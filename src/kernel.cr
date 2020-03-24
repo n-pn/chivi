@@ -7,11 +7,15 @@ module Kernel
 
   BOOKS = Array(Book).from_json File.read(".txt/top-books.json")
 
-  # alias SortBy = Symbol | Tuple(Symbol, Symbol)
+  # TODO: filtering
+
+  def book_size
+    BOOKS.size
+  end
 
   def list_books(limit = 20, offset = 0, sort_by = "tally")
     books = sort_books(sort_by)
-    books[0, 20]
+    books[offset, limit]
   end
 
   def sort_books(sort_by = "updated_at")
@@ -41,17 +45,19 @@ module Kernel
     end
   end
 
-  def parse_page(str, limit = 20)
-    int = parse_int(str)
-    int = 1 if int < 1
-
-    offset = (int - 1) * limit
-    {limit, offset}
+  def find_book(slug : String)
+    BOOKS.find(&.vi_slug.==(slug))
   end
 
-  def parse_int(str)
-    str.to_i
-  rescue
-    0
+  def list_chaps(book : String)
+    chap_file = ".txt/chaps/#{book}.json"
+    return nil unless File.exists?(chap_file)
+    Array(Chap).from_json File.read(chap_file)
+  end
+
+  def load_text(book : String, slug : String)
+    text_file = ".txt/texts/#{book}/#{slug}.txt"
+    return nil unless File.exists?(text_file)
+    File.read_lines(text_file)
   end
 end
