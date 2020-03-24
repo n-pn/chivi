@@ -1,0 +1,13 @@
+name: appcv
+version: 0.1.0
+
+authors:
+  - Nipinium <nipinium@gmail.com>
+
+targets:
+  appcv:
+    main: src/appcv.cr
+
+crystal: 0.33.0
+
+license: MIT
