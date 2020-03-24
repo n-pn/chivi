@@ -24,6 +24,19 @@
 
     return new Date(time).toISOString().split('T')[0]
   }
+
+  export function book_status(status) {
+    switch (status) {
+      case 0:
+        return 'Còn tiếp'
+      case 1:
+        return 'Hoàn thành'
+      case 2:
+        return 'Thái giám'
+      default:
+        return 'Không rõ'
+    }
+  }
 </script>
 
 <script>
@@ -143,7 +156,7 @@
     margin-top: 0.5rem;
     // margin: 1rem auto;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
     grid-gap: 0 0.5rem;
   }
 
@@ -213,15 +226,22 @@
         <MIcon m-icon="book" />
         {entry.vi_genre}
       </span>
-      <time class="updated_at" datetime={new Date(entry.updated_at)}>
-        <MIcon m-icon="clock" />
-        {relative_time(entry.updated_at)}
-      </time>
 
       <span class="chap_count">
         <MIcon m-icon="list" />
         {entry.chap_count} chương
       </span>
+
+      <span class="status">
+        <MIcon m-icon="activity" />
+        {book_status(entry.status)}
+      </span>
+
+      <time class="updated_at" datetime={new Date(entry.updated_at)}>
+        <MIcon m-icon="clock" />
+        {relative_time(entry.updated_at)}
+      </time>
+
     </div>
 
   </div>

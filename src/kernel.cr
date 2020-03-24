@@ -13,7 +13,7 @@ module Kernel
     BOOKS.size
   end
 
-  def list_books(limit = 20, offset = 0, sort_by = "tally")
+  def list_books(limit = 24, offset = 0, sort_by = "tally")
     books = sort_books(sort_by)
     books[offset, limit]
   end

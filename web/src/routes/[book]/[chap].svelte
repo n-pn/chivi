@@ -98,26 +98,31 @@
   }
 
   p {
-    @include font-size(2);
+    margin-top: 1rem;
+    font-size: rem(17px);
 
     @include screen-min(md) {
-      @include font-size(3);
+      font-size: rem(18px);
+    }
+
+    @include screen-min(lg) {
+      font-size: rem(19px);
+      margin-top: 1.25rem;
     }
 
     @include screen-min(xl) {
-      @include font-size(4);
+      font-size: rem(20px);
+      margin-top: 1.5rem;
     }
-
-    margin-top: 1rem;
   }
 
   footer {
     margin: 1rem 0;
-    // display: flex;
-    // justify-content: center;
-    // [m-button] {
-    //   margin-left: 0.5rem;
-    // }
+    display: flex;
+    justify-content: center;
+    [m-button] {
+      margin-left: 0.5rem;
+    }
   }
 
   .bread {
@@ -183,24 +188,28 @@
   {/each}
 </article>
 
-<footer class="u-cf">
+<footer>
   {#if prev}
-    <a
-      class="u-fl"
-      m-button="line"
-      href="/{book_slug}/{prev.uid}-{prev.url_slug}">
+    <a m-button="line" href="/{book_slug}/{prev.uid}-{prev.url_slug}">
       <MIcon m-icon="chevron-left" />
       <span>Prev</span>
+    </a>
+  {:else}
+    <a m-button="line" href="/{book_slug}">
+      <MIcon m-icon="list" />
+      <span>Home</span>
     </a>
   {/if}
 
   {#if next}
-    <a
-      class="u-fr"
-      m-button="primary"
-      href="/{book_slug}/{next.uid}-{next.url_slug}">
+    <a m-button="line primary" href="/{book_slug}/{next.uid}-{next.url_slug}">
       <span>Next</span>
       <MIcon m-icon="chevron-right" />
+    </a>
+  {:else if prev}
+    <a m-button="line" href="/{book_slug}">
+      <MIcon m-icon="list" />
+      <span>Home</span>
     </a>
   {/if}
 </footer>

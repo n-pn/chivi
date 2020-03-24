@@ -42,7 +42,7 @@
   }
   .wrap {
     margin: 0 auto;
-    width: 50rem;
+    width: 54rem;
     max-width: 100%;
 
     padding: 0 0.75rem;
