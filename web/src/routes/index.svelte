@@ -107,11 +107,11 @@
 <div class="list">
   {#each items as book}
     <a class="book" href={book.vi_slug}>
-      <picture class="book-cover" alt={book.vi_name}>
+      <picture class="book-cover">
         {#each book.covers as cover}
-          <source srcset={cover} alt={book.vi_name} />
+          <source srcset={cover} />
         {/each}
-        <img src="/img/nocover.jpg" alt={book.vi_name} />
+        <img src="img/nocover.png" alt={book.vi_title} />
       </picture>
 
       <div class="book-title">{book.vi_title}</div>

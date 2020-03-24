@@ -1,4 +1,5 @@
 <script>
+  export let segment = ''
   import { stores } from '@sapper/app'
   const { page } = stores()
 
@@ -7,6 +8,18 @@
       window.gtag('config', 'UA-160000714-1', {
         page_path: $page.path,
       })
+    }
+  }
+
+  function navigate(evt) {
+    switch (evt.keyCode) {
+      case 72:
+        _goto('/')
+        evt.preventDefault()
+        break
+
+      default:
+        break
     }
   }
 </script>
@@ -20,8 +33,9 @@
     width: 100%;
     height: $header-height;
     z-index: 999;
-    @include bgcolor(primary, 6);
-    @include shadow(4);
+    background-color: #fff;
+    // @include bgcolor(primary, 6);
+    @include shadow(3);
   }
   main {
     padding-top: $header-height;
@@ -58,15 +72,16 @@
     text-transform: uppercase;
 
     // font-variant: small-caps;
-    color: #fff;
+    @include color(primary, 9);
     font-weight: 500;
     letter-spacing: 0.1em;
     @include radius();
     @include font-size(2);
-    @include bgcolor(primary, 5);
+    @include bgcolor(primary, 1);
 
     @include hover() {
-      @include bgcolor(primary, 4);
+      @include bgcolor(primary, 5);
+      color: #fff;
     }
 
     > img {
@@ -94,9 +109,11 @@
   </script>
 </svelte:head>
 
+<svelte:window on:keydown={navigate} />
+
 <header>
   <div class="wrap">
-    <a href="/" class="logo">
+    <a href="/" class="logo" class:_active={segment == null}>
       <img src="/logo.svg" alt="logo" />
       <span>Chivi</span>
     </a>

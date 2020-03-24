@@ -23,6 +23,31 @@
   export let book_name
 
   import MIcon from '$mould/MIcon.svelte'
+
+  function navigate(evt) {
+    switch (evt.keyCode) {
+      case 82:
+        _goto(book_slug)
+        evt.preventDefault()
+        break
+      case 37:
+        if (prev) _goto(`${book_slug}/${prev.uid}-${prev.url_slug}`)
+        else _goto(`${book_slug}`)
+        evt.preventDefault()
+
+        break
+
+      case 39:
+        if (next) _goto(`${book_slug}/${next.uid}-${next.url_slug}`)
+        else _goto(`${book_slug}`)
+        evt.preventDefault()
+
+        break
+
+      default:
+        break
+    }
+  }
 </script>
 
 <style lang="scss">
@@ -134,6 +159,8 @@
 <svelte:head>
   <title>{vi_lines[0]} - {book_name} - Chivi</title>
 </svelte:head>
+
+<svelte:window on:keydown={navigate} />
 
 <div class="bread">
   <span class="crumb">
