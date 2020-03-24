@@ -1,13 +1,17 @@
-name: appcv
+name: server
 version: 0.1.0
 
 authors:
   - Nipinium <nipinium@gmail.com>
 
 targets:
-  appcv:
-    main: src/appcv.cr
+  server:
+    main: src/server.cr
 
 crystal: 0.33.0
 
 license: MIT
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
