@@ -17,17 +17,19 @@ rescue
 end
 
 module Server
+  Kemal.config.port = 4000
+
   serve_static false
 
   before_all do |env|
     env.response.content_type = "application/json"
   end
 
-  get "/" do |env|
+  get "/api" do |env|
     {msg: "ok"}.to_json env.response
   end
 
-  get "/books" do |env|
+  get "/api/books" do |env|
     page = env.params.query.fetch("page", "1")
     limit, offset = parse_page(page)
     sort_by = env.params.query.fetch("sort_by", "tally")
@@ -37,7 +39,7 @@ module Server
     {items: books, total: Kernel.book_size}.to_json env.response
   end
 
-  get "/books/:slug" do |env|
+  get "/api/books/:slug" do |env|
     slug = env.params.url["slug"]
     entry = Kernel.find_book(slug)
     chaps = Kernel.list_chaps(slug)
@@ -45,7 +47,7 @@ module Server
     {entry: entry, chaps: chaps}.to_json env.response
   end
 
-  get "/chaps/:book/:slug" do |env|
+  get "/api/chaps/:book/:slug" do |env|
     book = env.params.url["book"]
     slug = env.params.url["slug"]
     zh_lines = Kernel.load_text(book, slug)
