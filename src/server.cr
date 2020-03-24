@@ -50,11 +50,30 @@ module Server
   get "/api/chaps/:book/:slug" do |env|
     book = env.params.url["book"]
     slug = env.params.url["slug"]
+
+    book_item = Kernel.find_book(book)
+
+    if chaps = Kernel.list_chaps(book)
+      if idx = chaps.index(&.uid.==(slug))
+        prev_chap = chaps[idx - 1] if idx > 0
+        next_chap = chaps[idx + 1] if idx < chaps.size - 1
+      end
+    end
+
     zh_lines = Kernel.load_text(book, slug)
+
     if zh_lines
       vi_lines = Kernel::CHIVI.translate(zh_lines, mode: :mixed, book: nil)
     end
-    {zh_lines: zh_lines, vi_lines: vi_lines}.to_json env.response
+
+    {
+      prev:      prev_chap,
+      next:      next_chap,
+      zh_lines:  zh_lines,
+      vi_lines:  vi_lines,
+      book_slug: book_item.try &.vi_slug,
+      book_name: book_item.try &.vi_title,
+    }.to_json env.response
   end
 
   Kemal.run

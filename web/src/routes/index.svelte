@@ -1,52 +1,129 @@
+<script context="module">
+  export async function preload({ query }) {
+    const page = query.page || 1
+
+    const res = await this.fetch(`api/books?page=${page}`)
+    const { items, total } = await res.json()
+    return { items, total }
+  }
+</script>
+
+<script>
+  export let items = []
+  export let total = 0
+</script>
+
 <style lang="scss">
-  h1,
-  figure,
-  p {
-    text-align: center;
-    margin: 0 auto;
+  .list {
+    max-width: 100%;
+    margin: 1rem auto;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+    grid-gap: 0.5rem;
   }
 
-  h1 {
-    font-size: 2.8em;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin: 0 0 0.5em 0;
+  .book {
+    display: block;
+    position: relative;
+
+    margin-bottom: 3rem;
+
+    @include hover {
+      .book-title {
+        @include color(primary, 5);
+      }
+    }
+    // overflow: hidden;
+    &::before {
+      content: '';
+      display: block;
+      padding-top: 4/3;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
   }
 
-  figure {
-    margin: 0 0 1em 0;
-  }
+  .book-cover {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    z-index: 1;
 
-  img {
+    // source,
+    img {
+      @include radius();
+      // display: block;
+      min-width: 100%;
+      min-height: 100%;
+    }
+  }
+  .book-title {
     width: 100%;
-    max-width: 400px;
-    margin: 0 0 1em 0;
+    position: absolute;
+    bottom: -1.75rem;
+    font-weight: 600;
+    @include color(neutral, 7);
+    @include truncate();
+    @include font-size(3);
+    @include font-family(narrow);
   }
 
-  p {
-    margin: 1em auto;
+  .book-genre {
+    width: 100%;
+    position: absolute;
+    bottom: -3rem;
+    @include color(neutral, 5);
+    text-transform: uppercase;
+    font-weight: 500;
+    @include font-size(1);
   }
 
-  @media (min-width: 480px) {
-    h1 {
-      font-size: 4em;
+  .book-score {
+    width: 100%;
+    position: absolute;
+    bottom: -3rem;
+    @include color(neutral, 5);
+    text-transform: uppercase;
+    font-weight: 500;
+    @include font-size(1);
+    text-align: right;
+    span {
+      display: inline-block;
+      vertical-align: top;
+      font-size: 95%;
+      // margin-top: -0.125rem;
     }
   }
 </style>
 
 <svelte:head>
-  <title>Sapper project template</title>
+  <title>Chivi - Chinese to Vietname Machine Translation</title>
 </svelte:head>
 
-<h1>Great success!</h1>
+<div class="list">
+  {#each items as book}
+    <a class="book" href={book.vi_slug}>
+      <picture class="book-cover" alt={book.vi_name}>
+        {#each book.covers as cover}
+          <source srcset={cover} alt={book.vi_name} />
+        {/each}
+        <img src="/img/nocover.jpg" alt={book.vi_name} />
+      </picture>
 
-<figure>
-  <img alt="Borat" src="great-success.png" />
-  <figcaption>HIGH FIVE!</figcaption>
-</figure>
+      <div class="book-title">{book.vi_title}</div>
+      <div class="book-genre">{book.vi_genre}</div>
+      <div class="book-score">
+        <span>⭐</span>
+        {book.score}
+      </div>
+    </a>
+  {/each}
+</div>
 
-<p>
-  <strong>
-    Try editing this file (src/routes/index.svelte) to test live reloading.
-  </strong>
-</p>
+<div class="pagi">
+  <div>Total: {total}</div>
+</div>

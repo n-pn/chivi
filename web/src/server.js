@@ -6,8 +6,17 @@ import * as sapper from '@sapper/server'
 const { PORT, NODE_ENV } = process.env
 const dev = NODE_ENV === 'development'
 
+import { createProxyMiddleware } from 'http-proxy-middleware'
+
+const proxy = createProxyMiddleware('/api', {
+  target: 'http://localhost:4000',
+  changeOrigin: true,
+  pathRewrite: path => encodeURI(path),
+})
+
 polka() // You can also use Express
   .use(
+    proxy,
     compression({ threshold: 0 }),
     sirv('static', { dev }),
     sapper.middleware()
