@@ -26,11 +26,12 @@
 
   function navigate(evt) {
     switch (evt.keyCode) {
-      case 82:
+      case 72:
         _goto(book_slug)
         evt.preventDefault()
         break
       case 37:
+      case 74:
         if (prev) _goto(`${book_slug}/${prev.uid}-${prev.url_slug}`)
         else _goto(`${book_slug}`)
         evt.preventDefault()
@@ -38,6 +39,7 @@
         break
 
       case 39:
+      case 75:
         if (next) _goto(`${book_slug}/${next.uid}-${next.url_slug}`)
         else _goto(`${book_slug}`)
         evt.preventDefault()

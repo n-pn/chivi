@@ -13,7 +13,7 @@
 
   function navigate(evt) {
     switch (evt.keyCode) {
-      case 72:
+      case 82:
         _goto('/')
         evt.preventDefault()
         break
