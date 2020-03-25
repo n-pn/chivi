@@ -1,11 +1,11 @@
-require "../../src/engine/dict"
+require "../../src/engine/dict/dict_file"
 
-test = Engine::Dict.new "spec/fixtures/test.txt"
+test = Engine::DictFile.new "spec/fixtures/test.txt"
 
 print "\nset abc to abc: ", test.set("abc", "abc")
 
 print "\nput a to a: ", test.put("a", "a")
-print "\nput b to b: ", test.put("b", "b")
+print "\nput b to b: ", test.set("b", "b")
 
 print "\nset a to c: ", test.set("a", "c")
 

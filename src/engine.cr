@@ -1,6 +1,6 @@
-require "./*"
+require "./engine/*"
 
-class Engine::Main
+class Engine
   def initialize(@dir : String = ".dic")
     @repo = Repo.new(@dir)
   end
