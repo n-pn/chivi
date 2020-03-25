@@ -1,0 +1,53 @@
+[m-input] {
+  display: block;
+  position: relative;
+
+  > label {
+    $pad: rem(2x);
+    position: absolute;
+    top: -$pad;
+    left: $pad;
+    padding: 0 $pad / 2;
+    line-height: 1rem;
+    font-size: rem(14px);
+    // font-weight: 500;
+    @include font-family(narrow);
+    @include color(neutral, 6);
+    background: linear-gradient(180deg, transparent 50%, #fff 50%);
+    pointer-events: none;
+  }
+
+  > textarea,
+  > input,
+  > select {
+    display: block;
+    width: 100%;
+
+    @include border($color: color(neutral, 4));
+    @include radius;
+    background-color: #fff;
+
+    font-size: rem(4x);
+    line-height: rem(6x);
+    padding: 0.375rem 0.75rem;
+
+    &:focus {
+      box-shadow: 0 0 0 1px inset color(primary, 5);
+      @include border-color(color(primary, 5));
+    }
+  }
+}
+
+input,
+select {
+  [m-input~='large'] & {
+    padding-top: rem(5x) / 2;
+    padding-bottom: rem(5x) / 2;
+  }
+
+  [m-input~='small'] & {
+    // height: rem(11x);
+    padding-top: rem(1x) / 2;
+    padding-bottom: rem(1x) / 2;
+  }
+}

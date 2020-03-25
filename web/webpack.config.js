@@ -9,9 +9,10 @@ const dev = mode === 'development'
 
 const alias = {
   svelte: path.resolve('node_modules', 'svelte'),
-  $mould: path.resolve('node_modules', '~mould', 'lib'),
-  $com: path.resolve(__dirname, 'src', 'components'),
   $src: path.resolve(__dirname, 'src'),
+  $mould: path.resolve(__dirname, 'src', 'moulds'),
+  $style: path.resolve(__dirname, 'src', 'styles'),
+  $route: path.resolve(__dirname, 'src', 'routes'),
 }
 
 const extensions = ['.mjs', '.js', '.json', '.svelte', '.html']

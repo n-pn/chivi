@@ -1,0 +1,5 @@
+@each $pos in $-positions {
+  .u-pos-#{$pos} {
+    position: $pos;
+  }
+}

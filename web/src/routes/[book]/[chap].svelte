@@ -1,9 +1,10 @@
 <script context="module">
   export async function preload({ params }) {
     const book = params.book
-    const slug = params.chap.split('-')[0]
+    const slug = params.chap.split('-')
+    const chap = slug[slug.length - 1]
 
-    const res = await this.fetch(`api/chaps/${book}/${slug}`)
+    const res = await this.fetch(`api/chaps/${book}/${chap}`)
     const data = await res.json()
 
     if (!!data.book_name) {
@@ -15,32 +16,49 @@
 </script>
 
 <script>
+  import MIcon from '$mould/shared/MIcon.svelte'
+
   export let prev
   export let next
   // export let zh_lines
   export let vi_lines
   export let book_slug
   export let book_name
+  let scroll_ended = false
 
-  import MIcon from '$mould/MIcon.svelte'
+  function scrolled(evt) {
+    scroll_ended = false
+  }
 
   function navigate(evt) {
     switch (evt.keyCode) {
+      // case 32:
+      //   if (scroll_ended) {
+      //     evt.preventDefault()
+      //     if (next) _goto(`${book_slug}/${next.uid}-${next.url_slug}`)
+      //     else _goto(book_slug)
+      //   } else {
+      //     scroll_ended = true
+      //   }
+
+      //   break
+
       case 72:
-        _goto(book_slug)
         evt.preventDefault()
+        _goto(book_slug)
         break
+
       case 37:
       case 74:
-        if (prev) _goto(`${book_slug}/${prev.uid}-${prev.url_slug}`)
-        else _goto(`${book_slug}`)
         evt.preventDefault()
+        if (prev) _goto(`${book_slug}/${prev.url_slug}-${prev.uid}`)
+        else _goto(book_slug)
 
         break
 
       case 39:
       case 75:
-        if (next) _goto(`${book_slug}/${next.uid}-${next.url_slug}`)
+        if (next) _goto(`${book_slug}/${next.url_slug}-${next.uid}`)
         else _goto(`${book_slug}`)
         evt.preventDefault()
 
@@ -192,7 +210,7 @@
 
 <footer>
   {#if prev}
-    <a m-button="line" href="/{book_slug}/{prev.uid}-{prev.url_slug}">
+    <a m-button="line" href="/{book_slug}/{prev.url_slug}-{prev.uid}">
       <MIcon m-icon="chevron-left" />
       <span>Prev</span>
     </a>
@@ -204,7 +222,7 @@
   {/if}
 
   {#if next}
-    <a m-button="line primary" href="/{book_slug}/{next.uid}-{next.url_slug}">
+    <a m-button="line primary" href="/{book_slug}/{next.url_slug}-{next.uid}">
       <span>Next</span>
       <MIcon m-icon="chevron-right" />
     </a>

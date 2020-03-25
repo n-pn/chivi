@@ -1,0 +1,131 @@
+$-button-styles: text, line, fill !default;
+$-button-themes: neutral, primary, success, warning, harmful !default;
+
+$-button-style-df: fill !default;
+$-button-theme-df: neutral !default;
+
+$-button-size-names: tiny, small, medium, large, huge !default;
+$-button-size-df: medium !default;
+
+$-button-heights: (
+  /* 24px */ tiny: rem(6x),
+  /* 28px */ small: rem(7x),
+  /* 36px */ medium: rem(9x),
+  /* 48px */ large: rem(11x),
+  /* 60px */ huge: rem(14x)
+);
+
+$-button-icon-sizes: (
+  tiny: rem(16px),
+  small: rem(18px),
+  medium: rem(20px),
+  large: rem(24px),
+  huge: rem(28px),
+);
+
+$-button-font-sizes: (
+  tiny: rem(12px),
+  small: rem(13px),
+  medium: rem(14px),
+  large: rem(16px),
+  huge: rem(18px),
+);
+
+@mixin button-sizing($size: $-button-size-df) {
+  $height: map-get($-button-heights, $size);
+  $icon-size: map-get($-button-icon-sizes, $size);
+  $font-size: map-get($-button-font-sizes, $size);
+
+  $padding: ($height - $icon-size) / 2;
+
+  height: $height;
+  padding: $padding;
+  line-height: $icon-size;
+  font-size: $font-size;
+  vertical-align: bottom;
+  > span {
+    padding: 0 ($icon-size - $font-size) / 2;
+  }
+  > [m-icon] {
+    margin: -1px;
+    // margin-bottom: 0;
+
+    width: $icon-size;
+    height: $icon-size;
+  }
+
+  @at-root {
+    input#{&} {
+      padding: ($height - $icon-size) / 2 ($height - $font-size) / 2;
+    }
+  }
+}
+
+@mixin button-varify($style: fill, $theme: neutral) {
+  @if $style == line {
+    @if $theme == neutral {
+      border-color: color($theme, 4);
+      &:disabled {
+        border-color: color($theme, 3);
+      }
+    } @else {
+      border-color: color($theme, 3);
+      &:disabled {
+        border-color: color($theme, 2);
+      }
+    }
+  } @else {
+    border-color: transparent;
+  }
+
+  @if $style == fill {
+    @if $theme == neutral {
+      @include color(neutral, 6);
+      @include bgcolor(neutral, 2);
+      &:hover {
+        @include bgcolor(neutral, 3);
+      }
+
+      &:disabled {
+        @include color(neutral, 4);
+        @include bgcolor(neutral, 2);
+      }
+    } @else {
+      color: #fff;
+      @include bgcolor($theme, 5);
+      &:hover {
+        @include bgcolor($theme, 4);
+      }
+
+      &:disabled {
+        @include bgcolor($theme, 3);
+      }
+    }
+  } @else {
+    @if $theme == neutral {
+      @include color($theme, 6);
+
+      background-color: transparent;
+      &:hover {
+        background-color: color($theme, 2);
+      }
+
+      &:disabled {
+        @include color($theme, 4);
+        background-color: transparent;
+      }
+    } @else {
+      @include color($theme, 5);
+
+      background-color: transparent;
+      &:hover {
+        background-color: color($theme, 1);
+      }
+
+      &:disabled {
+        @include color($theme, 3);
+        background-color: transparent;
+      }
+    }
+  }
+}

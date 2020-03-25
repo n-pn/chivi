@@ -1,0 +1,92 @@
+// variables
+
+$-screen-xs: 320px !default;
+$-screen-sm: 560px !default;
+$-screen-md: 800px !default;
+$-screen-lg: 1040px !default;
+$-screen-xl: 1280px !default;
+
+$-screen-sizes: (
+  sm: $-screen-sm,
+  md: $-screen-md,
+  lg: $-screen-lg,
+  xl: $-screen-xl,
+) !default;
+
+$-screen-names: map-keys($-screen-sizes);
+
+// functions
+@function screen-size($key) {
+  $val: map-get($-screen-sizes, $key);
+
+  @if $val {
+    @return $val;
+  }
+
+  @warn "custom screen size '#{$key}' is not recommended";
+  @return $key;
+}
+
+// mixins
+
+@mixin screen-min($min: sm) {
+  @if $min == null or $min == xs {
+    @content;
+  } @else {
+    $size-min: screen-size($min);
+    @media screen and (min-width: $size-min) {
+      @content;
+    }
+  }
+}
+
+@mixin screen-max($max: xl) {
+  @if $max == null {
+    @content;
+  } @else {
+    $size-max: screen-size($max) - 1px;
+    @media screen and (max-width: $size-max) {
+      @content;
+    }
+  }
+}
+
+@mixin screen-range($min: sm, $max: xl) {
+  $size-min: screen-size($min);
+  $size-max: screen-size($max) - 1px;
+  @media screen and (min-width: $size-min) and (max-width: $size-max) {
+    @content;
+  }
+}
+
+@mixin screen-height-min($min: sm) {
+  // default is small tablet
+  @if $min == null {
+    @content;
+  } @else {
+    $size-min: screen-size($min);
+    @media screen and (min-height: $size-min) {
+      @content;
+    }
+  }
+}
+
+@mixin screen-height-max($max: xl) {
+  // default is large tablet
+  @if $max == null {
+    @content;
+  } @else {
+    $size-max: screen-size($max) - 1px;
+    @media screen and (max-height: $size-max) {
+      @content;
+    }
+  }
+}
+
+@mixin screen-height-range($min: sm, $max: xl) {
+  $size-min: screen-size($min);
+  $size-max: screen-size($max) - 1px;
+  @media screen and (min-height: $size-min) and (max-height: $size-max) {
+    @content;
+  }
+}

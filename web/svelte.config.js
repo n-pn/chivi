@@ -9,7 +9,7 @@ module.exports = {
       const { type, lang } = attributes
       if (type !== 'text/scss' && lang !== 'scss') return
 
-      const prepend_content = '@import "~mould/css/essence";\n'
+      const prepend_content = '@import "essence";\n'
       content = prepend_content + content
 
       const options = {
@@ -18,7 +18,6 @@ module.exports = {
         includePaths: [
           path.dirname(filename),
           path.resolve(__dirname, 'src/styles'),
-          path.resolve(__dirname, 'node_modules'),
         ],
         outFile: filename + '.css',
       }

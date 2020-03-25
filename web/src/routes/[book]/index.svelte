@@ -51,7 +51,7 @@
     }
   }
 
-  import MIcon from '$mould/MIcon.svelte'
+  import MIcon from '$mould/shared/MIcon.svelte'
 </script>
 
 <style type="text/scss">
@@ -156,7 +156,7 @@
     margin-top: 0.5rem;
     // margin: 1rem auto;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
     grid-gap: 0 0.5rem;
   }
 
@@ -181,14 +181,14 @@
     display: block;
     @include color(neutral, 7);
     @include border($side: bottom);
-    padding: 0.25rem 0.75rem;
+    padding: 0.5rem 0.75rem;
 
     @include hover {
       @include color(primary, 5);
     }
-    time {
-      @include color(neutral, 5);
-    }
+    // time {
+    //   @include color(neutral, 5);
+    // }
   }
 
   .chap-title {
@@ -260,14 +260,9 @@
   <div class="chap-list">
     {#each chaps as chap}
       <div class="chap-item">
-        <a class="chap-link" href="/{entry.vi_slug}/{chap.uid}-{chap.url_slug}">
+        <a class="chap-link" href="/{entry.vi_slug}/{chap.url_slug}-{chap.uid}">
           <div class="chap-title">{chap.vi_title}</div>
-          <time class="chap-time" datetime={new Date(chap.updated_at)}>
-            {relative_time(chap.created_at)}
-          </time>
-
         </a>
-
       </div>
     {/each}
   </div>

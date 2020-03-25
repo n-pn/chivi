@@ -32,7 +32,7 @@
     return arr
   }
 
-  import MIcon from '$mould/MIcon.svelte'
+  import MIcon from '$mould/shared/MIcon.svelte'
 </script>
 
 <style lang="scss">

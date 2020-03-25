@@ -1,9 +1,9 @@
 require "chivi/main"
-require "./models/*"
+require "./kernel/models/*"
 
 module Kernel
   extend self
-  CHIVI = Chivi::Main.new(".dic/")
+  CHIVI = Engine::Main.new(".dic/")
 
   BOOKS = Array(Book).from_json File.read(".txt/top-books.json")
 

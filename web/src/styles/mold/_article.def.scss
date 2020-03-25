@@ -1,0 +1,27 @@
+@mixin article {
+  & {
+    > h1,
+    > h2,
+    > h3,
+    > h4,
+    > h5,
+    > h6 {
+      position: relative;
+      &:after {
+        display: block;
+        content: ' ';
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        height: 1px;
+        @include bgcolor(neutral, 3);
+      }
+    }
+  }
+}
+
+@mixin flow($gap: 1rem) {
+  & > * + * {
+    margin-top: $gap;
+  }
+}
