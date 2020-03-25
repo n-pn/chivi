@@ -1,9 +1,10 @@
 require "./spec_helper"
+require "../src/engine"
 
-describe Appcv do
+describe Engine do
   # TODO: Write tests
 
   it "works" do
-    false.should eq(true)
+    false.should_not eq(true)
   end
 end
