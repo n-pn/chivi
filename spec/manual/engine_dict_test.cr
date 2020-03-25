@@ -1,6 +1,6 @@
-require "../../src/engine/dict/dict_file"
+require "../../src/engine/dict"
 
-test = Engine::DictFile.new "spec/fixtures/test.txt"
+test = Engine::Dict.new "spec/fixtures/test.txt"
 
 print "\nset abc to abc: ", test.set("abc", "abc")
 
@@ -12,8 +12,8 @@ print "\nset a to c: ", test.set("a", "c")
 print "\nfind abc: ", test.find("abc")
 print "\nfind ab: ", test.find("ab")
 
-print "\nscan abc: ", test.scan("abc".chars).map(&.to_s).join(" ")
-print "\nscan ab: ", test.scan("ab".chars).map(&.to_s).join(" ")
+print "\nscan abc: ", test.scan("abc").map { |x| "[#{x}]" }.join(" ")
+print "\nscan ab: ", test.scan("ab".chars).map { |x| "[#{x}]" }.join(" ")
 
 print "\ndel b: ", test.del "b"
 
@@ -21,4 +21,4 @@ puts "\n size: #{test.size}"
 
 pp test.to_a
 
-test.save!
+# test.save!
