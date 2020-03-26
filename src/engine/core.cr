@@ -38,7 +38,82 @@ class Engine::Core
 
   getter tokens = [] of Token
 
-  def tokenize!(dicts : Array(Dict), input : Array(Char))
+  def initialize(@dicts : Array(Dict))
+  end
+
+  NUMBER     = "零〇一二三四五六七八九十百千"
+  TITLE_RE_0 = /^(第?([\d#{NUMBER}]+)([集卷]))([,.:]?\s*)(.*)$/
+  TITLE_RE_1 = /^(.*?)(\s*)(第?([\d#{NUMBER}]+)([章节幕回]))([,.:]?\s*)(.*)$/
+  TITLE_RE_2 = /^([\d#{NUMBER}]+)([,.:]?\s*)(.*)$/
+
+  def parse_title(input : String)
+    @tokens = [] of Token
+
+    if match = TITLE_RE_0.match(input)
+      _, zh_group, index, label, trash, title = match
+      vi_group = "#{vi_label(label)} #{Util.hanzi_int(index)}"
+
+      @tokens << Token.new(zh_group, vi_group, 0)
+
+      if title.empty?
+        @tokens << Token.new(trash, "", 0) unless trash.empty?
+      else
+        @tokens << Token.new(trash, ":", 0) unless trash.empty?
+      end
+
+      input = title
+    end
+
+    if match = TITLE_RE_1.match(input)
+      _, pre_text, pre_trash, zh_group, index, label, trash, title = match
+
+      if pre_text.empty?
+        @tokens << Token.new(pre_trash, "", 0) unless pre_trash.empty?
+      else
+        @tokens.concat tokenize(pre_text.chars)
+        @tokens << Token.new(pre_trash, " - ", 0) unless pre_trash.empty?
+      end
+
+      vi_group = "#{vi_label(label)} #{Util.hanzi_int(index)}"
+      @tokens << Token.new(zh_group, vi_group, 0)
+    elsif match = TITLE_RE_2.match(input)
+      _, zh_index, trash, title = match
+      vi_index = "Chương #{Util.hanzi_int(zh_index)}"
+
+      @tokens << Token.new(zh_index, vi_index, 0)
+    else
+      title = input
+      trash = ""
+    end
+
+    if title.empty?
+      @tokens << Token.new(trash, "", 0) unless trash.empty?
+    else
+      @tokens << Token.new(trash, ":", 0) unless trash.empty?
+      @tokens.concat tokenize(title.chars)
+    end
+
+    self
+  end
+
+  private def vi_label(label : String)
+    case label
+    when "章" then "Chương"
+    when "卷" then "Quyển"
+    when "集" then "Tập"
+    when "节" then "Tiết"
+    when "幕" then "Màn"
+    when "回" then "Hồi"
+    else          label
+    end
+  end
+
+  def parse_plain(input : String)
+    @tokens = tokenize(input.chars)
+    self
+  end
+
+  def tokenize(input : Array(Char))
     selects = [Token.new("", "")]
     weights = [0.0]
 
@@ -49,12 +124,12 @@ class Engine::Core
       weights << idx + 1.0
     end
 
-    dsize = dicts.size + 1
+    dsize = @dicts.size + 1
 
     chars.each_with_index do |char, i|
       choices = {} of Int32 => Tuple(Dict::Item, Int32)
 
-      dicts.each_with_index do |dict, j|
+      @dicts.each_with_index do |dict, j|
         dict.scan(chars, i).each do |item|
           choices[item.key.size] = {item, j + 1}
         end
@@ -83,16 +158,20 @@ class Engine::Core
       idx -= token.key.size
     end
 
-    @tokens = [] of Token
+    combine_similar(res)
+  end
 
-    idx = res.size - 1
+  def combine_similar(tokens)
+    res = [] of Token
+    idx = tokens.size - 1
+
     while idx >= 0
-      acc = res[idx]
+      acc = tokens[idx]
       jdx = idx - 1
 
       if acc.dic == 0
         while jdx >= 0
-          cur = res[jdx]
+          cur = tokens[jdx]
           break if cur.dic > 0
           break unless similar?(acc, cur)
           acc.key += cur.key
@@ -101,11 +180,11 @@ class Engine::Core
         end
       end
 
-      @tokens << acc
       idx = jdx
+      res << acc
     end
 
-    self
+    res
   end
 
   private def similar?(acc : Token, cur : Token)
@@ -126,7 +205,7 @@ class Engine::Core
     end
   end
 
-  def apply_grammar!
+  def apply_grammar
     # TODO: handle more special rules, like:
     # - convert hanzi to number,
     # - convert hanzi percent
@@ -146,24 +225,21 @@ class Engine::Core
     self
   end
 
-  def capitalize!(cap_first : Bool = true)
+  def capitalize(cap_first : Bool = true)
     apply_cap = cap_first
 
     @tokens.each do |token|
-      if apply_cap && consume_cap?(token.val)
+      next if token.val.empty?
+
+      if apply_cap && token.val[0].alphanumeric?
         token.val = Util.capitalize(token.val)
         apply_cap = false
       else
-        apply_cap ||= cap_after?(token.key)
+        apply_cap ||= cap_after?(token.val)
       end
     end
 
     self
-  end
-
-  private def consume_cap?(val : String)
-    return false if val.empty?
-    val[0].alphanumeric?
   end
 
   private def cap_after?(val : String)
@@ -176,7 +252,7 @@ class Engine::Core
     end
   end
 
-  def add_spaces!
+  def add_spaces
     res = Array(Token).new
     add_space = false
 
@@ -223,82 +299,4 @@ class Engine::Core
       true
     end
   end
-
-  # # do not add capitalize and spaces, suit for tradsimp conversion
-  # def cv_raw(dicts : Dicts, input : String)
-  #   tokenize(dicts, input.chars)
-  # end
-
-  # # only add space, for transliteration like hanviet or pinyins
-  # def cv_lit(dicts : Dicts, input : String)
-  #   chars = Util.normalize(input)
-  #   tokens = tokenize(dicts, chars)
-  #   tokens = group_similar(tokens)
-  #   add_space(tokens)
-  # end
-
-  # # apply spaces, caps and grammars, suit for vietphase translation
-  # def cv_plain(dicts : Dicts, input : String)
-  #   chars = Util.normalize(input)
-  #   tokens = tokenize(dicts, chars)
-  #   tokens = group_similar(tokens)
-  #   tokens = apply_grammar(tokens)
-  #   tokens = capitalize(tokens)
-  #   add_space(tokens)
-  # end
-
-  # # take extra care for chapter titles
-  # def cv_title(dicts : Dicts, input : String)
-  #   if match = split_head(input)
-  #     head_text, head_trash, zh_index, vi_index, tail_trash, tail_text = match
-
-  #     output = Tokens.new
-
-  #     if !head_text.empty?
-  #       output.concat cv_plain(dicts, head_text)
-  #       output << Token.new(head_trash, " - ", 0)
-  #     elsif !head_trash.empty?
-  #       output << Token.new(head_trash, "", 0)
-  #     end
-
-  #     output << Token.new(zh_index, vi_index, 0)
-
-  #     if !tail_text.empty?
-  #       output << Token.new(tail_trash, ": ", 0)
-  #       output.concat cv_title(dicts, tail_text) # incase volume title is mixed with chapter title
-  #     elsif !tail_trash.empty?
-  #       output << Token.new(tail_trash, "", 0)
-  #     end
-
-  #     output
-  #   else
-  #     cv_plain(dicts, input)
-  #   end
-  # end
-
-  # NUMBER  = "零〇一二三四五六七八九十百千"
-  # LABELS  = "章节幕回集卷"
-  # HEAD_RE = /^(.*?)(\s*)(第?([\d#{NUMBER}]+)([#{LABELS}]))([,.:]?\s*)(.*)$/
-
-  # # split chapter title and translate chapter index
-  # def split_head(input : String)
-  #   if match = input.match(HEAD_RE)
-  #     vi_index = vi_label(match[5]) + " " + Util.hanzi_int(match[4])
-  #     {match[1], match[2], match[3], vi_index, match[6], match[7]}
-  #   else
-  #     nil
-  #   end
-  # end
-
-  # private def vi_label(label : String)
-  #   case label
-  #   when "章" then "Chương"
-  #   when "卷" then "Quyển"
-  #   when "集" then "Tập"
-  #   when "节" then "Tiết"
-  #   when "幕" then "Màn"
-  #   when "回" then "Hồi"
-  #   else          label
-  #   end
-  # end
 end

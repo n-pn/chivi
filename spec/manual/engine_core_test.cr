@@ -11,26 +11,31 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-generic = Engine::Dict.load! ".dic/common/generic.dic"
-combine = Engine::Dict.load! ".dic/common/combine.dic"
+GENERIC = Engine::Dict.load! ".dic/common/generic.dic"
+COMBINE = Engine::Dict.load! ".dic/common/combine.dic"
+COMBINE.set("贾文和", "Giả Văn Hoà")
 
-dicts = [generic, combine]
-combine.set("贾文和", "Giả Văn Hoà")
+DICTS = [GENERIC, COMBINE]
 
-engine = Engine::Core.new
+ENGINE = Engine::Core.new(DICTS)
 
-engine.tokenize!(dicts, "[综恐]这什么鬼东西！／what_the_fuck_!--落漠".chars)
-puts engine
+def translate(chars, title = false)
+  if title
+    res = ENGINE.parse_title(chars)
+  else
+    res = ENGINE.parse_plain(chars)
+  end
 
-engine.apply_grammar!
-puts engine
-
-engine.capitalize!
-puts engine
-
-engine.add_spaces!
-puts engine
+  res.apply_grammar.capitalize.add_spaces
+end
 
 Engine::Util.split_lines(text).each do |line|
-  puts engine.tokenize!(dicts, line.chars).apply_grammar!.capitalize!.add_spaces!
+  puts translate(line)
 end
+
+puts translate("一章:", true)
+puts translate("第一章", true)
+puts translate("第一章 屠龙之术", true)
+puts translate("一章, 屠龙之术", true)
+puts translate("一, 屠龙之术", true)
+puts translate("第十三集 龙章凤仪 第一章 屠龙之术", true)

@@ -60,7 +60,74 @@ module Engine::Util
   end
 
   # convert chinese numbers to latin numbers
-  def hanzi_int(input)
-    HANZI_INT.fetch(input, input)
+  # def hanzi_int(input)
+  #   HANZI_INT.fetch(input, input)
+  # end
+
+  def hanzi_int(input : String)
+    # TODO: Handle bigger numbers
+
+    res = 0
+    mod = 1
+    acc = 0
+
+    chars = input.chars
+    (chars.size - 1).downto(0) do |idx|
+      char = chars[idx]
+
+      case char
+      when '千'
+        res += acc
+        acc = 1000
+        mod = acc if mod < acc
+      when '百'
+        res += acc
+        acc = 100
+        mod = acc if mod < acc
+      when '十'
+        acc = 10
+      else
+        res += char_to_num(char) * mod
+        acc = 0
+        mod *= 10
+      end
+    end
+
+    res + acc
+  end
+
+  def char_to_num(char : Char)
+    case char
+    when '零' then 0
+    when '〇' then 0
+    when '一' then 1
+    when '二' then 2
+    when '三' then 3
+    when '四' then 4
+    when '五' then 5
+    when '六' then 6
+    when '七' then 7
+    when '八' then 8
+    when '九' then 9
+    when .ascii_number?
+      char.to_i
+    else
+      raise ArgumentError.new("Unknown char: #{char}")
+    end
   end
 end
+
+# puts Engine::Util.hanzi_int("1203")
+# puts Engine::Util.hanzi_int("十")
+# puts Engine::Util.hanzi_int("十七")
+# puts Engine::Util.hanzi_int("二十")
+# puts Engine::Util.hanzi_int("二十七")
+# puts Engine::Util.hanzi_int("百")
+# puts Engine::Util.hanzi_int("百零五")
+# puts Engine::Util.hanzi_int("百十五")
+# puts Engine::Util.hanzi_int("八百零五")
+# puts Engine::Util.hanzi_int("八百三十五")
+# puts Engine::Util.hanzi_int("四千零七")
+# puts Engine::Util.hanzi_int("四千八百零七")
+# puts Engine::Util.hanzi_int("四千二百一十七")
+# puts Engine::Util.hanzi_int("九九九〇")
