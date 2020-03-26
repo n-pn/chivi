@@ -5,8 +5,8 @@ require "json"
 
 # require "./core/*"
 
-class Engine::Core
-  # extend self
+module Engine::Core
+  extend self
 
   alias Dicts = Array(Dict)
   alias Chars = Array(Char)
@@ -36,64 +36,79 @@ class Engine::Core
     end
   end
 
-  getter tokens = [] of Token
-
-  def initialize(@dicts : Array(Dict))
+  def cv_raw(dicts : Dicts, input : String)
+    tokens = tokenize(dicts, input.chars)
+    tokens.reverse
   end
 
-  NUMBER     = "零〇一二三四五六七八九十百千"
-  TITLE_RE_0 = /^(第?([\d#{NUMBER}]+)([集卷]))([,.:]?\s*)(.*)$/
-  TITLE_RE_1 = /^(.*?)(\s*)(第?([\d#{NUMBER}]+)([章节幕回]))([,.:]?\s*)(.*)$/
-  TITLE_RE_2 = /^([\d#{NUMBER}]+)([,.:]?\s*)(.*)$/
+  def cv_lit(dicts : Dicts, input : String)
+    tokens = tokenize(dicts, input.chars)
+    tokens = combine_similar(tokens)
+    tokens = capitalize(tokens)
+    add_spaces(tokens)
+  end
 
-  def parse_title(input : String)
-    @tokens = [] of Token
+  def cv_plain(dicts : Dicts, input : String)
+    tokens = tokenize(dicts, input.chars)
+    tokens = combine_similar(tokens)
+    tokens = apply_grammar(tokens)
+    tokens = capitalize(tokens)
+    add_spaces(tokens)
+  end
+
+  HAN_NUM    = "零〇一二三四五六七八九十百千"
+  TITLE_RE_0 = /^(第?([\d#{HAN_NUM}]+)([集卷]))([,.:]?\s*)(.*)$/
+  TITLE_RE_1 = /^(.*?)(\s*)(第?([\d#{HAN_NUM}]+)([章节幕回]))([,.:]?\s*)(.*)$/
+  TITLE_RE_2 = /^([\d#{HAN_NUM}]+)([,.:]?\s*)(.*)$/
+
+  def cv_title(dicts : Dicts, input : String)
+    res = [] of Token
 
     if match = TITLE_RE_0.match(input)
       _, zh_group, index, label, trash, title = match
       vi_group = "#{vi_label(label)} #{Util.hanzi_int(index)}"
 
-      @tokens << Token.new(zh_group, vi_group, 0)
+      res << Token.new(zh_group, vi_group, 0)
 
       if title.empty?
-        @tokens << Token.new(trash, "", 0) unless trash.empty?
+        res << Token.new(trash, "", 0) unless trash.empty?
       else
-        @tokens << Token.new(trash, ":", 0) unless trash.empty?
+        res << Token.new(trash, ": ", 0) unless trash.empty?
       end
 
       input = title
     end
 
     if match = TITLE_RE_1.match(input)
-      _, pre_text, pre_trash, zh_group, index, label, trash, title = match
+      _, pre_title, pre_trash, zh_group, index, label, trash, title = match
 
-      if pre_text.empty?
-        @tokens << Token.new(pre_trash, "", 0) unless pre_trash.empty?
+      if pre_title.empty?
+        res << Token.new(pre_trash, "", 0) unless pre_trash.empty?
       else
-        @tokens.concat tokenize(pre_text.chars)
-        @tokens << Token.new(pre_trash, " - ", 0) unless pre_trash.empty?
+        res.concat cv_plain(dicts, pre_title)
+        res << Token.new(pre_trash, " - ", 0) unless pre_trash.empty?
       end
 
       vi_group = "#{vi_label(label)} #{Util.hanzi_int(index)}"
-      @tokens << Token.new(zh_group, vi_group, 0)
+      res << Token.new(zh_group, vi_group, 0)
     elsif match = TITLE_RE_2.match(input)
       _, zh_index, trash, title = match
       vi_index = "Chương #{Util.hanzi_int(zh_index)}"
 
-      @tokens << Token.new(zh_index, vi_index, 0)
+      res << Token.new(zh_index, vi_index, 0)
     else
       title = input
       trash = ""
     end
 
     if title.empty?
-      @tokens << Token.new(trash, "", 0) unless trash.empty?
+      res << Token.new(trash, "", 0) unless trash.empty?
     else
-      @tokens << Token.new(trash, ":", 0) unless trash.empty?
-      @tokens.concat tokenize(title.chars)
+      res << Token.new(trash, ": ", 0) unless trash.empty?
+      res.concat cv_plain(dicts, title)
     end
 
-    self
+    res
   end
 
   private def vi_label(label : String)
@@ -108,15 +123,9 @@ class Engine::Core
     end
   end
 
-  def parse_plain(input : String)
-    @tokens = tokenize(input.chars)
-    self
-  end
-
-  def tokenize(input : Array(Char))
+  def tokenize(dicts : Dicts, input : Chars)
     selects = [Token.new("", "")]
     weights = [0.0]
-
     chars = Util.normalize(input)
 
     input.each_with_index do |char, idx|
@@ -124,12 +133,12 @@ class Engine::Core
       weights << idx + 1.0
     end
 
-    dsize = @dicts.size + 1
+    dsize = dicts.size + 1
 
     chars.each_with_index do |char, i|
       choices = {} of Int32 => Tuple(Dict::Item, Int32)
 
-      @dicts.each_with_index do |dict, j|
+      dicts.each_with_index do |dict, j|
         dict.scan(chars, i).each do |item|
           choices[item.key.size] = {item, j + 1}
         end
@@ -158,10 +167,10 @@ class Engine::Core
       idx -= token.key.size
     end
 
-    combine_similar(res)
+    res
   end
 
-  def combine_similar(tokens)
+  def combine_similar(tokens : Array(Token))
     res = [] of Token
     idx = tokens.size - 1
 
@@ -194,18 +203,18 @@ class Engine::Core
     letter?(cur) && letter?(acc)
   end
 
-  private def letter?(tok : Token)
-    case tok.key[0]
+  private def letter?(token : Token)
+    case token.key[0]
     when .alphanumeric?, ':', '/', '?', '-', '_', '%'
       # match letter or uri scheme
       true
     else
       # match normalizabled chars
-      tok.val[0].alphanumeric?
+      token.val[0].alphanumeric?
     end
   end
 
-  def apply_grammar
+  def apply_grammar(tokens : Array(Token))
     # TODO: handle more special rules, like:
     # - convert hanzi to number,
     # - convert hanzi percent
@@ -215,20 +224,20 @@ class Engine::Core
     # - apply other grammar rule
     # - ...
 
-    @tokens.each do |token|
+    tokens.each do |token|
       if token.key == "的"
         token.val = ""
         token.dic = 0
       end
     end
 
-    self
+    tokens
   end
 
-  def capitalize(cap_first : Bool = true)
+  def capitalize(tokens : Array(Token), cap_first : Bool = true)
     apply_cap = cap_first
 
-    @tokens.each do |token|
+    tokens.each do |token|
       next if token.val.empty?
 
       if apply_cap && token.val[0].alphanumeric?
@@ -239,7 +248,7 @@ class Engine::Core
       end
     end
 
-    self
+    tokens
   end
 
   private def cap_after?(val : String)
@@ -252,11 +261,11 @@ class Engine::Core
     end
   end
 
-  def add_spaces
+  def add_spaces(tokens : Array(Token))
     res = Array(Token).new
     add_space = false
 
-    @tokens.each do |token|
+    tokens.each do |token|
       next if token.val.empty?
 
       res << Token.new("", " ", 0) if add_space && space_before?(token.val[0])
@@ -264,18 +273,7 @@ class Engine::Core
       add_space = token.dic > 0 || space_after?(token.val[-1])
     end
 
-    @tokens = res
-    self
-  end
-
-  def to_s(io : IO)
-    @tokens.each do |token|
-      io << token.val
-    end
-  end
-
-  def to_json(json : JSON::Builder)
-    @tokens.to_json(json)
+    res
   end
 
   private def space_before?(char : Char)

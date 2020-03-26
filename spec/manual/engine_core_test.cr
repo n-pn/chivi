@@ -17,16 +17,12 @@ COMBINE.set("贾文和", "Giả Văn Hoà")
 
 DICTS = [GENERIC, COMBINE]
 
-ENGINE = Engine::Core.new(DICTS)
-
-def translate(chars, title = false)
+def translate(input : String, title = false)
   if title
-    res = ENGINE.parse_title(chars)
+    Engine::Core.cv_title(DICTS, input).map(&.val).join
   else
-    res = ENGINE.parse_plain(chars)
+    Engine::Core.cv_plain(DICTS, input).map(&.val).join
   end
-
-  res.apply_grammar.capitalize.add_spaces
 end
 
 Engine::Util.split_lines(text).each do |line|
