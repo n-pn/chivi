@@ -1,4 +1,4 @@
-require "../../src/engine/util"
+require "../../src/engine/cv_util"
 
 puts CvUtil.titlecase("xxx  x x")
 puts CvUtil.slugify("xxx  x x")
