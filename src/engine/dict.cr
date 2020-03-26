@@ -1,5 +1,5 @@
+require "time"
 require "colorize"
-require "benchmark"
 
 class Engine::Dict
   # Child

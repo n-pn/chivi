@@ -1,5 +1,4 @@
-require "../src/main"
-engine = Engine.new(".dic")
+require "../../src/engine"
 
 text = "第十三集 龙章凤仪 第一章 屠龙之术
 贾文和一个玩阴谋的，突然间客串了一把热血刺客，效果立竿见影。一万个道理都未必能说服的廖群玉，被一把错刀给说得心服口服，当即赶到宋国馆邸，通过官方渠道传讯临安，以自己的身家性命作保，顺利说服贾师宪，由其举荐宝钞局主事，工部员外郎程宗扬为唐国正使，通问昭南事宜。
@@ -14,27 +13,31 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 http://test.com/test?q=1
 "
 
-puts engine.translate(text, :mixed).join("\n")
+Engine.convert(Engine::Util.split_lines(text), :mixed).each do |tokens|
+  puts Engine.to_text(tokens)
+end
 
 text = "【飞卢中文网A级签约作品：荒野食神之吃光食物链】当叶晓晨第一次得到【荒野食神系统】的时候，其实他是，是拒绝的，他跟系统讲，他拒绝，因为，其实他，根本没有厨艺……系统跟他讲，抓完荒野食材给厨艺，刀工很叼很快很炫目……  奇奇怪怪的荒野食材，丛林、沙漠、冰川、抓了这些食材，加了一段时间的厨艺技能之后呢！  菠萝烤鳄鱼，DUANG~~~很柔，很软。  蜜汁熊掌，DUANG~~~很香，很滑口。  亚马逊电鳗鱼面，DUANG~~DUANG~~DUANG~~很弹牙！  ……  女明星们问为什么这么好吃。  因为叶晓晨，他加特技…(本故事及人物纯属虚构，如有雷同，纯属巧合，切勿模仿。)"
 
-puts engine.translate(text, :plain).join("\n")
+Engine.convert(Engine::Util.split_lines(text), :plain).each do |tokens|
+  puts Engine.to_text(tokens)
+end
 
 line = "程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 puts line
 
-puts engine.hanviet(line)
-puts engine.pinyin(line)
-puts engine.tradsim(line)
+puts Engine.to_text(Engine.hanviet(line))
+puts Engine.to_text(Engine.pinyin(line))
+puts Engine.to_text(Engine.tradsim(line))
 
 test1 = "坚定不移沿着中国特色社会主义道路前进  为全面建成小康社会而奋斗"
 test2 = "MUV  LUV AL 红龙"
 test3 = "异闻录  每晚一个离奇的故事"
 test4 = "红龙M红~~~龙 MUV  LUV AL 红龙 http://test.com/test?q=1"
 
-puts engine.hanviet(test1)
-puts engine.hanviet(test2)
-puts engine.hanviet(test3)
-puts engine.hanviet(test4)
+puts Engine.to_text(Engine.hanviet(test1))
+puts Engine.to_text(Engine.hanviet(test2))
+puts Engine.to_text(Engine.hanviet(test3))
+puts Engine.to_text(Engine.hanviet(test4))
 
-puts engine.translate(test4, :plain)
+puts Engine.to_text(Engine.convert(test4, :plain))

@@ -1,86 +1,139 @@
+require "colorize"
 require "./dict"
 
 # Loading dicts
 class Engine::Repo
-  alias DictMap = Hash(String, Dict)
-  alias UserMap = Hash(String, DictMap)
+  class List
+    alias Map = Hash(String, Dict)
 
-  def initialize(@root = ".dic")
-    @dicts = {
-      "system" => DictMap.new,
-      "common" => DictMap.new,
-      "unique" => DictMap.new,
-    }
+    def initialize(@dir : String, preload = false)
+      @dicts = Map.new
+      @fixes = Hash(String, Map).new { |h, k| h[k] = Map.new }
 
-    @fixes = {
-      "common" => UserMap.new { |h, k| h[k] = DictMap.new },
-      "unique" => UserMap.new { |h, k| h[k] = DictMap.new },
-    }
+      load_dir!(lazy: false) if preload
+    end
+
+    def load_dir!(lazy = true) : Void
+      time1 = Time.monotonic
+
+      files = Dir.glob(File.join(@dir, "*.dic"))
+      count = files.size
+
+      files.each do |file|
+        name = File.basename(file, ".dic")
+
+        count += load_fixes!(name, lazy)
+        next if lazy && @dicts[name]?
+
+        @dicts[name] = load_dic(name)
+      end
+
+      time2 = Time.monotonic
+      elapsed = (time2 - time1).total_seconds
+
+      puts "- Loaded [#{@dir.colorize(:yellow)}], files: #{count.colorize(:yellow)}, time: #{elapsed.colorize(:yellow)}s"
+    end
+
+    def load_fixes!(name : String, lazy = true)
+      files = Dir.glob(File.join(@dir, "#{name}.*.fix"))
+
+      files.each do |file|
+        user = File.extname(File.basename(file, ".fix")).tr(".", "")
+        next if lazy && @fixes[name][user]?
+        @fixes[name][user] = load_fix(name, user)
+      end
+
+      files.size
+    end
+
+    def [](name : String)
+      [get_dic(name)]
+    end
+
+    def [](name : String, user : String)
+      [get_dic(name), get_fix(name, user)]
+    end
+
+    def get_dic(name : String)
+      @dicts[name] ||= load_dic(name)
+    end
+
+    def get_fix(name : String, user = "admin")
+      @fixes[name][user] ||= load_fix(name)
+    end
+
+    def all_fixes(name : String)
+      @fixes[name]
+    end
+
+    def load_dic(name : String)
+      Dict.new(File.join(@dir, "#{name}.dic"))
+    end
+
+    def load_fix(name : String, user : String = "admin")
+      Dict.new(File.join(@dir, "#{name}.#{user}.dic"))
+    end
+  end
+
+  def initialize(@dir : String = ".dic")
+    @system = List.new(@dir)
+    @common = List.new(File.join(@dir, "common"))
+    @unique = List.new(File.join(@dir, "unique"))
   end
 
   alias Dicts = Array(Dict)
 
+  @cc_cedict : Dicts? = nil
+  @trungviet : Dicts? = nil
+  @hanviet : Dicts? = nil
+  @pinyin : Dicts? = nil
+  @tradsim : Dicts? = nil
+
   def cc_cedict
-    @dicts["system"]["cc_cedict"] ||= load_dic(".", "cc_cedict")
+    @cc_cedict ||= @system["cc_cedict"]
   end
 
   def trungviet
-    @dicts["system"]["trungviet"] ||= load_dic(".", "trungviet")
+    @trungviet ||= @system["trungviet"]
   end
 
   def hanviet
-    @dicts["system"]["hanviet"] ||= load_dic(".", "hanviet")
+    @hanviet ||= @system["hanviet"]
   end
 
   def pinyin
-    @dicts["system"]["pinyin"] ||= load_dic(".", "pinyin")
+    @pinyin ||= @system["pinyin"]
   end
 
   def tradsim
-    @dicts["system"]["tradsim"] ||= load_dic(".", "tradsim")
+    @tradsim ||= @system["tradsim"]
   end
 
-  def generic
-    @dicts["common"]["generic"] ||= load_dic("common", "generic")
+  def generic(user : String = "admin")
+    @common["generic", user]
   end
 
-  def generic(fix : String)
-    @fixes["common"]["generic"][fix] ||= load_fix("common", "generic", fix)
-    {generic, @fixes["common"]["generic"][fix]}
+  def combine(user : String = "admin")
+    @common["combine", user]
   end
 
-  def combine
-    @dicts["common"]["combine"] ||= load_dic("common", "combine")
+  def suggest(user : String = "admin")
+    @common["suggest", user]
   end
 
-  def combine(fix : String)
-    @fixes["common"]["combine"][fix] ||= load_fix("common", "combine", fix)
-    {combine, @fixes["common"]["combine"][fix]}
+  def unique(name : String, user = "admin")
+    @unique[name, user]
   end
 
-  def suggest
-    @dicts["common"]["suggest"] ||= load_dic("common", "suggest")
-  end
+  def for_convert(book : String? = nil, user = "admin")
+    dicts = generic(user)
 
-  def suggest(fix : String)
-    @fixes["common"]["suggest"][fix] ||= load_fix("common", "suggest", fix)
-    {suggest, @fixes["common"]["suggest"][fix]}
-  end
+    if book
+      dicts.concat(unique(book, user))
+    else
+      dicts.concat(combine(user))
+    end
 
-  def unique(name : String)
-    @dicts["unique"][name] ||= load_dic("unique", name)
-  end
-
-  def unique(name : String, fix : String)
-    @fixes["unique"][name][fix] ||= load_fix("unique", name, fix)
-    {unique(name), @fixes["unique"][name][fix]}
-  end
-
-  def load_dic(dir : String, name : String)
-    Dict.new(File.join(@root, dir, "#{name}.dic"))
-  end
-
-  def load_fix(dir : String, name : String, user : String = "admin")
-    Dict.new(File.join(@root, dir, "#{name}.#{user}.fix"))
+    dicts
   end
 end
