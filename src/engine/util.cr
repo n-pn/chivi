@@ -60,10 +60,6 @@ module Engine::Util
   end
 
   # convert chinese numbers to latin numbers
-  # def hanzi_int(input)
-  #   HANZI_INT.fetch(input, input)
-  # end
-
   def hanzi_int(input : String)
     # TODO: Handle bigger numbers
 
@@ -96,7 +92,7 @@ module Engine::Util
     res + acc
   end
 
-  def char_to_num(char : Char)
+  private def char_to_num(char : Char)
     case char
     when '零' then 0
     when '〇' then 0
@@ -116,18 +112,3 @@ module Engine::Util
     end
   end
 end
-
-# puts Engine::Util.hanzi_int("1203")
-# puts Engine::Util.hanzi_int("十")
-# puts Engine::Util.hanzi_int("十七")
-# puts Engine::Util.hanzi_int("二十")
-# puts Engine::Util.hanzi_int("二十七")
-# puts Engine::Util.hanzi_int("百")
-# puts Engine::Util.hanzi_int("百零五")
-# puts Engine::Util.hanzi_int("百十五")
-# puts Engine::Util.hanzi_int("八百零五")
-# puts Engine::Util.hanzi_int("八百三十五")
-# puts Engine::Util.hanzi_int("四千零七")
-# puts Engine::Util.hanzi_int("四千八百零七")
-# puts Engine::Util.hanzi_int("四千二百一十七")
-# puts Engine::Util.hanzi_int("九九九〇")
