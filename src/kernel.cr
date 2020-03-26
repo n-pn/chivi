@@ -1,5 +1,5 @@
 require "chivi/main"
-require "./kernel/models/*"
+require "./kernel/*"
 
 module Kernel
   extend self
@@ -12,12 +12,12 @@ module Kernel
     @@books.size
   end
 
-  def list_books(limit = 24, offset = 0, sort_by = "tally")
+  def list_books(limit = 24, offset = 0, sort_by = "updated_at")
     books = sort_books(sort_by)
     books[offset, limit]
   end
 
-  def sort_books(sort_by = "updated_at")
+  def sort_books(sort_by : String)
     case sort_by
     when "tally"
       @@books.sort_by(&.tally.-)
