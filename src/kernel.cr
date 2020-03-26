@@ -4,7 +4,7 @@ require "./kernel/*"
 module Kernel
   extend self
 
-  @@books = Array(Book).from_json File.read(".txt/top-books.json")
+  @@books = Array(BookFile).from_json File.read(".txt/top-books.json")
 
   # TODO: filtering
 

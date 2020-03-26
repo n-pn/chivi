@@ -1,16 +1,33 @@
+require "./book_file"
+
 class BookRepo
   def initialize(@file = ".txt/top-books.json", preload = true)
     @books = {} of String => BookFile
+    @sorts = {} of String => BookFile
 
     load! if preload
   end
 
   def load!
     books = Array(BookFile).from_json File.read(@file)
+    books.each do |book|
+      @books[book.vi_slug] = book
+    end
+
+    @sorts["tally"] = books.sort_by(&.tally.-)
+    @sorts["^tally"] = books.sort_by(&.tally)
+    @sorts["score"] = books.sort_by(&.score.-)
+    @sorts["^score"] = books.sort_by(&.score)
+    @sorts["votes"] = books.sort_by(&.votes.-)
+    @sorts["^votes"] = books.sort_by(&.votes)
+    @sorts["word_count"] = books.sort_by(&.word_count.-)
+    @sorts["^word_count"] = books.sort_by(&.word_count)
+    @sorts["updated_at"] = books.sort_by(&.updated_at.-)
+    @sorts["^updated_at"] = books.sort_by(&.updated_at)
   end
 
   def total
-    books.size
+    @books.size
   end
 
   def list(limit = 20, offset = 0, sort_by = "updated_at")
@@ -31,33 +48,6 @@ class BookRepo
   def each(sort_by : String)
     sort(books, sort_by).each do |book|
       yield book
-    end
-  end
-
-  def sort(books, sort_by : String)
-    case sort_by
-    when "tally"
-      books.sort_by(&.tally.-)
-    when "^tally"
-      books.sort_by(&.tally)
-    when "score"
-      books.sort_by(&.score.-)
-    when "^score"
-      books.sort_by(&.score)
-    when "votes"
-      books.sort_by(&.votes.-)
-    when "^votes"
-      books.sort_by(&.votes)
-    when "word_count"
-      books.sort_by(&.word_count.-)
-    when "^word_count"
-      books.sort_by(&.word_count)
-    when "updated_at"
-      books.sort_by(&.updated_at.-)
-    when "^updated_at"
-      books.sort_by(&.updated_at)
-    else
-      books
     end
   end
 end

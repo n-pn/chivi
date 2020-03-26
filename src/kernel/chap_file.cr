@@ -1,6 +1,6 @@
 require "json"
 
-class Chap
+class ChapFile
   include JSON::Serializable
 
   property idx : Int32
