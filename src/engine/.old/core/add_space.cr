@@ -3,6 +3,7 @@ module Engine::Core
     add_space = false
 
     input.each_with_object(Tokens.new) do |token, res|
+      next if token.val == ""
       # if add_space && space_before?(token.val)
       # end
 

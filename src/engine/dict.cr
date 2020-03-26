@@ -17,7 +17,7 @@ class Engine::Dict
       cols = line.split(SEP_0)
 
       @key = cols[0]
-      @vals = (col[1]? || "").split(SEP_1)
+      @vals = (cols[1]? || "").split(SEP_1)
 
       mtime = cols[2]?.try(&.to_i?) || 0
       @mtime = EPOCH + mtime.minutes
@@ -126,13 +126,15 @@ class Engine::Dict
   end
 
   def scan(chars : Array(Char) | String, offset : Int32 = 0)
-    res = [] of Item?
+    res = [] of Item
 
     node = @trie
     offset.upto(chars.size - 1) do |idx|
       char = chars[idx]
       break unless node = node.trie[char]?
-      res << node.item
+      if item = node.item
+        res << item
+      end
     end
 
     res

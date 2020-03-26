@@ -23,7 +23,7 @@ module Engine::Core
     end
 
     def to_s(io : IO)
-      io << "[" << @key << ":" << @val << ":" << @dic << "]"
+      io << "[" << @key << "/" << @val << "/" << @dic << "]"
     end
   end
 

@@ -1,23 +1,24 @@
 require "./engine/*"
 
-class Engine
-  def initialize(@dir : String = ".dic")
-    @repo = Repo.new(@dir)
-  end
+module Engine
+  extend self
+
+  @@repo = Repo.new(".dic")
 
   def hanviet(input : String)
-    tokens = Core.cv_lit([@repo.hanviet], input)
+    tokens = Core.cv_lit([@@repo.hanviet], input)
     to_text(tokens)
   end
 
   def pinyin(input : String)
-    tokens = Core.cv_lit([@repo.pinyin], input)
+    tokens = Core.cv_lit([@@repo.pinyin], input)
     to_text(tokens)
   end
 
   def tradsim(input : String)
-    puts "TODO: punctuation!!!"
-    tokens = Core.cv_raw([@repo.tradsim], input)
+    # TODO: punctuation!
+
+    tokens = Core.cv_raw([@@repo.tradsim], input)
     to_text(tokens)
   end
 
@@ -31,8 +32,8 @@ class Engine
   end
 
   def translate(lines : Array(String), mode : Symbol, book : String?)
-    extra = book ? @repo.unique(book) : @repo.combine
-    dicts = [@repo.generic, extra]
+    extra = book ? @@repo.unique(book) : @@repo.combine
+    dicts = [@@repo.generic, extra]
 
     case mode
     when :title

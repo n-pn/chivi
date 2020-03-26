@@ -3,7 +3,7 @@ require "benchmark"
 
 require "../dict"
 
-class Chivi::DictRepo
+class Engine::Repo
   alias DictList = Hash(String, Dict)
   alias UserList = Hash(String, DictList)
 

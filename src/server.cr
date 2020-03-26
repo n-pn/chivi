@@ -1,4 +1,6 @@
 require "kemal"
+
+require "./engine"
 require "./kernel"
 
 def parse_page(input, limit = 20)
@@ -63,7 +65,7 @@ module Server
     zh_lines = Kernel.load_text(book, slug)
 
     if zh_lines
-      vi_lines = Kernel::CHIVI.translate(zh_lines, mode: :mixed, book: nil)
+      vi_lines = Engine.translate(zh_lines, mode: :mixed, book: nil)
     end
 
     {

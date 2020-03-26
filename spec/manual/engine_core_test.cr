@@ -17,12 +17,20 @@ combine = Engine::Dict.load! ".dic/common/combine.dic"
 dicts = [generic, combine]
 combine.set("贾文和", "Giả Văn Hoà")
 
-Engine::Util.split_lines(text).each_with_index do |line, idx|
-  if idx == 0
-    puts Engine::Core.cv_title(dicts, line).map(&.val).join
-  else
-    puts Engine::Core.cv_plain(dicts, line).map(&.val).join
-  end
-end
+engine = Engine::Core.new
 
-puts Engine::Core.cv_plain(dicts, "[综恐]这什么鬼东西！／what_the_fuck_!--落漠").map(&.val).join
+engine.tokenize!(dicts, "[综恐]这什么鬼东西！／what_the_fuck_!--落漠".chars)
+puts engine
+
+engine.apply_grammar!
+puts engine
+
+engine.capitalize!
+puts engine
+
+engine.add_spaces!
+puts engine
+
+Engine::Util.split_lines(text).each do |line|
+  puts engine.tokenize!(dicts, line.chars).apply_grammar!.capitalize!.add_spaces!
+end

@@ -3,14 +3,13 @@ require "./kernel/models/*"
 
 module Kernel
   extend self
-  CHIVI = Engine::Main.new(".dic/")
 
-  BOOKS = Array(Book).from_json File.read(".txt/top-books.json")
+  @@books = Array(Book).from_json File.read(".txt/top-books.json")
 
   # TODO: filtering
 
   def book_size
-    BOOKS.size
+    @@books.size
   end
 
   def list_books(limit = 24, offset = 0, sort_by = "tally")
@@ -21,32 +20,32 @@ module Kernel
   def sort_books(sort_by = "updated_at")
     case sort_by
     when "tally"
-      BOOKS.sort_by(&.tally.-)
+      @@books.sort_by(&.tally.-)
     when "^tally"
-      BOOKS.sort_by(&.tally)
+      @@books.sort_by(&.tally)
     when "score"
-      BOOKS.sort_by(&.score.-)
+      @@books.sort_by(&.score.-)
     when "^score"
-      BOOKS.sort_by(&.score)
+      @@books.sort_by(&.score)
     when "votes"
-      BOOKS.sort_by(&.votes.-)
+      @@books.sort_by(&.votes.-)
     when "^votes"
-      BOOKS.sort_by(&.votes)
+      @@books.sort_by(&.votes)
     when "word_count"
-      BOOKS.sort_by(&.word_count.-)
+      @@books.sort_by(&.word_count.-)
     when "^word_count"
-      BOOKS.sort_by(&.word_count)
+      @@books.sort_by(&.word_count)
     when "updated_at"
-      BOOKS.sort_by(&.updated_at.-)
+      @@books.sort_by(&.updated_at.-)
     when "^updated_at"
-      BOOKS.sort_by(&.updated_at)
+      @@books.sort_by(&.updated_at)
     else
-      BOOKS
+      @@books
     end
   end
 
   def find_book(slug : String)
-    BOOKS.find(&.vi_slug.==(slug))
+    @@books.find(&.vi_slug.==(slug))
   end
 
   def list_chaps(book : String)
