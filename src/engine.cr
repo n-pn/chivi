@@ -3,7 +3,7 @@ require "./engine/*"
 module Engine
   extend self
 
-  @@repo = CvRepo.new(".dic")
+  @@repo = CvRepo.new("data/dic-out")
 
   def hanviet(input : String, apply_cap = false)
     CvCore.cv_lit(@@repo.hanviet, input)
