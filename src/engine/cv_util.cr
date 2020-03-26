@@ -1,6 +1,6 @@
-require "./util/*"
+require "./cv_util/*"
 
-module Engine::Util
+module CvUtil
   extend self
 
   # capitalize all words

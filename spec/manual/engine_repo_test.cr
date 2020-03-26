@@ -1,7 +1,7 @@
-require "../src/repo"
+require "../../src/engine/cv_repo"
 
-repo = Chivi::Repo.new
+repo = CvRepo.new(".dic")
 
-puts repo.hanviet.size
-puts repo.combine.size
-puts repo.unique("not-found").size
+puts repo.system.get_dic("hanviet").size
+puts repo.common.get_dic("generic").mtime
+puts repo.unique["not-found"][0].size

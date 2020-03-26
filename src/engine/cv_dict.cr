@@ -1,7 +1,7 @@
 require "time"
 require "colorize"
 
-class Engine::Dict
+class CvDict
   # Child
   class Item
     EPOCH = Time.utc(2020, 1, 1)
@@ -51,9 +51,9 @@ class Engine::Dict
 
   # Class
 
-  @@cache = {} of String => Dict
+  @@cache = {} of String => CvDict
 
-  def self.load(file : String, reload : Bool = false) : Dict
+  def self.load(file : String, reload : Bool = false) : CvDict
     dict = @@cache[file]?
     return dict if dict && !reload
     @@cache[file] = new(file, preload: true)
@@ -76,7 +76,7 @@ class Engine::Dict
     end
   end
 
-  def load!(file : String = @file) : Dict
+  def load!(file : String = @file) : CvDict
     time1 = Time.monotonic
     lines = File.read_lines(file)
     lines.each { |line| put(Item.new(line)) }

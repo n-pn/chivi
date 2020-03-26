@@ -1,4 +1,4 @@
-module Engine::Core
+module CvCore
   def group_similar(input : Tokens) : Tokens
     output = Tokens.new
     idx = 0

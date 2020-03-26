@@ -1,15 +1,14 @@
-require "./dict"
-require "./util"
+require "./cv_dict"
+require "./cv_util"
 
 require "json"
 
 # require "./core/*"
 
-module Engine::Core
+module CvCore
   extend self
 
-  alias Dicts = Array(Dict)
-  alias Chars = Array(Char)
+  alias Dicts = Array(CvDict)
 
   class Token
     include JSON::Serializable
@@ -66,7 +65,7 @@ module Engine::Core
 
     if match = TITLE_RE_0.match(input)
       _, zh_group, index, label, trash, title = match
-      vi_group = "#{vi_label(label)} #{Util.hanzi_int(index)}"
+      vi_group = "#{vi_label(label)} #{CvUtil.hanzi_int(index)}"
 
       res << Token.new(zh_group, vi_group, 0)
 
@@ -89,11 +88,11 @@ module Engine::Core
         res << Token.new(pre_trash, " - ", 0) unless pre_trash.empty?
       end
 
-      vi_group = "#{vi_label(label)} #{Util.hanzi_int(index)}"
+      vi_group = "#{vi_label(label)} #{CvUtil.hanzi_int(index)}"
       res << Token.new(zh_group, vi_group, 0)
     elsif match = TITLE_RE_2.match(input)
       _, zh_index, trash, title = match
-      vi_index = "Chương #{Util.hanzi_int(zh_index)}"
+      vi_index = "Chương #{CvUtil.hanzi_int(zh_index)}"
 
       res << Token.new(zh_index, vi_index, 0)
     else
@@ -123,10 +122,10 @@ module Engine::Core
     end
   end
 
-  def tokenize(dicts : Dicts, input : Chars)
+  def tokenize(dicts : Dicts, input : Array(Char))
     selects = [Token.new("", "")]
     weights = [0.0]
-    chars = Util.normalize(input)
+    chars = CvUtil.normalize(input)
 
     input.each_with_index do |char, idx|
       selects << Token.new(char, chars[idx])
@@ -136,7 +135,7 @@ module Engine::Core
     dsize = dicts.size + 1
 
     chars.each_with_index do |char, i|
-      choices = {} of Int32 => Tuple(Dict::Item, Int32)
+      choices = {} of Int32 => Tuple(CvDict::Item, Int32)
 
       dicts.each_with_index do |dict, j|
         dict.scan(chars, i).each do |item|
@@ -241,7 +240,7 @@ module Engine::Core
       next if token.val.empty?
 
       if apply_cap && token.val[0].alphanumeric?
-        token.val = Util.capitalize(token.val)
+        token.val = CvUtil.capitalize(token.val)
         apply_cap = false
       else
         apply_cap ||= cap_after?(token.val)

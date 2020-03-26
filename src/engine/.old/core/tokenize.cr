@@ -1,6 +1,6 @@
 require "json"
 
-module Engine::Core
+module CvCore
   class Token
     include JSON::Serializable
 

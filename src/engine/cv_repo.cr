@@ -1,14 +1,14 @@
 require "colorize"
-require "./dict"
+require "./cv_dict"
 
 # Loading dicts
-class Engine::Repo
+class CvRepo
   class List
-    alias Map = Hash(String, Dict)
+    alias CvMap = Hash(String, CvDict)
 
     def initialize(@dir : String, preload = false)
-      @dicts = Map.new
-      @fixes = Hash(String, Map).new { |h, k| h[k] = Map.new }
+      @dicts = CvMap.new
+      @fixes = Hash(String, CvMap).new { |h, k| h[k] = CvMap.new }
 
       load_dir!(lazy: false) if preload
     end
@@ -67,13 +67,17 @@ class Engine::Repo
     end
 
     def load_dic(name : String)
-      Dict.new(File.join(@dir, "#{name}.dic"))
+      CvDict.new(File.join(@dir, "#{name}.dic"))
     end
 
     def load_fix(name : String, user : String = "admin")
-      Dict.new(File.join(@dir, "#{name}.#{user}.dic"))
+      CvDict.new(File.join(@dir, "#{name}.#{user}.dic"))
     end
   end
+
+  getter system : List
+  getter common : List
+  getter unique : List
 
   def initialize(@dir : String = ".dic")
     @system = List.new(@dir)
@@ -81,7 +85,7 @@ class Engine::Repo
     @unique = List.new(File.join(@dir, "unique"))
   end
 
-  alias Dicts = Array(Dict)
+  alias Dicts = Array(CvDict)
 
   @cc_cedict : Dicts? = nil
   @trungviet : Dicts? = nil

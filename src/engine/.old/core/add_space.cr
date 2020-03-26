@@ -1,4 +1,4 @@
-module Engine::Core
+module CvCore
   def add_space(input : Tokens)
     add_space = false
 

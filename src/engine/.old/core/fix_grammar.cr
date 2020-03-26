@@ -1,4 +1,4 @@
-module Engine::Core
+module CvCore
   def fix_grammar(input : Tokens) : Tokens
     output = Tokens.new
     idx = 0

@@ -3,7 +3,7 @@ require "benchmark"
 
 require "../dict"
 
-class Engine::Repo
+class CvRepo
   alias DictList = Hash(String, Dict)
   alias UserList = Hash(String, DictList)
 
