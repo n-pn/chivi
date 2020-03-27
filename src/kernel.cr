@@ -4,7 +4,7 @@ require "./kernel/*"
 module Kernel
   extend self
 
-  @@books = Array(BookFile).from_json File.read(".txt/top-books.json")
+  @@books = Array(BookFile).from_json File.read("data/txt0out/indexes/top-books.json")
 
   # TODO: filtering
 
@@ -49,9 +49,18 @@ module Kernel
   end
 
   def list_chaps(book : String)
-    chap_file = ".txt/chaps/#{book}.json"
+    if book = find_book(book)
+      site = book.favor_scrap
+      return [] of ChapFile if site.empty?
+      bsid = book.scrap_links[site]
+
+      file_tmp = "data/txt-tmp/chlists/#{bsid}.json"
+      file_out = "data/txt-out/chlists/#{bsid}.json"
+      if File.exists?(file_out)
+        Array(Chap).from_json File.read(file_out)
+      elsif
+
     return nil unless File.exists?(chap_file)
-    Array(Chap).from_json File.read(chap_file)
   end
 
   def load_text(book : String, slug : String)
