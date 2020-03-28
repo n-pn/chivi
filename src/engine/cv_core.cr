@@ -57,7 +57,7 @@ module CvCore
 
   HAN_NUM    = "零〇一二三四五六七八九十百千"
   TITLE_RE_0 = /^(第?([\d#{HAN_NUM}]+)([集卷]))([,.:]?\s*)(.*)$/
-  TITLE_RE_1 = /^(.*?)(\s*)(第?([\d#{HAN_NUM}]+)([章节幕回]))([,.:]?\s*)(.*)$/
+  TITLE_RE_1 = /^(.*?)(\s*)(第?【?([\d#{HAN_NUM}]+)】?([章节幕回]))([,.:]?\s*)(.*)$/
   TITLE_RE_2 = /^([\d#{HAN_NUM}]+)([,.:]?\s*)(.*)$/
 
   def cv_title(dicts : Dicts, input : String)

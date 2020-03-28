@@ -54,12 +54,12 @@ module CrUtil
     end
   end
 
-  UTF = Set.new ["jx_la", "hetushu", "paoshu8", "zhwenpg"]
-  TLS = OpenSSL::SSL::Context::Client.insecure
+  UTF_8 = Set.new ["jx_la", "hetushu", "paoshu8", "zhwenpg"]
+  TLS   = OpenSSL::SSL::Context::Client.insecure
 
-  def fetch_html(url : String)
+  def fetch_html(url : String, site)
     tls = url.starts_with?("https") ? TLS : nil
-    encoding = UTF.includes?(url) ? "UTF-8" : "GBK"
+    encoding = UTF_8.includes?(site) ? "UTF-8" : "GBK"
     do_fetch_html(url, tls, encoding)
   end
 

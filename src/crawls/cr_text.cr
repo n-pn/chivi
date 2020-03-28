@@ -6,7 +6,7 @@ require "file_utils"
 require "myhtml"
 require "./cr_util"
 
-module CrText
+class CrText
   getter html : String = ""
   getter title : String
   getter paras : Array(String)
@@ -31,12 +31,12 @@ module CrText
     File.delete(@text_file) if File.exists?(@text_file) && text
   end
 
-  def crawl!(persist : Bool = true, index = 0) : Void
+  def crawl!(persist : Bool = true, index = "0/0") : Void
     if File.exists?(@html_file)
       @html = File.read(@html_file)
     else
       url = CrUtil.text_url(@site, @bsid, @csid)
-      @html = CrUtil.fetch_text(text_url, encoding)
+      @html = CrUtil.fetch_html(url, @site)
     end
 
     doc = Myhtml::Parser.new(@html)
@@ -44,9 +44,12 @@ module CrText
 
     if persist
       File.write(@html_file, html)
-      puts "-- <#{index}> [#{@site}/#{@bsid}/#{@csid}] {#{@title}} saved.".colorize(:cyan)
+
+      puts "-- <#{index}.colorize(:cyan)> \
+      [#{@site}/#{@bsid}/#{@csid}] \
+      {#{@title.colorize(:cyan)}} saved."
+
       File.write(@text_file, self)
-      File.utime(@mtime, @mtime, @text_file)
     end
   end
 
@@ -65,16 +68,18 @@ module CrText
     when "hetushu"
       @title = extract_text(doc, ".h2") || @title
       @paras = doc.css("#content > div").map do |node|
-        Util.clean_text(node.inner_text(deep: false))
+        node.inner_text(deep: false).tr(" 　", " ")
       end.to_a
     when "zhwenpg"
       @title = extract_text(doc, "h2") || @title
-      @paras = doc.css("#tdcontent p").map { |x| clean_text(x.inner_text) }.to_a.reject(&.empty?)
+      @paras = extract_body(doc, "#tdcontent .content")
     when "duokan8"
       @title = extract_text(doc, "#read-content > h2") || @title
       @title = @title.sub(/^章节目录\s*/, "")
-      @paras = extract_body(doc, "#htmlContent")
-      @paras = @paras.map(&.sub("</div>", "").sub("</h1>", "")).reject(&.empty?)
+      @paras = extract_body(doc, "#htmlContent > p").map(&.sub("</div>", ""))
+      if first = @paras[0]?
+        @paras[0] = first.sub(/.+<\/h1>/, "")
+      end
     else
       raise "Site #{@site} unsupported!"
     end
@@ -87,21 +92,14 @@ module CrText
         first = first.sub(/^#{tt}/, "").lstrip
       end
 
-      if first.empty?
-        @paras.shift
-      else
-        @paras[0] = first
-      end
+      @paras[0] = first
     end
 
     if last = @paras[-1]?
-      last = last.sub("(本章完)", "").strip
-      if last.empty?
-        @paras.pop
-      else
-        @paras[-1] = last
-      end
+      @paras[-1] = last.sub("(本章完)", "")
     end
+
+    @paras = @paras.map(&.gsub("【】", "").strip).reject(&.empty?)
   end
 
   def to_s(io)
@@ -113,21 +111,16 @@ module CrText
 
   def extract_text(doc, query)
     if tag = doc.css(query).first?
-      clean_text(tag.inner_text)
+      tag.inner_text.tr(" 　", " ").strip
     end
   end
 
-  def clean_text(input)
-    input.tr(" 　", " ").strip
-  end
-
-  def extract_body(doc, query = "#content", dels = ["script", "div"])
-    if node = doc.css(query).first?
-      dels.each { |x| node.css(x).each(&.remove!) }
-      # node.css("br").each { |x| x.data = "\n" }
-      Util.split_clean(node.inner_text("\n"))
-    else
-      raise "No text!!!"
+  def extract_body(doc, query, dels = ["script", "div"])
+    node = doc.css(query).first
+    node.children.each do |tag|
+      tag.remove! if dels.includes?(tag.tag_name)
     end
+
+    node.inner_text("\n").tr(" 　", " ").split("\n")
   end
 end

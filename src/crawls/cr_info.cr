@@ -161,7 +161,7 @@ class CrInfo
       @html = File.read(@html_file)
     else
       url = CrUtil.info_url(@site, @bsid)
-      @html = CrUtil.fetch_html(url)
+      @html = CrUtil.fetch_html(url, @site)
     end
 
     doc = Myhtml::Parser.new(@html)
