@@ -19,7 +19,7 @@ module CrUtil
     "zhwenpg" => "https://novel.zhwenpg.com/b.php?id=%s",
   }
 
-  def info_url(site, bsid)
+  def info_url(site : String, bsid : String)
     url_form = INFO_URLS[site]
     if site == "duokan8" || site == "paoshu8"
       group_id = (bsid.to_i // 1000).to_s
@@ -29,20 +29,43 @@ module CrUtil
     end
   end
 
+  TEXT_URLS = {
+    "nofff"   => "https://www.nofff.com/%s/%s/",
+    "69shu"   => "https://www.69shu.com/txt/%s/%s",
+    "jx_la"   => "https://www.jx.la/book/%s/%s.html",
+    "rengshu" => "http://www.rengshu.com/book/%s/%s",
+    "xbiquge" => "https://www.xbiquge.cc/book/%s/%s.html",
+    "hetushu" => "https://www.hetushu.com/book/%s/%s.html",
+    "duokan8" => "http://www.duokan8.com/%i_%i/%s.html",
+    "paoshu8" => "http://www.paoshu8.com/%i_%i/%s.html",
+    "zhwenpg" => "https://novel.zhwenpg.com/r.php?id=%s",
+  }
+
+  def text_url(site : String, bsid : String, csid : String)
+    url_form = TEXT_URLS[site]
+    case site
+    when "zhwenpg"
+      url_form % csid
+    when "duokan8", "paoshu8"
+      group = (bsid.to_i // 1000).to_s
+      url_form % [group, bsid, csid]
+    else
+      url_form % [bsid, csid]
+    end
+  end
+
   UTF = Set.new ["jx_la", "hetushu", "paoshu8", "zhwenpg"]
   TLS = OpenSSL::SSL::Context::Client.insecure
 
-  def fetch_info(site, bsid)
-    book_url = info_url(site, bsid)
-    tls = book_url.starts_with?("https") ? TLS : nil
-    encoding = UTF.includes?(site) ? "UTF-8" : "GBK"
-
-    fetch_html(book_url, tls, encoding)
+  def fetch_html(url : String)
+    tls = url.starts_with?("https") ? TLS : nil
+    encoding = UTF.includes?(url) ? "UTF-8" : "GBK"
+    do_fetch_html(url, tls, encoding)
   end
 
   VERBOSE = ARGV.includes?("verbose")
 
-  def fetch_html(url, tls, encoding)
+  def do_fetch_html(url : String, tls, encoding : String)
     puts "HIT: #{url}".colorize(:blue) if VERBOSE
 
     HTTP::Client.get(url, tls: tls) do |res|
@@ -50,11 +73,12 @@ module CrUtil
       res.body_io.gets_to_end
     end
   rescue err
-    puts "Error fetching [#{url}]: #{err}".colorize(:red)
+    puts "Error fetching [#{url.colorize(:red)}]: <#{err.class}> #{err.colorize(:red)}"
+    return "404 Not Found!" if err.class == NilAssertionError
+
     sleep 500.milliseconds
     puts "Retrying.."
-
-    fetch_html(url, tls, encoding)
+    do_fetch_html(url, tls, encoding)
   end
 
   def outdated?(file, timespan = 10.hours)

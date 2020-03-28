@@ -1,6 +1,7 @@
 require "json"
 require "time"
 require "colorize"
+require "file_utils"
 require "option_parser"
 
 require "../../src/crawls/cr_info.cr"
@@ -9,21 +10,18 @@ REQUIRE_HTML = ARGV.includes?("require_html")
 
 def fetch_info(channel, site, bsid, label = bsid.to_i) : Void
   crawler = CrInfo.new(site, bsid)
-  begin
-    if crawler.cached?(300.days, require_html: REQUIRE_HTML)
-      crawler.load_cached!(chlist: false)
-    else
-      crawler.crawl!(label: label)
-    end
-
-    serial = crawler.serial
-    channel.send({bsid, serial.slug, serial.updated_at})
-  rescue err
-    crawler.reset_cache
-    puts "- crawl [#{bsid.colorize(:red)}] failed: #{err.colorize(:red)}"
-
-    channel.send({bsid, "", 0_i64})
+  if crawler.cached?(300.days, require_html: REQUIRE_HTML)
+    crawler.load_cached!(chlist: false)
+  else
+    crawler.crawl!(label: label)
   end
+
+  serial = crawler.serial
+  channel.send({bsid, serial.slug, serial.updated_at})
+rescue err
+  # crawler.reset_cache
+  puts "- crawl [#{bsid.colorize(:red)}] failed: <#{err.class}> #{err.colorize(:red)}"
+  channel.send({bsid, "--", 0_i64})
 end
 
 site = "rengshu"
@@ -48,21 +46,23 @@ OptionParser.parse do |parser|
   end
 end
 
-UPDATES = {} of String => Int64
-SITEMAP = {} of String => String
-
-def mapping(result) : Void
+def mapping(sitemap, updates, result) : Void
   bsid, slug, time = result
 
-  return if slug.empty?
+  return if slug == "--"
 
-  if old = SITEMAP[slug]?
-    puts "DUP [#{slug.colorize(:blue)}]: <#{old} <=> #{bsid}>"
-    return if UPDATES[slug] > time
+  if old_bsid = sitemap[slug]?
+    if old_bsid != bsid
+      puts "DUP [#{slug.colorize(:blue)}]: <#{old_bsid} <=> #{bsid}>"
+    end
+
+    if old_time = updates[slug]?
+      return if old_time > time
+    end
   end
 
-  UPDATES[slug] = time
-  SITEMAP[slug] = bsid
+  updates[slug] = time
+  sitemap[slug] = bsid
 end
 
 range = upto - from + 1
@@ -75,15 +75,28 @@ puts "CONFIG: { \
   worker: #{worker.colorize(:yellow)} \
 }"
 
+FileUtils.mkdir_p "data/txt-inp/#{site}/infos"
+FileUtils.mkdir_p "data/txt-tmp/serials/#{site}"
+FileUtils.mkdir_p "data/txt-tmp/chlists/#{site}"
+FileUtils.mkdir_p "data/txt-tmp/sitemap"
+
+out_file = "data/txt-tmp/sitemap/#{site}.json"
+
+updates = {} of String => Int64
+sitemap = {} of String => String
+if File.exists?(out_file)
+  sitemap = Hash(String, String).from_json File.read(out_file)
+end
+
 alias Result = Tuple(String, String, Int64)
 channel = Channel(Result).new(worker)
 
 total = upto - from + 1
 from.upto(upto) do |idx|
-  mapping(channel.receive) if idx > worker
+  mapping(sitemap, updates, channel.receive) if idx - from >= worker
   spawn { fetch_info(channel, site, idx.to_s, "#{idx}/#{total}") }
 end
 
-worker.times { mapping(channel.receive) }
+worker.times { mapping(sitemap, updates, channel.receive) }
 
-File.write "data/txt-tmp/sitemap/#{site}.json", SITEMAP.to_pretty_json
+File.write out_file, sitemap.to_pretty_json

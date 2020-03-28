@@ -160,7 +160,8 @@ class CrInfo
     if File.exists?(@html_file)
       @html = File.read(@html_file)
     else
-      @html = CrUtil.fetch_info(@site, @bsid)
+      url = CrUtil.info_url(@site, @bsid)
+      @html = CrUtil.fetch_html(url)
     end
 
     doc = Myhtml::Parser.new(@html)
@@ -178,6 +179,11 @@ class CrInfo
               [#{@site.colorize(:yellow)}/#{@bsid.colorize(:yellow)}] \
               {#{@serial.title.colorize(:yellow)}} \
               saved!"
+    end
+  rescue err
+    if err.class == Enumerable::EmptyError
+      File.write @serial_file, @serial.to_pretty_json
+      File.write @chlist_file, @chlist.to_pretty_json
     end
   end
 
@@ -293,14 +299,13 @@ class CrInfo
         link = node.css("a").first?
         next unless link
 
-        href = link.attributes["href"].not_nil!
-        csid = File.basename(href, ".html")
+        if href = link.attributes["href"]?
+          csid = File.basename(href, ".html")
+          title = link.inner_text
 
-        title = link.inner_text
-        next unless csid && title
-
-        volumes << Volume.new if volumes.empty?
-        volumes.last.chaps << Chap.new(csid, title, volumes.last.label)
+          volumes << Volume.new if volumes.empty?
+          volumes.last.chaps << Chap.new(csid, title, volumes.last.label)
+        end
       end
     end
 
