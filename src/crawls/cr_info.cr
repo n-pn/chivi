@@ -122,6 +122,7 @@ class CrInfo
     end
   end
 
+  getter html : String = ""
   getter serial : Serial
   getter chlist : ChList
 
@@ -138,41 +139,45 @@ class CrInfo
     @chlist = ChList.new
   end
 
-  def cached?(timespan = 30.minutes, require_html = false)
-    return false if Util.outdated?(@serial_file, timespan)
-    return false if Util.outdated?(@chlist_file, timespan)
-    !(require_html && Util.outdated?(@html_file, timespan))
+  def cached?(timespan = 10.minutes, require_html = false)
+    return false if CrUtil.outdated?(@serial_file, timespan)
+    return false if CrUtil.outdated?(@chlist_file, timespan)
+    !(require_html && CrUtil.outdated?(@html_file, timespan))
   end
 
-  def load_cached!
-    @serial = Serial.from_json(File.read(@serial_file))
-    @chlist = ChList.from_json(File.read(@chlist_file))
+  def load_cached!(serial = true, chlist = false)
+    @serial = Serial.from_json(File.read(@serial_file)) if serial
+    @chlist = ChList.from_json(File.read(@chlist_file)) if chlist
   end
 
-  def reset_cache(html = true, serial = true, chlist = true)
+  def reset_cache(html = true, serial = false, chlist = false)
     File.delete(@html_file) if File.exists?(@html_file) && html
     File.delete(@serial_file) if File.exists?(@serial_file) && serial
     File.delete(@chlist_file) if File.exists?(@chlist_file) && chlist
   end
 
-  def crawl!(persist = true, index = 0) : Void
+  def crawl!(persist : Bool = true, label : String = "0/0") : Void
     if File.exists?(@html_file)
-      html = File.read(@html_file)
+      @html = File.read(@html_file)
     else
-      html = CrUtil.fetch_info(@site, @bsid)
+      @html = CrUtil.fetch_info(@site, @bsid)
     end
 
-    doc = Myhtml::Parser.new(html)
+    doc = Myhtml::Parser.new(@html)
 
     extract_serial!(doc)
     extract_chlist!(doc)
     @serial.chap_count = @chlist.size
 
     if persist
-      File.write @html_file, html
+      File.write @html_file, @html
       File.write @serial_file, @serial.to_pretty_json
       File.write @chlist_file, @chlist.to_pretty_json
-      puts "- <#{index}> [#{@site}/#{@bsid}] {#{@serial.title}} saved!".colorize(:yellow)
+
+      puts "- <#{label.colorize(:yellow)}> \
+              [#{@site.colorize(:yellow)}/#{@bsid.colorize(:yellow)}] \
+              {#{@serial.title.colorize(:yellow)}} \
+              saved!"
     end
   end
 
