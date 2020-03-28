@@ -61,11 +61,14 @@ module CvUtil
 
   # convert chinese numbers to latin numbers
   def hanzi_int(input : String)
+    return input.to_i64 unless input =~ /\D/
+    # raise "Type mismatch [#{input}]" if input =~ /\d/
+
     # TODO: Handle bigger numbers
 
-    res = 0
-    mod = 1
-    acc = 0
+    res = 0_i64
+    mod = 1_i64
+    acc = 0_i64
 
     chars = input.chars
     (chars.size - 1).downto(0) do |idx|

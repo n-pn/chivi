@@ -39,8 +39,8 @@ class VpBook
 
   property yousuu_bids : Array(Int32) = [] of Int32
   property source_urls : Array(String) = [] of String
-  property scrap_links : Hash(String, String) = {} of String => String
-  property favor_scrap : String = ""
+  property crawl_links : Hash(String, String) = {} of String => String
+  property favor_crawl : String = ""
 
   def initialize
   end

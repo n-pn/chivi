@@ -56,9 +56,10 @@ module CvCore
   end
 
   HAN_NUM    = "零〇一二三四五六七八九十百千"
-  TITLE_RE_0 = /^(第?([\d#{HAN_NUM}]+)([集卷]))([,.:]?\s*)(.*)$/
-  TITLE_RE_1 = /^(.*?)(\s*)(第?【?([\d#{HAN_NUM}]+)】?([章节幕回]))([,.:]?\s*)(.*)$/
-  TITLE_RE_2 = /^([\d#{HAN_NUM}]+)([,.:]?\s*)(.*)$/
+  TITLE_RE_0 = /^(第?([#{HAN_NUM}]+|\d+)([集卷]))([,.:]?\s*)(.*)$/
+  TITLE_RE_1 = /^(.*?)(\s*)(第【?([\d#{HAN_NUM}]+)】?([章节幕回]))([,.:]?\s*)(.*)$/
+  TITLE_RE_2 = /^(.*?)(\s*)(第?【?([#{HAN_NUM}]+|\d+)】?([章节幕回]))([,.:]?\s*)(.*)$/
+  TITLE_RE_3 = /^([#{HAN_NUM}]+|\d+)([,.:]?\s*)(.*)$/
 
   def cv_title(dicts : Dicts, input : String)
     res = [] of Token
@@ -78,7 +79,7 @@ module CvCore
       input = title
     end
 
-    if match = TITLE_RE_1.match(input)
+    if match = (TITLE_RE_1.match(input) || TITLE_RE_2.match(input))
       _, pre_title, pre_trash, zh_group, index, label, trash, title = match
 
       if pre_title.empty?
@@ -90,7 +91,7 @@ module CvCore
 
       vi_group = "#{vi_label(label)} #{CvUtil.hanzi_int(index)}"
       res << Token.new(zh_group, vi_group, 0)
-    elsif match = TITLE_RE_2.match(input)
+    elsif match = TITLE_RE_3.match(input)
       _, zh_index, trash, title = match
       vi_index = "Chương #{CvUtil.hanzi_int(zh_index)}"
 

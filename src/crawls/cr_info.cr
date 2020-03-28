@@ -62,6 +62,7 @@ class CrInfo
 
     property status : Int32 = 0
 
+    property word_count : Int32 = 0
     property chap_count : Int32 = 0
     property updated_at : Int64 = 0
 
@@ -162,6 +163,7 @@ class CrInfo
     else
       url = CrUtil.info_url(@site, @bsid)
       @html = CrUtil.fetch_html(url, @site)
+      File.write(@html_file, @html) if persist
     end
 
     doc = Myhtml::Parser.new(@html)
@@ -171,7 +173,6 @@ class CrInfo
     @serial.chap_count = @chlist.size
 
     if persist
-      File.write @html_file, @html
       File.write @serial_file, @serial.to_pretty_json
       File.write @chlist_file, @chlist.to_pretty_json
 

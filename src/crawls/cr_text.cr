@@ -37,14 +37,13 @@ class CrText
     else
       url = CrUtil.text_url(@site, @bsid, @csid)
       @html = CrUtil.fetch_html(url, @site)
+      File.write(@html_file, @html) if persist
     end
 
     doc = Myhtml::Parser.new(@html)
     parse!(doc)
 
     if persist
-      File.write(@html_file, html)
-
       puts "-- <#{index}.colorize(:cyan)> \
       [#{@site}/#{@bsid}/#{@csid}] \
       {#{@title.colorize(:cyan)}} saved."

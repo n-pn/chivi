@@ -11,6 +11,12 @@ targets:
   sitemap:
     main: init/bookdb/sitemap.cr
 
+  serials:
+    main: init/bookdb/serials.cr
+
+  chlists:
+    main: init/bookdb/chlists.cr
+
 crystal: 0.33.0
 
 license: MIT
