@@ -3,6 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../src/models/vp_book"
+require "../src/crawls/cr_info"
 
 class BookSource
   include JSON::Serializable
@@ -162,10 +163,35 @@ files.each do |file|
   end
 end
 
-File.write "data/txt-tmp/yousuu/labels.txt", inputs.keys.join("\n")
+File.write "data/txt-tmp/existed.txt", inputs.keys.join("\n")
 
-titles = [] of String
-authors = [] of String
+def load_sitemap(site)
+  inp = "data/txt-tmp/mapping/#{site}.json"
+  map = Hash(String, String).from_json File.read(inp)
+
+  puts "- <#{site}>: #{map.size} entries".colorize(:cyan)
+
+  dir = "data/txt-tmp/mapping/#{site}/"
+  return map unless File.exists? dir
+
+  bsids = Dir.children(dir).map { |x| File.basename(x, ".txt") }
+  items = Set(String).new(bsids)
+
+  map.reject! { |key, val| items.includes?(val) }
+  puts "- <#{site}> ignore blacklist: #{map.size} entries".colorize(:cyan)
+
+  map
+end
+
+sitemaps = {} of String => Hash(String, String)
+
+SITES = [
+  "jx_la", "rengshu", "hetushu",
+  "xbiquge", "nofff", "duokan8",
+  "paoshu8", "69shu", "zhwenpg",
+]
+SITES.each { |site| sitemaps[site] = load_sitemap(site) }
+
 outputs = [] of VpBook
 
 inputs.map do |slug, books|
@@ -174,17 +200,7 @@ inputs.map do |slug, books|
 
   # puts "- #{slug}".colorize(:cyan)
 
-  titles << book.zh_title if book.zh_title.ends_with?(")")
-  authors << book.zh_author if book.zh_author.ends_with?(")")
-
   outputs << book
 end
 
-File.write "data/txt-tmp/yousuu/titles.txt", titles.uniq.join("\n")
-File.write "data/txt-tmp/yousuu/authors.txt", authors.uniq.join("\n")
-
 puts "- output: #{outputs.size} entries".colorize(:yellow)
-File.write "data/txt-tmp/yousuu/serials.json", outputs.to_pretty_json
-
-print "DUPLICATE: "
-puts outputs.map(&.zh_slug).group_by(&.downcase).to_a.reject(&.[1].size.==(1))

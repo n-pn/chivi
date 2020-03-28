@@ -15,3 +15,6 @@ license: MIT
 dependencies:
   kemal:
     github: kemalcr/kemal
+
+  myhtml:
+    github: kostya/myhtml
