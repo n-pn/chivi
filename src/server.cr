@@ -34,11 +34,11 @@ module Server
   get "/api/books" do |env|
     page = env.params.query.fetch("page", "1")
     limit, offset = parse_page(page)
-    sort_by = env.params.query.fetch("sort_by", "tally")
+    sort_by = env.params.query.fetch("sort_by", "updated_at")
 
-    books = Kernel.list_books(limit: limit, offset: offset, sort_by: sort_by)
+    books = Kernel.serials(preload: true).list(limit: limit, offset: offset, sort_by: sort_by)
 
-    {items: books, total: Kernel.book_size}.to_json env.response
+    {items: books, total: Kernel.serials.total}.to_json env.response
   end
 
   get "/api/books/:slug" do |env|

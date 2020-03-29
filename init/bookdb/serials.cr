@@ -34,7 +34,7 @@ CACHE_TIME = (ARGV[0]? || "10").to_i? || 10
 def merge_other(target : MyBook, site : String, bsid : String, label = "0/0") : MyBook
   crawler = CrInfo.new(site, bsid, target.updated_at)
 
-  if site == "zhwenpg" || crawler.cached?(CACHE_TIME.hours)
+  if site == "zhwenpg" || crawler.cached?(CACHE_TIME.hours) || !target.favor_crawl.empty?
     crawler.load_cached!
   else
     crawler.reset_cache(html: true)
@@ -137,10 +137,14 @@ FileUtils.mkdir("data/txt-out/serials")
 
 puts "- converting...".colorize(:cyan)
 
-allbook = [] of String
+mapping = {} of String => String
 missing = [] of String
 hastext = [] of String
-mapping = {} of String => String
+
+tally = [] of Tuple(String, Float64)
+score = [] of Tuple(String, Float64)
+votes = [] of Tuple(String, Int32)
+update = [] of Tuple(String, Int64)
 
 outputs.each_with_index do |output, idx|
   puts "- <#{idx + 1}/#{outputs.size}> [#{output.zh_slug}]".colorize(:blue)
@@ -149,33 +153,27 @@ outputs.each_with_index do |output, idx|
   File.write "data/txt-out/serials/#{output.vi_slug}.json", output.to_pretty_json
 
   mapping[output.zh_slug] = output.vi_slug
-  allbook << output.vi_slug
+  tally << {output.vi_slug, output.tally}
+  score << {output.vi_slug, output.score}
+  votes << {output.vi_slug, output.votes}
+  update << {output.vi_slug, output.updated_at}
 
   if output.favor_crawl.empty?
     missing << output.vi_slug
   else
     hastext << output.vi_slug
-
-    # site = output.favor_crawl
-    # bsid = output.crawl_links[site]
-
-    # chfile = "data/txt-tmp/chlists/#{site}/#{bsid}.json"
-    # chlist = CrInfo::ChList.from_json(File.read(chfile))
-
-    # out_dir = "data/txt-out/chlists/#{site}"
-    # FileUtils.mkdir_p out_dir
-
-    # out_list = chlist.map_with_index { |x, i| MyChap.new(x, i, site, bsid) }
-    # File.write File.join(out_dir, "#{bsid}.json"), out_list.to_pretty_json
   end
 end
 
 puts "- Save indexes...".colorize(:cyan)
 
-File.write "data/txt-out/indexes/all-books.json", outputs.to_pretty_json
-File.write "data/txt-out/indexes/top-books.json", outputs.first(3000).to_pretty_json
-
+File.write "data/txt-out/serials.json", outputs.to_pretty_json
 File.write "data/txt-out/mapping.json", mapping.to_pretty_json
+
+File.write "data/txt-out/indexes/tally.json", tally.sort_by(&.[1].-).to_pretty_json
+File.write "data/txt-out/indexes/score.json", score.sort_by(&.[1].-).to_pretty_json
+File.write "data/txt-out/indexes/votes.json", votes.sort_by(&.[1].-).to_pretty_json
+File.write "data/txt-out/indexes/update.json", update.sort_by(&.[1].-).to_pretty_json
 
 puts "- MISSING: #{missing.size}"
 File.write "data/txt-out/indexes/missing.txt", missing.join("\n")
