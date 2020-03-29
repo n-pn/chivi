@@ -42,39 +42,44 @@ module Server
   end
 
   get "/api/books/:slug" do |env|
-    slug = env.params.url["slug"]
-    entry = Kernel.find_book(slug)
-    chaps = Kernel.list_chaps(slug)
+    book = Kernel.serials.get(env.params.url["slug"])
+    halt env, status_code: 404, response: "Book not found" if book.nil?
 
-    {entry: entry, chaps: chaps}.to_json env.response
+    site = book.favor_crawl
+    if site.empty?
+      list = [] of VpChap
+    else
+      bsid = book.crawl_links[site]
+      list = Kernel.chlists(site, bsid)
+    end
+
+    {entry: book, chaps: list}.to_json env.response
   end
 
-  get "/api/chaps/:book/:slug" do |env|
-    book = env.params.url["book"]
-    slug = env.params.url["slug"]
+  get "/api/chaps/:book/:chap" do |env|
+    book = Kernel.serials.get(env.params.url["book"])
+    halt env, status_code: 404, response: "Book not found" if book.nil?
 
-    book_item = Kernel.find_book(book)
+    site = book.favor_crawl
+    halt env, status_code: 404, response: "Text not found" if site.empty?
 
-    if chaps = Kernel.list_chaps(book)
-      if idx = chaps.index(&.uid.==(slug))
-        prev_chap = chaps[idx - 1] if idx > 0
-        next_chap = chaps[idx + 1] if idx < chaps.size - 1
-      end
-    end
+    bsid = book.crawl_links[site]
+    list = Kernel.chlists(site, bsid)
 
-    zh_lines = Kernel.load_text(book, slug)
+    csid = env.params.url["chap"]
+    cidx = list.index(&.csid.==(csid))
 
-    if zh_lines
-      vi_lines = Engine.translate(zh_lines, mode: :mixed, book: nil)
-    end
+    halt env, status_code: 404, response: "Text not found" if cidx.nil?
+
+    curr_chap = list[cidx]
+    prev_chap = list[cidx - 1] if cidx > 0
+    next_chap = list[cidx + 1] if cidx < list.size - 1
 
     {
-      prev:      prev_chap,
-      next:      next_chap,
-      zh_lines:  zh_lines,
-      vi_lines:  vi_lines,
-      book_slug: book_item.try &.vi_slug,
-      book_name: book_item.try &.vi_title,
+      data: Kernel.load_text(site, bsid, csid),
+      prev: prev_chap,
+      next: next_chap,
+      book: book,
     }.to_json env.response
   end
 

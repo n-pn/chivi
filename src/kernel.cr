@@ -10,43 +10,31 @@ module Kernel
     @@serials ||= Serials.new("data/txt-out/serials/", preload: preload)
   end
 
-  def list_chaps(book : String)
-    if book = find_book(book)
-      site = book.favor_scrap
-      return [] of VpChap if site.empty?
-      bsid = book.scrap_links[site]
+  def chlists(site : String, bsid : String)
+    file_tmp = "data/txt-tmp/chlists/#{site}/#{bsid}.json"
+    file_out = "data/txt-out/chlists/#{site}/#{bsid}.json"
 
-      file_tmp = "data/txt-tmp/chlists/#{site}/#{bsid}.json"
-      file_out = "data/txt-out/chlists/#{site}/#{bsid}.json"
-      if File.exists?(file_out)
-        return Array(VpChap).from_json File.read(file_out)
-      elsif File.exists?(file_tmp)
-        puts "Translate it!"
-      end
+    if File.exists?(file_out)
+      Array(VpChap).from_json File.read(file_out)
+      # elsif File.exists?(file_tmp)
+      # TODO: Translate
+    else
+      [] of VpChap
     end
-
-    return [] of VpChap
   end
 
-  def load_text(book : String, csid : String)
-    if book = find_book(book)
-      site = book.favor_scrap
-      return nil if site.empty?
-      bsid = book.scrap_links[site]
+  def load_text(site : String, bsid : String, csid : String, user = "admin")
+    file_out = "data/txt-out/chtexts/#{site}/#{bsid}.json"
+    file_tmp = "data/txt-tmp/chtexts/#{site}/#{bsid}.txt"
 
-      file_tmp = "data/txt-tmp/chtexts/#{site}/#{bsid}.json"
-      file_out = "data/txt-out/chtexts/#{site}/#{bsid}.json"
-      if File.exists?(file_out)
-        return Array(VpChap).from_json File.read(file_out)
-      elsif File.exists?(file_tmp)
-        puts "Translate it!"
-      end
+    if File.exists?(file_out)
+      return Array(Array(CvCore::Token)).from_json File.read(file_out)
+    elsif File.exists?(file_tmp)
+      lines = File.read_lines(file_tmp)
+      paras = Engine.convert(lines, mode: :mixed, book: nil, user: user)
+      File.write(file_out, paras.to_json)
+
+      paras
     end
-
-    return [] of VpChap
-
-    text_file = "data/txt-tmp/#{book}/#{slug}.txt"
-    return nil unless File.exists?(text_file)
-    File.read_lines(text_file)
   end
 end
