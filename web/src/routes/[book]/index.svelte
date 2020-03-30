@@ -157,7 +157,7 @@
     margin-top: 0.5rem;
     // margin: 1rem auto;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
     grid-gap: 0 0.5rem;
   }
 
@@ -192,13 +192,24 @@
     // }
   }
 
+  .title {
+    margin-bottom: 0;
+  }
+
+  .subtitle {
+    margin-top: 0.25rem;
+    letter-spacing: 0.1em;
+    // font-weight: 300;
+    @include color(neutral, 7);
+  }
+
   .chap-title {
     @include truncate();
   }
 </style>
 
 <svelte:head>
-  <title>{book.vi_title} -- Chivi</title>
+  <title>{book.vi_title} - Chivi</title>
 </svelte:head>
 
 <div class="bread">
@@ -222,6 +233,7 @@
 
   <div class="intro">
     <h1 class="title">{book.vi_title} - {book.vi_author}</h1>
+    <h2 class="subtitle">{book.zh_title} - {book.zh_author}</h2>
     <div class="metadata">
       <span class="genre">
         <MIcon m-icon="book" />

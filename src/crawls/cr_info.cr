@@ -140,7 +140,7 @@ class CrInfo
     @chlist = ChList.new
   end
 
-  def cached?(time : Time = Time.utc - 30.minutes, require_html = false)
+  def cached?(time = 30.minutes, require_html = false)
     return false if CrUtil.outdated?(@serial_file, time)
     return false if CrUtil.outdated?(@chlist_file, time)
     !(require_html && CrUtil.outdated?(@html_file, time))
@@ -314,10 +314,15 @@ class CrInfo
 
     if @site == "jx_la"
       order = 0
+
       volumes.sort_by! do |volume|
-        index = volume.index
-        order += 1 if index == 0
-        {order, index}
+        if volume.label == "作品相关"
+          {-1, 0}
+        else
+          index = volume.index
+          order += 1 if index == 0
+          {order, index}
+        end
       end
     end
 

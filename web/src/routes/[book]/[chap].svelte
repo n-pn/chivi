@@ -16,11 +16,32 @@
   }
 
   export function render(tokens, active = false) {
-    if (active) {
-      return tokens.map(t => `<v k="${t[0]}" d="${t[2]}">${t[1]}</v>`).join('')
-    } else {
-      return tokens.map(t => t[1]).join('')
+    let res = ''
+
+    for (const tok of tokens) {
+      switch (tok[1].charAt(0)) {
+        case '⟨':
+          res += '<cite>'
+          break
+        case '“':
+          res += '<em>'
+          break
+      }
+
+      if (active) res += `<v k="${tok[0]}" d="${tok[2]}">${tok[1]}</v>`
+      else res += tok[1]
+
+      switch (tok[1].charAt(tok[1].length - 1)) {
+        case '⟩':
+          res += '</cite>'
+          break
+        case '”':
+          res += '</em>'
+          break
+      }
     }
+
+    return res
   }
 </script>
 
@@ -63,14 +84,14 @@
       case 37:
       case 74:
         evt.preventDefault()
-        if (prev) _goto(`${book_slug}/${prev_slug}`)
+        if (prev_slug) _goto(`${book_slug}/${prev_slug}`)
         else _goto(book_slug)
 
         break
 
       case 39:
       case 75:
-        if (next) _goto(`${book_slug}/${next_slug}`)
+        if (prev_slug) _goto(`${book_slug}/${next_slug}`)
         else _goto(`${book_slug}`)
         evt.preventDefault()
 
@@ -110,21 +131,21 @@
   h1 {
     @include border($side: bottom);
 
-    @include font-size(4);
+    font-size: rem(20px);
     line-height: 1.75rem;
 
     @include screen-min(md) {
-      @include font-size(5);
+      font-size: rem(22px);
       line-height: 2rem;
     }
 
     @include screen-min(lg) {
-      @include font-size(6);
+      font-size: rem(24px);
       line-height: 2.25rem;
     }
 
     @include screen-min(xl) {
-      @include font-size(7);
+      font-size: rem(30px);
       line-height: 2.5rem;
     }
   }
@@ -148,6 +169,12 @@
     }
   }
 
+  :global(cite) {
+    // text-transform: capitalize;
+    font-style: normal;
+    font-variant: small-caps;
+  }
+
   footer {
     margin: 1rem 0;
     display: flex;
@@ -158,7 +185,8 @@
   }
 
   .bread {
-    line-height: 2.5em;
+    line-height: 1.5em;
+    padding: 0.75em 0;
     // @include responsive-gap();
     padding-left: 0;
     padding-right: 0;
@@ -196,33 +224,33 @@
     border-bottom: 1px solid transparent;
 
     &[d='1'] {
-      border-bottom-color: color(blue, 5);
+      border-bottom-color: color(blue, 3);
+      cursor: pointer;
       @include hover {
-        cursor: pointer;
         color: color(blue, 6);
       }
     }
 
     &[d='2'] {
-      border-bottom-color: color(teal, 5);
+      border-bottom-color: color(teal, 3);
+      cursor: pointer;
       @include hover {
-        cursor: pointer;
         color: color(teal, 6);
       }
     }
 
     &[d='3'] {
-      border-bottom-color: color(red, 5);
+      border-bottom-color: color(red, 3);
+      cursor: pointer;
       @include hover {
-        cursor: pointer;
         color: color(red, 6);
       }
     }
 
     &[d='4'] {
-      border-color: color(orange, 5);
+      border-color: color(orange, 3);
+      cursor: pointer;
       @include hover {
-        cursor: pointer;
         color: color(orange, 6);
       }
     }

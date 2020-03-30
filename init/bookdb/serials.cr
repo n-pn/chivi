@@ -29,14 +29,12 @@ end
 
 # File.write "data/txt-tmp/existed.txt", inputs.keys.join("\n")
 
-CACHE_TIME = (ARGV[0]? || "10").to_i? || 10
+CACHE_TIME = ((ARGV[0]? || "10").to_i? || 10).hours
 
 def merge_other(target : MyBook, site : String, bsid : String, label = "0/0") : MyBook
   crawler = CrInfo.new(site, bsid, target.updated_at)
 
-  mtime = Time.utc - CACHE_TIME.hours
-
-  if site == "zhwenpg" || crawler.cached?(mtime) || !target.prefer_site.empty?
+  if site == "zhwenpg" || crawler.cached?(CACHE_TIME) || !target.prefer_site.empty?
     crawler.load_cached!
   else
     crawler.reset_cache(html: true)
@@ -59,7 +57,7 @@ def merge_other(target : MyBook, site : String, bsid : String, label = "0/0") : 
 
   target.zh_tags.concat(serial.tags)
 
-  target.status = serial.status if target.status < serial.updated_at
+  target.status = serial.status if target.status < serial.status
 
   target.chap_count = serial.chap_count if target.chap_count == 0
 

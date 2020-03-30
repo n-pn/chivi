@@ -119,7 +119,7 @@ module Chivi
       if title.empty?
         res << Token.new(trash, "", 0) unless trash.empty?
       else
-        res << Token.new(trash, ": ", 0) unless trash.empty?
+        res << Token.new(trash, ": ", 0) # unless trash.empty?
       end
 
       input = title

@@ -1,3 +1,4 @@
+require "colorize"
 require "file_utils"
 
 # require "../engine"
@@ -8,7 +9,7 @@ class Chlists
   def initialize(@dir = "data/txt-out/chlists")
   end
 
-  def get(book : VpBook, time : Time = Time.utc - 7.days)
+  def get(book : VpBook, time = 12.days)
     site = book.prefer_site
     bsid = book.prefer_bsid
     return [] of VpChap if bsid.empty?
@@ -16,10 +17,11 @@ class Chlists
     get(site, bsid.as(String), time)
   end
 
-  def get(site : String, bsid : String, time : Time = Time.utc - 7.days)
+  def get(site : String, bsid : String, time = 12.days)
     file_out = File.join(@dir, site, "#{bsid}.json")
 
     if CrUtil.outdated?(file_out, time)
+      puts "- <#{site}/#{bsid}> is outdated, refreshing...".colorize(:blue)
       crawler = CrInfo.new(site, bsid)
 
       if crawler.cached?(time)
