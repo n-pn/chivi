@@ -15,8 +15,8 @@ class CrText
   getter text_file : String
 
   def initialize(@site : String, @bsid : String, @csid : String, @title : String = "")
-    @html_file = ".inp/#{@site}/texts/#{@bsid}/#{@csid}.html"
-    @text_file = ".tmp/chtexts/#{@site}/#{@bsid}/#{@csid}.txt"
+    @html_file = "data/txt-inp/#{@site}/texts/#{@bsid}/#{@csid}.html"
+    @text_file = "data/txt-tmp/chtexts/#{@site}/#{@bsid}/#{@csid}.txt"
 
     @paras = [] of String
   end

@@ -1,22 +1,27 @@
 require "json"
 
+require "../engine"
+
 class VpChap
   include JSON::Serializable
 
-  property site : String
-  property bsid : String
   property csid : String
 
-  property idx : Int32
+  property url_slug : String = ""
 
   property zh_title : String = ""
   property vi_title : String = ""
 
-  property url_slug : String = ""
-
   property zh_volume : String = ""
   property vi_volume : String = ""
 
-  property created_at : Int64?
-  property updated_at : Int64?
+  def initialize(@csid, @zh_title, @zh_volume)
+    translate!
+  end
+
+  def translate!
+    @vi_title = Engine.translate(@zh_title, title: true)
+    @vi_volume = Engine.translate(@zh_volume, title: true)
+    @url_slug = CvUtil.slugify(@vi_title)
+  end
 end

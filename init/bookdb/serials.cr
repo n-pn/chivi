@@ -34,7 +34,9 @@ CACHE_TIME = (ARGV[0]? || "10").to_i? || 10
 def merge_other(target : MyBook, site : String, bsid : String, label = "0/0") : MyBook
   crawler = CrInfo.new(site, bsid, target.updated_at)
 
-  if site == "zhwenpg" || crawler.cached?(CACHE_TIME.hours) || !target.favor_crawl.empty?
+  mtime = Time.utc - CACHE_TIME.hours
+
+  if site == "zhwenpg" || crawler.cached?(mtime) || !target.favor_crawl.empty?
     crawler.load_cached!
   else
     crawler.reset_cache(html: true)

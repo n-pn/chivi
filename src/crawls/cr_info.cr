@@ -140,10 +140,10 @@ class CrInfo
     @chlist = ChList.new
   end
 
-  def cached?(timespan = 10.minutes, require_html = false)
-    return false if CrUtil.outdated?(@serial_file, timespan)
-    return false if CrUtil.outdated?(@chlist_file, timespan)
-    !(require_html && CrUtil.outdated?(@html_file, timespan))
+  def cached?(time : Time = Time.utc - 30.minutes, require_html = false)
+    return false if CrUtil.outdated?(@serial_file, time)
+    return false if CrUtil.outdated?(@chlist_file, time)
+    !(require_html && CrUtil.outdated?(@html_file, time))
   end
 
   def load_cached!(serial = true, chlist = false)
@@ -157,7 +157,7 @@ class CrInfo
     File.delete(@chlist_file) if File.exists?(@chlist_file) && chlist
   end
 
-  def crawl!(persist : Bool = true, label : String = "0/0") : Void
+  def crawl!(persist : Bool = true, label : String = "1/1") : Void
     if File.exists?(@html_file)
       @html = File.read(@html_file)
     else

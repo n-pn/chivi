@@ -81,11 +81,16 @@ module CrUtil
     do_fetch_html(url, tls, encoding)
   end
 
-  def outdated?(file, timespan = 10.hours)
+  def outdated?(file : String, time : Time = Time.utc - 10.hours)
     return true unless File.exists?(file)
-    mtime = File.info(file).modification_time
-    Time.local - mtime > timespan
+    time <= File.info(file).modification_time
   end
+
+  # def outdated?(file : String, timespan : Time::Span = 10.hours)
+  #   return true unless File.exists?(file)
+  #   mtime = File.info(file).modification_time
+  #   Time.local - mtime > timespan
+  # end
 
   # def fix_order(volumes)
   #   order = 0

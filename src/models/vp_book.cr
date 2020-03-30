@@ -68,4 +68,9 @@ class VpBook
       tag == @zh_genre || tag == @zh_title || tag == @zh_author
     end
   end
+
+  def crawl_bsid
+    return if favor_crawl.empty?
+    crawl_links[favor_crawl]?
+  end
 end

@@ -17,6 +17,16 @@ module Engine
     CvCore.cv_raw(@@repo.tradsim, input)
   end
 
+  def translate(input : String, title : Bool, book : String? = nil, user = "admin")
+    to_text convert(input, title, book, user)
+  end
+
+  def translate(input : Array(String), mode : Symbol, book : String? = nil, user = "admin")
+    convert(input, mode, book, user).map do |tokens|
+      to_text tokens
+    end
+  end
+
   def convert(input : String, title = false, book : String? = nil, user = "admin")
     dicts = @@repo.for_convert(book, user)
     title ? CvCore.cv_title(dicts, input) : CvCore.cv_plain(dicts, input)

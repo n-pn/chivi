@@ -2,30 +2,20 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "./serials/*"
+# require "../../src/crawls/cr_info"
+# require "../../src/models/vp_book"
+require "../../src/kernel/chlists"
 
 puts "- Save chlists...".colorize(:cyan)
 
+chlists = Chlists.new
+
 files = Dir.glob("data/txt-out/serials/*.json")
 files.each_with_index do |file, idx|
-  output = MyBook.from_json File.read(file)
-  next if output.favor_crawl.empty?
-
-  site = output.favor_crawl
-  bsid = output.crawl_links[site]
-
-  out_dir = "data/txt-out/chlists/#{site}"
-  FileUtils.mkdir_p(out_dir)
-  out_file = File.join(out_dir, "#{bsid}.json")
-
-  # next if File.exists?(out_file)
-  puts "- <#{idx + 1}/#{files.size}> [#{output.vi_slug}/#{site}/#{bsid}]".colorize(:blue)
-
-  chfile = "data/txt-tmp/chlists/#{site}/#{bsid}.json"
-  chlist = CrInfo::ChList.from_json(File.read(chfile))
-
-  out_list = chlist.map_with_index { |x, i| MyChap.new(x, i, site, bsid) }
-  File.write out_file, out_list.to_pretty_json
+  book = VpBook.from_json(File.read(file))
+  next if book.favor_crawl.empty?
+  list = chlists.get(book, time: Time.utc - 5.hours)
+  puts "- <#{idx + 1}/#{files.size}> [#{book.vi_slug}/#{book.favor_crawl}/#{book.crawl_bsid}]: #{list.size} chapters".colorize(:blue)
 rescue err
   puts err
 end
