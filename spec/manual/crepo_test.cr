@@ -1,6 +1,6 @@
-require "../../src/engine/cv_repo"
+require "../../src/engine/crepo"
 
-repo = CvRepo.new("data/dic-out")
+repo = CRepo.new("data/dic-out")
 
 puts repo.system.get_dic("hanviet").size
 puts repo.common.get_dic("generic").mtime

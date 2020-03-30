@@ -1,6 +1,6 @@
 require "json"
 
-module CvCore
+module Chivi
   class Token
     include JSON::Serializable
 

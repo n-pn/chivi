@@ -1,6 +1,6 @@
-require "./cv_util/*"
+require "./cutil/*"
 
-module CvUtil
+module CUtil
   extend self
 
   # capitalize all words

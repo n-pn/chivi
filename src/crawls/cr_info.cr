@@ -5,7 +5,7 @@ require "colorize"
 require "myhtml"
 
 require "./cr_util"
-require "../engine/cv_util"
+require "../engine/cutil"
 
 class CrInfo
   class Chap
@@ -41,7 +41,7 @@ class CrInfo
 
     def index
       if match = INDEX_RE.match(@label)
-        CvUtil.hanzi_int(match[1])
+        CUtil.hanzi_int(match[1])
       else
         0
       end

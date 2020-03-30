@@ -1,4 +1,4 @@
-module CvCore
+module Chivi
   def group_similar(input : Tokens) : Tokens
     output = Tokens.new
     idx = 0

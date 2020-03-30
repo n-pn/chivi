@@ -21,7 +21,7 @@ module Kernel
     file_tmp = "data/txt-tmp/chtexts/#{site}/#{bsid}.txt"
 
     if File.exists?(file_out)
-      return Array(Array(CvCore::Token)).from_json File.read(file_out)
+      return Array(Array(Chivi::Token)).from_json File.read(file_out)
     elsif File.exists?(file_tmp)
       lines = File.read_lines(file_tmp)
       paras = Engine.convert(lines, mode: :mixed, book: nil, user: user)

@@ -1,4 +1,4 @@
-module CvCore
+module Chivi
   def fix_grammar(input : Tokens) : Tokens
     output = Tokens.new
     idx = 0

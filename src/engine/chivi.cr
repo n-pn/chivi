@@ -1,21 +1,29 @@
-require "./cv_dict"
-require "./cv_util"
+require "./cdict"
+require "./cutil"
 
 require "json"
 
 # require "./core/*"
 
-module CvCore
+module Chivi
   extend self
 
-  alias Dicts = Array(CvDict)
+  alias Dicts = Array(CDict)
 
   class Token
-    include JSON::Serializable
+    # include JSON::Serializable
 
     property key : String
     property val : String
     property dic : Int32 = 0
+
+    def initialize(pull : JSON::PullParser)
+      pull.read_begin_array
+      @key = pull.read_string
+      @val = pull.read_string
+      @dic = pull.read_int.to_i
+      pull.read_end_array
+    end
 
     def initialize(@key : String, @val : String, @dic = 0)
     end
@@ -32,6 +40,28 @@ module CvCore
 
     def to_s(io : IO)
       io << "[" << @key << "/" << @val << "/" << @dic << "]"
+    end
+
+    def to_json(json : JSON::Builder)
+      json.array do
+        json.string @key
+        json.string @val
+        json.number @dic
+      end
+    end
+  end
+
+  class Tokens < Array(Token)
+    def raw
+      map(&.key)
+    end
+
+    def to_text
+      String.build do |io|
+        each do |item|
+          io << item.val
+        end
+      end
     end
   end
 
@@ -62,11 +92,11 @@ module CvCore
   TITLE_RE_3 = /^([#{HAN_NUM}]+|\d+)([,.:]?\s*)(.*)$/
 
   def cv_title(dicts : Dicts, input : String)
-    res = [] of Token
+    res = Tokens.new
 
     if match = TITLE_RE_0.match(input)
       _, zh_group, index, label, trash, title = match
-      vi_group = "#{vi_label(label)} #{CvUtil.hanzi_int(index)}"
+      vi_group = "#{vi_label(label)} #{CUtil.hanzi_int(index)}"
 
       res << Token.new(zh_group, vi_group, 0)
 
@@ -89,11 +119,11 @@ module CvCore
         res << Token.new(pre_trash, " - ", 0) unless pre_trash.empty?
       end
 
-      vi_group = "#{vi_label(label)} #{CvUtil.hanzi_int(index)}"
+      vi_group = "#{vi_label(label)} #{CUtil.hanzi_int(index)}"
       res << Token.new(zh_group, vi_group, 0)
     elsif match = TITLE_RE_3.match(input)
       _, zh_index, trash, title = match
-      vi_index = "Chương #{CvUtil.hanzi_int(zh_index)}"
+      vi_index = "Chương #{CUtil.hanzi_int(zh_index)}"
 
       res << Token.new(zh_index, vi_index, 0)
     else
@@ -126,7 +156,7 @@ module CvCore
   def tokenize(dicts : Dicts, input : Array(Char))
     selects = [Token.new("", "")]
     weights = [0.0]
-    chars = CvUtil.normalize(input)
+    chars = CUtil.normalize(input)
 
     input.each_with_index do |char, idx|
       selects << Token.new(char, chars[idx])
@@ -136,7 +166,7 @@ module CvCore
     dsize = dicts.size + 1
 
     chars.each_with_index do |char, i|
-      choices = {} of Int32 => Tuple(CvDict::Item, Int32)
+      choices = {} of Int32 => Tuple(CDict::Item, Int32)
 
       dicts.each_with_index do |dict, j|
         dict.scan(chars, i).each do |item|
@@ -159,7 +189,7 @@ module CvCore
     end
 
     idx = input.size
-    res = [] of Token
+    res = Tokens.new
 
     while idx > 0
       token = selects[idx]
@@ -170,8 +200,8 @@ module CvCore
     res
   end
 
-  def combine_similar(tokens : Array(Token))
-    res = [] of Token
+  def combine_similar(tokens : Tokens)
+    res = Tokens.new
     idx = tokens.size - 1
 
     while idx >= 0
@@ -214,7 +244,7 @@ module CvCore
     end
   end
 
-  def apply_grammar(tokens : Array(Token))
+  def apply_grammar(tokens : Tokens)
     # TODO: handle more special rules, like:
     # - convert hanzi to number,
     # - convert hanzi percent
@@ -234,14 +264,14 @@ module CvCore
     tokens
   end
 
-  def capitalize(tokens : Array(Token), cap_first : Bool = true)
+  def capitalize(tokens : Tokens, cap_first : Bool = true)
     apply_cap = cap_first
 
     tokens.each do |token|
       next if token.val.empty?
 
       if apply_cap && token.val[0].alphanumeric?
-        token.val = CvUtil.capitalize(token.val)
+        token.val = CUtil.capitalize(token.val)
         apply_cap = false
       else
         apply_cap ||= cap_after?(token.val)
@@ -261,8 +291,8 @@ module CvCore
     end
   end
 
-  def add_spaces(tokens : Array(Token))
-    res = Array(Token).new
+  def add_spaces(tokens : Tokens)
+    res = Tokens.new
     add_space = false
 
     tokens.each do |token|

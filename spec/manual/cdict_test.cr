@@ -1,6 +1,6 @@
-require "../../src/engine/cv_dict"
+require "../../src/engine/cdict"
 
-test = CvDict.new "spec/fixtures/test.txt"
+test = CDict.new "spec/fixtures/test.txt"
 
 print "\nset abc to abc: ", test.set("abc", "abc")
 

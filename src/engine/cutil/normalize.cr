@@ -1,4 +1,4 @@
-module CvUtil
+module CUtil
   NORMALIZE = {
     '《' => '⟨',
     '》' => '⟩',

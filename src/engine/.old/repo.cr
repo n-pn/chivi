@@ -3,7 +3,7 @@ require "benchmark"
 
 require "../dict"
 
-class CvRepo
+class CRepo
   alias DictList = Hash(String, Dict)
   alias UserList = Hash(String, DictList)
 

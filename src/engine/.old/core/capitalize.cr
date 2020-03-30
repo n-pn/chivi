@@ -1,4 +1,4 @@
-module CvCore
+module Chivi
   def capitalize(input : Tokens, apply_cap = true)
     input.each_with_index do |token, idx|
       if apply_cap && can_apply_cap?(token.val)

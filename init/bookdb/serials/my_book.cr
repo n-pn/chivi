@@ -159,7 +159,7 @@ class MyBook < VpBook
 
   def translate!
     @vi_title = map_title(@zh_title)
-    @vi_author = CvUtil.titlecase(MyUtil.hanviet(@zh_author))
+    @vi_author = CUtil.titlecase(MyUtil.hanviet(@zh_author))
 
     @vi_slug = pick_slug(@vi_title, @vi_author)
 
@@ -179,7 +179,7 @@ class MyBook < VpBook
     if titles = TITLES_MAP[zh_title]?
       return titles[0]
     else
-      CvUtil.capitalize(MyUtil.hanviet(zh_title))
+      CUtil.capitalize(MyUtil.hanviet(zh_title))
     end
   end
 
@@ -192,8 +192,8 @@ class MyBook < VpBook
   USED_SLUGS = Set(String).new
 
   def pick_slug(vi_title, vi_author)
-    title_slug = CvUtil.slugify(vi_title)
-    author_slug = CvUtil.slugify(vi_author)
+    title_slug = CUtil.slugify(vi_title)
+    author_slug = CUtil.slugify(vi_author)
     full_slug = "#{title_slug}--#{author_slug}"
 
     if USED_SLUGS.includes?(title_slug) || title_slug.size < 5
