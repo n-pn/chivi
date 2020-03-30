@@ -24,4 +24,8 @@ class VpChap
     @vi_volume = Engine.translate(@zh_volume, title: true)
     @url_slug = CUtil.slugify(@vi_title)
   end
+
+  def slug(site)
+    "#{@url_slug}-#{site}-#{@csid}"
+  end
 end

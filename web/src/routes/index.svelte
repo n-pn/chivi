@@ -145,7 +145,7 @@
         {#each book.covers as cover}
           <source srcset={cover} />
         {/each}
-        <img src="img/nocover.png" alt={book.vi_title} />
+        <img src="/img/nocover.png" alt={book.vi_title} />
       </picture>
 
       <div class="book-title">{book.vi_title}</div>

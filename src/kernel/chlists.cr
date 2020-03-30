@@ -5,13 +5,13 @@ require "../crawls/*"
 require "../models/*"
 
 class Chlists
-  def initialize(@dir = "data/txt-out/serials")
+  def initialize(@dir = "data/txt-out/chlists")
   end
 
   def get(book : VpBook, time : Time = Time.utc - 7.days)
-    site = book.favor_crawl
-    bsid = book.crawl_bsid
-    return [] of VpChap if bsid.nil?
+    site = book.prefer_site
+    bsid = book.prefer_bsid
+    return [] of VpChap if bsid.empty?
 
     get(site, bsid.as(String), time)
   end

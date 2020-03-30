@@ -15,9 +15,9 @@ chlists = Chlists.new
 files = Dir.glob("data/txt-out/serials/*.json")
 files.each_with_index do |file, idx|
   book = VpBook.from_json(File.read(file))
-  next if book.favor_crawl.empty?
+  next if book.prefer_site.empty?
   list = chlists.get(book, time: Time.utc - CACHE_TIME.hours)
-  puts "- <#{idx + 1}/#{files.size}> [#{book.vi_slug}/#{book.favor_crawl}/#{book.crawl_bsid}]: #{list.size} chapters".colorize(:blue)
+  puts "- <#{idx + 1}/#{files.size}> [#{book.vi_slug}/#{book.prefer_site}/#{book.prefer_bsid}]: #{list.size} chapters".colorize(:blue)
 rescue err
   puts err
 end

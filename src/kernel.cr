@@ -17,14 +17,16 @@ module Kernel
   end
 
   def load_text(site : String, bsid : String, csid : String, user = "admin")
-    file_out = "data/txt-out/chtexts/#{site}/#{bsid}.json"
-    file_tmp = "data/txt-tmp/chtexts/#{site}/#{bsid}.txt"
+    file_out = "data/txt-out/chtexts/#{site}/#{bsid}/#{csid}.json"
+    file_tmp = "data/txt-tmp/chtexts/#{site}/#{bsid}/#{csid}.txt"
 
     if File.exists?(file_out)
       return Array(Array(Chivi::Token)).from_json File.read(file_out)
     elsif File.exists?(file_tmp)
       lines = File.read_lines(file_tmp)
       paras = Engine.convert(lines, mode: :mixed, book: nil, user: user)
+
+      FileUtils.mkdir_p File.dirname(file_out)
       File.write(file_out, paras.to_json)
 
       paras
@@ -41,8 +43,8 @@ module Kernel
   end
 end
 
-book = Kernel.serials.get("chuế-tế")
-puts book.to_pretty_json
+# book = Kernel.serials.get("chuế-tế")
+# puts book.to_pretty_json
 
 # list = Kernel.chlists.get(book.favor_crawl, book.crawl_bsid.as(String))
 # puts list.first(10)

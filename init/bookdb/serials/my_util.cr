@@ -6,12 +6,12 @@ module MyUtil
 
   def hanviet(input : String)
     return input unless input =~ /\p{Han}/
-    Engine.hanviet(input).map(&.val).join
+    Engine.hanviet(input).vi_text
   end
 
   def translate(input : String, title = false)
     return input if input.empty?
-    Engine.convert(input, title: title).map(&.val).join
+    Engine.convert(input, title: title).vi_text
   end
 
   def load_sitemap(site)

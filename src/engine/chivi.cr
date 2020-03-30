@@ -52,11 +52,27 @@ module Chivi
   end
 
   class Tokens < Array(Token)
-    def raw
-      map(&.key)
+    def zh_text(io : IO)
+      each do |item|
+        io << item.key
+      end
     end
 
-    def to_text
+    def zh_text
+      String.build do |io|
+        each do |item|
+          io << item.key
+        end
+      end
+    end
+
+    def vi_text(io : IO)
+      each do |item|
+        io << item.val
+      end
+    end
+
+    def vi_text
       String.build do |io|
         each do |item|
           io << item.val

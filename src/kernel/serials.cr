@@ -42,8 +42,7 @@ class Serials
   end
 
   def total
-    load_dir! if @books.empty?
-    @books.size
+    @tally.size
   end
 
   def list(limit = 20, offset = 0, sort_by = "updated_at")

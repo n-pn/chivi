@@ -1,17 +1,17 @@
 <script context="module">
-  export async function preload({ params }) {
+  export async function preload({ params, query }) {
     const slug = params.book
+    const site = query.site
 
-    const url = `api/books/${slug}`
-    console.log(encodeURI(url))
+    let url = `api/books/${slug}`
+    if (site) url += `/${site}`
 
-    const res = await this.fetch(url)
-    const data = await res.json()
-
-    if (!!data.entry) {
+    try {
+      const res = await this.fetch(url)
+      const data = await res.json()
       return data
-    } else {
-      this.error(404, 'Book not found!')
+    } catch (err) {
+      this.error(404, err.message)
     }
   }
 
@@ -19,8 +19,8 @@
     const span = (new Date().getTime() - time) / 1000
 
     if (span < 60) return '< 1 phút trước'
-    if (span < 60 * 60) return `${span / 60} phút trước`
-    if (span < 60 * 60 * 24) return `${span / 3600} giờ trước`
+    if (span < 60 * 60) return `${Math.round(span / 60)} phút trước`
+    if (span < 60 * 60 * 24) return `${Math.round(span / 3600)} giờ trước`
 
     return new Date(time).toISOString().split('T')[0]
   }
@@ -40,12 +40,13 @@
 </script>
 
 <script>
-  export let entry
-  export let chaps = []
+  export let book
+  export let site
+  export let chlist = []
 
   let volumes = {}
   $: {
-    for (const chap of chaps) {
+    for (const chap of chlist) {
       volumes[chap.vi_volume] = volumes[chap.vi_volume] || []
       volumes[chap.vi_volume].push(chap)
     }
@@ -197,7 +198,7 @@
 </style>
 
 <svelte:head>
-  <title>{entry.vi_title} -- Chivi</title>
+  <title>{book.vi_title} -- Chivi</title>
 </svelte:head>
 
 <div class="bread">
@@ -205,41 +206,41 @@
     <a class="crumb-link" href="/">Home</a>
   </span>
   <span class="crumb">
-    <a class="crumb-link" href="/?genre={entry.vi_genre}">{entry.vi_genre}</a>
+    <a class="crumb-link" href="/?genre={book.vi_genre}">{book.vi_genre}</a>
   </span>
-  <span class="crumb">{entry.vi_title}</span>
+  <span class="crumb">{book.vi_title}</span>
 
 </div>
 
 <div class="info">
   <picture class="cover">
-    {#each entry.covers as cover}
+    {#each book.covers as cover}
       <source srcset={cover} />
     {/each}
-    <img src="img/nocover.png" alt={entry.vi_title} />
+    <img src="img/nocover.png" alt={book.vi_title} />
   </picture>
 
   <div class="intro">
-    <h1 class="title">{entry.vi_title} - {entry.vi_author}</h1>
+    <h1 class="title">{book.vi_title} - {book.vi_author}</h1>
     <div class="metadata">
       <span class="genre">
         <MIcon m-icon="book" />
-        {entry.vi_genre}
+        {book.vi_genre}
       </span>
 
       <span class="chap_count">
         <MIcon m-icon="list" />
-        {entry.chap_count} chương
+        {book.chap_count} chương
       </span>
 
       <span class="status">
         <MIcon m-icon="activity" />
-        {book_status(entry.status)}
+        {book_status(book.status)}
       </span>
 
-      <time class="updated_at" datetime={new Date(entry.updated_at)}>
+      <time class="updated_at" datetime={new Date(book.updated_at)}>
         <MIcon m-icon="clock" />
-        {relative_time(entry.updated_at)}
+        {relative_time(book.updated_at)}
       </time>
 
     </div>
@@ -249,18 +250,20 @@
 
 <h2>Giới thiệu:</h2>
 <div class="summary">
-  {#each entry.vi_intro.split('\n') as line}
+  {#each book.vi_intro.split('\n') as line}
     <p>{line}</p>
   {/each}
 </div>
 
 <h2>Danh sách chương:</h2>
-{#each Object.entries(volumes) as [label, chaps]}
-  <h3>{label} ({chaps.length} chương)</h3>
+{#each Object.entries(volumes) as [label, chlist]}
+  <h3>{label} ({chlist.length} chương)</h3>
   <div class="chap-list">
-    {#each chaps as chap}
+    {#each chlist as chap}
       <div class="chap-item">
-        <a class="chap-link" href="/{entry.vi_slug}/{chap.url_slug}-{chap.uid}">
+        <a
+          class="chap-link"
+          href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
           <div class="chap-title">{chap.vi_title}</div>
         </a>
       </div>

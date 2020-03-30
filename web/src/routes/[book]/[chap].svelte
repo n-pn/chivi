@@ -1,16 +1,25 @@
 <script context="module">
   export async function preload({ params }) {
     const book = params.book
+
     const slug = params.chap.split('-')
+    const site = slug[slug.length - 2]
     const chap = slug[slug.length - 1]
 
-    const res = await this.fetch(`api/chaps/${book}/${chap}`)
-    const data = await res.json()
-
-    if (!!data.book_name) {
+    try {
+      const res = await this.fetch(`api/books/${book}/${site}/${chap}`)
+      const data = await res.json()
       return data
+    } catch (err) {
+      this.error(404, data.msg)
+    }
+  }
+
+  export function render(tokens, active = false) {
+    if (active) {
+      return tokens.map(t => `<v k="${t[0]}" d="${t[2]}">${t[1]}</v>`).join('')
     } else {
-      this.error(404, 'Chap not found!')
+      return tokens.map(t => t[1]).join('')
     }
   }
 </script>
@@ -18,17 +27,20 @@
 <script>
   import MIcon from '$mould/shared/MIcon.svelte'
 
-  export let prev
-  export let next
-  // export let zh_lines
-  export let vi_lines
   export let book_slug
   export let book_name
-  let scroll_ended = false
+  export let prev_slug
+  export let next_slug
 
-  function scrolled(evt) {
-    scroll_ended = false
-  }
+  export let lines
+
+  let cur = 0
+
+  // let scroll_ended = false
+
+  // function scrolled(evt) {
+  //   scroll_ended = false
+  // }
 
   function navigate(evt) {
     switch (evt.keyCode) {
@@ -51,14 +63,14 @@
       case 37:
       case 74:
         evt.preventDefault()
-        if (prev) _goto(`${book_slug}/${prev.url_slug}-${prev.uid}`)
+        if (prev) _goto(`${book_slug}/${prev_slug}`)
         else _goto(book_slug)
 
         break
 
       case 39:
       case 75:
-        if (next) _goto(`${book_slug}/${next.url_slug}-${next.uid}`)
+        if (next) _goto(`${book_slug}/${next_slug}`)
         else _goto(`${book_slug}`)
         evt.preventDefault()
 
@@ -179,10 +191,46 @@
       display: none;
     }
   }
+
+  :global(v) {
+    border-bottom: 1px solid transparent;
+
+    &[d='1'] {
+      border-bottom-color: color(blue, 5);
+      @include hover {
+        cursor: pointer;
+        color: color(blue, 6);
+      }
+    }
+
+    &[d='2'] {
+      border-bottom-color: color(teal, 5);
+      @include hover {
+        cursor: pointer;
+        color: color(teal, 6);
+      }
+    }
+
+    &[d='3'] {
+      border-bottom-color: color(red, 5);
+      @include hover {
+        cursor: pointer;
+        color: color(red, 6);
+      }
+    }
+
+    &[d='4'] {
+      border-color: color(orange, 5);
+      @include hover {
+        cursor: pointer;
+        color: color(orange, 6);
+      }
+    }
+  }
 </style>
 
 <svelte:head>
-  <title>{vi_lines[0]} - {book_name} - Chivi</title>
+  <title>{render(lines[0])} - {book_name} - Chivi</title>
 </svelte:head>
 
 <svelte:window on:keydown={navigate} />
@@ -194,23 +242,27 @@
   <span class="crumb">
     <a class="crumb-link" href="/{book_slug}">{book_name}</a>
   </span>
-  <span class="crumb">{vi_lines[0]}</span>
+  <span class="crumb">{render(lines[0])}</span>
 
 </div>
 
 <article>
-  {#each vi_lines as line, idx}
+  {#each lines as line, idx}
     {#if idx == 0}
-      <h1 class="vi">{line}</h1>
+      <h1 class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
+        {@html render(line, idx == cur)}
+      </h1>
     {:else}
-      <p class="vi">{line}</p>
+      <p class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
+        {@html render(line, idx == cur)}
+      </p>
     {/if}
   {/each}
 </article>
 
 <footer>
-  {#if prev}
-    <a m-button="line" href="/{book_slug}/{prev.url_slug}-{prev.uid}">
+  {#if prev_slug}
+    <a m-button="line" href="/{book_slug}/{prev_slug}">
       <MIcon m-icon="chevron-left" />
       <span>Prev</span>
     </a>
@@ -221,12 +273,12 @@
     </a>
   {/if}
 
-  {#if next}
-    <a m-button="line primary" href="/{book_slug}/{next.url_slug}-{next.uid}">
+  {#if next_slug}
+    <a m-button="line primary" href="/{book_slug}/{next_slug}">
       <span>Next</span>
       <MIcon m-icon="chevron-right" />
     </a>
-  {:else if prev}
+  {:else if prev_slug}
     <a m-button="line" href="/{book_slug}">
       <MIcon m-icon="list" />
       <span>Home</span>

@@ -40,7 +40,9 @@ class VpBook
   property yousuu_bids : Array(Int32) = [] of Int32
   property source_urls : Array(String) = [] of String
   property crawl_links : Hash(String, String) = {} of String => String
-  property favor_crawl : String = ""
+
+  property prefer_site : String = ""
+  property prefer_bsid : String = ""
 
   def initialize
   end
@@ -67,10 +69,5 @@ class VpBook
     @zh_tags = @zh_tags.reject do |tag|
       tag == @zh_genre || tag == @zh_title || tag == @zh_author
     end
-  end
-
-  def crawl_bsid
-    return if favor_crawl.empty?
-    crawl_links[favor_crawl]?
   end
 end

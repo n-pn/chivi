@@ -36,7 +36,7 @@ def merge_other(target : MyBook, site : String, bsid : String, label = "0/0") : 
 
   mtime = Time.utc - CACHE_TIME.hours
 
-  if site == "zhwenpg" || crawler.cached?(mtime) || !target.favor_crawl.empty?
+  if site == "zhwenpg" || crawler.cached?(mtime) || !target.prefer_site.empty?
     crawler.load_cached!
   else
     crawler.reset_cache(html: true)
@@ -64,7 +64,11 @@ def merge_other(target : MyBook, site : String, bsid : String, label = "0/0") : 
   target.chap_count = serial.chap_count if target.chap_count == 0
 
   target.crawl_links[site] = bsid
-  target.favor_crawl = site if target.favor_crawl.empty?
+
+  if target.prefer_site.empty?
+    target.prefer_site = site
+    target.prefer_bsid = bsid
+  end
 
   target.updated_at = serial.updated_at if target.updated_at < serial.updated_at
 
@@ -134,8 +138,8 @@ puts "- output: #{outputs.size} entries".colorize(:cyan)
 outputs.sort_by!(&.tally.-)
 File.write "data/txt-tmp/serials.json", outputs.to_pretty_json
 
-FileUtils.rm_rf("data/txt-out/serials")
-FileUtils.mkdir("data/txt-out/serials")
+# FileUtils.rm_rf("data/txt-out/serials")
+FileUtils.mkdir_p("data/txt-out/serials")
 
 puts "- converting...".colorize(:cyan)
 
@@ -160,7 +164,7 @@ outputs.each_with_index do |output, idx|
   votes << {output.vi_slug, output.votes}
   update << {output.vi_slug, output.updated_at}
 
-  if output.favor_crawl.empty?
+  if output.prefer_site.empty?
     missing << output.vi_slug
   else
     hastext << output.vi_slug
@@ -172,13 +176,13 @@ puts "- Save indexes...".colorize(:cyan)
 File.write "data/txt-out/serials.json", outputs.to_pretty_json
 File.write "data/txt-out/mapping.json", mapping.to_pretty_json
 
-File.write "data/txt-out/indexes/tally.json", tally.sort_by(&.[1].-).to_pretty_json
-File.write "data/txt-out/indexes/score.json", score.sort_by(&.[1].-).to_pretty_json
-File.write "data/txt-out/indexes/votes.json", votes.sort_by(&.[1].-).to_pretty_json
-File.write "data/txt-out/indexes/update.json", update.sort_by(&.[1].-).to_pretty_json
+File.write "data/txt-out/serials/indexes/tally.json", tally.sort_by(&.[1].-).to_pretty_json
+File.write "data/txt-out/serials/indexes/score.json", score.sort_by(&.[1].-).to_pretty_json
+File.write "data/txt-out/serials/indexes/votes.json", votes.sort_by(&.[1].-).to_pretty_json
+File.write "data/txt-out/serials/indexes/update.json", update.sort_by(&.[1].-).to_pretty_json
 
 puts "- MISSING: #{missing.size}"
-File.write "data/txt-out/indexes/missing.txt", missing.join("\n")
+File.write "data/txt-out/serials/indexes/missing.txt", missing.join("\n")
 
 puts "- HASTEXT: #{hastext.size}"
-File.write "data/txt-out/indexes/hastext.txt", hastext.join("\n")
+File.write "data/txt-out/serials/indexes/hastext.txt", hastext.join("\n")

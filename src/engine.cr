@@ -18,13 +18,11 @@ module Engine
   end
 
   def translate(input : String, title : Bool, book : String? = nil, user = "admin")
-    to_text convert(input, title, book, user)
+    convert(input, title, book, user).vi_text
   end
 
   def translate(input : Array(String), mode : Symbol, book : String? = nil, user = "admin")
-    convert(input, mode, book, user).map do |tokens|
-      to_text tokens
-    end
+    convert(input, mode, book, user).map(&.vi_text)
   end
 
   def convert(input : String, title = false, book : String? = nil, user = "admin")
@@ -45,13 +43,5 @@ module Engine
         idx == 0 ? Chivi.cv_title(dicts, line) : Chivi.cv_plain(dicts, line)
       end
     end
-  end
-
-  def to_text(tokens : Array(Chivi::Token))
-    String.build { |io| to_text(tokens, io) }
-  end
-
-  def to_text(tokens : Array(Chivi::Token), io : IO)
-    tokens.each { |token| io << token.val }
   end
 end
