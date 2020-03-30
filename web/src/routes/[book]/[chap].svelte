@@ -91,7 +91,7 @@
 
       case 39:
       case 75:
-        if (prev_slug) _goto(`${book_slug}/${next_slug}`)
+        if (next_slug) _goto(`${book_slug}/${next_slug}`)
         else _goto(`${book_slug}`)
         evt.preventDefault()
 

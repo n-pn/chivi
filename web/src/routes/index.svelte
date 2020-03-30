@@ -1,8 +1,11 @@
 <script context="module">
   export async function preload({ query }) {
     const page = query.page || 1
+    let url = `api/books?page=${page}`
+    const sort_by = query.sort || 'tally'
+    url += `&sort_by=${sort_by}`
 
-    const res = await this.fetch(`api/books?page=${page}`)
+    const res = await this.fetch(url)
     const data = await res.json()
     return Object.assign(data, { page })
   }

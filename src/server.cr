@@ -47,9 +47,8 @@ module Server
 
     halt env, status_code: 404, response: ({msg: "Book not found"}).to_json if book.nil?
 
-    site, bsid = book.crawl_links.first
-
-    halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json if bsid.nil?
+    site = book.prefer_site
+    bsid = book.prefer_bsid
 
     chlist = Kernel.chlists.get(site, bsid)
     {book: book, site: site, chlist: chlist}.to_json env.response
