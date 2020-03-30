@@ -146,7 +146,7 @@ class CrInfo
     !(require_html && CrUtil.outdated?(@html_file, time))
   end
 
-  def load_cached!(serial = true, chlist = false)
+  def load_cached!(serial = true, chlist = true)
     @serial = Serial.from_json(File.read(@serial_file)) if serial
     @chlist = ChList.from_json(File.read(@chlist_file)) if chlist
   end

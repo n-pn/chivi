@@ -5,7 +5,7 @@ require "../crawls/*"
 require "../models/*"
 
 class Chlists
-  def initialize(@tmp = "data/txt-tmp", @out = "data/txt-out")
+  def initialize(@dir = "data/txt-out/serials")
   end
 
   def get(book : VpBook, time : Time = Time.utc - 7.days)
@@ -17,15 +17,18 @@ class Chlists
   end
 
   def get(site : String, bsid : String, time : Time = Time.utc - 7.days)
-    file_out = File.join(@out, "chlists", site, "#{bsid}.json")
+    file_out = File.join(@dir, site, "#{bsid}.json")
 
     if CrUtil.outdated?(file_out, time)
       crawler = CrInfo.new(site, bsid)
+
       if crawler.cached?(time)
-        crawler.load_cached!
+        crawler.load_cached!(chlist: true)
       else
+        crawler.reset_cache
         crawler.crawl!(persist: true)
       end
+
       save(site, bsid, crawler.chlist)
     else
       Array(VpChap).from_json File.read(file_out)
@@ -37,7 +40,7 @@ class Chlists
       VpChap.new(chap._id, chap.title, chap.volume)
     end
 
-    out_dir = File.join(@out, site)
+    out_dir = File.join(@dir, site)
     FileUtils.mkdir_p(out_dir)
 
     out_file = File.join(out_dir, "#{bsid}.json")

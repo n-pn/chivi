@@ -2,7 +2,7 @@ require "../engine"
 require "../models/*"
 
 class Serials
-  def initialize(@dir = "data/txt-out/")
+  def initialize(@dir = "data/txt-out/serials")
     @books = {} of String => VpBook
 
     @tally = Array(Tuple(String, Float64)).from_json File.read(index_file("tally"))
@@ -28,16 +28,17 @@ class Serials
   end
 
   def load(vi_slug : String)
-    file = File.join(@dir, "serials", "#{vi_slug}.json")
-    VpBook.from_json(File.read(file))
+    VpBook.from_json(File.read(file_path(vi_slug)))
+  end
+
+  def file_path(name)
+    File.join(@dir, "#{name}.json")
   end
 
   def save(book : VpBook)
-    file = File.join(@dir, "serials", "#{book.vi_slug}.json")
-    File.write file, book.to_pretty_json
-
-    @books[book.vi_slug] = book
+    File.write file_path(book.vi_slug), book.to_pretty_json
     # TODO: recalculate indexes
+    @books[book.vi_slug] = book
   end
 
   def total

@@ -9,7 +9,7 @@ module Kernel
   @@chlists : Chlists? = nil
 
   def serials
-    @@serials ||= Serials.new("data/txt-out/")
+    @@serials ||= Serials.new
   end
 
   def chlists
@@ -42,10 +42,10 @@ module Kernel
 end
 
 book = Kernel.serials.get("chuế-tế")
-puts book
+puts book.to_pretty_json
 
-list = Kernel.chlists.get(book.favor_crawl, book.crawl_bsid.as(String))
-puts list.first(10)
+# list = Kernel.chlists.get(book.favor_crawl, book.crawl_bsid.as(String))
+# puts list.first(10)
 
 # text = Kernel.load_text("jx_la", "285", "10612432")
 # puts text
