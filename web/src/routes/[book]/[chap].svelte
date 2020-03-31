@@ -70,6 +70,8 @@
   // }
 
   function navigate(evt) {
+    if (evt.ctrlKey || evt.altKey || evt.shiftKey) return
+
     switch (evt.keyCode) {
       // case 32:
       //   if (scroll_ended) {

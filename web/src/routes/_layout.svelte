@@ -14,8 +14,10 @@
   }
 
   function navigate(evt) {
+    if (evt.ctrlKey || evt.altKey || evt.shiftKey) return
+
     switch (evt.keyCode) {
-      case 82:
+      case 73:
         _goto('/')
         evt.preventDefault()
         break
