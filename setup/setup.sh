@@ -10,5 +10,5 @@ sudo service nginx reload
 sudo systemctl daemon-reload
 sudo systemctl enable chivi-server.service
 sudo systemctl enable chivi-client.service
-sudo system chivi-server start
-sudo system chivi-client start
+sudo service chivi-server start
+sudo service chivi-client start
