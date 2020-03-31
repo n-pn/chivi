@@ -86,14 +86,10 @@ class CrInfo
       end
     end
 
-    TITLES = Set(String).new File.read_lines("data/txt-tmp/yousuu/titles.txt")
+    # TITLES = Set(String).new File.read_lines("data/txt-tmp/yousuu/titles.txt")
 
     def title=(title : String)
-      if TITLES.includes?(title)
-        @title = title
-      else
-        @title = title.sub(/\(.+\)$/, "")
-      end
+      @title = title.sub(/\(.+\)$/, "")
     end
 
     def author=(author : String)

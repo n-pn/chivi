@@ -11,10 +11,6 @@ class Serials
     @update = Array(Tuple(String, Int64)).from_json File.read(index_file("update"))
   end
 
-  def index_file(name)
-    File.join(@dir, "indexes", "#{name}.json")
-  end
-
   def [](vi_slug : String)
     get(vi_slug)
   end
@@ -23,20 +19,25 @@ class Serials
     save(book)
   end
 
-  def get(vi_slug : String)
-    @books[vi_slug] ||= load(vi_slug)
+  def get(name : String)
+    slug = CUtil.slugify(name, no_accent: true)
+    @books[slug] ||= load(slug)
   end
 
   def load(vi_slug : String)
-    VpBook.from_json(File.read(file_path(vi_slug)))
+    VpBook.from_json(File.read(serial_file(vi_slug)))
   end
 
-  def file_path(name)
-    File.join(@dir, "#{name}.json")
+  def serial_file(vi_slug)
+    File.join(@dir, "#{vi_slug}.json")
+  end
+
+  def index_file(name)
+    File.join(@dir, "indexes", "#{name}.json")
   end
 
   def save(book : VpBook)
-    File.write file_path(book.vi_slug), book.to_pretty_json
+    File.write serial_file(book.vi_slug), book.to_pretty_json
     # TODO: recalculate indexes
     @books[book.vi_slug] = book
   end

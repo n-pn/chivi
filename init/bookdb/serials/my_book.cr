@@ -192,8 +192,8 @@ class MyBook < VpBook
   USED_SLUGS = Set(String).new
 
   def pick_slug(vi_title, vi_author)
-    title_slug = CUtil.slugify(vi_title)
-    author_slug = CUtil.slugify(vi_author)
+    title_slug = CUtil.slugify(vi_title, no_accent: true)
+    author_slug = CUtil.slugify(vi_author, no_accent: true)
     full_slug = "#{title_slug}--#{author_slug}"
 
     if USED_SLUGS.includes?(title_slug) || title_slug.size < 5

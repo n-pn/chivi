@@ -22,7 +22,7 @@ class VpChap
   def translate!
     @vi_title = Engine.translate(@zh_title, title: true)
     @vi_volume = Engine.translate(@zh_volume, title: true)
-    @url_slug = CUtil.slugify(@vi_title)
+    @url_slug = CUtil.slugify(@vi_title, no_accent: true)
   end
 
   def slug(site)

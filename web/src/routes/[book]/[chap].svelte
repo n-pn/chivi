@@ -177,9 +177,9 @@
   }
 
   :global(cite) {
-    // text-transform: capitalize;
+    text-transform: capitalize;
     font-style: normal;
-    font-variant: small-caps;
+    // font-variant: small-caps;
   }
 
   footer {

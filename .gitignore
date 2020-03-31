@@ -1,7 +1,6 @@
 /docs/
 /lib/
 /bin/
-!/bin/server
 /.shards/
 *.dwarf
 /data
