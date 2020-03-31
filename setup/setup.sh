@@ -1,4 +1,4 @@
-ROOT=/web/chivi/setup/services
+ROOT=/home/nipin/web/chivi/setup/services
 
 sudo rm /etc/nginx/sites-enabled/chivi.conf
 sudo ln -s "$ROOT/chivi-nginx.conf" /etc/nginx/sites-enabled/chivi.conf
