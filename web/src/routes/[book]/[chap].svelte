@@ -47,13 +47,19 @@
 
 <script>
   import MIcon from '$mould/shared/MIcon.svelte'
+  import Header from '$mould/layout/Header.svelte'
+  import LinkBtn from '$mould/layout/header/LinkBtn.svelte'
+  import Wrapper from '$mould/layout/Wrapper.svelte'
 
   export let book_slug
   export let book_name
   export let prev_slug
   export let next_slug
+  export let curr_slug
 
   export let lines
+  export let chidx
+  export let total
 
   let cur = 0
 
@@ -122,8 +128,9 @@
 
   article {
     background-color: #fff;
+    margin: 1rem 0;
     @include radius;
-    @include shadow(2);
+    @include shadow(1);
 
     @include responsive-gap();
   }
@@ -184,42 +191,6 @@
     }
   }
 
-  .bread {
-    line-height: 1.5em;
-    padding: 0.75em 0;
-    // @include responsive-gap();
-    padding-left: 0;
-    padding-right: 0;
-    @include font-size(2);
-    @include screen-min(lg) {
-      @include font-size(3);
-    }
-  }
-
-  .crumb {
-    padding: 0;
-    margin: 0;
-    a,
-    & {
-      @include color(neutral, 5);
-    }
-
-    @include hover {
-      a {
-        cursor: pointer;
-        @include color(primary, 5);
-      }
-    }
-    &:after {
-      margin-left: 0.25rem;
-      @include color(neutral, 4);
-      content: '>';
-    }
-    &:last-child:after {
-      display: none;
-    }
-  }
-
   :global(v) {
     border-bottom: 1px solid transparent;
 
@@ -255,6 +226,11 @@
       }
     }
   }
+
+  .index {
+    padding: 0 0.375rem;
+    @include truncate(25vw);
+  }
 </style>
 
 <svelte:head>
@@ -263,53 +239,65 @@
 
 <svelte:window on:keydown={navigate} />
 
-<div class="bread">
-  <span class="crumb">
-    <a class="crumb-link" href="/">Home</a>
-  </span>
-  <span class="crumb">
-    <a class="crumb-link" href="/{book_slug}">{book_name}</a>
-  </span>
-  <span class="crumb">{render(lines[0])}</span>
+<Header>
+  <div class="left">
+    <LinkBtn href="/">
+      <img src="/logo.svg" alt="logo" />
+    </LinkBtn>
 
-</div>
+    <LinkBtn href="/{book_slug}" class="active">
+      <span>{book_name}</span>
+    </LinkBtn>
 
-<article>
-  {#each lines as line, idx}
-    {#if idx == 0}
-      <h1 class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
-        {@html render(line, idx == cur)}
-      </h1>
+    <!-- <LinkBtn href="/{book_slug}/{curr_slug}"> -->
+    <span class="index">Ch {chidx}/{total}</span>
+    <!-- </LinkBtn> -->
+  </div>
+  <div class="right">
+    <LinkBtn href="/{book_slug}/{curr_slug}?reload=true">
+      <MIcon m-icon="refresh-ccw" />
+    </LinkBtn>
+  </div>
+</Header>
+
+<Wrapper>
+  <article>
+    {#each lines as line, idx}
+      {#if idx == 0}
+        <h1 class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
+          {@html render(line, idx == cur)}
+        </h1>
+      {:else}
+        <p class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
+          {@html render(line, idx == cur)}
+        </p>
+      {/if}
+    {/each}
+  </article>
+
+  <footer>
+    {#if prev_slug}
+      <a m-button="line" href="/{book_slug}/{prev_slug}">
+        <MIcon m-icon="chevron-left" />
+        <span>Prev</span>
+      </a>
     {:else}
-      <p class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
-        {@html render(line, idx == cur)}
-      </p>
+      <a m-button="line" href="/{book_slug}">
+        <MIcon m-icon="list" />
+        <span>Home</span>
+      </a>
     {/if}
-  {/each}
-</article>
 
-<footer>
-  {#if prev_slug}
-    <a m-button="line" href="/{book_slug}/{prev_slug}">
-      <MIcon m-icon="chevron-left" />
-      <span>Prev</span>
-    </a>
-  {:else}
-    <a m-button="line" href="/{book_slug}">
-      <MIcon m-icon="list" />
-      <span>Home</span>
-    </a>
-  {/if}
-
-  {#if next_slug}
-    <a m-button="line primary" href="/{book_slug}/{next_slug}">
-      <span>Next</span>
-      <MIcon m-icon="chevron-right" />
-    </a>
-  {:else if prev_slug}
-    <a m-button="line" href="/{book_slug}">
-      <MIcon m-icon="list" />
-      <span>Home</span>
-    </a>
-  {/if}
-</footer>
+    {#if next_slug}
+      <a m-button="line primary" href="/{book_slug}/{next_slug}">
+        <span>Next</span>
+        <MIcon m-icon="chevron-right" />
+      </a>
+    {:else if prev_slug}
+      <a m-button="line" href="/{book_slug}">
+        <MIcon m-icon="list" />
+        <span>Home</span>
+      </a>
+    {/if}
+  </footer>
+</Wrapper>

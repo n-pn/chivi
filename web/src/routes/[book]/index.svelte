@@ -40,6 +40,11 @@
 </script>
 
 <script>
+  import MIcon from '$mould/shared/MIcon.svelte'
+  import Header from '$mould/layout/Header.svelte'
+  import LinkBtn from '$mould/layout/header/LinkBtn.svelte'
+  import Wrapper from '$mould/layout/Wrapper.svelte'
+
   export let book
   export let site
   export let chlist = []
@@ -51,49 +56,14 @@
       volumes[chap.vi_volume].push(chap)
     }
   }
-
-  import MIcon from '$mould/shared/MIcon.svelte'
 </script>
 
 <style type="text/scss">
-  .bread {
-    line-height: 2.5em;
-    // @include responsive-gap();
-    padding-left: 0;
-    padding-right: 0;
-    @include font-size(2);
-    @include screen-min(lg) {
-      @include font-size(3);
-    }
-  }
-
-  .crumb {
-    padding: 0;
-    margin: 0;
-    &,
-    a {
-      @include color(neutral, 5);
-    }
-
-    @include hover {
-      a {
-        cursor: pointer;
-        @include color(primary, 5);
-      }
-    }
-    &:after {
-      margin-left: 0.25rem;
-      @include color(neutral, 4);
-      content: '>';
-    }
-    &:last-child:after {
-      display: none;
-    }
-  }
-
   .info {
+    margin-top: 1rem;
     display: flex;
   }
+
   .cover {
     margin-right: auto;
     width: 30%;
@@ -212,73 +182,76 @@
   <title>{book.vi_title} - Chivi</title>
 </svelte:head>
 
-<div class="bread">
-  <span class="crumb">
-    <a class="crumb-link" href="/">Home</a>
-  </span>
-  <span class="crumb">
-    <a class="crumb-link" href="/?genre={book.vi_genre}">{book.vi_genre}</a>
-  </span>
-  <span class="crumb">{book.vi_title}</span>
+<Header>
+  <div class="left">
+    <LinkBtn href="/">
+      <img src="/logo.svg" alt="logo" />
+    </LinkBtn>
 
-</div>
+    <LinkBtn href="/{book.vi_slug}" class="active">
+      <span>{book.vi_title}</span>
+    </LinkBtn>
+  </div>
+</Header>
 
-<div class="info">
-  <picture class="cover">
-    {#each book.covers as cover}
-      <source srcset={cover} />
-    {/each}
-    <img src="img/nocover.png" alt={book.vi_title} />
-  </picture>
+<Wrapper>
+  <div class="info">
+    <picture class="cover">
+      {#each book.covers as cover}
+        <source srcset={cover} />
+      {/each}
+      <img src="img/nocover.png" alt={book.vi_title} />
+    </picture>
 
-  <div class="intro">
-    <h1 class="title">{book.vi_title} - {book.vi_author}</h1>
-    <h2 class="subtitle">{book.zh_title} - {book.zh_author}</h2>
-    <div class="metadata">
-      <span class="genre">
-        <MIcon m-icon="book" />
-        {book.vi_genre}
-      </span>
+    <div class="intro">
+      <h1 class="title">{book.vi_title} - {book.vi_author}</h1>
+      <h2 class="subtitle">{book.zh_title} - {book.zh_author}</h2>
+      <div class="metadata">
+        <span class="genre">
+          <MIcon m-icon="book" />
+          {book.vi_genre}
+        </span>
 
-      <span class="chap_count">
-        <MIcon m-icon="list" />
-        {book.chap_count} chương
-      </span>
+        <span class="chap_count">
+          <MIcon m-icon="list" />
+          {book.chap_count} chương
+        </span>
 
-      <span class="status">
-        <MIcon m-icon="activity" />
-        {book_status(book.status)}
-      </span>
+        <span class="status">
+          <MIcon m-icon="activity" />
+          {book_status(book.status)}
+        </span>
 
-      <time class="updated_at" datetime={new Date(book.updated_at)}>
-        <MIcon m-icon="clock" />
-        {relative_time(book.updated_at)}
-      </time>
+        <time class="updated_at" datetime={new Date(book.updated_at)}>
+          <MIcon m-icon="clock" />
+          {relative_time(book.updated_at)}
+        </time>
+
+      </div>
 
     </div>
-
   </div>
-</div>
 
-<h2>Giới thiệu:</h2>
-<div class="summary">
-  {#each book.vi_intro.split('\n') as line}
-    <p>{line}</p>
-  {/each}
-</div>
-
-<h2>Danh sách chương:</h2>
-{#each Object.entries(volumes) as [label, chlist]}
-  <h3>{label} ({chlist.length} chương)</h3>
-  <div class="chap-list">
-    {#each chlist as chap}
-      <div class="chap-item">
-        <a
-          class="chap-link"
-          href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
-          <div class="chap-title">{chap.vi_title}</div>
-        </a>
-      </div>
+  <h2>Giới thiệu:</h2>
+  <div class="summary">
+    {#each book.vi_intro.split('\n') as line}
+      <p>{line}</p>
     {/each}
   </div>
-{/each}
+
+  <h2>Danh sách chương:</h2>
+  {#each Object.entries(volumes) as [label, chlist]}
+    <h3>{label} ({chlist.length} chương)</h3>
+    <div class="chap-list">
+      {#each chlist as chap}
+        <div class="chap-item">
+          <a
+            class="chap-link"
+            href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
+            <div class="chap-title">{chap.vi_title}</div>
+          </a>
+        </div>
+      {/each}
+    </div>
+  {/each}
+</Wrapper>

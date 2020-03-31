@@ -12,6 +12,10 @@
 </script>
 
 <script>
+  import MIcon from '$mould/shared/MIcon.svelte'
+  import Header from '$mould/layout/Header.svelte'
+  import Wrapper from '$mould/layout/Wrapper.svelte'
+
   export let items = []
   export let total = 0
   export let page = 1
@@ -34,8 +38,6 @@
     for (let i = page_from; i <= page_upto; i++) arr.push(i)
     return arr
   }
-
-  import MIcon from '$mould/shared/MIcon.svelte'
 </script>
 
 <style lang="scss">
@@ -141,57 +143,61 @@
   <title>Chivi - Chinese to Vietname Machine Translation</title>
 </svelte:head>
 
-<div class="list">
-  {#each items as book}
-    <a class="book" href={book.vi_slug}>
-      <picture class="book-cover">
-        {#each book.covers as cover}
-          <source srcset={cover} />
-        {/each}
-        <img src="/img/nocover.png" alt={book.vi_title} />
-      </picture>
+<Header />
 
-      <div class="book-title">{book.vi_title}</div>
-      <div class="book-genre">{book.vi_genre}</div>
-      <div class="book-score">
-        <span>⭐</span>
-        {book.score}
-      </div>
-    </a>
-  {/each}
-</div>
+<Wrapper>
+  <div class="list">
+    {#each items as book}
+      <a class="book" href={book.vi_slug}>
+        <picture class="book-cover">
+          {#each book.covers as cover}
+            <source srcset={cover} />
+          {/each}
+          <img src="/img/nocover.png" alt={book.vi_title} />
+        </picture>
 
-<footer class="pagi">
+        <div class="book-title">{book.vi_title}</div>
+        <div class="book-genre">{book.vi_genre}</div>
+        <div class="book-score">
+          <span>⭐</span>
+          {book.score}
+        </div>
+      </a>
+    {/each}
+  </div>
 
-  {#if page == 1}
-    <button class="page" m-button="line" disabled>
-      <MIcon m-icon="chevrons-left" />
-    </button>
-  {:else}
-    <a class="page" m-button="line" href="/?page=1">
-      <MIcon m-icon="chevrons-left" />
-    </a>
-  {/if}
-
-  {#each pages as curr}
-    {#if page == curr}
-      <button class="page" m-button="line primary" disabled>
-        <span>{curr}</span>
+  <footer class="pagi">
+    {#if page == 1}
+      <button class="page" m-button="line" disabled>
+        <MIcon m-icon="chevrons-left" />
       </button>
     {:else}
-      <a class="page" m-button="line" href="/?page={curr}">
-        <span>{curr}</span>
+      <a class="page" m-button="line" href="/?page=1">
+        <MIcon m-icon="chevrons-left" />
       </a>
     {/if}
-  {/each}
-  {#if page == page_max}
-    <button class="page" m-button="line" disabled>
-      <MIcon m-icon="chevrons-right" />
-    </button>
-  {:else}
-    <a class="page" m-button="line" href="/?page={page_max}">
-      <MIcon m-icon="chevrons-right" />
-    </a>
-  {/if}
 
-</footer>
+    {#each pages as curr}
+      {#if page == curr}
+        <button class="page" m-button="line primary" disabled>
+          <span>{curr}</span>
+        </button>
+      {:else}
+        <a class="page" m-button="line" href="/?page={curr}">
+          <span>{curr}</span>
+        </a>
+      {/if}
+    {/each}
+    {#if page == page_max}
+      <button class="page" m-button="line" disabled>
+        <MIcon m-icon="chevrons-right" />
+      </button>
+    {:else}
+      <a class="page" m-button="line" href="/?page={page_max}">
+        <MIcon m-icon="chevrons-right" />
+      </a>
+    {/if}
+
+  </footer>
+
+</Wrapper>

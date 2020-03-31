@@ -105,7 +105,7 @@ module Chivi
   TITLE_RE_0 = /^(第?([#{HAN_NUM}]+|\d+)([集卷]))([,.:]?\s*)(.*)$/
   TITLE_RE_1 = /^(.*?)(\s*)(第【?([\d#{HAN_NUM}]+)】?([章节幕回]))([,.:]?\s*)(.*)$/
   TITLE_RE_2 = /^(.*?)(\s*)(第?【?([#{HAN_NUM}]+|\d+)】?([章节幕回]))([,.:]?\s*)(.*)$/
-  TITLE_RE_3 = /^([#{HAN_NUM}]+|\d+)([,.:]?\s*)(.*)$/
+  TITLE_RE_3 = /^([#{HAN_NUM}]+|\d+)([,.:\s]\s*)(.*)$/
 
   def cv_title(dicts : Dicts, input : String)
     res = Tokens.new

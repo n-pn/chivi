@@ -157,15 +157,15 @@ outputs.each_with_index do |output, idx|
   File.write "data/txt-out/serials/#{output.vi_slug}.json", output.to_pretty_json
 
   mapping[output.zh_slug] = output.vi_slug
-  tally << {output.vi_slug, output.tally}
-  score << {output.vi_slug, output.score}
-  votes << {output.vi_slug, output.votes}
-  update << {output.vi_slug, output.updated_at}
 
   if output.prefer_site.empty?
     missing << output.vi_slug
   else
     hastext << output.vi_slug
+    tally << {output.vi_slug, output.tally}
+    score << {output.vi_slug, output.score}
+    votes << {output.vi_slug, output.votes}
+    update << {output.vi_slug, output.updated_at}
   end
 end
 

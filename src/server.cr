@@ -96,7 +96,10 @@ module Server
       book_name: book.vi_title,
       prev_slug: prev_chap.try(&.slug(site)),
       next_slug: next_chap.try(&.slug(site)),
+      curr_slug: curr_chap.try(&.slug(site)),
       lines:     Kernel.load_text(site, bsid, csid),
+      chidx:     cidx + 1,
+      total:     list.size,
     }.to_json env.response
   end
 
