@@ -32,6 +32,10 @@ module Kernel
       paras
     else
       crawler = CrText.new(site, bsid, csid)
+
+      FileUtils.mkdir_p File.dirname(crawler.html_file)
+      FileUtils.mkdir_p File.dirname(crawler.text_file)
+
       crawler.crawl!(persist: true)
       lines = [crawler.title].concat(crawler.paras)
 
