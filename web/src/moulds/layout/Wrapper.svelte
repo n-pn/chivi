@@ -4,7 +4,7 @@
     width: 54rem;
     max-width: 100%;
 
-    padding: 0;
+    padding: 0 0.5rem;
 
     @include screen-min(sm) {
       padding: 0 0.75rem;

@@ -1,6 +1,6 @@
 {
-  "name": "TODO",
-  "description": "TODO",
+  "name": "chivi",
+  "description": "chivi.xyz",
   "version": "0.0.1",
   "scripts": {
     "dev": "sapper dev",
