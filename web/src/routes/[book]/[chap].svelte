@@ -127,10 +127,10 @@
   }
 
   article {
-    background-color: #fff;
-    margin: 0.75rem 0;
-    @include radius;
-    @include shadow(1);
+    // background-color: #fff;
+    // margin: 0.75rem 0;
+    // @include radius;
+    // @include shadow(1);
 
     @include responsive-gap();
   }

@@ -1,2 +1,2 @@
-/snap/bin/shards build --release server
+shards build --release server
 cd web && yarn build
