@@ -60,7 +60,6 @@
 
 <style type="text/scss">
   .info {
-    margin-top: 1rem;
     display: flex;
   }
 
@@ -74,7 +73,7 @@
   }
 
   .intro {
-    padding-left: 1rem;
+    padding-left: 0.75rem;
     margin-left: auto;
     width: 70%;
 
@@ -115,17 +114,17 @@
   }
 
   h2 {
-    margin-top: 1rem;
+    margin-top: 0.75rem;
   }
 
   h3 {
-    margin-top: 1rem;
+    margin-top: 0.75rem;
     padding-left: 0.75rem;
   }
 
   .chap-list {
-    margin-top: 0.5rem;
-    // margin: 1rem auto;
+    margin-top: 0.25rem;
+    // margin: .75rem auto;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
     grid-gap: 0 0.5rem;
@@ -135,7 +134,16 @@
     &:nth-child(odd) {
       background-color: #fff;
     }
+
+    @include border($side: bottom);
+    &:first-child {
+      @include border($side: top);
+    }
+
     @include screen-min(sm) {
+      &:nth-child(2) {
+        @include border($side: top);
+      }
       &:nth-child(4n),
       &:nth-child(4n + 1) {
         background-color: #fff;
@@ -151,7 +159,7 @@
   .chap-link {
     display: block;
     @include color(neutral, 7);
-    @include border($side: bottom);
+
     padding: 0.5rem 0.75rem;
 
     @include hover {
@@ -175,6 +183,12 @@
 
   .chap-title {
     @include truncate();
+  }
+
+  .info,
+  h2,
+  .summary {
+    padding: 0 0.75rem;
   }
 </style>
 

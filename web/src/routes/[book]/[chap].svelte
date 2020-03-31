@@ -128,7 +128,7 @@
 
   article {
     background-color: #fff;
-    margin: 1rem 0;
+    margin: 0.75rem 0;
     @include radius;
     @include shadow(1);
 
@@ -183,7 +183,7 @@
   }
 
   footer {
-    margin: 1rem 0;
+    margin: 0.75rem 0;
     display: flex;
     justify-content: center;
     [m-button] {

@@ -43,7 +43,8 @@
 <style lang="scss">
   .list {
     max-width: 100%;
-    margin: 1rem auto;
+    margin: 0 auto;
+    padding: 0.75rem;
 
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));

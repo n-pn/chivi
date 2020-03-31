@@ -32,6 +32,18 @@
     :global(&.logo) {
       text-transform: uppercase;
       letter-spacing: 0.1em;
+
+      > :global(img) {
+        display: inline-block;
+        margin: 0.25rem 0;
+        // margin-top: -0.125rem;
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+
+      > :global(span) {
+        margin-left: 0.25rem;
+      }
     }
 
     :global(&.active) {
