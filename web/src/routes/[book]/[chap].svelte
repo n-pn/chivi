@@ -131,6 +131,7 @@
     // margin: 0.75rem 0;
     // @include radius;
     // @include shadow(1);
+    word-wrap: break-word;
 
     @include responsive-gap();
   }

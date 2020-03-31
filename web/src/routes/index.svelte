@@ -20,7 +20,7 @@
   export let total = 0
   export let page = 1
 
-  $: page_max = total / 20
+  $: page_max = Math.floor((total - 1) / 20) + 1
   $: pages = make_pages(page, page_max)
 
   function make_pages(page_now, page_max) {
