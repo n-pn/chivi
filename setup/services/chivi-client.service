@@ -9,6 +9,7 @@ Restart=always
 RestartSec=5
 User=nipin
 Environment=PORT=5100
+Environment=KEMAL_ENV=production
 WorkingDirectory=/home/nipin/web/chivi/web
 ExecStart=/usr/bin/node __sapper__/build
 [Install]
