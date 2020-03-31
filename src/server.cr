@@ -19,7 +19,7 @@ rescue
 end
 
 module Server
-  Kemal.config.port = 4000
+  Kemal.config.port = 5110
 
   serve_static false
 
