@@ -188,7 +188,12 @@
   .info,
   h2,
   .summary {
-    padding: 0 0.75rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .info {
+    padding-top: 0.75rem;
   }
 </style>
 

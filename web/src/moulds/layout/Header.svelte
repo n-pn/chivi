@@ -39,7 +39,7 @@
   }
   nav {
     display: flex;
-    padding: $gutter;
+    padding: $gutter 0.75rem;
     line-height: $inner-height;
     color: #fff;
 

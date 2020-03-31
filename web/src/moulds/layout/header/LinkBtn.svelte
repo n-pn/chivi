@@ -10,8 +10,9 @@
   a {
     display: inline-flex;
     // max-width: 10rem;
-    text-decoration: none;
+    cursor: pointer;
 
+    text-decoration: none;
     padding: 0 0.5rem;
     height: $height;
 
