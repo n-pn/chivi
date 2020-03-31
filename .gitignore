@@ -4,5 +4,4 @@
 !/bin/server
 /.shards/
 *.dwarf
-/.dic/
-/.txt/
+/data/
