@@ -16,7 +16,18 @@ module Kernel
     @@chlists ||= Chlists.new
   end
 
-  def load_book(book : String, site : String?)
+  def load_book(slug : String, site : String? = nil)
+    book = serials.get(slug)
+    return {nil, "", "", [] of VpChap} unless book
+
+    site = book.prefer_site if site.nil?
+    return {book, site, "", [] of VpChap} if site.empty?
+
+    bsid = book.crawl_links[site]?
+    return {book, site, "", [] of VpChap} if bsid.nil?
+
+    chlist = chlists.get(site, bsid)
+    {book, site, bsid, chlist}
   end
 
   def load_text(site : String, bsid : String, csid : String, user = "admin")

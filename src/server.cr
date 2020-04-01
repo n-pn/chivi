@@ -42,53 +42,42 @@ module Server
 
   get "/api/books/:slug" do |env|
     slug = env.params.url["slug"]
-    book = Kernel.serials.get(slug)
+    book, site, bsid, chlist = Kernel.load_book(slug)
 
     halt env, status_code: 404, response: ({msg: "Book not found"}).to_json if book.nil?
 
-    site = book.prefer_site
-    bsid = book.prefer_bsid
-
-    chlist = Kernel.chlists.get(site, bsid)
-    {book: book, site: site, chlist: chlist}.to_json env.response
+    {book: book, site: site, bsid: bsid, chlist: chlist}.to_json env.response
   end
 
   get "/api/books/:slug/:site" do |env|
     slug = env.params.url["slug"]
-    book = Kernel.serials.get(slug)
+    site = env.params.url["site"]
+
+    book, site, bsid, chlist = Kernel.load_book(slug, site)
 
     halt env, status_code: 404, response: ({msg: "Book not found"}).to_json if book.nil?
+    halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json if chlist.empty?
 
-    site = env.params.url["site"]
-    bsid = book.crawl_links[site]?
-
-    halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json if bsid.nil?
-
-    chlist = Kernel.chlists.get(site, bsid)
-    {book: book, site: site, chlist: chlist}.to_json env.response
+    {book: book, site: site, bsid: bsid, chlist: chlist}.to_json env.response
   end
 
   get "/api/books/:slug/:site/:chap" do |env|
     slug = env.params.url["slug"]
-    book = Kernel.serials.get(slug)
+    site = env.params.url["site"]
+
+    book, site, bsid, chlist = Kernel.load_book(slug, site)
 
     halt env, status_code: 404, response: ({msg: "Book not found"}).to_json if book.nil?
-
-    site = env.params.url["site"]
-    bsid = book.crawl_links[site]?
-
-    halt env, status_code: 404, response: ({msg: "Site not found"}).to_json if bsid.nil?
-
-    list = Kernel.chlists.get(site, bsid)
+    halt env, status_code: 404, response: ({msg: "Site not found"}).to_json if chlist.empty?
 
     csid = env.params.url["chap"]
-    cidx = list.index(&.csid.==(csid))
+    cidx = chlist.index(&.csid.==(csid))
 
     halt env, status_code: 404, response: ({msg: "Chap not found"}) if cidx.nil?
 
-    curr_chap = list[cidx]
-    prev_chap = list[cidx - 1] if cidx > 0
-    next_chap = list[cidx + 1] if cidx < list.size - 1
+    curr_chap = chlist[cidx]
+    prev_chap = chlist[cidx - 1] if cidx > 0
+    next_chap = chlist[cidx + 1] if cidx < chlist.size - 1
 
     {
       book_slug: book.vi_slug,
@@ -98,7 +87,7 @@ module Server
       curr_slug: curr_chap.try(&.slug(site)),
       lines:     Kernel.load_text(site, bsid, csid),
       chidx:     cidx + 1,
-      total:     list.size,
+      total:     chlist.size,
     }.to_json env.response
   end
 

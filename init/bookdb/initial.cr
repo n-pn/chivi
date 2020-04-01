@@ -3,6 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "./serials/*"
+require "../../src/kernel/chlists"
 
 files = Dir.glob("data/txt-inp/yousuu/serials/*.json")
 puts "- input: #{files.size} entries".colorize(:blue)
@@ -29,20 +30,11 @@ end
 
 # File.write "data/txt-tmp/existed.txt", inputs.keys.join("\n")
 
-CACHE_TIME = ((ARGV[0]? || "10").to_i? || 10).hours
+CACHE_TIME = ((ARGV[0]? || "10").to_i? || 10).days
 
-def merge_other(target : MyBook, site : String, bsid : String, label = "0/0") : MyBook
-  crawler = CrInfo.new(site, bsid, target.updated_at)
-
-  if site == "zhwenpg" || crawler.cached?(CACHE_TIME) || !target.prefer_site.empty?
-    crawler.load_cached!
-  else
-    crawler.reset_cache(html: true)
-    crawler.mkdirs!
-    crawler.crawl!(label: label)
-  end
-
-  serial = crawler.serial
+def merge_other(target : MyBook, site : String, bsid : String) : MyBook
+  serial_file = "data/txt-tmp/serials/#{site}/#{bsid}.json"
+  serial = CrInfo::Serial.from_json(File.read(serial_file))
 
   if cover = serial.cover
     target.covers << cover unless cover.empty?
@@ -59,7 +51,6 @@ def merge_other(target : MyBook, site : String, bsid : String, label = "0/0") : 
   target.zh_tags.concat(serial.tags)
 
   target.status = serial.status if target.status < serial.status
-
   target.chap_count = serial.chap_count if target.chap_count == 0
 
   target.crawl_links[site] = bsid
@@ -95,7 +86,7 @@ inputs.map do |slug, books|
 
   sitemaps.each do |site, map|
     if bsid = map[book.zh_slug]?
-      book = merge_other(book, site, bsid, "#{outputs.size}/#{inputs.size}")
+      book = merge_other(book, site, bsid)
     end
   end
 
@@ -125,7 +116,7 @@ files.each_with_index do |file, idx|
 
   sitemaps.each do |site, map|
     if bsid = map[book.zh_slug]?
-      book = merge_other(book, site, bsid, "#{idx + 1}/#{files.size}")
+      book = merge_other(book, site, bsid)
     end
   end
 
@@ -140,6 +131,8 @@ File.write "data/txt-tmp/serials.json", outputs.to_pretty_json
 FileUtils.rm_rf("data/txt-out/serials")
 FileUtils.mkdir_p("data/txt-out/serials")
 FileUtils.mkdir_p("data/txt-out/serials/indexes")
+FileUtils.rm_rf("data/txt-out/chlists")
+FileUtils.mkdir_p("data/txt-out/chlists")
 
 puts "- converting...".colorize(:cyan)
 
@@ -152,22 +145,40 @@ score = [] of Tuple(String, Float64)
 votes = [] of Tuple(String, Int32)
 update = [] of Tuple(String, Int64)
 
-outputs.each_with_index do |output, idx|
-  puts "- <#{idx + 1}/#{outputs.size}> [#{output.zh_slug}]".colorize(:blue)
+chlists = Chlists.new
 
-  output.translate!
-  File.write "data/txt-out/serials/#{output.vi_slug}.json", output.to_pretty_json
+outputs.each_with_index do |book, idx|
+  book.translate!
+  File.write "data/txt-out/serials/#{book.vi_slug}.json", book.to_pretty_json
 
-  mapping[output.zh_slug] = output.vi_slug
+  slug = book.vi_slug
+  site = book.prefer_site
+  bsid = book.prefer_bsid
 
-  if output.prefer_site.empty?
-    missing << output.vi_slug
+  mapping[book.zh_slug] = slug
+  if site.empty?
+    puts "- <#{idx + 1}/#{outputs.size}> [#{slug}]".colorize(:blue)
+    missing << slug
   else
-    hastext << output.vi_slug
-    tally << {output.vi_slug, output.tally}
-    score << {output.vi_slug, output.score}
-    votes << {output.vi_slug, output.votes}
-    update << {output.vi_slug, output.updated_at}
+    hastext << slug
+    tally << {slug, book.tally}
+    score << {slug, book.score}
+    votes << {slug, book.votes}
+    update << {slug, book.updated_at}
+
+    crawler = CrInfo.new(site, bsid, book.updated_at)
+
+    if site == "zhwenpg" || crawler.cached?(CACHE_TIME)
+      crawler.load_cached!(serial: true, chlist: true)
+    else
+      crawler.reset_cache(html: true)
+      crawler.mkdirs!
+      crawler.crawl!(label: "#{idx + 1}/#{outputs.size}")
+    end
+
+    chlist = crawler.chlist
+    puts "- <#{idx + 1}/#{outputs.size}> [#{slug}/#{site}/#{bsid}]: #{chlist.size} chapters".colorize(:blue)
+    chlists.save(site, bsid, chlist)
   end
 end
 
