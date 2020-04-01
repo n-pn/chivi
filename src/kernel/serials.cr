@@ -2,13 +2,17 @@ require "../engine"
 require "../models/*"
 
 class Serials
+  alias Index = Array(Tuple(String, Int64 | Float64))
+
   def initialize(@dir = "data/txt-out/serials")
     @books = {} of String => VpBook
 
-    @tally = Array(Tuple(String, Float64)).from_json File.read(index_file("tally"))
-    @score = Array(Tuple(String, Float64)).from_json File.read(index_file("score"))
-    @votes = Array(Tuple(String, Int32)).from_json File.read(index_file("votes"))
-    @update = Array(Tuple(String, Int64)).from_json File.read(index_file("update"))
+    @sorts = {
+      tally:  Index.from_json(File.read(index_file("tally"))),
+      score:  Index.from_json(File.read(index_file("score"))),
+      votes:  Index.from_json(File.read(index_file("votes"))),
+      update: Index.from_json(File.read(index_file("update"))),
+    }
   end
 
   def [](vi_slug : String)
@@ -36,13 +40,21 @@ class Serials
   end
 
   def save(book : VpBook)
-    File.write serial_file(book.vi_slug), book.to_pretty_json
+    slug = book.vi_slug
+    File.write(serial_file(slug), book.to_pretty_json)
+
     # TODO: recalculate indexes
-    @books[book.vi_slug] = book
+    if idx = @sorts[:update].index(&.[0].==(slug))
+      @sorts[:update][idx] = {slug, book.updated_at}
+      @sorts[:update].sort_by!(&.[1])
+      File.write(index_file("update"), @sorts[:update].to_pretty_json)
+    end
+
+    @books[slug] = book
   end
 
   def total
-    @tally.size
+    @sorts[:tally].size
   end
 
   def list(limit = 20, offset = 0, sort = "updated_at")
@@ -52,23 +64,23 @@ class Serials
   def sort_by(sort : String = "updated_at")
     case sort
     when "tally"
-      @tally
+      @sorts[:tally]
     when "^tally"
-      @tally.reverse
+      @sorts[:tally].reverse
     when "score"
-      @score
+      @sorts[:score]
     when "^score"
-      @score.reverse
+      @sorts[:score].reverse
     when "votes"
-      @votes
+      @sorts[:votes]
     when "^votes"
-      @votes.reverse
+      @sorts[:votes].reverse
     when "updated_at"
-      @update
+      @sorts[:update]
     when "^updated_at"
-      @update.reverse
+      @sorts[:update].reverse
     else
-      @update
+      @sorts[:update]
     end
   end
 end

@@ -49,12 +49,15 @@
   export let site
   export let chlist = []
 
-  let volumes = {}
-  $: {
+  $: volumes = map_volumes(chlist)
+
+  function map_volumes(chlist) {
+    let volumes = {}
     for (const chap of chlist) {
       volumes[chap.vi_volume] = volumes[chap.vi_volume] || []
       volumes[chap.vi_volume].push(chap)
     }
+    return volumes
   }
 </script>
 
@@ -195,6 +198,29 @@
   .info {
     padding-top: 0.75rem;
   }
+
+  .tabs {
+    display: flex;
+    line-height: 2rem;
+    height: 2rem;
+  }
+
+  .site {
+    display: inline-block;
+    text-transform: uppercase;
+    margin-left: 0.5rem;
+    padding: 0 0.5rem;
+    font-weight: 500;
+    @include color(neutral, 7);
+    @include font-size(2);
+
+    @include border();
+    @include radius();
+    &._active {
+      border-color: color(primary, 5);
+      @include color(primary, 5);
+    }
+  }
 </style>
 
 <svelte:head>
@@ -258,7 +284,17 @@
     {/each}
   </div>
 
-  <h2>Danh sách chương:</h2>
+  <h2 class="tabs">
+    <span>Mục lục:</span>
+    {#each Object.keys(book.crawl_links) as crawl}
+      <a
+        class="site"
+        class:_active={site == crawl}
+        href="/{book.vi_slug}?site={crawl}">
+        {crawl}
+      </a>
+    {/each}
+  </h2>
   {#each Object.entries(volumes) as [label, chlist]}
     <h3>{label} ({chlist.length} chương)</h3>
     <div class="chap-list">

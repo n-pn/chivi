@@ -16,6 +16,17 @@ module Kernel
     @@chlists ||= Chlists.new
   end
 
+  def update_time(status)
+    case status
+    when 0
+      1.hours
+    when 1
+      1.days
+    else
+      1.weeks
+    end
+  end
+
   def load_book(slug : String, site : String? = nil)
     slug = CUtil.unaccent(slug).tr(" ", "-")
     book = serials.get(slug)
@@ -27,7 +38,24 @@ module Kernel
     bsid = book.crawl_links[site]?
     return {book, site, "", [] of VpChap} if bsid.nil?
 
-    chlist = chlists.get(site, bsid)
+    crawler = CrInfo.new(site, bsid, book.updated_at)
+
+    unless crawler.cached?(update_time(book.status))
+      crawler.reset_cache
+      crawler.mkdirs!
+      crawler.crawl!(persist: true)
+
+      # TODO: extract to vp_book.cr or serials.cr
+      serial = crawler.serial
+      book.status = serial.status if book.status < serial.status
+      book.updated_at = serial.updated_at if book.updated_at < serial.updated_at
+      serials.save(book)
+
+      chlist = chlists.save(site, bsid, crawler.chlist)
+    else
+      chlist = chlists.get(site, bsid)
+    end
+
     {book, site, bsid, chlist}
   end
 

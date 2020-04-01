@@ -56,7 +56,7 @@ module Server
     book, site, bsid, chlist = Kernel.load_book(slug, site)
 
     halt env, status_code: 404, response: ({msg: "Book not found"}).to_json if book.nil?
-    halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json if chlist.empty?
+    halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json if bsid.empty?
 
     {book: book, site: site, bsid: bsid, chlist: chlist}.to_json env.response
   end
