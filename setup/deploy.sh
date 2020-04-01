@@ -1,2 +1,2 @@
-shards build --release server && sudo service chivi-server restart
-cd web && yarn build && sudo service chivi-client restart
+shards build --release server && sudo systemctl restart chivi-server.service
+cd web && yarn build && sudo systemctl restart chivi-client.service
