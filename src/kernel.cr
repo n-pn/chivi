@@ -40,6 +40,7 @@ module Kernel
       lines = [crawler.title].concat(crawler.paras)
 
       paras = Engine.convert(lines, mode: :mixed, book: nil, user: user)
+      FileUtils.mkdir_p File.dirname(file_out)
       File.write(file_out, paras.to_json)
 
       paras
