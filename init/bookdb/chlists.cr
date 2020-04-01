@@ -12,12 +12,14 @@ puts "- Save chlists (cache_time: #{CACHE_TIME})...".colorize(:cyan)
 
 chlists = Chlists.new
 
-files = Dir.glob("data/txt-out/serials/*.json")
-files.each_with_index do |file, idx|
-  book = VpBook.from_json(File.read(file))
+FileUtils.rm_rf("data/txt-out/chlists")
+FileUtils.mkdir_p("data/txt-out/chlists")
+
+books = Array(VpBook).from_json(File.read("data/txt-out/serials.json"))
+books.each_with_index do |book, idx|
   next if book.prefer_site.empty?
   list = chlists.get(book, time: CACHE_TIME)
-  puts "- <#{idx + 1}/#{files.size}> [#{book.vi_slug}/#{book.prefer_site}/#{book.prefer_bsid}]: #{list.size} chapters".colorize(:blue)
+  puts "- <#{idx + 1}/#{books.size}> [#{book.vi_slug}/#{book.prefer_site}/#{book.prefer_bsid}]: #{list.size} chapters".colorize(:blue)
 rescue err
   puts err
 end

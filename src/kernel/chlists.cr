@@ -9,7 +9,7 @@ class Chlists
   def initialize(@dir = "data/txt-out/chlists")
   end
 
-  def get(book : VpBook, time = 12.days)
+  def get(book : VpBook, time = 5.hours)
     site = book.prefer_site
     bsid = book.prefer_bsid
     return [] of VpChap if bsid.empty?
@@ -17,7 +17,7 @@ class Chlists
     get(site, bsid.as(String), time)
   end
 
-  def get(site : String, bsid : String, time = 12.days)
+  def get(site : String, bsid : String, time = 5.hours)
     file_out = File.join(@dir, site, "#{bsid}.json")
 
     if CrUtil.outdated?(file_out, time)
@@ -28,6 +28,7 @@ class Chlists
         crawler.load_cached!(chlist: true)
       else
         crawler.reset_cache
+        crawler.mkdirs!
         crawler.crawl!(persist: true)
       end
 

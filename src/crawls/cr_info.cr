@@ -136,6 +136,12 @@ class CrInfo
     @chlist = ChList.new
   end
 
+  def mkdirs!
+    FileUtils.mkdir_p(File.dirname(@html_file))
+    FileUtils.mkdir_p(File.dirname(@serial_file))
+    FileUtils.mkdir_p(File.dirname(@chlist_file))
+  end
+
   def cached?(time = 30.minutes, require_html = false)
     return false if CrUtil.outdated?(@serial_file, time)
     return false if CrUtil.outdated?(@chlist_file, time)

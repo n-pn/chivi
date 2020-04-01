@@ -38,6 +38,7 @@ def merge_other(target : MyBook, site : String, bsid : String, label = "0/0") : 
     crawler.load_cached!
   else
     crawler.reset_cache(html: true)
+    crawler.mkdirs!
     crawler.crawl!(label: label)
   end
 
@@ -136,8 +137,9 @@ puts "- output: #{outputs.size} entries".colorize(:cyan)
 outputs.sort_by!(&.tally.-)
 File.write "data/txt-tmp/serials.json", outputs.to_pretty_json
 
-# FileUtils.rm_rf("data/txt-out/serials")
+FileUtils.rm_rf("data/txt-out/serials")
 FileUtils.mkdir_p("data/txt-out/serials")
+FileUtils.mkdir_p("data/txt-out/serials/indexes")
 
 puts "- converting...".colorize(:cyan)
 
