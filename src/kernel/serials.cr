@@ -20,8 +20,7 @@ class Serials
   end
 
   def get(name : String)
-    slug = CUtil.slugify(name, no_accent: true)
-    @books[slug] ||= load(slug)
+    @books[name] ||= load(name)
   end
 
   def load(vi_slug : String)

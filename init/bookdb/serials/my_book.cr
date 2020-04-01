@@ -202,7 +202,10 @@ class MyBook < VpBook
       output = title_slug
     end
 
-    raise "ERROR!!!!" if USED_SLUGS.includes?(output)
+    if USED_SLUGS.includes?(output)
+      puts "USED SLUG #{output}"
+      exit 1
+    end
 
     USED_SLUGS << output
     output

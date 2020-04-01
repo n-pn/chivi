@@ -11,8 +11,11 @@ targets:
   sitemap:
     main: init/bookdb/sitemap.cr
 
-  initial:
-    main: init/bookdb/initial.cr
+  combine:
+    main: init/bookdb/combine.cr
+
+  convert:
+    main: init/bookdb/convert.cr
 
 crystal: 0.33.0
 

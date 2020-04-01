@@ -17,6 +17,7 @@ module Kernel
   end
 
   def load_book(slug : String, site : String? = nil)
+    slug = CUtil.unaccent(slug).tr(" ", "-")
     book = serials.get(slug)
     return {nil, "", "", [] of VpChap} unless book
 
