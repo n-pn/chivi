@@ -189,8 +189,8 @@
   }
 
   .info,
-  h2,
-  .summary {
+  .summary,
+  .content {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }
@@ -200,17 +200,33 @@
   }
 
   .tabs {
-    display: flex;
+    display: block;
+    margin: 0.75rem;
+    padding-top: 0.375rem;
+    // display: flex;
+    // height: 2rem;
+    @include border($side: top);
     line-height: 2rem;
-    height: 2rem;
+
+    @include clearfix;
+
+    > span {
+      float: left;
+      margin-top: 0.375rem;
+      @include font-size(5);
+      font-weight: 500;
+      // min-width: 6rem;
+    }
   }
 
   .site {
-    display: inline-block;
+    float: left;
     text-transform: uppercase;
-    margin-left: 0.5rem;
+    margin-left: 0.375rem;
+    margin-top: 0.375rem;
     padding: 0 0.5rem;
     font-weight: 500;
+    cursor: pointer;
     @include color(neutral, 7);
     @include font-size(2);
 
@@ -220,6 +236,10 @@
       border-color: color(primary, 5);
       @include color(primary, 5);
     }
+  }
+
+  .label {
+    @include color(neutral, 6);
   }
 </style>
 
@@ -250,7 +270,7 @@
 
     <div class="intro">
       <h1 class="title">{book.vi_title} - {book.vi_author}</h1>
-      <h2 class="subtitle">{book.zh_title} - {book.zh_author}</h2>
+      <h2 class="subtitle">{book.zh_title} — {book.zh_author}</h2>
       <div class="metadata">
         <span class="genre">
           <MIcon m-icon="book" />
@@ -277,15 +297,15 @@
     </div>
   </div>
 
-  <h2>Giới thiệu:</h2>
   <div class="summary">
+    <h2>Giới thiệu:</h2>
     {#each book.vi_intro.split('\n') as line}
       <p>{line}</p>
     {/each}
   </div>
 
-  <h2 class="tabs">
-    <span>Mục lục:</span>
+  <div class="tabs">
+    <span>Chọn nguồn:</span>
     {#each Object.keys(book.crawl_links) as crawl}
       <a
         class="site"
@@ -294,9 +314,18 @@
         {crawl}
       </a>
     {/each}
+  </div>
+
+  <h2 class="content">
+    Mục lục
+    <span class="label">({chlist.length} chương)</span>
   </h2>
+
   {#each Object.entries(volumes) as [label, chlist]}
-    <h3>{label} ({chlist.length} chương)</h3>
+    <h3>
+      {label}
+      <span class="label">({chlist.length} chương)</span>
+    </h3>
     <div class="chap-list">
       {#each chlist as chap}
         <div class="chap-item">

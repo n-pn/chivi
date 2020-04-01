@@ -16,7 +16,7 @@
     padding: 0 0.5rem;
     height: $height;
 
-    // font-variant: small-caps;
+    text-transform: uppercase;
     font-weight: 500;
 
     @include color(neutral, 2);
@@ -28,23 +28,6 @@
     @include hover() {
       @include bgcolor(primary, 4);
       color: #fff;
-    }
-
-    :global(&.logo) {
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-
-      > :global(img) {
-        display: inline-block;
-        margin: 0.25rem 0;
-        // margin-top: -0.125rem;
-        width: 1.75rem;
-        height: 1.75rem;
-      }
-
-      > :global(span) {
-        margin-left: 0.25rem;
-      }
     }
 
     :global(&.active) {
@@ -67,6 +50,23 @@
       // margin-top: -0.125rem;
       width: 1.25rem;
       height: 1.25rem;
+    }
+
+    :global(&.logo) {
+      letter-spacing: 0.1em;
+      @include font-size(3);
+
+      > :global(img) {
+        display: inline-block;
+        margin: 0.25rem 0;
+        // margin-top: -0.25rem;
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+
+      > :global(span) {
+        margin-left: 0.25rem;
+      }
     }
   }
 </style>
