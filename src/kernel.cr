@@ -48,8 +48,8 @@ module Kernel
       # TODO: extract to vp_book.cr or serials.cr
       serial = crawler.serial
       book.status = serial.status unless book.status > serial.status
-      book.chap_count = serial.chap_count
-      book.updated_at = serial.updated_at
+      book.chap_count = serial.chap_count unless book.chap_count > serial.chap_count
+      book.updated_at = serial.updated_at unless book.updated_at > serial.updated_at
       serials.save(book)
 
       chlist = chlists.save(site, bsid, crawler.chlist)

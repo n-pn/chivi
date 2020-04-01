@@ -3,7 +3,7 @@ require "../../src/crawls/cr_text.cr"
 
 def test_info(site, bsid)
   crawler = CrInfo.new(site, bsid)
-
+  crawler.mkdirs!
   crawler.crawl!(persist: false)
   puts crawler.serial.to_pretty_json
   puts crawler.chlist.first(8).to_pretty_json
@@ -11,11 +11,15 @@ end
 
 def test_text(site, bsid, csid)
   crawler = CrText.new(site, bsid, csid)
-  crawler.crawl!(persist: false)
+  crawler.reset_cache(html: false)
+  crawler.mkdirs!
+  crawler.crawl!(persist: true)
 
   # pp crawler.html
   pp crawler.title
   pp crawler.paras
+
+  crawler
 end
 
 # test_info("jx_la", "156")
@@ -30,10 +34,10 @@ end
 
 # test_text("jx_la", "7", "3666")
 # test_text("jx_la", "75722", "4089610")
-test_text("jx_la", "101533", "5208291")
+# test_text("jx_la", "101533", "5208291")
 # test_text("nofff", "6363", "23951830")
 # test_text("69shu", "30062", "22206999")
-# test_text("hetushu", "1619", "1087468")
+# test_text("hetushu", "1640", "1099716")
 # test_text("rengshu", "4243", "1408503")
 # test_text("xbiquge", "51918", "34575059")
 # test_text("zhwenpg", "aun4tm", "521645")
@@ -42,3 +46,5 @@ test_text("jx_la", "101533", "5208291")
 # test_text("paoshu8", "1986", "1447835")
 
 # puts crawler.chapters.to_pretty_json
+
+test_text("hetushu", "1640", "1099716")

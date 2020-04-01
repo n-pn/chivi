@@ -21,6 +21,11 @@ class CrText
     @paras = [] of String
   end
 
+  def mkdirs!
+    FileUtils.mkdir_p File.dirname(@html_file)
+    FileUtils.mkdir_p File.dirname(@text_file)
+  end
+
   def cached?(require_html : Bool = false)
     return false unless File.exists?(@text_file)
     !(require_html && !File.exists?(@html_file))
@@ -65,10 +70,24 @@ class CrText
       @title = extract_text(doc, "h1") || @title
       @paras = extract_body(doc, ".yd_text2")
     when "hetushu"
-      @title = extract_text(doc, ".h2") || @title
-      @paras = doc.css("#content > div").map do |node|
-        node.inner_text(deep: false).tr(" 　", " ")
-      end.to_a
+      @title = doc.css("#content .h2").first.inner_text
+
+      lines = doc.css("#content div:not([class])").map(&.inner_text(deep: false)).to_a
+      @paras = Array(String).new(lines.size, "")
+
+      meta = doc.css("meta[name=client]").first.attributes["content"].as(String)
+      jdx = 0
+      Base64.decode_string(meta).split(/[A-Z]+%/).map_with_index do |ord, idx|
+        ord = ord.to_i
+        if ord < 5
+          jdx += 1
+        else
+          ord -= jdx
+        end
+        @paras[ord] = lines[idx]
+      end
+
+      # @paras = lines
     when "zhwenpg"
       @title = extract_text(doc, "h2") || @title
       @paras = extract_body(doc, "#tdcontent .content")
