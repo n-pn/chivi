@@ -15,11 +15,25 @@
     }
   }
 
+  const tags = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+  }
+
+  function replace_tag(tag) {
+    return tags[tag] || tag
+  }
+
+  function escape_html(str) {
+    return str.replace(/[&<>]/g, replace_tag)
+  }
+
   export function render(tokens, active = false) {
     let res = ''
-
-    for (const tok of tokens) {
-      switch (tok[1].charAt(0)) {
+    let idx = 0
+    for (const [key, val, dic] of tokens) {
+      switch (val.charAt(0)) {
         case '⟨':
           res += '<cite>'
           break
@@ -28,10 +42,11 @@
           break
       }
 
-      if (active) res += `<v k="${tok[0]}" d="${tok[2]}">${tok[1]}</v>`
-      else res += tok[1]
+      const text = escape_html(val)
+      if (active) res += `<v i=${idx} d=${dic}>${text}</v>`
+      else res += text
 
-      switch (tok[1].charAt(tok[1].length - 1)) {
+      switch (val.charAt(val.length - 1)) {
         case '⟩':
           res += '</cite>'
           break
@@ -39,6 +54,8 @@
           res += '</em>'
           break
       }
+
+      idx += 1
     }
 
     return res
