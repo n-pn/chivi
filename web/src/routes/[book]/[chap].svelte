@@ -126,6 +126,9 @@
         break
     }
   }
+  function selection(evt) {
+    console.log(evt)
+  }
 </script>
 
 <style lang="scss">
@@ -259,7 +262,7 @@
   <title>{render(lines[0])} - {book_name} - Chivi</title>
 </svelte:head>
 
-<svelte:window on:keydown={navigate} />
+<svelte:window on:keydown={navigate} on:selectionchange={selection} />
 
 <Header>
   <div class="left">

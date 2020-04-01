@@ -100,6 +100,7 @@ module CUtil
     when '零' then 0
     when '〇' then 0
     when '一' then 1
+    when '两' then 2
     when '二' then 2
     when '三' then 3
     when '四' then 4
