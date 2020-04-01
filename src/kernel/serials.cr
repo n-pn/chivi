@@ -46,12 +46,12 @@ class Serials
     @tally.size
   end
 
-  def list(limit = 20, offset = 0, sort_by = "updated_at")
-    sort(sort_by)[offset, limit].map { |slug, _| get(slug) }
+  def list(limit = 20, offset = 0, sort = "updated_at")
+    sort_by(sort)[offset, limit].map { |slug, _| get(slug) }
   end
 
-  def sort(sort_by : String = "updated_at")
-    case sort_by
+  def sort_by(sort : String = "updated_at")
+    case sort
     when "tally"
       @tally
     when "^tally"

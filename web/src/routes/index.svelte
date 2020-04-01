@@ -2,12 +2,25 @@
   export async function preload({ query }) {
     const page = query.page || 1
     let url = `api/books?page=${page}`
-    const sort_by = query.sort || 'tally'
-    url += `&sort_by=${sort_by}`
+    const sort = query.sort || 'tally'
+    url += `&sort=${sort}`
 
     const res = await this.fetch(url)
     const data = await res.json()
     return Object.assign(data, { page })
+  }
+
+  export function page_url(page = 1, sort = 'tally') {
+    const params = {}
+    if (page > 1) params.page = page
+    if (sort !== 'tally') params.sort = sort
+
+    const query = Object.entries(params)
+      .map(([k, v]) => `${k}=${v}`)
+      .join('&')
+
+    if (query) return `/?${query}`
+    return '/'
   }
 </script>
 
@@ -19,6 +32,7 @@
   export let items = []
   export let total = 0
   export let page = 1
+  export let sort = 'tally'
 
   $: page_max = Math.floor((total - 1) / 20) + 1
   $: pages = make_pages(page, page_max)
@@ -173,19 +187,19 @@
         <MIcon m-icon="chevrons-left" />
       </button>
     {:else}
-      <a class="page" m-button="line" href="/?page=1">
+      <a class="page" m-button="line" href={page_url(1, sort)}>
         <MIcon m-icon="chevrons-left" />
       </a>
     {/if}
 
-    {#each pages as curr}
-      {#if page == curr}
+    {#each pages as idx}
+      {#if page == idx}
         <button class="page" m-button="line primary" disabled>
-          <span>{curr}</span>
+          <span>{idx}</span>
         </button>
       {:else}
-        <a class="page" m-button="line" href="/?page={curr}">
-          <span>{curr}</span>
+        <a class="page" m-button="line" href={page_url(idx, sort)}>
+          <span>{idx}</span>
         </a>
       {/if}
     {/each}
@@ -194,7 +208,7 @@
         <MIcon m-icon="chevrons-right" />
       </button>
     {:else}
-      <a class="page" m-button="line" href="/?page={page_max}">
+      <a class="page" m-button="line" href={page_url(page_max, sort)}>
         <MIcon m-icon="chevrons-right" />
       </a>
     {/if}

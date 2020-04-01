@@ -16,6 +16,9 @@ module Kernel
     @@chlists ||= Chlists.new
   end
 
+  def load_book(book : String, site : String?)
+  end
+
   def load_text(site : String, bsid : String, csid : String, user = "admin")
     file_out = "data/txt-out/chtexts/#{site}/#{bsid}/#{csid}.json"
     file_tmp = "data/txt-tmp/chtexts/#{site}/#{bsid}/#{csid}.txt"
