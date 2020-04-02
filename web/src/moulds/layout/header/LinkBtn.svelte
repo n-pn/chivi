@@ -23,24 +23,18 @@
 
     @include radius(3);
     @include font-size(2);
-    // @include bgcolor(primary, 5);
+    @include bgcolor(primary, 5);
 
     @include hover() {
       @include bgcolor(primary, 4);
-      color: #fff;
-    }
-
-    :global(&.active) {
-      @include bgcolor(primary, 5);
     }
 
     & + & {
       margin-left: $gutter;
     }
 
-    :global(span) {
-      @include truncate(100%);
-      max-width: 30vw;
+    :global(&.active) {
+      @include bgcolor(primary, 4);
     }
 
     :global(img),
@@ -56,16 +50,18 @@
       letter-spacing: 0.1em;
       @include font-size(3);
 
-      > :global(img) {
-        display: inline-block;
-        margin: 0.25rem 0;
-        // margin-top: -0.25rem;
-        width: 1.75rem;
-        height: 1.75rem;
-      }
+      // > :global(img) {
+      //   display: inline-block;
+      //   margin: 0.25rem 0;
+      //   // margin-top: -0.25rem;
+      //   width: 1.75rem;
+      //   height: 1.75rem;
+      // }
 
       > :global(span) {
+        padding: 0;
         margin-left: 0.25rem;
+        margin-right: 0;
       }
     }
   }
