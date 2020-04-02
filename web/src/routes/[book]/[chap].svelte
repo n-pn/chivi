@@ -35,7 +35,7 @@
     return str.replace(/[&<>]/g, replace_tag)
   }
 
-  export function render(tokens, active = true) {
+  export function render(tokens, active = false) {
     let res = ''
     let idx = 0
     for (const [key, val, dic] of tokens) {
@@ -327,11 +327,11 @@
     {#each lines as line, idx}
       {#if idx == 0}
         <h1 class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
-          {@html render(line, (idx = cur))}
+          {@html render(line, idx == cur)}
         </h1>
       {:else}
         <p class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
-          {@html render(line, (idx = cur))}
+          {@html render(line, idx == cur)}
         </p>
       {/if}
     {/each}
