@@ -6,21 +6,21 @@
 
     padding: 0;
 
-    @include screen-min(sm) {
-      padding: 0 0.75rem;
-    }
+    // @include screen-min(sm) {
+    //   padding: 0 0.75rem;
+    // }
 
-    @include screen-min(md) {
-      padding: 0 1rem;
-    }
+    // @include screen-min(md) {
+    //   padding: 0 1rem;
+    // }
 
-    @include screen-min(lg) {
-      padding: 0 1.25rem;
-    }
+    // @include screen-min(lg) {
+    //   padding: 0 1.25rem;
+    // }
 
-    @include screen-min(xl) {
-      padding: 0 1.5rem;
-    }
+    // @include screen-min(xl) {
+    //   padding: 0 1.5rem;
+    // }
   }
 </style>
 

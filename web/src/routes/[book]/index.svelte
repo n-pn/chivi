@@ -40,6 +40,28 @@
         return 'Không rõ'
     }
   }
+
+  export function map_volumes(chlist) {
+    let volumes = {}
+    for (const chap of chlist) {
+      volumes[chap.vi_volume] = volumes[chap.vi_volume] || []
+      volumes[chap.vi_volume].push(chap)
+    }
+    return volumes
+  }
+
+  export function get_latests(chlist) {
+    const start = chlist.length - 1
+    let stop = start - 5
+    if (stop < 0) stop = 0
+
+    const res = []
+    for (let i = start; i >= stop; i--) {
+      res.push(chlist[i])
+    }
+
+    return res
+  }
 </script>
 
 <script>
@@ -53,15 +75,7 @@
   export let chlist = []
 
   $: volumes = map_volumes(chlist)
-
-  function map_volumes(chlist) {
-    let volumes = {}
-    for (const chap of chlist) {
-      volumes[chap.vi_volume] = volumes[chap.vi_volume] || []
-      volumes[chap.vi_volume].push(chap)
-    }
-    return volumes
-  }
+  $: latests = get_latests(chlist)
 </script>
 
 <style type="text/scss">
@@ -323,6 +337,22 @@
     Mục lục
     <span class="label">({chlist.length} chương)</span>
   </h2>
+
+  <h3>
+    Mới nhất
+    <span class="label">({latests.length} chương)</span>
+  </h3>
+  <div class="chap-list">
+    {#each latests as chap}
+      <div class="chap-item">
+        <a
+          class="chap-link"
+          href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
+          <div class="chap-title">{chap.vi_title}</div>
+        </a>
+      </div>
+    {/each}
+  </div>
 
   {#each Object.entries(volumes) as [label, chlist]}
     <h3>
