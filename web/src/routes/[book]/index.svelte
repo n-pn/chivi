@@ -9,9 +9,12 @@
     try {
       const res = await this.fetch(url)
       const data = await res.json()
-      return data
+
+      if (res.status == 200) return data
+
+      this.error(res.status, data.msg)
     } catch (err) {
-      this.error(404, err.message)
+      this.error(500, err.message)
     }
   }
 

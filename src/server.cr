@@ -73,7 +73,7 @@ module Server
     csid = env.params.url["chap"]
     cidx = chlist.index(&.csid.==(csid))
 
-    halt env, status_code: 404, response: ({msg: "Chap not found"}) if cidx.nil?
+    halt env, status_code: 404, response: ({msg: "Chap not found"}).to_json if cidx.nil?
 
     curr_chap = chlist[cidx]
     prev_chap = chlist[cidx - 1] if cidx > 0

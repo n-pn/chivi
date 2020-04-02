@@ -5,7 +5,7 @@ class Serials
   alias Index = Array(Tuple(String, Int64 | Float64))
 
   def initialize(@dir = "data/txt-out/serials")
-    @books = {} of String => VpBook
+    @books = {} of String => VpBook?
 
     @sorts = {
       tally:  Index.from_json(File.read(index_file("tally"))),
@@ -28,7 +28,9 @@ class Serials
   end
 
   def load(vi_slug : String)
-    VpBook.from_json(File.read(serial_file(vi_slug)))
+    file = serial_file(vi_slug)
+    return nil unless File.exists?(file)
+    VpBook.from_json(File.read(file))
   end
 
   def serial_file(vi_slug)

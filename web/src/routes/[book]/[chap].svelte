@@ -6,19 +6,25 @@
     const site = slug[slug.length - 2]
     const chap = slug[slug.length - 1]
 
+    const url = `api/books/${book}/${site}/${chap}`
+
     try {
-      const res = await this.fetch(`api/books/${book}/${site}/${chap}`)
+      const res = await this.fetch(url)
       const data = await res.json()
-      return data
+
+      if (res.status == 200) return data
+
+      this.error(res.status, data.msg)
     } catch (err) {
-      this.error(404, data.msg)
+      this.error(500, err.message)
     }
   }
 
   const tags = {
-    '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
+    '"': '&quot;',
+    "'": '&apos;',
   }
 
   function replace_tag(tag) {
@@ -29,7 +35,7 @@
     return str.replace(/[&<>]/g, replace_tag)
   }
 
-  export function render(tokens, active = false) {
+  export function render(tokens, active = true) {
     let res = ''
     let idx = 0
     for (const [key, val, dic] of tokens) {
@@ -43,7 +49,8 @@
       }
 
       const text = escape_html(val)
-      if (active) res += `<v i=${idx} d=${dic}>${text}</v>`
+      if (active)
+        res += `<x-v k=${escape_html(key)} i=${idx} d=${dic}>${text}</x-v>`
       else res += text
 
       switch (val.charAt(val.length - 1)) {
@@ -63,6 +70,8 @@
 </script>
 
 <script>
+  import { onMount } from 'svelte'
+
   import MIcon from '$mould/shared/MIcon.svelte'
   import Header from '$mould/layout/Header.svelte'
   import LinkBtn from '$mould/layout/header/LinkBtn.svelte'
@@ -80,27 +89,10 @@
 
   let cur = 0
 
-  // let scroll_ended = false
-
-  // function scrolled(evt) {
-  //   scroll_ended = false
-  // }
-
   function navigate(evt) {
     if (evt.ctrlKey || evt.altKey || evt.shiftKey) return
 
     switch (evt.keyCode) {
-      // case 32:
-      //   if (scroll_ended) {
-      //     evt.preventDefault()
-      //     if (next) _goto(`${book_slug}/${next.uid}-${next.url_slug}`)
-      //     else _goto(book_slug)
-      //   } else {
-      //     scroll_ended = true
-      //   }
-
-      //   break
-
       case 72:
         evt.preventDefault()
         _goto(book_slug)
@@ -126,8 +118,53 @@
         break
     }
   }
+
+  onMount(() => {
+    document.onselectionchange = selection
+  })
+
   function selection(evt) {
-    console.log(evt)
+    const nodes = get_selected()
+    let key = ''
+    for (const node of nodes) {
+      if (node.nodeName == 'X-V') key += node.getAttribute('k')
+    }
+    console.log(key)
+  }
+
+  function get_selected() {
+    const sel = document.getSelection()
+    if (sel.isCollapsed) return []
+
+    const range = sel.getRangeAt(0)
+
+    let node = range.startContainer
+    const stop = range.endContainer
+
+    // Special case for a range that is contained within a single node
+    if (node == stop) return [node]
+
+    // Iterate nodes until we hit the end container
+    let nodes = []
+    while (node && node != stop) {
+      nodes.push((node = next_node(node)))
+    }
+
+    // Add partially selected nodes at the start of the range
+    node = range.startContainer
+    while (node && node != range.commonAncestorContainer) {
+      nodes.unshift(node)
+      node = node.parentNode
+    }
+
+    return nodes
+  }
+
+  function next_node(node) {
+    if (node.hasChildNodes()) return node.firstChild
+    while (node && !node.nextSibling) node = node.parentNode
+    if (!node) return null
+    return node.nextSibling
   }
 </script>
 
@@ -216,7 +253,7 @@
     }
   }
 
-  :global(v) {
+  :global(x-v) {
     border-bottom: 1px solid transparent;
 
     &[d='1'] {
@@ -262,7 +299,7 @@
   <title>{render(lines[0])} - {book_name} - Chivi</title>
 </svelte:head>
 
-<svelte:window on:keydown={navigate} on:selectionchange={selection} />
+<svelte:window on:keydown={navigate} />
 
 <Header>
   <div class="left">
@@ -290,11 +327,11 @@
     {#each lines as line, idx}
       {#if idx == 0}
         <h1 class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
-          {@html render(line, idx == cur)}
+          {@html render(line, (idx = cur))}
         </h1>
       {:else}
         <p class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
-          {@html render(line, idx == cur)}
+          {@html render(line, (idx = cur))}
         </p>
       {/if}
     {/each}
