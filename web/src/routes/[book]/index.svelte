@@ -262,6 +262,29 @@
 
 <svelte:head>
   <title>{book.vi_title} - Chivi</title>
+  <meta
+    name="keywords"
+    content="{book.vi_title},{book.zh_title},{book.vi_author},{book.zh_author}" />
+  <meta name="description" content={book.vi_intro} />
+  <meta property="og:type" content="novel" />
+  <meta property="og:title" content={book.vi_title} />
+  <meta property="og:description" content={book.vi_intro} />
+  <meta property="og:image" content={book.covers[0]} />
+  <meta property="og:novel:category" content={book.vi_genre} />
+  <meta property="og:novel:author" content={book.vi_author} />
+  <meta property="og:novel:book_name" content={book.vi_title} />
+  <meta
+    property="og:novel:read_url"
+    content="http://chivi.xyz/{book.vi_slug}/" />
+  <meta property="og:url" content="http://chivi.xyz/{book.vi_slug}/" />
+  <meta property="og:novel:status" content={book_status(book.status)} />
+  <meta
+    property="og:novel:update_time"
+    content={new Date(book.updated_at).toISOString()} />
+  <meta property="og:novel:latest_chapter_name" content={latests[0].vi_title} />
+  <meta
+    property="og:novel:latest_chapter_url"
+    content="https://chivi.xyz/{book.vi_slug}/{latests[0].url_slug}-{site}-{latests[0].csid}.html" />
 </svelte:head>
 
 <Header>
