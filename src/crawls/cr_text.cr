@@ -36,7 +36,7 @@ class CrText
     File.delete(@text_file) if File.exists?(@text_file) && text
   end
 
-  def crawl!(persist : Bool = true, index = "0/0") : Void
+  def crawl!(persist : Bool = true, label = "1/1") : Void
     if File.exists?(@html_file)
       @html = File.read(@html_file)
     else
@@ -49,8 +49,8 @@ class CrText
     parse!(doc)
 
     if persist
-      puts "-- <#{index}.colorize(:cyan)> \
-      [#{@site}/#{@bsid}/#{@csid}] \
+      puts "-- <#{label.colorize(:cyan)}> \
+      [#{@site.colorize(:cyan)}/#{@bsid.colorize(:cyan)}/#{@csid.colorize(:cyan)}] \
       {#{@title.colorize(:cyan)}} saved."
 
       File.write(@text_file, self)
