@@ -1,3 +1,5 @@
+#! /bin/bash
+
 ROOT=/home/nipin/web/chivi/setup/services
 
 sudo rm /etc/nginx/sites-enabled/chivi.conf
