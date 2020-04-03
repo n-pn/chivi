@@ -48,7 +48,7 @@ class Serials
     # TODO: recalculate indexes
     if idx = @sorts[:update].index(&.[0].==(slug))
       @sorts[:update][idx] = {slug, book.updated_at}
-      @sorts[:update].sort_by!(&.[1])
+      @sorts[:update].sort_by!(&.[1].-)
       File.write(index_file("update"), @sorts[:update].to_pretty_json)
     end
 

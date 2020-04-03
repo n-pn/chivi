@@ -1,7 +1,3 @@
-<script>
-  export let href = '/'
-</script>
-
 <style lang="scss">
   $header: 3rem;
   $height: 2.25rem;
@@ -9,7 +5,6 @@
 
   a {
     display: inline-flex;
-    // max-width: 10rem;
     cursor: pointer;
 
     text-decoration: none;
@@ -41,7 +36,6 @@
     :global(svg) {
       display: inline-block;
       margin: 0.5rem 0;
-      // margin-top: -0.125rem;
       width: 1.25rem;
       height: 1.25rem;
     }
@@ -50,23 +44,13 @@
       letter-spacing: 0.1em;
       @include font-size(3);
 
-      // > :global(img) {
-      //   display: inline-block;
-      //   margin: 0.25rem 0;
-      //   // margin-top: -0.25rem;
-      //   width: 1.75rem;
-      //   height: 1.75rem;
-      // }
-
       > :global(span) {
-        padding: 0;
         margin-left: 0.25rem;
-        margin-right: 0;
       }
     }
   }
 </style>
 
-<a {href} class={$$props.class}>
+<a href={$$props.href} class={$$props.class}>
   <slot />
 </a>
