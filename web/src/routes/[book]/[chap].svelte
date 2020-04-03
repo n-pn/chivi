@@ -341,24 +341,24 @@
     {#if prev_slug}
       <a m-button="line" href="/{book_slug}/{prev_slug}">
         <MIcon m-icon="chevron-left" />
-        <span>Prev</span>
+        <span>Chương trước (j)</span>
       </a>
     {:else}
       <a m-button="line" href="/{book_slug}">
         <MIcon m-icon="list" />
-        <span>Home</span>
+        <span>Mục lục (h)</span>
       </a>
     {/if}
 
     {#if next_slug}
       <a m-button="line primary" href="/{book_slug}/{next_slug}">
-        <span>Next</span>
+        <span>Chương tiếp (k)</span>
         <MIcon m-icon="chevron-right" />
       </a>
     {:else if prev_slug}
       <a m-button="line" href="/{book_slug}">
         <MIcon m-icon="list" />
-        <span>Home</span>
+        <span>Mục lục (h)</span>
       </a>
     {/if}
   </footer>

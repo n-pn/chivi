@@ -19,11 +19,11 @@ module Kernel
   def update_time(status)
     case status
     when 0
-      1.hours
+      2.hours
     when 1
-      1.days
+      4.days
     else
-      1.weeks
+      6.weeks
     end
   end
 
