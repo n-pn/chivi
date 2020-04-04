@@ -91,10 +91,10 @@ end
 alias Result = Tuple(String, String, Int64)
 channel = Channel(Result).new(worker)
 
-total = upto - from + 1
+total = upto - from
 from.upto(upto) do |idx|
   mapping(sitemap, updates, channel.receive) if idx - from >= worker
-  spawn { fetch_info(channel, site, idx.to_s, "#{idx}/#{total}") }
+  spawn { fetch_info(channel, site, idx.to_s, "#{idx - from}/#{total}") }
 end
 
 worker.times { mapping(sitemap, updates, channel.receive) }
