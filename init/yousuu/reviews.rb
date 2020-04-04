@@ -8,9 +8,9 @@ require "fileutils"
 
 # ## Core
 
-ROOT_DIR = "data/txt-inp/yousuu/serials/"
+ROOT_DIR = "data/txt-inp/yousuu/reviews/"
 OUT_FILE = "#{ROOT_DIR}/%i.json"
-BOOK_URL = "https://www.yousuu.com/api/book/%i?t=%i"
+REVIEW_URL = "https://www.yousuu.com/api/book/%i/comment?t=%i"
 
 def out_file(book_id)
   OUT_FILE % book_id
@@ -22,9 +22,9 @@ end
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
 
-def fetch_meta(book_id, proxy, verbose = false)
+def fetch_data(book_id, proxy, verbose = false)
     begin
-      url = BOOK_URL % [book_id, to_unix_ms(Time.now)]
+      url = REVIEW_URL % [book_id, to_unix_ms(Time.now)]
       puts "HIT: [#{url}], proxy: [#{proxy}]".blue if verbose
 
       body = URI.open(url, proxy: proxy, read_timeout: 10, "User-Agent" => USER_AGENT) { |f| f.read }
@@ -83,38 +83,34 @@ end
 proxies.uniq!
 # proxies = proxies.shuffle
 
-# # Prepare serials
-
-TOTAL   = 212000 # max book_id
 VERBOSE = ARGV.include?("verbose")
+
+# Prepare book_ids
 
 puts "Check for outdated entries...".blue
 
 fetched = Dir.glob("#{ROOT_DIR}/*.json").reject { |file| file_outdated?(file) }
 existed = Set.new fetched.map { |x| File.basename(x, ".json").to_i }
-serials = (1..TOTAL).reject { |x| existed.include?(x) }
 
-if ARGV.include?("shuffle")
-  puts "SHUFFLE INPUT!".yellow
-  serials = serials.shuffle
-elsif ARGV.include?("reverse")
-  puts "REVERSE INPUT!".yellow
-  serials = serials.reverse
-end
+input = JSON.parse File.read("data/txt-tmp/serials.json")
+book_ids = input.map{|x| x["yousuu_bids"]}.flatten
+book_ids = book_ids.reject { |x| existed.include?(x) }
+
+puts "Input: #{book_ids.size}".yellow
 
 # ## Crawling!
 
 step = 1
-until proxies.empty? || serials.empty?
-  puts "[LOOP:#{step}]: serials: #{serials.size}, proxies: #{proxies.size}".cyan
+until proxies.empty? || book_ids.empty?
+  puts "[LOOP:#{step}]: book_ids: #{book_ids.size}, proxies: #{proxies.size}".cyan
 
   working = []
   failure = []
 
-  Parallel.each_with_index(proxies.take(serials.size), in_threads: 20) do |proxy, idx|
-    book_id = serials.pop
+  Parallel.each_with_index(proxies.take(book_ids.size), in_threads: 20) do |proxy, idx|
+    book_id = book_ids.pop
 
-    res = fetch_meta(book_id, proxy, VERBOSE)
+    res = fetch_data(book_id, proxy, VERBOSE)
 
     if res[:status] == :ok
       working << res[:proxy]
@@ -129,5 +125,5 @@ until proxies.empty? || serials.empty?
 
   step += 1
   proxies = working
-  serials.concat failure
+  book_ids.concat failure
 end
