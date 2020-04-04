@@ -72,6 +72,7 @@
 
   export let book
   export let site
+  export let bsid
   export let chlist = []
 
   $: volumes = map_volumes(chlist)
@@ -96,18 +97,6 @@
     padding-left: 0.75rem;
     margin-left: auto;
     width: 70%;
-
-    // min-width: 10rem;
-    // @include screen-min(md) {
-    //   min-width: 12rem;
-    // }
-
-    // @include screen-min(lg) {
-    //   min-width: 14rem;
-    // }
-    // @include screen-min(xl) {
-    //   min-width: 16rem;
-    // }
   }
 
   .summary {
@@ -128,9 +117,6 @@
     :global([m-icon]) {
       margin-top: -0.125rem;
     }
-    // text-transform: uppercase;
-    // font-weight: 500;
-    // @include font-size(3);
   }
 
   h2 {
@@ -356,7 +342,7 @@
     {/each}
   </div>
 
-  <h2 class="content">
+  <h2 class="content" data-site={site} data-bsid={bsid}>
     Mục lục
     <span class="label">({chlist.length} chương)</span>
   </h2>
