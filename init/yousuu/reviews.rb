@@ -8,9 +8,15 @@ require "fileutils"
 
 # ## Core
 
+PAGE = (ARGV[0] || "1").to_i
+
+puts "PAGE: #{PAGE}"
+
+exit if PAGE < 1
+
 ROOT_DIR = "data/txt-inp/yousuu/reviews/"
-OUT_FILE = "#{ROOT_DIR}/%i.json"
-REVIEW_URL = "https://www.yousuu.com/api/book/%i/comment?t=%i"
+OUT_FILE = "#{ROOT_DIR}/page#{PAGE}/%i.json"
+REVIEW_URL = "https://www.yousuu.com/api/book/%i/comment?t=%i&page=#{PAGE}"
 
 def out_file(book_id)
   OUT_FILE % book_id
@@ -23,22 +29,20 @@ end
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
 
 def fetch_data(book_id, proxy, verbose = false)
-    begin
-      url = REVIEW_URL % [book_id, to_unix_ms(Time.now)]
-      puts "HIT: [#{url}], proxy: [#{proxy}]".blue if verbose
+  url = REVIEW_URL % [book_id, to_unix_ms(Time.now)]
+  puts "HIT: [#{url}], proxy: [#{proxy}]".blue if verbose
 
-      body = URI.open(url, proxy: proxy, read_timeout: 10, "User-Agent" => USER_AGENT) { |f| f.read }
-      raise "Malformed!" unless body.include?("{\"success\":true,") || body.include?("未找到该图书")
+  body = URI.open(url, proxy: proxy, read_timeout: 10, "User-Agent" => USER_AGENT) { |f| f.read }
+  raise "Malformed!" unless body.include?("{\"success\":true,") || body.include?("未找到该图书")
 
-      puts "- proxy [#{proxy}] worked!".green if verbose
-      File.write out_file(book_id), body
+  puts "- proxy [#{proxy}] worked!".green if verbose
+  File.write out_file(book_id), body
 
-      {status: :ok, proxy: proxy, book_id: book_id}
-    rescue => err
-      puts "- proxy [#{proxy}] not working, reason: #{err}".red if verbose
+  {status: :ok, proxy: proxy, book_id: book_id}
+rescue => err
+  puts "- proxy [#{proxy}] not working, reason: #{err}".red if verbose
 
-      {status: :err, proxy: proxy, book_id: book_id}
-    end
+  {status: :err, proxy: proxy, book_id: book_id}
 end
 
 # ## Prepare proxies
@@ -89,7 +93,7 @@ VERBOSE = ARGV.include?("verbose")
 
 puts "Check for outdated entries...".blue
 
-fetched = Dir.glob("#{ROOT_DIR}/*.json").reject { |file| file_outdated?(file) }
+fetched = Dir.glob("#{ROOT_DIR}/page#{PAGE}/*.json").reject { |file| file_outdated?(file) }
 existed = Set.new fetched.map { |x| File.basename(x, ".json").to_i }
 
 input = JSON.parse File.read("data/txt-tmp/serials.json")
