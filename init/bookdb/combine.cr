@@ -69,7 +69,7 @@ puts "- Merging with other sites..."
 sitemaps = {} of String => Hash(String, String)
 
 SITES = [
-  "jx_la", "rengshu", "hetushu",
+  "hetushu", "jx_la", "rengshu",
   "xbiquge", "nofff", "duokan8",
   "paoshu8", "69shu", "zhwenpg",
 ]

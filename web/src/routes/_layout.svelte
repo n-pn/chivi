@@ -5,6 +5,8 @@
 
   import Wrapper from '$mould/layout/Wrapper.svelte'
 
+  let tilt = false
+
   $: {
     if (typeof gtag === 'function') {
       window.gtag('config', 'UA-160000714-1', {
@@ -39,6 +41,6 @@
 
 <svelte:window on:keydown={navigate} />
 
-<main class="tilt">
+<main class:tilt>
   <slot />
 </main>

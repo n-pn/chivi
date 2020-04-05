@@ -30,12 +30,12 @@
     width: 100%;
     height: $outer-height;
     z-index: 800;
-    @include bgcolor(primary, 6);
+    @include bgcolor(primary, 7);
     @include shadow(2);
 
-    :global(&.fixed) {
-      // position: fixed;
-    }
+    // :global(&.fixed) {
+    // position: fixed;
+    // }
   }
   nav {
     display: flex;

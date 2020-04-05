@@ -28,6 +28,10 @@ score = [] of Tuple(String, Float64)
 votes = [] of Tuple(String, Int32)
 update = [] of Tuple(String, Int64)
 
+# authors = Hash(String, Array(String)).new do |h, k|
+#   h[k] = [] of String
+# end
+
 CTIME = ((ARGV[0]? || "10").to_i? || 10).days
 CLIST = Chlists.new
 

@@ -15,7 +15,7 @@ def fetch_page(crawlers, page = 1) : Void
   html_file = "data/txt-inp/zhwenpg/pages/#{page}.html"
 
   page_url = PAGE_URL % page
-  if CrUtil.outdated?(html_file, timespan: 3.hours)
+  if CrUtil.outdated?(html_file, time: 3.hours)
     html = CrUtil.fetch_html(page_url, "zhwenpg")
     File.write(html_file, html)
   else
@@ -39,7 +39,7 @@ def fetch_page(crawlers, page = 1) : Void
   end
 end
 
-def fetch_info(bsid : String, updated_at : Time, label = "0/0")
+def fetch_info(bsid : String, updated_at : Time, label = "1/1")
   cache_span = Time.utc - updated_at
 
   crawler = CrInfo.new("zhwenpg", bsid, updated_at.to_unix_ms)

@@ -18,10 +18,10 @@
 
     @include radius(3);
     @include font-size(2);
-    @include bgcolor(primary, 5);
+    @include bgcolor(primary, 6);
 
     @include hover() {
-      @include bgcolor(primary, 4);
+      @include bgcolor(primary, 5);
     }
 
     & + & {
@@ -29,7 +29,7 @@
     }
 
     :global(&.active) {
-      @include bgcolor(primary, 4);
+      @include bgcolor(primary, 5);
     }
 
     :global(img),
