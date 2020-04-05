@@ -55,8 +55,10 @@ def load_proxies(file)
     line.include?("http") ? line : "http://#{line}"
   end
 
+  proxies.uniq!
+
   puts "- loaded #{proxies.size} proxies from [#{file}]".blue
-  proxies.uniq
+  proxies
 end
 
 OUTDATED = 3600 * 24 * 7 # 5 days

@@ -41,8 +41,7 @@ def fetch_meta(book_id, proxy, verbose = false)
     end
 end
 
-# ## Prepare proxies
-
+# # Prepare proxies
 
 def load_proxies(file)
   return [] unless File.exists?(file)
@@ -51,8 +50,9 @@ def load_proxies(file)
     line.include?("http") ? line : "http://#{line}"
   end
 
+  proxies.uniq!
   puts "- loaded #{proxies.size} proxies from [#{file}]".blue
-  proxies.uniq
+  proxies
 end
 
 OUTDATED = 3600 * 24 * 7 # 5 days
@@ -102,7 +102,7 @@ elsif ARGV.include?("reverse")
   serials = serials.reverse
 end
 
-# ## Crawling!
+# # Crawling!
 
 step = 1
 until proxies.empty? || serials.empty?
