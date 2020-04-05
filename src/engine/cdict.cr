@@ -1,9 +1,12 @@
 require "time"
+require "json"
 require "colorize"
 
 class CDict
   # Child
   class Item
+    include JSON::Serializable
+
     EPOCH = Time.utc(2020, 1, 1)
 
     SEP_0 = "ǁ"

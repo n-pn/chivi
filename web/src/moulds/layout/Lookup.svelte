@@ -1,139 +1,165 @@
-<script>
-  import MIcon from '$mould/shared/MIcon.svelte'
+<script context="module">
+  async function get_hanviet(line) {
+    const res = await fetch(`/api/hanviet?line=${line}`)
+    const data = await res.json()
 
-  export let input = ''
-  export let offset = 0
-  export let active = true
-
-  $: if (input !== '' && fetch) fetch_inspect(input)
-
-  let chinese = []
-  let hanviet = []
-  let entries = []
-  $: current = entries[offset] || []
-
-  function render_line(tokens, offset) {
-    const current = entries[offset] || [[1]]
-    // if (current.length === 0) return
-
-    const range = offset + +current[0][0]
-
-    let output = ''
-    for (let [val, pos] of tokens) {
-      if (pos < 0) output += val
-      else {
-        let klass = pos >= offset && pos < range ? ' _active' : ''
-        output += `<ip-chr class="${klass}" data-i="${pos}">${val}</ip-chr>`
+    const hanviet = []
+    let idx = 0
+    for (const [key, val, dic] of data) {
+      if (dic == 0) {
+        hanviet.push([val, -1])
+        idx += key.length
+      } else {
+        for (let v of val.split(' ')) {
+          hanviet.push([v, idx])
+          idx += 1
+        }
       }
     }
 
-    return output
+    return hanviet
+  }
+
+  async function get_entries(line, from = 0) {
+    // const res = await fetch('/api/inspect', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ t: inp }),
+    // })
+
+    // TODO: add udic
+    const res = await fetch(`/api/lookup?line=${line}&from=${from}`)
+    const entries = await res.json()
+
+    return entries
+  }
+
+  function render_line(tokens, from, upto) {
+    let res = ''
+    for (const [val, idx] of tokens) {
+      if (idx < 0) res += val
+      else {
+        let klass = 'active'
+        if (idx < from || idx >= upto) klass = ''
+
+        res += `<x-c class="${klass}" data-i="${idx}">${val}</x-c>`
+      }
+    }
+
+    return res
+  }
+</script>
+
+<script>
+  import MIcon from '$mould/shared/MIcon.svelte'
+
+  export let active = true
+  export let text = ''
+  export let from = 0
+
+  let hanviet = []
+  let entries = []
+  let upto = 0
+
+  $: chinese = text.split('').map((x, i) => [x, i])
+  $: if (fetch && text !== '') lookup(text, from)
+
+  async function lookup(text, from) {
+    hanviet = await get_hanviet(text)
+    entries = await get_entries(text, from)
+    if (entries.length > 0) upto = from + +entries[0][0]
   }
 
   function handle_click(event) {
     const target = event.target
-    if (target.nodeName !== 'IP-CHR') return
-
-    const new_offset = +target.dataset.i
-    if (new_offset < 0 || new_offset >= chinese.length) return
-    if (entries[new_offset].length === 0) return
-
-    offset = new_offset
+    if (target.nodeName !== 'X-C') return
+    from = +target.dataset.i
   }
 
-  function chinese_text(offset, length) {
-    return chinese.slice(offset, offset + length).join('')
+  function chinese_entry(from, upto) {
+    return chinese
+      .slice(from, upto)
+      .map(x => x[0])
+      .join('')
   }
 
-  function hanviet_text(offset, length) {
-    let index = 0
-    while (hanviet[index][1] !== offset) index += 1
-    if (index + length >= hanviet.length) return ''
+  // function hanviet_text(idx, length) {
+  //   let index = 0
+  //   while (hanviet[index][1] !== idx) index += 1
+  //   if (index + length >= hanviet.length) return ''
 
-    let output = ''
-    while (hanviet[index][1] < offset + length) {
-      output += hanviet[index][0]
-      index += 1
-    }
-    return output.trim().toLowerCase()
-  }
+  //   let output = ''
+  //   while (hanviet[index][1] < idx + length) {
+  //     output += hanviet[index][0]
+  //     index += 1
+  //   }
+  //   return output.trim().toLowerCase()
+  // }
 
   function handle_keypress(e) {
     if (e.keyCode != 92) return
     active = !active
   }
-
-  async function fetch_inspect(inp) {
-    const res = await fetch('/api/inspect', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ t: inp }),
-    })
-
-    const data = await res.json()
-    chinese = data.chinese
-    hanviet = data.hanviet
-    entries = data.entries
-  }
 </script>
 
 <style lang="scss">
-  $sidebar-width: 24rem;
+  $sidebar-width: 30rem;
 
   aside {
     position: fixed;
     display: block;
     top: 0;
-
-    right: -$sidebar-width;
+    right: 0;
     width: $sidebar-width;
+    // min-width: 20rem;
+    max-width: 90vw;
 
     height: 100%;
-    z-index: 999;
+    z-index: 900;
 
     @include bgcolor(white);
-    @include shadow(lg);
+    @include shadow(2);
 
     // transition: transform 0.1s ease;
-
+    transform: translateX(100%);
     &._active {
-      transform: translateX(-$sidebar-width);
+      transform: translateX(0);
     }
   }
 
   $zh-height: 4.5rem;
-  $hv-height: 5.75rem;
+  $hv-height: 5.875rem;
   $hd-height: 3rem;
 
   header {
     display: flex;
     height: $hd-height;
-    padding: 0.5rem 0;
-    // @include bgcolor(neutral, 1);
+    padding: 0.375rem 0.75rem;
     border-bottom: 1px solid color(neutral, 2);
 
     :global(svg) {
       display: inline-block;
+      // vertical-align: top;
       vertical-align: text-top;
-      width: 1rem;
-      height: 1rem;
+      width: 1.25rem;
+      height: 1.25rem;
     }
 
     h2 {
-      margin-left: 1rem;
+      // display: flex;
       margin-right: auto;
       font-weight: 500;
       text-transform: uppercase;
-      line-height: $hd-height - 1rem;
+      line-height: $hd-height - 0.75rem;
       @include color(neutral, 6);
       @include font-size(sm);
     }
 
     button {
-      margin-left: auto;
-      margin-right: 0.5rem;
+      // margin-right: 0.75rem;
+      padding: 0 0.5rem;
       @include color(neutral, 6);
-      @include bgcolor(transparent);
+      @include bgcolor(none);
       @include hover {
         @include color(primary, 6);
       }
@@ -145,13 +171,13 @@
     overflow-y: scroll;
   }
 
-  :global(ip-chr) {
+  :global(x-c) {
+    cursor: pointer;
     @include hover {
-      cursor: pointer;
       @include color(primary, 5);
     }
 
-    &._active {
+    &.active {
       @include color(primary, 5);
     }
   }
@@ -166,40 +192,42 @@
   .input {
     overflow-y: scroll;
     line-height: 1.25rem;
-    padding: 0.5rem 1rem;
+    padding: 0.375rem 0.75rem;
     border-bottom: 1px solid color(neutral, 3);
 
     @include bgcolor(neutral, 1);
     @include font-family(sans);
 
     &._zh {
-      height: $zh-height;
+      max-height: $zh-height;
     }
 
     &._hv {
-      height: $hv-height;
+      max-height: $hv-height;
     }
   }
 
+  h3 {
+    // margin-top: 0.5rem;
+    font-weight: bold;
+    @include font-size(md);
+    @include color(neutral, 7);
+  }
+
   .entry {
-    margin: 0;
-    padding: 0 1rem;
+    padding: 0.375rem 0.75rem;
+    // padding-top: 0;
 
     & + & {
       border-top: 1px solid color(neutral, 3);
     }
-
-    h3 {
-      margin-top: 0.5rem;
-      font-weight: bold;
-      @include font-size(lg);
-      @include color(neutral, 7);
-    }
   }
 
   .item {
-    margin: 0.5rem 0;
     @include clearfix;
+    & + & {
+      margin-top: 0.5rem;
+    }
   }
 
   .term {
@@ -212,32 +240,49 @@
 
 <aside class:_active={active}>
   <header>
-    <h2>
-      <MIcon m-icon="compass" />
-      <span>Giải nghĩa</span>
-    </h2>
+    <h2>Giải nghĩa</h2>
+
+    <button on:click={() => (active = !active)}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <path
+          d="M17.85 10.2l-4.24 5.65m4.24-5.66L13.6 5.95m4.24 4.24a2 2 0 0 0 2.83
+          0l.7-.7-7.07-7.08-.7.71a2 2 0 0 0 0 2.83m0 9.9l-5.66-5.66m5.66
+          5.66s1.76 2.47-.71 4.95L3 10.9c2.47-2.48 4.95-.7 4.95-.7m0
+          0l5.66-4.25M7.95 15.85l-4.24 4.24" />
+      </svg>
+    </button>
 
     <button on:click={() => (active = !active)}>
       <MIcon m-icon="x" />
     </button>
+
   </header>
 
   <div class="input _zh" on:click={handle_click}>
-    {@html render_line(chinese.map((x, i) => [x, i]), offset)}
+    {@html render_line(chinese, from, upto)}
   </div>
 
   <div class="input _hv" on:click={handle_click}>
-    {@html render_line(hanviet, offset)}
+    {@html render_line(hanviet, from, upto)}
   </div>
 
   <section>
-    {#each current as [len, item]}
+    {#each entries as [len, items]}
       <div class="entry">
-        <h3>{chinese_text(offset, +len)} [ {hanviet_text(offset, +len)} ]</h3>
-        {#each item as [name, lines]}
+        <h3>{chinese_entry(from, from + len)}</h3>
+        {#each items as [name, value]}
           <div class="item">
             <h4>{name}</h4>
-            {#each lines.split('\n') as line}
+            {#each value.split('\n') as line}
               <p class="term">{line}</p>
             {/each}
           </div>

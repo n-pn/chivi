@@ -44,4 +44,44 @@ module Engine
       end
     end
   end
+
+  alias LookupItem = Tuple(String, String)
+
+  def lookup(str : String, idx = 0, book : String? = nil, user = "admin")
+    chars = str.chars
+
+    trungviet = @@repo.trungviet
+    cc_cedict = @@repo.cc_cedict
+
+    if book
+      special_1, special_2 = @@repo.unique(book, user)
+    else
+      special_1, special_2 = @@repo.combine(user)
+    end
+
+    generic_1, generic_2 = @@repo.generic(user)
+
+    dicts = {
+      {special_2, "special_2", "; "},
+      {special_1, "special_1", "; "},
+      {generic_2, "generic_2", "; "},
+      {generic_1, "generic_1", "; "},
+      {trungviet, "trungviet", "\n"},
+      {cc_cedict, "cc_cedict", "\n"},
+    }
+
+    # (0..chars.size).map do |idx|
+    res = Hash(Int32, Array(LookupItem)).new do |h, k|
+      h[k] = Array(LookupItem).new
+    end
+
+    dicts.each do |dict, name, join|
+      dict.scan(chars, idx).each do |item|
+        res[item.key.size] << {name, item.vals.join(join)}
+      end
+    end
+
+    res.to_a.sort_by(&.[0].-)
+    # end
+  end
 end

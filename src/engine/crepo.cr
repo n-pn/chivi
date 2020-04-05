@@ -87,18 +87,18 @@ class CRepo
 
   alias Dicts = Array(CDict)
 
-  @cc_cedict : Dicts? = nil
-  @trungviet : Dicts? = nil
+  @cc_cedict : CDict? = nil
+  @trungviet : CDict? = nil
   @hanviet : Dicts? = nil
   @pinyin : Dicts? = nil
   @tradsim : Dicts? = nil
 
   def cc_cedict
-    @cc_cedict ||= @system["cc_cedict"]
+    @cc_cedict ||= @system.load_dic("cc_cedict")
   end
 
   def trungviet
-    @trungviet ||= @system["trungviet"]
+    @trungviet ||= @system.load_dic("trungviet")
   end
 
   def hanviet

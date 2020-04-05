@@ -24,17 +24,17 @@
   $gutter: ($outer-height - $inner-height) / 2;
 
   header {
-    position: absolute;
+    position: sticky;
     top: 0;
     left: 0;
     width: 100%;
     height: $outer-height;
-    z-index: 999;
+    z-index: 800;
     @include bgcolor(primary, 6);
     @include shadow(2);
 
     :global(&.fixed) {
-      position: fixed;
+      // position: fixed;
     }
   }
   nav {

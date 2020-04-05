@@ -25,10 +25,35 @@ module Server
 
   before_all do |env|
     env.response.content_type = "application/json"
+    if Kemal.config.env == "production"
+      user = "guest"
+    else
+      user = "admin"
+    end
+
+    env.set("user", user)
   end
 
   get "/api" do |env|
     {msg: "ok"}.to_json env.response
+  end
+
+  get "/api/lookup" do |env|
+    line = env.params.query.fetch("line", "")
+    from = env.params.query.fetch("from", "0").to_i
+    udic = env.params.query["udic"]?
+    user = env.get("user").as(String)
+
+    res = Engine.lookup(line, from, udic, user)
+    res.to_json env.response
+  end
+
+  get "/api/hanviet" do |env|
+    line = env.params.query.fetch("line", "")
+    udic = env.params.query["udic"]?
+
+    res = Engine.hanviet(line)
+    res.to_json env.response
   end
 
   get "/api/books" do |env|
@@ -62,6 +87,8 @@ module Server
   end
 
   get "/api/books/:slug/:site/:chap" do |env|
+    user = env.get("user").as(String)
+
     slug = env.params.url["slug"]
     site = env.params.url["site"]
 
@@ -85,7 +112,7 @@ module Server
       prev_slug: prev_chap.try(&.slug(site)),
       next_slug: next_chap.try(&.slug(site)),
       curr_slug: curr_chap.try(&.slug(site)),
-      lines:     Kernel.load_text(site, bsid, csid),
+      lines:     Kernel.load_text(site, bsid, csid, user),
       chidx:     cidx + 1,
       total:     chlist.size,
     }.to_json env.response

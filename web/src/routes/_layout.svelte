@@ -30,12 +30,15 @@
 
 <style lang="scss">
   main {
-    padding-top: 3rem;
+    // padding-top: 3rem;
+    &.tilt {
+      margin-right: 30rem;
+    }
   }
 </style>
 
 <svelte:window on:keydown={navigate} />
 
-<main>
+<main class="tilt">
   <slot />
 </main>

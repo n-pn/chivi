@@ -38,6 +38,8 @@
   export function render(tokens, active = false) {
     let res = ''
     let idx = 0
+    let pos = 0
+
     for (const [key, val, dic] of tokens) {
       switch (val.charAt(0)) {
         case '⟨':
@@ -49,9 +51,13 @@
       }
 
       const text = escape_html(val)
-      if (active)
-        res += `<x-v k=${escape_html(key)} i=${idx} d=${dic}>${text}</x-v>`
-      else res += text
+
+      if (active) {
+        const e_key = escape_html(key)
+        res += `<x-v data-k="${e_key}" data-i=${idx} data-d=${dic} data-p=${pos}>${text}</x-v>`
+      } else {
+        res += text
+      }
 
       switch (val.charAt(val.length - 1)) {
         case '⟩':
@@ -63,6 +69,7 @@
       }
 
       idx += 1
+      pos += key.length
     }
 
     return res
@@ -77,6 +84,8 @@
   import LinkBtn from '$mould/layout/header/LinkBtn.svelte'
   import Wrapper from '$mould/layout/Wrapper.svelte'
 
+  import Lookup from '$mould/layout/Lookup.svelte'
+
   export let book_slug
   export let book_name
   export let prev_slug
@@ -88,6 +97,10 @@
   export let total
 
   let cur = 0
+
+  let lookup_text = ''
+  let lookup_from = 0
+  let lookup_active = false
 
   function navigate(evt) {
     if (evt.ctrlKey || evt.altKey || evt.shiftKey) return
@@ -119,9 +132,9 @@
     }
   }
 
-  onMount(() => {
-    document.onselectionchange = selection
-  })
+  // onMount(() => {
+  //   document.onselectionchange = selection
+  // })
 
   function selection(evt) {
     const nodes = get_selected()
@@ -165,6 +178,14 @@
     while (node && !node.nextSibling) node = node.parentNode
     if (!node) return null
     return node.nextSibling
+  }
+
+  function lookup(evt, idx) {
+    lookup_text = lines[idx].map(([key]) => key).join('')
+
+    if (evt.target.nodeName !== 'X-V') return
+    lookup_from = +evt.target.dataset['p']
+    lookup_active = true
   }
 </script>
 
@@ -256,7 +277,7 @@
   :global(x-v) {
     border-bottom: 1px solid transparent;
 
-    &[d='1'] {
+    &[data-d='1'] {
       border-bottom-color: color(blue, 3);
       cursor: pointer;
       @include hover {
@@ -264,7 +285,7 @@
       }
     }
 
-    &[d='2'] {
+    &[data-d='2'] {
       border-bottom-color: color(teal, 3);
       cursor: pointer;
       @include hover {
@@ -272,7 +293,7 @@
       }
     }
 
-    &[d='3'] {
+    &[data-d='3'] {
       border-bottom-color: color(red, 3);
       cursor: pointer;
       @include hover {
@@ -280,7 +301,7 @@
       }
     }
 
-    &[d='4'] {
+    &[data-d='4'] {
       border-color: color(orange, 3);
       cursor: pointer;
       @include hover {
@@ -319,6 +340,12 @@
     <LinkBtn href="/{book_slug}/{curr_slug}?reload=true">
       <MIcon m-icon="refresh-ccw" />
     </LinkBtn>
+
+    <LinkBtn
+      href="/{book_slug}/{curr_slug}#lookup"
+      on:click={(lookup_active = !lookup_active)}>
+      <MIcon m-icon="info" />
+    </LinkBtn>
   </div>
 </Header>
 
@@ -326,11 +353,17 @@
   <article>
     {#each lines as line, idx}
       {#if idx == 0}
-        <h1 class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
+        <h1
+          class:_active={idx == cur}
+          on:mouseenter={() => (cur = idx)}
+          on:click={evt => lookup(evt, idx)}>
           {@html render(line, idx == cur)}
         </h1>
       {:else}
-        <p class:_active={idx == cur} on:mouseenter={() => (cur = idx)}>
+        <p
+          class:_active={idx == cur}
+          on:mouseenter={() => (cur = idx)}
+          on:click={evt => lookup(evt, idx)}>
           {@html render(line, idx == cur)}
         </p>
       {/if}
@@ -363,3 +396,5 @@
     {/if}
   </footer>
 </Wrapper>
+
+<Lookup text={lookup_text} from={lookup_from} bind:active={lookup_active} />
