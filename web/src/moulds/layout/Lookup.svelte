@@ -194,6 +194,7 @@
     line-height: 1.25rem;
     padding: 0.375rem 0.75rem;
     border-bottom: 1px solid color(neutral, 3);
+    margin-bottom: 0.75rem;
 
     @include bgcolor(neutral, 1);
     @include font-family(sans);
@@ -203,6 +204,7 @@
     }
 
     &._hv {
+      border-top: 1px solid color(neutral, 3);
       max-height: $hv-height;
     }
   }
@@ -218,9 +220,7 @@
     padding: 0.375rem 0.75rem;
     // padding-top: 0;
 
-    & + & {
-      border-top: 1px solid color(neutral, 3);
-    }
+    border-top: 1px solid color(neutral, 3);
   }
 
   .item {
