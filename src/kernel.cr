@@ -40,7 +40,11 @@ module Kernel
 
     crawler = CrInfo.new(site, bsid, book.updated_at)
 
-    unless crawler.cached?(update_time(book.status))
+    cache_time = update_time(book.status)
+
+    if chlists.exists?(site, bsid) && !crawler.cached?(book.status)
+      chlist = chlists.get(site, bsid)
+    else
       crawler.reset_cache
       crawler.mkdirs!
       crawler.crawl!(persist: true)
@@ -53,8 +57,6 @@ module Kernel
       serials.save(book)
 
       chlist = chlists.save(site, bsid, crawler.chlist)
-    else
-      chlist = chlists.get(site, bsid)
     end
 
     {book, site, bsid, chlist}

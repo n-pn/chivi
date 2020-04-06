@@ -17,7 +17,12 @@ class Chlists
     get(site, bsid)
   end
 
-  def get(site : String, bsid : String)
+  def exists?(site : String, bsid : String)
+    file = File.join(@dir, site, "#{bsid}.json")
+    File.exists?(file)
+  end
+
+  def get(site : String, bsid : String, time = 30.days)
     file_out = File.join(@dir, site, "#{bsid}.json")
 
     # if CrUtil.outdated?(file_out, time)

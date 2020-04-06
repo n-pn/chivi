@@ -79,7 +79,7 @@ outputs = [] of MyBook
 
 inputs.map do |slug, books|
   book = MyBook.new(books)
-  next if book.tally < 100
+  next if book.tally < 50
 
   puts "- #{slug}".colorize(:cyan)
 
