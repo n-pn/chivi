@@ -3,7 +3,7 @@
   import { stores } from '@sapper/app'
   const { page } = stores()
 
-  let tilt = false
+  import { lookup_pinned } from '../stores.js'
 
   $: {
     if (typeof gtag === 'function') {
@@ -30,13 +30,12 @@
 
 <style lang="scss">
   main {
-    padding-top: 3rem;
-    &.tilt {
+    &._tilt {
       margin-right: 30rem;
     }
   }
 
-  .wrapper {
+  :global(.wrapper) {
     padding: 0;
     margin: 0 auto;
     width: 54rem;
@@ -46,8 +45,6 @@
 
 <svelte:window on:keydown={navigate} />
 
-<main class:tilt>
-  <div class="wrapper">
-    <slot />
-  </div>
+<main class:_tilt={$lookup_pinned}>
+  <slot />
 </main>

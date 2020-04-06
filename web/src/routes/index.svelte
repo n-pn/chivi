@@ -159,56 +159,59 @@
 
 <Header />
 
-<div class="list">
-  {#each items as book}
-    <a class="book" href={book.vi_slug}>
-      <picture class="book-cover">
-        {#each book.covers as cover}
-          <source srcset={cover} />
-        {/each}
-        <img src="/img/nocover.png" alt={book.vi_title} />
-      </picture>
+<div class="wrapper">
+  <div class="list">
+    {#each items as book}
+      <a class="book" href={book.vi_slug}>
+        <picture class="book-cover">
+          {#each book.covers as cover}
+            <source srcset={cover} />
+          {/each}
+          <img src="/img/nocover.png" alt={book.vi_title} />
+        </picture>
 
-      <div class="book-title">{book.vi_title}</div>
-      <div class="book-genre">{book.vi_genre}</div>
-      <div class="book-score">
-        <span>⭐</span>
-        {book.score}
-      </div>
-    </a>
-  {/each}
-</div>
+        <div class="book-title">{book.vi_title}</div>
+        <div class="book-genre">{book.vi_genre}</div>
+        <div class="book-score">
+          <span>⭐</span>
+          {book.score}
+        </div>
+      </a>
+    {/each}
+  </div>
 
-<footer class="pagi">
-  {#if page == 1}
-    <button class="page" m-button="line" disabled>
-      <MIcon m-icon="chevrons-left" />
-    </button>
-  {:else}
-    <a class="page" m-button="line" href={page_url(1, sort)}>
-      <MIcon m-icon="chevrons-left" />
-    </a>
-  {/if}
-
-  {#each pages as idx}
-    {#if page == idx}
-      <button class="page" m-button="line primary" disabled>
-        <span>{idx}</span>
+  <footer class="pagi">
+    {#if page == 1}
+      <button class="page" m-button="line" disabled>
+        <MIcon m-icon="chevrons-left" />
       </button>
     {:else}
-      <a class="page" m-button="line" href={page_url(idx, sort)}>
-        <span>{idx}</span>
+      <a class="page" m-button="line" href={page_url(1, sort)}>
+        <MIcon m-icon="chevrons-left" />
       </a>
     {/if}
-  {/each}
-  {#if page == page_max}
-    <button class="page" m-button="line" disabled>
-      <MIcon m-icon="chevrons-right" />
-    </button>
-  {:else}
-    <a class="page" m-button="line" href={page_url(page_max, sort)}>
-      <MIcon m-icon="chevrons-right" />
-    </a>
-  {/if}
 
-</footer>
+    {#each pages as idx}
+      {#if page == idx}
+        <button class="page" m-button="line primary" disabled>
+          <span>{idx}</span>
+        </button>
+      {:else}
+        <a class="page" m-button="line" href={page_url(idx, sort)}>
+          <span>{idx}</span>
+        </a>
+      {/if}
+    {/each}
+    {#if page == page_max}
+      <button class="page" m-button="line" disabled>
+        <MIcon m-icon="chevrons-right" />
+      </button>
+    {:else}
+      <a class="page" m-button="line" href={page_url(page_max, sort)}>
+        <MIcon m-icon="chevrons-right" />
+      </a>
+    {/if}
+
+  </footer>
+
+</div>

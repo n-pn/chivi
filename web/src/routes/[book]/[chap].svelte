@@ -83,6 +83,8 @@
   import Header from '$mould/layout/Header.svelte'
   import Lookup from '$mould/layout/Lookup.svelte'
 
+  import { lookup_active, lookup_line, lookup_from } from '../../stores.js'
+
   export let book_slug
   export let book_name
   export let prev_slug
@@ -94,10 +96,6 @@
   export let total
 
   let cur = 0
-
-  let lookup_text = ''
-  let lookup_from = 0
-  let lookup_active = false
 
   function navigate(evt) {
     if (evt.ctrlKey || evt.altKey || evt.shiftKey) return
@@ -178,11 +176,14 @@
   }
 
   function lookup(evt, idx) {
-    lookup_text = lines[idx].map(([key]) => key).join('')
+    lookup_line.set(lines[idx])
+    lookup_active.set(true)
 
-    if (evt.target.nodeName !== 'X-V') return
-    lookup_from = +evt.target.dataset['p']
-    lookup_active = true
+    if (evt.target.nodeName !== 'X-V') {
+      lookup_from.set(0)
+    } else {
+      lookup_from.set(+evt.target.dataset['p'])
+    }
   }
 </script>
 
@@ -341,57 +342,61 @@
 
     <button
       class="header-item"
-      class:_active={lookup_active}
-      on:click={() => (lookup_active = !lookup_active)}>
+      class:_active={$lookup_active}
+      on:click={() => lookup_active.set(x => !x)}>
       <MIcon m-icon="info" />
     </button>
   </div>
 </Header>
 
-<article>
-  {#each lines as line, idx}
-    {#if idx == 0}
-      <h1
-        class:_active={idx == cur}
-        on:mouseenter={() => (cur = idx)}
-        on:click={evt => lookup(evt, idx)}>
-        {@html render(line, idx == cur)}
-      </h1>
+<div class="wrapper">
+  <article>
+    {#each lines as line, idx}
+      {#if idx == 0}
+        <h1
+          class:_active={idx == cur}
+          on:mouseenter={() => (cur = idx)}
+          on:click={evt => lookup(evt, idx)}>
+          {@html render(line, idx == cur)}
+        </h1>
+      {:else}
+        <p
+          class:_active={idx == cur}
+          on:mouseenter={() => (cur = idx)}
+          on:click={evt => lookup(evt, idx)}>
+          {@html render(line, idx == cur)}
+        </p>
+      {/if}
+    {/each}
+  </article>
+
+  <footer>
+    {#if prev_slug}
+      <a m-button="line" href="/{book_slug}/{prev_slug}">
+        <MIcon m-icon="chevron-left" />
+        <span>Trước</span>
+      </a>
     {:else}
-      <p
-        class:_active={idx == cur}
-        on:mouseenter={() => (cur = idx)}
-        on:click={evt => lookup(evt, idx)}>
-        {@html render(line, idx == cur)}
-      </p>
+      <a m-button="line" href="/{book_slug}">
+        <MIcon m-icon="list" />
+        <span>Mục lục</span>
+      </a>
     {/if}
-  {/each}
-</article>
 
-<footer>
-  {#if prev_slug}
-    <a m-button="line" href="/{book_slug}/{prev_slug}">
-      <MIcon m-icon="chevron-left" />
-      <span>Trước</span>
-    </a>
-  {:else}
-    <a m-button="line" href="/{book_slug}">
-      <MIcon m-icon="list" />
-      <span>Mục lục</span>
-    </a>
-  {/if}
+    {#if next_slug}
+      <a m-button="line primary" href="/{book_slug}/{next_slug}">
+        <span>Tiếp</span>
+        <MIcon m-icon="chevron-right" />
+      </a>
+    {:else if prev_slug}
+      <a m-button="line" href="/{book_slug}">
+        <MIcon m-icon="list" />
+        <span>Mục lục</span>
+      </a>
+    {/if}
+  </footer>
+</div>
 
-  {#if next_slug}
-    <a m-button="line primary" href="/{book_slug}/{next_slug}">
-      <span>Tiếp</span>
-      <MIcon m-icon="chevron-right" />
-    </a>
-  {:else if prev_slug}
-    <a m-button="line" href="/{book_slug}">
-      <MIcon m-icon="list" />
-      <span>Mục lục</span>
-    </a>
-  {/if}
-</footer>
-
-<Lookup text={lookup_text} from={lookup_from} bind:active={lookup_active} />
+{#if $lookup_active}
+  <Lookup />
+{/if}

@@ -32,12 +32,14 @@
   <title>{status}</title>
 </svelte:head>
 
-<article>
-  <h1>{status}</h1>
+<div class="wrapper">
+  <article>
+    <h1>{status}</h1>
 
-  <p>{error.message}</p>
+    <p>{error.message}</p>
 
-  {#if dev && error.stack}
-    <pre>{error.stack}</pre>
-  {/if}
-</article>
+    {#if dev && error.stack}
+      <pre>{error.stack}</pre>
+    {/if}
+  </article>
+</div>

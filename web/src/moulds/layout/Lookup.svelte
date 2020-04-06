@@ -1,100 +1,130 @@
 <script context="module">
-  async function get_hanviet(line) {
-    const res = await fetch(`/api/hanviet?line=${line}`)
-    const data = await res.json()
+  // async function get_hanviet(line) {
+  //   const res = await fetch(`/api/hanviet?line=${line}`)
+  //   const data = await res.json()
 
-    const hanviet = []
-    let idx = 0
-    for (const [key, val, dic] of data) {
-      if (dic == 0) {
-        hanviet.push([val, -1])
-        idx += key.length
-      } else {
-        for (let v of val.split(' ')) {
-          hanviet.push([v, idx])
-          idx += 1
-        }
-      }
-    }
+  //   const hanviet = []
+  //   let idx = 0
+  //   for (const [key, val, dic] of data) {
+  //     if (dic == 0) {
+  //       hanviet.push([val, -1])
+  //       idx += key.length
+  //     } else {
+  //       for (let v of val.split(' ')) {
+  //         hanviet.push([v, idx])
+  //         idx += 1
+  //       }
+  //     }
+  //   }
 
-    return hanviet
-  }
+  //   return hanviet
+  // }
 
-  async function get_entries(line, from = 0) {
-    // const res = await fetch('/api/inspect', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ t: inp }),
-    // })
-
+  async function get_entries(line, from = 0, upto = from + 1) {
     // TODO: add udic
-    const res = await fetch(`/api/lookup?line=${line}&from=${from}`)
+    const res = await fetch(
+      `/api/lookup?line=${line}&from=${from}&upto=${upto}`
+    )
     const entries = await res.json()
-
     return entries
   }
 
-  function render_line(tokens, from, upto) {
-    let res = ''
-    for (const [val, idx] of tokens) {
-      if (idx < 0) res += val
-      else {
-        let klass = 'active'
-        if (idx < from || idx >= upto) klass = ''
+  function replace_tag(tag) {
+    return tags[tag] || tag
+  }
 
-        res += `<x-c class="${klass}" data-i="${idx}">${val}</x-c>`
+  function escape_html(str) {
+    return str.replace(/[&<>]/g, replace_tag)
+  }
+
+  function is_active(ax, ay, bx, by) {
+    if (bx >= ax && bx < ay) return '_active'
+    if (ay >= bx && ay < by) return '_active'
+    return ''
+  }
+
+  function render(tokens, from, upto) {
+    let zh = ''
+    let vi = ''
+
+    let idx = 0
+    let pos = 0
+
+    for (const [key, val, dic] of tokens) {
+      const e_key = escape_html(key)
+      const e_val = escape_html(val)
+
+      if (dic > 0) {
+        key.split().forEach((k, i) => {
+          let klass = is_active(from, upto, pos + i, pos + i + 1)
+          zh += `<x-zh class=${klass} data-p=${pos + i}>${escape_html(
+            k
+          )}</x-zh>`
+        })
+
+        let klass = is_active(from, upto, pos, pos + key.length)
+        vi += `<x-vi class=${klass} data-k="${e_key}" data-i=${idx} data-d=${dic} data-p=${pos}>${e_val}</x-vi>`
+      } else {
+        zh += e_key
+        vi += e_val
       }
+
+      idx += 1
+      pos += key.length
     }
 
-    return res
+    return [zh, vi]
   }
+
+  // function render_zh(tokens, from, upto) {
+  //   let res = ''
+  //   for (const [val, idx] of tokens) {
+  //     if (idx < 0) res += val
+  //     else {
+  //       let klass = 'active'
+  //       if (idx < from || idx >= upto) klass = ''
+
+  //       res += `<x-c class="${klass}" data-i="${idx}">${val}</x-c>`
+  //     }
+  //   }
+
+  //   return res
+  // }
 </script>
 
 <script>
   import MIcon from '$mould/shared/MIcon.svelte'
 
-  export let active = true
-  export let text = ''
-  export let from = 0
+  import {
+    lookup_active as active,
+    lookup_pinned as pinned,
+    lookup_line as line,
+    lookup_from as from,
+    lookup_udic as udic,
+  } from '../../stores.js'
 
-  let hanviet = []
+  let upto = $from + 1
+
+  // let hanviet = []
   let entries = []
-  let upto = 0
 
-  $: chinese = text.split('').map((x, i) => [x, i])
-  $: if (fetch && text !== '') lookup(text, from)
+  $: zh_text = $line.map(([zh]) => zh).join('')
+  $: [zh_html, vi_html] = render($line, $from, upto)
+  $: if (line !== []) lookup(zh_text, $from)
 
-  async function lookup(text, from) {
-    hanviet = await get_hanviet(text)
-    entries = await get_entries(text, from)
-    if (entries.length > 0) upto = from + +entries[0][0]
+  async function lookup(zh_text, from) {
+    // hanviet = await get_hanviet(text)
+    entries = await get_entries(zh_text, from)
+    if (entries.length > 0) upto = $from + +entries[0][0]
+    else upto = $from + 1
   }
 
   function handle_click(event) {
     const target = event.target
-    if (target.nodeName !== 'X-C') return
-    from = +target.dataset.i
+    // if (target.nodeName !== 'X-ZH') return
+    // if (target.nodeName !== 'X-ZH') return
+    from.set(+target.dataset.p)
   }
-
-  function chinese_entry(from, upto) {
-    return chinese
-      .slice(from, upto)
-      .map(x => x[0])
-      .join('')
-  }
-
-  // function hanviet_text(idx, length) {
-  //   let index = 0
-  //   while (hanviet[index][1] !== idx) index += 1
-  //   if (index + length >= hanviet.length) return ''
-
-  //   let output = ''
-  //   while (hanviet[index][1] < idx + length) {
-  //     output += hanviet[index][0]
-  //     index += 1
-  //   }
-  //   return output.trim().toLowerCase()
-  // }
 
   function handle_keypress(e) {
     if (e.keyCode != 92) return
@@ -127,9 +157,10 @@
     }
   }
 
-  $zh-height: 4.5rem;
-  $hv-height: 5.875rem;
   $hd-height: 3rem;
+
+  $vi-height: 9rem;
+  $zh-height: 9rem;
 
   header {
     display: flex;
@@ -160,24 +191,25 @@
       padding: 0 0.5rem;
       @include color(neutral, 6);
       @include bgcolor(none);
-      @include hover {
+      &._active,
+      &:hover {
         @include color(primary, 6);
       }
     }
   }
 
   section {
-    height: calc(100% - #{$zh-height + $hv-height + $hd-height});
+    height: calc(100% - #{$hd-height + $zh-height + $vi-height - 1.5rem});
     overflow-y: scroll;
   }
 
-  :global(x-c) {
+  :global(x-zh) {
     cursor: pointer;
     @include hover {
       @include color(primary, 5);
     }
 
-    &.active {
+    &._active {
       @include color(primary, 5);
     }
   }
@@ -199,13 +231,53 @@
     @include bgcolor(neutral, 1);
     @include font-family(sans);
 
-    &._zh {
-      max-height: $zh-height;
+    &._vi {
+      max-height: $vi-height;
     }
 
-    &._hv {
+    &._zh {
+      max-height: $zh-height;
       border-top: 1px solid color(neutral, 3);
-      max-height: $hv-height;
+    }
+  }
+
+  :global(x-vi) {
+    border-bottom: 1px solid transparent;
+
+    &[data-d='1'] {
+      border-bottom-color: color(blue, 3);
+      cursor: pointer;
+      &._active,
+      &:hover {
+        color: color(blue, 6);
+      }
+    }
+
+    &[data-d='2'] {
+      border-bottom-color: color(teal, 3);
+      cursor: pointer;
+      &._active,
+      &:hover {
+        color: color(teal, 6);
+      }
+    }
+
+    &[data-d='3'] {
+      border-bottom-color: color(red, 3);
+      cursor: pointer;
+      &._active,
+      &:hover {
+        color: color(red, 6);
+      }
+    }
+
+    &[data-d='4'] {
+      border-color: color(orange, 3);
+      cursor: pointer;
+      &._active,
+      &:hover {
+        color: color(orange, 6);
+      }
     }
   }
 
@@ -238,11 +310,11 @@
 
 <svelte:window on:keypress={handle_keypress} />
 
-<aside class:_active={active}>
+<aside class:_active={$active}>
   <header>
     <h2>Giải nghĩa</h2>
 
-    <button on:click={() => (active = !active)}>
+    <button class:_active={$pinned} on:click={() => pinned.update(x => !x)}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
@@ -261,24 +333,24 @@
       </svg>
     </button>
 
-    <button on:click={() => (active = !active)}>
+    <button on:click={() => active.set(false)}>
       <MIcon m-icon="x" />
     </button>
 
   </header>
 
+  <div class="input _vi" on:click={handle_click}>
+    {@html vi_html}
+  </div>
+
   <div class="input _zh" on:click={handle_click}>
-    {@html render_line(chinese, from, upto)}
+    {@html zh_html}
   </div>
 
-  <div class="input _hv" on:click={handle_click}>
-    {@html render_line(hanviet, from, upto)}
-  </div>
-
-  <section>
+  <section class="lookup">
     {#each entries as [len, items]}
       <div class="entry">
-        <h3>{chinese_entry(from, from + len)}</h3>
+        <h3>{zh_text.substring($from, $from + len)}</h3>
         {#each items as [name, value]}
           <div class="item">
             <h4>{name}</h4>

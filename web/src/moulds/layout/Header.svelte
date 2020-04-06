@@ -1,16 +1,5 @@
 <script>
-  let header
-  let scroll = 0
-
-  function scrolling(evt) {
-    const st = window.pageYOffset || document.documentElement.scrollTop
-    if (st > scroll) {
-      header.classList.remove('fixed')
-    } else {
-      header.classList.add('fixed')
-    }
-    scroll = st <= 0 ? 0 : st
-  }
+  import { lookup_pinned } from '../../stores.js'
 </script>
 
 <style lang="scss">
@@ -19,7 +8,7 @@
   $gutter: ($outer-height - $inner-height) / 2;
 
   .header {
-    position: absolute;
+    position: sticky;
     top: 0;
     left: 0;
     width: 100%;
@@ -28,8 +17,8 @@
     @include bgcolor(primary, 7);
     @include shadow(2);
 
-    :global(&.fixed) {
-      position: fixed;
+    &._tilt {
+      margin-right: 30rem;
     }
   }
 
@@ -104,9 +93,7 @@
   }
 </style>
 
-<svelte:window on:scroll={scrolling} />
-
-<header class="header" bind:this={header}>
+<header class="header" class:_tilt={$lookup_pinned}>
   <nav class="header-nav">
     <slot>
       <div class="left">
