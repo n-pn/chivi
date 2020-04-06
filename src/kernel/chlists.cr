@@ -20,7 +20,6 @@ class Chlists
   def get(site : String, bsid : String, time = 30.days)
     file_out = File.join(@dir, site, "#{bsid}.json")
     return nil if CrUtil.outdated?(file_out, time)
-
     Array(VpChap).from_json File.read(file_out)
   end
 

@@ -19,11 +19,11 @@ module Kernel
   def update_time(status)
     case status
     when 0
-      2.hours
+      5.hours
     when 1
-      4.days
+      5.days
     else
-      6.weeks
+      5.weeks
     end
   end
 
@@ -39,9 +39,10 @@ module Kernel
     return {book, site, "", [] of VpChap} if bsid.nil?
 
     cache_time = update_time(book.status)
-    chlist = chlists.get(site, bsid, time: cache_time)
 
-    unless chlist
+    if chlist = chlists.get(site, bsid, time: cache_time)
+      puts "Cached!"
+    else
       crawler = CrInfo.new(site, bsid, book.updated_at)
       crawler.reset_cache
       crawler.mkdirs!
