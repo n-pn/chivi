@@ -343,7 +343,7 @@
     <button
       class="header-item"
       class:_active={$lookup_active}
-      on:click={() => lookup_active.set(x => !x)}>
+      on:click={() => lookup_active.update(x => !x)}>
       <MIcon m-icon="info" />
     </button>
   </div>
@@ -397,6 +397,4 @@
   </footer>
 </div>
 
-{#if $lookup_active}
-  <Lookup />
-{/if}
+<Lookup />

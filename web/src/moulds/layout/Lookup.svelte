@@ -86,15 +86,13 @@
   function handle_click(event) {
     const target = event.target
     if (target.nodeName == 'X-ZH' || target.nodeName == 'X-VI') {
-      const p = +target.dataset['p']
-      console.log({ p })
-      from.set(p)
+      from.set(+target.dataset['p'])
     }
   }
 
   function handle_keypress(e) {
     if (e.keyCode != 92) return
-    active = !active
+    active.update(x => !x)
   }
 
   function pin_sidebar() {
@@ -102,7 +100,6 @@
   }
 
   function close_sidebar() {
-    pinned.set(false)
     active.set(false)
   }
 </script>
@@ -134,14 +131,11 @@
 
   $hd-height: 3rem;
 
-  $vi-height: 9rem;
-  $zh-height: 9rem;
-
   header {
     display: flex;
     height: $hd-height;
     padding: 0.375rem 0.75rem;
-    border-bottom: 1px solid color(neutral, 2);
+    border-bottom: 1px solid color(neutral, 3);
 
     :global(svg) {
       display: inline-block;
@@ -173,28 +167,8 @@
     }
   }
 
-  section {
-    height: calc(100% - #{$hd-height + $zh-height + $vi-height - 1.5rem});
-    overflow-y: scroll;
-  }
-
-  :global(x-zh) {
-    cursor: pointer;
-    @include hover {
-      @include color(primary, 5);
-    }
-
-    &._active {
-      @include color(primary, 5);
-    }
-  }
-
-  h4 {
-    font-weight: 500;
-    text-transform: uppercase;
-    @include color(neutral, 6);
-    @include font-size(sm);
-  }
+  $vi-height: 0.75rem + (1.25 * 7rem);
+  $zh-height: 0.75rem + (1.25 * 5rem);
 
   .input {
     overflow-y: scroll;
@@ -214,6 +188,31 @@
       max-height: $zh-height;
       border-top: 1px solid color(neutral, 3);
     }
+  }
+
+  $top-height: $hd-height + $zh-height + $vi-height + 1.5rem;
+
+  section {
+    height: calc(100% - #{$top-height});
+    overflow-y: scroll;
+  }
+
+  :global(x-zh) {
+    cursor: pointer;
+    @include hover {
+      @include color(primary, 5);
+    }
+
+    &._active {
+      @include color(primary, 5);
+    }
+  }
+
+  h4 {
+    font-weight: 500;
+    text-transform: uppercase;
+    @include color(neutral, 6);
+    @include font-size(sm);
   }
 
   :global(x-vi) {

@@ -1,5 +1,5 @@
 <script>
-  import { lookup_pinned } from '../../stores.js'
+  import { lookup_pinned, lookup_active } from '../../stores.js'
 </script>
 
 <style lang="scss">
@@ -18,7 +18,9 @@
     @include shadow(2);
 
     &._tilt {
-      margin-right: 30rem;
+      @include screen-min(lg) {
+        margin-right: 30rem;
+      }
     }
   }
 
@@ -93,7 +95,7 @@
   }
 </style>
 
-<header class="header" class:_tilt={$lookup_pinned}>
+<header class="header" class:_tilt={$lookup_pinned && $lookup_active}>
   <nav class="header-nav">
     <slot>
       <div class="left">
