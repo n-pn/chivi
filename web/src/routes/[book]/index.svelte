@@ -74,6 +74,10 @@
   export let bsid
   export let chlist = []
 
+  import { onMount } from 'svelte'
+  import { lookup_active } from '../../stores.js'
+  onMount(() => lookup_active.set(false))
+
   $: volumes = map_volumes(chlist)
   $: latests = get_latests(chlist)
 </script>

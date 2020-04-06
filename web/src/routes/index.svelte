@@ -36,6 +36,10 @@
   $: page_max = Math.floor((total - 1) / 20) + 1
   $: pages = make_pages(page, page_max)
 
+  import { onMount } from 'svelte'
+  import { lookup_active } from '../stores.js'
+  onMount(() => lookup_active.set(false))
+
   function make_pages(page_now, page_max) {
     let page_from = page_now - 2
     if (page_from < 1) page_from = 1
