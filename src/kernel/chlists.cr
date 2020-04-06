@@ -12,35 +12,16 @@ class Chlists
   def get(book : VpBook)
     site = book.prefer_site
     bsid = book.prefer_bsid
-    return [] of VpChap if bsid.empty?
+    return nil if bsid.empty?
 
     get(site, bsid)
   end
 
-  def exists?(site : String, bsid : String)
-    file = File.join(@dir, site, "#{bsid}.json")
-    File.exists?(file)
-  end
-
   def get(site : String, bsid : String, time = 30.days)
     file_out = File.join(@dir, site, "#{bsid}.json")
+    return nil if CrUtil.outdated?(file_out, time)
 
-    # if CrUtil.outdated?(file_out, time)
-    #   puts "- <#{site}/#{bsid}> is outdated, refreshing...".colorize(:blue)
-    #   crawler = CrInfo.new(site, bsid)
-
-    #   if crawler.cached?(time)
-    #     crawler.load_cached!(chlist: true)
-    #   else
-    #     crawler.reset_cache
-    #     crawler.mkdirs!
-    #     crawler.crawl!(persist: true)
-    #   end
-
-    #   save(site, bsid, crawler.chlist)
-    # else
     Array(VpChap).from_json File.read(file_out)
-    # end
   end
 
   def save(site, bsid, inp_list : CrInfo::ChList)

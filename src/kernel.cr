@@ -38,13 +38,11 @@ module Kernel
     bsid = book.crawl_links[site]?
     return {book, site, "", [] of VpChap} if bsid.nil?
 
-    crawler = CrInfo.new(site, bsid, book.updated_at)
-
     cache_time = update_time(book.status)
+    chlist = chlists.get(site, bsid, time: cache_time)
 
-    if chlists.exists?(site, bsid) && !crawler.cached?(book.status)
-      chlist = chlists.get(site, bsid)
-    else
+    unless chlist
+      crawler = CrInfo.new(site, bsid, book.updated_at)
       crawler.reset_cache
       crawler.mkdirs!
       crawler.crawl!(persist: true)

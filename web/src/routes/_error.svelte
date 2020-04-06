@@ -26,6 +26,10 @@
       font-size: 4em;
     }
   }
+
+  article {
+    padding: 2rem;
+  }
 </style>
 
 <svelte:head>
