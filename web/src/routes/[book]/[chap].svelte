@@ -176,6 +176,8 @@
   }
 
   function lookup(evt, idx) {
+    // if (!$lookup_active) return
+
     lookup_line.set(lines[idx])
     lookup_active.set(true)
 
@@ -307,11 +309,6 @@
       }
     }
   }
-
-  .index {
-    padding: 0 0.375rem;
-    @include truncate(25vw);
-  }
 </style>
 
 <svelte:head>
@@ -326,13 +323,9 @@
       <img src="/logo.svg" alt="logo" />
     </a>
 
-    <a href="/{book_slug}" class="header-item _active">
-      <span>{book_name}</span>
-    </a>
+    <a href="/{book_slug}" class="header-item">{book_name}</a>
 
-    <!-- <LinkBtn href="/{book_slug}/{curr_slug}"> -->
-    <span class="index">Ch {chidx}/{total}</span>
-    <!-- </LinkBtn> -->
+    <span class="header-item _active _index">Ch {chidx}/{total}</span>
   </div>
 
   <div class="right">

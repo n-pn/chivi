@@ -167,21 +167,25 @@
     }
   }
 
-  $vi-height: 0.75rem + (1.25 * 7rem);
-  $zh-height: 0.75rem + (1.25 * 5rem);
+  $vi-height: 0.75rem + (1.25 * 8rem);
+  $zh-height: 0.75rem + (1.25 * 6rem);
 
   .input {
-    overflow-y: scroll;
+    overflow-y: auto;
     line-height: 1.25rem;
     padding: 0.375rem 0.75rem;
-    border-bottom: 1px solid color(neutral, 3);
-    margin-bottom: 0.75rem;
+    // margin: 0.75rem;
+    // border: 1px solid color(neutral, 3);
+    // margin-bottom: 0.75rem;
 
+    @include radius();
     @include bgcolor(neutral, 1);
-    @include font-family(sans);
+    // @include font-family(sans);
 
     &._vi {
       max-height: $vi-height;
+      border-bottom: 1px solid color(neutral, 3);
+      margin-bottom: 0.75rem;
     }
 
     &._zh {
@@ -190,11 +194,11 @@
     }
   }
 
-  $top-height: $hd-height + $zh-height + $vi-height + 1.5rem;
+  $top-height: $hd-height + $zh-height + $vi-height;
 
   section {
-    height: calc(100% - #{$top-height});
-    overflow-y: scroll;
+    height: calc(100% - #{$hd-height});
+    overflow-y: auto;
   }
 
   :global(x-zh) {
@@ -313,15 +317,16 @@
 
   </header>
 
-  <div class="input _vi" on:click={handle_click}>
-    {@html vi_html}
-  </div>
-
-  <div class="input _zh" on:click={handle_click}>
-    {@html zh_html}
-  </div>
-
   <section class="lookup">
+
+    <div class="input _vi" on:click={handle_click}>
+      {@html vi_html}
+    </div>
+
+    <div class="input _zh" on:click={handle_click}>
+      {@html zh_html}
+    </div>
+
     {#each entries as [len, items]}
       <div class="entry">
         <h3>{zh_text.substring($from, $from + len)}</h3>
