@@ -1,25 +1,4 @@
 <script context="module">
-  // async function get_hanviet(line) {
-  //   const res = await fetch(`/api/hanviet?line=${line}`)
-  //   const data = await res.json()
-
-  //   const hanviet = []
-  //   let idx = 0
-  //   for (const [key, val, dic] of data) {
-  //     if (dic == 0) {
-  //       hanviet.push([val, -1])
-  //       idx += key.length
-  //     } else {
-  //       for (let v of val.split(' ')) {
-  //         hanviet.push([v, idx])
-  //         idx += 1
-  //       }
-  //     }
-  //   }
-
-  //   return hanviet
-  // }
-
   async function get_entries(line, from = 0, upto = from + 1) {
     // TODO: add udic
     const res = await fetch(
@@ -39,7 +18,7 @@
 
   function is_active(ax, ay, bx, by) {
     if (bx >= ax && bx < ay) return '_active'
-    if (ay >= bx && ay < by) return '_active'
+    // if (ay >= bx && ay < by) return '_active'
     return ''
   }
 
@@ -55,15 +34,15 @@
       const e_val = escape_html(val)
 
       if (dic > 0) {
-        key.split().forEach((k, i) => {
+        key.split('').forEach((k, i) => {
           let klass = is_active(from, upto, pos + i, pos + i + 1)
-          zh += `<x-zh class=${klass} data-p=${pos + i}>${escape_html(
+          zh += `<x-zh class="${klass}" data-p="${pos + i}">${escape_html(
             k
           )}</x-zh>`
         })
 
         let klass = is_active(from, upto, pos, pos + key.length)
-        vi += `<x-vi class=${klass} data-k="${e_key}" data-i=${idx} data-d=${dic} data-p=${pos}>${e_val}</x-vi>`
+        vi += `<x-vi class="${klass}" data-k="${e_key}" data-i="${idx}" data-d="${dic}" data-p="${pos}">${e_val}</x-vi>`
       } else {
         zh += e_key
         vi += e_val
@@ -75,21 +54,6 @@
 
     return [zh, vi]
   }
-
-  // function render_zh(tokens, from, upto) {
-  //   let res = ''
-  //   for (const [val, idx] of tokens) {
-  //     if (idx < 0) res += val
-  //     else {
-  //       let klass = 'active'
-  //       if (idx < from || idx >= upto) klass = ''
-
-  //       res += `<x-c class="${klass}" data-i="${idx}">${val}</x-c>`
-  //     }
-  //   }
-
-  //   return res
-  // }
 </script>
 
 <script>
@@ -121,14 +85,25 @@
 
   function handle_click(event) {
     const target = event.target
-    // if (target.nodeName !== 'X-ZH') return
-    // if (target.nodeName !== 'X-ZH') return
-    from.set(+target.dataset.p)
+    if (target.nodeName == 'X-ZH' || target.nodeName == 'X-VI') {
+      const p = +target.dataset['p']
+      console.log({ p })
+      from.set(p)
+    }
   }
 
   function handle_keypress(e) {
     if (e.keyCode != 92) return
     active = !active
+  }
+
+  function pin_sidebar() {
+    pinned.update(x => !x)
+  }
+
+  function close_sidebar() {
+    pinned.set(false)
+    active.set(false)
   }
 </script>
 
@@ -314,7 +289,7 @@
   <header>
     <h2>Giải nghĩa</h2>
 
-    <button class:_active={$pinned} on:click={() => pinned.update(x => !x)}>
+    <button class:_active={$pinned} on:click={pin_sidebar}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
@@ -333,7 +308,7 @@
       </svg>
     </button>
 
-    <button on:click={() => active.set(false)}>
+    <button on:click={close_sidebar}>
       <MIcon m-icon="x" />
     </button>
 
