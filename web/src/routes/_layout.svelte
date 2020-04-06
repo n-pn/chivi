@@ -3,8 +3,6 @@
   import { stores } from '@sapper/app'
   const { page } = stores()
 
-  import Wrapper from '$mould/layout/Wrapper.svelte'
-
   let tilt = false
 
   $: {
@@ -32,15 +30,24 @@
 
 <style lang="scss">
   main {
-    // padding-top: 3rem;
+    padding-top: 3rem;
     &.tilt {
       margin-right: 30rem;
     }
+  }
+
+  .wrapper {
+    padding: 0;
+    margin: 0 auto;
+    width: 54rem;
+    max-width: 100%;
   }
 </style>
 
 <svelte:window on:keydown={navigate} />
 
 <main class:tilt>
-  <slot />
+  <div class="wrapper">
+    <slot />
+  </div>
 </main>

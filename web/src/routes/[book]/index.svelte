@@ -68,7 +68,6 @@
   import MIcon from '$mould/shared/MIcon.svelte'
   import Header from '$mould/layout/Header.svelte'
   import LinkBtn from '$mould/layout/header/LinkBtn.svelte'
-  import Wrapper from '$mould/layout/Wrapper.svelte'
 
   export let book
   export let site
@@ -275,84 +274,100 @@
 
 <Header>
   <div class="left">
-    <LinkBtn href="/">
+    <a href="/" class="header-item">
       <img src="/logo.svg" alt="logo" />
-    </LinkBtn>
+    </a>
 
-    <LinkBtn href="/{book.vi_slug}" class="active">
+    <a href="/{book.vi_slug}" class="header-item _active">
       <span>{book.vi_title}</span>
-    </LinkBtn>
+    </a>
   </div>
 </Header>
 
-<Wrapper>
-  <div class="info">
-    <picture class="cover">
-      {#each book.covers as cover}
-        <source srcset={cover} />
-      {/each}
-      <img src="img/nocover.png" alt={book.vi_title} />
-    </picture>
+<div class="info">
+  <picture class="cover">
+    {#each book.covers as cover}
+      <source srcset={cover} />
+    {/each}
+    <img src="img/nocover.png" alt={book.vi_title} />
+  </picture>
 
-    <div class="intro">
-      <h1 class="title">{book.vi_title} - {book.vi_author}</h1>
-      <h2 class="subtitle">{book.zh_title} — {book.zh_author}</h2>
-      <div class="metadata">
-        <span class="genre">
-          <MIcon m-icon="book" />
-          {book.vi_genre}
-        </span>
+  <div class="intro">
+    <h1 class="title">{book.vi_title} - {book.vi_author}</h1>
+    <h2 class="subtitle">{book.zh_title} — {book.zh_author}</h2>
+    <div class="metadata">
+      <span class="genre">
+        <MIcon m-icon="book" />
+        {book.vi_genre}
+      </span>
 
-        <span class="chap_count">
-          <MIcon m-icon="list" />
-          {book.chap_count} chương
-        </span>
+      <span class="chap_count">
+        <MIcon m-icon="list" />
+        {book.chap_count} chương
+      </span>
 
-        <span class="status">
-          <MIcon m-icon="activity" />
-          {book_status(book.status)}
-        </span>
+      <span class="status">
+        <MIcon m-icon="activity" />
+        {book_status(book.status)}
+      </span>
 
-        <time class="updated_at" datetime={new Date(book.updated_at)}>
-          <MIcon m-icon="clock" />
-          {relative_time(book.updated_at)}
-        </time>
-
-      </div>
+      <time class="updated_at" datetime={new Date(book.updated_at)}>
+        <MIcon m-icon="clock" />
+        {relative_time(book.updated_at)}
+      </time>
 
     </div>
-  </div>
 
-  <div class="summary">
-    <h2>Giới thiệu:</h2>
-    {#each book.vi_intro.split('\n') as line}
-      <p>{line}</p>
-    {/each}
   </div>
+</div>
 
-  <div class="tabs">
-    <span>Chọn nguồn:</span>
-    {#each Object.keys(book.crawl_links) as crawl}
+<div class="summary">
+  <h2>Giới thiệu:</h2>
+  {#each book.vi_intro.split('\n') as line}
+    <p>{line}</p>
+  {/each}
+</div>
+
+<div class="tabs">
+  <span>Chọn nguồn:</span>
+  {#each Object.keys(book.crawl_links) as crawl}
+    <a
+      class="site"
+      class:_active={site == crawl}
+      href="/{book.vi_slug}?site={crawl}">
+      {crawl}
+    </a>
+  {/each}
+</div>
+
+<h2 class="content" data-site={site} data-bsid={bsid}>
+  Mục lục
+  <span class="label">({chlist.length} chương)</span>
+</h2>
+
+<h3>
+  Mới nhất
+  <span class="label">({latests.length} chương)</span>
+</h3>
+<div class="chap-list">
+  {#each latests as chap}
+    <div class="chap-item">
       <a
-        class="site"
-        class:_active={site == crawl}
-        href="/{book.vi_slug}?site={crawl}">
-        {crawl}
+        class="chap-link"
+        href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
+        <div class="chap-title">{chap.vi_title}</div>
       </a>
-    {/each}
-  </div>
+    </div>
+  {/each}
+</div>
 
-  <h2 class="content" data-site={site} data-bsid={bsid}>
-    Mục lục
-    <span class="label">({chlist.length} chương)</span>
-  </h2>
-
+{#each Object.entries(volumes) as [label, chlist]}
   <h3>
-    Mới nhất
-    <span class="label">({latests.length} chương)</span>
+    {label}
+    <span class="label">({chlist.length} chương)</span>
   </h3>
   <div class="chap-list">
-    {#each latests as chap}
+    {#each chlist as chap}
       <div class="chap-item">
         <a
           class="chap-link"
@@ -362,22 +377,4 @@
       </div>
     {/each}
   </div>
-
-  {#each Object.entries(volumes) as [label, chlist]}
-    <h3>
-      {label}
-      <span class="label">({chlist.length} chương)</span>
-    </h3>
-    <div class="chap-list">
-      {#each chlist as chap}
-        <div class="chap-item">
-          <a
-            class="chap-link"
-            href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
-            <div class="chap-title">{chap.vi_title}</div>
-          </a>
-        </div>
-      {/each}
-    </div>
-  {/each}
-</Wrapper>
+{/each}

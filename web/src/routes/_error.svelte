@@ -26,27 +26,18 @@
       font-size: 4em;
     }
   }
-
-  div {
-    display: flex;
-    width: 48rem;
-    margin: 1rem auto;
-  }
 </style>
 
 <svelte:head>
   <title>{status}</title>
 </svelte:head>
 
-<div>
-  <article>
-    <h1>{status}</h1>
+<article>
+  <h1>{status}</h1>
 
-    <p>{error.message}</p>
+  <p>{error.message}</p>
 
-    {#if dev && error.stack}
-      <pre>{error.stack}</pre>
-    {/if}
-  </article>
-
-</div>
+  {#if dev && error.stack}
+    <pre>{error.stack}</pre>
+  {/if}
+</article>

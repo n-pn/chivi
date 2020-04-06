@@ -81,9 +81,6 @@
 
   import MIcon from '$mould/shared/MIcon.svelte'
   import Header from '$mould/layout/Header.svelte'
-  import LinkBtn from '$mould/layout/header/LinkBtn.svelte'
-  import Wrapper from '$mould/layout/Wrapper.svelte'
-
   import Lookup from '$mould/layout/Lookup.svelte'
 
   export let book_slug
@@ -324,77 +321,77 @@
 
 <Header>
   <div class="left">
-    <LinkBtn href="/">
+    <a href="/" class="header-item">
       <img src="/logo.svg" alt="logo" />
-    </LinkBtn>
+    </a>
 
-    <LinkBtn href="/{book_slug}" class="active">
+    <a href="/{book_slug}" class="header-item _active">
       <span>{book_name}</span>
-    </LinkBtn>
+    </a>
 
     <!-- <LinkBtn href="/{book_slug}/{curr_slug}"> -->
     <span class="index">Ch {chidx}/{total}</span>
     <!-- </LinkBtn> -->
   </div>
-  <div class="right">
-    <LinkBtn href="/{book_slug}/{curr_slug}?reload=true">
-      <MIcon m-icon="refresh-ccw" />
-    </LinkBtn>
 
-    <LinkBtn
-      href="/{book_slug}/{curr_slug}#lookup"
-      on:click={(lookup_active = !lookup_active)}>
+  <div class="right">
+    <a href="/{book_slug}/{curr_slug}?reload=true" class="header-item">
+      <MIcon m-icon="refresh-ccw" />
+    </a>
+
+    <button
+      class="header-item"
+      class:_active={lookup_active}
+      on:click={() => (lookup_active = !lookup_active)}>
       <MIcon m-icon="info" />
-    </LinkBtn>
+    </button>
   </div>
 </Header>
 
-<Wrapper>
-  <article>
-    {#each lines as line, idx}
-      {#if idx == 0}
-        <h1
-          class:_active={idx == cur}
-          on:mouseenter={() => (cur = idx)}
-          on:click={evt => lookup(evt, idx)}>
-          {@html render(line, idx == cur)}
-        </h1>
-      {:else}
-        <p
-          class:_active={idx == cur}
-          on:mouseenter={() => (cur = idx)}
-          on:click={evt => lookup(evt, idx)}>
-          {@html render(line, idx == cur)}
-        </p>
-      {/if}
-    {/each}
-  </article>
-
-  <footer>
-    {#if prev_slug}
-      <a m-button="line" href="/{book_slug}/{prev_slug}">
-        <MIcon m-icon="chevron-left" />
-        <span>Trước</span>
-      </a>
+<article>
+  {#each lines as line, idx}
+    {#if idx == 0}
+      <h1
+        class:_active={idx == cur}
+        on:mouseenter={() => (cur = idx)}
+        on:click={evt => lookup(evt, idx)}>
+        {@html render(line, idx == cur)}
+      </h1>
     {:else}
-      <a m-button="line" href="/{book_slug}">
-        <MIcon m-icon="list" />
-        <span>Mục lục</span>
-      </a>
+      <p
+        class:_active={idx == cur}
+        on:mouseenter={() => (cur = idx)}
+        on:click={evt => lookup(evt, idx)}>
+        {@html render(line, idx == cur)}
+      </p>
     {/if}
+  {/each}
+</article>
 
-    {#if next_slug}
-      <a m-button="line primary" href="/{book_slug}/{next_slug}">
-        <span>Tiếp</span>
-        <MIcon m-icon="chevron-right" />
-      </a>
-    {:else if prev_slug}
-      <a m-button="line" href="/{book_slug}">
-        <MIcon m-icon="list" />
-        <span>Mục lục</span>
-      </a>
-    {/if}
-  </footer>
-</Wrapper>
+<footer>
+  {#if prev_slug}
+    <a m-button="line" href="/{book_slug}/{prev_slug}">
+      <MIcon m-icon="chevron-left" />
+      <span>Trước</span>
+    </a>
+  {:else}
+    <a m-button="line" href="/{book_slug}">
+      <MIcon m-icon="list" />
+      <span>Mục lục</span>
+    </a>
+  {/if}
+
+  {#if next_slug}
+    <a m-button="line primary" href="/{book_slug}/{next_slug}">
+      <span>Tiếp</span>
+      <MIcon m-icon="chevron-right" />
+    </a>
+  {:else if prev_slug}
+    <a m-button="line" href="/{book_slug}">
+      <MIcon m-icon="list" />
+      <span>Mục lục</span>
+    </a>
+  {/if}
+</footer>
 
 <Lookup text={lookup_text} from={lookup_from} bind:active={lookup_active} />
