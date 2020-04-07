@@ -366,24 +366,24 @@
 
   <footer>
     {#if prev_slug}
-      <a m-button="line" href="/{book_slug}/{prev_slug}">
+      <a m-button="line large" href="/{book_slug}/{prev_slug}">
         <MIcon m-icon="chevron-left" />
         <span>Trước</span>
       </a>
     {:else}
-      <a m-button="line" href="/{book_slug}">
+      <a m-button="line large" href="/{book_slug}">
         <MIcon m-icon="list" />
         <span>Mục lục</span>
       </a>
     {/if}
 
     {#if next_slug}
-      <a m-button="line primary" href="/{book_slug}/{next_slug}">
-        <span>Tiếp</span>
+      <a m-button="line large primary" href="/{book_slug}/{next_slug}">
+        <span>Kế tiếp</span>
         <MIcon m-icon="chevron-right" />
       </a>
     {:else if prev_slug}
-      <a m-button="line" href="/{book_slug}">
+      <a m-button="line large" href="/{book_slug}">
         <MIcon m-icon="list" />
         <span>Mục lục</span>
       </a>
