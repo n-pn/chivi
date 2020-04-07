@@ -96,6 +96,7 @@
   export let total
 
   let cur = 0
+  let enable_lookup = false
 
   function navigate(evt) {
     if (evt.ctrlKey || evt.altKey || evt.shiftKey) return
@@ -176,7 +177,7 @@
   }
 
   function lookup(evt, idx) {
-    // if (!$lookup_active) return
+    if (!enable_lookup) return
 
     lookup_line.set(lines[idx])
     lookup_active.set(true)
@@ -335,9 +336,9 @@
 
     <button
       class="header-item"
-      class:_active={$lookup_active}
-      on:click={() => lookup_active.update(x => !x)}>
-      <MIcon m-icon="info" />
+      class:_active={enable_lookup}
+      on:click={() => (enable_lookup = !enable_lookup)}>
+      <MIcon m-icon="compass" />
     </button>
   </div>
 </Header>
@@ -390,4 +391,6 @@
   </footer>
 </div>
 
-<Lookup />
+{#if enable_lookup}
+  <Lookup />
+{/if}
