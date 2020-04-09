@@ -125,7 +125,7 @@
     > div {
       @include clearfix;
       margin-bottom: 0.25rem;
-      * {
+      > * {
         float: left;
         & + * {
           margin-left: 0.5rem;
@@ -135,7 +135,7 @@
 
     &,
     time {
-      @include color(neutral, 5);
+      @include color(neutral, 6);
     }
 
     :global(svg) {
@@ -204,15 +204,17 @@
     // }
   }
 
-  .title {
-    margin-bottom: 0;
+  .author {
+    font-weight: 500;
+    // @include font-size(4);
+    // @include color(neutral, 6);
   }
 
   .subtitle {
     // letter-spacing: 0.1em;
-    font-weight: 400;
-    font-size: 90%;
-    @include color(neutral, 6);
+    // font-weight: 400;
+    font-size: 85%;
+    // @include color(neutral, 6);
   }
 
   .chap-title {
@@ -334,7 +336,11 @@
         <span class="author">
           <MIcon m-icon="pen-tool" />
           {book.vi_author}
+          <span>({book.zh_author})</span>
         </span>
+      </div>
+      <div>
+
         <span class="genre">
           <MIcon m-icon="book" />
           {book.vi_genre}
@@ -343,9 +349,12 @@
           <MIcon m-icon="activity" />
           {book_status(book.status)}
         </span>
-
+        <time class="updated_at" datetime={new Date(book.updated_at)}>
+          <MIcon m-icon="clock" />
+          {relative_time(book.updated_at)}
+        </time>
       </div>
-
+      <!--
       <div>
         <span class="prefer_site">
           <MIcon m-icon="link" />
@@ -355,13 +364,15 @@
           <MIcon m-icon="list" />
           {book.chap_count} chương
         </span>
-        <time class="updated_at" datetime={new Date(book.updated_at)}>
-          <MIcon m-icon="clock" />
-          {relative_time(book.updated_at)}
-        </time>
+      </div> -->
 
+      <div>
+        <div>
+          Đánh giá:
+          <strong>{book.score}</strong>
+          /10 ({book.votes} lượt đánh giá)
+        </div>
       </div>
-
     </div>
   </div>
 
