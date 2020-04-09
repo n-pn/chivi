@@ -66,6 +66,15 @@
         case '”':
           res += '</em>'
           break
+
+        // if (val === '⟨') body += '<cite>⟨'
+        //       else if (val === '⟩') body += '⟩</cite>'
+        //       else if (val === '[') body += '<x-m>['
+        //       else if (val === ']') body += ']</x-m>'
+        //       else if (val === '“') body += '<q>'
+        //       else if (val === '”') body += '</q>'
+        //       else if (val === '‘') body += '<i>‘'
+        //       else if (val === '’') body += '’</i>'
       }
 
       idx += 1
