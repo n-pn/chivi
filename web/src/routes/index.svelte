@@ -25,19 +25,19 @@
 </script>
 
 <script>
-  import MIcon from '$mould/shared/MIcon.svelte'
-  import Header from '$mould/layout/Header.svelte'
+  import MIcon from '$mould/MIcon.svelte'
+  import Header from '$layout/Header.svelte'
 
   export let items = []
   export let total = 0
   export let page = 1
-  export let sort = 'tally'
+  export let sort = 'access'
 
   $: page_max = Math.floor((total - 1) / 20) + 1
   $: pages = make_pages(page, page_max)
 
   import { onMount } from 'svelte'
-  import { lookup_active } from '../stores.js'
+  import { lookup_active } from '$src/stores.js'
   onMount(() => lookup_active.set(false))
 
   function make_pages(page_now, page_max) {
@@ -63,9 +63,7 @@
     margin: 0 auto;
     padding: 0.75rem;
 
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-    grid-gap: 0.5rem;
+    @include grid($gap: 0.5rem, $size: minmax(9rem, 1fr));
   }
 
   .book {
@@ -76,7 +74,7 @@
 
     @include hover {
       .book-title {
-        @include color(primary, 5);
+        @include fgcolor(color(primary, 5));
       }
     }
     // overflow: hidden;
@@ -111,7 +109,7 @@
     position: absolute;
     bottom: -1.75rem;
     font-weight: 600;
-    @include color(neutral, 7);
+    @include fgcolor(color(neutral, 7));
     @include truncate();
     @include font-size(3);
     @include font-family(narrow);
@@ -121,7 +119,7 @@
     width: 100%;
     position: absolute;
     bottom: -3rem;
-    @include color(neutral, 5);
+    @include fgcolor(color(neutral, 5));
     text-transform: uppercase;
     font-weight: 500;
     @include font-size(1);
@@ -131,12 +129,14 @@
     width: 100%;
     position: absolute;
     bottom: -3rem;
-    @include color(neutral, 5);
     text-transform: uppercase;
     font-weight: 500;
-    @include font-size(1);
     text-align: right;
-    span {
+
+    @include fgcolor(color(neutral, 5));
+    @include font-size(1);
+
+    > span {
       display: inline-block;
       vertical-align: top;
       font-size: 95%;
@@ -150,7 +150,7 @@
     justify-content: center;
   }
 
-  [m-button] {
+  .page {
     & + & {
       margin-left: 0.5rem;
     }
@@ -186,33 +186,33 @@
 
   <footer class="pagi">
     {#if page == 1}
-      <button class="page" m-button="line" disabled>
-        <MIcon m-icon="chevrons-left" />
+      <button class="page m-button _line" disabled>
+        <MIcon class="m-icon" name="chevrons-left" />
       </button>
     {:else}
-      <a class="page" m-button="line" href={page_url(1, sort)}>
-        <MIcon m-icon="chevrons-left" />
+      <a class="page m-button _line" href={page_url(1, sort)}>
+        <MIcon class="m-icon" name="chevrons-left" />
       </a>
     {/if}
 
     {#each pages as idx}
       {#if page == idx}
-        <button class="page" m-button="line primary" disabled>
+        <button class="page m-button _line _primary" disabled>
           <span>{idx}</span>
         </button>
       {:else}
-        <a class="page" m-button="line" href={page_url(idx, sort)}>
+        <a class="page m-button _line" href={page_url(idx, sort)}>
           <span>{idx}</span>
         </a>
       {/if}
     {/each}
     {#if page == page_max}
-      <button class="page" m-button="line" disabled>
-        <MIcon m-icon="chevrons-right" />
+      <button class="page m-button _line" disabled>
+        <MIcon class="m-icon" name="chevrons-right" />
       </button>
     {:else}
-      <a class="page" m-button="line" href={page_url(page_max, sort)}>
-        <MIcon m-icon="chevrons-right" />
+      <a class="page m-button _line" href={page_url(page_max, sort)}>
+        <MIcon class="m-icon" name="chevrons-right" />
       </a>
     {/if}
 

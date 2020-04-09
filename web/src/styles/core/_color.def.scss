@@ -1,7 +1,0 @@
-// set text color
-$-color-name-df: neutral !default;
-$-color-tone-df: 7 !default;
-
-@mixin color($name: $-color-name-df, $tone: $-color-tone-df) {
-  color: color($name, $tone);
-}

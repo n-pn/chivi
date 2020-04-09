@@ -65,8 +65,8 @@
 </script>
 
 <script>
-  import MIcon from '$mould/shared/MIcon.svelte'
-  import Header from '$mould/layout/Header.svelte'
+  import MIcon from '$mould/MIcon.svelte'
+  import Header from '$layout/Header.svelte'
 
   export let book
   export let site
@@ -74,7 +74,7 @@
   export let chlist = []
 
   import { onMount } from 'svelte'
-  import { lookup_active } from '../../stores.js'
+  import { lookup_active } from '$src/stores.js'
   onMount(() => lookup_active.set(false))
 
   $: volumes = map_volumes(chlist)
@@ -89,44 +89,33 @@
 
   .cover {
     float: left;
-    width: 40%;
+    @include props(width, attrs(40%, 30%));
 
-    @include screen-min(sm) {
-      width: 30%;
-    }
-
-    img {
+    > img {
       width: 100%;
       @include radius();
     }
   }
 
   .name {
-    float: left;
-    width: 100%;
     margin-bottom: 0.75rem;
-    @include screen-min(sm) {
-      float: right;
-      width: 70%;
-      padding-left: 0.75rem;
-    }
+    @include props(float, attrs(left, right));
+    @include props(width, attrs(100%, 70%));
+    @include props(padding-left, attrs(0, 0.75rem));
   }
 
   .extra {
     float: right;
     padding-left: 0.75rem;
 
-    width: 60%;
-
-    @include screen-min(sm) {
-      width: 70%;
-    }
+    @include props(width, attrs(60%, 70%));
 
     > div {
       @include clearfix;
       margin-bottom: 0.25rem;
       > * {
         float: left;
+
         & + * {
           margin-left: 0.5rem;
         }
@@ -135,7 +124,7 @@
 
     &,
     time {
-      @include color(neutral, 6);
+      @include fgcolor(color(neutral, 6));
     }
 
     :global(svg) {
@@ -144,7 +133,7 @@
   }
 
   .summary {
-    @include color(neutral, 7);
+    @include fgcolor(color(neutral, 7));
   }
 
   h2 {
@@ -158,10 +147,11 @@
 
   .chap-list {
     margin-top: 0.25rem;
+    &:last-child {
+      margin-bottom: 0.75rem;
+    }
     // margin: .75rem auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-    grid-gap: 0 0.5rem;
+    @include grid($size: minmax(20rem, 1fr), $gap: 0 0.5rem);
   }
 
   .chap-item {
@@ -169,14 +159,14 @@
       background-color: #fff;
     }
 
-    @include border($side: bottom);
+    @include border($pos: bottom);
     &:first-child {
-      @include border($side: top);
+      @include border($pos: top);
     }
 
     @include screen-min(sm) {
       &:nth-child(2) {
-        @include border($side: top);
+        @include border($pos: top);
       }
       &:nth-child(4n),
       &:nth-child(4n + 1) {
@@ -192,29 +182,29 @@
 
   .chap-link {
     display: block;
-    @include color(neutral, 7);
+    @include fgcolor(color(neutral, 7));
 
     padding: 0.5rem 0.75rem;
 
     @include hover {
-      @include color(primary, 5);
+      @include fgcolor(color(primary, 5));
     }
     // time {
-    //   @include color(neutral, 5);
+    //   @include fgcolor(color(neutral, 5));
     // }
   }
 
   .author {
     font-weight: 500;
     // @include font-size(4);
-    // @include color(neutral, 6);
+    // @include fgcolor(color(neutral, 6));
   }
 
   .subtitle {
     // letter-spacing: 0.1em;
     // font-weight: 400;
     font-size: 85%;
-    // @include color(neutral, 6);
+    // @include fgcolor(color(neutral, 6));
   }
 
   .chap-title {
@@ -224,8 +214,7 @@
   .info,
   .summary,
   .content {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    @include padding(left-right, 0.75rem);
   }
 
   .info {
@@ -236,18 +225,16 @@
     display: block;
     margin: 0.75rem;
     padding-top: 0.375rem;
-    // display: flex;
-    // height: 2rem;
-    @include border($side: top);
     line-height: 2rem;
+    @include border($pos: top);
 
     @include clearfix;
 
     > span {
       float: left;
       margin-top: 0.375rem;
-      @include font-size(5);
       font-weight: 500;
+      @include font-size(5);
       // min-width: 6rem;
     }
   }
@@ -260,19 +247,19 @@
     padding: 0 0.5rem;
     font-weight: 500;
     cursor: pointer;
-    @include color(neutral, 7);
+    @include fgcolor(color(neutral, 7));
     @include font-size(2);
 
     @include border();
     @include radius();
     &._active {
-      border-color: color(primary, 5);
-      @include color(primary, 5);
+      @include fgcolor(color(primary, 5));
+      @include border-color($value: color(primary, 5));
     }
   }
 
   .label {
-    @include color(neutral, 6);
+    @include fgcolor(color(neutral, 6));
   }
 </style>
 
@@ -334,7 +321,7 @@
     <div class="extra">
       <div>
         <span class="author">
-          <MIcon m-icon="pen-tool" />
+          <MIcon class="m-icon" name="pen-tool" />
           {book.vi_author}
           <span>({book.zh_author})</span>
         </span>
@@ -342,26 +329,26 @@
       <div>
 
         <span class="genre">
-          <MIcon m-icon="book" />
+          <MIcon class="m-icon" name="book" />
           {book.vi_genre}
         </span>
         <span class="status">
-          <MIcon m-icon="activity" />
+          <MIcon class="m-icon" name="activity" />
           {book_status(book.status)}
         </span>
         <time class="updated_at" datetime={new Date(book.updated_at)}>
-          <MIcon m-icon="clock" />
+          <MIcon class="m-icon" name="clock" />
           {relative_time(book.updated_at)}
         </time>
       </div>
       <!--
       <div>
         <span class="prefer_site">
-          <MIcon m-icon="link" />
+          <MIcon class="m-icon" name="link" />
           {book.prefer_site}
         </span>
         <span class="chap_count">
-          <MIcon m-icon="list" />
+          <MIcon class="m-icon" name="list" />
           {book.chap_count} chương
         </span>
       </div> -->

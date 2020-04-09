@@ -4735,3 +4735,7 @@ yargs@^7.0.0:
     which-module "^1.0.0"
     y18n "^3.2.1"
     yargs-parser "^5.0.0"
+
+"~mould@https://github.com/nipinium/mould.git":
+  version "0.0.1"
+  resolved "https://github.com/nipinium/mould.git#a1b6697d09a97a8da4f5747b751af5b9c6787ac8"

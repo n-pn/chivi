@@ -21,8 +21,8 @@
     margin: 1em auto;
   }
 
-  @media (min-width: 480px) {
-    h1 {
+  h1 {
+    @include screen-min(sm) {
       font-size: 4em;
     }
   }

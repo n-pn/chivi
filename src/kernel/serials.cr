@@ -29,7 +29,7 @@ class Serials
   end
 
   def bump(book : VpBook)
-    @sorts[:access].delete(book.vi_slug)
+    @sorts[:access].reject!(&.[0].==(book.vi_slug))
     @sorts[:access].unshift({book.vi_slug, book.updated_at})
   end
 

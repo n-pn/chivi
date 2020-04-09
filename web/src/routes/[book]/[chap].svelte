@@ -88,11 +88,11 @@
 <script>
   import { onMount } from 'svelte'
 
-  import MIcon from '$mould/shared/MIcon.svelte'
-  import Header from '$mould/layout/Header.svelte'
-  import Lookup from '$mould/layout/Lookup.svelte'
+  import MIcon from '$mould/MIcon.svelte'
+  import Header from '$layout/Header.svelte'
+  import Lookup from '$layout/Lookup.svelte'
 
-  import { lookup_active, lookup_line, lookup_from } from '../../stores.js'
+  import { lookup_active, lookup_line, lookup_from } from '$src/stores.js'
 
   export let book_slug
   export let book_name
@@ -200,73 +200,33 @@
 </script>
 
 <style lang="scss">
-  @mixin responsive-gap() {
-    padding: 0.75rem;
-
-    @include screen-min(md) {
-      padding: 1rem;
-    }
-
-    @include screen-min(lg) {
-      padding: 1.25rem;
-    }
-
-    @include screen-min(xl) {
-      padding: 1.5rem;
-    }
-  }
-
   article {
     // background-color: #fff;
     // margin: 0.75rem 0;
     // @include radius;
     // @include shadow(1);
+    padding: 0.75rem;
+    word-wrap: break-word;
     text-align: justify;
     text-justify: auto;
-    word-wrap: break-word;
-    padding: 0.75rem;
-    // @include responsive-gap();
   }
 
   h1 {
-    @include border($side: bottom);
+    $font-sizes: attrs(rem(22px), rem(24px), rem(26px), rem(28px), rem(30px));
+    $line-heights: attrs(1.5rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
 
-    font-size: rem(20px);
-    line-height: 1.75rem;
+    @include props(font-size, $font-sizes);
+    @include props(line-height, $line-heights);
 
-    @include screen-min(md) {
-      font-size: rem(22px);
-      line-height: 2rem;
-    }
-
-    @include screen-min(lg) {
-      font-size: rem(24px);
-      line-height: 2.25rem;
-    }
-
-    @include screen-min(xl) {
-      font-size: rem(30px);
-      line-height: 2.5rem;
-    }
+    @include border($pos: bottom);
   }
 
   p {
-    margin-top: 1rem;
-    font-size: rem(17px);
+    $font-sizes: attrs(rem(16px), rem(17px), rem(18px), rem(19px), rem(20px));
+    $margin-tops: attrs(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
 
-    @include screen-min(md) {
-      font-size: rem(18px);
-    }
-
-    @include screen-min(lg) {
-      font-size: rem(19px);
-      margin-top: 1.25rem;
-    }
-
-    @include screen-min(xl) {
-      font-size: rem(20px);
-      margin-top: 1.5rem;
-    }
+    @include props(font-size, $font-sizes);
+    @include props(margin-top, $margin-tops);
   }
 
   :global(cite) {
@@ -279,7 +239,7 @@
     margin: 0.75rem 0;
     display: flex;
     justify-content: center;
-    [m-button] {
+    .m-button {
       margin-left: 0.5rem;
     }
   }
@@ -344,14 +304,14 @@
 
   <div class="right">
     <a href="/{book_slug}/{curr_slug}?reload=true" class="header-item">
-      <MIcon m-icon="refresh-ccw" />
+      <MIcon class="m-icon _refresh-ccw" name="refresh-ccw" />
     </a>
 
     <button
       class="header-item"
       class:_active={enable_lookup}
       on:click={() => (enable_lookup = !enable_lookup)}>
-      <MIcon m-icon="compass" />
+      <MIcon class="m-icon _compass" name="compass" />
     </button>
   </div>
 </Header>
@@ -379,25 +339,25 @@
 
   <footer>
     {#if prev_slug}
-      <a m-button="line" href="/{book_slug}/{prev_slug}">
-        <MIcon m-icon="chevron-left" />
+      <a class="m-button _line" href="/{book_slug}/{prev_slug}">
+        <MIcon class="m-icon" name="chevron-left" />
         <span>Trước</span>
       </a>
     {:else}
-      <a m-button="line" href="/{book_slug}">
-        <MIcon m-icon="list" />
+      <a class="m-button _line" href="/{book_slug}">
+        <MIcon class="m-icon" name="list" />
         <span>Mục lục</span>
       </a>
     {/if}
 
     {#if next_slug}
-      <a m-button="line primary" href="/{book_slug}/{next_slug}">
+      <a class="m-button _line _primary" href="/{book_slug}/{next_slug}">
         <span>Kế tiếp</span>
-        <MIcon m-icon="chevron-right" />
+        <MIcon class="m-icon" name="chevron-right" />
       </a>
     {:else if prev_slug}
-      <a m-button="line" href="/{book_slug}">
-        <MIcon m-icon="list" />
+      <a class="m-button _line" href="/{book_slug}">
+        <MIcon class="m-icon" name="list" />
         <span>Mục lục</span>
       </a>
     {/if}

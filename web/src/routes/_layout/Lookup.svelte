@@ -57,7 +57,7 @@
 </script>
 
 <script>
-  import MIcon from '$mould/shared/MIcon.svelte'
+  import MIcon from '$mould/MIcon.svelte'
 
   import {
     lookup_active as active,
@@ -65,7 +65,7 @@
     lookup_line as line,
     lookup_from as from,
     lookup_udic as udic,
-  } from '../../stores.js'
+  } from '$src/stores.js'
 
   let upto = $from + 1
 
@@ -151,18 +151,18 @@
       font-weight: 500;
       text-transform: uppercase;
       line-height: $hd-height - 0.75rem;
-      @include color(neutral, 6);
+      @include fgcolor(color(neutral, 6));
       @include font-size(sm);
     }
 
     button {
       // margin-right: 0.75rem;
       padding: 0 0.5rem;
-      @include color(neutral, 6);
-      @include bgcolor(none);
+      @include fgcolor(color(neutral, 6));
+      @include bgcolor(transparent);
       &._active,
       &:hover {
-        @include color(primary, 6);
+        @include fgcolor(color(primary, 6));
       }
     }
   }
@@ -179,7 +179,7 @@
     // margin-bottom: 0.75rem;
 
     @include radius();
-    @include bgcolor(neutral, 1);
+    @include bgcolor(color(neutral, 1));
     // @include font-family(sans);
 
     &._vi {
@@ -204,19 +204,19 @@
   :global(x-zh) {
     cursor: pointer;
     @include hover {
-      @include color(primary, 5);
+      @include fgcolor(color(primary, 5));
     }
 
     &._active {
-      @include color(primary, 5);
+      @include fgcolor(color(primary, 5));
     }
   }
 
   h4 {
     font-weight: 500;
     text-transform: uppercase;
-    @include color(neutral, 6);
-    @include font-size(sm);
+    @include fgcolor(color(neutral, 6));
+    @include font-size(3);
   }
 
   :global(x-vi) {
@@ -263,7 +263,7 @@
     // margin-top: 0.5rem;
     font-weight: bold;
     @include font-size(md);
-    @include color(neutral, 7);
+    @include fgcolor(color(neutral, 7));
   }
 
   .entry {
@@ -312,13 +312,12 @@
     </button>
 
     <button on:click={close_sidebar}>
-      <MIcon m-icon="x" />
+      <MIcon class="m-icon" name="x" />
     </button>
 
   </header>
 
   <section class="lookup">
-
     <div class="input _vi" on:click={handle_click}>
       {@html vi_html}
     </div>

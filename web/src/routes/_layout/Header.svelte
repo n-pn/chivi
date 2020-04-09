@@ -1,5 +1,5 @@
 <script>
-  import { lookup_pinned, lookup_active } from '../../stores.js'
+  import { lookup_pinned, lookup_active } from '$src/stores.js'
 </script>
 
 <style lang="scss">
@@ -14,7 +14,7 @@
     width: 100%;
     height: $outer-height;
     z-index: 800;
-    @include bgcolor(primary, 7);
+    @include bgcolor(color(primary, 7));
     @include shadow(2);
 
     &._tilt {
@@ -58,15 +58,15 @@
     text-transform: uppercase;
     font-weight: 500;
 
-    @include color(neutral, 2);
+    @include fgcolor(color(neutral, 2));
 
     @include radius(3);
     @include font-size(2);
 
-    @include bgcolor(primary, 6);
+    @include bgcolor(color(primary, 6));
 
     @include hover() {
-      @include bgcolor(primary, 5);
+      @include bgcolor(color(primary, 5));
     }
 
     & + & {
@@ -74,7 +74,7 @@
     }
 
     &._active {
-      @include bgcolor(primary, 5);
+      @include bgcolor(color(primary, 5));
     }
 
     &._title {

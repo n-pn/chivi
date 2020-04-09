@@ -1,7 +1,8 @@
 {
   "name": "chivi",
-  "description": "chivi.xyz",
+  "description": "frontend for chivi.xyz",
   "version": "0.0.1",
+  "private": true,
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build",
@@ -26,7 +27,8 @@
     "sass-loader": "^8.0.0",
     "svelte": "^3.0.0",
     "svelte-loader-hot": "^0.3.0",
-    "webpack": "^4.42.0"
+    "webpack": "^4.42.0",
+    "~mould": "https://github.com/nipinium/mould.git"
   },
   "browserslist": [
     "> 1%",

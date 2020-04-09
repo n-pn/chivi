@@ -108,7 +108,7 @@
     max-width: 100%;
     background-color: #fff;
     margin-top: -10%;
-    @include corner(md);
+    @include radius(md);
     @include shadow(lg);
   }
 
@@ -118,14 +118,14 @@
     padding-top: 0.5rem;
     input {
       display: block;
-      @include bgcolor(neutral, 1);
+      @include bgcolor(color(neutral, 1));
       border: 1px solid color(neutral, 2);
       width: 100%;
       // width: calc(100% - #{$label-width});
       margin-left: auto;
       padding: 0 1rem;
       line-height: 2.5rem;
-      @include corner(md);
+      @include radius(md);
       &:focus {
         background-color: #fff;
         @include bdcolor(primary, 3);
@@ -141,12 +141,12 @@
     // padding: 0.5rem;
     // padding-bottom: 0;
     @include font-size(sm);
-    @include color(neutral, 7);
+    @include fgcolor(neutral, 7));
   }
 
   header {
-    @include bgcolor(neutral, 1);
-    @include corner-top(md);
+    @include bgcolor(color(neutral, 1));
+    @include radius-top(md);
     padding: 0 1rem;
     border-bottom: 1px solid color(neutral, 2);
     height: 2.5rem;
@@ -156,8 +156,8 @@
     display: inline-block;
     text-transform: uppercase;
     @include font-size(sm);
-    @include color(neutral, 6);
-    // @include corner-top(md);
+    @include fgcolor(neutral, 6));
+    // @include radius-top(md);
     font-weight: 500;
     height: 2.5rem;
     line-height: 2.5rem;
@@ -170,7 +170,7 @@
     // border: 1px solid color(neutral, 2);
     &._active {
       // border-bottom-color: color(primary, 3);
-      @include color(primary, 6);
+      @include fgcolor(primary, 6));
       background-color: #fff;
 
       border-left: 1px solid color(neutral, 2);
@@ -206,8 +206,8 @@
 
   .links {
     display: flex;
-    @include bgcolor(neutral, 1);
-    @include corner-bottom(md);
+    @include bgcolor(color(neutral, 1));
+    @include radius-bottom(md);
     // width: 5rem;
     margin: 0;
     padding: 0 0.5rem;
@@ -224,7 +224,7 @@
     }
 
     a {
-      @include color(neutral, 7);
+      @include fgcolor(neutral, 7));
       display: inline-block;
       border-left: 1px splid color(neutral, 3);
 
@@ -238,11 +238,11 @@
   .value-input {
     display: block;
     width: 100%;
-    @include corner(md);
+    @include radius(md);
     @include border(color(neutral, 2));
     padding: 0.5rem 1rem;
     margin: 0;
-    @include bgcolor(neutral, 1);
+    @include bgcolor(color(neutral, 1));
     min-height: 2.75rem;
     &:focus,
     &:active {
@@ -255,18 +255,18 @@
     display: flex;
     margin-bottom: 0.5rem;
     .cap {
-      @include color(neutral, 5);
+      @include fgcolor(neutral, 5));
       // padding-right: 0.25rem;
     }
     .act {
-      @include corner(md);
+      @include radius(md);
       margin-left: 0.25rem;
       padding: 0 0.5rem;
-      @include color(neutral, 6);
+      @include fgcolor(neutral, 6));
       @include border(color(neutral, 3));
       @include hover {
         cursor: pointer;
-        @include color(primary, 6);
+        @include fgcolor(primary, 6));
       }
     }
     span {

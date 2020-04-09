@@ -1,7 +1,0 @@
-$abbr: abbr(zindex, $df: z);
-
-@for $idx from 0 to 9 {
-  .u-#{$abbr}-#{$idx} {
-    z-index: zindex($idx);
-  }
-}

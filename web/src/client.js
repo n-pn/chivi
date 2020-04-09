@@ -1,5 +1,8 @@
 import * as sapper from '@sapper/app'
-import '$style/premade.scss'
+import '~mould/css/premade.scss'
+
+// import { fetch } from 'sapper'
+// window.fetch = window.fetch || fetch
 
 window._goto = sapper.goto
 
