@@ -42,6 +42,7 @@
     :global(.right) {
       display: flex;
       margin-left: auto;
+      padding-left: $gutter;
     }
   }
 
@@ -61,7 +62,7 @@
 
     @include radius(3);
     @include font-size(2);
-    @include truncate(null);
+
     @include bgcolor(primary, 6);
 
     @include hover() {
@@ -74,6 +75,30 @@
 
     &._active {
       @include bgcolor(primary, 5);
+    }
+
+    &._title {
+      max-width: 40vw;
+      @include screen-min(sm) {
+        max-width: 50vw;
+      }
+      @include screen-min(md) {
+        max-width: 60vw;
+      }
+    }
+
+    &._index {
+      max-width: 20vw;
+      @include screen-min(sm) {
+        max-width: 40vw;
+      }
+      @include screen-min(md) {
+        max-width: 60vw;
+      }
+    }
+
+    :global(span) {
+      @include truncate(100%);
     }
 
     :global(img),

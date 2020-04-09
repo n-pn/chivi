@@ -324,9 +324,13 @@
       <img src="/logo.svg" alt="logo" />
     </a>
 
-    <a href="/{book_slug}" class="header-item">{book_name}</a>
+    <a href="/{book_slug}" class="header-item _title">
+      <span>{book_name}</span>
+    </a>
 
-    <span class="header-item _active _index">Ch {chidx}/{total}</span>
+    <span class="header-item _active _index">
+      <span>Ch {chidx}/{total}</span>
+    </span>
   </div>
 
   <div class="right">

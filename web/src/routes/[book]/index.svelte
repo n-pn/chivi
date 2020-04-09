@@ -67,7 +67,6 @@
 <script>
   import MIcon from '$mould/shared/MIcon.svelte'
   import Header from '$mould/layout/Header.svelte'
-  import LinkBtn from '$mould/layout/header/LinkBtn.svelte'
 
   export let book
   export let site
@@ -84,42 +83,68 @@
 
 <style type="text/scss">
   .info {
-    display: flex;
+    // display: flex;
+    @include clearfix;
   }
 
   .cover {
-    margin-right: auto;
-    width: 30%;
+    float: left;
+    width: 40%;
+
+    @include screen-min(sm) {
+      width: 30%;
+    }
+
     img {
       width: 100%;
       @include radius();
     }
   }
 
-  .intro {
+  .name {
+    float: left;
+    width: 100%;
+    margin-bottom: 0.75rem;
+    @include screen-min(sm) {
+      float: right;
+      width: 70%;
+      padding-left: 0.75rem;
+    }
+  }
+
+  .extra {
+    float: right;
     padding-left: 0.75rem;
-    margin-left: auto;
-    width: 70%;
-  }
 
-  .summary {
-    @include color(neutral, 7);
-  }
+    width: 60%;
 
-  .metadata {
-    margin-top: 0.5rem;
+    @include screen-min(sm) {
+      width: 70%;
+    }
+
+    > div {
+      @include clearfix;
+      margin-bottom: 0.25rem;
+      * {
+        float: left;
+        & + * {
+          margin-left: 0.5rem;
+        }
+      }
+    }
+
     &,
     time {
       @include color(neutral, 5);
     }
 
-    * + * {
-      margin-left: 0.5rem;
-    }
-
-    :global([m-icon]) {
+    :global(svg) {
       margin-top: -0.125rem;
     }
+  }
+
+  .summary {
+    @include color(neutral, 7);
   }
 
   h2 {
@@ -184,10 +209,10 @@
   }
 
   .subtitle {
-    margin-top: 0.25rem;
-    letter-spacing: 0.1em;
-    // font-weight: 300;
-    @include color(neutral, 7);
+    // letter-spacing: 0.1em;
+    font-weight: 400;
+    font-size: 90%;
+    @include color(neutral, 6);
   }
 
   .chap-title {
@@ -290,6 +315,13 @@
 
 <div class="wrapper">
   <div class="info">
+    <div class="name">
+      <h1 class="title">
+        {book.vi_title}
+        <span class="subtitle">({book.zh_title})</span>
+      </h1>
+    </div>
+
     <picture class="cover">
       {#each book.covers as cover}
         <source srcset={cover} />
@@ -297,25 +329,32 @@
       <img src="img/nocover.png" alt={book.vi_title} />
     </picture>
 
-    <div class="intro">
-      <h1 class="title">{book.vi_title} - {book.vi_author}</h1>
-      <h2 class="subtitle">{book.zh_title} — {book.zh_author}</h2>
-      <div class="metadata">
+    <div class="extra">
+      <div>
+        <span class="author">
+          <MIcon m-icon="pen-tool" />
+          {book.vi_author}
+        </span>
         <span class="genre">
           <MIcon m-icon="book" />
           {book.vi_genre}
         </span>
-
-        <span class="chap_count">
-          <MIcon m-icon="list" />
-          {book.chap_count} chương
-        </span>
-
         <span class="status">
           <MIcon m-icon="activity" />
           {book_status(book.status)}
         </span>
 
+      </div>
+
+      <div>
+        <span class="prefer_site">
+          <MIcon m-icon="link" />
+          {book.prefer_site}
+        </span>
+        <span class="chap_count">
+          <MIcon m-icon="list" />
+          {book.chap_count} chương
+        </span>
         <time class="updated_at" datetime={new Date(book.updated_at)}>
           <MIcon m-icon="clock" />
           {relative_time(book.updated_at)}
