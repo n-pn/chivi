@@ -8,14 +8,14 @@ targets:
   server:
     main: src/server.cr
 
-  sitemap:
-    main: init/bookdb/sitemap.cr
+  bookdb-mapsite:
+    main: tasks/bookdb/mapsite.cr
 
-  combine:
-    main: init/bookdb/combine.cr
+  bookdb-combine:
+    main: tasks/bookdb/combine.cr
 
-  convert:
-    main: init/bookdb/convert.cr
+  bookdb-convert:
+    main: tasks/bookdb/convert.cr
 
 crystal: 0.33.0
 

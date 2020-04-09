@@ -2,7 +2,7 @@
   export async function preload({ query }) {
     const page = query.page || 1
     let url = `api/books?page=${page}`
-    const sort = query.sort || 'update'
+    const sort = query.sort || 'access'
     url += `&sort=${sort}`
 
     const res = await this.fetch(url)
@@ -10,10 +10,10 @@
     return Object.assign(data, { page })
   }
 
-  export function page_url(page = 1, sort = 'update') {
+  export function page_url(page = 1, sort = 'access') {
     const params = {}
     if (page > 1) params.page = page
-    if (sort !== 'update') params.sort = sort
+    if (sort !== 'access') params.sort = sort
 
     const query = Object.entries(params)
       .map(([k, v]) => `${k}=${v}`)

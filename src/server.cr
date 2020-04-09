@@ -59,7 +59,7 @@ module Server
   get "/api/books" do |env|
     page = env.params.query.fetch("page", "1")
     limit, offset = parse_page(page)
-    sort = env.params.query.fetch("sort", "tally")
+    sort = env.params.query.fetch("sort", "access")
 
     books = Kernel.serials.list(limit: limit, offset: offset, sort: sort)
     {items: books, total: Kernel.serials.total, sort: sort}.to_json env.response
@@ -71,6 +71,7 @@ module Server
 
     halt env, status_code: 404, response: ({msg: "Book not found"}).to_json if book.nil?
 
+    Kernel.serials.bump(book)
     {book: book, site: site, bsid: bsid, chlist: chlist}.to_json env.response
   end
 

@@ -93,7 +93,7 @@ module Kernel
   end
 end
 
-# book = Kernel.serials.get("chuế-tế")
+# book = Kernel.serials.get("chue-te")
 # puts book.to_pretty_json
 
 # list = Kernel.chlists.get(book.favor_crawl, book.crawl_bsid.as(String))

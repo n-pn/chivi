@@ -12,6 +12,7 @@ class Serials
       score:  Index.from_json(File.read(index_file("score"))),
       votes:  Index.from_json(File.read(index_file("votes"))),
       update: Index.from_json(File.read(index_file("update"))),
+      access: Index.from_json(File.read(index_file("update"))),
     }
   end
 
@@ -25,6 +26,11 @@ class Serials
 
   def get(name : String)
     @books[name] ||= load(name)
+  end
+
+  def bump(book : VpBook)
+    @sorts[:access].delete(book.vi_slug)
+    @sorts[:access].unshift({book.vi_slug, book.updated_at})
   end
 
   def load(vi_slug : String)
@@ -59,30 +65,22 @@ class Serials
     @sorts[:tally].size
   end
 
-  def list(limit = 20, offset = 0, sort = "updated_at")
+  def list(limit = 20, offset = 0, sort = "update")
     sort_by(sort)[offset, limit].map { |slug, _| get(slug) }
   end
 
-  def sort_by(sort : String = "updated_at")
+  def sort_by(sort : String = "update")
     case sort
     when "tally"
       @sorts[:tally]
-    when "^tally"
-      @sorts[:tally].reverse
     when "score"
       @sorts[:score]
-    when "^score"
-      @sorts[:score].reverse
     when "votes"
       @sorts[:votes]
-    when "^votes"
-      @sorts[:votes].reverse
-    when "updated_at"
+    when "update"
       @sorts[:update]
-    when "^updated_at"
-      @sorts[:update].reverse
     else
-      @sorts[:update]
+      @sorts[:access]
     end
   end
 end
