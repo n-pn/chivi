@@ -18,7 +18,7 @@ module.exports = {
         includePaths: [
           path.dirname(filename),
           path.resolve(__dirname, 'src/styles'),
-          path.resolve(__dirname, 'node_modules/~mould/css'),
+          path.resolve(__dirname, 'node_modules/@nipin/mould/css'),
         ],
         outFile: filename + '.css',
       }

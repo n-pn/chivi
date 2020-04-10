@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^2.0.0",
+    "@nipin/mould": "^0.3.0",
     "autoprefixer": "^9.7.4",
     "css-loader": "^3.4.1",
     "cssnano": "^4.1.10",
@@ -27,8 +28,7 @@
     "sass-loader": "^8.0.0",
     "svelte": "^3.0.0",
     "svelte-loader-hot": "^0.3.0",
-    "webpack": "^4.42.0",
-    "~mould": "https://github.com/nipinium/mould"
+    "webpack": "^4.42.0"
   },
   "browserslist": [
     "> 1%",

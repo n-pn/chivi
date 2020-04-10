@@ -10,6 +10,11 @@
     postcss "7.0.27"
     purgecss "^2.1.2"
 
+"@nipin/mould@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@nipin/mould/-/mould-0.3.0.tgz#3b7441741628671a4cfb5a0c3c205352d4092ced"
+  integrity sha512-IbH4W8+kuji+hmXCnsRY6GvFfhbW+253r7yad9OgOHEm7XgF8Wnwknw0CntLAYDY1esm3L5xotCbkNZnmXQqig==
+
 "@polka/url@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-0.5.0.tgz#b21510597fd601e5d7c95008b76bf0d254ebfd31"
@@ -4786,7 +4791,3 @@ yargs@^7.0.0:
     which-module "^1.0.0"
     y18n "^3.2.1"
     yargs-parser "^5.0.0"
-
-"~mould@https://github.com/nipinium/mould":
-  version "0.0.1"
-  resolved "https://github.com/nipinium/mould#5a0ee4b1f3eee03cc884b663474b601ce2c99ead"
