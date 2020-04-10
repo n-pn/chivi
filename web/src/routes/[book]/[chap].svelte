@@ -104,7 +104,7 @@
   export let chidx
   export let total
 
-  let cur = 0
+  let line_focused = 0
   let enable_lookup = false
 
   function navigate(evt) {
@@ -185,7 +185,11 @@
     return node.nextSibling
   }
 
-  function lookup(evt, idx) {
+  function change_focus(idx) {
+    line_focused = idx
+  }
+
+  function active_lookup(evt, idx) {
     if (!enable_lookup) return
 
     lookup_line.set(lines[idx])
@@ -195,6 +199,16 @@
       lookup_from.set(0)
     } else {
       lookup_from.set(+evt.target.dataset['p'])
+    }
+  }
+
+  function trigger_lookup() {
+    if ($lookup_active) {
+      enable_lookup = false
+      lookup_active.set(false)
+    } else {
+      enable_lookup = true
+      lookup_active.set(true)
     }
   }
 </script>
@@ -244,39 +258,30 @@
     }
   }
 
+  @mixin token($color: blue) {
+    border-bottom-color: color($color, 3);
+    cursor: pointer;
+    @include hover {
+      color: color($color, 6);
+    }
+  }
   :global(x-v) {
     border-bottom: 1px solid transparent;
 
     &[data-d='1'] {
-      border-bottom-color: color(blue, 3);
-      cursor: pointer;
-      @include hover {
-        color: color(blue, 6);
-      }
+      @include token(blue);
     }
 
     &[data-d='2'] {
-      border-bottom-color: color(teal, 3);
-      cursor: pointer;
-      @include hover {
-        color: color(teal, 6);
-      }
+      @include token(teal);
     }
 
     &[data-d='3'] {
-      border-bottom-color: color(red, 3);
-      cursor: pointer;
-      @include hover {
-        color: color(red, 6);
-      }
+      @include token(red);
     }
 
     &[data-d='4'] {
-      border-color: color(orange, 3);
-      cursor: pointer;
-      @include hover {
-        color: color(orange, 6);
-      }
+      @include token(orange);
     }
   }
 </style>
@@ -310,7 +315,7 @@
     <button
       class="header-item"
       class:_active={enable_lookup}
-      on:click={() => (enable_lookup = !enable_lookup)}>
+      on:click={trigger_lookup}>
       <MIcon class="m-icon _compass" name="compass" />
     </button>
   </div>
@@ -319,21 +324,19 @@
 <div class="wrapper">
   <article>
     {#each lines as line, idx}
-      {#if idx == 0}
-        <h1
-          class:_active={idx == cur}
-          on:mouseenter={() => (cur = idx)}
-          on:click={evt => lookup(evt, idx)}>
-          {@html render(line, idx == cur)}
-        </h1>
-      {:else}
-        <p
-          class:_active={idx == cur}
-          on:mouseenter={() => (cur = idx)}
-          on:click={evt => lookup(evt, idx)}>
-          {@html render(line, idx == cur)}
-        </p>
-      {/if}
+      <div
+        on:mouseenter={() => change_focus(idx)}
+        on:click={evt => active_lookup(evt, idx)}>
+        {#if idx == 0}
+          <h1>
+            {@html render(line, enable_lookup && idx == line_focused)}
+          </h1>
+        {:else}
+          <p>
+            {@html render(line, enable_lookup && idx == line_focused)}
+          </p>
+        {/if}
+      </div>
     {/each}
   </article>
 
