@@ -261,6 +261,10 @@
   .label {
     @include fgcolor(color(neutral, 6));
   }
+
+  strong {
+    font-weight: 500;
+  }
 </style>
 
 <svelte:head>
