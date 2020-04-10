@@ -1,8 +1,8 @@
 [Unit]
-Description=yousuu-serials-timer
+Description=yousuu-serials
 
 [Timer]
-OnCalendar=0/6:00:00
+OnCalendar=0/3:00:00
 RandomizedDelaySec=600
 OnBootSec=180
 Persistent=true

@@ -56,22 +56,24 @@ def download(url, label = "1/1") : Void
   return if File.exists?(file)
 
   puts "- saving <#{label.colorize(:blue)}> \
-        [ #{url.colorize(:blue)} ] \
-        to [ #{file.colorize(:blue)} ]"
+  [ #{url.colorize(:blue)} ] \
+  to [ #{file.colorize(:blue)} ]"
 
   tls = url.starts_with?("https") ? TLS : nil
 
-  HTTP::Client.get(url, tls: tls) do |res|
-    exts = MIME.extensions(res.mime_type.to_s)
-    unless exts.empty? || exts.includes?(ext)
-      puts "Wrong extension for [#{file}], \
+  begin
+    HTTP::Client.get(url, tls: tls) do |res|
+      exts = MIME.extensions(res.mime_type.to_s)
+      unless exts.empty? || exts.includes?(ext)
+        puts "Wrong extension for [#{file}], \
             expects [#{exts}], \
             got [#{ext}]".colorize(:red)
 
-      file = file.sub(ext, exts.first)
-    end
+        file = file.sub(ext, exts.first)
+      end
 
-    File.write(file, res.body_io)
+      File.write(file, res.body_io)
+    end
   rescue err
     puts "Error fetching [#{url}]: #{err.colorize(:red)}"
     FileUtils.touch(file)

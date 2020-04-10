@@ -1,5 +1,5 @@
 [Unit]
-Description=yousuu-serials-service
+Description=yousuu-serials
 After=network.target
 StartLimitIntervalSec=0
 
