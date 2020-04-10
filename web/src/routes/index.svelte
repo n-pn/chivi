@@ -33,6 +33,14 @@
   export let page = 1
   export let sort = 'access'
 
+  const sorts = {
+    access: 'Vừa xem',
+    update: 'Mới cập nhật',
+    score: 'Đánh giá',
+    votes: 'Lượt đánh giá',
+    tally: 'Tổng hợp',
+  }
+
   $: page_max = Math.floor((total - 1) / 20) + 1
   $: pages = make_pages(page, page_max)
 
@@ -60,10 +68,9 @@
 <style lang="scss">
   .list {
     max-width: 100%;
-    margin: 0 auto;
-    padding: 0.75rem;
+    margin: 0.75rem;
 
-    @include grid($gap: 0.5rem, $size: minmax(9rem, 1fr));
+    @include grid($gap: 0.5rem, $size: minmax(8.5rem, 1fr));
   }
 
   .book {
@@ -104,6 +111,7 @@
       min-height: 100%;
     }
   }
+
   .book-title {
     width: 100%;
     position: absolute;
@@ -145,7 +153,7 @@
   }
 
   .pagi {
-    margin-bottom: 1rem;
+    margin: 0.75rem;
     display: flex;
     justify-content: center;
   }
@@ -153,6 +161,41 @@
   .page {
     & + & {
       margin-left: 0.5rem;
+    }
+  }
+
+  .sort {
+    margin: 0.75rem;
+    margin-top: 0.25rem;
+
+    line-height: 2rem;
+    @include clearfix;
+    .label {
+      float: left;
+      font-weight: 500;
+      padding-top: 0.375rem;
+
+      @include font-size(5);
+      // @include fgcolor(color(neutral, 6));
+    }
+    .type {
+      float: left;
+      margin-left: 0.5rem;
+      margin-top: 0.5rem;
+
+      text-transform: uppercase;
+      padding: 0 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      @include fgcolor(color(neutral, 7));
+      @include font-size(2);
+
+      @include border();
+      @include radius();
+      &._active {
+        @include fgcolor(color(primary, 5));
+        @include border-color($value: color(primary, 5));
+      }
     }
   }
 </style>
@@ -164,6 +207,14 @@
 <Header />
 
 <div class="wrapper">
+  <div class="sort">
+    <span class="label">Sắp xếp theo:</span>
+    {#each Object.entries(sorts) as [type, label]}
+      <a class="type" class:_active={sort == type} href="/?sort={type}">
+        {label}
+      </a>
+    {/each}
+  </div>
   <div class="list">
     {#each items as book}
       <a class="book" href={book.vi_slug}>

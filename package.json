@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": {
+    "pull": "wsl scripts/pull.sh",
+    "push": "wsl scripts/push.sh",
+    "yousuu-pull": "wsl scripts/yousuu/pull.sh",
+    "yousuu-push": "wsl scripts/yousuu/push.sh"
+  }
+}

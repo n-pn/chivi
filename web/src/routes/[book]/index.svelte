@@ -224,7 +224,7 @@
   .tabs {
     display: block;
     margin: 0.75rem;
-    padding-top: 0.375rem;
+    // padding-top: 0.375rem;
     line-height: 2rem;
     @include border($pos: top);
 
@@ -232,7 +232,7 @@
 
     > span {
       float: left;
-      margin-top: 0.375rem;
+      margin-top: 0.5rem;
       font-weight: 500;
       @include font-size(5);
       // min-width: 6rem;
@@ -242,8 +242,8 @@
   .site {
     float: left;
     text-transform: uppercase;
-    margin-left: 0.375rem;
-    margin-top: 0.375rem;
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
     padding: 0 0.5rem;
     font-weight: 500;
     cursor: pointer;
