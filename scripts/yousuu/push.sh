@@ -1,5 +1,4 @@
 #! /bin/bash
 
-rsync -azi tasks/yousuu/ nipin@ssh.nipin.xyz:srv/yousuu/
-rsync -azi data/txt-inp/yousuu/serials/ nipin@ssh.nipin.xyz:srv/yousuu/.inp/serials/
-rsync -azi data/txt-inp/yousuu/proxies/ nipin@ssh.nipin.xyz:srv/yousuu/.inp/proxies/
+rsync -azi data/txt-inp/yousuu/proxies nipin@ssh.nipin.xyz:web/chivi/data/txt-inp/yousuu/.inp/
+rsync -azi data/txt-inp/yousuu/serials nipin@ssh.nipin.xyz:web/chivi/data/txt-inp/yousuu/.inp/

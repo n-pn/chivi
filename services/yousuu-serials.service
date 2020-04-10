@@ -6,8 +6,8 @@ StartLimitIntervalSec=0
 [Service]
 Type=oneshot
 User=nipin
-WorkingDirectory=/srv/yousuu
-ExecStart=/home/nipin/.rbenv/shims/ruby serials.rb
+WorkingDirectory=/home/nipin/web/chivi/
+ExecStart=$(which ruby) tasks/yousuu/serials.rb
 
 [Install]
 WantedBy=multi-user.target

@@ -1,12 +1,12 @@
 [Unit]
-Description=yousuu-initial-timer
+Description=yousuu-serials-timer
 
 [Timer]
 OnCalendar=0/6:00:00
 RandomizedDelaySec=600
 OnBootSec=180
 Persistent=true
-Unit=yousuu-initial.service
+Unit=yousuu-serials.service
 
 [Install]
 WantedBy=timers.target
