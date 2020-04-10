@@ -1,5 +1,5 @@
 [Unit]
-Description=yousuu-serials
+Description=yousuu-serials-service
 After=network.target
 StartLimitIntervalSec=0
 
@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=oneshot
 User=nipin
 WorkingDirectory=/home/nipin/web/chivi/
-ExecStart=$(which ruby) tasks/yousuu/serials.rb
+ExecStart=/home/nipin/.rbenv/shims/ruby tasks/yousuu/serials.rb
 
 [Install]
 WantedBy=multi-user.target
