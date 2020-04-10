@@ -1,3 +1,3 @@
 #! /bin/bash
 
-rsync -azi nipin@ssh.nipin.xyz:web/chivi/data/txt-inp/yousuu/.inp/serials data/txt-inp/yousuu/
+rsync -azui --no-p nipin@ssh.nipin.xyz:web/chivi/data/txt-inp/yousuu/serials/ data/txt-inp/yousuu/serials/
