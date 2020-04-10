@@ -28,7 +28,7 @@
     "svelte": "^3.0.0",
     "svelte-loader-hot": "^0.3.0",
     "webpack": "^4.42.0",
-    "~mould": "https://github.com/nipinium/mould.git"
+    "~mould": "https://github.com/nipinium/mould"
   },
   "browserslist": [
     "> 1%",
