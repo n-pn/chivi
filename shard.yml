@@ -17,6 +17,9 @@ targets:
   bookdb-convert:
     main: tasks/bookdb/convert.cr
 
+  bookdb-indexes:
+    main: tasks/bookdb/indexes.cr
+
 crystal: 0.33.0
 
 license: MIT
