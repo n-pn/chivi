@@ -120,7 +120,11 @@
 
     &._input {
       border: none;
+      outline: none;
       cursor: text;
+      &::placeholder {
+        @include color(neutral, 7);
+      }
       @include bgcolor(darken(color(primary, 7), 5%));
     }
   }
