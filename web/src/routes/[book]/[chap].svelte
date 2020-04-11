@@ -98,7 +98,7 @@
   export let book_name
   export let prev_slug
   export let next_slug
-  export let curr_slug
+  // export let curr_slug
 
   export let lines
   export let chidx
