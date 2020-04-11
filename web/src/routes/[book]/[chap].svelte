@@ -308,11 +308,12 @@
   </div>
 
   <div class="right">
-    <a href="/{book_slug}/{curr_slug}?reload=true" class="header-item">
+    <!-- <a href="/{book_slug}/{curr_slug}?reload=true" class="header-item">
       <MIcon class="m-icon _refresh-ccw" name="refresh-ccw" />
-    </a>
+    </a> -->
 
     <button
+      type="button"
       class="header-item"
       class:_active={enable_lookup}
       on:click={trigger_lookup}>
