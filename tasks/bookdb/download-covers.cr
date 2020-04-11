@@ -16,23 +16,7 @@ class String
   end
 end
 
-covers = [] of String
-
-books.each do |book|
-  urls = book.covers.map do |url|
-    url = url.sub("qu.la", "jx.la")
-    if url.starts_with?("http://image.qidian.com")
-      url = url.sub("http://image.qidian.com/books", "https://qidian.qpic.cn/qdbimg").sub(".jpg", "/300.jpg")
-    end
-
-    url
-  end
-
-  covers.concat(urls)
-end
-
-covers.uniq!
-
+covers = books.map(&.covers).flatten.uniq
 puts "- images: #{covers.size} entries".colorize(:cyan)
 
 OUT_DIR = "data/txt-tmp/covers"
@@ -53,27 +37,34 @@ TLS = OpenSSL::SSL::Context::Client.insecure
 def download(url, label = "1/1") : Void
   ext = extname(url)
   file = "#{OUT_DIR}/#{url.digest}#{ext}"
-  return if File.exists?(file)
+  return if File.exists?(file) # && File.size(file) > 0
 
   puts "- saving <#{label.colorize(:blue)}> \
   [ #{url.colorize(:blue)} ] \
   to [ #{file.colorize(:blue)} ]"
 
-  tls = url.starts_with?("https") ? TLS : nil
+  tls = url.starts_with?("https") ? TLS : false
 
   begin
-    HTTP::Client.get(url, tls: tls) do |res|
-      exts = MIME.extensions(res.mime_type.to_s)
-      unless exts.empty? || exts.includes?(ext)
-        puts "Wrong extension for [#{file}], \
-            expects [#{exts}], \
-            got [#{ext}]".colorize(:red)
+    uri = URI.parse(url)
+    client = HTTP::Client.new(uri.host.as(String), tls: tls)
+    client.dns_timeout = 5
+    client.read_timeout = 5
+    client.connect_timeout = 5
 
-        file = file.sub(ext, exts.first)
-      end
+    res = client.get(uri.full_path.as(String))
 
-      File.write(file, res.body_io)
-    end
+    # exts = MIME.extensions(res.mime_type.to_s)
+    # unless exts.empty? || exts.includes?(ext)
+    #   puts "Wrong extension for [ #{file} ], \
+    #       url [ #{url} ], \
+    #       expects [#{exts}], \
+    #       got [#{res.mime_type}: #{ext.to_a}]".colorize(:red)
+
+    #   file = file.sub(ext, exts.first)
+    # end
+
+    File.write(file, res.body_io)
   rescue err
     puts "Error fetching [#{url}]: #{err.colorize(:red)}"
     FileUtils.touch(file)
