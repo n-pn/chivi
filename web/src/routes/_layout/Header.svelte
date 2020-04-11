@@ -117,18 +117,34 @@
         margin-left: 0.25rem;
       }
     }
+
+    &._input {
+      border: none;
+      cursor: text;
+      @include bgcolor(darken(color(primary, 7), 5%));
+    }
   }
 </style>
 
 <header class="header" class:_tilt={$lookup_pinned && $lookup_active}>
-  <nav class="header-nav">
-    <slot>
-      <div class="left">
-        <a href="/" class="header-item _logo _active">
-          <img src="/logo.svg" alt="logo" />
-          <span>Chivi</span>
-        </a>
-      </div>
-    </slot>
-  </nav>
+  <form action="/search" method="get">
+    <nav class="header-nav">
+      <slot>
+        <div class="left">
+          <a href="/" class="header-item _logo _active">
+            <img src="/logo.svg" alt="logo" />
+            <span>Chivi</span>
+          </a>
+
+          <input
+            type="search"
+            name="kw"
+            class="header-item _input"
+            placeholder="Tìm kiếm"
+            on:focus={evt => evt.stopPropagation()} />
+
+        </div>
+      </slot>
+    </nav>
+  </form>
 </header>

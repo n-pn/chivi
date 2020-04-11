@@ -47,17 +47,10 @@ books = files.map { |file| MyBook.from_json(File.read(file)) }
 books = books.sort_by(&.tally.-)
 
 books.each_with_index do |book, idx|
+  label = "- <#{idx + 1}/#{books.size}> [#{book.vi_title}]"
+
   slug = book.vi_slug
-  label = "- <#{idx + 1}/#{books.size}> [#{slug}]"
-
   slugs[book.zh_slug] = slug
-  mapping[book.vi_slug] = Mapping.new(book)
-
-  tally << {slug, book.tally}
-  score << {slug, book.score}
-  votes << {slug, book.votes}
-  update << {slug, book.updated_at}
-  access << {slug, book.updated_at}
 
   if book.prefer_site.empty?
     puts label.colorize(:blue)
@@ -65,6 +58,14 @@ books.each_with_index do |book, idx|
   else
     puts label.colorize(:green)
     hastext << slug
+
+    tally << {slug, book.tally}
+    score << {slug, book.score}
+    votes << {slug, book.votes}
+    update << {slug, book.updated_at}
+    access << {slug, book.updated_at}
+
+    mapping[book.vi_slug] = Mapping.new(book)
   end
 end
 

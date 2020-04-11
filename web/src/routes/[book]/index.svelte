@@ -345,17 +345,6 @@
           {relative_time(book.updated_at)}
         </time>
       </div>
-      <!--
-      <div>
-        <span class="prefer_site">
-          <MIcon class="m-icon" name="link" />
-          {book.prefer_site}
-        </span>
-        <span class="chap_count">
-          <MIcon class="m-icon" name="list" />
-          {book.chap_count} chương
-        </span>
-      </div> -->
 
       <div>
         <div>

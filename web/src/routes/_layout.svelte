@@ -14,7 +14,7 @@
   }
 
   function navigate(evt) {
-    if (evt.ctrlKey || evt.altKey || evt.shiftKey) return
+    if (!evt.altKey) return
 
     switch (evt.keyCode) {
       case 73:

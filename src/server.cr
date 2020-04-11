@@ -65,6 +65,12 @@ module Server
     {items: books, total: Kernel.serials.total, sort: sort}.to_json env.response
   end
 
+  get "/api/search" do |env|
+    query = env.params.query.fetch("kw", "")
+    books = Kernel.serials.glob(query)
+    books.to_json env.response
+  end
+
   get "/api/books/:slug" do |env|
     slug = env.params.url["slug"]
     book, site, bsid, chlist = Kernel.load_book(slug)

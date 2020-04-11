@@ -78,20 +78,18 @@ class Serials
     sort_by(sort)[offset, limit].map { |slug, _| get(slug) }
   end
 
-  def glob(title : String = "", author : String = "")
-    title = CUtil.slugify(title, no_accent: true)
-    author = CUtil.slugify(author, no_accent: true)
-
-    res = [] of VpBook
+  def glob(query : String = "")
+    query = CUtil.slugify(query, no_accent: true)
+    output = [] of VpBook
 
     @mapping.each do |slug, data|
-      next unless data.title.find(&.includes?(title))
-      next unless data.author.find(&.includes?(author))
-      res << get(slug).not_nil!
-      break unless res.size < 20
+      if data.title.find(&.includes?(query)) || data.author.find(&.includes?(query))
+        output << get(slug).not_nil!
+        break unless output.size < 8
+      end
     end
 
-    res
+    output
   end
 
   def sort_by(sort : String = "update")
