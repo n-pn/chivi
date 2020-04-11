@@ -13,12 +13,9 @@ VERBOSE = ARGV.include?("verbose")
 def load_proxies(file)
   return [] unless File.exists?(file)
 
-  proxies = File.read(file).split("\n").map(&:strip).reject(&:empty?).map do |line|
-    line.include?("http") ? line : "http://#{line}"
-  end
-
-  proxies.uniq!
+  proxies = File.read(file).split("\n").map(&:strip).reject(&:empty?).uniq!
   puts "- loaded #{proxies.size} proxies from [#{file}]".blue
+
   proxies
 end
 
@@ -59,10 +56,10 @@ def outdated?(file)
   json = JSON.parse(data)
 
   status = json["data"]["bookInfo"]["status"] || 0
-  outdated = OUTDATED * (status + 1)
+  outdated = OUTDATED * (status + 1) # bump to 6 days or 9 days
 
   score = json["data"]["bookInfo"]["score"] || 0
-  outdated *= 2 if score == 0
+  outdated *= 3 if score == 0 # bump to 9, 12 or 18 days
 
   mtime = File.mtime(file).to_i
   Time.now.to_i - mtime > outdated
@@ -77,11 +74,11 @@ def fetch_meta(book_id, proxy)
   url = BOOK_URL % [book_id, (Time.now.to_f * 1000).round]
   puts "HIT: [#{url}], proxy: [#{proxy}]".blue if VERBOSE
 
-  body = URI.open(url, proxy: proxy, read_timeout: 10, "User-Agent" => USER_AGENT) { |f| f.read }
+  body = URI.open(url, proxy: "http://#{proxy}", read_timeout: 10, "User-Agent" => USER_AGENT) { |f| f.read }
   raise "Malformed!" unless body.include?("{\"success\":true,") || body.include?("未找到该图书")
 
   File.write(file, body)
-  File.open(PROXY_FILE, "a") { |f| f.puts proxy.sub("http://", "") }
+  File.open(PROXY_FILE, "a") { |f| f.puts proxy }
 
   puts "- proxy [#{proxy}] worked!".green if VERBOSE
   :done
@@ -108,6 +105,7 @@ end
 step = 1
 until proxies.empty? || serials.empty?
   puts "[LOOP:#{step}]: serials: #{serials.size}, proxies: #{proxies.size}".cyan
+  step += 1
 
   working = []
   failure = []
@@ -116,7 +114,7 @@ until proxies.empty? || serials.empty?
     book_id = serials.pop
 
     res = fetch_meta(book_id, proxy)
-    message = "- [#{idx + 1}/#{proxies.size}]: #{res}! (book_id: #{book_id}, proxy: #{proxy})"
+    message = "- [#{idx + 1}/#{proxies.size}]: #{res}! (book_id: [#{book_id}], proxy: [#{proxy}])"
 
     case res
     when :skip
@@ -130,7 +128,6 @@ until proxies.empty? || serials.empty?
     end
   end
 
-  step += 1
-  proxies = working
+  proxies.concat(working)
   serials.concat(failure)
 end
