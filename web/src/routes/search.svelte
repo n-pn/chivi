@@ -1,14 +1,15 @@
 <script context="module">
   export async function preload({ query }) {
     const kw = query.kw
+    query = kw.replace(/\+|-/g, ' ')
 
     if (kw) {
       const url = `api/search?kw=${kw}`
       const res = await this.fetch(url)
       const items = await res.json()
-      return { items, query: kw.replace(/\+/g, ' ') }
+      return { items, query }
     } else {
-      return { items: [], query: kw.replace(/\+/g, ' ') }
+      return { items: [], query }
     }
   }
 </script>
@@ -128,8 +129,9 @@
     text-align: center;
 
     @include props(margin-top, attrs(1rem, 1.5rem, 2rem));
-    @include props(margin-bottom, attrs(0.5rem, 0.75rem, 1rem));
+    @include props(margin-bottom, attrs(0rem, 0.5rem, 1rem));
     @include props(font-size, attrs(font-size(5), font-size(6), font-size(7)));
+    @include props(line-height, attrs(1.5rem, 1.75rem, 2rem));
     @include fgcolor(color(neutral, 6));
   }
 </style>

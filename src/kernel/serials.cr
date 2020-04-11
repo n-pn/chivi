@@ -15,7 +15,7 @@ class Serials
     @books = {} of String => VpBook?
 
     @sorts = {
-      access: Index.from_json(File.read(index_file("update"))),
+      access: Index.from_json(File.read(index_file("access"))),
       update: Index.from_json(File.read(index_file("update"))),
       score:  Index.from_json(File.read(index_file("score"))),
       votes:  Index.from_json(File.read(index_file("votes"))),
