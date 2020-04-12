@@ -1,27 +1,22 @@
 <script context="module">
-  const fixture = '宋师兄'
-  export async function preload({ query }) {
-    return { input: query.input || fixture }
-  }
-
-  export function gen_links(input) {
+  export function suggest_urls(key) {
     return [
-      { site: 'iCIBA', href: `https://www.iciba.com/${input}` },
+      { site: 'iCIBA', href: `https://www.iciba.com/${key}` },
       {
         site: 'Google Translation',
-        href: `https://translate.google.com/#view=home&op=translate&sl=zh-CN&tl=vi&text=${input}`,
+        href: `https://translate.google.com/#view=home&op=translate&sl=zh-CN&tl=vi&text=${key}`,
       },
       {
         site: 'Google',
-        href: `https://www.google.com/search?q=${input}`,
+        href: `https://www.google.com/search?q=${key}`,
       },
       {
         site: 'Baidu Fanyi',
-        href: `https://fanyi.baidu.com/#zh/en/${input}`,
+        href: `https://fanyi.baidu.com/#zh/en/${key}`,
       },
       {
         site: 'Baike',
-        href: `https://baike.baidu.com/item/${input}`,
+        href: `https://baike.baidu.com/item/${key}`,
       },
     ]
   }
@@ -30,67 +25,77 @@
 <script>
   import { onMount, afterUpdate } from 'svelte'
 
-  const dnames = ['common', 'unique']
+  const tabs = [['special', 'Riêng'], ['generic', 'Chung']]
 
-  export let input = ''
-  export let dname = 'unique'
+  export let active = true
 
-  $: links = gen_links(input)
+  export let key = ''
+  export let active_tab = 'special'
+  export let unique_dic = 'combine'
 
-  $: if (input !== '') fetch_data(input)
-  onMount(() => value_input.focus())
-  // afterUpdate(() => fetch_data(input))
+  let field
+  let val = ''
 
-  let data = {
-    chinese: '',
-    hanviet: [],
-    pinyins: '',
-    common: {},
-    unique: {},
+  $: active_dic = active_tab == 'special' ? unique_dic : 'generic'
+
+  let links = []
+  let props = {
+    hanviet: 'test',
+    pinyins: 'xx',
+    generic: { value: '', mtime: null },
+    special: { value: '', mtime: null },
     suggest: [],
   }
 
-  let value_input = null
-  $: value = data[dname].val || ''
-  $: suggest = data.suggest[0] || data.hanviet.join(' ')
+  onMount(() => field.focus())
 
-  async function fetch_data(input) {
-    if (!fetch) return
-    const res = await fetch('/api/inquire', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input }),
-    })
-    data = await res.json()
+  function change_tab(new_tab) {
+    console.log({ new_tab })
+    active_tab = new_tab
+    field.focus()
   }
 
-  function change_tab(name) {
-    dname = name
-    value_input.focus()
-    // const input = document.getElementById(`output-${name}`)
-    // setTimeout(() => input.focus(), 0)
+  async function upsert() {
+    const res = await fetch(
+      `/api/upsert?dic=${active_dic}&key=${key}&val=${val}`
+    )
+    active = false
   }
 
-  function capitalize(num = 100) {
-    const vals = value.split(' ')
-    console.log(value)
+  async function remove() {
+    const res = await fetch(`/api/delete?dic=${active_dic}&key=${key}`)
+    active = false
+  }
 
-    if (num > vals.length) num = vals.length
+  async function inquire() {
+    links = suggest_urls(key)
 
-    for (let i = 0; i < num; i++) {
-      vals[i] = vals[i].charAt(0).toUpperCase() + vals[i].slice(1)
-    }
-    for (let i = num; i < vals.length; i++) {
-      vals[i] = vals[i].toLowerCase()
-    }
+    const res = await fetch(`/api/inquire?key=${key}`)
+    const data = await res.json()
+    props = data
+    val = props[active_tab].value || props.suggest[0] || props.hanviet
+  }
 
-    console.log(vals)
-    value = vals.join(' ')
+  function capitalize(input) {
+    return input.charAt(0).toUpperCase() + input.slice(1)
+  }
+
+  function upcase(count = 100) {
+    const arr = val.split(' ')
+    if (count > arr.length) count = arr.length
+
+    for (let i = 0; i < count; i++) arr[i] = capitalize(arr[i])
+    for (let i = count; i < arr.length; i++) arr[i] = arr[i].toLowerCase()
+
+    val = arr.join(' ')
+    field.focus()
   }
 </script>
 
 <style lang="scss">
-  .wrap {
+  $gutter: 1rem;
+
+  .container {
     position: fixed;
     display: flex;
     align-items: center;
@@ -99,102 +104,116 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 9999;
-    background-color: rgba(#000, 0.1);
+    z-index: 999;
+    @include bgcolor(rgba(#000, 0.6));
   }
 
   .dialog {
-    width: rem(432);
+    width: rem(29);
     max-width: 100%;
-    background-color: #fff;
     margin-top: -10%;
-    @include radius(md);
-    @include shadow(lg);
+    @include bgcolor(white);
+    @include radius();
+    @include shadow(3);
+  }
+
+  $header-height: 3rem;
+  $header-gutter: 0.5rem;
+
+  header {
+    padding: $header-gutter $gutter;
+    height: $header-height;
+    line-height: $header-height - $header-gutter * 2;
+
+    @include bgcolor(color(neutral, 1));
+    @include radius($pos: top);
+    @include border($pos: bottom);
+
+    .label {
+      font-weight: 500;
+    }
+  }
+
+  .tab {
+    display: inline-block;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-left: $header-gutter;
+    font-weight: 500;
+    padding: 0 0.75rem;
+    height: $header-height - $header-gutter * 2;
+
+    @include font-size(2);
+    @include fgcolor(color(neutral, 6));
+
+    @include radius();
+
+    @include border();
+
+    &._active {
+      @include bgcolor(#fff);
+      @include fgcolor(color(primary, 6));
+      @include border-color($value: color(primary, 4));
+    }
   }
 
   $label-width: 3rem;
-  .chinese {
-    // display: flex;
-    padding-top: 0.5rem;
-    input {
-      display: block;
-      @include bgcolor(color(neutral, 1));
-      border: 1px solid color(neutral, 2);
-      width: 100%;
-      // width: calc(100% - #{$label-width});
-      margin-left: auto;
-      padding: 0 1rem;
-      line-height: 2.5rem;
-      @include radius(md);
-      &:focus {
-        background-color: #fff;
-        @include bdcolor(primary, 3);
-      }
-      // line-height: 1rem;
-    }
-  }
 
-  .translit {
-    // margin-left: $label-width + 0.5rem;
-    margin: 0;
-    padding-top: 0.5rem;
-    // padding: 0.5rem;
-    // padding-bottom: 0;
-    @include font-size(sm);
-    @include fgcolor(neutral, 7));
-  }
-
-  header {
-    @include bgcolor(color(neutral, 1));
-    @include radius-top(md);
-    padding: 0 1rem;
+  .key {
+    padding: $gutter;
     border-bottom: 1px solid color(neutral, 2);
-    height: 2.5rem;
   }
 
-  .tab-name {
-    display: inline-block;
-    text-transform: uppercase;
-    @include font-size(sm);
-    @include fgcolor(neutral, 6));
-    // @include radius-top(md);
-    font-weight: 500;
-    height: 2.5rem;
+  .key-inp {
+    display: block;
+    width: 100%;
+
+    padding: 0 0.75rem;
     line-height: 2.5rem;
-    padding: 0 1rem;
-    // margin-top: 1px;
 
-    border: 1px solid transparent;
-    // border-top: 0;
-    border-bottom: 0;
-    // border: 1px solid color(neutral, 2);
-    &._active {
-      // border-bottom-color: color(primary, 3);
-      @include fgcolor(primary, 6));
-      background-color: #fff;
+    @include radius();
 
-      border-left: 1px solid color(neutral, 2);
-      border-right: 1px solid color(neutral, 2);
-      @include bdcolor(neutral, 2);
-      border-top-color: color(primary, 5);
+    @include bgcolor(color(neutral, 1));
+    @include border($color: color(neutral, 2));
+
+    &:focus {
+      @include bgcolor(white);
+      @include border-color($value: color(primary, 3));
     }
+    // line-height: 1rem;
+  }
 
-    @include hover {
-      cursor: pointer;
+  .key-lit {
+    margin-top: 0.375rem;
+    @include font-size(2);
+    line-height: 1;
+    @include fgcolor(color(neutral, 7));
+  }
+
+  .val {
+    padding: 0 $gutter;
+  }
+
+  .val-inp {
+    display: block;
+    width: 100%;
+    min-height: 2.5rem;
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+
+    @include radius();
+    @include border($color: color(neutral, 2));
+    @include bgcolor(color(neutral, 1));
+    &:focus,
+    &:active {
+      @include bgcolor(white);
+      @include border-color($value: color(primary, 3));
     }
   }
 
-  .zhinput {
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid color(neutral, 2);
-  }
-
-  .value {
-    padding: 1rem;
-  }
-
-  .value-footer {
-    margin: 1rem 0;
+  .val-act {
+    // margin: 1rem 0;
+    margin: 0.5rem 0;
     display: flex;
     .left {
       margin-right: auto;
@@ -204,10 +223,43 @@
     }
   }
 
-  .links {
+  .cap {
+    display: flex;
+    line-height: 1.75rem;
+    margin: 0.5rem 0;
+  }
+
+  .cap-lbl {
+    padding: 0;
+    padding-right: 0.375rem;
+    max-width: 15vw;
+    @include truncate(null);
+
+    @include font-size(2);
+    @include fgcolor(color(neutral, 5));
+  }
+
+  .cap-btn {
+    padding: 0 0.375rem;
+    max-width: 20vw;
+    cursor: pointer;
+    @include truncate(null);
+    // text-transform: uppercase;
+    @include font-size(2);
+    // font-weight: 500;
+    @include fgcolor(color(neutral, 6));
+    // @include border($color: color(neutral, 3));
+    @include radius();
+    @include hover {
+      @include bgcolor(color(primary, 1));
+      @include fgcolor(color(primary, 6));
+    }
+  }
+
+  footer {
     display: flex;
     @include bgcolor(color(neutral, 1));
-    @include radius-bottom(md);
+    @include radius($pos: bottom);
     // width: 5rem;
     margin: 0;
     padding: 0 0.5rem;
@@ -219,12 +271,12 @@
       // display: inline-block;
       line-height: 1rem;
       padding: 0.5rem;
-      @include font-size(sm);
-      @include font-family(narrow);
+      @include font-size(2);
+      // @include font-family(narrow);
     }
 
     a {
-      @include fgcolor(neutral, 7));
+      @include fgcolor(color(neutral, 7));
       display: inline-block;
       border-left: 1px splid color(neutral, 3);
 
@@ -234,110 +286,82 @@
       }
     }
   }
-
-  .value-input {
-    display: block;
-    width: 100%;
-    @include radius(md);
-    @include border(color(neutral, 2));
-    padding: 0.5rem 1rem;
-    margin: 0;
-    @include bgcolor(color(neutral, 1));
-    min-height: 2.75rem;
-    &:focus,
-    &:active {
-      background-color: #fff;
-      @include bdcolor(primary, 3);
-    }
-  }
-
-  .value-edit {
-    display: flex;
-    margin-bottom: 0.5rem;
-    .cap {
-      @include fgcolor(neutral, 5));
-      // padding-right: 0.25rem;
-    }
-    .act {
-      @include radius(md);
-      margin-left: 0.25rem;
-      padding: 0 0.5rem;
-      @include fgcolor(neutral, 6));
-      @include border(color(neutral, 3));
-      @include hover {
-        cursor: pointer;
-        @include fgcolor(primary, 6));
-      }
-    }
-    span {
-      display: inline-block;
-
-      line-height: 1.5rem;
-      @include font-size(sm);
-      // @include truncate();
-      @include font-family(narrow);
-    }
-  }
 </style>
 
-<div class="wrap">
-  <div class="dialog">
+<div class="container" on:click={() => (active = false)}>
+  <div class="dialog" on:click={evt => evt.stopPropagation()}>
     <header>
-      {#each dnames as name}
+      <span class="label">Thêm từ:</span>
+      {#each tabs as [tab, lbl]}
         <span
-          class="tab-name"
-          class:_active={dname == name}
-          on:click={() => change_tab(name)}>
-          {name == 'common' ? 'Vietphrase' : 'Tên riêng'}
+          class="tab"
+          class:_active={tab == active_tab}
+          on:click={() => change_tab(tab)}>
+          {lbl}
         </span>
       {/each}
     </header>
-    <section class="zhinput">
-      <div class="chinese">
-        <input type="text" name="chinese" bind:value={input} />
-      </div>
-      <div class="translit">
-        <span class="pinyins">[{data.pinyins}]</span>
-        <span class="hanviet">{data.hanviet.join(' ')}</span>
+
+    <section class="key">
+      <input
+        class="key-inp"
+        type="text"
+        name="key"
+        bind:value={key}
+        on:change={inquire} />
+
+      <div class="key-lit">
+        <span class="pinyins">[{props.pinyins}]</span>
+        <span class="hanviet">{props.hanviet}</span>
       </div>
     </section>
 
-    <section class="value">
-      <div class="value-edit">
-        <span class="cap">Viết hoa:</span>
-        <span class="act" on:click={() => capitalize(1)}>1 chữ đầu</span>
-        <span class="act" on:click={() => capitalize(2)}>2 chữ đầu</span>
-        <span class="act" on:click={() => capitalize(3)}>3 chữ đầu</span>
-        <span class="act" on:click={() => capitalize(99)}>toàn bộ</span>
-        <span class="act" on:click={() => capitalize(0)}>không</span>
+    <section class="val">
+      <div class="cap">
+        <span class="cap-lbl">Viết hoa:</span>
+        <span class="cap-btn" on:click={() => upcase(0)}>không</span>
+        <span class="cap-btn" on:click={() => upcase(1)}>1 chữ</span>
+        <span class="cap-btn" on:click={() => upcase(2)}>2 chữ</span>
+        <span class="cap-btn" on:click={() => upcase(3)}>3 chữ</span>
+        <span class="cap-btn" on:click={() => upcase(99)}>toàn bộ</span>
       </div>
+
       <textarea
         lang="vi"
-        class="value-input"
+        class="val-inp"
         name="value"
-        id="value_input"
+        id="field"
         rows="2"
-        bind:this={value_input}
-        value={value || suggest} />
+        bind:this={field}
+        bind:value={val} />
 
-      <div class="value-footer">
-        <div class="left">
-          <button class="m-btn _fill">Undo</button>
-        </div>
+      <div class="val-act">
+        <div class="left" />
+
         <div class="right">
-          <button class="m-btn _primary">{value ? 'Update' : 'Add'}</button>
-          <button class="m-btn _text _red">Delete</button>
-        </div>
+          <button
+            type="button"
+            class="m-button _text _harmful"
+            on:click={remove}>
+            <span>Xoá từ</span>
+          </button>
+          <button type="button" class="m-button _primary" on:click={upsert}>
+            <!-- <svg class="m-icon _plus">
+              <use xlink:href="/icons.svg#plus" />
+            </svg> -->
+            <span>{props[active_tab].value ? 'Sửa' : 'Thêm'}</span>
+          </button>
 
+        </div>
       </div>
 
     </section>
 
-    <div class="links">
-      <span>Links:</span>
+    <footer>
+      <span>Tra từ:</span>
       {#each links as { site, href }}
-        <a {href} target="_blank">{site}</a>
+        <a {href} target="_blank" rel="noopener noreferer">{site}</a>
       {/each}
-    </div>
+    </footer>
   </div>
 </div>

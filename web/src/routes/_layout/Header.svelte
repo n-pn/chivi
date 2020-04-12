@@ -60,7 +60,7 @@
 
     @include fgcolor(color(neutral, 2));
 
-    @include radius(3);
+    @include radius();
     @include font-size(2);
 
     @include bgcolor(color(primary, 6));

@@ -91,6 +91,7 @@
   import MIcon from '$mould/MIcon.svelte'
   import Header from '$layout/Header.svelte'
   import Lookup from '$layout/Lookup.svelte'
+  import Upsert from '$layout/Upsert.svelte'
 
   import { lookup_active, lookup_line, lookup_from } from '$src/stores.js'
 
@@ -105,7 +106,9 @@
   export let total
 
   let line_focused = 0
+
   let enable_lookup = false
+  let enable_upsert = false
 
   function navigate(evt) {
     if (evt.ctrlKey || evt.altKey || evt.shiftKey) return
@@ -121,7 +124,6 @@
         evt.preventDefault()
         if (prev_slug) _goto(`${book_slug}/${prev_slug}`)
         else _goto(book_slug)
-
         break
 
       case 39:
@@ -129,7 +131,11 @@
         if (next_slug) _goto(`${book_slug}/${next_slug}`)
         else _goto(`${book_slug}`)
         evt.preventDefault()
+        break
 
+      case 67:
+        if (!enable_upsert) enable_upsert = true
+        evt.preventDefault()
         break
 
       default:
@@ -251,7 +257,7 @@
 
   footer {
     margin: 0.75rem 0;
-    @include flex($gap: 0.5rem);
+    @include flex($gap: 0.375rem);
     justify-content: center;
   }
 
@@ -367,4 +373,8 @@
 
 {#if enable_lookup}
   <Lookup />
+{/if}
+
+{#if enable_upsert}
+  <Upsert bind:active={enable_upsert} key="" />
 {/if}
