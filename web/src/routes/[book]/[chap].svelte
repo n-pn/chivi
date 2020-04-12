@@ -203,7 +203,7 @@
   }
 
   function trigger_lookup() {
-    if ($lookup_active) {
+    if (enable_lookup) {
       enable_lookup = false
       lookup_active.set(false)
     } else {
