@@ -128,6 +128,6 @@ until proxies.empty? || serials.empty?
     end
   end
 
-  proxies.concat(working)
-  serials.concat(failure)
+  proxies.concat(working).uniq!
+  serials.concat(failure).uniq!
 end
