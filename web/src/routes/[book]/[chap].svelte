@@ -251,11 +251,8 @@
 
   footer {
     margin: 0.75rem 0;
-    display: flex;
+    @include flex($gap: 0.5rem);
     justify-content: center;
-    .m-button {
-      margin-left: 0.5rem;
-    }
   }
 
   @mixin token($color: blue) {

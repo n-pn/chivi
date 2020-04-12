@@ -13,7 +13,7 @@ VERBOSE = ARGV.include?("verbose")
 def load_proxies(file)
   return [] unless File.exists?(file)
 
-  proxies = File.read(file).split("\n").map(&:strip).reject(&:empty?).uniq!
+  proxies = File.read(file).split("\n").map(&:strip).reject(&:empty?).uniq
   puts "- loaded #{proxies.size} proxies from [#{file}]".blue
 
   proxies

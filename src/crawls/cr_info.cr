@@ -211,6 +211,8 @@ class CrInfo
           @serial.status = text
         when "og:novel:update_time"
           @serial.updated_at = text
+        else
+          next
         end
       end
     when "hetushu"
