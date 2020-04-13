@@ -30,29 +30,41 @@
   export let active = true
 
   export let key = ''
-  export let active_tab = 'special'
-  export let unique_dic = 'combine'
+  export let dic = 'combine'
+  export let tab = 'special'
 
-  let field
+  let key_field
+  let val_field
+
   let val = ''
 
-  $: active_dic = active_tab == 'special' ? unique_dic : 'generic'
+  $: active_dic = tab == 'special' ? dic : 'generic'
+  $: if (key) inquire()
 
   let links = []
   let props = {
-    hanviet: 'test',
-    pinyins: 'xx',
+    hanviet: '',
+    pinyins: '',
     generic: { value: '', mtime: null },
     special: { value: '', mtime: null },
     suggest: [],
   }
 
-  onMount(() => field.focus())
+  onMount(() => {
+    if (key == '') key_field.focus()
+    else val_field.focus()
+  })
 
   function change_tab(new_tab) {
     console.log({ new_tab })
-    active_tab = new_tab
-    field.focus()
+    tab = new_tab
+    update_val()
+    val_field.focus()
+  }
+
+  function update_val() {
+    val = props[tab].value || props.suggest[0] || props.hanviet
+    if (tab === 'special') upcase_val()
   }
 
   async function upsert() {
@@ -71,16 +83,15 @@
     links = suggest_urls(key)
 
     const res = await fetch(`/api/inquire?key=${key}`)
-    const data = await res.json()
-    props = data
-    val = props[active_tab].value || props.suggest[0] || props.hanviet
+    props = await res.json()
+    update_val()
   }
 
   function capitalize(input) {
     return input.charAt(0).toUpperCase() + input.slice(1)
   }
 
-  function upcase(count = 100) {
+  function upcase_val(count = 100) {
     const arr = val.split(' ')
     if (count > arr.length) count = arr.length
 
@@ -88,7 +99,7 @@
     for (let i = count; i < arr.length; i++) arr[i] = arr[i].toLowerCase()
 
     val = arr.join(' ')
-    field.focus()
+    val_field.focus()
   }
 </script>
 
@@ -121,16 +132,25 @@
   $header-gutter: 0.5rem;
 
   header {
+    position: relative;
     padding: $header-gutter $gutter;
     height: $header-height;
     line-height: $header-height - $header-gutter * 2;
-
     @include bgcolor(color(neutral, 1));
     @include radius($pos: top);
     @include border($pos: bottom);
 
     .label {
       font-weight: 500;
+    }
+
+    .m-button {
+      position: absolute;
+      right: $header-gutter;
+      top: 0.375rem;
+      @include hover {
+        color: color(primary, 5);
+      }
     }
   }
 
@@ -160,7 +180,8 @@
   $label-width: 3rem;
 
   .key {
-    padding: $gutter;
+    margin: 0 $gutter;
+    padding: $gutter 0;
     border-bottom: 1px solid color(neutral, 2);
   }
 
@@ -187,7 +208,7 @@
     margin-top: 0.375rem;
     @include font-size(2);
     line-height: 1;
-    @include fgcolor(color(neutral, 7));
+    @include fgcolor(color(neutral, 6));
   }
 
   .val {
@@ -214,12 +235,14 @@
   .val-act {
     // margin: 1rem 0;
     margin: 0.5rem 0;
-    display: flex;
+    @include flex();
     .left {
       margin-right: auto;
+      @include flex($gap: 0.5rem);
     }
     .right {
       margin-left: auto;
+      @include flex($gap: 0.5rem);
     }
   }
 
@@ -292,14 +315,23 @@
   <div class="dialog" on:click={evt => evt.stopPropagation()}>
     <header>
       <span class="label">Thêm từ:</span>
-      {#each tabs as [tab, lbl]}
+      {#each tabs as [name, label]}
         <span
           class="tab"
-          class:_active={tab == active_tab}
-          on:click={() => change_tab(tab)}>
-          {lbl}
+          class:_active={name == tab}
+          on:click={() => change_tab(name)}>
+          {label}
         </span>
       {/each}
+
+      <button
+        type="button"
+        class="m-button _text"
+        on:click={() => (active = false)}>
+        <svg class="m-icon _x">
+          <use xlink:href="/icons.svg#x" />
+        </svg>
+      </button>
     </header>
 
     <section class="key">
@@ -308,31 +340,33 @@
         type="text"
         name="key"
         bind:value={key}
-        on:change={inquire} />
+        bind:this={key_field} />
 
       <div class="key-lit">
-        <span class="pinyins">[{props.pinyins}]</span>
-        <span class="hanviet">{props.hanviet}</span>
+        {#if key}
+          <span class="hanviet">{props.hanviet}</span>
+          <span class="pinyins">[{props.pinyins}]</span>
+        {/if}
       </div>
     </section>
 
     <section class="val">
       <div class="cap">
         <span class="cap-lbl">Viết hoa:</span>
-        <span class="cap-btn" on:click={() => upcase(0)}>không</span>
-        <span class="cap-btn" on:click={() => upcase(1)}>1 chữ</span>
-        <span class="cap-btn" on:click={() => upcase(2)}>2 chữ</span>
-        <span class="cap-btn" on:click={() => upcase(3)}>3 chữ</span>
-        <span class="cap-btn" on:click={() => upcase(99)}>toàn bộ</span>
+        <span class="cap-btn" on:click={() => upcase_val(0)}>không</span>
+        <span class="cap-btn" on:click={() => upcase_val(1)}>1 chữ</span>
+        <span class="cap-btn" on:click={() => upcase_val(2)}>2 chữ</span>
+        <span class="cap-btn" on:click={() => upcase_val(3)}>3 chữ</span>
+        <span class="cap-btn" on:click={() => upcase_val(99)}>toàn bộ</span>
       </div>
 
       <textarea
         lang="vi"
         class="val-inp"
         name="value"
-        id="field"
+        id="val_field"
         rows="2"
-        bind:this={field}
+        bind:this={val_field}
         bind:value={val} />
 
       <div class="val-act">
@@ -341,15 +375,12 @@
         <div class="right">
           <button
             type="button"
-            class="m-button _text _harmful"
+            class="m-button _line _harmful"
             on:click={remove}>
             <span>Xoá từ</span>
           </button>
           <button type="button" class="m-button _primary" on:click={upsert}>
-            <!-- <svg class="m-icon _plus">
-              <use xlink:href="/icons.svg#plus" />
-            </svg> -->
-            <span>{props[active_tab].value ? 'Sửa' : 'Thêm'}</span>
+            <span>{props[tab].value ? 'Cập nhật' : 'Thêm từ'}</span>
           </button>
 
         </div>

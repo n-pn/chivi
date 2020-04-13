@@ -6,11 +6,11 @@ module Engine
   @@repo = CRepo.new("data/dic-out")
 
   def hanviet(input : String, apply_cap = false)
-    Chivi.cv_lit(@@repo.hanviet, input)
+    Chivi.cv_lit(@@repo.hanviet, input, apply_cap: apply_cap)
   end
 
   def pinyin(input : String, apply_cap = false)
-    Chivi.cv_lit(@@repo.pinyin, input)
+    Chivi.cv_lit(@@repo.pinyin, input, apply_cap: apply_cap)
   end
 
   def tradsim(input : String)
@@ -62,10 +62,10 @@ module Engine
     generic_1, generic_2 = @@repo.generic(user)
 
     dicts = {
-      {special_2, "special_2", "; "},
-      {special_1, "special_1", "; "},
-      {generic_2, "generic_2", "; "},
-      {generic_1, "generic_1", "; "},
+      {special_2, "riêng (#{user})", "; "},
+      {special_1, "riêng (hệ thống)", "; "},
+      {generic_2, "chung (#{user})", "; "},
+      {generic_1, "chung (hệ thống)", "; "},
       {trungviet, "trungviet", "\n"},
       {cc_cedict, "cc_cedict", "\n"},
     }
@@ -83,5 +83,37 @@ module Engine
 
     res.to_a.sort_by(&.[0].-)
     # end
+  end
+
+  def inquire(key, book : String? = nil, user = "guest")
+    if book
+      special_1, special_2 = @@repo.unique(book, user)
+    else
+      special_1, special_2 = @@repo.combine(user)
+    end
+
+    generic_1, generic_2 = @@repo.generic(user)
+    suggest_1, suggest_2 = @@repo.suggest(user)
+
+    generic = generic_2.find(key) || generic_1.find(key)
+    special = special_2.find(key) || special_1.find(key)
+    suggest = suggest_2.find(key) || suggest_1.find(key)
+
+    {
+      hanviet: hanviet(key).vi_text,
+      pinyins: pinyin(key).vi_text,
+      generic: dict_item(generic),
+      special: dict_item(special),
+      suggest: suggest ? suggest.vals : [] of String,
+    }
+  end
+
+  private def dict_item(item : CDict::Item?)
+    return {value: "", mtime: nil} if item.nil?
+
+    {
+      value: item.vals.join(CDict::Item::SEP_1),
+      mtime: item.mtime.try(&.to_unix_ms),
+    }
   end
 end

@@ -50,13 +50,13 @@
           break
       }
 
-      const text = escape_html(val)
+      const e_key = escape_html(key)
+      const e_val = escape_html(val)
 
-      if (active) {
-        const e_key = escape_html(key)
-        res += `<x-v data-k="${e_key}" data-i=${idx} data-d=${dic} data-p=${pos}>${text}</x-v>`
+      if (active && dic > 0) {
+        res += `<x-v data-k="${e_key}" data-i=${idx} data-d=${dic} data-p=${pos}>${e_val}</x-v>`
       } else {
-        res += text
+        res += e_val
       }
 
       switch (val.charAt(val.length - 1)) {
@@ -106,12 +106,17 @@
   export let total
 
   let line_focused = 0
+  let item_focused
 
   let enable_lookup = false
   let enable_upsert = false
 
+  let upsert_key = ''
+  let upsert_dic = 'combine'
+  let upsert_tab = 'generic'
+
   function navigate(evt) {
-    if (evt.ctrlKey || evt.altKey || evt.shiftKey) return
+    if (!evt.altKey) return
 
     switch (evt.keyCode) {
       case 72:
@@ -134,7 +139,7 @@
         break
 
       case 67:
-        if (!enable_upsert) enable_upsert = true
+        if (!enable_upsert) active_upsert()
         evt.preventDefault()
         break
 
@@ -201,10 +206,17 @@
     lookup_line.set(lines[idx])
     lookup_active.set(true)
 
+    if (item_focused) {
+      item_focused.classList.remove('_active')
+    }
+
     if (evt.target.nodeName !== 'X-V') {
       lookup_from.set(0)
+      item_focused = null
     } else {
-      lookup_from.set(+evt.target.dataset['p'])
+      item_focused = evt.target
+      item_focused.classList.add('_active')
+      lookup_from.set(+item_focused.dataset['p'])
     }
   }
 
@@ -216,6 +228,29 @@
       enable_lookup = true
       lookup_active.set(true)
     }
+  }
+
+  function is_active(idx, cur) {
+    if (idx < cur - 9) return false
+    if (idx > cur + 9) return false
+    return true
+  }
+
+  function active_upsert() {
+    // TODO: from selection
+
+    if (item_focused) {
+      upsert_key = item_focused.dataset.k
+
+      const dic = +item_focused.dataset.d
+      if (dic == 1 || dic == 2) {
+        upsert_tab = 'generic'
+      } else {
+        upsert_tab = 'special'
+      }
+    }
+
+    enable_upsert = true
   }
 </script>
 
@@ -262,12 +297,22 @@
   }
 
   @mixin token($color: blue) {
-    border-bottom-color: color($color, 3);
     cursor: pointer;
+    position: relative;
+
+    ._active & {
+      border-color: color($color, 3);
+    }
+
+    &._active {
+      color: color($color, 6);
+    }
+
     @include hover {
       color: color($color, 6);
     }
   }
+
   :global(x-v) {
     border-bottom: 1px solid transparent;
 
@@ -328,19 +373,21 @@
 <div class="wrapper">
   <article>
     {#each lines as line, idx}
-      <div
-        on:mouseenter={() => change_focus(idx)}
-        on:click={evt => active_lookup(evt, idx)}>
-        {#if idx == 0}
-          <h1>
-            {@html render(line, enable_lookup && idx == line_focused)}
-          </h1>
-        {:else}
-          <p>
-            {@html render(line, enable_lookup && idx == line_focused)}
-          </p>
-        {/if}
-      </div>
+      {#if idx == 0}
+        <h1
+          class:_active={enable_lookup && idx == line_focused}
+          on:mouseenter={() => change_focus(idx)}
+          on:click={evt => active_lookup(evt, idx)}>
+          {@html render(line, is_active(idx, line_focused))}
+        </h1>
+      {:else}
+        <p
+          class:_active={enable_lookup && idx == line_focused}
+          on:mouseenter={() => change_focus(idx)}
+          on:click={evt => active_lookup(evt, idx)}>
+          {@html render(line, is_active(idx, line_focused))}
+        </p>
+      {/if}
     {/each}
   </article>
 
@@ -376,5 +423,9 @@
 {/if}
 
 {#if enable_upsert}
-  <Upsert bind:active={enable_upsert} key="" />
+  <Upsert
+    bind:active={enable_upsert}
+    key={upsert_key}
+    dic={upsert_dic}
+    tab={upsert_tab} />
 {/if}

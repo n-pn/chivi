@@ -45,7 +45,15 @@ module Server
     user = env.get("user").as(String)
 
     res = Engine.lookup(line, from, udic, user)
-    res.to_json env.response
+    res.to_json(env.response)
+  end
+
+  get "/api/inquire" do |env|
+    key = env.params.query["key"]? || ""
+    dic = env.params.query["dic"]?
+    user = env.get("user").as(String)
+    res = Engine.inquire(key, dic, user)
+    res.to_json(env.response)
   end
 
   get "/api/hanviet" do |env|

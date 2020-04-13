@@ -86,10 +86,10 @@ module Chivi
     tokens.reverse
   end
 
-  def cv_lit(dicts : Dicts, input : String)
+  def cv_lit(dicts : Dicts, input : String, apply_cap = false)
     tokens = tokenize(dicts, input.chars)
     tokens = combine_similar(tokens)
-    tokens = capitalize(tokens)
+    tokens = capitalize(tokens) if apply_cap
     add_spaces(tokens)
   end
 
