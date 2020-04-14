@@ -63,7 +63,7 @@ def save_book(book, label) : Void
 end
 
 limit = 20
-channel = Channel(Nil).new(20)
+channel = Channel(Nil).new(limit)
 
 books.each_with_index do |book, idx|
   channel.receive unless idx < limit

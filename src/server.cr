@@ -28,7 +28,7 @@ module Server
     if Kemal.config.env == "production"
       user = "guest"
     else
-      user = "admin"
+      user = "local"
     end
 
     env.set("user", user)
@@ -56,11 +56,18 @@ module Server
     res.to_json(env.response)
   end
 
-  get "/api/hanviet" do |env|
-    line = env.params.query.fetch("line", "")
-    udic = env.params.query["udic"]?
+  get "/api/upsert" do |env|
+    key = env.params.query["key"]? || ""
+    val = env.params.query["val"]? || ""
+    dic = env.params.query["dic"]?
+    user = env.get("user").as(String)
+    res = Engine.upsert(key, val, dic, user)
+    res.to_json(env.response)
+  end
 
-    res = Engine.hanviet(line)
+  get "/api/hanviet" do |env|
+    txt = env.params.query.fetch("txt", "")
+    res = Engine.hanviet(txt)
     res.to_json env.response
   end
 
@@ -106,15 +113,13 @@ module Server
 
     slug = env.params.url["slug"]
     site = env.params.url["site"]
+    csid = env.params.url["chap"]
 
     book, site, bsid, chlist = Kernel.load_book(slug, site)
+    cidx = chlist.index(&.csid.==(csid))
 
     halt env, status_code: 404, response: ({msg: "Book not found"}).to_json if book.nil?
     halt env, status_code: 404, response: ({msg: "Site not found"}).to_json if chlist.empty?
-
-    csid = env.params.url["chap"]
-    cidx = chlist.index(&.csid.==(csid))
-
     halt env, status_code: 404, response: ({msg: "Chap not found"}).to_json if cidx.nil?
 
     curr_chap = chlist[cidx]

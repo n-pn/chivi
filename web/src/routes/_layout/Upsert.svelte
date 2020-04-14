@@ -56,7 +56,6 @@
   })
 
   function change_tab(new_tab) {
-    console.log({ new_tab })
     tab = new_tab
     update_val()
     val_field.focus()

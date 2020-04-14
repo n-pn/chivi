@@ -4,14 +4,14 @@ require "../models/*"
 class Serials
   alias Index = Array(Tuple(String, Int64 | Float64))
 
-  class Mapping
+  class Query
     include JSON::Serializable
 
     property title : Array(String)
     property author : Array(String)
   end
 
-  def initialize(@dir = "data/txt-out/serials")
+  def initialize(@dir = "data/txt-out")
     @books = {} of String => VpBook?
 
     @sorts = {
@@ -22,7 +22,7 @@ class Serials
       tally:  Index.from_json(File.read(index_file("tally"))),
     }
 
-    @mapping = Hash(String, Mapping).from_json(File.read(index_file("mapping")))
+    @query = Hash(String, Query).from_json(File.read(index_file("query")))
   end
 
   def [](vi_slug : String)
@@ -49,7 +49,7 @@ class Serials
   end
 
   def serial_file(vi_slug)
-    File.join(@dir, "#{vi_slug}.json")
+    File.join(@dir, "serials", "#{vi_slug}.json")
   end
 
   def index_file(name)
@@ -82,7 +82,7 @@ class Serials
     query = CUtil.slugify(query, no_accent: true)
     output = [] of VpBook
 
-    @mapping.each do |slug, data|
+    @query.each do |slug, data|
       if data.title.find(&.includes?(query)) || data.author.find(&.includes?(query))
         output << get(slug).not_nil!
         break unless output.size < 8

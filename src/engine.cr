@@ -17,20 +17,20 @@ module Engine
     Chivi.cv_raw(@@repo.tradsim, input)
   end
 
-  def translate(input : String, title : Bool, book : String? = nil, user = "admin")
+  def translate(input : String, title : Bool, book : String? = nil, user = "local")
     convert(input, title, book, user).vi_text
   end
 
-  def translate(input : Array(String), mode : Symbol, book : String? = nil, user = "admin")
+  def translate(input : Array(String), mode : Symbol, book : String? = nil, user = "local")
     convert(input, mode, book, user).map(&.vi_text)
   end
 
-  def convert(input : String, title = false, book : String? = nil, user = "admin")
+  def convert(input : String, title = false, book : String? = nil, user = "local")
     dicts = @@repo.for_convert(book, user)
     title ? Chivi.cv_title(dicts, input) : Chivi.cv_plain(dicts, input)
   end
 
-  def convert(lines : Array(String), mode : Symbol, book : String? = nil, user = "admin")
+  def convert(lines : Array(String), mode : Symbol, book : String? = nil, user = "local")
     dicts = @@repo.for_convert(book, user)
 
     case mode
@@ -47,7 +47,7 @@ module Engine
 
   alias LookupItem = Tuple(String, String)
 
-  def lookup(str : String, idx = 0, book : String? = nil, user = "admin")
+  def lookup(str : String, idx = 0, book : String? = nil, user = "local")
     chars = str.chars
 
     trungviet = @@repo.trungviet
@@ -115,5 +115,19 @@ module Engine
       value: item.vals.join(CDict::Item::SEP_1),
       mtime: item.mtime.try(&.to_unix_ms),
     }
+  end
+
+  def upsert(key : String, val : String, dic : String? = nil, user : String = "local")
+    case dic
+    when "generic", nil
+      dict = @@repo.common.get_fix("generic", user)
+    when "combine"
+      dict = @@repo.common.get_fix("generic", user)
+    else
+      dict = @@repo.unique.get_fix(dic, user)
+    end
+
+    # TODO: smart tranfering items
+    dict.set(key, val)
   end
 end

@@ -116,7 +116,9 @@
   let upsert_tab = 'generic'
 
   function navigate(evt) {
-    if (!evt.altKey) return
+    if (enable_upsert) return
+
+    // if (!evt.altKey) return
 
     switch (evt.keyCode) {
       case 72:
@@ -201,23 +203,22 @@
   }
 
   function active_lookup(evt, idx) {
-    if (!enable_lookup) return
-
-    lookup_line.set(lines[idx])
-    lookup_active.set(true)
-
     if (item_focused) {
       item_focused.classList.remove('_active')
     }
 
+    lookup_line.set(lines[idx])
+
     if (evt.target.nodeName !== 'X-V') {
-      lookup_from.set(0)
       item_focused = null
+      lookup_from.set(0)
     } else {
       item_focused = evt.target
       item_focused.classList.add('_active')
       lookup_from.set(+item_focused.dataset['p'])
     }
+
+    if (enable_lookup) lookup_active.set(true)
   }
 
   function trigger_lookup() {

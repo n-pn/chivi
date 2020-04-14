@@ -58,7 +58,7 @@ class CRepo
       @dicts[name] ||= load_dic(name)
     end
 
-    def get_fix(name : String, user = "admin")
+    def get_fix(name : String, user = "local")
       @fixes[name][user] ||= load_fix(name)
     end
 
@@ -70,7 +70,7 @@ class CRepo
       CDict.new(File.join(@dir, "#{name}.dic"))
     end
 
-    def load_fix(name : String, user : String = "admin")
+    def load_fix(name : String, user : String = "local")
       CDict.new(File.join(@dir, "#{name}.#{user}.dic"))
     end
   end
@@ -113,23 +113,23 @@ class CRepo
     @tradsim ||= @system["tradsim"]
   end
 
-  def generic(user : String = "admin")
+  def generic(user : String = "local")
     @common["generic", user]
   end
 
-  def combine(user : String = "admin")
+  def combine(user : String = "local")
     @common["combine", user]
   end
 
-  def suggest(user : String = "admin")
+  def suggest(user : String = "local")
     @common["suggest", user]
   end
 
-  def unique(name : String, user = "admin")
+  def unique(name : String, user = "local")
     @unique[name, user]
   end
 
-  def for_convert(book : String? = nil, user = "admin")
+  def for_convert(book : String? = nil, user = "local")
     dicts = generic(user)
 
     if book
