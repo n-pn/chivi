@@ -1,26 +1,27 @@
-require "../../src/crawls/cr_info.cr"
-require "../../src/crawls/cr_text.cr"
+require "../../src/spider/info_crawler.cr"
+
+# require "../../src/spider/cr_text.cr"
 
 def test_info(site, bsid)
-  crawler = CrInfo.new(site, bsid)
+  crawler = InfoCrawler.new(site, bsid)
   crawler.mkdirs!
   crawler.crawl!(persist: false)
-  puts crawler.serial.to_pretty_json
-  puts crawler.chlist.first(8).to_pretty_json
+  puts crawler.sbook.to_pretty_json
+  puts crawler.slist.first(8).to_pretty_json
 end
 
-def test_text(site, bsid, csid)
-  crawler = CrText.new(site, bsid, csid)
-  crawler.reset_cache(html: false)
-  crawler.mkdirs!
-  crawler.crawl!(persist: true)
+# def test_text(site, bsid, csid)
+#   crawler = CrText.new(site, bsid, csid)
+#   crawler.reset_cache(html: false)
+#   crawler.mkdirs!
+#   crawler.crawl!(persist: true)
 
-  # pp crawler.html
-  pp crawler.title
-  pp crawler.paras
+#   # pp crawler.html
+#   pp crawler.title
+#   pp crawler.paras
 
-  crawler
-end
+#   crawler
+# end
 
 # test_info("jx_la", "156")
 # test_info("nofff", "18288")
@@ -44,7 +45,4 @@ end
 # test_text("duokan8", "5255", "1412849")
 # test_text("duokan8", "1986", "400011")
 # test_text("paoshu8", "1986", "1447835")
-
-# puts crawler.chapters.to_pretty_json
-
-test_text("hetushu", "1640", "1099716")
+# test_text("hetushu", "1640", "1099716")

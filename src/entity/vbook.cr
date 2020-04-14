@@ -3,54 +3,24 @@ require "colorize"
 require "../engine"
 
 require "./sbook"
+require "./vsite"
+require "./vtran"
 
 class VBook
-  class Scrap
-    include JSON::Serializable
-
-    property bsid = ""
-    property mtime = 0_i64
-    property count = 0
-
-    def initialize(@bsid, @mtime, @count)
-    end
-  end
-
-  class Trans
-    include JSON::Serializable
-
-    property zh = ""
-    property vi = ""
-    property hv = ""
-    property us = ""
-
-    def initialize(zh = "", vi = "", hv = "", us = "")
-      update(zh, vi, hv, us) unless zh.empty?
-    end
-
-    def update(@zh = "", @vi = "", @hv = "", @us = "")
-      @vi = Engine.convert(@zh).vi_text if @vi.empty?
-      @hv = Engine.hanviet(@zh).vi_text if @vi.empty?
-      @us = CUtil.slugify(@vi, no_accent: true) if @us.empty?
-    end
-
-    def to_s(io : IO)
-      io << to_pretty_json
-    end
-  end
-
   include JSON::Serializable
 
-  property label = Trans.new
-  property title = Trans.new
-  property author = Trans.new
-  property genre = Trans.new
-  property tags = Array(Trans).new
+  property label = VTran.new
+  property title = VTran.new
+  property author = VTran.new
+  property genre = VTran.new
+  property tags = Array(VTran).new
 
   property intro_zh = ""
   property intro_vi = ""
 
-  property covers = [] of String
+  property cover_urls = [] of String
+  property cover_file = "blank.jpg"
+
   property status = 0
   property hidden = 0
 
@@ -59,7 +29,6 @@ class VBook
   property tally = 0_f64
 
   property word_count = 0
-  property chap_count = 0
   property review_count = 0
 
   property updated_at = 0_i64
@@ -67,7 +36,7 @@ class VBook
   property yousuu_bids = [] of Int32
   property source_urls = [] of String
 
-  property scrap_links = {} of String => Scrap
+  property scrap_sites = {} of String => VSite
   property prefer_site = ""
   property prefer_bsid = ""
 
@@ -81,14 +50,28 @@ class VBook
   def update(other : SBook, book : String? = nil, user : String = "local")
     changed = false
 
+    if @genre.zh.empty? && !other.genre.empty?
+      update_genre(other.genre)
+      changed = true
+    end
+
+    unless other.tags.empty?
+      old_size = @tags.size
+      update_tags(other.tags)
+      changed = true if @tags.size > old_size
+    end
+
     if @intro_zh.empty? && !other.intro.empty?
       update_intro(other.intro, book, user)
       changed = true
     end
 
-    if @genre_zh.empty? && !other.genre.empty?
-      update_genre(other.genre, book, user)
-      changed = true
+    unless other.cover_link.empty?
+      @cover_urls << other.cover_link
+      if @cover_file == "blank.jpg"
+        @cover_file = other.cover_file
+        changed = true
+      end
     end
 
     if other.status > @status
@@ -96,11 +79,36 @@ class VBook
       changed = true
     end
 
+    if other.mtime > @mtime
+      @mtime = other.mtime
+      changed = true
+    end
+
+    if @prefer_site.empty?
+      @prefer_site = other.site
+      @prefer_bsid = other.bsid
+      changed = true
+    end
+
+    if site = @scrap_sites[other.site]?
+      if other.mtime > site.mtime
+        site.mtime = other.mtime
+        changed = true
+      end
+
+      if other.chaps > site.chaps
+        site.chaps = other.chaps
+        changed = true
+      end
+    else
+      @scrap_sites[other.site] = VSite.new(other)
+    end
+
     changed
   end
 
-  def save!(@dir : String = "data/txt-out/serials", name : String = @label_us) : Void
-    file = File.join(@dir, "#{name}.json")
+  def save!(dir : String = "data/txt-out/serials", name : String = @label_us) : Void
+    file = "#{dir}/#{name}.json"
     puts "- saved book <#{file.colorize(:green)}>"
     File.write(file, to_json)
   end
@@ -112,7 +120,7 @@ class VBook
   end
 
   def update_author(author_zh : String, author_vi : String? = nil)
-    author_hv = CUtil.titlecase(Engine.hanviet(author_zh))
+    author_hv = CUtil.titlecase(Engine.hanviet(author_zh).vi_text)
     author_vi ||= author_hv
     @author.update(author_zh, author_vi, author_hv)
   end
@@ -156,7 +164,7 @@ class VBook
       next if @tags.index(&.zh.==(tag_zh))
 
       tag_vi = Engine.hanviet(tag_zh).vi_text
-      @tags << Trans.new(tag_zh, tag_vi, tag_vi)
+      @tags << VTran.new(tag_zh, tag_vi, tag_vi)
     end
   end
 end

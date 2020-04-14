@@ -1,8 +1,8 @@
 time bin/bookdb-mapsite -w 12 -s rengshu -t 4275
-time bin/bookdb-mapsite -w 12 -s hetushu -f 4623 -t 4650
-time bin/bookdb-mapsite -w 12 -s duokan8 -f 16434 -t 17696
-time bin/bookdb-mapsite -w 12 -s 69shu -f 31034 -t 31135
-time bin/bookdb-mapsite -w 12 -s nofff -f 45009 -t 46673
-time bin/bookdb-mapsite -w 12 -s xbiquge -f 52341 -t 52473
-time bin/bookdb-mapsite -w 12 -s paoshu8 -f 139990 -t 141018
-time bin/bookdb-mapsite -w 12 -s jx_la -f 249358 -t 249698
+time bin/bookdb-mapsite -w 12 -s hetushu -t 4671
+time bin/bookdb-mapsite -w 12 -s duokan8 -t 18413
+time bin/bookdb-mapsite -w 12 -s 69shu -t 31135
+time bin/bookdb-mapsite -w 12 -s nofff -t 48522
+time bin/bookdb-mapsite -w 12 -s xbiquge -t 52558
+time bin/bookdb-mapsite -w 12 -s paoshu8 -t 141801
+time bin/bookdb-mapsite -w 12 -s jx_la -t 249832

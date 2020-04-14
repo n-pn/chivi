@@ -196,6 +196,7 @@ class CrInfo
       doc.css("meta[property]").each do |node|
         prop = node.attributes["property"]
         text = node.attributes["content"]
+
         case prop
         when "og:novel:book_name"
           @serial.title = text
