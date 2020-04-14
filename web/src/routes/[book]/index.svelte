@@ -81,6 +81,155 @@
   $: latests = get_latests(chlist)
 </script>
 
+<svelte:head>
+  <title>{book.vi_title} - Chivi</title>
+  <meta
+    name="keywords"
+    content="{book.vi_title},{book.zh_title},{book.vi_author},{book.zh_author}" />
+  <meta name="description" content={book.vi_intro} />
+  <meta property="og:type" content="novel" />
+  <meta property="og:title" content={book.vi_title} />
+  <meta property="og:description" content={book.vi_intro} />
+  <meta property="og:image" content={book.covers[0]} />
+  <meta property="og:novel:category" content={book.vi_genre} />
+  <meta property="og:novel:author" content={book.vi_author} />
+  <meta property="og:novel:book_name" content={book.vi_title} />
+  <meta
+    property="og:novel:read_url"
+    content="http://chivi.xyz/{book.vi_slug}/" />
+  <meta property="og:url" content="http://chivi.xyz/{book.vi_slug}/" />
+  <meta property="og:novel:status" content={book_status(book.status)} />
+  <meta
+    property="og:novel:update_time"
+    content={new Date(book.updated_at).toISOString()} />
+  <meta property="og:novel:latest_chapter_name" content={latests[0].vi_title} />
+  <meta
+    property="og:novel:latest_chapter_url"
+    content="https://chivi.xyz/{book.vi_slug}/{latests[0].url_slug}-{site}-{latests[0].csid}.html" />
+</svelte:head>
+
+<Header>
+  <div class="left">
+    <a href="/" class="header-item">
+      <img src="/logo.svg" alt="logo" />
+    </a>
+
+    <a href="/{book.vi_slug}" class="header-item _active">
+      <span>{book.vi_title}</span>
+    </a>
+  </div>
+</Header>
+
+<div class="wrapper">
+  <div class="info">
+    <div class="name">
+      <h1 class="title">
+        {book.vi_title}
+        <span class="subtitle">({book.zh_title})</span>
+      </h1>
+    </div>
+
+    <picture class="cover">
+      {#each book.covers as cover}
+        <source srcset={cover} />
+      {/each}
+      <img src="img/nocover.png" alt={book.vi_title} />
+    </picture>
+
+    <div class="extra">
+      <div>
+        <span class="author">
+          <MIcon class="m-icon" name="pen-tool" />
+          {book.vi_author}
+          <span>({book.zh_author})</span>
+        </span>
+      </div>
+      <div>
+
+        <span class="genre">
+          <MIcon class="m-icon" name="book" />
+          {book.vi_genre}
+        </span>
+        <span class="status">
+          <MIcon class="m-icon" name="activity" />
+          {book_status(book.status)}
+        </span>
+        <time class="updated_at" datetime={new Date(book.updated_at)}>
+          <MIcon class="m-icon" name="clock" />
+          {relative_time(book.updated_at)}
+        </time>
+      </div>
+
+      <div>
+        <div>
+          Đánh giá:
+          <strong>{book.score}</strong>
+          /10 ({book.votes} lượt đánh giá)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <h2>Giới thiệu:</h2>
+    {#each book.vi_intro.split('\n') as line}
+      <p>{line}</p>
+    {/each}
+  </div>
+
+  <div class="tabs">
+    <span>Chọn nguồn:</span>
+    {#each Object.keys(book.crawl_links) as crawl}
+      <a
+        class="site"
+        class:_active={site == crawl}
+        href="/{book.vi_slug}?site={crawl}">
+        {crawl}
+      </a>
+    {/each}
+  </div>
+
+  <h2 class="content" data-site={site} data-bsid={bsid}>
+    Mục lục
+    <span class="label">({chlist.length} chương)</span>
+  </h2>
+
+  <h3>
+    Mới nhất
+    <span class="label">({latests.length} chương)</span>
+  </h3>
+  <div class="chap-list">
+    {#each latests as chap}
+      <div class="chap-item">
+        <a
+          class="chap-link"
+          href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
+          <div class="chap-title">{chap.vi_title}</div>
+        </a>
+      </div>
+    {/each}
+  </div>
+
+  {#each Object.entries(volumes) as [label, chlist]}
+    <h3>
+      {label}
+      <span class="label">({chlist.length} chương)</span>
+    </h3>
+    <div class="chap-list">
+      {#each chlist as chap}
+        <div class="chap-item">
+          <a
+            class="chap-link"
+            href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
+            <div class="chap-title">{chap.vi_title}</div>
+          </a>
+        </div>
+      {/each}
+    </div>
+  {/each}
+
+</div>
+
 <style type="text/scss">
   .info {
     // display: flex;
@@ -266,152 +415,3 @@
     font-weight: 500;
   }
 </style>
-
-<svelte:head>
-  <title>{book.vi_title} - Chivi</title>
-  <meta
-    name="keywords"
-    content="{book.vi_title},{book.zh_title},{book.vi_author},{book.zh_author}" />
-  <meta name="description" content={book.vi_intro} />
-  <meta property="og:type" content="novel" />
-  <meta property="og:title" content={book.vi_title} />
-  <meta property="og:description" content={book.vi_intro} />
-  <meta property="og:image" content={book.covers[0]} />
-  <meta property="og:novel:category" content={book.vi_genre} />
-  <meta property="og:novel:author" content={book.vi_author} />
-  <meta property="og:novel:book_name" content={book.vi_title} />
-  <meta
-    property="og:novel:read_url"
-    content="http://chivi.xyz/{book.vi_slug}/" />
-  <meta property="og:url" content="http://chivi.xyz/{book.vi_slug}/" />
-  <meta property="og:novel:status" content={book_status(book.status)} />
-  <meta
-    property="og:novel:update_time"
-    content={new Date(book.updated_at).toISOString()} />
-  <meta property="og:novel:latest_chapter_name" content={latests[0].vi_title} />
-  <meta
-    property="og:novel:latest_chapter_url"
-    content="https://chivi.xyz/{book.vi_slug}/{latests[0].url_slug}-{site}-{latests[0].csid}.html" />
-</svelte:head>
-
-<Header>
-  <div class="left">
-    <a href="/" class="header-item">
-      <img src="/logo.svg" alt="logo" />
-    </a>
-
-    <a href="/{book.vi_slug}" class="header-item _active">
-      <span>{book.vi_title}</span>
-    </a>
-  </div>
-</Header>
-
-<div class="wrapper">
-  <div class="info">
-    <div class="name">
-      <h1 class="title">
-        {book.vi_title}
-        <span class="subtitle">({book.zh_title})</span>
-      </h1>
-    </div>
-
-    <picture class="cover">
-      {#each book.covers as cover}
-        <source srcset={cover} />
-      {/each}
-      <img src="img/nocover.png" alt={book.vi_title} />
-    </picture>
-
-    <div class="extra">
-      <div>
-        <span class="author">
-          <MIcon class="m-icon" name="pen-tool" />
-          {book.vi_author}
-          <span>({book.zh_author})</span>
-        </span>
-      </div>
-      <div>
-
-        <span class="genre">
-          <MIcon class="m-icon" name="book" />
-          {book.vi_genre}
-        </span>
-        <span class="status">
-          <MIcon class="m-icon" name="activity" />
-          {book_status(book.status)}
-        </span>
-        <time class="updated_at" datetime={new Date(book.updated_at)}>
-          <MIcon class="m-icon" name="clock" />
-          {relative_time(book.updated_at)}
-        </time>
-      </div>
-
-      <div>
-        <div>
-          Đánh giá:
-          <strong>{book.score}</strong>
-          /10 ({book.votes} lượt đánh giá)
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="summary">
-    <h2>Giới thiệu:</h2>
-    {#each book.vi_intro.split('\n') as line}
-      <p>{line}</p>
-    {/each}
-  </div>
-
-  <div class="tabs">
-    <span>Chọn nguồn:</span>
-    {#each Object.keys(book.crawl_links) as crawl}
-      <a
-        class="site"
-        class:_active={site == crawl}
-        href="/{book.vi_slug}?site={crawl}">
-        {crawl}
-      </a>
-    {/each}
-  </div>
-
-  <h2 class="content" data-site={site} data-bsid={bsid}>
-    Mục lục
-    <span class="label">({chlist.length} chương)</span>
-  </h2>
-
-  <h3>
-    Mới nhất
-    <span class="label">({latests.length} chương)</span>
-  </h3>
-  <div class="chap-list">
-    {#each latests as chap}
-      <div class="chap-item">
-        <a
-          class="chap-link"
-          href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
-          <div class="chap-title">{chap.vi_title}</div>
-        </a>
-      </div>
-    {/each}
-  </div>
-
-  {#each Object.entries(volumes) as [label, chlist]}
-    <h3>
-      {label}
-      <span class="label">({chlist.length} chương)</span>
-    </h3>
-    <div class="chap-list">
-      {#each chlist as chap}
-        <div class="chap-item">
-          <a
-            class="chap-link"
-            href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
-            <div class="chap-title">{chap.vi_title}</div>
-          </a>
-        </div>
-      {/each}
-    </div>
-  {/each}
-
-</div>

@@ -255,86 +255,6 @@
   }
 </script>
 
-<style lang="scss">
-  article {
-    // background-color: #fff;
-    // margin: 0.75rem 0;
-    // @include radius;
-    // @include shadow(1);
-    padding: 0.75rem;
-    word-wrap: break-word;
-    text-align: justify;
-    text-justify: auto;
-  }
-
-  h1 {
-    $font-sizes: attrs(rem(22px), rem(24px), rem(26px), rem(28px), rem(30px));
-    $line-heights: attrs(1.5rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
-
-    @include props(font-size, $font-sizes);
-    @include props(line-height, $line-heights);
-
-    @include border($pos: bottom);
-  }
-
-  p {
-    $font-sizes: attrs(rem(16px), rem(17px), rem(18px), rem(19px), rem(20px));
-    $margin-tops: attrs(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
-
-    @include props(font-size, $font-sizes);
-    @include props(margin-top, $margin-tops);
-  }
-
-  :global(cite) {
-    text-transform: capitalize;
-    font-style: normal;
-    // font-variant: small-caps;
-  }
-
-  footer {
-    margin: 0.75rem 0;
-    @include flex($gap: 0.375rem);
-    justify-content: center;
-  }
-
-  @mixin token($color: blue) {
-    cursor: pointer;
-    position: relative;
-
-    ._active & {
-      border-color: color($color, 3);
-    }
-
-    &._active {
-      color: color($color, 6);
-    }
-
-    @include hover {
-      color: color($color, 6);
-    }
-  }
-
-  :global(x-v) {
-    border-bottom: 1px solid transparent;
-
-    &[data-d='1'] {
-      @include token(blue);
-    }
-
-    &[data-d='2'] {
-      @include token(teal);
-    }
-
-    &[data-d='3'] {
-      @include token(red);
-    }
-
-    &[data-d='4'] {
-      @include token(orange);
-    }
-  }
-</style>
-
 <svelte:head>
   <title>{render(lines[0])} - {book_name} - Chivi</title>
 </svelte:head>
@@ -430,3 +350,83 @@
     dic={upsert_dic}
     tab={upsert_tab} />
 {/if}
+
+<style lang="scss">
+  article {
+    // background-color: #fff;
+    // margin: 0.75rem 0;
+    // @include radius;
+    // @include shadow(1);
+    padding: 0.75rem;
+    word-wrap: break-word;
+    text-align: justify;
+    text-justify: auto;
+  }
+
+  h1 {
+    $font-sizes: attrs(rem(22px), rem(24px), rem(26px), rem(28px), rem(30px));
+    $line-heights: attrs(1.5rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
+
+    @include props(font-size, $font-sizes);
+    @include props(line-height, $line-heights);
+
+    @include border($pos: bottom);
+  }
+
+  p {
+    $font-sizes: attrs(rem(16px), rem(17px), rem(18px), rem(19px), rem(20px));
+    $margin-tops: attrs(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
+
+    @include props(font-size, $font-sizes);
+    @include props(margin-top, $margin-tops);
+  }
+
+  :global(cite) {
+    text-transform: capitalize;
+    font-style: normal;
+    // font-variant: small-caps;
+  }
+
+  footer {
+    margin: 0.75rem 0;
+    @include flex($gap: 0.375rem);
+    justify-content: center;
+  }
+
+  @mixin token($color: blue) {
+    cursor: pointer;
+    position: relative;
+
+    ._active & {
+      border-color: color($color, 3);
+    }
+
+    &._active {
+      color: color($color, 6);
+    }
+
+    @include hover {
+      color: color($color, 6);
+    }
+  }
+
+  :global(x-v) {
+    border-bottom: 1px solid transparent;
+
+    &[data-d='1'] {
+      @include token(blue);
+    }
+
+    &[data-d='2'] {
+      @include token(teal);
+    }
+
+    &[data-d='3'] {
+      @include token(red);
+    }
+
+    &[data-d='4'] {
+      @include token(orange);
+    }
+  }
+</style>

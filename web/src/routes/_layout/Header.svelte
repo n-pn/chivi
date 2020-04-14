@@ -2,6 +2,29 @@
   import { lookup_pinned, lookup_active } from '$src/stores.js'
 </script>
 
+<header class="header" class:_tilt={$lookup_pinned && $lookup_active}>
+  <form action="/search" method="get">
+    <nav class="header-nav">
+      <slot>
+        <div class="left">
+          <a href="/" class="header-item _logo _active">
+            <img src="/logo.svg" alt="logo" />
+            <span>Chivi</span>
+          </a>
+
+          <input
+            type="search"
+            name="kw"
+            class="header-item _input"
+            placeholder="Tìm kiếm"
+            on:focus={evt => evt.stopPropagation()} />
+
+        </div>
+      </slot>
+    </nav>
+  </form>
+</header>
+
 <style lang="scss">
   $outer-height: 3rem;
   $inner-height: 2.25rem;
@@ -129,26 +152,3 @@
     }
   }
 </style>
-
-<header class="header" class:_tilt={$lookup_pinned && $lookup_active}>
-  <form action="/search" method="get">
-    <nav class="header-nav">
-      <slot>
-        <div class="left">
-          <a href="/" class="header-item _logo _active">
-            <img src="/logo.svg" alt="logo" />
-            <span>Chivi</span>
-          </a>
-
-          <input
-            type="search"
-            name="kw"
-            class="header-item _input"
-            placeholder="Tìm kiếm"
-            on:focus={evt => evt.stopPropagation()} />
-
-        </div>
-      </slot>
-    </nav>
-  </form>
-</header>

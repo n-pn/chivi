@@ -104,6 +104,62 @@
   }
 </script>
 
+<svelte:window on:keypress={handle_keypress} />
+
+<aside class:_active={$active}>
+  <header>
+    <h2>Giải nghĩa</h2>
+
+    <button class:_active={$pinned} on:click={pin_sidebar}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <path
+          d="M17.85 10.2l-4.24 5.65m4.24-5.66L13.6 5.95m4.24 4.24a2 2 0 0 0 2.83
+          0l.7-.7-7.07-7.08-.7.71a2 2 0 0 0 0 2.83m0 9.9l-5.66-5.66m5.66
+          5.66s1.76 2.47-.71 4.95L3 10.9c2.47-2.48 4.95-.7 4.95-.7m0
+          0l5.66-4.25M7.95 15.85l-4.24 4.24" />
+      </svg>
+    </button>
+
+    <button on:click={close_sidebar}>
+      <MIcon class="m-icon" name="x" />
+    </button>
+
+  </header>
+
+  <section class="lookup">
+    <div class="input _vi" on:click={handle_click}>
+      {@html vi_html}
+    </div>
+
+    <div class="input _zh" on:click={handle_click}>
+      {@html zh_html}
+    </div>
+
+    {#each entries as [len, items]}
+      <div class="entry">
+        <h3>{zh_text.substring($from, $from + len)}</h3>
+        {#each items as [name, value]}
+          <div class="item">
+            <h4>{name}</h4>
+            {#each value.split('\n') as line}
+              <p class="term">{line}</p>
+            {/each}
+          </div>
+        {/each}
+      </div>
+    {/each}
+  </section>
+</aside>
+
 <style lang="scss">
   $sidebar-width: 30rem;
 
@@ -285,59 +341,3 @@
     margin-top: 0.25rem;
   }
 </style>
-
-<svelte:window on:keypress={handle_keypress} />
-
-<aside class:_active={$active}>
-  <header>
-    <h2>Giải nghĩa</h2>
-
-    <button class:_active={$pinned} on:click={pin_sidebar}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round">
-        <path
-          d="M17.85 10.2l-4.24 5.65m4.24-5.66L13.6 5.95m4.24 4.24a2 2 0 0 0 2.83
-          0l.7-.7-7.07-7.08-.7.71a2 2 0 0 0 0 2.83m0 9.9l-5.66-5.66m5.66
-          5.66s1.76 2.47-.71 4.95L3 10.9c2.47-2.48 4.95-.7 4.95-.7m0
-          0l5.66-4.25M7.95 15.85l-4.24 4.24" />
-      </svg>
-    </button>
-
-    <button on:click={close_sidebar}>
-      <MIcon class="m-icon" name="x" />
-    </button>
-
-  </header>
-
-  <section class="lookup">
-    <div class="input _vi" on:click={handle_click}>
-      {@html vi_html}
-    </div>
-
-    <div class="input _zh" on:click={handle_click}>
-      {@html zh_html}
-    </div>
-
-    {#each entries as [len, items]}
-      <div class="entry">
-        <h3>{zh_text.substring($from, $from + len)}</h3>
-        {#each items as [name, value]}
-          <div class="item">
-            <h4>{name}</h4>
-            {#each value.split('\n') as line}
-              <p class="term">{line}</p>
-            {/each}
-          </div>
-        {/each}
-      </div>
-    {/each}
-  </section>
-</aside>

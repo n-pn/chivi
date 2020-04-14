@@ -102,6 +102,92 @@
   }
 </script>
 
+<div class="container" on:click={() => (active = false)}>
+  <div class="dialog" on:click={evt => evt.stopPropagation()}>
+    <header>
+      <span class="label">Thêm từ:</span>
+      {#each tabs as [name, label]}
+        <span
+          class="tab"
+          class:_active={name == tab}
+          on:click={() => change_tab(name)}>
+          {label}
+        </span>
+      {/each}
+
+      <button
+        type="button"
+        class="m-button _text"
+        on:click={() => (active = false)}>
+        <svg class="m-icon _x">
+          <use xlink:href="/icons.svg#x" />
+        </svg>
+      </button>
+    </header>
+
+    <section class="key">
+      <input
+        class="key-inp"
+        type="text"
+        name="key"
+        bind:value={key}
+        bind:this={key_field} />
+
+      <div class="key-lit">
+        {#if key}
+          <span class="hanviet">{props.hanviet}</span>
+          <span class="pinyins">[{props.pinyins}]</span>
+        {/if}
+      </div>
+    </section>
+
+    <section class="val">
+      <div class="cap">
+        <span class="cap-lbl">Viết hoa:</span>
+        <span class="cap-btn" on:click={() => upcase_val(0)}>không</span>
+        <span class="cap-btn" on:click={() => upcase_val(1)}>1 chữ</span>
+        <span class="cap-btn" on:click={() => upcase_val(2)}>2 chữ</span>
+        <span class="cap-btn" on:click={() => upcase_val(3)}>3 chữ</span>
+        <span class="cap-btn" on:click={() => upcase_val(99)}>toàn bộ</span>
+      </div>
+
+      <textarea
+        lang="vi"
+        class="val-inp"
+        name="value"
+        id="val_field"
+        rows="2"
+        bind:this={val_field}
+        bind:value={val} />
+
+      <div class="val-act">
+        <div class="left" />
+
+        <div class="right">
+          <button
+            type="button"
+            class="m-button _line _harmful"
+            on:click={remove}>
+            <span>Xoá từ</span>
+          </button>
+          <button type="button" class="m-button _primary" on:click={upsert}>
+            <span>{props[tab].value ? 'Cập nhật' : 'Thêm từ'}</span>
+          </button>
+
+        </div>
+      </div>
+
+    </section>
+
+    <footer>
+      <span>Tra từ:</span>
+      {#each links as { site, href }}
+        <a {href} target="_blank" rel="noopener noreferer">{site}</a>
+      {/each}
+    </footer>
+  </div>
+</div>
+
 <style lang="scss">
   $gutter: 1rem;
 
@@ -309,89 +395,3 @@
     }
   }
 </style>
-
-<div class="container" on:click={() => (active = false)}>
-  <div class="dialog" on:click={evt => evt.stopPropagation()}>
-    <header>
-      <span class="label">Thêm từ:</span>
-      {#each tabs as [name, label]}
-        <span
-          class="tab"
-          class:_active={name == tab}
-          on:click={() => change_tab(name)}>
-          {label}
-        </span>
-      {/each}
-
-      <button
-        type="button"
-        class="m-button _text"
-        on:click={() => (active = false)}>
-        <svg class="m-icon _x">
-          <use xlink:href="/icons.svg#x" />
-        </svg>
-      </button>
-    </header>
-
-    <section class="key">
-      <input
-        class="key-inp"
-        type="text"
-        name="key"
-        bind:value={key}
-        bind:this={key_field} />
-
-      <div class="key-lit">
-        {#if key}
-          <span class="hanviet">{props.hanviet}</span>
-          <span class="pinyins">[{props.pinyins}]</span>
-        {/if}
-      </div>
-    </section>
-
-    <section class="val">
-      <div class="cap">
-        <span class="cap-lbl">Viết hoa:</span>
-        <span class="cap-btn" on:click={() => upcase_val(0)}>không</span>
-        <span class="cap-btn" on:click={() => upcase_val(1)}>1 chữ</span>
-        <span class="cap-btn" on:click={() => upcase_val(2)}>2 chữ</span>
-        <span class="cap-btn" on:click={() => upcase_val(3)}>3 chữ</span>
-        <span class="cap-btn" on:click={() => upcase_val(99)}>toàn bộ</span>
-      </div>
-
-      <textarea
-        lang="vi"
-        class="val-inp"
-        name="value"
-        id="val_field"
-        rows="2"
-        bind:this={val_field}
-        bind:value={val} />
-
-      <div class="val-act">
-        <div class="left" />
-
-        <div class="right">
-          <button
-            type="button"
-            class="m-button _line _harmful"
-            on:click={remove}>
-            <span>Xoá từ</span>
-          </button>
-          <button type="button" class="m-button _primary" on:click={upsert}>
-            <span>{props[tab].value ? 'Cập nhật' : 'Thêm từ'}</span>
-          </button>
-
-        </div>
-      </div>
-
-    </section>
-
-    <footer>
-      <span>Tra từ:</span>
-      {#each links as { site, href }}
-        <a {href} target="_blank" rel="noopener noreferer">{site}</a>
-      {/each}
-    </footer>
-  </div>
-</div>

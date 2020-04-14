@@ -65,6 +65,77 @@
   }
 </script>
 
+<svelte:head>
+  <title>Chivi - Chinese to Vietname Machine Translation</title>
+</svelte:head>
+
+<Header />
+
+<div class="wrapper">
+  <div class="sort">
+    <span class="label">Sắp xếp theo:</span>
+    {#each Object.entries(sorts) as [type, label]}
+      <a class="type" class:_active={sort == type} href="/?sort={type}">
+        {label}
+      </a>
+    {/each}
+  </div>
+  <div class="list">
+    {#each items as book}
+      <a class="book" href={book.vi_slug}>
+        <picture class="-cover">
+          {#each book.covers as cover}
+            <source srcset={cover} />
+          {/each}
+          <img src="/img/nocover.png" alt={book.vi_title} />
+        </picture>
+
+        <div class="-title">{book.vi_title}</div>
+        <div class="-genre">{book.vi_genre}</div>
+        <div class="-score">
+          <span class="--icon">⭐</span>
+          <span class="--text">{book.score}</span>
+        </div>
+      </a>
+    {/each}
+  </div>
+
+  <footer class="pagi">
+    {#if page == 1}
+      <button class="page m-button _line" disabled>
+        <MIcon class="m-icon" name="chevrons-left" />
+      </button>
+    {:else}
+      <a class="page m-button _line" href={page_url(1, sort)}>
+        <MIcon class="m-icon" name="chevrons-left" />
+      </a>
+    {/if}
+
+    {#each pages as idx}
+      {#if page == idx}
+        <button class="page m-button _line _primary" disabled>
+          <span>{idx}</span>
+        </button>
+      {:else}
+        <a class="page m-button _line" href={page_url(idx, sort)}>
+          <span>{idx}</span>
+        </a>
+      {/if}
+    {/each}
+    {#if page == page_max}
+      <button class="page m-button _line" disabled>
+        <MIcon class="m-icon" name="chevrons-right" />
+      </button>
+    {:else}
+      <a class="page m-button _line" href={page_url(page_max, sort)}>
+        <MIcon class="m-icon" name="chevrons-right" />
+      </a>
+    {/if}
+
+  </footer>
+
+</div>
+
 <style lang="scss">
   .list {
     max-width: 100%;
@@ -80,7 +151,7 @@
     margin-bottom: 3rem;
 
     @include hover {
-      .book-title {
+      .-title {
         @include fgcolor(color(primary, 5));
       }
     }
@@ -94,61 +165,61 @@
       left: 0;
       z-index: -1;
     }
-  }
 
-  .book-cover {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    z-index: 1;
+    .-cover {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      z-index: 1;
 
-    // source,
-    img {
-      @include radius();
-      // display: block;
-      min-width: 100%;
-      min-height: 100%;
+      // source,
+      img {
+        @include radius();
+        // display: block;
+        min-width: 100%;
+        min-height: 100%;
+      }
     }
-  }
 
-  .book-title {
-    width: 100%;
-    position: absolute;
-    bottom: -1.75rem;
-    font-weight: 600;
-    @include fgcolor(color(neutral, 7));
-    @include truncate();
-    @include font-size(3);
-    @include font-family(narrow);
-  }
+    .-title {
+      width: 100%;
+      position: absolute;
+      bottom: -1.75rem;
+      font-weight: 600;
+      @include fgcolor(color(neutral, 7));
+      @include truncate();
+      @include font-size(3);
+      @include font-family(narrow);
+    }
 
-  .book-genre {
-    width: 100%;
-    position: absolute;
-    bottom: -3rem;
-    @include fgcolor(color(neutral, 5));
-    text-transform: uppercase;
-    font-weight: 500;
-    @include font-size(1);
-  }
+    .-genre {
+      width: 100%;
+      position: absolute;
+      bottom: -3rem;
+      @include fgcolor(color(neutral, 5));
+      text-transform: uppercase;
+      font-weight: 500;
+      @include font-size(1);
+    }
 
-  .book-score {
-    width: 100%;
-    position: absolute;
-    bottom: -3rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    text-align: right;
+    .-score {
+      width: 100%;
+      position: absolute;
+      bottom: -3rem;
+      text-transform: uppercase;
+      font-weight: 500;
+      text-align: right;
 
-    @include fgcolor(color(neutral, 5));
-    @include font-size(1);
+      @include fgcolor(color(neutral, 5));
+      @include font-size(1);
 
-    > span {
-      display: inline-block;
-      vertical-align: top;
-      font-size: 95%;
-      // margin-top: -0.125rem;
+      > span {
+        display: inline-block;
+        vertical-align: top;
+        font-size: 95%;
+        // margin-top: -0.125rem;
+      }
     }
   }
 
@@ -199,74 +270,3 @@
     }
   }
 </style>
-
-<svelte:head>
-  <title>Chivi - Chinese to Vietname Machine Translation</title>
-</svelte:head>
-
-<Header />
-
-<div class="wrapper">
-  <div class="sort">
-    <span class="label">Sắp xếp theo:</span>
-    {#each Object.entries(sorts) as [type, label]}
-      <a class="type" class:_active={sort == type} href="/?sort={type}">
-        {label}
-      </a>
-    {/each}
-  </div>
-  <div class="list">
-    {#each items as book}
-      <a class="book" href={book.vi_slug}>
-        <picture class="book-cover">
-          {#each book.covers as cover}
-            <source srcset={cover} />
-          {/each}
-          <img src="/img/nocover.png" alt={book.vi_title} />
-        </picture>
-
-        <div class="book-title">{book.vi_title}</div>
-        <div class="book-genre">{book.vi_genre}</div>
-        <div class="book-score">
-          <span>⭐</span>
-          {book.score}
-        </div>
-      </a>
-    {/each}
-  </div>
-
-  <footer class="pagi">
-    {#if page == 1}
-      <button class="page m-button _line" disabled>
-        <MIcon class="m-icon" name="chevrons-left" />
-      </button>
-    {:else}
-      <a class="page m-button _line" href={page_url(1, sort)}>
-        <MIcon class="m-icon" name="chevrons-left" />
-      </a>
-    {/if}
-
-    {#each pages as idx}
-      {#if page == idx}
-        <button class="page m-button _line _primary" disabled>
-          <span>{idx}</span>
-        </button>
-      {:else}
-        <a class="page m-button _line" href={page_url(idx, sort)}>
-          <span>{idx}</span>
-        </a>
-      {/if}
-    {/each}
-    {#if page == page_max}
-      <button class="page m-button _line" disabled>
-        <MIcon class="m-icon" name="chevrons-right" />
-      </button>
-    {:else}
-      <a class="page m-button _line" href={page_url(page_max, sort)}>
-        <MIcon class="m-icon" name="chevrons-right" />
-      </a>
-    {/if}
-
-  </footer>
-
-</div>

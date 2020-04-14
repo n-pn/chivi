@@ -22,6 +22,71 @@
   export let query = ''
 </script>
 
+<svelte:head>
+  <title>Tìm kiếm - Chivi</title>
+</svelte:head>
+
+<Header>
+  <div class="left">
+    <a href="/" class="header-item _logo">
+      <img src="/logo.svg" alt="logo" />
+    </a>
+
+    <input
+      type="search"
+      name="kw"
+      class="header-item _input _active"
+      placeholder="Tìm kiếm"
+      value={query}
+      on:focus={evt => evt.stopPropagation()} />
+
+  </div>
+</Header>
+
+<div class="wrapper">
+  <h1 class="label">
+    Tìm được {items.length}{items.length == 8 ? '+' : ''} kết quả cho "{query}"
+    :
+  </h1>
+
+  <div class="list">
+    {#each items as book}
+      <a class="book" href={book.vi_slug}>
+        <picture class="cover">
+          {#each book.covers as cover}
+            <source srcset={cover} />
+          {/each}
+          <img src="/img/nocover.png" alt={book.vi_title} />
+        </picture>
+
+        <div class="name">
+          <h2 class="title">
+            {book.vi_title}
+            <span class="subtitle">({book.zh_title})</span>
+          </h2>
+        </div>
+
+        <div class="extra">
+          <div>
+            <span class="author">
+              {book.vi_author}
+              <span>({book.zh_author})</span>
+            </span>
+          </div>
+
+          <div>
+            <span>
+              Đánh giá:
+              <strong>{book.score}</strong>
+              /10
+            </span>
+          </div>
+        </div>
+      </a>
+    {/each}
+  </div>
+</div>
+
 <style lang="scss">
   .list {
     // width: 35rem;
@@ -135,68 +200,3 @@
     @include fgcolor(color(neutral, 6));
   }
 </style>
-
-<svelte:head>
-  <title>Tìm kiếm - Chivi</title>
-</svelte:head>
-
-<Header>
-  <div class="left">
-    <a href="/" class="header-item _logo">
-      <img src="/logo.svg" alt="logo" />
-    </a>
-
-    <input
-      type="search"
-      name="kw"
-      class="header-item _input _active"
-      placeholder="Tìm kiếm"
-      value={query}
-      on:focus={evt => evt.stopPropagation()} />
-
-  </div>
-</Header>
-
-<div class="wrapper">
-  <h1 class="label">
-    Tìm được {items.length}{items.length == 8 ? '+' : ''} kết quả cho "{query}"
-    :
-  </h1>
-
-  <div class="list">
-    {#each items as book}
-      <a class="book" href={book.vi_slug}>
-        <picture class="cover">
-          {#each book.covers as cover}
-            <source srcset={cover} />
-          {/each}
-          <img src="/img/nocover.png" alt={book.vi_title} />
-        </picture>
-
-        <div class="name">
-          <h2 class="title">
-            {book.vi_title}
-            <span class="subtitle">({book.zh_title})</span>
-          </h2>
-        </div>
-
-        <div class="extra">
-          <div>
-            <span class="author">
-              {book.vi_author}
-              <span>({book.zh_author})</span>
-            </span>
-          </div>
-
-          <div>
-            <span>
-              Đánh giá:
-              <strong>{book.score}</strong>
-              /10
-            </span>
-          </div>
-        </div>
-      </a>
-    {/each}
-  </div>
-</div>

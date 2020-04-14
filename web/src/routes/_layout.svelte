@@ -28,6 +28,12 @@
   }
 </script>
 
+<svelte:window on:keydown={navigate} />
+
+<main class:_tilt={$lookup_pinned && $lookup_active}>
+  <slot />
+</main>
+
 <style lang="scss">
   main {
     &._tilt {
@@ -46,9 +52,3 @@
     max-width: 100%;
   }
 </style>
-
-<svelte:window on:keydown={navigate} />
-
-<main class:_tilt={$lookup_pinned && $lookup_active}>
-  <slot />
-</main>
