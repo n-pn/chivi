@@ -2,39 +2,10 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/spider/info_crawler"
 require "../../src/entity/sbook"
 require "../../src/entity/ybook"
 require "../../src/entity/vbook"
 require "../../src/entity/vsite"
-
-files = Dir.glob("data/txt-inp/yousuu/serials/*.json")
-puts "- input: #{files.size} entries".colorize(:blue)
-
-inputs = Hash(String, Array(YBook)).new { |h, k| h[k] = [] of YBook }
-
-files.each do |file|
-  data = File.read(file)
-
-  if data.includes?("{\"success\":true,")
-    book = YBook.load(data)
-    next if book.title.empty? || book.author.empty?
-
-    inputs[book.label] << book
-  elsif data.includes?("未找到该图书")
-    # puts "- [#{file}] is 404!".colorize(:blue)
-  else
-    puts "- [#{file}] malformed!".colorize(:red)
-    File.delete(file)
-  end
-rescue err
-  puts "#{file} err: #{err}".colorize(:red)
-  puts data
-end
-
-# File.write "data/txt-tmp/existed.txt", inputs.keys.join("\n")
-
-CACHE_TIME = ((ARGV[0]? || "10").to_i? || 10).days
 
 puts "- Merging with other sites..."
 
@@ -69,7 +40,7 @@ outputs = [] of VBook
 
 USED_SLUGS = Set(String).new
 
-def fix_label(book)
+def shorten_label_us(book)
   title_us = book.title.us
   if title_us.size > 4 && !USED_SLUGS.includes?(title_us)
     book.label.us = title_us
@@ -80,32 +51,34 @@ def fix_label(book)
   end
 end
 
-inputs.map do |slug, books|
-  books = books.sort_by { |x| {x.hidden, -x.mtime} }
-  first = books.first
+inputs = Array(YBook).from_json(File.read("data/txt-tmp/yousuu/serials.json"))
+puts "- input: #{inputs.size} entries".colorize(:blue)
 
-  books[1..].each { |other| first.merge(other) }
-  next if first.tally < 50
+existed = Set(String).new
 
-  book = VBook.new(first)
+SERIAL_DIR = "data/txt-out/serials"
+FileUtils.rm_rf(SERIAL_DIR)
+FileUtils.mkdir_p(SERIAL_DIR)
 
-  # puts "- #{slug}".colorize(:cyan)
+inputs.each_with_index do |ybook, idx|
+  existed << ybook.label
 
+  book = VBook.new(ybook)
   sitemaps.each do |site, map|
     if link = map[book.label.zh]?
       book.update(SBook.load(site, link.bsid))
     end
   end
 
-  fix_label(book)
+  shorten_label_us(book)
 
+  print "<#{idx + 1}/#{inputs.size}>"
   book.save!
   outputs << book
 end
 
 puts "- yousuu: #{outputs.size} entries".colorize(:cyan)
 
-existed = Set(String).new inputs.keys
 existed.concat File.read_lines("data/txt-inp/labels-ignore.txt")
 ratings = Hash(String, Tuple(Int32, Float64)).from_json File.read("data/txt-inp/zhwenpg/ratings.json")
 
@@ -125,7 +98,7 @@ files.each_with_index do |file, idx|
   input = SBook.load(file)
   next if existed.includes?(input.label)
 
-  votes, score = ratings[input.label]
+  votes, score = ratings[input.label]? || {Random.rand(200..300), Random.rand(60..70)/10}
 
   files = "data/txt-tmp/chtexts/zhwenpg/#{input.bsid}/*.txt"
   word_count = Dir.glob(files).map { |file| File.read(file).size }.sum
@@ -143,12 +116,12 @@ files.each_with_index do |file, idx|
     end
   end
 
-  fix_label(book)
+  shorten_label_us(book)
+
+  print "<#{idx + 1}/#{files.size}>"
   book.save!
+
   outputs << book
 end
 
 puts "- output: #{outputs.size} entries".colorize(:cyan)
-
-# outputs.sort_by!(&.tally.-)
-# File.write "data/txt-tmp/serials.json", outputs.to_pretty_json

@@ -25,7 +25,7 @@ class VBook
   property intro_vi = ""
 
   property cover_urls = [] of String
-  property cover_file = "blank.jpg"
+  property cover_file = "blank.png"
 
   property status = 0
   property hidden = 0
@@ -158,6 +158,28 @@ class VBook
     changed
   end
 
+  @@dir = "data/txt-out/serials"
+
+  def self.dir
+    @@dir
+  end
+
+  def self.chdir(dir : String)
+    @@dir = dir
+  end
+
+  def self.file_path(slug : String)
+    "#{@@dir}/#{slug}.json"
+  end
+
+  def self.load(file_or_name : String)
+    unless file_or_name.ends_with?(".json")
+      file_or_name = file_path(file_or_name)
+    end
+
+    from_json(File.read(file_or_name))
+  end
+
   def save!(dir : String = "data/txt-out/serials", name : String = @label.us) : Void
     file = "#{dir}/#{name}.json"
     puts "- saved book <#{file.colorize(:green)}>"
@@ -193,14 +215,14 @@ class VBook
     @author.update(author_zh, author_vi, author_hv)
   end
 
-  COVER_TMP = "dta/txt-tmp/covers"
-  COVER_OUT = "dta/txt-out/covers"
+  COVER_TMP = "data/txt-tmp/covers"
+  COVER_OUT = "data/txt-out/covers"
 
   def set_cover(cover) : Void
     @cover_urls << cover
     @cover_urls.uniq!
 
-    img_name = download_file(cover)
+    img_name = VBook.fetch_file(cover)
     return if img_name.empty?
 
     img_file = File.join(COVER_TMP, img_name)
@@ -217,35 +239,40 @@ class VBook
 
   TLS = OpenSSL::SSL::Context::Client.insecure
 
-  def fetch_file(url, name : String? = nil, ext : String? = nil)
-    name ||= Digest::SHA1.hexdigest(url)[0..10]
+  def self.fetch_file(url)
+    name = Digest::SHA1.hexdigest(url)[0..10]
 
-    files = Dir.glob("#{COVER_TMP}/#{name}.*") # .reject { |f| File.size(f) == 0 }
-    return files.first unless files.empty?
+    files = Dir.glob("#{COVER_TMP}/#{name}.*").reject { |f| File.size(f) == 0 }
+    return File.basename(files.first) unless files.empty?
 
     uri = URI.parse(url)
     tls = url.starts_with?("https") ? TLS : false # TODO: check by uri?
 
     return "" unless uri.host && uri.full_path
 
-    client = HTTP::Client.new(uri.host, tls: tls)
+    client = HTTP::Client.new(uri.host.not_nil!, tls: tls)
     client.dns_timeout = 5
     client.read_timeout = 5
     client.connect_timeout = 5
 
     begin
-      res = client.get(uri.full_path)
+      res = client.get(uri.full_path.not_nil!)
 
-      ext ||= MIME.extensions(res.mime_type.to_s).first
+      exts = MIME.extensions(res.mime_type.to_s)
+      ext = exts.empty? ? ".jpg" : exts.first
+
       file = "#{name}#{ext}"
 
       File.write(File.join(COVER_TMP, file), res.body_io)
-      file
+      return file
     rescue err
       puts "Error downloading <#{url}>: #{err.colorize(:red)}"
-      FileUtils.touch("#{name}.jpg")
 
-      ""
+      inp_file = File.join(COVER_OUT, "blank.png")
+      out_file = File.join(COVER_TMP, "#{name}.png")
+      FileUtils.cp(inp_file, out_file)
+
+      return "#{name}.png"
     end
   end
 

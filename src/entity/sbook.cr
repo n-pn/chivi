@@ -1,6 +1,5 @@
 # Book entity for scrapping
 require "json"
-require "./_util"
 
 class SBook
   include JSON::Serializable

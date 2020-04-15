@@ -2,13 +2,16 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "./models/my_book"
 require "../../src/engine/cutil"
+require "../../src/entity/vbook"
+
+files = Dir.glob("data/txt-out/serials/*.json")
+books = files.map { |file| VBook.load(file) }.sort_by(&.tally.-)
+
+# Build indexes
 
 INDEX_DIR = "data/txt-out/indexes"
 FileUtils.mkdir_p(INDEX_DIR)
-
-# Build indexes
 
 class Query
   include JSON::Serializable
@@ -16,18 +19,18 @@ class Query
   property title : Array(String)
   property author : Array(String)
 
-  def initialize(book : MyBook)
+  def initialize(book : VBook)
     @title = [
-      book.zh_title,
-      CUtil.slugify(book.vi_title, no_accent: true),
-      CUtil.slugify(MyUtil.hanviet(book.zh_title), no_accent: true),
+      book.title.zh,
+      CUtil.slugify(book.title.vi, no_accent: true),
+      CUtil.slugify(book.title.hv, no_accent: true),
     ].uniq
 
     @author = [
-      book.zh_author,
-      CUtil.slugify(book.vi_author, no_accent: true),
-      # CUtil.slugify(MyUtil.hanviet(book.zh_author), no_accent: true),
-    ] # .uniq
+      book.author.zh,
+      CUtil.slugify(book.author.vi, no_accent: true),
+      CUtil.slugify(book.author.hv, no_accent: true),
+    ].uniq
   end
 end
 
@@ -42,30 +45,28 @@ mapping = {} of String => String
 missing = [] of String
 hastext = [] of String
 
-files = Dir.glob("data/txt-out/serials/*.json")
-books = files.map { |file| MyBook.from_json(File.read(file)) }
-books = books.sort_by(&.tally.-)
-
 books.each_with_index do |book, idx|
-  label = "- <#{idx + 1}/#{books.size}> [#{book.vi_title}]"
+  label = "- <#{idx + 1}/#{books.size}> [#{book.title.vi}]"
 
-  slug = book.vi_slug
+  slug = book.label.us
   query[slug] = Query.new(book)
 
-  mapping[book.zh_slug] = book.vi_slug
+  mapping[book.label.zh] = book.label.us
 
-  if book.prefer_site.empty?
-    missing << book.vi_slug
-    puts label.colorize(:blue)
-  else
-    hastext << book.vi_slug
-    puts label.colorize(:green)
-
+  if book.hidden < 2
     tally << {slug, book.tally}
     score << {slug, book.score}
     votes << {slug, book.votes}
-    update << {slug, book.updated_at}
-    access << {slug, book.updated_at}
+    update << {slug, book.mtime}
+    access << {slug, book.mtime}
+  end
+
+  if book.prefer_site.empty?
+    missing << book.label.us
+    puts label.colorize(:blue)
+  else
+    hastext << book.label.us
+    puts label.colorize(:green)
   end
 end
 
