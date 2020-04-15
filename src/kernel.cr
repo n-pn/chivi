@@ -29,24 +29,26 @@ module Kernel
     bsid = book.crawl_links[site]?
     return {book, site, "", VList.new} if bsid.nil?
 
-    cache_time = update_time(book.status)
+    crawler = InfoCrawler.new(site, bsid, book.mtime)
+    FileUtil.mkdir_p("#{VList.dir}/#{site}")
+    crawler.mkdirs!
 
-    if chlist = chlists.get(site, bsid, time: cache_time)
-      puts "Cached!"
+    if crawler.cached?(update_time(book.status), require_html = false)
+      crawler.load_cached
     else
-      crawler = InfoCrawler.new(site, bsid, book.mtime)
       crawler.reset_cache
       crawler.mkdirs!
       crawler.crawl!(persist: true)
-
-      # TODO: extract to vp_book.cr or serials.cr
-      changed = book.update(crawler.sbook)
-      VBook.update!(book) if changed
-
-      chlist = chlists.save(site, bsid, crawler.chlist)
     end
 
-    {book, site, bsid, chlist}
+    changed = book.update(crawler.sbook)
+    VBook.save(book) if changed
+
+    list = VList.load(site, bsid)
+    changed = list.update(crawler.slist)
+    VList.save(list, bsid, site) if changed
+
+    {book, site, bsid, list}
   end
 
   def load_text(site : String, bsid : String, csid : String, user = "admin")

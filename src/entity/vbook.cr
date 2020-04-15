@@ -396,7 +396,7 @@ class VBook
 
   SORTS = {"access", "update", "score", "votes", "tally"}
 
-  def self.update!(book : VBook)
+  def self.save(book : VBook)
     book.save!
     SORTS.each { |name| update_index(name, book) }
     @books[book.label.us] = book
