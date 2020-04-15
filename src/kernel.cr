@@ -1,20 +1,10 @@
 require "./engine"
-require "./crawls/*"
-require "./kernel/*"
+
+require "./spider/*"
+require "./entity/*"
 
 module Kernel
   extend self
-
-  @@serials : Serials? = nil
-  @@chlists : Chlists? = nil
-
-  def serials
-    @@serials ||= Serials.new
-  end
-
-  def chlists
-    @@chlists ||= Chlists.new
-  end
 
   def update_time(status)
     case status
@@ -29,31 +19,29 @@ module Kernel
 
   def load_book(slug : String, site : String? = nil)
     slug = CUtil.unaccent(slug).tr(" ", "-")
-    book = serials.get(slug)
-    return {nil, "", "", [] of VpChap} unless book
+    book = VBook.get(slug)
+
+    return {nil, "", "", VList.new} unless book
 
     site = book.prefer_site if site.nil?
-    return {book, site, "", [] of VpChap} if site.empty?
+    return {book, site, "", VList.new} if site.empty?
 
     bsid = book.crawl_links[site]?
-    return {book, site, "", [] of VpChap} if bsid.nil?
+    return {book, site, "", VList.new} if bsid.nil?
 
     cache_time = update_time(book.status)
 
     if chlist = chlists.get(site, bsid, time: cache_time)
       puts "Cached!"
     else
-      crawler = CrInfo.new(site, bsid, book.updated_at)
+      crawler = InfoCrawler.new(site, bsid, book.mtime)
       crawler.reset_cache
       crawler.mkdirs!
       crawler.crawl!(persist: true)
 
       # TODO: extract to vp_book.cr or serials.cr
-      serial = crawler.serial
-      book.status = serial.status unless book.status > serial.status
-      book.chap_count = serial.chap_count unless book.chap_count > serial.chap_count
-      book.updated_at = serial.updated_at unless book.updated_at > serial.updated_at
-      serials.save(book)
+      changed = book.update(crawler.sbook)
+      VBook.update!(book) if changed
 
       chlist = chlists.save(site, bsid, crawler.chlist)
     end

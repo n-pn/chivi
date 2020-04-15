@@ -6,7 +6,7 @@ require "../../src/engine/cutil"
 require "../../src/entity/vbook"
 
 files = Dir.glob("data/txt-out/serials/*.json")
-books = files.map { |file| VBook.load(file) }.sort_by(&.tally.-)
+books = files.map { |file| VBook.load(file) }.sort_by(&.tally)
 
 # Build indexes
 
@@ -82,8 +82,8 @@ File.write "data/txt-out/mapping.json", mapping.to_pretty_json
 puts "- Save indexes...".colorize(:cyan)
 
 File.write "#{INDEX_DIR}/query.json", query.to_pretty_json
-File.write "#{INDEX_DIR}/tally.json", tally.sort_by(&.[1].-).to_pretty_json
-File.write "#{INDEX_DIR}/score.json", score.sort_by(&.[1].-).to_pretty_json
-File.write "#{INDEX_DIR}/votes.json", votes.sort_by(&.[1].-).to_pretty_json
-File.write "#{INDEX_DIR}/update.json", update.sort_by(&.[1].-).to_pretty_json
-File.write "#{INDEX_DIR}/access.json", access.sort_by(&.[1].-).to_pretty_json
+File.write "#{INDEX_DIR}/tally.json", tally.sort_by(&.[1]).to_pretty_json
+File.write "#{INDEX_DIR}/score.json", score.sort_by(&.[1]).to_pretty_json
+File.write "#{INDEX_DIR}/votes.json", votes.sort_by(&.[1]).to_pretty_json
+File.write "#{INDEX_DIR}/update.json", update.sort_by(&.[1]).to_pretty_json
+File.write "#{INDEX_DIR}/access.json", access.sort_by(&.[1]).to_pretty_json

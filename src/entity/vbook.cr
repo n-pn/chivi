@@ -158,28 +158,6 @@ class VBook
     changed
   end
 
-  @@dir = "data/txt-out/serials"
-
-  def self.dir
-    @@dir
-  end
-
-  def self.chdir(dir : String)
-    @@dir = dir
-  end
-
-  def self.file_path(slug : String)
-    "#{@@dir}/#{slug}.json"
-  end
-
-  def self.load(file_or_name : String)
-    unless file_or_name.ends_with?(".json")
-      file_or_name = file_path(file_or_name)
-    end
-
-    from_json(File.read(file_or_name))
-  end
-
   def save!(dir : String = "data/txt-out/serials", name : String = @label.us) : Void
     file = "#{dir}/#{name}.json"
     puts "- saved book <#{file.colorize(:green)}>"
@@ -321,4 +299,139 @@ class VBook
       @tags << VTran.new(tag_zh, tag_vi, tag_vi)
     end
   end
+
+  @@dir = "data/txt-out"
+
+  def self.dir
+    @@dir
+  end
+
+  def self.chdir(dir : String)
+    @@dir = dir
+  end
+
+  def self.file_path(slug : String)
+    "#{@@dir}/serials/#{slug}.json"
+  end
+
+  def self.index_path(name : String)
+    "#{@@dir}/indexes/#{name}.json"
+  end
+
+  def self.load(file_or_name : String)
+    puts "- loading vbook <#{file_or_name.colorize(:blue)}>"
+    unless file_or_name.ends_with?(".json")
+      file_or_name = file_path(file_or_name)
+    end
+
+    from_json(File.read(file_or_name))
+  end
+
+  @@cache = {} of String => VBook
+
+  def self.get(name : String)
+    @@cache[name] ||= load(name)
+  end
+
+  def all
+    @@cache
+  end
+
+  alias Index = Array(Tuple(String, Int64 | Float64))
+
+  def self.load_index(name, klass = Index)
+    puts "- loading index <#{name.colorize(:blue)}>"
+    klass.from_json(File.read(index_path(name)))
+  end
+
+  @@sorts = {} of String => Index
+
+  def self.sort_by(sort : String = "update")
+    @@sorts[sort] ||= load_index(sort, Index)
+  end
+
+  def self.list(limit = 20, offset = 0, sort = "update")
+    items = sort_by(sort)
+    output = [] of VBook
+
+    items.reverse_each do |slug, _|
+      if offset > 0
+        offset -= 1
+      else
+        output << get(slug).not_nil!
+        break unless output.size < limit
+      end
+    end
+
+    output
+  end
+
+  def self.total(sort)
+    sort_by(sort).size
+  end
+
+  class Query
+    include JSON::Serializable
+
+    property title : Array(String)
+    property author : Array(String)
+  end
+
+  @@query = {} of String => Query
+
+  def self.glob(query : String)
+    @@query = load_index("query", Hash(String, Query)) if @@query.empty?
+
+    output = [] of VBook
+
+    @@query.each do |slug, data|
+      if data.title.find(&.includes?(query)) || data.author.find(&.includes?(query))
+        output << get(slug).not_nil!
+        break if output.size >= 20
+      end
+    end
+
+    output
+  end
+
+  SORTS = {"access", "update", "score", "votes", "tally"}
+
+  def self.update!(book : VBook)
+    book.save!
+    SORTS.each { |name| update_index(name, book) }
+    @books[book.label.us] = book
+  end
+
+  def self.update_index(name, book : VpBook)
+    changed = false
+
+    sort = sort_by(name)
+    slug = book.label.us
+
+    case name
+    when "tally"
+      value = book.tally
+    when "score"
+      value = book.score
+    when "votes"
+      value = book.votes
+    when "update"
+      value = book.mtime
+    else
+      value = Time.utc.to_unix_ms
+    end
+
+    if index = sort.index(&.[0].==(slug))
+      return if sort[index][1] == value
+      sort[index] = {slug, value}
+    else
+      sort << {slug, value}
+    end
+
+    sort.sort_by!(&.[1])
+    File.write(index_path(name), sort.to_json)
+  end
 end
+
+# puts VBook.list(3, sort: "update")
+# puts VBook.list(3, sort: "tally")
