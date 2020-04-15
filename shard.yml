@@ -8,6 +8,9 @@ targets:
   server:
     main: src/server.cr
 
+  yousuu-combine:
+    main: tasks/yousuu/combine.cr
+
   bookdb-mapsite:
     main: tasks/bookdb/mapsite.cr
 

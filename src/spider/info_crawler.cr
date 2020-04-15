@@ -61,10 +61,10 @@ class InfoCrawler
     @slist = SList.load(@slist_file) if slist
   end
 
-  def reset_cache(html = true, sbook = false, chap = false)
+  def reset_cache(html = true, sbook = false, slist = false)
     File.delete(@html_file) if File.exists?(@html_file) && html
-    File.delete(@sbook_file) if File.exists?(@sbook_file) && book
-    File.delete(@slist_file) if File.exists?(@slist_file) && chap
+    File.delete(@sbook_file) if File.exists?(@sbook_file) && sbook
+    File.delete(@slist_file) if File.exists?(@slist_file) && slist
   end
 
   INFO_URLS = {

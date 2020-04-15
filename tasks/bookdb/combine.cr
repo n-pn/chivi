@@ -2,22 +2,25 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/crawls/cr_info"
-require "./models/*"
+require "../../src/spider/info_crawler"
+require "../../src/entity/sbook"
+require "../../src/entity/ybook"
+require "../../src/entity/vbook"
+require "../../src/entity/vsite"
 
 files = Dir.glob("data/txt-inp/yousuu/serials/*.json")
 puts "- input: #{files.size} entries".colorize(:blue)
 
-inputs = Hash(String, Array(BookInfo)).new { |h, k| h[k] = [] of BookInfo }
+inputs = Hash(String, Array(YBook)).new { |h, k| h[k] = [] of YBook }
 
 files.each do |file|
   data = File.read(file)
 
   if data.includes?("{\"success\":true,")
-    info = BookInfo.from_json_file(data)
-    next unless info.title && info.author
+    book = YBook.load(data)
+    next if book.title.empty? || book.author.empty?
 
-    inputs[info.slug] << info
+    inputs[book.label] << book
   elsif data.includes?("未找到该图书")
     # puts "- [#{file}] is 404!".colorize(:blue)
   else
@@ -26,50 +29,18 @@ files.each do |file|
   end
 rescue err
   puts "#{file} err: #{err}".colorize(:red)
+  puts data
 end
 
 # File.write "data/txt-tmp/existed.txt", inputs.keys.join("\n")
 
 CACHE_TIME = ((ARGV[0]? || "10").to_i? || 10).days
 
-def merge_other(target : MyBook, site : String, bsid : String) : MyBook
-  serial_file = "data/txt-tmp/serials/#{site}/#{bsid}.json"
-  serial = CrInfo::Serial.from_json(File.read(serial_file))
-
-  if cover = serial.cover
-    target.covers << cover unless cover.empty?
-  end
-
-  target.zh_intro = serial.intro if target.zh_intro.empty?
-
-  if target.zh_genre.empty?
-    target.zh_genre = serial.genre
-  elsif serial.genre != target.zh_genre
-    target.zh_tags << serial.genre unless serial.genre.empty?
-  end
-
-  target.zh_tags.concat(serial.tags)
-
-  target.status = serial.status if target.status < serial.status
-  target.chap_count = serial.chap_count if target.chap_count == 0
-
-  target.crawl_links[site] = bsid
-
-  if target.prefer_site.empty?
-    target.prefer_site = site
-    target.prefer_bsid = bsid
-  end
-
-  target.updated_at = serial.updated_at if target.updated_at < serial.updated_at
-
-  target
-end
-
 puts "- Merging with other sites..."
 
 def load_sitemap(site)
   inp = "data/txt-tmp/sitemap/#{site}.json"
-  map = Hash(String, String).from_json File.read(inp)
+  map = Hash(String, VSite).from_json(File.read(inp))
 
   puts "- <#{site}>: #{map.size} entries".colorize(:cyan)
 
@@ -79,13 +50,13 @@ def load_sitemap(site)
   bsids = Dir.children(dir).map { |x| File.basename(x, ".txt") }
   items = Set(String).new(bsids)
 
-  map.reject! { |key, val| items.includes?(val) }
+  map.reject! { |key, val| items.includes?(val.bsid) }
   puts "- <#{site}> ignore blacklist: #{map.size} entries".colorize(:cyan)
 
   map
 end
 
-sitemaps = {} of String => Hash(String, String)
+sitemaps = {} of String => Hash(String, VSite)
 
 SITES = [
   "hetushu", "jx_la", "rengshu",
@@ -94,20 +65,41 @@ SITES = [
 ]
 SITES.each { |site| sitemaps[site] = load_sitemap(site) }
 
-outputs = [] of MyBook
+outputs = [] of VBook
+
+USED_SLUGS = Set(String).new
+
+def fix_label(book)
+  title_us = book.title.us
+  if title_us.size > 4 && !USED_SLUGS.includes?(title_us)
+    book.label.us = title_us
+    USED_SLUGS << title_us
+  else
+    raise "DUP #{book.label}!!!" if USED_SLUGS.includes?(book.label.us)
+    USED_SLUGS << book.label.us
+  end
+end
 
 inputs.map do |slug, books|
-  book = MyBook.new(books)
-  next if book.tally < 50
+  books = books.sort_by { |x| {x.hidden, -x.mtime} }
+  first = books.first
+
+  books[1..].each { |other| first.merge(other) }
+  next if first.tally < 50
+
+  book = VBook.new(first)
 
   # puts "- #{slug}".colorize(:cyan)
 
   sitemaps.each do |site, map|
-    if bsid = map[book.zh_slug]?
-      book = merge_other(book, site, bsid)
+    if link = map[book.label.zh]?
+      book.update(SBook.load(site, link.bsid))
     end
   end
 
+  fix_label(book)
+
+  book.save!
   outputs << book
 end
 
@@ -117,42 +109,46 @@ existed = Set(String).new inputs.keys
 existed.concat File.read_lines("data/txt-inp/labels-ignore.txt")
 ratings = Hash(String, Tuple(Int32, Float64)).from_json File.read("data/txt-inp/zhwenpg/ratings.json")
 
+class VBook
+  def initialize(other : SBook)
+    set_title(other.title)
+    set_author(other.author)
+    set_label()
+
+    @status = other.status
+    @mtime = other.mtime
+  end
+end
+
 files = Dir.glob("data/txt-tmp/serials/zhwenpg/*.json")
 files.each_with_index do |file, idx|
-  input = CrInfo::Serial.from_json(File.read(file))
-  next if existed.includes?(input.slug)
+  input = SBook.load(file)
+  next if existed.includes?(input.label)
 
-  votes, score = ratings[input.slug]
+  votes, score = ratings[input.label]
 
-  word_count = input.word_count
-  if word_count == 0
-    files = "data/txt-tmp/chtexts/zhwenpg/#{input._id}/*.txt"
-    word_count = Dir.glob(files).map { |file| File.read(file).size }.sum
-  end
+  files = "data/txt-tmp/chtexts/zhwenpg/#{input.bsid}/*.txt"
+  word_count = Dir.glob(files).map { |file| File.read(file).size }.sum
 
-  book = MyBook.new(input, votes, score, word_count)
+  book = VBook.new(input)
+  book.hidden = 1
+  book.votes = votes
+  book.score = score
+  book.tally = (votes * score * 2).round / 2
+  book.word_count = word_count
 
   sitemaps.each do |site, map|
-    if bsid = map[book.zh_slug]?
-      book = merge_other(book, site, bsid)
+    if link = map[book.label.zh]?
+      book.update(SBook.load(site, link.bsid))
     end
   end
 
+  fix_label(book)
+  book.save!
   outputs << book
 end
 
 puts "- output: #{outputs.size} entries".colorize(:cyan)
 
-outputs.sort_by!(&.tally.-)
-outputs.each do |output|
-  output.covers = output.covers.uniq.map do |url|
-    url = url.sub("qu.la", "jx.la")
-    if url.starts_with?("http://image.qidian.com")
-      url = url.sub("http://image.qidian.com/books", "https://qidian.qpic.cn/qdbimg").sub(".jpg", "/300.jpg")
-    end
-
-    url
-  end
-end
-
-File.write "data/txt-tmp/serials.json", outputs.to_pretty_json
+# outputs.sort_by!(&.tally.-)
+# File.write "data/txt-tmp/serials.json", outputs.to_pretty_json
