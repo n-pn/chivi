@@ -17,8 +17,8 @@ targets:
   bookdb-combine:
     main: tasks/bookdb/combine.cr
 
-  bookdb-convert:
-    main: tasks/bookdb/convert.cr
+  bookdb-chlists:
+    main: tasks/bookdb/chlists.cr
 
   bookdb-indexes:
     main: tasks/bookdb/indexes.cr

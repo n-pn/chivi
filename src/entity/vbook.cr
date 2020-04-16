@@ -79,28 +79,15 @@ class VBook
     set_title(other.title)
     set_author(other.author)
     set_label()
-
-    set_genre(other.genre)
-    set_tags(other.tags)
-    set_intro(other.intro, book, user)
-    set_cover(other.cover)
-
-    @status = other.status
-    @mtime = other.mtime
-
-    @score = score
+    absorb(other, book, user)
     @tally = (@votes * @score * 2).round / 2
-
-    @scrap_sites[other.site] = VSite.new(other)
-    @prefer_site = other.site
-    @prefer_bsid = other.bsid
   end
 
   def to_s(io : IO)
     io << to_pretty_json
   end
 
-  def update(other : SBook, book : String? = nil, user : String = "local")
+  def absorb(other : SBook, book : String? = nil, user : String = "local")
     changed = false
 
     if @genre.zh.empty? && !other.genre.empty?

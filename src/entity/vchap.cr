@@ -6,10 +6,9 @@ require "./vtran"
 class VChap
   include JSON::Serializable
 
-  property csid : String
-
+  property csid = ""
   property title = VTran.new
-  property vlume = VTran.new
+  property volume = VTran.new
 
   def initialize(chap : SChap, book : String? = nil, user = "local")
     @csid = chap.csid
@@ -27,7 +26,7 @@ class VChap
     @title.update(title, title_vi)
   end
 
-  def set_volume(title, book : String? = nil, user = "local")
+  def set_volume(volume, book : String? = nil, user = "local")
     volume_vi = Engine.convert(volume, :title, book, user).vi_text
 
     @volume.update(volume, volume_vi)
@@ -47,7 +46,7 @@ class VList < Array(VChap)
     res
   end
 
-  def update(list : SList, book : String? = nil, user = "local")
+  def absorb(list : SList, book : String? = nil, user = "local")
     changed = list.size != size
 
     # in rare case when the list is truncated
@@ -60,7 +59,7 @@ class VList < Array(VChap)
       vlist = self[i]
 
       if vlist.csid != slist.csid
-        vlist.ccid = slist.csid
+        vlist.csid = slist.csid
         changed = true
       end
 
