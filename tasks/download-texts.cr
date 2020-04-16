@@ -20,9 +20,14 @@ files = File.read_lines("data/txt-out/hastext.txt").reverse
 books = files.map { |file| }
 puts "- books: #{files.size} entries".colorize(:cyan)
 
-def download_text(site, bsid, chap, label) : Void
+def download_text(channel, site, bsid, chap, label) : Void
   crawler = TextCrawler.new(site, bsid, chap.csid, chap.title)
-  crawler.crawl!(persist: true, label: label) unless crawler.existed?
+  crawler.crawl!(persist: true, label: label) unless crawler.cached?
+rescue err
+  puts "ERROR: #{err.colorize(:red)}"
+  File.delete HtmlCrawler.text_path(site, bsid, chap.csid)
+ensure
+  channel.send(nil)
 end
 
 def fetch_texts(site, bsid) : Void
@@ -31,7 +36,8 @@ def fetch_texts(site, bsid) : Void
   list = SList.load(site, bsid)
   return if list.empty?
 
-  HtmlCrawler.text_mkdir(site, bsid)
+  FileUtils.mkdir_p File.join("data", "txt-inp", site, "texts", bsid)
+  FileUtils.mkdir_p File.join("data", "txt-tmp", "chtexts", site, bsid)
 
   limit = 20
   limit = list.size if limit > list.size
@@ -39,10 +45,8 @@ def fetch_texts(site, bsid) : Void
 
   list.each_with_index do |chap, idx|
     channel.receive unless idx < limit
-
     spawn do
-      download_text(site, bsid, chap, "#{idx + 1}/#{list.size}")
-      channel.send(nil)
+      download_text(channel, site, bsid, chap, "#{idx + 1}/#{list.size}")
     end
   end
 

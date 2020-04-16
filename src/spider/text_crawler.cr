@@ -34,13 +34,9 @@ class TextCrawler
     FileUtils.mkdir_p File.join(@@dir, @site, @bsid)
   end
 
-  def existed?
-    return File.exists?(@file)
-  end
-
   def cached?(require_html : Bool = false)
     return false unless File.exists?(@file)
-    !(require_html && !File.exists?(HtmlCrawler.text_path(site, bsid, csid)))
+    !(require_html && !File.exists?(HtmlCrawler.text_path(@site, @bsid, @csid)))
   end
 
   def crawl!(persist : Bool = true, label = "1/1") : Void
