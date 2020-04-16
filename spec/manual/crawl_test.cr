@@ -1,6 +1,5 @@
 require "../../src/spider/info_crawler.cr"
-
-# require "../../src/spider/cr_text.cr"
+require "../../src/spider/text_crawler.cr"
 
 def test_info(site, bsid)
   crawler = InfoCrawler.new(site, bsid)
@@ -10,18 +9,18 @@ def test_info(site, bsid)
   puts crawler.slist.first(8).to_pretty_json
 end
 
-# def test_text(site, bsid, csid)
-#   crawler = CrText.new(site, bsid, csid)
-#   crawler.reset_cache(html: false)
-#   crawler.mkdirs!
-#   crawler.crawl!(persist: true)
+def test_text(site, bsid, csid)
+  crawler = TextCrawler.new(site, bsid, csid)
+  crawler.reset_cache(html: false)
+  crawler.mkdirs!
+  crawler.crawl!(persist: true)
 
-#   # pp crawler.html
-#   pp crawler.title
-#   pp crawler.paras
+  # pp crawler.html
+  pp crawler.title
+  pp crawler.paras
 
-#   crawler
-# end
+  crawler
+end
 
 # test_info("jx_la", "156")
 # test_info("nofff", "18288")
@@ -33,7 +32,7 @@ end
 # test_info("69shu", "30062")
 # test_info("zhwenpg", "duny4q")
 
-# test_text("jx_la", "7", "3666")
+test_text("jx_la", "7", "3666")
 # test_text("jx_la", "75722", "4089610")
 # test_text("jx_la", "101533", "5208291")
 # test_text("nofff", "6363", "23951830")

@@ -148,32 +148,32 @@ class InfoCrawler
         end
       end
     when "hetushu"
-      @sbook.title = node_text(doc, ".book_info > h2")
-      @sbook.author = node_text(doc, ".book_info a:first-child")
+      @sbook.title = extract_text(doc, ".book_info > h2")
+      @sbook.author = extract_text(doc, ".book_info a:first-child")
       @sbook.intro = doc.css(".intro > p").map(&.inner_text).join("\n")
-      @sbook.genre = node_text(doc, ".book_info > div:nth-of-type(2)").sub("类型：", "").strip
+      @sbook.genre = extract_text(doc, ".book_info > div:nth-of-type(2)").sub("类型：", "").strip
       @sbook.tags = doc.css(".tag a").map(&.inner_text).to_a
       if img = doc.css(".book_info img").first?
         @sbook.cover = "https://www.hetushu.com/" + img.attributes["src"].as(String)
       end
     when "69shu"
-      @sbook.title = node_text(doc, ".weizhi > a:nth-child(3)")
-      @sbook.author = node_text(doc, ".mu_beizhu a[target]")
-      @sbook.genre = node_text(doc, ".weizhi > a:nth-child(2)")
-      @sbook.mtime = node_text(doc, ".mu_beizhu").sub(/.+时间：/m, "")
+      @sbook.title = extract_text(doc, ".weizhi > a:nth-child(3)")
+      @sbook.author = extract_text(doc, ".mu_beizhu a[target]")
+      @sbook.genre = extract_text(doc, ".weizhi > a:nth-child(2)")
+      @sbook.mtime = extract_text(doc, ".mu_beizhu").sub(/.+时间：/m, "")
     when "zhwenpg"
       node = doc.css(".cbooksingle").to_a[2]
 
-      @sbook.title = node_text(node, "h2")
-      @sbook.author = node_text(node, "h2 + a > font")
-      @sbook.intro = node_text(node, "tr:nth-of-type(3)")
+      @sbook.title = extract_text(node, "h2")
+      @sbook.author = extract_text(node, "h2 + a > font")
+      @sbook.intro = extract_text(node, "tr:nth-of-type(3)")
       @sbook.cover = "https://novel.zhwenpg.com/image/cover/#{@bsid}.jpg"
     else
       raise "Site not supported!"
     end
   end
 
-  def node_text(doc, query)
+  def extract_text(doc, query)
     doc.css(query).first.inner_text.strip
   end
 
@@ -207,7 +207,7 @@ class InfoCrawler
         list.each { |x| @slist << x }
       end
     when "zhwenpg"
-      latest = node_text(doc, ".fontchap")
+      latest = extract_text(doc, ".fontchap")
 
       doc.css("#dulist a").each do |link|
         if href = link.attributes["href"]

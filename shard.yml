@@ -23,6 +23,9 @@ targets:
   bookdb-indexes:
     main: tasks/bookdb/indexes.cr
 
+  download-texts:
+    main: tasks/download-texts.cr
+
 crystal: 0.33.0
 
 license: MIT

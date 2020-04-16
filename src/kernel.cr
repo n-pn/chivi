@@ -1,7 +1,11 @@
 require "./engine"
 
-require "./spider/*"
-require "./entity/*"
+require "./spider/info_crawler"
+require "./spider/text_crawler"
+
+require "./entity/vbook"
+require "./entity/vchap"
+require "./entity/vtext"
 
 module Kernel
   extend self
@@ -51,43 +55,29 @@ module Kernel
     {book, site, bsid, list}
   end
 
-  def load_text(site : String, bsid : String, csid : String, user = "admin")
+  def load_text(site : String, bsid : String, csid : String, book : String? = nil, user = "local")
     file_out = "data/txt-out/chtexts/#{site}/#{bsid}/#{csid}.json"
+    VText.mkdir(site, bsid)
+
     file_tmp = "data/txt-tmp/chtexts/#{site}/#{bsid}/#{csid}.txt"
 
-    if File.exists?(file_out)
-      return Array(Array(Chivi::Token)).from_json File.read(file_out)
-    elsif File.exists?(file_tmp)
-      lines = File.read_lines(file_tmp)
-      paras = Engine.convert(lines, mode: :mixed, book: nil, user: user)
+    if data = VText.load(site, bsid, csid)
+      return data
+    end
 
-      FileUtils.mkdir_p File.dirname(file_out)
-      File.write(file_out, paras.to_json)
+    crawler = TextCrawler.new(site, bsid, csid)
 
-      paras
+    if crawler.cached?
+      lines = File.read_lines(crawler.text_file)
     else
-      crawler = CrText.new(site, bsid, csid)
-
-      FileUtils.mkdir_p File.dirname(crawler.html_file)
-      FileUtils.mkdir_p File.dirname(crawler.text_file)
-
+      crawler.mkdirs!
       crawler.crawl!(persist: true)
       lines = [crawler.title].concat(crawler.paras)
-
-      paras = Engine.convert(lines, mode: :mixed, book: nil, user: user)
-      FileUtils.mkdir_p File.dirname(file_out)
-      File.write(file_out, paras.to_json)
-
-      paras
     end
+
+    paras = Engine.convert(lines, mode: :mixed, book: nil, user: user)
+    File.write(file_out, paras.to_json)
+
+    paras
   end
 end
-
-# book = Kernel.serials.get("chue-te")
-# puts book.to_pretty_json
-
-# list = Kernel.chlists.get(book.favor_crawl, book.crawl_bsid.as(String))
-# puts list.first(10)
-
-# text = Kernel.load_text("jx_la", "285", "10612432")
-# puts text
