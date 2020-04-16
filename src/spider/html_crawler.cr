@@ -74,34 +74,33 @@ module HtmlCrawler
     end
   end
 
-  def fetch_info(site : String, bsid : String, label = "1/1") : String
+  def fetch_info(site : String, bsid : String) : String
     file = info_path(site, bsid)
 
     if File.exists?(file)
       html = File.read(file)
     else
-      html = fetch(info_url(site, bsid), encoding(site), label)
+      html = fetch(info_url(site, bsid), encoding(site))
       File.write(file, html)
     end
 
     html
   end
 
-  def fetch_text(site : String, bsid : String, csid : String, label = "1/1") : String
+  def fetch_text(site : String, bsid : String, csid : String) : String
     file = text_path(site, bsid, csid)
 
     if File.exists?(file)
       html = File.read(file)
     else
-      html = fetch(text_url(site, bsid, csid), encoding(site), label)
+      html = fetch(text_url(site, bsid, csid), encoding(site))
       File.write(file, html)
     end
 
     html
   end
 
-  def fetch(url : String, encoding : String = "UTF-8", label = "1/1") : String
-    puts "- <#{label.colorize(:blue)}> HIT: #{url.colorize(:blue)}"
+  def fetch(url : String, encoding : String = "UTF-8") : String
     do_fetch(url, tls(url), encoding)
   end
 

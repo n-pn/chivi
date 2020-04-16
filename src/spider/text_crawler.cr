@@ -40,7 +40,7 @@ class TextCrawler
   end
 
   def crawl!(persist : Bool = true, label = "1/1") : Void
-    html = HtmlCrawler.fetch_text(@site, @bsid, @csid, label: label)
+    html = HtmlCrawler.fetch_text(@site, @bsid, @csid)
     parse!(Myhtml::Parser.new(html))
 
     if persist
