@@ -4,80 +4,55 @@ require "colorize"
 require "file_utils"
 
 require "myhtml"
-require "./crawl_util"
+require "./html_crawler"
 
 class TextCrawler
-  getter html : String = ""
+  getter file : String
+
   getter title : String
   getter paras : Array(String)
 
-  getter html_file : String
-  getter text_file : String
+  @@dir = File.join("data", "txt-tmp", "chtexts")
+
+  def self.dir
+    @@dir
+  end
+
+  def self.dir=(@@dir)
+  end
+
+  def self.file_path(site, bsid, csid)
+    File.join(dir, site, bsid, "#{csid}.txt")
+  end
 
   def initialize(@site : String, @bsid : String, @csid : String, @title : String = "")
-    @html_file = "data/txt-inp/#{@site}/texts/#{@bsid}/#{@csid}.html"
-    @text_file = "data/txt-tmp/chtexts/#{@site}/#{@bsid}/#{@csid}.txt"
-
+    @file = TextCrawler.file_path(site, bsid, csid)
     @paras = [] of String
   end
 
-  def mkdirs!
-    FileUtils.mkdir_p File.dirname(@html_file)
-    FileUtils.mkdir_p File.dirname(@text_file)
+  def mkdir!
+    FileUtils.mkdir_p File.join(@@dir, @site, @bsid)
+  end
+
+  def existed?
+    return File.exists?(@file)
   end
 
   def cached?(require_html : Bool = false)
-    return false unless File.exists?(@text_file)
-    !(require_html && !File.exists?(@html_file))
-  end
-
-  def reset_cache(html : Bool = true, text : Bool = false)
-    File.delete(@html_file) if File.exists?(@html_file) && html
-    File.delete(@text_file) if File.exists?(@text_file) && text
-  end
-
-  TEXT_URLS = {
-    "nofff"   => "https://www.nofff.com/%s/%s/",
-    "69shu"   => "https://www.69shu.com/txt/%s/%s",
-    "jx_la"   => "https://www.jx.la/book/%s/%s.html",
-    "rengshu" => "http://www.rengshu.com/book/%s/%s",
-    "xbiquge" => "https://www.xbiquge.cc/book/%s/%s.html",
-    "hetushu" => "https://www.hetushu.com/book/%s/%s.html",
-    "duokan8" => "http://www.duokan8.com/%i_%i/%s.html",
-    "paoshu8" => "http://www.paoshu8.com/%i_%i/%s.html",
-    "zhwenpg" => "https://novel.zhwenpg.com/r.php?id=%s",
-  }
-
-  def text_url
-    url_form = TEXT_URLS[@site]
-    case @site
-    when "zhwenpg"
-      url_form % @csid
-    when "duokan8", "paoshu8"
-      prefix = (@bsid.to_i // 1000).to_s
-      url_form % [prefix, @bsid, @csid]
-    else
-      url_form % [@bsid, @csid]
-    end
+    return false unless File.exists?(@file)
+    !(require_html && !File.exists?(HtmlCrawler.text_path(site, bsid, csid)))
   end
 
   def crawl!(persist : Bool = true, label = "1/1") : Void
-    if File.exists?(@html_file)
-      @html = File.read(@html_file)
-    else
-      @html = CrawlUtil.fetch_html(text_url, @site)
-      File.write(@html_file, @html) if persist
-    end
-
-    doc = Myhtml::Parser.new(@html)
-    parse!(doc)
+    html = HtmlCrawler.fetch_text(@site, @bsid, @csid, label: label)
+    parse!(Myhtml::Parser.new(html))
 
     if persist
       puts "-- <#{label.colorize(:cyan)}> \
       [#{@site.colorize(:cyan)}/#{@bsid.colorize(:cyan)}/#{@csid.colorize(:cyan)}] \
       {#{@title.colorize(:cyan)}} saved."
 
-      File.write(@text_file, self)
+      File.write(@file, self)
     end
   end
 

@@ -305,13 +305,11 @@ class VBook
     "#{@@dir}/indexes/#{name}.json"
   end
 
-  def self.load(file_or_name : String)
-    puts "- loading vbook <#{file_or_name.colorize(:blue)}>"
-    unless file_or_name.ends_with?(".json")
-      file_or_name = file_path(file_or_name)
-    end
+  def self.load(file : String, label : String = "1/1")
+    puts "- <#{label.colorize(:blue)}> loading vbook #{file.colorize(:blue)}"
 
-    from_json(File.read(file_or_name))
+    file = file_path(file) unless file.ends_with?(".json")
+    from_json(File.read(file))
   end
 
   @@cache = {} of String => VBook
