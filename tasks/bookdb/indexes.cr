@@ -6,7 +6,7 @@ require "../../src/engine/cutil"
 require "../../src/entity/vbook"
 
 files = Dir.glob("data/txt-out/serials/*.json")
-books = files.map { |file| VBook.load(file) }.sort_by(&.tally)
+books = files.map_with_index { |file, idx| VBook.load(file, "#{idx + 1}/#{files.size}") }.sort_by(&.tally.-)
 
 # Build indexes
 
@@ -45,6 +45,8 @@ mapping = {} of String => String
 missing = [] of String
 hastext = [] of String
 
+crawls = [] of Tuple(String, String, String, Int32, Int64)
+
 books.each_with_index do |book, idx|
   label = "- <#{idx + 1}/#{books.size}> [#{book.title.vi}]"
 
@@ -62,13 +64,16 @@ books.each_with_index do |book, idx|
   end
 
   if book.prefer_site.empty?
-    missing << book.label.us
     puts label.colorize(:blue)
+    missing << book.label.us
   else
-    hastext << book.label.us
     puts label.colorize(:green)
+    hastext << book.label.us
+    crawls << {book.prefer_site, book.prefer_bsid, slug, book.status, book.mtime}
   end
 end
+
+File.write "data/txt-out/crawls.json", crawls.to_pretty_json
 
 puts "- MISSING: #{missing.size}"
 File.write "data/txt-out/missing.txt", missing.join("\n")

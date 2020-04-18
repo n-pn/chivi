@@ -7,53 +7,87 @@ require "../src/entity/schap"
 
 require "../src/spider/html_crawler"
 require "../src/spider/text_crawler"
+require "../src/spider/info_crawler"
 
 SITES = {
   "hetushu", "jx_la", "rengshu",
   "xbiquge", "nofff", "duokan8",
   "paoshu8", "69shu", "zhwenpg",
 }
-
 SITES.each { |site| HtmlCrawler.info_mkdir(site) }
 
-files = File.read_lines("data/txt-out/hastext.txt").reverse
-books = files.map { |file| }
-puts "- books: #{files.size} entries".colorize(:cyan)
+alias Crawl = Tuple(String, String, String, Int32, Int64)
 
-def download_text(channel, site, bsid, chap, label) : Void
+def fetch_text(site, bsid, chap, label) : Void
   crawler = TextCrawler.new(site, bsid, chap.csid, chap.title)
   crawler.crawl!(persist: true, label: label) unless crawler.cached?
 rescue err
   puts "ERROR: #{err.colorize(:red)}"
   File.delete HtmlCrawler.text_path(site, bsid, chap.csid)
-ensure
-  channel.send(nil)
 end
 
-def fetch_texts(site, bsid) : Void
+def cache_time(status)
+  case status
+  when 0
+    2.hours
+  when 1
+    10.days
+  else
+    100.days
+  end
+end
+
+def fetch_book(crawl : Crawl, label : String) : Void
+  site, bsid, slug, status, mtime = crawl
+
   return if bsid.empty?
 
-  list = SList.load(site, bsid)
+  crawler = InfoCrawler.new(site, bsid, mtime)
+  if crawler.cached?(time: cache_time(status))
+    puts "- <#{label.colorize(:blue)}> cached, skipping"
+    crawler.load_cached!(slist: true)
+  else
+    crawler.crawl!(persist: true, label: label)
+  end
+
+  list = crawler.slist
   return if list.empty?
 
   FileUtils.mkdir_p File.join("data", "txt-inp", site, "texts", bsid)
   FileUtils.mkdir_p File.join("data", "txt-tmp", "chtexts", site, bsid)
 
-  limit = 20
-  limit = list.size if limit > list.size
+  limit = list.size
+  limit = 8 if limit > 8
   channel = Channel(Nil).new(limit)
 
   list.each_with_index do |chap, idx|
     channel.receive unless idx < limit
+
     spawn do
-      download_text(channel, site, bsid, chap, "#{idx + 1}/#{list.size}")
+      fetch_text(site, bsid, chap, "#{slug}: #{idx + 1}/#{list.size}")
+    ensure
+      channel.send(nil)
     end
   end
 
   limit.times { channel.receive }
 end
 
-files.each_with_index do |file, idx|
-  book = VBook.load(file, label: "#{idx + 1}/#{books.size}")
-  fetch_texts(book.prefer_site, book.prefer_bsid)
+crawls = Array(Crawl).from_json(File.read("data/txt-out/crawls.json"))
+
+puts "- books: #{crawls.size} entries".colorize(:cyan)
+
+limit = 4
+channel = Channel(Nil).new(limit)
+
+crawls.each_with_index do |crawl, idx|
+  channel.receive unless idx < limit
+
+  spawn do
+    fetch_book(crawl, "#{crawl[2]}: #{idx + 1}/#{crawls.size}")
+  ensure
+    channel.send(nil)
+  end
 end
+
+limit.times { channel.receive }
