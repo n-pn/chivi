@@ -4,9 +4,10 @@ require "colorize"
 require "file_utils"
 
 require "myhtml"
-require "./html_crawler"
 
-class TextCrawler
+require "./cr_html"
+
+class Spider::CrText
   getter file : String
 
   getter title : String
@@ -26,7 +27,7 @@ class TextCrawler
   end
 
   def initialize(@site : String, @bsid : String, @csid : String, @title : String = "")
-    @file = TextCrawler.file_path(site, bsid, csid)
+    @file = CrText.file_path(site, bsid, csid)
     @paras = [] of String
   end
 

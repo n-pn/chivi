@@ -2,7 +2,7 @@ require "time"
 require "colorize"
 require "http/client"
 
-module CrawlUtil
+module Spider::CrUtil
   class StatusCodeError < Exception; end
 
   TEXT_URLS = {

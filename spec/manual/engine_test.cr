@@ -13,7 +13,7 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 http://test.com/test?q=1
 "
 
-Engine.convert(CUtil.split_lines(text), :mixed).each do |tokens|
+Engine.convert(Engine::CvUtil.split_lines(text), :mixed).each do |tokens|
   puts Engine.to_text(tokens)
 end
 

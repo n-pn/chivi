@@ -58,22 +58,16 @@ module Engine::CvUtil
     acc = 0_i64
 
     input.chars.reverse_each do |char|
+      int = char_to_num(char)
       case char
-      when '千'
+      when '万', '千', '百', '十'
         res += acc
-        acc = 1000
-        mod = acc if mod < acc
-      when '百'
-        res += acc
-        acc = 100
-        mod = acc if mod < acc
-      when '十'
-        acc = 10
-        mod = acc if mod < acc
+        mod = int if mod < int
+        acc = int
       else
-        res += char_to_num(char) * mod
-        acc = 0
+        res += int * mod
         mod *= 10
+        acc = 0
       end
     end
 
@@ -94,6 +88,10 @@ module Engine::CvUtil
     when '七' then 7
     when '八' then 8
     when '九' then 9
+    when '十' then 10
+    when '百' then 100
+    when '千' then 1000
+    when '万' then 10000
     when .ascii_number?
       char.to_i
     else

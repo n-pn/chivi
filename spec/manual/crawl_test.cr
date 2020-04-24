@@ -1,16 +1,17 @@
-require "../../src/spider/info_crawler.cr"
-require "../../src/spider/text_crawler.cr"
+require "../../src/spider/cr_info.cr"
+
+# require "../../src/spider/text_crawler.cr"
 
 def test_info(site, bsid)
-  crawler = InfoCrawler.new(site, bsid)
-  crawler.mkdirs!
-  crawler.crawl!(persist: false)
-  puts crawler.sbook.to_pretty_json
-  puts crawler.slist.first(8).to_pretty_json
+  crawler = Spider::CrInfo.new(site, bsid)
+  # crawler.mkdirs!
+  puts crawler.extract_info!.to_pretty_json
+  puts crawler.extract_stat!.to_pretty_json
+  puts crawler.extract_list!.first(8).to_pretty_json
 end
 
 def test_text(site, bsid, csid)
-  crawler = TextCrawler.new(site, bsid, csid)
+  crawler = Spider::CrText.new(site, bsid, csid)
   crawler.reset_cache(html: false)
   crawler.mkdirs!
   crawler.crawl!(persist: true)
@@ -32,7 +33,7 @@ end
 # test_info("69shu", "30062")
 # test_info("zhwenpg", "duny4q")
 
-test_text("jx_la", "7", "3666")
+# test_text("jx_la", "7", "3666")
 # test_text("jx_la", "75722", "4089610")
 # test_text("jx_la", "101533", "5208291")
 # test_text("nofff", "6363", "23951830")
