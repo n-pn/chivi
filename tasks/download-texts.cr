@@ -43,10 +43,11 @@ def fetch_book(crawl : Crawl, label : String) : Void
   return if bsid.empty?
 
   crawler = InfoCrawler.new(site, bsid, mtime)
-  if crawler.cached?(time: cache_time(status))
+  if crawler.cached?(time: cache_time(status), require_html: true)
     puts "- <#{label.colorize(:blue)}> cached, skipping"
     crawler.load_cached!(slist: true)
   else
+    crawler.reset_cache(html: true)
     crawler.crawl!(persist: true, label: label)
   end
 
