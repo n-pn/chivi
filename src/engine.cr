@@ -3,7 +3,7 @@ require "./engine/*"
 module Engine
   extend self
 
-  @@repo = CRepo.new("data/dic-out")
+  @@repo = CvRepo.new("data/dic-out")
 
   def hanviet(input : String, apply_cap = false)
     Chivi.cv_lit(@@repo.hanviet, input, apply_cap: apply_cap)

@@ -1,10 +1,10 @@
 require "colorize"
-require "./cdict"
+require "./cv_dict"
 
 # Loading dicts
-class CRepo
+class Engine::CvRepo
   class List
-    alias CvMap = Hash(String, CDict)
+    alias CvMap = Hash(String, CvDict)
 
     def initialize(@dir : String, preload = false)
       @dicts = CvMap.new
@@ -67,11 +67,11 @@ class CRepo
     end
 
     def load_dic(name : String)
-      CDict.new(File.join(@dir, "#{name}.dic"))
+      CvDict.new(File.join(@dir, "#{name}.dic"))
     end
 
     def load_fix(name : String, user : String = "local")
-      CDict.new(File.join(@dir, "#{name}.#{user}.dic"))
+      CvDict.new(File.join(@dir, "#{name}.#{user}.dic"))
     end
   end
 
@@ -85,10 +85,10 @@ class CRepo
     @unique = List.new(File.join(@dir, "unique"))
   end
 
-  alias Dicts = Array(CDict)
+  alias Dicts = Array(CvDict)
 
-  @cc_cedict : CDict? = nil
-  @trungviet : CDict? = nil
+  @cc_cedict : CvDict? = nil
+  @trungviet : CvDict? = nil
   @hanviet : Dicts? = nil
   @pinyin : Dicts? = nil
   @tradsim : Dicts? = nil

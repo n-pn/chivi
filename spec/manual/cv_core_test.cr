@@ -1,4 +1,6 @@
-require "../../src/engine/chivi"
+require "../../src/engine/cv_core"
+
+include Engine
 
 text = "第十三集 龙章凤仪 第一章 屠龙之术
 贾文和一个玩阴谋的，突然间客串了一把热血刺客，效果立竿见影。一万个道理都未必能说服的廖群玉，被一把错刀给说得心服口服，当即赶到宋国馆邸，通过官方渠道传讯临安，以自己的身家性命作保，顺利说服贾师宪，由其举荐宝钞局主事，工部员外郎程宗扬为唐国正使，通问昭南事宜。
@@ -11,21 +13,21 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-GENERIC = CDict.load! "data/dic-out/common/generic.dic"
-COMBINE = CDict.load! "data/dic-out/common/combine.dic"
+GENERIC = CvDict.load! "data/dic-out/common/generic.dic"
+COMBINE = CvDict.load! "data/dic-out/common/combine.dic"
 COMBINE.set("贾文和", "Giả Văn Hoà")
 
 DICTS = [GENERIC, COMBINE]
 
 def translate(input : String, title = false)
   if title
-    Chivi.cv_title(DICTS, input).to_json
+    CvCore.cv_title(DICTS, input).to_json
   else
-    Chivi.cv_plain(DICTS, input).to_json
+    CvCore.cv_plain(DICTS, input).to_json
   end
 end
 
-CUtil.split_lines(text).each do |line|
+text.split(/\n+/).each do |line|
   puts translate(line)
 end
 

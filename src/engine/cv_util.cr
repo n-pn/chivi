@@ -1,10 +1,8 @@
-require "./cutil/*"
+require "./cv_util/*"
 
-module CUtil
-  extend self
-
+module Engine::CvUtil
   # capitalize all words
-  def titlecase(input : String)
+  def titleize(input : String)
     input.split(" ").map { |x| capitalize(x) }.join(" ")
   end
 
@@ -14,7 +12,7 @@ module CUtil
     str[0].upcase + str[1..]
   end
 
-  def slugify(input : String, no_accent = false)
+  def slugify(input : String, no_accent = true)
     input = unaccent(input) if no_accent
 
     input.downcase
@@ -49,31 +47,17 @@ module CUtil
     input.chars.map { |char| normalize(char) }
   end
 
-  # read chinese text file and strip whitespaces
-  def read_lines(input : String) : Array(String)
-    split_lines(File.read(input))
-  end
-
-  # Split text to lines, strip empty whitespaces
-  def split_lines(input : String) : Array(String)
-    input.split("\n").map(&.tr("　", " ").strip).reject(&.empty?)
-  end
-
   # convert chinese numbers to latin numbers
+  # TODO: Handle bigger numbers
   def hanzi_int(input : String)
     return input.to_i64 unless input =~ /\D/
     # raise "Type mismatch [#{input}]" if input =~ /\d/
-
-    # TODO: Handle bigger numbers
 
     res = 0_i64
     mod = 1_i64
     acc = 0_i64
 
-    chars = input.chars
-    (chars.size - 1).downto(0) do |idx|
-      char = chars[idx]
-
+    input.chars.reverse_each do |char|
       case char
       when '千'
         res += acc
@@ -85,6 +69,7 @@ module CUtil
         mod = acc if mod < acc
       when '十'
         acc = 10
+        mod = acc if mod < acc
       else
         res += char_to_num(char) * mod
         acc = 0
@@ -115,4 +100,6 @@ module CUtil
       raise ArgumentError.new("Unknown char: #{char}")
     end
   end
+
+  extend self
 end
