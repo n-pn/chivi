@@ -2,8 +2,8 @@ require "../../src/spider/cr_info.cr"
 
 # require "../../src/spider/text_crawler.cr"
 
-def test_info(site, bsid)
-  crawler = Spider::CrInfo.new(site, bsid)
+def test_info(site, bsid, span = 2.hours)
+  crawler = Spider::CrInfo.new(site, bsid, cache: true, span: span)
   # crawler.mkdirs!
   puts crawler.extract_info!.to_pretty_json
   puts crawler.extract_stat!.to_pretty_json
@@ -13,7 +13,7 @@ end
 def test_text(site, bsid, csid)
   crawler = Spider::CrText.new(site, bsid, csid)
   crawler.reset_cache(html: false)
-  crawler.mkdirs!
+  # crawler.mkdirs!
   crawler.crawl!(persist: true)
 
   # pp crawler.html
@@ -23,7 +23,7 @@ def test_text(site, bsid, csid)
   crawler
 end
 
-# test_info("jx_la", "156")
+test_info("jx_la", "15000")
 # test_info("nofff", "18288")
 # test_info("rengshu", "181")
 # test_info("xbiquge", "51918")

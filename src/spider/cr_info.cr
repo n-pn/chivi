@@ -7,14 +7,46 @@ require "../kernel/chlist/zh_list"
 require "./cr_core"
 
 class Spider::CrInfo
-  def initialize(@site : String, @bsid : String, save_html = true)
-    html = CrCore.info_html(site, bsid, save: save_html)
+  HTML_DIR = "data/txt-inp"
+
+  def initialize(@site : String, @bsid : String, cache = true, span = 10.hours)
+    file = File.join(HTML_DIR, @site, "infos", "#{@bsid}.html")
+
+    if CrCore.outdated?(file, span)
+      html = CrCore.fetch_html(site_url)
+      File.write(file, html) if cache
+    else
+      html = File.read(file)
+    end
+
     @dom = Myhtml::Parser.new(html)
   end
 
+  SITE_URLS = {
+    "nofff"   => "https://www.nofff.com/%s",
+    "69shu"   => "https://www.69shu.com/%s/",
+    "jx_la"   => "https://www.jx.la/book/%s/",
+    "rengshu" => "http://www.rengshu.com/book/%s",
+    "xbiquge" => "https://www.xbiquge.cc/book/%s/",
+    "hetushu" => "https://www.hetushu.com/book/%s/index.html",
+    "duokan8" => "http://www.duokan8.com/%i_%i/",
+    "paoshu8" => "http://www.paoshu8.com/%i_%i/",
+    "zhwenpg" => "https://novel.zhwenpg.com/b.php?id=%s",
+  }
+
+  def site_url : String
+    url = SITE_URLS[@site]
+    if @site == "duokan8" || @site == "paoshu8"
+      group_id = (@bsid.to_i // 1000).to_s
+      url % [group_id, @bsid]
+    else
+      url % @bsid
+    end
+  end
+
   def extract_info!
-    info = Serial::ZhInfo.new
-    info.crawl_links[@site] = @bsid
+    output = Serial::ZhInfo.new
+    output.crawl_links[@site] = @bsid
 
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
@@ -24,52 +56,52 @@ class Spider::CrInfo
 
         case prop
         when "og:novel:book_name"
-          info.title = text
+          output.title = text
         when "og:novel:author"
-          info.author = text
+          output.author = text
         when "og:description"
-          info.intro = text
+          output.intro = text
         when "og:image"
           text = text.sub("qu.la", "jx.la") if @site == "jx_la"
-          info.cover = text
+          output.cover = text
         when "og:novel:category"
-          info.genre = text
+          output.genre = text
         else
           next
         end
       end
     when "hetushu"
-      info.title = CrCore.dom_text(@dom, ".book_info > h2")
-      info.author = CrCore.dom_text(@dom, ".book_info a:first-child")
-      info.intro = @dom.css(".intro > p").map(&.inner_text).join("\n")
-      info.genre = CrCore.dom_text(@dom, ".book_info > div:nth-of-type(2)").sub("类型：", "").strip
-      info.tags = @dom.css(".tag a").map(&.inner_text).to_a
+      output.title = CrCore.dom_text(@dom, ".book_info > h2")
+      output.author = CrCore.dom_text(@dom, ".book_info a:first-child")
+      output.intro = @dom.css(".intro > p").map(&.inner_text).join("\n")
+      output.genre = CrCore.dom_text(@dom, ".book_info > div:nth-of-type(2)").sub("类型：", "").strip
+      output.tags = @dom.css(".tag a").map(&.inner_text).to_a
       if img = @dom.css(".book_info img").first?
-        info.cover = "https://www.hetushu.com/" + img.attributes["src"].as(String)
+        output.cover = "https://www.hetushu.com/" + img.attributes["src"].as(String)
       end
     when "69shu"
-      info.title = CrCore.dom_text(@dom, ".weizhi > a:nth-child(3)")
-      info.author = CrCore.dom_text(@dom, ".mu_beizhu a[target]")
-      info.genre = CrCore.dom_text(@dom, ".weizhi > a:nth-child(2)")
+      output.title = CrCore.dom_text(@dom, ".weizhi > a:nth-child(3)")
+      output.author = CrCore.dom_text(@dom, ".mu_beizhu a[target]")
+      output.genre = CrCore.dom_text(@dom, ".weizhi > a:nth-child(2)")
     when "zhwenpg"
       node = @dom.css(".cbooksingle").to_a[2]
 
-      info.title = CrCore.dom_text(node, "h2")
-      info.author = CrCore.dom_text(node, "h2 + a > font")
-      info.intro = CrCore.dom_text(node, "tr:nth-of-type(3)")
-      info.cover = "https://novel.zhwenpg.com/image/cover/#{@bsid}.jpg"
+      output.title = CrCore.dom_text(node, "h2")
+      output.author = CrCore.dom_text(node, "h2 + a > font")
+      output.intro = CrCore.dom_text(node, "tr:nth-of-type(3)")
+      output.cover = "https://novel.zhwenpg.com/image/cover/#{@bsid}.jpg"
     else
       raise "Site not supported!"
     end
 
-    info.genre = info.genre.sub("小说", "")
+    output.genre = output.genre.sub("小说", "")
 
-    info
+    output
   end
 
   def extract_stat!(mtime = 0_i64)
-    stat = Serial::ZhStat.new
-    stat.mtime = mtime
+    output = Serial::ZhStat.new
+    output.mtime = mtime
 
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
@@ -81,12 +113,12 @@ class Spider::CrInfo
         when "og:novel:status"
           case text
           when "完成", "完本", "已经完结", "已经完本", "完结"
-            stat.status = 1
+            output.status = 1
           else
-            stat.status = 0
+            output.status = 0
           end
         when "og:novel:update_time"
-          stat.mtime = Serial::ZhStat.parse_time(text)
+          output.mtime = Serial::ZhStat.parse_time(text)
         else
           next
         end
@@ -95,15 +127,15 @@ class Spider::CrInfo
       # pass
     when "69shu"
       time = CrCore.dom_text(@dom, ".mu_beizhu").sub(/.+时间：/m, "")
-      stat.mtime = Serial::ZhStat.parse_time(time)
-      stat.mtime = mtime if stat.mtime < mtime
+      output.mtime = Serial::ZhStat.parse_time(time)
+      output.mtime = mtime if output.mtime < mtime
     when "zhwenpg"
       # pass
     else
       raise "Site not supported!"
     end
 
-    stat
+    output
   end
 
   def extract_list!
