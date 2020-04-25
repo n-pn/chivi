@@ -1,5 +1,5 @@
 time bin/bookdb-mapsite -w 12 -s rengshu -t 4275
-time bin/bookdb-mapsite -w 12 -s hetushu -t 4671
+time bin/bookdb-mapsite -w 12 -s hetushu -t 4692
 time bin/bookdb-mapsite -w 12 -s duokan8 -t 18413
 time bin/bookdb-mapsite -w 12 -s 69shu -t 31135
 time bin/bookdb-mapsite -w 12 -s nofff -t 48522

@@ -124,6 +124,10 @@ class Spider::CrInfo
         end
       end
     when "hetushu"
+      info = @dom.css(".book_info").first
+      if klass = info.attributes["class"]?
+        output.status = klass.includes?("finish") ? 1 : 0
+      end
       # pass
     when "69shu"
       time = CrCore.dom_text(@dom, ".mu_beizhu").sub(/.+时间：/m, "")
