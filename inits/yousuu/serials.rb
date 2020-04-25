@@ -65,7 +65,7 @@ end
 
 # # Prepare book_ids
 
-TOTAL = 212000 # max book_id
+TOTAL = 212100 # max book_id
 book_ids = (1..TOTAL).to_a
 
 if ARGV.include?("shuffle")

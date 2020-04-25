@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=oneshot
 User=nipin
 WorkingDirectory=/home/nipin/web/chivi/
-ExecStart=/home/nipin/.rbenv/shims/ruby tasks/yousuu/serials.rb
+ExecStart=/home/nipin/.rbenv/shims/ruby inits/yousuu/serials.rb
 
 [Install]
 WantedBy=multi-user.target
