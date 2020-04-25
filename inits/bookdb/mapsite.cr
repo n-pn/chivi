@@ -4,27 +4,20 @@ require "colorize"
 require "file_utils"
 require "option_parser"
 
-require "../../src/spider/info_crawler.cr"
-require "../../src/entity/vsite.cr"
+require "../../src/spider/cr_info.cr"
 
 REQUIRE_HTML = ARGV.includes?("require_html")
 
-alias Result = Tuple(String, VSite)
+def fetch_info(channel, site, bsid, label = "1/1") : Void
+  spider = Spider::CrInfo.new(site, bsid, cache: true, span: 6.months)
+  info = spider.extract_info!
 
-def fetch_info(site, bsid, label = "1/1") : Result
-  crawler = InfoCrawler.new(site, bsid)
-  if crawler.cached?(300.days, require_html: REQUIRE_HTML)
-    crawler.load_cached!(slist: false)
-  else
-    crawler.crawl!(persist: true, label: label)
-  end
-
-  info = crawler.sbook
-  {info.label, VSite.new(bsid, info.mtime, info.chaps)}
+  puts "- <#{label.colorize(:blue)}> [#{site}/#{bsid.colorize(:blue)}] {#{info.title.colorize(:blue)}}"
+  channel.send({bsid, info.title, info.author})
 rescue err
-  # crawler.reset_cache
-  puts "- crawl [#{bsid.colorize(:red)}] failed: <#{err.class}> #{err.colorize(:red)}"
-  {"--", VSite.new(bsid)}
+  puts "- <#{label.colorize(:red)}> [#{site}/#{bsid.colorize(:red)}] \
+          ERROR: <#{err.class}> #{err.colorize(:red)}"
+  channel.send({bsid, "", ""})
 end
 
 site = "rengshu"
@@ -49,55 +42,52 @@ OptionParser.parse do |parser|
   end
 end
 
-def mapping(sitemap, result) : Void
-  slug, site = result
-  return if slug == "--"
-
-  if old_site = sitemap[slug]?
-    if old_site.bsid != site.bsid
-      puts "DUP [#{slug.colorize(:blue)}]: <#{old_site} <=> #{site}>"
-    end
-
-    return if old_site.mtime > site.mtime
-  end
-
-  sitemap[slug] = site
-end
-
-range = upto - from + 1
-worker = range if worker > range
-
-puts "CONFIG: { \
+puts "- CONFIG: { \
   site: #{site.colorize(:yellow)}, \
   from: #{from.colorize(:yellow)}, \
   upto: #{upto.colorize(:yellow)}, \
   worker: #{worker.colorize(:yellow)} \
 }"
 
-FileUtils.mkdir_p "data/txt-inp/#{site}/infos"
-FileUtils.mkdir_p "data/txt-tmp/serials/#{site}"
-FileUtils.mkdir_p "data/txt-tmp/chlists/#{site}"
 FileUtils.mkdir_p "data/txt-tmp/sitemap"
 
-out_file = "data/txt-tmp/sitemap/#{site}.json"
+out_file = "data/txt-tmp/sitemap/#{site}.txt"
 
-sitemap = {} of String => VSite
-# if File.exists?(out_file)
-#   sitemap = Hash(String, String).from_json File.read(out_file)
-# end
+alias Result = Tuple(String, String, String)
 
-channel = Channel(Result).new(worker)
+sitemap = Array(Result).new
+indexed = Set(String).new
 
-total = upto - from + 1
-from.upto(upto) do |idx|
-  mapping(sitemap, channel.receive) unless idx - from < worker
-
-  spawn do
-    result = fetch_info(site, idx.to_s, "#{idx - from}/#{total}")
-    channel.send(result)
+if File.exists?(out_file)
+  lines = File.read_lines(out_file)
+  lines.each do |line|
+    next if line.empty?
+    bsid, title, author = line.split("--", 3)
+    sitemap << {bsid, title, author}
+    indexed << bsid
   end
 end
 
-worker.times { mapping(sitemap, channel.receive) }
+queue = [] of String
+from.upto(upto) do |idx|
+  book_id = idx.to_s
+  queue << book_id unless indexed.includes?(book_id)
+end
 
-File.write(out_file, sitemap.to_json)
+puts "- QUEUE: #{queue.size.colorize(:yellow)} entries"
+exit 0 if queue.empty?
+
+worker = queue.size if worker > queue.size
+channel = Channel(Result).new(worker)
+
+queue.each_with_index do |book_id, idx|
+  sitemap << channel.receive unless idx < worker
+
+  spawn do
+    fetch_info(channel, site, book_id, "#{idx + 1}/#{queue.size}")
+  end
+end
+
+worker.times { sitemap << channel.receive }
+
+File.write(out_file, sitemap.map(&.join("--")).join("\n"))

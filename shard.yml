@@ -9,22 +9,22 @@ targets:
     main: src/server.cr
 
   yousuu-combine:
-    main: tasks/yousuu/combine.cr
+    main: inits/yousuu/combine.cr
 
   bookdb-mapsite:
-    main: tasks/bookdb/mapsite.cr
+    main: inits/bookdb/mapsite.cr
 
   bookdb-combine:
-    main: tasks/bookdb/combine.cr
+    main: inits/bookdb/combine.cr
 
   bookdb-chlists:
-    main: tasks/bookdb/chlists.cr
+    main: inits/bookdb/chlists.cr
 
   bookdb-indexes:
-    main: tasks/bookdb/indexes.cr
+    main: inits/bookdb/indexes.cr
 
   download-texts:
-    main: tasks/download-texts.cr
+    main: inits/download-texts.cr
 
 crystal: 0.33.0
 
