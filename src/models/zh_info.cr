@@ -6,9 +6,6 @@ require "json"
 class ZhInfo
   include JSON::Serializable
 
-  # property site = ""
-  # property bsid = ""
-
   property title = ""
   property author = ""
 

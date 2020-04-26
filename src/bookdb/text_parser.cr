@@ -5,29 +5,66 @@ require "file_utils"
 
 require "myhtml"
 
-require "./cr_html"
+require "./parse_util"
 
-class LeechText
-  getter file : String
+class TextParser
+  def self.text_path(site : String, bsid : String, csid : String) : String
+    File.join(DIR, site, "texts", bsid, "#{csid}.html")
+  end
+
+  TEXT_URLS = {
+    "nofff"   => "https://www.nofff.com/%s/%s/",
+    "69shu"   => "https://www.69shu.com/txt/%s/%s",
+    "jx_la"   => "https://www.jx.la/book/%s/%s.html",
+    "rengshu" => "http://www.rengshu.com/book/%s/%s",
+    "xbiquge" => "https://www.xbiquge.cc/book/%s/%s.html",
+    "hetushu" => "https://www.hetushu.com/book/%s/%s.html",
+    "duokan8" => "http://www.duokan8.com/%i_%i/%s.html",
+    "paoshu8" => "http://www.paoshu8.com/%i_%i/%s.html",
+    "zhwenpg" => "https://novel.zhwenpg.com/r.php?id=%s",
+  }
+
+  def self.text_url(site : String, bsid : String, csid : String) : String
+    url = TEXT_URLS[site]
+    case site
+    when "zhwenpg"
+      url % csid
+    when "duokan8", "paoshu8"
+      group = (bsid.to_i // 1000).to_s
+      url % [group, bsid, csid]
+    else
+      url % [bsid, csid]
+    end
+  end
+
+  HTML_DIR = "data/txt-inp"
+
+  def self.html_dir(site : String, bsid : String)
+    File.join(HTML_DIR, site, "texts", bsid)
+  end
+
+  def self.html_file(site : String, bsid : String, csid : String)
+    File.join(html_dir(site, bsid), "#{csid}.html")
+  end
+
+  def self.load_dom(site : String, bsid : String, csid : String, expiry = 10.hours, frozen = true)
+    file = html_file(site, bsid, csid)
+
+    if ParseUtil.outdated?(file, expiry)
+      url = text_url(site, bsid, csid)
+      html = ParseUtil.fetch_html(url)
+      File.write(file, html) if frozen
+    else
+      html = File.read(file)
+    end
+
+    new(html, site)
+  end
 
   getter title : String
   getter paras : Array(String)
 
-  @@dir = File.join("data", "txt-tmp", "chtexts")
-
-  def self.dir
-    @@dir
-  end
-
-  def self.dir=(@@dir)
-  end
-
-  def self.file_path(site, bsid, csid)
-    File.join(dir, site, bsid, "#{csid}.txt")
-  end
-
-  def initialize(@site : String, @bsid : String, @csid : String, @title : String = "")
-    @file = CrText.file_path(site, bsid, csid)
+  def initialize(@site : String, @title = "")
     @paras = [] of String
   end
 

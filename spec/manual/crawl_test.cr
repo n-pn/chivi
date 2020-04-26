@@ -1,17 +1,16 @@
-require "../../src/crawls/extract_info.cr"
+require "../../src/parser/info_parser.cr"
 
 # require "../../src/spider/text_crawler.cr"
 
 def test_info(site, bsid, expiry = 6.hours) : Void
-  dom = ExtractInfo.load_dom(site, bsid, expiry: expiry, frozen: true)
+  parser = InfoParser.load!(site, bsid, expiry: expiry, frozen: true)
 
-  # worker.mkdirs!
-  puts ExtractInfo.extract_info!(dom, site).to_pretty_json
-  puts ExtractInfo.extract_list!(dom, site).first(10).to_pretty_json
+  puts parser.parse_info!.to_pretty_json
+  puts parser.parse_list!.first(10).to_pretty_json
 end
 
 def test_text(site, bsid, csid)
-  worker = LeechText.new(site, bsid, csid)
+  worker = TextParser.new(site, bsid, csid)
   worker.reset_cache(html: false)
   # worker.mkdirs!
   worker.crawl!(persist: true)
@@ -23,15 +22,15 @@ def test_text(site, bsid, csid)
   worker
 end
 
-# test_info("jx_la", "15000")
-# test_info("nofff", "18288")
-# test_info("rengshu", "181")
-# test_info("xbiquge", "51918")
-# test_info("hetushu", "5")
-# test_info("hetushu", "4420")
-# test_info("duokan8", "6293")
-# test_info("paoshu8", "1986")
-# test_info("69shu", "30062")
+test_info("jx_la", "15000")
+test_info("nofff", "18288")
+test_info("rengshu", "181")
+test_info("xbiquge", "51918")
+test_info("hetushu", "5")
+test_info("hetushu", "4420")
+test_info("duokan8", "6293")
+test_info("paoshu8", "1986")
+test_info("69shu", "30062")
 test_info("zhwenpg", "junthn")
 
 # test_text("jx_la", "7", "3666")

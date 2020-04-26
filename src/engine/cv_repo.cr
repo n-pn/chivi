@@ -76,12 +76,12 @@ class CvRepo
   end
 
   getter system : List
-  getter common : List
+  getter shared : List
   getter unique : List
 
   def initialize(@dir : String = ".dic")
     @system = List.new(@dir)
-    @common = List.new(File.join(@dir, "common"))
+    @shared = List.new(File.join(@dir, "shared"))
     @unique = List.new(File.join(@dir, "unique"))
   end
 
@@ -114,15 +114,15 @@ class CvRepo
   end
 
   def generic(user : String = "local")
-    @common["generic", user]
+    @shared["generic", user]
   end
 
   def combine(user : String = "local")
-    @common["combine", user]
+    @shared["combine", user]
   end
 
   def suggest(user : String = "local")
-    @common["suggest", user]
+    @shared["suggest", user]
   end
 
   def unique(name : String, user = "local")

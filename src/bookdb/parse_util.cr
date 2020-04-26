@@ -4,42 +4,7 @@ require "http/client"
 
 require "myhtml"
 
-module LeechUtil
-  DIR = "data/txt-inp"
-
-  TEXT_URLS = {
-    "nofff"   => "https://www.nofff.com/%s/%s/",
-    "69shu"   => "https://www.69shu.com/txt/%s/%s",
-    "jx_la"   => "https://www.jx.la/book/%s/%s.html",
-    "rengshu" => "http://www.rengshu.com/book/%s/%s",
-    "xbiquge" => "https://www.xbiquge.cc/book/%s/%s.html",
-    "hetushu" => "https://www.hetushu.com/book/%s/%s.html",
-    "duokan8" => "http://www.duokan8.com/%i_%i/%s.html",
-    "paoshu8" => "http://www.paoshu8.com/%i_%i/%s.html",
-    "zhwenpg" => "https://novel.zhwenpg.com/r.php?id=%s",
-  }
-
-  # def text_mkdir(site : String, csid : String)
-  #   FileUtils.mkdir_p(File.join(DIR, site, "texts", csid))
-  # end
-
-  def self.text_path(site : String, bsid : String, csid : String) : String
-    File.join(DIR, site, "texts", bsid, "#{csid}.html")
-  end
-
-  def self.text_url(site : String, bsid : String, csid : String) : String
-    url = TEXT_URLS[site]
-    case site
-    when "zhwenpg"
-      url % csid
-    when "duokan8", "paoshu8"
-      group = (bsid.to_i // 1000).to_s
-      url % [group, bsid, csid]
-    else
-      url % [bsid, csid]
-    end
-  end
-
+module ParseUtil
   # def text_html(site : String, bsid : String, csid : String, save = false) : String
   #   url = text_url(site, bsid, csid)
   #   file = text_path(site, bsid, csid)
@@ -83,7 +48,12 @@ module LeechUtil
     mtime < Time.utc - span
   end
 
-  def self.dom_text(dom, selector)
-    dom.css(selector).first.inner_text.strip
+  def self.inner_text(dom, css : String)
+    dom.css(css).first.inner_text.strip
+  end
+
+  def self.meta_content(dom, css : String)
+    node = dom.css("meta[property=\"#{css}\"]").first
+    node.attributes["content"]
   end
 end
