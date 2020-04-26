@@ -4,7 +4,7 @@ require "./cv_dict"
 require "./cv_util"
 require "./cv_node"
 
-module Engine::CvCore
+module CvCore
   extend self
 
   alias Dicts = Array(CvDict)
@@ -62,6 +62,7 @@ module Engine::CvCore
     when "节" then "Tiết #{int}"
     when "幕" then "Màn #{int}"
     when "回" then "Hồi #{int}"
+    when "折" then "Chiết #{int}"
     else          "Chương #{int}"
     end
   end

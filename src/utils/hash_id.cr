@@ -1,16 +1,14 @@
 # require "./vp_util/*"
 require "digest"
 
-module VpUtil
-  extend self
-
-  def hash_id(str : String, len = 10)
+module Utils
+  def self.hash_id(str : String, len = 10)
     digest = Digest::SHA1.hexdigest(str)
     number = decode16(digest[0...len])
     encode32(number)
   end
 
-  private def decode16(str : String)
+  private def self.decode16(str : String)
     int = 0_i64
     str.each_char do |char|
       int = int * 16 + lookup(char)
@@ -19,7 +17,7 @@ module VpUtil
     int
   end
 
-  private def lookup(chr : Char)
+  private def self.lookup(chr : Char)
     case chr
     when '0' then 0
     when '1' then 1
@@ -45,7 +43,7 @@ module VpUtil
          'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's',
          't', 'v', 'w', 'x', 'y', 'z'}
 
-  private def encode32(int : Int64) : String
+  private def self.encode32(int : Int64) : String
     String.build do |io|
       while int >= 32
         io << B32[int % 32]
@@ -56,4 +54,4 @@ module VpUtil
   end
 end
 
-# puts VpUtil.hash_id("dfsfsdfsd3453452524352523434fsdfs")
+# puts Utils.hash_id("dfsfsdfsd3453452524352523434fsdfs")

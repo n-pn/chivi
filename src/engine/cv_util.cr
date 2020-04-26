@@ -1,6 +1,6 @@
 require "./cv_util/*"
 
-module Engine::CvUtil
+module CvUtil
   # capitalize all words
   def titleize(input : String)
     input.split(" ").map { |x| capitalize(x) }.join(" ")

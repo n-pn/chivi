@@ -1,26 +1,26 @@
-require "../../src/spider/cr_info.cr"
+require "../../src/crawls/extract_info.cr"
 
 # require "../../src/spider/text_crawler.cr"
 
-def test_info(site, bsid, span = 2.hours)
-  crawler = Spider::CrInfo.new(site, bsid, cache: true, span: span)
-  # crawler.mkdirs!
-  puts crawler.extract_info!.to_pretty_json
-  puts crawler.extract_stat!.to_pretty_json
-  puts crawler.extract_list!.first(8).to_pretty_json
+def test_info(site, bsid, expiry = 6.hours) : Void
+  dom = ExtractInfo.load_dom(site, bsid, expiry: expiry, frozen: true)
+
+  # worker.mkdirs!
+  puts ExtractInfo.extract_info!(dom, site).to_pretty_json
+  puts ExtractInfo.extract_list!(dom, site).first(10).to_pretty_json
 end
 
 def test_text(site, bsid, csid)
-  crawler = Spider::CrText.new(site, bsid, csid)
-  crawler.reset_cache(html: false)
-  # crawler.mkdirs!
-  crawler.crawl!(persist: true)
+  worker = LeechText.new(site, bsid, csid)
+  worker.reset_cache(html: false)
+  # worker.mkdirs!
+  worker.crawl!(persist: true)
 
-  # pp crawler.html
-  pp crawler.title
-  pp crawler.paras
+  # pp worker.html
+  pp worker.title
+  pp worker.paras
 
-  crawler
+  worker
 end
 
 # test_info("jx_la", "15000")
@@ -32,7 +32,7 @@ end
 # test_info("duokan8", "6293")
 # test_info("paoshu8", "1986")
 # test_info("69shu", "30062")
-# test_info("zhwenpg", "duny4q")
+test_info("zhwenpg", "junthn")
 
 # test_text("jx_la", "7", "3666")
 # test_text("jx_la", "75722", "4089610")

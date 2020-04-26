@@ -4,7 +4,7 @@ require "http/client"
 
 require "myhtml"
 
-module Spider::CrCore
+module LeechUtil
   DIR = "data/txt-inp"
 
   TEXT_URLS = {
@@ -23,11 +23,11 @@ module Spider::CrCore
   #   FileUtils.mkdir_p(File.join(DIR, site, "texts", csid))
   # end
 
-  def text_path(site : String, bsid : String, csid : String) : String
+  def self.text_path(site : String, bsid : String, csid : String) : String
     File.join(DIR, site, "texts", bsid, "#{csid}.html")
   end
 
-  def text_url(site : String, bsid : String, csid : String) : String
+  def self.text_url(site : String, bsid : String, csid : String) : String
     url = TEXT_URLS[site]
     case site
     when "zhwenpg"
@@ -46,11 +46,11 @@ module Spider::CrCore
   #   fetch_html(url, file, save: save)
   # end
 
-  def fetch_html(url : String) : String
+  def self.fetch_html(url : String) : String
     do_fetch_html(url, tls_for(url), encoding_for(url))
   end
 
-  def do_fetch_html(url : String, tls, encoding : String) : String
+  def self.do_fetch_html(url : String, tls, encoding : String) : String
     HTTP::Client.get(url, tls: tls) do |res|
       return "404 Not Found!" if res.status_code == 404
 
@@ -63,7 +63,7 @@ module Spider::CrCore
     do_fetch_html(url, tls, encoding)
   end
 
-  def encoding_for(url : String)
+  def self.encoding_for(url : String)
     {"jx.la", "hetushu", "paoshu8", "zhwenpg"}.each do |site|
       return "UTF-8" if url.includes?(site)
     end
@@ -73,19 +73,17 @@ module Spider::CrCore
 
   TLS = OpenSSL::SSL::Context::Client.insecure
 
-  def tls_for(url : String)
+  def self.tls_for(url : String)
     url.starts_with?("https") ? TLS : nil
   end
 
-  def outdated?(file : String, span = 3.hours)
+  def self.outdated?(file : String, span = 3.hours)
     return true unless File.exists?(file)
     mtime = File.info(file).modification_time
     mtime < Time.utc - span
   end
 
-  def dom_text(dom, selector)
+  def self.dom_text(dom, selector)
     dom.css(selector).first.inner_text.strip
   end
-
-  extend self
 end

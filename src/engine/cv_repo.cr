@@ -2,7 +2,7 @@ require "colorize"
 require "./cv_dict"
 
 # Loading dicts
-class Engine::CvRepo
+class CvRepo
   class List
     alias CvMap = Hash(String, CvDict)
 

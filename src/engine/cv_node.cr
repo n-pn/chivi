@@ -1,4 +1,4 @@
-class Engine::CvNode
+class CvNode
   property key : String
   property val : String
   property dic = 0
@@ -36,7 +36,7 @@ class Engine::CvNode
   end
 end
 
-class Engine::CvNodes < Array(Engine::CvNode)
+class CvNodes < Array(CvNode)
   def keys
     map(&.key)
   end

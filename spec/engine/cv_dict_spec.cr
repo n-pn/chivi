@@ -1,9 +1,7 @@
 require "../spec_helper"
 require "../../src/engine/cv_dict"
 
-include Engine
-
-describe Engine::CvDict do
+describe CvDict do
   # TODO:
   # - Test dict preload and reload
 

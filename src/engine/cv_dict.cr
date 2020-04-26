@@ -2,7 +2,7 @@ require "time"
 require "json"
 require "colorize"
 
-class Engine::CvDict
+class CvDict
   EPOCH = Time.utc(2020, 1, 1)
 
   SEP_0 = "ǁ"

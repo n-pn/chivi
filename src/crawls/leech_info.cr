@@ -1,19 +1,39 @@
 require "../engine/cv_util"
+require "../utils/parse_time"
 
-require "../kernel/serial/zh_info"
-require "../kernel/serial/zh_stat"
-require "../kernel/chlist/zh_list"
+require "../models/zh_info"
+require "../models/zh_chap"
 
-require "./cr_core"
+require "./leech_util"
 
-class Spider::CrInfo
+alias ZhList = Array(ZhChap)
+
+class Volume
+  property label
+  property chaps : ZhList
+
+  def initialize(@label = "正文", @chaps = [] of ZhChap)
+  end
+
+  INDEX_RE = /([零〇一二两三四五六七八九十百千]+|\d+)[集卷]/
+
+  def index
+    if match = INDEX_RE.match(@label)
+      CvUtil.hanzi_int(match[1])
+    else
+      0
+    end
+  end
+end
+
+class LeechInfo
   HTML_DIR = "data/txt-inp"
 
   def initialize(@site : String, @bsid : String, cache = true, span = 10.hours)
     file = File.join(HTML_DIR, @site, "infos", "#{@bsid}.html")
 
-    if CrCore.outdated?(file, span)
-      html = CrCore.fetch_html(site_url)
+    if LeechUtil.outdated?(file, span)
+      html = LeechUtil.fetch_html(site_url)
       File.write(file, html) if cache
     else
       html = File.read(file)
@@ -45,8 +65,7 @@ class Spider::CrInfo
   end
 
   def extract_info!
-    output = Serial::ZhInfo.new
-    output.crawl_links[@site] = @bsid
+    output = ZhInfo.new
 
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
@@ -66,29 +85,48 @@ class Spider::CrInfo
           output.cover = text
         when "og:novel:category"
           output.genre = text
+        when "og:novel:status"
+          case text
+          when "完成", "完本", "已经完结", "已经完本", "完结"
+            output.state = 1
+          else
+            output.state = 0
+          end
+        when "og:novel:update_time"
+          output.mtime = Utils.parse_time(text)
         else
           next
         end
       end
     when "hetushu"
-      output.title = CrCore.dom_text(@dom, ".book_info > h2")
-      output.author = CrCore.dom_text(@dom, ".book_info a:first-child")
+      info_node = @dom.css(".book_info").first
+
+      output.title = LeechUtil.dom_text(info_node, "h2")
+      output.author = LeechUtil.dom_text(info_node, "a:first-child")
+
       output.intro = @dom.css(".intro > p").map(&.inner_text).join("\n")
-      output.genre = CrCore.dom_text(@dom, ".book_info > div:nth-of-type(2)").sub("类型：", "").strip
+      output.genre = LeechUtil.dom_text(info_node, "div:nth-of-type(2)").sub("类型：", "").strip
       output.tags = @dom.css(".tag a").map(&.inner_text).to_a
-      if img = @dom.css(".book_info img").first?
-        output.cover = "https://www.hetushu.com/" + img.attributes["src"].as(String)
+
+      if img_node = info_node.css("img").first?
+        url = img_node.attributes["src"]?
+        output.cover = "https://www.hetushu.com/#{url}"
       end
+
+      output.state = 1 if info_node.attributes["class"].includes?("finish")
     when "69shu"
-      output.title = CrCore.dom_text(@dom, ".weizhi > a:nth-child(3)")
-      output.author = CrCore.dom_text(@dom, ".mu_beizhu a[target]")
-      output.genre = CrCore.dom_text(@dom, ".weizhi > a:nth-child(2)")
+      output.title = LeechUtil.dom_text(@dom, ".weizhi > a:nth-child(3)")
+      output.author = LeechUtil.dom_text(@dom, ".mu_beizhu a[target]")
+      output.genre = LeechUtil.dom_text(@dom, ".weizhi > a:nth-child(2)")
+
+      mtime = LeechUtil.dom_text(@dom, ".mu_beizhu").sub(/.+时间：/m, "")
+      output.mtime = Utils.parse_time(mtime)
     when "zhwenpg"
       node = @dom.css(".cbooksingle").to_a[2]
 
-      output.title = CrCore.dom_text(node, "h2")
-      output.author = CrCore.dom_text(node, "h2 + a > font")
-      output.intro = CrCore.dom_text(node, "tr:nth-of-type(3)")
+      output.title = LeechUtil.dom_text(node, "h2")
+      output.author = LeechUtil.dom_text(node, "h2 + a > font")
+      output.intro = LeechUtil.dom_text(node, "tr:nth-of-type(3)")
       output.cover = "https://novel.zhwenpg.com/image/cover/#{@bsid}.jpg"
     else
       raise "Site not supported!"
@@ -99,51 +137,8 @@ class Spider::CrInfo
     output
   end
 
-  def extract_stat!(mtime = 0_i64)
-    output = Serial::ZhStat.new
-    output.mtime = mtime
-
-    case @site
-    when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
-      @dom.css("meta[property]").each do |node|
-        prop = node.attributes["property"]
-        text = node.attributes["content"]
-
-        case prop
-        when "og:novel:status"
-          case text
-          when "完成", "完本", "已经完结", "已经完本", "完结"
-            output.status = 1
-          else
-            output.status = 0
-          end
-        when "og:novel:update_time"
-          output.mtime = Serial::ZhStat.parse_time(text)
-        else
-          next
-        end
-      end
-    when "hetushu"
-      info = @dom.css(".book_info").first
-      if klass = info.attributes["class"]?
-        output.status = klass.includes?("finish") ? 1 : 0
-      end
-      # pass
-    when "69shu"
-      time = CrCore.dom_text(@dom, ".mu_beizhu").sub(/.+时间：/m, "")
-      output.mtime = Serial::ZhStat.parse_time(time)
-      output.mtime = mtime if output.mtime < mtime
-    when "zhwenpg"
-      # pass
-    else
-      raise "Site not supported!"
-    end
-
-    output
-  end
-
   def extract_list!
-    output = Chlist::ZhList.new(@site, @bsid)
+    output = ZhList.new
 
     case @site
     when "duokan8"
@@ -152,12 +147,12 @@ class Spider::CrInfo
           csid = File.basename(href, ".html")
           title = link.inner_text
 
-          output << Chlist::ZhChap.new(csid, title)
+          output << ZhChap.new(csid, title)
         end
       end
     when "69shu"
       volumes = @dom.css(".mu_contain").to_a.map do |node|
-        volume = Chlist::Volume.new
+        volume = Volume.new
 
         node.css("a").each do |link|
           if href = link.attributes["href"]?
@@ -165,7 +160,7 @@ class Spider::CrInfo
             title = link.inner_text
             next if title.starts_with?("我要报错！")
 
-            volume.chaps << Chlist::ZhChap.new(csid, title)
+            volume.chaps << ZhChap.new(csid, title)
           end
         end
 
@@ -175,16 +170,17 @@ class Spider::CrInfo
       volumes.shift if volumes.size > 1
       volumes.each { |volume| output.concat(volume.chaps) }
     when "zhwenpg"
-      latest = CrCore.dom_text(@dom, ".fontchap")
+      latest_chap = LeechUtil.dom_text(@dom, ".fontchap")
+      latest_title = Utils.clean_title(latest_chap)
 
       @dom.css("#dulist a").each do |link|
         if href = link.attributes["href"]?
           csid = href.sub("r.php?id=", "")
-          output << Chlist::ZhChap.new(csid, link.inner_text)
+          output << ZhChap.new(csid, link.inner_text)
         end
       end
 
-      output.list.reverse! if latest.includes?(output.first.title)
+      output.reverse! if latest_title.includes?(output.first.title)
     when "jx_la", "nofff", "rengshu", "xbiquge", "paoshu8"
       extract_volumes(output, "#list dl")
     when "hetushu"
@@ -196,15 +192,15 @@ class Spider::CrInfo
     output
   end
 
-  private def extract_volumes(output, selector) : Chlist::ZhList
-    volumes = [] of Chlist::Volume
+  private def extract_volumes(output, selector) : Void
+    volumes = [] of Volume
 
     nodes = @dom.css(selector).first.children
 
     nodes.each do |node|
       if node.tag_sym == :dt
         label = node.inner_text.gsub(/《.*》/, "").strip
-        volumes << Chlist::Volume.new(label)
+        volumes << Volume.new(label)
       elsif node.tag_sym == :dd
         link = node.css("a").first?
         next unless link
@@ -213,8 +209,8 @@ class Spider::CrInfo
           csid = File.basename(href, ".html")
           title = link.inner_text
 
-          volumes << Chlist::Volume.new if volumes.empty?
-          volumes.last.chaps << Chlist::ZhChap.new(csid, title, volumes.last.label)
+          volumes << Volume.new if volumes.empty?
+          volumes.last.chaps << ZhChap.new(csid, title, volumes.last.label)
         end
       end
     end
@@ -228,7 +224,7 @@ class Spider::CrInfo
         if volume.label == "作品相关"
           {-1, 0}
         else
-          index = Engine::CvUtil.hanzi_int(volume.index)
+          index = volume.index
           order += 1 if index == 0
           {order, index}
         end
@@ -236,7 +232,5 @@ class Spider::CrInfo
     end
 
     volumes.each { |volume| output.concat(volume.chaps) }
-
-    output
   end
 end

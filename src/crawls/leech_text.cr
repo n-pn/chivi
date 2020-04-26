@@ -7,7 +7,7 @@ require "myhtml"
 
 require "./cr_html"
 
-class Spider::CrText
+class LeechText
   getter file : String
 
   getter title : String

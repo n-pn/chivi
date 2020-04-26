@@ -6,15 +6,15 @@ module Engine
   @@repo = CvRepo.new("data/dic-out")
 
   def hanviet(input : String, apply_cap = false)
-    Chivi.cv_lit(@@repo.hanviet, input, apply_cap: apply_cap)
+    CvCore.cv_lit(@@repo.hanviet, input, apply_cap: apply_cap)
   end
 
   def pinyin(input : String, apply_cap = false)
-    Chivi.cv_lit(@@repo.pinyin, input, apply_cap: apply_cap)
+    CvCore.cv_lit(@@repo.pinyin, input, apply_cap: apply_cap)
   end
 
   def tradsim(input : String)
-    Chivi.cv_raw(@@repo.tradsim, input)
+    CvCore.cv_raw(@@repo.tradsim, input)
   end
 
   def translate(input : String, title : Bool, book : String? = nil, user = "local")
@@ -27,7 +27,7 @@ module Engine
 
   def convert(input : String, title = false, book : String? = nil, user = "local")
     dicts = @@repo.for_convert(book, user)
-    title ? Chivi.cv_title(dicts, input) : Chivi.cv_plain(dicts, input)
+    title ? CvCore.cv_title(dicts, input) : CvCore.cv_plain(dicts, input)
   end
 
   def convert(lines : Array(String), mode : Symbol, book : String? = nil, user = "local")
@@ -35,12 +35,12 @@ module Engine
 
     case mode
     when :title
-      lines.map { |line| Chivi.cv_title(dicts, line) }
+      lines.map { |line| CvCore.cv_title(dicts, line) }
     when :plain
-      lines.map { |line| Chivi.cv_plain(dicts, line) }
+      lines.map { |line| CvCore.cv_plain(dicts, line) }
     else # :mixed
       lines.map_with_index do |line, idx|
-        idx == 0 ? Chivi.cv_title(dicts, line) : Chivi.cv_plain(dicts, line)
+        idx == 0 ? CvCore.cv_title(dicts, line) : CvCore.cv_plain(dicts, line)
       end
     end
   end
