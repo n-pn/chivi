@@ -27,7 +27,7 @@ end
 # test_info("nofff", "18288")
 # test_info("rengshu", "181")
 # test_info("xbiquge", "51918")
-test_info("hetushu", "5")
+# test_info("hetushu", "5")
 # test_info("hetushu", "4420")
 # test_info("duokan8", "6293")
 # test_info("paoshu8", "1986")
