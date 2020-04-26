@@ -3,7 +3,7 @@ require "json"
 require "./schap"
 require "./vtran"
 
-class VChap
+class VpChap
   include JSON::Serializable
 
   property csid = ""

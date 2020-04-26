@@ -7,39 +7,35 @@ require "http/client"
 
 require "../engine"
 
-require "./sbook"
-require "./ybook"
-require "./vsite"
-require "./vtran"
-
-class VBook
+class VpBook
   include JSON::Serializable
 
-  property label = VTran.new
-  property title = VTran.new
-  property author = VTran.new
-  property genre = VTran.new
-  property tags = Array(VTran).new
+  property slug = ""
 
-  property intro_zh = ""
-  property intro_vi = ""
+  property title = ""
+  property author = ""
 
-  property cover_urls = [] of String
-  property cover_file = "blank.png"
+  property intro = ""
+  property cover = ""
 
-  property status = 0
-  property hidden = 0
+  property genre = ""
+  property tags = [] of String
 
-  property votes = 0
-  property score = 0_f64
-  property tally = 0_f64
-  property mtime = 0_i64
+  # property state = 0
+  # property mtime = 0_i64
 
-  property word_count = 0
-  property review_count = 0
+  # property hidden = 0
 
-  property yousuu_bids = [] of Int32
-  property source_urls = [] of String
+  # property votes = 0
+  # property score = 0_f64
+  # property tally = 0_f64
+  # property mtime = 0_i64
+
+  # property word_count = 0
+  # property review_count = 0
+
+  # property yousuu_bids = [] of Int32
+  # property source_urls = [] of String
 
   property scrap_sites = {} of String => VSite
   property prefer_site = ""

@@ -15,8 +15,8 @@ module Utils
   end
 
   TITLE_RE_0 = /^\d+\.\s*第/
-  TITLE_RE_1 = /^第?([#{NUMBERS}\d]+)([章节幕回折])[、：,.:\s](.*)$/
-  TITLE_RE_2 = /^([#{NUMBERS}\d]+)[、：,.:\s](.+)$/
+  TITLE_RE_1 = /^第?([#{NUMBERS}\d]+)([章节幕回折])[、：,.:\s]?(.*)$/
+  TITLE_RE_2 = /^([#{NUMBERS}\d]+)[、：,.:\s]?(.*)$/
   TITLE_RE_3 = /^（(\p{N}+)）(.*)$/
 
   def self.fix_title(title)

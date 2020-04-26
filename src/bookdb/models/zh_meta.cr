@@ -14,6 +14,6 @@ class ZhMeta
   # property chap_count = 0
   # property word_count = 0
 
-  def initialize(@hash)
+  def initialize(@hash : String)
   end
 end
