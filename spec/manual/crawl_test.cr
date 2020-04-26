@@ -1,5 +1,5 @@
-require "../../src/bookdb/info_parser.cr"
-require "../../src/bookdb/text_parser.cr"
+require "../../src/crawls/info_parser.cr"
+require "../../src/crawls/text_parser.cr"
 
 def test_info(site, bsid, expiry = 6.hours) : Void
   parser = InfoParser.load(site, bsid, expiry: expiry, frozen: true)
