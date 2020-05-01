@@ -4,7 +4,10 @@ require "file_utils"
 
 require "../../src/crawls/yousuu_info"
 
-files = Dir.glob("data/inits/txt-inp/yousuu/infos/*.json")
+files = Dir.glob("data/inits/txt-inp/yousuu/infos/*.json").sort_by do |file|
+  File.basename(file, ".json").to_i
+end
+
 puts "- input: #{files.size} entries".colorize(:blue)
 
 INFO_DIR = File.join("data", "appcv", "zhinfos", "yousuu")
@@ -23,20 +26,24 @@ files.each do |file|
     info = parser.get_info!
     next if info.title.empty? || info.author.empty?
 
+    # info_dir = File.join(INFO_DIR, info.hash)
+    # FileUtils.mkdir_p(info_dir)
+
     info_file = File.join(INFO_DIR, "#{info.bsid}.json")
     File.write(info_file, info.to_pretty_json)
 
     if mapped = sitemap[info.hash]?
       # puts info.label
-      next if mapped[:mtime] < info.mtime
+      next if mapped[:mtime] >= info.mtime
     end
 
     special << info.title if info.title =~ /\(.+\)$/
-    sitemap[info.hash] = {bsid: info.bsid, title: info.title, author: info.author, mtime: info.mtime}
-
-    # info_dir = File.join(INFO_DIR, info.hash)
-    # FileUtils.mkdir_p(info_dir)
-
+    sitemap[info.hash] = {
+      bsid:   info.bsid,
+      title:  info.title,
+      author: info.author,
+      mtime:  info.mtime,
+    }
     stat = parser.get_stat!
     next if stat.score == 0
 

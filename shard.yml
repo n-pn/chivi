@@ -11,8 +11,8 @@ targets:
   map-yousuu:
     main: inits/bookdb/map-yousuu.cr
 
-  map-extras:
-    main: inits/bookdb/map-extras.cr
+  map-crawls:
+    main: inits/bookdb/map-crawls.cr
 
   bookdb-combine:
     main: inits/bookdb/combine.cr

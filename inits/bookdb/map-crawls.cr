@@ -9,15 +9,18 @@ require "../../src/crawls/info_parser.cr"
 REQUIRE_HTML = ARGV.includes?("require_html")
 
 def fetch_info(channel, site, bsid, label = "1/1") : Void
-  crawls = Spider::CrInfo.new(site, bsid, cache: true, span: 6.months)
-  info = crawls.extract_info!
+  parser = InfoParser.load(site, bsid, expiry: 60.days, frozen: true)
 
-  puts "- <#{label.colorize(:blue)}> [#{site}/#{bsid.colorize(:blue)}] {#{info.title.colorize(:blue)}}"
-  channel.send({bsid, info.title, info.author})
+  infos = parser.get_infos!
+  info_file = File.join("data", "appcv", "zhinfos", site, "#{bsid}.json")
+  File.write(info_file, infos.to_pretty_json)
+
+  puts "- <#{label.colorize(:blue)}> [#{infos.label.colorize(:blue)}]"
+  channel.send(infos)
 rescue err
   puts "- <#{label.colorize(:red)}> [#{site}/#{bsid.colorize(:red)}] \
           ERROR: <#{err.class}> #{err.colorize(:red)}"
-  channel.send({bsid, "", ""})
+  channel.send(nil)
 end
 
 site = "rengshu"
@@ -30,7 +33,6 @@ OptionParser.parse do |parser|
   parser.on("-h", "--help", "Show this help") { puts parser }
 
   parser.on("-s SITE", "--site=SITE", "Site") { |x| site = x }
-  parser.on("-f FROM", "--from=FROM", "From") { |x| from = x.to_i }
   parser.on("-t UPTO", "--upto=UPTO", "Upto") { |x| upto = x.to_i }
 
   parser.on("-w WORKER", "--worker=WORKER", "Worker") { |x| worker = x.to_i }
@@ -44,50 +46,44 @@ end
 
 puts "- CONFIG: { \
   site: #{site.colorize(:yellow)}, \
-  from: #{from.colorize(:yellow)}, \
   upto: #{upto.colorize(:yellow)}, \
   worker: #{worker.colorize(:yellow)} \
 }"
 
-FileUtils.mkdir_p "data/txt-tmp/sitemap"
+FileUtils.mkdir_p(File.join("data", "appcv", "zhinfos", site))
+FileUtils.mkdir_p(File.join("data", "appcv", "zhchaps", site))
 
-out_file = "data/txt-tmp/sitemap/#{site}.txt"
+alias Mapping = NamedTuple(bsid: String, title: String, author: String, mtime: Int64)
 
-alias Result = Tuple(String, String, String)
+infos = [] of ZhInfo?
 
-sitemap = Array(Result).new
-indexed = Set(String).new
+channel = Channel(ZhInfo?).new(worker)
 
-if File.exists?(out_file)
-  lines = File.read_lines(out_file)
-  lines.each do |line|
-    next if line.empty?
-    bsid, title, author = line.split("--", 3)
-    sitemap << {bsid, title, author}
-    indexed << bsid
-  end
-end
-
-queue = [] of String
-from.upto(upto) do |idx|
-  book_id = idx.to_s
-  queue << book_id unless indexed.includes?(book_id)
-end
-
-puts "- QUEUE: #{queue.size.colorize(:yellow)} entries"
-exit 0 if queue.empty?
-
-worker = queue.size if worker > queue.size
-channel = Channel(Result).new(worker)
-
-queue.each_with_index do |book_id, idx|
-  sitemap << channel.receive unless idx < worker
+1.upto(upto).each_with_index do |bsid, idx|
+  infos << channel.receive unless idx < worker
 
   spawn do
-    fetch_info(channel, site, book_id, "#{idx + 1}/#{queue.size}")
+    fetch_info(channel, site, bsid.to_s, "#{idx + 1}/#{upto}")
   end
 end
 
-worker.times { sitemap << channel.receive }
+worker.times { infos << channel.receive }
 
-File.write(out_file, sitemap.map(&.join("--")).join("\n"))
+sitemap = Hash(String, Mapping).new
+
+infos.each do |info|
+  next unless info
+  if mapped = sitemap[info.hash]?
+    next if mapped[:mtime] >= info.mtime
+  end
+
+  sitemap[info.hash] = {
+    bsid:   info.bsid,
+    title:  info.title,
+    author: info.author,
+    mtime:  info.mtime,
+  }
+end
+
+map_file = "data/appcv/sitemap/#{site}.json"
+File.write(map_file, sitemap.to_pretty_json)
