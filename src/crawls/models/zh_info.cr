@@ -31,6 +31,24 @@ class ZhInfo
     Utils.hash_id(label)
   end
 
+  def title=(title : String)
+    @title = title.sub(/\(.+\)$/, "").strip
+  end
+
+  def author=(author : String)
+    @author = author.sub(/\(.+\)$/, "").sub(".QD", "").strip
+  end
+
+  def genre=(genre : String)
+    @genre = genre.strip
+  end
+
+  def tags=(tags : Array(String))
+    @tags = tags.reject do |tag|
+      tag == @genre || tag == @title || tag == @author
+    end
+  end
+
   def intro=(intro : String)
     @intro = intro.tr("　 ", " ")
       .split(/\s{2,}|\n+/)

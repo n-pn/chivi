@@ -6,17 +6,11 @@ require "option_parser"
 
 require "../../src/crawls/info_parser.cr"
 
-REQUIRE_HTML = ARGV.includes?("require_html")
-
 def fetch_info(channel, site, bsid, label = "1/1") : Void
   parser = InfoParser.load(site, bsid, expiry: 60.days, frozen: true)
-
-  infos = parser.get_infos!
-  info_file = File.join("data", "appcv", "zhinfos", site, "#{bsid}.json")
-  File.write(info_file, infos.to_pretty_json)
-
-  puts "- <#{label.colorize(:blue)}> [#{infos.label.colorize(:blue)}]"
-  channel.send(infos)
+  info = parser.get_infos!
+  puts "- <#{label.colorize(:blue)}> [#{info.label.colorize(:blue)}]"
+  channel.send(info)
 rescue err
   puts "- <#{label.colorize(:red)}> [#{site}/#{bsid.colorize(:red)}] \
           ERROR: <#{err.class}> #{err.colorize(:red)}"
@@ -50,8 +44,8 @@ puts "- CONFIG: { \
   worker: #{worker.colorize(:yellow)} \
 }"
 
-FileUtils.mkdir_p(File.join("data", "appcv", "zhinfos", site))
-FileUtils.mkdir_p(File.join("data", "appcv", "zhchaps", site))
+# FileUtils.mkdir_p(File.join("data", "appcv", "zhinfos", site))
+# FileUtils.mkdir_p(File.join("data", "appcv", "zhchaps", site))
 
 alias Mapping = NamedTuple(bsid: String, title: String, author: String, mtime: Int64)
 
@@ -71,11 +65,27 @@ worker.times { infos << channel.receive }
 
 sitemap = Hash(String, Mapping).new
 
+skips = Set(String).new
+skip_dir = File.join("data", "inits", site, "skips")
+if File.exists?(skip_dir)
+  files = Dir.children(skip_dir)
+  skips.concat(files.map { |file| File.basename(file, ".txt") })
+end
+
+INFO_DIR = File.join("data", "appcv", "zhinfos")
 infos.each do |info|
   next unless info
+  next if skips.includes?(info.bsid)
+
   if mapped = sitemap[info.hash]?
     next if mapped[:mtime] >= info.mtime
   end
+
+  info_dir = File.join(INFO_DIR, info.hash)
+  FileUtils.mkdir_p(info_dir)
+
+  info_file = File.join(info_dir, "#{info.site}.json")
+  File.write(info_file, info.to_pretty_json)
 
   sitemap[info.hash] = {
     bsid:   info.bsid,

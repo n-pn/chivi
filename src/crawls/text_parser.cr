@@ -10,9 +10,11 @@ class TextParser
   def self.load(site : String, bsid : String, csid : String, expiry = 10.hours, frozen = true)
     url = Utils.text_url(site, bsid, csid)
     file = Utils.text_path(site, bsid, csid)
-    html = Utils.read_file(file, expiry) || Utils.fetch_html(url)
 
-    File.write(file, html) if frozen
+    unless html = Utils.read_file(file, expiry)
+      html = Utils.fetch_html(url)
+      File.write(file, html) if frozen
+    end
 
     new(html, site)
   end

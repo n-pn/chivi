@@ -36,9 +36,11 @@ class InfoParser
   def self.load(info : ZhInfo, expiry = 10.hours, frozen = true)
     url = Utils.info_url(info.site, info.bsid)
     file = Utils.info_path(info.site, info.bsid)
-    html = Utils.read_file(file, expiry) || Utils.fetch_html(url)
 
-    File.write(file, html) if frozen
+    unless html = Utils.read_file(file, expiry)
+      html = Utils.fetch_html(url)
+      File.write(file, html) if frozen
+    end
 
     new(info, html)
   end
@@ -58,7 +60,6 @@ class InfoParser
     get_intro! if @info.intro.empty?
     get_cover! if @info.cover.empty?
     get_genre! if @info.genre.empty?
-    # @info.genre = @info.genre.sub("小说", "")
     get_tags! if @info.tags.empty?
     get_state! if @info.state == 0
     get_mtime! if @info.mtime == 0
@@ -154,8 +155,6 @@ class InfoParser
     else
       raise "Site not supported!"
     end
-
-    @info.genre
   end
 
   def get_tags!

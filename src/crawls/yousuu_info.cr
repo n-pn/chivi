@@ -53,7 +53,7 @@ class YousuuInfo
 
   def get_author!
     author = @ys_info.author || ""
-    @zh_info.author = AUTHORS.fetch(author, author).sub(".QD", "").strip
+    @zh_info.author = AUTHORS.fetch(author, author)
   end
 
   def get_intro!
