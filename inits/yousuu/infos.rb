@@ -14,7 +14,7 @@ proxies = load_proxies
 
 # ## Core
 
-ROOT_DIR = "data/txt-inp/yousuu/serials"
+ROOT_DIR = "data/inits/txt-inp/yousuu/infos"
 OUT_FILE = "#{ROOT_DIR}/%i.json"
 BOOK_URL = "https://www.yousuu.com/api/book/%i?t=%i"
 
