@@ -4,13 +4,13 @@ require "colorize"
 require "file_utils"
 require "option_parser"
 
-require "../../src/spider/cr_info.cr"
+require "../../src/crawls/info_parser.cr"
 
 REQUIRE_HTML = ARGV.includes?("require_html")
 
 def fetch_info(channel, site, bsid, label = "1/1") : Void
-  spider = Spider::CrInfo.new(site, bsid, cache: true, span: 6.months)
-  info = spider.extract_info!
+  crawls = Spider::CrInfo.new(site, bsid, cache: true, span: 6.months)
+  info = crawls.extract_info!
 
   puts "- <#{label.colorize(:blue)}> [#{site}/#{bsid.colorize(:blue)}] {#{info.title.colorize(:blue)}}"
   channel.send({bsid, info.title, info.author})

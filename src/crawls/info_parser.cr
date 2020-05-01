@@ -54,7 +54,6 @@ class InfoParser
 
   def get_infos!
     get_title! if @info.title.empty?
-
     get_author! if @info.author.empty?
     get_intro! if @info.intro.empty?
     get_cover! if @info.cover.empty?

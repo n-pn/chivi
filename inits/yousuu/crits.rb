@@ -19,7 +19,7 @@ PAGE = (ARGV[0] || "1").to_i
 puts "PAGE: #{PAGE}"
 exit if PAGE < 1
 
-ROOT_DIR = "data/txt-inp/yousuu/reviews/"
+ROOT_DIR = "data/txt-inp/yousuu/crits/"
 OUT_FILE = "#{ROOT_DIR}/page#{PAGE}/%i.json"
 REVIEW_URL = "https://www.yousuu.com/api/book/%i/comment?t=%i&page=#{PAGE}"
 
@@ -56,8 +56,8 @@ end
 
 # Prepare book_ids
 
-serials = JSON.parse File.read("data/txt-tmp/serials.json")
-book_ids = serials.map{|x| x["yousuu_bids"]}.flatten
+infos = JSON.parse File.read("data/txt-tmp/infos.json")
+book_ids = infos.map{|x| x["yousuu_bids"]}.flatten
 
 puts "Input: #{book_ids.size}".yellow
 

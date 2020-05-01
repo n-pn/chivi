@@ -8,11 +8,11 @@ targets:
   server:
     main: src/server.cr
 
-  yousuu-combine:
-    main: inits/yousuu/combine.cr
+  map-yousuu:
+    main: inits/bookdb/map-yousuu.cr
 
-  bookdb-mapsite:
-    main: inits/bookdb/mapsite.cr
+  map-extras:
+    main: inits/bookdb/map-extras.cr
 
   bookdb-combine:
     main: inits/bookdb/combine.cr
