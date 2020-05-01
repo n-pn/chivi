@@ -9,6 +9,7 @@ require "../../src/crawls/info_parser.cr"
 def fetch_info(channel, site, bsid, label = "1/1") : Void
   parser = InfoParser.load(site, bsid, expiry: 60.days, frozen: true)
   info = parser.get_infos!
+
   puts "- <#{label.colorize(:blue)}> [#{info.label.colorize(:blue)}]"
   channel.send(info)
 rescue err
@@ -49,6 +50,8 @@ puts "- CONFIG: { \
 
 alias Mapping = NamedTuple(bsid: String, title: String, author: String, mtime: Int64)
 
+# TODO: skip parsing mapped files
+
 infos = [] of ZhInfo?
 
 channel = Channel(ZhInfo?).new(worker)
@@ -72,20 +75,20 @@ if File.exists?(skip_dir)
   skips.concat(files.map { |file| File.basename(file, ".txt") })
 end
 
-INFO_DIR = File.join("data", "appcv", "zhinfos")
+info_dir = File.join("data", "appcv", "zhinfos", site)
+FileUtils.mkdir_p(File.join(info_dir))
+
 infos.each do |info|
   next unless info
+
+  info_file = File.join(info_dir, "#{info.bsid}.json")
+  File.write(info_file, info.to_pretty_json)
+
   next if skips.includes?(info.bsid)
 
   if mapped = sitemap[info.hash]?
     next if mapped[:mtime] >= info.mtime
   end
-
-  info_dir = File.join(INFO_DIR, info.hash)
-  FileUtils.mkdir_p(info_dir)
-
-  info_file = File.join(info_dir, "#{info.site}.json")
-  File.write(info_file, info.to_pretty_json)
 
   sitemap[info.hash] = {
     bsid:   info.bsid,

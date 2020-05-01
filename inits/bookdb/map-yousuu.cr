@@ -10,8 +10,8 @@ end
 
 puts "- input: #{files.size} entries".colorize(:blue)
 
-INFO_DIR = File.join("data", "appcv", "zhinfos")
-# FileUtils.mkdir_p(INFO_DIR)
+INFO_DIR = File.join("data", "appcv", "zhinfos", "yousuu")
+FileUtils.mkdir_p(INFO_DIR)
 
 STAT_DIR = File.join("data", "appcv", "zhstats")
 FileUtils.mkdir_p(STAT_DIR)
@@ -24,16 +24,19 @@ files.each do |file|
     info = parser.get_info!
     next if info.title.empty? || info.author.empty?
 
-    info_dir = File.join(INFO_DIR, info.hash)
-    FileUtils.mkdir_p(info_dir)
-
-    info_file = File.join(info_dir, "yousuu.json")
+    info_file = File.join(INFO_DIR, "#{info.bsid}.json")
     File.write(info_file, info.to_pretty_json)
 
     if mapped = sitemap[info.hash]?
       # puts info.label
       next if mapped[:mtime] >= info.mtime
     end
+    stat = parser.get_stat!
+    next if stat.score == 0
+
+    keep_stat += 1
+    stat_file = File.join(STAT_DIR, "#{info.hash}.json")
+    File.write(stat_file, stat.to_pretty_json)
 
     sitemap[info.hash] = {
       bsid:   info.bsid,
@@ -41,12 +44,6 @@ files.each do |file|
       author: info.author,
       mtime:  info.mtime,
     }
-    stat = parser.get_stat!
-    next if stat.score == 0
-
-    keep_stat += 1
-    stat_file = File.join(STAT_DIR, "#{info.hash}.json")
-    File.write(stat_file, stat.to_pretty_json)
   end
 rescue err
   puts "#{file} err: #{err}".colorize(:red)

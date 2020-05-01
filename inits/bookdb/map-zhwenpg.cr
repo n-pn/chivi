@@ -86,7 +86,9 @@ dones = Set(String).new
 
 puts "BOOKS: #{infos.size}, DONES: #{dones}"
 
-INFO_DIR = File.join("data", "appcv", "zhinfos")
+INFO_DIR = File.join("data", "appcv", "zhinfos", "zhwenpg")
+FileUtils.mkdir_p(INFO_DIR)
+
 STAT_DIR = File.join("data", "appcv", "zhstats")
 
 ratings_txt = File.read("data/inits/txt-inp/zhwenpg/ratings.json")
@@ -111,10 +113,7 @@ infos.each do |info|
 
   # puts info.to_pretty_json
 
-  info_dir = File.join(INFO_DIR, info.hash)
-  FileUtils.mkdir_p(info_dir)
-
-  info_file = File.join(info_dir, "zhwenpg.json")
+  info_file = File.join(INFO_DIR, "#{info.bsid}.json")
   File.write(info_file, info.to_pretty_json)
 
   sitemap[info.hash] = {
