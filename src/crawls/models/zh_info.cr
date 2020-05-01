@@ -51,6 +51,12 @@ class ZhInfo
 
   def intro=(intro : String)
     @intro = intro.tr("　 ", " ")
+      .gsub("&amp;", "&")
+      .gsub("&lt;", "<")
+      .gsub("&gt;", ">")
+      .gsub("<br>", "\n")
+      .gsub("<br/>", "\n")
+      .gsub("&nbsp;", " ")
       .split(/\s{2,}|\n+/)
       .map(&.strip)
       .reject(&.empty?)

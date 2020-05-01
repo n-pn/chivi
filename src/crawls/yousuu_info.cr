@@ -57,12 +57,7 @@ class YousuuInfo
   end
 
   def get_intro!
-    @zh_info.intro = @ys_info.intro.tr("　 ", " ")
-      .gsub("&lt;", "<")
-      .gsub("&gt;", ">")
-      .gsub("<br>", "\n")
-      .gsub("<br/>", "\n")
-      .gsub("&nbsp;", " ")
+    @zh_info.intro = @ys_info.intro
   end
 
   def get_cover!
@@ -87,9 +82,7 @@ class YousuuInfo
   end
 
   def get_tags!
-    @zh_info.tags = @ys_info.tags.map(&.split("-")).flatten.reject do |tag|
-      tag == @zh_info.genre || tag == @zh_info.title || tag == @zh_info.author
-    end
+    @zh_info.tags = @ys_info.tags.map(&.split("-")).flatten
   end
 
   def get_state!
