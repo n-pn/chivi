@@ -44,7 +44,7 @@ class VpInfo
   property crit_count = 0_i32
 
   property cr_anchors = {} of String => String
-  property cr_uptimes = {} of String => String
+  property cr_uptimes = {} of String => Int64
 
   property cr_site_df = ""
   property cr_bsid_df = ""
@@ -53,14 +53,17 @@ class VpInfo
   end
 
   def initialize(@title_zh : String, @author_zh : String, @uuid = "")
-    @uuid = gen_uuid(@title_zh, @author_zh) if @uuid.empty?
+    reset_uuid if @uuid.empty?
   end
 
-  def gen_uuid(title = @zh_title, author = @zh_author)
-    Utils.hash_id("#{title}--#{author}")
+  def reset_uuid
+    @uuid = Utils.hash_id("#{@title_zh}--#{@author_zh}")
   end
 
-  def intro_zh=(intro : String)
+  def set_intro_zh(intro : String, force = false) : Void
+    return if intro.empty?
+    return unless force || @intro_zh.empty?
+
     @intro_zh = intro.tr("　 ", " ")
       .gsub("&amp;", "&")
       .gsub("&lt;", "<")
@@ -73,12 +76,48 @@ class VpInfo
       .join("\n")
   end
 
-  def uptime=(uptime : Int64)
-    @uptime = uptime if uptime > @uptime
+  def set_genre_zh(genre : String, force = false) : Void
+    return if genre.empty?
+    if @genre_zh.empty?
+      @genre_zh = genre
+    elsif force
+      set_tag_zh(@genre_zh)
+      @genre_zh = genre
+    end
   end
 
-  def status=(status : Int32)
-    @status = status if status > @status
+  def set_tag_zh(tag : String) : Void
+    return if tag.empty?
+    case tag
+    when @genre_zh, @author_zh, @title_zh
+      return
+    else
+      @tags_zh << tag unless @tags_zh.includes?(tag)
+    end
+  end
+
+  def set_tags_zh(tags : Array(String)) : Void
+    return if tags.empty?
+    tags.each { |tag| set_tag_zh(tag) }
+  end
+
+  def add_cover(cover : String) : Void
+    return if cover.empty?
+    @covers << cover unless @covers.includes?(cover)
+  end
+
+  def set_uptime(uptime : Int64, force = false) : Void
+    return unless uptime > @uptime || force
+    @uptime = uptime
+  end
+
+  def set_status(status : Int32, force = false) : Void
+    return unless status > @status || force
+    @status = status
+  end
+
+  def reset_tally
+    @tally = (@votes * @score * 2).round / 2
   end
 
   DIR = File.join("data", "zh_infos")

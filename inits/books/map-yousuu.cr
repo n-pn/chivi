@@ -64,15 +64,17 @@ struct Serial
 
   def fix_genre!
     if genre = @category
-      @genre = genre[:className]
-      @genre.sub("小说", "") unless @genre == "轻小说"
+      @genre = fix_label(genre[:className])
     end
   end
 
   def fix_tags!
-    @tags = @tags.map(&.split("-")).flatten.uniq.reject do |tag|
-      tag == @genre || tag == @title || tag == @author
-    end
+    @tags = @tags.map(&.split("-")).flatten.map { |tag| fix_label(tag) }.uniq
+  end
+
+  def fix_label(label)
+    return label if label == "轻小说"
+    label.sub("小说", "")
   end
 
   def fix_cover!
@@ -171,18 +173,18 @@ serials.each do |uuid, serial|
     info = VpInfo.new(serial.title, serial.author)
   end
 
-  info.intro_zh = serial.intro if info.intro_zh.empty?
-  info.genre_zh = serial.genre if info.genre_zh.empty?
-  info.tags_zh.concat(serial.tags).uniq!
-  info.covers.push(serial.cover).uniq! unless serial.cover.empty?
+  info.set_intro_zh(serial.intro, force: true)
+  info.set_genre_zh(serial.genre, force: true)
+  info.set_tags_zh(serial.tags)
+  info.add_cover(serial.cover)
 
   info.votes = serial.scorerCount
   info.score = (serial.score * 10).round / 10
-  info.tally = (info.votes * info.score * 2).round / 2
+  info.reset_tally
 
-  info.status = serial.status
   info.shield = serial.shielded ? 2 : 0
-  info.uptime = serial.updateAt.to_unix_ms
+  info.set_status(serial.status)
+  info.set_uptime(serial.updateAt.to_unix_ms)
 
   info.yousuu = serial._id.to_s
   if source = serial.sources.first?

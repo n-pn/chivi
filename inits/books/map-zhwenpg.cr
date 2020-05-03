@@ -3,55 +3,10 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../src/crawls/models/zh_info"
-require "../../src/crawls/models/zh_stat"
-require "../../src/crawls/utils/html_utils"
-require "../../src/crawls/utils/file_utils"
+require "../../src/models/vp_info"
+require "../../src/crawls/fetch_util"
 
-def extract_info(dom, label = "1/1")
-  rows = dom.css("tr").to_a
-
-  link = rows[0].css("a").first
-  bsid = link.attributes["href"].sub("b.php?id=", "")
-
-  info = ZhInfo.new("zhwenpg", bsid)
-
-  info.title = link.inner_text.strip
-  info.author = rows[1].css(".fontwt").first.inner_text.strip
-
-  info.genre = rows[2].css(".fontgt").first.inner_text
-  info.cover = dom.css("img").first.attributes["data-src"]
-
-  utime = rows[3].css(".fontime").first.inner_text
-  info.mtime = Time.parse(utime, "%F", LOCATION).to_unix_ms
-
-  if intro = rows[4]?
-    info.intro = intro.inner_text("\n")
-  end
-
-  info
-end
-
-PAGE_URL = "https://novel.zhwenpg.com/?page=%i"
-LOCATION = Time::Location.fixed(3600 * 8)
-
-def fetch_page(page = 1)
-  puts "PAGE: #{page}"
-
-  file = "data/inits/txt-inp/zhwenpg/pages/#{page}.html"
-  url = PAGE_URL % page
-
-  unless html = Utils.read_file(file, expiry: 24.hours)
-    html = Utils.fetch_html(url)
-    File.write(file, html)
-  end
-
-  doc = Myhtml::Parser.new(html)
-  items = doc.css(".cbooksingle").to_a[2..-2]
-  items.map_with_index do |item, idx|
-    extract_info(item, "#{idx + 1}/#{items.size}")
-  end
-end
+EXPIRY = 7.days
 
 DONE_URL = "https://novel.zhwenpg.com/index.php?page=%i&genre=1"
 
@@ -61,8 +16,8 @@ def fetch_done(page = 1)
   file = "data/inits/txt-inp/zhwenpg/pages/#{page}-done.html"
   url = DONE_URL % page
 
-  unless html = Utils.read_file(file, expiry: 24.hours)
-    html = Utils.fetch_html(url)
+  unless html = FetchUtil.read_file(file, expiry: EXPIRY)
+    html = FetchUtil.fetch_html(url)
     File.write(file, html)
   end
 
@@ -76,75 +31,122 @@ def fetch_done(page = 1)
   end
 end
 
-sitemap = {} of String => NamedTuple(bsid: String, title: String, author: String, mtime: Int64)
+FINISHS = Set(String).new
+1.upto(2) { |page| FINISHS.concat(fetch_done(page)) }
 
-infos = [] of ZhInfo?
-1.upto(12) { |page| infos.concat(fetch_page(page)) }
+puts "- finished: #{FINISHS.to_a}"
 
-dones = Set(String).new
-1.upto(2) { |page| dones.concat(fetch_done(page)) }
-
-puts "BOOKS: #{infos.size}, DONES: #{dones}"
-
-INFO_DIR = File.join("data", "appcv", "zhinfos", "zhwenpg")
-FileUtils.mkdir_p(INFO_DIR)
-
-STAT_DIR = File.join("data", "appcv", "zhstats")
-
-ratings_txt = File.read("data/inits/txt-inp/zhwenpg/ratings.json")
-ratings_map = Hash(String, Tuple(Int32, Float64)).from_json ratings_txt
-
-ignores = {
+IGNORES = {
   "我有一座恐怖屋--我会修空调",
   "恐怖修仙世界--龙蛇枝",
   "恐怖复苏--佛前献花",
   "极品全能学生--花都大少",
   "民国谍影--寻青藤",
+  "异能小神农--张家三叔",
+  "从火凤凰开始的特种兵--燕草",
+  "攻略极品--萨琳娜",
+  "带着青山穿越--漆黑血海",
+  "大刁民--仲星羽",
+  "剑耀九歌--极光之北",
+  "商梯--钓人的鱼",
 }
 
-checked_txt = File.read("data/appcv/sitemap/yousuu.json")
-checked_map = Hash(String, NamedTuple(title: String)).from_json(checked_txt)
+RATINGS_TXT = File.read("data/inits/txt-inp/zhwenpg/ratings.json")
+RATINGS_MAP = Hash(String, Tuple(Int32, Float64)).from_json RATINGS_TXT
 
-infos.each do |info|
-  next unless info
-  next if ignores.includes?(info.label)
+struct Mapping
+  include JSON::Serializable
+  property uuid = ""
+  property title = ""
+  property author = ""
 
-  info.state = 1 if dones.includes?(info.bsid)
-
-  # puts info.to_pretty_json
-
-  info_file = File.join(INFO_DIR, "#{info.bsid}.#{info.hash}.json")
-  File.write(info_file, info.to_pretty_json)
-
-  sitemap[info.hash] = {
-    bsid:   info.bsid,
-    title:  info.title,
-    author: info.author,
-    mtime:  info.mtime,
-  }
-
-  next if checked_map.has_key?(info.hash)
-
-  stat_file = File.join(STAT_DIR, "#{info.hash}.json")
-
-  stat = ZhStat.new
-
-  stat.title = info.title
-  stat.author = info.author
-
-  stat.status = info.state
-  stat.shield = 1
-
-  votes, score = ratings_map[info.label]? || {Random.rand(50..100), Random.rand(50..70)/10}
-
-  stat.votes = votes
-  stat.score = score
-  stat.tally = (votes * score * 2).round / 2
-
-  files = "data/inits/txt-tmp/zhtexts/zhwenpg/#{info.bsid}/*.txt"
-  stat.word_count = Dir.glob(files).map { |file| File.read(file).size }.sum
-
-  File.write(stat_file, stat.to_pretty_json)
+  def initialize(@uuid, @title, @author)
+  end
 end
 
-File.write "data/appcv/sitemap/zhwenpg.json", sitemap.to_pretty_json
+SITEMAP = {} of String => Mapping
+
+def random_score(label)
+  puts "- new title: #{label.colorize(:yellow)}"
+  {Random.rand(50..100), Random.rand(50..70)/10}
+end
+
+def extract_info(dom, idx = "1/1") : Void
+  rows = dom.css("tr").to_a
+
+  link = rows[0].css("a").first
+  bsid = link.attributes["href"].sub("b.php?id=", "")
+
+  title = link.inner_text.strip
+  author = rows[1].css(".fontwt").first.inner_text.strip
+
+  label = "#{title}--#{author}"
+  uuid = Utils.hash_id(label)
+
+  SITEMAP[bsid] = Mapping.new(uuid, title, author)
+  return if IGNORES.includes?(label)
+
+  if File.exists?(VpInfo.file_path(uuid))
+    puts "- <#{idx.colorize(:blue)}> #{title.colorize(:blue)} - #{author.colorize(:blue)}"
+
+    info = VpInfo.load_json(uuid)
+  else
+    puts "- <#{idx.colorize(:green)}> #{title.colorize(:green)} - #{author.colorize(:green)}"
+
+    info = VpInfo.new(title, author, uuid)
+    votes, score = RATINGS_MAP[label]? || random_score(label)
+
+    info.shield = 1
+
+    info.votes = votes
+    info.score = score
+    info.reset_tally
+  end
+
+  if intro = rows[4]?
+    # TODO: trad to sim
+    info.set_intro_zh(intro.inner_text("\n"))
+  end
+
+  info.set_genre_zh(rows[2].css(".fontgt").first.inner_text)
+  info.add_cover(dom.css("img").first.attributes["data-src"])
+
+  mftime = rows[3].css(".fontime").first.inner_text
+  uptime = FetchUtil.parse_time(mftime)
+  info.set_uptime(uptime)
+
+  info.set_status(FINISHS.includes?(bsid) ? 1 : 0)
+
+  info.cr_anchors["zhwenpg"] = bsid
+  info.cr_uptimes["zhwenpg"] = uptime
+
+  if info.cr_site_df.empty?
+    info.cr_site_df = "zhwenpg"
+    info.cr_bsid_df = bsid
+  end
+
+  VpInfo.save_json(info)
+end
+
+PAGE_URL = "https://novel.zhwenpg.com/?page=%i"
+
+def fetch_page(page = 1)
+  puts "PAGE: #{page}"
+
+  file = "data/inits/txt-inp/zhwenpg/pages/#{page}.html"
+  url = PAGE_URL % page
+
+  unless html = FetchUtil.read_file(file, expiry: EXPIRY)
+    html = FetchUtil.fetch_html(url)
+    File.write(file, html)
+  end
+
+  doc = Myhtml::Parser.new(html)
+  items = doc.css(".cbooksingle").to_a[2..-2]
+  items.each_with_index do |item, idx|
+    extract_info(item, idx: "#{idx + 1}/#{items.size}")
+  end
+end
+
+1.upto(12) { |page| fetch_page(page) }
+File.write "data/appcv/sitemap/zhwenpg.json", SITEMAP.to_pretty_json
