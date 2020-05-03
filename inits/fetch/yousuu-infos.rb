@@ -9,7 +9,7 @@ require "fileutils"
 
 # # Prepare proxies
 
-require_relative "./_utils"
+require_relative "./yousuu-utils"
 proxies = load_proxies
 
 # ## Core

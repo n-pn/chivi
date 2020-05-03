@@ -81,7 +81,7 @@ FileUtils.mkdir_p(File.join(info_dir))
 infos.each do |info|
   next unless info
 
-  info_file = File.join(info_dir, "#{info.bsid}.json")
+  info_file = File.join(info_dir, "#{info.bsid}.#{info.hash}.json")
   File.write(info_file, info.to_pretty_json)
 
   next if skips.includes?(info.bsid)

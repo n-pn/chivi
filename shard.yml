@@ -9,19 +9,19 @@ targets:
     main: src/server.cr
 
   map-yousuu:
-    main: inits/bookdb/map-yousuu.cr
+    main: inits/books/map-yousuu.cr
 
   map-crawls:
-    main: inits/bookdb/map-crawls.cr
+    main: inits/books/map-crawls.cr
 
-  bookdb-combine:
-    main: inits/bookdb/combine.cr
+  info-combine:
+    main: inits/books/info-combine.cr
 
-  bookdb-chlists:
-    main: inits/bookdb/chlists.cr
+  books-chlists:
+    main: inits/books/chlists.cr
 
-  bookdb-indexes:
-    main: inits/bookdb/indexes.cr
+  books-indexes:
+    main: inits/books/indexes.cr
 
   download-texts:
     main: inits/download-texts.cr

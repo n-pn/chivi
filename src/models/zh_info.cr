@@ -1,6 +1,6 @@
 require "json"
 
-require "../../utils/hash_id"
+require "../utils/hash_id"
 
 class ZhInfo
   include JSON::Serializable

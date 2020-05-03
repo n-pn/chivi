@@ -113,7 +113,7 @@ infos.each do |info|
 
   # puts info.to_pretty_json
 
-  info_file = File.join(INFO_DIR, "#{info.bsid}.json")
+  info_file = File.join(INFO_DIR, "#{info.bsid}.#{info.hash}.json")
   File.write(info_file, info.to_pretty_json)
 
   sitemap[info.hash] = {
