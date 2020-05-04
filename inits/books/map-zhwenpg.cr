@@ -4,9 +4,9 @@ require "colorize"
 require "file_utils"
 
 require "../../src/models/vp_info"
-require "../../src/crawls/fetch_util"
+require "../../src/spider/spider_util"
 
-EXPIRY = 7.days
+EXPIRY = 24.hours
 
 DONE_URL = "https://novel.zhwenpg.com/index.php?page=%i&genre=1"
 
@@ -16,8 +16,8 @@ def fetch_done(page = 1)
   file = "data/inits/txt-inp/zhwenpg/pages/#{page}-done.html"
   url = DONE_URL % page
 
-  unless html = FetchUtil.read_file(file, expiry: EXPIRY)
-    html = FetchUtil.fetch_html(url)
+  unless html = SpiderUtil.read_file(file, expiry: EXPIRY)
+    html = SpiderUtil.fetch_html(url)
     File.write(file, html)
   end
 
@@ -111,14 +111,14 @@ def extract_info(dom, idx = "1/1") : Void
   info.set_genre_zh(rows[2].css(".fontgt").first.inner_text)
   info.add_cover(dom.css("img").first.attributes["data-src"])
 
-  mftime = rows[3].css(".fontime").first.inner_text
-  uptime = FetchUtil.parse_time(mftime)
-  info.set_uptime(uptime)
-
   info.set_status(FINISHS.includes?(bsid) ? 1 : 0)
 
+  mftime = rows[3].css(".fontime").first.inner_text
+  update = SpiderUtil.parse_time(mftime)
+  info.set_update(update)
+
   info.cr_anchors["zhwenpg"] = bsid
-  info.cr_uptimes["zhwenpg"] = uptime
+  info.cr_updates["zhwenpg"] = update
 
   if info.cr_site_df.empty?
     info.cr_site_df = "zhwenpg"
@@ -136,8 +136,8 @@ def fetch_page(page = 1)
   file = "data/inits/txt-inp/zhwenpg/pages/#{page}.html"
   url = PAGE_URL % page
 
-  unless html = FetchUtil.read_file(file, expiry: EXPIRY)
-    html = FetchUtil.fetch_html(url)
+  unless html = SpiderUtil.read_file(file, expiry: EXPIRY)
+    html = SpiderUtil.fetch_html(url)
     File.write(file, html)
   end
 

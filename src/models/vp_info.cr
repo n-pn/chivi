@@ -35,7 +35,7 @@ class VpInfo
 
   property status = 0_i32
   property shield = 0_i32
-  property uptime = 0_i64
+  property update = 0_i64
 
   property yousuu = ""
   property origin = ""
@@ -44,7 +44,7 @@ class VpInfo
   property crit_count = 0_i32
 
   property cr_anchors = {} of String => String
-  property cr_uptimes = {} of String => Int64
+  property cr_updates = {} of String => Int64
 
   property cr_site_df = ""
   property cr_bsid_df = ""
@@ -106,9 +106,9 @@ class VpInfo
     @covers << cover unless @covers.includes?(cover)
   end
 
-  def set_uptime(uptime : Int64, force = false) : Void
-    return unless uptime > @uptime || force
-    @uptime = uptime
+  def set_update(update : Int64, force = false) : Void
+    return unless update > @update || force
+    @update = update
   end
 
   def set_status(status : Int32, force = false) : Void

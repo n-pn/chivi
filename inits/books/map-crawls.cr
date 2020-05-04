@@ -4,11 +4,11 @@ require "colorize"
 require "file_utils"
 require "option_parser"
 
-require "../../src/crawls/info_parser.cr"
+require "../../src/spider/info_spider.cr"
 
 def fetch_info(channel, site, bsid, label = "1/1") : Void
-  parser = InfoParser.load(site, bsid, expiry: 60.days, frozen: true)
-  info = parser.get_infos!
+  spider = InfoSpider.load(site, bsid, expiry: 60.days, frozen: true)
+  info = spider.get_infos!
 
   puts "- <#{label.colorize(:blue)}> [#{info.label.colorize(:blue)}]"
   channel.send(info)

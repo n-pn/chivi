@@ -1,18 +1,15 @@
+require "myhtml"
 require "colorize"
 
-require "myhtml"
+require "./spider_util"
 
-require "./utils/file_utils"
-require "./utils/html_utils"
-require "./utils/fix_info"
-
-class TextParser
+class TextSpider
   def self.load(site : String, bsid : String, csid : String, expiry = 10.hours, frozen = true)
-    url = Utils.text_url(site, bsid, csid)
-    file = Utils.text_path(site, bsid, csid)
+    url = SpiderUtil.text_url(site, bsid, csid)
+    file = SpiderUtil.text_path(site, bsid, csid)
 
-    unless html = Utils.read_file(file, expiry)
-      html = Utils.fetch_html(url)
+    unless html = SpiderUtil.read_file(file, expiry)
+      html = SpiderUtil.fetch_html(url)
       File.write(file, html) if frozen
     end
 
@@ -29,7 +26,7 @@ class TextParser
 
   def get_title!
     if title = parse_title!
-      @title, _ = Utils.split_title(title)
+      @title, _ = SpiderUtil.split_title(title)
     end
 
     @title

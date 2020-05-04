@@ -1,7 +1,7 @@
 require "colorize"
 require "http/client"
 
-module FetchUtil
+module SpiderUtil
   # html utils
 
   SITE_URLS = {

@@ -37,7 +37,6 @@ struct Serial
   property shielded = false
 
   property countWord = 0_f64
-
   property commentCount = 0
 
   property scorerCount = 0
@@ -184,7 +183,7 @@ serials.each do |uuid, serial|
 
   info.shield = serial.shielded ? 2 : 0
   info.set_status(serial.status)
-  info.set_uptime(serial.updateAt.to_unix_ms)
+  info.set_update(serial.updateAt.to_unix_ms)
 
   info.yousuu = serial._id.to_s
   if source = serial.sources.first?
