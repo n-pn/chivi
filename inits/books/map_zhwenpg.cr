@@ -6,6 +6,8 @@ require "file_utils"
 require "../../src/models/vp_info"
 require "../../src/spider/spider_util"
 
+require "./mapping_util"
+
 EXPIRY = 24.hours
 
 DONE_URL = "https://novel.zhwenpg.com/index.php?page=%i&genre=1"
@@ -54,16 +56,6 @@ IGNORES = {
 RATINGS_TXT = File.read("data/inits/txt-inp/zhwenpg/ratings.json")
 RATINGS_MAP = Hash(String, Tuple(Int32, Float64)).from_json RATINGS_TXT
 
-struct Mapping
-  include JSON::Serializable
-  property uuid = ""
-  property title = ""
-  property author = ""
-
-  def initialize(@uuid, @title, @author)
-  end
-end
-
 SITEMAP = {} of String => Mapping
 
 def random_score(label)
@@ -71,7 +63,7 @@ def random_score(label)
   {Random.rand(50..100), Random.rand(50..70)/10}
 end
 
-def extract_info(dom, idx = "1/1") : Void
+def extract_info(dom, idx = "1/1", maptime = Time.local) : Void
   rows = dom.css("tr").to_a
 
   link = rows[0].css("a").first
@@ -141,12 +133,14 @@ def fetch_page(page = 1)
     File.write(file, html)
   end
 
+  maptime = Mapping.maptime(file)
+
   doc = Myhtml::Parser.new(html)
   items = doc.css(".cbooksingle").to_a[2..-2]
   items.each_with_index do |item, idx|
-    extract_info(item, idx: "#{idx + 1}/#{items.size}")
+    extract_info(item, idx: "#{idx + 1}/#{items.size}", maptime: maptime)
   end
 end
 
 1.upto(12) { |page| fetch_page(page) }
-File.write "data/appcv/sitemap/zhwenpg.json", SITEMAP.to_pretty_json
+Mapping.save!("zhwenpg", SITEMAP)

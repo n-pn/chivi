@@ -8,23 +8,23 @@ targets:
   server:
     main: src/server.cr
 
-  map-yousuu:
-    main: inits/books/map-yousuu.cr
+  map_yousuu:
+    main: inits/books/map_yousuu.cr
 
-  map-crawls:
-    main: inits/books/map-crawls.cr
+  map_crawls:
+    main: inits/books/map_crawls.cr
 
-  info-combine:
-    main: inits/books/info-combine.cr
+  info_combine:
+    main: inits/books/info_combine.cr
 
-  books-chlists:
+  books_chlists:
     main: inits/books/chlists.cr
 
-  books-indexes:
+  books_indexes:
     main: inits/books/indexes.cr
 
-  download-texts:
-    main: inits/download-texts.cr
+  download_texts:
+    main: inits/download_texts.cr
 
 crystal: 0.33.0
 

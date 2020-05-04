@@ -45,10 +45,19 @@ puts "- CONFIG: { \
   worker: #{worker.colorize(:yellow)} \
 }"
 
-# FileUtils.mkdir_p(File.join("data", "appcv", "zhinfos", site))
-# FileUtils.mkdir_p(File.join("data", "appcv", "zhchaps", site))
+MAP_DIR = File.join("data", "sitemaps")
+FileUtils.mkdir_p(MAP_DIR)
 
-alias Mapping = NamedTuple(bsid: String, title: String, author: String, mtime: Int64)
+alias Mapping = NamedTuple(uuid: String, title: String, author: String)
+MAPFILE = File.join(MAP_DIR, "#{site}.json")
+
+if File.exists?(MAPFILE)
+  sitemap = Hash(String, Mapping).from_json File.read(MAPFILE)
+  updated = File.info(MAPFILE).modification_time
+else
+  sitemap = {} of String => Mapping
+  updated = Time.local(2000, 1, 1)
+end
 
 # TODO: skip parsing mapped files
 

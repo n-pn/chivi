@@ -3,6 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../../src/models/vp_info"
+require "./mapping_util"
 
 struct Source
   include JSON::Serializable
@@ -93,37 +94,20 @@ struct Serial
   end
 end
 
-MAP_DIR = File.join("data", "sitemaps")
-FileUtils.mkdir_p(MAP_DIR)
-
-alias Mapping = NamedTuple(uuid: String, title: String, author: String)
-MAPFILE = File.join(MAP_DIR, "yousuu.json")
-
-if File.exists?(MAPFILE)
-  sitemap = Hash(String, Mapping).from_json File.read(MAPFILE)
-  updated = File.info(MAPFILE).modification_time
-else
-  sitemap = {} of String => Mapping
-  updated = Time.local(2000, 1, 1)
-end
-
-puts "- mapped: #{sitemap.size.colorize(:blue)} entries"
-
 alias Data = NamedTuple(bookInfo: Serial, bookSource: Array(Source))
 
-files = Dir.glob("data/inits/txt-inp/yousuu/infos/*.json").reject do |file|
-  bsid = File.basename(file, ".json")
-  sitemap.has_key?(bsid) && updated > File.info(file).modification_time
-end
+Mapping.mkdir!
+sitemap, unmapped = Mapping.load!("yousuu")
 
-# files = files.sort_by do |file|
-#   File.basename(file, ".json").to_i
-# end
+inputs = {} of String => Serial
 
-serials = {} of String => Serial
-files.each do |file|
+unmapped.each do |file|
   text = File.read(file)
-  next unless text.includes?("{\"success\":true")
+
+  unless text.includes?("{\"success\":true")
+    sitemap[File.basename(file, ".json")] = Mapping.new("-", "-", "-", Mapping.maptime(file))
+    next
+  end
 
   input = NamedTuple(data: Data).from_json(text)
   serial = input[:data][:bookInfo]
@@ -131,15 +115,11 @@ files.each do |file|
   serial.fix_title!
   serial.fix_author!
 
-  sitemap[serial._id.to_s] = {
-    uuid:   serial.uuid,
-    title:  serial.title,
-    author: serial.author,
-  }
+  sitemap[serial._id.to_s] = Mapping.new(serial.uuid, serial.title, serial.author, Mapping.maptime(file))
 
   next if serial.score == 0 || serial.title.empty? || serial.author.empty?
 
-  if old_serial = serials[serial.uuid]?
+  if old_serial = inputs[serial.uuid]?
     next if old_serial.updateAt >= serial.updateAt
   end
 
@@ -149,24 +129,23 @@ files.each do |file|
 
   serial.sources = input[:data][:bookSource]
 
-  serials[serial.uuid] = serial
+  inputs[serial.uuid] = serial
 rescue err
   File.delete(file)
   puts "#{file} err: #{err}".colorize(:red)
 end
 
-File.write(MAPFILE, sitemap.to_pretty_json)
+Mapping.save!("yousuu", sitemap)
 
-puts "- input: #{files.size.colorize(:blue)} entries, parse: #{serials.size.colorize(:blue)}"
-
-exit 0 if serials.size == 0
+puts "- new entries: #{inputs.size.colorize(:blue)}"
+exit 0 if inputs.size == 0
 
 FileUtils.mkdir_p(VpInfo::DIR)
 
 infos = VpInfo.load_all
 fresh = 0
 
-serials.each do |uuid, serial|
+inputs.each do |uuid, serial|
   unless info = infos[uuid]?
     fresh += 1
     info = VpInfo.new(serial.title, serial.author)
