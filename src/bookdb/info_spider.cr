@@ -2,6 +2,8 @@ require "json"
 require "myhtml"
 
 require "../engine/cv_util"
+require "../utils/hash_id"
+
 require "./spider_util"
 
 class SpChap
@@ -45,6 +47,37 @@ class Volume
   end
 end
 
+class SpInfo
+  include JSON::Serializable
+
+  property site = ""
+  property bsid = ""
+
+  property uuid = ""
+
+  property title = ""
+  property author = ""
+  property intro = ""
+  property cover = ""
+  property genre = ""
+  property tags = [] of String
+
+  property status = 0_i32
+  property update = 0_i64
+
+  def initialize(@site, @bsid)
+  end
+
+  def uuid
+    return @uuid unless @uuid.empty?
+    gen_uuid
+  end
+
+  def gen_uuid
+    @uuid = Utils.hash_id("#{@title}--#{@author}")
+  end
+end
+
 class InfoSpider
   def self.load(site : String, bsid : String, expiry = 10.hours, frozen = true)
     url = SpiderUtil.info_url(site, bsid)
@@ -63,46 +96,54 @@ class InfoSpider
   end
 
   def get_infos!
-    {
-      title:  get_title!,
-      author: get_author!,
-      intro:  get_intro!,
-      cover:  get_cover!,
-      genre:  get_genre!,
-      tags:   get_tags!,
-      status: get_status!,
-      update: get_update!,
-    }
+    info = SpInfo.new(@site, @bsid)
+
+    info.title = get_title!
+    info.author = get_author!
+    info.gen_uuid
+
+    info.intro = get_intro!
+    info.cover = get_cover!
+    info.genre = get_genre!
+    info.tags = get_tags!
+    info.status = get_status!
+    info.update = get_update!
+
+    info
   end
 
   def get_title!
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
-      meta_content("og:novel:book_name")
+      title = meta_content("og:novel:book_name")
     when "hetushu"
-      inner_text("h2")
+      title = inner_text("h2")
     when "69shu"
-      inner_text(".weizhi > a:last-child")
+      title = inner_text(".weizhi > a:last-child")
     when "zhwenpg"
-      inner_text(".cbooksingle h2")
+      title = inner_text(".cbooksingle h2")
     else
       raise "Site not supported!"
     end
+
+    title.sub(/\(.+\)$/, "").strip
   end
 
   def get_author!
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
-      meta_content("og:novel:author")
+      author = meta_content("og:novel:author")
     when "hetushu"
-      inner_text(".book_info a:first-child")
+      author = inner_text(".book_info a:first-child")
     when "69shu"
-      inner_text(".mu_beizhu > a[target]")
+      author = inner_text(".mu_beizhu > a[target]")
     when "zhwenpg"
-      inner_text(".fontwt")
+      author = inner_text(".fontwt")
     else
       raise "Site not supported!"
     end
+
+    author.sub(/\(.+\)|.QD$/, "").strip
   end
 
   def get_intro!
@@ -112,6 +153,7 @@ class InfoSpider
     when "hetushu"
       @dom.css(".intro > p").map(&.inner_text).join("\n")
     when "69shu"
+      ""
       # TODO: extract 69shu book intro
     when "zhwenpg"
       inner_text("tr:nth-of-type(3)")

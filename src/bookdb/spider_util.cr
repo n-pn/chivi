@@ -85,7 +85,7 @@ module SpiderUtil
 
   # file utils
 
-  INP_DIR = "data/inits/txt-inp"
+  INP_DIR = "data/.inits/txt-inp"
 
   def self.info_dir(site : String)
     File.join(INP_DIR, site, "infos")

@@ -11,8 +11,11 @@ targets:
   map_yousuu:
     main: inits/books/map_yousuu.cr
 
-  map_crawls:
-    main: inits/books/map_crawls.cr
+  map_zhwenpg:
+    main: inits/books/map_zhwenpg.cr
+
+  map_spider:
+    main: inits/books/map_spider.cr
 
   info_combine:
     main: inits/books/info_combine.cr

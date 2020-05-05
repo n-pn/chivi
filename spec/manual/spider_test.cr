@@ -1,5 +1,5 @@
-require "../../src/spider/info_spider.cr"
-require "../../src/spider/text_spider.cr"
+require "../../src/bookdb/info_spider.cr"
+require "../../src/bookdb/text_spider.cr"
 
 def test_info(site, bsid, expiry = 6.hours) : Void
   spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: true)
@@ -15,7 +15,7 @@ def test_text(site, bsid, csid, expiry = 1000.hours)
   puts spider.get_paras!.first(10).join("\n")
 end
 
-# test_info("jx_la", "15000")
+test_info("jx_la", "15000")
 # test_info("nofff", "18288")
 # test_info("rengshu", "181")
 # test_info("xbiquge", "51918")
@@ -26,7 +26,7 @@ end
 # test_info("69shu", "30062")
 # test_info("zhwenpg", "junthn")
 
-test_text("jx_la", "7", "3666")
+# test_text("jx_la", "7", "3666")
 # test_text("jx_la", "75722", "4089610")
 # test_text("jx_la", "101533", "5208291")
 # test_text("nofff", "6363", "23951830")

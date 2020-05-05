@@ -45,9 +45,7 @@ class VpInfo
 
   property cr_anchors = {} of String => String
   property cr_updates = {} of String => Int64
-
   property cr_site_df = ""
-  property cr_bsid_df = ""
 
   def initialize
   end
@@ -134,6 +132,12 @@ class VpInfo
     from_file(file_path(uuid))
   end
 
+  def self.load_json?(uuid : String)
+    file = file_path(uuid)
+    return nil unless File.exists?(file)
+    from_file(file)
+  end
+
   def self.save_json(info : VpInfo)
     File.write(file_path(info.uuid), info.to_pretty_json)
   end
@@ -152,7 +156,7 @@ class VpInfo
       @@infos[uuid] = from_file(file)
     end
 
-    puts "- loaded #{count.colorize(:blue)} entries"
+    puts "- [VP_INFO] loaded #{count.colorize(:blue)} entries"
     @@infos
   end
 

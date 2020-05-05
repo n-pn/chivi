@@ -4,18 +4,19 @@ require "colorize"
 require "file_utils"
 
 require "../../src/models/vp_info"
-require "../../src/spider/spider_util"
-
-require "./mapping_util"
+require "../../src/bookdb/spider_util"
 
 EXPIRY = 24.hours
 
 DONE_URL = "https://novel.zhwenpg.com/index.php?page=%i&genre=1"
 
+INPUT_DIR = File.join("data", ".inits", "txt-inp", "zhwenpg")
+
 def fetch_done(page = 1)
   puts "DONE PAGE: #{page}"
 
-  file = "data/inits/txt-inp/zhwenpg/pages/#{page}-done.html"
+  file = File.join(INPUT_DIR, "pages", "#{page}-done.html")
+
   url = DONE_URL % page
 
   unless html = SpiderUtil.read_file(file, expiry: EXPIRY)
@@ -53,17 +54,15 @@ IGNORES = {
   "商梯--钓人的鱼",
 }
 
-RATINGS_TXT = File.read("data/inits/txt-inp/zhwenpg/ratings.json")
+RATINGS_TXT = File.read(File.join(INPUT_DIR, "ratings.json"))
 RATINGS_MAP = Hash(String, Tuple(Int32, Float64)).from_json RATINGS_TXT
-
-SITEMAP = {} of String => Mapping
 
 def random_score(label)
   puts "- new title: #{label.colorize(:yellow)}"
   {Random.rand(50..100), Random.rand(50..70)/10}
 end
 
-def extract_info(dom, idx = "1/1", maptime = Time.local) : Void
+def extract_info(dom, idx = "1/1") : Void
   rows = dom.css("tr").to_a
 
   link = rows[0].css("a").first
@@ -75,7 +74,6 @@ def extract_info(dom, idx = "1/1", maptime = Time.local) : Void
   label = "#{title}--#{author}"
   uuid = Utils.hash_id(label)
 
-  SITEMAP[bsid] = Mapping.new(uuid, title, author)
   return if IGNORES.includes?(label)
 
   if File.exists?(VpInfo.file_path(uuid))
@@ -112,11 +110,7 @@ def extract_info(dom, idx = "1/1", maptime = Time.local) : Void
   info.cr_anchors["zhwenpg"] = bsid
   info.cr_updates["zhwenpg"] = update
 
-  if info.cr_site_df.empty?
-    info.cr_site_df = "zhwenpg"
-    info.cr_bsid_df = bsid
-  end
-
+  info.cr_site_df = "zhwenpg" if info.cr_site_df.empty?
   VpInfo.save_json(info)
 end
 
@@ -125,7 +119,7 @@ PAGE_URL = "https://novel.zhwenpg.com/?page=%i"
 def fetch_page(page = 1)
   puts "PAGE: #{page}"
 
-  file = "data/inits/txt-inp/zhwenpg/pages/#{page}.html"
+  file = File.join(INPUT_DIR, "pages", "#{page}.html")
   url = PAGE_URL % page
 
   unless html = SpiderUtil.read_file(file, expiry: EXPIRY)
@@ -133,14 +127,11 @@ def fetch_page(page = 1)
     File.write(file, html)
   end
 
-  maptime = Mapping.maptime(file)
-
   doc = Myhtml::Parser.new(html)
   items = doc.css(".cbooksingle").to_a[2..-2]
   items.each_with_index do |item, idx|
-    extract_info(item, idx: "#{idx + 1}/#{items.size}", maptime: maptime)
+    extract_info(item, idx: "#{idx + 1}/#{items.size}")
   end
 end
 
 1.upto(12) { |page| fetch_page(page) }
-Mapping.save!("zhwenpg", SITEMAP)
