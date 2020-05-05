@@ -2,38 +2,20 @@ require "json"
 require "myhtml"
 
 require "../engine/cv_util"
-require "../utils/hash_id"
+
+require "../utils/file_utils"
+require "../utils/parse_time"
+
+require "../models/zh_info"
+require "../models/zh_list"
 
 require "./spider_util"
 
-class SpChap
-  include JSON::Serializable
-
-  property csid : String = "0"
-  property title : String = ""
-  property volume : String = "正文"
-
-  def initialize(@csid, title, volume = "")
-    if volume.empty?
-      @title, @volume = SpiderUtil.split_title(title)
-    else
-      @title = SpiderUtil.fix_title(title)
-      @volume = SpiderUtil.clean_title(volume)
-    end
-  end
-
-  def to_s(io : IO)
-    io << to_pretty_json
-  end
-end
-
-alias SpList = Array(SpChap)
-
 class Volume
   property label
-  property chaps : SpList
+  property chaps : ZhList
 
-  def initialize(@label = "正文", @chaps = SpList.new)
+  def initialize(@label = "正文", @chaps = ZhList.new)
   end
 
   INDEX_RE = /([零〇一二两三四五六七八九十百千]+|\d+)[集卷]/
@@ -47,43 +29,14 @@ class Volume
   end
 end
 
-class SpInfo
-  include JSON::Serializable
-
-  property site = ""
-  property bsid = ""
-
-  property uuid = ""
-
-  property title = ""
-  property author = ""
-  property intro = ""
-  property cover = ""
-  property genre = ""
-  property tags = [] of String
-
-  property status = 0_i32
-  property update = 0_i64
-
-  def initialize(@site, @bsid)
-  end
-
-  def uuid
-    return @uuid unless @uuid.empty?
-    gen_uuid
-  end
-
-  def gen_uuid
-    @uuid = Utils.hash_id("#{@title}--#{@author}")
-  end
-end
-
 class InfoSpider
   def self.load(site : String, bsid : String, expiry = 10.hours, frozen = true)
     url = SpiderUtil.info_url(site, bsid)
     file = SpiderUtil.info_path(site, bsid)
 
-    unless html = SpiderUtil.read_file(file, expiry)
+    unless html = Utils.read_file(file, expiry)
+      puts "- HIT: #{url.colorize(:blue)}"
+
       html = SpiderUtil.fetch_html(url)
       File.write(file, html) if frozen
     end
@@ -96,11 +49,11 @@ class InfoSpider
   end
 
   def get_infos!
-    info = SpInfo.new(@site, @bsid)
+    info = ZhInfo.new(@site, @bsid)
 
     info.title = get_title!
     info.author = get_author!
-    info.gen_uuid
+    info.reset_uuid
 
     info.intro = get_intro!
     info.cover = get_cover!
@@ -236,12 +189,12 @@ class InfoSpider
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       text = meta_content("og:novel:update_time")
-      SpiderUtil.parse_time(text)
+      Utils.parse_time(text)
     when "hetushu"
       0_i64
     when "69shu"
       text = inner_text(".mu_beizhu").sub(/.+时间：/m, "")
-      SpiderUtil.parse_time(text)
+      Utils.parse_time(text)
     when "zhwenpg"
       0_i64
     else
@@ -250,7 +203,7 @@ class InfoSpider
   end
 
   def get_chaps!
-    output = SpList.new
+    output = ZhList.new
 
     case @site
     when "duokan8"
@@ -259,7 +212,7 @@ class InfoSpider
           csid = File.basename(href, ".html")
           title = link.inner_text
 
-          output << SpChap.new(csid, title)
+          output << ZhChap.new(csid, title)
         end
       end
     when "69shu"
@@ -272,7 +225,7 @@ class InfoSpider
             title = link.inner_text
             next if title.starts_with?("我要报错！")
 
-            volume.chaps << SpChap.new(csid, title)
+            volume.chaps << ZhChap.new(csid, title)
           end
         end
 
@@ -283,12 +236,12 @@ class InfoSpider
       volumes.each { |volume| output.concat(volume.chaps) }
     when "zhwenpg"
       latest_chap = inner_text(".fontchap")
-      latest_title, _ = SpiderUtil.split_title(latest_chap)
+      latest_title, _ = Utils.split_title(latest_chap)
 
       @dom.css("#dulist a").each do |link|
         if href = link.attributes["href"]?
           csid = href.sub("r.php?id=", "")
-          output << SpChap.new(csid, link.inner_text)
+          output << ZhChap.new(csid, link.inner_text)
         end
       end
 
@@ -322,7 +275,7 @@ class InfoSpider
           title = link.inner_text
 
           volumes << Volume.new if volumes.empty?
-          volumes.last.chaps << SpChap.new(csid, title, volumes.last.label)
+          volumes.last.chaps << ZhChap.new(csid, title, volumes.last.label)
         end
       end
     end
@@ -343,7 +296,7 @@ class InfoSpider
       end
     end
 
-    output = SpList.new
+    output = ZhList.new
     volumes.each { |volume| output.concat(volume.chaps) }
     output
   end

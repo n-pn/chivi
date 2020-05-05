@@ -1,14 +1,17 @@
 require "myhtml"
 require "colorize"
 
+require "../models/zh_list"
+
+require "../utils/fix_infos"
 require "./spider_util"
 
 class TextSpider
-  def self.load(site : String, bsid : String, csid : String, expiry = 10.hours, frozen = true)
+  def self.load(site : String, bsid : String, csid : String, expiry = 1000.days, frozen = true)
     url = SpiderUtil.text_url(site, bsid, csid)
     file = SpiderUtil.text_path(site, bsid, csid)
 
-    unless html = SpiderUtil.read_file(file, expiry)
+    unless html = Utils.read_file(file, expiry)
       html = SpiderUtil.fetch_html(url)
       File.write(file, html) if frozen
     end
@@ -19,14 +22,14 @@ class TextSpider
   getter title : String
   getter paras : Array(String)
 
-  def initialize(html : String, @site : String, @title = "")
+  def initialize(html : String, @site : String, @title = "", @volume = "")
     @dom = Myhtml::Parser.new(html)
     @paras = [] of String
   end
 
   def get_title!
     if title = parse_title!
-      @title, _ = SpiderUtil.split_title(title)
+      @title, @volume = Utils.split_title(title)
     end
 
     @title
@@ -89,36 +92,43 @@ class TextSpider
       raise "Site #{@site} unsupported!"
     end
 
-    clean_paras_by_title!
-
-    if last = @paras[-1]?
-      @paras[-1] = last.sub("(本章完)", "")
-    end
-
-    @paras = @paras.map(&.gsub("【】", "").strip).reject(&.empty?)
+    clean_all!
+    clean_head!
+    clean_tail!
 
     @paras
   end
 
-  def clean_paras_by_title!
-    if first = @paras[0]?
-      return unless @title =~ /\P{Han}/
-      @title.split(" ").each do |frag|
-        return unless first.starts_with?(frag)
-        first = first.sub(/^#{frag}/, "").lstrip
-      end
+  def clean_all!
+    @paras = @paras.map(&.gsub("【】", "").strip).reject(&.empty?)
+  end
 
-      if first.empty?
-        @paras.delete_at(0)
-      else
-        @paras[0] = first
-      end
+  def clean_head!
+    return unless head = @paras[0]?
+
+    head = head.sub(/^#{@volume}\s*/, "")
+    return unless @title =~ /\P{Han}/
+
+    @title.split(" ").each do |frag|
+      return unless head.starts_with?(frag)
+      head = head.sub(/^#{frag}\s*/, "")
     end
+
+    if head.empty?
+      @paras.delete_at(0)
+    else
+      @paras[0] = head
+    end
+  end
+
+  def clean_tail!
+    return unless tail = @paras[-1]
+    @paras.pop if tail == "(本章完)"
   end
 
   def to_s(io)
     io << @title
-    paras.each do |line|
+    @paras.each do |line|
       io << "\n" << line
     end
   end

@@ -1,3 +1,5 @@
+require "file_utils"
+
 require "../../src/bookdb/info_spider.cr"
 require "../../src/bookdb/text_spider.cr"
 
@@ -9,13 +11,15 @@ def test_info(site, bsid, expiry = 6.hours) : Void
 end
 
 def test_text(site, bsid, csid, expiry = 1000.hours)
+  FileUtils.mkdir_p(SpiderUtil.text_dir(site, bsid))
+
   spider = TextSpider.load(site, bsid, csid, expiry: expiry, frozen: true)
 
   puts spider.get_title!
   puts spider.get_paras!.first(10).join("\n")
 end
 
-test_info("jx_la", "15000")
+# test_info("jx_la", "15000")
 # test_info("nofff", "18288")
 # test_info("rengshu", "181")
 # test_info("xbiquge", "51918")
@@ -25,12 +29,12 @@ test_info("jx_la", "15000")
 # test_info("paoshu8", "1986")
 # test_info("69shu", "30062")
 # test_info("zhwenpg", "junthn")
+test_info("zhwenpg", "kun6m7")
 
-test_text("jx_la", "7", "3666")
+# test_text("jx_la", "7", "3666")
 # test_text("jx_la", "75722", "4089610")
-# test_text("jx_la", "101533", "5208291")
 # test_text("nofff", "6363", "23951830")
-# test_text("69shu", "30062", "22206999")
+# test_text("69shu", "30062", "22447740")
 # test_text("hetushu", "1640", "1099716")
 # test_text("rengshu", "4243", "1408503")
 # test_text("xbiquge", "51918", "34575059")

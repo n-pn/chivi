@@ -26,8 +26,8 @@ targets:
   books_indexes:
     main: inits/books/indexes.cr
 
-  download_texts:
-    main: inits/download_texts.cr
+  fetch_texts:
+    main: tasks/fetch_texts.cr
 
 crystal: 0.33.0
 

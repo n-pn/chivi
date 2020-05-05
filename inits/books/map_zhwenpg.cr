@@ -4,7 +4,7 @@ require "colorize"
 require "file_utils"
 
 require "../../src/models/vp_info"
-require "../../src/bookdb/spider_util"
+require "../../src/bookdb/info_spider"
 
 EXPIRY = 24.hours
 
@@ -19,7 +19,7 @@ def fetch_done(page = 1)
 
   url = DONE_URL % page
 
-  unless html = SpiderUtil.read_file(file, expiry: EXPIRY)
+  unless html = Utils.read_file(file, expiry: EXPIRY)
     html = SpiderUtil.fetch_html(url)
     File.write(file, html)
   end
@@ -52,10 +52,13 @@ IGNORES = {
   "大刁民--仲星羽",
   "剑耀九歌--极光之北",
   "商梯--钓人的鱼",
+  "青橙年代--萧明",
 }
 
 RATINGS_TXT = File.read(File.join(INPUT_DIR, "ratings.json"))
 RATINGS_MAP = Hash(String, Tuple(Int32, Float64)).from_json RATINGS_TXT
+
+LIST_DIR = File.join("data", "zh_lists")
 
 def random_score(label)
   puts "- new title: #{label.colorize(:yellow)}"
@@ -77,11 +80,11 @@ def extract_info(dom, idx = "1/1") : Void
   return if IGNORES.includes?(label)
 
   if File.exists?(VpInfo.file_path(uuid))
-    puts "- <#{idx.colorize(:blue)}> #{title.colorize(:blue)} - #{author.colorize(:blue)}"
+    puts "- <#{idx.colorize(:blue)}> #{title.colorize(:blue)}--#{author.colorize(:blue)}"
 
     info = VpInfo.load_json(uuid)
   else
-    puts "- <#{idx.colorize(:green)}> #{title.colorize(:green)} - #{author.colorize(:green)}"
+    puts "- <#{idx.colorize(:green)}> #{title.colorize(:green)}--#{author.colorize(:green)}"
 
     info = VpInfo.new(title, author, uuid)
     votes, score = RATINGS_MAP[label]? || random_score(label)
@@ -104,7 +107,7 @@ def extract_info(dom, idx = "1/1") : Void
   info.set_status(FINISHS.includes?(bsid) ? 1 : 0)
 
   mftime = rows[3].css(".fontime").first.inner_text
-  update = SpiderUtil.parse_time(mftime)
+  update = Utils.parse_time(mftime)
   info.set_update(update)
 
   info.cr_anchors["zhwenpg"] = bsid
@@ -112,6 +115,17 @@ def extract_info(dom, idx = "1/1") : Void
 
   info.cr_site_df = "zhwenpg" if info.cr_site_df.empty?
   VpInfo.save_json(info)
+
+  expiry = Time.unix_ms(update)
+  spider = InfoSpider.load("zhwenpg", bsid, expiry: expiry, frozen: true)
+
+  list_file = File.join(LIST_DIR, "#{info.uuid}.zhwenpg.#{bsid}.json")
+  begin
+    File.write(list_file, spider.get_chaps!.to_pretty_json)
+  rescue err
+    puts err
+    File.delete(SpiderUtil.info_path("zhwenpg", bsid))
+  end
 end
 
 PAGE_URL = "https://novel.zhwenpg.com/?page=%i"
@@ -122,7 +136,7 @@ def fetch_page(page = 1)
   file = File.join(INPUT_DIR, "pages", "#{page}.html")
   url = PAGE_URL % page
 
-  unless html = SpiderUtil.read_file(file, expiry: EXPIRY)
+  unless html = Utils.read_file(file, expiry: EXPIRY)
     html = SpiderUtil.fetch_html(url)
     File.write(file, html)
   end
@@ -134,4 +148,4 @@ def fetch_page(page = 1)
   end
 end
 
-1.upto(12) { |page| fetch_page(page) }
+1.upto(11) { |page| fetch_page(page) }
