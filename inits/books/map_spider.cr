@@ -77,6 +77,9 @@ def gen_expiry(status : Int32)
   end
 end
 
+LIST_DIR = File.join("data", "zh_lists")
+FileUtils.mkdir_p(LIST_DIR)
+
 def update_infos(site, bsid, uuid, label) : Void
   if uuid
     vp_info = VpInfo.load_json(uuid)
@@ -105,6 +108,9 @@ def update_infos(site, bsid, uuid, label) : Void
 
     puts "- <#{label.colorize(:green)}> #{sp_info.title}"
     VpInfo.save_json(vp_info)
+
+    list_file = File.join(LIST_DIR, "#{vp_info.uuid}.#{site}.#{bsid}.json")
+    File.write(list_file, spider.get_chaps!.to_pretty_json)
   else
     puts "- <#{label.colorize(:blue)}> #{sp_info.title}"
   end

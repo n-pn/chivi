@@ -26,7 +26,7 @@ test_info("jx_la", "15000")
 # test_info("69shu", "30062")
 # test_info("zhwenpg", "junthn")
 
-# test_text("jx_la", "7", "3666")
+test_text("jx_la", "7", "3666")
 # test_text("jx_la", "75722", "4089610")
 # test_text("jx_la", "101533", "5208291")
 # test_text("nofff", "6363", "23951830")

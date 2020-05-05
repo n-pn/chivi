@@ -7,6 +7,7 @@ require "../../src/models/vp_info"
 
 alias Data = NamedTuple(bookInfo: Serial, bookSource: Array(Source))
 
+sitemap = [] of String
 inputs = {} of String => Serial
 
 glob = File.join("data", ".inits", "txt-inp", "yousuu", "infos", "*.json")
@@ -20,6 +21,8 @@ Dir.glob(glob).each do |file|
 
   serial.fix_title!
   serial.fix_author!
+
+  sitemap << [serial._id.to_s, serial.uuid, serial.title, serial.author].join("--")
 
   next if serial.score == 0 || serial.title.empty? || serial.author.empty?
 
@@ -38,6 +41,8 @@ rescue err
   File.delete(file)
   puts "#{file} err: #{err}".colorize(:red)
 end
+
+File.write(File.join("data", "sitemaps", "yousuu.txt"), sitemap.join("\n"))
 
 FileUtils.mkdir_p(VpInfo::DIR)
 

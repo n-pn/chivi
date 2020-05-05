@@ -43,19 +43,19 @@ struct Serial
 
   property sources = [] of Source
 
-  FIX_DIR     = "inits/books/yousuu"
-  FIX_MAP     = Hash(String, String)
-  FIX_TITLES  = FIX_MAP.from_json(File.read("#{FIX_DIR}/fix-titles.json"))
-  FIX_AUTHORS = FIX_MAP.from_json(File.read("#{FIX_DIR}/fix-authors.json"))
+  FIX_DIR = "src/models/fixes"
+  FIX_MAP = Hash(String, String)
+  TITLES  = FIX_MAP.from_json(File.read("#{FIX_DIR}/titles.json"))
+  AUTHORS = FIX_MAP.from_json(File.read("#{FIX_DIR}/authors.json"))
 
   def fix_title!
     @title = @title.sub(/\(.+\)$/, "").strip
-    @title = FIX_TITLES.fetch(@title, @title)
+    @title = TITLES.fetch(@title, @title)
   end
 
   def fix_author!
     @author = @author.sub(/\(.+\)|.QD$/, "").strip
-    @author = FIX_AUTHORS.fetch(@author, @author)
+    @author = AUTHORS.fetch(@title, @author)
   end
 
   def fix_genre!

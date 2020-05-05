@@ -118,7 +118,7 @@ class VpInfo
     @tally = (@votes * @score * 2).round / 2
   end
 
-  DIR = File.join("data", "zh_infos")
+  DIR = File.join("data", "vp_infos")
 
   def self.file_path(uuid : String)
     File.join(DIR, "#{uuid}.json")
