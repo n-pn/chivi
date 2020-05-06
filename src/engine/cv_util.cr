@@ -1,6 +1,10 @@
 require "./cv_util/*"
 
 module CvUtil
+  def split_lines(input : String)
+    input.split("\n").map(&.strip).reject(&.empty?)
+  end
+
   # capitalize all words
   def titleize(input : String)
     input.split(" ").map { |x| capitalize(x) }.join(" ")

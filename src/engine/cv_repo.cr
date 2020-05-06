@@ -8,8 +8,6 @@ class CvRepo
 
     def initialize(@dir : String, preload = false)
       @dicts = CvMap.new
-      @fixes = Hash(String, CvMap).new { |h, k| h[k] = CvMap.new }
-
       load_dir!(lazy: false) if preload
     end
 
@@ -17,15 +15,13 @@ class CvRepo
       time1 = Time.monotonic
 
       files = Dir.glob(File.join(@dir, "*.dic"))
-      count = files.size
+      count = 0
 
       files.each do |file|
         name = File.basename(file, ".dic")
-
-        count += load_fixes!(name, lazy)
         next if lazy && @dicts[name]?
-
-        @dicts[name] = load_dic(name)
+        count += 1
+        @dicts[name] = load(name)
       end
 
       time2 = Time.monotonic
@@ -34,79 +30,59 @@ class CvRepo
       puts "- Loaded [#{@dir.colorize(:yellow)}], files: #{count.colorize(:yellow)}, time: #{elapsed.colorize(:yellow)}s"
     end
 
-    def load_fixes!(name : String, lazy = true)
-      files = Dir.glob(File.join(@dir, "#{name}.*.fix"))
-
-      files.each do |file|
-        user = File.extname(File.basename(file, ".fix")).tr(".", "")
-        next if lazy && @fixes[name][user]?
-        @fixes[name][user] = load_fix(name, user)
-      end
-
-      files.size
-    end
-
     def [](name : String)
-      [get_dic(name)]
+      get(name)
     end
 
     def [](name : String, user : String)
-      [get_dic(name), get_fix(name, user)]
+      get("#{name}.#{user}")
     end
 
-    def get_dic(name : String)
-      @dicts[name] ||= load_dic(name)
+    def get(name : String)
+      @dicts[name] ||= load(name)
     end
 
-    def get_fix(name : String, user = "local")
-      @fixes[name][user] ||= load_fix(name)
-    end
-
-    def all_fixes(name : String)
-      @fixes[name]
-    end
-
-    def load_dic(name : String)
+    def load(name : String)
       CvDict.new(File.join(@dir, "#{name}.dic"))
-    end
-
-    def load_fix(name : String, user : String = "local")
-      CvDict.new(File.join(@dir, "#{name}.#{user}.dic"))
     end
   end
 
   getter system : List
-  getter shared : List
-  getter unique : List
+  getter shared_base : List
+  getter shared_user : List
+  getter unique_base : List
+  getter unique_user : List
 
   def initialize(@dir : String = ".dic")
     @system = List.new(@dir)
-    @shared = List.new(File.join(@dir, "shared"))
-    @unique = List.new(File.join(@dir, "unique"))
+    @shared_base = List.new(File.join(@dir, "shared_base"))
+    @shared_user = List.new(File.join(@dir, "shared_user"))
+    @unique_base = List.new(File.join(@dir, "unique_base"))
+    @unique_user = List.new(File.join(@dir, "unique_user"))
   end
 
   alias Dicts = Array(CvDict)
 
   @cc_cedict : CvDict? = nil
   @trungviet : CvDict? = nil
-  @hanviet : Dicts? = nil
-  @pinyin : Dicts? = nil
-  @tradsim : Dicts? = nil
+  @hanviet : CvDict? = nil
+  @pinyins : CvDict? = nil
+  @tradsim : CvDict? = nil
 
   def cc_cedict
-    @cc_cedict ||= @system.load_dic("cc_cedict")
+    @cc_cedict ||= @system["cc_cedict"]
   end
 
   def trungviet
-    @trungviet ||= @system.load_dic("trungviet")
+    @trungviet ||= @system["trungviet"]
   end
 
   def hanviet
     @hanviet ||= @system["hanviet"]
   end
 
-  def pinyin
-    @pinyin ||= @system["pinyin"]
+  def pinyins
+    @pinyins ||= @system["pinyins"]
   end
 
   def tradsim
@@ -114,19 +90,19 @@ class CvRepo
   end
 
   def generic(user : String = "local")
-    @shared["generic", user]
+    [@shared_base["generic"], @shared_user["generic", user]]
   end
 
   def combine(user : String = "local")
-    @shared["combine", user]
+    [@shared_base["combine"], @shared_user["combine", user]]
   end
 
   def suggest(user : String = "local")
-    @shared["suggest", user]
+    [@shared_base["suggest"], @shared_user["suggest", user]]
   end
 
   def unique(name : String, user = "local")
-    @unique[name, user]
+    [@unique_base[name], @unique_user[name, user]]
   end
 
   def for_convert(book : String? = nil, user = "local")

@@ -14,23 +14,26 @@ class CvDict
     getter key : String
     getter vals : Array(String)
     getter mtime : Int32? = nil
-    getter extra : String? = nil
 
     def initialize(line : String)
       cols = line.split(SEP_0)
 
       @key = cols[0]
       @vals = (cols[1]? || "").split(SEP_1)
-
       @mtime = cols[2]?.try(&.to_i?)
-      @extra = cols[3]?
     end
 
-    def initialize(@key : String, vals : String, @mtime = nil, @extra = nil)
+    def initialize(@key : String, vals : String, @mtime = nil)
       @vals = vals.split(SEP_1)
     end
 
-    def initialize(@key : String, @vals : Array(String), @mtime = nil, @extra = nil)
+    def initialize(@key : String, @vals : Array(String), @mtime = nil)
+    end
+
+    def time
+      if mtime = @mtime
+        EPOCH + mtime.minutes
+      end
     end
 
     def to_s(io : IO)
@@ -86,6 +89,10 @@ class CvDict
     load!(@file) if preload && File.exists?(@file)
   end
 
+  def time
+    EPOCH + @mtime.minutes
+  end
+
   def load!(file : String = @file) : CvDict
     @mtime = Item.mtime(File.info(file).modification_time) if @mtime == 0
 
@@ -102,17 +109,19 @@ class CvDict
     self
   end
 
-  def set(key : String, vals : String | Array(String), extra : String? = nil)
-    item = Item.new(key, vals, Item.mtime, extra)
+  def set(key : String, vals : String | Array(String))
+    @mtime = Item.mtime
+    item = Item.new(key, vals, @mtime)
+
     File.open(@file, "a") { |f| f.puts item }
     put(item)
   end
 
-  def del(key : String, extra : String? = nil)
-    set(key, [] of String, extra)
+  def del(key : String)
+    set(key, [] of String)
   end
 
-  def put(key : String, vals : String | Array(String), extra : String? = nil)
+  def put(key : String, vals : String | Array(String))
     put(Item.new(key, vals))
   end
 
