@@ -100,6 +100,8 @@ combine_base = Cvdict.new("#{OUT_DIR}/shared_base/combine.dic")
 recycle_base = Cvdict.new("#{OUT_DIR}/shared_base/recycle.dic")
 
 generic_base.merge!("#{OUT_DIR}/hanviet.dic")
+generic_base.merge!("#{INP_DIR}/hanviet/lacviet/words.txt")
+generic_base.merge!("#{INP_DIR}/hanviet/checked/words.txt")
 
 INPUT.each do |key, vals|
   book_count = COUNT_BOOKS[key]? || 0
@@ -138,6 +140,20 @@ INPUT.each do |key, vals|
   end
 end
 
+Dir.glob("#{INP_DIR}/persist/generic/**/*.txt").each do |file|
+  Cvdict.load!(file).data.each do |key, val|
+    generic_base.set(key, val)
+    EXISTED.add(key)
+  end
+end
+
+Dir.glob("#{INP_DIR}/persist/suggest/**/*.txt").each do |file|
+  Cvdict.load!(file).data.each do |key, val|
+    suggest_base.set(key, val)
+    EXISTED.add(key)
+  end
+end
+
 puts "[Load extraqt]".colorize(:cyan)
 
 Cvdict.load!("#{INP_DIR}/extraqt/words.txt").data.each do |key, val|
@@ -148,11 +164,9 @@ Cvdict.load!("#{INP_DIR}/extraqt/words.txt").data.each do |key, val|
 
   ondicts = ONDICTS.includes?(key)
 
-  if ondicts && word_count >= 1000 && book_count >= 100
-    generic_base.set(key, val, :old_first)
-  elsif ondicts || (word_count >= 1000 && book_count >= 100)
+  if (ondicts && word_count >= 50) || (word_count >= 500 && book_count >= 50)
     suggest_base.set(key, val, :old_first)
-  elsif word_count >= 1000
+  elsif word_count >= 500
     recycle_base.set(key, val, :old_first)
   end
 end
@@ -165,28 +179,14 @@ Cvdict.load!("#{INP_DIR}/extraqt/names.txt").data.each do |key, val|
 
   ondicts = ONDICTS.includes?(key)
 
-  if ondicts && word_count >= 1000 && book_count >= 100
-    generic_base.set(key, val, :old_first)
-  elsif ondicts || (word_count >= 1000 && book_count >= 100)
+  if (ondicts && word_count >= 50) || word_count >= 500 || book_count >= 50
     suggest_base.set(key, val, :old_first)
-  elsif word_count >= 1000
+  elsif word_count >= 500
     recycle_base.set(key, val, :old_first)
   end
 
   next if generic_base.includes?(key)
   combine_base.set(key, val) if word_count >= 1000
-end
-
-Dir.glob("#{INP_DIR}/persist/generic/**/*.txt").each do |file|
-  Cvdict.load!(file).data.each do |key, val|
-    generic_base.set(key, val)
-  end
-end
-
-Dir.glob("#{INP_DIR}/persist/suggest/**/*.txt").each do |file|
-  Cvdict.load!(file).data.each do |key, val|
-    suggest_base.set(key, val)
-  end
 end
 
 # # cleanup
