@@ -4,7 +4,7 @@ require "json"
 require "../../src/engine/cv_util"
 require "./shared/cvdict"
 
-puts "- [load deps]".colorize(:cyan)
+puts "[Load deps]".colorize(:cyan)
 
 INP_DIR = File.join("data", ".inits", "dic-inp")
 TMP_DIR = File.join("data", ".inits", "dic-tmp")
@@ -17,7 +17,7 @@ COUNT_BOOKS = Counter.from_json File.read("#{INP_DIR}/counter/books.json")
 
 ONDICTS = Set(String).new File.read_lines("#{INP_DIR}/lexicon.txt")
 
-puts "- [load history]".colorize(:cyan)
+puts "\n[Load history]".colorize(:cyan)
 
 CHECKED = Set(String).new
 EXISTED = Set(String).new
@@ -54,8 +54,6 @@ def split_val(val : String)
 end
 
 def read_file(file)
-  puts "FILE: #{file}".colorize(:blue)
-
   File.read_lines(file).compact_map do |line|
     begin
       key, val = line.split "=", 2
@@ -66,13 +64,18 @@ def read_file(file)
   end
 end
 
-puts "[Read localqt]".colorize(:cyan)
+generic_base = Cvdict.new("#{OUT_DIR}/shared_base/generic.dic")
+suggest_base = Cvdict.new("#{OUT_DIR}/shared_base/suggest.dic")
+combine_base = Cvdict.new("#{OUT_DIR}/shared_base/combine.dic")
+recycle_base = Cvdict.new("#{OUT_DIR}/shared_base/recycle.dic")
+
+puts "\n[Load localqt]".colorize(:cyan)
 
 INPUT = Hash(String, Set(String)).new { |h, k| h[k] = Set(String).new }
 # WORDS = Dict.new { |h, k| h[k] = Set(String).new }
 
 Dir.glob("#{INP_DIR}/localqt/*.txt") do |file|
-  puts "- load file: [#{file.colorize(:cyan)}]"
+  puts "- load file: [#{file.colorize(:blue)}]"
 
   read_file(file).each do |key, vals|
     EXISTED.add key.as(String)
@@ -91,17 +94,6 @@ Dir.glob("#{INP_DIR}/localqt/replace/*.txt") do |file|
     INPUT[key].clear.concat(vals)
   end
 end
-
-puts "[extract localqt]".colorize(:cyan)
-
-generic_base = Cvdict.new("#{OUT_DIR}/shared_base/generic.dic")
-suggest_base = Cvdict.new("#{OUT_DIR}/shared_base/suggest.dic")
-combine_base = Cvdict.new("#{OUT_DIR}/shared_base/combine.dic")
-recycle_base = Cvdict.new("#{OUT_DIR}/shared_base/recycle.dic")
-
-generic_base.merge!("#{OUT_DIR}/hanviet.dic")
-generic_base.merge!("#{INP_DIR}/hanviet/lacviet/words.txt")
-generic_base.merge!("#{INP_DIR}/hanviet/checked/words.txt")
 
 INPUT.each do |key, vals|
   book_count = COUNT_BOOKS[key]? || 0
@@ -140,21 +132,26 @@ INPUT.each do |key, vals|
   end
 end
 
+puts "\n[Load generic]".colorize(:cyan)
+
 Dir.glob("#{INP_DIR}/persist/generic/**/*.txt").each do |file|
   Cvdict.load!(file).data.each do |key, val|
-    generic_base.set(key, val)
+    generic_base.set(key, val, :new_first)
+    CHECKED.add(key)
     EXISTED.add(key)
   end
 end
 
-Dir.glob("#{INP_DIR}/persist/suggest/**/*.txt").each do |file|
+puts "\n[Load suggest]".colorize(:cyan)
+
+Dir.glob("#{INP_DIR}/persist/suggest/*.txt").each do |file|
   Cvdict.load!(file).data.each do |key, val|
-    suggest_base.set(key, val)
+    suggest_base.set(key, val, :old_first) unless generic_base.includes?(key)
     EXISTED.add(key)
   end
 end
 
-puts "[Load extraqt]".colorize(:cyan)
+puts "\n[Load extraqt]".colorize(:cyan)
 
 Cvdict.load!("#{INP_DIR}/extraqt/words.txt").data.each do |key, val|
   next if EXISTED.includes?(key)
@@ -164,7 +161,9 @@ Cvdict.load!("#{INP_DIR}/extraqt/words.txt").data.each do |key, val|
 
   ondicts = ONDICTS.includes?(key)
 
-  if (ondicts && word_count >= 50) || (word_count >= 500 && book_count >= 50)
+  if (ondicts && book_count >= 20)
+    generic_base.set(key, val, :old_first)
+  elsif (ondicts && word_count >= 20) || (word_count >= 500 && book_count >= 50)
     suggest_base.set(key, val, :old_first)
   elsif word_count >= 500
     recycle_base.set(key, val, :old_first)
@@ -179,7 +178,9 @@ Cvdict.load!("#{INP_DIR}/extraqt/names.txt").data.each do |key, val|
 
   ondicts = ONDICTS.includes?(key)
 
-  if (ondicts && word_count >= 50) || word_count >= 500 || book_count >= 50
+  if (ondicts && book_count >= 20)
+    generic_base.set(key, val, :old_first)
+  elsif (ondicts && word_count >= 20) || word_count >= 500 || book_count >= 50
     suggest_base.set(key, val, :old_first)
   elsif word_count >= 500
     recycle_base.set(key, val, :old_first)
@@ -189,9 +190,27 @@ Cvdict.load!("#{INP_DIR}/extraqt/names.txt").data.each do |key, val|
   combine_base.set(key, val) if word_count >= 1000
 end
 
+# # hanviet
+
+puts "\n[Load hanviet]".colorize(:cyan)
+
+hanviet_dicts = {
+  "#{OUT_DIR}/hanviet.dic",
+  "#{INP_DIR}/hanviet/lacviet/words.txt",
+  "#{INP_DIR}/hanviet/checked/words.txt",
+}
+hanviet_dicts.each do |file|
+  Cvdict.load!(file).data.each do |key, val|
+    generic_base.set(key, val, :old_first)
+    EXISTED.add(key)
+  end
+end
+
 # # cleanup
+puts "\n[Cleanup]".colorize(:cyan)
 
 {suggest_base, combine_base, recycle_base}.each do |dic|
+  puts "- clean [#{dic.file.colorize(:blue)}]"
   dic.data.each do |key, val|
     if old_val = generic_base.get(key)
       new_val = val - old_val
@@ -204,7 +223,10 @@ end
   end
 end
 
+puts "\n[Save result]".colorize(:cyan)
+
 File.write("#{TMP_DIR}/checked.txt", CHECKED.to_a.join("\n"))
+File.write("#{TMP_DIR}/existed.txt", EXISTED.to_a.join("\n"))
 
 generic_base.save!
 suggest_base.save!

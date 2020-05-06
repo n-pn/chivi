@@ -1,7 +1,7 @@
 require "../../src/engine/cv_repo"
 
-repo = Engine::CvRepo.new("data/dic-out")
+repo = CvRepo.new("data/cv_dicts")
 
-puts repo.system.get_dic("hanviet").size
-puts repo.common.get_dic("generic").mtime
-puts repo.unique["not-found"][0].size
+puts repo.hanviet.size
+puts repo.shared_base["generic"].time
+puts repo.unique_base["not-found"].size

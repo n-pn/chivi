@@ -41,10 +41,6 @@ class CvDict
       if mtime = @mtime
         io << SEP_0 << mtime
       end
-
-      if extra = @extra
-        io << SEP_0 << extra
-      end
     end
 
     def self.mtime(time = Time.utc)
