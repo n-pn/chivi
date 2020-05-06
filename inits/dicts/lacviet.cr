@@ -1,4 +1,7 @@
-require "./util/cvdict"
+require "./shared/cvdict"
+
+INP_DIR = File.join("data", ".inits", "dic-inp")
+OUT_DIR = File.join("data", "cv_dicts")
 
 SEP_0 = "ǁ"
 SEP_1 = "¦"
@@ -16,11 +19,11 @@ def cleanup(val)
     .join("; ")
 end
 
-input = File.read_lines(".inp/routine/lacviet.txt")
-output = File.open(".dic/trungviet.dic", "w")
+input = File.read_lines("#{INP_DIR}/routine/lacviet.txt")
+output = File.open("#{OUT_DIR}/trungviet.dic", "w")
 
-chars = Cvdict.new(".inp/hanviet/lacviet/chars.txt")
-words = Cvdict.new(".inp/hanviet/lacviet/words.txt")
+chars = Cvdict.new("#{INP_DIR}/hanviet/lacviet/chars.txt")
+words = Cvdict.new("#{INP_DIR}/hanviet/lacviet/words.txt")
 
 input.each do |line|
   line = line.strip
