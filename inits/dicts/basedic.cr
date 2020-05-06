@@ -1,4 +1,4 @@
-require "../../src/engine/cutil"
+require "../../src/engine/cv_util"
 
 require "./shared/*"
 
@@ -16,7 +16,13 @@ end
 
 URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 
-def read_zip(zip_file : String = "data/dic-inp/routine/cedict.zip") : String
+INP_DIR = File.join("data", ".inits", "dic-inp")
+TMP_DIR = File.join("data", ".inits", "dic-tmp")
+OUT_DIR = File.join("data", "cv_dicts")
+
+ZIP_FILE = File.join(INP_DIR, "routine", "cedict.zip")
+
+def read_zip(zip_file = ZIP_FILE) : String
   print "-- fetching latest CC_CEDICT file from internet... ".colorize(:blue)
 
   if outdated?(zip_file)
@@ -48,11 +54,13 @@ end
 
 LINE_RE = /^(.+?) (.+?) \[(.+?)\] \/(.+)\/$/
 
-def load_input(inp_file : String = "data/dic-inp/routine/cedict.txt")
+INP_FILE = File.join(INP_DIR, "routine", "cedict.txt")
+
+def load_input(inp_file = INP_DIR)
   puts "- Load input from #{inp_file.colorize(:yellow)}"
 
   if outdated?(inp_file)
-    input = read_zip("data/dic-inp/routine/cedict.zip")
+    input = read_zip(ZIP_FILE)
 
     print "-- parsing...".colorize(:blue)
     output = [] of Array(String)
@@ -66,8 +74,8 @@ def load_input(inp_file : String = "data/dic-inp/routine/cedict.txt")
       lookup = cleanup_defn(defn, simp)
       next if lookup.empty?
 
-      trad = CUtil.normalize(trad).join
-      simp = CUtil.normalize(simp).join
+      trad = CvUtil.normalize(trad).join
+      simp = CvUtil.normalize(simp).join
       pinyin = pinyinfmt(pinyin)
 
       output << [trad, simp, pinyin, lookup]
@@ -82,10 +90,14 @@ def load_input(inp_file : String = "data/dic-inp/routine/cedict.txt")
   output
 end
 
+CEDICT_FILE  = File.join(OUT_DIR, "cc_cedict.dic")
+PINYINS_FILE = File.join(OUT_DIR, "pinyins.dic")
+TRADSIM_FILE = File.join(OUT_DIR, "tradsim.dic")
+
 def export_cedict(input)
   puts "\n- [Export cc_cedict]".colorize(:cyan)
 
-  output = Cvdict.new("data/dic-out/cc_cedict.dic")
+  output = Cvdict.new(CEDICT_FILE)
 
   input.each do |rec|
     _trad, simp, pinyin, lookup = rec
@@ -117,8 +129,8 @@ def export_pinyins(input, hanzidb)
     end
   end
 
-  output = Cvdict.new("data/dic-out/pinyins.dic")
-  output.load!("data/dic-inp/routine/pinyins.txt")
+  output = Cvdict.new(PINYINS_FILE)
+  output.load!(File.join(INP_DIR, "routine", "pinyins.txt"))
 
   counter.each do |char, count|
     best = count.to_a.sort_by { |pinyin, value| -value }.first(3).map(&.first)
@@ -141,7 +153,7 @@ end
 def export_tradsim(input, hanzidb)
   puts "\n- [Export tradsim]".colorize(:cyan)
 
-  tswords = Cvdict.new("data/dic-tmp/tswords.txt")
+  tswords = Cvdict.new(File.join(TMP_DIR, "tswords.txt"))
   counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
 
   input.each do |rec|
@@ -158,7 +170,7 @@ def export_tradsim(input, hanzidb)
     end
   end
 
-  output = Cvdict.new("data/dic-out/tradsim.dic")
+  output = Cvdict.new(TRADSIM_FILE)
 
   counter.each do |trad, counts|
     best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
@@ -189,11 +201,11 @@ def extract_ondicts(cedict, tradsim)
   ondicts = Set(String).new
 
   ondicts.concat cedict.keys.reject { |x| tradsim.includes?(x) }
-  ondicts.concat Cvdict.load!("data/dic-inp/routine/lacviet.txt").keys
-  ondicts.concat Cvdict.load!("data/dic-inp/hanviet/checked/words.txt").keys
-  ondicts.concat Cvdict.load!("data/dic-inp/hanviet/trichdan/words.txt").keys
+  ondicts.concat Cvdict.load!("#{INP_DIR}/routine/lacviet.txt").keys
+  ondicts.concat Cvdict.load!("#{INP_DIR}/hanviet/checked/words.txt").keys
+  ondicts.concat Cvdict.load!("#{INP_DIR}/hanviet/trichdan/words.txt").keys
 
-  out_file = "data/dic-tmp/ondicts.txt"
+  out_file = File.join(INP_DIR, "lexicon.txt")
   ondicts = ondicts.to_a.reject(&.!~(/\p{Han}/))
   File.write(out_file, ondicts.join("\n"))
 
@@ -214,17 +226,19 @@ end
 def export_hanviet(tradsim, pinyins, hanzidb)
   puts "\n- [Export hanviet]".colorize(:cyan)
 
-  history_file = "data/dic-inp/hanviet/localqt.log"
+  hanviet_dir = File.join(INP_DIR, "hanviet")
+
+  history_file = "#{hanviet_dir}/localqt.log"
   history = Set.new(File.read_lines(history_file)[1..].map(&.split("\t", 2)[0]))
 
-  localqt = Cvdict.load!("data/dic-inp/hanviet/localqt.txt")
+  localqt = Cvdict.load!("#{hanviet_dir}/localqt.txt")
 
-  localqt.merge!("data/dic-inp/hanviet/lacviet/chars.txt", mode: :old_first)
-  localqt.merge!("data/dic-inp/hanviet/trichdan/chars.txt", mode: :old_first)
+  localqt.merge!("#{hanviet_dir}/lacviet/chars.txt", mode: :old_first)
+  localqt.merge!("#{hanviet_dir}/trichdan/chars.txt", mode: :old_first)
 
   checked_files = {
-    "data/dic-inp/hanviet/checked/chars.txt",
-    "data/dic-inp/hanviet/checked/words.txt",
+    "#{hanviet_dir}/checked/chars.txt",
+    "#{hanviet_dir}/checked/words.txt",
   }
 
   checked_files.each do |file|
@@ -237,8 +251,8 @@ def export_hanviet(tradsim, pinyins, hanzidb)
 
   puts "\n- Split trad/simp, trad: #{tradsim.size}".colorize(:blue)
 
-  out_hanviet = Cvdict.new("data/dic-out/hanviet.dic")
-  out_hantrad = Cvdict.new("data/dic-out/hantrad.dic")
+  out_hanviet = Cvdict.new("#{OUT_DIR}/hanviet.dic")
+  out_hantrad = Cvdict.new("#{OUT_DIR}/hantrad.dic")
 
   localqt.data.each do |key, val|
     if keep_hanviet?(tradsim, key)
@@ -285,10 +299,11 @@ def export_hanviet(tradsim, pinyins, hanzidb)
 
   puts "\n- Fill missing hanviet from vietphrase".colorize(:blue)
 
+  localqt_dir = File.join(INP_DIR, "localqt")
   dict_files = {
-    "data/dic-inp/localqt/vietphrase.txt",
-    "data/dic-inp/localqt/names1.txt",
-    "data/dic-inp/localqt/names2.txt",
+    "#{localqt_dir}/vietphrase.txt",
+    "#{localqt_dir}/names1.txt",
+    "#{localqt_dir}/names2.txt",
   }
   recovered = 0
 
@@ -335,13 +350,13 @@ def export_hanviet(tradsim, pinyins, hanzidb)
   out_hanviet.save!(keep: 4, sort: true)
   out_hantrad.save!(keep: 4, sort: true)
 
-  out_file = "data/dic-tmp/hanmiss.txt"
+  out_file = "#{TMP_DIR}/hanmiss.txt"
   File.write out_file, missing.map { |x| "#{x}=#{pinyins.get(x)}" }.join("\n")
   puts "- saving [#{out_file.colorize(:green)}]... done, entries: #{missing.size.colorize(:green)}"
 end
 
-input = load_input("data/dic-inp/routine/cedict.txt")
-hanzidb = Cvdict.load!("data/dic-inp/routine/hanzidb.txt")
+input = load_input(INP_FILE)
+hanzidb = Cvdict.load!("#{INP_DIR}/routine/hanzidb.txt")
 
 cedict = export_cedict(input)
 tradsim = export_tradsim(input, hanzidb)
