@@ -3,6 +3,10 @@
     "Huyền ảo",
     false
   ],
+  "玄幻奇幻": [
+    "Huyền ảo",
+    true
+  ],
   "玄幻魔法": [
     "Huyền ảo",
     true
@@ -23,8 +27,12 @@
     "Tiên hiệp",
     false
   ],
+  "修真": [
+    "Tiên hiệp",
+    true
+  ],
   "修真武侠": [
-    "Huyền ảo",
+    "Tiên hiệp",
     true
   ],
   "科幻": [
@@ -34,6 +42,14 @@
   "奇幻": [
     "Kỳ huyễn",
     false
+  ],
+  "网游": [
+    "Trò chơi",
+    false
+  ],
+  "网游竞技": [
+    "Trò chơi",
+    true
   ],
   "游戏": [
     "Trò chơi",
@@ -55,6 +71,10 @@
     "Võ hiệp",
     false
   ],
+  "武侠仙侠": [
+    "Võ hiệp",
+    true
+  ],
   "二次元": [
     "Đồng nhân",
     true
@@ -66,6 +86,10 @@
   "科幻小说": [
     "Khoa viễn",
     false
+  ],
+  "科幻灵异": [
+    "Khoa viễn",
+    true
   ],
   "穿越时空": [
     "Xuyên việt",
@@ -143,6 +167,10 @@
     "Đồng nhân",
     false
   ],
+  "游戏小说": [
+    "Trò chơi",
+    false
+  ],
   "竞技小说": [
     "Trò chơi",
     true
@@ -158,6 +186,14 @@
   "游戏竞技": [
     "Trò chơi",
     false
+  ],
+  "言情": [
+    "Ngôn tình",
+    false
+  ],
+  "女生频道": [
+    "Ngôn tình",
+    true
   ],
   "耽美纯爱": [
     "Ngôn tình",
@@ -175,6 +211,10 @@
     "Huyền nghi",
     true
   ],
+  "小说": [
+    "Loại khác",
+    false
+  ],
   "其他": [
     "Loại khác",
     false
@@ -186,6 +226,10 @@
   "悬疑小说": [
     "Huyền nghi",
     false
+  ],
+  "职场": [
+    "Đô thị",
+    true
   ],
   "总裁豪门": [
     "Đô thị",

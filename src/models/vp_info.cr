@@ -10,22 +10,26 @@ class VpInfo
   property slug = ""
 
   property title_zh = ""
+
   property title_vi = ""
+  property title_vi_slug = ""
+
   property title_hv = ""
+  property title_hv_slug = ""
 
   property author_zh = ""
   property author_vi = ""
-  property author_sl = ""
-
-  property intro_zh = ""
-  property intro_vi = ""
+  property author_vi_slug = ""
 
   property genre_zh = ""
   property genre_vi = ""
-  property genre_sl = ""
+  property genre_vi_slug = ""
 
   property tags_zh = [] of String
   property tags_vi = [] of String
+
+  property intro_zh = ""
+  property intro_vi = ""
 
   property covers = [] of String
 

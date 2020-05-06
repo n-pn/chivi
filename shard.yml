@@ -17,8 +17,8 @@ targets:
   map_spider:
     main: inits/books/map_spider.cr
 
-  info_combine:
-    main: inits/books/info_combine.cr
+  convert_info:
+    main: inits/convert_info.cr
 
   books_chlists:
     main: inits/books/chlists.cr

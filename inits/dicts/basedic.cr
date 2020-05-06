@@ -227,25 +227,25 @@ def export_hanviet(tradsim, pinyins, hanzidb)
   puts "\n- [Export hanviet]".colorize(:cyan)
 
   hanviet_dir = File.join(INP_DIR, "hanviet")
-
-  history_file = "#{hanviet_dir}/localqt.log"
-  history = Set.new(File.read_lines(history_file)[1..].map(&.split("\t", 2)[0]))
-
   localqt = Cvdict.load!("#{hanviet_dir}/localqt.txt")
-
-  localqt.merge!("#{hanviet_dir}/lacviet/chars.txt", mode: :old_first)
-  localqt.merge!("#{hanviet_dir}/trichdan/chars.txt", mode: :old_first)
 
   checked_files = {
     "#{hanviet_dir}/checked/chars.txt",
     "#{hanviet_dir}/checked/words.txt",
   }
 
+  history_file = "#{hanviet_dir}/localqt.log"
+  history = Set.new(File.read_lines(history_file)[1..].map(&.split("\t", 2)[0]))
+
   checked_files.each do |file|
     Cvdict.load!(file).data.each do |key, val|
-      localqt.set(key, val) unless history.includes?(key)
+      mode = history.includes?(key) ? :keep_old : :keep_new
+      localqt.set(key, val, mode)
     end
   end
+
+  localqt.merge!("#{hanviet_dir}/lacviet/chars.txt", mode: :old_first)
+  localqt.merge!("#{hanviet_dir}/trichdan/chars.txt", mode: :old_first)
 
   puts "\n- input: #{localqt.size.colorize(:yellow)}"
 
