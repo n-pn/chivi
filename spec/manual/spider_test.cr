@@ -1,7 +1,7 @@
 require "file_utils"
 
-require "../../src/bookdb/info_spider.cr"
-require "../../src/bookdb/text_spider.cr"
+require "../../src/spider/info_spider.cr"
+require "../../src/spider/text_spider.cr"
 
 def test_info(site, bsid, expiry = 6.hours) : Void
   spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: true)

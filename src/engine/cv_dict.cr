@@ -15,12 +15,17 @@ class CvDict
     getter vals : Array(String)
     getter mtime : Int32? = nil
 
-    def initialize(line : String)
+    def self.parse(line : String)
       cols = line.split(SEP_0)
+      new(cols[0], split(cols[1]? || ""), cols[2]?.try(&.to_i?))
+    end
 
-      @key = cols[0]
-      @vals = (cols[1]? || "").split(SEP_1)
-      @mtime = cols[2]?.try(&.to_i?)
+    def self.split(vals : String)
+      vals.split(SEP_1)
+    end
+
+    def self.mtime(time = Time.utc)
+      (time - EPOCH).total_minutes.to_i
     end
 
     def initialize(@key : String, vals : String, @mtime = nil)
@@ -41,10 +46,6 @@ class CvDict
       if mtime = @mtime
         io << SEP_0 << mtime
       end
-    end
-
-    def self.mtime(time = Time.utc)
-      (time - EPOCH).total_minutes.to_i
     end
   end
 
@@ -94,7 +95,7 @@ class CvDict
 
     time1 = Time.monotonic
     lines = File.read_lines(file)
-    lines.each { |line| put(Item.new(line)) }
+    lines.each { |line| put(Item.parse(line)) }
     time2 = Time.monotonic
 
     elapsed = (time2 - time1).total_milliseconds

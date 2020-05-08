@@ -1,8 +1,11 @@
 require "json"
 
 require "./cv_dict"
-require "./cv_util"
 require "./cv_node"
+
+require "../_utils/normalize"
+require "../_utils/han_to_int"
+require "../_utils/string_utils"
 
 module CvCore
   extend self
@@ -53,7 +56,7 @@ module CvCore
   end
 
   private def vi_title(index : String, label = "")
-    int = CvUtil.hanzi_int(index)
+    int = Utils.han_to_int(index)
 
     case label
     when "章" then "Chương #{int}"
@@ -75,7 +78,7 @@ module CvCore
     weights = [0.0]
 
     norms = chars.map_with_index do |char, idx|
-      norm = CvUtil.normalize(char)
+      norm = Utils.normalize(char)
 
       weights << idx + 1.0
       selects << CvNode.new(char, norm)
@@ -198,7 +201,7 @@ module CvCore
       next if node.val.empty?
 
       if apply_cap && node.val[0].alphanumeric?
-        node.val = CvUtil.capitalize(node.val)
+        node.val = Utils.capitalize(node.val)
         apply_cap = false
       else
         apply_cap ||= cap_after?(node.val)

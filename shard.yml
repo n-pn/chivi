@@ -9,22 +9,22 @@ targets:
     main: src/server.cr
 
   map_yousuu:
-    main: inits/books/map_yousuu.cr
+    main: tasks/books/map_yousuu.cr
 
   map_zhwenpg:
-    main: inits/books/map_zhwenpg.cr
+    main: tasks/books/map_zhwenpg.cr
 
   map_spider:
-    main: inits/books/map_spider.cr
+    main: tasks/books/map_spider.cr
 
   convert_info:
-    main: inits/convert_info.cr
+    main: tasks/convert_info.cr
 
   books_chlists:
-    main: inits/books/chlists.cr
+    main: tasks/books/chlists.cr
 
   books_indexes:
-    main: inits/books/indexes.cr
+    main: tasks/books/indexes.cr
 
   fetch_texts:
     main: tasks/fetch_texts.cr
