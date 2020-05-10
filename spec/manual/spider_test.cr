@@ -26,10 +26,10 @@ end
 # test_info("hetushu", "5")
 # test_info("hetushu", "4420")
 # test_info("duokan8", "6293")
-# test_info("paoshu8", "1986")
+test_info("paoshu8", "817")
 # test_info("69shu", "30062")
 # test_info("zhwenpg", "junthn")
-test_info("zhwenpg", "kun6m7")
+# test_info("zhwenpg", "kun6m7")
 
 # test_text("jx_la", "7", "3666")
 # test_text("jx_la", "75722", "4089610")

@@ -1,6 +1,7 @@
 require "json"
 
 require "../_utils/file_utils"
+require "../_utils/fix_chtitles"
 require "../_utils/string_utils"
 
 class ChapItem
@@ -45,9 +46,9 @@ class ChapItem
   end
 
   def gen_slug(words : Int32 = 10) : Bool
-    return false if @title.empty?
+    return false if @vi_title.empty?
 
-    slug = Utils.slugify(@title, no_accent: true)
+    slug = Utils.slugify(@vi_title, no_accent: true)
     @title_slug = slug.split("-").first(words).join("-")
 
     true

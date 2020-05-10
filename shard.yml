@@ -20,11 +20,8 @@ targets:
   convert_info:
     main: tasks/convert_info.cr
 
-  books_chlists:
-    main: tasks/books/chlists.cr
-
-  books_indexes:
-    main: tasks/books/indexes.cr
+  convert_list:
+    main: tasks/convert_list.cr
 
   fetch_texts:
     main: tasks/fetch_texts.cr
