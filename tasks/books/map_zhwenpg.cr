@@ -123,6 +123,7 @@ def extract_info(dom, idx = "1/1") : Void
 
   mfdate = rows[3].css(".fontime").first.inner_text
   mftime = Utils.parse_time(mfdate).to_unix
+  puts "- #{title} - #{mftime}"
 
   info.set_mftime(mftime)
   info.cr_mftimes["zhwenpg"] = mftime

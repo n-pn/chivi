@@ -18,10 +18,12 @@ module Engine
   end
 
   def translate(input : String, title : Bool, book : String? = nil, user = "local")
+    return input if input.empty?
     convert(input, title, book, user).vi_text
   end
 
   def translate(input : Array(String), mode : Symbol, book : String? = nil, user = "local")
+    return input if input.empty?
     convert(input, mode, book, user).map(&.vi_text)
   end
 

@@ -1,4 +1,4 @@
-require "../../src/engine/cv_util"
+require "../../src/_utils/normalize"
 
 require "./shared/*"
 
@@ -74,8 +74,8 @@ def load_input(inp_file = INP_DIR)
       lookup = cleanup_defn(defn, simp)
       next if lookup.empty?
 
-      trad = CvUtil.normalize(trad).join
-      simp = CvUtil.normalize(simp).join
+      trad = Utils.normalize(trad).join
+      simp = Utils.normalize(simp).join
       pinyin = pinyinfmt(pinyin)
 
       output << [trad, simp, pinyin, lookup]
@@ -347,12 +347,19 @@ def export_hanviet(tradsim, pinyins, hanzidb)
 
   puts "- write results".colorize(:blue)
 
+  out_hanviet.data.each do |key, val|
+    if key =~ /\w/
+      puts "-- NO HANZI: [#{key}, #{val}]"
+      out_hanviet.del(key)
+    end
+  end
+
   out_hanviet.save!(keep: 4, sort: true)
   out_hantrad.save!(keep: 4, sort: true)
 
-  out_file = "#{TMP_DIR}/hanmiss.txt"
-  File.write out_file, missing.map { |x| "#{x}=#{pinyins.get(x)}" }.join("\n")
-  puts "- saving [#{out_file.colorize(:green)}]... done, entries: #{missing.size.colorize(:green)}"
+  miss_file = "#{TMP_DIR}/hanmiss.txt"
+  File.write miss_file, missing.map { |x| "#{x}=#{pinyins.get(x)}" }.join("\n")
+  puts "- saving [#{miss_file.colorize(:green)}]... done, entries: #{missing.size.colorize(:green)}"
 end
 
 input = load_input(INP_FILE)

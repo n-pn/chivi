@@ -158,7 +158,7 @@ class BookInfo
   end
 
   def self.load!(uuid : String) : BookInfo
-    @@infos[uuid] ||= read!(path_for(uuid))
+    read!(path_for(uuid))
   end
 
   def self.read!(file : String) : BookInfo
@@ -170,21 +170,20 @@ class BookInfo
     File.write(path_for(info.uuid), info.to_pretty_json)
   end
 
-  @@infos = {} of String => BookInfo
-
   def self.load_all(reset : Bool = false)
+    infos = {} of String => BookInfo
     count = 0
 
     files = Dir.glob(File.join(DIR, "*.json"))
     files.each do |file|
       uuid = File.basename(file, ".json")
-      next if !reset && @@infos.has_key?(uuid)
+      next if !reset && infos.has_key?(uuid)
 
       count += 1
-      @@infos[uuid] = read!(file)
+      infos[uuid] = read!(file)
     end
 
     # puts "- [BOOK_INFO] loaded #{count.colorize(:blue)} entries"
-    @@infos
+    infos
   end
 end
