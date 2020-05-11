@@ -11,7 +11,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware'
 const proxy = createProxyMiddleware('/api', {
   target: 'http://localhost:5110',
   changeOrigin: true,
-  pathRewrite: path => encodeURI(path),
+  pathRewrite: (path) => encodeURI(path),
 })
 
 polka() // You can also use Express
@@ -19,8 +19,9 @@ polka() // You can also use Express
     proxy,
     compression({ threshold: 0 }),
     sirv('static', { dev }),
+    sirv('upload', { dev }),
     sapper.middleware()
   )
-  .listen(PORT, '0.0.0.0', err => {
+  .listen(PORT, '0.0.0.0', (err) => {
     if (err) console.log('error', err)
   })

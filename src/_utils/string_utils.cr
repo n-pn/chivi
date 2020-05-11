@@ -3,6 +3,11 @@ module Utils
     input.split("\n").map(&.strip).reject(&.empty?)
   end
 
+  def self.split_words(input : String)
+    chars = slugify(input.gsub(/[\p{Han}\p{Hiragana}\p{Katakana}]+/, "-"), no_accent: true).split("-").uniq
+    chars.concat(input.gsub(/\P{Han}\P{Hiragana}\P{Katakana}/, "").split("").uniq).reject(&.empty?)
+  end
+
   # capitalize all words
   def self.titleize(input : String)
     input.split(" ").map { |x| capitalize(x) }.join(" ")

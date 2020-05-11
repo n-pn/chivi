@@ -22,7 +22,8 @@ Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
   uuid = BookInfo.uuid_for(info.title, info.author)
   sitemap << {info._id, uuid, info.title, info.author}.join("--")
 
-  next if info.score == 0 || info.title.empty? || info.author.empty?
+  next if info.title.empty? || info.author.empty?
+  next unless info.scorerCount > 0 || info.commentCount > 0
 
   if old_info = inputs[uuid]?
     next if old_info.updateAt >= info.updateAt

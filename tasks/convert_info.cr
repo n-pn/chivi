@@ -71,20 +71,12 @@ hastext = [] of String
 
 query = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
 
-def zh_split(str : String)
-  return [str] unless str =~ /\p{Han}/
-  str.split("")
-end
-
-def tokenize(info)
-  chars = zh_split(info.zh_title)
-  chars.concat(zh_split(info.zh_author))
-
-  hv_slug = Utils.slugify(info.hv_title, no_accent: true)
-  chars.concat(hv_slug.split("-"))
-
-  chars.concat(info.title_slug.split("-"))
-  chars.concat(info.author_slug.split("-"))
+def gen_query_words(info)
+  chars = Utils.split_words(info.zh_title)
+  chars.concat(Utils.split_words(info.zh_author))
+  chars.concat(Utils.split_words(info.hv_title))
+  chars.concat(info.title_slug.split("-").reject(&.empty?))
+  chars.concat(info.author_slug.split("-").reject(&.empty?))
 
   chars.uniq
 end
@@ -126,7 +118,7 @@ input.each_with_index do |info, idx|
     update << {info.uuid, info.mftime}
     access << {info.uuid, info.mftime}
 
-    tokenize(info).each do |token|
+    gen_query_words(info).each do |token|
       query[token] << info.uuid
     end
   end
@@ -148,7 +140,6 @@ puts "- Save indexes...".colorize(:cyan)
 INDEX_DIR = "data/indexing"
 FileUtils.mkdir_p(INDEX_DIR)
 
-File.write "#{INDEX_DIR}/query.json", query.to_pretty_json
 File.write "#{INDEX_DIR}/tally.json", tally.sort_by(&.[1]).to_pretty_json
 File.write "#{INDEX_DIR}/score.json", score.sort_by(&.[1]).to_pretty_json
 File.write "#{INDEX_DIR}/votes.json", votes.sort_by(&.[1]).to_pretty_json
@@ -163,3 +154,12 @@ File.write "#{INDEX_DIR}/hastext.txt", hastext.join("\n")
 
 puts "-- mapping: #{mapping.size}"
 File.write "#{INDEX_DIR}/mapping.json", mapping.to_pretty_json
+
+QUERY_DIR = File.join(INDEX_DIR, "queries")
+
+FileUtils.rm_rf(QUERY_DIR)
+FileUtils.mkdir_p(QUERY_DIR)
+
+query.each do |word, list|
+  File.write File.join(QUERY_DIR, "#{word}.txt"), list.join("\n")
+end

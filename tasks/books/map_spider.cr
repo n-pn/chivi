@@ -58,9 +58,9 @@ end
 
 def gen_expiry(status : Int32)
   case status
-  when 0 then 4.hours
-  when 1 then 10.days
-  else        360.days
+  when 0 then 10.hours
+  when 1 then 20.days
+  else        30.months
   end
 end
 

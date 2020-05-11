@@ -27,16 +27,22 @@ def update_infos(info, label)
   puts "- <#{label.colorize(:blue)}> #{info.zh_title.colorize(:blue)}--#{info.zh_author.colorize(:blue)}"
 
   expiry = gen_expiry(info.status)
+  update = false
 
   info.cr_anchors.each do |site, bsid|
-    time = site == "paoshu8" ? 10.years : expiry
+    out_file = ChapList.path_for(info.uuid, site, bsid)
+
+    time = site == "paoshu8" ? 10.months : expiry
     spider = InfoSpider.load(site, bsid, expiry: time, frozen: true)
+
+    mftime = spider.get_mftime!
+    next unless Utils.outdated?(out_file, Time.unix(mftime))
 
     info.set_status(spider.get_status!)
 
-    mftime = spider.get_mftime!
     info.set_mftime(mftime)
     info.cr_mftimes[site] = mftime
+    update = true
 
     chaps = spider.get_chaps!
     chaps.each do |item|
@@ -45,8 +51,7 @@ def update_infos(info, label)
       item.gen_slug(20)
     end
 
-    out_file = ChapList.path_for(info.uuid, site, bsid)
-    ChapList.save!(out_file, chaps)
+    ChapList.save!(out_file, chaps) if update
   rescue err
     puts "- [#{site}-#{bsid}] #{err}".colorize(:red)
   end
