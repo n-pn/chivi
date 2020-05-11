@@ -20,6 +20,9 @@ targets:
   convert_info:
     main: tasks/convert_info.cr
 
+  rebuild_index:
+    main: tasks/rebuild_index.cr
+
   convert_list:
     main: tasks/convert_list.cr
 

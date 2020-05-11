@@ -23,7 +23,7 @@ Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
   sitemap << {info._id, uuid, info.title, info.author}.join("--")
 
   next if info.title.empty? || info.author.empty?
-  next unless info.scorerCount > 0 || info.commentCount > 0
+  next unless info.score > 0 || info.commentCount > 0
 
   if old_info = inputs[uuid]?
     next if old_info.updateAt >= info.updateAt
@@ -40,7 +40,9 @@ rescue err
   puts "#{file} err: #{err}".colorize(:red)
 end
 
-File.write(File.join("data", "sitemaps", "yousuu.txt"), sitemap.join("\n"))
+MAP_DIR = File.join("data", "sitemaps")
+FileUtils.mkdir_p(MAP_DIR)
+File.write(File.join(MAP_DIR, "yousuu.txt"), sitemap.join("\n"))
 
 FileUtils.mkdir_p(BookInfo::DIR)
 

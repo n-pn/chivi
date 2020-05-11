@@ -1,11 +1,11 @@
 require "./engine"
 
-require "./spider/info_crawler"
-require "./spider/text_crawler"
+require "./spider/info_spider"
+require "./spider/text_spider"
 
-require "./entity/vbook"
-require "./entity/vchap"
-require "./entity/vtext"
+require "./models/book_info"
+require "./models/chap_list"
+require "./entity/chap_text"
 
 module Kernel
   extend self
@@ -33,23 +33,23 @@ module Kernel
     bsid = book.crawl_links[site]?
     return {book, site, "", VList.new} if bsid.nil?
 
-    crawler = InfoCrawler.new(site, bsid, book.mtime)
+    spider = InfoCrawler.new(site, bsid, book.mtime)
     FileUtil.mkdir_p("#{VList.dir}/#{site}")
-    crawler.mkdirs!
+    spider.mkdirs!
 
-    if crawler.cached?(update_time(book.status), require_html = false)
-      crawler.load_cached
+    if spider.cached?(update_time(book.status), require_html = false)
+      spider.load_cached
     else
-      crawler.reset_cache
-      crawler.mkdirs!
-      crawler.crawl!(persist: true)
+      spider.reset_cache
+      spider.mkdirs!
+      spider.crawl!(persist: true)
     end
 
-    changed = book.update(crawler.sbook)
+    changed = book.update(spider.sbook)
     VBook.save(book) if changed
 
     list = VList.load(site, bsid)
-    changed = list.update(crawler.slist)
+    changed = list.update(spider.slist)
     VList.save(list, bsid, site) if changed
 
     {book, site, bsid, list}
@@ -65,14 +65,14 @@ module Kernel
       return data
     end
 
-    crawler = TextCrawler.new(site, bsid, csid)
+    spider = TextCrawler.new(site, bsid, csid)
 
-    if crawler.cached?
-      lines = File.read_lines(crawler.text_file)
+    if spider.cached?
+      lines = File.read_lines(spider.text_file)
     else
-      crawler.mkdirs!
-      crawler.crawl!(persist: true)
-      lines = [crawler.title].concat(crawler.paras)
+      spider.mkdirs!
+      spider.crawl!(persist: true)
+      lines = [spider.title].concat(spider.paras)
     end
 
     paras = Engine.convert(lines, mode: :mixed, book: nil, user: user)

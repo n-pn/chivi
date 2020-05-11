@@ -274,9 +274,10 @@ class InfoSpider
   end
 
   private def extract_volumes(selector)
-    volumes = [] of Volume
+    return ChapList.new unless parent = @dom.css(selector).first?
 
-    nodes = @dom.css(selector).first.children
+    nodes = parent.children
+    volumes = [] of Volume
 
     nodes.each do |node|
       if node.tag_sym == :dt
@@ -322,7 +323,10 @@ class InfoSpider
   end
 
   private def meta_content(css : String)
-    node = @dom.css("meta[property=\"#{css}\"]").first
-    node.attributes["content"]
+    if node = @dom.css("meta[property=\"#{css}\"]").first?
+      node.attributes["content"]
+    else
+      ""
+    end
   end
 end

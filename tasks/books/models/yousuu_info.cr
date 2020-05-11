@@ -63,10 +63,7 @@ struct YousuuInfo
 
   def fix_cover!
     if @cover.starts_with?("http")
-      @cover =
-        @cover
-          .sub("http://image.qidian.com/books", "https://qidian.qpic.cn/qdbimg")
-          .sub("/300", "/300.jpg")
+      @cover = @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
     else
       @cover = ""
     end

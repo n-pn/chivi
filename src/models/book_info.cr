@@ -154,8 +154,7 @@ class BookInfo
 
   def self.load(uuid : String) : BookInfo?
     file = path_for(uuid)
-    return unless File.exists?(file)
-    @@infos[uuid] ||= read!(file)
+    read!(file) if File.exists?(file)
   end
 
   def self.load!(uuid : String) : BookInfo

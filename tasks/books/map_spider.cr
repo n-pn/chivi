@@ -4,6 +4,8 @@ require "file_utils"
 require "../../src/models/book_info.cr"
 require "../../src/spider/info_spider.cr"
 
+RETRY = ARGV.includes?("retry")
+
 module Mapping
   DIR = File.join("data", "sitemaps")
 
@@ -19,7 +21,7 @@ module Mapping
       File.read_lines(mapfile).each do |line|
         next if line.empty?
         bsid, uuid = line.split("--")
-        sitemap[bsid] = uuid
+        sitemap[bsid] = uuid unless RETRY && uuid.empty?
       end
     end
 
@@ -87,21 +89,27 @@ def update_infos(site, bsid, uuid, label) : Void
     puts "- <#{label.colorize(:green)}> #{title}"
     BookInfo.save!(info)
   else
-    puts "- <#{label.colorize(:blue)}> #{title}"
+    puts "- <#{label.colorize(:cyan)}> #{title}"
   end
 rescue err
-  Mapping.append(site, "#{bsid}--") unless uuid
+  Mapping.append(site, bsid)
+  file = SpiderUtil.info_path(site, bsid)
+  File.delete(file) if RETRY && File.exists?(file)
+
   puts "- <#{label.colorize(:red)}> #{err.message}"
 end
 
 def load_skipping(site : String)
-  skip_dir = File.join("data", ".inits", "txt-inp", site, "skips")
-  return Set(String).new unless File.exists?(skip_dir)
+  skipping = Set(String).new
 
-  skip_ids = Dir.children(skip_dir).map do |file|
-    File.basename(file, ".txt")
+  skip_dir = File.join("data", ".inits", "txt-inp", site, "skips")
+  if File.exists?(skip_dir)
+    Dir.children(skip_dir).map do |file|
+      skipping << File.basename(file, ".txt")
+    end
   end
-  Set(String).new(skip_ids)
+
+  skipping
 end
 
 def map_spider(site = "rengshu", upto = 4275, uuids = Set(String).new)
@@ -122,6 +130,8 @@ def map_spider(site = "rengshu", upto = 4275, uuids = Set(String).new)
 
     mapping << {bsid, uuid}
   end
+
+  puts "- size: #{mapping.size.colorize(:yellow)}"
 
   return if mapping.empty?
 

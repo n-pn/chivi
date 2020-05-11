@@ -33,7 +33,7 @@ def download_cover(url : String, file : String, label = "1/1")
       end
     end
 
-    File.write(file, res.try(&.body_io))
+    File.write(file, res.body_io.try(&.gets_to_end))
   rescue err
     FileUtils.touch(file)
     puts "- <#{url}>: #{err.colorize(:red)}"

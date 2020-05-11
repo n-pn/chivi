@@ -24,13 +24,13 @@ end
 def update_infos(info, label)
   return if info.cr_anchors.empty?
 
-  puts "- <#{label.colorize(:blue)}> #{info.zh_title.colorize(:blue)}--#{info.zh_author.colorize(:blue)}"
+  puts "- <#{label.colorize(:cyan)}> #{info.zh_title.colorize(:cyan)}--#{info.zh_author.colorize(:cyan)}"
 
   expiry = gen_expiry(info.status)
   update = false
 
   info.cr_anchors.each do |site, bsid|
-    out_file = ChapList.path_for(info.uuid, site, bsid)
+    out_file = ChapList.path_for(info.uuid, site)
 
     time = site == "paoshu8" ? 10.months : expiry
     spider = InfoSpider.load(site, bsid, expiry: time, frozen: true)

@@ -67,12 +67,12 @@ class ChapList < Array(ChapItem)
     Dir.glob(File.join(DIR, "*.json"))
   end
 
-  def self.path_for(guid : String, site : String, bsid : String)
-    File.join(DIR, "#{guid}.#{site}.#{bsid}.json")
+  def self.path_for(uuid : String, site : String)
+    File.join(DIR, "#{uuid}.#{site}.json")
   end
 
-  def self.load(guid : String, site : String, bsid : String)
-    file = path_for(guid, site, bsid)
+  def self.load(uuid : String, site : String)
+    file = path_for(uuid, site)
     File.exists?(file) ? read!(file) : ChapList.new
   end
 
