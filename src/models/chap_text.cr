@@ -22,7 +22,7 @@ class ChapText < Array(CvNodes)
 
   # class methods
 
-  DIR = File.join("data", "cv_texts")
+  DIR = File.join("data", "vp_texts")
 
   def self.uuid_for(buid : String, site : String, bsid : String)
     "#{buid}.#{site}.#{bsid}"
@@ -37,7 +37,10 @@ class ChapText < Array(CvNodes)
   end
 
   def self.load(file : String)
-    return nil unless File.exists?(file)
+    load!(file) if File.exists?(file)
+  end
+
+  def self.load!(file : String)
     from_json(File.read(file))
   end
 

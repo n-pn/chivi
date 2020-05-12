@@ -1,3 +1,5 @@
+require "file_utils"
+
 require "./engine"
 
 require "./spider/info_spider"
@@ -72,40 +74,41 @@ module Kernel
     chaps
   end
 
-  def translate(input : String, title = true)
-    return input if input.empty?
-    Engine.translate(input, title: title, book: nil, user: "local")
+  def load_chap(info : BookInfo, site : String, csid : String, user = "guest", mode = 0, unique : Bool = false)
+    bsid = info.cr_anchors[site]
+    uuid = ChapText.uuid_for(info.uuid, site, bsid)
+
+    json_file = ChapText.path_for(uuid, csid, user)
+    text_file = File.join("data", "zh_texts", uuid, "#{csid}.txt")
+
+    if File.exists?(json_file) && mode == 0
+      return ChapText.load!(json_file)
+    end
+
+    if File.exists?(text_file) && mode == 1
+      lines = File.read_lines(text_file)
+    else
+      spider = TextSpider.load(site, bsid, csid, expiry: 10.years, frozen: false)
+      lines = [spider.get_title!].concat(spider.get_paras!)
+
+      FileUtils.mkdir_p(File.dirname(text_file))
+      File.write(text_file, lines.join("\n"))
+    end
+
+    book = unique ? info.uuid : nil
+    paras = Engine.convert(lines, mode: :mixed, book: book, user: user)
+
+    FileUtils.mkdir_p(File.dirname(json_file))
+    File.write(json_file, paras.to_json)
+    paras
   end
-
-  # def load_text(site : String, bsid : String, csid : String, book : String? = nil, user = "local")
-  #   file_out = "data/txt-out/chtexts/#{site}/#{bsid}/#{csid}.json"
-  #   VText.mkdir(site, bsid)
-
-  #   file_tmp = "data/txt-tmp/chtexts/#{site}/#{bsid}/#{csid}.txt"
-
-  #   if data = VText.load(site, bsid, csid)
-  #     return data
-  #   end
-
-  #   spider = TextCrawler.new(site, bsid, csid)
-
-  #   if spider.cached?
-  #     lines = File.read_lines(spider.text_file)
-  #   else
-  #     spider.mkdirs!
-  #     spider.crawl!(persist: true)
-  #     lines = [spider.title].concat(spider.paras)
-  #   end
-
-  #   paras = Engine.convert(lines, mode: :mixed, book: nil, user: user)
-  #   File.write(file_out, paras.to_json)
-
-  #   paras
-  # end
 end
 
 # info = BookRepo.load("akpwpjf3").not_nil!
 # puts info.vi_title
 
 # chaps = Kernel.load_list(info, info.cr_site_df, refresh: true)
-# puts chaps.reverse.first(10)
+# puts chaps.reverse.first(4)
+
+# paras = Kernel.load_chap(info, info.cr_site_df, "3183122")
+# puts paras.first(10).map(&.vi_text)
