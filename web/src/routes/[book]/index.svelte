@@ -1,25 +1,52 @@
 <script context="module">
   export async function preload({ params, query }) {
     const slug = params.book
-    const site = query.site
 
     let url = `api/books/${slug}`
-    if (site) url += `/${site}`
+    const refresh = query.refresh == 'true'
 
     try {
       const res = await this.fetch(url)
       const data = await res.json()
 
-      if (res.status == 200) return data
+      if (res.status != 200) this.error(res.status, data.msg)
+      else {
+        const { book } = data
+        const site = query.site || book.cr_site_df
 
-      this.error(res.status, data.msg)
+        let list = []
+        if (site != '') {
+          const list_data = await load_list(
+            this.fetch,
+            book.slug,
+            site,
+            refresh
+          )
+          if (list_data.status == 200) list = list_data.list
+        }
+        return { book, site, list }
+      }
     } catch (err) {
       this.error(500, err.message)
     }
   }
 
+  export async function load_list(api, slug, site, refresh = false) {
+    let url = `api/books/${slug}/${site}?refresh=${refresh}`
+    try {
+      const res = await api(url)
+      const data = await res.json()
+
+      if (res.status == 200)
+        return { status: 200, list: data.list, bsid: data.bsid }
+      else return { status: res.status, message: data.msg }
+    } catch (err) {
+      return { status: 500, message: err.message }
+    }
+  }
+
   export function relative_time(time) {
-    const span = (new Date().getTime() - time) / 1000
+    const span = new Date().getTime() / 1000 - time
 
     if (span < 60) return '< 1 phút trước'
     if (span < 60 * 60) return `${Math.round(span / 60)} phút trước`
@@ -41,23 +68,23 @@
     }
   }
 
-  export function map_volumes(chlist) {
+  export function map_volumes(list) {
     let volumes = {}
-    for (const chap of chlist) {
+    for (const chap of list) {
       volumes[chap.vi_volume] = volumes[chap.vi_volume] || []
       volumes[chap.vi_volume].push(chap)
     }
     return volumes
   }
 
-  export function get_latests(chlist) {
-    const start = chlist.length - 1
+  export function get_latests(list) {
+    const start = list.length - 1
     let stop = start - 5
     if (stop < 0) stop = 0
 
     const res = []
     for (let i = start; i >= stop; i--) {
-      res.push(chlist[i])
+      res.push(list[i])
     }
 
     return res
@@ -70,42 +97,46 @@
 
   export let book
   export let site
-  export let bsid
-  export let chlist = []
+  export let list = []
 
   import { onMount } from 'svelte'
   import { lookup_active } from '$src/stores.js'
   onMount(() => lookup_active.set(false))
 
-  $: volumes = map_volumes(chlist)
-  $: latests = get_latests(chlist)
+  $: sites = Object.keys(book.cr_anchors)
+  $: volumes = map_volumes(list)
+  $: latests = get_latests(list)
+
+  $: cover_url = `https://chivi.xyz/covers/${book.uuid}.jpg`
+  $: updated_at = new Date(book.mftime * 1000)
+  $: status = book_status(book.status)
+  $: book_url = `https://chivi.xyz/${book.slug}/`
+  $: keywords = [
+    book.vi_title,
+    book.zh_title,
+    book.hv_title,
+    book.vi_author,
+    book.zh_author,
+    book.vi_genre,
+    book.zh_genre,
+  ]
 </script>
 
 <svelte:head>
   <title>{book.vi_title} - Chivi</title>
-  <meta
-    name="keywords"
-    content="{book.vi_title},{book.zh_title},{book.vi_author},{book.zh_author}" />
+  <meta name="keywords" content={keywords.join(',')} />
   <meta name="description" content={book.vi_intro} />
   <meta property="og:type" content="novel" />
   <meta property="og:title" content={book.vi_title} />
   <meta property="og:description" content={book.vi_intro} />
-  <meta property="og:image" content={book.covers[0]} />
+  <meta property="og:image" content={cover_url} />
   <meta property="og:novel:category" content={book.vi_genre} />
   <meta property="og:novel:author" content={book.vi_author} />
   <meta property="og:novel:book_name" content={book.vi_title} />
-  <meta
-    property="og:novel:read_url"
-    content="http://chivi.xyz/{book.vi_slug}/" />
-  <meta property="og:url" content="http://chivi.xyz/{book.vi_slug}/" />
-  <meta property="og:novel:status" content={book_status(book.status)} />
-  <meta
-    property="og:novel:update_time"
-    content={new Date(book.updated_at).toISOString()} />
-  <meta property="og:novel:latest_chapter_name" content={latests[0].vi_title} />
-  <meta
-    property="og:novel:latest_chapter_url"
-    content="https://chivi.xyz/{book.vi_slug}/{latests[0].url_slug}-{site}-{latests[0].csid}.html" />
+  <meta property="og:novel:read_url" content={book_url} />
+  <meta property="og:url" content={book_url} />
+  <meta property="og:novel:status" content={status} />
+  <meta property="og:novel:update_time" content={updated_at.toISOString()} />
 </svelte:head>
 
 <Header>
@@ -114,7 +145,7 @@
       <img src="/logo.svg" alt="logo" />
     </a>
 
-    <a href="/{book.vi_slug}" class="header-item _active">
+    <a href="/{book.slug}" class="header-item _active">
       <span>{book.vi_title}</span>
     </a>
   </div>
@@ -130,10 +161,7 @@
     </div>
 
     <picture class="cover">
-      {#each book.covers as cover}
-        <source srcset={cover} />
-      {/each}
-      <img src="img/nocover.png" alt={book.vi_title} />
+      <img src="/covers/{book.uuid}.jpg" alt={book.vi_title} />
     </picture>
 
     <div class="extra">
@@ -152,11 +180,11 @@
         </span>
         <span class="status">
           <MIcon class="m-icon" name="activity" />
-          {book_status(book.status)}
+          {status}
         </span>
-        <time class="updated_at" datetime={new Date(book.updated_at)}>
+        <time class="updated_at" datetime={updated_at}>
           <MIcon class="m-icon" name="clock" />
-          {relative_time(book.updated_at)}
+          {relative_time(book.mftime)}
         </time>
       </div>
 
@@ -177,57 +205,55 @@
     {/each}
   </div>
 
-  <div class="tabs">
-    <span>Chọn nguồn:</span>
-    {#each Object.keys(book.crawl_links) as crawl}
-      <a
-        class="site"
-        class:_active={site == crawl}
-        href="/{book.vi_slug}?site={crawl}">
-        {crawl}
-      </a>
-    {/each}
-  </div>
-
-  <h2 class="content" data-site={site} data-bsid={bsid}>
-    Mục lục
-    <span class="label">({chlist.length} chương)</span>
-  </h2>
-
-  <h3>
-    Mới nhất
-    <span class="label">({latests.length} chương)</span>
-  </h3>
-  <div class="chap-list">
-    {#each latests as chap}
-      <div class="chap-item">
+  {#if sites != []}
+    <div class="tabs">
+      <span>Chọn nguồn:</span>
+      {#each sites as crawl}
         <a
-          class="chap-link"
-          href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
-          <div class="chap-title">{chap.vi_title}</div>
+          class="site"
+          class:_active={site == crawl}
+          href="/{book.slug}?site={crawl}">
+          {crawl}
         </a>
-      </div>
-    {/each}
-  </div>
+      {/each}
+    </div>
 
-  {#each Object.entries(volumes) as [label, chlist]}
+    <h2 class="content" data-site={site}>
+      Mục lục
+      <span class="label">({list.length} chương)</span>
+    </h2>
+
     <h3>
-      {label}
-      <span class="label">({chlist.length} chương)</span>
+      Mới nhất
+      <span class="label">({latests.length} chương)</span>
     </h3>
     <div class="chap-list">
-      {#each chlist as chap}
+      {#each latests as chap}
         <div class="chap-item">
-          <a
-            class="chap-link"
-            href="/{book.vi_slug}/{chap.url_slug}-{site}-{chap.csid}">
+          <a class="chap-link" href="/{book.slug}/{chap.url_slug}">
             <div class="chap-title">{chap.vi_title}</div>
           </a>
         </div>
       {/each}
     </div>
-  {/each}
 
+    {#each Object.entries(volumes) as [label, list]}
+      <h3>
+        {label}
+        <span class="label">({list.length} chương)</span>
+      </h3>
+
+      <div class="chap-list">
+        {#each list as chap}
+          <div class="chap-item">
+            <a class="chap-link" href="/{book.slug}/{chap.url_slug}">
+              <div class="chap-title">{chap.vi_title}</div>
+            </a>
+          </div>
+        {/each}
+      </div>
+    {/each}
+  {/if}
 </div>
 
 <style type="text/scss">

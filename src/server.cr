@@ -77,16 +77,41 @@ module Server
     sort = env.params.query.fetch("sort", "access")
 
     books = BookRepo.index(limit: limit, offset: offset, sort: sort)
-    {items: books, total: BookRepo.sort_by(sort).size, sort: sort}.to_json env.response
+
+    items = books.map do |info|
+      {
+        uuid:     info.uuid,
+        slug:     info.slug,
+        vi_title: info.vi_title,
+        vi_genre: info.vi_genre,
+        score:    info.score,
+      }
+    end
+
+    {items: items, total: BookRepo.sort_by(sort).size, sort: sort}.to_json env.response
   end
 
   get "/api/search" do |env|
     query = env.params.query.fetch("kw", "")
     page = env.params.query.fetch("pg", "1")
-    limit, offset = parse_page(page)
+    limit, offset = parse_page(page, limit: 8)
 
     books = BookRepo.glob(query, limit, offset)
-    books.to_json env.response
+
+    items = books.map do |info|
+      {
+        uuid:      info.uuid,
+        slug:      info.slug,
+        vi_title:  info.vi_title,
+        zh_title:  info.zh_title,
+        vi_author: info.vi_author,
+        zh_author: info.zh_author,
+        vi_genre:  info.vi_genre,
+        score:     info.score,
+      }
+    end
+
+    items.to_json env.response
   end
 
   get "/api/books/:slug" do |env|
@@ -115,6 +140,16 @@ module Server
     refresh = env.params.query.fetch("refresh", "false") == "true"
 
     list = Kernel.load_list(info, site, refresh: refresh)
+
+    list = list.map do |chap|
+      {
+        csid:      chap.csid,
+        vi_title:  chap.vi_title,
+        vi_volume: chap.vi_volume,
+        url_slug:  chap.slug_for(site),
+      }
+    end
+
     {site: site, bsid: bsid, list: list}.to_json env.response
   end
 

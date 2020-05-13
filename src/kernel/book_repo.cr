@@ -34,7 +34,7 @@ module BookRepo
   end
 
   def index(limit = 20, offset = 0, sort = "update")
-    sort_by(sort)[offset, limit].compact_map { |uuid, _| load(uuid) }
+    sort_by(sort).reverse[offset, limit].compact_map { |uuid, _| load(uuid) }
   end
 
   @@sorted = {} of String => Index

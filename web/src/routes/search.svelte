@@ -51,12 +51,9 @@
 
   <div class="list">
     {#each items as book}
-      <a class="book" href={book.vi_slug}>
+      <a class="book" href={book.slug}>
         <picture class="cover">
-          {#each book.covers as cover}
-            <source srcset={cover} />
-          {/each}
-          <img src="/img/nocover.png" alt={book.vi_title} />
+          <img src="/covers/{book.uuid}.jpg" alt={book.vi_title} />
         </picture>
 
         <div class="name">
