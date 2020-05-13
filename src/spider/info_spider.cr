@@ -48,7 +48,7 @@ class InfoSpider
     @dom = Myhtml::Parser.new(html)
   end
 
-  def get_infos!(info = BookInfo.new)
+  def get_infos!(info = BookInfo.new) : BookInfo
     if info.zh_title.empty?
       info.zh_title = get_title!
       info.zh_author = get_author!
@@ -82,7 +82,7 @@ class InfoSpider
     info
   end
 
-  def get_title!
+  def get_title! : String
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       title = meta_content("og:novel:book_name")
@@ -99,7 +99,7 @@ class InfoSpider
     title.sub(/\(.+\)$/, "").strip
   end
 
-  def get_author!
+  def get_author! : String
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       author = meta_content("og:novel:author")
@@ -116,7 +116,7 @@ class InfoSpider
     author.sub(/\(.+\)|.QD$/, "").strip
   end
 
-  def get_intro!
+  def get_intro! : String
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       meta_content("og:description")
@@ -132,7 +132,7 @@ class InfoSpider
     end
   end
 
-  def get_cover!
+  def get_cover! : String
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       cover = meta_content("og:image")
@@ -156,7 +156,7 @@ class InfoSpider
     end
   end
 
-  def get_genre!
+  def get_genre! : String
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       meta_content("og:novel:category")
@@ -171,7 +171,7 @@ class InfoSpider
     end
   end
 
-  def get_tags!
+  def get_tags! : Array(String)
     if @site == "hetushu"
       @dom.css(".tag a").map(&.inner_text).to_a
     else
@@ -179,7 +179,7 @@ class InfoSpider
     end
   end
 
-  def get_status!
+  def get_status! : Int32
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       case meta_content("og:novel:status")
@@ -202,7 +202,7 @@ class InfoSpider
     end
   end
 
-  def get_mftime!
+  def get_mftime! : Int64
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       text = meta_content("og:novel:update_time")
@@ -219,7 +219,7 @@ class InfoSpider
     end
   end
 
-  def get_chaps!
+  def get_chaps! : ChapList
     output = ChapList.new
 
     case @site

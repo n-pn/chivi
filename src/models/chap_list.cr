@@ -63,24 +63,24 @@ class ChapList < Array(ChapItem)
   DIR = File.join("data", "vp_lists")
 
   # class methods
-  def self.files
+  def self.files : Array(String)
     Dir.glob(File.join(DIR, "*.json"))
   end
 
-  def self.path_for(uuid : String, site : String)
+  def self.path_for(uuid : String, site : String) : String
     File.join(DIR, "#{uuid}.#{site}.json")
   end
 
-  def self.load(uuid : String, site : String)
+  def self.load(uuid : String, site : String) : ChapList
     file = path_for(uuid, site)
     File.exists?(file) ? read!(file) : ChapList.new
   end
 
-  def self.read!(file : String)
+  def self.read!(file : String) : ChapList
     from_json(File.read(file))
   end
 
-  def self.save!(file : String, list : ChapList)
+  def self.save!(file : String, list : ChapList) : Void
     File.write(file, list.to_pretty_json)
   end
 end

@@ -61,7 +61,7 @@ module Engine
     end
 
     generic_user = @@repo.shared_user["generic", user]
-    geenric_base = @@repo.shared_base["generic"]
+    generic_base = @@repo.shared_base["generic"]
 
     dicts = {
       {special_user, "riêng (#{user})", "; "},

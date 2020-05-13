@@ -25,13 +25,17 @@ module Kernel
     end
   end
 
-  def load_list(info : BookInfo, site : String, refresh = false)
-    return {site, ChapList.new} unless bsid = info.cr_anchors[site]?
+  def load_list(info : BookInfo, site : String, refresh = false) : ChapList
+    unless bsid = info.cr_anchors[site]?
+      return ChapList.new
+    end
 
     file = ChapList.path_for(info.uuid, site)
     expiry = refresh ? 10.minutes : gen_expiry(info.status)
 
-    return ChapList.read!(file) unless Utils.outdated?(file, expiry)
+    unless Utils.outdated?(file, expiry)
+      return ChapList.read!(file)
+    end
 
     old_mftime = info.cr_mftimes[site]? || 0
 

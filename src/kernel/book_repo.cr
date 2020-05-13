@@ -86,13 +86,12 @@ module BookRepo
     BookInfo.save!(info)
   end
 
-  def glob(query : String = "")
+  def glob(query : String = "", limit = 10, offset = 0)
     uuids = Set(String).new
 
     words = Utils.split_words(query)
     words.each do |word|
       array = lookup(word)
-      puts word, array.first(10)
 
       return [] of BookInfo if array.empty?
 
@@ -105,7 +104,7 @@ module BookRepo
       break if uuids.empty?
     end
 
-    uuids.first(10).compact_map { |uuid| load(uuid) }
+    uuids.to_a[offset, limit].compact_map { |uuid| load(uuid) }
   end
 
   def lookup(word : String)

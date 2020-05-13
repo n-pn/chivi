@@ -76,65 +76,84 @@ module Server
     limit, offset = parse_page(page)
     sort = env.params.query.fetch("sort", "access")
 
-    books = Kernel.serials.list(limit: limit, offset: offset, sort: sort)
-    {items: books, total: Kernel.serials.total, sort: sort}.to_json env.response
+    books = BookRepo.index(limit: limit, offset: offset, sort: sort)
+    {items: books, total: BookRepo.sort_by(sort).size, sort: sort}.to_json env.response
   end
 
   get "/api/search" do |env|
     query = env.params.query.fetch("kw", "")
-    books = Kernel.serials.glob(query)
+    page = env.params.query.fetch("pg", "1")
+    limit, offset = parse_page(page)
+
+    books = BookRepo.glob(query, limit, offset)
     books.to_json env.response
   end
 
   get "/api/books/:slug" do |env|
     slug = env.params.url["slug"]
-    book, site, bsid, chlist = Kernel.load_book(slug)
 
-    halt env, status_code: 404, response: ({msg: "Book not found"}).to_json if book.nil?
+    unless info = BookRepo.find(slug)
+      halt env, status_code: 404, response: ({msg: "Book not found"}).to_json
+    end
 
-    Kernel.serials.bump(book)
-    {book: book, site: site, bsid: bsid, chlist: chlist}.to_json env.response
+    BookRepo.update_sort("access", info)
+    {book: info}.to_json env.response
   end
 
   get "/api/books/:slug/:site" do |env|
     slug = env.params.url["slug"]
+
+    unless info = BookRepo.find(slug)
+      halt env, status_code: 404, response: ({msg: "Book not found"}).to_json
+    end
+
     site = env.params.url["site"]
+    unless bsid = info.cr_anchors[site]?
+      halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json
+    end
 
-    book, site, bsid, chlist = Kernel.load_book(slug, site)
+    refresh = env.params.query.fetch("refresh", "false") == "true"
 
-    halt env, status_code: 404, response: ({msg: "Book not found"}).to_json if book.nil?
-    halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json if bsid.empty?
-
-    {book: book, site: site, bsid: bsid, chlist: chlist}.to_json env.response
+    list = Kernel.load_list(info, site, refresh: refresh)
+    {site: site, bsid: bsid, list: list}.to_json env.response
   end
 
-  get "/api/books/:slug/:site/:chap" do |env|
+  get "/api/books/:slug/:site/:csid" do |env|
     user = env.get("user").as(String)
 
     slug = env.params.url["slug"]
+
+    unless info = BookRepo.find(slug)
+      halt env, status_code: 404, response: ({msg: "Book not found"}).to_json
+    end
+
     site = env.params.url["site"]
-    csid = env.params.url["chap"]
+    unless bsid = info.cr_anchors[site]?
+      halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json
+    end
 
-    book, site, bsid, chlist = Kernel.load_book(slug, site)
-    cidx = chlist.index(&.csid.==(csid))
+    csid = env.params.url["csid"]
 
-    halt env, status_code: 404, response: ({msg: "Book not found"}).to_json if book.nil?
-    halt env, status_code: 404, response: ({msg: "Site not found"}).to_json if chlist.empty?
-    halt env, status_code: 404, response: ({msg: "Chap not found"}).to_json if cidx.nil?
+    list = Kernel.load_list(info, site, refresh: false)
+    unless cidx = list.index(&.csid.==(csid))
+      halt env, status_code: 404, response: ({msg: "Chap not found"}).to_json
+    end
 
-    curr_chap = chlist[cidx]
-    prev_chap = chlist[cidx - 1] if cidx > 0
-    next_chap = chlist[cidx + 1] if cidx < chlist.size - 1
+    curr_chap = list[cidx]
+    prev_chap = list[cidx - 1] if cidx > 0
+    next_chap = list[cidx + 1] if cidx < list.size - 1
+
+    mode = env.params.query.fetch("mode", "0").to_i
 
     {
-      book_slug: book.vi_slug,
-      book_name: book.vi_title,
-      prev_slug: prev_chap.try(&.slug(site)),
-      next_slug: next_chap.try(&.slug(site)),
-      curr_slug: curr_chap.try(&.slug(site)),
-      lines:     Kernel.load_text(site, bsid, csid, user),
+      book_slug: info.slug,
+      book_name: info.vi_title,
+      prev_slug: prev_chap.try(&.slug_for(site)),
+      next_slug: next_chap.try(&.slug_for(site)),
+      curr_slug: curr_chap.try(&.slug_for(site)),
+      lines:     Kernel.load_chap(info, site, csid, user, mode: mode),
       chidx:     cidx + 1,
-      total:     chlist.size,
+      total:     list.size,
     }.to_json env.response
   end
 
