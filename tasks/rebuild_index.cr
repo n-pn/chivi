@@ -44,19 +44,22 @@ input.each_with_index do |info, idx|
     wordmap["zh_authors"][word] << "#{info.uuid}--#{info.zh_author}"
   end
 
-  Utils.split_words(Utils.slugify(info.hv_title)).each do |word|
+  slug = Utils.slugify(info.hv_title)
+  Utils.split_words(slug).each do |word|
     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-    wordmap["hv_titles"][word] << "#{info.uuid}--#{normalize(info.hv_title)}"
+    wordmap["hv_titles"][word] << "#{info.uuid}--#{slug}"
   end
 
-  Utils.split_words(Utils.slugify(info.vi_title)).each do |word|
+  slug = Utils.slugify(info.vi_title)
+  Utils.split_words(slug).each do |word|
     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-    wordmap["vi_titles"][word] << "#{info.uuid}--#{normalize(info.vi_title)}"
+    wordmap["vi_titles"][word] << "#{info.uuid}--#{slug}"
   end
 
-  Utils.split_words(Utils.slugify(info.vi_author)).each do |word|
+  slug = Utils.slugify(info.vi_author)
+  Utils.split_words(slug).each do |word|
     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-    wordmap["vi_authors"][word] << "#{info.uuid}--#{normalize(info.vi_author)}"
+    wordmap["vi_authors"][word] << "#{info.uuid}--#{slug}"
   end
 end
 
