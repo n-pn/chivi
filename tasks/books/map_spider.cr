@@ -22,6 +22,8 @@ module Mapping
         next if line.empty?
         bsid, uuid = line.split("--")
         sitemap[bsid] = uuid unless RETRY && uuid.empty?
+      rescue
+        next
       end
     end
 

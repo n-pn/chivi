@@ -13,15 +13,11 @@ class BookInfo
   property vi_title = ""
   property hv_title = ""
 
-  property title_slug = ""
-
   property zh_author = ""
   property vi_author = ""
-  property author_slug = ""
 
   property zh_genre = ""
   property vi_genre = ""
-  property genre_slug = ""
 
   property zh_tags = [] of String
   property vi_tags = [] of String

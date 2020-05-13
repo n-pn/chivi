@@ -59,42 +59,25 @@ end
 
 input = BookInfo.load_all.values.sort_by(&.tally.-)
 
-tally = [] of Tuple(String, Float64)
-score = [] of Tuple(String, Float64)
-votes = [] of Tuple(String, Int32)
-update = [] of Tuple(String, Int64)
-access = [] of Tuple(String, Int64)
-
 mapping = {} of String => String
 missing = [] of String
 hastext = [] of String
 
-query = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
-
-def gen_query_words(info)
-  chars = Utils.split_words(info.zh_title)
-  chars.concat(Utils.split_words(info.zh_author))
-  chars.concat(Utils.split_words(info.hv_title))
-  chars.concat(info.title_slug.split("-").reject(&.empty?))
-  chars.concat(info.author_slug.split("-").reject(&.empty?))
-
-  chars.uniq
-end
+HIATUS = Time.local(2019, 1, 1).to_unix
 
 input.each_with_index do |info, idx|
   info.hv_title = hanviet(info.zh_title)
-
   info.vi_title = map_title(info.zh_title) || info.hv_title
-  info.title_slug = Utils.slugify(info.vi_title, no_accent: true)
 
   info.vi_author = Utils.titleize(hanviet(info.zh_author))
-  info.author_slug = Utils.slugify(info.vi_author, no_accent: true)
 
-  info.slug = pick_slug(info.title_slug, info.author_slug)
+  title_slug = Utils.slugify(info.vi_title, no_accent: true)
+  author_slug = Utils.slugify(info.vi_author, no_accent: true)
+
+  info.slug = pick_slug(title_slug, author_slug)
   TAKEN_SLUGS.add(info.slug)
 
   info.vi_genre, move_to_tag = map_genre(info.zh_genre)
-  info.genre_slug = Utils.slugify(info.vi_genre, no_accent: true)
 
   if move_to_tag && !info.zh_tags.includes?(info.zh_genre)
     info.zh_tags << info.zh_genre
@@ -107,22 +90,13 @@ input.each_with_index do |info, idx|
 
   info.vi_intro = translate(info.zh_intro)
 
+  if info.status == 0 && info.mftime < HIATUS
+    info.status = 3
+  end
+
   BookInfo.save!(info)
 
   mapping[info.slug] = info.uuid
-
-  if info.shield < 2
-    tally << {info.uuid, info.tally}
-    score << {info.uuid, info.score}
-    votes << {info.uuid, info.votes}
-    update << {info.uuid, info.mftime}
-    access << {info.uuid, info.mftime}
-
-    gen_query_words(info).each do |token|
-      query[token] << info.uuid
-    end
-  end
-
   label = "- <#{idx + 1}/#{input.size}> [#{info.slug}] #{info.vi_title}"
   if info.cr_site_df.empty?
     missing << info.uuid
@@ -135,16 +109,8 @@ end
 
 File.write("tasks/books/maps/new-genres.txt", NEW_GENRES.join("\n"))
 
-puts "- Save indexes...".colorize(:cyan)
-
 INDEX_DIR = "data/indexing"
 FileUtils.mkdir_p(INDEX_DIR)
-
-File.write "#{INDEX_DIR}/tally.json", tally.sort_by(&.[1]).to_pretty_json
-File.write "#{INDEX_DIR}/score.json", score.sort_by(&.[1]).to_pretty_json
-File.write "#{INDEX_DIR}/votes.json", votes.sort_by(&.[1]).to_pretty_json
-File.write "#{INDEX_DIR}/update.json", update.sort_by(&.[1]).to_pretty_json
-File.write "#{INDEX_DIR}/access.json", access.sort_by(&.[1]).to_pretty_json
 
 puts "-- missing: #{missing.size}"
 File.write "#{INDEX_DIR}/missing.txt", missing.join("\n")
@@ -154,12 +120,3 @@ File.write "#{INDEX_DIR}/hastext.txt", hastext.join("\n")
 
 puts "-- mapping: #{mapping.size}"
 File.write "#{INDEX_DIR}/mapping.json", mapping.to_pretty_json
-
-QUERY_DIR = File.join(INDEX_DIR, "queries")
-
-FileUtils.rm_rf(QUERY_DIR)
-FileUtils.mkdir_p(QUERY_DIR)
-
-query.each do |word, list|
-  File.write File.join(QUERY_DIR, "#{word}.txt"), list.join("\n")
-end

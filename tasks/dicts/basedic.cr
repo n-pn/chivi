@@ -244,8 +244,11 @@ def export_hanviet(tradsim, pinyins, hanzidb)
     end
   end
 
-  localqt.merge!("#{hanviet_dir}/lacviet/chars.txt", mode: :old_first)
-  localqt.merge!("#{hanviet_dir}/trichdan/chars.txt", mode: :old_first)
+  localqt.merge!("#{hanviet_dir}/lacviet/chars.txt", mode: :keep_old)
+  localqt.merge!("#{hanviet_dir}/trichdan/chars.txt", mode: :keep_old)
+
+  localqt.merge!("#{hanviet_dir}/lacviet/words.txt", mode: :keep_old)
+  localqt.merge!("#{hanviet_dir}/trichdan/words.txt", mode: :keep_old)
 
   puts "\n- input: #{localqt.size.colorize(:yellow)}"
 

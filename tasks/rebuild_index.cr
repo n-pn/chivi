@@ -13,44 +13,50 @@ votes = [] of Tuple(String, Int32)
 update = [] of Tuple(String, Int64)
 access = [] of Tuple(String, Int64)
 
-mapping = {} of String => String
-missing = [] of String
-hastext = [] of String
+wordmap = {
+  "zh_titles" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
+  "hv_titles" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
+  "vi_titles" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
 
-query = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
+  "zh_authors" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
+  "vi_authors" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
+}
 
-def gen_query_words(info)
-  chars = Utils.split_words(info.zh_title)
-  chars.concat(Utils.split_words(info.zh_author))
-  chars.concat(Utils.split_words(info.hv_title))
-  chars.concat(info.title_slug.split("-").reject(&.empty?))
-  chars.concat(info.author_slug.split("-").reject(&.empty?))
-
-  chars.uniq
+def normalize(input : String)
+  Utils.unaccent(input.downcase)
 end
 
 input.each_with_index do |info, idx|
-  mapping[info.slug] = info.uuid
+  next if info.shield > 1
+  puts "- <#{idx + 1}> #{info.vi_title}--#{info.vi_author}"
 
-  if info.shield < 2
-    tally << {info.uuid, info.tally}
-    score << {info.uuid, info.score}
-    votes << {info.uuid, info.votes}
-    update << {info.uuid, info.mftime}
-    access << {info.uuid, info.mftime}
+  tally << {info.uuid, info.tally}
+  score << {info.uuid, info.score}
+  votes << {info.uuid, info.votes}
+  update << {info.uuid, info.mftime}
+  access << {info.uuid, info.mftime}
 
-    gen_query_words(info).each do |token|
-      query[token] << info.uuid
-    end
+  Utils.split_words(info.zh_title).each do |word|
+    wordmap["zh_titles"][word] << "#{info.uuid}--#{info.zh_title}"
   end
 
-  label = "- <#{idx + 1}/#{input.size}> [#{info.slug}] #{info.vi_title}"
-  if info.cr_site_df.empty?
-    missing << info.uuid
-    puts label.colorize(:blue)
-  else
-    hastext << info.uuid
-    puts label.colorize(:green)
+  Utils.split_words(info.zh_author).each do |word|
+    wordmap["zh_authors"][word] << "#{info.uuid}--#{info.zh_author}"
+  end
+
+  Utils.split_words(Utils.slugify(info.hv_title)).each do |word|
+    next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
+    wordmap["hv_titles"][word] << "#{info.uuid}--#{normalize(info.hv_title)}"
+  end
+
+  Utils.split_words(Utils.slugify(info.vi_title)).each do |word|
+    next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
+    wordmap["vi_titles"][word] << "#{info.uuid}--#{normalize(info.vi_title)}"
+  end
+
+  Utils.split_words(Utils.slugify(info.vi_author)).each do |word|
+    next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
+    wordmap["vi_authors"][word] << "#{info.uuid}--#{normalize(info.vi_author)}"
   end
 end
 
@@ -65,21 +71,23 @@ File.write "#{INDEX_DIR}/votes.json", votes.sort_by(&.[1]).to_pretty_json
 File.write "#{INDEX_DIR}/update.json", update.sort_by(&.[1]).to_pretty_json
 File.write "#{INDEX_DIR}/access.json", access.sort_by(&.[1]).to_pretty_json
 
-puts "-- missing: #{missing.size}"
-File.write "#{INDEX_DIR}/missing.txt", missing.join("\n")
+WORD_MAPS = {"zh_titles", "zh_authors", "vi_titles", "vi_authors", "hv_titles"}
 
-puts "-- hastext: #{hastext.size}"
-File.write "#{INDEX_DIR}/hastext.txt", hastext.join("\n")
+alias Counter = Hash(String, Int32)
+counters = Hash(String, Counter).new
 
-puts "-- mapping: #{mapping.size}"
-File.write "#{INDEX_DIR}/mapping.json", mapping.to_pretty_json
+WORD_MAPS.each do |type|
+  wordmap_dir = File.join(INDEX_DIR, type)
+  FileUtils.rm_rf(wordmap_dir)
+  FileUtils.mkdir_p(wordmap_dir)
 
-File.write "#{INDEX_DIR}/query.json", query.to_pretty_json
+  counter = Counter.new
+  wordmap[type].each do |word, list|
+    counter[word] = list.size
+    File.write File.join(wordmap_dir, "#{word}.txt"), list.join("\n")
+  end
 
-QUERY_DIR = File.join(INDEX_DIR, "queries")
-FileUtils.rm_rf(QUERY_DIR)
-FileUtils.mkdir_p(QUERY_DIR)
-
-query.each do |word, list|
-  File.write File.join(QUERY_DIR, "#{word}.txt"), list.join("\n")
+  counters[type] = counter
 end
+
+File.write "#{INDEX_DIR}/wordmap.json", counters.to_pretty_json

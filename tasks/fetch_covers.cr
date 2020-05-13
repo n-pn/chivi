@@ -96,6 +96,7 @@ unless queue.size < 10
 end
 
 WEB_DIR = File.join("web", "upload", "covers")
+FileUtils.mkdir_p(WEB_DIR)
 
 # TODO: copy best covers to web/upload folder
 infos.each_with_index do |(uuid, info), idx|

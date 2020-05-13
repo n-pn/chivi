@@ -23,7 +23,8 @@ Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
   sitemap << {info._id, uuid, info.title, info.author}.join("--")
 
   next if info.title.empty? || info.author.empty?
-  next unless info.score > 0 || info.commentCount > 0
+  next if info.scorerCount >= 10 && info.score < 2.5
+  next if info.commentCount < 5
 
   if old_info = inputs[uuid]?
     next if old_info.updateAt >= info.updateAt
