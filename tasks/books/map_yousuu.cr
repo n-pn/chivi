@@ -11,7 +11,7 @@ inputs = {} of String => YousuuInfo
 INP_DIR = File.join("data", ".inits", "txt-inp", "yousuu", "serials")
 Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
   text = File.read(file)
-  next unless text.includes?("{\"success\":true")
+  next unless text.includes?("\"success\":")
 
   json = NamedTuple(data: JsonData).from_json(text)
   info = json[:data][:bookInfo]
@@ -22,9 +22,13 @@ Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
   uuid = BookInfo.uuid_for(info.title, info.author)
   sitemap << {info._id, uuid, info.title, info.author}.join("--")
 
+  next if info.recom_ignore
   next if info.title.empty? || info.author.empty?
-  next if info.scorerCount >= 10 && info.score < 2.5
-  next if info.commentCount < 5
+  if info.scorerCount >= 10
+    next if info.score < 2.5
+  else
+    next unless info.commentCount >= 5 || info.addListTotal >= 5
+  end
 
   if old_info = inputs[uuid]?
     next if old_info.updateAt >= info.updateAt
@@ -50,7 +54,7 @@ FileUtils.mkdir_p(BookInfo::DIR)
 infos = BookInfo.load_all
 fresh = 0
 
-CURRENT = Time.utc.to_unix_ms
+CURRENT = Time.local.to_unix_ms
 EPOCH   = Time.local(2010, 1, 1).to_unix_ms
 
 inputs.each do |uuid, input|

@@ -22,3 +22,5 @@ module Utils
     Time.utc(2010, 1, 1)
   end
 end
+
+# puts Utils.parse_time("5/14/2020 7:00:48 AM")

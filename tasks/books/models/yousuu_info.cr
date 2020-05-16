@@ -30,7 +30,9 @@ struct YousuuInfo
   property cover = ""
 
   property status = 0
+
   property shielded = false
+  property recom_ignore = false
 
   property countWord = 0_f64
   property commentCount = 0
@@ -38,7 +40,10 @@ struct YousuuInfo
   property scorerCount = 0
   property score = 0_f64
 
-  property updateAt = Time.unix(0_i64)
+  property addListCount = 0
+  property addListTotal = 0
+
+  property updateAt = Time.local(2010, 1, 1)
 
   property sources = [] of BookSource
 
@@ -71,3 +76,8 @@ struct YousuuInfo
 end
 
 alias JsonData = NamedTuple(bookInfo: YousuuInfo, bookSource: Array(BookSource))
+
+# text = File.read("data/.inits/txt-inp/yousuu/serials/176814.json")
+# data = NamedTuple(data: JsonData).from_json(text)
+
+# pp data

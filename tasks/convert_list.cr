@@ -36,7 +36,7 @@ def update_infos(info, label)
     spider = InfoSpider.load(site, bsid, expiry: time, frozen: true)
 
     mftime = spider.get_mftime!
-    next unless Utils.outdated?(out_file, Time.unix(mftime))
+    next unless Utils.outdated?(out_file, Time.unix_ms(mftime))
 
     info.set_status(spider.get_status!)
 

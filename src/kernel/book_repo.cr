@@ -119,7 +119,7 @@ module BookRepo
       COUNT_VP.each do |type|
         next unless list = shortest_list(words, type)
         list.each do |uuid, label, tally|
-          result << {uuid, tally} if label.includes?(query)
+          result << {uuid, tally} if label =~ /\b#{query}\b/
         end
       end
     end
