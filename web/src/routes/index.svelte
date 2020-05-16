@@ -183,33 +183,38 @@
       width: 100%;
       position: absolute;
       bottom: -1.75rem;
-      font-weight: 600;
+      font-weight: 500;
       @include fgcolor(color(neutral, 7));
       @include truncate();
       @include font-size(3);
-      @include font-family(narrow);
+      // line-height: 1rem;
+      // @include font-family(narrow);
     }
 
-    .-genre {
-      width: 100%;
+    .-genre,
+    .-score {
+      // width: 100%;
       position: absolute;
-      bottom: -3rem;
-      @include fgcolor(color(neutral, 5));
+      // bottom: 0.375rem;
+      bottom: -2.75rem;
+      // padding: 0.125rem 0.25rem;
       text-transform: uppercase;
       font-weight: 500;
+      @include fgcolor(color(neutral, 5));
+      // @include bgcolor(rgba(color(neutral, 9), 0.3));
       @include font-size(1);
+      @include radius();
+    }
+    .-genre {
+      // left: 0.375rem;
+      left: 0;
     }
 
     .-score {
-      width: 100%;
-      position: absolute;
-      bottom: -3rem;
+      // right: 0.375rem;
+      right: 0;
       text-transform: uppercase;
-      font-weight: 500;
       text-align: right;
-
-      @include fgcolor(color(neutral, 5));
-      @include font-size(1);
 
       > span {
         display: inline-block;
