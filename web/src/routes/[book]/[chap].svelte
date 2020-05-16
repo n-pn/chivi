@@ -383,7 +383,7 @@
 
   :global(cite) {
     text-transform: capitalize;
-    font-style: normal;
+    font-style: inherit;
     // font-variant: small-caps;
   }
 
@@ -394,12 +394,7 @@
   }
 
   @mixin token($color: blue) {
-    cursor: pointer;
-    position: relative;
-
-    ._active & {
-      border-color: color($color, 3);
-    }
+    border-color: color($color, 3);
 
     &._active {
       color: color($color, 6);
@@ -410,23 +405,36 @@
     }
   }
 
+  $token-colors: blue, teal, red, orange;
+
   :global(x-v) {
+    cursor: pointer;
+    position: relative;
     border-bottom: 1px solid transparent;
 
-    &[data-d='1'] {
-      @include token(blue);
-    }
+    // @for $index from 1 through 4 {
+    //   $color: nth($token-colors, $index);
+    //   &[data-d='#{color}'] {
+    //     @include token($color);
+    //   }
+    // }
 
-    &[data-d='2'] {
-      @include token(teal);
-    }
+    :global(._active) & {
+      &[data-d='1'] {
+        @include token(blue);
+      }
 
-    &[data-d='3'] {
-      @include token(red);
-    }
+      &[data-d='2'] {
+        @include token(teal);
+      }
 
-    &[data-d='4'] {
-      @include token(orange);
+      &[data-d='3'] {
+        @include token(red);
+      }
+
+      &[data-d='4'] {
+        @include token(orange);
+      }
     }
   }
 </style>

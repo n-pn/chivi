@@ -49,7 +49,7 @@ module Engine
 
   alias LookupItem = Tuple(String, String)
 
-  def lookup(str : String, idx = 0, dic : String? = nil, user = "guest")
+  def lookup(str : String, dic : String? = nil, user = "guest")
     chars = str.chars
 
     if dic
@@ -87,7 +87,7 @@ module Engine
     end
 
     {
-      hanviet: hanviet(str),
+      hanviet: hanviet(str, apply_cap: true),
       entries: entries,
     }
   end

@@ -40,11 +40,10 @@ module Server
 
   get "/api/lookup" do |env|
     line = env.params.query.fetch("line", "")
-    from = env.params.query.fetch("from", "0").to_i
     udic = env.params.query["udic"]?
     user = env.get("user").as(String)
 
-    res = Engine.lookup(line, from, udic, user)
+    res = Engine.lookup(line, udic, user)
     res.to_json(env.response)
   end
 

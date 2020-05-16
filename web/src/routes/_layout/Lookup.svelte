@@ -1,13 +1,4 @@
 <script context="module">
-  async function get_entries(line, from = 0, upto = from + 1) {
-    // TODO: add udic
-    const res = await fetch(
-      `/api/lookup?line=${line}&from=${from}&upto=${upto}`
-    )
-    const entries = await res.json()
-    return entries
-  }
-
   function replace_tag(tag) {
     return tags[tag] || tag
   }
@@ -69,18 +60,30 @@
 
   let upto = $from + 1
 
-  // let hanviet = []
+  let hanviet = []
   let entries = []
+  let current = []
 
   $: zh_text = $line.map(([zh]) => zh).join('')
   $: [zh_html, vi_html] = render($line, $from, upto)
-  $: if (line !== []) lookup(zh_text, $from)
+  $: [zh_raw, hv_html] = render(hanviet, $from, upto)
 
-  async function lookup(zh_text, from) {
-    // hanviet = await get_hanviet(text)
-    entries = await get_entries(zh_text, from)
-    if (entries.length > 0) upto = $from + +entries[0][0]
+  $: if (line !== []) lookup(zh_text)
+  $: if (entries.length > $from) {
+    current = entries[$from]
+    if (current.length > 0) upto = $from + +current[0][0]
     else upto = $from + 1
+  }
+
+  async function lookup(line, udic) {
+    // hanviet = await get_hanviet(text)
+    let url = `/api/lookup?line=${line}`
+    if (udic) url += `&udic=${udic}`
+    const res = await fetch(url)
+    const data = await res.json()
+
+    hanviet = data.hanviet
+    entries = data.entries
   }
 
   function handle_click(event) {
@@ -144,7 +147,11 @@
       {@html zh_html}
     </div>
 
-    {#each entries as [len, items]}
+    <div class="input _hv" on:click={handle_click}>
+      {@html hv_html}
+    </div>
+
+    {#each current as [len, items]}
       <div class="entry">
         <h3>{zh_text.substring($from, $from + len)}</h3>
         {#each items as [name, value]}
@@ -223,8 +230,9 @@
     }
   }
 
-  $vi-height: 0.75rem + (1.25 * 8rem);
-  $zh-height: 0.75rem + (1.25 * 6rem);
+  $vi-height: 0.75rem + (1.25 * 6rem);
+  $zh-height: 0.75rem + (1.25 * 3rem);
+  $hv-height: 0.75rem + (1.25 * 4rem);
 
   .input {
     overflow-y: auto;
@@ -241,11 +249,18 @@
     &._vi {
       max-height: $vi-height;
       border-bottom: 1px solid color(neutral, 3);
-      margin-bottom: 0.75rem;
     }
 
     &._zh {
       max-height: $zh-height;
+      margin-top: 0.375rem;
+      border-top: 1px solid color(neutral, 3);
+      border-bottom: 1px solid color(neutral, 3);
+    }
+
+    &._hv {
+      max-height: $hv-height;
+      margin-top: 0.375rem;
       border-top: 1px solid color(neutral, 3);
     }
   }
