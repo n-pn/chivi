@@ -11,7 +11,7 @@ inputs = {} of String => YousuuInfo
 INP_DIR = File.join("data", ".inits", "txt-inp", "yousuu", "serials")
 Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
   text = File.read(file)
-  next unless text.includes?("\"success\":")
+  next unless text.includes?("\"success\"")
 
   json = NamedTuple(data: JsonData).from_json(text)
   info = json[:data][:bookInfo]
@@ -22,7 +22,7 @@ Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
   uuid = BookInfo.uuid_for(info.title, info.author)
   sitemap << {info._id, uuid, info.title, info.author}.join("--")
 
-  next if info.recom_ignore
+  # next if info.recom_ignore
   next if info.title.empty? || info.author.empty?
   if info.scorerCount >= 10
     next if info.score < 2.5
@@ -41,7 +41,7 @@ Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
 
   inputs[uuid] = info
 rescue err
-  File.delete(file)
+  # File.deete(file)
   puts "#{file} err: #{err}".colorize(:red)
 end
 
