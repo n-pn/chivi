@@ -86,37 +86,75 @@ module BookRepo
     BookInfo.save!(info)
   end
 
-  def glob(query : String = "", limit = 10, offset = 0)
-    uuids = Set(String).new
+  COUNT_ZH = {"zh_titles", "zh_authors"}
+  COUNT_VP = {"vi_titles", "hv_titles", "vi_authors"}
+
+  def glob(query : String = "")
+    result = [] of Tuple(String, Float64)
 
     words = Utils.split_words(query)
+
+    if query =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
+      COUNT_ZH.each do |type|
+        next unless list = shortest_list(words, type)
+        list.each do |uuid, label, tally|
+          result << {uuid, tally} if label.includes?(query)
+        end
+      end
+    else
+      query = Utils.slugify(query)
+
+      COUNT_VP.each do |type|
+        next unless list = shortest_list(words, type)
+        list.each do |uuid, label, tally|
+          result << {uuid, tally} if label.includes?(query)
+        end
+      end
+    end
+
+    result.uniq.sort_by(&.[1].-).map(&.[0]) # sort result by tally
+  end
+
+  alias Counters = Hash(String, Hash(String, Float64))
+  @@counters : Counters? = nil
+
+  private def counters : Counters
+    @@counter ||= Counters.from_json(File.read(index_path("wordmap")))
+  end
+
+  private def shortest_list(words, type)
+    return unless counter = counters[type]?
+
+    best_word = words.first
+    return nil unless best_size = counter[best_word]?
+
     words.each do |word|
-      array = lookup(word)
-
-      return [] of BookInfo if array.empty?
-
-      if uuids.empty?
-        uuids = array
-      else
-        uuids &= array
+      return nil unless size = counter[word]?
+      if size < best_size
+        best_size = size
+        best_word = word
       end
-
-      break if uuids.empty?
     end
 
-    uuids.to_a[offset, limit].compact_map { |uuid| load(uuid) }
+    load_wordmap(type, best_word)
   end
 
-  def lookup(word : String)
-    @@queries[word] ||= begin
-      file = File.join(DIR, "queries", "#{word}.txt")
+  alias Mapping = Tuple(String, String, Float64)
+  @@wordmaps = Hash(String, Array(Mapping)).new
+
+  def load_wordmap(type : String, word : String)
+    @@wordmaps["#{type}-#{word}"] ||= begin
+      file = File.join(DIR, type, "#{word}.txt")
+      list = Array(Mapping).new
+
       if File.exists?(file)
-        Set.new(File.read_lines(file))
-      else
-        Set(String).new
+        File.read_lines(file).each do |line|
+          uuid, label, tally = line.split("ǁ")
+          list << {uuid, label, tally.to_f}
+        end
       end
+
+      list
     end
   end
-
-  @@queries = Hash(String, Set(String)).new
 end

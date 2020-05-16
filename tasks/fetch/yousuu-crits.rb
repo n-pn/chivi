@@ -6,8 +6,6 @@ require "parallel"
 require "colorize"
 require "fileutils"
 
-VERBOSE = ARGV.include?("verbose")
-
 # ## Prepare proxies
 
 require_relative "./yousuu-utils"
@@ -19,26 +17,28 @@ PAGE = (ARGV[0] || "1").to_i
 puts "PAGE: #{PAGE}"
 exit if PAGE < 1
 
-ROOT_DIR = "data/txt-inp/yousuu/crits/"
+OUTDATED = 3600 * 24 * 7
+def file_outdated?(file)
+  return true unless File.exists?(file)
+  # data = File.read(file)
+
+  # outdated = OUTDATED
+  # outdated *= 4 if data.include?("未找到该图书")
+
+  Time.now.to_i - File.mtime(file).to_i > OUTDATED
+end
+
+
+ROOT_DIR = "data/.inits/txt-inp/yousuu/crits/"
 OUT_FILE = "#{ROOT_DIR}/page#{PAGE}/%i.json"
 REVIEW_URL = "https://www.yousuu.com/api/book/%i/comment?t=%i&page=#{PAGE}"
 
-OUTDATED = 3600 * 24 * 3 # 3 days
-def file_outdated?(file)
-  return true unless File.exists?(file)
-  data = File.read(file)
 
-  outdated = OUTDATED
-  outdated *= 10 if data.include?("未找到该图书")
-
-  Time.now.to_i - File.mtime(file).to_i > outdated
-end
-
-def fetch_data(book_id, proxy)
-  file = OUT_FILE % book_id
+def fetch_data(bsid, proxy)
+  file = OUT_FILE % bsid
   return :skip unless file_outdated?(file)
 
-  url = REVIEW_URL % [book_id, unix_ms]
+  url = REVIEW_URL % [bsid, unix_ms]
   body = fetch_url(url, proxy)
 
   raise "Malformed!" unless body.include?("success") || body.include?("未找到该图书")
@@ -53,44 +53,56 @@ rescue => err
   :error
 end
 
+# Prepare bsids
 
-# Prepare book_ids
+bsids = []
 
-infos = JSON.parse File.read("data/txt-tmp/infos.json")
-book_ids = infos.map{|x| x["yousuu_bids"]}.flatten
+Dir.glob("data/vp_infos/*.json").each do |file|
+  json = JSON.parse(File.read(file))
 
-puts "Input: #{book_ids.size}".yellow
+  bsid = json["yousuu"]
+  next if bsid.empty?
+  next unless file_outdated?(OUT_FILE % bsid)
+
+  bsids << bsid
+end
+
+puts "Input: #{bsids.size}".yellow
 
 # ## Crawling!
 
 step = 1
-until proxies.empty? || book_ids.empty?
+until proxies.empty? || bsids.empty?
   puts "[LOOP:#{step}]: \
-        book_ids: #{book_ids.size}, \
+        bsids: #{bsids.size}, \
         proxies: #{proxies.size}".cyan
 
-  working = []
-  failure = []
+  failure_bsids = []
+  working_proxies = []
 
-  Parallel.each_with_index(proxies.take(book_ids.size), in_threads: 20) do |proxy, idx|
-    book_id = book_ids.pop
+  limit = proxies.size
+  limit = bsids.size if limit > bsids.size
 
-    res = fetch_data(book_id, proxy)
-    message = "- [#{idx + 1}/#{proxies.size}]: #{res}! book_id: [#{book_id}], proxy: [#{proxy}]"
+  Parallel.each(1..limit, in_threads: 20) do |idx|
+    proxy = proxies.pop
+    bsid = bsids.pop
+
+    res = fetch_data(bsid, proxy)
+    message = "- [#{idx}/#{limit}]: #{res}! bsid: [#{bsid}], proxy: [#{proxy}]"
 
     case res
     when :skip
-      working << proxy
+      working_proxies << proxy
     when :done
-      working << proxy
+      working_proxies << proxy
       puts message.green unless VERBOSE
     when :error
-      failure << book_id
+      failure_bsids << bsid
       puts message.red unless VERBOSE
     end
   end
 
   step += 1
-  proxies.concat(working).uniq!
-  book_ids.concat(failure).uniq!
+  bsids.concat(failure_bsids).uniq!
+  proxies.concat(working_proxies).uniq!
 end

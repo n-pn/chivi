@@ -37,29 +37,29 @@ input.each_with_index do |info, idx|
   access << {info.uuid, info.mftime}
 
   Utils.split_words(info.zh_title).each do |word|
-    wordmap["zh_titles"][word] << "#{info.uuid}--#{info.zh_title}"
+    wordmap["zh_titles"][word] << "#{info.uuid}ǁ#{info.zh_title}ǁ#{info.tally}"
   end
 
   Utils.split_words(info.zh_author).each do |word|
-    wordmap["zh_authors"][word] << "#{info.uuid}--#{info.zh_author}"
+    wordmap["zh_authors"][word] << "#{info.uuid}ǁ#{info.zh_author}ǁ#{info.tally}"
   end
 
   slug = Utils.slugify(info.hv_title)
   Utils.split_words(slug).each do |word|
     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-    wordmap["hv_titles"][word] << "#{info.uuid}--#{slug}"
+    wordmap["hv_titles"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.tally}"
   end
 
   slug = Utils.slugify(info.vi_title)
   Utils.split_words(slug).each do |word|
     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-    wordmap["vi_titles"][word] << "#{info.uuid}--#{slug}"
+    wordmap["vi_titles"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.tally}"
   end
 
   slug = Utils.slugify(info.vi_author)
   Utils.split_words(slug).each do |word|
     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-    wordmap["vi_authors"][word] << "#{info.uuid}--#{slug}"
+    wordmap["vi_authors"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.tally}"
   end
 end
 

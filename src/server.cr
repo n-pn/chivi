@@ -96,9 +96,11 @@ module Server
     page = env.params.query.fetch("pg", "1")
     limit, offset = parse_page(page, limit: 8)
 
-    books = BookRepo.glob(query, limit, offset)
+    uuids = BookRepo.glob(query)
 
-    items = books.map do |info|
+    items = uuids[offset, limit].compact_map do |uuid|
+      next unless info = BookRepo.load(uuid)
+
       {
         uuid:      info.uuid,
         slug:      info.slug,
@@ -111,7 +113,11 @@ module Server
       }
     end
 
-    items.to_json env.response
+    {
+      total: uuids.size,
+      items: items,
+      page:  page,
+    }.to_json env.response
   end
 
   get "/api/books/:slug" do |env|

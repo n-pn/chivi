@@ -1,15 +1,17 @@
 <script context="module">
   export async function preload({ query }) {
     const kw = query.kw
-    query = kw.replace(/\+|-/g, ' ')
+    const pg = query.pg || '1'
+
+    const keyword = kw.replace(/\+|-/g, ' ')
 
     if (kw) {
-      const url = `api/search?kw=${kw}`
+      const url = `api/search?kw=${kw}&pg=${pg}`
       const res = await this.fetch(url)
-      const items = await res.json()
-      return { items, query }
+      const { total, items, page } = await res.json()
+      return { total, items, keyword, page }
     } else {
-      return { items: [], query }
+      return { total: 0, items: [], keyword, page: 1 }
     }
   }
 </script>
@@ -18,8 +20,10 @@
   import MIcon from '$mould/MIcon.svelte'
   import Header from '$layout/Header.svelte'
 
+  export let total = 0
   export let items = []
-  export let query = ''
+  export let keyword = ''
+  export let page = 1
 </script>
 
 <svelte:head>
@@ -37,7 +41,7 @@
       name="kw"
       class="header-item _input _active"
       placeholder="Tìm kiếm"
-      value={query}
+      value={keyword}
       on:focus={evt => evt.stopPropagation()} />
 
   </div>
@@ -45,11 +49,10 @@
 
 <div class="wrapper">
   <h1 class="label">
-    Tìm được {items.length}{items.length == 8 ? '+' : ''} kết quả cho "{query}"
-    :
+    Tìm được {items.length}/{total} kết quả cho "{keyword}" :
   </h1>
 
-  <div class="list">
+  <div class="list" data-page={page}>
     {#each items as book}
       <a class="book" href={book.slug}>
         <picture class="cover">
