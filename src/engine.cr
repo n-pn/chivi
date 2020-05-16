@@ -17,22 +17,22 @@ module Engine
     CvCore.cv_raw([@@repo.tradsim], input)
   end
 
-  def translate(input : String, title : Bool, book : String? = nil, user = "local")
+  def translate(input : String, title : Bool, book : String? = nil, user = "guest")
     return input if input.empty?
     convert(input, title, book, user).vi_text
   end
 
-  def translate(input : Array(String), mode : Symbol, book : String? = nil, user = "local")
+  def translate(input : Array(String), mode : Symbol, book : String? = nil, user = "guest")
     return input if input.empty?
     convert(input, mode, book, user).map(&.vi_text)
   end
 
-  def convert(input : String, title = false, book : String? = nil, user = "local")
+  def convert(input : String, title = false, book : String? = nil, user = "guest")
     dicts = @@repo.for_convert(book, user)
     title ? CvCore.cv_title(dicts, input) : CvCore.cv_plain(dicts, input)
   end
 
-  def convert(lines : Array(String), mode : Symbol, book : String? = nil, user = "local")
+  def convert(lines : Array(String), mode : Symbol, book : String? = nil, user = "guest")
     dicts = @@repo.for_convert(book, user)
 
     case mode
@@ -124,11 +124,11 @@ module Engine
     }
   end
 
-  def upsert(key : String, val : String, dic : String? = nil, user : String = "local")
+  def upsert(key : String, val : String, dic : String? = nil, user : String = "guest")
     upsert({key => val}, dic, user)
   end
 
-  def upsert(entries : Hash(String, String), dic : String? = nil, user : String = "local")
+  def upsert(entries : Hash(String, String), dic : String? = nil, user : String = "guest")
     case dic
     when "generic", nil
       dict = @@repo.shared_user["generic", user]
