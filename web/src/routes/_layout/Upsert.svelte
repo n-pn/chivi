@@ -100,6 +100,13 @@
     val = arr.join(' ')
     val_field.focus()
   }
+
+  function submitOnEnter(evt) {
+    if (evt.keyCode == 13 && !evt.shiftKey) {
+      evt.preventDefault()
+      return upsert()
+    }
+  }
 </script>
 
 <div class="container" on:click={() => (active = false)}>
@@ -157,6 +164,7 @@
         name="value"
         id="val_field"
         rows="2"
+        on:keypress={submitOnEnter}
         bind:this={val_field}
         bind:value={val} />
 
