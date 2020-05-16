@@ -202,18 +202,20 @@ class InfoSpider
     end
   end
 
+  EPOCH = Time.local(2010, 1, 1).to_unix_ms
+
   def get_mftime! : Int64
     case @site
     when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       text = meta_content("og:novel:update_time")
-      Utils.parse_time(text).to_unix
+      Utils.parse_time(text).to_unix_ms
     when "hetushu"
-      0_i64
+      EPOCH
     when "69shu"
       text = inner_text(".mu_beizhu").sub(/.+时间：/m, "")
-      Utils.parse_time(text).to_unix
+      Utils.parse_time(text).to_unix_ms
     when "zhwenpg"
-      0_i64
+      EPOCH
     else
       raise "Site not supported!"
     end

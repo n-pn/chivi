@@ -1,17 +1,15 @@
 <script context="module">
   export async function preload({ query }) {
-    const kw = query.kw
+    const word = (query.kw || '').replace(/\+|-/g, ' ')
     const pg = query.pg || '1'
 
-    const keyword = kw.replace(/\+|-/g, ' ')
-
-    if (kw) {
-      const url = `api/search?kw=${kw}&pg=${pg}`
+    if (word) {
+      const url = `api/search?word=${word}&page=${pg}`
       const res = await this.fetch(url)
       const { total, items, page } = await res.json()
-      return { total, items, keyword, page }
+      return { total, items, word, page }
     } else {
-      return { total: 0, items: [], keyword, page: 1 }
+      return { total: 0, items: [], word, page: 1 }
     }
   }
 </script>
@@ -20,10 +18,11 @@
   import MIcon from '$mould/MIcon.svelte'
   import Header from '$layout/Header.svelte'
 
-  export let total = 0
-  export let items = []
-  export let keyword = ''
+  export let word = ''
   export let page = 1
+
+  export let items = []
+  export let total = 0
 </script>
 
 <svelte:head>
@@ -41,16 +40,14 @@
       name="kw"
       class="header-item _input _active"
       placeholder="Tìm kiếm"
-      value={keyword}
+      value={word}
       on:focus={evt => evt.stopPropagation()} />
 
   </div>
 </Header>
 
 <div class="wrapper">
-  <h1 class="label">
-    Tìm được {items.length}/{total} kết quả cho "{keyword}" :
-  </h1>
+  <h1 class="label">Tìm được {items.length}/{total} kết quả cho "{word}" :</h1>
 
   <div class="list" data-page={page}>
     {#each items as book}

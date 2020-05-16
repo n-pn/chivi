@@ -9,9 +9,9 @@ input = BookInfo.load_all.values.sort_by(&.tally.-)
 
 tally = [] of Tuple(String, Float64)
 score = [] of Tuple(String, Float64)
-votes = [] of Tuple(String, Int32)
-update = [] of Tuple(String, Int64)
-access = [] of Tuple(String, Int64)
+votes = [] of Tuple(String, Float64)
+update = [] of Tuple(String, Float64)
+access = [] of Tuple(String, Float64)
 
 wordmap = {
   "zh_titles" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
@@ -32,9 +32,9 @@ input.each_with_index do |info, idx|
 
   tally << {info.uuid, info.tally}
   score << {info.uuid, info.score}
-  votes << {info.uuid, info.votes}
-  update << {info.uuid, info.mftime}
-  access << {info.uuid, info.mftime}
+  votes << {info.uuid, info.votes.to_f}
+  update << {info.uuid, info.mftime.to_f}
+  access << {info.uuid, info.tally}
 
   Utils.split_words(info.zh_title).each do |word|
     wordmap["zh_titles"][word] << "#{info.uuid}ǁ#{info.zh_title}ǁ#{info.tally}"

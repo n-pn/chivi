@@ -39,27 +39,32 @@ module Server
   end
 
   get "/api/lookup" do |env|
+    user = env.get("user").as(String)
+
     line = env.params.query.fetch("line", "")
     udic = env.params.query["udic"]?
-    user = env.get("user").as(String)
 
     res = Engine.lookup(line, udic, user)
     res.to_json(env.response)
   end
 
   get "/api/inquire" do |env|
+    user = env.get("user").as(String)
+
     key = env.params.query["key"]? || ""
     dic = env.params.query["dic"]?
-    user = env.get("user").as(String)
+
     res = Engine.inquire(key, dic, user)
     res.to_json(env.response)
   end
 
   get "/api/upsert" do |env|
+    user = env.get("user").as(String)
+
     key = env.params.query["key"]? || ""
     val = env.params.query["val"]? || ""
     dic = env.params.query["dic"]?
-    user = env.get("user").as(String)
+
     res = Engine.upsert(key, val, dic, user)
     res.to_json(env.response)
   end
@@ -71,12 +76,11 @@ module Server
   end
 
   get "/api/books" do |env|
+    sort = env.params.query.fetch("sort", "access")
     page = env.params.query.fetch("page", "1")
     limit, offset = parse_page(page)
-    sort = env.params.query.fetch("sort", "access")
 
     books = BookRepo.index(limit: limit, offset: offset, sort: sort)
-
     items = books.map do |info|
       {
         uuid:     info.uuid,
@@ -91,8 +95,8 @@ module Server
   end
 
   get "/api/search" do |env|
-    query = env.params.query.fetch("kw", "")
-    page = env.params.query.fetch("pg", "1")
+    query = env.params.query.fetch("word", "")
+    page = env.params.query.fetch("page", "1")
     limit, offset = parse_page(page, limit: 8)
 
     uuids = BookRepo.glob(query)

@@ -46,7 +46,7 @@
   }
 
   export function relative_time(time) {
-    const span = new Date().getTime() / 1000 - time
+    const span = (new Date().getTime() - time) / 1000
 
     if (span < 60) return '< 1 phút trước'
     if (span < 60 * 60) return `${Math.round(span / 60)} phút trước`

@@ -122,7 +122,7 @@ def extract_info(dom, idx = "1/1") : Void
   info.set_status(FINISHS.includes?(bsid) ? 1 : 0)
 
   mfdate = rows[3].css(".fontime").first.inner_text
-  mftime = Utils.parse_time(mfdate).to_unix
+  mftime = Utils.parse_time(mfdate).to_unix_ms
   puts "- #{title} - #{mftime}"
 
   info.set_mftime(mftime)

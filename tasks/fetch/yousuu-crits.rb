@@ -29,7 +29,7 @@ def file_outdated?(file)
 end
 
 
-ROOT_DIR = "data/.inits/txt-inp/yousuu/crits/"
+ROOT_DIR = "data/.inits/txt-inp/yousuu/reviews/"
 OUT_FILE = "#{ROOT_DIR}/page#{PAGE}/%i.json"
 REVIEW_URL = "https://www.yousuu.com/api/book/%i/comment?t=%i&page=#{PAGE}"
 

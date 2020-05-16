@@ -8,7 +8,7 @@ require "../../src/models/book_info"
 sitemap = [] of String
 inputs = {} of String => YousuuInfo
 
-INP_DIR = File.join("data", ".inits", "txt-inp", "yousuu", "infos")
+INP_DIR = File.join("data", ".inits", "txt-inp", "yousuu", "serials")
 Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
   text = File.read(file)
   next unless text.includes?("{\"success\":true")
@@ -50,6 +50,9 @@ FileUtils.mkdir_p(BookInfo::DIR)
 infos = BookInfo.load_all
 fresh = 0
 
+CURRENT = Time.utc.to_unix_ms
+EPOCH   = Time.local(2010, 1, 1).to_unix_ms
+
 inputs.each do |uuid, input|
   unless info = infos[uuid]?
     fresh += 1
@@ -68,12 +71,18 @@ inputs.each do |uuid, input|
 
   info.shield = input.shielded ? 2 : 0
   info.set_status(input.status)
-  info.set_mftime(input.updateAt.to_unix)
 
   info.yousuu = input._id.to_s
   if source = input.sources.first?
     info.origin = source.link
   end
+
+  mftime = input.updateAt.to_unix_ms
+  if mftime >= CURRENT
+    puts "- WRONG TIME: #{info.yousuu}"
+    mftime = EPOCH
+  end
+  info.set_mftime(mftime)
 
   info.word_count = input.countWord.round.to_i
   info.crit_count = input.commentCount

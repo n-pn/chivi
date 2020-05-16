@@ -38,7 +38,7 @@ struct YousuuInfo
   property scorerCount = 0
   property score = 0_f64
 
-  property updateAt = Time.utc
+  property updateAt = Time.unix(0_i64)
 
   property sources = [] of BookSource
 

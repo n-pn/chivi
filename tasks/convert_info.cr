@@ -63,7 +63,7 @@ mapping = {} of String => String
 missing = [] of String
 hastext = [] of String
 
-HIATUS = Time.local(2019, 1, 1).to_unix
+HIATUS = Time.local(2019, 1, 1).to_unix_ms
 
 input.each_with_index do |info, idx|
   info.hv_title = hanviet(info.zh_title)
@@ -97,6 +97,12 @@ input.each_with_index do |info, idx|
   BookInfo.save!(info)
 
   mapping[info.slug] = info.uuid
+
+  # mapping[info.zh_title] ||= info.uuid
+
+  hanviet_slug = Utils.slugify(info.hv_title)
+  mapping[hanviet_slug] ||= info.uuid
+
   label = "- <#{idx + 1}/#{input.size}> [#{info.slug}] #{info.vi_title}"
   if info.cr_site_df.empty?
     missing << info.uuid

@@ -4,8 +4,6 @@ require "../_utils/string_utils"
 module BookRepo
   extend self
 
-  alias Index = Array(Tuple(String, Int64 | Float64))
-
   DIR = File.join("data", "indexing")
 
   def index_path(name : String, ext = ".json")
@@ -34,18 +32,31 @@ module BookRepo
   end
 
   def index(limit = 20, offset = 0, sort = "update")
-    sort_by(sort).reverse[offset, limit].compact_map { |uuid, _| load(uuid) }
+    output = [] of BookInfo
+
+    sort_by(sort).reverse_each do |uuid, _|
+      if offset > 0
+        offset -= 1
+      else
+        output << BookInfo.load!(uuid)
+        break if output.size == limit
+      end
+    end
+
+    output
   end
 
-  @@sorted = {} of String => Index
+  alias Sorting = Array(Tuple(String, Float64))
+
+  @@sorted = {} of String => Sorting
 
   def sort_by(sort : String = "update")
-    @@sorted[sort] ||= load_sort(sort, Index)
+    @@sorted[sort] ||= load_sort(sort)
   end
 
-  def load_sort(name, klass = Index)
+  def load_sort(name)
     puts "- loading sort <#{name.colorize(:blue)}>"
-    klass.from_json(File.read(index_path(name)))
+    Sorting.from_json(File.read(index_path(name)))
   end
 
   def update_sort(type : String, info : BookInfo)
@@ -58,21 +69,22 @@ module BookRepo
     when "score"
       value = info.score
     when "votes"
-      value = info.votes.to_i64
+      value = info.votes.to_f
     when "update"
-      value = info.mftime
-    else
-      value = Time.utc.to_unix
+      value = info.mftime.to_f
+    else # when "access"
+      value = Time.utc.to_unix_ms.to_f
     end
 
-    if index = sort.index { |id, _| uuid == id }
+    if index = sort.index { |key, _| uuid == key }
       return if sort[index][1] == value
       sort[index] = {uuid, value}
     else
       sort << {uuid, value}
     end
 
-    sort.sort_by!(&.[1])
+    puts "- sort type #{type} is changed, updating..."
+    @@sorted[type] = sort.sort_by!(&.[1])
     File.write(index_path(type), sort.to_json)
   end
 

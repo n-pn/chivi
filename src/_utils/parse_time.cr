@@ -19,6 +19,6 @@ module Utils
     end
 
     Log.error { "Error parsing <#{input}>: unknown time format!" }
-    Time.utc(2020, 1, 1)
+    Time.utc(2010, 1, 1)
   end
 end
