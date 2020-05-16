@@ -272,7 +272,7 @@
     </a>
 
     <span class="header-item _active _index">
-      <span>Ch {chidx}/{total}</span>
+      <span>{chidx}/{total}</span>
     </span>
   </div>
 
