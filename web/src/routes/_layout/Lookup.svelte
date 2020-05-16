@@ -27,13 +27,13 @@
       if (dic > 0) {
         key.split('').forEach((k, i) => {
           let klass = is_active(from, upto, pos + i, pos + i + 1)
-          zh += `<x-zh class="${klass}" data-p="${pos + i}">${escape_html(
+          zh += `<x-z class="${klass}" data-p="${pos + i}">${escape_html(
             k
-          )}</x-zh>`
+          )}</x-z>`
         })
 
         let klass = is_active(from, upto, pos, pos + key.length)
-        vi += `<x-vi class="${klass}" data-k="${e_key}" data-i="${idx}" data-d="${dic}" data-p="${pos}">${e_val}</x-vi>`
+        vi += `<x-v class="${klass}" data-k="${e_key}" data-i="${idx}" data-d="${dic}" data-p="${pos}">${e_val}</x-v>`
       } else {
         zh += e_key
         vi += e_val
@@ -88,7 +88,7 @@
 
   function handle_click(event) {
     const target = event.target
-    if (target.nodeName == 'X-ZH' || target.nodeName == 'X-VI') {
+    if (target.nodeName == 'X-Z' || target.nodeName == 'X-V') {
       from.set(+target.dataset['p'])
     }
   }
@@ -157,9 +157,15 @@
         {#each items as [name, value]}
           <div class="item">
             <h4>{name}</h4>
-            {#each value.split('\n') as line}
-              <p class="term">{line}</p>
-            {/each}
+            {#if value == ''}
+              <p class="deleted">
+                <em>(deleted)</em>
+              </p>
+            {:else}
+              {#each value.split('\n') as line}
+                <p class="term">{line}</p>
+              {/each}
+            {/if}
           </div>
         {/each}
       </div>
@@ -272,7 +278,7 @@
     overflow-y: auto;
   }
 
-  :global(x-zh) {
+  :global(x-z) {
     cursor: pointer;
     @include hover {
       @include fgcolor(color(primary, 5));
@@ -290,42 +296,39 @@
     @include font-size(3);
   }
 
-  :global(x-vi) {
-    border-bottom: 1px solid transparent;
+  @mixin token($color: blue) {
+    border-color: color($color, 3);
 
-    &[data-d='1'] {
-      border-bottom-color: color(blue, 3);
-      cursor: pointer;
-      &._active,
-      &:hover {
-        color: color(blue, 6);
-      }
+    &._active {
+      color: color($color, 6);
     }
 
-    &[data-d='2'] {
-      border-bottom-color: color(teal, 3);
-      cursor: pointer;
-      &._active,
-      &:hover {
-        color: color(teal, 6);
-      }
+    @include hover {
+      color: color($color, 6);
     }
+  }
 
-    &[data-d='3'] {
-      border-bottom-color: color(red, 3);
-      cursor: pointer;
-      &._active,
-      &:hover {
-        color: color(red, 6);
-      }
-    }
+  .input {
+    @include hover {
+      :global(x-v) {
+        cursor: pointer;
+        border-bottom: 1px solid transparent;
 
-    &[data-d='4'] {
-      border-color: color(orange, 3);
-      cursor: pointer;
-      &._active,
-      &:hover {
-        color: color(orange, 6);
+        &[data-d='1'] {
+          @include token(blue);
+        }
+
+        &[data-d='2'] {
+          @include token(teal);
+        }
+
+        &[data-d='3'] {
+          @include token(red);
+        }
+
+        &[data-d='4'] {
+          @include token(orange);
+        }
       }
     }
   }

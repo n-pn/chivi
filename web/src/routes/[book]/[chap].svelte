@@ -58,11 +58,9 @@
       const e_key = escape_html(key)
       const e_val = escape_html(val)
 
-      if (active && dic > 0) {
+      if (active) {
         res += `<x-v data-k="${e_key}" data-i=${idx} data-d=${dic} data-p=${pos}>${e_val}</x-v>`
-      } else {
-        res += e_val
-      }
+      } else res += e_val
 
       switch (val.charAt(val.length - 1)) {
         case '⟩':
@@ -87,6 +85,77 @@
     }
 
     return res
+  }
+
+  function get_selection(evt) {
+    const nodes = get_selected()
+
+    let res = ''
+    let idx = 0
+
+    for (; idx < nodes.length; idx++) {
+      const node = nodes[idx]
+      const name = node.nodeName
+
+      if (name == 'X-Z') break
+      else if (name == 'X-V') {
+        const dic = +node.dataset.d
+        const key = node.dataset.k
+        if (dic > 0 || key == '的' || key == '') break
+      }
+    }
+
+    for (; idx < nodes.length; idx++) {
+      const node = nodes[idx]
+      const name = node.nodeName
+
+      if (name == 'X-V') {
+        const dic = +node.dataset.d
+        const key = node.dataset.k
+        if (dic > 0 || key == '的' || key == '') res += key
+        else break
+      } else if (name == 'X-Z') res += node.textContent.trim()
+      else if (name != '#text') break
+    }
+
+    return res
+  }
+
+  function get_selected() {
+    const selection = document.getSelection()
+    if (selection.isCollapsed) return []
+
+    const range = selection.getRangeAt(0)
+
+    let node = range.startContainer
+    const stop = range.endContainer
+
+    // Special case for a range that is contained within a single node
+    if (node == stop) return [node]
+
+    // Iterate nodes until we hit the end container
+    let nodes = []
+    while (node && node != stop) {
+      node = next_node(node)
+      if (node) nodes.push(node)
+    }
+
+    // Add partially selected nodes at the start of the range
+    node = range.startContainer
+    while (node && node != range.commonAncestorContainer) {
+      nodes.unshift(node)
+      node = node.parentNode
+    }
+
+    return nodes
+  }
+
+  function next_node(node) {
+    if (node.hasChildNodes()) return node.firstChild
+
+    while (node && !node.nextSibling) node = node.parentNode
+    if (!node) return null
+    return node.nextSibling
   }
 </script>
 
@@ -114,24 +183,24 @@
   export let chidx
   export let lines
 
-  let line_focused = 0
-  let item_focused
+  let lineOnFocus = 0
+  let elemOnFocus = null
 
-  let enable_lookup = false
-  let enable_upsert = false
+  let lookupEnabled = false
+  let upsertEnabled = false
 
-  let upsert_key = ''
-  let upsert_dic = 'combine'
-  let upsert_tab = 'generic'
+  let upsertKey = ''
+  let upsertDic = 'combine'
+  let upsertTab = 'generic'
 
   function navigate(evt) {
-    if (enable_upsert) return
+    if (upsertEnabled) return
 
     // if (!evt.altKey) return
 
     switch (evt.keyCode) {
       case 27:
-        enable_upsert = false
+        upsertEnabled = false
         break
 
       case 72:
@@ -153,10 +222,17 @@
         evt.preventDefault()
         break
 
+      case 88:
+        if (!evt.altKey) return
+
+        if (!upsertEnabled) active_upsert('special')
+        evt.preventDefault()
+        break
+
       case 67:
         if (!evt.altKey) return
 
-        if (!enable_upsert) active_upsert()
+        if (!upsertEnabled) active_upsert('generic')
         evt.preventDefault()
         break
 
@@ -169,82 +245,35 @@
     }
   }
 
-  // onMount(() => {
-  //   document.onselectionchange = selection
-  // })
-
-  function selection(evt) {
-    const nodes = get_selected()
-    let key = ''
-    for (const node of nodes) {
-      if (node.nodeName == 'X-V') key += node.getAttribute('k')
-    }
-  }
-
-  function get_selected() {
-    const sel = document.getSelection()
-    if (sel.isCollapsed) return []
-
-    const range = sel.getRangeAt(0)
-
-    let node = range.startContainer
-    const stop = range.endContainer
-
-    // Special case for a range that is contained within a single node
-    if (node == stop) return [node]
-
-    // Iterate nodes until we hit the end container
-    let nodes = []
-    while (node && node != stop) {
-      nodes.push((node = next_node(node)))
-    }
-
-    // Add partially selected nodes at the start of the range
-    node = range.startContainer
-    while (node && node != range.commonAncestorContainer) {
-      nodes.unshift(node)
-      node = node.parentNode
-    }
-
-    return nodes
-  }
-
-  function next_node(node) {
-    if (node.hasChildNodes()) return node.firstChild
-    while (node && !node.nextSibling) node = node.parentNode
-    if (!node) return null
-    return node.nextSibling
-  }
-
   function change_focus(idx) {
-    line_focused = idx
+    lineOnFocus = idx
   }
 
   function active_lookup(evt, idx) {
-    if (item_focused) {
-      item_focused.classList.remove('_active')
+    if (elemOnFocus) {
+      elemOnFocus.classList.remove('_active')
     }
 
     lookup_line.set(lines[idx])
 
     if (evt.target.nodeName !== 'X-V') {
-      item_focused = null
+      elemOnFocus = null
       lookup_from.set(0)
     } else {
-      item_focused = evt.target
-      item_focused.classList.add('_active')
-      lookup_from.set(+item_focused.dataset['p'])
+      elemOnFocus = evt.target
+      elemOnFocus.classList.add('_active')
+      lookup_from.set(+elemOnFocus.dataset['p'])
     }
 
-    if (enable_lookup) lookup_active.set(true)
+    if (lookupEnabled) lookup_active.set(true)
   }
 
   function trigger_lookup() {
-    if (enable_lookup) {
-      enable_lookup = false
+    if (lookupEnabled) {
+      lookupEnabled = false
       lookup_active.set(false)
     } else {
-      enable_lookup = true
+      lookupEnabled = true
       lookup_active.set(true)
     }
   }
@@ -255,21 +284,25 @@
     return true
   }
 
-  function active_upsert() {
-    // TODO: from selection
+  function active_upsert(tab = 'special') {
+    upsertTab = tab
 
-    if (item_focused) {
-      upsert_key = item_focused.dataset.k
+    const selection = get_selection()
 
-      const dic = +item_focused.dataset.d
-      if (dic == 1 || dic == 2) {
-        upsert_tab = 'generic'
-      } else {
-        upsert_tab = 'special'
-      }
+    if (selection !== '') {
+      upsertKey = selection
+    } else if (elemOnFocus) {
+      upsertKey = elemOnFocus.dataset.k
+
+      // const dic = +elemOnFocus.dataset.d
+      // if (dic == 1 || dic == 2) {
+      //   upsertTab = 'generic'
+      // } else {
+      //   upsertTab = 'special'
+      // }
     }
 
-    enable_upsert = true
+    upsertEnabled = true
   }
 
   let reload = false
@@ -316,7 +349,7 @@
     <button
       type="button"
       class="header-item"
-      class:_active={enable_lookup}
+      class:_active={lookupEnabled}
       on:click={trigger_lookup}>
       <MIcon class="m-icon _compass" name="compass" />
     </button>
@@ -326,21 +359,20 @@
 <div class="wrapper">
   <article class:reload>
     {#each lines as line, idx}
-      {#if idx == 0}
-        <h1
-          class:_active={enable_lookup && idx == line_focused}
-          on:mouseenter={() => change_focus(idx)}
-          on:click={evt => active_lookup(evt, idx)}>
-          {@html render(line, is_active(idx, line_focused))}
-        </h1>
-      {:else}
-        <p
-          class:_active={enable_lookup && idx == line_focused}
-          on:mouseenter={() => change_focus(idx)}
-          on:click={evt => active_lookup(evt, idx)}>
-          {@html render(line, is_active(idx, line_focused))}
-        </p>
-      {/if}
+      <div
+        class:_focus={idx == lineOnFocus && lookupEnabled}
+        on:mouseenter={() => change_focus(idx)}
+        on:click={event => active_lookup(event, idx)}>
+        {#if idx == 0}
+          <h1>
+            {@html render(line, is_active(idx, lineOnFocus))}
+          </h1>
+        {:else}
+          <p>
+            {@html render(line, is_active(idx, lineOnFocus))}
+          </p>
+        {/if}
+      </div>
     {/each}
   </article>
 
@@ -371,16 +403,16 @@
   </footer>
 </div>
 
-{#if enable_lookup}
+{#if lookupEnabled}
   <Lookup />
 {/if}
 
-{#if enable_upsert}
+{#if upsertEnabled}
   <Upsert
-    bind:active={enable_upsert}
-    key={upsert_key}
-    dic={upsert_dic}
-    tab={upsert_tab} />
+    bind:active={upsertEnabled}
+    key={upsertKey}
+    dic={upsertDic}
+    tab={upsertTab} />
 {/if}
 
 <style lang="scss">
@@ -443,18 +475,12 @@
   $token-colors: blue, teal, red, orange;
 
   :global(x-v) {
-    cursor: pointer;
     position: relative;
     border-bottom: 1px solid transparent;
 
-    // @for $index from 1 through 4 {
-    //   $color: nth($token-colors, $index);
-    //   &[data-d='#{color}'] {
-    //     @include token($color);
-    //   }
-    // }
+    div._focus & {
+      cursor: pointer;
 
-    :global(._active) & {
       &[data-d='1'] {
         @include token(blue);
       }
@@ -470,6 +496,12 @@
       &[data-d='4'] {
         @include token(orange);
       }
+      // @for $index from 1 through 4 {
+      //   $color: nth($token-colors, $index);
+      //   &[data-d='#{color}'] {
+      //     @include token($color);
+      //   }
+      // }
     }
   }
 </style>

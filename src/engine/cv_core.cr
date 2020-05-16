@@ -103,6 +103,7 @@ module CvCore
       picks.each do |size, pick|
         item = items[size]
         next if item.vals.empty?
+        next if item.vals.first.empty?
 
         dic_bonus = pick / dsize
 

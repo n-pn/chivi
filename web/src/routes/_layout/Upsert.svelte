@@ -74,7 +74,7 @@
   }
 
   async function remove() {
-    const res = await fetch(`/api/delete?dic=${active_dic}&key=${key}`)
+    const res = await fetch(`/api/upsert?dic=${active_dic}&key=${key}`)
     active = false
   }
 

@@ -64,10 +64,10 @@ module Engine
     generic_base = @@repo.shared_base["generic"]
 
     dicts = {
-      {special_user, "riêng (#{user})", "; "},
-      {special_base, "riêng (hệ thống)", "; "},
-      {generic_user, "chung (#{user})", "; "},
-      {generic_base, "chung (hệ thống)", "; "},
+      {special_user, "riêng (user)", "; "},
+      {special_base, "riêng (base)", "; "},
+      {generic_user, "chung (user)", "; "},
+      {generic_base, "chung (base)", "; "},
       {@@repo.trungviet, "trungviet", "\n"},
       {@@repo.cc_cedict, "cc_cedict", "\n"},
     }
@@ -79,7 +79,7 @@ module Engine
 
       dicts.each do |dict, name, join|
         dict.scan(chars, idx).each do |item|
-          res[item.key.size] << {name, item.vals.join(join)}
+          res[item.key.size] << {name, item.vals.join(join)} unless item.vals.empty?
         end
       end
 
