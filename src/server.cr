@@ -183,17 +183,16 @@ module Server
     prev_chap = list[cidx - 1] if cidx > 0
     next_chap = list[cidx + 1] if cidx < list.size - 1
 
-    mode = env.params.query.fetch("mode", "0").to_i
+    mode = env.params.query.fetch("mode", "0").try(&.to_i) || 0
 
     {
-      book_slug: info.slug,
-      book_name: info.vi_title,
-      prev_slug: prev_chap.try(&.slug_for(site)),
-      next_slug: next_chap.try(&.slug_for(site)),
-      curr_slug: curr_chap.try(&.slug_for(site)),
-      lines:     Kernel.load_chap(info, site, csid, user, mode: mode),
-      chidx:     cidx + 1,
-      total:     list.size,
+      bname:    info.vi_title,
+      chidx:    cidx + 1,
+      total:    list.size,
+      prev_url: prev_chap.try(&.slug_for(site)),
+      next_url: next_chap.try(&.slug_for(site)),
+      curr_url: curr_chap.try(&.slug_for(site)),
+      lines:    Kernel.load_chap(info, site, csid, user, mode: mode),
     }.to_json env.response
   end
 

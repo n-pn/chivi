@@ -41,12 +41,13 @@
   $: active_dic = tab == 'special' ? dic : 'generic'
   $: if (key) inquire()
 
-  let links = []
+  $: links = suggest_urls(key)
+
   let props = {
     hanviet: '',
     pinyins: '',
-    generic: { value: '', mtime: null },
-    special: { value: '', mtime: null },
+    generic: { vals: [], time: null },
+    special: { vals: [], time: null },
     suggest: [],
   }
 
@@ -62,14 +63,13 @@
   }
 
   function update_val() {
-    val = props[tab].value || props.suggest[0] || props.hanviet
+    val = props[tab].vals[0] || props.suggest[0] || props.hanviet
     if (tab === 'special') upcase_val()
   }
 
   async function upsert() {
-    const res = await fetch(
-      `/api/upsert?dic=${active_dic}&key=${key}&val=${val}`
-    )
+    const url = `/api/upsert?dic=${active_dic}&key=${key}&val=${val}`
+    const res = await fetch(url)
     active = false
   }
 

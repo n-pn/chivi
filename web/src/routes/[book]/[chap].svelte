@@ -1,15 +1,20 @@
 <script context="module">
-  export async function preload({ params }) {
-    const book = params.book
+  export async function preload({ params, query }) {
+    const bslug = params.book
 
     const slug = params.chap.split('-')
     const site = slug[slug.length - 2]
-    const chap = slug[slug.length - 1]
+    const csid = slug[slug.length - 1]
 
-    const url = `api/books/${book}/${site}/${chap}`
+    const data = await load_page(this.fetch, bslug, site, csid)
+    return { ...data, bslug, site, csid }
+  }
+
+  async function load_page(get, bslug, site, csid, mode = 0) {
+    const url = `api/books/${bslug}/${site}/${csid}?mode=${mode}`
 
     try {
-      const res = await this.fetch(url)
+      const res = await get(url)
       const data = await res.json()
 
       if (res.status == 200) return data
@@ -95,15 +100,19 @@
 
   import { lookup_active, lookup_line, lookup_from } from '$src/stores.js'
 
-  export let book_slug
-  export let book_name
-  export let prev_slug
-  export let next_slug
-  // export let curr_slug
+  export let bname
+  export let bslug
 
-  export let lines
-  export let chidx
+  export let site
+  export let csid
+
+  export let prev_url
+  export let next_url
+  export let curr_url
+
   export let total
+  export let chidx
+  export let lines
 
   let line_focused = 0
   let item_focused
@@ -121,28 +130,38 @@
     // if (!evt.altKey) return
 
     switch (evt.keyCode) {
+      case 27:
+        enable_upsert = false
+        break
+
       case 72:
         evt.preventDefault()
-        _goto(book_slug)
+        _goto(bslug)
         break
 
       case 37:
       case 74:
         evt.preventDefault()
-        if (prev_slug) _goto(`${book_slug}/${prev_slug}`)
-        else _goto(book_slug)
+        if (prev_url) _goto(`${bslug}/${prev_url}`)
+        else _goto(bslug)
         break
 
       case 39:
       case 75:
-        if (next_slug) _goto(`${book_slug}/${next_slug}`)
-        else _goto(`${book_slug}`)
+        if (next_url) _goto(`${bslug}/${next_url}`)
+        else _goto(`${bslug}`)
         evt.preventDefault()
         break
 
       case 67:
+        if (!evt.altKey) return
+
         if (!enable_upsert) active_upsert()
         evt.preventDefault()
+        break
+
+      case 82:
+        if (evt.altKey) reload_page(1)
         break
 
       default:
@@ -160,7 +179,6 @@
     for (const node of nodes) {
       if (node.nodeName == 'X-V') key += node.getAttribute('k')
     }
-    console.log(key)
   }
 
   function get_selected() {
@@ -253,10 +271,20 @@
 
     enable_upsert = true
   }
+
+  let reload = false
+  async function reload_page(mode = 1) {
+    reload = true
+    const data = await load_page(window.fetch, bslug, site, csid, mode)
+    lines = data.lines
+    reload = false
+  }
 </script>
 
 <svelte:head>
-  <title>{render(lines[0])} - {book_name} - Chivi</title>
+  <title>{render(lines[0])} - {bname} - Chivi</title>
+  <meta property="og:url" content="{bslug}/{curr_url}" />
+
 </svelte:head>
 
 <svelte:window on:keydown={navigate} />
@@ -267,8 +295,8 @@
       <img src="/logo.svg" alt="logo" />
     </a>
 
-    <a href="/{book_slug}" class="header-item _title">
-      <span>{book_name}</span>
+    <a href="/{bslug}" class="header-item _title">
+      <span>{bname}</span>
     </a>
 
     <span class="header-item _active _index">
@@ -277,9 +305,13 @@
   </div>
 
   <div class="right">
-    <!-- <a href="/{book_slug}/{curr_slug}?reload=true" class="header-item">
+    <!-- <a href="/{bslug}/{curr_slug}?reload=true" class="header-item">
       <MIcon class="m-icon _refresh-ccw" name="refresh-ccw" />
     </a> -->
+
+    <button type="button" class="header-item" on:click={() => reload_page()}>
+      <MIcon class="m-icon _refresh-ccw" name="refresh-ccw" />
+    </button>
 
     <button
       type="button"
@@ -292,7 +324,7 @@
 </Header>
 
 <div class="wrapper">
-  <article>
+  <article class:reload>
     {#each lines as line, idx}
       {#if idx == 0}
         <h1
@@ -313,25 +345,25 @@
   </article>
 
   <footer>
-    {#if prev_slug}
-      <a class="m-button _line" href="/{book_slug}/{prev_slug}">
+    {#if prev_url}
+      <a class="m-button _line" href="/{bslug}/{prev_url}">
         <MIcon class="m-icon" name="chevron-left" />
         <span>Trước</span>
       </a>
     {:else}
-      <a class="m-button _line" href="/{book_slug}">
+      <a class="m-button _line" href="/{bslug}">
         <MIcon class="m-icon" name="list" />
         <span>Mục lục</span>
       </a>
     {/if}
 
-    {#if next_slug}
-      <a class="m-button _line _primary" href="/{book_slug}/{next_slug}">
+    {#if next_url}
+      <a class="m-button _line _primary" href="/{bslug}/{next_url}">
         <span>Kế tiếp</span>
         <MIcon class="m-icon" name="chevron-right" />
       </a>
-    {:else if prev_slug}
-      <a class="m-button _line" href="/{book_slug}">
+    {:else if prev_url}
+      <a class="m-button _line" href="/{bslug}">
         <MIcon class="m-icon" name="list" />
         <span>Mục lục</span>
       </a>
@@ -361,6 +393,9 @@
     word-wrap: break-word;
     text-align: justify;
     text-justify: auto;
+    &.reload {
+      @include fgcolor(neutral, 4);
+    }
   }
 
   h1 {

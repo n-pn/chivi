@@ -116,7 +116,7 @@ module Engine
   end
 
   private def dict_item(item : CvDict::Item?)
-    return {val: "", time: nil} if item.nil?
+    return {vals: [] of String, time: nil} if item.nil?
 
     {
       vals: item.vals,
