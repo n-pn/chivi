@@ -28,6 +28,8 @@
     "sass-loader": "^8.0.0",
     "svelte": "^3.0.0",
     "svelte-loader-hot": "^0.3.0",
+    "svelte-preprocess": "^3.7.4",
+    "typescript": "^3.9.3",
     "webpack": "^4.42.0"
   },
   "browserslist": [

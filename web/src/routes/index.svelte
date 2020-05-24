@@ -24,14 +24,14 @@
   }
 </script>
 
-<script>
+<script lang="typescript">
   import MIcon from '$mould/MIcon.svelte'
   import Header from '$layout/Header.svelte'
 
-  export let items = []
-  export let total = 0
-  export let page = 1
-  export let sort = 'access'
+  export let items: any[] = []
+  export let total: number = 0
+  export let page: number = 1
+  export let sort: string = 'access'
 
   const sorts = {
     access: 'Vừa xem',
@@ -41,27 +41,31 @@
     tally: 'Tổng hợp',
   }
 
-  $: page_max = Math.floor((total - 1) / 20) + 1
-  $: pages = make_pages(page, page_max)
+  let pageMax: number = 0
+  $: pageMax = Math.floor((total - 1) / 20) + 1
+
+  let pageList: any[] = []
+  $: pageList = make_pageList(page, pageMax)
 
   import { onMount } from 'svelte'
   import { lookup_active } from '$src/stores.js'
   onMount(() => lookup_active.set(false))
 
-  function make_pages(page_now, page_max) {
-    let page_from = page_now - 2
-    if (page_from < 1) page_from = 1
-    let page_upto = page_from + 4
-    if (page_upto > page_max) {
-      page_upto = page_max
-      page_from = page_upto - 4
-      if (page_from < 1) page_from = 1
+  function make_pageList(currPage: number, pageMax: number) {
+    let pageFrom = currPage - 2
+    if (pageFrom < 1) pageFrom = 1
+
+    let pageUpto = pageFrom + 4
+    if (pageUpto > pageMax) {
+      pageUpto = pageMax
+      pageFrom = pageUpto - 4
+      if (pageFrom < 1) pageFrom = 1
     }
 
-    // console.log({ page_from, page_upto })
-    let arr = []
-    for (let i = page_from; i <= page_upto; i++) arr.push(i)
-    return arr
+    // console.log({ pageFrom, pageUpto })
+    let output: number[] = []
+    for (let i = pageFrom; i <= pageUpto; i++) output.push(i)
+    return output
   }
 </script>
 
@@ -108,23 +112,23 @@
       </a>
     {/if}
 
-    {#each pages as idx}
-      {#if page == idx}
+    {#each pageList as currPage}
+      {#if page == currPage}
         <button class="page m-button _line _primary" disabled>
-          <span>{idx}</span>
+          <span>{currPage}</span>
         </button>
       {:else}
-        <a class="page m-button _line" href={page_url(idx, sort)}>
-          <span>{idx}</span>
+        <a class="page m-button _line" href={page_url(currPage, sort)}>
+          <span>{currPage}</span>
         </a>
       {/if}
     {/each}
-    {#if page == page_max}
+    {#if page == pageMax}
       <button class="page m-button _line" disabled>
         <MIcon class="m-icon" name="chevrons-right" />
       </button>
     {:else}
-      <a class="page m-button _line" href={page_url(page_max, sort)}>
+      <a class="page m-button _line" href={page_url(pageMax, sort)}>
         <MIcon class="m-icon" name="chevrons-right" />
       </a>
     {/if}

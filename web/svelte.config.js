@@ -1,8 +1,10 @@
 const path = require('path')
 const sass = require('node-sass')
+const prep = require('svelte-preprocess')
 
 module.exports = {
   preprocess: {
+    ...prep(),
     style: async ({ content, attributes, filename }) => {
       if (content.length === 0) return { code: content }
 
