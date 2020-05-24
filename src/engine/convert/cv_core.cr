@@ -3,9 +3,9 @@ require "json"
 require "./cv_dict"
 require "./cv_node"
 
-require "../_utils/normalize"
-require "../_utils/han_to_int"
-require "../_utils/string_utils"
+require "../../_utils/normalize"
+require "../../_utils/han_to_int"
+require "../../_utils/string_utils"
 
 module CvCore
   extend self

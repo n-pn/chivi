@@ -6,7 +6,6 @@ require "parallel"
 require "colorize"
 require "fileutils"
 
-
 # # Prepare proxies
 
 require_relative "./yousuu-utils"
@@ -36,7 +35,7 @@ def info_outdated?(file)
 
   data = File.read(file)
   if data.include?("未找到该图书")
-    outdated = OUTDATED * 10 # 30 days
+    outdated = OUTDATED * 5 # 15 days
   else
     outdated = get_outdated_by_status(data)
   end
@@ -44,11 +43,11 @@ def info_outdated?(file)
   Time.now.to_i - File.mtime(file).to_i > outdated
 end
 
-def fetch_meta(book_id, proxy)
-  file = OUT_FILE % book_id
+def fetch_meta(serial, proxy)
+  file = OUT_FILE % serial
   return :skip unless info_outdated?(file)
 
-  url = BOOK_URL % [book_id, unix_ms]
+  url = BOOK_URL % [serial, unix_ms]
   body = fetch_url(url, proxy)
 
   raise "Malformed!" unless body.include?("success") || body.include?("未找到该图书")
@@ -63,35 +62,39 @@ rescue => err
   :error
 end
 
-# # Prepare book_ids
+# # Prepare serials
 
-TOTAL = 212100 # max book_id
-book_ids = (1..TOTAL).to_a
+TOTAL = 212200 # max serial
+serials = (1..TOTAL).to_a
 
 if ARGV.include?("shuffle")
   puts "SHUFFLE INPUT!".yellow
-  book_ids.shuffle!
+  serials.shuffle!
 elsif ARGV.include?("reverse")
   puts "REVERSE INPUT!".yellow
-  book_ids.reverse!
+  serials.reverse!
 end
 
 # # Crawling!
 
 step = 1
-until proxies.empty? || book_ids.empty?
+until proxies.empty? || serials.empty?
   puts "[LOOP:#{step}]: \
-        book_ids: #{book_ids.size}, \
+        serials: #{serials.size}, \
         proxies: #{proxies.size}".cyan
 
   working = []
   failure = []
 
-  Parallel.each_with_index(proxies.take(book_ids.size), in_threads: 20) do |proxy, idx|
-    book_id = book_ids.pop
+  total = serials.size
+  total = proxies.size if total > proxies.size
 
-    res = fetch_meta(book_id, proxy)
-    message = "- [#{idx + 1}/#{proxies.size}]: #{res}! book_id: [#{book_id}], proxy: [#{proxy}]"
+  Parallel.each_with_index(1..total, in_threads: 20) do |idx|
+    proxy = proxies.pop
+    serial = serials.pop
+
+    res = fetch_meta(serial, proxy)
+    message = "- [#{idx}/#{total}]: #{res}! serial: [#{serial}], proxy: [#{proxy}]"
 
     case res
     when :skip
@@ -100,12 +103,12 @@ until proxies.empty? || book_ids.empty?
       working << proxy
       puts message.green unless VERBOSE
     when :error
-      failure << book_id
+      failure << serial
       puts message.red unless VERBOSE
     end
   end
 
   step += 1
   proxies.concat(working).uniq!
-  book_ids.concat(failure).uniq!
+  serials.concat(failure).uniq!
 end
