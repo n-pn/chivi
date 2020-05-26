@@ -15,11 +15,11 @@ module Kernel
   def gen_expiry(status)
     case status
     when 0
-      5.hours
+      6.hours
     when 1
-      5.days
+      6.weeks
     else
-      5.weeks
+      6.months
     end
   end
 
@@ -29,7 +29,7 @@ module Kernel
     end
 
     file = ChapList.path_for(info.uuid, site)
-    expiry = refresh ? 10.minutes : gen_expiry(info.status)
+    expiry = refresh ? 6.minutes : gen_expiry(info.status)
 
     unless Utils.outdated?(file, expiry)
       return ChapList.read!(file)
