@@ -115,6 +115,14 @@
     book.vi_genre,
     book.zh_genre,
   ]
+
+  let reloading = false
+  async function updateList() {
+    reloading = true
+    const data = await load_list(fetch, book.slug, site, true)
+    reloading = false
+    if (data.status == 200) list = data.list
+  }
 </script>
 
 <svelte:head>
@@ -210,9 +218,19 @@
       {/each}
     </div>
 
-    <h2 class="content" data-site={site}>
-      Mục lục
-      <span class="count">({list.length} chương)</span>
+    <h2 class="content u-cf" data-site={site}>
+      <span class="label u-fl">Mục lục</span>
+      <span class="count u-fl">({list.length} chương)</span>
+      <button
+        class="m-button _text u-fr"
+        class:_reload={reloading}
+        on:click={updateList}>
+        {#if reloading}
+          <MIcon class="m-icon" name="loader" />
+        {:else}
+          <span>Đổi mới: {relative_time(book.cr_mftimes[site])}</span>
+        {/if}
+      </button>
     </h2>
 
     <ChapList bslug={book.slug} label="Mới nhất" chaps={latests} />
@@ -297,6 +315,26 @@
 
   .info {
     padding-top: 0.75rem;
+  }
+
+  ._reload {
+    @include fgcolor(color(neutral, 5));
+
+    :global(svg) {
+      animation-name: spin;
+      animation-duration: 1000ms;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .tabs {

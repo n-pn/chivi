@@ -93,9 +93,8 @@
     }
   }
 
-  function handle_keypress(e) {
-    if (e.keyCode != 92) return
-    active.update((x) => !x)
+  function handleKeypress(evt) {
+    if (evt.keyCode == 27) active.set(false)
   }
 
   function pin_sidebar() {
@@ -107,7 +106,7 @@
   }
 </script>
 
-<svelte:window on:keypress={handle_keypress} />
+<svelte:window on:keydown={handleKeypress} />
 
 <aside class:_active={$active}>
   <header>

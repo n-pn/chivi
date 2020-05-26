@@ -219,6 +219,7 @@
         color: inherit;
         padding: 0 0.5rem;
         display: block;
+        font-weight: 500;
         width: 100%;
         border: none;
         outline: none;

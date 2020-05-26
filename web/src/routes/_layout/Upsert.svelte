@@ -279,13 +279,13 @@
     width: 100%;
     height: 100%;
     z-index: 999;
-    @include bgcolor(rgba(#000, 0.6));
+    @include bgcolor(rgba(#000, 0.65));
   }
 
   .dialog {
-    width: rem(29);
+    width: rem(30);
     max-width: 100%;
-    margin-top: -10%;
+    // margin-top: -10%;
     @include bgcolor(white);
     @include radius();
     @include shadow(3);

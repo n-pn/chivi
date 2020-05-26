@@ -65,13 +65,14 @@
   let upsertTab = 'generic'
 
   function handleKeypress(evt) {
-    if (upsertEnabled) return
+    // if (upsertEnabled) return
 
     // if (!evt.altKey) return
 
     switch (evt.keyCode) {
-      case 27:
-        upsertEnabled = false
+      case 220:
+        trigger_lookup()
+        // lookup_active.update((x) => !x)
         break
 
       case 72:
