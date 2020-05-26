@@ -21,8 +21,8 @@
 
 <style type="text/scss">
   .volume {
-    margin-top: 0.75rem;
-    padding-left: 0.75rem;
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
   }
 
   .count {
@@ -68,7 +68,6 @@
 
   .chap-link {
     display: block;
-    padding: 0.5rem 0.75rem;
 
     @include fgcolor(color(neutral, 7));
     @include hover {
@@ -77,6 +76,8 @@
   }
 
   .chap-text {
-    @include truncate();
+    display: block;
+    padding: 0.5rem 0.5rem;
+    @include truncate(100%);
   }
 </style>

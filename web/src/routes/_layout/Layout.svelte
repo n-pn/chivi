@@ -37,12 +37,17 @@
     <nav class="center">
       <div class="header-left">
         <slot name="header-left">
-          <a href="/" class="header-item _left _logo _active">
+          <a href="/" class="header-item _logo _active">
             <img src="/logo.svg" alt="logo" />
             <span>Chivi</span>
           </a>
 
-          <form class="header-item _input _right" action="/search" method="get">
+        </slot>
+      </div>
+
+      <div class="header-right">
+        <slot name="header-right">
+          <form class="header-item _input" action="/search" method="get">
             <input
               type="search"
               name="kw"
@@ -52,10 +57,6 @@
 
           </form>
         </slot>
-      </div>
-
-      <div class="header-right">
-        <slot name="header-right" />
       </div>
     </nav>
 
@@ -141,6 +142,8 @@
     text-decoration: none;
     padding: 0 0.5rem;
 
+    min-width: $header-inner-height;
+    max-width: 80vw;
     height: $header-inner-height;
     line-height: $header-inner-height;
 
@@ -167,22 +170,22 @@
     }
 
     &._title {
-      max-width: 30vw;
+      max-width: 25vw;
       @include screen-min(sm) {
-        max-width: 40vw;
+        max-width: 35vw;
       }
       @include screen-min(md) {
-        max-width: 50vw;
+        max-width: 45vw;
       }
     }
 
     &._index {
-      max-width: 20vw;
+      max-width: 15vw;
       @include screen-min(sm) {
-        max-width: 40vw;
+        max-width: 20vw;
       }
       @include screen-min(md) {
-        max-width: 60vw;
+        max-width: 30vw;
       }
     }
 

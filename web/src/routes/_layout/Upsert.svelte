@@ -176,7 +176,7 @@
 <div class="container" on:click={closePopup}>
   <div class="dialog" on:click={(evt) => evt.stopPropagation()}>
     <header>
-      <span class="label">Thêm từ:</span>
+      <span class="label">Từ điển</span>
       {#each tabs as [name, label]}
         <span
           class="tab"
@@ -230,7 +230,7 @@
         class:_fresh={newEntry}
         name="value"
         id="val_field"
-        rows="2"
+        rows="1"
         on:keypress={submitOnEnter}
         bind:this={val_field}
         bind:value={val} />
@@ -267,7 +267,7 @@
 </div>
 
 <style lang="scss">
-  $gutter: 1rem;
+  $gutter: 0.75rem;
 
   .container {
     position: fixed;
@@ -291,7 +291,7 @@
     @include shadow(3);
   }
 
-  $header-height: 3rem;
+  $header-height: 2.75rem;
   $header-gutter: 0.5rem;
 
   header {
@@ -305,12 +305,14 @@
 
     .label {
       font-weight: 500;
+      @include fgcolor(color(neutral, 7));
     }
 
     .m-button {
       position: absolute;
       right: $header-gutter;
-      top: 0.375rem;
+      // top: 0.375rem;
+      top: 0.25rem;
       @include hover {
         color: color(primary, 5);
       }
@@ -364,13 +366,14 @@
       @include bgcolor(white);
       @include border-color($value: color(primary, 3));
     }
-    // line-height: 1rem;
+    // line-height: .75rem;
   }
 
   .key-lit {
     margin-top: 0.375rem;
-    @include font-size(2);
     line-height: 1;
+    @include truncate();
+    @include font-size(2);
     @include fgcolor(color(neutral, 6));
   }
 
@@ -381,13 +384,15 @@
   .val-inp {
     display: block;
     width: 100%;
-    min-height: 2.5rem;
     margin: 0;
     padding: 0.375rem 0.75rem;
+
+    min-height: 2.5rem;
 
     @include radius();
     @include border($color: color(neutral, 2));
     @include bgcolor(color(neutral, 1));
+
     &:focus,
     &:active {
       @include bgcolor(white);
@@ -400,9 +405,10 @@
   }
 
   .val-act {
-    // margin: 1rem 0;
+    // margin: .75rem 0;
     margin: 0.5rem 0;
     @include flex();
+
     .left {
       margin-right: auto;
       @include flex($gap: 0.5rem);
@@ -422,7 +428,7 @@
   .cap-lbl {
     padding: 0;
     padding-right: 0.375rem;
-    max-width: 15vw;
+    max-width: 17.5vw;
     @include truncate(null);
 
     @include font-size(2);
@@ -450,6 +456,7 @@
     display: flex;
     @include bgcolor(color(neutral, 1));
     @include radius($pos: bottom);
+    align-items: center;
     // width: 5rem;
     margin: 0;
     padding: 0 0.5rem;
@@ -458,10 +465,13 @@
 
     span,
     a {
-      // display: inline-block;
-      line-height: 1rem;
+      line-height: 0.75rem;
       padding: 0.5rem;
       @include font-size(2);
+
+      display: inline-block;
+      overflow: hidden;
+
       // @include font-family(narrow);
     }
 
