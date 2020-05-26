@@ -24,139 +24,6 @@
       this.error(500, err.message)
     }
   }
-
-  const tags = {
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&apos;',
-  }
-
-  function replace_tag(tag) {
-    return tags[tag] || tag
-  }
-
-  function escape_html(str) {
-    return str.replace(/[&<>]/g, replace_tag)
-  }
-
-  export function render(tokens, active = false) {
-    let res = ''
-    let idx = 0
-    let pos = 0
-
-    for (const [key, val, dic] of tokens) {
-      switch (val.charAt(0)) {
-        case '⟨':
-          res += '<cite>'
-          break
-        case '“':
-          res += '<em>'
-          break
-      }
-
-      const e_key = escape_html(key)
-      const e_val = escape_html(val)
-
-      if (active) {
-        res += `<x-v data-k="${e_key}" data-i=${idx} data-d=${dic} data-p=${pos}>${e_val}</x-v>`
-      } else res += e_val
-
-      switch (val.charAt(val.length - 1)) {
-        case '⟩':
-          res += '</cite>'
-          break
-        case '”':
-          res += '</em>'
-          break
-
-        // if (val === '⟨') body += '<cite>⟨'
-        //       else if (val === '⟩') body += '⟩</cite>'
-        //       else if (val === '[') body += '<x-m>['
-        //       else if (val === ']') body += ']</x-m>'
-        //       else if (val === '“') body += '<q>'
-        //       else if (val === '”') body += '</q>'
-        //       else if (val === '‘') body += '<i>‘'
-        //       else if (val === '’') body += '’</i>'
-      }
-
-      idx += 1
-      pos += key.length
-    }
-
-    return res
-  }
-
-  function get_selection(evt) {
-    const nodes = get_selected()
-
-    let res = ''
-    let idx = 0
-
-    for (; idx < nodes.length; idx++) {
-      const node = nodes[idx]
-      const name = node.nodeName
-
-      if (name == 'X-Z') break
-      else if (name == 'X-V') {
-        const dic = +node.dataset.d
-        const key = node.dataset.k
-        if (dic > 0 || key == '的' || key == '') break
-      }
-    }
-
-    for (; idx < nodes.length; idx++) {
-      const node = nodes[idx]
-      const name = node.nodeName
-
-      if (name == 'X-V') {
-        const dic = +node.dataset.d
-        const key = node.dataset.k
-        if (dic > 0 || key == '的' || key == '') res += key
-        else break
-      } else if (name == 'X-Z') res += node.textContent.trim()
-      else if (name != '#text') break
-    }
-
-    return res
-  }
-
-  function get_selected() {
-    const selection = document.getSelection()
-    if (selection.isCollapsed) return []
-
-    const range = selection.getRangeAt(0)
-
-    let node = range.startContainer
-    const stop = range.endContainer
-
-    // Special case for a range that is contained within a single node
-    if (node == stop) return [node]
-
-    // Iterate nodes until we hit the end container
-    let nodes = []
-    while (node && node != stop) {
-      node = next_node(node)
-      if (node) nodes.push(node)
-    }
-
-    // Add partially selected nodes at the start of the range
-    node = range.startContainer
-    while (node && node != range.commonAncestorContainer) {
-      nodes.unshift(node)
-      node = node.parentNode
-    }
-
-    return nodes
-  }
-
-  function next_node(node) {
-    if (node.hasChildNodes()) return node.firstChild
-
-    while (node && !node.nextSibling) node = node.parentNode
-    if (!node) return null
-    return node.nextSibling
-  }
 </script>
 
 <script>
@@ -168,6 +35,8 @@
   import Upsert from '$layout/Upsert.svelte'
 
   import { lookup_active, lookup_line, lookup_from } from '$src/stores.js'
+  import render_convert from '$utils/render_convert'
+  import read_selection from '$utils/read_selection'
 
   export let bname
   export let bslug
@@ -183,7 +52,9 @@
   export let chidx
   export let lines
 
-  let lineOnFocus = 0
+  let lineOnHover = 0
+  let lineOnFocus = -1
+
   let elemOnFocus = null
 
   let lookupEnabled = false
@@ -193,7 +64,7 @@
   let upsertDic = 'combine'
   let upsertTab = 'generic'
 
-  function navigate(evt) {
+  function handleKeypress(evt) {
     if (upsertEnabled) return
 
     // if (!evt.altKey) return
@@ -210,16 +81,22 @@
 
       case 37:
       case 74:
-        evt.preventDefault()
-        if (prev_url) _goto(`${bslug}/${prev_url}`)
-        else _goto(bslug)
+        if (!evt.altKey) {
+          evt.preventDefault()
+          if (prev_url) _goto(`${bslug}/${prev_url}`)
+          else _goto(bslug)
+        }
+
         break
 
       case 39:
       case 75:
-        if (next_url) _goto(`${bslug}/${next_url}`)
-        else _goto(`${bslug}`)
-        evt.preventDefault()
+        if (!evt.altKey) {
+          evt.preventDefault()
+          if (next_url) _goto(`${bslug}/${next_url}`)
+          else _goto(`${bslug}`)
+        }
+
         break
 
       case 88:
@@ -245,15 +122,12 @@
     }
   }
 
-  function change_focus(idx) {
-    lineOnFocus = idx
-  }
-
-  function active_lookup(evt, idx) {
+  function handleClick(evt, idx) {
     if (elemOnFocus) {
       elemOnFocus.classList.remove('_active')
     }
 
+    lineOnFocus = idx
     lookup_line.set(lines[idx])
 
     if (evt.target.nodeName !== 'X-V') {
@@ -279,29 +153,30 @@
   }
 
   function is_active(idx, cur) {
-    if (idx < cur - 9) return false
-    if (idx > cur + 9) return false
+    if (idx < cur - 5) return false
+    if (idx > cur + 6) return false
     return true
   }
 
-  function active_upsert(tab = 'special') {
-    upsertTab = tab
-
-    const selection = get_selection()
+  function active_upsert(tab) {
+    const selection = read_selection()
 
     if (selection !== '') {
       upsertKey = selection
     } else if (elemOnFocus) {
       upsertKey = elemOnFocus.dataset.k
 
-      // const dic = +elemOnFocus.dataset.d
-      // if (dic == 1 || dic == 2) {
-      //   upsertTab = 'generic'
-      // } else {
-      //   upsertTab = 'special'
-      // }
+      if (!tab) {
+        const dic = +elemOnFocus.dataset.d
+        if (dic == 1 || dic == 2) {
+          upsertTab = 'generic'
+        } else {
+          upsertTab = 'special'
+        }
+      }
     }
 
+    upsertTab = tab || 'special'
     upsertEnabled = true
   }
 
@@ -315,12 +190,12 @@
 </script>
 
 <svelte:head>
-  <title>{render(lines[0])} - {bname} - Chivi</title>
+  <title>{render_convert(lines[0])} - {bname} - Chivi</title>
   <meta property="og:url" content="{bslug}/{curr_url}" />
 
 </svelte:head>
 
-<svelte:window on:keydown={navigate} />
+<svelte:window on:keydown={handleKeypress} />
 
 <Layout shiftLeft={$lookup_active}>
   <a slot="header-left" href="/" class="header-item ">
@@ -332,6 +207,7 @@
   </a>
 
   <span slot="header-left" class="header-item _active _index">
+    <!-- <span>{Math.round((chidx * 10000) / total) / 100}%</span> -->
     <span>{chidx}/{total}</span>
   </span>
 
@@ -347,6 +223,15 @@
     slot="header-right"
     type="button"
     class="header-item"
+    class:_active={upsertEnabled}
+    on:click={() => active_upsert()}>
+    <MIcon class="m-icon _plus-circle" name="plus-circle" />
+  </button>
+
+  <button
+    slot="header-right"
+    type="button"
+    class="header-item"
     class:_active={lookupEnabled}
     on:click={trigger_lookup}>
     <MIcon class="m-icon _compass" name="compass" />
@@ -355,16 +240,16 @@
   <article class:reload>
     {#each lines as line, idx}
       <div
-        class:_focus={idx == lineOnFocus}
-        on:mouseenter={() => change_focus(idx)}
-        on:click={(event) => active_lookup(event, idx)}>
+        class:_focus={idx == lineOnHover || idx == lineOnFocus}
+        on:mouseenter={() => (lineOnHover = idx)}
+        on:click={(event) => handleClick(event, idx)}>
         {#if idx == 0}
           <h1>
-            {@html render(line, is_active(idx, lineOnFocus))}
+            {@html render_convert(line, is_active(idx, lineOnHover), true)}
           </h1>
         {:else}
           <p>
-            {@html render(line, is_active(idx, lineOnFocus))}
+            {@html render_convert(line, is_active(idx, lineOnHover), true)}
           </p>
         {/if}
       </div>
@@ -412,14 +297,9 @@
 
 <style lang="scss">
   article {
-    // background-color: #fff;
-    // margin: 0.75rem 0;
-    // @include radius;
-    // @include shadow(1);
-    padding: 0.75rem;
+    padding: 0.75rem 0;
     word-wrap: break-word;
-    text-align: justify;
-    text-justify: auto;
+
     &.reload {
       @include fgcolor(neutral, 4);
     }
@@ -438,6 +318,9 @@
   p {
     $font-sizes: attrs(rem(16px), rem(17px), rem(18px), rem(19px), rem(20px));
     $margin-tops: attrs(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
+
+    text-align: justify;
+    text-justify: auto;
 
     @include props(font-size, $font-sizes);
     @include props(margin-top, $margin-tops);

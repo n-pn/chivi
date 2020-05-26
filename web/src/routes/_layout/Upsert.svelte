@@ -113,9 +113,28 @@
       return upsert()
     }
   }
+
+  function handleKeydown(evt) {
+    // evt.stopPropagation()
+
+    switch (evt.keyCode) {
+      case 27:
+        closePopup()
+        break
+
+      default:
+        break
+    }
+  }
+
+  function closePopup(changed = false) {
+    active = false
+  }
 </script>
 
-<div class="container" on:click={() => (active = false)}>
+<svelte:window on:keydown:stop={handleKeydown} />
+
+<div class="container" on:click={closePopup}>
   <div class="dialog" on:click={(evt) => evt.stopPropagation()}>
     <header>
       <span class="label">Thêm từ:</span>

@@ -67,11 +67,11 @@
     </div>
   </section>
 
-  <footer class="footer">
+  <!-- <footer class="footer">
     <div class="center">
       <slot name="footer" />
     </div>
-  </footer>
+  </footer> -->
 </main>
 
 <style lang="scss">
@@ -80,15 +80,10 @@
   $gutter: ($header-height - $header-inner-height) / 2;
 
   .main {
+    position: relative;
     &._shift {
       @include screen-min(lg) {
         margin-right: 30rem;
-      }
-    }
-
-    &._clear {
-      .header {
-        transform: translateY(-$header-height);
       }
     }
   }
@@ -104,12 +99,14 @@
 
   .header {
     position: sticky;
+    z-index: 800;
 
     top: 0;
     left: 0;
-    width: 100%;
+
+    max-width: 100%;
     height: $header-height;
-    z-index: 800;
+
     color: #fff;
     transition: transform 0.1s ease-in-out;
 
@@ -120,6 +117,10 @@
       display: flex;
       padding-top: $gutter;
       padding-bottom: $gutter;
+    }
+
+    .main._clear & {
+      transform: translateY(-$header-height);
     }
   }
 

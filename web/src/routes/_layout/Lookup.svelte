@@ -65,8 +65,8 @@
   let current = []
 
   $: zh_text = $line.map(([zh]) => zh).join('')
-  $: [zh_html, vi_html] = render($line, $from, upto)
-  $: [zh_raw, hv_html] = render(hanviet, $from, upto)
+  // $: [zh_html, vi_html] = render($line, $from, upto)
+  $: [zh_html, hv_html] = render(hanviet, $from, upto)
 
   $: if (line !== []) lookup(zh_text)
   $: if (entries.length > $from) {
@@ -95,11 +95,11 @@
 
   function handle_keypress(e) {
     if (e.keyCode != 92) return
-    active.update(x => !x)
+    active.update((x) => !x)
   }
 
   function pin_sidebar() {
-    pinned.update(x => !x)
+    pinned.update((x) => !x)
   }
 
   function close_sidebar() {
@@ -139,15 +139,15 @@
   </header>
 
   <section class="lookup">
-    <div class="input _vi" on:click={handle_click}>
+    <!-- <div class="source _vi" on:click={handle_click}>
       {@html vi_html}
-    </div>
+    </div> -->
 
-    <div class="input _zh" on:click={handle_click}>
+    <div class="source _zh" on:click={handle_click}>
       {@html zh_html}
     </div>
 
-    <div class="input _hv" on:click={handle_click}>
+    <div class="source _hv" on:click={handle_click}>
       {@html hv_html}
     </div>
 
@@ -236,11 +236,24 @@
     }
   }
 
-  $vi-height: 0.75rem + (1.25 * 6rem);
-  $zh-height: 0.75rem + (1.25 * 3rem);
-  $hv-height: 0.75rem + (1.25 * 4rem);
+  @mixin token($color: blue) {
+    border-color: color($color, 3);
 
-  .input {
+    &._active {
+      color: color($color, 6);
+    }
+
+    @include hover {
+      color: color($color, 6);
+    }
+  }
+
+  $vi-height: 0.75rem + (1.25 * 6rem);
+  $vi-height: 0;
+  $zh-height: 0.75rem + (1.25 * 5rem);
+  $hv-height: 0.75rem + (1.25 * 6rem);
+
+  .source {
     overflow-y: auto;
     line-height: 1.25rem;
     padding: 0.375rem 0.75rem;
@@ -248,14 +261,13 @@
     // border: 1px solid color(neutral, 3);
     // margin-bottom: 0.75rem;
 
-    @include radius();
     @include bgcolor(color(neutral, 1));
     // @include font-family(sans);
 
-    &._vi {
-      max-height: $vi-height;
-      border-bottom: 1px solid color(neutral, 3);
-    }
+    // &._vi {
+    //   max-height: $vi-height;
+    //   border-bottom: 1px solid color(neutral, 3);
+    // }
 
     &._zh {
       max-height: $zh-height;
@@ -268,6 +280,27 @@
       max-height: $hv-height;
       margin-top: 0.375rem;
       border-top: 1px solid color(neutral, 3);
+    }
+
+    :global(x-v) {
+      cursor: pointer;
+      border-bottom: 1px solid transparent;
+
+      &[data-d='1'] {
+        @include token(blue);
+      }
+
+      &[data-d='2'] {
+        @include token(teal);
+      }
+
+      &[data-d='3'] {
+        @include token(red);
+      }
+
+      &[data-d='4'] {
+        @include token(orange);
+      }
     }
   }
 
@@ -294,43 +327,6 @@
     text-transform: uppercase;
     @include fgcolor(color(neutral, 6));
     @include font-size(3);
-  }
-
-  @mixin token($color: blue) {
-    border-color: color($color, 3);
-
-    &._active {
-      color: color($color, 6);
-    }
-
-    @include hover {
-      color: color($color, 6);
-    }
-  }
-
-  .input {
-    @include hover {
-      :global(x-v) {
-        cursor: pointer;
-        border-bottom: 1px solid transparent;
-
-        &[data-d='1'] {
-          @include token(blue);
-        }
-
-        &[data-d='2'] {
-          @include token(teal);
-        }
-
-        &[data-d='3'] {
-          @include token(red);
-        }
-
-        &[data-d='4'] {
-          @include token(orange);
-        }
-      }
-    }
   }
 
   h3 {

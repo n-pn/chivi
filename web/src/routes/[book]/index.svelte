@@ -163,8 +163,8 @@
           <span>({book.zh_author})</span>
         </span>
       </div>
-      <div>
 
+      <div>
         <span class="genre">
           <MIcon class="m-icon" name="book" />
           {book.vi_genre}
@@ -223,7 +223,7 @@
 
 </Layout>
 
-<style type="text/scss">
+<style lang="scss">
   .info {
     // display: flex;
     @include clearfix;
