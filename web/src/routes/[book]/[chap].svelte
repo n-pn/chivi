@@ -65,7 +65,7 @@
   let upsertTab = 'generic'
 
   function handleKeypress(evt) {
-    // if (upsertEnabled) return
+    if (upsertEnabled) return
 
     // if (!evt.altKey) return
 

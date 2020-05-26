@@ -124,11 +124,12 @@
   function handleKeypress(evt) {
     if (!active) return
 
-    evt.stopPropagation()
     if (!evt.altKey) {
       if (evt.keyCode === 27) closePopup()
       return
     }
+
+    evt.stopPropagation()
 
     switch (evt.keyCode) {
       case 49:
