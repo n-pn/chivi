@@ -4,7 +4,6 @@
   const { page } = stores()
 
   $: {
-    console.log({ segment })
     if (typeof gtag === 'function') {
       window.gtag('config', 'UA-160000714-1', {
         page_path: $page.path,
@@ -13,4 +12,4 @@
   }
 </script>
 
-<slot />
+<slot {segment} />

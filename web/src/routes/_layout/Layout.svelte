@@ -61,7 +61,7 @@
 
   </header>
 
-  <section class="section">
+  <section class="section" on:click:passive={() => (scrollDown = false)}>
     <div class="center">
       <slot />
     </div>
@@ -85,6 +85,12 @@
         margin-right: 30rem;
       }
     }
+
+    &._clear {
+      .header {
+        transform: translateY(-$header-height);
+      }
+    }
   }
 
   $page-width: 52rem;
@@ -98,12 +104,15 @@
 
   .header {
     position: sticky;
+
     top: 0;
     left: 0;
     width: 100%;
     height: $header-height;
     z-index: 800;
     color: #fff;
+    transition: transform 0.1s ease-in-out;
+
     @include bgcolor(color(primary, 7));
     @include shadow(2);
 

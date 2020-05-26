@@ -93,7 +93,7 @@
     {/each}
   </div>
 
-  <footer class="pagi" slot="footer">
+  <div class="pagi" slot="footer">
     {#if page == 1}
       <button class="page m-button _line" disabled>
         <MIcon class="m-icon" name="chevrons-left" />
@@ -125,14 +125,14 @@
       </a>
     {/if}
 
-  </footer>
+  </div>
 
 </Layout>
 
 <style lang="scss">
   .list {
     max-width: 100%;
-    margin: 0.75rem 0;
+    margin: 0;
 
     @include grid($gap: 0.5rem, $size: minmax(8.5rem, 1fr));
   }
@@ -221,18 +221,6 @@
     }
   }
 
-  .pagi {
-    margin: 0.75rem;
-    display: flex;
-    justify-content: center;
-  }
-
-  .page {
-    & + & {
-      margin-left: 0.5rem;
-    }
-  }
-
   .sort {
     margin-top: 0.25rem;
     margin-bottom: 0.75rem;
@@ -266,6 +254,38 @@
         @include fgcolor(color(primary, 5));
         @include border-color($value: color(primary, 5));
       }
+    }
+  }
+
+  $footer-height: 4rem;
+
+  // :global(.footer) {
+  //   position: sticky;
+  //   bottom: 0;
+  //   left: 0;
+  //   width: 100%;
+  //   transition: transform 0.1s ease-in-out;
+  //   @include bgcolor(rgba(color(neutral, 1), 0.8));
+
+  //   :global(.main._clear) & {
+  //     transform: translateY($footer-height);
+  //     background-color: transparent;
+  //     margin-bottom: 0;
+  //   }
+  // }
+
+  .pagi {
+    padding: 0.5rem 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .page {
+    // :global(.main._clear) & {
+    //   @include bgcolor(color(neutral, 2));
+    // }
+    & + & {
+      margin-left: 0.5rem;
     }
   }
 </style>
