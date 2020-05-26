@@ -158,9 +158,10 @@
     }
   }
 
-  function is_active(idx, cur) {
-    if (idx < cur - 5) return false
-    if (idx > cur + 6) return false
+  function is_active(idx, hover, focus) {
+    if (idx == focus) return true
+    if (idx < hover - 4) return false
+    if (idx > hover + 5) return false
     return true
   }
 
@@ -248,11 +249,11 @@
         on:click={(event) => handleClick(event, idx)}>
         {#if idx == 0}
           <h1>
-            {@html render_convert(line, is_active(idx, lineOnHover), true)}
+            {@html render_convert(line, is_active(idx, lineOnHover, lineOnFocus), true)}
           </h1>
         {:else}
           <p>
-            {@html render_convert(line, is_active(idx, lineOnHover), true)}
+            {@html render_convert(line, is_active(idx, lineOnHover, lineOnFocus), true)}
           </p>
         {/if}
       </div>
