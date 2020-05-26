@@ -68,11 +68,11 @@
     </div>
   </section>
 
-  <!-- <footer class="footer">
+  <footer class="footer">
     <div class="center">
       <slot name="footer" />
     </div>
-  </footer> -->
+  </footer>
 </main>
 
 <style lang="scss">
