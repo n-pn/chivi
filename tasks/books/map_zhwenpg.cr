@@ -3,7 +3,7 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../src/models/book_info"
+require "../../src/bookdb/book_info"
 require "../../src/_utils/file_utils"
 require "../../src/_utils/parse_time"
 require "../../src/spider/spider_util"
@@ -79,7 +79,7 @@ def extract_info(dom, idx = "1/1") : Void
   label = "#{title}--#{author}"
   return if IGNORES.includes?(label)
 
-  info = BookInfo.load(title, author)
+  info = VpInfo.load(title, author)
 
   fresh = info.yousuu.empty?
   color = fresh ? :green : :blue
@@ -128,7 +128,7 @@ def extract_info(dom, idx = "1/1") : Void
   info.set_mftime(mftime)
   info.cr_mftimes["zhwenpg"] = mftime
 
-  BookInfo.save!(info)
+  VpInfo.save!(info)
 end
 
 def fetch_page(page = 1)

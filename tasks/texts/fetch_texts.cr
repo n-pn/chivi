@@ -2,8 +2,8 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../src/models/book_info"
-require "../src/models/zh_list"
+require "../src/bookdb/book_info"
+require "../src/bookdb/zh_list"
 
 require "../src/bookdb/info_spider"
 require "../src/bookdb/text_spider"
@@ -65,7 +65,7 @@ def fetch_book(info, label)
   limit.times { channel.receive }
 end
 
-crawls = BookInfo.load_all.reject do |uuid, info|
+crawls = VpInfo.load_all.reject do |uuid, info|
   info.cr_anchors.empty?
 end
 

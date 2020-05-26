@@ -4,7 +4,7 @@ require "file_utils"
 
 require "../src/_utils/string_utils"
 require "../src/engine"
-require "../src/models/book_info"
+require "../src/bookdb/book_info"
 
 def hanviet(input : String)
   return input unless input =~ /\p{Han}/
@@ -57,7 +57,7 @@ def translate(input : String)
   Engine.translate(lines, :plain, nil, "local").join("\n")
 end
 
-input = BookInfo.load_all.values.sort_by(&.tally.-)
+input = VpInfo.load_all.values.sort_by(&.tally.-)
 
 mapping = {} of String => String
 missing = [] of String
@@ -94,7 +94,7 @@ input.each_with_index do |info, idx|
     info.status = 3
   end
 
-  BookInfo.save!(info)
+  VpInfo.save!(info)
 
   mapping[info.slug] = info.uuid
 

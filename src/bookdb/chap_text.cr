@@ -3,7 +3,7 @@ require "colorize"
 
 require "../engine/cv_node"
 
-class ChapText < Array(CvNodes)
+class VpText < Array(CvNodes)
   def zh_text(io : IO)
     each do |line|
       line.zh_text(io)
@@ -44,7 +44,7 @@ class ChapText < Array(CvNodes)
     from_json(File.read(file))
   end
 
-  def self.save!(file : String, chap : ChapText)
+  def self.save!(file : String, chap : VpText)
     # puts "- save chtext to #{file.colorize(:blue)}"
     File.write(file, chap.to_json)
   end

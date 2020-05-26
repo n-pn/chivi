@@ -2,8 +2,8 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "./models/yousuu_info"
-require "../../src/models/book_info"
+require "./bookdb/yousuu_info"
+require "../../src/bookdb/book_info"
 
 sitemap = [] of String
 inputs = {} of String => YousuuInfo
@@ -19,7 +19,7 @@ Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
   info.fix_title!
   info.fix_author!
 
-  uuid = BookInfo.uuid_for(info.title, info.author)
+  uuid = VpInfo.uuid_for(info.title, info.author)
   sitemap << {info._id, uuid, info.title, info.author}.join("--")
 
   # next if info.recom_ignore
@@ -49,9 +49,9 @@ MAP_DIR = File.join("data", "sitemaps")
 FileUtils.mkdir_p(MAP_DIR)
 File.write(File.join(MAP_DIR, "yousuu.txt"), sitemap.join("\n"))
 
-FileUtils.mkdir_p(BookInfo::DIR)
+FileUtils.mkdir_p(VpInfo::DIR)
 
-infos = BookInfo.load_all
+infos = VpInfo.load_all
 fresh = 0
 
 CURRENT = Time.local.to_unix_ms
@@ -60,7 +60,7 @@ EPOCH   = Time.local(2010, 1, 1).to_unix_ms
 inputs.each do |uuid, input|
   unless info = infos[uuid]?
     fresh += 1
-    info = BookInfo.new(input.title, input.author, uuid)
+    info = VpInfo.new(input.title, input.author, uuid)
   end
 
   info.zh_intro = input.intro
@@ -91,7 +91,7 @@ inputs.each do |uuid, input|
   info.word_count = input.countWord.round.to_i
   info.crit_count = input.commentCount
 
-  BookInfo.save!(info)
+  VpInfo.save!(info)
 end
 
 puts "- existed: #{infos.size.colorize(:blue)}, fresh: #{fresh.colorize(:blue)}"

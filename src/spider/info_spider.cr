@@ -6,8 +6,8 @@ require "../_utils/file_utils"
 require "../_utils/han_to_int"
 require "../_utils/parse_time"
 
-require "../models/book_info"
-require "../models/chap_list"
+require "../bookdb/book_info"
+require "../bookdb/chap_list"
 
 require "./spider_util"
 
@@ -48,7 +48,7 @@ class InfoSpider
     @dom = Myhtml::Parser.new(html)
   end
 
-  def get_infos!(info = BookInfo.new) : BookInfo
+  def get_infos!(info = VpInfo.new) : VpInfo
     if info.zh_title.empty?
       info.zh_title = get_title!
       info.zh_author = get_author!

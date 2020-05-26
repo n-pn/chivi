@@ -5,11 +5,9 @@ require "./engine"
 require "./spider/info_spider"
 require "./spider/text_spider"
 
-require "./models/book_info"
-require "./models/chap_list"
-require "./models/chap_text"
-
-require "./kernel/querying"
+require "./bookdb/book_info"
+require "./bookdb/chap_list"
+require "./bookdb/chap_text"
 
 module Kernel
   extend self
@@ -25,7 +23,7 @@ module Kernel
     end
   end
 
-  def load_list(info : BookInfo, site : String, refresh = false) : ChapList
+  def load_list(info : VpInfo, site : String, refresh = false) : ChapList
     unless bsid = info.cr_anchors[site]?
       return ChapList.new
     end
@@ -46,7 +44,7 @@ module Kernel
       info.set_status(spider.get_status!)
       info.set_mftime(mftime)
       info.cr_mftimes[site] = mftime
-      Querying.save!(info)
+      BookRepo.save!(info)
     end
 
     chaps = spider.get_chaps!
@@ -78,7 +76,7 @@ module Kernel
     chaps
   end
 
-  def load_chap(info : BookInfo, site : String, csid : String, user = "guest", mode = 0, unique : Bool = false)
+  def load_chap(info : VpInfo, site : String, csid : String, user = "guest", mode = 0, unique : Bool = false)
     bsid = info.cr_anchors[site]
     uuid = ChapText.uuid_for(info.uuid, site, bsid)
 
@@ -108,7 +106,7 @@ module Kernel
   end
 end
 
-# info = Querying.load("akpwpjf3").not_nil!
+# info = BookRepo.load("akpwpjf3").not_nil!
 # puts info.vi_title
 
 # chaps = Kernel.load_list(info, info.cr_site_df, refresh: true)

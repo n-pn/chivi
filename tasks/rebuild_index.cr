@@ -3,9 +3,9 @@ require "colorize"
 require "file_utils"
 
 require "../src/_utils/string_utils"
-require "../src/models/book_info"
+require "../src/bookdb/book_info"
 
-input = BookInfo.load_all.values.sort_by(&.tally.-)
+input = VpInfo.load_all.values.sort_by(&.tally.-)
 
 tally = [] of Tuple(String, Float64)
 score = [] of Tuple(String, Float64)

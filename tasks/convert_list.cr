@@ -3,8 +3,8 @@ require "colorize"
 require "file_utils"
 
 require "../src/engine"
-require "../src/models/book_info"
-require "../src/models/chap_list"
+require "../src/bookdb/book_info"
+require "../src/bookdb/chap_list"
 
 require "../src/spider/info_spider"
 
@@ -56,12 +56,12 @@ def update_infos(info, label)
     puts "- [#{site}-#{bsid}] #{err}".colorize(:red)
   end
 
-  BookInfo.save!(info)
+  VpInfo.save!(info)
 end
 
 FileUtils.mkdir_p(ChapList::DIR)
 
-infos = BookInfo.load_all.values.sort_by!(&.tally.-)
+infos = VpInfo.load_all.values.sort_by!(&.tally.-)
 puts "- input: #{infos.size}"
 
 puts translate("WARM UP!")

@@ -4,7 +4,7 @@ require "colorize"
 require "http/client"
 require "file_utils"
 
-require "../src/models/book_info"
+require "../src/bookdb/book_info"
 
 TLS = OpenSSL::SSL::Context::Client.insecure
 
@@ -59,7 +59,7 @@ end
 
 queue = [] of Tuple(String, String)
 
-infos = BookInfo.load_all
+infos = VpInfo.load_all
 infos.values.sort_by(&.tally.-).each_with_index do |info, idx|
   # puts "- <#{idx + 1}/#{infos.size}> #{info.vi_title}".colorize(:cyan)
 

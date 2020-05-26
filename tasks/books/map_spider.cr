@@ -1,7 +1,7 @@
 require "option_parser"
 require "file_utils"
 
-require "../../src/models/book_info.cr"
+require "../../src/bookdb/book_info.cr"
 require "../../src/spider/info_spider.cr"
 
 RETRY = ARGV.includes?("retry")
@@ -70,7 +70,7 @@ end
 
 def update_infos(site, bsid, uuid, label) : Void
   if uuid
-    info = BookInfo.load!(uuid)
+    info = VpInfo.load!(uuid)
     expiry = gen_expiry(info.status)
   else
     expiry = 360.days
@@ -80,16 +80,16 @@ def update_infos(site, bsid, uuid, label) : Void
 
   title = spider.get_title!
   author = spider.get_author!
-  uuid ||= BookInfo.uuid_for(title, author)
+  uuid ||= VpInfo.uuid_for(title, author)
 
   Mapping.append(site, "#{bsid}--#{uuid}--#{title}--#{author}")
 
-  if info ||= BookInfo.load(uuid)
+  if info ||= VpInfo.load(uuid)
     info = spider.get_infos!(info)
     info.cr_site_df = site if prefered?(info, site)
 
     puts "- <#{label.colorize(:green)}> #{title}"
-    BookInfo.save!(info)
+    VpInfo.save!(info)
   else
     puts "- <#{label.colorize(:cyan)}> #{title}"
   end
@@ -172,7 +172,7 @@ def parse_args(site = "rengshu", upto = 4275)
   {site, upto}
 end
 
-files = Dir.children(BookInfo::DIR)
+files = Dir.children(VpInfo::DIR)
 uuids = Set(String).new files.map { |file| File.basename(file, ".json") }
 
 site, upto = parse_args
