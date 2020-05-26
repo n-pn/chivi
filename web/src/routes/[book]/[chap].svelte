@@ -123,18 +123,23 @@
   }
 
   function handleClick(evt, idx) {
-    if (elemOnFocus) {
-      elemOnFocus.classList.remove('_active')
+    const target = evt.target
+
+    if (target === elemOnFocus) {
+      active_upsert()
+      return
     }
+
+    if (elemOnFocus) elemOnFocus.classList.remove('_active')
 
     lineOnFocus = idx
     lookup_line.set(lines[idx])
 
-    if (evt.target.nodeName !== 'X-V') {
+    if (target.nodeName !== 'X-V') {
       elemOnFocus = null
       lookup_from.set(0)
     } else {
-      elemOnFocus = evt.target
+      elemOnFocus = target
       elemOnFocus.classList.add('_active')
       lookup_from.set(+elemOnFocus.dataset['p'])
     }
@@ -158,25 +163,22 @@
     return true
   }
 
-  function active_upsert(tab) {
+  function active_upsert(tab = null) {
     const selection = read_selection()
 
     if (selection !== '') {
       upsertKey = selection
     } else if (elemOnFocus) {
       upsertKey = elemOnFocus.dataset.k
-
-      if (!tab) {
-        const dic = +elemOnFocus.dataset.d
-        if (dic == 1 || dic == 2) {
-          upsertTab = 'generic'
-        } else {
-          upsertTab = 'special'
-        }
+      const dic = +elemOnFocus.dataset.d
+      if (dic == 1 || dic == 2) {
+        upsertTab = 'generic'
+      } else {
+        upsertTab = 'special'
       }
     }
 
-    upsertTab = tab || 'special'
+    upsertTab = upsertTab || tab || 'special'
     upsertEnabled = true
   }
 

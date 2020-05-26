@@ -40,6 +40,7 @@
   let val_field
 
   let val = ''
+  let newEntry = false
 
   $: active_dic = tab == 'special' ? dic : 'generic'
   $: if (key) inquire()
@@ -66,10 +67,16 @@
   }
 
   function update_val() {
-    val = props[tab].vals[0] || props.suggest[0]
-    if (!val) {
-      val = props.hanviet
-      if (tab === 'special') upcase_val()
+    val = props[tab].vals[0]
+    if (val) {
+      newEntry = false
+    } else {
+      newEntry = true
+      val = props.suggest[0]
+      if (!val) {
+        val = props.hanviet
+        if (tab === 'special') change_val_case()
+      }
     }
   }
 
@@ -96,7 +103,7 @@
     return input.charAt(0).toUpperCase() + input.slice(1)
   }
 
-  function upcase_val(count = 100) {
+  function change_val_case(count = 100) {
     const arr = val.split(' ')
     if (count > arr.length) count = arr.length
 
@@ -114,12 +121,44 @@
     }
   }
 
-  function handleKeydown(evt) {
-    // evt.stopPropagation()
+  function handleKeypress(evt) {
+    if (!active) return
+
+    evt.stopPropagation()
+    if (!evt.altKey) {
+      if (evt.keyCode === 27) closePopup()
+      return
+    }
 
     switch (evt.keyCode) {
-      case 27:
-        closePopup()
+      case 49:
+        change_val_case(1)
+        break
+
+      case 50:
+        change_val_case(2)
+        break
+
+      case 51:
+        change_val_case(3)
+        break
+
+      case 52:
+        change_val_case(9)
+        break
+
+      case 48:
+      case 53:
+      case 192:
+        change_val_case(0)
+        break
+
+      case 88:
+        change_tab('special')
+        break
+
+      case 67:
+        change_tab('generic')
         break
 
       default:
@@ -132,7 +171,7 @@
   }
 </script>
 
-<svelte:window on:keydown:stop={handleKeydown} />
+<svelte:window on:keydown={handleKeypress} />
 
 <div class="container" on:click={closePopup}>
   <div class="dialog" on:click={(evt) => evt.stopPropagation()}>
@@ -176,16 +215,19 @@
     <section class="val">
       <div class="cap">
         <span class="cap-lbl">Viết hoa:</span>
-        <span class="cap-btn" on:click={() => upcase_val(0)}>không</span>
-        <span class="cap-btn" on:click={() => upcase_val(1)}>1 chữ</span>
-        <span class="cap-btn" on:click={() => upcase_val(2)}>2 chữ</span>
-        <span class="cap-btn" on:click={() => upcase_val(3)}>3 chữ</span>
-        <span class="cap-btn" on:click={() => upcase_val(99)}>toàn bộ</span>
+        <span class="cap-btn" on:click={() => change_val_case(0)}>không</span>
+        <span class="cap-btn" on:click={() => change_val_case(1)}>1 chữ</span>
+        <span class="cap-btn" on:click={() => change_val_case(2)}>2 chữ</span>
+        <span class="cap-btn" on:click={() => change_val_case(3)}>3 chữ</span>
+        <span class="cap-btn" on:click={() => change_val_case(99)}>
+          toàn bộ
+        </span>
       </div>
 
       <textarea
         lang="vi"
         class="val-inp"
+        class:_fresh={newEntry}
         name="value"
         id="val_field"
         rows="2"
@@ -203,8 +245,11 @@
             on:click={remove}>
             <span>Xoá từ</span>
           </button>
-          <button type="button" class="m-button _primary" on:click={upsert}>
-            <span>{props[tab].value ? 'Cập nhật' : 'Thêm từ'}</span>
+          <button
+            type="button"
+            class="m-button {newEntry ? '_primary' : '_success'}"
+            on:click={upsert}>
+            <span>{newEntry ? 'Thêm từ' : 'Sửa từ'}</span>
           </button>
 
         </div>
@@ -347,6 +392,10 @@
     &:active {
       @include bgcolor(white);
       @include border-color($value: color(primary, 3));
+    }
+
+    &._fresh {
+      font-style: italic;
     }
   }
 
