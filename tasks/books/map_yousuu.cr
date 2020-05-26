@@ -2,11 +2,11 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "./bookdb/yousuu_info"
 require "../../src/bookdb/book_info"
+# require "../../src/bookdb/book_info/ys_info"
 
 sitemap = [] of String
-inputs = {} of String => YousuuInfo
+inputs = {} of String => YsInfo
 
 INP_DIR = File.join("data", ".inits", "txt-inp", "yousuu", "serials")
 Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
@@ -19,7 +19,7 @@ Dir.glob(File.join(INP_DIR, "*.json")).each do |file|
   info.fix_title!
   info.fix_author!
 
-  uuid = VpInfo.uuid_for(info.title, info.author)
+  uuid = Utils.book_uid(info.title, info.author)
   sitemap << {info._id, uuid, info.title, info.author}.join("--")
 
   # next if info.recom_ignore

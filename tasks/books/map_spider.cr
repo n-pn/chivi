@@ -80,7 +80,7 @@ def update_infos(site, bsid, uuid, label) : Void
 
   title = spider.get_title!
   author = spider.get_author!
-  uuid ||= VpInfo.uuid_for(title, author)
+  uuid ||= Utils.book_uid(title, author)
 
   Mapping.append(site, "#{bsid}--#{uuid}--#{title}--#{author}")
 

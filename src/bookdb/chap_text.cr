@@ -1,7 +1,7 @@
 require "json"
 require "colorize"
 
-require "../engine/cv_node"
+require "../engine/convert/cv_node"
 
 class VpText < Array(CvNodes)
   def zh_text(io : IO)

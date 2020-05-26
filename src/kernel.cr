@@ -78,13 +78,13 @@ module Kernel
 
   def load_chap(info : VpInfo, site : String, csid : String, user = "guest", mode = 0, unique : Bool = false)
     bsid = info.cr_anchors[site]
-    uuid = ChapText.uuid_for(info.uuid, site, bsid)
+    uuid = VpText.uuid_for(info.uuid, site, bsid)
 
-    json_file = ChapText.path_for(uuid, csid, user)
+    json_file = VpText.path_for(uuid, csid, user)
     text_file = File.join("data", "zh_texts", uuid, "#{csid}.txt")
 
     if File.exists?(json_file) && mode == 0
-      return ChapText.load!(json_file)
+      return VpText.load!(json_file)
     end
 
     if File.exists?(text_file) && mode == 1

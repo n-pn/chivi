@@ -1,5 +1,5 @@
 require "json"
-require "../../../src/_utils/unique_ids"
+require "../../_utils/unique_ids"
 
 struct BookSource
   include JSON::Serializable
@@ -11,7 +11,7 @@ struct BookSource
   property link : String
 end
 
-struct YousuuInfo
+struct YsInfo
   include JSON::Serializable
 
   property _id : Int32
@@ -47,7 +47,7 @@ struct YousuuInfo
 
   property sources = [] of BookSource
 
-  FIX_DIR = "tasks/books/fixes"
+  FIX_DIR = "src/bookdb/_fixes"
   FIX_MAP = Hash(String, String)
   TITLES  = FIX_MAP.from_json(File.read("#{FIX_DIR}/titles.json"))
   AUTHORS = FIX_MAP.from_json(File.read("#{FIX_DIR}/authors.json"))
@@ -75,7 +75,7 @@ struct YousuuInfo
   end
 end
 
-alias JsonData = NamedTuple(bookInfo: YousuuInfo, bookSource: Array(BookSource))
+alias JsonData = NamedTuple(bookInfo: YsInfo, bookSource: Array(BookSource))
 
 # text = File.read("data/.inits/txt-inp/yousuu/serials/176814.json")
 # data = NamedTuple(data: JsonData).from_json(text)
