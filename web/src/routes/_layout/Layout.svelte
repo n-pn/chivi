@@ -167,12 +167,12 @@
     }
 
     &._title {
-      max-width: 40vw;
+      max-width: 30vw;
       @include screen-min(sm) {
-        max-width: 50vw;
+        max-width: 40vw;
       }
       @include screen-min(md) {
-        max-width: 60vw;
+        max-width: 50vw;
       }
     }
 
