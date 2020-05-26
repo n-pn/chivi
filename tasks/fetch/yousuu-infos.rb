@@ -86,8 +86,8 @@ until proxies.empty? || serials.empty?
   working = []
   failure = []
 
-  total = serials.size
-  total = proxies.size if total > proxies.size
+  total = proxies.size
+  total = serials.size if total > serials.size
 
   Parallel.each_with_index(1..total, in_threads: 20) do |idx|
     proxy = proxies.pop

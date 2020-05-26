@@ -59,7 +59,7 @@ IGNORES = {
   "亏成首富从游戏开始--绝不咸鱼",
 }
 
-RATINGS_TXT = File.read(File.join("tasks", "books", "fixes", "ratings.json"))
+RATINGS_TXT = File.read(File.join("src", "bookdb", "_fixes", "ratings.json"))
 RATINGS_MAP = Hash(String, Tuple(Int32, Float64)).from_json RATINGS_TXT
 
 def random_score(label)

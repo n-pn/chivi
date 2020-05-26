@@ -34,11 +34,11 @@ OUT_FILE = "#{ROOT_DIR}/page#{PAGE}/%i.json"
 REVIEW_URL = "https://www.yousuu.com/api/book/%i/comment?t=%i&page=#{PAGE}"
 
 
-def fetch_data(bsid, proxy)
-  file = OUT_FILE % bsid
+def fetch_data(serial, proxy)
+  file = OUT_FILE % serial
   return :skip unless file_outdated?(file)
 
-  url = REVIEW_URL % [bsid, unix_ms]
+  url = REVIEW_URL % [serial, unix_ms]
   body = fetch_url(url, proxy)
 
   raise "Malformed!" unless body.include?("success") || body.include?("未找到该图书")
@@ -53,42 +53,42 @@ rescue => err
   :error
 end
 
-# Prepare bsids
+# Prepare serials
 
-bsids = []
+serials = []
 
-Dir.glob("data/book_infos/*.json").each do |file|
+Dir.glob("data/vp_infos/*.json").each do |file|
   json = JSON.parse(File.read(file))
 
-  bsid = json["yousuu"]
-  next if bsid.empty?
-  next unless file_outdated?(OUT_FILE % bsid)
+  serial = json["yousuu"]
+  next if serial.empty?
+  next unless file_outdated?(OUT_FILE % serial)
 
-  bsids << bsid
+  serials << serial
 end
 
-puts "Input: #{bsids.size}".yellow
+puts "Input: #{serials.size}".yellow
 
 # ## Crawling!
 
 step = 1
-until proxies.empty? || bsids.empty?
+until proxies.empty? || serials.empty?
   puts "[LOOP:#{step}]: \
-        bsids: #{bsids.size}, \
+        serials: #{serials.size}, \
         proxies: #{proxies.size}".cyan
 
-  failure_bsids = []
+  failure_serials = []
   working_proxies = []
 
   limit = proxies.size
-  limit = bsids.size if limit > bsids.size
+  limit = serials.size if limit > serials.size
 
   Parallel.each(1..limit, in_threads: 20) do |idx|
     proxy = proxies.pop
-    bsid = bsids.pop
+    serial = serials.pop
 
-    res = fetch_data(bsid, proxy)
-    message = "- [#{idx}/#{limit}]: #{res}! bsid: [#{bsid}], proxy: [#{proxy}]"
+    res = fetch_data(serial, proxy)
+    message = "- [#{idx}/#{limit}]: #{res}! serial: [#{serial}], proxy: [#{proxy}]"
 
     case res
     when :skip
@@ -97,12 +97,12 @@ until proxies.empty? || bsids.empty?
       working_proxies << proxy
       puts message.green unless VERBOSE
     when :error
-      failure_bsids << bsid
+      failure_serials << serial
       puts message.red unless VERBOSE
     end
   end
 
   step += 1
-  bsids.concat(failure_bsids).uniq!
+  serials.concat(failure_serials).uniq!
   proxies.concat(working_proxies).uniq!
 end

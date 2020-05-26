@@ -26,7 +26,7 @@
 
 <script>
   import MIcon from '$mould/MIcon.svelte'
-  import Header from '$layout/Header.svelte'
+  import Layout from '$layout/Layout.svelte'
 
   export let items = []
   export let total = 0
@@ -43,10 +43,6 @@
 
   $: pageMax = Math.floor((total - 1) / 20) + 1
   $: pageList = make_pageList(page, pageMax)
-
-  import { onMount } from 'svelte'
-  import { lookup_active } from '$src/stores.js'
-  onMount(() => lookup_active.set(false))
 
   function make_pageList(currPage, pageMax) {
     let pageFrom = currPage - 2
@@ -70,9 +66,8 @@
   <title>Chivi - Chinese to Vietname Machine Translation</title>
 </svelte:head>
 
-<Header />
+<Layout>
 
-<div class="wrapper">
   <div class="sort">
     <span class="label">Sắp xếp theo:</span>
     {#each Object.entries(sorts) as [type, label]}
@@ -98,7 +93,7 @@
     {/each}
   </div>
 
-  <footer class="pagi">
+  <footer class="pagi" slot="footer">
     {#if page == 1}
       <button class="page m-button _line" disabled>
         <MIcon class="m-icon" name="chevrons-left" />
@@ -132,12 +127,12 @@
 
   </footer>
 
-</div>
+</Layout>
 
 <style lang="scss">
   .list {
     max-width: 100%;
-    margin: 0.75rem;
+    margin: 0.75rem 0;
 
     @include grid($gap: 0.5rem, $size: minmax(8.5rem, 1fr));
   }
@@ -239,13 +234,15 @@
   }
 
   .sort {
-    margin: 0.75rem;
     margin-top: 0.25rem;
+    margin-bottom: 0.75rem;
+
+    display: flex;
+    flex-wrap: wrap;
 
     line-height: 2rem;
     @include clearfix;
     .label {
-      float: left;
       font-weight: 500;
       padding-top: 0.375rem;
 
@@ -253,7 +250,6 @@
       // @include fgcolor(color(neutral, 6));
     }
     .type {
-      float: left;
       margin-left: 0.5rem;
       margin-top: 0.5rem;
 

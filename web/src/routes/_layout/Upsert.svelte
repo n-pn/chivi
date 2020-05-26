@@ -25,7 +25,10 @@
 <script>
   import { onMount, afterUpdate } from 'svelte'
 
-  const tabs = [['special', 'Riêng'], ['generic', 'Chung']]
+  const tabs = [
+    ['special', 'Riêng'],
+    ['generic', 'Chung'],
+  ]
 
   export let active = true
 
@@ -63,8 +66,11 @@
   }
 
   function update_val() {
-    val = props[tab].vals[0] || props.suggest[0] || props.hanviet
-    if (tab === 'special') upcase_val()
+    val = props[tab].vals[0] || props.suggest[0]
+    if (!val) {
+      val = props.hanviet
+      if (tab === 'special') upcase_val()
+    }
   }
 
   async function upsert() {
@@ -110,7 +116,7 @@
 </script>
 
 <div class="container" on:click={() => (active = false)}>
-  <div class="dialog" on:click={evt => evt.stopPropagation()}>
+  <div class="dialog" on:click={(evt) => evt.stopPropagation()}>
     <header>
       <span class="label">Thêm từ:</span>
       {#each tabs as [name, label]}

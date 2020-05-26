@@ -83,7 +83,7 @@
 
 <script>
   import MIcon from '$mould/MIcon.svelte'
-  import Header from '$layout/Header.svelte'
+  import Layout from '$layout/Layout.svelte'
 
   import ChapList from '$reused/ChapList.svelte'
 
@@ -134,19 +134,15 @@
   <meta property="og:novel:update_time" content={updated_at.toISOString()} />
 </svelte:head>
 
-<Header>
-  <div class="left">
-    <a href="/" class="header-item">
-      <img src="/logo.svg" alt="logo" />
-    </a>
+<Layout>
+  <a href="/" class="header-item" slot="header-left">
+    <img src="/logo.svg" alt="logo" />
+  </a>
 
-    <a href="/{book.slug}" class="header-item _active">
-      <span>{book.vi_title}</span>
-    </a>
-  </div>
-</Header>
+  <a href="/{book.slug}" class="header-item _active" slot="header-left">
+    <span>{book.vi_title}</span>
+  </a>
 
-<div class="wrapper">
   <div class="info">
     <div class="name">
       <h1 class="title">
@@ -224,7 +220,8 @@
       <ChapList bslug={book.slug} {label} {chaps} />
     {/each}
   {/if}
-</div>
+
+</Layout>
 
 <style type="text/scss">
   .info {
@@ -298,19 +295,13 @@
     // @include fgcolor(color(neutral, 6));
   }
 
-  .info,
-  .summary,
-  .content {
-    @include padding(left-right, 0.75rem);
-  }
-
   .info {
     padding-top: 0.75rem;
   }
 
   .tabs {
     display: block;
-    margin: 0.75rem;
+    margin: 0.75rem 0;
     // padding-top: 0.375rem;
     line-height: 2rem;
     @include border($pos: top);

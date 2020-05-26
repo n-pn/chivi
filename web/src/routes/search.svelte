@@ -16,7 +16,7 @@
 
 <script>
   import MIcon from '$mould/MIcon.svelte'
-  import Header from '$layout/Header.svelte'
+  import Layout from '$layout/Layout.svelte'
 
   export let word = ''
   export let page = 1
@@ -29,24 +29,7 @@
   <title>Tìm kiếm - Chivi</title>
 </svelte:head>
 
-<Header>
-  <div class="left">
-    <a href="/" class="header-item _logo">
-      <img src="/logo.svg" alt="logo" />
-    </a>
-
-    <input
-      type="search"
-      name="kw"
-      class="header-item _input _active"
-      placeholder="Tìm kiếm"
-      value={word}
-      on:focus={evt => evt.stopPropagation()} />
-
-  </div>
-</Header>
-
-<div class="wrapper">
+<Layout searchKey={word}>
   <h1 class="label">Tìm được {items.length}/{total} kết quả cho "{word}" :</h1>
 
   <div class="list" data-page={page}>
@@ -82,14 +65,14 @@
       </a>
     {/each}
   </div>
-</div>
+</Layout>
 
 <style lang="scss">
   .list {
     // width: 35rem;
     max-width: 100%;
 
-    padding: 0.75rem;
+    padding: 0.75rem 0;
     margin: 0 auto;
 
     @include grid($gap: 0.75rem, $size: minmax(18rem, 1fr));

@@ -163,7 +163,7 @@
   import { onMount } from 'svelte'
 
   import MIcon from '$mould/MIcon.svelte'
-  import Header from '$layout/Header.svelte'
+  import Layout from '$layout/Layout.svelte'
   import Lookup from '$layout/Lookup.svelte'
   import Upsert from '$layout/Upsert.svelte'
 
@@ -322,47 +322,42 @@
 
 <svelte:window on:keydown={navigate} />
 
-<Header>
-  <div class="left">
-    <a href="/" class="header-item">
-      <img src="/logo.svg" alt="logo" />
-    </a>
+<Layout shiftLeft={$lookup_active}>
+  <a slot="header-left" href="/" class="header-item ">
+    <img src="/logo.svg" alt="logo" />
+  </a>
 
-    <a href="/{bslug}" class="header-item _title">
-      <span>{bname}</span>
-    </a>
+  <a slot="header-left" href="/{bslug}" class="header-item _title">
+    <span>{bname}</span>
+  </a>
 
-    <span class="header-item _active _index">
-      <span>{chidx}/{total}</span>
-    </span>
-  </div>
+  <span slot="header-left" class="header-item _active _index">
+    <span>{chidx}/{total}</span>
+  </span>
 
-  <div class="right">
-    <!-- <a href="/{bslug}/{curr_slug}?reload=true" class="header-item">
-      <MIcon class="m-icon _refresh-ccw" name="refresh-ccw" />
-    </a> -->
+  <button
+    slot="header-right"
+    type="button"
+    class="header-item"
+    on:click={() => reload_page()}>
+    <MIcon class="m-icon _refresh-ccw" name="refresh-ccw" />
+  </button>
 
-    <button type="button" class="header-item" on:click={() => reload_page()}>
-      <MIcon class="m-icon _refresh-ccw" name="refresh-ccw" />
-    </button>
+  <button
+    slot="header-right"
+    type="button"
+    class="header-item"
+    class:_active={lookupEnabled}
+    on:click={trigger_lookup}>
+    <MIcon class="m-icon _compass" name="compass" />
+  </button>
 
-    <button
-      type="button"
-      class="header-item"
-      class:_active={lookupEnabled}
-      on:click={trigger_lookup}>
-      <MIcon class="m-icon _compass" name="compass" />
-    </button>
-  </div>
-</Header>
-
-<div class="wrapper">
   <article class:reload>
     {#each lines as line, idx}
       <div
-        class:_focus={idx == lineOnFocus && lookupEnabled}
+        class:_focus={idx == lineOnFocus}
         on:mouseenter={() => change_focus(idx)}
-        on:click={event => active_lookup(event, idx)}>
+        on:click={(event) => active_lookup(event, idx)}>
         {#if idx == 0}
           <h1>
             {@html render(line, is_active(idx, lineOnFocus))}
@@ -401,7 +396,7 @@
       </a>
     {/if}
   </footer>
-</div>
+</Layout>
 
 {#if lookupEnabled}
   <Lookup />
