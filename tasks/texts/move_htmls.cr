@@ -3,9 +3,9 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../src/models/vp_info"
+require "../src/models/book_info"
 
-infos = VpInfo.load_all.reject do |uuid, info|
+infos = BookInfo.load_all.reject do |uuid, info|
   info.cr_anchors.empty?
 end
 infos = infos.values.sort_by(&.tally.-)

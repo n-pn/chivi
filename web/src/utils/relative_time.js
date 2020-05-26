@@ -3,7 +3,7 @@ const hour_span = minute_span * 60
 const day_span = hour_span * 24
 const month_span = day_span * 30
 
-function relative_time(time) {
+export default function relative_time(time) {
   const span = (new Date().getTime() - time) / 1000
 
   if (span < minute_span) return '< 1 phút trước'

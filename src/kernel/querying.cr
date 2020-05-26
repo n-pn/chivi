@@ -1,7 +1,7 @@
 require "../models/book_info"
 require "../_utils/string_utils"
 
-module BookRepo
+module Querying
   extend self
 
   DIR = File.join("data", "indexing")

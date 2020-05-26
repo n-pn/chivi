@@ -9,7 +9,7 @@ require "./models/book_info"
 require "./models/chap_list"
 require "./models/chap_text"
 
-require "./kernel/book_repo"
+require "./kernel/querying"
 
 module Kernel
   extend self
@@ -46,7 +46,7 @@ module Kernel
       info.set_status(spider.get_status!)
       info.set_mftime(mftime)
       info.cr_mftimes[site] = mftime
-      BookRepo.save!(info)
+      Querying.save!(info)
     end
 
     chaps = spider.get_chaps!
@@ -108,7 +108,7 @@ module Kernel
   end
 end
 
-# info = BookRepo.load("akpwpjf3").not_nil!
+# info = Querying.load("akpwpjf3").not_nil!
 # puts info.vi_title
 
 # chaps = Kernel.load_list(info, info.cr_site_df, refresh: true)

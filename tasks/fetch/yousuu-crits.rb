@@ -57,7 +57,7 @@ end
 
 bsids = []
 
-Dir.glob("data/vp_infos/*.json").each do |file|
+Dir.glob("data/book_infos/*.json").each do |file|
   json = JSON.parse(File.read(file))
 
   bsid = json["yousuu"]
