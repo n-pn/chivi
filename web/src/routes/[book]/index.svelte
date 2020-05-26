@@ -219,6 +219,7 @@
     </div>
 
     <h2 class="content u-cf" data-site={site}>
+      <!-- <MIcon class="m-icon u-fl" name="list" /> -->
       <span class="label u-fl">Mục lục</span>
       <span class="count u-fl">({list.length} chương)</span>
       <button
@@ -317,7 +318,26 @@
     padding-top: 0.75rem;
   }
 
-  ._reload {
+  .content {
+    // margin-left: 0.5rem;
+    // @include fgcolor(color(neutral, 6));
+    // > :global(.m-icon) {
+    //   margin-top: 0.375rem;
+    // }
+
+    > .label {
+      margin-right: 0.25rem;
+    }
+
+    > .count {
+      display: none;
+      @include screen-min(sm) {
+        display: inline-block;
+      }
+    }
+  }
+
+  .m-button._reload {
     @include fgcolor(color(neutral, 5));
 
     :global(svg) {
