@@ -24,14 +24,14 @@
   }
 </script>
 
-<script lang="typescript">
+<script>
   import MIcon from '$mould/MIcon.svelte'
   import Header from '$layout/Header.svelte'
 
-  export let items: any[] = []
-  export let total: number = 0
-  export let page: number = 1
-  export let sort: string = 'access'
+  export let items = []
+  export let total = 0
+  export let page = 1
+  export let sort = 'access'
 
   const sorts = {
     access: 'Vừa xem',
@@ -41,17 +41,14 @@
     tally: 'Tổng hợp',
   }
 
-  let pageMax: number = 0
   $: pageMax = Math.floor((total - 1) / 20) + 1
-
-  let pageList: any[] = []
   $: pageList = make_pageList(page, pageMax)
 
   import { onMount } from 'svelte'
   import { lookup_active } from '$src/stores.js'
   onMount(() => lookup_active.set(false))
 
-  function make_pageList(currPage: number, pageMax: number) {
+  function make_pageList(currPage, pageMax) {
     let pageFrom = currPage - 2
     if (pageFrom < 1) pageFrom = 1
 
@@ -63,7 +60,7 @@
     }
 
     // console.log({ pageFrom, pageUpto })
-    let output: number[] = []
+    let output = []
     for (let i = pageFrom; i <= pageUpto; i++) output.push(i)
     return output
   }

@@ -45,16 +45,6 @@
     }
   }
 
-  export function relative_time(time) {
-    const span = (new Date().getTime() - time) / 1000
-
-    if (span < 60) return '< 1 phút trước'
-    if (span < 60 * 60) return `${Math.round(span / 60)} phút trước`
-    if (span < 60 * 60 * 24) return `${Math.round(span / 3600)} giờ trước`
-
-    return new Date(time).toISOString().split('T')[0]
-  }
-
   export function book_status(status) {
     switch (status) {
       case 0:
@@ -95,12 +85,17 @@
   import MIcon from '$mould/MIcon.svelte'
   import Header from '$layout/Header.svelte'
 
+  import ChapList from '$reused/ChapList.svelte'
+
+  import { onMount } from 'svelte'
+  import { lookup_active } from '$src/stores.js'
+
+  import relative_time from '$utils/relative_time'
+
   export let book
   export let site
   export let list = []
 
-  import { onMount } from 'svelte'
-  import { lookup_active } from '$src/stores.js'
   onMount(() => lookup_active.set(false))
 
   $: sites = Object.keys(book.cr_anchors)
@@ -182,10 +177,11 @@
           <MIcon class="m-icon" name="activity" />
           {status}
         </span>
-        <time class="updated_at" datetime={updated_at}>
+        <span class="updated_at">
           <MIcon class="m-icon" name="clock" />
-          {relative_time(book.mftime)}
-        </time>
+          <time datetime={updated_at}>{relative_time(book.mftime)}</time>
+        </span>
+
       </div>
 
       <div>
@@ -220,38 +216,12 @@
 
     <h2 class="content" data-site={site}>
       Mục lục
-      <span class="label">({list.length} chương)</span>
+      <span class="count">({list.length} chương)</span>
     </h2>
 
-    <h3>
-      Mới nhất
-      <span class="label">({latests.length} chương)</span>
-    </h3>
-    <div class="chap-list">
-      {#each latests as chap}
-        <div class="chap-item">
-          <a class="chap-link" href="/{book.slug}/{chap.url_slug}">
-            <div class="chap-title">{chap.vi_title}</div>
-          </a>
-        </div>
-      {/each}
-    </div>
-
-    {#each Object.entries(volumes) as [label, list]}
-      <h3>
-        {label}
-        <span class="label">({list.length} chương)</span>
-      </h3>
-
-      <div class="chap-list">
-        {#each list as chap}
-          <div class="chap-item">
-            <a class="chap-link" href="/{book.slug}/{chap.url_slug}">
-              <div class="chap-title">{chap.vi_title}</div>
-            </a>
-          </div>
-        {/each}
-      </div>
+    <ChapList bslug={book.slug} label="Mới nhất" chaps={latests} />
+    {#each Object.entries(volumes) as [label, chaps]}
+      <ChapList bslug={book.slug} {label} {chaps} />
     {/each}
   {/if}
 </div>
@@ -315,60 +285,6 @@
     margin-top: 0.75rem;
   }
 
-  h3 {
-    margin-top: 0.75rem;
-    padding-left: 0.75rem;
-  }
-
-  .chap-list {
-    margin-top: 0.25rem;
-    &:last-child {
-      margin-bottom: 0.75rem;
-    }
-    // margin: .75rem auto;
-    @include grid($size: minmax(20rem, 1fr), $gap: 0 0.5rem);
-  }
-
-  .chap-item {
-    &:nth-child(odd) {
-      background-color: #fff;
-    }
-
-    @include border($pos: bottom);
-    &:first-child {
-      @include border($pos: top);
-    }
-
-    @include screen-min(sm) {
-      &:nth-child(2) {
-        @include border($pos: top);
-      }
-      &:nth-child(4n),
-      &:nth-child(4n + 1) {
-        background-color: #fff;
-      }
-
-      &:nth-child(4n + 2),
-      &:nth-child(4n + 3) {
-        background-color: color(neutral, 1);
-      }
-    }
-  }
-
-  .chap-link {
-    display: block;
-    @include fgcolor(color(neutral, 7));
-
-    padding: 0.5rem 0.75rem;
-
-    @include hover {
-      @include fgcolor(color(primary, 5));
-    }
-    // time {
-    //   @include fgcolor(color(neutral, 5));
-    // }
-  }
-
   .author {
     font-weight: 500;
     // @include font-size(4);
@@ -380,10 +296,6 @@
     // font-weight: 400;
     font-size: 85%;
     // @include fgcolor(color(neutral, 6));
-  }
-
-  .chap-title {
-    @include truncate();
   }
 
   .info,
@@ -433,7 +345,7 @@
     }
   }
 
-  .label {
+  .count {
     @include fgcolor(color(neutral, 6));
   }
 

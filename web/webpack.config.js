@@ -11,9 +11,11 @@ const alias = {
   svelte: path.resolve('node_modules', 'svelte'),
   $mould: path.resolve('node_modules', '@nipin', 'mould', 'lib'),
   $src: path.resolve(__dirname, 'src'),
+  $utils: path.resolve(__dirname, 'src', 'utils'),
   $style: path.resolve(__dirname, 'src', 'styles'),
   $route: path.resolve(__dirname, 'src', 'routes'),
   $layout: path.resolve(__dirname, 'src', 'routes', '_layout'),
+  $reused: path.resolve(__dirname, 'src', 'routes', '_reused'),
 }
 
 const extensions = ['.mjs', '.js', '.json', '.svelte', '.html']
