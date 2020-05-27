@@ -205,7 +205,7 @@
     {/each}
   </div>
 
-  {#if sites != []}
+  {#if sites.length > 0}
     <div class="tabs">
       <span>Chọn nguồn:</span>
       {#each sites as crawl}
