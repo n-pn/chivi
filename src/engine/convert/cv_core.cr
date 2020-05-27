@@ -201,7 +201,7 @@ module CvCore
     nodes.each do |node|
       next if node.val.empty?
 
-      if apply_cap && node.val[0].alphanumeric?
+      if apply_cap && node.val =~ /[\p{L}\p{N}]/
         node.val = Utils.capitalize(node.val)
         apply_cap = false
       else

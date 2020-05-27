@@ -62,13 +62,11 @@ module Kernel
     uuid = VpText.uuid_for(info.uuid, site, bsid)
 
     json_file = VpText.path_for(uuid, csid, user)
+    return VpText.load!(json_file) if mode == 0 && File.exists?(json_file)
+
     text_file = File.join("data", "zh_texts", uuid, "#{csid}.txt")
 
-    if File.exists?(json_file) && mode == 0
-      return VpText.load!(json_file)
-    end
-
-    if File.exists?(text_file) && mode == 1
+    if mode == 1 && File.exists?(text_file)
       lines = File.read_lines(text_file)
     else
       spider = TextSpider.load(site, bsid, csid, expiry: 10.years, frozen: false)
@@ -79,11 +77,12 @@ module Kernel
     end
 
     book = unique ? info.uuid : nil
-    paras = Engine.convert(lines, mode: :mixed, book: book, user: user)
+    chap = Engine.convert(lines, mode: :mixed, book: book, user: user)
 
     FileUtils.mkdir_p(File.dirname(json_file))
-    File.write(json_file, paras.to_json)
-    paras
+    File.write(json_file, chap.to_json)
+
+    chap
   end
 end
 
