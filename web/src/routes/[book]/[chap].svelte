@@ -165,22 +165,25 @@
     return true
   }
 
-  function active_upsert(tab = null) {
+  function active_upsert(tab) {
     const selection = read_selection()
 
     if (selection !== '') {
       upsertKey = selection
     } else if (elemOnFocus) {
       upsertKey = elemOnFocus.dataset.k
-      const dic = +elemOnFocus.dataset.d
-      if (dic == 1 || dic == 2) {
-        upsertTab = 'generic'
-      } else {
-        upsertTab = 'special'
+
+      if (!tab) {
+        const dic = +elemOnFocus.dataset.d
+        if (dic == 1 || dic == 2) {
+          tab = 'generic'
+        } else {
+          tab = 'special'
+        }
       }
     }
 
-    upsertTab = upsertTab || tab || 'special'
+    upsertTab = tab || 'special'
     upsertEnabled = true
   }
 
