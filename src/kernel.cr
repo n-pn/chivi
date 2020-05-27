@@ -30,46 +30,27 @@ module Kernel
 
     file = ChapList.path_for(info.uuid, site)
     expiry = refresh ? 6.minutes : gen_expiry(info.status)
-
-    unless Utils.outdated?(file, expiry)
-      return ChapList.read!(file)
-    end
-
-    old_mftime = info.cr_mftimes[site]? || 0
+    return ChapList.read!(file) unless Utils.outdated?(file, expiry)
 
     spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: false)
     mftime = spider.get_mftime!
+    old_mftime = info.cr_mftimes[site]? || 0
 
     if mftime > old_mftime
       info.set_status(spider.get_status!)
       info.set_mftime(mftime)
       info.cr_mftimes[site] = mftime
+
       BookRepo.save!(info)
     end
 
     chaps = spider.get_chaps!
 
-    if File.exists?(file)
-      old_chaps = ChapList.read!(file)
-      old_chaps.each_with_index do |old_chap, idx|
-        break unless new_chap = chaps[idx]
-        next unless new_chap.zh_title == old_chap.zh_title
-
-        new_chap.vi_title = old_chap.vi_title
-        new_chap.vi_volume = old_chap.vi_volume
-        new_chap.title_slug = old_chap.title_slug
-      end
-    end
-
     chaps.each do |item|
-      if item.vi_title.empty?
-        item.vi_title = Engine.translate(item.zh_title, title: true)
-        item.gen_slug(20)
-      end
+      item.vi_title = Engine.translate(item.zh_title, title: true)
+      item.vi_volume = Engine.translate(item.zh_volume, title: true)
 
-      if item.vi_volume.empty?
-        item.vi_volume = Engine.translate(item.zh_volume, title: true)
-      end
+      item.gen_slug(20)
     end
 
     ChapList.save!(file, chaps)

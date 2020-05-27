@@ -5,11 +5,12 @@ module Utils
 
   SPLIT_RE_0 = /^(第[#{NUMBERS}\d]+[集卷].*?)(第?[#{NUMBERS}\d]+[章节幕回].*)$/
   SPLIT_RE_1 = /^(第[#{NUMBERS}\d]+[集卷].*?)(（\p{N}+）.*)$/
+  SPLIT_RE_2 = /^【(第[#{NUMBERS}\d]+[集卷])】(.+)$/
 
-  def self.split_title(title)
+  def self.split_title(title : String)
     volume = "正文"
 
-    if match = SPLIT_RE_0.match(title) || SPLIT_RE_1.match(title)
+    if match = SPLIT_RE_0.match(title) || SPLIT_RE_1.match(title) || SPLIT_RE_2.match(title)
       _, volume, title = match
       volume = clean_title(volume)
     end
@@ -22,7 +23,7 @@ module Utils
   TITLE_RE_2 = /^([#{NUMBERS}\d]+)[、：,.:\s]?(.*)$/
   TITLE_RE_3 = /^（(\p{N}+)）(.*)$/
 
-  def self.fix_title(title)
+  def self.fix_title(title : String)
     if match = TITLE_RE_0.match(title)
       return clean_title(title.sub(/^\d+\.\s*第/, "第"))
     end

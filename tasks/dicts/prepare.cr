@@ -1,7 +1,7 @@
 # combine extraqt and localqt
 require "json"
 
-require "../../src/engine/cv_util"
+require "../../src/_utils/normalize"
 require "./shared/cvdict"
 
 puts "[Load deps]".colorize(:cyan)
@@ -57,7 +57,7 @@ def read_file(file)
   File.read_lines(file).compact_map do |line|
     begin
       key, val = line.split "=", 2
-      {CvUtil.normalize(key).join, split_val(val)}
+      {Utils.normalize(key).join, split_val(val)}
     rescue
       nil
     end
@@ -107,27 +107,27 @@ INPUT.each do |key, vals|
   names = names.first(4)
 
   unless words.empty?
-    if (ondicts || word_count >= 50) && (checked || book_count >= 10)
+    if (ondicts || word_count >= 100) && (checked || book_count >= 20)
       generic_base.set(key, words, :keep_new)
-    elsif checked || ondicts || word_count >= 10
-      suggest_base.set(key, words, :keep_new)
-    else
+    elsif checked || ondicts || word_count >= 100
+      suggest_base.set(key, words, :keep_new) if words[0].split(" ").size < 8
+    elsif word_count >= 5
       recycle_base.set(key, words, :keep_new)
     end
   end
 
   unless names.empty?
-    if (ondicts || word_count >= 50) && book_count >= 10 && words.empty?
+    if (ondicts || word_count >= 100) && book_count >= 20 && words.empty?
       generic_base.set(key, names, :new_first)
-    elsif checked || ondicts || word_count >= 10
-      suggest_base.set(key, names, :new_first)
-    else
+    elsif checked || ondicts || word_count >= 20
+      suggest_base.set(key, names, :new_first) if names[0].split(" ").size < 8
+    elsif word_count >= 5
       recycle_base.set(key, names, :new_first)
     end
 
     next if key =~ /^\P{Han}/ || generic_base.includes?(key)
-    if checked || book_count >= 10
-      combine_base.set(key, names, :new_first)
+    if (checked && word_count >= 50) || book_count >= 20
+      combine_base.set(key, names, :old_first)
     end
   end
 end
@@ -137,6 +137,7 @@ puts "\n[Load generic]".colorize(:cyan)
 Dir.glob("#{INP_DIR}/persist/generic/**/*.txt").each do |file|
   Cvdict.load!(file).data.each do |key, val|
     generic_base.set(key, val, :new_first)
+
     CHECKED.add(key)
     EXISTED.add(key)
   end
@@ -161,16 +162,17 @@ Cvdict.load!("#{INP_DIR}/extraqt/words.txt").data.each do |key, val|
 
   ondicts = ONDICTS.includes?(key)
 
-  if (ondicts && book_count >= 20)
+  if (ondicts && book_count >= 50)
     generic_base.set(key, val, :old_first)
-  elsif (ondicts && word_count >= 20) || (word_count >= 500 && book_count >= 50)
-    suggest_base.set(key, val, :old_first)
+  elsif (ondicts && word_count >= 100) || (word_count >= 500 && book_count >= 50)
+    suggest_base.set(key, val, :old_first) if val[0].split(" ").size < 6
   elsif word_count >= 500
     recycle_base.set(key, val, :old_first)
   end
 end
 
 Cvdict.load!("#{INP_DIR}/extraqt/names.txt").data.each do |key, val|
+  next if key.size == 1
   next if EXISTED.includes?(key)
 
   book_count = COUNT_BOOKS[key]? || 0
@@ -178,10 +180,10 @@ Cvdict.load!("#{INP_DIR}/extraqt/names.txt").data.each do |key, val|
 
   ondicts = ONDICTS.includes?(key)
 
-  if (ondicts && book_count >= 20)
+  if (ondicts && book_count >= 50)
     generic_base.set(key, val, :old_first)
-  elsif (ondicts && word_count >= 20) || word_count >= 500 || book_count >= 50
-    suggest_base.set(key, val, :old_first)
+  elsif (ondicts && word_count > 20) || word_count >= 500 || book_count >= 50
+    suggest_base.set(key, val, :old_first) if val[0].split(" ").size < 6
   elsif word_count >= 500
     recycle_base.set(key, val, :old_first)
   end
