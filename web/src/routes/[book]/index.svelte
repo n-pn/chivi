@@ -16,7 +16,7 @@
 
         if (site !== '') {
           const list_data = await load_list(this.fetch, book.slug, site, reload)
-          if (list_data.status == 200) return { ...list_data, book }
+          return { ...list_data, book }
         }
 
         return { book, site, chlist: [] }
@@ -32,10 +32,10 @@
       const res = await api(url)
       const data = await res.json()
 
-      if (res.status == 200) return { status: 200, ...data }
-      else return { status: res.status, message: data.msg }
+      if (res.status == 200) return data
+      else throw data
     } catch (err) {
-      return { status: 500, message: err.message }
+      throw { status: 500, message: err.message }
     }
   }
 
@@ -88,7 +88,10 @@
 
   export let book
   export let site
+  export let bsid
+
   export let chlist = []
+  export let mftime = 0
 
   onMount(() => lookup_active.set(false))
 
@@ -111,21 +114,19 @@
   ]
 
   let reloading = false
-  async function updateList() {
+  async function reloadContent(source, reload = false) {
     reloading = true
-    const data = await load_list(fetch, book.slug, site, true)
+    const data = await load_list(fetch, book.slug, site, reload)
 
+    site = source
+    mftime = data.mftime
+    chlist = data.chlist
+
+    if (book.mftime < mftime) book.mftime = mftime
+    if (book.cr_mftimes[site] < mftime) book.cr_mftimes[site] = mftime
+
+    book = book
     reloading = false
-    if (data.status == 200) {
-      chlist = data.chlist
-      const mftime = data.mftime
-
-      if (mftime > 0) {
-        book.cr_mftimes[site] = mftime
-        if (book.mftime < mftime) book.mftime = mftime
-        book = book
-      }
-    }
   }
 </script>
 
@@ -210,14 +211,15 @@
   </div>
 
   {#if sites.length > 0}
-    <div class="tabs">
+    <div class="tabs" data-site={site} data-bsid={bsid}>
       <span>Chọn nguồn:</span>
-      {#each sites as crawl}
+      {#each sites as source}
         <a
           class="site"
-          class:_active={site == crawl}
-          href="/{book.slug}?site={crawl}">
-          {crawl}
+          class:_active={site == source}
+          href="/{book.slug}?site={source}"
+          on:click={() => reloadContent(source, false)}>
+          {source}
         </a>
       {/each}
     </div>
@@ -229,7 +231,7 @@
       <button
         class="m-button _text u-fr"
         class:_reload={reloading}
-        on:click={updateList}>
+        on:click={() => reloadContent(site, true)}>
         {#if reloading}
           <MIcon class="m-icon" name="loader" />
         {:else}

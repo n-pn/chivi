@@ -24,31 +24,27 @@ module Kernel
   end
 
   def load_list(info : VpInfo, site : String, user = "local", reload = false) : Tuple(ChapList, Int64)
-    unless bsid = info.cr_anchors[site]?
-      return {ChapList.new, 0_i64}
-    end
+    return {ChapList.new, 0_i64} unless bsid = info.cr_anchors[site]?
 
     file = ChapList.path_for(info.uuid, site)
     expiry = reload ? 6.minutes : gen_expiry(info.status)
-    unless Utils.outdated?(file, expiry)
-      mftime = File.info(file).modification_time.to_unix_ms
-      return {ChapList.read!(file), mftime}
-    end
+
+    mftime = info.cr_mftimes[site]? || 0_i64
+    return {ChapList.read!(file), mftime} unless Utils.outdated?(file, expiry)
 
     spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: false)
-    mftime = spider.get_mftime!
-    old_mftime = info.cr_mftimes[site]? || 0
+    new_mftime = spider.get_mftime!
 
-    if mftime > old_mftime
+    if new_mftime > mftime
       info.set_status(spider.get_status!)
-      info.set_mftime(mftime)
-      info.cr_mftimes[site] = mftime
+      info.set_mftime(new_mftime)
+      info.cr_mftimes[site] = new_mftime
 
+      mftime = new_mftime
       BookRepo.save!(info)
     end
 
     chaps = spider.get_chaps!
-
     chaps.each do |item|
       item.vi_title = Engine.translate(item.zh_title, info.uuid, user, title: true)
       item.vi_volume = Engine.translate(item.zh_volume, info.uuid, user, title: true)
