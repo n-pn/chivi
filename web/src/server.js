@@ -14,8 +14,8 @@ const proxy = createProxyMiddleware('/api', {
   pathRewrite: (path) => encodeURI(path),
 })
 
-const maxAge = 7 * 24 * 3600
-const assetOpts = { dev, maxAge, immutable: true, etag: true }
+const maxAge = 30 * 24 * 3600
+const assetOpts = { dev, maxAge, etag: true }
 
 polka() // You can also use Express
   .use(
