@@ -30,10 +30,10 @@ def update_infos(info, label)
   update = false
 
   info.cr_anchors.each do |site, bsid|
-    out_file = ChapList.path_for(info.uuid, site)
+    next if site == "paoshu8" || site == "duokan8"
 
-    time = site == "paoshu8" ? 10.months : expiry
-    spider = InfoSpider.load(site, bsid, expiry: time, frozen: true)
+    out_file = ChapList.path_for(info.uuid, site)
+    spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: true)
 
     mftime = spider.get_mftime!
     next unless Utils.outdated?(out_file, Time.unix_ms(mftime))
