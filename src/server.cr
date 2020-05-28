@@ -29,10 +29,13 @@ module Server
 
   before_all do |env|
     env.response.content_type = "application/json"
-    if Kemal.config.env == "production"
-      user = "guest"
-    else
+    case Kemal.config.env
+    when "development"
       user = "local"
+    when "test"
+      user = "test"
+    else
+      user = "guest"
     end
 
     env.set("user", user)
