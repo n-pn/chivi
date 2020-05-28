@@ -6,68 +6,65 @@ module Engine
   @@repo = CvRepo.new("data/cv_dicts")
 
   def hanviet(input : String, apply_cap = false)
-    CvCore.cv_lit([@@repo.hanviet], input, apply_cap: apply_cap)
+    CvCore.cv_lit(input, @@repo.hanviet, apply_cap: apply_cap)
   end
 
   def pinyins(input : String, apply_cap = false)
-    CvCore.cv_lit([@@repo.pinyins], input, apply_cap: apply_cap)
+    CvCore.cv_lit(input, @@repo.pinyins, apply_cap: apply_cap)
   end
 
   def tradsim(input : String)
-    CvCore.cv_raw([@@repo.tradsim], input)
+    CvCore.cv_raw(input, @@repo.tradsim)
   end
 
-  def translate(input : String, title : Bool, book : String? = nil, user = "guest")
+  def translate(input : String, book : String = "tong-hop", user : String = "local", title : Bool = false)
     return input if input.empty?
-    convert(input, title, book, user).vi_text
+    convert(input, book, user, title: title).vi_text
   end
 
-  def translate(input : Array(String), mode : Symbol, book : String? = nil, user = "guest")
+  def translate(input : Array(String), book : String = "tong-hop", user : String = "local", mode : Symbol = :mixed)
     return input if input.empty?
-    convert(input, mode, book, user).map(&.vi_text)
+    convert(input, book, user, mode: mode).map(&.vi_text)
   end
 
-  def convert(input : String, title = false, book : String? = nil, user = "guest")
+  def convert(input : String, book : String = "", user : String = "local", title : Bool = false)
     dicts = @@repo.for_convert(book, user)
-    title ? CvCore.cv_title(dicts, input) : CvCore.cv_plain(dicts, input)
+    title ? CvCore.cv_title(input, dicts) : CvCore.cv_plain(input, dicts)
   end
 
-  def convert(lines : Array(String), mode : Symbol, book : String? = nil, user = "guest")
+  def convert(lines : Array(String), book : String = "tong-hop", user : String = "local", mode : Symbol = :mixed)
     dicts = @@repo.for_convert(book, user)
 
     case mode
     when :title
-      lines.map { |line| CvCore.cv_title(dicts, line) }
+      lines.map { |line| CvCore.cv_title(line, dicts) }
     when :plain
-      lines.map { |line| CvCore.cv_plain(dicts, line) }
+      lines.map { |line| CvCore.cv_plain(line, dicts) }
     else # :mixed
       lines.map_with_index do |line, idx|
-        idx == 0 ? CvCore.cv_title(dicts, line) : CvCore.cv_plain(dicts, line)
+        idx == 0 ? CvCore.cv_title(line, dicts) : CvCore.cv_plain(line, dicts)
       end
     end
   end
 
   alias LookupItem = Tuple(String, String)
 
-  def lookup(str : String, dic : String? = nil, user = "guest")
-    chars = str.chars
+  def lookup(line : String, book : String = "tong-hop", user : String = "local")
+    chars = line.chars
 
-    if dic
-      special_base = @@repo.unique_base[dic]
-      special_user = @@repo.unique_user[dic, user]
+    if book == "combine" || book.empty?
+      special_root, special_user = @@repo.combine(user)
     else
-      special_base = @@repo.shared_base["combine"]
-      special_user = @@repo.shared_user["combine", user]
+      special_root, special_user = @@repo.book(book, user)
     end
 
-    generic_user = @@repo.shared_user["generic", user]
-    generic_base = @@repo.shared_base["generic"]
+    generic_root, generic_user = @@repo.generic(user)
 
     dicts = {
       {special_user, "riêng (user)", "; "},
-      {special_base, "riêng (base)", "; "},
+      {special_root, "riêng (base)", "; "},
       {generic_user, "chung (user)", "; "},
-      {generic_base, "chung (base)", "; "},
+      {generic_root, "chung (base)", "; "},
       {@@repo.trungviet, "trungviet", "\n"},
       {@@repo.cc_cedict, "cc_cedict", "\n"},
     }
@@ -87,16 +84,16 @@ module Engine
     end
 
     {
-      hanviet: hanviet(str, apply_cap: true),
+      hanviet: hanviet(line, apply_cap: true),
       entries: entries,
     }
   end
 
-  def inquire(key, book : String? = nil, user = "guest")
-    if book
-      special_1, special_2 = @@repo.unique(book, user)
-    else
+  def inquire(key : String, book : String = "tong-hop", user = "local")
+    if book.empty?
       special_1, special_2 = @@repo.combine(user)
+    else
+      special_1, special_2 = @@repo.book(book, user)
     end
 
     generic_1, generic_2 = @@repo.generic(user)
@@ -124,23 +121,30 @@ module Engine
     }
   end
 
-  def upsert(key : String, val : String, dic : String? = nil, user : String = "guest")
-    upsert({key => val}, dic, user)
+  def upsert(key : String, val = "", dict = "tong-hop", user = "local")
+    do_upsert(key, val, dict, user, mode: :new_first)
+
+    if val.empty?
+      do_upsert(key, val, "combine", user, mode: :keep_new)
+    else
+      do_upsert(key, val, "suggest", user, mode: :new_first)
+    end
   end
 
-  def upsert(entries : Hash(String, String), dic : String? = nil, user : String = "guest")
-    case dic
-    when "generic", nil
-      dict = @@repo.shared_user["generic", user]
-    when "combine"
-      dict = @@repo.shared_user["combine", user]
-    else
-      dict = @@repo.unique_user[dic, user]
-    end
+  def do_upsert(key : String, val = "", dict = "tong-hop", user = "local", mode = :new_first)
+    dict = "generic" if dict.empty?
 
-    entries.each do |key, val|
-      @@repo.shared_user["suggest", user].set(key, val)
-      dict.set(key, val)
+    case dict
+    when "suggest", "generic", "combine"
+      @@repo.core_user[dict, user].set(key, val, mode: mode)
+      if user == "local" || user == "admin"
+        @@repo.core_root[dict].set(key, val, mode: mode)
+      end
+    else
+      @@repo.book_user[dict, user].set(key, val, mode: mode)
+      if user == "local" || user == "admin"
+        @@repo.book_root[dict].set(key, val, mode: mode)
+      end
     end
   end
 end

@@ -18,6 +18,10 @@ rescue
   0
 end
 
+def json_error(msg : String)
+  {msg: msg}.to_json
+end
+
 module Server
   Kemal.config.port = 5110
 
@@ -39,33 +43,33 @@ module Server
   end
 
   get "/api/lookup" do |env|
-    user = env.get("user").as(String)
-
     line = env.params.query.fetch("line", "")
-    udic = env.params.query["udic"]?
 
-    res = Engine.lookup(line, udic, user)
+    user = env.get("user").as(String)
+    dict = env.params.query["dict"]? || "combine"
+
+    res = Engine.lookup(line, dict, user)
     res.to_json(env.response)
   end
 
   get "/api/inquire" do |env|
+    key = env.params.query["key"]? || ""
+
+    dict = env.params.query["dic"]? || "tong-hop"
     user = env.get("user").as(String)
 
-    key = env.params.query["key"]? || ""
-    dic = env.params.query["dic"]?
-
-    res = Engine.inquire(key, dic, user)
+    res = Engine.inquire(key, dict, user)
     res.to_json(env.response)
   end
 
   get "/api/upsert" do |env|
-    user = env.get("user").as(String)
-
     key = env.params.query["key"]? || ""
     val = env.params.query["val"]? || ""
-    dic = env.params.query["dic"]?
 
-    res = Engine.upsert(key, val, dic, user)
+    dict = env.params.query["dict"]? || "tong-hop"
+    user = env.get("user").as(String)
+
+    res = Engine.upsert(key, val, dict, user)
     res.to_json(env.response)
   end
 
@@ -126,31 +130,31 @@ module Server
   get "/api/books/:slug" do |env|
     slug = env.params.url["slug"]
 
-    unless info = BookRepo.find(slug)
-      halt env, status_code: 404, response: ({msg: "Book not found"}).to_json
+    unless book = BookRepo.find(slug)
+      halt env, status_code: 404, response: json_error("Book not found!")
     end
 
-    BookRepo.update_sort("access", info)
-    {book: info}.to_json env.response
+    BookRepo.update_sort("access", book)
+    {book: book}.to_json env.response
   end
 
   get "/api/books/:slug/:site" do |env|
+    user = env.get("user").as(String)
     slug = env.params.url["slug"]
 
     unless info = BookRepo.find(slug)
-      halt env, status_code: 404, response: ({msg: "Book not found"}).to_json
+      halt env, status_code: 404, response: json_error("Book not found!")
     end
 
     site = env.params.url["site"]
     unless bsid = info.cr_anchors[site]?
-      halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json
+      halt env, status_code: 404, response: json_error("Site [#{site}] not found")
     end
 
-    refresh = env.params.query.fetch("refresh", "false") == "true"
+    reload = env.params.query.fetch("reload", "false") == "true"
+    chlist, mftime = Kernel.load_list(info, site, user, reload: reload)
 
-    list = Kernel.load_list(info, site, refresh: refresh)
-
-    list = list.map do |chap|
+    chlist = chlist.map do |chap|
       {
         csid:      chap.csid,
         vi_title:  chap.vi_title,
@@ -159,7 +163,7 @@ module Server
       }
     end
 
-    {site: site, bsid: bsid, list: list}.to_json env.response
+    {site: site, bsid: bsid, chlist: chlist, mftime: mftime}.to_json env.response
   end
 
   get "/api/books/:slug/:site/:csid" do |env|
@@ -178,25 +182,28 @@ module Server
 
     csid = env.params.url["csid"]
 
-    list = Kernel.load_list(info, site, refresh: false)
-    unless cidx = list.index(&.csid.==(csid))
+    chlist, _ = Kernel.load_list(info, site, reload: false)
+    unless ch_index = chlist.index(&.csid.==(csid))
       halt env, status_code: 404, response: ({msg: "Chap not found"}).to_json
     end
 
-    curr_chap = list[cidx]
-    prev_chap = list[cidx - 1] if cidx > 0
-    next_chap = list[cidx + 1] if cidx < list.size - 1
+    curr_chap = chlist[ch_index]
+    prev_chap = chlist[ch_index - 1] if ch_index > 0
+    next_chap = chlist[ch_index + 1] if ch_index < chlist.size - 1
 
     mode = env.params.query.fetch("mode", "0").try(&.to_i) || 0
 
     {
-      bname:    info.vi_title,
-      chidx:    cidx + 1,
-      total:    list.size,
-      prev_url: prev_chap.try(&.slug_for(site)),
-      next_url: next_chap.try(&.slug_for(site)),
-      curr_url: curr_chap.try(&.slug_for(site)),
-      lines:    Kernel.load_chap(info, site, csid, user, mode: mode),
+      book_uuid: info.uuid,
+      book_slug: info.slug,
+      book_name: info.vi_title,
+      ch_index:  ch_index + 1,
+      ch_total:  chlist.size,
+      prev_url:  prev_chap.try(&.slug_for(site)),
+      next_url:  next_chap.try(&.slug_for(site)),
+      curr_url:  curr_chap.try(&.slug_for(site)),
+
+      content: Kernel.load_chap(info, site, csid, user, mode: mode),
     }.to_json env.response
   end
 

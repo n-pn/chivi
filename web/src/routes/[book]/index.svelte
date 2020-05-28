@@ -3,7 +3,7 @@
     const slug = params.book
 
     let url = `api/books/${slug}`
-    const refresh = query.refresh == 'true'
+    const reload = query.reload == 'true'
 
     try {
       const res = await this.fetch(url)
@@ -14,31 +14,25 @@
         const { book } = data
         const site = query.site || book.cr_site_df
 
-        let list = []
-        if (site != '') {
-          const list_data = await load_list(
-            this.fetch,
-            book.slug,
-            site,
-            refresh
-          )
-          if (list_data.status == 200) list = list_data.list
+        if (site !== '') {
+          const list_data = await load_list(this.fetch, book.slug, site, reload)
+          if (list_data.status == 200) return { ...list_data, book }
         }
-        return { book, site, list }
+
+        return { book, site, chlist: [] }
       }
     } catch (err) {
       this.error(500, err.message)
     }
   }
 
-  export async function load_list(api, slug, site, refresh = false) {
-    let url = `api/books/${slug}/${site}?refresh=${refresh}`
+  export async function load_list(api, slug, site, reload = false) {
+    let url = `api/books/${slug}/${site}?reload=${reload}`
     try {
       const res = await api(url)
       const data = await res.json()
 
-      if (res.status == 200)
-        return { status: 200, list: data.list, bsid: data.bsid }
+      if (res.status == 200) return { status: 200, ...data }
       else return { status: res.status, message: data.msg }
     } catch (err) {
       return { status: 500, message: err.message }
@@ -94,13 +88,13 @@
 
   export let book
   export let site
-  export let list = []
+  export let chlist = []
 
   onMount(() => lookup_active.set(false))
 
   $: sites = Object.keys(book.cr_anchors)
-  $: volumes = map_volumes(list)
-  $: latests = get_latests(list)
+  $: volumes = map_volumes(chlist)
+  $: latests = get_latests(chlist)
 
   $: cover_url = `https://chivi.xyz/covers/${book.uuid}.jpg`
   $: updated_at = new Date(book.mftime * 1000)
@@ -120,8 +114,18 @@
   async function updateList() {
     reloading = true
     const data = await load_list(fetch, book.slug, site, true)
+
     reloading = false
-    if (data.status == 200) list = data.list
+    if (data.status == 200) {
+      chlist = data.chlist
+      const mftime = data.mftime
+
+      if (mftime > 0) {
+        book.cr_mftimes[site] = mftime
+        if (book.mftime < mftime) book.mftime = mftime
+        book = book
+      }
+    }
   }
 </script>
 
@@ -221,7 +225,7 @@
     <h2 class="content u-cf" data-site={site}>
       <!-- <MIcon class="m-icon u-fl" name="list" /> -->
       <span class="label u-fl">Mục lục</span>
-      <span class="count u-fl">({list.length} chương)</span>
+      <span class="count u-fl">({chlist.length} chương)</span>
       <button
         class="m-button _text u-fr"
         class:_reload={reloading}

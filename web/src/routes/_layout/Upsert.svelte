@@ -33,7 +33,7 @@
   export let active = true
 
   export let key = ''
-  export let dic = 'combine'
+  export let dic = ''
   export let tab = 'special'
 
   let key_field
@@ -42,9 +42,7 @@
   let val = ''
   let newEntry = false
 
-  $: active_dic = tab == 'special' ? dic : 'generic'
-  $: if (key) inquire()
-
+  $: if (key) inquire(key)
   $: links = suggest_urls(key)
 
   let props = {
@@ -80,18 +78,16 @@
     }
   }
 
-  async function upsert() {
-    const url = `/api/upsert?dic=${active_dic}&key=${key}&val=${val}`
+  async function upsert(val) {
+    let target = 'generic'
+    if (tab === 'special') target = dic === '' ? 'combine' : dic
+
+    const url = `/api/upsert?dict=${target}&key=${key}&val=${val}`
     const res = await fetch(url)
     active = false
   }
 
-  async function remove() {
-    const res = await fetch(`/api/upsert?dic=${active_dic}&key=${key}`)
-    active = false
-  }
-
-  async function inquire() {
+  async function inquire(key) {
     links = suggest_urls(key)
 
     const res = await fetch(`/api/inquire?key=${key}`)
@@ -117,7 +113,7 @@
   function submitOnEnter(evt) {
     if (evt.keyCode == 13 && !evt.shiftKey) {
       evt.preventDefault()
-      return upsert()
+      return upsert(val)
     }
   }
 
@@ -243,13 +239,13 @@
           <button
             type="button"
             class="m-button _line _harmful"
-            on:click={remove}>
+            on:click={() => upsert('')}>
             <span>Xoá từ</span>
           </button>
           <button
             type="button"
             class="m-button {newEntry ? '_primary' : '_success'}"
-            on:click={upsert}>
+            on:click={() => upsert(val)}>
             <span>{newEntry ? 'Thêm từ' : 'Sửa từ'}</span>
           </button>
 

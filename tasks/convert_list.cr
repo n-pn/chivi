@@ -8,9 +8,9 @@ require "../src/bookdb/chap_list"
 
 require "../src/spider/info_spider"
 
-def translate(input : String)
+def translate(input : String, book : String)
   return input if input.empty?
-  Engine.translate(input, title: true, book: nil, user: "local")
+  Engine.translate(input, book: book, user: "local", title: true)
 end
 
 def gen_expiry(status : Int32)
@@ -46,8 +46,8 @@ def update_infos(info, label)
 
     chaps = spider.get_chaps!
     chaps.each do |item|
-      item.vi_title = translate(item.zh_title)
-      item.vi_volume = translate(item.zh_volume)
+      item.vi_title = translate(item.zh_title, info.uuid)
+      item.vi_volume = translate(item.zh_volume, info.uuid)
       item.gen_slug(20)
     end
 
@@ -64,7 +64,7 @@ FileUtils.mkdir_p(ChapList::DIR)
 infos = VpInfo.load_all.values.sort_by!(&.tally.-)
 puts "- input: #{infos.size}"
 
-puts translate("WARM UP!")
+puts translate("WARM UP!", "tong-hop")
 
 limit = 10
 channel = Channel(Nil).new(limit)

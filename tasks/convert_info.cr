@@ -51,10 +51,10 @@ def pick_slug(title_slug, author_slug)
   full_slug
 end
 
-def translate(input : String)
+def translate(input : String, book : String)
   return input if input.empty?
   lines = input.split("\n")
-  Engine.translate(lines, :plain, nil, "local").join("\n")
+  Engine.translate(lines, book, user: "local", mode: :plain).join("\n")
 end
 
 input = VpInfo.load_all.values.sort_by(&.tally.-)
@@ -88,7 +88,7 @@ input.each_with_index do |info, idx|
     info.vi_tags[idx] = hanviet(tag)
   end
 
-  info.vi_intro = translate(info.zh_intro)
+  info.vi_intro = translate(info.zh_intro, info.uuid)
 
   if info.status == 0 && info.mftime < HIATUS
     info.status = 3

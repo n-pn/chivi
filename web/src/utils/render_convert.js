@@ -13,7 +13,7 @@ function escape_html(str) {
   return str.replace(/[&<>]/g, replace_tag)
 }
 
-export default function render_convert(tokens, active = false, decor = false) {
+export default function render_convert(tokens, mode = 0, wrap = null) {
   let res = ''
   let idx = 0
   let pos = 0
@@ -22,7 +22,7 @@ export default function render_convert(tokens, active = false, decor = false) {
     const e_key = escape_html(key)
     const e_val = escape_html(val)
 
-    if (decor) {
+    if (mode > 0) {
       switch (e_val.charAt(0)) {
         case '⟨':
           res += '<cite>'
@@ -33,11 +33,11 @@ export default function render_convert(tokens, active = false, decor = false) {
       }
     }
 
-    if (active) {
+    if (mode == 2) {
       res += `<x-v data-k="${e_key}" data-i=${idx} data-d=${dic} data-p=${pos}>${e_val}</x-v>`
     } else res += e_val
 
-    if (decor) {
+    if (mode > 0) {
       switch (e_val.charAt(0)) {
         case '⟩':
           res += '</cite>'
@@ -61,5 +61,6 @@ export default function render_convert(tokens, active = false, decor = false) {
     pos += key.length
   }
 
+  if (wrap) res = `<${wrap}>${res}</${wrap}>`
   return res
 }

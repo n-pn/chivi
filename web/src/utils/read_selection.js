@@ -8,11 +8,11 @@ export default function read_selection() {
     const node = nodes[idx]
     const name = node.nodeName
 
-    if (name == 'X-Z') break
-    else if (name == 'X-V') {
+    if (name === 'X-Z') break
+    else if (name === 'X-V') {
       const dic = +node.dataset.d
       const key = node.dataset.k
-      if (dic > 0 || key == '的' || key == '') break
+      if (dic > 0 || key === '的' || key === '') break
     }
   }
 
@@ -20,13 +20,13 @@ export default function read_selection() {
     const node = nodes[idx]
     const name = node.nodeName
 
-    if (name == 'X-V') {
+    if (name === 'X-V') {
       const dic = +node.dataset.d
       const key = node.dataset.k
-      if (dic > 0 || key == '的' || key == '') res += key
+      if (dic > 0 || key === '的' || key === '') res += key
       else break
-    } else if (name == 'X-Z') res += node.textContent.trim()
-    else if (name != '#text') break
+    } else if (name === 'X-Z') res += node.textContent.trim()
+    else if (name !== '#text') break
   }
 
   return res

@@ -91,8 +91,8 @@ def load_input(inp_file = INP_DIR)
 end
 
 CEDICT_FILE  = File.join(OUT_DIR, "cc_cedict.dic")
-PINYINS_FILE = File.join(OUT_DIR, "pinyins.dic")
-TRADSIM_FILE = File.join(OUT_DIR, "tradsim.dic")
+PINYINS_FILE = File.join(OUT_DIR, "core_root", "pinyins.dic")
+TRADSIM_FILE = File.join(OUT_DIR, "core_root", "tradsim.dic")
 
 def export_cedict(input)
   puts "\n- [Export cc_cedict]".colorize(:cyan)
@@ -234,13 +234,9 @@ def export_hanviet(tradsim, pinyins, hanzidb)
     "#{hanviet_dir}/checked/words.txt",
   }
 
-  history_file = "#{hanviet_dir}/localqt.log"
-  history = Set.new(File.read_lines(history_file)[1..].map(&.split("\t", 2)[0]))
-
   checked_files.each do |file|
     Cvdict.load!(file).data.each do |key, val|
-      mode = history.includes?(key) ? :keep_old : :keep_new
-      localqt.set(key, val, mode)
+      localqt.set(key, val, mode: :keep_new)
     end
   end
 
@@ -254,8 +250,8 @@ def export_hanviet(tradsim, pinyins, hanzidb)
 
   puts "\n- Split trad/simp, trad: #{tradsim.size}".colorize(:blue)
 
-  out_hanviet = Cvdict.new("#{OUT_DIR}/hanviet.dic")
-  out_hantrad = Cvdict.new("#{OUT_DIR}/hantrad.dic")
+  out_hanviet = Cvdict.new("#{OUT_DIR}/core_root/hanviet.dic")
+  out_hantrad = Cvdict.new("#{OUT_DIR}/core_user/hanviet.local.dic")
 
   localqt.data.each do |key, val|
     if keep_hanviet?(tradsim, key)

@@ -23,14 +23,17 @@ module Kernel
     end
   end
 
-  def load_list(info : VpInfo, site : String, refresh = false) : ChapList
+  def load_list(info : VpInfo, site : String, user = "local", reload = false) : Tuple(ChapList, Int64)
     unless bsid = info.cr_anchors[site]?
-      return ChapList.new
+      return {ChapList.new, 0_i64}
     end
 
     file = ChapList.path_for(info.uuid, site)
-    expiry = refresh ? 6.minutes : gen_expiry(info.status)
-    return ChapList.read!(file) unless Utils.outdated?(file, expiry)
+    expiry = reload ? 6.minutes : gen_expiry(info.status)
+    unless Utils.outdated?(file, expiry)
+      mftime = File.info(file).modification_time.to_unix_ms
+      return {ChapList.read!(file), mftime}
+    end
 
     spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: false)
     mftime = spider.get_mftime!
@@ -47,14 +50,14 @@ module Kernel
     chaps = spider.get_chaps!
 
     chaps.each do |item|
-      item.vi_title = Engine.translate(item.zh_title, title: true)
-      item.vi_volume = Engine.translate(item.zh_volume, title: true)
+      item.vi_title = Engine.translate(item.zh_title, info.uuid, user, title: true)
+      item.vi_volume = Engine.translate(item.zh_volume, info.uuid, user, title: true)
 
       item.gen_slug(20)
     end
 
     ChapList.save!(file, chaps)
-    chaps
+    {chaps, mftime}
   end
 
   def load_chap(info : VpInfo, site : String, csid : String, user = "guest", mode = 0, unique : Bool = false)
@@ -76,13 +79,12 @@ module Kernel
       File.write(text_file, lines.join("\n"))
     end
 
-    book = unique ? info.uuid : nil
-    chap = Engine.convert(lines, mode: :mixed, book: book, user: user)
+    content = Engine.convert(lines, book: info.uuid, user: user, mode: :mixed)
 
     FileUtils.mkdir_p(File.dirname(json_file))
-    File.write(json_file, chap.to_json)
+    File.write(json_file, content.to_json)
 
-    chap
+    content
   end
 end
 

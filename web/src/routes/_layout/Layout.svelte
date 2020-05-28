@@ -89,7 +89,7 @@
     }
   }
 
-  $page-width: 52rem;
+  $page-width: 54rem;
 
   .center {
     margin: 0 auto;

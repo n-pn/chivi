@@ -1,25 +1,26 @@
 <script context="module">
   export async function preload({ params, query }) {
-    const bslug = params.book
+    const book = params.book
 
     const slug = params.chap.split('-')
     const site = slug[slug.length - 2]
     const csid = slug[slug.length - 1]
 
-    const data = await load_page(this.fetch, bslug, site, csid)
-    return { ...data, bslug, site, csid }
+    const mode = +query.mode || 0
+
+    const data = await load_chapter(this.fetch, book, site, csid, mode)
+    return { ...data, site, csid }
   }
 
-  async function load_page(get, bslug, site, csid, mode = 0) {
-    const url = `api/books/${bslug}/${site}/${csid}?mode=${mode}`
+  async function load_chapter(get, book, site, csid, mode = 0) {
+    const url = `api/books/${book}/${site}/${csid}?mode=${mode}`
 
     try {
       const res = await get(url)
       const data = await res.json()
 
       if (res.status == 200) return data
-
-      this.error(res.status, data.msg)
+      else this.error(res.status, data.msg)
     } catch (err) {
       this.error(500, err.message)
     }
@@ -38,19 +39,21 @@
   import render_convert from '$utils/render_convert'
   import read_selection from '$utils/read_selection'
 
-  export let bname
-  export let bslug
+  export let book_uuid = ''
+  export let book_name = ''
+  export let book_slug = ''
 
   export let site
   export let csid
 
-  export let prev_url
-  export let next_url
-  export let curr_url
+  export let prev_url = ''
+  export let next_url = ''
+  export let curr_url = ''
 
-  export let total
-  export let chidx
-  export let lines
+  export let ch_total = 1
+  export let ch_index = 1
+
+  export let content = []
 
   let lineOnHover = 0
   let lineOnFocus = -1
@@ -64,6 +67,8 @@
   let upsertDic = 'combine'
   let upsertTab = 'generic'
 
+  let upserted = false
+
   function handleKeypress(evt) {
     if (upsertEnabled) return
 
@@ -72,20 +77,19 @@
     switch (evt.keyCode) {
       case 220:
         trigger_lookup()
-        // lookup_active.update((x) => !x)
         break
 
       case 72:
         evt.preventDefault()
-        _goto(bslug)
+        _goto(book_slug)
         break
 
       case 37:
       case 74:
         if (!evt.altKey) {
           evt.preventDefault()
-          if (prev_url) _goto(`${bslug}/${prev_url}`)
-          else _goto(bslug)
+          if (prev_url) _goto(`${book_slug}/${prev_url}`)
+          else _goto(book_slug)
         }
 
         break
@@ -94,24 +98,26 @@
       case 75:
         if (!evt.altKey) {
           evt.preventDefault()
-          if (next_url) _goto(`${bslug}/${next_url}`)
-          else _goto(`${bslug}`)
+          if (next_url) _goto(`${book_slug}/${next_url}`)
+          else _goto(`${book_slug}`)
         }
 
         break
 
       case 88:
-        if (!evt.altKey) return
+        if (evt.altKey && !upsertEnabled) {
+          evt.preventDefault()
+          active_upsert('special')
+        }
 
-        if (!upsertEnabled) active_upsert('special')
-        evt.preventDefault()
         break
 
       case 67:
-        if (!evt.altKey) return
+        if (evt.altKey && !upsertEnabled) {
+          active_upsert('generic')
+          evt.preventDefault()
+        }
 
-        if (!upsertEnabled) active_upsert('generic')
-        evt.preventDefault()
         break
 
       case 82:
@@ -125,16 +131,12 @@
 
   function handleClick(evt, idx) {
     const target = evt.target
-
-    if (target === elemOnFocus) {
-      active_upsert()
-      return
-    }
+    if (target === elemOnFocus) return active_upsert()
 
     if (elemOnFocus) elemOnFocus.classList.remove('_active')
 
     lineOnFocus = idx
-    lookup_line.set(lines[idx])
+    lookup_line.set(content[idx])
 
     if (target.nodeName !== 'X-V') {
       elemOnFocus = null
@@ -149,56 +151,48 @@
   }
 
   function trigger_lookup() {
-    if (lookupEnabled) {
-      lookupEnabled = false
-      lookup_active.set(false)
-    } else {
-      lookupEnabled = true
-      lookup_active.set(true)
-    }
+    lookupEnabled = !lookupEnabled
+    lookup_active.set(lookupEnabled)
   }
 
-  function is_active(idx, hover, focus) {
-    if (idx == focus) return true
-    if (idx < hover - 4) return false
-    if (idx > hover + 5) return false
-    return true
+  function render_mode(idx, hover, focus) {
+    if (idx == focus) return 2
+    if (idx < hover - 4) return 1
+    if (idx > hover + 5) return 1
+    return 2
   }
 
   function active_upsert(tab) {
-    const selection = read_selection()
-
-    if (selection !== '') {
-      upsertKey = selection
-    } else if (elemOnFocus) {
+    if (elemOnFocus) {
       upsertKey = elemOnFocus.dataset.k
 
       if (!tab) {
-        const dic = +elemOnFocus.dataset.d
-        if (dic == 1 || dic == 2) {
-          tab = 'generic'
-        } else {
-          tab = 'special'
-        }
+        const dict = +elemOnFocus.dataset.d
+        tab = dict === 1 ? 'generic' : 'special'
       }
     }
 
+    const selection = read_selection()
+    if (selection !== '') upsertKey = selection
+
+    upsertDic = book_uuid
     upsertTab = tab || 'special'
     upsertEnabled = true
   }
 
-  let reload = false
+  let pageReloading = false
   async function reload_page(mode = 1) {
-    reload = true
-    const data = await load_page(window.fetch, bslug, site, csid, mode)
-    lines = data.lines
-    reload = false
+    pageReloading = true
+    const data = await load_chapter(window.fetch, book_slug, site, csid, mode)
+
+    content = data.content
+    pageReloading = false
   }
 </script>
 
 <svelte:head>
-  <title>{render_convert(lines[0])} - {bname} - Chivi</title>
-  <meta property="og:url" content="{bslug}/{curr_url}" />
+  <title>{render_convert(content[0])} - {book_name} - Chivi</title>
+  <meta property="og:url" content="{book_slug}/{curr_url}" />
 
 </svelte:head>
 
@@ -209,13 +203,13 @@
     <img src="/logo.svg" alt="logo" />
   </a>
 
-  <a slot="header-left" href="/{bslug}" class="header-item _title">
-    <span>{bname}</span>
+  <a slot="header-left" href="/{book_slug}" class="header-item _title">
+    <span>{book_name}</span>
   </a>
 
   <span slot="header-left" class="header-item _active _index">
-    <!-- <span>{Math.round((chidx * 10000) / total) / 100}%</span> -->
-    <span>{chidx}/{total}</span>
+    <!-- <span>{Math.round((ch_index * 10000) / ch_total) / 100}%</span> -->
+    <span>{ch_index}/{ch_total}</span>
   </span>
 
   <button
@@ -223,7 +217,9 @@
     type="button"
     class="header-item"
     on:click={() => reload_page()}>
-    <MIcon class="m-icon _refresh-ccw" name="refresh-ccw" />
+    <MIcon
+      class="m-icon _refresh-ccw {pageReloading ? '_reload' : ''}"
+      name="refresh-ccw" />
   </button>
 
   <button
@@ -244,45 +240,37 @@
     <MIcon class="m-icon _compass" name="compass" />
   </button>
 
-  <article class:reload>
-    {#each lines as line, idx}
+  <article class:_reload={pageReloading}>
+    {#each content as line, idx}
       <div
         class:_focus={idx == lineOnHover || idx == lineOnFocus}
         on:mouseenter={() => (lineOnHover = idx)}
         on:click={(event) => handleClick(event, idx)}>
-        {#if idx == 0}
-          <h1>
-            {@html render_convert(line, is_active(idx, lineOnHover, lineOnFocus), true)}
-          </h1>
-        {:else}
-          <p>
-            {@html render_convert(line, is_active(idx, lineOnHover, lineOnFocus), true)}
-          </p>
-        {/if}
+        {@html render_convert(line, render_mode(idx, lineOnHover, lineOnFocus), idx == '0' ? 'h1' : 'p')}
       </div>
     {/each}
   </article>
 
   <footer>
     {#if prev_url}
-      <a class="m-button _line" href="/{bslug}/{prev_url}">
+      <a class="m-button _line" href="/{book_slug}/{prev_url}">
         <MIcon class="m-icon" name="chevron-left" />
         <span>Trước</span>
       </a>
     {:else}
-      <a class="m-button _line" href="/{bslug}">
+      <a class="m-button _line" href="/{book_slug}">
         <MIcon class="m-icon" name="list" />
         <span>Mục lục</span>
       </a>
     {/if}
 
     {#if next_url}
-      <a class="m-button _line _primary" href="/{bslug}/{next_url}">
+      <a class="m-button _line _primary" href="/{book_slug}/{next_url}">
         <span>Kế tiếp</span>
         <MIcon class="m-icon" name="chevron-right" />
       </a>
     {:else if prev_url}
-      <a class="m-button _line" href="/{bslug}">
+      <a class="m-button _line" href="/{book_slug}">
         <MIcon class="m-icon" name="list" />
         <span>Mục lục</span>
       </a>
@@ -307,36 +295,36 @@
     padding: 0.75rem 0;
     word-wrap: break-word;
 
-    &.reload {
-      @include fgcolor(neutral, 4);
+    &._reload {
+      @include fgcolor(neutral, 5);
     }
-  }
 
-  h1 {
-    $font-sizes: attrs(rem(22px), rem(24px), rem(26px), rem(28px), rem(30px));
-    $line-heights: attrs(1.5rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
+    :global(h1) {
+      $font-sizes: attrs(rem(22px), rem(24px), rem(26px), rem(28px), rem(30px));
+      $line-heights: attrs(1.5rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
 
-    @include props(font-size, $font-sizes);
-    @include props(line-height, $line-heights);
+      @include props(font-size, $font-sizes);
+      @include props(line-height, $line-heights);
 
-    @include border($pos: bottom);
-  }
+      @include border($pos: bottom);
+    }
 
-  p {
-    $font-sizes: attrs(rem(16px), rem(17px), rem(18px), rem(19px), rem(20px));
-    $margin-tops: attrs(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
+    :global(p) {
+      $font-sizes: attrs(rem(16px), rem(17px), rem(18px), rem(19px), rem(20px));
+      $margin-tops: attrs(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
 
-    text-align: justify;
-    text-justify: auto;
+      text-align: justify;
+      text-justify: auto;
 
-    @include props(font-size, $font-sizes);
-    @include props(margin-top, $margin-tops);
-  }
+      @include props(font-size, $font-sizes);
+      @include props(margin-top, $margin-tops);
+    }
 
-  :global(cite) {
-    text-transform: capitalize;
-    font-style: inherit;
-    // font-variant: small-caps;
+    :global(cite) {
+      text-transform: capitalize;
+      font-style: inherit;
+      // font-variant: small-caps;
+    }
   }
 
   footer {
@@ -346,7 +334,7 @@
   }
 
   @mixin token($color: blue) {
-    border-color: color($color, 3);
+    border-color: color($color, 2);
 
     &._active {
       color: color($color, 6);
@@ -371,22 +359,28 @@
       }
 
       &[data-d='2'] {
-        @include token(teal);
+        @include token(orange);
       }
 
       &[data-d='3'] {
         @include token(red);
       }
-
-      &[data-d='4'] {
-        @include token(orange);
-      }
-      // @for $index from 1 through 4 {
-      //   $color: nth($token-colors, $index);
-      //   &[data-d='#{color}'] {
-      //     @include token($color);
-      //   }
-      // }
     }
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  :global(.m-icon._reload) {
+    animation-name: spin;
+    animation-duration: 1000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
   }
 </style>

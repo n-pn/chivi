@@ -10,21 +10,21 @@ require "../../_utils/string_utils"
 module CvCore
   extend self
 
-  alias Dicts = Array(CvDict)
+  alias DictPair = Tuple(CvDict, CvDict)
 
-  def cv_raw(dicts : Dicts, input : String)
-    tokenize(dicts, input.chars).reverse
+  def cv_raw(input : String, dpair : DictPair)
+    tokenize(input.chars, [dpair]).reverse
   end
 
-  def cv_lit(dicts : Dicts, input : String, apply_cap = false)
-    nodes = tokenize(dicts, input.chars)
+  def cv_lit(input : String, dpair : DictPair, apply_cap = false)
+    nodes = tokenize(input.chars, [dpair])
     nodes = combine_similar(nodes)
     nodes = capitalize(nodes) if apply_cap
     add_spaces(nodes)
   end
 
-  def cv_plain(dicts : Dicts, input : String)
-    nodes = tokenize(dicts, input.chars)
+  def cv_plain(input : String, dicts : Array(DictPair))
+    nodes = tokenize(input.chars, dicts)
     nodes = combine_similar(nodes)
     nodes = apply_grammar(nodes)
     nodes = capitalize(nodes)
@@ -33,7 +33,7 @@ module CvCore
 
   TITLE_RE = /^(第([零〇一二两三四五六七八九十百千]+|\d+)([集卷章节幕回]))([,.:]*)(.*)$/
 
-  def cv_title(dicts : Dicts, input : String)
+  def cv_title(input : String, dicts : Array(DictPair))
     res = CvNodes.new
     space = false
 
@@ -48,7 +48,7 @@ module CvCore
         res << CvNode.new("", " ", 0) unless title.empty?
       end
 
-      res.concat(cv_plain(dicts, title)) unless title.empty?
+      res.concat(cv_plain(title, dicts)) unless title.empty?
       space = true
     end
 
@@ -70,9 +70,9 @@ module CvCore
     end
   end
 
-  private def tokenize(dicts : Dicts, chars : Array(Char))
-    dsize = dicts.size + 1
-    csize = chars.size + 1
+  private def tokenize(chars : Array(Char), dicts : Array(DictPair))
+    dict_count = dicts.size + 1
+    char_count = chars.size + 1
 
     selects = [CvNode.new("", "")]
     weights = [0.0]
@@ -87,33 +87,36 @@ module CvCore
     end
 
     0.upto(chars.size) do |idx|
-      items = {} of Int32 => CvDict::Item
-      picks = {} of Int32 => Int32
+      init_bonus = (char_count - idx) / char_count + 1
 
-      dicts.each_with_index do |dict, jdx|
-        dict.scan(norms, idx).each do |item|
+      dicts.each_with_index do |(root_dict, user_dict), jdx|
+        dict_index = jdx + 1
+        dict_bonus = dict_index / dict_count
+
+        items = {} of Int32 => CvDict::Item
+
+        root_dict.scan(norms, idx).each do |item|
           key = item.key.size
           items[key] = item
-          picks[key] = jdx + 1
         end
-      end
 
-      idx_bonus = (csize - idx) / csize + 1
+        user_dict.scan(norms, idx).each do |item|
+          key = item.key.size
+          items[key] = item
+        end
 
-      picks.each do |size, pick|
-        item = items[size]
-        next if item.vals.empty?
-        next if item.vals.first.empty?
+        items.each do |size, item|
+          next if item.vals.empty?
+          next if item.vals.first.empty?
 
-        dic_bonus = pick / dsize
+          item_weight = (size + dict_bonus ** init_bonus) ** (1 + dict_bonus)
+          gain_weight = weights[idx] + item_weight
 
-        item_weight = (size + dic_bonus ** idx_bonus) ** (1 + dic_bonus)
-        gain_weight = weights[idx] + item_weight
-
-        jdx = idx + size
-        if gain_weight > weights[jdx]
-          weights[jdx] = gain_weight
-          selects[jdx] = CvNode.new(item.key, item.vals[0], pick)
+          jdx = idx + size
+          if gain_weight > weights[jdx]
+            weights[jdx] = gain_weight
+            selects[jdx] = CvNode.new(item.key, item.vals[0], dict_index)
+          end
         end
       end
     end

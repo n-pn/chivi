@@ -47,73 +47,63 @@ class CvRepo
     end
   end
 
-  getter system : List
-  getter shared_base : List
-  getter shared_user : List
-  getter unique_base : List
-  getter unique_user : List
+  getter base_dict : List
+  getter core_root : List
+  getter core_user : List
+  getter book_root : List
+  getter book_user : List
 
   def initialize(@dir : String = ".dic")
-    @system = List.new(@dir)
-    @shared_base = List.new(File.join(@dir, "shared_base"))
-    @shared_user = List.new(File.join(@dir, "shared_user"))
-    @unique_base = List.new(File.join(@dir, "unique_base"))
-    @unique_user = List.new(File.join(@dir, "unique_user"))
+    @base_dict = List.new(@dir)
+
+    @core_root = List.new(File.join(@dir, "core_root"))
+    @core_user = List.new(File.join(@dir, "core_user"))
+    @book_root = List.new(File.join(@dir, "book_root"))
+    @book_user = List.new(File.join(@dir, "book_user"))
   end
 
   alias Dicts = Array(CvDict)
 
   @cc_cedict : CvDict? = nil
   @trungviet : CvDict? = nil
-  @hanviet : CvDict? = nil
-  @pinyins : CvDict? = nil
-  @tradsim : CvDict? = nil
 
   def cc_cedict
-    @cc_cedict ||= @system["cc_cedict"]
+    @cc_cedict ||= @base_dict["cc_cedict"]
   end
 
   def trungviet
-    @trungviet ||= @system["trungviet"]
+    @trungviet ||= @base_dict["trungviet"]
   end
 
-  def hanviet
-    @hanviet ||= @system["hanviet"]
+  def pinyins(user : String = "local")
+    {@core_root["pinyins"], @core_user["pinyins", user]}
   end
 
-  def pinyins
-    @pinyins ||= @system["pinyins"]
+  def tradsim(user : String = "local")
+    {@core_root["tradsim"], @core_user["tradsim", user]}
   end
 
-  def tradsim
-    @tradsim ||= @system["tradsim"]
+  def hanviet(user : String = "local")
+    {@core_root["hanviet"], @core_user["hanviet", user]}
   end
 
   def generic(user : String = "local")
-    [@shared_base["generic"], @shared_user["generic", user]]
+    {@core_root["generic"], @core_user["generic", user]}
   end
 
   def combine(user : String = "local")
-    [@shared_base["combine"], @shared_user["combine", user]]
+    {@core_root["combine"], @core_user["combine", user]}
   end
 
   def suggest(user : String = "local")
-    [@shared_base["suggest"], @shared_user["suggest", user]]
+    {@core_root["suggest"], @core_user["suggest", user]}
   end
 
-  def unique(name : String, user = "local")
-    [@unique_base[name], @unique_user[name, user]]
+  def book(dict : String = "tong-hop", user = "local")
+    {@book_root[dict], @book_user[dict, user]}
   end
 
-  def for_convert(book : String? = nil, user = "local")
-    dicts = generic(user)
-
-    if book
-      dicts.concat(unique(book, user))
-    else
-      dicts.concat(combine(user))
-    end
-
-    dicts
+  def for_convert(dict : String = "tong-hop", user : String = "local")
+    [generic(user), combine(user), book(dict, user)]
   end
 end

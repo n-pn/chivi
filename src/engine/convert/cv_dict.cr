@@ -12,8 +12,8 @@ class CvDict
     include JSON::Serializable
 
     getter key : String
-    getter vals : Array(String)
-    getter mtime : Int32? = nil
+    property vals = [""]
+    property mtime : Int32? = nil
 
     def self.parse(line : String)
       cols = line.split(SEP_0)
@@ -21,6 +21,7 @@ class CvDict
     end
 
     def self.split(vals : String)
+      return [""] if vals.empty?
       vals.split(SEP_1)
     end
 
@@ -79,6 +80,7 @@ class CvDict
 
   getter file : String
   getter trie : Leaf = Leaf.new
+
   getter size : Int32 = 0
   getter mtime : Int32 = 0
 
@@ -95,7 +97,7 @@ class CvDict
 
     time1 = Time.monotonic
     lines = File.read_lines(file)
-    lines.each { |line| put(Item.parse(line)) }
+    lines.each { |line| put(Item.parse(line), mode: :new_first) }
     time2 = Time.monotonic
 
     elapsed = (time2 - time1).total_milliseconds
@@ -106,12 +108,16 @@ class CvDict
     self
   end
 
-  def set(key : String, vals : String | Array(String))
+  def set(key : String, vals : String | Array(String), mode = :keep_new)
     @mtime = Item.mtime
     item = Item.new(key, vals, @mtime)
 
     File.open(@file, "a") { |f| f.puts item }
-    put(item)
+    put(item, mode)
+  end
+
+  def set(entries : Array(Tuple(String, String)) | Hash(String, String), mode = :keep_new)
+    entries.each { |key, val| set(key, val, mode) }
   end
 
   def del(key : String)
@@ -122,16 +128,28 @@ class CvDict
     put(Item.new(key, vals))
   end
 
-  def put(new_item : Item) : Item?
+  def put(new_item : Item, mode = :keep_new) : Item
     leaf = new_item.key.chars.reduce(@trie) do |leaf, char|
       leaf.trie[char] ||= Leaf.new
     end
 
-    old_item = leaf.item
-    leaf.item = new_item
+    if old_item = leaf.item
+      case mode
+      when :new_first
+        new_item.vals.concat(old_item.vals).uniq!
+      when :old_first
+        old_item.vals.each { |val| new_item.vals.unshift(val) }
+        new_item.vals.uniq!
+      when :keep_new
+        new_item.vals.uniq!
+      else # :keep_old
+        new_item.vals = old_item.vals
+      end
+    else
+      @size += 1
+    end
 
-    @size += 1 if old_item.nil?
-    old_item
+    leaf.item = new_item
   end
 
   def find(key : String) : Item?
@@ -186,9 +204,9 @@ class CvDict
     end
   end
 
-  def save!(file : String = @file)
+  def save!(file : String = @file, compact = false)
     File.open(file, "w") do |f|
-      each { |item| f.puts item }
+      each { |item| f.puts(item) unless compact && item.vals.first.empty? }
     end
 
     puts "- Saved [#{file.colorize(:yellow)}], \
