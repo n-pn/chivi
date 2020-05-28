@@ -41,7 +41,10 @@ def update_infos(info, label)
     info.set_status(spider.get_status!)
 
     info.set_mftime(mftime)
-    info.cr_mftimes[site] = mftime
+    if old_mftime = info.cr_mftimes[site]? || 0_i64
+      info.cr_mftimes[site] = mftime if mftime > old_mftime
+    end
+
     update = true
 
     chaps = spider.get_chaps!

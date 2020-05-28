@@ -21,5 +21,8 @@ files.each_with_index do |inp_file, idx|
 
   puts "- #{idx}: #{rem_file}"
   `magick "#{rem_file}" -quality 85 #{out_file}`
-  FileUtils.rm(rem_file)
+end
+
+Dir.glob("web/upload/covers/*.png") do |file|
+  FileUtils.rm(file)
 end
