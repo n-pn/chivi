@@ -108,19 +108,25 @@
 
         break
 
-      case 88:
-        if (!upsertEnabled) {
-          evt.preventDefault()
-          showUpsertModal('special')
-        }
+      case 46:
+        evt.preventDefault()
+        if (evt.shiftKey) deleteFocusedWord()
+        break
 
+      case 13:
+      case 90:
+        evt.preventDefault()
+        showUpsertModal()
+        break
+
+      case 88:
+        evt.preventDefault()
+        showUpsertModal('special')
         break
 
       case 67:
-        if (!upsertEnabled) {
-          showUpsertModal('generic')
-          evt.preventDefault()
-        }
+        evt.preventDefault()
+        showUpsertModal('generic')
 
         break
 
@@ -131,6 +137,18 @@
       default:
         break
     }
+  }
+
+  async function deleteFocusedWord() {
+    if (!elemOnFocus) return
+
+    const dict = +elemOnFocus.dataset.d == 1 ? 'generic' : book_uuid
+    const key = elemOnFocus.dataset.k
+
+    const url = `/api/upsert?dict=${dict}&key=${key}`
+    const res = await fetch(url)
+
+    shouldReload = true
   }
 
   function handleClick(evt, idx) {
@@ -166,8 +184,11 @@
     return 2
   }
 
-  function showUpsertModal(tab) {
-    if (elemOnFocus) {
+  function showUpsertModal(tab = null) {
+    const selection = read_selection()
+
+    if (selection !== '') upsertKey = selection
+    else if (elemOnFocus) {
       upsertKey = elemOnFocus.dataset.k
 
       if (!tab) {
@@ -176,17 +197,14 @@
       }
     }
 
-    const selection = read_selection()
-    if (selection !== '') upsertKey = selection
-
-    upsertDic = book_uuid
     upsertTab = tab || 'special'
+    upsertDic = book_uuid
     upsertEnabled = true
   }
 
   let pageReloading = false
   async function reloadContent(mode = 1) {
-    console.log(`reloading page with mode: ${mode}`)
+    // console.log(`reloading page with mode: ${mode}`)
 
     pageReloading = true
     const data = await load_chapter(window.fetch, book_slug, site, csid, mode)
