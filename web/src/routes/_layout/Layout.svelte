@@ -214,16 +214,17 @@
       padding: 0;
       position: relative;
       cursor: text;
+      border-radius: $header-inner-height / 2;
 
       > input {
         color: inherit;
-        padding: 0 0.5rem;
+        padding: 0 1rem;
         display: block;
         font-weight: 500;
         width: 100%;
         border: none;
         outline: none;
-        @include radius();
+        border-radius: $header-inner-height / 2;
         &::placeholder {
           @include fgcolor(color(neutral, 5));
         }
@@ -235,8 +236,10 @@
         padding: 0;
         margin: 0;
         position: absolute;
-        right: 0.5rem;
-        top: 0.5rem;
+        right: 0.875rem;
+        top: 0.625rem;
+        width: 1rem;
+        height: 1rem;
         @include fgcolor(color(neutral, 5));
       }
     }
