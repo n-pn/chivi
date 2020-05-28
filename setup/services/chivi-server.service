@@ -9,6 +9,7 @@ Restart=always
 RestartSec=5
 User=nipin
 Environment=PORT=5110
+Environment=KEMAL_ENV=production
 WorkingDirectory=/home/nipin/web/chivi
 ExecStart=/home/nipin/web/chivi/bin/server
 [Install]
