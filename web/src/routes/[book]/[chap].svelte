@@ -67,7 +67,11 @@
   let upsertDic = 'combine'
   let upsertTab = 'generic'
 
-  let upserted = false
+  let shouldReload = false
+  $: if (shouldReload) {
+    shouldReload = false
+    reloadContent(1)
+  }
 
   function handleKeypress(evt) {
     if (upsertEnabled) return
@@ -76,7 +80,7 @@
 
     switch (evt.keyCode) {
       case 220:
-        trigger_lookup()
+        triggerLookupSidebar()
         break
 
       case 72:
@@ -107,21 +111,21 @@
       case 88:
         if (evt.altKey && !upsertEnabled) {
           evt.preventDefault()
-          active_upsert('special')
+          showUpsertModal('special')
         }
 
         break
 
       case 67:
         if (evt.altKey && !upsertEnabled) {
-          active_upsert('generic')
+          showUpsertModal('generic')
           evt.preventDefault()
         }
 
         break
 
       case 82:
-        if (evt.altKey) reload_page(1)
+        if (evt.altKey) reloadContent(1)
         break
 
       default:
@@ -131,7 +135,7 @@
 
   function handleClick(evt, idx) {
     const target = evt.target
-    if (target === elemOnFocus) return active_upsert()
+    if (target === elemOnFocus) return showUpsertModal()
 
     if (elemOnFocus) elemOnFocus.classList.remove('_active')
 
@@ -150,19 +154,19 @@
     if (lookupEnabled) lookup_active.set(true)
   }
 
-  function trigger_lookup() {
+  function triggerLookupSidebar() {
     lookupEnabled = !lookupEnabled
     lookup_active.set(lookupEnabled)
   }
 
-  function render_mode(idx, hover, focus) {
+  function renderMode(idx, hover, focus) {
     if (idx == focus) return 2
     if (idx < hover - 4) return 1
     if (idx > hover + 5) return 1
     return 2
   }
 
-  function active_upsert(tab) {
+  function showUpsertModal(tab) {
     if (elemOnFocus) {
       upsertKey = elemOnFocus.dataset.k
 
@@ -181,7 +185,9 @@
   }
 
   let pageReloading = false
-  async function reload_page(mode = 1) {
+  async function reloadContent(mode = 1) {
+    console.log(`reloading page with mode: ${mode}`)
+
     pageReloading = true
     const data = await load_chapter(window.fetch, book_slug, site, csid, mode)
 
@@ -193,7 +199,6 @@
 <svelte:head>
   <title>{render_convert(content[0])} - {book_name} - Chivi</title>
   <meta property="og:url" content="{book_slug}/{curr_url}" />
-
 </svelte:head>
 
 <svelte:window on:keydown={handleKeypress} />
@@ -216,7 +221,7 @@
     slot="header-right"
     type="button"
     class="header-item"
-    on:click={() => reload_page()}>
+    on:click={() => reloadContent()}>
     <MIcon
       class="m-icon _refresh-ccw {pageReloading ? '_reload' : ''}"
       name="refresh-ccw" />
@@ -227,7 +232,7 @@
     type="button"
     class="header-item"
     class:_active={upsertEnabled}
-    on:click={() => active_upsert()}>
+    on:click={() => showUpsertModal()}>
     <MIcon class="m-icon _plus-circle" name="plus-circle" />
   </button>
 
@@ -236,7 +241,7 @@
     type="button"
     class="header-item"
     class:_active={lookupEnabled}
-    on:click={trigger_lookup}>
+    on:click={triggerLookupSidebar}>
     <MIcon class="m-icon _compass" name="compass" />
   </button>
 
@@ -246,7 +251,7 @@
         class:_focus={idx == lineOnHover || idx == lineOnFocus}
         on:mouseenter={() => (lineOnHover = idx)}
         on:click={(event) => handleClick(event, idx)}>
-        {@html render_convert(line, render_mode(idx, lineOnHover, lineOnFocus), idx == '0' ? 'h1' : 'p')}
+        {@html render_convert(line, renderMode(idx, lineOnHover, lineOnFocus), idx == '0' ? 'h1' : 'p')}
       </div>
     {/each}
   </article>
@@ -279,7 +284,7 @@
 </Layout>
 
 {#if lookupEnabled}
-  <Lookup />
+  <Lookup onTop={!upsertEnabled} />
 {/if}
 
 {#if upsertEnabled}
@@ -287,7 +292,8 @@
     bind:active={upsertEnabled}
     key={upsertKey}
     dic={upsertDic}
-    tab={upsertTab} />
+    tab={upsertTab}
+    bind:shouldReload />
 {/if}
 
 <style lang="scss">

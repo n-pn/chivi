@@ -1,5 +1,5 @@
 <script context="module">
-  export function suggest_urls(key) {
+  export function prepareLookupLinks(key) {
     return [
       { site: 'iCIBA', href: `https://www.iciba.com/${key}` },
       {
@@ -36,14 +36,16 @@
   export let dic = ''
   export let tab = 'special'
 
+  export let shouldReload = false
+
   let key_field
   let val_field
 
   let val = ''
   let newEntry = false
 
-  $: if (key) inquire(key)
-  $: links = suggest_urls(key)
+  $: if (key) inquireWord(key)
+  $: links = prepareLookupLinks(key)
 
   let props = {
     hanviet: '',
@@ -78,17 +80,19 @@
     }
   }
 
-  async function upsert(val) {
+  async function upsertData(val) {
     let target = 'generic'
     if (tab === 'special') target = dic === '' ? 'combine' : dic
 
     const url = `/api/upsert?dict=${target}&key=${key}&val=${val}`
     const res = await fetch(url)
+
+    if (props[tab].vals[0] !== val) shouldReload = true
     active = false
   }
 
-  async function inquire(key) {
-    links = suggest_urls(key)
+  async function inquireWord(key) {
+    links = prepareLookupLinks(key)
 
     const res = await fetch(`/api/inquire?key=${key}`)
     props = await res.json()
@@ -113,19 +117,19 @@
   function submitOnEnter(evt) {
     if (evt.keyCode == 13 && !evt.shiftKey) {
       evt.preventDefault()
-      return upsert(val)
+      return upsertData(val)
     }
   }
 
   function handleKeypress(evt) {
-    if (!active) return
-
-    if (!evt.altKey) {
-      if (evt.keyCode === 27) closePopup()
+    if (evt.keyCode === 27) {
+      evt.preventDefault()
+      active = false
       return
     }
 
-    evt.stopPropagation()
+    if (!evt.altKey) return
+    evt.preventDefault()
 
     switch (evt.keyCode) {
       case 49:
@@ -162,15 +166,11 @@
         break
     }
   }
-
-  function closePopup(changed = false) {
-    active = false
-  }
 </script>
 
 <svelte:window on:keydown={handleKeypress} />
 
-<div class="container" on:click={closePopup}>
+<div class="container" on:click={() => (active = false)}>
   <div class="dialog" on:click={(evt) => evt.stopPropagation()}>
     <header>
       <span class="label">Từ điển</span>
@@ -239,13 +239,13 @@
           <button
             type="button"
             class="m-button _line _harmful"
-            on:click={() => upsert('')}>
+            on:click={() => upsertData('')}>
             <span>Xoá từ</span>
           </button>
           <button
             type="button"
             class="m-button {newEntry ? '_primary' : '_success'}"
-            on:click={() => upsert(val)}>
+            on:click={() => upsertData(val)}>
             <span>{newEntry ? 'Thêm từ' : 'Sửa từ'}</span>
           </button>
 

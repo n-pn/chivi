@@ -58,6 +58,8 @@
     lookup_udic as udic,
   } from '$src/stores.js'
 
+  export let onTop = false
+
   let upto = $from + 1
 
   let hanviet = []
@@ -94,7 +96,7 @@
   }
 
   function handleKeypress(evt) {
-    if (evt.keyCode == 27) active.set(false)
+    if (evt.keyCode == 27 && onTop) active.set(false)
   }
 
   function pin_sidebar() {
@@ -112,7 +114,7 @@
   <header>
     <h2>Giải nghĩa</h2>
 
-    <button class:_active={$pinned} on:click={pin_sidebar}>
+    <!-- <button class:_active={$pinned} on:click={pin_sidebar}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
@@ -129,7 +131,7 @@
           5.66s1.76 2.47-.71 4.95L3 10.9c2.47-2.48 4.95-.7 4.95-.7m0
           0l5.66-4.25M7.95 15.85l-4.24 4.24" />
       </svg>
-    </button>
+    </button> -->
 
     <button on:click={close_sidebar}>
       <MIcon class="m-icon" name="x" />
@@ -223,7 +225,7 @@
       @include font-size(sm);
     }
 
-    button {
+    :global(button) {
       // margin-right: 0.75rem;
       padding: 0 0.5rem;
       @include fgcolor(color(neutral, 6));
