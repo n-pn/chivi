@@ -127,11 +127,11 @@
       case 67:
         evt.preventDefault()
         showUpsertModal('generic')
-
         break
 
       case 82:
-        if (evt.altKey) reloadContent(1)
+        evt.preventDefault()
+        reloadContent(1)
         break
 
       default:
