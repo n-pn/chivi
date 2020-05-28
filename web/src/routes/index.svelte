@@ -168,12 +168,11 @@
       height: 100%;
       z-index: 1;
 
-      // source,
       img {
         @include radius();
         // display: block;
         min-width: 100%;
-        min-height: 100%;
+        height: auto;
       }
     }
 
