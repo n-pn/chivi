@@ -80,7 +80,9 @@
     {#each items as book}
       <a class="book" href={book.slug} rel="prefetch">
         <picture class="-cover">
-          <img src="/covers/{book.uuid}.jpg" alt={book.vi_title} />
+          <source srcset="/images/{book.uuid}.webp" type="image/webp" />
+          <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
+          <img src="/covers/{book.uuid}.jpg" alt="" loading="lazy" />
         </picture>
 
         <div class="-title">{book.vi_title}</div>

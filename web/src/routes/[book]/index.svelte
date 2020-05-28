@@ -168,7 +168,9 @@
     </div>
 
     <picture class="cover">
-      <img src="/covers/{book.uuid}.jpg" alt={book.vi_title} />
+      <source srcset="/images/{book.uuid}.webp" type="image/webp" />
+      <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
+      <img src="/covers/{book.uuid}.jpg" alt={book.vi_title} loading="lazy" />
     </picture>
 
     <div class="extra">
