@@ -20,7 +20,7 @@ const assetOpts = { dev, maxAge, immutable: true, etag: true }
 polka() // You can also use Express
   .use(
     proxy,
-    compression({ threshold: dev ? 0 : 6 }),
+    compression({ threshold: dev ? 0 : 1 }),
     sirv('static', assetOpts),
     sirv('upload', assetOpts),
     sapper.middleware()
