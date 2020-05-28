@@ -199,7 +199,7 @@
       <div>
         <div>
           Đánh giá:
-          <strong>{book.score}</strong>
+          <strong>{book.votes < 10 ? '--' : book.score}</strong>
           /10 ({book.votes} lượt đánh giá)
         </div>
       </div>

@@ -87,7 +87,7 @@
         <div class="-genre">{book.vi_genre}</div>
         <div class="-score">
           <span class="--icon">⭐</span>
-          <span class="--text">{book.score}</span>
+          <span class="--text">{book.votes < 10 ? '--' : book.score}</span>
         </div>
       </a>
     {/each}

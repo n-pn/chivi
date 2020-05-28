@@ -95,6 +95,7 @@ module Server
         vi_title: info.vi_title,
         vi_genre: info.vi_genre,
         score:    info.score,
+        votes:    info.votes,
       }
     end
 
@@ -120,6 +121,7 @@ module Server
         zh_author: info.zh_author,
         vi_genre:  info.vi_genre,
         score:     info.score,
+        votes:     info.votes,
       }
     end
 
