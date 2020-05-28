@@ -109,7 +109,7 @@
         break
 
       case 88:
-        if (evt.altKey && !upsertEnabled) {
+        if (!upsertEnabled) {
           evt.preventDefault()
           showUpsertModal('special')
         }
@@ -117,7 +117,7 @@
         break
 
       case 67:
-        if (evt.altKey && !upsertEnabled) {
+        if (!upsertEnabled) {
           showUpsertModal('generic')
           evt.preventDefault()
         }
@@ -340,13 +340,10 @@
   }
 
   @mixin token($color: blue) {
-    border-color: color($color, 2);
+    border-color: color($color, 3);
 
-    &._active {
-      color: color($color, 6);
-    }
-
-    @include hover {
+    &._active,
+    &:hover {
       color: color($color, 6);
     }
   }
