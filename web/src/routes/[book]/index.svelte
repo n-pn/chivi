@@ -1,9 +1,7 @@
 <script context="module">
   export async function preload({ params, query }) {
     const slug = params.book
-
-    let url = `api/books/${slug}`
-    const reload = query.reload == 'true'
+    const url = `api/books/${slug}`
 
     try {
       const res = await this.fetch(url)
@@ -13,33 +11,43 @@
       else {
         const { book } = data
         const site = query.site || book.cr_site_df
+        const { slug } = book
 
         if (site !== '') {
-          const list_data = await load_list(this.fetch, book.slug, site, reload)
-          return { ...list_data, book }
+          const { chlist } = await loadContent(this.fetch, slug, site)
+          return { book, site, chlist }
         }
 
-        return { book, site, chlist: [] }
+        return { book, site, chlists: [] }
       }
     } catch (err) {
       this.error(500, err.message)
     }
   }
 
-  export async function load_list(api, slug, site, reload = false) {
+  // const cachedContent = {}
+
+  export async function loadContent(api, slug, site, reload = false) {
+    const key = `${slug}|${site}`
+
+    // if (!reload) {
+    //   const data = cachedContent[key]
+    //   if (data) return data
+    // }
+
     let url = `api/books/${slug}/${site}?reload=${reload}`
     try {
       const res = await api(url)
       const data = await res.json()
 
       if (res.status == 200) return data
-      else throw data
+      else throw data.msg
     } catch (err) {
-      throw { status: 500, message: err.message }
+      throw err.message
     }
   }
 
-  export function book_status(status) {
+  export function translateStatus(status) {
     switch (status) {
       case 0:
         return 'Còn tiếp'
@@ -52,7 +60,9 @@
     }
   }
 
-  export function map_volumes(list) {
+  export function mapVolumes(list) {
+    if (!list) return {}
+
     let volumes = {}
     for (const chap of list) {
       volumes[chap.vi_volume] = volumes[chap.vi_volume] || []
@@ -61,67 +71,60 @@
     return volumes
   }
 
-  export function get_latests(list) {
+  export function mapLatests(list) {
+    if (!list) return []
+    if (list.length <= 6) return list
+
     const start = list.length - 1
     let stop = start - 5
     if (stop < 0) stop = 0
 
-    const res = []
-    for (let i = start; i >= stop; i--) {
-      res.push(list[i])
-    }
+    const output = []
+    for (let i = start; i >= stop; i--) output.push(list[i])
+    return output
+  }
 
-    return res
+  export function prepareKeywords(book) {
+    return [
+      book.vi_title,
+      book.hv_title,
+      book.vi_author,
+      book.vi_genre,
+      ...book.vi_tags,
+    ].join(',')
   }
 </script>
 
 <script>
   import MIcon from '$mould/MIcon.svelte'
   import Layout from '$layout/Layout.svelte'
-
   import ChapList from '$reused/ChapList.svelte'
-
-  import { onMount } from 'svelte'
-  import { lookup_active } from '$src/stores.js'
 
   import relative_time from '$utils/relative_time'
 
   export let book
   export let site
-  export let bsid
-
   export let chlist = []
-  export let mftime = 0
 
-  onMount(() => lookup_active.set(false))
+  $: sources = Object.keys(book.cr_anchors)
+  $: volumes = mapVolumes(chlist)
+  $: latests = mapLatests(chlist)
 
-  $: sites = Object.keys(book.cr_anchors)
-  $: volumes = map_volumes(chlist)
-  $: latests = get_latests(chlist)
-
-  $: cover_url = `https://chivi.xyz/covers/${book.uuid}.jpg`
-  $: updated_at = new Date(book.mftime * 1000)
-  $: status = book_status(book.status)
   $: book_url = `https://chivi.xyz/${book.slug}/`
-  $: keywords = [
-    book.vi_title,
-    book.zh_title,
-    book.hv_title,
-    book.vi_author,
-    book.zh_author,
-    book.vi_genre,
-    book.zh_genre,
-  ]
+  $: cover_url = `https://chivi.xyz/covers/${book.uuid}.jpg`
+  $: status = translateStatus(book.status)
+  $: keywords = prepareKeywords(book)
+  $: updated_at = new Date(book.mftime * 1000)
 
   let reloading = false
-  async function reloadContent(source, reload = false) {
-    reloading = true
-    const data = await load_list(fetch, book.slug, site, reload)
-
+  async function changeSite(source, reload = false) {
     site = source
-    mftime = data.mftime
+    reloading = true
+
+    const data = await loadContent(fetch, book.slug, site, reload)
     chlist = data.chlist
 
+    const mftime = data.mftime
     if (book.mftime < mftime) book.mftime = mftime
     if (book.cr_mftimes[site] < mftime) book.cr_mftimes[site] = mftime
 
@@ -132,7 +135,7 @@
 
 <svelte:head>
   <title>{book.vi_title} - Chivi</title>
-  <meta name="keywords" content={keywords.join(',')} />
+  <meta name="keywords" content={keywords} />
   <meta name="description" content={book.vi_intro} />
   <meta property="og:type" content="novel" />
   <meta property="og:title" content={book.vi_title} />
@@ -210,15 +213,16 @@
     {/each}
   </div>
 
-  {#if sites.length > 0}
-    <div class="tabs" data-site={site} data-bsid={bsid}>
+  {#if sources.length > 0}
+    <div class="tabs" data-active={site}>
       <span>Chọn nguồn:</span>
-      {#each sites as source}
+      {#each sources as source}
         <a
           class="site"
-          class:_active={site == source}
+          class:_active={site === source}
           href="/{book.slug}?site={source}"
-          on:click={() => reloadContent(source, false)}>
+          on:click|preventDefault={() => changeSite(source, false)}
+          rel="nofollow">
           {source}
         </a>
       {/each}
@@ -231,7 +235,7 @@
       <button
         class="m-button _text u-fr"
         class:_reload={reloading}
-        on:click={() => reloadContent(site, true)}>
+        on:click={() => changeSite(site, true)}>
         {#if reloading}
           <MIcon class="m-icon" name="loader" />
         {:else}

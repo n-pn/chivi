@@ -78,7 +78,7 @@
   </div>
   <div class="list">
     {#each items as book}
-      <a class="book" href={book.slug}>
+      <a class="book" href={book.slug} rel="prefetch">
         <picture class="-cover">
           <img src="/covers/{book.uuid}.jpg" alt={book.vi_title} />
         </picture>

@@ -28,7 +28,6 @@ module Server
   serve_static false
 
   before_all do |env|
-    env.response.content_type = "application/json"
     case Kemal.config.env
     when "development"
       user = "local"
@@ -39,6 +38,7 @@ module Server
     end
 
     env.set("user", user)
+    env.response.content_type = "application/json"
   end
 
   get "/api" do |env|
@@ -166,7 +166,7 @@ module Server
       }
     end
 
-    {site: site, bsid: bsid, chlist: chlist, mftime: mftime}.to_json env.response
+    {chlist: chlist, mftime: mftime}.to_json env.response
   end
 
   get "/api/books/:slug/:site/:csid" do |env|

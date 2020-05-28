@@ -12,7 +12,10 @@
 <ul class="chap-list">
   {#each chaps as chap}
     <li class="chap-item">
-      <a class="chap-link" href="/{bslug}/{chap.url_slug}">
+      <a
+        class="chap-link"
+        href="/{bslug}/{chap.url_slug}"
+        rel="nofollow prefetch">
         <span class="chap-text">{chap.vi_title}</span>
       </a>
     </li>
