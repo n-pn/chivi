@@ -93,9 +93,7 @@ module BookRepo
   SORTS = {"access", "update", "score", "votes", "tally"}
 
   def save!(info : VpInfo) : Void
-    update_sort("access", info)
     update_sort("update", info)
-
     @@cached[info.uuid] = info
     VpInfo.save!(info)
   end

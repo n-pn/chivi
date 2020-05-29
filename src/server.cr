@@ -201,6 +201,8 @@ module Server
       halt env, status_code: 404, response: ({msg: "Book not found"}).to_json
     end
 
+    BookRepo.update_sort("access", info)
+
     site = env.params.url["site"]
     unless bsid = info.cr_anchors[site]?
       halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json
