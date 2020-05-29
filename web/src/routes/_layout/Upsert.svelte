@@ -90,13 +90,17 @@
 
   onMount(() => {
     if (key == '') keyField.focus()
-    else valField.focus()
+    else refocusOnValField()
   })
 
   function changeTab(new_tab) {
     tab = new_tab
     updateVal()
-    valField.focus()
+    refocusOnValField()
+  }
+
+  function refocusOnValField() {
+    if (valField) valField.focus()
   }
 
   function updateVal() {
@@ -124,8 +128,7 @@
   function replaceValue(newValue) {
     oldValue = outValue
     outValue = newValue
-
-    valField.focus()
+    refocusOnValField()
   }
 
   async function upsertData(val) {
@@ -142,7 +145,6 @@
   async function inquireWord(word, dict) {
     const res = await fetch(`/api/inquire?word=${word}&dict=${dict}`)
     props = await res.json()
-
     updateVal()
   }
 
@@ -162,7 +164,7 @@
 
   function updateCase(count = 100) {
     outValue = titleize(outValue, count)
-    valField.focus()
+    refocusOnValField()
   }
 
   function submitOnEnter(evt) {

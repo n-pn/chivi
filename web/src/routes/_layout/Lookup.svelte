@@ -68,8 +68,8 @@
 
   $: if (entries.length > from) {
     current = entries[from]
-    if (current.length > 0) upto = from + +current[0][0]
-    else upto = from + 1
+    if (current.length == 0) upto = from + 1
+    else upto = from + +current[0][0].length
   }
   $: [zh_html, hv_html] = render(hanviet, from, upto)
 
