@@ -3,13 +3,10 @@
     return [
       { site: 'iCIBA', href: `https://www.iciba.com/${key}` },
       {
-        site: 'Google Translation',
-        href: `https://translate.google.com/#view=home&op=translate&sl=zh-CN&tl=vi&text=${key}`,
+        site: 'Google Translate',
+        href: `https://translate.google.com/#view=home&op=translate&sl=zh-CN&tl=en&text=${key}`,
       },
-      {
-        site: 'Google',
-        href: `https://www.google.com/search?q=${key}`,
-      },
+
       {
         site: 'Baidu Fanyi',
         href: `https://fanyi.baidu.com/#zh/en/${key}`,
@@ -17,6 +14,14 @@
       {
         site: 'Baike',
         href: `https://baike.baidu.com/item/${key}`,
+      },
+      {
+        site: 'Google',
+        href: `https://www.google.com/search?q=${key}`,
+      },
+      {
+        site: 'Baidu',
+        href: `http://www.baidu.com/s?wd=${key}`,
       },
     ]
   }
@@ -255,7 +260,6 @@
     </section>
 
     <footer>
-      <span>Tra từ:</span>
       {#each links as { site, href }}
         <a {href} target="_blank" rel="noopener noreferer">{site}</a>
       {/each}
@@ -451,31 +455,27 @@
 
   footer {
     display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    border-top: 1px solid color(neutral, 2);
+
     @include bgcolor(color(neutral, 1));
     @include radius($pos: bottom);
-    align-items: center;
-    // width: 5rem;
-    margin: 0;
-    padding: 0 0.5rem;
-    border-top: 1px solid color(neutral, 2);
-    text-align: center;
 
-    span,
     a {
-      line-height: 0.75rem;
+      // display: inline-block;
+      line-height: 1rem;
       padding: 0.5rem;
-      @include font-size(2);
-
-      display: inline-block;
-      overflow: hidden;
-
-      // @include font-family(narrow);
-    }
-
-    a {
-      @include fgcolor(color(neutral, 7));
-      display: inline-block;
       border-left: 1px splid color(neutral, 3);
+
+      // max-width: 25vw;
+      // overflow: hidden;
+      // @include truncate();
+
+      @include font-size(2);
+      @include fgcolor(color(neutral, 7));
 
       @include hover {
         cursor: pointer;
