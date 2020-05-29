@@ -555,7 +555,7 @@
 
     .cap-btn {
       padding: 0 0.375rem;
-      max-width: 20vw;
+      // max-width: 20vw;
       cursor: pointer;
       @include truncate(null);
 

@@ -171,9 +171,9 @@
     }
 
     &._title {
-      max-width: 25vw;
+      max-width: 28vw;
       @include screen-min(sm) {
-        max-width: 35vw;
+        max-width: 36vw;
       }
       @include screen-min(md) {
         max-width: 45vw;
@@ -181,12 +181,12 @@
     }
 
     &._index {
-      max-width: 15vw;
+      max-width: 16vw;
       @include screen-min(sm) {
         max-width: 20vw;
       }
       @include screen-min(md) {
-        max-width: 30vw;
+        max-width: 25vw;
       }
     }
 

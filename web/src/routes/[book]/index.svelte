@@ -155,7 +155,7 @@
     <img src="/logo.svg" alt="logo" />
   </a>
 
-  <a href="/{book.slug}" class="header-item _active" slot="header-left">
+  <a href="/{book.slug}" class="header-item _active _title" slot="header-left">
     <span>{book.vi_title}</span>
   </a>
 
