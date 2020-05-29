@@ -7,8 +7,8 @@
     const csid = slug[slug.length - 1]
 
     const mode = +query.mode || 0
-
     const data = await load_chapter(this.fetch, book, site, csid, mode)
+
     return { ...data, site, csid }
   }
 

@@ -135,7 +135,15 @@ module Engine
     dict = "generic" if dict.empty?
 
     case dict
-    when "suggest", "generic", "combine"
+    when "generic", "combine", "suggest"
+      # prevent missing translation
+      if dict == "generic" && key.size == 1 && val.empty?
+        hanviet_root, hanviet_user = @@repo.hanviet
+        if hanviet = hanviet_user.find(key) || hanviet_root.find(key)
+          val = hanviet.vals.first
+        end
+      end
+
       @@repo.core_user[dict, user].set(key, val, mode: mode)
       if user == "local" || user == "admin"
         @@repo.core_root[dict].set(key, val, mode: mode)
