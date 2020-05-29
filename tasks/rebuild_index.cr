@@ -13,13 +13,16 @@ votes = [] of Tuple(String, Float64)
 update = [] of Tuple(String, Float64)
 access = [] of Tuple(String, Float64)
 
-wordmap = {
-  "zh_titles" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
-  "hv_titles" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
-  "vi_titles" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
+def mapper
+  Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
+end
 
-  "zh_authors" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
-  "vi_authors" => Hash(String, Array(String)).new { |h, k| h[k] = [] of String },
+wordmap = {
+  "zh_titles"  => mapper,
+  "hv_titles"  => mapper,
+  "vi_titles"  => mapper,
+  "zh_authors" => mapper,
+  "vi_authors" => mapper,
 }
 
 def normalize(input : String)
@@ -27,7 +30,7 @@ def normalize(input : String)
 end
 
 input.each_with_index do |info, idx|
-  next if info.shield > 1
+  # next if info.shield > 1
   puts "- <#{idx + 1}> #{info.vi_title}--#{info.vi_author}"
 
   tally << {info.uuid, info.tally}
