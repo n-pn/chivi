@@ -210,7 +210,7 @@
         <span>({book.votes} lượt đánh giá)</span>
       </div>
 
-      {#if book.yousuu !== ''}
+      {#if book.origin !== ''}
         <div>
           <span>Liên kết:</span>
           <a
@@ -220,13 +220,16 @@
             target="_blank">
             Trang gốc
           </a>
-          <a
-            class="link"
-            href="https://www.yousuu.com/book/{book.yousuu}"
-            rel="nofollow noreferer"
-            target="_blank">
-            Ưu thư võng
-          </a>
+
+          {#if book.yousuu !== ''}
+            <a
+              class="link"
+              href="https://www.yousuu.com/book/{book.yousuu}"
+              rel="nofollow noreferer"
+              target="_blank">
+              Ưu thư võng
+            </a>
+          {/if}
         </div>
       {/if}
     </div>
