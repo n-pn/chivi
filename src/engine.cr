@@ -134,6 +134,8 @@ module Engine
 
   private def mtime(time : Int32?)
     return 0 unless time
+    return 0 unless time > 0
+
     CvDict::Item.real_time(time).to_unix_ms
   end
 
