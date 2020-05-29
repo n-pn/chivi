@@ -418,7 +418,7 @@
     display: block;
     width: 100%;
 
-    padding: 0.5rem 0.75rem 0.25rem;
+    padding: 0.375rem 0.75rem;
     line-height: 1.5rem;
 
     @include radius();
