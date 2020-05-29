@@ -35,7 +35,6 @@
   import Lookup from '$layout/Lookup.svelte'
   import Upsert from '$layout/Upsert.svelte'
 
-  import { lookup_active, lookup_line, lookup_from } from '$src/stores.js'
   import render_convert from '$utils/render_convert'
   import read_selection from '$utils/read_selection'
 
@@ -61,8 +60,11 @@
   let elemOnFocus = null
 
   let lookupEnabled = false
-  let upsertEnabled = false
+  let lookupActived = false
+  let lookupLine = ''
+  let lookupFrom = 0
 
+  let upsertEnabled = false
   let upsertKey = ''
   let upsertDic = 'combine'
   let upsertTab = 'generic'
@@ -95,7 +97,6 @@
           if (prev_url) _goto(`${book_slug}/${prev_url}`)
           else _goto(book_slug)
         }
-
         break
 
       case 39:
@@ -105,7 +106,6 @@
           if (next_url) _goto(`${book_slug}/${next_url}`)
           else _goto(`${book_slug}`)
         }
-
         break
 
       case 46:
@@ -158,23 +158,23 @@
     if (elemOnFocus) elemOnFocus.classList.remove('_active')
 
     lineOnFocus = idx
-    lookup_line.set(content[idx])
+    lookupLine = content[idx].map((x) => x[0]).join('')
 
     if (target.nodeName !== 'X-V') {
       elemOnFocus = null
-      lookup_from.set(0)
+      lookupFrom = 0
     } else {
       elemOnFocus = target
       elemOnFocus.classList.add('_active')
-      lookup_from.set(+elemOnFocus.dataset['p'])
+      lookupFrom = +elemOnFocus.dataset['p']
     }
 
-    if (lookupEnabled) lookup_active.set(true)
+    if (lookupEnabled) lookupActived = true
   }
 
   function triggerLookupSidebar() {
     lookupEnabled = !lookupEnabled
-    lookup_active.set(lookupEnabled)
+    lookupActived = lookupEnabled
   }
 
   function renderMode(idx, hover, focus) {
@@ -221,7 +221,7 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Layout shiftLeft={$lookup_active}>
+<Layout shiftLeft={lookupActived}>
   <a slot="header-left" href="/" class="header-item ">
     <img src="/logo.svg" alt="logo" />
   </a>
@@ -302,7 +302,12 @@
 </Layout>
 
 {#if lookupEnabled}
-  <Lookup onTop={!upsertEnabled} />
+  <Lookup
+    on_top={!upsertEnabled}
+    bind:active={lookupActived}
+    line={lookupLine}
+    from={lookupFrom}
+    dict={book_uuid} />
 {/if}
 
 {#if upsertEnabled}

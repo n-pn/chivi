@@ -45,14 +45,35 @@ module Server
     {msg: "ok"}.to_json env.response
   end
 
-  get "/api/lookup" do |env|
-    line = env.params.query.fetch("line", "")
-
+  post "/api/convert" do |env|
     user = env.get("user").as(String)
-    dict = env.params.query["dict"]? || "combine"
 
-    res = Engine.lookup(line, dict, user)
+    type = env.params.query["type"].as(String)
+    text = env.params.json["text"].as(String)
+
+    lines = Utils.split_lines(text)
+    case type
+    when "hanviet"
+      res = lines.map { |line| Engine.hanviet(line, user, apply_cap: true) }
+    when "pinyins"
+      res = lines.map { |line| Engine.pinyins(line, user, apply_cap: true) }
+    when "tradsim"
+      res = lines.map { |line| Engine.tradsim(line, user) }
+    else
+      dict = env.params.json.fetch("dict", "tong-hop").as(String)
+      res = Engine.convert(lines, dict, user, mode: :plain)
+    end
+
     res.to_json(env.response)
+  end
+
+  get "/api/lookup" do |env|
+    user = env.get("user").as(String)
+
+    line = env.params.query.fetch("line", "")
+    dict = env.params.query.fetch("dict", "tong-hop")
+
+    Engine.lookup(line, dict, user).to_json(env.response)
   end
 
   get "/api/inquire" do |env|

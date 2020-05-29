@@ -5,16 +5,16 @@ module Engine
 
   @@repo = CvRepo.new("data/cv_dicts")
 
-  def hanviet(input : String, apply_cap = false)
-    CvCore.cv_lit(input, @@repo.hanviet, apply_cap: apply_cap)
+  def hanviet(line : String, user = "local", apply_cap = false)
+    CvCore.cv_lit(line, @@repo.hanviet(user), apply_cap: apply_cap)
   end
 
-  def pinyins(input : String, apply_cap = false)
-    CvCore.cv_lit(input, @@repo.pinyins, apply_cap: apply_cap)
+  def pinyins(line : String, user = "local", apply_cap = false)
+    CvCore.cv_lit(line, @@repo.pinyins(user), apply_cap: apply_cap)
   end
 
-  def tradsim(input : String)
-    CvCore.cv_raw(input, @@repo.tradsim)
+  def tradsim(line : String, user = "local")
+    CvCore.cv_raw(line, @@repo.tradsim(user))
   end
 
   def translate(input : String, book : String = "tong-hop", user : String = "local", title : Bool = false)
@@ -49,15 +49,11 @@ module Engine
 
   alias LookupItem = Tuple(String, String)
 
-  def lookup(line : String, book : String = "tong-hop", user : String = "local")
+  def lookup(line : String, dict : String = "tong-hop", user : String = "local")
     chars = line.chars
 
-    if book == "combine" || book.empty?
-      special_root, special_user = @@repo.combine(user)
-    else
-      special_root, special_user = @@repo.book(book, user)
-    end
-
+    special_root, special_user = @@repo.book(dict, user)
+    combine_root, combine_user = @@repo.combine(user)
     generic_root, generic_user = @@repo.generic(user)
 
     dicts = {
@@ -69,24 +65,34 @@ module Engine
       {@@repo.cc_cedict, "cc_cedict", "\n"},
     }
 
-    entries = (0..chars.size).map do |idx|
-      res = Hash(Int32, Array(LookupItem)).new do |h, k|
-        h[k] = Array(LookupItem).new
-      end
+    trungviet = @@repo.trungviet
+    cc_cedict = @@repo.cc_cedict
 
-      dicts.each do |dict, name, join|
-        dict.scan(chars, idx).each do |item|
-          res[item.key.size] << {name, item.vals.join(join)} unless item.vals.empty?
+    upto = chars.size - 1
+    (0..upto).map do |idx|
+      entry = Hash(Int32, Hash(String, Array(String))).new do |hash, key|
+        hash[key] = Hash(String, Array(String)).new do |h, k|
+          h[k] = [] of String
         end
       end
 
-      res.to_a.sort_by(&.[0].-)
-    end
+      {special_user, special_root, combine_user, combine_root, generic_user, generic_root}.each do |dict|
+        dict.scan(chars, idx).each do |item|
+          words = entry[item.key.size]["vietphrase"]
+          words.concat(item.vals).uniq!
+        end
+      end
 
-    {
-      hanviet: hanviet(line, apply_cap: true),
-      entries: entries,
-    }
+      trungviet.scan(chars, idx).each do |item|
+        entry[item.key.size]["trungviet"] = item.vals
+      end
+
+      cc_cedict.scan(chars, idx).each do |item|
+        entry[item.key.size]["cc_cedict"] = item.vals
+      end
+
+      entry.to_a.sort_by(&.[0].-)
+    end
   end
 
   def inquire(key : String, book : String = "tong-hop", user = "local")

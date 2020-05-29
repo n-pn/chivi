@@ -50,67 +50,69 @@
 <script>
   import MIcon from '$mould/MIcon.svelte'
 
-  import {
-    lookup_active as active,
-    lookup_pinned as pinned,
-    lookup_line as line,
-    lookup_from as from,
-    lookup_udic as udic,
-  } from '$src/stores.js'
+  export let line = ''
+  export let from = 0
+  export let dict = 'tong-hop'
 
-  export let onTop = false
+  export let active = false
+  export let on_top = false
 
-  let upto = $from + 1
+  let upto = from + 1
 
   let hanviet = []
   let entries = []
   let current = []
 
-  $: zh_text = $line.map(([zh]) => zh).join('')
-  // $: [zh_html, vi_html] = render($line, $from, upto)
-  $: [zh_html, hv_html] = render(hanviet, $from, upto)
+  $: if (line !== '') loadHanviet(line)
+  $: if (line !== '') lookupTerms(line)
 
-  $: if (line !== []) lookup(zh_text)
-  $: if (entries.length > $from) {
-    current = entries[$from]
-    if (current.length > 0) upto = $from + +current[0][0]
-    else upto = $from + 1
+  $: if (entries.length > from) {
+    current = entries[from]
+    if (current.length > 0) upto = from + +current[0][0]
+    else upto = from + 1
+  }
+  $: [zh_html, hv_html] = render(hanviet, from, upto)
+
+  async function loadHanviet(text) {
+    const url = `/api/convert?type=hanviet`
+    const res = await fetch(url, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text }),
+    })
+    const data = await res.json()
+    hanviet = data[0]
   }
 
-  async function lookup(line, udic) {
-    // hanviet = await get_hanviet(text)
-    let url = `/api/lookup?line=${line}`
-    if (udic) url += `&udic=${udic}`
+  async function lookupTerms(line) {
+    const url = `/api/lookup?line=${line}&dict=${dict}`
     const res = await fetch(url)
     const data = await res.json()
 
-    hanviet = data.hanviet
-    entries = data.entries
+    entries = data
   }
 
-  function handle_click(event) {
+  function handleClick(event) {
     const target = event.target
     if (target.nodeName == 'X-Z' || target.nodeName == 'X-V') {
-      from.set(+target.dataset['p'])
+      from = +target.dataset['p']
     }
   }
 
   function handleKeypress(evt) {
-    if (evt.keyCode == 27 && onTop) active.set(false)
+    if (evt.keyCode == 27 && on_top) active = false
   }
 
-  function pin_sidebar() {
-    pinned.update((x) => !x)
-  }
-
-  function close_sidebar() {
-    active.set(false)
+  function getWord(from, size) {
+    return line.substring(from, from + size)
   }
 </script>
 
 <svelte:window on:keydown={handleKeypress} />
 
-<aside class:_active={$active}>
+<aside class:_active={active}>
   <header>
     <h2>Giải nghĩa</h2>
 
@@ -133,41 +135,41 @@
       </svg>
     </button> -->
 
-    <button on:click={close_sidebar}>
+    <button on:click={() => (active = false)}>
       <MIcon class="m-icon" name="x" />
     </button>
 
   </header>
 
   <section class="lookup">
-    <!-- <div class="source _vi" on:click={handle_click}>
+    <!-- <div class="source _vi" on:click={handleClick}>
       {@html vi_html}
     </div> -->
 
-    <div class="source _zh" on:click={handle_click}>
+    <div class="source _zh" on:click={handleClick} lang="zh">
       {@html zh_html}
     </div>
 
-    <div class="source _hv" on:click={handle_click}>
+    <div class="source _hv" on:click={handleClick}>
       {@html hv_html}
     </div>
 
-    {#each current as [len, items]}
+    {#each current as [size, entries]}
       <div class="entry">
-        <h3>{zh_text.substring($from, $from + len)}</h3>
-        {#each items as [name, value]}
-          <div class="item">
-            <h4>{name}</h4>
-            {#if value == ''}
-              <p class="deleted">
-                <em>(deleted)</em>
-              </p>
-            {:else}
-              {#each value.split('\n') as line}
-                <p class="term">{line}</p>
-              {/each}
-            {/if}
-          </div>
+        <h3 lang="zh">[ {getWord(from, size)} ]</h3>
+        {#each Object.entries(entries) as [name, items]}
+          {#if items.length > 0}
+            <div class="item">
+              <h4>{name}</h4>
+              {#if name == 'vietphrase'}
+                <p class="viet">{items.join(', ')}</p>
+              {:else}
+                {#each items as line}
+                  <p class="term">{line}</p>
+                {/each}
+              {/if}
+            </div>
+          {/if}
         {/each}
       </div>
     {/each}
@@ -249,8 +251,8 @@
     }
   }
 
-  $vi-height: 0.75rem + (1.25 * 6rem);
-  $vi-height: 0;
+  // $vi-height: 0.75rem + (1.25 * 6rem);
+  // $vi-height: 0;
   $zh-height: 0.75rem + (1.25 * 5rem);
   $hv-height: 0.75rem + (1.25 * 6rem);
 
@@ -272,15 +274,26 @@
 
     &._zh {
       max-height: $zh-height;
-      margin-top: 0.375rem;
-      border-top: 1px solid color(neutral, 3);
-      border-bottom: 1px solid color(neutral, 3);
+      // margin-top: 0.375rem;
+      // border-top: 1px solid color(neutral, 3);
+      // border-bottom: 1px solid color(neutral, 3);
     }
 
     &._hv {
       max-height: $hv-height;
-      margin-top: 0.375rem;
+      // margin-top: 0.5rem;
       border-top: 1px solid color(neutral, 3);
+    }
+
+    :global(x-z) {
+      cursor: pointer;
+      @include hover {
+        @include fgcolor(color(primary, 5));
+      }
+
+      &._active {
+        @include fgcolor(color(primary, 5));
+      }
     }
 
     :global(x-v) {
@@ -305,54 +318,42 @@
     }
   }
 
-  $top-height: $hd-height + $zh-height + $vi-height;
+  // $top-height: $hd-height + $zh-height + $vi-height;
 
   section {
     height: calc(100% - #{$hd-height});
     overflow-y: auto;
   }
 
-  :global(x-z) {
-    cursor: pointer;
-    @include hover {
-      @include fgcolor(color(primary, 5));
-    }
-
-    &._active {
-      @include fgcolor(color(primary, 5));
-    }
+  h3 {
+    // margin-top: 0.5rem;
+    font-weight: 500;
+    @include font-size(md);
+    @include fgcolor(color(neutral, 7));
   }
 
   h4 {
     font-weight: 500;
     text-transform: uppercase;
     @include fgcolor(color(neutral, 6));
-    @include font-size(3);
-  }
-
-  h3 {
-    // margin-top: 0.5rem;
-    font-weight: bold;
-    @include font-size(md);
-    @include fgcolor(color(neutral, 7));
+    @include font-size(2);
   }
 
   .entry {
     padding: 0.375rem 0.75rem;
     // padding-top: 0;
-
     border-top: 1px solid color(neutral, 3);
   }
 
   .item {
-    @include clearfix;
+    // @include clearfix;
     & + & {
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
     }
   }
 
   .term {
-    line-height: 1.375rem;
-    margin-top: 0.25rem;
+    line-height: 1.5rem;
+    // margin-top: 0.25rem;
   }
 </style>
