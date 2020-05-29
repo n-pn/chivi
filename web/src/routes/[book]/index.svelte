@@ -178,7 +178,11 @@
         <span class="author">
           <MIcon class="m-icon" name="pen-tool" />
           {book.vi_author}
-          <span>({book.zh_author})</span>
+        </span>
+
+        <span class="author">
+          <MIcon class="m-icon" name="pen-tool" />
+          <span>{book.zh_author}</span>
         </span>
       </div>
 
@@ -191,20 +195,40 @@
           <MIcon class="m-icon" name="activity" />
           {status}
         </span>
-        <span class="updated_at">
+        <span class="mftime">
           <MIcon class="m-icon" name="clock" />
           <time datetime={updated_at}>{relative_time(book.mftime)}</time>
         </span>
-
       </div>
 
       <div>
-        <div>
+        <span>
           Đánh giá:
           <strong>{book.votes < 10 ? '--' : book.score}</strong>
-          /10 ({book.votes} lượt đánh giá)
-        </div>
+          /10
+        </span>
+        <span>({book.votes} lượt đánh giá)</span>
       </div>
+
+      {#if book.yousuu !== ''}
+        <div>
+          <span>Liên kết:</span>
+          <a
+            class="link"
+            href={book.origin}
+            rel="nofollow noreferer"
+            target="_blank">
+            Trang gốc
+          </a>
+          <a
+            class="link"
+            href="https://www.yousuu.com/book/{book.yousuu}"
+            rel="nofollow noreferer"
+            target="_blank">
+            Ưu thư võng
+          </a>
+        </div>
+      {/if}
     </div>
   </div>
 
@@ -262,7 +286,7 @@
 
   .cover {
     float: left;
-    @include props(width, attrs(40%, 30%));
+    @include props(width, attrs(40%, 30%, 25%));
 
     > img {
       width: 100%;
@@ -270,10 +294,15 @@
     }
   }
 
+  .link {
+    // font-weight: 500;
+    @include fgcolor(color(primary, 6));
+  }
+
   .name {
     margin-bottom: 0.75rem;
     @include props(float, attrs(left, right));
-    @include props(width, attrs(100%, 70%));
+    @include props(width, attrs(100%, 70%, 75%));
     @include props(padding-left, attrs(0, 0.75rem));
   }
 
@@ -281,17 +310,14 @@
     float: right;
     padding-left: 0.75rem;
 
-    @include props(width, attrs(60%, 70%));
+    @include props(width, attrs(60%, 70%, 75%));
 
     > div {
       @include clearfix;
       margin-bottom: 0.25rem;
       > * {
         float: left;
-
-        & + * {
-          margin-left: 0.5rem;
-        }
+        margin-right: 0.5rem;
       }
     }
 
@@ -303,6 +329,17 @@
     :global(svg) {
       margin-top: -0.125rem;
     }
+  }
+
+  .title {
+    // margin-top: 0.75rem;
+    // margin: 0.25rem 0;
+
+    $font-sizes: attrs(rem(26px), rem(28px), rem(30px));
+    $line-heights: attrs(1.5rem, 1.75rem, 2rem);
+
+    @include props(font-size, $font-sizes);
+    @include props(line-height, $line-heights);
   }
 
   .summary {

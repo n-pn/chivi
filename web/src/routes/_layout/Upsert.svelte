@@ -286,7 +286,7 @@
           {/each}
 
           <span class="mftime">
-            <span class="text">{isNewEntry ? 'Thêm:' : 'Sửa:'}</span>
+            <span class="text">Lưu:</span>
             <span class="time">{mtime > 0 ? relative_time(mtime) : '--'}</span>
           </span>
         </div>
