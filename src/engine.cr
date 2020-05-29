@@ -47,8 +47,6 @@ module Engine
     end
   end
 
-  alias LookupItem = Tuple(String, String)
-
   def lookup(line : String, dict : String = "tong-hop", user : String = "local")
     chars = line.chars
 
@@ -56,21 +54,12 @@ module Engine
     combine_root, combine_user = @@repo.combine(user)
     generic_root, generic_user = @@repo.generic(user)
 
-    dicts = {
-      {special_user, "riêng (user)", "; "},
-      {special_root, "riêng (base)", "; "},
-      {generic_user, "chung (user)", "; "},
-      {generic_root, "chung (base)", "; "},
-      {@@repo.trungviet, "trungviet", "\n"},
-      {@@repo.cc_cedict, "cc_cedict", "\n"},
-    }
-
     trungviet = @@repo.trungviet
     cc_cedict = @@repo.cc_cedict
 
     upto = chars.size - 1
     (0..upto).map do |idx|
-      entry = Hash(Int32, Hash(String, Array(String))).new do |hash, key|
+      entry = Hash(String, Hash(String, Array(String))).new do |hash, key|
         hash[key] = Hash(String, Array(String)).new do |h, k|
           h[k] = [] of String
         end
@@ -78,20 +67,20 @@ module Engine
 
       {special_user, special_root, combine_user, combine_root, generic_user, generic_root}.each do |dict|
         dict.scan(chars, idx).each do |item|
-          words = entry[item.key.size]["vietphrase"]
+          words = entry[item.key]["vietphrase"]
           words.concat(item.vals).uniq!
         end
       end
 
       trungviet.scan(chars, idx).each do |item|
-        entry[item.key.size]["trungviet"] = item.vals
+        entry[item.key]["trungviet"] = item.vals
       end
 
       cc_cedict.scan(chars, idx).each do |item|
-        entry[item.key.size]["cc_cedict"] = item.vals
+        entry[item.key]["cc_cedict"] = item.vals
       end
 
-      entry.to_a.sort_by(&.[0].-)
+      entry.to_a.sort_by(&.[0].size.-)
     end
   end
 

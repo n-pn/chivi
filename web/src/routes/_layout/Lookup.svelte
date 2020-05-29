@@ -104,10 +104,6 @@
   function handleKeypress(evt) {
     if (evt.keyCode == 27 && on_top) active = false
   }
-
-  function getWord(from, size) {
-    return line.substring(from, from + size)
-  }
 </script>
 
 <svelte:window on:keydown={handleKeypress} />
@@ -154,9 +150,9 @@
       {@html hv_html}
     </div>
 
-    {#each current as [size, entries]}
+    {#each current as [word, entries]}
       <div class="entry">
-        <h3 lang="zh">[ {getWord(from, size)} ]</h3>
+        <h3 class="word" lang="zh">{word}</h3>
         {#each Object.entries(entries) as [name, items]}
           {#if items.length > 0}
             <div class="item">
@@ -325,11 +321,12 @@
     overflow-y: auto;
   }
 
-  h3 {
+  .word {
     // margin-top: 0.5rem;
     font-weight: 500;
     @include font-size(md);
     @include fgcolor(color(neutral, 7));
+    // @include border($pos: left, $width: 0.25rem, $color: color(primary, 5));
   }
 
   h4 {
