@@ -19,7 +19,7 @@ files.each_with_index do |inp_file, idx|
 
   puts "- #{idx}: #{rem_file}"
   `magick "#{rem_file}" -quality 96 #{out_file}`
-
+  FileUtils.rm(rem_file)
 end
 
 files.each_with_index do |inp_file, idx|
