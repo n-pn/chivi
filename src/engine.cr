@@ -86,35 +86,25 @@ module Engine
 
   def inquire(word : String, dict : String = "tong-hop", user = "local")
     generic_vals = [] of String
-    generic_time = 0_i64
+    generic_time : Int32? = nil
+    generic_root, generic_user = @@repo.generic(user)
 
-    @@repo.generic(user).each do |dict|
+    {generic_user, generic_root}.each do |dict|
       if item = dict.find(word)
         generic_vals.concat(item.vals)
-        if mtime = item.mtime
-          generic_time = mtime if generic_time == 0
-        end
+        generic_time ||= item.mtime || 0
       end
     end
 
     special_vals = [] of String
-    special_time = 0_i64
+    special_time : Int32? = nil
+    special_root, special_user = @@repo.book(dict, user)
+    combine_root, combine_user = @@repo.combine(user)
 
-    @@repo.book(dict, user).each do |dict|
+    {combine_user, combine_root, special_user, special_root}.each do |dict|
       if item = dict.find(word)
         special_vals.concat(item.vals)
-        if mtime = item.mtime
-          special_time = mtime if special_time == 0_i64
-        end
-      end
-    end
-
-    @@repo.combine(user).each do |dict|
-      if item = dict.find(word)
-        special_vals.concat(item.vals)
-        if mtime = item.mtime
-          special_time = mtime if special_time == 0_i64
-        end
+        special_time ||= item.mtime || 0
       end
     end
 
@@ -126,26 +116,25 @@ module Engine
       end
     end
 
-    if generic_time > 0
-      generic_time = CvDict::Item.real_time(generic_time).to_unix_ms
-    end
-
-    if special_time > 0
-      special_time = CvDict::Item.real_time(special_time).to_unix_ms
-    end
-
     generic_vals.uniq!
     special_vals.uniq!
 
-    suggest_vals.reject! { |x| generic_vals.includes?(x) || special_vals.includes?(x) }
+    suggest_vals.reject! do |x|
+      generic_vals.includes?(x) || special_vals.includes?(x)
+    end
 
     {
       hanviet: hanviet(word).vi_text,
       pinyins: pinyins(word).vi_text,
-      generic: {vals: generic_vals, time: generic_time},
-      special: {vals: special_vals, time: special_time},
+      generic: {vals: generic_vals, time: mtime(generic_time)},
+      special: {vals: special_vals, time: mtime(special_time)},
       suggest: suggest_vals,
     }
+  end
+
+  private def mtime(time : Int32?)
+    return 0 unless time
+    CvDict::Item.real_time(time).to_unix_ms
   end
 
   def upsert(key : String, val = "", dict = "tong-hop", user = "local")
