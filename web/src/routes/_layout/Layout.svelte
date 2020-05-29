@@ -81,6 +81,7 @@
   $gutter: ($header-height - $header-inner-height) / 2;
 
   .main {
+    min-width: 320px;
     position: relative;
     &._shift {
       @include screen-min(lg) {

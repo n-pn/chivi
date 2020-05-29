@@ -29,6 +29,10 @@ class CvDict
       (time - EPOCH).total_minutes.to_i
     end
 
+    def self.real_time(mtime : Int32 | Int64)
+      EPOCH + mtime.minutes
+    end
+
     def initialize(@key : String, vals : String, @mtime = nil)
       @vals = vals.split(SEP_1)
     end

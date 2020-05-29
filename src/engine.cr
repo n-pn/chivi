@@ -84,35 +84,67 @@ module Engine
     end
   end
 
-  def inquire(key : String, book : String = "tong-hop", user = "local")
-    if book.empty?
-      special_1, special_2 = @@repo.combine(user)
-    else
-      special_1, special_2 = @@repo.book(book, user)
+  def inquire(word : String, dict : String = "tong-hop", user = "local")
+    generic_vals = [] of String
+    generic_time = 0_i64
+
+    @@repo.generic(user).each do |dict|
+      if item = dict.find(word)
+        generic_vals.concat(item.vals)
+        if mtime = item.mtime
+          generic_time = mtime if generic_time == 0
+        end
+      end
     end
 
-    generic_1, generic_2 = @@repo.generic(user)
-    suggest_1, suggest_2 = @@repo.suggest(user)
+    special_vals = [] of String
+    special_time = 0_i64
 
-    generic = generic_2.find(key) || generic_1.find(key)
-    special = special_2.find(key) || special_1.find(key)
-    suggest = suggest_2.find(key) || suggest_1.find(key)
+    @@repo.book(dict, user).each do |dict|
+      if item = dict.find(word)
+        special_vals.concat(item.vals)
+        if mtime = item.mtime
+          special_time = mtime if special_time == 0_i64
+        end
+      end
+    end
+
+    @@repo.combine(user).each do |dict|
+      if item = dict.find(word)
+        special_vals.concat(item.vals)
+        if mtime = item.mtime
+          special_time = mtime if special_time == 0_i64
+        end
+      end
+    end
+
+    suggest_vals = [] of String
+
+    @@repo.suggest(user).each do |dict|
+      if item = dict.find(word)
+        suggest_vals.concat(item.vals)
+      end
+    end
+
+    if generic_time > 0
+      generic_time = CvDict::Item.real_time(generic_time).to_unix_ms
+    end
+
+    if special_time > 0
+      special_time = CvDict::Item.real_time(special_time).to_unix_ms
+    end
+
+    generic_vals.uniq!
+    special_vals.uniq!
+
+    suggest_vals.reject! { |x| generic_vals.includes?(x) || special_vals.includes?(x) }
 
     {
-      hanviet: hanviet(key).vi_text,
-      pinyins: pinyins(key).vi_text,
-      generic: dict_item(generic),
-      special: dict_item(special),
-      suggest: suggest ? suggest.vals : [] of String,
-    }
-  end
-
-  private def dict_item(item : CvDict::Item?)
-    return {vals: [] of String, time: nil} if item.nil?
-
-    {
-      vals: item.vals,
-      time: item.time,
+      hanviet: hanviet(word).vi_text,
+      pinyins: pinyins(word).vi_text,
+      generic: {vals: generic_vals, time: generic_time},
+      special: {vals: special_vals, time: special_time},
+      suggest: suggest_vals,
     }
   end
 

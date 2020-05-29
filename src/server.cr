@@ -77,12 +77,12 @@ module Server
   end
 
   get "/api/inquire" do |env|
-    key = env.params.query["key"]? || ""
-
-    dict = env.params.query["dic"]? || "tong-hop"
     user = env.get("user").as(String)
 
-    res = Engine.inquire(key, dict, user)
+    word = env.params.query["word"]? || ""
+    dict = env.params.query["dict"]? || "tong-hop"
+
+    res = Engine.inquire(word, dict, user)
     res.to_json(env.response)
   end
 
