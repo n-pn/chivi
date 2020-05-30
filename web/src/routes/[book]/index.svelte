@@ -5,22 +5,24 @@
     const tab = query.tab || 'overview'
     const page = +(query.page || 1)
 
-    try {
-      const res = await this.fetch(url)
-      const data = await res.json()
+    const res = await this.fetch(url)
+    const data = await res.json()
 
-      if (res.status != 200) this.error(res.status, data.msg)
-      else {
-        const { book } = data
-        const site = query.site || book.cr_site_df
-        return { book, site, tab, page }
+    if (res.status == 200) {
+      const { book } = data
+      const site = query.site || book.cr_site_df || ''
+
+      let chlist = []
+      if (tab === 'content' && site !== '') {
+        const data = await loadContent(this.fetch, slug, site)
+        chlist = data.chlist
       }
-    } catch (err) {
-      this.error(500, err.message)
-    }
-  }
 
-  // const cachedContent = {}
+      return { book, site, tab, page, chlist }
+    }
+
+    this.error(res.status, data.msg)
+  }
 
   export async function loadContent(api, slug, site, reload = false) {
     const key = `${slug}|${site}`
@@ -108,14 +110,15 @@
   export let book
   export let site
   export let page = 1
+  export let chlist = []
 
   export let tab = 'overview'
+  let activeTab = tab
 
   $: sources = Object.keys(book.cr_anchors)
   $: hasContent = sources.length > 0
 
-  let chlist = []
-  $: if (tab == 'content') changeSite(site, false)
+  $: changeSite(site, false)
 
   $: latest = mapLatests(chlist)
 
@@ -126,7 +129,10 @@
   $: keywords = prepareKeywords(book)
 
   let reloading = false
+
   async function changeSite(source, reload = false) {
+    if (site == source && reload == false && chlist.length > 0) return
+
     site = source
     reloading = true
 
@@ -142,7 +148,7 @@
   }
 
   function changeTab(newTab) {
-    tab = newTab
+    activeTab = newTab
   }
 
   function latestLink(site) {
@@ -264,28 +270,28 @@
     <header class="meta-header">
       <a
         class="meta-header-tab"
-        class:_active={tab == 'overview'}
+        class:_active={activeTab == 'overview'}
         href="/{book.slug}?tab=overview"
-        on:click|preventDefault|stopPropagation={() => changeTab('overview')}>
+        on:click|preventDefault={() => changeTab('overview')}>
         Tổng quan
       </a>
       <a
         class="meta-header-tab"
-        class:_active={tab == 'content'}
+        class:_active={activeTab == 'content'}
         href="/{book.slug}?tab=content"
-        on:click|preventDefault|stopPropagation={() => changeTab('content')}>
+        on:click|preventDefault={() => changeTab('content')}>
         Mục lục
       </a>
       <a
         class="meta-header-tab"
-        class:_active={tab == 'review'}
-        href="/{book.slug}?tab=review"
-        on:click|preventDefault|stopPropagation={() => changeTab('review')}>
+        class:_active={activeTab == 'reviews'}
+        href="/{book.slug}?tab=reviews"
+        on:click|preventDefault={() => changeTab('reviews')}>
         Bình luận
       </a>
     </header>
 
-    <div class="meta-tab" class:_active={tab == 'overview'}>
+    <div class="meta-tab" class:_active={activeTab == 'overview'}>
       <div class="summary">
         <h2>Giới thiệu:</h2>
         {#each book.vi_intro.split('\n') as line}
@@ -327,7 +333,7 @@
       {/if}
     </div>
 
-    <div class="meta-tab" class:_active={tab == 'content'}>
+    <div class="meta-tab" class:_active={activeTab == 'content'}>
       {#if hasContent}
         <div class="meta-sites" data-active={site}>
           {#each sources as source}
@@ -371,7 +377,7 @@
       {/if}
     </div>
 
-    <div class="meta-tab" class:_active={tab == 'review'}>
+    <div class="meta-tab" class:_active={activeTab == 'reviews'}>
       <div class="empty">Đang hoàn thiện :(</div>
     </div>
   </section>
