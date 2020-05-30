@@ -362,45 +362,32 @@
   }
 
   @mixin token-focus($color: blue) {
+  }
+
+  @mixin token($color: blue) {
     &._active,
     &:hover {
       color: color($color, 6);
     }
-  }
 
-  @mixin token-hover($color: blue) {
-    border-bottom: 1px solid color($color, 3);
+    ._hover & {
+      border-bottom: 1px solid color($color, 3);
+    }
   }
 
   :global(x-v) {
-    .line._hover & {
-      cursor: pointer;
+    cursor: pointer;
 
-      &[data-d='1'] {
-        @include token-hover(blue);
-      }
-
-      &[data-d='2'] {
-        @include token-hover(orange);
-      }
-
-      &[data-d='3'] {
-        @include token-hover(red);
-      }
+    &[data-d='1'] {
+      @include token(blue);
     }
 
-    .line._focus & {
-      &[data-d='1'] {
-        @include token-focus(blue);
-      }
+    &[data-d='2'] {
+      @include token(orange);
+    }
 
-      &[data-d='2'] {
-        @include token-focus(orange);
-      }
-
-      &[data-d='3'] {
-        @include token-focus(red);
-      }
+    &[data-d='3'] {
+      @include token(red);
     }
   }
 
