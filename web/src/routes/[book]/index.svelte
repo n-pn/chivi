@@ -149,6 +149,18 @@
   function changeTab(newTab) {
     tab = newTab
   }
+
+  function latestLink(site) {
+    const latest = book.cr_latests[site]
+    if (!latest) return `${book.slug}?site=${site}&refresh=true`
+    return `/${book.slug}/${latest.slug}-${site}-${latest.csid}`
+  }
+
+  function latestText(site) {
+    const latest = book.cr_latests[site]
+    if (!latest) return '< bấm vào đây chưa cập nhật >'
+    return latest.name
+  }
 </script>
 
 <svelte:head>
@@ -287,20 +299,37 @@
       </div>
 
       {#if hasContent}
-        <div class="tabs" data-active={site}>
-          <span>Chọn nguồn:</span>
-          {#each sources as source}
-            <a
-              class="site"
-              class:_active={site === source}
-              href="/{book.slug}?site={source}"
-              on:click|preventDefault={() => changeSite(source, false)}
-              rel="nofollow">
-              {source}
-            </a>
-          {/each}
-        </div>
-        <ChapList bslug={book.slug} label="Mới nhất" chaps={latests} />
+        <h2>Mới nhất:</h2>
+        <table class="latests">
+          <thead>
+            <tr>
+              <th class="latest-site">Nguồn</th>
+              <th class="latest-chap">Chương mới nhất</th>
+              <th class="latest-time">Thời gian đổi mới</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {#each sources as source}
+              <tr>
+                <td class="latest-site">
+                  <span class="latest-text">{source}</span>
+                </td>
+                <td class="latest-chap">
+                  <a class="latest-link" href={latestLink(source)}>
+                    {latestText(source)}
+                  </a>
+                </td>
+                <td class="latest-time">
+                  <span class="latest-text">
+                    {relative_time(book.cr_mftimes[source])}
+                  </span>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+
+        </table>
       {/if}
     </div>
 
@@ -401,6 +430,10 @@
       margin-top: -0.125rem;
     }
   }
+
+  // h2 {
+  //   @include fgcolor(color(neutral, 6));
+  // }
 
   .title {
     // margin-top: 0.75rem;
@@ -577,5 +610,71 @@
 
   strong {
     font-weight: 500;
+  }
+
+  .latests {
+    width: 100%;
+    max-width: 100%;
+
+    tr {
+      @include border($pos: bottom);
+      &:nth-child(even) {
+        @include bgcolor(color(neutral, 1));
+      }
+    }
+
+    thead,
+    thead tr {
+      background: transparent;
+    }
+
+    th {
+      border: none;
+      padding: 0.375rem 0.75rem;
+      text-transform: uppercase;
+      font-weight: 500;
+      @include font-size(1);
+      @include fgcolor(color(neutral, 6));
+    }
+
+    th,
+    td {
+      border: none;
+      @include truncate(null);
+    }
+
+    td {
+      padding: 0;
+    }
+
+    .latest-site {
+      max-width: 5rem;
+    }
+
+    .latest-time {
+      display: none;
+      @include screen-min(sm) {
+        display: table-cell;
+        max-width: 8.5rem;
+        text-align: right;
+      }
+    }
+  }
+
+  .latest-text {
+    display: block;
+    padding: 0.375rem 0.75rem;
+    @include fgcolor(color(neutral, 6));
+  }
+
+  .latest-link {
+    display: block;
+    padding: 0.375rem 0.75rem;
+    font-weight: 400;
+    font-style: italic;
+    @include fgcolor(color(neutral, 6));
+    &:hover {
+      @include fgcolor(color(primary, 6));
+    }
   }
 </style>

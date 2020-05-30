@@ -1,7 +1,7 @@
 require "json"
 require "colorize"
 
-require "./book_info/*"
+require "./models/vp_info"
 
 module BookRepo
   extend self

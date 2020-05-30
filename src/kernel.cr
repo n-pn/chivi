@@ -35,15 +35,6 @@ module Kernel
     spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: false)
     new_mftime = spider.get_mftime!
 
-    if new_mftime > mftime
-      info.set_status(spider.get_status!)
-      info.set_mftime(new_mftime)
-      info.cr_mftimes[site] = new_mftime
-
-      mftime = new_mftime
-      BookRepo.save!(info)
-    end
-
     chaps = spider.get_chaps!
     chaps.each do |item|
       item.vi_title = Engine.translate(item.zh_title, info.uuid, user, title: true)
@@ -52,7 +43,25 @@ module Kernel
       item.gen_slug(20)
     end
 
+    if new_mftime > mftime
+      mftime = new_mftime
+
+      info.set_mftime(mftime)
+      info.cr_mftimes[site] = mftime
+      info.set_status(spider.get_status!)
+    end
+
+    if latest = chaps.last?
+      info.cr_latests[site] = {
+        csid: latest.csid,
+        name: latest.vi_title,
+        slug: latest.title_slug,
+      }
+    end
+
+    BookRepo.save!(info)
     ChapList.save!(file, chaps)
+
     {chaps, mftime}
   end
 

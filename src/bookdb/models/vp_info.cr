@@ -41,6 +41,8 @@ class VpInfo
 
   property cr_anchors = {} of String => String
   property cr_mftimes = {} of String => Int64
+  property cr_latests = {} of String => NamedTuple(csid: String, name: String, slug: String)
+
   property cr_site_df = ""
 
   def initialize

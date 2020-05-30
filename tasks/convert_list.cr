@@ -30,7 +30,8 @@ def update_infos(info, label)
   update = false
 
   info.cr_anchors.each do |site, bsid|
-    next if site == "paoshu8" || site == "duokan8"
+    # next if site == "duokan8"
+    # next if site == "paoshu8" || site == "duokan8"
 
     out_file = ChapList.path_for(info.uuid, site)
     spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: true)
@@ -45,8 +46,6 @@ def update_infos(info, label)
       info.cr_mftimes[site] = mftime if mftime > old_mftime
     end
 
-    update = true
-
     chaps = spider.get_chaps!
     chaps.each do |item|
       item.vi_title = translate(item.zh_title, info.uuid)
@@ -54,12 +53,22 @@ def update_infos(info, label)
       item.gen_slug(20)
     end
 
-    ChapList.save!(out_file, chaps) if update
+    ChapList.save!(out_file, chaps)
+
+    if latest = chaps.last?
+      info.cr_latests[site] = {
+        csid: latest.csid,
+        name: latest.vi_title,
+        slug: latest.title_slug,
+      }
+    end
+
+    update = true
   rescue err
     puts "- [#{site}-#{bsid}] #{err}".colorize(:red)
   end
 
-  VpInfo.save!(info)
+  VpInfo.save!(info) if update
 end
 
 FileUtils.mkdir_p(ChapList::DIR)

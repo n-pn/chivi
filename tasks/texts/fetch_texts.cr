@@ -3,10 +3,10 @@ require "colorize"
 require "file_utils"
 
 require "../src/bookdb/book_info"
-require "../src/bookdb/zh_list"
+require "../src/bookdb/chap_list"
 
-require "../src/bookdb/info_spider"
-require "../src/bookdb/text_spider"
+require "../src/spider/info_spider"
+require "../src/spider/text_spider"
 
 def fetch_text(file : String, site : String, bsid : String, chap : ZhChap, label : String) : Void
   return if File.exists?(file)

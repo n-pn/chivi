@@ -26,11 +26,11 @@ targets:
   convert_list:
     main: tasks/convert_list.cr
 
-  fetch_texts:
-    main: tasks/fetch_texts.cr
-
   fetch_covers:
     main: tasks/fetch_covers.cr
+
+  fetch_texts:
+    main: tasks/texts/fetch_texts.cr
 
 crystal: 0.33.0
 
