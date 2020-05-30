@@ -52,9 +52,10 @@
 <Layout>
 
   <div class="sort">
-    <span class="label">Sắp xếp:</span>
     {#each Object.entries(sorts) as [type, label]}
-      <a class="type" active="d{sort == type}" href="/?sort={type}">{label}</a>
+      <a class="sort-type" class:_active={sort == type} href="/?sort={type}">
+        <span>{label}</span>
+      </a>
     {/each}
   </div>
   <div class="list">
@@ -211,46 +212,27 @@
   }
 
   .sort {
-    display: flex;
+    @include flex($gap: 0.5rem);
     justify-content: center;
 
-    margin-top: 0.75rem;
-    margin-bottom: 0.75rem;
-
+    margin: 0.75rem 0;
     line-height: 2rem;
-    // flex-wrap: wrap;
+  }
 
-    @include clearfix;
+  .sort-type {
+    // cursor: pointer;
+    text-transform: uppercase;
+    padding: 0 0.5rem;
+    font-weight: 500;
+    @include truncate(null);
 
-    .label {
-      display: none;
-      @include screen-min(sm) {
-        display: inline-block;
-        font-weight: 500;
-        text-transform: uppercase;
-        @include font-size(2);
-        @include fgcolor(color(neutral, 6));
-      }
-    }
-    .type {
-      cursor: pointer;
-
-      margin-left: 0.5rem;
-
-      text-transform: uppercase;
-      padding: 0 0.5rem;
-      font-weight: 500;
-
-      @include truncate(null);
-
-      @include fgcolor(color(neutral, 7));
-      @include font-size(2);
-      @include border();
-      @include radius();
-      &._active {
-        @include fgcolor(color(primary, 5));
-        @include border-color($value: color(primary, 5));
-      }
+    @include fgcolor(color(neutral, 7));
+    @include font-size(2);
+    @include border();
+    @include radius();
+    &._active {
+      @include fgcolor(color(primary, 5));
+      @include border-color($value: color(primary, 5));
     }
   }
 

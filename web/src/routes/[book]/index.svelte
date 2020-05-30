@@ -117,7 +117,7 @@
   let chlist = []
   $: if (tab == 'content') changeSite(site, false)
 
-  $: latests = mapLatests(chlist)
+  $: latest = mapLatests(chlist)
 
   $: book_url = `https://chivi.xyz/${book.slug}/`
   $: cover_url = `https://chivi.xyz/covers/${book.uuid}.jpg`
@@ -243,7 +243,7 @@
             href={book.origin}
             rel="nofollow noreferer"
             target="_blank">
-            Trang gốc
+            Trang nguồn
           </a>
 
           {#if book.yousuu !== ''}
@@ -274,7 +274,7 @@
         class:_active={tab == 'content'}
         href="/{book.slug}?tab=content"
         on:click|preventDefault|stopPropagation={() => changeTab('content')}>
-        Chương tiết
+        Mục lục
       </a>
       <a
         class="meta-header-tab"
@@ -323,18 +323,16 @@
               </tr>
             {/each}
           </tbody>
-
         </table>
       {/if}
     </div>
 
     <div class="meta-tab" class:_active={tab == 'content'}>
       {#if hasContent}
-        <div class="tabs" data-active={site}>
-          <span>Chọn nguồn:</span>
+        <div class="meta-sites" data-active={site}>
           {#each sources as source}
             <a
-              class="site"
+              class="meta-site"
               class:_active={site === source}
               href="/{book.slug}?site={source}"
               on:click|preventDefault={() => changeSite(source, false)}
@@ -344,10 +342,10 @@
           {/each}
         </div>
 
-        <h2 class="content u-cf" data-site={site}>
+        <h3 class="caption _recent u-cf" data-site={site}>
           <!-- <MIcon class="m-icon u-fl" name="list" /> -->
-          <span class="label u-fl">Mục lục</span>
-          <span class="count u-fl">({chlist.length} chương)</span>
+          <span class="label u-fl">Mới nhất:</span>
+
           <button
             class="m-button _text u-fr"
             class:_reload={reloading}
@@ -355,10 +353,17 @@
             {#if reloading}
               <MIcon class="m-icon" name="loader" />
             {:else}
-              <span>Đổi mới: {relative_time(book.cr_mftimes[site])}</span>
+              <span>{relative_time(book.cr_mftimes[site])}</span>
             {/if}
           </button>
-        </h2>
+        </h3>
+
+        <ChapList bslug={book.slug} sname={site} chaps={latest} focus={page} />
+
+        <h3 class="caption _content u-cf">
+          <span class="label u-fl">Mục lục:</span>
+          <span class="count u-fl">({chlist.length} chương)</span>
+        </h3>
 
         <ChapList bslug={book.slug} sname={site} chaps={chlist} focus={page} />
       {:else}
@@ -474,12 +479,16 @@
     padding-top: 0.75rem;
   }
 
-  .content {
+  .caption {
     margin-bottom: 0.75rem;
     // @include fgcolor(color(neutral, 6));
     // > :global(.m-icon) {
     //   margin-top: 0.375rem;
     // }
+
+    &._content {
+      margin-top: 0.75rem;
+    }
 
     > .label {
       margin-right: 0.25rem;
@@ -513,38 +522,25 @@
     }
   }
 
-  .tabs {
+  .meta-sites {
     display: block;
-    margin-bottom: 0.75rem;
-    // margin: 0.75rem 0;
-    // padding-top: 0.375rem;
-    line-height: 2rem;
-    // @include border($pos: top);
-
-    @include clearfix;
-
-    > span {
-      float: left;
-      margin-top: 0.5rem;
-      font-weight: 500;
-      @include font-size(5);
-      // min-width: 6rem;
-    }
+    // margin-bottom: 0.75rem;
+    justify-content: center;
+    @include flex($gap: 0.5rem);
   }
 
-  .site {
-    float: left;
-    text-transform: uppercase;
-    margin-left: 0.5rem;
-    margin-top: 0.5rem;
+  .meta-site {
+    cursor: pointer;
     padding: 0 0.5rem;
     font-weight: 500;
-    cursor: pointer;
-    @include fgcolor(color(neutral, 7));
-    @include font-size(2);
-
+    line-height: 2rem;
+    text-transform: uppercase;
     @include border();
     @include radius();
+
+    @include font-size(2);
+    @include fgcolor(color(neutral, 7));
+
     &._active {
       @include fgcolor(color(primary, 5));
       @include border-color($value: color(primary, 5));

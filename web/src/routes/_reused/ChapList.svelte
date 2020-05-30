@@ -1,5 +1,5 @@
 <script context="module">
-  export function paginate(chaps, focus, limit = 50) {
+  export function paginate(chaps, focus, limit = 20) {
     let offset = (focus - 1) * limit
     if (offset < 0) offset = 0
     return chaps.slice(offset, offset + limit)
@@ -18,7 +18,7 @@
   export let bslug = ''
   export let sname = ''
   export let focus = 1
-  export let limit = 30
+  export let limit = 20
 
   let scroll = null
 
@@ -52,45 +52,47 @@
 
 </div>
 
-<nav class="pagi">
-  <button
-    class="page m-button _line"
-    on:click={() => changeFocus(1)}
-    disabled={focus == 1}>
-    <MIcon class="m-icon" name="chevrons-left" />
-  </button>
-
-  <button
-    class="page m-button _line"
-    on:click={() => changeFocus(focus - 1)}
-    disabled={focus == 1}>
-    <MIcon class="m-icon" name="chevron-left" />
-  </button>
-
-  {#each range as [index, level]}
+{#if total > 1}
+  <nav class="pagi">
     <button
       class="page m-button _line"
-      disabled={focus == index}
-      on:click={() => changeFocus(index)}
-      data-level={level}>
-      <span>{index}</span>
+      on:click={() => changeFocus(1)}
+      disabled={focus == 1}>
+      <MIcon class="m-icon" name="chevrons-left" />
     </button>
-  {/each}
 
-  <button
-    class="page m-button _line"
-    on:click={() => changeFocus(focus + 1)}
-    disabled={focus == total}>
-    <MIcon class="m-icon" name="chevron-right" />
-  </button>
+    <button
+      class="page m-button _line"
+      on:click={() => changeFocus(focus - 1)}
+      disabled={focus == 1}>
+      <MIcon class="m-icon" name="chevron-left" />
+    </button>
 
-  <button
-    class="page m-button _line"
-    on:click={() => changeFocus(total)}
-    disabled={focus == total}>
-    <MIcon class="m-icon" name="chevrons-right" />
-  </button>
-</nav>
+    {#each range as [index, level]}
+      <button
+        class="page m-button _line"
+        disabled={focus == index}
+        on:click={() => changeFocus(index)}
+        data-level={level}>
+        <span>{index}</span>
+      </button>
+    {/each}
+
+    <button
+      class="page m-button _line"
+      on:click={() => changeFocus(focus + 1)}
+      disabled={focus == total}>
+      <MIcon class="m-icon" name="chevron-right" />
+    </button>
+
+    <button
+      class="page m-button _line"
+      on:click={() => changeFocus(total)}
+      disabled={focus == total}>
+      <MIcon class="m-icon" name="chevrons-right" />
+    </button>
+  </nav>
+{/if}
 
 <style type="text/scss">
   .volume {
@@ -167,8 +169,8 @@
     display: block;
     padding: 0;
     line-height: 1.5rem;
-    $font-sizes: attrs(rem(15px), rem(16px), rem(17px));
-    @include props(font-size, $font-sizes);
+    // $font-sizes: attrs(rem(15px), rem(16px), rem(17px));
+    // @include props(font-size, $font-sizes);
 
     @include fgcolor(color(neutral, 8));
     @include truncate(100%);
@@ -184,6 +186,7 @@
     &:disabled {
       cursor: text;
     }
+
     & + & {
       margin-left: 0.375rem;
     }
