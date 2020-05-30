@@ -2,6 +2,7 @@
   export async function preload({ params, query }) {
     const slug = params.book
     const url = `api/books/${slug}`
+    const tab = query.tab || 'overview'
 
     try {
       const res = await this.fetch(url)
@@ -15,10 +16,10 @@
 
         if (site !== '') {
           const { chlist } = await loadContent(this.fetch, slug, site)
-          return { book, site, chlist }
+          return { book, site, chlist, tab }
         }
 
-        return { book, site, chlists: [] }
+        return { book, site, chlists: [], tab }
       }
     } catch (err) {
       this.error(500, err.message)
@@ -71,12 +72,12 @@
     return volumes
   }
 
-  export function mapLatests(list) {
+  export function mapLatests(list, size = 10) {
     if (!list) return []
-    if (list.length <= 6) return list
+    if (list.length <= size) return list
 
     const start = list.length - 1
-    let stop = start - 5
+    let stop = start - size + 1
     if (stop < 0) stop = 0
 
     const output = []
@@ -106,7 +107,11 @@
   export let site
   export let chlist = []
 
+  export let tab = 'overview'
+
   $: sources = Object.keys(book.cr_anchors)
+  $: hasContent = sources.length > 0
+
   $: volumes = mapVolumes(chlist)
   $: latests = mapLatests(chlist)
 
@@ -130,6 +135,10 @@
 
     book = book
     reloading = false
+  }
+
+  function changeTab(newTab) {
+    tab = newTab
   }
 </script>
 
@@ -159,7 +168,7 @@
     <span>{book.vi_title}</span>
   </a>
 
-  <div class="info">
+  <section class="info">
     <div class="name">
       <h1 class="title">
         {book.vi_title}
@@ -233,51 +242,103 @@
         </div>
       {/if}
     </div>
-  </div>
+  </section>
 
-  <div class="summary">
-    <h2>Giới thiệu:</h2>
-    {#each book.vi_intro.split('\n') as line}
-      <p>{line}</p>
-    {/each}
-  </div>
+  <section class="meta">
+    <header class="meta-header">
+      <a
+        class="meta-header-tab"
+        class:_active={tab == 'overview'}
+        href="/{book.slug}?tab=overview"
+        on:click={() => changeTab('overview')}>
+        Tổng quan
+      </a>
+      <a
+        class="meta-header-tab"
+        class:_active={tab == 'content'}
+        href="/{book.slug}?tab=content"
+        on:click={() => changeTab('content')}>
+        Chương tiết
+      </a>
+      <a
+        class="meta-header-tab"
+        class:_active={tab == 'review'}
+        href="/{book.slug}?tab=review"
+        on:click={() => changeTab('review')}>
+        Bình luận
+      </a>
+    </header>
 
-  {#if sources.length > 0}
-    <div class="tabs" data-active={site}>
-      <span>Chọn nguồn:</span>
-      {#each sources as source}
-        <a
-          class="site"
-          class:_active={site === source}
-          href="/{book.slug}?site={source}"
-          on:click|preventDefault={() => changeSite(source, false)}
-          rel="nofollow">
-          {source}
-        </a>
-      {/each}
+    <div class="meta-tab" class:_active={tab == 'overview'}>
+      <div class="summary">
+        <h2>Giới thiệu:</h2>
+        {#each book.vi_intro.split('\n') as line}
+          <p>{line}</p>
+        {/each}
+      </div>
+
+      {#if hasContent}
+        <div class="tabs" data-active={site}>
+          <span>Chọn nguồn:</span>
+          {#each sources as source}
+            <a
+              class="site"
+              class:_active={site === source}
+              href="/{book.slug}?site={source}"
+              on:click|preventDefault={() => changeSite(source, false)}
+              rel="nofollow">
+              {source}
+            </a>
+          {/each}
+        </div>
+        <ChapList bslug={book.slug} label="Mới nhất" chaps={latests} />
+      {/if}
     </div>
 
-    <h2 class="content u-cf" data-site={site}>
-      <!-- <MIcon class="m-icon u-fl" name="list" /> -->
-      <span class="label u-fl">Mục lục</span>
-      <span class="count u-fl">({chlist.length} chương)</span>
-      <button
-        class="m-button _text u-fr"
-        class:_reload={reloading}
-        on:click={() => changeSite(site, true)}>
-        {#if reloading}
-          <MIcon class="m-icon" name="loader" />
-        {:else}
-          <span>Đổi mới: {relative_time(book.cr_mftimes[site])}</span>
-        {/if}
-      </button>
-    </h2>
+    <div class="meta-tab" class:_active={tab == 'content'}>
+      {#if hasContent}
+        <div class="tabs" data-active={site}>
+          <span>Chọn nguồn:</span>
+          {#each sources as source}
+            <a
+              class="site"
+              class:_active={site === source}
+              href="/{book.slug}?site={source}"
+              on:click|preventDefault={() => changeSite(source, false)}
+              rel="nofollow">
+              {source}
+            </a>
+          {/each}
+        </div>
 
-    <ChapList bslug={book.slug} label="Mới nhất" chaps={latests} />
-    {#each Object.entries(volumes) as [label, chaps]}
-      <ChapList bslug={book.slug} {label} {chaps} />
-    {/each}
-  {/if}
+        <h2 class="content u-cf" data-site={site}>
+          <!-- <MIcon class="m-icon u-fl" name="list" /> -->
+          <span class="label u-fl">Mục lục</span>
+          <span class="count u-fl">({chlist.length} chương)</span>
+          <button
+            class="m-button _text u-fr"
+            class:_reload={reloading}
+            on:click={() => changeSite(site, true)}>
+            {#if reloading}
+              <MIcon class="m-icon" name="loader" />
+            {:else}
+              <span>Đổi mới: {relative_time(book.cr_mftimes[site])}</span>
+            {/if}
+          </button>
+        </h2>
+
+        {#each Object.entries(volumes) as [label, chaps]}
+          <ChapList bslug={book.slug} {label} {chaps} />
+        {/each}
+      {:else}
+        <div class="empty">Không có nội dung</div>
+      {/if}
+    </div>
+
+    <div class="meta-tab" class:_active={tab == 'review'}>
+      <div class="empty">Đang hoàn thiện :(</div>
+    </div>
+  </section>
 
 </Layout>
 
@@ -414,7 +475,7 @@
     margin: 0.75rem 0;
     // padding-top: 0.375rem;
     line-height: 2rem;
-    @include border($pos: top);
+    // @include border($pos: top);
 
     @include clearfix;
 
@@ -448,6 +509,60 @@
 
   .count {
     @include fgcolor(color(neutral, 6));
+  }
+
+  .meta {
+    background-color: #fff;
+    margin: 0.75rem 0;
+    padding: 0 0.75rem;
+    border-radius: 0.75rem;
+    @include shadow(2);
+  }
+
+  $meta-height: 3rem;
+  .meta-header {
+    @include border($pos: bottom, $color: color(neutral, 3));
+    height: $meta-height;
+    display: flex;
+  }
+
+  .meta-header-tab {
+    height: $meta-height;
+    line-height: $meta-height;
+    width: 50%;
+    font-weight: 500;
+    text-align: center;
+    text-transform: uppercase;
+
+    @include font-size(2);
+    @include screen-min(sm) {
+      @include font-size(3);
+    }
+
+    @include fgcolor(color(neutral, 6));
+    &._active {
+      @include fgcolor(color(primary, 6));
+      @include border($pos: bottom, $color: color(primary, 5), $width: 2px);
+    }
+  }
+
+  .meta-tab {
+    display: none;
+    &._active {
+      display: block;
+      min-height: 50vh;
+    }
+  }
+
+  .empty {
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-style: italic;
+    @include font-size(4);
+    @include fgcolor(color(neutral, 5));
   }
 
   strong {
