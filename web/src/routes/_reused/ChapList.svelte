@@ -1,13 +1,7 @@
 <script>
-  export let label = 'Chính văn'
   export let bslug = ''
   export let chaps = []
 </script>
-
-<h3 class="volume">
-  <span class="label">{label}</span>
-  <span class="count">({chaps.length} chương)</span>
-</h3>
 
 <ul class="chap-list">
   {#each chaps as chap}
@@ -16,7 +10,8 @@
         class="chap-link"
         href="/{bslug}/{chap.url_slug}"
         rel="nofollow prefetch">
-        <span class="chap-text">{chap.vi_title}</span>
+        <span class="volume">{chap.vi_volume}</span>
+        <span class="title">{chap.vi_title}</span>
       </a>
     </li>
   {/each}
@@ -28,31 +23,27 @@
     padding-left: 0.5rem;
   }
 
-  .count {
-    @include fgcolor(color(neutral, 6));
-  }
+  $chap-size: 17.5rem;
+  $chap-break: $chap-size * 2 + 0.75 * 5;
 
   .chap-list {
-    margin-top: 0.25rem;
-    &:last-child {
-      margin-bottom: 0.75rem;
-    }
-    @include grid($size: minmax(20rem, 1fr), $gap: 0 0.5rem);
+    @include grid($size: minmax($chap-size, 1fr), $gap: 0 0.75rem);
   }
 
   .chap-item {
     display: block;
 
-    &:nth-child(odd) {
-      background-color: #fff;
-    }
-
     @include border($pos: bottom);
+
     &:first-child {
       @include border($pos: top);
     }
 
-    @include screen-min(sm) {
+    &:nth-child(even) {
+      background-color: color(neutral, 1);
+    }
+
+    @include screen-min($chap-break) {
       &:nth-child(2) {
         @include border($pos: top);
       }
@@ -66,21 +57,52 @@
       &:nth-child(4n + 3) {
         background-color: color(neutral, 1);
       }
+
+      // &:nth-child(4n),
+      // &:nth-child(4n + 3) {
+      //   @include border($pos: right);
+      // }
+
+      // &:nth-child(4n + 1),
+      // &:nth-child(4n + 2) {
+      //   @include border($pos: left);
+      // }
     }
   }
 
   .chap-link {
     display: block;
+    padding: 0.375rem 0.75rem;
 
-    @include fgcolor(color(neutral, 7));
+    &:visited {
+      .title {
+        font-style: italic;
+        @include fgcolor(color(neutral, 5));
+      }
+    }
+
     @include hover {
-      @include fgcolor(color(primary, 5));
+      .title {
+        @include fgcolor(color(primary, 5));
+      }
     }
   }
 
-  .chap-text {
+  .volume {
     display: block;
-    padding: 0.5rem 0.5rem;
+    padding: 0;
+    line-height: 1.25rem;
+    @include font-size(1);
+    text-transform: uppercase;
+    @include fgcolor(color(neutral, 5));
+    @include truncate(100%);
+  }
+
+  .title {
+    display: block;
+    padding: 0;
+    line-height: 1.5rem;
+    @include fgcolor(color(neutral, 8));
     @include truncate(100%);
   }
 </style>

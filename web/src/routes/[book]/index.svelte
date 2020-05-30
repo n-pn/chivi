@@ -3,6 +3,7 @@
     const slug = params.book
     const url = `api/books/${slug}`
     const tab = query.tab || 'overview'
+    const page = +(query.page || 1)
 
     try {
       const res = await this.fetch(url)
@@ -16,10 +17,10 @@
 
         if (site !== '') {
           const { chlist } = await loadContent(this.fetch, slug, site)
-          return { book, site, chlist, tab }
+          return { book, site, chlist, tab, page }
         }
 
-        return { book, site, chlists: [], tab }
+        return { book, site, chlists: [], tab, page }
       }
     } catch (err) {
       this.error(500, err.message)
@@ -72,7 +73,14 @@
     return volumes
   }
 
-  export function mapLatests(list, size = 10) {
+  export function mapContent(list, page = 1) {
+    const limit = 20
+    let offset = (page - 1) * limit
+    if (offset < 0) offset = 0
+    return list.slice(offset, offset + limit)
+  }
+
+  export function mapLatests(list, size = 6) {
     if (!list) return []
     if (list.length <= size) return list
 
@@ -105,6 +113,7 @@
 
   export let book
   export let site
+  export let page = 1
   export let chlist = []
 
   export let tab = 'overview'
@@ -112,7 +121,7 @@
   $: sources = Object.keys(book.cr_anchors)
   $: hasContent = sources.length > 0
 
-  $: volumes = mapVolumes(chlist)
+  $: content = mapContent(chlist, page)
   $: latests = mapLatests(chlist)
 
   $: book_url = `https://chivi.xyz/${book.slug}/`
@@ -327,9 +336,7 @@
           </button>
         </h2>
 
-        {#each Object.entries(volumes) as [label, chaps]}
-          <ChapList bslug={book.slug} {label} {chaps} />
-        {/each}
+        <ChapList bslug={book.slug} chaps={content} />
       {:else}
         <div class="empty">Không có nội dung</div>
       {/if}
@@ -408,10 +415,11 @@
 
   .summary {
     @include fgcolor(color(neutral, 7));
-  }
 
-  h2 {
-    margin-top: 0.75rem;
+    p {
+      margin: 0.75rem;
+      margin-top: 0;
+    }
   }
 
   .author {
@@ -432,7 +440,7 @@
   }
 
   .content {
-    // margin-left: 0.5rem;
+    margin-bottom: 0.75rem;
     // @include fgcolor(color(neutral, 6));
     // > :global(.m-icon) {
     //   margin-top: 0.375rem;
@@ -472,7 +480,8 @@
 
   .tabs {
     display: block;
-    margin: 0.75rem 0;
+    margin-bottom: 0.75rem;
+    // margin: 0.75rem 0;
     // padding-top: 0.375rem;
     line-height: 2rem;
     // @include border($pos: top);
@@ -549,6 +558,7 @@
   .meta-tab {
     display: none;
     &._active {
+      padding: 0.75rem 0;
       display: block;
       min-height: 50vh;
     }
