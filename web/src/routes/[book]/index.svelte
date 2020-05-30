@@ -250,21 +250,21 @@
         class="meta-header-tab"
         class:_active={tab == 'overview'}
         href="/{book.slug}?tab=overview"
-        on:click={() => changeTab('overview')}>
+        on:click|preventDefault={() => changeTab('overview')}>
         Tổng quan
       </a>
       <a
         class="meta-header-tab"
         class:_active={tab == 'content'}
         href="/{book.slug}?tab=content"
-        on:click={() => changeTab('content')}>
+        on:click|preventDefault={() => changeTab('content')}>
         Chương tiết
       </a>
       <a
         class="meta-header-tab"
         class:_active={tab == 'review'}
         href="/{book.slug}?tab=review"
-        on:click={() => changeTab('review')}>
+        on:click|preventDefault={() => changeTab('review')}>
         Bình luận
       </a>
     </header>
