@@ -87,14 +87,14 @@
 
       case 72:
         evt.preventDefault()
-        _goto(book_slug)
+        _goto(`/${book_slug}?tab=content`)
         break
 
       case 37:
       case 74:
         if (!evt.altKey) {
           evt.preventDefault()
-          if (prev_url) _goto(`${book_slug}/${prev_url}`)
+          if (prev_url) _goto(`/${book_slug}/${prev_url}`)
           else _goto(book_slug)
         }
         break
@@ -103,7 +103,7 @@
       case 75:
         if (!evt.altKey) {
           evt.preventDefault()
-          if (next_url) _goto(`${book_slug}/${next_url}`)
+          if (next_url) _goto(`/${book_slug}/${next_url}`)
           else _goto(`${book_slug}`)
         }
         break
@@ -280,7 +280,7 @@
         <span>Trước</span>
       </a>
     {:else}
-      <a class="m-button _line" href="/{book_slug}">
+      <a class="m-button _line" href="/{book_slug}?tab=content">
         <MIcon class="m-icon" name="list" />
         <span>Mục lục</span>
       </a>
@@ -292,7 +292,7 @@
         <MIcon class="m-icon" name="chevron-right" />
       </a>
     {:else if prev_url}
-      <a class="m-button _line" href="/{book_slug}">
+      <a class="m-button _line" href="/{book_slug}?tab=content">
         <MIcon class="m-icon" name="list" />
         <span>Mục lục</span>
       </a>

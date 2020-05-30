@@ -10,7 +10,7 @@
     return Object.assign(data, { page })
   }
 
-  export function page_url(page = 1, sort = 'access') {
+  export function makePageUrl(page = 1, sort = 'access') {
     const params = {}
     if (page > 1) params.page = page
     if (sort !== 'access') params.sort = sort
@@ -43,14 +43,52 @@
 
   $: pageMax = Math.floor((total - 1) / 20) + 1
   $: pageList = paginate_range(page, pageMax)
+
+  function handleKeypress(evt) {
+    switch (evt.keyCode) {
+      case 72:
+        evt.preventDefault()
+        changePage(1)
+        break
+
+      case 76:
+        evt.preventDefault()
+        changePage(pageMax)
+        break
+
+      case 37:
+      case 74:
+        if (!evt.altKey) {
+          evt.preventDefault()
+          changePage(page - 1)
+        }
+        break
+
+      case 39:
+      case 75:
+        if (!evt.altKey) {
+          evt.preventDefault()
+          changePage(page + 1)
+        }
+        break
+
+      default:
+        break
+    }
+  }
+
+  function changePage(newPage) {
+    if (newPage >= 1 && newPage <= pageMax) _goto(makePageUrl(newPage, sort))
+  }
 </script>
 
 <svelte:head>
   <title>Chivi - Chinese to Vietname Machine Translation</title>
 </svelte:head>
 
-<Layout>
+<svelte:window on:keydown={handleKeypress} />
 
+<Layout>
   <div class="sort">
     {#each Object.entries(sorts) as [type, label]}
       <a class="sort-type" class:_active={sort == type} href="/?sort={type}">
@@ -58,6 +96,7 @@
       </a>
     {/each}
   </div>
+
   <div class="list">
     {#each items as book}
       <a class="book" href={book.slug} rel="prefetch">
@@ -81,14 +120,14 @@
     <a
       class="page m-button _line"
       class._disable={page == 1}
-      href={page_url(1, sort)}>
+      href={makePageUrl(1, sort)}>
       <MIcon class="m-icon" name="chevrons-left" />
     </a>
 
     <a
       class="page m-button _line"
       class._disable={page == 1}
-      href={page_url(+page - 1, sort)}>
+      href={makePageUrl(+page - 1, sort)}>
       <MIcon class="m-icon" name="chevron-left" />
     </a>
 
@@ -97,7 +136,7 @@
         class="page m-button _line"
         class._disable={page == index}
         data-level={level}
-        href={page_url(index, sort)}>
+        href={makePageUrl(index, sort)}>
         <span>{index}</span>
       </a>
     {/each}
@@ -105,14 +144,14 @@
     <a
       class="page m-button _line"
       disabled={page == pageMax}
-      href={page_url(page + 1, sort)}>
+      href={makePageUrl(page + 1, sort)}>
       <MIcon class="m-icon" name="chevron-right" />
     </a>
 
     <a
       class="page m-button _line"
       disabled={page == pageMax}
-      href={page_url(pageMax, sort)}>
+      href={makePageUrl(pageMax, sort)}>
       <MIcon class="m-icon" name="chevrons-right" />
     </a>
 

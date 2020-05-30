@@ -33,7 +33,42 @@
     scroll.scrollIntoView({ behavior: 'smooth', block: 'start' })
     // window.scrollBy(0, -20)
   }
+
+  function handleKeypress(evt) {
+    switch (evt.keyCode) {
+      case 72:
+        evt.preventDefault()
+        changeFocus(1)
+        break
+
+      case 76:
+        evt.preventDefault()
+        changeFocus(total)
+        break
+
+      case 37:
+      case 74:
+        if (!evt.altKey) {
+          evt.preventDefault()
+          changeFocus(focus - 1)
+        }
+        break
+
+      case 39:
+      case 75:
+        if (!evt.altKey) {
+          evt.preventDefault()
+          changeFocus(focus + 1)
+        }
+        break
+
+      default:
+        break
+    }
+  }
 </script>
+
+<svelte:window on:keydown={handleKeypress} />
 
 <div class="chap" data-site={sname} id="chap" bind:this={scroll}>
   <ul class="chap-list">

@@ -119,7 +119,6 @@
   $: hasContent = sources.length > 0
 
   $: changeSite(site, false)
-
   $: latest = mapLatests(chlist)
 
   $: book_url = `https://chivi.xyz/${book.slug}/`
@@ -159,7 +158,7 @@
 
   function latestText(site) {
     const latest = book.cr_latests[site]
-    if (!latest) return '< bấm vào đây chưa cập nhật >'
+    if (!latest) return '< bấm vào đây để cập nhật >'
     return latest.name
   }
 </script>
