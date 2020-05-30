@@ -27,7 +27,7 @@
 <script>
   import MIcon from '$mould/MIcon.svelte'
   import Layout from '$layout/Layout.svelte'
-  import pagination_range from '$utils/pagination_range'
+  import paginate_range from '$utils/paginate_range'
 
   export let items = []
   export let total = 0
@@ -42,7 +42,7 @@
   }
 
   $: pageMax = Math.floor((total - 1) / 20) + 1
-  $: pageList = pagination_range(page, pageMax)
+  $: pageList = paginate_range(page, pageMax)
 </script>
 
 <svelte:head>

@@ -1,21 +1,79 @@
-<script>
-  export let bslug = ''
-  export let chaps = []
+<script context="module">
+  export function paginate(chaps, focus, limit = 50) {
+    let offset = (focus - 1) * limit
+    if (offset < 0) offset = 0
+    return chaps.slice(offset, offset + limit)
+  }
+
+  export function page_url(slug, site, page = 1) {
+    return `/${slug}?tab=content&site=${site}&page=${page}`
+  }
 </script>
 
-<ul class="chap-list">
-  {#each chaps as chap}
-    <li class="chap-item">
-      <a
-        class="chap-link"
-        href="/{bslug}/{chap.url_slug}"
-        rel="nofollow prefetch">
-        <span class="volume">{chap.vi_volume}</span>
-        <span class="title">{chap.vi_title}</span>
-      </a>
-    </li>
+<script>
+  import MIcon from '$mould/MIcon.svelte'
+  import paginate_range from '$utils/paginate_range'
+
+  export let chaps = []
+  export let bslug = ''
+  export let sname = ''
+  export let focus = 1
+  export let limit = 30
+
+  let scroll = null
+
+  $: items = paginate(chaps, focus, limit)
+  $: total = Math.floor((chaps.length - 1) / limit) + 1
+  $: range = paginate_range(focus, total)
+
+  function changeFocus(newFocus) {
+    focus = newFocus
+    scroll.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // window.scrollBy(0, -20)
+  }
+</script>
+
+<div class="chap" data-site={sname} id="chap" bind:this={scroll}>
+  <ul class="chap-list">
+    {#each items as chap}
+      <li class="chap-item">
+        <a
+          class="chap-link"
+          href="/{bslug}/{chap.url_slug}"
+          rel="nofollow prefetch">
+          <span class="volume">{chap.vi_volume}</span>
+          <span class="title">{chap.vi_title}</span>
+        </a>
+      </li>
+    {/each}
+  </ul>
+
+</div>
+
+<div class="pagi">
+  <button
+    class="page m-button _line"
+    on:click={() => changeFocus(1)}
+    disabled={focus == 1}>
+    <MIcon class="m-icon" name="chevrons-left" />
+  </button>
+
+  {#each range as index}
+    <button
+      class="page m-button _line"
+      disabled={focus == index}
+      on:click={() => changeFocus(index)}>
+      <span>{index}</span>
+    </button>
   {/each}
-</ul>
+
+  <button
+    class="page m-button _line"
+    disabled={focus == total}
+    on:click={() => changeFocus(total)}>
+    <MIcon class="m-icon" name="chevrons-right" />
+  </button>
+</div>
 
 <style type="text/scss">
   .volume {
@@ -57,16 +115,6 @@
       &:nth-child(4n + 3) {
         background-color: color(neutral, 1);
       }
-
-      // &:nth-child(4n),
-      // &:nth-child(4n + 3) {
-      //   @include border($pos: right);
-      // }
-
-      // &:nth-child(4n + 1),
-      // &:nth-child(4n + 2) {
-      //   @include border($pos: left);
-      // }
     }
   }
 
@@ -104,5 +152,23 @@
     line-height: 1.5rem;
     @include fgcolor(color(neutral, 8));
     @include truncate(100%);
+  }
+
+  .pagi {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .page {
+    // :global(.main._clear) & {
+    //   @include bgcolor(color(neutral, 2));
+    // }
+    &:disabled {
+      cursor: text;
+    }
+    & + & {
+      margin-left: 0.375rem;
+    }
   }
 </style>

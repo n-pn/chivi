@@ -1,4 +1,4 @@
-export default function pagination_range(currPage, pageMax) {
+export default function paginate_range(currPage, pageMax) {
   let pageFrom = currPage - 2
   if (pageFrom < 1) pageFrom = 1
 
