@@ -27,6 +27,7 @@
 <script>
   import MIcon from '$mould/MIcon.svelte'
   import Layout from '$layout/Layout.svelte'
+  import pagination_range from '$utils/pagination_range'
 
   export let items = []
   export let total = 0
@@ -41,24 +42,7 @@
   }
 
   $: pageMax = Math.floor((total - 1) / 20) + 1
-  $: pageList = make_pageList(page, pageMax)
-
-  function make_pageList(currPage, pageMax) {
-    let pageFrom = currPage - 2
-    if (pageFrom < 1) pageFrom = 1
-
-    let pageUpto = pageFrom + 4
-    if (pageUpto > pageMax) {
-      pageUpto = pageMax
-      pageFrom = pageUpto - 4
-      if (pageFrom < 1) pageFrom = 1
-    }
-
-    // console.log({ pageFrom, pageUpto })
-    let output = []
-    for (let i = pageFrom; i <= pageUpto; i++) output.push(i)
-    return output
-  }
+  $: pageList = pagination_range(page, pageMax)
 </script>
 
 <svelte:head>
@@ -94,7 +78,7 @@
     {/each}
   </div>
 
-  <div class="pagi" slot="footer">
+  <div class="pagi">
     {#if page == 1}
       <button class="page m-button _line" disabled>
         <MIcon class="m-icon" name="chevrons-left" />
@@ -283,7 +267,7 @@
   // }
 
   .pagi {
-    padding: 0.5rem 0;
+    padding: 0.75rem 0;
     display: flex;
     justify-content: center;
   }
@@ -292,6 +276,9 @@
     // :global(.main._clear) & {
     //   @include bgcolor(color(neutral, 2));
     // }
+    &:disabled {
+      cursor: text;
+    }
     & + & {
       margin-left: 0.5rem;
     }

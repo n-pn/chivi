@@ -13,14 +13,7 @@
       else {
         const { book } = data
         const site = query.site || book.cr_site_df
-        const { slug } = book
-
-        if (site !== '') {
-          const { chlist } = await loadContent(this.fetch, slug, site)
-          return { book, site, chlist, tab, page }
-        }
-
-        return { book, site, chlists: [], tab, page }
+        return { book, site, tab, page }
       }
     } catch (err) {
       this.error(500, err.message)
@@ -102,6 +95,10 @@
       ...book.vi_tags,
     ].join(',')
   }
+
+  export function page_url(slug, site, page = 1) {
+    return `/${slug}?tab=content&site=${site}&page=${page}`
+  }
 </script>
 
 <script>
@@ -110,25 +107,31 @@
   import ChapList from '$reused/ChapList.svelte'
 
   import relative_time from '$utils/relative_time'
+  import pagination_range from '$utils/pagination_range'
 
   export let book
   export let site
   export let page = 1
-  export let chlist = []
 
   export let tab = 'overview'
 
   $: sources = Object.keys(book.cr_anchors)
   $: hasContent = sources.length > 0
 
+  let chlist = []
+  $: if (tab == 'content') changeSite(site, false)
+
   $: content = mapContent(chlist, page)
   $: latests = mapLatests(chlist)
 
   $: book_url = `https://chivi.xyz/${book.slug}/`
   $: cover_url = `https://chivi.xyz/covers/${book.uuid}.jpg`
+  $: update = new Date(book.mftime)
   $: status = translateStatus(book.status)
   $: keywords = prepareKeywords(book)
-  $: updated_at = new Date(book.mftime * 1000)
+
+  $: pageMax = Math.floor((chlist.length - 1) / 20) + 1
+  $: pageList = pagination_range(page, pageMax)
 
   let reloading = false
   async function changeSite(source, reload = false) {
@@ -177,7 +180,7 @@
   <meta property="og:novel:read_url" content={book_url} />
   <meta property="og:url" content={book_url} />
   <meta property="og:novel:status" content={status} />
-  <meta property="og:novel:update_time" content={updated_at.toISOString()} />
+  <meta property="og:novel:update_time" content={update.toISOString()} />
 </svelte:head>
 
 <Layout>
@@ -227,7 +230,7 @@
         </span>
         <span class="mftime">
           <MIcon class="m-icon" name="clock" />
-          <time datetime={updated_at}>{relative_time(book.mftime)}</time>
+          <time datetime={update}>{relative_time(book.mftime)}</time>
         </span>
       </div>
 
@@ -271,21 +274,21 @@
         class="meta-header-tab"
         class:_active={tab == 'overview'}
         href="/{book.slug}?tab=overview"
-        on:click|preventDefault={() => changeTab('overview')}>
+        on:click|preventDefault|stopPropagation={() => changeTab('overview')}>
         Tổng quan
       </a>
       <a
         class="meta-header-tab"
         class:_active={tab == 'content'}
         href="/{book.slug}?tab=content"
-        on:click|preventDefault={() => changeTab('content')}>
+        on:click|preventDefault|stopPropagation={() => changeTab('content')}>
         Chương tiết
       </a>
       <a
         class="meta-header-tab"
         class:_active={tab == 'review'}
         href="/{book.slug}?tab=review"
-        on:click|preventDefault={() => changeTab('review')}>
+        on:click|preventDefault|stopPropagation={() => changeTab('review')}>
         Bình luận
       </a>
     </header>
@@ -364,6 +367,48 @@
             {/if}
           </button>
         </h2>
+
+        <div class="pagi">
+          {#if page == 1}
+            <button class="page m-button _line" disabled>
+              <MIcon class="m-icon" name="chevrons-left" />
+            </button>
+          {:else}
+            <a
+              class="page m-button _line"
+              href={page_url(book.slug, site, 1)}
+              on:click|preventDefault|stopPropagation={() => (page = 1)}>
+              <MIcon class="m-icon" name="chevrons-left" />
+            </a>
+          {/if}
+
+          {#each pageList as currPage}
+            {#if page == currPage}
+              <button class="page m-button _line _primary" disabled>
+                <span>{currPage}</span>
+              </button>
+            {:else}
+              <a
+                class="page m-button _line"
+                href={page_url(book.slug, site, currPage)}
+                on:click|preventDefault|stopPropagation={() => (page = currPage)}>
+                <span>{currPage}</span>
+              </a>
+            {/if}
+          {/each}
+          {#if page == pageMax}
+            <button class="page m-button _line" disabled>
+              <MIcon class="m-icon" name="chevrons-right" />
+            </button>
+          {:else}
+            <a
+              class="page m-button _line"
+              href={page_url(book.slug, site, pageMax)}
+              on:click|preventDefault|stopPropagation={() => (page = pageMax)}>
+              <MIcon class="m-icon" name="chevrons-right" />
+            </a>
+          {/if}
+        </div>
 
         <ChapList bslug={book.slug} chaps={content} />
       {:else}
@@ -649,6 +694,9 @@
 
     .latest-site {
       max-width: 5rem;
+      text-transform: uppercase;
+      font-weight: 500;
+      @include font-size(1);
     }
 
     .latest-time {
@@ -665,6 +713,11 @@
     display: block;
     padding: 0.375rem 0.75rem;
     @include fgcolor(color(neutral, 6));
+
+    .latest-time & {
+      @include font-size(2);
+      // @include fgcolor(color(neutral, 5));
+    }
   }
 
   .latest-link {
@@ -675,6 +728,24 @@
     @include fgcolor(color(neutral, 6));
     &:hover {
       @include fgcolor(color(primary, 6));
+    }
+  }
+
+  .pagi {
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .page {
+    // :global(.main._clear) & {
+    //   @include bgcolor(color(neutral, 2));
+    // }
+    &:disabled {
+      cursor: text;
+    }
+    & + & {
+      margin-left: 0.5rem;
     }
   }
 </style>
