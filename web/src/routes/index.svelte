@@ -1,6 +1,6 @@
 <script context="module">
   export async function preload({ query }) {
-    const page = query.page || 1
+    const page = +(query.page || 1)
     let url = `api/books?page=${page}`
     const sort = query.sort || 'access'
     url += `&sort=${sort}`
@@ -54,9 +54,7 @@
   <div class="sort">
     <span class="label">Sắp xếp:</span>
     {#each Object.entries(sorts) as [type, label]}
-      <a class="type" class:_active={sort == type} href="/?sort={type}">
-        {label}
-      </a>
+      <a class="type" active="d{sort == type}" href="/?sort={type}">{label}</a>
     {/each}
   </div>
   <div class="list">
@@ -79,36 +77,43 @@
   </div>
 
   <div class="pagi">
-    {#if page == 1}
-      <button class="page m-button _line" disabled>
-        <MIcon class="m-icon" name="chevrons-left" />
-      </button>
-    {:else}
-      <a class="page m-button _line" href={page_url(1, sort)}>
-        <MIcon class="m-icon" name="chevrons-left" />
-      </a>
-    {/if}
+    <a
+      class="page m-button _line"
+      class._disable={page == 1}
+      href={page_url(1, sort)}>
+      <MIcon class="m-icon" name="chevrons-left" />
+    </a>
 
-    {#each pageList as currPage}
-      {#if page == currPage}
-        <button class="page m-button _line _primary" disabled>
-          <span>{currPage}</span>
-        </button>
-      {:else}
-        <a class="page m-button _line" href={page_url(currPage, sort)}>
-          <span>{currPage}</span>
-        </a>
-      {/if}
-    {/each}
-    {#if page == pageMax}
-      <button class="page m-button _line" disabled>
-        <MIcon class="m-icon" name="chevrons-right" />
-      </button>
-    {:else}
-      <a class="page m-button _line" href={page_url(pageMax, sort)}>
-        <MIcon class="m-icon" name="chevrons-right" />
+    <a
+      class="page m-button _line"
+      class._disable={page == 1}
+      href={page_url(+page - 1, sort)}>
+      <MIcon class="m-icon" name="chevron-left" />
+    </a>
+
+    {#each pageList as [index, level]}
+      <a
+        class="page m-button _line"
+        class._disable={page == index}
+        data-level={level}
+        href={page_url(index, sort)}>
+        <span>{index}</span>
       </a>
-    {/if}
+    {/each}
+
+    <a
+      class="page m-button _line"
+      disabled={page == pageMax}
+      href={page_url(page + 1, sort)}>
+      <MIcon class="m-icon" name="chevron-right" />
+    </a>
+
+    <a
+      class="page m-button _line"
+      disabled={page == pageMax}
+      href={page_url(pageMax, sort)}>
+      <MIcon class="m-icon" name="chevrons-right" />
+    </a>
 
   </div>
 
@@ -267,20 +272,49 @@
   // }
 
   .pagi {
-    padding: 0.75rem 0;
-    display: flex;
+    margin: 0.75rem 0;
+    @include flex($gap: 0.375rem);
     justify-content: center;
   }
 
   .page {
-    // :global(.main._clear) & {
-    //   @include bgcolor(color(neutral, 2));
-    // }
-    &:disabled {
+    &[disabled] {
       cursor: text;
     }
+
     & + & {
       margin-left: 0.5rem;
+    }
+
+    & + & {
+      margin-left: 0.375rem;
+    }
+
+    &[data-level] {
+      display: none;
+    }
+
+    &[data-level='0'] {
+      display: inline-block;
+    }
+
+    &[data-level='1'] {
+      @include screen-min(sm) {
+        display: inline-block;
+      }
+    }
+
+    &[data-level='2'] {
+      @include screen-min(md) {
+        display: inline-block;
+      }
+    }
+
+    &[data-level='3'],
+    &[data-level='4'] {
+      @include screen-min(lg) {
+        display: inline-block;
+      }
     }
   }
 </style>

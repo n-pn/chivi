@@ -443,11 +443,18 @@
 
   .summary {
     @include fgcolor(color(neutral, 7));
-
     p {
-      margin: 0.75rem;
-      margin-top: 0;
+      $font-sizes: attrs(rem(15px), rem(16px), rem(17px));
+      @include props(font-size, $font-sizes);
     }
+    p + p {
+      margin-top: 0.75rem;
+    }
+
+    // p {
+    //   margin: 0.75rem;
+    //   margin-top: 0;
+    // }
   }
 
   .author {
@@ -550,10 +557,16 @@
 
   .meta {
     background-color: #fff;
-    margin: 0.75rem 0;
+    margin: 0.75rem -0.75rem;
     padding: 0 0.75rem;
     border-radius: 0.75rem;
     @include shadow(2);
+    @include screen-min(md) {
+      margin-left: 0;
+      margin-right: 0;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
   }
 
   $meta-height: 3rem;

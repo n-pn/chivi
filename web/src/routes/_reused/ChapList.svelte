@@ -24,9 +24,11 @@
 
   $: items = paginate(chaps, focus, limit)
   $: total = Math.floor((chaps.length - 1) / limit) + 1
-  $: range = paginate_range(focus, total)
+  $: range = paginate_range(focus, total, 7)
 
   function changeFocus(newFocus) {
+    if (newFocus < 1) newFocus = 1
+    if (newFocus > total) newFocus = total
     focus = newFocus
     scroll.scrollIntoView({ behavior: 'smooth', block: 'start' })
     // window.scrollBy(0, -20)
@@ -50,7 +52,7 @@
 
 </div>
 
-<div class="pagi">
+<nav class="pagi">
   <button
     class="page m-button _line"
     on:click={() => changeFocus(1)}
@@ -58,22 +60,37 @@
     <MIcon class="m-icon" name="chevrons-left" />
   </button>
 
-  {#each range as index}
+  <button
+    class="page m-button _line"
+    on:click={() => changeFocus(focus - 1)}
+    disabled={focus == 1}>
+    <MIcon class="m-icon" name="chevron-left" />
+  </button>
+
+  {#each range as [index, level]}
     <button
       class="page m-button _line"
       disabled={focus == index}
-      on:click={() => changeFocus(index)}>
+      on:click={() => changeFocus(index)}
+      data-level={level}>
       <span>{index}</span>
     </button>
   {/each}
 
   <button
     class="page m-button _line"
-    disabled={focus == total}
-    on:click={() => changeFocus(total)}>
+    on:click={() => changeFocus(focus + 1)}
+    disabled={focus == total}>
+    <MIcon class="m-icon" name="chevron-right" />
+  </button>
+
+  <button
+    class="page m-button _line"
+    on:click={() => changeFocus(total)}
+    disabled={focus == total}>
     <MIcon class="m-icon" name="chevrons-right" />
   </button>
-</div>
+</nav>
 
 <style type="text/scss">
   .volume {
@@ -150,25 +167,52 @@
     display: block;
     padding: 0;
     line-height: 1.5rem;
+    $font-sizes: attrs(rem(15px), rem(16px), rem(17px));
+    @include props(font-size, $font-sizes);
+
     @include fgcolor(color(neutral, 8));
     @include truncate(100%);
   }
 
   .pagi {
     margin-top: 0.75rem;
-    display: flex;
+    @include flex($gap: 0.375rem);
     justify-content: center;
   }
 
   .page {
-    // :global(.main._clear) & {
-    //   @include bgcolor(color(neutral, 2));
-    // }
     &:disabled {
       cursor: text;
     }
     & + & {
       margin-left: 0.375rem;
+    }
+
+    &[data-level] {
+      display: none;
+    }
+
+    &[data-level='0'] {
+      display: inline-block;
+    }
+
+    &[data-level='1'] {
+      @include screen-min(sm) {
+        display: inline-block;
+      }
+    }
+
+    &[data-level='2'] {
+      @include screen-min(md) {
+        display: inline-block;
+      }
+    }
+
+    &[data-level='3'],
+    &[data-level='4'] {
+      @include screen-min(lg) {
+        display: inline-block;
+      }
     }
   }
 </style>
