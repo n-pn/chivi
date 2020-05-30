@@ -260,7 +260,7 @@
     <MIcon class="m-icon _compass" name="compass" />
   </button>
 
-  <article class:_reload={pageReloading}>
+  <article class="convert" class:_reload={pageReloading}>
     {#each content as line, idx}
       <div
         class="line"
@@ -273,7 +273,7 @@
     {/each}
   </article>
 
-  <footer>
+  <footer class="footer">
     {#if prev_url}
       <a class="m-button _line" href="/{book_slug}/{prev_url}">
         <MIcon class="m-icon" name="chevron-left" />
@@ -319,7 +319,7 @@
 {/if}
 
 <style lang="scss">
-  article {
+  .convert {
     padding: 0.75rem 0;
     word-wrap: break-word;
 
@@ -355,13 +355,10 @@
     }
   }
 
-  footer {
+  .footer {
     margin: 0.75rem 0;
     @include flex($gap: 0.375rem);
     justify-content: center;
-  }
-
-  @mixin token-focus($color: blue) {
   }
 
   @mixin token($color: blue) {
