@@ -662,6 +662,7 @@
     max-width: 100%;
 
     tr {
+      width: 100%;
       @include border($pos: bottom);
       &:nth-child(even) {
         @include bgcolor(color(neutral, 1));
@@ -720,11 +721,26 @@
     }
   }
 
+  .latest-chap {
+    width: 35rem;
+
+    max-width: 60vw;
+    @include screen-min(sm) {
+      max-width: 50vw;
+    }
+    @include screen-min(lg) {
+      max-width: 40vw;
+    }
+  }
+
   .latest-link {
     display: block;
     padding: 0.375rem 0.75rem;
     font-weight: 400;
     font-style: italic;
+    width: auto;
+    @include truncate();
+
     @include fgcolor(color(neutral, 6));
     &:hover {
       @include fgcolor(color(primary, 6));
@@ -745,7 +761,7 @@
       cursor: text;
     }
     & + & {
-      margin-left: 0.5rem;
+      margin-left: 0.375rem;
     }
   }
 </style>
