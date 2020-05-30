@@ -155,19 +155,15 @@
     const target = evt.target
     if (target === elemOnFocus) return showUpsertModal()
 
+    if (target.nodeName !== 'X-V') return
     if (elemOnFocus) elemOnFocus.classList.remove('_active')
 
     lineOnFocus = idx
     lookupLine = content[idx].map((x) => x[0]).join('')
 
-    if (target.nodeName !== 'X-V') {
-      elemOnFocus = null
-      lookupFrom = 0
-    } else {
-      elemOnFocus = target
-      elemOnFocus.classList.add('_active')
-      lookupFrom = +elemOnFocus.dataset['p']
-    }
+    elemOnFocus = target
+    elemOnFocus.classList.add('_active')
+    lookupFrom = +elemOnFocus.dataset['p']
 
     if (lookupEnabled) lookupActived = true
   }
@@ -178,10 +174,11 @@
   }
 
   function renderMode(idx, hover, focus) {
-    if (idx == focus) return 2
-    if (idx < hover - 4) return 1
-    if (idx > hover + 5) return 1
-    return 2
+    if (idx == focus || idx == hover) return 2
+    return 1
+    // if (idx < hover - 4) return 1
+    // if (idx > hover + 5) return 1
+    // return 2
   }
 
   function showUpsertModal(tab = null) {
@@ -266,7 +263,9 @@
   <article class:_reload={pageReloading}>
     {#each content as line, idx}
       <div
-        class:_focus={idx == lineOnHover || idx == lineOnFocus}
+        class="line"
+        class:_focus={idx == lineOnFocus}
+        class:_hover={idx == lineOnHover}
         on:mouseenter={() => (lineOnHover = idx)}
         on:click={(event) => handleClick(event, idx)}>
         {@html render_convert(line, renderMode(idx, lineOnHover, lineOnFocus), idx == '0' ? 'h1' : 'p')}
@@ -362,34 +361,45 @@
     justify-content: center;
   }
 
-  @mixin token($color: blue) {
-    border-color: color($color, 3);
-
+  @mixin token-focus($color: blue) {
     &._active,
     &:hover {
       color: color($color, 6);
     }
   }
 
-  $token-colors: blue, teal, red, orange;
+  @mixin token-hover($color: blue) {
+    border-bottom: 1px solid color($color, 3);
+  }
 
   :global(x-v) {
-    position: relative;
-    border-bottom: 1px solid transparent;
-
-    div._focus & {
+    .line._hover & {
       cursor: pointer;
 
       &[data-d='1'] {
-        @include token(blue);
+        @include token-hover(blue);
       }
 
       &[data-d='2'] {
-        @include token(orange);
+        @include token-hover(orange);
       }
 
       &[data-d='3'] {
-        @include token(red);
+        @include token-hover(red);
+      }
+    }
+
+    .line._focus & {
+      &[data-d='1'] {
+        @include token-focus(blue);
+      }
+
+      &[data-d='2'] {
+        @include token-focus(orange);
+      }
+
+      &[data-d='3'] {
+        @include token-focus(red);
       }
     }
   }
@@ -405,7 +415,7 @@
 
   :global(.m-icon._reload) {
     animation-name: spin;
-    animation-duration: 1000ms;
+    animation-duration: 0.5s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
   }

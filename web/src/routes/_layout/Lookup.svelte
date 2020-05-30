@@ -104,6 +104,15 @@
   function handleKeypress(evt) {
     if (evt.keyCode == 27 && on_top) active = false
   }
+
+  function renderVietphrase(words) {
+    let res = []
+    for (let word of words) {
+      if (word === '') res.push('<em>&lt;đã xoá&gt;</em>')
+      else res.push(word)
+    }
+    return res.join('; ')
+  }
 </script>
 
 <svelte:window on:keydown={handleKeypress} />
@@ -132,9 +141,11 @@
         {#each Object.entries(entries) as [name, items]}
           {#if items.length > 0}
             <div class="item">
-              <h4>{name}</h4>
+              <h4 class="name">{name}</h4>
               {#if name == 'vietphrase'}
-                <p class="viet">{items.join(', ')}</p>
+                <p class="viet">
+                  {@html renderVietphrase(items)}
+                </p>
               {:else}
                 {#each items as line}
                   <p class="term">{line}</p>
@@ -257,7 +268,8 @@
       border-top: 1px solid color(neutral, 3);
     }
 
-    :global(x-z) {
+    :global(x-z),
+    :global(x-v) {
       cursor: pointer;
       @include hover {
         @include fgcolor(color(primary, 5));
@@ -265,27 +277,6 @@
 
       &._active {
         @include fgcolor(color(primary, 5));
-      }
-    }
-
-    :global(x-v) {
-      cursor: pointer;
-      border-bottom: 1px solid transparent;
-
-      &[data-d='1'] {
-        @include token(blue);
-      }
-
-      &[data-d='2'] {
-        @include token(teal);
-      }
-
-      &[data-d='3'] {
-        @include token(red);
-      }
-
-      &[data-d='4'] {
-        @include token(orange);
       }
     }
   }

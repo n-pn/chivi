@@ -570,8 +570,12 @@
   .actions {
     // margin: .75rem 0;
     margin: 0.5rem 0;
-    justify-content: right;
+
     @include flex($gap: 0.5rem, $child: '.m-button');
+
+    .m-button {
+      margin-left: auto;
+    }
   }
 
   .footer {
