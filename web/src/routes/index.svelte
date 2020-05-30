@@ -35,9 +35,8 @@
 
   const sorts = {
     access: 'Vừa xem',
-    update: 'Mới cập nhật',
+    update: 'Đổi mới',
     score: 'Đánh giá',
-    votes: 'Lượt đánh giá',
     tally: 'Tổng hợp',
   }
 
@@ -69,7 +68,7 @@
 <Layout>
 
   <div class="sort">
-    <span class="label">Sắp xếp theo:</span>
+    <span class="label">Sắp xếp:</span>
     {#each Object.entries(sorts) as [type, label]}
       <a class="type" class:_active={sort == type} href="/?sort={type}">
         {label}
@@ -223,32 +222,40 @@
   }
 
   .sort {
-    margin-top: 0.25rem;
+    display: flex;
+    justify-content: center;
+
+    margin-top: 0.75rem;
     margin-bottom: 0.75rem;
 
-    display: flex;
-    flex-wrap: wrap;
-
     line-height: 2rem;
-    @include clearfix;
-    .label {
-      font-weight: 500;
-      padding-top: 0.375rem;
+    // flex-wrap: wrap;
 
-      @include font-size(5);
-      // @include fgcolor(color(neutral, 6));
+    @include clearfix;
+
+    .label {
+      display: none;
+      @include screen-min(sm) {
+        display: inline-block;
+        font-weight: 500;
+        text-transform: uppercase;
+        @include font-size(2);
+        @include fgcolor(color(neutral, 6));
+      }
     }
     .type {
+      cursor: pointer;
+
       margin-left: 0.5rem;
-      margin-top: 0.5rem;
 
       text-transform: uppercase;
       padding: 0 0.5rem;
       font-weight: 500;
-      cursor: pointer;
+
+      @include truncate(null);
+
       @include fgcolor(color(neutral, 7));
       @include font-size(2);
-
       @include border();
       @include radius();
       &._active {
