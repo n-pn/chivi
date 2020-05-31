@@ -15,15 +15,7 @@
       let lists = {}
       if (tab === 'content' && site !== '') {
         const { chlist } = await loadContent(this.fetch, slug, site)
-        const last = chlist[chlist.length - 1]
-        if (last) {
-          book.cr_latests[site] = {
-            csid: last.csid,
-            name: last.vi_title,
-            slug: last.url_slug,
-          }
-        }
-
+        book = updateLatest(book, site, chlist)
         lists[site] = chlist
       }
 
@@ -33,15 +25,24 @@
     this.error(res.status, data.msg)
   }
 
+  export function updateLatest(book, site, list) {
+    if (list.length == 0) return book
+
+    const lastest = list[list.length - 1]
+    if (lastest) {
+      book.cr_latests[site] = {
+        csid: lastest.csid,
+        name: lastest.vi_title,
+        slug: lastest.title_slug,
+      }
+    }
+
+    return book
+  }
+
   export async function loadContent(api, slug, site, reload = false) {
-    const key = `${slug}|${site}`
+    const url = `api/books/${slug}/${site}?reload=${reload}`
 
-    // if (!reload) {
-    //   const data = cachedContent[key]
-    //   if (data) return data
-    // }
-
-    let url = `api/books/${slug}/${site}?reload=${reload}`
     try {
       const res = await api(url)
       const data = await res.json()
@@ -53,7 +54,7 @@
     }
   }
 
-  export function translateStatus(status) {
+  export function mapStatus(status) {
     switch (status) {
       case 0:
         return 'Còn tiếp'
@@ -64,37 +65,6 @@
       default:
         return 'Không rõ'
     }
-  }
-
-  export function mapVolumes(list) {
-    if (!list) return {}
-
-    let volumes = {}
-    for (const chap of list) {
-      volumes[chap.vi_volume] = volumes[chap.vi_volume] || []
-      volumes[chap.vi_volume].push(chap)
-    }
-    return volumes
-  }
-
-  export function mapContent(list, page = 1) {
-    const limit = 50
-    let offset = (page - 1) * limit
-    if (offset < 0) offset = 0
-    return list.slice(offset, offset + limit)
-  }
-
-  export function mapLatests(list, size = 6) {
-    if (!list) return []
-    if (list.length <= size) return list
-
-    const start = list.length - 1
-    let stop = start - size + 1
-    if (stop < 0) stop = 0
-
-    const output = []
-    for (let i = start; i >= stop; i--) output.push(list[i])
-    return output
   }
 
   export function prepareKeywords(book) {
@@ -135,7 +105,7 @@
   $: book_url = `https://chivi.xyz/${book.slug}/`
   $: cover_url = `https://chivi.xyz/covers/${book.uuid}.jpg`
   $: update = new Date(book.mftime)
-  $: status = translateStatus(book.status)
+  $: status = mapStatus(book.status)
   $: keywords = prepareKeywords(book)
 
   let reloading = false
@@ -155,16 +125,7 @@
     if (book.mftime < mftime) book.mftime = mftime
     if (book.cr_mftimes[site] < mftime) book.cr_mftimes[site] = mftime
 
-    const last = chaps[chaps.length - 1]
-    if (last) {
-      book.cr_latests[site] = {
-        csid: last.csid,
-        name: last.vi_title,
-        slug: last.url_slug,
-      }
-    }
-
-    book = book // trigger update
+    book = updateLatest(book, site, data.chlist)
     reloading = false
   }
 

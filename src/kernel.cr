@@ -29,41 +29,54 @@ module Kernel
     file = ChapList.path_for(info.uuid, site)
     expiry = reload ? 6.minutes : gen_expiry(info.status)
 
-    mftime = info.cr_mftimes[site]? || 0_i64
+    mftime = info.cr_mftimes[site]? || InfoSpider::EPOCH
     return {ChapList.read!(file), mftime} unless Utils.outdated?(file, expiry)
 
     spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: false)
-
-    new_mftime = spider.get_mftime!
-    new_mftime = Time.local.to_unix_ms if new_mftime == InfoSpider::EPOCH
-
-    if new_mftime > mftime
-      mftime = new_mftime
-      info.set_mftime(mftime)
-      info.cr_mftimes[site] = mftime
-      info.set_status(spider.get_status!)
-    end
 
     chaps = spider.get_chaps!
     chaps.each do |item|
       item.vi_title = Engine.translate(item.zh_title, info.uuid, user, true)
       item.vi_volume = Engine.translate(item.zh_volume, info.uuid, user, true)
-
       item.gen_slug(20)
     end
 
+    new_mftime = spider.get_mftime!
+
     if latest = chaps.last?
-      info.cr_latests[site] = {
-        csid: latest.csid,
-        name: latest.vi_title,
-        slug: latest.title_slug,
-      }
+      if changed?(latest, info.cr_latests[site]?)
+        info.cr_latests[site] = {
+          csid: latest.csid,
+          name: latest.vi_title,
+          slug: latest.title_slug,
+        }
+
+        if new_mftime <= mftime &&
+           if info.mftime > mftime
+             new_mftime = info.mftime
+           else
+             new_mftime = Time.local.to_unix_ms
+           end
+        end
+
+        mftime = new_mftime
+        info.set_mftime(mftime)
+        info.cr_mftimes[site] = mftime
+        info.set_status(spider.get_status!)
+
+        BookRepo.save!(info)
+      end
     end
 
-    BookRepo.save!(info)
     ChapList.save!(file, chaps)
 
     {chaps, mftime}
+  end
+
+  private def changed?(new_latest : ChapItem?, old_latest)
+    return false unless new_latest
+    return true unless old_latest
+    new_latest.csid != old_latest[:csid]
   end
 
   def load_chap(info : VpInfo, site : String, csid : String, user = "guest", mode = 0, unique : Bool = false)

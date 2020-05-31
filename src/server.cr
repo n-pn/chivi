@@ -182,10 +182,10 @@ module Server
 
     chlist = chlist.map do |chap|
       {
-        csid:      chap.csid,
-        vi_title:  chap.vi_title,
-        vi_volume: chap.vi_volume,
-        url_slug:  chap.slug_for(site),
+        csid:       chap.csid,
+        vi_title:   chap.vi_title,
+        vi_volume:  chap.vi_volume,
+        title_slug: chap.title_slug,
       }
     end
 

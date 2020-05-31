@@ -89,7 +89,7 @@
       <li class="chap-item">
         <a
           class="chap-link"
-          href="/{bslug}/{chap.url_slug}"
+          href="/{bslug}/{chap.title_slug}-{sname}-{chap.csid}"
           rel="nofollow prefetch">
           <span class="volume">{chap.vi_volume}</span>
           <span class="title">{chap.vi_title}</span>
