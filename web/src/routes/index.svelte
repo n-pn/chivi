@@ -247,7 +247,7 @@
     z-index: 1;
 
     img {
-      max-width: 100%;
+      width: 100%;
       max-height: 100%;
       object-fit: cover;
       @include radius();
