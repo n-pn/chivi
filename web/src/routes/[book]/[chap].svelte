@@ -77,7 +77,7 @@
 
   function handleKeypress(evt) {
     if (upsertEnabled) return
-    if (evt.ctrlKey || evt.shiftKey) return
+    if (evt.ctrlKey) return
 
     // if (!evt.altKey) return
 
