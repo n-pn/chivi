@@ -14,9 +14,8 @@
 
       let lists = {}
       if (tab === 'content' && site !== '') {
-        const data = await loadContent(this.fetch, slug, site)
-
-        const last = data.chlist[chaps.length - 1]
+        const { chlist } = await loadContent(this.fetch, slug, site)
+        const last = chlist[chlist.length - 1]
         if (last) {
           book.cr_latests[site] = {
             csid: last.csid,
@@ -25,7 +24,7 @@
           }
         }
 
-        lists[site] = data.chlist
+        lists[site] = chlist
       }
 
       return { book, site, tab, page, lists }
