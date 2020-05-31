@@ -35,7 +35,14 @@ module Kernel
     spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: false)
 
     new_mftime = spider.get_mftime!
-    new_mftime = info.mftime if new_mftime == InfoSpider::EPOCH
+    new_mftime = Time.local.to_unix_ms if new_mftime == InfoSpider::EPOCH
+
+    if new_mftime > mftime
+      mftime = new_mftime
+      info.set_mftime(mftime)
+      info.cr_mftimes[site] = mftime
+      info.set_status(spider.get_status!)
+    end
 
     chaps = spider.get_chaps!
     chaps.each do |item|
@@ -43,14 +50,6 @@ module Kernel
       item.vi_volume = Engine.translate(item.zh_volume, info.uuid, user, true)
 
       item.gen_slug(20)
-    end
-
-    if new_mftime > mftime
-      mftime = new_mftime
-
-      info.set_mftime(mftime)
-      info.cr_mftimes[site] = mftime
-      info.set_status(spider.get_status!)
     end
 
     if latest = chaps.last?
