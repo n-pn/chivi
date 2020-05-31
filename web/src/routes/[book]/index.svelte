@@ -15,6 +15,16 @@
       let lists = {}
       if (tab === 'content' && site !== '') {
         const data = await loadContent(this.fetch, slug, site)
+
+        const last = data.chlist[chaps.length - 1]
+        if (last) {
+          book.cr_latests[site] = {
+            csid: last.csid,
+            name: last.vi_title,
+            slug: last.url_slug,
+          }
+        }
+
         lists[site] = data.chlist
       }
 
