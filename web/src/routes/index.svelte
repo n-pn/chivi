@@ -104,13 +104,13 @@
   <div class="list">
     {#each items as book}
       <a class="book" href={book.slug} rel="prefetch">
-        <picture class="-cover">
+        <picture class="book-cover">
           <source srcset="/images/{book.uuid}.webp" type="image/webp" />
           <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
           <img src="/covers/{book.uuid}.jpg" alt="" loading="lazy" />
         </picture>
 
-        <div class="-title">{book.vi_title}</div>
+        <div class="book-title">{book.vi_title}</div>
         <div class="-genre">{book.vi_genre}</div>
         <div class="-score">
           <span class="--icon">⭐</span>
@@ -178,7 +178,7 @@
     margin-bottom: 3rem;
 
     @include hover {
-      .-title {
+      .book-title {
         @include fgcolor(color(primary, 5));
       }
     }
@@ -191,33 +191,6 @@
       top: 0;
       left: 0;
       z-index: -1;
-    }
-
-    .-cover {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      z-index: 1;
-
-      img {
-        @include radius();
-        // display: block;
-        min-width: 100%;
-        height: auto;
-      }
-    }
-
-    .-title {
-      width: 100%;
-      position: absolute;
-      bottom: -1.75rem;
-      font-weight: 500;
-      @include fgcolor(color(neutral, 7));
-      @include truncate();
-      @include font-size(3);
-      // line-height: 1rem;
-      // @include font-family(narrow);
     }
 
     .-genre,
@@ -251,6 +224,33 @@
         font-size: 95%;
         // margin-top: -0.125rem;
       }
+    }
+  }
+
+  .book-title {
+    width: 100%;
+    position: absolute;
+    bottom: -1.75rem;
+    font-weight: 500;
+    @include fgcolor(color(neutral, 7));
+    @include truncate();
+    @include font-size(3);
+    // line-height: 1rem;
+    // @include font-family(narrow);
+  }
+
+  .book-cover {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    z-index: 1;
+
+    img {
+      min-width: 100%;
+      height: 100%;
+      object-fit: cover;
+      @include radius();
     }
   }
 

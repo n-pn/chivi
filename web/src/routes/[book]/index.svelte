@@ -12,13 +12,13 @@
       const { book } = data
       const site = query.site || book.cr_site_df || ''
 
-      let chlist = []
+      let lists = {}
       if (tab === 'content' && site !== '') {
         const data = await loadContent(this.fetch, slug, site)
-        chlist = data.chlist
+        lists[site] = data.chlist
       }
 
-      return { book, site, tab, page, chlist }
+      return { book, site, tab, page, lists }
     }
 
     this.error(res.status, data.msg)
@@ -110,10 +110,13 @@
   export let book
   export let site
   export let page = 1
-  export let chlist = []
+  export let lists = {}
 
   export let tab = 'overview'
   export let latest = true
+
+  let chaps = []
+  $: chaps = lists[site] || []
 
   $: sources = Object.keys(book.cr_anchors)
   $: hasContent = sources.length > 0
@@ -129,20 +132,21 @@
   let reloading = false
 
   async function changeSite(source, reload = false) {
-    latest = true
-    if (site == source && reload == false && chlist.length > 0) return
-
     site = source
+    latest = true
+
+    if (reload == false && lists[site]) return
     reloading = true
 
     const data = await loadContent(fetch, book.slug, site, reload)
-    chlist = data.chlist
+    lists[site] = data.chlist
+    lists = lists // trigger update
 
     const mftime = data.mftime
     if (book.mftime < mftime) book.mftime = mftime
     if (book.cr_mftimes[site] < mftime) book.cr_mftimes[site] = mftime
 
-    const last = chlist[chlist.length - 1]
+    const last = chaps[chaps.length - 1]
     if (last) {
       book.cr_latests[site] = {
         csid: last.csid,
@@ -151,7 +155,7 @@
       }
     }
 
-    book = book
+    book = book // trigger update
     reloading = false
   }
 
@@ -366,7 +370,7 @@
         <h3 class="caption _recent u-cf" data-site={site}>
           <!-- <MIcon class="m-icon u-fl" name="list" /> -->
           <span class="label u-fl">Mục lục:</span>
-          <span class="count u-fl">({chlist.length} chương)</span>
+          <span class="count u-fl">({chaps.length} chương)</span>
 
           <button
             class="m-button _text u-fr"
@@ -396,7 +400,7 @@
         <ChapList
           bslug={book.slug}
           sname={site}
-          chaps={chlist}
+          {chaps}
           focus={page}
           reverse={latest} />
       {:else}
