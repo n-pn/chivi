@@ -127,8 +127,8 @@
         break
 
       case 67:
-        evt.preventDefault('generic')
-        showUpsertModal()
+        evt.preventDefault()
+        showUpsertModal('generic')
         break
 
       case 82:
@@ -191,7 +191,7 @@
     else if (elemOnFocus) {
       upsertKey = elemOnFocus.dataset.k
 
-      if (!tab) {
+      if (tab == null) {
         const dict = +elemOnFocus.dataset.d
         tab = dict === 1 ? 'generic' : 'special'
       }
