@@ -77,6 +77,7 @@
 
   function handleKeypress(evt) {
     if (upsertEnabled) return
+    if (evt.ctrlKey || evt.shiftKey) return
 
     // if (!evt.altKey) return
 
@@ -117,6 +118,7 @@
       case 90:
         evt.preventDefault()
         showUpsertModal()
+
         break
 
       case 88:
@@ -125,13 +127,14 @@
         break
 
       case 67:
-        evt.preventDefault()
-        showUpsertModal('generic')
+        evt.preventDefault('generic')
+        showUpsertModal()
         break
 
       case 82:
         evt.preventDefault()
         reloadContent(1)
+
         break
 
       default:
@@ -175,10 +178,10 @@
 
   function renderMode(idx, hover, focus) {
     if (idx == focus || idx == hover) return 2
-    return 1
-    // if (idx < hover - 4) return 1
-    // if (idx > hover + 5) return 1
-    // return 2
+    // return 1
+    if (idx < hover - 5) return 1
+    if (idx > hover + 5) return 1
+    return 2
   }
 
   function showUpsertModal(tab = null) {
