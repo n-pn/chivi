@@ -33,12 +33,14 @@ module Kernel
     return {ChapList.read!(file), mftime} unless Utils.outdated?(file, expiry)
 
     spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: false)
+
     new_mftime = spider.get_mftime!
+    new_mftime = info.mftime if new_mftime == InfoSpider::EPOCH
 
     chaps = spider.get_chaps!
     chaps.each do |item|
-      item.vi_title = Engine.translate(item.zh_title, info.uuid, user, title: true)
-      item.vi_volume = Engine.translate(item.zh_volume, info.uuid, user, title: true)
+      item.vi_title = Engine.translate(item.zh_title, info.uuid, user, true)
+      item.vi_volume = Engine.translate(item.zh_volume, info.uuid, user, true)
 
       item.gen_slug(20)
     end

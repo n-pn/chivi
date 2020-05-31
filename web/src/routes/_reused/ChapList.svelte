@@ -34,7 +34,11 @@
     // window.scrollBy(0, -20)
   }
 
+  import { searching } from '$src/stores'
+
   function handleKeypress(evt) {
+    if ($searching == true) return
+
     switch (evt.keyCode) {
       case 72:
         evt.preventDefault()

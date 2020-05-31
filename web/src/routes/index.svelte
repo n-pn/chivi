@@ -44,7 +44,11 @@
   $: pageMax = Math.floor((total - 1) / 20) + 1
   $: pageList = paginate_range(page, pageMax)
 
+  import { searching } from '$src/stores'
+
   function handleKeypress(evt) {
+    if ($searching == true) return
+
     switch (evt.keyCode) {
       case 72:
         evt.preventDefault()

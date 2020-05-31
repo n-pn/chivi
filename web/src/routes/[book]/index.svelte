@@ -142,6 +142,15 @@
     if (book.mftime < mftime) book.mftime = mftime
     if (book.cr_mftimes[site] < mftime) book.cr_mftimes[site] = mftime
 
+    const last = chlist[chlist.length - 1]
+    if (last) {
+      book.cr_latests[site] = {
+        csid: last.csid,
+        name: last.vi_title,
+        slug: last.url_slug,
+      }
+    }
+
     book = book
     reloading = false
   }
@@ -321,8 +330,15 @@
                   </a>
                 </td>
                 <td class="latest-time">
-                  <span class="latest-text">
-                    {relative_time(book.cr_mftimes[source])}
+                  <span
+                    class="latest-text _update"
+                    class:_reload={site == source && reloading}
+                    on:click={() => changeSite(source, true)}>
+                    {#if site == source && reloading}
+                      <MIcon class="m-icon" name="loader" />
+                    {:else}
+                      <time>{relative_time(book.cr_mftimes[source])}</time>
+                    {/if}
                   </span>
                 </td>
               </tr>
@@ -507,7 +523,7 @@
     }
   }
 
-  .m-button._reload {
+  ._reload {
     @include fgcolor(color(neutral, 5));
 
     :global(svg) {
@@ -681,6 +697,7 @@
 
     .latest-time & {
       @include font-size(2);
+      cursor: pointer;
       // @include fgcolor(color(neutral, 5));
     }
   }

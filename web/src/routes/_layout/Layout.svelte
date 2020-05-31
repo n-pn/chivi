@@ -1,5 +1,6 @@
 <script>
   import MIcon from '$mould/MIcon.svelte'
+  import { searching } from '$src/stores'
 
   export let shiftLeft = false
   export let searchKey = ''
@@ -16,8 +17,6 @@
   }
 
   function handleKeypress(evt) {
-    if (!evt.altKey) return
-
     switch (evt.keyCode) {
       case 73:
         _goto('/')
@@ -52,9 +51,10 @@
               type="search"
               name="kw"
               placeholder="Tìm kiếm"
+              on:focus={() => searching.set(true)}
+              on:onfocusout={() => $searching.set(false)}
               value={searchKey} />
             <MIcon class="m-icon _search" name="search" />
-
           </form>
         </slot>
       </div>
