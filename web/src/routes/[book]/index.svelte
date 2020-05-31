@@ -113,12 +113,11 @@
   export let chlist = []
 
   export let tab = 'overview'
-  let activeTab = tab
 
   $: sources = Object.keys(book.cr_anchors)
   $: hasContent = sources.length > 0
 
-  $: changeSite(site, false)
+  $: if (tab == 'content') changeSite(site, false)
   $: latest = mapLatests(chlist)
 
   $: book_url = `https://chivi.xyz/${book.slug}/`
@@ -156,7 +155,7 @@
   }
 
   function changeTab(newTab) {
-    activeTab = newTab
+    tab = newTab
   }
 
   function latestLink(site) {
@@ -278,28 +277,28 @@
     <header class="meta-header">
       <a
         class="meta-header-tab"
-        class:_active={activeTab == 'overview'}
+        class:_active={tab == 'overview'}
         href="/{book.slug}?tab=overview"
         on:click|preventDefault={() => changeTab('overview')}>
         Tổng quan
       </a>
       <a
         class="meta-header-tab"
-        class:_active={activeTab == 'content'}
+        class:_active={tab == 'content'}
         href="/{book.slug}?tab=content"
         on:click|preventDefault={() => changeTab('content')}>
         Mục lục
       </a>
       <a
         class="meta-header-tab"
-        class:_active={activeTab == 'reviews'}
+        class:_active={tab == 'reviews'}
         href="/{book.slug}?tab=reviews"
         on:click|preventDefault={() => changeTab('reviews')}>
         Bình luận
       </a>
     </header>
 
-    <div class="meta-tab" class:_active={activeTab == 'overview'}>
+    <div class="meta-tab" class:_active={tab == 'overview'}>
       <div class="summary">
         <h2>Giới thiệu:</h2>
         {#each book.vi_intro.split('\n') as line}
@@ -348,7 +347,7 @@
       {/if}
     </div>
 
-    <div class="meta-tab" class:_active={activeTab == 'content'}>
+    <div class="meta-tab" class:_active={tab == 'content'}>
       {#if hasContent}
         <div class="meta-sites" data-active={site}>
           {#each sources as source}
@@ -392,7 +391,7 @@
       {/if}
     </div>
 
-    <div class="meta-tab" class:_active={activeTab == 'reviews'}>
+    <div class="meta-tab" class:_active={tab == 'reviews'}>
       <div class="empty">Đang hoàn thiện :(</div>
     </div>
   </section>
