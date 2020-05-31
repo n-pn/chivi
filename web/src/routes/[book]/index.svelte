@@ -113,12 +113,12 @@
   export let chlist = []
 
   export let tab = 'overview'
+  export let latest = true
 
   $: sources = Object.keys(book.cr_anchors)
   $: hasContent = sources.length > 0
 
   $: if (tab == 'content') changeSite(site, false)
-  $: latest = mapLatests(chlist)
 
   $: book_url = `https://chivi.xyz/${book.slug}/`
   $: cover_url = `https://chivi.xyz/covers/${book.uuid}.jpg`
@@ -129,6 +129,7 @@
   let reloading = false
 
   async function changeSite(source, reload = false) {
+    latest = true
     if (site == source && reload == false && chlist.length > 0) return
 
     site = source
@@ -312,8 +313,8 @@
           <thead>
             <tr>
               <th class="latest-site">Nguồn</th>
-              <th class="latest-chap">Chương mới nhất</th>
-              <th class="latest-time">Thời gian đổi mới</th>
+              <th class="latest-chap">Chương cuối</th>
+              <th class="latest-time">Đổi mới</th>
             </tr>
           </thead>
 
@@ -349,10 +350,10 @@
 
     <div class="meta-tab" class:_active={tab == 'content'}>
       {#if hasContent}
-        <div class="meta-sites" data-active={site}>
+        <div class="sources" data-active={site}>
           {#each sources as source}
             <a
-              class="meta-site"
+              class="source-item"
               class:_active={site === source}
               href="/{book.slug}?site={source}"
               on:click|preventDefault={() => changeSite(source, false)}
@@ -364,7 +365,8 @@
 
         <h3 class="caption _recent u-cf" data-site={site}>
           <!-- <MIcon class="m-icon u-fl" name="list" /> -->
-          <span class="label u-fl">Mới nhất:</span>
+          <span class="label u-fl">Mục lục:</span>
+          <span class="count u-fl">({chlist.length} chương)</span>
 
           <button
             class="m-button _text u-fr"
@@ -373,19 +375,30 @@
             {#if reloading}
               <MIcon class="m-icon" name="loader" />
             {:else}
-              <span>{relative_time(book.cr_mftimes[site])}</span>
+              <MIcon class="m-icon" name="clock" />
             {/if}
+            <span>{relative_time(book.cr_mftimes[site])}</span>
           </button>
+
+          <button
+            class="m-button _text u-fr"
+            on:click={() => (latest = !latest)}>
+            {#if latest}
+              <MIcon class="m-icon" name="arrow-down" />
+            {:else}
+              <MIcon class="m-icon" name="arrow-up" />
+            {/if}
+            <span>Sắp xếp</span>
+          </button>
+
         </h3>
 
-        <ChapList bslug={book.slug} sname={site} chaps={latest} focus={page} />
-
-        <h3 class="caption _content u-cf">
-          <span class="label u-fl">Mục lục:</span>
-          <span class="count u-fl">({chlist.length} chương)</span>
-        </h3>
-
-        <ChapList bslug={book.slug} sname={site} chaps={chlist} focus={page} />
+        <ChapList
+          bslug={book.slug}
+          sname={site}
+          chaps={chlist}
+          focus={page}
+          reverse={latest} />
       {:else}
         <div class="empty">Không có nội dung</div>
       {/if}
@@ -501,20 +514,13 @@
 
   .caption {
     margin-bottom: 0.75rem;
-    // @include fgcolor(color(neutral, 6));
-    // > :global(.m-icon) {
-    //   margin-top: 0.375rem;
-    // }
-
-    &._content {
-      margin-top: 0.75rem;
-    }
 
     > .label {
       margin-right: 0.25rem;
     }
 
-    > .count {
+    .label,
+    .count {
       display: none;
       @include screen-min(sm) {
         display: inline-block;
@@ -542,14 +548,14 @@
     }
   }
 
-  .meta-sites {
-    display: block;
-    // margin-bottom: 0.75rem;
+  .sources {
+    margin-bottom: 0.75rem;
     justify-content: center;
+    overflow: auto;
     @include flex($gap: 0.5rem);
   }
 
-  .meta-site {
+  .source-item {
     cursor: pointer;
     padding: 0 0.5rem;
     font-weight: 500;
@@ -658,7 +664,7 @@
       padding: 0.375rem 0.75rem;
       text-transform: uppercase;
       font-weight: 500;
-      @include font-size(1);
+      @include font-size(2);
       @include fgcolor(color(neutral, 6));
     }
 
@@ -672,7 +678,7 @@
       padding: 0;
     }
 
-    .latest-site {
+    td.latest-site {
       max-width: 5rem;
       text-transform: uppercase;
       font-weight: 500;
@@ -715,13 +721,21 @@
 
   .latest-link {
     display: block;
-    padding: 0.375rem 0.75rem;
-    font-weight: 400;
-    font-style: italic;
-    width: auto;
     @include truncate();
 
-    @include fgcolor(color(neutral, 6));
+    width: auto;
+    padding: 0.375rem 0.75rem;
+
+    font-style: normal;
+    font-weight: 400;
+
+    @include fgcolor(color(neutral, 8));
+
+    &:visited {
+      font-style: italic;
+      @include fgcolor(color(neutral, 5));
+    }
+
     &:hover {
       @include fgcolor(color(primary, 6));
     }

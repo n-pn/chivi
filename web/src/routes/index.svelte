@@ -255,7 +255,8 @@
   }
 
   .sort {
-    @include flex($gap: 0.5rem);
+    @include flex($gap: 0.375rem);
+    overflow: auto;
     justify-content: center;
 
     margin: 0.75rem 0;
@@ -263,7 +264,6 @@
   }
 
   .sort-type {
-    // cursor: pointer;
     text-transform: uppercase;
     padding: 0 0.5rem;
     font-weight: 500;

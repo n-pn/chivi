@@ -1,8 +1,16 @@
 <script context="module">
-  export function paginate(chaps, focus, limit = 20) {
+  export function paginate(chaps, focus, limit = 20, reverse = false) {
     let offset = (focus - 1) * limit
     if (offset < 0) offset = 0
-    return chaps.slice(offset, offset + limit)
+    if (!reverse) return chaps.slice(offset, offset + limit)
+
+    const from = chaps.length - 1 - offset
+    let down = from - limit + 1
+    if (down < 0) down = 0
+
+    const output = []
+    for (let i = from; i >= down; i--) output.push(chaps[i])
+    return output
   }
 
   export function page_url(slug, site, page = 1) {
@@ -18,11 +26,12 @@
   export let bslug = ''
   export let sname = ''
   export let focus = 1
-  export let limit = 20
+  export let limit = 24
+  export let reverse = false
 
   let scroll = null
 
-  $: items = paginate(chaps, focus, limit)
+  $: items = paginate(chaps, focus, limit, reverse)
   $: total = Math.floor((chaps.length - 1) / limit) + 1
   $: range = paginate_range(focus, total, 7)
 
