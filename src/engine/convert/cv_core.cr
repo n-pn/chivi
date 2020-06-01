@@ -147,14 +147,27 @@ module CvCore
       jdx = idx - 1
 
       if acc.dic == 0
-        while jdx >= 0
-          cur = nodes[jdx]
-          break if cur.dic > 0
-          break unless similar?(acc, cur)
+        char = acc.key[0]
 
-          acc.key += cur.key
-          acc.val += cur.val
-          jdx -= 1
+        if letter?(char)
+          acc.dic = 1
+          while idx >= 0
+            cur = nodes[jdx]
+            break unless letter?(cur.key[0])
+
+            acc.key += cur.key
+            acc.val += cur.val
+            jdx -= 1
+          end
+        else
+          while idx >= 0
+            cur = nodes[jdx]
+            break unless cur.key[0] == char
+
+            acc.key += cur.key
+            acc.val += cur.val
+            jdx -= 1
+          end
         end
       end
 
@@ -165,22 +178,27 @@ module CvCore
     res
   end
 
-  private def similar?(acc : CvNode, cur : CvNode)
-    return true if acc.key[0] == cur.key[0]
-    return true if acc.key == acc.val && cur.key == cur.val
+  # private def similar?(acc : CvNode, cur : CvNode)
+  #   return true if acc.key[0] == cur.key[0]
+  #   return true if acc.key == acc.val && cur.key == cur.val
 
-    letter?(cur) && letter?(acc)
-  end
+  #   letter?(cur) && letter?(acc)
+  # end
 
-  private def letter?(node : CvNode)
-    case node.key[0]
-    when .alphanumeric?, ':', '/', '?', '-', '_', '%'
-      # match letter or uri scheme
-      true
-    else
-      # match normalizabled chars
-      node.val[0].alphanumeric?
-    end
+  # private def letter?(node : CvNode)
+  #   case node.key[0]
+  #   when .alphanumeric?, ':', '/', '?', '-', '_', '%'
+  #     # match letter or uri scheme
+  #     true
+  #   else
+  #     # match normalizabled chars
+  #     node.val[0].alphanumeric?
+  #   end
+  # end
+
+  private def letter?(char : Char)
+    return true if char == '_'
+    return char.alphanumeric?
   end
 
   def apply_grammar(nodes : CvNodes)
