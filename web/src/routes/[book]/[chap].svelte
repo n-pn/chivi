@@ -327,7 +327,7 @@
     word-wrap: break-word;
 
     &._reload {
-      @include fgcolor(neutral, 5);
+      @include fgcolor(neutral, 7);
     }
 
     :global(h1) {
