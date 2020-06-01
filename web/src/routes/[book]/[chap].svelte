@@ -365,7 +365,7 @@
 
     :global(cite) {
       text-transform: capitalize;
-      font-style: inherit;
+      font-style: normal;
       // font-variant: small-caps;
     }
   }

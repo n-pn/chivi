@@ -150,7 +150,6 @@ module CvCore
         char = acc.key[0]
 
         if letter?(char)
-          acc.dic = 1
           while jdx >= 0
             cur = nodes[jdx]
             break unless letter?(cur.key[0])
@@ -159,6 +158,8 @@ module CvCore
             acc.val += cur.val
             jdx -= 1
           end
+
+          acc.dic = 1
         else
           while jdx >= 0
             cur = nodes[jdx]
