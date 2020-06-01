@@ -31,7 +31,7 @@ module CvCore
     add_spaces(nodes)
   end
 
-  TITLE_RE = /^(第([零〇一二两三四五六七八九十百千]+|\d+)([集卷章节幕回]))([,.:]*)(.*)$/
+  TITLE_RE = /^(第([零〇一二两三四五六七八九十百千]+|\d+)([集卷章节幕回]))([，,.:]*)(.*)$/
 
   def cv_title(input : String, dicts : Array(DictPair))
     res = CvNodes.new
@@ -151,7 +151,7 @@ module CvCore
 
         if letter?(char)
           acc.dic = 1
-          while idx >= 0
+          while jdx >= 0
             cur = nodes[jdx]
             break unless letter?(cur.key[0])
 
@@ -160,7 +160,7 @@ module CvCore
             jdx -= 1
           end
         else
-          while idx >= 0
+          while jdx >= 0
             cur = nodes[jdx]
             break unless cur.key[0] == char
 

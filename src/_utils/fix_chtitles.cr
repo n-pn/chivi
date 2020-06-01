@@ -18,14 +18,15 @@ module Utils
     {fix_title(title), volume}
   end
 
-  TITLE_RE_0 = /^\d+\.\s*第/
-  TITLE_RE_1 = /^第?([#{NUMBERS}\d]+)([章节幕回折])[、：,.:\s]?(.*)$/
+  TITLE_RE_0 = /^(\d+)\.\s*第.+[章节幕回折]\s*(.+)/
+  TITLE_RE_1 = /^第?([#{NUMBERS}\d]+)([章节幕回折])[，、：,.:\s]?(.*)$/
   TITLE_RE_2 = /^([#{NUMBERS}\d]+)[、：,.:\s]?(.*)$/
   TITLE_RE_3 = /^（(\p{N}+)）(.*)$/
 
   def self.fix_title(title : String)
     if match = TITLE_RE_0.match(title)
-      return clean_title(title.sub(/^\d+\.\s*第/, "第"))
+      _, number, title = match
+      return "#{number}. #{clean_title(title)}"
     end
 
     label = "章"

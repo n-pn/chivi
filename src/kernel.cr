@@ -27,7 +27,7 @@ module Kernel
     return {ChapList.new, 0_i64} unless bsid = info.cr_anchors[site]?
 
     file = ChapList.path_for(info.uuid, site)
-    expiry = reload ? 1.minutes : gen_expiry(info.status)
+    expiry = reload ? 6.minutes : gen_expiry(info.status)
 
     mftime = info.cr_mftimes[site]? || InfoSpider::EPOCH
     return {ChapList.read!(file), mftime} unless Utils.outdated?(file, expiry)
