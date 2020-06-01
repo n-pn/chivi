@@ -206,24 +206,24 @@
       font-weight: 500;
       text-transform: uppercase;
       line-height: $hd-height - 0.75rem;
-      @include fgcolor(color(neutral, 6));
+      @include fgcolor(neutral, 6);
       @include font-size(sm);
     }
 
     :global(button) {
       // margin-right: 0.75rem;
       padding: 0 0.5rem;
-      @include fgcolor(color(neutral, 6));
+      @include fgcolor(neutral, 6);
       @include bgcolor(transparent);
       &._active,
       &:hover {
-        @include fgcolor(color(primary, 6));
+        @include fgcolor(primary, 6);
       }
     }
   }
 
   @mixin token($color: blue) {
-    border-color: color($color, 3);
+    @include bdcolor($color, 3);
 
     &._active {
       color: color($color, 6);
@@ -247,7 +247,7 @@
     // border: 1px solid color(neutral, 3);
     // margin-bottom: 0.75rem;
 
-    @include bgcolor(color(neutral, 1));
+    @include bgcolor(neutral, 1);
     // @include font-family(sans);
 
     // &._vi {
@@ -272,11 +272,11 @@
     :global(x-v) {
       cursor: pointer;
       @include hover {
-        @include fgcolor(color(primary, 5));
+        @include fgcolor(primary, 5);
       }
 
       &._active {
-        @include fgcolor(color(primary, 5));
+        @include fgcolor(primary, 5);
       }
     }
   }
@@ -292,14 +292,14 @@
     // margin-top: 0.5rem;
     font-weight: 500;
     @include font-size(md);
-    @include fgcolor(color(neutral, 7));
-    // @include border($pos: left, $width: 0.25rem, $color: color(primary, 5));
+    @include fgcolor(neutral, 7);
+    // @include border($sides: left, $width: 0.25rem, $color: color(primary, 5));
   }
 
   h4 {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(color(neutral, 6));
+    @include fgcolor(neutral, 6);
     @include font-size(2);
   }
 

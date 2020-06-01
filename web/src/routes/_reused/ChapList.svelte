@@ -158,19 +158,19 @@
   .chap-item {
     display: block;
 
-    @include border($pos: bottom);
+    @include border($sides: bottom);
 
     &:first-child {
-      @include border($pos: top);
+      @include border($sides: top);
     }
 
     &:nth-child(even) {
-      background-color: color(neutral, 1);
+      @include bgcolor(neutral, 1);
     }
 
     @include screen-min($chap-break) {
       &:nth-child(2) {
-        @include border($pos: top);
+        @include border($sides: top);
       }
 
       &:nth-child(4n),
@@ -180,7 +180,7 @@
 
       &:nth-child(4n + 2),
       &:nth-child(4n + 3) {
-        background-color: color(neutral, 1);
+        @include bgcolor(neutral, 1);
       }
     }
   }
@@ -192,13 +192,13 @@
     &:visited {
       .title {
         font-style: italic;
-        @include fgcolor(color(neutral, 5));
+        @include fgcolor(neutral, 5);
       }
     }
 
     @include hover {
       .title {
-        @include fgcolor(color(primary, 5));
+        @include fgcolor(primary, 5);
       }
     }
   }
@@ -209,7 +209,7 @@
     line-height: 1.25rem;
     @include font-size(1);
     text-transform: uppercase;
-    @include fgcolor(color(neutral, 5));
+    @include fgcolor(neutral, 5);
     @include truncate(100%);
   }
 
@@ -217,10 +217,10 @@
     display: block;
     padding: 0;
     line-height: 1.5rem;
-    // $font-sizes: attrs(rem(15px), rem(16px), rem(17px));
-    // @include props(font-size, $font-sizes);
+    // $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
+    // @include apply(font-size, $font-sizes);
 
-    @include fgcolor(color(neutral, 8));
+    @include fgcolor(neutral, 8);
     @include truncate(100%);
   }
 

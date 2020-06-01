@@ -393,7 +393,7 @@
 
   .cover {
     float: left;
-    @include props(width, attrs(40%, 30%, 25%));
+    @include apply(width, screen-vals(40%, 30%, 25%));
 
     > img {
       width: 100%;
@@ -403,21 +403,21 @@
 
   .link {
     // font-weight: 500;
-    @include fgcolor(color(primary, 6));
+    @include fgcolor(primary, 6);
   }
 
   .name {
     margin-bottom: 0.75rem;
-    @include props(float, attrs(left, right));
-    @include props(width, attrs(100%, 70%, 75%));
-    @include props(padding-left, attrs(0, 0.75rem));
+    @include apply(float, screen-vals(left, right));
+    @include apply(width, screen-vals(100%, 70%, 75%));
+    @include apply(padding-left, screen-vals(0, 0.75rem));
   }
 
   .extra {
     float: right;
     padding-left: 0.75rem;
 
-    @include props(width, attrs(60%, 70%, 75%));
+    @include apply(width, screen-vals(60%, 70%, 75%));
 
     > div {
       @include clearfix;
@@ -430,7 +430,7 @@
 
     &,
     time {
-      @include fgcolor(color(neutral, 6));
+      @include fgcolor(neutral, 6);
     }
 
     :global(svg) {
@@ -439,25 +439,25 @@
   }
 
   // h2 {
-  //   @include fgcolor(color(neutral, 6));
+  //   @include fgcolor(neutral, 6);
   // }
 
   .title {
     // margin-top: 0.75rem;
     // margin: 0.25rem 0;
 
-    $font-sizes: attrs(rem(26px), rem(28px), rem(30px));
-    $line-heights: attrs(1.5rem, 1.75rem, 2rem);
+    $font-sizes: screen-vals(rem(26px), rem(28px), rem(30px));
+    $line-heights: screen-vals(1.5rem, 1.75rem, 2rem);
 
-    @include props(font-size, $font-sizes);
-    @include props(line-height, $line-heights);
+    @include apply(font-size, $font-sizes);
+    @include apply(line-height, $line-heights);
   }
 
   .summary {
-    @include fgcolor(color(neutral, 7));
+    @include fgcolor(neutral, 7);
     p {
-      $font-sizes: attrs(rem(15px), rem(16px), rem(17px));
-      @include props(font-size, $font-sizes);
+      $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
+      @include apply(font-size, $font-sizes);
     }
     p + p {
       margin-top: 0.75rem;
@@ -472,14 +472,14 @@
   .author {
     font-weight: 500;
     // @include font-size(4);
-    // @include fgcolor(color(neutral, 6));
+    // @include fgcolor(neutral, 6);
   }
 
   .subtitle {
     // letter-spacing: 0.1em;
     // font-weight: 400;
     font-size: 85%;
-    // @include fgcolor(color(neutral, 6));
+    // @include fgcolor(neutral, 6);
   }
 
   .info {
@@ -503,7 +503,7 @@
   }
 
   ._reload {
-    @include fgcolor(color(neutral, 5));
+    @include fgcolor(neutral, 5);
 
     :global(svg) {
       animation-name: spin;
@@ -539,16 +539,16 @@
     @include radius();
 
     @include font-size(2);
-    @include fgcolor(color(neutral, 7));
+    @include fgcolor(neutral, 7);
 
     &._active {
-      @include fgcolor(color(primary, 5));
-      @include border-color($value: color(primary, 5));
+      @include fgcolor(primary, 5);
+      @include bdcolor($color: primary, $shade: 5);
     }
   }
 
   .count {
-    @include fgcolor(color(neutral, 6));
+    @include fgcolor(neutral, 6);
   }
 
   .meta {
@@ -567,7 +567,7 @@
 
   $meta-height: 3rem;
   .meta-header {
-    @include border($pos: bottom, $color: color(neutral, 3));
+    @include border($sides: bottom, $color: color(neutral, 3));
     height: $meta-height;
     display: flex;
   }
@@ -585,10 +585,10 @@
       @include font-size(3);
     }
 
-    @include fgcolor(color(neutral, 6));
+    @include fgcolor(neutral, 6);
     &._active {
-      @include fgcolor(color(primary, 6));
-      @include border($pos: bottom, $color: color(primary, 5), $width: 2px);
+      @include fgcolor(primary, 6);
+      @include border($sides: bottom, $color: color(primary, 5), $width: 2px);
     }
   }
 
@@ -609,7 +609,7 @@
     text-align: center;
     font-style: italic;
     @include font-size(4);
-    @include fgcolor(color(neutral, 5));
+    @include fgcolor(neutral, 5);
   }
 
   strong {
@@ -622,9 +622,9 @@
 
     tr {
       width: 100%;
-      @include border($pos: bottom);
+      @include border($sides: bottom);
       &:nth-child(even) {
-        @include bgcolor(color(neutral, 1));
+        @include bgcolor(neutral, 1);
       }
     }
 
@@ -639,7 +639,7 @@
       text-transform: uppercase;
       font-weight: 500;
       @include font-size(2);
-      @include fgcolor(color(neutral, 6));
+      @include fgcolor(neutral, 6);
     }
 
     th,
@@ -672,12 +672,12 @@
   .latest-text {
     display: block;
     padding: 0.375rem 0.75rem;
-    @include fgcolor(color(neutral, 6));
+    @include fgcolor(neutral, 6);
 
     .latest-time & {
       @include font-size(2);
       cursor: pointer;
-      // @include fgcolor(color(neutral, 5));
+      // @include fgcolor(neutral, 5);
     }
   }
 
@@ -703,15 +703,15 @@
     font-style: normal;
     font-weight: 400;
 
-    @include fgcolor(color(neutral, 8));
+    @include fgcolor(neutral, 8);
 
     &:visited {
       font-style: italic;
-      @include fgcolor(color(neutral, 5));
+      @include fgcolor(neutral, 5);
     }
 
     &:hover {
-      @include fgcolor(color(primary, 6));
+      @include fgcolor(primary, 6);
     }
   }
 </style>

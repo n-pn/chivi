@@ -17,7 +17,7 @@
             name="kw"
             class="header-item _input"
             placeholder="Tìm kiếm"
-            on:focus={evt => evt.stopPropagation()} />
+            on:focus={(evt) => evt.stopPropagation()} />
 
         </div>
       </slot>
@@ -37,7 +37,7 @@
     width: 100%;
     height: $outer-height;
     z-index: 800;
-    @include bgcolor(color(primary, 7));
+    @include bgcolor(primary, 7);
     @include shadow(2);
 
     &._tilt {
@@ -81,15 +81,15 @@
     text-transform: uppercase;
     font-weight: 500;
 
-    @include fgcolor(color(neutral, 2));
+    @include fgcolor(neutral, 2);
 
     @include radius();
     @include font-size(2);
 
-    @include bgcolor(color(primary, 6));
+    @include bgcolor(primary, 6);
 
     @include hover() {
-      @include bgcolor(color(primary, 5));
+      @include bgcolor(primary, 5);
     }
 
     & + & {
@@ -97,7 +97,7 @@
     }
 
     &._active {
-      @include bgcolor(color(primary, 5));
+      @include bgcolor(primary, 5);
     }
 
     &._title {
@@ -146,7 +146,7 @@
       outline: none;
       cursor: text;
       &::placeholder {
-        @include fgcolor(color(neutral, 5));
+        @include fgcolor(neutral, 5);
       }
       @include bgcolor(darken(color(primary, 7), 5%));
     }

@@ -10,10 +10,10 @@
     postcss "7.0.28"
     purgecss "^2.2.0"
 
-"@nipin/mould@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@nipin/mould/-/mould-0.3.1.tgz#5d0b735b3b798a1396487b0be525f0a06d1c702f"
-  integrity sha512-yuc+cW68ffKnx6NqjCcCNPwhuxaHMwSu2zwGnMZqfQYWg81AQ79oTeTrGJ6EXUad7uNWwkdXZ8VHVTmI8QBgbA==
+"@nipin/mould@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@nipin/mould/-/mould-0.4.1.tgz#8a1c672acdb9cd731a6c75dceaf23f5bba26e76f"
+  integrity sha512-amqKTqiYgyXqe3h7tjkjTM56Ao9D/Jx6wz4MG/bQOniaZDXHVDR+DvYTz2QRl/3kRV4zW+6NOcVPRj4xkA2Ryg==
 
 "@polka/url@^0.5.0":
   version "0.5.0"

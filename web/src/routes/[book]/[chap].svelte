@@ -331,24 +331,36 @@
     }
 
     :global(h1) {
-      $font-sizes: attrs(rem(22px), rem(24px), rem(26px), rem(28px), rem(30px));
-      $line-heights: attrs(1.5rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
+      $font-sizes: screen-vals(
+        rem(22px),
+        rem(24px),
+        rem(26px),
+        rem(28px),
+        rem(30px)
+      );
+      $line-heights: screen-vals(1.5rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
 
-      @include props(font-size, $font-sizes);
-      @include props(line-height, $line-heights);
+      @include apply(font-size, $font-sizes);
+      @include apply(line-height, $line-heights);
 
-      @include border($pos: bottom);
+      @include border($sides: bottom);
     }
 
     :global(p) {
-      $font-sizes: attrs(rem(16px), rem(17px), rem(18px), rem(19px), rem(20px));
-      $margin-tops: attrs(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
+      $font-sizes: screen-vals(
+        rem(16px),
+        rem(17px),
+        rem(18px),
+        rem(19px),
+        rem(20px)
+      );
+      $margin-tops: screen-vals(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
 
       text-align: justify;
       text-justify: auto;
 
-      @include props(font-size, $font-sizes);
-      @include props(margin-top, $margin-tops);
+      @include apply(font-size, $font-sizes);
+      @include apply(margin-top, $margin-tops);
     }
 
     :global(cite) {

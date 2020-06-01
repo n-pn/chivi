@@ -179,7 +179,7 @@
 
     @include hover {
       .book-title {
-        @include fgcolor(color(primary, 5));
+        @include fgcolor(primary, 5);
       }
     }
     // overflow: hidden;
@@ -202,7 +202,7 @@
       // padding: 0.125rem 0.25rem;
       text-transform: uppercase;
       font-weight: 500;
-      @include fgcolor(color(neutral, 5));
+      @include fgcolor(neutral, 5);
       // @include bgcolor(rgba(color(neutral, 9), 0.3));
       @include font-size(1);
       @include radius();
@@ -232,7 +232,7 @@
     position: absolute;
     bottom: -1.75rem;
     font-weight: 500;
-    @include fgcolor(color(neutral, 7));
+    @include fgcolor(neutral, 7);
     @include truncate();
     @include font-size(3);
     // line-height: 1rem;
@@ -269,13 +269,13 @@
     font-weight: 500;
     @include truncate(null);
 
-    @include fgcolor(color(neutral, 7));
+    @include fgcolor(neutral, 7);
     @include font-size(2);
     @include border();
     @include radius();
     &._active {
-      @include fgcolor(color(primary, 5));
-      @include border-color($value: color(primary, 5));
+      @include fgcolor(primary, 5);
+      @include bdcolor($color: primary, $shade: 5);
     }
   }
 

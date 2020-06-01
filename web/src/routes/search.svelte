@@ -92,7 +92,7 @@
     @include hover {
       @include shadow(2);
       .title {
-        @include fgcolor(color(primary, 5));
+        @include fgcolor(primary, 5);
       }
     }
   }
@@ -101,7 +101,7 @@
     // font-weight: 300;
     @include font-size(5);
     line-height: 1.75rem;
-    @include fgcolor(color(neutral, 7));
+    @include fgcolor(neutral, 7);
   }
 
   strong {
@@ -111,7 +111,7 @@
   .cover {
     float: left;
     @include radius();
-    @include props(width, attrs(30%, 30%));
+    @include apply(width, screen-vals(35%, 30%));
 
     position: relative;
     overflow: hidden;
@@ -127,7 +127,7 @@
       width: 100%;
       height: 0;
       padding-top: (4/3) * 100%;
-      @include bgcolor(color(primary, 7));
+      @include bgcolor(primary, 7);
       z-index: -1;
     }
 
@@ -142,14 +142,14 @@
     float: right;
     margin-bottom: 0.375rem;
     padding-left: 0.5rem;
-    @include props(width, attrs(70%, 70%));
+    @include apply(width, screen-vals(65%, 70%));
   }
 
   .extra {
     float: right;
     padding-left: 0.5rem;
 
-    @include props(width, attrs(70%, 70%));
+    @include apply(width, screen-vals(65%, 70%));
 
     > div {
       @include clearfix;
@@ -164,7 +164,7 @@
     }
 
     & {
-      @include fgcolor(color(neutral, 6));
+      @include fgcolor(neutral, 6);
     }
 
     :global(svg) {
@@ -175,10 +175,13 @@
   .label {
     text-align: center;
 
-    @include props(margin-top, attrs(1rem, 1.5rem, 2rem));
-    @include props(margin-bottom, attrs(0rem, 0.5rem, 1rem));
-    @include props(font-size, attrs(font-size(5), font-size(6), font-size(7)));
-    @include props(line-height, attrs(1.5rem, 1.75rem, 2rem));
-    @include fgcolor(color(neutral, 6));
+    @include apply(margin-top, screen-vals(1rem, 1.5rem, 2rem));
+    @include apply(margin-bottom, screen-vals(0rem, 0.5rem, 1rem));
+    @include apply(
+      font-size,
+      screen-vals(font-size(5), font-size(6), font-size(7))
+    );
+    @include apply(line-height, screen-vals(1.5rem, 1.75rem, 2rem));
+    @include fgcolor(neutral, 6);
   }
 </style>

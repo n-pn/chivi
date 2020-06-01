@@ -362,13 +362,13 @@
     padding: $header-gutter $gutter;
     height: $header-height;
     line-height: $header-height - $header-gutter * 2;
-    @include bgcolor(color(neutral, 1));
-    @include radius($pos: top);
-    @include border($pos: bottom);
+    @include bgcolor(neutral, 1);
+    @include radius($sides: top);
+    @include border($sides: bottom);
 
     .label {
       font-weight: 500;
-      @include fgcolor(color(neutral, 7));
+      @include fgcolor(neutral, 7);
     }
 
     .m-button {
@@ -391,7 +391,7 @@
       height: $header-height - $header-gutter * 2;
 
       @include font-size(2);
-      @include fgcolor(color(neutral, 6));
+      @include fgcolor(neutral, 6);
 
       @include radius();
 
@@ -399,8 +399,8 @@
 
       &._active {
         @include bgcolor(#fff);
-        @include fgcolor(color(primary, 6));
-        @include border-color($value: color(primary, 4));
+        @include fgcolor(primary, 6);
+        @include bdcolor($color: primary, $shade: 4);
       }
     }
   }
@@ -425,12 +425,12 @@
 
     @include radius();
 
-    @include bgcolor(color(neutral, 1));
+    @include bgcolor(neutral, 1);
     @include border($color: color(neutral, 2));
 
     &:focus {
       @include bgcolor(white);
-      @include border-color($value: color(primary, 3));
+      @include bdcolor($color: primary, $shade: 3);
     }
     // line-height: .75rem;
   }
@@ -441,7 +441,7 @@
     line-height: 1;
     @include truncate();
     @include font-size(2);
-    @include fgcolor(color(neutral, 6));
+    @include fgcolor(neutral, 6);
   }
 
   $suggests-height: 2rem;
@@ -468,12 +468,12 @@
 
       @include radius();
       @include border($color: color(neutral, 2));
-      @include bgcolor(color(neutral, 1));
+      @include bgcolor(neutral, 1);
 
       &:focus,
       &:active {
         @include bgcolor(white);
-        @include border-color($value: color(primary, 3));
+        @include bdcolor($color: primary, $shade: 3);
       }
 
       &._fresh {
@@ -493,9 +493,9 @@
 
     @include flex($gap: 0.25rem, $child: '.suggest');
     @include font-size(2);
-    // @include bgcolor(color(neutral, 1));
-    @include border($pos: top, $color: color(neutral, 2));
-    @include radius($pos: bottom);
+    // @include bgcolor(neutral, 1);
+    @include border($sides: top, $color: color(neutral, 2));
+    @include radius($sides: bottom);
 
     .suggest {
       font-style: italic;
@@ -504,12 +504,12 @@
 
       padding: 0 0.25rem;
 
-      @include fgcolor(color(primary, 6));
-      @include bgcolor(color(neutral, 1));
+      @include fgcolor(primary, 6);
+      @include bgcolor(neutral, 1);
       @include radius;
       &:hover {
         cursor: pointer;
-        @include bgcolor(color(primary, 1));
+        @include bgcolor(primary, 1);
       }
     }
 
@@ -521,7 +521,7 @@
       height: 1.5rem;
       // @include truncate();
       @include font-size(2);
-      @include fgcolor(color(neutral, 5));
+      @include fgcolor(neutral, 5);
     }
   }
 
@@ -536,14 +536,14 @@
     padding: 0.25rem 0.75rem;
     line-height: 1.5rem;
 
-    // @include bgcolor(color(neutral, 1));
-    @include border($pos: bottom, $color: color(neutral, 2));
-    @include radius($pos: top);
+    // @include bgcolor(neutral, 1);
+    @include border($sides: bottom, $color: color(neutral, 2));
+    @include radius($sides: top);
 
     text-transform: uppercase;
     font-weight: 500;
     @include font-size(1);
-    @include fgcolor(color(neutral, 5));
+    @include fgcolor(neutral, 5);
 
     .cap-lbl {
       padding: 0;
@@ -561,8 +561,8 @@
 
       @include radius();
       @include hover {
-        @include bgcolor(color(primary, 1));
-        @include fgcolor(color(primary, 5));
+        @include bgcolor(primary, 1);
+        @include fgcolor(primary, 5);
       }
     }
   }
@@ -586,8 +586,8 @@
     margin: 0;
     border-top: 1px solid color(neutral, 3);
 
-    @include bgcolor(color(neutral, 1));
-    @include radius($pos: bottom);
+    @include bgcolor(neutral, 1);
+    @include radius($sides: bottom);
 
     a {
       // display: inline-block;
@@ -600,7 +600,7 @@
       // @include truncate();
 
       @include font-size(2);
-      @include fgcolor(color(neutral, 7));
+      @include fgcolor(neutral, 7);
 
       @include hover {
         cursor: pointer;

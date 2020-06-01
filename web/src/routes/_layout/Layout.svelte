@@ -112,7 +112,7 @@
     color: #fff;
     transition: transform 0.1s ease-in-out;
 
-    @include bgcolor(color(primary, 7));
+    @include bgcolor(primary, 7);
     @include shadow(2);
 
     .center {
@@ -151,15 +151,15 @@
     text-transform: uppercase;
     font-weight: 500;
 
-    @include fgcolor(color(neutral, 2));
-    @include bgcolor(color(primary, 6));
+    @include fgcolor(neutral, 2);
+    @include bgcolor(primary, 6);
 
     @include radius();
     @include font-size(2);
 
     @include hover() {
       cursor: pointer;
-      @include bgcolor(color(primary, 5));
+      @include bgcolor(primary, 5);
     }
 
     & + & {
@@ -167,7 +167,7 @@
     }
 
     &._active {
-      @include bgcolor(color(primary, 5));
+      @include bgcolor(primary, 5);
     }
 
     &._title {
@@ -227,7 +227,7 @@
         outline: none;
         border-radius: $header-inner-height / 2;
         &::placeholder {
-          @include fgcolor(color(neutral, 5));
+          @include fgcolor(neutral, 5);
         }
         @include bgcolor(darken(color(primary, 7), 5%));
       }
@@ -241,7 +241,7 @@
         top: 0.625rem;
         width: 1rem;
         height: 1rem;
-        @include fgcolor(color(neutral, 5));
+        @include fgcolor(neutral, 5);
       }
     }
   }
