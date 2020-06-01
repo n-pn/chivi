@@ -105,7 +105,7 @@
         if (!evt.altKey) {
           evt.preventDefault()
           if (next_url) _goto(`/${book_slug}/${next_url}`)
-          else _goto(`${book_slug}`)
+          else _goto(`${book_slug}?tab=content`)
         }
         break
 

@@ -9,7 +9,7 @@
     const data = await res.json()
 
     if (res.status == 200) {
-      const { book } = data
+      let { book } = data
       const site = query.site || book.cr_site_df || ''
 
       let lists = {}
