@@ -37,15 +37,22 @@ module CvCore
     res = CvNodes.new
     space = false
 
-    input.split(" ") do |title|
+    tokens = input.split(" ")
+    tokens.each_with_index do |title, idx|
       res << CvNode.new("", " ", 0) if space
 
       if match = TITLE_RE.match(title)
         _, group, index, label, trash, title = match
 
-        res << CvNode.new(group, vi_title(index, label), 0)
-        res << CvNode.new(trash, ":", 0) # unless trash.empty?
-        res << CvNode.new("", " ", 0) unless title.empty?
+        index = Utils.han_to_int(index)
+
+        if title.empty? && tokens.size == idx + 1
+          res << CvNode.new(group, "#{vi_label(label)} #{index}", 0)
+          res << CvNode.new(trash, "", 0) unless trash.empty?
+        else
+          res << CvNode.new(group, "#{vi_label(label)} #{index}", 0)
+          res << CvNode.new(trash, ": ", 0)
+        end
       end
 
       res.concat(cv_plain(title, dicts)) unless title.empty?
@@ -55,18 +62,16 @@ module CvCore
     res
   end
 
-  private def vi_title(index : String, label = "")
-    int = Utils.han_to_int(index)
-
+  private def vi_label(label = "")
     case label
-    when "章" then "Chương #{int}"
-    when "卷" then "Quyển #{int}"
-    when "集" then "Tập #{int}"
-    when "节" then "Tiết #{int}"
-    when "幕" then "Màn #{int}"
-    when "回" then "Hồi #{int}"
-    when "折" then "Chiết #{int}"
-    else          "Chương #{int}"
+    when "章" then "Chương"
+    when "卷" then "Quyển"
+    when "集" then "Tập"
+    when "节" then "Tiết"
+    when "幕" then "Màn"
+    when "回" then "Hồi"
+    when "折" then "Chiết"
+    else          "Chương"
     end
   end
 
