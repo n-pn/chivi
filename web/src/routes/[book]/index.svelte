@@ -190,12 +190,12 @@
       <div>
         <span class="author">
           <MIcon class="m-icon" name="pen-tool" />
-          {book.vi_author}
+          <a href="search?kw={book.vi_author}">{book.vi_author}</a>
         </span>
 
         <span class="author">
           <MIcon class="m-icon" name="pen-tool" />
-          <span>{book.zh_author}</span>
+          <a href="search?kw={book.zh_author}">{book.zh_author}</a>
         </span>
       </div>
 
@@ -471,8 +471,14 @@
 
   .author {
     font-weight: 500;
+    > a {
+      @include fgcolor(neutral, 6);
+      @include hover {
+        @include fgcolor(primary, 6);
+      }
+    }
     // @include font-size(4);
-    // @include fgcolor(neutral, 6);
+    //
   }
 
   .subtitle {

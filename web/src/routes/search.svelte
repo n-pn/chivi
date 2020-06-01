@@ -1,12 +1,12 @@
 <script context="module">
   export async function preload({ query }) {
     const word = (query.kw || '').replace(/\+|-/g, ' ')
-    const pg = query.pg || '1'
+    const page = +(query.pg || '1')
 
     if (word) {
-      const url = `api/search?word=${word}&page=${pg}`
+      const url = `api/search?word=${word}&page=${page}`
       const res = await this.fetch(url)
-      const { total, items, page } = await res.json()
+      const { total, items } = await res.json()
       return { total, items, word, page }
     } else {
       return { total: 0, items: [], word, page: 1 }
@@ -23,6 +23,10 @@
 
   export let items = []
   export let total = 0
+
+  const limit = 8
+  $: offset = (page - 1) * limit
+  $: pmax = Math.round((total - 1) / limit) + 1
 </script>
 
 <svelte:head>
@@ -30,7 +34,10 @@
 </svelte:head>
 
 <Layout searchKey={word}>
-  <h1 class="label">Tìm được {items.length}/{total} kết quả cho "{word}" :</h1>
+  <h1 class="label">
+    Hiển thị kết quả {offset + 1}~{offset + items.length}/{total} cho từ khoá "{word}"
+    :
+  </h1>
 
   <div class="list" data-page={page}>
     {#each items as book}
@@ -67,6 +74,24 @@
       </a>
     {/each}
   </div>
+
+  {#if page < pmax}
+    <div class="pagi">
+      <a
+        class="m-button _line"
+        href="search?kw={word}&pg={page > 1 ? page - 1 : 1}">
+        <MIcon name="chevron-left" />
+        <span>Trước</span>
+      </a>
+
+      <a
+        class="m-button _line _primary"
+        href="search?kw={word}&pg={page < pmax ? page + 1 : pmax}">
+        <span>Kế tiếp</span>
+        <MIcon name="chevron-right" />
+      </a>
+    </div>
+  {/if}
 </Layout>
 
 <style lang="scss">
@@ -183,5 +208,16 @@
     );
     @include apply(line-height, screen-vals(1.5rem, 1.75rem, 2rem));
     @include fgcolor(neutral, 6);
+  }
+
+  .pagi {
+    @include flex($gap: 0.75rem, $child: '.m-button');
+    justify-content: center;
+    .m-button {
+      width: 6.25rem;
+      :global(svg) {
+        margin-top: rem(-1px);
+      }
+    }
   }
 </style>
