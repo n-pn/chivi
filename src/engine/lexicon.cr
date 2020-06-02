@@ -111,11 +111,11 @@ class Lexicon
     {@core["suggest"], @core["suggest", user]}
   end
 
-  def book(dict : String = "tong-hop", user = "local")
+  def special(dict : String = "tong-hop", user = "local")
     {@book[dict], @book[dict, user]}
   end
 
-  def for_convert(dict : String = "tong-hop", user : String = "local")
-    [generic(user), combine(user), book(dict, user)]
+  def convert(name : String = "tong-hop", user : String = "local")
+    [generic(user), combine(user), book(name, user)]
   end
 end

@@ -240,9 +240,12 @@ module CvCore
       if node.val.empty?
         res << node
       else
-        res << CvNode.new("", " ", 0) if add_space && space_before?(node.val[0])
-        res << node
+        if add_space && (node.dic > 0 || space_before?(node.val[0]))
+          res << CvNode.new("", " ", 0)
+        end
+
         add_space = node.dic > 0 || space_after?(node.val[-1])
+        res << node
       end
     end
 
@@ -261,13 +264,15 @@ module CvCore
 
   private def space_after?(char : Char)
     case char
-    when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
-         '!', '?', '%', '…', '~'
-      true
-      # when '“', '‘', '⟨', '(', '[', '{', ' ', '_', '/', '\\'
-      # false
+    # when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
+    #      '!', '?', '%', '…', '~', '—'
+    #   true
+    # else
+    #   false
+    when '“', '‘', '⟨', '(', '[', '{', ' ', '_', '/', '\\'
+      false
     else
-      char.alphanumeric?
+      true
     end
   end
 end
