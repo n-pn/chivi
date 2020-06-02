@@ -1,4 +1,4 @@
-require "./convert/cv_core"
+require "./convert/*"
 
 module Convert
   extend self

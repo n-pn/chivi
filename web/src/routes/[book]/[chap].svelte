@@ -118,7 +118,6 @@
       case 90:
         evt.preventDefault()
         showUpsertModal()
-
         break
 
       case 88:
@@ -134,7 +133,6 @@
       case 82:
         evt.preventDefault()
         reloadContent(1)
-
         break
 
       default:

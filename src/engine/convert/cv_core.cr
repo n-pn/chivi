@@ -147,7 +147,7 @@ module CvCore
       jdx = idx - 1
 
       if acc.dic == 0
-        if letter?(acc.key[0])
+        if acc.key[0].alphanumeric?
           while jdx >= 0
             cur = nodes[jdx]
             break unless letter?(cur.key[0])
@@ -177,8 +177,13 @@ module CvCore
     res
   end
 
-  private def letter?(char : Char)
-    char == '_' || char.alphanumeric?
+  private def letter?(char : Char) : Bool
+    case char
+    when '_', '.', '%', '-', '/', '?', '=', ':'
+      true
+    else
+      char.alphanumeric?
+    end
   end
 
   def apply_grammar(nodes : CvNodes)
@@ -256,10 +261,13 @@ module CvCore
 
   private def space_after?(char : Char)
     case char
-    when '“', '‘', '⟨', '(', '[', '{', ' ', '_', '/', '\\'
-      false
-    else
+    when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
+         '!', '?', '%', '…', '~'
       true
+      # when '“', '‘', '⟨', '(', '[', '{', ' ', '_', '/', '\\'
+      # false
+    else
+      char.alphanumeric?
     end
   end
 end

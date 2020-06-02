@@ -258,14 +258,13 @@
     &._zh {
       max-height: $zh-height;
       // margin-top: 0.375rem;
-      // border-top: 1px solid color(neutral, 3);
-      // border-bottom: 1px solid color(neutral, 3);
+      @include border($sides: bottom);
     }
 
     &._hv {
       max-height: $hv-height;
       // margin-top: 0.5rem;
-      border-top: 1px solid color(neutral, 3);
+      @include border($sides: bottom);
     }
 
     :global(x-z),
@@ -306,7 +305,10 @@
   .entry {
     padding: 0.375rem 0.75rem;
     // padding-top: 0;
-    border-top: 1px solid color(neutral, 3);
+    @include border($sides: bottom, $shade: 3);
+    &:last-child {
+      border: none;
+    }
   }
 
   .item {
