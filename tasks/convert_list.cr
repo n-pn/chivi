@@ -22,14 +22,14 @@ def gen_expiry(status : Int32)
 end
 
 def update_infos(info, label)
-  return if info.cr_anchors.empty?
+  return if info.cr_sitemap.empty?
 
   puts "- <#{label.colorize(:cyan)}> #{info.zh_title.colorize(:cyan)}--#{info.zh_author.colorize(:cyan)}"
 
   expiry = gen_expiry(info.status)
   update = false
 
-  info.cr_anchors.each do |site, bsid|
+  info.cr_sitemap.each do |site, bsid|
     # next if site == "duokan8"
     # next if site == "paoshu8" || site == "duokan8"
 
@@ -42,8 +42,8 @@ def update_infos(info, label)
     info.set_status(spider.get_status!)
 
     info.set_mftime(mftime)
-    if old_mftime = info.cr_mftimes[site]? || 0_i64
-      info.cr_mftimes[site] = mftime if mftime > old_mftime
+    if old_mftime = info.last_times[site]? || 0_i64
+      info.last_times[site] = mftime if mftime > old_mftime
     end
 
     chaps = spider.get_chaps!

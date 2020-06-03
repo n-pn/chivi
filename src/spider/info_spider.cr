@@ -55,7 +55,7 @@ class InfoSpider
       info.reset_uuid
     end
 
-    unless info.cr_anchors[@site]?
+    unless info.cr_sitemap[@site]?
       info.zh_intro = get_intro! if info.zh_intro.empty?
       info.add_cover(get_cover!)
 
@@ -74,9 +74,9 @@ class InfoSpider
     mftime = get_mftime!
     info.set_mftime(mftime)
 
-    if mftime > info.cr_mftimes.fetch(@site, -1)
-      info.cr_anchors[@site] = @bsid
-      info.cr_mftimes[@site] = mftime
+    if mftime > info.last_times.fetch(@site, -1)
+      info.cr_sitemap[@site] = @bsid
+      info.last_times[@site] = mftime
     end
 
     info

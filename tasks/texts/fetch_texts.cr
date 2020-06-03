@@ -33,7 +33,7 @@ FileUtils.mkdir_p(TEXT_DIR)
 
 def fetch_book(info, label)
   site = info.cr_site_df
-  bsid = info.cr_anchors[site]
+  bsid = info.cr_sitemap[site]
 
   name = "#{info.uuid}.#{site}.#{bsid}"
 
@@ -66,7 +66,7 @@ def fetch_book(info, label)
 end
 
 crawls = VpInfo.load_all.reject do |uuid, info|
-  info.cr_anchors.empty?
+  info.cr_sitemap.empty?
 end
 
 puts "- to crawl: #{crawls.size} entries".colorize(:cyan)

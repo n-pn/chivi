@@ -39,11 +39,13 @@ class VpInfo
   property word_count = 0_i32
   property crit_count = 0_i32
 
-  property cr_anchors = {} of String => String
-  property cr_mftimes = {} of String => Int64
-  property cr_latests = {} of String => NamedTuple(csid: String, name: String, slug: String)
-
+  property cr_sitemap = {} of String => String
   property cr_site_df = ""
+
+  property last_times = {} of String => Int64
+  property last_csids = {} of String => String
+  property last_texts = {} of String => String
+  property last_slugs = {} of String => String
 
   def initialize
   end

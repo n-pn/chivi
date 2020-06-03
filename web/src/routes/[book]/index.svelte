@@ -97,7 +97,7 @@
   let chaps = []
   $: chaps = lists[site] || []
 
-  $: sources = Object.keys(book.cr_anchors)
+  $: sources = Object.keys(book.cr_sitemap)
   $: hasContent = sources.length > 0
 
   $: if (tab == 'content') changeSite(site, false)
@@ -123,7 +123,7 @@
 
     const mftime = data.mftime
     if (book.mftime < mftime) book.mftime = mftime
-    if (book.cr_mftimes[site] < mftime) book.cr_mftimes[site] = mftime
+    if (book.last_times[site] < mftime) book.last_times[site] = mftime
 
     book = updateLatest(book, site, data.chlist)
     reloading = false
@@ -311,7 +311,7 @@
                     {#if site == source && reloading}
                       <MIcon class="m-icon" name="loader" />
                     {:else}
-                      <time>{relative_time(book.cr_mftimes[source])}</time>
+                      <time>{relative_time(book.last_times[source])}</time>
                     {/if}
                   </span>
                 </td>
@@ -351,7 +351,7 @@
             {:else}
               <MIcon class="m-icon" name="clock" />
             {/if}
-            <span>{relative_time(book.cr_mftimes[site])}</span>
+            <span>{relative_time(book.last_times[site])}</span>
           </button>
 
           <button

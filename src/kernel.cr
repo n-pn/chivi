@@ -24,12 +24,12 @@ module Kernel
   end
 
   def load_list(info : VpInfo, site : String, user = "local", reload = false) : Tuple(ChapList, Int64)
-    return {ChapList.new, 0_i64} unless bsid = info.cr_anchors[site]?
+    return {ChapList.new, 0_i64} unless bsid = info.cr_sitemap[site]?
 
     file = ChapList.path_for(info.uuid, site)
     expiry = reload ? 6.minutes : gen_expiry(info.status)
 
-    mftime = info.cr_mftimes[site]? || InfoSpider::EPOCH
+    mftime = info.last_times[site]? || InfoSpider::EPOCH
     return {ChapList.read!(file), mftime} unless Utils.outdated?(file, expiry)
 
     spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: false)
@@ -44,26 +44,24 @@ module Kernel
     new_mftime = spider.get_mftime!
 
     if latest = chaps.last?
-      if changed?(latest, info.cr_latests[site]?)
-        info.cr_latests[site] = {
-          csid: latest.csid,
-          name: latest.vi_title,
-          slug: latest.title_slug,
-        }
+      if changed?(latest, info.last_csids[site]?)
+        info.last_csids[site] = latest.csid
+        info.last_texts[site] = latest.vi_title
+        info.last_slugs[site] = latest.title_slug
 
-        if new_mftime <= mftime &&
-           if info.mftime > mftime
-             new_mftime = info.mftime
-           else
-             new_mftime = Time.local.to_unix_ms
-           end
+        if new_mftime <= mftime
+          if info.mftime > mftime
+            new_mftime = info.mftime
+          else
+            new_mftime = Time.local.to_unix_ms
+          end
         end
 
         mftime = new_mftime
         info.set_mftime(mftime)
-        info.cr_mftimes[site] = mftime
-        info.set_status(spider.get_status!)
+        info.last_times[site] = mftime
 
+        info.set_status(spider.get_status!)
         BookRepo.save!(info)
       end
     end
@@ -76,11 +74,11 @@ module Kernel
   private def changed?(new_latest : ChapItem?, old_latest)
     return false unless new_latest
     return true unless old_latest
-    new_latest.csid != old_latest[:csid]
+    new_latest.csid != old_latest
   end
 
   def load_chap(info : VpInfo, site : String, csid : String, user = "guest", mode = 0, unique : Bool = false)
-    bsid = info.cr_anchors[site]
+    bsid = info.cr_sitemap[site]
     uuid = VpText.uuid_for(info.uuid, site, bsid)
 
     json_file = VpText.path_for(uuid, csid, user)

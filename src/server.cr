@@ -173,7 +173,7 @@ module Server
     end
 
     site = env.params.url["site"]
-    unless bsid = info.cr_anchors[site]?
+    unless bsid = info.cr_sitemap[site]?
       halt env, status_code: 404, response: json_error("Site [#{site}] not found")
     end
 
@@ -204,7 +204,7 @@ module Server
     BookRepo.update_sort("access", info)
 
     site = env.params.url["site"]
-    unless bsid = info.cr_anchors[site]?
+    unless bsid = info.cr_sitemap[site]?
       halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json
     end
 

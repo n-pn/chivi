@@ -94,22 +94,22 @@ input.each_with_index do |info, idx|
     info.status = 3
   end
 
-  if bsid = info.cr_anchors["zhwenpg"]?
+  if bsid = info.cr_sitemap["zhwenpg"]?
     # reset hash key order
-    info.cr_anchors.delete("zhwenpg")
-    info.cr_anchors["zhwenpg"] = bsid
+    info.cr_sitemap.delete("zhwenpg")
+    info.cr_sitemap["zhwenpg"] = bsid
   end
 
-  if time = info.cr_mftimes["zhwenpg"]?
-    info.cr_mftimes["69shu"] = info.mftime if time < info.mftime
+  if time = info.last_times["zhwenpg"]?
+    info.last_times["69shu"] = info.mftime if time < info.mftime
   end
 
-  if time = info.cr_mftimes["69shu"]?
-    info.cr_mftimes["69shu"] = info.mftime if time < info.mftime
+  if time = info.last_times["69shu"]?
+    info.last_times["69shu"] = info.mftime if time < info.mftime
   end
 
-  if time = info.cr_mftimes["hetushu"]?
-    info.cr_mftimes["hetushu"] = info.mftime if time < info.mftime
+  if time = info.last_times["hetushu"]?
+    info.last_times["hetushu"] = info.mftime if time < info.mftime
   end
 
   VpInfo.save!(info)

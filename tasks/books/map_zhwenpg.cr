@@ -86,8 +86,8 @@ def extract_info(dom, idx = "1/1") : Void
   puts "- <#{idx.colorize(color)}> \
           [#{info.uuid.colorize(color)}] #{title.colorize(color)}--#{author.colorize(color)}"
 
-  unless info.cr_anchors.has_key?("zhwenpg")
-    info.cr_anchors["zhwenpg"] = bsid
+  unless info.cr_sitemap.has_key?("zhwenpg")
+    info.cr_sitemap["zhwenpg"] = bsid
     info.cr_site_df = "zhwenpg" if info.cr_site_df.empty?
 
     if fresh
@@ -126,7 +126,7 @@ def extract_info(dom, idx = "1/1") : Void
   puts "- #{title} - #{mftime}"
 
   info.set_mftime(mftime)
-  info.cr_mftimes["zhwenpg"] = mftime
+  info.last_times["zhwenpg"] = mftime
 
   VpInfo.save!(info)
 end
