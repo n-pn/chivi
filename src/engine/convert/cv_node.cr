@@ -1,67 +1,43 @@
 class CvNode
+  SEP = "¦"
+
   property key : String
   property val : String
-  property dic = 0
+  property dic : Int32
 
-  def initialize(json : JSON::PullParser)
-    json.read_begin_array
-    @key = json.read_string
-    @val = json.read_string
-    @dic = json.read_int.to_i
-    json.read_end_array
+  # def initialize(json : JSON::PullParser)
+  #   json.read_begin_array
+  #   @key = json.read_string
+  #   @val = json.read_string
+  #   @dic = json.read_int.to_i
+  #   json.read_end_array
+  # end
+
+  def initialize(@key : String, @val : String, @dic : Int32 = 0)
   end
 
-  def initialize(@key : String, @val : String, @dic = 0)
-  end
-
-  def initialize(key : Char, val : Char, @dic = 0)
+  def initialize(key : Char, val : Char, @dic : Int32 = 0)
     @key = key.to_s
     @val = val.to_s
   end
 
-  def initialize(chr : Char, @dic = 0)
+  def initialize(chr : Char, @dic : Int32 = 0)
     @key = @val = chr.to_s
   end
 
   def to_s(io : IO)
-    io << "[" << @key << "|" << @val << "|" << @dic << "]"
+    io << @key << SEP << @val << SEP << @dic
   end
 
-  def to_json(json : JSON::Builder)
-    json.array do
-      json.string @key
-      json.string @val
-      json.number @dic
-    end
-  end
-end
-
-class CvNodes < Array(CvNode)
-  def keys
-    map(&.key)
+  def to_s
+    String.build { |io| to_s(io) }
   end
 
-  def vals
-    map(&.vals)
-  end
-
-  def zh_text(io : IO)
-    each { |item| io << item.key }
-  end
-
-  def zh_text
-    String.build { |io| zh_text(io) }
-  end
-
-  def vi_text(io : IO)
-    each { |item| io << item.val }
-  end
-
-  def vi_text
-    String.build { |io| vi_text(io) }
-  end
-
-  def to_s(io)
-    each { |item| item.to_json(io) }
-  end
+  # def to_json(json : JSON::Builder)
+  #   json.array do
+  #     json.string @key
+  #     json.string @val
+  #     json.number @dic
+  #   end
+  # end
 end

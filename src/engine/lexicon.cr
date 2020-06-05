@@ -57,65 +57,61 @@ class LxRepo
   end
 
   def load_root(name : String)
-    @@roots[name] ||= LxDict.load(File.join(@dir, "#{name}.dic"))
+    @roots[name] ||= LxDict.load(File.join(@dir, "#{name}.dic"))
   end
 
   def load_user(name : String, user = "local")
-    @@users[name][user] ||= LxDict.load(File.join(@dir, "#{name}.#{user}.fix"))
+    @users[name][user] ||= LxDict.load(File.join(@dir, "#{name}.#{user}.fix"))
   end
 end
 
-class Lexicon
-  getter home : LxRepo
-  getter core : LxRepo
-  getter book : LxRepo
+module Lexicon
+  DIR = "data/lx_dicts"
 
-  def initialize(@dir : String = ".dic", preload : Bool = false)
-    @home = LxRepo.new(@dir, preload)
-    @core = LxRepo.new(File.join(@dir, "core"), preload)
-    @book = LxRepo.new(File.join(@dir, "book"), preload)
+  @@HOME = LxRepo.new(DIR)
+  @@CORE = LxRepo.new(File.join(DIR, "core"))
+  @@BOOK = LxRepo.new(File.join(DIR, "book"))
+
+  @@cc_cedict : LxDict? = nil
+  @@trungviet : LxDict? = nil
+
+  def self.cc_cedict
+    @@cc_cedict ||= @@HOME["cc_cedict"]
   end
 
-  @cc_cedict : LxDict? = nil
-  @trungviet : LxDict? = nil
-
-  def cc_cedict
-    @cc_cedict ||= @home["cc_cedict"]
+  def self.trungviet
+    @@trungviet ||= @@HOME["trungviet"]
   end
 
-  def trungviet
-    @trungviet ||= @home["trungviet"]
+  def self.pinyins(user : String = "local")
+    {@@CORE["pinyins"], @@CORE["pinyins", user]}
   end
 
-  def pinyins(user : String = "local")
-    {@core["pinyins"], @core["pinyins", user]}
+  def self.tradsim(user : String = "local")
+    {@@CORE["tradsim"], @@CORE["tradsim", user]}
   end
 
-  def tradsim(user : String = "local")
-    {@core["tradsim"], @core["tradsim", user]}
+  def self.hanviet(user : String = "local")
+    {@@CORE["hanviet"], @@CORE["hanviet", user]}
   end
 
-  def hanviet(user : String = "local")
-    {@core["hanviet"], @core["hanviet", user]}
+  def self.generic(user : String = "local")
+    {@@CORE["generic"], @@CORE["generic", user]}
   end
 
-  def generic(user : String = "local")
-    {@core["generic"], @core["generic", user]}
+  def self.combine(user : String = "local")
+    {@@CORE["combine"], @@CORE["combine", user]}
   end
 
-  def combine(user : String = "local")
-    {@core["combine"], @core["combine", user]}
+  def self.suggest(user : String = "local")
+    {@@CORE["suggest"], @@CORE["suggest", user]}
   end
 
-  def suggest(user : String = "local")
-    {@core["suggest"], @core["suggest", user]}
+  def self.special(dict : String = "tong-hop", user = "local")
+    {@@BOOK[dict], @@BOOK[dict, user]}
   end
 
-  def special(dict : String = "tong-hop", user = "local")
-    {@book[dict], @book[dict, user]}
-  end
-
-  def convert(name : String = "tong-hop", user : String = "local")
-    [generic(user), combine(user), book(name, user)]
+  def self.for_convert(name : String = "tong-hop", user : String = "local")
+    [generic(user), combine(user), special(name, user)]
   end
 end

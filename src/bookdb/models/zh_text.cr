@@ -31,13 +31,15 @@ class ZhText
     load!(@file) if preload
   end
 
-  def load!(file : String = @file) : Void
+  def load!(file : String = @file) : ZhText
     if File.exists?(file)
       @lines = File.read_lines(file)
       puts "- loaded zh_text file `#{file}`".colorize(:cyan)
     else
       puts "- zh_text file `#{file}` not found!".colorize(:red)
     end
+
+    self
   end
 
   def cached?
@@ -48,7 +50,9 @@ class ZhText
     @lines.join("\n", io)
   end
 
-  def save!(file : String = @file) : Void
+  def save!(file : String = @file) : ZhText
     File.open(file, "w") { |io| to_s(io) }
+
+    self
   end
 end

@@ -1,3 +1,4 @@
+require "colorize"
 require "./lx_item"
 
 class LxLeaf
@@ -44,7 +45,7 @@ class LxDict
     time2 = Time.monotonic
 
     elapsed = (time2 - time1).total_milliseconds
-    puts "- Loaded [#{file.colorize(:yellow)}], \
+    puts "- loaded: `#{file.colorize(:yellow)}`, \
             lines: #{lines.size.colorize(:yellow)}, \
             time: #{elapsed.colorize(:yellow)}ms"
 
@@ -81,7 +82,7 @@ class LxDict
       when :new_first
         new_item.vals.concat(old_item.vals).uniq!
       when :old_first
-        new_item.vals = old_item.vals.concat(new_items.vals).uniq
+        new_item.vals = old_item.vals.concat(new_item.vals).uniq
       when :keep_new
         new_item.vals.uniq!
       else # :keep_old

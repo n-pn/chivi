@@ -3,6 +3,9 @@ require "colorize"
 class VpText
   DIR = File.join("data", "vp_texts")
 
+  SEP_0 = "ǁ"
+  SEP_1 = "¦"
+
   def self.root(site : String, bsid : String)
     File.join(DIR, "#{site}-#{bsid}")
   end
@@ -32,13 +35,15 @@ class VpText
     load!(@file) if preload
   end
 
-  def load!(file : String = @file) : Void
+  def load!(file : String = @file) : VpText
     if File.exists?(file)
       @lines = File.read_lines(file)
       puts "- loaded vp_text file `#{file}`".colorize(:cyan)
     else
       puts "- vp_text file `#{file}` not found!".colorize(:red)
     end
+
+    self
   end
 
   def cached?
@@ -49,7 +54,25 @@ class VpText
     @lines.join("\n", io)
   end
 
-  def save!(file : String = @file) : Void
+  def save!(file : String = @file) : VpText
     File.open(file, "w") { |io| to_s(io) }
+
+    self
+  end
+
+  def zh_lines : Array(String)
+    @lines.map { |line| VpText.zh_line(line) }
+  end
+
+  def vi_lines : Array(String)
+    @lines.map { |line| VpText.vi_line(line) }
+  end
+
+  def self.zh_line(vp_line : String) : String
+    vp_line.split(SEP_0).map { |x| x.split(SEP_1, 2)[0] }.join("")
+  end
+
+  def self.vi_line(vp_line : String) : String
+    vp_line.split(SEP_0).map { |x| x.split(SEP_1, 3)[1] }.join("")
   end
 end

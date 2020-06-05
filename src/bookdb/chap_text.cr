@@ -12,62 +12,40 @@ require "../engine/convert"
 module ChapText
   extend self
 
-  def load(site : String, bsid : String, csid : String, user : String = "local", dict = "tong-hop", mode : Int32 = 0)
+  # modes:
+  # 2 => load saved vp_text
+  # 1 => load saved zh_text then convert vp_text
+  # 0 => fetch text from external sites then convert to vp_text
+
+  def load_vp(site : String, bsid : String, csid : String, user : String = "local", dict = "tong-hop", mode : Int32 = 2)
     vp_text = VpText.new(site, bsid, csid, user)
-    zh_text = ZhText.new(site, bsid, csid)
+    return vp_text.load! if mode > 1 && vp_text.cached?
 
-    if vp_text.cached?
-      vp_text.load!
+    zh_text = load_zh(site, bsid, csid, mode)
+    cv_dicts = Lexicon.for_convert(dict, user)
 
-      unless zh_text.cached?
-        zh_text.lines = zh_lines(vp_text.lines)
-        zh_text.save!
-      end
+    vp_text.lines.clear
+    vp_text.lines << Convert.title(zh_text.lines.first, dicts).to_s
 
-      return vp_text.lines if mode == 1
+    zh_text.lines[1..].each do |line|
+      vp_text.lines << Convert.plain(line, dicts).to_s
     end
 
-    if mode == 1 && zh_text.cached?
+    vp_text.save!
+  end
+
+  # modes:
+  # 1 => load saved zh_text
+  # 0 => fetch text from external sites
+
+  def load_zh(site : String, bsid : String, csid : String, mode : Int32 = 1)
+    zh_text = ZhText.new(site, bsid, csid)
+
+    if mode > 0 && zh_text.cached?
       zh_text.load!
     else
       zh_text.lines = SourceText.fetch!(site, bsid, csid, keep_html: false)
       zh_text.save!
     end
-
-    dicts = Lexicon.convert(dict, user)
-    vp_text.lines = zh_text.lines.map_with_index do |line, idx|
-      convert(line, dicts, idx > 0)
-    end
-
-    vp_text.save!
-    vp_text.lines
-  end
-
-  def convert(line : String, dicts : Array(Tuple(LxDict, LxDict)), plain : Bool = true)
-    nodes = plain ? Convert.plain(line, dicts) : Convert.title(line, dicts)
-    vp_line(nodes)
-  end
-
-  SEP_0 = "ǁ"
-  SEP_1 = "¦"
-
-  def vp_line(cv_nodes : CvNodes)
-    cv_nodes.map { |token| {token.key, token.val, token.dic}.join(SEP_1) }.join(SEP_0)
-  end
-
-  def zh_lines(vp_lines : Array(String)) : Array(String)
-    vp_lines.map { |line| zh_line(line) }
-  end
-
-  def zh_line(vp_line : String) : String
-    vp_line.split(SEP_0).map { |x| x.split(SEP_1, 2)[0] }.join("")
-  end
-
-  def vi_lines(vp_lines : Array(String)) : Array(String)
-    vp_lines.map { |line| vi_line(line) }
-  end
-
-  def vi_line(vp_line : String) : String
-    vp_line.split(SEP_0).map { |x| x.split(SEP_1, 3)[1] }.join("")
   end
 end

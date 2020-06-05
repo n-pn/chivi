@@ -40,6 +40,6 @@ puts Engine.hanviet(test2).vi_text
 puts Engine.hanviet(test3).vi_text
 puts Engine.hanviet(test4).vi_text
 
-puts Engine.convert(test4, title: false).vi_text
+puts Engine.convert(test4, title: false)
 puts Engine.convert(test5, title: false).vi_text
 puts Engine.convert("“稍等。”李峥倒是不在意这些议论，更在意身旁失魂落魄的大兄弟，“英男别慌，最惨的是我才对，400分满分，输了一分，输了一生。”", title: false).vi_text
