@@ -1,8 +1,8 @@
 require "json"
 require "colorize"
 
-require "./models/zh_texts"
-require "./models/vp_texts"
+require "./models/zh_text"
+require "./models/vp_text"
 
 require "./import/source_text"
 

@@ -46,7 +46,7 @@ module SourceText
     if File.exists?(file)
       html = Utils.read_file(file)
     else
-      html = SpiderUtil.fetch_html(url)
+      html = ImportUtil.fetch_html(url)
       File.write(file, html) if save_html
     end
 

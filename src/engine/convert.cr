@@ -108,20 +108,16 @@ module Convert
     0.upto(chars.size) do |idx|
       init_bonus = (char_count - idx) / char_count + 1
 
-      dicts.each_with_index do |(root_dict, user_dict), jdx|
+      dicts.each_with_index do |dpair, jdx|
         dict_index = jdx + 1
         dict_bonus = dict_index / dict_count
 
         items = {} of Int32 => LxItem
 
-        root_dict.scan(norms, idx).each do |item|
-          key = item.key.size
-          items[key] = item
-        end
-
-        user_dict.scan(norms, idx).each do |item|
-          key = item.key.size
-          items[key] = item
+        dpair.each do |dict|
+          dict.scan(norms, idx).each do |item|
+            items[item.key.size] ||= item
+          end
         end
 
         items.each do |size, item|

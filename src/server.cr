@@ -61,7 +61,7 @@ module Server
       res = lines.map { |line| Engine.tradsim(line, user) }
     else
       dict = env.params.json.fetch("dict", "tong-hop").as(String)
-      res = Engine.convert(lines, dict, user, mode: :plain)
+      res = Engine.cv_mixed(lines, dict, user, mode: :plain)
     end
 
     res.to_json(env.response)
@@ -71,7 +71,7 @@ module Server
     user = env.get("user").as(String)
 
     line = env.params.query.fetch("line", "")
-    dict = env.params.query.fetch("dict", "tong-hop")
+    dict = env.params.query.fetch("dict", "tonghop")
 
     Engine.lookup(line, dict, user).to_json(env.response)
   end
@@ -80,7 +80,7 @@ module Server
     user = env.get("user").as(String)
 
     word = env.params.query["word"]? || ""
-    dict = env.params.query["dict"]? || "tong-hop"
+    dict = env.params.query["dict"]? || "tonghop"
 
     res = Engine.inquire(word, dict, user)
     res.to_json(env.response)
@@ -90,7 +90,7 @@ module Server
     key = env.params.query["key"]? || ""
     val = env.params.query["val"]? || ""
 
-    dict = env.params.query["dict"]? || "tong-hop"
+    dict = env.params.query["dict"]? || "tonghop"
     user = env.get("user").as(String)
 
     res = Engine.upsert(key, val, dict, user)
@@ -160,7 +160,7 @@ module Server
       halt env, status_code: 404, response: json_error("Book not found!")
     end
 
-    BookRepo.update_sort("access", book)
+    # BookRepo.update_sort("access", book)
     {book: book}.to_json env.response
   end
 

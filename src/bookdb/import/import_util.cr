@@ -1,7 +1,7 @@
 require "colorize"
 require "http/client"
 
-module SpiderUtil
+module ImportUtil
   def self.fetch_html(url : String) : String
     puts "- HIT: #{url.colorize(:grey)}"
     fetch_html(url, tls_for(url), encoding_for(url))
