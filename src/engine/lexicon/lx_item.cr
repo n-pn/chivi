@@ -1,13 +1,13 @@
-class LxItem
+struct LxItem
   EPOCH = Time.utc(2020, 1, 1)
 
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 
   getter key : String
-  property vals : Array(String)
-  property mtime : Int32?
-  property extra : String?
+  getter vals : Array(String)
+  getter mtime : Int32?
+  getter extra : String?
 
   def self.from(line : String)
     cols = line.split(SEP_0, 4)

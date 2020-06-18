@@ -6,8 +6,7 @@ require "./models/vp_text"
 
 require "./import/source_text"
 
-require "../engine/lexicon"
-require "../engine/convert"
+require "../engine"
 
 module ChapText
   extend self
@@ -17,18 +16,15 @@ module ChapText
   # 1 => load saved zh_text then convert vp_text
   # 0 => fetch text from external sites then convert to vp_text
 
-  def load_vp(site : String, bsid : String, csid : String, user : String = "local", dict = "tong-hop", mode : Int32 = 2)
+  def load_vp(site : String, bsid : String, csid : String, user : String = "local", dict = "tonghop", mode : Int32 = 2)
     vp_text = VpText.new(site, bsid, csid, user)
     return vp_text.load! if mode > 1 && vp_text.cached?
 
     zh_text = load_zh(site, bsid, csid, mode)
-    cv_dicts = Lexicon.for_convert(dict, user)
-
     vp_text.lines.clear
-    vp_text.lines << Convert.title(zh_text.lines.first, dicts).to_s
 
-    zh_text.lines[1..].each do |line|
-      vp_text.lines << Convert.plain(line, dicts).to_s
+    Engine.cv_mixed(zh_text.lines, dict, user).each do |nodes|
+      vt_text.lines << node.to_s
     end
 
     vp_text.save!

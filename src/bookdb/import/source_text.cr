@@ -1,7 +1,7 @@
 require "myhtml"
 require "colorize"
 
-require "./spider_util"
+require "./import_util"
 
 module SourceText
   extend self

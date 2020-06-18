@@ -4,7 +4,7 @@ const prep = require('svelte-preprocess')
 
 module.exports = {
   preprocess: {
-    ...prep(),
+    ...prep({ typescript: { transpileOnly: true } }),
     style: async ({ content, attributes, filename }) => {
       if (content.length === 0) return { code: content }
 

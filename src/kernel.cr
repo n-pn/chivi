@@ -3,7 +3,6 @@ require "file_utils"
 require "./engine"
 
 require "./spider/info_spider"
-require "./spider/text_spider"
 
 require "./bookdb/book_info"
 require "./bookdb/chap_list"
@@ -75,33 +74,6 @@ module Kernel
     return false unless new_latest
     return true unless old_latest
     new_latest.csid != old_latest
-  end
-
-  def load_chap(info : VpInfo, site : String, csid : String, user = "guest", mode = 0, unique : Bool = false)
-    bsid = info.cr_sitemap[site]
-    uuid = VpText.uuid_for(info.uuid, site, bsid)
-
-    json_file = VpText.path_for(uuid, csid, user)
-    return VpText.load!(json_file) if mode == 0 && File.exists?(json_file)
-
-    text_file = File.join("data", "zh_texts", uuid, "#{csid}.txt")
-
-    if mode == 1 && File.exists?(text_file)
-      lines = File.read_lines(text_file)
-    else
-      spider = TextSpider.load(site, bsid, csid, expiry: 10.years, frozen: false)
-      lines = [spider.get_title!].concat(spider.get_paras!)
-
-      FileUtils.mkdir_p(File.dirname(text_file))
-      File.write(text_file, lines.join("\n"))
-    end
-
-    content = Engine.convert(lines, book: info.uuid, user: user, mode: :mixed)
-
-    FileUtils.mkdir_p(File.dirname(json_file))
-    File.write(json_file, content.to_json)
-
-    content
   end
 end
 

@@ -4,7 +4,7 @@ class ZhText
   DIR = File.join("data", "zh_texts")
 
   def self.root(site : String, bsid : String)
-    File.join(DIR, "#{site}-#{bsid}")
+    File.join(DIR, "#{site}.#{bsid}")
   end
 
   def self.list(site : String, bsid : String)
@@ -34,9 +34,9 @@ class ZhText
   def load!(file : String = @file) : ZhText
     if File.exists?(file)
       @lines = File.read_lines(file)
-      puts "- loaded zh_text file `#{file}`".colorize(:cyan)
+      puts "- loaded zh_text `#{file}`".colorize(:cyan)
     else
-      puts "- zh_text file `#{file}` not found!".colorize(:red)
+      puts "- zh_text `#{file}` not found!".colorize(:red)
     end
 
     self

@@ -1,4 +1,4 @@
-require "./lexicon/lx_dict"
+require "./lexicon/lx_pair"
 require "./convert/cv_node"
 require "./convert/cv_data"
 
@@ -9,7 +9,6 @@ require "../_utils/normalize"
 module Convert
   extend self
 
-  alias LxPair = Tuple(LxDict, LxDict)
   alias LxList = Array(LxPair)
 
   def cvraw(input : String, dicts : LxPair)
@@ -34,7 +33,6 @@ module Convert
     space = false
 
     title, volume = Utils.split_title(input)
-    pp [title, volume]
 
     unless volume.empty? || volume == "正文"
       if match = TITLE_RE.match(volume)
@@ -112,14 +110,7 @@ module Convert
         dict_index = jdx + 1
         dict_bonus = dict_index / dict_count
 
-        items = {} of Int32 => LxItem
-
-        dpair.each do |dict|
-          dict.scan(norms, idx).each do |item|
-            items[item.key.size] ||= item
-          end
-        end
-
+        items = dpair.scan(norms, idx)
         items.each do |size, item|
           next if item.vals.empty?
           next if item.vals.first.empty?

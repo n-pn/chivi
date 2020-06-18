@@ -1,14 +1,14 @@
 require "colorize"
 require "./lx_item"
 
-class LxLeaf
+private class LxLeaf
   alias LxTrie = Hash(Char, LxLeaf)
 
   property item : LxItem?
-  property next : LxTrie
+  getter trie : LxTrie
 
   def initialize(@item : LxItem? = nil)
-    @next = LxTrie.new
+    @trie = LxTrie.new
   end
 end
 
@@ -27,7 +27,7 @@ class LxDict
   end
 
   getter file : String
-  getter root : LxLeaf = LxLeaf.new
+  getter trie : LxLeaf = LxLeaf.new
 
   getter size : Int32 = 0
   getter time : Time?
@@ -73,8 +73,8 @@ class LxDict
   end
 
   def put(new_item : LxItem, mode = :keep_new) : LxItem?
-    leaf = new_item.key.chars.reduce(@root) do |leaf, char|
-      leaf.next[char] ||= LxLeaf.new
+    leaf = new_item.key.chars.reduce(@trie) do |leaf, char|
+      leaf.trie[char] ||= LxLeaf.new
     end
 
     if old_item = leaf.item
@@ -82,11 +82,12 @@ class LxDict
       when :new_first
         new_item.vals.concat(old_item.vals).uniq!
       when :old_first
-        new_item.vals = old_item.vals.concat(new_item.vals).uniq
+        old_item.vals.each { |val| new_item.vals.unshift(val) }
+        new_item.vals.uniq!
       when :keep_new
         new_item.vals.uniq!
       else # :keep_old
-        new_item.vals = old_item.vals
+        new_item.vals.clear.concat(old_item.vals)
       end
     else
       @size += 1
@@ -97,10 +98,10 @@ class LxDict
   end
 
   def find(key : String) : LxItem?
-    leaf = @root
+    leaf = @trie
 
     key.chars.each do |char|
-      leaf = leaf.next[char]?
+      leaf = leaf.trie[char]?
       return nil unless leaf
     end
 
@@ -122,10 +123,10 @@ class LxDict
   def scan(chars : Array(Char), offset : Int32 = 0) : Array(LxItem)
     items = [] of LxItem
 
-    leaf = @root
+    leaf = @trie
     offset.upto(chars.size - 1) do |idx|
       char = chars[idx]
-      break unless leaf = leaf.next[char]?
+      break unless leaf = leaf.trie[char]?
       if item = leaf.item
         items << item
       end
@@ -137,10 +138,10 @@ class LxDict
   include Enumerable(LxItem)
 
   def each
-    queue = [@root]
+    queue = [@trie]
 
     while leaf = queue.pop?
-      leaf.next.each_value do |leaf|
+      leaf.trie.each_value do |leaf|
         queue << leaf
 
         if item = leaf.item
@@ -150,7 +151,7 @@ class LxDict
     end
   end
 
-  def save!(file : String = @file, compact = false) : Void
+  def save!(file : String = @file, compact : Bool = false) : Void
     File.open(file, "w") do |f|
       each do |item|
         items.vals = items.vals.first(1) if compact

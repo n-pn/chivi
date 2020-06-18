@@ -7,7 +7,7 @@ class VpText
   SEP_1 = "¦"
 
   def self.root(site : String, bsid : String)
-    File.join(DIR, "#{site}-#{bsid}")
+    File.join(DIR, "#{site}.#{bsid}")
   end
 
   def self.list(site : String, bsid : String, user : String = "local")
@@ -30,7 +30,7 @@ class VpText
 
   def initialize(@site : String, @bsid : String, @csid : String, @user : String = "local", preload : Bool = true)
     @root = VpText.root(@site, @bsid)
-    @file = File.join(@root, "#{@csid}-#{@user}.txt")
+    @file = File.join(@root, "#{@csid}.#{@user}.txt")
 
     load!(@file) if preload
   end
@@ -38,9 +38,9 @@ class VpText
   def load!(file : String = @file) : VpText
     if File.exists?(file)
       @lines = File.read_lines(file)
-      puts "- loaded vp_text file `#{file}`".colorize(:cyan)
+      puts "- loaded vp_text `#{file}`".colorize(:cyan)
     else
-      puts "- vp_text file `#{file}` not found!".colorize(:red)
+      puts "- vp_text `#{file}` not found!".colorize(:red)
     end
 
     self
@@ -61,18 +61,14 @@ class VpText
   end
 
   def zh_lines : Array(String)
-    @lines.map { |line| VpText.zh_line(line) }
+    @lines.map do |line|
+      line.split(SEP_0).map { |x| x.split(SEP_1, 2)[0] }.join("")
+    end
   end
 
   def vi_lines : Array(String)
-    @lines.map { |line| VpText.vi_line(line) }
-  end
-
-  def self.zh_line(vp_line : String) : String
-    vp_line.split(SEP_0).map { |x| x.split(SEP_1, 2)[0] }.join("")
-  end
-
-  def self.vi_line(vp_line : String) : String
-    vp_line.split(SEP_0).map { |x| x.split(SEP_1, 3)[1] }.join("")
+    @lines.map do |line|
+      line.split(SEP_0).map { |x| x.split(SEP_1, 3)[1] }.join("")
+    end
   end
 end

@@ -24,15 +24,15 @@
   }
 </script>
 
-<script>
+<script lang="typescript">
   import MIcon from '$mould/MIcon.svelte'
   import Layout from '$layout/Layout.svelte'
   import paginate_range from '$utils/paginate_range'
 
   export let items = []
-  export let total = 0
-  export let page = 1
-  export let sort = 'access'
+  export let total : number = 0
+  export let page : number = 1
+  export let sort : string = 'access'
 
   const sorts = {
     access: 'Vừa xem',
@@ -81,7 +81,7 @@
     }
   }
 
-  function changePage(newPage) {
+  function changePage(newPage : number) {
     if (newPage >= 1 && newPage <= pageMax) _goto(makePageUrl(newPage, sort))
   }
 </script>

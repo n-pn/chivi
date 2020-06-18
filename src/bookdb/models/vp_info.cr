@@ -160,7 +160,7 @@ class VpInfo
   end
 
   def self.save!(info : VpInfo, file = path_for(info.uuid)) : Void
-    File.write(file, info.to_pretty_json)
+    File.write(file, info.to_json)
   end
 
   def self.load_all(reset : Bool = false)

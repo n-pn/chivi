@@ -4,18 +4,12 @@ require "./engine"
 require "./kernel"
 
 def parse_page(input, limit = 20)
-  page = parse_int(input)
+  page = input.to_i? || 0
 
   offset = (page - 1) * limit
   offset = 0 if offset < 0
 
   {limit, offset}
-end
-
-def parse_int(str)
-  str.to_i
-rescue
-  0
 end
 
 def json_error(msg : String)
@@ -47,21 +41,21 @@ module Server
 
   post "/api/convert" do |env|
     user = env.get("user").as(String)
-
     type = env.params.query["type"].as(String)
-    text = env.params.json["text"].as(String)
 
+    text = env.params.json["text"].as(String)
     lines = Utils.split_lines(text)
+
     case type
     when "hanviet"
-      res = lines.map { |line| Engine.hanviet(line, user, apply_cap: true) }
+      res = Engine.hanviet(lines, user, apply_cap: true)
     when "pinyins"
-      res = lines.map { |line| Engine.pinyins(line, user, apply_cap: true) }
+      res = Engine.pinyins(lines, user, apply_cap: true)
     when "tradsim"
-      res = lines.map { |line| Engine.tradsim(line, user) }
+      res = Engine.tradsim(lines, user, apply_cap: true)
     else
-      dict = env.params.json.fetch("dict", "tong-hop").as(String)
-      res = Engine.cv_mixed(lines, dict, user, mode: :plain)
+      dict = env.params.json.fetch("dict", "tonghop").as(String)
+      res = Engine.cv_mixed(lines, dict, user)
     end
 
     res.to_json(env.response)
@@ -231,7 +225,7 @@ module Server
       next_url:  next_chap.try(&.slug_for(site)),
       curr_url:  curr_chap.try(&.slug_for(site)),
 
-      content: Kernel.load_chap(info, site, csid, user, mode: mode),
+      content: ChapText.load_vp(site, bsid, csid, user, info.uuid, mode: mode),
     }.to_json env.response
   end
 
