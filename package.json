@@ -2,9 +2,9 @@
   "private": true,
   "scripts": {
     "pull": "bash scripts/fetch_content.sh",
-    "push": "bash scripts/upload_content.sh",
+    "push": "bash scripts/push_content.sh",
     "yousuu-pull": "bash scripts/fetch_yousuu.sh",
-    "yousuu-push": "bash scripts/upload_yousuu.sh",
+    "yousuu-push": "bash scripts/push_yousuu.sh",
     "build": "shards build --release -Dpreview_mt"
   }
 }

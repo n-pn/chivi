@@ -3,7 +3,7 @@ require "http/client"
 
 module ImportUtil
   def self.fetch_html(url : String) : String
-    puts "- HIT: #{url.colorize(:grey)}"
+    puts "- HIT: `#{url.colorize(:cyan)}`"
     fetch_html(url, tls_for(url), encoding_for(url))
   end
 

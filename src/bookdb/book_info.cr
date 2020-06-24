@@ -3,14 +3,10 @@ require "colorize"
 
 require "./models/vp_info"
 
+require "./indexes/BookOrderIndex"
+
 module BookRepo
   extend self
-
-  DIR = File.join("data", "indexing")
-
-  def index_path(name : String, ext = ".json")
-    File.join(DIR, name + ext)
-  end
 
   @@cached = {} of String => VpInfo?
 
@@ -33,37 +29,18 @@ module BookRepo
     @@mapping ||= Hash(String, String).from_json(File.read(index_path("mapping")))
   end
 
-  def index(limit = 20, offset = 0, sort = "update")
+  def index(limit = 20, offset = 0, order = "update")
     output = [] of VpInfo
 
-    sort_by(sort).reverse_each do |uuid, _|
-      if offset > 0
-        offset -= 1
-      else
-        output << VpInfo.load!(uuid)
-        break if output.size == limit
-      end
+    BookOrderIndex.load!(order).fetch(limit, offset) do |uuid|
+      output << VpInfo.load!(uuid)
     end
 
     output
   end
 
-  alias Sorting = Array(Tuple(String, Float64))
-
-  @@sorted = {} of String => Sorting
-
-  def sort_by(sort : String = "update")
-    @@sorted[sort] ||= load_sort(sort)
-  end
-
-  def load_sort(name)
-    puts "- loading sort <#{name.colorize(:blue)}>"
-    Sorting.from_json(File.read(index_path(name)))
-  end
-
-  def update_sort(type : String, info : VpInfo)
-    sort = sort_by(type)
-    uuid = info.uuid
+  def update_order(info : VpInfo, order_type : String) : Void
+    order = BookOrderIndex.load!(order_type)
 
     case type
     when "tally"
@@ -78,24 +55,14 @@ module BookRepo
       value = Time.utc.to_unix_ms.to_f
     end
 
-    if index = sort.index { |key, _| uuid == key }
-      return if sort[index][1] == value
-      sort[index] = {uuid, value}
-    else
-      sort << {uuid, value}
-    end
-
-    puts "- sort type #{type} is changed, updating..."
-    @@sorted[type] = sort.sort_by!(&.[1])
-    File.write(index_path(type), sort.to_json)
+    order.upsert(info.uuid, value, reorder: true)
+    order.save! if order.changed?
   end
 
-  SORTS = {"access", "update", "score", "votes", "tally"}
-
   def save!(info : VpInfo) : Void
-    update_sort("update", info)
     @@cached[info.uuid] = info
-    VpInfo.save!(info)
+    update_order(info, update)
+    info.save!
   end
 
   COUNT_ZH = {"zh_titles", "zh_authors"}

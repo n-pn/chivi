@@ -38,9 +38,9 @@ class VpText
   def load!(file : String = @file) : VpText
     if File.exists?(file)
       @lines = File.read_lines(file)
-      puts "- loaded vp_text `#{file}`".colorize(:cyan)
+      puts "- [vp_text] `#{file}` loaded.".colorize(:cyan)
     else
-      puts "- vp_text `#{file}` not found!".colorize(:red)
+      puts "- [vp_text] `#{file}` not found!".colorize(:red)
     end
 
     self

@@ -34,9 +34,9 @@ class ZhText
   def load!(file : String = @file) : ZhText
     if File.exists?(file)
       @lines = File.read_lines(file)
-      puts "- loaded zh_text `#{file}`".colorize(:cyan)
+      puts "- [zh_text] `#{file} loaded.`".colorize(:cyan)
     else
-      puts "- zh_text `#{file}` not found!".colorize(:red)
+      puts "- [zh_text] `#{file}` not found!".colorize(:red)
     end
 
     self
