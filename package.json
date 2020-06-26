@@ -5,6 +5,6 @@
     "push": "bash scripts/push_content.sh",
     "yousuu-pull": "bash scripts/fetch_yousuu.sh",
     "yousuu-push": "bash scripts/push_yousuu.sh",
-    "build": "shards build --release -Dpreview_mt"
+    "build": "cd server && shards build --release -Dpreview_mt"
   }
 }
