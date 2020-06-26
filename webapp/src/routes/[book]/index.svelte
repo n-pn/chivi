@@ -215,19 +215,13 @@
   }
 
   .summary {
-    @include fgcolor(neutral, 7);
     p {
+      margin: 0.75rem 0;
+      word-wrap: break-word;
+      @include fgcolor(neutral, 7);
       $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
       @include apply(font-size, $font-sizes);
     }
-    p + p {
-      margin-top: 0.75rem;
-    }
-
-    // p {
-    //   margin: 0.75rem;
-    //   margin-top: 0;
-    // }
   }
 
   .author {
@@ -444,6 +438,9 @@
     .latest-time & {
       @include font-size(2);
       cursor: pointer;
+      &:hover {
+        @include fgcolor(primary, 5);
+      }
       // @include fgcolor(neutral, 5);
     }
   }
@@ -512,16 +509,8 @@
   <section class="info">
     <div class="name">
       <h1 class="title">
-        <div>
-          <MIcon class="m-icon" name="book" />
-          {book.vi_title}
-        </div>
-
-        <div>
-          <MIcon class="m-icon" name="book" />
-          <span class="subtitle">{book.zh_title}</span>
-
-        </div>
+        {book.vi_title}
+        <span class="subtitle">- {book.zh_title}</span>
       </h1>
     </div>
 
@@ -657,7 +646,7 @@
                     {#if site == source && loading}
                       <MIcon class="m-icon" name="loader" />
                     {:else}
-                      <time>{relative_time(book.cr_mftimes[source])}</time>
+                      <span>{relative_time(book.cr_mftimes[source])}</span>
                     {/if}
                   </span>
                 </td>

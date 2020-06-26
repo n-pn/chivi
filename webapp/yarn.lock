@@ -11,9 +11,9 @@
     purgecss "^2.2.0"
 
 "@nipin/mould@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@nipin/mould/-/mould-0.4.2.tgz#4309a7f4af40678a619f69fe5e5d649e3e135b63"
-  integrity sha512-mGayXrQFb4WeImm1rsp1PmtxS7WxbLeSAlZiSa1tytclqJw+vZxja0Nve3xZtAhknDnYNZ22RlB6PLCKBbdZ1g==
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@nipin/mould/-/mould-0.4.3.tgz#273a01cda7b9cefe43b170ebd4a9659b27c7e4b9"
+  integrity sha512-ErRoivCX0dcNb2++sT6i+Ekv48pxUCi2o+uVQkiVVZbynJcPg1ZW6EksMgU9H+xgLyw9/v3yuiLjarSdz2xcjw==
 
 "@polka/url@^0.5.0":
   version "0.5.0"

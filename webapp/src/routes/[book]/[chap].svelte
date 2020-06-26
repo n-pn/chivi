@@ -88,7 +88,7 @@
 
       case 72:
         evt.preventDefault()
-        _goto(`/${book_slug}?tab=content`)
+        _goto(`/${book_slug}?tab=content&site=${site}`)
         break
 
       case 37:
@@ -105,7 +105,7 @@
         if (!evt.altKey) {
           evt.preventDefault()
           if (next_url) _goto(`/${book_slug}/${next_url}`)
-          else _goto(`${book_slug}?tab=content`)
+          else _goto(`${book_slug}?tab=content&site=${site}`)
         }
         break
 
@@ -212,113 +212,6 @@
   }
 </script>
 
-<svelte:head>
-  <title>{render_convert(content[0])} - {book_name} - Chivi</title>
-  <meta property="og:url" content="{book_slug}/{curr_url}" />
-</svelte:head>
-
-<svelte:window on:keydown={handleKeypress} />
-
-<Layout shiftLeft={lookupActived}>
-  <a slot="header-left" href="/" class="header-item ">
-    <img src="/logo.svg" alt="logo" />
-  </a>
-
-  <a slot="header-left" href="/{book_slug}" class="header-item _title">
-    <span>{book_name}</span>
-  </a>
-
-  <span slot="header-left" class="header-item _active _index">
-    <!-- <span>{Math.round((ch_index * 10000) / ch_total) / 100}%</span> -->
-    <span>{ch_index}/{ch_total}</span>
-  </span>
-
-  <button
-    slot="header-right"
-    type="button"
-    class="header-item"
-    on:click={() => reloadContent()}>
-    <MIcon
-      class="m-icon _refresh-ccw {pageReloading ? '_reload' : ''}"
-      name="refresh-ccw" />
-  </button>
-
-  <button
-    slot="header-right"
-    type="button"
-    class="header-item"
-    class:_active={upsertEnabled}
-    on:click={() => showUpsertModal()}>
-    <MIcon class="m-icon _plus-circle" name="plus-circle" />
-  </button>
-
-  <button
-    slot="header-right"
-    type="button"
-    class="header-item"
-    class:_active={lookupEnabled}
-    on:click={triggerLookupSidebar}>
-    <MIcon class="m-icon _compass" name="compass" />
-  </button>
-
-  <article class="convert" class:_reload={pageReloading}>
-    {#each content as line, idx}
-      <div
-        class="line"
-        class:_focus={idx == lineOnFocus}
-        class:_hover={idx == lineOnHover}
-        on:mouseenter={() => (lineOnHover = idx)}
-        on:click={(event) => handleClick(event, idx)}>
-        {@html render_convert(line, renderMode(idx, lineOnHover, lineOnFocus), idx == '0' ? 'h1' : 'p')}
-      </div>
-    {/each}
-  </article>
-
-  <footer class="footer">
-    {#if prev_url}
-      <a class="m-button _line" href="/{book_slug}/{prev_url}">
-        <MIcon class="m-icon" name="chevron-left" />
-        <span>Trước</span>
-      </a>
-    {:else}
-      <a class="m-button _line" href="/{book_slug}?tab=content">
-        <MIcon class="m-icon" name="list" />
-        <span>Mục lục</span>
-      </a>
-    {/if}
-
-    {#if next_url}
-      <a class="m-button _line _primary" href="/{book_slug}/{next_url}">
-        <span>Kế tiếp</span>
-        <MIcon class="m-icon" name="chevron-right" />
-      </a>
-    {:else if prev_url}
-      <a class="m-button _line" href="/{book_slug}?tab=content">
-        <MIcon class="m-icon" name="list" />
-        <span>Mục lục</span>
-      </a>
-    {/if}
-  </footer>
-</Layout>
-
-{#if lookupEnabled}
-  <Lookup
-    on_top={!upsertEnabled}
-    bind:active={lookupActived}
-    line={lookupLine}
-    from={lookupFrom}
-    dict={book_uuid} />
-{/if}
-
-{#if upsertEnabled}
-  <Upsert
-    bind:active={upsertEnabled}
-    key={upsertKey}
-    dic={upsertDic}
-    tab={upsertTab}
-    bind:shouldReload />
-{/if}
-
 <style lang="scss">
   .convert {
     padding: 0.75rem 0;
@@ -417,3 +310,112 @@
     animation-timing-function: linear;
   }
 </style>
+
+<svelte:head>
+  <title>{render_convert(content[0])} - {book_name} - Chivi</title>
+  <meta property="og:url" content="{book_slug}/{curr_url}" />
+</svelte:head>
+
+<svelte:window on:keydown={handleKeypress} />
+
+<Layout shiftLeft={lookupActived}>
+  <a slot="header-left" href="/" class="header-item ">
+    <img src="/logo.svg" alt="logo" />
+  </a>
+
+  <a
+    slot="header-left"
+    href="/{book_slug}?tab=content&site=${site}"
+    class="header-item _title">
+    <span>{book_name}</span>
+  </a>
+
+  <span slot="header-left" class="header-item _active _index">
+    <!-- <span>{Math.round((ch_index * 10000) / ch_total) / 100}%</span> -->
+    <span>{ch_index}/{ch_total}</span>
+  </span>
+
+  <button
+    slot="header-right"
+    type="button"
+    class="header-item"
+    on:click={() => reloadContent()}>
+    <MIcon
+      class="m-icon _refresh-ccw {pageReloading ? '_reload' : ''}"
+      name="refresh-ccw" />
+  </button>
+
+  <button
+    slot="header-right"
+    type="button"
+    class="header-item"
+    class:_active={upsertEnabled}
+    on:click={() => showUpsertModal()}>
+    <MIcon class="m-icon _plus-circle" name="plus-circle" />
+  </button>
+
+  <button
+    slot="header-right"
+    type="button"
+    class="header-item"
+    class:_active={lookupEnabled}
+    on:click={triggerLookupSidebar}>
+    <MIcon class="m-icon _compass" name="compass" />
+  </button>
+
+  <article class="convert" class:_reload={pageReloading}>
+    {#each content as line, idx}
+      <div
+        class="line"
+        class:_focus={idx == lineOnFocus}
+        class:_hover={idx == lineOnHover}
+        on:mouseenter={() => (lineOnHover = idx)}
+        on:click={(event) => handleClick(event, idx)}>
+        {@html render_convert(line, renderMode(idx, lineOnHover, lineOnFocus), idx == '0' ? 'h1' : 'p')}
+      </div>
+    {/each}
+  </article>
+
+  <footer class="footer">
+    {#if prev_url}
+      <a
+        class="m-button _line"
+        class:_disable={!prev_url}
+        href="/{book_slug}/{prev_url ? prev_url : curr_url}">
+        <MIcon class="m-icon" name="chevron-left" />
+        <span>Trước</span>
+      </a>
+    {/if}
+
+    <a class="m-button _line" href="/{book_slug}?tab=content&site={site}">
+      <MIcon class="m-icon" name="list" />
+      <span>Mục lục</span>
+    </a>
+
+    <a
+      class="m-button _line _primary"
+      class:_disable={!next_url}
+      href="/{book_slug}/{next_url ? next_url : curr_url}">
+      <span>Kế tiếp</span>
+      <MIcon class="m-icon" name="chevron-right" />
+    </a>
+  </footer>
+</Layout>
+
+{#if lookupEnabled}
+  <Lookup
+    on_top={!upsertEnabled}
+    bind:active={lookupActived}
+    line={lookupLine}
+    from={lookupFrom}
+    dict={book_uuid} />
+{/if}
+
+{#if upsertEnabled}
+  <Upsert
+    bind:active={upsertEnabled}
+    key={upsertKey}
+    dic={upsertDic}
+    tab={upsertTab}
+    bind:shouldReload />
+{/if}

@@ -29,71 +29,6 @@
   $: pmax = Math.round((total - 1) / limit) + 1
 </script>
 
-<svelte:head>
-  <title>Tìm kiếm - Chivi</title>
-</svelte:head>
-
-<Layout searchKey={word}>
-  <h1 class="label">
-    Hiển thị kết quả {offset + 1}~{offset + items.length}/{total} cho từ khoá "{word}"
-    :
-  </h1>
-
-  <div class="list" data-page={page}>
-    {#each items as book}
-      <a class="book" href={book.slug} rel="prefetch">
-        <picture class="cover">
-          <source srcset="/images/{book.uuid}.webp" type="image/webp" />
-          <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
-          <img src="/covers/{book.uuid}.jpg" alt="" loading="lazy" />
-        </picture>
-
-        <div class="name">
-          <h2 class="title">
-            {book.vi_title}
-            <span class="subtitle">({book.zh_title})</span>
-          </h2>
-        </div>
-
-        <div class="extra">
-          <div>
-            <span class="author">
-              {book.vi_author}
-              <span>({book.zh_author})</span>
-            </span>
-          </div>
-
-          <div>
-            <span>
-              Đánh giá:
-              <strong>{book.score}</strong>
-              /10
-            </span>
-          </div>
-        </div>
-      </a>
-    {/each}
-  </div>
-
-  {#if page < pmax}
-    <div class="pagi">
-      <a
-        class="m-button _line"
-        href="search?kw={word}&pg={page > 1 ? page - 1 : 1}">
-        <MIcon name="chevron-left" />
-        <span>Trước</span>
-      </a>
-
-      <a
-        class="m-button _line _primary"
-        href="search?kw={word}&pg={page < pmax ? page + 1 : pmax}">
-        <span>Kế tiếp</span>
-        <MIcon name="chevron-right" />
-      </a>
-    </div>
-  {/if}
-</Layout>
-
 <style lang="scss">
   .list {
     // width: 35rem;
@@ -213,6 +148,8 @@
   .pagi {
     @include flex($gap: 0.75rem, $child: '.m-button');
     justify-content: center;
+    margin-bottom: 0.75rem;
+
     .m-button {
       width: 6.25rem;
       :global(svg) {
@@ -221,3 +158,68 @@
     }
   }
 </style>
+
+<svelte:head>
+  <title>Tìm kiếm - Chivi</title>
+</svelte:head>
+
+<Layout searchKey={word}>
+  <h1 class="label">
+    Hiển thị kết quả {offset + 1}~{offset + items.length}/{total} cho từ khoá "{word}"
+    :
+  </h1>
+
+  <div class="list" data-page={page}>
+    {#each items as book}
+      <a class="book" href={book.slug} rel="prefetch">
+        <picture class="cover">
+          <source srcset="/images/{book.uuid}.webp" type="image/webp" />
+          <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
+          <img src="/covers/{book.uuid}.jpg" alt="" loading="lazy" />
+        </picture>
+
+        <div class="name">
+          <h2 class="title">
+            {book.vi_title}
+            <span class="subtitle">({book.zh_title})</span>
+          </h2>
+        </div>
+
+        <div class="extra">
+          <div>
+            <span class="author">
+              {book.vi_author}
+              <span>({book.zh_author})</span>
+            </span>
+          </div>
+
+          <div>
+            <span>
+              Đánh giá:
+              <strong>{book.score}</strong>
+              /10
+            </span>
+          </div>
+        </div>
+      </a>
+    {/each}
+  </div>
+
+  {#if page < pmax}
+    <div class="pagi">
+      <a
+        class="m-button _line"
+        href="search?kw={word}&pg={page > 1 ? page - 1 : 1}">
+        <MIcon name="chevron-left" />
+        <span>Trước</span>
+      </a>
+
+      <a
+        class="m-button _line _primary"
+        href="search?kw={word}&pg={page < pmax ? page + 1 : pmax}">
+        <span>Kế tiếp</span>
+        <MIcon name="chevron-right" />
+      </a>
+    </div>
+  {/if}
+</Layout>

@@ -227,8 +227,9 @@
   }
 
   .page {
-    &[disabled] {
-      cursor: text;
+    &._actived {
+      @include bdcolor(neutral, 3);
+      @include fgcolor(neutral, 5);
     }
 
     & + & {
@@ -305,14 +306,14 @@
   <div class="pagi">
     <a
       class="page m-button _line"
-      class._disable={page == 1}
+      class:_disable={page == 1}
       href={makePageUrl(1, sort)}>
       <MIcon class="m-icon" name="chevrons-left" />
     </a>
 
     <a
       class="page m-button _line"
-      class._disable={page == 1}
+      class:_disable={page == 1}
       href={makePageUrl(+page - 1, sort)}>
       <MIcon class="m-icon" name="chevron-left" />
     </a>
@@ -320,7 +321,8 @@
     {#each pageList as [index, level]}
       <a
         class="page m-button _line"
-        class._disable={page == index}
+        class:_actived={page == index}
+        class:_disable={page == index}
         data-level={level}
         href={makePageUrl(index, sort)}>
         <span>{index}</span>
@@ -329,18 +331,17 @@
 
     <a
       class="page m-button _line"
-      disabled={page == pageMax}
+      class:_disable={page == pageMax}
       href={makePageUrl(page + 1, sort)}>
       <MIcon class="m-icon" name="chevron-right" />
     </a>
 
     <a
       class="page m-button _line"
-      disabled={page == pageMax}
+      class:_disable={page == pageMax}
       href={makePageUrl(pageMax, sort)}>
       <MIcon class="m-icon" name="chevrons-right" />
     </a>
-
   </div>
 
 </Layout>
