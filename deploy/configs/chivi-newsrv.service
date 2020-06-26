@@ -1,0 +1,16 @@
+[Unit]
+Description=chivi-newsrv
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=nipin
+Environment=PORT=5111
+Environment=AMBER_ENV=production
+WorkingDirectory=/home/nipin/web/chivi/newsrv
+ExecStart=/home/nipin/web/chivi/newsrv/bin/chivi
+[Install]
+WantedBy=multi-user.target

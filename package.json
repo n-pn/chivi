@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "up": "bash scripts/upload/assets.sh",
+    "dn": "bash scripts/backup/assets.sh",
+    "ysup": "bash scripts/upload/yousuu.sh",
+    "ysdn": "bash scripts/backup/yousuu.sh",
+    "build": "cd oldsrv && shards build --release -Dpreview_mt"
+  }
+}

@@ -1,0 +1,44 @@
+name: server
+version: 0.1.0
+
+authors:
+  - Nipinium <nipinium@gmail.com>
+
+targets:
+  chivi:
+    main: src/server.cr
+
+  map_yousuu:
+    main: tasks/books/map_yousuu.cr
+
+  map_zhwenpg:
+    main: tasks/books/map_zhwenpg.cr
+
+  map_spider:
+    main: tasks/books/map_spider.cr
+
+  convert_info:
+    main: tasks/convert_info.cr
+
+  rebuild_index:
+    main: tasks/rebuild_index.cr
+
+  convert_list:
+    main: tasks/convert_list.cr
+
+  fetch_covers:
+    main: tasks/fetch_covers.cr
+
+  fetch_texts:
+    main: tasks/texts/fetch_texts.cr
+
+crystal: 0.33.0
+
+license: MIT
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+
+  myhtml:
+    github: kostya/myhtml

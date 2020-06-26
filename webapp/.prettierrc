@@ -1,0 +1,10 @@
+{
+  "endOfLine": "lf",
+  "trailingComma": "es5",
+  "quoteProps": "consistent",
+  "tabWidth": 2,
+  "semi": false,
+  "singleQuote": true,
+  "htmlWhitespaceSensitivity": "strict",
+  "svelteSortOrder": "scripts-styles-markup"
+}
