@@ -12,7 +12,7 @@
       let { book } = data
       const site = query.site || book.cr_site_df || ''
 
-      let lists = {}
+      const lists = {}
       if (tab === 'content' && site !== '') {
         const { chlist } = await loadContent(this.fetch, slug, site)
         book = updateLatest(book, site, chlist)
@@ -27,14 +27,12 @@
 
   export function updateLatest(book, site, list) {
     if (list.length == 0) return book
-
     const lastest = list[list.length - 1]
-    if (lastest) {
-      book.cr_latests[site] = {
-        csid: lastest.csid,
-        name: lastest.vi_title,
-        slug: lastest.title_slug,
-      }
+
+    book.cr_latests[site] = {
+      csid: lastest.csid,
+      name: lastest.vi_title,
+      slug: lastest.title_slug,
     }
 
     return book
@@ -88,19 +86,20 @@
 
   export let book
   export let site
-  export let page = 1
+
   export let lists = {}
+  export let page = 1
 
   export let tab = 'overview'
-  export let latest = true
+  export let desc = true
 
   let chaps = []
   $: chaps = lists[site] || []
 
-  $: sources = Object.keys(book.cr_sitemap)
+  $: sources = Object.keys(book.cr_anchors)
   $: hasContent = sources.length > 0
 
-  $: if (tab == 'content') changeSite(site, false)
+  $: if (tab == 'content') switchSite(site, false)
 
   $: book_url = `https://chivi.xyz/${book.slug}/`
   $: cover_url = `https://chivi.xyz/covers/${book.uuid}.jpg`
@@ -108,25 +107,26 @@
   $: status = mapStatus(book.status)
   $: keywords = prepareKeywords(book)
 
-  let reloading = false
+  let loading = false
 
-  async function changeSite(source, reload = false) {
+  async function switchSite(source, reload = false) {
     site = source
-    latest = true
-
     if (reload == false && lists[site]) return
-    reloading = true
 
-    const data = await loadContent(fetch, book.slug, site, reload)
-    lists[site] = data.chlist
+    loading = true
+    const { chlist, mftime } = await loadContent(fetch, book.slug, site, reload)
+    loading = false
+
+    lists[site] = chlist
+
+    desc = true
     lists = lists // trigger update
 
-    const mftime = data.mftime
+    // update site latests
     if (book.mftime < mftime) book.mftime = mftime
-    if (book.last_times[site] < mftime) book.last_times[site] = mftime
+    if (book.cr_mftimes[site] < mftime) book.cr_mftimes[site] = mftime
 
-    book = updateLatest(book, site, data.chlist)
-    reloading = false
+    book = updateLatest(book, site, chlist)
   }
 
   function changeTab(newTab) {
@@ -141,249 +141,10 @@
 
   function latestText(site) {
     const latest = book.cr_latests[site]
-    if (!latest) return '< bấm vào đây để cập nhật >'
+    if (!latest) return '<bấm vào đây để cập nhật>'
     return latest.name
   }
 </script>
-
-<svelte:head>
-  <title>{book.vi_title} - Chivi</title>
-  <meta name="keywords" content={keywords} />
-  <meta name="description" content={book.vi_intro} />
-  <meta property="og:type" content="novel" />
-  <meta property="og:title" content={book.vi_title} />
-  <meta property="og:description" content={book.vi_intro} />
-  <meta property="og:image" content={cover_url} />
-  <meta property="og:novel:category" content={book.vi_genre} />
-  <meta property="og:novel:author" content={book.vi_author} />
-  <meta property="og:novel:book_name" content={book.vi_title} />
-  <meta property="og:novel:read_url" content={book_url} />
-  <meta property="og:url" content={book_url} />
-  <meta property="og:novel:status" content={status} />
-  <meta property="og:novel:update_time" content={update.toISOString()} />
-</svelte:head>
-
-<Layout>
-  <a href="/" class="header-item" slot="header-left">
-    <img src="/logo.svg" alt="logo" />
-  </a>
-
-  <a href="/{book.slug}" class="header-item _active _title" slot="header-left">
-    <span>{book.vi_title}</span>
-  </a>
-
-  <section class="info">
-    <div class="name">
-      <h1 class="title">
-        {book.vi_title}
-        <span class="subtitle">({book.zh_title})</span>
-      </h1>
-    </div>
-
-    <picture class="cover">
-      <source srcset="/images/{book.uuid}.webp" type="image/webp" />
-      <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
-      <img src="/covers/{book.uuid}.jpg" alt={book.vi_title} loading="lazy" />
-    </picture>
-
-    <div class="extra">
-      <div>
-        <span class="author">
-          <MIcon class="m-icon" name="pen-tool" />
-          <a href="search?kw={book.vi_author}">{book.vi_author}</a>
-        </span>
-
-        <span class="author">
-          <MIcon class="m-icon" name="pen-tool" />
-          <a href="search?kw={book.zh_author}">{book.zh_author}</a>
-        </span>
-      </div>
-
-      <div>
-        <span class="genre">
-          <MIcon class="m-icon" name="book" />
-          {book.vi_genre}
-        </span>
-        <span class="status">
-          <MIcon class="m-icon" name="activity" />
-          {status}
-        </span>
-        <span class="mftime">
-          <MIcon class="m-icon" name="clock" />
-          <time datetime={update}>{relative_time(book.mftime)}</time>
-        </span>
-      </div>
-
-      <div>
-        <span>
-          Đánh giá:
-          <strong>{book.votes < 10 ? '--' : book.score}</strong>
-          /10
-        </span>
-        <span>({book.votes} lượt đánh giá)</span>
-      </div>
-
-      {#if book.origin !== ''}
-        <div>
-          <span>Liên kết:</span>
-          <a
-            class="link"
-            href={book.origin}
-            rel="nofollow noreferer"
-            target="_blank">
-            Trang nguồn
-          </a>
-
-          {#if book.yousuu !== ''}
-            <a
-              class="link"
-              href="https://www.yousuu.com/book/{book.yousuu}"
-              rel="nofollow noreferer"
-              target="_blank">
-              Ưu thư võng
-            </a>
-          {/if}
-        </div>
-      {/if}
-    </div>
-  </section>
-
-  <section class="meta">
-    <header class="meta-header">
-      <a
-        class="meta-header-tab"
-        class:_active={tab == 'overview'}
-        href="/{book.slug}?tab=overview"
-        on:click|preventDefault={() => changeTab('overview')}>
-        Tổng quan
-      </a>
-      <a
-        class="meta-header-tab"
-        class:_active={tab == 'content'}
-        href="/{book.slug}?tab=content"
-        on:click|preventDefault={() => changeTab('content')}>
-        Mục lục
-      </a>
-      <a
-        class="meta-header-tab"
-        class:_active={tab == 'reviews'}
-        href="/{book.slug}?tab=reviews"
-        on:click|preventDefault={() => changeTab('reviews')}>
-        Bình luận
-      </a>
-    </header>
-
-    <div class="meta-tab" class:_active={tab == 'overview'}>
-      <div class="summary">
-        <h2>Giới thiệu:</h2>
-        {#each book.vi_intro.split('\n') as line}
-          <p>{line}</p>
-        {/each}
-      </div>
-
-      {#if hasContent}
-        <h2>Mới nhất:</h2>
-        <table class="latests">
-          <thead>
-            <tr>
-              <th class="latest-site">Nguồn</th>
-              <th class="latest-chap">Chương cuối</th>
-              <th class="latest-time">Đổi mới</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {#each sources as source}
-              <tr>
-                <td class="latest-site">
-                  <span class="latest-text">{source}</span>
-                </td>
-                <td class="latest-chap">
-                  <a class="latest-link" href={latestLink(source)}>
-                    {latestText(source)}
-                  </a>
-                </td>
-                <td class="latest-time">
-                  <span
-                    class="latest-text _update"
-                    class:_reload={site == source && reloading}
-                    on:click={() => changeSite(source, true)}>
-                    {#if site == source && reloading}
-                      <MIcon class="m-icon" name="loader" />
-                    {:else}
-                      <time>{relative_time(book.last_times[source])}</time>
-                    {/if}
-                  </span>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      {/if}
-    </div>
-
-    <div class="meta-tab" class:_active={tab == 'content'}>
-      {#if hasContent}
-        <div class="sources" data-active={site}>
-          {#each sources as source}
-            <a
-              class="source-item"
-              class:_active={site === source}
-              href="/{book.slug}?site={source}"
-              on:click|preventDefault={() => changeSite(source, false)}
-              rel="nofollow">
-              {source}
-            </a>
-          {/each}
-        </div>
-
-        <h3 class="caption _recent u-cf" data-site={site}>
-          <!-- <MIcon class="m-icon u-fl" name="list" /> -->
-          <span class="label u-fl">Mục lục:</span>
-          <span class="count u-fl">({chaps.length} chương)</span>
-
-          <button
-            class="m-button _text u-fr"
-            class:_reload={reloading}
-            on:click={() => changeSite(site, true)}>
-            {#if reloading}
-              <MIcon class="m-icon" name="loader" />
-            {:else}
-              <MIcon class="m-icon" name="clock" />
-            {/if}
-            <span>{relative_time(book.last_times[site])}</span>
-          </button>
-
-          <button
-            class="m-button _text u-fr"
-            on:click={() => (latest = !latest)}>
-            {#if latest}
-              <MIcon class="m-icon" name="arrow-down" />
-            {:else}
-              <MIcon class="m-icon" name="arrow-up" />
-            {/if}
-            <span>Sắp xếp</span>
-          </button>
-
-        </h3>
-
-        <ChapList
-          bslug={book.slug}
-          sname={site}
-          {chaps}
-          focus={page}
-          reverse={latest} />
-      {:else}
-        <div class="empty">Không có nội dung</div>
-      {/if}
-    </div>
-
-    <div class="meta-tab" class:_active={tab == 'reviews'}>
-      <div class="empty">Đang hoàn thiện :(</div>
-    </div>
-  </section>
-
-</Layout>
 
 <style lang="scss">
   .info {
@@ -721,3 +482,249 @@
     }
   }
 </style>
+
+<svelte:head>
+  <title>{book.vi_title} - Chivi</title>
+  <meta name="keywords" content={keywords} />
+  <meta name="description" content={book.vi_intro} />
+  <meta property="og:type" content="novel" />
+  <meta property="og:title" content={book.vi_title} />
+  <meta property="og:description" content={book.vi_intro} />
+  <meta property="og:image" content={cover_url} />
+  <meta property="og:novel:category" content={book.vi_genre} />
+  <meta property="og:novel:author" content={book.vi_author} />
+  <meta property="og:novel:book_name" content={book.vi_title} />
+  <meta property="og:novel:read_url" content={book_url} />
+  <meta property="og:url" content={book_url} />
+  <meta property="og:novel:status" content={status} />
+  <meta property="og:novel:update_time" content={update.toISOString()} />
+</svelte:head>
+
+<Layout>
+  <a href="/" class="header-item" slot="header-left">
+    <img src="/logo.svg" alt="logo" />
+  </a>
+
+  <a href="/{book.slug}" class="header-item _active _title" slot="header-left">
+    <span>{book.vi_title}</span>
+  </a>
+
+  <section class="info">
+    <div class="name">
+      <h1 class="title">
+        <div>
+          <MIcon class="m-icon" name="book" />
+          {book.vi_title}
+        </div>
+
+        <div>
+          <MIcon class="m-icon" name="book" />
+          <span class="subtitle">{book.zh_title}</span>
+
+        </div>
+      </h1>
+    </div>
+
+    <picture class="cover">
+      <source srcset="/images/{book.uuid}.webp" type="image/webp" />
+      <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
+      <img src="/covers/{book.uuid}.jpg" alt={book.vi_title} loading="lazy" />
+    </picture>
+
+    <div class="extra">
+      <div>
+        <span class="author">
+          <MIcon class="m-icon" name="pen-tool" />
+          <a href="search?kw={book.vi_author}">{book.vi_author}</a>
+        </span>
+
+        <span class="author">
+          <MIcon class="m-icon" name="pen-tool" />
+          <a href="search?kw={book.zh_author}">{book.zh_author}</a>
+        </span>
+      </div>
+
+      <div>
+        <span class="genre">
+          <MIcon class="m-icon" name="book" />
+          {book.vi_genre}
+        </span>
+        <span class="status">
+          <MIcon class="m-icon" name="activity" />
+          {status}
+        </span>
+        <span class="mftime">
+          <MIcon class="m-icon" name="clock" />
+          <time datetime={update}>{relative_time(book.mftime)}</time>
+        </span>
+      </div>
+
+      <div>
+        <span>
+          Đánh giá:
+          <strong>{book.votes < 10 ? '--' : book.score}</strong>
+          /10
+        </span>
+        <span>({book.votes} lượt đánh giá)</span>
+      </div>
+
+      {#if book.origin !== ''}
+        <div>
+          <span>Liên kết:</span>
+          <a
+            class="link"
+            href={book.origin}
+            rel="nofollow noreferer"
+            target="_blank">
+            Trang gốc
+          </a>
+
+          {#if book.yousuu !== ''}
+            <a
+              class="link"
+              href="https://www.yousuu.com/book/{book.yousuu}"
+              rel="nofollow noreferer"
+              target="_blank">
+              Ưu thư võng
+            </a>
+          {/if}
+        </div>
+      {/if}
+    </div>
+  </section>
+
+  <section class="meta">
+    <header class="meta-header">
+      <a
+        class="meta-header-tab"
+        class:_active={tab == 'overview'}
+        href="/{book.slug}?tab=overview"
+        on:click|preventDefault={() => changeTab('overview')}>
+        Tổng quan
+      </a>
+      <a
+        class="meta-header-tab"
+        class:_active={tab == 'content'}
+        href="/{book.slug}?tab=content"
+        on:click|preventDefault={() => changeTab('content')}>
+        Mục lục
+      </a>
+      <a
+        class="meta-header-tab"
+        class:_active={tab == 'reviews'}
+        href="/{book.slug}?tab=reviews"
+        on:click|preventDefault={() => changeTab('reviews')}>
+        Bình luận
+      </a>
+    </header>
+
+    <div class="meta-tab" class:_active={tab == 'overview'}>
+      <div class="summary">
+        <h2>Giới thiệu:</h2>
+        {#each book.vi_intro.split('\n') as line}
+          <p>{line}</p>
+        {/each}
+      </div>
+
+      {#if hasContent}
+        <h2>Mới nhất:</h2>
+
+        <table class="latests">
+          <thead>
+            <tr>
+              <th class="latest-site">Nguồn</th>
+              <th class="latest-chap">Chương mới nhất</th>
+              <th class="latest-time">Cập nhật</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {#each sources as source}
+              <tr>
+                <td class="latest-site">
+                  <span class="latest-text">{source}</span>
+                </td>
+                <td class="latest-chap">
+                  <a class="latest-link" href={latestLink(source)}>
+                    {latestText(source)}
+                  </a>
+                </td>
+                <td class="latest-time">
+                  <span
+                    class="latest-text _update"
+                    class:_reload={site == source && loading}
+                    on:click={() => switchSite(source, true)}>
+                    {#if site == source && loading}
+                      <MIcon class="m-icon" name="loader" />
+                    {:else}
+                      <time>{relative_time(book.cr_mftimes[source])}</time>
+                    {/if}
+                  </span>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      {/if}
+    </div>
+
+    <div class="meta-tab" class:_active={tab == 'content'}>
+      {#if hasContent}
+        <div class="sources" data-active={site}>
+          {#each sources as source}
+            <a
+              class="source-item"
+              class:_active={site === source}
+              href="/{book.slug}?site={source}"
+              on:click|preventDefault={() => switchSite(source, false)}
+              rel="nofollow">
+              {source}
+            </a>
+          {/each}
+        </div>
+
+        <h3 class="caption _recent u-cf">
+          <!-- <MIcon class="m-icon u-fl" name="list" /> -->
+          <span class="label u-fl">Mục lục</span>
+          <span class="count u-fl">({site})</span>
+
+          <button
+            class="m-button _text u-fr"
+            class:_reload={loading}
+            on:click={() => switchSite(site, true)}>
+            {#if loading}
+              <MIcon class="m-icon" name="loader" />
+            {:else}
+              <MIcon class="m-icon" name="clock" />
+            {/if}
+            <span>{relative_time(book.cr_mftimes[site])}</span>
+          </button>
+
+          <button class="m-button _text u-fr" on:click={() => (desc = !desc)}>
+            {#if desc}
+              <MIcon class="m-icon" name="arrow-down" />
+            {:else}
+              <MIcon class="m-icon" name="arrow-up" />
+            {/if}
+            <span>{chaps.length} chương</span>
+          </button>
+
+        </h3>
+
+        <ChapList
+          bslug={book.slug}
+          sname={site}
+          {chaps}
+          focus={page}
+          reverse={desc} />
+      {:else}
+        <div class="empty">Không có nội dung</div>
+      {/if}
+    </div>
+
+    <div class="meta-tab" class:_active={tab == 'reviews'}>
+      <div class="empty">Đang hoàn thiện :(</div>
+    </div>
+  </section>
+
+</Layout>

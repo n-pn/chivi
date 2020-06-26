@@ -1,5 +1,5 @@
 <script context="module">
-  export function paginate(chaps, focus, limit = 20, reverse = false) {
+  export function paginate(chaps, focus, limit = 50, reverse = false) {
     let offset = (focus - 1) * limit
     if (offset < 0) offset = 0
     if (!reverse) return chaps.slice(offset, offset + limit)
@@ -26,7 +26,7 @@
   export let bslug = ''
   export let sname = ''
   export let focus = 1
-  export let limit = 24
+  export let limit = 40
   export let reverse = false
 
   let scroll = null
@@ -80,67 +80,6 @@
     }
   }
 </script>
-
-<svelte:window on:keydown={handleKeypress} />
-
-<div class="chap" data-site={sname} id="chap" bind:this={scroll}>
-  <ul class="chap-list">
-    {#each items as chap}
-      <li class="chap-item">
-        <a
-          class="chap-link"
-          href="/{bslug}/{chap.title_slug}-{sname}-{chap.csid}"
-          rel="nofollow prefetch">
-          <span class="volume">{chap.vi_volume}</span>
-          <span class="title">{chap.vi_title}</span>
-        </a>
-      </li>
-    {/each}
-  </ul>
-
-</div>
-
-{#if total > 1}
-  <nav class="pagi">
-    <button
-      class="page m-button _line"
-      on:click={() => changeFocus(1)}
-      disabled={focus == 1}>
-      <MIcon class="m-icon" name="chevrons-left" />
-    </button>
-
-    <button
-      class="page m-button _line"
-      on:click={() => changeFocus(focus - 1)}
-      disabled={focus == 1}>
-      <MIcon class="m-icon" name="chevron-left" />
-    </button>
-
-    {#each range as [index, level]}
-      <button
-        class="page m-button _line"
-        disabled={focus == index}
-        on:click={() => changeFocus(index)}
-        data-level={level}>
-        <span>{index}</span>
-      </button>
-    {/each}
-
-    <button
-      class="page m-button _line"
-      on:click={() => changeFocus(focus + 1)}
-      disabled={focus == total}>
-      <MIcon class="m-icon" name="chevron-right" />
-    </button>
-
-    <button
-      class="page m-button _line"
-      on:click={() => changeFocus(total)}
-      disabled={focus == total}>
-      <MIcon class="m-icon" name="chevrons-right" />
-    </button>
-  </nav>
-{/if}
 
 <style type="text/scss">
   .volume {
@@ -267,3 +206,64 @@
     }
   }
 </style>
+
+<svelte:window on:keydown={handleKeypress} />
+
+<div class="chap" data-site={sname} id="chap" bind:this={scroll}>
+  <ul class="chap-list">
+    {#each items as chap}
+      <li class="chap-item">
+        <a
+          class="chap-link"
+          href="/{bslug}/{chap.title_slug}-{sname}-{chap.csid}"
+          rel="nofollow prefetch">
+          <span class="volume">{chap.vi_volume}</span>
+          <span class="title">{chap.vi_title}</span>
+        </a>
+      </li>
+    {/each}
+  </ul>
+
+</div>
+
+{#if total > 1}
+  <nav class="pagi">
+    <button
+      class="page m-button _line"
+      on:click={() => changeFocus(1)}
+      disabled={focus == 1}>
+      <MIcon class="m-icon" name="chevrons-left" />
+    </button>
+
+    <button
+      class="page m-button _line"
+      on:click={() => changeFocus(focus - 1)}
+      disabled={focus == 1}>
+      <MIcon class="m-icon" name="chevron-left" />
+    </button>
+
+    {#each range as [index, level]}
+      <button
+        class="page m-button _line"
+        disabled={focus == index}
+        on:click={() => changeFocus(index)}
+        data-level={level}>
+        <span>{index}</span>
+      </button>
+    {/each}
+
+    <button
+      class="page m-button _line"
+      on:click={() => changeFocus(focus + 1)}
+      disabled={focus == total}>
+      <MIcon class="m-icon" name="chevron-right" />
+    </button>
+
+    <button
+      class="page m-button _line"
+      on:click={() => changeFocus(total)}
+      disabled={focus == total}>
+      <MIcon class="m-icon" name="chevrons-right" />
+    </button>
+  </nav>
+{/if}

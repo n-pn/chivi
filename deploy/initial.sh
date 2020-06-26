@@ -1,12 +1,12 @@
 #! /bin/bash
 
-ROOT=/home/nipin/web/chivi/setup/services
+CWD=/home/nipin/web/chivi/deploy/configs
 
 sudo rm /etc/nginx/sites-enabled/chivi.conf
-sudo ln -s "$ROOT/chivi-nginx.conf" /etc/nginx/sites-enabled/chivi.conf
+sudo ln -s "$CWD/nginx.conf" /etc/nginx/sites-enabled/chivi.conf
 
-sudo cp "$ROOT/chivi-server.service" /etc/systemd/system/chivi-server.service
-sudo cp "$ROOT/chivi-client.service" /etc/systemd/system/chivi-client.service
+sudo cp "$CWD/chivi-client.service" /etc/systemd/system/chivi-client.service
+sudo cp "$CWD/chivi-oldsrv.service" /etc/systemd/system/chivi-server.service
 
 sudo service nginx reload
 sudo systemctl daemon-reload

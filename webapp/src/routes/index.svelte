@@ -1,13 +1,14 @@
 <script context="module">
   export async function preload({ query }) {
     const page = +(query.page || 1)
-    let url = `api/books?page=${page}`
+
+    let url = `api/books/?page=${page}`
     const sort = query.sort || 'access'
     url += `&sort=${sort}`
 
     const res = await this.fetch(url)
     const data = await res.json()
-    return Object.assign(data, { page })
+    return { page, ...data }
   }
 
   export function makePageUrl(page = 1, sort = 'access') {
@@ -24,15 +25,15 @@
   }
 </script>
 
-<script lang="typescript">
+<script>
   import MIcon from '$mould/MIcon.svelte'
   import Layout from '$layout/Layout.svelte'
   import paginate_range from '$utils/paginate_range'
 
   export let items = []
-  export let total : number = 0
-  export let page : number = 1
-  export let sort : string = 'access'
+  export let total = 0
+  export let page = 1
+  export let sort = 'access'
 
   const sorts = {
     access: 'Vừa xem',
@@ -81,87 +82,10 @@
     }
   }
 
-  function changePage(newPage : number) {
+  function changePage(newPage = 2) {
     if (newPage >= 1 && newPage <= pageMax) _goto(makePageUrl(newPage, sort))
   }
 </script>
-
-<svelte:head>
-  <title>Chivi - Chinese to Vietname Machine Translation</title>
-</svelte:head>
-
-<svelte:window on:keydown={handleKeypress} />
-
-<Layout>
-  <div class="sort">
-    {#each Object.entries(sorts) as [type, label]}
-      <a class="sort-type" class:_active={sort == type} href="/?sort={type}">
-        <span>{label}</span>
-      </a>
-    {/each}
-  </div>
-
-  <div class="list">
-    {#each items as book}
-      <a class="book" href={book.slug} rel="prefetch">
-        <picture class="book-cover">
-          <source srcset="/images/{book.uuid}.webp" type="image/webp" />
-          <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
-          <img src="/covers/{book.uuid}.jpg" alt="" loading="lazy" />
-        </picture>
-
-        <div class="book-title">{book.vi_title}</div>
-        <div class="-genre">{book.vi_genre}</div>
-        <div class="-score">
-          <span class="--icon">⭐</span>
-          <span class="--text">{book.votes < 10 ? '--' : book.score}</span>
-        </div>
-      </a>
-    {/each}
-  </div>
-
-  <div class="pagi">
-    <a
-      class="page m-button _line"
-      class._disable={page == 1}
-      href={makePageUrl(1, sort)}>
-      <MIcon class="m-icon" name="chevrons-left" />
-    </a>
-
-    <a
-      class="page m-button _line"
-      class._disable={page == 1}
-      href={makePageUrl(+page - 1, sort)}>
-      <MIcon class="m-icon" name="chevron-left" />
-    </a>
-
-    {#each pageList as [index, level]}
-      <a
-        class="page m-button _line"
-        class._disable={page == index}
-        data-level={level}
-        href={makePageUrl(index, sort)}>
-        <span>{index}</span>
-      </a>
-    {/each}
-
-    <a
-      class="page m-button _line"
-      disabled={page == pageMax}
-      href={makePageUrl(page + 1, sort)}>
-      <MIcon class="m-icon" name="chevron-right" />
-    </a>
-
-    <a
-      class="page m-button _line"
-      disabled={page == pageMax}
-      href={makePageUrl(pageMax, sort)}>
-      <MIcon class="m-icon" name="chevrons-right" />
-    </a>
-
-  </div>
-
-</Layout>
 
 <style lang="scss">
   .list {
@@ -343,3 +267,80 @@
     }
   }
 </style>
+
+<svelte:head>
+  <title>Chivi - Chinese to Vietname Machine Translation</title>
+</svelte:head>
+
+<svelte:window on:keydown={handleKeypress} />
+
+<Layout>
+  <div class="sort">
+    {#each Object.entries(sorts) as [type, label]}
+      <a class="sort-type" class:_active={sort == type} href="/?sort={type}">
+        <span>{label}</span>
+      </a>
+    {/each}
+  </div>
+
+  <div class="list">
+    {#each items as book}
+      <a class="book" href={book.slug} rel="prefetch">
+        <picture class="book-cover">
+          <source srcset="/images/{book.uuid}.webp" type="image/webp" />
+          <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
+          <img src="/covers/{book.uuid}.jpg" alt="" loading="lazy" />
+        </picture>
+
+        <div class="book-title">{book.vi_title}</div>
+        <div class="-genre">{book.vi_genre}</div>
+        <div class="-score">
+          <span class="--icon">⭐</span>
+          <span class="--text">{book.votes < 10 ? '--' : book.score}</span>
+        </div>
+      </a>
+    {/each}
+  </div>
+
+  <div class="pagi">
+    <a
+      class="page m-button _line"
+      class._disable={page == 1}
+      href={makePageUrl(1, sort)}>
+      <MIcon class="m-icon" name="chevrons-left" />
+    </a>
+
+    <a
+      class="page m-button _line"
+      class._disable={page == 1}
+      href={makePageUrl(+page - 1, sort)}>
+      <MIcon class="m-icon" name="chevron-left" />
+    </a>
+
+    {#each pageList as [index, level]}
+      <a
+        class="page m-button _line"
+        class._disable={page == index}
+        data-level={level}
+        href={makePageUrl(index, sort)}>
+        <span>{index}</span>
+      </a>
+    {/each}
+
+    <a
+      class="page m-button _line"
+      disabled={page == pageMax}
+      href={makePageUrl(page + 1, sort)}>
+      <MIcon class="m-icon" name="chevron-right" />
+    </a>
+
+    <a
+      class="page m-button _line"
+      disabled={page == pageMax}
+      href={makePageUrl(pageMax, sort)}>
+      <MIcon class="m-icon" name="chevrons-right" />
+    </a>
+
+  </div>
+
+</Layout>
