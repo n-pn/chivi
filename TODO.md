@@ -6,7 +6,10 @@
 -   [ ] calling multi (cached) requests in `[chap].svelte`
 -   [ ] display chap index insides `[chap].svelte` instead of return to info page
 -   [ ] focus to current page in chap list (save current `csid` in store)
--   [ ]
+-   [ ] add footer (links to facebook page, discord channel, voz page support, tos page, privacy page, donation page etc.)
+-   [ ] add missing pages (see above), add tips and hints (keyboards support)
+-   [ ] improve ui, make `sort` list and `site` list dropdowns
+-   [ ] improve `[chap].svelte` responsively, fetch after `onMount` instead of `preload`
 
 ## Backend
 
@@ -41,8 +44,10 @@
 ## Both FE and BE
 
 -   [ ] rewrite FE after BE api changes
+-   [ ] improve search, must be able to jump directly to matched query without having to visit the search result page
 -   [ ] add custom texts (single chapter or many)
 -   [ ] edit raw texts
+
 -   [ ] quick convert (using `book/tonghop.dic`, no saving text)
 -   [ ] basic authentication system
 -   [ ] user impressions and trackings
