@@ -219,6 +219,7 @@
       margin: 0.75rem 0;
       word-wrap: break-word;
       @include fgcolor(neutral, 7);
+
       $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
       @include apply(font-size, $font-sizes);
     }
@@ -263,7 +264,7 @@
     }
   }
 
-  ._reload {
+  ._loading {
     @include fgcolor(neutral, 5);
 
     :global(svg) {
@@ -524,13 +525,12 @@
       <div>
         <span class="author">
           <MIcon class="m-icon" name="pen-tool" />
-          <a href="search?kw={book.vi_author}">{book.vi_author}</a>
+          <a href="search?kw={book.vi_author}">
+            {book.vi_author}
+            <span>- {book.zh_author}</span>
+          </a>
         </span>
 
-        <span class="author">
-          <MIcon class="m-icon" name="pen-tool" />
-          <a href="search?kw={book.zh_author}">{book.zh_author}</a>
-        </span>
       </div>
 
       <div>
@@ -594,7 +594,7 @@
       <a
         class="meta-header-tab"
         class:_active={tab == 'content'}
-        href="/{book.slug}?tab=content"
+        href="/{book.slug}?tab=content&site={site}"
         on:click|preventDefault={() => changeTab('content')}>
         Mục lục
       </a>
@@ -641,7 +641,7 @@
                 <td class="latest-time">
                   <span
                     class="latest-text _update"
-                    class:_reload={site == source && loading}
+                    class:_loading={site == source && loading}
                     on:click={() => switchSite(source, true)}>
                     {#if site == source && loading}
                       <MIcon class="m-icon" name="loader" />
@@ -679,7 +679,7 @@
 
           <button
             class="m-button _text u-fr"
-            class:_reload={loading}
+            class:_loading={loading}
             on:click={() => switchSite(site, true)}>
             {#if loading}
               <MIcon class="m-icon" name="loader" />

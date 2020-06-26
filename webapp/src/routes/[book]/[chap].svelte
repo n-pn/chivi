@@ -263,7 +263,7 @@
 
   .footer {
     margin: 0.75rem 0;
-    @include flex($gap: 0.375rem);
+    @include flex($gap: 0.75rem);
     justify-content: center;
   }
 
@@ -325,7 +325,7 @@
 
   <a
     slot="header-left"
-    href="/{book_slug}?tab=content&site=${site}"
+    href="/{book_slug}?tab=content&site={site}"
     class="header-item _title">
     <span>{book_name}</span>
   </a>

@@ -6,10 +6,10 @@
     if (word) {
       const url = `api/search?word=${word}&page=${page}`
       const res = await this.fetch(url)
-      const { total, items } = await res.json()
-      return { total, items, word, page }
+      const data = await res.json()
+      return { word, page, ...data }
     } else {
-      return { total: 0, items: [], word, page: 1 }
+      return { word, page: 1, total: 0, items: [] }
     }
   }
 </script>
@@ -25,8 +25,8 @@
   export let total = 0
 
   const limit = 8
-  $: offset = (page - 1) * limit
-  $: pmax = Math.round((total - 1) / limit) + 1
+  $: offset = (+page - 1) * limit
+  $: pmax = Math.floor((+total - 1) / limit) + 1
 </script>
 
 <style lang="scss">
@@ -151,9 +151,9 @@
     margin-bottom: 0.75rem;
 
     .m-button {
-      width: 6.25rem;
-      :global(svg) {
-        margin-top: rem(-1px);
+      width: rem(25x);
+      span {
+        padding-top: rem(1px);
       }
     }
   }
@@ -181,7 +181,7 @@
         <div class="name">
           <h2 class="title">
             {book.vi_title}
-            <span class="subtitle">({book.zh_title})</span>
+            <span class="subtitle">- {book.zh_title}</span>
           </h2>
         </div>
 
@@ -189,14 +189,14 @@
           <div>
             <span class="author">
               {book.vi_author}
-              <span>({book.zh_author})</span>
+              <span>- {book.zh_author}</span>
             </span>
           </div>
 
           <div>
             <span>
               Đánh giá:
-              <strong>{book.score}</strong>
+              <strong>{book.score == 0 ? '--' : book.score}</strong>
               /10
             </span>
           </div>
@@ -205,21 +205,21 @@
     {/each}
   </div>
 
-  {#if page < pmax}
-    <div class="pagi">
-      <a
-        class="m-button _line"
-        href="search?kw={word}&pg={page > 1 ? page - 1 : 1}">
-        <MIcon name="chevron-left" />
-        <span>Trước</span>
-      </a>
+  <div class="pagi">
+    <a
+      class="m-button _line"
+      class:_disable={page == 1}
+      href="search?kw={word}&pg={page > 1 ? +page - 1 : 1}">
+      <MIcon name="chevron-left" />
+      <span>Trước</span>
+    </a>
 
-      <a
-        class="m-button _line _primary"
-        href="search?kw={word}&pg={page < pmax ? page + 1 : pmax}">
-        <span>Kế tiếp</span>
-        <MIcon name="chevron-right" />
-      </a>
-    </div>
-  {/if}
+    <a
+      class="m-button _line _primary"
+      class:_disable={page == pmax}
+      href="search?kw={word}&pg={page < pmax ? +page + 1 : pmax}">
+      <span>Kế tiếp</span>
+      <MIcon name="chevron-right" />
+    </a>
+  </div>
 </Layout>
