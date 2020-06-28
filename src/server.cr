@@ -1,20 +1,4 @@
-require "kemal"
-
-require "./engine"
-require "./kernel"
-
-def parse_page(input, limit = 20)
-  page = input.to_i? || 0
-
-  offset = (page - 1) * limit
-  offset = 0 if offset < 0
-
-  {limit, offset}
-end
-
-def json_error(msg : String)
-  {msg: msg}.to_json
-end
+require "./routes/*"
 
 module Server
   Kemal.config.port = 5110
@@ -24,209 +8,19 @@ module Server
   before_all do |env|
     case Kemal.config.env
     when "development"
-      user = "local"
+      udic = "local"
     when "test"
-      user = "test"
+      udic = "_test"
     else
-      user = "guest"
+      udic = "appcv"
     end
 
-    env.set("user", user)
+    env.set("udic", udic)
     env.response.content_type = "application/json"
   end
 
-  get "/api" do |env|
+  get "/_/" do |env|
     {msg: "ok"}.to_json env.response
-  end
-
-  post "/api/convert" do |env|
-    user = env.get("user").as(String)
-    type = env.params.query["type"].as(String)
-
-    text = env.params.json["text"].as(String)
-    lines = Utils.split_lines(text)
-
-    case type
-    when "hanviet"
-      res = Engine.hanviet(lines, user, apply_cap: true)
-    when "pinyins"
-      res = Engine.pinyins(lines, user, apply_cap: true)
-    when "tradsim"
-      res = Engine.tradsim(lines, user, apply_cap: true)
-    else
-      dict = env.params.json.fetch("dict", "tonghop").as(String)
-      res = Engine.cv_mixed(lines, dict, user)
-    end
-
-    res.to_json(env.response)
-  end
-
-  get "/api/lookup" do |env|
-    user = env.get("user").as(String)
-
-    line = env.params.query.fetch("line", "")
-    dict = env.params.query.fetch("dict", "tonghop")
-
-    Engine.lookup(line, dict, user).to_json(env.response)
-  end
-
-  get "/api/inquire" do |env|
-    user = env.get("user").as(String)
-
-    word = env.params.query["word"]? || ""
-    dict = env.params.query["dict"]? || "tonghop"
-
-    res = Engine.inquire(word, dict, user)
-    res.to_json(env.response)
-  end
-
-  get "/api/upsert" do |env|
-    key = env.params.query["key"]? || ""
-    val = env.params.query["val"]? || ""
-
-    dict = env.params.query["dict"]? || "tonghop"
-    user = env.get("user").as(String)
-
-    res = Engine.upsert(key, val, dict, user)
-    res.to_json(env.response)
-  end
-
-  get "/api/hanviet" do |env|
-    txt = env.params.query.fetch("txt", "")
-    res = Engine.hanviet(txt)
-    res.to_json env.response
-  end
-
-  get "/api/books" do |env|
-    sort = env.params.query.fetch("sort", "access")
-    page = env.params.query.fetch("page", "1")
-    limit, offset = parse_page(page)
-
-    books = BookRepo.index(limit: limit, offset: offset, sort: sort)
-    items = books.map do |info|
-      {
-        uuid:     info.uuid,
-        slug:     info.slug,
-        vi_title: info.vi_title,
-        vi_genre: info.vi_genre,
-        score:    info.score,
-        votes:    info.votes,
-      }
-    end
-
-    {items: items, total: BookRepo.sort_by(sort).size, sort: sort}.to_json env.response
-  end
-
-  get "/api/search" do |env|
-    query = env.params.query.fetch("word", "")
-    page = env.params.query.fetch("page", "1")
-    limit, offset = parse_page(page, limit: 8)
-
-    uuids = BookRepo.glob(query)
-
-    items = uuids[offset, limit].compact_map do |uuid|
-      next unless info = BookRepo.load(uuid)
-
-      {
-        uuid:      info.uuid,
-        slug:      info.slug,
-        vi_title:  info.vi_title,
-        zh_title:  info.zh_title,
-        vi_author: info.vi_author,
-        zh_author: info.zh_author,
-        vi_genre:  info.vi_genre,
-        score:     info.score,
-        votes:     info.votes,
-      }
-    end
-
-    {
-      total: uuids.size,
-      items: items,
-      page:  page,
-    }.to_json env.response
-  end
-
-  get "/api/books/:slug" do |env|
-    slug = env.params.url["slug"]
-
-    unless book = BookRepo.find(slug)
-      halt env, status_code: 404, response: json_error("Book not found!")
-    end
-
-    # BookRepo.update_sort("access", book)
-    {book: book}.to_json env.response
-  end
-
-  get "/api/books/:slug/:site" do |env|
-    user = env.get("user").as(String)
-    slug = env.params.url["slug"]
-
-    unless info = BookRepo.find(slug)
-      halt env, status_code: 404, response: json_error("Book not found!")
-    end
-
-    site = env.params.url["site"]
-    unless bsid = info.cr_sitemap[site]?
-      halt env, status_code: 404, response: json_error("Site [#{site}] not found")
-    end
-
-    reload = env.params.query.fetch("reload", "false") == "true"
-    chlist, mftime = Kernel.load_list(info, site, user, reload: reload)
-
-    chlist = chlist.map do |chap|
-      {
-        csid:       chap.csid,
-        vi_title:   chap.vi_title,
-        vi_volume:  chap.vi_volume,
-        title_slug: chap.title_slug,
-      }
-    end
-
-    {chlist: chlist, mftime: mftime}.to_json env.response
-  end
-
-  get "/api/books/:slug/:site/:csid" do |env|
-    user = env.get("user").as(String)
-
-    slug = env.params.url["slug"]
-
-    unless info = BookRepo.find(slug)
-      halt env, status_code: 404, response: ({msg: "Book not found"}).to_json
-    end
-
-    BookRepo.update_sort("access", info)
-
-    site = env.params.url["site"]
-    unless bsid = info.cr_sitemap[site]?
-      halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json
-    end
-
-    csid = env.params.url["csid"]
-
-    chlist, _ = Kernel.load_list(info, site, reload: false)
-    unless ch_index = chlist.index(&.csid.==(csid))
-      halt env, status_code: 404, response: ({msg: "Chap not found"}).to_json
-    end
-
-    curr_chap = chlist[ch_index]
-    prev_chap = chlist[ch_index - 1] if ch_index > 0
-    next_chap = chlist[ch_index + 1] if ch_index < chlist.size - 1
-
-    mode = env.params.query.fetch("mode", "0").try(&.to_i) || 0
-
-    {
-      book_uuid: info.uuid,
-      book_slug: info.slug,
-      book_name: info.vi_title,
-      ch_index:  ch_index + 1,
-      ch_total:  chlist.size,
-      prev_url:  prev_chap.try(&.slug_for(site)),
-      next_url:  next_chap.try(&.slug_for(site)),
-      curr_url:  curr_chap.try(&.slug_for(site)),
-
-      content: ChapText.load_vp(site, bsid, csid, user, info.uuid, mode: mode),
-    }.to_json env.response
   end
 
   Kemal.run
