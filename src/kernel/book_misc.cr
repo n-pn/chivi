@@ -2,6 +2,8 @@ require "json"
 require "colorize"
 
 class BookMisc
+  # contain book optional infomation
+
   include JSON::Serializable
 
   property uuid = ""

@@ -3,23 +3,29 @@ require "colorize"
 require "../utils/gen_uuids"
 
 class BookInfo
+  # contain book main infomation
+  # us == url slug
+
   include JSON::Serializable
 
   property uuid = ""
   property slug = ""
 
-  property zh_title = ""
-  property vi_title = ""
-  property hv_title = ""
+  property title_zh = ""
+  property title_hv = ""
+  property title_vi = ""
 
-  property zh_author = ""
-  property vi_author = ""
+  property author_zh = ""
+  property author_vi = ""
+  property author_us = ""
 
-  property zh_genre = ""
-  property vi_genre = ""
+  property genre_zh = ""
+  property genre_vi = ""
+  property genre_us = ""
 
-  property zh_tags = [] of String
-  property vi_tags = [] of String
+  property tags_zh = [] of String
+  property tags_vi = [] of String
+  property tags_us = [] of String
 
   property voters = 0_i32
   property rating = 0_f64
@@ -28,20 +34,20 @@ class BookInfo
   def initialize
   end
 
-  def initialize(@zh_title : String, @zh_author : String, @uuid = "")
+  def initialize(@title_zh : String, @author_zh : String, @uuid = "")
     fix_uuid! if @uuid.empty?
   end
 
   def fix_uuid!
-    @uuid = Utils.gen_uuid(@zh_title, @zh_author)
+    @uuid = Utils.gen_uuid(@title_zh, @author_zh)
   end
 
   def set_genre(genre : String)
     genre = fix_label(genre)
-    return if genre.empty? || genre == @zh_genre
+    return if genre.empty? || genre == @genre_zh
 
-    @zh_genre = genre
-    @vi_genre = ""
+    @genre_zh = genre
+    @genre_vi = ""
   end
 
   def add_tags(tags : Array(String))
@@ -53,15 +59,17 @@ class BookInfo
     return if tag.empty?
 
     tag = fix_label(tag)
-    return if @zh_tags.includes?(tag)
+    return if tag == @title_zh || tag == @author_zh
+    return if @tags_zh.includes?(tag)
 
-    @zh_tags << tag
-    @vi_tags << ""
+    @tags_zh << tag
+    @tags_vi << ""
+    @tags_us << ""
   end
 
   private def fix_label(label : String)
     return label if label.empty? || label == "轻小说"
-    label.sub("小说", "")
+    label.sub(/小说$/, "")
   end
 
   def fix_weight!
