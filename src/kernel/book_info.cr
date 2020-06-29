@@ -21,72 +21,27 @@ class BookInfo
   property zh_tags = [] of String
   property vi_tags = [] of String
 
-  property zh_intro = ""
-  property vi_intro = ""
-
-  property covers = [] of String
-
   property voters = 0_i32
   property rating = 0_f64
   property weight = 0_f64
-
-  property status = 0_i32
-  property shield = 0_i32
-  property mftime = 0_i64
-
-  property yousuu = ""
-  property origin = ""
-
-  property word_count = 0_i32
-  property crit_count = 0_i32
-
-  property cr_sitemap = {} of String => String
-  property cr_site_df = ""
-
-  property last_times = {} of String => Int64
-  property last_csids = {} of String => String
-  property last_texts = {} of String => String
-  property last_slugs = {} of String => String
 
   def initialize
   end
 
   def initialize(@zh_title : String, @zh_author : String, @uuid = "")
-    reset_uuid! if @uuid.empty?
+    fix_uuid! if @uuid.empty?
   end
 
-  def reset_uuid!
+  def fix_uuid!
     @uuid = Utils.gen_uuid(@zh_title, @zh_author)
   end
 
-  def zh_intro=(intro : String)
-    return if intro.empty? || intro == @zh_intro
-
-    @zh_intro = intro.tr("　 ", " ")
-      .gsub("&amp;", "&")
-      .gsub("&lt;", "<")
-      .gsub("&gt;", ">")
-      .gsub("&nbsp;", " ")
-      .gsub(/<br\s*\/?>/, "\n")
-      .split(/\s{2,}|\n+/)
-      .map(&.strip)
-      .reject(&.empty?)
-      .join("\n")
-    @vi_intro = ""
-  end
-
-  def zh_genre=(genre : String)
-    genre = fix_tag(genre)
+  def set_genre(genre : String)
+    genre = fix_label(genre)
     return if genre.empty? || genre == @zh_genre
 
     @zh_genre = genre
     @vi_genre = ""
-  end
-
-  def zh_tag=(tags : Array(String))
-    @zh_tags.clear
-    @vi_tags.clear
-    add_tags(tags)
   end
 
   def add_tags(tags : Array(String))
@@ -97,36 +52,19 @@ class BookInfo
   def add_tag(tag : String)
     return if tag.empty?
 
-    case tag = fix_tag(tag)
-    when @zh_genre, @zh_author, @zh_title
-      return
-    else
-      return if @zh_tags.includes?(tag)
+    tag = fix_label(tag)
+    return if @zh_tags.includes?(tag)
 
-      @zh_tags << tag
-      @vi_tags << ""
-    end
+    @zh_tags << tag
+    @vi_tags << ""
   end
 
-  def fix_tag(tag : String)
-    return tag if tag.empty? || tag == "轻小说"
-    tag.sub("小说", "")
+  private def fix_label(label : String)
+    return label if label.empty? || label == "轻小说"
+    label.sub("小说", "")
   end
 
-  def add_cover(cover : String)
-    return if cover.empty? || @covers.includes?(cover)
-    @covers << cover
-  end
-
-  def set_status(status : Int32) : Void
-    @status = status if status > @status
-  end
-
-  def set_mftime(mftime : Int64) : Void
-    @mftime = mftime if mftime > @mftime
-  end
-
-  def reset_weight!
+  def fix_weight!
     @weight = (@voters * @rating * 2).round / 2
   end
 
@@ -136,44 +74,59 @@ class BookInfo
 
   # class methods
 
-  ROOT = File.join("var", "appcv", "book_infos")
+  DIR = File.join("var", "appcv", "book_infos")
+
+  def self.setup!
+    FileUtils.mkdir_p(DIR)
+  end
+
+  def self.reset!
+    FileUtils.rm_rf(DIR)
+    setup!
+  end
 
   def self.path(uuid : String)
-    File.join(ROOT, "#{uuid}.json")
+    File.join(DIR, "#{uuid}.json")
+  end
+
+  def self.files
+    Dir.glob(File.join(DIR, "*.json"))
+  end
+
+  def self.uuids
+    files.map { |file| File.basename(file, ".json") }
+  end
+
+  CACHE = {} of String => BookInfo
+
+  def self.load_all!
+    uuids.each { |uuid| load!(uuid) }
+    puts "- <book_info> loaded `#{cache.size.colorize(:cyan)}` entries."
+
+    CACHE
+  end
+
+  def self.load!(uuid : String) : BookInfo
+    CACHE[uuid] ||= from_json(File.read(path(uuid)))
   end
 
   def self.load!(title : String, author : String) : BookInfo
     uuid = Utils.gen_uuid(title, author)
-    load(uuid) || new(title, author, uuid)
+    CACHE[uuid] ||= init!(title, author, uuid)
   end
 
-  def self.load(uuid : String) : BookInfo?
+  def self.init!(title : String, author : String, uuid = Utils.gen_uuid(title, author)) : BookInfo
     file = path(uuid)
-    read!(file) if File.exists?(file)
-  end
 
-  def self.load!(uuid : String) : BookInfo
-    read!(path(uuid))
-  end
-
-  def self.read!(file : String) : BookInfo
-    from_json(File.read(file))
+    if File.exists?(file)
+      from_json(File.read(file))
+    else
+      new(title, author, uuid)
+    end
   end
 
   def self.save!(info : BookInfo, file = path(info.uuid)) : Void
-    File.write(file, info.to_json)
-  end
-
-  def self.load_all
-    infos = {} of String => BookInfo
-
-    files = Dir.glob(File.join(ROOT, "*.json"))
-    files.each do |file|
-      uuid = File.basename(file, ".json")
-      infos[uuid] = read!(file)
-    end
-
-    puts "- <book_info> loaded `#{files.size.colorize(:cyan)}` entries."
-    infos
+    File.write(file, info)
+    # puts "- <book_info> [#{file.colorize(:cyan)}] saved."
   end
 end

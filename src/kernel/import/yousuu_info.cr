@@ -38,8 +38,8 @@ class YousuuInfo
   property scorerCount = 0
   property score = 0_f64
 
-  # property addListCount = 0
-  # property addListTotal = 0
+  property addListCount = 0
+  property addListTotal = 0
 
   property updateAt = Time.utc(2000, 1, 1)
   property sources = [] of BookSource
@@ -47,6 +47,20 @@ class YousuuInfo
   FIXING  = Hash(String, String)
   TITLES  = FIXING.from_json(File.read("etc/bookdb/fix-titles.json"))
   AUTHORS = FIXING.from_json(File.read("etc/bookdb/fix-authors.json"))
+
+  def label
+    "#{@title}--#{@author}"
+  end
+
+  def worthless?
+    return true if @title.empty?
+    return true if @author.empty?
+
+    return false if @score >= 2
+    return false if @commentCount >= 4
+
+    addListTotal < 4
+  end
 
   def fix_title!
     @title = @title.sub(/\(.+\)$/, "").strip
@@ -70,9 +84,13 @@ class YousuuInfo
     end
   end
 
+  def first_source
+    @sources.first?.try(&.link)
+  end
+
   ROOT = File.join("var", "appcv", ".cache", "yousuu", "serials")
 
-  def glob!
+  def self.files : Array(String)
     Dir.glob(File.join(ROOT, "*.json"))
   end
 
@@ -80,6 +98,8 @@ class YousuuInfo
 
   def self.load!(file : String)
     text = File.read(file)
+    return unless text.includes?("\"success\"")
+
     json = NamedTuple(data: Data).from_json(text)
 
     info = json[:data][:bookInfo]
