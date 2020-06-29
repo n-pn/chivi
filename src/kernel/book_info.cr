@@ -42,12 +42,16 @@ class BookInfo
     @uuid = Utils.gen_uuid(@title_zh, @author_zh)
   end
 
-  def set_genre(genre : String)
+  def add_genre(genre : String)
     genre = fix_label(genre)
     return if genre.empty? || genre == @genre_zh
 
-    @genre_zh = genre
-    @genre_vi = ""
+    if @genre_zh.empty?
+      @genre_zh = genre
+      @genre_vi = ""
+    else
+      add_tag(genre)
+    end
   end
 
   def add_tags(tags : Array(String))

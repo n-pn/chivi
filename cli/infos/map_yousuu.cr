@@ -31,7 +31,7 @@ fresh = 0
 inputs.each_value do |input|
   info = BookInfo.init!(input.title, input.author)
 
-  info.set_genre(input.genre)
+  info.add_genre(input.genre)
   info.add_tags(input.tags)
 
   info.voters = input.scorerCount

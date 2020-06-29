@@ -9,7 +9,7 @@
     "www-up": "cd www && yarn build && git push deploy",
     "srv-rs": "ssh nipin@ssh.chivi.xyz \" systemctl restart chivi-server.service\"",
     "www-rs": "ssh nipin@ssh.chivi.xyz \" systemctl restart chivi-client.service\"",
-    "map-yousuu": "wsl bin/map_yousuu",
+    "map-yousuu": "yarn build map_yousuu && wsl bin/map_yousuu",
     "map-remote": "wsl bin/map_remote",
     "map-remotes": "wsl cli/infos/map_remote.sh",
     "map-zhwenpg": "wsl bin/map_zhwenpg"
