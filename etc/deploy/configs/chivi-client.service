@@ -9,7 +9,7 @@ Restart=always
 RestartSec=5
 User=nipin
 Environment=PORT=5100
-WorkingDirectory=/home/nipin/srv/chivi/webapp
+WorkingDirectory=/home/nipin/srv/chivi/www
 ExecStart=/usr/bin/node __sapper__/build
 [Install]
 WantedBy=multi-user.target

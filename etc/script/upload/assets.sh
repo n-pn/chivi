@@ -1,12 +1,19 @@
 #! /bin/bash
 
-INP=data
-OUT=nipin@ssh.chivi.xyz:web/chivi
+INP=var
+OUT=nipin@ssh.chivi.xyz:srv/chivi/var/appcv
 
-rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/cv_dicts" "$OUT/data/"
-rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/vp_infos" "$OUT/data/"
-rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/vp_lists" "$OUT/data/"
-rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/indexing" "$OUT/data/"
-# rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/sitemaps" "$OUT/data/"
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/libcv" $OUT
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/book_infos" $OUT
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/book_metas" $OUT
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/book_seeds" $OUT
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/book_index" $OUT
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/chap_lists" $OUT
+# rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/chap_texts" $OUT
+# rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/chap_trans" $OUT
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/user_infos" $OUT
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/user_crits" $OUT
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/user_books" $OUT
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/user_lists" $OUT
 
-rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "web/upload" "$OUT/web/"
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "web/public" "$OUT/www/"

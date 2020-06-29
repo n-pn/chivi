@@ -1,6 +1,6 @@
 #! /bin/bash
 
-INP=assets/.inits/books/yousuu
+INP=var/appcv/.cache/yousuu
 OUT=nipin@ssh.nipin.xyz:web/chivi/assets/.inits/books/yousuu
 
 rsync -azui --chmod=Dg+s,ug+w,Fo-w,+X "$INP/proxies/awmproxy.com.txt" "$OUT/proxies"

@@ -1,5 +1,5 @@
 [Unit]
-Description=chivi-oldsrv
+Description=chivi-server
 After=network.target
 StartLimitIntervalSec=0
 
@@ -10,7 +10,8 @@ RestartSec=5
 User=nipin
 Environment=PORT=5110
 Environment=KEMAL_ENV=production
-WorkingDirectory=/home/nipin/srv/chivi/oldsrv
-ExecStart=/home/nipin/srv/chivi/oldsrv/bin/chivi
+WorkingDirectory=/home/nipin/srv/chivi
+ExecStart=/home/nipin/srv/chivi/bin/chivi
+
 [Install]
 WantedBy=multi-user.target

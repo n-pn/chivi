@@ -1,9 +1,10 @@
-INP_DIR = File.join("data", "zh_texts")
-OUT_DIR= "nipin@ssh.chivi.xyz:web/chivi/data/zh_texts/"
+INP_DIR = File.join("var", "appcv", "chap_texts")
+OUT_DIR= "nipin@ssh.chivi.xyz:srv/chivi/var/appcv/chap_texts/"
 
 def sync_site(site)
   list = Dir.glob(File.join(INP_DIR, "#{site}.*"))
   puts "- #{site}: #{list.size} entries"
+
   list.each do |path|
     puts path
 

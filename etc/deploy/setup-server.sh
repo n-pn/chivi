@@ -1,6 +1,6 @@
 #! /bin/bash
 
-CWD=/home/nipin/web/chivi/deploy/configs
+CWD=/home/nipin/srv/chivi/etc/deploy/configs
 
 sudo rm /etc/nginx/sites-enabled/chivi.conf
 sudo ln -s "$CWD/nginx.conf" /etc/nginx/sites-enabled/chivi.conf
