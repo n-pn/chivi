@@ -44,9 +44,9 @@ class YousuuInfo
   property updateAt = Time.utc(2000, 1, 1)
   property sources = [] of BookSource
 
-  FIXMAP  = Hash(String, String)
-  TITLES  = FIXMAP.from_json(File.read("etc/bookdb/fix-titles.json"))
-  AUTHORS = FIXMAP.from_json(File.read("etc/bookdb/fix-authors.json"))
+  FIXING  = Hash(String, String)
+  TITLES  = FIXING.from_json(File.read("etc/bookdb/fix-titles.json"))
+  AUTHORS = FIXING.from_json(File.read("etc/bookdb/fix-authors.json"))
 
   def fix_title!
     @title = @title.sub(/\(.+\)$/, "").strip
@@ -92,4 +92,4 @@ class YousuuInfo
   end
 end
 
-pp YousuuInfo.load!("var/appcv/.cache/yousuu/serials/176814.json")
+# pp YousuuInfo.load!("var/appcv/.cache/yousuu/serials/176814.json")
