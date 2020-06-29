@@ -6,11 +6,9 @@ class ValueIndex
   SEP = "ǁ"
   LBL = "value_index".colorize(:blue)
 
-  class Item
+  struct Item
     getter key : String
     getter val : Float64
-    property prev : Item? = nil
-    property succ : Item? = nil
 
     def initialize(@key, @val)
     end
@@ -24,126 +22,88 @@ class ValueIndex
     end
   end
 
-  def initialize(@file : String, preload : Bool = false)
-    @head = Item.new("", 0_f64)
-    @data = {} of String => Float64
+  getter data = [] of Item
+  delegate each, to: @data
+  delegate reverse_each, to: @data
 
-    load!(@file) if preload
+  def initialize(@file : String, preload : Bool = false, reorder : Bool = false)
+    load!(@file, reorder) if preload
   end
 
-  def load!(file : String = @file)
+  # :nodoc:
+  def load!(file : String = @file, reorder : Bool = true)
     if File.exists?(file)
       lines = File.read_lines(file)
-      lines.each { |line| set!(line) }
+      lines.each do |line|
+        cols = line.split(SEP, 2)
 
-      puts "- <#{LBL}> [#{file.colorize(:cyan)}] loaded."
+        key = cols[0]
+        val = cols[1]?.try(&.to_f?) || -1_f64
+
+        set!(key, val, reorder: false)
+        # rescue err
+        #   puts "- <value_index> error parsing line `#{line.colorize(:red)}`: #{err.message.colorize(:red)}"
+      end
+
+      puts "- <value_index> [#{file.colorize(:cyan)}] loaded."
     else
-      puts "- <#{LBL}> [#{file.colorize(:red)}] not found!"
+      puts "- <value_index> [#{file.colorize(:red)}] not found!"
     end
 
+    sort! if reorder
     self
   end
 
   # atomic update
-  def add!(key : String, val : Float64) : Void
-    add!(Item.new(key, val))
-  end
-
-  # :ditto:
-  def add!(item : Item) : Void
-    File.open(@file, "a") { |io| io.puts(item) }
-    set!(item)
+  def add!(key : String, val : Float64, reorder : Bool = true) : Void
+    File.open(@file, "a") { |io| io << key << SEP << val << "\n" }
+    set!(key, val, reorder: reorder)
   end
 
   # delete entry by key
   def del!(key : String)
-    File.open(@file, "a") { |io| io.puts(key) }
-    rem!(key, @head)
+    File.open(@file, "a") { |io| io << key << "\n" }
+    set!(key, -1_f64, reorder: false)
   end
 
   # :nodoc:
-  def set!(line : String) : Void
-    cols = line.split(SEP, 2)
-    key = cols[0]
+  def set!(key : String, val : Float64 = -1_f64, reorder : Bool = true) : Void
+    if val < 0
+      @data.reject!(&.eql?(key))
+      return
+    end
 
-    if val = cols[1]?.try(&.to_f?)
-      set!(Item.new(key, val))
+    if idx = index(key)
+      @data[idx] = Item.new(key, val)
     else
-      rem!(key, @head)
+      @data << Item.new(key, val)
     end
-  rescue err
-    puts "- <#{LBL}> error parsing line `#{line.colorize(:red)}`: #{err.message.colorize(:red)}"
+
+    sort! if reorder
   end
 
   # :nodoc:
-  def set!(key : String, val : Float64)
-    set!(Item.new(key, val))
-  end
-
-  # :nodoc:
-  def set!(item : Item, node : Item = @head) : Void
-    return if item.val < 0
-
-    while node.val > item.val
-      return if node.key == item.key
-      return unless node = node.succ
-    end
-
-    if prev = node.prev
-      item.prev = prev
-      prev.succ = item
-    else
-      @head = item
-    end
-
-    item.succ = node
-    node.prev = item
-
-    rem!(item.key, node) # remove duplicate
-  end
-
-  # :nodoc:
-  def rem!(key : String, node : Item? = @head)
-    return unless node
-    return unless node = index(key, node)
-
-    if prev = node.prev
-      prev.succ = node.succ
-    end
-
-    if succ = node.succ
-      succ.prev = node.prev
-    end
-  end
-
-  def index(key : String, node : Item? = @head)
-    return unless node
-
-    while node.key != key
-      return unless node = node.succ
-    end
-
-    node
-  end
-
-  def value(key : String) : Float64?
-    index(key).try(&.val)
-  end
-
-  def save! : self
-    File.open(@file, "w") do |io|
-      each { |item| io.puts(item) }
-    end
-
-    puts "- <#{LBL}> [#{@file.colorize(:cyan)}] saved."
+  def sort! : self
+    @data.sort_by!(&.val)
     self
   end
 
-  def each(node = @head)
-    while node
-      yield node unless node.key.empty?
-      node = node.succ
-    end
+  # :nodoc:
+  def index(key : String)
+    @data.index(&.eql?(key))
+  end
+
+  # :nodoc:
+  def to_s(io : IO)
+    each { |x| io << x.key << SEP << x.val << "\n" }
+  end
+
+  # :nodoc:
+  def save!(file : String = @file) : self
+    File.write(file, self)
+
+    puts "- <#{LBL}> [#{@file.colorize(:cyan)}] saved."
+    self
   end
 
   # class methods
@@ -168,37 +128,31 @@ class ValueIndex
   def self.load!(name : String)
     @@cache[name] ||= new(path(name), preload: true, reorder: true)
   end
-
-  def to_a
-    res = [] of Tuple(String, Float64)
-    each { |x| res << {x.key, x.val} }
-    res
-  end
 end
 
 # ValueIndex.setup!
 
-test = ValueIndex.new("test.txt", preload: true)
-pp test.to_a
+# test = ValueIndex.new("test.txt", preload: true, reorder: true)
+# puts test
 
-test.add!("a", 1.0)
-test.add!("b", 2.0)
-test.add!("c", 1.1)
-test.add!("d", 1.2)
-test.add!("e", 0.2)
+# test.add!("a", 1.0)
+# test.add!("b", 2.0)
+# test.add!("c", 1.1)
+# test.add!("d", 1.2)
+# test.add!("e", 0.2)
 
-# pp test.value("b")
-pp test.to_a
+# # puts test.value("b")
+# puts test
 
-test.add!("b", 0.2)
-# pp test.value("b")
-pp test.to_a
+# test.add!("b", 0.2)
+# # puts test.value("b")
+# puts test
 
-test.add!("b", 3.0)
-# pp test.value("b")
-pp test.to_a
+# test.add!("b", 3.0)
+# # puts test.value("b")
+# puts test
 
-test.add!("a", 3.0)
-pp test.to_a
+# test.add!("a", 3.0)
+# puts test
 
-test.save!
+# test.save!
