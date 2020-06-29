@@ -43,7 +43,7 @@ class BookInfo
   end
 
   def add_genre(genre : String)
-    genre = fix_label(genre)
+    genre = fix_genre(genre)
     return if genre.empty? || genre == @genre_zh
 
     if @genre_zh.empty?
@@ -54,6 +54,11 @@ class BookInfo
     end
   end
 
+  private def fix_genre(genre : String)
+    return genre if genre.empty? || genre == "轻小说"
+    genre.sub(/小说$/, "")
+  end
+
   def add_tags(tags : Array(String))
     return if tags.empty?
     tags.each { |tag| add_tag(tag) }
@@ -62,18 +67,12 @@ class BookInfo
   def add_tag(tag : String)
     return if tag.empty?
 
-    tag = fix_label(tag)
     return if tag == @title_zh || tag == @author_zh
     return if @tags_zh.includes?(tag)
 
     @tags_zh << tag
     @tags_vi << ""
     @tags_us << ""
-  end
-
-  private def fix_label(label : String)
-    return label if label.empty? || label == "轻小说"
-    label.sub(/小说$/, "")
   end
 
   def fix_weight!

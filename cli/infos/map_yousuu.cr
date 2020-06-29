@@ -30,6 +30,7 @@ fresh = 0
 
 inputs.each_value do |input|
   info = BookInfo.init!(input.title, input.author)
+  fresh += 1 if info.slug.empty?
 
   info.add_genre(input.genre)
   info.add_tags(input.tags)
@@ -41,10 +42,8 @@ inputs.each_value do |input|
   BookInfo.save!(info)
 
   misc = BookMisc.init!(info.uuid)
-  fresh += 1 if misc.mftime == 0
 
   misc.set_intro(input.intro)
-
   misc.add_cover(input.cover)
 
   misc.shield = input.shielded ? 2 : 0

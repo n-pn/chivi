@@ -23,7 +23,6 @@ class YousuuInfo
 
   @[JSON::Field(key: "classInfo")]
   property category : NamedTuple(classId: Int32, className: String)?
-  property genre = ""
 
   property tags = [] of String
   property cover = ""
@@ -72,16 +71,20 @@ class YousuuInfo
     @author = AUTHORS.fetch(@title, @author)
   end
 
-  def fix_tags!
-    @tags = @tags.map(&.split("-")).flatten.uniq
+  def cover
+    if @cover.starts_with?("http")
+      @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
+    else
+      ""
+    end
   end
 
-  def fix_cover!
-    if @cover.starts_with?("http")
-      @cover = @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
-    else
-      @cover = ""
-    end
+  def genre
+    @category.try(&.[:className]) || ""
+  end
+
+  def tags
+    @tags.map(&.split("-")).flatten.uniq
   end
 
   def first_source
