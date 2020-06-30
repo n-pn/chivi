@@ -27,18 +27,18 @@ class YousuuInfo
   property tags = [] of String
   property cover = ""
 
-  property status = 0
+  property status = 0_i32
   property shielded = false
   # property recom_ignore = false
 
-  property countWord = 0_f64
-  property commentCount = 0
+  property countWord = 0_f32
+  property commentCount = 0_i32
 
-  property scorerCount = 0
-  property score = 0_f64
+  property scorerCount = 0_i32
+  property score = 0_f32
 
-  property addListCount = 0
-  property addListTotal = 0
+  property addListCount = 0_i32
+  property addListTotal = 0_i32
 
   property updateAt = Time.utc(2000, 1, 1)
   property sources = [] of BookSource
@@ -55,10 +55,8 @@ class YousuuInfo
     return true if @title.empty?
     return true if @author.empty?
 
-    return false if @score >= 2
-    return false if @commentCount >= 4
-
-    addListTotal < 4
+    return false if @score >= 2.5
+    @commentCount < 10 || @addListTotal < 10
   end
 
   def fix_title!

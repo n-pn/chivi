@@ -159,32 +159,36 @@ class MapValue::File
   delegate reverse_each, to: @data
 
   def initialize(@file, preload : Bool = true)
-    load!(@file) if preload && ::File.exists?(@file)
-  end
+    return unless preload && exist?
 
-  def load!(file : String = @file) : Void
     ::File.each_line(file) do |line|
       key, val = line.split(SEP, 2)
       if val = val.try(&.to_i64?)
-        upsert!(key, val)
+        @data.upsert!(key, val)
       else
-        delete!(key)
+        @data.delete!(key)
       end
+    rescue err
+      puts "- <map_value> error parsing line `#{line}`: #{err}".colorize(:red)
     end
   end
 
-  def save!(file : String = @file) : Void
-    ::File.write(file, self)
+  def exist?
+    ::File.exists?(@file)
+  end
+
+  def save! : Void
+    ::File.write(@file, self)
   end
 
   def upsert!(key : String, val : Int64) : Void
     ::File.open(file, "a") { |io| io << key << SEP << val << "\n" }
-    data.upsert!(key, val)
+    @data.upsert!(key, val)
   end
 
   def delete!(key : String) : Void
     ::File.open(file, "a") { |io| io << key << SEP << "\n" }
-    data.delete!(key)
+    @data.delete!(key)
   end
 
   def to_s(io : IO)
@@ -196,30 +200,28 @@ class MapValue::File
   end
 end
 
-module MapValue::Repo
+module MapValue
   extend self
 
   DIR = ::File.join("var", "appcv", "map_values")
   FileUtils.mkdir_p(DIR)
 
-  def self.path(name : String)
-    File.join(DIR, "#{name}.txt")
+  def path(name : String)
+    ::File.join(DIR, "#{name}.txt")
   end
 
   CACHE = {} of String => File
 
-  def self.load!(name : String, file = path(name))
-    CACHE[name] ||= new(file, preload: true)
+  def load!(name : String, file = path(name)) : File
+    CACHE[name] ||= File.new(file, preload: true)
   end
 
-  def self.save!(data : File, file : String = data.file)
+  def save!(data : File, file : String = data.file) : Void
     data.save!(file)
   end
 end
 
-# MapValue::Repo.mkdir!
-
-# test = MapValue::File.new("test.txt")
+# test = MapValue.load!("test")
 
 # test.upsert!("a", 10)
 # test.upsert!("b", 20)

@@ -1,8 +1,9 @@
 require "json"
 require "colorize"
+require "file_utils"
 require "../utils/gen_uuids"
 
-class BookInfo
+class BookInfo::Data
   # contain book main infomation
   # us == url slug
 
@@ -28,27 +29,115 @@ class BookInfo
   property tags_us = [] of String
 
   property voters = 0_i32
-  property rating = 0_f64
-  property weight = 0_f64
+  property rating = 0_f32
+  property weight = 0_i64
 
   def initialize
   end
 
   def initialize(@title_zh : String, @author_zh : String, @uuid = "")
-    fix_uuid! if @uuid.empty?
+    gen_uuid! if @uuid.empty?
   end
 
-  def fix_uuid!
+  def gen_uuid!
     @uuid = Utils.gen_uuid(@title_zh, @author_zh)
   end
 
-  def add_genre(genre : String)
-    genre = fix_genre(genre)
-    return if genre.empty? || genre == @genre_zh
+  def scored
+    (@rating * 10).to_i64
+  end
 
-    if @genre_zh.empty?
-      @genre_zh = genre
-      @genre_vi = ""
+  def fix_weight!
+    @weight = scored * @voters
+  end
+
+  def title_zh=(@title_zh : String)
+    @title_hv = ""
+    @title_vi = ""
+  end
+
+  def author_zh=(@author_zh : String)
+    @author_vi = ""
+    @author_us = ""
+  end
+
+  def genre_zh=(@genre_zh : String)
+    @genre_vi = ""
+    @genre_us = ""
+  end
+
+  def add_tags(tags : Array(String))
+    tags.each { |tag| add_tag(tag) }
+  end
+
+  def add_tag(tag : String, uniq : Bool = false)
+    return if !uniq && @tags_zh.includes?(tag)
+
+    @tags_zh << tag
+    @tags_vi << ""
+    @tags_us << ""
+  end
+
+  def to_s(io : IO)
+    to_json(io)
+  end
+end
+
+struct BookInfo::File
+  getter file : String
+  getter data : Data
+
+  delegate to_s, to: @data
+  delegate gen_uuid!, to: @data
+  delegate fix_weight!, to: @data
+
+  def initialize(@file, preload : Bool = true)
+    if preload && exist?
+      @data = Data.from_json(::File.read(file))
+      @changed = false
+    else
+      @data = Data.new
+      @changed = true
+    end
+  end
+
+  def save! : Void
+    ::File.write(file, self)
+    puts "- <book_info> [#{file.colorize(:cyan)}] saved."
+  end
+
+  def exist?
+    ::File.exists?(@file)
+  end
+
+  def changed?
+    @changed
+  end
+
+  def set_uuid(uuid : String) : Void
+    @data.uuid = uuid
+  end
+
+  def set_title(title : String) : Void
+    return if title.empty? || @data.title_zh == title
+    @data.title_zh = title
+    @changed = true
+  end
+
+  def set_author(author : String) : Void
+    return if author.empty? || @data.author_zh == author
+    @data.author_zh = author
+    @changed = true
+  end
+
+  def add_genre(genre : String) : Void
+    return if genre.empty? || genre == @data.genre_zh
+
+    genre = fix_genre(genre)
+
+    if @data.genre_zh.empty?
+      @data.genre_zh = genre
+      @changed = true
     else
       add_tag(genre)
     end
@@ -60,86 +149,75 @@ class BookInfo
   end
 
   def add_tags(tags : Array(String))
-    return if tags.empty?
     tags.each { |tag| add_tag(tag) }
   end
 
   def add_tag(tag : String)
-    return if tag.empty?
+    return if tag.empty? || @data.tags_zh.includes?(tag)
+    return if tag == @data.title_zh || tag == @data.author_zh
 
-    return if tag == @title_zh || tag == @author_zh
-    return if @tags_zh.includes?(tag)
-
-    @tags_zh << tag
-    @tags_vi << ""
-    @tags_us << ""
+    @data.add_tag(tag, uniq: true)
+    @changed = true
   end
 
-  def fix_weight!
-    @weight = (@voters * @rating * 2).round / 2
+  def set_voters(voters : Int32)
+    return if @data.voters == voters
+    @data.voters = voters
+    @changed = true
   end
 
-  def to_s(io : IO)
-    to_json(io)
+  def set_rating(rating : Float32)
+    return if @data.rating == rating
+    @data.rating = rating
+    @changed = true
+  end
+end
+
+module BookInfo
+  extend self
+
+  DIR = ::File.join("var", "appcv", "book_infos")
+  FileUtils.mkdir_p(DIR)
+
+  def path(uuid : String)
+    ::File.join(DIR, "#{uuid}.json")
   end
 
-  def save!(file = BookInfo.path(@uuid)) : self
-    File.write(file, self)
-    puts "- <book_info> [#{file.colorize(:cyan)}] saved."
-
-    self
-  end
-
-  # class methods
-
-  DIR = File.join("var", "appcv", "book_infos")
-
-  def self.setup!
-    FileUtils.mkdir_p(DIR)
-  end
-
-  def self.reset!
-    FileUtils.rm_rf(DIR)
-    setup!
-  end
-
-  def self.path(uuid : String)
-    File.join(DIR, "#{uuid}.json")
-  end
-
-  def self.files
+  def files
     Dir.glob(File.join(DIR, "*.json"))
   end
 
-  def self.uuids
-    files.map { |file| File.basename(file, ".json") }
+  def uuids
+    files.map { |file| ::File.basename(file, ".json") }
   end
 
-  CACHE = {} of String => BookInfo
+  CACHE = {} of String => File
 
-  def self.load_all!
-    uuids.each { |uuid| load!(uuid) }
-    puts "- <book_info> loaded `#{cache.size.colorize(:cyan)}` entries."
+  def load_all!
+    files.each do |file|
+      uuid = File.basename(file, ".json")
+      load!(uuid, file)
+    end
+
+    puts "- <book_info> loaded `#{CACHE.size.colorize(:cyan)}` entries."
 
     CACHE
   end
 
-  def self.load!(uuid : String) : BookInfo
-    CACHE[uuid] ||= from_json(File.read(path(uuid)))
+  def load!(uuid : String) : File
+    CACHE[uuid] ||= File.new(path(uuid), preload: true)
   end
 
-  def self.load!(title : String, author : String) : BookInfo
+  def init!(title : String, author : String) : File
     uuid = Utils.gen_uuid(title, author)
-    CACHE[uuid] ||= init!(title, author, uuid)
-  end
+    file = load!(uuid)
 
-  def self.init!(title : String, author : String, uuid = Utils.gen_uuid(title, author)) : BookInfo
-    file = path(uuid)
-
-    if File.exists?(file)
-      from_json(File.read(file))
-    else
-      new(title, author, uuid)
+    unless file.exist?
+      file.data.uuid = uuid
+      file.data.title_zh = title
+      file.data.author_zh = author
     end
+
+    file
   end
 end

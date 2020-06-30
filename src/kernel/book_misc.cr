@@ -1,5 +1,6 @@
 require "json"
 require "colorize"
+require "file_utils"
 
 class BookMisc
   # contain book optional infomation
@@ -66,7 +67,7 @@ class BookMisc
 
   def save!(file = BookMisc.path(@uuid)) : self
     File.write(file, self)
-    puts "- <book_misc> [#{file.colorize(:cyan)}] saved."
+    # puts "- <book_misc> [#{file.colorize(:cyan)}] saved."
 
     self
   end
@@ -74,15 +75,7 @@ class BookMisc
   # class methods
 
   DIR = File.join("var", "appcv", "book_miscs")
-
-  def self.setup!
-    FileUtils.mkdir_p(DIR)
-  end
-
-  def self.reset!
-    FileUtils.rm_rf(DIR)
-    setup!
-  end
+  FileUtils.mkdir_p(DIR)
 
   def self.path(uuid : String)
     File.join(DIR, "#{uuid}.json")
