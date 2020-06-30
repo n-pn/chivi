@@ -8,8 +8,8 @@ class BookMisc
 
   property uuid = ""
 
-  property zh_intro = ""
-  property vi_intro = ""
+  property intro_zh = ""
+  property intro_vi = ""
 
   property covers = [] of String
 
@@ -28,9 +28,9 @@ class BookMisc
   end
 
   def set_intro(intro : String)
-    return if intro.empty? || intro == @zh_intro
+    return if intro.empty? || intro == @intro_zh
 
-    @zh_intro = intro.tr("　 ", " ")
+    @intro_zh = intro.tr("　 ", " ")
       .gsub("&amp;", "&")
       .gsub("&lt;", "<")
       .gsub("&gt;", ">")
@@ -40,7 +40,7 @@ class BookMisc
       .map(&.strip)
       .reject(&.empty?)
       .join("\n")
-    @vi_intro = ""
+    @intro_vi = ""
   end
 
   def add_cover(cover : String)
@@ -62,6 +62,13 @@ class BookMisc
 
   def to_s(io : IO)
     to_json(io)
+  end
+
+  def save!(file = BookMisc.path(@uuid)) : self
+    File.write(file, self)
+    puts "- <book_misc> [#{file.colorize(:cyan)}] saved."
+
+    self
   end
 
   # class methods
@@ -93,7 +100,7 @@ class BookMisc
 
   def self.load_all!
     uuids.each { |uuid| load!(uuid) }
-    puts "- <book_misc> loaded `#{cache.size.colorize(:cyan)}` entries."
+    puts "- <book_misc> loaded `#{CACHE.size.colorize(:cyan)}` entries."
 
     CACHE
   end
@@ -110,10 +117,5 @@ class BookMisc
     else
       new(uuid)
     end
-  end
-
-  def self.save!(misc : BookMisc, file = path(misc.uuid)) : Void
-    File.write(file, misc)
-    # puts "- <book_misc> [#{file.colorize(:cyan)}] saved."
   end
 end

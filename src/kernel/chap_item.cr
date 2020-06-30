@@ -8,45 +8,49 @@ class ChapItem
 
   getter scid = ""
 
-  property zh_group = ""
-  property vi_group = ""
+  property group_zh = ""
+  property group_vi = ""
 
-  property zh_title = ""
-  property vi_title = ""
+  property title_zh = ""
+  property title_vi = ""
+  property title_us = ""
 
-  property url_slug = ""
+  property mftime = 0_i64
 
-  def initialize(@scid : String, @zh_title : String, @zh_group : String = "")
+  def initialize
+  end
+
+  def initialize(@scid : String, @title_zh : String, @group_zh : String = "")
     if group.empty?
-      @zh_title, @zh_group = Utils.split_group(title)
+      @title_zh, @group_zh = Utils.split_group(title)
     else
-      @zh_title = Utils.format_title(title)
-      @zh_group = Utils.clean_spaces(group)
+      @title_zh = Utils.format_title(title)
+      @group_zh = Utils.clean_spaces(group)
     end
   end
 
-  def zh_title=(title : String)
-    return if title.empty? || title == @zh_title
+  def title_zh=(title : String)
+    return if title.empty? || title == @title_zh
 
-    @zh_title = title
-    @vi_title = ""
-    @url_slug = ""
+    @title_zh = title
+    @title_vi = ""
+    @title_us = ""
   end
 
-  def zh_group=(group : String)
-    return if group.empty? || group == @zh_group
+  def group_zh=(group : String)
+    return if group.empty? || group == @group_zh
 
-    @zh_group = group
-    @vi_group = ""
+    @group_zh = group
+    @group_vi = ""
   end
 
   def gen_slug!(limit : Int32 = 12) : Void
-    return if @vi_title.empty?
-    slug = Utils.slugify(@vi_title, no_accent: true)
-    @url_slug = slug.split("-").first(limit).join("-")
+    return if @title_vi.empty?
+    slug = Utils.slugify(@title_vi, no_accent: true)
+    @title_us = slug.split("-").first(limit).join("-")
   end
 
   def slug_for(seed : String)
-    "#{@url_slug}-#{seed}-#{@scid}"
+    "#{@title_us}-#{seed}-#{@scid}"
   end
 end

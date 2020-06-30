@@ -83,6 +83,13 @@ class BookInfo
     to_json(io)
   end
 
+  def save!(file = BookInfo.path(@uuid)) : self
+    File.write(file, self)
+    puts "- <book_info> [#{file.colorize(:cyan)}] saved."
+
+    self
+  end
+
   # class methods
 
   DIR = File.join("var", "appcv", "book_infos")
@@ -134,10 +141,5 @@ class BookInfo
     else
       new(title, author, uuid)
     end
-  end
-
-  def self.save!(info : BookInfo, file = path(info.uuid)) : Void
-    File.write(file, info)
-    # puts "- <book_info> [#{file.colorize(:cyan)}] saved."
   end
 end

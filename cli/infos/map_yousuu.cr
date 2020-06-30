@@ -10,6 +10,8 @@ inputs = {} of String => YousuuInfo
 
 YousuuInfo.files.each do |file|
   next unless info = YousuuInfo.load!(file)
+
+  # TODO: check author whitelist
   next if info.worthless?
 
   if old_info = inputs[info.label]?
@@ -29,6 +31,8 @@ BookMisc.setup!
 fresh = 0
 
 inputs.each_value do |input|
+  # primary info
+
   info = BookInfo.init!(input.title, input.author)
   fresh += 1 if info.slug.empty?
 
@@ -39,7 +43,10 @@ inputs.each_value do |input|
   info.rating = (input.score * 10).round / 10
   info.fix_weight!
 
-  BookInfo.save!(info)
+  # TODO: add author whitelist
+  info.save!
+
+  # seconday info
 
   misc = BookMisc.init!(info.uuid)
 
@@ -58,7 +65,7 @@ inputs.each_value do |input|
   misc.word_count = input.countWord.round.to_i
   misc.crit_count = input.commentCount
 
-  BookMisc.save!(misc)
+  misc.save!
 end
 
 puts "- FRESH: #{fresh.colorize(:yellow)}."
