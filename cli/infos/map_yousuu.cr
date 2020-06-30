@@ -9,6 +9,8 @@ require "../../src/kernel/mapper/map_value"
 require "../../src/kernel/import/yousuu_info"
 
 class MapYousuu
+  DIR = File.join("var", "appcv", ".cache", "yousuu", "serials")
+
   def self.run!
     this = new
     this.load_inputs!
@@ -18,20 +20,22 @@ class MapYousuu
 
   def initialize
     @inputs = {} of String => YousuuInfo
-
     @author_file = "etc/author-whitelist.txt"
     @author_list = Set(String).new(File.read_lines(@author_file))
   end
 
   def load_inputs! : Void
-    files = YousuuInfo.files
+    files = Dir.glob(File.join(DIR, "*.json"))
+    puts "- INPUT: #{files.size.colorize(:yellow)}."
+
     files.each { |file| parse_file!(file) }
-    puts "- TOTAL: #{files.size.colorize(:yellow)}."
   end
 
   def parse_file!(file : String) : Void
     return unless info = YousuuInfo.load!(file)
+
     return if worthless?(info)
+    add_to_whitelist(info)
 
     uuid = Utils.gen_uuid(info.title, info.author)
 
@@ -45,30 +49,43 @@ class MapYousuu
     File.delete(file)
   end
 
-  def worthless?(info : YousuuInfo)
-    return false if @author_list.includes?(info.author)
-    info.worthless?
+  def qualified?(info : YousuuInfo)
+    return true if info.score > 7 && info.scorerCount > 20
+    return true if info.score > 6 && info.scorerCount > 30
+    return true if info.score > 5 && info.scorerCount > 40
+    return true if info.score > 4 && info.scorerCount > 50
+
+    info.scorerCount > 100
   end
 
-  def add_to_whitelist(data : BookInfo::Data)
-    return if data.weight < 5000
-    return if @author_list.includes?(data.author_zh)
+  def worthless?(info : YousuuInfo)
+    return true if info.title.empty?
+    return true if info.author.empty?
+    return false if qualified?(info)
+    return false if @author_list.includes?(info.author)
 
-    @author_list.add(data.author_zh)
-    File.open(@author_file, "a") { |io| io.puts(data.author_zh) }
+    return false if info.score >= 2.5
+    info.commentCount < 10 || info.addListTotal < 10
+  end
+
+  def add_to_whitelist(info : YousuuInfo)
+    return unless qualified?(info)
+
+    @author_list.add(info.author)
+    File.open(@author_file, "a") { |io| io.puts(info.author) }
   end
 
   def extract_infos!
     weight_map = MapValue.load!("book_weight")
     rating_map = MapValue.load!("book_rating")
 
-    fresh = 0
+    insert_count = 0
+    update_count = 0
 
     @inputs.each do |uuid, input|
       # primary info
 
       info = BookInfo.init!(input.title, input.author)
-      fresh += 1 unless info.exist?
 
       info.add_genre(input.genre)
       info.add_tags(input.tags)
@@ -77,8 +94,15 @@ class MapYousuu
       info.set_rating((input.score * 10).round / 10)
       info.fix_weight!
 
-      add_to_whitelist(info.data)
-      info.save! if info.changed?
+      if info.changed?
+        if info.exist?
+          update_count += 1
+        else
+          insert_count += 1
+        end
+
+        info.save!
+      end
 
       # update indexes
       weight_map.data.upsert!(uuid, info.data.weight)
@@ -88,7 +112,9 @@ class MapYousuu
     weight_map.save!
     rating_map.save!
 
-    puts "- FRESH: #{fresh.colorize(:yellow)}."
+    puts "- INFOS: #{@inputs.size.colorize(:yellow)}, \
+           INSERT: #{insert_count.colorize(:yellow)}, \
+           UPDATE: #{update_count.colorize(:yellow)}."
   end
 
   def extract_miscs!

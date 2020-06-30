@@ -47,18 +47,6 @@ class YousuuInfo
   TITLES  = FIXING.from_json(File.read("etc/bookdb/fix-titles.json"))
   AUTHORS = FIXING.from_json(File.read("etc/bookdb/fix-authors.json"))
 
-  def label
-    "#{@title}--#{@author}"
-  end
-
-  def worthless?
-    return true if @title.empty?
-    return true if @author.empty?
-
-    return false if @score >= 2.5
-    @commentCount < 10 || @addListTotal < 10
-  end
-
   def fix_title!
     @title = @title.sub(/\(.+\)$/, "").strip
     @title = TITLES.fetch(@title, @title)
@@ -87,12 +75,6 @@ class YousuuInfo
 
   def first_source
     @sources.first?.try(&.link)
-  end
-
-  ROOT = File.join("var", "appcv", ".cache", "yousuu", "serials")
-
-  def self.files : Array(String)
-    Dir.glob(File.join(ROOT, "*.json"))
   end
 
   alias Data = NamedTuple(bookInfo: YousuuInfo, bookSource: Array(BookSource))

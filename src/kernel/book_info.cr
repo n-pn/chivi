@@ -103,7 +103,7 @@ struct BookInfo::File
 
   def save! : Void
     ::File.write(file, self)
-    puts "- <book_info> [#{file.colorize(:cyan)}] saved."
+    # puts "- <book_info> [#{file.colorize(:cyan)}] saved."
   end
 
   def exist?
