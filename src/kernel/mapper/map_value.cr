@@ -45,30 +45,30 @@ end
 struct MapValue::Data
   getter data = {} of String => Node
 
-  def initialize(min : Int64 = Int64::MIN, max : Int64 = Int64::MAX)
-    @head = Node.new("", min)
-    @tail = Node.new("", max)
+  def initialize
+    @head = Node.new("", Int64::MAX)
+    @tail = Node.new("", Int64::MIN)
     @head.set_succ!(@tail)
   end
 
   def upsert!(key : String, val : Int64) : Void
-    if node = @data[key]?
+    if node = find(key)
       return if node.val == val
       node.val = val
 
-      if @tail.prev.try(&.val.< val)
-        unless node.succ == @tail
+      if @head.succ.try(&.val.< val)
+        unless node.prev == @head
           node.unlink!
-          @tail.set_prev!(node)
+          @head.set_succ!(node)
         end
 
         return
       end
 
-      if @head.succ.try(&.val.> val)
-        unless node.prev == @head
+      if @tail.prev.try(&.val.> val)
+        unless node.succ == @tail
           node.unlink!
-          @head.set_succ!(node)
+          @tail.set_prev!(node)
         end
 
         return
@@ -77,17 +77,17 @@ struct MapValue::Data
       node = Node.new(key, val)
       @data[key] = node
 
-      if @tail.prev.try(&.val.< val)
-        @tail.set_prev!(node)
-        return
-      end
-
-      if @head.succ.try(&.val.> val)
+      if @head.succ.try(&.val.< val)
         @head.set_succ!(node)
         return
       end
 
-      @tail.set_prev!(node)
+      if @tail.prev.try(&.val.> val)
+        @tail.set_prev!(node)
+        return
+      end
+
+      @head.set_prev!(node)
     end
 
     # sorting
@@ -95,7 +95,7 @@ struct MapValue::Data
     # move left
     prev = node.prev
 
-    while prev && prev.val > val
+    while prev && prev.val < val
       prev = prev.prev
     end
 
@@ -107,7 +107,7 @@ struct MapValue::Data
     # move right
     succ = node.succ
 
-    while succ && succ.val < val
+    while succ && succ.val > val
       succ = succ.succ
     end
 
@@ -121,18 +121,30 @@ struct MapValue::Data
     @data[key]?.try(&.unlink!)
   end
 
+  def find(key : String) : Node?
+    @data[key]?
+  end
+
   def get_val(key : String) : Int64?
     @data[key]?.try(&.val)
   end
 
-  def each(node = @head.succ)
+  def first
+    @head.succ
+  end
+
+  def last
+    @tail.prev
+  end
+
+  def each(node = first)
     while node && node != @tail
       yield node
       node = node.succ
     end
   end
 
-  def reverse_each(node = @tail.prev)
+  def reverse_each(node = last)
     while node && node != @head
       yield node
       node = node.prev
@@ -141,7 +153,7 @@ struct MapValue::Data
 
   def to_s(io : IO)
     io << "{ "
-    reverse_each { |node| io << node << " " }
+    each { |node| io << node << " " }
     io << "}"
   end
 
@@ -192,7 +204,7 @@ class MapValue::File
   end
 
   def to_s(io : IO)
-    @data.each { |node| io << node.key << SEP << node.val << "\n" }
+    @data.reverse_each { |node| io << node.key << SEP << node.val << "\n" }
   end
 
   def to_s
