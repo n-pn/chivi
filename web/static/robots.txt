@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /_/
+Disallow: /api/
+Disallow: /covers/
+Disallow: /images/
