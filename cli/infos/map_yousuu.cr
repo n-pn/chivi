@@ -11,18 +11,10 @@ require "../../src/kernel/import/yousuu_info"
 class MapYousuu
   DIR = File.join("var", "appcv", ".cache", "yousuu", "serials")
 
-  def self.run!
-    this = new
-    this.load_inputs!
-    this.extract_infos!
-    this.extract_miscs!
-  end
+  WHITELIST_FILE = File.join("etc", "author-whitelist.txt")
+  WHITELIST_DATA = Set(String).new File.read_lines(WHITELIST_FILE)
 
-  def initialize
-    @inputs = {} of String => YousuuInfo
-    @author_file = "etc/author-whitelist.txt"
-    @author_list = Set(String).new(File.read_lines(@author_file))
-  end
+  @inputs = {} of String => YousuuInfo
 
   def load_inputs! : Void
     files = Dir.glob(File.join(DIR, "*.json"))
@@ -62,64 +54,55 @@ class MapYousuu
     return true if info.title.empty?
     return true if info.author.empty?
     return false if qualified?(info)
-    return false if @author_list.includes?(info.author)
+    return false if WHITELIST_DATA.includes?(info.author)
 
     return false if info.score >= 2.5
     info.commentCount < 10 || info.addListTotal < 10
   end
 
   def add_to_whitelist(info : YousuuInfo)
+    return if WHITELIST_DATA.includes?(info.author)
     return unless qualified?(info)
 
-    @author_list.add(info.author)
-    File.open(@author_file, "a") { |io| io.puts(info.author) }
+    WHITELIST_DATA.add(info.author)
+    File.open(WHITELIST_FILE, "a") { |io| io.puts(info.author) }
   end
 
   def extract_infos!
-    weight_map = MapValue.load!("book_weight")
-    rating_map = MapValue.load!("book_rating")
+    # weight_map = MapValue.load!("book_weight")
+    # rating_map = MapValue.load!("book_rating")
 
-    insert_count = 0
     update_count = 0
 
     @inputs.each do |uuid, input|
       # primary info
 
-      info = BookInfo.init!(input.title, input.author)
+      info = BookInfo.find_or_create!(input.title, input.author)
 
-      info.add_genre(input.genre)
+      info.set_genre(input.genre)
       info.add_tags(input.tags)
 
       info.set_voters(input.scorerCount)
       info.set_rating((input.score * 10).round / 10)
       info.fix_weight!
 
-      if info.changed?
-        if info.exist?
-          update_count += 1
-        else
-          insert_count += 1
-        end
+      update_count += 1 if info.changed?
 
-        info.save!
-      end
-
-      # update indexes
-      weight_map.data.upsert!(uuid, info.data.weight)
-      rating_map.data.upsert!(uuid, info.data.scored)
+      # weight_map.data.upsert!(uuid, info.data.weight)
+      # rating_map.data.upsert!(uuid, info.data.scored)
     end
 
-    weight_map.save!
-    rating_map.save!
+    # weight_map.save!
+    # rating_map.save!
 
+    BookInfo.save_all!
     puts "- INFOS: #{@inputs.size.colorize(:yellow)}, \
-           INSERT: #{insert_count.colorize(:yellow)}, \
            UPDATE: #{update_count.colorize(:yellow)}."
   end
 
   def extract_miscs!
-    update_map = MapValue.load!("book_update")
-    access_map = MapValue.load!("book_access")
+    # update_map = MapValue.load!("book_update")
+    # access_map = MapValue.load!("book_access")
     # fresh = 0
 
     @inputs.each do |uuid, input|
@@ -134,8 +117,8 @@ class MapYousuu
       mftime = input.updateAt.to_unix_ms
       misc.set_mftime(mftime)
 
-      update_map.data.upsert!(uuid, misc.mftime)
-      access_map.data.upsert!(uuid, misc.mftime)
+      # update_map.data.upsert!(uuid, misc.mftime)
+      # access_map.data.upsert!(uuid, misc.mftime)
 
       misc.yousuu_link = "https://www.yousuu.com/book/#{input._id}"
       misc.origin_link = input.first_source || ""
@@ -146,10 +129,13 @@ class MapYousuu
       misc.save!
     end
 
-    access_map.save!
-    update_map.save!
+    # access_map.save!
+    # update_map.save!
     # puts "- FRESH: #{fresh.colorize(:yellow)}."
   end
 end
 
-MapYousuu.run!
+mapper = MapYousuu.new
+mapper.load_inputs!
+mapper.extract_infos!
+mapper.extract_miscs!

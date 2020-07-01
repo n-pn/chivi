@@ -2,6 +2,8 @@ require "json"
 require "colorize"
 require "file_utils"
 
+require "./chap_item"
+
 class BookMisc
   # contain book optional infomation
 
@@ -21,7 +23,11 @@ class BookMisc
 
   property yousuu_link = ""
   property origin_link = ""
-  property prefer_seed = ""
+
+  # seed types: 0 => remote, 1 => manual, 2 => locked
+  property seed_types = {} of String => Int32
+  property seed_sbids = {} of String => String
+  property seed_lasts = {} of String => ChapItem
 
   property word_count = 0_i32
   property crit_count = 0_i32
@@ -52,6 +58,14 @@ class BookMisc
 
   def set_status(status : Int32) : Void
     @status = status if status > @status
+  end
+
+  def set_seed(seed : String, sbid : String, type = 0)
+    return if seed.empty? || sbid.empty?
+
+    @seed_sbids[seed] = sbid
+    @seed_types[seed] = type
+    @seed_lasts[seed] ||= ChapItem.new
   end
 
   MFTIME = Time.utc.to_unix_ms

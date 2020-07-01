@@ -9,105 +9,68 @@ require "../../src/utils/parse_time"
 
 require "../../src/kernel/book_info"
 require "../../src/kernel/book_misc"
-require "../../src/kernel/book_seed"
 
-class ZhwenpgImporter
-  DIR = File.join("var", "appcv", ".cache", "zhwenpg")
+module MapZhwenpg
+  extend self
 
-  def self.run!(lower_page = 1, upper_page = 12, expiry = 24.hours)
-    importer = new(expiry)
+  DIR = File.join("var", "appcv", ".cache", "zhwenpg", "pages")
 
-    (lower_page..upper_page).each do |page|
-      importer.extract_page(page)
+  BLACKLIST_FILE = File.join("etc", "title-blacklist.txt")
+  BLACKLIST_DATA = Set(String).new File.read_lines(BLACKLIST_FILE)
+
+  RATING_FILE = File.join("etc", "bookdb", "fix-ratings.json")
+  RATING_TEXT = File.read(RATING_FILE)
+  RATING_DATA = Hash(String, Tuple(Int32, Float32)).from_json RATING_TEXT
+
+  def expiry(page : Int32 = 1)
+    24.hours * page
+  end
+
+  def page_url(page : Int32, status : Int32 = 0)
+    if status > 0
+      "https://novel.zhwenpg.com/index.php?page=#{page}&genre=1"
+    else
+      "https://novel.zhwenpg.com/index.php?page=#{page}&order=1"
     end
   end
 
-  def initialize(@expiry : Time::Span = 24.hours)
-    @finished = Set(String).new
-    (1..3).each { |page| load_finished(page) }
-    # puts "- finished: #{@finished.to_a}"
+  def page_path(page : Int32, status : Int32 = 0)
+    File.join(DIR, "#{page}-#{status}.html")
   end
 
-  def load_finished(page = 1)
-    puts "- COMPLETED PAGE: #{page}"
+  def should_skip?(title : String)
+    BLACKLIST_DATA.includes?(title)
+  end
 
-    url = "https://novel.zhwenpg.com/index.php?page=#{page}&genre=1"
-    file = File.join(DIR, "pages", "#{page}-done.html")
+  def parse_page!(page = 1, status = 0)
+    puts "- PAGE: #{page}"
 
-    unless html = Utils.read_file(file, time: @expiry)
+    url = page_url(page, status)
+    file = page_path(page, status)
+
+    unless html = Utils.read_file(file, time: expiry(page))
       html = Utils.fetch_html(url)
       File.write(file, html)
     end
 
     doc = Myhtml::Parser.new(html)
-    items = doc.css(".cbooksingle").to_a[2..-2]
-
-    items.each do |item|
-      rows = item.css("tr").to_a
-      link = rows[0].css("a").first
-      sbid = link.attributes["href"].sub("b.php?id=", "")
-      @finished << sbid
+    nodes = doc.css(".cbooksingle").to_a[2..-2]
+    nodes.each_with_index do |node, idx|
+      parse_info!(node, status, index: "#{idx + 1}/#{nodes.size}")
     end
   end
 
-  def should_skip?(title : String)
-    case title
-    when "我有一座恐怖屋",
-         "恐怖修仙世界",
-         "恐怖复苏",
-         "极品全能学生",
-         "民国谍影",
-         "异能小神农",
-         "从火凤凰开始的特种兵",
-         "攻略极品",
-         "带着青山穿越",
-         "大刁民",
-         "剑耀九歌",
-         "商梯",
-         "青橙年代",
-         "亏成首富从游戏开始"
-      true
-    else
-      false
-    end
-  end
-
-  def random_score(label : String)
+  def random_score
     puts "-- FRESH --".colorize(:yellow)
     {Random.rand(50..100), Random.rand(50..70)/10}
   end
 
-  def extract_page(page = 1)
-    puts "- PAGE: #{page}"
-
-    url = "https://novel.zhwenpg.com/?page=#{page}"
-    file = File.join(DIR, "pages", "#{page}.html")
-
-    unless html = Utils.read_file(file, time: @expiry)
-      html = Utils.fetch_html(url)
-      File.write(file, html)
-    end
-
-    doc = Myhtml::Parser.new(html)
-    items = doc.css(".cbooksingle").to_a[2..-2]
-    items.each_with_index do |item, idx|
-      extract_info(item, idx: "#{idx + 1}/#{items.size}")
-    end
+  def fetch_score(caption : String)
+    RATING_DATA[caption]? || {0, 0_f32}
   end
 
-  def status_of(sbid : String)
-    @finished.includes?(sbid) ? 1 : 0
-  end
-
-  RATINGS_TXT = File.read(File.join("etc", "bookdb", "fix-ratings.json"))
-  RATINGS_MAP = Hash(String, Tuple(Int32, Float64)).from_json RATINGS_TXT
-
-  def fetch_score(label : String)
-    RATINGS_MAP[label]? || {0, 0.0}
-  end
-
-  def extract_info(dom, idx = "1/1") : Void
-    rows = dom.css("tr").to_a
+  def parse_info!(node, status, index = "1/1") : Void
+    rows = node.css("tr").to_a
 
     link = rows[0].css("a").first
     sbid = link.attributes["href"].sub("b.php?id=", "")
@@ -115,56 +78,69 @@ class ZhwenpgImporter
     title = link.inner_text.strip
     author = rows[1].css(".fontwt").first.inner_text.strip
 
-    label = "#{title}--#{author}"
     return if should_skip?(title)
-
-    info = BookInfo.init!(title, author)
+    info = BookInfo.find_or_create!(title, author)
 
     genre = rows[2].css(".fontgt").first.inner_text
-    info.add_genre(genre)
+    info.set_genre(genre)
 
-    voters, rating = fetch_score(label)
+    caption = "#{title}--#{author}"
+    voters, rating = fetch_score(caption)
 
-    info.voters = voters
-    info.rating = rating
+    info.set_voters(voters)
+    info.set_rating(rating)
     info.fix_weight!
 
-    BookInfo.save!(info)
+    # book_misc
 
-    misc = BookMisc.init!(info.uuid)
-
-    misc.prefer_seed = "zhwenpg" if misc.prefer_seed.empty?
-    misc.shield = 1
+    uuid = info.uuid
+    misc = BookMisc.init!(uuid)
 
     if intro = rows[4]?
       # TODO: trad to sim
-      misc.intro_zh = intro.inner_text("\n") if misc.intro_zh.empty?
+      misc.set_intro(intro.inner_text("\n"))
     end
 
-    misc.add_cover(dom.css("img").first.attributes["data-src"])
-    misc.set_status(status_of(sbid))
+    misc.add_cover(node.css("img").first.attributes["data-src"])
+    misc.set_status(status)
 
-    mfdate = rows[3].css(".fontime").first.inner_text
-    mftime = extract_time(mfdate)
+    mftime = parse_time(rows[3].css(".fontime").first.inner_text)
     misc.set_mftime(mftime)
 
-    BookMisc.save!(misc)
+    latest_node = rows[3].css("a[target=_blank]").first
+    latest_text = latest_node.inner_text
+    latest_link = latest_node.attributes["href"]
+    latest_scid = latest_link.sub("r.php?id=", "")
 
-    # TODO: add book_seed
+    misc.set_seed("zhwenpg", sbid, 0)
+    latest = misc.seed_lasts["zhwenpg"]
+
+    latest.mftime = mftime
+    latest.scid = latest_scid
+    latest.set_title(latest_text)
 
     fresh = misc.yousuu_link.empty?
     color = fresh ? :green : :blue
-    puts "- <#{idx.colorize(color)}> [#{info.uuid}] #{label.colorize(color)}"
+
+    misc.shield = 1 if fresh
+    misc.save!
+
+    # book_seed
+
+    puts "- <#{index.colorize(color)}> [#{uuid}] #{caption.colorize(color)}"
   end
 
   TIME = Time.utc.to_unix_ms
   DATE = TIME - 24.hours.total_milliseconds.to_i64
 
-  private def extract_time(time : String)
+  private def parse_time(time : String)
     mftime = Utils.parse_time(time).to_unix_ms
     return mftime if mftime <= DATE
-    return TIME
+    TIME
   end
 end
 
-ZhwenpgImporter.run!(1, 12)
+1.upto(3) { |page| MapZhwenpg.parse_page!(page, status: 1) }
+1.upto(12) { |page| MapZhwenpg.parse_page!(page, status: 0) }
+
+BookInfo.save_all!
