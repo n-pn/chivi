@@ -29,9 +29,9 @@ def info_outdated?(file)
 
   data = File.read(file)
   if data.include?("未找到该图书")
-    expirty = OUTDATED * 5 # 15 days
+    expiry = OUTDATED * 5 # 15 days
   else
-    expirty = get_expiry_by_status(data)
+    expiry = get_expiry_by_status(data)
   end
 
   File.mtime(file).to_i < Time.now.to_i - expiry
