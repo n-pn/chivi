@@ -82,18 +82,17 @@ until proxies.empty? || ybids.empty?
   failure_ybids = []
   working_proxies = []
 
-  limit = proxies.size
-  limit = ybids.size if limit > ybids.size
+  limit = ybids.size
+  limit = proxies.size if limit > proxies.size
 
   Parallel.each(1..limit, in_threads: 20) do |idx|
     ybid = ybids.pop
     proxy = proxies.pop
 
-    result = fetch_data(ybid, proxy)
-    message = "- [#{idx}/#{limit}]: #{result}! ybid: [#{ybid}], proxy: [#{proxy}]"
+    status = fetch_data(ybid, proxy)
+    message = "- [#{idx}/#{limit}]: #{status}! ybid: [#{ybid}], proxy: [#{proxy}]"
 
-    case result
-
+    case status
     when :skip
       working_proxies << proxy
     when :error
