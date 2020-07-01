@@ -15,7 +15,7 @@ describe LxDict do
     end
 
     it "loads existed dict" do
-      dict = LxDict.load("spec/_tests/sample-lexfile.lex")
+      dict = LxDict.load("spec/_tests/sample-lexfile.dic")
       dict.should_not be(nil)
 
       dict.size.should eq(1)

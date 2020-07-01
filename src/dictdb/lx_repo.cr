@@ -24,9 +24,9 @@ class LxRepo
   end
 
   def load_root_dicts! : Void
-    root_files = Dir.glob(File.join(@dir, "*.lex"))
+    root_files = Dir.glob(File.join(@dir, "*.dic"))
     root_files.each do |file|
-      name = File.basename(file, ".lex")
+      name = File.basename(file, ".dic")
       @roots[name] = load_root(name)
     end
   end
@@ -55,7 +55,7 @@ class LxRepo
   end
 
   def load_root(name : String)
-    @roots[name] ||= LxDict.load(File.join(@dir, "#{name}.lex"))
+    @roots[name] ||= LxDict.load(File.join(@dir, "#{name}.dic"))
   end
 
   def load_user(name : String, user = "local")
