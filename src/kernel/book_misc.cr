@@ -34,7 +34,7 @@ class BookMisc::Data
   property crit_count = 0_i32
 
   @[JSON::Field(ignore: true)]
-  @changed = false
+  property changed = false
 
   def initialize(@uuid : String)
     @changed = true
@@ -42,6 +42,11 @@ class BookMisc::Data
 
   def changed?
     @changed
+  end
+
+  def mark_saved!
+    @changed = false
+    @seed_lasts.each_value { |chap| chap.mark_saved! }
   end
 
   def intro_zh=(intro : String)
@@ -68,12 +73,36 @@ class BookMisc::Data
     @status = status
   end
 
-  def set_seed(seed : String, sbid : String, type = 0)
-    return if seed.empty? || sbid.empty?
-
+  def set_seed_sbid(seed : String, sbid : String) : Void
+    return if @seed_sbids[seed]?.try(&.== sbid)
+    @changed = true
     @seed_sbids[seed] = sbid
+  end
+
+  def set_seed_type(seed : String, type : Int32 = 0) : Void
+    return if @seed_types[seed]?.try(&.== type)
+    @changed = true
     @seed_types[seed] = type
-    @seed_lasts[seed] ||= ChapItem.new
+  end
+
+  def set_seed_chap(seed : String, scid : String, title : String, mftime = 0_i64) : Void
+    if chap = @seed_lasts[seed]?
+      if chap.scid != scid && chap.mftime == mftime
+        chap.mftime = Time.utc.to_unix_ms
+      else
+        chap.mftime = mftime
+      end
+
+      chap.scid = scid
+      chap.set_title(title)
+      @changed ||= chap.changed?
+    else
+      chap = ChapItem.new(scid, title)
+      chap.mftime = mftime
+
+      @changed = true
+      @seed_lasts[seed] = chap
+    end
   end
 
   def mftime=(mftime : Int64) : Void
@@ -85,16 +114,6 @@ class BookMisc::Data
   def to_s(io : IO)
     to_json(io)
   end
-
-  def save!(file = BookMisc.path(@uuid)) : self
-    File.write(file, self)
-    # puts "- <book_misc> [#{file.colorize(:cyan)}] saved."
-
-    self
-  end
-
-  # class methods
-
 end
 
 class BookMiscNotFound < Exception
@@ -166,6 +185,7 @@ module BookMisc
 
   def save!(misc : Data, file = path(misc.uuid)) : Void
     File.write(file, misc)
+    misc.mark_saved!
     puts "- <book_misc> [#{file.colorize(:cyan)}] saved."
   end
 end

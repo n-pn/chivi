@@ -95,41 +95,38 @@ module MapZhwenpg
 
     # book_misc
 
-    uuid = info.uuid
-    misc = BookMisc.get_or_create!(uuid)
+    misc = BookMisc.get_or_create!(info.uuid)
 
     if intro = rows[4]?
-      # TODO: trad to sim
-      misc.intro_zh = Utils.split_text(intro.inner_text("\n")).join("\n")
+      # TODO: fix tradtosim
+      intro_text = Utils.split_text(intro.inner_text("\n"))
+      # intro_text = Engine.tradsim(intro_text)
+      misc.intro_zh = intro_text.join("\n")
     end
 
     misc.add_cover(node.css("img").first.attributes["data-src"])
     misc.status = status
 
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
-    misc.mftime = mftime
 
     latest_node = rows[3].css("a[target=_blank]").first
     latest_text = latest_node.inner_text
     latest_link = latest_node.attributes["href"]
     latest_scid = latest_link.sub("r.php?id=", "")
 
-    misc.set_seed("zhwenpg", sbid, 0)
-    latest = misc.seed_lasts["zhwenpg"]
+    misc.set_seed_sbid("zhwenpg", sbid)
+    misc.set_seed_type("zhwenpg", 0)
+    misc.set_seed_chap("zhwenpg", latest_scid, latest_text, mftime)
 
-    latest.mftime = mftime
-    latest.scid = latest_scid
-    latest.set_title(latest_text)
+    misc.mftime = misc.seed_lasts["zhwenpg"].mftime
 
     fresh = misc.yousuu_link.empty?
     color = fresh ? :green : :blue
 
     misc.shield = 1 if fresh
-    misc.save!
+    BookMisc.save!(misc) if misc.changed?
 
-    # book_seed
-
-    puts "- <#{index.colorize(color)}> [#{uuid}] #{caption.colorize(color)}"
+    puts "- <#{index.colorize(color)}-#{misc.uuid}> #{caption.colorize(color)}"
   end
 
   TIME = Time.utc.to_unix_ms

@@ -50,6 +50,10 @@ class BookInfo::Data
     @changed
   end
 
+  def mark_saved!
+    @changed = false
+  end
+
   def fix_uuid! : Void
     self.uuid = Utils.gen_uuid(@title_zh, @author_zh)
   end
@@ -190,8 +194,14 @@ struct BookInfo::Bulk
     @data.values.reduce(false) { |acc, i| acc ||= i.changed? }
   end
 
+  def mark_saved!
+    @data.each_value { |data| data.mark_saved! }
+  end
+
   def save!(file : String = @file) : Void
     File.write(file, self)
+    mark_saved!
+
     puts "- <book_info> [#{file.colorize(:cyan)}] saved."
   end
 
