@@ -12,6 +12,8 @@
     "map-yousuu": "yarn build map_yousuu && wsl bin/map_yousuu",
     "map-remote": "wsl bin/map_remote",
     "map-remotes": "wsl cli/infos/map_remote.sh",
-    "map-zhwenpg": "wsl bin/map_zhwenpg"
+    "map-zhwenpg": "wsl bin/map_zhwenpg",
+    "crawl-crits": "ruby etc/script/yousuu/crawl-crits.rb",
+    "crawl-infos": "ruby etc/script/yousuu/crawl-infos.rb"
   }
 }

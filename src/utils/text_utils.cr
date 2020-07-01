@@ -1,31 +1,50 @@
 module Utils
-  def self.split_lines(input : String)
-    input.split("\n").map(&.strip).reject(&.empty?)
+  def self.fix_genre(genre : String)
+    return genre if genre.empty? || genre == "轻小说"
+    genre.sub(/小说$/, "")
   end
 
-  def self.split_words(input : String)
-    input = slugify(input)
+  def self.split_text(text : String, split : String | Regex = /\s{2,}|\n+/)
+    text = Utils.clean_text(text)
+    Utils.split_lines(text, split)
+  end
 
-    output = [] of String
+  def self.clean_text(text : String)
+    text.tr("　 ", " ")
+      .gsub("&amp;", "&")
+      .gsub("&lt;", "<")
+      .gsub("&gt;", ">")
+      .gsub("&nbsp;", " ")
+      .gsub(/<br\s*\/?>/i, "\n")
+  end
+
+  def self.split_lines(text : String, split : String | Regex = "\n")
+    text.split(split).map(&.strip).reject(&.empty?)
+  end
+
+  def self.split_words(text : String)
+    text = slugify(text)
+
+    res = [] of String
     acc = ""
 
-    input.each_char do |char|
+    text.each_char do |char|
       if char.ascii_alphanumeric?
         acc += char
         next
       end
 
       unless acc.empty?
-        output << acc
+        res << acc
         acc = ""
       end
 
       word = char.to_s
-      output << word if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}\p{L}]/
+      res << word if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}\p{L}]/
     end
 
-    output << acc unless acc.empty?
-    output.uniq
+    res << acc unless acc.empty?
+    res.uniq
   end
 
   # capitalize all words

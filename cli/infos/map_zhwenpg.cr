@@ -5,7 +5,8 @@ require "file_utils"
 
 require "../../src/utils/html_utils"
 require "../../src/utils/file_utils"
-require "../../src/utils/parse_time"
+require "../../src/utils/time_utils"
+require "../../src/utils/text_utils"
 
 require "../../src/kernel/book_info"
 require "../../src/kernel/book_misc"
@@ -82,30 +83,31 @@ module MapZhwenpg
     info = BookInfo.find_or_create!(title, author)
 
     genre = rows[2].css(".fontgt").first.inner_text
-    info.set_genre(genre)
+    info.genre_zh = genre
+    info.add_tag(genre)
 
     caption = "#{title}--#{author}"
     voters, rating = fetch_score(caption)
 
-    info.set_voters(voters)
-    info.set_rating(rating)
+    info.voters = voters
+    info.rating = rating
     info.fix_weight!
 
     # book_misc
 
     uuid = info.uuid
-    misc = BookMisc.init!(uuid)
+    misc = BookMisc.get_or_create!(uuid)
 
     if intro = rows[4]?
       # TODO: trad to sim
-      misc.set_intro(intro.inner_text("\n"))
+      misc.intro_zh = Utils.split_text(intro.inner_text("\n")).join("\n")
     end
 
     misc.add_cover(node.css("img").first.attributes["data-src"])
-    misc.set_status(status)
+    misc.status = status
 
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
-    misc.set_mftime(mftime)
+    misc.mftime = mftime
 
     latest_node = rows[3].css("a[target=_blank]").first
     latest_text = latest_node.inner_text

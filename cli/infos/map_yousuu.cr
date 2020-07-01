@@ -8,6 +8,9 @@ require "../../src/kernel/book_misc"
 require "../../src/kernel/mapper/map_value"
 require "../../src/kernel/import/yousuu_info"
 
+require "../../src/utils/time_utils"
+require "../../src/utils/text_utils"
+
 class MapYousuu
   DIR = File.join("var", "appcv", ".cache", "yousuu", "serials")
 
@@ -79,11 +82,12 @@ class MapYousuu
 
       info = BookInfo.find_or_create!(input.title, input.author)
 
-      info.set_genre(input.genre)
+      # info.genre_zh = Utils.fix_genre(input.genre)
+      info.genre_zh = input.genre
       info.add_tags(input.tags)
 
-      info.set_voters(input.scorerCount)
-      info.set_rating((input.score * 10).round / 10)
+      info.voters = input.scorerCount
+      info.rating = (input.score * 10).round / 10
       info.fix_weight!
 
       update_count += 1 if info.changed?
@@ -96,7 +100,7 @@ class MapYousuu
     # rating_map.save!
 
     BookInfo.save_all!
-    puts "- INFOS: #{@inputs.size.colorize(:yellow)}, \
+    puts "- TOTAL: #{@inputs.size.colorize(:yellow)}, \
            UPDATE: #{update_count.colorize(:yellow)}."
   end
 
@@ -106,16 +110,16 @@ class MapYousuu
     # fresh = 0
 
     @inputs.each do |uuid, input|
-      misc = BookMisc.init!(uuid)
+      misc = BookMisc.get_or_create!(uuid)
 
-      misc.set_intro(input.intro)
+      misc.intro_zh = Utils.split_text(input.intro).join("\n")
       misc.add_cover(input.cover)
 
       misc.shield = input.shielded ? 2 : 0
-      misc.set_status(input.status)
+      misc.status = input.status
 
-      mftime = input.updateAt.to_unix_ms
-      misc.set_mftime(mftime)
+      mftime = Utils.correct_time(input.updateAt).to_unix_ms
+      misc.mftime = mftime
 
       # update_map.data.upsert!(uuid, misc.mftime)
       # access_map.data.upsert!(uuid, misc.mftime)
@@ -126,7 +130,7 @@ class MapYousuu
       misc.word_count = input.countWord.round.to_i
       misc.crit_count = input.commentCount
 
-      misc.save!
+      BookMisc.save!(misc) if misc.changed?
     end
 
     # access_map.save!

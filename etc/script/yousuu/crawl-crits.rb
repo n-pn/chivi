@@ -14,31 +14,29 @@ proxies = load_proxies
 # ## Core
 
 PAGE = (ARGV[0] || "1").to_i
-puts "PAGE: #{PAGE}"
+puts "-- [ PAGE: #{PAGE} ] --"
 exit if PAGE < 1
 
-OUTDATED = 3600 * 24 * 7
+EXPIRY = 3600 * 24 * 5
 def file_outdated?(file)
   return true unless File.exists?(file)
-  # data = File.read(file)
+  expiry = EXPIRY
 
-  # outdated = OUTDATED
-  # outdated *= 4 if data.include?("未找到该图书")
+  data = File.read(file)
+  expiry *= 4 if data.include?("未找到该图书")
 
-  Time.now.to_i - File.mtime(file).to_i > OUTDATED
+  File.mtime(file).to_i < Time.now.to_i - expiry
 end
 
-
-ROOT_DIR = "assets/.inits/books/yousuu/reviews/"
-OUT_FILE = "#{ROOT_DIR}/page#{PAGE}/%i.json"
+ROOT_DIR = "var/appcv/.cache/yousuu/reviews"
+OUT_FILE = "#{ROOT_DIR}/%i-#{PAGE}.json"
 REVIEW_URL = "https://www.yousuu.com/api/book/%i/comment?t=%i&page=#{PAGE}"
 
-
-def fetch_data(serial, proxy)
-  file = OUT_FILE % serial
+def fetch_data(ybid, proxy)
+  file = OUT_FILE % ybid
   return :skip unless file_outdated?(file)
 
-  url = REVIEW_URL % [serial, unix_ms]
+  url = REVIEW_URL % [ybid, unix_ms]
   body = fetch_url(url, proxy)
 
   raise "Malformed!" unless body.include?("success") || body.include?("未找到该图书")
@@ -47,62 +45,67 @@ def fetch_data(serial, proxy)
   save_proxy(proxy)
 
   puts "- proxy [#{proxy}] worked!".green if VERBOSE
-  :done
+  :success
 rescue => err
   puts "- proxy [#{proxy}] not working, reason: #{err}".red if VERBOSE
   :error
 end
 
-# Prepare serials
 
-serials = []
+def load_ybids(page = 1)
+  files = Dir.glob("var/appcv/book_miscs/*.json")
+  files.inject([]) do |memo, file|
+    json = JSON.parse(File.read(file))
+    link = json["yousuu_link"]
 
-Dir.glob("data/vp_infos/*.json").each do |file|
-  json = JSON.parse(File.read(file))
+    unless link.empty?
+      ybid = File.basename(link)
+      # TODO: check review total
+      memo << ybid if file_outdated?(OUT_FILE % ybid)
+    end
 
-  serial = json["yousuu"]
-  next if serial.empty?
-  next unless file_outdated?(OUT_FILE % serial)
-
-  serials << serial
+    memo
+  end
 end
 
-puts "Input: #{serials.size}".yellow
+# Prepare ybids
+
+ybids = load_ybids()
+puts "Input: #{ybids.size}".yellow
 
 # ## Crawling!
 
 step = 1
-until proxies.empty? || serials.empty?
-  puts "[LOOP:#{step}]: \
-        serials: #{serials.size}, \
-        proxies: #{proxies.size}".cyan
+until proxies.empty? || ybids.empty?
+  puts "- <#{step}> ybids: #{ybids.size}, proxies: #{proxies.size}".cyan
 
-  failure_serials = []
+  failure_ybids = []
   working_proxies = []
 
   limit = proxies.size
-  limit = serials.size if limit > serials.size
+  limit = ybids.size if limit > ybids.size
 
   Parallel.each(1..limit, in_threads: 20) do |idx|
+    ybid = ybids.pop
     proxy = proxies.pop
-    serial = serials.pop
 
-    res = fetch_data(serial, proxy)
-    message = "- [#{idx}/#{limit}]: #{res}! serial: [#{serial}], proxy: [#{proxy}]"
+    result = fetch_data(ybid, proxy)
+    message = "- [#{idx}/#{limit}]: #{result}! ybid: [#{ybid}], proxy: [#{proxy}]"
 
-    case res
+    case result
+
     when :skip
       working_proxies << proxy
-    when :done
-      working_proxies << proxy
-      puts message.green unless VERBOSE
     when :error
-      failure_serials << serial
+      failure_ybids << ybid
       puts message.red unless VERBOSE
+    when :success
+      working_proxies << proxy
+      puts message.cyan unless VERBOSE
     end
   end
 
   step += 1
-  serials.concat(failure_serials).uniq!
+  ybids.concat(failure_ybids).uniq!
   proxies.concat(working_proxies).uniq!
 end

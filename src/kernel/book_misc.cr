@@ -1,10 +1,11 @@
 require "json"
 require "colorize"
 require "file_utils"
+require "../utils/text_utils"
 
 require "./chap_item"
 
-class BookMisc
+class BookMisc::Data
   # contain book optional infomation
 
   include JSON::Serializable
@@ -32,32 +33,39 @@ class BookMisc
   property word_count = 0_i32
   property crit_count = 0_i32
 
+  @[JSON::Field(ignore: true)]
+  @changed = false
+
   def initialize(@uuid : String)
+    @changed = true
   end
 
-  def set_intro(intro : String)
-    return if intro.empty? || intro == @intro_zh
+  def changed?
+    @changed
+  end
 
-    @intro_zh = intro.tr("　 ", " ")
-      .gsub("&amp;", "&")
-      .gsub("&lt;", "<")
-      .gsub("&gt;", ">")
-      .gsub("&nbsp;", " ")
-      .gsub(/<br\s*\/?>/, "\n")
-      .split(/\s{2,}|\n+/)
-      .map(&.strip)
-      .reject(&.empty?)
-      .join("\n")
-    @intro_vi = ""
+  def intro_zh=(intro : String)
+    return if intro == @intro_zh
+    @changed = true
+    @intro_zh = intro
+  end
+
+  def intro_vi=(intro : String)
+    return if intro == @intro_vi
+    @changed = true
+    @intro_vi = intro
   end
 
   def add_cover(cover : String)
     return if cover.empty? || @cover_links.includes?(cover)
+    @changed = true
     @cover_links << cover
   end
 
-  def set_status(status : Int32) : Void
-    @status = status if status > @status
+  def status=(status : Int32) : Void
+    return if status <= @status
+    @changed = true
+    @status = status
   end
 
   def set_seed(seed : String, sbid : String, type = 0)
@@ -68,12 +76,10 @@ class BookMisc
     @seed_lasts[seed] ||= ChapItem.new
   end
 
-  MFTIME = Time.utc.to_unix_ms
-  DFTIME = Time.utc(2000, 1, 1).to_unix_ms
-
-  def set_mftime(mftime : Int64) : Void
-    mftime = DFTIME if mftime > MFTIME
-    @mftime = mftime if mftime > @mftime
+  def mftime=(mftime : Int64) : Void
+    return if @mftime >= mftime
+    changed = true
+    @mftime = mftime
   end
 
   def to_s(io : IO)
@@ -89,41 +95,77 @@ class BookMisc
 
   # class methods
 
+end
+
+class BookMiscNotFound < Exception
+  def initialize(uuid : String)
+    super("Book misc uuid [#{uuid}] does not exit")
+  end
+end
+
+module BookMisc
+  extend self
+
   DIR = File.join("var", "appcv", "book_miscs")
   FileUtils.mkdir_p(DIR)
 
-  def self.path(uuid : String)
+  def path(uuid : String)
     File.join(DIR, "#{uuid}.json")
   end
 
-  def self.files
+  def exist?(uuid : String)
+    File.exists?(path(uuid))
+  end
+
+  def glob_dir
     Dir.glob(File.join(DIR, "*.json"))
   end
 
-  def self.uuids
-    files.map { |file| File.basename(file, ".json") }
-  end
+  CACHE = {} of String => Data
 
-  CACHE = {} of String => BookMisc
-
-  def self.load_all!
-    uuids.each { |uuid| load!(uuid) }
-    puts "- <book_misc> loaded `#{CACHE.size.colorize(:cyan)}` entries."
-
-    CACHE
-  end
-
-  def self.load!(uuid : String) : BookMisc
-    CACHE[uuid] ||= init!(uuid)
-  end
-
-  def self.init!(uuid : String) : BookMisc
-    file = path(uuid)
-
-    if File.exists?(file)
-      from_json(File.read(file))
-    else
-      new(uuid)
+  def load_all! : Void
+    files = glob_dir
+    files.each do |file|
+      load! File.basename(file, ".json")
     end
+    puts "- <book_misc> loaded `#{files.size.colorize(:cyan)}` entries."
+  end
+
+  def each(load_all : Bool = false)
+    load_all! if load_all
+
+    CACHE.each_value do |misc|
+      yield misc
+    end
+  end
+
+  def get!(uuid : String) : Data
+    get(uuid) || raise BookMiscNotFound.new(uuid)
+  end
+
+  def get(uuid : String)
+    CACHE[uuid] ||= begin
+      file = path(uuid)
+      return unless File.exists?(file)
+      load!(file)
+    end
+  end
+
+  def get_or_create!(uuid : String) : Data
+    unless misc = get(uuid)
+      misc = Data.new(uuid)
+      CACHE[uuid] = misc
+    end
+
+    misc
+  end
+
+  def load!(file : String)
+    Data.from_json(File.read(file))
+  end
+
+  def save!(misc : Data, file = path(misc.uuid)) : Void
+    File.write(file, misc)
+    puts "- <book_misc> [#{file.colorize(:cyan)}] saved."
   end
 end

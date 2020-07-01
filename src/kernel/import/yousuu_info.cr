@@ -70,7 +70,9 @@ class YousuuInfo
   end
 
   def tags
-    @tags.map(&.split("-")).flatten.uniq
+    @tags.map(&.split("-")).flatten.uniq.reject! do |tag|
+      tag == @title || tag == @author
+    end
   end
 
   def first_source

@@ -39,51 +39,89 @@ class BookInfo::Data
   end
 
   def initialize(@title_zh : String, @author_zh : String, @uuid = "")
-    @changed = true
-    gen_uuid! if @uuid.empty?
+    if @uuid.empty?
+      fix_uuid!
+    else
+      @changed = true
+    end
   end
 
   def changed?
     @changed
   end
 
-  def gen_uuid!
-    @uuid = Utils.gen_uuid(@title_zh, @author_zh)
+  def fix_uuid! : Void
+    self.uuid = Utils.gen_uuid(@title_zh, @author_zh)
   end
 
-  def set_title(title : String) : Void
-    return if title.empty? || @title_zh == title
+  def uuid=(uuid : String)
+    return if @uuid == uuid
+    @changed = true
+    @uuid = uuid
+  end
 
+  def title_zh=(title : String)
+    return if @title_zh == title
+    @changed = true
     @title_zh = title
-    @title_hv = ""
-    @title_vi = ""
-    @changed = true
   end
 
-  def set_author(author : String) : Void
-    return if author.empty? || @author_zh == author
+  def title_hv=(title : String)
+    return if @title_hv == title
+    @changed = true
+    @title_hv = title
+  end
 
+  def title_vi=(title : String)
+    return if @title_vi == title
+    @changed = true
+    @title_vi = title
+  end
+
+  def vi_title
+    @title_vi.empty? ? @title_hv : @title_vi
+  end
+
+  def author_zh=(author : String)
+    return if @author_zh == author
+    @changed = true
     @author_zh = author
-    @author_vi = ""
-    @author_us = ""
+  end
+
+  def author_vi=(author : String)
+    return if @author_vi == author
     @changed = true
+    @author_vi = author
   end
 
-  def set_genre(genre : String) : Void
-    return if genre.empty? || genre == @genre_zh
-    genre = fix_genre(genre)
-
-    if @genre_zh.empty?
-      @genre_zh = genre
-      @changed = true
-    else
-      add_tag(genre)
-    end
+  def author_us=(author : String)
+    return if @author_us == author
+    @changed = true
+    @author_us = author
   end
 
-  private def fix_genre(genre : String)
-    return genre if genre.empty? || genre == "轻小说"
-    genre.sub(/小说$/, "")
+  def author_zh=(author : String)
+    return if @author_zh == author
+    @changed = true
+    @author_zh = author
+  end
+
+  def genre_zh=(genre : String)
+    return if genre == @genre_zh
+    @changed = true
+    @genre_zh = genre
+  end
+
+  def genre_vi=(genre : String)
+    return if genre == @genre_vi
+    @changed = true
+    @genre_vi = genre
+  end
+
+  def genre_us=(genre : String)
+    return if genre == @genre_us
+    @changed = true
+    @genre_us = genre
   end
 
   def add_tags(tags : Array(String))
@@ -91,30 +129,24 @@ class BookInfo::Data
   end
 
   def add_tag(tag : String)
-    case tag
-    when .empty?, @title_zh, @author_zh
-      return
-    else
-      return if @tags_zh.includes?(tag)
+    return if tag.empty? || @tags_zh.includes?(tag)
+    @changed = true
 
-      @tags_zh << tag
-      @tags_vi << ""
-      @tags_us << ""
-
-      @changed = true
-    end
+    @tags_zh << tag
+    @tags_vi << ""
+    @tags_us << ""
   end
 
-  def set_voters(voters : Int32)
+  def voters=(voters : Int32)
     return if @voters == voters
-    @voters = voters
     @changed = true
+    @voters = voters
   end
 
-  def set_rating(rating : Float32)
+  def rating=(rating : Float32)
     return if @rating == rating
-    @rating = rating
     @changed = true
+    @rating = rating
   end
 
   def scored
@@ -201,12 +233,6 @@ module BookInfo
     end
   end
 
-  def save_all!(only_changed : Bool = true) : Void
-    CACHE.each_value do |bulk|
-      bulk.save! if bulk.changed? || !only_changed
-    end
-  end
-
   def load_bulk!(uuid : String)
     bulk_id = get_bulk_id(uuid)
     CACHE[bulk_id] ||= Bulk.new(path(bulk_id), preload: true)
@@ -252,5 +278,17 @@ module BookInfo
     end
 
     data
+  end
+
+  def save_all!(only_changed : Bool = true) : Void
+    CACHE.each_value do |bulk|
+      bulk.save! if bulk.changed? || !only_changed
+    end
+  end
+
+  def save!(info : Data) : Void
+    bulk = load_bulk!(uuid)
+    bulk.set(info)
+    bulk.save!
   end
 end

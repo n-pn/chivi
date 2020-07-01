@@ -7,7 +7,7 @@ def read_proxy_file(file)
   proxies
 end
 
-PROXY_DIR = "data/.inits/books/yousuu/proxies"
+PROXY_DIR = "var/appcv/.cache/yousuu/proxies"
 
 PROXY_TIME = Time.new.to_i / (3600 * 6)
 PROXY_FILE = "#{PROXY_DIR}/working/#{PROXY_TIME}.txt"
