@@ -12,7 +12,8 @@ class BookMisc
   property intro_zh = ""
   property intro_vi = ""
 
-  property covers = [] of String
+  property cover_links = [] of String
+  property local_cover = ""
 
   property status = 0_i32
   property shield = 0_i32
@@ -45,8 +46,8 @@ class BookMisc
   end
 
   def add_cover(cover : String)
-    return if cover.empty? || @covers.includes?(cover)
-    @covers << cover
+    return if cover.empty? || @cover_links.includes?(cover)
+    @cover_links << cover
   end
 
   def set_status(status : Int32) : Void
