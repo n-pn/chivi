@@ -16,7 +16,7 @@ def load_proxies
   proxies = read_proxy_file(PROXY_FILE)
 
   if proxies.size < 200
-    workings = Dir.glob("#{PROXY_DIR}/working/*.txt").reject{|x| x == PROXY_FILE}
+    workings = Dir.glob("#{PROXY_DIR}/working/*.txt").reject { |x| x == PROXY_FILE }
     if workings.size > 0
       puts "Load previous working proxies!".yellow
       prev_file = workings.sort.last

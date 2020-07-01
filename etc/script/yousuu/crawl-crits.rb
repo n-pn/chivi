@@ -6,18 +6,12 @@ require "parallel"
 require "colorize"
 require "fileutils"
 
-# ## Prepare proxies
-
-require_relative "./crawl-utils"
-proxies = load_proxies
-
-# ## Core
-
 PAGE = (ARGV[0] || "1").to_i
 puts "-- [ PAGE: #{PAGE} ] --"
 exit if PAGE < 1
 
 EXPIRY = 3600 * 24 * 5
+
 def file_outdated?(file)
   return true unless File.exists?(file)
   expiry = EXPIRY
@@ -51,7 +45,6 @@ rescue => err
   :error
 end
 
-
 def load_ybids(page = 1)
   files = Dir.glob("var/appcv/book_miscs/*.json")
   files.inject([]) do |memo, file|
@@ -68,12 +61,15 @@ def load_ybids(page = 1)
   end
 end
 
-# Prepare ybids
+# Prepare data
 
 ybids = load_ybids()
 puts "Input: #{ybids.size}".yellow
 
-# ## Crawling!
+require_relative "./crawl-utils"
+proxies = load_proxies
+
+# Crawling!
 
 step = 1
 until proxies.empty? || ybids.empty?

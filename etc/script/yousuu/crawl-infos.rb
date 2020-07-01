@@ -6,18 +6,12 @@ require "parallel"
 require "colorize"
 require "fileutils"
 
-# # Prepare proxies
-
-require_relative "./crawl-utils"
-proxies = load_proxies
-
-# ## Core
-
 ROOT_DIR = "var/appcv/.cache/yousuu/serials"
 OUT_FILE = "#{ROOT_DIR}/%i.json"
 BOOK_URL = "https://www.yousuu.com/api/book/%i?t=%i"
 
 EXPIRY = 3600 * 24 * 3 # 3 days
+
 def get_expiry_by_status(data)
   json = JSON.parse(data)
 
@@ -62,7 +56,10 @@ rescue => err
   :error
 end
 
-# # Prepare ysids
+# Prepare data
+
+require_relative "./crawl-utils"
+proxies = load_proxies
 
 TOTAL = 212500 # max ysid
 ysids = (1..TOTAL).to_a
@@ -75,7 +72,7 @@ elsif ARGV.include?("reverse")
   ysids.reverse!
 end
 
-# # Crawling!
+# Crawling!
 
 step = 1
 until proxies.empty? || ysids.empty?
