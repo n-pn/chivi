@@ -50,14 +50,29 @@ class BookInfo::Data
     @changed = false
   end
 
-  def fix_uuid! : Void
+  def fix_uuid!(force = true) : Void
+    return unless force || @uuid.empty?
     self.uuid = Utils.gen_uuid(@title_zh, @author_zh)
+  end
+
+  def set_uuid!(uuid : String, force = false) : Void
+    return if uuid.empty?
+    return unless force || @uuid.empty?
+    self.uuid = uuid
   end
 
   def uuid=(uuid : String)
     return if @uuid == uuid
     @changed = true
     @uuid = uuid
+  end
+
+  def set_title!(title : String, force = false)
+    return unless @title_zh.empty? || force
+
+    self.title_zh = title
+    self.title_hv = ""
+    self.title_vi = ""
   end
 
   def title_zh=(title : String)
@@ -82,6 +97,14 @@ class BookInfo::Data
     @title_vi.empty? ? @title_hv : @title_vi
   end
 
+  def set_author!(author : String, force = false)
+    return unless @author_zh.empty? || force
+
+    self.author_zh = author
+    self.author_vi = ""
+    self.author_us = ""
+  end
+
   def author_zh=(author : String)
     return if @author_zh == author
     @changed = true
@@ -104,6 +127,14 @@ class BookInfo::Data
     return if @author_zh == author
     @changed = true
     @author_zh = author
+  end
+
+  def set_genre!(genre : String, force = false)
+    return unless @genre_zh.empty? || force
+
+    self.genre_zh = genre
+    self.genre_vi = ""
+    self.genre_us = ""
   end
 
   def genre_zh=(genre : String)

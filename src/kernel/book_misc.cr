@@ -40,7 +40,7 @@ class BookMisc::Data
   @[JSON::Field(ignore: true)]
   property changed = false
 
-  def initialize(@uuid : String)
+  def initialize(@uuid : String = "")
     @changed = true
   end
 

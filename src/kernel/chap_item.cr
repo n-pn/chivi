@@ -23,10 +23,10 @@ class ChapItem
   def initialize
   end
 
-  def initialize(@scid : String, title : String, label : String = "")
+  def initialize(@scid : String, title : String, label : String = "正文")
     @changed = true
 
-    if label.empty?
+    if label.empty? || label == "正文"
       set_title(title)
     else
       @title_zh = Utils.format_title(title)

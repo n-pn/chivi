@@ -5,9 +5,11 @@ require "../../src/import/remote_text.cr"
 def fetch_text(seed : String, sbid : String, scid : String)
   puts "\n[ #{seed} / #{sbid} / #{scid} ]\n".colorize(:yellow)
 
-  task = RemoteText.new(seed, sbid)
-  text = task.fetch_text!(scid, keep_html: true)
-  puts text.split("\n").first(8).join("\n")
+  RemoteUtil.mkdir!(seed, sbid)
+  text = RemoteText.fetch!(seed, sbid, scid, freeze: true)
+
+  puts text.title
+  puts text.paras.first(5).join("\n")
 end
 
 fetch_text("hetushu", "1640", "1099716")
