@@ -44,6 +44,7 @@ end
 
 struct MapValue::Data
   getter data = {} of String => Node
+  delegate size, to: @data
 
   def initialize
     @head = Node.new("", Int64::MAX)
@@ -162,7 +163,7 @@ struct MapValue::Data
   end
 end
 
-class MapValue::File
+class MapValue::Bulk
   SEP = "ǁ"
 
   getter file : String
@@ -171,9 +172,15 @@ class MapValue::File
   delegate reverse_each, to: @data
 
   def initialize(@file, preload : Bool = true)
-    return unless preload && exist?
+    load!(@file) if preload && exist?
+  end
 
-    ::File.each_line(file) do |line|
+  def exist?
+    File.exists?(@file)
+  end
+
+  def load!(file : File = @file) : Void
+    File.each_line(file) do |line|
       key, val = line.split(SEP, 2)
       if val = val.try(&.to_i64?)
         @data.upsert!(key, val)
@@ -183,23 +190,22 @@ class MapValue::File
     rescue err
       puts "- <map_value> error parsing line `#{line}`: #{err}".colorize(:red)
     end
+
+    puts "- <map_value> [#{file}] loaded.".colorize(:cyan)
   end
 
-  def exist?
-    ::File.exists?(@file)
-  end
-
-  def save! : Void
-    ::File.write(@file, self)
+  def save!(file : String = @file) : Void
+    File.write(file, self)
+    puts "- <map_value> [#{file}] saved (entries: #{@data.size}).".colorize(:cyan)
   end
 
   def upsert!(key : String, val : Int64) : Void
-    ::File.open(file, "a") { |io| io << key << SEP << val << "\n" }
+    File.open(@file, "a") { |io| io << key << SEP << val << "\n" }
     @data.upsert!(key, val)
   end
 
   def delete!(key : String) : Void
-    ::File.open(file, "a") { |io| io << key << SEP << "\n" }
+    File.open(@file, "a") { |io| io << key << SEP << "\n" }
     @data.delete!(key)
   end
 
@@ -215,20 +221,20 @@ end
 module MapValue
   extend self
 
-  DIR = ::File.join("var", "appcv", "map_values")
+  DIR = File.join("var", "appcv", "map_values")
   FileUtils.mkdir_p(DIR)
 
   def path(name : String)
-    ::File.join(DIR, "#{name}.txt")
+    File.join(DIR, "#{name}.txt")
   end
 
-  CACHE = {} of String => File
+  CACHE = {} of String => Bulk
 
-  def load!(name : String, file = path(name)) : File
+  def load!(name : String, file = path(name)) : Bulk
     CACHE[name] ||= File.new(file, preload: true)
   end
 
-  def save!(data : File, file : String = data.file) : Void
+  def save!(data : Bulk, file : String = data.file) : Void
     data.save!(file)
   end
 end

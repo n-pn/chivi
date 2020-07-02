@@ -42,7 +42,9 @@ class TokenIndex
     @data[key].add(val)
   end
 
-  def del!(key, )
+  def del!(key : String)
+    @data[key].remove(key)
+  end
 
   def save! : self
     File.open(@file, "w") do |f|

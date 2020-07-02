@@ -149,30 +149,33 @@ module BookMisc
     File.join(DIR, "#{uuid}.json")
   end
 
-  def exist?(uuid : String)
-    File.exists?(path(uuid))
+  def uuid_of(file : String)
+    File.basename(file, ".json")
   end
 
   def glob_dir
     Dir.glob(File.join(DIR, "*.json"))
   end
 
+  def exist?(uuid : String)
+    File.exists?(path(uuid))
+  end
+
   CACHE = {} of String => Data
 
   def load_all! : Void
     files = glob_dir
-    files.each do |file|
-      load! File.basename(file, ".json")
-    end
+    files.each { |file| load!(uuid_of(file)) }
     puts "- <book_misc> loaded `#{files.size.colorize(:cyan)}` entries."
+  end
+
+  def all_uuids : Array(String)
+    glob_dir.map { |file| uuid_of(file) }
   end
 
   def each(load_all : Bool = false)
     load_all! if load_all
-
-    CACHE.each_value do |misc|
-      yield misc
-    end
+    CACHE.each_value { |misc| yield misc }
   end
 
   def get!(uuid : String) : Data

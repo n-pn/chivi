@@ -1,3 +1,5 @@
+require "html"
+
 module Utils
   def self.fix_genre(genre : String)
     return genre if genre.empty? || genre == "轻小说"
@@ -10,16 +12,12 @@ module Utils
   end
 
   def self.clean_text(text : String)
-    text.tr("　 ", " ")
-      .gsub("&amp;", "&")
-      .gsub("&lt;", "<")
-      .gsub("&gt;", ">")
-      .gsub("&nbsp;", " ")
-      .gsub(/<br\s*\/?>/i, "\n")
+    text = HTML.unescape(text)
+    text.gsub(/\p{Z}/, " ").gsub("【】", "").strip
   end
 
   def self.split_lines(text : String, split : String | Regex = "\n")
-    text.split(split).map(&.strip).reject(&.empty?)
+    text.gsub(/<br\s*\/?>/i, "\n").split(split).map(&.strip).reject(&.empty?)
   end
 
   def self.split_words(text : String)

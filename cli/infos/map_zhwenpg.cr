@@ -96,8 +96,7 @@ module MapZhwenpg
 
     misc = BookMisc.get_or_create!(info.uuid)
 
-    if intro = rows[4]?
-      # TODO: fix tradtosim
+    if (intro = rows[4]?) && misc.intro_zh.empty?
       intro_text = Utils.split_text(intro.inner_text("\n"))
       # intro_text = Engine.tradsim(intro_text)
       misc.intro_zh = intro_text.join("\n")

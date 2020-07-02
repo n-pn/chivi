@@ -5,7 +5,7 @@ require "file_utils"
 require "../../src/kernel/book_info"
 require "../../src/kernel/book_misc"
 
-require "../../src/kernel/mapper/map_value"
+require "../../src/mapper/map_value"
 require "../../src/kernel/import/yousuu_info"
 
 require "../../src/utils/time_utils"

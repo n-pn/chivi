@@ -1,17 +1,19 @@
 module Utils
-  alias Span = Time::Span | Time::MonthSpan
+  alias TimeSpan = Time::Span | Time::MonthSpan
 
-  def self.read_file(file : String, time : Time | Span)
+  def self.read_file(file : String)
+    File.read(file) if File.exists?(file)
+  end
+
+  def self.read_file(file : String, time : Time | TimeSpan)
     File.read(file) unless file_outdated?(file, time)
   end
 
-  TIME_SPAN = 1.hours
-
-  def self.file_outdated?(file : String, time : Span = TIME_SPAN)
-    file_outdated?(file, Time.utc - time)
+  def self.file_outdated?(file : String, span : TimeSpan)
+    file_outdated?(file, Time.utc - span)
   end
 
-  def self.file_outdated?(file : String, time : Time = Time.utc - TIME_SPAN)
+  def self.file_outdated?(file : String, time : Time)
     return true unless File.exists?(file)
     File.info(file).modification_time < time
   end
