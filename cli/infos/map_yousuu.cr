@@ -84,7 +84,6 @@ class MapYousuu
 
       # info.genre_zh = Utils.fix_genre(input.genre)
       info.genre_zh = input.genre
-      info.add_tags(input.tags)
 
       info.voters = input.scorerCount
       info.rating = (input.score * 10).round / 10
@@ -113,6 +112,7 @@ class MapYousuu
       misc = BookMisc.get_or_create!(uuid)
 
       misc.intro_zh = Utils.split_text(input.intro).join("\n")
+      misc.add_tags(input.tags)
       misc.add_cover(input.cover)
 
       misc.shield = input.shielded ? 2 : 0

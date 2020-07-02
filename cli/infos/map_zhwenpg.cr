@@ -84,7 +84,6 @@ module MapZhwenpg
 
     genre = rows[2].css(".fontgt").first.inner_text
     info.genre_zh = genre
-    info.add_tag(genre)
 
     caption = "#{title}--#{author}"
     voters, rating = fetch_score(caption)
@@ -104,6 +103,7 @@ module MapZhwenpg
       misc.intro_zh = intro_text.join("\n")
     end
 
+    misc.add_tag(genre)
     misc.add_cover(node.css("img").first.attributes["data-src"])
     misc.status = status
 

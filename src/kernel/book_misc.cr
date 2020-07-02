@@ -15,6 +15,10 @@ class BookMisc::Data
   property intro_zh = ""
   property intro_vi = ""
 
+  property tags_zh = [] of String
+  property tags_vi = [] of String
+  property tags_us = [] of String
+
   property cover_links = [] of String
   property local_cover = ""
 
@@ -59,6 +63,19 @@ class BookMisc::Data
     return if intro == @intro_vi
     @changed = true
     @intro_vi = intro
+  end
+
+  def add_tags(tags : Array(String))
+    tags.each { |tag| add_tag(tag) }
+  end
+
+  def add_tag(tag : String)
+    return if tag.empty? || @tags_zh.includes?(tag)
+    @changed = true
+
+    @tags_zh << tag
+    @tags_vi << ""
+    @tags_us << ""
   end
 
   def add_cover(cover : String)

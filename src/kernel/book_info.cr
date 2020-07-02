@@ -24,10 +24,6 @@ class BookInfo::Data
   property genre_vi = ""
   property genre_us = ""
 
-  property tags_zh = [] of String
-  property tags_vi = [] of String
-  property tags_us = [] of String
-
   property voters = 0_i32
   property rating = 0_f32
   property weight = 0_i64
@@ -126,19 +122,6 @@ class BookInfo::Data
     return if genre == @genre_us
     @changed = true
     @genre_us = genre
-  end
-
-  def add_tags(tags : Array(String))
-    tags.each { |tag| add_tag(tag) }
-  end
-
-  def add_tag(tag : String)
-    return if tag.empty? || @tags_zh.includes?(tag)
-    @changed = true
-
-    @tags_zh << tag
-    @tags_vi << ""
-    @tags_us << ""
   end
 
   def voters=(voters : Int32)
