@@ -97,44 +97,41 @@ class RemoteText
 
   def extract_body!(dom : Myhtml::Parser, title = "")
     case @seed
-    when "jx_la", "nofff", "rengshu", "paoshu8"
+    when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge"
       parse_body!(dom, "#content")
     when "zhwenpg"
       parse_body!(dom, "#tdcontent .content")
-    when "xbiquge"
-      parse_body!(dom, "#content").map(&.sub("www.xbiquge.cc", ""))
+    when "duokan8"
+      parse_body!(dom, "#htmlContent > p")
     when "69shu"
       lines = parse_body!(dom, ".yd_text2")
       lines.shift if title.includes?(lines[0])
       lines
-    when "duokan8"
-      parse_body!(dom, "#htmlContent > p")
     when "hetushu"
-      parse_hetushu_body!(dom)
+      parse_body_hetushu!(dom)
     else
       raise "- seed `#{@seed}` not supported!"
     end
   end
 
   def parse_body!(dom : Myhtml::Parser, query : String, rejects = ["script", "div"])
-    res = [] of String
-
-    return res unless node = dom.css(query).first?
+    return [] of String unless node = dom.css(query).first?
     node.children.each { |x| x.remove! if rejects.includes?(x.tag_name) }
 
-    node.inner_text("\n").split("\n").each do |line|
-      line = line.sub("</div>", "") if @seed == "duokan8"
-      line = Utils.clean_text(line)
-      res << line unless line.empty?
+    lines = node.inner_text("\n").split("\n")
+
+    if @seed == "duokan8"
+      lines.update(0, &.sub(/.+<\/h1>\s*/, ""))
+      lines.map!(&.sub("</div>", ""))
+    elsif @seed == "xbiquge"
+      lines.map!(&.sub("www.xbiquge.cc", ""))
     end
 
-    res.update(0, &.sub(/.+<\/h1>\s*/, "")) if @seed == "duokan8"
-    res.update(-1, &.sub("(本章完)", ""))
-
-    res
+    lines.update(-1, &.sub("(本章完)", ""))
+    lines.map! { |line| Utils.clean_text(line) }.reject!(&.empty?)
   end
 
-  private def parse_hetushu_body!(dom : Myhtml::Parser)
+  def parse_body_hetushu!(dom : Myhtml::Parser)
     client = dom.css("meta[name=client]").first.attributes["content"]
     orders = Base64.decode_string(client).split(/[A-Z]+%/)
 
