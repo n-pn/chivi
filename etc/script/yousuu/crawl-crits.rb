@@ -73,7 +73,7 @@ proxies = load_proxies
 
 step = 1
 until proxies.empty? || ybids.empty?
-  puts "- <#{step}> ybids: #{ybids.size}, proxies: #{proxies.size}".cyan
+  puts "\n- <#{step}> ybids: #{ybids.size}, proxies: #{proxies.size}\n".yellow
 
   failure_ybids = []
   working_proxies = []

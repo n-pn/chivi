@@ -76,7 +76,7 @@ end
 
 step = 1
 until proxies.empty? || ysids.empty?
-  puts "- <#{step}> ysids: #{ysids.size}, proxies: #{proxies.size}".cyan
+  puts "\n- <#{step}> ysids: #{ysids.size}, proxies: #{proxies.size}\n".yellow
 
   working = []
   failure = []
