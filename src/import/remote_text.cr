@@ -69,8 +69,11 @@ class RemoteText
       title = extract_title!(dom)
       io << title
 
-      extract_body!(dom, title).each do |line|
-        io << "\n" << line unless line.empty?
+      lines = extract_body!(dom)
+      lines.shift if title.includes?(lines[0])
+
+      lines.each do |line|
+        io << "\n" << line
       end
     end
   end
@@ -95,7 +98,7 @@ class RemoteText
     Utils.clean_text(node.inner_text)
   end
 
-  def extract_body!(dom : Myhtml::Parser, title = "")
+  def extract_body!(dom : Myhtml::Parser)
     case @seed
     when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge"
       parse_body!(dom, "#content")
@@ -104,9 +107,7 @@ class RemoteText
     when "duokan8"
       parse_body!(dom, "#htmlContent > p")
     when "69shu"
-      lines = parse_body!(dom, ".yd_text2")
-      lines.shift if title.includes?(lines[0])
-      lines
+      parse_body!(dom, ".yd_text2")
     when "hetushu"
       parse_body_hetushu!(dom)
     else
@@ -114,9 +115,11 @@ class RemoteText
     end
   end
 
-  def parse_body!(dom : Myhtml::Parser, query : String, rejects = ["script", "div"])
+  def parse_body!(dom : Myhtml::Parser, query : String)
     return [] of String unless node = dom.css(query).first?
-    node.children.each { |x| x.remove! if rejects.includes?(x.tag_name) }
+    node.children.each do |tag|
+      tag.remove! if {"script", "div"}.includes?(tag.tag_name)
+    end
 
     lines = node.inner_text("\n").split("\n")
 
