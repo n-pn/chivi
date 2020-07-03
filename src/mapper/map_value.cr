@@ -198,7 +198,11 @@ struct MapValue::Bulk
     puts "- <map_value> [#{file.colorize(:cyan)}] saved (entries: #{size})."
   end
 
-  def upsert!(key : String, val : Int64) : Void
+  def upsert!(key : String, val : Int64, force : Bool = false) : Void
+    if @data.get_val(key).try(&.>=(val))
+      return unless force
+    end
+
     File.open(@file, "a") { |io| io << key << SEP << val << "\n" }
     @data.upsert!(key, val)
   end
@@ -238,26 +242,26 @@ module MapValue
   end
 end
 
-# test = MapValue.load!("test")
+# test = MapValue::Bulk.new("test")
 
-# test.upsert!("a", 10)
-# test.upsert!("b", 20)
-# test.upsert!("c", 11)
-# test.upsert!("d", 12)
-# test.upsert!("e", 2)
+# test.upsert!("a", 10_i64)
+# test.upsert!("b", 20_i64)
+# test.upsert!("c", 11_i64)
+# test.upsert!("d", 12_i64)
+# test.upsert!("e", 2_i64)
 
 # # puts test.value("b")
 # puts test
 
-# test.upsert!("b", 2)
+# test.upsert!("b", 2_i64)
 # # puts test.value("b")
 # puts test
 
-# test.upsert!("b", 30)
+# test.upsert!("b", 30_i64)
 # # puts test.value("b")
 # puts test
 
-# test.upsert!("a", 30)
+# test.upsert!("a", 30_i64)
 # puts test
 
 # test.save!

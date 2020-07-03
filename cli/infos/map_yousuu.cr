@@ -53,7 +53,7 @@ class MapYousuu
 
   def worthless?(info : YousuuInfo)
     if weight = AUTHORS.get_val(info.author)
-      return false if weight >= 1500
+      return false if weight >= 2000
     end
 
     info.score < 2.5 && info.addListTotal < 5 && info.commentCount < 10
@@ -95,10 +95,14 @@ class MapYousuu
       info.yousuu_link = "https://www.yousuu.com/book/#{input._id}"
       info.origin_link = input.first_source || ""
 
-      @info_create += 1 unless BookInfo.exists?(uuid)
       if info.changed?
-        @info_update += 1
         info.save!
+
+        if BookInfo.exists?(uuid)
+          @info_update += 1
+        else
+          @info_create += 1
+        end
       end
 
       rating_map.data.upsert!(uuid, info.scored)

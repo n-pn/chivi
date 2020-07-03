@@ -47,6 +47,8 @@ class MapLabel::Bulk
   end
 
   def upsert!(key : String, val : String) : Void
+    return if @data[key]?.try(&.== val)
+
     File.open(@file, "a") { |io| io << key << SEP << val << "\n" }
     @data[key] = val
   end
