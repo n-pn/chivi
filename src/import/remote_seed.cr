@@ -335,11 +335,17 @@ class SeedParser
     chaps
   end
 
-  INDEX_RE = /([零〇一二两三四五六七八九十百千]+|\d+)[集卷]/
+  INDEX_RE    = /([零〇一二两三四五六七八九十百千]+|\d+)[集卷]/
+  INDEX_CACHE = {} of String => Int32
 
   private def label_index(label : String)
-    return -1 if label == "作品相关"
-    INDEX_RE.match(label).try { |match| Utils.han_to_int(match[1]) }
+    return 0 if label == "作品相关"
+    unless index = INDEX_CACHE[label]?
+      index = INDEX_RE.match(label).try { |x| Utils.han_to_int(x[1]) } || 0
+      INDEX_CACHE[label] = index
+    end
+
+    return index if index > 0
   end
 
   private def extract_zhwenpg_chaps
