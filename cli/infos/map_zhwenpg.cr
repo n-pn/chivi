@@ -104,7 +104,7 @@ module MapZhwenpg
     info.shield = 1 if fresh
 
     color = fresh ? :green : :blue
-    puts "- <#{index.colorize(color)}-#{info.uuid}> #{caption.colorize(color)}"
+    puts "- <#{index.colorize(color)}> [#{info.uuid}] #{caption.colorize(color)}"
     info.save! if info.changed?
     # book_seed
 

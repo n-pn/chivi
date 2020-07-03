@@ -10,9 +10,9 @@
     "srv-rs": "ssh nipin@ssh.chivi.xyz \" systemctl restart chivi-server.service\"",
     "www-rs": "ssh nipin@ssh.chivi.xyz \" systemctl restart chivi-client.service\"",
     "map_yousuu": "yarn build map_yousuu && wsl bin/map_yousuu",
-    "map_remote": "yarn build map_yousuu && wsl bin/map_remote",
+    "map_remote": "yarn build map_remote && wsl bin/map_remote",
     "map_remotes": "wsl cli/infos/map_remote.sh",
-    "map_zhwenpg": "yarn build map_yousuu && wsl bin/map_zhwenpg",
+    "map_zhwenpg": "yarn build map_zhwenpg && wsl bin/map_zhwenpg",
     "crawl_crits": "ruby etc/script/yousuu/crawl-crits.rb",
     "crawl_infos": "ruby etc/script/yousuu/crawl-infos.rb"
   }
