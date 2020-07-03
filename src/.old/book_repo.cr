@@ -1,11 +1,11 @@
 # require "./models/book_info"
-# require "./models/book_misc"
+# require "./models/book_seed"
 
 # module BookRepo
 #   extend self
 
 #   INFO_DIR = File.join("var", "appcv", "book_infos")
-#   MISC_DIR = File.join("var", "appcv", "book_miscs")
+#   MISC_DIR = File.join("var", "appcv", "book_seeds")
 
 #   def setup!
 #     FileUtils.mkdir_p(INFO_DIR)

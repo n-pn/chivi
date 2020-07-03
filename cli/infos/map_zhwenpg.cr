@@ -9,7 +9,7 @@ require "../../src/utils/time_utils"
 require "../../src/utils/text_utils"
 
 require "../../src/kernel/book_info"
-require "../../src/kernel/book_misc"
+require "../../src/kernel/book_seed"
 
 module MapZhwenpg
   extend self
@@ -82,8 +82,16 @@ module MapZhwenpg
     return if should_skip?(title)
     info = BookInfo.find_or_create!(title, author)
 
+    if (intro = rows[4]?) && info.intro_zh.empty?
+      intro_text = Utils.split_text(intro.inner_text("\n"))
+      # intro_text = Engine.tradsim(intro_text)
+      info.intro_zh = intro_text.join("\n")
+    end
+
     genre = rows[2].css(".fontgt").first.inner_text
     info.genre_zh = genre
+    info.add_tag(genre)
+    info.add_cover(node.css("img").first.attributes["data-src"])
 
     caption = "#{title}--#{author}"
     voters, rating = fetch_score(caption)
@@ -92,40 +100,33 @@ module MapZhwenpg
     info.rating = rating
     info.fix_weight!
 
-    # book_misc
+    fresh = info.yousuu_link.empty?
+    info.shield = 1 if fresh
 
-    misc = BookMisc.get_or_create!(info.uuid)
+    color = fresh ? :green : :blue
+    puts "- <#{index.colorize(color)}-#{info.uuid}> #{caption.colorize(color)}"
+    info.save! if info.changed?
+    # book_seed
 
-    if (intro = rows[4]?) && misc.intro_zh.empty?
-      intro_text = Utils.split_text(intro.inner_text("\n"))
-      # intro_text = Engine.tradsim(intro_text)
-      misc.intro_zh = intro_text.join("\n")
-    end
+    seed = BookSeed.get_or_create!(info.uuid)
 
-    misc.add_tag(genre)
-    misc.add_cover(node.css("img").first.attributes["data-src"])
-    misc.status = status
+    seed.status = status
 
-    mftime = parse_time(rows[3].css(".fontime").first.inner_text)
+    seed.lead = "zhwenpg" if seed.lead.empty?
+    seed.set_type("zhwenpg", 0)
+    seed.set_sbid("zhwenpg", sbid)
 
     latest_node = rows[3].css("a[target=_blank]").first
     latest_text = latest_node.inner_text
+
     latest_link = latest_node.attributes["href"]
     latest_scid = latest_link.sub("r.php?id=", "")
 
-    misc.set_seed_sbid("zhwenpg", sbid)
-    misc.set_seed_type("zhwenpg", 0)
-    misc.set_seed_chap("zhwenpg", latest_scid, latest_text, mftime)
+    mftime = parse_time(rows[3].css(".fontime").first.inner_text)
+    seed.set_latest_chap("zhwenpg", latest_scid, latest_text, mftime)
+    seed.mftime = seed.latest_times["zhwenpg"]
 
-    misc.mftime = misc.seed_lasts["zhwenpg"].mftime
-
-    fresh = misc.yousuu_link.empty?
-    color = fresh ? :green : :blue
-
-    misc.shield = 1 if fresh
-    BookMisc.save!(misc) if misc.changed?
-
-    puts "- <#{index.colorize(color)}-#{misc.uuid}> #{caption.colorize(color)}"
+    seed.save! if seed.changed?
   end
 
   TIME = Time.utc.to_unix_ms
@@ -140,5 +141,3 @@ end
 
 1.upto(3) { |page| MapZhwenpg.parse_page!(page, status: 1) }
 1.upto(12) { |page| MapZhwenpg.parse_page!(page, status: 0) }
-
-BookInfo.save_all!

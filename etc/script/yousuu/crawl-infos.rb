@@ -99,7 +99,7 @@ until proxies.empty? || ysids.empty?
       puts message.red unless VERBOSE
     when :success
       working << proxy
-      puts message.cyan unless VERBOSE
+      puts message.green unless VERBOSE
     end
   end
 

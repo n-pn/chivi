@@ -5,7 +5,7 @@ require "../../src/utils/file_utils.cr"
 require "../../src/utils/html_utils.cr"
 
 require "../../src/kernel/book_info.cr"
-require "../../src/kernel/book_misc.cr"
+require "../../src/kernel/book_seed.cr"
 require "../../src/mapper/map_value.cr"
 
 # require "../../src/kernel/import/remote_info.cr"

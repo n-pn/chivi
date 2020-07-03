@@ -44,7 +44,7 @@ end
 
 struct MapValue::Data
   getter data = {} of String => Node
-  delegate size, to: @data
+  forward_missing_to @data
 
   def initialize
     @head = Node.new("", Int64::MAX)
@@ -168,8 +168,7 @@ class MapValue::Bulk
 
   getter file : String
   getter data = Data.new
-  delegate each, to: @data
-  delegate reverse_each, to: @data
+  forward_missing_to @data
 
   def initialize(@file, preload : Bool = true)
     load!(@file) if preload && exist?
@@ -179,7 +178,7 @@ class MapValue::Bulk
     File.exists?(@file)
   end
 
-  def load!(file : File = @file) : Void
+  def load!(file : String = @file) : Void
     File.each_line(file) do |line|
       key, val = line.split(SEP, 2)
       if val = val.try(&.to_i64?)
@@ -188,15 +187,15 @@ class MapValue::Bulk
         @data.delete!(key)
       end
     rescue err
-      puts "- <map_value> error parsing line `#{line}`: #{err}".colorize(:red)
+      puts "- <map_value> error parsing line `#{line}`: #{err.colorize(:red)}"
     end
 
-    puts "- <map_value> [#{file}] loaded.".colorize(:cyan)
+    puts "- <map_value> [#{file.colorize(:cyan)}] loaded."
   end
 
   def save!(file : String = @file) : Void
     File.write(file, self)
-    puts "- <map_value> [#{file}] saved (entries: #{@data.size}).".colorize(:cyan)
+    puts "- <map_value> [#{file.colorize(:cyan)}] saved (entries: #{size})."
   end
 
   def upsert!(key : String, val : Int64) : Void
@@ -224,18 +223,18 @@ module MapValue
   DIR = File.join("var", "appcv", "map_values")
   FileUtils.mkdir_p(DIR)
 
-  def path(name : String)
-    File.join(DIR, "#{name}.txt")
+  def path_for(type : String)
+    File.join(DIR, "#{type}.txt")
   end
 
   CACHE = {} of String => Bulk
 
-  def load!(name : String, file = path(name)) : Bulk
-    CACHE[name] ||= File.new(file, preload: true)
+  def load!(type : String)
+    CACHE[type] ||= init!(type)
   end
 
-  def save!(data : Bulk, file : String = data.file) : Void
-    data.save!(file)
+  def init!(type : String, file = path_for(type))
+    Bulk.new(file, preload: true)
   end
 end
 

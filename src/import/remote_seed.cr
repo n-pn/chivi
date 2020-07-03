@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../kernel/book_info"
-require "../kernel/book_misc"
+require "../kernel/book_seed"
 require "../kernel/chap_list"
 
 require "../utils/han_to_int"
@@ -166,7 +166,7 @@ class SeedParser
       when "zhwenpg", "69shu"
         0
       else
-        raise "Seed `#{@seed}` not supported!"
+        raise "Seed `#{@seed}` unsupported!"
       end
   end
 
@@ -185,7 +185,7 @@ class SeedParser
       when "hetushu", "zhwenpg"
         0_i64
       else
-        raise "Seed `#{@seed}` not supported!"
+        raise "Seed `#{@seed}` unsupported!"
       end
   end
 
@@ -200,8 +200,8 @@ class SeedParser
         if href = meta_data("og:novel:latest_chapter_url")
           text = meta_data("og:novel:latest_chapter_name").not_nil!
           text = text.sub(/^章节目录\s+/, "") if @seed = "duokan8"
-          latest.set_title(text)
 
+          latest.set_title(text)
           latest.scid = extract_scid(href)
         end
       when "zhwenpg"
@@ -220,7 +220,7 @@ class SeedParser
           latest.scid = extract_scid(node.attributes["href"])
         end
       else
-        raise "Seed `#{@seed}` not supported!"
+        raise "Seed `#{@seed}` unsupported!"
       end
 
       latest
@@ -236,7 +236,7 @@ class SeedParser
     when "69shu"
       File.basename(href)
     else
-      raise "Seed `#{@seed}` not supported!"
+      raise "Seed `#{@seed}` unsupported!"
     end
   end
 
@@ -256,7 +256,7 @@ class SeedParser
       when "69shu"
         extract_69shu_chaps
       else
-        raise "Seed `#{@seed}` not supported!"
+        raise "Seed `#{@seed}` unsupported!"
       end
   end
 
@@ -266,12 +266,11 @@ class SeedParser
     @doc.css(".chapter-list a").each do |link|
       if href = link.attributes["href"]?
         scid = extract_scid(href)
-        title = link.inner_text
-        chaps << ChapItem.new(scid, title)
+        chaps << ChapItem.new(scid, link.inner_text)
       end
     end
 
-    chapss
+    chaps
   end
 
   private def extract_69shu_chaps

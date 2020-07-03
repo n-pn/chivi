@@ -3,10 +3,10 @@ require "colorize"
 require "file_utils"
 
 require "../../src/kernel/book_info"
-require "../../src/kernel/book_misc"
+require "../../src/kernel/book_seed"
 
 require "../../src/mapper/map_value"
-require "../../src/kernel/import/yousuu_info"
+require "../../src/import/yousuu_info"
 
 require "../../src/utils/time_utils"
 require "../../src/utils/text_utils"
@@ -14,26 +14,35 @@ require "../../src/utils/text_utils"
 class MapYousuu
   DIR = File.join("var", "appcv", ".cache", "yousuu", "serials")
 
-  WHITELIST_FILE = File.join("etc", "author-whitelist.txt")
-  WHITELIST_DATA = Set(String).new File.read_lines(WHITELIST_FILE)
+  @input_total = 0
+  @input_count = 0
 
+  @info_create = 0
+  @info_update = 0
+
+  AUTHORS = MapValue.load!("authors")
   @inputs = {} of String => YousuuInfo
 
   def load_inputs! : Void
     files = Dir.glob(File.join(DIR, "*.json"))
-    puts "- INPUT: #{files.size.colorize(:yellow)}."
-
     files.each { |file| parse_file!(file) }
   end
 
+  def print_stats!
+    puts "- <INPUT> total: #{@input_total}, worth: #{@input_count} ".colorize(:yellow)
+    puts "- <OUTPUT> create: #{@info_create}, update: #{@info_update}".colorize(:yellow)
+  end
+
   def parse_file!(file : String) : Void
+    @input_total += 1
+
     return unless info = YousuuInfo.load!(file)
+    return if info.title.empty? || info.author.empty?
 
     return if worthless?(info)
-    add_to_whitelist(info)
+    @input_count += 1
 
     uuid = Utils.gen_uuid(info.title, info.author)
-
     if old_info = @inputs[uuid]?
       return if old_info.updateAt >= info.updateAt
     end
@@ -44,23 +53,12 @@ class MapYousuu
     File.delete(file)
   end
 
-  def qualified?(info : YousuuInfo)
-    return true if info.score > 7 && info.scorerCount > 20
-    return true if info.score > 6 && info.scorerCount > 30
-    return true if info.score > 5 && info.scorerCount > 40
-    return true if info.score > 4 && info.scorerCount > 50
-
-    info.scorerCount > 100
-  end
-
   def worthless?(info : YousuuInfo)
-    return true if info.title.empty?
-    return true if info.author.empty?
-    return false if qualified?(info)
-    return false if WHITELIST_DATA.includes?(info.author)
+    if weight = AUTHORS.get_val(info.author)
+      return false if weight >= 1500
+    end
 
-    return false if info.score >= 2.5
-    info.commentCount < 10 || info.addListTotal < 10
+    info.score < 2.5 || info.commentCount < 5 || info.addListTotal < 10
   end
 
   def add_to_whitelist(info : YousuuInfo)
@@ -72,65 +70,65 @@ class MapYousuu
   end
 
   def extract_infos!
-    # weight_map = MapValue.load!("book_weight")
-    # rating_map = MapValue.load!("book_rating")
-
-    update_count = 0
+    rating_map = MapValue.load!("book_rating")
+    weight_map = MapValue.load!("book_weight")
 
     @inputs.each do |uuid, input|
       # primary info
 
-      info = BookInfo.find_or_create!(input.title, input.author)
+      info = BookInfo.find_or_create!(input.title, input.author, uuid)
 
-      # info.genre_zh = Utils.fix_genre(input.genre)
+      info.intro_zh = Utils.split_text(input.intro).join("\n")
       info.genre_zh = input.genre
+      info.add_tags(input.tags)
+      info.add_cover(input.cover)
+
+      info.shield = input.shielded ? 2 : 0
 
       info.voters = input.scorerCount
       info.rating = (input.score * 10).round / 10
+
       info.fix_weight!
+      AUTHORS.upsert!(info.author_zh, info.weight)
 
-      update_count += 1 if info.changed?
+      info.word_count = input.countWord.round.to_i
+      info.crit_count = input.commentCount
 
-      # weight_map.data.upsert!(uuid, info.data.weight)
-      # rating_map.data.upsert!(uuid, info.data.scored)
+      info.yousuu_link = "https://www.yousuu.com/book/#{input._id}"
+      info.origin_link = input.first_source || ""
+
+      @info_create += 1 unless BookInfo.exists?(uuid)
+      if info.changed?
+        @info_create += 1
+        info.save!
+      end
+
+      rating_map.data.upsert!(uuid, info.scored)
+      weight_map.data.upsert!(uuid, info.weight)
     end
 
-    # weight_map.save!
-    # rating_map.save!
-
-    BookInfo.save_all!
-    puts "- TOTAL: #{@inputs.size.colorize(:yellow)}, \
-           UPDATE: #{update_count.colorize(:yellow)}."
+    rating_map.save!
+    weight_map.save!
+    AUTHORS.save!
   end
 
-  def extract_miscs!
-    # update_map = MapValue.load!("book_update")
-    # access_map = MapValue.load!("book_access")
+  def initial_seeds!
+    update_map = MapValue.load!("book_update")
+    access_map = MapValue.load!("book_access")
     # fresh = 0
 
     @inputs.each do |uuid, input|
-      misc = BookMisc.get_or_create!(uuid)
+      seed = BookSeed.get_or_create!(uuid)
 
-      misc.intro_zh = Utils.split_text(input.intro).join("\n")
-      misc.add_tags(input.tags)
-      misc.add_cover(input.cover)
-
-      misc.shield = input.shielded ? 2 : 0
-      misc.status = input.status
+      seed.status = input.status
 
       mftime = Utils.correct_time(input.updateAt).to_unix_ms
-      misc.mftime = mftime
+      seed.mftime = mftime
 
-      # update_map.data.upsert!(uuid, misc.mftime)
-      # access_map.data.upsert!(uuid, misc.mftime)
+      update_map.data.upsert!(uuid, seed.mftime)
+      access_map.data.upsert!(uuid, seed.mftime)
 
-      misc.yousuu_link = "https://www.yousuu.com/book/#{input._id}"
-      misc.origin_link = input.first_source || ""
-
-      misc.word_count = input.countWord.round.to_i
-      misc.crit_count = input.commentCount
-
-      BookMisc.save!(misc) if misc.changed?
+      seed.save! if seed.changed?
     end
 
     # access_map.save!
@@ -142,4 +140,5 @@ end
 mapper = MapYousuu.new
 mapper.load_inputs!
 mapper.extract_infos!
-mapper.extract_miscs!
+mapper.initial_seeds!
+mapper.print_stats!

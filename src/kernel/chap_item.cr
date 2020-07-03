@@ -7,7 +7,6 @@ class ChapItem
   include JSON::Serializable
 
   property scid = ""
-  property mftime = 0_i64
 
   property label_zh = "正文"
   property label_vi = "Chính văn"
@@ -23,7 +22,7 @@ class ChapItem
   def initialize
   end
 
-  def initialize(@scid : String, title : String, label : String = "正文", @mftime = 0_i64)
+  def initialize(@scid : String, title : String, label : String = "正文")
     @changed = true
 
     if label.empty? || label == "正文"
@@ -40,12 +39,6 @@ class ChapItem
 
   def mark_saved!
     @changed = false
-  end
-
-  def mftime=(mftime : Int64)
-    return if mftime == @mftime
-    @changed = true
-    @mftime = mftime
   end
 
   def set_title(title : String)
@@ -70,6 +63,7 @@ class ChapItem
     return if label == @label_zh
     @changed = true
     @label_zh = label
+    @label_vi = ""
   end
 
   def label_vi=(label : String)

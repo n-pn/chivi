@@ -3,8 +3,7 @@ require "colorize"
 require "file_utils"
 require "../utils/gen_uuids"
 
-class BookInfo::Data
-  # contain book main infomation
+class BookInfo
   # us == url slug
 
   include JSON::Serializable
@@ -24,9 +23,26 @@ class BookInfo::Data
   property genre_vi = ""
   property genre_us = ""
 
+  property intro_zh = ""
+  property intro_vi = ""
+
+  property tags_zh = [] of String
+  property tags_vi = [] of String
+  property tags_us = [] of String
+
+  property cover_links = [] of String
+  property local_cover = ""
+
+  property shield = 0_i32
   property voters = 0_i32
   property rating = 0_f32
   property weight = 0_i64
+
+  property word_count = 0_i32
+  property crit_count = 0_i32
+
+  property yousuu_link = ""
+  property origin_link = ""
 
   @[JSON::Field(ignore: true)]
   @changed = false
@@ -155,6 +171,37 @@ class BookInfo::Data
     @genre_us = genre
   end
 
+  def intro_zh=(intro : String)
+    return if intro == @intro_zh
+    @changed = true
+    @intro_zh = intro
+  end
+
+  def intro_vi=(intro : String)
+    return if intro == @intro_vi
+    @changed = true
+    @intro_vi = intro
+  end
+
+  def add_tags(tags : Array(String))
+    tags.each { |tag| add_tag(tag) }
+  end
+
+  def add_tag(tag : String)
+    return if tag.empty? || @tags_zh.includes?(tag)
+    @changed = true
+
+    @tags_zh << tag
+    @tags_vi << ""
+    @tags_us << ""
+  end
+
+  def add_cover(cover : String)
+    return if cover.empty? || @cover_links.includes?(cover)
+    @changed = true
+    @cover_links << cover
+  end
+
   def voters=(voters : Int32)
     return if @voters == voters
     @changed = true
@@ -178,141 +225,90 @@ class BookInfo::Data
   def to_s(io : IO)
     to_json(io)
   end
-end
-
-struct BookInfo::Bulk
-  getter file : String
-  getter data = {} of String => Data
-
-  def initialize(@file, preload : Bool = true)
-    load! if preload && exist?
-  end
-
-  def exist?
-    File.exists?(@file)
-  end
-
-  def get(uuid : String)
-    @data[uuid]?
-  end
-
-  def set(data : Data)
-    @data[data.uuid] = data
-  end
-
-  def load!(file : String = @file) : Void
-    @data.merge! Hash(String, Data).from_json(File.read(file))
-  end
-
-  def changed? : Bool
-    @data.values.reduce(false) { |acc, i| acc ||= i.changed? }
-  end
-
-  def mark_saved!
-    @data.each_value { |data| data.mark_saved! }
-  end
-
-  def save!(file : String = @file) : Void
-    File.write(file, self)
-    mark_saved!
-
-    puts "- <book_info> [#{file.colorize(:cyan)}] saved."
-  end
-
-  def to_s(io : IO)
-    @data.to_json(io)
-  end
 
   def to_s
     String.build { |io| to_s(io) }
   end
-end
 
-class BookNotFound < Exception
-  def initialize(uuid : String)
-    super("Book with uuid [#{uuid}] does not exist")
+  def save!(file : String = BookInfo.path_for(@uuid)) : Void
+    @changed = false
+    File.write(file, self)
+    puts "- <book_info> [#{file.colorize(:cyan)}] saved."
   end
-end
 
-module BookInfo
-  extend self
+  # class methods
 
   DIR = File.join("var", "appcv", "book_infos")
   FileUtils.mkdir_p(DIR)
 
-  def path(drop : String)
-    File.join(DIR, "#{drop}.json")
+  def self.path_for(uuid : String)
+    File.join(DIR, "#{uuid}.json")
   end
 
-  def glob_dir
+  def self.save!(info : BookInfo, file = path_for(info.uuid))
+    info.save!(file) if info.changed?
+  end
+
+  def self.glob_dir
     Dir.glob(File.join(DIR, "*.json"))
   end
 
-  CACHE = {} of String => Bulk
-
-  def load_all! : Void
-    glob_dir.each do |file|
-      uuid = File.basename(file, ".json")
-      load!(uuid, file)
-    end
+  def self.uuid_for(file : String)
+    File.basename(file, ".json")
   end
 
-  def load_bulk!(uuid : String)
-    bulk_id = get_bulk_id(uuid)
-    CACHE[bulk_id] ||= Bulk.new(path(bulk_id), preload: true)
+  def self.exists?(uuid : String)
+    File.exists?(path_for(uuid))
   end
 
-  def get_bulk_id(uuid : String)
-    uuid[0, 2]
+  def self.from_file(file : String)
+    BookInfo.from_json(File.read(file))
   end
 
-  def each(load_all : Bool = false)
-    load_all! if load_all
-
-    CACHE.each_value do |bulk|
-      bulk.each_value do |data|
-        yield data
-      end
-    end
+  def self.get!(uuid : String)
+    get(uuid) || raise "- <book_file> #{uuid} not found!"
   end
 
-  def get(uuid : String) : Data?
-    load_bulk!(uuid).get(uuid)
+  def self.get(uuid : String)
+    file = path_for(uuid)
+    from_file(file) if File.exists?(file)
   end
 
-  def get!(uuid : String) : Data
-    get(uuid) || raise BookNotFound.new(uuid)
-  end
-
-  def find(title : String, author : String)
+  def self.find(title : String, author : String)
     get(Utils.gen_uuid(title, author))
   end
 
-  def find!(title : String, author : String)
-    find(uuid) || raise BookNotFound.new(uuid)
+  def self.find!(title : String, author : String)
+    find(uuid) || raise "- <book_file> #{uuid} not found!"
   end
 
-  def find_or_create!(title : String, author : String)
-    uuid = Utils.gen_uuid(title, author)
-    bulk = load_bulk!(uuid)
+  def self.find_or_create!(title : String, author : String, uuid : String? = nil)
+    uuid ||= Utils.gen_uuid(title, author)
+    get(uuid) || new(title, author, uuid)
+  end
 
-    unless data = bulk.get(uuid)
-      data = Data.new(title, author, uuid)
-      bulk.set(data)
+  # Load with cache
+
+  CACHE = {} of String => BookInfo
+
+  def self.load_all!
+    glob_dir.each do |file|
+      CACHE[uuid_for(file)] ||= BookInfo.from_file(file)
     end
 
-    data
+    CACHE
   end
 
-  def save_all!(only_changed : Bool = true) : Void
-    CACHE.each_value do |bulk|
-      bulk.save! if bulk.changed? || !only_changed
-    end
+  def self.load(uuid : String)
+    CACHE[uuid] ||= get(uuid)
   end
 
-  def save!(info : Data) : Void
-    bulk = load_bulk!(uuid)
-    bulk.set(info)
-    bulk.save!
+  def self.load!(uuid : String)
+    CACHE[uuid] ||= get!(uuid)
+  end
+
+  def self.load_or_create!(title : String, author : String, uuid : String? = nil)
+    uuid ||= Utils.gen_uuid(title, author)
+    CACHE[uuid] ||= find_or_create!(title, author, uuid)
   end
 end

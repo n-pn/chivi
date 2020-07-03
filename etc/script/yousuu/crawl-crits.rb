@@ -46,7 +46,7 @@ rescue => err
 end
 
 def load_ybids(page = 1)
-  files = Dir.glob("var/appcv/book_miscs/*.json")
+  files = Dir.glob("var/appcv/book_infos/*.json")
   files.inject([]) do |memo, file|
     json = JSON.parse(File.read(file))
     link = json["yousuu_link"]
@@ -96,7 +96,7 @@ until proxies.empty? || ybids.empty?
       puts message.red unless VERBOSE
     when :success
       working_proxies << proxy
-      puts message.cyan unless VERBOSE
+      puts message.green unless VERBOSE
     end
   end
 
