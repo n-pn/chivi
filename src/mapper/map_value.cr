@@ -163,7 +163,7 @@ struct MapValue::Data
   end
 end
 
-class MapValue::Bulk
+struct MapValue::Bulk
   SEP = "ǁ"
 
   getter file : String

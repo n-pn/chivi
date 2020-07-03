@@ -37,16 +37,14 @@ class MapYousuu
     @input_total += 1
 
     return unless info = YousuuInfo.load!(file)
-    return if info.title.empty? || info.author.empty?
-
-    return if worthless?(info)
-    @input_count += 1
+    return if info.title.empty? || info.author.empty? || worthless?(info)
 
     uuid = Utils.gen_uuid(info.title, info.author)
     if old_info = @inputs[uuid]?
       return if old_info.updateAt >= info.updateAt
     end
 
+    @input_count += 1
     @inputs[uuid] = info
   rescue err
     puts "- <read_json> #{file} err: #{err}".colorize(:red)
@@ -58,7 +56,7 @@ class MapYousuu
       return false if weight >= 1500
     end
 
-    info.score < 2.5 || info.commentCount < 5 || info.addListTotal < 10
+    info.score < 2.5 && info.addListTotal < 5 && info.commentCount < 10
   end
 
   def add_to_whitelist(info : YousuuInfo)
@@ -99,7 +97,7 @@ class MapYousuu
 
       @info_create += 1 unless BookInfo.exists?(uuid)
       if info.changed?
-        @info_create += 1
+        @info_update += 1
         info.save!
       end
 
