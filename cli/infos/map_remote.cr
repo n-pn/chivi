@@ -7,8 +7,9 @@ require "../../src/utils/html_utils.cr"
 require "../../src/kernel/book_info.cr"
 require "../../src/kernel/book_seed.cr"
 require "../../src/mapper/map_value.cr"
+require "../../src/mapper/map_label.cr"
 
-# require "../../src/kernel/import/remote_info.cr"
+require "../../src/import/remote_seed.cr"
 
 class MapRemote
   def self.init(argv = ARGV)
@@ -30,10 +31,43 @@ class MapRemote
     new(seed, retry)
   end
 
-  def initialize(@seed : String = "hetushu", @retry : Bool = false)
-    @mapper = MapValue.load!("#{@seed}-sitemap")
+  def initialize(@seed : String, @retry : Bool = false)
+    @uuids = MapLabel.init!("#{@seed}-uuids")
+    @titles = MapLabel.init!("#{@seed}-titles")
+    @authors = MapLabel.init!("#{@seed}-authors")
+  end
+
+  # @unmapped_sbids : Array(String)? = nil
+
+  def map_cached!
+    files = Dir.glob(File.join(RemoteUtil.info_root(@seed), "*.html"))
+    files.each do |file|
+      sbid = File.basename(file, ".html")
+
+      if uuid = @uuids.get_val(sbid)
+        next unless uuid == "--" && @retry
+        File.delete(file)
+      end
+
+      begin
+        remote = RemoteSeed.new(@seed, sbid, expiry: 1.year, freeze: true)
+
+        @uuids.upsert!(sbid, remote.get_uuid)
+        @titles.upsert!(sbid, remote.get_title)
+        @authors.upsert!(sbid, remote.get_author)
+      rescue err
+        puts "- error parsing `#{sbid}`: #{err.colorize(:red)}"
+
+        @uuids.upsert!(sbid, "--")
+        @titles.upsert!(sbid, "--")
+        @authors.upsert!(sbid, "--")
+      end
+    end
   end
 end
+
+remote = MapRemote.init
+remote.map_cached!
 
 # RETRY = ARGV.includes?("retry")
 

@@ -8,9 +8,9 @@ def fetch_seed(seed, sbid, expiry = 30.days) : Void
   RemoteUtil.mkdir!(seed)
   task = RemoteSeed.new(seed, sbid, expiry: expiry, freeze: true)
 
-  puts task.extract_info!.to_pretty_json
-  puts task.extract_seed!.to_pretty_json
-  puts task.extract_chaps!.first(3).to_pretty_json
+  puts task.extract_info.to_pretty_json
+  puts task.extract_seed.to_pretty_json
+  puts task.extract_chaps.first(3).to_pretty_json
 end
 
 fetch_seed("jx_la", "7")

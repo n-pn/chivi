@@ -383,21 +383,22 @@ class RemoteSeed
   getter type : Int32
 
   getter parser : SeedParser
+  forward_missing_to parser
 
   def initialize(@seed, @sbid, @type = 0, expiry = 6.hours, freeze = false)
     html = RemoteUtil.info_html(@seed, @sbid, expiry, freeze)
     @parser = SeedParser.new(@seed, html)
   end
 
-  def extract_uuid!
+  def get_uuid : String
     Utils.gen_uuid(@parser.get_title, @parser.get_author)
   end
 
-  def default_info
+  def default_info : BookInfo
     BookInfo.find_or_create!(@parser.get_title, @parser.get_author)
   end
 
-  def extract_info!(info : BookInfo = default_info)
+  def extract_info(info : BookInfo = default_info) : BookInfo
     info.intro_zh = @parser.get_intro if info.intro_zh.empty?
     info.add_cover(@parser.get_cover)
     info.add_tags(@parser.get_tags)
@@ -406,11 +407,11 @@ class RemoteSeed
     info
   end
 
-  def default_seed
-    BookSeed.get_or_create!(extract_uuid!)
+  def default_seed : BookSeed
+    BookSeed.get_or_create!(get_uuid)
   end
 
-  def extract_seed!(seed : BookSeed = default_seed)
+  def extract_seed(seed : BookSeed = default_seed)
     seed.status = @parser.get_status
 
     mftime = @parser.get_mftime
@@ -431,7 +432,7 @@ class RemoteSeed
     seed.latest_times[@seed]?.try(&.<= mftime) || true
   end
 
-  def extract_chaps!(old_list = ChapSeed.load!(@seed, @sbid))
+  def extract_chaps(old_list = ChapSeed.load!(@seed, @sbid))
     new_list = @parser.get_chaps
 
     size = old_list.size

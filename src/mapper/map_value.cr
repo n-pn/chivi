@@ -233,11 +233,11 @@ module MapValue
 
   CACHE = {} of String => Bulk
 
-  def load!(type : String)
+  def load!(type : String) : Bulk
     CACHE[type] ||= init!(type)
   end
 
-  def init!(type : String, file = path_for(type))
+  def init!(type : String, file = path_for(type)) : Bulk
     Bulk.new(file, preload: true)
   end
 end
