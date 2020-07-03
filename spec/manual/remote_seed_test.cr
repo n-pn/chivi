@@ -9,7 +9,7 @@ def fetch_seed(seed, sbid, expiry = 24.hours) : Void
   task = RemoteSeed.new(seed, sbid, expiry: expiry, freeze: true)
 
   puts task.extract_info!.to_pretty_json
-  puts task.extract_misc!.to_pretty_json
+  puts task.extract_seed!.to_pretty_json
   # puts info.chaps.first(10).to_pretty_json
 end
 

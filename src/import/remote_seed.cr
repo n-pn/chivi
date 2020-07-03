@@ -4,7 +4,7 @@ require "file_utils"
 
 require "../kernel/book_info"
 require "../kernel/book_seed"
-require "../kernel/chap_list"
+require "../kernel/chap_seed"
 
 require "../utils/han_to_int"
 require "../utils/html_utils"
@@ -193,7 +193,7 @@ class SeedParser
 
   def get_latest
     @latest ||= begin
-      latest = ChapItem.new("", "", mftime: get_mftime)
+      latest = ChapItem.new("", "")
 
       case @seed
       when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
@@ -392,52 +392,42 @@ class RemoteSeed
     Utils.gen_uuid(@parser.get_title, @parser.get_author)
   end
 
-  @info : BookInfo::Data?
-
   def default_info
-    @info ||= BookInfo.find_or_create!(@parser.get_title, @parser.get_author)
+    BookInfo.find_or_create!(@parser.get_title, @parser.get_author)
   end
 
-  def extract_info!(info : BookInfo::Data = default_info)
-    info.set_genre!(@parser.get_genre)
-    info.tap(&.fix_uuid!(info.changed?))
+  def extract_info!(info : BookInfo = default_info)
+    info.intro_zh = @parser.get_intro if info.intro_zh.empty?
+    info.add_cover(@parser.get_cover)
+    info.add_tags(@parser.get_tags)
+    info.add_tag(@parser.get_genre)
+
+    info
   end
 
-  @misc : BookMisc::Data?
-
-  def default_misc
-    @misc ||= BookMisc.get_or_create!(extract_uuid!)
+  def default_seed
+    BookSeed.get_or_create!(extract_uuid!)
   end
 
-  def extract_misc!(misc : BookMisc::Data = default_misc)
-    misc.intro_zh = @parser.get_intro if misc.intro_zh.empty?
-
-    if @seed == "hetushu"
-      misc.add_tags(@parser.get_tags)
-    else
-      misc.add_tag(@parser.get_genre)
-    end
-
-    misc.add_cover(@parser.get_cover)
-    misc.status = @parser.get_status
+  def extract_seed!(seed : BookSeed = default_seed)
+    seed.status = @parser.get_status
 
     mftime = @parser.get_mftime
-    if better_seed?(misc, mftime)
-      misc.set_seed_sbid(@seed, @sbid)
-      misc.set_seed_type(@seed, @type)
+    if better_seed?(seed, mftime)
+      seed.set_sbid(@seed, @sbid)
+      seed.set_type(@seed, @type)
 
-      misc.set_seed_chap(@seed, @parser.get_latest)
-      misc.mftime = misc.seed_chaps[@seed].mftime
+      seed.set_latest_chap(@seed, @parser.get_latest, mftime)
+      seed.mftime = seed.latest_times[@seed]
     end
 
-    misc
+    seed
   end
 
-  private def better_seed?(misc : BookMisc::Data, mftime : Int64)
-    sbid = misc.seed_sbids[@seed]?
+  private def better_seed?(seed : BookSeed, mftime : Int64)
+    sbid = seed.sbids[@seed]?
     return true if sbid.nil? || sbid == @sbid
-
-    misc.seed_chaps[@seed]?.try(&.mftime.<= mftime) || true
+    seed.latest_times[@seed]?.try(&.<= mftime) || true
   end
 
   def extract_chaps!(chap : ChapList)
