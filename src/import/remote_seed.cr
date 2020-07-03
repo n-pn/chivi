@@ -13,24 +13,6 @@ require "../utils/text_utils"
 
 require "./remote_util"
 
-class SeedVolume
-  getter label : String
-  getter chaps = [] of ChapItem
-
-  def initialize(@label = "正文")
-  end
-
-  INDEX_RE = /([零〇一二两三四五六七八九十百千]+|\d+)[集卷]/
-
-  def label_index
-    if match = INDEX_RE.match(@label)
-      Utils.han_to_int(match[1])
-    else
-      0
-    end
-  end
-end
-
 class SeedParser
   getter seed : String
 
@@ -312,48 +294,52 @@ class SeedParser
   end
 
   private def extract_generic_chaps(selector : String)
-    output = [] of ChapItem
-    return output unless parent = @doc.css(selector).first?
+    chaps = [] of ChapItem
+    return chaps unless parent = @doc.css(selector).first?
 
     nodes = parent.children
-    volumes = [] of SeedVolume
+    label = "正文"
 
     nodes.each do |node|
-      if node.tag_sym == :dt
+      case node.tag_sym
+      when :dt
         label = node.inner_text.gsub(/《.*》/, "").strip
-        volumes << SeedVolume.new(label)
-      elsif node.tag_sym == :dd
-        link = node.css("a").first?
-        next unless link
+      when :dd
+        next if label.includes?("最新章节")
+        next unless link = node.css("a").first?
+        next unless href = link.attributes["href"]?
 
-        if href = link.attributes["href"]?
-          scid = extract_scid(href)
-          title = link.inner_text
-
-          volumes << SeedVolume.new if volumes.empty?
-          volumes.last.chaps << ChapItem.new(scid, title, volumes.last.label)
-        end
+        chaps << ChapItem.new(extract_scid(href), link.inner_text, label)
+      else
+        # skip
       end
     end
-
-    volumes.shift if volumes.first.label.includes?("最新章节")
 
     if @seed == "jx_la"
-      order = 0
+      label_idx = 0
+      label_acc = 0
+      title_idx = 0
 
-      volumes.sort_by! do |volume|
-        if volume.label == "作品相关"
-          {-1, 0}
+      chaps.sort_by! do |chap|
+        if label_idx = label_index(chap.label_zh)
+          label_acc = 0
         else
-          index = volume.label_index
-          order += 1 if index == 0
-          {order, index}
+          label_acc += 1
         end
+
+        title_idx += 1
+        {label_idx, label_acc, title_idx}
       end
     end
 
-    volumes.each { |volume| output.concat(volume.chaps) }
-    output
+    chaps
+  end
+
+  INDEX_RE = /([零〇一二两三四五六七八九十百千]+|\d+)[集卷]/
+
+  private def label_index(label : String)
+    return -1 if label == "作品相关"
+    INDEX_RE.match(label).try { |match| Utils.han_to_int(match[1]) }
   end
 
   private def extract_zhwenpg_chaps
@@ -389,6 +375,8 @@ class RemoteSeed
   getter seed : String
   getter sbid : String
   getter type : Int32
+
+  getter parser : SeedParser
 
   def initialize(@seed, @sbid, @type = 0, expiry = 6.hours, freeze = false)
     html = RemoteUtil.info_html(@seed, @sbid, expiry, freeze)
@@ -440,10 +428,14 @@ class RemoteSeed
     misc
   end
 
-  def better_seed?(misc : BookMisc::Data, mftime : Int64)
+  private def better_seed?(misc : BookMisc::Data, mftime : Int64)
     sbid = misc.seed_sbids[@seed]?
     return true if sbid.nil? || sbid == @sbid
 
     misc.seed_chaps[@seed]?.try(&.mftime.<= mftime) || true
+  end
+
+  def extract_chaps!(chap : ChapList)
+    # TODO!
   end
 end
