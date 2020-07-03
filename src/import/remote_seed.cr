@@ -166,94 +166,152 @@ class SeedParser
       end
   end
 
+  @status : Int32? = nil
+
   def get_status : Int32
-    case @seed
-    when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
-      case meta_data("og:novel:status")
-      when "完成", "完本", "已经完结", "已经完本", "完结"
-        1
-      else
+    @status ||=
+      case @seed
+      when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+        case meta_data("og:novel:status")
+        when "完成", "完本", "已经完结", "已经完本", "完结"
+          1
+        else
+          0
+        end
+      when "hetushu"
+        classes = node_attr(".book_info", "class").not_nil!
+        classes.includes?("finish") ? 1 : 0
+      when "zhwenpg", "69shu"
         0
+      else
+        raise "Seed `#{@seed}` not supported!"
       end
-    when "hetushu"
-      classes = node_attr(".book_info", "class").not_nil!
-      classes.includes?("finish") ? 1 : 0
-    when "zhwenpg", "69shu"
-      0
-    else
-      raise "Site not supported!"
-    end
   end
+
+  @mftme : Int64? = nil
 
   def get_mftime : Int64
-    case @seed
-    when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
-      text = meta_data("og:novel:update_time").not_nil!
-      Utils.parse_time(text).to_unix_ms
-    when "69shu"
-      text = node_text(".mu_beizhu").not_nil!.sub(/.+时间：/m, "")
-      Utils.parse_time(text).to_unix_ms
-    when "hetushu", "zhwenpg"
-      0_i64
-    else
-      raise "Site not supported!"
+    @mftime ||=
+      case @seed
+      when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
+        text = meta_data("og:novel:update_time").not_nil!
+
+        Utils.parse_time(text).to_unix_ms
+      when "69shu"
+        text = node_text(".mu_beizhu").not_nil!.sub(/.+时间：/m, "")
+        Utils.parse_time(text).to_unix_ms
+      when "hetushu", "zhwenpg"
+        0_i64
+      else
+        raise "Seed `#{@seed}` not supported!"
+      end
+  end
+
+  @latest : ChapItem? = nil
+
+  def get_latest
+    @latest ||= begin
+      latest = ChapItem.new("", "", mftime: get_mftime)
+
+      case @seed
+      when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
+        if href = meta_data("og:novel:latest_chapter_url")
+          text = meta_data("og:novel:latest_chapter_name").not_nil!
+          text = text.sub(/^章节目录\s+/, "") if @seed = "duokan8"
+          latest.set_title(text)
+
+          latest.scid = extract_scid(href)
+        end
+      when "zhwenpg"
+        if node = find_node(".fontwt0 + a")
+          latest.set_title(node.inner_text.strip)
+          latest.scid = extract_scid(node.attributes["href"])
+        end
+      when "69shu"
+        if node = find_node(".mulu_list:first-of-type a:first-child")
+          latest.set_title(node.inner_text.strip)
+          latest.scid = extract_scid(node.attributes["href"])
+        end
+      when "hetushu"
+        if node = find_node("#dir > dd:last-child > a")
+          latest.set_title(node.inner_text.strip)
+          latest.scid = extract_scid(node.attributes["href"])
+        end
+      else
+        raise "Seed `#{@seed}` not supported!"
+      end
+
+      latest
     end
   end
+
+  private def extract_scid(href : String)
+    case @seed
+    when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8", "hetushu"
+      File.basename(href, ".html")
+    when "zhwenpg"
+      href.sub("r.php?id=", "")
+    when "69shu"
+      File.basename(href)
+    else
+      raise "Seed `#{@seed}` not supported!"
+    end
+  end
+
+  @chaps : Array(ChapItem)? = nil
 
   def get_chaps : Array(ChapItem)
-    output = [] of ChapItem
-
-    case @seed
-    when "duokan8"
-      @doc.css(".chapter-list a").each do |link|
-        if href = link.attributes["href"]?
-          csid = File.basename(href, ".html")
-          title = link.inner_text
-          output << ChapItem.new(csid, title)
-        end
+    @chaps ||=
+      case @seed
+      when "jx_la", "nofff", "rengshu", "xbiquge", "paoshu8"
+        extract_generic_chaps("#list dl")
+      when "hetushu"
+        extract_generic_chaps("#dir")
+      when "duokan8"
+        extract_duokan8_chaps
+      when "zhwenpg"
+        extract_zhwenpg_chaps
+      when "69shu"
+        extract_69shu_chaps
+      else
+        raise "Seed `#{@seed}` not supported!"
       end
-    when "69shu"
-      volumes = @doc.css(".mu_contain").to_a.map do |node|
-        volume = SeedVolume.new
-
-        node.css("a").each do |link|
-          if href = link.attributes["href"]?
-            csid = File.basename(href)
-            title = link.inner_text
-            next if title.starts_with?("我要报错！")
-
-            volume.chaps << ChapItem.new(csid, title)
-          end
-        end
-
-        volume
-      end
-
-      volumes.shift if volumes.size > 1
-      volumes.each { |volume| output.concat(volume.chaps) }
-    when "zhwenpg"
-      latest_chap = node_text(".fontchap")
-
-      @doc.css("#dulist a").each do |link|
-        if href = link.attributes["href"]?
-          csid = href.sub("r.php?id=", "")
-          output << ChapItem.new(csid, link.inner_text)
-        end
-      end
-
-      output.reverse! if latest_chap == output.first.title
-    when "jx_la", "nofff", "rengshu", "xbiquge", "paoshu8"
-      output = extract_volumes("#list dl")
-    when "hetushu"
-      output = extract_volumes("#dir")
-    else
-      raise "Site not supported!"
-    end
-
-    output
   end
 
-  private def extract_volumes(selector)
+  private def extract_duokan8_chaps
+    chaps = [] of ChapItem
+
+    @doc.css(".chapter-list a").each do |link|
+      if href = link.attributes["href"]?
+        scid = extract_scid(href)
+        title = link.inner_text
+        chaps << ChapItem.new(scid, title)
+      end
+    end
+
+    chapss
+  end
+
+  private def extract_69shu_chaps
+    chaps = [] of ChapItem
+
+    @doc.css(".mu_contain").each do |node|
+      label = node.css("h2").first.inner_text.strip
+      next if label.ends_with?("最新6章")
+
+      node.css(".mulu_list:first-child > li > a").each do |link|
+        text = link.inner_text
+        # next if text.starts_with?("我要报错！")
+
+        scid = extract_scid(link.attributes["href"])
+        chaps << ChapItem.new(scid, text, label)
+      end
+    end
+
+    chaps
+  end
+
+  private def extract_generic_chaps(selector : String)
     output = [] of ChapItem
     return output unless parent = @doc.css(selector).first?
 
@@ -269,11 +327,11 @@ class SeedParser
         next unless link
 
         if href = link.attributes["href"]?
-          csid = File.basename(href, ".html")
+          scid = extract_scid(href)
           title = link.inner_text
 
           volumes << SeedVolume.new if volumes.empty?
-          volumes.last.chaps << ChapItem.new(csid, title, volumes.last.label)
+          volumes.last.chaps << ChapItem.new(scid, title, volumes.last.label)
         end
       end
     end
@@ -298,20 +356,32 @@ class SeedParser
     output
   end
 
+  private def extract_zhwenpg_chaps
+    chaps = [] of ChapItem
+
+    @doc.css("#dulist > li > a").each do |link|
+      scid = extract_scid(link.attributes["href"])
+      chaps << ChapItem.new(scid, link.inner_text)
+    end
+
+    chaps.reverse! if get_latest.scid == chaps.first.scid
+    chaps
+  end
+
+  private def find_node(selector)
+    @doc.css(selector).first?
+  end
+
+  private def node_attr(selector : String, attribute : String)
+    find_node(selector).try(&.attributes[attribute]?)
+  end
+
   private def meta_data(selector : String)
     node_attr("meta[property=\"#{selector}\"]", "content")
   end
 
-  private def node_attr(selector : String, attribute : String)
-    if node = @doc.css(selector).first?
-      node.attributes[attribute]?
-    end
-  end
-
   private def node_text(selector : String)
-    if node = @doc.css(selector).first?
-      node.inner_text.strip
-    end
+    find_node(selector).try(&.inner_text.strip)
   end
 end
 
@@ -323,6 +393,10 @@ class RemoteSeed
   def initialize(@seed, @sbid, @type = 0, expiry = 6.hours, freeze = false)
     html = RemoteUtil.info_html(@seed, @sbid, expiry, freeze)
     @parser = SeedParser.new(@seed, html)
+  end
+
+  def extract_uuid!
+    Utils.gen_uuid(@parser.get_title, @parser.get_author)
   end
 
   @info : BookInfo::Data?
@@ -339,10 +413,7 @@ class RemoteSeed
   @misc : BookMisc::Data?
 
   def default_misc
-    @misc ||= begin
-      uuid = Utils.gen_uuid(@parser.get_title, @parser.get_author)
-      BookMisc.get_or_create!(uuid)
-    end
+    @misc ||= BookMisc.get_or_create!(extract_uuid!)
   end
 
   def extract_misc!(misc : BookMisc::Data = default_misc)
@@ -358,15 +429,21 @@ class RemoteSeed
     misc.status = @parser.get_status
 
     mftime = @parser.get_mftime
+    if better_seed?(misc, mftime)
+      misc.set_seed_sbid(@seed, @sbid)
+      misc.set_seed_type(@seed, @type)
 
-    # TODO: skip if @sbid mftime < misc.seed_sbids[@seed] mftime
-    # TODO: add seed_lasts
-
-    misc.set_seed_sbid(@seed, @sbid)
-    misc.set_seed_type(@seed, @type)
-
-    misc.mftime = mftime
+      misc.set_seed_chap(@seed, @parser.get_latest)
+      misc.mftime = misc.seed_chaps[@seed].mftime
+    end
 
     misc
+  end
+
+  def better_seed?(misc : BookMisc::Data, mftime : Int64)
+    sbid = misc.seed_sbids[@seed]?
+    return true if sbid.nil? || sbid == @sbid
+
+    misc.seed_chaps[@seed]?.try(&.mftime.<= mftime) || true
   end
 end

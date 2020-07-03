@@ -26,7 +26,7 @@ module RemoteUtil
     when "nofff"
       "https://www.nofff.com/#{sbid}/"
     when "69shu"
-      "https://www.69shu.com/txt/#{sbid}/"
+      "https://www.69shu.com/#{sbid}/"
     when "jx_la"
       "https://www.jx.la/book/#{sbid}/"
     when "rengshu"

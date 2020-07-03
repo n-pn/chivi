@@ -32,7 +32,7 @@ class BookMisc::Data
   # seed types: 0 => remote, 1 => manual, 2 => locked
   property seed_types = {} of String => Int32
   property seed_sbids = {} of String => String
-  property seed_lasts = {} of String => ChapItem
+  property seed_chaps = {} of String => ChapItem
 
   property word_count = 0_i32
   property crit_count = 0_i32
@@ -50,7 +50,7 @@ class BookMisc::Data
 
   def mark_saved!
     @changed = false
-    @seed_lasts.each_value { |chap| chap.mark_saved! }
+    @seed_chaps.each_value { |chap| chap.mark_saved! }
   end
 
   def intro_zh=(intro : String)
@@ -103,23 +103,20 @@ class BookMisc::Data
   end
 
   def set_seed_chap(seed : String, scid : String, title : String, mftime = 0_i64) : Void
-    if chap = @seed_lasts[seed]?
-      if chap.scid != scid && chap.mftime == mftime
+    set_seed_chap(seed, ChapItem.new(scid, title, mftime: mftime))
+  end
+
+  def set_seed_chap(seed : String, chap : ChapItem)
+    if old_chap = @seed_chaps[seed]?
+      return if old_chap.scid == chap.scid
+
+      if old_chap.mftime == chap.mftime
         chap.mftime = Time.utc.to_unix_ms
-      else
-        chap.mftime = mftime
       end
-
-      chap.scid = scid
-      chap.set_title(title)
-      @changed ||= chap.changed?
-    else
-      chap = ChapItem.new(scid, title)
-      chap.mftime = mftime
-
-      @changed = true
-      @seed_lasts[seed] = chap
     end
+
+    @changed = true
+    @seed_chaps[seed] = chap
   end
 
   def mftime=(mftime : Int64) : Void

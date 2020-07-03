@@ -23,7 +23,7 @@ class ChapItem
   def initialize
   end
 
-  def initialize(@scid : String, title : String, label : String = "正文")
+  def initialize(@scid : String, title : String, label : String = "正文", @mftime = 0_i64)
     @changed = true
 
     if label.empty? || label == "正文"
