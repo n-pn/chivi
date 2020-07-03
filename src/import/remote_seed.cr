@@ -199,8 +199,7 @@ class SeedParser
       when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
         if href = meta_data("og:novel:latest_chapter_url")
           text = meta_data("og:novel:latest_chapter_name").not_nil!
-          text = text.sub(/^章节目录\s+/, "") if @seed = "duokan8"
-
+          text = text.sub(/^章节目录\s+/, "") if @seed == "duokan8"
           latest.set_title(text)
           latest.scid = extract_scid(href)
         end
@@ -231,22 +230,22 @@ class SeedParser
     case @seed
     when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8", "hetushu"
       File.basename(href, ".html")
-    when "zhwenpg"
-      href.sub("r.php?id=", "")
     when "69shu"
       File.basename(href)
+    when "zhwenpg"
+      href.sub("r.php?id=", "")
     else
       raise "Seed `#{@seed}` unsupported!"
     end
   end
 
-  @chaps : Array(ChapItem)? = nil
+  @chapters : Array(ChapItem)? = nil
 
   def get_chaps : Array(ChapItem)
-    @chaps ||=
+    @chapters ||=
       case @seed
       when "jx_la", "nofff", "rengshu", "xbiquge", "paoshu8"
-        extract_generic_chaps("#list dl")
+        extract_generic_chaps("#list > dl")
       when "hetushu"
         extract_generic_chaps("#dir")
       when "duokan8"
@@ -280,7 +279,7 @@ class SeedParser
       label = node.css("h2").first.inner_text.strip
       next if label.ends_with?("最新6章")
 
-      node.css(".mulu_list:first-child > li > a").each do |link|
+      node.css(".mulu_list:first-of-type > li > a").each do |link|
         text = link.inner_text
         # next if text.starts_with?("我要报错！")
 
@@ -292,20 +291,32 @@ class SeedParser
     chaps
   end
 
+  private def extract_zhwenpg_chaps
+    chaps = [] of ChapItem
+
+    @doc.css("#dulist a").each do |link|
+      scid = extract_scid(link.attributes["href"])
+      chaps << ChapItem.new(scid, link.inner_text)
+    end
+
+    chaps.reverse! if get_latest.scid == chaps.first.scid
+    chaps
+  end
+
   private def extract_generic_chaps(selector : String)
     chaps = [] of ChapItem
-    return chaps unless parent = @doc.css(selector).first?
+    return chaps unless node = find_node(selector)
 
-    nodes = parent.children
     label = "正文"
 
-    nodes.each do |node|
+    node.children.each do |node|
       case node.tag_sym
       when :dt
         label = node.inner_text.gsub(/《.*》/, "").strip
       when :dd
         next if label.includes?("最新章节")
         next unless link = node.css("a").first?
+
         next unless href = link.attributes["href"]?
 
         chaps << ChapItem.new(extract_scid(href), link.inner_text, label)
@@ -320,7 +331,8 @@ class SeedParser
       title_idx = 0
 
       chaps.sort_by! do |chap|
-        if label_idx = label_index(chap.label_zh)
+        if idx = label_index(chap.label_zh)
+          label_idx = idx
           label_acc = 0
         else
           label_acc += 1
@@ -337,26 +349,15 @@ class SeedParser
   INDEX_RE    = /([零〇一二两三四五六七八九十百千]+|\d+)[集卷]/
   INDEX_CACHE = {} of String => Int32
 
-  private def label_index(label : String)
+  private def label_index(label : String) : Int32?
     return 0 if label == "作品相关"
+
     unless index = INDEX_CACHE[label]?
-      index = INDEX_RE.match(label).try { |x| Utils.han_to_int(x[1]) } || 0
+      index = INDEX_RE.match(label).try { |x| Utils.han_to_int(x[1]).to_i } || 0
       INDEX_CACHE[label] = index
     end
 
     return index if index > 0
-  end
-
-  private def extract_zhwenpg_chaps
-    chaps = [] of ChapItem
-
-    @doc.css("#dulist > li > a").each do |link|
-      scid = extract_scid(link.attributes["href"])
-      chaps << ChapItem.new(scid, link.inner_text)
-    end
-
-    chaps.reverse! if get_latest.scid == chaps.first.scid
-    chaps
   end
 
   private def find_node(selector)
@@ -430,7 +431,25 @@ class RemoteSeed
     seed.latest_times[@seed]?.try(&.<= mftime) || true
   end
 
-  def extract_chaps!(chap : ChapList)
-    # TODO!
+  def extract_chaps!(old_list = ChapSeed.load!(@seed, @sbid))
+    new_list = @parser.get_chaps
+
+    size = old_list.size
+    size = new_list.size if size > new_list.size
+
+    0.upto(size - 1).each do |i|
+      old_chap = old_list[i]
+      new_chap = new_list[i]
+
+      old_chap.scid = new_chap.scid
+      old_chap.title_zh = new_chap.title_zh
+      old_chap.label_zh = new_chap.label_zh
+    end
+
+    size.upto(new_list.size - 1) do |i|
+      old_list << new_list[i]
+    end
+
+    old_list
   end
 end

@@ -8,8 +8,8 @@ class ChapItem
 
   property scid = ""
 
-  property label_zh = "正文"
-  property label_vi = "Chính văn"
+  property label_zh = ""
+  property label_vi = ""
 
   property title_zh = ""
   property title_vi = ""
