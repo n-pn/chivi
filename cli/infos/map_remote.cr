@@ -147,6 +147,8 @@ class MapRemote
     remote = RemoteSeed.new(@seed, sbid, expiry: expiry, freeze: true)
 
     uuid = remote.get_uuid
+    return if uuid == "--"
+
     title = remote.get_title
     author = remote.get_author
 

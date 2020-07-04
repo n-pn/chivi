@@ -396,7 +396,9 @@ class RemoteSeed
 
   def get_uuid : String
     title = @parser.get_title
-    return "--" if title.empty?
+    author = @parser.get_author
+    return "--" if title.empty? || author.empty?
+
     Utils.gen_uuid(title, @parser.get_author)
   end
 
