@@ -84,14 +84,8 @@ module MapZhwenpg
     return if should_skip?(title)
     info = BookInfo.find_or_create!(title, author)
 
-    if (intro = rows[4]?) && info.intro_zh.empty?
-      intro_text = Utils.split_text(intro.inner_text("\n"))
-      # intro_text = Engine.tradsim(intro_text)
-      info.intro_zh = intro_text.join("\n")
-    end
-
     genre = rows[2].css(".fontgt").first.inner_text
-    info.genre_zh = genre
+    info.set_genre(genre)
     info.add_tag(genre)
     info.add_cover(node.css("img").first.attributes["data-src"])
 
@@ -100,7 +94,7 @@ module MapZhwenpg
 
     info.voters = voters
     info.rating = rating
-    info.fix_weight!
+    info.fix_weight
 
     fresh = info.yousuu_link.empty?
     info.shield = 1 if fresh
@@ -111,6 +105,12 @@ module MapZhwenpg
     # book_meta
 
     meta = BookMeta.get_or_create!(info.uuid)
+
+    if (intro = rows[4]?) && meta.intro_zh.empty?
+      intro_text = Utils.split_text(intro.inner_text("\n"))
+      # intro_text = Engine.tradsim(intro_text)
+      meta.intro_zh = intro_text.join("\n")
+    end
 
     meta.status = status
     meta.add_seed("zhwenpg", sbid, 0)

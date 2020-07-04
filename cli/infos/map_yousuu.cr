@@ -71,8 +71,7 @@ class MapYousuu
 
       info = BookInfo.find_or_create!(input.title, input.author, uuid)
 
-      info.intro_zh = Utils.split_text(input.intro).join("\n")
-      info.genre_zh = input.genre
+      info.set_genre(input.genre)
       info.add_tags(input.tags)
       info.add_cover(input.cover)
 
@@ -80,8 +79,8 @@ class MapYousuu
 
       info.voters = input.scorerCount
       info.rating = (input.score * 10).round / 10
+      info.fix_weight
 
-      info.fix_weight!
       AUTHORS.upsert!(info.author_zh, info.weight)
 
       info.word_count = input.countWord.round.to_i
@@ -116,6 +115,7 @@ class MapYousuu
     @inputs.each do |uuid, input|
       meta = BookMeta.get_or_create!(uuid)
 
+      meta.intro_zh = Utils.split_text(input.intro).join("\n")
       meta.status = input.status
 
       mftime = Utils.correct_time(input.updateAt).to_unix_ms

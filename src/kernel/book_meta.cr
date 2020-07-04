@@ -11,6 +11,9 @@ class BookMeta
 
   property uuid = ""
 
+  property intro_zh = ""
+  property intro_vi = ""
+
   property status = 0_i32
   property mftime = 0_i64
 
@@ -37,6 +40,18 @@ class BookMeta
   def mark_saved!
     @changed = false
     @latest_chaps.each_value { |chap| chap.mark_saved! }
+  end
+
+  def intro_zh=(intro : String)
+    return if intro == @intro_zh
+    @changed = true
+    @intro_zh = intro
+  end
+
+  def intro_vi=(intro : String)
+    return if intro == @intro_vi
+    @changed = true
+    @intro_vi = intro
   end
 
   def status=(status : Int32) : Void

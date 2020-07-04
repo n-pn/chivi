@@ -23,9 +23,6 @@ class BookInfo
   property genre_vi = ""
   property genre_us = ""
 
-  property intro_zh = ""
-  property intro_vi = ""
-
   property tags_zh = [] of String
   property tags_vi = [] of String
   property tags_us = [] of String
@@ -71,7 +68,7 @@ class BookInfo
     self.uuid = Utils.gen_uuid(@title_zh, @author_zh)
   end
 
-  def set_uuid!(uuid : String, force = false) : Void
+  def set_uuid(uuid : String, force = false) : Void
     return if uuid.empty?
     return unless force || @uuid.empty?
     self.uuid = uuid
@@ -83,7 +80,7 @@ class BookInfo
     @uuid = uuid
   end
 
-  def set_title!(title : String, force = false)
+  def set_title(title : String, force = false)
     return unless @title_zh.empty? || force
 
     self.title_zh = title
@@ -113,7 +110,7 @@ class BookInfo
     @title_vi.empty? ? @title_hv : @title_vi
   end
 
-  def set_author!(author : String, force = false)
+  def set_author(author : String, force = false)
     return unless @author_zh.empty? || force
 
     self.author_zh = author
@@ -145,7 +142,7 @@ class BookInfo
     @author_zh = author
   end
 
-  def set_genre!(genre : String, force = false)
+  def set_genre(genre : String, force = false)
     return unless @genre_zh.empty? || force
 
     self.genre_zh = genre
@@ -169,18 +166,6 @@ class BookInfo
     return if genre == @genre_us
     @changed = true
     @genre_us = genre
-  end
-
-  def intro_zh=(intro : String)
-    return if intro == @intro_zh
-    @changed = true
-    @intro_zh = intro
-  end
-
-  def intro_vi=(intro : String)
-    return if intro == @intro_vi
-    @changed = true
-    @intro_vi = intro
   end
 
   def add_tags(tags : Array(String))
@@ -218,7 +203,7 @@ class BookInfo
     (@rating * 10).to_i64
   end
 
-  def fix_weight!
+  def fix_weight
     @weight = scored * @voters
   end
 

@@ -403,8 +403,8 @@ class RemoteSeed
   end
 
   def emit_info(info : BookInfo = BookInfo.find_or_create!(@parser.get_title, @parser.get_author)) : BookInfo
-    info.intro_zh = @parser.get_intro if info.intro_zh.empty?
     info.add_cover(@parser.get_cover)
+    info.set_genre(@parser.get_genre)
     info.add_tags(@parser.get_tags)
     info.add_tag(@parser.get_genre)
 
@@ -412,6 +412,7 @@ class RemoteSeed
   end
 
   def emit_meta(meta : BookMeta = BookMeta.get_or_create!(get_uuid), type = 0)
+    meta.intro_zh = @parser.get_intro if meta.intro_zh.empty?
     meta.status = @parser.get_status
 
     mftime = @parser.get_mftime
