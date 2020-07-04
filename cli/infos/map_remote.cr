@@ -138,6 +138,7 @@ class MapRemote
   end
 
   def qualified?(uuid : String, author : String)
+    return true if @seed == "hetushu" || @seed == "rengshu"
     # return false if author.empty?
     @best_uuids.includes?(uuid) || @best_authors.includes?(author)
   end
