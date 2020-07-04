@@ -6,7 +6,7 @@ OUT=nipin@ssh.chivi.xyz:srv/chivi/var/appcv
 rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/libcv" $OUT
 rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/book_infos" $OUT
 rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/book_metas" $OUT
-rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/book_seeds" $OUT
+rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/book_metas" $OUT
 rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/book_index" $OUT
 rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/chap_lists" $OUT
 # rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "$INP/appcv/chap_texts" $OUT

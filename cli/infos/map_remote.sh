@@ -1,8 +1,8 @@
-time bin/map_spider -s hetushu -u 4759
-time bin/map_spider -s jx_la -u 251787
-time bin/map_spider -s rengshu -u 4275
-time bin/map_spider -s xbiquge -u 52859
-time bin/map_spider -s nofff -u 63553
-time bin/map_spider -s duokan8 -u 21518
-time bin/map_spider -s 69shu -u 31692
-time bin/map_spider -s paoshu8 -u 144433
+time bin/map_remote -s hetushu -f 1 -u 4833
+time bin/map_remote -s jx_la -f 1-u 252955
+time bin/map_remote -s rengshu -f 1 -u 4275
+time bin/map_remote -s xbiquge -f 1 -u 52991
+time bin/map_remote -s nofff -f 1 -u 69982
+time bin/map_remote -s duokan8 -f 1 -u 23438
+time bin/map_remote -s 69shu -f 1 -u 32113
+time bin/map_remote -s paoshu8 -f 1 -u 147487

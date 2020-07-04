@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../kernel/book_info"
-require "../kernel/book_seed"
+require "../kernel/book_meta"
 require "../kernel/chap_seed"
 
 require "../utils/han_to_int"
@@ -74,9 +74,14 @@ class SeedParser
       intro =
         case @seed
         when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
-          meta_data("og:description")
+          if text = meta_data("og:description")
+            Utils.split_text(text).join("\n")
+          end
         when "zhwenpg"
-          node_text("tr:nth-of-type(3)")
+          # TODO: trad to simp?
+          if text = node_text("tr:nth-of-type(3)")
+            Utils.split_text(text).join("\n")
+          end
         when "hetushu"
           @doc.css(".intro > p").map(&.inner_text).join("\n")
         when "69shu"
@@ -85,7 +90,7 @@ class SeedParser
           raise "Unknown seed type [#{@seed}]!"
         end
 
-      intro ? Utils.clean_text(intro) : ""
+      intro || ""
     end
   end
 
@@ -380,25 +385,22 @@ end
 class RemoteSeed
   getter seed : String
   getter sbid : String
-  getter type : Int32
 
   getter parser : SeedParser
   forward_missing_to parser
 
-  def initialize(@seed, @sbid, @type = 0, expiry = 6.hours, freeze = false)
+  def initialize(@seed, @sbid, expiry = 6.hours, freeze = false)
     html = RemoteUtil.info_html(@seed, @sbid, expiry, freeze)
     @parser = SeedParser.new(@seed, html)
   end
 
   def get_uuid : String
-    Utils.gen_uuid(@parser.get_title, @parser.get_author)
+    title = @parser.get_title
+    return "--" if title.empty?
+    Utils.gen_uuid(title, @parser.get_author)
   end
 
-  def default_info : BookInfo
-    BookInfo.find_or_create!(@parser.get_title, @parser.get_author)
-  end
-
-  def extract_info(info : BookInfo = default_info) : BookInfo
+  def emit_info(info : BookInfo = BookInfo.find_or_create!(@parser.get_title, @parser.get_author)) : BookInfo
     info.intro_zh = @parser.get_intro if info.intro_zh.empty?
     info.add_cover(@parser.get_cover)
     info.add_tags(@parser.get_tags)
@@ -407,32 +409,27 @@ class RemoteSeed
     info
   end
 
-  def default_seed : BookSeed
-    BookSeed.get_or_create!(get_uuid)
-  end
-
-  def extract_seed(seed : BookSeed = default_seed)
-    seed.status = @parser.get_status
+  def emit_meta(meta : BookMeta = BookMeta.get_or_create!(get_uuid), type = 0)
+    meta.status = @parser.get_status
 
     mftime = @parser.get_mftime
-    if better_seed?(seed, mftime)
-      seed.set_sbid(@seed, @sbid)
-      seed.set_type(@seed, @type)
+    if better_seed?(meta, mftime)
+      meta.add_seed(@seed, @sbid, type)
 
-      seed.set_latest_chap(@seed, @parser.get_latest, mftime)
-      seed.mftime = seed.latest_times[@seed]
+      meta.set_latest_chap(@seed, @parser.get_latest, mftime)
+      meta.mftime = meta.latest_times[@seed]
     end
 
-    seed
+    meta
   end
 
-  private def better_seed?(seed : BookSeed, mftime : Int64)
-    sbid = seed.sbids[@seed]?
+  private def better_seed?(meta : BookMeta, mftime : Int64)
+    sbid = meta.seed_sbids[@seed]?
     return true if sbid.nil? || sbid == @sbid
-    seed.latest_times[@seed]?.try(&.<= mftime) || true
+    meta.latest_times[@seed]?.try(&.<= mftime) || true
   end
 
-  def extract_chaps(old_list = ChapSeed.load!(@seed, @sbid))
+  def emit_chaps(old_list = ChapSeed.init!(get_uuid, @seed))
     new_list = @parser.get_chaps
 
     size = old_list.size

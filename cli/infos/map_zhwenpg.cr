@@ -9,7 +9,9 @@ require "../../src/utils/time_utils"
 require "../../src/utils/text_utils"
 
 require "../../src/kernel/book_info"
-require "../../src/kernel/book_seed"
+require "../../src/kernel/book_meta"
+
+require "../../src/import/remote_seed"
 
 module MapZhwenpg
   extend self
@@ -106,15 +108,12 @@ module MapZhwenpg
     color = fresh ? :green : :blue
     puts "- <#{index.colorize(color)}> [#{info.uuid}] #{caption.colorize(color)}"
     info.save! if info.changed?
-    # book_seed
+    # book_meta
 
-    seed = BookSeed.get_or_create!(info.uuid)
+    meta = BookMeta.get_or_create!(info.uuid)
 
-    seed.status = status
-
-    seed.lead = "zhwenpg" if seed.lead.empty?
-    seed.set_type("zhwenpg", 0)
-    seed.set_sbid("zhwenpg", sbid)
+    meta.status = status
+    meta.add_seed("zhwenpg", sbid, 0)
 
     latest_node = rows[3].css("a[target=_blank]").first
     latest_text = latest_node.inner_text
@@ -123,10 +122,18 @@ module MapZhwenpg
     latest_scid = latest_link.sub("r.php?id=", "")
 
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
-    seed.set_latest_chap("zhwenpg", latest_scid, latest_text, mftime)
-    seed.mftime = seed.latest_times["zhwenpg"]
+    meta.set_latest_chap("zhwenpg", latest_scid, latest_text, mftime)
+    meta.mftime = meta.latest_times["zhwenpg"]
 
-    seed.save! if seed.changed?
+    return unless meta.changed?
+    meta.save!
+
+    expiry = Time.utc - Time.unix_ms(mftime)
+    expiry = expiry > 24.hours ? expiry - 24.hours : expiry
+
+    remote = RemoteSeed.new("zhwenpg", sbid, expiry: expiry, freeze: true)
+    chaps = remote.emit_chaps
+    chaps.save! if chaps.changed?
   end
 
   TIME = Time.utc.to_unix_ms

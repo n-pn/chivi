@@ -6,18 +6,19 @@ require "./chap_item"
 
 # require "../utils/text_utils"
 
-class BookSeed
+class BookMeta
   include JSON::Serializable
 
   property uuid = ""
-  property lead = ""
 
   property status = 0_i32
   property mftime = 0_i64
 
   # seed types: 0 => remote, 1 => manual, 2 => locked
-  property sbids = {} of String => String
-  property types = {} of String => Int32
+
+  property seed_lists = [] of String
+  property seed_types = {} of String => Int32
+  property seed_sbids = {} of String => String
 
   property latest_times = {} of String => Int64
   property latest_chaps = {} of String => ChapItem
@@ -50,16 +51,25 @@ class BookSeed
     @mftime = mftime
   end
 
-  def set_sbid(seed : String, sbid : String) : Void
-    return if @sbids[seed]?.try(&.== sbid)
+  def add_seed(seed : String, sbid : String, type : Int32 = 0) : Void
+    if @seed_lists.includes?(seed)
+      return if @seed_sbids[seed] == sbid && @seed_types[seed] == type
+    else
+      @seed_lists << seed
+    end
+
     @changed = true
-    @sbids[seed] = sbid
+    @seed_sbids[seed] = sbid
+    @seed_types[seed] = type
+    # rescue err
+    # puts err
+    # puts self
   end
 
   def set_type(seed : String, type : Int32 = 0) : Void
-    return if @types[seed]?.try(&.== type)
+    return if @seed_types[seed]?.try(&.== type)
     @changed = true
-    @types[seed] = type
+    @seed_types[type] = type
   end
 
   def set_latest_chap(seed : String, scid : String, title : String, mftime = 0_i64) : Void
@@ -89,15 +99,16 @@ class BookSeed
     String.build { |io| to_s(io) }
   end
 
-  def save!(file : String = BookSeed.path_for(@uuid))
+  def save!(file : String = BookMeta.path_for(@uuid))
     mark_saved!
+
     File.write(file, self)
-    # puts "- <book_seed> [#{file.colorize(:cyan)}] saved."
+    puts "- <book_meta> [#{file.colorize(:cyan)}] saved."
   end
 
   # class methods
 
-  DIR = File.join("var", "appcv", "book_seeds")
+  DIR = File.join("var", "appcv", "book_metas")
   FileUtils.mkdir_p(DIR)
 
   def self.uuid_for(file : String)
@@ -129,7 +140,7 @@ class BookSeed
   end
 
   def self.get!(uuid : String) : self
-    get(uuid) || raise "- <book_seed> [#{uuid}] not found!"
+    get(uuid) || raise "- <book_meta> [#{uuid}] not found!"
   end
 
   def self.get_or_create!(uuid : String) : self
@@ -142,13 +153,13 @@ class BookSeed
 
   def self.load_all!
     glob_dir.each { |file| load!(uuid_for(file)) }
-    puts "- <book_seed> loaded `#{CACHE.size.colorize(:cyan)}` entries."
+    puts "- <book_meta> loaded `#{CACHE.size.colorize(:cyan)}` entries."
 
     CACHE
   end
 
   def self.load(uuid : String)
-    CACHE[uuid] ||= get(uuid)
+    load!(uuid) if File.exists?(path_for(uuid))
   end
 
   def self.load!(uuid : String)

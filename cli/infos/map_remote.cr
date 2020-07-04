@@ -5,71 +5,181 @@ require "../../src/utils/file_utils.cr"
 require "../../src/utils/html_utils.cr"
 
 require "../../src/kernel/book_info.cr"
-require "../../src/kernel/book_seed.cr"
+require "../../src/kernel/book_meta.cr"
 require "../../src/mapper/map_value.cr"
 require "../../src/mapper/map_label.cr"
 
 require "../../src/import/remote_seed.cr"
 
 class MapRemote
-  def self.init(argv = ARGV)
-    seed = "rengshu"
-    retry = false
+  SEEDS = {
+    "hetushu", "jx_la", "rengshu",
+    "xbiquge", "nofff", "duokan8",
+    "paoshu8", "69shu", "zhwenpg",
+  }
+
+  def self.run!(argv = ARGV)
+    seed = "hetushu"
+    from = 1
+    mode = 0
+    upto = 1
 
     OptionParser.parse(argv) do |parser|
-      parser.banner = "Usage: mapping [arguments]"
+      parser.banner = "Usage: map_remote [arguments]"
       parser.on("-s SEED", "--seed=SEED", "Seed name") { |x| seed = x }
-      parser.on("-r", "--retry", "Retry on error") { retry = true }
+      parser.on("-m MODE", "--mode=MODE", "Map mode") { |x| mode = x.to_i }
+      parser.on("-f FROM", "--from=FROM", "First sbid") { |x| from = x.to_i }
+      parser.on("-u UPTO", "--upto=UPTO", "Last sbid") { |x| upto = x.to_i }
 
       parser.invalid_option do |flag|
-        STDERR.puts "ERROR: #{flag} is not a valid option."
+        STDERR.puts "ERROR: `#{flag}` is not a valid option."
         STDERR.puts parser
         exit(1)
       end
     end
 
-    new(seed, retry)
+    unless SEEDS.includes?(seed)
+      STDERR.puts "ERROR: invalid seed `#{seed}`."
+      exit(1)
+    end
+
+    mapper = new(seed)
+
+    upto = default_upto(seed) if upto == 1
+    mapper.crawl!(from, upto, mode)
   end
 
-  def initialize(@seed : String, @retry : Bool = false)
-    @uuids = MapLabel.init!("#{@seed}-uuids")
-    @titles = MapLabel.init!("#{@seed}-titles")
-    @authors = MapLabel.init!("#{@seed}-authors")
+  def self.default_from(seed : String) : Int32
+    1 # TODO: read from input?
   end
 
-  # @unmapped_sbids : Array(String)? = nil
+  def self.default_upto(seed : String) : Int32
+    case seed
+    when "hetushu" then 4831
+    when "jx_la"   then 252941
+    when "rengshu" then 4275
+    when "xbiquge" then 52986
+    when "nofff"   then 69766
+    when "duokan8" then 23377
+    when "69shu"   then 32113
+    when "paoshu8" then 147456
+    else                1
+    end
+  end
 
-  def map_cached!
-    files = Dir.glob(File.join(RemoteUtil.info_root(@seed), "*.html"))
-    files.each do |file|
-      sbid = File.basename(file, ".html")
+  def initialize(@seed : String, @type = 0)
+    @best_uuids = Set(String).new
+    MapValue.init!("weight").each do |item|
+      @best_uuids << item.key if item.val >= 500
+    end
 
-      if uuid = @uuids.get_val(sbid)
-        next unless uuid == "--" && @retry
-        File.delete(file)
-      end
+    @best_authors = Set(String).new
+    MapValue.init!("best_authors").each do |item|
+      @best_authors << item.key if item.val >= 2000
+    end
 
-      begin
-        remote = RemoteSeed.new(@seed, sbid, expiry: 1.year, freeze: true)
+    @access = MapValue.init!("access")
+    @update = MapValue.init!("update")
 
-        @uuids.upsert!(sbid, remote.get_uuid)
-        @titles.upsert!(sbid, remote.get_title)
-        @authors.upsert!(sbid, remote.get_author)
-      rescue err
-        puts "- error parsing `#{sbid}`: #{err.colorize(:red)}"
+    @map_uuids = MapLabel.init!("#{seed}_uuids")
+    @map_titles = MapLabel.init!("#{seed}_titles")
+    @map_authors = MapLabel.init!("#{seed}_authors")
+  end
 
-        @uuids.upsert!(sbid, "--")
-        @titles.upsert!(sbid, "--")
-        @authors.upsert!(sbid, "--")
+  alias TimeSpan = Time::Span | Time::MonthSpan
+
+  def crawl!(from = 1, upto = 1, mode = 0)
+    queue = [] of Tuple(String, TimeSpan)
+
+    from.upto(upto) do |id|
+      sbid = id.to_s
+      queue << {sbid, expiry_for(sbid)} if should_crawl?(sbid, mode)
+    end
+
+    limit = queue.size
+    limit = 8 if limit > 8
+    channel = Channel(Nil).new(limit)
+
+    queue.each_with_index do |(sbid, expiry), idx|
+      channel.receive if idx > limit
+
+      spawn do
+        parse!(sbid, expiry, "#{idx + 1}/#{queue.size}")
+      ensure
+        channel.send(nil)
       end
     end
+
+    limit.times { channel.receive }
+
+    @update.save!
+    @access.save!
+
+    @map_uuids.save!
+    @map_titles.save!
+    @map_authors.save!
+
+    puts "[seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size}] ".colorize(:yellow)
+  end
+
+  def expiry_for(sbid : String)
+    return 3.months unless uuid = @map_uuids.get_val(sbid)
+    return 6.months unless update = @update.get_val(uuid)
+    expiry = Time.utc - Time.unix_ms(update)
+    expiry > 24.hours ? expiry - 24.hours : expiry
+  end
+
+  def should_crawl?(sbid : String, mode = 0) : Bool
+    return true unless uuid = @map_uuids.get_val(sbid)
+    return true if mode == 2 && uuid == "--"
+
+    # TODO: check titles blacklist
+    qualified?(uuid, @map_authors.get_val(sbid) || "")
+  end
+
+  def qualified?(uuid : String, author : String)
+    # return false if author.empty?
+    @best_uuids.includes?(uuid) || @best_authors.includes?(author)
+  end
+
+  def parse!(sbid : String, expiry = 24.hours, label = "1/1")
+    remote = RemoteSeed.new(@seed, sbid, expiry: expiry, freeze: true)
+
+    uuid = remote.get_uuid
+    title = remote.get_title
+    author = remote.get_author
+
+    puts "- <#{label}> [#{sbid}] #{uuid}-#{author}-#{title}".colorize(:blue)
+
+    @map_uuids.upsert!(sbid, uuid)
+    @map_titles.upsert!(sbid, title)
+    @map_authors.upsert!(sbid, author)
+
+    return unless qualified?(uuid, author)
+
+    remote.emit_meta.try do |meta|
+      if meta.changed?
+        meta.save!
+        @update.upsert!(meta.uuid, meta.mftime)
+        @access.upsert!(meta.uuid, meta.mftime)
+      end
+    end
+
+    remote.emit_info.try { |x| x.save! if x.changed? }
+    remote.emit_chaps.try { |x| x.save! if x.changed? }
+  rescue err
+    puts "- error parsing `#{sbid}`: #{err.colorize(:red)}"
+    puts err.backtrace
+
+    @map_uuids.upsert!(sbid, "--")
+    @map_titles.upsert!(sbid, "")
+    @map_authors.upsert!(sbid, "")
   end
 end
 
-remote = MapRemote.init
-remote.map_cached!
+MapRemote.run!
 
-# RETRY = ARGV.includes?("retry")
+# RETRY = ARGV.includes?("mode")
 
 # module Mapping
 #   DIR = File.join("data", "sitemaps")

@@ -3,7 +3,7 @@ require "file_utils"
 require "./engine"
 
 require "./kernel/book_info"
-require "./kernel/book_seed"
+require "./kernel/book_meta"
 require "./kernel/chap_list"
 require "./kernel/chap_text"
 

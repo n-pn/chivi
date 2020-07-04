@@ -38,7 +38,7 @@ class MapLabel::Bulk
     puts "- <map_label> [#{file.colorize(:cyan)}] saved, (entries: #{size})."
   end
 
-  def includes?(key : String)
+  def has_key?(key : String)
     @data.has_key?(key)
   end
 

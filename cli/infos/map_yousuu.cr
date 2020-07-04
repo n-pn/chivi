@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../../src/kernel/book_info"
-require "../../src/kernel/book_seed"
+require "../../src/kernel/book_meta"
 
 require "../../src/mapper/map_value"
 require "../../src/import/yousuu_info"
@@ -20,17 +20,12 @@ class MapYousuu
   @info_create = 0
   @info_update = 0
 
-  AUTHORS = MapValue.load!("authors")
+  AUTHORS = MapValue.load!("best_authors")
   @inputs = {} of String => YousuuInfo
 
   def load_inputs! : Void
     files = Dir.glob(File.join(DIR, "*.json"))
     files.each { |file| parse_file!(file) }
-  end
-
-  def print_stats!
-    puts "- <INPUT> total: #{@input_total}, worth: #{@input_count} ".colorize(:yellow)
-    puts "- <OUTPUT> create: #{@info_create}, update: #{@info_update}".colorize(:yellow)
   end
 
   def parse_file!(file : String) : Void
@@ -96,13 +91,13 @@ class MapYousuu
       info.origin_link = input.first_source || ""
 
       if info.changed?
-        info.save!
-
         if BookInfo.exists?(uuid)
           @info_update += 1
         else
           @info_create += 1
         end
+
+        info.save!
       end
 
       rating_map.data.upsert!(uuid, info.scored)
@@ -111,36 +106,41 @@ class MapYousuu
 
     rating_map.save!
     weight_map.save!
-    AUTHORS.save!
   end
 
-  def initial_seeds!
+  def initial_metas!
     update_map = MapValue.load!("book_update")
     access_map = MapValue.load!("book_access")
     # fresh = 0
 
     @inputs.each do |uuid, input|
-      seed = BookSeed.get_or_create!(uuid)
+      meta = BookMeta.get_or_create!(uuid)
 
-      seed.status = input.status
+      meta.status = input.status
 
       mftime = Utils.correct_time(input.updateAt).to_unix_ms
-      seed.mftime = mftime
+      meta.mftime = mftime
 
-      update_map.data.upsert!(uuid, seed.mftime)
-      access_map.data.upsert!(uuid, seed.mftime)
+      update_map.data.upsert!(uuid, meta.mftime)
+      access_map.data.upsert!(uuid, meta.mftime)
 
-      seed.save! if seed.changed?
+      meta.save! if meta.changed?
     end
 
-    # access_map.save!
-    # update_map.save!
-    # puts "- FRESH: #{fresh.colorize(:yellow)}."
+    access_map.save!
+    update_map.save!
+  end
+
+  def cleanup!
+    puts "- <INPUT> total: #{@input_total}, worth: #{@input_count} ".colorize(:yellow)
+    puts "- <OUTPUT> create: #{@info_create}, update: #{@info_update}".colorize(:yellow)
+
+    AUTHORS.save!
   end
 end
 
 mapper = MapYousuu.new
 mapper.load_inputs!
 mapper.extract_infos!
-mapper.initial_seeds!
-mapper.print_stats!
+mapper.initial_metas!
+mapper.cleanup!
