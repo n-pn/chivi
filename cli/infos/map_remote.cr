@@ -20,8 +20,8 @@ class MapRemote
 
   def self.run!(argv = ARGV)
     seed = "hetushu"
-    from = 1
     mode = 0
+    from = 1
     upto = 1
 
     OptionParser.parse(argv) do |parser|
@@ -43,10 +43,8 @@ class MapRemote
       exit(1)
     end
 
-    mapper = new(seed)
-
-    upto = default_upto(seed) if upto == 1
-    mapper.crawl!(from, upto, mode)
+    upto = default_upto(seed) if upto <= 1
+    new(seed).crawl!(from, upto, mode)
   end
 
   def self.default_from(seed : String) : Int32

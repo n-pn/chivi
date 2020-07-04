@@ -19,6 +19,8 @@ class BookInfo
   property author_vi = ""
   property author_us = ""
 
+  property cover_url = ""
+
   property genre_zh = ""
   property genre_vi = ""
   property genre_us = ""
@@ -27,9 +29,6 @@ class BookInfo
   property tags_vi = [] of String
   property tags_us = [] of String
 
-  property cover_links = [] of String
-  property local_cover = ""
-
   property shield = 0_i32
   property voters = 0_i32
   property rating = 0_f32
@@ -37,9 +36,6 @@ class BookInfo
 
   property word_count = 0_i32
   property crit_count = 0_i32
-
-  property yousuu_link = ""
-  property origin_link = ""
 
   @[JSON::Field(ignore: true)]
   @changed = false
@@ -179,12 +175,6 @@ class BookInfo
     @tags_zh << tag
     @tags_vi << ""
     @tags_us << ""
-  end
-
-  def add_cover(cover : String)
-    return if cover.empty? || @cover_links.includes?(cover)
-    @changed = true
-    @cover_links << cover
   end
 
   def voters=(voters : Int32)

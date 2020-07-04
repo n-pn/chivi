@@ -14,6 +14,10 @@ class BookMeta
   property intro_zh = ""
   property intro_vi = ""
 
+  property cover_links = [] of String
+  property yousuu_link = ""
+  property origin_link = ""
+
   property status = 0_i32
   property mftime = 0_i64
 
@@ -64,6 +68,12 @@ class BookMeta
     return if @mftime >= mftime
     changed = true
     @mftime = mftime
+  end
+
+  def add_cover(cover : String)
+    return if cover.empty? || @cover_links.includes?(cover)
+    @changed = true
+    @cover_links << cover
   end
 
   def add_seed(seed : String, sbid : String, type : Int32 = 0) : Void

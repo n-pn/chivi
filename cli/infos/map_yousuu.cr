@@ -73,7 +73,6 @@ class MapYousuu
 
       info.set_genre(input.genre)
       info.add_tags(input.tags)
-      info.add_cover(input.cover)
 
       info.shield = input.shielded ? 2 : 0
 
@@ -85,9 +84,6 @@ class MapYousuu
 
       info.word_count = input.countWord.round.to_i
       info.crit_count = input.commentCount
-
-      info.yousuu_link = "https://www.yousuu.com/book/#{input._id}"
-      info.origin_link = input.first_source || ""
 
       if info.changed?
         if BookInfo.exists?(uuid)
@@ -117,6 +113,10 @@ class MapYousuu
 
       meta.intro_zh = Utils.split_text(input.intro).join("\n")
       meta.status = input.status
+      meta.add_cover(input.cover)
+
+      meta.yousuu_link = "https://www.yousuu.com/book/#{input._id}"
+      meta.origin_link = input.first_source || ""
 
       mftime = Utils.correct_time(input.updateAt).to_unix_ms
       meta.mftime = mftime

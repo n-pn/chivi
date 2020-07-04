@@ -11,7 +11,14 @@ require "../../src/utils/text_utils"
 require "../../src/kernel/book_info"
 require "../../src/kernel/book_meta"
 
+require "../../src/mapper/map_value"
+
 require "../../src/import/remote_seed"
+
+ACCESS = MapValue.init!("book_access")
+UPDATE = MapValue.init!("book_update")
+WEIGHT = MapValue.init!("book_weight")
+RATING = MapValue.init!("book_rating")
 
 module MapZhwenpg
   extend self
@@ -83,11 +90,11 @@ module MapZhwenpg
 
     return if should_skip?(title)
     info = BookInfo.find_or_create!(title, author)
+    meta = BookMeta.get_or_create!(info.uuid)
 
     genre = rows[2].css(".fontgt").first.inner_text
     info.set_genre(genre)
     info.add_tag(genre)
-    info.add_cover(node.css("img").first.attributes["data-src"])
 
     caption = "#{title}--#{author}"
     voters, rating = fetch_score(caption)
@@ -96,15 +103,13 @@ module MapZhwenpg
     info.rating = rating
     info.fix_weight
 
-    fresh = info.yousuu_link.empty?
+    RATING.upsert!(info.uuid, info.scored)
+    WEIGHT.upsert!(info.uuid, info.weight)
+
+    fresh = meta.yousuu_link.empty?
     info.shield = 1 if fresh
 
-    color = fresh ? :green : :blue
-    puts "- <#{index.colorize(color)}> [#{info.uuid}] #{caption.colorize(color)}"
-    info.save! if info.changed?
     # book_meta
-
-    meta = BookMeta.get_or_create!(info.uuid)
 
     if (intro = rows[4]?) && meta.intro_zh.empty?
       intro_text = Utils.split_text(intro.inner_text("\n"))
@@ -113,6 +118,7 @@ module MapZhwenpg
     end
 
     meta.status = status
+    meta.add_cover(node.css("img").first.attributes["data-src"])
     meta.add_seed("zhwenpg", sbid, 0)
 
     latest_node = rows[3].css("a[target=_blank]").first
@@ -125,8 +131,11 @@ module MapZhwenpg
     meta.set_latest_chap("zhwenpg", latest_scid, latest_text, mftime)
     meta.mftime = meta.latest_times["zhwenpg"]
 
-    return unless meta.changed?
-    meta.save!
+    ACCESS.upsert!(info.uuid, mftime)
+    UPDATE.upsert!(info.uuid, mftime)
+
+    info.save! if info.changed?
+    meta.save! if meta.changed?
 
     expiry = Time.utc - Time.unix_ms(mftime)
     expiry = expiry > 24.hours ? expiry - 24.hours : expiry
@@ -134,6 +143,9 @@ module MapZhwenpg
     remote = RemoteSeed.new("zhwenpg", sbid, expiry: expiry, freeze: true)
     chaps = remote.emit_chaps
     chaps.save! if chaps.changed?
+
+    color = fresh ? :green : :blue
+    puts "- <#{index.colorize(color)}> [#{info.uuid}] #{caption.colorize(color)}"
   end
 
   TIME = Time.utc.to_unix_ms
@@ -148,3 +160,8 @@ end
 
 1.upto(3) { |page| MapZhwenpg.parse_page!(page, status: 1) }
 1.upto(12) { |page| MapZhwenpg.parse_page!(page, status: 0) }
+
+ACCESS.save!
+UPDATE.save!
+RATING.save!
+WEIGHT.save!
