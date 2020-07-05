@@ -128,7 +128,7 @@ module MapZhwenpg
     latest_scid = latest_link.sub("r.php?id=", "")
 
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
-    meta.set_latest_chap("zhwenpg", latest_scid, latest_text, mftime)
+    meta.set_latest("zhwenpg", latest_scid, latest_text, mftime)
     meta.mftime = meta.latest_times["zhwenpg"]
 
     ACCESS.upsert!(info.uuid, mftime)

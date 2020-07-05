@@ -52,6 +52,18 @@ class BookMeta
     @intro_zh = intro
   end
 
+  def yousuu_link=(yousuu_link : String) : Void
+    return if @yousuu_link == yousuu_link
+    changed = true
+    @yousuu_link = yousuu_link
+  end
+
+  def origin_link=(origin_link : String) : Void
+    return if @origin_link == origin_link
+    changed = true
+    @origin_link = origin_link
+  end
+
   def intro_vi=(intro : String)
     return if intro == @intro_vi
     @changed = true
@@ -97,11 +109,11 @@ class BookMeta
     @seed_types[type] = type
   end
 
-  def set_latest_chap(seed : String, scid : String, title : String, mftime = 0_i64) : Void
-    set_latest_chap(seed, ChapItem.new(scid, title), mftime)
+  def set_latest(seed : String, scid : String, title : String, mftime = 0_i64) : Void
+    set_latest(seed, ChapItem.new(scid, title), mftime)
   end
 
-  def set_latest_chap(seed : String, chap : ChapItem, mftime = 0_i64)
+  def set_latest(seed : String, chap : ChapItem, mftime = 0_i64)
     if old_chap = @latest_chaps[seed]?
       return if old_chap.scid == chap.scid
 

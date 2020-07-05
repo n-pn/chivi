@@ -3,95 +3,105 @@ require "colorize"
 require "file_utils"
 
 require "../../src/kernel/book_info"
+require "../../src/kernel/book_meta"
 require "../../src/utils/text_utils"
 
-input = BookInfo.load_all.values.sort_by(&.weight.-)
+books = BookMeta.load_all!
 
-weight = [] of Tuple(String, Float64)
-rating = [] of Tuple(String, Float64)
-votes = [] of Tuple(String, Float64)
-update = [] of Tuple(String, Float64)
-access = [] of Tuple(String, Float64)
-
-def mapper
-  Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
+has_text = 0
+books.each_value do |book|
+  has_text += 1 if book.seed_lists.size > 0
 end
 
-wordmap = {
-  "zh_titles"  => mapper,
-  "hv_titles"  => mapper,
-  "vi_titles"  => mapper,
-  "zh_authors" => mapper,
-  "vi_authors" => mapper,
-}
+puts "- has_text: #{has_text}".colorize(:yellow)
 
-def normalize(input : String)
-  Utils.unaccent(input.downcase)
-end
+# input = BookInfo.load_all.values.sort_by(&.weight.-)
 
-input.each_with_index do |info, idx|
-  # next if info.shield > 1
-  puts "- <#{idx + 1}> #{info.vi_title}--#{info.vi_author}"
+# weight = [] of Tuple(String, Float64)
+# rating = [] of Tuple(String, Float64)
+# votes = [] of Tuple(String, Float64)
+# update = [] of Tuple(String, Float64)
+# access = [] of Tuple(String, Float64)
 
-  weight << {info.uuid, info.weight}
-  rating << {info.uuid, info.rating}
-  update << {info.uuid, info.mftime.to_f}
-  access << {info.uuid, info.weight}
+# def mapper
+#   Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
+# end
 
-  Utils.split_words(info.zh_title).each do |word|
-    wordmap["zh_titles"][word] << "#{info.uuid}ǁ#{info.zh_title}ǁ#{info.weight}"
-  end
+# wordmap = {
+#   "zh_titles"  => mapper,
+#   "hv_titles"  => mapper,
+#   "vi_titles"  => mapper,
+#   "zh_authors" => mapper,
+#   "vi_authors" => mapper,
+# }
 
-  Utils.split_words(info.zh_author).each do |word|
-    wordmap["zh_authors"][word] << "#{info.uuid}ǁ#{info.zh_author}ǁ#{info.weight}"
-  end
+# def normalize(input : String)
+#   Utils.unaccent(input.downcase)
+# end
 
-  slug = Utils.slugify(info.hv_title)
-  Utils.split_words(slug).each do |word|
-    next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-    wordmap["hv_titles"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.weight}"
-  end
+# input.each_with_index do |info, idx|
+#   # next if info.shield > 1
+#   puts "- <#{idx + 1}> #{info.vi_title}--#{info.vi_author}"
 
-  slug = Utils.slugify(info.vi_title)
-  Utils.split_words(slug).each do |word|
-    next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-    wordmap["vi_titles"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.weight}"
-  end
+#   weight << {info.uuid, info.weight}
+#   rating << {info.uuid, info.rating}
+#   update << {info.uuid, info.mftime.to_f}
+#   access << {info.uuid, info.weight}
 
-  slug = Utils.slugify(info.vi_author)
-  Utils.split_words(slug).each do |word|
-    next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-    wordmap["vi_authors"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.weight}"
-  end
-end
+#   Utils.split_words(info.zh_title).each do |word|
+#     wordmap["zh_titles"][word] << "#{info.uuid}ǁ#{info.zh_title}ǁ#{info.weight}"
+#   end
 
-puts "- Save indexes...".colorize(:cyan)
+#   Utils.split_words(info.zh_author).each do |word|
+#     wordmap["zh_authors"][word] << "#{info.uuid}ǁ#{info.zh_author}ǁ#{info.weight}"
+#   end
 
-INDEX_DIR = File.join("var", "appcv", "book_index")
-FileUtils.mkdir_p(INDEX_DIR)
+#   slug = Utils.slugify(info.hv_title)
+#   Utils.split_words(slug).each do |word|
+#     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
+#     wordmap["hv_titles"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.weight}"
+#   end
 
-File.write "#{INDEX_DIR}/weight.json", weight.sort_by(&.[1]).to_pretty_json
-File.write "#{INDEX_DIR}/rating.json", rating.sort_by(&.[1]).to_pretty_json
-File.write "#{INDEX_DIR}/update.json", update.sort_by(&.[1]).to_pretty_json
-File.write "#{INDEX_DIR}/access.json", access.sort_by(&.[1]).to_pretty_json
+#   slug = Utils.slugify(info.vi_title)
+#   Utils.split_words(slug).each do |word|
+#     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
+#     wordmap["vi_titles"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.weight}"
+#   end
 
-WORD_MAPS = {"zh_titles", "zh_authors", "vi_titles", "vi_authors", "hv_titles"}
+#   slug = Utils.slugify(info.vi_author)
+#   Utils.split_words(slug).each do |word|
+#     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
+#     wordmap["vi_authors"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.weight}"
+#   end
+# end
 
-alias Counter = Hash(String, Int32)
-counters = Hash(String, Counter).new
+# puts "- Save indexes...".colorize(:cyan)
 
-WORD_MAPS.each do |type|
-  wordmap_dir = File.join(INDEX_DIR, type)
-  FileUtils.rm_rf(wordmap_dir)
-  FileUtils.mkdir_p(wordmap_dir)
+# INDEX_DIR = File.join("var", "appcv", "book_index")
+# FileUtils.mkdir_p(INDEX_DIR)
 
-  counter = Counter.new
-  wordmap[type].each do |word, list|
-    counter[word] = list.size
-    File.write File.join(wordmap_dir, "#{word}.txt"), list.join("\n")
-  end
+# File.write "#{INDEX_DIR}/weight.json", weight.sort_by(&.[1]).to_pretty_json
+# File.write "#{INDEX_DIR}/rating.json", rating.sort_by(&.[1]).to_pretty_json
+# File.write "#{INDEX_DIR}/update.json", update.sort_by(&.[1]).to_pretty_json
+# File.write "#{INDEX_DIR}/access.json", access.sort_by(&.[1]).to_pretty_json
 
-  counters[type] = counter
-end
+# WORD_MAPS = {"zh_titles", "zh_authors", "vi_titles", "vi_authors", "hv_titles"}
 
-File.write "#{INDEX_DIR}/wordmap.json", counters.to_pretty_json
+# alias Counter = Hash(String, Int32)
+# counters = Hash(String, Counter).new
+
+# WORD_MAPS.each do |type|
+#   wordmap_dir = File.join(INDEX_DIR, type)
+#   FileUtils.rm_rf(wordmap_dir)
+#   FileUtils.mkdir_p(wordmap_dir)
+
+#   counter = Counter.new
+#   wordmap[type].each do |word, list|
+#     counter[word] = list.size
+#     File.write File.join(wordmap_dir, "#{word}.txt"), list.join("\n")
+#   end
+
+#   counters[type] = counter
+# end
+
+# File.write "#{INDEX_DIR}/wordmap.json", counters.to_pretty_json

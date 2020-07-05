@@ -6,101 +6,89 @@ require "parallel"
 require "colorize"
 require "fileutils"
 
-PAGE = (ARGV[0] || "1").to_i
-puts "-- [ PAGE: #{PAGE} ] --"
-exit if PAGE < 1
-
-EXPIRY = 3600 * 24 * 5
-
-def file_outdated?(file)
-  return true unless File.exists?(file)
-  expiry = EXPIRY
-
-  data = File.read(file)
-  expiry *= 4 if data.include?("未找到该图书")
-
-  File.mtime(file).to_i < Time.now.to_i - expiry
-end
-
-ROOT_DIR = "var/appcv/.cache/yousuu/reviews"
-OUT_FILE = "#{ROOT_DIR}/%i-#{PAGE}.json"
-REVIEW_URL = "https://www.yousuu.com/api/book/%i/comment?t=%i&page=#{PAGE}"
-
-def fetch_data(ybid, proxy)
-  file = OUT_FILE % ybid
-  return :skip unless file_outdated?(file)
-
-  url = REVIEW_URL % [ybid, unix_ms]
-  body = fetch_url(url, proxy)
-
-  raise "Malformed!" unless body.include?("success") || body.include?("未找到该图书")
-
-  File.write(file, body)
-  save_proxy(proxy)
-
-  puts "- proxy [#{proxy}] worked!".green if VERBOSE
-  :success
-rescue => err
-  puts "- proxy [#{proxy}] not working, reason: #{err}".red if VERBOSE
-  :error
-end
-
-def load_ybids(page = 1)
-  files = Dir.glob("var/appcv/book_infos/*.json")
-  files.inject([]) do |memo, file|
-    json = JSON.parse(File.read(file))
-    link = json["yousuu_link"]
-
-    unless link.empty?
-      ybid = File.basename(link)
-      # TODO: check review total
-      memo << ybid if file_outdated?(OUT_FILE % ybid)
-    end
-
-    memo
-  end
-end
-
-# Prepare data
-
-ybids = load_ybids()
-puts "Input: #{ybids.size}".yellow
-
 require_relative "./crawl-utils"
-proxies = load_proxies
 
-# Crawling!
+class CritCrawler
+  def initialize(load_proxy = false, debug_mode = false)
+    @http = HttpClient.new(load_proxy, debug_mode)
+    @bids = []
 
-step = 1
-until proxies.empty? || ybids.empty?
-  puts "\n- <#{step}> ybids: #{ybids.size}, proxies: #{proxies.size}\n".yellow
-
-  failure_ybids = []
-  working_proxies = []
-
-  limit = ybids.size
-  limit = proxies.size if limit > proxies.size
-
-  Parallel.each(1..limit, in_threads: 20) do |idx|
-    ybid = ybids.pop
-    proxy = proxies.pop
-
-    status = fetch_data(ybid, proxy)
-    message = "- [#{idx}/#{limit}]: #{status}! ybid: [#{ybid}], proxy: [#{proxy}]"
-
-    case status
-    when :skip
-      working_proxies << proxy
-    when :error
-      failure_ybids << ybid
-      puts message.red unless VERBOSE
-    when :success
-      working_proxies << proxy
-      puts message.green unless VERBOSE
+    files = Dir.glob("var/appcv/book_metas/*.json")
+    files.each do |file|
+      json = JSON.parse(File.read(file))
+      link = json["yousuu_link"]
+      @bids << File.basename(link) unless link.empty?
     end
   end
 
-  step += 1
-  ybids.concat(failure_ybids).uniq!
-  proxies.concat(working_proxies).uniq!
+  def load_bids(page = 1)
+    @bids.each_with_object([]) do |ybid, memo|
+      memo << ybid if outdated?(page_path(ybid, page))
+    end
+  end
+
+  def crawl!(page = 1)
+    puts "-- [ page: #{page} ] --".yellow
+
+    step = 1
+    bids = load_bids(page)
+
+    until bids.empty? || proxy_size == 0
+      puts "\n- <#{step}> ybids: #{bids.size}, proxies: #{proxy_size}\n".yellow
+      failures = []
+
+      Parallel.each_with_index(bids, in_threads: 20) do |ybid, idx|
+        case @http.get!(page_url(ybid, page), page_path(ybid, page))
+        when :success
+          puts " - <#{idx}/#{bids.size}> [#{ybid}] saved.".green
+        when :proxy_error
+          puts " - <#{idx}/#{bids.size}> [#{ybid}] proxy error!".red
+          failures << ybid
+        when :no_more_proxy
+          puts " - Ran out of proxy, aborting!".red
+          return
+        end
+      end
+
+      step += 1
+      bids = failures
+    end
+  end
+
+  def proxy_size
+    @http.proxies.size
+  end
+
+  ROOT_DIR = "var/appcv/.cache/yousuu/reviews"
+
+  def page_path(ybid, page = 1)
+    "#{ROOT_DIR}/#{ybid}-#{page}.json"
+  end
+
+  EXPIRY = 3600 * 24 * 5
+
+  def outdated?(file)
+    return true unless File.exists?(file)
+    expiry = EXPIRY
+
+    data = File.read(file)
+    expiry *= 4 if data.include?("未找到该图书")
+
+    File.mtime(file).to_i < Time.now.to_i - expiry
+  end
+
+  def page_url(ybid, page = 1)
+    time = (Time.now.to_f * 1000).round
+    "https://www.yousuu.com/api/book/#{ybid}/comment?page=#{page}&t=#{time}"
+  end
+end
+
+load_proxy = ARGV.include?("proxy")
+debug_mode = ARGV.include?("debug")
+crawler = CritCrawler.new(load_proxy, debug_mode)
+
+page = 1
+while crawler.proxy_size > 0
+  crawler.crawl!(page)
+  page += 1
 end

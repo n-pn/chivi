@@ -419,7 +419,7 @@ class RemoteSeed
     if better_seed?(meta, mftime)
       meta.add_seed(@seed, @sbid, type)
 
-      meta.set_latest_chap(@seed, @parser.get_latest, mftime)
+      meta.set_latest(@seed, @parser.get_latest, mftime)
       meta.mftime = meta.latest_times[@seed]
     end
 
