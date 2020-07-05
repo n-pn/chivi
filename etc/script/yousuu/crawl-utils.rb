@@ -1,4 +1,9 @@
+require "json"
+require "time"
+require "open-uri"
+require "parallel"
 require "colorize"
+require "fileutils"
 
 class HttpClient
   attr_reader :proxies

@@ -1,57 +1,44 @@
-require "set"
-require "json"
-require "time"
-require "open-uri"
-require "parallel"
-require "colorize"
-require "fileutils"
-
 require_relative "./crawl-utils"
 
 class CritCrawler
   def initialize(load_proxy = false, debug_mode = false)
     @http = HttpClient.new(load_proxy, debug_mode)
-    @bids = []
+    @ybids = []
 
     files = Dir.glob("var/appcv/book_metas/*.json")
     files.each do |file|
       json = JSON.parse(File.read(file))
       link = json["yousuu_link"]
-      @bids << File.basename(link) unless link.empty?
-    end
-  end
-
-  def load_bids(page = 1)
-    @bids.each_with_object([]) do |ybid, memo|
-      memo << ybid if outdated?(page_path(ybid, page))
+      @ybids << File.basename(link) unless link.empty?
     end
   end
 
   def crawl!(page = 1)
-    puts "-- [ page: #{page} ] --".yellow
-
     step = 1
-    bids = load_bids(page)
+    ybids = @ybids.dup
 
-    until bids.empty? || proxy_size == 0
-      puts "\n- <#{step}> ybids: #{bids.size}, proxies: #{proxy_size}\n".yellow
-      failures = []
+    until ybids.empty? || proxy_size == 0
+      puts "\n[<#{step}-#{page}> ybids: #{ybids.size}, proxies: #{proxy_size}]".yellow
+      fails = []
 
-      Parallel.each_with_index(bids, in_threads: 20) do |ybid, idx|
-        case @http.get!(page_url(ybid, page), page_path(ybid, page))
+      Parallel.each_with_index(ybids, in_threads: 20) do |ybid, idx|
+        out_file = page_path(ybid, page)
+        next unless outdated?(out_file)
+
+        case @http.get!(page_url(ybid, page), out_file)
         when :success
-          puts " - <#{idx}/#{bids.size}> [#{ybid}] saved.".green
+          puts " - <#{idx}/#{ybids.size}> [#{ybid}] saved.".green
         when :proxy_error
-          puts " - <#{idx}/#{bids.size}> [#{ybid}] proxy error!".red
-          failures << ybid
+          puts " - <#{idx}/#{ybids.size}> [#{ybid}] proxy error!".red
+          fails << ybid
         when :no_more_proxy
           puts " - Ran out of proxy, aborting!".red
-          return
+          break
         end
       end
 
       step += 1
-      bids = failures
+      ybids = fails
     end
   end
 
