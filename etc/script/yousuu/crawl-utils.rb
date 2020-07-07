@@ -97,9 +97,9 @@ class HttpClient
 
     proxy[2] += 1
     if proxy[1] > 0
-      @proxy.unshift(proxy)
+      @proxies.unshift(proxy)
     else
-      @proxy.push(proxy)
+      @proxies.push(proxy)
     end
   end
 end
