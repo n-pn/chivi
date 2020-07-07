@@ -77,7 +77,7 @@ class OrderMap
     end
 
     def to_s(io : IO)
-      io << "[" << @key << " : " << @val << "]"
+      io << @key << SEP_0 << @val
     end
 
     def to_s
@@ -93,7 +93,7 @@ class OrderMap
   getter first : Node
   getter last : Node
 
-  def initialize(@file, preload : Bool = true)
+  def initialize(@file, preload : Bool = false)
     @first = Node.new("", Int64::MAX)
     @last = Node.new("", Int64::MIN)
     @first.set_right(@last)
@@ -107,7 +107,7 @@ class OrderMap
 
   def load!(file : String = @file) : Void
     File.each_line(file) do |line|
-      key, val = line.split(SEP_0, 2)
+      key, val = line.strip.split(SEP_0, 2)
       if val = val.try(&.to_i64?)
         upsert(key, val)
       else
@@ -136,13 +136,7 @@ class OrderMap
       @data[key] = node
     end
 
-    pivot_sort(node)
-  end
-
-  private def pivot_sort(node : Node) : Node
-    node.move_right || node.move_left
-    # puts "#{node}, left: #{node.left}, right: #{node.right}"
-    node
+    node.move_right || node.move_left || node
   end
 
   def delete!(key : String) : Void
@@ -198,17 +192,13 @@ class OrderMap
   FileUtils.mkdir_p(DIR)
 
   def path_for(name : String)
-    File.join(DIR, "#{type}.txt")
+    File.join(DIR, "#{name}.txt")
   end
 
-  def load(name : String, preload : Bool = true) : OrderMap
-    new(path_for(name), preload: preload)
-  end
+  CACHE = {} of String => self
 
-  CACHE = {} of String => OrderMap
-
-  def load_cached(name : String, preload : Bool = true) : OrderMap
-    CACHE[name] ||= load(name, preload)
+  def load(file : String) : OrderMap
+    CACHE[name] ||= new(file, preload: true)
   end
 end
 
