@@ -271,6 +271,7 @@ class BookInfo
       CACHE[uuid_for(file)] ||= BookInfo.from_file(file)
     end
 
+    puts "- <book_info> loaded all, entries: #{CACHE.size}.".colorize(:blue)
     CACHE
   end
 

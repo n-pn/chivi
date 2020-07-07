@@ -5,9 +5,8 @@ require "../../../src/kernel/dict_repo"
 module Common
   extend self
 
-  INP_DIR = File.join("var", "libcv", ".inits")
-  TMP_DIR = File.join("var", "libcv", ".temps")
-  OUT_DIR = File.join("var", "libcv")
+  INP_DIR = File.join("var", ".dict_inits")
+  OUT_DIR = File.join("var", "dict_repos")
 
   def inp_path(file : String)
     File.join(INP_DIR, file)
@@ -17,15 +16,11 @@ module Common
     File.join(OUT_DIR, file)
   end
 
-  def tmp_path(file : String)
-    File.join(TMP_DIR, file)
-  end
-
   def mkdir!(file : String)
     FileUtils.mkdir_p(File.dirname(file))
   end
 
-  KNOWN_FILE = tmp_path("known_words.txt")
+  KNOWN_FILE = inp_path("autogen/known_words.txt")
   FileUtils.touch(KNOWN_FILE) unless File.exists?(KNOWN_FILE)
 
   KNOWN_WORD = Set(String).new(File.read_lines(KNOWN_FILE))

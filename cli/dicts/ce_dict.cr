@@ -3,8 +3,8 @@ require "colorize"
 require "http/client"
 require "compress/zip"
 
-require "./_utils/common"
-require "./_utils/pinyin"
+require "./utils/common"
+require "./utils/pinyin"
 
 require "../../src/_utils/normalize"
 require "../../src/kernel/dict_repo"
@@ -57,10 +57,10 @@ class CE_DICT
 
   getter input = [] of Entry
 
-  HANZIDB_FILE = Common.inp_path("_system/hanzidb.txt")
+  HANZIDB_FILE = Common.inp_path("initial/hanzidb.txt")
   HANZIDB_DICT = Common.load_legacy_dict!(HANZIDB_FILE)
 
-  CE_DICT_FILE = Common.out_path("lookup/cc_cedict.dic")
+  CE_DICT_FILE = Common.out_path("cc_cedict.dic")
   TRADSIM_FILE = Common.out_path("shared/tradsim.dic")
   PINYINS_FILE = Common.out_path("shared/pinyins.dic")
 
@@ -70,16 +70,16 @@ class CE_DICT
       @input << entry
     end
 
-    puts "- input: #{@input.size} entries.".colorize(:cyan)
+    puts "- input: #{@input.size} entries.".colorize(:blue)
   end
 
   def read_zip : String
-    puts "- reading zip file content...".colorize(:cyan)
+    puts "- reading zip file content...".colorize(:blue)
 
-    zip_file = Common.inp_path("_system/cedict.zip")
+    zip_file = Common.inp_path("initial/cc-cedict.zip")
 
     if outdated?(zip_file)
-      puts "- fetching latest CC_CEDICT from internet... ".colorize(:cyan)
+      puts "- fetching latest CC_CEDICT from internet... ".colorize(:blue)
       HTTP::Client.get(CEDICT_URL) { |res| File.write(zip_file, res.body_io) }
     end
 
@@ -116,7 +116,7 @@ class CE_DICT
     puts "\n- [Export tradsim]".colorize(:cyan)
 
     counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
-    tswords = DictRepo.new(Common.tmp_path("tradsimp-words.dict"))
+    tswords = DictRepo.new(Common.inp_path("autogen/tradsimp-words.dict"))
 
     @input.each do |entry|
       next if is_trad?(entry.define)
@@ -175,7 +175,7 @@ class CE_DICT
     end
 
     dict = DictRepo.new(PINYINS_FILE)
-    dict.load_legacy!(Common.inp_path("_system/pinyins.txt"))
+    dict.load_legacy!(Common.inp_path("initial/extra-pinyins.txt"))
 
     HANZIDB_DICT.each do |entry|
       dict.upsert(entry.key, entry.vals) unless entry.vals.first.empty?

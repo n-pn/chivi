@@ -1,6 +1,6 @@
 # require "./shared/cvdict"
 
-require "./_utils/common"
+require "./utils/common"
 
 def cleanup(defs : String)
   defs.split("\\t")
@@ -14,13 +14,13 @@ def cleanup(defs : String)
     .join("; ")
 end
 
-OUT_FILE = Common.out_path("lookup/lacviet.dic")
+OUT_FILE = Common.out_path("trungviet.dic")
 
 out_dict = DictRepo.new(OUT_FILE, false)
-out_dict.load_legacy!(Common.inp_path("_system/lacviet.txt"))
+out_dict.load_legacy!(Common.inp_path("initial/lacviet-mtd.txt"))
 
-char_dict = DictRepo.new(Common.tmp_path("hanviet/lacviet-chars.dic"))
-word_dict = DictRepo.new(Common.tmp_path("hanviet/lacviet-words.dic"))
+char_dict = DictRepo.new(Common.inp_path("autogen/lacviet-chars.dic"))
+word_dict = DictRepo.new(Common.inp_path("autogen/lacviet-words.dic"))
 
 out_dict.each do |item|
   Common.add_to_known(item.key)

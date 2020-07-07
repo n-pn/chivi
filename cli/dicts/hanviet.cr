@@ -1,3 +1,23 @@
+require "../../src/kernel/book_info"
+
+using = Set(String).new
+
+infos = BookInfo.load_all!
+infos.each_value do |info|
+  split_hanzi(info.title_zh) { |x| using << x }
+  split_hanzi(info.author_zh) { |x| using << x }
+end
+
+def split_hanzi(input)
+  input.split("").each do |char|
+    yield char if char =~ /\p{Han}/
+  end
+end
+
+puts "- common hanzi: #{using.size}"
+
+File.write "var/.dict_inits/autogen/common-hanzi.txt", using.to_a.join("\n")
+
 # EXCEPT = {"連", "嬑", "釵", "匂", "宮", "夢", "滿", "闇", "詞", "遊", "東", "獅", "劍", "韻", "許", "雲", "異", "傳", "倫", "爾", "龍", "瑩", "蟲", "亞", "鷹", "馬", "鮮", "萊", "義", "筆", "災", "萇", "珎", "風", "俠", "雖", "離", "楓", "時", "卝", "輪", "迴", "笀", "當", "偍"}
 
 # def keep_hanviet?(tradsim, input : String)
