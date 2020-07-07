@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../../src/dictdb/dict_file"
+require "../../../src/filedb/dict_repo"
 
 module Common
   extend self
@@ -48,16 +48,16 @@ module Common
   end
 
   def load_legacy_dict!(file : String)
-    dict = DictFile.new(file, preload: false)
+    dict = DictRepo.new(file, preload: false)
     dict.tap(&.load_legacy!(file))
   end
 
   def load_modern_dict!(file : String, preload = true)
     Common.mkdir!(file)
-    DictFile.new(file, preload: preload)
+    DictRepo.new(file, preload: preload)
   end
 
-  def convert(dict : DictFile, input : String, sep = "")
+  def convert(dict : DictRepo, input : String, sep = "")
     res = [] of String
 
     chars = input.chars

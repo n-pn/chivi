@@ -1,7 +1,7 @@
 require "myhtml"
 require "colorize"
 require "file_utils"
-require "../utils/file_utils"
+require "../_utils/file_utils"
 
 module RemoteUtil
   extend self

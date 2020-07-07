@@ -1,7 +1,7 @@
 # combine extraqt and localqt
 require "json"
 
-require "../../src/_utils/normalize"
+require "../../src/_utils//normalize"
 require "./shared/cvdict"
 
 puts "[Load deps]".colorize(:cyan)

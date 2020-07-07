@@ -2,7 +2,8 @@ require "json"
 require "colorize"
 require "file_utils"
 
-class TokenIndex
+# mapping a label to a set of values
+class LabelSet
   SEP = "ǁ"
 
   alias Data = Hash(String, Set(String))
@@ -76,7 +77,7 @@ class TokenIndex
   end
 
   # class methods
-  ROOT = File.join("var", "appcv", "_indexes")
+  ROOT = File.join("var", "label_sets")
 
   def self.setup!
     FileUtils.mkdir_p(ROOT)
@@ -86,9 +87,9 @@ class TokenIndex
     File.join(ROOT, type)
   end
 
-  @@cache = {} of String => TokenIndex
+  @@cache = {} of String => LabelSet
 
-  def self.load!(type : String) : TokenIndex
+  def self.load!(type : String) : LabelSet
     @@cache[type] ||= new(path(file), preload: true)
   end
 end

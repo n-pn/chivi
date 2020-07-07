@@ -1,7 +1,7 @@
 require "json"
 require "colorize"
 require "file_utils"
-require "../utils/gen_uuids"
+require "../_utils/gen_uuids"
 
 class BookInfo
   # us == url slug
@@ -213,7 +213,7 @@ class BookInfo
 
   # class methods
 
-  DIR = File.join("var", "appcv", "book_infos")
+  DIR = File.join("var", "book_infos")
   FileUtils.mkdir_p(DIR)
 
   def self.path_for(uuid : String)

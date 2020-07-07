@@ -2,7 +2,7 @@ require "colorize"
 require "file_utils"
 
 # main dict file, with edit history and priority lock level
-class DictFile
+class DictRepo
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 
@@ -240,19 +240,19 @@ class DictFile
       each(&.puts(io, trim: trim))
     end
 
-    puts "- <dict_file> [#{file.colorize(:yellow)}] saved (#{@size.colorize(:yellow)} entries)."
+    puts "- <dict_repo> [#{file.colorize(:yellow)}] saved (#{@size.colorize(:yellow)} entries)."
   end
 
   # class methods
 
-  CACHE = {} of String => DictFile
+  CACHE = {} of String => DictRepo
 
-  def load!(file : String, preload : Bool = true) : DictFile
+  def load!(file : String, preload : Bool = true) : DictRepo
     CACHE[file] ||= new(file, preload)
   end
 end
 
-# test = DictFile.new("tmp/test_lex_dict.dic", preload: true)
+# test = DictRepo.new("tmp/test_lex_dict.dic", preload: true)
 
 # test.upsert("a", "a")
 # test.upsert!("a", "b")

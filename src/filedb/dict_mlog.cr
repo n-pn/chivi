@@ -1,16 +1,17 @@
 require "colorize"
 
-class DictLogs
+# dict modification log
+class DictMlog
   EPOCH = Time.utc(2020, 1, 1)
   SEP_0 = "ǁ"
 
-  class Log
+  class Mlog
     def self.mtime(time = Time.utc)
       (time - EPOCH).total_minutes.to_i
     end
 
     getter mtime : Int32  # time by total minutes since the EPOCH
-    getter uname : String # user name
+    getter uname : String # user handle name
     getter level : Int32  # user power level
 
     getter key : String
@@ -43,7 +44,7 @@ class DictLogs
       io << "\n"
     end
 
-    def better_than?(other : Item)
+    def better_than?(other : Mlog)
       return @mtime >= other.mtime if @level == other.level
       @level > other.level
     end
@@ -52,8 +53,8 @@ class DictLogs
   getter file : String
   getter time = EPOCH
 
-  getter logs = [] of Log
-  getter best = {} of String => Log
+  getter logs = [] of Mlog
+  getter best = {} of String => Mlog
 
   delegate size, to: @logs
   delegate each, to: @logs
@@ -70,7 +71,7 @@ class DictLogs
     lines = File.read_lines(@file)
 
     lines.each do |line|
-      append(Item.parse!(line))
+      append(Mlog.parse!(line))
     rescue
       puts "- <dict_logs> error parsing line: `#{line.colorize(:red)}`."
     end
@@ -83,19 +84,19 @@ class DictLogs
     @logs.sort_by!(&.mtime)
   end
 
-  def insert!(item : Item)
-    append!(item)
-    insert(item)
+  def insert!(mlog : Mlog)
+    append!(mlog)
+    insert(mlog)
   end
 
-  def append!(item : Item)
-    File.open(@file, "a") { |io| item.puts(io) }
+  def append!(mlog : Mlog)
+    File.open(@file, "a") { |io| mlog.puts(io) }
   end
 
-  def insert(item : Item) : Void
-    @logs << item
-    return if @best[item.key]?.try(&.better_than?(item))
-    @best[item.key] = item
+  def insert(mlog : Mlog) : Void
+    @logs << mlog
+    return if @best[mlog.key]?.try(&.better_than?(mlog))
+    @best[mlog.key] = mlog
   end
 
   def save!(sort : Bool = false)
@@ -103,7 +104,7 @@ class DictLogs
     @logs.uniq!
 
     File.open(@file, "w") do |io|
-      @logs.each { |item| io.puts(item) }
+      @logs.each { |mlog| io.puts(mlog) }
     end
 
     puts "- <dict_log> [#{@file.colorize(:cyan)}] saved."

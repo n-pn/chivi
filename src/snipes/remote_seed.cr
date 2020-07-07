@@ -2,14 +2,14 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../kernel/book_info"
-require "../kernel/book_meta"
-require "../kernel/chap_seed"
+require "../filedb/book_info"
+require "../filedb/book_meta"
+require "../filedb/chap_seed"
 
-require "../utils/han_to_int"
-require "../utils/html_utils"
-require "../utils/time_utils"
-require "../utils/text_utils"
+require "../_utils/han_to_int"
+require "../_utils/html_utils"
+require "../_utils/time_utils"
+require "../_utils/text_utils"
 
 require "./remote_util"
 

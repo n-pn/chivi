@@ -1,6 +1,6 @@
-require "../utils/file_utils"
-require "../utils/html_utils"
-require "../utils/text_utils"
+require "../_utils/file_utils"
+require "../_utils/html_utils"
+require "../_utils/text_utils"
 
 require "./remote_util"
 

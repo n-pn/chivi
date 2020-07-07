@@ -1,10 +1,10 @@
-require "../dictdb/lx_pair"
+require "../filedb/lx_pair"
 require "./convert/cv_node"
 require "./convert/cv_data"
 
-require "../utils/fix_titles"
-require "../utils/han_to_int"
-require "../utils/normalize"
+require "../_utils/fix_titles"
+require "../_utils/han_to_int"
+require "../_utils/normalize"
 
 module Convert
   extend self
@@ -32,13 +32,13 @@ module Convert
     nodes = CvData.new
     space = false
 
-    title, volume = Gutils.split_title(input)
+    title, volume = Utils.split_title(input)
 
     unless volume.empty? || volume == "正文"
       if match = TITLE_RE.match(volume)
         _, group, index, label, trash, volume = match
 
-        index = Gutils.han_to_int(index)
+        index = Utils.han_to_int(index)
         nodes << CvNode.new(group, "#{cv_label(label)} #{index}", 0)
 
         if !volume.empty?
@@ -58,7 +58,7 @@ module Convert
       if match = TITLE_RE.match(title)
         _, group, index, label, trash, title = match
 
-        index = Gutils.han_to_int(index)
+        index = Utils.han_to_int(index)
         nodes << CvNode.new(group, "#{cv_label(label)} #{index}", 0)
 
         if !title.empty?
@@ -95,7 +95,7 @@ module Convert
     weights = [0.0]
 
     norms = chars.map_with_index do |char, idx|
-      norm = Gutils.normalize(char)
+      norm = Utils.normalize(char)
 
       weights << idx + 1.0
       selects << CvNode.new(char, norm)

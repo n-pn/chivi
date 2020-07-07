@@ -2,14 +2,14 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/kernel/book_info"
-require "../../src/kernel/book_meta"
+require "../../src/filedb/book_info"
+require "../../src/filedb/book_meta"
 
 require "../../src/mapper/map_value"
 require "../../src/import/yousuu_info"
 
-require "../../src/utils/time_utils"
-require "../../src/utils/text_utils"
+require "../../src/_utils/time_utils"
+require "../../src/_utils/text_utils"
 
 class MapYousuu
   DIR = File.join("var", "appcv", ".cache", "yousuu", "serials")

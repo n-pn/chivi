@@ -1,13 +1,13 @@
 require "../spec_helper"
-require "../../src/dictdb/lx_dict"
+require "../../src/filedb/dict_repo"
 
-describe LxDict do
+describe DictRepo do
   # TODO:
   # - Test dict preload and reload
 
   describe ".load" do
     it "loads empty dict" do
-      dict = LxDict.load("spec/_tests/nonexist.txt")
+      dict = DictRepo.load!("spec/_tests/nonexist.txt")
       dict.should_not be(nil)
 
       dict.size.should eq(0)
@@ -15,7 +15,7 @@ describe LxDict do
     end
 
     it "loads existed dict" do
-      dict = LxDict.load("spec/_tests/sample-lexfile.dic")
+      dict = DictRepo.load!("spec/_tests/sample-lexfile.dic")
       dict.should_not be(nil)
 
       dict.size.should eq(1)
@@ -26,7 +26,7 @@ describe LxDict do
   describe ".load!" do
     it "should raise when file not found!" do
       expect_raises(Exception) do
-        dict = LxDict.load!("spec/_tests/nonexist.txt")
+        dict = DictRepo.load!("spec/_tests/nonexist.txt")
       end
     end
   end

@@ -6,14 +6,15 @@
     "ys-up": "bash etc/script/upload/yousuu.sh",
     "ys-dn": "bash etc/script/backup/yousuu.sh",
     "build": "shards build --release",
+    "build-mt": "shards build --release -Dpreviewmt",
     "www-up": "cd www && yarn build && git push deploy",
-    "srv-rs": "ssh nipin@ssh.chivi.xyz \" systemctl restart chivi-server.service\"",
-    "www-rs": "ssh nipin@ssh.chivi.xyz \" systemctl restart chivi-client.service\"",
+    "www-rs": "ssh nipin@ssh.chivi.xyz \"systemctl restart chivi-client.service\"",
+    "srv-rs": "ssh nipin@ssh.chivi.xyz \"systemctl restart chivi-server.service\"",
     "map_yousuu": "wsl bin/map_yousuu",
     "map_remote": "wsl bin/map_remote",
     "map_remotes": "wsl cli/infos/map_remote.sh",
     "map_zhwenpg": "wsl bin/map_zhwenpg",
-    "crawl_crits": "ruby etc/script/yousuu/crawl-crits.rb",
-    "crawl_infos": "ruby etc/script/yousuu/crawl-infos.rb"
+    "crawl_crits": "ruby etc/script/yousuu/crawl_crits.rb",
+    "crawl_infos": "ruby etc/script/yousuu/crawl_infos.rb"
   }
 }

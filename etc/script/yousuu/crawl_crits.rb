@@ -1,11 +1,11 @@
-require_relative "./crawl-utils"
+require_relative "./crawl_utils"
 
 class CritCrawler
   def initialize(load_proxy = false, debug_mode = false)
     @http = HttpClient.new(load_proxy, debug_mode)
     @ybids = []
 
-    files = Dir.glob("var/appcv/book_metas/*.json")
+    files = Dir.glob("var/book_metas/*.json")
     files.each do |file|
       json = JSON.parse(File.read(file))
       link = json["yousuu_link"]
@@ -46,7 +46,7 @@ class CritCrawler
     @http.proxies.size
   end
 
-  ROOT_DIR = "var/appcv/.cache/yousuu/reviews"
+  ROOT_DIR = "var/.book_cache/yousuu/reviews"
 
   def page_path(ybid, page = 1)
     "#{ROOT_DIR}/#{ybid}-#{page}.json"

@@ -1,17 +1,17 @@
-require "./dictdb/*"
+require "./filedb/dict_repo"
+require "./filedb/dict_ulog"
 
 module DictDB
   ROOT = File.join("var", "libcv")
 
-  @@LOOKUP = LxRepo.new(File.join(ROOT, "lookup"))
-  @@SHARED = LxRepo.new(File.join(ROOT, "shared"))
-  @@UNIQUE = LxRepo.new(File.join(ROOT, "unique"))
+  SHARED = {} of String => DictRepo
+  UNIQUE = {} of String => DictRepo
 
-  @@cc_cedict : LxDict? = nil
-  @@trungviet : LxDict? = nil
+  @@cc_cedict : DictRepo? = nil
+  @@trungviet : DictRepo? = nil
 
   def self.cc_cedict
-    @@cc_cedict ||= @@LOOKUP["cc_cedict"]
+    @@cc_cedict ||= DictRepo.load
   end
 
   def self.trungviet

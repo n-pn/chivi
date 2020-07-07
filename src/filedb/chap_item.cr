@@ -1,7 +1,7 @@
 require "json"
 require "colorize"
-require "../utils/text_utils"
-require "../utils/fix_titles"
+require "../_utils/text_utils"
+require "../_utils/fix_titles"
 
 class ChapItem
   include JSON::Serializable

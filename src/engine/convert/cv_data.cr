@@ -1,6 +1,6 @@
 require "json"
 require "./cv_node"
-require "../../utils/text_utils"
+require "../../_utils/text_utils"
 
 module CvUtil
   extend self

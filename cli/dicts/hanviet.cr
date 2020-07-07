@@ -85,14 +85,14 @@
 #   puts "\n- Fill missing hanviet from vietphrase".colorize(:blue)
 
 #   localqt_dir = File.join(INP_DIR, "localqt")
-#   dict_files = {
+#   dict_repos = {
 #     "#{localqt_dir}/vietphrase.txt",
 #     "#{localqt_dir}/names1.txt",
 #     "#{localqt_dir}/names2.txt",
 #   }
 #   recovered = 0
 
-#   dict_files.each do |file|
+#   dict_repos.each do |file|
 #     Cvdict.load!(file).data.each do |key, val|
 #       next if key.size > 1 || !missing.includes?(key)
 #       out_hanviet.add(key, val.first)

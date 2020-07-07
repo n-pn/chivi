@@ -3,11 +3,11 @@ require "colorize"
 require "http/client"
 require "compress/zip"
 
-require "./utils/common"
-require "./utils/pinyin"
+require "./_utils/common"
+require "./_utils/pinyin"
 
-require "../../src/utils/normalize"
-require "../../src/dictdb/dict_file"
+require "../../src/_utils/normalize"
+require "../../src/filedb/dict_repo"
 
 class Entry
   getter trad : String
@@ -95,7 +95,7 @@ class CE_DICT
 
   def export_ce_dict!
     puts "\n- [Export ce_dict]".colorize(:cyan)
-    dict = DictFile.new(CE_DICT_FILE)
+    dict = DictRepo.new(CE_DICT_FILE)
 
     @input.each do |entry|
       Common.add_to_known(entry.simp)
@@ -116,7 +116,7 @@ class CE_DICT
     puts "\n- [Export tradsim]".colorize(:cyan)
 
     counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
-    tswords = DictFile.new(Common.tmp_path("tradsimp-words.dict"))
+    tswords = DictRepo.new(Common.tmp_path("tradsimp-words.dict"))
 
     @input.each do |entry|
       next if is_trad?(entry.define)
@@ -133,7 +133,7 @@ class CE_DICT
       end
     end
 
-    dict = DictFile.new(TRADSIM_FILE)
+    dict = DictRepo.new(TRADSIM_FILE)
 
     counter.each do |trad, counts|
       best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
@@ -174,7 +174,7 @@ class CE_DICT
       end
     end
 
-    dict = DictFile.new(PINYINS_FILE)
+    dict = DictRepo.new(PINYINS_FILE)
     dict.load_legacy!(Common.inp_path("_system/pinyins.txt"))
 
     HANZIDB_DICT.each do |entry|

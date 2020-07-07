@@ -1,8 +1,8 @@
 require "json"
 require "colorize"
 
-require "../kernel/chap_text"
-require "../kernel/import/remote_text"
+require "../filedb/chap_text"
+require "../filedb/import/remote_text"
 
 require "../engine"
 

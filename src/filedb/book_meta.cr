@@ -4,7 +4,7 @@ require "file_utils"
 
 require "./chap_item"
 
-# require "../utils/text_utils"
+# require "../_utils/text_utils"
 
 class BookMeta
   include JSON::Serializable
@@ -145,7 +145,7 @@ class BookMeta
 
   # class methods
 
-  DIR = File.join("var", "appcv", "book_metas")
+  DIR = File.join("var", "book_metas")
   FileUtils.mkdir_p(DIR)
 
   def self.uuid_for(file : String)
