@@ -2,8 +2,8 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/filedb/book_info"
-require "../../src/filedb/book_meta"
+require "../../src/kernel/book_info"
+require "../../src/kernel/book_meta"
 
 require "../../src/mapper/map_value"
 require "../../src/import/yousuu_info"

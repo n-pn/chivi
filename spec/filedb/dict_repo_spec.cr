@@ -1,5 +1,5 @@
 require "../spec_helper"
-require "../../src/filedb/dict_repo"
+require "../../src/kernel/dict_repo"
 
 describe DictRepo do
   # TODO:

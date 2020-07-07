@@ -4,7 +4,7 @@ require "colorize"
 require "http/client"
 require "file_utils"
 
-require "../../src/filedb/book_info"
+require "../../src/kernel/book_info"
 
 TLS = OpenSSL::SSL::Context::Client.insecure
 

@@ -2,8 +2,8 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/filedb/book_info"
-require "../../src/filedb/book_meta"
+require "../../src/kernel/book_info"
+require "../../src/kernel/book_meta"
 require "../../src/_utils/text_utils"
 
 books = BookMeta.load_all!

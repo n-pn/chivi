@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../../src/filedb/dict_repo"
+require "../../../src/kernel/dict_repo"
 
 module Common
   extend self

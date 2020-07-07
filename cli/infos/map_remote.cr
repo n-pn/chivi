@@ -4,8 +4,8 @@ require "option_parser"
 require "../../src/_utils/file_utils.cr"
 require "../../src/_utils/html_utils.cr"
 
-require "../../src/filedb/book_info.cr"
-require "../../src/filedb/book_meta.cr"
+require "../../src/kernel/book_info.cr"
+require "../../src/kernel/book_meta.cr"
 require "../../src/mapper/map_value.cr"
 require "../../src/mapper/map_label.cr"
 

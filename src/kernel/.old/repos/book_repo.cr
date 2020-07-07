@@ -1,12 +1,12 @@
 require "json"
 require "colorize"
 
-require "../filedb/book_info"
+require "../kernel/book_info"
 
-require "../filedb/indexes/book_index"
-require "../filedb/indexes/book_order_index"
-require "../filedb/indexes/book_token_index"
-require "../filedb/indexes/book_label_index"
+require "../kernel/indexes/book_index"
+require "../kernel/indexes/book_order_index"
+require "../kernel/indexes/book_token_index"
+require "../kernel/indexes/book_label_index"
 
 module BookRepo
   extend self

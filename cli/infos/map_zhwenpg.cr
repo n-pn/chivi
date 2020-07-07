@@ -8,8 +8,8 @@ require "../../src/_utils/file_utils"
 require "../../src/_utils/time_utils"
 require "../../src/_utils/text_utils"
 
-require "../../src/filedb/book_info"
-require "../../src/filedb/book_meta"
+require "../../src/kernel/book_info"
+require "../../src/kernel/book_meta"
 
 require "../../src/mapper/map_value"
 

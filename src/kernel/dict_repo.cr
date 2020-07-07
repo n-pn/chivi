@@ -1,7 +1,8 @@
 require "colorize"
 require "file_utils"
 
-# main dict file, with edit history and priority lock level
+# main dict entries
+# TODO: rename?
 class DictRepo
   SEP_0 = "ǁ"
   SEP_1 = "¦"

@@ -1,8 +1,9 @@
-require "./filedb/dict_repo"
-require "./filedb/dict_ulog"
+require "./kernel/dict_repo"
+require "./kernel/dict_mlog"
 
 module DictDB
-  ROOT = File.join("var", "libcv")
+  DIC_DIR = File.join("var", "dict_repos")
+  LOG_DIR = File.join("var", "dict_mlogs")
 
   SHARED = {} of String => DictRepo
   UNIQUE = {} of String => DictRepo

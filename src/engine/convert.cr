@@ -1,4 +1,4 @@
-require "../filedb/lx_pair"
+require "../kernel/lx_pair"
 require "./convert/cv_node"
 require "./convert/cv_data"
 

@@ -2,9 +2,9 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../filedb/book_info"
-require "../filedb/book_meta"
-require "../filedb/chap_seed"
+require "../kernel/book_info"
+require "../kernel/book_meta"
+require "../kernel/chap_seed"
 
 require "../_utils/han_to_int"
 require "../_utils/html_utils"
