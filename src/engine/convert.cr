@@ -1,6 +1,5 @@
-require "../kernel/lx_pair"
-require "./convert/cv_node"
-require "./convert/cv_data"
+require "./cv_data"
+require "../kernel/dict_repo"
 
 require "../_utils/fix_titles"
 require "../_utils/han_to_int"
@@ -9,72 +8,71 @@ require "../_utils/normalize"
 module Convert
   extend self
 
-  alias LxList = Array(LxPair)
-
-  def cvraw(input : String, dicts : LxPair)
-    tokenize(input.chars, [dicts])
+  def cv_raw(input : String, dict : DictRepo)
+    tokenize(input.chars, dict)
   end
 
-  def cvlit(input : String, dicts : LxPair, apply_cap = false)
-    nodes = tokenize(input.chars, [dicts])
-    nodes.capitalize! if apply_cap
-    nodes.pad_spaces!
+  def cv_lit(input : String, dict : DictRepo, apply_cap = false)
+    res = tokenize(input.chars, dicts)
+    res.capitalize! if apply_cap
+    res.pad_spaces!
   end
 
-  def plain(input : String, dicts : Array(LxPair))
-    nodes = tokenize(input.chars, dicts)
-    nodes.grammarize!.capitalize!.pad_spaces!
+  def cv_plain(input : String, *dicts : DictRepo)
+    res = tokenize(input.chars, dicts)
+    res.grammarize!
+    res.capitalize!
+    res.pad_spaces!
+    res
   end
 
   TITLE_RE = /^(第([零〇一二两三四五六七八九十百千]+|\d+)([集卷章节幕回]))([,.:\s]*)(.*)$/
 
-  def title(input : String, dicts : Array(LxPair))
-    nodes = CvData.new
-    space = false
+  def cv_title(input : String, *dicts : DictRepo)
+    res = CvData.new
 
-    title, volume = Utils.split_title(input)
+    title, label = Utils.split_label(input)
+    unless label.empty? || label == "正文"
+      if match = TITLE_RE.match(label)
+        _, group, idx, tag, trash, label = match
 
-    unless volume.empty? || volume == "正文"
-      if match = TITLE_RE.match(volume)
-        _, group, index, label, trash, volume = match
+        num = Utils.han_to_int(idx)
+        res << CvData::Node.new(group, "#{cv_title_tag(tag)} #{num}", 1)
 
-        index = Utils.han_to_int(index)
-        nodes << CvNode.new(group, "#{cv_label(label)} #{index}", 0)
-
-        if !volume.empty?
-          nodes << CvNode.new(trash, ": ", 0)
+        if !label.empty?
+          res << CvData::Node.new(trash, ": ", 0)
         elsif !trash.empty?
-          nodes << CvNode.new(trash, "", 0)
+          res << CvData::Node.new(trash, "", 0)
         end
       end
 
-      unless volume.empty?
-        nodes.concat(plain(volume, dicts))
-        nodes << CvNode.new("", " - ", 0) unless title.empty?
+      unless label.empty?
+        res.concat(cv_plain(volume, dicts))
+        res << CvData::Node.new("", " - ", 0) unless title.empty?
       end
     end
 
     unless title.empty?
       if match = TITLE_RE.match(title)
-        _, group, index, label, trash, title = match
+        _, group, idx, tag, trash, title = match
 
-        index = Utils.han_to_int(index)
-        nodes << CvNode.new(group, "#{cv_label(label)} #{index}", 0)
+        num = Utils.han_to_int(idx)
+        res << CvData::Node.new(group, "#{cv_title_tag(tag)} #{num}", 1)
 
         if !title.empty?
-          nodes << CvNode.new(trash, ": ", 0)
+          res << CvData::Node.new(trash, ": ", 0)
         elsif !trash.empty?
-          nodes << CvNode.new(trash, "", 0)
+          res << CvData::Node.new(trash, "", 0)
         end
       end
 
-      nodes.concat(plain(title, dicts)) unless title.empty?
+      res.concat(cv_plain(title, dicts)) unless title.empty?
     end
 
     nodes
   end
 
-  private def cv_label(label = "")
+  private def cv_title_tag(label = "")
     case label
     when "章" then "Chương"
     when "卷" then "Quyển"
@@ -87,103 +85,76 @@ module Convert
     end
   end
 
-  def tokenize(chars : Array(Char), dicts : LxList)
-    dict_count = dicts.size + 1
-    char_count = chars.size + 1
-
-    selects = [CvNode.new("", "")]
+  def tokenize(chars : Array(Char), *dicts : DictRepo)
+    choices = [CvData::Node.new("", "")]
     weights = [0.0]
 
     norms = chars.map_with_index do |char, idx|
       norm = Utils.normalize(char)
 
       weights << idx + 1.0
-      selects << CvNode.new(char, norm)
+      choices << CvData::Node.new(char, norm, 0)
 
       norm
     end
 
+    dict_count = dicts.size + 1
+    char_count = chars.size + 1
+
     0.upto(chars.size) do |idx|
-      init_bonus = (char_count - idx) / char_count + 1
+      pos_weight = (char_count - idx) / char_count
 
-      dicts.each_with_index do |dpair, jdx|
-        dict_index = jdx + 1
-        dict_bonus = dict_index / dict_count
+      dicts.each_with_index do |dict, jdx|
+        dic = jdx + 1
+        dic_weight = dic / dict_count + 1
 
-        items = dpair.scan(norms, idx)
-        items.each do |size, item|
-          next if item.vals.empty?
-          next if item.vals.first.empty?
-
-          item_weight = (size + dict_bonus ** init_bonus) ** (1 + dict_bonus)
-          gain_weight = weights[idx] + item_weight
+        dict.scan(norms, idx).each do |item|
+          weight = weights[idx] + pos_weight + size + dic_weight ** size
 
           jdx = idx + size
-          if gain_weight > weights[jdx]
-            weights[jdx] = gain_weight
-            selects[jdx] = CvNode.new(item.key, item.vals[0], dict_index)
+          if weight > weights[jdx]
+            weights[jdx] = weight
+            choices[jdx] = CvData::Node.new(item.key, item.vals[0], dic, item.extra)
           end
         end
       end
     end
 
-    nodes = [] of CvNode
-    index = chars.size
+    res = CvData.new
+    idx = chars.size
 
-    while index > 0
-      node = selects[index]
-      nodes << node
-      index -= node.key.size
-    end
-
-    combine_similar(nodes)
-  end
-
-  private def combine_similar(input : Array(CvNode)) : CvData
-    nodes = CvData.new
-    index = input.size - 1
-
-    while index >= 0
-      acc = input[index]
-      jdx = index - 1
+    while idx > 0
+      acc = choices[idx]
+      idx -= acc.key.size
 
       if acc.dic == 0
-        if acc.key[0].alphanumeric?
-          while jdx >= 0
-            cur = input[jdx]
-            break unless letter?(cur.key[0])
-
-            acc.key += cur.key
-            acc.val += cur.val
-            jdx -= 1
-          end
-
+        if acc.match_letter?
           acc.dic = 1
-        else
-          while jdx >= 0
-            cur = input[jdx]
-            break unless cur.key[0] == acc.key[0]
 
-            acc.key += cur.key
-            acc.val += cur.val
-            jdx -= 1
+          while idx > 0
+            node = choices[idx]
+            break if node.dic > 0
+            break unless node.special_char? || node.match_letter?
+
+            acc.combine(node)
+            idx -= node.key.size
+          end
+        elsif acc.unchanged?
+          while idx > 0
+            node = choices[idx]
+            break if node.dic > 0
+            break unless node.unchanged?
+
+            acc.combine(node)
+            idx -= node.key.size
           end
         end
       end
 
-      index = jdx
-      nodes << acc
+      res << acc
     end
 
-    nodes
-  end
-
-  private def letter?(char : Char) : Bool
-    case char
-    when '_', '.', '%', '-', '/', '?', '=', ':'
-      true
-    else
-      char.alphanumeric?
-    end
+    res.data.reverse!
+    res
   end
 end
