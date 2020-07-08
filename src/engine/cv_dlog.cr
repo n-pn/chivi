@@ -13,7 +13,7 @@ class CvDlog
 
     getter mtime : Int32   # time by total minutes since the EPOCH
     getter udname : String # user handle dname
-    getter dlock : Int32   # entry lock level
+    getter power : Int32   # entry lock level
 
     getter key : String
     getter vals : String
@@ -22,14 +22,14 @@ class CvDlog
     def self.parse!(line : String)
       cols = line.split(SEP_0)
 
-      mtime, udname, dlock, key = cols
+      mtime, udname, power, key = cols
       vals = cols.fetch(4, "")
       extra = cols.fetch(5, "")
 
-      new(mtime.to_i, udname, dlock.to_i, key, vals, extra)
+      new(mtime.to_i, udname, power.to_i, key, vals, extra)
     end
 
-    def initialize(@mtime, @udname, @dlock, @key, @vals = "", @extra = "")
+    def initialize(@mtime, @udname, @power, @key, @vals = "", @extra = "")
     end
 
     def to_s
@@ -37,7 +37,7 @@ class CvDlog
     end
 
     def to_s(io : IO)
-      {@mtime, @udname, @dlock, @key, @vals, @extra}.join(io, SEP_0)
+      {@mtime, @udname, @power, @key, @vals, @extra}.join(io, SEP_0)
     end
 
     def puts(io : IO)
@@ -46,8 +46,8 @@ class CvDlog
     end
 
     def better_than?(other : Item)
-      return @mtime >= other.mtime if @dlock == other.dlock
-      @dlock > other.dlock
+      return @mtime >= other.mtime if @power == other.power
+      @power > other.power
     end
   end
 
@@ -95,12 +95,12 @@ class CvDlog
   end
 
   def insert(item : Item) : Void
-    insert(item.key, item.dlock) { item }
+    insert(item.key, item.power) { item }
   end
 
-  def insert(key : String, dlock = 0)
+  def insert(key : String, power = 0)
     if best = find(key)
-      return if best.dlock > dlock
+      return if best.power > power
     end
 
     item = yield

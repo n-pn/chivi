@@ -72,13 +72,13 @@ module Engine
     dict.save! if save_dict
   end
 
-  def upsert(dname : String, uname : String, dlock : String, key : String, vals : String = "", extra = "")
+  def upsert(dname : String, uname : String, power : String, key : String, vals : String = "", extra = "")
     dlog = CvDlog.load_remote(dname)
     dict = CvDict.load_remote(dname)
 
-    dlog.insert(key, dlock) do
+    dlog.insert(key, power) do
       dict.upsert!(key, [vals], extra)
-      CvDlog::Item.new(CvDlog::Item.mtime, uname, dlock, key, vals, extra)
+      CvDlog::Item.new(CvDlog::Item.mtime, uname, power, key, vals, extra)
     end
   end
 
@@ -88,12 +88,12 @@ module Engine
 
     mtime = 0
     uname = ""
-    dlock = 0
+    power = 0
 
     if node = CvDict.load_remote(dname).find(input)
       vals = node.vals
       extra = node.extra
-      dlock = 1
+      power = 1
     end
 
     if dlog = CvDlog.load_remote(dname).find(input)
@@ -102,9 +102,9 @@ module Engine
 
       mtime = dlog.mtime
       uname = dlog.uname
-      dlock = dlog.dlock
+      power = dlog.power
     end
 
-    {vals: vals, extra: extra, mtime: mtime, uname: uname, dlock: dlock}
+    {vals: vals, extra: extra, mtime: mtime, uname: uname, power: power}
   end
 end

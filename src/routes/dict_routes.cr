@@ -57,13 +57,13 @@ module Server
   get "/_upsert" do |env|
     uname = env.get("uname").as(String)
     dname = env.params.query.fetch("dname", "combine")
-    dlock = env.params.query.fetch("dlock", "0").to_i? || 0
+    power = env.params.query.fetch("power", "0").to_i? || 0
 
     key = env.params.query.fetch("key", "")
     vals = env.params.query.fetch("vals", "")
     extra = env.params.query.fetch("extra", "")
 
-    if Engine.upsert(dname, uname, dlock, key, vals, extra)
+    if Engine.upsert(dname, uname, power, key, vals, extra)
       {msg: "accepted"}.to_json(env.response)
     else
       {msg: "rejected"}.to_json(env.response)
