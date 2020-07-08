@@ -188,7 +188,7 @@ class OrderMap
 
   # class methods
 
-  DIR = File.join("var", "appcv", "order_maps")
+  DIR = File.join("var", "order_maps")
   FileUtils.mkdir_p(DIR)
 
   def path_for(name : String)
@@ -198,7 +198,7 @@ class OrderMap
   CACHE = {} of String => self
 
   def load(file : String) : OrderMap
-    CACHE[name] ||= new(file, preload: true)
+    CACHE[file] ||= new(file, preload: true)
   end
 end
 

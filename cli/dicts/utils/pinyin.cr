@@ -1,7 +1,7 @@
-module Pinyin
+module Utils
   extend self
 
-  TONES = {
+  PINYIN_TONES = {
     "nü1"     => "nǖ",
     "nü2"     => "nǘ",
     "nü3"     => "nǚ",
@@ -2061,12 +2061,12 @@ module Pinyin
     "biu1"    => "biū",
   }
 
-  def to_tone(input : String)
+  def pinyin_to_tone(input : String)
     input
       .downcase
       .gsub("u:", "ü")
       .split(/[\s\-]/x)
-      .map { |word| TONES.fetch(word, word) }
+      .map { |word| PINYIN_TONES.fetch(word, word) }
       .join(" ")
   end
 end

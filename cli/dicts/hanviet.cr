@@ -1,33 +1,91 @@
-require "../../src/kernel/book_info"
+require "./utils/common"
+require "../../src/kernel/dict_repo"
+require "../../src/kernel/value_set"
 
-using = Set(String).new
+class Hanviet
+  COMMONS = ValueSet.load(Utils.inp_path("autogen/common-hanzi.txt"))
+  HANZIDB = ValueSet.load(Utils.inp_path("initial/hanzidb.txt"))
 
-infos = BookInfo.load_all!
-infos.each_value do |info|
-  split_hanzi(info.title_zh) { |x| using << x }
-  split_hanzi(info.author_zh) { |x| using << x }
-end
+  TRADSIM = DictRepo.load(Utils.out_path("shared/tradsim.txt"))
+  PINYINS = DictRepo.load(Utils.out_path("shared/pinyins.txt"))
 
-def split_hanzi(input)
-  input.split("").each do |char|
-    yield char if char =~ /\p{Han}/
+  def should_keep_hanviet?(input : String)
+    return true if COMMONS.includes?(input)
+    return true if HANZIDB.includes?(input)
+
+    input.split("").each do |char|
+      return false if TRADSIM.has_key?(char)
+    end
+
+    true
+  end
+
+  @dict = DictRepo.new(Utils.out_path("shared/hanviet.dic"))
+
+  def import_lacviet_chars!
+    input = DictRepo.load
+
+    input.each do |node|
+      @dict.upsert(node.key, node.vals)
+    end
+  end
+
+  def import_dict!(file : String)
+    if file.ends_with?(".txt")
+      input = DictRepo.load_legacy(file)
+    else
+      input = DictRepo.load(file)
+    end
+
+    input.each do |item|
+      if item.key.ends_with?("章")
+        next if item.key.size > 1
+      end
+
+      @dict.upsert(item.key) do |node|
+        if node.removed? || node.vals.includes?(item.vals.first)
+          # node.vals = item.vals.concat(node.vals)
+        else
+          # if COMMONS.includes?(node.key)
+          # puts "#{node.key}=#{item.vals.join("/")}|#{node.vals.join("/")}"
+          # end
+        end
+
+        node.vals.concat(item.vals)
+        node.vals.uniq!
+      end
+    end
+  end
+
+  def transform_from_trad!
+    TRADSIM.each do |item|
+      next if @dict.find(item.vals.first)
+      next unless node = @dict.find(item.key)
+      puts @dict.upsert(item.vals.first, node.vals)
+    end
+  end
+
+  def save!
+    COMMONS.each do |key|
+      next if @dict.has_key?(key)
+      puts "#{key}="
+    end
+
+    @dict.save!
   end
 end
 
-puts "- common hanzi: #{using.size}"
+worker = Hanviet.new
 
-File.write "var/.dict_inits/autogen/common-hanzi.txt", using.to_a.join("\n")
+worker.import_dict!(Utils.inp_path("hanviet/verified-chars.txt"))
+worker.import_dict!(Utils.inp_path("autogen/lacviet-chars.dic"))
+worker.import_dict!(Utils.inp_path("hanviet/localqt-chars.txt"))
+worker.import_dict!(Utils.inp_path("hanviet/checked-chars.txt"))
+worker.import_dict!(Utils.inp_path("hanviet/trichdan-chars.txt"))
+worker.import_dict!(Utils.inp_path("hanviet/verified-words.txt"))
 
-# EXCEPT = {"連", "嬑", "釵", "匂", "宮", "夢", "滿", "闇", "詞", "遊", "東", "獅", "劍", "韻", "許", "雲", "異", "傳", "倫", "爾", "龍", "瑩", "蟲", "亞", "鷹", "馬", "鮮", "萊", "義", "筆", "災", "萇", "珎", "風", "俠", "雖", "離", "楓", "時", "卝", "輪", "迴", "笀", "當", "偍"}
-
-# def keep_hanviet?(tradsim, input : String)
-#   return true if EXCEPT.includes?(input)
-#   input.split("").each do |char|
-#     return false if tradsim.includes?(char)
-#   end
-
-#   true
-# end
+worker.transform_from_trad!
+worker.save!
 
 # def export_hanviet(tradsim, pinyins, hanzidb)
 #   puts "\n- [Export hanviet]".colorize(:cyan)

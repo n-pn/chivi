@@ -1,9 +1,7 @@
-# require "./shared/cvdict"
-
 require "./utils/common"
 
-def cleanup(defs : String)
-  defs.split("\\t")
+def cleanup(input : String)
+  input.split("\\t")
     .map(&.gsub(/^\d+\.\s*/, "").gsub(/\.\s*$/, ""))
     .reject(&.empty?)
     .join("; ")
@@ -14,16 +12,18 @@ def cleanup(defs : String)
     .join("; ")
 end
 
-OUT_FILE = Common.out_path("trungviet.dic")
+OUT_FILE = Utils.out_path("trungviet.dic")
 
 out_dict = DictRepo.new(OUT_FILE, false)
-out_dict.load_legacy!(Common.inp_path("initial/lacviet-mtd.txt"))
+out_dict.load_legacy!(Utils.inp_path("initial/lacviet-mtd.txt"))
 
-char_dict = DictRepo.new(Common.inp_path("autogen/lacviet-chars.dic"))
-word_dict = DictRepo.new(Common.inp_path("autogen/lacviet-words.dic"))
+char_dict = DictRepo.new(Utils.inp_path("autogen/lacviet-chars.dic"))
+word_dict = DictRepo.new(Utils.inp_path("autogen/lacviet-words.dic"))
+
+knowns = Utils.known_words
 
 out_dict.each do |item|
-  Common.add_to_known(item.key)
+  knowns.upsert(item.key) if Utils.has_hanzi?(item.key)
 
   item.vals = item.vals.first.split("\\n").map { |x| cleanup(x) }
   item.vals.each do |val|
@@ -45,4 +45,4 @@ end
 out_dict.save!
 char_dict.save!
 word_dict.save!
-Common.save_known_words!
+knowns.save!

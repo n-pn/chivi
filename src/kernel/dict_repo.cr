@@ -170,12 +170,12 @@ class DictRepo
         upsert(key, vals, extra)
         count += 1
       rescue
-        puts "- <lex_dict> error parsing line `#{line}`.".colorize(:red)
+        puts "- <dict_repo> error parsing line `#{line}`.".colorize(:red)
       end
     end
 
     elapse_time = elapsed_time.total_milliseconds.round.to_i
-    puts "- <lex_dict> [#{file.colorize(:yellow)}] loaded, \
+    puts "- <dict_repo> [#{file.colorize(:yellow)}] loaded, \
             lines: #{count.colorize(:yellow)}, \
             time: #{elapse_time.colorize(:yellow)}ms"
 
@@ -238,18 +238,23 @@ class DictRepo
 
   def save!(file : String = @file, trim = 0) : Void
     File.open(file, "w") do |io|
-      each(&.puts(io, trim: trim))
+      each { |node| node.puts(io, trim: trim) }
     end
 
-    puts "- <dict_repo> [#{file.colorize(:yellow)}] saved (#{@size.colorize(:yellow)} entries)."
+    puts "- <dict_repo> [#{file.colorize(:yellow)}] saved, entries: #{@size.colorize(:yellow)}."
   end
 
   # class methods
 
   CACHE = {} of String => DictRepo
 
-  def load!(file : String, preload : Bool = true) : DictRepo
+  def self.load(file : String, preload : Bool = true) : DictRepo
     CACHE[file] ||= new(file, preload)
+  end
+
+  def self.load_legacy(file : String)
+    dict = new(file, preload: false)
+    dict.tap(&.load_legacy!(file))
   end
 end
 

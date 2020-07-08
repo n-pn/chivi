@@ -31,15 +31,15 @@ class Entry
 
     trad = Utils.normalize(trad).join
     simp = Utils.normalize(simp).join
-    pinyin = Pinyin.to_tone(pinyin)
+    pinyin = Utils.pinyin_to_tone(pinyin)
 
     new(trad, simp, pinyin, define)
   end
 
   def self.cleanup(entry, hanzi) : String
-    entry.gsub(/\p{Han}+\|/, "")                            # remove hantrads
-      .gsub(/(?<=\[)(.*?)(?=\])/) { |p| Pinyin.to_tone(p) } # number to tones
-      .split("/").reject { |x| repeat_itself?(x, hanzi) }   # clean trad defs
+    entry.gsub(/\p{Han}+\|/, "") # remove hantrads
+      .gsub(/(?<=\[)(.*?)(?=\])/) { |p| Utils.pinyin_to_tone(p) }
+      .split("/").reject { |x| repeat_itself?(x, hanzi) } # clean trad hanzi
       .join("; ")
   end
 
@@ -55,14 +55,14 @@ end
 class CE_DICT
   CEDICT_URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 
+  HANZIDB_FILE = Utils.inp_path("initial/hanzidb.txt")
+  HANZIDB_DICT = DictRepo.load_legacy(HANZIDB_FILE)
+
+  CE_DICT_FILE = Utils.out_path("cc_cedict.dic")
+  TRADSIM_FILE = Utils.out_path("shared/tradsim.dic")
+  PINYINS_FILE = Utils.out_path("shared/pinyins.dic")
+
   getter input = [] of Entry
-
-  HANZIDB_FILE = Common.inp_path("initial/hanzidb.txt")
-  HANZIDB_DICT = Common.load_legacy_dict!(HANZIDB_FILE)
-
-  CE_DICT_FILE = Common.out_path("cc_cedict.dic")
-  TRADSIM_FILE = Common.out_path("shared/tradsim.dic")
-  PINYINS_FILE = Common.out_path("shared/pinyins.dic")
 
   def initialize
     read_zip.split("\n").each do |line|
@@ -75,8 +75,7 @@ class CE_DICT
 
   def read_zip : String
     puts "- reading zip file content...".colorize(:blue)
-
-    zip_file = Common.inp_path("initial/cc-cedict.zip")
+    zip_file = Utils.inp_path("initial/cc-cedict.zip")
 
     if outdated?(zip_file)
       puts "- fetching latest CC_CEDICT from internet... ".colorize(:blue)
@@ -95,14 +94,16 @@ class CE_DICT
 
   def export_ce_dict!
     puts "\n- [Export ce_dict]".colorize(:cyan)
+
     dict = DictRepo.new(CE_DICT_FILE)
+    knowns = Utils.known_words
 
     @input.each do |entry|
-      Common.add_to_known(entry.simp)
+      knowns.upsert(entry.simp) if Utils.has_hanzi?(entry.simp)
       dict.upsert(entry.simp, "[#{entry.pinyin}] #{entry.define}")
     end
 
-    Common.save_known_words!
+    knowns.save!
     dict.save!
   end
 
@@ -116,7 +117,7 @@ class CE_DICT
     puts "\n- [Export tradsim]".colorize(:cyan)
 
     counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
-    tswords = DictRepo.new(Common.inp_path("autogen/tradsimp-words.dict"))
+    tswords = DictRepo.new(Utils.inp_path("autogen/tradsimp-words.dict"))
 
     @input.each do |entry|
       next if is_trad?(entry.define)
@@ -149,7 +150,7 @@ class CE_DICT
     words.each do |item|
       simp = item.vals.uniq
       next if simp.size > 1 || simp.first == item.key
-      next if simp.first == Common.convert(dict, item.key)
+      next if simp.first == Utils.convert(dict, item.key)
       dict.upsert(item.key, simp)
     end
 
@@ -175,7 +176,7 @@ class CE_DICT
     end
 
     dict = DictRepo.new(PINYINS_FILE)
-    dict.load_legacy!(Common.inp_path("initial/extra-pinyins.txt"))
+    dict.load_legacy!(Utils.inp_path("initial/extra-pinyins.txt"))
 
     HANZIDB_DICT.each do |entry|
       dict.upsert(entry.key, entry.vals) unless entry.vals.first.empty?
