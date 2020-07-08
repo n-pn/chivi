@@ -2,24 +2,23 @@ require "./routes/*"
 
 module Server
   Kemal.config.port = 5110
-
   serve_static false
 
   before_all do |env|
     case Kemal.config.env
     when "development"
-      udic = "local"
+      uname = "local"
     when "test"
-      udic = "_test"
+      uname = "test"
     else
-      udic = "appcv"
+      uname = "guest"
     end
 
-    env.set("udic", udic)
+    env.set("uname", uname)
     env.response.content_type = "application/json"
   end
 
-  get "/_/" do |env|
+  get "/" do |env|
     {msg: "ok"}.to_json env.response
   end
 

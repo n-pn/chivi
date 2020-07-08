@@ -1,7 +1,7 @@
 require "./utils/common"
 require "./utils/clavis"
 
-require "../../src/kernel/dict_repo"
+require "../../src/engine/cv_dict"
 require "../../src/kernel/value_set"
 
 puts "\n[Load inputs]".colorize(:cyan)
@@ -16,14 +16,14 @@ inp_recycle = Clavis.new(Utils.inp_path("autogen/recycle.txt"), true)
 
 puts "\n[Export output]".colorize(:cyan)
 
-out_generic = DictRepo.new(Utils.out_path("shared/generic.dic"), false)
+out_generic = CvDict.new(Utils.out_path("shared/generic.dic"), false)
 inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
   out_generic.upsert(key, vals)
 end
 
 out_generic.save!
 
-out_suggest = DictRepo.new(Utils.out_path("shared/suggest.dic"), false)
+out_suggest = CvDict.new(Utils.out_path("shared/suggest.dic"), false)
 inp_suggest.each do |key, vals|
   # unless CHECKED.includes?(key) || !KNOWNED.includes?(key)
   #   next if Utils.convert(out_generic, key, " ") == vals.first
@@ -33,7 +33,7 @@ inp_suggest.each do |key, vals|
 end
 out_suggest.save!
 
-out_combine = DictRepo.new(Utils.out_path("shared/combine.dic"), false)
+out_combine = CvDict.new(Utils.out_path("shared/combine.dic"), false)
 inp_combine.each do |key, vals|
   # unless CHECKED.includes?(key) || !KNOWNED.includes?(key)
   #   next if Utils.convert(out_generic, key, " ") == vals.first
@@ -43,7 +43,7 @@ inp_combine.each do |key, vals|
 end
 out_combine.save!
 
-out_recycle = DictRepo.new(Utils.out_path("shared/recycle.dic"))
+out_recycle = CvDict.new(Utils.out_path("shared/recycle.dic"))
 inp_recycle.each do |key, vals|
   # unless CHECKED.includes?(key) || !KNOWNED.includes?(key)
   #   next if Utils.convert(out_generic, key, " ") == vals.first

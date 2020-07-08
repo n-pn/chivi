@@ -1,13 +1,13 @@
 require "../spec_helper"
-require "../../src/kernel/dict_repo"
+require "../../src/engine/cv_dict"
 
-describe DictRepo do
+describe CvDict do
   # TODO:
   # - Test dict preload and reload
 
   describe ".load" do
     it "loads empty dict" do
-      dict = DictRepo.load!("spec/_tests/nonexist.txt")
+      dict = CvDict.load!("spec/_tests/nonexist.txt")
       dict.should_not be(nil)
 
       dict.size.should eq(0)
@@ -15,7 +15,7 @@ describe DictRepo do
     end
 
     it "loads existed dict" do
-      dict = DictRepo.load!("spec/_tests/sample-lexfile.dic")
+      dict = CvDict.load!("spec/_tests/sample-lexfile.dic")
       dict.should_not be(nil)
 
       dict.size.should eq(1)
@@ -26,7 +26,7 @@ describe DictRepo do
   describe ".load!" do
     it "should raise when file not found!" do
       expect_raises(Exception) do
-        dict = DictRepo.load!("spec/_tests/nonexist.txt")
+        dict = CvDict.load!("spec/_tests/nonexist.txt")
       end
     end
   end

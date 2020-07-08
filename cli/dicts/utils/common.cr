@@ -1,13 +1,13 @@
 require "file_utils"
 
-require "../../../src/kernel/dict_repo"
+require "../../../src/engine/cv_dict"
 require "../../../src/kernel/value_set"
 
 module Utils
   extend self
 
   INP_DIR = File.join("var", ".dict_inits")
-  OUT_DIR = File.join("var", "dict_repos")
+  OUT_DIR = File.join("var", "dict_files")
 
   def inp_path(file : String)
     File.join(INP_DIR, file)
@@ -32,11 +32,11 @@ module Utils
   end
 
   def load_legacy(file : String)
-    dict = DictRepo.new(file, preload: false)
+    dict = CvDict.new(file, preload: false)
     dict.tap(&.load_legacy!(file))
   end
 
-  def convert(dict : DictRepo, input : String, sep = "")
+  def convert(dict : CvDict, input : String, sep = "")
     res = [] of String
 
     chars = input.chars

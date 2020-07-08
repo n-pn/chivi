@@ -1,13 +1,13 @@
 require "./utils/common"
-require "../../src/kernel/dict_repo"
+require "../../src/engine/cv_dict"
 require "../../src/kernel/value_set"
 
 class Hanviet
   COMMONS = ValueSet.load(Utils.inp_path("autogen/common-hanzi.txt"))
   HANZIDB = ValueSet.load(Utils.inp_path("initial/hanzidb.txt"))
 
-  TRADSIM = DictRepo.load(Utils.out_path("shared/tradsim.txt"))
-  PINYINS = DictRepo.load(Utils.out_path("shared/pinyins.txt"))
+  TRADSIM = CvDict.load(Utils.out_path("shared/tradsim.txt"))
+  PINYINS = CvDict.load(Utils.out_path("shared/pinyins.txt"))
 
   def should_keep_hanviet?(input : String)
     return true if COMMONS.includes?(input)
@@ -20,10 +20,10 @@ class Hanviet
     true
   end
 
-  @dict = DictRepo.new(Utils.out_path("shared/hanviet.dic"))
+  @dict = CvDict.new(Utils.out_path("shared/hanviet.dic"))
 
   def import_lacviet_chars!
-    input = DictRepo.load
+    input = CvDict.load
 
     input.each do |node|
       @dict.upsert(node.key, node.vals)
@@ -32,9 +32,9 @@ class Hanviet
 
   def import_dict!(file : String)
     if file.ends_with?(".txt")
-      input = DictRepo.load_legacy(file)
+      input = CvDict.load_legacy(file)
     else
-      input = DictRepo.load(file)
+      input = CvDict.load(file)
     end
 
     input.each do |item|
@@ -168,14 +168,14 @@ worker.save!
 #   puts "\n- Fill missing hanviet from vietphrase".colorize(:blue)
 
 #   localqt_dir = File.join(INP_DIR, "localqt")
-#   dict_repos = {
+#   cv_dicts = {
 #     "#{localqt_dir}/vietphrase.txt",
 #     "#{localqt_dir}/names1.txt",
 #     "#{localqt_dir}/names2.txt",
 #   }
 #   recovered = 0
 
-#   dict_repos.each do |file|
+#   cv_dicts.each do |file|
 #     Cvdict.load!(file).data.each do |key, val|
 #       next if key.size > 1 || !missing.includes?(key)
 #       out_hanviet.add(key, val.first)

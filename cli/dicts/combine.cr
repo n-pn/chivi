@@ -4,7 +4,7 @@ require "json"
 require "./utils/common"
 require "./utils/clavis"
 
-require "../../src/kernel/dict_repo"
+require "../../src/engine/cv_dict"
 require "../../src/kernel/value_set"
 
 puts "[Load counters]".colorize(:cyan)
@@ -175,7 +175,7 @@ end
 
 puts "\n[Load hanviet]".colorize(:cyan)
 
-DictRepo.load(Utils.out_path("shared/hanviet.dic")).each do |node|
+CvDict.load(Utils.out_path("shared/hanviet.dic")).each do |node|
   next if CHECKED.includes?(node.key)
   EXISTED.add(node.key)
 

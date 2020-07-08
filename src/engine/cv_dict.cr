@@ -2,8 +2,8 @@ require "colorize"
 require "file_utils"
 
 # main dict entries
-# TODO: rename?
-class DictRepo
+# TODO: redname?
+class CvDict
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 
@@ -20,13 +20,13 @@ class DictRepo
 
     getter key : String
     property vals : Array(String)
-    property extra : String # extra data, can be used to mark attributes or priorities
+    property extra : String
+    # extra data, can be used to mark attributes or priorities
+
+    getter trie = Hash(Char, Node).new
 
     def initialize(@key, @vals = [] of String, @extra = "")
     end
-
-    alias Trie = Hash(Char, Node)
-    property trie : Trie? = nil
 
     def to_s
       String.build { |io| to_s(io) }
@@ -58,9 +58,7 @@ class DictRepo
       queue = [self]
 
       while node = queue.pop?
-        next unless trie = node.trie
-
-        trie.each_value do |node|
+        node.trie.each_value do |node|
           queue << node
           yield node unless node.removed?
         end
@@ -77,8 +75,7 @@ class DictRepo
       node = self
 
       key.each_char do |char|
-        trie = node.trie ||= Trie.new
-        node = trie[char] ||= Node.new(node.key + char)
+        node = node.trie[char] ||= Node.new(node.key + char)
       end
 
       node
@@ -89,8 +86,7 @@ class DictRepo
 
       from.upto(key.size - 1) do |idx|
         char = key.unsafe_fetch(idx)
-        trie = node.trie ||= Trie.new
-        node = trie[char] ||= Node.new(node.key + char)
+        node = node.trie[char] ||= Node.new(node.key + char)
       end
 
       node
@@ -100,8 +96,7 @@ class DictRepo
       node = self
 
       key.each_char do |char|
-        return nil unless trie = node.trie
-        return nil unless node = trie[char]?
+        return nil unless node = node.trie[char]?
       end
 
       node unless node.removed?
@@ -112,8 +107,7 @@ class DictRepo
 
       from.upto(key.size - 1) do |idx|
         char = key.unsafe_fetch(idx)
-        return nil unless trie = node.trie
-        return nil unless node = trie[char]?
+        return nil unless node = node.trie[char]?
       end
 
       node unless node.removed?
@@ -128,8 +122,7 @@ class DictRepo
 
       from.upto(chars.size - 1) do |idx|
         char = chars.unsafe_fetch(idx)
-        return unless trie = node.trie
-        return unless node = trie[char]?
+        return unless node = node.trie[char]?
         yield node unless node.removed?
       end
     end
@@ -157,10 +150,6 @@ class DictRepo
     File.exists?(@file)
   end
 
-  def load_legacy!(file : String = @file)
-    load!(file, sep_0: "=", sep_1: /[\/\|]/)
-  end
-
   def load!(file : String = @file, sep_0 : String = SEP_0, sep_1 : String | Regex = SEP_1) : Void
     count = 0
 
@@ -170,12 +159,12 @@ class DictRepo
         upsert(key, vals, extra)
         count += 1
       rescue
-        puts "- <dict_repo> error parsing line `#{line}`.".colorize(:red)
+        puts "- <cv_dict> error parsing line `#{line}`.".colorize(:red)
       end
     end
 
     elapse_time = elapsed_time.total_milliseconds.round.to_i
-    puts "- <dict_repo> [#{file.colorize(:yellow)}] loaded, \
+    puts "- <cv_dict> [#{file.colorize(:yellow)}] loaded, \
             lines: #{count.colorize(:yellow)}, \
             time: #{elapse_time.colorize(:yellow)}ms"
 
@@ -224,6 +213,7 @@ class DictRepo
 
   def upsert(key : String) : Node
     node = @root.find!(key)
+
     @size += 1 if node.removed?
     yield node
     @size -= 1 if node.removed?
@@ -241,24 +231,77 @@ class DictRepo
       each { |node| node.puts(io, trim: trim) }
     end
 
-    puts "- <dict_repo> [#{file.colorize(:yellow)}] saved, entries: #{@size.colorize(:yellow)}."
+    puts "- <cv_dict> [#{file.colorize(:yellow)}] saved, entries: #{@size.colorize(:yellow)}."
   end
 
   # class methods
 
-  CACHE = {} of String => DictRepo
+  DIR = File.join("var", "dict_files")
+  FileUtils.mkdir_p(File.join(DIR, "lookup"))
+  FileUtils.mkdir_p(File.join(DIR, "unique"))
 
-  def self.load(file : String, preload : Bool = true) : DictRepo
+  def self.path_for(nane : String)
+    File.join(DIR, "#{dname}.dic")
+  end
+
+  @@cc_cedict : CvDict? = nil
+  @@trungviet : CvDict? = nil
+  @@hanviet : CvDict? = nil
+  @@generic : CvDict? = nil
+
+  def self.cc_cedict
+    @@cc_cedict ||= new(path_for("cc_cedict"), true)
+  end
+
+  def self.trungviet
+    @@trungviet ||= new(path_for("cc_cedict"), true)
+  end
+
+  def self.hanviet
+    @@hanviet ||= load_shared("hanviet")
+  end
+
+  def self.generic
+    @@generic ||= load_shared("generic")
+  end
+
+  CACHE = {} of String => self
+
+  def self.load(file : String, preload : Bool = true) : self
     CACHE[file] ||= new(file, preload)
   end
 
   def self.load_legacy(file : String)
     dict = new(file, preload: false)
-    dict.tap(&.load_legacy!(file))
+    dict.tap(&.load!(file, "=", /[\/|]/))
+  end
+
+  def self.load_shared(dname : String)
+    load(path_for("shared/#{dname}"), true)
+  end
+
+  def self.load_unique(dname : String)
+    load(path_for("unique/#{dname}"), true)
+  end
+
+  def self.load_remote(dname : String)
+    case dname
+    when "hanviet" then hanviet
+    when "generic" then generic
+    when "pinyins", "tradsim", "combine", "suggest"
+      load_shared(dname)
+    else
+      load_unique(dname)
+    end
+  end
+
+  def self.for_convert(dname = "combine")
+    special = dname == "combine" ? load_shared(dname) : load_unique(dname)
+    {hanviet, generic, special}
   end
 end
 
-# test = DictRepo.new("tmp/test_lex_dict.dic", preload: true)
+# test = CvDict.new("tmp/test_lex_dict.dic", preload: true)
 
 # test.upsert("a", "a")
 # test.upsert!("a", "b")

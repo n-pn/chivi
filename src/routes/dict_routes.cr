@@ -1,33 +1,72 @@
 require "./_route_utils"
 
 module Server
-  get "/_/lookup" do |env|
-    user = env.get("user").as(String)
+  alias LookupEntry = Hash(String, Array(String))
 
-    line = env.params.query.fetch("line", "")
-    dict = env.params.query.fetch("dict", "tonghop")
+  get "/_lookup" do |env|
+    dname = env.params.query.fetch("dname", "combine")
+    dicts = CvDict.for_convert(dname)
 
-    Engine.lookup(line, dict, user).to_json(env.response)
-  end
+    chars = env.params.query.fetch("input", "").chars
+    upper = chars.size - 1
 
-  get "/_/inquire" do |env|
-    user = env.get("user").as(String)
+    res = (0..upper).map do |idx|
+      entry = Hash(String, LookupEntry).new do |hash, key|
+        hash[key] = LookupEntry.new { |h, k| h[k] = [] of String }
+      end
 
-    word = env.params.query["word"]? || ""
-    dict = env.params.query["dict"]? || "tonghop"
+      dicts.reverse_each do |dict|
+        dict.scan(chars, idx).each do |item|
+          entry[item.key.size]["vietphrase"].concat(item.vals).uniq!
+        end
+      end
 
-    res = Engine.inquire(word, dict, user)
+      CvDict.trungviet.scan(chars, idx).each do |item|
+        entry[item.key.size]["trungviet"] = item.vals
+      end
+
+      CvDict.cc_cedict.scan(chars, idx).each do |item|
+        entry[item.key.size]["cc_cedict"] = item.vals
+      end
+
+      entry.to_a.sort_by(&.[0].size.-)
+    end
+
     res.to_json(env.response)
   end
 
-  get "/_/upsert" do |env|
-    key = env.params.query["key"]? || ""
-    val = env.params.query["val"]? || ""
+  get "/_search" do |env|
+    # TODO: search for a list of dnames
 
-    dict = env.params.query["dict"]? || "tonghop"
-    user = env.get("user").as(String)
+    input = env.params.query.fetch("input", "")
+    dname = env.params.query.fetch("dname", "combine")
 
-    res = Engine.upsert(key, val, dict, user)
-    res.to_json(env.response)
+    if item = CvDict.load_shared("suggest").find(input)
+      suggest = {vals: item.vals, extra: item.extra}
+    end
+
+    {
+      generic: Engine.search(input, "generic"),
+      special: Engine.search(input, dname),
+      suggest: suggest,
+      hanviet: Engine.translit(input, "hanviet", false).vi_text,
+      pinyins: Engine.translit(input, "pinyins", false).vi_text,
+    }.to_json(env.response)
+  end
+
+  get "/_upsert" do |env|
+    uname = env.get("uname").as(String)
+    dname = env.params.query.fetch("dname", "combine")
+    dlock = env.params.query.fetch("dlock", "0").to_i? || 0
+
+    key = env.params.query.fetch("key", "")
+    vals = env.params.query.fetch("vals", "")
+    extra = env.params.query.fetch("extra", "")
+
+    if Engine.upsert(dname, uname, dlock, key, vals, extra)
+      {msg: "accepted"}.to_json(env.response)
+    else
+      {msg: "rejected"}.to_json(env.response)
+    end
   end
 end

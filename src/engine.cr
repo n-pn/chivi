@@ -1,147 +1,110 @@
-require "./engine/*"
+require "./engine/cv_dict"
+require "./engine/cv_data"
+
+require "./engine/convert"
+require "./engine/analyze"
 
 module Engine
   extend self
 
-  def hanviet(line : String, user = "local", apply_cap = false)
-    dicts = Lexicon.shared("hanviet", user)
-    Convert.cvlit(line, dicts, apply_cap: apply_cap)
+  def translit(input : String, type = "hanviet", apply_cap = false)
+    dict = CvDict.shared(type)
+    pad_space = type != "tradsim"
+    Convert.translit(input, dict, apply_cap, pad_space)
   end
 
-  def hanviet(lines : Array(String), user = "local", apply_cap = false)
-    dicts = Lexicon.shared("hanviet", user)
-    lines.map { |line| Convert.cvlit(line, dicts, apply_cap: apply_cap) }
+  def translit(lines : Array(String), type = "hanviet", apply_cap = false)
+    dict = CvDict.shared(type)
+    pad_space = type != "tradsim"
+    lines.map { |line| Convert.translit(line, dict, apply_cap, pad_space) }
   end
 
-  def pinyins(line : String, user = "local", apply_cap = false)
-    dicts = Lexicon.shared("pinyins", user)
-    Convert.cvlit(line, dicts, apply_cap: apply_cap)
+  def cv_title(input : String, udict = "combine")
+    dicts = CvDict.for_convert(udict)
+    Convert.cv_title(input, *dicts)
   end
 
-  def pinyins(lines : Array(String), user = "local", apply_cap = false)
-    dicts = Lexicon.shared("pinyins", user)
-    lines.map { |line| Convert.cvlit(line, dicts, apply_cap: apply_cap) }
+  def cv_title(lines : Array(String), udict = "combine")
+    dicts = CvDict.for_convert(udict)
+    lines.map { |line| Convert.title(line, *dicts) }
   end
 
-  def tradsim(line : String, user = "local")
-    dicts = Lexicon.get_shared("tradsim", user)
-    Convert.cvraw(line, dicts)
+  def cv_plain(input : String, udict = "combine")
+    dicts = CvDict.for_convert(udict)
+    Convert.plain(input, *dicts)
   end
 
-  def tradsim(lines : Array(String), user = "local")
-    dicts = Lexicon.shared("tradsim", user)
-    lines.map { |line| Convert.cvraw(line, dicts) }
+  def cv_plain(lines : Array(String), udict = "combine")
+    dicts = CvDict.for_convert(udict)
+    lines.map { |line| Convert.plain(line, *dicts) }
   end
 
-  def cv_title(input : String, dict : String = "tonghop", user : String = "local")
-    return input if input.empty?
-    Convert.title(input, Lexicon.for_convert(dict, user))
-  end
+  def cv_mixed(lines : Array(String), udict = "combine")
+    dicts = CvDict.for_convert(udict)
+    output = [Convert.cv_title(lines.first, *dicts)]
 
-  def cv_title(lines : Array(String), dict : String = "tonghop", user : String = "local")
-    return lines if lines.empty?
-    dicts = Lexicon.for_convert(dict, user)
-    lines.map { |line| Convert.title(line, dicts) }
-  end
-
-  def cv_plain(input : String, dict : String = "tonghop", user : String = "local")
-    return input if input.empty?
-    dicts = Lexicon.for_convert(dict, user)
-    Convert.plain(input, dicts)
-  end
-
-  def cv_plain(lines : Array(String), dict : String = "tonghop", user : String = "local")
-    return lines if lines.empty?
-    dicts = Lexicon.for_convert(dict, user)
-    lines.map { |line| Convert.plain(line, dicts) }
-  end
-
-  def cv_mixed(lines : Array(String), dict : String = "tonghop", user : String = "local")
-    return lines if lines.empty?
-    dicts = Lexicon.for_convert(dict, user)
-
-    lines.map_with_index do |line, idx|
-      idx == 0 ? Convert.title(line, dicts) : Convert.plain(line, dicts)
+    1.upto(lines.size - 1) do |i|
+      line = lines.unsafe_fetch(i)
+      output << Convert.cv_plain(line, *dicts)
     end
+
+    output
   end
 
-  def upsert(key : String, val : String = "", dict = "tonghop", user = "local")
-    sync = user == "admin"
+  def apply_logs!(dname : String, mode = :keep_new, save_dict = true)
+    dlog = CvDlog.load_remote(dname)
+    dict = CvDict.load_remote(dname)
+    dlog.best.each_value do |log|
+      dict.update(key) do |node|
+        node.extra = log.extra
 
-    case dict
-    when "suggest", "combine", "pinyins", "tradsim", "hanviet"
-      Lexicon.shared(dict, user).upsert(key, val, sync: sync)
-    when "generic"
-      # prevent missing translation
-      if key.size == 1 && val.empty?
-        if item = Lexicon.shared("hanviet", user).find(key)
-          val = item.vals.first
+        vals = log.vals.split(CvDict::SEP_1)
+        if node.vals.empty? || mode == :keep_new
+          node.vals = vals
+        elsif mode == :new_first
+          node.vals = vals.concat(node.vals)
+        else
+          node.vals.concat(vals)
         end
       end
+    end
 
-      Lexicon.shared("generic", user).upsert(key, val, sync: sync)
-    else
-      dict = "tonghop" if dict.empty?
-      Lexicon.unique(dict, user).upsert(key, val, sync: sync)
+    dict.save! if save_dict
+  end
 
-      unless val.empty?
-        Lexicon.shared("suggest", user).upsert(key, val, sync: sync)
-      end
+  def upsert(dname : String, uname : String, dlock : String, key : String, vals : String = "", extra = "")
+    dlog = CvDlog.load_remote(dname)
+    dict = CvDict.load_remote(dname)
+
+    dlog.insert(key, dlock) do
+      dict.upsert!(key, [vals], extra)
+      CvDlog::Item.new(CvDlog::Item.mtime, uname, dlock, key, vals, extra)
     end
   end
 
-  def lookup(line : String, dict : String = "tonghop", user : String = "local")
-    trungviet = Lexicon.trungviet
-    cc_cedict = Lexicon.cc_cedict
+  def search(input : String, dname = "generic")
+    vals = [] of String
+    extra = ""
 
-    special = Lexicon.unique(dict, user)
-    generic = Lexicon.shared("generic", user)
+    mtime = 0
+    uname = ""
+    dlock = 0
 
-    chars = line.chars
-    upper = chars.size - 1
-
-    (0..upper).map do |idx|
-      entry = Hash(String, Hash(String, Array(String))).new do |hash, key|
-        hash[key] = Hash(String, Array(String)).new do |h, k|
-          h[k] = [] of String
-        end
-      end
-
-      special.scan(chars, idx).each do |item|
-        entry[item.key]["vietphrase"].concat(item.vals).uniq!
-      end
-
-      generic.scan(chars, idx).each do |item|
-        entry[item.key]["vietphrase"].concat(item.vals).uniq!
-      end
-
-      trungviet.scan(chars, idx).each do |item|
-        entry[item.key]["trungviet"] = item.vals
-      end
-
-      cc_cedict.scan(chars, idx).each do |item|
-        entry[item.key]["cc_cedict"] = item.vals
-      end
-
-      entry.to_a.sort_by(&.[0].size.-)
-    end
-  end
-
-  def inquire(term : String, dict : String = "tonghop", user = "local")
-    special = Lexicon.unique(dict, user).search(term)
-    generic = Lexicon.shared("generic", user).search(term)
-    suggest, _ = Lexicon.shared(dict, user).search(term)
-
-    suggest.reject! do |x|
-      special[0].includes?(x) || generic[0].includes?(x)
+    if node = CvDict.load_remote(dname).find(input)
+      vals = node.vals
+      extra = node.extra
+      dlock = 1
     end
 
-    {
-      hanviet: hanviet(term).vi_text,
-      pinyins: pinyins(term).vi_text,
-      special: special,
-      generic: generic,
-      suggest: suggest,
-    }
+    if dlog = CvDlog.load_remote(dname).find(input)
+      vals = dlog.vals.split(CvDict::SEP_1) if vals.empty?
+      extra = dlog.extra if extra.empty?
+
+      mtime = dlog.mtime
+      uname = dlog.uname
+      dlock = dlog.dlock
+    end
+
+    {vals: vals, extra: extra, mtime: mtime, uname: uname, dlock: dlock}
   end
 end

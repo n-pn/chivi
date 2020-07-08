@@ -6,8 +6,8 @@ require "compress/zip"
 require "./utils/common"
 require "./utils/pinyin"
 
+require "../../src/engine/cv_dict"
 require "../../src/_utils/normalize"
-require "../../src/kernel/dict_repo"
 
 class Entry
   getter trad : String
@@ -56,7 +56,7 @@ class CE_DICT
   CEDICT_URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 
   HANZIDB_FILE = Utils.inp_path("initial/hanzidb.txt")
-  HANZIDB_DICT = DictRepo.load_legacy(HANZIDB_FILE)
+  HANZIDB_DICT = CvDict.load_legacy(HANZIDB_FILE)
 
   CE_DICT_FILE = Utils.out_path("cc_cedict.dic")
   TRADSIM_FILE = Utils.out_path("shared/tradsim.dic")
@@ -95,7 +95,7 @@ class CE_DICT
   def export_ce_dict!
     puts "\n- [Export ce_dict]".colorize(:cyan)
 
-    dict = DictRepo.new(CE_DICT_FILE)
+    dict = CvDict.new(CE_DICT_FILE)
     knowns = Utils.known_words
 
     @input.each do |entry|
@@ -117,7 +117,7 @@ class CE_DICT
     puts "\n- [Export tradsim]".colorize(:cyan)
 
     counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
-    tswords = DictRepo.new(Utils.inp_path("autogen/tradsimp-words.dict"))
+    tswords = CvDict.new(Utils.inp_path("autogen/tradsimp-words.dict"))
 
     @input.each do |entry|
       next if is_trad?(entry.define)
@@ -134,7 +134,7 @@ class CE_DICT
       end
     end
 
-    dict = DictRepo.new(TRADSIM_FILE)
+    dict = CvDict.new(TRADSIM_FILE)
 
     counter.each do |trad, counts|
       best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
@@ -175,8 +175,8 @@ class CE_DICT
       end
     end
 
-    dict = DictRepo.new(PINYINS_FILE)
-    dict.load_legacy!(Utils.inp_path("initial/extra-pinyins.txt"))
+    dict = CvDict.new(PINYINS_FILE)
+    dict.load!(Utils.inp_path("initial/extra-pinyins.txt"), "=", "/")
 
     HANZIDB_DICT.each do |entry|
       dict.upsert(entry.key, entry.vals) unless entry.vals.first.empty?

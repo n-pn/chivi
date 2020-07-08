@@ -15,8 +15,8 @@ end
 
 OUT_FILE = Utils.out_path("trungviet.dic")
 
-out_dict = DictRepo.new(OUT_FILE, false)
-out_dict.load_legacy!(Utils.inp_path("initial/lacviet-mtd.txt"))
+out_dict = CvDict.new(OUT_FILE, false)
+out_dict.load!(Utils.inp_path("initial/lacviet-mtd.txt"), "=", "\\n")
 
 char_dict = Clavis.new(Utils.inp_path("hanviet/lacviet-chars.txt"), false)
 word_dict = Clavis.new(Utils.inp_path("hanviet/lacviet-words.txt"), false)
@@ -26,7 +26,7 @@ knowns = Utils.known_words
 out_dict.each do |item|
   knowns.upsert(item.key) if Utils.has_hanzi?(item.key)
 
-  item.vals = item.vals.first.split("\\n").map { |x| cleanup(x) }
+  item.vals = item.vals.map { |x| cleanup(x) }
   item.vals.each do |val|
     if match = val.match(/{(.+)}/)
       val = match[1].downcase
