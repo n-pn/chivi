@@ -1,6 +1,6 @@
 #! /bin/bash
 
-INP=var/appcv/.cache/yousuu
+INP=var/.book_cache/yousuu
 # OUT=nipin@ssh.nipin.xyz:web/chivi/assets/.inits/books/yousuu
 OUT=nipin@ssh.nipin.xyz:web/chivi/data/txt-inp/yousuu
 

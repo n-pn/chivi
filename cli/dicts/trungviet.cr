@@ -1,4 +1,5 @@
 require "./utils/common"
+require "./utils/clavis"
 
 def cleanup(input : String)
   input.split("\\t")
@@ -17,8 +18,8 @@ OUT_FILE = Utils.out_path("trungviet.dic")
 out_dict = DictRepo.new(OUT_FILE, false)
 out_dict.load_legacy!(Utils.inp_path("initial/lacviet-mtd.txt"))
 
-char_dict = DictRepo.new(Utils.inp_path("autogen/lacviet-chars.dic"))
-word_dict = DictRepo.new(Utils.inp_path("autogen/lacviet-words.dic"))
+char_dict = Clavis.new(Utils.inp_path("hanviet/lacviet-chars.txt"), false)
+word_dict = Clavis.new(Utils.inp_path("hanviet/lacviet-words.txt"), false)
 
 knowns = Utils.known_words
 
@@ -34,9 +35,7 @@ out_dict.each do |item|
         word_dict.upsert(item.key, [val])
       else
         vals = val.split(/[,;]\s*/)
-        char_dict.upsert(item.key) do |node|
-          node.vals.concat(vals)
-        end
+        char_dict.upsert(item.key, item.vals)
       end
     end
   end

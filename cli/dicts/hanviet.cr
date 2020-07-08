@@ -58,10 +58,15 @@ class Hanviet
   end
 
   def transform_from_trad!
-    TRADSIM.each do |item|
-      next if @dict.find(item.vals.first)
-      next unless node = @dict.find(item.key)
-      puts @dict.upsert(item.vals.first, node.vals)
+    HANZIDB.each do |key|
+      next unless trad = TRADSIM.find(key)
+      next unless item = @dict.find(key)
+
+      @dict.upsert(trad.vals.first) do |node|
+        break unless node.vals.empty?
+        node.vals = item.vals
+        puts item
+      end
     end
   end
 
@@ -84,7 +89,7 @@ worker.import_dict!(Utils.inp_path("hanviet/checked-chars.txt"))
 worker.import_dict!(Utils.inp_path("hanviet/trichdan-chars.txt"))
 worker.import_dict!(Utils.inp_path("hanviet/verified-words.txt"))
 
-worker.transform_from_trad!
+# worker.transform_from_trad!
 worker.save!
 
 # def export_hanviet(tradsim, pinyins, hanzidb)
