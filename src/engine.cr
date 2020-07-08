@@ -8,39 +8,39 @@ module Engine
   extend self
 
   def translit(input : String, type = "hanviet", apply_cap = false)
-    dict = CvDict.shared(type)
+    dict = CvDict.load_shared(type)
     pad_space = type != "tradsim"
     Convert.translit(input, dict, apply_cap, pad_space)
   end
 
   def translit(lines : Array(String), type = "hanviet", apply_cap = false)
-    dict = CvDict.shared(type)
+    dict = CvDict.load_shared(type)
     pad_space = type != "tradsim"
     lines.map { |line| Convert.translit(line, dict, apply_cap, pad_space) }
   end
 
-  def cv_title(input : String, udict = "combine")
-    dicts = CvDict.for_convert(udict)
+  def cv_title(input : String, dname = "combine")
+    dicts = CvDict.for_convert(dname)
     Convert.cv_title(input, *dicts)
   end
 
-  def cv_title(lines : Array(String), udict = "combine")
-    dicts = CvDict.for_convert(udict)
-    lines.map { |line| Convert.title(line, *dicts) }
+  def cv_title(lines : Array(String), dname = "combine")
+    dicts = CvDict.for_convert(dname)
+    lines.map { |line| Convert.cv_title(line, *dicts) }
   end
 
-  def cv_plain(input : String, udict = "combine")
-    dicts = CvDict.for_convert(udict)
-    Convert.plain(input, *dicts)
+  def cv_plain(input : String, dname = "combine")
+    dicts = CvDict.for_convert(dname)
+    Convert.cv_plain(input, *dicts)
   end
 
-  def cv_plain(lines : Array(String), udict = "combine")
-    dicts = CvDict.for_convert(udict)
-    lines.map { |line| Convert.plain(line, *dicts) }
+  def cv_plain(lines : Array(String), dname = "combine")
+    dicts = CvDict.for_convert(dname)
+    lines.map { |line| Convert.cv_plain(line, *dicts) }
   end
 
-  def cv_mixed(lines : Array(String), udict = "combine")
-    dicts = CvDict.for_convert(udict)
+  def cv_mixed(lines : Array(String), dname = "combine")
+    dicts = CvDict.for_convert(dname)
     output = [Convert.cv_title(lines.first, *dicts)]
 
     1.upto(lines.size - 1) do |i|

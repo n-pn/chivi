@@ -9,7 +9,7 @@ module Convert
   extend self
 
   def translit(input : String, dict : CvDict, apply_cap = false, pad_space = true)
-    res = tokenize(input.chars, dicts)
+    res = tokenize(input.chars, dict)
     res.capitalize! if apply_cap
     res.pad_spaces! if pad_space
 
@@ -17,7 +17,7 @@ module Convert
   end
 
   def cv_plain(input : String, *dicts : CvDict)
-    res = tokenize(input.chars, dicts)
+    res = tokenize(input.chars, *dicts)
     res.grammarize!
     res.capitalize!
     res.pad_spaces!
@@ -45,7 +45,7 @@ module Convert
       end
 
       unless label.empty?
-        res.concat(cv_plain(volume, dicts))
+        res.concat(cv_plain(label, *dicts))
         res << CvData::Node.new("", " - ", 0) unless title.empty?
       end
     end
@@ -64,10 +64,10 @@ module Convert
         end
       end
 
-      res.concat(cv_plain(title, dicts)) unless title.empty?
+      res.concat(cv_plain(title, *dicts)) unless title.empty?
     end
 
-    nodes
+    res
   end
 
   private def cv_title_tag(label = "")
@@ -106,11 +106,12 @@ module Convert
         dic = jdx + 1
         dic_weight = dic / dict_count + 1
 
-        dict.scan(norms, idx).each do |item|
-          weight = weights[idx] + pos_weight + size + dic_weight ** size
+        dict.scan(norms, idx) do |item|
+          length = item.key.size
+          weight = weights[idx] + pos_weight + length ** (1 + dic_weight)
 
-          jdx = idx + size
-          if weight > weights[jdx]
+          jdx = idx + length
+          if weight >= weights[jdx]
             weights[jdx] = weight
             choices[jdx] = CvData::Node.new(item.key, item.vals[0], dic, item.extra)
           end
@@ -134,7 +135,7 @@ module Convert
             break if node.dic > 0
             break unless node.special_char? || node.match_letter?
 
-            acc.combine(node)
+            acc.combine!(node)
             idx -= node.key.size
           end
         elsif acc.unchanged?
@@ -143,7 +144,7 @@ module Convert
             break if node.dic > 0
             break unless node.unchanged?
 
-            acc.combine(node)
+            acc.combine!(node)
             idx -= node.key.size
           end
         end

@@ -2,9 +2,10 @@ require "json"
 require "../_utils/text_utils"
 
 class CvData
-  class Node
-    SEP = "¦"
+  SEP_0 = "ǁ"
+  SEP_1 = "¦"
 
+  class Node
     property key : String
     property val : String
     property dic : Int32
@@ -27,7 +28,7 @@ class CvData
     end
 
     def to_s(io : IO)
-      io << @key << SEP << @val << SEP << @dic
+      io << @key << SEP_1 << @val << SEP_1 << @dic
     end
 
     # return true if
@@ -55,8 +56,8 @@ class CvData
     end
 
     def combine!(other : self)
-      @key += other.key
-      @val += other.val
+      @key = other.key + @key
+      @val = other.val + @val
     end
 
     def should_cap_after?
@@ -69,7 +70,7 @@ class CvData
     end
 
     def should_space_before?
-      return true if @dic > 0
+      # return true if @dic > 0
 
       case @val[0]?
       when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
@@ -81,7 +82,7 @@ class CvData
     end
 
     def should_space_after?
-      return true if @dic > 0
+      # return true if @dic > 0
 
       case @val[-1]?
       # when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
@@ -97,9 +98,11 @@ class CvData
     end
   end
 
-  SEP = "ǁ"
-  @data = [] of Node
-  forward_missing_to @data
+  getter data = [] of Node
+  # forward_missing_to @data
+
+  delegate :<<, to: @data
+  delegate each, to: @data
 
   def grammarize!
     # TODO: handle more special rules, like:
@@ -119,6 +122,10 @@ class CvData
     end
 
     self
+  end
+
+  def concat(other : self)
+    @data.concat(other.data)
   end
 
   def capitalize!
@@ -173,7 +180,7 @@ class CvData
   end
 
   def to_s(io : IO) : Void
-    map(&.to_s).join(SEP, io)
+    map(&.to_s).join(SEP_0, io)
   end
 
   def to_s : String

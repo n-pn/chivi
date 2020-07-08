@@ -240,7 +240,7 @@ class CvDict
   FileUtils.mkdir_p(File.join(DIR, "lookup"))
   FileUtils.mkdir_p(File.join(DIR, "unique"))
 
-  def self.path_for(nane : String)
+  def self.path_for(dname : String)
     File.join(DIR, "#{dname}.dic")
   end
 

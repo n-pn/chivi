@@ -130,10 +130,14 @@ class CvDlog
   FileUtils.mkdir_p(File.join(DIR, "lookup"))
   FileUtils.mkdir_p(File.join(DIR, "unique"))
 
-  ENV = ::ENV["KEMAL_ENV"]? == "production" ? "appcv" : "local"
+  @@scope = ENV["KEMAL_ENV"]? == "production" ? "appcv" : "local"
 
-  def self.path_for(dname : String, env = ENV)
-    File.join(DIR, "#{dname}.#{env}.log")
+  def self.set_scope!(scope : String)
+    @@scope = scope
+  end
+
+  def self.path_for(dname : String, scope = @@scope)
+    File.join(DIR, "#{dname}.#{scope}.log")
   end
 
   CACHE = {} of String => self
