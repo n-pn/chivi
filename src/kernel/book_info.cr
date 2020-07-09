@@ -68,7 +68,8 @@ class BookInfo
   property view_count = 0_i32
   property read_count = 0_i32
 
-  property seeds = {} of String => BookSeed
+  property seed_names = [] of String # sort by order of priority
+  property seed_infos = {} of String => BookSeed
 
   def initialize
   end
@@ -118,7 +119,7 @@ class BookInfo
   end
 
   def fix_weight
-    @weight = scored * @voters
+    @weight = scored * @voters + @view_count
   end
 
   def status=(status : Int32)
@@ -134,11 +135,12 @@ class BookInfo
   end
 
   def add_seed(name : String, type = 0)
-    if seed = @seeds[name]?
+    if seed = @seed_infos[name]?
       seed.type = type
       @changes += seed.reset_changes!
     else
-      seed = seeds[name] = BookSeed.new(name, type)
+      seed = @seed_infos[name] = BookSeed.new(name, type)
+      @seed_names << name
       @changes += 1
     end
 
@@ -146,7 +148,7 @@ class BookInfo
   end
 
   def update_seed(name : String, sbid : String, scid : String, mftime : Int64, &block : BookSeed -> Void)
-    seed = @seeds[name] ||= BookSeed.new(name, 0)
+    seed = @seed_infos[name] ||= BookSeed.new(name, 0)
 
     if seed.sbid != sbid
       return seed if seed.mftime > mftime

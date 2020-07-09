@@ -108,6 +108,9 @@ uuids.each do |uuid|
     old_data = OldChapList.load_file(file)
     new_data = ChapList.new(uuid, File.basename(file, ".json"))
 
+    new_data.sbid = old_data.sbid
+    new_data.type = old_data.type
+
     old_data.data.each_value do |item|
       new_data.upsert(item)
     end

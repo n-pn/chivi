@@ -19,9 +19,9 @@ class ChapItem
     set_title(title, label)
   end
 
-  def set_title(input : String, label : String = "正文")
+  def set_title(title : String, label : String = "正文")
     if label.empty? || label == "正文"
-      self.title, self.label = Utils.split_label(input)
+      self.title, self.label = Utils.split_label(title)
     else
       @title = Utils.format_title(title)
       @label = Utils.clean_spaces(label)
