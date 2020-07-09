@@ -3,7 +3,7 @@ require "file_utils"
 require "./chap_item"
 
 class ChapSeed
-  DIR = File.join("var", "appcv", "chap_seeds")
+  DIR = File.join("var", "chap_seeds")
   FileUtils.mkdir_p(DIR)
 
   def self.glob_dir : Array(String)

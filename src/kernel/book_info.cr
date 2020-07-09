@@ -1,168 +1,99 @@
-require "json"
 require "colorize"
 require "file_utils"
+
+require "./base_model"
+
 require "../_utils/gen_uuids"
 
-class BookInfo
-  # us == url slug
+class BookSeed
+  include BaseModel
 
-  include JSON::Serializable
+  # seed types: 0 => remote, 1 => manual, 2 => locked
+  property type = 0
+
+  property name = ""
+  property sbid = ""
+
+  property mftime = 0_i64
+
+  property chap_scid = ""
+  property chap_text = ""
+  property chap_slug = ""
+
+  def initialize(@name, @type = 0)
+  end
+
+  # reset changes count and return old count value
+  def reset_changes! : Int32
+    @changes, ret = 0, @changes
+  end
+end
+
+class BookInfo
+  include BaseModel
 
   property uuid = ""
   property slug = ""
 
   property title_zh = ""
-  property title_hv = ""
   property title_vi = ""
 
   property author_zh = ""
   property author_vi = ""
-  property author_us = ""
 
-  property cover_url = ""
+  property intro_zh = ""
+  property intro_vi = ""
 
   property genre_zh = ""
   property genre_vi = ""
-  property genre_us = ""
 
   property tags_zh = [] of String
   property tags_vi = [] of String
-  property tags_us = [] of String
 
-  property shield = 0_i32
   property voters = 0_i32
   property rating = 0_f32
   property weight = 0_i64
 
+  property shield = 0_i32
+  property status = 0_i32
+  property mftime = 0_i64
+
+  property yousuu_url = ""
+  property origin_url = ""
+  property cover_urls = [] of String
+  property main_cover = ""
+
   property word_count = 0_i32
   property crit_count = 0_i32
+  property view_count = 0_i32
+  property read_count = 0_i32
 
-  @[JSON::Field(ignore: true)]
-  @changed = false
+  property seeds = {} of String => BookSeed
 
   def initialize
   end
 
   def initialize(@title_zh : String, @author_zh : String, @uuid = "")
     if @uuid.empty?
-      fix_uuid!
+      fix_uuid
     else
-      @changed = true
+      @changes = 1
     end
   end
 
-  def changed?
-    @changed
-  end
-
-  def mark_saved!
-    @changed = false
-  end
-
-  def fix_uuid!(force = true) : Void
-    return unless force || @uuid.empty?
+  def fix_uuid : Void
     self.uuid = Utils.gen_uuid(@title_zh, @author_zh)
   end
 
-  def set_uuid(uuid : String, force = false) : Void
-    return if uuid.empty?
-    return unless force || @uuid.empty?
-    self.uuid = uuid
-  end
+  {% for field in {:title, :author, :genre} %}
+    def set_{{field.id}}(value : String, force = false)
+      return if @{{field.id}}_zh == value
+      return unless @{{field.id}}_zh.empty? || force
 
-  def uuid=(uuid : String)
-    return if @uuid == uuid
-    @changed = true
-    @uuid = uuid
-  end
-
-  def set_title(title : String, force = false)
-    return unless @title_zh.empty? || force
-
-    self.title_zh = title
-    self.title_hv = ""
-    self.title_vi = ""
-  end
-
-  def title_zh=(title : String)
-    return if @title_zh == title
-    @changed = true
-    @title_zh = title
-  end
-
-  def title_hv=(title : String)
-    return if @title_hv == title
-    @changed = true
-    @title_hv = title
-  end
-
-  def title_vi=(title : String)
-    return if @title_vi == title
-    @changed = true
-    @title_vi = title
-  end
-
-  def vi_title
-    @title_vi.empty? ? @title_hv : @title_vi
-  end
-
-  def set_author(author : String, force = false)
-    return unless @author_zh.empty? || force
-
-    self.author_zh = author
-    self.author_vi = ""
-    self.author_us = ""
-  end
-
-  def author_zh=(author : String)
-    return if @author_zh == author
-    @changed = true
-    @author_zh = author
-  end
-
-  def author_vi=(author : String)
-    return if @author_vi == author
-    @changed = true
-    @author_vi = author
-  end
-
-  def author_us=(author : String)
-    return if @author_us == author
-    @changed = true
-    @author_us = author
-  end
-
-  def author_zh=(author : String)
-    return if @author_zh == author
-    @changed = true
-    @author_zh = author
-  end
-
-  def set_genre(genre : String, force = false)
-    return unless @genre_zh.empty? || force
-
-    self.genre_zh = genre
-    self.genre_vi = ""
-    self.genre_us = ""
-  end
-
-  def genre_zh=(genre : String)
-    return if genre == @genre_zh
-    @changed = true
-    @genre_zh = genre
-  end
-
-  def genre_vi=(genre : String)
-    return if genre == @genre_vi
-    @changed = true
-    @genre_vi = genre
-  end
-
-  def genre_us=(genre : String)
-    return if genre == @genre_us
-    @changed = true
-    @genre_us = genre
-  end
+      self.{{field.id}}_zh = value
+      self.{{field.id}}_vi = ""
+    end
+  {% end %}
 
   def add_tags(tags : Array(String))
     tags.each { |tag| add_tag(tag) }
@@ -170,23 +101,16 @@ class BookInfo
 
   def add_tag(tag : String)
     return if tag.empty? || @tags_zh.includes?(tag)
-    @changed = true
+    @changes += 1
 
     @tags_zh << tag
     @tags_vi << ""
-    @tags_us << ""
   end
 
-  def voters=(voters : Int32)
-    return if @voters == voters
-    @changed = true
-    @voters = voters
-  end
-
-  def rating=(rating : Float32)
-    return if @rating == rating
-    @changed = true
-    @rating = rating
+  def add_cover(cover : String)
+    return if cover.empty? || @cover_urls.includes?(cover)
+    @changes += 1
+    @cover_urls << cover
   end
 
   def scored
@@ -197,18 +121,66 @@ class BookInfo
     @weight = scored * @voters
   end
 
-  def to_s(io : IO)
-    to_json(io)
+  def status=(status : Int32)
+    return if status <= @status
+    @changes += 1
+    @status = status
+  end
+
+  def mftime=(mftime : Int64)
+    return if mftime <= @mftime
+    @changes += 1
+    @mftime = mftime
+  end
+
+  def add_seed(name : String, type = 0)
+    if seed = @seeds[name]?
+      seed.type = type
+      @changes += seed.reset_changes!
+    else
+      seed = seeds[name] = BookSeed.new(name, type)
+      @changes += 1
+    end
+
+    seed
+  end
+
+  def update_seed(name : String, sbid : String, scid : String, mftime : Int64, &block : BookSeed -> Void)
+    seed = @seeds[name] ||= BookSeed.new(name, 0)
+
+    if seed.sbid != sbid
+      return seed if seed.mftime > mftime
+      seed.sbid = sbid
+    end
+
+    mftime = @mftime if mftime < @mftime
+    mftime = seed.mftime if mftime < seed.mftime
+
+    if seed.chap_scid != scid
+      seed.chap_scid = scid
+      mftime = Time.utc.to_unix_ms if mftime == seed.mftime
+    end
+
+    seed.mftime = mftime
+    yield(seed) if block
+
+    @changes += seed.reset_changes!
+    seed
   end
 
   def to_s
     String.build { |io| to_s(io) }
   end
 
+  def to_s(io : IO)
+    to_json(io)
+  end
+
   def save!(file : String = BookInfo.path_for(@uuid)) : Void
-    @changed = false
     File.write(file, self)
-    puts "- <book_info> [#{file.colorize(:cyan)}] saved."
+    puts "- <book_info> [#{file.colorize(:blue)}] saved \
+            (#{@changes.colorize(:blue)} changes)."
+    @changes = 0
   end
 
   # class methods
@@ -218,10 +190,6 @@ class BookInfo
 
   def self.path_for(uuid : String)
     File.join(DIR, "#{uuid}.json")
-  end
-
-  def self.save!(info : BookInfo, file = path_for(info.uuid))
-    info.save!(file) if info.changed?
   end
 
   def self.glob_dir
@@ -237,54 +205,52 @@ class BookInfo
   end
 
   def self.from_file(file : String)
-    BookInfo.from_json(File.read(file))
+    from_json(File.read(file))
   end
 
-  def self.get!(uuid : String)
-    get(uuid) || raise "- <book_file> #{uuid} not found!"
+  CACHE = {} of String => BookInfo
+
+  def self.load!(uuid : String, cache = true)
+    load(uuid, cache) || raise "- <book_info> [#{uuid}] not found!"
   end
 
-  def self.get(uuid : String)
-    file = path_for(uuid)
-    from_file(file) if File.exists?(file)
+  def self.load(uuid : String, cache = true)
+    unless info = CACHE[uuid]?
+      file = path_for(uuid)
+      return unless File.exists?(file)
+
+      info = from_file(file)
+      CACHE[uuid] = info if cache
+    end
+
+    info
   end
 
-  def self.find(title : String, author : String)
-    get(Utils.gen_uuid(title, author))
+  def self.find!(title : String, author : String, cache = true)
+    load!(Utils.gen_uuid(title, author), cache)
   end
 
-  def self.find!(title : String, author : String)
-    find(uuid) || raise "- <book_file> #{uuid} not found!"
+  def self.find(title : String, author : String, cache = true)
+    load(Utils.gen_uuid(title, author), cache)
   end
 
-  def self.find_or_create!(title : String, author : String, uuid : String? = nil)
-    uuid ||= Utils.gen_uuid(title, author)
-    get(uuid) || new(title, author, uuid)
+  def self.find_or_create(title : String, author : String, uuid = Utils.gen_uuid(title, author), cache = true)
+    unless info = load(uuid, cache)
+      info = new(title, author, uuid)
+      CACHE[uuid] = info if cache
+    end
+
+    info
   end
 
   # Load with cache
 
-  CACHE = {} of String => BookInfo
-
-  def self.load_all!
-    glob_dir.each do |file|
-      CACHE[uuid_for(file)] ||= BookInfo.from_file(file)
+  def self.load_all!(cache = true)
+    all = glob_dir.map do |file|
+      load!(uuid_for(file), cache)
     end
 
-    puts "- <book_info> loaded all, entries: #{CACHE.size}.".colorize(:blue)
-    CACHE
-  end
-
-  def self.load(uuid : String)
-    CACHE[uuid] ||= get(uuid)
-  end
-
-  def self.load!(uuid : String)
-    CACHE[uuid] ||= get!(uuid)
-  end
-
-  def self.load_or_create!(title : String, author : String, uuid : String? = nil)
-    uuid ||= Utils.gen_uuid(title, author)
-    CACHE[uuid] ||= find_or_create!(title, author, uuid)
+    puts "- <book_info> loaded all (#{all.size.colorize(:green)} entries)."
+    all
   end
 end

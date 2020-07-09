@@ -6,7 +6,7 @@ require "../_utils/file_utils"
 module RemoteUtil
   extend self
 
-  DIR = File.join("var", "appcv", ".cache")
+  DIR = File.join("var", ".book_cache")
   FileUtils.mkdir_p(DIR)
 
   def mkdir!(seed : String)

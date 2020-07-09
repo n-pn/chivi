@@ -9,21 +9,21 @@ require "../../src/_utils/time_utils"
 require "../../src/_utils/text_utils"
 
 require "../../src/kernel/book_info"
-require "../../src/kernel/book_meta"
+# require "../../src/kernel/book_meta"
 
-require "../../src/mapper/map_value"
+require "../../src/kernel/order_map"
 
-require "../../src/import/remote_seed"
+require "../../src/snipes/remote_seed"
 
-ACCESS = MapValue.init!("book_access")
-UPDATE = MapValue.init!("book_update")
-WEIGHT = MapValue.init!("book_weight")
-RATING = MapValue.init!("book_rating")
+ACCESS = OrderMap.load("book_access", cache: false, preload: true)
+UPDATE = OrderMap.load("book_update", cache: false, preload: true)
+WEIGHT = OrderMap.load("book_weight", cache: false, preload: true)
+RATING = OrderMap.load("book_rating", cache: false, preload: true)
 
 module MapZhwenpg
   extend self
 
-  DIR = File.join("var", "appcv", ".cache", "zhwenpg", "pages")
+  DIR = File.join("var", ".book_cache", "zhwenpg", "pages")
 
   BLACKLIST_FILE = File.join("etc", "title-blacklist.txt")
   BLACKLIST_DATA = Set(String).new File.read_lines(BLACKLIST_FILE)
@@ -89,8 +89,7 @@ module MapZhwenpg
     author = rows[1].css(".fontwt").first.inner_text.strip
 
     return if should_skip?(title)
-    info = BookInfo.find_or_create!(title, author)
-    meta = BookMeta.get_or_create!(info.uuid)
+    info = BookInfo.find_or_create(title, author, cache: false)
 
     genre = rows[2].css(".fontgt").first.inner_text
     info.set_genre(genre)
@@ -103,24 +102,19 @@ module MapZhwenpg
     info.rating = rating
     info.fix_weight
 
-    RATING.upsert!(info.uuid, info.scored)
-    WEIGHT.upsert!(info.uuid, info.weight)
-
-    fresh = meta.yousuu_link.empty?
+    fresh = info.yousuu_url.empty?
     info.shield = 1 if fresh
 
-    # book_meta
-
-    if (intro = rows[4]?) && meta.intro_zh.empty?
+    if (intro = rows[4]?) && info.intro_zh.empty?
       intro_text = Utils.split_text(intro.inner_text("\n"))
       # intro_text = Engine.tradsim(intro_text)
-      meta.intro_zh = intro_text.join("\n")
+      info.intro_zh = intro_text.join("\n")
     end
 
-    meta.status = status
-    meta.add_cover(node.css("img").first.attributes["data-src"])
-    meta.add_seed("zhwenpg", sbid, 0)
+    info.status = status
+    info.add_cover(node.css("img").first.attributes["data-src"])
 
+    info.add_seed("zhwenpg", 0)
     latest_node = rows[3].css("a[target=_blank]").first
     latest_text = latest_node.inner_text
 
@@ -128,14 +122,18 @@ module MapZhwenpg
     latest_scid = latest_link.sub("r.php?id=", "")
 
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
-    meta.set_latest("zhwenpg", latest_scid, latest_text, mftime)
-    meta.mftime = meta.latest_times["zhwenpg"]
+    seed = info.update_seed("zhwenpg", sbid, latest_scid, mftime) do |seed|
+      seed.chap_text = latest_text
+    end
 
-    ACCESS.upsert!(info.uuid, mftime)
-    UPDATE.upsert!(info.uuid, mftime)
+    info.mftime = seed.mftime
+
+    ACCESS.upsert(info.uuid, info.mftime)
+    UPDATE.upsert(info.uuid, info.mftime)
+    WEIGHT.upsert(info.uuid, info.weight)
+    RATING.upsert(info.uuid, info.scored)
 
     info.save! if info.changed?
-    meta.save! if meta.changed?
 
     expiry = Time.utc - Time.unix_ms(mftime)
     expiry = expiry > 24.hours ? expiry - 24.hours : expiry

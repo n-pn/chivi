@@ -15,21 +15,21 @@ class CritCrawler
 
   def crawl!(page = 1)
     step = 1
-    ybids = @ybids.dup
+    queue = @ybids.dup
 
     until ybids.empty? || proxy_size == 0
-      puts "\n[<#{step}-#{page}> ybids: #{ybids.size}, proxies: #{proxy_size}]".yellow
+      puts "\n[<#{step}-#{page}> queue: #{queue.size}, proxies: #{proxy_size}]".yellow
       fails = []
 
-      Parallel.each_with_index(ybids, in_threads: 20) do |ybid, idx|
-        out_file = page_path(ybid, page)
-        next unless outdated?(out_file)
+      Parallel.each_with_index(queue, in_threads: 30) do |ybid, idx|
+        out_file = review_path(ybid, page)
+        next if still_good?(out_file)
 
-        case @http.get!(page_url(ybid, page), out_file)
+        case @http.get!(comment_url(ybid, page), out_file)
         when :success
-          puts " - <#{idx}/#{ybids.size}> [#{ybid}] saved.".green
+          puts " - <#{idx}/#{queue.size}/#{page}> [#{ybid}] saved.".green
         when :proxy_error
-          puts " - <#{idx}/#{ybids.size}> [#{ybid}] proxy error!".red
+          puts " - <#{idx}/#{queue.size}/#{page}> [#{ybid}] proxy failed, remain: #{proxy_size}.".red
           fails << ybid
         when :no_more_proxy
           puts " - Ran out of proxy, aborting!".red
@@ -38,7 +38,7 @@ class CritCrawler
       end
 
       step += 1
-      ybids = fails
+      queue = fails
     end
   end
 
@@ -48,23 +48,23 @@ class CritCrawler
 
   ROOT_DIR = "var/.book_cache/yousuu/reviews"
 
-  def page_path(ybid, page = 1)
+  def review_path(ybid, page = 1)
     "#{ROOT_DIR}/#{ybid}-#{page}.json"
   end
 
-  EXPIRY = 3600 * 24 * 5
+  INTERVAL = 3600 * 24 * 5 # 5 days
 
-  def outdated?(file)
-    return true unless File.exists?(file)
-    expiry = EXPIRY
+  def still_good?(file)
+    return false unless File.exists?(file)
+    interval = INTERVAL
 
     data = File.read(file)
-    expiry *= 4 if data.include?("未找到该图书")
+    interval *= 4 if data.include?("未找到该图书")
 
-    File.mtime(file).to_i < Time.now.to_i - expiry
+    Time.now.to_i - File.mtime(file).to_i <= interval
   end
 
-  def page_url(ybid, page = 1)
+  def review_url(ybid, page = 1)
     time = (Time.now.to_f * 1000).round
     "https://www.yousuu.com/api/book/#{ybid}/comment?page=#{page}&t=#{time}"
   end

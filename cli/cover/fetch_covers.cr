@@ -8,7 +8,7 @@ require "../../src/kernel/book_info"
 
 TLS = OpenSSL::SSL::Context::Client.insecure
 
-TMP_DIR = File.join("var", "appcv", ".cache", "covers")
+TMP_DIR = File.join("var", ".book_cover")
 
 DEFAULT = File.join(TMP_DIR, "blank.jpg")
 

@@ -97,4 +97,4 @@ class YousuuInfo
   end
 end
 
-# pp YousuuInfo.load!("var/appcv/.cache/yousuu/serials/176814.json")
+# pp YousuuInfo.load!("var/.book_cache/yousuu/serials/176814.json")

@@ -12,7 +12,7 @@ require "../../src/_utils/time_utils"
 require "../../src/_utils/text_utils"
 
 class MapYousuu
-  DIR = File.join("var", "appcv", ".cache", "yousuu", "serials")
+  DIR = File.join("var", ".book_cache", "yousuu", "serials")
 
   @input_total = 0
   @input_count = 0

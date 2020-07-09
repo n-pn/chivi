@@ -191,14 +191,19 @@ class OrderMap
   DIR = File.join("var", "order_maps")
   FileUtils.mkdir_p(DIR)
 
-  def path_for(name : String)
+  def self.path_for(name : String)
     File.join(DIR, "#{name}.txt")
   end
 
   CACHE = {} of String => self
 
-  def load(file : String) : OrderMap
-    CACHE[file] ||= new(file, preload: true)
+  def self.load(file : String, cache = true, preload = true) : self
+    unless item = CACHE[file]?
+      item = new(file, preload: preload)
+      CACHE[file] = item if cache
+    end
+
+    item
   end
 end
 

@@ -16,31 +16,31 @@ class CritCrawler
     "https://www.yousuu.com/api/book/#{ybid}?t=#{time}"
   end
 
-  EXPIRY = 3600 * 24 * 3 # 3 days
+  INTERVAL = 3600 * 24 * 3 # 3 days
 
-  def get_expiry_by_status(text)
-    json = JSON.parse(text)
+  def still_good?(file)
+    return false unless File.exists?(file)
 
-    status = json["data"]["bookInfo"]["status"] || 0
-    expiry = EXPIRY * (status + 1) # bump to 6 days or 9 days
-
-    score = json["data"]["bookInfo"]["score"] || 0
-    expiry *= 3 if score == 0 # bump to 9, 12 or 18 days
-
-    expiry
-  end
-
-  def outdated?(file)
-    return true unless File.exists?(file)
-
-    text = File.read(file)
-    if text.include?("未找到该图书")
-      expiry = EXPIRY * 5 # 15 days
+    data = File.read(file)
+    if data.include?("未找到该图书")
+      interval = INTERVAL * 5 # try again in 15 days
     else
-      expiry = get_expiry_by_status(text)
+      interval = get_interval_by_status(data)
     end
 
-    File.mtime(file).to_i < Time.now.to_i - expiry
+    Time.now.to_i - File.mtime(file).to_i < interval
+  end
+
+  def get_interval_by_status(data)
+    json = JSON.parse(data)
+
+    status = json["data"]["bookInfo"]["status"] || 0
+    interval = INTERVAL * (status + 1) # try again in 6 days or 9 days if completed or axed
+
+    score = json["data"]["bookInfo"]["score"] || 0
+    interval *= 3 if score == 0 # try again in 9, 12 or 18 days if no score
+
+    interval
   end
 
   def proxy_size
@@ -50,27 +50,27 @@ class CritCrawler
   def crawl!(total = 212500, order = :sequel)
     puts "-- [total: #{total}, order: #{order}] --".yellow
 
-    ybids = (1..total).to_a
+    queue = (1..total).to_a
     if order == :shuffle
-      ybids.shuffle!
+      queue.shuffle!
     elsif order == :reverse
-      ybids.reverse!
+      queue.reverse!
     end
 
     step = 1
-    until ybids.empty? || proxy_size == 0
-      puts "\n[<#{step}> ybids: #{ybids.size}, proxies: #{proxy_size}]".yellow
+    until queue.empty? || proxy_size == 0
+      puts "\n[<#{step}> queue: #{queue.size}, proxies: #{proxy_size}]".yellow
       fails = []
 
-      Parallel.each_with_index(ybids, in_threads: 20) do |ybid, idx|
+      Parallel.each_with_index(queue, in_threads: 30) do |ybid, idx|
         out_file = book_path(ybid)
-        next unless outdated?(out_file)
+        next if still_good?(out_file)
 
         case @http.get!(book_url(ybid), out_file)
         when :success
-          puts " - <#{idx}/#{ybids.size}> [#{ybid}] saved.".green
+          puts " - <#{idx}/#{queue.size}> [#{ybid}] saved.".green
         when :proxy_error
-          puts " - <#{idx}/#{ybids.size}> [#{ybid}] proxy error!".red
+          puts " - <#{idx}/#{queue.size}> [#{ybid}] proxy error!".red
           fails << ybid
         when :no_more_proxy
           puts " - Ran out of proxy, aborting!".red
@@ -79,7 +79,7 @@ class CritCrawler
       end
 
       step += 1
-      ybids = fails
+      queue = fails
     end
   end
 end
