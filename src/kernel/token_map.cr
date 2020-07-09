@@ -140,12 +140,13 @@ class TokenMap
     io << "\n"
   end
 
-  def save!(file : String = @file)
+  def save!(file : String = @file) : Void
     File.open(file, "w") do |io|
       @hash.each { |key, vals| to_s(io, key, vals) }
     end
 
-    puts "- <token_map> [#{@file.colorize(:cyan)}] saved."
+    puts "- <token_map> [#{file.colorize(:yellow)}] saved \
+            (#{size.colorize(:yellow)} entries)."
   end
 
   # class methods

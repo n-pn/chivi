@@ -34,6 +34,7 @@ class BookInfo
 
   property title_zh = ""
   property title_vi = ""
+  property title_hv = ""
 
   property author_zh = ""
   property author_vi = ""
@@ -179,8 +180,8 @@ class BookInfo
 
   def save!(file : String = BookInfo.path_for(@uuid)) : Void
     File.write(file, self)
-    puts "- <book_info> [#{file.colorize(:blue)}] saved \
-            (#{@changes.colorize(:blue)} changes)."
+    puts "- <book_info> [#{file.colorize(:yellow)}] saved \
+            (#{@changes.colorize(:yellow)} changes)."
     @changes = 0
   end
 
@@ -246,12 +247,13 @@ class BookInfo
 
   # Load with cache
 
-  def self.load_all!(cache = true)
-    all = glob_dir.map do |file|
-      load!(uuid_for(file), cache)
+  def self.load_all!
+    glob_dir.each do |file|
+      load!(uuid_for(file), true)
     end
 
-    puts "- <book_info> loaded all (#{all.size.colorize(:green)} entries)."
-    all
+    puts "- <book_info> loaded all infos to cache \
+            (#{CACHE.size.colorize(:blue)} entries)."
+    CACHE
   end
 end

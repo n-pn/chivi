@@ -3,14 +3,13 @@ require "colorize"
 require "file_utils"
 
 require "../../src/kernel/book_info"
-require "../../src/kernel/book_meta"
 require "../../src/_utils/text_utils"
 
-books = BookMeta.load_all!
+books = BookInfo.load_all!
 
 has_text = 0
 books.each_value do |book|
-  has_text += 1 if book.seed_lists.size > 0
+  has_text += 1 if book.seeds.size > 0
 end
 
 puts "- has_text: #{has_text}".colorize(:yellow)

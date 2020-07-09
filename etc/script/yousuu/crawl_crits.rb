@@ -5,10 +5,10 @@ class CritCrawler
     @http = HttpClient.new(load_proxy, debug_mode)
     @ybids = []
 
-    files = Dir.glob("var/book_metas/*.json")
+    files = Dir.glob("var/book_infos/*.json")
     files.each do |file|
       json = JSON.parse(File.read(file))
-      link = json["yousuu_link"]
+      link = json["yousuu_url"]
       @ybids << File.basename(link) unless link.empty?
     end
   end
@@ -17,7 +17,7 @@ class CritCrawler
     step = 1
     queue = @ybids.dup
 
-    until ybids.empty? || proxy_size == 0
+    until queue.empty? || proxy_size == 0
       puts "\n[<#{step}-#{page}> queue: #{queue.size}, proxies: #{proxy_size}]".yellow
       fails = []
 
@@ -25,7 +25,7 @@ class CritCrawler
         out_file = review_path(ybid, page)
         next if still_good?(out_file)
 
-        case @http.get!(comment_url(ybid, page), out_file)
+        case @http.get!(review_url(ybid, page), out_file)
         when :success
           puts " - <#{idx}/#{queue.size}/#{page}> [#{ybid}] saved.".green
         when :proxy_error

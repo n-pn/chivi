@@ -193,8 +193,8 @@ class OrderMap
 
   def save!(file : String = @file) : Void
     File.write(file, self)
-    puts "- <order_map> [#{file.colorize(:blue)}] saved \
-            (#{size.colorize(:blue)} entries)."
+    puts "- <order_map> [#{file.colorize(:yellow)}] saved \
+            (#{size.colorize(:yellow)} entries)."
   end
 
   # class methods

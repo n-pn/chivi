@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../kernel/book_info"
-require "../kernel/chap_seed"
+require "../kernel/chap_list"
 
 require "../_utils/han_to_int"
 require "../_utils/html_utils"
@@ -388,7 +388,7 @@ class RemoteSeed
   getter parser : SeedParser
   forward_missing_to parser
 
-  def initialize(@seed, @sbid, expiry = 6.hours, freeze = false)
+  def initialize(@seed, @sbid, @type = 0, expiry = 6.hours, freeze = false)
     html = RemoteUtil.info_html(@seed, @sbid, expiry, freeze)
     @parser = SeedParser.new(@seed, html)
   end
@@ -426,27 +426,22 @@ class RemoteSeed
     info
   end
 
-  def emit_chap_list(old_list = ChapSeed.init!(get_uuid, @seed), mode = 0)
-    new_list = @parser.get_chaps
+  def emit_chap_list(list : ChapList? = nil, mode = 0)
+    list ||= ChapList.find_or_create(get_uuid, @seed)
+    list.sbid = @sbid
+    list.type = @type
 
-    size = old_list.size
-    size = new_list.size if size > new_list.size
-
-    0.upto(size - 1).each do |i|
-      old_chap = old_list[i]
-      new_chap = new_list[i]
-
-      if old_chap.scid != new_chap.scid || mode > 0
-        old_chap.scid = new_chap.scid
-        old_chap.title = new_chap.title
-        old_chap.label = new_chap.label
-      end
+    if mode == 2
+      list.chaps.clear
+      list.index.clear
+      # else
+      # list.rebuild_index! if list.index.empty?
     end
 
-    size.upto(new_list.size - 1) do |i|
-      old_list << new_list[i]
+    @parser.get_chaps.each do |chap|
+      list.upsert(chap, mode)
     end
 
-    old_list
+    list
   end
 end

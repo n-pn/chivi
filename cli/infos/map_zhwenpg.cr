@@ -53,7 +53,7 @@ module MapZhwenpg
   end
 
   def parse_page!(page = 1, status = 0)
-    puts "- PAGE: #{page}"
+    puts "\n[-- Page: #{page} --]".colorize.light_cyan.bold
 
     url = page_url(page, status)
     file = page_path(page, status)
@@ -71,7 +71,7 @@ module MapZhwenpg
   end
 
   def random_score
-    puts "-- FRESH --".colorize(:yellow)
+    puts "-- FRESH --".colorize.yellow
     {Random.rand(50..100), Random.rand(50..70)/10}
   end
 
@@ -105,6 +105,9 @@ module MapZhwenpg
     fresh = info.yousuu_url.empty?
     info.shield = 1 if fresh
 
+    color = fresh ? :light_cyan : :light_blue
+    puts "\n<#{index}> [#{info.uuid}] #{caption.colorize(color)}"
+
     if (intro = rows[4]?) && info.intro_zh.empty?
       intro_text = Utils.split_text(intro.inner_text("\n"))
       # intro_text = Engine.tradsim(intro_text)
@@ -127,22 +130,20 @@ module MapZhwenpg
     end
 
     info.mftime = seed.mftime
+    return unless info.changed?
+
+    info.save!
 
     ACCESS.upsert(info.uuid, info.mftime)
     UPDATE.upsert(info.uuid, info.mftime)
     WEIGHT.upsert(info.uuid, info.weight)
     RATING.upsert(info.uuid, info.scored)
 
-    info.save! if info.changed?
-
     expiry = Time.utc - Time.unix_ms(mftime)
     expiry = expiry > 24.hours ? expiry - 24.hours : expiry
 
     remote = RemoteSeed.new("zhwenpg", sbid, expiry: expiry, freeze: true)
     remote.emit_chap_list.tap { |list| list.save! if list.changed? }
-
-    color = fresh ? :green : :blue
-    puts "- <#{index.colorize(color)}> [#{info.uuid}] #{caption.colorize(color)}"
   end
 
   TIME = Time.utc.to_unix_ms
@@ -150,13 +151,14 @@ module MapZhwenpg
 
   private def parse_time(time : String)
     mftime = Utils.parse_time(time).to_unix_ms
-    return mftime if mftime <= DATE
-    TIME
+    mftime <= DATE ? mftime : TIME
   end
 end
 
 1.upto(3) { |page| MapZhwenpg.parse_page!(page, status: 1) }
 1.upto(12) { |page| MapZhwenpg.parse_page!(page, status: 0) }
+
+puts "\n[-- Save indexes --]".colorize.cyan.bold
 
 ACCESS.save!
 UPDATE.save!

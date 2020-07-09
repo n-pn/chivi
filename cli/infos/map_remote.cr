@@ -5,10 +5,10 @@ require "../../src/_utils/file_utils.cr"
 require "../../src/_utils/html_utils.cr"
 
 require "../../src/kernel/book_info.cr"
-require "../../src/mapper/order_map.cr"
-require "../../src/mapper/label_map.cr"
+require "../../src/kernel/order_map.cr"
+require "../../src/kernel/label_map.cr"
 
-require "../../src/import/remote_seed.cr"
+require "../../src/snipes/remote_seed.cr"
 
 class MapRemote
   SEEDS = {
@@ -96,6 +96,8 @@ class MapRemote
       queue << {sbid, expiry_for(sbid)} if should_crawl?(sbid, mode)
     end
 
+    puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
+
     limit = queue.size
     limit = 8 if limit > 8
     channel = Channel(Nil).new(limit)
@@ -112,6 +114,8 @@ class MapRemote
 
     limit.times { channel.receive }
 
+    puts "\n[-- Save indexes --]".colorize.cyan.bold
+
     BOOK_UPDATE.save!
     BOOK_ACCESS.save!
 
@@ -119,7 +123,7 @@ class MapRemote
     @seed_titles.save!
     @seed_authors.save!
 
-    puts "[seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size}] ".colorize(:yellow)
+    puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
   end
 
   def expiry_for(sbid : String)
@@ -141,7 +145,7 @@ class MapRemote
   def qualified?(uuid : String, author : String)
     return true if @seed == "hetushu" || @seed == "rengshu"
     # return false if author.empty?
-    BOOK_INFO.has_key?(uuid) || TOP_AUTHOR.includes?(author)
+    BOOK_INFOS.has_key?(uuid) || TOP_AUTHORS.includes?(author)
   end
 
   def parse!(sbid : String, expiry = 24.hours, label = "1/1")
@@ -153,31 +157,30 @@ class MapRemote
     title = remote.get_title
     author = remote.get_author
 
-    puts "- <#{label}> [#{sbid}] #{uuid}-#{author}-#{title}".colorize(:blue)
+    puts "\n<#{label}> [#{sbid}] #{uuid}-#{author}-#{title}".colorize.cyan
 
-    @seed_uuids.upsert!(sbid, uuid)
-    @seed_titles.upsert!(sbid, title)
-    @seed_authors.upsert!(sbid, author)
+    @seed_uuids.upsert(sbid, uuid)
+    @seed_titles.upsert(sbid, title)
+    @seed_authors.upsert(sbid, author)
 
     return unless qualified?(uuid, author)
 
-    remote.emit_meta.try do |meta|
-      if meta.changed?
-        meta.save!
-        BOOK_UPDATE.upsert!(meta.uuid, meta.mftime)
-        BOOK_ACCESS.upsert!(meta.uuid, meta.mftime)
-      end
-    end
+    info = remote.emit_book_info
 
-    remote.emit_info.try { |x| x.save! if x.changed? }
-    remote.emit_chaps.try { |x| x.save! if x.changed? }
+    return unless info.changed?
+    info.save!
+
+    BOOK_UPDATE.upsert(uuid, info.mftime)
+    BOOK_ACCESS.upsert(uuid, info.mftime)
+
+    remote.emit_chap_list.tap { |x| x.save! if x.changed? }
   rescue err
-    puts "- error parsing `#{sbid}`: #{err.colorize(:red)}"
-    puts err.backtrace
+    puts "Error parsing `#{sbid}`: #{err.colorize.red}".colorize.bold
+    # puts err.backtrace
 
-    @seed_uuids.upsert!(sbid, "--")
-    @seed_titles.upsert!(sbid, "")
-    @seed_authors.upsert!(sbid, "")
+    @seed_uuids.upsert(sbid, "--")
+    @seed_titles.upsert(sbid, "")
+    @seed_authors.upsert(sbid, "")
   end
 end
 

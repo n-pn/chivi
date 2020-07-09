@@ -65,8 +65,6 @@ class MapYousuu
 
   def extract!
     @inputs.each do |uuid, input|
-      # primary info
-
       info = BookInfo.find_or_create(input.title, input.author, uuid, cache: false)
 
       info.set_genre(input.genre)
@@ -93,15 +91,15 @@ class MapYousuu
       info.yousuu_url = "https://www.yousuu.com/book/#{input._id}"
       info.origin_url = input.first_source || ""
 
-      if info.changed?
-        if BookInfo.exists?(uuid)
-          @info_update += 1
-        else
-          @info_create += 1
-        end
+      next unless info.changed?
 
-        info.save!
+      if BookInfo.exists?(uuid)
+        @info_update += 1
+      else
+        @info_create += 1
       end
+
+      info.save!
 
       @book_rating.upsert(uuid, info.scored)
       @book_weight.upsert(uuid, info.weight)
@@ -112,8 +110,9 @@ class MapYousuu
   end
 
   def cleanup!
-    puts "- <INP> total: #{@input_total}, keeps: #{@input_count} ".colorize(:yellow)
-    puts "- <OUT> create: #{@info_create}, update: #{@info_update}".colorize(:yellow)
+    puts "\n[-- Clean up --]".colorize.cyan.bold
+    puts "- <INP> total: #{@input_total}, keeps: #{@input_count} ".colorize.yellow
+    puts "- <OUT> create: #{@info_create}, update: #{@info_update}".colorize.yellow
 
     @book_rating.save!
     @book_weight.save!

@@ -25,8 +25,8 @@ class LabelMap
   def load!(file : String = @file) : Void
     count = 0
 
-    File.read_lines(file) do |line|
-      key, val = line.split(SEP, 2)
+    File.each_line(file) do |line|
+      key, val = line.strip.split(SEP, 2)
       val.empty? ? delete(key) : upsert(key, val)
       count += 1
     rescue err
@@ -88,8 +88,8 @@ class LabelMap
   def save!(file : String = @file) : Void
     File.write(file, self)
 
-    puts "- <label_map> [#{file.colorize(:blue)}] saved \
-            (#{size.colorize(:blue)} entries)."
+    puts "- <label_map> [#{file.colorize(:yellow)}] saved \
+            (#{size.colorize(:yellow)} entries)."
   end
 
   # class methods

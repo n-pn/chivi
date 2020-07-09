@@ -3,7 +3,7 @@ require "http/client"
 
 module Utils
   def self.fetch_html(url : String) : String
-    puts "- GET: [#{url.colorize(:cyan)}]"
+    puts "- GET: [#{url.colorize.magenta}]"
     fetch_html(url, tls_for(url), encoding_for(url))
   end
 
@@ -13,7 +13,7 @@ module Utils
       res.body_io.try(&.gets_to_end)
     end
   rescue err
-    puts "- <fetch_html> error fetching #{url.colorize(:red)}]: [#{err.class}] #{err.colorize(:red)}"
+    puts "- <fetch_html> error fetching #{url.colorize.red}]: [#{err.class}] #{err.colorize(:red)}"
     sleep 500.milliseconds
     fetch_html(url, tls, encoding)
   end

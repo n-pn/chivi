@@ -16,17 +16,16 @@ class ChapItem
   end
 
   def initialize(@scid : String, title : String, label : String = "正文")
+    set_title(title, label)
+  end
+
+  def set_title(input : String, label : String = "正文")
     if label.empty? || label == "正文"
-      set_title(title)
+      self.title, self.label = Utils.split_label(input)
     else
       @title = Utils.format_title(title)
       @label = Utils.clean_spaces(label)
-      @changes = 1
     end
-  end
-
-  def set_title(input : String)
-    self.title, self.label = Utils.split_label(input)
   end
 
   def set_slug(title : String, max_words : Int32 = 12) : Void
