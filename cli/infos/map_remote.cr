@@ -5,9 +5,8 @@ require "../../src/_utils/file_utils.cr"
 require "../../src/_utils/html_utils.cr"
 
 require "../../src/kernel/book_info.cr"
-require "../../src/kernel/book_meta.cr"
-require "../../src/mapper/map_value.cr"
-require "../../src/mapper/map_label.cr"
+require "../../src/mapper/order_map.cr"
+require "../../src/mapper/label_map.cr"
 
 require "../../src/import/remote_seed.cr"
 
@@ -65,23 +64,26 @@ class MapRemote
     end
   end
 
+  def self.top_authors(weight : Int32)
+    ret = Set(String).new
+
+    OrderMap.load("top_authors").each do |item|
+      ret << item.key if item.val >= weight
+    end
+
+    ret
+  end
+
+  BOOK_ACCESS = OrderMap.load("book_access")
+  BOOK_UPDATE = OrderMap.load("book_update")
+  TOP_AUTHORS = top_authors(2000)
+
+  BOOK_INFOS = BookInfo.load_all!
+
   def initialize(@seed : String, @type = 0)
-    @best_uuids = Set(String).new
-    MapValue.init!("weight").each do |item|
-      @best_uuids << item.key if item.val >= 500
-    end
-
-    @best_authors = Set(String).new
-    MapValue.init!("best_authors").each do |item|
-      @best_authors << item.key if item.val >= 2000
-    end
-
-    @access = MapValue.init!("access")
-    @update = MapValue.init!("update")
-
-    @map_uuids = MapLabel.init!("#{seed}_uuids")
-    @map_titles = MapLabel.init!("#{seed}_titles")
-    @map_authors = MapLabel.init!("#{seed}_authors")
+    @seed_uuids = LabelMap.load("seeds/#{seed}_uuids")
+    @seed_titles = LabelMap.load("seeds/#{seed}_titles")
+    @seed_authors = LabelMap.load("seeds/#{seed}_authors")
   end
 
   alias TimeSpan = Time::Span | Time::MonthSpan
@@ -110,35 +112,36 @@ class MapRemote
 
     limit.times { channel.receive }
 
-    @update.save!
-    @access.save!
+    BOOK_UPDATE.save!
+    BOOK_ACCESS.save!
 
-    @map_uuids.save!
-    @map_titles.save!
-    @map_authors.save!
+    @seed_uuids.save!
+    @seed_titles.save!
+    @seed_authors.save!
 
     puts "[seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size}] ".colorize(:yellow)
   end
 
   def expiry_for(sbid : String)
-    return 3.months unless uuid = @map_uuids.get_val(sbid)
-    return 6.months unless update = @update.get_val(uuid)
-    expiry = Time.utc - Time.unix_ms(update)
+    return 3.months unless uuid = @seed_uuids.fetch(sbid)
+    return 6.months unless time = BOOK_UPDATE.value(uuid)
+
+    expiry = Time.utc - Time.unix_ms(time)
     expiry > 24.hours ? expiry - 24.hours : expiry
   end
 
   def should_crawl?(sbid : String, mode = 0) : Bool
-    return true unless uuid = @map_uuids.get_val(sbid)
+    return true unless uuid = @seed_uuids.fetch(sbid)
     return true if mode == 2 && uuid == "--"
 
     # TODO: check titles blacklist
-    qualified?(uuid, @map_authors.get_val(sbid) || "")
+    qualified?(uuid, @seed_authors.fetch(sbid, ""))
   end
 
   def qualified?(uuid : String, author : String)
     return true if @seed == "hetushu" || @seed == "rengshu"
     # return false if author.empty?
-    @best_uuids.includes?(uuid) || @best_authors.includes?(author)
+    BOOK_INFO.has_key?(uuid) || TOP_AUTHOR.includes?(author)
   end
 
   def parse!(sbid : String, expiry = 24.hours, label = "1/1")
@@ -152,17 +155,17 @@ class MapRemote
 
     puts "- <#{label}> [#{sbid}] #{uuid}-#{author}-#{title}".colorize(:blue)
 
-    @map_uuids.upsert!(sbid, uuid)
-    @map_titles.upsert!(sbid, title)
-    @map_authors.upsert!(sbid, author)
+    @seed_uuids.upsert!(sbid, uuid)
+    @seed_titles.upsert!(sbid, title)
+    @seed_authors.upsert!(sbid, author)
 
     return unless qualified?(uuid, author)
 
     remote.emit_meta.try do |meta|
       if meta.changed?
         meta.save!
-        @update.upsert!(meta.uuid, meta.mftime)
-        @access.upsert!(meta.uuid, meta.mftime)
+        BOOK_UPDATE.upsert!(meta.uuid, meta.mftime)
+        BOOK_ACCESS.upsert!(meta.uuid, meta.mftime)
       end
     end
 
@@ -172,9 +175,9 @@ class MapRemote
     puts "- error parsing `#{sbid}`: #{err.colorize(:red)}"
     puts err.backtrace
 
-    @map_uuids.upsert!(sbid, "--")
-    @map_titles.upsert!(sbid, "")
-    @map_authors.upsert!(sbid, "")
+    @seed_uuids.upsert!(sbid, "--")
+    @seed_titles.upsert!(sbid, "")
+    @seed_authors.upsert!(sbid, "")
   end
 end
 

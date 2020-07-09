@@ -123,7 +123,7 @@ module MapZhwenpg
 
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
     seed = info.update_seed("zhwenpg", sbid, latest_scid, mftime) do |seed|
-      seed.chap_text = latest_text
+      seed.latest.set_title(latest_text)
     end
 
     info.mftime = seed.mftime
@@ -139,8 +139,7 @@ module MapZhwenpg
     expiry = expiry > 24.hours ? expiry - 24.hours : expiry
 
     remote = RemoteSeed.new("zhwenpg", sbid, expiry: expiry, freeze: true)
-    chaps = remote.emit_chaps
-    chaps.save! if chaps.changed?
+    remote.emit_chap_list.tap { |list| list.save! if list.changed? }
 
     color = fresh ? :green : :blue
     puts "- <#{index.colorize(color)}> [#{info.uuid}] #{caption.colorize(color)}"

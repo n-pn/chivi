@@ -3,7 +3,6 @@ require "colorize"
 require "file_utils"
 
 require "../kernel/book_info"
-require "../kernel/book_meta"
 require "../kernel/chap_seed"
 
 require "../_utils/han_to_int"
@@ -205,23 +204,24 @@ class SeedParser
         if href = meta_data("og:novel:latest_chapter_url")
           text = meta_data("og:novel:latest_chapter_name").not_nil!
           text = text.sub(/^章节目录\s+/, "") if @seed == "duokan8"
-          latest.set_title(text)
+
           latest.scid = extract_scid(href)
+          latest.set_title(text)
         end
       when "zhwenpg"
         if node = find_node(".fontwt0 + a")
-          latest.set_title(node.inner_text.strip)
           latest.scid = extract_scid(node.attributes["href"])
+          latest.set_title(node.inner_text.strip)
         end
       when "69shu"
         if node = find_node(".mulu_list:first-of-type a:first-child")
-          latest.set_title(node.inner_text.strip)
           latest.scid = extract_scid(node.attributes["href"])
+          latest.set_title(node.inner_text.strip)
         end
       when "hetushu"
         if node = find_node("#dir > dd:last-child > a")
-          latest.set_title(node.inner_text.strip)
           latest.scid = extract_scid(node.attributes["href"])
+          latest.set_title(node.inner_text.strip)
         end
       else
         raise "Seed `#{@seed}` unsupported!"
@@ -321,7 +321,6 @@ class SeedParser
       when :dd
         next if label.includes?("最新章节")
         next unless link = node.css("a").first?
-
         next unless href = link.attributes["href"]?
 
         chaps << ChapItem.new(extract_scid(href), link.inner_text, label)
@@ -336,7 +335,7 @@ class SeedParser
       title_idx = 0
 
       chaps.sort_by! do |chap|
-        if idx = label_index(chap.label_zh)
+        if idx = label_index(chap.label)
           label_idx = idx
           label_acc = 0
         else
@@ -351,15 +350,15 @@ class SeedParser
     chaps
   end
 
-  INDEX_RE    = /([零〇一二两三四五六七八九十百千]+|\d+)[集卷]/
-  INDEX_CACHE = {} of String => Int32
+  INDEX_RE  = /([零〇一二两三四五六七八九十百千]+|\d+)[集卷]/
+  IDX_CACHE = {} of String => Int32
 
   private def label_index(label : String) : Int32?
     return 0 if label == "作品相关"
 
-    unless index = INDEX_CACHE[label]?
+    unless index = IDX_CACHE[label]?
       index = INDEX_RE.match(label).try { |x| Utils.han_to_int(x[1]).to_i } || 0
-      INDEX_CACHE[label] = index
+      IDX_CACHE[label] = index
     end
 
     return index if index > 0
@@ -402,37 +401,32 @@ class RemoteSeed
     Utils.gen_uuid(title, @parser.get_author)
   end
 
-  def emit_info(info : BookInfo = BookInfo.find_or_create!(@parser.get_title, @parser.get_author)) : BookInfo
-    info.set_genre(@parser.get_genre)
-    info.add_tags(@parser.get_tags)
-    info.add_tag(@parser.get_genre)
+  def emit_book_info(info : BookInfo? = nil) : BookInfo
+    info ||= BookInfo.find_or_create(@parser.get_title, @parser.get_author)
 
+    info.set_genre(@parser.get_genre)
+    info.add_tag(@parser.get_genre)
+    info.add_tags(@parser.get_tags)
+
+    info.add_cover(@parser.get_cover)
+    info.intro_zh = @parser.get_intro if info.intro_zh.empty?
+    info.status = @parser.get_status
+
+    info.add_seed(@seed, @type)
+
+    latest = @parser.get_latest
+    mftime = @parser.get_mftime
+
+    seed = info.update_seed(@seed, @sbid, latest.scid, mftime) do |seed|
+      seed.latest.title = latest.title
+      seed.latest.label = latest.label
+    end
+
+    info.mftime = seed.mftime
     info
   end
 
-  def emit_meta(meta : BookMeta = BookMeta.get_or_create!(get_uuid), type = 0)
-    meta.add_cover(@parser.get_cover)
-    meta.intro_zh = @parser.get_intro if meta.intro_zh.empty?
-    meta.status = @parser.get_status
-
-    mftime = @parser.get_mftime
-    if better_seed?(meta, mftime)
-      meta.add_seed(@seed, @sbid, type)
-
-      meta.set_latest(@seed, @parser.get_latest, mftime)
-      meta.mftime = meta.latest_times[@seed]
-    end
-
-    meta
-  end
-
-  private def better_seed?(meta : BookMeta, mftime : Int64)
-    sbid = meta.seed_sbids[@seed]?
-    return true if sbid.nil? || sbid == @sbid
-    meta.latest_times[@seed]?.try(&.<= mftime) || true
-  end
-
-  def emit_chaps(old_list = ChapSeed.init!(get_uuid, @seed))
+  def emit_chap_list(old_list = ChapSeed.init!(get_uuid, @seed), mode = 0)
     new_list = @parser.get_chaps
 
     size = old_list.size
@@ -442,9 +436,11 @@ class RemoteSeed
       old_chap = old_list[i]
       new_chap = new_list[i]
 
-      old_chap.scid = new_chap.scid
-      old_chap.title_zh = new_chap.title_zh
-      old_chap.label_zh = new_chap.label_zh
+      if old_chap.scid != new_chap.scid || mode > 0
+        old_chap.scid = new_chap.scid
+        old_chap.title = new_chap.title
+        old_chap.label = new_chap.label
+      end
     end
 
     size.upto(new_list.size - 1) do |i|

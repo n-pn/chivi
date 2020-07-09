@@ -106,18 +106,24 @@ class OrderMap
   end
 
   def load!(file : String = @file) : Void
+    count = 0
+
     File.each_line(file) do |line|
       key, val = line.strip.split(SEP_0, 2)
+
       if val = val.try(&.to_i64?)
         upsert(key, val)
       else
         delete(key)
       end
+
+      count += 1
     rescue err
-      puts "- <map_value> error parsing line `#{line}`: #{err.colorize(:red)}"
+      puts "- <order_map> error parsing line `#{line}`: #{err.colorize(:red)}"
     end
 
-    puts "- <map_value> [#{file.colorize(:cyan)}] loaded."
+    puts "- <order_map> [#{file.colorize(:blue)}] loaded \
+            (#{count.colorize(:blue)} lines)."
   end
 
   def upsert!(key : String, val : Int64, force : Bool = false) : Void
@@ -153,6 +159,10 @@ class OrderMap
     @data.fetch(key, nil)
   end
 
+  def value(key : String) : Int64?
+    fetch(key).try(&.val)
+  end
+
   def each(node = @first)
     while node = node.right
       yield node unless node == @last
@@ -183,7 +193,8 @@ class OrderMap
 
   def save!(file : String = @file) : Void
     File.write(file, self)
-    puts "- <order_map> [#{file.colorize(:cyan)}] saved, entries: #{size}."
+    puts "- <order_map> [#{file.colorize(:blue)}] saved \
+            (#{size.colorize(:blue)} entries)."
   end
 
   # class methods
@@ -197,10 +208,10 @@ class OrderMap
 
   CACHE = {} of String => self
 
-  def self.load(file : String, cache = true, preload = true) : self
-    unless item = CACHE[file]?
-      item = new(file, preload: preload)
-      CACHE[file] = item if cache
+  def self.load(name : String, cache = true, preload = true) : self
+    unless item = CACHE[name]?
+      item = new(path_for(name), preload: preload)
+      CACHE[name] = item if cache
     end
 
     item

@@ -24,5 +24,10 @@ module BaseModel
     def changed?
       @changes > 0
     end
+
+    # reset changes count and return old count value
+    def reset_changes! : Int32
+      @changes, ret = 0, @changes
+    end
   end
 end

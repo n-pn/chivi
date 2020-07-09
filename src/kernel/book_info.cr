@@ -2,6 +2,7 @@ require "colorize"
 require "file_utils"
 
 require "./base_model"
+require "./chap_item"
 
 require "../_utils/gen_uuids"
 
@@ -15,17 +16,13 @@ class BookSeed
   property sbid = ""
 
   property mftime = 0_i64
-
-  property chap_scid = ""
-  property chap_text = ""
-  property chap_slug = ""
+  property latest = ChapItem.new
 
   def initialize(@name, @type = 0)
   end
 
-  # reset changes count and return old count value
-  def reset_changes! : Int32
-    @changes, ret = 0, @changes
+  def update_changes!
+    @changes += @latest.reset_changes!
   end
 end
 
@@ -58,13 +55,15 @@ class BookInfo
   property status = 0_i32
   property mftime = 0_i64
 
-  property yousuu_url = ""
-  property origin_url = ""
   property cover_urls = [] of String
   property main_cover = ""
 
+  property yousuu_url = ""
+  property origin_url = ""
+
   property word_count = 0_i32
   property crit_count = 0_i32
+
   property view_count = 0_i32
   property read_count = 0_i32
 
@@ -156,15 +155,17 @@ class BookInfo
     mftime = @mftime if mftime < @mftime
     mftime = seed.mftime if mftime < seed.mftime
 
-    if seed.chap_scid != scid
-      seed.chap_scid = scid
+    if seed.latest.scid != scid
+      seed.latest.scid = scid
       mftime = Time.utc.to_unix_ms if mftime == seed.mftime
+
+      yield(seed) if block
     end
 
     seed.mftime = mftime
-    yield(seed) if block
+    seed.update_changes! # transfer changes count from latest chap to book seed
 
-    @changes += seed.reset_changes!
+    @changes += seed.reset_changes! # transfer changes count from seed to info
     seed
   end
 

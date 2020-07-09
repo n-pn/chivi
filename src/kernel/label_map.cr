@@ -12,6 +12,7 @@ class LabelMap
 
   delegate size, to: @hash
   delegate each, to: @hash
+  delegate fetch, to: @hash
 
   def initialize(@file, preload : Bool = false)
     load!(@file) if preload && exists?
@@ -22,18 +23,18 @@ class LabelMap
   end
 
   def load!(file : String = @file) : Void
-    File.each_line(file) do |line|
-      key, val = line.strip.split(SEP, 2)
-      if val.empty?
-        delete(key)
-      else
-        upsert(key, val)
-      end
+    count = 0
+
+    File.read_lines(file) do |line|
+      key, val = line.split(SEP, 2)
+      val.empty? ? delete(key) : upsert(key, val)
+      count += 1
     rescue err
       puts "- <label_map> error parsing line `#{line}`: #{err.colorize(:red)}"
     end
 
-    puts "- <label_map> [#{file.colorize(:cyan)}] loaded."
+    puts "- <label_map> [#{file.colorize(:blue)}] loaded \
+            (#{count.colorize(:blue)} lines)."
   end
 
   def keys(val : String)
@@ -86,7 +87,9 @@ class LabelMap
 
   def save!(file : String = @file) : Void
     File.write(file, self)
-    puts "- <label_map> [#{file.colorize(:cyan)}] saved, entries: #{size}."
+
+    puts "- <label_map> [#{file.colorize(:blue)}] saved \
+            (#{size.colorize(:blue)} entries)."
   end
 
   # class methods
@@ -100,8 +103,13 @@ class LabelMap
 
   CACHE = {} of String => self
 
-  def self.load(file : String) : self
-    CACHE[file] ||= new(file, preload: true)
+  def self.load(name : String, cache = true, preload = true) : self
+    unless item = CACHE[name]?
+      item = new(path_for(name), preload: preload)
+      CACHE[name] = item if cache
+    end
+
+    item
   end
 end
 

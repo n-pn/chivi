@@ -1,88 +1,41 @@
-require "json"
 require "colorize"
-require "../_utils/text_utils"
+require "./base_model"
 require "../_utils/fix_titles"
+require "../_utils/text_utils"
 
 class ChapItem
-  include JSON::Serializable
+  include BaseModel
 
   property scid = ""
+  property slug = ""
 
-  property label_zh = ""
-  property label_vi = ""
+  property label = ""
+  property title = ""
 
-  property title_zh = ""
-  property title_vi = ""
-
-  property url_slug = ""
-
-  @[JSON::Field(ignore: true)]
-  property changed = false
-
-  def initialize
+  def initialize(@scid = "")
   end
 
   def initialize(@scid : String, title : String, label : String = "正文")
-    @changed = true
-
     if label.empty? || label == "正文"
       set_title(title)
     else
-      @title_zh = Utils.format_title(title)
-      @label_zh = Utils.clean_spaces(label)
+      @title = Utils.format_title(title)
+      @label = Utils.clean_spaces(label)
+      @changes = 1
     end
   end
 
-  def changed?
-    @changed
+  def set_title(input : String)
+    self.title, self.label = Utils.split_label(input)
   end
 
-  def mark_saved!
-    @changed = false
-  end
-
-  def set_title(title : String)
-    title, label = Utils.split_label(title)
-    self.title_zh = title
-    self.label_zh = label
-  end
-
-  def title_zh=(title : String)
-    return if title == @title_zh
-    @changed = true
-    @title_zh = title
-  end
-
-  def title_vi=(title : String)
-    return if title == @title_vi
-    @changed = true
-    @title_vi = title
-  end
-
-  def label_zh=(label : String)
-    return if label == @label_zh
-    @changed = true
-    @label_zh = label
-    @label_vi = ""
-  end
-
-  def label_vi=(label : String)
-    return if label == @label_vi
-    @changed = true
-    @label_vi = label
-  end
-
-  def gen_slug!(limit : Int32 = 12) : Void
-    return if @title_vi.empty?
-    slug = Utils.slugify(@title_vi, no_accent: true)
-    url_slug = slug.split("-").first(limit).join("-")
-    return if url_slug == @url_slug
-
-    @changed = true
-    @url_slug = url_slug
+  def set_slug(title : String, max_words : Int32 = 12) : Void
+    slug = Utils.slugify(title, no_accent: true)
+    slug = slug.split("-").first(max_words).join("-")
+    self.slug = slug
   end
 
   def slug_for(seed : String)
-    "#{@url_slug}-#{seed}-#{@scid}"
+    "#{@slug}-#{seed}-#{@scid}"
   end
 end
