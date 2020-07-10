@@ -153,20 +153,20 @@ class CvDict
   def load!(file : String = @file, sep_0 : String = SEP_0, sep_1 : String | Regex = SEP_1) : Void
     count = 0
 
-    elapsed_time = Time.measure do
+    elapsed = Time.measure do
       File.each_line(file) do |line|
         key, vals, extra = Node.parse(line, sep_0, sep_1)
         upsert(key, vals, extra)
         count += 1
       rescue
-        puts "- <cv_dict> error parsing line `#{line}`.".colorize(:red)
+        puts "- <dict_file> error parsing line `#{line}`.".colorize(:red)
       end
     end
 
-    elapse_time = elapsed_time.total_milliseconds.round.to_i
-    puts "- <cv_dict> [#{file.colorize(:yellow)}] loaded, \
-            lines: #{count.colorize(:yellow)}, \
-            time: #{elapse_time.colorize(:yellow)}ms"
+    elapsed = elapsed.total_milliseconds.round.to_i
+    puts "- <dict_file> [#{file.colorize.blue}] loaded \
+            (lines: #{count.colorize.blue}, \
+             time: #{elapsed.colorize.blue}ms)"
 
     self.time = File.info(file).modification_time
   end
@@ -231,7 +231,8 @@ class CvDict
       each { |node| node.puts(io, trim: trim) }
     end
 
-    puts "- <cv_dict> [#{file.colorize(:yellow)}] saved, entries: #{@size.colorize(:yellow)}."
+    puts "- <dict_file> [#{file.colorize.yellow}] saved \
+            (entries: #{@size.colorize.yellow})."
   end
 
   # class methods

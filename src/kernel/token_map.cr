@@ -19,21 +19,22 @@ class TokenMap
   end
 
   def load!(file : String = @file) : Void
+    count = 0
+
     File.each_line(file) do |line|
       cols = line.strip.split(SEP_0, 2)
 
       key = cols[0]
       vals = (cols[1]? || "").split(SEP_1)
-      if vals.empty?
-        delete(key)
-      else
-        upsert(key, vals)
-      end
+
+      vals.empty? ? delete(key) : upsert(key, vals)
+      count += 1
     rescue err
       puts "- <token_map> error parsing line `#{line.colorize(:red)}`: #{err.message.colorize(:red)}"
     end
 
-    puts "- <token_map> [#{file.colorize(:cyan)}] loaded."
+    puts "- <token_map> [#{file.colorize.blue}] loaded \
+            (lines: #{count.tokenize.blue})."
   end
 
   def search(tokens : Array(String))
@@ -145,8 +146,8 @@ class TokenMap
       @hash.each { |key, vals| to_s(io, key, vals) }
     end
 
-    puts "- <token_map> [#{file.colorize(:yellow)}] saved \
-            (#{size.colorize(:yellow)} entries)."
+    puts "- <token_map> [#{file.colorize.yellow}] saved \
+            (entries: #{size.colorize.yellow})."
   end
 
   # class methods

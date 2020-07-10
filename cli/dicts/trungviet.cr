@@ -13,7 +13,7 @@ def cleanup(input : String)
     .join("; ")
 end
 
-OUT_FILE = Utils.out_path("trungviet.dic")
+OUT_FILE = Utils.out_path("lookup/trungviet.dic")
 
 out_dict = CvDict.new(OUT_FILE, false)
 out_dict.load!(Utils.inp_path("initial/lacviet-mtd.txt"), "=", "\\n")
@@ -21,10 +21,10 @@ out_dict.load!(Utils.inp_path("initial/lacviet-mtd.txt"), "=", "\\n")
 char_dict = Clavis.new(Utils.inp_path("hanviet/lacviet-chars.txt"), false)
 word_dict = Clavis.new(Utils.inp_path("hanviet/lacviet-words.txt"), false)
 
-knowns = Utils.known_words
+ondicts = Utils.ondicts_words
 
 out_dict.each do |item|
-  knowns.upsert(item.key) if Utils.has_hanzi?(item.key)
+  ondicts.upsert(item.key) if Utils.has_hanzi?(item.key)
 
   item.vals = item.vals.map { |x| cleanup(x) }
   item.vals.each do |val|
@@ -44,4 +44,4 @@ end
 out_dict.save!
 char_dict.save!
 word_dict.save!
-knowns.save!
+ondicts.save!

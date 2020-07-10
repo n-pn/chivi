@@ -51,8 +51,8 @@ class ChapList
     ChapList.mkdir!(@uuid)
     File.write(file, to_json)
 
-    puts "- <chap_list> [#{file.colorize(:yellow)}] saved \
-            (#{@changes.colorize(:yellow)} changes)."
+    puts "- <chap_list> [#{file.colorize.yellow}] saved \
+            (changes: #{@changes.colorize.yellow})."
   end
 
   # class methods
@@ -77,7 +77,7 @@ class ChapList
     end
 
     puts "- <chap_list> loaded [#{uuid}] chap lists to cache \
-    (#{ret.size.colorize(:blue)} entries)."
+            (entries: #{ret.size.colorize.blue.bold})."
 
     ret
   end
@@ -116,7 +116,7 @@ class ChapList
   end
 
   def self.load_file(file : String)
-    puts "- <chap_list> [#{file.colorize(:blue)}] loaded."
+    puts "- <chap_list> [#{file.colorize.blue}] loaded."
     from_json(File.read(file))
   end
 end

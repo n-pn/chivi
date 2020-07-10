@@ -122,8 +122,8 @@ class OrderMap
       puts "- <order_map> error parsing line `#{line}`: #{err.colorize(:red)}"
     end
 
-    puts "- <order_map> [#{file.colorize(:blue)}] loaded \
-            (#{count.colorize(:blue)} lines)."
+    puts "- <order_map> [#{file.colorize.blue}] loaded \
+            (lines: #{count.colorize.blue})."
   end
 
   def upsert!(key : String, val : Int64, force : Bool = false) : Void
@@ -193,8 +193,8 @@ class OrderMap
 
   def save!(file : String = @file) : Void
     File.write(file, self)
-    puts "- <order_map> [#{file.colorize(:yellow)}] saved \
-            (#{size.colorize(:yellow)} entries)."
+    puts "- <order_map> [#{file.colorize.yellow}] saved \
+            (entries: #{size.colorize.yellow})."
   end
 
   # class methods

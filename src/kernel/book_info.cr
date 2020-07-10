@@ -182,8 +182,8 @@ class BookInfo
 
   def save!(file : String = BookInfo.path_for(@uuid)) : Void
     File.write(file, self)
-    puts "- <book_info> [#{file.colorize(:yellow)}] saved \
-            (#{@changes.colorize(:yellow)} changes)."
+    puts "- <book_info> [#{file.colorize.yellow}] saved \
+            (changes: #{@changes.colorize.yellow})."
     @changes = 0
   end
 
@@ -255,7 +255,7 @@ class BookInfo
     end
 
     puts "- <book_info> loaded all infos to cache \
-            (#{CACHE.size.colorize(:blue)} entries)."
+            (entries: #{CACHE.size.colorize.blue.bold})."
     CACHE
   end
 end

@@ -17,8 +17,15 @@ class ValueSet
   end
 
   def load!(file : String = @file) : Void
-    @list.concat File.read_lines(file)
-    puts "- <value_set> [#{file.colorize(:cyan)}] loaded."
+    count = 0
+
+    File.each_line do |line|
+      @list << line.strip
+      count += 1
+    end
+
+    puts "- <value_set> [#{file.colorize.blue}] loaded \
+            (lines: #{count.colorize.blue})."
   end
 
   def upsert!(key : String) : Void
@@ -51,7 +58,8 @@ class ValueSet
 
   def save!(file : String = @file) : Void
     File.write(file, self)
-    puts "- <value_set> [#{file.colorize(:cyan)}] saved, entries: #{size}."
+    puts "- <value_set> [#{file.colorize.yellow}] saved \
+            (entries: #{size.colorize.yellow})."
   end
 
   # class methods

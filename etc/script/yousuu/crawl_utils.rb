@@ -41,9 +41,17 @@ class HttpClient
   end
 
   private def read_proxy_file(file)
-    return [] unless File.exists?(file)
+    ret = []
+    return ret unless File.exists?(file)
+
+    File.read(file).split("\n").each do |line|
+      line.chomp!
+      ret << line if line =~ /^\d+\.\d+\.\d+\.\d+:\d+$/
+    end
+
     puts "- <load_proxy> [#{file.yellow}] loaded."
-    File.read(file).split("\n").map(&:strip).reject(&:empty?).uniq
+
+    ret
   end
 
   USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"

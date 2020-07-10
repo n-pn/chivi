@@ -21,10 +21,10 @@ module Utils
     FileUtils.mkdir_p(File.dirname(file))
   end
 
-  @@known : ValueSet? = nil
+  @@ondicts : ValueSet? = nil
 
-  def known_words : ValueSet
-    @@known ||= ValueSet.new(inp_path("autogen/known-words.txt"), true)
+  def ondicts_words : ValueSet
+    @@ondicts ||= ValueSet.new(inp_path("autogen/ondicts-words.txt"), true)
   end
 
   def has_hanzi?(input : String)

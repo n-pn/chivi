@@ -74,11 +74,11 @@ class CvDlog
     lines.each do |line|
       append(Item.parse!(line))
     rescue
-      puts "- <cv_dlog> error parsing line: `#{line.colorize(:red)}`."
+      puts "- <dict_dlog> error parsing line: `#{line.colorize(:red)}`."
     end
 
-    puts "- <cv_dlog> [#{@file.colorize(:cyan)}] loaded \
-            (#{lines.size.colorize(:cyan)} entries)."
+    puts "- <dict_dlog> [#{@file.colorize.blue}] loaded \
+            (entries: #{lines.size.colorize.blue})."
   end
 
   def sort! : Void
@@ -120,7 +120,8 @@ class CvDlog
       @logs.each { |item| io.puts(item) }
     end
 
-    puts "- <cv_dlog> [#{@file.colorize(:cyan)}] saved."
+    puts "- <dict_dlog> [#{@file.colorize.yellow}] saved \
+            (entries: #{logs.size.colorize.yellow})."
     self
   end
 

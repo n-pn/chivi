@@ -58,27 +58,28 @@ class CE_DICT
   HANZIDB_FILE = Utils.inp_path("initial/hanzidb.txt")
   HANZIDB_DICT = CvDict.load_legacy(HANZIDB_FILE)
 
-  CE_DICT_FILE = Utils.out_path("cc_cedict.dic")
-  TRADSIM_FILE = Utils.out_path("shared/tradsim.dic")
-  PINYINS_FILE = Utils.out_path("shared/pinyins.dic")
+  CE_DICT_FILE = Utils.out_path("lookup/cc_cedict.dic")
+  TRADSIM_FILE = Utils.out_path("tradsim.dic")
+  PINYINS_FILE = Utils.out_path("pinyins.dic")
 
   getter input = [] of Entry
 
   def initialize
+    puts "\n[-- Loading input --]".colorize.cyan.bold
+
     read_zip.split("\n").each do |line|
       next unless entry = Entry.parse(line)
       @input << entry
     end
 
-    puts "- input: #{@input.size} entries.".colorize(:blue)
+    puts "- input: #{@input.size} entries.".colorize.light_cyan
   end
 
   def read_zip : String
-    puts "- reading zip file content...".colorize(:blue)
     zip_file = Utils.inp_path("initial/cc-cedict.zip")
 
     if outdated?(zip_file)
-      puts "- fetching latest CC_CEDICT from internet... ".colorize(:blue)
+      puts "- fetching latest CC_CEDICT from internet... ".colorize.light_cyan
       HTTP::Client.get(CEDICT_URL) { |res| File.write(zip_file, res.body_io) }
     end
 
@@ -93,18 +94,18 @@ class CE_DICT
   end
 
   def export_ce_dict!
-    puts "\n- [Export ce_dict]".colorize(:cyan)
+    puts "\n[-- Export ce_dict --]".colorize.cyan.bold
 
     dict = CvDict.new(CE_DICT_FILE)
-    knowns = Utils.known_words
+    ondicts = Utils.ondicts_words
 
     @input.each do |entry|
-      knowns.upsert(entry.simp) if Utils.has_hanzi?(entry.simp)
+      ondicts.upsert(entry.simp) if Utils.has_hanzi?(entry.simp)
       dict.upsert(entry.simp, "[#{entry.pinyin}] #{entry.define}")
     end
 
-    knowns.save!
     dict.save!
+    ondicts.save!
   end
 
   alias Counter = Hash(String, Int32)
@@ -114,7 +115,7 @@ class CE_DICT
   end
 
   def export_tradsim!
-    puts "\n- [Export tradsim]".colorize(:cyan)
+    puts "\n[-- Export tradsim --]".colorize.cyan.bold
 
     counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
     tswords = CvDict.new(Utils.inp_path("autogen/tradsimp-words.dict"))
@@ -158,7 +159,7 @@ class CE_DICT
   end
 
   def export_pinyins!
-    puts "\n- [Export pinyins]".colorize(:cyan)
+    puts "\n[-- Export pinyins --]".colorize.cyan.bold
 
     counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
 
