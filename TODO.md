@@ -15,35 +15,29 @@
 
 - [ ] make it works again
 
-  - [ ] polish `serial.cr` and fix `source.cr`, rename `serial` to `info`?
-  - [ ] combine `zh_list` and `zh_text`, add `convert_by` and `convert_at` metadata
-  - [ ] rebuild books assets
-  - [ ] finish rewrite book_indexes and rebuild book_indexes
+  - [x] polish `serial.cr` and fix `source.cr`, rename `serial` to `info`?
+  - [-] rebuild books assets
+  - [-] finish rewrite book_indexes and rebuild book_indexes
 
 - [ ] combine zh_texts with vp_texts
 
-  - [ ] combine files
-  - [ ] rewrite chap_repo, add meta data (convert_by user, converted_at time, etc.)
-  - [ ] replace SEP0 and SEP1 to unicode alternatives in input text for correctness
+  - [ ] combine `zh_list` and `zh_text`, add `convert_by` and `convert_at` metadata
+  - [ ] replace `SEP_0` and `SEP_1` to unicode alternatives in input text for correctness
 
 - [ ] update dicts
 
-  - [ ] rewrite import codes, add trad hanzi to `core/common.dic`
-  - [ ] fix hanviet again (write an ui tool?)
-  - [ ] prefer hanviet words to extra dicts' words
-  - [ ] move `core/combine.dic` to `book/tonghop.dic`
+  - [x] rewrite import codes, <s>add trad hanzi to `core/common.dic`</s>
+  - [-] fix hanviet again (write an ui tool?)
+  - [x] prefer hanviet words to extra dicts' words
+  - [x] remove unnessary suggestions (hanviet, convertable, low frequency etc.)
   - [ ] add common words (datetime, percents)
-  - [ ] add emoji
-  - [ ] remove unnessary suggestions (hanviet, convertable, low frequency etc.)
+  - [ ] add unicode emoji
 
 - [ ] convert engine
 
-  - [ ] combines non-latin letters (e.g. hiragana)
-  - [ ] fix 69shu title texts
+  - [x] combines non-latin letters (e.g. hiragana)
+  - [-] fix 69shu title texts (uncheck)
   - [ ] apply basic grammar rules
-
-- [ ] update lexicon logic
-  - [ ] rename `set` to `append`
 
 ## Both FE and BE
 

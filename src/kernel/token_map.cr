@@ -37,31 +37,27 @@ class TokenMap
             (lines: #{count.tokenize.blue})."
   end
 
-  def search(tokens : Array(String))
+  def fuzzy_search(tokens : Array(String))
     res = [] of String
-    return res unless keys = min_keys_set(tokens)
+    return res unless key_set = min_keys_set(tokens)
 
-    keys.each do |key|
+    key_set.each do |key|
       values = @hash[key]
-      res << key if contains?(values, tokens)
+      res << key if fuzzy_match?(values, tokens)
     end
 
     res
   end
 
-  private def contains?(values : Array(String), tokens : Array(String))
+  private def fuzzy_match?(values : Array(String), tokens : Array(String))
     return true if tokens.empty?
 
-    values.each_with_index do |v, i|
-      next unless v == tokens[0]
+    idx = 0
 
-      j = 1
-      while j < tokens.size
-        break if values[i + j]? != tokens.unsafe_fetch(j)
-        j += 1
-      end
-
-      return true if j == tokens.size
+    values.each do |v|
+      next unless v == tokens[idx]
+      idx += 1
+      return true if idx == tokens.size
     end
 
     false
