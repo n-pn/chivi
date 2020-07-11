@@ -3,10 +3,10 @@ require "colorize"
 require "file_utils"
 
 require "../src/engine"
-require "../src/bookdb/book_info"
-require "../src/bookdb/chap_list"
+require "../src/kernel/book_info"
+require "../src/kernel/chap_list"
 
-require "../src/spider/info_spider"
+require "../src/snipes/info_spider"
 
 def translate(input : String, book : String)
   return input if input.empty?

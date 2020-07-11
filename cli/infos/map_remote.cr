@@ -64,19 +64,9 @@ class MapRemote
     end
   end
 
-  def self.top_authors(weight : Int32)
-    ret = Set(String).new
-
-    OrderMap.load("top_authors").each do |item|
-      ret << item.key if item.val >= weight
-    end
-
-    ret
-  end
-
   BOOK_ACCESS = OrderMap.load("book_access")
   BOOK_UPDATE = OrderMap.load("book_update")
-  TOP_AUTHORS = top_authors(2000)
+  TOP_AUTHORS = OrderMap.load("top_authors")
 
   BOOK_INFOS = BookInfo.load_all!
 
@@ -145,7 +135,9 @@ class MapRemote
   def qualified?(uuid : String, author : String)
     return true if @seed == "hetushu" || @seed == "rengshu"
     # return false if author.empty?
-    BOOK_INFOS.has_key?(uuid) || TOP_AUTHORS.includes?(author)
+    return true if BOOK_INFOS.has_key?(uuid)
+
+    (TOP_AUTHORS.value(author) || 0) >= 2000
   end
 
   def parse!(sbid : String, expiry = 24.hours, label = "1/1")
@@ -166,6 +158,18 @@ class MapRemote
     return unless qualified?(uuid, author)
 
     info = remote.emit_book_info
+
+    if info.weight == 0 && info.yousuu_url.empty?
+      puts "- FAKING RANDOM RATING -".colorize.yellow
+
+      weight = TOP_AUTHORS.value(info.author_zh) || 2000_i64
+      weight = Random.rand((weight // 2)..weight)
+      scored = Random.rand(30..70)
+
+      info.rating = (scored / 10).to_f32
+      info.voters = (weight // scored).to_i32
+      info.weight = (scored * info.voters).to_i64
+    end
 
     return unless info.changed?
     info.save!

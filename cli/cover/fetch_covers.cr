@@ -6,11 +6,10 @@ require "file_utils"
 
 require "../../src/kernel/book_info"
 
-TLS = OpenSSL::SSL::Context::Client.insecure
-
 TMP_DIR = File.join("var", ".book_cover")
+FILE_DF = File.join(TMP_DIR, "blank.jpg")
 
-DEFAULT = File.join(TMP_DIR, "blank.jpg")
+TLS = OpenSSL::SSL::Context::Client.insecure
 
 def download_cover(url : String, file : String, label = "1/1") : Void
   return if !SKIP_EMPTY && File.exists?(file)
@@ -36,7 +35,7 @@ def download_cover(url : String, file : String, label = "1/1") : Void
     File.write(file, res.body_io.try(&.gets_to_end))
   end
 rescue err
-  FileUtils.cp(DEFAULT, file)
+  FileUtils.cp(FILE_DF, file)
   puts "- <#{label}> [#{url.colorize(:red)}] #{err.colorize(:red)}"
 end
 
@@ -58,7 +57,7 @@ end
 
 queue = [] of Tuple(String, String)
 
-infos = BookInfo.load_all
+infos = BookInfo.load_all!
 infos.values.sort_by(&.weight.-).each_with_index do |info, idx|
   # puts "- <#{idx + 1}/#{infos.size}> #{info.vi_title}".colorize(:cyan)
 
@@ -66,7 +65,7 @@ infos.values.sort_by(&.weight.-).each_with_index do |info, idx|
   FileUtils.mkdir_p(cover_dir)
   indexed = glob_dir(cover_dir)
 
-  info.covers.each do |cover|
+  info.cover_urls.each do |cover|
     name = Digest::SHA1.hexdigest(cover)[0..10]
     next if indexed.has_key?(name)
 
@@ -76,8 +75,8 @@ end
 
 puts "- pending: #{queue.size}"
 
-unless queue.size < 10
-  limit = 10
+unless queue.size < 12
+  limit = 12
   limit = queue.size if queue.size < limit
 
   channel = Channel(Nil).new(limit)
@@ -94,27 +93,31 @@ unless queue.size < 10
   limit.times { channel.receive }
 end
 
-OUT_DIR = File.join("www", "public", "covers")
+OUT_DIR = File.join("web", "public", "covers")
 FileUtils.mkdir_p(OUT_DIR)
 
 # TODO: copy best covers to web/upload folder
-infos.each_with_index do |(uuid, info), idx|
-  puts "- <#{idx + 1}/#{infos.size}> #{info.vi_title}"
-
-  best_file = DEFAULT
+infos.each_value do |info|
+  best_file = FILE_DF
   best_size = File.size(best_file)
 
-  cover_dir = File.join(OUT_DIR, info.uuid)
+  cover_dir = File.join(TMP_DIR, info.uuid)
   cover_files = glob_dir(cover_dir).values
 
   cover_files.each do |file|
     size = File.size(file)
+
     if size > best_size
       best_file = file
       best_size = size
     end
   end
 
-  out_file = File.join(OUT_DIR, "#{uuid}.jpg")
+  main_cover = File.basename(best_file)
+  out_file = File.join(OUT_DIR, "#{info.uuid}.#{main_cover}")
+
   FileUtils.cp(best_file, out_file)
+
+  info.main_cover = main_cover
+  info.save! if info.changed?
 end

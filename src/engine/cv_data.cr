@@ -179,11 +179,29 @@ class CvData
     String.build { |io| vi_text(io) }
   end
 
-  def to_s(io : IO) : Void
-    map(&.to_s).join(SEP_0, io)
+  def to_s(io : IO)
+    return io if @data.empty?
+    @data.unsafe_fetch(0).to_s(io)
+
+    1.upto(@data.size - 1) do |i|
+      io << SEP_0
+      @data.unsafe_fetch(i).to_s(io)
+    end
+
+    io
   end
 
   def to_s : String
     String.build { |io| to_s(io) }
+  end
+
+  # class methods
+
+  def self.zh_text(text : String)
+    String.build do |io|
+      text.split(SEP_0).each do |node|
+        io << node.split(SEP_1, 2).first
+      end
+    end
   end
 end

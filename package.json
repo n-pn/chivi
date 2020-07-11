@@ -6,7 +6,7 @@
     "ys-up": "bash etc/script/upload/yousuu.sh",
     "ys-dn": "bash etc/script/backup/yousuu.sh",
     "build": "shards build --release",
-    "build-mt": "shards build --release -Dpreviewmt",
+    "build-mt": "shards build --release -Dpreview_mt",
     "www-up": "cd www && yarn build && git push deploy",
     "www-rs": "ssh nipin@ssh.chivi.xyz \"systemctl restart chivi-client.service\"",
     "srv-rs": "ssh nipin@ssh.chivi.xyz \"systemctl restart chivi-server.service\"",
