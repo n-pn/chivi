@@ -18,6 +18,10 @@ class CvDict
       {key, vals, extra}
     end
 
+    def self.split(vals : String, sep = SEP_1)
+      vals.split(sep)
+    end
+
     getter key : String
     property vals : Array(String)
     property extra : String
@@ -238,38 +242,63 @@ class CvDict
   # class methods
 
   DIR = File.join("var", "dict_files")
-  FileUtils.mkdir_p(File.join(DIR, "lookup"))
   FileUtils.mkdir_p(File.join(DIR, "unique"))
 
   def self.path_for(dname : String)
     File.join(DIR, "#{dname}.dic")
   end
 
+  CACHE = {} of String => self
+
+  def self.load(name : String, cache = true, preload : Bool = true) : self
+    unless dict = CACHE[name]?
+      dict = new(path_for(name), preload)
+      CACHE[name] = dict if cache
+    end
+
+    dict
+  end
+
   @@cc_cedict : CvDict? = nil
   @@trungviet : CvDict? = nil
+  @@tradsim : CvDict? = nil
+  @@binh_am : CvDict? = nil
+
   @@hanviet : CvDict? = nil
   @@generic : CvDict? = nil
+  @@combine : CvDict? = nil
+  @@suggest : CvDict? = nil
 
   def self.cc_cedict
-    @@cc_cedict ||= new(path_for("cc_cedict"), true)
+    @@cc_cedict ||= new(path_for("system/cc_cedict"), preload: true)
   end
 
   def self.trungviet
-    @@trungviet ||= new(path_for("cc_cedict"), true)
+    @@trungviet ||= new(path_for("system/trungviet"), preload: true)
+  end
+
+  def self.tradsim
+    @@tradsim ||= new(path_for("system/tradsim"), preload: true)
+  end
+
+  def self.binh_am
+    @@binh_am ||= new(path_for("system/binh_am"), preload: true)
   end
 
   def self.hanviet
-    @@hanviet ||= load_shared("hanviet")
+    @@hanviet ||= load("hanviet")
   end
 
   def self.generic
-    @@generic ||= load_shared("generic")
+    @@generic ||= load("generic")
   end
 
-  CACHE = {} of String => self
+  def self.combine
+    @@combine ||= load("combine")
+  end
 
-  def self.load(file : String, preload : Bool = true) : self
-    CACHE[file] ||= new(file, preload)
+  def self.suggest
+    @@suggest ||= load("suggest")
   end
 
   def self.load_legacy(file : String)
@@ -277,27 +306,24 @@ class CvDict
     dict.tap(&.load!(file, "=", /[\/|]/))
   end
 
-  def self.load_shared(dname : String)
-    load(path_for("shared/#{dname}"), true)
-  end
-
   def self.load_unique(dname : String)
-    load(path_for("unique/#{dname}"), true)
+    load("unique/#{dname}", cache: true, preload: true)
   end
 
   def self.load_remote(dname : String)
     case dname
     when "hanviet" then hanviet
+    when "pinyins" then pinyins
+    when "tradsim" then tradsim
     when "generic" then generic
-    when "pinyins", "tradsim", "combine", "suggest"
-      load_shared(dname)
-    else
-      load_unique(dname)
+    when "combine" then combine
+    when "suggest" then suggest
+    else                load_unique(dname)
     end
   end
 
   def self.for_convert(dname = "combine")
-    special = dname == "combine" ? load_shared(dname) : load_unique(dname)
+    special = dname == "combine" ? combine : load_unique(dname)
     {hanviet, generic, special}
   end
 end

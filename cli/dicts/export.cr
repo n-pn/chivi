@@ -1,54 +1,89 @@
 require "./utils/common"
 require "./utils/clavis"
 
-require "../../src/engine/cv_dict"
+require "../../src/engine"
 require "../../src/kernel/value_set"
 
-puts "\n[Load inputs]".colorize(:cyan)
+puts "\n[Load deps]".colorize(:cyan)
 
 CHECKED = ValueSet.load(Utils.inp_path("autogen/checked.txt"))
-KNOWNED = ValueSet.load(Utils.inp_path("autogen/known-words.txt"))
+ONDICTS = Utils.ondicts_words
 
-inp_generic = Clavis.new(Utils.inp_path("autogen/generic.txt"), true)
-inp_suggest = Clavis.new(Utils.inp_path("autogen/suggest.txt"), true)
-inp_combine = Clavis.new(Utils.inp_path("autogen/combine.txt"), true)
-inp_recycle = Clavis.new(Utils.inp_path("autogen/recycle.txt"), true)
+REJECT_STARTS = File.read_lines("cli/dicts/cfgs/reject-starts.txt")
+REJECT_ENDS   = File.read_lines("cli/dicts/cfgs/reject-ends.txt")
 
-puts "\n[Export output]".colorize(:cyan)
+def should_keep?(key : String)
+  return true if ONDICTS.includes?(key)
+  return true if CHECKED.includes?(key)
+  return true if key.ends_with?("目的")
 
-out_generic = CvDict.new(Utils.out_path("shared/generic.dic"), false)
-inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
-  out_generic.upsert(key, vals)
+  false
 end
 
+def should_skip?(key : String)
+  REJECT_STARTS.each { |word| return true if key.starts_with?(word) }
+  REJECT_ENDS.each { |word| return true if key.ends_with?(word) }
+
+  key !~ /\p{Han}/
+end
+
+puts "\n[Export generic]".colorize.cyan.bold
+
+inp_generic = Clavis.load("autogen/output/generic.txt", true)
+out_generic = CvDict.load("generic", preload: false)
+
+inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
+  unless should_keep?(key)
+    next if should_skip?(key)
+
+    unless Engine.hanviet(key).vi_text.downcase == vals.first.downcase
+      next if Engine.cv_plain(key, "tonghop").vi_text == vals.first
+    end
+  end
+  out_generic.upsert(key, vals)
+end
 out_generic.save!
 
-out_suggest = CvDict.new(Utils.out_path("shared/suggest.dic"), false)
-inp_suggest.each do |key, vals|
-  # unless CHECKED.includes?(key) || !KNOWNED.includes?(key)
-  #   next if Utils.convert(out_generic, key, " ") == vals.first
-  # end
+puts "\n[Export suggest]".colorize.cyan.bold
+
+inp_suggest = Clavis.load("autogen/output/suggest.txt", true)
+out_suggest = CvDict.load("suggest", preload: false)
+
+inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
+  unless should_keep?(key)
+    next if should_skip?(key)
+    next if key =~ /[的了是]/
+    next if Engine.hanviet(key).vi_text.downcase == vals.first.downcase
+    next if Engine.cv_plain(key, "tonghop").vi_text.downcase == vals.first.downcase
+  end
 
   out_suggest.upsert(key, vals)
 end
 out_suggest.save!
 
-out_combine = CvDict.new(Utils.out_path("shared/combine.dic"), false)
-inp_combine.each do |key, vals|
-  # unless CHECKED.includes?(key) || !KNOWNED.includes?(key)
-  #   next if Utils.convert(out_generic, key, " ") == vals.first
-  # end
+puts "\n[Export combine]".colorize.cyan.bold
 
+inp_combine = Clavis.load("autogen/output/combine.txt", true)
+out_combine = CvDict.load("combine", preload: false)
+
+inp_combine.to_a.sort_by(&.[0].size).each do |key, vals|
+  unless should_keep?(key)
+    next if should_skip?(key)
+  end
   out_combine.upsert(key, vals)
 end
 out_combine.save!
 
-out_recycle = CvDict.new(Utils.out_path("shared/recycle.dic"))
-inp_recycle.each do |key, vals|
-  # unless CHECKED.includes?(key) || !KNOWNED.includes?(key)
-  #   next if Utils.convert(out_generic, key, " ") == vals.first
-  # end
+puts "\n[Export recycle]".colorize.cyan.bold
 
+inp_recycle = Clavis.load("autogen/output/recycle.txt", true)
+out_recycle = CvDict.load("recycle", preload: false)
+
+inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
+  unless should_keep?(key)
+    next if should_skip?(key)
+    next if key =~ /[的了是]/
+  end
   out_recycle.upsert(key, vals)
 end
 out_recycle.save!

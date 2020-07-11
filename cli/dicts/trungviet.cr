@@ -13,13 +13,13 @@ def cleanup(input : String)
     .join("; ")
 end
 
-OUT_FILE = Utils.out_path("lookup/trungviet.dic")
+OUT_FILE = Utils.out_path("system/trungviet.dic")
 
 out_dict = CvDict.new(OUT_FILE, false)
 out_dict.load!(Utils.inp_path("initial/lacviet-mtd.txt"), "=", "\\n")
 
-char_dict = Clavis.new(Utils.inp_path("hanviet/lacviet-chars.txt"), false)
-word_dict = Clavis.new(Utils.inp_path("hanviet/lacviet-words.txt"), false)
+hv_chars = Clavis.load("hanviet/lacviet-chars.txt", false)
+hv_words = Clavis.load("hanviet/lacviet-words.txt", false)
 
 ondicts = Utils.ondicts_words
 
@@ -28,20 +28,20 @@ out_dict.each do |item|
 
   item.vals = item.vals.map { |x| cleanup(x) }
   item.vals.each do |val|
-    if match = val.match(/{(.+)}/)
+    if match = val.match(/{(.+?)}/)
       val = match[1].downcase
 
       if item.key.size > 1
-        word_dict.upsert(item.key, [val])
+        hv_words.upsert(item.key, [val])
       else
         vals = val.split(/[,;]\s*/)
-        char_dict.upsert(item.key, item.vals)
+        hv_chars.upsert(item.key, vals)
       end
     end
   end
 end
 
 out_dict.save!
-char_dict.save!
-word_dict.save!
+hv_chars.save!
+hv_words.save!
 ondicts.save!

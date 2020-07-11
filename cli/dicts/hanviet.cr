@@ -1,16 +1,17 @@
 require "./utils/common"
+require "./utils/clavis"
 require "../../src/engine/cv_dict"
 require "../../src/kernel/value_set"
 
 class Hanviet
-  COMMONS = ValueSet.load(Utils.inp_path("autogen/common-hanzi.txt"))
-  HANZIDB = ValueSet.load(Utils.inp_path("initial/hanzidb.txt"))
+  CRUCIAL = ValueSet.new(Utils.inp_path("autogen/crucial-chars.txt"), preload: true)
+  HANZIDB = ValueSet.new(Utils.inp_path("initial/hanzidb.txt"), preload: true)
 
-  TRADSIM = CvDict.load(Utils.out_path("shared/tradsim.txt"))
-  PINYINS = CvDict.load(Utils.out_path("shared/pinyins.txt"))
+  TRADSIM = CvDict.tradsim
+  BINH_AM = CvDict.binh_am
 
   def should_keep_hanviet?(input : String)
-    return true if COMMONS.includes?(input)
+    return true if CRUCIAL.includes?(input)
     return true if HANZIDB.includes?(input)
 
     input.split("").each do |char|
@@ -20,7 +21,7 @@ class Hanviet
     true
   end
 
-  @dict = CvDict.new(Utils.out_path("shared/hanviet.dic"))
+  @dict = CvDict.load("hanviet", cache: false, preload: false)
 
   def import_lacviet_chars!
     input = CvDict.load
@@ -31,28 +32,24 @@ class Hanviet
   end
 
   def import_dict!(file : String)
-    if file.ends_with?(".txt")
-      input = CvDict.load_legacy(file)
-    else
-      input = CvDict.load(file)
-    end
+    input = Clavis.load(file)
 
-    input.each do |item|
-      if item.key.ends_with?("章")
-        next if item.key.size > 1
-      end
+    input.each do |key, vals|
+      next if key =~ /\P{Han}/
+      # if key.ends_with?("章")
+      #   next if key.size > 1
+      # end
 
-      @dict.upsert(item.key) do |node|
-        if node.removed? || node.vals.includes?(item.vals.first)
-          # node.vals = item.vals.concat(node.vals)
-        else
-          # if COMMONS.includes?(node.key)
-          # puts "#{node.key}=#{item.vals.join("/")}|#{node.vals.join("/")}"
-          # end
-        end
+      @dict.upsert(key) do |node|
+        # if node.removed? || node.vals.includes?(item.vals.first)
+        #   node.vals = item.vals.concat(node.vals)
+        # else
+        #   if CRUCIAL.includes?(node.key)
+        #     puts "#{node.key}=#{item.vals.join("/")}|#{node.vals.join("/")}"
+        #   end
+        # end
 
-        node.vals.concat(item.vals)
-        node.vals.uniq!
+        node.vals.concat(vals).uniq!
       end
     end
   end
@@ -71,7 +68,7 @@ class Hanviet
   end
 
   def save!
-    COMMONS.each do |key|
+    CRUCIAL.each do |key|
       next if @dict.has_key?(key)
       puts "#{key}="
     end
@@ -82,12 +79,12 @@ end
 
 worker = Hanviet.new
 
-worker.import_dict!(Utils.inp_path("hanviet/verified-chars.txt"))
-worker.import_dict!(Utils.inp_path("autogen/lacviet-chars.dic"))
-worker.import_dict!(Utils.inp_path("hanviet/localqt-chars.txt"))
-worker.import_dict!(Utils.inp_path("hanviet/checked-chars.txt"))
-worker.import_dict!(Utils.inp_path("hanviet/trichdan-chars.txt"))
-worker.import_dict!(Utils.inp_path("hanviet/verified-words.txt"))
+worker.import_dict!("hanviet/verified-chars.txt")
+worker.import_dict!("hanviet/lacviet-chars.txt")
+worker.import_dict!("localqt/hanviet.txt")
+worker.import_dict!("hanviet/checked-chars.txt")
+worker.import_dict!("hanviet/trichdan-chars.txt")
+worker.import_dict!("hanviet/verified-words.txt")
 
 # worker.transform_from_trad!
 worker.save!

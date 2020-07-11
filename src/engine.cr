@@ -7,16 +7,34 @@ require "./engine/analyze"
 module Engine
   extend self
 
-  def translit(input : String, type = "hanviet", apply_cap = false)
-    dict = CvDict.load_shared(type)
-    pad_space = type != "tradsim"
-    Convert.translit(input, dict, apply_cap, pad_space)
+  def tradsim(input : String)
+    dict = CvDict.tradsim
+    Convert.translit(input, dict, false, false)
   end
 
-  def translit(lines : Array(String), type = "hanviet", apply_cap = false)
-    dict = CvDict.load_shared(type)
-    pad_space = type != "tradsim"
-    lines.map { |line| Convert.translit(line, dict, apply_cap, pad_space) }
+  def tradsim(lines : Array(String))
+    dict = CvDict.tradsim
+    lines.map { |line| Convert.translit(input, dict, false, false) }
+  end
+
+  def hanviet(input : String, apply_cap = false)
+    dict = CvDict.hanviet
+    Convert.translit(input, dict, apply_cap, true)
+  end
+
+  def hanviet(lines : Array(String), apply_cap = false)
+    dict = CvDict.hanviet
+    lines.map { |line| Convert.translit(input, dict, apply_cap, false) }
+  end
+
+  def binh_am(input : String, apply_cap = false)
+    dict = CvDict.binh_am
+    Convert.translit(input, dict, apply_cap, true)
+  end
+
+  def binh_am(lines : Array(String), apply_cap = false)
+    dict = CvDict.binh_am
+    lines.map { |line| Convert.translit(input, dict, apply_cap, false) }
   end
 
   def cv_title(input : String, dname = "combine")
@@ -77,32 +95,33 @@ module Engine
     dict = CvDict.load_remote(dname)
 
     dlog.insert(key, power) do
-      dict.upsert!(key, [vals], extra)
+      dict.upsert!(key, CvDict::Node.split(vals), extra)
       CvDlog::Item.new(CvDlog::Item.mtime, uname, power, key, vals, extra)
     end
   end
 
-  def search(input : String, dname = "generic")
-    vals = [] of String
-    extra = ""
-
+  def search(key : String, dname = "generic")
     mtime = 0
     uname = ""
     power = 0
 
-    if node = CvDict.load_remote(dname).find(input)
+    vals = [] of String
+    extra = ""
+
+    if node = CvDict.load_remote(dname).find(key)
+      power = 1
+
       vals = node.vals
       extra = node.extra
-      power = 1
     end
 
-    if dlog = CvDlog.load_remote(dname).find(input)
-      vals = dlog.vals.split(CvDict::SEP_1) if vals.empty?
-      extra = dlog.extra if extra.empty?
-
+    if dlog = CvDlog.load_remote(dname).find(key)
       mtime = dlog.mtime
       uname = dlog.uname
       power = dlog.power
+
+      vals = CvDict::Node.split(dlog.vals) if vals.empty?
+      extra = dlog.extra if extra.empty?
     end
 
     {vals: vals, extra: extra, mtime: mtime, uname: uname, power: power}

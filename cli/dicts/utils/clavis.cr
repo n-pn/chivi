@@ -1,6 +1,16 @@
 require "../../../src/_utils/normalize"
 
 class Clavis
+  DIR = File.join("var", ".dict_inits")
+
+  def self.path_for(file : String)
+    File.join(DIR, file)
+  end
+
+  def self.load(file : String, preload = true)
+    new(path_for(file), preload: preload)
+  end
+
   SEP_0 = "="
   SEP_1 = "/"
 
@@ -11,7 +21,7 @@ class Clavis
     load!(@file) if preload && File.exists?(@file)
   end
 
-  def load!(file : String = @file)
+  def load!(file : String = @file, mode = :keep_new)
     count = 0
 
     elapsed_time = Time.measure do
@@ -19,17 +29,21 @@ class Clavis
         key, vals = line.strip.split(SEP_0, 2)
 
         key = Utils.normalize(key).join("")
-        vals = vals.split(/[\/\|]/)
+        vals =
+          vals.split(/[\/\|]/)
+            .map(&.strip)
+            .reject(&.empty?)
+            .reject(&.includes?(":"))
 
-        @data[key] = vals
+        upsert(key, vals, mode)
         count += 1
       rescue
-        puts "- <clavis> error parsing line `#{line}`.".colorize(:red)
+        puts "- <old_dict> error parsing line ##{count}: `#{line}`.".colorize(:red)
       end
     end
 
     elapse_time = elapsed_time.total_milliseconds.round.to_i
-    puts "- <clavis> [#{file.colorize(:yellow)}] loaded, \
+    puts "- <old_dict> [#{file.colorize(:yellow)}] loaded, \
             lines: #{count.colorize(:yellow)}, \
             time: #{elapse_time.colorize(:yellow)}ms"
   end
@@ -59,11 +73,11 @@ class Clavis
     File.open(file, "w") do |io|
       @data.each do |key, vals|
         io << key << SEP_0
-        vals.join(io, SEP_1)
+        vals.uniq.join(io, SEP_1)
         io << "\n"
       end
     end
 
-    puts "- <clavis> [#{file.colorize(:yellow)}] saved, entries: #{size.colorize(:yellow)}."
+    puts "- <old_dict> [#{file.colorize(:yellow)}] saved, entries: #{size.colorize(:yellow)}."
   end
 end

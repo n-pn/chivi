@@ -19,7 +19,7 @@ class ValueSet
   def load!(file : String = @file) : Void
     count = 0
 
-    File.each_line do |line|
+    File.each_line(file) do |line|
       @list << line.strip
       count += 1
     end

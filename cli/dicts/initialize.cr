@@ -1,21 +1,22 @@
 require "../../src/kernel/book_info"
+require "../../src/kernel/value_set"
 
-def split_hanzi(input)
+def split_chars(input)
   input.split("").each do |char|
     yield char if char =~ /\p{Han}/
   end
 end
 
-def extract_common_hanzi
-  common = Set(String).new
+def extract_crucial_chars
+  crucial = ValueSet.new("var/.dict_inits/autogen/crutial-chars.txt")
 
   infos = BookInfo.load_all!
   infos.each_value do |info|
-    split_hanzi(info.title_zh) { |x| common << x }
-    split_hanzi(info.author_zh) { |x| common << x }
+    split_chars(info.title_zh) { |x| crucial.upsert(x) }
+    split_chars(info.author_zh) { |x| crucial.upsert(x) }
   end
 
-  puts "- common hanzi: #{common.size}"
-
-  File.write "var/.dict_inits/autogen/common-hanzi.txt", common.to_a.join("\n")
+  crucial.save!
 end
+
+extract_crucial_chars

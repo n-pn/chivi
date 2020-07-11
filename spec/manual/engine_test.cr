@@ -26,9 +26,9 @@ end
 
 line = "程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-puts Engine.translit(line, "hanviet").vi_text
-puts Engine.translit(line, "pinyins").vi_text
-puts Engine.translit(line, "tradsim").vi_text
+puts Engine.hanviet(line).vi_text
+puts Engine.binh_am(line).vi_text
+puts Engine.tradsim(line).vi_text
 
 test1 = "坚定不移沿着中国特色社会主义道路前进  为全面建成小康社会而奋斗"
 test2 = "MUV  LUV AL 红龙"
@@ -37,11 +37,13 @@ test4 = "红龙M红~~~龙 MUV  LUV AL 红龙 http://test.com/test?q=1"
 test5 = "【实验总分：79.3。排名：6】"
 test6 = "“稍等。”李峥倒是不在意这些议论，更在意身旁失魂落魄的大兄弟，“英男别慌，最惨的是我才对，400分满分，输了一分，输了一生。”"
 
-puts Engine.translit(test1, "hanviet").vi_text
-puts Engine.translit(test2, "hanviet").vi_text
-puts Engine.translit(test3, "hanviet").vi_text
-puts Engine.translit(test4, "hanviet").vi_text
+puts Engine.hanviet(test1).vi_text
+puts Engine.hanviet(test2).vi_text
+puts Engine.hanviet(test3).vi_text
+puts Engine.hanviet(test4).vi_text
 
 puts Engine.cv_plain(test4, "combine").vi_text
 puts Engine.cv_plain(test5, "combine").vi_text
 puts Engine.cv_plain(test6, "combine").vi_text
+
+# puts Engine.hanviet("左丰").vi_text.downcase == "Tả Phong".downcase

@@ -58,9 +58,9 @@ class CE_DICT
   HANZIDB_FILE = Utils.inp_path("initial/hanzidb.txt")
   HANZIDB_DICT = CvDict.load_legacy(HANZIDB_FILE)
 
-  CE_DICT_FILE = Utils.out_path("lookup/cc_cedict.dic")
-  TRADSIM_FILE = Utils.out_path("tradsim.dic")
-  PINYINS_FILE = Utils.out_path("pinyins.dic")
+  CE_DICT_FILE = Utils.out_path("system/cc_cedict.dic")
+  TRADSIM_FILE = Utils.out_path("system/tradsim.dic")
+  BINH_AM_FILE = Utils.out_path("system/binh_am.dic")
 
   getter input = [] of Entry
 
@@ -176,7 +176,7 @@ class CE_DICT
       end
     end
 
-    dict = CvDict.new(PINYINS_FILE)
+    dict = CvDict.new(BINH_AM_FILE)
     dict.load!(Utils.inp_path("initial/extra-pinyins.txt"), "=", "/")
 
     HANZIDB_DICT.each do |entry|

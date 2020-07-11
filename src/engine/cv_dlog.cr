@@ -128,7 +128,6 @@ class CvDlog
   # class methods
 
   DIR = File.join("var", "dict_dlogs")
-  FileUtils.mkdir_p(File.join(DIR, "lookup"))
   FileUtils.mkdir_p(File.join(DIR, "unique"))
 
   @@scope = ENV["KEMAL_ENV"]? == "production" ? "appcv" : "local"
