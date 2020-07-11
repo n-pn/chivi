@@ -226,7 +226,9 @@ class RemoteInfo
   def extract_latest_chap_by_meta_tag
     return unless href = meta_data("og:novel:latest_chapter_url")
     text = meta_data("og:novel:latest_chapter_name").not_nil!
-    text = text.sub(/^章节目录\s+/, "") if @seed == "duokan8"
+    if @seed == "duokan8"
+      text = text.sub(/^.*正文\s*/, "").sub(/^.*章节目录\s*/, "")
+    end
 
     ChapItem.new(extract_scid(href), text)
   end
