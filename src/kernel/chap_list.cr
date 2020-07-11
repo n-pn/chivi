@@ -28,7 +28,9 @@ class ChapList
     return if mode == 0 && @index.has_key?(chap.scid)
 
     upsert(chap.scid) do |old_chap|
-      old_chap.set_title(chap.title, chap.label)
+      old_chap.set_title(chap.title_zh, chap.label_zh)
+      # old_chap.title_vi = chap.title_vi
+      # old_chap.label_vi = chap.label_vi
     end
   end
 

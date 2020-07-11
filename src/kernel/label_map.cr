@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 class LabelMap
-  SEP = "ǁ"
+  SEP_0 = "ǁ"
 
   getter file : String
 
@@ -13,6 +13,7 @@ class LabelMap
   delegate size, to: @hash
   delegate each, to: @hash
   delegate fetch, to: @hash
+  delegate has_key?, to: @hash
 
   def initialize(@file, preload : Bool = false)
     load!(@file) if preload && exists?
@@ -26,7 +27,7 @@ class LabelMap
     count = 0
 
     File.each_line(file) do |line|
-      key, val = line.strip.split(SEP, 2)
+      key, val = line.strip.split(SEP_0)
       val.empty? ? delete(key) : upsert(key, val)
       count += 1
     rescue err
@@ -82,7 +83,7 @@ class LabelMap
   end
 
   private def to_s(io : IO, key : String, val : String)
-    io << key << SEP << val << "\n"
+    io << key << SEP_0 << val << "\n"
   end
 
   def save!(file : String = @file) : Void

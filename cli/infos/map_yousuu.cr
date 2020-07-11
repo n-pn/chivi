@@ -5,7 +5,7 @@ require "file_utils"
 require "../../src/kernel/book_info"
 require "../../src/kernel/order_map"
 
-require "../../src/snipes/yousuu_info"
+require "../../src/source/yousuu_info"
 
 require "../../src/_utils/time_utils"
 require "../../src/_utils/text_utils"
@@ -18,15 +18,21 @@ class MapYousuu
   @info_create = 0
   @info_update = 0
 
-  @book_rating = OrderMap.load("book_rating")
-  @book_weight = OrderMap.load("book_weight")
-  @book_update = OrderMap.load("book_update")
-  @book_access = OrderMap.load("book_access")
-  @top_authors = OrderMap.load("top_authors")
-
   @inputs = {} of String => YousuuInfo
 
+  def initialize
+    puts "\n[-- Load indexes --]".colorize.cyan.bold
+
+    @book_rating = OrderMap.load("book_rating")
+    @book_weight = OrderMap.load("book_weight")
+    @book_update = OrderMap.load("book_update")
+    @book_access = OrderMap.load("book_access")
+    @top_authors = OrderMap.load("top_authors")
+  end
+
   def prepare! : Void
+    puts "\n[-- Load inputs --]".colorize.cyan.bold
+
     files = Dir.glob(File.join(DIR, "*.json"))
     files.each do |file|
       @input_total += 1
@@ -48,6 +54,8 @@ class MapYousuu
   end
 
   def worthless?(info : YousuuInfo)
+    return true if SourceUtil.blacklist?(info.title)
+
     if weight = @top_authors.value(info.author)
       return false if weight >= 2000
     end
@@ -55,15 +63,9 @@ class MapYousuu
     info.score < 2.5 && info.addListTotal < 5 && info.commentCount < 10
   end
 
-  def add_to_whitelist(info : YousuuInfo)
-    return if WHITELIST_DATA.includes?(info.author)
-    return unless qualified?(info)
-
-    WHITELIST_DATA.add(info.author)
-    File.open(WHITELIST_FILE, "a") { |io| io.puts(info.author) }
-  end
-
   def extract!
+    puts "\n[-- Extract outputs --]".colorize.cyan.bold
+
     @inputs.each do |uuid, input|
       info = BookInfo.find_or_create(input.title, input.author, uuid, cache: false)
 

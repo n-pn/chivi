@@ -10,6 +10,8 @@
     "www-up": "cd www && yarn build && git push deploy",
     "www-rs": "ssh nipin@ssh.chivi.xyz \"systemctl restart chivi-client.service\"",
     "srv-rs": "ssh nipin@ssh.chivi.xyz \"systemctl restart chivi-server.service\"",
+    "cv_book_info": "wsl bin/cv_book_info",
+    "cv_chap_list": "wsl bin/cv_chap_list",
     "map_yousuu": "wsl bin/map_yousuu",
     "map_remote": "wsl bin/map_remote",
     "map_remotes": "wsl cli/infos/map_remote.sh",

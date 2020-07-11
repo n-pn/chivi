@@ -1,4 +1,5 @@
 require "json"
+require "./source_util"
 
 struct BookSource
   include JSON::Serializable
@@ -43,26 +44,9 @@ class YousuuInfo
   property updateAt = Time.utc(2000, 1, 1)
   property sources = [] of BookSource
 
-  FIXING  = Hash(String, String)
-  TITLES  = FIXING.from_json(File.read("etc/bookdb/fix-titles.json"))
-  AUTHORS = FIXING.from_json(File.read("etc/bookdb/fix-authors.json"))
-
-  def fix_title!
-    @title = @title.sub(/\(.+\)$/, "").strip
-    @title = TITLES.fetch(@title, @title)
-  end
-
-  def fix_author!
-    @author = @author.sub(/\(.+\)|.QD$/, "").strip
-    @author = AUTHORS.fetch(@title, @author)
-  end
-
   def cover
-    if @cover.starts_with?("http")
-      @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
-    else
-      ""
-    end
+    return "" unless @cover.starts_with?("http")
+    @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
   end
 
   def genre
@@ -90,8 +74,8 @@ class YousuuInfo
     info = json[:data][:bookInfo]
     info.sources = json[:data][:bookSource]
 
-    info.fix_title!
-    info.fix_author!
+    info.title = SourceUtil.fix_title(info.title)
+    info.author = SourceUtil.fix_author(info.title, info.author)
 
     info
   end

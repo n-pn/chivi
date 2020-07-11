@@ -6,7 +6,7 @@ require "../src/engine"
 require "../src/kernel/book_info"
 require "../src/kernel/chap_list"
 
-require "../src/snipes/info_spider"
+require "../src/source/info_spider"
 
 def translate(input : String, book : String)
   return input if input.empty?

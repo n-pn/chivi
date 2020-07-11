@@ -4,150 +4,146 @@ require "file_utils"
 
 require "../src/_utils/text_utils"
 require "../src/kernel/book_info"
+
+require "../src/kernel/label_map"
+require "../src/kernel/token_map"
+require "../src/kernel/value_set"
+
 require "../src/engine"
 
-def hanviet(input : String)
-  return input unless input =~ /\p{Han}/
-  Engine.hanviet(input, apply_cap: true).vi_text
-end
+module Convert
+  extend self
 
-MAP_DIR = File.join("etc", "bookdb")
+  def hanviet(input : String)
+    return input unless input =~ /\p{Han}/
+    Engine.hanviet(input, apply_cap: true).vi_text
+  end
 
-TITLE_FILE = File.join(MAP_DIR, "map-titles.json")
-MAP_TITLES = Hash(String, Array(String)).from_json(File.read(TITLE_FILE))
+  def cv_intro(input : String, dname : String) : String
+    lines = input.split("\n")
+    Engine.cv_plain(lines, dname).map(&.vi_text).join("\n")
+  end
 
-def map_title(title_zh : String)
-  if title_vis = MAP_TITLES[title_zh]?
-    title_vis.first
+  def cv_title(input : String, dname : String) : String
+    Engine.cv_plain(input, dname)
+  end
+
+  FIX_TITLES = LabelMap.load("fix_vi_titles")
+  FIX_GENRES = LabelMap.load("fix_vi_genres")
+  NEW_GENRES = ValueSet.load("unknown_genres")
+
+  def map_genre(genre_zh : String)
+    unless genre_vi = FIX_GENRES.fetch(genre_zh)
+      NEW_GENRES.add(genre_zh)
+      return "Loại khác"
+    end
+
+    genre_vi
+  end
+
+  SLUG_UUIDS = LabelMap.load("slug_uuid", preload: false)
+
+  def pick_slug(title_slug : String, author_slug : String) : String
+    unless title_slug.size < 5 || SLUG_UUIDS.fetch(title_slug)
+      return title_slug
+    end
+
+    full_slug = "#{title_slug}--#{author_slug}"
+    return full_slug unless SLUG_UUIDS.fetch(full_slug)
+    raise "DUPLICATE: #{full_slug}"
+  end
+
+  SEEDS = {
+    "hetushu", "jx_la", "rengshu",
+    "xbiquge", "nofff", "duokan8",
+    "paoshu8", "69shu", "zhwenpg",
+  }
+
+  def seed_order(name : String) : Int32
+    SEEDS.index(name) || -1
+  end
+
+  HIATUS = Time.utc(2019, 1, 1).to_unix_ms
+
+  def run!
+    input = BookInfo.load_all!.values.sort_by(&.weight.-)
+    input.each_with_index do |info, idx|
+      if info.uuid == "gyveercp"
+        puts info
+      end
+
+      info.title_hv = hanviet(info.title_zh)
+      info.title_vi = FIX_TITLES.fetch(info.title_zh, info.title_hv)
+
+      info.title_vi = Utils.titleize(info.title_vi)
+      title_sl = Utils.slugify(info.title_vi, no_accent: true)
+
+      info.author_vi = Utils.titleize(hanviet(info.author_zh))
+      author_sl = Utils.slugify(info.author_vi, no_accent: true)
+
+      begin
+        info.slug = pick_slug(title_sl, author_sl)
+        SLUG_UUIDS.upsert(info.slug, info.uuid)
+
+        hanviet_sl = Utils.slugify(info.title_hv, no_accent: true)
+        if SLUG_UUIDS.has_key?(hanviet_sl)
+          hanviet_full_sl = "#{hanviet_sl}--#{author_sl}"
+          unless SLUG_UUIDS.has_key?(hanviet_full_sl)
+            SLUG_UUIDS.upsert(hanviet_full_sl, info.uuid)
+          end
+        else
+          SLUG_UUIDS.upsert(hanviet_sl, info.uuid)
+        end
+      rescue
+        raise ({info.uuid, SLUG_UUIDS.fetch(info.slug)}).to_json
+      end
+
+      info.genre_vi = map_genre(info.genre_zh)
+
+      info.tags_zh.each_with_index do |tag, idx|
+        info.tags_vi[idx] = hanviet(tag)
+      end
+
+      info.intro_vi = cv_intro(info.intro_zh, info.uuid)
+
+      if info.status == 0 && info.mftime < HIATUS
+        info.status = 3
+      end
+
+      info.seed_names.sort_by! { |seed| seed_order(seed) }
+
+      info.seed_infos.each_value do |seed|
+        chap = seed.latest
+        chap.label_vi = Engine.hanviet(chap.label_zh).vi_text
+        chap.title_vi = Engine.cv_plain(chap.title_zh, info.uuid).vi_text
+        chap.set_slug(chap.title_vi)
+      end
+
+      info.save!
+
+      color = info.seed_names.empty? ? :cyan : :blue
+      puts "- <#{idx + 1}/#{input.size}> [#{info.slug}] #{info.title_vi}".colorize(color)
+    end
+  end
+
+  def save!
+    SLUG_UUIDS.save!
+    NEW_GENRES.save!
   end
 end
 
-GENRE_FILE = File.join(MAP_DIR, "map-genres.json")
-MAP_GENRES = Hash(String, Tuple(String, Bool)).from_json(File.read(GENRE_FILE))
+Convert.run!
 
-NEW_GENRES = Set(String).new
+# File.write("var/new-genres.txt", NEW_GENRES.join("\n"))
 
-def map_genre(zh_genre : String)
-  return {"Loại khác", false} if zh_genre.empty?
+# INDEX_DIR = "var/.indexes"
+# FileUtils.mkdir_p(INDEX_DIR)
 
-  if res = MAP_GENRES[zh_genre]?
-    return res
-  end
+# puts "-- missing: #{missing.size}"
+# File.write "#{INDEX_DIR}/missing.txt", missing.join("\n")
 
-  NEW_GENRES.add(zh_genre)
-  {"Loại khác", true}
-end
+# puts "-- hastext: #{hastext.size}"
+# File.write "#{INDEX_DIR}/hastext.txt", hastext.join("\n")
 
-TAKEN_SLUGS = Set(String).new
-
-def pick_slug(title_slug : String, author_slug : String) : String
-  unless title_slug.size < 5 || TAKEN_SLUGS.includes?(title_slug)
-    return title_slug
-  end
-
-  full_slug = "#{title_slug}--#{author_slug}"
-  raise "DUPLICATE: #{full_slug}" if TAKEN_SLUGS.includes?(full_slug)
-
-  full_slug
-end
-
-SEEDS = {
-  "hetushu", "jx_la", "rengshu",
-  "xbiquge", "nofff", "duokan8",
-  "paoshu8", "69shu", "zhwenpg",
-}
-
-def seed_order(name : String) : Int32
-  SEEDS.index(name) || -1
-end
-
-def translate(input : String, book : String) : String
-  return input if input.empty?
-  lines = input.split("\n")
-  Engine.cv_plain(lines, book).map(&.vi_text).join("\n")
-end
-
-input = BookInfo.load_all!.values.sort_by(&.weight.-)
-
-mapping = {} of String => String
-missing = [] of String
-hastext = [] of String
-
-HIATUS = Time.utc(2019, 1, 1).to_unix_ms
-
-input.each_with_index do |info, idx|
-  info.title_hv = hanviet(info.title_zh)
-  info.title_vi = map_title(info.title_zh) || info.title_hv
-
-  info.author_vi = Utils.titleize(hanviet(info.author_zh))
-
-  title_slug = Utils.slugify(info.title_vi, no_accent: true)
-  author_slug = Utils.slugify(info.author_vi, no_accent: true)
-
-  info.slug = pick_slug(title_slug, author_slug)
-  TAKEN_SLUGS.add(info.slug)
-
-  info.genre_vi, _ = map_genre(info.genre_zh)
-
-  info.tags_zh.each_with_index do |tag, idx|
-    info.tags_vi[idx] = hanviet(tag)
-  end
-
-  info.intro_vi = translate(info.intro_zh, info.uuid)
-
-  if info.status == 0 && info.mftime < HIATUS
-    info.status = 3
-  end
-
-  info.seed_names.sort_by! { |seed| seed_order(seed) }
-
-  info.seed_infos.each_value do |seed|
-    chap = seed.latest
-
-    label_zh = CvData.zh_text(chap.label)
-    label_cv = Engine.hanviet(label_zh)
-    chap.label = label_cv.to_s
-
-    title_zh = CvData.zh_text(chap.title)
-    title_cv = Engine.cv_plain(title_zh, info.uuid)
-
-    chap.title = title_cv.to_s
-    chap.set_slug(title_cv.vi_text)
-  end
-
-  info.save!
-
-  mapping[info.slug] = info.uuid
-
-  # mapping[info.title_zh] ||= info.uuid
-
-  hanviet_slug = Utils.slugify(info.title_hv, no_accent: true)
-  if mapping.has_key?(hanviet_slug)
-    mapping["#{hanviet_slug}--#{author_slug}"] ||= info.uuid
-  else
-    mapping[hanviet_slug] ||= info.uuid
-  end
-
-  label = "- <#{idx + 1}/#{input.size}> [#{info.slug}] #{info.title_vi}"
-  if info.seed_names.empty?
-    missing << info.uuid
-    puts label.colorize(:blue)
-  else
-    hastext << info.uuid
-    puts label.colorize(:green)
-  end
-end
-
-File.write("var/new-genres.txt", NEW_GENRES.join("\n"))
-
-INDEX_DIR = "var/.indexes"
-FileUtils.mkdir_p(INDEX_DIR)
-
-puts "-- missing: #{missing.size}"
-File.write "#{INDEX_DIR}/missing.txt", missing.join("\n")
-
-puts "-- hastext: #{hastext.size}"
-File.write "#{INDEX_DIR}/hastext.txt", hastext.join("\n")
-
-puts "-- mapping: #{mapping.size}"
-File.write "#{INDEX_DIR}/mapping.json", mapping.to_pretty_json
+# puts "-- mapping: #{mapping.size}"
+# File.write "#{INDEX_DIR}/mapping.json", mapping.to_pretty_json

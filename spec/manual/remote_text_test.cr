@@ -1,6 +1,6 @@
 require "colorize"
 
-require "../../src/import/remote_chap.cr"
+require "../../src/source/remote_text.cr"
 
 def fetch_chap(seed : String, sbid : String, scid : String)
   puts "\n[ #{seed} / #{sbid} / #{scid} ]\n".colorize(:yellow)

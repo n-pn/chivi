@@ -8,7 +8,7 @@ require "../../src/kernel/book_info.cr"
 require "../../src/kernel/order_map.cr"
 require "../../src/kernel/label_map.cr"
 
-require "../../src/snipes/remote_seed.cr"
+require "../../src/source/remote_info.cr"
 
 class MapRemote
   SEEDS = {
@@ -128,26 +128,26 @@ class MapRemote
     return true unless uuid = @seed_uuids.fetch(sbid)
     return true if mode == 2 && uuid == "--"
 
-    # TODO: check titles blacklist
     qualified?(uuid, @seed_authors.fetch(sbid, ""))
   end
 
   def qualified?(uuid : String, author : String)
     return true if @seed == "hetushu" || @seed == "rengshu"
-    # return false if author.empty?
     return true if BOOK_INFOS.has_key?(uuid)
-
-    (TOP_AUTHORS.value(author) || 0) >= 2000
+    return false unless weight = TOP_AUTHORS.value(author)
+    weight >= 2000
   end
 
   def parse!(sbid : String, expiry = 24.hours, label = "1/1")
-    remote = RemoteSeed.new(@seed, sbid, expiry: expiry, freeze: true)
+    remote = RemoteInfo.new(@seed, sbid, expiry: expiry, freeze: true)
 
-    uuid = remote.get_uuid
+    uuid = remote.uuid
     return if uuid == "--"
 
-    title = remote.get_title
-    author = remote.get_author
+    title = remote.title
+    author = remote.author
+
+    return if SourceUtil.blacklist?(title)
 
     puts "\n<#{label}> [#{sbid}] #{uuid}-#{author}-#{title}".colorize.cyan
 
@@ -156,7 +156,6 @@ class MapRemote
     @seed_authors.upsert(sbid, author)
 
     return unless qualified?(uuid, author)
-
     info = remote.emit_book_info
 
     if info.weight == 0 && info.yousuu_url.empty?
