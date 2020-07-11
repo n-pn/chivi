@@ -1,11 +1,6 @@
 require "html"
 
 module Utils
-  def self.fix_genre(genre : String)
-    return genre if genre.empty? || genre == "轻小说"
-    genre.sub(/小说$/, "")
-  end
-
   def self.split_text(text : String, split : String | Regex = /\s{2,}|\n+/)
     text = Utils.clean_text(text)
     Utils.split_lines(text, split)

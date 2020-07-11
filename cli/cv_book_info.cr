@@ -43,16 +43,6 @@ module Convert
 
   SLUG_UUIDS = LabelMap.load("slug_uuid", preload: false)
 
-  def pick_slug(title_slug : String, author_slug : String) : String
-    unless title_slug.size < 5 || SLUG_UUIDS.fetch(title_slug)
-      return title_slug
-    end
-
-    full_slug = "#{title_slug}--#{author_slug}"
-    return full_slug unless SLUG_UUIDS.fetch(full_slug)
-    raise "DUPLICATE: #{full_slug}"
-  end
-
   SEEDS = {
     "hetushu", "jx_la", "rengshu",
     "xbiquge", "nofff", "duokan8",
@@ -66,12 +56,10 @@ module Convert
   HIATUS = Time.utc(2019, 1, 1).to_unix_ms
 
   def run!
-    input = BookInfo.load_all!.values.sort_by(&.weight.-)
-    input.each_with_index do |info, idx|
-      if info.uuid == "gyveercp"
-        puts info
-      end
+    infos = BookInfo.load_all!
+    input = infos.values.sort_by(&.weight.-)
 
+    input.each_with_index do |info, idx|
       info.title_hv = hanviet(info.title_zh)
       info.title_vi = FIX_TITLES.fetch(info.title_zh, info.title_hv)
 
@@ -81,21 +69,27 @@ module Convert
       info.author_vi = Utils.titleize(hanviet(info.author_zh))
       author_sl = Utils.slugify(info.author_vi, no_accent: true)
 
-      begin
-        info.slug = pick_slug(title_sl, author_sl)
-        SLUG_UUIDS.upsert(info.slug, info.uuid)
+      unless title_sl.size < 5 || SLUG_UUIDS.fetch(title_sl)
+        info.slug = title_sl
+        SLUG_UUIDS.upsert(title_sl, info.uuid)
+      else
+        full_slug = "#{title_sl}--#{author_sl}"
 
-        hanviet_sl = Utils.slugify(info.title_hv, no_accent: true)
-        if SLUG_UUIDS.has_key?(hanviet_sl)
-          hanviet_full_sl = "#{hanviet_sl}--#{author_sl}"
-          unless SLUG_UUIDS.has_key?(hanviet_full_sl)
-            SLUG_UUIDS.upsert(hanviet_full_sl, info.uuid)
-          end
-        else
-          SLUG_UUIDS.upsert(hanviet_sl, info.uuid)
+        if old_uuid = SLUG_UUIDS.fetch(full_slug)
+          puts infos[old_uuid].to_pretty_json
+          puts info.to_pretty_json
+          raise "DUPLICATE!!"
         end
-      rescue
-        raise ({info.uuid, SLUG_UUIDS.fetch(info.slug)}).to_json
+      end
+
+      hanviet_sl = Utils.slugify(info.title_hv, no_accent: true)
+      if SLUG_UUIDS.has_key?(hanviet_sl)
+        hanviet_full_sl = "#{hanviet_sl}--#{author_sl}"
+        unless SLUG_UUIDS.has_key?(hanviet_full_sl)
+          SLUG_UUIDS.upsert(hanviet_full_sl, info.uuid)
+        end
+      else
+        SLUG_UUIDS.upsert(hanviet_sl, info.uuid)
       end
 
       info.genre_vi = map_genre(info.genre_zh)
@@ -114,7 +108,7 @@ module Convert
 
       info.seed_infos.each_value do |seed|
         chap = seed.latest
-        chap.label_vi = Engine.hanviet(chap.label_zh).vi_text
+        chap.label_vi = Engine.cv_plain(chap.label_zh, info.uuid).vi_text
         chap.title_vi = Engine.cv_plain(chap.title_zh, info.uuid).vi_text
         chap.set_slug(chap.title_vi)
       end

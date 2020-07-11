@@ -8,12 +8,13 @@ module SourceUtil
   FIX_AUTHORS = LabelMap.load("fix_zh_authors")
 
   def fix_title(title : String)
-    title = title.sub(/\(.+\)$/, "").strip
+    title = title.gsub(/\p{Z}/, " ").strip.sub(/\s*\(.+\)$/, "")
     FIX_TITLES.fetch(title, title)
   end
 
   def fix_author(title : String, author : String)
-    author = author.sub(/\(.+\)|.QD$/, "").strip
+    author =
+      author.gsub(/\p{Z}/, " ").strip.sub(/\s*\.QD$/, "").sub(/\s*\(.+\)$/, "")
     FIX_AUTHORS.fetch(title, author)
   end
 

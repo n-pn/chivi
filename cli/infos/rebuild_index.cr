@@ -7,12 +7,23 @@ require "../../src/_utils/text_utils"
 
 books = BookInfo.load_all!
 
+map = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
+
 has_text = 0
 books.each_value do |book|
-  has_text += 1 if book.seeds.size > 0
+  has_text += 1 if book.seed_names.size > 0
+
+  title = book.title_zh.gsub(/\P{Han}/, "")
+  map["#{book.author_zh}--#{title}"] << book.title_zh
 end
 
 puts "- has_text: #{has_text}".colorize(:yellow)
+
+map.reject! do |key, vals|
+  vals.size == 1
+end
+
+File.write "tmp/conflicts.json", map.to_pretty_json
 
 # input = BookInfo.load_all.values.sort_by(&.weight.-)
 

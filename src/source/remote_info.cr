@@ -215,7 +215,7 @@ class RemoteInfo
     when "69shu"
       extract_latest_chap_by_css(".mulu_list:first-of-type a:first-child")
     when "hetushu"
-      extract_latest_chap_by_css("#dir > dd:last-child > a")
+      extract_latest_chap_by_css("#dir :last-child a:last-of-type")
     when "zhwenpg"
       extract_latest_chap_by_css(".fontwt0 + a")
     else
@@ -285,17 +285,25 @@ class RemoteInfo
 
   private def extract_69shu_chaps
     chaps = [] of ChapItem
+    return chaps unless nodes = @doc.css(".mu_contain").to_a
 
-    @doc.css(".mu_contain").each do |node|
-      label = node.css("h2").first.inner_text.strip
-      next if label.ends_with?("最新6章")
+    nodes.shift if nodes.size > 0
+    label = "正文"
 
-      node.css(".mulu_list:first-of-type > li > a").each do |link|
-        text = link.inner_text
-        # next if text.starts_with?("我要报错！")
+    nodes.each do |mulu|
+      mulu.children.each do |node|
+        case node.tag_sym
+        when :h2
+          label = node.inner_text.strip
+        when :ul
+          node.css("a").each do |link|
+            text = link.inner_text
+            next if text.starts_with?("我要报错！")
 
-        scid = extract_scid(link.attributes["href"])
-        chaps << ChapItem.new(scid, text, label)
+            scid = extract_scid(link.attributes["href"])
+            chaps << ChapItem.new(scid, text, label)
+          end
+        end
       end
     end
 
@@ -326,13 +334,11 @@ class RemoteInfo
         label = node.inner_text.gsub(/《.*》/, "").strip
       when :dd
         next if label.includes?("最新章节")
-        next unless link = node.css("a").first?
-        next unless href = link.attributes["href"]?
-
-        chaps << ChapItem.new(extract_scid(href), link.inner_text, label)
-      else
-        # skip
       end
+
+      next unless link = node.css("a").first?
+      next unless href = link.attributes["href"]?
+      chaps << ChapItem.new(extract_scid(href), link.inner_text, label)
     end
 
     if @seed == "jx_la"
