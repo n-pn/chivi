@@ -64,10 +64,11 @@ class MapRemote
     end
   end
 
-  BOOK_UUIDS  = Set{BookInfo.glob_dir.map { |x| File.basename(x, ".json") }}
-  TOP_AUTHORS = OrderMap.load("top_authors")
-
   def initialize(@seed : String, @type = 0)
+    @book_uuids = BookInfo.uuids
+    @top_authors = OrderMap.load("top_authors")
+    @book_update = OrderMap.load("book_update")
+
     @map_uuids = LabelMap.load("sitemaps/#{seed}--sbid--uuid")
     @map_titles = LabelMap.load("sitemaps/#{seed}--sbid--title")
     @map_authors = LabelMap.load("sitemaps/#{seed}--sbid--author")
@@ -106,13 +107,15 @@ class MapRemote
     @map_uuids.save!
     @map_titles.save!
     @map_authors.save!
+    @book_update.save!
 
     puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
   end
 
   def expiry_for(sbid : String)
     return 3.months unless uuid = @map_uuids.fetch(sbid)
-    return 6.months unless BOOK_UUIDS.includes?(uuid)
+    return 6.months unless @book_uuids.includes?(uuid)
+    return 1.months unless time = @book_update.value(uuid)
 
     expiry = Time.utc - Time.unix_ms(time)
     expiry > 24.hours ? expiry - 24.hours : expiry
@@ -127,8 +130,8 @@ class MapRemote
 
   def qualified?(uuid : String, author : String)
     return true if @seed == "hetushu" || @seed == "rengshu"
-    return true if BOOK_UUIDS.includes?(uuid)
-    return false unless weight = TOP_AUTHORS.value(author)
+    return true if @book_uuids.includes?(uuid)
+    return false unless weight = @top_authors.value(author)
     weight >= 2000
   end
 
@@ -155,7 +158,7 @@ class MapRemote
     if info.weight == 0 && info.yousuu_url.empty?
       puts "- FAKING RANDOM RATING -".colorize.yellow
 
-      weight = TOP_AUTHORS.value(info.author_zh) || 2000_i64
+      weight = @top_authors.value(info.author_zh) || 2000_i64
       weight = Random.rand((weight // 2)..weight)
       scored = Random.rand(30..70)
 
@@ -164,10 +167,12 @@ class MapRemote
       info.weight = (scored * info.voters).to_i64
     end
 
-    return unless info.changed?
-    info.save!
+    @book_update.upsert(info.uuid, info.mftime)
+    info.save! if info.changed?
 
-    remote.emit_chap_list.tap { |x| x.save! if x.changed? }
+    if ChapList.outdated?(info.uuid, @seed, Time.unix_ms(info.mftime))
+      remote.emit_chap_list.tap { |x| x.save! if x.changed? }
+    end
   rescue err
     puts "Error parsing `#{sbid}`: #{err.colorize.red}".colorize.bold
     # puts err.backtrace

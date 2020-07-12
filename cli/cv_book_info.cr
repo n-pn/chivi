@@ -7,8 +7,8 @@ require "../src/kernel/book_info"
 
 require "../src/kernel/label_map"
 require "../src/kernel/token_map"
+require "../src/kernel/order_map"
 require "../src/kernel/value_set"
-require "../src/kernel/order_set"
 
 require "../src/engine"
 
@@ -35,7 +35,7 @@ class ConvertBookInfo
   end
 
   HIATUS = Time.utc(2019, 1, 1).to_unix_ms
-  TITLES = LabelMap.load("fix_vi_titles")
+  TITLES = LabelMap.load("override/title_vi")
 
   def convert!
     @input.each do |info|
@@ -200,8 +200,8 @@ class ConvertBookInfo
     SEEDS.index(name) || -1
   end
 
-  FIX_ZH_TITLES  = LabelMap.load("fix_zh_titles")
-  FIX_ZH_AUTHORS = LabelMap.load("fix_zh_authors")
+  FIX_ZH_TITLES  = LabelMap.load("override/title_zh")
+  FIX_ZH_AUTHORS = LabelMap.load("override/author_zh")
 
   def resolve_duplicate(old_info, new_info, slug)
     puts old_info.to_json.colorize.cyan

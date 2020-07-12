@@ -133,15 +133,15 @@ class MapZhwenpg
     info.mftime = seed.mftime
 
     @book_update.upsert(info.uuid, info.mftime)
+    info.save! if info.changed?
 
-    return unless info.changed?
-    info.save!
+    if ChapList.outdated?(info.uuid, "zhwenpg", Time.unix_ms(info.mftime))
+      expiry = Time.utc - Time.unix_ms(mftime)
+      expiry = expiry > 24.hours ? expiry - 24.hours : expiry
 
-    expiry = Time.utc - Time.unix_ms(mftime)
-    expiry = expiry > 24.hours ? expiry - 24.hours : expiry
-
-    remote = RemoteInfo.new("zhwenpg", sbid, expiry: expiry, freeze: true)
-    remote.emit_chap_list.tap { |list| list.save! if list.changed? }
+      remote = RemoteInfo.new("zhwenpg", sbid, expiry: expiry, freeze: true)
+      remote.emit_chap_list.tap { |x| x.save! if x.changed? }
+    end
   end
 
   TIME = Time.utc.to_unix_ms

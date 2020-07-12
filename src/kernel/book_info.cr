@@ -207,8 +207,12 @@ class BookInfo
     File.join(DIR, "#{uuid}.json")
   end
 
-  def self.glob_dir
+  def self.files
     Dir.glob(File.join(DIR, "*.json"))
+  end
+
+  def self.uuids
+    Set(String).new files.map { |x| File.basename(x, ".json") }
   end
 
   def self.uuid_for(file : String)
@@ -261,7 +265,7 @@ class BookInfo
   # Load with cache
 
   def self.load_all!
-    glob_dir.each do |file|
+    files.each do |file|
       load!(uuid_for(file), true)
     rescue
       puts "- error parsing file: #{file}"

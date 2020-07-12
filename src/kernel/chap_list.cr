@@ -88,8 +88,14 @@ class ChapList
     File.join(DIR, uuid, "#{seed}.json")
   end
 
-  def exists?(uuid : String, seed : String)
+  def self.exists?(uuid : String, seed : String)
     File.exists?(path_for(uuid, seed))
+  end
+
+  def self.outdated?(uuid : String, seed : String, time : Time)
+    file = path_for(uuid, seed)
+    return true unless File.exists?(file)
+    File.info(file).modification_time < time
   end
 
   CACHE = Hash(String, Hash(String, ChapList)).new do |h, k|
