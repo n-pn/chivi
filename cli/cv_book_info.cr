@@ -292,14 +292,16 @@ class ConvertBookInfo
       SLUG_UUIDS.upsert(info.slug, info.uuid)
 
       hanviet_slug = Utils.slugify(info.title_hv, no_accent: true)
-      if SLUG_UUIDS.has_key?(hanviet_slug)
-        full_slug = "#{hanviet_slug}--#{author_slug}"
+      if hanviet_slug != title_slug
+        if SLUG_UUIDS.has_key?(hanviet_slug)
+          full_slug = "#{hanviet_slug}--#{author_slug}"
 
-        unless SLUG_UUIDS.has_key?(full_slug)
-          SLUG_UUIDS.upsert(full_slug, info.uuid)
+          unless SLUG_UUIDS.has_key?(full_slug)
+            SLUG_UUIDS.upsert(full_slug, info.uuid)
+          end
+        else
+          SLUG_UUIDS.upsert(hanviet_slug, info.uuid)
         end
-      else
-        SLUG_UUIDS.upsert(hanviet_slug, info.uuid)
       end
 
       next unless info.changed?
