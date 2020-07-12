@@ -21,7 +21,7 @@ class Hanviet
     true
   end
 
-  @dict = CvDict.load("hanviet", cache: false, preload: false)
+  getter dict = CvDict.load("hanviet", cache: false, preload: false)
 
   def import_lacviet_chars!
     input = CvDict.load
@@ -31,23 +31,33 @@ class Hanviet
     end
   end
 
-  def import_dict!(file : String)
+  def import_dict!(file : String, mode = :old_first)
     input = Clavis.load(file)
 
     input.each do |key, vals|
       next if key =~ /\P{Han}/
-      # if key.ends_with?("章")
-      #   next if key.size > 1
-      # end
 
       @dict.upsert(key) do |node|
-        # if node.removed? || node.vals.includes?(item.vals.first)
-        #   node.vals = item.vals.concat(node.vals)
-        # else
-        #   if CRUCIAL.includes?(node.key)
-        #     puts "#{node.key}=#{item.vals.join("/")}|#{node.vals.join("/")}"
-        #   end
-        # end
+        if node.removed?
+          node.vals = vals
+        else
+          case mode
+          when :keep_old
+            # do nothing
+          when :keep_new
+            node.vals = vals
+          when :old_first
+            node.vals.concat(vals).uniq!
+          when :new_first
+            node.vals = vals.concat(node.vals).uniq!
+          when :first_if_exists
+            if node.vals.includes?(vals.first)
+              node.vals = vals.concat(node.vals).uniq!
+            else
+              node.vals.concat(vals).uniq!
+            end
+          end
+        end
 
         node.vals.concat(vals).uniq!
       end
@@ -67,6 +77,21 @@ class Hanviet
     end
   end
 
+  def extract_conflicts
+    conflict = Clavis.load("hanviet/conflict.txt", false)
+    resolved = Clavis.load("hanviet/verified-chars.txt", true)
+    # lacviet = Clavis.load("localqt/hanviet.txt", true)
+
+    @dict.each do |node|
+      next if node.vals.size < 2
+      next unless CRUCIAL.includes?(node.key)
+      next if resolved.has_key?(node.key)
+      conflict.upsert(node.key, node.vals)
+    end
+
+    conflict.save!
+  end
+
   def save!
     CRUCIAL.each do |key|
       next if @dict.has_key?(key)
@@ -79,13 +104,14 @@ end
 
 worker = Hanviet.new
 
-worker.import_dict!("hanviet/verified-chars.txt")
 worker.import_dict!("hanviet/lacviet-chars.txt")
-worker.import_dict!("localqt/hanviet.txt")
-worker.import_dict!("hanviet/checked-chars.txt")
-worker.import_dict!("hanviet/trichdan-chars.txt")
-worker.import_dict!("hanviet/verified-words.txt")
+worker.import_dict!("localqt/hanviet.txt", mode: :first_if_exists)
+worker.import_dict!("hanviet/trichdan-chars.txt", mode: :first_if_exists)
+worker.import_dict!("hanviet/checked-chars.txt", mode: :first_if_exists)
+worker.import_dict!("hanviet/verified-chars.txt", mode: :keep_new)
+worker.import_dict!("hanviet/verified-words.txt", mode: :keep_new)
 
+worker.extract_conflicts
 # worker.transform_from_trad!
 worker.save!
 

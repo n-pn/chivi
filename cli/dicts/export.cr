@@ -4,7 +4,7 @@ require "./utils/clavis"
 require "../../src/engine"
 require "../../src/kernel/value_set"
 
-puts "\n[Load deps]".colorize(:cyan)
+puts "\n[Load deps]".colorize.cyan.bold
 
 CHECKED = ValueSet.new(Utils.inp_path("autogen/checked.txt"), true)
 ONDICTS = Utils.ondicts_words

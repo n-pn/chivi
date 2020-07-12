@@ -84,7 +84,7 @@ INPUT.each do |key, vals|
   unless words.empty?
     if (ondicts || word_count >= 100) && (checked || book_count >= 20)
       inp_generic.upsert(key, words)
-    elsif checked || ondicts || book_count >= 20
+    elsif checked || ondicts || book_count >= 10
       inp_suggest.upsert(key, words)
     elsif word_count >= 100 && key.size < 8
       inp_suggest.upsert(key, words)
@@ -94,7 +94,7 @@ INPUT.each do |key, vals|
   end
 
   unless names.empty?
-    if (ondicts || word_count >= 200) && (checked || book_count >= 40) && words.empty?
+    if (ondicts || word_count >= 200) && (checked || book_count >= 40)
       inp_generic.upsert(key, vals, :old_first)
     elsif checked || ondicts || book_count >= 10
       inp_suggest.upsert(key, vals, :old_first)
@@ -105,7 +105,7 @@ INPUT.each do |key, vals|
     end
 
     next unless words.empty? && key !~ /^\P{Han}/
-    if checked || (book_count >= 40 && word_count >= 200)
+    if checked || (book_count >= 20 && word_count >= 500)
       inp_combine.upsert(key, vals, :old_first)
     end
   end
@@ -192,9 +192,9 @@ Clavis.load("extraqt/combined-lowercase.txt").each do |key, vals|
 
   ondicts = ONDICTS.includes?(key)
 
-  if ondicts && book_count >= 30 && word_count >= 200
+  if ondicts && book_count >= 20 && word_count >= 200
     inp_generic.upsert(key, vals, :old_first)
-  elsif (ondicts || book_count >= 20) && word_count >= 500
+  elsif (ondicts || book_count >= 20) && word_count >= 100
     inp_suggest.upsert(key, vals, :old_first)
   elsif word_count >= 250
     inp_recycle.upsert(key, vals, :old_first)
@@ -209,9 +209,9 @@ Clavis.load("extraqt/combined-uppercase.txt").each do |key, vals|
 
   ondicts = ONDICTS.includes?(key)
 
-  if ondicts && book_count >= 50 && word_count >= 400
+  if ondicts && book_count >= 40 && word_count >= 400
     inp_generic.upsert(key, vals, :old_first)
-  elsif (ondicts || book_count >= 20) && word_count >= 500
+  elsif (ondicts || book_count >= 20) && word_count >= 200
     inp_suggest.upsert(key, vals, :old_first)
   elsif word_count >= 250
     inp_recycle.upsert(key, vals, :old_first)

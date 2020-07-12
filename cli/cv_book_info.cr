@@ -80,8 +80,8 @@ class ConvertBookInfo
 
       info.seed_infos.each_value do |seed|
         chap = seed.latest
-        chap.label_vi = Engine.cv_plain(chap.label_zh, info.uuid).vi_text
-        chap.title_vi = Engine.cv_plain(chap.title_zh, info.uuid).vi_text
+        chap.label_vi = Engine.cv_title(chap.label_zh, info.uuid).vi_text
+        chap.title_vi = Engine.cv_title(chap.title_zh, info.uuid).vi_text
         chap.set_slug(chap.title_vi)
       end
 
