@@ -31,12 +31,12 @@ class ConvertBookInfo
   NEW_GENRES = ValueSet.load("unknown_genres")
 
   def map_genre(genre_zh : String)
-    unless genre_vi = FIX_GENRES.fetch(genre_zh)
-      NEW_GENRES.upsert(genre_zh)
-      return "Loại khác"
+    if genre_vi = FIX_GENRES.fetch(genre_zh)
+      return genre_vi
     end
 
-    genre_vi
+    NEW_GENRES.upsert(genre_zh)
+    nil
   end
 
   SEEDS = {
@@ -66,17 +66,21 @@ class ConvertBookInfo
     author_zh_map = TokenMap.load("uuid-author_zh", preload: false)
     author_vi_map = TokenMap.load("uuid-author_vi", preload: false)
 
-    genre_vi_map = TokenMap.load("uuid-genre_vi", preload: false)
+    genres_vi_map = TokenMap.load("uuid-genres_vi", preload: false)
     tags_vi_map = TokenMap.load("uuid-tags_vi", preload: false)
 
     @input.each do |info|
       info.title_hv = hanviet(info.title_zh)
       info.title_vi = FIX_TITLES.fetch(info.title_zh, info.title_hv)
-      info.title_vi = Utils.titleize(info.title_vi)
 
+      info.title_vi = Utils.titleize(info.title_vi)
       info.author_vi = Utils.titleize(hanviet(info.author_zh))
 
-      info.genre_vi = map_genre(info.genre_zh)
+      info.genres_zh.each_with_index do |genre, idx|
+        genre_vi = map_genre(genre) || Engine.cv_plain(genre, "tonghop").vi_text
+        info.genres_vi[idx] = genre_vi
+      end
+
       info.tags_zh.each_with_index do |tag, idx|
         tag_vi = Engine.cv_plain(tag, "tonghop").vi_text
         info.tags_vi[idx] = tag_vi
@@ -103,7 +107,7 @@ class ConvertBookInfo
       author_zh_map.upsert(info.uuid, Utils.split_words(info.author_zh))
       author_vi_map.upsert(info.uuid, Utils.split_words(info.author_vi))
 
-      genre_vi_map.upsert(info.uuid, [Utils.slugify(info.genre_vi)])
+      genres_vi_map.upsert(info.uuid, info.genres_vi.map { |x| Utils.slugify(x) })
       tags_vi_map.upsert(info.uuid, info.tags_vi.map { |x| Utils.slugify(x) })
       info.save! # if info.changed?
     end
@@ -115,7 +119,7 @@ class ConvertBookInfo
     title_hv_map.save!
     author_zh_map.save!
     author_vi_map.save!
-    genre_vi_map.save!
+    genres_vi_map.save!
     tags_vi_map.save!
   end
 

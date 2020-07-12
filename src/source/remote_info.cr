@@ -406,8 +406,7 @@ class RemoteInfo
   def emit_book_info(info : BookInfo? = nil) : BookInfo
     info ||= BookInfo.find_or_create(title, author, cache: false)
 
-    info.set_genre(genre)
-    info.add_tag(genre)
+    info.add_genre(genre)
     info.add_tags(tags)
 
     info.intro_zh = intro if info.intro_zh.empty?

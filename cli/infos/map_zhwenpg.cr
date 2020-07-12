@@ -84,8 +84,7 @@ class MapZhwenpg
     info = BookInfo.find_or_create(title, author, cache: false)
 
     genre = rows[2].css(".fontgt").first.inner_text
-    info.set_genre(genre)
-    info.add_tag(genre)
+    info.add_genre(genre)
 
     fresh = info.yousuu_url.empty?
     info.shield = 1 if fresh

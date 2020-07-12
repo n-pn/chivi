@@ -69,7 +69,7 @@ class MapYousuu
     @inputs.each do |uuid, input|
       info = BookInfo.find_or_create(input.title, input.author, uuid, cache: false)
 
-      info.set_genre(input.genre)
+      info.add_genre(input.genre)
       info.add_tags(input.tags)
 
       info.shield = input.shielded ? 2 : 0

@@ -42,8 +42,8 @@ class BookInfo
   property intro_zh = ""
   property intro_vi = ""
 
-  property genre_zh = ""
-  property genre_vi = ""
+  property genres_zh = [] of String
+  property genres_vi = [] of String
 
   property tags_zh = [] of String
   property tags_vi = [] of String
@@ -86,7 +86,7 @@ class BookInfo
     self.uuid = Utils.gen_uuid(@title_zh, @author_zh)
   end
 
-  {% for field in {:title, :author, :genre} %}
+  {% for field in {:title, :author} %}
     def set_{{field.id}}(value : String, force = false)
       return if @{{field.id}}_zh == value
       return unless @{{field.id}}_zh.empty? || force
@@ -95,6 +95,14 @@ class BookInfo
       self.{{field.id}}_vi = ""
     end
   {% end %}
+
+  def add_genre(genre : String)
+    return if genre.empty? || @genres_zh.includes?(genre)
+    @changes += 1
+
+    @genres_zh << genre
+    @genres_vi << ""
+  end
 
   def add_tags(tags : Array(String))
     tags.each { |tag| add_tag(tag) }
