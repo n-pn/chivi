@@ -17,11 +17,6 @@ class MapZhwenpg
   DIR = File.join("var", ".book_cache", "zhwenpg", "pages")
 
   def initialize
-    @book_access = OrderMap.load("book_access", cache: false, preload: true)
-    @book_update = OrderMap.load("book_update", cache: false, preload: true)
-    @book_weight = OrderMap.load("book_weight", cache: false, preload: true)
-    @book_rating = OrderMap.load("book_rating", cache: false, preload: true)
-
     @top_authors = OrderMap.load("top_authors")
   end
 
@@ -97,8 +92,6 @@ class MapZhwenpg
       info.rating = rating
       info.fix_weight
 
-      @book_weight.upsert(info.uuid, info.weight)
-      @book_rating.upsert(info.uuid, info.scored)
       @top_authors.upsert(info.author_zh, info.weight)
     end
 
@@ -131,9 +124,6 @@ class MapZhwenpg
     return unless info.changed?
     info.save!
 
-    @book_access.upsert(info.uuid, info.mftime)
-    @book_update.upsert(info.uuid, info.mftime)
-
     expiry = Time.utc - Time.unix_ms(mftime)
     expiry = expiry > 24.hours ? expiry - 24.hours : expiry
 
@@ -151,11 +141,6 @@ class MapZhwenpg
 
   def save_indexes!
     puts "\n[-- Save indexes --]".colorize.cyan.bold
-
-    @book_access.save!
-    @book_update.save!
-    @book_rating.save!
-    @book_weight.save!
     @top_authors.save!
   end
 end

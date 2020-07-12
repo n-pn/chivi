@@ -180,7 +180,3 @@ end
 # puts test.search(["c"])
 
 # test.save!
-
-test = TokenMap.load("uuid-author_vi")
-
-puts test.fuzzy_search(["thanh", "ky", "si"])

@@ -86,7 +86,7 @@ class BookInfo
     self.uuid = Utils.gen_uuid(@title_zh, @author_zh)
   end
 
-  {% for field in {:title, :author} %}
+  {% for field in {:title, :author, :intro} %}
     def set_{{field.id}}(value : String, force = false)
       return if @{{field.id}}_zh == value
       return unless @{{field.id}}_zh.empty? || force
@@ -96,24 +96,24 @@ class BookInfo
     end
   {% end %}
 
-  def add_genre(genre : String)
-    return if genre.empty? || @genres_zh.includes?(genre)
+  def add_genre(genre_zh : String, genre_vi = "") : Void
+    return if genre_zh.empty? || @genres_zh.includes?(genre_zh)
     @changes += 1
 
-    @genres_zh << genre
-    @genres_vi << ""
+    @genres_zh << genre_zh
+    @genres_vi << genre_vi
   end
 
   def add_tags(tags : Array(String))
     tags.each { |tag| add_tag(tag) }
   end
 
-  def add_tag(tag : String)
-    return if tag.empty? || @tags_zh.includes?(tag)
+  def add_tag(tag_zh : String, tag_vi = "") : Void
+    return if tag_zh.empty? || @tags_zh.includes?(tag_zh)
     @changes += 1
 
-    @tags_zh << tag
-    @tags_vi << ""
+    @tags_zh << tag_zh
+    @tags_vi << tag_vi
   end
 
   def add_cover(cover : String)
@@ -263,6 +263,9 @@ class BookInfo
   def self.load_all!
     glob_dir.each do |file|
       load!(uuid_for(file), true)
+    rescue
+      puts "- error parsing file: #{file}"
+      File.delete(file)
     end
 
     puts "- <book_info> loaded all infos to cache \

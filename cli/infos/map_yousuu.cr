@@ -3,6 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../../src/kernel/book_info"
+require "../../src/kernel/label_map"
 require "../../src/kernel/order_map"
 
 require "../../src/source/yousuu_info"
@@ -22,12 +23,12 @@ class MapYousuu
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-
-    @book_rating = OrderMap.load("book_rating")
-    @book_weight = OrderMap.load("book_weight")
-    @book_update = OrderMap.load("book_update")
-    @book_access = OrderMap.load("book_access")
     @top_authors = OrderMap.load("top_authors")
+    @book_update = OrderMap.load("book_update")
+
+    @map_uuids = LabelMap.load("sitemaps/yousuu--sbid--uuid")
+    @map_titles = LabelMap.load("sitemaps/yousuu--sbid--title")
+    @map_authors = LabelMap.load("sitemaps/yousuu--sbid--author")
   end
 
   def prepare! : Void
@@ -41,6 +42,10 @@ class MapYousuu
       next if info.title.empty? || info.author.empty? || worthless?(info)
 
       uuid = Utils.gen_uuid(info.title, info.author)
+      @map_uuids.upsert(info._id.to_s, uuid)
+      @map_titles.upsert(info._id.to_s, info.title)
+      @map_authors.upsert(info._id.to_s, info.author)
+
       if old_info = @inputs[uuid]?
         next if old_info.updateAt >= info.updateAt
       end
@@ -78,10 +83,7 @@ class MapYousuu
       info.rating = (input.score * 10).round / 10
       info.fix_weight
 
-      if info.intro_zh.empty?
-        info.intro_zh = Utils.split_text(input.intro).join("\n")
-      end
-
+      info.set_title(Utils.split_text(input.intro).join("\n"))
       info.mftime = Utils.correct_time(input.updateAt).to_unix_ms
 
       info.status = input.status
@@ -93,21 +95,16 @@ class MapYousuu
       info.yousuu_url = "https://www.yousuu.com/book/#{input._id}"
       info.origin_url = input.first_source || ""
 
-      next unless info.changed?
-
-      if BookInfo.exists?(uuid)
+      if @book_update.has_key?(uuid)
         @info_update += 1
       else
         @info_create += 1
       end
 
-      info.save!
-
-      @book_rating.upsert(uuid, info.scored)
-      @book_weight.upsert(uuid, info.weight)
-      @book_update.upsert(uuid, info.mftime)
-      @book_access.upsert(uuid, info.mftime)
       @top_authors.upsert(info.author_zh, info.weight)
+      @book_update.upsert(uuid, info.mftime)
+
+      info.save! if info.changed?
     end
   end
 
@@ -115,16 +112,17 @@ class MapYousuu
     puts "\n[-- Clean up --]".colorize.cyan.bold
     puts "- <INP> total: #{@input_total}, keeps: #{@input_count} ".colorize.yellow
     puts "- <OUT> create: #{@info_create}, update: #{@info_update}".colorize.yellow
+    @map_uuids.save!
+    @map_titles.save!
+    @map_authors.save!
 
-    @book_rating.save!
-    @book_weight.save!
-    @book_access.save!
-    @book_update.save!
     @top_authors.save!
+    @book_update.save!
+    @book_update.save!
   end
 end
 
-mapper = MapYousuu.new
-mapper.prepare!
-mapper.extract!
-mapper.cleanup!
+worker = MapYousuu.new
+worker.prepare!
+worker.extract!
+worker.cleanup!

@@ -4,17 +4,17 @@ require "../kernel/value_set"
 module SourceUtil
   extend self
 
-  FIX_TITLES  = LabelMap.load("fix_zh_titles")
-  FIX_AUTHORS = LabelMap.load("fix_zh_authors")
+  TITLES  = LabelMap.load("override/title_zh")
+  AUTHORS = LabelMap.load("override/author_zh")
 
   def fix_title(title : String)
     title = remove_trashes(replace_spaces(title))
-    FIX_TITLES.fetch(title, title)
+    TITLES.fetch(title, title)
   end
 
   def fix_author(author : String, title : String)
     author = remove_trashes(replace_spaces(author).sub(/\s*\.QD$/, ""))
-    return author unless match = FIX_AUTHORS.fetch(author)
+    return author unless match = AUTHORS.fetch(author)
 
     splits = match.split("¦")
     match_author = splits[0]

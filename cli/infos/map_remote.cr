@@ -64,16 +64,13 @@ class MapRemote
     end
   end
 
-  BOOK_WEIGHT = OrderMap.load("book_weight")
-  BOOK_RATING = OrderMap.load("book_rating")
-  BOOK_ACCESS = OrderMap.load("book_access")
-  BOOK_UPDATE = OrderMap.load("book_update")
+  BOOK_UUIDS  = Set{BookInfo.glob_dir.map { |x| File.basename(x, ".json") }}
   TOP_AUTHORS = OrderMap.load("top_authors")
 
   def initialize(@seed : String, @type = 0)
-    @seed_uuids = LabelMap.load("seeds/#{seed}_uuids")
-    @seed_titles = LabelMap.load("seeds/#{seed}_titles")
-    @seed_authors = LabelMap.load("seeds/#{seed}_authors")
+    @map_uuids = LabelMap.load("sitemaps/#{seed}--sbid--uuid")
+    @map_titles = LabelMap.load("sitemaps/#{seed}--sbid--title")
+    @map_authors = LabelMap.load("sitemaps/#{seed}--sbid--author")
   end
 
   alias TimeSpan = Time::Span | Time::MonthSpan
@@ -106,36 +103,31 @@ class MapRemote
 
     puts "\n[-- Save indexes --]".colorize.cyan.bold
 
-    BOOK_RATING.save!
-    BOOK_WEIGHT.save!
-    BOOK_UPDATE.save!
-    BOOK_ACCESS.save!
-
-    @seed_uuids.save!
-    @seed_titles.save!
-    @seed_authors.save!
+    @map_uuids.save!
+    @map_titles.save!
+    @map_authors.save!
 
     puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
   end
 
   def expiry_for(sbid : String)
-    return 3.months unless uuid = @seed_uuids.fetch(sbid)
-    return 6.months unless time = BOOK_UPDATE.value(uuid)
+    return 3.months unless uuid = @map_uuids.fetch(sbid)
+    return 6.months unless BOOK_UUIDS.includes?(uuid)
 
     expiry = Time.utc - Time.unix_ms(time)
     expiry > 24.hours ? expiry - 24.hours : expiry
   end
 
   def should_crawl?(sbid : String, mode = 0) : Bool
-    return true unless uuid = @seed_uuids.fetch(sbid)
+    return true unless uuid = @map_uuids.fetch(sbid)
     return true if mode == 2 && uuid == "--"
 
-    qualified?(uuid, @seed_authors.fetch(sbid, ""))
+    qualified?(uuid, @map_authors.fetch(sbid, ""))
   end
 
   def qualified?(uuid : String, author : String)
     return true if @seed == "hetushu" || @seed == "rengshu"
-    return true if BOOK_UPDATE.has_key?(uuid)
+    return true if BOOK_UUIDS.includes?(uuid)
     return false unless weight = TOP_AUTHORS.value(author)
     weight >= 2000
   end
@@ -153,9 +145,9 @@ class MapRemote
 
     puts "\n<#{label}> [#{sbid}] #{uuid}-#{author}-#{title}".colorize.cyan
 
-    @seed_uuids.upsert(sbid, uuid)
-    @seed_titles.upsert(sbid, title)
-    @seed_authors.upsert(sbid, author)
+    @map_uuids.upsert(sbid, uuid)
+    @map_titles.upsert(sbid, title)
+    @map_authors.upsert(sbid, author)
 
     return unless qualified?(uuid, author)
     info = remote.emit_book_info
@@ -170,25 +162,19 @@ class MapRemote
       info.rating = (scored / 10).to_f32
       info.voters = (weight // scored).to_i32
       info.weight = (scored * info.voters).to_i64
-
-      BOOK_WEIGHT.upsert(info.uuid, info.weight)
-      BOOK_RATING.upsert(info.uuid, info.scored)
     end
 
     return unless info.changed?
     info.save!
-
-    BOOK_UPDATE.upsert(uuid, info.mftime)
-    BOOK_ACCESS.upsert(uuid, info.mftime)
 
     remote.emit_chap_list.tap { |x| x.save! if x.changed? }
   rescue err
     puts "Error parsing `#{sbid}`: #{err.colorize.red}".colorize.bold
     # puts err.backtrace
 
-    @seed_uuids.upsert(sbid, "--")
-    @seed_titles.upsert(sbid, "")
-    @seed_authors.upsert(sbid, "")
+    @map_uuids.upsert(sbid, "--")
+    @map_titles.upsert(sbid, "")
+    @map_authors.upsert(sbid, "")
   end
 end
 

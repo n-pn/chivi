@@ -11,9 +11,9 @@ SEEDS = {
 }
 
 SEEDS.each do |seed|
-  seed_uuids = LabelMap.load("seeds/#{seed}_uuids")
-  seed_titles = LabelMap.load("seeds/#{seed}_titles")
-  seed_authors = LabelMap.load("seeds/#{seed}_authors")
+  seed_uuids = LabelMap.load("sitemaps/#{seed}--sbid--uuid")
+  seed_titles = LabelMap.load("sitemaps/#{seed}--sbid--title")
+  seed_authors = LabelMap.load("sitemaps/#{seed}--sbid--author")
 
   seed_uuids.each do |sbid, uuid|
     next unless title = seed_titles.fetch(sbid)

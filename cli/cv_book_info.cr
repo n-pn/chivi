@@ -8,6 +8,7 @@ require "../src/kernel/book_info"
 require "../src/kernel/label_map"
 require "../src/kernel/token_map"
 require "../src/kernel/value_set"
+require "../src/kernel/order_set"
 
 require "../src/engine"
 
@@ -26,29 +27,6 @@ class ConvertBookInfo
     Engine.cv_plain(input, dname)
   end
 
-  FIX_TITLES = LabelMap.load("fix_vi_titles")
-  FIX_GENRES = LabelMap.load("fix_vi_genres")
-  NEW_GENRES = ValueSet.load("unknown_genres")
-
-  def map_genre(genre_zh : String)
-    if genre_vi = FIX_GENRES.fetch(genre_zh)
-      return genre_vi
-    end
-
-    NEW_GENRES.upsert(genre_zh)
-    nil
-  end
-
-  SEEDS = {
-    "hetushu", "jx_la", "rengshu",
-    "xbiquge", "nofff", "duokan8",
-    "paoshu8", "69shu", "zhwenpg",
-  }
-
-  def seed_order(name : String) : Int32
-    SEEDS.index(name) || -1
-  end
-
   getter input : Array(BookInfo)
 
   def initialize
@@ -57,32 +35,20 @@ class ConvertBookInfo
   end
 
   HIATUS = Time.utc(2019, 1, 1).to_unix_ms
+  TITLES = LabelMap.load("fix_vi_titles")
 
   def convert!
-    title_zh_map = TokenMap.load("uuid-title_zh", preload: false)
-    title_vi_map = TokenMap.load("uuid-title_vi", preload: false)
-    title_hv_map = TokenMap.load("uuid-title_hv", preload: false)
-
-    author_zh_map = TokenMap.load("uuid-author_zh", preload: false)
-    author_vi_map = TokenMap.load("uuid-author_vi", preload: false)
-
-    genres_vi_map = TokenMap.load("uuid-genres_vi", preload: false)
-    tags_vi_map = TokenMap.load("uuid-tags_vi", preload: false)
-
     @input.each do |info|
       info.title_hv = hanviet(info.title_zh)
-      info.title_vi = FIX_TITLES.fetch(info.title_zh, info.title_hv)
+      info.title_vi = TITLES.fetch(info.title_zh, info.title_hv)
 
       info.title_vi = Utils.titleize(info.title_vi)
       info.author_vi = Utils.titleize(hanviet(info.author_zh))
 
-      info.genres_zh.each_with_index do |genre, idx|
-        genre_vi = map_genre(genre) || Engine.cv_plain(genre, "tonghop").vi_text
-        info.genres_vi[idx] = genre_vi
-      end
+      map_genres(info)
 
       info.tags_zh.each_with_index do |tag, idx|
-        tag_vi = Engine.cv_plain(tag, "tonghop").vi_text
+        tag_vi = map_genre(tag) || Engine.cv_plain(tag, "tonghop").vi_text
         info.tags_vi[idx] = tag_vi
       end
 
@@ -100,27 +66,138 @@ class ConvertBookInfo
         chap.set_slug(chap.title_vi)
       end
 
-      title_zh_map.upsert(info.uuid, Utils.split_words(info.title_zh))
-      title_vi_map.upsert(info.uuid, Utils.split_words(info.title_vi))
-      title_hv_map.upsert(info.uuid, Utils.split_words(info.title_hv))
-
-      author_zh_map.upsert(info.uuid, Utils.split_words(info.author_zh))
-      author_vi_map.upsert(info.uuid, Utils.split_words(info.author_vi))
-
-      genres_vi_map.upsert(info.uuid, info.genres_vi.map { |x| Utils.slugify(x) })
-      tags_vi_map.upsert(info.uuid, info.tags_vi.map { |x| Utils.slugify(x) })
       info.save! # if info.changed?
     end
+  end
 
-    NEW_GENRES.save!
+  def map_genre(genre)
+    case genre
+    when "玄幻"  then "Huyền ảo"
+    when "奇幻"  then "Kỳ huyễn"
+    when "幻想"  then "Giả tưởng"
+    when "魔法"  then "Ma pháp"
+    when "历史"  then "Lịch sử"
+    when "军事"  then "Quân sự"
+    when "都市"  then "Đô thị"
+    when "现实"  then "Hiện thực"
+    when "职场"  then "Chức trường"
+    when "官场"  then "Quan trường"
+    when "校园"  then "Vườn trường"
+    when "商战"  then "Thương chiến"
+    when "仙侠"  then "Tiên hiệp"
+    when "修真"  then "Tu chân"
+    when "科幻"  then "Khoa viễn"
+    when "空间"  then "Không gian"
+    when "游戏"  then "Trò chơi"
+    when "体育"  then "Thể thao"
+    when "竞技"  then "Thi đấu"
+    when "悬疑"  then "Huyền nghi"
+    when "惊悚"  then "Kinh dị"
+    when "灵异"  then "Thần quái"
+    when "同人"  then "Đồng nhân"
+    when "武侠"  then "Võ hiệp"
+    when "耽美"  then "Đam mỹ"
+    when "女生"  then "Nữ sinh"
+    when "言情"  then "Ngôn tình"
+    when "穿越"  then "Xuyên việt"
+    when "二次元" then "Nhị thứ nguyên"
+    when "轻小说" then "Khinh tiểu thuyết"
+    end
+  end
 
-    title_zh_map.save!
-    title_vi_map.save!
-    title_hv_map.save!
-    author_zh_map.save!
-    author_vi_map.save!
-    genres_vi_map.save!
-    tags_vi_map.save!
+  def add_genre(info, *genres : String) : Void
+    genres.each do |genre|
+      info.add_genre(genre, map_genre(genre).not_nil!)
+    end
+  end
+
+  def map_genres(info)
+    # TODO: fix the clusterfuck code, check for changing of code
+
+    genres_zh = [] of String
+    genres_vi = [] of String
+
+    if info.genres_zh.empty?
+      info.add_genre("其他", "Loại khác")
+      return info
+    end
+
+    input = info.genres_zh.dup
+
+    info.genres_zh.clear
+    info.genres_vi.clear
+
+    input.each do |genre_zh|
+      if genre_vi = map_genre(genre_zh)
+        info.add_genre(genre_zh, genre_vi)
+        next
+      end
+
+      case genre_zh
+      when "都市言情"
+        add_genre(info, "都市", "言情")
+      when "科幻空间"
+        add_genre(info, "科幻", "空间")
+      when "科幻灵异"
+        add_genre(info, "科幻", "灵异")
+      when "游戏竞技", "网游竞技"
+        add_genre(info, "游戏", "竞技")
+      when "武侠仙侠"
+        add_genre(info, "武侠", "仙侠")
+      when "修真武侠"
+        add_genre(info, "修真", "武侠")
+      when "历史军事"
+        add_genre(info, "历史", "军事")
+      when "幻想言情"
+        add_genre(info, "幻想", "言情")
+      when "悬疑惊悚"
+        add_genre(info, "悬疑", "惊悚")
+      when "玄幻魔法"
+        add_genre(info, "幻想", "魔法")
+      when "玄幻奇幻"
+        add_genre(info, "玄幻", "奇幻")
+      when "奇幻修真"
+        add_genre(info, "奇幻", "修真")
+      when "架空历史"
+        add_genre(info, "幻想", "历史")
+      when "官场职场"
+        add_genre(info, "官场", "职场")
+      when "总裁豪门"
+        add_genre(info, "都市", "言情")
+      when "衍生同人", "小说同人"
+        add_genre(info, "同人")
+      when "女生频道"
+        add_genre(info, "女生")
+      when "耽美纯爱"
+        add_genre(info, "耽美", "女生")
+      when "青春校园"
+        add_genre(info, "校园", "都市")
+      when "悬疑推理"
+        add_genre(info, "悬疑")
+      when "仙侠奇缘", "经典仙侠"
+        add_genre(info, "仙侠")
+      when "穿越时空"
+        add_genre(info, "穿越")
+      when "网游"
+        add_genre(info, "游戏")
+      when "其他", "综合其他"
+        if info.genres_zh.size < 2
+          info.add_genre("其他", "Loại khác")
+        end
+      else
+        info.add_genre(genre_zh, hanviet(genre_zh))
+      end
+    end
+  end
+
+  SEEDS = {
+    "hetushu", "jx_la", "rengshu",
+    "xbiquge", "nofff", "duokan8",
+    "paoshu8", "69shu", "zhwenpg",
+  }
+
+  def seed_order(name : String) : Int32
+    SEEDS.index(name) || -1
   end
 
   FIX_ZH_TITLES  = LabelMap.load("fix_zh_titles")
@@ -180,7 +257,7 @@ class ConvertBookInfo
   end
 
   FULL_SLUGS = {} of String => String
-  SLUG_UUIDS = LabelMap.load("slug_uuid", preload: false)
+  SLUG_UUIDS = LabelMap.load("slug--uuid", preload: false)
 
   def make_slugs!
     @input.each_with_index do |info, idx|
@@ -230,7 +307,54 @@ class ConvertBookInfo
   end
 
   def build_indexes!
-    # TODO
+    book_rating = OrderMap.load("uuid--rating")
+    book_weight = OrderMap.load("uuid--weight")
+    book_update = OrderMap.load("uuid--update")
+    book_access = OrderMap.load("uuid--access")
+
+    title_zh_map = TokenMap.load("uuid--title_zh", preload: false)
+    title_vi_map = TokenMap.load("uuid--title_vi", preload: false)
+    title_hv_map = TokenMap.load("uuid--title_hv", preload: false)
+
+    author_zh_map = TokenMap.load("uuid--author_zh", preload: false)
+    author_vi_map = TokenMap.load("uuid--author_vi", preload: false)
+
+    genres_vi_map = TokenMap.load("uuid--genres_vi", preload: false)
+    tags_vi_map = TokenMap.load("uuid--tags_vi", preload: false)
+
+    @input.each do |info|
+      uuid = info.uuid
+
+      book_rating.upsert(uuid, info.scored)
+      book_weight.upsert(uuid, info.weight)
+      book_update.upsert(uuid, info.mftime)
+      book_access.upsert(uuid, info.mftime)
+
+      title_zh_map.upsert(uuid, Utils.split_words(info.title_zh))
+      title_vi_map.upsert(uuid, Utils.split_words(info.title_vi))
+      title_hv_map.upsert(uuid, Utils.split_words(info.title_hv))
+
+      author_zh_map.upsert(uuid, Utils.split_words(info.author_zh))
+      author_vi_map.upsert(uuid, Utils.split_words(info.author_vi))
+
+      genres_vi_map.upsert(uuid, info.genres_vi.map { |x| Utils.slugify(x) })
+      tags_vi_map.upsert(uuid, info.tags_vi.map { |x| Utils.slugify(x) })
+    end
+
+    book_rating.save!
+    book_weight.save!
+    book_access.save!
+    book_update.save!
+
+    title_zh_map.save!
+    title_vi_map.save!
+    title_hv_map.save!
+
+    author_zh_map.save!
+    author_vi_map.save!
+
+    genres_vi_map.save!
+    tags_vi_map.save!
   end
 end
 
