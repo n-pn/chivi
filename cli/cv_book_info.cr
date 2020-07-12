@@ -204,6 +204,6 @@ end
 
 cmd = ConvertBookInfo.new
 
-cmd.convert! if ARGV.includes?("reset")
+cmd.convert! unless ARGV.includes?("index_only")
 cmd.make_slugs!
 cmd.build_indexes!

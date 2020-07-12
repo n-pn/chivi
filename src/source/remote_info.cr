@@ -68,7 +68,7 @@ class RemoteInfo
   @intro : String? = nil
 
   def intro : String
-    @cover ||= extract_intro || ""
+    @intro ||= extract_intro || ""
   end
 
   def extract_intro

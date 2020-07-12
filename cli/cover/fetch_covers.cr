@@ -66,6 +66,11 @@ infos.values.sort_by(&.weight.-).each_with_index do |info, idx|
   indexed = glob_dir(cover_dir)
 
   info.cover_urls.each do |cover|
+    unless cover.starts_with?("http")
+      puts info.to_json
+      gets
+    end
+
     name = Digest::SHA1.hexdigest(cover)[0..10]
     next if indexed.has_key?(name)
 

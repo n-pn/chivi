@@ -12,7 +12,7 @@ def fetch_info(info, sbid, expiry = 30.days) : Void
   puts task.emit_chap_list(mode: 2).chaps.last(4).to_pretty_json
 end
 
-fetch_info("jx_la", "7")
+# fetch_info("jx_la", "7")
 # fetch_info("jx_la", "179402")
 
 # fetch_info("69shu", "22729")
@@ -27,6 +27,7 @@ fetch_info("jx_la", "7")
 
 # fetch_info("duokan8", "6293")
 # fetch_info("xbiquge", "51918")
+# fetch_info("xbiquge", "41881")
 # fetch_info("paoshu8", "817")
 
 # fetch_info("zhwenpg", "aun4tm")
