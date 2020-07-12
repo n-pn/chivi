@@ -58,9 +58,7 @@ end
 queue = [] of Tuple(String, String)
 
 infos = BookInfo.load_all!
-infos.values.sort_by(&.weight.-).each_with_index do |info, idx|
-  # puts "- <#{idx + 1}/#{infos.size}> #{info.vi_title}".colorize(:cyan)
-
+infos.each_value do |info|
   cover_dir = File.join(TMP_DIR, info.uuid)
   FileUtils.mkdir_p(cover_dir)
   indexed = glob_dir(cover_dir)

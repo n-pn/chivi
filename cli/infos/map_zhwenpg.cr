@@ -140,7 +140,7 @@ class MapZhwenpg
       expiry = expiry > 24.hours ? expiry - 24.hours : expiry
 
       remote = RemoteInfo.new("zhwenpg", sbid, expiry: expiry, freeze: true)
-      remote.emit_chap_list.tap { |x| x.save! if x.changed? }
+      remote.emit_chap_list.save!
     end
   end
 

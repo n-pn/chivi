@@ -7,7 +7,8 @@ require "../../src/_utils/gen_uuids"
 SEEDS = {
   "hetushu", "jx_la", "rengshu",
   "xbiquge", "nofff", "duokan8",
-  "paoshu8", "69shu",
+  "paoshu8", "69shu", "zhwenpg",
+  "yousuu",
 }
 
 SEEDS.each do |seed|

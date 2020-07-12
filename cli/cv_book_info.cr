@@ -30,6 +30,8 @@ class ConvertBookInfo
   getter input : Array(BookInfo)
 
   def initialize
+    puts "[-- Load inputs --]".colorize.cyan.bold
+
     @infos = BookInfo.load_all!
     @input = @infos.values.sort_by(&.weight.-)
   end
@@ -38,6 +40,8 @@ class ConvertBookInfo
   TITLES = LabelMap.load("override/title_vi")
 
   def convert!
+    puts "[-- Convert texts --]".colorize.cyan.bold
+
     @input.each do |info|
       info.title_hv = hanviet(info.title_zh)
       info.title_vi = TITLES.fetch(info.title_zh, info.title_hv)
@@ -260,6 +264,8 @@ class ConvertBookInfo
   SLUG_UUIDS = LabelMap.load("slug--uuid", preload: false)
 
   def make_slugs!
+    puts "[-- Generate unique slugs --]".colorize.cyan.bold
+
     @input.each_with_index do |info, idx|
       title_slug = Utils.slugify(info.title_vi, no_accent: true)
       author_slug = Utils.slugify(info.author_vi, no_accent: true)
@@ -307,6 +313,8 @@ class ConvertBookInfo
   end
 
   def build_indexes!
+    puts "[-- Rebuild indexes --]".colorize.cyan.bold
+
     book_rating = OrderMap.load("uuid--rating")
     book_weight = OrderMap.load("uuid--weight")
     book_update = OrderMap.load("uuid--update")

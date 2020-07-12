@@ -171,7 +171,7 @@ class MapRemote
     info.save! if info.changed?
 
     if ChapList.outdated?(info.uuid, @seed, Time.unix_ms(info.mftime))
-      remote.emit_chap_list.tap { |x| x.save! if x.changed? }
+      remote.emit_chap_list.save!
     end
   rescue err
     puts "Error parsing `#{sbid}`: #{err.colorize.red}".colorize.bold
