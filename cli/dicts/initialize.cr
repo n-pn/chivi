@@ -8,7 +8,7 @@ def split_chars(input)
 end
 
 def extract_crucial_chars
-  crucial = ValueSet.new("var/.dict_inits/autogen/crutial-chars.txt")
+  crucial = ValueSet.new("var/.dict_inits/autogen/crutial-chars.txt", false)
 
   infos = BookInfo.load_all!
   infos.each_value do |info|

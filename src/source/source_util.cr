@@ -8,14 +8,27 @@ module SourceUtil
   FIX_AUTHORS = LabelMap.load("fix_zh_authors")
 
   def fix_title(title : String)
-    title = title.gsub(/\p{Z}/, " ").strip.sub(/\s*\(.+\)$/, "")
+    title = remove_trashes(replace_spaces(title))
     FIX_TITLES.fetch(title, title)
   end
 
-  def fix_author(title : String, author : String)
-    author =
-      author.gsub(/\p{Z}/, " ").strip.sub(/\s*\.QD$/, "").sub(/\s*\(.+\)$/, "")
-    FIX_AUTHORS.fetch(title, author)
+  def fix_author(author : String, title : String)
+    author = remove_trashes(replace_spaces(author).sub(/\s*\.QD$/, ""))
+    return author unless match = FIX_AUTHORS.fetch(author)
+
+    splits = match.split("¦")
+    match_author = splits[0]
+
+    return match_author unless match_title = splits[1]?
+    match_title == title ? match_author : author
+  end
+
+  def replace_spaces(input : String)
+    input.gsub(/\p{Z}/, " ").strip
+  end
+
+  def remove_trashes(input : String)
+    input.sub(/\s*\(.+\)$/, "")
   end
 
   def fix_genre(genre : String)

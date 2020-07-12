@@ -11,9 +11,7 @@ require "../src/kernel/value_set"
 
 require "../src/engine"
 
-module Convert
-  extend self
-
+class ConvertBookInfo
   def hanviet(input : String)
     return input unless input =~ /\p{Han}/
     Engine.hanviet(input, apply_cap: true).vi_text
@@ -34,14 +32,12 @@ module Convert
 
   def map_genre(genre_zh : String)
     unless genre_vi = FIX_GENRES.fetch(genre_zh)
-      NEW_GENRES.add(genre_zh)
+      NEW_GENRES.upsert(genre_zh)
       return "Loại khác"
     end
 
     genre_vi
   end
-
-  SLUG_UUIDS = LabelMap.load("slug_uuid", preload: false)
 
   SEEDS = {
     "hetushu", "jx_la", "rengshu",
@@ -53,53 +49,29 @@ module Convert
     SEEDS.index(name) || -1
   end
 
+  getter input : Array(BookInfo)
+
+  def initialize
+    @infos = BookInfo.load_all!
+    @input = @infos.values.sort_by(&.weight.-)
+  end
+
   HIATUS = Time.utc(2019, 1, 1).to_unix_ms
 
-  def run!
-    infos = BookInfo.load_all!
-    input = infos.values.sort_by(&.weight.-)
-
-    input.each_with_index do |info, idx|
+  def convert!
+    @input.each do |info|
       info.title_hv = hanviet(info.title_zh)
       info.title_vi = FIX_TITLES.fetch(info.title_zh, info.title_hv)
 
       info.title_vi = Utils.titleize(info.title_vi)
-      title_sl = Utils.slugify(info.title_vi, no_accent: true)
-
       info.author_vi = Utils.titleize(hanviet(info.author_zh))
-      author_sl = Utils.slugify(info.author_vi, no_accent: true)
-
-      unless title_sl.size < 5 || SLUG_UUIDS.fetch(title_sl)
-        info.slug = title_sl
-        SLUG_UUIDS.upsert(title_sl, info.uuid)
-      else
-        full_slug = "#{title_sl}--#{author_sl}"
-
-        if old_uuid = SLUG_UUIDS.fetch(full_slug)
-          puts infos[old_uuid].to_pretty_json
-          puts info.to_pretty_json
-          raise "DUPLICATE!!"
-        end
-      end
-
-      hanviet_sl = Utils.slugify(info.title_hv, no_accent: true)
-      if SLUG_UUIDS.has_key?(hanviet_sl)
-        hanviet_full_sl = "#{hanviet_sl}--#{author_sl}"
-        unless SLUG_UUIDS.has_key?(hanviet_full_sl)
-          SLUG_UUIDS.upsert(hanviet_full_sl, info.uuid)
-        end
-      else
-        SLUG_UUIDS.upsert(hanviet_sl, info.uuid)
-      end
 
       info.genre_vi = map_genre(info.genre_zh)
-
       info.tags_zh.each_with_index do |tag, idx|
         info.tags_vi[idx] = hanviet(tag)
       end
 
       info.intro_vi = cv_intro(info.intro_zh, info.uuid)
-
       if info.status == 0 && info.mftime < HIATUS
         info.status = 3
       end
@@ -113,31 +85,125 @@ module Convert
         chap.set_slug(chap.title_vi)
       end
 
+      info.save! # if info.changed?
+    end
+
+    NEW_GENRES.save!
+  end
+
+  FIX_ZH_TITLES  = LabelMap.load("fix_zh_titles")
+  FIX_ZH_AUTHORS = LabelMap.load("fix_zh_authors")
+
+  def resolve_duplicate(old_info, new_info, slug)
+    puts old_info.to_json.colorize.cyan
+    puts new_info.to_json.colorize.cyan
+
+    old_title = old_info.title_zh
+    new_title = new_info.title_zh
+
+    old_author = old_info.author_zh
+    new_author = new_info.author_zh
+
+    if old_title != new_title
+      puts "\n[ fix title ]".colorize.cyan
+      puts "FIX 1 (keep old): `#{new_title}ǁ#{old_title}`"
+      puts "FIX 2 (keep new): `#{old_title}ǁ#{new_title}`"
+    end
+
+    if old_author != new_author
+      puts "\n[ fix author ]".colorize.cyan
+      puts "FIX 1 (keep old): `#{new_author}ǁ#{old_author}¦#{new_title}`"
+      puts "FIX 2 (keep new): `#{old_author}ǁ#{new_author}¦#{old_title}`"
+    end
+
+    print "\nPrompt (1: keep old, 2: keep new, else: skipping): ".colorize.blue
+
+    case gets.try(&.chomp)
+    when "1"
+      puts "- Keep old!!".colorize.yellow
+      File.delete("var/book_infos/#{new_info.uuid}.json")
+      FileUtils.rm_rf("var/chap_lists/#{new_info.uuid}")
+
+      if old_title != new_title
+        FIX_ZH_TITLES.upsert!(new_title, old_title)
+      else
+        FIX_ZH_AUTHORS.upsert!(new_author, "#{old_author}¦#{new_title}")
+      end
+    when "2"
+      puts "- Keep new!!".colorize.yellow
+      File.delete("var/book_infos/#{old_info.uuid}.json")
+      FileUtils.rm_rf("var/chap_lists/#{old_info.uuid}")
+
+      if old_title != new_title
+        FIX_ZH_TITLES.upsert!(old_title, new_title)
+      else
+        FIX_ZH_AUTHORS.upsert!(old_author, "#{new_author}¦#{old_title}")
+      end
+
+      FULL_SLUGS[slug] = new_info.uuid
+      SLUG_UUIDS.delete(slug)
+    else
+      puts "- Skipping for now!!"
+    end
+  end
+
+  FULL_SLUGS = {} of String => String
+  SLUG_UUIDS = LabelMap.load("slug_uuid", preload: false)
+
+  def make_slugs!
+    @input.each_with_index do |info, idx|
+      title_slug = Utils.slugify(info.title_vi, no_accent: true)
+      author_slug = Utils.slugify(info.author_vi, no_accent: true)
+
+      full_slug = "#{title_slug}--#{author_slug}"
+      if old_uuid = FULL_SLUGS[full_slug]?
+        resolve_duplicate(@infos[old_uuid], info, full_slug)
+      else
+        FULL_SLUGS[full_slug] = info.uuid
+      end
+
+      next unless FULL_SLUGS[full_slug] == info.uuid
+
+      if old_uuid = SLUG_UUIDS.fetch(title_slug)
+        if old_full_uuid = SLUG_UUIDS.fetch(full_slug)
+          raise "DUPLICATE! [#{old_uuid}, #{old_full_uuid}, #{info.uuid}]"
+        end
+
+        info.slug = full_slug
+      else
+        info.slug = title_slug
+      end
+
+      SLUG_UUIDS.upsert(info.slug, info.uuid)
+
+      hanviet_slug = Utils.slugify(info.title_hv, no_accent: true)
+      if SLUG_UUIDS.has_key?(hanviet_slug)
+        full_slug = "#{hanviet_slug}--#{author_slug}"
+
+        unless SLUG_UUIDS.has_key?(full_slug)
+          SLUG_UUIDS.upsert(full_slug, info.uuid)
+        end
+      else
+        SLUG_UUIDS.upsert(hanviet_slug, info.uuid)
+      end
+
+      next unless info.changed?
       info.save!
 
       color = info.seed_names.empty? ? :cyan : :blue
       puts "- <#{idx + 1}/#{input.size}> [#{info.slug}] #{info.title_vi}".colorize(color)
     end
+
+    SLUG_UUIDS.save!
   end
 
-  def save!
-    SLUG_UUIDS.save!
-    NEW_GENRES.save!
+  def build_indexes!
+    # TODO
   end
 end
 
-Convert.run!
+cmd = ConvertBookInfo.new
 
-# File.write("var/new-genres.txt", NEW_GENRES.join("\n"))
-
-# INDEX_DIR = "var/.indexes"
-# FileUtils.mkdir_p(INDEX_DIR)
-
-# puts "-- missing: #{missing.size}"
-# File.write "#{INDEX_DIR}/missing.txt", missing.join("\n")
-
-# puts "-- hastext: #{hastext.size}"
-# File.write "#{INDEX_DIR}/hastext.txt", hastext.join("\n")
-
-# puts "-- mapping: #{mapping.size}"
-# File.write "#{INDEX_DIR}/mapping.json", mapping.to_pretty_json
+cmd.convert! if ARGV.includes?("reset")
+cmd.make_slugs!
+cmd.build_indexes!

@@ -6,7 +6,7 @@ require "../../src/kernel/value_set"
 
 puts "\n[Load deps]".colorize(:cyan)
 
-CHECKED = ValueSet.load(Utils.inp_path("autogen/checked.txt"))
+CHECKED = ValueSet.new(Utils.inp_path("autogen/checked.txt"), true)
 ONDICTS = Utils.ondicts_words
 
 REJECT_STARTS = File.read_lines("cli/dicts/cfgs/reject-starts.txt")

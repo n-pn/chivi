@@ -26,7 +26,7 @@ class RemoteInfo
   @title : String? = nil
 
   def title : String
-    @title ||= extract_title.try { |x| SourceUtil.fix_title(x.strip) } || ""
+    @title ||= extract_title.try { |x| SourceUtil.fix_title(x) } || ""
   end
 
   def extract_title
@@ -47,9 +47,7 @@ class RemoteInfo
   @author : String? = nil
 
   def author : String
-    @author ||= extract_author.try { |author|
-      SourceUtil.fix_author(title, author.strip)
-    } || ""
+    @author ||= extract_author.try { |x| SourceUtil.fix_author(x, title) } || ""
   end
 
   def extract_author

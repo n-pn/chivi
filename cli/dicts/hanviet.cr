@@ -4,8 +4,8 @@ require "../../src/engine/cv_dict"
 require "../../src/kernel/value_set"
 
 class Hanviet
-  CRUCIAL = ValueSet.new(Utils.inp_path("autogen/crucial-chars.txt"), preload: true)
-  HANZIDB = ValueSet.new(Utils.inp_path("initial/hanzidb.txt"), preload: true)
+  CRUCIAL = ValueSet.new(Utils.inp_path("autogen/crucial-chars.txt"), true)
+  HANZIDB = ValueSet.new(Utils.inp_path("initial/hanzidb.txt"), true)
 
   TRADSIM = CvDict.tradsim
   BINH_AM = CvDict.binh_am

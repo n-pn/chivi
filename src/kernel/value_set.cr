@@ -71,9 +71,14 @@ class ValueSet
     File.join(DIR, "#{name}.txt")
   end
 
-  CACHE = {} of String => self
+  CACHE = {} of String => ValueSet
 
-  def self.load(file : String) : self
-    CACHE[file] ||= new(file, preload: true)
+  def self.load(name : String, cache = true, preload = true) : self
+    unless data = CACHE[name]?
+      data = new(path_for(name), preload: preload)
+      CACHE[name] = data if cache
+    end
+
+    data
   end
 end

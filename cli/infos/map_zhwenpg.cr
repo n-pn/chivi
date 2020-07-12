@@ -13,15 +13,17 @@ require "../../src/kernel/order_map"
 
 require "../../src/source/remote_info"
 
-module MapZhwenpg
-  extend self
-
-  ACCESS = OrderMap.load("book_access", cache: false, preload: true)
-  UPDATE = OrderMap.load("book_update", cache: false, preload: true)
-  WEIGHT = OrderMap.load("book_weight", cache: false, preload: true)
-  RATING = OrderMap.load("book_rating", cache: false, preload: true)
-
+class MapZhwenpg
   DIR = File.join("var", ".book_cache", "zhwenpg", "pages")
+
+  def initialize
+    @book_access = OrderMap.load("book_access", cache: false, preload: true)
+    @book_update = OrderMap.load("book_update", cache: false, preload: true)
+    @book_weight = OrderMap.load("book_weight", cache: false, preload: true)
+    @book_rating = OrderMap.load("book_rating", cache: false, preload: true)
+
+    @top_authors = OrderMap.load("top_authors")
+  end
 
   def expiry(page : Int32 = 1)
     24.hours * page
@@ -62,7 +64,7 @@ module MapZhwenpg
     {Random.rand(50..100), Random.rand(50..70)/10}
   end
 
-  RATING_TEXT = File.read(File.join("etc", "bookdb", "fix-ratings.json"))
+  RATING_TEXT = File.read("#{__DIR__}/fix-ratings.json")
   RATING_DATA = Hash(String, Tuple(Int32, Float32)).from_json RATING_TEXT
 
   def fetch_score(caption : String)
@@ -91,6 +93,8 @@ module MapZhwenpg
     info.voters = voters
     info.rating = rating
     info.fix_weight
+
+    @top_authors.upsert(info.author_zh, info.weight)
 
     fresh = info.yousuu_url.empty?
     info.shield = 1 if fresh
@@ -124,10 +128,10 @@ module MapZhwenpg
 
     info.save!
 
-    ACCESS.upsert(info.uuid, info.mftime)
-    UPDATE.upsert(info.uuid, info.mftime)
-    WEIGHT.upsert(info.uuid, info.weight)
-    RATING.upsert(info.uuid, info.scored)
+    @book_access.upsert(info.uuid, info.mftime)
+    @book_update.upsert(info.uuid, info.mftime)
+    @book_weight.upsert(info.uuid, info.weight)
+    @book_rating.upsert(info.uuid, info.scored)
 
     expiry = Time.utc - Time.unix_ms(mftime)
     expiry = expiry > 24.hours ? expiry - 24.hours : expiry
@@ -147,14 +151,17 @@ module MapZhwenpg
   def save_indexes!
     puts "\n[-- Save indexes --]".colorize.cyan.bold
 
-    ACCESS.save!
-    UPDATE.save!
-    RATING.save!
-    WEIGHT.save!
+    @book_access.save!
+    @book_update.save!
+    @book_rating.save!
+    @book_weight.save!
+    @top_authors.save!
   end
 end
 
-1.upto(3) { |page| MapZhwenpg.parse_page!(page, status: 1) }
-1.upto(12) { |page| MapZhwenpg.parse_page!(page, status: 0) }
+worker = MapZhwenpg.new
 
-MapZhwenpg.save_indexes!
+1.upto(3) { |page| worker.parse_page!(page, status: 1) }
+1.upto(12) { |page| worker.parse_page!(page, status: 0) }
+
+worker.save_indexes!

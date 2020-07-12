@@ -75,7 +75,7 @@ class YousuuInfo
     info.sources = json[:data][:bookSource]
 
     info.title = SourceUtil.fix_title(info.title)
-    info.author = SourceUtil.fix_author(info.title, info.author)
+    info.author = SourceUtil.fix_author(info.author, info.title)
 
     info
   end

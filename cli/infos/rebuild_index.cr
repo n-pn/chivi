@@ -14,7 +14,8 @@ books.each_value do |book|
   has_text += 1 if book.seed_names.size > 0
 
   title = book.title_zh.gsub(/\P{Han}/, "")
-  map["#{book.author_zh}--#{title}"] << book.title_zh
+  author = book.author_zh.gsub(/\P{Han}/, "")
+  map["#{title}--#{author}"] << "#{book.title_zh}--#{book.author_zh}"
 end
 
 puts "- has_text: #{has_text}".colorize(:yellow)
