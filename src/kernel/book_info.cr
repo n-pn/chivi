@@ -147,8 +147,10 @@ class BookInfo
     seed
   end
 
-  def update_seed(name : String, sbid : String, scid : String, mftime : Int64, &block : BookSeed -> Void)
-    seed = @seed_infos[name] ||= BookSeed.new(name, 0)
+  def update_seed(name : String, sbid : String, mftime : Int64, latest : ChapItem)
+    unless seed = @seed_infos[name]?
+      seed = add_seed(name, 0)
+    end
 
     if seed.sbid != sbid
       return seed if seed.mftime > mftime
@@ -158,11 +160,12 @@ class BookInfo
     mftime = @mftime if mftime < @mftime
     mftime = seed.mftime if mftime < seed.mftime
 
-    if seed.latest.scid != scid
-      seed.latest.scid = scid
+    if seed.latest.scid != latest.scid
+      seed.latest = latest
       mftime = Time.utc.to_unix_ms if mftime == seed.mftime
-
-      yield(seed) if block
+    else
+      seed.latest.title_zh = latest.title_zh
+      seed.latest.label_zh = latest.label_zh
     end
 
     seed.mftime = mftime

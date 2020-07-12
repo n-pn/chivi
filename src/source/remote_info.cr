@@ -404,7 +404,7 @@ class RemoteInfo
   end
 
   def emit_book_info(info : BookInfo? = nil) : BookInfo
-    info ||= BookInfo.find_or_create(title, author)
+    info ||= BookInfo.find_or_create(title, author, cache: false)
 
     info.set_genre(genre)
     info.add_tag(genre)
@@ -415,32 +415,25 @@ class RemoteInfo
     info.status = status
 
     info.add_seed(@seed, @type)
-
-    seed = info.update_seed(@seed, @sbid, latest_chap.scid, mftime) do |seed|
-      seed.latest.title_zh = latest_chap.title_zh
-      seed.latest.label_zh = latest_chap.label_zh
-    end
-
+    seed = info.update_seed(@seed, @sbid, mftime, latest_chap)
     info.mftime = seed.mftime
+
     info
   end
 
   def emit_chap_list(list : ChapList? = nil, mode = 0)
-    list ||= ChapList.find_or_create(uuid, @seed)
+    list ||= ChapList.find_or_create(uuid, @seed, cache: false)
     list.sbid = @sbid
     list.type = @type
 
     if mode == 2
       list.chaps.clear
       list.index.clear
-      # else
-      # list.rebuild_index! if list.index.empty?
+    else
+      list.rebuild_index! if list.index.empty?
     end
 
-    chapters.each do |chap|
-      list.upsert(chap, mode)
-    end
-
+    chapters.each { |chap| list.upsert(chap, mode) }
     list
   end
 end

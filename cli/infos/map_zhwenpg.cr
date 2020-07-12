@@ -87,20 +87,24 @@ class MapZhwenpg
     info.set_genre(genre)
     info.add_tag(genre)
 
-    caption = "#{title}--#{author}"
-    voters, rating = fetch_score(caption)
-
-    info.voters = voters
-    info.rating = rating
-    info.fix_weight
-
-    @top_authors.upsert(info.author_zh, info.weight)
-
     fresh = info.yousuu_url.empty?
     info.shield = 1 if fresh
 
+    if info.yousuu_url.empty? && info.weight == 0
+      caption = "#{title}--#{author}"
+      voters, rating = fetch_score(caption)
+
+      info.voters = voters
+      info.rating = rating
+      info.fix_weight
+
+      @book_weight.upsert(info.uuid, info.weight)
+      @book_rating.upsert(info.uuid, info.scored)
+      @top_authors.upsert(info.author_zh, info.weight)
+    end
+
     color = fresh ? :light_cyan : :light_blue
-    puts "\n<#{index}> [#{info.uuid}] #{caption.colorize(color)}"
+    puts "\n<#{index}> [#{info.uuid}] #{info.title_zh}--#{info.author_zh}".colorize(color)
 
     if (intro = rows[4]?) && info.intro_zh.empty?
       intro_text = Utils.split_text(intro.inner_text("\n"))
@@ -111,27 +115,25 @@ class MapZhwenpg
     info.status = status
     info.add_cover(node.css("img").first.attributes["data-src"])
 
-    info.add_seed("zhwenpg", 0)
     latest_node = rows[3].css("a[target=_blank]").first
     latest_text = latest_node.inner_text
 
     latest_link = latest_node.attributes["href"]
     latest_scid = latest_link.sub("r.php?id=", "")
 
+    latest_chap = ChapItem.new(latest_scid, latest_text)
+
+    info.add_seed("zhwenpg", 0)
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
-    seed = info.update_seed("zhwenpg", sbid, latest_scid, mftime) do |seed|
-      seed.latest.set_title(latest_text)
-    end
 
+    seed = info.update_seed("zhwenpg", sbid, mftime, latest_chap)
     info.mftime = seed.mftime
-    return unless info.changed?
 
+    return unless info.changed?
     info.save!
 
     @book_access.upsert(info.uuid, info.mftime)
     @book_update.upsert(info.uuid, info.mftime)
-    @book_weight.upsert(info.uuid, info.weight)
-    @book_rating.upsert(info.uuid, info.scored)
 
     expiry = Time.utc - Time.unix_ms(mftime)
     expiry = expiry > 24.hours ? expiry - 24.hours : expiry

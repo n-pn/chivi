@@ -9,11 +9,13 @@ def fetch_info(info, sbid, expiry = 30.days) : Void
   task = RemoteInfo.new(info, sbid, expiry: expiry, freeze: true)
 
   puts task.emit_book_info.to_pretty_json
+  puts task.latest_chap.to_pretty_json
   puts task.emit_chap_list(mode: 2).chaps.last(4).to_pretty_json
 end
 
 # fetch_info("jx_la", "7")
 # fetch_info("jx_la", "179402")
+fetch_info("jx_la", "250502")
 
 # fetch_info("69shu", "22729")
 # fetch_info("69shu", "30062")
@@ -26,7 +28,7 @@ end
 # fetch_info("hetushu", "4420")
 
 # fetch_info("duokan8", "6293")
-# fetch_info("xbiquge", "51918")
+fetch_info("xbiquge", "51918")
 # fetch_info("xbiquge", "41881")
 # fetch_info("paoshu8", "817")
 

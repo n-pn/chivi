@@ -70,8 +70,6 @@ class MapRemote
   BOOK_UPDATE = OrderMap.load("book_update")
   TOP_AUTHORS = OrderMap.load("top_authors")
 
-  BOOK_INFOS = BookInfo.load_all!
-
   def initialize(@seed : String, @type = 0)
     @seed_uuids = LabelMap.load("seeds/#{seed}_uuids")
     @seed_titles = LabelMap.load("seeds/#{seed}_titles")
@@ -137,7 +135,7 @@ class MapRemote
 
   def qualified?(uuid : String, author : String)
     return true if @seed == "hetushu" || @seed == "rengshu"
-    return true if BOOK_INFOS.has_key?(uuid)
+    return true if BOOK_UPDATE.has_key?(uuid)
     return false unless weight = TOP_AUTHORS.value(author)
     weight >= 2000
   end
