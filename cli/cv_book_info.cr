@@ -59,16 +59,27 @@ class ConvertBookInfo
   HIATUS = Time.utc(2019, 1, 1).to_unix_ms
 
   def convert!
+    title_zh_map = TokenMap.load("uuid-title_zh", preload: false)
+    title_vi_map = TokenMap.load("uuid-title_vi", preload: false)
+    title_hv_map = TokenMap.load("uuid-title_hv", preload: false)
+
+    author_zh_map = TokenMap.load("uuid-author_zh", preload: false)
+    author_vi_map = TokenMap.load("uuid-author_vi", preload: false)
+
+    genre_vi_map = TokenMap.load("uuid-genre_vi", preload: false)
+    tags_vi_map = TokenMap.load("uuid-tags_vi", preload: false)
+
     @input.each do |info|
       info.title_hv = hanviet(info.title_zh)
       info.title_vi = FIX_TITLES.fetch(info.title_zh, info.title_hv)
-
       info.title_vi = Utils.titleize(info.title_vi)
+
       info.author_vi = Utils.titleize(hanviet(info.author_zh))
 
       info.genre_vi = map_genre(info.genre_zh)
       info.tags_zh.each_with_index do |tag, idx|
-        info.tags_vi[idx] = hanviet(tag)
+        tag_vi = Engine.cv_plain(tag, "tonghop").vi_text
+        info.tags_vi[idx] = tag_vi
       end
 
       info.intro_vi = cv_intro(info.intro_zh, info.uuid)
@@ -85,10 +96,27 @@ class ConvertBookInfo
         chap.set_slug(chap.title_vi)
       end
 
+      title_zh_map.upsert(info.uuid, Utils.split_words(info.title_zh))
+      title_vi_map.upsert(info.uuid, Utils.split_words(info.title_vi))
+      title_hv_map.upsert(info.uuid, Utils.split_words(info.title_hv))
+
+      author_zh_map.upsert(info.uuid, Utils.split_words(info.author_zh))
+      author_vi_map.upsert(info.uuid, Utils.split_words(info.author_vi))
+
+      genre_vi_map.upsert(info.uuid, [Utils.slugify(info.genre_vi)])
+      tags_vi_map.upsert(info.uuid, info.tags_vi.map { |x| Utils.slugify(x) })
       info.save! # if info.changed?
     end
 
     NEW_GENRES.save!
+
+    title_zh_map.save!
+    title_vi_map.save!
+    title_hv_map.save!
+    author_zh_map.save!
+    author_vi_map.save!
+    genre_vi_map.save!
+    tags_vi_map.save!
   end
 
   FIX_ZH_TITLES  = LabelMap.load("fix_zh_titles")

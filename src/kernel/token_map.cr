@@ -10,6 +10,8 @@ class TokenMap
   getter hash = Hash(String, Array(String)).new
   getter keys = Hash(String, Array(String)).new
 
+  forward_missing_to @hash
+
   def initialize(@file : String, preload : Bool = false)
     load!(@file) if preload && exist?
   end
@@ -34,7 +36,7 @@ class TokenMap
     end
 
     puts "- <token_map> [#{file.colorize.blue}] loaded \
-            (lines: #{count.tokenize.blue})."
+            (lines: #{count.colorize.blue})."
   end
 
   def fuzzy_search(tokens : Array(String))
@@ -106,7 +108,7 @@ class TokenMap
   end
 
   private def insert_key(key : String, vals : Array(String))
-    vals.each do |val|
+    vals.uniq.each do |val|
       @keys[val] ||= [] of String
       @keys[val] << key
     end
@@ -143,7 +145,7 @@ class TokenMap
     end
 
     puts "- <token_map> [#{file.colorize.yellow}] saved \
-            (entries: #{size.colorize.yellow})."
+            (entries: #{@hash.size.colorize.yellow})."
   end
 
   # class methods
@@ -156,8 +158,13 @@ class TokenMap
 
   CACHE = {} of String => self
 
-  def self.load(file : String) : self
-    CACHE[file] ||= new(file, preload: true)
+  def self.load(name : String, cache = true, preload = true) : self
+    unless data = CACHE[name]?
+      data = new(path_for(name), preload: preload)
+      CACHE[name] = data if preload
+    end
+
+    data
   end
 end
 
@@ -173,3 +180,7 @@ end
 # puts test.search(["c"])
 
 # test.save!
+
+test = TokenMap.load("uuid-author_vi")
+
+puts test.fuzzy_search(["thanh", "ky", "si"])

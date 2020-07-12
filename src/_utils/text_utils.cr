@@ -37,7 +37,7 @@ module Utils
     end
 
     res << acc unless acc.empty?
-    res.uniq
+    res
   end
 
   # capitalize all words
