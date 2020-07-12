@@ -19,8 +19,8 @@ class MapZhwenpg
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-    @top_authors = OrderMap.load("top_authors")
-    @book_update = OrderMap.load("book_update")
+    @top_authors = OrderMap.load("author--weight")
+    @book_update = OrderMap.load("uuid--update")
 
     @map_uuids = LabelMap.load("sitemaps/zhwenpg--sbid--uuid")
     @map_titles = LabelMap.load("sitemaps/zhwenpg--sbid--title")

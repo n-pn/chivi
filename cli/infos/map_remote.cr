@@ -66,8 +66,8 @@ class MapRemote
 
   def initialize(@seed : String, @type = 0)
     @book_uuids = BookInfo.uuids
-    @top_authors = OrderMap.load("top_authors")
-    @book_update = OrderMap.load("book_update")
+    @top_authors = OrderMap.load("author--weight")
+    @book_update = OrderMap.load("uuid--update")
 
     @map_uuids = LabelMap.load("sitemaps/#{seed}--sbid--uuid")
     @map_titles = LabelMap.load("sitemaps/#{seed}--sbid--title")

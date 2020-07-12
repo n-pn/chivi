@@ -5,8 +5,8 @@ authors:
   - Nipinium <nipinium@gmail.com>
 
 targets:
-  chivi:
-    main: src/server.cr
+  # chivi:
+  #   main: src/server.cr
 
   map_yousuu:
     main: cli/infos/map_yousuu.cr
@@ -17,20 +17,20 @@ targets:
   map_remote:
     main: cli/infos/map_remote.cr
 
-  rebuild_index:
-    main: cli/rebuild_index.cr
+  # rebuild_index:
+  #   main: cli/rebuild_index.cr
 
   cv_book_info:
     main: cli/cv_book_info.cr
 
-  cv_chap_list:
-    main: cli/cv_chap_list.cr
+  # cv_chap_list:
+  #   main: cli/cv_chap_list.cr
 
   fetch_covers:
     main: cli/cover/fetch_covers.cr
 
-  preload_texts:
-    main: cli/texts/preload_texts.cr
+  # preload_texts:
+  #   main: cli/texts/preload_texts.cr
 
 crystal: 0.35.0
 
