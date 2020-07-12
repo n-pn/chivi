@@ -10,6 +10,7 @@ require "../../src/_utils/text_utils"
 
 require "../../src/kernel/book_info"
 require "../../src/kernel/order_map"
+require "../../src/kernel/label_map"
 
 require "../../src/source/remote_info"
 
@@ -17,7 +18,13 @@ class MapZhwenpg
   DIR = File.join("var", ".book_cache", "zhwenpg", "pages")
 
   def initialize
+    puts "\n[-- Load indexes --]".colorize.cyan.bold
     @top_authors = OrderMap.load("top_authors")
+    @book_update = OrderMap.load("book_update")
+
+    @map_uuids = LabelMap.load("sitemaps/zhwenpg--sbid--uuid")
+    @map_titles = LabelMap.load("sitemaps/zhwenpg--sbid--title")
+    @map_authors = LabelMap.load("sitemaps/zhwenpg--sbid--author")
   end
 
   def expiry(page : Int32 = 1)
@@ -78,6 +85,10 @@ class MapZhwenpg
     return if SourceUtil.blacklist?(title)
     info = BookInfo.find_or_create(title, author, cache: false)
 
+    @map_uuids.upsert(sbid, info.uuid)
+    @map_titles.upsert(sbid, info.title_zh)
+    @map_authors.upsert(sbid, info.author_zh)
+
     genre = rows[2].css(".fontgt").first.inner_text
     info.add_genre(genre)
 
@@ -121,6 +132,8 @@ class MapZhwenpg
     seed = info.update_seed("zhwenpg", sbid, mftime, latest_chap)
     info.mftime = seed.mftime
 
+    @book_update.upsert(info.uuid, info.mftime)
+
     return unless info.changed?
     info.save!
 
@@ -142,6 +155,11 @@ class MapZhwenpg
   def save_indexes!
     puts "\n[-- Save indexes --]".colorize.cyan.bold
     @top_authors.save!
+    @book_update.save!
+
+    @map_uuids.save!
+    @map_titles.save!
+    @map_authors.save!
   end
 end
 

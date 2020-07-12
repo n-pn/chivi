@@ -118,7 +118,6 @@ class MapYousuu
 
     @top_authors.save!
     @book_update.save!
-    @book_update.save!
   end
 end
 
