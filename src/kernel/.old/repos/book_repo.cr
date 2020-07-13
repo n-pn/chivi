@@ -13,14 +13,14 @@ module BookRepo
 
   @@cached = {} of String => BookInfo?
 
-  def load(uuid : String)
-    @@cached[uuid] ||= BookInfo.load(uuid)
+  def load(ubid : String)
+    @@cached[ubid] ||= BookInfo.load(ubid)
   end
 
   def find(slug : String)
     @@cached[slug] ||=
-      if uuid = mapping[slug]?
-        BookInfo.load!(uuid)
+      if ubid = mapping[slug]?
+        BookInfo.load!(ubid)
       else
         nil
       end
@@ -35,8 +35,8 @@ module BookRepo
   def index(limit = 20, offset = 0, order = "update")
     output = [] of BookInfo
 
-    BookOrderIndex.load!(order).fetch(limit, offset) do |uuid|
-      output << BookInfo.load!(uuid)
+    BookOrderIndex.load!(order).fetch(limit, offset) do |ubid|
+      output << BookInfo.load!(ubid)
     end
 
     output
@@ -55,12 +55,12 @@ module BookRepo
     end
 
     order = BookOrderIndex.load!(order_type)
-    order.upsert(info.uuid, info.vi_genre, value, reorder: true)
+    order.upsert(info.ubid, info.vi_genre, value, reorder: true)
     order.save! if order.changed?
   end
 
   def save!(info : BookInfo) : Void
-    @@cached[info.uuid] = info
+    @@cached[info.ubid] = info
     update_order(info, update)
     info.save!
   end
@@ -76,8 +76,8 @@ module BookRepo
     if query =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
       COUNT_ZH.each do |type|
         next unless list = shortest_list(words, type)
-        list.each do |uuid, label, tally|
-          result << {uuid, tally} if label.includes?(query)
+        list.each do |ubid, label, tally|
+          result << {ubid, tally} if label.includes?(query)
         end
       end
     else
@@ -85,8 +85,8 @@ module BookRepo
 
       COUNT_VP.each do |type|
         next unless list = shortest_list(words, type)
-        list.each do |uuid, label, tally|
-          result << {uuid, tally} if label =~ /\b#{query}\b/
+        list.each do |ubid, label, tally|
+          result << {ubid, tally} if label =~ /\b#{query}\b/
         end
       end
     end
@@ -128,8 +128,8 @@ module BookRepo
 
       if File.exists?(file)
         File.read_lines(file).each do |line|
-          uuid, label, tally = line.split("ǁ")
-          list << {uuid, label, tally.to_f}
+          ubid, label, tally = line.split("ǁ")
+          list << {ubid, label, tally.to_f}
         end
       end
 

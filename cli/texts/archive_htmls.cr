@@ -5,7 +5,7 @@ require "file_utils"
 
 require "../src/bookdb/book_info"
 
-infos = VpInfo.load_all.reject do |uuid, info|
+infos = VpInfo.load_all.reject do |ubid, info|
   info.cr_sitemap.empty?
 end
 infos = infos.values.sort_by(&.tally.-)
@@ -17,7 +17,7 @@ TEXT_DIR = File.join("data", "zh_texts")
 
 infos.each_with_index do |info, idx|
   info.cr_sitemap.each do |site, bsid|
-    text_dir = File.join(TEXT_DIR, "#{info.uuid}.#{site}.#{bsid}")
+    text_dir = File.join(TEXT_DIR, "#{info.ubid}.#{site}.#{bsid}")
     next unless File.exists?(text_dir)
 
     html_dir = File.join(HTML_DIR, site, "texts", bsid)

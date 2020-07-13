@@ -20,9 +20,9 @@ class MapZhwenpg
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
     @top_authors = OrderMap.load("author--weight")
-    @book_update = OrderMap.load("uuid--update")
+    @book_update = OrderMap.load("ubid--update")
 
-    @map_uuids = LabelMap.load("sitemaps/zhwenpg--sbid--uuid")
+    @map_ubids = LabelMap.load("sitemaps/zhwenpg--sbid--ubid")
     @map_titles = LabelMap.load("sitemaps/zhwenpg--sbid--title")
     @map_authors = LabelMap.load("sitemaps/zhwenpg--sbid--author")
   end
@@ -85,7 +85,7 @@ class MapZhwenpg
     return if SourceUtil.blacklist?(title)
     info = BookInfo.get_or_create(title, author)
 
-    @map_uuids.upsert(sbid, info.uuid)
+    @map_ubids.upsert(sbid, info.ubid)
     @map_titles.upsert(sbid, info.title_zh)
     @map_authors.upsert(sbid, info.author_zh)
 
@@ -107,7 +107,7 @@ class MapZhwenpg
     end
 
     color = fresh ? :light_cyan : :light_blue
-    puts "\n<#{index}> [#{info.uuid}] #{info.title_zh}--#{info.author_zh}".colorize(color)
+    puts "\n<#{index}> [#{info.ubid}] #{info.title_zh}--#{info.author_zh}".colorize(color)
 
     if (intro = rows[4]?) && info.intro_zh.empty?
       intro_text = Utils.split_text(intro.inner_text("\n"))
@@ -132,10 +132,10 @@ class MapZhwenpg
     seed = info.update_seed("zhwenpg", sbid, mftime, latest_chap)
     info.mftime = seed.mftime
 
-    @book_update.upsert(info.uuid, info.mftime)
+    @book_update.upsert(info.ubid, info.mftime)
     info.save! if info.changed?
 
-    if ChapList.outdated?(info.uuid, "zhwenpg", Time.unix_ms(info.mftime))
+    if ChapList.outdated?(info.ubid, "zhwenpg", Time.unix_ms(info.mftime))
       expiry = Time.utc - Time.unix_ms(mftime)
       expiry = expiry > 24.hours ? expiry - 24.hours : expiry
 
@@ -157,7 +157,7 @@ class MapZhwenpg
     @top_authors.save!
     @book_update.save!
 
-    @map_uuids.save!
+    @map_ubids.save!
     @map_titles.save!
     @map_authors.save!
   end

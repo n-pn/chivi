@@ -56,7 +56,7 @@ class ConvertBookInfo
         info.tags_vi[idx] = tag_vi
       end
 
-      info.intro_vi = cv_intro(info.intro_zh, info.uuid)
+      info.intro_vi = cv_intro(info.intro_zh, info.ubid)
       if info.status == 0 && info.mftime < HIATUS
         info.status = 3
       end
@@ -65,8 +65,8 @@ class ConvertBookInfo
 
       info.seed_infos.each_value do |seed|
         chap = seed.latest
-        chap.label_vi = Engine.cv_title(chap.label_zh, info.uuid).vi_text
-        chap.title_vi = Engine.cv_title(chap.title_zh, info.uuid).vi_text
+        chap.label_vi = Engine.cv_title(chap.label_zh, info.ubid).vi_text
+        chap.title_vi = Engine.cv_title(chap.title_zh, info.ubid).vi_text
         chap.set_slug(chap.title_vi)
       end
 
@@ -239,7 +239,7 @@ class ConvertBookInfo
       puts "- Keep new!!".colorize.yellow
       transfer_info(remove: old_info, remain: new_info)
 
-      FULL_SLUGS[slug] = new_info.uuid
+      FULL_SLUGS[slug] = new_info.ubid
       SLUG_UUIDS.delete(slug)
     else
       puts "- Skipping for now!!"
@@ -254,8 +254,8 @@ class ConvertBookInfo
       remain.update_seed(name, seed.sbid, seed.mftime, seed.latest)
     end
 
-    File.delete("var/book_infos/#{remove.uuid}.json")
-    FileUtils.rm_rf("var/chap_lists/#{remove.uuid}")
+    File.delete("var/book_infos/#{remove.ubid}.json")
+    FileUtils.rm_rf("var/chap_lists/#{remove.ubid}")
 
     if remove.title_zh != remain.title_zh
       TITLE_ZH.upsert!(remove.title_zh, remain.title_zh)
@@ -265,7 +265,7 @@ class ConvertBookInfo
   end
 
   FULL_SLUGS = {} of String => String
-  SLUG_UUIDS = LabelMap.load("slug--uuid", preload: false)
+  SLUG_UUIDS = LabelMap.load("slug--ubid", preload: false)
 
   def make_slugs!
     puts "[-- Generate unique slugs --]".colorize.cyan.bold
@@ -275,21 +275,21 @@ class ConvertBookInfo
       author_slug = Utils.slugify(info.author_vi, no_accent: true)
 
       full_slug = "#{title_slug}--#{author_slug}"
-      if old_uuid = FULL_SLUGS[full_slug]?
-        resolve_duplicate(@infos[old_uuid], info, full_slug)
+      if old_ubid = FULL_SLUGS[full_slug]?
+        resolve_duplicate(@infos[old_ubid], info, full_slug)
       else
-        FULL_SLUGS[full_slug] = info.uuid
+        FULL_SLUGS[full_slug] = info.ubid
       end
 
-      next unless FULL_SLUGS[full_slug] == info.uuid
+      next unless FULL_SLUGS[full_slug] == info.ubid
 
-      if old_uuid = SLUG_UUIDS.fetch(title_slug)
+      if old_ubid = SLUG_UUIDS.fetch(title_slug)
         info.slug = full_slug
       else
         info.slug = title_slug
       end
 
-      SLUG_UUIDS.upsert(info.slug, info.uuid)
+      SLUG_UUIDS.upsert(info.slug, info.ubid)
 
       hanviet_slug = Utils.slugify(info.title_hv, no_accent: true)
       if hanviet_slug != title_slug
@@ -297,10 +297,10 @@ class ConvertBookInfo
           full_slug = "#{hanviet_slug}--#{author_slug}"
 
           unless SLUG_UUIDS.has_key?(full_slug)
-            SLUG_UUIDS.upsert(full_slug, info.uuid)
+            SLUG_UUIDS.upsert(full_slug, info.ubid)
           end
         else
-          SLUG_UUIDS.upsert(hanviet_slug, info.uuid)
+          SLUG_UUIDS.upsert(hanviet_slug, info.ubid)
         end
       end
 
@@ -318,38 +318,38 @@ class ConvertBookInfo
   def build_indexes!
     puts "[-- Rebuild indexes --]".colorize.cyan.bold
 
-    book_rating = OrderMap.load("uuid--rating")
-    book_weight = OrderMap.load("uuid--weight")
-    book_update = OrderMap.load("uuid--update")
-    book_access = OrderMap.load("uuid--access")
+    book_rating = OrderMap.load("ubid--rating")
+    book_weight = OrderMap.load("ubid--weight")
+    book_update = OrderMap.load("ubid--update")
+    book_access = OrderMap.load("ubid--access")
 
-    title_zh_map = TokenMap.load("uuid--title_zh", preload: false)
-    title_vi_map = TokenMap.load("uuid--title_vi", preload: false)
-    title_hv_map = TokenMap.load("uuid--title_hv", preload: false)
+    title_zh_map = TokenMap.load("ubid--title_zh", preload: false)
+    title_vi_map = TokenMap.load("ubid--title_vi", preload: false)
+    title_hv_map = TokenMap.load("ubid--title_hv", preload: false)
 
-    author_zh_map = TokenMap.load("uuid--author_zh", preload: false)
-    author_vi_map = TokenMap.load("uuid--author_vi", preload: false)
+    author_zh_map = TokenMap.load("ubid--author_zh", preload: false)
+    author_vi_map = TokenMap.load("ubid--author_vi", preload: false)
 
-    genres_vi_map = TokenMap.load("uuid--genres_vi", preload: false)
-    tags_vi_map = TokenMap.load("uuid--tags_vi", preload: false)
+    genres_vi_map = TokenMap.load("ubid--genres_vi", preload: false)
+    tags_vi_map = TokenMap.load("ubid--tags_vi", preload: false)
 
     @input.each do |info|
-      uuid = info.uuid
+      ubid = info.ubid
 
-      book_rating.upsert(uuid, info.scored)
-      book_weight.upsert(uuid, info.weight)
-      book_update.upsert(uuid, info.mftime)
-      book_access.upsert(uuid, info.mftime)
+      book_rating.upsert(ubid, info.scored)
+      book_weight.upsert(ubid, info.weight)
+      book_update.upsert(ubid, info.mftime)
+      book_access.upsert(ubid, info.mftime)
 
-      title_zh_map.upsert(uuid, Utils.split_words(info.title_zh))
-      title_vi_map.upsert(uuid, Utils.split_words(info.title_vi))
-      title_hv_map.upsert(uuid, Utils.split_words(info.title_hv))
+      title_zh_map.upsert(ubid, Utils.split_words(info.title_zh))
+      title_vi_map.upsert(ubid, Utils.split_words(info.title_vi))
+      title_hv_map.upsert(ubid, Utils.split_words(info.title_hv))
 
-      author_zh_map.upsert(uuid, Utils.split_words(info.author_zh))
-      author_vi_map.upsert(uuid, Utils.split_words(info.author_vi))
+      author_zh_map.upsert(ubid, Utils.split_words(info.author_zh))
+      author_vi_map.upsert(ubid, Utils.split_words(info.author_vi))
 
-      genres_vi_map.upsert(uuid, info.genres_vi.map { |x| Utils.slugify(x) })
-      tags_vi_map.upsert(uuid, info.tags_vi.map { |x| Utils.slugify(x) })
+      genres_vi_map.upsert(ubid, info.genres_vi.map { |x| Utils.slugify(x) })
+      tags_vi_map.upsert(ubid, info.tags_vi.map { |x| Utils.slugify(x) })
     end
 
     book_rating.save!

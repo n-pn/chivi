@@ -24,9 +24,9 @@ class MapYousuu
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
     @top_authors = OrderMap.load("author--weight")
-    @book_update = OrderMap.load("uuid--update")
+    @book_update = OrderMap.load("ubid--update")
 
-    @map_uuids = LabelMap.load("sitemaps/yousuu--sbid--uuid")
+    @map_ubids = LabelMap.load("sitemaps/yousuu--sbid--ubid")
     @map_titles = LabelMap.load("sitemaps/yousuu--sbid--title")
     @map_authors = LabelMap.load("sitemaps/yousuu--sbid--author")
   end
@@ -42,18 +42,18 @@ class MapYousuu
       next if info.title.empty? || info.author.empty? || worthless?(info)
 
       ysid = info._id.to_s
-      uuid = Utils.gen_uuid(info.title, info.author)
+      ubid = Utils.gen_ubid(info.title, info.author)
 
-      @map_uuids.upsert(ysid, uuid)
+      @map_ubids.upsert(ysid, ubid)
       @map_titles.upsert(ysid, info.title)
       @map_authors.upsert(ysid, info.author)
 
-      if old_info = @inputs[uuid]?
+      if old_info = @inputs[ubid]?
         next if old_info.updateAt >= info.updateAt
       end
 
       @input_count += 1
-      @inputs[uuid] = info
+      @inputs[ubid] = info
     rescue err
       puts "- <yousuu_info> #{file} err: #{err}".colorize(:red)
       File.delete(file)
@@ -73,8 +73,8 @@ class MapYousuu
   def extract!
     puts "\n[-- Extract outputs --]".colorize.cyan.bold
 
-    @inputs.each do |uuid, input|
-      info = BookInfo.get_or_create(input.title, input.author, uuid)
+    @inputs.each do |ubid, input|
+      info = BookInfo.get_or_create(input.title, input.author, ubid)
 
       info.add_genre(input.genre)
       info.add_tags(input.tags)
@@ -99,14 +99,14 @@ class MapYousuu
 
       next unless info.changed?
 
-      if @book_update.has_key?(uuid)
+      if @book_update.has_key?(ubid)
         @info_update += 1
       else
         @info_create += 1
       end
 
       @top_authors.upsert(info.author_zh, info.weight)
-      @book_update.upsert(uuid, info.mftime)
+      @book_update.upsert(ubid, info.mftime)
 
       info.save!
     end
@@ -116,7 +116,7 @@ class MapYousuu
     puts "\n[-- Clean up --]".colorize.cyan.bold
     puts "- <INP> total: #{@input_total}, keeps: #{@input_count} ".colorize.yellow
     puts "- <OUT> create: #{@info_create}, update: #{@info_update}".colorize.yellow
-    @map_uuids.save!
+    @map_ubids.save!
     @map_titles.save!
     @map_authors.save!
 

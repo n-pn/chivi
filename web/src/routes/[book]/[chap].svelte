@@ -38,7 +38,7 @@
   import render_convert from '$utils/render_convert'
   import read_selection from '$utils/read_selection'
 
-  export let book_uuid = ''
+  export let book_ubid = ''
   export let book_name = ''
   export let book_slug = ''
 
@@ -143,7 +143,7 @@
   async function deleteFocusedWord() {
     if (!elemOnFocus) return
 
-    const dict = +elemOnFocus.dataset.d == 1 ? 'generic' : book_uuid
+    const dict = +elemOnFocus.dataset.d == 1 ? 'generic' : book_ubid
     const key = elemOnFocus.dataset.k
 
     const url = `/api/upsert?dict=${dict}&key=${key}`
@@ -196,7 +196,7 @@
     }
 
     upsertTab = tab || 'special'
-    upsertDic = book_uuid
+    upsertDic = book_ubid
     upsertEnabled = true
   }
 
@@ -408,7 +408,7 @@
     bind:active={lookupActived}
     line={lookupLine}
     from={lookupFrom}
-    dict={book_uuid} />
+    dict={book_ubid} />
 {/if}
 
 {#if upsertEnabled}

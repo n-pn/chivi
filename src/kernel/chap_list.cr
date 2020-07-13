@@ -5,7 +5,7 @@ require "./chap_item"
 class ChapList
   include BaseModel
 
-  getter uuid : String # book uuid
+  getter ubid : String # book ubid
   getter seed : String # seed name
   property sbid = ""   # seed book id
   property type = 0    # seed type, 0 mean remote source, 1 mean manual source
@@ -16,7 +16,7 @@ class ChapList
   # TODO: explicit adding `delegate` calls for better error checking
   forward_missing_to @chaps
 
-  def initialize(@uuid : String, @seed : String)
+  def initialize(@ubid : String, @seed : String)
     @changes = 1
   end
 
@@ -52,8 +52,8 @@ class ChapList
   end
 
   # save file and reset change counter
-  def save!(file : String = ChapList.path_for(@uuid, @seed)) : Void
-    ChapList.mkdir!(@uuid) # prevent missing folder
+  def save!(file : String = ChapList.path_for(@ubid, @seed)) : Void
+    ChapList.mkdir!(@ubid) # prevent missing folder
     File.write(file, to_json)
 
     @changes = 0
@@ -67,22 +67,22 @@ class ChapList
   FileUtils.mkdir_p(DIR)
 
   # creat new folder inside `DIR` for this book
-  def self.mkdir!(uuid : String)
-    FileUtils.mkdir_p(File.join(DIR, uuid))
+  def self.mkdir!(ubid : String)
+    FileUtils.mkdir_p(File.join(DIR, ubid))
   end
 
-  # all chap list file in `uuid` folder, return all files if no `uuid` provided
-  def self.files(uuid : String = "**") : Array(String)
-    Dir.glob(File.join(DIR, uuid, "*.json"))
+  # all chap list file in `ubid` folder, return all files if no `ubid` provided
+  def self.files(ubid : String = "**") : Array(String)
+    Dir.glob(File.join(DIR, ubid, "*.json"))
   end
 
   # generate file path of chap list base from `DIR`
-  def self.path_for(uuid : String, seed : String)
-    File.join(DIR, uuid, "#{seed}.json")
+  def self.path_for(ubid : String, seed : String)
+    File.join(DIR, ubid, "#{seed}.json")
   end
 
-  # extract uuid name from filename
-  def self.uuid_for(file : String) : String
+  # extract ubid name from filename
+  def self.ubid_for(file : String) : String
     File.basename(File.dirname(file))
   end
 
@@ -93,13 +93,13 @@ class ChapList
   end
 
   # check if chap list exists
-  def self.exists?(uuid : String, seed : String)
-    File.exists?(path_for(uuid, seed))
+  def self.exists?(ubid : String, seed : String)
+    File.exists?(path_for(ubid, seed))
   end
 
   # return true if chap list not found or has mtime smaller than `time`
-  def self.outdated?(uuid : String, seed : String, time : Time)
-    file = path_for(uuid, seed)
+  def self.outdated?(ubid : String, seed : String, time : Time)
+    file = path_for(ubid, seed)
     return true unless File.exists?(file)
     File.info(file).modification_time < time
   end
@@ -119,27 +119,27 @@ class ChapList
     File.delete(file)
   end
 
-  # load chap list by book `uuid` and `seed` name
-  def self.get(uuid : String, seed : String) : ChapList?
-    read(path_for(uuid, seed))
+  # load chap list by book `ubid` and `seed` name
+  def self.get(ubid : String, seed : String) : ChapList?
+    read(path_for(ubid, seed))
   end
 
   # load chap list, raise error if not found
-  def self.get!(uuid : String, seed : String) : ChapList
-    get(uuid, seed) || raise "<chap_list> list [#{uuid}/#{seed}] not found!"
+  def self.get!(ubid : String, seed : String) : ChapList
+    get(ubid, seed) || raise "<chap_list> list [#{ubid}/#{seed}] not found!"
   end
 
   # load chap list or create new one
-  def self.get_or_create(uuid : String, seed : String) : ChapList
-    get(uuid, seed) || new(uuid, seed)
+  def self.get_or_create(ubid : String, seed : String) : ChapList
+    get(ubid, seed) || new(ubid, seed)
   end
 
   # load all chap lists for one book
-  def self.load_all!(uuid : String)
+  def self.load_all!(ubid : String)
     lists = [] of ChapList
-    files(uuid).each { |file| lists << read!(file) }
+    files(ubid).each { |file| lists << read!(file) }
 
-    puts "- <chap_list> loaded all chap lists for [#{uuid}] \
+    puts "- <chap_list> loaded all chap lists for [#{ubid}] \
             (count: #{lists.size.colorize.yellow})."
 
     lists
@@ -151,28 +151,28 @@ class ChapList
   CACHE_LIMIT = 500
 
   # load with caching, raise error if chap list does not exists.
-  def self.preload!(uuid : String, seed : String) : ChapList
+  def self.preload!(ubid : String, seed : String) : ChapList
     CACHE.shift if CACHE.size > LIMIT
-    CACHE[cache_key(uuid, seed)] ||= get!(uuid, seed)
+    CACHE[cache_key(ubid, seed)] ||= get!(ubid, seed)
   end
 
   # load with caching, create new entry if not exists
-  def self.preload_or_create!(uuid : String, seed : String) : ChapList
+  def self.preload_or_create!(ubid : String, seed : String) : ChapList
     CACHE.shift if CACHE.size > LIMIT
-    CACHE[cache_key(uuid, seed)] ||= get_or_create(uuid, seed)
+    CACHE[cache_key(ubid, seed)] ||= get_or_create(ubid, seed)
   end
 
   # generate unique cache key
-  private def self.cache_key(uuid : String, seed : String) : String
-    "#{uuid}/#{seed}"
+  private def self.cache_key(ubid : String, seed : String) : String
+    "#{ubid}/#{seed}"
   end
 
   # preload all chap lists for one book to cache
-  def self.preload_all!(uuid : String)
+  def self.preload_all!(ubid : String)
     lists = [] of ChapList
-    files(uuid).each { |file| lists << preload!(uuid, seed_for(file)) }
+    files(ubid).each { |file| lists << preload!(ubid, seed_for(file)) }
 
-    puts "- <chap_list> loaded all chap lists for [#{uuid}] to cache \
+    puts "- <chap_list> loaded all chap lists for [#{ubid}] to cache \
             (count: #{lists.size.colorize.yellow})."
 
     lists

@@ -102,7 +102,7 @@
   $: if (tab == 'content') switchSite(site, false)
 
   $: book_url = `https://chivi.xyz/${book.slug}/`
-  $: cover_url = `https://chivi.xyz/covers/${book.uuid}.jpg`
+  $: cover_url = `https://chivi.xyz/covers/${book.ubid}.jpg`
   $: update = new Date(book.mftime)
   $: status = mapStatus(book.status)
   $: keywords = prepareKeywords(book)
@@ -516,9 +516,9 @@
     </div>
 
     <picture class="cover">
-      <source srcset="/images/{book.uuid}.webp" type="image/webp" />
-      <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
-      <img src="/covers/{book.uuid}.jpg" alt={book.vi_title} loading="lazy" />
+      <source srcset="/images/{book.ubid}.webp" type="image/webp" />
+      <source srcset="/covers/{book.ubid}.jpg" type="image/jpeg" />
+      <img src="/covers/{book.ubid}.jpg" alt={book.vi_title} loading="lazy" />
     </picture>
 
     <div class="extra">

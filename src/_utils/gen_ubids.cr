@@ -1,7 +1,7 @@
 require "digest"
 
 module Utils
-  def self.gen_uuid(title : String, author : String)
+  def self.gen_ubid(title : String, author : String)
     digest32("#{title}--#{author}")
   end
 

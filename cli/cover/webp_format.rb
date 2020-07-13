@@ -3,8 +3,8 @@ require "fileutils"
 files = Dir.glob("web/public/covers/*.jpg")
 
 def out_path(inp_file)
-  uuid = File.basename(inp_file).split(".").first
-  "web/public/images/#{uuid}.webp"
+  ubid = File.basename(inp_file).split(".").first
+  "web/public/images/#{ubid}.webp"
 end
 
 def convert_image(inp_file, out_file, label)

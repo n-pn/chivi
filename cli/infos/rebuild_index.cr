@@ -54,35 +54,35 @@ File.write "tmp/conflicts.json", conflicts.to_pretty_json
 #   # next if info.shield > 1
 #   puts "- <#{idx + 1}> #{info.vi_title}--#{info.vi_author}"
 
-#   weight << {info.uuid, info.weight}
-#   rating << {info.uuid, info.rating}
-#   update << {info.uuid, info.mftime.to_f}
-#   access << {info.uuid, info.weight}
+#   weight << {info.ubid, info.weight}
+#   rating << {info.ubid, info.rating}
+#   update << {info.ubid, info.mftime.to_f}
+#   access << {info.ubid, info.weight}
 
 #   Utils.split_words(info.zh_title).each do |word|
-#     wordmap["zh_titles"][word] << "#{info.uuid}ǁ#{info.zh_title}ǁ#{info.weight}"
+#     wordmap["zh_titles"][word] << "#{info.ubid}ǁ#{info.zh_title}ǁ#{info.weight}"
 #   end
 
 #   Utils.split_words(info.zh_author).each do |word|
-#     wordmap["zh_authors"][word] << "#{info.uuid}ǁ#{info.zh_author}ǁ#{info.weight}"
+#     wordmap["zh_authors"][word] << "#{info.ubid}ǁ#{info.zh_author}ǁ#{info.weight}"
 #   end
 
 #   slug = Utils.slugify(info.hv_title)
 #   Utils.split_words(slug).each do |word|
 #     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-#     wordmap["hv_titles"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.weight}"
+#     wordmap["hv_titles"][word] << "#{info.ubid}ǁ#{slug}ǁ#{info.weight}"
 #   end
 
 #   slug = Utils.slugify(info.vi_title)
 #   Utils.split_words(slug).each do |word|
 #     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-#     wordmap["vi_titles"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.weight}"
+#     wordmap["vi_titles"][word] << "#{info.ubid}ǁ#{slug}ǁ#{info.weight}"
 #   end
 
 #   slug = Utils.slugify(info.vi_author)
 #   Utils.split_words(slug).each do |word|
 #     next if word =~ /[\p{Han}\p{Hiragana}\p{Katakana}]/
-#     wordmap["vi_authors"][word] << "#{info.uuid}ǁ#{slug}ǁ#{info.weight}"
+#     wordmap["vi_authors"][word] << "#{info.ubid}ǁ#{slug}ǁ#{info.weight}"
 #   end
 # end
 

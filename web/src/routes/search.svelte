@@ -173,9 +173,9 @@
     {#each items as book}
       <a class="book" href={book.slug} rel="prefetch">
         <picture class="cover">
-          <source srcset="/images/{book.uuid}.webp" type="image/webp" />
-          <source srcset="/covers/{book.uuid}.jpg" type="image/jpeg" />
-          <img src="/covers/{book.uuid}.jpg" alt="" loading="lazy" />
+          <source srcset="/images/{book.ubid}.webp" type="image/webp" />
+          <source srcset="/covers/{book.ubid}.jpg" type="image/jpeg" />
+          <img src="/covers/{book.ubid}.jpg" alt="" loading="lazy" />
         </picture>
 
         <div class="name">

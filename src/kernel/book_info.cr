@@ -4,7 +4,7 @@ require "file_utils"
 require "./base_model"
 require "./chap_item"
 
-require "../_utils/gen_uuids"
+require "../_utils/gen_ubids"
 
 class BookSeed
   include BaseModel
@@ -40,7 +40,7 @@ end
 class BookInfo
   include BaseModel
 
-  property uuid = ""
+  property ubid = ""
   property slug = ""
 
   property title_zh = ""
@@ -85,17 +85,17 @@ class BookInfo
   def initialize
   end
 
-  def initialize(@title_zh : String, @author_zh : String, @uuid = "")
-    if @uuid.empty?
-      fix_uuid
+  def initialize(@title_zh : String, @author_zh : String, @ubid = "")
+    if @ubid.empty?
+      fix_ubid
     else
       @changes = 1
     end
   end
 
-  # regenerate uuid
-  def fix_uuid : Void
-    self.uuid = Utils.gen_uuid(@title_zh, @author_zh)
+  # regenerate ubid
+  def fix_ubid : Void
+    self.ubid = Utils.gen_ubid(@title_zh, @author_zh)
   end
 
   {% for field in {:title, :author, :intro} %}
@@ -207,7 +207,7 @@ class BookInfo
   end
 
   # save file and reset change counter
-  def save!(file : String = BookInfo.path_for(@uuid)) : Void
+  def save!(file : String = BookInfo.path_for(@ubid)) : Void
     File.write(file, self)
 
     @changes = 0
@@ -225,29 +225,29 @@ class BookInfo
     Dir.glob(File.join(DIR, "*.json"))
   end
 
-  # all existed books (identity by its `uuid`) inside data folder
-  def self.uuids : Array(String)
-    files.map { |x| uuid_for(x) }
+  # all existed books (identity by its `ubid`) inside data folder
+  def self.ubids : Array(String)
+    files.map { |x| ubid_for(x) }
   end
 
   # generate file path of the book in the data folder
-  def self.path_for(uuid : String) : String
-    File.join(DIR, "#{uuid}.json")
+  def self.path_for(ubid : String) : String
+    File.join(DIR, "#{ubid}.json")
   end
 
-  # extract uuid from filename
-  def self.uuid_for(file : String) : String
+  # extract ubid from filename
+  def self.ubid_for(file : String) : String
     File.basename(file, ".json")
   end
 
-  # check if book with this `uuid` exists
-  def self.exists?(uuid : String) : Bool
-    File.exists?(path_for(uuid))
+  # check if book with this `ubid` exists
+  def self.exists?(ubid : String) : Bool
+    File.exists?(path_for(ubid))
   end
 
   # return true if book info not found or has mtime smaller than `time`
-  def self.outdated?(uuid : String, time : Time)
-    file = path_for(uuid)
+  def self.outdated?(ubid : String, time : Time)
+    file = path_for(ubid)
     return true unless File.exists?(file)
     File.info(file).modification_time < time
   end
@@ -267,14 +267,14 @@ class BookInfo
     File.delete(file)
   end
 
-  # load book info by its `uuid`
-  def self.get(uuid : String) : BookInfo?
-    read(path_for(uuid))
+  # load book info by its `ubid`
+  def self.get(ubid : String) : BookInfo?
+    read(path_for(ubid))
   end
 
-  # load book info by its `uuid`, raise error if not found.
-  def self.get!(uuid : String) : BookInfo
-    get(uuid) || raise "<book_info> book with uuid [#{uuid}] not found!"
+  # load book info by its `ubid`, raise error if not found.
+  def self.get!(ubid : String) : BookInfo
+    get(ubid) || raise "<book_info> book with ubid [#{ubid}] not found!"
   end
 
   # find book info by `title` and `author`, raise error if not found.
@@ -284,14 +284,14 @@ class BookInfo
 
   # find book info by using `title` and `author` as unique identity
   def self.get(title : String, author : String) : BookInfo?
-    get(Utils.gen_uuid(title, author))
+    get(Utils.gen_ubid(title, author))
   end
 
   # create new entry if book with this `title_zh` and `author_zh` does not exist
-  # can reuse `uuid` if pre-calculated
-  def self.get_or_create(title : String, author : String, uuid : String? = nil)
-    uuid ||= Utils.gen_uuid(title, author)
-    get(uuid) || new(title, author, uuid)
+  # can reuse `ubid` if pre-calculated
+  def self.get_or_create(title : String, author : String, ubid : String? = nil)
+    ubid ||= Utils.gen_ubid(title, author)
+    get(ubid) || new(title, author, ubid)
   end
 
   # load all book infos from `DIR` folder
@@ -304,20 +304,20 @@ class BookInfo
   # cache book infos for faster access and consistency
   CACHE = {} of String => BookInfo
 
-  # load with caching, raise error if book with this uuid does not exists.
-  def self.preload!(uuid : String) : BookInfo
-    CACHE[uuid] ||= load!(uuid)
+  # load with caching, raise error if book with this ubid does not exists.
+  def self.preload!(ubid : String) : BookInfo
+    CACHE[ubid] ||= load!(ubid)
   end
 
   # load with caching, create new entry if not exists
-  def self.preload_or_create!(title : String, author : String, uuid : String? = nil) : BookInfo
-    uuid ||= Utils.gen_uuid(title, author)
-    CACHE[uuid] ||= find_or_create(title, author, uuid)
+  def self.preload_or_create!(title : String, author : String, ubid : String? = nil) : BookInfo
+    ubid ||= Utils.gen_ubid(title, author)
+    CACHE[ubid] ||= find_or_create(title, author, ubid)
   end
 
   # loadd all entries in to `CACHE`
   def self.preload_all!
-    files.each { |file| CACHE[uuid_for(file)] = read!(file) }
+    files.each { |file| CACHE[ubid_for(file)] = read!(file) }
     puts "- <book_info> loaded all entries to cache (size: #{CACHE.size.colorize.green})."
     CACHE
   end

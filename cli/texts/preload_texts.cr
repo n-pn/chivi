@@ -32,7 +32,7 @@ def fetch_book(info, label)
   site = info.cr_site_df
   bsid = info.cr_sitemap[site]
 
-  name = "#{info.uuid}.#{site}.#{bsid}"
+  name = "#{info.ubid}.#{site}.#{bsid}"
 
   list_file = File.join(LIST_DIR, "#{name}.json")
   return unless File.exists?(list_file)
@@ -62,7 +62,7 @@ def fetch_book(info, label)
   limit.times { channel.receive }
 end
 
-crawls = BookInfo.load_all.reject do |uuid, info|
+crawls = BookInfo.load_all.reject do |ubid, info|
   info.cr_sitemap.empty?
 end
 

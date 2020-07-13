@@ -9,7 +9,7 @@ module Server
     books = BookRepo.index(limit: limit, offset: offset, sort: sort)
     items = books.map do |info|
       {
-        uuid:     info.uuid,
+        ubid:     info.ubid,
         slug:     info.slug,
         vi_title: info.vi_title,
         vi_genre: info.vi_genre,
@@ -26,13 +26,13 @@ module Server
     page = env.params.query.fetch("page", "1")
     limit, offset = parse_page(page, limit: 8)
 
-    uuids = BookRepo.glob(query)
+    ubids = BookRepo.glob(query)
 
-    items = uuids[offset, limit].compact_map do |uuid|
-      next unless info = BookRepo.load(uuid)
+    items = ubids[offset, limit].compact_map do |ubid|
+      next unless info = BookRepo.load(ubid)
 
       {
-        uuid:      info.uuid,
+        ubid:      info.ubid,
         slug:      info.slug,
         vi_title:  info.vi_title,
         zh_title:  info.zh_title,
@@ -45,7 +45,7 @@ module Server
     end
 
     {
-      total: uuids.size,
+      total: ubids.size,
       items: items,
       page:  page,
     }.to_json env.response
@@ -120,7 +120,7 @@ module Server
     mode = env.params.query.fetch("mode", "0").try(&.to_i) || 0
 
     {
-      book_uuid: info.uuid,
+      book_ubid: info.ubid,
       book_slug: info.slug,
       book_name: info.vi_title,
       ch_index:  ch_index + 1,
@@ -129,7 +129,7 @@ module Server
       next_url:  next_chap.try(&.slug_for(site)),
       curr_url:  curr_chap.try(&.slug_for(site)),
 
-      content: ChapText.load_vp(site, bsid, csid, user, info.uuid, mode: mode),
+      content: ChapText.load_vp(site, bsid, csid, user, info.ubid, mode: mode),
     }.to_json env.response
   end
 end

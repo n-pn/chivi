@@ -36,7 +36,7 @@ end
 
 def update_infos(info, label)
   return if info.seed_infos.empty?
-  puts "- <#{label}> #{info.uuid}--#{info.slug}".colorize.cyan.bold
+  puts "- <#{label}> #{info.ubid}--#{info.slug}".colorize.cyan.bold
 
   expiry = gen_expiry(info.status)
 
@@ -47,19 +47,19 @@ def update_infos(info, label)
     remote.emit_book_info(info)
 
     if info.changed?
-      latest = translate_chap(seed.latest, info.uuid)
+      latest = translate_chap(seed.latest, info.ubid)
       info.update_seed(seed.name, seed.sbid, remote.mftime, latest)
       info.save!
     end
 
-    if ChapList.outdated?(info.uuid, seed.name, Time.unix_ms(info.mftime))
+    if ChapList.outdated?(info.ubid, seed.name, Time.unix_ms(info.mftime))
       chaps = remote.emit_chap_list
     else
-      chaps = ChapList.get!(info.uuid, seed.name)
+      chaps = ChapList.get!(info.ubid, seed.name)
     end
 
     chaps.each_with_index do |chap, idx|
-      chaps.upsert(translate_chap(chap, info.uuid), idx)
+      chaps.upsert(translate_chap(chap, info.ubid), idx)
     end
 
     chaps.save! if chaps.changed?

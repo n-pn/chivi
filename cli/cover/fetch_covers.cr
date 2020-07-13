@@ -59,7 +59,7 @@ queue = [] of Tuple(String, String)
 
 infos = BookInfo.load_all!
 infos.each do |info|
-  cover_dir = File.join(TMP_DIR, info.uuid)
+  cover_dir = File.join(TMP_DIR, info.ubid)
   FileUtils.mkdir_p(cover_dir)
   indexed = glob_dir(cover_dir)
 
@@ -104,7 +104,7 @@ infos.each do |info|
   best_file = FILE_DF
   best_size = File.size(best_file)
 
-  cover_dir = File.join(TMP_DIR, info.uuid)
+  cover_dir = File.join(TMP_DIR, info.ubid)
   cover_files = glob_dir(cover_dir).values
 
   cover_files.each do |file|
@@ -117,7 +117,7 @@ infos.each do |info|
   end
 
   main_cover = File.basename(best_file)
-  out_file = File.join(OUT_DIR, "#{info.uuid}.#{main_cover}")
+  out_file = File.join(OUT_DIR, "#{info.ubid}.#{main_cover}")
 
   FileUtils.cp(best_file, out_file)
 

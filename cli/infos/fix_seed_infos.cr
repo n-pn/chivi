@@ -2,7 +2,7 @@
 
 require "../../src/kernel/label_map"
 require "../../src/source/source_util"
-require "../../src/_utils/gen_uuids"
+require "../../src/_utils/gen_ubids"
 
 SEEDS = {
   "hetushu", "jx_la", "rengshu",
@@ -12,11 +12,11 @@ SEEDS = {
 }
 
 SEEDS.each do |seed|
-  seed_uuids = LabelMap.load("sitemaps/#{seed}--sbid--uuid")
+  seed_ubids = LabelMap.load("sitemaps/#{seed}--sbid--ubid")
   seed_titles = LabelMap.load("sitemaps/#{seed}--sbid--title")
   seed_authors = LabelMap.load("sitemaps/#{seed}--sbid--author")
 
-  seed_uuids.each do |sbid, uuid|
+  seed_ubids.each do |sbid, ubid|
     next unless title = seed_titles.fetch(sbid)
     new_title = SourceUtil.fix_title(title)
 
@@ -35,14 +35,14 @@ SEEDS.each do |seed|
       author = new_author
     end
 
-    new_uuid = Utils.gen_uuid(title, author)
+    new_ubid = Utils.gen_ubid(title, author)
 
-    if uuid != new_uuid
-      seed_uuids.upsert(sbid, uuid)
+    if ubid != new_ubid
+      seed_ubids.upsert(sbid, ubid)
     end
   end
 
-  seed_uuids.save!
+  seed_ubids.save!
   seed_titles.save!
   seed_authors.save!
 end

@@ -27,7 +27,7 @@ module Kernel
   def load_list(info : VpInfo, site : String, user = "local", reload = false) : Tuple(ChapList, Int64)
     return {ChapList.new, 0_i64} unless bsid = info.cr_sitemap[site]?
 
-    file = ChapList.path_for(info.uuid, site)
+    file = ChapList.path_for(info.ubid, site)
     expiry = reload ? 6.minutes : gen_expiry(info.status)
 
     mftime = info.last_times[site]? || InfoSpider::EPOCH
@@ -37,8 +37,8 @@ module Kernel
 
     chaps = spider.get_chaps!
     chaps.each do |item|
-      item.vi_title = Engine.translate(item.zh_title, info.uuid, user, true)
-      item.vi_volume = Engine.translate(item.zh_volume, info.uuid, user, true)
+      item.vi_title = Engine.translate(item.zh_title, info.ubid, user, true)
+      item.vi_volume = Engine.translate(item.zh_volume, info.ubid, user, true)
       item.gen_slug(20)
     end
 

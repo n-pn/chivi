@@ -392,15 +392,15 @@ class RemoteInfo
     find_node(selector).try(&.inner_text.strip)
   end
 
-  @uuid : String? = nil
+  @ubid : String? = nil
 
-  def uuid : String
-    @uuid ||= get_uuid
+  def ubid : String
+    @ubid ||= get_ubid
   end
 
-  def get_uuid
+  def get_ubid
     return "--" if title.empty? || author.empty?
-    Utils.gen_uuid(title, author)
+    Utils.gen_ubid(title, author)
   end
 
   def emit_book_info(info : BookInfo? = nil) : BookInfo
@@ -421,7 +421,7 @@ class RemoteInfo
   end
 
   def emit_chap_list(list : ChapList? = nil, mode : Symbol = :check)
-    list ||= ChapList.get_or_create(uuid, @seed)
+    list ||= ChapList.get_or_create(ubid, @seed)
     list.sbid = @sbid
     list.type = @type
 

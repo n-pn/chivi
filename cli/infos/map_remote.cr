@@ -65,11 +65,11 @@ class MapRemote
   end
 
   def initialize(@seed : String, @type = 0)
-    @book_uuids = Set(String).new(BookInfo.uuids)
+    @book_ubids = Set(String).new(BookInfo.ubids)
     @top_authors = OrderMap.load("author--weight")
-    @book_update = OrderMap.load("uuid--update")
+    @book_update = OrderMap.load("ubid--update")
 
-    @map_uuids = LabelMap.load("sitemaps/#{seed}--sbid--uuid")
+    @map_ubids = LabelMap.load("sitemaps/#{seed}--sbid--ubid")
     @map_titles = LabelMap.load("sitemaps/#{seed}--sbid--title")
     @map_authors = LabelMap.load("sitemaps/#{seed}--sbid--author")
   end
@@ -104,7 +104,7 @@ class MapRemote
 
     puts "\n[-- Save indexes --]".colorize.cyan.bold
 
-    @map_uuids.save!
+    @map_ubids.save!
     @map_titles.save!
     @map_authors.save!
     @book_update.save!
@@ -113,24 +113,24 @@ class MapRemote
   end
 
   def expiry_for(sbid : String)
-    return 3.months unless uuid = @map_uuids.fetch(sbid)
-    return 6.months unless @book_uuids.includes?(uuid)
-    return 1.months unless time = @book_update.value(uuid)
+    return 3.months unless ubid = @map_ubids.fetch(sbid)
+    return 6.months unless @book_ubids.includes?(ubid)
+    return 1.months unless time = @book_update.value(ubid)
 
     expiry = Time.utc - Time.unix_ms(time)
     expiry > 24.hours ? expiry - 24.hours : expiry
   end
 
   def should_crawl?(sbid : String, mode = 0) : Bool
-    return true unless uuid = @map_uuids.fetch(sbid)
-    return true if mode == 2 && uuid == "--"
+    return true unless ubid = @map_ubids.fetch(sbid)
+    return true if mode == 2 && ubid == "--"
 
-    qualified?(uuid, @map_authors.fetch(sbid, ""))
+    qualified?(ubid, @map_authors.fetch(sbid, ""))
   end
 
-  def qualified?(uuid : String, author : String)
+  def qualified?(ubid : String, author : String)
     return true if @seed == "hetushu" || @seed == "rengshu"
-    return true if @book_uuids.includes?(uuid)
+    return true if @book_ubids.includes?(ubid)
     return false unless weight = @top_authors.value(author)
     weight >= 2000
   end
@@ -138,20 +138,20 @@ class MapRemote
   def parse!(sbid : String, expiry = 24.hours, label = "1/1")
     remote = RemoteInfo.new(@seed, sbid, expiry: expiry, freeze: true)
 
-    uuid = remote.uuid
-    return if uuid == "--"
+    ubid = remote.ubid
+    return if ubid == "--"
 
     title = remote.title
     author = remote.author
     return if SourceUtil.blacklist?(title)
 
-    puts "\n<#{label}> [#{sbid}] #{uuid}-#{author}-#{title}".colorize.cyan
+    puts "\n<#{label}> [#{sbid}] #{ubid}-#{author}-#{title}".colorize.cyan
 
-    @map_uuids.upsert(sbid, uuid)
+    @map_ubids.upsert(sbid, ubid)
     @map_titles.upsert(sbid, title)
     @map_authors.upsert(sbid, author)
 
-    return unless qualified?(uuid, author)
+    return unless qualified?(ubid, author)
     info = remote.emit_book_info
 
     if info.weight == 0 && info.yousuu_url.empty?
@@ -166,17 +166,17 @@ class MapRemote
       info.weight = (scored * info.voters).to_i64
     end
 
-    @book_update.upsert(info.uuid, info.mftime)
+    @book_update.upsert(info.ubid, info.mftime)
     info.save! if info.changed?
 
-    if ChapList.outdated?(info.uuid, @seed, Time.unix_ms(info.mftime))
+    if ChapList.outdated?(info.ubid, @seed, Time.unix_ms(info.mftime))
       remote.emit_chap_list.save!
     end
   rescue err
     puts "Error parsing `#{sbid}`: #{err.colorize.red}".colorize.bold
     # puts err.backtrace
 
-    @map_uuids.upsert(sbid, "--")
+    @map_ubids.upsert(sbid, "--")
     @map_titles.upsert(sbid, "")
     @map_authors.upsert(sbid, "")
   end
