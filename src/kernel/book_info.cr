@@ -209,6 +209,7 @@ class BookInfo
   # save file and reset change counter
   def save!(file : String = BookInfo.path_for(@uuid)) : Void
     File.write(file, self)
+
     @changes = 0
     puts "- <book_info> [#{file.colorize.yellow}] saved \
             (changes: #{@changes.colorize.yellow})."
@@ -244,14 +245,14 @@ class BookInfo
     File.exists?(path_for(uuid))
   end
 
-  # return true if book not found or has modification time earlier than `time`
+  # return true if book info not found or has mtime smaller than `time`
   def self.outdated?(uuid : String, time : Time)
     file = path_for(uuid)
     return true unless File.exists?(file)
     File.info(file).modification_time < time
   end
 
-  # read file if exists, raise error if not found
+  # read book info file if exists, raise error if not found
   def self.read!(file : String) : BookInfo
     read(file) || raise "<book_info> file [#{file}] not found!"
   end
@@ -273,7 +274,7 @@ class BookInfo
 
   # load book info by its `uuid`, raise error if not found.
   def self.get!(uuid : String) : BookInfo
-    get(uuid) || raise "<book_info> uuid [#{uuid}] not found!"
+    get(uuid) || raise "<book_info> book with uuid [#{uuid}] not found!"
   end
 
   # find book info by `title` and `author`, raise error if not found.
@@ -300,6 +301,7 @@ class BookInfo
     list
   end
 
+  # cache book infos for faster access and consistency
   CACHE = {} of String => BookInfo
 
   # load with caching, raise error if book with this uuid does not exists.
