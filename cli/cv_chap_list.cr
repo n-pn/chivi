@@ -5,80 +5,75 @@ require "file_utils"
 require "../src/engine"
 require "../src/kernel/book_info"
 require "../src/kernel/chap_list"
+require "../src/source/remote_info"
 
-require "../src/source/info_spider"
-
-def translate(input : String, book : String)
+def translate(input : String, dname : String)
   return input if input.empty?
-  Engine.translate(input, book: book, user: "local", title: true)
+  Engine.cv_title(input, dname).vi_text
 end
 
 def gen_expiry(status : Int32)
   case status
   when 0 then 10.hours
   when 1 then 10.days
-  else        10.weeks
+  when 2 then 10.weeks
+  else        10.months
   end
+end
+
+def translate_chap(chap : ChapItem, dname : String)
+  if chap.label_vi.empty?
+    chap.label_vi = translate(chap.label_zh, dname)
+  end
+
+  if chap.title_vi.empty?
+    chap.title_vi = translate(chap.title_zh, dname)
+    chap.set_slug(chap.title_vi)
+  end
+
+  chap
 end
 
 def update_infos(info, label)
-  return if info.cr_sitemap.empty?
-
-  puts "- <#{label.colorize(:cyan)}> #{info.zh_title.colorize(:cyan)}--#{info.zh_author.colorize(:cyan)}"
+  return if info.seed_infos.empty?
+  puts "- <#{label}> #{info.uuid}--#{info.slug}".colorize.cyan.bold
 
   expiry = gen_expiry(info.status)
-  update = false
 
-  info.cr_sitemap.each do |site, bsid|
-    # next if site == "duokan8"
-    # next if site == "paoshu8" || site == "duokan8"
+  info.seed_infos.each_value do |seed|
+    next if seed.type > 0
 
-    out_file = ChapList.path_for(info.uuid, site)
-    spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: true)
+    remote = RemoteInfo.new(seed.name, seed.sbid, expiry: expiry, freeze: true)
+    remote.emit_book_info(info)
 
-    mftime = spider.get_mftime!
-    next unless Utils.outdated?(out_file, Time.unix_ms(mftime))
-
-    info.set_status(spider.get_status!)
-
-    info.set_mftime(mftime)
-    if old_mftime = info.last_times[site]? || 0_i64
-      info.last_times[site] = mftime if mftime > old_mftime
+    if info.changed?
+      latest = translate_chap(seed.latest, info.uuid)
+      info.update_seed(seed.name, seed.sbid, remote.mftime, latest)
+      info.save!
     end
 
-    chaps = spider.get_chaps!
-    chaps.each do |item|
-      item.vi_title = translate(item.zh_title, info.uuid)
-      item.vi_volume = translate(item.zh_volume, info.uuid)
-      item.gen_slug(20)
+    if ChapList.outdated?(info.uuid, seed.name, Time.unix_ms(info.mftime))
+      chaps = remote.emit_chap_list
+    else
+      chaps = ChapList.load!(info.uuid, seed.name)
     end
 
-    ChapList.save!(out_file, chaps)
-
-    if latest = chaps.last?
-      info.cr_latests[site] = {
-        csid: latest.csid,
-        name: latest.vi_title,
-        slug: latest.title_slug,
-      }
+    chaps.each_with_index do |chap, idx|
+      chaps.upsert(translate_chap(chap, info.uuid), idx)
     end
 
-    update = true
+    chaps.save! if chaps.changed?
   rescue err
-    puts "- [#{site}-#{bsid}] #{err}".colorize(:red)
+    puts "- error loading: [#{seed.name}/#{seed.sbid}]:  #{err}".colorize.red
   end
-
-  VpInfo.save!(info) if update
 end
 
-FileUtils.mkdir_p(ChapList::DIR)
-
-infos = VpInfo.load_all.values.sort_by!(&.tally.-)
+infos = BookInfo.load_all!.values.sort_by!(&.weight.-)
 puts "- input: #{infos.size}"
 
-puts translate("WARM UP!", "tong-hop")
+puts translate("WARM UP!", "combine")
 
-limit = 10
+limit = 8
 channel = Channel(Nil).new(limit)
 
 infos.each_with_index do |info, idx|

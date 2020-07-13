@@ -420,19 +420,30 @@ class RemoteInfo
     info
   end
 
-  def emit_chap_list(list : ChapList? = nil, mode = 0)
+  def emit_chap_list(list : ChapList? = nil, mode : Symbol = :check)
     list ||= ChapList.find_or_create(uuid, @seed, cache: false)
     list.sbid = @sbid
     list.type = @type
 
-    if mode == 2
+    if mode == :reset || (mode == :check && invalid_list?(list))
       list.chaps.clear
       list.index.clear
+      chapters.each { |chap| list.append(chap) }
     else
-      list.rebuild_index! if list.index.empty?
+      list.size.upto(chapters.size - 1) { |idx| list.append(chapters[idx]) }
     end
 
-    chapters.each { |chap| list.upsert(chap, mode) }
     list
+  end
+
+  def invalid_list?(list : ChapList)
+    list.rebuild_index! if list.index.empty?
+
+    list.index.each do |scid, idx|
+      return true unless chap = chapters[idx]?
+      return true if chap.scid != scid
+    end
+
+    false
   end
 end

@@ -41,4 +41,12 @@ class ChapItem
   def slug_for(seed : String)
     "#{@url_slug}-#{seed}-#{@scid}"
   end
+
+  def inherit(other : self) : Void
+    self.title_zh = other.title_zh
+    self.title_vi = other.title_vi
+    self.title_zh = other.title_zh
+    self.label_zh = other.label_zh
+    self.url_slug = other.url_slug
+  end
 end

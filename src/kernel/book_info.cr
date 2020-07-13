@@ -21,8 +21,19 @@ class BookSeed
   def initialize(@name, @type = 0)
   end
 
-  def update_changes!
+  # update latest chap
+  def update_latest(latest : ChapItem, mftime = @mftime)
+    if @latest.scid != latest.scid
+      mftime = Time.utc.to_unix_ms if mftime == @mftime
+      @latest = latest
+    else
+      @latest.inherit(latest)
+    end
+
     @changes += @latest.reset_changes!
+
+    @mftime = mftime
+    @latest
   end
 end
 
@@ -82,11 +93,13 @@ class BookInfo
     end
   end
 
+  # regenerate uuid
   def fix_uuid : Void
     self.uuid = Utils.gen_uuid(@title_zh, @author_zh)
   end
 
   {% for field in {:title, :author, :intro} %}
+    # only set field if not empty
     def set_{{field.id}}(value : String, force = false)
       return if @{{field.id}}_zh == value
       return unless @{{field.id}}_zh.empty? || force
@@ -96,6 +109,7 @@ class BookInfo
     end
   {% end %}
 
+  # add new genre if not already exists
   def add_genre(genre_zh : String, genre_vi = "") : Void
     return if genre_zh.empty? || @genres_zh.includes?(genre_zh)
     @changes += 1
@@ -104,10 +118,12 @@ class BookInfo
     @genres_vi << genre_vi
   end
 
+  # calling `add_tag(tag)` for each tag
   def add_tags(tags : Array(String))
     tags.each { |tag| add_tag(tag) }
   end
 
+  # add new tag if not already exists
   def add_tag(tag_zh : String, tag_vi = "") : Void
     return if tag_zh.empty? || @tags_zh.includes?(tag_zh)
     @changes += 1
@@ -116,32 +132,38 @@ class BookInfo
     @tags_vi << tag_vi
   end
 
+  # only add cover if not already exists
   def add_cover(cover : String)
     return if cover.empty? || @cover_urls.includes?(cover)
     @changes += 1
     @cover_urls << cover
   end
 
+  # transform rating to integer based score (0 to 100)
   def scored
     (@rating * 10).to_i64
   end
 
+  # recaculate book worth
   def fix_weight
     @weight = scored * @voters + @view_count
   end
 
+  # only update if new status is greater than old status
   def status=(status : Int32)
     return if status <= @status
     @changes += 1
     @status = status
   end
 
+  # only update if new mftime is greater than old mftime
   def mftime=(mftime : Int64)
     return if mftime <= @mftime
     @changes += 1
     @mftime = mftime
   end
 
+  # add new seed or update previous one
   def add_seed(name : String, type = 0)
     if seed = @seed_infos[name]?
       seed.type = type
@@ -155,6 +177,7 @@ class BookInfo
     seed
   end
 
+  # update seed info, update mftime and latest chap
   def update_seed(name : String, sbid : String, mftime : Int64, latest : ChapItem)
     unless seed = @seed_infos[name]?
       seed = add_seed(name, 0)
@@ -167,35 +190,28 @@ class BookInfo
 
     mftime = @mftime if mftime < @mftime
     mftime = seed.mftime if mftime < seed.mftime
-
-    if seed.latest.scid != latest.scid
-      seed.latest = latest
-      mftime = Time.utc.to_unix_ms if mftime == seed.mftime
-    else
-      seed.latest.title_zh = latest.title_zh
-      seed.latest.label_zh = latest.label_zh
-    end
-
-    seed.mftime = mftime
-    seed.update_changes! # transfer changes count from latest chap to book seed
+    seed.update_latest(latest, mftime)
 
     @changes += seed.reset_changes! # transfer changes count from seed to info
     seed
   end
 
+  # json serialization
   def to_s
     String.build { |io| to_s(io) }
   end
 
+  # :ditto:
   def to_s(io : IO)
     to_json(io)
   end
 
+  # save file and reset change counter
   def save!(file : String = BookInfo.path_for(@uuid)) : Void
     File.write(file, self)
+    @changes = 0
     puts "- <book_info> [#{file.colorize.yellow}] saved \
             (changes: #{@changes.colorize.yellow})."
-    @changes = 0
   end
 
   # class methods
@@ -203,77 +219,104 @@ class BookInfo
   DIR = File.join("var", "book_infos")
   FileUtils.mkdir_p(DIR)
 
-  def self.path_for(uuid : String)
-    File.join(DIR, "#{uuid}.json")
-  end
-
-  def self.files
+  # all book infos file in the `DIR` folder
+  def self.files : Array(String)
     Dir.glob(File.join(DIR, "*.json"))
   end
 
-  def self.uuids
-    Set(String).new files.map { |x| File.basename(x, ".json") }
+  # all existed books (identity by its `uuid`) inside data folder
+  def self.uuids : Array(String)
+    Set(String).new(files.map { |x| uuid_for(x) })
   end
 
-  def self.uuid_for(file : String)
+  # generate file path of the book in the data folder
+  def self.path_for(uuid : String) : String
+    File.join(DIR, "#{uuid}.json")
+  end
+
+  # extract uuid from filename
+  def self.uuid_for(file : String) : String
     File.basename(file, ".json")
   end
 
-  def self.exists?(uuid : String)
+  # check if book with this `uuid` exists
+  def self.exists?(uuid : String) : Bool
     File.exists?(path_for(uuid))
   end
 
-  def self.from_file(file : String)
+  # return true if book not found or has modification time earlier than `time`
+  def self.outdated?(uuid : String, time : Time)
+    file = path_for(uuid)
+    return true unless File.exists?(file)
+    File.info(file).modification_time < time
+  end
+
+  # read file if exists, raise error if not found
+  def self.read!(file : String) : BookInfo
+    read(file) || raise "<book_info> file [#{file}] not found!"
+  end
+
+  # read file if exists, return nil if error, delete file if parsing error.
+  def self.read(file : String) : BookInfo?
+    return unless File.exists?(file)
+    puts "- <book_info> [#{file.colorize.blue}] loaded."
     from_json(File.read(file))
+  rescue err
+    puts "- <book_info> error parsing file [#{file}], err: #{err}".colorize.red
+    File.delete(file)
+  end
+
+  # load book info by its `uuid`
+  def self.get(uuid : String) : BookInfo?
+    read(path_for(uuid))
+  end
+
+  # load book info by its `uuid`, raise error if not found.
+  def self.get!(uuid : String) : BookInfo
+    get(uuid) || raise "<book_info> uuid [#{uuid}] not found!"
+  end
+
+  # find book info by `title` and `author`, raise error if not found.
+  def self.get!(title : String, author : String) : BookInfo
+    load!(title, author) || raise "<book_info> book [#{title}-#{author}] not found!"
+  end
+
+  # find book info by using `title` and `author` as unique identity
+  def self.get(title : String, author : String) : BookInfo?
+    load(Utils.gen_uuid(title, author))
+  end
+
+  # create new entry if book with this `title_zh` and `author_zh` does not exist
+  # can reuse `uuid` if pre-calculated
+  def self.get_or_create(title : String, author : String, uuid : String? = nil)
+    uuid ||= Utils.gen_uuid(title, author)
+    load(uuid) || new(title, author, uuid)
+  end
+
+  # load all book infos from `DIR` folder
+  def self.load_all!(list = [] of BookInfo) : Array(BookInfo)
+    files.each { |file| list << read!(file) }
+    puts "- <book_info> loaded all entries (size: #{list.size.colorize.green})."
+    list
   end
 
   CACHE = {} of String => BookInfo
 
-  def self.load!(uuid : String, cache = true)
-    load(uuid, cache) || raise "- <book_info> [#{uuid}] not found!"
+  # load with caching, raise error if book with this uuid does not exists.
+  def self.preload!(uuid : String) : BookInfo
+    CACHE[uuid] ||= load!(uuid)
   end
 
-  def self.load(uuid : String, cache = true)
-    unless info = CACHE[uuid]?
-      file = path_for(uuid)
-      return unless File.exists?(file)
-
-      info = from_file(file)
-      CACHE[uuid] = info if cache
-    end
-
-    info
+  # load with caching, create new entry if not exists
+  def self.preload_or_create!(title : String, author : String, uuid : String? = nil) : BookInfo
+    uuid ||= Utils.gen_uuid(title, author)
+    CACHE[uuid] ||= find_or_create(title, author, uuid)
   end
 
-  def self.find!(title : String, author : String, cache = true)
-    load!(Utils.gen_uuid(title, author), cache)
-  end
-
-  def self.find(title : String, author : String, cache = true)
-    load(Utils.gen_uuid(title, author), cache)
-  end
-
-  def self.find_or_create(title : String, author : String, uuid = Utils.gen_uuid(title, author), cache = true)
-    unless info = load(uuid, cache)
-      info = new(title, author, uuid)
-      CACHE[uuid] = info if cache
-    end
-
-    info
-  end
-
-  # Load with cache
-
-  def self.load_all!
-    files.each do |file|
-      load!(uuid_for(file), true)
-    rescue
-      puts "- error parsing file: #{file}"
-      File.delete(file)
-    end
-
-    puts "- <book_info> loaded all infos to cache \
-            (entries: #{CACHE.size.colorize.blue.bold})."
+  # loadd all entries in to `CACHE`
+  def self.preload_all!
+    files.each { |file| CACHE[uuid_for(file)] = read!(file) }
+    puts "- <book_info> loaded all entries to cache (size: #{CACHE.size.colorize.green})."
     CACHE
   end
 end

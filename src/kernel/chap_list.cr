@@ -24,28 +24,26 @@ class ChapList
     @chaps.each_with_index { |item, idx| @index[item.scid] = idx }
   end
 
-  def upsert(chap : ChapItem, mode = 0)
-    return if mode == 0 && @index.has_key?(chap.scid)
-
-    upsert(chap.scid) do |old_chap|
-      old_chap.set_title(chap.title_zh, chap.label_zh)
-      # old_chap.title_vi = chap.title_vi
-      # old_chap.label_vi = chap.label_vi
-    end
+  def append(chap : ChapItem) : ChapItem
+    @index[chap.scid] = @chaps.size
+    @chaps.push(chap)
+    chap
   end
 
-  def upsert(scid : String)
-    if idx = @index[scid]?
+  def upsert(chap : ChapItem, idx : Int32? = nil)
+    upsert(chap.scid, idx, &.inherit(chap))
+  end
+
+  def upsert(scid : String, idx : Int32? = nil)
+    if idx ||= @index[scid]?
       chap = @chaps[idx]
     else
-      chap = ChapItem.new(scid)
-      @index[scid] = @chaps.size
-      @chaps << chap
+      chap = append(ChapItem.new(scid))
     end
 
     yield chap
-
     @changes += chap.reset_changes!
+
     chap
   end
 
@@ -66,22 +64,8 @@ class ChapList
     FileUtils.mkdir_p(File.join(DIR, uuid))
   end
 
-  def self.glob_dir(uuid : String) : Array(String)
+  def self.files(uuid : String = "**") : Array(String)
     Dir.glob(File.join(DIR, uuid, "*.json"))
-  end
-
-  def self.load_all!(uuid : String)
-    ret = CACHE[uuid] ||= {} of String => ChapList
-
-    glob_dir(uuid).each do |file|
-      seed = File.basename(file, ".json")
-      ret[seed] ||= load_file(file)
-    end
-
-    puts "- <chap_list> loaded [#{uuid}] chap lists to cache \
-            (entries: #{ret.size.colorize.blue.bold})."
-
-    ret
   end
 
   def self.path_for(uuid : String, seed : String)
@@ -98,8 +82,56 @@ class ChapList
     File.info(file).modification_time < time
   end
 
-  CACHE = Hash(String, Hash(String, ChapList)).new do |h, k|
-    h[k] = {} of String => ChapList
+  def self.read!(file : String) : ChapList
+    read(file) || raise "<chap_list> file [#{file}] not found!"
+  end
+
+  def self.read(file : String) : ChapList?
+    return unless File.exists?(file)
+    puts "- <chap_list> [#{file.colorize.blue}] loaded."
+    from_json(File.read(file))
+  end
+
+  def self.load(uuid : String, seed : String) : ChapList?
+    read(path_for(uuid, seed))
+  end
+
+  def self.load!(uuid : String, seed : String) : ChapList
+    load(uuid, seed) || raise "<chap_list> list [#{uuid}/#{seed}] not found!"
+  end
+
+  def self.find_or_create(uuid : String, seed : String) : ChapList
+    load(uuid, seed) || new(uuid, seed)
+  end
+
+  CACHE = {} of String => ChapList
+  LIMIT = 500
+
+  def self.cache_load!(uuid : String, seed : String) : ChapList
+    cache_data("#{uuid}/#{seed}", load!(uuid, seed))
+  end
+
+  def self.cache_find_or_create(uuid : String, seed : String) : ChapList
+    cache_data("#{uuid}/#{seed}", find_or_create(uuid, seed))
+  end
+
+  def self.cache_data(key : String, value : ChapList)
+    CACHE.shift if CACHE.size > LIMIT
+    CACHE[key] ||= value
+  end
+
+  def self.load_all!(uuid : String)
+    ret = CACHE[uuid] ||= {} of String => ChapList
+
+    files(uuid).each do |file|
+      seed = File.basename(file, ".json")
+      ret[seed] ||= load_file(file)
+    end
+
+    puts "- <chap_list> loaded [#{uuid}] chap lists to cache \
+            (entries: #{ret.size.colorize.blue.bold})."
+
+    ret
   end
 
   def self.find(uuid : String, seed : String, cache = true)
@@ -121,10 +153,5 @@ class ChapList
     end
 
     list
-  end
-
-  def self.load_file(file : String)
-    puts "- <chap_list> [#{file.colorize.blue}] loaded."
-    from_json(File.read(file))
   end
 end

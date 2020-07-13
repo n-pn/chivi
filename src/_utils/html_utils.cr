@@ -13,7 +13,7 @@ module Utils
       res.body_io.try(&.gets_to_end)
     end
   rescue err
-    puts "- <fetch_html> error fetching #{url.colorize.red}]: [#{err.class}] #{err.colorize(:red)}"
+    puts "- <fetch_html> error fetching #{url.colorize.red}]: [#{err.class}] #{err.colorize.red}"
     sleep 500.milliseconds
     fetch_html(url, tls, encoding)
   end

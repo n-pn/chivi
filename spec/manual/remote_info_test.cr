@@ -10,7 +10,7 @@ def fetch_info(info, sbid, expiry = 30.days) : Void
 
   puts task.emit_book_info.to_pretty_json
   puts task.latest_chap.to_pretty_json
-  puts task.emit_chap_list(mode: 2).chaps.last(4).to_pretty_json
+  puts task.emit_chap_list(mode: :check).chaps.last(4).to_pretty_json
 end
 
 # fetch_info("jx_la", "7")
