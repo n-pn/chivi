@@ -65,7 +65,7 @@ class MapRemote
   end
 
   def initialize(@seed : String, @type = 0)
-    @book_uuids = BookInfo.uuids
+    @book_uuids = Set(String).new(BookInfo.uuids)
     @top_authors = OrderMap.load("author--weight")
     @book_update = OrderMap.load("uuid--update")
 
@@ -143,7 +143,6 @@ class MapRemote
 
     title = remote.title
     author = remote.author
-
     return if SourceUtil.blacklist?(title)
 
     puts "\n<#{label}> [#{sbid}] #{uuid}-#{author}-#{title}".colorize.cyan

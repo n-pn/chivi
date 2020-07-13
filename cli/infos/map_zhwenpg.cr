@@ -83,7 +83,7 @@ class MapZhwenpg
     author = rows[1].css(".fontwt").first.inner_text.strip
 
     return if SourceUtil.blacklist?(title)
-    info = BookInfo.find_or_create(title, author, cache: false)
+    info = BookInfo.get_or_create(title, author)
 
     @map_uuids.upsert(sbid, info.uuid)
     @map_titles.upsert(sbid, info.title_zh)

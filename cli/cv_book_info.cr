@@ -32,7 +32,7 @@ class ConvertBookInfo
   def initialize
     puts "[-- Load inputs --]".colorize.cyan.bold
 
-    @infos = BookInfo.load_all!
+    @infos = BookInfo.preload_all!
     @input = @infos.values.sort_by(&.weight.-)
   end
 
@@ -204,8 +204,8 @@ class ConvertBookInfo
     SEEDS.index(name) || -1
   end
 
-  FIX_ZH_TITLES  = LabelMap.load("override/title_zh")
-  FIX_ZH_AUTHORS = LabelMap.load("override/author_zh")
+  TITLE_ZH  = LabelMap.load("override/title_zh")
+  AUTHOR_ZH = LabelMap.load("override/author_zh")
 
   def resolve_duplicate(old_info, new_info, slug)
     puts old_info.to_json.colorize.cyan
@@ -219,14 +219,14 @@ class ConvertBookInfo
 
     if old_title != new_title
       puts "\n[ fix title ]".colorize.cyan
-      puts "FIX 1 (keep old): `#{new_title}ǁ#{old_title}`"
-      puts "FIX 2 (keep new): `#{old_title}ǁ#{new_title}`"
+      puts "FIX 1 (keep old): `#{new_title} => #{old_title}`"
+      puts "FIX 2 (keep new): `#{old_title} => #{new_title}`"
     end
 
     if old_author != new_author
       puts "\n[ fix author ]".colorize.cyan
-      puts "FIX 1 (keep old): `#{new_author}ǁ#{old_author}¦#{new_title}`"
-      puts "FIX 2 (keep new): `#{old_author}ǁ#{new_author}¦#{old_title}`"
+      puts "FIX 1 (keep old): `#{new_author} => #{old_author}`"
+      puts "FIX 2 (keep new): `#{old_author} => #{new_author}`"
     end
 
     print "\nPrompt (1: keep old, 2: keep new, else: skipping): ".colorize.blue
@@ -234,29 +234,33 @@ class ConvertBookInfo
     case gets.try(&.chomp)
     when "1"
       puts "- Keep old!!".colorize.yellow
-      File.delete("var/book_infos/#{new_info.uuid}.json")
-      FileUtils.rm_rf("var/chap_lists/#{new_info.uuid}")
-
-      if old_title != new_title
-        FIX_ZH_TITLES.upsert!(new_title, old_title)
-      else
-        FIX_ZH_AUTHORS.upsert!(new_author, "#{old_author}¦#{new_title}")
-      end
+      transfer_info(remove: new_info, remain: old_info)
     when "2"
       puts "- Keep new!!".colorize.yellow
-      File.delete("var/book_infos/#{old_info.uuid}.json")
-      FileUtils.rm_rf("var/chap_lists/#{old_info.uuid}")
-
-      if old_title != new_title
-        FIX_ZH_TITLES.upsert!(old_title, new_title)
-      else
-        FIX_ZH_AUTHORS.upsert!(old_author, "#{new_author}¦#{old_title}")
-      end
+      transfer_info(remove: old_info, remain: new_info)
 
       FULL_SLUGS[slug] = new_info.uuid
       SLUG_UUIDS.delete(slug)
     else
       puts "- Skipping for now!!"
+    end
+  end
+
+  # move seed info from removed entry to remained entry
+  private def transfer_info(remove : BookInfo, remain : BookInfo)
+    remove.seed_infos.each do |name, seed|
+      next if remain.seed_infos.has_key?(name)
+      remain.add_seed(name, seed.type)
+      remain.update_seed(name, seed.sbid, seed.mftime, seed.latest)
+    end
+
+    File.delete("var/book_infos/#{remove.uuid}.json")
+    FileUtils.rm_rf("var/chap_lists/#{remove.uuid}")
+
+    if remove.title_zh != remain.title_zh
+      TITLE_ZH.upsert!(remove.title_zh, remain.title_zh)
+    else
+      AUTHOR_ZH.upsert!(remove.author_zh, "#{remain.author_zh}¦#{remain.title_zh}")
     end
   end
 
@@ -280,10 +284,6 @@ class ConvertBookInfo
       next unless FULL_SLUGS[full_slug] == info.uuid
 
       if old_uuid = SLUG_UUIDS.fetch(title_slug)
-        if old_full_uuid = SLUG_UUIDS.fetch(full_slug)
-          raise "DUPLICATE! [#{old_uuid}, #{old_full_uuid}, #{info.uuid}]"
-        end
-
         info.slug = full_slug
       else
         info.slug = title_slug
@@ -308,7 +308,8 @@ class ConvertBookInfo
       info.save!
 
       color = info.seed_names.empty? ? :cyan : :blue
-      puts "- <#{idx + 1}/#{input.size}> [#{info.slug}] #{info.title_vi}".colorize(color)
+      puts "- <#{idx + 1}/#{input.size}> \
+              [#{info.slug.colorize(color)}] #{info.title_vi.colorize(color)}"
     end
 
     SLUG_UUIDS.save!
@@ -370,6 +371,6 @@ end
 
 cmd = ConvertBookInfo.new
 
-cmd.convert! unless ARGV.includes?("index_only")
+cmd.convert!
 cmd.make_slugs!
 cmd.build_indexes!

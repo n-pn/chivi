@@ -41,10 +41,12 @@ class MapYousuu
       next unless info = YousuuInfo.load!(file)
       next if info.title.empty? || info.author.empty? || worthless?(info)
 
+      ysid = info._id.to_s
       uuid = Utils.gen_uuid(info.title, info.author)
-      @map_uuids.upsert(info._id.to_s, uuid)
-      @map_titles.upsert(info._id.to_s, info.title)
-      @map_authors.upsert(info._id.to_s, info.author)
+
+      @map_uuids.upsert(ysid, uuid)
+      @map_titles.upsert(ysid, info.title)
+      @map_authors.upsert(ysid, info.author)
 
       if old_info = @inputs[uuid]?
         next if old_info.updateAt >= info.updateAt
@@ -72,7 +74,7 @@ class MapYousuu
     puts "\n[-- Extract outputs --]".colorize.cyan.bold
 
     @inputs.each do |uuid, input|
-      info = BookInfo.find_or_create(input.title, input.author, uuid, cache: false)
+      info = BookInfo.get_or_create(input.title, input.author, uuid)
 
       info.add_genre(input.genre)
       info.add_tags(input.tags)

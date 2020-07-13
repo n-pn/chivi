@@ -404,7 +404,7 @@ class RemoteInfo
   end
 
   def emit_book_info(info : BookInfo? = nil) : BookInfo
-    info ||= BookInfo.find_or_create(title, author, cache: false)
+    info ||= BookInfo.get_or_create(title, author)
 
     info.add_genre(genre)
     info.add_tags(tags)
@@ -421,7 +421,7 @@ class RemoteInfo
   end
 
   def emit_chap_list(list : ChapList? = nil, mode : Symbol = :check)
-    list ||= ChapList.find_or_create(uuid, @seed, cache: false)
+    list ||= ChapList.get_or_create(uuid, @seed)
     list.sbid = @sbid
     list.type = @type
 

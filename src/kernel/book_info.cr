@@ -227,7 +227,7 @@ class BookInfo
 
   # all existed books (identity by its `uuid`) inside data folder
   def self.uuids : Array(String)
-    Set(String).new(files.map { |x| uuid_for(x) })
+    files.map { |x| uuid_for(x) }
   end
 
   # generate file path of the book in the data folder
@@ -279,19 +279,19 @@ class BookInfo
 
   # find book info by `title` and `author`, raise error if not found.
   def self.get!(title : String, author : String) : BookInfo
-    load!(title, author) || raise "<book_info> book [#{title}-#{author}] not found!"
+    get!(title, author) || raise "<book_info> book [#{title}-#{author}] not found!"
   end
 
   # find book info by using `title` and `author` as unique identity
   def self.get(title : String, author : String) : BookInfo?
-    load(Utils.gen_uuid(title, author))
+    get(Utils.gen_uuid(title, author))
   end
 
   # create new entry if book with this `title_zh` and `author_zh` does not exist
   # can reuse `uuid` if pre-calculated
   def self.get_or_create(title : String, author : String, uuid : String? = nil)
     uuid ||= Utils.gen_uuid(title, author)
-    load(uuid) || new(title, author, uuid)
+    get(uuid) || new(title, author, uuid)
   end
 
   # load all book infos from `DIR` folder

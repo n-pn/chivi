@@ -126,12 +126,12 @@ class ChapList
 
   # load chap list, raise error if not found
   def self.get!(uuid : String, seed : String) : ChapList
-    load(uuid, seed) || raise "<chap_list> list [#{uuid}/#{seed}] not found!"
+    get(uuid, seed) || raise "<chap_list> list [#{uuid}/#{seed}] not found!"
   end
 
   # load chap list or create new one
   def self.get_or_create(uuid : String, seed : String) : ChapList
-    load(uuid, seed) || new(uuid, seed)
+    get(uuid, seed) || new(uuid, seed)
   end
 
   # load all chap lists for one book

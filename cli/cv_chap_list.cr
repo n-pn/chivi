@@ -55,7 +55,7 @@ def update_infos(info, label)
     if ChapList.outdated?(info.uuid, seed.name, Time.unix_ms(info.mftime))
       chaps = remote.emit_chap_list
     else
-      chaps = ChapList.load!(info.uuid, seed.name)
+      chaps = ChapList.get!(info.uuid, seed.name)
     end
 
     chaps.each_with_index do |chap, idx|
@@ -68,7 +68,7 @@ def update_infos(info, label)
   end
 end
 
-infos = BookInfo.load_all!.values.sort_by!(&.weight.-)
+infos = BookInfo.load_all!.sort_by!(&.weight.-)
 puts "- input: #{infos.size}"
 
 puts translate("WARM UP!", "combine")

@@ -58,7 +58,7 @@ end
 queue = [] of Tuple(String, String)
 
 infos = BookInfo.load_all!
-infos.each_value do |info|
+infos.each do |info|
   cover_dir = File.join(TMP_DIR, info.uuid)
   FileUtils.mkdir_p(cover_dir)
   indexed = glob_dir(cover_dir)
@@ -100,7 +100,7 @@ OUT_DIR = File.join("web", "public", "covers")
 FileUtils.mkdir_p(OUT_DIR)
 
 # TODO: copy best covers to web/upload folder
-infos.each_value do |info|
+infos.each do |info|
   best_file = FILE_DF
   best_size = File.size(best_file)
 
