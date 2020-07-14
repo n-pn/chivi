@@ -1,11 +1,11 @@
-require "../kernel/label_map"
-require "../kernel/value_set"
+require "../lookup/label_map"
+require "../lookup/value_set"
 
 module SourceUtil
   extend self
 
-  TITLES  = LabelMap.load("override/title_zh")
-  AUTHORS = LabelMap.load("override/author_zh")
+  TITLES  = LabelMap.load!("override/title_zh")
+  AUTHORS = LabelMap.load!("override/author_zh")
 
   def fix_title(title : String)
     title = remove_trashes(replace_spaces(title))
@@ -36,9 +36,9 @@ module SourceUtil
     genre.sub(/小说$/, "")
   end
 
-  SKIP_TITLES = ValueSet.load("skip_titles")
+  BLACKLIST = ValueSet.load!("title-blacklist")
 
   def blacklist?(title : String)
-    SKIP_TITLES.includes?(title)
+    BLACKLIST.includes?(title)
   end
 end

@@ -98,32 +98,32 @@ class OrderMap
     @last = Node.new("", Int64::MIN)
     @first.set_right(@last)
 
-    load!(@file) if preload && exist?
-  end
-
-  def exist?
-    File.exists?(@file)
+    load!(@file) if preload
   end
 
   def load!(file : String = @file) : Void
     count = 0
 
-    File.each_line(file) do |line|
-      key, val = line.strip.split(SEP_0, 2)
+    elapsed = Time.measure do
+      File.each_line(file) do |line|
+        key, val = line.strip.split(SEP_0, 2)
 
-      if val = val.try(&.to_i64?)
-        upsert(key, val)
-      else
-        delete(key)
+        if val = val.try(&.to_i64?)
+          upsert(key, val)
+        else
+          delete(key)
+        end
+
+        count += 1
+      rescue err
+        puts "- <order_map> error parsing line `#{line}`: #{err.colorize(:red)}"
       end
-
-      count += 1
-    rescue err
-      puts "- <order_map> error parsing line `#{line}`: #{err.colorize(:red)}"
     end
 
+    elapsed = elapsed.total_milliseconds.round.to_i
     puts "- <order_map> [#{file.colorize.blue}] loaded \
-            (lines: #{count.colorize.blue})."
+            (lines: #{count.colorize.blue}) \
+            time: #{elapsed.colorize.blue}ms)."
   end
 
   def upsert!(key : String, val : Int64, force : Bool = false) : Void
@@ -199,22 +199,54 @@ class OrderMap
 
   # class methods
 
-  DIR = File.join("var", "order_maps")
+  DIR = File.join("var", "lookup", "orders")
   FileUtils.mkdir_p(DIR)
 
+  # file path relative to `DIR`
   def self.path_for(name : String)
     File.join(DIR, "#{name}.txt")
   end
 
-  CACHE = {} of String => self
+  # file name relative to `DIR`
+  def self.name_for(file : String)
+    File.sub("#{DIR}/", "").sub(".txt", "")
+  end
 
-  def self.load(name : String, cache = true, preload = true) : self
-    unless item = CACHE[name]?
-      item = new(path_for(name), preload: preload)
-      CACHE[name] = item if cache
-    end
+  # check file exists in `DIR`
+  def self.exists?(name : String)
+    File.exists?(path_for(file))
+  end
 
-    item
+  # read random file, raising FileNotFound if not existed
+  def self.read!(file : String) : OrderMap
+    new(file, preload: true)
+  end
+
+  # load file if exists, else raising exception
+  def self.load!(name : String) : OrderMap
+    load(name) || raise "<order_map> name [#{name}] not found!"
+  end
+
+  # load file if exists, else return nil
+  def self.load(name : String) : OrderMap?
+    file = path_for(name)
+    new(file, preload: true) if File.exists?(file)
+  end
+
+  # create new file from fresh
+  def self.init(name : String) : OrderMap
+    new(path_for(name), preload: false)
+  end
+
+  # load existing or create a new one
+  def self.get_or_create(name : String) : OrderMap
+    load(name) || init(name)
+  end
+
+  CACHE = {} of String => OrderMap
+
+  def self.preload!(name : String) : OrderMap
+    CACHE[name] ||= load!(name)
   end
 end
 

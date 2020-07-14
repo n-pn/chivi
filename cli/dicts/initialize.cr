@@ -1,5 +1,5 @@
-require "../../src/kernel/book_info"
-require "../../src/kernel/value_set"
+require "../../src/models/book_info"
+require "../../src/lookup/value_set"
 
 def split_chars(input)
   input.split("").each do |char|
@@ -11,7 +11,7 @@ def extract_crucial_chars
   crucial = ValueSet.new("var/.dict_inits/autogen/crutial-chars.txt", false)
 
   infos = BookInfo.load_all!
-  infos.each_value do |info|
+  infos.each do |info|
     split_chars(info.title_zh) { |x| crucial.upsert(x) }
     split_chars(info.author_zh) { |x| crucial.upsert(x) }
   end

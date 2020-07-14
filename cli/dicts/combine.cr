@@ -5,7 +5,7 @@ require "./utils/common"
 require "./utils/clavis"
 
 require "../../src/engine/cv_dict"
-require "../../src/kernel/value_set"
+require "../../src/lookup/value_set"
 
 puts "\n[Load counters]".colorize.cyan.bold
 
@@ -158,7 +158,7 @@ end
 
 puts "\n[Load hanviet]".colorize.cyan.bold
 
-CvDict.hanviet.each do |node|
+TrieDict.hanviet.each do |node|
   next if CHECKED.includes?(node.key)
   EXISTED.add(node.key)
 

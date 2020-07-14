@@ -4,9 +4,10 @@ require "option_parser"
 require "../../src/_utils/file_utils.cr"
 require "../../src/_utils/html_utils.cr"
 
-require "../../src/kernel/book_info.cr"
-require "../../src/kernel/order_map.cr"
-require "../../src/kernel/label_map.cr"
+require "../../src/lookup/order_map.cr"
+require "../../src/lookup/label_map.cr"
+
+require "../../src/models/book_info.cr"
 
 require "../../src/source/remote_info.cr"
 
@@ -66,12 +67,12 @@ class MapRemote
 
   def initialize(@seed : String, @type = 0)
     @book_ubids = Set(String).new(BookInfo.ubids)
-    @top_authors = OrderMap.load("author--weight")
-    @book_update = OrderMap.load("ubid--update")
+    @top_authors = OrderMap.load!("author--weight")
+    @book_update = OrderMap.load!("ubid--update")
 
-    @map_ubids = LabelMap.load("sitemaps/#{seed}--sbid--ubid")
-    @map_titles = LabelMap.load("sitemaps/#{seed}--sbid--title")
-    @map_authors = LabelMap.load("sitemaps/#{seed}--sbid--author")
+    @map_ubids = LabelMap.get_or_create("sitemaps/#{seed}--sbid--ubid")
+    @map_titles = LabelMap.get_or_create("sitemaps/#{seed}--sbid--title")
+    @map_authors = LabelMap.get_or_create("sitemaps/#{seed}--sbid--author")
   end
 
   alias TimeSpan = Time::Span | Time::MonthSpan

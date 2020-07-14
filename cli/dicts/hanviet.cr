@@ -1,14 +1,14 @@
 require "./utils/common"
 require "./utils/clavis"
 require "../../src/engine/cv_dict"
-require "../../src/kernel/value_set"
+require "../../src/lookup/value_set"
 
 class Hanviet
-  CRUCIAL = ValueSet.new(Utils.inp_path("autogen/crucial-chars.txt"), true)
-  HANZIDB = ValueSet.new(Utils.inp_path("initial/hanzidb.txt"), true)
+  CRUCIAL = ValueSet.read!(Utils.inp_path("autogen/crucial-chars.txt"))
+  HANZIDB = ValueSet.read!(Utils.inp_path("initial/hanzidb.txt"))
 
-  TRADSIM = CvDict.tradsim
-  BINH_AM = CvDict.binh_am
+  TRADSIM = TrieDict.tradsim
+  BINH_AM = TrieDict.binh_am
 
   def should_keep_hanviet?(input : String)
     return true if CRUCIAL.includes?(input)
@@ -21,10 +21,10 @@ class Hanviet
     true
   end
 
-  getter dict = CvDict.load("hanviet", cache: false, preload: false)
+  getter dict = TrieDict.load("hanviet", cache: false, preload: false)
 
   def import_lacviet_chars!
-    input = CvDict.load
+    input = TrieDict.load
 
     input.each do |node|
       @dict.upsert(node.key, node.vals)

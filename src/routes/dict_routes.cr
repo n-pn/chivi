@@ -5,7 +5,7 @@ module Server
 
   get "/_lookup" do |env|
     dname = env.params.query.fetch("dname", "combine")
-    dicts = CvDict.for_convert(dname)
+    dicts = TrieDict.for_convert(dname)
 
     chars = env.params.query.fetch("input", "").chars
     upper = chars.size - 1
@@ -21,11 +21,11 @@ module Server
         end
       end
 
-      CvDict.trungviet.scan(chars, idx).each do |item|
+      TrieDict.trungviet.scan(chars, idx).each do |item|
         entry[item.key.size]["trungviet"] = item.vals
       end
 
-      CvDict.cc_cedict.scan(chars, idx).each do |item|
+      TrieDict.cc_cedict.scan(chars, idx).each do |item|
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
@@ -41,7 +41,7 @@ module Server
     input = env.params.query.fetch("input", "")
     dname = env.params.query.fetch("dname", "combine")
 
-    if item = CvDict.load_shared("suggest").find(input)
+    if item = TrieDict.load_shared("suggest").find(input)
       suggest = {vals: item.vals, extra: item.extra}
     end
 

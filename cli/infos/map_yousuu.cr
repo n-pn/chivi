@@ -2,14 +2,15 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/kernel/book_info"
-require "../../src/kernel/label_map"
-require "../../src/kernel/order_map"
-
-require "../../src/source/yousuu_info"
-
 require "../../src/_utils/time_utils"
 require "../../src/_utils/text_utils"
+
+require "../../src/models/book_info"
+
+require "../../src/lookup/label_map"
+require "../../src/lookup/order_map"
+
+require "../../src/source/yousuu_info"
 
 class MapYousuu
   DIR = File.join("var", ".book_cache", "yousuu", "serials")
@@ -23,12 +24,12 @@ class MapYousuu
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-    @top_authors = OrderMap.load("author--weight")
-    @book_update = OrderMap.load("ubid--update")
+    @top_authors = OrderMap.get_or_create("author--weight")
+    @book_update = OrderMap.get_or_create("ubid--update")
 
-    @map_ubids = LabelMap.load("sitemaps/yousuu--sbid--ubid")
-    @map_titles = LabelMap.load("sitemaps/yousuu--sbid--title")
-    @map_authors = LabelMap.load("sitemaps/yousuu--sbid--author")
+    @map_ubids = LabelMap.get_or_create("sitemaps/yousuu--sbid--ubid")
+    @map_titles = LabelMap.get_or_create("sitemaps/yousuu--sbid--title")
+    @map_authors = LabelMap.get_or_create("sitemaps/yousuu--sbid--author")
   end
 
   def prepare! : Void

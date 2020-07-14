@@ -1,13 +1,13 @@
 require "file_utils"
 
-require "../../../src/engine/cv_dict"
-require "../../../src/kernel/value_set"
+require "../../../src/lookup/dict_term"
+require "../../../src/lookup/value_set"
 
 module Utils
   extend self
 
   INP_DIR = File.join("var", ".dict_inits")
-  OUT_DIR = File.join("var", "dict_files")
+  OUT_DIR = File.join("var", "_clavis")
 
   def inp_path(file : String)
     File.join(INP_DIR, file)
@@ -24,7 +24,7 @@ module Utils
   @@ondicts : ValueSet? = nil
 
   def ondicts_words : ValueSet
-    @@ondicts ||= ValueSet.new(inp_path("autogen/ondicts-words.txt"), true)
+    @@ondicts ||= ValueSet.read!(inp_path("autogen/ondicts-words.txt"))
   end
 
   def has_hanzi?(input : String)
@@ -32,11 +32,11 @@ module Utils
   end
 
   def load_legacy(file : String)
-    dict = CvDict.new(file, preload: false)
+    dict = TrieDict.new(file, preload: false)
     dict.tap(&.load_legacy!(file))
   end
 
-  def convert(dict : CvDict, input : String, sep = "")
+  def convert(dict : TrieDict, input : String, sep = "")
     res = [] of String
 
     chars = input.chars

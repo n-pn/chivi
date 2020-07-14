@@ -3,8 +3,8 @@ require "colorize"
 require "file_utils"
 
 require "../src/engine"
-require "../src/kernel/book_info"
-require "../src/kernel/chap_list"
+require "../src/models/book_info"
+require "../src/models/chap_list"
 require "../src/source/remote_info"
 
 def translate(input : String, dname : String)

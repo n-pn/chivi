@@ -2,20 +2,11 @@ require "colorize"
 require "http/client"
 
 module Utils
-  def self.fetch_html(url : String) : String
-    puts "- GET: [#{url.colorize.magenta}]"
-    fetch_html(url, tls_for(url), encoding_for(url))
-  end
+  alias SSL = OpenSSL::SSL::Context::Client
+  TLS = SSL.insecure
 
-  def self.fetch_html(url : String, tls : OpenSSL::SSL::Context::Client?, encoding : String) : String?
-    HTTP::Client.get(url, tls: tls) do |res|
-      res.body_io.set_encoding(encoding, invalid: :skip)
-      res.body_io.try(&.gets_to_end)
-    end
-  rescue err
-    puts "- <fetch_html> error fetching #{url.colorize.red}]: [#{err.class}] #{err.colorize.red}"
-    sleep 500.milliseconds
-    fetch_html(url, tls, encoding)
+  def self.tls_for(url : String) : SSL?
+    url.starts_with?("https") ? TLS : nil
   end
 
   def self.encoding_for(url : String) : String
@@ -26,9 +17,24 @@ module Utils
     "GBK"
   end
 
-  TLS = OpenSSL::SSL::Context::Client.insecure
+  def self.fetch_html(url : String) : String
+    puts "- GET: [#{url.colorize.magenta}]"
+    fetch_html(url, tls_for(url), encoding_for(url), retry: 0)
+  end
 
-  def self.tls_for(url : String) : OpenSSL::SSL::Context::Client?
-    url.starts_with?("https") ? TLS : nil
+  def self.fetch_html(url : String, tls : SSL?, encoding : String, retry = 0) : String
+    HTTP::Client.get(url, tls: tls) do |res|
+      res.body_io.set_encoding(encoding, invalid: :skip)
+      res.body_io.try(&.gets_to_end) || "404 Not Found!"
+    end
+  rescue err
+    puts "- <fetch_html> error fetching #{url.colorize.red}]: \
+            [#{err.class}] #{err.colorize.red}"
+    if retry < 5
+      sleep 500.milliseconds
+      fetch_html(url, tls, encoding, retry + 1)
+    else
+      "404 Not Found!"
+    end
   end
 end

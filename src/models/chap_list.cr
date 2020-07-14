@@ -1,5 +1,6 @@
 require "colorize"
 require "file_utils"
+
 require "./chap_item"
 
 class ChapList
@@ -63,7 +64,7 @@ class ChapList
 
   # class methods
 
-  DIR = File.join("var", "chap_lists")
+  DIR = File.join("var", "chapdb", "lists")
   FileUtils.mkdir_p(DIR)
 
   # creat new folder inside `DIR` for this book
@@ -77,7 +78,12 @@ class ChapList
   end
 
   # generate file path of chap list base from `DIR`
-  def self.path_for(ubid : String, seed : String)
+  def self.path_for(ubid : String) : String
+    File.join(DIR, ubid)
+  end
+
+  # generate file path of chap list base from `DIR`
+  def self.path_for(ubid : String, seed : String) : String
     File.join(DIR, ubid, "#{seed}.json")
   end
 

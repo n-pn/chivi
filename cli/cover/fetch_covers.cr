@@ -4,7 +4,7 @@ require "colorize"
 require "http/client"
 require "file_utils"
 
-require "../../src/kernel/book_info"
+require "../../src/models/book_info"
 
 TMP_DIR = File.join("var", ".book_cover")
 FILE_DF = File.join(TMP_DIR, "blank.jpg")

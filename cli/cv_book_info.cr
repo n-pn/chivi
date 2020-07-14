@@ -3,13 +3,13 @@ require "colorize"
 require "file_utils"
 
 require "../src/_utils/text_utils"
-require "../src/kernel/book_info"
 
-require "../src/kernel/label_map"
-require "../src/kernel/token_map"
-require "../src/kernel/order_map"
-require "../src/kernel/value_set"
+require "../src/lookup/label_map"
+require "../src/lookup/token_map"
+require "../src/lookup/order_map"
+require "../src/lookup/value_set"
 
+require "../src/models/book_info"
 require "../src/engine"
 
 class ConvertBookInfo
@@ -36,8 +36,9 @@ class ConvertBookInfo
     @input = @infos.values.sort_by(&.weight.-)
   end
 
-  HIATUS = Time.utc(2019, 1, 1).to_unix_ms
-  TITLES = LabelMap.load("override/title_vi")
+  HIATUS  = Time.utc(2019, 1, 1).to_unix_ms
+  TITLES  = LabelMap.load!("override/title_vi")
+  AUTHORS = LabelMap.load!("override/author_vi")
 
   def convert!
     puts "[-- Convert texts --]".colorize.cyan.bold
@@ -45,9 +46,12 @@ class ConvertBookInfo
     @input.each do |info|
       info.title_hv = hanviet(info.title_zh)
       info.title_vi = TITLES.fetch(info.title_zh, info.title_hv)
-
       info.title_vi = Utils.titleize(info.title_vi)
-      info.author_vi = Utils.titleize(hanviet(info.author_zh))
+
+      info.author_vi = AUTHORS.fetch(
+        info.author_zh,
+        Utils.titleize(hanviet(info.author_zh))
+      )
 
       map_genres(info)
 
@@ -204,8 +208,8 @@ class ConvertBookInfo
     SEEDS.index(name) || -1
   end
 
-  TITLE_ZH  = LabelMap.load("override/title_zh")
-  AUTHOR_ZH = LabelMap.load("override/author_zh")
+  TITLE_ZH  = LabelMap.load!("override/title_zh")
+  AUTHOR_ZH = LabelMap.load!("override/author_zh")
 
   def resolve_duplicate(old_info, new_info, slug)
     puts old_info.to_json.colorize.cyan
@@ -265,7 +269,7 @@ class ConvertBookInfo
   end
 
   FULL_SLUGS = {} of String => String
-  SLUG_UUIDS = LabelMap.load("slug--ubid", preload: false)
+  SLUG_UUIDS = LabelMap.init("slug--ubid")
 
   def make_slugs!
     puts "[-- Generate unique slugs --]".colorize.cyan.bold
@@ -318,20 +322,20 @@ class ConvertBookInfo
   def build_indexes!
     puts "[-- Rebuild indexes --]".colorize.cyan.bold
 
-    book_rating = OrderMap.load("ubid--rating")
-    book_weight = OrderMap.load("ubid--weight")
-    book_update = OrderMap.load("ubid--update")
-    book_access = OrderMap.load("ubid--access")
+    book_rating = OrderMap.init("ubid--rating")
+    book_weight = OrderMap.init("ubid--weight")
+    book_update = OrderMap.init("ubid--update")
+    book_access = OrderMap.init("ubid--access")
 
-    title_zh_map = TokenMap.load("ubid--title_zh", preload: false)
-    title_vi_map = TokenMap.load("ubid--title_vi", preload: false)
-    title_hv_map = TokenMap.load("ubid--title_hv", preload: false)
+    title_zh_map = TokenMap.init("ubid--title_zh")
+    title_vi_map = TokenMap.init("ubid--title_vi")
+    title_hv_map = TokenMap.init("ubid--title_hv")
 
-    author_zh_map = TokenMap.load("ubid--author_zh", preload: false)
-    author_vi_map = TokenMap.load("ubid--author_vi", preload: false)
+    author_zh_map = TokenMap.init("ubid--author_zh")
+    author_vi_map = TokenMap.init("ubid--author_vi")
 
-    genres_vi_map = TokenMap.load("ubid--genres_vi", preload: false)
-    tags_vi_map = TokenMap.load("ubid--tags_vi", preload: false)
+    genres_vi_map = TokenMap.init("ubid--genres_vi")
+    tags_vi_map = TokenMap.init("ubid--tags_vi")
 
     @input.each do |info|
       ubid = info.ubid

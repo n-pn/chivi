@@ -13,30 +13,30 @@ class TokenMap
   forward_missing_to @hash
 
   def initialize(@file : String, preload : Bool = false)
-    load!(@file) if preload && exist?
-  end
-
-  def exist?
-    File.exists?(@file)
+    load!(@file) if preload
   end
 
   def load!(file : String = @file) : Void
     count = 0
 
-    File.each_line(file) do |line|
-      cols = line.strip.split(SEP_0, 2)
+    elapsed = Time.measure do
+      File.each_line(file) do |line|
+        cols = line.strip.split(SEP_0, 2)
 
-      key = cols[0]
-      vals = (cols[1]? || "").split(SEP_1)
+        key = cols[0]
+        vals = (cols[1]? || "").split(SEP_1)
 
-      vals.empty? ? delete(key) : upsert(key, vals)
-      count += 1
-    rescue err
-      puts "- <token_map> error parsing line `#{line.colorize(:red)}`: #{err.message.colorize(:red)}"
+        vals.empty? ? delete(key) : upsert(key, vals)
+        count += 1
+      rescue err
+        puts "- <token_map> error parsing line `#{line.colorize.red}`: #{err}"
+      end
     end
 
+    elapsed = elapsed.total_milliseconds.round.to_i
     puts "- <token_map> [#{file.colorize.blue}] loaded \
-            (lines: #{count.colorize.blue})."
+            (lines: #{count.colorize.blue}) \
+            time: #{elapsed.colorize.blue}ms)."
   end
 
   def fuzzy_search(tokens : Array(String))
@@ -149,22 +149,54 @@ class TokenMap
   end
 
   # class methods
-  DIR = File.join("var", "token_maps")
+  DIR = File.join("var", "lookup", "tokens")
   FileUtils.mkdir_p(DIR)
 
-  def self.path_for(name : String)
+  # file path relative to `DIR`
+  def self.path_for(name : String) : String
     File.join(DIR, "#{name}.txt")
   end
 
-  CACHE = {} of String => self
+  # file name relative to `DIR`
+  def self.name_for(file : String) : String
+    File.sub("#{DIR}/", "").sub(".txt", "")
+  end
 
-  def self.load(name : String, cache = true, preload = true) : self
-    unless data = CACHE[name]?
-      data = new(path_for(name), preload: preload)
-      CACHE[name] = data if preload
-    end
+  # check file exists in `DIR`
+  def self.exists?(name : String) : Bool
+    File.exists?(path_for(file))
+  end
 
-    data
+  # read random file, raising FileNotFound if not existed
+  def self.read!(file : String) : TokenMap
+    new(file, preload: true)
+  end
+
+  # load file if exists, else raising exception
+  def self.load!(name : String) : TokenMap
+    load(name) || raise "<token_map> name [#{name}] not found!"
+  end
+
+  # load file if exists, else return nil
+  def self.load(name : String) : TokenMap?
+    file = path_for(name)
+    new(file, preload: true) if File.exists?(file)
+  end
+
+  # create new file from fresh
+  def self.init(name : String) : TokenMap
+    new(path_for(name), preload: false)
+  end
+
+  # load existing or create a new one
+  def self.get_or_create(name : String) : TokenMap
+    load(name) || init(name)
+  end
+
+  CACHE = {} of String => TokenMap
+
+  def self.preload!(name : String) : TokenMap
+    CACHE[name] ||= load!(name)
   end
 end
 

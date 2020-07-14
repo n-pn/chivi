@@ -15,27 +15,27 @@ class LabelMap
   delegate fetch, to: @hash
   delegate has_key?, to: @hash
 
-  def initialize(@file, preload : Bool = false)
-    load!(@file) if preload && exists?
-  end
-
-  def exists?
-    File.exists?(@file)
+  def initialize(@file, preload : Bool = true)
+    load!(@file) if preload
   end
 
   def load!(file : String = @file) : Void
     count = 0
 
-    File.each_line(file) do |line|
-      key, val = line.strip.split(SEP_0)
-      val.empty? ? delete(key) : upsert(key, val)
-      count += 1
-    rescue err
-      puts "- <label_map> error parsing line `#{line}`: #{err.colorize(:red)}"
+    elapsed = Time.measure do
+      File.each_line(file) do |line|
+        key, val = line.strip.split(SEP_0)
+        val.empty? ? delete(key) : upsert(key, val)
+        count += 1
+      rescue err
+        puts "- <label_map> error parsing line `#{line}`: #{err.colorize(:red)}"
+      end
     end
 
+    elapsed = elapsed.total_milliseconds.round.to_i
     puts "- <label_map> [#{file.colorize.blue}] loaded \
-            (lines: #{count.colorize.blue})."
+            (lines: #{count.colorize.blue}) \
+            time: #{elapsed.colorize.blue}ms)."
   end
 
   def keys(val : String)
@@ -95,22 +95,47 @@ class LabelMap
 
   # class methods
 
-  DIR = File.join("var", "label_maps")
+  DIR = File.join("var", "lookup", "labels")
   FileUtils.mkdir_p(DIR)
 
-  def self.path_for(name : String)
+  def self.path_for(name : String) : String
     File.join(DIR, "#{name}.txt")
   end
 
-  CACHE = {} of String => self
+  def self.name_for(file : String) : String
+    File.sub("#{DIR}/", "").sub(".txt", "")
+  end
 
-  def self.load(name : String, cache = true, preload = true) : self
-    unless item = CACHE[name]?
-      item = new(path_for(name), preload: preload)
-      CACHE[name] = item if cache
-    end
+  def self.exists?(name : String) : Bool
+    File.exists?(path_for(file))
+  end
 
-    item
+  def self.read!(file : String) : LabelMap
+    new(file, preload: true)
+  end
+
+  def self.load!(name : String) : LabelMap
+    load(name) || raise "<labep_map> name [#{name}] not found!"
+  end
+
+  def self.load(name : String) : LabelMap?
+    file = path_for(name)
+    new(file, preload: true) if File.exists?(file)
+  end
+
+  def self.init(name : String) : LabelMap
+    new(path_for(name), preload: false)
+  end
+
+  # load existing or create a new one
+  def self.get_or_create(name : String) : LabelMap
+    load(name) || init(name)
+  end
+
+  CACHE = {} of String => LabelMap
+
+  def self.preload!(name : String) : LabelMap
+    CACHE[name] ||= load!(name)
   end
 end
 

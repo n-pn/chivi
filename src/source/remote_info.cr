@@ -2,13 +2,13 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../kernel/book_info"
-require "../kernel/chap_list"
-
-require "../_utils/han_to_int"
 require "../_utils/html_utils"
-require "../_utils/time_utils"
 require "../_utils/text_utils"
+require "../_utils/time_utils"
+require "../_utils/han_to_int"
+
+require "../models/book_info"
+require "../models/chap_list"
 
 require "./remote_util"
 require "./source_util"

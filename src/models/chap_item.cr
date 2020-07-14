@@ -1,7 +1,9 @@
 require "colorize"
-require "./base_model"
+
 require "../_utils/fix_titles"
 require "../_utils/text_utils"
+
+require "./base_model"
 
 class ChapItem
   include BaseModel

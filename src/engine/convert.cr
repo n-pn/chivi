@@ -1,14 +1,14 @@
-require "./cv_dict"
-require "./cv_data"
-
 require "../_utils/fix_titles"
 require "../_utils/han_to_int"
 require "../_utils/normalize"
 
+require "../dictdb/trie_dict"
+require "./cv_data"
+
 module Convert
   extend self
 
-  def translit(input : String, dict : CvDict, apply_cap = false, pad_space = true)
+  def translit(input : String, dict : TrieDict, apply_cap = false, pad_space = true)
     res = tokenize(input.chars, dict)
     res.capitalize! if apply_cap
     res.pad_spaces! if pad_space
@@ -16,7 +16,7 @@ module Convert
     res
   end
 
-  def cv_plain(input : String, *dicts : CvDict)
+  def cv_plain(input : String, *dicts : TrieDict)
     res = tokenize(input.chars, *dicts)
     res.grammarize!
     res.capitalize!
@@ -26,7 +26,7 @@ module Convert
 
   TITLE_RE = /^(第([零〇一二两三四五六七八九十百千]+|\d+)([集卷章节幕回]))([,.:\s]*)(.*)$/
 
-  def cv_title(input : String, *dicts : CvDict)
+  def cv_title(input : String, *dicts : TrieDict)
     res = CvData.new
 
     title, label = Utils.split_label(input)
@@ -83,7 +83,7 @@ module Convert
     end
   end
 
-  def tokenize(chars : Array(Char), *dicts : CvDict)
+  def tokenize(chars : Array(Char), *dicts : TrieDict)
     choices = [CvData::Node.new("", "")]
     weights = [0.0]
 

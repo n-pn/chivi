@@ -2,13 +2,13 @@ require "file_utils"
 
 require "./engine"
 
-require "./kernel/book_info"
-require "./kernel/book_meta"
-require "./kernel/chap_list"
-require "./kernel/chap_text"
+require "./models/book_info"
+require "./models/book_meta"
+require "./models/chap_list"
+require "./models/chap_text"
 
-require "./kernel/import/remote_info"
-require "./kernel/import/remote_text"
+require "./models/import/remote_info"
+require "./models/import/remote_text"
 
 module Kernel
   extend self

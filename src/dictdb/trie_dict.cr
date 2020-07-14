@@ -3,25 +3,11 @@ require "file_utils"
 
 # main dict entries
 # TODO: redname?
-class CvDict
+class TrieDict
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 
   class Node
-    def self.parse(line : String, sep_0 : String = SEP_0, sep_1 : String | Regex = SEP_1)
-      cols = line.split(sep_0)
-
-      key = cols[0]
-      vals = cols.fetch(1, "").split(sep_1)
-      extra = cols.fetch(2, "")
-
-      {key, vals, extra}
-    end
-
-    def self.split(vals : String, sep = SEP_1)
-      vals.split(sep)
-    end
-
     getter key : String
     property vals : Array(String)
     property extra : String
@@ -134,6 +120,22 @@ class CvDict
     def scan(input : String, from = 0) : Void
       scan(input.chars, from) { |node| yield node }
     end
+
+    # class methods
+
+    def self.parse(line : String, sep_0 : String = SEP_0, sep_1 : String | Regex = SEP_1)
+      cols = line.split(sep_0)
+
+      key = cols[0]
+      vals = cols.fetch(1, "").split(sep_1)
+      extra = cols.fetch(2, "")
+
+      {key, vals, extra}
+    end
+
+    def self.split(vals : String, sep = SEP_1)
+      vals.split(sep)
+    end
   end
 
   getter file : String
@@ -163,12 +165,12 @@ class CvDict
         upsert(key, vals, extra)
         count += 1
       rescue
-        puts "- <dict_file> error parsing line `#{line}`.".colorize(:red)
+        puts "- <trie_dict> error parsing line `#{line}`.".colorize(:red)
       end
     end
 
     elapsed = elapsed.total_milliseconds.round.to_i
-    puts "- <dict_file> [#{file.colorize.blue}] loaded \
+    puts "- <trie_dict> [#{file.colorize.blue}] loaded \
             (lines: #{count.colorize.blue}, \
              time: #{elapsed.colorize.blue}ms)"
 
@@ -235,13 +237,13 @@ class CvDict
       each { |node| node.puts(io, trim: trim) }
     end
 
-    puts "- <dict_file> [#{file.colorize.yellow}] saved \
+    puts "- <trie_dict> [#{file.colorize.yellow}] saved \
             (entries: #{@size.colorize.yellow})."
   end
 
   # class methods
 
-  DIR = File.join("var", "dict_files")
+  DIR = File.join("var", "dictdb")
   FileUtils.mkdir_p(File.join(DIR, "unique"))
 
   def self.path_for(dname : String)
@@ -259,15 +261,15 @@ class CvDict
     dict
   end
 
-  @@cc_cedict : CvDict? = nil
-  @@trungviet : CvDict? = nil
-  @@tradsim : CvDict? = nil
-  @@binh_am : CvDict? = nil
+  @@cc_cedict : TrieDict? = nil
+  @@trungviet : TrieDict? = nil
+  @@tradsim : TrieDict? = nil
+  @@binh_am : TrieDict? = nil
 
-  @@hanviet : CvDict? = nil
-  @@generic : CvDict? = nil
-  @@combine : CvDict? = nil
-  @@suggest : CvDict? = nil
+  @@hanviet : TrieDict? = nil
+  @@generic : TrieDict? = nil
+  @@combine : TrieDict? = nil
+  @@suggest : TrieDict? = nil
 
   def self.cc_cedict
     @@cc_cedict ||= new(path_for("system/cc_cedict"), preload: true)
@@ -328,7 +330,7 @@ class CvDict
   end
 end
 
-# test = CvDict.new("tmp/test_lex_dict.dic", preload: true)
+# test = TrieDict.new("tmp/test_lex_dict.dic", preload: true)
 
 # test.upsert("a", "a")
 # test.upsert!("a", "b")

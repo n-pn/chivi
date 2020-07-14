@@ -2,8 +2,8 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../src/kernel/chap_list"
-require "../src/kernel/import/remote_text"
+require "../src/models/chap_list"
+require "../src/models/import/remote_text"
 
 def fetch_text(file : String, site : String, bsid : String, chap : ZhChap, label : String) : Void
   return if File.exists?(file)

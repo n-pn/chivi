@@ -1,8 +1,7 @@
-# fix `var/label_maps/seeds/*` info after fix titles and authors
-
-require "../../src/kernel/label_map"
+require "../../src/models/book_info"
+require "../../src/models/chap_list"
+require "../../src/lookup/label_map"
 require "../../src/source/source_util"
-require "../../src/_utils/gen_ubids"
 
 SEEDS = {
   "hetushu", "jx_la", "rengshu",
@@ -11,10 +10,12 @@ SEEDS = {
   "yousuu",
 }
 
+UBIDS = Set(String).new
+
 SEEDS.each do |seed|
-  seed_ubids = LabelMap.load("sitemaps/#{seed}--sbid--ubid")
-  seed_titles = LabelMap.load("sitemaps/#{seed}--sbid--title")
-  seed_authors = LabelMap.load("sitemaps/#{seed}--sbid--author")
+  seed_ubids = LabelMap.load!("sitemaps/#{seed}--sbid--ubid")
+  seed_titles = LabelMap.load!("sitemaps/#{seed}--sbid--title")
+  seed_authors = LabelMap.load!("sitemaps/#{seed}--sbid--author")
 
   seed_ubids.each do |sbid, ubid|
     next unless title = seed_titles.fetch(sbid)
@@ -35,7 +36,8 @@ SEEDS.each do |seed|
       author = new_author
     end
 
-    new_ubid = Utils.gen_ubid(title, author)
+    new_ubid = BookInfo.ubid_for(title, author)
+    UBIDS.add(new_ubid)
 
     if ubid != new_ubid
       seed_ubids.upsert(sbid, ubid)
@@ -45,4 +47,13 @@ SEEDS.each do |seed|
   seed_ubids.save!
   seed_titles.save!
   seed_authors.save!
+end
+
+ubids = BookInfo.ubids
+
+ubids.each do |ubid|
+  next if UBIDS.includes?(ubid)
+  puts "- DEAD ENTRY: #{ubid}"
+  File.delete(BookInfo.path_for(ubid))
+  FileUtils.rm_rf(ChapList.path_for(ubid))
 end

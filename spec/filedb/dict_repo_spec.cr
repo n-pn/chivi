@@ -1,13 +1,13 @@
 require "../spec_helper"
 require "../../src/engine/cv_dict"
 
-describe CvDict do
+describe TrieDict do
   # TODO:
   # - Test dict preload and reload
 
   describe ".load" do
     it "loads empty dict" do
-      dict = CvDict.load!("spec/_tests/nonexist.txt")
+      dict = TrieDict.load!("spec/_tests/nonexist.txt")
       dict.should_not be(nil)
 
       dict.size.should eq(0)
@@ -15,7 +15,7 @@ describe CvDict do
     end
 
     it "loads existed dict" do
-      dict = CvDict.load!("spec/_tests/sample-lexfile.dic")
+      dict = TrieDict.load!("spec/_tests/sample-lexfile.dic")
       dict.should_not be(nil)
 
       dict.size.should eq(1)
@@ -26,7 +26,7 @@ describe CvDict do
   describe ".load!" do
     it "should raise when file not found!" do
       expect_raises(Exception) do
-        dict = CvDict.load!("spec/_tests/nonexist.txt")
+        dict = TrieDict.load!("spec/_tests/nonexist.txt")
       end
     end
   end

@@ -56,7 +56,7 @@ class CE_DICT
   CEDICT_URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 
   HANZIDB_FILE = Utils.inp_path("initial/hanzidb.txt")
-  HANZIDB_DICT = CvDict.load_legacy(HANZIDB_FILE)
+  HANZIDB_DICT = TrieDict.load_legacy(HANZIDB_FILE)
 
   CE_DICT_FILE = Utils.out_path("system/cc_cedict.dic")
   TRADSIM_FILE = Utils.out_path("system/tradsim.dic")
@@ -96,7 +96,7 @@ class CE_DICT
   def export_ce_dict!
     puts "\n[-- Export ce_dict --]".colorize.cyan.bold
 
-    dict = CvDict.new(CE_DICT_FILE)
+    dict = TrieDict.new(CE_DICT_FILE)
     ondicts = Utils.ondicts_words
 
     @input.each do |entry|
@@ -118,7 +118,7 @@ class CE_DICT
     puts "\n[-- Export tradsim --]".colorize.cyan.bold
 
     counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
-    tswords = CvDict.new(Utils.inp_path("autogen/tradsimp-words.dict"))
+    tswords = TrieDict.new(Utils.inp_path("autogen/tradsimp-words.dict"))
 
     @input.each do |entry|
       next if is_trad?(entry.define)
@@ -135,7 +135,7 @@ class CE_DICT
       end
     end
 
-    dict = CvDict.new(TRADSIM_FILE)
+    dict = TrieDict.new(TRADSIM_FILE)
 
     counter.each do |trad, counts|
       best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
@@ -176,7 +176,7 @@ class CE_DICT
       end
     end
 
-    dict = CvDict.new(BINH_AM_FILE)
+    dict = TrieDict.new(BINH_AM_FILE)
     dict.load!(Utils.inp_path("initial/extra-pinyins.txt"), "=", "/")
 
     HANZIDB_DICT.each do |entry|

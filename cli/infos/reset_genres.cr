@@ -1,5 +1,5 @@
-require "../../src/kernel/book_info"
-require "../../src/kernel/token_map"
+require "../../src/lookup/token_map"
+require "../../src/models/book_info"
 
 input = BookInfo.load_all!
 

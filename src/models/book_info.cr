@@ -1,41 +1,10 @@
 require "colorize"
 require "file_utils"
 
-require "./base_model"
-require "./chap_item"
-
 require "../_utils/gen_ubids"
 
-class BookSeed
-  include BaseModel
-
-  # seed types: 0 => remote, 1 => manual, 2 => locked
-  property type = 0
-
-  property name = ""
-  property sbid = ""
-
-  property mftime = 0_i64
-  property latest = ChapItem.new
-
-  def initialize(@name, @type = 0)
-  end
-
-  # update latest chap
-  def update_latest(latest : ChapItem, mftime = @mftime)
-    if @latest.scid != latest.scid
-      mftime = Time.utc.to_unix_ms if mftime == @mftime
-      @latest = latest
-    else
-      @latest.inherit(latest)
-    end
-
-    @changes += @latest.reset_changes!
-
-    @mftime = mftime
-    @latest
-  end
-end
+require "./base_model"
+require "./book_seed"
 
 class BookInfo
   include BaseModel
@@ -95,7 +64,7 @@ class BookInfo
 
   # regenerate ubid
   def fix_ubid : Void
-    self.ubid = Utils.gen_ubid(@title_zh, @author_zh)
+    self.ubid = BookInfo.ubid_for(@title_zh, @author_zh)
   end
 
   {% for field in {:title, :author, :intro} %}
@@ -217,7 +186,7 @@ class BookInfo
 
   # class methods
 
-  DIR = File.join("var", "book_infos")
+  DIR = File.join("var", "bookdb", "infos")
   FileUtils.mkdir_p(DIR)
 
   # all book infos file in the `DIR` folder
@@ -238,6 +207,11 @@ class BookInfo
   # extract ubid from filename
   def self.ubid_for(file : String) : String
     File.basename(file, ".json")
+  end
+
+  # generate unique book id from `title_zh` and `author_zh`
+  def self.ubid_for(title : String, author : String) : String
+    Utils.gen_ubid(title, author)
   end
 
   # check if book with this `ubid` exists
@@ -284,13 +258,13 @@ class BookInfo
 
   # find book info by using `title` and `author` as unique identity
   def self.get(title : String, author : String) : BookInfo?
-    get(Utils.gen_ubid(title, author))
+    get(ubid_for(title, author))
   end
 
   # create new entry if book with this `title_zh` and `author_zh` does not exist
   # can reuse `ubid` if pre-calculated
   def self.get_or_create(title : String, author : String, ubid : String? = nil)
-    ubid ||= Utils.gen_ubid(title, author)
+    ubid ||= ubid_for(title, author)
     get(ubid) || new(title, author, ubid)
   end
 
@@ -311,7 +285,7 @@ class BookInfo
 
   # load with caching, create new entry if not exists
   def self.preload_or_create!(title : String, author : String, ubid : String? = nil) : BookInfo
-    ubid ||= Utils.gen_ubid(title, author)
+    ubid ||= ubid_for(title, author)
     CACHE[ubid] ||= find_or_create(title, author, ubid)
   end
 

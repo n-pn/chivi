@@ -2,8 +2,8 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/kernel/book_info"
 require "../../src/_utils/text_utils"
+require "../../src/models/book_info"
 
 books = BookInfo.load_all!
 

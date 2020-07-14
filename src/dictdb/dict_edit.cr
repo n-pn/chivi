@@ -2,22 +2,14 @@ require "colorize"
 require "file_utils"
 
 # dict modification log
-class CvDlog
+class DictEdit
   EPOCH = Time.utc(2020, 1, 1)
   SEP_0 = "ǁ"
 
-  class Item
+  class Edit
     def self.mtime(time = Time.utc)
       (time - EPOCH).total_minutes.to_i
     end
-
-    getter mtime : Int32   # time by total minutes since the EPOCH
-    getter udname : String # user handle dname
-    getter power : Int32   # entry lock level
-
-    getter key : String
-    getter vals : String
-    getter extra : String
 
     def self.parse!(line : String)
       cols = line.split(SEP_0)
@@ -28,6 +20,14 @@ class CvDlog
 
       new(mtime.to_i, udname, power.to_i, key, vals, extra)
     end
+
+    getter mtime : Int32   # time by total minutes since the EPOCH
+    getter udname : String # user handle dname
+    getter power : Int32   # entry lock level
+
+    getter key : String
+    getter vals : String
+    getter extra : String
 
     def initialize(@mtime, @udname, @power, @key, @vals = "", @extra = "")
     end
@@ -45,7 +45,7 @@ class CvDlog
       io << "\n"
     end
 
-    def better_than?(other : Item)
+    def better_than?(other : Edit)
       return @mtime >= other.mtime if @power == other.power
       @power > other.power
     end
@@ -54,11 +54,11 @@ class CvDlog
   getter file : String
   getter time = EPOCH
 
-  getter logs = [] of Item
-  getter best = {} of String => Item
+  getter list = [] of Edit
+  getter best = {} of String => Edit
 
-  delegate size, to: @logs
-  delegate each, to: @logs
+  delegate size, to: @list
+  delegate each, to: @list
 
   def initialize(@file, preload : Bool = false)
     load!(@file) if preload && exists?
@@ -72,7 +72,7 @@ class CvDlog
     lines = File.read_lines(@file)
 
     lines.each do |line|
-      append(Item.parse!(line))
+      append(Edit.parse!(line))
     rescue
       puts "- <dict_dlog> error parsing line: `#{line.colorize(:red)}`."
     end
@@ -82,19 +82,19 @@ class CvDlog
   end
 
   def sort! : Void
-    @logs.sort_by!(&.mtime)
+    @list.sort_by!(&.mtime)
   end
 
-  def insert!(item : Item)
+  def insert!(item : Edit)
     append!(item)
     insert(item)
   end
 
-  def append!(item : Item)
+  def append!(item : Edit)
     File.open(@file, "a") { |io| item.puts(io) }
   end
 
-  def insert(item : Item) : Void
+  def insert(item : Edit) : Void
     insert(item.key, item.power) { item }
   end
 
@@ -104,7 +104,7 @@ class CvDlog
     end
 
     item = yield
-    @logs << item
+    @list << item
     @best[key] = item
   end
 
@@ -114,20 +114,20 @@ class CvDlog
 
   def save!(sort : Bool = false)
     sort! if sort
-    @logs.uniq!
+    @list.uniq!
 
     File.open(@file, "w") do |io|
-      @logs.each { |item| io.puts(item) }
+      @list.each { |item| io.puts(item) }
     end
 
     puts "- <dict_dlog> [#{@file.colorize.yellow}] saved \
-            (entries: #{logs.size.colorize.yellow})."
+            (entries: #{list.size.colorize.yellow})."
     self
   end
 
   # class methods
 
-  DIR = File.join("var", "dict_dlogs")
+  DIR = File.join("var", "dictdb")
   FileUtils.mkdir_p(File.join(DIR, "unique"))
 
   @@scope = ENV["KEMAL_ENV"]? == "production" ? "appcv" : "local"
@@ -146,10 +146,10 @@ class CvDlog
     CACHE[file] ||= new(file, preload)
   end
 
-  @@hanviet : CvDlog? = nil
-  @@generic : CvDlog? = nil
-  @@combine : CvDlog? = nil
-  @@suggest : CvDlog? = nil
+  @@hanviet : DictEdit? = nil
+  @@generic : DictEdit? = nil
+  @@combine : DictEdit? = nil
+  @@suggest : DictEdit? = nil
 
   def self.hanviet
     @@hanviet ||= new(path_for("shared/hanviet"), true)

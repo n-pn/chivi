@@ -8,9 +8,10 @@ require "../../src/_utils/file_utils"
 require "../../src/_utils/time_utils"
 require "../../src/_utils/text_utils"
 
-require "../../src/kernel/book_info"
-require "../../src/kernel/order_map"
-require "../../src/kernel/label_map"
+require "../../src/models/book_info"
+
+require "../../src/lookup/order_map"
+require "../../src/lookup/label_map"
 
 require "../../src/source/remote_info"
 
@@ -19,12 +20,12 @@ class MapZhwenpg
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-    @top_authors = OrderMap.load("author--weight")
-    @book_update = OrderMap.load("ubid--update")
+    @top_authors = OrderMap.load!("author--weight")
+    @book_update = OrderMap.load!("ubid--update")
 
-    @map_ubids = LabelMap.load("sitemaps/zhwenpg--sbid--ubid")
-    @map_titles = LabelMap.load("sitemaps/zhwenpg--sbid--title")
-    @map_authors = LabelMap.load("sitemaps/zhwenpg--sbid--author")
+    @map_ubids = LabelMap.get_or_create("sitemaps/zhwenpg--sbid--ubid")
+    @map_titles = LabelMap.get_or_create("sitemaps/zhwenpg--sbid--title")
+    @map_authors = LabelMap.get_or_create("sitemaps/zhwenpg--sbid--author")
   end
 
   def expiry(page : Int32 = 1)

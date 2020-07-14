@@ -1,6 +1,6 @@
 require "spec"
 require "file_utils"
-require "../../src/kernel/chap_text"
+require "../../src/models/chap_text"
 
 describe ChapText do
   it "correctly save text" do
