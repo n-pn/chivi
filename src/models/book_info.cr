@@ -177,11 +177,12 @@ class BookInfo
 
   # save file and reset change counter
   def save!(file : String = BookInfo.path_for(@ubid)) : Void
-    File.write(file, self)
+    color = changed? ? :yellow : :cyan
+    puts "- <book_info> [#{file.colorize(color)}] saved \
+    (changes: #{@changes.colorize(color)})."
 
     @changes = 0
-    puts "- <book_info> [#{file.colorize.yellow}] saved \
-            (changes: #{@changes.colorize.yellow})."
+    File.write(file, self)
   end
 
   # class methods
@@ -234,11 +235,12 @@ class BookInfo
   # read file if exists, return nil if error, delete file if parsing error.
   def self.read(file : String) : BookInfo?
     return unless File.exists?(file)
-    puts "- <book_info> [#{file.colorize.blue}] loaded."
+    # puts "- <book_info> [#{file.colorize.blue}] loaded."
     from_json(File.read(file))
   rescue err
     puts "- <book_info> error parsing file [#{file}], err: #{err}".colorize.red
     File.delete(file)
+    nil
   end
 
   # load book info by its `ubid`

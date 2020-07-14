@@ -29,7 +29,7 @@ class MapZhwenpg
   end
 
   def expiry(page : Int32 = 1)
-    24.hours * page
+    4.hours * page
   end
 
   def page_url(page : Int32, status : Int32 = 0)
@@ -143,6 +143,8 @@ class MapZhwenpg
       remote = RemoteInfo.new("zhwenpg", sbid, expiry: expiry, freeze: true)
       remote.emit_chap_list.save!
     end
+  rescue err
+    puts "ERROR: #{err.colorize.red}!"
   end
 
   TIME = Time.utc.to_unix_ms

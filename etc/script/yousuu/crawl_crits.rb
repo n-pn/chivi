@@ -5,7 +5,7 @@ class CritCrawler
     @http = HttpClient.new(load_proxy, debug_mode)
     @ybids = []
 
-    files = Dir.glob("var/book_infos/*.json")
+    files = Dir.glob("var/bookdb/infos/*.json")
     files.each do |file|
       json = JSON.parse(File.read(file))
       link = json["yousuu_url"]

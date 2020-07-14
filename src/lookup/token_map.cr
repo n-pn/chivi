@@ -8,7 +8,7 @@ class TokenMap
   SEP_1 = "¦"
 
   getter hash = Hash(String, Array(String)).new
-  getter keys = Hash(String, Array(String)).new
+  getter keys = Hash(String, Set(String)).new
 
   forward_missing_to @hash
 
@@ -39,16 +39,20 @@ class TokenMap
             time: #{elapsed.colorize.blue}ms)."
   end
 
+  def keys(val : String)
+    @keys[val]?
+  end
+
   def fuzzy_search(tokens : Array(String))
-    res = [] of String
-    return res unless key_set = min_keys_set(tokens)
+    output = [] of String
+    return output unless key_set = min_keys_set(tokens)
 
     key_set.each do |key|
       values = @hash[key]
-      res << key if fuzzy_match?(values, tokens)
+      output << key if fuzzy_match?(values, tokens)
     end
 
-    res
+    output
   end
 
   private def fuzzy_match?(values : Array(String), tokens : Array(String))
@@ -109,15 +113,15 @@ class TokenMap
 
   private def insert_key(key : String, vals : Array(String))
     vals.uniq.each do |val|
-      @keys[val] ||= [] of String
-      @keys[val] << key
+      list = @keys[val] ||= Set(String).new
+      list << key
     end
   end
 
   private def delete_key(key : String, vals : Array(String))
     vals.each do |val|
-      next unless keys = @keys[val]?
-      keys.delete(key)
+      next unless list = @keys[val]?
+      list.delete(key)
     end
   end
 

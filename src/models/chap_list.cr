@@ -54,12 +54,13 @@ class ChapList
 
   # save file and reset change counter
   def save!(file : String = ChapList.path_for(@ubid, @seed)) : Void
+    color = changed? ? :yellow : :cyan
+    puts "- <chap_list> [#{file.colorize(color)}] saved \
+            (changes: #{@changes.colorize(color)})."
+
     ChapList.mkdir!(@ubid) # prevent missing folder
     File.write(file, to_json)
-
     @changes = 0
-    puts "- <chap_list> [#{file.colorize.yellow}] saved \
-            (changes: #{@changes.colorize.yellow})."
   end
 
   # class methods
@@ -118,7 +119,7 @@ class ChapList
   # read file if exists, return nil if error, delete file if parsing error.
   def self.read(file : String) : ChapList?
     return unless File.exists?(file)
-    puts "- <chap_list> [#{file.colorize.blue}] loaded."
+    # puts "- <chap_list> [#{file.colorize.blue}] loaded."
     from_json(File.read(file))
   rescue err
     puts "- <chap_list> error parsing file [#{file}], err: #{err}".colorize.red

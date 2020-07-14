@@ -30,7 +30,7 @@ module Utils
   rescue err
     puts "- <fetch_html> error fetching #{url.colorize.red}]: \
             [#{err.class}] #{err.colorize.red}"
-    if retry < 5
+    if retry < 3
       sleep 500.milliseconds
       fetch_html(url, tls, encoding, retry + 1)
     else

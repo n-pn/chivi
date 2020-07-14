@@ -64,7 +64,7 @@ class ValueSet
 
   # class methods
 
-  DIR = File.join("var", "lookup", "value")
+  DIR = File.join("var", "lookup", "values")
   FileUtils.mkdir_p(DIR)
 
   # file path relative to `DIR`

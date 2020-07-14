@@ -156,20 +156,20 @@ class OrderMap
   end
 
   def fetch(key : String) : Node?
-    @data.fetch(key, nil)
+    @data.fetch(key, nil) unless key.empty?
   end
 
   def value(key : String) : Int64?
     fetch(key).try(&.val)
   end
 
-  def each(node = @first)
+  def each(node : Node = @first)
     while node = node.right
       yield node unless node == @last
     end
   end
 
-  def reverse_each(node = @last)
+  def reverse_each(node : Node = @last)
     while node = node.left
       yield node unless node == @first
     end

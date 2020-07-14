@@ -99,6 +99,7 @@ class MapYousuu
       info.origin_url = input.first_source || ""
 
       next unless info.changed?
+      info.save!
 
       if @book_update.has_key?(ubid)
         @info_update += 1
@@ -108,8 +109,6 @@ class MapYousuu
 
       @top_authors.upsert(info.author_zh, info.weight)
       @book_update.upsert(ubid, info.mftime)
-
-      info.save!
     end
   end
 

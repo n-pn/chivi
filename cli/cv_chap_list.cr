@@ -34,6 +34,8 @@ def translate_chap(chap : ChapItem, dname : String)
   chap
 end
 
+SKIP_PAOSHU8 = ARGV.includes?("skip_paoshu8")
+
 def update_infos(info, label)
   return if info.seed_infos.empty?
   puts "- <#{label}> #{info.ubid}--#{info.slug}".colorize.cyan.bold
@@ -42,6 +44,7 @@ def update_infos(info, label)
 
   info.seed_infos.each_value do |seed|
     next if seed.type > 0
+    next if SKIP_PAOSHU8 && seed.name == "paoshu8"
 
     remote = RemoteInfo.new(seed.name, seed.sbid, expiry: expiry, freeze: true)
     remote.emit_book_info(info)
@@ -64,7 +67,7 @@ def update_infos(info, label)
 
     chaps.save! if chaps.changed?
   rescue err
-    puts "- error loading: [#{seed.name}/#{seed.sbid}]:  #{err}".colorize.red
+    puts "- <cv_chap_list> error loading: [#{seed.name}/#{seed.sbid}]:  #{err}".colorize.red
   end
 end
 
