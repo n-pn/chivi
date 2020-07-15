@@ -2,8 +2,12 @@ require "json"
 require "colorize"
 require "file_utils"
 
+require "../common/file_util"
+
 class LabelMap
+  LABEL = "label_map"
   SEP_0 = "ǁ"
+  SEP_1 = "¦"
 
   getter file : String
 
@@ -20,22 +24,12 @@ class LabelMap
   end
 
   def load!(file : String = @file) : Void
-    count = 0
-
-    elapsed = Time.measure do
-      File.each_line(file) do |line|
-        key, val = line.strip.split(SEP_0)
-        val.empty? ? delete(key) : upsert(key, val)
-        count += 1
-      rescue err
-        puts "- <label_map> error parsing line `#{line}`: #{err.colorize(:red)}"
-      end
+    FileUtil.each_line(file, LABEL) do |line|
+      key, val = line.strip.split(SEP_0)
+      val.empty? ? delete(key) : upsert(key, val)
+    rescue err
+      FileUtil.log_error(LABEL, line, err)
     end
-
-    elapsed = elapsed.total_milliseconds.round.to_i
-    puts "- <label_map> [#{file.colorize.blue}] loaded \
-            (lines: #{count.colorize.blue}) \
-            time: #{elapsed.colorize.blue}ms)."
   end
 
   def keys(val : String)
@@ -71,7 +65,7 @@ class LabelMap
   end
 
   def append!(key : String, val = "") : Void
-    File.open(@file, "a") { |io| to_s(io, key, val) }
+    FileUtil.append(@file) { |io| to_s(io, key, val) }
   end
 
   def to_s
@@ -87,10 +81,7 @@ class LabelMap
   end
 
   def save!(file : String = @file) : Void
-    File.write(file, self)
-
-    puts "- <label_map> [#{file.colorize.yellow}] saved \
-            (entries: #{size.colorize.yellow})."
+    FileUtil.save(file, LABEL, @hash.size) { |io| to_s(io) }
   end
 
   # class methods
@@ -115,7 +106,7 @@ class LabelMap
   end
 
   def self.load!(name : String) : LabelMap
-    load(name) || raise "<labep_map> name [#{name}] not found!"
+    load(name) || raise "<#{LABEL}> name [#{name}] not found!"
   end
 
   def self.load(name : String) : LabelMap?
@@ -143,7 +134,7 @@ end
 
 # test = LabelMap.new("tmp/label_map.txt")
 # test.upsert("a", "b")
-# test.upsert("b", "b")
+# test.upsert!("b", "b")
 
 # puts test.fetch("a")
 # puts test.keys("b")

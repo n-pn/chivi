@@ -4,7 +4,7 @@ require "file_utils"
 require "./chap_info"
 
 class ChapList
-  include BaseModel
+  include JsonData
 
   getter ubid : String # book ubid
   getter seed : String # seed name

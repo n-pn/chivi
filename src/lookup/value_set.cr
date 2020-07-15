@@ -2,9 +2,12 @@ require "json"
 require "colorize"
 require "file_utils"
 
-class ValueSet
-  getter file : String
+require "../common/file_util"
 
+class ValueSet
+  LABEL = "value_set"
+
+  getter file : String
   getter list = Set(String).new
   forward_missing_to @list
 
@@ -13,19 +16,9 @@ class ValueSet
   end
 
   def load!(file : String = @file) : Void
-    count = 0
-
-    elapsed = Time.measure do
-      File.each_line(file) do |line|
-        @list << line.strip
-        count += 1
-      end
+    FileUtil.each_line(file, LABEL) do |line|
+      @list << line.strip
     end
-
-    elapsed = elapsed.total_milliseconds.round.to_i
-    puts "- <value_set> [#{file.colorize.blue}] loaded \
-            (lines: #{count.colorize.blue}) \
-            time: #{elapsed.colorize.blue}ms)."
   end
 
   def upsert!(key : String) : Void
@@ -45,7 +38,7 @@ class ValueSet
   end
 
   def append!(key : String) : Void
-    File.open(@file, "a") { |io| io.puts(key) }
+    FileUtil.append(@file, &.puts(key))
   end
 
   def to_s
@@ -57,9 +50,7 @@ class ValueSet
   end
 
   def save!(file : String = @file) : Void
-    File.write(file, self)
-    puts "- <value_set> [#{file.colorize.yellow}] saved \
-            (entries: #{size.colorize.yellow})."
+    FileUtil.save(file, LABEL, @list.size) { |io| to_s(io) }
   end
 
   # class methods
@@ -89,7 +80,7 @@ class ValueSet
 
   # load file if exists, else raising exception
   def self.load!(name : String) : ValueSet
-    load(name) || raise "<value_set> name [#{name}] not found!"
+    load(name) || raise "<#{LABEL}> name [#{name}] not found!"
   end
 
   # load file if exists, else return nil

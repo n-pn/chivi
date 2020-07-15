@@ -1,5 +1,5 @@
 require "../../src/engine"
-require "../../src/_utils/text_utils"
+require "../../src/common/text_util"
 
 text = "第十三集 龙章凤仪 第一章 屠龙之术
 贾文和一个玩阴谋的，突然间客串了一把热血刺客，效果立竿见影。一万个道理都未必能说服的廖群玉，被一把错刀给说得心服口服，当即赶到宋国馆邸，通过官方渠道传讯临安，以自己的身家性命作保，顺利说服贾师宪，由其举荐宝钞局主事，工部员外郎程宗扬为唐国正使，通问昭南事宜。
@@ -14,13 +14,13 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 http://test.com/test?q=1
 "
 
-Engine.cv_mixed(Utils.split_lines(text), "combine").each do |data|
+Engine.cv_mixed(TextUtil.split_text(text), "combine").each do |data|
   puts data.vi_text
 end
 
 text = "【飞卢中文网A级签约作品：荒野食神之吃光食物链】当叶晓晨第一次得到【荒野食神系统】的时候，其实他是，是拒绝的，他跟系统讲，他拒绝，因为，其实他，根本没有厨艺……系统跟他讲，抓完荒野食材给厨艺，刀工很叼很快很炫目……  奇奇怪怪的荒野食材，丛林、沙漠、冰川、抓了这些食材，加了一段时间的厨艺技能之后呢！  菠萝烤鳄鱼，DUANG~~~很柔，很软。  蜜汁熊掌，DUANG~~~很香，很滑口。  亚马逊电鳗鱼面，DUANG~~DUANG~~DUANG~~很弹牙！  ……  女明星们问为什么这么好吃。  因为叶晓晨，他加特技…(本故事及人物纯属虚构，如有雷同，纯属巧合，切勿模仿。)"
 
-Engine.cv_plain(Utils.split_lines(text), "combine").each do |data|
+Engine.cv_plain(TextUtil.split_text(text), "combine").each do |data|
   puts data.vi_text
 end
 

@@ -1,8 +1,8 @@
-require "../_utils/fix_titles"
 require "../_utils/han_to_int"
 require "../_utils/normalize"
 
 require "../dictdb/trie_dict"
+require "../bookdb/chap_util"
 require "./cv_data"
 
 module Convert
@@ -29,24 +29,24 @@ module Convert
   def cv_title(input : String, *dicts : TrieDict)
     res = CvData.new
 
-    title, label = Utils.split_label(input)
+    title, label = ChapUtil.split_label(input)
     unless label.empty? || label == "正文"
       if match = TITLE_RE.match(label)
         _, group, idx, tag, trash, label = match
 
         num = Utils.han_to_int(idx)
-        res << CvData::Node.new(group, "#{cv_title_tag(tag)} #{num}", 1)
+        res << CvNode.new(group, "#{cv_title_tag(tag)} #{num}", 1)
 
         if !label.empty?
-          res << CvData::Node.new(trash, ": ", 0)
+          res << CvNode.new(trash, ": ", 0)
         elsif !trash.empty?
-          res << CvData::Node.new(trash, "", 0)
+          res << CvNode.new(trash, "", 0)
         end
       end
 
       unless label.empty?
         res.concat(cv_plain(label, *dicts))
-        res << CvData::Node.new("", " - ", 0) unless title.empty?
+        res << CvNode.new("", " - ", 0) unless title.empty?
       end
     end
 
@@ -55,12 +55,12 @@ module Convert
         _, group, idx, tag, trash, title = match
 
         num = Utils.han_to_int(idx)
-        res << CvData::Node.new(group, "#{cv_title_tag(tag)} #{num}", 1)
+        res << CvNode.new(group, "#{cv_title_tag(tag)} #{num}", 1)
 
         if !title.empty?
-          res << CvData::Node.new(trash, ": ", 0)
+          res << CvNode.new(trash, ": ", 0)
         elsif !trash.empty?
-          res << CvData::Node.new(trash, "", 0)
+          res << CvNode.new(trash, "", 0)
         end
       end
 
@@ -84,14 +84,14 @@ module Convert
   end
 
   def tokenize(chars : Array(Char), *dicts : TrieDict)
-    choices = [CvData::Node.new("", "")]
+    choices = [CvNode.new("", "")]
     weights = [0.0]
 
     norms = chars.map_with_index do |char, idx|
       norm = Utils.normalize(char)
 
       weights << idx + 1.0
-      choices << CvData::Node.new(char, norm, 0)
+      choices << CvNode.new(char, norm, 0)
 
       norm
     end
@@ -113,7 +113,7 @@ module Convert
           jdx = idx + length
           if weight >= weights[jdx]
             weights[jdx] = weight
-            choices[jdx] = CvData::Node.new(item.key, item.vals[0], dic, item.extra)
+            choices[jdx] = CvNode.new(item.key, item.vals[0], dic, item.extra)
           end
         end
       end

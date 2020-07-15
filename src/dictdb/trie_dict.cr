@@ -1,150 +1,20 @@
 require "colorize"
 require "file_utils"
 
-# main dict entries
-# TODO: redname?
+require "../common/file_util"
+require "./trie_node"
+
+# TODO: rename?
 class TrieDict
-  SEP_0 = "ǁ"
-  SEP_1 = "¦"
-
-  class Node
-    getter key : String
-    property vals : Array(String)
-    property extra : String
-    # extra data, can be used to mark attributes or priorities
-
-    getter trie = Hash(Char, Node).new
-
-    def initialize(@key, @vals = [] of String, @extra = "")
-    end
-
-    def to_s
-      String.build { |io| to_s(io) }
-    end
-
-    def to_s(io : IO, trim = 4)
-      vals = @vals.uniq
-      vals = vals.last(trim) if trim > 0
-
-      io << @key << SEP_0
-      vals.join(io, SEP_1)
-      io << SEP_0 << @extra
-    end
-
-    def puts(io : IO, trim = 4)
-      to_s(io, trim)
-      io << "\n"
-    end
-
-    def remove!
-      @vals.clear
-    end
-
-    def removed?
-      @vals.empty?
-    end
-
-    def each
-      queue = [self]
-
-      while node = queue.pop?
-        node.trie.each_value do |node|
-          queue << node
-          yield node unless node.removed?
-        end
-      end
-    end
-
-    def to_a
-      res = [] of Node
-      each { |node| res << node }
-      res
-    end
-
-    def find!(key : String) : Node
-      node = self
-
-      key.each_char do |char|
-        node = node.trie[char] ||= Node.new(node.key + char)
-      end
-
-      node
-    end
-
-    def find!(key : Array(Char), from = 0) : Node
-      node = self
-
-      from.upto(key.size - 1) do |idx|
-        char = key.unsafe_fetch(idx)
-        node = node.trie[char] ||= Node.new(node.key + char)
-      end
-
-      node
-    end
-
-    def find(key : String) : Node?
-      node = self
-
-      key.each_char do |char|
-        return nil unless node = node.trie[char]?
-      end
-
-      node unless node.removed?
-    end
-
-    def find(key : Array(Char), from = 0) : Node?
-      node = self
-
-      from.upto(key.size - 1) do |idx|
-        char = key.unsafe_fetch(idx)
-        return nil unless node = node.trie[char]?
-      end
-
-      node unless node.removed?
-    end
-
-    def has_key?(key : String) : Bool
-      find(key) != nil
-    end
-
-    def scan(chars : Array(Char), from = 0) : Void
-      node = self
-
-      from.upto(chars.size - 1) do |idx|
-        char = chars.unsafe_fetch(idx)
-        return unless node = node.trie[char]?
-        yield node unless node.removed?
-      end
-    end
-
-    def scan(input : String, from = 0) : Void
-      scan(input.chars, from) { |node| yield node }
-    end
-
-    # class methods
-
-    def self.parse(line : String, sep_0 : String = SEP_0, sep_1 : String | Regex = SEP_1)
-      cols = line.split(sep_0)
-
-      key = cols[0]
-      vals = cols.fetch(1, "").split(sep_1)
-      extra = cols.fetch(2, "")
-
-      {key, vals, extra}
-    end
-
-    def self.split(vals : String, sep = SEP_1)
-      vals.split(sep)
-    end
-  end
+  LABEL = "trie_dict"
 
   getter file : String
   getter time = Time.utc(2020, 1, 1)
 
-  getter root = Node.new("")
+  getter root = TrieNode.new("")
   getter size = 0
 
-  def initialize(@file, preload : Bool = false)
+  def initialize(@file, preload : Bool = false, legacy : Bool = false)
     load!(@file) if preload && exists?
   end
 
@@ -156,25 +26,22 @@ class TrieDict
     File.exists?(@file)
   end
 
-  def load!(file : String = @file, sep_0 : String = SEP_0, sep_1 : String | Regex = SEP_1) : Void
-    count = 0
-
-    elapsed = Time.measure do
-      File.each_line(file) do |line|
-        key, vals, extra = Node.parse(line, sep_0, sep_1)
-        upsert(key, vals, extra)
-        count += 1
-      rescue
-        puts "- <trie_dict> error parsing line `#{line}`.".colorize(:red)
-      end
+  def load_legacy!(file : String = @file) : Void
+    FileUtil.each_line(file, LABEL) do |line|
+      key, vals = TrieNode.parse_legacy(line)
+      upsert(key, vals)
+    rescue err
+      FileUtil.log_error(LABEL, line, err)
     end
+  end
 
-    elapsed = elapsed.total_milliseconds.round.to_i
-    puts "- <trie_dict> [#{file.colorize.blue}] loaded \
-            (lines: #{count.colorize.blue}, \
-             time: #{elapsed.colorize.blue}ms)"
-
-    self.time = File.info(file).modification_time
+  def load!(file : String = @file) : Void
+    FileUtil.each_line(file, LABEL) do |line|
+      key, vals, extra = TrieNode.parse(line)
+      upsert(key, vals, extra)
+    rescue err
+      FileUtil.log_error(LABEL, line, err)
+    end
   end
 
   def delete!(key : String)
@@ -198,8 +65,8 @@ class TrieDict
     append!(node)
   end
 
-  def append!(node : Node, trim = 1) : Node
-    File.open(@file, "a") { |io| node.puts(io, trim: trim) }
+  def append!(node : TrieNode, trim = 1) : TrieNode
+    FileUtil.append(@file) { |io| node.puts(io, trim: trim) }
     node
   end
 
@@ -210,14 +77,14 @@ class TrieDict
     end
   end
 
-  def upsert(key : String, vals : Array(String), extra = "") : Node
+  def upsert(key : String, vals : Array(String), extra = "") : TrieNode
     upsert(key) do |node|
       node.vals = vals
       node.extra = extra
     end
   end
 
-  def upsert(key : String) : Node
+  def upsert(key : String) : TrieNode
     node = @root.find!(key)
 
     @size += 1 if node.removed?
@@ -226,19 +93,16 @@ class TrieDict
     node
   end
 
-  include Enumerable(Node)
+  include Enumerable(TrieNode)
   delegate each, to: @root
   delegate scan, to: @root
   delegate find, to: @root
   delegate has_key?, to: @root
 
   def save!(file : String = @file, trim = 0) : Void
-    File.open(file, "w") do |io|
+    FileUtil.save(file, LABEL, @size) do |io|
       each { |node| node.puts(io, trim: trim) }
     end
-
-    puts "- <trie_dict> [#{file.colorize.yellow}] saved \
-            (entries: #{@size.colorize.yellow})."
   end
 
   # class methods
@@ -250,73 +114,41 @@ class TrieDict
     File.join(DIR, "#{dname}.dic")
   end
 
-  CACHE = {} of String => self
-
-  def self.load(name : String, cache = true, preload : Bool = true) : self
-    unless dict = CACHE[name]?
-      dict = new(path_for(name), preload)
-      CACHE[name] = dict if cache
-    end
-
-    dict
+  def self.load!(name : String)
+    new(path_for(name), preload: true)
   end
 
-  @@cc_cedict : TrieDict? = nil
-  @@trungviet : TrieDict? = nil
-  @@tradsim : TrieDict? = nil
-  @@binh_am : TrieDict? = nil
-
-  @@hanviet : TrieDict? = nil
-  @@generic : TrieDict? = nil
-  @@combine : TrieDict? = nil
-  @@suggest : TrieDict? = nil
-
-  def self.cc_cedict
-    @@cc_cedict ||= new(path_for("system/cc_cedict"), preload: true)
+  def self.read(file : String)
+    new(file, preload: true)
   end
 
-  def self.trungviet
-    @@trungviet ||= new(path_for("system/trungviet"), preload: true)
+  def self.read_legacy(file : String)
+    new(file, preload: false).tap(&.load_legacy!)
   end
 
-  def self.tradsim
-    @@tradsim ||= new(path_for("system/tradsim"), preload: true)
+  CACHE = {} of String => TrieDict
+
+  def self.preload!(name : String)
+    CACHE[name] ||= load!(name)
   end
 
-  def self.binh_am
-    @@binh_am ||= new(path_for("system/binh_am"), preload: true)
-  end
+  class_getter cc_cedict : TrieDict { load!("system/cc_cedict") }
+  class_getter trungviet : TrieDict { load!("system/trungviet") }
+  class_getter tradsim : TrieDict { load!("system/tradsim") }
+  class_getter binh_am : TrieDict { load!("system/binh_am") }
 
-  def self.hanviet
-    @@hanviet ||= load("hanviet")
-  end
-
-  def self.generic
-    @@generic ||= load("generic")
-  end
-
-  def self.combine
-    @@combine ||= load("combine")
-  end
-
-  def self.suggest
-    @@suggest ||= load("suggest")
-  end
-
-  def self.load_legacy(file : String)
-    dict = new(file, preload: false)
-    dict.tap(&.load!(file, "=", /[\/|]/))
-  end
+  class_getter hanviet : TrieDict { preload!("hanviet") }
+  class_getter generic : TrieDict { preload!("generic") }
+  class_getter suggest : TrieDict { preload!("suggest") }
+  class_getter combine : TrieDict { preload!("combine") }
 
   def self.load_unique(dname : String)
-    load("unique/#{dname}", cache: true, preload: true)
+    preload!("unique/#{dname}")
   end
 
-  def self.load_remote(dname : String)
+  def self.load_unsure(dname : String)
     case dname
     when "hanviet" then hanviet
-    when "pinyins" then pinyins
-    when "tradsim" then tradsim
     when "generic" then generic
     when "combine" then combine
     when "suggest" then suggest

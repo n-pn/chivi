@@ -1,104 +1,10 @@
 require "json"
-require "../_utils/text_utils"
+require "../common/text_util"
+
+require "./cv_node"
 
 class CvData
-  SEP_0 = "ǁ"
-  SEP_1 = "¦"
-
-  class Node
-    property key : String
-    property val : String
-    property dic : Int32
-    property etc : String
-
-    def initialize(@key : String, @val : String, @dic : Int32 = 0, @etc = "")
-    end
-
-    def initialize(key : Char, val : Char, @dic : Int32 = 0, @etc = "")
-      @key = key.to_s
-      @val = val.to_s
-    end
-
-    def initialize(char : Char, @dic : Int32 = 0, @etc = "")
-      @key = @val = char.to_s
-    end
-
-    def to_s
-      String.build { |io| to_s(io) }
-    end
-
-    def to_s(io : IO)
-      io << @key << SEP_1 << @val << SEP_1 << @dic
-    end
-
-    # return true if
-    def capitalize!
-      @val = Utils.capitalize(@val)
-    end
-
-    LETTER_RE = /[\p{L}\p{N}\p{Han}\p{Hiragana}\p{Katakana}]/
-
-    def match_letter?
-      LETTER_RE.matches?(@val)
-    end
-
-    def special_char?
-      case @key[0]?
-      when '_', '.', '%', '-', '/', '?', '=', ':'
-        true
-      else
-        false
-      end
-    end
-
-    def unchanged?
-      @key == @val
-    end
-
-    def combine!(other : self)
-      @key = other.key + @key
-      @val = other.val + @val
-    end
-
-    def should_cap_after?
-      case @val[-1]?
-      when '“', '‘', '⟨', '[', '{', '.', ':', '!', '?', ' '
-        return true
-      else
-        return false
-      end
-    end
-
-    def should_space_before?
-      # return true if @dic > 0
-
-      case @val[0]?
-      when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
-           '!', '?', '%', ' ', '_', '…', '/', '\\', '~', '·'
-        false
-      else
-        true
-      end
-    end
-
-    def should_space_after?
-      # return true if @dic > 0
-
-      case @val[-1]?
-      # when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
-      #      '!', '?', '%', '…', '~', '—'
-      #   true
-      # else
-      #   false
-      when '“', '‘', '⟨', '(', '[', '{', ' ', '_', '/', '\\', '·'
-        false
-      else
-        true
-      end
-    end
-  end
-
-  getter data = [] of Node
+  getter data = [] of CvNode
   # forward_missing_to @data
 
   delegate :<<, to: @data
@@ -146,14 +52,14 @@ class CvData
   end
 
   def pad_spaces!
-    res = [] of Node
+    res = [] of CvNode
     add_space = false
 
     @data.each do |node|
       if node.val.empty?
         res << node
       else
-        res << Node.new("", " ", 0) if add_space && node.should_space_before?
+        res << CvNode.new("", " ", 0) if add_space && node.should_space_before?
         add_space = node.should_space_after?
         res << node
       end
@@ -184,7 +90,7 @@ class CvData
     @data.unsafe_fetch(0).to_s(io)
 
     1.upto(@data.size - 1) do |i|
-      io << SEP_0
+      io << CvNode::SEP_0
       @data.unsafe_fetch(i).to_s(io)
     end
 
@@ -199,8 +105,8 @@ class CvData
 
   def self.zh_text(text : String)
     String.build do |io|
-      text.split(SEP_0).each do |node|
-        io << node.split(SEP_1, 2).first
+      text.split(CvNode::SEP_0).each do |node|
+        io << node.split(CvNode::SEP_1, 2).first
       end
     end
   end

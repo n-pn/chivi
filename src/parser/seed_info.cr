@@ -7,7 +7,7 @@ require "../_utils/han_to_int"
 # require "../models/book_info"
 # require "../models/chap_list"
 
-require "../common/html_util"
+require "../common/http_util"
 require "../common/file_util"
 require "../common/time_util"
 
@@ -55,11 +55,11 @@ class SeedInfo
     file = path_for(seed, sbid)
 
     unless html = FileUtil.read(file, expiry)
-      html = HtmlUtil.fetch(url, HtmlUtil.encoding_for(seed))
+      html = HttpUtil.fetch_html(url, HttpUtil.encoding_for(seed))
       File.write(file, html) if freeze
     end
 
-    html = HtmlUtil.fetch(url, file, expiry, freeze)
+    html = HttpUtil.fetch_html(url, file, expiry, freeze)
     new(seed, sbid, html, type)
   end
 

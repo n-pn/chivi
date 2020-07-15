@@ -2,7 +2,10 @@ require "json"
 require "colorize"
 require "file_utils"
 
+require "../common/file_util"
+
 class OrderMap
+  LABEL = "order_map"
   SEP_0 = "ǁ"
 
   class Node
@@ -102,28 +105,17 @@ class OrderMap
   end
 
   def load!(file : String = @file) : Void
-    count = 0
+    FileUtil.each_line(file, LABEL) do |line|
+      key, val = line.strip.split(SEP_0, 2)
 
-    elapsed = Time.measure do
-      File.each_line(file) do |line|
-        key, val = line.strip.split(SEP_0, 2)
-
-        if val = val.try(&.to_i64?)
-          upsert(key, val)
-        else
-          delete(key)
-        end
-
-        count += 1
-      rescue err
-        puts "- <order_map> error parsing line `#{line}`: #{err.colorize(:red)}"
+      if val = val.try(&.to_i64?)
+        upsert(key, val)
+      else
+        delete(key)
       end
+    rescue err
+      FileUtil.log_error(LABEL, line, err)
     end
-
-    elapsed = elapsed.total_milliseconds.round.to_i
-    puts "- <order_map> [#{file.colorize.blue}] loaded \
-            (lines: #{count.colorize.blue}) \
-            time: #{elapsed.colorize.blue}ms)."
   end
 
   def upsert!(key : String, val : Int64, force : Bool = false) : Void
@@ -176,7 +168,7 @@ class OrderMap
   end
 
   def append!(key : String, val : Int64) : Void
-    File.open(@file, "a") { |io| to_s(io, key, val) }
+    FileUtil.append(@file) { |io| to_s(io, key, val) }
   end
 
   def to_s
@@ -192,9 +184,7 @@ class OrderMap
   end
 
   def save!(file : String = @file) : Void
-    File.write(file, self)
-    puts "- <order_map> [#{file.colorize.yellow}] saved \
-            (entries: #{size.colorize.yellow})."
+    FileUtil.save(file, LABEL, @data.size) { |io| to_s(io) }
   end
 
   # class methods

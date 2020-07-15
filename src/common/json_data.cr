@@ -34,30 +34,3 @@ module JsonData
     end
   end
 end
-
-# module JsonFile
-#   macro included
-#     include JsonData
-#   end
-
-#   @[JSON::Field(ignore: true)]
-#   getter file = ""
-
-#   @@brand = ""
-
-#   def self.brand
-#     brand
-#   end
-
-#   def self.brand(brand : String)
-#     @@brand = brand
-#   end
-
-#   @@dir = File.join("var", brand)
-
-#   def self.dir(dir : String)
-#     @@dir = File.join("var", dir)
-#     FileUtil.mkdir(@@dir)
-#   end
-
-# end

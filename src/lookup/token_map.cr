@@ -2,8 +2,11 @@ require "json"
 require "colorize"
 require "file_utils"
 
+require "../common/file_util"
+
 # mapping key to a list of tokens
 class TokenMap
+  LABEL = "token_map"
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 
@@ -19,24 +22,16 @@ class TokenMap
   def load!(file : String = @file) : Void
     count = 0
 
-    elapsed = Time.measure do
-      File.each_line(file) do |line|
-        cols = line.strip.split(SEP_0, 2)
+    FileUtil.each_line(file, LABEL) do |line|
+      cols = line.strip.split(SEP_0, 2)
 
-        key = cols[0]
-        vals = (cols[1]? || "").split(SEP_1)
+      key = cols[0]
+      vals = (cols[1]? || "").split(SEP_1)
 
-        vals.empty? ? delete(key) : upsert(key, vals)
-        count += 1
-      rescue err
-        puts "- <token_map> error parsing line `#{line.colorize.red}`: #{err}"
-      end
+      vals.empty? ? delete(key) : upsert(key, vals)
+    rescue err
+      FileUtil.log_error(LABEL, line, err)
     end
-
-    elapsed = elapsed.total_milliseconds.round.to_i
-    puts "- <token_map> [#{file.colorize.blue}] loaded \
-            (lines: #{count.colorize.blue}) \
-            time: #{elapsed.colorize.blue}ms)."
   end
 
   def keys(val : String)
@@ -131,7 +126,7 @@ class TokenMap
   end
 
   def append!(key : String, vals : Array(String))
-    File.open(@file, "a") { |io| to_s(io, key, vals) }
+    FileUtil.append(@file) { |io| to_s(io, key, vals) }
   end
 
   def to_s
@@ -149,12 +144,9 @@ class TokenMap
   end
 
   def save!(file : String = @file) : Void
-    File.open(file, "w") do |io|
+    FileUtil.save(file, LABEL, @hash.size) do |io|
       @hash.each { |key, vals| to_s(io, key, vals) }
     end
-
-    puts "- <token_map> [#{file.colorize.yellow}] saved \
-            (entries: #{@hash.size.colorize.yellow})."
   end
 
   # class methods
