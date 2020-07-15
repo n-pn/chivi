@@ -5,7 +5,7 @@ require "file_utils"
 require "../src/engine"
 require "../src/models/book_info"
 require "../src/models/chap_list"
-require "../src/source/remote_info"
+require "../src/parser/seed_info"
 
 def translate(input : String, dname : String)
   return input if input.empty?
@@ -21,7 +21,7 @@ def gen_expiry(status : Int32)
   end
 end
 
-def translate_chap(chap : ChapItem, dname : String)
+def translate_chap(chap : ChapInfo, dname : String)
   if chap.label_vi.empty?
     chap.label_vi = translate(chap.label_zh, dname)
   end
@@ -46,7 +46,7 @@ def update_infos(info, label)
     next if seed.type > 0
     next if SKIP_PAOSHU8 && seed.name == "paoshu8"
 
-    remote = RemoteInfo.new(seed.name, seed.sbid, expiry: expiry, freeze: true)
+    remote = SeedInfo.new(seed.name, seed.sbid, expiry: expiry, freeze: true)
     remote.emit_book_info(info)
 
     if info.changed?

@@ -72,7 +72,7 @@ module Kernel
     {chaps, mftime}
   end
 
-  private def changed?(new_latest : ChapItem?, old_latest)
+  private def changed?(new_latest : ChapInfo?, old_latest)
     return false unless new_latest
     return true unless old_latest
     new_latest.csid != old_latest

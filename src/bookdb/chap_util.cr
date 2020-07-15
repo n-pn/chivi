@@ -1,4 +1,4 @@
-module Utils
+module ChapUtil
   # fixes chapter titles
 
   NUMS = "零〇一二两三四五六七八九十百千"
@@ -45,7 +45,7 @@ module Utils
     return clean_spaces(title)
   end
 
-  def self.clean_spaces(title : String)
-    title.gsub(/\p{Z}+/, " ").strip
+  def self.clean_spaces(input : String)
+    input.tr("\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000", " ")
   end
 end

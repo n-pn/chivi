@@ -1,12 +1,11 @@
 require "colorize"
 
-require "../_utils/fix_titles"
-require "../_utils/text_utils"
+require "../common/text_util"
+require "../common/json_data"
+require "./chap_util"
 
-require "./base_model"
-
-class ChapItem
-  include BaseModel
+class ChapInfo
+  include JsonData
 
   property scid = ""
 
@@ -27,16 +26,15 @@ class ChapItem
 
   def set_title(title : String, label : String = "正文")
     if label.empty? || label == "正文"
-      self.title_zh, self.label_zh = Utils.split_label(title)
+      self.title_zh, self.label_zh = ChapUtil.split_label(title)
     else
-      self.title_zh = Utils.format_title(title)
-      self.label_zh = Utils.clean_spaces(label)
+      self.title_zh = ChapUtil.format_title(title)
+      self.label_zh = ChapUtil.clean_spaces(label)
     end
   end
 
   def set_slug(title = @title_vi, max_words : Int32 = 12) : Void
-    slug = Utils.slugify(title, no_accent: true)
-    slug = slug.split("-").first(max_words).join("-")
+    slug = TextUtil.tokenize(title).first(max_words).join("-")
     self.url_slug = slug
   end
 
@@ -47,8 +45,10 @@ class ChapItem
   def inherit(other : self) : Void
     self.title_zh = other.title_zh
     self.title_vi = other.title_vi
+
     self.title_zh = other.title_zh
     self.label_zh = other.label_zh
+
     self.url_slug = other.url_slug
   end
 end

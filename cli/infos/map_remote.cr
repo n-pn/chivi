@@ -9,7 +9,7 @@ require "../../src/lookup/label_map.cr"
 
 require "../../src/models/book_info.cr"
 
-require "../../src/source/remote_info.cr"
+require "../../src/parser/seed_info.cr"
 
 class MapRemote
   SEEDS = {
@@ -137,14 +137,14 @@ class MapRemote
   end
 
   def parse!(sbid : String, expiry = 24.hours, label = "1/1")
-    remote = RemoteInfo.new(@seed, sbid, expiry: expiry, freeze: true)
+    remote = SeedInfo.new(@seed, sbid, expiry: expiry, freeze: true)
 
     ubid = remote.ubid
     return if ubid == "--"
 
     title = remote.title
     author = remote.author
-    return if SourceUtil.blacklist?(title)
+    return if BookUtil.blacklist?(title)
 
     puts "\n<#{label}> [#{sbid}] #{ubid}-#{author}-#{title}".colorize.cyan
 

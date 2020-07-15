@@ -1,12 +1,12 @@
 require "file_utils"
 
-require "../../src/source/remote_info.cr"
+require "../../src/parser/seed_info.cr"
 
 def fetch_info(info, sbid, expiry = 30.days) : Void
   puts "\n[ #{info} / #{sbid} ]\n".colorize(:yellow)
 
   RemoteUtil.mkdir!(info)
-  task = RemoteInfo.new(info, sbid, expiry: expiry, freeze: true)
+  task = SeedInfo.new(info, sbid, expiry: expiry, freeze: true)
 
   puts task.emit_book_info.to_pretty_json
   puts task.latest_chap.to_pretty_json

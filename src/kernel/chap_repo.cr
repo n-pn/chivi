@@ -2,12 +2,16 @@ require "json"
 require "colorize"
 
 require "../models/chap_text"
-require "../source/remote_text"
+require "../parser/seed_info"
+require "../parser/seed_text"
 
 require "../engine"
 
 module ChapRepo
   extend self
+
+  def load_list(ubid : String, seed : String, sbid = "", mode = 1)
+  end
 
   # modes:
   # 2 => load saved chap_text
@@ -23,7 +27,7 @@ module ChapRepo
       return chap if mode > 1
       zh_lines = chap.zh_lines
     else
-      zh_lines = RemoteText.fetch!(host, bsid, csid, keep_html: false)
+      zh_lines = SeedText.fetch!(host, bsid, csid, keep_html: false)
     end
 
     chap.data = Engine.cv_mixed(zh_lines, bdic, udic).map(&.to_s).join("\n")

@@ -11,7 +11,7 @@ struct BookSource
   property link : String
 end
 
-class YousuuInfo
+class YsSerial
   include JSON::Serializable
 
   property _id : Int32
@@ -63,7 +63,7 @@ class YousuuInfo
     @sources.first?.try(&.link)
   end
 
-  alias Data = NamedTuple(bookInfo: YousuuInfo, bookSource: Array(BookSource))
+  alias Data = NamedTuple(bookInfo: YsSerial, bookSource: Array(BookSource))
 
   def self.load!(file : String)
     text = File.read(file)
@@ -81,4 +81,4 @@ class YousuuInfo
   end
 end
 
-# pp YousuuInfo.load!("var/.book_cache/yousuu/serials/176814.json")
+# pp YsSerial.load!("var/.book_cache/yousuu/serials/176814.json")

@@ -1,13 +1,12 @@
 require "colorize"
 require "file_utils"
 
-require "../_utils/gen_ubids"
-
-require "./base_model"
+require "../common/json_data"
 require "./book_seed"
+require "./book_util"
 
 class BookInfo
-  include BaseModel
+  include JsonData
 
   property ubid = ""
   property slug = ""
@@ -39,7 +38,7 @@ class BookInfo
   property cover_urls = [] of String
   property main_cover = ""
 
-  property yousuu_url = ""
+  property yousuu_bid = ""
   property origin_url = ""
 
   property word_count = 0_i32
@@ -48,8 +47,7 @@ class BookInfo
   property view_count = 0_i32
   property read_count = 0_i32
 
-  property seed_names = [] of String # sort by order of priority
-  property seed_infos = {} of String => BookSeed
+  property seeds = {} of String => BookSeed
 
   def initialize
   end
@@ -66,17 +64,6 @@ class BookInfo
   def fix_ubid : Void
     self.ubid = BookInfo.ubid_for(@title_zh, @author_zh)
   end
-
-  {% for field in {:title, :author, :intro} %}
-    # only set field if not empty
-    def set_{{field.id}}(value : String, force = false)
-      return if @{{field.id}}_zh == value
-      return unless @{{field.id}}_zh.empty? || force
-
-      self.{{field.id}}_zh = value
-      self.{{field.id}}_vi = ""
-    end
-  {% end %}
 
   # add new genre if not already exists
   def add_genre(genre_zh : String, genre_vi = "") : Void
@@ -118,51 +105,42 @@ class BookInfo
     @weight = scored * @voters + @view_count
   end
 
-  # only update if new status is greater than old status
-  def status=(status : Int32)
-    return if status <= @status
-    @changes += 1
-    @status = status
-  end
-
-  # only update if new mftime is greater than old mftime
-  def mftime=(mftime : Int64)
-    return if mftime <= @mftime
-    @changes += 1
-    @mftime = mftime
-  end
-
-  # add new seed or update previous one
-  def add_seed(name : String, type = 0)
-    if seed = @seed_infos[name]?
-      seed.type = type
-      @changes += seed.reset_changes!
-    else
-      seed = @seed_infos[name] = BookSeed.new(name, type)
-      @seed_names << name
-      @changes += 1
+  def update(source : YsSerial)
+    source.genres.each do |(genre_zh, genre_vi)|
+      add_genre(genres_zh, genre_vi)
     end
 
-    seed
+    source.tags.each do |tag|
+      add_tag(tag)
+    end
   end
 
-  # update seed info, update mftime and latest chap
-  def update_seed(name : String, sbid : String, mftime : Int64, latest : ChapItem)
-    unless seed = @seed_infos[name]?
-      seed = add_seed(name, 0)
+  # update info from remote seed source
+  def update(source : SeedInfo)
+    genres = BookUtil.map_genre(source.genre)
+      .source.genres.each do |(genre_zh, genre_vi)|
+      add_genre(genres_zh, genre_vi)
     end
 
-    if seed.sbid != sbid
-      return seed if seed.mftime > mftime
-      seed.sbid = sbid
+    source.tags.each do |tag|
+      add_tag(tag)
     end
 
-    mftime = @mftime if mftime < @mftime
-    mftime = seed.mftime if mftime < seed.mftime
-    seed.update_latest(latest, mftime)
+    set_intro(source.intro) if @intro_zh.empty?
+    add_cover(source.cover)
 
-    @changes += seed.reset_changes! # transfer changes count from seed to info
-    seed
+    seed = put_seed(source.seed, source.type)
+    seed.update_remote(source)
+
+    self.mftime = seed.mftime if @mftime < seed.mftime
+    self.status = seed.status if @status < seed.status
+
+    @changes += seed.reset_changes!
+  end
+
+  # create new seed if not existed
+  def put_seed(name : String, type = 1)
+    @seeds[name] ||= BookSeed.new(name, type)
   end
 
   # json serialization

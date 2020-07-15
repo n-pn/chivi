@@ -137,6 +137,8 @@ class LabelMap
   def self.preload!(name : String) : LabelMap
     CACHE[name] ||= load!(name)
   end
+
+  class_getter mapping : LabelMap { preload!("slug--ubid") }
 end
 
 # test = LabelMap.new("tmp/label_map.txt")

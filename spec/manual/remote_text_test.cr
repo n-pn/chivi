@@ -1,12 +1,12 @@
 require "colorize"
 
-require "../../src/source/remote_text.cr"
+require "../../src/parser/seed_text.cr"
 
 def fetch_chap(seed : String, sbid : String, scid : String)
   puts "\n[ #{seed} / #{sbid} / #{scid} ]\n".colorize(:yellow)
 
   RemoteUtil.mkdir!(seed, sbid)
-  chap = RemoteText.fetch!(seed, sbid, scid, freeze: true)
+  chap = SeedText.fetch!(seed, sbid, scid, freeze: true)
 
   puts chap.title
   puts chap.paras.first(5).join("\n")

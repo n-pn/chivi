@@ -4,7 +4,7 @@ require "../_utils/text_utils"
 
 require "./remote_util"
 
-class RemoteText
+class SeedText
   def self.fetch!(seed : String, sbid : String, scid : String, freeze = false)
     new(seed, fetch_html!(seed, sbid, scid, freeze))
   end

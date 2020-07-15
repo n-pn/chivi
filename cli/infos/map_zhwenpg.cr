@@ -13,7 +13,7 @@ require "../../src/models/book_info"
 require "../../src/lookup/order_map"
 require "../../src/lookup/label_map"
 
-require "../../src/source/remote_info"
+require "../../src/parser/seed_info"
 
 class MapZhwenpg
   DIR = File.join("var", ".book_cache", "zhwenpg", "pages")
@@ -125,7 +125,7 @@ class MapZhwenpg
     latest_link = latest_node.attributes["href"]
     latest_scid = latest_link.sub("r.php?id=", "")
 
-    latest_chap = ChapItem.new(latest_scid, latest_text)
+    latest_chap = ChapInfo.new(latest_scid, latest_text)
 
     info.add_seed("zhwenpg", 0)
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
@@ -140,7 +140,7 @@ class MapZhwenpg
       expiry = Time.utc - Time.unix_ms(mftime)
       expiry = expiry > 24.hours ? expiry - 24.hours : expiry
 
-      remote = RemoteInfo.new("zhwenpg", sbid, expiry: expiry, freeze: true)
+      remote = SeedInfo.new("zhwenpg", sbid, expiry: expiry, freeze: true)
       remote.emit_chap_list.save!
     end
   rescue err

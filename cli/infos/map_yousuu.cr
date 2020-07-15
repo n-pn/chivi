@@ -10,7 +10,7 @@ require "../../src/models/book_info"
 require "../../src/lookup/label_map"
 require "../../src/lookup/order_map"
 
-require "../../src/source/yousuu_info"
+require "../../src/parser/ys_serial"
 
 class MapYousuu
   DIR = File.join("var", ".book_cache", "yousuu", "serials")
@@ -20,7 +20,7 @@ class MapYousuu
   @info_create = 0
   @info_update = 0
 
-  @inputs = {} of String => YousuuInfo
+  @inputs = {} of String => YsSerial
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
@@ -39,7 +39,7 @@ class MapYousuu
     files.each do |file|
       @input_total += 1
 
-      next unless info = YousuuInfo.load!(file)
+      next unless info = YsSerial.load!(file)
       next if info.title.empty? || info.author.empty? || worthless?(info)
 
       ysid = info._id.to_s
@@ -56,12 +56,12 @@ class MapYousuu
       @input_count += 1
       @inputs[ubid] = info
     rescue err
-      puts "- <yousuu_info> #{file} err: #{err}".colorize(:red)
+      puts "- <ys_serial> #{file} err: #{err}".colorize(:red)
       File.delete(file)
     end
   end
 
-  def worthless?(info : YousuuInfo)
+  def worthless?(info : YsSerial)
     return true if SourceUtil.blacklist?(info.title)
 
     if weight = @top_authors.value(info.author)
@@ -95,7 +95,7 @@ class MapYousuu
       info.word_count = input.countWord.round.to_i
       info.crit_count = input.commentCount
 
-      info.yousuu_url = "https://www.yousuu.com/book/#{input._id}"
+      info.yousuu_bid = input._id.to_s
       info.origin_url = input.first_source || ""
 
       next unless info.changed?

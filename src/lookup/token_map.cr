@@ -43,8 +43,13 @@ class TokenMap
     @keys[val]?
   end
 
+  def search(tokens : Array(String))
+    return fuzzy_search(tokens) if tokens.size > 0
+    keys(tokens.first) || Set(String).new
+  end
+
   def fuzzy_search(tokens : Array(String))
-    output = [] of String
+    output = Set(String).new
     return output unless key_set = min_keys_set(tokens)
 
     key_set.each do |key|
@@ -58,12 +63,12 @@ class TokenMap
   private def fuzzy_match?(values : Array(String), tokens : Array(String))
     return true if tokens.empty?
 
-    idx = 0
+    token_index = 0
 
-    values.each do |v|
-      next unless v == tokens[idx]
-      idx += 1
-      return true if idx == tokens.size
+    values.each do |value|
+      next unless value == tokens[token_index]
+      token_index += 1
+      return true if token_index == tokens.size
     end
 
     false
@@ -202,6 +207,14 @@ class TokenMap
   def self.preload!(name : String) : TokenMap
     CACHE[name] ||= load!(name)
   end
+
+  class_getter title_zh : TokenMap { preload!("ubid--title_zh") }
+  class_getter title_hv : TokenMap { preload!("ubid--title_hv") }
+  class_getter title_vi : TokenMap { preload!("ubid--title_vi") }
+  class_getter author_zh : TokenMap { preload!("ubid--author_zh") }
+  class_getter author_vi : TokenMap { preload!("ubid--author_vi") }
+  class_getter genres_vi : TokenMap { preload!("ubid--genres_vi") }
+  class_getter tags_vi : TokenMap { preload!("ubid--tags_vi") }
 end
 
 # test = TokenMap.new("tmp/token_map.txt")

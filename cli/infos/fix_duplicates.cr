@@ -2,7 +2,7 @@ require "../../src/models/book_info"
 require "../../src/models/chap_list"
 
 require "../../src/lookup/label_map"
-require "../../src/source/source_util"
+require "../../src/parser/source_util"
 
 SITES = {
   "hetushu", "jx_la", "rengshu",

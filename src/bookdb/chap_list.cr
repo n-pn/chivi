@@ -1,7 +1,7 @@
 require "colorize"
 require "file_utils"
 
-require "./chap_item"
+require "./chap_info"
 
 class ChapList
   include BaseModel
@@ -11,7 +11,9 @@ class ChapList
   property sbid = ""   # seed book id
   property type = 0    # seed type, 0 mean remote source, 1 mean manual source
 
-  getter chaps = [] of ChapItem
+  alias Chaps = Array(ChapInfo)
+
+  getter chaps = Chaps
   getter index = {} of String => Int32 # can be used for manual sort
 
   # TODO: explicit adding `delegate` calls for better error checking
@@ -26,24 +28,87 @@ class ChapList
     @chaps.each_with_index { |item, idx| @index[item.scid] = idx }
   end
 
-  # add a new chap_item to last position
-  def append(chap : ChapItem) : ChapItem
+  # check if this version of chap list is matched with updated list
+  def match?(items : Chaps)
+    rebuild_index! if @index.empty?
+
+    @index.each do |scid, idx|
+      # check if old item existed in new list
+      return false unless chap = @items[idx]?
+      # check if chap link changed
+      return false if chap.scid != scid
+    end
+
+    true
+  end
+
+  # merge self with a list of items, make full assignments if `dirty` == false
+  def merge!(items : Chaps, dirty : Bool = true)
+    size = items.size
+
+    size.times do |idx|
+      old_chap = chaps.unsafe_fetch(idx)
+      new_chap = items.unsafe_fetch(idx)
+
+      if old_chap.scid == new_chap.scid
+        next if dirty
+      else
+        @index.delete(old_chap.scid)
+        @index[new_chap.scid] = idx
+        old_chap.scid = new_chap.scid
+      end
+
+      old_item.inherit(new_item)
+      @changes += old_item.reset_changes!
+    end
+
+    if chaps.size > size
+      truncate!(size)
+    else
+      chaps.size.upto(size - 1) do |idx|
+        append(items.unsafe_fetch(idx))
+      end
+    end
+  end
+
+  # delete chap_info at `idx` position and update @index
+  def delete_at!(idx : Int32)
+    if chap = @chaps.delete_at(idx)
+      @index.delete(chap.scid)
+
+      idx.upto(@chaps.size - 1) do |jdx|
+        @index[@chaps.unsafe_fetch(jdx).scid] = jdx
+        @changes += 1
+      end
+    end
+  end
+
+  # remove extra chap_items
+  def truncate!(from : Int32 = 0)
+    (size - from).times do
+      @changes += 1
+      @index.delete(@chaps.pop.scid)
+    end
+  end
+
+  # add a new chap_info to last position
+  def append(chap : ChapInfo) : ChapInfo
     @index[chap.scid] = @chaps.size
     @chaps.push(chap)
     chap
   end
 
-  # insert or update a chap_item
-  def upsert(chap : ChapItem, idx : Int32? = nil)
+  # insert or update a chap_info
+  def upsert(chap : ChapInfo, idx : Int32? = nil)
     upsert(chap.scid, idx, &.inherit(chap))
   end
 
-  # insert or update a chap_item with block
+  # insert or update a chap_info with block
   def upsert(scid : String, idx : Int32? = nil)
     if idx ||= @index[scid]?
       chap = @chaps[idx]
     else
-      chap = append(ChapItem.new(scid))
+      chap = append(ChapInfo.new(scid))
     end
 
     yield chap
