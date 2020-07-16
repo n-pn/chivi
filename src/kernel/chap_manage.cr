@@ -1,13 +1,13 @@
 require "json"
 require "colorize"
 
-require "../models/chap_text"
+require "../bookdb/chap_text"
 require "../parser/seed_info"
 require "../parser/seed_text"
 
 require "../engine"
 
-module ChapRepo
+module ChapManage
   extend self
 
   def load_list(ubid : String, seed : String, sbid = "", mode = 1)

@@ -1,18 +1,21 @@
 require "colorize"
 require "file_utils"
+require "../common/file_util"
 
 class ChapText
-  SEP0 = "ǁ"
-  SEP1 = "¦"
+  LABEL = "chap_text"
+  SEP_0 = "ǁ"
+  SEP_1 = "¦"
 
-  property type = 0
   property ubid = ""
   property seed = ""
   property scid = ""
-  property data = ""
+  property type = 0
+  # source type, greater than 1 means it can not be fetched remotely
 
-  property converted_at = 0_i64
-  property converted_by = ""
+  property data = ""
+  property user = ""    # latest converter
+  property time = 0_i64 # converted time
 
   def initialize(@ubid : String, @seed : String, @scid : String, preload : Bool = false)
     @root = ChapText.root(@ubid, @seed)
@@ -24,9 +27,10 @@ class ChapText
   def load!(file : String = @file) : self
     if File.exists?(file)
       @data = File.read(file)
-      puts "- <chap_text> [#{file.colorize(:cyan)}] loaded."
+      @time = File.info(file).modification_time.to_unix_ms
+      puts "- <#{LABEL}> [#{file.colorize.cyan}] loaded."
     else
-      puts "- <chap_text> [#{file.colorize(:red)}] not found!"
+      puts "- <#{LABEL}> [#{file.colorize.red}] not found!"
     end
 
     self
@@ -37,25 +41,22 @@ class ChapText
   end
 
   def save!(file : String = @file) : self
-    File.write(file, @data)
-    puts "- <chap_text> [#{file.colorize(:cyan)}] saved."
-
-    self
+    FileUtils.save(file, LABEL, @data.size) { |io| @data.to_s(io) }
   end
 
   def to_s(io : IO)
-    io << @data
+    @data.to_s(io)
   end
 
   def zh_lines : Array(String)
     @data.split("\n").map do |line|
-      line.split(SEP0).map { |x| x.split(SEP1, 2)[0] }.join("")
+      line.split(SEP_0).map { |x| x.split(SEP_1, 2)[0] }.join("")
     end
   end
 
   def vi_lines : Array(String)
     @data.split("\n").map do |line|
-      line.split(SEP0).map { |x| x.split(SEP1, 3)[1] }.join("")
+      line.split(SEP_0).map { |x| x.split(SEP_1, 3)[1] }.join("")
     end
   end
 
