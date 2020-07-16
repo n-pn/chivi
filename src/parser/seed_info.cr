@@ -396,7 +396,7 @@ class SeedInfo
   #   info.add_genre(genre)
   #   info.add_tags(tags)
 
-  #   info.intro_zh = intro if info.intro_zh.empty?
+  #   info.zh_intro = intro if info.zh_intro.empty?
   #   info.add_cover(cover)
   #   info.status = status
 

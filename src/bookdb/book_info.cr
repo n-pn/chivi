@@ -2,8 +2,9 @@ require "colorize"
 require "file_utils"
 
 require "../common/json_data"
+require "../common/uuid_util"
+
 require "./book_seed"
-require "./book_util"
 
 class BookInfo
   include JsonData
@@ -11,21 +12,21 @@ class BookInfo
   property ubid = ""
   property slug = ""
 
-  property title_zh = ""
-  property title_vi = ""
-  property title_hv = ""
+  property zh_title = ""
+  property vi_title = ""
+  property hv_title = ""
 
-  property author_zh = ""
-  property author_vi = ""
+  property zh_author = ""
+  property vi_author = ""
 
-  property intro_zh = ""
-  property intro_vi = ""
+  property zh_intro = ""
+  property vi_intro = ""
 
-  property genres_zh = [] of String
-  property genres_vi = [] of String
+  property zh_genres = {} of String => String
+  property vi_genres = [] of String
 
-  property tags_zh = [] of String
-  property tags_vi = [] of String
+  property zh_tags = {} of String => String
+  property vi_tags = [] of String
 
   property voters = 0_i32
   property rating = 0_f32
@@ -35,7 +36,7 @@ class BookInfo
   property status = 0_i32
   property mftime = 0_i64
 
-  property cover_urls = [] of String
+  property cover_urls = {} of String => String
   property main_cover = ""
 
   property yousuu_bid = ""
@@ -52,26 +53,28 @@ class BookInfo
   def initialize
   end
 
-  def initialize(@title_zh : String, @author_zh : String, @ubid = "")
-    if @ubid.empty?
-      fix_ubid
-    else
-      @changes = 1
-    end
+  def initialize(@zh_title : String, @zh_author : String, @ubid = "")
+    fix_ubid if @ubid.empty?
+    @changes = 1
   end
 
   # regenerate ubid
   def fix_ubid : Void
-    self.ubid = BookInfo.ubid_for(@title_zh, @author_zh)
+    self.ubid = UuidUtil.gen_ubid(@zh_title, @zh_author)
   end
 
-  # add new genre if not already exists
-  def add_genre(genre_zh : String, genre_vi = "") : Void
-    return if genre_zh.empty? || @genres_zh.includes?(genre_zh)
+  # add new zh_genre if not already exists
+  def add_genre_zh(site : String, genre : String) : Void
+    @genre_zh[site]?.try { |x| return if x == genre }
     @changes += 1
+    @genre_zh[site] = genre
+  end
 
-    @genres_zh << genre_zh
-    @genres_vi << genre_vi
+  # add new vi_genre if not already exists
+  def add_genre_vi(genre : String) : Void
+    return if @vi_genres.includes?(genre)
+    @changes += 1
+    @vi_genres << genre_vi
   end
 
   # calling `add_tag(tag)` for each tag
@@ -81,18 +84,19 @@ class BookInfo
 
   # add new tag if not already exists
   def add_tag(tag_zh : String, tag_vi = "") : Void
-    return if tag_zh.empty? || @tags_zh.includes?(tag_zh)
+    return if tag_zh.empty? || @zh_tags.includes?(tag_zh)
     @changes += 1
 
-    @tags_zh << tag_zh
-    @tags_vi << tag_vi
+    @zh_tags << tag_zh
+    @vi_tags << tag_vi
   end
 
   # only add cover if not already exists
-  def add_cover(cover : String)
-    return if cover.empty? || @cover_urls.includes?(cover)
+  def add_cover(site : String, cover : String)
+    @cover_urls[site]?.try { |x| return if x == cover }
+
     @changes += 1
-    @cover_urls << cover
+    @cover_urls[site] = cover
   end
 
   # transform rating to integer based score (0 to 100)
@@ -107,7 +111,7 @@ class BookInfo
 
   def update(source : YsSerial)
     source.genres.each do |(genre_zh, genre_vi)|
-      add_genre(genres_zh, genre_vi)
+      add_genre(zh_genres, genre_vi)
     end
 
     source.tags.each do |tag|
@@ -115,28 +119,28 @@ class BookInfo
     end
   end
 
-  # update info from remote seed source
-  def update(source : SeedInfo)
-    genres = BookUtil.map_genre(source.genre)
-      .source.genres.each do |(genre_zh, genre_vi)|
-      add_genre(genres_zh, genre_vi)
-    end
+  # # update info from remote seed source
+  # def update(source : SeedInfo)
+  #   genres = UuidUtil.map_genre(source.genre)
+  #     .source.genres.each do |(genre_zh, genre_vi)|
+  #     add_genre(zh_genres, genre_vi)
+  #   end
 
-    source.tags.each do |tag|
-      add_tag(tag)
-    end
+  #   source.tags.each do |tag|
+  #     add_tag(tag)
+  #   end
 
-    set_intro(source.intro) if @intro_zh.empty?
-    add_cover(source.cover)
+  #   set_intro(source.intro) if @zh_intro.empty?
+  #   add_cover(source.cover)
 
-    seed = put_seed(source.seed, source.type)
-    seed.update_remote(source)
+  #   seed = put_seed(source.seed, source.type)
+  #   seed.update_remote(source)
 
-    self.mftime = seed.mftime if @mftime < seed.mftime
-    self.status = seed.status if @status < seed.status
+  #   self.mftime = seed.mftime if @mftime < seed.mftime
+  #   self.status = seed.status if @status < seed.status
 
-    @changes += seed.reset_changes!
-  end
+  #   @changes += seed.reset_changes!
+  # end
 
   # create new seed if not existed
   def put_seed(name : String, type = 1)
@@ -188,9 +192,9 @@ class BookInfo
     File.basename(file, ".json")
   end
 
-  # generate unique book id from `title_zh` and `author_zh`
+  # generate unique book id from `zh_title` and `zh_author`
   def self.ubid_for(title : String, author : String) : String
-    Utils.gen_ubid(title, author)
+    UuidUtil.gen_ubid(title, author)
   end
 
   # check if book with this `ubid` exists
@@ -241,7 +245,7 @@ class BookInfo
     get(ubid_for(title, author))
   end
 
-  # create new entry if book with this `title_zh` and `author_zh` does not exist
+  # create new entry if book with this `zh_title` and `zh_author` does not exist
   # can reuse `ubid` if pre-calculated
   def self.get_or_create(title : String, author : String, ubid : String? = nil)
     ubid ||= ubid_for(title, author)
