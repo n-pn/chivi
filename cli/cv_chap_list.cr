@@ -26,9 +26,9 @@ def translate_chap(chap : ChapInfo, dname : String)
     chap.label_vi = translate(chap.label_zh, dname)
   end
 
-  if chap.title_vi.empty?
-    chap.title_vi = translate(chap.title_zh, dname)
-    chap.set_slug(chap.title_vi)
+  if chap.vi_title.empty?
+    chap.vi_title = translate(chap.zh_title, dname)
+    chap.set_slug(chap.vi_title)
   end
 
   chap

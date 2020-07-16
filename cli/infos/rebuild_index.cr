@@ -13,9 +13,9 @@ has_text = 0
 books.each do |book|
   has_text += 1 if book.seed_names.size > 0
 
-  title = book.title_zh.gsub(/\P{Han}/, "")
-  author = book.author_zh.gsub(/\P{Han}/, "")
-  conflicts["#{title}--#{author}"] << "#{book.title_zh}--#{book.author_zh}"
+  title = book.zh_title.gsub(/\P{Han}/, "")
+  author = book.zh_author.gsub(/\P{Han}/, "")
+  conflicts["#{title}--#{author}"] << "#{book.zh_title}--#{book.zh_author}"
 end
 
 puts "- has_text: #{has_text}".colorize(:yellow)

@@ -14,9 +14,9 @@ SITES = {
 UBIDS = Set(String).new
 
 SITES.each do |site|
-  sbid_ubids = LabelMap.load!("sitemaps/#{site}--sbid--ubid")
-  sbid_titles = LabelMap.load!("sitemaps/#{site}--sbid--title")
-  sbid_authors = LabelMap.load!("sitemaps/#{site}--sbid--author")
+  sbid_ubids = LabelMap.load!("sitemaps/#{site}--ubid")
+  sbid_titles = LabelMap.load!("sitemaps/#{site}--title")
+  sbid_authors = LabelMap.load!("sitemaps/#{site}--author")
 
   sbid_ubids.each do |sbid, ubid|
     next unless title = sbid_titles.fetch(sbid)

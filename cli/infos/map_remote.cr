@@ -68,11 +68,11 @@ class MapRemote
   def initialize(@seed : String, @type = 0)
     @book_ubids = Set(String).new(BookInfo.ubids)
     @top_authors = OrderMap.load!("author--weight")
-    @book_update = OrderMap.load!("ubid--update")
+    @book_update = OrderMap.load!("book--update")
 
-    @map_ubids = LabelMap.get_or_create("sitemaps/#{seed}--sbid--ubid")
-    @map_titles = LabelMap.get_or_create("sitemaps/#{seed}--sbid--title")
-    @map_authors = LabelMap.get_or_create("sitemaps/#{seed}--sbid--author")
+    @map_ubids = LabelMap.get_or_create("sitemaps/#{seed}--ubid")
+    @map_titles = LabelMap.get_or_create("sitemaps/#{seed}--title")
+    @map_authors = LabelMap.get_or_create("sitemaps/#{seed}--author")
   end
 
   alias TimeSpan = Time::Span | Time::MonthSpan
@@ -158,7 +158,7 @@ class MapRemote
     if info.weight == 0 && info.yousuu_url.empty?
       puts "- FAKING RANDOM RATING -".colorize.yellow
 
-      weight = @top_authors.value(info.author_zh) || 2000_i64
+      weight = @top_authors.value(info.zh_author) || 2000_i64
       weight = Random.rand((weight // 2)..weight)
       scored = Random.rand(30..70)
 

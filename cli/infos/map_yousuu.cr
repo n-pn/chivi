@@ -25,11 +25,11 @@ class MapYousuu
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
     @top_authors = OrderMap.get_or_create("author--weight")
-    @book_update = OrderMap.get_or_create("ubid--update")
+    @book_update = OrderMap.get_or_create("update")
 
-    @map_ubids = LabelMap.get_or_create("sitemaps/yousuu--sbid--ubid")
-    @map_titles = LabelMap.get_or_create("sitemaps/yousuu--sbid--title")
-    @map_authors = LabelMap.get_or_create("sitemaps/yousuu--sbid--author")
+    @map_ubids = LabelMap.get_or_create("sitemaps/yousuu--ubid")
+    @map_titles = LabelMap.get_or_create("sitemaps/yousuu--title")
+    @map_authors = LabelMap.get_or_create("sitemaps/yousuu--author")
   end
 
   def prepare! : Void
@@ -107,7 +107,7 @@ class MapYousuu
         @info_create += 1
       end
 
-      @top_authors.upsert(info.author_zh, info.weight)
+      @top_authors.upsert(info.zh_author, info.weight)
       @book_update.upsert(ubid, info.mftime)
     end
   end

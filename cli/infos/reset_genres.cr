@@ -5,10 +5,10 @@ input = BookInfo.load_all!
 
 # reset content
 input.each do |info|
-  info.genres_zh.clear
-  info.genres_vi.clear
-  info.tags_zh.clear
-  info.tags_vi.clear
+  info.zh_genres.clear
+  info.vi_genres.clear
+  info.zh_tags.clear
+  info.vi_tags.clear
 
   info.save!
 end
@@ -57,94 +57,94 @@ end
 # end
 
 # input.values.each_with_index do |info, offset|
-#   genres_zh = [] of String
-#   genres_vi = [] of String
+#   zh_genres = [] of String
+#   vi_genres = [] of String
 
-#   info.genres_zh.each_with_index do |genre_zh, idx|
+#   info.zh_genres.each_with_index do |genre_zh, idx|
 #     if genre_vi = map_genre(genre_zh)
-#       genres_zh << genre_zh
-#       genres_vi << genre_vi
+#       zh_genres << genre_zh
+#       vi_genres << genre_vi
 #     else
 #       case genre_zh
 #       when "都市言情"
-#         update(genres_zh, genres_vi, ["都市", "言情"])
+#         update(zh_genres, vi_genres, ["都市", "言情"])
 #       when "科幻空间"
-#         update(genres_zh, genres_vi, ["科幻", "空间"])
+#         update(zh_genres, vi_genres, ["科幻", "空间"])
 #       when "科幻灵异"
-#         update(genres_zh, genres_vi, ["科幻", "灵异"])
+#         update(zh_genres, vi_genres, ["科幻", "灵异"])
 #       when "游戏竞技"
-#         update(genres_zh, genres_vi, ["游戏", "竞技"])
+#         update(zh_genres, vi_genres, ["游戏", "竞技"])
 #       when "网游竞技"
-#         update(genres_zh, genres_vi, ["游戏", "竞技"])
+#         update(zh_genres, vi_genres, ["游戏", "竞技"])
 #       when "武侠仙侠"
-#         update(genres_zh, genres_vi, ["武侠", "仙侠"])
+#         update(zh_genres, vi_genres, ["武侠", "仙侠"])
 #       when "修真武侠"
-#         update(genres_zh, genres_vi, ["修真", "武侠"])
+#         update(zh_genres, vi_genres, ["修真", "武侠"])
 #       when "历史军事"
-#         update(genres_zh, genres_vi, ["历史", "军事"])
+#         update(zh_genres, vi_genres, ["历史", "军事"])
 #       when "幻想言情"
-#         update(genres_zh, genres_vi, ["幻想", "言情"])
+#         update(zh_genres, vi_genres, ["幻想", "言情"])
 #       when "悬疑惊悚"
-#         update(genres_zh, genres_vi, ["悬疑", "惊悚"])
+#         update(zh_genres, vi_genres, ["悬疑", "惊悚"])
 #       when "玄幻魔法"
-#         update(genres_zh, genres_vi, ["幻想", "魔法"])
+#         update(zh_genres, vi_genres, ["幻想", "魔法"])
 #       when "玄幻奇幻"
-#         update(genres_zh, genres_vi, ["玄幻", "奇幻"])
+#         update(zh_genres, vi_genres, ["玄幻", "奇幻"])
 #       when "奇幻修真"
-#         update(genres_zh, genres_vi, ["奇幻", "修真"])
+#         update(zh_genres, vi_genres, ["奇幻", "修真"])
 #       when "架空历史"
-#         update(genres_zh, genres_vi, ["幻想", "历史"])
+#         update(zh_genres, vi_genres, ["幻想", "历史"])
 #       when "官场职场"
-#         update(genres_zh, genres_vi, ["官场", "职场"])
+#         update(zh_genres, vi_genres, ["官场", "职场"])
 #       when "总裁豪门"
-#         update(genres_zh, genres_vi, ["都市", "言情"])
+#         update(zh_genres, vi_genres, ["都市", "言情"])
 #       when "衍生同人", "小说同人"
-#         update(genres_zh, genres_vi, ["同人"])
+#         update(zh_genres, vi_genres, ["同人"])
 #       when "女生频道"
-#         update(genres_zh, genres_vi, ["女生"])
+#         update(zh_genres, vi_genres, ["女生"])
 #       when "耽美纯爱"
-#         update(genres_zh, genres_vi, ["耽美"])
+#         update(zh_genres, vi_genres, ["耽美"])
 #       when "青春校园"
-#         update(genres_zh, genres_vi, ["校园"])
+#         update(zh_genres, vi_genres, ["校园"])
 #       when "悬疑推理"
-#         update(genres_zh, genres_vi, ["悬疑"])
+#         update(zh_genres, vi_genres, ["悬疑"])
 #       when "仙侠奇缘"
-#         update(genres_zh, genres_vi, ["仙侠"])
+#         update(zh_genres, vi_genres, ["仙侠"])
 #       when "经典仙侠"
-#         update(genres_zh, genres_vi, ["仙侠"])
+#         update(zh_genres, vi_genres, ["仙侠"])
 #       when "穿越时空"
-#         update(genres_zh, genres_vi, ["穿越"])
+#         update(zh_genres, vi_genres, ["穿越"])
 #       when "网游"
-#         update(genres_zh, genres_vi, ["游戏"])
+#         update(zh_genres, vi_genres, ["游戏"])
 #       when "其他", "综合其他"
-#         if info.genres_zh.size < 2
-#           genres_zh << "其他"
-#           genres_vi << "Loại khác"
+#         if info.zh_genres.size < 2
+#           zh_genres << "其他"
+#           vi_genres << "Loại khác"
 #         end
 #       else
 #         puts "- #{offset + 1} / #{input.size}"
 #         puts info.to_json.colorize.cyan
-#         puts "All genres: #{info.genres_zh}"
+#         puts "All genres: #{info.zh_genres}"
 #         puts "Unknown genre: `#{genre_zh}`!"
 #         gets
 #       end
 #     end
 #   end
 
-#   if info.genres_zh.empty?
-#     genres_zh << "其他"
-#     genres_vi << "Loại khác"
+#   if info.zh_genres.empty?
+#     zh_genres << "其他"
+#     vi_genres << "Loại khác"
 #   end
 
-#   info.genres_zh = genres_zh.uniq
-#   info.genres_vi = genres_vi.uniq
+#   info.zh_genres = zh_genres.uniq
+#   info.vi_genres = vi_genres.uniq
 
 #   changed = false
 
-#   info.genres_zh.each do |genre|
-#     if idx = info.tags_zh.index(genre)
-#       info.tags_zh.delete_at(idx)
-#       info.tags_vi.delete_at(idx)
+#   info.zh_genres.each do |genre|
+#     if idx = info.zh_tags.index(genre)
+#       info.zh_tags.delete_at(idx)
+#       info.vi_tags.delete_at(idx)
 #       changed = true
 #     end
 #   end

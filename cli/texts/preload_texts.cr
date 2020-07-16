@@ -43,7 +43,7 @@ def fetch_book(info, label)
   FileUtils.mkdir_p(SpiderUtil.text_dir(site, bsid))
 
   chaps = ZhList.from_json(File.read(list_file))
-  puts "- <#{label.colorize(:cyan)}> [#{site}-#{bsid}-#{info.title_zh}] #{chaps.size.colorize(:cyan)} entries"
+  puts "- <#{label.colorize(:cyan)}> [#{site}-#{bsid}-#{info.zh_title}] #{chaps.size.colorize(:cyan)} entries"
 
   limit = 4
   limit = chaps.size if limit > chaps.size

@@ -21,11 +21,11 @@ class MapZhwenpg
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
     @top_authors = OrderMap.load!("author--weight")
-    @book_update = OrderMap.load!("ubid--update")
+    @book_update = OrderMap.load!("book--update")
 
-    @map_ubids = LabelMap.get_or_create("sitemaps/zhwenpg--sbid--ubid")
-    @map_titles = LabelMap.get_or_create("sitemaps/zhwenpg--sbid--title")
-    @map_authors = LabelMap.get_or_create("sitemaps/zhwenpg--sbid--author")
+    @map_ubids = LabelMap.get_or_create("sitemaps/zhwenpg--ubid")
+    @map_titles = LabelMap.get_or_create("sitemaps/zhwenpg--title")
+    @map_authors = LabelMap.get_or_create("sitemaps/zhwenpg--author")
   end
 
   def expiry(page : Int32 = 1)
@@ -87,8 +87,8 @@ class MapZhwenpg
     info = BookInfo.get_or_create(title, author)
 
     @map_ubids.upsert(sbid, info.ubid)
-    @map_titles.upsert(sbid, info.title_zh)
-    @map_authors.upsert(sbid, info.author_zh)
+    @map_titles.upsert(sbid, info.zh_title)
+    @map_authors.upsert(sbid, info.zh_author)
 
     genre = rows[2].css(".fontgt").first.inner_text
     info.add_genre(genre)
@@ -104,16 +104,16 @@ class MapZhwenpg
       info.rating = rating
       info.fix_weight
 
-      @top_authors.upsert(info.author_zh, info.weight)
+      @top_authors.upsert(info.zh_author, info.weight)
     end
 
     color = fresh ? :light_cyan : :light_blue
-    puts "\n<#{index}> [#{info.ubid}] #{info.title_zh}--#{info.author_zh}".colorize(color)
+    puts "\n<#{index}> [#{info.ubid}] #{info.zh_title}--#{info.zh_author}".colorize(color)
 
-    if (intro = rows[4]?) && info.intro_zh.empty?
+    if (intro = rows[4]?) && info.zh_intro.empty?
       intro_text = Utils.split_text(intro.inner_text("\n"))
       # intro_text = Engine.tradsim(intro_text)
-      info.intro_zh = intro_text.join("\n")
+      info.zh_intro = intro_text.join("\n")
     end
 
     info.status = status

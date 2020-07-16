@@ -23,7 +23,7 @@ infos.each_with_index do |info, idx|
     html_dir = File.join(HTML_DIR, site, "texts", bsid)
     next unless File.exists?(html_dir)
 
-    puts "- <#{idx + 1}/#{infos.size}> #{info.title_zh.colorize(:blue)} #{info.author_zh.colorize(:blue)} #{site.colorize(:blue)} #{bsid.colorize(:blue)}"
+    puts "- <#{idx + 1}/#{infos.size}> #{info.zh_title.colorize(:blue)} #{info.zh_author.colorize(:blue)} #{site.colorize(:blue)} #{bsid.colorize(:blue)}"
 
     keep_dir = "/mnt/e/Asset/chivi/#{site}/#{bsid}"
     FileUtils.mkdir_p(keep_dir)

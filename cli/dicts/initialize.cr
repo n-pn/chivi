@@ -12,8 +12,8 @@ def extract_crucial_chars
 
   infos = BookInfo.load_all!
   infos.each do |info|
-    split_chars(info.title_zh) { |x| crucial.upsert(x) }
-    split_chars(info.author_zh) { |x| crucial.upsert(x) }
+    split_chars(info.zh_title) { |x| crucial.upsert(x) }
+    split_chars(info.zh_author) { |x| crucial.upsert(x) }
   end
 
   crucial.save!

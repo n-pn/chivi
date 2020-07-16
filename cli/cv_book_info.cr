@@ -31,8 +31,8 @@ def cv_plain(input : String, dname : String) : String
   Engine.cv_plain(input, dname).vi_text
 end
 
-TITLE_ZH  = LabelMap.load!("override/title_zh")
-AUTHOR_ZH = LabelMap.load!("override/author_zh")
+TITLE_ZH  = LabelMap.load!("override/zh_title")
+AUTHOR_ZH = LabelMap.load!("override/zh_author")
 
 # move seed info from removed entry to remained entry
 private def transfer_info(remove : BookInfo, remain : BookInfo)
@@ -45,10 +45,10 @@ private def transfer_info(remove : BookInfo, remain : BookInfo)
   File.delete(BookInfo.path_for(remove.ubid))
   FileUtils.rm_rf(ChapList.path_for(remove.ubid))
 
-  if remove.title_zh != remain.title_zh
-    TITLE_ZH.upsert!(remove.title_zh, remain.title_zh)
+  if remove.zh_title != remain.zh_title
+    TITLE_ZH.upsert!(remove.zh_title, remain.zh_title)
   else
-    AUTHOR_ZH.upsert!(remove.author_zh, "#{remain.author_zh}¦#{remain.title_zh}")
+    AUTHOR_ZH.upsert!(remove.zh_author, "#{remain.zh_author}¦#{remain.zh_title}")
   end
 end
 
@@ -56,11 +56,11 @@ def resolve_duplicate(old_info, new_info, slug)
   puts old_info.to_json.colorize.cyan
   puts new_info.to_json.colorize.cyan
 
-  old_title = old_info.title_zh
-  new_title = new_info.title_zh
+  old_title = old_info.zh_title
+  new_title = new_info.zh_title
 
-  old_author = old_info.author_zh
-  new_author = new_info.author_zh
+  old_author = old_info.zh_author
+  new_author = new_info.zh_author
 
   if old_title != new_title
     puts "\n[ fix title ]".colorize.cyan
@@ -107,48 +107,48 @@ INFOS = BookInfo.preload_all!
 INPUT = INFOS.values.sort_by(&.weight.-)
 
 HIATUS  = Time.utc(2019, 1, 1).to_unix_ms
-TITLES  = LabelMap.load!("override/title_vi")
-AUTHORS = LabelMap.load!("override/author_vi")
+TITLES  = LabelMap.load!("override/vi_title")
+AUTHORS = LabelMap.load!("override/vi_author")
 
 FULL_SLUGS = {} of String => String
 SLUG_UBIDS = LabelMap.init("slug--ubid")
 
 puts "[-- Convert! --]".colorize.cyan.bold
 
-book_rating = OrderMap.init("ubid--rating")
-book_weight = OrderMap.init("ubid--weight")
-book_update = OrderMap.init("ubid--update")
-book_access = OrderMap.init("ubid--access")
+book_rating = OrderMap.init("rating")
+book_weight = OrderMap.init("weight")
+book_update = OrderMap.init("update")
+book_access = OrderMap.init("access")
 
-title_zh_map = TokenMap.init("ubid--title_zh")
-title_vi_map = TokenMap.init("ubid--title_vi")
-title_hv_map = TokenMap.init("ubid--title_hv")
+title_zh_map = TokenMap.init("zh_title")
+title_vi_map = TokenMap.init("vi_title")
+title_hv_map = TokenMap.init("hv_title")
 
-author_zh_map = TokenMap.init("ubid--author_zh")
-author_vi_map = TokenMap.init("ubid--author_vi")
+author_zh_map = TokenMap.init("zh_author")
+author_vi_map = TokenMap.init("vi_author")
 
-genres_vi_map = TokenMap.init("ubid--genres_vi")
-tags_vi_map = TokenMap.init("ubid--tags_vi")
+genres_vi_map = TokenMap.init("vi_genres")
+tags_vi_map = TokenMap.init("vi_tags")
 
 INPUT.each_with_index do |info, idx|
   puts "\n- <#{idx + 1}/#{INPUT.size}> [#{info.ubid}] {#{info.slug}}".colorize.cyan
 
-  info.title_hv = hanviet(info.title_zh)
-  title_vi = TITLES.fetch(info.title_zh) || info.title_hv
-  info.title_vi = Utils.titleize(title_vi)
+  info.hv_title = hanviet(info.zh_title)
+  vi_title = TITLES.fetch(info.zh_title) || info.hv_title
+  info.vi_title = Utils.titleize(vi_title)
 
-  if author_vi = AUTHORS.fetch(info.author_zh)
-    info.author_vi = author_vi
+  if vi_author = AUTHORS.fetch(info.zh_author)
+    info.vi_author = vi_author
   else
-    info.author_vi = Utils.titleize(hanviet(info.author_zh))
+    info.vi_author = Utils.titleize(hanviet(info.zh_author))
   end
 
-  info.genres_zh, info.genres_vi = map_genres(info)
-  info.tags_vi = info.tags_zh.map do |tag|
+  info.zh_genres, info.vi_genres = map_genres(info)
+  info.vi_tags = info.zh_tags.map do |tag|
     map_genre_vi(tag) || cv_plain(tag, "tonghop")
   end
 
-  info.intro_vi = cv_intro(info.intro_zh, info.ubid)
+  info.vi_intro = cv_intro(info.zh_intro, info.ubid)
   info.status = 3 if info.status == 0 && info.mftime < HIATUS
 
   info.seed_names = info.seed_names.sort_by { |x| seed_order(x) }
@@ -156,13 +156,13 @@ INPUT.each_with_index do |info, idx|
   info.seed_infos.each_value do |seed|
     latest = seed.latest
     latest.label_vi = cv_title(latest.label_zh, info.ubid)
-    latest.title_vi = cv_title(latest.title_zh, info.ubid)
-    latest.set_slug(latest.title_vi)
+    latest.vi_title = cv_title(latest.zh_title, info.ubid)
+    latest.set_slug(latest.vi_title)
     info.update_seed(seed.name, seed.sbid, seed.mftime, latest)
   end
 
-  title_slug = Utils.slugify(info.title_vi, no_accent: true)
-  author_slug = Utils.slugify(info.author_vi, no_accent: true)
+  title_slug = Utils.slugify(info.vi_title, no_accent: true)
+  author_slug = Utils.slugify(info.vi_author, no_accent: true)
 
   full_slug = "#{title_slug}--#{author_slug}"
   if old_ubid = FULL_SLUGS[full_slug]?
@@ -183,7 +183,7 @@ INPUT.each_with_index do |info, idx|
 
   SLUG_UBIDS.upsert(info.slug, info.ubid)
 
-  hanviet_slug = Utils.slugify(info.title_hv, no_accent: true)
+  hanviet_slug = Utils.slugify(info.hv_title, no_accent: true)
   if hanviet_slug != title_slug
     if SLUG_UBIDS.has_key?(hanviet_slug)
       full_slug = "#{hanviet_slug}--#{author_slug}"
@@ -201,17 +201,17 @@ INPUT.each_with_index do |info, idx|
   book_update.upsert(info.ubid, info.mftime)
   book_access.upsert(info.ubid, info.mftime)
 
-  title_zh_map.upsert(info.ubid, Utils.split_words(info.title_zh))
-  title_vi_map.upsert(info.ubid, Utils.split_words(info.title_vi))
-  title_hv_map.upsert(info.ubid, Utils.split_words(info.title_hv))
+  title_zh_map.upsert(info.ubid, Utils.split_words(info.zh_title))
+  title_vi_map.upsert(info.ubid, Utils.split_words(info.vi_title))
+  title_hv_map.upsert(info.ubid, Utils.split_words(info.hv_title))
 
-  author_zh_map.upsert(info.ubid, Utils.split_words(info.author_zh))
-  author_vi_map.upsert(info.ubid, Utils.split_words(info.author_vi))
+  author_zh_map.upsert(info.ubid, Utils.split_words(info.zh_author))
+  author_vi_map.upsert(info.ubid, Utils.split_words(info.vi_author))
 
-  genres_slugs = info.genres_vi.map { |x| Utils.slugify(x) }
+  genres_slugs = info.vi_genres.map { |x| Utils.slugify(x) }
   genres_vi_map.upsert(info.ubid, genres_slugs)
 
-  tags_slugs = info.tags_vi.map { |x| Utils.slugify(x) }
+  tags_slugs = info.vi_tags.map { |x| Utils.slugify(x) }
   tags_vi_map.upsert(info.ubid, tags_slugs)
 end
 
