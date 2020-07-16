@@ -1,8 +1,6 @@
 require "colorize"
 require "http/client"
 
-require "./file_util"
-
 module HttpUtil
   extend self
 
