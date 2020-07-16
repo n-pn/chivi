@@ -104,4 +104,7 @@ class ValueSet
   def self.preload!(name : String) : ValueSet
     CACHE[name] ||= load!(name)
   end
+
+  class_getter skip_titles : ValueSet { preload!("skip-titles") }
+  class_getter skip_genres : ValueSet { preload!("skip-genres") }
 end

@@ -240,10 +240,10 @@ class OrderMap
   end
 
   class_getter author : OrderMap { preload!("author--weight") }
-  class_getter access : OrderMap { preload!("ubid--access") }
-  class_getter update : OrderMap { preload!("ubid--update") }
-  class_getter weight : OrderMap { preload!("ubid--weight") }
-  class_getter rating : OrderMap { preload!("ubid--rating") }
+  class_getter access : OrderMap { preload!("book--access") }
+  class_getter update : OrderMap { preload!("book--update") }
+  class_getter weight : OrderMap { preload!("book--weight") }
+  class_getter rating : OrderMap { preload!("book--rating") }
 end
 
 # test = OrderMap.new("tmp/order_map.txt", false)

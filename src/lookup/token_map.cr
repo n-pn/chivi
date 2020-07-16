@@ -200,13 +200,17 @@ class TokenMap
     CACHE[name] ||= load!(name)
   end
 
-  class_getter title_zh : TokenMap { preload!("ubid--title_zh") }
-  class_getter title_hv : TokenMap { preload!("ubid--title_hv") }
-  class_getter title_vi : TokenMap { preload!("ubid--title_vi") }
-  class_getter author_zh : TokenMap { preload!("ubid--author_zh") }
-  class_getter author_vi : TokenMap { preload!("ubid--author_vi") }
-  class_getter genres_vi : TokenMap { preload!("ubid--genres_vi") }
-  class_getter tags_vi : TokenMap { preload!("ubid--tags_vi") }
+  def self.flush! : Void
+    CACHE.each_value { |map| map.save! }
+  end
+
+  class_getter zh_title : TokenMap { preload!("zh_title") }
+  class_getter hv_title : TokenMap { preload!("hv_title") }
+  class_getter vi_title : TokenMap { preload!("vi_title") }
+  class_getter zh_author : TokenMap { preload!("zh_author") }
+  class_getter vi_author : TokenMap { preload!("vi_author") }
+  class_getter vi_genres : TokenMap { preload!("vi_genres") }
+  class_getter vi_tags : TokenMap { preload!("vi_tags") }
 end
 
 # test = TokenMap.new("tmp/token_map.txt")
