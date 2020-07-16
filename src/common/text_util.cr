@@ -4,22 +4,19 @@ module TextUtil
   extend self
 
   def split_html(input : String, split : String | Regex = /\s{2,}|\n+/)
-    input = clean_html(input)
-    split_lines(input, split)
+    split_text(clean_html(input), split)
   end
 
   def clean_html(input : String)
-    input = HTML.unescape(input)
-    input.gsub(/<br\s*\/?>/i, "\n").gsub("【】", "")
+    HTML.unescape(input).gsub(/<br\s*\/?>/i, "\n").gsub("【】", "")
   end
 
   def split_text(input : String, split : String | Regex = "\n")
-    input = fix_spaces(input)
-    input.split(split).map(&.strip).reject(&.empty?)
+    fix_spaces(input).split(split).map(&.strip).reject(&.empty?)
   end
 
   # replace unicode whitespaces with " "
-  def fix_spaces(input)
+  def fix_spaces(input : String)
     input.tr("\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000", " ")
   end
 

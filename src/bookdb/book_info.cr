@@ -28,6 +28,9 @@ class BookInfo
   property zh_tags = {} of String => String
   property vi_tags = [] of String
 
+  property cover_urls = {} of String => String
+  property main_cover = ""
+
   property voters = 0_i32
   property rating = 0_f32
   property weight = 0_i64
@@ -35,9 +38,6 @@ class BookInfo
   property shield = 0_i32
   property status = 0_i32
   property mftime = 0_i64
-
-  property cover_urls = {} of String => String
-  property main_cover = ""
 
   property yousuu_bid = ""
   property origin_url = ""
@@ -64,31 +64,31 @@ class BookInfo
   end
 
   # add new zh_genre if not already exists
-  def add_genre_zh(site : String, genre : String) : Void
-    @genre_zh[site]?.try { |x| return if x == genre }
+  def add_zh_genre(site : String, genre : String) : Void
+    @zh_genres[site]?.try { |x| return if x == genre }
     @changes += 1
-    @genre_zh[site] = genre
+    @zh_genres[site] = genre
   end
 
   # add new vi_genre if not already exists
-  def add_genre_vi(genre : String) : Void
+  def add_vi_genre(genre : String) : Void
     return if @vi_genres.includes?(genre)
     @changes += 1
     @vi_genres << genre_vi
   end
 
-  # calling `add_tag(tag)` for each tag
-  def add_tags(tags : Array(String))
-    tags.each { |tag| add_tag(tag) }
+  # add new zh_tag if not already exists
+  def add_zh_tags(site : String, tag : String) : Void
+    @zh_tags[site]?.try { |x| return if x == tag }
+    @changes += 1
+    @zh_tags[site] = tag
   end
 
-  # add new tag if not already exists
-  def add_tag(tag_zh : String, tag_vi = "") : Void
-    return if tag_zh.empty? || @zh_tags.includes?(tag_zh)
+  # add new vi_tag if not already exists
+  def add_vi_tag(tag : String) : Void
+    return if @vi_tags.includes?(tag)
     @changes += 1
-
-    @zh_tags << tag_zh
-    @vi_tags << tag_vi
+    @vi_tags << vi_tag
   end
 
   # only add cover if not already exists
@@ -105,12 +105,16 @@ class BookInfo
   end
 
   # recaculate book worth
-  def fix_weight
-    @weight = scored * @voters + @view_count
+  def get_weight
+    scored * @voters + @view_count
+  end
+
+  def set_weight(weight = get_weight)
+    self.weight = weight
   end
 
   def update(source : YsSerial)
-    source.genres.each do |(genre_zh, genre_vi)|
+    source.genres.each do |(zh_genres, genre_vi)|
       add_genre(zh_genres, genre_vi)
     end
 
@@ -122,7 +126,7 @@ class BookInfo
   # # update info from remote seed source
   # def update(source : SeedInfo)
   #   genres = UuidUtil.map_genre(source.genre)
-  #     .source.genres.each do |(genre_zh, genre_vi)|
+  #     .source.genres.each do |(zh_genres, genre_vi)|
   #     add_genre(zh_genres, genre_vi)
   #   end
 

@@ -1,7 +1,6 @@
 require "json"
-require "./source_util"
 
-struct BookSource
+struct YsSource
   include JSON::Serializable
 
   @[JSON::Field(key: "siteName")]
@@ -42,41 +41,66 @@ class YsSerial
   property addListTotal = 0_i32
 
   property updateAt = Time.utc(2000, 1, 1)
-  property sources = [] of BookSource
+  property sources = [] of YsSource
 
-  def cover
+  @[JSON::Field(ignore: true)]
+  getter ysid : String { @_id.to_s }
+
+  @[JSON::Field(ignore: true)]
+  getter genre : String { @category.try(&.[:className]) || "" }
+
+  @[JSON::Field(ignore: true)]
+  getter source_url : String { @sources.first?.try(&.link) || "" }
+
+  @[JSON::Field(ignore: true)]
+  getter fixed_tags : Array(String) { fix_tags }
+
+  @[JSON::Field(ignore: true)]
+  getter fixed_cover : String { fix_cover }
+
+  @[JSON::Field(ignore: true)]
+  getter mftime : Int64 { fix_time }
+
+  @[JSON::Field(ignore: true)]
+  getter voters : Int32 { @scorerCount }
+
+  @[JSON::Field(ignore: true)]
+  getter rating : Int32 { (source.score * 10).round / 10 }
+
+  @[JSON::Field(ignore: true)]
+  getter weight : Int32 { (rating * 10).to_i64 * voters }
+
+  @[JSON::Field(ignore: true)]
+  getter word_count : Int32 { input.countWord.round.to_i }
+
+  @[JSON::Field(ignore: true)]
+  getter crit_count : Int32 { @commentCount }
+
+  def fix_tags
+    @tags.map(&.split("-")).flatten.uniq
+  end
+
+  def fix_cover(cover : String)
     return "" unless @cover.starts_with?("http")
     @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
   end
 
-  def genre
-    @category.try(&.[:className]) || ""
+  TIME_DF = Time.utc(2000, 1, 1).to_unix_ms
+
+  def fix_time
+    return TIME_DF if @updateAt >= Time.utc
+    @updateAt.to_unix_ms
   end
 
-  def tags
-    @tags.map(&.split("-")).flatten.uniq.reject! do |tag|
-      tag == @title || tag == @author
-    end
-  end
+  alias Data = NamedTuple(bookInfo: YsSerial, bookSource: Array(YsSource))
 
-  def first_source
-    @sources.first?.try(&.link)
-  end
-
-  alias Data = NamedTuple(bookInfo: YsSerial, bookSource: Array(BookSource))
-
-  def self.load!(file : String)
+  def self.load(file : String)
     text = File.read(file)
     return unless text.includes?("\"success\"")
 
     json = NamedTuple(data: Data).from_json(text)
-
     info = json[:data][:bookInfo]
     info.sources = json[:data][:bookSource]
-
-    info.title = SourceUtil.fix_title(info.title)
-    info.author = SourceUtil.fix_author(info.author, info.title)
-
     info
   end
 end

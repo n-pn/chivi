@@ -20,14 +20,26 @@ module BookManage
 
   def upsert!(source : YsSerial, force = false, flush = true)
     info = find_or_create(source.title, source.author)
-    rebuild_identity!(info, force)
+
+    rebuild_identity!(info, force: force)
+
     set_intro(info, source.intro, force: force)
+    set_genre(info, "yousuu", source.genre, force: force)
+    set_tags(info, "yousuu", source.fixed_tags, force: force)
+    set_cover(info, "yousuu", source.fixed_cover, force: force)
 
-    info.shield = 2 if input.shielded
+    set_mftime(info, source.mftime, force: force)
+    set_status(info, source.status, force: force)
+    set_shield(info, 2, force: force) if source.shielded
 
-    info.voters = input.scorerCount
-    info.rating = (input.score * 10).round / 10
-    info.fix_weight
+    set_voters(info, source.voters, force: force)
+    set_rating(info, source.rating, force: force)
+    set_weight(info, source.weight, force: force)
+
+    info.yousuu_bid = source.ysid
+    info.source_url = source.source_url
+    info.word_count = source.word_count
+    info.crit_count = source.crit_count
 
     info.save! if info.changed? && flush
   end
@@ -151,21 +163,68 @@ module BookManage
     end
   end
 
-  def set_intro(info : BookInfo, zh_intro = "", force = false)
+  def set_intro(info : BookInfo, zh_intro : String, force = false)
     return unless force || info.zh_intro.empty?
-    info.vi_intro = cv_intro(zh_intro, info.ubid)
-    info.zh_intro = zh_intro
+    # assuming zh_intro is uncleaned
+    lines = TextUtil.split_html(zh_intro)
+    info.zh_intro = lines.join("\n")
+    info.vi_intro = cv_intro(lines, info.ubid)
   end
 
+  # currently unused
   def set_vi_intro(info : BookInfo, vi_intro = "", force = false)
     return unless force || info.vi_intro.empty?
-    vi_intro = cv_intro if vi_intro.empty?
+    # assuming zh_intro is cleaned
+    vi_intro = cv_intro(info.zh_intro.split("\n")) if vi_intro.empty?
     info.vi_intro = vi_intro
   end
 
-  private def cv_intro(input : String, ubid : String)
-    cv_lines = Engine.cv_plain(input.split("\n"), ubid)
-    vi_intro = cv_lines.map(&.vi_text).join("\n")
+  private def cv_intro(lines : Array(String), dname : String)
+    Engine.cv_plain(lines, dname).map(&.vi_text).join("\n")
+  end
+
+  def set_genre(info : BookInfo, site : String, genre : String, force = false)
+    return unless force || info.zh_genres.includes?(site)
+    info.add_zh_genre(site, genre)
+
+    zh_genres = genres_tally(info.zh_genres.values, min_count: 2)
+
+    if zh_genres.empty?
+      info.vi_genres = ["Loại khác"]
+    else
+      info.vi_genres = zh_genres.map do |(genre, _)|
+        LabelMap.vi_genre.fetch(genre).not_nil!
+      end
+    end
+
+    update_token(TokenMap.vi_genres, info.ubid, info.vi_genres)
+  end
+
+  def genres_tally(zh_genres : Array(String), min_count = 1)
+    counter = Hash(String, Int32).new { |h, k| h[k] = 0 }
+
+    zh_genres.each do |genre|
+      split_genres(genre).each { |x| counter[x] += 1 }
+    end
+
+    counted = counter.to_a
+
+    if min_count > 1
+      selects = counted.select { |_, c| c >= min_count }
+      counted = selects unless selects.empty?
+    end
+
+    counted.sort_by { |(_, c)| -c }
+  end
+
+  def split_genres(genre : String)
+    genre = genre.sub(/小说$/, "") unless genre == "轻小说"
+    unless genres = LabelMap.genre_zh.fetch(genre)
+      ValueSet.skip_genres.upsert!(genre) if genre != "其他"
+      [] of String
+    end
+
+    enres.split("¦")
   end
 
   def set_voters(info : BookInfo, voters : Int32, force = false)
@@ -175,27 +234,27 @@ module BookManage
 
   def set_rating(info : BookInfo, rating : Int32, force = false)
     return unless force || info.rating < rating
+    update_order(OrderMap.rating, (rating * 10).to_i64)
     info.rating = rating
   end
 
-  def fix_weight(info : BookInfo, weight = -1, force = true)
+  def set_weight(info : BookInfo, weight : Int64, force = true)
+    weight += info.view_count
+
+    return unless force || info.weight < weight
+    update_order(OrderMap.weight, weight)
+    info.weight = weight
   end
 
-  def fix_genre(genre : String)
-    genre = genre.sub(/小说$/, "") unless genre == "轻小说"
-    if genres = LabelMap.genre_zh.fetch(genre)
-      return genres.split("¦")
-    end
-
-    ValueSet.skip_genres.upsert!(genre) if genre != "其他"
-    [] of String
+  private def update_token(map : TokenMap, key : String, vals : String)
+    map.upsert!(key, TextUtil.tokenize(vals))
   end
 
-  private def update_token(token_map : TokenMap, key : String, vals : String)
-    token_map.upsert!(key, TextUtil.tokenize(vals))
+  private def update_token(map : TokenMap, key : String, vals : Array(String))
+    map.upsert!(key, vals)
   end
 
-  private def update_order(order_map : TokenMap, key : String, value : Int64)
-    order_map.upsert!(key, value)
+  private def update_order(map : TokenMap, key : String, value : Int64)
+    map.upsert!(key, value)
   end
 end

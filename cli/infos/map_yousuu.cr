@@ -86,7 +86,7 @@ class MapYousuu
       info.rating = (input.score * 10).round / 10
       info.fix_weight
 
-      info.set_title(Utils.split_text(input.intro).join("\n"))
+      info.set_intro(Utils.split_text(input.intro).join("\n"))
       info.mftime = Utils.correct_time(input.updateAt).to_unix_ms
 
       info.status = input.status
