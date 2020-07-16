@@ -74,7 +74,7 @@ class CritCrawler
           fails << ybid
         when :no_more_proxy
           puts " - Ran out of proxy, aborting!".red
-          break
+          return
         end
       end
 
