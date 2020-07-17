@@ -65,7 +65,8 @@ class BookInfo
 
   # add new zh_genre if not already exists
   def add_zh_genre(site : String, genre : String) : Void
-    @zh_genres[site]?.try { |x| return if x == genre }
+    return if @zh_genres[site]? == genre
+
     @changes += 1
     @zh_genres[site] = genre
   end
@@ -73,27 +74,29 @@ class BookInfo
   # add new vi_genre if not already exists
   def add_vi_genre(genre : String) : Void
     return if @vi_genres.includes?(genre)
+
     @changes += 1
     @vi_genres << genre_vi
   end
 
   # add new zh_tag if not already exists
-  def add_zh_tags(site : String, tag : String) : Void
-    @zh_tags[site]?.try { |x| return if x == tag }
+  def add_zh_tags(site : String, tags : String) : Void
+    return if @zh_tags[site]? == tags
+
     @changes += 1
-    @zh_tags[site] = tag
+    @zh_tags[site] = tags
   end
 
   # add new vi_tag if not already exists
-  def add_vi_tag(tag : String) : Void
-    return if @vi_tags.includes?(tag)
+  def add_vi_tag(vi_tag : String) : Void
+    return if @vi_tags.includes?(vi_tag)
     @changes += 1
     @vi_tags << vi_tag
   end
 
   # only add cover if not already exists
   def add_cover(site : String, cover : String)
-    @cover_urls[site]?.try { |x| return if x == cover }
+    return if @cover_urls[site]? == cover
 
     @changes += 1
     @cover_urls[site] = cover
@@ -112,39 +115,6 @@ class BookInfo
   def set_weight(weight = get_weight)
     self.weight = weight
   end
-
-  def update(source : YsSerial)
-    source.genres.each do |(zh_genres, genre_vi)|
-      add_genre(zh_genres, genre_vi)
-    end
-
-    source.tags.each do |tag|
-      add_tag(tag)
-    end
-  end
-
-  # # update info from remote seed source
-  # def update(source : SeedInfo)
-  #   genres = UuidUtil.map_genre(source.genre)
-  #     .source.genres.each do |(zh_genres, genre_vi)|
-  #     add_genre(zh_genres, genre_vi)
-  #   end
-
-  #   source.tags.each do |tag|
-  #     add_tag(tag)
-  #   end
-
-  #   set_intro(source.intro) if @zh_intro.empty?
-  #   add_cover(source.cover)
-
-  #   seed = put_seed(source.seed, source.type)
-  #   seed.update_remote(source)
-
-  #   self.mftime = seed.mftime if @mftime < seed.mftime
-  #   self.status = seed.status if @status < seed.status
-
-  #   @changes += seed.reset_changes!
-  # end
 
   # create new seed if not existed
   def put_seed(name : String, type = 1)
@@ -274,7 +244,7 @@ class BookInfo
   # load with caching, create new entry if not exists
   def self.preload_or_create!(title : String, author : String, ubid : String? = nil) : BookInfo
     ubid ||= ubid_for(title, author)
-    CACHE[ubid] ||= find_or_create(title, author, ubid)
+    CACHE[ubid] ||= get_or_create(title, author, ubid)
   end
 
   # loadd all entries in to `CACHE`

@@ -239,11 +239,15 @@ class OrderMap
     CACHE[name] ||= load!(name)
   end
 
-  class_getter author : OrderMap { preload!("author--weight") }
-  class_getter access : OrderMap { preload!("book--access") }
-  class_getter update : OrderMap { preload!("book--update") }
-  class_getter weight : OrderMap { preload!("book--weight") }
-  class_getter rating : OrderMap { preload!("book--rating") }
+  def self.flush! : Void
+    CACHE.each_value { |map| map.save! }
+  end
+
+  class_getter author : OrderMap { preload!("top_authors") }
+  class_getter access : OrderMap { preload!("book_access") }
+  class_getter update : OrderMap { preload!("book_update") }
+  class_getter weight : OrderMap { preload!("book_weight") }
+  class_getter rating : OrderMap { preload!("book_rating") }
 end
 
 # test = OrderMap.new("tmp/order_map.txt", false)
