@@ -129,14 +129,15 @@ class LabelMap
     CACHE[name] ||= load!(name)
   end
 
-  class_getter mapping : LabelMap { preload!("slug--ubid") }
+  class_getter map_slug : LabelMap { preload!("map_slug") }
 
   class_getter zh_title : LabelMap { preload!("fixes/zh_title") }
-  class_getter zh_author : LabelMap { preload!("fixes/zh_author") }
-  class_getter zh_genre : LabelMap { preload!("fixes/zh_genre") }
-
   class_getter vi_title : LabelMap { preload!("fixes/vi_title") }
+
+  class_getter zh_author : LabelMap { preload!("fixes/zh_author") }
   class_getter vi_author : LabelMap { preload!("fixes/vi_author") }
+
+  class_getter zh_genre : LabelMap { preload!("fixes/zh_genre") }
   class_getter vi_genre : LabelMap { preload!("fixes/vi_genre") }
 end
 

@@ -50,7 +50,7 @@ class YsSerial
   getter genre : String { @category.try(&.[:className]) || "" }
 
   @[JSON::Field(ignore: true)]
-  getter source_url : String { @sources.first?.try(&.link) || "" }
+  getter origin_url : String { @sources.first?.try(&.link) || "" }
 
   @[JSON::Field(ignore: true)]
   getter fixed_tags : Array(String) { fix_tags }
@@ -65,29 +65,29 @@ class YsSerial
   getter voters : Int32 { @scorerCount }
 
   @[JSON::Field(ignore: true)]
-  getter rating : Int32 { (source.score * 10).round / 10 }
+  getter rating : Float32 { (@score * 10).round / 10 }
 
   @[JSON::Field(ignore: true)]
-  getter weight : Int32 { (rating * 10).to_i64 * voters }
+  getter weight : Int64 { (rating * 10).to_i64 * voters }
 
   @[JSON::Field(ignore: true)]
-  getter word_count : Int32 { input.countWord.round.to_i }
+  getter word_count : Int32 { @countWord.round.to_i }
 
   @[JSON::Field(ignore: true)]
   getter crit_count : Int32 { @commentCount }
 
-  def fix_tags
+  private def fix_tags
     @tags.map(&.split("-")).flatten.uniq
   end
 
-  def fix_cover(cover : String)
+  private def fix_cover
     return "" unless @cover.starts_with?("http")
     @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
   end
 
   TIME_DF = Time.utc(2000, 1, 1).to_unix_ms
 
-  def fix_time
+  private def fix_time
     return TIME_DF if @updateAt >= Time.utc
     @updateAt.to_unix_ms
   end
@@ -105,4 +105,8 @@ class YsSerial
   end
 end
 
-# pp YsSerial.load!("var/.book_cache/yousuu/serials/176814.json")
+# serial = YsSerial.load("var/.book_cache/yousuu/serials/176814.json").not_nil!
+# puts serial.genre
+# puts serial.fixed_tags
+# puts serial.fixed_cover
+# puts serial.mftime

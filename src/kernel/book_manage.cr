@@ -4,6 +4,9 @@ require "colorize"
 require "../engine"
 require "../lookup/*"
 
+require "../parser/ys_serial"
+require "../parser/seed_info"
+
 require "../common/text_util"
 require "../bookdb/book_info"
 
@@ -14,7 +17,7 @@ module BookManage
   delegate get!, to: BookInfo
 
   def find(slug : String)
-    return unless ubid = LabelMap.mapping.fetch(slug)
+    return unless ubid = LabelMap.map_slug.fetch(slug)
     BookInfo.get(ubid)
   end
 
@@ -28,20 +31,21 @@ module BookManage
     set_tags(info, "yousuu", source.fixed_tags, force: force)
     set_cover(info, "yousuu", source.fixed_cover, force: force)
 
-    set_mftime(info, source.mftime, force: force)
-    set_status(info, source.status, force: force)
     set_shield(info, 2, force: force) if source.shielded
+    set_status(info, source.status, force: force)
+    set_mftime(info, source.mftime, force: force)
 
     set_voters(info, source.voters, force: force)
     set_rating(info, source.rating, force: force)
     set_weight(info, source.weight, force: force)
 
     info.yousuu_bid = source.ysid
-    info.source_url = source.source_url
+    info.origin_url = source.origin_url
     info.word_count = source.word_count
     info.crit_count = source.crit_count
 
     info.save! if info.changed? && flush
+    info
   end
 
   def upsert!(source : SeedInfo, force = false, flush = true)
@@ -50,14 +54,19 @@ module BookManage
     set_intro(info, source.intro, force: force)
 
     info.save! if info.changed? && flush
+    info
   end
 
+  # def ubid_for(title : String, author : String)
+
+  # end
+
   def find_or_create(title : String, author : String)
-    title = fix_title
-    author = fix_author
+    # title = fix_title(title)
+    # author = fix_author(author, title)
 
     raise "book title on blacklist" if blacklist?(title)
-    info = BookUtil.preload_or_create!(title, author)
+    info = BookInfo.preload_or_create!(title, author)
 
     update_token(TokenMap.zh_title, info.ubid, title)
     update_token(TokenMap.zh_author, info.ubid, author)
@@ -66,18 +75,18 @@ module BookManage
   end
 
   def fix_title(title : String)
-    title = TextUtil.fix_spaces(title).sug(/\(.+\)\s*$/, "").strip
+    title = TextUtil.fix_spaces(title).sub(/\(.+\)\s*$/, "").strip
     LabelMap.zh_title.fetch(title) || title
   end
 
   def fix_author(author : String, title : String = "")
-    author = TextUtil.fix_spaces(author).sug(/\(.+\)|\.QD\s*$/, "").strip
+    author = TextUtil.fix_spaces(author).sub(/\(.+\)|\.QD\s*$/, "").strip
     return author unless matcher = LabelMap.zh_author.fetch(author)
 
     items = matcher.split("¦")
     match_author = items[0]
 
-    return match_author unless match_tile = items[1]?
+    return match_author unless match_title = items[1]?
     match_title == title ? match_author : author
   end
 
@@ -107,7 +116,7 @@ module BookManage
     return unless force || info.vi_title.empty?
 
     if vi_title.empty?
-      vi_title = LabelMap.fetch(info.vi_title) || info.hv_title
+      vi_title = LabelMap.vi_title.fetch(info.zh_title) || info.hv_title
       vi_title = to_hanviet(info.zh_title) if vi_title.empty?
       vi_title = TextUtil.titleize(vi_title)
     end
@@ -120,7 +129,7 @@ module BookManage
     return unless force || info.vi_author.empty?
 
     if vi_author.empty?
-      unless vi_author = LabelMap.fetch(info.vi_author)
+      unless vi_author = LabelMap.vi_author.fetch(info.zh_author)
         vi_author = TextUtil.titleize(to_hanviet(info.zh_author))
       end
     end
@@ -145,18 +154,18 @@ module BookManage
     raise "vi_author is empty" if info.vi_author.empty?
 
     title_slug = TextUtil.slugify(info.vi_title)
-    return title_slug if set_slug(title_slug, info.sbid)
+    return title_slug if set_slug(info, title_slug)
 
     author_slug = TextUtil.slugify(info.vi_author)
     full_slug = "#{title_slug}--#{author_slug}"
-    return full_slug if set_slug(full_slug, info.sbid)
+    return full_slug if set_slug(info, full_slug)
 
     raise "can not find an unique slug for this book"
   end
 
   def set_slug(info : BookInfo, slug : String) : String?
-    unless old_ubid = LabelMap.mapping.fetch(slug)
-      LabelMap.upsert(slug, info.ubid)
+    unless old_ubid = LabelMap.map_slug.fetch(slug)
+      LabelMap.map_slug.upsert!(slug, info.ubid)
       info.slug = slug
     else
       slug if old_ubid == info.ubid
@@ -184,10 +193,10 @@ module BookManage
   end
 
   def set_genre(info : BookInfo, site : String, genre : String, force = false)
-    return unless force || info.zh_genres.includes?(site)
+    return unless force || !info.zh_genres.includes?(site)
     info.add_zh_genre(site, genre)
 
-    zh_genres = genres_tally(info.zh_genres.values, min_count: 2)
+    zh_genres = count_genres(info.zh_genres.values, min_count: 2)
 
     if zh_genres.empty?
       info.vi_genres = ["Loại khác"]
@@ -200,7 +209,7 @@ module BookManage
     update_token(TokenMap.vi_genres, info.ubid, info.vi_genres)
   end
 
-  def genres_tally(zh_genres : Array(String), min_count = 1)
+  def count_genres(zh_genres : Array(String), min_count = 1)
     counter = Hash(String, Int32).new { |h, k| h[k] = 0 }
 
     zh_genres.each do |genre|
@@ -219,12 +228,44 @@ module BookManage
 
   def split_genres(genre : String)
     genre = genre.sub(/小说$/, "") unless genre == "轻小说"
-    unless genres = LabelMap.genre_zh.fetch(genre)
+
+    if genres = LabelMap.zh_genre.fetch(genre)
+      genres.split("¦")
+    else
       ValueSet.skip_genres.upsert!(genre) if genre != "其他"
       [] of String
     end
+  end
 
-    enres.split("¦")
+  def set_tags(info : BookInfo, site : String, tags : Array(String), force = false)
+    return unless force || !info.zh_tags.includes?(site)
+    info.add_zh_tags(site, tags.join("¦"))
+    tags.each { |tag_zh| info.add_vi_tag(to_hanviet(tag_zh)) }
+    update_token(TokenMap.vi_tags, info.ubid, info.vi_tags)
+  end
+
+  def set_cover(info : BookInfo, site : String, cover : String, force = false)
+    return unless force || !info.cover_urls.includes?(site)
+    info.add_cover(site, cover)
+    # TODO: Fetch covers?
+  end
+
+  def set_shield(info : BookInfo, shield = 0, force = false)
+    return unless force || info.shield > shield
+    info.shield = shield
+    # TODO: remove info from order_map indexes if shield > 0 ?
+  end
+
+  def set_status(info : BookInfo, status = 0, force = false)
+    return unless force || info.status > status
+    info.status = status
+  end
+
+  def set_mftime(info : BookInfo, mftime = 0_i64, force = false)
+    return unless force || info.mftime > mftime
+    update_order(OrderMap.update, info.ubid, mftime)
+    update_order(OrderMap.access, info.ubid, mftime)
+    info.mftime = mftime
   end
 
   def set_voters(info : BookInfo, voters : Int32, force = false)
@@ -232,9 +273,9 @@ module BookManage
     info.voters = voters
   end
 
-  def set_rating(info : BookInfo, rating : Int32, force = false)
+  def set_rating(info : BookInfo, rating : Float, force = false)
     return unless force || info.rating < rating
-    update_order(OrderMap.rating, (rating * 10).to_i64)
+    update_order(OrderMap.rating, info.ubid, info.scored)
     info.rating = rating
   end
 
@@ -242,7 +283,7 @@ module BookManage
     weight += info.view_count
 
     return unless force || info.weight < weight
-    update_order(OrderMap.weight, weight)
+    update_order(OrderMap.weight, info.ubid, weight)
     info.weight = weight
   end
 
@@ -254,7 +295,7 @@ module BookManage
     map.upsert!(key, vals)
   end
 
-  private def update_order(map : TokenMap, key : String, value : Int64)
+  private def update_order(map : OrderMap, key : String, value : Int64)
     map.upsert!(key, value)
   end
 end
