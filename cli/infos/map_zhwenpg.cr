@@ -3,33 +3,25 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../src/_utils/html_utils"
-require "../../src/_utils/file_utils"
-require "../../src/_utils/time_utils"
-require "../../src/_utils/text_utils"
+require "../../src/common/file_util"
+require "../../src/common/http_util"
+require "../../src/common/time_util"
+require "../../src/common/text_util"
 
-require "../../src/models/book_info"
-
-require "../../src/lookup/order_map"
-require "../../src/lookup/label_map"
-
-require "../../src/parser/seed_info"
+require "../../src/kernel/book_manage"
 
 class MapZhwenpg
   DIR = File.join("var", ".book_cache", "zhwenpg", "pages")
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-    @top_authors = OrderMap.load!("author--weight")
-    @book_update = OrderMap.load!("book--update")
-
-    @map_ubids = LabelMap.get_or_create("sitemaps/zhwenpg--ubid")
-    @map_titles = LabelMap.get_or_create("sitemaps/zhwenpg--title")
-    @map_authors = LabelMap.get_or_create("sitemaps/zhwenpg--author")
+    @authors = OrderMap.get_or_create("top_authors")
+    @sitemap = LabelMap.get_or_create("sites/zhwenpg")
+    @checked = Set(String).new
   end
 
   def expiry(page : Int32 = 1)
-    4.hours * page
+    Time.utc - 4.hours * page
   end
 
   def page_url(page : Int32, status : Int32 = 0)
@@ -50,8 +42,8 @@ class MapZhwenpg
     url = page_url(page, status)
     file = page_path(page, status)
 
-    unless html = Utils.read_file(file, time: expiry(page))
-      html = Utils.fetch_html(url)
+    unless html = FileUtil.read(file, expiry: expiry(page))
+      html = HttpUtil.fetch_html(url, HttpUtil.encoding_for("zhwenpg"))
       File.write(file, html)
     end
 
@@ -80,10 +72,13 @@ class MapZhwenpg
     link = rows[0].css("a").first
     sbid = link.attributes["href"].sub("b.php?id=", "")
 
+    return if @checked.includes?(sbid)
+    @checked << sbid
+
     title = link.inner_text.strip
     author = rows[1].css(".fontwt").first.inner_text.strip
 
-    return if SourceUtil.blacklist?(title)
+    return if BookManage.blacklist?(title)
     info = BookInfo.get_or_create(title, author)
 
     @map_ubids.upsert(sbid, info.ubid)
@@ -147,11 +142,11 @@ class MapZhwenpg
     puts "ERROR: #{err.colorize.red}!"
   end
 
-  TIME = Time.utc.to_unix_ms
+  TIME = Time.utc.to_unix
   DATE = TIME - 24.hours.total_milliseconds.to_i64
 
   private def parse_time(time : String)
-    mftime = Utils.parse_time(time).to_unix_ms
+    mftime = Utils.parse_time(time).to_unix
     mftime <= DATE ? mftime : TIME
   end
 

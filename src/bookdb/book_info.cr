@@ -109,7 +109,7 @@ class BookInfo
 
   # recaculate book worth
   def get_weight
-    scored * @voters + @view_count
+    scored * @voters
   end
 
   def set_weight(weight = get_weight)
@@ -245,6 +245,10 @@ class BookInfo
   def self.preload_or_create!(title : String, author : String, ubid : String? = nil) : BookInfo
     ubid ||= ubid_for(title, author)
     CACHE[ubid] ||= get_or_create(title, author, ubid)
+  end
+
+  def self.cache_info(info : BookInfo)
+    CACHE[info.ubid] = info
   end
 
   # loadd all entries in to `CACHE`

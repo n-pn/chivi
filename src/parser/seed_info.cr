@@ -198,10 +198,10 @@ class SeedInfo
     case @seed
     when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
       text = meta_data("og:novel:update_time").not_nil!
-      Utils.parse_time(text).to_unix_ms
+      Utils.parse_time(text).to_unix
     when "69shu"
       text = node_text(".mu_beizhu").not_nil!.sub(/.+时间：/m, "")
-      Utils.parse_time(text).to_unix_ms
+      Utils.parse_time(text).to_unix
     when "hetushu", "zhwenpg"
       0_i64
     else

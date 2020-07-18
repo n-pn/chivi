@@ -126,7 +126,11 @@ class LabelMap
   CACHE = {} of String => LabelMap
 
   def self.preload!(name : String) : LabelMap
-    CACHE[name] ||= load!(name)
+    CACHE[name] ||= load(name) || init(name)
+  end
+
+  def self.flush!
+    CACHE.each_value { |item| item.save! }
   end
 
   class_getter map_slug : LabelMap { preload!("map_slug") }

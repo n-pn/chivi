@@ -21,57 +21,13 @@ module BookManage
     BookInfo.get(ubid)
   end
 
-  def upsert!(source : YsSerial, force = false, flush = true)
-    info = find_or_create(source.title, source.author)
+  def find_or_create(title : String, author : String, fixed = false)
+    unless fixed
+      title = fix_title(title)
+      author = fix_author(author, title)
+    end
 
-    rebuild_identity!(info, force: force)
-
-    set_intro(info, source.intro, force: force)
-    set_genre(info, "yousuu", source.genre, force: force)
-    set_tags(info, "yousuu", source.fixed_tags, force: force)
-    set_cover(info, "yousuu", source.fixed_cover, force: force)
-
-    set_shield(info, 2, force: force) if source.shielded
-    set_status(info, source.status, force: force)
-    set_mftime(info, source.mftime, force: force)
-
-    set_voters(info, source.voters, force: force)
-    set_rating(info, source.rating, force: force)
-    set_weight(info, source.weight, force: force)
-
-    info.yousuu_bid = source.ysid
-    info.origin_url = source.origin_url
-    info.word_count = source.word_count
-    info.crit_count = source.crit_count
-
-    info.save! if info.changed? && flush
-    info
-  end
-
-  def upsert!(source : SeedInfo, force = false, flush = true)
-    info = find_or_create(source.title, source.author)
-    rebuild_identity!(info, force)
-    set_intro(info, source.intro, force: force)
-
-    info.save! if info.changed? && flush
-    info
-  end
-
-  # def ubid_for(title : String, author : String)
-
-  # end
-
-  def find_or_create(title : String, author : String)
-    # title = fix_title(title)
-    # author = fix_author(author, title)
-
-    raise "book title on blacklist" if blacklist?(title)
-    info = BookInfo.preload_or_create!(title, author)
-
-    update_token(TokenMap.zh_title, info.ubid, title)
-    update_token(TokenMap.zh_author, info.ubid, author)
-
-    info
+    BookInfo.get_or_create(title, author)
   end
 
   def fix_title(title : String)
@@ -90,18 +46,65 @@ module BookManage
     match_title == title ? match_author : author
   end
 
-  def blacklist?(title : String)
+  def blacklist?(info : BookInfo)
     # TODO: check by both author and book title
-    ValueSet.skip_titles.includes?(title)
+    ValueSet.skip_titles.includes?(info.zh_title)
   end
 
-  def rebuild_identity!(info : BookInfo, force = false)
+  def whitelist?(info : BookInfo)
+    OrderMap.top_authors.has_key?(info.zh_author)
+  end
+
+  def update(info : BookInfo, source : YsSerial, force = false)
+    set_intro(info, source.intro, force: force)
+    set_genre(info, "yousuu", source.genre, force: force)
+    set_tags(info, "yousuu", source.fixed_tags, force: force)
+    set_cover(info, "yousuu", source.fixed_cover, force: force)
+
+    set_shield(info, 2, force: force) if source.shielded
+    set_status(info, source.status, force: force)
+    set_mftime(info, source.mftime, force: force)
+
+    set_voters(info, source.voters, force: force)
+    set_rating(info, source.rating, force: force)
+    set_weight(info, source.weight, force: force)
+
+    info.yousuu_bid = source.ysid
+    info.origin_url = source.origin_url
+    info.word_count = source.word_count
+    info.crit_count = source.crit_count
+
+    info
+  end
+
+  def update(source : SeedInfo, force = false, flush = true)
+    info = find_or_create(source.title, source.author)
+    rebuild_identity!(info, force)
+    set_intro(info, source.intro, force: force)
+
+    info.save! if info.changed? && flush
+    info
+  end
+
+  def reset_info(info : BookInfo, force = false)
+    update_token(TokenMap.zh_title, info.ubid, info.zh_title)
+    update_token(TokenMap.zh_author, info.ubid, info.zh_author)
+
     set_hv_title(info, force: force)
     set_vi_title(info, force: force)
     set_vi_author(info, force: force)
 
-    map_slug(info, force: force)
-    set_slug(info, TextUtil.slugify(info.hv_title)) if force
+    return unless force || info.slug.empty?
+
+    title_slug = TextUtil.slugify(info.vi_title)
+    set_slug(info, title_slug)
+
+    author_slug = TextUtil.slugify(info.vi_author)
+    full_slug = "#{title_slug}--#{author_slug}"
+    set_slug(info, full_slug)
+
+    hanviet_slug = TextUtil.slugify(info.hv_title)
+    set_slug(info, hanviet_slug)
   end
 
   def set_hv_title(info : BookInfo, hv_title = "", force = false)
@@ -142,34 +145,14 @@ module BookManage
     Engine.hanviet(title, apply_cap: true).vi_text
   end
 
-  def map_slug(info : BookInfo, new_slug : String = "", force = false)
-    return info.slug unless force || info.slug.empty?
-
-    if !new_slug.empty?
-      raise "slug used by other book!" unless set_slug(info, new_slug)
-      return new_slug
-    end
-
-    raise "vi_title is empty" if info.vi_title.empty?
-    raise "vi_author is empty" if info.vi_author.empty?
-
-    title_slug = TextUtil.slugify(info.vi_title)
-    return title_slug if set_slug(info, title_slug)
-
-    author_slug = TextUtil.slugify(info.vi_author)
-    full_slug = "#{title_slug}--#{author_slug}"
-    return full_slug if set_slug(info, full_slug)
-
-    raise "can not find an unique slug for this book"
-  end
-
   def set_slug(info : BookInfo, slug : String) : String?
-    unless old_ubid = LabelMap.map_slug.fetch(slug)
-      LabelMap.map_slug.upsert!(slug, info.ubid)
-      info.slug = slug
+    if ubid = LabelMap.map_slug.fetch(slug)
+      return if ubid != info.ubid
     else
-      slug if old_ubid == info.ubid
+      LabelMap.map_slug.upsert!(slug, info.ubid)
     end
+
+    info.slug = slug
   end
 
   def set_intro(info : BookInfo, zh_intro : String, force = false)
@@ -209,7 +192,7 @@ module BookManage
     update_token(TokenMap.vi_genres, info.ubid, info.vi_genres)
   end
 
-  def count_genres(zh_genres : Array(String), min_count = 1)
+  private def count_genres(zh_genres : Array(String), min_count = 1)
     counter = Hash(String, Int32).new { |h, k| h[k] = 0 }
 
     zh_genres.each do |genre|
@@ -251,20 +234,20 @@ module BookManage
   end
 
   def set_shield(info : BookInfo, shield = 0, force = false)
-    return unless force || info.shield > shield
+    return unless force || info.shield < shield
     info.shield = shield
     # TODO: remove info from order_map indexes if shield > 0 ?
   end
 
   def set_status(info : BookInfo, status = 0, force = false)
-    return unless force || info.status > status
+    return unless force || info.status < status
     info.status = status
   end
 
   def set_mftime(info : BookInfo, mftime = 0_i64, force = false)
-    return unless force || info.mftime > mftime
-    update_order(OrderMap.update, info.ubid, mftime)
-    update_order(OrderMap.access, info.ubid, mftime)
+    return unless force || info.mftime < mftime
+    update_order(OrderMap.book_update, info.ubid, mftime)
+    update_order(OrderMap.book_access, info.ubid, mftime)
     info.mftime = mftime
   end
 
@@ -275,15 +258,13 @@ module BookManage
 
   def set_rating(info : BookInfo, rating : Float, force = false)
     return unless force || info.rating < rating
-    update_order(OrderMap.rating, info.ubid, info.scored)
+    update_order(OrderMap.book_rating, info.ubid, info.scored)
     info.rating = rating
   end
 
   def set_weight(info : BookInfo, weight : Int64, force = true)
-    weight += info.view_count
-
     return unless force || info.weight < weight
-    update_order(OrderMap.weight, info.ubid, weight)
+    update_order(OrderMap.book_weight, info.ubid, weight)
     info.weight = weight
   end
 
@@ -292,7 +273,7 @@ module BookManage
   end
 
   private def update_token(map : TokenMap, key : String, vals : Array(String))
-    map.upsert!(key, vals)
+    map.upsert!(key, vals.map { |x| TextUtil.slugify(x) })
   end
 
   private def update_order(map : OrderMap, key : String, value : Int64)

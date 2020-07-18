@@ -54,7 +54,7 @@ module Kernel
           if info.mftime > mftime
             new_mftime = info.mftime
           else
-            new_mftime = Time.local.to_unix_ms
+            new_mftime = Time.local.to_unix
           end
         end
 

@@ -124,7 +124,7 @@ class OrderMap
 
   def upsert(key : String, val : Int64, force = false) : Node?
     if node = fetch(key)
-      return if !force && node.val >= val
+      return unless force || node.val < val
 
       node.val = val
       @first.set_right(node) if val >= @first.right!.val
@@ -243,11 +243,11 @@ class OrderMap
     CACHE.each_value { |map| map.save! }
   end
 
-  class_getter author : OrderMap { preload!("top_authors") }
-  class_getter access : OrderMap { preload!("book_access") }
-  class_getter update : OrderMap { preload!("book_update") }
-  class_getter weight : OrderMap { preload!("book_weight") }
-  class_getter rating : OrderMap { preload!("book_rating") }
+  class_getter top_authors : OrderMap { preload!("top_authors") }
+  class_getter book_access : OrderMap { preload!("book_access") }
+  class_getter book_update : OrderMap { preload!("book_update") }
+  class_getter book_weight : OrderMap { preload!("book_weight") }
+  class_getter book_rating : OrderMap { preload!("book_rating") }
 end
 
 # test = OrderMap.new("tmp/order_map.txt", false)

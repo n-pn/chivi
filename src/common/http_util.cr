@@ -7,20 +7,19 @@ module HttpUtil
   LABEL = "http_util"
   alias SSL = OpenSSL::SSL::Context::Client
 
-  def fetch_html(url : String, encoding = "GBK") : String
-    puts "-- <#{LABEL}> GET: [#{url}] --".colorize.magenta
-
-    tls = url.starts_with?("https") ? SSL.insecure : nil
-    html = do_fetch(url, tls, encoding, retry: 0)
-  end
-
   UTF8_SITES = {"jx_la", "hetushu", "paoshu8", "zhwenpg"}
 
   def encoding_for(site : String) : String
     UTF8_SITES.includes?(site) ? "UTF-8" : "GBK"
   end
 
-  def do_fetch_html(url : String, tls : SSL?, encoding : String, retry = 0)
+  def fetch_html(url : String, encoding = "GBK") : String
+    puts "-- <#{LABEL}> GET: [#{url}] --".colorize.magenta
+    tls = url.starts_with?("https") ? SSL.insecure : nil
+    html = fetch_html(url, encoding, tls, retry: 0)
+  end
+
+  def fetch_html(url : String, encoding : String, tls : SSL?, retry = 0)
     HTTP::Client.get(url, tls: tls) do |res|
       res.body_io.set_encoding(encoding, invalid: :skip)
       res.body_io.try(&.gets_to_end) || "404 Not Found!"
@@ -30,7 +29,8 @@ module HttpUtil
             {#{err.class}} #{err.colorize.red} (retry: #{retry.colorize.red})"
 
     return "500 Server Error!" if retry > 2 # stop trying after 3 times
-    sleep 500.milliseconds
-    fetch(url, tls, encoding, retry + 1)
+    retry += 1
+    sleep 500.milliseconds * retry
+    fetch_html(url, encoding, tls, retry)
   end
 end

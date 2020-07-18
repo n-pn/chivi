@@ -95,11 +95,11 @@ class BookSearch
 
   def order_map(sort : Symbol)
     case sort
-    when :access then OrderMap.access
-    when :update then OrderMap.update
+    when :access then OrderMap.book_access
+    when :update then OrderMap.book_update
     when :rating then OrderMap.rating
-    when :weight then OrderMap.weight
-    else              OrderMap.weight
+    when :weight then OrderMap.book_weight
+    else              OrderMap.book_weight
     end
   end
 
