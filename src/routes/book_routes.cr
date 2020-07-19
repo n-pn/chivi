@@ -1,121 +1,117 @@
-require "./_route_utils"
+require "./_utils"
+require "../kernel"
 
 module Server
-  get "/_/books" do |env|
-    sort = env.params.query.fetch("sort", "access")
+  get "/_list_book" do |env|
+    word = env.params.query.fetch("word", "")
+
+    type =
+      case env.params.query.fetch("type", "")
+      when "title"  then :title
+      when "author" then :author
+      else               :fuzzy
+      end
+
+    genre = env.params.query.fetch("genre", "")
+
+    order =
+      case env.params.query.fetch("sort", "access")
+      when "weight", "tally" then :weight
+      when "rating", "score" then :rating
+      when "access"          then :access
+      when "update"          then :update
+      else                        :weight
+      end
+
     page = env.params.query.fetch("page", "1")
-    limit, offset = parse_page(page)
+    limit, offset = Utils.parse_page(page, 24)
 
-    books = BookRepo.index(limit: limit, offset: offset, sort: sort)
-    items = books.map do |info|
-      {
-        ubid:     info.ubid,
-        slug:     info.slug,
-        vi_title: info.vi_title,
-        vi_genre: info.vi_genre,
-        score:    info.score,
-        votes:    info.votes,
-      }
-    end
+    anchor = env.params.query.fetch("anchor", "")
 
-    {items: items, total: BookRepo.sort_by(sort).size, sort: sort}.to_json env.response
-  end
+    opts = BookRepo::Query::Opts.new(word, type, genre, order, limit, offset, anchor)
 
-  get "/_/search" do |env|
-    query = env.params.query.fetch("word", "")
-    page = env.params.query.fetch("page", "1")
-    limit, offset = parse_page(page, limit: 8)
+    infos, total = BookRepo::Query.fetch!(opts)
 
-    ubids = BookRepo.glob(query)
-
-    items = ubids[offset, limit].compact_map do |ubid|
-      next unless info = BookRepo.load(ubid)
-
+    items = infos.map do |info|
       {
         ubid:      info.ubid,
         slug:      info.slug,
         vi_title:  info.vi_title,
-        zh_title:  info.zh_title,
         vi_author: info.vi_author,
-        zh_author: info.zh_author,
-        vi_genre:  info.vi_genre,
-        score:     info.score,
-        votes:     info.votes,
+        vi_genres: info.vi_genres,
+        rating:    info.rating,
+        voters:    info.voters,
       }
     end
 
-    {
-      total: ubids.size,
-      items: items,
-      page:  page,
-    }.to_json env.response
+    {items: items, total: total, query: opts}.to_json(env.response)
   end
 
-  get "/_/books/:slug" do |env|
-    slug = env.params.url["slug"]
-
-    unless book = BookRepo.find(slug)
-      halt env, status_code: 404, response: json_error("Book not found!")
-    end
-
-    # BookRepo.update_sort("access", book)
-    {book: book}.to_json env.response
-  end
-
-  get "/_/books/:slug/:site" do |env|
-    user = env.get("user").as(String)
-    slug = env.params.url["slug"]
+  get "/_load_book" do |env|
+    slug = env.params.query["slug"]
 
     unless info = BookRepo.find(slug)
-      halt env, status_code: 404, response: json_error("Book not found!")
+      halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    site = env.params.url["site"]
-    unless bsid = info.cr_sitemap[site]?
-      halt env, status_code: 404, response: json_error("Site [#{site}] not found")
-    end
+    BookRepo.inc_counter(info, read: false)
+    {book: info}.to_json(env.response)
+  end
 
+  get "/_get_chaps" do |env|
+    slug = env.params.query["slug"]
+    seed = env.params.query["seed"]
     reload = env.params.query.fetch("reload", "false") == "true"
-    chlist, mftime = Kernel.load_list(info, site, user, reload: reload)
 
-    chlist = chlist.map do |chap|
+    unless info = BookRepo.find(slug)
+      halt env, status_code: 404, response: Utils.json_error("Book not found!")
+    end
+
+    unless fetched = Kernel.load_list(info, seed, reload: reload)
+      halt env, status_code: 404, response: Utils.json_error("Seed not found!")
+    end
+
+    BookRepo.bump_access(info)
+    BookRepo.inc_counter(info, read: false)
+
+    chlist, mftime = fetched
+    chlist = chlist.chaps.map do |chap|
       {
-        csid:       chap.csid,
-        vi_title:   chap.vi_title,
-        vi_volume:  chap.vi_volume,
-        title_slug: chap.title_slug,
+        scid:  chap.scid,
+        slug:  chap.url_slug,
+        label: chap.vi_label,
+        title: chap.vi_title,
       }
     end
 
-    {chlist: chlist, mftime: mftime}.to_json env.response
+    {chlist: chlist, mftime: mftime}.to_json(env.response)
   end
 
-  get "/_/books/:slug/:site/:csid" do |env|
-    user = env.get("user").as(String)
-
-    slug = env.params.url["slug"]
+  get "/_load_text" do |env|
+    slug = env.params.query["slug"]
 
     unless info = BookRepo.find(slug)
-      halt env, status_code: 404, response: ({msg: "Book not found"}).to_json
+      halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    BookRepo.update_sort("access", info)
+    BookRepo.bump_access(info)
+    BookRepo.inc_counter(info, read: true)
 
-    site = env.params.url["site"]
-    unless bsid = info.cr_sitemap[site]?
-      halt env, status_code: 404, response: ({msg: "Site [#{site}] not found"}).to_json
+    seed = env.params.query["seed"]
+    unless fetched = Kernel.load_list(info, seed, reload: false)
+      halt env, status_code: 404, response: Utils.json_error("Seed not found!")
     end
 
-    csid = env.params.url["csid"]
+    scid = env.params.query["scid"]
+    list, _ = fetched
 
-    chlist, _ = Kernel.load_list(info, site, reload: false)
-    unless ch_index = chlist.index(&.csid.==(csid))
-      halt env, status_code: 404, response: ({msg: "Chap not found"}).to_json
+    unless index = list.index[scid]?
+      halt env, status_code: 404, response: Utils.json_error("Chapter not found!")
     end
 
-    curr_chap = chlist[ch_index]
-    prev_chap = chlist[ch_index - 1] if ch_index > 0
-    next_chap = chlist[ch_index + 1] if ch_index < chlist.size - 1
+    curr_chap = list.chaps[index]
+    prev_chap = list.chaps[index - 1] if index > 0
+    next_chap = list.chaps[index + 1] if index < list.size - 1
 
     mode = env.params.query.fetch("mode", "0").try(&.to_i) || 0
 
@@ -123,13 +119,15 @@ module Server
       book_ubid: info.ubid,
       book_slug: info.slug,
       book_name: info.vi_title,
-      ch_index:  ch_index + 1,
-      ch_total:  chlist.size,
-      prev_url:  prev_chap.try(&.slug_for(site)),
-      next_url:  next_chap.try(&.slug_for(site)),
-      curr_url:  curr_chap.try(&.slug_for(site)),
+      seed_name: seed,
+      ch_index:  index + 1,
+      ch_total:  list.size,
 
-      content: ChapText.load_vp(site, bsid, csid, user, info.ubid, mode: mode),
-    }.to_json env.response
+      prev_url: prev_chap.try(&.slug_for(seed)),
+      next_url: next_chap.try(&.slug_for(seed)),
+      curr_url: curr_chap.try(&.slug_for(seed)),
+
+      # content: ChapText.load_vp(site, bsid, scid, user, info.ubid, mode: mode),
+    }.to_json(env.response)
   end
 end

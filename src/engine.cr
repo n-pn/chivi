@@ -14,7 +14,7 @@ module Engine
 
   def tradsim(lines : Array(String))
     dict = TrieDict.tradsim
-    lines.map { |line| Convert.translit(input, dict, false, false) }
+    lines.map { |line| Convert.translit(line, dict, false, false) }
   end
 
   def hanviet(input : String, apply_cap = false)
@@ -24,7 +24,7 @@ module Engine
 
   def hanviet(lines : Array(String), apply_cap = false)
     dict = TrieDict.hanviet
-    lines.map { |line| Convert.translit(input, dict, apply_cap, false) }
+    lines.map { |line| Convert.translit(line, dict, apply_cap, false) }
   end
 
   def binh_am(input : String, apply_cap = false)
@@ -34,7 +34,7 @@ module Engine
 
   def binh_am(lines : Array(String), apply_cap = false)
     dict = TrieDict.binh_am
-    lines.map { |line| Convert.translit(input, dict, apply_cap, false) }
+    lines.map { |line| Convert.translit(line, dict, apply_cap, false) }
   end
 
   def cv_title(input : String, dname = "combine")
@@ -70,8 +70,8 @@ module Engine
   end
 
   def apply_logs!(dname : String, mode = :keep_new, save_dict = true)
-    edit = DictEdit.load_remote(dname)
-    dict = TrieDict.load_remote(dname)
+    edit = DictEdit.load_unsure(dname)
+    dict = TrieDict.load_unsure(dname)
 
     edit.best.each_value do |log|
       dict.update(key) do |node|
@@ -91,12 +91,12 @@ module Engine
     dict.save! if save_dict
   end
 
-  def upsert(dname : String, uname : String, power : String, key : String, vals : String = "", extra = "")
-    edit = DictEdit.load_remote(dname)
-    dict = TrieDict.load_remote(dname)
+  def upsert(dname : String, uname : String, power : Int32, key : String, vals : String = "", extra = "")
+    edit = DictEdit.load_unsure(dname)
+    dict = TrieDict.load_unsure(dname)
 
     edit.insert(key, power) do
-      dict.upsert!(key, TrieDict::Node.split(vals), extra)
+      dict.upsert!(key, TrieNode.split(vals), extra)
       DictEdit::Edit.new(DictEdit::Edit.mtime, uname, power, key, vals, extra)
     end
   end
@@ -109,19 +109,19 @@ module Engine
     vals = [] of String
     extra = ""
 
-    if node = TrieDict.load_remote(dname).find(key)
+    if node = TrieDict.load_unsure(dname).find(key)
       power = 1
 
       vals = node.vals
       extra = node.extra
     end
 
-    if edit = DictEdit.load_remote(dname).find(key)
+    if edit = DictEdit.load_unsure(dname).find(key)
       mtime = edit.mtime
       uname = edit.uname
       power = edit.power
 
-      vals = TrieDict::Node.split(edit.vals) if vals.empty?
+      vals = TrieNode.split(edit.vals) if vals.empty?
       extra = edit.extra if extra.empty?
     end
 

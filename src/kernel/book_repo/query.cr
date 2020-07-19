@@ -4,9 +4,12 @@ require "../../lookup/order_map"
 require "../../bookdb/book_info"
 
 # TODO: change class to module?
+require "json"
 
 class BookRepo::Query
   struct Opts
+    include JSON::Serializable
+
     getter :query, :type, :genre, :order, :limit, :offset, :anchor
 
     def initialize(@query = "", @type = :fuzzy, @genre = "", @order = :weight, @limit = 24, @offset = 0, @anchor = "")
@@ -27,7 +30,10 @@ class BookRepo::Query
     list.filter_query(opts.query, opts.type) if opts.filter_query?
     list.filter_genre(opts.genre) if opts.filter_genre?
 
-    list.fetch!(opts.order, opts.limit, opts.offset, opts.anchor)
+    infos = list.fetch!(opts.order, opts.limit, opts.offset, opts.anchor)
+    total = list.ubids.size
+
+    {infos, total}
   end
 
   getter ubids = Set(String).new
@@ -98,7 +104,7 @@ class BookRepo::Query
     case sort
     when :access then OrderMap.book_access
     when :update then OrderMap.book_update
-    when :rating then OrderMap.rating
+    when :rating then OrderMap.book_rating
     when :weight then OrderMap.book_weight
     else              OrderMap.book_weight
     end

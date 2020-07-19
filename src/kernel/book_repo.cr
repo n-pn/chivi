@@ -245,4 +245,15 @@ module BookRepo
     Utils.update_order(OrderMap.book_weight, info.ubid, weight)
     info.weight = weight
   end
+
+  def inc_counter(info : BookInfo, read = false)
+    info.view_count += 1
+    info.read_count += 1 if read
+
+    info.save!
+  end
+
+  def bump_access(info : BookInfo, value : Int64 = Time.utc.to_unix_ms)
+    Utils.update_order(OrderMap.book_access, info.ubid, value)
+  end
 end

@@ -1,4 +1,5 @@
-require "./_route_utils"
+require "./_utils"
+require "../engine"
 
 module Server
   alias LookupEntry = Hash(String, Array(String))
@@ -16,16 +17,16 @@ module Server
       end
 
       dicts.reverse_each do |dict|
-        dict.scan(chars, idx).each do |item|
+        dict.scan(chars, idx) do |item|
           entry[item.key.size]["vietphrase"].concat(item.vals).uniq!
         end
       end
 
-      TrieDict.trungviet.scan(chars, idx).each do |item|
+      TrieDict.trungviet.scan(chars, idx) do |item|
         entry[item.key.size]["trungviet"] = item.vals
       end
 
-      TrieDict.cc_cedict.scan(chars, idx).each do |item|
+      TrieDict.cc_cedict.scan(chars, idx) do |item|
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
@@ -41,16 +42,16 @@ module Server
     input = env.params.query.fetch("input", "")
     dname = env.params.query.fetch("dname", "combine")
 
-    if item = TrieDict.load_shared("suggest").find(input)
+    if item = TrieDict.suggest.find(input)
       suggest = {vals: item.vals, extra: item.extra}
     end
 
     {
+      suggest: suggest,
       generic: Engine.search(input, "generic"),
       special: Engine.search(input, dname),
-      suggest: suggest,
-      hanviet: Engine.translit(input, "hanviet", false).vi_text,
-      pinyins: Engine.translit(input, "pinyins", false).vi_text,
+      hanviet: Engine.hanviet(input, false).vi_text,
+      binh_am: Engine.binh_am(input, false).vi_text,
     }.to_json(env.response)
   end
 

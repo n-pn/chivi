@@ -1,8 +1,10 @@
 require "colorize"
 require "file_utils"
+require "../common/file_util"
 
 # dict modification log
 class DictEdit
+  LABEL = "dict_edit"
   EPOCH = Time.utc(2020, 1, 1)
   SEP_0 = "ǁ"
 
@@ -14,22 +16,22 @@ class DictEdit
     def self.parse!(line : String)
       cols = line.split(SEP_0)
 
-      mtime, udname, power, key = cols
+      mtime, uname, power, key = cols
       vals = cols.fetch(4, "")
       extra = cols.fetch(5, "")
 
-      new(mtime.to_i, udname, power.to_i, key, vals, extra)
+      new(mtime.to_i, uname, power.to_i, key, vals, extra)
     end
 
-    getter mtime : Int32   # time by total minutes since the EPOCH
-    getter udname : String # user handle dname
-    getter power : Int32   # entry lock level
+    getter mtime : Int32  # time by total minutes since the EPOCH
+    getter uname : String # user handle dname
+    getter power : Int32  # entry lock level
 
     getter key : String
     getter vals : String
     getter extra : String
 
-    def initialize(@mtime, @udname, @power, @key, @vals = "", @extra = "")
+    def initialize(@mtime, @uname, @power, @key, @vals = "", @extra = "")
     end
 
     def to_s
@@ -37,7 +39,7 @@ class DictEdit
     end
 
     def to_s(io : IO)
-      {@mtime, @udname, @power, @key, @vals, @extra}.join(io, SEP_0)
+      {@mtime, @uname, @power, @key, @vals, @extra}.join(io, SEP_0)
     end
 
     def puts(io : IO)
@@ -69,16 +71,11 @@ class DictEdit
   end
 
   def load!(file : String = @file) : Void
-    lines = File.read_lines(@file)
-
-    lines.each do |line|
-      append(Edit.parse!(line))
-    rescue
-      puts "- <dict_dlog> error parsing line: `#{line.colorize(:red)}`."
+    FileUtil.each_line(file, LABEL) do |line|
+      insert(Edit.parse!(line))
+    rescue err
+      FileUtil.log_error(LABEL, line, err)
     end
-
-    puts "- <dict_dlog> [#{@file.colorize.blue}] loaded \
-            (entries: #{lines.size.colorize.blue})."
   end
 
   def sort! : Void
@@ -112,17 +109,13 @@ class DictEdit
     @best[key]?
   end
 
-  def save!(sort : Bool = false)
+  def save!(sort : Bool = false) : Void
     sort! if sort
     @list.uniq!
 
-    File.open(@file, "w") do |io|
+    FileUtil.save(file, LABEL, @list.size) do |io|
       @list.each { |item| io.puts(item) }
     end
-
-    puts "- <dict_dlog> [#{@file.colorize.yellow}] saved \
-            (entries: #{list.size.colorize.yellow})."
-    self
   end
 
   # class methods
@@ -140,45 +133,36 @@ class DictEdit
     File.join(DIR, "#{dname}.#{scope}.log")
   end
 
+  def self.load!(name : String)
+    new(path_for(name), preload: true)
+  end
+
+  def self.read(file : String)
+    new(file, preload: true)
+  end
+
   CACHE = {} of String => self
 
-  def self.load(file : String, preload : Bool = true) : self
-    CACHE[file] ||= new(file, preload)
+  def self.preload!(name : String) : self
+    CACHE[name] ||= load!(name)
   end
 
-  @@hanviet : DictEdit? = nil
-  @@generic : DictEdit? = nil
-  @@combine : DictEdit? = nil
-  @@suggest : DictEdit? = nil
-
-  def self.hanviet
-    @@hanviet ||= new(path_for("shared/hanviet"), true)
+  def self.load_unique(dname : String)
+    preload!("unique/#{dname}")
   end
 
-  def self.generic
-    @@generic ||= new(path_for("shared/generic"), true)
-  end
+  class_getter hanviet : DictEdit { preload!("hanviet") }
+  class_getter generic : DictEdit { preload!("generic") }
+  class_getter suggest : DictEdit { preload!("suggest") }
+  class_getter combine : DictEdit { preload!("combine") }
 
-  def self.combine
-    @@combine ||= new(path_for("shared/combine"), true)
-  end
-
-  def self.suggest
-    @@suggest ||= new(path_for("shared/suggest"), true)
-  end
-
-  def self.shared(dname : String)
+  def self.load_unsure(dname : String)
     case dname
     when "hanviet" then hanviet
     when "generic" then generic
     when "combine" then combine
     when "suggest" then suggest
-    else
-      load(path_for("shared/#{dname}"), true)
+    else                load_unique(dname)
     end
-  end
-
-  def self.unique(dname : String)
-    load(path_for("unique/#{dname}"), true)
   end
 end

@@ -1,10 +1,9 @@
 require "kemal"
 
-require "./dictdb"
-require "./engine"
-require "./kernel"
+require "../engine"
+require "../kernel"
 
-module Utils
+module Server::Utils
   def self.parse_page(input, limit = 20)
     page = input.to_i? || 0
 

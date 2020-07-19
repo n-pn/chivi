@@ -1,12 +1,12 @@
-name: chivi
+name: server
 version: 0.2.0
 
 authors:
   - Nipinium <nipinium@gmail.com>
 
 targets:
-  # chivi:
-  #   main: src/server.cr
+  server:
+    main: src/server.cr
 
   map_yousuu:
     main: cli/infos/map_yousuu.cr
@@ -39,6 +39,7 @@ license: MIT
 dependencies:
   kemal:
     github: kemalcr/kemal
+    branch: master
 
   myhtml:
     github: kostya/myhtml

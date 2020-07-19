@@ -1,14 +1,6 @@
 require "file_utils"
 
-require "./engine"
-
-require "./models/book_info"
-require "./models/book_meta"
-require "./models/chap_list"
-require "./models/chap_text"
-
-require "./models/import/remote_info"
-require "./models/import/remote_text"
+require "./kernel/*"
 
 module Kernel
   extend self
@@ -24,58 +16,24 @@ module Kernel
     end
   end
 
-  def load_list(info : VpInfo, site : String, user = "local", reload = false) : Tuple(ChapList, Int64)
-    return {ChapList.new, 0_i64} unless bsid = info.cr_sitemap[site]?
+  def load_list(info : BookInfo, seed_name : String, reload = false) : Tuple(ChapList, Int64)?
+    return unless seed = info.seeds[seed_name]?
 
-    file = ChapList.path_for(info.ubid, site)
-    expiry = reload ? 6.minutes : gen_expiry(info.status)
+    list = ChapList.get_or_create(info.ubid, seed_name)
 
-    mftime = info.last_times[site]? || InfoSpider::EPOCH
-    return {ChapList.read!(file), mftime} unless Utils.outdated?(file, expiry)
+    expiry = Time.utc - (reload ? 10.minutes : gen_expiry(info.status))
 
-    spider = InfoSpider.load(site, bsid, expiry: expiry, frozen: false)
+    if ChapList.outdated?(info.ubid, seed_name, expiry)
+      remote = SeedInfo.init(seed_name, seed.sbid, expiry: expiry, freeze: false)
 
-    chaps = spider.get_chaps!
-    chaps.each do |item|
-      item.vi_title = Engine.translate(item.zh_title, info.ubid, user, true)
-      item.vi_volume = Engine.translate(item.zh_volume, info.ubid, user, true)
-      item.gen_slug(20)
+      BookRepo.update_info(info, remote)
+      info.save! if info.changed?
+
+      ChapRepo.update_list(list, remote)
+      list.save! if list.changed?
     end
 
-    new_mftime = spider.get_mftime!
-
-    if latest = chaps.last?
-      if changed?(latest, info.last_csids[site]?)
-        info.last_csids[site] = latest.csid
-        info.last_texts[site] = latest.vi_title
-        info.last_slugs[site] = latest.title_slug
-
-        if new_mftime <= mftime
-          if info.mftime > mftime
-            new_mftime = info.mftime
-          else
-            new_mftime = Time.local.to_unix_ms
-          end
-        end
-
-        mftime = new_mftime
-        info.set_mftime(mftime)
-        info.last_times[site] = mftime
-
-        info.set_status(spider.get_status!)
-        BookRepo.save!(info)
-      end
-    end
-
-    ChapList.save!(file, chaps)
-
-    {chaps, mftime}
-  end
-
-  private def changed?(new_latest : ChapInfo?, old_latest)
-    return false unless new_latest
-    return true unless old_latest
-    new_latest.csid != old_latest
+    {list, seed.mftime}
   end
 end
 
