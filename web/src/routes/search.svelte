@@ -1,10 +1,12 @@
 <script context="module">
+  export const limit = 8
+
   export async function preload({ query }) {
     const word = (query.kw || '').replace(/\+|-/g, ' ')
     const page = +(query.pg || '1')
 
     if (word) {
-      const url = `/_list_book?word=${word}&page=${page}`
+      const url = `/_list_book?word=${word}&page=${page}&limit=${limit}`
       const res = await this.fetch(url)
       const data = await res.json()
       return { word, page, ...data }
@@ -24,7 +26,6 @@
   export let items = []
   export let total = 0
 
-  const limit = 20
   $: offset = (+page - 1) * limit
   $: pmax = Math.floor((+total - 1) / limit) + 1
 </script>

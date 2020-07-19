@@ -23,8 +23,13 @@ module Server
       else                        :weight
       end
 
-    page = env.params.query.fetch("page", "1")
-    limit, offset = Utils.parse_page(page, 20)
+    page = env.params.query.fetch("page", "1").try(&.to_i?) || 1
+    page = 1 if page < 1
+
+    limit = env.params.query.fetch("limit", "20").try(&.to_i?) || 20
+    limit = 20 if limit > 20 || limit < 0
+
+    offset = (page - 1) * limit
 
     anchor = env.params.query.fetch("anchor", "")
 

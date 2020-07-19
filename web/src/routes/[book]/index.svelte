@@ -192,10 +192,7 @@
     > div {
       @include clearfix;
       margin-bottom: 0.5rem;
-      > * {
-        float: left;
-        margin-right: 0.75rem;
-      }
+      @include flex($gap: 0.5rem);
     }
 
     &,
@@ -534,14 +531,8 @@
       <div>
         <span class="author">
           <MIcon class="m-icon" name="pen-tool" />
-          <a href="search?kw={book.vi_author}">
-            {book.vi_author}
-            <span>- {book.zh_author}</span>
-          </a>
+          <a href="search?kw={book.vi_author}">{book.vi_author}</a>
         </span>
-
-      </div>
-      <div>
         {#each book.vi_genres.slice(0, 3) as genre}
           <span class="genre">
             <MIcon class="m-icon" name="book" />
