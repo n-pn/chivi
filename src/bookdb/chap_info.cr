@@ -9,8 +9,8 @@ class ChapInfo
 
   property scid = ""
 
-  property label_zh = ""
-  property label_vi = ""
+  property zh_label = ""
+  property vi_label = ""
 
   property zh_title = ""
   property vi_title = ""
@@ -26,10 +26,10 @@ class ChapInfo
 
   def set_title(title : String, label : String = "正文")
     if label.empty? || label == "正文"
-      self.zh_title, self.label_zh = ChapUtil.split_label(title)
+      self.zh_title, self.zh_label = ChapUtil.split_label(title)
     else
       self.zh_title = ChapUtil.format_title(title)
-      self.label_zh = ChapUtil.clean_spaces(label)
+      self.zh_label = ChapUtil.clean_spaces(label)
     end
   end
 
@@ -42,12 +42,14 @@ class ChapInfo
     "#{@url_slug}-#{seed}-#{@scid}"
   end
 
-  def inherit(other : self) : Void
+  def inherit(other : self, force = false) : Void
+    return unless force || @scid == other.scid
+
     self.zh_title = other.zh_title
     self.vi_title = other.vi_title
 
     self.zh_title = other.zh_title
-    self.label_zh = other.label_zh
+    self.zh_label = other.zh_label
 
     self.url_slug = other.url_slug
   end

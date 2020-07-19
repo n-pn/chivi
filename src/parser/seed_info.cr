@@ -4,12 +4,11 @@ require "file_utils"
 
 require "../_utils/han_to_int"
 
-# require "../models/book_info"
-# require "../models/chap_list"
-
 require "../common/http_util"
 require "../common/file_util"
 require "../common/time_util"
+
+require "../bookdb/chap_info"
 
 class SeedInfo
   DIR = File.join("var", ".book_cache")
@@ -59,7 +58,6 @@ class SeedInfo
       File.write(file, html) if freeze
     end
 
-    html = HttpUtil.fetch_html(url, file, expiry, freeze)
     new(seed, sbid, html, type)
   end
 
@@ -77,10 +75,10 @@ class SeedInfo
   getter cover : String { parse_cover || "" }
   getter genre : String { parse_genre || "" }
   getter tags : Array(String) { parse_tags || [] of String }
-  getter status : Array(String) { parse_status || 0 }
-  getter mftime : Array(String) { parse_mftime || 0_i64 }
-  getter latest : Array(String) { parse_latest || ChapInfo.new("", "") }
-  getter chapters : Array(String) { parse_chapters || [] of ChapInfo }
+  getter status : Int32 { parse_status || 0 }
+  getter mftime : Int64 { parse_mftime || 0_i64 }
+  getter latest : ChapInfo { parse_latest || ChapInfo.new("", "") }
+  getter chapters : Array(ChapInfo) { parse_chapters || [] of ChapInfo }
 
   def parse_title
     case @seed
@@ -209,7 +207,7 @@ class SeedInfo
     end
   end
 
-  def parse_latest
+  def parse_latest : ChapInfo?
     case @seed
     when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
       parse_latest_by_meta_tag()
@@ -313,7 +311,7 @@ class SeedInfo
   private def parse_zhwenpg_chapters
     chaps = [] of ChapInfo
 
-    @doc.css("#dulist a").each do |link|
+    @doc.css(".clistitem > a").each do |link|
       scid = parse_scid(link.attributes["href"])
       chaps << ChapInfo.new(scid, link.inner_text)
     end
@@ -353,7 +351,7 @@ class SeedInfo
     title_idx = 0
 
     chapters.sort_by! do |chap|
-      idx = indexed[chap.label_zh] ||= label_index(label)
+      idx = indexed[chap.zh_label] ||= label_index(chap.zh_label)
 
       if idx > 0
         label_idx = idx

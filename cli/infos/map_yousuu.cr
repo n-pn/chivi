@@ -1,12 +1,12 @@
-require "../../src/kernel/book_manage"
+require "../../src/kernel/book_repo"
 
 def should_skip?(info : BookInfo, source : YsSerial)
   if info.yousuu_bid != source.ysid
     return true if info.crit_count > source.crit_count
   end
 
-  return true if BookManage.blacklist?(info)
-  return false if BookManage.whitelist?(info)
+  return true if BookRepo.blacklist?(info)
+  return false if BookRepo.whitelist?(info)
   source.score < 2.5 && source.addListTotal < 5 && source.commentCount < 10
 end
 
@@ -24,14 +24,14 @@ files.each do |file|
   next unless source = YsSerial.load(file)
   next if source.title.empty? || source.author.empty?
 
-  info = BookManage.find_or_create(source.title, source.author, fixed: false)
+  info = BookRepo.find_or_create(source.title, source.author, fixed: false)
   sitemap.upsert(source.ysid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}¦#{Time.utc.to_unix}")
 
   next if should_skip?(info, source)
   inp_count += 1
 
-  BookManage.reset_info(info) if info.slug.empty?
-  BookManage.update(info, source)
+  BookRepo.reset_info(info) if info.slug.empty?
+  BookRepo.update(info, source)
 
   next unless info.changed?
   fresh = BookInfo.exists?(info.ubid)

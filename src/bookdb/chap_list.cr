@@ -8,16 +8,17 @@ class ChapList
 
   getter ubid : String # book ubid
   getter seed : String # seed name
-  property sbid = ""   # seed book id
-  property type = 0    # seed type, 0 mean remote source, 1 mean manual source
 
-  alias Chaps = Array(ChapInfo)
+  property sbid = "" # seed book id
+  property type = 0  # seed type
 
-  getter chaps = Chaps
+  getter chaps = [] of ChapInfo
   getter index = {} of String => Int32 # can be used for manual sort
 
   # TODO: explicit adding `delegate` calls for better error checking
-  forward_missing_to @chaps
+  delegate size, to: @chaps
+
+  # forward_missing_to @chaps
 
   def initialize(@ubid : String, @seed : String)
     @changes = 1
@@ -29,7 +30,7 @@ class ChapList
   end
 
   # check if this version of chap list is matched with updated list
-  def match?(items : Chaps)
+  def match?(items : Array(ChapInfo))
     rebuild_index! if @index.empty?
 
     @index.each do |scid, idx|
@@ -43,12 +44,13 @@ class ChapList
   end
 
   # merge self with a list of items, make full assignments if `dirty` == false
-  def merge!(items : Chaps, dirty : Bool = true)
-    size = items.size
+  def merge!(source : Array(ChapInfo), dirty : Bool = true)
+    size = source.size
+    truncate!(size) if @chaps.size > size
 
-    size.times do |idx|
-      old_chap = chaps.unsafe_fetch(idx)
-      new_chap = items.unsafe_fetch(idx)
+    @chaps.size.times do |idx|
+      old_chap = @chaps[idx]
+      new_chap = source[idx]
 
       if old_chap.scid == new_chap.scid
         next if dirty
@@ -58,16 +60,12 @@ class ChapList
         old_chap.scid = new_chap.scid
       end
 
-      old_item.inherit(new_item)
-      @changes += old_item.reset_changes!
+      old_chap.inherit(new_chap, force: true)
+      @changes += old_chap.reset_changes!
     end
 
-    if chaps.size > size
-      truncate!(size)
-    else
-      chaps.size.upto(size - 1) do |idx|
-        append(items.unsafe_fetch(idx))
-      end
+    @chaps.size.upto(size - 1) do |idx|
+      append(source.unsafe_fetch(idx))
     end
   end
 
@@ -85,9 +83,10 @@ class ChapList
 
   # remove extra chap_items
   def truncate!(from : Int32 = 0)
-    (size - from).times do
+    (@chaps.size - from).times do
       @changes += 1
-      @index.delete(@chaps.pop.scid)
+      last = @chaps.pop
+      @index.delete(last.scid)
     end
   end
 
@@ -96,6 +95,13 @@ class ChapList
     @index[chap.scid] = @chaps.size
     @chaps.push(chap)
     chap
+  end
+
+  def update_each
+    @chaps.each do |chap|
+      chap = yield(chap)
+      @changes += chap.reset_changes!
+    end
   end
 
   # insert or update a chap_info

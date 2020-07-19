@@ -155,7 +155,7 @@ INPUT.each_with_index do |info, idx|
 
   info.seed_infos.each_value do |seed|
     latest = seed.latest
-    latest.label_vi = cv_title(latest.label_zh, info.ubid)
+    latest.vi_label = cv_title(latest.zh_label, info.ubid)
     latest.vi_title = cv_title(latest.zh_title, info.ubid)
     latest.set_slug(latest.vi_title)
     info.update_seed(seed.name, seed.sbid, seed.mftime, latest)

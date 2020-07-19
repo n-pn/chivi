@@ -1,10 +1,11 @@
-require "../common/text_util"
-require "../lookup/token_map"
-require "../lookup/order_map"
-require "../bookdb/book_info"
+require "../../common/text_util"
+require "../../lookup/token_map"
+require "../../lookup/order_map"
+require "../../bookdb/book_info"
 
-# TODO: rewrite
-class BookSearch
+# TODO: change class to module?
+
+class BookRepo::Query
   struct Opts
     getter :query, :type, :genre, :order, :limit, :offset, :anchor
 

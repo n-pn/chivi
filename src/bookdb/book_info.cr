@@ -117,8 +117,20 @@ class BookInfo
   end
 
   # create new seed if not existed
-  def put_seed(name : String, type = 1)
+  def add_seed(name : String, type = 1)
     @seeds[name] ||= BookSeed.new(name, type)
+  end
+
+  # update info from remote seed source
+  def set_seed(source : BookSeed)
+    set_seed(source.name, source.type) { |seed| seed.update(source) }
+  end
+
+  def set_seed(name : String, type = 1)
+    seed = @seeds[name] ||= BookSeed.new(name, type)
+    yield seed
+    @changes += seed.reset_changes!
+    seed
   end
 
   # json serialization

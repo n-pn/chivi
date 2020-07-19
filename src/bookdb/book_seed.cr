@@ -5,22 +5,21 @@ require "./chap_info"
 
 class BookSeed
   # seed types: 0 => remote, 1 => manual, 2 => locked
-  # order : to be sorted
+  # index : to be sorted
 
   include JsonData
 
+  property idx = 0
+
   property name = ""
   property sbid = ""
-
   property type = 0
-  property order = 0
 
   property status = 0
   property mftime = 0_i64
-
   property latest = ChapInfo.new
 
-  def initialize(@name, @type = 0, @order = BookSeed.order_for(@name))
+  def initialize(@name, @type = 0, @idx = BookSeed.index_for(@name))
     @changes = 1
   end
 
@@ -28,12 +27,12 @@ class BookSeed
     @type == 0
   end
 
-  def update_remote(sbid = @sbid, type = @type, expiry : Time = Time.unix_ms(@mftime), freeze : Bool = false)
-    source = SeedInfo.new(@seed, sbid, type, expiry: expiry, freeze: freeze)
-    update_remote(source)
-  end
+  # def update_remote(sbid = @sbid, type = @type, expiry : Time = Time.unix_ms(@mftime), freeze : Bool = false)
+  #   source = SeedInfo.new(@seed, sbid, type, expiry: expiry, freeze: freeze)
+  #   update_remote(source)
+  # end
 
-  def update_remote(source : SeedInfo)
+  def update(source : BookSeed)
     if @sbid != source.sbid
       return if @mftime > source.mftime
     else
@@ -69,7 +68,7 @@ class BookSeed
     "paoshu8", "69shu", "zhwenpg",
   }
 
-  def self.order_for(name : String) : Int32
+  def self.index_for(name : String) : Int32
     NAMES.index(name) || -1
   end
 end

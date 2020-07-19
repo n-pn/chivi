@@ -14,7 +14,7 @@ module HttpUtil
   end
 
   def fetch_html(url : String, encoding = "GBK") : String
-    puts "-- <#{LABEL}> GET: [#{url}] --".colorize.magenta
+    puts "- <#{LABEL}> GET: [#{url}]".colorize.magenta
     tls = url.starts_with?("https") ? SSL.insecure : nil
     html = fetch_html(url, encoding, tls, retry: 0)
   end

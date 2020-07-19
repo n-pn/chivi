@@ -22,8 +22,8 @@ def gen_expiry(status : Int32)
 end
 
 def translate_chap(chap : ChapInfo, dname : String)
-  if chap.label_vi.empty?
-    chap.label_vi = translate(chap.label_zh, dname)
+  if chap.vi_label.empty?
+    chap.vi_label = translate(chap.zh_label, dname)
   end
 
   if chap.vi_title.empty?

@@ -8,15 +8,15 @@ require "../../src/common/http_util"
 require "../../src/common/time_util"
 require "../../src/common/text_util"
 
-require "../../src/kernel/book_manage"
+require "../../src/kernel/book_repo"
+require "../../src/kernel/chap_repo"
 
 class MapZhwenpg
   DIR = File.join("var", ".book_cache", "zhwenpg", "pages")
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-    @authors = OrderMap.get_or_create("top_authors")
-    @sitemap = LabelMap.get_or_create("sites/zhwenpg")
+    @sitemap = LabelMap.get_or_create("zhwenpg-infos")
     @checked = Set(String).new
   end
 
@@ -78,86 +78,93 @@ class MapZhwenpg
     title = link.inner_text.strip
     author = rows[1].css(".fontwt").first.inner_text.strip
 
-    return if BookManage.blacklist?(title)
-    info = BookInfo.get_or_create(title, author)
+    info = BookRepo.find_or_create(title, author, fixed: false)
+    return if BookRepo.blacklist?(info)
 
-    @map_ubids.upsert(sbid, info.ubid)
-    @map_titles.upsert(sbid, info.zh_title)
-    @map_authors.upsert(sbid, info.zh_author)
+    @sitemap.upsert(sbid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}¦#{Time.utc.to_unix}")
+
+    BookRepo.reset_info(info) if info.slug.empty?
+
+    fresh = info.yousuu_bid.empty?
+    BookRepo.set_shield(info, 1) if fresh
 
     genre = rows[2].css(".fontgt").first.inner_text
-    info.add_genre(genre)
+    BookRepo.set_genre(info, "zhwenpg", genre, force: false)
 
-    fresh = info.yousuu_url.empty?
-    info.shield = 1 if fresh
+    cover = node.css("img").first.attributes["data-src"]
+    BookRepo.set_cover(info, "zhwenpg", cover, force: false)
 
-    if info.yousuu_url.empty? && info.weight == 0
+    if (intro = rows[4]?) && info.zh_intro.empty?
+      intro_text = TextUtil.split_html(intro.inner_text("\n"))
+      # intro_text = Engine.tradsim(intro_text)
+      BookRepo.set_intro(info, intro_text.join("\n"), force: false)
+    end
+
+    BookRepo.set_status(info, status)
+
+    if info.yousuu_bid.empty? && info.weight == 0
       caption = "#{title}--#{author}"
       voters, rating = fetch_score(caption)
 
-      info.voters = voters
-      info.rating = rating
-      info.fix_weight
+      BookRepo.set_voters(info, voters, force: false)
+      BookRepo.set_rating(info, rating, force: false)
 
-      @top_authors.upsert(info.zh_author, info.weight)
+      weight = (rating * 10).to_i64 * voters
+      BookRepo.set_weight(info, weight, force: false)
+
+      OrderMap.top_authors.upsert(info.zh_author, info.weight) if info.weight >= 2000
     end
 
     color = fresh ? :light_cyan : :light_blue
-    puts "\n<#{index}> [#{info.ubid}] #{info.zh_title}--#{info.zh_author}".colorize(color)
+    puts "\n<#{index}> [#{sbid}] #{info.zh_title}--#{info.zh_author}".colorize(color)
 
-    if (intro = rows[4]?) && info.zh_intro.empty?
-      intro_text = Utils.split_text(intro.inner_text("\n"))
-      # intro_text = Engine.tradsim(intro_text)
-      info.zh_intro = intro_text.join("\n")
+    # info.add_seed("zhwenpg", 0)
+    mftime = parse_time(rows[3].css(".fontime").first.inner_text)
+    latest = latest_chap(rows[3].css("a[target=_blank]").first)
+
+    seed = info.set_seed("zhwenpg") do |seed|
+      seed.update_latest(ChapRepo.translate(latest, info.ubid), mftime)
     end
 
-    info.status = status
-    info.add_cover(node.css("img").first.attributes["data-src"])
-
-    latest_node = rows[3].css("a[target=_blank]").first
-    latest_text = latest_node.inner_text
-
-    latest_link = latest_node.attributes["href"]
-    latest_scid = latest_link.sub("r.php?id=", "")
-
-    latest_chap = ChapInfo.new(latest_scid, latest_text)
-
-    info.add_seed("zhwenpg", 0)
-    mftime = parse_time(rows[3].css(".fontime").first.inner_text)
-
-    seed = info.update_seed("zhwenpg", sbid, mftime, latest_chap)
-    info.mftime = seed.mftime
-
-    @book_update.upsert(info.ubid, info.mftime)
+    BookRepo.set_mftime(info, seed.mftime)
     info.save! if info.changed?
 
     if ChapList.outdated?(info.ubid, "zhwenpg", Time.unix_ms(info.mftime))
-      expiry = Time.utc - Time.unix_ms(mftime)
-      expiry = expiry > 24.hours ? expiry - 24.hours : expiry
+      expiry = Time.unix_ms(mftime) + 1.days * status
+      remote = SeedInfo.init("zhwenpg", sbid, expiry: expiry, freeze: true)
 
-      remote = SeedInfo.new("zhwenpg", sbid, expiry: expiry, freeze: true)
-      remote.emit_chap_list.save!
+      list = ChapList.get_or_create(info.ubid, "zhwenpg")
+      list = ChapRepo.update_list(list, remote)
+
+      list.save! if list.changed?
     end
   rescue err
     puts "ERROR: #{err.colorize.red}!"
+  end
+
+  def latest_chap(node)
+    link = node.attributes["href"]
+    scid = link.sub("r.php?id=", "")
+    text = node.inner_text
+    ChapInfo.new(scid, text)
   end
 
   TIME = Time.utc.to_unix
   DATE = TIME - 24.hours.total_milliseconds.to_i64
 
   private def parse_time(time : String)
-    mftime = Utils.parse_time(time).to_unix
+    mftime = TimeUtil.parse(time).to_unix
     mftime <= DATE ? mftime : TIME
   end
 
   def save_indexes!
     puts "\n[-- Save indexes --]".colorize.cyan.bold
-    @top_authors.save!
-    @book_update.save!
 
-    @map_ubids.save!
-    @map_titles.save!
-    @map_authors.save!
+    OrderMap.flush!
+    LabelMap.flush!
+    TokenMap.flush!
+
+    @sitemap.save!
   end
 end
 
