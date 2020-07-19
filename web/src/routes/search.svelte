@@ -4,7 +4,7 @@
     const page = +(query.pg || '1')
 
     if (word) {
-      const url = `api/search?word=${word}&page=${page}`
+      const url = `/_list_book?word=${word}&page=${page}`
       const res = await this.fetch(url)
       const data = await res.json()
       return { word, page, ...data }
@@ -24,7 +24,7 @@
   export let items = []
   export let total = 0
 
-  const limit = 8
+  const limit = 20
   $: offset = (+page - 1) * limit
   $: pmax = Math.floor((+total - 1) / limit) + 1
 </script>
@@ -179,24 +179,18 @@
         </picture>
 
         <div class="name">
-          <h2 class="title">
-            {book.vi_title}
-            <span class="subtitle">- {book.zh_title}</span>
-          </h2>
+          <h2 class="title">{book.vi_title}</h2>
         </div>
 
         <div class="extra">
           <div>
-            <span class="author">
-              {book.vi_author}
-              <span>- {book.zh_author}</span>
-            </span>
+            <span class="author">{book.vi_author}</span>
           </div>
 
           <div>
             <span>
               Đánh giá:
-              <strong>{book.score == 0 ? '--' : book.score}</strong>
+              <strong>{book.rating == 0 ? '--' : book.rating}</strong>
               /10
             </span>
           </div>

@@ -11,7 +11,8 @@
     if (res.status == 200) {
       let { book } = data
       let seeds = Object.values(book.seeds).sort((a, b) => a.idx - b.idx)
-      const seed = query.seed || seeds[0].name || ''
+
+      const seed = query.seed || (seeds.length > 0 && seeds[0].name) || ''
 
       const chlists = {}
       if (tab === 'content' && seed !== '') {
