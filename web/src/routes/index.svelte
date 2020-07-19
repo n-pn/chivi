@@ -4,6 +4,7 @@
     let url = `/_list_book?page=${page}`
 
     if (query.sort) url += `&sort=${query.sort}`
+    if (query.genre) url += `&genre=${query.genre}`
     if (query.anchor) url += `&anchor=${query.anchor}`
 
     const res = await this.fetch(url)

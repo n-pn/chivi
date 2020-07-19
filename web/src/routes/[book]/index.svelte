@@ -168,6 +168,13 @@
     @include fgcolor(primary, 6);
   }
 
+  .genre > a {
+    @include fgcolor(neutral, 6);
+    &:hover {
+      @include fgcolor(primary, 6);
+    }
+  }
+
   .name {
     margin-bottom: 0.75rem;
     @include apply(float, screen-vals(left, right));
@@ -183,10 +190,10 @@
 
     > div {
       @include clearfix;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.5rem;
       > * {
         float: left;
-        margin-right: 0.5rem;
+        margin-right: 0.75rem;
       }
     }
 
@@ -471,7 +478,7 @@
 
     @include fgcolor(neutral, 8);
 
-    &:viseedd {
+    &:visited {
       font-style: italic;
       @include fgcolor(neutral, 5);
     }
@@ -533,12 +540,15 @@
         </span>
 
       </div>
-
       <div>
-        <span class="genre">
-          <MIcon class="m-icon" name="book" />
-          {book.vi_genres[0]}
-        </span>
+        {#each book.vi_genres.slice(0, 3) as genre}
+          <span class="genre">
+            <MIcon class="m-icon" name="book" />
+            <a href="/?genre={genre}">{genre}</a>
+          </span>
+        {/each}
+      </div>
+      <div>
         <span class="status">
           <MIcon class="m-icon" name="activity" />
           {status}
