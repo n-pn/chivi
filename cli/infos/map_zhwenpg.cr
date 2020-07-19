@@ -6,7 +6,6 @@ require "file_utils"
 require "../../src/common/file_util"
 require "../../src/common/http_util"
 require "../../src/common/time_util"
-require "../../src/common/text_util"
 
 require "../../src/kernel/book_repo"
 require "../../src/kernel/chap_repo"
@@ -81,7 +80,7 @@ class MapZhwenpg
     info = BookRepo.find_or_create(title, author, fixed: false)
     return if BookRepo.blacklist?(info)
 
-    @sitemap.upsert(sbid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}¦#{Time.utc.to_unix}")
+    @sitemap.upsert(sbid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}¦#{Time.utc.to_unix_ms}")
 
     BookRepo.reset_info(info) if info.slug.empty?
 
@@ -121,12 +120,8 @@ class MapZhwenpg
     # info.add_seed("zhwenpg", 0)
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
     latest = latest_chap(rows[3].css("a[target=_blank]").first)
+    BookRepo.update_seed(info, "zhwenpg", 0, latest, mftime)
 
-    seed = info.set_seed("zhwenpg") do |seed|
-      seed.update_latest(ChapRepo.translate(latest, info.ubid), mftime)
-    end
-
-    BookRepo.set_mftime(info, seed.mftime)
     info.save! if info.changed?
 
     if ChapList.outdated?(info.ubid, "zhwenpg", Time.unix_ms(info.mftime))
@@ -149,11 +144,11 @@ class MapZhwenpg
     ChapInfo.new(scid, text)
   end
 
-  TIME = Time.utc.to_unix
+  TIME = Time.utc.to_unix_ms
   DATE = TIME - 24.hours.total_milliseconds.to_i64
 
   private def parse_time(time : String)
-    mftime = TimeUtil.parse(time).to_unix
+    mftime = TimeUtil.parse(time).to_unix_ms
     mftime <= DATE ? mftime : TIME
   end
 

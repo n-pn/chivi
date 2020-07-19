@@ -27,7 +27,7 @@ class ChapText
   def load!(file : String = @file) : self
     if File.exists?(file)
       @data = File.read(file)
-      @time = File.info(file).modification_time.to_unix
+      @time = File.info(file).modification_time.to_unix_ms
       puts "- <#{LABEL}> [#{file.colorize.cyan}] loaded."
     else
       puts "- <#{LABEL}> [#{file.colorize.red}] not found!"

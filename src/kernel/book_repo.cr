@@ -5,6 +5,7 @@ require "../parser/ys_serial"
 require "../parser/seed_info"
 
 require "./book_repo/*"
+require "./chap_repo/utils"
 
 module BookRepo
   extend self
@@ -67,9 +68,27 @@ module BookRepo
     set_tags(info, source.seed, source.tags, force: force)
 
     set_status(info, source.status, force: force)
-    set_mftime(info, source.mftime, force: force)
+    update_seed(info, source.seed, source.type, source.latest, source.mftime)
+
+    if info.weight == 0 && info.yousuu_bid.empty?
+      puts "- FAKING RANDOM RATING -".colorize.yellow
+      voters, rating, weight = Utils.fake_rating(info.zh_author)
+
+      set_voters(info, voters, force: false)
+      set_rating(info, rating, force: false)
+      set_weight(info, weight, force: false)
+    end
 
     info
+  end
+
+  def update_seed(info : BookInfo, seed : String, type : Int32, latest : ChapInfo, mftime : Int64)
+    seed = info.set_seed(seed, type) do |seed|
+      latest = ChapRepo::Utils.convert(latest, info.ubid)
+      seed.update_latest(latest, mftime)
+    end
+
+    set_mftime(info, seed.mftime)
   end
 
   def reset_info(info : BookInfo, force = false)
@@ -161,7 +180,6 @@ module BookRepo
 
     # assuming zh_intro is cleaned
     lines = info.zh_intro.split("\n")
-
     info.vi_intro = Utils.cv_intro(lines, info.ubid)
   end
 

@@ -48,7 +48,7 @@ class BookSeed
     mftime = @mftime if mftime < @mftime
 
     if @latest.scid != latest.scid
-      mftime = Time.utc.to_unix if mftime == @mftime
+      mftime = Time.utc.to_unix_ms if mftime == @mftime
       @latest = latest
     else
       @latest.inherit(latest)

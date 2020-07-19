@@ -25,7 +25,7 @@ files.each do |file|
   next if source.title.empty? || source.author.empty?
 
   info = BookRepo.find_or_create(source.title, source.author, fixed: false)
-  sitemap.upsert(source.ysid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}¦#{Time.utc.to_unix}")
+  sitemap.upsert(source.ysid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}¦#{Time.utc.to_unix_ms}")
 
   next if should_skip?(info, source)
   inp_count += 1

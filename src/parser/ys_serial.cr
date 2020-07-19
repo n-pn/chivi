@@ -85,11 +85,11 @@ class YsSerial
     @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
   end
 
-  TIME_DF = Time.utc(2000, 1, 1).to_unix
+  TIME_DF = Time.utc(2000, 1, 1).to_unix_ms
 
   private def fix_time
     return TIME_DF if @updateAt >= Time.utc
-    @updateAt.to_unix
+    @updateAt.to_unix_ms
   end
 
   alias Data = NamedTuple(bookInfo: YsSerial, bookSource: Array(YsSource))

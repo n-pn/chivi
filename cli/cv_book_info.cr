@@ -106,7 +106,7 @@ puts "[-- Load inputs --]".colorize.cyan.bold
 INFOS = BookInfo.preload_all!
 INPUT = INFOS.values.sort_by(&.weight.-)
 
-HIATUS  = Time.utc(2019, 1, 1).to_unix
+HIATUS  = Time.utc(2019, 1, 1).to_unix_ms
 TITLES  = LabelMap.load!("override/vi_title")
 AUTHORS = LabelMap.load!("override/vi_author")
 

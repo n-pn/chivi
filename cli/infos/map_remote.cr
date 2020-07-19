@@ -1,21 +1,18 @@
 require "file_utils"
 require "option_parser"
 
-require "../../src/_utils/file_utils.cr"
-require "../../src/_utils/html_utils.cr"
+require "../../src/common/file_util"
+require "../../src/common/http_util"
+require "../../src/common/time_util"
 
-require "../../src/lookup/order_map.cr"
-require "../../src/lookup/label_map.cr"
-
-require "../../src/models/book_info.cr"
-
-require "../../src/parser/seed_info.cr"
+require "../../src/kernel/book_repo"
+require "../../src/kernel/chap_repo"
 
 class MapRemote
   SEEDS = {
     "hetushu", "jx_la", "rengshu",
     "xbiquge", "nofff", "duokan8",
-    "paoshu8", "69shu", "zhwenpg",
+    "paoshu8", "69shu",
   }
 
   def self.run!(argv = ARGV)
@@ -66,19 +63,19 @@ class MapRemote
   end
 
   def initialize(@seed : String, @type = 0)
-    @book_ubids = Set(String).new(BookInfo.ubids)
-    @top_authors = OrderMap.load!("author--weight")
-    @book_update = OrderMap.load!("book--update")
+    @existed = Set(String).new(BookInfo.ubids)
+    @sitemap = LabelMap.get_or_create("zhwenpg-infos")
 
-    @map_ubids = LabelMap.get_or_create("sitemaps/#{seed}--ubid")
-    @map_titles = LabelMap.get_or_create("sitemaps/#{seed}--title")
-    @map_authors = LabelMap.get_or_create("sitemaps/#{seed}--author")
+    @crawled = {} of String => String
+    @sitemap.each do |key, val|
+      ubid, title, author = val.split("¦")
+      ubid = "--" if title.empty? || author.empty?
+      @crawled[key] = ubid
+    end
   end
 
-  alias TimeSpan = Time::Span | Time::MonthSpan
-
   def crawl!(from = 1, upto = 1, mode = 0)
-    queue = [] of Tuple(String, TimeSpan)
+    queue = [] of Tuple(String, Time)
 
     from.upto(upto) do |id|
       sbid = id.to_s
@@ -104,82 +101,69 @@ class MapRemote
     limit.times { channel.receive }
 
     puts "\n[-- Save indexes --]".colorize.cyan.bold
+    OrderMap.flush!
+    LabelMap.flush!
+    TokenMap.flush!
 
-    @map_ubids.save!
-    @map_titles.save!
-    @map_authors.save!
-    @book_update.save!
+    @sitemap.save!
 
     puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
   end
 
   def expiry_for(sbid : String)
-    return 3.months unless ubid = @map_ubids.fetch(sbid)
-    return 6.months unless @book_ubids.includes?(ubid)
-    return 1.months unless time = @book_update.value(ubid)
-
-    expiry = Time.utc - Time.unix_ms(time)
-    expiry > 24.hours ? expiry - 24.hours : expiry
+    return Time.utc - 8.months unless ubid = @crawled[sbid]?
+    return Time.utc - 4.months unless @existed.includes?(ubid)
+    return Time.utc - 2.months unless time = OrderMap.book_update.value(ubid)
+    Time.unix_ms(time)
   end
 
   def should_crawl?(sbid : String, mode = 0) : Bool
-    return true unless ubid = @map_ubids.fetch(sbid)
-    return true if mode == 2 && ubid == "--"
-
-    qualified?(ubid, @map_authors.fetch(sbid, ""))
+    return true unless meta = @sitemap.fetch(sbid)
+    ubid, title, author = meta.split("¦")
+    return true if mode == 2 && title.empty? || author.empty?
+    qualified?(ubid, author)
   end
 
   def qualified?(ubid : String, author : String)
     return true if @seed == "hetushu" || @seed == "rengshu"
-    return true if @book_ubids.includes?(ubid)
-    return false unless weight = @top_authors.value(author)
-    weight >= 2000
+    return true if @existed.includes?(ubid)
+    OrderMap.top_authors.has_key?(author)
   end
 
-  def parse!(sbid : String, expiry = 24.hours, label = "1/1")
-    remote = SeedInfo.new(@seed, sbid, expiry: expiry, freeze: true)
+  def parse!(sbid : String, expiry = Time.utc - 24.hours, label = "1/1")
+    remote = SeedInfo.init(@seed, sbid, expiry: expiry, freeze: true)
 
-    ubid = remote.ubid
-    return if ubid == "--"
+    info = BookRepo.find_or_create(remote.title, remote.author)
+    save_info(sbid, info.ubid, info.zh_title, info.zh_author)
 
-    title = remote.title
-    author = remote.author
-    return if BookUtil.blacklist?(title)
+    return if info.zh_title.empty? || info.zh_author.empty? || BookRepo.blacklist?(info)
 
-    puts "\n<#{label}> [#{sbid}] #{ubid}-#{author}-#{title}".colorize.cyan
+    return unless qualified?(info.ubid, info.zh_author)
 
-    @map_ubids.upsert(sbid, ubid)
-    @map_titles.upsert(sbid, title)
-    @map_authors.upsert(sbid, author)
+    puts "\n<#{label}> [#{sbid}] #{info.ubid}-#{info.zh_title}".colorize.cyan
 
-    return unless qualified?(ubid, author)
-    info = remote.emit_book_info
+    BookRepo.reset_info(info) if info.slug.empty?
+    BookRepo.update(info, remote)
 
-    if info.weight == 0 && info.yousuu_url.empty?
-      puts "- FAKING RANDOM RATING -".colorize.yellow
-
-      weight = @top_authors.value(info.zh_author) || 2000_i64
-      weight = Random.rand((weight // 2)..weight)
-      scored = Random.rand(30..70)
-
-      info.rating = (scored / 10).to_f32
-      info.voters = (weight // scored).to_i32
-      info.weight = (scored * info.voters).to_i64
-    end
-
-    @book_update.upsert(info.ubid, info.mftime)
     info.save! if info.changed?
 
     if ChapList.outdated?(info.ubid, @seed, Time.unix_ms(info.mftime))
-      remote.emit_chap_list.save!
+      expiry = Time.unix_ms(info.mftime) + 1.days * info.status
+      remote = SeedInfo.init(@seed, sbid, expiry: expiry, freeze: true)
+
+      list = ChapList.get_or_create(info.ubid, @seed)
+      list = ChapRepo.update_list(list, remote)
+
+      list.save! if list.changed?
     end
   rescue err
     puts "Error parsing `#{sbid}`: #{err.colorize.red}".colorize.bold
     # puts err.backtrace
+    save_info(sbid)
+  end
 
-    @map_ubids.upsert(sbid, "--")
-    @map_titles.upsert(sbid, "")
-    @map_authors.upsert(sbid, "")
+  def save_info(sbid, ubid = "--", title = "", author = "")
+    @sitemap.upsert(sbid, "#{ubid}¦#{title}¦#{author}¦#{Time.utc.to_unix_ms}")
   end
 end
 

@@ -33,6 +33,7 @@ module BookRepo::Utils
     counter = Hash(String, Int32).new { |h, k| h[k] = 0 }
 
     zh_genres.each do |genre|
+      next if genre.empty?
       split_zh_genre(genre).each { |x| counter[x] += 1 }
     end
 
@@ -55,6 +56,16 @@ module BookRepo::Utils
       ValueSet.skip_genres.upsert!(genre) if genre != "其他"
       [] of String
     end
+  end
+
+  def fake_rating(zh_author : String)
+    weight = OrderMap.top_authors.value(zh_author) || 1000_i64
+    weight = Random.rand((weight // 2)..weight)
+    scored = Random.rand(30..70)
+
+    voters = (weight // scored).to_i32
+    rating = (scored / 10).to_f32
+    {voters, rating, scored.to_i64 * voters}
   end
 
   def map_vi_genres(zh_genres : Array(String))
