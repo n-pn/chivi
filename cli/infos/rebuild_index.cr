@@ -2,20 +2,29 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/_utils/text_utils"
-require "../../src/models/book_info"
+require "../../src/common/text_util"
+require "../../src/bookdb/book_info"
+# require "../../src/kernel/info_repo"
 
-books = BookInfo.load_all!
-
+infos = BookInfo.load_all!
+has_text = 0
 conflicts = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
 
-has_text = 0
-books.each do |book|
-  has_text += 1 if book.seed_names.size > 0
+infos.each do |info|
+  # changes = 0
 
-  title = book.zh_title.gsub(/\P{Han}/, "")
-  author = book.zh_author.gsub(/\P{Han}/, "")
-  conflicts["#{title}--#{author}"] << "#{book.zh_title}--#{book.zh_author}"
+  # info.seeds.each_value do |seed|
+  #   seed.idx = BookSeed.index_for(seed.name)
+  #   changes += seed.changes
+  # end
+
+  # info.save! if changes > 0
+
+  has_text += 1 unless info.seeds.empty?
+
+  title = info.zh_title.gsub(/\P{Han}/, "")
+  author = info.zh_author.gsub(/\P{Han}/, "")
+  conflicts["#{title}--#{author}"] << "#{info.zh_title}--#{info.zh_author}"
 end
 
 puts "- has_text: #{has_text}".colorize(:yellow)
@@ -88,7 +97,7 @@ File.write "tmp/conflicts.json", conflicts.to_pretty_json
 
 # puts "- Save indexes...".colorize(:cyan)
 
-# INDEX_DIR = File.join("var", "appcv", "book_index")
+# INDEX_DIR = File.join("var", "appcv", "info_index")
 # FileUtils.mkdir_p(INDEX_DIR)
 
 # File.write "#{INDEX_DIR}/weight.json", weight.sort_by(&.[1]).to_pretty_json

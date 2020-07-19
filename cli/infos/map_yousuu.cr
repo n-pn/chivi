@@ -16,31 +16,34 @@ files = Dir.glob(File.join(DIR, "*.json")).sort_by do |file|
 end
 
 inp_total = inp_count = created = updated = 0
-sitemap = LabelMap.preload!("yousuu-data")
+sitemap = LabelMap.preload!("yousuu-infos")
 
-files.each do |file|
+files.each_with_index do |file, idx|
   inp_total += 1
 
   next unless source = YsSerial.load(file)
   next if source.title.empty? || source.author.empty?
 
   info = BookRepo.find_or_create(source.title, source.author, fixed: false)
-  sitemap.upsert(source.ysid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}¦#{Time.utc.to_unix_ms}")
+  sitemap.upsert(source.ysid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}")
+
+  if BookInfo.exists?(info.ubid)
+    updated += 1
+    color = :blue
+  else
+    created += 1
+    color = :cyan
+  end
+
+  puts "- <#{idx + 1}/#{files.size}> #{info.zh_title} ".colorize(color)
 
   next if should_skip?(info, source)
   inp_count += 1
 
-  BookRepo.reset_info(info) if info.slug.empty?
-  BookRepo.update(info, source)
+  BookRepo.upsert_info(info)
+  BookRepo.update_info(info, source)
 
   next unless info.changed?
-  fresh = BookInfo.exists?(info.ubid)
-
-  if fresh
-    created += 1
-  else
-    updated += 1
-  end
 
   info.save!
 

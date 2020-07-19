@@ -36,7 +36,7 @@ module BookRepo
     BookInfo.get_or_create(title, author)
   end
 
-  def update(info : BookInfo, source : YsSerial, force = false)
+  def update_info(info : BookInfo, source : YsSerial, force = false)
     set_intro(info, source.intro, force: force)
     set_cover(info, "yousuu", source.fixed_cover, force: force)
 
@@ -60,7 +60,7 @@ module BookRepo
     info
   end
 
-  def update(info : BookInfo, source : SeedInfo, force = false)
+  def update_info(info : BookInfo, source : SeedInfo, force = false)
     set_intro(info, source.intro, force: force)
     set_cover(info, source.seed, source.cover, force: force)
 
@@ -68,7 +68,7 @@ module BookRepo
     set_tags(info, source.seed, source.tags, force: force)
 
     set_status(info, source.status, force: force)
-    update_seed(info, source.seed, source.type, source.latest, source.mftime)
+    update_seed(info, source, force: force)
 
     if info.weight == 0 && info.yousuu_bid.empty?
       puts "- FAKING RANDOM RATING -".colorize.yellow
@@ -82,24 +82,28 @@ module BookRepo
     info
   end
 
-  def update_seed(info : BookInfo, seed : String, type : Int32, latest : ChapInfo, mftime : Int64)
-    seed = info.set_seed(seed, type) do |seed|
-      latest = ChapRepo::Utils.convert(latest, info.ubid)
-      seed.update_latest(latest, mftime)
-    end
+  def update_seed(info : BookInfo, source : SeedInfo, force = false)
+    seed = info.add_seed(source.seed, source.sbid, source.type)
+    update_seed(info, seed, source.latest, source.mftime)
+  end
+
+  def update_seed(info : BookInfo, seed : BookSeed, latest : ChapInfo, mftime : Int64)
+    latest = ChapRepo::Utils.convert(latest, info.ubid)
+    seed.update_latest(latest, mftime)
+    info.update_seed(seed)
 
     set_mftime(info, seed.mftime)
   end
 
-  def reset_info(info : BookInfo, force = false)
+  def upsert_info(info : BookInfo, force = false)
+    return unless force || info.slug.empty?
+
     Utils.update_token(TokenMap.zh_title, info.ubid, info.zh_title)
     Utils.update_token(TokenMap.zh_author, info.ubid, info.zh_author)
 
     set_hv_title(info, force: force)
     set_vi_title(info, force: force)
     set_vi_author(info, force: force)
-
-    return unless force || info.slug.empty?
 
     title1_slug = TextUtil.slugify(info.hv_title)
     title2_slug = TextUtil.slugify(info.vi_title)
@@ -240,9 +244,5 @@ module BookRepo
     return unless force || info.weight < weight
     Utils.update_order(OrderMap.book_weight, info.ubid, weight)
     info.weight = weight
-  end
-
-  def add_seed(info : BookInfo, seed : String, type : String, latest : ChapInfo, mftime : Int64)
-    3
   end
 end

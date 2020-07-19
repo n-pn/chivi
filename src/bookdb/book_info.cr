@@ -117,17 +117,17 @@ class BookInfo
   end
 
   # create new seed if not existed
-  def add_seed(name : String, type = 1)
-    @seeds[name] ||= BookSeed.new(name, type)
+  def add_seed(name : String, sbid = "", type = 0)
+    @seeds[name] ||= BookSeed.new(name, sbid, type)
   end
 
   # update info from remote seed source
-  def set_seed(source : BookSeed)
-    set_seed(source.name, source.type) { |seed| seed.update(source) }
+  def update_seed(seed : BookSeed)
+    update_seed(seed.name, &.update(seed))
   end
 
-  def set_seed(name : String, type = 1)
-    seed = @seeds[name] ||= BookSeed.new(name, type)
+  def update_seed(name : String, sbid = "", type = 0)
+    seed = add_seed(name, sbid, type)
     yield seed
     @changes += seed.reset_changes!
     seed

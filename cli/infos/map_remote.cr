@@ -64,7 +64,7 @@ class MapRemote
 
   def initialize(@seed : String, @type = 0)
     @existed = Set(String).new(BookInfo.ubids)
-    @sitemap = LabelMap.get_or_create("zhwenpg-infos")
+    @sitemap = LabelMap.get_or_create("#{@seed}-infos")
 
     @crawled = {} of String => String
     @sitemap.each do |key, val|
@@ -114,7 +114,7 @@ class MapRemote
     return Time.utc - 8.months unless ubid = @crawled[sbid]?
     return Time.utc - 4.months unless @existed.includes?(ubid)
     return Time.utc - 2.months unless time = OrderMap.book_update.value(ubid)
-    Time.unix_ms(time)
+    Time.unix_ms(time) + 1.days
   end
 
   def should_crawl?(sbid : String, mode = 0) : Bool
@@ -142,8 +142,8 @@ class MapRemote
 
     puts "\n<#{label}> [#{sbid}] #{info.ubid}-#{info.zh_title}".colorize.cyan
 
-    BookRepo.reset_info(info) if info.slug.empty?
-    BookRepo.update(info, remote)
+    BookRepo.upsert_info(info)
+    BookRepo.update_info(info, remote)
 
     info.save! if info.changed?
 
@@ -163,7 +163,7 @@ class MapRemote
   end
 
   def save_info(sbid, ubid = "--", title = "", author = "")
-    @sitemap.upsert(sbid, "#{ubid}¦#{title}¦#{author}¦#{Time.utc.to_unix_ms}")
+    @sitemap.upsert(sbid, "#{ubid}¦#{title}¦#{author}")
   end
 end
 

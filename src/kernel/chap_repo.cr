@@ -14,10 +14,14 @@ module ChapRepo
   def load_list(ubid : String, seed : String, sbid = "", mode = 1)
   end
 
-  def update_list(list : ChapList, source : SeedInfo, dirty = true, force = false)
-    list.merge!(source.chapters, dirty: dirty)
-    list.update_each { |chap| Utils.convert(chap, list.ubid, force: force) }
-    list
+  def update_list(chlist : ChapList, source : SeedInfo, dirty = true, force = false)
+    chlist.sbid = source.sbid
+    chlist.type = source.type
+
+    chlist.merge!(source.chapters, dirty: dirty)
+    chlist.update_each { |chap| Utils.convert(chap, chlist.ubid, force: force) }
+
+    chlist
   end
 
   # # modes:

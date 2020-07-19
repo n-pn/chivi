@@ -80,9 +80,9 @@ class MapZhwenpg
     info = BookRepo.find_or_create(title, author, fixed: false)
     return if BookRepo.blacklist?(info)
 
-    @sitemap.upsert(sbid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}¦#{Time.utc.to_unix_ms}")
+    @sitemap.upsert(sbid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}")
 
-    BookRepo.reset_info(info) if info.slug.empty?
+    BookRepo.upsert_info(info)
 
     fresh = info.yousuu_bid.empty?
     BookRepo.set_shield(info, 1) if fresh
@@ -120,19 +120,19 @@ class MapZhwenpg
     # info.add_seed("zhwenpg", 0)
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
     latest = latest_chap(rows[3].css("a[target=_blank]").first)
-    BookRepo.update_seed(info, "zhwenpg", 0, latest, mftime)
+
+    seed = info.add_seed("zhwenpg", sbid, 0)
+    BookRepo.update_seed(info, seed, latest, mftime)
 
     info.save! if info.changed?
 
-    if ChapList.outdated?(info.ubid, "zhwenpg", Time.unix_ms(info.mftime))
-      expiry = Time.unix_ms(mftime) + 1.days * status
-      remote = SeedInfo.init("zhwenpg", sbid, expiry: expiry, freeze: true)
+    expiry = Time.unix_ms(info.mftime)
+    remote = SeedInfo.init("zhwenpg", sbid, expiry: expiry, freeze: true)
 
-      list = ChapList.get_or_create(info.ubid, "zhwenpg")
-      list = ChapRepo.update_list(list, remote)
+    chlist = ChapList.get_or_create(info.ubid, "zhwenpg")
+    chlist = ChapRepo.update_list(chlist, remote)
 
-      list.save! if list.changed?
-    end
+    chlist.save! if chlist.changed?
   rescue err
     puts "ERROR: #{err.colorize.red}!"
   end

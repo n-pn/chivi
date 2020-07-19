@@ -9,17 +9,16 @@ class BookSeed
 
   include JsonData
 
-  property idx = 0
-
   property name = ""
   property sbid = ""
   property type = 0
+  property idx = 0
 
-  property status = 0
   property mftime = 0_i64
   property latest = ChapInfo.new
 
-  def initialize(@name, @type = 0, @idx = BookSeed.index_for(@name))
+  def initialize(@name, @sbid = "", @type = 0)
+    @idx = BookSeed.index_for(@name)
     @changes = 1
   end
 
