@@ -283,7 +283,7 @@
       <a
         class="sort-type"
         class:_active={query.order == type}
-        href="/sort={type}">
+        href="/?sort={type}">
         <span>{label}</span>
       </a>
     {/each}
