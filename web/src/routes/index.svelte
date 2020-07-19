@@ -1,26 +1,27 @@
 <script context="module">
   export async function preload({ query }) {
     const page = +(query.page || 1)
+    let url = `/_list_book?page=${page}`
 
-    let url = `api/books?page=${page}`
-    const sort = query.sort || 'access'
-    url += `&sort=${sort}`
+    if (query.sort) url += `&sort=${query.sort}`
+    if (query.anchor) url += `&anchor=${query.anchor}`
 
     const res = await this.fetch(url)
     const data = await res.json()
     return { page, ...data }
   }
 
-  export function makePageUrl(page = 1, sort = 'access') {
+  export function makePageUrl(page = 1, query = {}) {
     const params = {}
     if (page > 1) params.page = page
-    if (sort !== 'access') params.sort = sort
+    if (query.order !== 'access') params.order = query.order
+    // if (query.anchor) params.anchor = query.anchor
 
-    const query = Object.entries(params)
+    const opts = Object.entries(params)
       .map(([k, v]) => `${k}=${v}`)
       .join('&')
 
-    if (query) return `/?${query}`
+    if (opts) return `/?${opts}`
     return '/'
   }
 </script>
@@ -32,14 +33,14 @@
 
   export let items = []
   export let total = 0
+  export let query = {}
   export let page = 1
-  export let sort = 'access'
 
   const sorts = {
     access: 'Vừa xem',
     update: 'Đổi mới',
-    score: 'Đánh giá',
-    tally: 'Tổng hợp',
+    rating: 'Đánh giá',
+    weight: 'Tổng hợp',
   }
 
   $: pageMax = Math.floor((total - 1) / 20) + 1
@@ -83,7 +84,8 @@
   }
 
   function changePage(newPage = 2) {
-    if (newPage >= 1 && newPage <= pageMax) _goto(makePageUrl(newPage, sort))
+    if (newPage >= 1 && newPage <= pageMax)
+      _goto(makePageUrl(newPage, query.order))
   }
 </script>
 
@@ -278,7 +280,10 @@
 <Layout>
   <div class="sort">
     {#each Object.entries(sorts) as [type, label]}
-      <a class="sort-type" class:_active={sort == type} href="/?sort={type}">
+      <a
+        class="sort-type"
+        class:_active={query.order == type}
+        href="/sort={type}">
         <span>{label}</span>
       </a>
     {/each}
@@ -294,10 +299,10 @@
         </picture>
 
         <div class="book-title">{book.vi_title}</div>
-        <div class="-genre">{book.vi_genre}</div>
+        <div class="-genre">{book.vi_genres[0]}</div>
         <div class="-score">
           <span class="--icon">⭐</span>
-          <span class="--text">{book.votes < 10 ? '--' : book.score}</span>
+          <span class="--text">{book.voters < 10 ? '--' : book.rating}</span>
         </div>
       </a>
     {/each}
@@ -307,14 +312,14 @@
     <a
       class="page m-button _line"
       class:_disable={page == 1}
-      href={makePageUrl(1, sort)}>
+      href={makePageUrl(1, query)}>
       <MIcon class="m-icon" name="chevrons-left" />
     </a>
 
     <a
       class="page m-button _line"
       class:_disable={page == 1}
-      href={makePageUrl(+page - 1, sort)}>
+      href={makePageUrl(+page - 1, query)}>
       <MIcon class="m-icon" name="chevron-left" />
     </a>
 
@@ -324,7 +329,7 @@
         class:_actived={page == index}
         class:_disable={page == index}
         data-level={level}
-        href={makePageUrl(index, sort)}>
+        href={makePageUrl(index, query)}>
         <span>{index}</span>
       </a>
     {/each}
@@ -332,16 +337,15 @@
     <a
       class="page m-button _line"
       class:_disable={page == pageMax}
-      href={makePageUrl(page + 1, sort)}>
+      href={makePageUrl(page + 1, query)}>
       <MIcon class="m-icon" name="chevron-right" />
     </a>
 
     <a
       class="page m-button _line"
       class:_disable={page == pageMax}
-      href={makePageUrl(pageMax, sort)}>
+      href={makePageUrl(pageMax, query)}>
       <MIcon class="m-icon" name="chevrons-right" />
     </a>
   </div>
-
 </Layout>

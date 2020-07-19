@@ -82,11 +82,6 @@
 </script>
 
 <style type="text/scss">
-  .volume {
-    padding-top: 0.5rem;
-    padding-left: 0.5rem;
-  }
-
   $chap-size: 17.5rem;
   $chap-break: $chap-size * 2 + 0.75 * 5;
 
@@ -142,7 +137,12 @@
     }
   }
 
-  .volume {
+  // .label {
+  //   padding-top: 0.5rem;
+  //   padding-left: 0.5rem;
+  // }
+
+  .label {
     display: block;
     padding: 0;
     line-height: 1.25rem;
@@ -215,10 +215,10 @@
       <li class="chap-item">
         <a
           class="chap-link"
-          href="/{bslug}/{chap.title_slug}-{sname}-{chap.csid}"
+          href="/{bslug}/{chap.slug}-{sname}-{chap.scid}"
           rel="nofollow prefetch">
-          <span class="volume">{chap.vi_volume}</span>
-          <span class="title">{chap.vi_title}</span>
+          <span class="label">{chap.label}</span>
+          <span class="title">{chap.title}</span>
         </a>
       </li>
     {/each}

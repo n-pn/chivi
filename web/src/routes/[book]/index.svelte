@@ -1,7 +1,7 @@
 <script context="module">
   export async function preload({ params, query }) {
     const slug = params.book
-    const url = `api/books/${slug}`
+    const url = `_load_book?slug=${slug}`
     const tab = query.tab || 'overview'
     const page = +(query.page || 1)
 
@@ -10,36 +10,38 @@
 
     if (res.status == 200) {
       let { book } = data
-      const site = query.site || book.cr_site_df || ''
+      let seeds = Object.values(book.seeds).sort((a, b) => a.idx - b.idx)
+      const seed = query.seed || seeds[0].name || ''
 
-      const lists = {}
-      if (tab === 'content' && site !== '') {
-        const { chlist } = await loadContent(this.fetch, slug, site)
-        book = updateLatest(book, site, chlist)
-        lists[site] = chlist
+      const chlists = {}
+      if (tab === 'content' && seed !== '') {
+        const { chlist, mftime } = await loadContent(this.fetch, slug, seed)
+        book = updateLatest(book, seed_name, chlist, mftime)
+        chlists[seed] = chlist
       }
 
-      return { book, site, tab, page, lists }
+      return { book, seed, tab, page, chlists }
     }
 
     this.error(res.status, data.msg)
   }
 
-  export function updateLatest(book, site, list) {
+  export function updateLatest(book, seed_name, chlist, mftime) {
     if (list.length == 0) return book
-    const lastest = list[list.length - 1]
+    const latest = list[list.length - 1]
 
-    book.cr_latests[site] = {
-      csid: lastest.csid,
-      name: lastest.vi_title,
-      slug: lastest.title_slug,
-    }
+    const seed = book[seed_name]
+    if (!seed) return book
 
+    seed.latest = latest
+    seed.mftime = mftime
+
+    if (book.mftime < mftime) book.mftime = mftime
     return book
   }
 
-  export async function loadContent(api, slug, site, reload = false) {
-    const url = `api/books/${slug}/${site}?reload=${reload}`
+  export async function loadContent(api, slug, seed, reload = false) {
+    const url = `_get_chaps?slug=${slug}&seed=${seed}&reload=${reload}`
 
     try {
       const res = await api(url)
@@ -70,7 +72,7 @@
       book.vi_title,
       book.hv_title,
       book.vi_author,
-      book.vi_genre,
+      ...book.vi_genres,
       ...book.vi_tags,
     ].join(',')
   }
@@ -85,21 +87,21 @@
   import paginate_range from '$utils/paginate_range'
 
   export let book
-  export let site
+  export let seed
 
-  export let lists = {}
+  export let chlists = {}
   export let page = 1
 
   export let tab = 'overview'
   export let desc = true
 
   let chaps = []
-  $: chaps = lists[site] || []
+  $: chaps = chlists[seed] || []
 
-  $: sources = Object.keys(book.cr_anchors)
+  $: sources = Object.keys(book.seeds)
   $: hasContent = sources.length > 0
 
-  $: if (tab == 'content') switchSite(site, false)
+  $: if (tab == 'content') switchSite(seed, false)
 
   $: book_url = `https://chivi.xyz/${book.slug}/`
   $: cover_url = `https://chivi.xyz/covers/${book.ubid}.jpg`
@@ -110,39 +112,38 @@
   let loading = false
 
   async function switchSite(source, reload = false) {
-    site = source
-    if (reload == false && lists[site]) return
+    seed = source
+    if (reload == false && chlists[seed]) return
 
     loading = true
-    const { chlist, mftime } = await loadContent(fetch, book.slug, site, reload)
+    const { chlist, mftime } = await loadContent(fetch, book.slug, seed, reload)
     loading = false
 
-    lists[site] = chlist
+    chlists[seed] = chlist
 
     desc = true
-    lists = lists // trigger update
-
-    // update site latests
-    if (book.mftime < mftime) book.mftime = mftime
-    if (book.cr_mftimes[site] < mftime) book.cr_mftimes[site] = mftime
-
-    book = updateLatest(book, site, chlist)
+    chlists = chlists // trigger update
+    book = updateLatest(book, seed, chlist, mftime)
   }
 
   function changeTab(newTab) {
     tab = newTab
   }
 
-  function latestLink(site) {
-    const latest = book.cr_latests[site]
-    if (!latest) return `${book.slug}?site=${site}&refresh=true`
-    return `/${book.slug}/${latest.slug}-${site}-${latest.csid}`
+  function latestLink(latest) {
+    if (!latest) return `${book.slug}?seed=${seed}&refresh=true`
+    return `/${book.slug}/${latest.url_slug}-${seed}-${latest.csid}`
   }
 
-  function latestText(site) {
-    const latest = book.cr_latests[site]
-    if (!latest) return '<bấm vào đây để cập nhật>'
-    return latest.name
+  function latestText(latest) {
+    if (!latest) return '...'
+    return latest.vi_title
+  }
+
+  function seedMftime(seed_name) {
+    const seed_info = book.seeds[seed_name]
+    if (!seed_info) return 0
+    return seed_info.mftime
   }
 </script>
 
@@ -414,7 +415,7 @@
       padding: 0;
     }
 
-    td.latest-site {
+    td.latest-seed {
       max-width: 5rem;
       text-transform: uppercase;
       font-weight: 500;
@@ -470,7 +471,7 @@
 
     @include fgcolor(neutral, 8);
 
-    &:visited {
+    &:viseedd {
       font-style: italic;
       @include fgcolor(neutral, 5);
     }
@@ -536,7 +537,7 @@
       <div>
         <span class="genre">
           <MIcon class="m-icon" name="book" />
-          {book.vi_genre}
+          {book.vi_genres[0]}
         </span>
         <span class="status">
           <MIcon class="m-icon" name="activity" />
@@ -551,27 +552,27 @@
       <div>
         <span>
           Đánh giá:
-          <strong>{book.votes < 10 ? '--' : book.score}</strong>
+          <strong>{book.voters < 10 ? '--' : book.rating}</strong>
           /10
         </span>
-        <span>({book.votes} lượt đánh giá)</span>
+        <span>({book.voters} lượt đánh giá)</span>
       </div>
 
-      {#if book.origin !== ''}
+      {#if book.origin_url !== ''}
         <div>
           <span>Liên kết:</span>
           <a
             class="link"
-            href={book.origin}
+            href={book.origin_url}
             rel="nofollow noreferer"
             target="_blank">
             Trang gốc
           </a>
 
-          {#if book.yousuu !== ''}
+          {#if book.yousuu_bid !== ''}
             <a
               class="link"
-              href="https://www.yousuu.com/book/{book.yousuu}"
+              href="https://www.yousuu.com/book/{book.yousuu_bid}"
               rel="nofollow noreferer"
               target="_blank">
               Ưu thư võng
@@ -594,7 +595,7 @@
       <a
         class="meta-header-tab"
         class:_active={tab == 'content'}
-        href="/{book.slug}?tab=content&site={site}"
+        href="/{book.slug}?tab=content&seed={seed}"
         on:click|preventDefault={() => changeTab('content')}>
         Mục lục
       </a>
@@ -621,32 +622,32 @@
         <table class="latests">
           <thead>
             <tr>
-              <th class="latest-site">Nguồn</th>
+              <th class="latest-seed">Nguồn</th>
               <th class="latest-chap">Chương mới nhất</th>
               <th class="latest-time">Cập nhật</th>
             </tr>
           </thead>
 
           <tbody>
-            {#each sources as source}
+            {#each Object.values(book.seeds) as source}
               <tr>
-                <td class="latest-site">
-                  <span class="latest-text">{source}</span>
+                <td class="latest-seed">
+                  <span class="latest-text">{source.name}</span>
                 </td>
                 <td class="latest-chap">
-                  <a class="latest-link" href={latestLink(source)}>
-                    {latestText(source)}
+                  <a class="latest-link" href={latestLink(source.latest)}>
+                    {latestText(source.latest)}
                   </a>
                 </td>
                 <td class="latest-time">
                   <span
                     class="latest-text _update"
-                    class:_loading={site == source && loading}
-                    on:click={() => switchSite(source, true)}>
-                    {#if site == source && loading}
+                    class:_loading={seed == source.name && loading}
+                    on:click={() => switchSite(source.name, true)}>
+                    {#if seed == source.name && loading}
                       <MIcon class="m-icon" name="loader" />
                     {:else}
-                      <span>{relative_time(book.cr_mftimes[source])}</span>
+                      <span>{relative_time(source.mftime)}</span>
                     {/if}
                   </span>
                 </td>
@@ -659,12 +660,12 @@
 
     <div class="meta-tab" class:_active={tab == 'content'}>
       {#if hasContent}
-        <div class="sources" data-active={site}>
-          {#each sources as source}
+        <div class="sources" data-active={seed}>
+          {#each Object.keys(book.seeds) as source}
             <a
               class="source-item"
-              class:_active={site === source}
-              href="/{book.slug}?site={source}"
+              class:_active={seed === source}
+              href="/{book.slug}?seed={source}"
               on:click|preventDefault={() => switchSite(source, false)}
               rel="nofollow">
               {source}
@@ -675,18 +676,18 @@
         <h3 class="caption _recent u-cf">
           <!-- <MIcon class="m-icon u-fl" name="list" /> -->
           <span class="label u-fl">Nguồn:</span>
-          <span class="count u-fl">{site}</span>
+          <span class="count u-fl">{seed}</span>
 
           <button
             class="m-button _text u-fr"
             class:_loading={loading}
-            on:click={() => switchSite(site, true)}>
+            on:click={() => switchSite(seed, true)}>
             {#if loading}
               <MIcon class="m-icon" name="loader" />
             {:else}
               <MIcon class="m-icon" name="clock" />
             {/if}
-            <span>{relative_time(book.cr_mftimes[site])}</span>
+            <span>{relative_time(seedMftime(seed))}</span>
           </button>
 
           <button class="m-button _text u-fr" on:click={() => (desc = !desc)}>
@@ -697,12 +698,11 @@
             {/if}
             <span>{chaps.length} chương</span>
           </button>
-
         </h3>
 
         <ChapList
           bslug={book.slug}
-          sname={site}
+          sname={seed}
           {chaps}
           focus={page}
           reverse={desc} />

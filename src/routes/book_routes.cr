@@ -24,7 +24,7 @@ module Server
       end
 
     page = env.params.query.fetch("page", "1")
-    limit, offset = Utils.parse_page(page, 24)
+    limit, offset = Utils.parse_page(page, 20)
 
     anchor = env.params.query.fetch("anchor", "")
 
