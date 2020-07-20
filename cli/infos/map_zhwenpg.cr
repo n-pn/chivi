@@ -15,7 +15,7 @@ class MapZhwenpg
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-    @sitemap = LabelMap.load("sources/zhwenpg")
+    @sitemap = LabelMap.load("_import/sites/zhwenpg")
     @checked = Set(String).new
   end
 
