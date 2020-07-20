@@ -359,7 +359,7 @@
 </style>
 
 <svelte:head>
-  <title>{chap_label} - {chap_title} - {book_name} - Chivi</title>
+  <title>{chap_title} - {book_name} - Chivi</title>
   <meta property="og:url" content="{book_slug}/{curr_url}" />
 </svelte:head>
 
