@@ -53,7 +53,10 @@ module BookRepo::Utils
     if genres = LabelMap.zh_genre.fetch(genre)
       genres.split("¦")
     else
-      ValueSet.skip_genres.upsert!(genre) if genre != "其他"
+      if !genre.blank? || genre.includes?("其他")
+        ValueSet.skip_genres.upsert!(genre)
+      end
+
       [] of String
     end
   end

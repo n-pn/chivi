@@ -36,7 +36,7 @@ module TextUtil
           io << char
         else
           upcase = char.upcase
-          capped = upcase != char
+          capped = upcase != char.downcase
           io << upcase
         end
       end

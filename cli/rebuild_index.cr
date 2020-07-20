@@ -53,6 +53,9 @@ ACCESS.save!
 RATING.save!
 WEIGHT.save!
 
+GENRES.save!
+TAGS.save!
+
 # puts "- has_text: #{has_text}".colorize(:yellow)
 
 # conflicts.reject! do |key, vals|

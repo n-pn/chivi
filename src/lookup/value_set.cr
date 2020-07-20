@@ -109,6 +109,6 @@ class ValueSet
     CACHE.each_value { |item| item.save! }
   end
 
-  class_getter skip_titles : ValueSet { preload("skip_titles") }
-  class_getter skip_genres : ValueSet { preload("skip_genres") }
+  class_getter skip_titles : ValueSet { preload("_import/skip_titles") }
+  class_getter skip_genres : ValueSet { preload("_import/skip_genres") }
 end
