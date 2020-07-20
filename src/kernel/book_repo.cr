@@ -248,7 +248,7 @@ module BookRepo
 
   def set_rating(info : BookInfo, rating : Float, force = false)
     return unless force || info.rating < rating
-    Utils.update_order(OrderMap.book_rating, info.ubid, info.scored)
+    Utils.update_order(OrderMap.book_rating, info.ubid, (rating * 10).to_i64)
     info.rating = rating
   end
 

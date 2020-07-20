@@ -33,8 +33,6 @@ class BookRepo::Query
     total = query.ubids.size
     infos = query.fetch!(opts.order, opts.limit, opts.offset, opts.anchor)
 
-    puts query.ubids
-
     {infos, total}
   end
 
@@ -91,7 +89,7 @@ class BookRepo::Query
 
     sorted = order_map(sort)
 
-    unless @filtered && @ubids.size < 100
+    unless @filtered && @ubids.size < 1000
       return scan_sorted(sorted, limit, offset, anchor)
     end
 

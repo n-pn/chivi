@@ -6,7 +6,7 @@
     const page = +(query.pg || '1')
 
     if (word) {
-      const url = `/_list_book?word=${word}&page=${page}&limit=${limit}&sort=weight`
+      const url = `/_list_book?word=${word}&page=${page}&limit=${limit}&order=weight`
       const res = await this.fetch(url)
       const data = await res.json()
       return { word, page, ...data }

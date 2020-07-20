@@ -1,37 +1,53 @@
 require "./_utils"
 require "../kernel"
 
+module Params
+  extend self
+
+  def search_type(type : String?)
+    case type
+    when "title"  then :title
+    when "author" then :author
+    else               :fuzzy
+    end
+  end
+
+  def search_order(order : String?)
+    case order
+    when "weight", "tally" then :weight
+    when "rating", "score" then :rating
+    when "access"          then :access
+    when "update"          then :update
+    else                        :access
+    end
+  end
+
+  def search_page(page : String?)
+    return 1 unless page = page.try(&.to_i?)
+    page = 1 if page < 1
+    page
+  end
+
+  def search_limit(limit : String?)
+    return 20 unless limit = limit.try(&.to_i?)
+    limit = 20 if limit < 1 || limit > 20
+    limit
+  end
+end
+
 module Server
   get "/_list_book" do |env|
     word = env.params.query.fetch("word", "")
-
-    type =
-      case env.params.query.fetch("type", "")
-      when "title"  then :title
-      when "author" then :author
-      else               :fuzzy
-      end
+    type = Params.search_type(env.params.query["type"]?)
 
     genre = env.params.query.fetch("genre", "")
 
-    order =
-      case env.params.query["sort"]
-      when "weight", "tally" then :weight
-      when "rating", "score" then :rating
-      when "access"          then :access
-      when "update"          then :update
-      else                        :weight
-      end
-
-    page = env.params.query.fetch("page", "1").try(&.to_i?) || 1
-    page = 1 if page < 1
-
-    limit = env.params.query.fetch("limit", "20").try(&.to_i?) || 20
-    limit = 20 if limit > 20 || limit < 0
-
-    offset = (page - 1) * limit
-
+    order = Params.search_order(env.params.query["order"]?)
     anchor = env.params.query.fetch("anchor", "")
+
+    page = Params.search_page(env.params.query["page"]?)
+    limit = Params.search_limit(env.params.query["limit"]?)
+    offset = (page - 1) * limit
 
     opts = BookRepo::Query::Opts.new(word, type, genre, order, limit, offset, anchor)
 
@@ -59,8 +75,8 @@ module Server
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    BookRepo.bump_access(info)
-    BookRepo.inc_counter(info, read: false)
+    # BookRepo.bump_access(info)
+    # BookRepo.inc_counter(info, read: false)
 
     {book: info}.to_json(env.response)
   end
@@ -79,7 +95,7 @@ module Server
     end
 
     BookRepo.bump_access(info)
-    # BookRepo.inc_counter(info, read: false)
+    BookRepo.inc_counter(info, read: false)
 
     chlist, mftime = fetched
     chlist = chlist.chaps.map do |chap|

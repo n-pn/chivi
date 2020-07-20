@@ -3,7 +3,7 @@
     const page = +(query.page || 1)
     let url = `/_list_book?page=${page}`
 
-    if (query.sort) url += `&sort=${query.sort}`
+    if (query.order) url += `&order=${query.order}`
     if (query.genre) url += `&genre=${query.genre}`
     if (query.anchor) url += `&anchor=${query.anchor}`
 
@@ -13,17 +13,17 @@
   }
 
   export function makePageUrl(page = 1, query = {}) {
-    const params = {}
-    if (page > 1) params.page = page
-    if (query.order !== 'access') params.order = query.order
-    if (query.genre) params.genre = query.genre
-    // if (query.anchor) params.anchor = query.anchor
+    const opts = {}
+    if (page > 1) opts.page = page
+    if (query.order !== 'access') opts.order = query.order
+    if (query.genre) opts.genre = query.genre
+    // if (query.anchor) opts.anchor = query.anchor
 
-    const opts = Object.entries(params)
+    const params = Object.entries(opts)
       .map(([k, v]) => `${k}=${v}`)
       .join('&')
 
-    if (opts) return `/?${opts}`
+    if (params) return `/?${params}`
     return '/'
   }
 </script>
@@ -38,7 +38,7 @@
   export let query = {}
   export let page = 1
 
-  const sorts = {
+  const order_names = {
     access: 'Vừa xem',
     update: 'Đổi mới',
     rating: 'Đánh giá',
@@ -182,7 +182,7 @@
     }
   }
 
-  .sort {
+  .order {
     @include flex($gap: 0.375rem);
     overflow: auto;
     justify-content: center;
@@ -191,7 +191,7 @@
     line-height: 2rem;
   }
 
-  .sort-type {
+  .order-type {
     text-transform: uppercase;
     padding: 0 0.5rem;
     font-weight: 500;
@@ -280,12 +280,12 @@
 <svelte:window on:keydown={handleKeypress} />
 
 <Layout>
-  <div class="sort">
-    {#each Object.entries(sorts) as [type, label]}
+  <div class="order">
+    {#each Object.entries(order_names) as [type, label]}
       <a
-        class="sort-type"
-        class:_active={query.order == type}
-        href="/?sort={type}">
+        class="order-type"
+        class:_active={query.order === type}
+        href={makePageUrl(1, { ...query, order: type })}>
         <span>{label}</span>
       </a>
     {/each}
