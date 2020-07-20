@@ -130,10 +130,12 @@ class BookRepo::Query
   end
 
   def seek_cursor(sorted : OrderMap, offset = 0)
+    return sorted.first if offset == 0
+
     sorted.each do |node|
       next unless match?(node.key)
-      return node if offset == 0
       offset -= 1
+      return node if offset == 0
     end
 
     nil
