@@ -82,10 +82,10 @@ module Server
     chlist, mftime = fetched
     chlist = chlist.chaps.map do |chap|
       {
-        scid:  chap.scid,
-        slug:  chap.url_slug,
-        label: chap.vi_label,
-        title: chap.vi_title,
+        scid:     chap.scid,
+        vi_label: chap.vi_label,
+        vi_title: chap.vi_title,
+        url_slug: chap.url_slug,
       }
     end
 

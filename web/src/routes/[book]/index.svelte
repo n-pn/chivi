@@ -35,8 +35,8 @@
     if (chlist.length == 0) return book_info
     const latest = chlist[chlist.length - 1]
 
-    book.seed_latests[seed_name] = latest
-    book.seed_mftimes[seed_name] = mftime
+    book_info.seed_latests[seed_name] = latest
+    book_info.seed_mftimes[seed_name] = mftime
     if (book_info.mftime < mftime) book_info.mftime = mftime
 
     return book_info
@@ -131,9 +131,9 @@
   }
 
   function latestLink(seed_name) {
-    const latest = book.seed_latests[seed]
-    if (!latest) return `${book.slug}?seed=${seed}&refresh=true`
-    return `/${book.slug}/${latest.url_slug}-${seed}-${latest.scid}`
+    const latest = book.seed_latests[seed_name]
+    if (!latest) return `${book.slug}?seed=${seed_name}&refresh=true`
+    return `/${book.slug}/${latest.url_slug}-${seed_name}-${latest.scid}`
   }
 
   function latestText(seed_name) {
@@ -644,7 +644,7 @@
                     {#if seed == name && loading}
                       <MIcon class="m-icon" name="loader" />
                     {:else}
-                      <span>{relative_time(book.seed_mftimes[seed])}</span>
+                      <span>{relative_time(book.seed_mftimes[name])}</span>
                     {/if}
                   </span>
                 </td>

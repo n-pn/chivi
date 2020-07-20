@@ -215,10 +215,10 @@
       <li class="chap-item">
         <a
           class="chap-link"
-          href="/{bslug}/{chap.slug}-{sname}-{chap.scid}"
+          href="/{bslug}/{chap.url_slug}-{sname}-{chap.scid}"
           rel="nofollow prefetch">
-          <span class="label">{chap.label}</span>
-          <span class="title">{chap.title}</span>
+          <span class="label">{chap.vi_label}</span>
+          <span class="title">{chap.vi_title}</span>
         </a>
       </li>
     {/each}
