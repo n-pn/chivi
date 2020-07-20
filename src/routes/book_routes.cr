@@ -15,7 +15,7 @@ module Server
     genre = env.params.query.fetch("genre", "")
 
     order =
-      case env.params.query.fetch("sort", "access")
+      case env.params.query["sort"]
       when "weight", "tally" then :weight
       when "rating", "score" then :rating
       when "access"          then :access

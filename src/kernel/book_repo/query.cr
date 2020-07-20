@@ -15,23 +15,25 @@ class BookRepo::Query
     def initialize(@query = "", @type = :fuzzy, @genre = "", @order = :weight, @limit = 24, @offset = 0, @anchor = "")
     end
 
-    def filter_query?
+    def query?
       !@query.empty?
     end
 
-    def filter_genre?
+    def genre?
       !@genre.empty?
     end
   end
 
   def self.fetch!(opts : Opts)
-    list = new
+    query = new
 
-    list.filter_query(opts.query, opts.type) if opts.filter_query?
-    list.filter_genre(opts.genre) if opts.filter_genre?
+    query.filter_query(opts.query, opts.type) if opts.query?
+    query.filter_genre(opts.genre) if opts.genre?
 
-    infos = list.fetch!(opts.order, opts.limit, opts.offset, opts.anchor)
-    total = list.ubids.size
+    total = query.ubids.size
+    infos = query.fetch!(opts.order, opts.limit, opts.offset, opts.anchor)
+
+    puts query.ubids
 
     {infos, total}
   end
@@ -88,6 +90,25 @@ class BookRepo::Query
     return output if @no_match
 
     sorted = order_map(sort)
+
+    unless @filtered && @ubids.size < 100
+      return scan_sorted(sorted, limit, offset, anchor)
+    end
+
+    sorted_ubids = @ubids.to_a.sort_by do |ubid|
+      -(sorted.value(ubid) || 0_i64)
+    end
+
+    sorted_ubids[offset, limit].each do |ubid|
+      output << BookInfo.get!(ubid)
+    end
+
+    output
+  end
+
+  def scan_sorted(sorted : OrderMap, limit = 24, offset = 0, anchor = "")
+    output = [] of BookInfo
+
     cursor = sorted.fetch(anchor) || seek_cursor(sorted, offset)
     return output unless cursor
 

@@ -6,17 +6,26 @@ require "../src/common/text_util"
 require "../src/bookdb/book_info"
 require "../src/kernel/book_repo"
 
+UPDATE = OrderMap.init("indexes/orders/book_update")
+ACCESS = OrderMap.init("indexes/orders/book_access")
+RATING = OrderMap.init("indexes/orders/book_rating")
+WEIGHT = OrderMap.init("indexes/orders/book_weight")
+
+GENRES = TokenMap.init("indexes/tokens/vi_genres")
+TAGS   = TokenMap.init("indexes/tokens/vi_tags")
+
 def fix_indexes(info : BookInfo)
   # update tokens
   BookRepo.upsert_info(info, force: true)
-  BookRepo::Utils.update_token(TokenMap.vi_genres, info.ubid, info.vi_genres)
-  BookRepo::Utils.update_token(TokenMap.vi_tags, info.ubid, info.vi_tags)
+
+  BookRepo::Utils.update_token(GENRES, info.ubid, info.vi_genres)
+  BookRepo::Utils.update_token(TAGS, info.ubid, info.vi_tags)
 
   # update orders
-  BookRepo::Utils.update_order(OrderMap.book_update, info.ubid, info.mftime)
-  BookRepo::Utils.update_order(OrderMap.book_access, info.ubid, info.mftime)
-  BookRepo::Utils.update_order(OrderMap.book_rating, info.ubid, info.scored)
-  BookRepo::Utils.update_order(OrderMap.book_weight, info.ubid, info.weight)
+  BookRepo::Utils.update_order(UPDATE, info.ubid, info.mftime)
+  BookRepo::Utils.update_order(ACCESS, info.ubid, info.mftime)
+  BookRepo::Utils.update_order(RATING, info.ubid, info.scored)
+  BookRepo::Utils.update_order(WEIGHT, info.ubid, info.weight)
 
   info.save! if info.changed?
 end
@@ -37,8 +46,12 @@ infos.each_with_index do |info, idx|
   conflicts["#{title}--#{author}"] << "#{info.zh_title}--#{info.zh_author}"
 end
 
-OrderMap.flush!
 TokenMap.flush!
+
+UPDATE.save!
+ACCESS.save!
+RATING.save!
+WEIGHT.save!
 
 # puts "- has_text: #{has_text}".colorize(:yellow)
 

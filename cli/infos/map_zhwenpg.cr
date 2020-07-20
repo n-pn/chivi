@@ -20,7 +20,7 @@ class MapZhwenpg
   end
 
   def expiry(page : Int32 = 1)
-    Time.utc - 4.hours * page
+    Time.utc - 12.hours * page
   end
 
   def page_url(page : Int32, status : Int32 = 0)
@@ -147,12 +147,8 @@ class MapZhwenpg
     ChapInfo.new(scid, text)
   end
 
-  TIME = Time.utc.to_unix_ms
-  DATE = TIME - 24.hours.total_milliseconds.to_i64
-
   private def parse_time(time : String)
-    mftime = TimeUtil.parse(time).to_unix_ms
-    mftime <= DATE ? mftime : TIME
+    TimeUtil.parse(time).to_unix_ms
   end
 
   def save_indexes!

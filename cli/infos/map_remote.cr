@@ -111,10 +111,10 @@ class MapRemote
   end
 
   def expiry_for(sbid : String)
-    return Time.utc - 8.months unless ubid = @crawled[sbid]?
-    return Time.utc - 4.months unless @existed.includes?(ubid)
-    return Time.utc - 2.months unless time = OrderMap.book_update.value(ubid)
-    Time.unix_ms(time) + 1.days
+    return Time.utc - 9.months unless ubid = @crawled[sbid]?
+    return Time.utc - 6.months unless @existed.includes?(ubid)
+    return Time.utc - 3.months unless time = OrderMap.book_update.value(ubid)
+    Time.unix_ms(time) + 6.hours
   end
 
   def should_crawl?(sbid : String, mode = 0) : Bool
