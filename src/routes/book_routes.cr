@@ -59,7 +59,9 @@ module Server
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
+    BookRepo.bump_access(info)
     BookRepo.inc_counter(info, read: false)
+
     {book: info}.to_json(env.response)
   end
 
@@ -77,7 +79,7 @@ module Server
     end
 
     BookRepo.bump_access(info)
-    BookRepo.inc_counter(info, read: false)
+    # BookRepo.inc_counter(info, read: false)
 
     chlist, mftime = fetched
     chlist = chlist.chaps.map do |chap|
@@ -99,7 +101,7 @@ module Server
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    BookRepo.bump_access(info)
+    # BookRepo.bump_access(info)
     BookRepo.inc_counter(info, read: true)
 
     seed = env.params.query["seed"]
