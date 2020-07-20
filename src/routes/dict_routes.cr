@@ -8,11 +8,12 @@ module Server
     dname = env.params.query.fetch("dname", "combine")
     dicts = TrieDict.for_convert(dname)
 
-    chars = env.params.query.fetch("input", "").chars
+    input = env.params.query.fetch("input", "")
+    chars = input.chars
     upper = chars.size - 1
 
-    res = (0..upper).map do |idx|
-      entry = Hash(String, LookupEntry).new do |hash, key|
+    entries = (0..upper).map do |idx|
+      entry = Hash(Int32, LookupEntry).new do |hash, key|
         hash[key] = LookupEntry.new { |h, k| h[k] = [] of String }
       end
 
@@ -30,10 +31,11 @@ module Server
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
-      entry.to_a.sort_by(&.[0].size.-)
+      entry.to_a.sort_by(&.[0].-)
     end
 
-    res.to_json(env.response)
+    hanviet = Engine.hanviet(input, apply_cap: true).to_s
+    {hanviet: hanviet, entries: entries}.to_json(env.response)
   end
 
   get "/_search" do |env|

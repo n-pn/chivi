@@ -298,15 +298,15 @@
     cursor: pointer;
 
     &[data-d='1'] {
-      @include token(neutral);
+      @include token(teal);
     }
 
     &[data-d='2'] {
-      @include token(primary);
+      @include token(blue);
     }
 
     &[data-d='3'] {
-      @include token(harmful);
+      @include token(red);
     }
   }
 
@@ -416,9 +416,6 @@
     <a href="/{book_slug}" class="crumb">{book_name}</a>
     <span class="split">&gt;</span>
     <span class="crumb">{chap_label}</span>
-    <span class="split">-</span>
-    <span class="crumb">{chap_title}</span>
-
     <span class="mtime">
       <span>Cập nhật:</span>
       <span>{relative_time(chap_time)}</span>
@@ -468,9 +465,9 @@
   <Lookup
     on_top={!upsertEnabled}
     bind:active={lookupActived}
-    line={lookupLine}
-    from={lookupFrom}
-    dict={book_ubid} />
+    input={lookupLine}
+    dname={book_ubid}
+    from={lookupFrom} />
 {/if}
 
 {#if upsertEnabled}

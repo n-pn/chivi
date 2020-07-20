@@ -11,16 +11,7 @@ has_text = 0
 conflicts = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
 
 infos.each do |info|
-  # changes = 0
-
-  # info.seeds.each_value do |seed|
-  #   seed.idx = BookSeed.index_for(seed.name)
-  #   changes += seed.changes
-  # end
-
-  # info.save! if changes > 0
-
-  has_text += 1 unless info.seeds.empty?
+  has_text += 1 unless info.seed_names.empty?
 
   title = info.zh_title.gsub(/\P{Han}/, "")
   author = info.zh_author.gsub(/\P{Han}/, "")

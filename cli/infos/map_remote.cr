@@ -145,16 +145,17 @@ class MapRemote
     BookRepo.update_info(info, remote)
 
     return unless info.changed?
+    info.save!
 
     expiry = Time.unix_ms(info.mftime)
-    if ChapList.outdated?(info.ubid, @seed, expiry)
-      remote = SeedInfo.init(@seed, sbid, expiry: expiry, freeze: true)
 
-      chlist = ChapList.get_or_create(info.ubid, @seed)
-      chlist = ChapRepo.update_list(chlist, remote)
+    return unless ChapList.outdated?(info.ubid, @seed, expiry)
+    remote = SeedInfo.init(@seed, sbid, expiry: expiry, freeze: true)
 
-      chlist.save! if chlist.changed?
-    end
+    chlist = ChapList.get_or_create(info.ubid, @seed)
+    chlist = ChapRepo.update_list(chlist, remote)
+
+    chlist.save! if chlist.changed?
   rescue err
     puts "Error parsing `#{sbid}`: #{err.colorize.red}".colorize.bold
     # puts err.backtrace

@@ -133,7 +133,7 @@
   function latestLink(seed_name) {
     const latest = book.seed_latests[seed]
     if (!latest) return `${book.slug}?seed=${seed}&refresh=true`
-    return `/${book.slug}/${latest.url_slug}-${seed}-${latest.csid}`
+    return `/${book.slug}/${latest.url_slug}-${seed}-${latest.scid}`
   }
 
   function latestText(seed_name) {

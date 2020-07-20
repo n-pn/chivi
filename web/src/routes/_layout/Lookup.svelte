@@ -1,4 +1,11 @@
 <script context="module">
+  const tags = {
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&apos;',
+  }
+
   function replace_tag(tag) {
     return tags[tag] || tag
   }
@@ -7,10 +14,75 @@
     return str.replace(/[&<>]/g, replace_tag)
   }
 
-  function is_active(ax, ay, bx, by) {
-    if (bx >= ax && bx < ay) return '_active'
-    // if (ay >= bx && ay < by) return '_active'
-    return ''
+  function is_active(from, upto, idx) {
+    if (idx < from) return false
+    return idx < upto
+  }
+
+  function render_zh(tokens, from, upto) {
+    let res = ''
+    let idx = 0
+    let pos = 0
+
+    for (const [key] of tokens) {
+      if (key == '') continue
+      let chars = key.split('')
+
+      for (let jdx = 0; jdx < chars.length; jdx++) {
+        const char = chars[jdx]
+
+        res += '<x-z '
+        if (is_active(from, upto, pos)) res += 'class=_active '
+
+        res += `data-i=${idx} `
+        res += `data-p=${pos}>`
+        res += escape_html(char)
+        res += '</x-z>'
+
+        pos += 1
+      }
+
+      idx += 1
+    }
+
+    return res
+  }
+
+  function render_hv(tokens, from, upto) {
+    let res = ''
+    let idx = 0
+    let pos = 0
+
+    for (const [key, val, dic] of tokens) {
+      let key_chars = key.split('')
+      let val_chars = val.split(' ')
+
+      if (dic == 0 || key_chars.length != val_chars.length) {
+        res += val
+        idx += 1
+        pos += key_chars.length
+        continue
+      }
+
+      for (let jdx = 0; jdx < key_chars.length; jdx++) {
+        const key_char = key_chars[jdx]
+        const val_char = val_chars[jdx]
+
+        res += '<x-v '
+        if (is_active(from, upto, pos)) res += 'class=_active '
+
+        res += `data-k=${escape_html(key_char)} `
+        res += `data-i=${idx} `
+        res += `data-p=${pos}>`
+        res += escape_html(val_char)
+        res += '</x-v>'
+        pos += 1
+      }
+
+      idx += 1
+    }
+
+    return res
   }
 
   function render(tokens, from, upto) {
@@ -66,12 +138,8 @@
 
   $: if (input !== '') lookupTerms(input)
 
-  $: if (entries.length > from) {
-    current = entries[from]
-    if (current.length == 0) upto = from + 1
-    else upto = from + +current[0][0].length
-  }
-  $: [zh_html, hv_html] = render(hanviet, from, upto)
+  $: zh_html = render_zh(hanviet, from, upto)
+  $: hv_html = render_hv(hanviet, from, upto)
 
   async function lookupTerms(input) {
     const url = `_lookup?input=${input}&dname=${dname}`
@@ -79,13 +147,27 @@
     const data = await res.json()
 
     entries = data.entries
-    hanviet = parse_content(data.hanviet)
+    hanviet = parse_content(data.hanviet)[0]
+    updateFocus()
+  }
+
+  function updateFocus() {
+    if (entries.length < from) {
+      current = []
+      upto = from + 1
+    } else {
+      current = entries[from]
+
+      if (current.length == 0) upto = from + 1
+      else upto = from + +current[0][0]
+    }
   }
 
   function handleClick(event) {
     const target = event.target
     if (target.nodeName == 'X-Z' || target.nodeName == 'X-V') {
       from = +target.dataset['p']
+      updateFocus()
     }
   }
 
