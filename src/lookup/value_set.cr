@@ -58,7 +58,7 @@ class ValueSet
   # class methods
 
   DIR = File.join("var", "bookdb")
-  FileUtils.mkdir_p(File.join(DIR, "initial"))
+  FileUtils.mkdir_p(File.join(DIR, "_import"))
 
   # file path relative to `DIR`
   def self.path_for(name : String) : String

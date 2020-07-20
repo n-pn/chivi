@@ -40,7 +40,8 @@ rescue err
   File.delete(file)
 end
 
-input.values.each_with_index do |source, idx|
+input = input.values.sort_by(&.weight.-)
+input.each_with_index do |source, idx|
   info = BookRepo.find_or_create(source.title, source.author, fixed: true)
   BookRepo.upsert_info(info)
   BookRepo.update_info(info, source)

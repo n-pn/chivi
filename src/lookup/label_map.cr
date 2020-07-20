@@ -89,7 +89,7 @@ class LabelMap
   # class methods
 
   DIR = File.join("var", "bookdb")
-  FileUtils.mkdir_p(File.join(DIR, "initial", "fixes"))
+  FileUtils.mkdir_p(File.join(DIR, "_import", "fixes"))
 
   def self.path_for(name : String) : String
     File.join(DIR, "#{name}.txt")

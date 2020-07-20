@@ -192,7 +192,7 @@ class OrderMap
   # class methods
 
   DIR = File.join("var", "bookdb")
-  FileUtils.mkdir_p(File.join("indexes", "orders"))
+  FileUtils.mkdir_p(File.join(DIR, "indexes", "orders"))
 
   # file path relative to `DIR`
   def self.path_for(name : String)
