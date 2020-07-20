@@ -1,7 +1,7 @@
 <script context="module">
   export async function preload({ params, query }) {
-    const slug = params.book
-    const url = `_load_book?slug=${slug}`
+    const book_slug = params.book
+    const url = `_load_book?slug=${book_slug}`
     const tab = query.tab || 'overview'
     const page = +(query.page || 1)
 
@@ -10,39 +10,45 @@
 
     if (res.status == 200) {
       let { book } = data
-      let seeds = Object.values(book.seeds).sort((a, b) => a.idx - b.idx)
+      let seed_infos = Object.values(book.seeds).sort((a, b) => a.idx - b.idx)
 
-      const seed = query.seed || (seeds.length > 0 && seeds[0].name) || ''
+      const seed_name =
+        query.seed || (seed_infos.length > 0 && seed_infos[0].name) || ''
 
       const chlists = {}
-      if (tab === 'content' && seed !== '') {
-        const { chlist, mftime } = await loadContent(this.fetch, slug, seed)
+      if (tab === 'content' && seed_name !== '') {
+        const { chlist, mftime } = await loadChlist(
+          this.fetch,
+          book_slug,
+          seed_name,
+          false
+        )
         book = updateLatest(book, seed_name, chlist, mftime)
-        chlists[seed] = chlist
+        chlists[seed_name] = chlist
       }
 
-      return { book, seed, tab, page, chlists }
+      return { book, seed: seed_name, tab, page, chlists }
     }
 
     this.error(res.status, data.msg)
   }
 
-  export function updateLatest(book, seed_name, chlist, mftime) {
-    if (list.length == 0) return book
-    const latest = list[list.length - 1]
+  export function updateLatest(book_info, seed_name, chlist, mftime) {
+    if (chlist.length == 0) return book_info
+    const latest = chlist[chlist.length - 1]
 
-    const seed = book[seed_name]
-    if (!seed) return book
+    const seed_info = book_info[seed_name]
+    if (!seed_info) return book_info
 
-    seed.latest = latest
-    seed.mftime = mftime
+    seed_info.latest = latest
+    seed_info.mftime = mftime
 
-    if (book.mftime < mftime) book.mftime = mftime
-    return book
+    if (book_info.mftime < mftime) book_info.mftime = mftime
+    return book_info
   }
 
-  export async function loadContent(api, slug, seed, reload = false) {
-    const url = `_get_chaps?slug=${slug}&seed=${seed}&reload=${reload}`
+  export async function loadChlist(api, book_slug, seed_name, reload = false) {
+    const url = `_get_chaps?slug=${book_slug}&seed=${seed_name}&reload=${reload}`
 
     try {
       const res = await api(url)
@@ -117,7 +123,7 @@
     if (reload == false && chlists[seed]) return
 
     loading = true
-    const { chlist, mftime } = await loadContent(fetch, book.slug, seed, reload)
+    const { chlist, mftime } = await loadChlist(fetch, book.slug, seed, reload)
     loading = false
 
     chlists[seed] = chlist

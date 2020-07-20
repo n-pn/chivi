@@ -125,7 +125,6 @@ class MapRemote
   end
 
   def qualified?(ubid : String, author : String)
-    return true if @seed == "hetushu" || @seed == "rengshu"
     return true if @existed.includes?(ubid)
     OrderMap.top_authors.has_key?(author)
   end

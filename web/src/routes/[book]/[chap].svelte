@@ -218,7 +218,7 @@
     // console.log(`reloading page with mode: ${mode}`)
 
     pageReloading = true
-    const data = await load_chapter(
+    const data = await load_text(
       window.fetch,
       book_slug,
       seed_name,
