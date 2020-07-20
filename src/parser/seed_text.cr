@@ -1,3 +1,5 @@
+require "myhtml"
+require "colorize"
 require "file_utils"
 
 require "../common/file_util"
@@ -87,21 +89,21 @@ class SeedText
   def parse_title!
     case @seed
     when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge", "69shu"
-      inner_text("h1")
+      title_text("h1")
     when "zhwenpg"
-      inner_text("h2")
+      title_text("h2")
     when "hetushu"
-      inner_text("#content .h2")
+      title_text("#content .h2")
     when "duokan8"
-      inner_text("#read-content > h2").sub(/^章节目录\s*/, "")
+      title_text("#read-content > h2").sub(/^章节目录\s*/, "")
     else
       raise "- unknown seed."
     end
   end
 
-  private def inner_text(query : String)
+  private def title_text(query : String)
     return "" unless node = @doc.css(query).first?
-    TextUtil.clean_html(node.inner_text).strip
+    clean_text(node.inner_text)
   end
 
   def parse_paras!
@@ -139,7 +141,7 @@ class SeedText
     lines.shift if title.includes?(lines[0])
     lines.update(-1, &.sub("(本章完)", ""))
 
-    lines.map! { |line| TextUtil.clean_html(line).strip }.reject!(&.empty?)
+    lines.map! { |line| clean_text(line) }.reject(&.empty?)
   end
 
   private def parse_hetushu_paras!
@@ -158,9 +160,17 @@ class SeedText
         ord -= jmp
       end
 
-      res[ord] = node.inner_text(deep: false)
+      res[ord] = node.inner_text(deep: false).strip
     end
 
     res
   end
+
+  private def clean_text(input)
+    input = TextUtil.clean_html(input)
+    input = TextUtil.fix_spaces(input)
+    input.strip
+  end
 end
+
+# pp TextUtil.clean_html("    三位大儒默契的没有接，而是彼此交换眼神。").strip
