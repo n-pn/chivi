@@ -16,6 +16,7 @@
     const params = {}
     if (page > 1) params.page = page
     if (query.order !== 'access') params.order = query.order
+    if (query.genre) params.genre = query.genre
     // if (query.anchor) params.anchor = query.anchor
 
     const opts = Object.entries(params)
@@ -174,8 +175,8 @@
     z-index: 1;
 
     img {
-      width: 100%;
-      max-height: 100%;
+      min-width: 100%;
+      max-height: 13.5rem;
       object-fit: cover;
       @include radius();
     }

@@ -15,8 +15,7 @@
       mode
     )
 
-    const content = parseContent(data.content)
-    return { ...data, content }
+    return data
   }
 
   async function load_text(fetch, book_slug, seed_name, chap_scid, mode = 0) {
@@ -32,12 +31,6 @@
       this.error(500, err.message)
     }
   }
-
-  export function parseContent(body) {
-    return body
-      .split('\n')
-      .map((line) => line.split('ǁ').map((x) => x.split('¦')))
-  }
 </script>
 
 <script>
@@ -49,8 +42,8 @@
   import Upsert from '$layout/Upsert.svelte'
 
   import relative_time from '$utils/relative_time'
-  import render_convert from '$utils/render_convert'
   import read_selection from '$utils/read_selection'
+  import { render_convert, parse_content } from '$utils/render_convert'
 
   export let book_ubid = ''
   export let book_name = ''
@@ -69,7 +62,8 @@
   export let next_url = ''
   export let curr_url = ''
 
-  export let content = []
+  export let content = ''
+  $: lines = parse_content(content)
 
   let lineOnHover = 0
   let lineOnFocus = -1
@@ -177,7 +171,7 @@
     if (elemOnFocus) elemOnFocus.classList.remove('_active')
 
     lineOnFocus = idx
-    lookupLine = content[idx].map((x) => x[0]).join('')
+    lookupLine = lines[idx].map((x) => x[0]).join('')
 
     elemOnFocus = target
     elemOnFocus.classList.add('_active')
@@ -230,7 +224,7 @@
       mode
     )
 
-    content = parseContent(data.content)
+    lines = parse_content(data.content)
     chap_time = data.chap_time
     pageReloading = false
   }
@@ -432,7 +426,7 @@
   </nav>
 
   <article class="convert" class:_reload={pageReloading}>
-    {#each content as line, idx}
+    {#each lines as line, idx}
       <div
         class="line"
         class:_focus={idx == lineOnFocus}

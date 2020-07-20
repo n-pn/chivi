@@ -13,7 +13,13 @@ function escape_html(str) {
   return str.replace(/[&<>]/g, replace_tag)
 }
 
-export default function render_convert(tokens, mode = 0, wrap = null) {
+export function parse_content(body) {
+  return body
+    .split('\n')
+    .map((line) => line.split('ǁ').map((x) => x.split('¦')))
+}
+
+export function render_convert(tokens, mode = 0, wrap = null) {
   let res = ''
   let idx = 0
   let pos = 0

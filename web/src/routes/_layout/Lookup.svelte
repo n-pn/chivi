@@ -48,23 +48,23 @@
 </script>
 
 <script>
+  import { parse_content } from '$utils/render_convert'
   import MIcon from '$mould/MIcon.svelte'
 
-  export let line = ''
-  export let from = 0
-  export let dict = 'tong-hop'
+  export let input = ''
+  export let dname = 'tong-hop'
 
   export let active = false
   export let on_top = false
 
+  export let from = 0
   let upto = from + 1
 
   let hanviet = []
   let entries = []
   let current = []
 
-  $: if (line !== '') loadHanviet(line)
-  $: if (line !== '') lookupTerms(line)
+  $: if (input !== '') lookupTerms(input)
 
   $: if (entries.length > from) {
     current = entries[from]
@@ -73,25 +73,13 @@
   }
   $: [zh_html, hv_html] = render(hanviet, from, upto)
 
-  async function loadHanviet(text) {
-    const url = `/api/convert?type=hanviet`
-    const res = await fetch(url, {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ text }),
-    })
-    const data = await res.json()
-    hanviet = data[0]
-  }
-
-  async function lookupTerms(line) {
-    const url = `/api/lookup?line=${line}&dict=${dict}`
+  async function lookupTerms(input) {
+    const url = `_lookup?input=${input}&dname=${dname}`
     const res = await fetch(url)
     const data = await res.json()
 
-    entries = data
+    entries = data.entries
+    hanviet = parse_content(data.hanviet)
   }
 
   function handleClick(event) {
@@ -114,50 +102,6 @@
     return res.join('; ')
   }
 </script>
-
-<svelte:window on:keydown={handleKeypress} />
-
-<aside class:_active={active}>
-  <header>
-    <h2>Giải nghĩa</h2>
-
-    <button on:click={() => (active = false)}>
-      <MIcon class="m-icon" name="x" />
-    </button>
-  </header>
-
-  <section class="lookup">
-    <div class="source _zh" on:click={handleClick} lang="zh">
-      {@html zh_html}
-    </div>
-
-    <div class="source _hv" on:click={handleClick}>
-      {@html hv_html}
-    </div>
-
-    {#each current as [word, entries]}
-      <div class="entry">
-        <h3 class="word" lang="zh">{word}</h3>
-        {#each Object.entries(entries) as [name, items]}
-          {#if items.length > 0}
-            <div class="item">
-              <h4 class="name">{name}</h4>
-              {#if name == 'vietphrase'}
-                <p class="viet">
-                  {@html renderVietphrase(items)}
-                </p>
-              {:else}
-                {#each items as line}
-                  <p class="term">{line}</p>
-                {/each}
-              {/if}
-            </div>
-          {/if}
-        {/each}
-      </div>
-    {/each}
-  </section>
-</aside>
 
 <style lang="scss">
   $sidebar-width: 30rem;
@@ -323,3 +267,47 @@
     // margin-top: 0.25rem;
   }
 </style>
+
+<svelte:window on:keydown={handleKeypress} />
+
+<aside class:_active={active}>
+  <header>
+    <h2>Giải nghĩa</h2>
+
+    <button on:click={() => (active = false)}>
+      <MIcon class="m-icon" name="x" />
+    </button>
+  </header>
+
+  <section class="lookup">
+    <div class="source _zh" on:click={handleClick} lang="zh">
+      {@html zh_html}
+    </div>
+
+    <div class="source _hv" on:click={handleClick}>
+      {@html hv_html}
+    </div>
+
+    {#each current as [size, entries]}
+      <div class="entry">
+        <h3 class="word" lang="zh">{input.substr(from, size)}</h3>
+        {#each Object.entries(entries) as [name, items]}
+          {#if items.length > 0}
+            <div class="item">
+              <h4 class="name">{name}</h4>
+              {#if name == 'vietphrase'}
+                <p class="viet">
+                  {@html renderVietphrase(items)}
+                </p>
+              {:else}
+                {#each items as line}
+                  <p class="term">{line}</p>
+                {/each}
+              {/if}
+            </div>
+          {/if}
+        {/each}
+      </div>
+    {/each}
+  </section>
+</aside>
