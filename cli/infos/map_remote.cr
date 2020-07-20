@@ -64,7 +64,7 @@ class MapRemote
 
   def initialize(@seed : String, @type = 0)
     @existed = Set(String).new(BookInfo.ubids)
-    @sitemap = LabelMap.get_or_create("sites/#{@seed}")
+    @sitemap = LabelMap.load("sources/#{@seed}")
 
     @crawled = {} of String => String
     @sitemap.each do |key, val|

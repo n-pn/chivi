@@ -191,8 +191,8 @@ class OrderMap
 
   # class methods
 
-  DIR = File.join("var", "lookup", "orders")
-  FileUtils.mkdir_p(DIR)
+  DIR = File.join("var", "bookdb")
+  FileUtils.mkdir_p(File.join("indexes", "orders"))
 
   # file path relative to `DIR`
   def self.path_for(name : String)
@@ -243,11 +243,11 @@ class OrderMap
     CACHE.each_value { |map| map.save! }
   end
 
-  class_getter top_authors : OrderMap { preload("top_authors") }
-  class_getter book_access : OrderMap { preload("book_access") }
-  class_getter book_update : OrderMap { preload("book_update") }
-  class_getter book_weight : OrderMap { preload("book_weight") }
-  class_getter book_rating : OrderMap { preload("book_rating") }
+  class_getter top_authors : OrderMap { preload("_import/top_authors") }
+  class_getter book_access : OrderMap { preload("indexes/orders/book_access") }
+  class_getter book_update : OrderMap { preload("indexes/orders/book_update") }
+  class_getter book_weight : OrderMap { preload("indexes/orders/book_weight") }
+  class_getter book_rating : OrderMap { preload("indexes/orders/book_rating") }
 end
 
 # test = OrderMap.new("tmp/order_map.txt", false)

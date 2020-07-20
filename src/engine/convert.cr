@@ -2,7 +2,7 @@ require "../_utils/han_to_int"
 require "../_utils/normalize"
 
 require "../dictdb/trie_dict"
-require "../bookdb/chap_util"
+require "../common/chap_util"
 require "./cv_data"
 
 module Convert
@@ -24,7 +24,7 @@ module Convert
     res
   end
 
-  TITLE_RE = /^(第([零〇一二两三四五六七八九十百千]+|\d+)([集卷章节幕回]))([,.:\s]*)(.*)$/
+  TITLE_RE = /^(第?([零〇一二两三四五六七八九十百千]+|\d+)([集卷章节幕回]))([,.:\s]*)(.*)$/
 
   def cv_title(input : String, *dicts : TrieDict)
     res = CvData.new
@@ -45,8 +45,12 @@ module Convert
         end
       end
 
-      res.concat(cv_plain(label, *dicts)) unless label.empty?
-      res << CvNode.new("", " - ", 0) unless title.empty?
+      if label.empty?
+        res << CvNode.new("", ": ", 0) unless title.empty?
+      else
+        res.concat(cv_plain(label, *dicts))
+        res << CvNode.new("", " - ", 0) unless title.empty?
+      end
     end
 
     unless title.empty?

@@ -48,6 +48,7 @@ class CvNode
   end
 
   def unchanged?
+    return false if @key == " "
     @key == @val
   end
 

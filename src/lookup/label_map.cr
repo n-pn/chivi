@@ -88,8 +88,8 @@ class LabelMap
 
   # class methods
 
-  DIR = File.join("var", "lookup", "labels")
-  FileUtils.mkdir_p(DIR)
+  DIR = File.join("var", "bookdb")
+  FileUtils.mkdir_p(File.join(DIR, "initial", "fixes"))
 
   def self.path_for(name : String) : String
     File.join(DIR, "#{name}.txt")
@@ -133,16 +133,16 @@ class LabelMap
     CACHE.each_value { |item| item.save! }
   end
 
-  class_getter map_slug : LabelMap { preload("map_slug") }
+  class_getter book_slug : LabelMap { preload("indexes/book_slug") }
 
-  class_getter zh_title : LabelMap { preload("fixes/zh_title") }
-  class_getter vi_title : LabelMap { preload("fixes/vi_title") }
+  class_getter zh_author : LabelMap { preload("_import/fixes/zh_author") }
+  class_getter vi_author : LabelMap { preload("_import/fixes/vi_author") }
 
-  class_getter zh_author : LabelMap { preload("fixes/zh_author") }
-  class_getter vi_author : LabelMap { preload("fixes/vi_author") }
+  class_getter zh_title : LabelMap { preload("_import/fixes/zh_title") }
+  class_getter vi_title : LabelMap { preload("_import/fixes/vi_title") }
 
-  class_getter zh_genre : LabelMap { preload("fixes/zh_genre") }
-  class_getter vi_genre : LabelMap { preload("fixes/vi_genre") }
+  class_getter zh_genre : LabelMap { preload("_import/fixes/zh_genre") }
+  class_getter vi_genre : LabelMap { preload("_import/fixes/vi_genre") }
 end
 
 # test = LabelMap.new("tmp/label_map.txt")

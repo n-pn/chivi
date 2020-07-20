@@ -1,4 +1,4 @@
-require "../../src/engine/lexicon"
+require "../../src/dictdb/trie_dict"
 require "../../src/engine/convert"
 
 text = "第十三集 龙章凤仪 第一章 屠龙之术
@@ -12,13 +12,13 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-DICTS = Lexicon.for_convert("tong-hop")
+DICTS = TrieDict.for_convert("tong-hop")
 
 def translate(input : String, title = false)
   if title
-    Convert.title(input, DICTS).vi_text
+    Convert.cv_title(input, *DICTS).vi_text
   else
-    Convert.plain(input, DICTS).vi_text
+    Convert.cv_plain(input, *DICTS).vi_text
   end
 end
 
@@ -31,5 +31,9 @@ puts translate("第一章 屠龙之术", true)
 puts translate("一, 屠龙之术", true)
 puts translate("1, 屠龙之术", true)
 puts translate("第十三集 龙章凤仪 第一章屠龙之术", true)
+puts translate("第十三集 龙章凤仪", true)
 puts translate("1第一章")
+puts translate("一. 屠龙之术")
 puts translate("朥负已定")
+
+pp Convert.cv_title("1, 屠龙之术", *DICTS)

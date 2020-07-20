@@ -63,7 +63,7 @@ class ChapText
 
   # class methods
 
-  DIR = File.join("var", "chapdb", "files")
+  DIR = File.join("var", "bookdb", "chfiles")
   FileUtils.mkdir_p(DIR)
 
   def self.path_for(ubid : String, seed : String)

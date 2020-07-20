@@ -153,8 +153,8 @@ class TokenMap
   end
 
   # class methods
-  DIR = File.join("var", "lookup", "tokens")
-  FileUtils.mkdir_p(DIR)
+  DIR = File.join("var", "bookdb")
+  FileUtils.mkdir_p(File.join(DIR, "indexes", "tokens"))
 
   # file path relative to `DIR`
   def self.path_for(name : String) : String
@@ -205,15 +205,15 @@ class TokenMap
     CACHE.each_value { |map| map.save! }
   end
 
-  class_getter zh_title : TokenMap { preload("zh_title") }
-  class_getter hv_title : TokenMap { preload("hv_title") }
-  class_getter vi_title : TokenMap { preload("vi_title") }
+  class_getter zh_author : TokenMap { preload("indexes/tokens/zh_author") }
+  class_getter vi_author : TokenMap { preload("indexes/tokens/vi_author") }
 
-  class_getter zh_author : TokenMap { preload("zh_author") }
-  class_getter vi_author : TokenMap { preload("vi_author") }
+  class_getter zh_title : TokenMap { preload("indexes/tokens/zh_title") }
+  class_getter vi_title : TokenMap { preload("indexes/tokens/vi_title") }
+  class_getter hv_title : TokenMap { preload("indexes/tokens/hv_title") }
 
-  class_getter vi_genres : TokenMap { preload("vi_genres") }
-  class_getter vi_tags : TokenMap { preload("vi_tags") }
+  class_getter vi_genres : TokenMap { preload("indexes/tokens/vi_genres") }
+  class_getter vi_tags : TokenMap { preload("indexes/tokens/vi_tags") }
 end
 
 # test = TokenMap.new("tmp/token_map.txt")

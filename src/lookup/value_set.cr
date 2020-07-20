@@ -57,8 +57,8 @@ class ValueSet
 
   # class methods
 
-  DIR = File.join("var", "lookup", "values")
-  FileUtils.mkdir_p(DIR)
+  DIR = File.join("var", "bookdb")
+  FileUtils.mkdir_p(File.join(DIR, "initial"))
 
   # file path relative to `DIR`
   def self.path_for(name : String) : String
@@ -109,6 +109,6 @@ class ValueSet
     CACHE.each_value { |item| item.save! }
   end
 
-  class_getter skip_titles : ValueSet { preload("skip-titles") }
-  class_getter skip_genres : ValueSet { preload("skip-genres") }
+  class_getter skip_titles : ValueSet { preload("skip_titles") }
+  class_getter skip_genres : ValueSet { preload("skip_genres") }
 end

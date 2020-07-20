@@ -136,7 +136,7 @@ class ChapList
 
   # class methods
 
-  DIR = File.join("var", "chapdb", "lists")
+  DIR = File.join("var", "bookdb", "chlists")
   FileUtils.mkdir_p(DIR)
 
   # creat new folder inside `DIR` for this book

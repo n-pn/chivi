@@ -80,6 +80,7 @@ module TextUtil
   end
 end
 
+# puts TextUtil.tokenize("Diablo Chi Hủy Diệt")
 # puts TextUtil.split_words("abc")
 # puts TextUtil.split_words("重返2008年")
 # puts TextUtil.split_words("Trọng phản 2008 niên")

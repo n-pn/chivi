@@ -14,7 +14,7 @@ module BookRepo
   delegate get!, to: BookInfo
 
   def find(slug : String)
-    return unless ubid = LabelMap.map_slug.fetch(slug)
+    return unless ubid = LabelMap.book_slug.fetch(slug)
     BookInfo.get(ubid)
   end
 
@@ -123,7 +123,8 @@ module BookRepo
     title1_slug = TextUtil.slugify(info.vi_title)
     full_slug_1 = "#{title1_slug}--#{author_slug}"
 
-    info.slug = check_slug(info, title1_slug) || check_slug(info, full_slug_1)
+    book_slug = check_slug(info, title1_slug) || check_slug(info, full_slug_1)
+    info.slug = book_slug || check_slug(info, "#{title1_slug}-#{info.ubid}").not_nil!
 
     title2_slug = TextUtil.slugify(info.hv_title)
     full_slug_2 = "#{title2_slug}--#{author_slug}"
@@ -171,10 +172,10 @@ module BookRepo
   end
 
   def check_slug(info : BookInfo, slug : String) : String?
-    if ubid = LabelMap.map_slug.fetch(slug)
+    if ubid = LabelMap.book_slug.fetch(slug)
       return if ubid != info.ubid
     else
-      LabelMap.map_slug.upsert!(slug, info.ubid)
+      LabelMap.book_slug.upsert!(slug, info.ubid)
       slug
     end
   end
