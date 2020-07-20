@@ -137,6 +137,7 @@
   let current = []
 
   $: if (input !== '') lookupTerms(input)
+  $: if (from < entries.length) updateFocus()
 
   $: zh_html = render_zh(hanviet, from, upto)
   $: hv_html = render_hv(hanviet, from, upto)
@@ -148,7 +149,7 @@
 
     entries = data.entries
     hanviet = parse_content(data.hanviet)[0]
-    updateFocus()
+    from = from
   }
 
   function updateFocus() {
@@ -167,7 +168,6 @@
     const target = event.target
     if (target.nodeName == 'X-Z' || target.nodeName == 'X-V') {
       from = +target.dataset['p']
-      updateFocus()
     }
   }
 
