@@ -26,10 +26,21 @@ module TextUtil
   end
 
   # don't downcase extra characters
-  def capitalize(str : String) : String
+  def capitalize(input : String) : String
     # TODO: handle punctuation?
-    return str if str.empty?
-    str[0].upcase + str[1..]
+    return input if input.blank?
+    String.build do |io|
+      capped = false
+      input.each_char do |char|
+        if capped
+          io << char
+        else
+          upcase = char.upcase
+          capped = upcase != char
+          io << upcase
+        end
+      end
+    end
   end
 
   # split input to words
