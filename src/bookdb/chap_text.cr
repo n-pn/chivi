@@ -40,6 +40,7 @@ class ChapText
   end
 
   def save!(file : String = @file) : Void
+    @time = Time.utc.to_unix_ms
     FileUtils.mkdir_p(File.dirname(file))
     FileUtil.save(file, LABEL, @data.size) { |io| @data.to_s(io) }
   end

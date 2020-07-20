@@ -48,6 +48,7 @@
   import Lookup from '$layout/Lookup.svelte'
   import Upsert from '$layout/Upsert.svelte'
 
+  import relative_time from '$utils/relative_time'
   import render_convert from '$utils/render_convert'
   import read_selection from '$utils/read_selection'
 
@@ -58,8 +59,11 @@
   export let ch_total = 1
   export let ch_index = 1
 
-  export let seed_name
-  export let chap_scid
+  export let seed_name = ''
+  export let chap_scid = ''
+  export let chap_time = 0
+  export let chap_title = ''
+  export let chap_label = ''
 
   export let prev_url = ''
   export let next_url = ''
@@ -227,6 +231,7 @@
     )
 
     content = parseContent(data.content)
+    chap_time = data.chap_time
     pageReloading = false
   }
 </script>
@@ -252,8 +257,6 @@
 
       @include apply(font-size, $font-sizes);
       @include apply(line-height, $line-heights);
-
-      @include border($sides: bottom);
     }
 
     :global(p) {
@@ -328,10 +331,41 @@
     animation-iteration-count: infinite;
     animation-timing-function: linear;
   }
+
+  .navi {
+    // display: flex;
+    // flex-wrap: wrap;
+    margin: 0.375rem 0;
+    line-height: 1.5rem;
+    padding-bottom: 0.375rem;
+    @include border($sides: bottom);
+    @include clearfix;
+
+    .crumb {
+      // float: left;
+      @include fgcolor(neutral, 6);
+    }
+
+    .split {
+      // float: left;
+      // margin: 0 0.25rem;
+      @include fgcolor(neutral, 5);
+    }
+
+    a.crumb:hover {
+      @include fgcolor(primary, 6);
+    }
+
+    .mtime {
+      float: right;
+      font-style: italic;
+      @include fgcolor(neutral, 5);
+    }
+  }
 </style>
 
 <svelte:head>
-  <title>{render_convert(content[0])} - {book_name} - Chivi</title>
+  <title>{chap_label} - {chap_title} - {book_name} - Chivi</title>
   <meta property="og:url" content="{book_slug}/{curr_url}" />
 </svelte:head>
 
@@ -381,6 +415,21 @@
     on:click={triggerLookupSidebar}>
     <MIcon class="m-icon _compass" name="compass" />
   </button>
+
+  <nav class="navi">
+    <a href="/" class="crumb">Chivi</a>
+    <span class="split">&gt;</span>
+    <a href="/{book_slug}" class="crumb">{book_name}</a>
+    <span class="split">&gt;</span>
+    <span class="crumb">{chap_label}</span>
+    <span class="split">-</span>
+    <span class="crumb">{chap_title}</span>
+
+    <span class="mtime">
+      <span>Cập nhật:</span>
+      <span>{relative_time(chap_time)}</span>
+    </span>
+  </nav>
 
   <article class="convert" class:_reload={pageReloading}>
     {#each content as line, idx}

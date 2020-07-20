@@ -64,7 +64,7 @@ class MapRemote
 
   def initialize(@seed : String, @type = 0)
     @existed = Set(String).new(BookInfo.ubids)
-    @sitemap = LabelMap.get_or_create("#{@seed}-infos")
+    @sitemap = LabelMap.get_or_create("sites/#{@seed}")
 
     @crawled = {} of String => String
     @sitemap.each do |key, val|
@@ -144,10 +144,9 @@ class MapRemote
     BookRepo.upsert_info(info)
     BookRepo.update_info(info, remote)
 
-    info.save! if info.changed?
+    return unless info.changed?
 
     expiry = Time.unix_ms(info.mftime)
-
     if ChapList.outdated?(info.ubid, @seed, expiry)
       remote = SeedInfo.init(@seed, sbid, expiry: expiry, freeze: true)
 

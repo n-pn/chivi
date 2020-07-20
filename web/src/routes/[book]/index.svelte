@@ -10,10 +10,8 @@
 
     if (res.status == 200) {
       let { book } = data
-      let seed_infos = Object.values(book.seeds).sort((a, b) => a.idx - b.idx)
 
-      const seed_name =
-        query.seed || (seed_infos.length > 0 && seed_infos[0].name) || ''
+      const seed_name = query.seed || book.seed_names[0] || ''
 
       const chlists = {}
       if (tab === 'content' && seed_name !== '') {
@@ -37,13 +35,10 @@
     if (chlist.length == 0) return book_info
     const latest = chlist[chlist.length - 1]
 
-    const seed_info = book_info[seed_name]
-    if (!seed_info) return book_info
-
-    seed_info.latest = latest
-    seed_info.mftime = mftime
-
+    book.seed_latests[seed_name] = latest
+    book.seed_mftimes[seed_name] = mftime
     if (book_info.mftime < mftime) book_info.mftime = mftime
+
     return book_info
   }
 
@@ -102,11 +97,9 @@
   export let tab = 'overview'
   export let desc = true
 
-  let chaps = []
-  $: chaps = chlists[seed] || []
-
-  $: sources = Object.keys(book.seeds)
-  $: hasContent = sources.length > 0
+  let chlist = []
+  $: chlist = chlists[seed] || []
+  $: hasContent = book.seed_names.length > 0
 
   $: if (tab == 'content') switchSite(seed, false)
 
@@ -137,20 +130,16 @@
     tab = newTab
   }
 
-  function latestLink(latest) {
+  function latestLink(seed_name) {
+    const latest = book.seed_latests[seed]
     if (!latest) return `${book.slug}?seed=${seed}&refresh=true`
     return `/${book.slug}/${latest.url_slug}-${seed}-${latest.csid}`
   }
 
-  function latestText(latest) {
+  function latestText(seed_name) {
+    const latest = book.seed_latests[seed_name]
     if (!latest) return '...'
     return latest.vi_title
-  }
-
-  function seedMftime(seed_name) {
-    const seed_info = book.seeds[seed_name]
-    if (!seed_info) return 0
-    return seed_info.mftime
   }
 </script>
 
@@ -637,25 +626,25 @@
           </thead>
 
           <tbody>
-            {#each Object.values(book.seeds) as source}
+            {#each book.seed_names as name}
               <tr>
                 <td class="latest-seed">
-                  <span class="latest-text">{source.name}</span>
+                  <span class="latest-text">{name}</span>
                 </td>
                 <td class="latest-chap">
-                  <a class="latest-link" href={latestLink(source.latest)}>
-                    {latestText(source.latest)}
+                  <a class="latest-link" href={latestLink(name)}>
+                    {latestText(name)}
                   </a>
                 </td>
                 <td class="latest-time">
                   <span
                     class="latest-text _update"
-                    class:_loading={seed == source.name && loading}
-                    on:click={() => switchSite(source.name, true)}>
-                    {#if seed == source.name && loading}
+                    class:_loading={seed == name && loading}
+                    on:click={() => switchSite(name, true)}>
+                    {#if seed == name && loading}
                       <MIcon class="m-icon" name="loader" />
                     {:else}
-                      <span>{relative_time(source.mftime)}</span>
+                      <span>{relative_time(book.seed_mftimes[seed])}</span>
                     {/if}
                   </span>
                 </td>
@@ -669,14 +658,14 @@
     <div class="meta-tab" class:_active={tab == 'content'}>
       {#if hasContent}
         <div class="sources" data-active={seed}>
-          {#each Object.keys(book.seeds) as source}
+          {#each book.seed_names as name}
             <a
               class="source-item"
-              class:_active={seed === source}
-              href="/{book.slug}?seed={source}"
-              on:click|preventDefault={() => switchSite(source, false)}
+              class:_active={seed === name}
+              href="/{book.slug}?seed={name}"
+              on:click|preventDefault={() => switchSite(name, false)}
               rel="nofollow">
-              {source}
+              {name}
             </a>
           {/each}
         </div>
@@ -695,7 +684,7 @@
             {:else}
               <MIcon class="m-icon" name="clock" />
             {/if}
-            <span>{relative_time(seedMftime(seed))}</span>
+            <span>{relative_time(book.seed_mftimes[seed])}</span>
           </button>
 
           <button class="m-button _text u-fr" on:click={() => (desc = !desc)}>
@@ -704,14 +693,14 @@
             {:else}
               <MIcon class="m-icon" name="arrow-up" />
             {/if}
-            <span>{chaps.length} chương</span>
+            <span>{chlist.length} chương</span>
           </button>
         </h3>
 
         <ChapList
           bslug={book.slug}
           sname={seed}
-          {chaps}
+          chaps={chlist}
           focus={page}
           reverse={desc} />
       {:else}

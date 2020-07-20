@@ -15,7 +15,7 @@ class MapZhwenpg
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-    @sitemap = LabelMap.get_or_create("zhwenpg-infos")
+    @sitemap = LabelMap.get_or_create("sites/zhwenpg")
     @checked = Set(String).new
   end
 
@@ -121,8 +121,11 @@ class MapZhwenpg
     mftime = parse_time(rows[3].css(".fontime").first.inner_text)
     latest = latest_chap(rows[3].css("a[target=_blank]").first)
 
-    seed = info.add_seed("zhwenpg", sbid, 0)
-    BookRepo.update_seed(info, seed, latest, mftime)
+    info.add_seed("zhwenpg")
+    info.set_seed_sbid("zhwenpg", sbid)
+    info.set_seed_type("zhwenpg", 0)
+
+    BookRepo.update_seed(info, "zhwenpg", latest, mftime)
 
     info.save! if info.changed?
 

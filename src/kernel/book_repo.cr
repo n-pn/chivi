@@ -20,11 +20,19 @@ module BookRepo
 
   def blacklist?(info : BookInfo)
     # TODO: check by both author and book title
-    ValueSet.skip_titles.includes?(info.zh_title)
+    blacklist?(info.zh_title)
+  end
+
+  def blacklist?(title : String)
+    ValueSet.skip_titles.includes?(title)
   end
 
   def whitelist?(info : BookInfo)
-    OrderMap.top_authors.has_key?(info.zh_author)
+    whitelist?(info.zh_author)
+  end
+
+  def whitelist?(author : String)
+    OrderMap.top_authors.has_key?(author)
   end
 
   def find_or_create(title : String, author : String, fixed = false)
@@ -83,16 +91,21 @@ module BookRepo
   end
 
   def update_seed(info : BookInfo, source : SeedInfo, force = false)
-    seed = info.add_seed(source.seed, source.sbid, source.type)
-    update_seed(info, seed, source.latest, source.mftime)
+    if info.seed_sbids[source.seed]? != source.sbid
+      return if info.seed_mftimes.fetch(source.seed, 0_i64) > source.mftime
+      info.set_seed_sbid(source.seed, source.sbid)
+    end
+
+    info.add_seed(source.seed)
+    info.set_seed_type(source.seed, source.type)
+    update_seed(info, source.seed, source.latest, source.mftime)
   end
 
-  def update_seed(info : BookInfo, seed : BookSeed, latest : ChapInfo, mftime : Int64)
+  def update_seed(info : BookInfo, seed_name : String, latest : ChapInfo, mftime : Int64)
     latest = ChapRepo::Utils.convert(latest, info.ubid)
-    seed.update_latest(latest, mftime)
-    info.update_seed(seed)
-
-    set_mftime(info, seed.mftime)
+    info.set_seed_latest(seed_name, latest, mftime)
+    mftime = info.seed_mftimes[seed_name]
+    set_mftime(info, mftime)
   end
 
   def upsert_info(info : BookInfo, force = false)

@@ -4,7 +4,7 @@ require "file_utils"
 require "../common/json_data"
 require "../common/uuid_util"
 
-require "./book_seed"
+require "./chap_info"
 
 class BookInfo
   include JsonData
@@ -48,7 +48,11 @@ class BookInfo
   property view_count = 0_i32
   property read_count = 0_i32
 
-  property seeds = {} of String => BookSeed
+  property seed_names = [] of String
+  property seed_sbids = {} of String => String
+  property seed_types = {} of String => Int32
+  property seed_mftimes = {} of String => Int64
+  property seed_latests = {} of String => ChapInfo
 
   def initialize
   end
@@ -116,21 +120,53 @@ class BookInfo
     self.weight = weight
   end
 
+  SEEDS = {
+    "hetushu", "jx_la", "rengshu",
+    "xbiquge", "nofff", "duokan8",
+    "paoshu8", "69shu", "zhwenpg",
+  }
+
   # create new seed if not existed
-  def add_seed(name : String, sbid = "", type = 0)
-    @seeds[name] ||= BookSeed.new(name, sbid, type)
+  def add_seed(seed_name : String)
+    return if @seed_names.includes?(seed_name)
+    @changes += 1
+    @seed_names << seed_name
+    @seed_names.sort_by! { |name| SEEDS.index(name) || -1 }
   end
 
-  # update info from remote seed source
-  def update_seed(seed : BookSeed)
-    update_seed(seed.name, &.update(seed))
+  def set_seed_type(seed_name : String, type : Int32)
+    return if @seed_types[seed_name]? == type
+    @changes += 1
+    @seed_types[seed_name] = type
   end
 
-  def update_seed(name : String, sbid = "", type = 0)
-    seed = add_seed(name, sbid, type)
-    yield seed
-    @changes += seed.reset_changes!
-    seed
+  def set_seed_sbid(seed_name : String, sbid : String)
+    return if @seed_sbids[seed_name]? == sbid
+    @changes += 1
+    @seed_sbids[seed_name] = sbid
+  end
+
+  def set_seed_mftime(seed_name : String, mftime : Int64)
+    return if @seed_mftimes[seed_name]? == mftime
+    @changes += 1
+    @seed_mftimes[seed_name] = mftime
+  end
+
+  def set_seed_latest(seed_name : String, latest : ChapInfo, mftime = 0_i64)
+    old_latest = @seed_latests[seed_name] ||= ChapInfo.new
+    if old_latest.scid != latest.scid
+      old_latest.scid = latest.scid
+
+      if @seed_mftimes[seed_name]? == mftime
+        mftime = Time.utc.to_unix_ms if mftime == @mftime
+      end
+
+      set_seed_mftime(seed_name, mftime)
+    end
+
+    old_latest.inherit(latest)
+    @changes += old_latest.reset_changes!
+    old_latest
   end
 
   # json serialization

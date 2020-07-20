@@ -30,6 +30,7 @@ module Convert
     res = CvData.new
 
     title, label = ChapUtil.split_label(input)
+
     unless label.empty? || label == "正文"
       if match = TITLE_RE.match(label)
         _, group, idx, tag, trash, label = match
@@ -44,10 +45,8 @@ module Convert
         end
       end
 
-      unless label.empty?
-        res.concat(cv_plain(label, *dicts))
-        res << CvNode.new("", " - ", 0) unless title.empty?
-      end
+      res.concat(cv_plain(label, *dicts)) unless label.empty?
+      res << CvNode.new("", " - ", 0) unless title.empty?
     end
 
     unless title.empty?

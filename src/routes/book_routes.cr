@@ -127,8 +127,11 @@ module Server
       book_slug: info.slug,
       book_name: info.vi_title,
 
-      seed_name: seed,
-      chap_scid: curr_chap.scid,
+      seed_name:  seed,
+      chap_time:  chap.time,
+      chap_scid:  curr_chap.scid,
+      chap_title: curr_chap.vi_title,
+      chap_label: curr_chap.vi_label,
 
       ch_index: index + 1,
       ch_total: list.size,

@@ -1,12 +1,8 @@
 require "../../src/kernel/book_repo"
 
-def should_skip?(info : BookInfo, source : YsSerial)
-  if info.yousuu_bid != source.ysid
-    return true if info.crit_count > source.crit_count
-  end
-
-  return true if BookRepo.blacklist?(info)
-  return false if BookRepo.whitelist?(info)
+def should_skip?(source : YsSerial)
+  return true if BookRepo.blacklist?(source.title)
+  return false if BookRepo.whitelist?(source.author)
   source.score < 2.5 && source.addListTotal < 5 && source.commentCount < 10
 end
 
@@ -16,16 +12,40 @@ files = Dir.glob(File.join(DIR, "*.json")).sort_by do |file|
 end
 
 inp_total = inp_count = created = updated = 0
-sitemap = LabelMap.preload!("yousuu-infos")
+sitemap = LabelMap.preload!("sites/yousuu")
+
+input = {} of String => YsSerial
 
 files.each_with_index do |file, idx|
   inp_total += 1
 
   next unless source = YsSerial.load(file)
-  next if source.title.empty? || source.author.empty?
 
-  info = BookRepo.find_or_create(source.title, source.author, fixed: false)
-  sitemap.upsert(source.ysid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}")
+  source.title = BookRepo::Utils.fix_zh_title(source.title)
+  source.author = BookRepo::Utils.fix_zh_author(source.author)
+
+  ubid = UuidUtil.gen_ubid(source.title, source.author)
+  sitemap.upsert(source.ysid, "#{ubid}¦#{source.title}¦#{source.author}")
+
+  next if source.title.empty? || source.author.empty? || should_skip?(source)
+
+  if existed = input[ubid]?
+    next if existed.mftime > source.mftime
+  end
+
+  inp_count += 1
+  input[ubid] = source
+rescue err
+  puts "- <map_yousuu> #{file} err: #{err}".colorize(:red)
+  File.delete(file)
+end
+
+input.values.each_with_index do |source, idx|
+  info = BookRepo.find_or_create(source.title, source.author, fixed: true)
+  BookRepo.upsert_info(info)
+  BookRepo.update_info(info, source)
+
+  next unless info.changed?
 
   if BookInfo.exists?(info.ubid)
     updated += 1
@@ -35,24 +55,10 @@ files.each_with_index do |file, idx|
     color = :cyan
   end
 
-  puts "- <#{idx + 1}/#{files.size}> #{info.zh_title} ".colorize(color)
-
-  next if should_skip?(info, source)
-  inp_count += 1
-
-  BookRepo.upsert_info(info)
-  BookRepo.update_info(info, source)
-
-  next unless info.changed?
+  puts "\n- <#{idx + 1}/#{input.size}> #{info.zh_title} ".colorize(color)
 
   info.save!
-
-  if info.weight >= 2000
-    OrderMap.top_authors.upsert!(info.zh_author, info.weight)
-  end
-rescue err
-  puts "- <map_yousuu> #{file} err: #{err}".colorize(:red)
-  File.delete(file)
+  OrderMap.top_authors.upsert!(info.zh_author, info.weight) if info.weight >= 2000
 end
 
 puts "- <INP> total: #{inp_total}, keeps: #{inp_count} ".colorize.yellow
