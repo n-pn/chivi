@@ -22,9 +22,9 @@ def translate(input : String, title = false)
   end
 end
 
-text.split(/\n+/).each_with_index do |line, idx|
-  puts translate(line, title: idx == 0)
-end
+# text.split(/\n+/).each_with_index do |line, idx|
+#   puts translate(line, title: idx == 0)
+# end
 
 puts translate("第一章", true)
 puts translate("第一章 屠龙之术", true)
@@ -37,3 +37,5 @@ puts translate("一. 屠龙之术")
 puts translate("朥负已定")
 
 pp Convert.cv_title("1, 屠龙之术", *DICTS)
+
+puts translate("第三千七百九十八章 历史的本质就是套娃", true)

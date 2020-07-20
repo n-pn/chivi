@@ -94,7 +94,7 @@ module Server
       halt env, status_code: 404, response: Utils.json_error("Seed not found!")
     end
 
-    BookRepo.bump_access(info)
+    BookRepo.bump_access(info, Time.utc.to_unix_ms)
     BookRepo.inc_counter(info, read: false)
 
     chlist, mftime = fetched
@@ -117,7 +117,7 @@ module Server
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    # BookRepo.bump_access(info)
+    BookRepo.bump_access(info, Time.utc.to_unix_ms)
     BookRepo.inc_counter(info, read: true)
 
     seed = env.params.query["seed"]

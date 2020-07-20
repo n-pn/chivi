@@ -65,8 +65,6 @@ class SeedText
 
   def initialize(@seed : String, html : String)
     @doc = Myhtml::Parser.new(html)
-    @title = parse_title!
-    @paras = parse_paras!
   end
 
   def to_s(io : IO)
@@ -82,6 +80,9 @@ class SeedText
     File.write(path, self)
     puts "- <remote_text> saved to file [#{path}]."
   end
+
+  getter title : String { parse_title! }
+  getter paras : Array(String) { parse_paras! }
 
   def parse_title!
     case @seed
@@ -100,11 +101,7 @@ class SeedText
 
   private def inner_text(query : String)
     return "" unless node = @doc.css(query).first?
-    TextUtil.clean_html(node.inner_text)
-  end
-
-  def paras
-    @paras ||= parse_paras!
+    TextUtil.clean_html(node.inner_text).strip
   end
 
   def parse_paras!
@@ -139,10 +136,10 @@ class SeedText
       lines.map!(&.sub("www.xbiquge.cc", ""))
     end
 
-    lines.shift if @title.includes?(lines[0])
+    lines.shift if title.includes?(lines[0])
     lines.update(-1, &.sub("(本章完)", ""))
 
-    lines.map! { |line| TextUtil.clean_html(line) }.reject!(&.empty?)
+    lines.map! { |line| TextUtil.clean_html(line).strip }.reject!(&.empty?)
   end
 
   private def parse_hetushu_paras!

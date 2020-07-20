@@ -40,7 +40,7 @@ module Kernel
   # 1 => load saved chap_text then convert
   # 2 => fetch text from external hosts then convert
 
-  def load_text(ubid : String, seed : String, sbid : String, scid : String, mode : Int32 = 2)
+  def load_text(ubid : String, seed : String, sbid : String, scid : String, mode : Int32 = 0)
     chap = ChapText.new(ubid, seed, scid, preload: false)
 
     if chap.exists? && mode < 2
