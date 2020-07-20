@@ -16,14 +16,14 @@ module BookRepo::Utils
   end
 
   def fix_zh_title(title : String, author : String = "")
-    title = TextUtil.fix_spaces(title).sub(/\(.+\)\s*$/, "").strip
+    title = TextUtil.fix_spaces(title).sub(/[（\(].+[\)）]\s*$/, "").strip
 
     fix_map = LabelMap.zh_title
     fix_map.fetch("#{title}--#{author}") || fix_map.fetch(title) || title
   end
 
   def fix_zh_author(author : String, title : String = "")
-    author = TextUtil.fix_spaces(author).sub(/\(.+\)|\.QD\s*$/, "").strip
+    author = TextUtil.fix_spaces(author).sub(/[（\(].+[\)）]|\.QD\s*$/, "").strip
 
     fix_map = LabelMap.zh_author
     fix_map.fetch("#{title}--#{author}") || fix_map.fetch(author) || author
