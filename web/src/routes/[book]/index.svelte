@@ -526,7 +526,7 @@
       <div>
         <span class="author">
           <MIcon class="m-icon" name="pen-tool" />
-          <a href="search?kw={book.vi_author}">{book.vi_author}</a>
+          <a href="search?kw={book.vi_author}&type=author">{book.vi_author}</a>
         </span>
         {#each book.vi_genres.slice(0, 3) as genre}
           <span class="genre">

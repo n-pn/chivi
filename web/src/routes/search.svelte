@@ -3,15 +3,16 @@
 
   export async function preload({ query }) {
     const word = (query.kw || '').replace(/\+|-/g, ' ')
-    const page = +(query.pg || '1')
+    const page = +(query.page || '1')
+    const type = query.type || 'fuzzy'
 
     if (word) {
-      const url = `/_list_book?word=${word}&page=${page}&limit=${limit}&order=weight`
+      const url = `/_list_book?word=${word}&page=${page}&limit=${limit}&order=weight&type=${type}`
       const res = await this.fetch(url)
       const data = await res.json()
-      return { word, page, ...data }
+      return { word, page, type, total: data.total, items: data.items }
     } else {
-      return { word, page: 1, total: 0, items: [] }
+      return { word, page: 1, type, total: 0, items: [] }
     }
   }
 </script>
@@ -22,12 +23,19 @@
 
   export let word = ''
   export let page = 1
+  export let type = 'fuzzy'
 
   export let items = []
   export let total = 0
 
   $: offset = (+page - 1) * limit
   $: pmax = Math.floor((+total - 1) / limit) + 1
+
+  function searchUrl(page) {
+    if (page < 1) page = 1
+    if (page > pmax) page = pmax
+    return `search?kw=${word}&page=${page}&type=${type}`
+  }
 </script>
 
 <style lang="scss">
@@ -204,7 +212,7 @@
     <a
       class="m-button _line"
       class:_disable={page == 1}
-      href="search?kw={word}&pg={page > 1 ? +page - 1 : 1}">
+      href={searchUrl(page - 1)}>
       <MIcon name="chevron-left" />
       <span>Trước</span>
     </a>
@@ -212,7 +220,7 @@
     <a
       class="m-button _line _primary"
       class:_disable={page == pmax}
-      href="search?kw={word}&pg={page < pmax ? +page + 1 : pmax}">
+      href={searchUrl(page + 1)}>
       <span>Kế tiếp</span>
       <MIcon name="chevron-right" />
     </a>
