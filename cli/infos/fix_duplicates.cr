@@ -1,8 +1,5 @@
-require "../../src/models/book_info"
-require "../../src/models/chap_list"
-
-require "../../src/lookup/label_map"
-require "../../src/parser/source_util"
+require "../../src/kernel/book_repo"
+require "../../src/kernel/chap_repo"
 
 SITES = {
   "hetushu", "jx_la", "rengshu",
@@ -14,37 +11,31 @@ SITES = {
 UBIDS = Set(String).new
 
 SITES.each do |site|
-  sbid_ubids = LabelMap.load!("sitemaps/#{site}--ubid")
-  sbid_titles = LabelMap.load!("sitemaps/#{site}--title")
-  sbid_authors = LabelMap.load!("sitemaps/#{site}--author")
+  infos = LabelMap.load!("_import/sites/#{site}")
 
-  sbid_ubids.each do |sbid, ubid|
-    next unless title = sbid_titles.fetch(sbid)
-    new_title = SourceUtil.fix_title(title)
+  infos.each do |sbid, info|
+    ubid, title, author = info.split("¦")
+    new_title = BookRepo::Utils.fix_zh_title(title)
 
     if title != new_title
-      puts "- title changed: #{title} -> #{new_title} [#{sbid} - #{ubid}]"
-      sbid_titles.upsert(sbid, new_title)
+      puts "- title: #{title} -> #{new_title} [#{sbid} - #{ubid}]"
       title = new_title
     end
 
-    next unless author = sbid_authors.fetch(sbid)
-    new_author = SourceUtil.fix_author(author, title)
+    new_author = BookRepo::Utils.fix_zh_author(author, title)
 
     if author != new_author
-      puts "- author changed: #{author} -> #{new_author} [#{sbid} - #{ubid}]"
-      sbid_authors.upsert(sbid, new_author)
+      puts "- author: #{author} -> #{new_author} [#{sbid} - #{ubid}]"
       author = new_author
     end
 
-    new_ubid = BookInfo.ubid_for(title, author)
-    sbid_ubids.upsert(sbid, ubid) if ubid != new_ubid
+    new_ubid = UuidUtil.gen_ubid(title, author)
+
+    infos.upsert(sbid, "#{new_ubid}¦#{title}¦#{author}") if ubid != new_ubid
     UBIDS.add(new_ubid)
   end
 
-  sbid_ubids.save!
-  sbid_titles.save!
-  sbid_authors.save!
+  infos.save!
 end
 
 BookInfo.ubids.each do |ubid|
