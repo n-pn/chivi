@@ -4,7 +4,7 @@ require "colorize"
 require "../bookdb/chap_list"
 require "../bookdb/chap_text"
 require "../parser/seed_info"
-# require "../parser/seed_text"
+require "../parser/seed_text"
 
 require "./chap_repo/*"
 

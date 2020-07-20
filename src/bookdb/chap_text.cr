@@ -18,8 +18,7 @@ class ChapText
   property time = 0_i64 # converted time
 
   def initialize(@ubid : String, @seed : String, @scid : String, preload : Bool = false)
-    @root = ChapText.root(@ubid, @seed)
-    @file = File.join(@root, "#{@scid}.txt")
+    @file = File.join(DIR, "#{@ubid}.#{@seed}", "#{@scid}.txt")
 
     load!(@file) if preload
   end
@@ -40,8 +39,9 @@ class ChapText
     File.exists?(@file)
   end
 
-  def save!(file : String = @file) : self
-    FileUtils.save(file, LABEL, @data.size) { |io| @data.to_s(io) }
+  def save!(file : String = @file) : Void
+    FileUtils.mkdir_p(File.dirname(file))
+    FileUtil.save(file, LABEL, @data.size) { |io| @data.to_s(io) }
   end
 
   def to_s(io : IO)

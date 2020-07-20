@@ -192,6 +192,8 @@ class SeedInfo
     end
   end
 
+  TIME_DF = Time.utc(2010, 1, 1).to_unix_ms
+
   def parse_mftime
     case @seed
     when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
@@ -201,7 +203,7 @@ class SeedInfo
       text = node_text(".mu_beizhu").not_nil!.sub(/.+时间：/m, "")
       TimeUtil.parse(text).to_unix_ms
     when "hetushu", "zhwenpg"
-      0_i64
+      TIME_DF
     else
       raise "Seed `#{@seed}` unsupported!"
     end

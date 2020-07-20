@@ -1,22 +1,29 @@
 <script context="module">
   export async function preload({ params, query }) {
-    const book = params.book
+    const book_slug = params.book
 
-    const slug = params.chap.split('-')
-    const site = slug[slug.length - 2]
-    const csid = slug[slug.length - 1]
+    const cols = params.chap.split('-')
+    const seed_name = cols[cols.length - 2]
+    const chap_scid = cols[cols.length - 1]
 
     const mode = +query.mode || 0
-    const data = await load_chapter(this.fetch, book, site, csid, mode)
+    const data = await load_text(
+      this.fetch,
+      book_slug,
+      seed_name,
+      chap_scid,
+      mode
+    )
 
-    return { ...data, site, csid }
+    const content = parseContent(data.content)
+    return { ...data, content }
   }
 
-  async function load_chapter(get, book, site, csid, mode = 0) {
-    const url = `api/books/${book}/${site}/${csid}?mode=${mode}`
+  async function load_text(fetch, book_slug, seed_name, chap_scid, mode = 0) {
+    const url = `/_load_text?slug=${book_slug}&seed=${seed_name}&scid=${chap_scid}&mode=${mode}`
 
     try {
-      const res = await get(url)
+      const res = await fetch(url)
       const data = await res.json()
 
       if (res.status == 200) return data
@@ -24,6 +31,12 @@
     } catch (err) {
       this.error(500, err.message)
     }
+  }
+
+  export function parseContent(body) {
+    return body
+      .split('\n')
+      .map((line) => line.split('ǁ').map((x) => x.split('¦')))
   }
 </script>
 
@@ -42,15 +55,15 @@
   export let book_name = ''
   export let book_slug = ''
 
-  export let site
-  export let csid
+  export let ch_total = 1
+  export let ch_index = 1
+
+  export let seed_name
+  export let chap_scid
 
   export let prev_url = ''
   export let next_url = ''
   export let curr_url = ''
-
-  export let ch_total = 1
-  export let ch_index = 1
 
   export let content = []
 
@@ -88,7 +101,7 @@
 
       case 72:
         evt.preventDefault()
-        _goto(`/${book_slug}?tab=content&site=${site}`)
+        _goto(`/${book_slug}?tab=content&seed=${seed}`)
         break
 
       case 37:
@@ -105,7 +118,7 @@
         if (!evt.altKey) {
           evt.preventDefault()
           if (next_url) _goto(`/${book_slug}/${next_url}`)
-          else _goto(`${book_slug}?tab=content&site=${site}`)
+          else _goto(`${book_slug}?tab=content&seed=${seed}`)
         }
         break
 
@@ -143,10 +156,10 @@
   async function deleteFocusedWord() {
     if (!elemOnFocus) return
 
-    const dict = +elemOnFocus.dataset.d == 1 ? 'generic' : book_ubid
+    const dname = +elemOnFocus.dataset.d == 3 ? book_ubid : 'generic'
     const key = elemOnFocus.dataset.k
 
-    const url = `/api/upsert?dict=${dict}&key=${key}`
+    const url = `/_upsert?dname=${dname}&power=1&key=${key}`
     const res = await fetch(url)
 
     shouldReload = true
@@ -191,7 +204,7 @@
 
       if (tab == null) {
         const dict = +elemOnFocus.dataset.d
-        tab = dict === 1 ? 'generic' : 'special'
+        tab = dict === 3 ? 'special' : 'generic'
       }
     }
 
@@ -205,9 +218,15 @@
     // console.log(`reloading page with mode: ${mode}`)
 
     pageReloading = true
-    const data = await load_chapter(window.fetch, book_slug, site, csid, mode)
+    const data = await load_chapter(
+      window.fetch,
+      book_slug,
+      seed_name,
+      chap_scid,
+      mode
+    )
 
-    content = data.content
+    content = parseContent(data.content)
     pageReloading = false
   }
 </script>
@@ -282,15 +301,15 @@
     cursor: pointer;
 
     &[data-d='1'] {
-      @include token(blue);
+      @include token(neutral);
     }
 
     &[data-d='2'] {
-      @include token(orange);
+      @include token(primary);
     }
 
     &[data-d='3'] {
-      @include token(red);
+      @include token(harmful);
     }
   }
 
@@ -325,7 +344,7 @@
 
   <a
     slot="header-left"
-    href="/{book_slug}?tab=content&site={site}"
+    href="/{book_slug}?tab=content&seed={seed_name}"
     class="header-item _title">
     <span>{book_name}</span>
   </a>
@@ -387,7 +406,7 @@
       </a>
     {/if}
 
-    <a class="m-button _line" href="/{book_slug}?tab=content&site={site}">
+    <a class="m-button _line" href="/{book_slug}?tab=content&seed={seed_name}">
       <MIcon class="m-icon" name="list" />
       <span>Mục lục</span>
     </a>

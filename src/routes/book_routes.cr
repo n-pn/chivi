@@ -120,19 +120,24 @@ module Server
 
     mode = env.params.query.fetch("mode", "0").try(&.to_i) || 0
 
+    chap = Kernel.load_text(info.ubid, seed, list.sbid, curr_chap.scid, mode: mode)
+
     {
       book_ubid: info.ubid,
       book_slug: info.slug,
       book_name: info.vi_title,
+
       seed_name: seed,
-      ch_index:  index + 1,
-      ch_total:  list.size,
+      chap_scid: curr_chap.scid,
+
+      ch_index: index + 1,
+      ch_total: list.size,
 
       prev_url: prev_chap.try(&.slug_for(seed)),
       next_url: next_chap.try(&.slug_for(seed)),
       curr_url: curr_chap.try(&.slug_for(seed)),
 
-      # content: ChapText.load_vp(site, bsid, scid, user, info.ubid, mode: mode),
+      content: chap.data,
     }.to_json(env.response)
   end
 end

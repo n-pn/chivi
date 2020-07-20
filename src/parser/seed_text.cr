@@ -1,23 +1,63 @@
-require "../_utils/file_utils"
-require "../_utils/html_utils"
-require "../_utils/text_utils"
+require "file_utils"
 
-require "./remote_util"
+require "../common/file_util"
+require "../common/http_util"
+require "../common/text_util"
 
 class SeedText
-  def self.fetch!(seed : String, sbid : String, scid : String, freeze = false)
-    new(seed, fetch_html!(seed, sbid, scid, freeze))
+  DIR = File.join("var", ".book_cache")
+  FileUtils.mkdir_p(DIR)
+
+  def self.mkdir!(seed : String, sbid : String)
+    FileUtils.mkdir_p(root(seed, sbid))
   end
 
-  def self.fetch_html!(seed : String, sbid : String, scid : String, freeze = true)
-    path = RemoteUtil.text_path(seed, sbid, scid)
+  def self.root(seed : String, sbid : String)
+    File.join(DIR, seed, "texts", sbid)
+  end
 
-    unless html = Utils.read_file(path)
-      html = Utils.fetch_html(RemoteUtil.text_url(seed, sbid, scid))
-      File.write(path, html) if freeze
+  def self.path_for(seed : String, sbid : String, scid : String)
+    File.join(root(seed, sbid), "#{scid}.html")
+  end
+
+  def self.text_url(seed : String, sbid : String, scid : String)
+    case seed
+    when "nofff"
+      "https://www.nofff.com/#{sbid}/#{scid}/"
+    when "69shu"
+      "https://www.69shu.com/txt/#{sbid}/#{scid}"
+    when "jx_la"
+      "https://www.jx.la/book/#{sbid}/#{scid}.html"
+    when "rengshu"
+      "http://www.rengshu.com/book/#{sbid}/#{scid}"
+    when "xbiquge"
+      "https://www.xbiquge.cc/book/#{sbid}/#{scid}.html"
+    when "hetushu"
+      "https://www.hetushu.com/book/#{sbid}/#{scid}.html"
+    when "duokan8"
+      group = sbid.to_i // 1000
+      "http://www.duokan8.com/#{group}_#{sbid}/#{scid}.html"
+    when "paoshu8"
+      group = sbid.to_i // 1000
+      "http://www.paoshu8.com/#{group}_#{sbid}/#{scid}.html"
+    when "zhwenpg"
+      "https://novel.zhwenpg.com/r.php?id=#{scid}"
+    else
+      raise "- seed `#{seed}` not supported!"
+    end
+  end
+
+  def self.init(seed : String, sbid : String, scid : String, expiry = Time.utc(2010, 1, 1), freeze = false)
+    url = text_url(seed, sbid, scid)
+    file = path_for(seed, sbid, scid)
+    FileUtils.mkdir_p(File.dirname(file))
+
+    unless html = FileUtil.read(file, expiry)
+      html = HttpUtil.fetch_html(url, HttpUtil.encoding_for(seed))
+      File.write(file, html) if freeze
     end
 
-    html
+    new(seed, html)
   end
 
   getter title : String
@@ -60,7 +100,7 @@ class SeedText
 
   private def inner_text(query : String)
     return "" unless node = @doc.css(query).first?
-    Utils.clean_text(node.inner_text)
+    TextUtil.clean_html(node.inner_text)
   end
 
   def paras
@@ -102,7 +142,7 @@ class SeedText
     lines.shift if @title.includes?(lines[0])
     lines.update(-1, &.sub("(本章完)", ""))
 
-    lines.map! { |line| Utils.clean_text(line) }.reject!(&.empty?)
+    lines.map! { |line| TextUtil.clean_html(line) }.reject!(&.empty?)
   end
 
   private def parse_hetushu_paras!

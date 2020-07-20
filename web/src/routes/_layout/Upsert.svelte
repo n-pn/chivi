@@ -52,40 +52,33 @@
 
   let isNewEntry = false
 
-  $: if (key) inquireWord(key, dic)
+  $: if (key) searchWord(key, dic)
   $: links = prepareLookupLinks(key)
 
-  $: mtime = props[tab].time
+  $: mtime = props[tab].mtime
   $: suggests = makeSuggests(tab, outValue, oldValue)
 
   function makeSuggests(tab, reject, accept) {
-    const output = []
-    for (const word of props.suggest) {
-      if (word !== reject) output.push(word)
-    }
+    let output = []
 
-    for (const word of props.special.vals) {
-      if (word !== reject) output.push(word)
-    }
-
-    for (const word of props.generic.vals) {
-      if (word !== reject) output.push(word)
-    }
+    output = output.concat(props.suggest.vals)
+    output = output.concat(props.special.vals)
+    output = output.concat(props.generic.vals)
 
     let hanviet = props.hanviet
     if (tab === 'special') hanviet = titleize(hanviet, 9)
-    if (hanviet !== reject) output.push(hanviet)
+    output.push(hanviet)
 
     if (accept) output.push(accept)
-    return output.filter((v, i, s) => s.indexOf(v) === i)
+    return output.filter((v, i, s) => s.indexOf(v) === i && v !== reject)
   }
 
   let props = {
     hanviet: '',
-    pinyins: '',
-    suggest: [],
-    generic: { vals: [], time: 0 },
-    special: { vals: [], time: 0 },
+    binh_am: '',
+    suggest: { vals: [], extra: '' },
+    generic: { vals: [], mtime: 0, extra: '' },
+    special: { vals: [], mtime: 0, extra: '' },
   }
 
   onMount(() => {
@@ -110,15 +103,18 @@
       isNewEntry = false
     } else {
       isNewEntry = true
-      outValue = props.suggest[0]
+      let newValue = props.suggest.vals[0]
 
-      if (!outValue) {
-        outValue = props.hanviet
-        if (tab === 'special') updateCase()
+      if (!newValue) {
+        newValue = props.hanviet
+        if (tab === 'special') newValue = titleize(newValue, 9)
       }
-    }
 
-    suggests = makeSuggests(tab, outValue, oldValue)
+      suggests = makeSuggests(tab, newValue, oldValue)
+
+      if (suggests.length > 0) outValue = suggests[0]
+      else outValue = newValue
+    }
   }
 
   function defaultVal(tab) {
@@ -135,15 +131,15 @@
     let target = 'generic'
     if (tab === 'special') target = dic === '' ? 'combine' : dic
 
-    const url = `/api/upsert?dict=${target}&key=${key}&val=${val}`
+    const url = `/_upsert?dname=${target}&key=${key}&vals=${val}`
     const res = await fetch(url)
 
     if (defaultVal(tab) !== val) shouldReload = true
     active = false
   }
 
-  async function inquireWord(word, dict) {
-    const res = await fetch(`/api/inquire?word=${word}&dict=${dict}`)
+  async function searchWord(input, dname) {
+    const res = await fetch(`/_search?input=${input}&dname=${dname}`)
     props = await res.json()
     updateVal()
   }
@@ -220,113 +216,6 @@
     }
   }
 </script>
-
-<svelte:window on:keydown={handleKeypress} />
-
-<div class="container" on:click={() => (active = false)}>
-  <div class="dialog" on:click={(evt) => evt.stopPropagation()}>
-    <header class="header">
-      <span class="label">Từ điển</span>
-      {#each tabs as [name, label]}
-        <span
-          class="tab"
-          class:_active={name == tab}
-          on:click={() => changeTab(name)}>
-          {label}
-        </span>
-      {/each}
-
-      <button
-        type="button"
-        class="m-button _text"
-        on:click={() => (active = false)}>
-        <svg class="m-icon _x">
-          <use xlink:href="/icons.svg#x" />
-        </svg>
-      </button>
-    </header>
-
-    <div class="content">
-
-      <section class="source">
-        <div class="chinese">
-          <input
-            class="key-field"
-            type="text"
-            name="key"
-            bind:value={key}
-            bind:this={keyField} />
-        </div>
-
-        <div class="translit">
-          {#if key}
-            <span class="hanviet">{props.hanviet}</span>
-            <span class="pinyins">[{props.pinyins}]</span>
-          {/if}
-        </div>
-      </section>
-
-      <section class="working">
-        <input
-          type="text"
-          lang="vi"
-          class="val-field"
-          class:_fresh={isNewEntry}
-          name="value"
-          id="valField"
-          on:keypress={submitOnEnter}
-          bind:this={valField}
-          bind:value={outValue} />
-
-        <div class="suggests">
-          {#each suggests as suggest}
-            <span class="suggest" on:click={() => replaceValue(suggest)}>
-              {suggest}
-            </span>
-          {/each}
-
-          <span class="mftime">
-            <span class="text">Lưu:</span>
-            <span class="time">{mtime > 0 ? relative_time(mtime) : '--'}</span>
-          </span>
-        </div>
-
-        <div class="capitalize">
-          <span class="cap-lbl">Viết hoa:</span>
-          <span class="cap-btn" on:click={() => updateCase(0)}>không</span>
-          <span class="cap-btn" on:click={() => updateCase(1)}>1 chữ</span>
-          <span class="cap-btn" on:click={() => updateCase(2)}>2 chữ</span>
-          <span class="cap-btn" on:click={() => updateCase(3)}>3 chữ</span>
-          <span class="cap-btn" on:click={() => updateCase(99)}>toàn bộ</span>
-        </div>
-      </section>
-
-      <section class="actions">
-        <button
-          type="button"
-          class="m-button _line _harmful"
-          on:click={() => upsertData('')}>
-          <span>Xoá từ</span>
-        </button>
-
-        <button
-          type="button"
-          class="m-button {isNewEntry ? '_primary' : '_success'}"
-          on:click={() => upsertData(outValue)}>
-          <span>{isNewEntry ? 'Thêm từ' : 'Sửa từ'}</span>
-        </button>
-
-      </section>
-
-    </div>
-
-    <footer class="footer">
-      {#each links as { site, href }}
-        <a {href} target="_blank" rel="noopener noreferer">{site}</a>
-      {/each}
-    </footer>
-  </div>
-</div>
 
 <style lang="scss">
   $gutter: 0.75rem;
@@ -545,14 +434,6 @@
     @include font-size(1);
     @include fgcolor(neutral, 5);
 
-    .cap-lbl {
-      padding: 0;
-      padding-right: 0.25rem;
-
-      max-width: 16vw;
-      @include truncate(null);
-    }
-
     .cap-btn {
       padding: 0 0.375rem;
       // max-width: 20vw;
@@ -609,3 +490,113 @@
     }
   }
 </style>
+
+<svelte:window on:keydown={handleKeypress} />
+
+<div class="container" on:click={() => (active = false)}>
+  <div class="dialog" on:click={(evt) => evt.stopPropagation()}>
+    <header class="header">
+      <span class="label">Từ điển</span>
+      {#each tabs as [name, label]}
+        <span
+          class="tab"
+          class:_active={name == tab}
+          on:click={() => changeTab(name)}>
+          {label}
+        </span>
+      {/each}
+
+      <button
+        type="button"
+        class="m-button _text"
+        on:click={() => (active = false)}>
+        <svg class="m-icon _x">
+          <use xlink:href="/icons.svg#x" />
+        </svg>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <section class="source">
+        <div class="chinese">
+          <input
+            class="key-field"
+            type="text"
+            name="key"
+            bind:value={key}
+            bind:this={keyField} />
+        </div>
+
+        <div class="translit">
+          {#if key}
+            <span class="hanviet">{props.hanviet}</span>
+            <span class="binh_am">[{props.binh_am}]</span>
+          {/if}
+        </div>
+      </section>
+
+      <section class="working">
+        <input
+          type="text"
+          lang="vi"
+          class="val-field"
+          class:_fresh={isNewEntry}
+          name="value"
+          id="valField"
+          on:keypress={submitOnEnter}
+          bind:this={valField}
+          bind:value={outValue} />
+
+        <div class="suggests">
+          {#each suggests as suggest}
+            <span class="suggest" on:click={() => replaceValue(suggest)}>
+              {suggest}
+            </span>
+          {/each}
+
+          <span class="mftime">
+            <span class="text">Lưu:</span>
+            <span class="time">{mtime > 0 ? relative_time(mtime) : '--'}</span>
+          </span>
+        </div>
+
+        <div class="capitalize">
+          <span class="cap-btn" on:click={() => updateCase(1)}>
+            Hoa một chữ
+          </span>
+          <span class="cap-btn" on:click={() => updateCase(2)}>Hai chữ</span>
+          <span class="cap-btn" on:click={() => updateCase(3)}>Ba chữ</span>
+          <span class="cap-btn" on:click={() => updateCase(99)}>
+            Hoa toàn bộ
+          </span>
+          <span class="cap-btn" on:click={() => updateCase(0)}>Không hoa</span>
+        </div>
+      </section>
+
+      <section class="actions">
+        <button
+          type="button"
+          class="m-button _line _harmful"
+          on:click={() => upsertData('')}>
+          <span>Xoá từ</span>
+        </button>
+
+        <button
+          type="button"
+          class="m-button {isNewEntry ? '_primary' : '_success'}"
+          on:click={() => upsertData(outValue)}>
+          <span>{isNewEntry ? 'Thêm từ' : 'Sửa từ'}</span>
+        </button>
+
+      </section>
+
+    </div>
+
+    <footer class="footer">
+      {#each links as { site, href }}
+        <a {href} target="_blank" rel="noopener noreferer">{site}</a>
+      {/each}
+    </footer>
+  </div>
+</div>

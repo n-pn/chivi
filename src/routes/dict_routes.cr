@@ -44,14 +44,16 @@ module Server
 
     if item = TrieDict.suggest.find(input)
       suggest = {vals: item.vals, extra: item.extra}
+    else
+      suggest = {vals: [] of String, extra: ""}
     end
 
     {
-      suggest: suggest,
-      generic: Engine.search(input, "generic"),
-      special: Engine.search(input, dname),
       hanviet: Engine.hanviet(input, false).vi_text,
       binh_am: Engine.binh_am(input, false).vi_text,
+      generic: Engine.search(input, "generic"),
+      special: Engine.search(input, dname),
+      suggest: suggest,
     }.to_json(env.response)
   end
 

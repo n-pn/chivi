@@ -35,6 +35,28 @@ module Kernel
 
     {list, seed.mftime}
   end
+
+  # # modes:
+  # 0 => load saved chap_text
+  # 1 => load saved chap_text then convert
+  # 2 => fetch text from external hosts then convert
+
+  def load_text(ubid : String, seed : String, sbid : String, scid : String, mode : Int32 = 2)
+    chap = ChapText.new(ubid, seed, scid, preload: false)
+
+    if chap.exists? && mode < 2
+      chap.load!
+
+      return chap if mode == 0
+      zh_lines = chap.zh_lines
+    else
+      remote = SeedText.init(seed, sbid, scid, freeze: false)
+      zh_lines = [remote.title].concat(remote.paras)
+    end
+
+    chap.data = Engine.cv_mixed(zh_lines, ubid).map(&.to_s).join("\n")
+    chap.tap(&.save!)
+  end
 end
 
 # info = BookRepo.load("akpwpjf3").not_nil!
