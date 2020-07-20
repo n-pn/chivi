@@ -118,18 +118,17 @@ module BookRepo
     set_vi_title(info, force: force)
     set_vi_author(info, force: force)
 
-    title1_slug = TextUtil.slugify(info.hv_title)
-    title2_slug = TextUtil.slugify(info.vi_title)
-
     author_slug = TextUtil.slugify(info.vi_author)
+
+    title1_slug = TextUtil.slugify(info.vi_title)
     full_slug_1 = "#{title1_slug}--#{author_slug}"
+
+    info.slug = check_slug(info, title1_slug) || check_slug(info, full_slug_1)
+
+    title2_slug = TextUtil.slugify(info.hv_title)
     full_slug_2 = "#{title2_slug}--#{author_slug}"
 
-    # the shortest slug will remain
-    set_slug(info, full_slug_1)
-    set_slug(info, full_slug_2)
-    set_slug(info, title1_slug)
-    set_slug(info, title2_slug)
+    check_slug(info, title2_slug) || check_slug(info, full_slug_2)
   end
 
   def set_hv_title(info : BookInfo, hv_title = "", force = false)
@@ -171,14 +170,13 @@ module BookRepo
     info.vi_author = vi_author
   end
 
-  def set_slug(info : BookInfo, slug : String) : String?
+  def check_slug(info : BookInfo, slug : String) : String?
     if ubid = LabelMap.map_slug.fetch(slug)
       return if ubid != info.ubid
     else
       LabelMap.map_slug.upsert!(slug, info.ubid)
+      slug
     end
-
-    info.slug = slug
   end
 
   def set_intro(info : BookInfo, zh_intro : String, force = false)

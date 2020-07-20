@@ -19,8 +19,10 @@ class LabelMap
   delegate fetch, to: @hash
   delegate has_key?, to: @hash
 
-  def initialize(@file, preload : Bool = true)
-    load!(@file) if preload
+  # modes: 0 => init, 1 => load if exists, 2 => force load, raise exception if not exists
+  def initialize(@file, mode : Int32 = 1)
+    return if mode == 0
+    load!(@file) if mode == 2 || File.exists?(file)
   end
 
   def load!(file : String = @file) : Void
@@ -102,47 +104,45 @@ class LabelMap
   end
 
   def self.read!(file : String) : LabelMap
-    new(file, preload: true)
+    new(file, mode: 2)
   end
 
   def self.load!(name : String) : LabelMap
-    load(name) || raise "<#{LABEL}> name [#{name}] not found!"
+    new(path_for(name), mode: 2)
   end
 
-  def self.load(name : String) : LabelMap?
-    file = path_for(name)
-    new(file, preload: true) if File.exists?(file)
+  def self.load(name : String) : LabelMap
+    new(path_for(name), mode: 1)
   end
 
   def self.init(name : String) : LabelMap
-    new(path_for(name), preload: false)
-  end
-
-  # load existing or create a new one
-  def self.get_or_create(name : String) : LabelMap
-    load(name) || init(name)
+    new(path_for(name), mode: 0)
   end
 
   CACHE = {} of String => LabelMap
 
   def self.preload!(name : String) : LabelMap
-    CACHE[name] ||= load(name) || init(name)
+    CACHE[name] ||= load!(name)
+  end
+
+  def self.preload(name : String) : LabelMap
+    CACHE[name] ||= load(name)
   end
 
   def self.flush!
     CACHE.each_value { |item| item.save! }
   end
 
-  class_getter map_slug : LabelMap { preload!("map_slug") }
+  class_getter map_slug : LabelMap { preload("map_slug") }
 
-  class_getter zh_title : LabelMap { preload!("fixes/zh_title") }
-  class_getter vi_title : LabelMap { preload!("fixes/vi_title") }
+  class_getter zh_title : LabelMap { preload("fixes/zh_title") }
+  class_getter vi_title : LabelMap { preload("fixes/vi_title") }
 
-  class_getter zh_author : LabelMap { preload!("fixes/zh_author") }
-  class_getter vi_author : LabelMap { preload!("fixes/vi_author") }
+  class_getter zh_author : LabelMap { preload("fixes/zh_author") }
+  class_getter vi_author : LabelMap { preload("fixes/vi_author") }
 
-  class_getter zh_genre : LabelMap { preload!("fixes/zh_genre") }
-  class_getter vi_genre : LabelMap { preload!("fixes/vi_genre") }
+  class_getter zh_genre : LabelMap { preload("fixes/zh_genre") }
+  class_getter vi_genre : LabelMap { preload("fixes/vi_genre") }
 end
 
 # test = LabelMap.new("tmp/label_map.txt")

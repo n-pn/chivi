@@ -11,8 +11,10 @@ class ValueSet
   getter list = Set(String).new
   forward_missing_to @list
 
-  def initialize(@file, preload : Bool = true)
-    load!(@file) if preload
+  # modes: 0 => init, 1 => load if exists, 2 => force load, raise exception if not exists
+  def initialize(@file : String, mode : Int32 = 1)
+    return if mode == 0
+    load!(@file) if mode == 2 || File.exists?(file)
   end
 
   def load!(file : String = @file) : Void
@@ -75,28 +77,22 @@ class ValueSet
 
   # read random file, raising FileNotFound if not existed
   def self.read!(file : String) : ValueSet
-    new(file, preload: true)
+    new(file, mode: 2)
   end
 
   # load file if exists, else raising exception
   def self.load!(name : String) : ValueSet
-    load(name) || raise "<#{LABEL}> name [#{name}] not found!"
+    new(path_for(name), mode: 2)
   end
 
   # load file if exists, else return nil
   def self.load(name : String) : ValueSet?
-    file = path_for(name)
-    new(file, preload: true) if File.exists?(file)
+    new(path_for(name), mode: 1)
   end
 
   # create new file from fresh
   def self.init(name : String) : ValueSet
-    new(path_for(name), preload: false)
-  end
-
-  # load existing or create a new one
-  def self.get_or_create(name : String) : ValueSet
-    load(name) || init(name)
+    new(path_for(name), mode: 0)
   end
 
   CACHE = {} of String => ValueSet
@@ -105,6 +101,14 @@ class ValueSet
     CACHE[name] ||= load!(name)
   end
 
-  class_getter skip_titles : ValueSet { preload!("skip-titles") }
-  class_getter skip_genres : ValueSet { preload!("skip-genres") }
+  def self.preload(name : String) : ValueSet
+    CACHE[name] ||= load(name)
+  end
+
+  def self.flush!
+    CACHE.each_value { |item| item.save! }
+  end
+
+  class_getter skip_titles : ValueSet { preload("skip-titles") }
+  class_getter skip_genres : ValueSet { preload("skip-genres") }
 end

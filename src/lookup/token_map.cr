@@ -10,13 +10,16 @@ class TokenMap
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 
+  getter file : String
   getter hash = Hash(String, Array(String)).new
   getter keys = Hash(String, Set(String)).new
 
   forward_missing_to @hash
 
-  def initialize(@file : String, preload : Bool = false)
-    load!(@file) if preload
+  # modes: 0 => init, 1 => load if exists, 2 => force load, raise exception if not exists
+  def initialize(@file : String, mode : Int32 = 1)
+    return if mode == 0
+    load!(@file) if mode == 2 || File.exists?(file)
   end
 
   def load!(file : String = @file) : Void
@@ -170,28 +173,22 @@ class TokenMap
 
   # read random file, raising FileNotFound if not existed
   def self.read!(file : String) : TokenMap
-    new(file, preload: true)
+    new(file, mode: 2)
   end
 
   # load file if exists, else raising exception
   def self.load!(name : String) : TokenMap
-    load(name) || raise "<token_map> name [#{name}] not found!"
+    new(path_for(name), mode: 2)
   end
 
-  # load file if exists, else return nil
-  def self.load(name : String) : TokenMap?
-    file = path_for(name)
-    new(file, preload: true) if File.exists?(file)
+  # load file if exists, else create a new one
+  def self.load(name : String) : TokenMap
+    new(path_for(name), mode: 1)
   end
 
   # create new file from fresh
   def self.init(name : String) : TokenMap
-    new(path_for(name), preload: false)
-  end
-
-  # load existing or create a new one
-  def self.get_or_create(name : String) : TokenMap
-    load(name) || init(name)
+    new(path_for(name), mode: 0)
   end
 
   CACHE = {} of String => TokenMap
@@ -200,17 +197,23 @@ class TokenMap
     CACHE[name] ||= load!(name)
   end
 
+  def self.preload(name : String) : TokenMap
+    CACHE[name] ||= load(name)
+  end
+
   def self.flush! : Void
     CACHE.each_value { |map| map.save! }
   end
 
-  class_getter zh_title : TokenMap { preload!("zh_title") }
-  class_getter hv_title : TokenMap { preload!("hv_title") }
-  class_getter vi_title : TokenMap { preload!("vi_title") }
-  class_getter zh_author : TokenMap { preload!("zh_author") }
-  class_getter vi_author : TokenMap { preload!("vi_author") }
-  class_getter vi_genres : TokenMap { preload!("vi_genres") }
-  class_getter vi_tags : TokenMap { preload!("vi_tags") }
+  class_getter zh_title : TokenMap { preload("zh_title") }
+  class_getter hv_title : TokenMap { preload("hv_title") }
+  class_getter vi_title : TokenMap { preload("vi_title") }
+
+  class_getter zh_author : TokenMap { preload("zh_author") }
+  class_getter vi_author : TokenMap { preload("vi_author") }
+
+  class_getter vi_genres : TokenMap { preload("vi_genres") }
+  class_getter vi_tags : TokenMap { preload("vi_tags") }
 end
 
 # test = TokenMap.new("tmp/token_map.txt")

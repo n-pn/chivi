@@ -96,12 +96,14 @@ class OrderMap
   getter first : Node
   getter last : Node
 
-  def initialize(@file, preload : Bool = false)
+  # modes: 0 => init, 1 => load if exists, 2 => force load, raise exception if not exists
+  def initialize(@file : String, mode : Int32 = 1)
     @first = Node.new("", Int64::MAX)
     @last = Node.new("", Int64::MIN)
     @first.set_right(@last)
 
-    load!(@file) if preload
+    return if mode == 0
+    load!(@file) if mode == 2 || File.exists?(file)
   end
 
   def load!(file : String = @file) : Void
@@ -209,28 +211,22 @@ class OrderMap
 
   # read random file, raising FileNotFound if not existed
   def self.read!(file : String) : OrderMap
-    new(file, preload: true)
+    new(file, mode: 2)
   end
 
   # load file if exists, else raising exception
   def self.load!(name : String) : OrderMap
-    load(name) || raise "<order_map> name [#{name}] not found!"
+    new(path_for(name), mode: 2)
   end
 
   # load file if exists, else return nil
-  def self.load(name : String) : OrderMap?
-    file = path_for(name)
-    new(file, preload: true) if File.exists?(file)
+  def self.load(name : String) : OrderMap
+    new(path_for(name), mode: 1)
   end
 
   # create new file from fresh
   def self.init(name : String) : OrderMap
-    new(path_for(name), preload: false)
-  end
-
-  # load existing or create a new one
-  def self.get_or_create(name : String) : OrderMap
-    load(name) || init(name)
+    new(path_for(name), mode: 0)
   end
 
   CACHE = {} of String => OrderMap
@@ -239,15 +235,19 @@ class OrderMap
     CACHE[name] ||= load!(name)
   end
 
+  def self.preload(name : String) : OrderMap
+    CACHE[name] ||= load(name)
+  end
+
   def self.flush! : Void
     CACHE.each_value { |map| map.save! }
   end
 
-  class_getter top_authors : OrderMap { preload!("top_authors") }
-  class_getter book_access : OrderMap { preload!("book_access") }
-  class_getter book_update : OrderMap { preload!("book_update") }
-  class_getter book_weight : OrderMap { preload!("book_weight") }
-  class_getter book_rating : OrderMap { preload!("book_rating") }
+  class_getter top_authors : OrderMap { preload("top_authors") }
+  class_getter book_access : OrderMap { preload("book_access") }
+  class_getter book_update : OrderMap { preload("book_update") }
+  class_getter book_weight : OrderMap { preload("book_weight") }
+  class_getter book_rating : OrderMap { preload("book_rating") }
 end
 
 # test = OrderMap.new("tmp/order_map.txt", false)
