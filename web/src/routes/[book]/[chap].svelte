@@ -413,8 +413,10 @@
   <nav class="navi">
     <a href="/" class="crumb">Chivi</a>
     <span class="split">&gt;</span>
+    <a href="/{book_slug}" class="crumb">{book_name}</a>
+    <span class="split">&gt;</span>
     <a href="/{book_slug}?tab=content&seed={seed_name}" class="crumb">
-      {book_name}
+      [{seed_name}]
     </a>
     <span class="split">&gt;</span>
     <span class="crumb">{chap_label}</span>

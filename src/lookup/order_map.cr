@@ -158,8 +158,6 @@ class OrderMap
   end
 
   def each(node : Node = @first)
-    pp [node.key, node.val]
-
     while node = node.right
       yield node unless node == @last
     end

@@ -4,7 +4,7 @@ require "colorize"
 require "http/client"
 require "file_utils"
 
-require "../../src/models/book_info"
+require "../../src/bookdb/book_info"
 
 TMP_DIR = File.join("var", ".book_cover")
 FILE_DF = File.join(TMP_DIR, "blank.jpg")
@@ -63,7 +63,9 @@ infos.each do |info|
   FileUtils.mkdir_p(cover_dir)
   indexed = glob_dir(cover_dir)
 
-  info.cover_urls.each do |cover|
+  info.cover_urls.each_value do |cover|
+    next if cover.empty?
+
     unless cover.starts_with?("http")
       puts info.to_json
       gets

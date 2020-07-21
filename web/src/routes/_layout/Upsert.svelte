@@ -1,39 +1,13 @@
-<script context="module">
-  export function prepareLookupLinks(key) {
-    return [
-      { site: 'iCIBA', href: `https://www.iciba.com/${key}` },
-      {
-        site: 'GTrans',
-        href: `https://translate.google.com/#view=home&op=translate&sl=zh-CN&tl=en&text=${key}`,
-      },
-      {
-        site: 'Google',
-        href: `https://www.google.com/search?q=${key}`,
-      },
-      {
-        site: 'Fanyi',
-        href: `https://fanyi.baidu.com/#zh/en/${key}`,
-      },
-      {
-        site: 'Baike',
-        href: `https://baike.baidu.com/item/${key}`,
-      },
-
-      {
-        site: 'Baidu',
-        href: `http://www.baidu.com/s?wd=${key}`,
-      },
-    ]
-  }
-</script>
-
 <script>
   import { onMount } from 'svelte'
   import relative_time from '$utils/relative_time'
 
+  import Footer from './Upsert/Footer.svelte'
+
   const tabs = [
-    ['special', 'Riêng'],
-    ['generic', 'Chung'],
+    ['special', 'VP riêng'],
+    ['generic', 'VP chung'],
+    // ['hanviet', 'Hán việt'],
   ]
 
   export let active = true
@@ -53,21 +27,20 @@
   let isNewEntry = false
 
   $: if (key) searchWord(key, dic)
-  $: links = prepareLookupLinks(key)
 
-  $: mtime = props[tab].mtime
+  $: mftime = props[tab].mftime
   $: suggests = makeSuggests(tab, outValue, oldValue)
+  $: actionType = outValue == '' ? 'Xoá từ' : isNewEntry ? 'Thêm từ' : 'Sửa từ'
 
   function makeSuggests(tab, reject, accept) {
-    let output = []
+    let hanviet = props.hanviet
+    if (hanviet == reject) reject = null
+    let output = [hanviet]
+    if (tab == 'special') output.push(titleize(hanviet, 9))
 
     output = output.concat(props.suggest.vals)
     output = output.concat(props.special.vals)
     output = output.concat(props.generic.vals)
-
-    let hanviet = props.hanviet
-    if (tab === 'special') hanviet = titleize(hanviet, 9)
-    output.push(hanviet)
 
     if (accept) output.push(accept)
     return output.filter((v, i, s) => s.indexOf(v) === i && v !== reject)
@@ -77,8 +50,8 @@
     hanviet: '',
     binh_am: '',
     suggest: { vals: [], extra: '' },
-    generic: { vals: [], mtime: 0, extra: '' },
-    special: { vals: [], mtime: 0, extra: '' },
+    generic: { vals: [], mftime: 0, extra: '' },
+    special: { vals: [], mftime: 0, extra: '' },
   }
 
   onMount(() => {
@@ -238,7 +211,7 @@
     min-width: 320px;
     max-width: 100%;
     // margin-top: -10%;
-    @include bgcolor(white);
+    @include bgcolor(neutral, 1);
     @include radius();
     @include shadow(3);
   }
@@ -248,115 +221,112 @@
 
   .header {
     position: relative;
-    padding: $header-gutter $gutter;
+    // padding: $header-gutter $gutter;
     height: $header-height;
-    line-height: $header-height - $header-gutter * 2;
-    @include bgcolor(neutral, 1);
-    @include radius($sides: top);
+
+    display: flex;
     @include border($sides: bottom);
 
-    .label {
-      font-weight: 500;
-      @include fgcolor(neutral, 7);
-    }
-
     .m-button {
-      position: absolute;
-      right: $header-gutter;
+      margin: 0.25rem 0.5rem;
       // top: 0.375rem;
-      top: 0.25rem;
       @include hover {
         color: color(primary, 5);
       }
     }
-
-    .tab {
-      display: inline-block;
-      cursor: pointer;
-      text-transform: uppercase;
-      margin-left: $header-gutter;
-      font-weight: 500;
-      padding: 0 0.75rem;
-      height: $header-height - $header-gutter * 2;
-
-      @include font-size(2);
-      @include fgcolor(neutral, 6);
-
-      @include radius();
-
-      @include border();
-
-      &._active {
-        @include bgcolor(#fff);
-        @include fgcolor(primary, 6);
-        @include bdcolor($color: primary, $shade: 4);
-      }
-    }
   }
 
-  .content {
-    padding: 0 0.75rem;
+  .label {
+    line-height: $header-height;
+    text-transform: uppercase;
+    @include font-size(2);
+    font-weight: 500;
+    margin: 0 0.75rem;
+    @include fgcolor(neutral, 6);
   }
 
-  $label-width: 3rem;
+  .hanzi {
+    display: inline-block;
+    margin: 0.375rem 0;
 
-  .source {
-    margin-top: 0.75rem;
-    margin-bottom: 0.75rem;
-  }
+    padding: 0 0.375rem;
+    line-height: $header-height - 0.875rem;
 
-  .key-field {
-    display: block;
-    width: 100%;
+    flex-grow: 1;
 
-    padding: 0.375rem 0.75rem;
-    line-height: 1.5rem;
-
+    @include truncate(null);
     @include radius();
 
     @include bgcolor(neutral, 1);
-    @include border($color: color(neutral, 2));
+    @include border($color: color(neutral, 1));
 
     &:focus {
       @include bgcolor(white);
       @include bdcolor($color: primary, $shade: 3);
     }
-    // line-height: .75rem;
   }
 
-  .translit {
-    margin-top: 0.375rem;
+  .tabs {
+    margin-top: 0.5rem;
+    @include border($sides: bottom);
+    @include flex($gap: 0.5rem);
     padding: 0 0.75rem;
-    line-height: 1;
-    @include truncate();
+    height: 2rem;
+    line-height: 2rem;
+    // justify-content: center;
+  }
+
+  .tab {
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 0 0.75rem;
+    height: 2rem;
+    margin-top: 0.25px;
+
     @include font-size(2);
     @include fgcolor(neutral, 6);
+
+    @include radius();
+    @include radius(0, $sides: bottom);
+
+    @include border($color: neutral);
+    @include border($color: none, $sides: bottom);
+
+    &._active {
+      @include bgcolor(#fff);
+      @include fgcolor(primary, 6);
+      @include bdcolor($color: primary, $shade: 4);
+      // @include bdwidth(2px, $sides: top);
+      @include bdcolor($color: none, $sides: bottom);
+    }
   }
+
+  .body {
+    @include bgcolor(#fff);
+    padding: 0.75rem;
+  }
+
+  $label-width: 3rem;
 
   $suggests-height: 2rem;
   $titleize-height: 2rem;
   $val-line-height: 2.5rem;
 
-  .working {
-    position: relative;
-    margin: 0.5rem 0;
+  .output {
+    @include bgcolor(neutral, 1);
 
     .val-field {
       display: block;
       width: 100%;
-      height: $suggests-height + $titleize-height + 3rem;
 
       margin: 0;
+
       line-height: 1.5rem;
+      padding: 0.75rem;
 
-      padding-left: 0.75rem;
-      padding-right: 0.75rem;
-
-      padding-top: $suggests-height;
-      padding-bottom: $titleize-height;
-
-      @include radius();
-      @include border($color: color(neutral, 2));
+      border: none;
+      @include border();
       @include bgcolor(neutral, 1);
 
       &:focus,
@@ -371,86 +341,89 @@
     }
   }
 
-  .suggests {
-    position: absolute;
+  .hints {
     // width: 100%;
     height: $suggests-height;
-    bottom: 1px;
-    left: 1px;
-    right: 1px;
-    padding: 0.25rem 0.75rem;
 
-    @include flex($gap: 0.25rem, $child: '.suggest');
+    padding: 0.25rem 0.5rem;
+
+    @include border();
+    border-bottom: none;
+    @include radius($sides: top);
+
+    @include flex($gap: 0.25rem, $child: '.hint');
     @include font-size(2);
-    // @include bgcolor(neutral, 1);
-    @include border($sides: top, $color: color(neutral, 2));
-    @include radius($sides: bottom);
 
-    .suggest {
+    .hint {
       font-style: italic;
       line-height: 1.5rem;
       height: 1.5rem;
 
       padding: 0 0.25rem;
+      max-width: 25vw;
+      @include truncate(null);
 
-      @include fgcolor(primary, 6);
+      @include fgcolor(neutral, 6);
       @include bgcolor(neutral, 1);
       @include radius;
       &:hover {
         cursor: pointer;
+        @include fgcolor(primary, 6);
         @include bgcolor(primary, 1);
       }
-    }
 
-    .mftime {
-      font-style: italic;
-      margin-left: auto;
-
-      line-height: 1.5rem;
-      height: 1.5rem;
-      // @include truncate();
-      @include font-size(2);
-      @include fgcolor(neutral, 5);
+      &._binh_am {
+        margin-left: auto;
+      }
     }
   }
 
-  .capitalize {
-    position: absolute;
-    top: 1px;
-    left: 1px;
-    right: 1px;
+  .format {
     display: flex;
-    // justify-content: center;
+    padding: 0 0.5rem;
 
-    padding: 0.25rem 0.75rem;
-    line-height: 1.5rem;
+    @include border();
+    border-top: none;
+    @include radius($sides: bottom);
 
-    // @include bgcolor(neutral, 1);
-    @include border($sides: bottom, $color: color(neutral, 2));
-    @include radius($sides: top);
+    font-size: rem(10px);
+    @include screen-min(sm) {
+      font-size: rem(11px);
+    }
+    @include screen-min(md) {
+      font-size: rem(12px);
+    }
 
-    text-transform: uppercase;
-    font-weight: 500;
-    @include font-size(1);
-    @include fgcolor(neutral, 5);
+    .cap,
+    .etc {
+      display: flex;
+    }
 
-    .cap-btn {
+    .etc {
+      margin-left: auto;
+    }
+
+    .btn {
+      display: inline-block;
       padding: 0 0.375rem;
-      // max-width: 20vw;
+      line-height: 2rem;
+      text-transform: uppercase;
+      font-weight: 500;
+      @include fgcolor(neutral, 5);
+
+      max-width: 14vw;
       cursor: pointer;
       @include truncate(null);
 
-      @include radius();
       @include hover {
-        @include bgcolor(primary, 1);
         @include fgcolor(primary, 5);
+        @include bgcolor(#fff);
       }
     }
   }
 
-  .actions {
-    // margin: .75rem 0;
-    margin: 0.5rem 0;
+  .footer {
+    margin-top: 0.75rem;
 
     @include flex($gap: 0.5rem, $child: '.m-button');
 
@@ -458,53 +431,22 @@
       margin-left: auto;
     }
   }
-
-  .footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin: 0;
-    border-top: 1px solid color(neutral, 3);
-
-    @include bgcolor(neutral, 1);
-    @include radius($sides: bottom);
-
-    a {
-      // display: inline-block;
-      line-height: 1rem;
-      padding: 0.5rem;
-      border-left: 1px splid color(neutral, 3);
-
-      // max-width: 25vw;
-      // overflow: hidden;
-      // @include truncate();
-
-      @include font-size(2);
-      @include fgcolor(neutral, 7);
-
-      @include hover {
-        cursor: pointer;
-        background-color: color(neutral, 3);
-      }
-    }
-  }
 </style>
 
 <svelte:window on:keydown={handleKeypress} />
 
 <div class="container" on:click={() => (active = false)}>
-  <div class="dialog" on:click={(evt) => evt.stopPropagation()}>
+  <div class="dialog" on:click|stopPropagation={refocusOnValField}>
     <header class="header">
-      <span class="label">Từ điển</span>
-      {#each tabs as [name, label]}
-        <span
-          class="tab"
-          class:_active={name == tab}
-          on:click={() => changeTab(name)}>
-          {label}
-        </span>
-      {/each}
+      <span class="label">Thêm từ:</span>
+
+      <span
+        class="hanzi"
+        role="textbox"
+        contenteditable="true"
+        on:click|stopPropagation={() => keyField.focus()}
+        bind:textContent={key}
+        bind:this={keyField} />
 
       <button
         type="button"
@@ -516,27 +458,29 @@
       </button>
     </header>
 
-    <div class="content">
+    <section class="tabs">
+      {#each tabs as [name, label]}
+        <span
+          class="tab"
+          class:_active={name == tab}
+          on:click={() => changeTab(name)}>
+          {label}
+        </span>
+      {/each}
+    </section>
 
-      <section class="source">
-        <div class="chinese">
-          <input
-            class="key-field"
-            type="text"
-            name="key"
-            bind:value={key}
-            bind:this={keyField} />
+    <section class="body">
+      <div class="output">
+        <div class="hints">
+          {#each suggests as suggest}
+            <span class="hint" on:click={() => replaceValue(suggest)}>
+              {suggest}
+            </span>
+          {/each}
+
+          <span class="hint _binh_am">[{props.binh_am}]</span>
         </div>
 
-        <div class="translit">
-          {#if key}
-            <span class="hanviet">{props.hanviet}</span>
-            <span class="binh_am">[{props.binh_am}]</span>
-          {/if}
-        </div>
-      </section>
-
-      <section class="working">
         <input
           type="text"
           lang="vi"
@@ -548,55 +492,45 @@
           bind:this={valField}
           bind:value={outValue} />
 
-        <div class="suggests">
-          {#each suggests as suggest}
-            <span class="suggest" on:click={() => replaceValue(suggest)}>
-              {suggest}
-            </span>
-          {/each}
+        <div class="format">
+          <div class="cap">
+            <span class="btn" on:click={() => updateCase(1)}>Hoa 1 chữ</span>
+            <span class="btn" on:click={() => updateCase(2)}>Hai chữ</span>
+            <span class="btn" on:click={() => updateCase(3)}>Ba chữ</span>
+            <span class="btn" on:click={() => updateCase(99)}>Toàn bộ</span>
+            <span class="btn" on:click={() => updateCase(0)}>Không hoa</span>
+          </div>
 
+          <div class="etc">
+            <span class="btn" on:click={() => (outValue = defaultVal(tab))}>
+              Phục
+            </span>
+            <span class="btn" on:click={() => (outValue = '')}>Xoá</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+
+        {#if mftime > 0}
           <span class="mftime">
             <span class="text">Lưu:</span>
-            <span class="time">{mtime > 0 ? relative_time(mtime) : '--'}</span>
+            <span class="time">{relative_time(mftime)}</span>
           </span>
-        </div>
-
-        <div class="capitalize">
-          <span class="cap-btn" on:click={() => updateCase(1)}>
-            Hoa một chữ
-          </span>
-          <span class="cap-btn" on:click={() => updateCase(2)}>Hai chữ</span>
-          <span class="cap-btn" on:click={() => updateCase(3)}>Ba chữ</span>
-          <span class="cap-btn" on:click={() => updateCase(99)}>
-            Hoa toàn bộ
-          </span>
-          <span class="cap-btn" on:click={() => updateCase(0)}>Không hoa</span>
-        </div>
-      </section>
-
-      <section class="actions">
-        <button
-          type="button"
-          class="m-button _line _harmful"
-          on:click={() => upsertData('')}>
-          <span>Xoá từ</span>
-        </button>
+        {/if}
 
         <button
           type="button"
-          class="m-button {isNewEntry ? '_primary' : '_success'}"
+          class="m-button {tab == 'special' ? '_primary' : '_success'}"
+          class:_line={!isNewEntry}
+          disabled={outValue == defaultVal(tab)}
           on:click={() => upsertData(outValue)}>
-          <span>{isNewEntry ? 'Thêm từ' : 'Sửa từ'}</span>
+          <span>{actionType}</span>
         </button>
+      </div>
+    </section>
 
-      </section>
+    <Footer {key} />
 
-    </div>
-
-    <footer class="footer">
-      {#each links as { site, href }}
-        <a {href} target="_blank" rel="noopener noreferer">{site}</a>
-      {/each}
-    </footer>
   </div>
 </div>

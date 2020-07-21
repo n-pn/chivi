@@ -13,9 +13,9 @@ def fetch_info(info, sbid, expiry = Time.utc) : Void
   puts task.chapters.last(4).to_pretty_json
 end
 
-# fetch_info("jx_la", "7")
-# fetch_info("jx_la", "179402")
-# fetch_info("jx_la", "250502")
+fetch_info("jx_la", "7")
+fetch_info("jx_la", "179402")
+fetch_info("jx_la", "250502")
 
 # fetch_info("69shu", "22729")
 # fetch_info("69shu", "30062")
@@ -32,5 +32,5 @@ end
 # fetch_info("xbiquge", "41881")
 # fetch_info("paoshu8", "817")
 
-fetch_info("zhwenpg", "aun4tm")
-fetch_info("zhwenpg", "punj76")
+# fetch_info("zhwenpg", "aun4tm")
+# fetch_info("zhwenpg", "punj76")
