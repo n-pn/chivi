@@ -85,7 +85,7 @@ class MapRemote
     puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
 
     limit = queue.size
-    limit = 8 if limit > 8
+    limit = 16 if limit > 16
     channel = Channel(Nil).new(limit)
 
     queue.each_with_index do |(sbid, expiry), idx|
