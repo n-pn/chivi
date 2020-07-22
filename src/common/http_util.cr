@@ -7,7 +7,7 @@ module HttpUtil
   LABEL = "http_util"
   alias SSL = OpenSSL::SSL::Context::Client
 
-  UTF8_SITES = {"jx_la", "hetushu", "paoshu8", "zhwenpg"}
+  UTF8_SITES = {"qu_la", "jx_la", "hetushu", "paoshu8", "zhwenpg"}
 
   def encoding_for(site : String) : String
     UTF8_SITES.includes?(site) ? "UTF-8" : "GBK"

@@ -28,6 +28,8 @@ class SeedInfo
       "https://www.nofff.com/#{sbid}/"
     when "69shu"
       "https://www.69shu.com/#{sbid}/"
+    when "qu_la"
+      "https://www.qu.la/book/#{sbid}/"
     when "jx_la"
       "https://www.jx.la/book/#{sbid}/"
     when "rengshu"
@@ -82,7 +84,7 @@ class SeedInfo
 
   def parse_title
     case @seed
-    when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       meta_data("og:novel:book_name")
     when "hetushu"
       node_text("h2")
@@ -97,7 +99,7 @@ class SeedInfo
 
   def parse_author
     case @seed
-    when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       meta_data("og:novel:author")
     when "hetushu"
       node_text(".book_info a:first-child")
@@ -112,7 +114,7 @@ class SeedInfo
 
   def parse_intro
     case @seed
-    when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       return "" unless text = meta_data("og:description")
       TextUtil.split_html(text).join("\n")
     when "zhwenpg"
@@ -130,7 +132,7 @@ class SeedInfo
 
   def parse_cover
     case @seed
-    when "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       meta_data("og:image")
     when "zhwenpg"
       node_attr(".cover_wrapper_m img", "data-src")
@@ -148,7 +150,7 @@ class SeedInfo
 
   def parse_genre
     case @seed
-    when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       meta_data("og:novel:category")
     when "hetushu"
       node_text(".title > a:nth-child(2)")
@@ -171,7 +173,7 @@ class SeedInfo
 
   def parse_status
     case @seed
-    when "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
       map_status(meta_data("og:novel:status"))
     when "hetushu"
       classes = node_attr(".book_info", "class").not_nil!
@@ -196,7 +198,7 @@ class SeedInfo
 
   def parse_mftime
     case @seed
-    when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
+    when "qu_la", "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
       text = meta_data("og:novel:update_time").not_nil!
       TimeUtil.parse(text).to_unix_ms
     when "69shu"
@@ -211,7 +213,7 @@ class SeedInfo
 
   def parse_latest : ChapInfo?
     case @seed
-    when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
+    when "qu_la", "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
       parse_latest_by_meta_tag()
     when "69shu"
       parse_latest_by_css(".mulu_list:first-of-type a:first-child")
@@ -242,7 +244,7 @@ class SeedInfo
 
   private def parse_scid(href : String)
     case @seed
-    when "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8", "hetushu"
+    when "qu_la", "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8", "hetushu"
       File.basename(href, ".html")
     when "69shu"
       File.basename(href)
@@ -265,6 +267,8 @@ class SeedInfo
       parse_zhwenpg_chapters
     when "69shu"
       parse_69shu_chaps
+    when "qu_la"
+      parse_qu_la_chaps
     else
       raise "Seed `#{@seed}` unsupported!"
     end
@@ -307,6 +311,26 @@ class SeedInfo
       end
     end
 
+    chaps
+  end
+
+  def parse_qu_la_chaps
+    chaps = [] of ChapInfo
+
+    @doc.css("h2.layout-tit").each do |h2|
+      label = h2.inner_text.strip
+      next if label.includes?("最新章节")
+      next unless ul = h2.next.try(&.css("ul > ul:first-child").first)
+
+      # puts ul.inner_text
+
+      ul.css("a").each do |link|
+        next unless href = link.attributes["href"]?
+        chaps << ChapInfo.new(parse_scid(href), link.inner_text, label)
+      end
+    end
+
+    fix_chapters_order(chaps)
     chaps
   end
 

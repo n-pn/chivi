@@ -10,12 +10,16 @@ def fetch_info(info, sbid, expiry = Time.utc) : Void
   puts task.latest.to_pretty_json
 
   puts task.chapters.size
+  puts task.chapters.first(4).to_pretty_json
   puts task.chapters.last(4).to_pretty_json
 end
 
-fetch_info("jx_la", "7")
+# fetch_info("qu_la", "7")
+fetch_info("qu_la", "179402")
+
+# fetch_info("jx_la", "7")
 fetch_info("jx_la", "179402")
-fetch_info("jx_la", "250502")
+# fetch_info("jx_la", "250502")
 
 # fetch_info("69shu", "22729")
 # fetch_info("69shu", "30062")

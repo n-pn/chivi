@@ -28,6 +28,8 @@ class SeedText
       "https://www.nofff.com/#{sbid}/#{scid}/"
     when "69shu"
       "https://www.69shu.com/txt/#{sbid}/#{scid}"
+    when "qu_la"
+      "https://www.qu.la/book/#{sbid}/#{scid}.html"
     when "jx_la"
       "https://www.jx.la/book/#{sbid}/#{scid}.html"
     when "rengshu"
@@ -88,7 +90,7 @@ class SeedText
 
   def parse_title!
     case @seed
-    when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge", "69shu"
+    when "qu_la", "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge", "69shu"
       title_text("h1")
     when "zhwenpg"
       title_text("h2")
@@ -108,7 +110,7 @@ class SeedText
 
   def parse_paras!
     case @seed
-    when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge"
+    when "qu_la", "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge"
       parse_paras!("#content")
     when "zhwenpg"
       parse_paras!("#tdcontent .content")

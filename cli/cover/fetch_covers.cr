@@ -63,8 +63,8 @@ infos.each do |info|
   FileUtils.mkdir_p(cover_dir)
   indexed = glob_dir(cover_dir)
 
-  info.cover_urls.each_value do |cover|
-    next if cover.empty?
+  info.cover_urls.each do |site, cover|
+    next if cover.empty? || site == "jx_la" || site == "paoshu8"
 
     unless cover.starts_with?("http")
       puts info.to_json

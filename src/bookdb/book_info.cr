@@ -121,7 +121,7 @@ class BookInfo
   end
 
   SEEDS = {
-    "hetushu", "jx_la", "rengshu",
+    "hetushu", "qu_la", "jx_la", "rengshu",
     "xbiquge", "nofff", "duokan8",
     "paoshu8", "69shu", "zhwenpg",
   }

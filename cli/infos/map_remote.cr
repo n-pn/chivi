@@ -10,7 +10,7 @@ require "../../src/kernel/chap_repo"
 
 class MapRemote
   SEEDS = {
-    "hetushu", "jx_la", "rengshu",
+    "hetushu", "qu_la", "jx_la", "rengshu",
     "xbiquge", "nofff", "duokan8",
     "paoshu8", "69shu",
   }
@@ -51,6 +51,7 @@ class MapRemote
   def self.default_upto(seed : String) : Int32
     case seed
     when "hetushu" then 4831
+    when "qu_la"   then 252941
     when "jx_la"   then 252941
     when "rengshu" then 4275
     when "xbiquge" then 52986
@@ -110,7 +111,10 @@ class MapRemote
     puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
   end
 
+  CACHED = ARGV.includes?("cached")
+
   def expiry_for(sbid : String)
+    return Time.utc - 1.year if CACHED
     return Time.utc - 9.months unless ubid = @crawled[sbid]?
     return Time.utc - 6.months unless @existed.includes?(ubid)
     return Time.utc - 3.months unless time = OrderMap.book_update.value(ubid)
