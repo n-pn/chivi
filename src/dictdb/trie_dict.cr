@@ -114,6 +114,10 @@ class TrieDict
     File.join(DIR, "#{dname}.dic")
   end
 
+  def self.init(name : String)
+    new(path_for(name), preload: false)
+  end
+
   def self.load!(name : String)
     new(path_for(name), preload: true)
   end

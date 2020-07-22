@@ -1,4 +1,4 @@
-require "../../src/models/book_info"
+require "../../src/bookdb/book_info"
 require "../../src/lookup/value_set"
 
 def split_chars(input)
@@ -8,7 +8,7 @@ def split_chars(input)
 end
 
 def extract_crucial_chars
-  crucial = ValueSet.new("var/.dict_inits/autogen/crutial-chars.txt", false)
+  crucial = ValueSet.new("var/.dict_inits/autogen/crutial-chars.txt", mode: 0)
 
   infos = BookInfo.load_all!
   infos.each do |info|

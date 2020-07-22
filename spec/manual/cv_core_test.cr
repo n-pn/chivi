@@ -11,8 +11,8 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-GENERIC = TrieDict.load! "data/cv_dicts/shared_base/generic.dic"
-COMBINE = TrieDict.load! "data/cv_dicts/shared_base/combine.dic"
+GENERIC = TrieDict.load! "data/trie_dicts/shared_base/generic.dic"
+COMBINE = TrieDict.load! "data/trie_dicts/shared_base/combine.dic"
 COMBINE.set("贾文和", "Giả Văn Hoà")
 
 DICTS = [GENERIC, COMBINE]

@@ -10,4 +10,4 @@ rsync -azi --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r "web/public" "$OUT/web/"
 # INP=var/._old_info
 # OUT=nipin@ssh.chivi.xyz:web/chivi/data
 
-# rsync -azui "$INP/cv_dicts" "$OUT"
+# rsync -azui "$INP/trie_dicts" "$OUT"

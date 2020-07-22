@@ -30,7 +30,7 @@ end
 puts "\n[Export generic]".colorize.cyan.bold
 
 inp_generic = Clavis.load("autogen/output/generic.txt", true)
-out_generic = TrieDict.load("generic", preload: false)
+out_generic = TrieDict.init("generic")
 
 inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
@@ -47,7 +47,7 @@ out_generic.save!
 puts "\n[Export suggest]".colorize.cyan.bold
 
 inp_suggest = Clavis.load("autogen/output/suggest.txt", true)
-out_suggest = TrieDict.load("suggest", preload: false)
+out_suggest = TrieDict.init("suggest")
 
 inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
@@ -64,7 +64,7 @@ out_suggest.save!
 puts "\n[Export combine]".colorize.cyan.bold
 
 inp_combine = Clavis.load("autogen/output/combine.txt", true)
-out_combine = TrieDict.load("combine", preload: false)
+out_combine = TrieDict.init("combine")
 
 inp_combine.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
@@ -77,7 +77,7 @@ out_combine.save!
 puts "\n[Export recycle]".colorize.cyan.bold
 
 inp_recycle = Clavis.load("autogen/output/recycle.txt", true)
-out_recycle = TrieDict.load("recycle", preload: false)
+out_recycle = TrieDict.init("recycle")
 
 inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)

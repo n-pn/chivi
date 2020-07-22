@@ -84,6 +84,7 @@
   import MIcon from '$mould/MIcon.svelte'
   import Layout from '$layout/Layout.svelte'
   import ChapList from '$reused/ChapList.svelte'
+  import BookCover from '$reused/BookCover.svelte'
 
   import relative_time from '$utils/relative_time'
   import paginate_range from '$utils/paginate_range'
@@ -152,11 +153,6 @@
   .cover {
     float: left;
     @include apply(width, screen-vals(40%, 30%, 25%));
-
-    > img {
-      width: 100%;
-      @include radius();
-    }
   }
 
   .link {
@@ -516,11 +512,9 @@
       </h1>
     </div>
 
-    <picture class="cover">
-      <source srcset="/images/{book.ubid}.webp" type="image/webp" />
-      <source srcset="/covers/{book.ubid}.jpg" type="image/jpeg" />
-      <img src="/covers/{book.ubid}.jpg" alt={book.vi_title} loading="lazy" />
-    </picture>
+    <div class="cover">
+      <BookCover ubid={book.ubid} curl={book.main_cover} text={book.vi_title} />
+    </div>
 
     <div class="extra">
       <div>

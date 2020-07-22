@@ -33,6 +33,8 @@
   import Layout from '$layout/Layout.svelte'
   import paginate_range from '$utils/paginate_range'
 
+  import BookCover from '$reused/BookCover.svelte'
+
   export let items = []
   export let total = 0
   export let query = {}
@@ -106,7 +108,7 @@
     margin-bottom: 3rem;
 
     @include hover {
-      .book-title {
+      .-title {
         @include fgcolor(primary, 5);
       }
     }
@@ -153,32 +155,32 @@
         // margin-top: -0.125rem;
       }
     }
-  }
 
-  .book-title {
-    width: 100%;
-    position: absolute;
-    bottom: -1.75rem;
-    font-weight: 500;
-    @include fgcolor(neutral, 7);
-    @include truncate();
-    @include font-size(3);
-    // line-height: 1rem;
-    // @include font-family(narrow);
-  }
+    .-title {
+      width: 100%;
+      position: absolute;
+      bottom: -1.75rem;
+      font-weight: 500;
+      @include fgcolor(neutral, 7);
+      @include truncate();
+      @include font-size(3);
+      // line-height: 1rem;
+      // @include font-family(narrow);
+    }
 
-  .book-cover {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    z-index: 1;
+    .-cover {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      z-index: 1;
 
-    img {
-      min-width: 100%;
-      max-height: 13.5rem;
-      object-fit: cover;
-      @include radius();
+      :global(img) {
+        min-width: 100%;
+        max-height: 13.5rem;
+        object-fit: cover;
+        @include radius();
+      }
     }
   }
 
@@ -189,21 +191,21 @@
 
     margin: 0.75rem 0;
     line-height: 2rem;
-  }
 
-  .order-type {
-    text-transform: uppercase;
-    padding: 0 0.5rem;
-    font-weight: 500;
-    @include truncate(null);
+    .-type {
+      text-transform: uppercase;
+      padding: 0 0.5rem;
+      font-weight: 500;
+      @include truncate(null);
 
-    @include fgcolor(neutral, 7);
-    @include font-size(2);
-    @include border();
-    @include radius();
-    &._active {
-      @include fgcolor(primary, 5);
-      @include bdcolor($color: primary, $shade: 5);
+      @include fgcolor(neutral, 7);
+      @include font-size(2);
+      @include border();
+      @include radius();
+      &._active {
+        @include fgcolor(primary, 5);
+        @include bdcolor($color: primary, $shade: 5);
+      }
     }
   }
 
@@ -283,7 +285,7 @@
   <div class="order">
     {#each Object.entries(order_names) as [type, label]}
       <a
-        class="order-type"
+        class="-type"
         class:_active={query.order === type}
         href={makePageUrl(1, { ...query, order: type })}>
         <span>{label}</span>
@@ -294,14 +296,16 @@
   <div class="list">
     {#each items as book}
       <a class="book" href={book.slug} rel="prefetch">
-        <picture class="book-cover">
-          <source srcset="/images/{book.ubid}.webp" type="image/webp" />
-          <source srcset="/covers/{book.ubid}.jpg" type="image/jpeg" />
-          <img src="/covers/{book.ubid}.jpg" alt="" loading="lazy" />
-        </picture>
+        <div class="-cover">
+          <BookCover
+            ubid={book.ubid}
+            curl={book.main_cover}
+            text={book.vi_title} />
+        </div>
 
-        <div class="book-title">{book.vi_title}</div>
+        <div class="-title">{book.vi_title}</div>
         <div class="-genre">{book.vi_genres[0]}</div>
+
         <div class="-score">
           <span class="--icon">⭐</span>
           <span class="--text">{book.voters < 10 ? '--' : book.rating}</span>

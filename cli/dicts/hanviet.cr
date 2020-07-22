@@ -1,6 +1,6 @@
 require "./utils/common"
 require "./utils/clavis"
-require "../../src/engine/cv_dict"
+require "../../src/dictdb/trie_dict"
 require "../../src/lookup/value_set"
 
 class Hanviet
@@ -21,13 +21,13 @@ class Hanviet
     true
   end
 
-  getter dict = TrieDict.load("hanviet", cache: false, preload: false)
+  getter output : TrieDict { TrieDict.init("hanviet") }
 
   def import_lacviet_chars!
     input = TrieDict.load
 
     input.each do |node|
-      @dict.upsert(node.key, node.vals)
+      output.upsert(node.key, node.vals)
     end
   end
 
@@ -37,7 +37,7 @@ class Hanviet
     input.each do |key, vals|
       next if key =~ /\P{Han}/
 
-      @dict.upsert(key) do |node|
+      output.upsert(key) do |node|
         if node.removed?
           node.vals = vals
         else
@@ -67,9 +67,9 @@ class Hanviet
   def transform_from_trad!
     HANZIDB.each do |key|
       next unless trad = TRADSIM.find(key)
-      next unless item = @dict.find(key)
+      next unless item = output.find(key)
 
-      @dict.upsert(trad.vals.first) do |node|
+      output.upsert(trad.vals.first) do |node|
         break unless node.vals.empty?
         node.vals = item.vals
         puts item
@@ -82,7 +82,7 @@ class Hanviet
     resolved = Clavis.load("hanviet/verified-chars.txt", true)
     # lacviet = Clavis.load("localqt/hanviet.txt", true)
 
-    @dict.each do |node|
+    output.each do |node|
       next if node.vals.size < 2
       next unless CRUCIAL.includes?(node.key)
       next if resolved.has_key?(node.key)
@@ -94,11 +94,11 @@ class Hanviet
 
   def save!
     CRUCIAL.each do |key|
-      next if @dict.has_key?(key)
+      next if output.has_key?(key)
       puts "#{key}="
     end
 
-    @dict.save!
+    output.save!
   end
 end
 
@@ -191,14 +191,14 @@ worker.save!
 #   puts "\n- Fill missing hanviet from vietphrase".colorize(:blue)
 
 #   localqt_dir = File.join(INP_DIR, "localqt")
-#   cv_dicts = {
+#   trie_dicts = {
 #     "#{localqt_dir}/vietphrase.txt",
 #     "#{localqt_dir}/names1.txt",
 #     "#{localqt_dir}/names2.txt",
 #   }
 #   recovered = 0
 
-#   cv_dicts.each do |file|
+#   trie_dicts.each do |file|
 #     Cvdict.load!(file).data.each do |key, val|
 #       next if key.size > 1 || !missing.includes?(key)
 #       out_hanviet.add(key, val.first)

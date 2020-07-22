@@ -4,7 +4,7 @@ require "json"
 require "./utils/common"
 require "./utils/clavis"
 
-require "../../src/engine/cv_dict"
+require "../../src/dictdb/trie_dict"
 require "../../src/lookup/value_set"
 
 puts "\n[Load counters]".colorize.cyan.bold

@@ -6,7 +6,7 @@ require "compress/zip"
 require "./utils/common"
 require "./utils/pinyin"
 
-require "../../src/engine/cv_dict"
+require "../../src/dictdb/trie_dict"
 require "../../src/_utils/normalize"
 
 class Entry
@@ -56,7 +56,7 @@ class CE_DICT
   CEDICT_URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 
   HANZIDB_FILE = Utils.inp_path("initial/hanzidb.txt")
-  HANZIDB_DICT = TrieDict.load_legacy(HANZIDB_FILE)
+  HANZIDB_DICT = TrieDict.read_legacy(HANZIDB_FILE)
 
   CE_DICT_FILE = Utils.out_path("system/cc_cedict.dic")
   TRADSIM_FILE = Utils.out_path("system/tradsim.dic")
@@ -177,7 +177,7 @@ class CE_DICT
     end
 
     dict = TrieDict.new(BINH_AM_FILE)
-    dict.load!(Utils.inp_path("initial/extra-pinyins.txt"), "=", "/")
+    dict.load_legacy!(Utils.inp_path("initial/extra-pinyins.txt"))
 
     HANZIDB_DICT.each do |entry|
       dict.upsert(entry.key, entry.vals) unless entry.vals.first.empty?

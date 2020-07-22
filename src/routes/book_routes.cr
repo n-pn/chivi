@@ -55,13 +55,15 @@ module Server
 
     items = infos.map do |info|
       {
-        ubid:      info.ubid,
-        slug:      info.slug,
-        vi_title:  info.vi_title,
-        vi_author: info.vi_author,
-        vi_genres: info.vi_genres,
-        rating:    info.rating,
-        voters:    info.voters,
+        ubid:       info.ubid,
+        slug:       info.slug,
+        vi_title:   info.vi_title,
+        zh_title:   info.zh_title,
+        vi_author:  info.vi_author,
+        vi_genres:  info.vi_genres,
+        main_cover: info.main_cover,
+        rating:     info.rating,
+        voters:     info.voters,
       }
     end
 

@@ -1,4 +1,4 @@
-require "../../src/engine/cv_dict"
+require "../../src/dictdb/trie_dict"
 
 test = Engine::TrieDict.new "spec/fixtures/test.txt"
 

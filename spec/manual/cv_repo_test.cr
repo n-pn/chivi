@@ -1,6 +1,6 @@
 require "../../src/engine/cv_repo"
 
-repo = CvRepo.new("data/cv_dicts")
+repo = CvRepo.new("data/trie_dicts")
 
 puts repo.hanviet.size
 puts repo.shared_base["generic"].time

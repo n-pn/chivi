@@ -1,4 +1,4 @@
-require "../../src/dictdb/trie_dict"
+require "../../src/dictdb/trie_dict""
 require "../../src/engine/convert"
 
 text = "第十三集 龙章凤仪 第一章 屠龙之术

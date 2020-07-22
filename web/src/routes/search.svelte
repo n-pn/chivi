@@ -20,6 +20,7 @@
 <script>
   import MIcon from '$mould/MIcon.svelte'
   import Layout from '$layout/Layout.svelte'
+  import BookCover from '$reused/BookCover.svelte'
 
   export let word = ''
   export let page = 1
@@ -100,7 +101,7 @@
       z-index: -1;
     }
 
-    > img {
+    :global(img) {
       width: 100%;
       height: auto;
       @include radius();
@@ -181,14 +182,18 @@
   <div class="list" data-page={page}>
     {#each items as book}
       <a class="book" href={book.slug} rel="prefetch">
-        <picture class="cover">
-          <source srcset="/images/{book.ubid}.webp" type="image/webp" />
-          <source srcset="/covers/{book.ubid}.jpg" type="image/jpeg" />
-          <img src="/covers/{book.ubid}.jpg" alt="" loading="lazy" />
-        </picture>
+        <div class="cover">
+          <BookCover
+            ubid={book.ubid}
+            curl={book.main_cover}
+            text={book.vi_title} />
+        </div>
 
         <div class="name">
-          <h2 class="title">{book.vi_title}</h2>
+          <h2 class="title">
+            {book.vi_title}
+            <span>({book.zh_title})</span>
+          </h2>
         </div>
 
         <div class="extra">

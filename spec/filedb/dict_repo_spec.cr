@@ -1,5 +1,5 @@
 require "../spec_helper"
-require "../../src/engine/cv_dict"
+require "../../src/dictdb/trie_dict"
 
 describe TrieDict do
   # TODO:
