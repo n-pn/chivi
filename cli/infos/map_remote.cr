@@ -149,11 +149,9 @@ class MapRemote
     BookRepo.update_info(info, remote)
 
     info.save! if info.changed?
-    expiry = Time.unix_ms(info.mftime)
+    expiry = Time.unix_ms(info.mftime) unless CACHED
 
     return unless ChapList.outdated?(info.ubid, @seed, expiry)
-    remote = SeedInfo.init(@seed, sbid, expiry: expiry, freeze: true)
-
     chlist = ChapList.get_or_create(info.ubid, @seed)
     chlist = ChapRepo.update_list(chlist, remote)
 
