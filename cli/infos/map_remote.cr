@@ -144,9 +144,7 @@ class MapRemote
     BookRepo.upsert_info(info)
     BookRepo.update_info(info, remote)
 
-    return unless info.changed?
-    info.save!
-
+    info.save! if info.changed?
     expiry = Time.unix_ms(info.mftime)
 
     return unless ChapList.outdated?(info.ubid, @seed, expiry)

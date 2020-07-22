@@ -28,7 +28,7 @@ module Kernel
       BookRepo.update_info(info, remote)
       info.save! if info.changed?
 
-      ChapRepo.update_list(chlist, remote)
+      ChapRepo.update_list(chlist, remote, dirty: reload, force: reload)
       chlist.save! if chlist.changed?
     end
 
