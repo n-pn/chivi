@@ -3,7 +3,7 @@ module ChapUtil
 
   NUMS = "零〇一二两三四五六七八九十百千"
   TAGS = "章节幕回折"
-  SEPS = ".，,、：:"
+  SEPS = ".，,、：: "
 
   SPLIT_RE_0 = /^(第[#{NUMS}\d]+[集卷].*?)(第?[#{NUMS}\d]+[#{TAGS}].*)$/
   SPLIT_RE_1 = /^(第[#{NUMS}\d]+[集卷].*?)(（\p{N}+）.*)$/
@@ -21,10 +21,10 @@ module ChapUtil
     {format_title(title), label}
   end
 
-  TITLE_RE_0 = /^第?([#{NUMS}\d]+)([#{TAGS}])[#{SEPS}\s]*(.*)$/
-  TITLE_RE_1 = /^\d+\.\s*第(.+)([#{TAGS}])[#{SEPS}\s]*(.+)/ # 69shu
-  TITLE_RE_2 = /^([#{NUMS}\d]+)[#{SEPS}\s]*(.*)$/
-  TITLE_RE_3 = /^\（(\p{N}+)\）[#{SEPS}\s]*(.*)$/
+  TITLE_RE_0 = /^第?([#{NUMS}\d]+)([#{TAGS}])[#{SEPS}]*(.*)$/
+  TITLE_RE_1 = /^\d+\.\s*第(.+)([#{TAGS}])[#{SEPS}]*(.+)/ # 69shu
+  TITLE_RE_2 = /^([#{NUMS}\d]+)[#{SEPS}]+(.*)$/
+  TITLE_RE_3 = /^\（(\p{N}+)\）[#{SEPS}]*(.*)$/
 
   def self.format_title(title : String)
     if match = TITLE_RE_0.match(title)
