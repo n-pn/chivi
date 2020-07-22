@@ -183,7 +183,7 @@ class BookInfo
   def save!(file : String = BookInfo.path_for(@ubid)) : Void
     color = changed? ? :yellow : :cyan
     puts "- <book_info> [#{file.colorize(color)}] saved \
-    (changes: #{@changes.colorize(color)})."
+            (changes: #{@changes.colorize(color)})."
 
     @changes = 0
     File.write(file, self)

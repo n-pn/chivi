@@ -225,7 +225,7 @@
     height: $header-height;
 
     display: flex;
-    @include border($sides: bottom);
+    @include border($sides: bottom, $shade: 3);
 
     .m-button {
       margin: 0.25rem 0.5rem;
@@ -261,8 +261,8 @@
     @include border($color: color(neutral, 1));
 
     &:focus {
-      @include bgcolor(white);
-      @include bdcolor($color: primary, $shade: 3);
+      // @include bgcolor(white);
+      @include bdcolor($color: primary, $shade: 4);
     }
   }
 
