@@ -127,8 +127,9 @@ module BookRepo
     info.slug = book_slug || check_slug(info, "#{title1_slug}-#{info.ubid}").not_nil!
 
     title2_slug = TextUtil.slugify(info.hv_title)
-    full_slug_2 = "#{title2_slug}--#{author_slug}"
 
+    return if title2_slug == title1_slug
+    full_slug_2 = "#{title2_slug}--#{author_slug}"
     check_slug(info, title2_slug) || check_slug(info, full_slug_2)
   end
 
