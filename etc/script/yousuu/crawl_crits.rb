@@ -78,4 +78,5 @@ page = 1
 while crawler.proxy_size > 0
   crawler.crawl!(page)
   page += 1
+  break if page = 5
 end

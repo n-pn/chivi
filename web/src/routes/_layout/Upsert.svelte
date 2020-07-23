@@ -267,7 +267,7 @@
   }
 
   .tabs {
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
     @include border($sides: bottom);
     @include flex($gap: 0.5rem);
     padding: 0 0.75rem;
