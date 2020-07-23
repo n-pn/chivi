@@ -201,6 +201,8 @@
   }
 
   .title {
+    font-weight: 300;
+    // @include fgcolor(neutral, 7);
     $line-heights: screen-vals(1.5rem, 1.75rem, 2rem);
     @include apply(line-height, $line-heights);
     $font-sizes: screen-vals(rem(26px), rem(28px), rem(30px));
