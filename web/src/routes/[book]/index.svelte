@@ -110,15 +110,15 @@
   $: status = mapStatus(book.status)
   $: keywords = prepareKeywords(book)
 
-  let loading = false
+  let __loading = false
 
   async function switchSite(source, reload = false) {
     seed = source
     if (reload == false && chlists[seed]) return
 
-    loading = true
+    __loading = true
     const { chlist, mftime } = await loadChlist(fetch, book.slug, seed, reload)
-    loading = false
+    __loading = false
 
     chlists[seed] = chlist
 
@@ -180,10 +180,14 @@
 
     @include apply(width, screen-vals(60%, 70%, 75%));
 
-    > div {
-      @include clearfix;
+    .-row {
       margin-bottom: 0.5rem;
-      @include flex($gap: 0.5rem);
+      @include flex($gap: 0);
+      flex-wrap: wrap;
+    }
+
+    .-col {
+      margin-right: 0.5rem;
     }
 
     &,
@@ -196,19 +200,19 @@
     }
   }
 
-  // h2 {
-  //   @include fgcolor(neutral, 6);
-  // }
-
   .title {
-    // margin-top: 0.75rem;
-    // margin: 0.25rem 0;
-
-    $font-sizes: screen-vals(rem(26px), rem(28px), rem(30px));
     $line-heights: screen-vals(1.5rem, 1.75rem, 2rem);
-
-    @include apply(font-size, $font-sizes);
     @include apply(line-height, $line-heights);
+    $font-sizes: screen-vals(rem(26px), rem(28px), rem(30px));
+    @include apply(font-size, $font-sizes);
+
+    .-sub {
+      font-size: 90%;
+      line-height: inherit;
+      // font-weight: 400;
+      // letter-spacing: 0.1em;
+      // @include fgcolor(neutral, 7);
+    }
   }
 
   .summary {
@@ -234,13 +238,6 @@
     //
   }
 
-  .subtitle {
-    // letter-spacing: 0.1em;
-    // font-weight: 400;
-    font-size: 85%;
-    // @include fgcolor(neutral, 6);
-  }
-
   .info {
     padding-top: 0.75rem;
   }
@@ -261,7 +258,7 @@
     }
   }
 
-  ._loading {
+  .__loading {
     @include fgcolor(neutral, 5);
 
     :global(svg) {
@@ -326,28 +323,33 @@
 
   $meta-height: 3rem;
   .meta-header {
-    @include border($sides: bottom, $color: color(neutral, 3));
     height: $meta-height;
     display: flex;
-  }
+    @include border($sides: bottom, $color: neutral, $shade: 3);
 
-  .meta-header-tab {
-    height: $meta-height;
-    line-height: $meta-height;
-    width: 50%;
-    font-weight: 500;
-    text-align: center;
-    text-transform: uppercase;
+    .-tab {
+      height: $meta-height;
+      line-height: $meta-height;
+      width: 50%;
+      font-weight: 500;
+      text-align: center;
+      text-transform: uppercase;
 
-    @include font-size(2);
-    @include screen-min(sm) {
-      @include font-size(3);
-    }
+      @include font-size(2);
+      @include screen-min(sm) {
+        @include font-size(3);
+      }
 
-    @include fgcolor(neutral, 6);
-    &._active {
-      @include fgcolor(primary, 6);
-      @include border($sides: bottom, $color: color(primary, 5), $width: 2px);
+      @include fgcolor(neutral, 6);
+      &._active {
+        @include fgcolor(primary, 6);
+        @include border(
+          $sides: bottom,
+          $color: primary,
+          $shade: 5,
+          $width: 2px
+        );
+      }
     }
   }
 
@@ -378,6 +380,7 @@
   .latests {
     width: 100%;
     max-width: 100%;
+    margin-bottom: 0.75rem;
 
     tr {
       width: 100%;
@@ -444,7 +447,8 @@
   }
 
   .latest-chap {
-    width: 35rem;
+    width: 40vw;
+    @include truncate(null);
 
     max-width: 60vw;
     @include screen-min(sm) {
@@ -457,7 +461,7 @@
 
   .latest-link {
     display: block;
-    @include truncate();
+    @include truncate(null);
 
     width: auto;
     padding: 0.375rem 0.75rem;
@@ -507,8 +511,8 @@
   <section class="info">
     <div class="name">
       <h1 class="title">
-        {book.vi_title}
-        <span class="subtitle">- {book.zh_title}</span>
+        <span class="-main">{book.vi_title}</span>
+        <span class="-sub">({book.zh_title})</span>
       </h1>
     </div>
 
@@ -517,43 +521,45 @@
     </div>
 
     <div class="extra">
-      <div>
-        <span class="author">
+      <div class="-row">
+        <span class="-col author">
           <MIcon class="m-icon" name="pen-tool" />
           <a href="search?kw={book.vi_author}&type=author">{book.vi_author}</a>
         </span>
-        {#each book.vi_genres.slice(0, 3) as genre}
-          <span class="genre">
+
+        {#each book.vi_genres as genre}
+          <span class="-col genre">
             <MIcon class="m-icon" name="book" />
             <a href="/?genre={genre}">{genre}</a>
           </span>
         {/each}
       </div>
-      <div>
-        <span class="status">
+
+      <div class="-row">
+        <span class="-col status">
           <MIcon class="m-icon" name="activity" />
           {status}
         </span>
-        <span class="mftime">
+        <span class="-col mftime">
           <MIcon class="m-icon" name="clock" />
           <time datetime={update}>{relative_time(book.mftime)}</time>
         </span>
       </div>
 
-      <div>
-        <span>
+      <div class="-row">
+        <span class="-col">
           Đánh giá:
           <strong>{book.voters < 10 ? '--' : book.rating}</strong>
           /10
         </span>
-        <span>({book.voters} lượt đánh giá)</span>
+        <span class="-col">({book.voters} lượt đánh giá)</span>
       </div>
 
       {#if book.origin_url !== ''}
-        <div>
-          <span>Liên kết:</span>
+        <div class="-row">
+          <span class="-col">Liên kết:</span>
           <a
-            class="link"
+            class="-col link"
             href={book.origin_url}
             rel="nofollow noreferer"
             target="_blank">
@@ -562,7 +568,7 @@
 
           {#if book.yousuu_bid !== ''}
             <a
-              class="link"
+              class="-col link"
               href="https://www.yousuu.com/book/{book.yousuu_bid}"
               rel="nofollow noreferer"
               target="_blank">
@@ -577,21 +583,23 @@
   <section class="meta">
     <header class="meta-header">
       <a
-        class="meta-header-tab"
+        class="-tab"
         class:_active={tab == 'overview'}
         href="/{book.slug}?tab=overview"
         on:click|preventDefault={() => changeTab('overview')}>
         Tổng quan
       </a>
+
       <a
-        class="meta-header-tab"
+        class="-tab"
         class:_active={tab == 'content'}
         href="/{book.slug}?tab=content&seed={seed}"
         on:click|preventDefault={() => changeTab('content')}>
         Mục lục
       </a>
+
       <a
-        class="meta-header-tab"
+        class="-tab"
         class:_active={tab == 'reviews'}
         href="/{book.slug}?tab=reviews"
         on:click|preventDefault={() => changeTab('reviews')}>
@@ -608,7 +616,7 @@
       </div>
 
       {#if hasContent}
-        <h2>Mới nhất:</h2>
+        <h2>Chương tiết:</h2>
 
         <table class="latests">
           <thead>
@@ -633,9 +641,9 @@
                 <td class="latest-time">
                   <span
                     class="latest-text _update"
-                    class:_loading={seed == name && loading}
+                    class:__loading={seed == name && __loading}
                     on:click={() => switchSite(name, true)}>
-                    {#if seed == name && loading}
+                    {#if seed == name && __loading}
                       <MIcon class="m-icon" name="loader" />
                     {:else}
                       <span>{relative_time(book.seed_mftimes[name])}</span>
@@ -671,9 +679,9 @@
 
           <button
             class="m-button _text u-fr"
-            class:_loading={loading}
+            class:__loading
             on:click={() => switchSite(seed, true)}>
-            {#if loading}
+            {#if __loading}
               <MIcon class="m-icon" name="loader" />
             {:else}
               <MIcon class="m-icon" name="clock" />
