@@ -18,6 +18,10 @@ TAGS   = TokenMap.init("indexes/tokens/vi_tags")
 def fix_indexes(info : BookInfo)
   # update tokens
   BookRepo.upsert_info(info, force: true)
+  if mftime = info.seed_mftimes["hetushu"]?
+    info.seed_mftimes["hetushu"] = info.mftime if info.mftime > mftime
+  end
+
   info.save! if info.changed?
 
   BookRepo::Utils.update_token(GENRES, info.ubid, info.vi_genres)

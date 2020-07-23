@@ -110,7 +110,7 @@ class UserInfo
   end
 end
 
-user = UserInfo.new("admin@chivi.xyz")
-puts user
+# user = UserInfo.new("admin@chivi.xyz")
+# puts user
 
-puts user.match_pass?("chivi.xyz")
+# puts user.match_pass?("chivi.xyz")

@@ -35,14 +35,17 @@
   function makeSuggests(tab, reject, accept) {
     let hanviet = props.hanviet
     if (hanviet == reject) reject = null
-    let output = [hanviet]
-    if (tab == 'special') output.push(titleize(hanviet, 9))
 
-    output = output.concat(props.suggest.vals)
-    output = output.concat(props.special.vals)
-    output = output.concat(props.generic.vals)
+    let output = [
+      hanviet,
+      ...props.suggest.vals,
+      ...props.special.vals,
+      ...props.generic.vals,
+    ]
 
+    if (tab === 'special') output.push(titleize(hanviet, 9))
     if (accept) output.push(accept)
+
     return output.filter((v, i, s) => s.indexOf(v) === i && v !== reject)
   }
 
@@ -85,7 +88,7 @@
 
       suggests = makeSuggests(tab, newValue, oldValue)
 
-      if (suggests.length > 0) outValue = suggests[0]
+      if (suggests.length > 0) outValue = suggests[suggests.length - 1]
       else outValue = newValue
     }
   }
@@ -343,7 +346,7 @@
 
   .hints {
     // width: 100%;
-    height: $suggests-height;
+    // height: $suggests-height;
 
     padding: 0.25rem 0.5rem;
 
@@ -394,26 +397,26 @@
       font-size: rem(12px);
     }
 
-    .cap,
-    .etc {
+    .-cap,
+    .-etc {
       display: flex;
     }
 
-    .etc {
+    .-etc {
       margin-left: auto;
     }
 
-    .btn {
+    .-btn {
       display: inline-block;
+      cursor: pointer;
       padding: 0 0.375rem;
-      line-height: 2rem;
-      text-transform: uppercase;
+      line-height: 2.25rem;
       font-weight: 500;
-      @include fgcolor(neutral, 5);
+      text-transform: uppercase;
 
       max-width: 14vw;
-      cursor: pointer;
       @include truncate(null);
+      @include fgcolor(neutral, 5);
 
       @include hover {
         @include fgcolor(primary, 5);
@@ -493,19 +496,19 @@
           bind:value={outValue} />
 
         <div class="format">
-          <div class="cap">
-            <span class="btn" on:click={() => updateCase(1)}>Hoa 1 chữ</span>
-            <span class="btn" on:click={() => updateCase(2)}>Hai chữ</span>
-            <span class="btn" on:click={() => updateCase(3)}>Ba chữ</span>
-            <span class="btn" on:click={() => updateCase(99)}>Toàn bộ</span>
-            <span class="btn" on:click={() => updateCase(0)}>Không hoa</span>
+          <div class="-cap">
+            <span class="-btn" on:click={() => updateCase(1)}>Hoa 1 chữ</span>
+            <span class="-btn" on:click={() => updateCase(2)}>Hai chữ</span>
+            <span class="-btn" on:click={() => updateCase(3)}>Ba chữ</span>
+            <span class="-btn" on:click={() => updateCase(99)}>Toàn bộ</span>
+            <span class="-btn" on:click={() => updateCase(0)}>Không hoa</span>
           </div>
 
-          <div class="etc">
-            <span class="btn" on:click={() => (outValue = defaultVal(tab))}>
+          <div class="-etc">
+            <span class="-btn" on:click={() => (outValue = defaultVal(tab))}>
               Phục
             </span>
-            <span class="btn" on:click={() => (outValue = '')}>Xoá</span>
+            <span class="-btn" on:click={() => (outValue = '')}>Xoá</span>
           </div>
         </div>
       </div>
