@@ -121,9 +121,10 @@ class BookInfo
   end
 
   SEEDS = {
-    "hetushu", "qu_la", "jx_la", "rengshu",
+    "hetushu", "jx_la", "rengshu",
     "xbiquge", "nofff", "duokan8",
     "paoshu8", "69shu", "zhwenpg",
+    "qu_la",
   }
 
   # create new seed if not existed

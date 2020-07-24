@@ -3,9 +3,8 @@ require "colorize"
 require "file_utils"
 
 require "../src/engine"
-require "../src/models/book_info"
-require "../src/models/chap_list"
-require "../src/parser/seed_info"
+require "../src/kernel/book_repo"
+require "../src/kernel/chap_repo"
 
 def translate(input : String, dname : String)
   return input if input.empty?
@@ -37,37 +36,25 @@ end
 SKIP_PAOSHU8 = ARGV.includes?("skip_paoshu8")
 
 def update_infos(info, label)
-  return if info.seed_infos.empty?
+  return if info.seed_names.empty?
   puts "- <#{label}> #{info.ubid}--#{info.slug}".colorize.cyan.bold
 
-  expiry = gen_expiry(info.status)
+  expiry = Time.utc - gen_expiry(info.status)
 
-  info.seed_infos.each_value do |seed|
-    next if seed.type > 0
-    next if SKIP_PAOSHU8 && seed.name == "paoshu8"
+  info.seed_sbids.each do |name, sbid|
+    next unless info.seed_types[name]? == 0
+    next if SKIP_PAOSHU8 && name == "paoshu8"
 
-    remote = SeedInfo.new(seed.name, seed.sbid, expiry: expiry, freeze: true)
-    remote.emit_book_info(info)
+    remote = SeedInfo.init(name, sbid, expiry: expiry, freeze: true)
+    BookRepo.update_info(info, remote)
 
-    if info.changed?
-      latest = translate_chap(seed.latest, info.ubid)
-      info.update_seed(seed.name, seed.sbid, remote.mftime, latest)
-      info.save!
-    end
+    next unless ChapList.outdated?(info.ubid, name, Time.unix_ms(info.mftime))
+    chlist = ChapList.get!(info.ubid, name)
 
-    if ChapList.outdated?(info.ubid, seed.name, Time.unix_ms(info.mftime))
-      chaps = remote.emit_chap_list
-    else
-      chaps = ChapList.get!(info.ubid, seed.name)
-    end
-
-    chaps.each_with_index do |chap, idx|
-      chaps.upsert(translate_chap(chap, info.ubid), idx)
-    end
-
-    chaps.save! if chaps.changed?
+    ChapRepo.update_list(chlist, remote)
+    chlist.save! if chlist.changed?
   rescue err
-    puts "- <cv_chap_list> error loading: [#{seed.name}/#{seed.sbid}]:  #{err}".colorize.red
+    puts "- <cv_chap_list> error loading: [#{name}/#{sbid}]:  #{err}".colorize.red
   end
 end
 
