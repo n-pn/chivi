@@ -41,5 +41,8 @@ dependencies:
     github: kemalcr/kemal
     branch: master
 
+  kemal-session:
+    github: kemalcr/kemal-session
+
   myhtml:
     github: kostya/myhtml

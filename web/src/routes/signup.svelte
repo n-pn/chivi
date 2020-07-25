@@ -5,18 +5,19 @@
   import { user } from '$src/stores'
 
   let email = ''
+  let uname = ''
   let upass = ''
   let error
 
   async function submit(evt) {
     error = null
 
-    const res = await fetch('_login', {
+    const res = await fetch('_signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, upass }),
+      body: JSON.stringify({ email, uname, upass }),
     })
 
     const data = await res.json()
@@ -25,7 +26,27 @@
       $user = { uname: data.uname, power: data.power }
       _goto('/')
     } else {
-      error = true
+      error = error_message(data.msg)
+    }
+  }
+
+  function error_message(msg) {
+    switch (msg) {
+      case 'email too short':
+      case 'invalid email format':
+        return 'Địa chỉ hòm thư không hợp lệ'
+      case 'email existed':
+        return 'Địa chỉ hòm thư đã được sử dụng'
+      case 'username too short':
+        return 'Tên người dùng quá ngắn (cần ít nhất 5 ký tự)'
+      case 'invalid username format':
+        return 'Tên người dùng không hợp lệ'
+      case 'username existed':
+        return 'Tên người dùng đã được sử dụng'
+      case 'password too short':
+        return 'Mật khẩu quá ngắn (cần ít nhất 7 ký tự)'
+      default:
+        return 'Không rõ lỗi, xin liên hệ ban quản trị'
     }
   }
 </script>
@@ -141,6 +162,17 @@
     </div>
 
     <div class="input">
+      <label for="cname">Tên người dùng</label>
+      <input
+        type="text"
+        id="cname"
+        name="cname"
+        placeholder="Tên người dùng"
+        required
+        bind:value={uname} />
+    </div>
+
+    <div class="input">
       <label for="cpass">Mật khẩu</label>
       <input
         type="password"
@@ -152,15 +184,15 @@
     </div>
 
     {#if error}
-      <div class="error">Email hoặc mật khẩu không đúng!</div>
+      <div class="error">{error}</div>
     {/if}
 
     <footer>
-      <a href="/signup" class="m-button _line">Tài khoải mới</a>
+      <a href="/login" class="m-button _line">Đăng nhập</a>
 
-      <button type="submit" class="m-button _primary login">
-        <MIcon class="m-icon _login" name="log-in" />
-        <span>Đăng nhập</span>
+      <button type="submit" class="m-button _success login">
+        <MIcon class="m-icon _signup" name="user-plus" />
+        <span>Tạo tài khoản</span>
       </button>
     </footer>
   </form>

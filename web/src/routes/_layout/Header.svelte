@@ -98,7 +98,6 @@
   :global(.header-text) {
     text-transform: uppercase;
     font-weight: 500;
-    letter-spacing: 0.05em;
 
     @include font-size(2);
 
@@ -118,6 +117,7 @@
 
     ._brand & {
       @include font-size(3);
+      letter-spacing: 0.1em;
     }
 
     &._title {
@@ -169,13 +169,17 @@
 
       padding: 0 0.75rem;
       line-height: 2.25rem;
-      text-transform: uppercase;
+      // text-transform: uppercase;
       font-weight: 500;
       @include fgcolor(neutral, 6);
 
-      @include hover {
+      &:hover {
         @include fgcolor(primary, 6);
         @include bgcolor(neutral, 2);
+      }
+
+      span {
+        margin-left: 0.25rem;
       }
     }
   }
@@ -237,19 +241,24 @@
 
       <span class="header-item _menu">
         <MIcon class="m-icon _user" name="user" />
-        <span class="header-text _show-md">{$user.uname}</span>
+        <span class="header-text _show-md">
+          {$user.power < 0 ? 'Khách' : $user.uname}
+        </span>
 
         <div class="header-menu">
           <div class="-head">
             <MIcon class="m-icon _user" name="user" />
             <span class="-uname">{$user.uname}</span>
-            <span class="-power">({$user.power})</span>
           </div>
 
           {#if $user.power < 0}
             <a href="/login" class="-item">
               <MIcon class="m-icon _log-in" name="log-in" />
               <span>Đăng nhập</span>
+            </a>
+            <a href="/signup" class="-item">
+              <MIcon class="m-icon _user-plus" name="user-plus" />
+              <span>Đăng ký</span>
             </a>
           {:else}
             <a href="/_logout" class="-item" on:click|preventDefault={logout}>

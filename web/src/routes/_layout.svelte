@@ -33,7 +33,7 @@
     if (data.status == 'ok') {
       $user = { uname: data.uname, power: data.power }
     } else {
-      $user = { uname: 'Guest', power: -1 }
+      $user = { uname: 'Khách', power: -1 }
     }
   })
 </script>

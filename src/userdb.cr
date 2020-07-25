@@ -18,8 +18,8 @@ module UserDB
   end
 
   def create(email : String, uname : String, upass = "chivi.xyz", group = "guest", power = 1)
-    raise "email `#{email}` existed" if user_mails.has_key?(email)
-    raise "uname `#{uname}` existed" if user_names.has_key?(uname)
+    raise "email existed" if user_mails.has_key?(email)
+    raise "username existed" if user_names.has_key?(uname)
 
     user = UserInfo.new(email, uname, upass)
     user.group = group

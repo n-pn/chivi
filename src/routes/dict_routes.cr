@@ -1,5 +1,7 @@
 require "./_utils"
 require "../engine"
+require "../userdb"
+require "../dictdb"
 
 module Server
   alias LookupEntry = Hash(String, Array(String))
@@ -53,22 +55,31 @@ module Server
     {
       hanviet: Engine.hanviet(input, false).vi_text,
       binh_am: Engine.binh_am(input, false).vi_text,
-      generic: Engine.search(input, "generic"),
-      special: Engine.search(input, dname),
+      generic: DictDB.search(input, "generic"),
+      special: DictDB.search(input, dname),
       suggest: suggest,
     }.to_json(env.response)
   end
 
   get "/_upsert" do |env|
-    uname = env.get("uname").as(String)
-    dname = env.params.query.fetch("dname", "combine")
     power = env.params.query.fetch("power", "0").to_i? || 0
+
+    if uslug = env.session.string("uslug")
+      user = UserInfo.get!(uslug)
+      uname = user.uname
+      power = user.power if power > user.power
+    else
+      uname = "guest"
+      power = 0
+    end
+
+    dname = env.params.query.fetch("dname", "combine")
 
     key = env.params.query.fetch("key", "")
     vals = env.params.query.fetch("vals", "")
     extra = env.params.query.fetch("extra", "")
 
-    if Engine.upsert(dname, uname, power, key, vals, extra)
+    if DictDB.upsert(dname, uname, power, key, vals, extra)
       {msg: "accepted"}.to_json(env.response)
     else
       {msg: "rejected"}.to_json(env.response)

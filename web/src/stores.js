@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 
-export const user = writable({ uname: 'Guest', power: -1 })
+export const user = writable({ uname: 'Khách', power: -1 })
 
 export const header = writable({ page: 'index', query: '' })
 export const layout = writable({ shift: false, clear: false })

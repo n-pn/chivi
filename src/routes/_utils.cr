@@ -1,4 +1,5 @@
 require "kemal"
+require "kemal-session"
 
 require "../engine"
 require "../kernel"

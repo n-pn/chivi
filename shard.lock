@@ -8,6 +8,10 @@ shards:
     git: https://github.com/kemalcr/kemal.git
     version: 0.26.1+git.commit.dfe7dca08f4c9a9456d6132af5f6b59fcd6865e4
 
+  kemal-session:
+    git: https://github.com/kemalcr/kemal-session.git
+    version: 0.12.1
+
   kilt:
     git: https://github.com/jeromegn/kilt.git
     version: 0.4.0
