@@ -189,7 +189,9 @@
     {/if}
 
     <footer>
-      <a href="/login" class="m-button _line">Đăng nhập</a>
+      <a href="/login" class="m-button _line">
+        <span>Đăng nhập</span>
+      </a>
 
       <button type="submit" class="m-button _success login">
         <MIcon class="m-icon _signup" name="user-plus" />
