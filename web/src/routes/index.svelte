@@ -89,8 +89,9 @@
   }
 
   function changePage(newPage = 2) {
-    if (newPage >= 1 && newPage <= pageMax)
-      _goto(makePageUrl(newPage, query.order))
+    if (newPage >= 1 && newPage <= pageMax) {
+      _goto(makePageUrl(newPage, query))
+    }
   }
 </script>
 
