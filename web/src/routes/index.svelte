@@ -51,7 +51,11 @@
   $: pageMax = Math.floor((total - 1) / 20) + 1
   $: pageList = paginate_range(page, pageMax)
 
+  let searching = false
+
   function handleKeypress(evt) {
+    if (searching) return
+
     switch (evt.keyCode) {
       case 72:
         evt.preventDefault()
@@ -280,7 +284,12 @@
 
 <Header>
   <form slot="left" class="header-field" action="/search" method="get">
-    <input type="search" name="kw" placeholder="Tìm kiếm" />
+    <input
+      type="search"
+      name="kw"
+      placeholder="Tìm kiếm"
+      on:focus={() => (searching = true)}
+      on:onfocusout={() => (searching = false)} />
     <MIcon class="m-icon _search" name="search" />
   </form>
 </Header>
