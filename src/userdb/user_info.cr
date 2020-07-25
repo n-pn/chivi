@@ -7,9 +7,8 @@ require "../common/uuid_util"
 class UserInfo
   include JsonData
 
-  property uuid = ""
-
   property email = ""
+  property uslug = ""
   property uname = ""
   property cpass = ""
 
@@ -32,7 +31,7 @@ class UserInfo
 
   def set_email(email : String)
     @email = email.strip
-    @uuid = UuidUtil.digest32(@email.downcase)
+    @uslug = UuidUtil.digest32(@email.downcase)
   end
 
   def set_uname(uname : String)
@@ -57,7 +56,7 @@ class UserInfo
     to_json(io)
   end
 
-  def save!(file : String = UserInfo.path_for(@uuid))
+  def save!(file : String = UserInfo.path_for(@uslug))
     color = changed? ? :yellow : :cyan
     puts "- <user_info> [#{file.colorize(color)}] saved \
             (changes: #{@changes.colorize(color)})."
@@ -71,12 +70,12 @@ class UserInfo
   DIR = File.join("var", "userdb", "infos")
   FileUtils.mkdir_p(DIR)
 
-  def path_for(name : String)
-    File.join(DIR, "#{name}.json")
+  def self.path_for(uslug : String)
+    File.join(DIR, "#{uslug}.json")
   end
 
-  def existed?(name : String)
-    File.existed?(path_for(name))
+  def self.existed?(uslug : String)
+    File.existed?(path_for(uslug))
   end
 
   def self.read!(file : String)
@@ -90,12 +89,12 @@ class UserInfo
     File.delete(file)
   end
 
-  def self.get!(name : String)
-    read!(path_for(name))
+  def self.get!(uslug : String)
+    read!(path_for(uslug))
   end
 
-  def self.get(name : String)
-    read(path_for(name))
+  def self.get(uslug : String)
+    read(path_for(uslug))
   end
 
   CACHE = {} of String => UserInfo

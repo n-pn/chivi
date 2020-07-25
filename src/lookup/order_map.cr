@@ -214,6 +214,10 @@ class OrderMap
     new(file, mode: 2)
   end
 
+  def self.read(file : String) : OrderMap
+    new(file, mode: 1)
+  end
+
   # load file if exists, else raising exception
   def self.load!(name : String) : OrderMap
     new(path_for(name), mode: 2)

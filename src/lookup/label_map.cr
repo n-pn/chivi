@@ -107,6 +107,10 @@ class LabelMap
     new(file, mode: 2)
   end
 
+  def self.read(file : String) : LabelMap
+    new(file, mode: 1)
+  end
+
   def self.load!(name : String) : LabelMap
     new(path_for(name), mode: 2)
   end

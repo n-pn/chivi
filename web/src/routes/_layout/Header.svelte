@@ -1,154 +1,248 @@
 <script>
-  import { lookup_pinned, lookup_active } from '$src/stores.js'
+  import { user } from '$src/stores'
+
+  import MIcon from '$mould/MIcon.svelte'
+
+  export let segment = ''
+
+  async function logout() {
+    $user = { uname: 'Guest', power: -1 }
+    document.cookie = 'uslug=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+    const res = await fetch('_logout')
+  }
 </script>
 
-<header class="header" class:_tilt={$lookup_pinned && $lookup_active}>
-  <form action="/search" method="get">
-    <nav class="header-nav">
-      <slot>
-        <div class="left">
-          <a href="/" class="header-item _logo _active">
-            <img src="/logo.svg" alt="logo" />
-            <span>Chivi</span>
-          </a>
-
-          <input
-            type="search"
-            name="kw"
-            class="header-item _input"
-            placeholder="Tìm kiếm"
-            on:focus={(evt) => evt.stopPropagation()} />
-
-        </div>
-      </slot>
-    </nav>
-  </form>
-</header>
-
 <style lang="scss">
-  $outer-height: 3rem;
-  $inner-height: 2.25rem;
-  $gutter: ($outer-height - $inner-height) / 2;
+  $header-height: 3rem;
+  $header-inner-height: 2.25rem;
+  $header-gutter: ($header-height - $header-inner-height) / 2;
 
   .header {
     position: sticky;
+    z-index: 800;
+
     top: 0;
     left: 0;
-    width: 100%;
-    height: $outer-height;
-    z-index: 800;
+
+    max-width: 100%;
+    height: $header-height;
+
+    color: #fff;
+    transition: transform 0.1s ease-in-out;
+
     @include bgcolor(primary, 7);
     @include shadow(2);
 
-    &._tilt {
-      @include screen-min(lg) {
-        margin-right: 30rem;
-      }
-    }
-  }
-
-  .header-nav {
-    margin: 0 auto;
-    width: 54rem;
-    max-width: 100%;
-
-    display: flex;
-    padding: $gutter 0.75rem;
-    line-height: $inner-height;
-    color: #fff;
-
-    :global(.left) {
-      display: flex;
-      margin-right: auto;
+    :global(.__clear) & {
+      transform: translateY(-$header-height);
     }
 
-    :global(.right) {
+    .-wrap {
       display: flex;
+      padding-top: $header-gutter;
+      padding-bottom: $header-gutter;
+    }
+
+    .-left,
+    .-right {
+      @include flex($gap: $header-gutter, $child: ':global(*)');
+    }
+
+    .-left {
+      flex-grow: 1;
+    }
+
+    .-right {
       margin-left: auto;
-      padding-left: $gutter;
+      padding-left: $header-gutter;
     }
   }
 
   :global(.header-item) {
     display: inline-flex;
-    cursor: pointer;
+    position: relative;
 
     text-decoration: none;
     padding: 0 0.5rem;
 
-    height: $inner-height;
-
-    text-transform: uppercase;
-    font-weight: 500;
+    min-width: $header-inner-height;
+    height: $header-inner-height;
+    line-height: $header-inner-height;
 
     @include fgcolor(neutral, 2);
-
-    @include radius();
-    @include font-size(2);
-
     @include bgcolor(primary, 6);
 
-    @include hover() {
-      @include bgcolor(primary, 5);
-    }
+    @include radius();
 
-    & + & {
-      margin-left: $gutter;
+    @include hover() {
+      cursor: pointer;
+      @include bgcolor(primary, 5);
     }
 
     &._active {
       @include bgcolor(primary, 5);
     }
 
-    &._title {
-      max-width: 40vw;
-      @include screen-min(sm) {
-        max-width: 50vw;
-      }
-      @include screen-min(md) {
-        max-width: 60vw;
-      }
-    }
-
-    &._index {
-      max-width: 20vw;
-      @include screen-min(sm) {
-        max-width: 40vw;
-      }
-      @include screen-min(md) {
-        max-width: 60vw;
-      }
-    }
-
-    :global(span) {
-      @include truncate(100%);
-    }
-
     :global(img),
     :global(svg) {
-      display: inline-block;
       margin: 0.5rem 0;
       width: 1.25rem;
       height: 1.25rem;
     }
+  }
 
-    &._logo {
-      letter-spacing: 0.1em;
-      @include font-size(3);
+  :global(.header-text) {
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-left: 0.25rem;
+    letter-spacing: 0.05em;
+    @include font-size(2);
 
-      > span {
-        margin-left: 0.25rem;
+    &._hide {
+      display: none;
+      @include screen-min(md) {
+        display: inline-block;
       }
     }
 
-    &._input {
+    ._brand & {
+      @include font-size(3);
+    }
+  }
+
+  .header-menu {
+    position: absolute;
+    display: none;
+    width: 12rem;
+
+    .header-item:hover > & {
+      display: block;
+      top: $header-inner-height;
+      right: 0;
+      @include bgcolor(#fff);
+      @include shadow;
+      @include radius;
+      padding-bottom: 0.5rem;
+    }
+
+    :global(.m-icon) {
+      margin: 0;
+    }
+
+    .-head {
+      padding: 0 0.75rem;
+      margin-bottom: 0.5rem;
+      line-height: 3rem;
+      font-weight: 500;
+      @include font-size(4);
+      @include fgcolor(neutral, 6);
+      @include border($sides: bottom);
+      // @include bgcolor(neutral, 2);
+      @include radius($sides: top);
+
+      :global(.m-icon) {
+        width: 1.75rem;
+        height: 1.75rem;
+        margin-top: -0.25rem;
+        margin-left: -0.25rem;
+      }
+    }
+
+    .-item {
+      display: block;
+
+      padding: 0 0.75rem;
+      line-height: 2.25rem;
+      text-transform: uppercase;
+      font-weight: 500;
+      @include fgcolor(neutral, 6);
+
+      @include hover {
+        @include fgcolor(primary, 6);
+        @include bgcolor(neutral, 2);
+      }
+    }
+  }
+
+  :global(.header-field) {
+    position: relative;
+    padding: 0;
+    // flex-grow: 1;
+
+    cursor: text;
+    border-radius: $header-inner-height / 2;
+    height: $header-inner-height;
+    line-height: $header-inner-height;
+
+    > :global(input) {
+      color: inherit;
+      padding: 0 1rem;
+      display: block;
+      // font-weight: 500;
+      width: 100%;
       border: none;
       outline: none;
-      cursor: text;
+      border-radius: $header-inner-height / 2;
+
+      @include bgcolor(darken(color(primary, 7), 5%));
+
       &::placeholder {
         @include fgcolor(neutral, 5);
       }
-      @include bgcolor(darken(color(primary, 7), 5%));
+    }
+
+    > :global(.m-icon) {
+      position: absolute;
+      // display: flex;
+      padding: 0;
+      margin: 0;
+      right: 0.875rem;
+      top: 0.625rem;
+      width: 1.125rem;
+      height: 1.125rem;
+      @include fgcolor(neutral, 5);
     }
   }
 </style>
+
+<header class="header" data-page={segment}>
+  <nav class="wrapper -wrap">
+    <div class="-left">
+      <a href="/" class="header-item _brand">
+        <img src="/logo.svg" alt="logo" />
+        <span class="header-text _hide">Chivi</span>
+      </a>
+
+      <slot name="left" />
+    </div>
+
+    <div class="-right">
+      <slot name="right" />
+
+      <span class="header-item _menu">
+        <MIcon class="m-icon _user" name="user" />
+        <span class="header-text _hide">{$user.uname}</span>
+
+        <div class="header-menu">
+          <div class="-head">
+            <MIcon class="m-icon _user" name="user" />
+            <span class="-uname">{$user.uname}</span>
+            <span class="-power">({$user.power})</span>
+          </div>
+
+          {#if $user.power < 0}
+            <a href="/login" class="-item">
+              <MIcon class="m-icon _log-in" name="log-in" />
+              <span>Đăng nhập</span>
+            </a>
+          {:else}
+            <a href="/_logout" class="-item" on:click|preventDefault={logout}>
+              <MIcon class="m-icon _log-out" name="log-out" />
+              <span>Đăng xuất</span>
+            </a>
+          {/if}
+        </div>
+      </span>
+    </div>
+  </nav>
+</header>

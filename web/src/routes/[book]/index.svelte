@@ -82,9 +82,10 @@
 
 <script>
   import MIcon from '$mould/MIcon.svelte'
-  import Layout from '$layout/Layout.svelte'
   import ChapList from '$reused/ChapList.svelte'
   import BookCover from '$reused/BookCover.svelte'
+
+  import Header from '$layout/Header.svelte'
 
   import relative_time from '$utils/relative_time'
   import paginate_range from '$utils/paginate_range'
@@ -501,15 +502,14 @@
   <meta property="og:novel:update_time" content={update.toISOString()} />
 </svelte:head>
 
-<Layout>
-  <a href="/" class="header-item" slot="header-left">
-    <img src="/logo.svg" alt="logo" />
+<Header>
+  <a slot="left" href="/{book.slug}" class="header-item _active">
+    <MIcon class="m-icon _book-open" name="book-open" />
+    <span class="header-text _hide">{book.vi_title}</span>
   </a>
+</Header>
 
-  <a href="/{book.slug}" class="header-item _active _title" slot="header-left">
-    <span>{book.vi_title}</span>
-  </a>
-
+<div class="wrapper">
   <section class="info">
     <div class="name">
       <h1 class="title">
@@ -531,7 +531,7 @@
 
         {#each book.vi_genres as genre}
           <span class="-col genre">
-            <MIcon class="m-icon" name="book" />
+            <MIcon class="m-icon _bookmark" name="bookmark" />
             <a href="/?genre={genre}">{genre}</a>
           </span>
         {/each}
@@ -675,7 +675,7 @@
         </div>
 
         <h3 class="caption _recent u-cf">
-          <!-- <MIcon class="m-icon u-fl" name="list" /> -->
+          <MIcon class="m-icon u-fl" name="list" />
           <span class="label u-fl">Nguồn:</span>
           <span class="count u-fl">{seed}</span>
 
@@ -717,4 +717,4 @@
     </div>
   </section>
 
-</Layout>
+</div>

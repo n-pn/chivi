@@ -37,7 +37,7 @@
   import { onMount } from 'svelte'
 
   import MIcon from '$mould/MIcon.svelte'
-  import Layout from '$layout/Layout.svelte'
+  import Header from '$layout/Header.svelte'
   import Lookup from '$layout/Lookup.svelte'
   import Upsert from '$layout/Upsert.svelte'
 
@@ -365,25 +365,21 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Layout shiftLeft={lookupActived}>
-  <a slot="header-left" href="/" class="header-item ">
-    <img src="/logo.svg" alt="logo" />
-  </a>
-
+<Header shiftLeft={lookupActived}>
   <a
-    slot="header-left"
+    slot="left"
     href="/{book_slug}?tab=content&seed={seed_name}"
     class="header-item _title">
-    <span>{book_name}</span>
+    <MIcon class="m-icon _book-open" name="book-open" />
+    <span class="header-text _hide">{book_name}</span>
   </a>
 
-  <span slot="header-left" class="header-item _active _index">
-    <!-- <span>{Math.round((ch_index * 10000) / ch_total) / 100}%</span> -->
-    <span>{ch_index}/{ch_total}</span>
+  <span slot="left" class="header-item _active">
+    <span class="header-text">{ch_index}/{ch_total}</span>
   </span>
 
   <button
-    slot="header-right"
+    slot="right"
     type="button"
     class="header-item"
     on:click={() => reloadContent()}>
@@ -393,7 +389,7 @@
   </button>
 
   <button
-    slot="header-right"
+    slot="right"
     type="button"
     class="header-item"
     class:_active={upsertEnabled}
@@ -402,14 +398,16 @@
   </button>
 
   <button
-    slot="header-right"
+    slot="right"
     type="button"
     class="header-item"
     class:_active={lookupEnabled}
     on:click={triggerLookupSidebar}>
     <MIcon class="m-icon _compass" name="compass" />
   </button>
+</Header>
 
+<div class="wrapper">
   <nav class="navi">
     <a href="/" class="crumb">Chivi</a>
     <span class="split">&gt;</span>
@@ -463,7 +461,7 @@
       <MIcon class="m-icon" name="chevron-right" />
     </a>
   </footer>
-</Layout>
+</div>
 
 {#if lookupEnabled}
   <Lookup

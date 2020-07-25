@@ -29,11 +29,12 @@
 </script>
 
 <script>
-  import MIcon from '$mould/MIcon.svelte'
-  import Layout from '$layout/Layout.svelte'
   import paginate_range from '$utils/paginate_range'
 
+  import MIcon from '$mould/MIcon.svelte'
   import BookCover from '$reused/BookCover.svelte'
+
+  import Header from '$layout/Header.svelte'
 
   export let items = []
   export let total = 0
@@ -50,11 +51,7 @@
   $: pageMax = Math.floor((total - 1) / 20) + 1
   $: pageList = paginate_range(page, pageMax)
 
-  import { searching } from '$src/stores'
-
   function handleKeypress(evt) {
-    if ($searching == true) return
-
     switch (evt.keyCode) {
       case 72:
         evt.preventDefault()
@@ -281,7 +278,14 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Layout>
+<Header>
+  <form slot="left" class="header-field" action="/search" method="get">
+    <input type="search" name="kw" placeholder="Tìm kiếm" />
+    <MIcon class="m-icon _search" name="search" />
+  </form>
+</Header>
+
+<div class="wrapper">
   <div class="order">
     {#each Object.entries(order_names) as [type, label]}
       <a
@@ -354,4 +358,5 @@
       <MIcon class="m-icon" name="chevrons-right" />
     </a>
   </div>
-</Layout>
+
+</div>

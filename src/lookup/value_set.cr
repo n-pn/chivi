@@ -80,6 +80,10 @@ class ValueSet
     new(file, mode: 2)
   end
 
+  def self.read(file : String) : ValueSet
+    new(file, mode: 1)
+  end
+
   # load file if exists, else raising exception
   def self.load!(name : String) : ValueSet
     new(path_for(name), mode: 2)
