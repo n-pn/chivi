@@ -675,7 +675,6 @@
         </div>
 
         <h3 class="caption _recent u-cf">
-          <MIcon class="m-icon u-fl" name="list" />
           <span class="label u-fl">Nguồn:</span>
           <span class="count u-fl">{seed}</span>
 
