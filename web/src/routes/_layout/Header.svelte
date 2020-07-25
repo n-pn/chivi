@@ -88,17 +88,28 @@
       margin: 0.5rem 0;
       width: 1.25rem;
       height: 1.25rem;
+
+      & + :global(.header-text) {
+        margin-left: 0.25rem;
+      }
     }
   }
 
   :global(.header-text) {
     text-transform: uppercase;
     font-weight: 500;
-    margin-left: 0.25rem;
     letter-spacing: 0.05em;
+
     @include font-size(2);
 
-    &._hide {
+    &._show-sm {
+      display: none;
+      @include screen-min(sm) {
+        display: inline-block;
+      }
+    }
+
+    &._show-md {
       display: none;
       @include screen-min(md) {
         display: inline-block;
@@ -107,6 +118,11 @@
 
     ._brand & {
       @include font-size(3);
+    }
+
+    &._title {
+      max-width: 40vw;
+      @include truncate(null);
     }
   }
 
@@ -210,7 +226,7 @@
     <div class="-left">
       <a href="/" class="header-item _brand">
         <img src="/logo.svg" alt="logo" />
-        <span class="header-text _hide">Chivi</span>
+        <span class="header-text _show-md">Chivi</span>
       </a>
 
       <slot name="left" />
@@ -221,7 +237,7 @@
 
       <span class="header-item _menu">
         <MIcon class="m-icon _user" name="user" />
-        <span class="header-text _hide">{$user.uname}</span>
+        <span class="header-text _show-md">{$user.uname}</span>
 
         <div class="header-menu">
           <div class="-head">

@@ -371,11 +371,12 @@
     href="/{book_slug}?tab=content&seed={seed_name}"
     class="header-item _title">
     <MIcon class="m-icon _book-open" name="book-open" />
-    <span class="header-text _hide">{book_name}</span>
+    <span class="header-text _show-sm _title">{book_name}</span>
   </a>
 
   <span slot="left" class="header-item _active">
-    <span class="header-text">{ch_index}/{ch_total}</span>
+    <span class="header-text">{ch_index}</span>
+    <span class="header-text _show-md">/{ch_total}</span>
   </span>
 
   <button

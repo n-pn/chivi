@@ -505,7 +505,7 @@
 <Header>
   <a slot="left" href="/{book.slug}" class="header-item _active">
     <MIcon class="m-icon _book-open" name="book-open" />
-    <span class="header-text _hide">{book.vi_title}</span>
+    <span class="header-text _title">{book.vi_title}</span>
   </a>
 </Header>
 
