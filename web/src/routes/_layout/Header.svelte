@@ -68,6 +68,7 @@
     min-width: $header-inner-height;
     height: $header-inner-height;
     line-height: $header-inner-height;
+    user-select: none;
 
     @include fgcolor(neutral, 2);
     @include bgcolor(primary, 6);
