@@ -1,7 +1,48 @@
+<script context="module">
+  export async function dict_search(term, bdic) {
+    const url = `/_search?term=${term}&bdic=${bdic}`
+    const res = await fetch(url)
+
+    const data = await res.json()
+    return data
+  }
+
+  export async function dict_upsert(dname, key, vals, power) {
+    const url = `/_upsert?dname=${dname}&key=${key}&vals=${vals}&power=${power}`
+    const res = await fetch(url)
+
+    const { status } = await res.json()
+    return status
+  }
+
+  export function generate_hints(meta, reject, accept) {
+    let res = [...meta.special.vals, ...meta.generic.vals, ...meta.suggest]
+    if (accept && accept !== '') res.push(accept)
+
+    return res.filter(
+      (v, i, s) =>
+        v !== reject && v.toLowerCase() !== meta.hanviet && s.indexOf(v) === i
+    )
+  }
+
+  export function capitalize(input) {
+    return input.charAt(0).toUpperCase() + input.slice(1)
+  }
+
+  export function titleize(input, count = 9) {
+    const res = input.split(' ')
+    if (count > res.length) count = res.length
+
+    for (let i = 0; i < count; i++) res[i] = capitalize(res[i])
+    for (let i = count; i < res.length; i++) res[i] = res[i].toLowerCase()
+
+    return res.join(' ')
+  }
+</script>
+
 <script>
   import { onMount } from 'svelte'
   import relative_time from '$utils/relative_time'
-  import { user } from '$src/stores'
   import Footer from './Upsert/Footer.svelte'
 
   const tabs = [
@@ -10,156 +51,101 @@
     // ['hanviet', 'Hán việt'],
   ]
 
-  export let active = true
-
   export let key = ''
-  export let tab = 'special'
+  export let tab = 'generic'
   export let dname = ''
+  export let actived = true
   export let changed = false
 
-  let props = {
-    hanviet: '',
-    binh_am: '',
-    suggest: { vals: [], extra: '' },
-    generic: { vals: [], extra: '', mtime: 0, uname: '', power: '0' },
-    special: { vals: [], extra: '', mtime: 0, uname: '', power: '0' },
-  }
+  import { user } from '$src/stores'
+  $: uname = $user.uname
+  $: power = $user.power
 
-  let keyField
-  let valField
-
-  let oldValue = ''
-  let outValue = ''
-
-  let extra = ''
-  let power = $user.power
-
-  $: if (key) searchWord(key, dname)
-
-  $: suggest = makeSuggests(tab, outValue, oldValue)
-  $: current = props[tab] || {
-    vals: [],
-    extra: '',
-    mtime: 0,
-    uname: '',
-    power: '0',
-  }
-
-  $: isNewEntry = current.vals.length == 0
-  $: actionType = outValue == '' ? 'Xoá từ' : isNewEntry ? 'Thêm từ' : 'Sửa từ'
-  $: valChanged = outValue != props[tab].vals[0]
-
-  function makeSuggests(tab, reject, accept) {
-    let output = [
-      ...props.suggest.vals,
-      ...props.special.vals,
-      ...props.generic.vals,
-    ]
-    if (accept && accept != '') output.push(accept)
-
-    return output.filter(
-      (v, i, s) => v !== reject && v != props.hanviet && s.indexOf(v) === i
-    )
-  }
+  let inp_field
+  let out_field
 
   onMount(() => {
-    if (key == '') keyField.focus()
-    else focusOnValField()
+    if (key == '') inp_field.focus()
+    else out_field.focus()
   })
 
-  function changeTab(new_tab) {
+  let meta = {
+    hanviet: '',
+    binh_am: '',
+    suggest: [],
+    generic: { vals: [], mtime: 0, uname: '', power: 0 },
+    special: { vals: [], mtime: 0, uname: '', power: 0 },
+  }
+
+  $: current = meta[tab]
+  $: existed = current.vals[0] || ''
+  $: updated = out_val != existed
+  $: prevail = $user.power >= current.power
+  $: btn_lbl = out_val == '' ? 'Xoá từ' : existed ? 'Sửa từ' : 'Thêm từ'
+
+  $: if (key) preload_input()
+
+  async function preload_input() {
+    out_val = ''
+    meta = await dict_search(key, dname)
+    update_val()
+  }
+
+  let out_val = ''
+  let hints = []
+
+  function change_tab(new_tab) {
     tab = new_tab
-    updateVal()
-    focusOnValField()
+    update_val()
   }
 
-  function focusOnValField() {
-    if (valField) valField.focus()
-  }
+  function update_val(new_val) {
+    new_val = new_val || existed
 
-  function updateVal() {
-    outValue = current.vals[0]
-
-    if (outValue) {
-      isNewEntry = false
+    if (new_val) {
+      out_val = new_val
+      hints = generate_hints(meta, out_val)
     } else {
-      isNewEntry = true
-      let newValue = props.suggest.vals[0]
+      let new_val = meta.hanviet
+      if (tab == 'special') new_val = titleize(new_val, 9)
 
-      if (!newValue) {
-        newValue = props.hanviet
-        if (tab === 'special') newValue = titleize(newValue, 9)
-      }
-
-      suggest = makeSuggests(tab, newValue, oldValue)
-
-      if (suggest.length > 0) outValue = suggest[suggest.length - 1]
-      else outValue = newValue
-    }
-  }
-
-  function replaceValue(newValue) {
-    oldValue = outValue
-    outValue = newValue
-    focusOnValField()
-  }
-
-  async function upsertData(val) {
-    let target = 'generic'
-    if (tab === 'special') {
-      target = dname === '' ? 'combine' : dname
+      hints = generate_hints(meta, new_val)
+      if (hints.length > 0) out_val = hints[hints.length - 1]
+      else out_val = new_val
     }
 
-    let url = `/_upsert?dname=${target}`
-    url += `&key=${key}&vals=${val}&extra=${extra}`
-
-    if (power > $user.power) power = $user.power
-    url += `&power=${power}`
-
-    const res = await fetch(url)
-    const { status } = await res.json()
-
-    changed = status === 'ok' && valChanged
-    active = false
+    out_field.focus()
   }
 
-  async function searchWord(input, dname) {
-    const res = await fetch(`/_search?input=${input}&dname=${dname}`)
-    props = await res.json()
-    updateVal()
+  async function submit_val() {
+    const target = tab == 'special' ? dname : 'generic'
+    const status = await dict_upsert(target, key, out_val, $user.power)
+
+    changed = status === 'ok' && updated
+    actived = false
   }
 
-  function capitalize(input) {
-    return input.charAt(0).toUpperCase() + input.slice(1)
+  function upcase_val(count = 100) {
+    const new_val = titleize(out_val, count)
+    update_val(new_val)
   }
 
-  function titleize(input, count = 99) {
-    const arr = input.split(' ')
-    if (count > arr.length) count = arr.length
-
-    for (let i = 0; i < count; i++) arr[i] = capitalize(arr[i])
-    for (let i = count; i < arr.length; i++) arr[i] = arr[i].toLowerCase()
-
-    return arr.join(' ')
-  }
-
-  function updateCase(count = 100) {
-    outValue = titleize(outValue, count)
-    focusOnValField()
-  }
-
-  function submitOnEnter(evt) {
-    if (evt.keyCode == 13 && !evt.shiftKey) {
+  function handle_enter(evt) {
+    if (evt.keyCode == 13) {
       evt.preventDefault()
-      return upsertData(outValue)
+      return submit_val()
     }
   }
 
-  function handleKeypress(evt) {
+  function handle_keypress(evt) {
+    if (evt.keyCode == 13) {
+      evt.preventDefault()
+      return submit_val()
+    }
+
     if (evt.keyCode === 27) {
       evt.preventDefault()
-      active = false
-      return
+      return (actived = false)
     }
 
     if (!evt.altKey) return
@@ -167,33 +153,33 @@
 
     switch (evt.keyCode) {
       case 49:
-        updateCase(1)
+        upcase_val(1)
         break
 
       case 50:
-        updateCase(2)
+        upcase_val(2)
         break
 
       case 51:
-        updateCase(3)
+        upcase_val(3)
         break
 
       case 52:
-        updateCase(9)
+        upcase_val(9)
         break
 
       case 48:
       case 53:
       case 192:
-        updateCase(0)
+        upcase_val(0)
         break
 
       case 88:
-        changeTab('special')
+        change_tab('special')
         break
 
       case 67:
-        changeTab('generic')
+        change_tab('generic')
         break
 
       default:
@@ -327,29 +313,29 @@
 
   .output {
     @include bgcolor(neutral, 1);
+  }
 
-    .val-field {
-      display: block;
-      width: 100%;
+  .val-field {
+    display: block;
+    width: 100%;
 
-      margin: 0;
+    margin: 0;
 
-      line-height: 1.5rem;
-      padding: 0.75rem;
+    line-height: 1.5rem;
+    padding: 0.75rem;
 
-      border: none;
-      @include border();
-      @include bgcolor(neutral, 1);
+    outline: none;
+    @include border();
+    @include bgcolor(neutral, 1);
 
-      &:focus,
-      &:active {
-        @include bgcolor(white);
-        @include bdcolor($color: primary, $shade: 3);
-      }
+    &:focus,
+    &:active {
+      @include bgcolor(white);
+      @include bdcolor($color: primary, $shade: 3);
+    }
 
-      &._fresh {
-        font-style: italic;
-      }
+    &._fresh {
+      font-style: italic;
     }
   }
 
@@ -363,10 +349,10 @@
     border-bottom: none;
     @include radius($sides: top);
 
-    @include flex($gap: 0.25rem, $child: '.hint');
+    @include flex($gap: 0.25rem, $child: '.-hint');
     @include font-size(2);
 
-    .hint {
+    .-hint {
       font-style: italic;
       line-height: 1.5rem;
       height: 1.5rem;
@@ -384,7 +370,7 @@
         @include bgcolor(primary, 1);
       }
 
-      &._binh_am {
+      &._right {
         margin-left: auto;
       }
     }
@@ -459,10 +445,10 @@
   }
 </style>
 
-<svelte:window on:keydown={handleKeypress} />
+<svelte:window on:keydown={handle_keypress} />
 
-<div class="container" on:click={() => (active = false)}>
-  <div class="dialog" on:click|stopPropagation={focusOnValField}>
+<div class="container" on:click={() => (actived = false)}>
+  <div class="dialog" on:click|stopPropagation={() => out_field.focus()}>
     <header class="header">
       <span class="label">Thêm từ:</span>
 
@@ -470,14 +456,14 @@
         class="hanzi"
         role="textbox"
         contenteditable="true"
-        on:click|stopPropagation={() => keyField.focus()}
+        on:click|stopPropagation={() => inp_field.focus()}
         bind:textContent={key}
-        bind:this={keyField} />
+        bind:this={inp_field} />
 
       <button
         type="button"
         class="m-button _text"
-        on:click={() => (active = false)}>
+        on:click={() => (actived = false)}>
         <svg class="m-icon _x">
           <use xlink:href="/icons.svg#x" />
         </svg>
@@ -489,7 +475,7 @@
         <span
           class="tab"
           class:_active={name == tab}
-          on:click={() => changeTab(name)}>
+          on:click={() => change_tab(name)}>
           {label}
         </span>
       {/each}
@@ -498,71 +484,67 @@
     <section class="body">
       <div class="output">
         <div class="hints">
-          <span class="hint" on:click={() => replaceValue(props.hanviet)}>
-            {props.hanviet}
+          <span class="-hint" on:click={() => update_val(meta.hanviet)}>
+            {meta.hanviet}
           </span>
 
-          {#each suggest as word}
-            <span class="hint" on:click={() => replaceValue(word)}>{word}</span>
+          {#each hints as hint}
+            <span class="-hint" on:click={() => update_val(hint)}>{hint}</span>
           {/each}
 
-          <span class="hint _binh_am">[{props.binh_am}]</span>
+          <span class="-hint _right">[{meta.binh_am}]</span>
         </div>
 
         <input
           type="text"
           lang="vi"
           class="val-field"
-          class:_fresh={isNewEntry}
+          class:_fresh={!existed}
           name="value"
-          id="valField"
-          on:keypress={submitOnEnter}
-          bind:this={valField}
-          bind:value={outValue} />
+          id="out_field"
+          on:keypress={handle_enter}
+          bind:this={out_field}
+          bind:value={out_val} />
 
         <div class="format">
           <div class="-cap">
-            <span class="-btn" on:click={() => updateCase(1)}>Hoa 1 chữ</span>
-            <span class="-btn" on:click={() => updateCase(2)}>Hai chữ</span>
-            <span class="-btn" on:click={() => updateCase(3)}>Ba chữ</span>
-            <span class="-btn" on:click={() => updateCase(99)}>Toàn bộ</span>
-            <span class="-btn" on:click={() => updateCase(0)}>Không hoa</span>
+            <span class="-btn" on:click={() => upcase_val(1)}>Hoa 1 chữ</span>
+            <span class="-btn" on:click={() => upcase_val(2)}>Hai chữ</span>
+            <span class="-btn" on:click={() => upcase_val(3)}>Ba chữ</span>
+            <span class="-btn" on:click={() => upcase_val(9)}>Toàn bộ</span>
+            <span class="-btn" on:click={() => upcase_val(0)}>Không hoa</span>
           </div>
 
           <div class="-etc">
-            <span class="-btn" on:click={() => (outValue = current.vals[0])}>
-              Phục
-            </span>
-            <span class="-btn" on:click={() => (outValue = '')}>Xoá</span>
+            {#if updated}
+              <span class="-btn" on:click={() => update_val(existed)}>
+                Phục
+              </span>
+            {/if}
+            <span class="-btn" on:click={() => (out_val = '')}>Xoá</span>
           </div>
         </div>
       </div>
 
       <div class="footer">
-        {#if props[tab].uname != ''}
+        {#if current.uname != ''}
           <div class="edit">
-            <!-- <div class="-line"> -->
             <span class="-text">Lưu:</span>
-            <span class="-time">{relative_time(props[tab].mtime)}</span>
-            <!-- </div> -->
-
-            <!-- <div class="-line"> -->
+            <span class="-time">{relative_time(current.mtime)}</span>
             <span class="-text">bởi</span>
-            <span class="-user">
-              {props[tab].uname} (quyền: {props[tab].power})
-            </span>
-            <!-- </div> -->
-
+            <span class="-user">{current.uname} ({current.power})</span>
           </div>
         {/if}
 
         <button
           type="button"
-          class="m-button {tab == 'special' ? '_primary' : '_success'}"
-          class:_line={!isNewEntry}
-          disabled={!valChanged && $user.power <= props[tab].power}
-          on:click={() => upsertData(outValue)}>
-          <span>{actionType}</span>
+          class="m-button {$user.power >= current.power ? '_solid' : '_line'}"
+          class:_harmful={out_val == ''}
+          class:_primary={!existed}
+          class:_success={existed}
+          disabled={!(updated || prevail)}
+          on:click={submit_val}>
+          <span class="-text">{btn_lbl}</span>
         </button>
       </div>
     </section>

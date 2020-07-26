@@ -13,7 +13,7 @@
     }
   }
 
-  import { user, layout } from '$src/stores'
+  import { user, layout_shift, layout_clear } from '$src/stores'
 
   let lastScrollTop = 0
 
@@ -24,7 +24,7 @@
     const scrollDown = scrollTop > lastScrollTop
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop
 
-    $layout.clear = scrollDown
+    $layout_clear = scrollDown
   }
 
   onMount(async () => {
@@ -39,6 +39,11 @@
 </script>
 
 <style lang="scss">
+  :global(html),
+  :global(body) {
+    min-height: 100%;
+  }
+
   :global(#sapper) {
     position: relative;
     min-width: 320px;
@@ -55,8 +60,8 @@
   }
 
   main {
-    width: 100%;
-    height: 100%;
+    // width: 100%;
+    // height: 100%;
 
     &._shift {
       @include screen-min(lg) {
@@ -68,6 +73,6 @@
 
 <svelte:window on:scroll={handleScroll} />
 
-<main class:_shift={$layout.shift} class:__clear={$layout.clear}>
+<main class:_shift={$layout_shift} class:__clear={$layout_clear}>
   <slot {segment} />
 </main>

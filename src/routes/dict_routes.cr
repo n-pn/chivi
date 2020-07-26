@@ -43,16 +43,16 @@ module Server
   get "/_search" do |env|
     # TODO: search for a list of dnames
 
-    input = env.params.query.fetch("input", "")
-    dname = env.params.query.fetch("dname", "combine")
+    term = env.params.query.fetch("term", "")
+    bdic = env.params.query.fetch("bdic", "combine")
 
-    suggest = TrieDict.suggest.find(input).try(&.vals) || [] of String
+    suggest = TrieDict.suggest.find(term).try(&.vals) || [] of String
 
     {
-      hanviet: Engine.hanviet(input, false).vi_text,
-      binh_am: Engine.binh_am(input, false).vi_text,
-      generic: DictDB.search(input, "generic"),
-      special: DictDB.search(input, dname),
+      hanviet: Engine.hanviet(term, false).vi_text,
+      binh_am: Engine.binh_am(term, false).vi_text,
+      generic: DictDB.search(term, "generic"),
+      special: DictDB.search(term, bdic),
       suggest: suggest,
     }.to_json(env.response)
   end
@@ -78,8 +78,6 @@ module Server
     DictDB.upsert(dname, uname, power, key, vals)
     {status: "ok", msg: "accepted"}.to_json(env.response)
   rescue err
-    puts err
-    puts err.backtrace
     {status: "err", msg: err.message}.to_json(env.response)
   end
 end

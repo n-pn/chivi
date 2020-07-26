@@ -1,25 +1,19 @@
 <script context="module">
   export async function preload({ params, query }) {
-    const book_slug = params.book
+    const bslug = params.book
 
     const cols = params.chap.split('-')
-    const seed_name = cols[cols.length - 2]
-    const chap_scid = cols[cols.length - 1]
+    const seed = cols[cols.length - 2]
+    const scid = cols[cols.length - 1]
 
     const mode = +query.mode || 0
-    const data = await load_text(
-      this.fetch,
-      book_slug,
-      seed_name,
-      chap_scid,
-      mode
-    )
+    const data = await load_text(this.fetch, bslug, seed, scid, mode)
 
     return data
   }
 
-  async function load_text(fetch, book_slug, seed_name, chap_scid, mode = 0) {
-    const url = `/_load_text?slug=${book_slug}&seed=${seed_name}&scid=${chap_scid}&mode=${mode}`
+  async function load_text(fetch, bslug, seed, scid, mode = 0) {
+    const url = `/_load_text?slug=${bslug}&seed=${seed}&scid=${scid}&mode=${mode}`
 
     try {
       const res = await fetch(url)
@@ -35,6 +29,8 @@
 
 <script>
   import { onMount } from 'svelte'
+
+  import { layout_shift } from '$src/stores'
 
   import MIcon from '$mould/MIcon.svelte'
   import Header from '$layout/Header.svelte'
@@ -75,7 +71,7 @@
   let lookupLine = ''
   let lookupFrom = 0
 
-  let upsertEnabled = false
+  let upsert_actived = false
   let upsertKey = ''
   let upsertDic = 'combine'
   let upsertTab = 'generic'
@@ -86,8 +82,10 @@
     reloadContent(1)
   }
 
+  $: $layout_shift = lookupEnabled
+
   function handleKeypress(evt) {
-    if (upsertEnabled) return
+    if (upsert_actived) return
     if (evt.ctrlKey) return
 
     // if (!evt.altKey) return
@@ -208,7 +206,7 @@
 
     upsertTab = tab || 'special'
     upsertDic = book_ubid
-    upsertEnabled = true
+    upsert_actived = true
   }
 
   let pageReloading = false
@@ -365,7 +363,7 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Header shiftLeft={lookupActived}>
+<Header>
   <a
     slot="left"
     href="/{book_slug}?tab=content&seed={seed_name}"
@@ -393,7 +391,7 @@
     slot="right"
     type="button"
     class="header-item"
-    class:_active={upsertEnabled}
+    class:_active={upsert_actived}
     on:click={() => showUpsertModal()}>
     <MIcon class="m-icon _plus-circle" name="plus-circle" />
   </button>
@@ -466,18 +464,18 @@
 
 {#if lookupEnabled}
   <Lookup
-    on_top={!upsertEnabled}
+    on_top={!upsert_actived}
     bind:active={lookupActived}
     input={lookupLine}
     dname={book_ubid}
     from={lookupFrom} />
 {/if}
 
-{#if upsertEnabled}
+{#if upsert_actived}
   <Upsert
     tab={upsertTab}
     key={upsertKey}
     dname={upsertDic}
-    bind:active={upsertEnabled}
+    bind:actived={upsert_actived}
     bind:changed={shouldReload} />
 {/if}
