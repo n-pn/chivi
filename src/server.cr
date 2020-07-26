@@ -3,7 +3,9 @@ require "./routes/*"
 Kemal::Session.config do |config|
   config.cookie_name = "chivi"
   config.secret = ENV["SECRET"]? || "d954684990fd34f6232918376e4e9f93423423444d"
-  config.gc_interval = 2.minutes # 2 minutes
+  config.timeout = 3.days
+  config.engine = Kemal::Session::FileEngine.new({:sessions_dir => "tmp/"})
+  config.gc_interval = 5.minutes # 5 minutes
 end
 
 module Server

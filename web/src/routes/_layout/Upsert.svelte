@@ -560,7 +560,7 @@
           type="button"
           class="m-button {tab == 'special' ? '_primary' : '_success'}"
           class:_line={!isNewEntry}
-          disabled={!valChanged && $user.power < props[tab].power}
+          disabled={!valChanged && $user.power <= props[tab].power}
           on:click={() => upsertData(outValue)}>
           <span>{actionType}</span>
         </button>

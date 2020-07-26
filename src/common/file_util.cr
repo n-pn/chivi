@@ -17,6 +17,9 @@ module FileUtil
 
     elapsed = Time.measure do
       File.each_line(file) do |line|
+        line = line.strip
+        next if line.blank?
+
         yield(line)
         count += 1
       end
