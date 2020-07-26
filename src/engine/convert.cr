@@ -116,7 +116,7 @@ module Convert
           jdx = idx + length
           if weight >= weights[jdx]
             weights[jdx] = weight
-            choices[jdx] = CvNode.new(item.key, item.vals[0], dic, item.extra)
+            choices[jdx] = CvNode.new(item.key, item.vals[0])
           end
         end
       end

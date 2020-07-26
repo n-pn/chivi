@@ -46,11 +46,7 @@ module Server
     input = env.params.query.fetch("input", "")
     dname = env.params.query.fetch("dname", "combine")
 
-    if item = TrieDict.suggest.find(input)
-      suggest = {vals: item.vals, extra: item.extra}
-    else
-      suggest = {vals: [] of String, extra: ""}
-    end
+    suggest = TrieDict.suggest.find(input).try(&.vals) || [] of String
 
     {
       hanviet: Engine.hanviet(input, false).vi_text,
@@ -78,9 +74,8 @@ module Server
 
     key = env.params.query.fetch("key", "")
     vals = env.params.query.fetch("vals", "")
-    extra = env.params.query.fetch("extra", "")
 
-    DictDB.upsert(dname, uname, power, key, vals, extra)
+    DictDB.upsert(dname, uname, power, key, vals)
     {status: "ok", msg: "accepted"}.to_json(env.response)
   rescue err
     puts err

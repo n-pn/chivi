@@ -37,8 +37,8 @@ class TrieDict
 
   def load!(file : String = @file) : Void
     FileUtil.each_line(file, LABEL) do |line|
-      key, vals, extra = TrieNode.parse(line)
-      upsert(key, vals, extra)
+      key, vals = TrieNode.parse(line)
+      upsert(key, vals)
     rescue err
       FileUtil.log_error(LABEL, line, err)
     end
@@ -52,12 +52,12 @@ class TrieDict
     upsert(key, &.vals.push(""))
   end
 
-  def upsert!(key : String, value : String, extra = "")
-    append!(upsert(key, value, extra))
+  def upsert!(key : String, value : String)
+    append!(upsert(key, value))
   end
 
-  def upsert!(key : String, vals : Array(String), extra = "")
-    append!(upsert(key, vals, extra))
+  def upsert!(key : String, vals : Array(String))
+    append!(upsert(key, vals))
   end
 
   def upsert!(key : String)
@@ -70,18 +70,14 @@ class TrieDict
     node
   end
 
-  def upsert(key : String, value : String = "", extra = "")
+  def upsert(key : String, value : String = "")
     upsert(key) do |node|
       node.vals = [value]
-      node.extra = extra
     end
   end
 
-  def upsert(key : String, vals : Array(String), extra = "") : TrieNode
-    upsert(key) do |node|
-      node.vals = vals
-      node.extra = extra
-    end
+  def upsert(key : String, vals : Array(String)) : TrieNode
+    upsert(key, &.vals = vals)
   end
 
   def upsert(key : String) : TrieNode

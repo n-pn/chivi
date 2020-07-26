@@ -4,12 +4,11 @@ class TrieNode
 
   getter key : String
   property vals : Array(String)
-  property extra : String
   # extra data, can be used to mark attributes or priorities
 
   getter trie = Hash(Char, TrieNode).new
 
-  def initialize(@key, @vals = [] of String, @extra = "")
+  def initialize(@key, @vals = [] of String)
   end
 
   def to_s
@@ -22,7 +21,6 @@ class TrieNode
 
     io << @key << SEP_0
     vals.join(io, SEP_1)
-    io << SEP_0 << @extra
   end
 
   def puts(io : IO, trim = 4)

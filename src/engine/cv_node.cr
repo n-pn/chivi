@@ -5,17 +5,16 @@ class CvNode
   property key : String
   property val : String
   property dic : Int32
-  property etc : String
 
-  def initialize(@key : String, @val : String, @dic : Int32 = 0, @etc = "")
+  def initialize(@key : String, @val : String, @dic : Int32 = 0)
   end
 
-  def initialize(key : Char, val : Char, @dic : Int32 = 0, @etc = "")
+  def initialize(key : Char, val : Char, @dic : Int32 = 0)
     @key = key.to_s
     @val = val.to_s
   end
 
-  def initialize(char : Char, @dic : Int32 = 0, @etc = "")
+  def initialize(char : Char, @dic : Int32 = 0)
     @key = @val = char.to_s
   end
 

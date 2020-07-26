@@ -11,9 +11,8 @@ class EditData
 
     mtime, uname, power, key = cols
     vals = cols.fetch(4, "")
-    extra = cols.fetch(5, "")
 
-    new(mtime.to_i, uname, power.to_i, key, vals, extra)
+    new(mtime.to_i, uname, power.to_i, key, vals)
   end
 
   getter mtime : Int32  # time by total minutes since the EPOCH
@@ -22,9 +21,8 @@ class EditData
 
   getter key : String
   getter vals : String
-  getter extra : String
 
-  def initialize(@mtime, @uname, @power, @key, @vals = "", @extra = "")
+  def initialize(@mtime, @uname, @power, @key, @vals = "")
   end
 
   def to_s
@@ -32,7 +30,7 @@ class EditData
   end
 
   def to_s(io : IO)
-    {@mtime, @uname, @power, @key, @vals, @extra}.join(io, SEP_0)
+    {@mtime, @uname, @power, @key, @vals}.join(io, SEP_0)
   end
 
   def puts(io : IO)
