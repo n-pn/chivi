@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import relative_time from '$utils/relative_time'
-
+  import { user } from '$src/stores'
   import Footer from './Upsert/Footer.svelte'
 
   const tabs = [
@@ -23,12 +23,14 @@
 
   let oldValue = ''
   let outValue = ''
-
   let isNewEntry = false
+
+  let extra = ''
+  let power = $user.power
 
   $: if (key) searchWord(key, dic)
 
-  $: mftime = props[tab].mftime
+  $: mtime = props[tab].mtime
   $: suggests = makeSuggests(tab, outValue, oldValue)
   $: actionType = outValue == '' ? 'Xoá từ' : isNewEntry ? 'Thêm từ' : 'Sửa từ'
 
@@ -53,8 +55,8 @@
     hanviet: '',
     binh_am: '',
     suggest: { vals: [], extra: '' },
-    generic: { vals: [], mftime: 0, extra: '' },
-    special: { vals: [], mftime: 0, extra: '' },
+    generic: { vals: [], extra: '', mtime: 0, uname: '', power: '0' },
+    special: { vals: [], extra: '', mtime: 0, uname: '', power: '0' },
   }
 
   onMount(() => {
@@ -107,16 +109,23 @@
     let target = 'generic'
     if (tab === 'special') target = dic === '' ? 'combine' : dic
 
-    const url = `/_upsert?dname=${target}&key=${key}&vals=${val}`
-    const res = await fetch(url)
+    let url = `/_upsert?dname=${target}`
+    url += `&key=${key}&vals=${val}&extra=${extra}`
 
-    if (defaultVal(tab) !== val) shouldReload = true
+    if (power > $user.power) power = $user.power
+    url += `&power=${power}`
+
+    const res = await fetch(url)
+    const { status } = await res.json()
+
+    shouldReload = status === 'ok' && defaultVal(tab) !== val
     active = false
   }
 
   async function searchWord(input, dname) {
     const res = await fetch(`/_search?input=${input}&dname=${dname}`)
     props = await res.json()
+    console.log({ props })
     updateVal()
   }
 
@@ -424,6 +433,19 @@
       }
     }
   }
+  .edit {
+    font-style: italic;
+
+    line-height: 2.25rem;
+    @include fgcolor(neutral, 6);
+    @include font-size(2);
+
+    .-time,
+    .-user {
+      font-weight: 500;
+      @include fgcolor(primary, 8);
+    }
+  }
 
   .footer {
     margin-top: 0.75rem;
@@ -514,11 +536,12 @@
       </div>
 
       <div class="footer">
-
-        {#if mftime > 0}
-          <span class="mftime">
-            <span class="text">Lưu:</span>
-            <span class="time">{relative_time(mftime)}</span>
+        {#if props[tab].power > 0}
+          <span class="edit">
+            <span class="-text">Đã lưu:</span>
+            <span class="-time">{relative_time(props[tab].mtime)}</span>
+            <span class="-text">bởi:</span>
+            <span class="-user">{props[tab].uname} ({props[tab].power})</span>
           </span>
         {/if}
 

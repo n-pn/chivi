@@ -29,10 +29,10 @@ module DictDB
     edit = DictEdit.load_unsure(dname)
     dict = TrieDict.load_unsure(dname)
 
-    edit.insert(key, power) do
-      dict.upsert!(key, TrieNode.split(vals), extra)
-      DictEdit::Edit.new(DictEdit::Edit.mtime, uname, power, key, vals, extra)
-    end
+    entry = EditData.new(EditData.mtime, uname, power, key, vals, extra)
+    raise "power too low" unless edit.insert!(entry)
+    raise "power too low" unless power > 0
+    dict.upsert!(key, TrieNode.split(vals), extra)
   end
 
   def search(key : String, dname = "generic")
@@ -59,6 +59,7 @@ module DictDB
       extra = edit.extra if extra.empty?
     end
 
+    mtime = (EditData::EPOCH + mtime.minutes).to_unix_ms
     {vals: vals, extra: extra, mtime: mtime, uname: uname, power: power}
   end
 end

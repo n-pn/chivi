@@ -2,62 +2,17 @@ require "colorize"
 require "file_utils"
 require "../common/file_util"
 
+require "./edit_data"
+
 # dict modification log
 class DictEdit
   LABEL = "dict_edit"
-  EPOCH = Time.utc(2020, 1, 1)
-  SEP_0 = "ǁ"
-
-  class Edit
-    def self.mtime(time = Time.utc)
-      (time - EPOCH).total_minutes.to_i
-    end
-
-    def self.parse!(line : String)
-      cols = line.split(SEP_0)
-
-      mtime, uname, power, key = cols
-      vals = cols.fetch(4, "")
-      extra = cols.fetch(5, "")
-
-      new(mtime.to_i, uname, power.to_i, key, vals, extra)
-    end
-
-    getter mtime : Int32  # time by total minutes since the EPOCH
-    getter uname : String # user handle dname
-    getter power : Int32  # entry lock level
-
-    getter key : String
-    getter vals : String
-    getter extra : String
-
-    def initialize(@mtime, @uname, @power, @key, @vals = "", @extra = "")
-    end
-
-    def to_s
-      String.build { |io| to_s(io) }
-    end
-
-    def to_s(io : IO)
-      {@mtime, @uname, @power, @key, @vals, @extra}.join(io, SEP_0)
-    end
-
-    def puts(io : IO)
-      to_s(io)
-      io << "\n"
-    end
-
-    def better_than?(other : Edit)
-      return @mtime >= other.mtime if @power == other.power
-      @power > other.power
-    end
-  end
 
   getter file : String
-  getter time = EPOCH
+  getter time = EditData::EPOCH
 
-  getter list = [] of Edit
-  getter best = {} of String => Edit
+  getter list = [] of EditData
+  getter best = {} of String => EditData
 
   delegate size, to: @list
   delegate each, to: @list
@@ -72,7 +27,7 @@ class DictEdit
 
   def load!(file : String = @file) : Void
     FileUtil.each_line(file, LABEL) do |line|
-      insert(Edit.parse!(line))
+      insert(EditData.parse!(line))
     rescue err
       FileUtil.log_error(LABEL, line, err)
     end
@@ -82,27 +37,22 @@ class DictEdit
     @list.sort_by!(&.mtime)
   end
 
-  def insert!(item : Edit)
+  def insert!(item : EditData)
     append!(item)
     insert(item)
   end
 
-  def append!(item : Edit)
+  def append!(item : EditData)
     File.open(@file, "a") { |io| item.puts(io) }
   end
 
-  def insert(item : Edit) : Void
-    insert(item.key, item.power) { item }
-  end
-
-  def insert(key : String, power = 0)
-    if best = find(key)
-      return if best.power > power
+  def insert(item : EditData)
+    if best = find(item.key)
+      return if best.power > item.power
     end
 
-    item = yield
     @list << item
-    @best[key] = item
+    @best[item.key] = item
   end
 
   def find(key : String)
