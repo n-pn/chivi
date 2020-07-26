@@ -13,43 +13,9 @@
   export let active = true
 
   export let key = ''
-  export let dic = ''
   export let tab = 'special'
-
-  export let shouldReload = false
-
-  let keyField
-  let valField
-
-  let oldValue = ''
-  let outValue = ''
-  let isNewEntry = false
-
-  let extra = ''
-  let power = $user.power
-
-  $: if (key) searchWord(key, dic)
-
-  $: mtime = props[tab].mtime
-  $: suggests = makeSuggests(tab, outValue, oldValue)
-  $: actionType = outValue == '' ? 'Xoá từ' : isNewEntry ? 'Thêm từ' : 'Sửa từ'
-
-  function makeSuggests(tab, reject, accept) {
-    let hanviet = props.hanviet
-    if (hanviet == reject) reject = null
-
-    let output = [
-      hanviet,
-      ...props.suggest.vals,
-      ...props.special.vals,
-      ...props.generic.vals,
-    ]
-
-    if (tab === 'special') output.push(titleize(hanviet, 9))
-    if (accept) output.push(accept)
-
-    return output.filter((v, i, s) => s.indexOf(v) === i && v !== reject)
-  }
+  export let dname = ''
+  export let changed = false
 
   let props = {
     hanviet: '',
@@ -59,23 +25,60 @@
     special: { vals: [], extra: '', mtime: 0, uname: '', power: '0' },
   }
 
+  let keyField
+  let valField
+
+  let oldValue = ''
+  let outValue = ''
+
+  let extra = ''
+  let power = $user.power
+
+  $: if (key) searchWord(key, dname)
+
+  $: suggest = makeSuggests(tab, outValue, oldValue)
+  $: current = props[tab] || {
+    vals: [],
+    extra: '',
+    mtime: 0,
+    uname: '',
+    power: '0',
+  }
+
+  $: isNewEntry = current.vals.length == 0
+  $: actionType = outValue == '' ? 'Xoá từ' : isNewEntry ? 'Thêm từ' : 'Sửa từ'
+  $: valChanged = outValue != props[tab]
+
+  function makeSuggests(tab, reject, accept) {
+    let output = [
+      ...props.suggest.vals,
+      ...props.special.vals,
+      ...props.generic.vals,
+    ]
+    if (accept && accept != '') output.push(accept)
+
+    return output.filter(
+      (v, i, s) => v !== reject && v != props.hanviet && s.indexOf(v) === i
+    )
+  }
+
   onMount(() => {
     if (key == '') keyField.focus()
-    else refocusOnValField()
+    else focusOnValField()
   })
 
   function changeTab(new_tab) {
     tab = new_tab
     updateVal()
-    refocusOnValField()
+    focusOnValField()
   }
 
-  function refocusOnValField() {
+  function focusOnValField() {
     if (valField) valField.focus()
   }
 
   function updateVal() {
-    outValue = defaultVal(tab)
+    outValue = current.vals[0]
 
     if (outValue) {
       isNewEntry = false
@@ -88,26 +91,22 @@
         if (tab === 'special') newValue = titleize(newValue, 9)
       }
 
-      suggests = makeSuggests(tab, newValue, oldValue)
+      suggest = makeSuggests(tab, newValue, oldValue)
 
-      if (suggests.length > 0) outValue = suggests[suggests.length - 1]
+      if (suggest.length > 0) outValue = suggest[suggest.length - 1]
       else outValue = newValue
     }
-  }
-
-  function defaultVal(tab) {
-    return props[tab].vals[0]
   }
 
   function replaceValue(newValue) {
     oldValue = outValue
     outValue = newValue
-    refocusOnValField()
+    focusOnValField()
   }
 
   async function upsertData(val) {
     let target = 'generic'
-    if (tab === 'special') target = dic === '' ? 'combine' : dic
+    if (tab === 'special') target = dname === '' ? 'combine' : dname
 
     let url = `/_upsert?dname=${target}`
     url += `&key=${key}&vals=${val}&extra=${extra}`
@@ -118,14 +117,13 @@
     const res = await fetch(url)
     const { status } = await res.json()
 
-    shouldReload = status === 'ok' && defaultVal(tab) !== val
+    changed = status === 'ok' && defaultVal(tab) !== val
     active = false
   }
 
   async function searchWord(input, dname) {
     const res = await fetch(`/_search?input=${input}&dname=${dname}`)
     props = await res.json()
-    console.log({ props })
     updateVal()
   }
 
@@ -145,7 +143,7 @@
 
   function updateCase(count = 100) {
     outValue = titleize(outValue, count)
-    refocusOnValField()
+    focusOnValField()
   }
 
   function submitOnEnter(evt) {
@@ -433,6 +431,7 @@
       }
     }
   }
+
   .edit {
     font-style: italic;
 
@@ -461,7 +460,7 @@
 <svelte:window on:keydown={handleKeypress} />
 
 <div class="container" on:click={() => (active = false)}>
-  <div class="dialog" on:click|stopPropagation={refocusOnValField}>
+  <div class="dialog" on:click|stopPropagation={focusOnValField}>
     <header class="header">
       <span class="label">Thêm từ:</span>
 
@@ -497,10 +496,12 @@
     <section class="body">
       <div class="output">
         <div class="hints">
-          {#each suggests as suggest}
-            <span class="hint" on:click={() => replaceValue(suggest)}>
-              {suggest}
-            </span>
+          <span class="hint" on:click={() => replaceValue(props.hanviet)}>
+            {props.hanviet}
+          </span>
+
+          {#each suggest as word}
+            <span class="hint" on:click={() => replaceValue(word)}>{word}</span>
           {/each}
 
           <span class="hint _binh_am">[{props.binh_am}]</span>
@@ -527,7 +528,7 @@
           </div>
 
           <div class="-etc">
-            <span class="-btn" on:click={() => (outValue = defaultVal(tab))}>
+            <span class="-btn" on:click={() => (outValue = current.vals[0])}>
               Phục
             </span>
             <span class="-btn" on:click={() => (outValue = '')}>Xoá</span>
@@ -536,20 +537,28 @@
       </div>
 
       <div class="footer">
-        {#if props[tab].power > 0}
-          <span class="edit">
-            <span class="-text">Đã lưu:</span>
+        {#if props[tab].uname != ''}
+          <div class="edit">
+            <!-- <div class="-line"> -->
+            <span class="-text">Lưu:</span>
             <span class="-time">{relative_time(props[tab].mtime)}</span>
-            <span class="-text">bởi:</span>
-            <span class="-user">{props[tab].uname} ({props[tab].power})</span>
-          </span>
+            <!-- </div> -->
+
+            <!-- <div class="-line"> -->
+            <span class="-text">bởi</span>
+            <span class="-user">
+              {props[tab].uname} (quyền: {props[tab].power})
+            </span>
+            <!-- </div> -->
+
+          </div>
         {/if}
 
         <button
           type="button"
           class="m-button {tab == 'special' ? '_primary' : '_success'}"
           class:_line={!isNewEntry}
-          disabled={outValue == defaultVal(tab)}
+          disabled={!valChanged}
           on:click={() => upsertData(outValue)}>
           <span>{actionType}</span>
         </button>
@@ -557,6 +566,5 @@
     </section>
 
     <Footer {key} />
-
   </div>
 </div>

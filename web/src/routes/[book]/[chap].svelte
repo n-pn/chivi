@@ -201,8 +201,8 @@
       upsertKey = elemOnFocus.dataset.k
 
       if (tab == null) {
-        const dict = +elemOnFocus.dataset.d
-        tab = dict === 3 ? 'special' : 'generic'
+        const dic = +elemOnFocus.dataset.d
+        tab = dic === 3 ? 'special' : 'generic'
       }
     }
 
@@ -475,9 +475,9 @@
 
 {#if upsertEnabled}
   <Upsert
-    bind:active={upsertEnabled}
     key={upsertKey}
     dic={upsertDic}
     tab={upsertTab}
-    bind:shouldReload />
+    bind:active={upsertEnabled}
+    bind:changed={shouldReload} />
 {/if}
