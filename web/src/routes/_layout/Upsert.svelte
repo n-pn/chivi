@@ -47,7 +47,7 @@
 
   $: isNewEntry = current.vals.length == 0
   $: actionType = outValue == '' ? 'Xoá từ' : isNewEntry ? 'Thêm từ' : 'Sửa từ'
-  $: valChanged = outValue != props[tab]
+  $: valChanged = outValue != props[tab].vals[0]
 
   function makeSuggests(tab, reject, accept) {
     let output = [
@@ -106,7 +106,9 @@
 
   async function upsertData(val) {
     let target = 'generic'
-    if (tab === 'special') target = dname === '' ? 'combine' : dname
+    if (tab === 'special') {
+      target = dname === '' ? 'combine' : dname
+    }
 
     let url = `/_upsert?dname=${target}`
     url += `&key=${key}&vals=${val}&extra=${extra}`
@@ -117,7 +119,7 @@
     const res = await fetch(url)
     const { status } = await res.json()
 
-    changed = status === 'ok' && defaultVal(tab) !== val
+    changed = status === 'ok' && valChanged
     active = false
   }
 
@@ -558,7 +560,7 @@
           type="button"
           class="m-button {tab == 'special' ? '_primary' : '_success'}"
           class:_line={!isNewEntry}
-          disabled={!valChanged}
+          disabled={!valChanged && $user.power < props[tab].power}
           on:click={() => upsertData(outValue)}>
           <span>{actionType}</span>
         </button>

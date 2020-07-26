@@ -475,9 +475,9 @@
 
 {#if upsertEnabled}
   <Upsert
-    key={upsertKey}
-    dic={upsertDic}
     tab={upsertTab}
+    key={upsertKey}
+    dname={upsertDic}
     bind:active={upsertEnabled}
     bind:changed={shouldReload} />
 {/if}
