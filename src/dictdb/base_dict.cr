@@ -58,7 +58,7 @@ class BaseDict
   delegate find, to: @trie
   delegate has_key?, to: @trie
 
-  def save!(file : String = @file, trim = 0) : Void
+  def save!(file : String = @file) : Void
     FileUtil.save(file, LABEL, @size) { |io| each(&.puts(io)) }
   end
 

@@ -88,7 +88,7 @@ load_proxy = ARGV.include?("proxy")
 debug_mode = ARGV.include?("debug")
 crawler = CritCrawler.new(load_proxy, debug_mode)
 
-total = (ARGV[0] || "234590").to_i || 234590
+total = (ARGV[0] || "234700").to_i || 234700
 
 order = :sequel
 order = :reverse if ARGV.include?("reverse")

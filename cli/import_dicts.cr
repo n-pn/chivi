@@ -9,7 +9,6 @@ files.each do |file|
   name = File.basename(file, ".guest.dic")
 
   FileUtils.cp file, "#{OUT}/core/#{name}.log"
-  FileUtils.cp file, "#{OUT}/core/#{name}.test.log"
 rescue
   puts file
 end
