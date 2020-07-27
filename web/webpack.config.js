@@ -8,8 +8,8 @@ const mode = process.env.NODE_ENV
 const dev = mode === 'development'
 
 const alias = {
-  svelte: path.resolve('node_modules', 'svelte'),
-  $mould: path.resolve('node_modules', '@nipin', 'mould', 'lib'),
+  svelte: path.resolve(__dirname, 'node_modules', 'svelte'),
+  $mould: path.resolve(__dirname, 'node_modules', '@nipin', 'mould', 'lib'),
   $src: path.resolve(__dirname, 'src'),
   $utils: path.resolve(__dirname, 'src', 'utils'),
   $style: path.resolve(__dirname, 'src', 'styles'),
@@ -84,7 +84,12 @@ module.exports = {
             },
             {
               loader: 'sass-loader',
-              options: { sourceMap: true },
+              options: {
+                sourceMap: true,
+                sassOptions: {
+                  includePaths: [path.resolve(__dirname, 'node_modules')],
+                },
+              },
             },
           ].filter(Boolean),
         },
