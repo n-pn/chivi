@@ -245,22 +245,6 @@
     padding-top: 0.75rem;
   }
 
-  .caption {
-    margin-bottom: 0.75rem;
-
-    > .label {
-      margin-right: 0.25rem;
-    }
-
-    .label,
-    .count {
-      display: none;
-      @include screen-min(sm) {
-        display: inline-block;
-      }
-    }
-  }
-
   .__loading {
     @include fgcolor(neutral, 5);
 
@@ -282,32 +266,127 @@
   }
 
   .sources {
-    margin-bottom: 0.75rem;
-    justify-content: center;
-    overflow: auto;
-    @include flex($gap: 0.5rem);
-  }
+    margin: 0.75rem 0 1.25rem;
+    display: flex;
 
-  .source-item {
-    cursor: pointer;
-    padding: 0 0.5rem;
-    font-weight: 500;
-    line-height: 2rem;
-    text-transform: uppercase;
-    @include border();
-    @include radius();
+    .-left {
+      display: flex;
+      margin-right: 0.5rem;
+    }
 
-    @include font-size(2);
-    @include fgcolor(neutral, 7);
+    .-hint {
+      // display: none;
+      // @include screen-min(sm) {
+      //   display: inline-block;
+      // }
 
-    &._active {
-      @include fgcolor(primary, 5);
-      @include bdcolor($color: primary, $shade: 5);
+      height: 2.25rem;
+      line-height: 2.25rem;
+      text-transform: uppercase;
+      margin-right: 0.5rem;
+      font-weight: 500;
+      @include font-size(2);
+      @include fgcolor(neutral, 7);
+    }
+
+    .-hide {
+      display: none;
+      @include screen-min(sm) {
+        display: inline-block;
+      }
+    }
+
+    .-right {
+      @include flex($gap: 0.5rem);
+      margin-left: auto;
+    }
+
+    .m-button {
+      @include border();
+      > span {
+        @include truncate(null);
+        max-width: 25vw;
+      }
     }
   }
 
-  .count {
-    @include fgcolor(neutral, 6);
+  .seed-menu {
+    position: relative;
+
+    &:hover .-menu {
+      display: block;
+    }
+
+    .-text {
+      display: inline-block;
+      height: 2.25rem;
+
+      cursor: pointer;
+      padding: 0 0.5rem;
+      font-weight: 500;
+      line-height: 2rem;
+      text-transform: uppercase;
+      @include border();
+      @include radius();
+
+      @include font-size(2);
+      @include fgcolor(neutral, 7);
+    }
+
+    .-count {
+      display: none;
+      @include screen-min(sm) {
+        margin-left: 0.25rem;
+        display: inline-block;
+        @include fgcolor(neutral, 6);
+      }
+    }
+
+    .-menu {
+      display: none;
+      position: absolute;
+      top: 2.25rem;
+      left: 0;
+      min-width: 12rem;
+      padding: 0.75rem 0;
+      background-color: #fff;
+
+      @include radius();
+      @include shadow(2);
+    }
+
+    .-item {
+      cursor: pointer;
+      display: flex;
+      padding: 0 0.75rem;
+
+      line-height: 2.25rem;
+      @include border($sides: top);
+      &:last-child {
+        @include border($sides: bottom);
+      }
+
+      @include font-size(2);
+      @include fgcolor(neutral, 7);
+
+      &._active {
+        @include fgcolor(primary, 5);
+      }
+
+      &:hover {
+        @include bgcolor(neutral, 2);
+      }
+
+      .-name {
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+
+      .-time {
+        margin-left: auto;
+        @include fgcolor(neutral, 5);
+      }
+    }
   }
 
   .meta {
@@ -659,44 +738,59 @@
 
     <div class="meta-tab" class:_active={tab == 'content'}>
       {#if hasContent}
-        <div class="sources" data-active={seed}>
-          {#each book.seed_names as name}
-            <a
-              class="source-item"
-              class:_active={seed === name}
-              href="/{book.slug}?seed={name}"
-              on:click|preventDefault={() => switchSite(name, false)}
-              rel="nofollow">
-              {name}
-            </a>
-          {/each}
+        <div class="sources">
+          <div class="-left">
+            <div class="-hint">Nguồn:</div>
+
+            <div class="seed-menu">
+              <div class="-text">
+                <span class="-label ">{seed}</span>
+                <span class="-count ">({chlist.length} chương)</span>
+              </div>
+
+              <div class="-menu">
+                {#each book.seed_names as name}
+                  <a
+                    class="-item"
+                    class:_active={seed === name}
+                    href="/{book.slug}?seed={name}"
+                    on:click|preventDefault={() => switchSite(name, false)}
+                    rel="nofollow">
+                    <span class="-name">{name}</span>
+                    <span class="-time">
+                      ({relative_time(book.seed_mftimes[name])})
+                    </span>
+                  </a>
+                {/each}
+              </div>
+            </div>
+
+          </div>
+
+          <div class="-right">
+            <button
+              class="m-button _text"
+              class:__loading
+              on:click={() => switchSite(seed, true)}>
+              {#if __loading}
+                <MIcon class="m-icon" name="loader" />
+              {:else}
+                <MIcon class="m-icon" name="clock" />
+              {/if}
+              <span>{relative_time(book.seed_mftimes[seed])}</span>
+            </button>
+
+            <button class="m-button _text" on:click={() => (desc = !desc)}>
+              {#if desc}
+                <MIcon class="m-icon" name="arrow-down" />
+              {:else}
+                <MIcon class="m-icon" name="arrow-up" />
+              {/if}
+              <span class="-hide">Sắp xếp</span>
+            </button>
+          </div>
+
         </div>
-
-        <h3 class="caption _recent u-cf">
-          <span class="label u-fl">Nguồn:</span>
-          <span class="count u-fl">{seed}</span>
-
-          <button
-            class="m-button _text u-fr"
-            class:__loading
-            on:click={() => switchSite(seed, true)}>
-            {#if __loading}
-              <MIcon class="m-icon" name="loader" />
-            {:else}
-              <MIcon class="m-icon" name="clock" />
-            {/if}
-            <span>{relative_time(book.seed_mftimes[seed])}</span>
-          </button>
-
-          <button class="m-button _text u-fr" on:click={() => (desc = !desc)}>
-            {#if desc}
-              <MIcon class="m-icon" name="arrow-down" />
-            {:else}
-              <MIcon class="m-icon" name="arrow-up" />
-            {/if}
-            <span>{chlist.length} chương</span>
-          </button>
-        </h3>
 
         <ChapList
           bslug={book.slug}
