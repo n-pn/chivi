@@ -64,7 +64,7 @@ module BookRepo::Utils
   def fake_rating(zh_author : String)
     weight = OrderMap.top_authors.value(zh_author) || 1000_i64
     weight = Random.rand((weight // 2)..weight)
-    scored = Random.rand(30..70)
+    scored = Random.rand(40..70)
 
     voters = (weight // scored).to_i32
     rating = (scored / 10).to_f32

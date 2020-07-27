@@ -64,9 +64,6 @@ class SeedText
     new(seed, html)
   end
 
-  getter title : String
-  getter paras : Array(String)
-
   def initialize(@seed : String, html : String)
     @doc = Myhtml::Parser.new(html)
   end
@@ -90,14 +87,20 @@ class SeedText
 
   def parse_title!
     case @seed
-    when "qu_la", "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge", "69shu"
+    when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge"
       title_text("h1")
+    when "qu_la"
+      title_text(".title")
     when "zhwenpg"
       title_text("h2")
     when "hetushu"
       title_text("#content .h2")
     when "duokan8"
-      title_text("#read-content > h2").sub(/^章节目录\s*/, "")
+      title_text("#read-content > h2")
+        .sub(/^章节目录\s*/, "")
+        .sub(/《.+》正文\s/, "")
+    when "69shu"
+      title_text("h1").sub(/\d+\.第/, "第")
     else
       raise "- unknown seed."
     end
@@ -136,14 +139,21 @@ class SeedText
     if @seed == "duokan8"
       lines.update(0, &.sub(/.+<\/h1>\s*/, ""))
       lines.map!(&.sub("</div>", ""))
-    elsif @seed == "xbiquge"
-      lines.map!(&.sub("www.xbiquge.cc", ""))
     end
 
-    lines.shift if title.includes?(lines[0])
-    lines.update(-1, &.sub("(本章完)", ""))
+    lines.map! { |x| clean_text(x) }.reject!(&.empty?)
+    lines.shift if lines.first == title
 
-    lines.map! { |line| clean_text(line) }.reject(&.empty?)
+    case @seed
+    when "xbiquge"
+      lines.shift if lines.first.starts_with?("笔趣阁 ")
+    when "jx_la"
+      lines.pop if lines.last.starts_with?("正在手打中，")
+    when "69shu"
+      lines.pop if lines.last == "(本章完)"
+    end
+
+    lines
   end
 
   private def parse_hetushu_paras!
