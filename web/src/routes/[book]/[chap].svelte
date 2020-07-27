@@ -359,7 +359,7 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Vessel shift={lookupEnabled}>
+<Vessel shift={lookupActived}>
   <a
     slot="header-left"
     href="/{book_slug}?tab=content&seed={seed_name}"

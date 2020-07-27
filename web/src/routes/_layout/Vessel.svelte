@@ -27,7 +27,6 @@
 <style lang="scss">
   .vessel {
     position: relative;
-    width: 100%;
     height: 100%;
 
     &._shift {
