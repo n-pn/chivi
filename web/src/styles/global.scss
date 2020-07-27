@@ -2,7 +2,8 @@
 
 html,
 body,
-#sapper {
+#sapper,
+.vessel {
   min-height: 100%;
 }
 
@@ -11,9 +12,6 @@ body,
 }
 
 .vessel {
-  position: relative;
-  height: 100%;
-
   &._shift {
     @include screen-min(lg) {
       margin-right: 30rem;
@@ -143,64 +141,6 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   }
 }
 
-.header-menu {
-  position: absolute;
-  display: none;
-  width: 12rem;
-
-  .header-item:hover > & {
-    display: block;
-    top: $header-inner-height;
-    right: 0;
-    @include bgcolor(#fff);
-    @include shadow;
-    @include radius;
-    padding-bottom: 0.5rem;
-  }
-
-  .m-icon {
-    margin: 0;
-  }
-
-  .-head {
-    padding: 0 0.75rem;
-    margin-bottom: 0.5rem;
-    line-height: 3rem;
-    font-weight: 500;
-    @include font-size(4);
-    @include fgcolor(neutral, 6);
-    @include border($sides: bottom);
-    // @include bgcolor(neutral, 2);
-    @include radius($sides: top);
-
-    .m-icon {
-      width: 1.75rem;
-      height: 1.75rem;
-      margin-top: -0.25rem;
-      margin-left: -0.25rem;
-    }
-  }
-
-  .-item {
-    display: block;
-
-    padding: 0 0.75rem;
-    line-height: 2.25rem;
-    // text-transform: uppercase;
-    font-weight: 500;
-    @include fgcolor(neutral, 6);
-
-    &:hover {
-      @include fgcolor(primary, 6);
-      @include bgcolor(neutral, 2);
-    }
-
-    span {
-      margin-left: 0.25rem;
-    }
-  }
-}
-
 .header-field {
   position: relative;
   padding: 0;
@@ -238,5 +178,51 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
     width: 1.125rem;
     height: 1.125rem;
     @include fgcolor(neutral, 5);
+  }
+}
+
+.header-menu {
+  position: absolute;
+  display: none;
+  width: 10rem;
+
+  .header-item:hover > & {
+    display: block;
+    top: $header-inner-height;
+    right: 0;
+    @include bgcolor(#fff);
+    @include shadow;
+    @include radius;
+    padding: 0.5rem 0;
+  }
+
+  .m-icon {
+    margin: 0;
+  }
+
+  .-item {
+    display: block;
+
+    padding: 0 0.75rem;
+    line-height: 2.25rem;
+    text-transform: uppercase;
+    font-weight: 500;
+
+    @include border($sides: top);
+    &:last-child {
+      @include border($sides: bottom);
+    }
+
+    @include font-size(2);
+    @include fgcolor(neutral, 6);
+
+    &:hover {
+      @include fgcolor(primary, 6);
+      @include bgcolor(neutral, 2);
+    }
+
+    span {
+      margin-left: 0.25rem;
+    }
   }
 }

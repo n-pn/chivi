@@ -52,10 +52,6 @@
           </span>
 
           <div class="header-menu">
-            <div class="-head">
-              <MIcon class="m-icon _user" name="user" />
-              <span class="-uname">{$user.uname}</span>
-            </div>
 
             {#if $user.power < 0}
               <a href="/auth/login" class="-item">

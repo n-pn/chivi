@@ -12,6 +12,8 @@ class UserDict
   getter file : String
   getter dict : BaseDict
 
+  getter power = 1 # minimum user power to have effective changes
+
   getter items = [] of DictEdit
   getter bests = {} of String => DictEdit
   getter hints = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
@@ -19,7 +21,7 @@ class UserDict
   delegate size, to: @items
   delegate each, to: @items
 
-  def initialize(@file, name : String, mode : Int32 = 0)
+  def initialize(@file, name : String, mode : Int32 = 0, @power = 1)
     @dict = BaseDict.load(name, mode: 1)
 
     return if mode == 0
@@ -44,6 +46,11 @@ class UserDict
       else
         @hints[item.key].clear
       end
+    end
+
+    if item.power < @power
+      add_hints(item.key, item.val)
+      raise "power too low"
     end
 
     @dict.upsert(item.key, DictTrie.split(item.val, "/"), freeze: freeze)
