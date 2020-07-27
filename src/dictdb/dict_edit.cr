@@ -22,7 +22,7 @@ class DictEdit
   getter key : String
   getter val : String
 
-  getter mtime : Int32  # time by total minutes since the EPOCH
+  getter mtime : Int32  # time by total minutes since `EPOCH`
   getter uname : String # user handle dname
   getter power : Int32  # entry lock level
 
@@ -40,6 +40,15 @@ class DictEdit
   def puts(io : IO)
     to_s(io)
     io << "\n"
+  end
+
+  def eql?(other : self)
+    return false if @val != other.val
+    @uname == other.uname
+  end
+
+  def utime
+    (EPOCH + mtime.minutes).to_unix_ms
   end
 
   def prevail?(other : self)

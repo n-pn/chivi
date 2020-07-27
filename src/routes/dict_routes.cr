@@ -8,7 +8,7 @@ module Server
 
   get "/_lookup" do |env|
     dname = env.params.query.fetch("dname", "combine")
-    dicts = BaseDict.for_convert(dname)
+    dicts = DictDB.for_convert(dname)
 
     input = env.params.query.fetch("input", "")
     chars = input.chars
@@ -25,11 +25,11 @@ module Server
         end
       end
 
-      BaseDict.trungviet.scan(chars, idx) do |item|
+      DictDB.trungviet.scan(chars, idx) do |item|
         entry[item.key.size]["trungviet"] = item.vals
       end
 
-      BaseDict.cc_cedict.scan(chars, idx) do |item|
+      DictDB.cc_cedict.scan(chars, idx) do |item|
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
@@ -44,9 +44,9 @@ module Server
     # TODO: search for a list of dnames
 
     term = env.params.query.fetch("term", "")
-    bdic = env.params.query.fetch("bdic", "combine")
+    bdic = env.params.query.fetch("bdic", "_tonghop")
 
-    suggest = BaseDict.suggest.find(term).try(&.vals) || [] of String
+    suggest = DictDB.suggest.dict.find(term).try(&.vals) || [] of String
 
     {
       hanviet: Engine.hanviet(term, false).vi_text,
@@ -70,7 +70,7 @@ module Server
       power = 0
     end
 
-    dname = env.params.query.fetch("dname", "combine")
+    dname = env.params.query.fetch("dname", "_tonghop")
 
     key = env.params.query.fetch("key", "")
     vals = env.params.query.fetch("vals", "")

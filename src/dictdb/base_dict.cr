@@ -23,53 +23,33 @@ class BaseDict
 
     FileUtil.each_line(file, LABEL) do |line|
       key, vals = DictTrie.parse(line, sep_0, sep_1)
-      upsert(key, vals)
+      upsert(key, vals, freeze: false)
     rescue err
       FileUtil.log_error(LABEL, line, err)
     end
   end
 
-  def delete!(key : String)
-    append!(delete(key))
+  def upsert(key : String, val : String = "", freeze = true)
+    upsert(key, freeze: freeze, &.vals = [val])
   end
 
-  def delete(key : String)
-    upsert(key, &.vals.push(""))
+  def upsert(key : String, vals : Array(String), freeze = true)
+    upsert(key, freeze: freeze, &.vals = vals)
   end
 
-  def upsert!(key : String, value : String)
-    append!(upsert(key, value))
-  end
-
-  def upsert!(key : String, vals : Array(String))
-    append!(upsert(key, vals))
-  end
-
-  def upsert!(key : String)
-    node = upsert(key) { |node| yield node }
-    append!(node)
-  end
-
-  def append!(node : DictTrie, trim = 1) : DictTrie
-    FileUtil.append(@file) { |io| node.puts(io, trim: trim) }
-    node
-  end
-
-  def upsert(key : String, value : String = "")
-    upsert(key, &.vals = [value])
-  end
-
-  def upsert(key : String, vals : Array(String)) : DictTrie
-    upsert(key, &.vals = vals)
-  end
-
-  def upsert(key : String) : DictTrie
+  def upsert(key : String, freeze : Bool = false) : DictTrie
     node = @trie.find!(key)
 
     @size += 1 if node.removed?
     yield node
     @size -= 1 if node.removed?
+
+    File.open(@file, "a", &.puts(node)) if freeze
     node
+  end
+
+  def delete(key : String, freeze = true)
+    upsert(key, freeze, &.vals = [] of String)
   end
 
   include Enumerable(DictTrie)
@@ -79,9 +59,7 @@ class BaseDict
   delegate has_key?, to: @trie
 
   def save!(file : String = @file, trim = 0) : Void
-    FileUtil.save(file, LABEL, @size) do |io|
-      each { |node| node.puts(io, trim: trim) }
-    end
+    FileUtil.save(file, LABEL, @size) { |io| each(&.puts(io)) }
   end
 
   # class methods
@@ -110,7 +88,7 @@ end
 # test = BaseDict.new("tmp/test_lex_dict.dic", preload: true)
 
 # test.upsert("a", "a")
-# test.upsert!("a", "b")
+# test.upsert("a", "b", freeze: true)
 
 # puts test.find("a")
 
@@ -131,8 +109,8 @@ end
 # puts test.find("xy")
 # puts test.find("xcbsf")
 
-# test.upsert!("xx", "yy")
-# test.delete!("xy")
+# test.upsert("xx", "yy", freeze: true)
+# test.delete("xy", freeze: true)
 
 # puts test.size
 

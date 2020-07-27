@@ -10,14 +10,14 @@ class UserDict
   LABEL = "user_dict"
 
   getter file : String
-  getter time = DictEdit::EPOCH
-
   getter dict : BaseDict
-  getter list = [] of DictEdit
-  getter best = {} of String => DictEdit
 
-  delegate size, to: @list
-  delegate each, to: @list
+  getter items = [] of DictEdit
+  getter bests = {} of String => DictEdit
+  getter hints = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
+
+  delegate size, to: @items
+  delegate each, to: @items
 
   def initialize(@file, name : String, mode : Int32 = 0)
     @dict = BaseDict.load(name, mode: 1)
@@ -28,56 +28,56 @@ class UserDict
 
   def load!(file : String = @file) : Void
     FileUtil.each_line(file, LABEL) do |line|
-      insert(DictEdit.parse!(line))
+      insert(DictEdit.parse!(line), freeze: false)
     rescue err
       FileUtil.log_error(LABEL, line, err)
     end
   end
 
-  def sort! : Void
-    @list.sort_by!(&.mtime)
-  end
+  def insert(item : DictEdit, freeze : Bool = false)
+    if best = @bests[item.key]?
+      raise "duplicate" if best.eql?(item) # prevent duplicate
 
-  def insert!(item : DictEdit)
-    append!(item)
-    insert(item)
-  end
-
-  def append!(item : DictEdit)
-    File.open(@file, "a") { |io| item.puts(io) }
-  end
-
-  def insert(item : DictEdit)
-    if best = find(item.key)
-      return if best.power > item.power
+      unless item.prevail?(best)
+        add_hints(item.key, item.val)
+        raise "power too low"
+      else
+        @hints[item.key].clear
+      end
     end
 
-    @dict.upsert(item.key, item.val)
-    @list << item
-    @best[item.key] = item
+    @dict.upsert(item.key, item.val, freeze: freeze)
+    File.open(@file, "a", &.puts(item)) if freeze
+
+    @items.push(item)
+    @bests[item.key] = item
+  end
+
+  def add_hints(key : String, val : String)
+    @hints[key].push(val)
   end
 
   def find(key : String)
-    @best[key]?
+    return @dict.find(key), @bests[key]?, @hints[key]?
   end
 
-  def save!(file : String = @file, sort : Bool = false) : Void
-    sort! if sort
-    @list.uniq!
-
+  def save!(file : String = @file) : Void
     @dict.save!
-    FileUtil.save(file, LABEL, @list.size) do |io|
-      @list.each { |item| io.puts(item) }
+
+    @items.sort_by!(&.mtime).uniq!
+    FileUtil.save(file, LABEL, @items.size) do |io|
+      @items.each { |item| io.puts(item) }
     end
   end
 
   # class methods
 
   DIR = File.join("var", "dictdb")
-  EXT = ENV["KEMAL_ENV"]? == "production" ? "log" : "test.log"
+
+  class_property ext = ENV["KEMAL_ENV"]? == "production" ? "log" : "test.log"
 
   def self.path_for(name : String)
-    File.join(DIR, "#{name}.#{EXT}")
+    File.join(DIR, "#{name}.#{ext}")
   end
 
   CACHE = {} of String => UserDict

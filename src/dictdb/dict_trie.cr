@@ -19,17 +19,13 @@ class DictTrie
     String.build { |io| to_s(io) }
   end
 
-  def to_s(io : IO, trim = 4)
-    vals = @vals.uniq
-    vals = vals.last(trim) if trim > 0
-
+  def to_s(io : IO)
     io << @key << SEP_0
-    vals.join(io, SEP_1)
+    @vals.uniq.join(io, SEP_1) unless @vals.empty?
   end
 
-  def puts(io : IO, trim = 4)
-    to_s(io, trim)
-    io << "\n"
+  def puts(io : IO)
+    io << self << "\n"
   end
 
   def remove!

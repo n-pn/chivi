@@ -17,52 +17,32 @@ module DictDB
 
   class_getter generic : UserDict { UserDict.load("core/generic") }
   class_getter suggest : UserDict { UserDict.load("core/suggest") }
-  class_getter combine : UserDict { UserDict.load("uniq/_tonghop") }
 
   def for_convert(name : String) : Tuple(BaseDict, BaseDict, BaseDict)
     name = "_tonghop" if name.empty?
     {hanviet, generic.dict, UserDict.load("uniq/#{name}").dict}
   end
 
-  def find_dict(name : String)
-    case name
-    when "generic" then generic
-    when "hanviet" then hanviet
-    when "combine" then combine
-    else                UserDict.load("uniq/#{name}")
-    end
+  def find_dict(name : String) : UserDict
+    return generic if name == "generic"
+    UserDict.load("uniq/#{name}")
   end
 
   def upsert(dname : String, uname : String, power : Int32, key : String, val : String = "")
-    dname = "_combine" if dname.empty?
+    dname = "_tonghop" if dname.empty?
     entry = DictEdit.new(key, val, uname: uname, power: power)
-
-    dict = find_dict(dname)
-    raise "power too low" unless dict.insert!(entry)
+    find_dict(dname).insert(entry, freeze: true)
   end
 
   def search(term : String, dname = "generic")
-    mtime = 0
-    uname = ""
-    power = 0
+    item, edit, hints = find_dict(dname).find(term)
 
-    vals = [] of String
-
-    if node = BaseDict.load_unsure(dname).find(term)
-      power = 1
-
-      vals = node.vals
-    end
-
-    if edit = UserDict.load_unsure(dname).find(term)
-      mtime = edit.mtime
-      uname = edit.uname
-      power = edit.power
-
-      vals = DictTrie.split(edit.val) if vals.empty?
-    end
-
-    mtime = (DictEdit::EPOCH + mtime.minutes).to_unix_ms
-    {vals: vals, mtime: mtime, uname: uname, power: power}
+    {
+      vals:  item.try(&.vals) || [] of String,
+      hints: hints || [] of String,
+      mtime: edit.try(&.utime) || 0,
+      uname: edit.try(&.uname) || "",
+      power: edit.try(&.power) || (item.nil? ? 0 : 1),
+    }
   end
 end
