@@ -1,18 +1,51 @@
 <script>
   import { user } from '$src/stores'
-
   import MIcon from '$mould/MIcon.svelte'
 
   export let segment = ''
+  export let shift = false
+  export let clear = false
 
   async function logout() {
     $user = { uname: 'Guest', power: -1 }
     document.cookie = 'uslug=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
     const res = await fetch('_logout')
   }
+
+  let lastScrollTop = 0
+
+  // Credits: "https://github.com/qeremy/so/blob/master/so.dom.js#L426"
+  function handleScroll(evt) {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+
+    const scrollDown = scrollTop > lastScrollTop
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop
+
+    clear = scrollDown
+  }
 </script>
 
 <style lang="scss">
+  $page-width: 54rem;
+
+  .wrapper {
+    width: $page-width;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 0.75rem;
+  }
+
+  main {
+    // width: 100%;
+    // height: 100%;
+
+    &._shift {
+      @include screen-min(lg) {
+        margin-right: 30rem;
+      }
+    }
+  }
+
   $header-height: 3rem;
   $header-inner-height: 2.25rem;
   $header-gutter: ($header-height - $header-inner-height) / 2;
@@ -225,49 +258,57 @@
   }
 </style>
 
-<header class="header" data-page={segment}>
-  <nav class="wrapper -wrap">
-    <div class="-left">
-      <a href="/" class="header-item _brand">
-        <img src="/logo.svg" alt="logo" />
-        <span class="header-text _show-md">Chivi</span>
-      </a>
+<svelte:window on:scroll={handleScroll} />
 
-      <slot name="left" />
-    </div>
+<main class:_shift={shift} class:__clear={clear}>
+  <header class="header" data-page={segment}>
+    <nav class="wrapper -wrap">
+      <div class="-left">
+        <a href="/" class="header-item _brand">
+          <img src="/logo.svg" alt="logo" />
+          <span class="header-text _show-md">Chivi</span>
+        </a>
 
-    <div class="-right">
-      <slot name="right" />
+        <slot name="header-left" />
+      </div>
 
-      <span class="header-item _menu">
-        <MIcon class="m-icon _user" name="user" />
-        <span class="header-text _show-md">
-          {$user.power < 0 ? 'Khách' : $user.uname}
-        </span>
+      <div class="-right">
+        <slot name="header-right" />
 
-        <div class="header-menu">
-          <div class="-head">
-            <MIcon class="m-icon _user" name="user" />
-            <span class="-uname">{$user.uname}</span>
+        <span class="header-item _menu">
+          <MIcon class="m-icon _user" name="user" />
+          <span class="header-text _show-md">
+            {$user.power < 0 ? 'Khách' : $user.uname}
+          </span>
+
+          <div class="header-menu">
+            <div class="-head">
+              <MIcon class="m-icon _user" name="user" />
+              <span class="-uname">{$user.uname}</span>
+            </div>
+
+            {#if $user.power < 0}
+              <a href="/login" class="-item">
+                <MIcon class="m-icon _log-in" name="log-in" />
+                <span>Đăng nhập</span>
+              </a>
+              <a href="/signup" class="-item">
+                <MIcon class="m-icon _user-plus" name="user-plus" />
+                <span>Đăng ký</span>
+              </a>
+            {:else}
+              <a href="/_logout" class="-item" on:click|preventDefault={logout}>
+                <MIcon class="m-icon _log-out" name="log-out" />
+                <span>Đăng xuất</span>
+              </a>
+            {/if}
           </div>
+        </span>
+      </div>
+    </nav>
+  </header>
 
-          {#if $user.power < 0}
-            <a href="/login" class="-item">
-              <MIcon class="m-icon _log-in" name="log-in" />
-              <span>Đăng nhập</span>
-            </a>
-            <a href="/signup" class="-item">
-              <MIcon class="m-icon _user-plus" name="user-plus" />
-              <span>Đăng ký</span>
-            </a>
-          {:else}
-            <a href="/_logout" class="-item" on:click|preventDefault={logout}>
-              <MIcon class="m-icon _log-out" name="log-out" />
-              <span>Đăng xuất</span>
-            </a>
-          {/if}
-        </div>
-      </span>
-    </div>
-  </nav>
-</header>
+  <div class="wrapper">
+    <slot />
+  </div>
+</main>

@@ -19,7 +19,7 @@
 
 <script>
   import MIcon from '$mould/MIcon.svelte'
-  import Header from '$layout/Header.svelte'
+  import Vessel from '$layout/Vessel.svelte'
   import BookCover from '$reused/BookCover.svelte'
 
   export let word = ''
@@ -173,14 +173,12 @@
   <title>Tìm kiếm - Chivi</title>
 </svelte:head>
 
-<Header>
-  <form slot="left" class="header-field" action="/search" method="get">
+<Vessel>
+  <form slot="header-left" class="header-field" action="/search" method="get">
     <input type="search" name="kw" placeholder="Tìm kiếm" value={word} />
     <MIcon class="m-icon _search" name="search" />
   </form>
-</Header>
 
-<div class="wrapper">
   <h1 class="label">
     Hiển thị kết quả {offset + 1}~{offset + items.length}/{total} cho từ khoá "{word}"
     :
@@ -237,5 +235,4 @@
       <MIcon name="chevron-right" />
     </a>
   </div>
-
-</div>
+</Vessel>

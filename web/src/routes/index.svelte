@@ -34,7 +34,7 @@
   import MIcon from '$mould/MIcon.svelte'
   import BookCover from '$reused/BookCover.svelte'
 
-  import Header from '$layout/Header.svelte'
+  import Vessel from '$layout/Vessel.svelte'
 
   export let items = []
   export let total = 0
@@ -283,8 +283,8 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Header>
-  <form slot="left" class="header-field" action="/search" method="get">
+<Vessel>
+  <form slot="header-left" class="header-field" action="/search" method="get">
     <input
       type="search"
       name="kw"
@@ -293,9 +293,7 @@
       on:onfocusout={() => (searching = false)} />
     <MIcon class="m-icon _search" name="search" />
   </form>
-</Header>
 
-<div class="wrapper">
   <div class="order">
     {#each Object.entries(order_names) as [type, label]}
       <a
@@ -368,5 +366,4 @@
       <MIcon class="m-icon" name="chevrons-right" />
     </a>
   </div>
-
-</div>
+</Vessel>

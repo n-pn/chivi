@@ -1,6 +1,6 @@
 <script>
   import MIcon from '$mould/MIcon'
-  import Header from '$layout/Header'
+  import Vessel from '$layout/Vessel'
 
   import { user } from '$src/stores'
 
@@ -120,50 +120,50 @@
   }
 </style>
 
-<Header />
+<Vessel>
+  <section>
+    <form action="/_login" method="POST" on:submit|preventDefault={submit}>
+      <header>
+        <img src="/logo.svg" alt="logo" />
+        <span>Chivi</span>
+      </header>
 
-<section>
-  <form action="/_login" method="POST" on:submit|preventDefault={submit}>
-    <header>
-      <img src="/logo.svg" alt="logo" />
-      <span>Chivi</span>
-    </header>
+      <div class="input">
+        <label for="email">Hòm thư</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Hòm thư"
+          required
+          bind:value={email} />
+      </div>
 
-    <div class="input">
-      <label for="email">Hòm thư</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        placeholder="Hòm thư"
-        required
-        bind:value={email} />
-    </div>
+      <div class="input">
+        <label for="cpass">Mật khẩu</label>
+        <input
+          type="password"
+          id="upass"
+          name="upass"
+          placeholder="Mật khẩu"
+          required
+          bind:value={upass} />
+      </div>
 
-    <div class="input">
-      <label for="cpass">Mật khẩu</label>
-      <input
-        type="password"
-        id="upass"
-        name="upass"
-        placeholder="Mật khẩu"
-        required
-        bind:value={upass} />
-    </div>
+      {#if error}
+        <div class="error">Email hoặc mật khẩu không đúng!</div>
+      {/if}
 
-    {#if error}
-      <div class="error">Email hoặc mật khẩu không đúng!</div>
-    {/if}
+      <footer>
+        <a href="/signup" class="m-button _line">
+          <span>Tài khoải mới</span>
+        </a>
 
-    <footer>
-      <a href="/signup" class="m-button _line">
-        <span>Tài khoải mới</span>
-      </a>
-
-      <button type="submit" class="m-button _primary login">
-        <MIcon class="m-icon _login" name="log-in" />
-        <span>Đăng nhập</span>
-      </button>
-    </footer>
-  </form>
-</section>
+        <button type="submit" class="m-button _primary login">
+          <MIcon class="m-icon _login" name="log-in" />
+          <span>Đăng nhập</span>
+        </button>
+      </footer>
+    </form>
+  </section>
+</Vessel>

@@ -30,10 +30,8 @@
 <script>
   import { onMount } from 'svelte'
 
-  import { layout_shift } from '$src/stores'
-
   import MIcon from '$mould/MIcon.svelte'
-  import Header from '$layout/Header.svelte'
+  import Vessel from '$layout/Vessel.svelte'
   import Lookup from '$layout/Lookup.svelte'
   import Upsert from '$layout/Upsert.svelte'
 
@@ -81,8 +79,6 @@
     shouldReload = false
     reloadContent(1)
   }
-
-  $: $layout_shift = lookupEnabled
 
   function handleKeypress(evt) {
     if (upsert_actived) return
@@ -363,22 +359,22 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Header>
+<Vessel shift={lookupEnabled}>
   <a
-    slot="left"
+    slot="header-left"
     href="/{book_slug}?tab=content&seed={seed_name}"
     class="header-item _title">
     <MIcon class="m-icon _book-open" name="book-open" />
     <span class="header-text _show-sm _title">{book_name}</span>
   </a>
 
-  <span slot="left" class="header-item _active">
+  <span slot="header-left" class="header-item _active">
     <span class="header-text">{ch_index}</span>
     <span class="header-text _show-md">/{ch_total}</span>
   </span>
 
   <button
-    slot="right"
+    slot="header-right"
     type="button"
     class="header-item"
     on:click={() => reloadContent()}>
@@ -388,7 +384,7 @@
   </button>
 
   <button
-    slot="right"
+    slot="header-right"
     type="button"
     class="header-item"
     class:_active={upsert_actived}
@@ -397,16 +393,14 @@
   </button>
 
   <button
-    slot="right"
+    slot="header-right"
     type="button"
     class="header-item"
     class:_active={lookupEnabled}
     on:click={triggerLookupSidebar}>
     <MIcon class="m-icon _compass" name="compass" />
   </button>
-</Header>
 
-<div class="wrapper">
   <nav class="navi">
     <a href="/" class="crumb">Chivi</a>
     <span class="split">&gt;</span>
@@ -460,22 +454,22 @@
       <MIcon class="m-icon" name="chevron-right" />
     </a>
   </footer>
-</div>
 
-{#if lookupEnabled}
-  <Lookup
-    on_top={!upsert_actived}
-    bind:active={lookupActived}
-    input={lookupLine}
-    dname={book_ubid}
-    from={lookupFrom} />
-{/if}
+  {#if lookupEnabled}
+    <Lookup
+      on_top={!upsert_actived}
+      bind:active={lookupActived}
+      input={lookupLine}
+      dname={book_ubid}
+      from={lookupFrom} />
+  {/if}
 
-{#if upsert_actived}
-  <Upsert
-    tab={upsertTab}
-    key={upsertKey}
-    dname={upsertDic}
-    bind:actived={upsert_actived}
-    bind:changed={shouldReload} />
-{/if}
+  {#if upsert_actived}
+    <Upsert
+      tab={upsertTab}
+      key={upsertKey}
+      dname={upsertDic}
+      bind:actived={upsert_actived}
+      bind:changed={shouldReload} />
+  {/if}
+</Vessel>

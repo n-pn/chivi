@@ -85,7 +85,7 @@
   import ChapList from '$reused/ChapList.svelte'
   import BookCover from '$reused/BookCover.svelte'
 
-  import Header from '$layout/Header.svelte'
+  import Vessel from '$layout/Vessel.svelte'
 
   import relative_time from '$utils/relative_time'
   import paginate_range from '$utils/paginate_range'
@@ -502,14 +502,12 @@
   <meta property="og:novel:update_time" content={update.toISOString()} />
 </svelte:head>
 
-<Header>
-  <a slot="left" href="/{book.slug}" class="header-item _active">
+<Vessel>
+  <a slot="header-left" href="/{book.slug}" class="header-item _active">
     <MIcon class="m-icon _book-open" name="book-open" />
     <span class="header-text _title">{book.vi_title}</span>
   </a>
-</Header>
 
-<div class="wrapper">
   <section class="info">
     <div class="name">
       <h1 class="title">
@@ -715,5 +713,4 @@
       <div class="empty">Đang hoàn thiện :(</div>
     </div>
   </section>
-
-</div>
+</Vessel>
