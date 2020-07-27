@@ -12,18 +12,18 @@ class UserDict
   getter file : String
   getter time = DictEdit::EPOCH
 
+  getter dict : BaseDict
   getter list = [] of DictEdit
   getter best = {} of String => DictEdit
 
   delegate size, to: @list
   delegate each, to: @list
 
-  def initialize(@file, preload : Bool = false)
-    load!(@file) if preload && exists?
-  end
+  def initialize(@file, name : String, mode : Int32 = 0)
+    @dict = BaseDict.load(name, mode: 1)
 
-  def exists?
-    File.exists?(file)
+    return if mode == 0
+    load!(@file) if mode == 2 || File.exists?(@file)
   end
 
   def load!(file : String = @file) : Void
@@ -52,6 +52,7 @@ class UserDict
       return if best.power > item.power
     end
 
+    @dict.upsert(item.key, item.val)
     @list << item
     @best[item.key] = item
   end
@@ -60,10 +61,11 @@ class UserDict
     @best[key]?
   end
 
-  def save!(sort : Bool = false) : Void
+  def save!(file : String = @file, sort : Bool = false) : Void
     sort! if sort
     @list.uniq!
 
+    @dict.save!
     FileUtil.save(file, LABEL, @list.size) do |io|
       @list.each { |item| io.puts(item) }
     end
@@ -72,48 +74,19 @@ class UserDict
   # class methods
 
   DIR = File.join("var", "dictdb")
-  FileUtils.mkdir_p(File.join(DIR, "unique"))
+  EXT = ENV["KEMAL_ENV"]? == "production" ? "log" : "test.log"
 
-  @@scope = ENV["KEMAL_ENV"]? == "production" ? "appcv" : "local"
-
-  def self.set_scope!(scope : String)
-    @@scope = scope
+  def self.path_for(name : String)
+    File.join(DIR, "#{name}.#{EXT}")
   end
 
-  def self.path_for(dname : String, scope = @@scope)
-    File.join(DIR, "#{dname}.#{scope}.fix")
+  CACHE = {} of String => UserDict
+
+  def self.load(name : String, mode = 1)
+    CACHE[name] ||= new(path_for(name), name, mode: mode)
   end
 
   def self.load!(name : String)
-    new(path_for(name), preload: true)
-  end
-
-  def self.read(file : String)
-    new(file, preload: true)
-  end
-
-  CACHE = {} of String => self
-
-  def self.preload!(name : String) : self
-    CACHE[name] ||= load!(name)
-  end
-
-  def self.load_unique(dname : String)
-    preload!("unique/#{dname}")
-  end
-
-  class_getter hanviet : UserDict { preload!("hanviet") }
-  class_getter generic : UserDict { preload!("generic") }
-  class_getter suggest : UserDict { preload!("suggest") }
-  class_getter combine : UserDict { preload!("combine") }
-
-  def self.load_unsure(dname : String)
-    case dname
-    when "hanviet" then hanviet
-    when "generic" then generic
-    when "combine" then combine
-    when "suggest" then suggest
-    else                load_unique(dname)
-    end
+    load(name, mode: 2)
   end
 end

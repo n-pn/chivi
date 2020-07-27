@@ -13,10 +13,8 @@ def cleanup(input : String)
     .join("; ")
 end
 
-OUT_FILE = Utils.out_path("system/trungviet.dic")
-
-out_dict = BaseDict.new(OUT_FILE, false)
-out_dict.load_legacy!(Utils.inp_path("initial/lacviet-mtd.txt"))
+out_dict = BaseDict.load("trungviet", mode: 0)
+out_dict.load!(Utils.inp_path("initial/lacviet-mtd.txt"), legacy: true)
 
 hv_chars = Clavis.load("hanviet/lacviet-chars.txt", false)
 hv_words = Clavis.load("hanviet/lacviet-words.txt", false)

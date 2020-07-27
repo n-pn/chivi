@@ -6,7 +6,7 @@ OUT = File.join("var", "dictdb")
 files = Dir.glob("#{INP}/core_user/*.guest.dic")
 files.each do |file|
   name = File.basename(file, ".guest.dic")
-  out_file = "#{OUT}/#{name}.appcv.fix"
+  out_file = "#{OUT}/common/#{name}.log"
 
   FileUtils.cp(file, out_file)
   FileUtils.cp(file, out_file.sub("appcv", "local"))

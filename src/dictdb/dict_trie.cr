@@ -8,6 +8,10 @@ class DictTrie
 
   getter trie = Hash(Char, DictTrie).new
 
+  def initialize(@key, val : String)
+    @vals = val.split("/")
+  end
+
   def initialize(@key, @vals = [] of String)
   end
 
@@ -115,18 +119,13 @@ class DictTrie
 
   # class methods
 
-  def self.parse(line : String)
-    cols = line.split(SEP_0, 3)
-    return cols[0], split(cols[1]?), cols[2]? || ""
-  end
-
-  def self.parse_legacy(line : String)
-    cols = line.split("=", 2)
-    return cols[0], split(cols[1]?, /[\/\|]/)
+  def self.parse(line : String, sep_0 = SEP_0, sep_1 = SEP_1)
+    cols = line.split(sep_0)
+    return cols[0], split(cols[1]?, sep_1)
   end
 
   def self.split(vals : String?, sep = SEP_1)
-    return vals.split(sep) if vals && !vals.empty?
-    [] of String
+    return [] of String unless vals && !vals.blank?
+    vals.split(sep)
   end
 end

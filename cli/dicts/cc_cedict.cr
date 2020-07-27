@@ -56,11 +56,7 @@ class CE_DICT
   CEDICT_URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 
   HANZIDB_FILE = Utils.inp_path("initial/hanzidb.txt")
-  HANZIDB_DICT = BaseDict.read_legacy(HANZIDB_FILE)
-
-  CE_DICT_FILE = Utils.out_path("system/cc_cedict.dic")
-  TRADSIM_FILE = Utils.out_path("system/tradsim.dic")
-  BINH_AM_FILE = Utils.out_path("system/binh_am.dic")
+  HANZIDB_DICT = BaseDict.read!(HANZIDB_FILE, legacy: true)
 
   getter input = [] of Entry
 
@@ -96,7 +92,7 @@ class CE_DICT
   def export_ce_dict!
     puts "\n[-- Export ce_dict --]".colorize.cyan.bold
 
-    dict = BaseDict.new(CE_DICT_FILE)
+    dict = BaseDict.load("cc_cedict", mode: 0)
     ondicts = Utils.ondicts_words
 
     @input.each do |entry|
@@ -135,7 +131,7 @@ class CE_DICT
       end
     end
 
-    dict = BaseDict.new(TRADSIM_FILE)
+    dict = BaseDict.load("_tradsim", mode: 0)
 
     counter.each do |trad, counts|
       best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
@@ -176,8 +172,8 @@ class CE_DICT
       end
     end
 
-    dict = BaseDict.new(BINH_AM_FILE)
-    dict.load_legacy!(Utils.inp_path("initial/extra-pinyins.txt"))
+    dict = BaseDict.load("_binh_am", mode: 0)
+    dict.load!(Utils.inp_path("initial/extra-pinyins.txt"), legacy: true)
 
     HANZIDB_DICT.each do |entry|
       dict.upsert(entry.key, entry.vals) unless entry.vals.first.empty?

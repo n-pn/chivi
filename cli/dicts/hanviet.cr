@@ -21,15 +21,7 @@ class Hanviet
     true
   end
 
-  getter output : BaseDict { BaseDict.init("hanviet") }
-
-  def import_lacviet_chars!
-    input = BaseDict.load
-
-    input.each do |node|
-      output.upsert(node.key, node.vals)
-    end
-  end
+  getter output : BaseDict { BaseDict.load("_hanviet", mode: 0) }
 
   def import_dict!(file : String, mode = :old_first)
     input = Clavis.load(file)

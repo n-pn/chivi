@@ -3,53 +3,58 @@ require "./dictdb/*"
 module DictDB
   extend self
 
-  def apply_logs!(dname : String, mode = :keep_new, save_dict = true)
-    edit = UserDict.load_unsure(dname)
-    dict = BaseDict.load_unsure(dname)
+  DIR = File.join("var", "dictdb")
 
-    edit.best.each_value do |log|
-      dict.update(key) do |node|
-        node.extra = log.extra
+  FileUtils.mkdir_p(File.join(DIR, "core"))
+  FileUtils.mkdir_p(File.join(DIR, "uniq"))
 
-        vals = log.vals.split(BaseDict::SEP_1)
-        if node.vals.empty? || mode == :keep_new
-          node.vals = vals
-        elsif mode == :new_first
-          node.vals = vals.concat(node.vals)
-        else
-          node.vals.concat(vals)
-        end
-      end
+  class_getter cc_cedict : BaseDict { BaseDict.load!("cc_cedict") }
+  class_getter trungviet : BaseDict { BaseDict.load!("trungviet") }
+
+  class_getter tradsim : BaseDict { BaseDict.load!("_tradsim") }
+  class_getter binh_am : BaseDict { BaseDict.load!("_binh_am") }
+  class_getter hanviet : BaseDict { BaseDict.load!("_hanviet") }
+
+  class_getter generic : UserDict { UserDict.load("core/generic") }
+  class_getter suggest : UserDict { UserDict.load("core/suggest") }
+  class_getter combine : UserDict { UserDict.load("uniq/_tonghop") }
+
+  def for_convert(name : String) : Tuple(BaseDict, BaseDict, BaseDict)
+    name = "_tonghop" if name.empty?
+    {hanviet, generic.dict, UserDict.load("uniq/#{name}").dict}
+  end
+
+  def find_dict(name : String)
+    case name
+    when "generic" then generic
+    when "hanviet" then hanviet
+    when "combine" then combine
+    else                UserDict.load("uniq/#{name}")
     end
-
-    dict.save! if save_dict
   end
 
   def upsert(dname : String, uname : String, power : Int32, key : String, val : String = "")
-    edit = UserDict.load_unsure(dname)
-    dict = BaseDict.load_unsure(dname)
+    dname = "_combine" if dname.empty?
+    entry = DictEdit.new(key, val, uname: uname, power: power)
 
-    entry = DictEdit.new(key, val, DictEdit.mtime, uname, power)
-
-    raise "power too low" unless edit.insert!(entry)
-    raise "power too low" unless power > 0
-    dict.upsert!(key, DictTrie.split(val, "/"))
+    dict = find_dict(dname)
+    raise "power too low" unless dict.insert!(entry)
   end
 
-  def search(key : String, dname = "generic")
+  def search(term : String, dname = "generic")
     mtime = 0
     uname = ""
     power = 0
 
     vals = [] of String
 
-    if node = BaseDict.load_unsure(dname).find(key)
+    if node = BaseDict.load_unsure(dname).find(term)
       power = 1
 
       vals = node.vals
     end
 
-    if edit = UserDict.load_unsure(dname).find(key)
+    if edit = UserDict.load_unsure(dname).find(term)
       mtime = edit.mtime
       uname = edit.uname
       power = edit.power

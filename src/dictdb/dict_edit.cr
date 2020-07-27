@@ -26,7 +26,7 @@ class DictEdit
   getter uname : String # user handle dname
   getter power : Int32  # entry lock level
 
-  def initialize(@key, @val = "", @mtime = 0, @uname = "Guest", @power = 1)
+  def initialize(@key, @val = "", @mtime = DictEdit.mtime, @uname = "Guest", @power = 1)
   end
 
   def to_s
