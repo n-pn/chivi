@@ -46,7 +46,7 @@ class UserDict
       end
     end
 
-    @dict.upsert(item.key, item.val, freeze: freeze)
+    @dict.upsert(item.key, DictTrie.split(item.val, "/"), freeze: freeze)
     File.open(@file, "a", &.puts(item)) if freeze
 
     @items.push(item)

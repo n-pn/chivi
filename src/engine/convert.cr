@@ -110,6 +110,8 @@ module Convert
         dic_weight = dic / dict_count + 1
 
         dict.scan(norms, idx) do |item|
+          next if item.vals.empty?
+
           length = item.key.size
           weight = weights[idx] + pos_weight + length ** (1 + dic_weight)
 
