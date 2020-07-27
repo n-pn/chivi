@@ -188,7 +188,7 @@
       {/if}
 
       <footer>
-        <a href="/login" class="m-button _line">
+        <a href="/auth/login" class="m-button _line">
           <span>Đăng nhập</span>
         </a>
 

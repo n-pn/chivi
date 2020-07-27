@@ -8,7 +8,6 @@
 
   async function logout() {
     $user = { uname: 'Guest', power: -1 }
-    document.cookie = 'uslug=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
     const res = await fetch('_logout')
   }
 
@@ -26,24 +25,25 @@
 </script>
 
 <style lang="scss">
-  $page-width: 54rem;
-
-  .wrapper {
-    width: $page-width;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0 0.75rem;
-  }
-
-  main {
-    // width: 100%;
-    // height: 100%;
+  .vessel {
+    position: relative;
+    width: 100%;
+    height: 100%;
 
     &._shift {
       @include screen-min(lg) {
         margin-right: 30rem;
       }
     }
+  }
+
+  $page-width: 54rem;
+
+  .center {
+    width: $page-width;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 0.75rem;
   }
 
   $header-height: 3rem;
@@ -260,9 +260,9 @@
 
 <svelte:window on:scroll={handleScroll} />
 
-<main class:_shift={shift} class:__clear={clear}>
+<div class="vessel" class:_shift={shift} class:__clear={clear}>
   <header class="header" data-page={segment}>
-    <nav class="wrapper -wrap">
+    <nav class="center -wrap">
       <div class="-left">
         <a href="/" class="header-item _brand">
           <img src="/logo.svg" alt="logo" />
@@ -288,16 +288,19 @@
             </div>
 
             {#if $user.power < 0}
-              <a href="/login" class="-item">
+              <a href="/auth/login" class="-item">
                 <MIcon class="m-icon _log-in" name="log-in" />
                 <span>Đăng nhập</span>
               </a>
-              <a href="/signup" class="-item">
+              <a href="/auth/signup" class="-item">
                 <MIcon class="m-icon _user-plus" name="user-plus" />
                 <span>Đăng ký</span>
               </a>
             {:else}
-              <a href="/_logout" class="-item" on:click|preventDefault={logout}>
+              <a
+                href="/auth/logout"
+                class="-item"
+                on:click|preventDefault={logout}>
                 <MIcon class="m-icon _log-out" name="log-out" />
                 <span>Đăng xuất</span>
               </a>
@@ -308,7 +311,9 @@
     </nav>
   </header>
 
-  <div class="wrapper">
-    <slot />
-  </div>
-</main>
+  <main>
+    <div class="center">
+      <slot />
+    </div>
+  </main>
+</div>

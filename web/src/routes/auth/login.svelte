@@ -155,7 +155,7 @@
       {/if}
 
       <footer>
-        <a href="/signup" class="m-button _line">
+        <a href="/auth/signup" class="m-button _line">
           <span>Tài khoải mới</span>
         </a>
 
