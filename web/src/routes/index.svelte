@@ -118,7 +118,7 @@
     &::before {
       content: '';
       display: block;
-      padding-top: 4/3;
+      padding-top: #{4 / 3};
       position: absolute;
       top: 0;
       left: 0;

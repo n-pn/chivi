@@ -96,7 +96,7 @@
       left: 0;
       width: 100%;
       height: 0;
-      padding-top: (4/3) * 100%;
+      padding-top: #{4 / 3} * 100%;
       @include bgcolor(primary, 7);
       z-index: -1;
     }
