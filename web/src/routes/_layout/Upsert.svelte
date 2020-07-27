@@ -16,7 +16,13 @@
   }
 
   export function generate_hints(meta, reject, accept) {
-    let res = [...meta.special.vals, ...meta.generic.vals, ...meta.suggest]
+    let res = [
+      ...meta.special.vals,
+      ...meta.special.hints,
+      ...meta.generic.vals,
+      ...meta.generic.hints,
+      ...meta.suggest,
+    ]
     if (accept && accept !== '') res.push(accept)
 
     return res.filter(
@@ -73,8 +79,8 @@
     hanviet: '',
     binh_am: '',
     suggest: [],
-    generic: { vals: [], mtime: 0, uname: '', power: 0 },
-    special: { vals: [], mtime: 0, uname: '', power: 0 },
+    generic: { vals: [], hints: [], mtime: 0, uname: '', power: 0 },
+    special: { vals: [], hints: [], mtime: 0, uname: '', power: 0 },
   }
 
   $: current = meta[tab]

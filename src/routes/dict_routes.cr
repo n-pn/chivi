@@ -46,13 +46,15 @@ module Server
     term = env.params.query.fetch("term", "")
     bdic = env.params.query.fetch("bdic", "_tonghop")
 
+    generic = DictDB.search(term, "generic")
+    special = DictDB.search(term, bdic)
     suggest = DictDB.suggest.dict.find(term).try(&.vals) || [] of String
 
     {
       hanviet: Engine.hanviet(term, false).vi_text,
       binh_am: Engine.binh_am(term, false).vi_text,
-      generic: DictDB.search(term, "generic"),
-      special: DictDB.search(term, bdic),
+      generic: generic,
+      special: special,
       suggest: suggest,
     }.to_json(env.response)
   end
