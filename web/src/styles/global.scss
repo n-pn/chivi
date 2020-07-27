@@ -34,7 +34,7 @@ $header-height: 3rem;
 $header-inner-height: 2.25rem;
 $header-gutter: ($header-height - $header-inner-height) / 2;
 
-.header {
+.main-header {
   position: sticky;
   z-index: 800;
 

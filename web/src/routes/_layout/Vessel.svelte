@@ -27,7 +27,7 @@
 <svelte:window on:scroll={handleScroll} />
 
 <div class="vessel" class:_shift={shift} class:__clear={clear}>
-  <header class="header" data-page={segment}>
+  <header class="main-header" data-page={segment}>
     <nav class="center -wrap">
       <div class="-left">
         <a href="/" class="header-item _brand">
