@@ -24,62 +24,267 @@
   }
 </script>
 
+<style lang="scss">
+  $header-height: 3rem;
+  $header-inner-height: 2.25rem;
+  $header-gutter: ($header-height - $header-inner-height) / 2;
+
+  .header {
+    display: block;
+    position: fixed;
+    z-index: 800;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: $header-height;
+
+    color: #fff;
+    transition: transform 0.1s ease-in-out;
+
+    @include bgcolor(primary, 7);
+    @include shadow(2);
+
+    &._clear {
+      transform: translateY(-$header-height);
+    }
+
+    .-wrap {
+      display: flex;
+      padding-top: $header-gutter;
+      padding-bottom: $header-gutter;
+    }
+
+    .-left,
+    .-right {
+      @include flex($gap: $header-gutter, $child: ':global(*)');
+    }
+
+    .-left {
+      flex-grow: 1;
+    }
+
+    .-right {
+      margin-left: auto;
+      padding-left: $header-gutter;
+    }
+  }
+
+  :global(.header-item) {
+    display: inline-flex;
+    position: relative;
+
+    text-decoration: none;
+    padding: 0 0.5rem;
+
+    height: $header-inner-height;
+    line-height: $header-inner-height;
+    user-select: none;
+
+    @include fgcolor(neutral, 2);
+    @include bgcolor(primary, 6);
+
+    @include radius();
+
+    @include hover() {
+      cursor: pointer;
+      @include bgcolor(primary, 5);
+    }
+
+    &._active {
+      @include bgcolor(primary, 5);
+    }
+
+    :global(img),
+    :global(svg) {
+      margin: 0.5rem 0;
+      width: 1.25rem;
+      height: 1.25rem;
+
+      & + :global(.header-text) {
+        margin-left: 0.25rem;
+      }
+    }
+  }
+
+  :global(.header-text) {
+    text-transform: uppercase;
+    font-weight: 500;
+
+    @include font-size(2);
+
+    &._show-sm {
+      display: none;
+      @include screen-min(sm) {
+        display: inline-block;
+      }
+    }
+
+    &._show-md {
+      display: none;
+      @include screen-min(md) {
+        display: inline-block;
+      }
+    }
+
+    ._brand & {
+      @include font-size(3);
+      letter-spacing: 0.1em;
+    }
+
+    &._title {
+      max-width: 40vw;
+      @include truncate(null);
+    }
+  }
+
+  :global(.header-field) {
+    position: relative;
+    padding: 0;
+    // flex-grow: 1;
+
+    cursor: text;
+    border-radius: $header-inner-height / 2;
+    height: $header-inner-height;
+    line-height: $header-inner-height;
+
+    > :global(input) {
+      color: inherit;
+      padding: 0 1rem;
+      display: block;
+      // font-weight: 500;
+      width: 100%;
+      border: none;
+      outline: none;
+      border-radius: $header-inner-height / 2;
+
+      @include bgcolor(darken(color(primary, 7), 5%));
+
+      &::placeholder {
+        @include fgcolor(neutral, 5);
+      }
+    }
+
+    > :global(.m-icon) {
+      position: absolute;
+      // display: flex;
+      padding: 0;
+      margin: 0;
+      right: 0.875rem;
+      top: 0.625rem;
+      width: 1.125rem;
+      height: 1.125rem;
+      @include fgcolor(neutral, 5);
+    }
+  }
+
+  .header-menu {
+    position: absolute;
+    display: none;
+    width: 10rem;
+
+    .header-item:hover > & {
+      display: block;
+      top: $header-inner-height;
+      right: 0;
+      @include bgcolor(#fff);
+      @include shadow;
+      @include radius;
+      padding: 0.5rem 0;
+    }
+
+    :global(.m-icon) {
+      margin: 0;
+    }
+
+    .-item {
+      display: block;
+
+      padding: 0 0.75rem;
+      line-height: 2.25rem;
+      text-transform: uppercase;
+      font-weight: 500;
+
+      @include border($sides: top);
+      &:last-child {
+        @include border($sides: bottom);
+      }
+
+      @include font-size(2);
+      @include fgcolor(neutral, 6);
+
+      &:hover {
+        @include fgcolor(primary, 6);
+        @include bgcolor(neutral, 2);
+      }
+
+      span {
+        margin-left: 0.25rem;
+      }
+    }
+  }
+</style>
+
 <svelte:window on:scroll={handleScroll} />
 
-<div
-  class="vessel"
-  class:_shift={shift}
-  class:__clear={clear}
-  on:click={() => (clear = false)}>
-  <header class="main-header" data-page={segment}>
-    <nav class="center -wrap">
-      <div class="-left">
-        <a href="/" class="header-item _brand">
-          <img src="/logo.svg" alt="logo" />
-          <span class="header-text _show-md">Chivi</span>
-        </a>
+<header
+  class="header"
+  data-page={segment}
+  class:_clear={clear}
+  class:__shift={shift}>
+  <nav class="center -wrap">
+    <div class="-left">
+      <a href="/" class="header-item _brand">
+        <img src="/logo.svg" alt="logo" />
+        <span class="header-text _show-md">Chivi</span>
+      </a>
 
-        <slot name="header-left" />
-      </div>
-
-      <div class="-right">
-        <slot name="header-right" />
-
-        <span class="header-item _menu">
-          <MIcon class="m-icon _user" name="user" />
-          <span class="header-text _show-md">
-            {$user.power < 0 ? 'Khách' : $user.uname}
-          </span>
-
-          <div class="header-menu">
-
-            {#if $user.power < 0}
-              <a href="/auth/login" class="-item">
-                <MIcon class="m-icon _log-in" name="log-in" />
-                <span>Đăng nhập</span>
-              </a>
-              <a href="/auth/signup" class="-item">
-                <MIcon class="m-icon _user-plus" name="user-plus" />
-                <span>Đăng ký</span>
-              </a>
-            {:else}
-              <a
-                href="/auth/logout"
-                class="-item"
-                on:click|preventDefault={logout}>
-                <MIcon class="m-icon _log-out" name="log-out" />
-                <span>Đăng xuất</span>
-              </a>
-            {/if}
-          </div>
-        </span>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <div class="center">
-      <slot />
+      <slot name="header-left" />
     </div>
-  </main>
-</div>
+
+    <div class="-right">
+      <slot name="header-right" />
+
+      <span class="header-item _menu">
+        <MIcon class="m-icon _user" name="user" />
+        <span class="header-text _show-md">
+          {$user.power < 0 ? 'Khách' : $user.uname}
+        </span>
+
+        <div class="header-menu">
+
+          {#if $user.power < 0}
+            <a href="/auth/login" class="-item">
+              <MIcon class="m-icon _log-in" name="log-in" />
+              <span>Đăng nhập</span>
+            </a>
+            <a href="/auth/signup" class="-item">
+              <MIcon class="m-icon _user-plus" name="user-plus" />
+              <span>Đăng ký</span>
+            </a>
+          {:else}
+            <a
+              href="/auth/logout"
+              class="-item"
+              on:click|preventDefault={logout}>
+              <MIcon class="m-icon _log-out" name="log-out" />
+              <span>Đăng xuất</span>
+            </a>
+          {/if}
+        </div>
+      </span>
+    </div>
+  </nav>
+</header>
+
+<main
+  class="vessel"
+  class:__clear={clear}
+  class:__shift={shift}
+  on:click={() => (clear = false)}>
+
+  <section class="center">
+    <slot />
+  </section>
+</main>
