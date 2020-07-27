@@ -56,7 +56,7 @@
     height: $header-height;
 
     color: #fff;
-    transition: transform 0.1s ease-in-out;
+    // transition: transform 0.1s ease-in-out;
 
     @include bgcolor(primary, 7);
     @include shadow(2);
