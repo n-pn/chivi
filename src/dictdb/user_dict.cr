@@ -65,7 +65,7 @@ class UserDict
   end
 
   def find(key : String)
-    return @dict.find(key), @bests[key]?, @hints[key]?
+    {@dict.find(key), @bests[key]?, @hints[key]?}
   end
 
   def save!(file : String = @file) : Void

@@ -35,14 +35,15 @@ module DictDB
   end
 
   def search(term : String, dname = "generic")
-    item, edit, hints = find_dict(dname).find(term)
+    dict = find_dict(dname)
+    item, edit, hints = dict.find(term)
 
     {
       vals:  item.try(&.vals) || [] of String,
-      hints: hints || [] of String,
       mtime: edit.try(&.utime) || 0,
       uname: edit.try(&.uname) || "",
-      power: edit.try(&.power) || (item.nil? ? 0 : 1),
+      power: edit.try(&.power) || dict.power,
+      hints: hints || [] of String,
     }
   end
 end

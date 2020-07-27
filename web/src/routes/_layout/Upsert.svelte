@@ -4,6 +4,7 @@
     const res = await fetch(url)
 
     const data = await res.json()
+    console.log({ data })
     return data
   }
 
@@ -106,7 +107,7 @@
   }
 
   function update_val(new_val) {
-    new_val = new_val || existed
+    new_val = new_val || meta[tab].vals[0]
 
     if (new_val) {
       out_val = new_val
