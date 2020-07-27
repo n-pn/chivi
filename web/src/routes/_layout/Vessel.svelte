@@ -56,13 +56,16 @@
     height: $header-height;
 
     color: #fff;
-    // transition: transform 0.1s ease-in-out;
+    transition: transform 100ms ease-in-out;
+    will-change: transform;
 
     @include bgcolor(primary, 7);
     @include shadow(2);
 
     &._clear {
-      transform: translateY(-$header-height);
+      // position: absolute;
+      // top: -$header-height;
+      transform: translateY(-100%);
     }
 
     .-wrap {
