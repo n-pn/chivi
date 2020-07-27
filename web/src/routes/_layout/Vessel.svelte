@@ -26,7 +26,11 @@
 
 <svelte:window on:scroll={handleScroll} />
 
-<div class="vessel" class:_shift={shift} class:__clear={clear}>
+<div
+  class="vessel"
+  class:_shift={shift}
+  class:__clear={clear}
+  on:click={() => (clear = false)}>
   <header class="main-header" data-page={segment}>
     <nav class="center -wrap">
       <div class="-left">

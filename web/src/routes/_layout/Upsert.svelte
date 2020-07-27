@@ -544,7 +544,7 @@
           class:_primary={!existed}
           class:_success={existed}
           disabled={!(updated || prevail)}
-          on:click={submit_val}>
+          on:click|once={submit_val}>
           <span class="-text">{btn_lbl}</span>
         </button>
       </div>
