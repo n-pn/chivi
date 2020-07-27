@@ -412,7 +412,6 @@
     <span class="split">&gt;</span>
     <span class="crumb">{chap_label}</span>
     <span class="mtime">
-      <span>Cập nhật:</span>
       <span>{relative_time(chap_time)}</span>
     </span>
   </nav>
