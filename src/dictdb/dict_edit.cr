@@ -14,7 +14,7 @@ class DictEdit
 
     mtime = cols[2]?.try(&.to_i) || 0
     uname = cols[3]? || "Guest"
-    power = cols[4]?.try(&.to_i) || 0
+    power = cols[4]?.try(&.to_i) || 1
 
     new(key, val, mtime, uname, power)
   end
@@ -26,7 +26,7 @@ class DictEdit
   getter uname : String # user handle dname
   getter power : Int32  # entry lock level
 
-  def initialize(@key, @val = "", @mtime = 0, @uname = "Guest", @power = 0)
+  def initialize(@key, @val = "", @mtime = 0, @uname = "Guest", @power = 1)
   end
 
   def to_s
