@@ -1,14 +1,14 @@
 require "./utils/common"
 require "./utils/clavis"
-require "../../src/dictdb/trie_dict"
+require "../../src/dictdb/base_dict"
 require "../../src/lookup/value_set"
 
 class Hanviet
   CRUCIAL = ValueSet.read!(Utils.inp_path("autogen/crucial-chars.txt"))
   HANZIDB = ValueSet.read!(Utils.inp_path("initial/hanzidb.txt"))
 
-  TRADSIM = TrieDict.tradsim
-  BINH_AM = TrieDict.binh_am
+  TRADSIM = BaseDict.tradsim
+  BINH_AM = BaseDict.binh_am
 
   def should_keep_hanviet?(input : String)
     return true if CRUCIAL.includes?(input)
@@ -21,10 +21,10 @@ class Hanviet
     true
   end
 
-  getter output : TrieDict { TrieDict.init("hanviet") }
+  getter output : BaseDict { BaseDict.init("hanviet") }
 
   def import_lacviet_chars!
-    input = TrieDict.load
+    input = BaseDict.load
 
     input.each do |node|
       output.upsert(node.key, node.vals)
@@ -191,14 +191,14 @@ worker.save!
 #   puts "\n- Fill missing hanviet from vietphrase".colorize(:blue)
 
 #   localqt_dir = File.join(INP_DIR, "localqt")
-#   trie_dicts = {
+#   base_dicts = {
 #     "#{localqt_dir}/vietphrase.txt",
 #     "#{localqt_dir}/names1.txt",
 #     "#{localqt_dir}/names2.txt",
 #   }
 #   recovered = 0
 
-#   trie_dicts.each do |file|
+#   base_dicts.each do |file|
 #     Cvdict.load!(file).data.each do |key, val|
 #       next if key.size > 1 || !missing.includes?(key)
 #       out_hanviet.add(key, val.first)

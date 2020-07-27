@@ -39,7 +39,7 @@ class CvNode
 
   def special_char?
     case @key[0]?
-    when '_', '.', '%', '-', '/', '?', '=', ':'
+    when '_', '.', '%', '-', '/', '?', '=', ':', '#'
       true
     else
       false

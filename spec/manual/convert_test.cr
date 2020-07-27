@@ -1,4 +1,4 @@
-require "../../src/dictdb/trie_dict""
+require "../../src/dictdb/base_dict""
 require "../../src/engine/convert"
 
 text = "第十三集 龙章凤仪 第一章 屠龙之术
@@ -12,7 +12,7 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-DICTS = TrieDict.for_convert("tong-hop")
+DICTS = BaseDict.for_convert("tong-hop")
 
 def translate(input : String, title = false)
   if title

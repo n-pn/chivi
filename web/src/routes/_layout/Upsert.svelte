@@ -532,7 +532,8 @@
             <span class="-text">Lưu:</span>
             <span class="-time">{relative_time(current.mtime)}</span>
             <span class="-text">bởi</span>
-            <span class="-user">{current.uname} ({current.power})</span>
+            <span class="-user">{current.uname}</span>
+            <span class="-text">(quyền hạn: {current.power})</span>
           </div>
         {/if}
 

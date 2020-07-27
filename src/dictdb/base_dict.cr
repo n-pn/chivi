@@ -2,16 +2,16 @@ require "colorize"
 require "file_utils"
 
 require "../common/file_util"
-require "./trie_node"
+require "./dict_trie"
 
 # TODO: rename?
-class TrieDict
-  LABEL = "trie_dict"
+class BaseDict
+  LABEL = "base_dict"
 
   getter file : String
   getter time = Time.utc(2020, 1, 1)
 
-  getter root = TrieNode.new("")
+  getter root = DictTrie.new("")
   getter size = 0
 
   def initialize(@file, preload : Bool = false, legacy : Bool = false)
@@ -28,7 +28,7 @@ class TrieDict
 
   def load_legacy!(file : String = @file) : Void
     FileUtil.each_line(file, LABEL) do |line|
-      key, vals = TrieNode.parse_legacy(line)
+      key, vals = DictTrie.parse_legacy(line)
       upsert(key, vals)
     rescue err
       FileUtil.log_error(LABEL, line, err)
@@ -37,7 +37,7 @@ class TrieDict
 
   def load!(file : String = @file) : Void
     FileUtil.each_line(file, LABEL) do |line|
-      key, vals = TrieNode.parse(line)
+      key, vals = DictTrie.parse(line)
       upsert(key, vals)
     rescue err
       FileUtil.log_error(LABEL, line, err)
@@ -65,7 +65,7 @@ class TrieDict
     append!(node)
   end
 
-  def append!(node : TrieNode, trim = 1) : TrieNode
+  def append!(node : DictTrie, trim = 1) : DictTrie
     FileUtil.append(@file) { |io| node.puts(io, trim: trim) }
     node
   end
@@ -76,11 +76,11 @@ class TrieDict
     end
   end
 
-  def upsert(key : String, vals : Array(String)) : TrieNode
+  def upsert(key : String, vals : Array(String)) : DictTrie
     upsert(key, &.vals = vals)
   end
 
-  def upsert(key : String) : TrieNode
+  def upsert(key : String) : DictTrie
     node = @root.find!(key)
 
     @size += 1 if node.removed?
@@ -89,7 +89,7 @@ class TrieDict
     node
   end
 
-  include Enumerable(TrieNode)
+  include Enumerable(DictTrie)
   delegate each, to: @root
   delegate scan, to: @root
   delegate find, to: @root
@@ -126,21 +126,21 @@ class TrieDict
     new(file, preload: false).tap(&.load_legacy!)
   end
 
-  CACHE = {} of String => TrieDict
+  CACHE = {} of String => BaseDict
 
   def self.preload!(name : String)
     CACHE[name] ||= load!(name)
   end
 
-  class_getter cc_cedict : TrieDict { load!("system/cc_cedict") }
-  class_getter trungviet : TrieDict { load!("system/trungviet") }
-  class_getter tradsim : TrieDict { load!("system/tradsim") }
-  class_getter binh_am : TrieDict { load!("system/binh_am") }
+  class_getter cc_cedict : BaseDict { load!("system/cc_cedict") }
+  class_getter trungviet : BaseDict { load!("system/trungviet") }
+  class_getter tradsim : BaseDict { load!("system/tradsim") }
+  class_getter binh_am : BaseDict { load!("system/binh_am") }
 
-  class_getter hanviet : TrieDict { preload!("hanviet") }
-  class_getter generic : TrieDict { preload!("generic") }
-  class_getter suggest : TrieDict { preload!("suggest") }
-  class_getter combine : TrieDict { preload!("combine") }
+  class_getter hanviet : BaseDict { preload!("hanviet") }
+  class_getter generic : BaseDict { preload!("generic") }
+  class_getter suggest : BaseDict { preload!("suggest") }
+  class_getter combine : BaseDict { preload!("combine") }
 
   def self.load_unique(dname : String)
     preload!("unique/#{dname}")
@@ -162,7 +162,7 @@ class TrieDict
   end
 end
 
-# test = TrieDict.new("tmp/test_lex_dict.dic", preload: true)
+# test = BaseDict.new("tmp/test_lex_dict.dic", preload: true)
 
 # test.upsert("a", "a")
 # test.upsert!("a", "b")

@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../../src/dictdb/trie_dict"
+require "../../../src/dictdb/base_dict"
 require "../../../src/lookup/value_set"
 
 module Utils
@@ -32,11 +32,11 @@ module Utils
   end
 
   def load_legacy(file : String)
-    dict = TrieDict.new(file, preload: false)
+    dict = BaseDict.new(file, preload: false)
     dict.tap(&.load_legacy!(file))
   end
 
-  def convert(dict : TrieDict, input : String, sep = "")
+  def convert(dict : BaseDict, input : String, sep = "")
     res = [] of String
 
     chars = input.chars

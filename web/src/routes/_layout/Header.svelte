@@ -65,7 +65,6 @@
     text-decoration: none;
     padding: 0 0.5rem;
 
-    min-width: $header-inner-height;
     height: $header-inner-height;
     line-height: $header-inner-height;
     user-select: none;

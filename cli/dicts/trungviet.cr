@@ -15,7 +15,7 @@ end
 
 OUT_FILE = Utils.out_path("system/trungviet.dic")
 
-out_dict = TrieDict.new(OUT_FILE, false)
+out_dict = BaseDict.new(OUT_FILE, false)
 out_dict.load_legacy!(Utils.inp_path("initial/lacviet-mtd.txt"))
 
 hv_chars = Clavis.load("hanviet/lacviet-chars.txt", false)

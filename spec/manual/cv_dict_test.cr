@@ -1,6 +1,6 @@
-require "../../src/dictdb/trie_dict"
+require "../../src/dictdb/base_dict"
 
-test = Engine::TrieDict.new "spec/fixtures/test.txt"
+test = Engine::BaseDict.new "spec/fixtures/test.txt"
 
 print "\nset abc to abc: ", test.set("abc", "abc")
 

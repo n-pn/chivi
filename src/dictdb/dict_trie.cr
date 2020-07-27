@@ -1,4 +1,4 @@
-class TrieNode
+class DictTrie
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 
@@ -6,7 +6,7 @@ class TrieNode
   property vals : Array(String)
   # extra data, can be used to mark attributes or priorities
 
-  getter trie = Hash(Char, TrieNode).new
+  getter trie = Hash(Char, DictTrie).new
 
   def initialize(@key, @vals = [] of String)
   end
@@ -48,33 +48,33 @@ class TrieNode
   end
 
   def to_a
-    res = [] of TrieNode
+    res = [] of DictTrie
     each { |node| res << node }
     res
   end
 
-  def find!(key : String) : TrieNode
+  def find!(key : String) : DictTrie
     node = self
 
     key.each_char do |char|
-      node = node.trie[char] ||= TrieNode.new(node.key + char)
+      node = node.trie[char] ||= DictTrie.new(node.key + char)
     end
 
     node
   end
 
-  def find!(key : Array(Char), from = 0) : TrieNode
+  def find!(key : Array(Char), from = 0) : DictTrie
     node = self
 
     from.upto(key.size - 1) do |idx|
       char = key.unsafe_fetch(idx)
-      node = node.trie[char] ||= TrieNode.new(node.key + char)
+      node = node.trie[char] ||= DictTrie.new(node.key + char)
     end
 
     node
   end
 
-  def find(key : String) : TrieNode?
+  def find(key : String) : DictTrie?
     node = self
 
     key.each_char do |char|
@@ -84,7 +84,7 @@ class TrieNode
     node unless node.removed?
   end
 
-  def find(key : Array(Char), from = 0) : TrieNode?
+  def find(key : Array(Char), from = 0) : DictTrie?
     node = self
 
     from.upto(key.size - 1) do |idx|

@@ -8,7 +8,7 @@ module Server
 
   get "/_lookup" do |env|
     dname = env.params.query.fetch("dname", "combine")
-    dicts = TrieDict.for_convert(dname)
+    dicts = BaseDict.for_convert(dname)
 
     input = env.params.query.fetch("input", "")
     chars = input.chars
@@ -25,11 +25,11 @@ module Server
         end
       end
 
-      TrieDict.trungviet.scan(chars, idx) do |item|
+      BaseDict.trungviet.scan(chars, idx) do |item|
         entry[item.key.size]["trungviet"] = item.vals
       end
 
-      TrieDict.cc_cedict.scan(chars, idx) do |item|
+      BaseDict.cc_cedict.scan(chars, idx) do |item|
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
@@ -46,7 +46,7 @@ module Server
     term = env.params.query.fetch("term", "")
     bdic = env.params.query.fetch("bdic", "combine")
 
-    suggest = TrieDict.suggest.find(term).try(&.vals) || [] of String
+    suggest = BaseDict.suggest.find(term).try(&.vals) || [] of String
 
     {
       hanviet: Engine.hanviet(term, false).vi_text,
