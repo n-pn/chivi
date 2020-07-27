@@ -26,4 +26,16 @@
   })
 </script>
 
+<style lang="scss">
+  :global(html),
+  :global(body),
+  :global(#sapper) {
+    min-height: 100%;
+  }
+
+  :global(#sapper) {
+    min-width: 320px;
+  }
+</style>
+
 <slot {segment} />

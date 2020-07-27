@@ -25,6 +25,21 @@
 </script>
 
 <style lang="scss">
+  .__shift {
+    @include screen-min(lg) {
+      padding-right: 30rem;
+    }
+  }
+
+  $page-width: 54rem;
+
+  .center {
+    width: $page-width;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 0.75rem;
+  }
+
   $header-height: 3rem;
   $header-inner-height: 2.25rem;
   $header-gutter: ($header-height - $header-inner-height) / 2;
@@ -223,6 +238,10 @@
         margin-left: 0.25rem;
       }
     }
+  }
+
+  .vessel {
+    padding-top: $header-height;
   }
 </style>
 
