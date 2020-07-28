@@ -69,10 +69,10 @@
 
   let elemOnFocus = null
 
-  let lookupEnabled = false
-  let lookupActived = false
-  let lookupLine = ''
-  let lookupFrom = 0
+  let clavisEnabled = false
+  let clavisActived = false
+  let clavisLine = ''
+  let clavisFrom = 0
 
   let upsert_actived = false
   let upsertKey = ''
@@ -168,18 +168,18 @@
     if (elemOnFocus) elemOnFocus.classList.remove('_active')
 
     lineOnFocus = idx
-    lookupLine = lines[idx].map((x) => x[0]).join('')
+    clavisLine = lines[idx].map((x) => x[0]).join('')
 
     elemOnFocus = target
     elemOnFocus.classList.add('_active')
-    lookupFrom = +elemOnFocus.dataset['p']
+    clavisFrom = +elemOnFocus.dataset['p']
 
-    if (lookupEnabled) lookupActived = true
+    if (clavisEnabled) clavisActived = true
   }
 
   function triggerClavisSidebar() {
-    lookupEnabled = !lookupEnabled
-    lookupActived = lookupEnabled
+    clavisEnabled = !clavisEnabled
+    clavisActived = clavisEnabled
   }
 
   function renderMode(idx, hover, focus) {
@@ -362,7 +362,7 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Vessel shift={lookupActived}>
+<Vessel shift={clavisActived}>
   <a slot="header-left" href={book_path} class="header-item _title">
     <MIcon class="m-icon _book-open" name="book-open" />
     <span class="header-text _show-sm _title">{book_name}</span>
@@ -396,7 +396,7 @@
     slot="header-right"
     type="button"
     class="header-item"
-    class:_active={lookupEnabled}
+    class:_active={clavisEnabled}
     on:click={triggerClavisSidebar}>
     <MIcon class="m-icon _compass" name="compass" />
   </button>
@@ -449,13 +449,13 @@
     </a>
   </footer>
 
-  {#if lookupEnabled}
+  {#if clavisEnabled}
     <Clavis
       on_top={!upsert_actived}
-      bind:active={lookupActived}
-      input={lookupLine}
+      bind:active={clavisActived}
+      input={clavisLine}
       dname={book_ubid}
-      from={lookupFrom} />
+      from={clavisFrom} />
   {/if}
 
   {#if upsert_actived}
