@@ -107,13 +107,13 @@ module Convert
 
       dicts.each_with_index do |dict, jdx|
         dic = jdx + 1
-        dic_weight = dic / dict_count + 1
+        dic_weight = dic / dict_count
 
         dict.scan(norms, idx) do |item|
           next if item.vals.empty?
 
           length = item.key.size
-          weight = weights[idx] + pos_weight + length ** (1 + dic_weight)
+          weight = weights[idx] + length * (dic_weight + pos_weight + 1)
 
           jdx = idx + length
           if weight >= weights[jdx]
