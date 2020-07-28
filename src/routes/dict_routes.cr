@@ -59,10 +59,10 @@ module Server
     }.to_json(env.response)
   end
 
-  put "/_upsert" do |env|
-    dic = env.params.query.fetch("dic", "_tonghop")
-    key = env.params.json.fetch("key", "").as(String)
-    val = env.params.json.fetch("val", "").as(String)
+  put "/_upsert/:dic" do |env|
+    dic = env.params.url["dic"]
+    key = env.params.json["key"].as(String)
+    val = env.params.json["val"].as(String?) || ""
     # power = env.params.json["power"].as(Int64).to_i
 
     if uslug = env.session.string?("uslug")

@@ -7,7 +7,7 @@ export async function dict_search(http, term, bdic) {
 }
 
 export async function dict_upsert(http, dic, key, val = '') {
-  const url = `/_upsert?dic=${dic}`
+  const url = `/_upsert/${dic}`
   const res = await http(url, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -15,7 +15,6 @@ export async function dict_upsert(http, dic, key, val = '') {
   })
 
   const data = await res.json()
-  // console.log({ data })
   return data.status
 }
 
