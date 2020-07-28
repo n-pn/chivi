@@ -60,6 +60,9 @@ module Server
   end
 
   put "/_upsert" do |env|
+    dic = env.params.query.fetch("dic", "_tonghop")
+    key = env.params.json.fetch("key", "").as(String)
+    val = env.params.json.fetch("val", "").as(String)
     # power = env.params.json["power"].as(Int64).to_i
 
     if uslug = env.session.string?("uslug")
@@ -67,16 +70,11 @@ module Server
       uname = user.uname
       power = user.power
     else
-      uname = "guest"
+      uname = "Guest"
       power = 0
     end
 
-    dname = env.params.query.fetch("dname", "_tonghop")
-
-    key = env.params.json.fetch("key", "").as(String)
-    vals = env.params.json.fetch("vals", "").as(String)
-
-    DictDB.upsert(dname, uname, power, key, vals)
+    DictDB.upsert(dic, uname, power, key, val)
     {status: "ok", msg: "accepted"}.to_json(env.response)
   rescue err
     {status: "err", msg: err.message}.to_json(env.response)

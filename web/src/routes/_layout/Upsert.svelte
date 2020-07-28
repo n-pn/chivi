@@ -1,25 +1,4 @@
 <script context="module">
-  export async function dict_search(term, bdic) {
-    const url = `/_search?term=${term}&bdic=${bdic}`
-    const res = await fetch(url)
-
-    const data = await res.json()
-    return data
-  }
-
-  export async function dict_upsert(dname, key, vals) {
-    const url = `/_upsert?dname=${dname}`
-    const res = await fetch(url, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key, vals }),
-    })
-
-    const data = await res.json()
-    // console.log({ data })
-    return data.status
-  }
-
   export function generate_hints(meta, reject, accept) {
     let res = [
       ...meta.special.vals,
@@ -68,6 +47,8 @@
   import relative_time from '$utils/relative_time'
   import Footer from './Upsert/Footer.svelte'
 
+  import { dict_search, dict_upsert } from '$src/api'
+
   const tabs = [
     ['special', 'VP riêng'],
     ['generic', 'VP chung'],
@@ -111,7 +92,7 @@
 
   async function preload_input() {
     out_val = ''
-    meta = await dict_search(key, dname)
+    meta = await dict_search(window.fetch, key, dname)
     update_val()
   }
 
@@ -145,10 +126,10 @@
   }
 
   async function submit_val() {
-    const target = tab == 'special' ? dname : 'generic'
-    const status = await dict_upsert(target, key, out_val)
+    const dic = tab == 'special' ? dname : 'generic'
+    const res = await dict_upsert(window.fetch, dic, key, out_val)
 
-    changed = status === 'ok' && updated
+    changed = res === 'ok' && updated
     actived = false
   }
 

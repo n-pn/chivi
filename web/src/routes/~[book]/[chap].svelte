@@ -7,23 +7,9 @@
     const scid = cols[cols.length - 1]
 
     const mode = +query.mode || 0
-    const data = await load_text(this.fetch, bslug, seed, scid, mode)
+    const data = await load_chtext(this.fetch, bslug, seed, scid, mode)
 
     return data
-  }
-
-  async function load_text(fetch, bslug, seed, scid, mode = 0) {
-    const url = `/_load_text?slug=${bslug}&seed=${seed}&scid=${scid}&mode=${mode}`
-
-    try {
-      const res = await fetch(url)
-      const data = await res.json()
-
-      if (res.status == 200) return data
-      else this.error(res.status, data.msg)
-    } catch (err) {
-      this.error(500, err.message)
-    }
   }
 </script>
 
@@ -40,6 +26,7 @@
   import { render_convert, parse_content } from '$utils/render_convert'
 
   import { user } from '$src/stores'
+  import { dict_upsert, load_chtext } from '$src/api'
 
   export let bslug = ''
   export let bname = ''
@@ -156,10 +143,8 @@
     const dic = +focused_elem.dataset.d == 3 ? ubid : 'generic'
     const key = focused_elem.dataset.k
 
-    const url = `/_upsert?dname=${dic}&power=${$user.power}&key=${key}`
-    const res = await fetch(url)
-
-    should_reload = true
+    const res = await dict_upsert(fetch, dic, key, '')
+    should_reload = res == 'ok'
   }
 
   function handleClick(evt, idx) {
@@ -214,7 +199,7 @@
     // console.log(`reloading page with mode: ${mode}`)
 
     __reloading = true
-    const data = await load_text(window.fetch, bslug, seed, scid, mode)
+    const data = await load_chtext(window.fetch, bslug, seed, scid, mode)
 
     should_reload = false
     mftime = data.mftime
