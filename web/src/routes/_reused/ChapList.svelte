@@ -13,8 +13,8 @@
     return output
   }
 
-  export function page_url(slug, site, page = 1) {
-    return `/${slug}?tab=content&site=${site}&page=${page}`
+  export function page_url(slug, seed, page = 1) {
+    return `/~${slug}?tab=content&seed=${seed}&page=${page}`
   }
 </script>
 
@@ -211,8 +211,8 @@
       <li class="chap-item">
         <a
           class="chap-link"
-          href="/{bslug}/{chap.url_slug}-{sname}-{chap.scid}"
-          rel="nofollow prefetch">
+          href="/~{bslug}/{chap.url_slug}-{sname}-{chap.scid}"
+          rel="prefetch">
           <span class="label">{chap.vi_label}</span>
           <span class="title">{chap.vi_title}</span>
         </a>

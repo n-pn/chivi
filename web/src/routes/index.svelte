@@ -307,7 +307,7 @@
 
   <div class="list">
     {#each items as book}
-      <a class="book" href={book.slug} rel="prefetch">
+      <a class="book" href="~{book.slug}" rel="prefetch">
         <div class="-cover">
           <BookCover
             ubid={book.ubid}
