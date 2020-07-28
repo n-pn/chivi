@@ -130,7 +130,6 @@ module Convert
     while idx > 0
       acc = choices[idx]
       idx -= acc.key.size
-
       if acc.dic == 0
         if acc.match_letter?
           acc.dic = 1
@@ -146,7 +145,7 @@ module Convert
         elsif acc.unchanged?
           while idx > 0
             node = choices[idx]
-            break if node.dic > 0
+            break if node.dic > 0 || node.match_letter?
             break unless node.unchanged?
 
             acc.combine!(node)

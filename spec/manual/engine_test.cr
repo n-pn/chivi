@@ -46,5 +46,6 @@ puts Engine.cv_plain(test4, "combine").vi_text
 puts Engine.cv_plain(test5, "combine").vi_text
 puts Engine.cv_plain(test6, "combine").vi_text
 puts Engine.cv_title("一个普通人的日常（七）", "combine").vi_text
+puts Engine.cv_title("一柱的数量多在5—50本之间", "combine").vi_text
 
-# puts Engine.hanviet("左丰").vi_text.downcase == "Tả Phong".downcase
+puts Engine.hanviet("左丰").vi_text.downcase == "Tả Phong".downcase

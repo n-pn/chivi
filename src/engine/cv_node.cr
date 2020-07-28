@@ -34,7 +34,7 @@ class CvNode
   LETTER_RE = /[\p{L}\p{N}]/
 
   def match_letter?
-    LETTER_RE.matches?(@val)
+    LETTER_RE.matches?(@key)
   end
 
   def special_char?
