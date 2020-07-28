@@ -20,8 +20,13 @@ class CvData
     # - apply other grammar rule
     # - ...
 
-    each do |node|
-      if node.key == "的"
+    @data.each_with_index do |node, idx|
+      case node.key
+      when "对"
+        unless @data[idx + 1]?.try(&.dic.>(0))
+          node.val = "đúng"
+        end
+      when "的"
         node.val = ""
         node.dic = 0
       end
@@ -37,7 +42,7 @@ class CvData
   def capitalize!
     apply_cap = true
 
-    each do |node|
+    @data.each do |node|
       next if node.val.empty?
 
       if apply_cap && node.match_letter?
@@ -70,7 +75,7 @@ class CvData
   end
 
   def zh_text(io : IO)
-    each { |item| io << item.key }
+    @data.each { |item| io << item.key }
   end
 
   def zh_text
@@ -78,7 +83,7 @@ class CvData
   end
 
   def vi_text(io : IO)
-    each { |item| io << item.val }
+    @data.each { |item| io << item.val }
   end
 
   def vi_text
