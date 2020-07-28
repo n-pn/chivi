@@ -15,8 +15,9 @@
       body: JSON.stringify({ key, vals }),
     })
 
-    const { status } = await res.json()
-    return status
+    const data = await res.json()
+    // console.log({ data })
+    return data.status
   }
 
   export function generate_hints(meta, reject, accept) {
@@ -47,6 +48,18 @@
     for (let i = count; i < res.length; i++) res[i] = res[i].toLowerCase()
 
     return res.join(' ')
+  }
+
+  export function compare_power(user, prev) {
+    if (user < prev) return [false, 'text']
+    else if (user == prev) return [false, 'line']
+    else return [true, 'solid']
+  }
+
+  export function compare_value(new_val, old_val) {
+    if (new_val == '') return ['harmful', 'Xoá từ']
+    else if (old_val == '') return ['success', 'Thêm từ']
+    else return ['primary', 'Sửa từ']
   }
 </script>
 
@@ -90,8 +103,9 @@
   $: current = meta[tab]
   $: existed = current.vals[0] || ''
   $: updated = out_val != existed
-  $: prevail = $user.power >= current.power
-  $: btn_lbl = out_val == '' ? 'Xoá từ' : existed ? 'Sửa từ' : 'Thêm từ'
+
+  $: [prevail, btn_power] = compare_power($user.power, current.power)
+  $: [btn_class, btn_label] = compare_value(out_val, existed)
 
   $: if (key) preload_input()
 
@@ -549,13 +563,10 @@
 
         <button
           type="button"
-          class="m-button {$user.power >= current.power ? '_solid' : '_line'}"
-          class:_harmful={out_val == ''}
-          class:_primary={!existed}
-          class:_success={existed}
+          class="m-button _{btn_class} _{btn_power}"
           disabled={!(updated || prevail)}
           on:click|once={submit_val}>
-          <span class="-text">{btn_lbl}</span>
+          <span class="-text">{btn_label}</span>
         </button>
       </div>
     </section>
