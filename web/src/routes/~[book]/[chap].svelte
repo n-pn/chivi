@@ -56,6 +56,11 @@
   export let next_url = ''
   export let curr_url = ''
 
+  $: book_path = `/~${book_slug}?tab=content&seed=${seed_name}`
+  $: curr_path = `/~${book_slug}/${curr_url}`
+  $: prev_path = prev_url ? `/~${book_slug}/${prev_url}` : book_path
+  $: next_path = next_url ? `/~${book_slug}/${next_url}` : book_path
+
   export let content = ''
   $: lines = parse_content(content)
 
@@ -93,15 +98,14 @@
 
       case 72:
         evt.preventDefault()
-        _goto(`/${book_slug}?tab=content&seed=${seed}`)
+        _goto(book_path)
         break
 
       case 37:
       case 74:
         if (!evt.altKey) {
           evt.preventDefault()
-          if (prev_url) _goto(`/${book_slug}/${prev_url}`)
-          else _goto(book_slug)
+          _goto(prev_path)
         }
         break
 
@@ -109,8 +113,7 @@
       case 75:
         if (!evt.altKey) {
           evt.preventDefault()
-          if (next_url) _goto(`/${book_slug}/${next_url}`)
-          else _goto(`${book_slug}?tab=content&seed=${seed}`)
+          _goto(next_path)
         }
         break
 
@@ -360,10 +363,7 @@
 <svelte:window on:keydown={handleKeypress} />
 
 <Vessel shift={lookupActived}>
-  <a
-    slot="header-left"
-    href="/{book_slug}?tab=content&seed={seed_name}"
-    class="header-item _title">
+  <a slot="header-left" href={book_path} class="header-item _title">
     <MIcon class="m-icon _book-open" name="book-open" />
     <span class="header-text _show-sm _title">{book_name}</span>
   </a>
@@ -404,11 +404,9 @@
   <nav class="navi">
     <a href="/" class="crumb">Chivi</a>
     <span class="split">&gt;</span>
-    <a href="/{book_slug}" class="crumb">{book_name}</a>
+    <a href="/~{book_slug}" class="crumb">{book_name}</a>
     <span class="split">&gt;</span>
-    <a href="/{book_slug}?tab=content&seed={seed_name}" class="crumb">
-      [{seed_name}]
-    </a>
+    <a href={book_path} class="crumb">[{seed_name}]</a>
     <span class="split">&gt;</span>
     <span class="crumb">{chap_label}</span>
     <span class="mtime">
@@ -431,16 +429,13 @@
 
   <footer class="footer">
     {#if prev_url}
-      <a
-        class="m-button _line"
-        class:_disable={!prev_url}
-        href="/{book_slug}/{prev_url || ''}">
+      <a class="m-button _line" class:_disable={!prev_url} href={prev_path}>
         <MIcon class="m-icon" name="chevron-left" />
         <span>Trước</span>
       </a>
     {/if}
 
-    <a class="m-button _line" href="/{book_slug}?tab=content&seed={seed_name}">
+    <a class="m-button _line" href={book_path}>
       <MIcon class="m-icon" name="list" />
       <span>Mục lục</span>
     </a>
@@ -448,7 +443,7 @@
     <a
       class="m-button _line _primary"
       class:_disable={!next_url}
-      href="/{book_slug}/{next_url || ''}">
+      href={next_path}>
       <span>Kế tiếp</span>
       <MIcon class="m-icon" name="chevron-right" />
     </a>
