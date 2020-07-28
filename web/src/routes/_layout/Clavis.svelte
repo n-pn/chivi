@@ -68,6 +68,7 @@
         const key_char = key_chars[jdx]
         const val_char = val_chars[jdx]
 
+        if (jdx > 0) res += ' '
         res += '<x-v '
         if (is_active(from, upto, pos)) res += 'class=_active '
 

@@ -32,7 +32,7 @@
 
   import MIcon from '$mould/MIcon.svelte'
   import Vessel from '$layout/Vessel.svelte'
-  import Lookup from '$layout/Lookup.svelte'
+  import Clavis from '$layout/Clavis.svelte'
   import Upsert from '$layout/Upsert.svelte'
 
   import relative_time from '$utils/relative_time'
@@ -88,7 +88,7 @@
 
     switch (evt.keyCode) {
       case 220:
-        triggerLookupSidebar()
+        triggerClavisSidebar()
         break
 
       case 72:
@@ -174,7 +174,7 @@
     if (lookupEnabled) lookupActived = true
   }
 
-  function triggerLookupSidebar() {
+  function triggerClavisSidebar() {
     lookupEnabled = !lookupEnabled
     lookupActived = lookupEnabled
   }
@@ -397,7 +397,7 @@
     type="button"
     class="header-item"
     class:_active={lookupEnabled}
-    on:click={triggerLookupSidebar}>
+    on:click={triggerClavisSidebar}>
     <MIcon class="m-icon _compass" name="compass" />
   </button>
 
@@ -455,7 +455,7 @@
   </footer>
 
   {#if lookupEnabled}
-    <Lookup
+    <Clavis
       on_top={!upsert_actived}
       bind:active={lookupActived}
       input={lookupLine}
