@@ -1,6 +1,5 @@
 require "fileutils"
 
-files = Dir.glob("web/public/covers/*.jpg")
 
 def out_path(inp_file)
   ubid = File.basename(inp_file).split(".").first
@@ -12,6 +11,17 @@ def convert_image(inp_file, out_file, label)
   `magick "#{inp_file}" -quality 96 #{out_file}`
 end
 
+files = Dir.glob("web/public/covers/*.{png,jpeg,gif}")
+files.each_with_index do |inp_file, idx|
+  out_file = out_path(inp_file)
+  next if File.exists?(out_file)
+
+  label = "<#{idx + 1}/#{files.size}>"
+  convert_image(inp_file, out_file, label)
+end
+
+
+files = Dir.glob("web/public/covers/*.jpg")
 files.each_with_index do |inp_file, idx|
   out_file = out_path(inp_file)
   next if File.exists?(out_file)
@@ -33,4 +43,7 @@ files.each_with_index do |inp_file, idx|
 
   convert_image(rem_file, out_file, label)
   FileUtils.rm(rem_file)
+  next if File.exists?(out_file)
+
+  FileUtils.cp("web/static/nocover.webp", out_file)
 end
