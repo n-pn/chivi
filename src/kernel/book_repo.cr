@@ -204,7 +204,7 @@ module BookRepo
     return unless force || !info.zh_genres.includes?(site)
     info.add_zh_genre(site, genre)
 
-    zh_genres = Utils.fix_zh_genres(info.zh_genres.values, min_count: 2)
+    zh_genres = Utils.fix_zh_genres(info.zh_genres, min_count: 2)
     info.vi_genres = Utils.map_vi_genres(zh_genres.first(3))
 
     Utils.update_token(TokenMap.vi_genres, info.ubid, info.vi_genres)

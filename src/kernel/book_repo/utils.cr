@@ -29,22 +29,23 @@ module BookRepo::Utils
     fix_map.fetch("#{title}--#{author}") || fix_map.fetch(author) || author
   end
 
-  def fix_zh_genres(zh_genres : Array(String), min_count = 1)
+  def fix_zh_genres(zh_genres : Hash(String, String))
     counter = Hash(String, Int32).new { |h, k| h[k] = 0 }
+    initial = [] of String
 
-    zh_genres.each do |genre|
+    zh_genres.each do |site, genre|
       next if genre.empty?
-      split_zh_genre(genre).each { |x| counter[x] += 1 }
+
+      genres = split_zh_genre(genre)
+      genres.each { |x| counter[x] += 1 }
+
+      initial = genres if initial.empty? || site == "yousuu"
     end
 
-    counted = counter.to_a
+    selects = counter.to_a.select(&.[1].> 1)
+    return initial if selects.empty?
 
-    if min_count > 1
-      selects = counted.select(&.[1].>= min_count)
-      counted = selects unless selects.empty?
-    end
-
-    counted.sort_by(&.[1].-).map(&.[0])
+    selects.sort_by(&.[1].-).map(&.[0])
   end
 
   def split_zh_genre(genre : String)
