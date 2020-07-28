@@ -43,8 +43,8 @@ module Server
   get "/_search" do |env|
     # TODO: search for a list of dnames
 
-    term = env.params.query.fetch("term", "")
     bdic = env.params.query.fetch("bdic", "_tonghop")
+    term = env.params.query.fetch("term", "")
 
     generic = DictDB.search(term, "generic")
     special = DictDB.search(term, bdic)
@@ -59,8 +59,8 @@ module Server
     }.to_json(env.response)
   end
 
-  get "/_upsert" do |env|
-    power = env.params.query.fetch("power", "0").to_i? || 0
+  put "/_upsert" do |env|
+    power = env.params.json["power"]?.as?(Int32) || 0
 
     if uslug = env.session.string?("uslug")
       user = UserInfo.get!(uslug)
@@ -74,8 +74,8 @@ module Server
 
     dname = env.params.query.fetch("dname", "_tonghop")
 
-    key = env.params.query.fetch("key", "")
-    vals = env.params.query.fetch("vals", "")
+    key = env.params.json.fetch("key", "").as(String)
+    vals = env.params.json.fetch("vals", "").as(String)
 
     DictDB.upsert(dname, uname, power, key, vals)
     {status: "ok", msg: "accepted"}.to_json(env.response)

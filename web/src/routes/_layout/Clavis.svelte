@@ -1,5 +1,6 @@
 <script context="module">
   const tags = {
+    '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
     '"': '&quot;',
@@ -11,7 +12,7 @@
   }
 
   function escape_html(str) {
-    return str.replace(/[&<>]/g, replace_tag)
+    return str.replace(/[&<>'"]/g, replace_tag)
   }
 
   function is_active(from, upto, idx) {
@@ -85,39 +86,6 @@
 
     return res
   }
-
-  function render(tokens, from, upto) {
-    let zh = ''
-    let vi = ''
-
-    let idx = 0
-    let pos = 0
-
-    for (const [key, val, dic] of tokens) {
-      const e_key = escape_html(key)
-      const e_val = escape_html(val)
-
-      if (dic > 0) {
-        key.split('').forEach((k, i) => {
-          let klass = is_active(from, upto, pos + i, pos + i + 1)
-          zh += `<x-z class="${klass}" data-p="${pos + i}">${escape_html(
-            k
-          )}</x-z>`
-        })
-
-        let klass = is_active(from, upto, pos, pos + key.length)
-        vi += `<x-v class="${klass}" data-k="${e_key}" data-i="${idx}" data-d="${dic}" data-p="${pos}">${e_val}</x-v>`
-      } else {
-        zh += e_key
-        vi += e_val
-      }
-
-      idx += 1
-      pos += key.length
-    }
-
-    return [zh, vi]
-  }
 </script>
 
 <script>
@@ -125,7 +93,7 @@
   import MIcon from '$mould/MIcon.svelte'
 
   export let input = ''
-  export let dname = 'tong-hop'
+  export let dname = '_tonghop'
 
   export let active = false
   export let on_top = false
@@ -137,14 +105,16 @@
   let entries = []
   let current = []
 
-  $: if (input !== '') lookupTerms(input)
+  $: if (input !== '') lookup_line(input)
   $: if (from < entries.length) updateFocus()
 
   $: zh_html = render_zh(hanviet, from, upto)
   $: hv_html = render_hv(hanviet, from, upto)
 
-  async function lookupTerms(input) {
-    const url = `_lookup?input=${input}&dname=${dname}`
+  async function lookup_line(input) {
+    // console.log({ input, escape: encodeURIComponent(input) })
+    const url = `/_lookup?dname=${dname}&input=${encodeURIComponent(input)}`
+
     const res = await fetch(url)
     const data = await res.json()
 

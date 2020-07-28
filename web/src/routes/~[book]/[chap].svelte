@@ -319,32 +319,37 @@
     animation-timing-function: linear;
   }
 
-  .navi {
+  .bread {
     // display: flex;
     // flex-wrap: wrap;
+
     margin: 0.375rem 0;
     line-height: 1.5rem;
     padding-bottom: 0.375rem;
     @include border($sides: bottom);
     @include clearfix;
 
-    .crumb {
-      // float: left;
+    .-crumb {
+      float: left;
       @include fgcolor(neutral, 6);
+
+      &._sep:after {
+        content: '>';
+        @include fgcolor(neutral, 5);
+        padding: 0 0.25rem;
+      }
     }
 
-    .split {
-      // float: left;
-      // margin: 0 0.25rem;
-      @include fgcolor(neutral, 5);
+    .-link {
+      color: inherit;
+      &:hover {
+        @include fgcolor(primary, 6);
+      }
     }
 
-    a.crumb:hover {
-      @include fgcolor(primary, 6);
-    }
-
-    .mtime {
+    .-right {
       float: right;
+      // margin-left: auto;
       font-style: italic;
       @include fgcolor(neutral, 5);
     }
@@ -398,19 +403,26 @@
     <MIcon class="m-icon _compass" name="compass" />
   </button>
 
-  <nav class="navi">
-    <a href="/" class="crumb">Chivi</a>
+  <nav class="bread">
+    <div class="-crumb _sep">
+      <a href="/" class="-link">Chivi</a>
+    </div>
 
-    <span class="split">&gt;</span>
-    <span class="crumb">{ch_label}</span>
+    <div class="-crumb _sep">
+      <a href="/~{bslug}" class="-link">{bname}</a>
+    </div>
 
-    <span class="split">&gt;</span>
-    <a href="/~{bslug}" class="crumb">{bname}</a>
-    <span class="split">&gt;</span>
-    <a href={book_path} class="crumb">[{seed}]</a>
-    <span class="mtime">
+    <div class="-crumb _sep">
+      <a href={book_path} class="-link">[{seed}]</a>
+    </div>
+
+    <div class="-crumb">
+      <span class="-text">{ch_label}</span>
+    </div>
+
+    <div class="-right">
       <span>{relative_time(mftime)}</span>
-    </span>
+    </div>
   </nav>
 
   <article class="convert" class:_reload={__reloading}>

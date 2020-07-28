@@ -8,8 +8,12 @@
   }
 
   export async function dict_upsert(dname, key, vals, power) {
-    const url = `/_upsert?dname=${dname}&key=${key}&vals=${vals}&power=${power}`
-    const res = await fetch(url)
+    const url = `/_upsert?dname=${dname}`
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, vals, power }),
+    })
 
     const { status } = await res.json()
     return status
