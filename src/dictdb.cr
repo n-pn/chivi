@@ -43,7 +43,7 @@ module DictDB
       mtime: edit.try(&.utime) || 0,
       uname: edit.try(&.uname) || "",
       power: edit.try(&.power) || dict.power,
-      hints: hints || [] of String,
+      hints: hints.try(&.uniq.last(3)) || [] of String,
     }
   end
 end

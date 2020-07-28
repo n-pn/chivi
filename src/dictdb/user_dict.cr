@@ -43,14 +43,14 @@ class UserDict
       unless item.prevail?(best)
         add_hints(item.key, item.val)
         raise "power too low"
-      else
-        @hints[item.key].clear
       end
     end
 
     if item.power < @power
       add_hints(item.key, item.val)
       raise "power too low"
+    elsif best
+      add_hints(item.key, best.val)
     end
 
     @dict.upsert(item.key, DictTrie.split(item.val, "/"), freeze: freeze)
