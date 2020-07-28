@@ -134,8 +134,11 @@
       if (tab == 'special') new_val = titleize(new_val, 9)
 
       hints = generate_hints(meta, new_val)
-      if (hints.length > 0) out_val = hints[hints.length - 1]
-      else out_val = new_val
+
+      if (hints.length > 0) {
+        out_val = hints.pop()
+        hints = hints
+      } else out_val = new_val
     }
 
     out_field.focus()
@@ -204,6 +207,15 @@
 
       case 67:
         change_tab('generic')
+        break
+
+      case 82:
+        update_val(existed)
+        break
+
+      case 69:
+        out_val = ''
+        val_field.focus()
         break
 
       default:
