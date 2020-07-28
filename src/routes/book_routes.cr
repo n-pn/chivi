@@ -143,24 +143,25 @@ module Server
     chap = Kernel.load_text(info.ubid, seed, list.sbid, curr_chap.scid, mode: mode)
 
     {
-      book_ubid: info.ubid,
-      book_slug: info.slug,
-      book_name: info.vi_title,
+      mftime: chap.time,
+      cvdata: chap.data,
 
-      seed_name:  seed,
-      chap_time:  chap.time,
-      chap_scid:  curr_chap.scid,
-      chap_title: curr_chap.vi_title,
-      chap_label: curr_chap.vi_label,
+      bslug: info.slug,
+      bname: info.vi_title,
 
+      ubid: info.ubid,
+      seed: seed,
+      scid: curr_chap.scid,
+
+      ch_title: curr_chap.vi_title,
+      ch_label: curr_chap.vi_label,
       ch_index: index + 1,
       ch_total: list.size,
 
+      curr_url: curr_chap.try(&.slug_for(seed)),
       prev_url: prev_chap.try(&.slug_for(seed)),
       next_url: next_chap.try(&.slug_for(seed)),
-      curr_url: curr_chap.try(&.slug_for(seed)),
 
-      content: chap.data,
     }.to_json(env.response)
   end
 end

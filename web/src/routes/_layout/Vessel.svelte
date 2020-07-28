@@ -114,6 +114,12 @@
       @include bgcolor(primary, 5);
     }
 
+    &:disabled {
+      cursor: text;
+      @include fgcolor(neutral, 4);
+      @include bgcolor(primary, 6);
+    }
+
     :global(img),
     :global(svg) {
       margin: 0.5rem 0;

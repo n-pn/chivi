@@ -39,51 +39,50 @@
   import read_selection from '$utils/read_selection'
   import { render_convert, parse_content } from '$utils/render_convert'
 
-  export let book_ubid = ''
-  export let book_name = ''
-  export let book_slug = ''
+  import { user } from '$src/stores'
+
+  export let bslug = ''
+  export let bname = ''
+
+  export let ubid = ''
+  export let seed = ''
+  export let scid = ''
+
+  export let mftime = 0
+  export let cvdata = ''
+  $: lines = parse_content(cvdata)
 
   export let ch_total = 1
   export let ch_index = 1
 
-  export let seed_name = ''
-  export let chap_scid = ''
-  export let chap_time = 0
-  export let chap_title = ''
-  export let chap_label = ''
+  export let ch_title = ''
+  export let ch_label = ''
 
+  export let curr_url = ''
   export let prev_url = ''
   export let next_url = ''
-  export let curr_url = ''
 
-  $: book_path = `/~${book_slug}?tab=content&seed=${seed_name}`
-  $: curr_path = `/~${book_slug}/${curr_url}`
-  $: prev_path = prev_url ? `/~${book_slug}/${prev_url}` : book_path
-  $: next_path = next_url ? `/~${book_slug}/${next_url}` : book_path
+  $: book_path = `/~${bslug}?tab=content&seed=${seed}`
+  $: curr_path = `/~${bslug}/${curr_url}`
+  $: prev_path = prev_url ? `/~${bslug}/${prev_url}` : book_path
+  $: next_path = next_url ? `/~${bslug}/${next_url}` : book_path
 
-  export let content = ''
-  $: lines = parse_content(content)
+  let hovered_line = 0
+  let focused_line = 0
 
-  let lineOnHover = 0
-  let lineOnFocus = -1
+  let focused_elem = null
 
-  let elemOnFocus = null
-
-  let clavisEnabled = false
-  let clavisActived = false
-  let clavisLine = ''
-  let clavisFrom = 0
+  let clavis_enabled = false
+  let clavis_actived = false
+  let clavis_line = ''
+  let clavis_from = 0
 
   let upsert_actived = false
-  let upsertKey = ''
-  let upsertDic = 'combine'
-  let upsertTab = 'generic'
+  let upsert_key = ''
+  let upsert_tab = 'special'
 
-  let shouldReload = false
-  $: if (shouldReload) {
-    shouldReload = false
-    reloadContent(1)
-  }
+  let should_reload = false
+  $: if (should_reload) reconvert(1)
 
   function handleKeypress(evt) {
     if (upsert_actived) return
@@ -139,8 +138,11 @@
         break
 
       case 82:
-        evt.preventDefault()
-        reloadContent(1)
+        if ($user.power > 0) {
+          evt.preventDefault()
+          reconvert(1)
+        }
+
         break
 
       default:
@@ -149,37 +151,37 @@
   }
 
   async function deleteFocusedWord() {
-    if (!elemOnFocus) return
+    if (!focused_elem || $user.power < 1) return
 
-    const dname = +elemOnFocus.dataset.d == 3 ? book_ubid : 'generic'
-    const key = elemOnFocus.dataset.k
+    const dic = +focused_elem.dataset.d == 3 ? ubid : 'generic'
+    const key = focused_elem.dataset.k
 
-    const url = `/_upsert?dname=${dname}&power=1&key=${key}`
+    const url = `/_upsert?dname=${dic}&power=${$user.power}&key=${key}`
     const res = await fetch(url)
 
-    shouldReload = true
+    should_reload = true
   }
 
   function handleClick(evt, idx) {
     const target = evt.target
-    if (target === elemOnFocus) return showUpsertModal()
+    if (target === focused_elem) return showUpsertModal()
 
     if (target.nodeName !== 'X-V') return
-    if (elemOnFocus) elemOnFocus.classList.remove('_active')
+    if (focused_elem) focused_elem.classList.remove('_active')
 
-    lineOnFocus = idx
-    clavisLine = lines[idx].map((x) => x[0]).join('')
+    focused_line = idx
+    clavis_line = lines[idx].map((x) => x[0]).join('')
 
-    elemOnFocus = target
-    elemOnFocus.classList.add('_active')
-    clavisFrom = +elemOnFocus.dataset['p']
+    focused_elem = target
+    focused_elem.classList.add('_active')
 
-    if (clavisEnabled) clavisActived = true
+    clavis_from = +focused_elem.dataset['p']
+    if (clavis_enabled) clavis_actived = true
   }
 
   function triggerClavisSidebar() {
-    clavisEnabled = !clavisEnabled
-    clavisActived = clavisEnabled
+    clavis_enabled = !clavis_enabled
+    clavis_actived = clavis_enabled
   }
 
   function renderMode(idx, hover, focus) {
@@ -193,37 +195,31 @@
   function showUpsertModal(tab = null) {
     const selection = read_selection()
 
-    if (selection !== '') upsertKey = selection
-    else if (elemOnFocus) {
-      upsertKey = elemOnFocus.dataset.k
+    if (selection !== '') upsert_key = selection
+    else if (focused_elem) {
+      upsert_key = focused_elem.dataset.k
 
       if (tab == null) {
-        const dic = +elemOnFocus.dataset.d
+        const dic = +focused_elem.dataset.d
         tab = dic === 3 ? 'special' : 'generic'
       }
     }
 
-    upsertTab = tab || 'special'
-    upsertDic = book_ubid
+    upsert_tab = tab || 'special'
     upsert_actived = true
   }
 
-  let pageReloading = false
-  async function reloadContent(mode = 1) {
+  let __reloading = false
+  async function reconvert(mode = 1) {
     // console.log(`reloading page with mode: ${mode}`)
 
-    pageReloading = true
-    const data = await load_text(
-      window.fetch,
-      book_slug,
-      seed_name,
-      chap_scid,
-      mode
-    )
+    __reloading = true
+    const data = await load_text(window.fetch, bslug, seed, scid, mode)
 
-    lines = parse_content(data.content)
-    chap_time = data.chap_time
-    pageReloading = false
+    should_reload = false
+    mftime = data.mftime
+    cvdata = data.cvdata
+    __reloading = false
   }
 </script>
 
@@ -356,16 +352,16 @@
 </style>
 
 <svelte:head>
-  <title>{chap_title} - {book_name} - Chivi</title>
-  <meta property="og:url" content="{book_slug}/{curr_url}" />
+  <title>{ch_title} - {bname} - Chivi</title>
+  <meta property="og:url" content="{bslug}/{curr_url}" />
 </svelte:head>
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Vessel shift={clavisActived}>
+<Vessel shift={clavis_actived}>
   <a slot="header-left" href={book_path} class="header-item _title">
     <MIcon class="m-icon _book-open" name="book-open" />
-    <span class="header-text _show-sm _title">{book_name}</span>
+    <span class="header-text _show-sm _title">{bname}</span>
   </a>
 
   <span slot="header-left" class="header-item _active">
@@ -377,9 +373,10 @@
     slot="header-right"
     type="button"
     class="header-item"
-    on:click={() => reloadContent()}>
+    disabled={$user.power < 1}
+    on:click={() => reconvert(1)}>
     <MIcon
-      class="m-icon _refresh-ccw {pageReloading ? '_reload' : ''}"
+      class="m-icon _refresh-ccw {__reloading ? '_reload' : ''}"
       name="refresh-ccw" />
   </button>
 
@@ -396,33 +393,35 @@
     slot="header-right"
     type="button"
     class="header-item"
-    class:_active={clavisEnabled}
+    class:_active={clavis_enabled}
     on:click={triggerClavisSidebar}>
     <MIcon class="m-icon _compass" name="compass" />
   </button>
 
   <nav class="navi">
     <a href="/" class="crumb">Chivi</a>
+
     <span class="split">&gt;</span>
-    <a href="/~{book_slug}" class="crumb">{book_name}</a>
+    <span class="crumb">{ch_label}</span>
+
     <span class="split">&gt;</span>
-    <a href={book_path} class="crumb">[{seed_name}]</a>
+    <a href="/~{bslug}" class="crumb">{bname}</a>
     <span class="split">&gt;</span>
-    <span class="crumb">{chap_label}</span>
+    <a href={book_path} class="crumb">[{seed}]</a>
     <span class="mtime">
-      <span>{relative_time(chap_time)}</span>
+      <span>{relative_time(mftime)}</span>
     </span>
   </nav>
 
-  <article class="convert" class:_reload={pageReloading}>
+  <article class="convert" class:_reload={__reloading}>
     {#each lines as line, idx}
       <div
         class="line"
-        class:_focus={idx == lineOnFocus}
-        class:_hover={idx == lineOnHover}
-        on:mouseenter={() => (lineOnHover = idx)}
+        class:_focus={idx == focused_line}
+        class:_hover={idx == hovered_line}
+        on:mouseenter={() => (hovered_line = idx)}
         on:click={(event) => handleClick(event, idx)}>
-        {@html render_convert(line, renderMode(idx, lineOnHover, lineOnFocus), idx == '0' ? 'h1' : 'p')}
+        {@html render_convert(line, renderMode(idx, hovered_line, focused_line), idx == '0' ? 'h1' : 'p')}
       </div>
     {/each}
   </article>
@@ -449,21 +448,21 @@
     </a>
   </footer>
 
-  {#if clavisEnabled}
+  {#if clavis_enabled}
     <Clavis
       on_top={!upsert_actived}
-      bind:active={clavisActived}
-      input={clavisLine}
-      dname={book_ubid}
-      from={clavisFrom} />
+      bind:active={clavis_actived}
+      input={clavis_line}
+      dname={ubid}
+      from={clavis_from} />
   {/if}
 
   {#if upsert_actived}
     <Upsert
-      tab={upsertTab}
-      key={upsertKey}
-      dname={upsertDic}
+      tab={upsert_tab}
+      key={upsert_key}
+      dname={ubid}
       bind:actived={upsert_actived}
-      bind:changed={shouldReload} />
+      bind:changed={should_reload} />
   {/if}
 </Vessel>
