@@ -60,13 +60,12 @@ module Server
   end
 
   put "/_upsert" do |env|
-    power = env.params.json["power"]?.as?(Int32) || 0
+    # power = env.params.json["power"].as(Int64).to_i
 
     if uslug = env.session.string?("uslug")
       user = UserInfo.get!(uslug)
       uname = user.uname
-      power = user.power if power > user.power
-      power = 0 if power < 0
+      power = user.power
     else
       uname = "guest"
       power = 0

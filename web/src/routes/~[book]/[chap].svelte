@@ -100,7 +100,7 @@
         _goto(book_path)
         break
 
-      case 37:
+      // case 37:
       case 74:
         if (!evt.altKey) {
           evt.preventDefault()
@@ -108,7 +108,7 @@
         }
         break
 
-      case 39:
+      // case 39:
       case 75:
         if (!evt.altKey) {
           evt.preventDefault()

@@ -7,12 +7,12 @@
     return data
   }
 
-  export async function dict_upsert(dname, key, vals, power) {
+  export async function dict_upsert(dname, key, vals) {
     const url = `/_upsert?dname=${dname}`
     const res = await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key, vals, power }),
+      body: JSON.stringify({ key, vals }),
     })
 
     const { status } = await res.json()
@@ -129,7 +129,7 @@
 
   async function submit_val() {
     const target = tab == 'special' ? dname : 'generic'
-    const status = await dict_upsert(target, key, out_val, $user.power)
+    const status = await dict_upsert(target, key, out_val)
 
     changed = status === 'ok' && updated
     actived = false
