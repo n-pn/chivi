@@ -449,6 +449,13 @@
       font-weight: 500;
       @include fgcolor(primary, 8);
     }
+
+    ._hide {
+      display: none;
+      @include screen-min(sm) {
+        display: inline-block;
+      }
+    }
   }
 
   .footer {
@@ -550,19 +557,13 @@
             <span class="-time">{relative_time(current.mtime)}</span>
             <span class="-text">bởi</span>
             <span class="-user">{current.uname}</span>
-            <span class="-text">(quyền hạn: {current.power})</span>
+            <span class="-text _hide">(quyền hạn: {current.power})</span>
           </div>
         {/if}
 
         <button
           type="button"
-          class="m-button"
-          class:_harmful={btn_class == 'harmful'}
-          class:_success={btn_class == 'success'}
-          class:_primary={btn_class == 'primary'}
-          class:_text={btn_power == 'text'}
-          class:_line={btn_power == 'line'}
-          class:_solid={btn_power == 'solid'}
+          class="m-button _{btn_class} _{btn_power}"
           disabled={!(updated || prevail)}
           on:click|once={submit_val}>
           <span class="-text">{btn_label}</span>

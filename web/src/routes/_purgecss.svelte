@@ -1,0 +1,4 @@
+<!-- trigger purgecss filter lists -->
+<button class="m-button _harmful" />
+<button class="m-button _harmful _line" />
+<button class="m-button _harmful _solid" />
