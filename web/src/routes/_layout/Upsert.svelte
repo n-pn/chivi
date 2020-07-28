@@ -556,7 +556,13 @@
 
         <button
           type="button"
-          class="m-button _{btn_class} _{btn_power}"
+          class="m-button"
+          class:_harmful={btn_class == 'harmful'}
+          class:_success={btn_class == 'success'}
+          class:_primary={btn_class == 'primary'}
+          class:_text={btn_power == 'text'}
+          class:_line={btn_power == 'line'}
+          class:_solid={btn_power == 'solid'}
           disabled={!(updated || prevail)}
           on:click|once={submit_val}>
           <span class="-text">{btn_label}</span>
