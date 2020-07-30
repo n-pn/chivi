@@ -217,35 +217,39 @@
       @include fgcolor(neutral, 7);
     }
 
-    :global(h1) {
-      $font-sizes: screen-vals(
-        rem(22px),
-        rem(24px),
-        rem(26px),
-        rem(28px),
-        rem(30px)
-      );
-      $line-heights: screen-vals(1.5rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
+    .line {
+      &._head {
+        font-weight: 300;
 
-      @include apply(font-size, $font-sizes);
-      @include apply(line-height, $line-heights);
-    }
+        $font-sizes: screen-vals(
+          rem(22px),
+          rem(24px),
+          rem(26px),
+          rem(28px),
+          rem(30px)
+        );
+        $line-heights: screen-vals(1.5rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
 
-    :global(p) {
-      $font-sizes: screen-vals(
-        rem(16px),
-        rem(17px),
-        rem(18px),
-        rem(19px),
-        rem(20px)
-      );
-      $margin-tops: screen-vals(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
+        @include apply(font-size, $font-sizes);
+        @include apply(line-height, $line-heights);
+      }
 
-      text-align: justify;
-      text-justify: auto;
+      &._para {
+        $font-sizes: screen-vals(
+          rem(16px),
+          rem(17px),
+          rem(18px),
+          rem(19px),
+          rem(20px)
+        );
+        $margin-tops: screen-vals(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
 
-      @include apply(font-size, $font-sizes);
-      @include apply(margin-top, $margin-tops);
+        text-align: justify;
+        text-justify: auto;
+
+        @include apply(font-size, $font-sizes);
+        @include apply(margin-top, $margin-tops);
+      }
     }
 
     :global(cite) {
@@ -412,14 +416,16 @@
 
   <article class="convert" class:_reload={__reloading}>
     {#each lines as line, idx}
-      <div
+      <p
         class="line"
+        class:_head={idx == 0}
+        class:_para={idx != 0}
         class:_focus={idx == focused_line}
         class:_hover={idx == hovered_line}
         on:mouseenter={() => (hovered_line = idx)}
         on:click={(event) => handleClick(event, idx)}>
         {@html render_convert(line, renderMode(idx, hovered_line, focused_line))}
-      </div>
+      </p>
     {/each}
   </article>
 
