@@ -20,17 +20,44 @@ class CvData
     # - apply other grammar rule
     # - ...
 
-    @data.each_with_index do |node, idx|
+    @data.each_with_index do |node, i|
       case node.key
       when "了"
-        if match_node?(idx + 1, &.dic.>(0)) && !(match_node?(idx - 2, &.key.==("了")) || match_node?(idx + 2, &.key.==("了")))
+        node.dic = 1
+
+        if border?(i + 1) || match_key?(i - 2, "了") || match_key?(i + 2, "了")
+          node.val = "rồi"
+        else
           node.val = ""
-          node.dic = 1
         end
       when "对"
-        unless match_node?(idx + 1, &.dic.>(0))
+        node.dic = 1
+
+        unless border?(i + 1)
           node.val = "đúng"
+        else
+          # TODO: check noun, verb?
+          node.val = "đối với"
         end
+      when "地"
+        node.dic = 1
+
+        if border?(i - 1)
+          # TODO: check noun, verb?
+          node.val = "mà"
+        else
+          node.val = "địa"
+        end
+      when "原来"
+        node.dic = 1
+
+        if border?(i - 1) && !match_key?(i + 1, "的")
+          node.val = "thì ra"
+        else
+          node.val = "ban đầu"
+        end
+        # when "不过"
+        # TODO!
       when "的"
         node.val = ""
         node.dic = 1
@@ -40,9 +67,18 @@ class CvData
     self
   end
 
+  private def border?(idx : Int32)
+    return true unless node = @data[idx]?
+    node.dic == 0
+  end
+
   private def match_node?(idx : Int32)
     return false unless node = @data[idx]?
     yield node
+  end
+
+  private def match_key?(idx : Int32, key : String)
+    match_node?(idx) { |x| x.key == key }
   end
 
   def concat(other : self)
