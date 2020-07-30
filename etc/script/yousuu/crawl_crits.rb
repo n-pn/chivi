@@ -5,11 +5,13 @@ class CritCrawler
     @http = HttpClient.new(load_proxy, debug_mode)
     @ybids = []
 
-    files = Dir.glob("var/bookdb/infos/*.json")
+    files = Dir.glob("var/bookdb/serials/*.json")
+    puts "- inputs: #{files.size}"
+
     files.each do |file|
       json = JSON.parse(File.read(file))
-      link = json["yousuu_url"]
-      @ybids << File.basename(link) unless link.empty?
+      ybid = json["yousuu_bid"]
+      @ybids << ybid unless ybid.empty?
     end
   end
 
@@ -78,5 +80,5 @@ page = 1
 while crawler.proxy_size > 0
   crawler.crawl!(page)
   page += 1
-  break if page = 5
+  break if page == 4
 end
