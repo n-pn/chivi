@@ -23,7 +23,7 @@ class CvData
     @data.each_with_index do |node, idx|
       case node.key
       when "了"
-        if match_node?(idx + 1, &.dic.>(0)) && match_node?(idx + 2, &.key.!=("了"))
+        if match_node?(idx + 1, &.dic.>(0)) && !(match_node?(idx - 2, &.key.==("了")) || match_node?(idx + 2, &.key.==("了")))
           node.val = ""
           node.dic = 1
         end
