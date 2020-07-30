@@ -220,6 +220,7 @@
     .line {
       &._head {
         font-weight: 300;
+        @include fgcolor(neutral, 9);
 
         $font-sizes: screen-vals(
           rem(22px),
