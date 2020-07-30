@@ -171,10 +171,10 @@
 
   function renderMode(idx, hover, focus) {
     if (idx == focus || idx == hover) return 2
-    // return 1
-    if (idx < hover - 5) return 1
-    if (idx > hover + 5) return 1
-    return 2
+    return 1
+    // if (idx < hover - 5) return 1
+    // if (idx > hover + 5) return 1
+    // return 2
   }
 
   function showUpsertModal(tab = null) {
@@ -418,7 +418,7 @@
         class:_hover={idx == hovered_line}
         on:mouseenter={() => (hovered_line = idx)}
         on:click={(event) => handleClick(event, idx)}>
-        {@html render_convert(line, renderMode(idx, hovered_line, focused_line), idx == '0' ? 'h1' : 'p')}
+        {@html render_convert(line, renderMode(idx, hovered_line, focused_line))}
       </div>
     {/each}
   </article>
