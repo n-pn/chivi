@@ -32,7 +32,8 @@ module BookRepo
   end
 
   def whitelist?(author : String)
-    OrderMap.top_authors.has_key?(author)
+    return false unless weight = OrderMap.author_weight.value(author)
+    weight >= 1500
   end
 
   def find_or_create(title : String, author : String, fixed = false)
@@ -204,7 +205,7 @@ module BookRepo
     return unless force || !info.zh_genres.includes?(site)
     info.add_zh_genre(site, genre)
 
-    zh_genres = Utils.fix_zh_genres(info.zh_genres, min_count: 2)
+    zh_genres = Utils.fix_zh_genres(info.zh_genres)
     info.vi_genres = Utils.map_vi_genres(zh_genres.first(3))
 
     Utils.update_token(TokenMap.vi_genres, info.ubid, info.vi_genres)
