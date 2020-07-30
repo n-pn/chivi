@@ -277,7 +277,7 @@
       <span class="header-item _menu">
         <MIcon class="m-icon _user" name="user" />
         <span class="header-text _show-md">
-          {$user.power < 0 ? 'Khách' : $user.uname}
+          {#if $user.power > 0}{$user.uname} [{$user.power}]{:else}Khách{/if}
         </span>
 
         <div class="header-menu">

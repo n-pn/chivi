@@ -214,7 +214,7 @@
     word-wrap: break-word;
 
     &._reload {
-      @include fgcolor(neutral, 7);
+      @include fgcolor(neutral, 6);
     }
 
     .line {

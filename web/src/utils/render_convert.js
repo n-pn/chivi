@@ -19,7 +19,7 @@ export function parse_content(body) {
     .map((line) => line.split('ǁ').map((x) => x.split('¦')))
 }
 
-export function render_convert(tokens, mode = 0, wrap = null) {
+export function render_convert(tokens, mode = 0) {
   let res = ''
   let idx = 0
   let pos = 0
@@ -54,19 +54,9 @@ export function render_convert(tokens, mode = 0, wrap = null) {
       }
     }
 
-    // if (val === '⟨') body += '<cite>⟨'
-    //       else if (val === '⟩') body += '⟩</cite>'
-    //       else if (val === '[') body += '<x-m>['
-    //       else if (val === ']') body += ']</x-m>'
-    //       else if (val === '“') body += '<q>'
-    //       else if (val === '”') body += '</q>'
-    //       else if (val === '‘') body += '<i>‘'
-    //       else if (val === '’') body += '’</i>'
-
     idx += 1
     pos += key.length
   }
 
-  if (wrap) res = `<${wrap}>${res}</${wrap}>`
   return res
 }
