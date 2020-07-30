@@ -141,7 +141,7 @@ module Convert
         else
           while idx > 0
             node = choices[idx]
-            break unless node.key == acc.key
+            break unless acc.key[0] == node.key[0]
             acc.combine!(node)
             idx -= node.key.size
           end
