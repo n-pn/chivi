@@ -22,8 +22,13 @@ class CvData
 
     @data.each_with_index do |node, idx|
       case node.key
+      when "了"
+        if match_node?(idx + 1, &.dic.>(0)) && match_node?(idx + 2, &.key.!=("了"))
+          node.val = "~"
+          node.dic = 1
+        end
       when "对"
-        unless @data[idx + 1]?.try(&.dic.>(0))
+        unless match_node?(idx + 1, &.dic.>(0))
           node.val = "đúng"
         end
       when "的"
@@ -33,6 +38,11 @@ class CvData
     end
 
     self
+  end
+
+  private def match_node?(idx : Int32)
+    return false unless node = @data[idx]?
+    yield node
   end
 
   def concat(other : self)

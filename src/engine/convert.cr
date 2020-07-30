@@ -100,22 +100,18 @@ module Convert
     end
 
     dict_count = dicts.size + 1
-    char_count = chars.size + 1
 
     0.upto(chars.size) do |idx|
-      pos_weight = (char_count - idx) / char_count
-
       dicts.each_with_index do |dict, jdx|
         dic = jdx + 1
-        dic_weight = dic / dict_count
 
         dict.scan(norms, idx) do |item|
           next if item.vals.empty?
 
-          length = item.key.size
-          weight = weights[idx] + length * (dic_weight + pos_weight + 1)
+          len = item.key.size
+          jdx = idx + len
+          weight = weights[idx] + len ** (dic / dict_count + 2)
 
-          jdx = idx + length
           if weight >= weights[jdx]
             weights[jdx] = weight
             choices[jdx] = CvNode.new(item.key, item.vals[0], dic)
