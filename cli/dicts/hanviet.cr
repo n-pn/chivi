@@ -96,10 +96,12 @@ end
 
 worker = Hanviet.new
 
-worker.import_dict!("hanviet/lacviet-chars.txt")
-worker.import_dict!("localqt/hanviet.txt", mode: :first_if_exists)
-worker.import_dict!("hanviet/trichdan-chars.txt", mode: :first_if_exists)
-worker.import_dict!("hanviet/checked-chars.txt", mode: :first_if_exists)
+worker.import_dict!("localqt/hanviet.txt", mode: :old_first)
+worker.import_dict!("hanviet/checked-chars.txt", mode: :old_first)
+worker.import_dict!("hanviet/lacviet-chars.txt", mode: :old_first)
+worker.import_dict!("hanviet/lacviet-words.txt", mode: :old_first)
+worker.import_dict!("hanviet/trichdan-chars.txt", mode: :old_first)
+worker.import_dict!("hanviet/trichdan-words.txt", mode: :old_first)
 worker.import_dict!("hanviet/verified-chars.txt", mode: :keep_new)
 worker.import_dict!("hanviet/verified-words.txt", mode: :keep_new)
 
