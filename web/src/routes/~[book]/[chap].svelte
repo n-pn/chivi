@@ -213,9 +213,9 @@
     padding: 0.75rem 0;
     word-wrap: break-word;
 
-    &._reload {
-      @include fgcolor(neutral, 6);
-    }
+    // &._reload {
+    //   @include fgcolor(neutral, 6);
+    // }
 
     .line {
       &._head {
