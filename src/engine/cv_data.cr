@@ -33,7 +33,7 @@ class CvData
       when "对"
         node.dic = 1
 
-        unless border?(i + 1)
+        if border?(i + 1)
           node.val = "đúng"
         else
           # TODO: check noun, verb?
@@ -43,10 +43,10 @@ class CvData
         node.dic = 1
 
         if border?(i - 1)
+          node.val = "địa"
+        else
           # TODO: check noun, verb?
           node.val = "mà"
-        else
-          node.val = "địa"
         end
       when "原来"
         node.dic = 1
