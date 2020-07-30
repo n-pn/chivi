@@ -63,13 +63,17 @@ module BookRepo::Utils
   end
 
   def fake_rating(zh_author : String)
-    weight = OrderMap.top_authors.value(zh_author) || 1000_i64
-    weight = Random.rand((weight // 2)..weight)
-    scored = Random.rand(40..70)
+    voters_max = OrderMap.author_voters.value(zh_author) || 100_i64
+    voters_min = voters_max // 2
+    voters = Random.rand(voters_min..voters_max).to_i32
 
-    voters = (weight // scored).to_i32
+    scored_max = OrderMap.author_rating.value(zh_author) || 60_i64
+    scored_min = scored_max &* 2 // 3
+
+    scored = Random.rand(scored_min..scored_max)
     rating = (scored / 10).to_f32
-    {voters, rating, scored.to_i64 * voters}
+
+    {voters, rating, scored * voters}
   end
 
   def map_vi_genres(zh_genres : Array(String))

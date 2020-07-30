@@ -194,7 +194,7 @@ class SeedInfo
     end
   end
 
-  TIME_DF = Time.utc(2010, 1, 1).to_unix_ms
+  TIME_DF = Time.utc(2000, 1, 1).to_unix_ms
 
   def parse_mftime
     case @seed

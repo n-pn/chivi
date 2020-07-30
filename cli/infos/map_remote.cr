@@ -130,7 +130,7 @@ class MapRemote
 
   def qualified?(ubid : String, author : String)
     return true if @existed.includes?(ubid)
-    OrderMap.top_authors.has_key?(author)
+    BookRepo.whitelist?(author)
   end
 
   def parse!(sbid : String, expiry = Time.utc - 24.hours, label = "1/1")

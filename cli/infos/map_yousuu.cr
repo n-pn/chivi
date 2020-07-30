@@ -59,7 +59,9 @@ input.each_with_index do |source, idx|
   puts "\n- <#{idx + 1}/#{input.size}> #{info.zh_title} ".colorize(color)
 
   info.save!
-  OrderMap.top_authors.upsert!(info.zh_author, info.weight) if info.weight >= 2000
+  OrderMap.author_voters.upsert!(info.zh_author, info.voters.to_i64)
+  OrderMap.author_rating.upsert!(info.zh_author, info.scored)
+  OrderMap.author_weight.upsert!(info.zh_author, info.weight)
 end
 
 puts "- <INP> total: #{inp_total}, keeps: #{inp_count} ".colorize.yellow

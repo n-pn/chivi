@@ -111,7 +111,9 @@ class MapZhwenpg
       weight = (rating * 10).to_i64 * voters
       BookRepo.set_weight(info, weight, force: false)
 
-      OrderMap.top_authors.upsert(info.zh_author, info.weight) if info.weight >= 2000
+      OrderMap.author_voters.upsert!(info.zh_author, info.voters.to_i64)
+      OrderMap.author_rating.upsert!(info.zh_author, info.scored)
+      OrderMap.author_weight.upsert!(info.zh_author, info.weight)
     end
 
     color = fresh ? :light_cyan : :light_blue

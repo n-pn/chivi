@@ -247,7 +247,10 @@ class OrderMap
     CACHE.each_value { |map| map.save! }
   end
 
-  class_getter top_authors : OrderMap { preload("_import/top_authors") }
+  class_getter author_rating : OrderMap { preload("_import/author_rating") }
+  class_getter author_voters : OrderMap { preload("_import/author_voters") }
+  class_getter author_weight : OrderMap { preload("_import/author_weight") }
+
   class_getter book_access : OrderMap { preload("indexes/orders/book_access") }
   class_getter book_update : OrderMap { preload("indexes/orders/book_update") }
   class_getter book_weight : OrderMap { preload("indexes/orders/book_weight") }
