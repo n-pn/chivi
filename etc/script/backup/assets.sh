@@ -1,7 +1,13 @@
 #! /bin/bash
 
-INP=nipin@ssh.chivi.xyz:web/chivi/data
-OUT=var/._old_info
+INP_OLD=nipin@ssh.chivi.xyz:web/chivi/data
+OUT_OLD=var/._old_info
 
-rsync -azui "$INP/cv_dicts/*" "$OUT/cv_dicts"
+rsync -azi "$INP_OLD/cv_dicts/*" "$OUT_OLD/cv_dicts"
 # rsync -azui "$INP/zh_texts/*" "$OUT/zh_texts"
+
+INP=nipin@ssh.nipin.xyz:web/chivi/var/
+OUT=var/
+
+rsync -azi "$INP/dictdb" $OUT
+rsync -azi "$INP/userdb" $OUT
