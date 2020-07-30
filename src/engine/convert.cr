@@ -138,12 +138,10 @@ module Convert
             acc.combine!(node)
             idx -= node.key.size
           end
-        elsif acc.unchanged?
+        else
           while idx > 0
             node = choices[idx]
-            break if node.dic > 0 || node.match_letter?
-            break unless node.unchanged?
-
+            break unless node.key == acc.key
             acc.combine!(node)
             idx -= node.key.size
           end
