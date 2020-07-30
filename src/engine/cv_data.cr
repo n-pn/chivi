@@ -24,7 +24,7 @@ class CvData
       case node.key
       when "了"
         if match_node?(idx + 1, &.dic.>(0)) && match_node?(idx + 2, &.key.!=("了"))
-          node.val = "~"
+          node.val = ""
           node.dic = 1
         end
       when "对"
@@ -33,7 +33,7 @@ class CvData
         end
       when "的"
         node.val = ""
-        node.dic = 0
+        node.dic = 1
       end
     end
 
