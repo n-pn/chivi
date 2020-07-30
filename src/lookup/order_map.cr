@@ -140,7 +140,7 @@ class OrderMap
   end
 
   def delete!(key : String) : Void
-    append!(key, "") if delete(key)
+    File.open(@file, "a", &.puts("#{key}#{SEP_0}")) if delete(key)
   end
 
   def delete(key : String) : Node?

@@ -8,7 +8,7 @@ SITES = {
   "yousuu",
 }
 
-UBIDS = Set(String).new
+DELETED = Set(String).new
 
 SITES.each do |site|
   infos = LabelMap.load!("_import/sites/#{site}")
@@ -32,16 +32,28 @@ SITES.each do |site|
     new_ubid = UuidUtil.gen_ubid(title, author)
 
     infos.upsert(sbid, "#{new_ubid}¦#{title}¦#{author}") if ubid != new_ubid
-    UBIDS.add(new_ubid)
+    DELETED.add(new_ubid)
   end
 
   infos.save!
 end
 
 BookInfo.ubids.each do |ubid|
-  next if UBIDS.includes?(ubid)
+  next if DELETED.includes?(ubid)
   puts "- DEAD ENTRY: #{ubid}"
 
   File.delete(BookInfo.path_for(ubid))
   FileUtils.rm_rf(ChapList.path_for(ubid))
+
+  OrderMap.book_access.delete!(ubid)
+  OrderMap.book_update.delete!(ubid)
+  OrderMap.book_weight.delete!(ubid)
+  OrderMap.book_rating.delete!(ubid)
+
+  TokenMap.zh_author.delete!(ubid)
+  TokenMap.vi_author.delete!(ubid)
+  TokenMap.zh_title.delete!(ubid)
+  TokenMap.vi_title.delete!(ubid)
+  TokenMap.vi_genres.delete!(ubid)
+  TokenMap.vi_tags.delete!(ubid)
 end
