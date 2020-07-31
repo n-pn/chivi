@@ -40,4 +40,48 @@ module UserDB
     user_mails.upsert!(info.email.downcase, info.uslug)
     user_names.upsert!(info.uname.downcase, info.uslug)
   end
+
+  BOOK_DIR = File.join("var", "userdb", "books")
+
+  BOOK_MAP = {} of String => TokenMap
+
+  def book_map(uslug : String)
+    BOOK_MAP[uslug] ||= TokenMap.read(File.join(BOOK_DIR, "#{uslug}.txt"))
+  end
+
+  # tags: viewed, liked, reading, completed, onhold, dropped
+
+  def add_book_tag(uslug : String, ubid : String, tag : String)
+    mapper = book_map(uslug)
+
+    if tags = mapper.vals(ubid)
+      return if tags.includes?(tag)
+      tags << tag
+    else
+      tags = [tag]
+    end
+
+    mapper.upsert!(ubid, tags)
+  end
+
+  def remove_book_tag(uslug : String, ubid : String, tag : String)
+    mapper = book_map(uslug)
+    return unless tags = mapper.vals(ubid)
+    tags.delete(tags) if tags.includes?(tag)
+    mapper.upsert!(ubid, tags)
+  end
+
+  def update_book_tag(uslug : String, ubid : String, old_tag : String, new_tag : String)
+    mapper = book_map(uslug)
+    return add_book_tag(uslug, ubid, new_tag) unless tags = mapper.vals(ubid)
+
+    tags.delete(old_tag) if tags.includes?(old_tag)
+    tags.push(new_tag) unless tags.includes?(new_tag)
+
+    mapper.upsert!(ubid, tags)
+  end
+
+  def list_books(uslug : String, tag : String)
+    book_map(uslug).keys(tag)
+  end
 end

@@ -37,6 +37,10 @@ class TokenMap
     end
   end
 
+  def vals(key : String)
+    @hash[key]?
+  end
+
   def keys(val : String)
     @keys[val]?
   end
