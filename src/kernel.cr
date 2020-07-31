@@ -16,23 +16,23 @@ module Kernel
     end
   end
 
-  def load_list(info : BookInfo, seed_name : String, reload = false) : Tuple(ChapList, Int64)?
-    return unless seed_sbid = info.seed_sbids[seed_name]?
+  def load_list(info : BookInfo, seed : String, mode = 1) : Tuple(ChapList, Int64)?
+    return unless seed_sbid = info.seed_sbids[seed]?
 
-    chlist = ChapList.get_or_create(info.ubid, seed_name)
-    expiry = Time.utc - (reload ? 10.minutes : gen_expiry(info.status))
+    chlist = ChapList.get_or_create(info.ubid, seed)
+    expiry = Time.utc - (mode == 0 ? 10.minutes : gen_expiry(info.status))
 
-    if ChapList.outdated?(info.ubid, seed_name, expiry)
-      remote = SeedInfo.init(seed_name, seed_sbid, expiry: expiry, freeze: false)
+    if ChapList.outdated?(info.ubid, seed, expiry)
+      remote = SeedInfo.init(seed, seed_sbid, expiry: expiry, freeze: false)
 
       BookRepo.update_info(info, remote)
       info.save! if info.changed?
 
-      ChapRepo.update_list(chlist, remote, dirty: reload, force: reload)
+      ChapRepo.update_list(chlist, remote, dirty: mode < 2, force: mode > 1)
       chlist.save! if chlist.changed?
     end
 
-    {chlist, info.seed_mftimes[seed_name]}
+    {chlist, info.seed_mftimes[seed]}
   end
 
   # # modes:

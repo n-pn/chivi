@@ -19,7 +19,7 @@ export async function dict_upsert(http, dic, key, val = '') {
 }
 
 export async function load_chtext(fetch, bslug, seed, scid, mode = 0) {
-  const url = `/_load_text?slug=${bslug}&seed=${seed}&scid=${scid}&mode=${mode}`
+  const url = `/_texts/${bslug}/${seed}/${scid}?mode=${mode}`
 
   try {
     const res = await fetch(url)

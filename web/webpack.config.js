@@ -16,6 +16,7 @@ const alias = {
   $route: path.resolve(__dirname, 'src', 'routes'),
   $layout: path.resolve(__dirname, 'src', 'routes', '_layout'),
   $reused: path.resolve(__dirname, 'src', 'routes', '_reused'),
+  $partial: path.resolve(__dirname, 'src', 'routes', '_partial'),
 }
 
 const extensions = ['.mjs', '.js', '.json', '.svelte', '.html']

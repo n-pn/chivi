@@ -36,7 +36,7 @@ module Params
 end
 
 module Server
-  get "/_list_book" do |env|
+  get "/_books" do |env|
     word = env.params.query.fetch("word", "")
     type = Params.search_type(env.params.query["type"]?)
 
@@ -70,8 +70,8 @@ module Server
     {items: items, total: total, query: opts}.to_json(env.response)
   end
 
-  get "/_load_book" do |env|
-    slug = env.params.query["slug"]
+  get "/_books/:slug" do |env|
+    slug = env.params.url["slug"]
 
     unless info = BookRepo.find(slug)
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
@@ -83,16 +83,16 @@ module Server
     {book: info}.to_json(env.response)
   end
 
-  get "/_get_chaps" do |env|
-    slug = env.params.query["slug"]
-    seed = env.params.query["seed"]
-    reload = env.params.query.fetch("reload", "false") == "true"
+  get "/_chaps/:slug/:seed" do |env|
+    slug = env.params.url["slug"]
+    seed = env.params.url["seed"]
+    mode = env.params.query["mode"]?.try(&.to_i?) || 0
 
     unless info = BookRepo.find(slug)
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    unless fetched = Kernel.load_list(info, seed, reload: reload)
+    unless fetched = Kernel.load_list(info, seed, mode: mode)
       halt env, status_code: 404, response: Utils.json_error("Seed not found!")
     end
 
@@ -112,8 +112,8 @@ module Server
     {chlist: chlist, mftime: mftime}.to_json(env.response)
   end
 
-  get "/_load_text" do |env|
-    slug = env.params.query["slug"]
+  get "/_texts/:slug/:seed/:scid" do |env|
+    slug = env.params.url["slug"]
 
     unless info = BookRepo.find(slug)
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
@@ -122,12 +122,12 @@ module Server
     BookRepo.bump_access(info, Time.utc.to_unix_ms)
     BookRepo.inc_counter(info, read: true)
 
-    seed = env.params.query["seed"]
-    unless fetched = Kernel.load_list(info, seed, reload: false)
+    seed = env.params.url["seed"]
+    unless fetched = Kernel.load_list(info, seed, mode: 0)
       halt env, status_code: 404, response: Utils.json_error("Seed not found!")
     end
 
-    scid = env.params.query["scid"]
+    scid = env.params.url["scid"]
     list, _ = fetched
 
     unless index = list.index[scid]?

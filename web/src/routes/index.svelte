@@ -1,7 +1,7 @@
 <script context="module">
   export async function preload({ query }) {
     const page = +(query.page || 1)
-    let url = `/_list_book?page=${page}`
+    let url = `/_books?page=${page}`
 
     if (query.order) url += `&order=${query.order}`
     if (query.genre) url += `&genre=${query.genre}`

@@ -1,49 +1,43 @@
 <script context="module">
   export async function preload({ params, query }) {
-    const book_slug = params.book
-    const url = `_load_book?slug=${book_slug}`
-    const tab = query.tab || 'overview'
-    const page = +(query.page || 1)
+    const bslug = params.book
 
-    const res = await this.fetch(url)
+    const res = await this.fetch(`/_books/${bslug}`)
     const data = await res.json()
 
     if (res.status == 200) {
       let { book } = data
+      const sname = query.seed || book.seed_names[0] || ''
 
-      const seed_name = query.seed || book.seed_names[0] || ''
-
+      const tab = query.tab || 'overview'
+      const page = +(query.page || 1)
       const chlists = {}
-      if (tab === 'content' && seed_name !== '') {
-        const { chlist, mftime } = await loadChlist(
-          this.fetch,
-          book_slug,
-          seed_name,
-          false
-        )
-        book = updateLatest(book, seed_name, chlist, mftime)
-        chlists[seed_name] = chlist
+
+      if (tab === 'content' && sname !== '') {
+        const chaps = await fetch_chaps(this.fetch, bslug, sname, 0)
+        book = updateLatest(book, sname, chaps.chlist, chaps.mftime)
+        chlists[sname] = chaps.chlist
       }
 
-      return { book, seed: seed_name, tab, page, chlists }
+      return { book, seed: sname, tab, page, chlists }
     }
 
     this.error(res.status, data.msg)
   }
 
-  export function updateLatest(book_info, seed_name, chlist, mftime) {
+  export function updateLatest(book_info, sname, chlist, mftime) {
     if (chlist.length == 0) return book_info
     const latest = chlist[chlist.length - 1]
 
-    book_info.seed_latests[seed_name] = latest
-    book_info.seed_mftimes[seed_name] = mftime
+    book_info.seed_latests[sname] = latest
+    book_info.seed_mftimes[sname] = mftime
     if (book_info.mftime < mftime) book_info.mftime = mftime
 
     return book_info
   }
 
-  export async function loadChlist(api, book_slug, seed_name, reload = false) {
-    const url = `_get_chaps?slug=${book_slug}&seed=${seed_name}&reload=${reload}`
+  export async function fetch_chaps(api, bslug, sname, mode = 0) {
+    const url = `/_chaps/${bslug}/${sname}?mode=${mode}`
 
     try {
       const res = await api(url)
@@ -55,40 +49,16 @@
       throw err.message
     }
   }
-
-  export function mapStatus(status) {
-    switch (status) {
-      case 0:
-        return 'Còn tiếp'
-      case 1:
-        return 'Hoàn thành'
-      case 2:
-        return 'Thái giám'
-      default:
-        return 'Không rõ'
-    }
-  }
-
-  export function prepareKeywords(book) {
-    return [
-      book.vi_title,
-      book.hv_title,
-      book.vi_author,
-      ...book.vi_genres,
-      ...book.vi_tags,
-    ].join(',')
-  }
 </script>
 
 <script>
   import MIcon from '$mould/MIcon.svelte'
-  import ChapList from '$reused/ChapList.svelte'
-  import BookCover from '$reused/BookCover.svelte'
 
   import Vessel from '$layout/Vessel.svelte'
+  import Outline from '$partial/BookIndex/Outline.svelte'
 
+  import ChapList from '$reused/ChapList.svelte'
   import relative_time from '$utils/relative_time'
-  import paginate_range from '$utils/paginate_range'
 
   export let book
   export let seed
@@ -103,22 +73,16 @@
   $: chlist = chlists[seed] || []
   $: hasContent = book.seed_names.length > 0
 
-  $: if (tab == 'content') switchSite(seed, false)
-
-  $: book_url = `https://chivi.xyz/~${book.slug}/`
-  $: cover_url = `https://chivi.xyz/covers/${book.ubid}.jpg`
-  $: update = new Date(book.mftime)
-  $: status = mapStatus(book.status)
-  $: keywords = prepareKeywords(book)
+  $: if (tab == 'content') switchSite(seed, 0)
 
   let __loading = false
 
-  async function switchSite(source, reload = false) {
+  async function switchSite(source, mode = 0) {
     seed = source
-    if (reload == false && chlists[seed]) return
+    if (mode == 0 && chlists[seed]) return
 
     __loading = true
-    const { chlist, mftime } = await loadChlist(fetch, book.slug, seed, reload)
+    const { chlist, mftime } = await fetch_chaps(fetch, book.slug, seed, mode)
     __loading = false
 
     chlists[seed] = chlist
@@ -132,89 +96,24 @@
     tab = newTab
   }
 
-  function latestLink(seed_name) {
-    const latest = book.seed_latests[seed_name]
-    if (!latest) return `/~${book.slug}?seed=${seed_name}&refresh=true`
-    return `/~${book.slug}/${latest.url_slug}-${seed_name}-${latest.scid}`
+  function latestLink(sname) {
+    const latest = book.seed_latests[sname]
+    if (!latest) return `/~${book.slug}?seed=${sname}&refresh=true`
+    return `/~${book.slug}/${latest.url_slug}-${sname}-${latest.scid}`
   }
 
-  function latestText(seed_name) {
-    const latest = book.seed_latests[seed_name]
+  function latestText(sname) {
+    const latest = book.seed_latests[sname]
     if (!latest) return '...'
     return latest.vi_title
   }
 </script>
 
 <style lang="scss">
-  .info {
-    // display: flex;
-    @include clearfix;
-  }
-
-  .cover {
-    float: left;
-    @include apply(width, screen-vals(40%, 30%, 25%));
-  }
-
-  .link {
-    // font-weight: 500;
-    @include fgcolor(primary, 6);
-  }
-
   .genre > a {
     @include fgcolor(neutral, 6);
     &:hover {
       @include fgcolor(primary, 6);
-    }
-  }
-
-  .name {
-    margin-bottom: 0.75rem;
-    @include apply(float, screen-vals(left, right));
-    @include apply(width, screen-vals(100%, 70%, 75%));
-    @include apply(padding-left, screen-vals(0, 0.75rem));
-  }
-
-  .extra {
-    float: right;
-    padding-left: 0.75rem;
-
-    @include apply(width, screen-vals(60%, 70%, 75%));
-
-    .-row {
-      margin-bottom: 0.5rem;
-      @include flex($gap: 0);
-      flex-wrap: wrap;
-    }
-
-    .-col {
-      margin-right: 0.5rem;
-    }
-
-    &,
-    time {
-      @include fgcolor(neutral, 6);
-    }
-
-    :global(svg) {
-      margin-top: -0.125rem;
-    }
-  }
-
-  .title {
-    font-weight: 300;
-    // @include fgcolor(neutral, 7);
-    $line-heights: screen-vals(1.5rem, 1.75rem, 2rem);
-    @include apply(line-height, $line-heights);
-    $font-sizes: screen-vals(rem(26px), rem(28px), rem(30px));
-    @include apply(font-size, $font-sizes);
-
-    .-sub {
-      font-size: 90%;
-      line-height: inherit;
-      // font-weight: 400;
-      // letter-spacing: 0.1em;
-      // @include fgcolor(neutral, 7);
     }
   }
 
@@ -227,22 +126,6 @@
       $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
       @include apply(font-size, $font-sizes);
     }
-  }
-
-  .author {
-    font-weight: 500;
-    > a {
-      @include fgcolor(neutral, 6);
-      @include hover {
-        @include fgcolor(primary, 6);
-      }
-    }
-    // @include font-size(4);
-    //
-  }
-
-  .info {
-    padding-top: 0.75rem;
   }
 
   .__loading {
@@ -455,10 +338,6 @@
     @include fgcolor(neutral, 5);
   }
 
-  strong {
-    font-weight: 500;
-  }
-
   .latests {
     width: 100%;
     max-width: 100%;
@@ -564,100 +443,13 @@
   }
 </style>
 
-<svelte:head>
-  <title>{book.vi_title} - Chivi</title>
-  <meta name="keywords" content={keywords} />
-  <meta name="description" content={book.vi_intro} />
-  <meta property="og:type" content="novel" />
-  <meta property="og:title" content={book.vi_title} />
-  <meta property="og:description" content={book.vi_intro} />
-  <meta property="og:image" content={cover_url} />
-  <meta property="og:novel:category" content={book.vi_genre} />
-  <meta property="og:novel:author" content={book.vi_author} />
-  <meta property="og:novel:book_name" content={book.vi_title} />
-  <meta property="og:novel:read_url" content={book_url} />
-  <meta property="og:url" content={book_url} />
-  <meta property="og:novel:status" content={status} />
-  <meta property="og:novel:update_time" content={update.toISOString()} />
-</svelte:head>
-
 <Vessel>
   <a slot="header-left" href="/{book.slug}" class="header-item _active">
     <MIcon class="m-icon _book-open" name="book-open" />
     <span class="header-text _title">{book.vi_title}</span>
   </a>
 
-  <section class="info">
-    <div class="name">
-      <h1 class="title">
-        <span class="-main">{book.vi_title}</span>
-        <span class="-sub">({book.zh_title})</span>
-      </h1>
-    </div>
-
-    <div class="cover">
-      <BookCover ubid={book.ubid} curl={book.main_cover} text={book.vi_title} />
-    </div>
-
-    <div class="extra">
-      <div class="-row">
-        <span class="-col author">
-          <MIcon class="m-icon" name="pen-tool" />
-          <a href="search?kw={book.vi_author}&type=author">{book.vi_author}</a>
-        </span>
-
-        {#each book.vi_genres as genre}
-          <span class="-col genre">
-            <MIcon class="m-icon _bookmark" name="bookmark" />
-            <a href="/?genre={genre}">{genre}</a>
-          </span>
-        {/each}
-      </div>
-
-      <div class="-row">
-        <span class="-col status">
-          <MIcon class="m-icon" name="activity" />
-          {status}
-        </span>
-        <span class="-col mftime">
-          <MIcon class="m-icon" name="clock" />
-          <time datetime={update}>{relative_time(book.mftime)}</time>
-        </span>
-      </div>
-
-      <div class="-row">
-        <span class="-col">
-          Đánh giá:
-          <strong>{book.voters < 10 ? '--' : book.rating}</strong>
-          /10
-        </span>
-        <span class="-col">({book.voters} lượt đánh giá)</span>
-      </div>
-
-      {#if book.origin_url !== ''}
-        <div class="-row">
-          <span class="-col">Liên kết:</span>
-          <a
-            class="-col link"
-            href={book.origin_url}
-            rel="nofollow noreferer"
-            target="_blank">
-            Trang gốc
-          </a>
-
-          {#if book.yousuu_bid !== ''}
-            <a
-              class="-col link"
-              href="https://www.yousuu.com/book/{book.yousuu_bid}"
-              rel="nofollow noreferer"
-              target="_blank">
-              Ưu thư võng
-            </a>
-          {/if}
-        </div>
-      {/if}
-    </div>
-  </section>
+  <Outline {book} />
 
   <section class="meta">
     <header class="meta-header">
@@ -721,7 +513,7 @@
                   <span
                     class="latest-text _update"
                     class:__loading={seed == name && __loading}
-                    on:click={() => switchSite(name, true)}>
+                    on:click={() => switchSite(name, 1)}>
                     {#if seed == name && __loading}
                       <MIcon class="m-icon" name="loader" />
                     {:else}
@@ -754,7 +546,7 @@
                     class="-item"
                     class:_active={seed === name}
                     href="/~{book.slug}?tab=content&seed={name}"
-                    on:click|preventDefault={() => switchSite(name, false)}
+                    on:click|preventDefault={() => switchSite(name, 0)}
                     rel="nofollow">
                     <span class="-name">{name}</span>
                     <span class="-time">
@@ -771,7 +563,7 @@
             <button
               class="m-button _text"
               class:__loading
-              on:click={() => switchSite(seed, true)}>
+              on:click={() => switchSite(seed, 1)}>
               {#if __loading}
                 <MIcon class="m-icon" name="loader" />
               {:else}
