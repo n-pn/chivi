@@ -140,7 +140,7 @@
   </h1>
 
   <div class="cover">
-    <BookCover ubid={book.ubid} curl={book.main_cover} text={book.vi_title} />
+    <BookCover ubid={book.ubid} path={book.main_cover} text={book.vi_title} />
   </div>
 
   <section class="extra">

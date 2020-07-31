@@ -311,7 +311,7 @@
         <div class="-cover">
           <BookCover
             ubid={book.ubid}
-            curl={book.main_cover}
+            path={book.main_cover}
             text={book.vi_title} />
         </div>
 
