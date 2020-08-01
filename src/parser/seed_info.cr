@@ -231,6 +231,8 @@ class SeedInfo
     text = meta_data("og:novel:latest_chapter_name").not_nil!
     if @seed == "duokan8"
       text = text.sub(/^.*正文\s*/, "").sub(/^.*章节目录\s*/, "")
+    elsif @seed == "xbiquge"
+      text = text.sub(/^.+?\s/, "")
     end
 
     ChapInfo.new(parse_scid(href), text)

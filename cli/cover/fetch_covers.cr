@@ -7,7 +7,7 @@ require "file_utils"
 require "../../src/bookdb/book_info"
 
 TMP_DIR = File.join("var", ".book_cover")
-FILE_DF = File.join(TMP_DIR, "blank.jpg")
+# FILE_DF = File.join(TMP_DIR, "blank.jpg")
 
 TLS = OpenSSL::SSL::Context::Client.insecure
 
@@ -35,7 +35,7 @@ def download_cover(url : String, file : String, label = "1/1") : Void
     File.write(file, res.body_io.try(&.gets_to_end))
   end
 rescue err
-  FileUtils.cp(FILE_DF, file)
+  FileUtils.touch(file)
   puts "- <#{label}> [#{url.colorize(:red)}] #{err.colorize(:red)}"
 end
 
@@ -103,8 +103,8 @@ FileUtils.mkdir_p(OUT_DIR)
 
 # TODO: copy best covers to web/upload folder
 infos.each do |info|
-  best_file = FILE_DF
-  best_size = File.size(best_file)
+  best_file = ""
+  best_size = 0
 
   cover_dir = File.join(TMP_DIR, info.ubid)
   cover_files = glob_dir(cover_dir).values
@@ -118,11 +118,13 @@ infos.each do |info|
     end
   end
 
+  next if best_file.empty?
+
   main_cover = File.basename(best_file)
-  out_file = File.join(OUT_DIR, "#{info.ubid}.#{main_cover}")
-
-  FileUtils.cp(best_file, out_file)
-
   info.main_cover = main_cover
-  info.save! if info.changed?
+  next unless info.changed?
+
+  info.save!
+  out_file = File.join(OUT_DIR, "#{info.ubid}.#{main_cover}")
+  FileUtils.cp(best_file, out_file)
 end

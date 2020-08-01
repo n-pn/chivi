@@ -32,9 +32,9 @@ end
 # fetch_info("hetushu", "4420")
 
 # fetch_info("duokan8", "6293")
-# fetch_info("xbiquge", "51918")
-# fetch_info("xbiquge", "41881")
+fetch_info("xbiquge", "48680")
+fetch_info("xbiquge", "41881")
 # fetch_info("paoshu8", "817")
 
-fetch_info("zhwenpg", "aun4tm")
+# fetch_info("zhwenpg", "aun4tm")
 # fetch_info("zhwenpg", "punj76")
