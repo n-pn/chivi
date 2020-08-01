@@ -17,6 +17,7 @@
     "map_remotes": "wsl cli/infos/map_remote.sh",
     "map_zhwenpg": "wsl bin/map_zhwenpg",
     "ys_review": "ruby etc/script/yousuu/crawl_crits.rb",
-    "ys_serial": "ruby etc/script/yousuu/crawl_infos.rb"
+    "ys_serial": "ruby etc/script/yousuu/crawl_infos.rb",
+    "add_cover": "wsl bin/fetch_covers && ruby cli/cover/webp_format.rb"
   }
 }
