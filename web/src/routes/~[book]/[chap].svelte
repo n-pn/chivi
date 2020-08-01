@@ -161,11 +161,13 @@
     }
   })
 
-  function handleClick(evt, idx) {
-    const target = evt.target
-    if (target === focused_elem) return showUpsertModal()
-
+  function handleClick({ target }, idx) {
     if (target.nodeName !== 'X-V') return
+
+    upsert_key = target.dataset.k
+    upsert_tab = +target.dataset.d > 2 ? 'special' : 'generic'
+
+    if (target === focused_elem) return showUpsertModal()
     if (focused_elem) focused_elem.classList.remove('_active')
 
     focused_line = idx
@@ -173,9 +175,6 @@
 
     focused_elem = target
     focused_elem.classList.add('_active')
-
-    upsert_key = focused_elem.dataset.k
-    upsert_tab = +focused_elem.dataset.d > 2 ? 'special' : 'generic'
 
     clavis_from = +focused_elem.dataset.p
     if (clavis_enabled) clavis_actived = true
