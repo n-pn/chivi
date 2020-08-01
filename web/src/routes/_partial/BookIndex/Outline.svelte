@@ -99,9 +99,10 @@
   .link {
     // font-weight: 500;
     color: inherit;
-    @include fgcolor(primary, 7);
+    // @include fgcolor(primary, 7);
+    &._outer,
     &:hover {
-      @include fgcolor(primary, 5);
+      @include fgcolor(primary, 6);
     }
   }
 
@@ -188,7 +189,7 @@
 
         {#if book.origin_url != ''}
           <a
-            class="stat link"
+            class="stat link _outer"
             href={book.origin_url}
             rel="nofollow noreferer"
             target="_blank">
@@ -198,7 +199,7 @@
 
         {#if book.yousuu_bid !== ''}
           <a
-            class="stat link"
+            class="stat link _outer"
             href="https://www.yousuu.com/book/{book.yousuu_bid}"
             rel="nofollow noreferer"
             target="_blank">
