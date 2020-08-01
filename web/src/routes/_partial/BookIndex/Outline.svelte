@@ -99,9 +99,9 @@
   .link {
     // font-weight: 500;
     color: inherit;
-    @include fgcolor(primary, 8);
+    @include fgcolor(primary, 7);
     &:hover {
-      @include fgcolor(primary, 6);
+      @include fgcolor(primary, 5);
     }
   }
 
