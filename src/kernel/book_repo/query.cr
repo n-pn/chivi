@@ -24,15 +24,16 @@ class BookRepo::Query
     end
   end
 
+  class_getter book_count : Int32 { OrderMap.book_weight.size }
+
   def self.fetch!(opts : Opts)
     query = new
 
     query.filter_query(opts.query, opts.type) if opts.query?
     query.filter_genre(opts.genre) if opts.genre?
 
-    total = query.ubids.size
     infos = query.fetch!(opts.order, opts.limit, opts.offset, opts.anchor)
-
+    total = query.filtered ? query.ubids.size : book_count
     {infos, total}
   end
 
