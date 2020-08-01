@@ -267,7 +267,7 @@
   }
 
   .footer {
-    margin: 0.75rem 0;
+    margin: 0.75rem 0 1.75rem;
     @include flex($gap: 0.375rem);
     justify-content: center;
   }

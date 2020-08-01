@@ -8,29 +8,35 @@
 </script>
 
 <style lang="scss">
-  h1,
-  p {
-    margin: 0 auto;
-  }
-
-  h1 {
-    font-size: 2.8em;
-    font-weight: 700;
-    margin: 0 0 0.5em 0;
-  }
-
-  p {
-    margin: 1em auto;
-  }
-
-  h1 {
-    @include screen-min(sm) {
-      font-size: 4em;
-    }
+  section {
+    min-height: 80vh;
+    @include flex;
+    @include flex-center;
   }
 
   article {
     padding: 2rem;
+    width: 20rem;
+    text-align: center;
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: 4rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+    @include fgcolor(neutral, 7);
+    // margin: 0 0 0.5em 0;
+
+    @include screen-min(sm) {
+      font-size: 4.5rem;
+    }
+  }
+
+  p {
+    margin-top: 1.5rem;
+    font-style: italic;
+    @include fgcolor(neutral, 8);
   }
 </style>
 
@@ -39,13 +45,16 @@
 </svelte:head>
 
 <Vessel>
-  <article>
-    <h1>{status}</h1>
+  <section>
+    <article>
+      <h1>{status}</h1>
 
-    <p>{error.message}</p>
+      <p>{error.message}</p>
 
-    {#if dev && error.stack}
-      <pre>{error.stack}</pre>
-    {/if}
-  </article>
+      {#if dev && error.stack}
+        <pre>{error.stack}</pre>
+      {/if}
+    </article>
+  </section>
+
 </Vessel>
