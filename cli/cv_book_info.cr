@@ -2,14 +2,14 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../src/lookup/order_map"
+require "../src/bookdb/book_info"
 
 count = 0
-OrderMap.book_access.each do |node|
-  puts node
-  count += 1
-  break if count > 100
+BookInfo.load_all!.each do |info|
+  count += 1 if info.seed_names.size > 0
 end
+
+puts count
 
 # require "../src/_utils/text_utils"
 

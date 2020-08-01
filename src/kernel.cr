@@ -20,7 +20,7 @@ module Kernel
     return unless seed_sbid = info.seed_sbids[seed]?
 
     chlist = ChapList.get_or_create(info.ubid, seed)
-    expiry = Time.utc - (mode == 0 ? 10.minutes : gen_expiry(info.status))
+    expiry = Time.utc - (mode > 0 ? 10.minutes : gen_expiry(info.status))
 
     if ChapList.outdated?(info.ubid, seed, expiry)
       remote = SeedInfo.init(seed, seed_sbid, expiry: expiry, freeze: false)
