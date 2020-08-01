@@ -61,7 +61,7 @@
 
   let clavis_enabled = false
   let clavis_actived = false
-  let clavis_line = ''
+  let clavis_input = ''
   let clavis_from = 0
 
   let upsert_actived = false
@@ -147,6 +147,20 @@
     should_reload = res == 'ok'
   }
 
+  onMount(() => {
+    const evt = document.addEventListener('selectionchange', () => {
+      const selection = read_selection()
+      if (selection) {
+        upsert_key = selection
+        upsert_tab = 'special'
+      }
+    })
+
+    return () => {
+      document.removeEventListener('selectionchange', evt)
+    }
+  })
+
   function handleClick(evt, idx) {
     const target = evt.target
     if (target === focused_elem) return showUpsertModal()
@@ -155,12 +169,15 @@
     if (focused_elem) focused_elem.classList.remove('_active')
 
     focused_line = idx
-    clavis_line = lines[idx].map((x) => x[0]).join('')
+    clavis_input = lines[idx].map((x) => x[0]).join('')
 
     focused_elem = target
     focused_elem.classList.add('_active')
 
-    clavis_from = +focused_elem.dataset['p']
+    upsert_key = focused_elem.dataset.k
+    upsert_tab = +focused_elem.dataset.d > 2 ? 'special' : 'generic'
+
+    clavis_from = +focused_elem.dataset.p
     if (clavis_enabled) clavis_actived = true
   }
 
@@ -177,20 +194,10 @@
     // return 2
   }
 
+  // $: console.log({ upsert_key, upsert_tab })
+
   function showUpsertModal(tab = null) {
-    const selection = read_selection()
-
-    if (selection !== '') upsert_key = selection
-    else if (focused_elem) {
-      upsert_key = focused_elem.dataset.k
-
-      if (tab == null) {
-        const dic = +focused_elem.dataset.d
-        tab = dic === 3 ? 'special' : 'generic'
-      }
-    }
-
-    upsert_tab = tab || 'special'
+    upsert_tab = tab || upsert_tab
     upsert_actived = true
   }
 
@@ -456,7 +463,7 @@
     <Clavis
       on_top={!upsert_actived}
       bind:active={clavis_actived}
-      input={clavis_line}
+      input={clavis_input}
       dname={ubid}
       from={clavis_from} />
   {/if}

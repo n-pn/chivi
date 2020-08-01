@@ -17,9 +17,10 @@
 
   a {
     // display: inline-block;
+    cursor: pointer;
     line-height: 1rem;
     padding: 0.5rem;
-    border-left: 1px splid color(neutral, 3);
+    // border-left: 1px solid color(neutral, 3);
 
     // max-width: 25vw;
     // overflow: hidden;
@@ -28,8 +29,7 @@
     @include font-size(2);
     @include fgcolor(neutral, 7);
 
-    @include hover {
-      cursor: pointer;
+    &:hover {
       background-color: color(neutral, 3);
     }
   }

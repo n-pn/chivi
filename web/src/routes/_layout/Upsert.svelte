@@ -370,6 +370,7 @@
     @include font-size(2);
 
     .-hint {
+      cursor: pointer;
       font-style: italic;
       line-height: 1.5rem;
       height: 1.5rem;
@@ -381,8 +382,8 @@
       @include fgcolor(neutral, 6);
       @include bgcolor(neutral, 1);
       @include radius;
+
       &:hover {
-        cursor: pointer;
         @include fgcolor(primary, 6);
         @include bgcolor(primary, 1);
       }
@@ -430,9 +431,9 @@
       @include truncate(null);
       @include fgcolor(neutral, 5);
 
-      @include hover {
+      &:hover {
         @include fgcolor(primary, 5);
-        @include bgcolor(#fff);
+        @include bgcolor(white);
       }
     }
   }
