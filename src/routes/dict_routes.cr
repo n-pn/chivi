@@ -1,5 +1,5 @@
 require "./_utils"
-require "../engine"
+require "../libcv"
 require "../userdb"
 require "../dictdb"
 
@@ -36,7 +36,7 @@ module Server
       entry.to_a.sort_by(&.[0].-)
     end
 
-    hanviet = Engine.hanviet(input, apply_cap: true).to_s
+    hanviet = Libcv.hanviet(input, apply_cap: true).to_s
     {hanviet: hanviet, entries: entries}.to_json(env.response)
   end
 
@@ -51,8 +51,8 @@ module Server
     suggest = DictDB.suggest.dict.find(term).try(&.vals) || [] of String
 
     {
-      hanviet: Engine.hanviet(term, false).vi_text,
-      binh_am: Engine.binh_am(term, false).vi_text,
+      hanviet: Libcv.hanviet(term, false).vi_text,
+      binh_am: Libcv.binh_am(term, false).vi_text,
       generic: generic,
       special: special,
       suggest: suggest,

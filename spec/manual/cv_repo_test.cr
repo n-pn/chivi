@@ -1,4 +1,4 @@
-require "../../src/engine/cv_repo"
+require "../../src/libcv/cv_repo"
 
 repo = CvRepo.new("data/base_dicts")
 

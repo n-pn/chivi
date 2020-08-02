@@ -1,7 +1,7 @@
 require "./utils/common"
 require "./utils/clavis"
 
-require "../../src/engine"
+require "../../src/libcv"
 require "../../src/lookup/value_set"
 
 puts "\n[Load deps]".colorize.cyan.bold
@@ -36,8 +36,8 @@ inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if should_skip?(key)
 
-    unless Engine.hanviet(key).vi_text.downcase == vals.first.downcase
-      next if Engine.cv_plain(key, "tonghop").vi_text == vals.first
+    unless Libcv.hanviet(key).vi_text.downcase == vals.first.downcase
+      next if Libcv.cv_plain(key, "tonghop").vi_text == vals.first
     end
   end
   out_generic.upsert(key, vals)
@@ -53,8 +53,8 @@ inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if should_skip?(key)
     next if key =~ /[的了是]/
-    next if Engine.hanviet(key).vi_text.downcase == vals.first.downcase
-    next if Engine.cv_plain(key, "tonghop").vi_text.downcase == vals.first.downcase
+    next if Libcv.hanviet(key).vi_text.downcase == vals.first.downcase
+    next if Libcv.cv_plain(key, "tonghop").vi_text.downcase == vals.first.downcase
   end
 
   out_suggest.upsert(key, vals)

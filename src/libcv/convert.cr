@@ -3,7 +3,7 @@ require "../_utils/normalize"
 
 require "../dictdb/base_dict"
 require "../common/chap_util"
-require "./cv_data"
+require "./convert/*"
 
 module Convert
   extend self

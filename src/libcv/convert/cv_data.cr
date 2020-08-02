@@ -1,5 +1,4 @@
 require "json"
-require "../common/text_util"
 
 require "./cv_node"
 

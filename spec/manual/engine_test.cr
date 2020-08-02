@@ -1,4 +1,4 @@
-require "../../src/engine"
+require "../../src/libcv"
 require "../../src/common/text_util"
 
 # text = "第十三集 龙章凤仪 第一章 屠龙之术
@@ -14,21 +14,21 @@ require "../../src/common/text_util"
 # http://test.com/test?q=1
 # "
 
-# Engine.cv_mixed(TextUtil.split_text(text), "combine").each do |data|
+# Libcv.cv_mixed(TextUtil.split_text(text), "combine").each do |data|
 #   puts data.vi_text
 # end
 
 # text = "【飞卢中文网A级签约作品：荒野食神之吃光食物链】当叶晓晨第一次得到【荒野食神系统】的时候，其实他是，是拒绝的，他跟系统讲，他拒绝，因为，其实他，根本没有厨艺……系统跟他讲，抓完荒野食材给厨艺，刀工很叼很快很炫目……  奇奇怪怪的荒野食材，丛林、沙漠、冰川、抓了这些食材，加了一段时间的厨艺技能之后呢！  菠萝烤鳄鱼，DUANG~~~很柔，很软。  蜜汁熊掌，DUANG~~~很香，很滑口。  亚马逊电鳗鱼面，DUANG~~DUANG~~DUANG~~很弹牙！  ……  女明星们问为什么这么好吃。  因为叶晓晨，他加特技…(本故事及人物纯属虚构，如有雷同，纯属巧合，切勿模仿。)"
 
-# Engine.cv_plain(TextUtil.split_text(text), "combine").each do |data|
+# Libcv.cv_plain(TextUtil.split_text(text), "combine").each do |data|
 #   puts data.vi_text
 # end
 
 # line = "程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-# puts Engine.hanviet(line).vi_text
-# puts Engine.binh_am(line).vi_text
-# puts Engine.tradsim(line).vi_text
+# puts Libcv.hanviet(line).vi_text
+# puts Libcv.binh_am(line).vi_text
+# puts Libcv.tradsim(line).vi_text
 
 # test1 = "坚定不移沿着中国特色社会主义道路前进  为全面建成小康社会而奋斗"
 # test2 = "MUV  LUV AL 红龙"
@@ -37,17 +37,17 @@ require "../../src/common/text_util"
 # test5 = "【实验总分：79.3。排名：6】"
 # test6 = "“稍等。”李峥倒是不在意这些议论，更在意身旁失魂落魄的大兄弟，“英男别慌，最惨的是我才对，400分满分，输了一分，输了一生。”"
 
-# puts Engine.hanviet(test1).vi_text
-# puts Engine.hanviet(test2).vi_text
-# puts Engine.hanviet(test3).vi_text
-# puts Engine.hanviet(test4).vi_text
-# puts Engine.hanviet("左丰").vi_text.downcase == "Tả Phong".downcase
+# puts Libcv.hanviet(test1).vi_text
+# puts Libcv.hanviet(test2).vi_text
+# puts Libcv.hanviet(test3).vi_text
+# puts Libcv.hanviet(test4).vi_text
+# puts Libcv.hanviet("左丰").vi_text.downcase == "Tả Phong".downcase
 
-# puts Engine.cv_plain(test4, "combine").vi_text
-# puts Engine.cv_plain(test5, "combine").vi_text
-# puts Engine.cv_plain(test6, "combine").vi_text
-# puts Engine.cv_title("一个普通人的日常（七）", "combine").vi_text
-# puts Engine.cv_title("一柱的数量多在5—50本之间", "combine").vi_text
-pp Engine.cv_plain("了却它", "combine")
-pp Engine.cv_plain("了却它", "kwxrpf79")
-# pp Engine.cv_plain("无论成败，了却它。", "kwxrpf79")
+# puts Libcv.cv_plain(test4, "combine").vi_text
+# puts Libcv.cv_plain(test5, "combine").vi_text
+# puts Libcv.cv_plain(test6, "combine").vi_text
+# puts Libcv.cv_title("一个普通人的日常（七）", "combine").vi_text
+# puts Libcv.cv_title("一柱的数量多在5—50本之间", "combine").vi_text
+pp Libcv.cv_plain("了却它", "combine")
+pp Libcv.cv_plain("了却它", "kwxrpf79")
+# pp Libcv.cv_plain("无论成败，了却它。", "kwxrpf79")

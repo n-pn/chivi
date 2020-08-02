@@ -2,13 +2,13 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../src/engine"
+require "../src/libcv"
 require "../src/kernel/book_repo"
 require "../src/kernel/chap_repo"
 
 def translate(input : String, dname : String)
   return input if input.empty?
-  Engine.cv_title(input, dname).vi_text
+  Libcv.cv_title(input, dname).vi_text
 end
 
 def gen_expiry(status : Int32)

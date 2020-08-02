@@ -1,7 +1,7 @@
 require "./dictdb"
-require "./engine/*"
+require "./libcv/*"
 
-module Engine
+module Libcv
   extend self
 
   def tradsim(input : String)

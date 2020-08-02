@@ -20,23 +20,23 @@ puts count
 # require "../src/models/book_info"
 # require "../src/models/chap_list"
 
-# require "../src/engine"
+# require "../src/libcv"
 
 # def hanviet(input : String)
 #   return input unless input =~ /\p{Han}/
-#   Engine.hanviet(input, apply_cap: true).vi_text
+#   Libcv.hanviet(input, apply_cap: true).vi_text
 # end
 
 # def cv_intro(input : String, dname : String) : String
-#   Engine.cv_plain(input.split("\n"), dname).map(&.vi_text).join("\n")
+#   Libcv.cv_plain(input.split("\n"), dname).map(&.vi_text).join("\n")
 # end
 
 # def cv_title(input : String, dname : String) : String
-#   Engine.cv_title(input, dname).vi_text
+#   Libcv.cv_title(input, dname).vi_text
 # end
 
 # def cv_plain(input : String, dname : String) : String
-#   Engine.cv_plain(input, dname).vi_text
+#   Libcv.cv_plain(input, dname).vi_text
 # end
 
 # TITLE_ZH  = LabelMap.load!("override/zh_title")

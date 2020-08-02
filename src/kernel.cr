@@ -53,7 +53,7 @@ module Kernel
       zh_lines = [remote.title].concat(remote.paras)
     end
 
-    chap.data = Engine.cv_mixed(zh_lines, ubid).map(&.to_s).join("\n")
+    chap.data = Libcv.cv_mixed(zh_lines, ubid).map(&.to_s).join("\n")
     chap.tap(&.save!)
   end
 end
