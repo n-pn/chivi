@@ -243,7 +243,7 @@
 
       &._para {
         $font-sizes: screen-vals(
-          rem(18px),
+          rem(17px),
           rem(18px),
           rem(19px),
           rem(20px),
