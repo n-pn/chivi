@@ -1,4 +1,4 @@
-require "../../../src/_utils/normalize"
+require "../../../src/utils/normalize"
 
 class Clavis
   DIR = File.join("var", ".dict_inits")

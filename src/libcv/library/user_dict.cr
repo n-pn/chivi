@@ -1,7 +1,7 @@
 require "colorize"
 require "file_utils"
 
-require "../../common/file_util"
+require "../../utils/file_util"
 
 require "./base_dict"
 require "./user_dict/*"

@@ -11,7 +11,7 @@ end
 
 puts count
 
-# require "../src/_utils/text_utils"
+# require "../src/utils/text_utils"
 
 # require "../src/lookup/label_map"
 # require "../src/lookup/token_map"

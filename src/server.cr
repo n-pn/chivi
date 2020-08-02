@@ -1,4 +1,4 @@
-require "./routes/*"
+require "./webcv/*"
 
 Kemal::Session.config do |config|
   config.cookie_name = "chivi"

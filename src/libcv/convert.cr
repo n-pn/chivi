@@ -1,7 +1,7 @@
-require "../_utils/han_to_int"
-require "../_utils/normalize"
+require "../utils/han_to_int"
+require "../utils/normalize"
 
-require "../common/chap_util"
+require "../utils/chap_util"
 require "./library/base_dict"
 require "./convert/*"
 

@@ -2,11 +2,11 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../_utils/han_to_int"
+require "../utils/han_to_int"
 
-require "../common/http_util"
-require "../common/file_util"
-require "../common/time_util"
+require "../utils/http_util"
+require "../utils/file_util"
+require "../utils/time_util"
 
 require "../bookdb/chap_info"
 

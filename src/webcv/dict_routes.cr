@@ -1,6 +1,4 @@
-require "./_utils"
-require "../libcv"
-require "../userdb"
+require "./route_utils"
 
 module Server
   alias LookupEntry = Hash(String, Array(String))

@@ -7,7 +7,7 @@ require "./utils/common"
 require "./utils/pinyin"
 
 require "../../src/library/base_dict"
-require "../../src/_utils/normalize"
+require "../../src/utils/normalize"
 
 class Entry
   getter trad : String

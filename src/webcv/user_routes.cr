@@ -1,15 +1,4 @@
-require "./_utils"
-require "../userdb"
-require "../kernel/book_repo"
-
-module UserUtils
-  extend self
-
-  def return_user(env, user : UserInfo)
-    env.session.string("uslug", user.uslug)
-    {status: "ok", uname: user.uname, power: user.power}.to_json(env.response)
-  end
-end
+require "./route_utils"
 
 module Server
   post "/_signup" do |env|
@@ -24,7 +13,7 @@ module Server
     raise "password too short" if upass.size < 7
 
     user = UserDB.create(email, uname, upass, "guest", 1)
-    UserUtils.return_user(env, user)
+    Utils.return_user(env, user)
   rescue err
     {status: "err", msg: err.message}.to_json(env.response)
   end
@@ -34,7 +23,7 @@ module Server
     upass = env.params.json["upass"].as(String).strip
 
     user = UserDB.authenticate(email, upass)
-    UserUtils.return_user(env, user)
+    Utils.return_user(env, user)
   rescue err
     puts err
     {status: "err", msg: "email or password incorrect"}.to_json(env.response)

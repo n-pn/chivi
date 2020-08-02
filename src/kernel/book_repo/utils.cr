@@ -1,6 +1,6 @@
 require "../../libcv"
 require "../../lookup/*"
-require "../../common/text_util"
+require "../../utils/text_util"
 
 module BookRepo::Utils
   extend self

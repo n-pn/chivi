@@ -1,9 +1,9 @@
 require "file_utils"
 require "option_parser"
 
-require "../../src/common/file_util"
-require "../../src/common/http_util"
-require "../../src/common/time_util"
+require "../../src/utils/file_util"
+require "../../src/utils/http_util"
+require "../../src/utils/time_util"
 
 require "../../src/kernel/book_repo"
 require "../../src/kernel/chap_repo"

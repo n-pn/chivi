@@ -1,8 +1,8 @@
 require "colorize"
 require "file_utils"
 
-require "../common/json_data"
-require "../common/uuid_util"
+require "../utils/json_data"
+require "../utils/uuid_util"
 
 require "./chap_info"
 

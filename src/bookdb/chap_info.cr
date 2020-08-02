@@ -1,8 +1,8 @@
 require "colorize"
 
-require "../common/text_util"
-require "../common/chap_util"
-require "../common/json_data"
+require "../utils/text_util"
+require "../utils/chap_util"
+require "../utils/json_data"
 
 class ChapInfo
   include JsonData

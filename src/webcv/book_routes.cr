@@ -1,5 +1,4 @@
-require "./_utils"
-require "../kernel"
+require "./route_utils"
 
 module Params
   extend self
