@@ -1,8 +1,8 @@
 require "file_utils"
-require "../src/library"
+require "../src/libcv/library"
 
 INP = File.join("var", "._old_info", "cv_dicts")
-OUT = File.join("var", "library")
+OUT = File.join("var", "dictdb")
 
 def copy_files(type_inp, type_out = type_inp)
   files = Dir.glob("#{INP}/#{type_inp}_user/*.guest.dic")
@@ -16,7 +16,7 @@ def copy_files(type_inp, type_out = type_inp)
 end
 
 def update_dicts(type)
-  UserDict.ext = type
+  Libcv::UserDict.ext = type
 
   Libcv::Library.generic.save!
   Libcv::Library.suggest.save!
@@ -24,7 +24,7 @@ def update_dicts(type)
   Dir.glob("#{OUT}/uniq/*.#{type}").each do |file|
     name = File.basename(file, ".#{type}")
     next if name.includes?(".")
-    UserDict.load!("uniq/#{name}").save!
+    Libcv::UserDict.load!("uniq/#{name}").save!
   rescue
     puts file
   end

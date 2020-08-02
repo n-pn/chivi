@@ -3,8 +3,8 @@ require "colorize"
 require "file_utils"
 
 require "../src/libcv"
-require "../src/kernel/bookdb"
-require "../src/kernel/chapdb"
+require "../src/appcv/bookdb"
+require "../src/appcv/chapdb"
 
 def translate(input : String, dname : String)
   return input if input.empty?

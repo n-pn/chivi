@@ -3,7 +3,7 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../src/models/book_info"
+require "../src/appcv/models/book_info"
 
 infos = VpInfo.load_all.reject do |ubid, info|
   info.cr_sitemap.empty?

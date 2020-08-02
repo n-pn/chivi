@@ -1,4 +1,4 @@
-require "../../src/kernel/bookdb"
+require "../../src/appcv/bookdb"
 
 def should_skip?(source : YsSerial)
   return true if BookDB.blacklist?(source.title)

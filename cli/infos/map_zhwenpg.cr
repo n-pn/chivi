@@ -7,8 +7,8 @@ require "../../src/utils/file_util"
 require "../../src/utils/http_util"
 require "../../src/utils/time_util"
 
-require "../../src/kernel/bookdb"
-require "../../src/kernel/chapdb"
+require "../../src/appcv/bookdb"
+require "../../src/appcv/chapdb"
 
 class MapZhwenpg
   DIR = File.join("var", ".book_cache", "zhwenpg", "pages")
