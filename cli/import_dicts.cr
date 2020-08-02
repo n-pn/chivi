@@ -1,8 +1,8 @@
 require "file_utils"
-require "../src/dictdb"
+require "../src/library"
 
 INP = File.join("var", "._old_info", "cv_dicts")
-OUT = File.join("var", "dictdb")
+OUT = File.join("var", "library")
 
 def copy_files(type_inp, type_out = type_inp)
   files = Dir.glob("#{INP}/#{type_inp}_user/*.guest.dic")
@@ -18,8 +18,8 @@ end
 def update_dicts(type)
   UserDict.ext = type
 
-  DictDB.generic.save!
-  DictDB.suggest.save!
+  Libcv::Library.generic.save!
+  Libcv::Library.suggest.save!
 
   Dir.glob("#{OUT}/uniq/*.#{type}").each do |file|
     name = File.basename(file, ".#{type}")

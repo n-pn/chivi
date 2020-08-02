@@ -1,11 +1,11 @@
 require "../_utils/han_to_int"
 require "../_utils/normalize"
 
-require "../dictdb/base_dict"
 require "../common/chap_util"
+require "./library/base_dict"
 require "./convert/*"
 
-module Convert
+module Libcv::Convert
   extend self
 
   def translit(input : String, dict : BaseDict, apply_cap = false, pad_space = true)

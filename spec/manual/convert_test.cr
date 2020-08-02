@@ -1,4 +1,4 @@
-require "../../src/dictdb/base_dict""
+require "../../src/library/base_dict""
 require "../../src/libcv/convert"
 
 text = "第十三集 龙章凤仪 第一章 屠龙之术

@@ -1,9 +1,9 @@
-require "./dictdb/*"
+require "./library/*"
 
-module DictDB
+module Libcv::Library
   extend self
 
-  DIR = File.join("var", "dictdb")
+  DIR = File.join("var", "library")
 
   FileUtils.mkdir_p(File.join(DIR, "core"))
   FileUtils.mkdir_p(File.join(DIR, "uniq"))

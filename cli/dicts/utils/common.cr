@@ -1,13 +1,13 @@
 require "file_utils"
 
-require "../../../src/dictdb/base_dict"
+require "../../../src/library/base_dict"
 require "../../../src/lookup/value_set"
 
 module Utils
   extend self
 
   INP_DIR = File.join("var", ".dict_inits")
-  OUT_DIR = File.join("var", "dictdb")
+  OUT_DIR = File.join("var", "library")
 
   def inp_path(file : String)
     File.join(INP_DIR, file)

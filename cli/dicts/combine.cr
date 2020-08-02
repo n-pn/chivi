@@ -4,7 +4,7 @@ require "json"
 require "./utils/common"
 require "./utils/clavis"
 
-require "../../src/dictdb"
+require "../../src/library"
 require "../../src/lookup/value_set"
 
 puts "\n[Load counters]".colorize.cyan.bold
@@ -158,7 +158,7 @@ end
 
 puts "\n[Load hanviet]".colorize.cyan.bold
 
-DictDB.hanviet.each do |node|
+Libcv::Library.hanviet.each do |node|
   next if CHECKED.includes?(node.key)
   EXISTED.add(node.key)
 

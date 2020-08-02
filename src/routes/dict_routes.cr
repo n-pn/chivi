@@ -1,14 +1,13 @@
 require "./_utils"
 require "../libcv"
 require "../userdb"
-require "../dictdb"
 
 module Server
   alias LookupEntry = Hash(String, Array(String))
 
   get "/_lookup" do |env|
     dname = env.params.query.fetch("dname", "combine")
-    dicts = DictDB.for_convert(dname)
+    dicts = Libcv::Library.for_convert(dname)
 
     input = env.params.query.fetch("input", "")
     chars = input.chars
@@ -25,11 +24,11 @@ module Server
         end
       end
 
-      DictDB.trungviet.scan(chars, idx) do |item|
+      Libcv::Library.trungviet.scan(chars, idx) do |item|
         entry[item.key.size]["trungviet"] = item.vals
       end
 
-      DictDB.cc_cedict.scan(chars, idx) do |item|
+      Libcv::Library.cc_cedict.scan(chars, idx) do |item|
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
@@ -46,9 +45,9 @@ module Server
     bdic = env.params.query.fetch("bdic", "_tonghop")
     term = env.params.query.fetch("term", "")
 
-    generic = DictDB.search(term, "generic")
-    special = DictDB.search(term, bdic)
-    suggest = DictDB.suggest.dict.find(term).try(&.vals) || [] of String
+    generic = Libcv::Library.search(term, "generic")
+    special = Libcv::Library.search(term, bdic)
+    suggest = Libcv::Library.suggest.dict.find(term).try(&.vals) || [] of String
 
     {
       hanviet: Libcv.hanviet(term, false).vi_text,
@@ -74,7 +73,7 @@ module Server
       power = 0
     end
 
-    DictDB.upsert(dic, uname, power, key, val)
+    Libcv::Library.upsert(dic, uname, power, key, val)
     {status: "ok", msg: "accepted"}.to_json(env.response)
   rescue err
     {status: "err", msg: err.message}.to_json(env.response)

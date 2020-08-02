@@ -1,12 +1,13 @@
 require "colorize"
 require "file_utils"
-require "../common/file_util"
+
+require "../../common/file_util"
 
 require "./base_dict"
-require "./dict_edit"
+require "./user_dict/*"
 
 # dict modification log
-class UserDict
+class Libcv::UserDict
   LABEL = "user_dict"
 
   getter file : String

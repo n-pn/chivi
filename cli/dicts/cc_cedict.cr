@@ -6,7 +6,7 @@ require "compress/zip"
 require "./utils/common"
 require "./utils/pinyin"
 
-require "../../src/dictdb/base_dict"
+require "../../src/library/base_dict"
 require "../../src/_utils/normalize"
 
 class Entry

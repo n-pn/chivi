@@ -1,11 +1,11 @@
 require "colorize"
 require "file_utils"
 
-require "../common/file_util"
-require "./dict_trie"
+require "../../common/file_util"
+require "./base_dict/dict_trie"
 
 # TODO: rename?
-class BaseDict
+class Libcv::BaseDict
   LABEL = "base_dict"
 
   getter file : String

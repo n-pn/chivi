@@ -1,6 +1,6 @@
 require "./utils/common"
 require "./utils/clavis"
-require "../../src/dictdb/base_dict"
+require "../../src/library/base_dict"
 require "../../src/lookup/value_set"
 
 class Hanviet

@@ -1,4 +1,4 @@
-require "../../src/dictdb/base_dict"
+require "../../src/library/base_dict"
 
 test = Libcv::BaseDict.new "spec/fixtures/test.txt"
 
