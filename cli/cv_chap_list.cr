@@ -3,8 +3,8 @@ require "colorize"
 require "file_utils"
 
 require "../src/libcv"
-require "../src/kernel/book_repo"
-require "../src/kernel/chap_repo"
+require "../src/kernel/bookdb"
+require "../src/kernel/chapdb"
 
 def translate(input : String, dname : String)
   return input if input.empty?
@@ -46,12 +46,12 @@ def update_infos(info, label)
     next if SKIP_PAOSHU8 && name == "paoshu8"
 
     remote = SeedInfo.init(name, sbid, expiry: expiry, freeze: true)
-    BookRepo.update_info(info, remote)
+    BookDB.update_info(info, remote)
 
     next unless ChapList.outdated?(info.ubid, name, Time.unix_ms(info.mftime))
     chlist = ChapList.get!(info.ubid, name)
 
-    ChapRepo.update_list(chlist, remote)
+    ChapDB.update_list(chlist, remote)
     chlist.save! if chlist.changed?
   rescue err
     puts "- <cv_chap_list> error loading: [#{name}/#{sbid}]:  #{err}".colorize.red

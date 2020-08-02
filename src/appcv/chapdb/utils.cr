@@ -1,7 +1,7 @@
 require "../../libcv"
-require "../../bookdb/chap_info"
+require "../models/chap_info"
 
-module ChapRepo::Utils
+module ChapDB::Utils
   extend self
 
   def convert(chap : ChapInfo, ubid : String, force = false)

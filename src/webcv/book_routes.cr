@@ -48,9 +48,9 @@ module Server
     limit = Params.search_limit(env.params.query["limit"]?)
     offset = (page - 1) * limit
 
-    opts = BookRepo::Query::Opts.new(word, type, genre, order, limit, offset, anchor)
+    opts = BookDB::Query::Opts.new(word, type, genre, order, limit, offset, anchor)
 
-    infos, total = BookRepo::Query.fetch!(opts)
+    infos, total = BookDB::Query.fetch!(opts)
 
     items = infos.map do |info|
       {
@@ -72,12 +72,12 @@ module Server
   get "/_books/:slug" do |env|
     slug = env.params.url["slug"]
 
-    unless info = BookRepo.find(slug)
+    unless info = BookDB.find(slug)
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    # BookRepo.bump_access(info)
-    # BookRepo.inc_counter(info, read: false)
+    # BookDB.bump_access(info)
+    # BookDB.inc_counter(info, read: false)
 
     {book: info}.to_json(env.response)
   end
@@ -87,16 +87,16 @@ module Server
     seed = env.params.url["seed"]
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
 
-    unless info = BookRepo.find(slug)
+    unless info = BookDB.find(slug)
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    unless fetched = Kernel.load_list(info, seed, mode: mode)
+    unless fetched = Appcv.load_list(info, seed, mode: mode)
       halt env, status_code: 404, response: Utils.json_error("Seed not found!")
     end
 
-    BookRepo.bump_access(info, Time.utc.to_unix_ms)
-    BookRepo.inc_counter(info, read: false)
+    BookDB.bump_access(info, Time.utc.to_unix_ms)
+    BookDB.inc_counter(info, read: false)
 
     chlist, mftime = fetched
     chlist = chlist.chaps.map do |chap|
@@ -114,15 +114,15 @@ module Server
   get "/_texts/:slug/:seed/:scid" do |env|
     slug = env.params.url["slug"]
 
-    unless info = BookRepo.find(slug)
+    unless info = BookDB.find(slug)
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    BookRepo.bump_access(info, Time.utc.to_unix_ms)
-    BookRepo.inc_counter(info, read: true)
+    BookDB.bump_access(info, Time.utc.to_unix_ms)
+    BookDB.inc_counter(info, read: true)
 
     seed = env.params.url["seed"]
-    unless fetched = Kernel.load_list(info, seed, mode: 0)
+    unless fetched = Appcv.load_list(info, seed, mode: 0)
       halt env, status_code: 404, response: Utils.json_error("Seed not found!")
     end
 
@@ -139,7 +139,7 @@ module Server
 
     mode = env.params.query.fetch("mode", "0").try(&.to_i) || 0
 
-    chap = Kernel.load_text(info.ubid, seed, list.sbid, curr_chap.scid, mode: mode)
+    chap = Appcv.load_text(info.ubid, seed, list.sbid, curr_chap.scid, mode: mode)
 
     {
       mftime: chap.time,

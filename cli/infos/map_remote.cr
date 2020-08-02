@@ -5,8 +5,8 @@ require "../../src/utils/file_util"
 require "../../src/utils/http_util"
 require "../../src/utils/time_util"
 
-require "../../src/kernel/book_repo"
-require "../../src/kernel/chap_repo"
+require "../../src/kernel/bookdb"
+require "../../src/kernel/chapdb"
 
 class MapRemote
   SEEDS = {
@@ -130,30 +130,30 @@ class MapRemote
 
   def qualified?(ubid : String, author : String)
     return true if @existed.includes?(ubid)
-    BookRepo.whitelist?(author)
+    BookDB.whitelist?(author)
   end
 
   def parse!(sbid : String, expiry = Time.utc - 24.hours, label = "1/1")
     remote = SeedInfo.init(@seed, sbid, expiry: expiry, freeze: true)
 
-    info = BookRepo.find_or_create(remote.title, remote.author)
+    info = BookDB.find_or_create(remote.title, remote.author)
     save_info(sbid, info.ubid, info.zh_title, info.zh_author)
 
-    return if info.zh_title.empty? || info.zh_author.empty? || BookRepo.blacklist?(info)
+    return if info.zh_title.empty? || info.zh_author.empty? || BookDB.blacklist?(info)
 
     return unless qualified?(info.ubid, info.zh_author)
 
     puts "\n<#{label}> [#{sbid}] #{info.ubid}-#{info.zh_title}".colorize.cyan
 
-    BookRepo.upsert_info(info)
-    BookRepo.update_info(info, remote)
+    BookDB.upsert_info(info)
+    BookDB.update_info(info, remote)
 
     info.save! if info.changed?
     expiry = Time.unix_ms(info.mftime) unless CACHED
 
     return unless ChapList.outdated?(info.ubid, @seed, expiry)
     chlist = ChapList.get_or_create(info.ubid, @seed)
-    chlist = ChapRepo.update_list(chlist, remote)
+    chlist = ChapDB.update_list(chlist, remote)
 
     chlist.save! if chlist.changed?
   rescue err

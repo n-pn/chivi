@@ -1,8 +1,7 @@
 require "file_utils"
+require "./appcv/*"
 
-require "./kernel/*"
-
-module Kernel
+module Appcv
   extend self
 
   def gen_expiry(status)
@@ -25,10 +24,10 @@ module Kernel
     if ChapList.outdated?(info.ubid, seed, expiry)
       remote = SeedInfo.init(seed, seed_sbid, expiry: expiry, freeze: false)
 
-      BookRepo.update_info(info, remote)
+      BookDB.update_info(info, remote)
       info.save! if info.changed?
 
-      ChapRepo.update_list(chlist, remote, dirty: mode < 2, force: mode > 1)
+      ChapDB.update_list(chlist, remote, dirty: mode < 2, force: mode > 1)
       chlist.save! if chlist.changed?
     end
 
@@ -58,7 +57,7 @@ module Kernel
   end
 end
 
-# info = BookRepo.load("akpwpjf3").not_nil!
+# info = BookDB.load("akpwpjf3").not_nil!
 # puts info.vi_title
 
 # chaps = Kernel.load_list(info, info.cr_site_df, refresh: true)

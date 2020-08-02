@@ -1,8 +1,4 @@
-require "json"
-require "colorize"
-require "file_utils"
-
-require "../utils/file_util"
+require "./_lookup"
 
 # mapping key to a list of tokens
 class TokenMap

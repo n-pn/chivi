@@ -1,14 +1,14 @@
 require "json"
 require "colorize"
 
-require "../bookdb/chap_list"
-require "../bookdb/chap_text"
-require "../parser/seed_info"
-require "../parser/seed_text"
+require "./models/chap_list"
+require "./models/chap_text"
+require "./parser/seed_info"
+require "./parser/seed_text"
 
-require "./chap_repo/*"
+require "./chapdb/*"
 
-module ChapRepo
+module ChapDB
   extend self
 
   def load_list(ubid : String, seed : String, sbid = "", mode = 1)

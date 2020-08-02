@@ -1,5 +1,5 @@
 require "./lookup"
-require "./userdb/*"
+require "./models/user_info"
 
 module UserDB
   extend self

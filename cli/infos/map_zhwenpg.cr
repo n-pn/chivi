@@ -7,8 +7,8 @@ require "../../src/utils/file_util"
 require "../../src/utils/http_util"
 require "../../src/utils/time_util"
 
-require "../../src/kernel/book_repo"
-require "../../src/kernel/chap_repo"
+require "../../src/kernel/bookdb"
+require "../../src/kernel/chapdb"
 
 class MapZhwenpg
   DIR = File.join("var", ".book_cache", "zhwenpg", "pages")
@@ -77,39 +77,39 @@ class MapZhwenpg
     title = link.inner_text.strip
     author = rows[1].css(".fontwt").first.inner_text.strip
 
-    info = BookRepo.find_or_create(title, author, fixed: false)
-    return if BookRepo.blacklist?(info)
+    info = BookDB.find_or_create(title, author, fixed: false)
+    return if BookDB.blacklist?(info)
 
     @sitemap.upsert(sbid, "#{info.ubid}¦#{info.zh_title}¦#{info.zh_author}")
 
-    BookRepo.upsert_info(info)
+    BookDB.upsert_info(info)
 
     fresh = info.yousuu_bid.empty?
-    BookRepo.set_shield(info, 1) if fresh
+    BookDB.set_shield(info, 1) if fresh
 
     genre = rows[2].css(".fontgt").first.inner_text
-    BookRepo.set_genre(info, "zhwenpg", genre, force: false)
+    BookDB.set_genre(info, "zhwenpg", genre, force: false)
 
     cover = node.css("img").first.attributes["data-src"]
-    BookRepo.set_cover(info, "zhwenpg", cover, force: false)
+    BookDB.set_cover(info, "zhwenpg", cover, force: false)
 
     if (intro = rows[4]?) && info.zh_intro.empty?
       intro_text = TextUtil.split_html(intro.inner_text("\n"))
       # intro_text = Libcv.tradsim(intro_text)
-      BookRepo.set_intro(info, intro_text.join("\n"), force: false)
+      BookDB.set_intro(info, intro_text.join("\n"), force: false)
     end
 
-    BookRepo.set_status(info, status)
+    BookDB.set_status(info, status)
 
     if info.yousuu_bid.empty? && info.weight == 0
       caption = "#{title}--#{author}"
       voters, rating = fetch_score(caption)
 
-      BookRepo.set_voters(info, voters, force: false)
-      BookRepo.set_rating(info, rating, force: false)
+      BookDB.set_voters(info, voters, force: false)
+      BookDB.set_rating(info, rating, force: false)
 
       weight = (rating * 10).to_i64 * voters
-      BookRepo.set_weight(info, weight, force: false)
+      BookDB.set_weight(info, weight, force: false)
 
       OrderMap.author_voters.upsert!(info.zh_author, info.voters.to_i64)
       OrderMap.author_rating.upsert!(info.zh_author, info.scored)
@@ -127,7 +127,7 @@ class MapZhwenpg
     info.set_seed_sbid("zhwenpg", sbid)
     info.set_seed_type("zhwenpg", 0)
 
-    BookRepo.update_seed(info, "zhwenpg", latest, mftime)
+    BookDB.update_seed(info, "zhwenpg", latest, mftime)
 
     info.save! if info.changed?
 
@@ -135,7 +135,7 @@ class MapZhwenpg
     remote = SeedInfo.init("zhwenpg", sbid, expiry: expiry, freeze: true)
 
     chlist = ChapList.get_or_create(info.ubid, "zhwenpg")
-    chlist = ChapRepo.update_list(chlist, remote)
+    chlist = ChapDB.update_list(chlist, remote)
 
     chlist.save! if chlist.changed?
   rescue err

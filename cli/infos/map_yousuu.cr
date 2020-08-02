@@ -1,8 +1,8 @@
-require "../../src/kernel/book_repo"
+require "../../src/kernel/bookdb"
 
 def should_skip?(source : YsSerial)
-  return true if BookRepo.blacklist?(source.title)
-  return false if BookRepo.whitelist?(source.author)
+  return true if BookDB.blacklist?(source.title)
+  return false if BookDB.whitelist?(source.author)
   source.score < 2.5 && source.addListTotal < 5 && source.commentCount < 10
 end
 
@@ -21,8 +21,8 @@ files.each_with_index do |file, idx|
 
   next unless source = YsSerial.load(file)
 
-  source.title = BookRepo::Utils.fix_zh_title(source.title)
-  source.author = BookRepo::Utils.fix_zh_author(source.author)
+  source.title = BookDB::Utils.fix_zh_title(source.title)
+  source.author = BookDB::Utils.fix_zh_author(source.author)
 
   ubid = UuidUtil.gen_ubid(source.title, source.author)
   sitemap.upsert(source.ysid, "#{ubid}¦#{source.title}¦#{source.author}")
@@ -42,9 +42,9 @@ end
 
 input = input.values.sort_by(&.weight.-)
 input.each_with_index do |source, idx|
-  info = BookRepo.find_or_create(source.title, source.author, fixed: true)
-  BookRepo.upsert_info(info)
-  BookRepo.update_info(info, source)
+  info = BookDB.find_or_create(source.title, source.author, fixed: true)
+  BookDB.upsert_info(info)
+  BookDB.update_info(info, source)
 
   next unless info.changed?
 

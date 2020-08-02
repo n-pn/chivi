@@ -1,13 +1,13 @@
 require "json"
 require "colorize"
 
-require "../parser/ys_serial"
-require "../parser/seed_info"
+require "./parser/ys_serial"
+require "./parser/seed_info"
 
-require "./book_repo/*"
-require "./chap_repo/utils"
+require "./bookdb/*"
+require "./chapdb/utils"
 
-module BookRepo
+module BookDB
   extend self
 
   delegate get, to: BookInfo
@@ -103,7 +103,7 @@ module BookRepo
   end
 
   def update_seed(info : BookInfo, seed_name : String, latest : ChapInfo, mftime : Int64)
-    latest = ChapRepo::Utils.convert(latest, info.ubid)
+    latest = ChapDB::Utils.convert(latest, info.ubid)
     info.set_seed_latest(seed_name, latest, mftime)
     mftime = info.seed_mftimes[seed_name]
     set_mftime(info, mftime)

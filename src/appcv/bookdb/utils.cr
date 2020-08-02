@@ -1,8 +1,8 @@
 require "../../libcv"
-require "../../lookup/*"
 require "../../utils/text_util"
+require "../lookup/*"
 
-module BookRepo::Utils
+module BookDB::Utils
   extend self
 
   def cv_intro(lines : Array(String), dname : String)

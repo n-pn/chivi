@@ -1,4 +1,4 @@
-require "../../src/bookdb/book_info"
+require "../../src/models/book_info"
 require "../../src/lookup/value_set"
 
 def split_chars(input)

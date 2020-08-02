@@ -2,13 +2,12 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../utils/han_to_int"
+require "../../utils/han_to_int"
+require "../../utils/http_util"
+require "../../utils/file_util"
+require "../../utils/time_util"
 
-require "../utils/http_util"
-require "../utils/file_util"
-require "../utils/time_util"
-
-require "../bookdb/chap_info"
+require "../models/chap_info"
 
 class SeedInfo
   DIR = File.join("var", ".book_cache")

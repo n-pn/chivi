@@ -3,8 +3,8 @@ require "colorize"
 require "file_utils"
 
 require "../src/utils/text_util"
-require "../src/bookdb/book_info"
-require "../src/kernel/book_repo"
+require "../src/models/book_info"
+require "../src/kernel/bookdb"
 
 ACCESS = OrderMap.init("indexes/orders/book_access")
 
@@ -17,21 +17,21 @@ TAGS   = TokenMap.init("indexes/tokens/vi_tags")
 
 def fix_indexes(info : BookInfo)
   # update tokens
-  BookRepo.upsert_info(info, force: true)
+  BookDB.upsert_info(info, force: true)
   if mftime = info.seed_mftimes["hetushu"]?
     info.seed_mftimes["hetushu"] = info.mftime if info.mftime > mftime
   end
 
   info.save! if info.changed?
 
-  BookRepo::Utils.update_token(GENRES, info.ubid, info.vi_genres)
-  BookRepo::Utils.update_token(TAGS, info.ubid, info.vi_tags)
+  BookDB::Utils.update_token(GENRES, info.ubid, info.vi_genres)
+  BookDB::Utils.update_token(TAGS, info.ubid, info.vi_tags)
 
   # update orders
-  BookRepo::Utils.update_order(UPDATE, info.ubid, info.mftime)
-  BookRepo::Utils.update_order(ACCESS, info.ubid, info.weight)
-  BookRepo::Utils.update_order(RATING, info.ubid, info.scored)
-  BookRepo::Utils.update_order(WEIGHT, info.ubid, info.weight)
+  BookDB::Utils.update_order(UPDATE, info.ubid, info.mftime)
+  BookDB::Utils.update_order(ACCESS, info.ubid, info.weight)
+  BookDB::Utils.update_order(RATING, info.ubid, info.scored)
+  BookDB::Utils.update_order(WEIGHT, info.ubid, info.weight)
 end
 
 infos = BookInfo.load_all!

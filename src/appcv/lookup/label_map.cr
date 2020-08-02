@@ -1,8 +1,4 @@
-require "json"
-require "colorize"
-require "file_utils"
-
-require "../utils/file_util"
+require "./_lookup"
 
 class LabelMap
   LABEL = "label_map"
