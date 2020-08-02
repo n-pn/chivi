@@ -249,7 +249,7 @@
           rem(20px),
           rem(21px)
         );
-        $margin-tops: screen-vals(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
+        $margin-tops: screen-vals(1rem, 1.25rem, 1.5rem);
 
         text-align: justify;
         text-justify: auto;
