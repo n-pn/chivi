@@ -39,6 +39,10 @@ class ChapText
     File.exists?(@file)
   end
 
+  def outdated?(expiry : Time::Span)
+    Time.utc - @time > expiry
+  end
+
   def save!(file : String = @file) : Void
     @time = Time.utc
     FileUtils.mkdir_p(File.dirname(file))

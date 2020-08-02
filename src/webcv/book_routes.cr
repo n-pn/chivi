@@ -137,13 +137,12 @@ module Server
     prev_chap = list.chaps[index - 1] if index > 0
     next_chap = list.chaps[index + 1] if index < list.size - 1
 
-    mode = env.params.query.fetch("mode", "0").try(&.to_i) || 0
-
-    chap = Appcv.load_text(info.ubid, seed, list.sbid, curr_chap.scid, mode: mode)
+    mode = env.params.query.fetch("mode", "0").try(&.to_i?) || 0
+    chap = Appcv.load_text(info.ubid, seed, list.sbid, scid, mode: mode)
 
     {
-      mftime: chap.time,
       cvdata: chap.data,
+      mftime: chap.time.to_unix_ms,
 
       bslug: info.slug,
       bname: info.vi_title,

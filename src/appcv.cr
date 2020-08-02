@@ -47,10 +47,7 @@ module Appcv
     if chap.exists? && (mode < 2 || chap.type > 0)
       chap.load!
 
-      if mode == 0
-        return chap if chap.time >= Time.utc - 3.hours
-      end
-
+      return chap unless mode > 0 || chap.outdated?(1.hours)
       zh_lines = chap.zh_lines
     else
       remote = SeedText.init(seed, sbid, scid, freeze: false)
@@ -58,7 +55,9 @@ module Appcv
     end
 
     chap.data = Libcv.cv_mixed(zh_lines, ubid).map(&.to_s).join("\n")
-    chap.tap(&.save!)
+    chap.save!
+
+    chap
   end
 end
 
