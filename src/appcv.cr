@@ -15,11 +15,11 @@ module Appcv
     end
   end
 
-  def load_list(info : BookInfo, seed : String, mode = 1) : Tuple(ChapList, Int64)?
+  def load_list(info : BookInfo, seed : String, mode = 0) : Tuple(ChapList, Int64)?
     return unless seed_sbid = info.seed_sbids[seed]?
 
     chlist = ChapList.get_or_create(info.ubid, seed)
-    expiry = Time.utc - (mode > 0 ? 10.minutes : gen_expiry(info.status))
+    expiry = mode > 0 ? (Time.utc - 5.minutes) : Time.unix_ms(info.mftime)
 
     if ChapList.outdated?(info.ubid, seed, expiry)
       remote = SeedInfo.init(seed, seed_sbid, expiry: expiry, freeze: false)
@@ -27,8 +27,10 @@ module Appcv
       BookDB.update_info(info, remote)
       info.save! if info.changed?
 
-      ChapDB.update_list(chlist, remote, dirty: mode < 2, force: mode > 1)
+      ChapDB.update_list(chlist, remote, dirty: mode < 2, force: mode > 0)
       chlist.save! if chlist.changed?
+    else
+      ChapDB.translate_list(chlist, force: mode > 0)
     end
 
     {chlist, info.seed_mftimes[seed]}
@@ -42,10 +44,13 @@ module Appcv
   def load_text(ubid : String, seed : String, sbid : String, scid : String, mode : Int32 = 0)
     chap = ChapText.new(ubid, seed, scid, preload: false)
 
-    if chap.exists? && mode < 2
+    if chap.exists? && (mode < 2 || chap.type > 0)
       chap.load!
 
-      return chap if mode == 0
+      if mode == 0
+        return chap if chap.time >= Time.utc - 3.hours
+      end
+
       zh_lines = chap.zh_lines
     else
       remote = SeedText.init(seed, sbid, scid, freeze: false)
