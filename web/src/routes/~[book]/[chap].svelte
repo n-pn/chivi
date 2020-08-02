@@ -229,7 +229,7 @@
         @include fgcolor(neutral, 9);
 
         $font-sizes: screen-vals(
-          rem(22px),
+          rem(24px),
           rem(24px),
           rem(26px),
           rem(28px),
@@ -243,11 +243,11 @@
 
       &._para {
         $font-sizes: screen-vals(
-          rem(16px),
-          rem(17px),
+          rem(18px),
           rem(18px),
           rem(19px),
-          rem(20px)
+          rem(20px),
+          rem(21px)
         );
         $margin-tops: screen-vals(1rem, 1rem, 1.25rem, 1.5rem, 1.5rem);
 
