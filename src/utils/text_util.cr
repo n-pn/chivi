@@ -29,15 +29,15 @@ module TextUtil
   def capitalize(input : String) : String
     # TODO: handle punctuation?
     return input if input.blank?
+
     String.build do |io|
-      capped = false
+      uncap = true
       input.each_char do |char|
-        if capped
-          io << char
+        if uncap && char.alphanumeric?
+          io << char.upcase
+          uncap = false
         else
-          upcase = char.upcase
-          capped = upcase != char.downcase
-          io << upcase
+          io << char
         end
       end
     end

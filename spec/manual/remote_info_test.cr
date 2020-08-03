@@ -1,9 +1,9 @@
 require "file_utils"
 
-require "../../src/parser/seed_info.cr"
+require "../../src/appcv/parser/seed_info.cr"
 
 def fetch_info(info, sbid, expiry = Time.utc) : Void
-  puts "\n[ #{info} / #{sbid} ]\n".colorize(:yellow)
+  puts "\n[ #{info}/#{sbid} ]\n".colorize(:yellow)
 
   task = SeedInfo.init(info, sbid, expiry: expiry, freeze: false)
 
@@ -32,9 +32,11 @@ end
 # fetch_info("hetushu", "4420")
 
 # fetch_info("duokan8", "6293")
-fetch_info("xbiquge", "48680")
-fetch_info("xbiquge", "41881")
+# fetch_info("xbiquge", "48680")
+# fetch_info("xbiquge", "41881")
 # fetch_info("paoshu8", "817")
 
 # fetch_info("zhwenpg", "aun4tm")
 # fetch_info("zhwenpg", "punj76")
+
+fetch_info("jx_la", "80240")
