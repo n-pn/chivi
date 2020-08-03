@@ -235,7 +235,7 @@
           rem(28px),
           rem(30px)
         );
-        $line-heights: screen-vals(1.5rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
+        $line-heights: screen-vals(1.75rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
 
         @include apply(font-size, $font-sizes);
         @include apply(line-height, $line-heights);
@@ -322,6 +322,8 @@
     margin: 0.375rem 0;
     line-height: 1.5rem;
     padding-bottom: 0.375rem;
+
+    @include font-size(2);
     @include border($sides: bottom);
     @include clearfix;
 
