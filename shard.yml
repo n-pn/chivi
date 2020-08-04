@@ -29,6 +29,9 @@ targets:
   fetch_covers:
     main: cli/cover/fetch_covers.cr
 
+  cleanup_dicts:
+    main: cli/cleanup_dicts.cr
+
   # preload_texts:
   #   main: cli/texts/preload_texts.cr
 

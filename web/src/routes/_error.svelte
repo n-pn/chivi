@@ -16,7 +16,7 @@
 
   article {
     padding: 2rem;
-    width: 20rem;
+    // width: 20rem;
     text-align: center;
     max-width: 100%;
   }

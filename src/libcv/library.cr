@@ -3,10 +3,9 @@ require "./library/*"
 module Libcv::Library
   extend self
 
-  DIR = File.join("var", "library")
-
-  FileUtils.mkdir_p(File.join(DIR, "core"))
-  FileUtils.mkdir_p(File.join(DIR, "uniq"))
+  # DIR = File.join("var", "libcv")
+  # FileUtils.mkdir_p(File.join(DIR, "lexicon", "core"))
+  # FileUtils.mkdir_p(File.join(DIR, "lexicon", "uniq"))
 
   class_getter cc_cedict : BaseDict { BaseDict.load!("cc_cedict") }
   class_getter trungviet : BaseDict { BaseDict.load!("trungviet") }
