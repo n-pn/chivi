@@ -138,7 +138,7 @@ module Server
     next_chap = list.chaps[index + 1] if index < list.size - 1
 
     mode = env.params.query.fetch("mode", "0").try(&.to_i?) || 0
-    chap = Appcv.load_text(info.ubid, seed, list.sbid, scid, mode: mode)
+    chap = Appcv.get_text(info.ubid, seed, list.sbid, scid, mode: mode)
 
     {
       cvdata: chap.data,

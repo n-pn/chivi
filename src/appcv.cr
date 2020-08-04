@@ -41,23 +41,38 @@ module Appcv
   # 1 => load saved chap_text then convert
   # 2 => fetch text from external hosts then convert
 
-  def load_text(ubid : String, seed : String, sbid : String, scid : String, mode : Int32 = 0)
-    chap = ChapText.new(ubid, seed, scid, preload: false)
+  def get_text(ubid : String, seed : String, sbid : String, scid : String, mode : Int32 = 0)
+    chtext = ChapText.new(ubid, seed, sbid, scid, mode: 0)
+    cached = File.exists?(chtext.file)
 
-    if chap.exists? && (mode < 2 || chap.type > 0)
-      chap.load!
-
-      return chap unless mode > 0 || chap.outdated?(1.hours)
-      zh_lines = chap.zh_lines
+    if remote?(seed) && (mode == 2 || !cached)
+      source = SeedText.init(seed, sbid, scid, freeze: false)
+      lines = [source.title].concat(source.paras)
+    elsif cached
+      chtext.load!
+      return chtext if mode == 0 && recent?(chtext.time, 1.hours)
+      lines = chtext.zh_lines
     else
-      remote = SeedText.init(seed, sbid, scid, freeze: false)
-      zh_lines = [remote.title].concat(remote.paras)
+      lines = [] of String
     end
 
-    chap.data = Libcv.cv_mixed(zh_lines, ubid).map(&.to_s).join("\n")
-    chap.save!
+    chtext.data = Libcv.cv_mixed(lines, ubid).map(&.to_s).join("\n")
+    chtext.tap(&.save!)
+  end
 
-    chap
+  SEEDS = {
+    "hetushu", "jx_la", "rengshu",
+    "xbiquge", "nofff", "duokan8",
+    "paoshu8", "69shu", "zhwenpg",
+    "qu_la", "5200",
+  }
+
+  def remote?(seed : String)
+    SEEDS.includes?(seed)
+  end
+
+  def recent?(time : Time, span = 1.hours)
+    time + span > Time.utc
   end
 end
 
