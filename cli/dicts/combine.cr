@@ -94,19 +94,19 @@ INPUT.each do |key, vals|
   end
 
   unless names.empty?
-    if (ondicts || checked || word_count >= 200) && book_count >= 40
-      inp_generic.upsert(key, vals, :old_first)
+    if (ondicts || checked || word_count >= 100) && book_count >= 20
+      inp_generic.upsert(key, vals, :new_first)
     elsif checked || ondicts || book_count >= 10
-      inp_suggest.upsert(key, vals, :old_first)
+      inp_suggest.upsert(key, vals, :new_first)
     elsif word_count >= 100 && key.size < 8
-      inp_suggest.upsert(key, vals, :old_first)
+      inp_suggest.upsert(key, vals, :new_first)
     elsif word_count >= 10
-      inp_recycle.upsert(key, vals, :old_first)
+      inp_recycle.upsert(key, vals, :new_first)
     end
 
     next unless words.empty? && key !~ /^\P{Han}/
     if checked || (book_count >= 20 && word_count >= 500)
-      inp_combine.upsert(key, vals, :old_first)
+      inp_combine.upsert(key, vals, :new_first)
     end
   end
 end
