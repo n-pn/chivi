@@ -6,7 +6,7 @@ require "file_utils"
 
 require "../../src/appcv/models/book_info"
 
-TMP_DIR = File.join("var", ".book_cover")
+TMP_DIR = File.join("var", "appcv", ".covers")
 # FILE_DF = File.join(TMP_DIR, "blank.jpg")
 
 TLS = OpenSSL::SSL::Context::Client.insecure

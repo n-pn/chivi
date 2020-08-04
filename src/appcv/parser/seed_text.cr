@@ -7,7 +7,7 @@ require "../../utils/http_util"
 require "../../utils/text_util"
 
 class SeedText
-  DIR = File.join("var", ".book_cache")
+  DIR = File.join("var", "appcv", ".cached")
   FileUtils.mkdir_p(DIR)
 
   def self.mkdir!(seed : String, sbid : String)
@@ -44,6 +44,9 @@ class SeedText
     when "paoshu8"
       group = sbid.to_i // 1000
       "http://www.paoshu8.com/#{group}_#{sbid}/#{scid}.html"
+    when "5200"
+      group = sbid.to_i // 1000
+      "https://www.5200.net/#{group}_#{sbid}/#{scid}.html"
     when "zhwenpg"
       "https://novel.zhwenpg.com/r.php?id=#{scid}"
     else
@@ -87,7 +90,7 @@ class SeedText
 
   def parse_title!
     case @seed
-    when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge"
+    when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge", "5200"
       title_text("h1")
     when "qu_la"
       title_text(".title")
@@ -113,7 +116,7 @@ class SeedText
 
   def parse_paras!
     case @seed
-    when "qu_la", "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge"
+    when "qu_la", "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge", "5200"
       parse_paras!("#content")
     when "zhwenpg"
       parse_paras!("#tdcontent .content")
@@ -149,9 +152,11 @@ class SeedText
       lines.shift if lines.first.starts_with?("笔趣阁 ")
     when "jx_la"
       lines.pop if lines.last.starts_with?("正在手打中，")
-    when "69shu"
-      lines.pop if lines.last == "(本章完)"
+    when "5200"
+      lines.pop if lines.last.ends_with?("更新速度最快。")
     end
+
+    lines.pop if lines.last == "(本章完)"
 
     lines
   end

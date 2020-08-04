@@ -10,7 +10,7 @@ require "../../utils/time_util"
 require "../models/chap_info"
 
 class SeedInfo
-  DIR = File.join("var", ".book_cache")
+  DIR = File.join("var", "appcv", ".cached")
   FileUtils.mkdir_p(DIR)
 
   def self.path_for(seed : String)
@@ -43,6 +43,9 @@ class SeedInfo
     when "paoshu8"
       group = sbid.to_i // 1000
       "http://www.paoshu8.com/#{group}_#{sbid}/"
+    when "5200"
+      group = sbid.to_i // 1000
+      "https://www.5200.net/#{group}_#{sbid}/"
     when "zhwenpg"
       "https://novel.zhwenpg.com/b.php?id=#{sbid}"
     else
@@ -83,7 +86,8 @@ class SeedInfo
 
   def parse_title
     case @seed
-    when "qu_la", "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "jx_la", "duokan8", "nofff",
+         "rengshu", "xbiquge", "paoshu8", "5200"
       meta_data("og:novel:book_name")
     when "hetushu"
       node_text("h2")
@@ -98,7 +102,8 @@ class SeedInfo
 
   def parse_author
     case @seed
-    when "qu_la", "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "jx_la", "duokan8", "nofff",
+         "rengshu", "xbiquge", "paoshu8", "5200"
       meta_data("og:novel:author")
     when "hetushu"
       node_text(".book_info a:first-child")
@@ -113,7 +118,8 @@ class SeedInfo
 
   def parse_intro
     case @seed
-    when "qu_la", "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "jx_la", "duokan8", "nofff",
+         "rengshu", "xbiquge", "paoshu8", "5200"
       return "" unless text = meta_data("og:description")
       TextUtil.split_html(text).join("\n")
     when "zhwenpg"
@@ -131,7 +137,8 @@ class SeedInfo
 
   def parse_cover
     case @seed
-    when "qu_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "duokan8", "nofff", "rengshu",
+         "xbiquge", "paoshu8", "5200"
       meta_data("og:image")
     when "zhwenpg"
       node_attr(".cover_wrapper_m img", "data-src")
@@ -149,7 +156,8 @@ class SeedInfo
 
   def parse_genre
     case @seed
-    when "qu_la", "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "jx_la", "duokan8", "nofff",
+         "rengshu", "xbiquge", "paoshu8", "5200"
       meta_data("og:novel:category")
     when "hetushu"
       node_text(".title > a:nth-child(2)")
@@ -172,7 +180,8 @@ class SeedInfo
 
   def parse_status
     case @seed
-    when "qu_la", "jx_la", "duokan8", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "qu_la", "jx_la", "duokan8", "nofff",
+         "rengshu", "xbiquge", "paoshu8", "5200"
       map_status(meta_data("og:novel:status"))
     when "hetushu"
       classes = node_attr(".book_info", "class").not_nil!
@@ -197,7 +206,8 @@ class SeedInfo
 
   def parse_mftime
     case @seed
-    when "qu_la", "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
+    when "qu_la", "jx_la", "nofff", "rengshu",
+         "xbiquge", "duokan8", "paoshu8", "5200"
       text = meta_data("og:novel:update_time").not_nil!
       TimeUtil.parse(text).to_unix_ms
     when "69shu"
@@ -212,7 +222,8 @@ class SeedInfo
 
   def parse_latest : ChapInfo?
     case @seed
-    when "qu_la", "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8"
+    when "qu_la", "jx_la", "nofff", "rengshu",
+         "xbiquge", "duokan8", "paoshu8", "5200"
       parse_latest_by_meta_tag()
     when "69shu"
       parse_latest_by_css(".mulu_list:first-of-type a:first-child")
@@ -245,7 +256,9 @@ class SeedInfo
 
   private def parse_scid(href : String)
     case @seed
-    when "qu_la", "jx_la", "nofff", "rengshu", "xbiquge", "duokan8", "paoshu8", "hetushu"
+    when "qu_la", "jx_la", "nofff", "rengshu",
+         "xbiquge", "duokan8", "paoshu8", "hetushu",
+         "5200"
       File.basename(href, ".html")
     when "69shu"
       File.basename(href)
@@ -260,6 +273,8 @@ class SeedInfo
     case @seed
     when "jx_la", "nofff", "rengshu", "xbiquge", "paoshu8"
       parse_generic_chaps("#list > dl")
+    when "5200"
+      parse_generic_chaps(".listmain > dl")
     when "hetushu"
       parse_generic_chaps("#dir")
     when "duokan8"

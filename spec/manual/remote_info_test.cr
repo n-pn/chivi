@@ -7,7 +7,18 @@ def fetch_info(info, sbid, expiry = Time.utc) : Void
 
   task = SeedInfo.init(info, sbid, expiry: expiry, freeze: false)
 
-  puts task.latest.to_pretty_json
+  info = {
+    title:  task.title,
+    author: task.author,
+    intro:  task.intro,
+    cover:  task.cover,
+    genre:  task.genre,
+    tags:   task.tags,
+    status: task.status,
+    mftime: task.mftime,
+    latest: task.latest,
+  }
+  puts info.to_json
 
   puts task.chapters.size
   puts task.chapters.first(4).to_pretty_json
@@ -39,4 +50,6 @@ end
 # fetch_info("zhwenpg", "aun4tm")
 # fetch_info("zhwenpg", "punj76")
 
-fetch_info("jx_la", "80240")
+# fetch_info("jx_la", "80240")
+
+fetch_info("5200", "28208")

@@ -124,7 +124,8 @@ class BookInfo
     "hetushu", "jx_la", "rengshu",
     "xbiquge", "nofff", "duokan8",
     "paoshu8", "69shu", "zhwenpg",
-    "qu_la",
+    "qu_la", "5200", "kenwen",
+    "mxguan",
   }
 
   # create new seed if not existed

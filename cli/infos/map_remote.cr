@@ -10,9 +10,10 @@ require "../../src/appcv/chapdb"
 
 class MapRemote
   SEEDS = {
-    "hetushu", "qu_la", "jx_la", "rengshu",
+    "hetushu", "jx_la", "rengshu",
     "xbiquge", "nofff", "duokan8",
-    "paoshu8", "69shu",
+    "paoshu8", "69shu", "qu_la",
+    "5200", "kenwen", "mxguan",
   }
 
   def self.run!(argv = ARGV)
@@ -59,6 +60,9 @@ class MapRemote
     when "duokan8" then 23377
     when "69shu"   then 32113
     when "paoshu8" then 147456
+    when "5200"    then 28208
+    when "kenwen"  then 540465
+    when "mxguan"  then 99998593
     else                1
     end
   end

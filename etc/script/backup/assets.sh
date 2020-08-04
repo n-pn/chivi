@@ -5,3 +5,7 @@ OUT=var/
 
 rsync -azi "$INP/dictdb" $OUT
 rsync -azi "$INP/userdb" $OUT
+rsync -azi "$INP/bookdb/serials" "$OUT/bookdb"
+rsync -azi "$INP/bookdb/indexes" "$OUT/bookdb"
+rsync -azi "$INP/bookdb/chlists" "$OUT/bookdb"
+rsync -azi "$INP/bookdb/chfiles" "$OUT/bookdb"

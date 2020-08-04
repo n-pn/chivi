@@ -11,7 +11,7 @@ require "../../src/appcv/bookdb"
 require "../../src/appcv/chapdb"
 
 class MapZhwenpg
-  DIR = File.join("var", ".book_cache", "zhwenpg", "pages")
+  DIR = File.join("var", "appcv", ".cached", "zhwenpg", "pages")
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold

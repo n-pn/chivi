@@ -6,7 +6,7 @@ def should_skip?(source : YsSerial)
   source.score < 2.5 && source.addListTotal < 5 && source.commentCount < 10
 end
 
-DIR = File.join("var", ".book_cache", "yousuu", "serials")
+DIR = File.join("var", "appcv", ".cached", "yousuu", "serials")
 files = Dir.glob(File.join(DIR, "*.json")).sort_by do |file|
   File.basename(file, ".json").to_i
 end
