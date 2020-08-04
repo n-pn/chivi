@@ -53,7 +53,10 @@ module Appcv
       return chtext if mode == 0 && recent?(chtext.time, 1.hours)
       lines = chtext.zh_lines
     else
-      lines = [] of String
+      lines = [
+        "Lỗi: Chương tiết không có nội dung!",
+        "Xin liên hệ với ban quản trị để khắc phục.",
+      ]
     end
 
     chtext.data = Libcv.cv_mixed(lines, ubid).map(&.to_s).join("\n")
