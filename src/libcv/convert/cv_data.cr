@@ -22,39 +22,47 @@ class CvData
     @data.each_with_index do |node, i|
       case node.key
       when "了"
-        node.dic = 1
-
         if border?(i + 1) || match_key?(i - 2, "了") || match_key?(i + 2, "了")
           node.val = "rồi"
         else
           node.val = ""
         end
+
+        node.dic = 1
       when "对"
+        if border?(i + 1) || match_key?(i + 1, "的")
+          node.val = "đúng"
+        else
+          node.val = "đối với"
+        end
+
+        node.dic = 1
+      when "也"
         node.dic = 1
 
         if border?(i + 1)
-          node.val = "đúng"
+          node.val = "vậy"
         else
-          # TODO: check noun, verb?
-          node.val = "đối với"
+          node.val = "cũng"
         end
       when "地"
-        node.dic = 1
-
         if border?(i - 1)
           node.val = "địa"
         else
           # TODO: check noun, verb?
           node.val = "mà"
         end
-      when "原来"
-        node.dic = 1
 
+        node.dic = 1
+      when "原来"
         if border?(i - 1) && !match_key?(i + 1, "的")
           node.val = "thì ra"
         else
           node.val = "ban đầu"
         end
+
+        node.dic = 1
+
         # when "不过"
         # TODO!
       when "的"
