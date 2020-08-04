@@ -157,6 +157,7 @@ puts "\n[Load hanviet]".colorize.cyan.bold
 Libcv::Library.hanviet.each do |node|
   next if CHECKED.includes?(node.key)
   EXISTED.add(node.key)
+  next if node.key.size > 1
 
   if vals = inp_generic[node.key]?
     inp_generic.delete(node.key) if node.vals.first == vals.first
