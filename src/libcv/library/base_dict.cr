@@ -64,7 +64,7 @@ class Libcv::BaseDict
 
   # class methods
 
-  DIR = File.join("var", "dictdb")
+  DIR = File.join("var", "libcv", "lexicon")
 
   def self.path_for(name : String)
     File.join(DIR, "#{name}.dic")

@@ -6,7 +6,7 @@ require "compress/zip"
 require "./utils/common"
 require "./utils/pinyin"
 
-require "../../src/library/base_dict"
+require "../../src/libcv/library"
 require "../../src/utils/normalize"
 
 class Entry
@@ -56,7 +56,7 @@ class CE_DICT
   CEDICT_URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 
   HANZIDB_FILE = Utils.inp_path("initial/hanzidb.txt")
-  HANZIDB_DICT = BaseDict.read!(HANZIDB_FILE, legacy: true)
+  HANZIDB_DICT = Libcv::BaseDict.read!(HANZIDB_FILE, legacy: true)
 
   getter input = [] of Entry
 
@@ -92,7 +92,7 @@ class CE_DICT
   def export_ce_dict!
     puts "\n[-- Export ce_dict --]".colorize.cyan.bold
 
-    dict = BaseDict.load("cc_cedict", mode: 0)
+    dict = Libcv::BaseDict.load("cc_cedict", mode: 0)
     ondicts = Utils.ondicts_words
 
     @input.each do |entry|
@@ -114,7 +114,7 @@ class CE_DICT
     puts "\n[-- Export tradsim --]".colorize.cyan.bold
 
     counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
-    tswords = BaseDict.new(Utils.inp_path("autogen/tradsimp-words.dict"))
+    tswords = Libcv::BaseDict.new(Utils.inp_path("autogen/tradsimp-words.dict"))
 
     @input.each do |entry|
       next if is_trad?(entry.define)
@@ -131,7 +131,7 @@ class CE_DICT
       end
     end
 
-    dict = BaseDict.load("_tradsim", mode: 0)
+    dict = Libcv::BaseDict.load("_tradsim", mode: 0)
 
     counter.each do |trad, counts|
       best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
@@ -172,7 +172,7 @@ class CE_DICT
       end
     end
 
-    dict = BaseDict.load("_binh_am", mode: 0)
+    dict = Libcv::BaseDict.load("_binh_am", mode: 0)
     dict.load!(Utils.inp_path("initial/extra-pinyins.txt"), legacy: true)
 
     HANZIDB_DICT.each do |entry|

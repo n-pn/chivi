@@ -1,7 +1,7 @@
 require "../../../src/utils/normalize"
 
 class Clavis
-  DIR = File.join("var", ".dict_inits")
+  DIR = File.join("var", "libcv", "initial")
 
   def self.path_for(file : String)
     File.join(DIR, file)

@@ -80,7 +80,7 @@ class Libcv::UserDict
 
   # class methods
 
-  DIR = File.join("var", "dictdb")
+  DIR = File.join("var", "libcv", "lexicon")
 
   class_property ext = ENV["KEMAL_ENV"]? == "production" ? "log" : "test.log"
 

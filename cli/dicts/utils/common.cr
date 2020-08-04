@@ -1,13 +1,13 @@
 require "file_utils"
 
-require "../../../src/library/base_dict"
-require "../../../src/lookup/value_set"
+require "../../../src/libcv/library"
+require "../../../src/appcv/lookup/value_set"
 
 module Utils
   extend self
 
-  INP_DIR = File.join("var", ".dict_inits")
-  OUT_DIR = File.join("var", "library")
+  INP_DIR = File.join("var", "libcv", "initial")
+  OUT_DIR = File.join("var", "libcv", "lexicon")
 
   def inp_path(file : String)
     File.join(INP_DIR, file)
@@ -36,7 +36,7 @@ module Utils
     dict.tap(&.load_legacy!(file))
   end
 
-  def convert(dict : BaseDict, input : String, sep = "")
+  def convert(dict : Libcv::BaseDict, input : String, sep = "")
     res = [] of String
 
     chars = input.chars

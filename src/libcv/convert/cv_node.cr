@@ -1,3 +1,5 @@
+require "../../utils/text_util"
+
 class CvNode
   SEP_0 = "ǁ"
   SEP_1 = "¦"

@@ -1,14 +1,15 @@
 require "./utils/common"
 require "./utils/clavis"
-require "../../src/library/base_dict"
-require "../../src/lookup/value_set"
+
+require "../../src/libcv/library"
+require "../../src/appcv/lookup/value_set"
 
 class Hanviet
   CRUCIAL = ValueSet.read!(Utils.inp_path("autogen/crucial-chars.txt"))
   HANZIDB = ValueSet.read!(Utils.inp_path("initial/hanzidb.txt"))
 
-  TRADSIM = BaseDict.tradsim
-  BINH_AM = BaseDict.binh_am
+  TRADSIM = Libcv::BaseDict.tradsim
+  BINH_AM = Libcv::BaseDict.binh_am
 
   def should_keep_hanviet?(input : String)
     return true if CRUCIAL.includes?(input)
@@ -21,7 +22,7 @@ class Hanviet
     true
   end
 
-  getter output : BaseDict { BaseDict.load("_hanviet", mode: 0) }
+  getter output : Libcv::BaseDict { Libcv::BaseDict.load("_hanviet", mode: 0) }
 
   def import_dict!(file : String, mode = :old_first)
     input = Clavis.load(file)

@@ -1,5 +1,5 @@
-require "../../src/models/book_info"
-require "../../src/lookup/value_set"
+require "../../src/appcv/models/book_info"
+require "../../src/appcv/lookup/value_set"
 
 def split_chars(input)
   input.split("").each do |char|
@@ -8,15 +8,16 @@ def split_chars(input)
 end
 
 def extract_crucial_chars
-  crucial = ValueSet.new("var/.dict_inits/autogen/crutial-chars.txt", mode: 0)
+  file = "var/libcv/initial/autogen/crutial-chars.txt"
+  dict = ValueSet.new(file, mode: 0)
 
   infos = BookInfo.load_all!
   infos.each do |info|
-    split_chars(info.zh_title) { |x| crucial.upsert(x) }
-    split_chars(info.zh_author) { |x| crucial.upsert(x) }
+    split_chars(info.zh_title) { |x| dict.upsert(x) }
+    split_chars(info.zh_author) { |x| dict.upsert(x) }
   end
 
-  crucial.save!
+  dict.save!
 end
 
 extract_crucial_chars

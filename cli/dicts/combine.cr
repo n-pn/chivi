@@ -4,8 +4,8 @@ require "json"
 require "./utils/common"
 require "./utils/clavis"
 
-require "../../src/library"
-require "../../src/lookup/value_set"
+require "../../src/libcv/library"
+require "../../src/appcv/lookup"
 
 puts "\n[Load counters]".colorize.cyan.bold
 
@@ -94,7 +94,7 @@ INPUT.each do |key, vals|
   end
 
   unless names.empty?
-    if (ondicts || word_count >= 200) && (checked || book_count >= 40)
+    if (ondicts || checked || word_count >= 200) && book_count >= 40
       inp_generic.upsert(key, vals, :old_first)
     elsif checked || ondicts || book_count >= 10
       inp_suggest.upsert(key, vals, :old_first)
@@ -146,11 +146,7 @@ Dir.glob(Utils.inp_path("manmade/other-names/*.txt")).each do |file|
     CHECKED.add(key)
     EXISTED.add(key)
 
-    if COUNT_WORDS.fetch(key, 0) >= 50
-      inp_suggest.upsert(key, vals, :old_first)
-    else
-      inp_recycle.upsert(key, vals, :old_first)
-    end
+    inp_suggest.upsert(key, vals, :old_first)
   end
 end
 
@@ -171,17 +167,6 @@ Libcv::Library.hanviet.each do |node|
   end
 end
 
-{"hanviet/lacviet-words.txt", "hanviet/trichdan-words.txt"}.each do |file|
-  Clavis.load(file, true).each do |key, vals|
-    EXISTED.add(key)
-    if COUNT_WORDS.fetch(key, 0) >= 50
-      inp_generic.upsert(key, vals, :old_first)
-    else
-      inp_suggest.upsert(key, vals, :old_first)
-    end
-  end
-end
-
 puts "\n[Load extraqt]".colorize.cyan.bold
 
 Clavis.load("extraqt/combined-lowercase.txt").each do |key, vals|
@@ -194,9 +179,9 @@ Clavis.load("extraqt/combined-lowercase.txt").each do |key, vals|
 
   if ondicts && book_count >= 20 && word_count >= 200
     inp_generic.upsert(key, vals, :old_first)
-  elsif (ondicts || book_count >= 20) && word_count >= 100
+  elsif ondicts || book_count >= 20 || word_count >= 200
     inp_suggest.upsert(key, vals, :old_first)
-  elsif word_count >= 250
+  elsif word_count >= 200
     inp_recycle.upsert(key, vals, :old_first)
   end
 end
@@ -211,9 +196,9 @@ Clavis.load("extraqt/combined-uppercase.txt").each do |key, vals|
 
   if ondicts && book_count >= 40 && word_count >= 400
     inp_generic.upsert(key, vals, :old_first)
-  elsif (ondicts || book_count >= 20) && word_count >= 200
+  elsif ondicts || book_count >= 20 || word_count >= 200
     inp_suggest.upsert(key, vals, :old_first)
-  elsif word_count >= 250
+  elsif word_count >= 200
     inp_recycle.upsert(key, vals, :old_first)
   end
 end

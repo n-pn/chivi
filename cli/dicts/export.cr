@@ -2,7 +2,7 @@ require "./utils/common"
 require "./utils/clavis"
 
 require "../../src/libcv"
-require "../../src/lookup/value_set"
+require "../../src/appcv/lookup/value_set"
 
 puts "\n[Load deps]".colorize.cyan.bold
 
@@ -30,14 +30,14 @@ end
 puts "\n[Export generic]".colorize.cyan.bold
 
 inp_generic = Clavis.load("autogen/output/generic.txt", true)
-out_generic = BaseDict.load("core/generic", mode: 0)
+out_generic = Libcv::BaseDict.load("core/generic", mode: 0)
 
 inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if should_skip?(key)
 
     unless Libcv.hanviet(key).vi_text.downcase == vals.first.downcase
-      next if Libcv.cv_plain(key, "tonghop").vi_text == vals.first
+      next if Libcv.cv_plain(key).vi_text == vals.first
     end
   end
   out_generic.upsert(key, vals)
@@ -47,14 +47,14 @@ out_generic.save!
 puts "\n[Export suggest]".colorize.cyan.bold
 
 inp_suggest = Clavis.load("autogen/output/suggest.txt", true)
-out_suggest = BaseDict.load("core/suggest", 0)
+out_suggest = Libcv::BaseDict.load("core/suggest", 0)
 
 inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if should_skip?(key)
     next if key =~ /[的了是]/
     next if Libcv.hanviet(key).vi_text.downcase == vals.first.downcase
-    next if Libcv.cv_plain(key, "tonghop").vi_text.downcase == vals.first.downcase
+    next if Libcv.cv_plain(key).vi_text.downcase == vals.first.downcase
   end
 
   out_suggest.upsert(key, vals)
@@ -64,7 +64,7 @@ out_suggest.save!
 puts "\n[Export combine]".colorize.cyan.bold
 
 inp_combine = Clavis.load("autogen/output/combine.txt", true)
-out_combine = BaseDict.load("uniq/_tonghop", 0)
+out_combine = Libcv::BaseDict.load("uniq/_tonghop", 0)
 
 inp_combine.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
@@ -77,12 +77,11 @@ out_combine.save!
 puts "\n[Export recycle]".colorize.cyan.bold
 
 inp_recycle = Clavis.load("autogen/output/recycle.txt", true)
-out_recycle = BaseDict.load("salvation", 0)
+out_recycle = Libcv::BaseDict.load("salvation", 0)
 
 inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if should_skip?(key)
-    next if key =~ /[的了是]/
   end
   out_recycle.upsert(key, vals)
 end
