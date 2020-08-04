@@ -6,23 +6,12 @@
 - [ ] calling multi (cached) requests in `[chap].svelte`
 - [ ] display chap index insides `[chap].svelte` instead of return to info page
 - [ ] focus to current page in chap list (save current `csid` in store)
-- [ ] add footer (links to facebook page, discord channel, voz page support, tos page, privacy page, donation page etc.)
+- [-] add footer (links to facebook page, discord channel, voz page support, tos page, privacy page, donation page etc.)
 - [ ] add missing pages (see above), add tips and hints (keyboards support)
-- [ ] improve ui, make `sort` list and `site` list dropdowns
+- [-] improve ui, make `sort` list and `site` list dropdowns
 - [ ] improve `[chap].svelte` responsively, fetch after `onMount` instead of `preload`
 
 ## Backend
-
-- [ ] make it works again
-
-  - [x] polish `serial.cr` and fix `source.cr`, rename `serial` to `info`?
-  - [-] rebuild books assets
-  - [-] finish rewrite book_indexes and rebuild book_indexes
-
-- [ ] combine zh_texts with vp_texts
-
-  - [ ] combine `zh_list` and `zh_text`, add `convert_by` and `convert_at` metadata
-  - [ ] replace `SEP_0` and `SEP_1` to unicode alternatives in input text for correctness
 
 - [ ] update dicts
 
@@ -36,22 +25,22 @@
 - [ ] convert engine
 
   - [x] combines non-latin letters (e.g. hiragana)
-  - [-] fix 69shu title texts (uncheck)
-  - [ ] apply basic grammar rules
+  - [x] fix 69shu title texts
+  - [-] apply basic grammar rules
 
 ## Both FE and BE
 
-- [ ] rewrite FE after BE api changes
-- [ ] improve search, must be able to jump directly to matched query without having to visit the search result page
-- [ ] add custom texts (single chapter or many)
-- [ ] edit raw texts
+- [x] rewrite FE after BE api changes
+- [x] improve search, must be able to jump directly to matched query without having to visit the search result page
+- [x] basic authentication system
+- [ ] add chap texts manually
+- [ ] edit chap texts
 
 - [ ] quick convert (using `book/tonghop.dic`, no saving text)
-- [ ] basic authentication system
 - [ ] user impressions and trackings
 - [ ] dicts management (bulk imports, bulk delete, tranfering etc.)
-- [ ] convert websites?
-- [ ] fix lookup sidebar: incorrect hanviet range, scroll to focused etc.
+- [ ] convert web urls?
+- [-] fix lookup sidebar: incorrect hanviet range, scroll to focused etc.
 - ...
 
 - [ ] analyze texts
