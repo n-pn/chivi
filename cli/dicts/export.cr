@@ -37,7 +37,7 @@ inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
     next if should_skip?(key)
 
     unless Libcv.hanviet(key).vi_text.downcase == vals.first.downcase
-      next if Libcv.cv_plain(key).vi_text == vals.first
+      next if Libcv.cv_plain(key, "combine").vi_text == vals.first
     end
   end
   out_generic.upsert(key, vals)
@@ -51,10 +51,10 @@ out_suggest = Libcv::BaseDict.load("core/suggest", 0)
 
 inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
-    next if should_skip?(key)
     next if key =~ /[的了是]/
-    next if Libcv.hanviet(key).vi_text.downcase == vals.first.downcase
-    next if Libcv.cv_plain(key).vi_text.downcase == vals.first.downcase
+    next if should_skip?(key)
+    next if Libcv.hanviet(key, false).vi_text == vals.first
+    next if Libcv.cv_plain(key, "combine").vi_text.downcase == vals.first.downcase
   end
 
   out_suggest.upsert(key, vals)
