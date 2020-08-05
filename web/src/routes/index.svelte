@@ -278,7 +278,7 @@
 </style>
 
 <svelte:head>
-  <title>Chivi - Chinese to Vietname Machine Translation</title>
+  <title>Chivi - Công cụ dịch truyện từ Tiếng Trung sang Tiếng Việt</title>
 </svelte:head>
 
 <svelte:window on:keydown={handleKeypress} />

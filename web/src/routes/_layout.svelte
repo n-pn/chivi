@@ -29,7 +29,8 @@
 <style lang="scss">
   :global(html),
   :global(body),
-  :global(#sapper) {
+  :global(#sapper),
+  :global(main) {
     min-height: 100%;
   }
 

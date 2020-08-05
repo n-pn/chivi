@@ -67,7 +67,7 @@ class UserInfo
 
   # class methods
 
-  DIR = File.join("var", "userdb", "infos")
+  DIR = File.join("var", "appcv", "members")
   FileUtils.mkdir_p(DIR)
 
   def self.path_for(uslug : String)
