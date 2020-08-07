@@ -7,4 +7,4 @@ time bin/map_remote -s 69shu -f 1 -u 33452
 time bin/map_remote -s paoshu8 -f 1 -u 149155
 time bin/map_remote -s jx_la -f 1 -u 254593
 time bin/map_remote -s 5200 -f 1 -u 28208
-# time bin/map_remote -s qu_la -f 1 -u 254854
+time bin/map_remote -s qu_la -f 1 -u 254854
