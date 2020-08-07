@@ -8,7 +8,7 @@ require "fileutils"
 class HttpClient
   attr_reader :proxies
 
-  PROXY_DIR = "var/.book_cache/yousuu/proxies"
+  PROXY_DIR = "var/appcv/.cached/yousuu/proxies"
 
   def initialize(load_proxy = false, debug_mode = false)
     @debug_mode = debug_mode

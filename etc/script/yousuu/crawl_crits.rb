@@ -5,7 +5,7 @@ class CritCrawler
     @http = HttpClient.new(load_proxy, debug_mode)
     @ybids = []
 
-    files = Dir.glob("var/models/serials/*.json")
+    files = Dir.glob("var/bookdb/serials/*.json")
     puts "- inputs: #{files.size}"
 
     files.each do |file|
@@ -48,7 +48,7 @@ class CritCrawler
     @http.proxies.size
   end
 
-  ROOT_DIR = "var/.book_cache/yousuu/reviews"
+  ROOT_DIR = "var/appcv/.cached/yousuu/reviews"
 
   def review_path(ybid, page = 1)
     "#{ROOT_DIR}/#{ybid}-#{page}.json"

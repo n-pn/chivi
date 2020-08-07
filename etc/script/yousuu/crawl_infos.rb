@@ -1,7 +1,7 @@
 require_relative "./crawl_utils"
 
 class CritCrawler
-  INFO_DIR = "var/.book_cache/yousuu/serials"
+  INFO_DIR = "var/appcv/.cached/yousuu/serials"
 
   def initialize(load_proxy = false, debug_mode = false)
     @http = HttpClient.new(load_proxy, debug_mode)
