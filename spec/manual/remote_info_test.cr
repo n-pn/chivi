@@ -26,7 +26,7 @@ def fetch_info(info, sbid, expiry = Time.utc) : Void
 end
 
 # fetch_info("qu_la", "7")
-# fetch_info("qu_la", "179402")
+fetch_info("qu_la", "9923")
 
 # fetch_info("jx_la", "7")
 # fetch_info("jx_la", "179402")
@@ -52,4 +52,4 @@ end
 
 # fetch_info("jx_la", "80240")
 
-fetch_info("5200", "28208")
+# fetch_info("5200", "28208")
