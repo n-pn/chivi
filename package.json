@@ -19,6 +19,7 @@
     "map_zhwenpg": "wsl bin/map_zhwenpg",
     "ys_review": "ruby etc/script/yousuu/crawl_crits.rb",
     "ys_serial": "ruby etc/script/yousuu/crawl_infos.rb",
-    "add_cover": "wsl bin/fetch_covers && ruby cli/cover/webp_format.rb"
+    "add_cover": "wsl bin/fetch_covers && ruby cli/cover/webp_format.rb",
+    "update-data": "yarn map_yousuu && yarn map_zhwenpg && yarn map_remotes && yarn add_cover"
   }
 }
