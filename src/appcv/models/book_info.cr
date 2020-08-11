@@ -192,7 +192,7 @@ class BookInfo
 
   # class methods
 
-  DIR = File.join("var", "bookdb", "serials")
+  DIR = File.join("var", "appcv", "serials")
   FileUtils.mkdir_p(DIR)
 
   # all book infos file in the `DIR` folder

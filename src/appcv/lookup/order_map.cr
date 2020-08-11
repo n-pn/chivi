@@ -187,8 +187,8 @@ class OrderMap
 
   # class methods
 
-  DIR = File.join("var", "bookdb")
-  FileUtils.mkdir_p(File.join(DIR, "indexes", "orders"))
+  DIR = File.join("var", "appcv")
+  FileUtils.mkdir_p(File.join(DIR, "serials", "indexes", "orders"))
 
   # file path relative to `DIR`
   def self.path_for(name : String)

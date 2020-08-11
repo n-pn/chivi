@@ -153,7 +153,7 @@ class TokenMap
   end
 
   # class methods
-  DIR = File.join("var", "bookdb")
+  DIR = File.join("var", "appcv")
   FileUtils.mkdir_p(File.join(DIR, "indexes", "tokens"))
 
   # file path relative to `DIR`

@@ -125,7 +125,7 @@ class MapZhwenpg
 
     info.add_seed("zhwenpg")
     info.set_seed_sbid("zhwenpg", sbid)
-    info.set_seed_type("zhwenpg", 0)
+    # info.set_seed_type("zhwenpg", 0)
 
     BookDB.update_seed(info, "zhwenpg", latest, mftime)
 

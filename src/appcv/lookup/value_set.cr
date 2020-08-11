@@ -53,7 +53,7 @@ class ValueSet
 
   # class methods
 
-  DIR = File.join("var", "bookdb")
+  DIR = File.join("var", "appcv")
   FileUtils.mkdir_p(File.join(DIR, "_import"))
 
   # file path relative to `DIR`
