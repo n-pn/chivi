@@ -53,23 +53,26 @@ class SeedInfo
     end
   end
 
-  def self.init(seed : String, sbid : String, type = 0, expiry : Time = Time.utc - 6.hours, freeze : Bool = false)
+  def self.init(seed : String, sbid : String, expiry : Time = Time.utc - 6.hours, freeze : Bool = false)
     url = info_url(seed, sbid)
     file = path_for(seed, sbid)
 
-    unless html = FileUtil.read(file, expiry)
+    if html = FileUtil.read(file, expiry)
+      fresh = false
+    else
       html = HttpUtil.fetch_html(url, HttpUtil.encoding_for(seed))
       File.write(file, html) if freeze
+      fresh = true
     end
 
-    new(seed, sbid, html, type)
+    new(seed, sbid, html, fresh: fresh)
   end
 
   getter seed : String
   getter sbid : String
-  getter type : Int32
+  getter fresh : Bool
 
-  def initialize(@seed, @sbid, html : String, @type = 0)
+  def initialize(@seed, @sbid, html : String, @fresh = false)
     @doc = Myhtml::Parser.new(html)
   end
 

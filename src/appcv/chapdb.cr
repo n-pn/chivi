@@ -13,7 +13,6 @@ module ChapDB
 
   def update_list(chlist : ChapList, source : SeedInfo, dirty = true, force = false)
     chlist.sbid = source.sbid
-    chlist.type = source.type
 
     chlist.merge!(source.chapters, dirty: dirty)
     translate_list(chlist, force: force)

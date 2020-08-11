@@ -98,7 +98,7 @@ module BookDB
     end
 
     info.add_seed(source.seed)
-    info.set_seed_type(source.seed, source.type)
+    # info.set_seed_type(source.seed, 0)
     update_seed(info, source.seed, source.latest, source.mftime)
   end
 

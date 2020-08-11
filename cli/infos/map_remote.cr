@@ -89,11 +89,15 @@ class MapRemote
 
     puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
 
+    queue = queue.shuffle
+
     limit = queue.size
     limit = 8 if limit > 8
+    limit = 1 if @seed == "qu_la"
+
     channel = Channel(Nil).new(limit)
 
-    queue.reverse.each_with_index do |(sbid, expiry), idx|
+    queue.each_with_index do |(sbid, expiry), idx|
       channel.receive if idx > limit
 
       spawn do
@@ -143,6 +147,10 @@ class MapRemote
     info = BookDB.find_or_create(remote.title, remote.author)
     save_info(sbid, info.ubid, info.zh_title, info.zh_author)
 
+    if remote.fresh && @seed == "qu_la" # || @seed == "paoshu8"
+      sleep 3.seconds
+    end
+
     return if info.zh_title.empty? || info.zh_author.empty? || BookDB.blacklist?(info)
 
     return unless qualified?(info.ubid, info.zh_author)
@@ -153,6 +161,7 @@ class MapRemote
     BookDB.update_info(info, remote)
 
     info.save! if info.changed?
+
     expiry = Time.unix_ms(info.mftime) unless CACHED
 
     return unless ChapList.outdated?(info.ubid, @seed, expiry)

@@ -1,4 +1,5 @@
-require "./library/*"
+require "./library/base_dict"
+require "./library/user_dict"
 
 module Libcv::Library
   extend self

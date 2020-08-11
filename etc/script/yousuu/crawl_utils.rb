@@ -65,7 +65,11 @@ class HttpClient
       body = URI.open(url, proxy: "http://#{proxy[0]}", read_timeout: 15, "User-Agent" => USER_AGENT) { |f| f.read }
 
       unless valid_response?(body)
-        puts "- proxy [#{proxy[0].red}] not working, #{err.red}" if @debug_mode
+        if @debug_mode
+          puts "- proxy [#{proxy[0].red}] not working"
+          puts body
+        end
+
         return :proxy_error
       end
 
@@ -74,7 +78,7 @@ class HttpClient
       File.write(file, body)
 
       :success
-    rescue => err
+    rescue Exception => err
       puts "- ERROR: #{err.message.red}" if @debug_mode
       handle_failed_proxy(proxy)
 

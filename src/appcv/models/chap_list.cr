@@ -8,9 +8,7 @@ class ChapList
 
   getter ubid : String # book ubid
   getter seed : String # seed name
-
-  property sbid = "" # seed book id
-  property type = 0  # seed type
+  property sbid = ""   # seed book id
 
   getter chaps = [] of ChapInfo
   getter index = {} of String => Int32 # can be used for manual sort

@@ -50,7 +50,6 @@ class BookInfo
 
   property seed_names = [] of String
   property seed_sbids = {} of String => String
-  property seed_types = {} of String => Int32
   property seed_mftimes = {} of String => Int64
   property seed_latests = {} of String => ChapInfo
 
@@ -136,11 +135,11 @@ class BookInfo
     @seed_names.sort_by! { |name| SEEDS.index(name) || -1 }
   end
 
-  def set_seed_type(seed_name : String, type : Int32)
-    return if @seed_types[seed_name]? == type
-    @changes += 1
-    @seed_types[seed_name] = type
-  end
+  # def set_seed_type(seed_name : String, type : Int32)
+  #   return if @seed_types[seed_name]? == type
+  #   @changes += 1
+  #   @seed_types[seed_name] = type
+  # end
 
   def set_seed_sbid(seed_name : String, sbid : String)
     return if @seed_sbids[seed_name]? == sbid
