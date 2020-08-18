@@ -18,9 +18,9 @@ module Libcv::Library
   class_getter generic : UserDict { UserDict.load("core/generic") }
   class_getter suggest : UserDict { UserDict.load("core/suggest") }
 
-  def for_convert(name : String) : Tuple(BaseDict, BaseDict, BaseDict)
+  def for_convert(name : String) : Tuple(BaseDict, BaseDict)
     name = "_tonghop" if name.empty?
-    {hanviet, generic.dict, UserDict.load("uniq/#{name}").dict}
+    {generic.dict, UserDict.load("uniq/#{name}").dict}
   end
 
   def find_dict(name : String) : UserDict

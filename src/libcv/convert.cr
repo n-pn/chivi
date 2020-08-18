@@ -103,7 +103,7 @@ module Libcv::Convert
 
     0.upto(chars.size) do |idx|
       dicts.each_with_index do |dict, jdx|
-        dic = jdx + 1
+        dic = jdx + 2
 
         dict.scan(norms, idx) do |item|
           next if item.vals.empty?
