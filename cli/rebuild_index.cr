@@ -7,25 +7,28 @@ require "../src/appcv/models/book_info"
 require "../src/appcv/bookdb"
 
 ACCESS = OrderMap.init("indexes/orders/book_access")
-
 UPDATE = OrderMap.init("indexes/orders/book_update")
 RATING = OrderMap.init("indexes/orders/book_rating")
 WEIGHT = OrderMap.init("indexes/orders/book_weight")
 
-GENRES = TokenMap.init("indexes/tokens/vi_genres")
-TAGS   = TokenMap.init("indexes/tokens/vi_tags")
+# GENRES = TokenMap.init("indexes/tokens/vi_genres")
+# TAGS   = TokenMap.init("indexes/tokens/vi_tags")
 
 def fix_indexes(info : BookInfo)
   # update tokens
-  BookDB.upsert_info(info, force: true)
-  if mftime = info.seed_mftimes["hetushu"]?
-    info.seed_mftimes["hetushu"] = info.mftime if info.mftime > mftime
+  # BookDB.upsert_info(info, force: true)
+
+  # fix mftimes
+  {"hetushu", "69shu", "zhwenpg"}.each do |seed|
+    if mftime = info.seed_mftimes[seed]?
+      info.seed_mftimes[seed] = info.mftime if mftime < info.mftime
+    end
   end
 
   info.save! if info.changed?
 
-  BookDB::Utils.update_token(GENRES, info.ubid, info.vi_genres)
-  BookDB::Utils.update_token(TAGS, info.ubid, info.vi_tags)
+  # BookDB::Utils.update_token(GENRES, info.ubid, info.vi_genres)
+  # BookDB::Utils.update_token(TAGS, info.ubid, info.vi_tags)
 
   # update orders
   BookDB::Utils.update_order(UPDATE, info.ubid, info.mftime)
@@ -50,20 +53,17 @@ infos.each_with_index do |info, idx|
   conflicts["#{title}--#{author}"] << "#{info.zh_title}--#{info.zh_author}"
 end
 
-TokenMap.flush!
+# TokenMap.flush!
 
 ACCESS.save!
 UPDATE.save!
 RATING.save!
 WEIGHT.save!
 
-GENRES.save!
-TAGS.save!
+# GENRES.save!
+# TAGS.save!
 
 puts "- has_text: #{has_text}".colorize(:yellow)
 
-conflicts.reject! do |key, vals|
-  vals.size == 1
-end
-
+conflicts.reject! { |key, vals| vals.size == 1 }
 File.write "tmp/conflicts.json", conflicts.to_pretty_json

@@ -13,6 +13,7 @@ REJECT_STARTS = File.read_lines("cli/dicts/cfgs/reject-starts.txt")
 REJECT_ENDS   = File.read_lines("cli/dicts/cfgs/reject-ends.txt")
 
 def should_keep?(key : String)
+  return true if key.size == 1
   return true if ONDICTS.includes?(key)
   return true if CHECKED.includes?(key)
   return true if key.ends_with?("目的")
@@ -40,8 +41,19 @@ inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
       next if Libcv.cv_plain(key, "combine").vi_text == vals.first
     end
   end
+
   out_generic.upsert(key, vals)
 end
+
+puts "- load hanviet".colorize.cyan.bold
+
+Libcv::Library.hanviet.each do |node|
+  next if node.key.size > 1
+  out_generic.upsert(node.key, freeze: false) do |item|
+    item.vals = node.vals if item.vals.empty?
+  end
+end
+
 out_generic.save!
 
 puts "\n[Export suggest]".colorize.cyan.bold
@@ -70,6 +82,7 @@ inp_combine.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if should_skip?(key)
   end
+
   out_combine.upsert(key, vals)
 end
 out_combine.save!
@@ -83,6 +96,7 @@ inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if should_skip?(key)
   end
+
   out_recycle.upsert(key, vals)
 end
 out_recycle.save!

@@ -150,14 +150,7 @@ Dir.glob(Utils.inp_path("manmade/other-names/*.txt")).each do |file|
   end
 end
 
-# # hanviet
-
-puts "\n[Load hanviet]".colorize.cyan.bold
-
-Libcv::Library.hanviet.each do |node|
-  next if CHECKED.includes?(node.key) || node.key.size > 1
-  inp_generic.upsert(node.key, node.vals, :keep_old)
-end
+# # extra
 
 puts "\n[Load extraqt]".colorize.cyan.bold
 
