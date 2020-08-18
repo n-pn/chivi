@@ -4,5 +4,5 @@
 /.shards/
 *.dwarf
 /data
-/server
+/webcv
 node_modules
