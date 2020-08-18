@@ -151,7 +151,8 @@ class SeedInfo
       return "" unless href = node_attr(".book_info img", "src")
       File.join("https://www.hetushu.com", href)
     when "69shu"
-      "" # TODO: extract 69shu book cover
+      group = @sbid.to_i % 1000
+      "https://www.69shu.com/files/article/image/#{group}/#{@sbid}/#{sbid}s.jpg"
     else
       raise "Unknown seed type [#{@seed}]!"
     end
