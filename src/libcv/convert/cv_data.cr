@@ -21,6 +21,15 @@ class CvData
 
     @data.each_with_index do |node, i|
       case node.key
+      when "年", "月", "日"
+        next unless prev = @data[i - 1]?
+        next unless prev.dic == 1 && prev.key =~ /^\d+$/
+        prev.key += node.key
+        prev.val = "#{cv_key(node.key)} #{prev.val}"
+
+        node.key = ""
+        node.val = ""
+        node.dic = 0
       when "了"
         if border?(i + 1) || match_key?(i - 2, "了") || match_key?(i + 2, "了")
           node.val = "rồi"
@@ -72,6 +81,16 @@ class CvData
     end
 
     self
+  end
+
+  private def cv_key(key : String)
+    case key
+    when "年" then "năm"
+    when "月" then "tháng"
+    when "日" then "ngày"
+    else
+      raise "unknown key #{key}"
+    end
   end
 
   private def border?(idx : Int32)
