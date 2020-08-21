@@ -20,6 +20,7 @@
     "ys_review": "ruby etc/script/yousuu/crawl_crits.rb",
     "ys_serial": "ruby etc/script/yousuu/crawl_infos.rb",
     "add_cover": "wsl bin/fetch_covers && ruby cli/cover/webp_format.rb",
-    "update-data": "yarn map_yousuu && yarn map_zhwenpg && yarn map_remotes && yarn add_cover"
+    "backup": "wsl bin/migrate_dicts && yarn db-dn && yarn ys-dn",
+    "update": "yarn map_yousuu && yarn map_zhwenpg && yarn map_remotes && yarn add_cover"
   }
 }
