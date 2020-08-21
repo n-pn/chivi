@@ -72,7 +72,7 @@ class CvNode
     return before if @dic > 0
 
     case @key
-    when "＋", "+"
+    when "＋"
       return before
     when "."
       return false
@@ -82,7 +82,7 @@ class CvNode
     when '”', '’', '⟩', ')', ']', '}',
          ',', '.', ':', ';', '!', '?',
          '-', '+', '=', '%', '_', '/',
-         '…', '~', '#', '$'
+         '…', '~', '#', '$', '^'
       false
     else
       before

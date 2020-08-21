@@ -21,9 +21,13 @@ class CvData
 
     @data.each_with_index do |node, i|
       case node.key
+      when "+", "-", "^"
+        node.val = " " + node.val if lexicon?(i - 1)
+        node.val += " " if lexicon?(i + 1)
       when "年", "月", "日"
         next unless prev = @data[i - 1]?
         next unless prev.dic == 1 && prev.key =~ /^\d+$/
+
         prev.key += node.key
         prev.val = "#{cv_key(node.key)} #{prev.val}"
 
@@ -33,6 +37,7 @@ class CvData
       when "两"
         next unless prev = @data[i - 1]?
         next unless prev.dic == 1 && prev.key =~ /^\d+$/
+
         node.val = "lượng"
         node.dic = 1
       when "了"
@@ -98,14 +103,17 @@ class CvData
     end
   end
 
-  private def border?(idx : Int32)
-    return true unless node = @data[idx]?
-    node.dic == 0
-  end
-
   private def match_node?(idx : Int32)
     return false unless node = @data[idx]?
     yield node
+  end
+
+  private def border?(idx : Int32)
+    match_node?(idx) { |x| x.dic == 0 }
+  end
+
+  private def lexicon?(idx : Int32)
+    match_node?(idx) { |x| x.dic > 1 }
   end
 
   private def match_key?(idx : Int32, key : String)
