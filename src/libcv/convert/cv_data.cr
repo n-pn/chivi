@@ -141,10 +141,7 @@ class CvData
       if node.val.empty?
         res << node
       else
-        if node.should_space_before?(add_space)
-          res << CvNode.new("", " ", 0)
-        end
-
+        res << CvNode.new("", " ", 0) if node.should_space_before?(add_space)
         add_space = node.should_space_after?
         res << node
       end

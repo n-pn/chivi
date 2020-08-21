@@ -3,11 +3,11 @@ require "./route_utils"
 module Server
   alias LookupEntry = Hash(String, Array(String))
 
-  get "/_lookup" do |env|
+  post "/_lookup" do |env|
     dname = env.params.query.fetch("dname", "combine")
     dicts = Libcv::Library.for_convert(dname)
 
-    input = env.params.query.fetch("input", "")
+    input = env.params.json["input"].as(String)
     chars = input.chars
     upper = chars.size - 1
 

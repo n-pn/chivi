@@ -70,7 +70,7 @@ module BookDB
   end
 
   def update_info(info : BookInfo, source : SeedInfo, force = false)
-    set_intro(info, source.intro, force: force)
+    set_intro(info, source.intro, force: !info.zh_intro.includes?("\n"))
     set_cover(info, source.seed, source.cover, force: force)
 
     set_genre(info, source.seed, source.genre, force: force)

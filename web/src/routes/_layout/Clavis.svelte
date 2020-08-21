@@ -112,10 +112,12 @@
   $: hv_html = render_hv(hanviet, from, upto)
 
   async function lookup_line(input) {
-    // console.log({ input, escape: encodeURIComponent(input) })
-    const url = `/_lookup?dname=${dname}&input=${encodeURIComponent(input)}`
-
-    const res = await fetch(url)
+    const url = `/_lookup?dname=${dname}`
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: input }),
+    })
     const data = await res.json()
 
     entries = data.entries

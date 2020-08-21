@@ -50,4 +50,6 @@ require "../../src/utils/text_util"
 # puts Libcv.cv_title("一柱的数量多在5—50本之间", "combine").vi_text
 pp Libcv.cv_plain("了却它", "combine")
 pp Libcv.cv_plain("了却它", "kwxrpf79")
+pp Libcv.cv_plain("来自芈骊的愤怒值+678！", "combine").vi_text
+pp Libcv.hanviet("来自芈骊的愤怒值+678！").vi_text
 # pp Libcv.cv_plain("无论成败，了却它。", "kwxrpf79")
