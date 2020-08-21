@@ -30,6 +30,11 @@ class CvData
         node.key = ""
         node.val = ""
         node.dic = 0
+      when "两"
+        next unless prev = @data[i - 1]?
+        next unless prev.dic == 1 && prev.key =~ /^\d+$/
+        node.val = "lượng"
+        node.dic = 1
       when "了"
         if border?(i + 1) || match_key?(i - 2, "了") || match_key?(i + 2, "了")
           node.val = "rồi"
@@ -136,7 +141,10 @@ class CvData
       if node.val.empty?
         res << node
       else
-        res << CvNode.new("", " ", 0) if add_space && node.should_space_before?
+        if node.should_space_before?(add_space)
+          res << CvNode.new("", " ", 0)
+        end
+
         add_space = node.should_space_after?
         res << node
       end
