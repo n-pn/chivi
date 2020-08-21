@@ -6,13 +6,13 @@ require "../src/utils/text_util"
 require "../src/appcv/models/book_info"
 require "../src/appcv/bookdb"
 
-# ACCESS = OrderMap.init("indexes/orders/book_access")
-# UPDATE = OrderMap.init("indexes/orders/book_update")
-# RATING = OrderMap.init("indexes/orders/book_rating")
-# WEIGHT = OrderMap.init("indexes/orders/book_weight")
+ACCESS = OrderMap.init("indexes/orders/book_access")
+UPDATE = OrderMap.init("indexes/orders/book_update")
+RATING = OrderMap.init("indexes/orders/book_rating")
+WEIGHT = OrderMap.init("indexes/orders/book_weight")
 
-# GENRES = TokenMap.init("indexes/tokens/vi_genres")
-# TAGS   = TokenMap.init("indexes/tokens/vi_tags")
+GENRES = TokenMap.init("indexes/tokens/vi_genres")
+TAGS   = TokenMap.init("indexes/tokens/vi_tags")
 
 def fix_indexes(info : BookInfo)
   # update tokens
@@ -31,14 +31,14 @@ def fix_indexes(info : BookInfo)
 
   info.save! if changed
 
-  # BookDB::Utils.update_token(GENRES, info.ubid, info.vi_genres)
-  # BookDB::Utils.update_token(TAGS, info.ubid, info.vi_tags)
+  BookDB::Utils.update_token(GENRES, info.ubid, info.vi_genres)
+  BookDB::Utils.update_token(TAGS, info.ubid, info.vi_tags)
 
   # update orders
-  # BookDB::Utils.update_order(UPDATE, info.ubid, info.mftime)
-  # BookDB::Utils.update_order(ACCESS, info.ubid, info.weight)
-  # BookDB::Utils.update_order(RATING, info.ubid, info.scored)
-  # BookDB::Utils.update_order(WEIGHT, info.ubid, info.weight)
+  BookDB::Utils.update_order(UPDATE, info.ubid, info.mftime)
+  BookDB::Utils.update_order(ACCESS, info.ubid, info.weight)
+  BookDB::Utils.update_order(RATING, info.ubid, info.scored)
+  BookDB::Utils.update_order(WEIGHT, info.ubid, info.weight)
 end
 
 infos = BookInfo.load_all!
@@ -59,13 +59,13 @@ end
 
 # TokenMap.flush!
 
-# ACCESS.save!
-# UPDATE.save!
-# RATING.save!
-# WEIGHT.save!
+ACCESS.save!
+UPDATE.save!
+RATING.save!
+WEIGHT.save!
 
-# GENRES.save!
-# TAGS.save!
+GENRES.save!
+TAGS.save!
 
 puts "- has_text: #{has_text}".colorize(:yellow)
 
