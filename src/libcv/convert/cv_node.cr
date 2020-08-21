@@ -69,7 +69,8 @@ class CvNode
   end
 
   def should_space_before?(before : Bool = false)
-    return before if @dic > 0 || @key == "＋" || @key == "."
+    return before if @dic > 0 || @key == "＋"
+    return false if @key == "."
 
     case @val[0]?
     when '”', '’', '⟩', ')', ']', '}',
