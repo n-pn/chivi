@@ -60,7 +60,8 @@ class CvNode
 
   def should_cap_after?
     case @val[-1]?
-    when '“', '‘', '⟨', '[', '{', '.', ':', '!', '?', '·'
+    when '“', '‘', '⟨', '[', '{',
+         '.', ':', '!', '?', '·'
       return true
     else
       return false
@@ -69,9 +70,11 @@ class CvNode
 
   def should_space_before?
     return true if @dic > 0
+    return true if @key == "＋"
 
     case @val[0]?
-    when '“', '‘', '⟨', '(', '[', '{'
+    when '“', '‘', '⟨', '(', '[', '{',
+         '—', '·'
       true
     else
       false
@@ -80,10 +83,12 @@ class CvNode
 
   def should_space_after?
     return true if @dic > 0
+    return true if @key == "＋"
 
     case @val[-1]?
-    when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
-         '!', '?', '%', '…', '~', '—'
+    when '”', '’', '⟩', ')', ']', '}',
+         ',', '.', ':', ';', '!', '?',
+         '%', '…', '~', '—', '·'
       true
     else
       false
