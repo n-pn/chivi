@@ -117,7 +117,7 @@ class CvData
     @data.each do |node|
       next if node.val.empty?
 
-      if apply_cap && node.match_letter?
+      if apply_cap && node.dic > 0
         node.capitalize!
         apply_cap = false
       else

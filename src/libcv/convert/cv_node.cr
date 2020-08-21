@@ -68,30 +68,25 @@ class CvNode
   end
 
   def should_space_before?
-    # return true if @dic > 0
+    return true if @dic > 0
 
     case @val[0]?
-    when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
-         '!', '?', '%', ' ', '_', '…', '/', '\\', '~'
-      false
-    else
+    when '“', '‘', '⟨', '(', '[', '{'
       true
+    else
+      false
     end
   end
 
   def should_space_after?
-    # return true if @dic > 0
+    return true if @dic > 0
 
     case @val[-1]?
-    # when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
-    #      '!', '?', '%', '…', '~', '—'
-    #   true
-    # else
-    #   false
-    when '“', '‘', '⟨', '(', '[', '{', ' ', '_', '/', '\\'
-      false
-    else
+    when '”', '’', '⟩', ')', ']', '}', ',', '.', ':', ';',
+         '!', '?', '%', '…', '~', '—'
       true
+    else
+      false
     end
   end
 end

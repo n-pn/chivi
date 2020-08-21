@@ -92,9 +92,10 @@ module Libcv::Convert
 
     norms = chars.map_with_index do |char, idx|
       norm = Utils.normalize(char)
+      dict = norm.to_s =~ /[\p{L}\p{N}]/ ? 1 : 0
 
+      choices << CvNode.new(char, norm, dict)
       weights << idx + 1.0
-      choices << CvNode.new(char, norm, 0)
 
       norm
     end
@@ -126,28 +127,23 @@ module Libcv::Convert
     while idx > 0
       acc = choices[idx]
       idx -= acc.key.size
-      if acc.dic == 0
-        if acc.match_letter?
-          acc.dic = 1
 
-          while idx > 0
-            node = choices[idx]
-            break if node.dic > 0
-            break unless node.special_char? || node.match_letter?
+      if acc.dic == 1
+        while idx > 0
+          node = choices[idx]
+          break if node.dic != 1
+          acc.combine!(node)
+          idx -= node.key.size
+        end
+      elsif acc.dic == 0
+        while idx > 0
+          node = choices[idx]
+          break if node.dic > 0 || acc.key[0] != node.key[0]
 
-            acc.combine!(node)
-            idx -= node.key.size
-          end
-        else
-          while idx > 0
-            node = choices[idx]
-            break unless acc.key[0] == node.key[0]
-            acc.combine!(node)
-            idx -= node.key.size
-          end
+          acc.combine!(node)
+          idx -= node.key.size
         end
       end
-
       res << acc
     end
 
