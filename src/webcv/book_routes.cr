@@ -96,7 +96,7 @@ module Server
     end
 
     BookDB.bump_access(info, Time.utc.to_unix_ms)
-    BookDB.inc_counter(info, read: false)
+    # BookDB.inc_counter(info, read: false)
 
     chlist, mftime = fetched
     chlist = chlist.chaps.map do |chap|
@@ -119,7 +119,7 @@ module Server
     end
 
     BookDB.bump_access(info, Time.utc.to_unix_ms)
-    BookDB.inc_counter(info, read: true)
+    # BookDB.inc_counter(info, read: true)
 
     seed = env.params.url["seed"]
     unless fetched = Appcv.load_list(info, seed, mode: 0)

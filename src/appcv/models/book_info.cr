@@ -45,8 +45,8 @@ class BookInfo
   property word_count = 0_i32
   property crit_count = 0_i32
 
-  property view_count = 0_i32
-  property read_count = 0_i32
+  # property view_count = 0_i32
+  # property read_count = 0_i32
 
   property seed_names = [] of String
   property seed_sbids = {} of String => String
