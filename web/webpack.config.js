@@ -19,7 +19,7 @@ const alias = {
   $partial: path.resolve(__dirname, 'src', 'routes', '_partial'),
 }
 
-const extensions = ['.mjs', '.js', '.json', '.svelte', '.html']
+const extensions = ['.mjs', '.js', '.json', '.svelte', '.html', '.ts']
 const mainFields = ['svelte', 'module', 'browser', 'main']
 
 const { preprocess } = require('./svelte.config')
