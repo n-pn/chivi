@@ -61,7 +61,7 @@ class CvNode
   def should_cap_after?
     case @val[-1]?
     when '“', '‘', '⟨', '[', '{',
-         '.', ':', '!', '?', '·'
+         '.', ':', '!', '?'
       return true
     else
       return false
