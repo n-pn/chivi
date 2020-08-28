@@ -100,22 +100,22 @@ module Libcv::Convert
       norm
     end
 
-    dict_count = dicts.size + 1
+    dict_count = dicts.size &+ 1
 
     0.upto(chars.size) do |idx|
       dicts.each_with_index do |dict, jdx|
-        dic = jdx + 2
+        cost = (jdx + 1) * 0.25 + 2
 
         dict.scan(norms, idx) do |item|
           next if item.vals.empty?
 
-          len = item.key.size
-          jdx = idx + len
-          weight = weights[idx] + len ** (dic / dict_count + 2)
+          size = item.key.size
+          jump = idx &+ size
+          weight = weights[idx] + size ** cost
 
-          if weight >= weights[jdx]
-            weights[jdx] = weight
-            choices[jdx] = CvNode.new(item.key, item.vals[0], dic)
+          if weight > weights[jump]
+            weights[jump] = weight
+            choices[jump] = CvNode.new(item.key, item.vals[0], jdx &+ 2)
           end
         end
       end
