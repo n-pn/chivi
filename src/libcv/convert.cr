@@ -104,7 +104,7 @@ module Libcv::Convert
 
     0.upto(chars.size) do |idx|
       dicts.each_with_index do |dict, jdx|
-        cost = (jdx + 1) * 0.25 + 2
+        cost = 2 + (jdx + 1) * 0.25
 
         dict.scan(norms, idx) do |item|
           next if item.vals.empty?
@@ -113,7 +113,7 @@ module Libcv::Convert
           jump = idx &+ size
           weight = weights[idx] + size ** cost
 
-          if weight > weights[jump]
+          if weight >= weights[jump]
             weights[jump] = weight
             choices[jump] = CvNode.new(item.key, item.vals[0], jdx &+ 2)
           end
