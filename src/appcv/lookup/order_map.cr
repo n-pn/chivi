@@ -1,9 +1,6 @@
 require "./_lookup"
 
 class OrderMap
-  LABEL = "order_map"
-  SEP_0 = "ǁ"
-
   class Node
     getter key : String
     property val : Int64
@@ -84,6 +81,8 @@ class OrderMap
     end
   end
 
+  include FlatFile(Int64)
+
   getter file : String
   getter data = {} of String => Node
   delegate size, to: @data
@@ -103,21 +102,13 @@ class OrderMap
   end
 
   def load!(file : String = @file) : Void
-    FileUtil.each_line(file, LABEL) do |line|
-      key, val = line.strip.split(SEP_0, 2)
-
+    read_file(file) do |key, val|
       if val = val.try(&.to_i64?)
         upsert(key, val)
       else
         delete(key)
       end
-    rescue err
-      FileUtil.log_error(LABEL, line, err)
     end
-  end
-
-  def upsert!(key : String, val : Int64, force : Bool = false) : Void
-    append!(key, val) if upsert(key, val, force)
   end
 
   def upsert(key : String, val : Int64, force = false) : Node?
@@ -135,54 +126,41 @@ class OrderMap
     node.move_right || node.move_left || node
   end
 
-  def delete!(key : String) : Void
-    File.open(@file, "a", &.puts("#{key}#{SEP_0}")) if delete(key)
-  end
-
-  def delete(key : String) : Node?
-    if node = @data.delete(key)
-      node.unlink_self
-    end
+  def delete(key : String) : Bool
+    return false unless node = @data.delete(key)
+    !!node.unlink_self
   end
 
   def fetch(key : String) : Node?
-    @data.fetch(key, nil) unless key.empty?
+    @data[key]?
   end
 
   def value(key : String) : Int64?
-    fetch(key).try(&.val)
+    @data[key]?.try(&.val)
   end
 
   def each(node : Node = @first)
     while node = node.right
-      yield node unless node == @last
+      return if node == @last
+      yield node
     end
   end
 
   def reverse_each(node : Node = @last)
     while node = node.left
-      yield node unless node == @first
+      return if node == @first
+      yield node
     end
   end
 
-  def append!(key : String, val : Int64) : Void
-    FileUtil.append(@file) { |io| to_s(io, key, val) }
-  end
-
-  def to_s
-    String.build { |io| to_s(io) }
+  def to_s(io : IO, val : Int64) : Void
+    io << val
   end
 
   def to_s(io : IO)
-    reverse_each { |node| to_s(io, node.key, node.val) }
-  end
-
-  private def to_s(io : IO, key : String, val : Int64)
-    io << key << SEP_0 << val << "\n"
-  end
-
-  def save!(file : String = @file) : Void
-    FileUtil.save(file, LABEL, @data.size) { |io| to_s(io) }
+    each do |node|
+      puts(io, node.key, node.val)
+    end
   end
 
   # class methods
@@ -195,62 +173,18 @@ class OrderMap
     File.join(DIR, "#{name}.txt")
   end
 
-  # file name relative to `DIR`
-  def self.name_for(file : String)
-    File.sub("#{DIR}/", "").sub(".txt", "")
+  def self.load_name(name : String)
+    load(path_for(name))
   end
 
-  # check file exists in `DIR`
-  def self.exists?(name : String)
-    File.exists?(path_for(file))
-  end
+  class_getter author_rating : OrderMap { load_name("_import/author_rating") }
+  class_getter author_voters : OrderMap { load_name("_import/author_voters") }
+  class_getter author_weight : OrderMap { load_name("_import/author_weight") }
 
-  # read random file, raising FileNotFound if not existed
-  def self.read!(file : String) : OrderMap
-    new(file, mode: 2)
-  end
-
-  def self.read(file : String) : OrderMap
-    new(file, mode: 1)
-  end
-
-  # load file if exists, else raising exception
-  def self.load!(name : String) : OrderMap
-    new(path_for(name), mode: 2)
-  end
-
-  # load file if exists, else return nil
-  def self.load(name : String) : OrderMap
-    new(path_for(name), mode: 1)
-  end
-
-  # create new file from fresh
-  def self.init(name : String) : OrderMap
-    new(path_for(name), mode: 0)
-  end
-
-  CACHE = {} of String => OrderMap
-
-  def self.preload!(name : String) : OrderMap
-    CACHE[name] ||= load!(name)
-  end
-
-  def self.preload(name : String) : OrderMap
-    CACHE[name] ||= load(name)
-  end
-
-  def self.flush! : Void
-    CACHE.each_value { |map| map.save! }
-  end
-
-  class_getter author_rating : OrderMap { preload("_import/author_rating") }
-  class_getter author_voters : OrderMap { preload("_import/author_voters") }
-  class_getter author_weight : OrderMap { preload("_import/author_weight") }
-
-  class_getter book_access : OrderMap { preload("indexes/orders/book_access") }
-  class_getter book_update : OrderMap { preload("indexes/orders/book_update") }
-  class_getter book_weight : OrderMap { preload("indexes/orders/book_weight") }
-  class_getter book_rating : OrderMap { preload("indexes/orders/book_rating") }
+  class_getter book_access : OrderMap { load_name("indexes/orders/book_access") }
+  class_getter book_update : OrderMap { load_name("indexes/orders/book_update") }
+  class_getter book_weight : OrderMap { load_name("indexes/orders/book_weight") }
+  class_getter book_rating : OrderMap { load_name("indexes/orders/book_rating") }
 end
 
 # test = OrderMap.new("tmp/order_map.txt", false)

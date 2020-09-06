@@ -11,8 +11,8 @@ module UserDB
   FileUtils.mkdir_p(ID_DIR)
   FileUtils.mkdir_p(SR_DIR)
 
-  class_getter emails : LabelMap { LabelMap.read("#{ID_DIR}/emails.txt") }
-  class_getter unames : LabelMap { LabelMap.read("#{ID_DIR}/unames.txt") }
+  class_getter emails : LabelMap { LabelMap.load("#{ID_DIR}/emails.txt") }
+  class_getter unames : LabelMap { LabelMap.load("#{ID_DIR}/unames.txt") }
 
   def find_by_mail(email : String)
     return unless uslug = emails.fetch(email.downcase)

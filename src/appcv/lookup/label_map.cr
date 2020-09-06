@@ -1,85 +1,40 @@
 require "./_lookup"
 
 class LabelMap
-  LABEL = "label_map"
-  SEP_0 = "ǁ"
-  SEP_1 = "¦"
+  include FlatFile(String)
 
-  getter file : String
+  getter data = Hash(String, String).new
+  delegate size, to: @data
+  delegate each, to: @data
+  delegate has_key?, to: @data
 
-  getter hash = Hash(String, String).new
-  getter keys = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
-
-  delegate size, to: @hash
-  delegate each, to: @hash
-  delegate fetch, to: @hash
-  delegate has_key?, to: @hash
-
-  # modes: 0 => init, 1 => load if exists, 2 => force load, raise exception if not exists
-  def initialize(@file, mode : Int32 = 1)
-    return if mode == 0
-    load!(@file) if mode == 2 || File.exists?(file)
+  def fetch(key)
+    @data[key]?
   end
 
-  def load!(file : String = @file) : Void
-    FileUtil.each_line(file, LABEL) do |line|
-      key, val = line.strip.split(SEP_0)
-      val.empty? ? delete(key) : upsert(key, val)
-    rescue err
-      FileUtil.log_error(LABEL, line, err)
+  def load!(file : String = @file)
+    read_file(file) do |key, val|
+      val.nil? ? delete(key) : upsert(key, val)
     end
-  end
-
-  def keys(val : String)
-    @keys[val]?
-  end
-
-  def fetch(key : String)
-    @hash.fetch(key, nil)
-  end
-
-  def upsert!(key : String, val : String) : Void
-    append!(key, val) if upsert(key, val)
   end
 
   def upsert(key : String, val : String) : String?
-    if old = fetch(key)
-      return if val == old
-      @keys[old].delete(key)
-    end
-
-    @keys[val] << key
-    @hash[key] = val
+    return if @data[key]?.try(&.== val)
+    @data[key] = val
   end
 
-  def delete!(key : String) : Void
-    append!(key, "") if delete(key)
+  def delete(key : String) : Bool
+    !!@data.delete(key)
   end
 
-  def delete(key : String) : String?
-    if old = @hash.delete(key)
-      return old if @keys[old].delete(key)
-    end
-  end
-
-  def append!(key : String, val = "") : Void
-    FileUtil.append(@file) { |io| to_s(io, key, val) }
-  end
-
-  def to_s
-    String.build { |io| to_s(io) }
+  def to_s(io : IO, val : String) : Void
+    io << val
   end
 
   def to_s(io : IO)
-    @hash.each { |key, val| to_s(io, key, val) }
-  end
-
-  private def to_s(io : IO, key : String, val : String)
-    io << key << SEP_0 << val << "\n"
-  end
-
-  def save!(file : String = @file) : Void
-    FileUtil.save(file, LABEL, @hash.size) { |io| to_s(io) }
+    each do |key, val|
+      puts(io, key, val)
+    end
   end
 
   # class methods
@@ -91,65 +46,26 @@ class LabelMap
     File.join(DIR, "#{name}.txt")
   end
 
-  def self.name_for(file : String) : String
-    File.sub("#{DIR}/", "").sub(".txt", "")
+  def self.load_name(name : String)
+    load(path_for(name))
   end
 
-  def self.exists?(name : String) : Bool
-    File.exists?(path_for(file))
-  end
+  class_getter book_slug : LabelMap { load_name("indexes/book_slug") }
 
-  def self.read!(file : String) : LabelMap
-    new(file, mode: 2)
-  end
+  class_getter zh_author : LabelMap { load_name("_import/fixes/zh_author") }
+  class_getter vi_author : LabelMap { load_name("_import/fixes/vi_author") }
 
-  def self.read(file : String) : LabelMap
-    new(file, mode: 1)
-  end
+  class_getter zh_title : LabelMap { load_name("_import/fixes/zh_title") }
+  class_getter vi_title : LabelMap { load_name("_import/fixes/vi_title") }
 
-  def self.load!(name : String) : LabelMap
-    new(path_for(name), mode: 2)
-  end
-
-  def self.load(name : String) : LabelMap
-    new(path_for(name), mode: 1)
-  end
-
-  def self.init(name : String) : LabelMap
-    new(path_for(name), mode: 0)
-  end
-
-  CACHE = {} of String => LabelMap
-
-  def self.preload!(name : String) : LabelMap
-    CACHE[name] ||= load!(name)
-  end
-
-  def self.preload(name : String) : LabelMap
-    CACHE[name] ||= load(name)
-  end
-
-  def self.flush!
-    CACHE.each_value { |item| item.save! }
-  end
-
-  class_getter book_slug : LabelMap { preload("indexes/book_slug") }
-
-  class_getter zh_author : LabelMap { preload("_import/fixes/zh_author") }
-  class_getter vi_author : LabelMap { preload("_import/fixes/vi_author") }
-
-  class_getter zh_title : LabelMap { preload("_import/fixes/zh_title") }
-  class_getter vi_title : LabelMap { preload("_import/fixes/vi_title") }
-
-  class_getter zh_genre : LabelMap { preload("_import/fixes/zh_genre") }
-  class_getter vi_genre : LabelMap { preload("_import/fixes/vi_genre") }
+  class_getter zh_genre : LabelMap { load_name("_import/fixes/zh_genre") }
+  class_getter vi_genre : LabelMap { load_name("_import/fixes/vi_genre") }
 end
 
-# test = LabelMap.new("tmp/label_map.txt")
-# test.upsert("a", "b")
-# test.upsert!("b", "b")
+# map = LabelMap.load("tmp/test.txt", mode: 0)
 
-# puts test.fetch("a")
-# puts test.keys("b")
+# map.upsert!("a", "b")
+# map.upsert!("a", "b")
+# map.upsert!("a", "c")
 
-# test.save!
+# map.save!

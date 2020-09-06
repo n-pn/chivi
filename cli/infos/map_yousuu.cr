@@ -12,7 +12,7 @@ files = Dir.glob(File.join(DIR, "*.json")).sort_by do |file|
 end
 
 inp_total = inp_count = created = updated = 0
-sitemap = LabelMap.load("_import/sites/yousuu")
+sitemap = LabelMap.load_name("_import/sites/yousuu")
 
 input = {} of String => YsSerial
 
