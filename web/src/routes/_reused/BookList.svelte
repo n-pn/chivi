@@ -5,28 +5,30 @@
   export let books = []
 </script>
 
-<div class="list">
-  {#each books as book}
-    <a class="book" href="~{book.slug}" rel="prefetch">
-      <div class="cover">
-        <BookCover
-          ubid={book.ubid}
-          path={book.main_cover}
-          text={book.vi_title} />
-      </div>
+{#if books.length == 0}
+  <div class="empty">Danh sách trống</div>
+{:else}
+  <div class="list">
+    {#each books as book}
+      <a class="book" href="~{book.slug}" rel="prefetch">
+        <div class="cover">
+          <BookCover
+            ubid={book.ubid}
+            path={book.main_cover}
+            text={book.vi_title} />
+        </div>
 
-      <div class="title">{book.vi_title}</div>
-      <div class="genre">{book.vi_genres[0]}</div>
+        <div class="title">{book.vi_title}</div>
+        <div class="genre">{book.vi_genres[0]}</div>
 
-      <div class="score">
-        <span class="-icon">⭐</span>
-        <span class="-text">{book.voters < 10 ? '--' : book.rating}</span>
-      </div>
-    </a>
-  {:else}
-    <div class="empty">Không có nội dung :(</div>
-  {/each}
-</div>
+        <div class="score">
+          <span class="-icon">⭐</span>
+          <span class="-text">{book.voters < 10 ? '--' : book.rating}</span>
+        </div>
+      </a>
+    {/each}
+  </div>
+{/if}
 
 <style lang="scss">
   .list {
@@ -121,11 +123,10 @@
   }
 
   .empty {
-    width: 100%;
     display: flex;
+    min-height: 50vh;
     align-items: center;
     justify-content: center;
-    min-height: 50vh;
     font-style: italic;
     @include fgcolor(neutral, 6);
   }
