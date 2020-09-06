@@ -88,10 +88,11 @@ module Server
         main_cover: info.main_cover,
         rating:     info.rating,
         voters:     info.voters,
+        mftime:     info.mftime,
         tagged:     tag,
       }
     end
 
-    infos.to_json(env.response)
+    infos.sort_by(&.[:mftime].-).to_json(env.response)
   end
 end
