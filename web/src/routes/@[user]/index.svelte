@@ -14,7 +14,7 @@
     const data = await res.json()
 
     if (res.status == 200) {
-      return { books: data, tagged: query.tag || 'all' }
+      return { books: data, uname: params.user, tagged: query.tab || 'all' }
     } else this.error(res.status, data.msg)
   }
 
@@ -39,6 +39,7 @@
   import BookList from '$reused/BookList.svelte'
 
   export let books = []
+  export let uname = ''
   export let tagged = 'all'
 
   $: content = filter_content(books)
@@ -52,10 +53,11 @@
 
   <div class="tabs">
     {#each tabs as [tag_type, tag_name, tag_icon]}
-      <span
+      <a
+        href="/@{uname}?tab={tag_type}"
         class="tab"
         class:_active={tag_type == tagged}
-        on:click={() => (tagged = tag_type)}>{tag_name} ({content[tag_type].length})</span>
+        on:click|preventDefault={() => (tagged = tag_type)}>{tag_name} ({content[tag_type].length})</a>
     {/each}
   </div>
 
