@@ -32,7 +32,7 @@
   import paginate_range from '$utils/paginate_range'
 
   import MIcon from '$mould/MIcon.svelte'
-  import BookCover from '$reused/BookCover.svelte'
+  import BookList from '$reused/BookList.svelte'
 
   import Vessel from '$layout/Vessel.svelte'
 
@@ -95,97 +95,79 @@
   }
 </script>
 
+<svelte:head>
+  <title>Chivi - Công cụ dịch truyện từ Tiếng Trung sang Tiếng Việt</title>
+</svelte:head>
+
+<svelte:window on:keydown={handleKeypress} />
+
+<Vessel>
+  <form slot="header-left" class="header-field" action="/search" method="get">
+    <input
+      type="search"
+      name="kw"
+      placeholder="Tìm kiếm"
+      on:focus={() => (searching = true)}
+      on:onfocusout={() => (searching = false)} />
+    <MIcon class="m-icon _search" name="search" />
+  </form>
+
+  <div class="order">
+    {#each Object.entries(order_names) as [type, label]}
+      <a
+        class="-type"
+        class:_active={query.order === type}
+        href={makePageUrl(1, { ...query, order: type })}>
+        <span>{label}</span>
+      </a>
+    {/each}
+  </div>
+
+  <BookList books={items} />
+
+  <div class="pagi">
+    <a
+      class="page m-button _line"
+      class:_disable={page == 1}
+      href={makePageUrl(1, query)}>
+      <MIcon class="m-icon" name="chevrons-left" />
+    </a>
+
+    <a
+      class="page m-button _line"
+      class:_disable={page == 1}
+      href={makePageUrl(+page - 1, query)}>
+      <MIcon class="m-icon" name="chevron-left" />
+    </a>
+
+    {#each pageList as [index, level]}
+      <a
+        class="page m-button _line"
+        class:_actived={page == index}
+        class:_disable={page == index}
+        data-level={level}
+        href={makePageUrl(index, query)}>
+        <span>{index}</span>
+      </a>
+    {/each}
+
+    <a
+      class="page m-button _line"
+      class:_disable={page == pageMax}
+      href={makePageUrl(page + 1, query)}>
+      <MIcon class="m-icon" name="chevron-right" />
+    </a>
+
+    <a
+      class="page m-button _line"
+      class:_disable={page == pageMax}
+      href={makePageUrl(pageMax, query)}>
+      <MIcon class="m-icon" name="chevrons-right" />
+    </a>
+  </div>
+</Vessel>
+
 <style lang="scss">
-  .list {
-    max-width: 100%;
-    margin: 0;
-
-    @include grid($gap: 0.5rem, $size: minmax(8.5rem, 1fr));
-  }
-
-  .book {
-    display: block;
-    position: relative;
-
-    margin-bottom: 3rem;
-
-    @include hover {
-      .-title {
-        @include fgcolor(primary, 5);
-      }
-    }
-    // overflow: hidden;
-    &::before {
-      content: '';
-      display: block;
-      padding-top: #{4 / 3};
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: -1;
-    }
-
-    .-genre,
-    .-score {
-      // width: 100%;
-      position: absolute;
-      // bottom: 0.375rem;
-      bottom: -2.75rem;
-      // padding: 0.125rem 0.25rem;
-      text-transform: uppercase;
-      font-weight: 500;
-      @include fgcolor(neutral, 5);
-      // @include bgcolor(rgba(color(neutral, 9), 0.3));
-      @include font-size(1);
-      @include radius();
-    }
-    .-genre {
-      // left: 0.375rem;
-      left: 0;
-    }
-
-    .-score {
-      // right: 0.375rem;
-      right: 0;
-      text-transform: uppercase;
-      text-align: right;
-
-      > span {
-        display: inline-block;
-        vertical-align: top;
-        font-size: 95%;
-        // margin-top: -0.125rem;
-      }
-    }
-
-    .-title {
-      width: 100%;
-      position: absolute;
-      bottom: -1.75rem;
-      font-weight: 500;
-      @include fgcolor(neutral, 7);
-      @include truncate();
-      @include font-size(3);
-      // line-height: 1rem;
-      // @include font-family(narrow);
-    }
-
-    .-cover {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      z-index: 1;
-
-      :global(img) {
-        min-width: 100%;
-        max-height: 13.5rem;
-        object-fit: cover;
-        @include radius();
-      }
-    }
-  }
-
   .order {
     @include flex($gap: 0.375rem);
     overflow: auto;
@@ -276,94 +258,3 @@
     }
   }
 </style>
-
-<svelte:head>
-  <title>Chivi - Công cụ dịch truyện từ Tiếng Trung sang Tiếng Việt</title>
-</svelte:head>
-
-<svelte:window on:keydown={handleKeypress} />
-
-<Vessel>
-  <form slot="header-left" class="header-field" action="/search" method="get">
-    <input
-      type="search"
-      name="kw"
-      placeholder="Tìm kiếm"
-      on:focus={() => (searching = true)}
-      on:onfocusout={() => (searching = false)} />
-    <MIcon class="m-icon _search" name="search" />
-  </form>
-
-  <div class="order">
-    {#each Object.entries(order_names) as [type, label]}
-      <a
-        class="-type"
-        class:_active={query.order === type}
-        href={makePageUrl(1, { ...query, order: type })}>
-        <span>{label}</span>
-      </a>
-    {/each}
-  </div>
-
-  <div class="list">
-    {#each items as book}
-      <a class="book" href="~{book.slug}" rel="prefetch">
-        <div class="-cover">
-          <BookCover
-            ubid={book.ubid}
-            path={book.main_cover}
-            text={book.vi_title} />
-        </div>
-
-        <div class="-title">{book.vi_title}</div>
-        <div class="-genre">{book.vi_genres[0]}</div>
-
-        <div class="-score">
-          <span class="--icon">⭐</span>
-          <span class="--text">{book.voters < 10 ? '--' : book.rating}</span>
-        </div>
-      </a>
-    {/each}
-  </div>
-
-  <div class="pagi">
-    <a
-      class="page m-button _line"
-      class:_disable={page == 1}
-      href={makePageUrl(1, query)}>
-      <MIcon class="m-icon" name="chevrons-left" />
-    </a>
-
-    <a
-      class="page m-button _line"
-      class:_disable={page == 1}
-      href={makePageUrl(+page - 1, query)}>
-      <MIcon class="m-icon" name="chevron-left" />
-    </a>
-
-    {#each pageList as [index, level]}
-      <a
-        class="page m-button _line"
-        class:_actived={page == index}
-        class:_disable={page == index}
-        data-level={level}
-        href={makePageUrl(index, query)}>
-        <span>{index}</span>
-      </a>
-    {/each}
-
-    <a
-      class="page m-button _line"
-      class:_disable={page == pageMax}
-      href={makePageUrl(page + 1, query)}>
-      <MIcon class="m-icon" name="chevron-right" />
-    </a>
-
-    <a
-      class="page m-button _line"
-      class:_disable={page == pageMax}
-      href={makePageUrl(pageMax, query)}>
-      <MIcon class="m-icon" name="chevrons-right" />
-    </a>
-  </div>
-</Vessel>

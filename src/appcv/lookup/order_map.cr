@@ -157,7 +157,7 @@ class OrderMap
     io << val
   end
 
-  def to_s(io : IO)
+  def to_s(io : IO) : Void
     each do |node|
       puts(io, node.key, node.val)
     end

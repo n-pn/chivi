@@ -42,30 +42,6 @@ module Server
     {status: "err", msg: "user not logged in"}.to_json(env.response)
   end
 
-  get "/_self/tagged_books" do |env|
-    uslug = env.session.string("uslug")
-    # tag = env.params.query["tag"]? || "liked"
-
-    books = UserDB.tagged_books(uslug)
-    infos = books.map do |ubid, tag|
-      info = BookInfo.get!(ubid)
-      {
-        ubid:       info.ubid,
-        slug:       info.slug,
-        vi_title:   info.vi_title,
-        zh_title:   info.zh_title,
-        vi_author:  info.vi_author,
-        vi_genres:  info.vi_genres,
-        main_cover: info.main_cover,
-        rating:     info.rating,
-        voters:     info.voters,
-        tagged:     tag,
-      }
-    end
-
-    infos.to_json(env.response)
-  end
-
   get "/_self/tagged_books/:ubid" do |env|
     uslug = env.session.string("uslug")
     ubid = env.params.url["ubid"]
@@ -90,5 +66,32 @@ module Server
     {stt: "ok", tag: tag}
   rescue err
     {stt: "err", msg: "user not logged in"}.to_json(env.response)
+  end
+
+  get "/_users/:uname/tagged_books" do |env|
+    uname = env.params.url["uname"]
+    unless user = UserDB.find_by_uname(uname)
+      halt env, status_code: 404, response: Utils.json_error("user not found!")
+    end
+
+    books = UserDB.tagged_books(user.uslug)
+    infos = books.map do |ubid, tag|
+      info = BookInfo.get!(ubid)
+
+      {
+        ubid:       info.ubid,
+        slug:       info.slug,
+        vi_title:   info.vi_title,
+        zh_title:   info.zh_title,
+        vi_author:  info.vi_author,
+        vi_genres:  info.vi_genres,
+        main_cover: info.main_cover,
+        rating:     info.rating,
+        voters:     info.voters,
+        tagged:     tag,
+      }
+    end
+
+    infos.to_json(env.response)
   end
 end

@@ -24,6 +24,71 @@
   }
 </script>
 
+<svelte:window on:scroll={handleScroll} />
+
+<header
+  class="header"
+  data-page={segment}
+  class:_clear={clear}
+  class:__shift={shift}>
+  <nav class="center -wrap">
+    <div class="-left">
+      <a href="/" class="header-item _brand">
+        <img src="/logo.svg" alt="logo" />
+        <span class="header-text _show-md">Chivi</span>
+      </a>
+
+      <slot name="header-left" />
+    </div>
+
+    <div class="-right">
+      <slot name="header-right" />
+
+      <span class="header-item _menu">
+        <MIcon class="m-icon _user" name="user" />
+        <span class="header-text _show-md">
+          {#if $user.power > 0}{$user.uname} [{$user.power}]{:else}Khách{/if}
+        </span>
+
+        <div class="header-menu">
+          {#if $user.power < 0}
+            <a href="/auth/login" class="-item">
+              <MIcon class="m-icon _log-in" name="log-in" />
+              <span>Đăng nhập</span>
+            </a>
+            <a href="/auth/signup" class="-item">
+              <MIcon class="m-icon _user-plus" name="user-plus" />
+              <span>Đăng ký</span>
+            </a>
+          {:else}
+            <a href="/@{$user.uname}" class="-item">
+              <MIcon class="m-icon _layers" name="layers" />
+              <span>Tủ truyện</span>
+            </a>
+            <a
+              href="/auth/logout"
+              class="-item"
+              on:click|preventDefault={logout}>
+              <MIcon class="m-icon _log-out" name="log-out" />
+              <span>Đăng xuất</span>
+            </a>
+          {/if}
+        </div>
+      </span>
+    </div>
+  </nav>
+</header>
+
+<main
+  class="vessel"
+  class:__clear={clear}
+  class:__shift={shift}
+  on:click={() => (clear = false)}>
+  <section class="center">
+    <slot />
+  </section>
+</main>
+
 <style lang="scss">
   .__shift {
     @include screen-min(lg) {
@@ -203,12 +268,12 @@
     }
   }
 
-  .header-menu {
+  :global(.header-menu) {
     position: absolute;
     display: none;
-    width: 10rem;
+    width: 11rem;
 
-    .header-item:hover > & {
+    :global(.header-item):hover > & {
       display: block;
       top: $header-inner-height;
       right: 0;
@@ -222,13 +287,15 @@
       margin: 0;
     }
 
-    .-item {
+    :global(.-item) {
       display: block;
 
-      padding: 0 0.75rem;
+      padding: 0 0.5rem;
       line-height: 2.25rem;
       text-transform: uppercase;
       font-weight: 500;
+
+      @include flex(0.25rem);
 
       @include border($sides: top);
       &:last-child {
@@ -243,8 +310,15 @@
         @include bgcolor(neutral, 2);
       }
 
-      span {
-        margin-left: 0.25rem;
+      > :global(.m-icon) {
+        margin: 0.5rem;
+        // width: 1.25rem;
+        // height: 1.25rem;
+
+        // margin-top: -0.125rem;
+        &._right {
+          margin-left: auto;
+        }
       }
     }
   }
@@ -253,66 +327,3 @@
     padding-top: $header-height;
   }
 </style>
-
-<svelte:window on:scroll={handleScroll} />
-
-<header
-  class="header"
-  data-page={segment}
-  class:_clear={clear}
-  class:__shift={shift}>
-  <nav class="center -wrap">
-    <div class="-left">
-      <a href="/" class="header-item _brand">
-        <img src="/logo.svg" alt="logo" />
-        <span class="header-text _show-md">Chivi</span>
-      </a>
-
-      <slot name="header-left" />
-    </div>
-
-    <div class="-right">
-      <slot name="header-right" />
-
-      <span class="header-item _menu">
-        <MIcon class="m-icon _user" name="user" />
-        <span class="header-text _show-md">
-          {#if $user.power > 0}{$user.uname} [{$user.power}]{:else}Khách{/if}
-        </span>
-
-        <div class="header-menu">
-
-          {#if $user.power < 0}
-            <a href="/auth/login" class="-item">
-              <MIcon class="m-icon _log-in" name="log-in" />
-              <span>Đăng nhập</span>
-            </a>
-            <a href="/auth/signup" class="-item">
-              <MIcon class="m-icon _user-plus" name="user-plus" />
-              <span>Đăng ký</span>
-            </a>
-          {:else}
-            <a
-              href="/auth/logout"
-              class="-item"
-              on:click|preventDefault={logout}>
-              <MIcon class="m-icon _log-out" name="log-out" />
-              <span>Đăng xuất</span>
-            </a>
-          {/if}
-        </div>
-      </span>
-    </div>
-  </nav>
-</header>
-
-<main
-  class="vessel"
-  class:__clear={clear}
-  class:__shift={shift}
-  on:click={() => (clear = false)}>
-
-  <section class="center">
-    <slot />
-  </section>
-</main>

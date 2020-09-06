@@ -79,7 +79,13 @@ module Server
     # BookDB.bump_access(info)
     # BookDB.inc_counter(info, read: false)
 
-    {book: info}.to_json(env.response)
+    if uslug = env.session.string?("uslug")
+      tag = UserDB.get_book_tag(uslug, info.ubid) || ""
+    else
+      tag = ""
+    end
+
+    {book: info, tagged: tag}.to_json(env.response)
   end
 
   get "/_chaps/:slug/:seed" do |env|

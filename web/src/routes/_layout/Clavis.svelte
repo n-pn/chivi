@@ -158,6 +158,50 @@
   }
 </script>
 
+<svelte:window on:keydown={handleKeypress} />
+
+<aside class:_active={active}>
+  <header>
+    <h2>Giải nghĩa</h2>
+
+    <button on:click={() => (active = false)}>
+      <MIcon class="m-icon" name="x" />
+    </button>
+  </header>
+
+  <section class="lookup">
+    <div class="source _zh" on:click={handleClick} lang="zh">
+      {@html zh_html}
+    </div>
+
+    <div class="source _hv" on:click={handleClick}>
+      {@html hv_html}
+    </div>
+
+    {#each current as [size, entries]}
+      <div class="entry">
+        <h3 class="word" lang="zh">{input.substr(from, size)}</h3>
+        {#each Object.entries(entries) as [name, items]}
+          {#if items.length > 0}
+            <div class="item">
+              <h4 class="name">{name}</h4>
+              {#if name == 'vietphrase'}
+                <p class="viet">
+                  {@html renderVietphrase(items)}
+                </p>
+              {:else}
+                {#each items as line}
+                  <p class="term">{line}</p>
+                {/each}
+              {/if}
+            </div>
+          {/if}
+        {/each}
+      </div>
+    {/each}
+  </section>
+</aside>
+
 <style lang="scss">
   $sidebar-width: 30rem;
 
@@ -322,47 +366,3 @@
     // margin-top: 0.25rem;
   }
 </style>
-
-<svelte:window on:keydown={handleKeypress} />
-
-<aside class:_active={active}>
-  <header>
-    <h2>Giải nghĩa</h2>
-
-    <button on:click={() => (active = false)}>
-      <MIcon class="m-icon" name="x" />
-    </button>
-  </header>
-
-  <section class="lookup">
-    <div class="source _zh" on:click={handleClick} lang="zh">
-      {@html zh_html}
-    </div>
-
-    <div class="source _hv" on:click={handleClick}>
-      {@html hv_html}
-    </div>
-
-    {#each current as [size, entries]}
-      <div class="entry">
-        <h3 class="word" lang="zh">{input.substr(from, size)}</h3>
-        {#each Object.entries(entries) as [name, items]}
-          {#if items.length > 0}
-            <div class="item">
-              <h4 class="name">{name}</h4>
-              {#if name == 'vietphrase'}
-                <p class="viet">
-                  {@html renderVietphrase(items)}
-                </p>
-              {:else}
-                {#each items as line}
-                  <p class="term">{line}</p>
-                {/each}
-              {/if}
-            </div>
-          {/if}
-        {/each}
-      </div>
-    {/each}
-  </section>
-</aside>

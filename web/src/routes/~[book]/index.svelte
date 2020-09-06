@@ -19,7 +19,7 @@
         chlists[sname] = chaps.chlist
       }
 
-      return { book, seed: sname, tab, page, chlists }
+      return { book, tagged: data.tagged, seed: sname, tab, page, chlists }
     }
 
     this.error(res.status, data.msg)
@@ -49,9 +49,17 @@
       throw err.message
     }
   }
+
+  const book_tags = [
+    ['reading', 'Đang đọc', 'eye'],
+    ['completed', 'Hoàn thành', 'check-square'],
+    ['dropped', 'Vứt bỏ', 'trash'],
+    ['pending', 'Đọc sau', 'calendar'],
+  ]
 </script>
 
 <script>
+  import { user } from '$src/stores'
   import MIcon from '$mould/MIcon.svelte'
 
   import Vessel from '$layout/Vessel.svelte'
@@ -69,21 +77,23 @@
   export let tab = 'overview'
   export let desc = true
 
+  export let tagged = ''
+
   let chlist = []
   $: chlist = chlists[seed] || []
   $: hasContent = book.seed_names.length > 0
 
   $: if (tab == 'content') switchSite(seed, 0)
 
-  let __loading = false
+  let _loading = false
 
   async function switchSite(source, mode = 0) {
     seed = source
     if (mode == 0 && chlists[seed]) return
 
-    __loading = true
+    _loading = true
     const { chlist, mftime } = await fetch_chaps(fetch, book.slug, seed, mode)
-    __loading = false
+    _loading = false
 
     chlists[seed] = chlist
 
@@ -107,7 +117,190 @@
     if (!latest) return '...'
     return latest.vi_title
   }
+
+  async function tagging_book(new_tag) {
+    if (new_tag == tagged) tagged = ''
+    else tagged = new_tag
+
+    await fetch(`/_self/tagged_books/${book.ubid}?tag=${tagged}`, {
+      method: 'PUT',
+    })
+  }
 </script>
+
+<Vessel>
+  <a slot="header-left" href="/{book.slug}" class="header-item _active">
+    <MIcon class="m-icon _book-open" name="book-open" />
+    <span class="header-text _title">{book.vi_title}</span>
+  </a>
+
+  <span slot="header-right" class="header-item _menu">
+    <MIcon class="m-icon _star" name="star" />
+    {#if $user.power > 0}
+      <div class="header-menu">
+        {#each book_tags as [tag_type, tag_name, tag_icon]}
+          <div class="-item" on:click={() => tagging_book(tag_type)}>
+            <MIcon class="m-icon _{tag_icon}" name={tag_icon} />
+            <span>{tag_name}</span>
+
+            {#if tagged == tag_type}
+              <MIcon class="m-icon _check _right" name="check" />
+            {/if}
+          </div>
+        {/each}
+      </div>
+    {/if}
+  </span>
+
+  <Outline {book} />
+
+  <section class="meta">
+    <header class="meta-header">
+      <a
+        class="-tab"
+        class:_active={tab == 'overview'}
+        href="/~{book.slug}?tab=overview"
+        on:click|preventDefault={() => changeTab('overview')}>
+        Tổng quan
+      </a>
+
+      <a
+        class="-tab"
+        class:_active={tab == 'content'}
+        href="/~{book.slug}?tab=content&seed={seed}"
+        on:click|preventDefault={() => changeTab('content')}>
+        Mục lục
+      </a>
+
+      <a
+        class="-tab"
+        class:_active={tab == 'reviews'}
+        href="/~{book.slug}?tab=reviews"
+        on:click|preventDefault={() => changeTab('reviews')}>
+        Bình luận
+      </a>
+    </header>
+
+    <div class="meta-tab" class:_active={tab == 'overview'}>
+      <div class="summary">
+        <h2>Giới thiệu:</h2>
+        {#each book.vi_intro.split('\n') as line}
+          <p>{line}</p>
+        {/each}
+      </div>
+
+      {#if hasContent}
+        <h2>Chương tiết:</h2>
+
+        <table class="latests">
+          <thead>
+            <tr>
+              <th class="latest-seed">Nguồn</th>
+              <th class="latest-chap">Chương mới nhất</th>
+              <th class="latest-time">Cập nhật</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {#each book.seed_names as name}
+              <tr>
+                <td class="latest-seed">
+                  <span class="latest-text">{name}</span>
+                </td>
+                <td class="latest-chap">
+                  <a class="latest-link" href={latestLink(name)}>
+                    {latestText(name)}
+                  </a>
+                </td>
+                <td class="latest-time">
+                  <span
+                    class="latest-text _update"
+                    class:_loading={seed == name && _loading}
+                    on:click={() => switchSite(name, 1)}>
+                    {#if seed == name && _loading}
+                      <MIcon class="m-icon" name="loader" />
+                    {:else}
+                      <span>{relative_time(book.seed_mftimes[name])}</span>
+                    {/if}
+                  </span>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      {/if}
+    </div>
+
+    <div class="meta-tab" class:_active={tab == 'content'}>
+      {#if hasContent}
+        <div class="sources">
+          <div class="-left">
+            <div class="-hint">Nguồn:</div>
+
+            <div class="seed-menu">
+              <div class="-text">
+                <span class="-label">{seed}</span>
+                <span class="-count">({chlist.length} chương)</span>
+              </div>
+
+              <div class="-menu">
+                {#each book.seed_names as name}
+                  <a
+                    class="-item"
+                    class:_active={seed === name}
+                    href="/~{book.slug}?tab=content&seed={name}"
+                    on:click|preventDefault={() => switchSite(name, 0)}
+                    rel="nofollow">
+                    <span class="-name">{name}</span>
+                    <span class="-time">
+                      ({relative_time(book.seed_mftimes[name])})
+                    </span>
+                  </a>
+                {/each}
+              </div>
+            </div>
+          </div>
+
+          <div class="-right">
+            <button
+              class="m-button _text"
+              class:_loading
+              on:click={() => switchSite(seed, 1)}>
+              {#if _loading}
+                <MIcon class="m-icon" name="loader" />
+              {:else}
+                <MIcon class="m-icon" name="clock" />
+              {/if}
+              <span>{relative_time(book.seed_mftimes[seed])}</span>
+            </button>
+
+            <button class="m-button _text" on:click={() => (desc = !desc)}>
+              {#if desc}
+                <MIcon class="m-icon" name="arrow-down" />
+              {:else}
+                <MIcon class="m-icon" name="arrow-up" />
+              {/if}
+              <span class="-hide">Sắp xếp</span>
+            </button>
+          </div>
+        </div>
+
+        <ChapList
+          bslug={book.slug}
+          sname={seed}
+          chaps={chlist}
+          focus={page}
+          reverse={desc} />
+      {:else}
+        <div class="empty">Không có nội dung</div>
+      {/if}
+    </div>
+
+    <div class="meta-tab" class:_active={tab == 'reviews'}>
+      <div class="empty">Đang hoàn thiện :(</div>
+    </div>
+  </section>
+</Vessel>
 
 <style lang="scss">
   .genre > a {
@@ -128,7 +321,7 @@
     }
   }
 
-  .__loading {
+  ._loading {
     @include fgcolor(neutral, 5);
 
     :global(svg) {
@@ -442,161 +635,3 @@
     }
   }
 </style>
-
-<Vessel>
-  <a slot="header-left" href="/{book.slug}" class="header-item _active">
-    <MIcon class="m-icon _book-open" name="book-open" />
-    <span class="header-text _title">{book.vi_title}</span>
-  </a>
-
-  <Outline {book} />
-
-  <section class="meta">
-    <header class="meta-header">
-      <a
-        class="-tab"
-        class:_active={tab == 'overview'}
-        href="/~{book.slug}?tab=overview"
-        on:click|preventDefault={() => changeTab('overview')}>
-        Tổng quan
-      </a>
-
-      <a
-        class="-tab"
-        class:_active={tab == 'content'}
-        href="/~{book.slug}?tab=content&seed={seed}"
-        on:click|preventDefault={() => changeTab('content')}>
-        Mục lục
-      </a>
-
-      <a
-        class="-tab"
-        class:_active={tab == 'reviews'}
-        href="/~{book.slug}?tab=reviews"
-        on:click|preventDefault={() => changeTab('reviews')}>
-        Bình luận
-      </a>
-    </header>
-
-    <div class="meta-tab" class:_active={tab == 'overview'}>
-      <div class="summary">
-        <h2>Giới thiệu:</h2>
-        {#each book.vi_intro.split('\n') as line}
-          <p>{line}</p>
-        {/each}
-      </div>
-
-      {#if hasContent}
-        <h2>Chương tiết:</h2>
-
-        <table class="latests">
-          <thead>
-            <tr>
-              <th class="latest-seed">Nguồn</th>
-              <th class="latest-chap">Chương mới nhất</th>
-              <th class="latest-time">Cập nhật</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {#each book.seed_names as name}
-              <tr>
-                <td class="latest-seed">
-                  <span class="latest-text">{name}</span>
-                </td>
-                <td class="latest-chap">
-                  <a class="latest-link" href={latestLink(name)}>
-                    {latestText(name)}
-                  </a>
-                </td>
-                <td class="latest-time">
-                  <span
-                    class="latest-text _update"
-                    class:__loading={seed == name && __loading}
-                    on:click={() => switchSite(name, 1)}>
-                    {#if seed == name && __loading}
-                      <MIcon class="m-icon" name="loader" />
-                    {:else}
-                      <span>{relative_time(book.seed_mftimes[name])}</span>
-                    {/if}
-                  </span>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      {/if}
-    </div>
-
-    <div class="meta-tab" class:_active={tab == 'content'}>
-      {#if hasContent}
-        <div class="sources">
-          <div class="-left">
-            <div class="-hint">Nguồn:</div>
-
-            <div class="seed-menu">
-              <div class="-text">
-                <span class="-label ">{seed}</span>
-                <span class="-count ">({chlist.length} chương)</span>
-              </div>
-
-              <div class="-menu">
-                {#each book.seed_names as name}
-                  <a
-                    class="-item"
-                    class:_active={seed === name}
-                    href="/~{book.slug}?tab=content&seed={name}"
-                    on:click|preventDefault={() => switchSite(name, 0)}
-                    rel="nofollow">
-                    <span class="-name">{name}</span>
-                    <span class="-time">
-                      ({relative_time(book.seed_mftimes[name])})
-                    </span>
-                  </a>
-                {/each}
-              </div>
-            </div>
-
-          </div>
-
-          <div class="-right">
-            <button
-              class="m-button _text"
-              class:__loading
-              on:click={() => switchSite(seed, 1)}>
-              {#if __loading}
-                <MIcon class="m-icon" name="loader" />
-              {:else}
-                <MIcon class="m-icon" name="clock" />
-              {/if}
-              <span>{relative_time(book.seed_mftimes[seed])}</span>
-            </button>
-
-            <button class="m-button _text" on:click={() => (desc = !desc)}>
-              {#if desc}
-                <MIcon class="m-icon" name="arrow-down" />
-              {:else}
-                <MIcon class="m-icon" name="arrow-up" />
-              {/if}
-              <span class="-hide">Sắp xếp</span>
-            </button>
-          </div>
-
-        </div>
-
-        <ChapList
-          bslug={book.slug}
-          sname={seed}
-          chaps={chlist}
-          focus={page}
-          reverse={desc} />
-      {:else}
-        <div class="empty">Không có nội dung</div>
-      {/if}
-    </div>
-
-    <div class="meta-tab" class:_active={tab == 'reviews'}>
-      <div class="empty">Đang hoàn thiện :(</div>
-    </div>
-  </section>
-</Vessel>

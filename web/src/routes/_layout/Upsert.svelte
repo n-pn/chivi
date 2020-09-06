@@ -205,6 +205,112 @@
   }
 </script>
 
+<svelte:window on:keydown={handle_keypress} />
+
+<div class="container" on:click={() => (actived = false)}>
+  <div class="dialog" on:click|stopPropagation={() => out_field.focus()}>
+    <header class="header">
+      <span class="label">Thêm từ:</span>
+
+      <span
+        class="hanzi"
+        role="textbox"
+        contenteditable="true"
+        on:click|stopPropagation={() => inp_field.focus()}
+        bind:textContent={key}
+        bind:this={inp_field} />
+
+      <button
+        type="button"
+        class="m-button _text"
+        on:click={() => (actived = false)}>
+        <svg class="m-icon _x">
+          <use xlink:href="/icons.svg#x" />
+        </svg>
+      </button>
+    </header>
+
+    <section class="tabs">
+      {#each tabs as [name, label]}
+        <span
+          class="tab"
+          class:_active={name == tab}
+          on:click={() => change_tab(name)}>
+          {label}
+        </span>
+      {/each}
+    </section>
+
+    <section class="body">
+      <div class="output">
+        <div class="hints">
+          <span class="-hint" on:click={() => update_val(meta.hanviet)}>
+            {meta.hanviet}
+          </span>
+
+          {#each hints as hint}
+            <span class="-hint" on:click={() => update_val(hint)}>{hint}</span>
+          {/each}
+
+          <span class="-hint _right">[{meta.binh_am}]</span>
+        </div>
+
+        <input
+          type="text"
+          lang="vi"
+          class="val-field"
+          class:_fresh={!existed}
+          name="value"
+          id="out_field"
+          on:keypress={handle_enter}
+          bind:this={out_field}
+          bind:value={out_val} />
+
+        <div class="format">
+          <div class="-cap">
+            <span class="-btn" on:click={() => upcase_val(1)}>Hoa 1 chữ</span>
+            <span class="-btn" on:click={() => upcase_val(2)}>Hai chữ</span>
+            <span class="-btn" on:click={() => upcase_val(3)}>Ba chữ</span>
+            <span class="-btn" on:click={() => upcase_val(9)}>Toàn bộ</span>
+            <span class="-btn" on:click={() => upcase_val(0)}>Không hoa</span>
+          </div>
+
+          <div class="-etc">
+            {#if updated}
+              <span class="-btn" on:click={() => update_val(existed)}>
+                Phục
+              </span>
+            {/if}
+            <span class="-btn" on:click={() => (out_val = '')}>Xoá</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        {#if current.uname != ''}
+          <div class="edit">
+            <span class="-text">Lưu:</span>
+            <span class="-time">{relative_time(current.mtime)}</span>
+            <span class="-text">bởi</span>
+            <span class="-user">{current.uname}</span>
+            <span class="-text _hide">(quyền hạn: {current.power})</span>
+          </div>
+        {/if}
+
+        <button
+          type="button"
+          class="m-button _{btn_class} _{btn_power}"
+          disabled={!(updated || prevail)}
+          on:click|once={submit_val}>
+          <span class="-text">{btn_label}</span>
+        </button>
+      </div>
+    </section>
+
+    <Footer {key} />
+  </div>
+</div>
+
 <style lang="scss">
   $gutter: 0.75rem;
 
@@ -469,109 +575,3 @@
     }
   }
 </style>
-
-<svelte:window on:keydown={handle_keypress} />
-
-<div class="container" on:click={() => (actived = false)}>
-  <div class="dialog" on:click|stopPropagation={() => out_field.focus()}>
-    <header class="header">
-      <span class="label">Thêm từ:</span>
-
-      <span
-        class="hanzi"
-        role="textbox"
-        contenteditable="true"
-        on:click|stopPropagation={() => inp_field.focus()}
-        bind:textContent={key}
-        bind:this={inp_field} />
-
-      <button
-        type="button"
-        class="m-button _text"
-        on:click={() => (actived = false)}>
-        <svg class="m-icon _x">
-          <use xlink:href="/icons.svg#x" />
-        </svg>
-      </button>
-    </header>
-
-    <section class="tabs">
-      {#each tabs as [name, label]}
-        <span
-          class="tab"
-          class:_active={name == tab}
-          on:click={() => change_tab(name)}>
-          {label}
-        </span>
-      {/each}
-    </section>
-
-    <section class="body">
-      <div class="output">
-        <div class="hints">
-          <span class="-hint" on:click={() => update_val(meta.hanviet)}>
-            {meta.hanviet}
-          </span>
-
-          {#each hints as hint}
-            <span class="-hint" on:click={() => update_val(hint)}>{hint}</span>
-          {/each}
-
-          <span class="-hint _right">[{meta.binh_am}]</span>
-        </div>
-
-        <input
-          type="text"
-          lang="vi"
-          class="val-field"
-          class:_fresh={!existed}
-          name="value"
-          id="out_field"
-          on:keypress={handle_enter}
-          bind:this={out_field}
-          bind:value={out_val} />
-
-        <div class="format">
-          <div class="-cap">
-            <span class="-btn" on:click={() => upcase_val(1)}>Hoa 1 chữ</span>
-            <span class="-btn" on:click={() => upcase_val(2)}>Hai chữ</span>
-            <span class="-btn" on:click={() => upcase_val(3)}>Ba chữ</span>
-            <span class="-btn" on:click={() => upcase_val(9)}>Toàn bộ</span>
-            <span class="-btn" on:click={() => upcase_val(0)}>Không hoa</span>
-          </div>
-
-          <div class="-etc">
-            {#if updated}
-              <span class="-btn" on:click={() => update_val(existed)}>
-                Phục
-              </span>
-            {/if}
-            <span class="-btn" on:click={() => (out_val = '')}>Xoá</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer">
-        {#if current.uname != ''}
-          <div class="edit">
-            <span class="-text">Lưu:</span>
-            <span class="-time">{relative_time(current.mtime)}</span>
-            <span class="-text">bởi</span>
-            <span class="-user">{current.uname}</span>
-            <span class="-text _hide">(quyền hạn: {current.power})</span>
-          </div>
-        {/if}
-
-        <button
-          type="button"
-          class="m-button _{btn_class} _{btn_power}"
-          disabled={!(updated || prevail)}
-          on:click|once={submit_val}>
-          <span class="-text">{btn_label}</span>
-        </button>
-      </div>
-    </section>
-
-    <Footer {key} />
-  </div>
-</div>

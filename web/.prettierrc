@@ -6,5 +6,5 @@
   "semi": false,
   "singleQuote": true,
   "htmlWhitespaceSensitivity": "strict",
-  "svelteSortOrder": "scripts-styles-markup"
+  "svelteSortOrder": "scripts-markup-styles"
 }
