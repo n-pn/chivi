@@ -39,6 +39,68 @@
   }
 </script>
 
+<svelte:head>
+  <title>Tìm kiếm - Chivi</title>
+</svelte:head>
+
+<Vessel>
+  <form slot="header-left" class="header-field" action="/search" method="get">
+    <input type="search" name="kw" placeholder="Tìm kiếm" value={word} />
+    <MIcon class="m-icon _search" name="search" />
+  </form>
+
+  <h1 class="label">
+    Hiển thị kết quả {offset + 1}~{offset + items.length}/{total} cho từ khoá "{word}"
+    :
+  </h1>
+
+  <div class="list" data-page={page}>
+    {#each items as book}
+      <a class="book" href="/~{book.slug}" rel="prefetch">
+        <div class="cover">
+          <BookCover
+            ubid={book.ubid}
+            path={book.main_cover}
+            text={book.vi_title} />
+        </div>
+
+        <div class="name">
+          <h2 class="title">{book.vi_title} <span>({book.zh_title})</span></h2>
+        </div>
+
+        <div class="extra">
+          <div><span class="author">{book.vi_author}</span></div>
+
+          <div>
+            <span>
+              Đánh giá: <strong>{book.rating == 0 ? '--' : book.rating}</strong>
+              /10
+            </span>
+          </div>
+        </div>
+      </a>
+    {/each}
+  </div>
+
+  <div class="pagi">
+    <a
+      class="m-button _line"
+      class:_disable={page == 1}
+      href={searchUrl(page - 1)}>
+      <MIcon name="chevron-left" />
+      <span>Trước</span>
+    </a>
+
+    <a
+      class="m-button _line _primary"
+      class:_disable={page == pmax}
+      href={searchUrl(page + 1)}>
+      <span>Kế tiếp</span>
+      <MIcon name="chevron-right" />
+    </a>
+  </div>
+</Vessel>
+
 <style lang="scss">
   .list {
     // width: 35rem;
@@ -168,71 +230,3 @@
     }
   }
 </style>
-
-<svelte:head>
-  <title>Tìm kiếm - Chivi</title>
-</svelte:head>
-
-<Vessel>
-  <form slot="header-left" class="header-field" action="/search" method="get">
-    <input type="search" name="kw" placeholder="Tìm kiếm" value={word} />
-    <MIcon class="m-icon _search" name="search" />
-  </form>
-
-  <h1 class="label">
-    Hiển thị kết quả {offset + 1}~{offset + items.length}/{total} cho từ khoá "{word}"
-    :
-  </h1>
-
-  <div class="list" data-page={page}>
-    {#each items as book}
-      <a class="book" href={book.slug} rel="prefetch">
-        <div class="cover">
-          <BookCover
-            ubid={book.ubid}
-            path={book.main_cover}
-            text={book.vi_title} />
-        </div>
-
-        <div class="name">
-          <h2 class="title">
-            {book.vi_title}
-            <span>({book.zh_title})</span>
-          </h2>
-        </div>
-
-        <div class="extra">
-          <div>
-            <span class="author">{book.vi_author}</span>
-          </div>
-
-          <div>
-            <span>
-              Đánh giá:
-              <strong>{book.rating == 0 ? '--' : book.rating}</strong>
-              /10
-            </span>
-          </div>
-        </div>
-      </a>
-    {/each}
-  </div>
-
-  <div class="pagi">
-    <a
-      class="m-button _line"
-      class:_disable={page == 1}
-      href={searchUrl(page - 1)}>
-      <MIcon name="chevron-left" />
-      <span>Trước</span>
-    </a>
-
-    <a
-      class="m-button _line _primary"
-      class:_disable={page == pmax}
-      href={searchUrl(page + 1)}>
-      <span>Kế tiếp</span>
-      <MIcon name="chevron-right" />
-    </a>
-  </div>
-</Vessel>
