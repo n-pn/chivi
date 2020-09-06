@@ -42,30 +42,12 @@ module Server
     {status: "err", msg: "user not logged in"}.to_json(env.response)
   end
 
-  put "/_self/tag_book" do |env|
+  get "/_self/tagged_books" do |env|
     uslug = env.session.string("uslug")
-    ubid = env.params.query["ubid"]
+    # tag = env.params.query["tag"]? || "liked"
 
-    old_tag = env.params.query["old_tag"]? || ""
-    new_tag = env.params.query["new_tag"]? || ""
-
-    if old_tag.empty?
-      UserDB.add_book_tag(uslug, ubid, new_tag)
-    elsif new_tag.empty?
-      UserDB.remove_book_tag(uslug, ubid, old_tag)
-    else
-      UserDB.update_book_tag(uslug, ubid, old_tag, new_tag)
-    end
-  rescue err
-    {status: "err", msg: "user not logged in"}.to_json(env.response)
-  end
-
-  get "/_self/list_books" do |env|
-    uslug = env.session.string("uslug")
-    tag = env.params.query["tag"]? || "liked"
-
-    ubids = UserDB.list_books(uslug, tag) || Set(String).new
-    infos = ubids.map do |ubid|
+    books = UserDB.tagged_books(uslug)
+    infos = books.map do |ubid, tag|
       info = BookInfo.get!(ubid)
       {
         ubid:       info.ubid,
@@ -77,9 +59,36 @@ module Server
         main_cover: info.main_cover,
         rating:     info.rating,
         voters:     info.voters,
+        tagged:     tag,
       }
     end
 
     infos.to_json(env.response)
+  end
+
+  get "/_self/tagged_books/:ubid" do |env|
+    uslug = env.session.string("uslug")
+    ubid = env.params.url["ubid"]
+
+    tag = UserDB.get_book_tag(uslug, ubid) || ""
+    {stt: "ok", tag: tag}
+  rescue err
+    {stt: "err", msg: "user not logged in"}.to_json(env.response)
+  end
+
+  put "/_self/tagged_books/:ubid" do |env|
+    uslug = env.session.string("uslug")
+    ubid = env.params.url["ubid"]
+    tag = env.params.query["tag"]? || ""
+
+    if tag.empty?
+      UserDB.remove_book_tag(uslug, ubid)
+    else
+      UserDB.add_book_tag(uslug, ubid, tag)
+    end
+
+    {stt: "ok", tag: tag}
+  rescue err
+    {stt: "err", msg: "user not logged in"}.to_json(env.response)
   end
 end

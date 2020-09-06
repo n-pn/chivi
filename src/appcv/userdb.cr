@@ -48,45 +48,27 @@ module UserDB
     unames.upsert!(info.uname.downcase, info.uslug)
   end
 
-  UBIDS = {} of String => TokenMap
+  UBIDS = {} of String => LabelMap
 
   def ubids(uslug : String)
-    UBIDS[uslug] ||= TokenMap.read(File.join(SR_DIR, "#{uslug}.txt"))
+    UBIDS[uslug] ||= LabelMap.load(File.join(SR_DIR, "#{uslug}.txt"))
   end
 
-  # tags: viewed, liked, reading, completed, onhold, dropped
+  # tags: reading, finished, onhold, dropped
 
   def add_book_tag(uslug : String, ubid : String, tag : String)
-    mapper = ubids(uslug)
-
-    if tags = mapper.vals(ubid)
-      return if tags.includes?(tag)
-      tags << tag
-    else
-      tags = [tag]
-    end
-
-    mapper.upsert!(ubid, tags)
+    ubids(uslug).upsert!(ubid, tag)
   end
 
-  def remove_book_tag(uslug : String, ubid : String, tag : String)
-    mapper = ubids(uslug)
-    return unless tags = mapper.vals(ubid)
-    tags.delete(tags) if tags.includes?(tag)
-    mapper.upsert!(ubid, tags)
+  def remove_book_tag(uslug : String, ubid : String)
+    ubids(uslug).delete!(ubid)
   end
 
-  def update_book_tag(uslug : String, ubid : String, old_tag : String, new_tag : String)
-    mapper = ubids(uslug)
-    return add_book_tag(uslug, ubid, new_tag) unless tags = mapper.vals(ubid)
-
-    tags.delete(old_tag) if tags.includes?(old_tag)
-    tags.push(new_tag) unless tags.includes?(new_tag)
-
-    mapper.upsert!(ubid, tags)
+  def tagged_books(uslug : String)
+    ubids(uslug).data
   end
 
-  def list_books(uslug : String, tag : String)
-    ubids(uslug).keys(tag)
+  def get_book_tag(uslug : String, ubid : String)
+    ubids(uslug).fetch(ubid)
   end
 end

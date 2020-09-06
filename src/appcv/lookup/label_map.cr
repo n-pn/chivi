@@ -31,7 +31,7 @@ class LabelMap
     io << val
   end
 
-  def to_s(io : IO)
+  def to_s(io : IO) : Void
     each do |key, val|
       puts(io, key, val)
     end
