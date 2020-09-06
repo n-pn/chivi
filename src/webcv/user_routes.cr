@@ -75,7 +75,7 @@ module Server
     end
 
     books = UserDB.tagged_books(user.uslug)
-    infos = books.map do |ubid, tag|
+    infos = books.compact_map do |ubid, tag|
       info = BookInfo.get!(ubid)
 
       {
@@ -91,6 +91,8 @@ module Server
         mftime:     info.mftime,
         tagged:     tag,
       }
+    rescue
+      UserDB.remove_book_tag(user.uslug, ubid)
     end
 
     infos.sort_by(&.[:mftime].-).to_json(env.response)
