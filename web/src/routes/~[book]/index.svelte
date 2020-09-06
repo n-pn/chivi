@@ -52,6 +52,7 @@
 
   const book_tags = [
     ['reading', 'Đang đọc', 'eye'],
+    ['onhold', 'Tạm ngưng', 'pause'],
     ['completed', 'Hoàn thành', 'check-square'],
     ['dropped', 'Vứt bỏ', 'trash'],
     ['pending', 'Đọc sau', 'calendar'],

@@ -3,6 +3,7 @@
     ['all', 'Tất cả', 'asterisk'],
     ['reading', 'Đang đọc', 'eye'],
     ['completed', 'Hoàn thành', 'check-square'],
+    ['onhold', 'Tạm ngưng', 'pause'],
     ['dropped', 'Vứt bỏ', 'trash'],
     ['pending', 'Đọc sau', 'calendar'],
   ]
@@ -23,6 +24,7 @@
       all: books,
       reading: [],
       completed: [],
+      onhold: [],
       dropped: [],
       pending: [],
     }
