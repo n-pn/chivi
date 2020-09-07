@@ -56,11 +56,11 @@ module UserDB
 
   # tags: reading, finished, onhold, dropped
 
-  def add_book_tag(uslug : String, ubid : String, tag : String)
+  def add_book_tag(uslug : String, ubid : String, tag : String) : Void
     ubids(uslug).upsert!(ubid, tag)
   end
 
-  def remove_book_tag(uslug : String, ubid : String)
+  def remove_book_tag(uslug : String, ubid : String) : Void
     ubids(uslug).delete!(ubid)
   end
 

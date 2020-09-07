@@ -1,6 +1,5 @@
 <script context="module">
   const tabs = [
-    ['all', 'Tất cả', 'asterisk'],
     ['reading', 'Đang đọc', 'eye'],
     ['completed', 'Hoàn thành', 'check-square'],
     ['onhold', 'Tạm ngưng', 'pause'],
@@ -9,29 +8,15 @@
   ]
 
   export async function preload({ params, query }) {
-    const bslug = params.book
-
-    const res = await this.fetch(`/_users/${params.user}/tagged_books`)
+    const tagged = query.tab || 'reading'
+    const res = await this.fetch(
+      `/_users/${params.user}/tagged_books?tag=${tagged}`
+    )
     const data = await res.json()
 
     if (res.status == 200) {
-      return { books: data, uname: params.user, tagged: query.tab || 'all' }
+      return { books: data, uname: params.user, tagged }
     } else this.error(res.status, data.msg)
-  }
-
-  export function filter_content(books) {
-    const res = {
-      all: books,
-      reading: [],
-      completed: [],
-      onhold: [],
-      dropped: [],
-      pending: [],
-    }
-
-    for (let book of books) res[book.tagged].push(book)
-
-    return res
   }
 </script>
 
@@ -42,9 +27,7 @@
 
   export let books = []
   export let uname = ''
-  export let tagged = 'all'
-
-  $: content = filter_content(books)
+  export let tagged = 'reading'
 </script>
 
 <Vessel>
@@ -58,30 +41,31 @@
       <a
         href="/@{uname}?tab={tag_type}"
         class="tab"
-        class:_active={tag_type == tagged}
-        on:click|preventDefault={() => (tagged = tag_type)}>{tag_name} ({content[tag_type].length})</a>
+        class:_active={tag_type == tagged}>{tag_name}</a>
     {/each}
   </div>
 
-  <BookList books={content[tagged]} />
+  <BookList {books} />
 </Vessel>
 
 <style lang="scss">
   .tabs {
-    margin: 0.75rem 0;
     display: flex;
+    margin: 0.75rem 0;
     @include border($sides: bottom);
   }
 
   .tab {
-    line-height: 2.5rem;
+    line-height: 2rem;
     text-transform: uppercase;
     cursor: pointer;
     font-weight: 500;
     padding: 0 0.5rem;
+    // max-width: 30vw;
 
+    @include font-size(2);
     @include fgcolor(neutral, 6);
-    @include font-size(3);
+    @include truncate(null);
 
     &:hover {
       @include fgcolor(primary, 6);

@@ -74,8 +74,12 @@ module Server
       halt env, status_code: 404, response: Utils.json_error("user not found!")
     end
 
+    tag = env.params.query["tag"]? || "reading"
     books = UserDB.tagged_books(user.uslug)
-    infos = books.compact_map do |ubid, tag|
+
+    infos = books.compact_map do |ubid, tagged|
+      next unless tag == tagged
+
       info = BookInfo.get!(ubid)
 
       {
@@ -89,7 +93,6 @@ module Server
         rating:     info.rating,
         voters:     info.voters,
         mftime:     info.mftime,
-        tagged:     tag,
       }
     rescue
       UserDB.remove_book_tag(user.uslug, ubid)
