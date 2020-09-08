@@ -177,9 +177,7 @@ module Libcv::Convert
 
   private def special_char?(node : CvNode)
     case node.key[0]?
-    when ':', '/', '.', '%', '-',
-         '+', '?', '#', '=', '&',
-         '$', '^'
+    when ':', '/', '.', '-', '+', '?', '%', '#', '&'
       true
     else
       false

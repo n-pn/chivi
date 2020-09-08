@@ -178,10 +178,17 @@ class CvData
     case right.val[0]?
     when '”', '’', '⟩', ')', ']', '}',
          ',', '.', ':', ';', '!', '?',
-         '%', '…', '~'
+         '%', '~'
       return false
     when '·'
       return true
+    when '…'
+      case left.val[-1]?
+      when '.', ','
+        return true
+      else
+        return false
+      end
     end
 
     case left.val[-1]?
