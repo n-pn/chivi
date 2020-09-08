@@ -24,7 +24,10 @@ module Libcv::Convert
     res
   end
 
-  TITLE_RE = /^(第?([零〇一二两三四五六七八九十百千]+|\d+)([集卷章节幕回]))([,.:\s]*)(.*)$/
+  LABEL_RE_1 = /^(第?([零〇一二两三四五六七八九十百千]+|\d+)([集卷]))([,.:\s]*)(.*)$/
+  TITLE_RE_1 = /^(第?([零〇一二两三四五六七八九十百千]+|\d+)([章节幕回]))([,.:\s]*)(.*)$/
+
+  TITLE_RE_2 = /^((\d+)([,.:]))(\s*)(.+)$/
 
   def cv_title(input : String, *dicts : BaseDict)
     res = CvData.new
@@ -32,7 +35,7 @@ module Libcv::Convert
     title, label = ChapUtil.split_label(input)
 
     unless label.empty? || label == "正文"
-      if match = TITLE_RE.match(label)
+      if match = LABEL_RE_1.match(label)
         _, group, idx, tag, trash, label = match
 
         num = Utils.han_to_int(idx)
@@ -54,7 +57,7 @@ module Libcv::Convert
     end
 
     unless title.empty?
-      if match = TITLE_RE.match(title)
+      if match = TITLE_RE_1.match(title)
         _, group, idx, tag, trash, title = match
 
         num = Utils.han_to_int(idx)
@@ -62,6 +65,15 @@ module Libcv::Convert
 
         if !title.empty?
           res << CvNode.new(trash, ": ", 0)
+        elsif !trash.empty?
+          res << CvNode.new(trash, "", 0)
+        end
+      elsif match = TITLE_RE_2.match(title)
+        _, group, num, tag, trash, title = match
+        res << CvNode.new(group, "#{num}#{tag}", 1)
+
+        if !title.empty?
+          res << CvNode.new(trash, " ", 0)
         elsif !trash.empty?
           res << CvNode.new(trash, "", 0)
         end
