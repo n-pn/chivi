@@ -347,12 +347,12 @@
 
         $font-sizes: screen-vals(
           rem(24px),
-          rem(24px),
+          rem(25px),
           rem(26px),
           rem(28px),
           rem(30px)
         );
-        $line-heights: screen-vals(1.75rem, 1.75rem, 2rem, 2.25rem, 2.5rem);
+        $line-heights: screen-vals(1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
 
         @include apply(font-size, $font-sizes);
         @include apply(line-height, $line-heights);
@@ -360,13 +360,13 @@
 
       &._para {
         $font-sizes: screen-vals(
-          rem(17px),
           rem(18px),
           rem(19px),
           rem(20px),
-          rem(21px)
+          rem(21px),
+          rem(22px)
         );
-        $margin-tops: screen-vals(1rem, 1.25rem, 1.5rem);
+        $margin-tops: screen-vals(1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
 
         text-align: justify;
         text-justify: auto;
