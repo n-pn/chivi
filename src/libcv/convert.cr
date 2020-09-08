@@ -135,14 +135,14 @@ module Libcv::Convert
           when 2
             break
           when 0
-            break unless node.special_char?
+            break unless special_char?(node)
           end
 
           acc.combine!(node)
           idx -= node.key.size
         end
 
-        if (last = res.last?) && last.special_char?
+        if (last = res.last?) && special_char?(last)
           last.combine!(acc)
           last.dic = 1
           next
@@ -163,6 +163,14 @@ module Libcv::Convert
     res
   end
 
-  private def special_char?(char : Char)
+  private def special_char?(node : CvNode)
+    case node.key[0]?
+    when ':', '/', '.', '%', '-',
+         '+', '?', '#', '=', '&',
+         '$', '^'
+      true
+    else
+      false
+    end
   end
 end

@@ -28,31 +28,8 @@ class CvNode
     io << @key << SEP_1 << @val << SEP_1 << @dic
   end
 
-  # return true if
   def capitalize!
     @val = TextUtil.capitalize(@val)
-  end
-
-  # LETTER_RE = /[_\p{L}\p{N}]/
-
-  # def match_letter?
-  #   LETTER_RE.matches?(@key)
-  # end
-
-  def special_char?
-    case @key[0]?
-    when ':', '/', '.', '%', '-',
-         '+', '?', '#', '=', '&',
-         '$', '^'
-      true
-    else
-      false
-    end
-  end
-
-  def unchanged?
-    return false if @key == " "
-    @key == @val
   end
 
   def combine!(other : self)
