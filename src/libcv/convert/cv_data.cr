@@ -83,6 +83,11 @@ class CvData
         node.dic = 9
         # when "不过"
         # TODO!
+      when "行"
+        if border?(i - 1) && border?(i + 1)
+          node.val = "được"
+          node.dic = 9
+        end
       when "的"
         node.val = ""
         node.dic = 9
