@@ -214,6 +214,123 @@
   }
 </script>
 
+<svelte:head>
+  <title>{ch_title} - {bname} - Chivi</title>
+  <meta property="og:url" content="{bslug}/{curr_url}" />
+</svelte:head>
+
+<svelte:window on:keydown={handleKeypress} />
+
+<Vessel shift={clavis_actived}>
+  <a slot="header-left" href={book_path} class="header-item _title">
+    <MIcon class="m-icon _book-open" name="book-open" />
+    <span class="header-text _show-sm _title">{bname}</span>
+  </a>
+
+  <span slot="header-left" class="header-item _active">
+    <span class="header-text">{ch_index}</span>
+    <span class="header-text _show-md">/{ch_total}</span>
+  </span>
+
+  <button
+    slot="header-right"
+    type="button"
+    class="header-item"
+    disabled={$user.power < 1}
+    on:click={() => reconvert(1)}>
+    <MIcon
+      class="m-icon _refresh-ccw {__reloading ? '_reload' : ''}"
+      name="refresh-ccw" />
+  </button>
+
+  <button
+    slot="header-right"
+    type="button"
+    class="header-item"
+    class:_active={upsert_actived}
+    on:click={() => showUpsertModal()}>
+    <MIcon class="m-icon _plus-circle" name="plus-circle" />
+  </button>
+
+  <button
+    slot="header-right"
+    type="button"
+    class="header-item"
+    class:_active={clavis_enabled}
+    on:click={triggerClavisSidebar}>
+    <MIcon class="m-icon _compass" name="compass" />
+  </button>
+
+  <nav class="bread">
+    <div class="-crumb _sep"><a href="/" class="-link">Chivi</a></div>
+
+    <div class="-crumb _sep"><a href="/~{bslug}" class="-link">{bname}</a></div>
+
+    <div class="-crumb _sep">
+      <a href={book_path} class="-link">[{seed}]</a>
+    </div>
+
+    <div class="-crumb"><span class="-text">{ch_label}</span></div>
+
+    <div class="-right"><span>{relative_time(mftime)}</span></div>
+  </nav>
+
+  <article class="convert" class:_reload={__reloading}>
+    {#each lines as line, idx}
+      <p
+        class="line"
+        class:_head={idx == 0}
+        class:_para={idx != 0}
+        class:_focus={idx == focused_line}
+        class:_hover={idx == hovered_line}
+        on:mouseenter={() => (hovered_line = idx)}
+        on:click={(event) => handleClick(event, idx)}>
+        {@html render_convert(line, renderMode(idx, hovered_line, focused_line))}
+      </p>
+    {/each}
+  </article>
+
+  <footer class="footer">
+    {#if prev_url}
+      <a class="m-button _line" class:_disable={!prev_url} href={prev_path}>
+        <MIcon class="m-icon" name="chevron-left" />
+        <span>Trước</span>
+      </a>
+    {/if}
+
+    <a class="m-button _line" href={book_path}>
+      <MIcon class="m-icon" name="list" />
+      <span>Mục lục</span>
+    </a>
+
+    <a
+      class="m-button _line _primary"
+      class:_disable={!next_url}
+      href={next_path}>
+      <span>Kế tiếp</span>
+      <MIcon class="m-icon" name="chevron-right" />
+    </a>
+  </footer>
+
+  {#if clavis_enabled}
+    <Clavis
+      on_top={!upsert_actived}
+      bind:active={clavis_actived}
+      input={clavis_input}
+      dname={ubid}
+      from={clavis_from} />
+  {/if}
+
+  {#if upsert_actived}
+    <Upsert
+      tab={upsert_tab}
+      key={upsert_key}
+      dname={ubid}
+      bind:actived={upsert_actived}
+      bind:changed={should_reload} />
+  {/if}
+</Vessel>
+
 <style lang="scss">
   .convert {
     padding: 0.75rem 0;
@@ -287,15 +404,19 @@
     cursor: pointer;
 
     &[data-d='1'] {
-      @include token(teal);
+      @include token(success);
     }
 
     &[data-d='2'] {
-      @include token(blue);
+      @include token(primary);
     }
 
     &[data-d='3'] {
-      @include token(red);
+      @include token(harmful);
+    }
+
+    &[data-d='9'] {
+      @include token(neutral);
     }
   }
 
@@ -353,128 +474,3 @@
     }
   }
 </style>
-
-<svelte:head>
-  <title>{ch_title} - {bname} - Chivi</title>
-  <meta property="og:url" content="{bslug}/{curr_url}" />
-</svelte:head>
-
-<svelte:window on:keydown={handleKeypress} />
-
-<Vessel shift={clavis_actived}>
-  <a slot="header-left" href={book_path} class="header-item _title">
-    <MIcon class="m-icon _book-open" name="book-open" />
-    <span class="header-text _show-sm _title">{bname}</span>
-  </a>
-
-  <span slot="header-left" class="header-item _active">
-    <span class="header-text">{ch_index}</span>
-    <span class="header-text _show-md">/{ch_total}</span>
-  </span>
-
-  <button
-    slot="header-right"
-    type="button"
-    class="header-item"
-    disabled={$user.power < 1}
-    on:click={() => reconvert(1)}>
-    <MIcon
-      class="m-icon _refresh-ccw {__reloading ? '_reload' : ''}"
-      name="refresh-ccw" />
-  </button>
-
-  <button
-    slot="header-right"
-    type="button"
-    class="header-item"
-    class:_active={upsert_actived}
-    on:click={() => showUpsertModal()}>
-    <MIcon class="m-icon _plus-circle" name="plus-circle" />
-  </button>
-
-  <button
-    slot="header-right"
-    type="button"
-    class="header-item"
-    class:_active={clavis_enabled}
-    on:click={triggerClavisSidebar}>
-    <MIcon class="m-icon _compass" name="compass" />
-  </button>
-
-  <nav class="bread">
-    <div class="-crumb _sep">
-      <a href="/" class="-link">Chivi</a>
-    </div>
-
-    <div class="-crumb _sep">
-      <a href="/~{bslug}" class="-link">{bname}</a>
-    </div>
-
-    <div class="-crumb _sep">
-      <a href={book_path} class="-link">[{seed}]</a>
-    </div>
-
-    <div class="-crumb">
-      <span class="-text">{ch_label}</span>
-    </div>
-
-    <div class="-right">
-      <span>{relative_time(mftime)}</span>
-    </div>
-  </nav>
-
-  <article class="convert" class:_reload={__reloading}>
-    {#each lines as line, idx}
-      <p
-        class="line"
-        class:_head={idx == 0}
-        class:_para={idx != 0}
-        class:_focus={idx == focused_line}
-        class:_hover={idx == hovered_line}
-        on:mouseenter={() => (hovered_line = idx)}
-        on:click={(event) => handleClick(event, idx)}>
-        {@html render_convert(line, renderMode(idx, hovered_line, focused_line))}
-      </p>
-    {/each}
-  </article>
-
-  <footer class="footer">
-    {#if prev_url}
-      <a class="m-button _line" class:_disable={!prev_url} href={prev_path}>
-        <MIcon class="m-icon" name="chevron-left" />
-        <span>Trước</span>
-      </a>
-    {/if}
-
-    <a class="m-button _line" href={book_path}>
-      <MIcon class="m-icon" name="list" />
-      <span>Mục lục</span>
-    </a>
-
-    <a
-      class="m-button _line _primary"
-      class:_disable={!next_url}
-      href={next_path}>
-      <span>Kế tiếp</span>
-      <MIcon class="m-icon" name="chevron-right" />
-    </a>
-  </footer>
-
-  {#if clavis_enabled}
-    <Clavis
-      on_top={!upsert_actived}
-      bind:active={clavis_actived}
-      input={clavis_input}
-      dname={ubid}
-      from={clavis_from} />
-  {/if}
-
-  {#if upsert_actived}
-    <Upsert
-      tab={upsert_tab}
-      key={upsert_key}
-      dname={ubid}
-      bind:actived={upsert_actived}
-      bind:changed={should_reload} />
-  {/if}
-</Vessel>

@@ -33,15 +33,17 @@ class CvNode
     @val = TextUtil.capitalize(@val)
   end
 
-  LETTER_RE = /[\p{L}\p{N}]/
+  # LETTER_RE = /[_\p{L}\p{N}]/
 
-  def match_letter?
-    LETTER_RE.matches?(@key)
-  end
+  # def match_letter?
+  #   LETTER_RE.matches?(@key)
+  # end
 
   def special_char?
     case @key[0]?
-    when '_', '.', '%', '-', '/', '?', '=', ':', '#', '+', '$'
+    when ':', '/', '.', '%', '-',
+         '+', '?', '#', '=', '&',
+         '$', '^'
       true
     else
       false
@@ -56,55 +58,5 @@ class CvNode
   def combine!(other : self)
     @key = other.key + @key
     @val = other.val + @val
-  end
-
-  def should_cap_after?
-    case @val[-1]?
-    when '“', '‘', '⟨', '[', '{',
-         '.', ':', '!', '?'
-      return true
-    else
-      return false
-    end
-  end
-
-  def should_space_before?(before : Bool = false)
-    return before if @dic > 0
-
-    case @key
-    when "＋"
-      return before
-    when "."
-      return false
-    end
-
-    case @val[0]?
-    when '”', '’', '⟩', ')', ']', '}',
-         ',', '.', ':', ';', '!', '?',
-         '-', '+', '=', '%', '_', '/',
-         '…', '~', '#', '$', '^'
-      false
-    else
-      before
-      # when '“', '‘', '⟨', '(', '[', '{',
-      #      '—', '·'
-      #   true
-      # else
-      #   before
-    end
-  end
-
-  def should_space_after?
-    return true if @dic > 0 || @key == "＋"
-    return false if @key == "."
-
-    case @val[-1]?
-    when '”', '’', '⟩', ')', ']', '}',
-         ',', '.', ':', ';', '!', '?',
-         '%', '…', '~', '—', '·'
-      true
-    else
-      false
-    end
   end
 end
