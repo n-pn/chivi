@@ -1,182 +1,147 @@
 require "file_utils"
 require "option_parser"
 
-require "../../src/utils/file_util"
-require "../../src/utils/http_util"
-require "../../src/utils/time_util"
+require "../../src/appcv/parser/seed_info"
+require "../../src/appcv/lookup"
 
-require "../../src/appcv/bookdb"
-require "../../src/appcv/chapdb"
+SEEDS = {
+  "hetushu", "jx_la", "rengshu",
+  "xbiquge", "nofff", "duokan8",
+  "paoshu8", "69shu", "qu_la",
+  "5200", "kenwen", "mxguan",
+}
 
 class MapRemote
-  SEEDS = {
-    "hetushu", "jx_la", "rengshu",
-    "xbiquge", "nofff", "duokan8",
-    "paoshu8", "69shu", "qu_la",
-    "5200", "kenwen", "mxguan",
-  }
+  DIR = File.join("var", "appcv", ".mapped")
+
+  getter seed : String
+  getter upto = 1
+
+  def initialize(@seed, @upto, @mode : Int32 = 0)
+    root = File.join(DIR, @seed)
+    FileUtils.mkdir_p(root)
+
+    @unames = LabelMap.load(File.join(root, "unames.txt"))
+
+    @intros = LabelMap.load(File.join(root, "intros.txt"))
+    @covers = LabelMap.load(File.join(root, "covers.txt"))
+
+    @genres = LabelMap.load(File.join(root, "genres.txt"))
+    @labels = LabelMap.load(File.join(root, "labels.txt"))
+
+    @states = LabelMap.load(File.join(root, "states.txt"))
+    @mtimes = LabelMap.load(File.join(root, "mtimes.txt"))
+
+    @ctimes = LabelMap.load(File.join(root, "ctimes.txt"))
+  end
+
+  def run!
+    queue = [] of Tuple(String, Time)
+
+    1.upto(upto) do |sbid|
+      sbid = sbid.to_s
+      next unless expiry = expiry_for(sbid)
+      queue << {sbid, expiry}
+    end
+
+    puts "\n[-- seed: #{@seed}, \
+                upto: #{upto}, \
+                size: #{queue.size}, \
+                mode: #{@mode} --] ".colorize.cyan.bold
+
+    worker = queue.size
+    worker = 8 if worker > 8
+
+    channel = Channel(SeedInfo).new(worker)
+
+    queue.each_with_index do |(sbid, expiry), idx|
+      map_entry(channel.receive) if idx > worker
+
+      spawn do
+        parser = SeedInfo.new(@seed, sbid, expiry, freeze: true)
+        puts "- <#{idx + 1}/#{queue.size}> #{parser.title}--#{parser.author}"
+        channel.send(parser)
+      end
+    end
+
+    worker.times { map_entry(channel.receive) }
+    LabelMap.flush!
+  end
+
+  OLD = Time.utc - 12.months
+  NEW = Time.utc - 3.hours
+
+  def expiry_for(sbid : String) : Time?
+    # for unmapped book entry
+    return OLD unless uname = @unames.fetch(sbid)
+    return OLD unless state = @states.fetch(sbid)
+    return NEW unless mtime = @mtimes.fetch(sbid)
+    return NEW unless ctime = @ctimes.fetch(sbid)
+
+    # fast mapping mode, skipping mapped entries
+    return if @mode == 0
+
+    # skipp mapping recently cached entries
+    return if (Time.unix(ctime.to_i64) + 30.minutes) > Time.utc
+
+    # redownload error pages
+    return NEW if @mode > 1 && uname == "--"
+
+    # don't download completed series
+    mtime = Time.unix_ms(mtime.to_i64)
+    return mtime if state == "1"
+
+    # since these sites don't have update times
+    return Time.utc - 1.days if @seed == "hetushu" || @seed == "zhwenpg"
+
+    # recheck after 3 days
+    mtime += 3.days
+    mtime < NEW ? mtime : NEW
+  end
+
+  def map_entry(info : SeedInfo) : Void
+    @unames.upsert!(info.sbid, "#{info.title}--#{info.author}")
+
+    @intros.upsert!(info.sbid, info.intro.gsub('\n', LabelMap::SEP_1))
+    @covers.upsert!(info.sbid, info.cover)
+
+    @genres.upsert!(info.sbid, info.genre)
+    @labels.upsert!(info.sbid, info.tags.join(LabelMap::SEP_1))
+
+    @states.upsert!(info.sbid, info.status.to_s)
+    @mtimes.upsert!(info.sbid, info.mftime.to_s)
+
+    @ctimes.upsert!(info.sbid, Time.utc.to_unix.to_s)
+  rescue err
+    puts "ERROR: <#{info.sbid}> : #{err}".colorize.red
+    info.delete_cache! if @mode > 0
+    @unames.upsert!(info.sbid, "--")
+  end
 
   def self.run!(argv = ARGV)
     seed = "hetushu"
-    mode = 0
-    from = 1
     upto = 1
+    mode = 0
 
     OptionParser.parse(argv) do |parser|
       parser.banner = "Usage: map_remote [arguments]"
       parser.on("-s SEED", "--seed=SEED", "Seed name") { |x| seed = x }
-      parser.on("-m MODE", "--mode=MODE", "Map mode") { |x| mode = x.to_i }
-      parser.on("-f FROM", "--from=FROM", "First sbid") { |x| from = x.to_i }
       parser.on("-u UPTO", "--upto=UPTO", "Last sbid") { |x| upto = x.to_i }
+      parser.on("-m MODE", "--mode=MODE", "Parse mode") { |x| mode = x.to_i }
 
       parser.invalid_option do |flag|
         STDERR.puts "ERROR: `#{flag}` is not a valid option."
         STDERR.puts parser
         exit(1)
       end
-    end
 
-    unless SEEDS.includes?(seed)
-      STDERR.puts "ERROR: invalid seed `#{seed}`."
-      exit(1)
-    end
-
-    upto = default_upto(seed) if upto <= 1
-    new(seed).crawl!(from, upto, mode)
-  end
-
-  def self.default_from(seed : String) : Int32
-    1 # TODO: read from input?
-  end
-
-  def self.default_upto(seed : String) : Int32
-    case seed
-    when "hetushu" then 4831
-    when "qu_la"   then 252941
-    when "jx_la"   then 252941
-    when "rengshu" then 4275
-    when "xbiquge" then 52986
-    when "nofff"   then 69766
-    when "duokan8" then 23377
-    when "69shu"   then 32113
-    when "paoshu8" then 147456
-    when "5200"    then 28208
-    when "kenwen"  then 540465
-    when "mxguan"  then 99998593
-    else                1
-    end
-  end
-
-  def initialize(@seed : String, @type = 0)
-    @existed = Set(String).new(BookInfo.ubids)
-    @sitemap = LabelMap.load("_import/sites/#{@seed}")
-
-    @crawled = {} of String => String
-    @sitemap.each do |key, val|
-      ubid, title, author = val.split("¦")
-      ubid = "--" if title.empty? || author.empty?
-      @crawled[key] = ubid
-    end
-  end
-
-  def crawl!(from = 1, upto = 1, mode = 0)
-    queue = [] of Tuple(String, Time)
-
-    from.upto(upto) do |id|
-      sbid = id.to_s
-      queue << {sbid, expiry_for(sbid)} if should_crawl?(sbid, mode)
-    end
-
-    puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
-
-    queue = queue.shuffle
-
-    limit = queue.size
-    limit = 8 if limit > 8
-    limit = 1 if @seed == "qu_la"
-
-    channel = Channel(Nil).new(limit)
-
-    queue.each_with_index do |(sbid, expiry), idx|
-      channel.receive if idx > limit
-
-      spawn do
-        parse!(sbid, expiry, "#{idx + 1}/#{queue.size}")
-      ensure
-        channel.send(nil)
+      unless SEEDS.includes?(seed)
+        STDERR.puts "ERROR: invalid seed `#{seed}`."
+        exit(1)
       end
     end
 
-    limit.times { channel.receive }
-
-    puts "\n[-- Save indexes --]".colorize.cyan.bold
-    OrderMap.flush!
-    LabelMap.flush!
-    TokenMap.flush!
-
-    @sitemap.save!
-
-    puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
-  end
-
-  CACHED = ARGV.includes?("cached")
-
-  def expiry_for(sbid : String)
-    return Time.utc - 1.year if CACHED
-    return Time.utc - 9.months unless ubid = @crawled[sbid]?
-    return Time.utc - 6.months unless @existed.includes?(ubid)
-    return Time.utc - 3.months unless time = OrderMap.book_update.value(ubid)
-    Time.unix_ms(time) + 6.hours
-  end
-
-  def should_crawl?(sbid : String, mode = 0) : Bool
-    return true unless meta = @sitemap.fetch(sbid)
-    ubid, title, author = meta.split("¦")
-    return true if mode == 2 && title.empty? || author.empty?
-    qualified?(ubid, author)
-  end
-
-  def qualified?(ubid : String, author : String)
-    return true if @existed.includes?(ubid)
-    BookDB.whitelist?(author)
-  end
-
-  def parse!(sbid : String, expiry = Time.utc - 24.hours, label = "1/1")
-    remote = SeedInfo.init(@seed, sbid, expiry: expiry, freeze: true)
-
-    info = BookDB.find_or_create(remote.title, remote.author)
-    save_info(sbid, info.ubid, info.zh_title, info.zh_author)
-
-    if remote.fresh && @seed == "qu_la" # || @seed == "paoshu8"
-      sleep 3.seconds
-    end
-
-    return if info.zh_title.empty? || info.zh_author.empty? || BookDB.blacklist?(info)
-
-    return unless qualified?(info.ubid, info.zh_author)
-
-    puts "\n<#{label}> [#{sbid}] #{info.ubid}-#{info.zh_title}".colorize.cyan
-
-    BookDB.upsert_info(info)
-    BookDB.update_info(info, remote)
-
-    info.save! if info.changed?
-
-    expiry = Time.unix_ms(info.mftime) unless CACHED
-
-    return unless ChapList.outdated?(info.ubid, @seed, expiry)
-    chlist = ChapList.get_or_create(info.ubid, @seed)
-    chlist = ChapDB.update_list(chlist, remote)
-
-    chlist.save! if chlist.changed?
-  rescue err
-    puts "Error parsing `#{sbid}`: #{err.colorize.red}".colorize.bold
-    # puts err.backtrace
-    save_info(sbid)
-  end
-
-  def save_info(sbid, ubid = "--", title = "", author = "")
-    @sitemap.upsert(sbid, "#{ubid}¦#{title}¦#{author}")
+    new(seed, upto, mode).run!
   end
 end
 

@@ -18,7 +18,7 @@ class SeedInfo
 
   getter html_link : String { gen_html_link }
   getter file_path : String { gen_file_path }
-  getter is_cached = false
+  getter from_cache = false
 
   getter title : String { parse_title || "" }
   getter author : String { parse_author || "" }
@@ -73,18 +73,22 @@ class SeedInfo
   FileUtils.mkdir_p(DIR)
 
   private def gen_file_path
-    File.join(DIR, @seed, "#{@sbid}.html")
+    File.join(DIR, @seed, "infos", "#{@sbid}.html")
   end
 
   private def fetch_html
     if html = FileUtil.read(file_path, @expiry)
-      is_cached = true
+      from_cache = true
     else
       html = HttpUtil.fetch_html(html_link, HttpUtil.encoding_for(seed))
       File.write(file_path, html) if @freeze
     end
 
     html
+  end
+
+  def delete_cache!
+    File.delete file_path
   end
 
   private def parse_title
