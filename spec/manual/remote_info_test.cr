@@ -3,9 +3,9 @@ require "file_utils"
 require "../../src/appcv/parser/seed_info.cr"
 
 def fetch_info(info, sbid, expiry = Time.utc) : Void
-  puts "\n[ #{info}/#{sbid} ]\n".colorize(:yellow)
+  puts "\n[ #{info} - #{sbid} ]\n".colorize(:yellow)
 
-  task = SeedInfo.init(info, sbid, expiry: expiry, freeze: false)
+  task = SeedInfo.new(info, sbid, expiry: expiry, freeze: false)
 
   info = {
     title:  task.title,
@@ -18,7 +18,7 @@ def fetch_info(info, sbid, expiry = Time.utc) : Void
     mftime: task.mftime,
     latest: task.latest,
   }
-  puts info.to_json
+  puts info.to_pretty_json
 
   puts task.chapters.size
   puts task.chapters.first(4).to_pretty_json
@@ -26,7 +26,7 @@ def fetch_info(info, sbid, expiry = Time.utc) : Void
 end
 
 # fetch_info("qu_la", "7")
-fetch_info("qu_la", "9923")
+# fetch_info("qu_la", "9923")
 
 # fetch_info("jx_la", "7")
 # fetch_info("jx_la", "179402")
@@ -52,4 +52,4 @@ fetch_info("qu_la", "9923")
 
 # fetch_info("jx_la", "80240")
 
-# fetch_info("5200", "28208")
+fetch_info("5200", "28208")

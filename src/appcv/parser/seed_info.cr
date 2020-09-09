@@ -10,71 +10,15 @@ require "../../utils/time_util"
 require "../models/chap_info"
 
 class SeedInfo
-  DIR = File.join("var", "appcv", ".cached")
-  FileUtils.mkdir_p(DIR)
-
-  def self.path_for(seed : String)
-    File.join(DIR, seed, "infos")
-  end
-
-  def self.path_for(seed : String, sbid : String)
-    File.join(path_for(seed), "#{sbid}.html")
-  end
-
-  def self.info_url(seed : String, sbid : String)
-    case seed
-    when "nofff"
-      "https://www.nofff.com/#{sbid}/"
-    when "69shu"
-      "https://www.69shu.com/#{sbid}/"
-    when "qu_la"
-      "https://www.qu.la/book/#{sbid}/"
-    when "jx_la"
-      "https://www.jx.la/book/#{sbid}/"
-    when "rengshu"
-      "http://www.rengshu.com/book/#{sbid}"
-    when "xbiquge"
-      "https://www.xbiquge.cc/book/#{sbid}/"
-    when "hetushu"
-      "https://www.hetushu.com/book/#{sbid}/index.html"
-    when "duokan8"
-      group = sbid.to_i // 1000
-      "http://www.duokan8.com/#{group}_#{sbid}/"
-    when "paoshu8"
-      group = sbid.to_i // 1000
-      "http://www.paoshu8.com/#{group}_#{sbid}/"
-    when "5200"
-      group = sbid.to_i // 1000
-      "https://www.5200.net/#{group}_#{sbid}/"
-    when "zhwenpg"
-      "https://novel.zhwenpg.com/b.php?id=#{sbid}"
-    else
-      raise "- site `#{seed}` not supported!"
-    end
-  end
-
-  def self.init(seed : String, sbid : String, expiry : Time = Time.utc - 6.hours, freeze : Bool = false)
-    url = info_url(seed, sbid)
-    file = path_for(seed, sbid)
-
-    if html = FileUtil.read(file, expiry)
-      fresh = false
-    else
-      html = HttpUtil.fetch_html(url, HttpUtil.encoding_for(seed))
-      File.write(file, html) if freeze
-      fresh = true
-    end
-
-    new(seed, sbid, html, fresh: fresh)
-  end
-
   getter seed : String
   getter sbid : String
-  getter fresh : Bool
 
-  def initialize(@seed, @sbid, html : String, @fresh = false)
-    @doc = Myhtml::Parser.new(html)
-  end
+  getter html : String { fetch_html }
+  getter rdoc : Myhtml::Parser { Myhtml::Parser.new(html) }
+
+  getter html_link : String { gen_html_link }
+  getter file_path : String { gen_file_path }
+  getter is_cached = false
 
   getter title : String { parse_title || "" }
   getter author : String { parse_author || "" }
@@ -87,7 +31,63 @@ class SeedInfo
   getter latest : ChapInfo { parse_latest || ChapInfo.new("", "") }
   getter chapters : Array(ChapInfo) { parse_chapters || [] of ChapInfo }
 
-  def parse_title
+  def initialize(@seed : String,
+                 @sbid : String,
+                 @expiry : Time = Time.utc - 3.hours,
+                 @freeze : Bool = false)
+  end
+
+  private def gen_html_link
+    case @seed
+    when "nofff"
+      "https://www.nofff.com/#{@sbid}/"
+    when "69shu"
+      "https://www.69shu.com/#{@sbid}/"
+    when "qu_la"
+      "https://www.qu.la/book/#{@sbid}/"
+    when "jx_la"
+      "https://www.jx.la/book/#{@sbid}/"
+    when "rengshu"
+      "http://www.rengshu.com/book/#{@sbid}"
+    when "xbiquge"
+      "https://www.xbiquge.cc/book/#{@sbid}/"
+    when "hetushu"
+      "https://www.hetushu.com/book/#{@sbid}/index.html"
+    when "duokan8"
+      group = @sbid.to_i // 1000
+      "http://www.duokan8.com/#{group}_#{@sbid}/"
+    when "paoshu8"
+      group = @sbid.to_i // 1000
+      "http://www.paoshu8.com/#{group}_#{@sbid}/"
+    when "5200"
+      group = @sbid.to_i // 1000
+      "https://www.5200.net/#{group}_#{@sbid}/"
+    when "zhwenpg"
+      "https://novel.zhwenpg.com/b.php?id=#{@sbid}"
+    else
+      raise "- site `#{@seed}` not supported!"
+    end
+  end
+
+  DIR = File.join("var", "appcv", ".cached")
+  FileUtils.mkdir_p(DIR)
+
+  private def gen_file_path
+    File.join(DIR, @seed, "#{@sbid}.html")
+  end
+
+  private def fetch_html
+    if html = FileUtil.read(file_path, @expiry)
+      is_cached = true
+    else
+      html = HttpUtil.fetch_html(html_link, HttpUtil.encoding_for(seed))
+      File.write(file_path, html) if @freeze
+    end
+
+    html
+  end
+
+  private def parse_title
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
          "rengshu", "xbiquge", "paoshu8", "5200"
@@ -103,7 +103,7 @@ class SeedInfo
     end
   end
 
-  def parse_author
+  private def parse_author
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
          "rengshu", "xbiquge", "paoshu8", "5200"
@@ -119,7 +119,7 @@ class SeedInfo
     end
   end
 
-  def parse_intro
+  private def parse_intro
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
          "rengshu", "xbiquge", "paoshu8", "5200"
@@ -130,7 +130,7 @@ class SeedInfo
       # TODO: trad to simp?
       TextUtil.split_html(text).join("\n")
     when "hetushu"
-      @doc.css(".intro > p").map(&.inner_text).join("\n")
+      rdoc.css(".intro > p").map(&.inner_text).join("\n")
     when "69shu"
       "" # TODO: extract 69shu book intro
     else
@@ -138,7 +138,7 @@ class SeedInfo
     end
   end
 
-  def parse_cover
+  private def parse_cover
     case @seed
     when "qu_la", "duokan8", "nofff", "rengshu",
          "xbiquge", "paoshu8", "5200"
@@ -158,7 +158,7 @@ class SeedInfo
     end
   end
 
-  def parse_genre
+  private def parse_genre
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
          "rengshu", "xbiquge", "paoshu8", "5200"
@@ -174,15 +174,15 @@ class SeedInfo
     end
   end
 
-  def parse_tags
+  private def parse_tags
     return unless @seed == "hetushu"
 
-    @doc.css(".tag a").map(&.inner_text).to_a.reject! do |tag|
+    rdoc.css(".tag a").map(&.inner_text).to_a.reject! do |tag|
       tag == author || tag == title
     end
   end
 
-  def parse_status
+  private def parse_status
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
          "rengshu", "xbiquge", "paoshu8", "5200"
@@ -208,7 +208,7 @@ class SeedInfo
 
   TIME_DF = Time.utc(2000, 1, 1).to_unix_ms
 
-  def parse_mftime
+  private def parse_mftime
     case @seed
     when "qu_la", "jx_la", "nofff", "rengshu",
          "xbiquge", "duokan8", "paoshu8", "5200"
@@ -224,7 +224,7 @@ class SeedInfo
     end
   end
 
-  def parse_latest : ChapInfo?
+  private def parse_latest : ChapInfo?
     case @seed
     when "qu_la", "jx_la", "nofff", "rengshu",
          "xbiquge", "duokan8", "paoshu8", "5200"
@@ -240,7 +240,7 @@ class SeedInfo
     end
   end
 
-  def parse_latest_by_meta_tag
+  private def parse_latest_by_meta_tag
     return unless href = meta_data("og:novel:latest_chapter_url")
     text = meta_data("og:novel:latest_chapter_name").not_nil!
     if @seed == "duokan8"
@@ -252,7 +252,7 @@ class SeedInfo
     ChapInfo.new(parse_scid(href), text)
   end
 
-  def parse_latest_by_css(selector)
+  private def parse_latest_by_css(selector)
     return unless node = find_node(selector)
     scid = parse_scid(node.attributes["href"])
     ChapInfo.new(scid, node.inner_text.strip)
@@ -273,7 +273,7 @@ class SeedInfo
     end
   end
 
-  def parse_chapters : Array(ChapInfo)
+  private def parse_chapters : Array(ChapInfo)
     case @seed
     when "jx_la", "nofff", "rengshu", "xbiquge", "paoshu8"
       parse_generic_chaps("#list > dl")
@@ -297,7 +297,7 @@ class SeedInfo
   private def parse_duokan8_chaps
     chaps = [] of ChapInfo
 
-    @doc.css(".chapter-list a").each do |link|
+    rdoc.css(".chapter-list a").each do |link|
       if href = link.attributes["href"]?
         scid = parse_scid(href)
         chaps << ChapInfo.new(scid, link.inner_text)
@@ -309,7 +309,7 @@ class SeedInfo
 
   private def parse_69shu_chaps
     chaps = [] of ChapInfo
-    return chaps unless nodes = @doc.css(".mu_contain").to_a
+    return chaps unless nodes = rdoc.css(".mu_contain").to_a
 
     nodes.shift if nodes.size > 0
     label = "正文"
@@ -334,10 +334,10 @@ class SeedInfo
     chaps
   end
 
-  def parse_qu_la_chaps
+  private def parse_qu_la_chaps
     chaps = [] of ChapInfo
 
-    @doc.css("h2.layout-tit").each do |h2|
+    rdoc.css("h2.layout-tit").each do |h2|
       label = h2.inner_text.strip
       next if label.includes?("最新章节")
       next unless ul = h2.next.try(&.css("ul > ul:first-child").first)
@@ -357,7 +357,7 @@ class SeedInfo
   private def parse_zhwenpg_chapters
     chaps = [] of ChapInfo
 
-    @doc.css(".clistitem > a").each do |link|
+    rdoc.css(".clistitem > a").each do |link|
       scid = parse_scid(link.attributes["href"])
       chaps << ChapInfo.new(scid, link.inner_text)
     end
@@ -419,7 +419,7 @@ class SeedInfo
   end
 
   private def find_node(selector)
-    @doc.css(selector).first?
+    rdoc.css(selector).first?
   end
 
   private def node_attr(selector : String, attribute : String)
@@ -433,39 +433,4 @@ class SeedInfo
   private def node_text(selector : String)
     find_node(selector).try(&.inner_text.strip)
   end
-
-  # def emit_book_info(info : BookInfo? = nil) : BookInfo
-  #   info ||= BookInfo.get_or_create(title, author)
-
-  #   info.add_genre(genre)
-  #   info.add_tags(tags)
-
-  #   info.zh_intro = intro if info.zh_intro.empty?
-  #   info.add_cover(cover)
-  #   info.status = status
-
-  #   info.add_seed(@seed, @type)
-  #   seed = info.update_seed(@seed, @sbid, mftime, latest)
-  #   info.mftime = seed.mftime
-
-  #   info
-  # end
-
-  # def emit_chapters(out_list : ChapList? = nil, mode : Symbol = :check)
-  #   out_list ||= ChapList.get_or_create(ubid, @seed)
-  #   inp_list = chapters
-
-  #   out_list.sbid = @sbid
-  #   out_list.type = @type
-
-  #   if mode == :reset || (mode == :check && !out_list.match?(inp_list))
-  #     out_list.chaps.clear
-  #     out_list.index.clear
-  #     inp_list.each { |chap| out_list.append(chap) }
-  #   else
-  #     out_list.size.upto(inp_list.size - 1) { |idx| out_list.append(inp_list[idx]) }
-  #   end
-
-  #   out_list
-  # end
 end

@@ -16,13 +16,13 @@ module Appcv
   end
 
   def load_list(info : BookInfo, seed : String, mode = 0) : Tuple(ChapList, Int64)?
-    return unless seed_sbid = info.seed_sbids[seed]?
+    return unless sbid = info.seed_sbids[seed]?
 
     chlist = ChapList.get_or_create(info.ubid, seed)
     expiry = mode > 0 ? (Time.utc - 5.minutes) : Time.unix_ms(info.mftime)
 
     if ChapList.outdated?(info.ubid, seed, expiry)
-      remote = SeedInfo.init(seed, seed_sbid, expiry: expiry, freeze: false)
+      remote = SeedInfo.new(seed, sbid, expiry: expiry, freeze: false)
 
       BookDB.update_info(info, remote)
       info.save! if info.changed?
