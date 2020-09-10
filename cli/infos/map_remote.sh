@@ -6,4 +6,4 @@ time bin/map_remote -s duokan8 -u 32940 -m 1
 time bin/map_remote -s paoshu8 -u 151692 -m 1
 time bin/map_remote -s 69shu -u 34448 -m 1
 time bin/map_remote -s 5200 -u 29277 -m 1
-time bin/map_remote -s jx_la -u 258233 -m 1
+time bin/map_remote -s jx_la -u 259742 -m 1

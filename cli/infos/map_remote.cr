@@ -82,10 +82,13 @@ class MapRemote
     return if @mode == 0
 
     # skipp mapping recently cached entries
+    # TODO: check with cached html_file mtime
     return if (Time.unix(ctime.to_i64) + 30.minutes) > Time.utc
 
     # redownload error pages
-    return NEW if @mode > 1 && uname == "--"
+    if uname == "--"
+      return @mode > 1 ? NEW : OLD
+    end
 
     # don't download completed series
     mtime = Time.unix_ms(mtime.to_i64)
