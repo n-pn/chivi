@@ -62,6 +62,9 @@ class SeedInfo
     when "5200"
       group = @sbid.to_i // 1000
       "https://www.5200.net/#{group}_#{@sbid}/"
+    when "bqg5200"
+      group = @sbid.to_i // 1000
+      "https://www.biquge5200.com/#{group}_#{@sbid}/"
     when "zhwenpg"
       "https://novel.zhwenpg.com/b.php?id=#{@sbid}"
     else
@@ -94,7 +97,8 @@ class SeedInfo
   private def parse_title
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
-         "rengshu", "xbiquge", "paoshu8", "5200"
+         "rengshu", "xbiquge", "paoshu8", "5200",
+         "bqg5200"
       meta_data("og:novel:book_name")
     when "hetushu"
       node_text("h2")
@@ -110,7 +114,8 @@ class SeedInfo
   private def parse_author
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
-         "rengshu", "xbiquge", "paoshu8", "5200"
+         "rengshu", "xbiquge", "paoshu8", "5200",
+         "bqg5200"
       meta_data("og:novel:author")
     when "hetushu"
       node_text(".book_info a:first-child")
@@ -126,7 +131,8 @@ class SeedInfo
   private def parse_intro
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
-         "rengshu", "xbiquge", "paoshu8", "5200"
+         "rengshu", "xbiquge", "paoshu8", "5200",
+         "bqg5200"
       return "" unless text = meta_data("og:description")
       TextUtil.split_html(text).join("\n")
     when "zhwenpg"
@@ -145,7 +151,8 @@ class SeedInfo
   private def parse_cover
     case @seed
     when "qu_la", "duokan8", "nofff", "rengshu",
-         "xbiquge", "paoshu8", "5200"
+         "xbiquge", "paoshu8", "5200",
+         "bqg5200"
       meta_data("og:image")
     when "zhwenpg"
       node_attr(".cover_wrapper_m img", "data-src")
@@ -165,7 +172,8 @@ class SeedInfo
   private def parse_genre
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
-         "rengshu", "xbiquge", "paoshu8", "5200"
+         "rengshu", "xbiquge", "paoshu8", "5200",
+         "bqg5200"
       meta_data("og:novel:category")
     when "hetushu"
       node_text(".title > a:nth-child(2)")
@@ -189,7 +197,8 @@ class SeedInfo
   private def parse_status
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
-         "rengshu", "xbiquge", "paoshu8", "5200"
+         "rengshu", "xbiquge", "paoshu8", "5200",
+         "bqg5200"
       map_status(meta_data("og:novel:status"))
     when "hetushu"
       classes = node_attr(".book_info", "class").not_nil!
@@ -215,7 +224,8 @@ class SeedInfo
   private def parse_mftime
     case @seed
     when "qu_la", "jx_la", "nofff", "rengshu",
-         "xbiquge", "duokan8", "paoshu8", "5200"
+         "xbiquge", "duokan8", "paoshu8", "5200",
+         "bqg5200"
       text = meta_data("og:novel:update_time").not_nil!
       TimeUtil.parse(text).to_unix_ms
     when "69shu"
@@ -231,7 +241,8 @@ class SeedInfo
   private def parse_latest : ChapInfo?
     case @seed
     when "qu_la", "jx_la", "nofff", "rengshu",
-         "xbiquge", "duokan8", "paoshu8", "5200"
+         "xbiquge", "duokan8", "paoshu8", "5200",
+         "bqg5200"
       parse_latest_by_meta_tag()
     when "69shu"
       parse_latest_by_css(".mulu_list:first-of-type a:first-child")
@@ -246,6 +257,7 @@ class SeedInfo
 
   private def parse_latest_by_meta_tag
     return unless href = meta_data("og:novel:latest_chapter_url")
+
     text = meta_data("og:novel:latest_chapter_name").not_nil!
     if @seed == "duokan8"
       text = text.sub(/^.*正文\s*/, "").sub(/^.*章节目录\s*/, "")
@@ -253,7 +265,13 @@ class SeedInfo
       text = text.sub(/^.+?\s/, "")
     end
 
-    ChapInfo.new(parse_scid(href), text)
+    if @seed == "bqg5200"
+      scid = File.basename(href, ".htm")
+    else
+      scid = parse_scid(href)
+    end
+
+    ChapInfo.new(scid, text)
   end
 
   private def parse_latest_by_css(selector)
@@ -266,7 +284,7 @@ class SeedInfo
     case @seed
     when "qu_la", "jx_la", "nofff", "rengshu",
          "xbiquge", "duokan8", "paoshu8", "hetushu",
-         "5200"
+         "5200", "bqg5200"
       File.basename(href, ".html")
     when "69shu"
       File.basename(href)
@@ -279,7 +297,7 @@ class SeedInfo
 
   private def parse_chapters : Array(ChapInfo)
     case @seed
-    when "jx_la", "nofff", "rengshu", "xbiquge", "paoshu8"
+    when "jx_la", "nofff", "rengshu", "xbiquge", "paoshu8", "bqg5200"
       parse_generic_chaps("#list > dl")
     when "5200"
       parse_generic_chaps(".listmain > dl")

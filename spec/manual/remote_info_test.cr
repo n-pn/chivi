@@ -5,7 +5,7 @@ require "../../src/appcv/parser/seed_info.cr"
 def fetch_info(info, sbid, expiry = Time.utc) : Void
   puts "\n[ #{info} - #{sbid} ]\n".colorize(:yellow)
 
-  task = SeedInfo.new(info, sbid, expiry: expiry, freeze: false)
+  task = SeedInfo.new(info, sbid, expiry: expiry, freeze: true)
 
   info = {
     title:  task.title,
@@ -39,7 +39,7 @@ end
 # fetch_info("rengshu", "181")
 
 # fetch_info("hetushu", "5")
-fetch_info("hetushu", "162")
+# fetch_info("hetushu", "162")
 # fetch_info("hetushu", "350")
 # fetch_info("hetushu", "4420")
 
@@ -54,3 +54,5 @@ fetch_info("hetushu", "162")
 # fetch_info("jx_la", "80240")
 
 # fetch_info("5200", "28208")
+
+fetch_info("bqg5200", "139570")

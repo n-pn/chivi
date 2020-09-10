@@ -8,7 +8,8 @@ SEEDS = {
   "hetushu", "jx_la", "rengshu",
   "xbiquge", "nofff", "duokan8",
   "paoshu8", "69shu", "qu_la",
-  "5200", "kenwen", "mxguan",
+  "5200", "bqg5200",
+  "kenwen", "mxguan",
 }
 
 class MapRemote
