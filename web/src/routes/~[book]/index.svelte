@@ -130,7 +130,7 @@
 </script>
 
 <Vessel>
-  <a slot="header-left" href="/{book.slug}" class="header-item _active">
+  <a slot="header-left" href="/~{book.slug}" class="header-item _active">
     <MIcon class="m-icon _book-open" name="book-open" />
     <span class="header-text _title">{book.vi_title}</span>
   </a>
