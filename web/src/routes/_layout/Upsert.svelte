@@ -120,7 +120,7 @@
 
       hints = generate_hints(meta, new_val)
 
-      if (tab == 'hanviet' || hints == []) out_val = new_val
+      if (tab == 'hanviet' || hints.length == 0) out_val = new_val
       else {
         out_val = hints.pop()
         hints = hints
