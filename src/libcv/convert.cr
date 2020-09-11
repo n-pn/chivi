@@ -8,20 +8,14 @@ require "./convert/*"
 module Libcv::Convert
   extend self
 
-  def translit(input : String, dict : BaseDict, apply_cap = false, pad_space = true)
+  def translit(input : String, dict : BaseDict, apply_cap = fase)
     res = tokenize(input.chars, dict)
     res.capitalize! if apply_cap
-    res.pad_spaces! if pad_space
-
-    res
+    res.pad_spaces!
   end
 
   def cv_plain(input : String, *dicts : BaseDict)
-    res = tokenize(input.chars, *dicts)
-    res.grammarize!
-    res.capitalize!
-    res.pad_spaces!
-    res
+    tokenize(input.chars, *dicts).grammarize!.capitalize!.pad_spaces!
   end
 
   LABEL_RE_1 = /^(第?([零〇一二两三四五六七八九十百千]+|\d+)([集卷]))([,.:\s]*)(.*)$/
@@ -168,9 +162,6 @@ module Libcv::Convert
     end
 
     res.data.reverse!
-
-    pp res
-
     res
   end
 

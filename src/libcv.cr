@@ -5,25 +5,33 @@ module Libcv
 
   def tradsim(input : String)
     dict = Library.tradsim
-    Convert.translit(input, dict, false, false)
+    Convert.tokenize(input.chars, dict)
   end
 
   def tradsim(lines : Array(String))
     dict = Library.tradsim
-    lines.map { |line| Convert.translit(line, dict, false, false) }
+    lines.map { |line| Convert.tokenize(line.chars, dict) }
   end
 
-  {% for type in {:hanviet, :binh_am} %}
-  def {{type.id}}(input : String, apply_cap = false)
-    dict = Library.{{type.id}}
-    Convert.translit(input, dict, apply_cap, true)
+  def binh_am(input : String, apply_cap = false)
+    dict = Library.binh_am
+    Convert.translit(input, dict, apply_cap)
   end
 
-  def {{type.id}}(lines : Array(String), apply_cap = false)
-    dict = Library.{{type.id}}
-    lines.map { |line| Convert.translit(line, dict, apply_cap, false) }
+  def binh_am(lines : Array(String), apply_cap = false)
+    dict = Library.binh_am
+    lines.map { |line| Convert.translit(line, dict, apply_cap) }
   end
-  {% end %}
+
+  def hanviet(input : String, apply_cap = true)
+    dict = Library.hanviet.dict
+    Convert.translit(input, dict, apply_cap)
+  end
+
+  def hanviet(lines : Array(String), apply_cap = true)
+    dict = Library.hanviet.dict
+    lines.map { |line| Convert.translit(line, dict, apply_cap) }
+  end
 
   {% for type in {:title, :plain} %}
   def cv_{{type.id}}(input : String, dname = "_tonghop")

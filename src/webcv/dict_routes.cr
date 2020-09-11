@@ -37,22 +37,19 @@ module Server
     {hanviet: hanviet, entries: entries}.to_json(env.response)
   end
 
-  get "/_search" do |env|
-    # TODO: search for a list of dnames
-
-    bdic = env.params.query.fetch("bdic", "_tonghop")
-    term = env.params.query.fetch("term", "")
-
-    generic = Libcv::Library.search(term, "generic")
-    special = Libcv::Library.search(term, bdic)
-    suggest = Libcv::Library.suggest.dict.find(term).try(&.vals) || [] of String
+  get "/_dicts/search/:key" do |env|
+    key = env.params.url["key"]
+    dic = env.params.query.fetch("dic", "_tonghop")
 
     {
-      hanviet: Libcv.hanviet(term, false).vi_text,
-      binh_am: Libcv.binh_am(term, false).vi_text,
-      generic: generic,
-      special: special,
-      suggest: suggest,
+      dicts: {
+        special: Libcv::Library.load_dict(dic).find(key),
+        generic: Libcv::Library.generic.find(key),
+        hanviet: Libcv::Library.hanviet.find(key),
+      },
+      hanviet: Libcv.hanviet(key, false).vi_text,
+      binh_am: Libcv.binh_am(key, false).vi_text,
+      suggest: Libcv::Library.suggest.dict.find(key).try(&.vals) || [] of String,
     }.to_json(env.response)
   end
 

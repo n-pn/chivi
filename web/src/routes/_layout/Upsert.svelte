@@ -1,10 +1,10 @@
 <script context="module">
   export function generate_hints(meta, reject, accept) {
     let res = [
-      ...meta.special.vals,
-      ...meta.special.hints,
-      ...meta.generic.vals,
-      ...meta.generic.hints,
+      ...meta.dicts.special.vals,
+      ...meta.dicts.special.hints,
+      ...meta.dicts.generic.vals,
+      ...meta.dicts.generic.hints,
       ...meta.suggest,
     ]
     if (accept && accept !== '') res.push(accept)
@@ -45,19 +45,20 @@
 <script>
   import { onMount } from 'svelte'
   import relative_time from '$utils/relative_time'
-  import Footer from './Upsert/Footer.svelte'
+  import UpsertFooter from './Upsert/Footer.svelte'
 
   import { dict_search, dict_upsert } from '$src/api'
 
   const tabs = [
     ['special', 'VP riêng'],
     ['generic', 'VP chung'],
-    // ['hanviet', 'Hán việt'],
+    ['hanviet', 'Hán việt'],
   ]
 
   export let key = ''
-  export let tab = 'generic'
+  export let tab = 'special'
   export let dname = ''
+
   export let actived = true
   export let changed = false
 
@@ -74,14 +75,17 @@
   })
 
   let meta = {
+    dicts: {
+      special: { vals: [], hints: [], mtime: 0, uname: '', power: 0 },
+      generic: { vals: [], hints: [], mtime: 0, uname: '', power: 0 },
+      hanviet: { vals: [], hints: [], mtime: 0, uname: '', power: 0 },
+    },
     hanviet: '',
     binh_am: '',
     suggest: [],
-    generic: { vals: [], hints: [], mtime: 0, uname: '', power: 0 },
-    special: { vals: [], hints: [], mtime: 0, uname: '', power: 0 },
   }
 
-  $: current = meta[tab]
+  $: current = meta.dicts[tab]
   $: existed = current.vals[0] || ''
   $: updated = out_val != existed
 
@@ -92,7 +96,7 @@
 
   async function preload_input() {
     out_val = ''
-    meta = await dict_search(window.fetch, key, dname)
+    meta = await dict_search(fetch, key, dname)
     update_val()
   }
 
@@ -105,7 +109,7 @@
   }
 
   function update_val(new_val) {
-    new_val = new_val || meta[tab].vals[0]
+    new_val = new_val || meta.dicts[tab].vals[0]
 
     if (new_val) {
       out_val = new_val
@@ -116,18 +120,19 @@
 
       hints = generate_hints(meta, new_val)
 
-      if (hints.length > 0) {
+      if (tab == 'hanviet' || hints == []) out_val = new_val
+      else {
         out_val = hints.pop()
         hints = hints
-      } else out_val = new_val
+      }
     }
 
     out_field.focus()
   }
 
   async function submit_val() {
-    const dic = tab == 'special' ? dname : 'generic'
-    const res = await dict_upsert(window.fetch, dic, key, out_val)
+    const dic = tab == 'special' ? dname : tab
+    const res = await dict_upsert(fetch, dic, key, out_val)
 
     changed = res === 'ok' && updated
     actived = false
@@ -307,7 +312,7 @@
       </div>
     </section>
 
-    <Footer {key} />
+    <UpsertFooter {key} />
   </div>
 </div>
 

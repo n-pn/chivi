@@ -66,7 +66,15 @@ class Libcv::UserDict
   end
 
   def find(key : String)
-    {@dict.find(key), @bests[key]?, @hints[key]?}
+    best = @bests[key]?
+
+    {
+      vals:  @dict.find(key).try(&.vals) || [] of String,
+      mtime: best.try(&.utime) || 0,
+      uname: best.try(&.uname) || "",
+      power: best.try(&.power) || @power,
+      hints: @hints[key]?.try(&.uniq.last(3)) || [] of String,
+    }
   end
 
   def save!(file : String = @file) : Void
@@ -90,11 +98,11 @@ class Libcv::UserDict
 
   CACHE = {} of String => UserDict
 
-  def self.load(name : String, mode = 1)
-    CACHE[name] ||= new(path_for(name), name, mode: mode)
+  def self.load(name : String, mode = 1, power = 1)
+    CACHE[name] ||= new(path_for(name), name, mode: mode, power: power)
   end
 
-  def self.load!(name : String)
-    load(name, mode: 2)
+  def self.load!(name : String, power = 1)
+    load(name, mode: 2, power: power)
   end
 end

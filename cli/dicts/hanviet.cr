@@ -95,7 +95,7 @@ def save_dict!(dict)
   dict.save!
 end
 
-hanviet = Libcv::BaseDict.load("_hanviet", mode: 0)
+hanviet = Libcv::BaseDict.load("core/hanviet", mode: 0)
 
 hanviet = merge(hanviet, "localqt/hanviet.txt", mode: :old_first)
 hanviet = merge(hanviet, "hanviet/checked-chars.txt", mode: :old_first)

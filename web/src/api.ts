@@ -1,8 +1,8 @@
-export async function dict_search(http, term, bdic) {
-  const url = `/_search?term=${term}&bdic=${bdic}`
-  const res = await http(url)
-
+export async function dict_search(fetch, key, dic = '_tonghop') {
+  const url = `/_dicts/search/${key}?dic=${dic}`
+  const res = await fetch(url)
   const data = await res.json()
+
   return data
 }
 
