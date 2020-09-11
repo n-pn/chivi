@@ -55,13 +55,20 @@ class MapRemote
 
     channel = Channel(SeedInfo).new(worker)
 
-    queue.each_with_index do |(sbid, expiry), idx|
+    queue.shuffle.each_with_index do |(sbid, expiry), idx|
       map_entry(channel.receive) if idx > worker
 
       spawn do
         parser = SeedInfo.new(@seed, sbid, expiry, freeze: true)
-        puts "- <#{idx + 1}/#{queue.size}> #{parser.title}--#{parser.author}"
-        channel.send(parser)
+
+        begin
+          puts "- <#{idx + 1}/#{queue.size}> #{parser.title}--#{parser.author}"
+        rescue err
+          puts err
+        ensure
+          # TODO: extract valuable data
+          channel.send(parser)
+        end
       end
     end
 

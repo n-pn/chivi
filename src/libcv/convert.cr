@@ -143,12 +143,8 @@ module Libcv::Convert
       if acc.dic == 1
         while idx > 0
           node = choices[idx]
-          case node.dic
-          when 2
-            break
-          when 0
-            break unless special_char?(node)
-          end
+          break if node.dic > 1
+          break if node.dic == 0 && !special_char?(node)
 
           acc.combine!(node)
           idx -= node.key.size
@@ -172,6 +168,9 @@ module Libcv::Convert
     end
 
     res.data.reverse!
+
+    pp res
+
     res
   end
 
