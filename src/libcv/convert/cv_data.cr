@@ -22,25 +22,6 @@ class CvData
 
     @data.each_with_index do |node, i|
       case node.key
-      when "+", "-", "^"
-        node.val = " " + node.val if lexicon?(i - 1)
-        node.val += " " if lexicon?(i + 1)
-      when "年", "月", "日"
-        next unless prev = @data[i - 1]?
-        next unless prev.dic == 1 && prev.key =~ /^\d+$/
-
-        prev.key += node.key
-        prev.val = "#{cv_key(node.key)} #{prev.val}"
-
-        node.key = ""
-        node.val = ""
-        node.dic = 9
-      when "两"
-        next unless prev = @data[i - 1]?
-        next unless prev.dic == 1 && prev.key =~ /^\d+$/
-
-        node.val = "lượng"
-        node.dic = 9
       when "了"
         if border?(i + 1) || match_key?(i - 2, "了") || match_key?(i + 2, "了")
           node.val = "rồi"
@@ -91,6 +72,30 @@ class CvData
       when "的"
         node.val = ""
         node.dic = 9
+      else
+        next unless node.dic == 1 && node.key =~ /^\d+$/
+        next unless succ = @data[i + 1]?
+
+        case succ.key
+        when "米"
+          succ.val = "mét"
+          succ.dic = 9
+        when "里"
+          succ.val = "dặm"
+          succ.dic = 9
+        when "两"
+          succ.val = "lượng"
+          succ.dic = 9
+        when "年", "月", "日"
+          # TODO: handle special cases
+          node.key += succ.key
+          node.val = "#{cv_key(succ.key)} #{node.val}"
+          node.dic = 9
+
+          succ.key = ""
+          succ.val = ""
+          succ.dic = 0
+        end
       end
     end
 
