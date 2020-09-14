@@ -33,7 +33,7 @@ class SeedInfo
 
   def initialize(@seed : String,
                  @sbid : String,
-                 @expiry : Time = Time.utc - 3.hours,
+                 @expiry : Time = Time.utc - 1.years,
                  @freeze : Bool = false)
   end
 
@@ -86,6 +86,8 @@ class SeedInfo
     if html = FileUtil.read(file_path, @expiry)
       from_cache = true
     else
+      raise "Dead sites" if @seed == "jx_la" || @seed == "duokan8"
+
       html = HttpUtil.fetch_html(html_link, HttpUtil.encoding_for(seed))
       File.write(file_path, html) if @freeze
     end

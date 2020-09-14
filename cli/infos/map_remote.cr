@@ -14,6 +14,7 @@ class MapRemote
     "biquge5200", "5200", "zhwenpg",
     "duokan8", "rengshu", "nofff",
     "paoshu8", "jx_la", "qu_la",
+    "shubaow",
   }
 
   def self.run!(argv = ARGV)
@@ -86,15 +87,13 @@ class MapRemote
 
     puts "\n[-- seed: #{@seed}, from: #{from}, upto: #{upto}, mode: #{mode}, size: #{queue.size} --] ".colorize.cyan.bold
 
-    queue = queue.shuffle
-
     limit = queue.size
     limit = 8 if limit > 8
     limit = 1 if @seed == "qu_la"
 
     channel = Channel(Nil).new(limit)
 
-    queue.each_with_index do |(sbid, expiry), idx|
+    queue.shuffle.each_with_index do |(sbid, expiry), idx|
       channel.receive if idx > limit
 
       spawn do
@@ -119,7 +118,10 @@ class MapRemote
   CACHED = ARGV.includes?("cached")
 
   def expiry_for(sbid : String)
-    return Time.utc - 1.year if CACHED || @seed == "jx_la" || @seed == "duokan8"
+    if CACHED || @seed == "jx_la" || @seed == "duokan8"
+      return Time.utc - 1.year
+    end
+
     return Time.utc - 9.months unless ubid = @crawled[sbid]?
     return Time.utc - 6.months unless @existed.includes?(ubid)
     return Time.utc - 3.months unless time = OrderMap.book_update.value(ubid)
@@ -140,7 +142,7 @@ class MapRemote
     BookDB.whitelist?(author)
   end
 
-  def parse!(sbid : String, expiry = Time.utc - 24.hours, label = "1/1")
+  def parse!(sbid : String, expiry = Time.utc - 1.years, label = "1/1")
     remote = SeedInfo.new(@seed, sbid, expiry: expiry, freeze: true)
 
     info = BookDB.find_or_create(remote.title, remote.author)
@@ -157,7 +159,9 @@ class MapRemote
 
     info.save! if info.changed?
 
-    expiry = Time.unix_ms(info.mftime) unless CACHED
+    unless CACHED || @seed == "jx_la" || @seed == "duokan8"
+      expiry = Time.unix_ms(info.mftime)
+    end
 
     return unless ChapList.outdated?(info.ubid, @seed, expiry)
     chlist = ChapList.get_or_create(info.ubid, @seed)

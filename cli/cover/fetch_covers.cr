@@ -64,7 +64,7 @@ infos.each do |info|
   indexed = glob_dir(cover_dir)
 
   info.cover_urls.each do |site, cover|
-    next if cover.empty? # || site == "jx_la" || site == "paoshu8"
+    next if cover.empty? || site == "jx_la" || site == "duokan8"
 
     unless cover.starts_with?("http")
       puts info.to_json
