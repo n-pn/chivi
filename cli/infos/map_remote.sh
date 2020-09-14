@@ -8,4 +8,4 @@ time bin/map_remote -s nofff -u 87009 -m 1
 time bin/map_remote -s biquge5200 -u 139570 -m 1
 time bin/map_remote -s paoshu8 -u 151692 -m 1
 time bin/map_remote -s shubaow -u 150092 -m 1
-# time bin/map_remote -s jx_la -u 259742 -m 1
+time bin/map_remote -s jx_la -u 259742 -m 1

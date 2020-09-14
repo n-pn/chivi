@@ -33,7 +33,7 @@ module BookDB
 
   def whitelist?(author : String)
     return false unless weight = OrderMap.author_weight.value(author)
-    weight >= 1500
+    weight >= 2000
   end
 
   def find_or_create(title : String, author : String, fixed = false)
@@ -79,14 +79,14 @@ module BookDB
     set_status(info, source.status, force: force)
     update_seed(info, source, force: force)
 
-    if info.weight == 0 && info.yousuu_bid.empty?
-      puts "- FAKING RANDOM RATING -".colorize.yellow
-      voters, rating, weight = Utils.fake_rating(info.zh_author)
+    # if info.weight == 0 && info.yousuu_bid.empty?
+    #   puts "- FAKING RANDOM RATING -".colorize.yellow
+    #   voters, rating, weight = Utils.fake_rating(info.zh_author)
 
-      set_voters(info, voters, force: false)
-      set_rating(info, rating, force: false)
-      set_weight(info, weight, force: false)
-    end
+    #   set_voters(info, voters, force: false)
+    #   set_rating(info, rating, force: false)
+    #   set_weight(info, weight, force: false)
+    # end
 
     info
   end
@@ -121,13 +121,13 @@ module BookDB
 
     author_slug = TextUtil.slugify(info.vi_author)
 
-    title1_slug = TextUtil.slugify(info.vi_title)
+    title1_slug = TextUtil.slugify(info.hv_title)
     full_slug_1 = "#{title1_slug}--#{author_slug}"
 
     book_slug = check_slug(info, title1_slug) || check_slug(info, full_slug_1)
     info.slug = book_slug || check_slug(info, "#{title1_slug}-#{info.ubid}").not_nil!
 
-    title2_slug = TextUtil.slugify(info.hv_title)
+    title2_slug = TextUtil.slugify(info.vi_title)
 
     return if title2_slug == title1_slug
     full_slug_2 = "#{title2_slug}--#{author_slug}"

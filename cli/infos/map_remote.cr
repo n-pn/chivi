@@ -52,7 +52,6 @@ class MapRemote
   def self.default_upto(seed : String) : Int32
     case seed
     when "hetushu" then 4831
-    when "qu_la"   then 252941
     when "jx_la"   then 252941
     when "rengshu" then 4275
     when "xbiquge" then 52986
@@ -61,7 +60,6 @@ class MapRemote
     when "69shu"   then 32113
     when "paoshu8" then 147456
     when "5200"    then 28208
-    when "kenwen"  then 540465
     else                1
     end
   end
@@ -121,7 +119,7 @@ class MapRemote
   CACHED = ARGV.includes?("cached")
 
   def expiry_for(sbid : String)
-    return Time.utc - 1.year if CACHED
+    return Time.utc - 1.year if CACHED || @seed == "jx_la"
     return Time.utc - 9.months unless ubid = @crawled[sbid]?
     return Time.utc - 6.months unless @existed.includes?(ubid)
     return Time.utc - 3.months unless time = OrderMap.book_update.value(ubid)

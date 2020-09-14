@@ -21,6 +21,9 @@ module Appcv
     chlist = ChapList.get_or_create(info.ubid, seed)
     expiry = mode > 0 ? (Time.utc - 5.minutes) : Time.unix_ms(info.mftime)
 
+    # jx_la is dead :()
+    expiry -= 1.years if seed == "jx_la"
+
     if ChapList.outdated?(info.ubid, seed, expiry)
       remote = SeedInfo.new(seed, sbid, expiry: expiry, freeze: false)
 

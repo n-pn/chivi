@@ -132,7 +132,7 @@ class MapZhwenpg
     info.save! if info.changed?
 
     expiry = Time.unix_ms(info.mftime)
-    remote = SeedInfo.init("zhwenpg", sbid, expiry: expiry, freeze: true)
+    remote = SeedInfo.new("zhwenpg", sbid, expiry: expiry, freeze: true)
 
     chlist = ChapList.get_or_create(info.ubid, "zhwenpg")
     chlist = ChapDB.update_list(chlist, remote)
