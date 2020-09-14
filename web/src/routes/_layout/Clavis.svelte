@@ -313,6 +313,7 @@
     :global(x-z),
     :global(x-v) {
       cursor: pointer;
+
       @include hover {
         @include fgcolor(primary, 5);
       }

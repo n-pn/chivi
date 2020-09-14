@@ -404,7 +404,7 @@
     cursor: pointer;
 
     &[data-d='1'] {
-      @include token(cyan);
+      @include token(teal);
     }
 
     &[data-d='2'] {
