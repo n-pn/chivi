@@ -55,4 +55,4 @@ end
 
 # fetch_info("5200", "28208")
 
-fetch_info("bqg5200", "139570")
+fetch_info("biquge5200", "139570")

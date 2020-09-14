@@ -47,6 +47,9 @@ class SeedText
     when "5200"
       group = sbid.to_i // 1000
       "https://www.5200.net/#{group}_#{sbid}/#{scid}.html"
+    when "biquge5200"
+      group = sbid.to_i // 1000
+      "https://www.biquge5200/#{group}_#{sbid}/#{scid}.html"
     when "zhwenpg"
       "https://novel.zhwenpg.com/r.php?id=#{scid}"
     else
@@ -90,7 +93,7 @@ class SeedText
 
   def parse_title!
     case @seed
-    when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge", "5200"
+    when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge", "5200", "biquge5200"
       title_text("h1")
     when "qu_la"
       title_text(".title")
@@ -116,7 +119,9 @@ class SeedText
 
   def parse_paras!
     case @seed
-    when "qu_la", "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge", "5200"
+    when "qu_la", "jx_la", "nofff",
+         "rengshu", "paoshu8", "xbiquge",
+         "5200", "biquge5200"
       parse_paras!("#content")
     when "zhwenpg"
       parse_paras!("#tdcontent .content")

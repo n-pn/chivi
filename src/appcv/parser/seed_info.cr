@@ -62,7 +62,7 @@ class SeedInfo
     when "5200"
       group = @sbid.to_i // 1000
       "https://www.5200.net/#{group}_#{@sbid}/"
-    when "bqg5200"
+    when "biquge5200"
       group = @sbid.to_i // 1000
       "https://www.biquge5200.com/#{group}_#{@sbid}/"
     when "zhwenpg"
@@ -98,7 +98,7 @@ class SeedInfo
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
          "rengshu", "xbiquge", "paoshu8", "5200",
-         "bqg5200"
+         "biquge5200"
       meta_data("og:novel:book_name")
     when "hetushu"
       node_text("h2")
@@ -115,7 +115,7 @@ class SeedInfo
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
          "rengshu", "xbiquge", "paoshu8", "5200",
-         "bqg5200"
+         "biquge5200"
       meta_data("og:novel:author")
     when "hetushu"
       node_text(".book_info a:first-child")
@@ -132,7 +132,7 @@ class SeedInfo
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
          "rengshu", "xbiquge", "paoshu8", "5200",
-         "bqg5200"
+         "biquge5200"
       return "" unless text = meta_data("og:description")
       TextUtil.split_html(text).join("\n")
     when "zhwenpg"
@@ -152,7 +152,7 @@ class SeedInfo
     case @seed
     when "qu_la", "duokan8", "nofff", "rengshu",
          "xbiquge", "paoshu8", "5200",
-         "bqg5200"
+         "biquge5200"
       meta_data("og:image")
     when "zhwenpg"
       node_attr(".cover_wrapper_m img", "data-src")
@@ -173,7 +173,7 @@ class SeedInfo
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
          "rengshu", "xbiquge", "paoshu8", "5200",
-         "bqg5200"
+         "biquge5200"
       meta_data("og:novel:category")
     when "hetushu"
       node_text(".title > a:nth-child(2)")
@@ -198,7 +198,7 @@ class SeedInfo
     case @seed
     when "qu_la", "jx_la", "duokan8", "nofff",
          "rengshu", "xbiquge", "paoshu8", "5200",
-         "bqg5200"
+         "biquge5200"
       map_status(meta_data("og:novel:status"))
     when "hetushu"
       classes = node_attr(".book_info", "class").not_nil!
@@ -225,7 +225,7 @@ class SeedInfo
     case @seed
     when "qu_la", "jx_la", "nofff", "rengshu",
          "xbiquge", "duokan8", "paoshu8", "5200",
-         "bqg5200"
+         "biquge5200"
       text = meta_data("og:novel:update_time").not_nil!
       TimeUtil.parse(text).to_unix_ms
     when "69shu"
@@ -242,7 +242,7 @@ class SeedInfo
     case @seed
     when "qu_la", "jx_la", "nofff", "rengshu",
          "xbiquge", "duokan8", "paoshu8", "5200",
-         "bqg5200"
+         "biquge5200"
       parse_latest_by_meta_tag()
     when "69shu"
       parse_latest_by_css(".mulu_list:first-of-type a:first-child")
@@ -265,7 +265,7 @@ class SeedInfo
       text = text.sub(/^.+?\s/, "")
     end
 
-    if @seed == "bqg5200"
+    if @seed == "biquge5200"
       scid = File.basename(href, ".htm")
     else
       scid = parse_scid(href)
@@ -284,7 +284,7 @@ class SeedInfo
     case @seed
     when "qu_la", "jx_la", "nofff", "rengshu",
          "xbiquge", "duokan8", "paoshu8", "hetushu",
-         "5200", "bqg5200"
+         "5200", "biquge5200"
       File.basename(href, ".html")
     when "69shu"
       File.basename(href)
@@ -297,7 +297,7 @@ class SeedInfo
 
   private def parse_chapters : Array(ChapInfo)
     case @seed
-    when "jx_la", "nofff", "rengshu", "xbiquge", "paoshu8", "bqg5200"
+    when "jx_la", "nofff", "rengshu", "xbiquge", "paoshu8", "biquge5200"
       parse_generic_chaps("#list > dl")
     when "5200"
       parse_generic_chaps(".listmain > dl")

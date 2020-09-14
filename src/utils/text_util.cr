@@ -8,7 +8,10 @@ module TextUtil
   end
 
   def clean_html(input : String)
-    HTML.unescape(input).gsub(/<br\s*\/?>/i, "\n").gsub("【】", "")
+    HTML.unescape(input)
+      .gsub(/<br\s*\/?>/i, "\n")
+      .gsub("【】", "")
+      .gsub("...", "…")
   end
 
   def split_text(input : String, split : String | Regex = "\n")
