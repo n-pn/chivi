@@ -67,10 +67,10 @@ module Appcv
   end
 
   SEEDS = {
-    "hetushu", "jx_la", "rengshu",
-    "xbiquge", "nofff", "duokan8",
-    "paoshu8", "69shu", "zhwenpg",
-    "qu_la", "5200",
+    "hetushu", "rengshu", "xbiquge",
+    "nofff", "duokan8", "paoshu8",
+    "69shu", "zhwenpg", "5200",
+    "biquge5200", "shubaow",
   }
 
   def remote?(seed : String)

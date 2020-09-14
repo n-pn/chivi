@@ -146,7 +146,7 @@
     {/each}
 
     <a
-      class="page m-button _line"
+      class="page m-button _fill"
       class:_disable={page == page_max}
       href={makePageUrl(page + 1, query)}>
       <span>Kế tiếp</span>
