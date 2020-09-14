@@ -404,19 +404,19 @@
     cursor: pointer;
 
     &[data-d='1'] {
-      @include token(success);
+      @include token(cyan);
     }
 
     &[data-d='2'] {
-      @include token(primary);
+      @include token(blue);
     }
 
     &[data-d='3'] {
-      @include token(harmful);
+      @include token(green);
     }
 
     &[data-d='9'] {
-      @include token(neutral);
+      @include token(gray);
     }
   }
 
