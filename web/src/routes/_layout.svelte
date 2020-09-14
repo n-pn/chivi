@@ -13,18 +13,53 @@
   }
 
   import { onMount } from 'svelte'
-  import { user } from '$src/stores'
+  import { auth } from '$src/stores'
 
   onMount(async () => {
     const res = await fetch('_self')
     const data = await res.json()
     if (data.status == 'ok') {
-      $user = { uname: data.uname, power: data.power }
+      $auth = { uname: data.uname, power: data.power }
     } else {
-      $user = { uname: 'Khách', power: -1 }
+      $auth = { uname: 'Khách', power: -1 }
     }
   })
 </script>
+
+<div>
+  <slot {segment} />
+</div>
+
+<footer>
+  <span>
+    Trang web đang trong quá trình hoàn thiện, mọi ý kiến thắc mắc mời liên hệ
+    tới một trong các địa chỉ sau:
+  </span>
+
+  <a
+    class="link"
+    href="https://voz.vn/t/truyen-tau-dich-may-mtl.95881/"
+    target="_blank"
+    rel="noreferer noopener">
+    Vozforums
+  </a>
+
+  <a
+    class="link"
+    href="https://www.facebook.com/chivi.xyz/"
+    target="_blank"
+    rel="noreferer noopener">
+    Facebook
+  </a>
+
+  <a
+    class="link"
+    href="https://discord.gg/mdC3KQH"
+    target="_blank"
+    rel="noreferer noopener">
+    Discord
+  </a>
+</footer>
 
 <style lang="scss">
   :global(html),
@@ -62,38 +97,3 @@
     }
   }
 </style>
-
-<div>
-  <slot {segment} />
-</div>
-
-<footer>
-  <span>
-    Trang web đang trong quá trình hoàn thiện, mọi ý kiến thắc mắc mời liên hệ
-    tới một trong các địa chỉ sau:
-  </span>
-
-  <a
-    class="link"
-    href="https://voz.vn/t/truyen-tau-dich-may-mtl.95881/"
-    target="_blank"
-    rel="noreferer noopener">
-    Vozforums
-  </a>
-
-  <a
-    class="link"
-    href="https://www.facebook.com/chivi.xyz/"
-    target="_blank"
-    rel="noreferer noopener">
-    Facebook
-  </a>
-
-  <a
-    class="link"
-    href="https://discord.gg/mdC3KQH"
-    target="_blank"
-    rel="noreferer noopener">
-    Discord
-  </a>
-</footer>

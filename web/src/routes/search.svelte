@@ -77,6 +77,8 @@
               /10
             </span>
           </div>
+
+          <div><span class="genre">Thể loại: {book.vi_genres[0]}</span></div>
         </div>
       </a>
     {/each}

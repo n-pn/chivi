@@ -2,7 +2,7 @@
   import MIcon from '$mould/MIcon'
   import Vessel from '$layout/Vessel'
 
-  import { user } from '$src/stores'
+  import { auth } from '$src/stores'
 
   let email = ''
   let uname = ''
@@ -23,7 +23,7 @@
     const data = await res.json()
 
     if (data.status == 'ok') {
-      $user = { uname: data.uname, power: data.power }
+      $auth = { uname: data.uname, power: data.power }
       _goto('/')
     } else {
       error = error_message(data.msg)
@@ -50,6 +50,62 @@
     }
   }
 </script>
+
+<Vessel>
+  <section>
+    <form action="/_login" method="POST" on:submit|preventDefault={submit}>
+      <header><img src="/logo.svg" alt="logo" /> <span>Chivi</span></header>
+
+      <div class="input">
+        <label for="email">Hòm thư</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Hòm thư"
+          required
+          bind:value={email} />
+      </div>
+
+      <div class="input">
+        <label for="cname">Tên người dùng</label>
+        <input
+          type="text"
+          id="cname"
+          name="cname"
+          placeholder="Tên người dùng"
+          required
+          bind:value={uname} />
+      </div>
+
+      <div class="input">
+        <label for="cpass">Mật khẩu</label>
+        <input
+          type="password"
+          id="upass"
+          name="upass"
+          placeholder="Mật khẩu"
+          required
+          bind:value={upass} />
+      </div>
+
+      {#if error}
+        <div class="error">{error}</div>
+      {/if}
+
+      <footer>
+        <a href="/auth/login" class="m-button _line">
+          <span>Đăng nhập</span>
+        </a>
+
+        <button type="submit" class="m-button _success login">
+          <MIcon class="m-icon _signup" name="user-plus" />
+          <span>Tạo tài khoản</span>
+        </button>
+      </footer>
+    </form>
+  </section>
+</Vessel>
 
 <style lang="scss">
   section {
@@ -141,62 +197,3 @@
     }
   }
 </style>
-
-<Vessel>
-  <section>
-    <form action="/_login" method="POST" on:submit|preventDefault={submit}>
-      <header>
-        <img src="/logo.svg" alt="logo" />
-        <span>Chivi</span>
-      </header>
-
-      <div class="input">
-        <label for="email">Hòm thư</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Hòm thư"
-          required
-          bind:value={email} />
-      </div>
-
-      <div class="input">
-        <label for="cname">Tên người dùng</label>
-        <input
-          type="text"
-          id="cname"
-          name="cname"
-          placeholder="Tên người dùng"
-          required
-          bind:value={uname} />
-      </div>
-
-      <div class="input">
-        <label for="cpass">Mật khẩu</label>
-        <input
-          type="password"
-          id="upass"
-          name="upass"
-          placeholder="Mật khẩu"
-          required
-          bind:value={upass} />
-      </div>
-
-      {#if error}
-        <div class="error">{error}</div>
-      {/if}
-
-      <footer>
-        <a href="/auth/login" class="m-button _line">
-          <span>Đăng nhập</span>
-        </a>
-
-        <button type="submit" class="m-button _success login">
-          <MIcon class="m-icon _signup" name="user-plus" />
-          <span>Tạo tài khoản</span>
-        </button>
-      </footer>
-    </form>
-  </section>
-</Vessel>

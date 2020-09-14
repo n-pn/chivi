@@ -48,8 +48,8 @@
     weight: 'Tổng hợp',
   }
 
-  $: pageMax = Math.floor((total - 1) / 20) + 1
-  $: pageList = paginate_range(page, pageMax)
+  $: page_max = Math.floor((total - 1) / 20) + 1
+  $: page_ary = paginate_range(page, page_max)
 
   let searching = false
 
@@ -64,7 +64,7 @@
 
       case 76:
         evt.preventDefault()
-        changePage(pageMax)
+        changePage(page_max)
         break
 
       case 37:
@@ -89,7 +89,7 @@
   }
 
   function changePage(newPage = 2) {
-    if (newPage >= 1 && newPage <= pageMax) {
+    if (newPage >= 1 && newPage <= page_max) {
       _goto(makePageUrl(newPage, query))
     }
   }
@@ -129,18 +129,12 @@
     <a
       class="page m-button _line"
       class:_disable={page == 1}
-      href={makePageUrl(1, query)}>
-      <MIcon class="m-icon" name="chevrons-left" />
-    </a>
-
-    <a
-      class="page m-button _line"
-      class:_disable={page == 1}
       href={makePageUrl(+page - 1, query)}>
       <MIcon class="m-icon" name="chevron-left" />
+      <span>Trước</span>
     </a>
 
-    {#each pageList as [index, level]}
+    {#each page_ary as [index, level]}
       <a
         class="page m-button _line"
         class:_actived={page == index}
@@ -153,16 +147,10 @@
 
     <a
       class="page m-button _line"
-      class:_disable={page == pageMax}
+      class:_disable={page == page_max}
       href={makePageUrl(page + 1, query)}>
+      <span>Kế tiếp</span>
       <MIcon class="m-icon" name="chevron-right" />
-    </a>
-
-    <a
-      class="page m-button _line"
-      class:_disable={page == pageMax}
-      href={makePageUrl(pageMax, query)}>
-      <MIcon class="m-icon" name="chevrons-right" />
     </a>
   </div>
 </Vessel>

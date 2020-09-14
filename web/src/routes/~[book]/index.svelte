@@ -60,7 +60,7 @@
 </script>
 
 <script>
-  import { user } from '$src/stores'
+  import { auth } from '$src/stores'
   import MIcon from '$mould/MIcon.svelte'
 
   import Vessel from '$layout/Vessel.svelte'
@@ -137,7 +137,7 @@
 
   <span slot="header-right" class="header-item _menu">
     <MIcon class="m-icon _star" name="star" />
-    {#if $user.power > 0}
+    {#if $auth.power > 0}
       <div class="header-menu">
         {#each book_tags as [tag_type, tag_name, tag_icon]}
           <div class="-item" on:click={() => tagging_book(tag_type)}>

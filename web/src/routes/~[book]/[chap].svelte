@@ -25,7 +25,7 @@
   import read_selection from '$utils/read_selection'
   import { render_convert, parse_content } from '$utils/render_convert'
 
-  import { user } from '$src/stores'
+  import { auth } from '$src/stores'
   import { dict_upsert, load_chtext } from '$src/api'
 
   export let bslug = ''
@@ -125,7 +125,7 @@
         break
 
       case 82:
-        if ($user.power > 0) {
+        if  $auth.power > 0) {
           evt.preventDefault()
           reconvert(1)
         }
@@ -138,7 +138,7 @@
   }
 
   async function deleteFocusedWord() {
-    if (!focused_elem || $user.power < 1) return
+    if (!focused_elem || $auth.power < 1) return
 
     const dic = +focused_elem.dataset.d == 3 ? ubid : 'generic'
     const key = focused_elem.dataset.k
@@ -236,7 +236,7 @@
     slot="header-right"
     type="button"
     class="header-item"
-    disabled={$user.power < 1}
+    disabled={$auth.power < 1}
     on:click={() => reconvert(1)}>
     <MIcon
       class="m-icon _refresh-ccw {__reloading ? '_reload' : ''}"

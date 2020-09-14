@@ -62,9 +62,9 @@
   export let actived = true
   export let changed = false
 
-  import { user } from '$src/stores'
-  $: uname = $user.uname
-  $: power = $user.power
+  import { auth } from '$src/stores'
+  $: uname = $auth.uname
+  $: power = $auth.power
 
   let inp_field
   let out_field
@@ -89,7 +89,7 @@
   $: existed = current.vals[0] || ''
   $: updated = out_val != existed
 
-  $: [prevail, btn_power] = compare_power($user.power, current.power)
+  $: [prevail, btn_power] = compare_power($auth.power, current.power)
   $: [btn_class, btn_label] = compare_value(out_val, existed)
 
   $: if (key) preload_input()
