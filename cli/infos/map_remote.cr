@@ -119,7 +119,7 @@ class MapRemote
   CACHED = ARGV.includes?("cached")
 
   def expiry_for(sbid : String)
-    return Time.utc - 1.year if CACHED || @seed == "jx_la"
+    return Time.utc - 1.year if CACHED || @seed == "jx_la" || @seed == "duokan8"
     return Time.utc - 9.months unless ubid = @crawled[sbid]?
     return Time.utc - 6.months unless @existed.includes?(ubid)
     return Time.utc - 3.months unless time = OrderMap.book_update.value(ubid)
