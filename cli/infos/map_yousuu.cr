@@ -1,12 +1,13 @@
 require "../../src/appcv/bookdb"
 
-def should_skip?(source : YsSerial)
-  return true if BookDB.blacklist?(source.title)
+def should_keep?(source : YsSerial)
+  return false if source.title.empty? || source.author.empty?
+  return false if BookDB.blacklist?(source.title)
 
-  return false if BookDB.whitelist?(source.author) || source.addListTotal >= 5
-  return false if source.score >= 3 && source.commentCount >= 10
+  return true if source.addListTotal >= 5
+  return true if source.score >= 3 && source.commentCount >= 10
 
-  true
+  BookDB.whitelist?(source.author)
 end
 
 DIR = File.join("var", "appcv", ".cached", "yousuu", "serials")
@@ -30,7 +31,7 @@ files.each_with_index do |file, idx|
   ubid = UuidUtil.gen_ubid(source.title, source.author)
   sitemap.upsert(source.ysid, "#{ubid}¦#{source.title}¦#{source.author}")
 
-  next if source.title.empty? || source.author.empty? || should_skip?(source)
+  next unless should_keep?(source)
 
   if existed = input[ubid]?
     next if existed.mftime > source.mftime
