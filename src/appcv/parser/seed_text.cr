@@ -24,6 +24,8 @@ class SeedText
 
   def self.text_url(seed : String, sbid : String, scid : String)
     case seed
+    when "zhwenpg"
+      "https://novel.zhwenpg.com/r.php?id=#{scid}"
     when "nofff"
       "https://www.nofff.com/#{sbid}/#{scid}/"
     when "69shu"
@@ -50,8 +52,9 @@ class SeedText
     when "biquge5200"
       group = sbid.to_i // 1000
       "https://www.biquge5200/#{group}_#{sbid}/#{scid}.html"
-    when "zhwenpg"
-      "https://novel.zhwenpg.com/r.php?id=#{scid}"
+    when "shubaow"
+      group = sbid.to_i // 1000
+      "https://www.shubaow.net/#{group}_#{sbid}/#{scid}.html"
     else
       raise "- seed `#{seed}` not supported!"
     end
@@ -93,7 +96,9 @@ class SeedText
 
   def parse_title!
     case @seed
-    when "jx_la", "nofff", "rengshu", "paoshu8", "xbiquge", "5200", "biquge5200"
+    when "jx_la", "nofff", "rengshu",
+         "paoshu8", "xbiquge", "5200", "biquge5200",
+         "shubaow"
       title_text("h1")
     when "qu_la"
       title_text(".title")
@@ -121,7 +126,7 @@ class SeedText
     case @seed
     when "qu_la", "jx_la", "nofff",
          "rengshu", "paoshu8", "xbiquge",
-         "5200", "biquge5200"
+         "5200", "biquge5200", "shubaow"
       parse_paras!("#content")
     when "zhwenpg"
       parse_paras!("#tdcontent .content")

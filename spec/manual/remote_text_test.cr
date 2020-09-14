@@ -41,4 +41,6 @@ end
 
 # fetch_chap("5200", "28208", "12163631")
 
-fetch_chap("biquge5200", "139731", "174666986")
+# fetch_chap("biquge5200", "139731", "174666986")
+
+fetch_chap("shubaow", "150092", "32706021")
