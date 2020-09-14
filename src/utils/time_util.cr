@@ -27,4 +27,5 @@ module TimeUtil
   end
 end
 
-# puts Utils.parse_time("5/14/2020 7:00:48 AM")
+# puts TimeUtil.parse("5/14/2020 7:00:48 AM")
+# puts TimeUtil.parse("2020-09-08 10:00")

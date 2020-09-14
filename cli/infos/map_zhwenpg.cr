@@ -15,7 +15,7 @@ class MapZhwenpg
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-    @sitemap = LabelMap.load("_import/sites/zhwenpg")
+    @sitemap = LabelMap.load_name("_import/sites/zhwenpg")
     @checked = Set(String).new
   end
 
@@ -23,7 +23,7 @@ class MapZhwenpg
     Time.utc - 12.hours * page
   end
 
-  def page_url(page : Int32, status : Int32 = 0)
+  def page_url(page : Int32, status = 0)
     if status > 0
       "https://novel.zhwenpg.com/index.php?page=#{page}&genre=1"
     else
@@ -31,7 +31,7 @@ class MapZhwenpg
     end
   end
 
-  def page_path(page : Int32, status : Int32 = 0)
+  def page_path(page : Int32, status = 0)
     File.join(DIR, "#{page}-#{status}.html")
   end
 
@@ -150,7 +150,7 @@ class MapZhwenpg
   end
 
   private def parse_time(time : String)
-    TimeUtil.parse(time).to_unix_ms
+    TimeUtil.parse("#{time} 10:00").to_unix_ms
   end
 
   def save_indexes!

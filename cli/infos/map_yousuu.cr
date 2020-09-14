@@ -4,8 +4,8 @@ def should_keep?(source : YsSerial)
   return false if source.title.empty? || source.author.empty?
   return false if BookDB.blacklist?(source.title)
 
-  return true if source.addListTotal >= 5
-  return true if source.score >= 3 && source.commentCount >= 10
+  return true if source.addListTotal >= 5 || source.commentCount >= 10
+  return true if source.score >= 3 && source.scorerCount >= 10
 
   BookDB.whitelist?(source.author)
 end

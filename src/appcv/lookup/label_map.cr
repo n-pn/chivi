@@ -46,7 +46,7 @@ class LabelMap
     File.join(DIR, "#{name}.txt")
   end
 
-  def self.load_name(name : String, mode = 1)
+  def self.load_name(name : String, mode = 1) : self
     load(path_for(name), mode: mode)
   end
 
