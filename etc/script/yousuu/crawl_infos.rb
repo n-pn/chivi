@@ -1,6 +1,6 @@
 require_relative "./crawl_utils"
 
-class CritCrawler
+class InfoCrawler
   INFO_DIR = "var/appcv/.cached/yousuu/serials"
 
   def initialize(load_proxy = false, debug_mode = false)
@@ -86,9 +86,9 @@ end
 
 load_proxy = ARGV.include?("proxy")
 debug_mode = ARGV.include?("debug")
-crawler = CritCrawler.new(load_proxy, debug_mode)
+crawler = InfoCrawler.new(load_proxy, debug_mode)
 
-total = 239000
+total = 242100
 
 order = :sequel
 order = :reverse if ARGV.include?("reverse")
