@@ -66,7 +66,7 @@ class MapRemote
 
   def initialize(@seed : String, @type = 0)
     @existed = Set(String).new(BookInfo.ubids)
-    @sitemap = LabelMap.load("_import/sites/#{@seed}")
+    @sitemap = LabelMap.load_name("_import/sites/#{@seed}")
 
     @crawled = {} of String => String
     @sitemap.each do |key, val|
@@ -127,6 +127,8 @@ class MapRemote
   end
 
   def should_crawl?(sbid : String, mode = 0) : Bool
+    return true if @seed == "hetushu" # accept all book from hetushu
+
     return true unless meta = @sitemap.fetch(sbid)
     ubid, title, author = meta.split("¦")
     return true if mode == 2 && title.empty? || author.empty?
