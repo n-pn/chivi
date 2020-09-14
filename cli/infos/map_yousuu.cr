@@ -2,10 +2,11 @@ require "../../src/appcv/bookdb"
 
 def should_skip?(source : YsSerial)
   return true if BookDB.blacklist?(source.title)
-  return false if BookDB.whitelist?(source.author)
-  return false if source.addListTotal >= 5
 
-  source.score >= 3 && source.commentCount >= 10
+  return false if BookDB.whitelist?(source.author) || source.addListTotal >= 5
+  return false if source.score >= 3 && source.commentCount >= 10
+
+  true
 end
 
 DIR = File.join("var", "appcv", ".cached", "yousuu", "serials")

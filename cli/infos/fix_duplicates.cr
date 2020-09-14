@@ -5,13 +5,14 @@ SITES = {
   "hetushu", "jx_la", "rengshu",
   "xbiquge", "nofff", "duokan8",
   "paoshu8", "69shu", "zhwenpg",
+  "5200", "biquge5200", "shubaow",
   "yousuu",
 }
 
 DELETED = Set(String).new
 
 SITES.each do |site|
-  infos = LabelMap.load!("_import/sites/#{site}")
+  infos = LabelMap.load_name("_import/sites/#{site}")
 
   infos.each do |sbid, info|
     ubid, title, author = info.split("¦")
