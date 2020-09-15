@@ -93,8 +93,10 @@
       <span>Trước</span>
     </a>
 
+    <span class="m-button _line _primary _disable"><span>{page}</span></span>
+
     <a
-      class="m-button _line _primary"
+      class="m-button _solid _primary"
       class:_disable={page == pmax}
       href={searchUrl(page + 1)}>
       <span>Kế tiếp</span>
@@ -225,7 +227,6 @@
     margin-bottom: 0.75rem;
 
     .m-button {
-      width: rem(25x);
       span {
         padding-top: rem(1px);
       }

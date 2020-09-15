@@ -254,7 +254,7 @@
                     rel="nofollow">
                     <span class="-name">{name}</span>
                     <span class="-time">
-                      ({relative_time(book.seed_mftimes[name], seed)})
+                      ({relative_time(book.seed_mftimes[name], name)})
                     </span>
                   </a>
                 {/each}
