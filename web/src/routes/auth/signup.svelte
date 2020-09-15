@@ -14,24 +14,22 @@
 
     const res = await fetch('_signup', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, uname, upass }),
     })
 
     const data = await res.json()
 
-    if (data.status == 'ok') {
+    if (data._stt == 'ok') {
       $auth = { uname: data.uname, power: data.power }
       _goto('/')
     } else {
-      error = error_message(data.msg)
+      error = error_message(data._msg)
     }
   }
 
-  function error_message(msg) {
-    switch (msg) {
+  function error_message(message) {
+    switch (message) {
       case 'email too short':
       case 'invalid email format':
         return 'Địa chỉ hòm thư không hợp lệ'

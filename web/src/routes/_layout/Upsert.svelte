@@ -132,7 +132,7 @@
 
   async function submit_val() {
     const dic = tab == 'special' ? dname : tab
-    const res = await dict_upsert(fetch, dic, key, out_val)
+    const res = await dict_upsert(fetch, dic, key.trim(), out_val.trim())
 
     changed = res === 'ok' && updated
     actived = false

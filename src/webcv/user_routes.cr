@@ -15,7 +15,7 @@ module Server
     user = UserDB.create(email, uname, upass, "guest", 1)
     Utils.return_user(env, user)
   rescue err
-    {status: "err", msg: err.message}.to_json(env.response)
+    {_stt: "err", _msg: err.message}.to_json(env.response)
   end
 
   post "/_login" do |env|
@@ -26,7 +26,7 @@ module Server
     Utils.return_user(env, user)
   rescue err
     puts err
-    {status: "err", msg: "email or password incorrect"}.to_json(env.response)
+    {_stt: "err", _msg: "email or password incorrect"}.to_json(env.response)
   end
 
   get "/_logout" do |env|
@@ -37,9 +37,9 @@ module Server
   get "/_self" do |env|
     uslug = env.session.string("uslug")
     user = UserInfo.get!(uslug)
-    {status: "ok", uname: user.uname, power: user.power}.to_json(env.response)
+    {_stt: "ok", uname: user.uname, power: user.power}.to_json(env.response)
   rescue err
-    {status: "err", msg: "user not logged in"}.to_json(env.response)
+    {_stt: "err", _msg: "user not logged in"}.to_json(env.response)
   end
 
   get "/_self/book_mark/:ubid" do |env|
@@ -47,9 +47,9 @@ module Server
     ubid = env.params.url["ubid"]
 
     mark = UserDB.get_book_mark(uslug, ubid) || ""
-    {stt: "ok", mark: mark}
+    {_stt: "ok", mark: mark}
   rescue err
-    {stt: "err", msg: "user not logged in"}.to_json(env.response)
+    {_stt: "err", _msg: "user not logged in"}.to_json(env.response)
   end
 
   put "/_self/book_mark/:ubid" do |env|
@@ -63,9 +63,9 @@ module Server
       UserDB.mark_book(uslug, ubid, mark)
     end
 
-    {s: "ok", mark: mark}
+    {_stt: "ok", mark: mark}
   rescue err
-    {s: "err", m: "user not logged in"}.to_json(env.response)
+    {_stt: "err", _msg: "user not logged in"}.to_json(env.response)
   end
 
   get "/_users/:uname/marked_books" do |env|
@@ -75,29 +75,15 @@ module Server
     end
 
     mark = env.params.query["mark"]? || "reading"
+    limit, offset = Utils.parse_page(env.params.query.fetch("page", "1"))
+
     uuids = UserDB.marked_books(user.uslug, mark)
-
-    pp mark, uuids
-
-    infos = uuids.compact_map do |ubid|
-      info = BookInfo.get!(ubid)
-
-      {
-        ubid:       info.ubid,
-        slug:       info.slug,
-        vi_title:   info.vi_title,
-        zh_title:   info.zh_title,
-        vi_author:  info.vi_author,
-        vi_genres:  info.vi_genres,
-        main_cover: info.main_cover,
-        rating:     info.rating,
-        voters:     info.voters,
-        mftime:     info.mftime,
-      }
+    infos = uuids[offset, limit].compact_map do |ubid|
+      BookInfo.get!(ubid)
     rescue
       UserDB.unmark_book(user.uslug, ubid)
     end
 
-    infos.sort_by(&.[:mftime].-).to_json(env.response)
+    Utils.books_json(env.response, infos.sort_by(&.mftime.-), uuids.size)
   end
 end

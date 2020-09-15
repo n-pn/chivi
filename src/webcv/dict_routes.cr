@@ -3,7 +3,7 @@ require "./route_utils"
 module Server
   alias LookupEntry = Hash(String, Array(String))
 
-  post "/_lookup" do |env|
+  post "/_dicts/lookup" do |env|
     dname = env.params.query.fetch("dname", "combine")
     dicts = Libcv::Library.for_convert(dname)
 
@@ -53,7 +53,7 @@ module Server
     }.to_json(env.response)
   end
 
-  put "/_upsert/:dic" do |env|
+  put "/_dicts/upsert/:dic" do |env|
     dic = env.params.url["dic"]
     key = env.params.json["key"].as(String)
     val = env.params.json["val"].as(String?) || ""
@@ -69,8 +69,8 @@ module Server
     end
 
     Libcv::Library.upsert(dic, uname, power, key, val)
-    {status: "ok", msg: "accepted"}.to_json(env.response)
+    {_stt: "ok", _msg: "accepted"}.to_json(env.response)
   rescue err
-    {status: "err", msg: err.message}.to_json(env.response)
+    {_stt: "err", _msg: err.message}.to_json(env.response)
   end
 end

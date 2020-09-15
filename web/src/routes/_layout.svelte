@@ -16,9 +16,9 @@
   import { auth } from '$src/stores'
 
   onMount(async () => {
-    const res = await fetch('_self')
+    const res = await fetch('/_self')
     const data = await res.json()
-    if (data.status == 'ok') {
+    if (data._stt == 'ok') {
       $auth = { uname: data.uname, power: data.power }
     } else {
       $auth = { uname: 'Khách', power: -1 }

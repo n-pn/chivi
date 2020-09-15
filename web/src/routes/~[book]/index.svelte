@@ -144,6 +144,9 @@
 
   <span slot="header-right" class="header-item _menu">
     <MIcon class="m-icon" name={mark ? mark_icons[mark] : 'star'} />
+    <span
+      class="header-text _show-md">{mark ? mark_names[mark] : 'Đánh dấu'}</span>
+
     {#if $auth.power > 0}
       <div class="header-menu">
         {#each mark_types as type}

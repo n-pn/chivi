@@ -13,15 +13,13 @@
 
     const res = await fetch('_login', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, upass }),
     })
 
     const data = await res.json()
 
-    if (data.status == 'ok') {
+    if (data._stt == 'ok') {
       $auth = { uname: data.uname, power: data.power }
       _goto('/')
     } else {

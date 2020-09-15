@@ -112,7 +112,7 @@
   $: hv_html = render_hv(hanviet, from, upto)
 
   async function lookup_line(input) {
-    const url = `/_lookup?dname=${dname}`
+    const url = `/_dicts/lookup?dname=${dname}`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
