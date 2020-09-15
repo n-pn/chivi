@@ -1,22 +1,5 @@
 # TODO
 
-## Current
-
-### Fix hanviet
-
-prepare:
-
-- [ ] make `hanviet` dictionary access/editable by moderators
-- [ ] extract list of most 20k popular book titles (and their authors)
-- [ ] counting hanzi occurences (sort by count) from titles and authors
-
-main activity:
-
-- [ ] rewrite `Upsert` component to accept hanviet
-- [ ] implement dict management (for hanviet first)
-- [ ] make table comparing multiple hanviet sources
-- [ ] implement functionalities to that table
-
 ## Backlog
 
 ### Frontend
@@ -38,31 +21,84 @@ main activity:
   - [-] fix hanviet again (write an ui tool?)
   - [x] prefer hanviet words to extra dicts' words
   - [x] remove unnessary suggestions (hanviet, convertable, low frequency etc.)
-  - [ ] add unicode emoji
+  - [ ] add kaomoji?
 
 - [ ] convert engine
 
   - [x] combines unicode letters and digits
   - [-] fix 69shu title texts
+    - [ ] to be recheck
+    - [ ] change chap number index?
   - [-] handle numbers (datetime, percent, units)
   - [-] apply basic grammar rules
+    - [x] many
+    - [-] handle datetime, need to merge year month day to single word
+    - [ ] handle hours and minutes
 
 ### Both FE and BE
 
 - [x] rewrite FE after BE api changes
 - [x] improve search, must be able to jump directly to matched query without having to visit the search result page
 - [x] basic authentication system
+
 - [ ] add chap texts manually
 - [ ] edit chap texts
 
-- [ ] quick convert (using `book/tonghop.dic`, no saving text)
-- [ ] user impressions and trackings
+- [ ] quick convert (using `book/dich-nhanh.dic`, no saving text)
+- [ ] translate websites?
+
+- [-] user impressions and trackings
+
+  - [x] book library (marking `ongoing`, `completed`, etc.)
+  - [ ] tracking chapter read, make chapter bookmark to quick re-read jump
+
 - [ ] dicts management (bulk imports, bulk delete, tranfering etc.)
-- [ ] convert web urls?
-- [-] fix lookup sidebar: incorrect hanviet range, scroll to focused etc.
+
+- [-] fix lookup sidebar:
+
+  - [x] incorrect hanviet range
+  - [ ] scroll to focused .
+
 - ...
 
 - [ ] analyze texts
   - [ ] analyze chapters, output words count (reject child words with same count)
   - [ ] smart filtering words (remove existed entries)
   - [ ] implement ui for it
+
+### Pending
+
+- [ ] add background images for pages
+      pick first book cover image for book lists pages
+
+  TODO: figure out how to apply body background-image from routes
+
+  references:
+
+  - https://stackoverflow.com/questions/26621513/darken-css-background-image
+
+- [ ] using user name as primary key for users related records
+- [ ] using book slug instead of uuid for dict names and other indexes
+
+## Current
+
+### Fix hanviet
+
+prepare:
+
+- [x] make `hanviet` dictionary access/editable by moderators
+- [ ] extract list of most 20k popular book titles (and their authors)
+- [ ] counting hanzi occurences (sort by count) from titles and authors
+
+main activity:
+
+- [x] rewrite `Upsert` component to accept hanviet
+- [ ] implement dict management (for hanviet first)
+- [ ] make table comparing multiple hanviet sources
+- [ ] implement functionalities to that table
+
+### Fix upsert dialog
+
+- [ ] instead of providing the exact hanzi string, rewrite it by providing the whole line and range indexes instead
+- [ ] add button to move focus
+- [ ] add keyboard shortcut to move focus
