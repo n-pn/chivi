@@ -48,27 +48,30 @@ module UserDB
     unames.upsert!(info.uname.downcase, info.uslug)
   end
 
-  UBIDS = {} of String => LabelMap
+  UBIDS = {} of String => TokenMap
 
   def ubids(uslug : String)
-    UBIDS[uslug] ||= LabelMap.load(File.join(SR_DIR, "#{uslug}.txt"))
+    UBIDS[uslug] ||= TokenMap.read(File.join(SR_DIR, "#{uslug}.txt"))
   end
 
   # tags: reading, finish, dropped, onhold, pending
 
   def mark_book(uslug : String, ubid : String, mark : String) : Void
-    ubids(uslug).upsert!(ubid, mark)
+    ubids(uslug).upsert!(ubid, [mark])
   end
 
   def unmark_book(uslug : String, ubid : String) : Void
     ubids(uslug).delete!(ubid)
   end
 
-  def marked_books(uslug : String)
-    ubids(uslug).data
+  def marked_books(uslug : String, mark : String)
+    dict = ubids(uslug)
+    return dict.hash.keys if mark.empty?
+
+    dict.keys(mark).try(&.to_a) || [] of String
   end
 
   def get_book_mark(uslug : String, ubid : String)
-    ubids(uslug).fetch(ubid)
+    ubids(uslug).vals(ubid).try(&.first?)
   end
 end

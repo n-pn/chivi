@@ -75,12 +75,11 @@ module Server
     end
 
     mark = env.params.query["mark"]? || "reading"
+    uuids = UserDB.marked_books(user.uslug, mark)
 
-    books = UserDB.marked_books(user.uslug)
+    pp mark, uuids
 
-    infos = books.compact_map do |ubid, marked|
-      next unless mark == marked
-
+    infos = uuids.compact_map do |ubid|
       info = BookInfo.get!(ubid)
 
       {
