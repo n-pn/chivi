@@ -22,9 +22,10 @@ module ChapUtil
   end
 
   TITLE_RE_0 = /^第?([#{NUMS}\d]+)([#{TAGS}])[#{SEPS}]*(.*)$/
-  TITLE_RE_1 = /^\d+\.\s*第(.+)([#{TAGS}])[#{SEPS}]*(.+)/ # 69shu
-  TITLE_RE_2 = /^([#{NUMS}\d]+)[#{SEPS}]+(.*)$/
-  TITLE_RE_3 = /^\（(\p{N}+)\）[#{SEPS}]*(.*)$/
+  TITLE_RE_1 = /^\d+\.\s*第(.+)([#{TAGS}])[#{SEPS}]*(.+)/ # 69shu 1
+  TITLE_RE_2 = /^第(.+)([#{TAGS}])\d+\.\s*[#{SEPS}]*(.+)/ # 69shu 2
+  TITLE_RE_3 = /^([#{NUMS}\d]+)[#{SEPS}]+(.*)$/
+  TITLE_RE_4 = /^\（(\p{N}+)\）[#{SEPS}]*(.*)$/
 
   def self.format_title(title : String)
     if match = TITLE_RE_0.match(title)
@@ -32,12 +33,12 @@ module ChapUtil
       return "第#{idx}#{tag} #{clean_spaces(title)}"
     end
 
-    if match = TITLE_RE_1.match(title)
+    if match = TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
       _, idx, tag, title = match
       return "第#{idx}#{tag} #{title}"
     end
 
-    if match = TITLE_RE_2.match(title) || TITLE_RE_3.match(title)
+    if match = TITLE_RE_3.match(title) || TITLE_RE_4.match(title)
       _, idx, title = match
       return "#{idx}. #{clean_spaces(title)}"
     end
