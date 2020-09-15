@@ -274,8 +274,8 @@
         <div class="format">
           <div class="-cap">
             <span class="-btn" on:click={() => upcase_val(1)}>Hoa 1 chữ</span>
-            <span class="-btn" on:click={() => upcase_val(2)}>Hai chữ</span>
-            <span class="-btn" on:click={() => upcase_val(3)}>Ba chữ</span>
+            <span class="-btn" on:click={() => upcase_val(2)}>2 chữ</span>
+            <span class="-btn" on:click={() => upcase_val(3)}>3 chữ</span>
             <span class="-btn" on:click={() => upcase_val(9)}>Toàn bộ</span>
             <span class="-btn" on:click={() => upcase_val(0)}>Không hoa</span>
           </div>

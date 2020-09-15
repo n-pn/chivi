@@ -221,7 +221,7 @@
                     {#if seed == name && _loading}
                       <MIcon class="m-icon" name="loader" />
                     {:else}
-                      <span>{relative_time(book.seed_mftimes[name])}</span>
+                      <span>{relative_time(book.seed_mftimes[name], name)}</span>
                     {/if}
                   </span>
                 </td>
@@ -254,7 +254,7 @@
                     rel="nofollow">
                     <span class="-name">{name}</span>
                     <span class="-time">
-                      ({relative_time(book.seed_mftimes[name])})
+                      ({relative_time(book.seed_mftimes[name], seed)})
                     </span>
                   </a>
                 {/each}
@@ -272,7 +272,7 @@
               {:else}
                 <MIcon class="m-icon" name="clock" />
               {/if}
-              <span>{relative_time(book.seed_mftimes[seed])}</span>
+              <span>{relative_time(book.seed_mftimes[seed], seed)}</span>
             </button>
 
             <button class="m-button _text" on:click={() => (desc = !desc)}>
@@ -399,7 +399,7 @@
       height: 2.25rem;
 
       cursor: pointer;
-      padding: 0 0.5rem;
+      padding: 0 0.75rem;
       font-weight: 500;
       line-height: 2rem;
       text-transform: uppercase;
@@ -424,7 +424,7 @@
       position: absolute;
       top: 2.25rem;
       left: 0;
-      min-width: 12rem;
+      min-width: 13rem;
       padding: 0.75rem 0;
       background-color: #fff;
 

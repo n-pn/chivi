@@ -150,7 +150,7 @@ class MapZhwenpg
   end
 
   private def parse_time(time : String)
-    TimeUtil.parse("#{time} 10:00").to_unix_ms
+    TimeUtil.parse(time).to_unix_ms
   end
 
   def save_indexes!

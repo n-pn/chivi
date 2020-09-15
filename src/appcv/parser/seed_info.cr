@@ -240,10 +240,10 @@ class SeedInfo
       TimeUtil.parse(text).to_unix_ms
     when "biquge5200"
       text = node_text("#info > p:last-child").not_nil!.sub("最后更新：", "")
-      TimeUtil.parse("#{text} 10:00").to_unix_ms
+      TimeUtil.parse(text).to_unix_ms
     when "69shu"
       text = node_text(".mu_beizhu").not_nil!.sub(/.+时间：/m, "")
-      TimeUtil.parse("#{text} 10:00").to_unix_ms
+      TimeUtil.parse(text).to_unix_ms
     when "hetushu", "zhwenpg"
       TIME_DF
     else
