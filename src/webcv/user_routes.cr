@@ -78,12 +78,13 @@ module Server
     limit, offset = Utils.parse_page(env.params.query.fetch("page", "1"))
 
     uuids = UserDB.marked_books(user.uslug, mark)
-    infos = uuids[offset, limit].compact_map do |ubid|
+    infos = uuids.compact_map do |ubid|
       BookInfo.get!(ubid)
     rescue
       UserDB.unmark_book(user.uslug, ubid)
     end
 
-    Utils.books_json(env.response, infos.sort_by(&.mftime.-), uuids.size)
+    infos = infos.sort_by(&.mftime.-)[offset, limit]
+    Utils.books_json(env.response, infos, uuids.size)
   end
 end
