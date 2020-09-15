@@ -272,22 +272,20 @@
           bind:value={out_val} />
 
         <div class="format">
-          <div class="-cap">
-            <span class="-btn" on:click={() => upcase_val(1)}>Hoa 1 chữ</span>
-            <span class="-btn" on:click={() => upcase_val(2)}>2 chữ</span>
-            <span class="-btn" on:click={() => upcase_val(3)}>3 chữ</span>
-            <span class="-btn" on:click={() => upcase_val(9)}>Toàn bộ</span>
-            <span class="-btn" on:click={() => upcase_val(0)}>Không hoa</span>
-          </div>
+          <span class="-lbl">Viết hoa:</span>
+          <span class="-btn" on:click={() => upcase_val(1)}>1 chữ</span>
+          <span class="-btn" on:click={() => upcase_val(2)}>2 chữ</span>
+          <span class="-btn" on:click={() => upcase_val(3)}>3 chữ</span>
+          <span class="-btn" on:click={() => upcase_val(9)}>Tất cả</span>
+          <span class="-btn" on:click={() => upcase_val(0)}>Không</span>
 
-          <div class="-etc">
-            {#if updated}
-              <span class="-btn" on:click={() => update_val(existed)}>
-                Phục
-              </span>
-            {/if}
-            <span class="-btn" on:click={() => (out_val = '')}>Xoá</span>
-          </div>
+          <span class="-btn _right" on:click={() => (out_val = '')}>Xoá</span>
+
+          {#if updated}
+            <span class="-btn _right" on:click={() => update_val(existed)}>
+              Phục
+            </span>
+          {/if}
         </div>
       </div>
 
@@ -506,45 +504,63 @@
   }
 
   .format {
-    display: flex;
-    padding: 0 0.5rem;
+    $height: 2.25rem;
+
+    padding: 0 0.375rem;
+    overflow: hidden;
+    height: $height;
+
+    @include clearfix;
 
     @include border();
     border-top: none;
     @include radius($sides: bottom);
 
     font-size: rem(10px);
+
     @include screen-min(sm) {
       font-size: rem(11px);
     }
+
     @include screen-min(md) {
       font-size: rem(12px);
     }
 
-    .-cap,
-    .-etc {
-      display: flex;
-    }
-
-    .-etc {
-      margin-left: auto;
-    }
-
+    .-lbl,
     .-btn {
-      display: inline-block;
-      cursor: pointer;
+      float: left;
       padding: 0 0.375rem;
-      line-height: 2.25rem;
+      line-height: $height;
       font-weight: 500;
       text-transform: uppercase;
 
-      max-width: 14vw;
-      @include truncate(null);
       @include fgcolor(neutral, 5);
+    }
+
+    .-lbl {
+      display: none;
+      @include screen-min(sm) {
+        display: inline-block;
+      }
+    }
+
+    .-btn {
+      cursor: pointer;
+
+      // max-width: 14vw;
+      @include truncate(null);
 
       &:hover {
         @include fgcolor(primary, 5);
         @include bgcolor(white);
+      }
+
+      &._right {
+        float: right;
+      }
+
+      @include screen-min(md) {
+        padding: 0 0.5rem;
       }
     }
   }
