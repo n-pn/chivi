@@ -15,7 +15,7 @@
 
       if (tab === 'content' && sname !== '') {
         const chaps = await fetch_chaps(this.fetch, bslug, sname, 0)
-        book = updateLatest(book, sname, chaps.chlist, chaps.mftime)
+        book = update_last_chap(book, sname, chaps.chlist, chaps.mftime)
         chlists[sname] = chaps.chlist
       }
 
@@ -25,7 +25,7 @@
     this.error(res.status, data.msg)
   }
 
-  export function updateLatest(book_info, sname, chlist, mftime) {
+  export function update_last_chap(book_info, sname, chlist, mftime) {
     if (chlist.length == 0) return book_info
     const latest = chlist[chlist.length - 1]
 
@@ -84,11 +84,11 @@
   $: chlist = chlists[seed] || []
   $: hasContent = book.seed_names.length > 0
 
-  $: if (tab == 'content') switchSite(seed, 0)
+  $: if (tab == 'content') change_seed(seed, 0)
 
   let _loading = false
 
-  async function switchSite(source, mode = 0) {
+  async function change_seed(source, mode = 0) {
     seed = source
     if (mode == 0 && chlists[seed]) return
 
@@ -98,22 +98,22 @@
 
     chlists[seed] = chlist
 
-    desc = true
     chlists = chlists // trigger update
-    book = updateLatest(book, seed, chlist, mftime)
+    book = update_last_chap(book, seed, chlist, mftime)
   }
 
-  function changeTab(newTab) {
-    tab = newTab
+  function change_tab(new_tab) {
+    // TODO: scrolling?
+    tab = new_tab
   }
 
-  function latestLink(sname) {
+  function last_chap_link(sname) {
     const latest = book.seed_latests[sname]
     if (!latest) return `/~${book.slug}?seed=${sname}&refresh=true`
     return `/~${book.slug}/${latest.url_slug}-${sname}-${latest.scid}`
   }
 
-  function latestText(sname) {
+  function last_chap_text(sname) {
     const latest = book.seed_latests[sname]
     if (!latest) return '...'
     return latest.vi_title
@@ -161,7 +161,7 @@
         class="-tab"
         class:_active={tab == 'overview'}
         href="/~{book.slug}?tab=overview"
-        on:click|preventDefault={() => changeTab('overview')}>
+        on:click|preventDefault={() => change_tab('overview')}>
         Tổng quan
       </a>
 
@@ -169,7 +169,7 @@
         class="-tab"
         class:_active={tab == 'content'}
         href="/~{book.slug}?tab=content&seed={seed}"
-        on:click|preventDefault={() => changeTab('content')}>
+        on:click|preventDefault={() => change_tab('content')}>
         Mục lục
       </a>
 
@@ -177,7 +177,7 @@
         class="-tab"
         class:_active={tab == 'reviews'}
         href="/~{book.slug}?tab=reviews"
-        on:click|preventDefault={() => changeTab('reviews')}>
+        on:click|preventDefault={() => change_tab('reviews')}>
         Bình luận
       </a>
     </header>
@@ -209,15 +209,15 @@
                   <span class="latest-text">{name}</span>
                 </td>
                 <td class="latest-chap">
-                  <a class="latest-link" href={latestLink(name)}>
-                    {latestText(name)}
+                  <a class="latest-link" href={last_chap_link(name)}>
+                    {last_chap_text(name)}
                   </a>
                 </td>
                 <td class="latest-time">
                   <span
                     class="latest-text _update"
                     class:_loading={seed == name && _loading}
-                    on:click={() => switchSite(name, 1)}>
+                    on:click={() => change_seed(name, 1)}>
                     {#if seed == name && _loading}
                       <MIcon class="m-icon" name="loader" />
                     {:else}
@@ -250,7 +250,7 @@
                     class="-item"
                     class:_active={seed === name}
                     href="/~{book.slug}?tab=content&seed={name}"
-                    on:click|preventDefault={() => switchSite(name, 0)}
+                    on:click|preventDefault={() => change_seed(name, 0)}
                     rel="nofollow">
                     <span class="-name">{name}</span>
                     <span class="-time">
@@ -266,7 +266,7 @@
             <button
               class="m-button _text"
               class:_loading
-              on:click={() => switchSite(seed, $auth.power > 2 ? 2 : 1)}>
+              on:click={() => change_seed(seed, $auth.power > 2 ? 2 : 1)}>
               {#if _loading}
                 <MIcon class="m-icon" name="loader" />
               {:else}
