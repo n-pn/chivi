@@ -516,11 +516,7 @@
     border-top: none;
     @include radius($sides: bottom);
 
-    font-size: rem(10px);
-
-    @include screen-min(sm) {
-      font-size: rem(11px);
-    }
+    font-size: rem(11px);
 
     @include screen-min(md) {
       font-size: rem(12px);
