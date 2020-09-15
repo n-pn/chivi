@@ -42,43 +42,44 @@ module Server
     {status: "err", msg: "user not logged in"}.to_json(env.response)
   end
 
-  get "/_self/tagged_books/:ubid" do |env|
+  get "/_self/book_mark/:ubid" do |env|
     uslug = env.session.string("uslug")
     ubid = env.params.url["ubid"]
 
-    tag = UserDB.get_book_tag(uslug, ubid) || ""
-    {stt: "ok", tag: tag}
+    mark = UserDB.get_book_mark(uslug, ubid) || ""
+    {stt: "ok", mark: mark}
   rescue err
     {stt: "err", msg: "user not logged in"}.to_json(env.response)
   end
 
-  put "/_self/tagged_books/:ubid" do |env|
+  put "/_self/book_mark/:ubid" do |env|
     uslug = env.session.string("uslug")
     ubid = env.params.url["ubid"]
-    tag = env.params.query["tag"]? || ""
+    mark = env.params.query["mark"]? || ""
 
-    if tag.empty?
-      UserDB.remove_book_tag(uslug, ubid)
+    if mark.empty?
+      UserDB.unmark_book(uslug, ubid)
     else
-      UserDB.add_book_tag(uslug, ubid, tag)
+      UserDB.mark_book(uslug, ubid, mark)
     end
 
-    {stt: "ok", tag: tag}
+    {s: "ok", mark: mark}
   rescue err
-    {stt: "err", msg: "user not logged in"}.to_json(env.response)
+    {s: "err", m: "user not logged in"}.to_json(env.response)
   end
 
-  get "/_users/:uname/tagged_books" do |env|
+  get "/_users/:uname/marked_books" do |env|
     uname = env.params.url["uname"]
     unless user = UserDB.find_by_uname(uname)
       halt env, status_code: 404, response: Utils.json_error("user not found!")
     end
 
-    tag = env.params.query["tag"]? || "reading"
-    books = UserDB.tagged_books(user.uslug)
+    mark = env.params.query["mark"]? || "reading"
 
-    infos = books.compact_map do |ubid, tagged|
-      next unless tag == tagged
+    books = UserDB.marked_books(user.uslug)
+
+    infos = books.compact_map do |ubid, marked|
+      next unless mark == marked
 
       info = BookInfo.get!(ubid)
 
@@ -95,7 +96,7 @@ module Server
         mftime:     info.mftime,
       }
     rescue
-      UserDB.remove_book_tag(user.uslug, ubid)
+      UserDB.unmark_book(user.uslug, ubid)
     end
 
     infos.sort_by(&.[:mftime].-).to_json(env.response)

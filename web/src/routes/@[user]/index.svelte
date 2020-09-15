@@ -1,21 +1,30 @@
 <script context="module">
-  const tabs = [
-    ['reading', 'Đang đọc', 'eye'],
-    ['completed', 'Hoàn thành', 'check-square'],
-    ['onhold', 'Tạm ngưng', 'pause'],
-    ['dropped', 'Vứt bỏ', 'trash'],
-    ['pending', 'Đọc sau', 'calendar'],
-  ]
+  const mark_types = ['reading', 'onhold', 'completed', 'dropped', 'pending']
 
+  const mark_names = {
+    reading: 'Đang đọc',
+    onhold: 'Tạm ngưng',
+    completed: 'Hoàn thành',
+    dropped: 'Ngừng đọc',
+    pending: 'Đọc sau',
+  }
+
+  const mark_icons = {
+    reading: 'eye',
+    onhold: 'pause',
+    completed: 'check-square',
+    dropped: 'trash',
+    pending: 'calendar',
+  }
   export async function preload({ params, query }) {
-    const tagged = query.tab || 'reading'
+    const mark = query.tab || 'reading'
     const res = await this.fetch(
-      `/_users/${params.user}/tagged_books?tag=${tagged}`
+      `/_users/${params.user}/marked_books?mark=${mark}`
     )
     const data = await res.json()
 
     if (res.status == 200) {
-      return { books: data, uname: params.user, tagged }
+      return { books: data, uname: params.user, mark }
     } else this.error(res.status, data.msg)
   }
 </script>
@@ -25,9 +34,9 @@
   import Vessel from '$layout/Vessel.svelte'
   import BookList from '$reused/BookList.svelte'
 
-  export let books = []
+  export let mark = 'reading'
   export let uname = ''
-  export let tagged = 'reading'
+  export let books = []
 </script>
 
 <Vessel>
@@ -37,11 +46,11 @@
   </span>
 
   <div class="tabs">
-    {#each tabs as [tag_type, tag_name, tag_icon]}
+    {#each mark_types as type}
       <a
-        href="/@{uname}?tab={tag_type}"
+        href="/@{uname}?tab={type}"
         class="tab"
-        class:_active={tag_type == tagged}>{tag_name}</a>
+        class:_active={type == mark}>{mark_names[type]}</a>
     {/each}
   </div>
 

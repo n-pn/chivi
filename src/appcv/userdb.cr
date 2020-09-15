@@ -54,21 +54,21 @@ module UserDB
     UBIDS[uslug] ||= LabelMap.load(File.join(SR_DIR, "#{uslug}.txt"))
   end
 
-  # tags: reading, finished, onhold, dropped
+  # tags: reading, finish, dropped, onhold, pending
 
-  def add_book_tag(uslug : String, ubid : String, tag : String) : Void
-    ubids(uslug).upsert!(ubid, tag)
+  def mark_book(uslug : String, ubid : String, mark : String) : Void
+    ubids(uslug).upsert!(ubid, mark)
   end
 
-  def remove_book_tag(uslug : String, ubid : String) : Void
+  def unmark_book(uslug : String, ubid : String) : Void
     ubids(uslug).delete!(ubid)
   end
 
-  def tagged_books(uslug : String)
+  def marked_books(uslug : String)
     ubids(uslug).data
   end
 
-  def get_book_tag(uslug : String, ubid : String)
+  def get_book_mark(uslug : String, ubid : String)
     ubids(uslug).fetch(ubid)
   end
 end

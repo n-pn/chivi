@@ -7,19 +7,19 @@
 
     if (res.status == 200) {
       let { book } = data
-      const sname = query.seed || book.seed_names[0] || ''
+      const seed = query.seed || book.seed_names[0] || ''
 
       const tab = query.tab || 'overview'
       const page = +(query.page || 1)
       const chlists = {}
 
-      if (tab === 'content' && sname !== '') {
-        const chaps = await fetch_chaps(this.fetch, bslug, sname, 0)
-        book = update_last_chap(book, sname, chaps.chlist, chaps.mftime)
-        chlists[sname] = chaps.chlist
+      if (tab === 'content' && seed !== '') {
+        const chaps = await fetch_chaps(this.fetch, bslug, seed, 0)
+        book = update_last_chap(book, seed, chaps.chlist, chaps.mftime)
+        chlists[seed] = chaps.chlist
       }
 
-      return { book, tagged: data.tagged, seed: sname, tab, page, chlists }
+      return { book, mark: data.mark, seed: seed, tab, page, chlists }
     }
 
     this.error(res.status, data.msg)
@@ -50,13 +50,23 @@
     }
   }
 
-  const book_tags = [
-    ['reading', 'Đang đọc', 'eye'],
-    ['completed', 'Hoàn thành', 'check-square'],
-    ['onhold', 'Tạm ngưng', 'pause'],
-    ['dropped', 'Vứt bỏ', 'trash'],
-    ['pending', 'Đọc sau', 'calendar'],
-  ]
+  const mark_types = ['reading', 'onhold', 'completed', 'dropped', 'pending']
+
+  const mark_names = {
+    reading: 'Đang đọc',
+    onhold: 'Tạm ngưng',
+    completed: 'Hoàn thành',
+    dropped: 'Ngừng đọc',
+    pending: 'Đọc sau',
+  }
+
+  const mark_icons = {
+    reading: 'eye',
+    onhold: 'pause',
+    completed: 'check-square',
+    dropped: 'trash',
+    pending: 'calendar',
+  }
 </script>
 
 <script>
@@ -70,6 +80,7 @@
   import relative_time from '$utils/relative_time'
 
   export let book
+  export let mark = ''
   export let seed
 
   export let chlists = {}
@@ -77,8 +88,6 @@
 
   export let tab = 'overview'
   export let desc = true
-
-  export let tagged = ''
 
   let chlist = []
   $: chlist = chlists[seed] || []
@@ -107,25 +116,23 @@
     tab = new_tab
   }
 
-  function last_chap_link(sname) {
-    const latest = book.seed_latests[sname]
-    if (!latest) return `/~${book.slug}?seed=${sname}&refresh=true`
-    return `/~${book.slug}/${latest.url_slug}-${sname}-${latest.scid}`
+  function last_chap_link(seed) {
+    const latest = book.seed_latests[seed]
+    if (!latest) return `/~${book.slug}?seed=${seed}&refresh=true`
+    return `/~${book.slug}/${latest.url_slug}-${seed}-${latest.scid}`
   }
 
-  function last_chap_text(sname) {
-    const latest = book.seed_latests[sname]
+  function last_chap_text(seed) {
+    const latest = book.seed_latests[seed]
     if (!latest) return '...'
     return latest.vi_title
   }
 
-  async function tagging_book(new_tag) {
-    if (new_tag == tagged) tagged = ''
-    else tagged = new_tag
+  async function mark_book(new_mark) {
+    if (mark == new_mark) mark = ''
+    else mark = new_mark
 
-    await fetch(`/_self/tagged_books/${book.ubid}?tag=${tagged}`, {
-      method: 'PUT',
-    })
+    await fetch(`/_self/book_mark/${book.ubid}?mark=${mark}`, { method: 'PUT' })
   }
 </script>
 
@@ -136,15 +143,15 @@
   </a>
 
   <span slot="header-right" class="header-item _menu">
-    <MIcon class="m-icon _star" name="star" />
+    <MIcon class="m-icon" name={mark ? mark_icons[mark] : 'star'} />
     {#if $auth.power > 0}
       <div class="header-menu">
-        {#each book_tags as [tag_type, tag_name, tag_icon]}
-          <div class="-item" on:click={() => tagging_book(tag_type)}>
-            <MIcon class="m-icon _{tag_icon}" name={tag_icon} />
-            <span>{tag_name}</span>
+        {#each mark_types as type}
+          <div class="-item" on:click={() => mark_book(type)}>
+            <MIcon class="m-icon" name={mark_icons[type]} />
+            <span>{mark_names[type]}</span>
 
-            {#if tagged == tag_type}
+            {#if mark == type}
               <MIcon class="m-icon _check _right" name="check" />
             {/if}
           </div>
