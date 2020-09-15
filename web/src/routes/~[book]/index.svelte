@@ -266,7 +266,7 @@
             <button
               class="m-button _text"
               class:_loading
-              on:click={() => switchSite(seed, 1)}>
+              on:click={() => switchSite(seed, $auth.power > 2 ? 2 : 1)}>
               {#if _loading}
                 <MIcon class="m-icon" name="loader" />
               {:else}

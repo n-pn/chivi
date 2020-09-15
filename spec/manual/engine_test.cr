@@ -53,5 +53,7 @@ require "../../src/utils/text_util"
 # pp Libcv.cv_plain("来自芈骊的愤怒值+678！", "combine").vi_text
 # pp Libcv.cv_plain("一试63", "combine").vi_text
 # pp Libcv.hanviet("来自芈骊的愤怒值+678！").vi_text
-pp Libcv.cv_plain("郑兴怀16岁进国子监，苦读十年，元景19年，他金榜题名，二甲进士。", "fqq1j06c")
-# pp Libcv.cv_plain("无论成败，了却它。", "kwxrpf79")
+pp Libcv.cv_plain("郑兴怀16岁进国子监，苦读十年，元景19年，他金榜题名，二甲进士。", "fqq1j06c").vi_text
+pp Libcv.cv_plain("无论成败，了却它。", "kwxrpf79").vi_text
+pp Libcv.cv_plain("第103章 102.", "kwxrpf79").vi_text
+pp Libcv.hanviet("第103章 102.", "kwxrpf79").vi_text

@@ -23,7 +23,7 @@ module ChapUtil
 
   TITLE_RE_0 = /^第?([#{NUMS}\d]+)([#{TAGS}])[#{SEPS}]*(.*)$/
   TITLE_RE_1 = /^\d+\.\s*第(.+)([#{TAGS}])[#{SEPS}]*(.+)/ # 69shu 1
-  TITLE_RE_2 = /^第(.+)([#{TAGS}])\d+\.\s*[#{SEPS}]*(.+)/ # 69shu 2
+  TITLE_RE_2 = /^第(.+)([#{TAGS}])\s\d+\.\s*(.+)/         # 69shu 2
   TITLE_RE_3 = /^([#{NUMS}\d]+)[#{SEPS}]+(.*)$/
   TITLE_RE_4 = /^\（(\p{N}+)\）[#{SEPS}]*(.*)$/
 

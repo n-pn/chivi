@@ -182,6 +182,8 @@ class CvData
   end
 
   private def should_space?(left : CvNode, right : CvNode)
+    return false if left.val.blank? || right.val.blank?
+
     # handle .jpg case
     return false if right.dic == 1 && right.key[0]? == '.'
 
