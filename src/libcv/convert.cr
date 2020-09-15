@@ -140,13 +140,13 @@ module Libcv::Convert
         while idx > 0
           node = choices[idx]
           break if node.dic > 1
-          break if node.dic == 0 && !special_char?(node)
+          break if node.dic == 0 && !special_mid_char?(node)
 
           acc.combine!(node)
           idx -= node.key.size
         end
 
-        if (last = res.last?) && special_char?(last)
+        if (last = res.last?) && special_end_char?(last)
           last.combine!(acc)
           last.dic = 1
           next
@@ -167,9 +167,18 @@ module Libcv::Convert
     res
   end
 
-  private def special_char?(node : CvNode)
+  private def special_mid_char?(node : CvNode)
     case node.key[0]?
     when ':', '/', '.', '-', '+', '?', '%', '#', '&'
+      true
+    else
+      false
+    end
+  end
+
+  private def special_end_char?(node : CvNode)
+    case node.key[0]?
+    when '-', '+', '?', '%'
       true
     else
       false

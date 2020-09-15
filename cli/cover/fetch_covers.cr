@@ -64,12 +64,14 @@ infos.each do |info|
   indexed = glob_dir(cover_dir)
 
   info.cover_urls.each do |site, cover|
-    next if cover.empty? || site == "jx_la" || site == "duokan8"
-
-    unless cover.starts_with?("http")
-      puts info.to_json
-      gets
+    case site
+    when "jx_la", "duokan8", "shubaow"
+      next
+    else
+      next if cover.empty?
     end
+
+    puts info.to_json unless cover.starts_with?("http")
 
     name = Digest::SHA1.hexdigest(cover)[0..10]
     next if indexed.has_key?(name)

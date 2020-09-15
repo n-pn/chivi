@@ -57,3 +57,4 @@ pp Libcv.cv_plain("郑兴怀16岁进国子监，苦读十年，元景19年，他
 pp Libcv.cv_plain("无论成败，了却它。", "kwxrpf79").vi_text
 pp Libcv.cv_plain("第103章 102.", "kwxrpf79").vi_text
 pp Libcv.hanviet("第103章 102.", "kwxrpf79").vi_text
+pp Libcv.cv_plain("第103章 102+ title 无论成败，了却它。", "kwxrpf79").vi_text

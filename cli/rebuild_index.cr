@@ -26,7 +26,7 @@ SEEDS = {
 
 def fix_indexes(info : BookInfo)
   # update tokens
-  # BookDB.upsert_info(info, force: true)
+  BookDB.upsert_info(info, force: true)
 
   # fix seeds' mftime
   changed = false

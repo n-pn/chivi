@@ -20,6 +20,7 @@ def update_dicts(type)
 
   Libcv::Library.generic.save!
   Libcv::Library.suggest.save!
+  Libcv::Library.hanviet.save!
 
   Dir.glob("#{OUT}/uniq/*.#{type}").each do |file|
     name = File.basename(file, ".#{type}")
