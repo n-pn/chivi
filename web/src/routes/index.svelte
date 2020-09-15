@@ -137,7 +137,7 @@
     {#each page_ary as [index, level]}
       <a
         class="page m-button _line"
-        class:_actived={page == index}
+        class:_primary={page == index}
         class:_disable={page == index}
         data-level={level}
         href={makePageUrl(index, query)}>
@@ -146,7 +146,7 @@
     {/each}
 
     <a
-      class="page m-button _fill"
+      class="page m-button _solid _primary"
       class:_disable={page == page_max}
       href={makePageUrl(page + 1, query)}>
       <span>Kế tiếp</span>
@@ -205,13 +205,9 @@
   }
 
   .page {
-    &._actived {
-      @include bdcolor(neutral, 3);
-      @include fgcolor(neutral, 5);
-    }
-
-    & + & {
-      margin-left: 0.5rem;
+    display: inline-flex;
+    > span {
+      margin-top: rem(1px);
     }
 
     & + & {
@@ -239,7 +235,8 @@
     }
 
     &[data-level='3'],
-    &[data-level='4'] {
+    &[data-level='4'],
+    &[data-level='5'] {
       @include screen-min(lg) {
         display: inline-block;
       }
