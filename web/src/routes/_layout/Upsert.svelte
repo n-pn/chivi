@@ -272,10 +272,10 @@
           bind:value={out_val} />
 
         <div class="format">
-          <span class="-lbl">Viết hoa:</span>
-          <span class="-btn" on:click={() => upcase_val(1)}>1 chữ</span>
-          <span class="-btn" on:click={() => upcase_val(2)}>2 chữ</span>
-          <span class="-btn" on:click={() => upcase_val(3)}>3 chữ</span>
+          <span class="-lbl _show-sm">V. hoa:</span>
+          <span class="-btn" on:click={() => upcase_val(1)}>Một chữ</span>
+          <span class="-btn" on:click={() => upcase_val(2)}>Hai chữ</span>
+          <span class="-btn _show-md" on:click={() => upcase_val(3)}>Ba chữ</span>
           <span class="-btn" on:click={() => upcase_val(9)}>Tất cả</span>
           <span class="-btn" on:click={() => upcase_val(0)}>Không</span>
 
@@ -537,9 +537,16 @@
       @include fgcolor(neutral, 5);
     }
 
-    .-lbl {
+    ._show-sm {
       display: none;
       @include screen-min(sm) {
+        display: inline-block;
+      }
+    }
+
+    ._show-md {
+      display: none;
+      @include screen-min(md) {
         display: inline-block;
       }
     }
@@ -557,10 +564,6 @@
 
       &._right {
         float: right;
-      }
-
-      @include screen-min(md) {
-        padding: 0 0.5rem;
       }
     }
   }
