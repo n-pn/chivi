@@ -1,21 +1,5 @@
 <script context="module">
-  const mark_types = ['reading', 'onhold', 'completed', 'pending', 'dropped']
-
-  const mark_names = {
-    reading: 'Đang đọc',
-    onhold: 'Tạm ngừng',
-    completed: 'Hoàn thành',
-    pending: 'Đọc sau',
-    dropped: 'Bỏ dở',
-  }
-
-  const mark_icons = {
-    reading: 'eye',
-    onhold: 'pause',
-    completed: 'check-square',
-    dropped: 'trash',
-    pending: 'calendar',
-  }
+  import { mark_types, mark_names } from '$utils/constants'
 
   export async function preload({ params, query }) {
     const user = params.user
