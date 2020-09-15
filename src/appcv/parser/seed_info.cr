@@ -235,10 +235,12 @@ class SeedInfo
     case @seed
     when "qu_la", "jx_la", "nofff",
          "rengshu", "xbiquge", "duokan8",
-         "paoshu8", "5200", "biquge5200",
-         "shubaow"
+         "paoshu8", "5200", "shubaow"
       text = meta_data("og:novel:update_time").not_nil!
       TimeUtil.parse(text).to_unix_ms
+    when "biquge5200"
+      text = node_text("#info > p:last-child").not_nil!.sub("最后更新：", "")
+      TimeUtil.parse("#{text} 10:00").to_unix_ms
     when "69shu"
       text = node_text(".mu_beizhu").not_nil!.sub(/.+时间：/m, "")
       TimeUtil.parse("#{text} 10:00").to_unix_ms

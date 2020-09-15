@@ -125,7 +125,7 @@
         break
 
       case 82:
-        if  $auth.power > 0) {
+        if ($auth.power > 0) {
           evt.preventDefault()
           reconvert(1)
         }

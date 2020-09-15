@@ -9,7 +9,7 @@ function replace_tag(tag) {
   return tags[tag] || tag
 }
 
-function escape_html(str) {
+function escape_html(str = '') {
   return str.replace(/[&<>]/g, replace_tag)
 }
 

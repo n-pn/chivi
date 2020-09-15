@@ -16,6 +16,14 @@ TAGS   = TokenMap.init("indexes/tokens/vi_tags")
 
 EPOCH = Time.utc(2020, 1, 1).to_unix_ms
 
+SEEDS = {
+  "hetushu", "xbiquge", "69shu",
+  "biquge5200", "5200", "zhwenpg",
+  "duokan8", "rengshu", "nofff",
+  "paoshu8", "kenwen", "mxguan",
+  "shubaow", "jx_la", "qu_la",
+}
+
 def fix_indexes(info : BookInfo)
   # update tokens
   # BookDB.upsert_info(info, force: true)
@@ -34,9 +42,11 @@ def fix_indexes(info : BookInfo)
   # fix status
   if info.status == 0 && info.mftime < EPOCH
     info.status = 3
+    changed = true
   end
 
-  info.save! if changed
+  info.seed_names = info.seed_names.sort_by { |s| SEEDS.index(s) || -1 }
+  info.save! if changed || info.changed?
 
   BookDB::Utils.update_token(GENRES, info.ubid, info.vi_genres)
   BookDB::Utils.update_token(TAGS, info.ubid, info.vi_tags)
