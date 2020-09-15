@@ -1,12 +1,12 @@
 <script context="module">
-  const mark_types = ['reading', 'onhold', 'completed', 'dropped', 'pending']
+  const mark_types = ['reading', 'onhold', 'completed', 'pending', 'dropped']
 
   const mark_names = {
     reading: 'Đang đọc',
-    onhold: 'Tạm ngưng',
+    onhold: 'Tạm ngừng',
     completed: 'Hoàn thành',
-    dropped: 'Ngừng đọc',
     pending: 'Đọc sau',
+    dropped: 'Bỏ dở',
   }
 
   const mark_icons = {
