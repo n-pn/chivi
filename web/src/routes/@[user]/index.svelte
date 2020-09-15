@@ -32,8 +32,8 @@
 
 <Vessel>
   <span slot="header-left" class="header-item _active">
-    <MIcon class="m-icon _layers" name="layers" />
-    <span class="header-text">Tủ truyện</span>
+    <MIcon class="m-icon" name="layers" />
+    <span class="header-text">Tủ truyện của @{uname}</span>
   </span>
 
   <div class="tabs">
