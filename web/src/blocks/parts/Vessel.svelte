@@ -156,16 +156,16 @@
   }
 
   :global(.header-item) {
+    cursor: pointer;
     display: inline-flex;
     position: relative;
-    cursor: pointer;
-
+    outline: none;
     text-decoration: none;
-    padding: 0 0.5rem;
+    user-select: none;
 
+    padding: 0 0.5rem;
     height: $header-inner-height;
     line-height: $header-inner-height;
-    user-select: none;
 
     @include fgcolor(neutral, 2);
     @include bgcolor(primary, 6);

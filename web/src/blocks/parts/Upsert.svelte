@@ -69,7 +69,6 @@
 </script>
 
 <script>
-  import { onMount } from 'svelte'
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
   import UpsertFooter from './Upsert/Footer.svelte'
@@ -79,22 +78,19 @@
     self_power,
     upsert_atab as atab,
     upsert_udic as udic,
-    upsert_input as input,
-    upsert_lower as lower,
-    upsert_upper as upper,
+    upsert_input,
+    upsert_lower,
+    upsert_upper,
     upsert_actived as actived,
     upsert_changed as changed,
   } from '$src/stores'
 
-  $: key = $input.substring($lower, $upper)
+  $: lower = $upsert_lower
+  $: upper = $upsert_upper
+  $: input = $upsert_input.substring(lower, upper)
+  $: if ($actived && input) preload_input(input)
 
-  let inp_field
-  let out_field
-
-  onMount(() => {
-    if (key == '') inp_field.focus()
-    else out_field.focus()
-  })
+  let val_field
 
   let meta = {
     dicts: {
@@ -114,11 +110,9 @@
   $: [prevail, btn_power] = compare_power($self_power, current.power)
   $: [btn_class, btn_label] = compare_value(out_val, existed)
 
-  $: if ($actived) preload_input(key)
-
-  async function preload_input(key) {
+  async function preload_input(input) {
     out_val = ''
-    meta = await dict_search(fetch, key, $udic)
+    meta = await dict_search(fetch, input, $udic)
     update_val()
   }
 
@@ -149,7 +143,7 @@
       }
     }
 
-    out_field.focus()
+    val_field.focus()
   }
 
   async function submit_val() {
@@ -230,6 +224,19 @@
         break
     }
   }
+
+  function dec(caret, lower) {
+    return caret == lower ? caret : caret - 1
+  }
+
+  function inc(caret, upper) {
+    return caret == upper ? caret : caret + 1
+  }
+
+  function reset_bounds() {
+    lower = $upsert_lower
+    upper = $upsert_upper
+  }
 </script>
 
 <svelte:window on:keydown={handle_keypress} />
@@ -238,17 +245,47 @@
   class="holder"
   class:_active={$actived}
   on:click={() => actived.set(false)}>
-  <div class="dialog" on:click|stopPropagation={() => out_field.focus()}>
+  <div class="dialog" on:click|stopPropagation={() => val_field.focus()}>
     <header class="header">
-      <span class="label">Thêm từ:</span>
+      <button class="m-button _text" on:click={reset_bounds}>
+        <AIcon name="rotate-ccw" />
+      </button>
 
-      <span
-        class="hanzi"
-        role="textbox"
-        contenteditable="true"
-        on:click|stopPropagation={() => inp_field.focus()}
-        bind:textContent={key}
-        bind:this={inp_field} />
+      <div class="hanzi">
+        <button
+          class="-btn"
+          disabled={lower == 0}
+          on:click={() => (lower -= 1)}>
+          <AIcon name="chevron-left" />
+        </button>
+
+        <button
+          class="-btn _bd"
+          disabled={lower == upper - 1}
+          on:click={() => (lower += 1)}>
+          <AIcon name="chevron-right" />
+        </button>
+
+        <span class="-inp">
+          <span class="-sub">{$upsert_input.substring(0, lower)}</span>
+          <span class="-key">{input}</span>
+          <span class="-sub">{$upsert_input.substring(upper)}</span>
+        </span>
+
+        <button
+          class="-btn _bd"
+          disabled={upper == lower + 1}
+          on:click={() => (upper -= 1)}>
+          <AIcon name="chevron-left" />
+        </button>
+
+        <button
+          class="-btn"
+          disabled={upper == $upsert_input.length}
+          on:click={() => (upper += 1)}>
+          <AIcon name="chevron-right" />
+        </button>
+      </div>
 
       <button
         type="button"
@@ -289,9 +326,9 @@
           class="val-field"
           class:_fresh={!existed}
           name="value"
-          id="out_field"
+          id="val_field"
           on:keypress={handle_enter}
-          bind:this={out_field}
+          bind:this={val_field}
           bind:value={out_val} />
 
         <div class="format">
@@ -333,7 +370,7 @@
       </div>
     </section>
 
-    <UpsertFooter {key} />
+    <UpsertFooter {input} />
   </div>
 </div>
 
@@ -367,51 +404,77 @@
   }
 
   $header-height: 2.75rem;
-  $header-gutter: 0.5rem;
+  $header-gutter: 0.25rem;
+  $header-inner-height: 2.25rem;
 
   .header {
-    position: relative;
-    // padding: $header-gutter $gutter;
-    height: $header-height;
-
     display: flex;
-    @include border($sides: bottom, $shade: 3);
+    position: relative;
+    padding: $header-gutter 0.25rem;
+    // height: $header-height;
 
     .m-button {
-      margin: 0.25rem 0.5rem;
-      // top: 0.375rem;
+      margin: 0.375rem;
+      @include fgcolor(neutral, 6);
       &:hover {
-        @include fgcolor(primary, 5);
+        @include fgcolor(primary, 6);
       }
     }
   }
 
-  .label {
-    line-height: $header-height;
-    text-transform: uppercase;
-    font-weight: 500;
-    margin: 0 0.75rem;
-    @include font-size(2);
-    @include fgcolor(neutral, 6);
-  }
-
   .hanzi {
-    display: inline-block;
+    display: inline-flex;
     margin: 0.375rem 0;
 
-    padding: 0 0.375rem;
-    line-height: $header-height - 0.875rem;
+    height: $header-inner-height;
+    line-height: $header-inner-height;
     flex-grow: 1;
 
-    @include truncate(null);
     @include radius();
 
     @include bgcolor(neutral, 1);
     @include border($color: neutral, $shade: 3);
+
+    > .-inp {
+      flex-grow: 1;
+      display: inline-flex;
+      overflow: hidden;
+      justify-content: center;
+      @include fgcolor(neutral, 5);
+
+      > .-key {
+        font-weight: 500;
+        @include fgcolor(neutral, 7);
+      }
+    }
+
+    > .-btn {
+      background: transparent;
+      padding: 0 0.375rem;
+      margin: 0;
+      line-height: 1em;
+      @include font-size(4);
+      @include fgcolor(neutral, 7);
+
+      &:hover {
+        background-color: #fff;
+        @include fgcolor(primary, 5);
+      }
+
+      &:disabled {
+        cursor: pointer;
+        @include fgcolor(neutral, 5);
+        background: transparent;
+      }
+
+      &._bd {
+        @include border($sides: left-right);
+      }
+    }
   }
 
   .tabs {
-    margin-top: 0.75rem;
+    // margin-top: 0.75rem;
     @include border($sides: bottom);
     @include flex($gap: 0.5rem);
     padding: 0 0.75rem;

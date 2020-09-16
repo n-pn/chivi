@@ -1,55 +1,28 @@
+<script context="module">
+  function gen_links(input) {
+    return [
+      [
+        'Gtrans',
+        `https://translate.google.com/#view=home&op=translate&sl=zh-CN&tl=en&text=${input}`,
+      ],
+      ['Google', `https://www.google.com/search?q=${input}`],
+      ['Fanyi', `https://fanyi.baidu.com/#zh/en/${input}`],
+      ['Baidu', `http://www.baidu.com/s?wd=${input}`],
+      ['Baike', `https://baike.baidu.com/item/${input}`],
+      ['iCIBA', `https://www.iciba.com/${input}`],
+    ]
+  }
+</script>
+
 <script>
-  export let key = ''
+  export let input = ''
+  $: links = gen_links(input)
 </script>
 
 <footer>
-  <a
-    class="footer-link"
-    href="https://translate.google.com/#view=home&op=translate&sl=zh-CN&tl=en&text={key}"
-    target="_blank"
-    rel="noopener noreferer">
-    GTrans
-  </a>
-
-  <a
-    class="footer-link"
-    href="https://www.google.com/search?q={key}"
-    target="_blank"
-    rel="noopener noreferer">
-    Google
-  </a>
-
-  <a
-    class="footer-link"
-    href="https://fanyi.baidu.com/#zh/en/{key}"
-    target="_blank"
-    rel="noopener noreferer">
-    Fanyi
-  </a>
-
-  <a
-    class="footer-link"
-    href="https://baike.baidu.com/item/{key}"
-    target="_blank"
-    rel="noopener noreferer">
-    Baike
-  </a>
-
-  <a
-    class="footer-link"
-    href="http://www.baidu.com/s?wd={key}"
-    target="_blank"
-    rel="noopener noreferer">
-    Baidu
-  </a>
-
-  <a
-    class="footer-link"
-    href="https://www.iciba.com/{key}"
-    target="_blank"
-    rel="noopener noreferer">
-    iCIBA
-  </a>
+  {#each links as [name, href]}
+    <a {href} target="_blank" rel="noopener noreferer"> {name} </a>
+  {/each}
 </footer>
 
 <style lang="scss">
@@ -68,8 +41,8 @@
   a {
     // display: inline-block;
     cursor: pointer;
-    line-height: 1rem;
     padding: 0.5rem;
+    line-height: 1rem;
     // border-left: 1px solid color(neutral, 3);
 
     // max-width: 25vw;
@@ -80,7 +53,7 @@
     @include fgcolor(neutral, 7);
 
     &:hover {
-      background-color: color(neutral, 3);
+      @include bgcolor(neutral, 3);
     }
   }
 </style>
