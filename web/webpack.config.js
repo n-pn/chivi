@@ -89,6 +89,7 @@ module.exports = {
             },
           ].filter(Boolean),
         },
+        { test: /\.ts$/, loader: 'ts-loader' },
       ],
     },
     mode,

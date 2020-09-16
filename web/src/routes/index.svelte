@@ -28,8 +28,8 @@
   }
 </script>
 
-<script>
-  import paginate_range from '$utils/paginate_range'
+<script lang="ts">
+  import paginate_range from '$utils/paginate_range.ts'
 
   import MIcon from '$mould/MIcon.svelte'
   import BookList from '$reused/BookList.svelte'

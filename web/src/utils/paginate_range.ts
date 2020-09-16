@@ -1,18 +1,18 @@
-export default function paginate_range(focus, total, limit = 5) {
-  const output = [[focus, 0]]
+export default function paginate_range(caret = 1, total = 1, limit = 5) {
+  const output = [[caret, 0]]
 
-  let left = focus - 1
-  let right = focus + 1
+  let from = caret - 1
+  let upto = caret + 1
   let level = 1
 
-  while (left >= 1 || right <= total) {
+  while (from >= 1 || upto <= total) {
     if (output.length >= limit) break
 
-    if (left >= 1) output.unshift([left--, level])
-    else if (right <= total) output.push([right++, level])
+    if (from >= 1) output.unshift([from--, level])
+    else if (upto <= total) output.push([upto++, level])
 
-    if (right <= total) output.push([right++, level])
-    else if (left >= 1) output.unshift([left--, level])
+    if (upto <= total) output.push([upto++, level])
+    else if (from >= 1) output.unshift([from--, level])
 
     level += 1
   }
