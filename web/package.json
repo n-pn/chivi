@@ -17,7 +17,6 @@
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^2.0.0",
-    "@nipin/mould": "^0.4.4",
     "@tsconfig/svelte": "^1.0.10",
     "autoprefixer": "^9.8.6",
     "css-loader": "^4.2.2",

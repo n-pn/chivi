@@ -31,10 +31,10 @@
 <script lang="ts">
   import paginate_range from '$utils/paginate_range.ts'
 
-  import MIcon from '$mould/MIcon.svelte'
-  import BookList from '$reused/BookList.svelte'
+  import AIcon from '$atoms/AIcon.svelte'
+  import BookList from '$comps/BookList.svelte'
 
-  import Vessel from '$layout/Vessel.svelte'
+  import Vessel from '$parts/Vessel'
 
   export let items = []
   export let total: number = 0
@@ -109,7 +109,7 @@
       placeholder="Tìm kiếm"
       on:focus={() => (searching = true)}
       on:onfocusout={() => (searching = false)} />
-    <MIcon class="m-icon _search" name="search" />
+    <AIcon name="search" />
   </form>
 
   <div class="order">
@@ -130,7 +130,7 @@
       class="page m-button _line"
       class:_disable={page == 1}
       href={makePageUrl(+page - 1, query)}>
-      <MIcon class="m-icon" name="chevron-left" />
+      <AIcon name="chevron-left" />
       <span>Trước</span>
     </a>
 
@@ -150,7 +150,7 @@
       class:_disable={page == page_max}
       href={makePageUrl(page + 1, query)}>
       <span>Kế tiếp</span>
-      <MIcon class="m-icon" name="chevron-right" />
+      <AIcon name="chevron-right" />
     </a>
   </div>
 </Vessel>

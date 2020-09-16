@@ -1,6 +1,6 @@
 <script>
-  import MIcon from '$mould/MIcon'
-  import Vessel from '$layout/Vessel'
+  import AIcon from '$atoms/AIcon'
+  import Vessel from '$parts/Vessel'
 
   import { self_uname, self_power } from '$src/stores'
 
@@ -98,7 +98,7 @@
         </a>
 
         <button type="submit" class="m-button _success login">
-          <MIcon class="m-icon _signup" name="user-plus" />
+          <AIcon name="user-plus" />
           <span>Tạo tài khoản</span>
         </button>
       </footer>

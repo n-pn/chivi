@@ -54,13 +54,14 @@
 </script>
 
 <script>
-  import MIcon from '$mould/MIcon.svelte'
+  import AIcon from '$atoms/AIcon.svelte'
 
-  import Vessel from '$layout/Vessel.svelte'
-  import Outline from '$partial/BookIndex/Outline.svelte'
-
-  import ChapList from '$reused/ChapList.svelte'
+  import Vessel from '$parts/Vessel'
+  import ChapList from '$comps/ChapList.svelte'
   import relative_time from '$utils/relative_time'
+
+  import Outline from '$routes/_partial/BookIndex/Outline.svelte'
+
   import { self_uname, self_power } from '$src/stores'
 
   export let book
@@ -122,12 +123,12 @@
 
 <Vessel>
   <a slot="header-left" href="/~{book.slug}" class="header-item _active">
-    <MIcon class="m-icon _book-open" name="book-open" />
+    <AIcon name="book-open" />
     <span class="header-text _title">{book.vi_title}</span>
   </a>
 
   <span slot="header-right" class="header-item _menu">
-    <MIcon class="m-icon" name={mark ? mark_icons[mark] : 'star'} />
+    <AIcon name={mark ? mark_icons[mark] : 'star'} />
     <span
       class="header-text _show-md">{mark ? mark_names[mark] : 'Đánh dấu'}</span>
 
@@ -135,11 +136,13 @@
       <div class="header-menu">
         {#each mark_types as type}
           <div class="-item" on:click={() => mark_book(type)}>
-            <MIcon class="m-icon" name={mark_icons[type]} />
+            <AIcon name={mark_icons[type]} />
             <span>{mark_names[type]}</span>
 
             {#if mark == type}
-              <MIcon class="m-icon _check _right" name="check" />
+              <span class="_right">
+                <AIcon name="check" />
+              </span>
             {/if}
           </div>
         {/each}
@@ -213,7 +216,7 @@
                     class:_loading={seed == name && _loading}
                     on:click={() => change_seed(name, 1)}>
                     {#if seed == name && _loading}
-                      <MIcon class="m-icon" name="loader" />
+                      <AIcon name="loader" />
                     {:else}
                       <span>{relative_time(book.seed_mftimes[name], name)}</span>
                     {/if}
@@ -262,18 +265,18 @@
               class:_loading
               on:click={() => change_seed(seed, $self_power > 2 ? 2 : 1)}>
               {#if _loading}
-                <MIcon class="m-icon" name="loader" />
+                <AIcon name="loader" />
               {:else}
-                <MIcon class="m-icon" name="clock" />
+                <AIcon name="clock" />
               {/if}
               <span>{relative_time(book.seed_mftimes[seed], seed)}</span>
             </button>
 
             <button class="m-button _text" on:click={() => (desc = !desc)}>
               {#if desc}
-                <MIcon class="m-icon" name="arrow-down" />
+                <AIcon name="arrow-down" />
               {:else}
-                <MIcon class="m-icon" name="arrow-up" />
+                <AIcon name="arrow-up" />
               {/if}
               <span class="-hide">Sắp xếp</span>
             </button>

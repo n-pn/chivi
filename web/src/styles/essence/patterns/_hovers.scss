@@ -1,0 +1,46 @@
+// hovers
+
+@mixin hoverable {
+  // prettier-ignore
+  @media (hover: hover) { @content; }
+}
+
+@mixin not-hoverable {
+  // prettier-ignore
+  @media not all and (hover: none) { @content; }
+}
+
+@mixin hover {
+  @include hoverable {
+    // prettier-ignore
+    &:hover { @content; }
+  }
+}
+
+@mixin plain-hover {
+  // prettier-ignore
+  & { @content; }
+  // prettier-ignore
+  @include hover { @content; }
+}
+
+@mixin hover-focus {
+  // prettier-ignore
+  &:focus { @content; }
+  // prettier-ignore
+  @include hover { @content; }
+}
+
+@mixin plain-hover-focus {
+  // prettier-ignore
+  &, &:focus { @content; }
+  // prettier-ignore
+  @include hover { @content; }
+}
+
+@mixin hover-focus-active {
+  // prettier-ignore
+  &:active, &:focus { @content; }
+  // prettier-ignore
+  @include hover { @content; }
+}

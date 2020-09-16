@@ -23,9 +23,9 @@
 </script>
 
 <script>
-  import MIcon from '$mould/MIcon.svelte'
-  import Vessel from '$layout/Vessel.svelte'
-  import BookList from '$reused/BookList.svelte'
+  import AIcon from '$atoms/AIcon.svelte'
+  import Vessel from '$parts/Vessel'
+  import BookList from '$comps/BookList.svelte'
 
   export let mark = 'reading'
   export let page = ''
@@ -39,7 +39,7 @@
 
 <Vessel>
   <span slot="header-left" class="header-item _active">
-    <MIcon class="m-icon" name="layers" />
+    <AIcon name="layers" />
     <span class="header-text">Tủ truyện của @{uname}</span>
   </span>
 
@@ -59,7 +59,7 @@
       class="page m-button _line"
       class:_disable={page == 1}
       href="/@{uname}?mark={mark}&page={+page - 1}">
-      <MIcon class="m-icon" name="chevron-left" />
+      <AIcon name="chevron-left" />
       <span>Trước</span>
     </a>
 
@@ -70,7 +70,7 @@
       class:_disable={page == page_max}
       href="/@{uname}?mark={mark}&page={+page + 1}">
       <span>Kế tiếp</span>
-      <MIcon class="m-icon" name="chevron-right" />
+      <AIcon name="chevron-right" />
     </a>
   </div>
 </Vessel>

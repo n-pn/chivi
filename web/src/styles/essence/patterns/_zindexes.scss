@@ -1,0 +1,3 @@
+@function zindex($val: 1) {
+  @return $val * 100;
+}

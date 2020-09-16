@@ -31,7 +31,7 @@
 </script>
 
 <script>
-  import MIcon from '$mould/MIcon.svelte'
+  import AIcon from '$atoms/AIcon.svelte'
   import relative_time from '$utils/relative_time'
 
   export let book
@@ -53,8 +53,8 @@
 
       <div class="seed-menu">
         <div class="-text">
-          <span class="-label ">{seed}</span>
-          <span class="-count ">({chlist.length} chương)</span>
+          <span class="-label">{seed}</span>
+          <span class="-count">({chlist.length} chương)</span>
         </div>
 
         <div class="-menu">
@@ -73,29 +73,27 @@
           {/each}
         </div>
       </div>
-
     </div>
 
     <div class="-right">
       <button class="m-button _text" class:_loading on:click={() => (mode = 1)}>
         {#if _loading}
-          <MIcon class="m-icon" name="loader" />
+          <AIcon name="loader" />
         {:else}
-          <MIcon class="m-icon" name="clock" />
+          <AIcon name="clock" />
         {/if}
         <span>{relative_time(book.seed_mftimes[seed])}</span>
       </button>
 
       <button class="m-button _text" on:click={() => (desc = !desc)}>
         {#if desc}
-          <MIcon class="m-icon" name="arrow-down" />
+          <AIcon name="arrow-down" />
         {:else}
-          <MIcon class="m-icon" name="arrow-up" />
+          <AIcon name="arrow-up" />
         {/if}
         <span class="-hide">Sắp xếp</span>
       </button>
     </div>
-
   </div>
 
   <ChapList

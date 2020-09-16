@@ -90,10 +90,10 @@
 
 <script>
   import { parse_content } from '$utils/render_convert'
-  import MIcon from '$mould/MIcon.svelte'
+  import AIcon from '$atoms/AIcon.svelte'
 
   export let input = ''
-  export let dname = '_tonghop'
+  export let dname = 'dich-nhanh'
 
   export let active = false
   export let on_top = false
@@ -165,7 +165,7 @@
     <h2>Giải nghĩa</h2>
 
     <button on:click={() => (active = false)}>
-      <MIcon class="m-icon" name="x" />
+      <AIcon name="x" />
     </button>
   </header>
 

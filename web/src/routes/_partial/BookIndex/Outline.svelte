@@ -22,8 +22,8 @@
 </script>
 
 <script>
-  import MIcon from '$mould/MIcon.svelte'
-  import BookCover from '$reused/BookCover.svelte'
+  import AIcon from '$atoms/AIcon.svelte'
+  import ACover from '$atoms/ACover.svelte'
   import relative_time from '$utils/relative_time'
 
   export let book
@@ -36,6 +36,100 @@
   $: keywords = gen_keywords(book)
   $: has_links = book.yousuu_bid || book.origin_url
 </script>
+
+<svelte:head>
+  <title>{book.vi_title} - Chivi</title>
+  <meta name="keywords" content={keywords} />
+  <meta name="description" content={book_intro} />
+
+  <meta property="og:title" content={book.vi_title} />
+  <meta property="og:type" content="novel" />
+  <meta property="og:description" content={book_intro} />
+  <meta property="og:url" content={book_url} />
+  <meta property="og:image" content={book_cover} />
+
+  <meta property="og:novel:category" content={book.vi_genres[0]} />
+  <meta property="og:novel:author" content={book.vi_author} />
+  <meta property="og:novel:book_name" content={book.vi_title} />
+  <meta property="og:novel:read_url" content="{book_url}&tab=content" />
+  <meta property="og:novel:status" content={vi_status} />
+  <meta property="og:novel:update_time" content={updated_at.toISOString()} />
+</svelte:head>
+
+<div class="main-info">
+  <h1 class="title">
+    <span class="-main">{book.vi_title}</span>
+    <span class="-sub">({book.zh_title})</span>
+  </h1>
+
+  <div class="cover">
+    <ACover ubid={book.ubid} path={book.main_cover} />
+  </div>
+
+  <section class="extra">
+    <div class="line">
+      <span class="stat author">
+        <AIcon name="pen-tool" />
+        <a class="link" href="/search?kw={book.vi_author}&type=author">
+          {book.vi_author}
+        </a>
+      </span>
+
+      {#each book.vi_genres as genre}
+        <span class="stat">
+          <AIcon name="bookmark" />
+          <a class="link" href="/?genre={genre}">{genre}</a>
+        </span>
+      {/each}
+    </div>
+
+    <div class="line">
+      <span class="stat _status">
+        <AIcon name="activity" />
+        <span>{vi_status}</span>
+      </span>
+
+      <span class="stat _mftime">
+        <AIcon name="clock" />
+        <span>{relative_time(book.mftime)}</span>
+      </span>
+    </div>
+
+    <div class="line">
+      <span class="stat">
+        Đánh giá: <strong>{book.voters < 10 ? '--' : book.rating}</strong> /10
+      </span>
+
+      <span class="stat">({book.voters} lượt đánh giá)</span>
+    </div>
+
+    {#if has_links}
+      <div class="line">
+        <span class="stat">Liên kết:</span>
+
+        {#if book.origin_url != ''}
+          <a
+            class="stat link _outer"
+            href={book.origin_url}
+            rel="nofollow noreferer"
+            target="_blank">
+            Trang gốc
+          </a>
+        {/if}
+
+        {#if book.yousuu_bid !== ''}
+          <a
+            class="stat link _outer"
+            href="https://www.yousuu.com/book/{book.yousuu_bid}"
+            rel="nofollow noreferer"
+            target="_blank">
+            Ưu thư võng
+          </a>
+        {/if}
+      </div>
+    {/if}
+  </section>
+</div>
 
 <style lang="scss">
   .main-info {
@@ -114,99 +208,3 @@
     font-weight: 500;
   }
 </style>
-
-<svelte:head>
-  <title>{book.vi_title} - Chivi</title>
-  <meta name="keywords" content={keywords} />
-  <meta name="description" content={book_intro} />
-
-  <meta property="og:title" content={book.vi_title} />
-  <meta property="og:type" content="novel" />
-  <meta property="og:description" content={book_intro} />
-  <meta property="og:url" content={book_url} />
-  <meta property="og:image" content={book_cover} />
-
-  <meta property="og:novel:category" content={book.vi_genres[0]} />
-  <meta property="og:novel:author" content={book.vi_author} />
-  <meta property="og:novel:book_name" content={book.vi_title} />
-  <meta property="og:novel:read_url" content="{book_url}&tab=content" />
-  <meta property="og:novel:status" content={vi_status} />
-  <meta property="og:novel:update_time" content={updated_at.toISOString()} />
-</svelte:head>
-
-<div class="main-info">
-  <h1 class="title">
-    <span class="-main">{book.vi_title}</span>
-    <span class="-sub">({book.zh_title})</span>
-  </h1>
-
-  <div class="cover">
-    <BookCover ubid={book.ubid} path={book.main_cover} text={book.vi_title} />
-  </div>
-
-  <section class="extra">
-    <div class="line">
-      <span class="stat author">
-        <MIcon class="m-icon" name="pen-tool" />
-        <a class="link" href="/search?kw={book.vi_author}&type=author">
-          {book.vi_author}
-        </a>
-      </span>
-
-      {#each book.vi_genres as genre}
-        <span class="stat">
-          <MIcon class="m-icon _bookmark" name="bookmark" />
-          <a class="link" href="/?genre={genre}">{genre}</a>
-        </span>
-      {/each}
-    </div>
-
-    <div class="line">
-      <span class="stat _status">
-        <MIcon class="m-icon" name="activity" />
-        <span>{vi_status}</span>
-      </span>
-
-      <span class="stat _mftime">
-        <MIcon class="m-icon" name="clock" />
-        <span>{relative_time(book.mftime)}</span>
-      </span>
-    </div>
-
-    <div class="line">
-      <span class="stat">
-        Đánh giá:
-        <strong>{book.voters < 10 ? '--' : book.rating}</strong>
-        /10
-      </span>
-
-      <span class="stat">({book.voters} lượt đánh giá)</span>
-    </div>
-
-    {#if has_links}
-      <div class="line">
-        <span class="stat">Liên kết:</span>
-
-        {#if book.origin_url != ''}
-          <a
-            class="stat link _outer"
-            href={book.origin_url}
-            rel="nofollow noreferer"
-            target="_blank">
-            Trang gốc
-          </a>
-        {/if}
-
-        {#if book.yousuu_bid !== ''}
-          <a
-            class="stat link _outer"
-            href="https://www.yousuu.com/book/{book.yousuu_bid}"
-            rel="nofollow noreferer"
-            target="_blank">
-            Ưu thư võng
-          </a>
-        {/if}
-      </div>
-    {/if}
-  </section>
-</div>

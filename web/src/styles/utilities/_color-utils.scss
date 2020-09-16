@@ -1,0 +1,35 @@
+$color-utils: true !default;
+
+@if $color-utils {
+  // backgrounds
+
+  @each $name in (none, white, black) {
+    .u-bg-#{$name} {
+      @include bgcolor($name);
+    }
+  }
+
+  @each $color in $-color-names {
+    @for $shade from 1 through 9 {
+      .u-bg-#{$color}-#{$shade} {
+        @include bgcolor($color, $shade);
+      }
+    }
+  }
+
+  // foreground
+
+  @each $color in (none, white, black) {
+    .u-fg-#{$color} {
+      @include fgcolor($color);
+    }
+  }
+
+  @each $color in map-keys($-color-mapping) {
+    @for $shade from 1 through 9 {
+      .u-fg-#{$color}-#{$shade} {
+        @include fgcolor($color, $shade);
+      }
+    }
+  }
+}

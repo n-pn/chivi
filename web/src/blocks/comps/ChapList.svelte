@@ -19,7 +19,7 @@
 </script>
 
 <script lang="ts">
-  import MIcon from '$mould/MIcon.svelte'
+  import AIcon from '$atoms/AIcon.svelte'
   import paginate_range from '$utils/paginate_range'
 
   export let chaps = []
@@ -101,14 +101,14 @@
       class="page m-button _line"
       on:click={() => changeFocus(1)}
       disabled={focus == 1}>
-      <MIcon class="m-icon" name="chevrons-left" />
+      <AIcon name="chevrons-left" />
     </button>
 
     <button
       class="page m-button _line"
       on:click={() => changeFocus(focus - 1)}
       disabled={focus == 1}>
-      <MIcon class="m-icon" name="chevron-left" />
+      <AIcon name="chevron-left" />
     </button>
 
     {#each range as [index, level]}
@@ -125,14 +125,14 @@
       class="page m-button _line"
       on:click={() => changeFocus(focus + 1)}
       disabled={focus == total}>
-      <MIcon class="m-icon" name="chevron-right" />
+      <AIcon name="chevron-right" />
     </button>
 
     <button
       class="page m-button _line"
       on:click={() => changeFocus(total)}
       disabled={focus == total}>
-      <MIcon class="m-icon" name="chevrons-right" />
+      <AIcon name="chevrons-right" />
     </button>
   </nav>
 {/if}

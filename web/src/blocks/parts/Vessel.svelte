@@ -1,6 +1,6 @@
 <script>
   import { self_uname, self_power } from '$src/stores'
-  import MIcon from '$mould/MIcon.svelte'
+  import AIcon from '$atoms/AIcon.svelte'
 
   export let segment = ''
   export let shift = false
@@ -46,7 +46,7 @@
       <slot name="header-right" />
 
       <span class="header-item _menu">
-        <MIcon class="m-icon _user" name="user" />
+        <AIcon name="user" />
         <span class="header-text _show-md">
           {#if $self_power > 0}{$self_uname} [{$self_power}]{:else}Khách{/if}
         </span>
@@ -54,23 +54,23 @@
         <div class="header-menu">
           {#if $self_power < 0}
             <a href="/auth/login" class="-item">
-              <MIcon class="m-icon _log-in" name="log-in" />
+              <AIcon name="log-in" />
               <span>Đăng nhập</span>
             </a>
             <a href="/auth/signup" class="-item">
-              <MIcon class="m-icon _user-plus" name="user-plus" />
+              <AIcon name="user-plus" />
               <span>Đăng ký</span>
             </a>
           {:else}
             <a href="/@{$self_uname}" class="-item">
-              <MIcon class="m-icon _layers" name="layers" />
+              <AIcon name="layers" />
               <span>Tủ truyện</span>
             </a>
             <a
               href="/auth/logout"
               class="-item"
               on:click|preventDefault={logout}>
-              <MIcon class="m-icon _log-out" name="log-out" />
+              <AIcon name="log-out" />
               <span>Đăng xuất</span>
             </a>
           {/if}

@@ -1,6 +1,5 @@
 import * as sapper from '@sapper/app'
-import '@nipin/mould/css/premade.scss'
-// import '@nipin/mould/css/utilities.scss'
+import '$src/styles/premade.scss'
 
 // import { fetch } from 'sapper'
 // window.fetch = window.fetch || fetch

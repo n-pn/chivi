@@ -1,0 +1,11 @@
+// clearfix
+
+@mixin clearfix($screen: xs) {
+  @include screen-min($screen) {
+    &:after {
+      display: block;
+      content: '';
+      clear: both;
+    }
+  }
+}

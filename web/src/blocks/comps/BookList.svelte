@@ -1,6 +1,6 @@
 <script>
-  import MIcon from '$mould/MIcon.svelte'
-  import BookCover from './BookCover.svelte'
+  import AIcon from '$atoms/AIcon.svelte'
+  import ACover from '$atoms/ACover.svelte'
 
   export let books = []
 </script>
@@ -12,10 +12,7 @@
     {#each books as book}
       <a class="book" href="~{book.slug}" rel="prefetch">
         <div class="cover">
-          <BookCover
-            ubid={book.ubid}
-            path={book.main_cover}
-            text={book.vi_title} />
+          <ACover ubid={book.ubid} path={book.main_cover} />
         </div>
 
         <div class="title">{book.vi_title}</div>

@@ -9,14 +9,13 @@ const dev = mode === 'development'
 
 const alias = {
   svelte: path.resolve(__dirname, 'node_modules', 'svelte'),
-  $mould: path.resolve(__dirname, 'node_modules', '@nipin', 'mould', 'lib'),
+
   $src: path.resolve(__dirname, 'src'),
-  $utils: path.resolve(__dirname, 'src', 'utils'),
-  $style: path.resolve(__dirname, 'src', 'styles'),
-  $route: path.resolve(__dirname, 'src', 'routes'),
-  $layout: path.resolve(__dirname, 'src', 'routes', '_layout'),
-  $reused: path.resolve(__dirname, 'src', 'routes', '_reused'),
-  $partial: path.resolve(__dirname, 'src', 'routes', '_partial'),
+  $routes: path.resolve(__dirname, 'src/routes'),
+  $atoms: path.resolve(__dirname, 'src', 'blocks/atoms'),
+  $comps: path.resolve(__dirname, 'src', 'blocks/comps'),
+  $parts: path.resolve(__dirname, 'src', 'blocks/parts'),
+  $utils: path.resolve(__dirname, 'src/utils'),
 }
 
 const extensions = ['.mjs', '.js', '.json', '.svelte', '.html', '.ts']

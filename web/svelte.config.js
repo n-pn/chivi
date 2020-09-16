@@ -23,7 +23,7 @@ module.exports = {
         path.resolve(__dirname, 'src/styles'),
         path.resolve(__dirname, 'node_modules'),
       ],
-      prependData: "@import '@nipin/mould/css/essence.scss';",
+      prependData: "@import 'essence';",
     },
     typescript: {
       tsconfigFile: './tsconfig.json',

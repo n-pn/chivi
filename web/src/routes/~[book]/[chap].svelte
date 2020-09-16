@@ -16,10 +16,11 @@
 <script>
   import { onMount } from 'svelte'
 
-  import MIcon from '$mould/MIcon.svelte'
-  import Vessel from '$layout/Vessel.svelte'
-  import Clavis from '$layout/Clavis.svelte'
-  import Upsert from '$layout/Upsert.svelte'
+  import AIcon from '$atoms/AIcon.svelte'
+  import Vessel from '$parts/Vessel'
+
+  import Clavis from '$parts/Clavis.svelte'
+  import Upsert from '$parts/Upsert.svelte'
 
   import relative_time from '$utils/relative_time'
   import read_selection from '$utils/read_selection'
@@ -237,7 +238,7 @@
 
 <Vessel shift={clavis_actived}>
   <a slot="header-left" href={book_path} class="header-item _title">
-    <MIcon class="m-icon _book-open" name="book-open" />
+    <AIcon name="book-open" />
     <span class="header-text _show-sm _title">{bname}</span>
   </a>
 
@@ -252,9 +253,7 @@
     class="header-item"
     disabled={$self_power < 1}
     on:click={() => reconvert(1)}>
-    <MIcon
-      class="m-icon _refresh-ccw {_reloading ? '_reload' : ''}"
-      name="refresh-ccw" />
+    <AIcon name="refresh-ccw" spin={_reloading} />
   </button>
 
   <button
@@ -263,7 +262,7 @@
     class="header-item"
     class:_active={$upsert_actived}
     on:click={() => show_upsert_modal()}>
-    <MIcon class="m-icon _plus-circle" name="plus-circle" />
+    <AIcon class="m-icon _plus-circle" name="plus-circle" />
   </button>
 
   <button
@@ -272,7 +271,7 @@
     class="header-item"
     class:_active={clavis_enabled}
     on:click={triggerClavisSidebar}>
-    <MIcon class="m-icon _compass" name="compass" />
+    <AIcon name="compass" />
   </button>
 
   <nav class="bread">
@@ -307,13 +306,13 @@
   <footer class="footer">
     {#if prev_url}
       <a class="m-button _line" class:_disable={!prev_url} href={prev_path}>
-        <MIcon class="m-icon" name="chevron-left" />
+        <AIcon name="chevron-left" />
         <span>Trước</span>
       </a>
     {/if}
 
     <a class="m-button _line" href={book_path}>
-      <MIcon class="m-icon" name="list" />
+      <AIcon name="list" />
       <span>Mục lục</span>
     </a>
 
@@ -322,7 +321,7 @@
       class:_disable={!next_url}
       href={next_path}>
       <span>Kế tiếp</span>
-      <MIcon class="m-icon" name="chevron-right" />
+      <AIcon name="chevron-right" />
     </a>
   </footer>
 
@@ -425,22 +424,6 @@
     &[data-d='9'] {
       @include token(gray);
     }
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  :global(.m-icon._reload) {
-    animation-name: spin;
-    animation-duration: 0.5s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
   }
 
   .bread {
