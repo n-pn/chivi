@@ -58,7 +58,7 @@
   import ARtime from '$atoms/ARtime'
 
   import Vessel from '$parts/Vessel'
-  import ChapList from '$comps/ChapList'
+  import ChapList from '$melds/ChapList'
 
   import Outline from './_outline'
 

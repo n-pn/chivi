@@ -39,7 +39,7 @@
   import paginate_range from '$utils/paginate_range'
 
   import AIcon from '$atoms/AIcon.svelte'
-  import BookList from '$comps/BookList.svelte'
+  import BookList from '$melds/BookList.svelte'
 
   import Vessel from '$parts/Vessel'
 

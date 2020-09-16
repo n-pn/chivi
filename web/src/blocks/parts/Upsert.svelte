@@ -79,14 +79,14 @@
     self_power,
     upsert_atab as atab,
     upsert_udic as udic,
-    upsert_inp as inp,
-    upsert_idx as idx,
-    upsert_len as len,
+    upsert_input as input,
+    upsert_lower as lower,
+    upsert_upper as upper,
     upsert_actived as actived,
     upsert_changed as changed,
   } from '$src/stores'
 
-  $: key = $inp.substring($idx, $len)
+  $: key = $input.substring($lower, $upper)
 
   let inp_field
   let out_field
@@ -295,7 +295,7 @@
           bind:value={out_val} />
 
         <div class="format">
-          <span class="-lbl _show-sm">V. hoa:</span>
+          <span class="-lbl _show-sm">V.hoa:</span>
           <span class="-btn" on:click={() => upcase_val(1)}>Một chữ</span>
           <span class="-btn" on:click={() => upcase_val(2)}>Hai chữ</span>
           <span class="-btn _show-md" on:click={() => upcase_val(3)}>Ba chữ</span>
@@ -319,7 +319,7 @@
             <span class="-time"><ARtime time={current.mtime} /></span>
             <span class="-text">bởi</span>
             <span class="-user">{current.uname}</span>
-            <span class="-text _hide">(quyền hạn: {current.power})</span>
+            <span class="-text _hide">[Q.hạn {current.power}]</span>
           </div>
         {/if}
 
@@ -407,7 +407,7 @@
     @include radius();
 
     @include bgcolor(neutral, 1);
-    @include border($color: neutral, $shade: 2);
+    @include border($color: neutral, $shade: 3);
   }
 
   .tabs {

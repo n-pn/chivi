@@ -25,7 +25,7 @@
 <script>
   import AIcon from '$atoms/AIcon.svelte'
   import Vessel from '$parts/Vessel'
-  import BookList from '$comps/BookList.svelte'
+  import BookList from '$melds/BookList.svelte'
 
   export let mark = 'reading'
   export let page = ''

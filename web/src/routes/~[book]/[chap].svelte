@@ -43,9 +43,9 @@
   import {
     self_uname,
     self_power,
-    upsert_inp,
-    upsert_idx,
-    upsert_len,
+    upsert_input,
+    upsert_lower,
+    upsert_upper,
     upsert_atab,
     upsert_udic,
     upsert_actived,
@@ -171,9 +171,9 @@
     const evt = document.addEventListener('selectionchange', () => {
       const selection = read_selection()
       if (selection) {
-        $upsert_inp = selection
-        $upsert_idx = 0
-        $upsert_len = selection.length
+        $upsert_input = selection
+        $upsert_lower = 0
+        $upsert_upper = selection.length
 
         $upsert_atab = 'special'
       }
@@ -190,9 +190,9 @@
     const zh_line = zh_data[idx]
 
     // TODO: import from target
-    $upsert_inp = target.dataset.k
-    $upsert_idx = 0
-    $upsert_len = $upsert_inp.length
+    $upsert_input = target.dataset.k
+    $upsert_lower = 0
+    $upsert_upper = $upsert_input.length
 
     $upsert_atab = +target.dataset.d > 2 ? 'special' : 'generic'
 

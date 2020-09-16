@@ -9,30 +9,24 @@ const dev = mode === 'development'
 
 const alias = {
   svelte: path.resolve(__dirname, 'node_modules', 'svelte'),
-
   $src: path.resolve(__dirname, 'src'),
   $routes: path.resolve(__dirname, 'src/routes'),
   $atoms: path.resolve(__dirname, 'src', 'blocks/atoms'),
-  $comps: path.resolve(__dirname, 'src', 'blocks/comps'),
+  $melds: path.resolve(__dirname, 'src', 'blocks/melds'),
   $parts: path.resolve(__dirname, 'src', 'blocks/parts'),
   $utils: path.resolve(__dirname, 'src/utils'),
 }
 
+const { preprocess } = require('./svelte.config')
 const extensions = ['.mjs', '.js', '.json', '.svelte', '.html']
 const mainFields = ['svelte', 'module', 'browser', 'main']
-
-const { preprocess } = require('./svelte.config')
 
 // postcss
 
 const autoprefixer = require('autoprefixer')
 const cssnano = require('cssnano')({ preset: 'default' })
 const purgecss = require('@fullhuman/postcss-purgecss')({
-  content: [
-    './src/**/*.html',
-    './src/**/*.svelte',
-    './__sapper__/export/**/*.html',
-  ],
+  content: ['./src/**/*.html', './src/**/*.svelte'],
   keyframes: true,
   whitelistPatterns: [/svelte-/],
   defaultExtractor: (content) => content.match(/[A-Za-z0-9-_:/]+/g) || [],
