@@ -69,7 +69,7 @@
 </script>
 
 <script>
-  import { onMount } from 'svelte'
+  // import { onMount } from 'svelte'
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
   import UpsertFooter from './Upsert/Footer.svelte'
@@ -92,7 +92,7 @@
   $: if ($actived && input) preload_input(input)
 
   let val_field
-  onMount(() => val_field.focus())
+  // onMount(() => val_field.focus())
 
   let meta = {
     dicts: {
@@ -243,156 +243,154 @@
 
 <svelte:window on:keydown={handle_keypress} />
 
-<div
-  class="holder"
-  class:_active={$actived}
-  on:click={() => actived.set(false)}>
-  <div class="dialog" on:click|stopPropagation={() => val_field.focus()}>
-    <header class="header">
-      <button class="m-button _text" on:click={reset_bounds}>
-        <AIcon name="rotate-ccw" />
-      </button>
-
-      <div class="hanzi">
-        <button
-          class="-btn"
-          disabled={lower == 0}
-          on:click={() => (lower -= 1)}>
-          <AIcon name="chevron-left" />
+{#if $actived}
+  <div class="holder" on:click={() => actived.set(false)}>
+    <div class="dialog" on:click|stopPropagation={() => val_field.focus()}>
+      <header class="header">
+        <button class="m-button _text" on:click={reset_bounds}>
+          <AIcon name="rotate-ccw" />
         </button>
 
-        <button
-          class="-btn _bd"
-          disabled={lower == upper - 1}
-          on:click={() => (lower += 1)}>
-          <AIcon name="chevron-right" />
-        </button>
+        <div class="hanzi">
+          <button
+            class="-btn"
+            disabled={lower == 0}
+            on:click={() => (lower -= 1)}>
+            <AIcon name="chevron-left" />
+          </button>
 
-        <span class="-inp">
-          <span class="-sub">{$upsert_input.substring(0, lower)}</span>
-          <span class="-key">{input}</span>
-          <span class="-sub">{$upsert_input.substring(upper)}</span>
-        </span>
+          <button
+            class="-btn _bd"
+            disabled={lower == upper - 1}
+            on:click={() => (lower += 1)}>
+            <AIcon name="chevron-right" />
+          </button>
 
-        <button
-          class="-btn _bd"
-          disabled={upper == lower + 1}
-          on:click={() => (upper -= 1)}>
-          <AIcon name="chevron-left" />
-        </button>
-
-        <button
-          class="-btn"
-          disabled={upper == $upsert_input.length}
-          on:click={() => (upper += 1)}>
-          <AIcon name="chevron-right" />
-        </button>
-      </div>
-
-      <button
-        type="button"
-        class="m-button _text"
-        on:click={() => actived.set(false)}>
-        <AIcon name="x" />
-      </button>
-    </header>
-
-    <section class="tabs">
-      {#each tabs as [name, label]}
-        <span
-          class="tab"
-          class:_active={name == $atab}
-          on:click={() => change_tab(name)}>
-          {label}
-        </span>
-      {/each}
-    </section>
-
-    <section class="body">
-      <div class="output">
-        <div class="hints">
-          <span class="-hint" on:click={() => update_val(meta.hanviet)}>
-            {meta.hanviet}
+          <span class="-inp">
+            <span class="-sub">{$upsert_input.substring(0, lower)}</span>
+            <span class="-key">{input}</span>
+            <span class="-sub">{$upsert_input.substring(upper)}</span>
           </span>
 
-          {#each hints as hint}
-            <span class="-hint" on:click={() => update_val(hint)}>{hint}</span>
-          {/each}
+          <button
+            class="-btn _bd"
+            disabled={upper == lower + 1}
+            on:click={() => (upper -= 1)}>
+            <AIcon name="chevron-left" />
+          </button>
 
-          <span class="-hint _right">[{meta.binh_am}]</span>
+          <button
+            class="-btn"
+            disabled={upper == $upsert_input.length}
+            on:click={() => (upper += 1)}>
+            <AIcon name="chevron-right" />
+          </button>
         </div>
-
-        <input
-          type="text"
-          lang="vi"
-          class="val-field"
-          class:_fresh={!existed}
-          name="value"
-          id="val_field"
-          on:keypress={handle_enter}
-          bind:this={val_field}
-          bind:value={out_val} />
-
-        <div class="format">
-          <span class="-lbl _show-sm">V.hoa:</span>
-          <span class="-btn" on:click={() => upcase_val(1)}>Một chữ</span>
-          <span class="-btn" on:click={() => upcase_val(2)}>Hai chữ</span>
-          <span class="-btn _show-md" on:click={() => upcase_val(3)}>Ba chữ</span>
-          <span class="-btn" on:click={() => upcase_val(9)}>Tất cả</span>
-          <span class="-btn" on:click={() => upcase_val(0)}>Không</span>
-
-          <span class="-btn _right" on:click={() => (out_val = '')}>Xoá</span>
-
-          {#if updated}
-            <span class="-btn _right" on:click={() => update_val(existed)}>
-              Phục
-            </span>
-          {/if}
-        </div>
-      </div>
-
-      <div class="footer">
-        {#if current.uname != ''}
-          <div class="edit">
-            <span class="-text">Lưu:</span>
-            <span class="-time"><ARtime time={current.mtime} /></span>
-            <span class="-text">bởi</span>
-            <span class="-user">{current.uname}</span>
-            <span class="-text _hide">[Q.hạn {current.power}]</span>
-          </div>
-        {/if}
 
         <button
           type="button"
-          class="m-button _{btn_class} _{btn_power}"
-          disabled={!(updated || prevail)}
-          on:click|once={submit_val}>
-          <span class="-text">{btn_label}</span>
+          class="m-button _text"
+          on:click={() => actived.set(false)}>
+          <AIcon name="x" />
         </button>
-      </div>
-    </section>
+      </header>
 
-    <UpsertFooter {input} />
+      <section class="tabs">
+        {#each tabs as [name, label]}
+          <span
+            class="tab"
+            class:_active={name == $atab}
+            on:click={() => change_tab(name)}>
+            {label}
+          </span>
+        {/each}
+      </section>
+
+      <section class="body">
+        <div class="output">
+          <div class="hints">
+            <span class="-hint" on:click={() => update_val(meta.hanviet)}>
+              {meta.hanviet}
+            </span>
+
+            {#each hints as hint}
+              <span
+                class="-hint"
+                on:click={() => update_val(hint)}>{hint}</span>
+            {/each}
+
+            <span class="-hint _right">[{meta.binh_am}]</span>
+          </div>
+
+          <input
+            type="text"
+            lang="vi"
+            class="val-field"
+            class:_fresh={!existed}
+            name="value"
+            id="val_field"
+            on:keypress={handle_enter}
+            bind:this={val_field}
+            bind:value={out_val} />
+
+          <div class="format">
+            <span class="-lbl _show-sm">V.hoa:</span>
+            <span class="-btn" on:click={() => upcase_val(1)}>Một chữ</span>
+            <span class="-btn" on:click={() => upcase_val(2)}>Hai chữ</span>
+            <span class="-btn _show-md" on:click={() => upcase_val(3)}>Ba chữ</span>
+            <span class="-btn" on:click={() => upcase_val(9)}>Tất cả</span>
+            <span class="-btn" on:click={() => upcase_val(0)}>Không</span>
+
+            <span class="-btn _right" on:click={() => (out_val = '')}>Xoá</span>
+
+            {#if updated}
+              <span class="-btn _right" on:click={() => update_val(existed)}>
+                Phục
+              </span>
+            {/if}
+          </div>
+        </div>
+
+        <div class="footer">
+          {#if current.uname != ''}
+            <div class="edit">
+              <span class="-text">Lưu:</span>
+              <span class="-time"><ARtime time={current.mtime} /></span>
+              <span class="-text">bởi</span>
+              <span class="-user">{current.uname}</span>
+              <span class="-text _hide">[Q.hạn {current.power}]</span>
+            </div>
+          {/if}
+
+          <button
+            type="button"
+            class="m-button _{btn_class} _{btn_power}"
+            disabled={!(updated || prevail)}
+            on:click|once={submit_val}>
+            <span class="-text">{btn_label}</span>
+          </button>
+        </div>
+      </section>
+
+      <UpsertFooter {input} />
+    </div>
   </div>
-</div>
+{/if}
 
 <style lang="scss">
   $gutter: 0.75rem;
 
   .holder {
-    display: none;
-    &._active {
-      display: flex;
-      position: fixed;
-      align-items: center;
-      justify-content: center;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 999;
-      @include bgcolor(rgba(#000, 0.65));
-    }
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    @include bgcolor(rgba(#000, 0.65));
   }
 
   .dialog {
