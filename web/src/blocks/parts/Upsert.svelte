@@ -247,10 +247,6 @@
   <div class="holder" on:click={() => actived.set(false)}>
     <div class="dialog" on:click|stopPropagation={() => val_field.focus()}>
       <header class="header">
-        <button class="m-button _text" on:click={reset_bounds}>
-          <AIcon name="rotate-ccw" />
-        </button>
-
         <div class="hanzi">
           <button
             class="-btn"
@@ -286,6 +282,10 @@
             <AIcon name="chevron-right" />
           </button>
         </div>
+
+        <button class="m-button _text" on:click={reset_bounds}>
+          <AIcon name="rotate-ccw" />
+        </button>
 
         <button
           type="button"
@@ -404,17 +404,15 @@
   }
 
   $header-height: 2.75rem;
-  $header-gutter: 0.25rem;
   $header-inner-height: 2.25rem;
 
   .header {
     display: flex;
     position: relative;
-    padding: $header-gutter 0.25rem;
+    padding: 0.75rem 0.375rem;
     // height: $header-height;
 
     .m-button {
-      margin: 0.375rem;
       @include fgcolor(neutral, 6);
       &:hover {
         @include fgcolor(primary, 6);
@@ -424,7 +422,7 @@
 
   .hanzi {
     display: inline-flex;
-    margin: 0.375rem 0;
+    margin: 0 0.375rem;
 
     height: $header-inner-height;
     line-height: $header-inner-height;
