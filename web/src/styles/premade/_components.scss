@@ -31,21 +31,21 @@
   }
 }
 
-.m-icon {
-  @include svg-icon();
-}
+// .m-icon {
+//   @include svg-icon();
+// }
 
-.m-article {
-  @include article();
-}
+// .m-article {
+//   @include article();
+// }
 
-.m-input {
-  @include input-common();
-  @include input-sizing(normal);
-  &._small {
-    @include input-sizing(small);
-  }
-  &._large {
-    @include input-sizing(large);
-  }
-}
+// .m-input {
+//   @include input-common();
+//   @include input-sizing(normal);
+//   &._small {
+//     @include input-sizing(small);
+//   }
+//   &._large {
+//     @include input-sizing(large);
+//   }
+// }

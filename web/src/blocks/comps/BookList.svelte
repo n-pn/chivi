@@ -1,31 +1,27 @@
-<script>
+<script lang="ts">
   import AIcon from '$atoms/AIcon.svelte'
   import ACover from '$atoms/ACover.svelte'
 
   export let books = []
 </script>
 
-{#if books.length == 0}
-  <div class="empty">Danh sách trống</div>
-{:else}
-  <div class="list">
-    {#each books as book}
-      <a class="book" href="~{book.slug}" rel="prefetch">
-        <div class="cover">
-          <ACover ubid={book.ubid} path={book.main_cover} />
-        </div>
+<div class="list">
+  {#each books as book}
+    <a class="book" href="~{book.slug}" rel="prefetch">
+      <div class="cover">
+        <ACover ubid={book.ubid} path={book.main_cover} />
+      </div>
 
-        <div class="title">{book.vi_title}</div>
-        <div class="genre">{book.vi_genres[0]}</div>
+      <div class="title">{book.vi_title}</div>
+      <div class="genre">{book.vi_genres[0]}</div>
 
-        <div class="score">
-          <span class="-icon">⭐</span>
-          <span class="-text">{book.voters < 10 ? '--' : book.rating}</span>
-        </div>
-      </a>
-    {/each}
-  </div>
-{/if}
+      <div class="score">
+        <span class="-icon">⭐</span>
+        <span class="-text">{book.voters < 10 ? '--' : book.rating}</span>
+      </div>
+    </a>
+  {/each}
+</div>
 
 <style lang="scss">
   .list {
@@ -117,14 +113,5 @@
       object-fit: cover;
       @include radius();
     }
-  }
-
-  .empty {
-    display: flex;
-    min-height: 50vh;
-    align-items: center;
-    justify-content: center;
-    font-style: italic;
-    @include fgcolor(neutral, 6);
   }
 </style>

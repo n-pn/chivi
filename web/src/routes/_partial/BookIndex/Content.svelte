@@ -31,8 +31,8 @@
 </script>
 
 <script>
-  import AIcon from '$atoms/AIcon.svelte'
-  import relative_time from '$utils/relative_time'
+  import AIcon from '$atoms/AIcon'
+  import ARtime from '$atoms/ARtime'
 
   export let book
   export let seed
@@ -67,7 +67,8 @@
               rel="nofollow">
               <span class="-name">{name}</span>
               <span class="-time">
-                ({relative_time(book.seed_mftimes[name])})
+                (
+                <ARtime time={book.seed_mftimes[name]} />)
               </span>
             </a>
           {/each}
@@ -82,7 +83,7 @@
         {:else}
           <AIcon name="clock" />
         {/if}
-        <span>{relative_time(book.seed_mftimes[seed])}</span>
+        <span><ARtime time={book.seed_mftimes[seed]} /></span>
       </button>
 
       <button class="m-button _text" on:click={() => (desc = !desc)}>

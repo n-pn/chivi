@@ -25,9 +25,6 @@ module.exports = {
       ],
       prependData: "@import 'essence';",
     },
-    typescript: {
-      tsconfigFile: './tsconfig.json',
-      transpileOnly: true,
-    },
+    typescript: { transpileOnly: true },
   }),
 }

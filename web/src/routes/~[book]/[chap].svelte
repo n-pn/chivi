@@ -11,22 +11,35 @@
 
     return data
   }
+
+  async function load_chtext(fetch, bslug, seed, scid, mode = 0) {
+    const url = `/_texts/${bslug}/${seed}/${scid}?mode=${mode}`
+
+    try {
+      const res = await fetch(url)
+      const data = await res.json()
+
+      if (res.status == 200) return data
+      else this.error(res.status, data._msg)
+    } catch (err) {
+      this.error(500, err.message)
+    }
+  }
 </script>
 
 <script>
   import { onMount } from 'svelte'
 
-  import AIcon from '$atoms/AIcon.svelte'
+  import AIcon from '$atoms/AIcon'
+  import ARtime from '$atoms/ARtime'
+
   import Vessel from '$parts/Vessel'
+  import Clavis from '$parts/Clavis'
+  import Upsert, { dict_upsert } from '$parts/Upsert'
 
-  import Clavis from '$parts/Clavis.svelte'
-  import Upsert from '$parts/Upsert.svelte'
-
-  import relative_time from '$utils/relative_time'
   import read_selection from '$utils/read_selection'
   import { render_convert, parse_content } from '$utils/render_convert'
 
-  import { dict_upsert, load_chtext } from '$src/api'
   import {
     self_uname,
     self_power,
@@ -262,7 +275,7 @@
     class="header-item"
     class:_active={$upsert_actived}
     on:click={() => show_upsert_modal()}>
-    <AIcon class="m-icon _plus-circle" name="plus-circle" />
+    <AIcon name="plus-circle" />
   </button>
 
   <button
@@ -285,7 +298,9 @@
 
     <div class="-crumb"><span class="-text">{ch_label}</span></div>
 
-    <div class="-right"><span>{relative_time(mftime)}</span></div>
+    <div class="-right">
+      <span><ARtime time={mftime} /></span>
+    </div>
   </nav>
 
   <article class="convert" class:_reload={_reloading}>

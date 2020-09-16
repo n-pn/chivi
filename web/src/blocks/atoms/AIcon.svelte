@@ -10,28 +10,26 @@
 <style lang="scss">
   svg {
     display: inline-block;
+
     width: 1em;
     height: 1em;
 
     stroke: currentColor;
-    stroke-width: 1.5;
+    stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
   }
 
+  // prettier-ignore
   @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
   .spin {
     animation-name: spin;
-    animation-duration: 0.5s;
+    animation-duration: 1s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
   }

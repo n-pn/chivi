@@ -22,9 +22,9 @@
 </script>
 
 <script>
-  import AIcon from '$atoms/AIcon.svelte'
-  import ACover from '$atoms/ACover.svelte'
-  import relative_time from '$utils/relative_time'
+  import AIcon from '$atoms/AIcon'
+  import ACover from '$atoms/ACover'
+  import ARtime from '$atoms/ARtime'
 
   export let book
 
@@ -91,7 +91,7 @@
 
       <span class="stat _mftime">
         <AIcon name="clock" />
-        <span>{relative_time(book.mftime)}</span>
+        <span><ARtime time={book.mftime} /></span>
       </span>
     </div>
 

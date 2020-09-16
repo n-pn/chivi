@@ -22,7 +22,7 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   import AIcon from '$atoms/AIcon.svelte'
   import Vessel from '$parts/Vessel'
   import BookList from '$comps/BookList.svelte'
@@ -52,27 +52,33 @@
     {/each}
   </div>
 
-  <BookList {books} />
+  {#if books.length == 0}
+    <div class="empty">Danh sách trống</div>
+  {:else}
+    <BookList {books} />
 
-  <div class="pagi">
-    <a
-      class="page m-button _line"
-      class:_disable={page == 1}
-      href="/@{uname}?mark={mark}&page={+page - 1}">
-      <AIcon name="chevron-left" />
-      <span>Trước</span>
-    </a>
+    <div class="pagi">
+      <a
+        class="page m-button _line"
+        class:_disable={page == 1}
+        href="/@{uname}?mark={mark}&page={+page - 1}">
+        <AIcon name="chevron-left" />
+        <span>Trước</span>
+      </a>
 
-    <div class="page m-button _line _primary _disable"><span>{page}</span></div>
+      <div class="page m-button _line _primary _disable">
+        <span>{page}</span>
+      </div>
 
-    <a
-      class="page m-button _solid _primary"
-      class:_disable={page == page_max}
-      href="/@{uname}?mark={mark}&page={+page + 1}">
-      <span>Kế tiếp</span>
-      <AIcon name="chevron-right" />
-    </a>
-  </div>
+      <a
+        class="page m-button _solid _primary"
+        class:_disable={page == page_max}
+        href="/@{uname}?mark={mark}&page={+page + 1}">
+        <span>Kế tiếp</span>
+        <AIcon name="chevron-right" />
+      </a>
+    </div>
+  {/if}
 </Vessel>
 
 <style lang="scss">

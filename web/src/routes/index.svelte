@@ -112,47 +112,51 @@
     <AIcon name="search" />
   </form>
 
-  <div class="order">
-    {#each Object.entries(order_names) as [type, label]}
-      <a
-        class="-type"
-        class:_active={query.order === type}
-        href={makePageUrl(1, { ...query, order: type })}>
-        <span>{label}</span>
-      </a>
-    {/each}
-  </div>
+  {#if items.length == 0}
+    <div class="empty">Danh sách trống</div>
+  {:else}
+    <div class="order">
+      {#each Object.entries(order_names) as [type, label]}
+        <a
+          class="-type"
+          class:_active={query.order === type}
+          href={makePageUrl(1, { ...query, order: type })}>
+          <span>{label}</span>
+        </a>
+      {/each}
+    </div>
 
-  <BookList books={items} />
+    <BookList books={items} />
 
-  <div class="pagi">
-    <a
-      class="page m-button _line"
-      class:_disable={page == 1}
-      href={makePageUrl(+page - 1, query)}>
-      <AIcon name="chevron-left" />
-      <span>Trước</span>
-    </a>
-
-    {#each page_ary as [index, level]}
+    <div class="pagi">
       <a
         class="page m-button _line"
-        class:_primary={page == index}
-        class:_disable={page == index}
-        data-level={level}
-        href={makePageUrl(index, query)}>
-        <span>{index}</span>
+        class:_disable={page == 1}
+        href={makePageUrl(+page - 1, query)}>
+        <AIcon name="chevron-left" />
+        <span>Trước</span>
       </a>
-    {/each}
 
-    <a
-      class="page m-button _solid _primary"
-      class:_disable={page == page_max}
-      href={makePageUrl(page + 1, query)}>
-      <span>Kế tiếp</span>
-      <AIcon name="chevron-right" />
-    </a>
-  </div>
+      {#each page_ary as [index, level]}
+        <a
+          class="page m-button _line"
+          class:_primary={page == index}
+          class:_disable={page == index}
+          data-level={level}
+          href={makePageUrl(index, query)}>
+          <span>{index}</span>
+        </a>
+      {/each}
+
+      <a
+        class="page m-button _solid _primary"
+        class:_disable={page == page_max}
+        href={makePageUrl(page + 1, query)}>
+        <span>Kế tiếp</span>
+        <AIcon name="chevron-right" />
+      </a>
+    </div>
+  {/if}
 </Vessel>
 
 <style lang="scss">
@@ -241,5 +245,14 @@
         display: inline-block;
       }
     }
+  }
+
+  .empty {
+    display: flex;
+    min-height: 50vh;
+    align-items: center;
+    justify-content: center;
+    font-style: italic;
+    @include fgcolor(neutral, 6);
   }
 </style>

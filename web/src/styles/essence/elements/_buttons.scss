@@ -67,8 +67,8 @@ $-button-text-sizes: (
 
   > svg,
   > img {
-    width: $icon-size;
-    height: $icon-size;
+    width: $icon-size !important;
+    height: $icon-size !important;
   }
 
   @at-root {

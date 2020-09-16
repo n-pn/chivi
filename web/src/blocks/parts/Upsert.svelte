@@ -1,5 +1,5 @@
 <script context="module">
-  export function generate_hints(meta, reject, accept) {
+  function generate_hints(meta, reject, accept) {
     let res = [
       ...meta.dicts.special.vals,
       ...meta.dicts.special.hints,
@@ -15,11 +15,11 @@
     )
   }
 
-  export function capitalize(input) {
+  function capitalize(input) {
     return input.charAt(0).toUpperCase() + input.slice(1)
   }
 
-  export function titleize(input, count = 9) {
+  function titleize(input, count = 9) {
     const res = input.split(' ')
     if (count > res.length) count = res.length
 
@@ -29,13 +29,13 @@
     return res.join(' ')
   }
 
-  export function compare_power(user, prev) {
+  function compare_power(user, prev) {
     if (user < prev) return [false, 'text']
     else if (user == prev) return [false, 'line']
     else return [true, 'solid']
   }
 
-  export function compare_value(new_val, old_val) {
+  function compare_value(new_val, old_val) {
     if (new_val == '') return ['harmful', 'Xoá từ']
     else if (old_val == '') return ['success', 'Thêm từ']
     else return ['primary', 'Sửa từ']
@@ -46,14 +46,33 @@
     ['generic', 'VP chung'],
     ['hanviet', 'Hán việt'],
   ]
+
+  export async function dict_search(fetch, key: String, dic = 'dich-nhanh') {
+    const url = `/_dicts/search/${key}?dic=${dic}`
+    const res = await fetch(url)
+    const data = await res.json()
+
+    return data
+  }
+
+  export async function dict_upsert(fetch, dic: string, key: String, val = '') {
+    const url = `/_dicts/upsert/${dic}`
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, val }),
+    })
+
+    const { _stt } = await res.json()
+    return _stt
+  }
 </script>
 
 <script lang="ts">
   import { onMount } from 'svelte'
-  import relative_time from '$utils/relative_time'
+  import AIcon from '$atoms/AIcon'
+  import ARtime from '$atoms/ARtime'
   import UpsertFooter from './Upsert/Footer.svelte'
-
-  import { dict_search, dict_upsert } from '$src/api'
 
   import {
     self_uname,
@@ -134,8 +153,8 @@
   }
 
   async function submit_val() {
-    const dic = $atab == 'special' ? dname : $atab
-    const res = await dict_upsert(fetch, $udic, key.trim(), out_val.trim())
+    const dic = $atab == 'special' ? $udic : $atab
+    const res = await dict_upsert(fetch, dic, key.trim(), out_val.trim())
 
     $actived = false
     $changed = res === 'ok' && updated
@@ -235,9 +254,7 @@
         type="button"
         class="m-button _text"
         on:click={() => actived.set(false)}>
-        <svg class="m-icon _x">
-          <use xlink:href="/icons.svg#x" />
-        </svg>
+        <AIcon name="x" />
       </button>
     </header>
 
@@ -299,7 +316,7 @@
         {#if current.uname != ''}
           <div class="edit">
             <span class="-text">Lưu:</span>
-            <span class="-time">{relative_time(current.mtime)}</span>
+            <span class="-time"><ARtime time={current.mtime} /></span>
             <span class="-text">bởi</span>
             <span class="-user">{current.uname}</span>
             <span class="-text _hide">(quyền hạn: {current.power})</span>

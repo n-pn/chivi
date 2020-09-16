@@ -256,7 +256,7 @@
       }
     }
 
-    > :global(.m-icon) {
+    > :global(svg) {
       position: absolute;
       // display: flex;
       padding: 0;
@@ -284,7 +284,7 @@
       padding: 0.5rem 0;
     }
 
-    :global(.m-icon) {
+    :global(svg) {
       margin: 0;
     }
 
@@ -311,7 +311,7 @@
         @include bgcolor(neutral, 2);
       }
 
-      > :global(.m-icon) {
+      > :global(svg) {
         margin: 0.5rem;
         // width: 1.25rem;
         // height: 1.25rem;

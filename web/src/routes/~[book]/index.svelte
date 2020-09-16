@@ -54,11 +54,11 @@
 </script>
 
 <script>
-  import AIcon from '$atoms/AIcon.svelte'
+  import AIcon from '$atoms/AIcon'
+  import ARtime from '$atoms/ARtime'
 
   import Vessel from '$parts/Vessel'
-  import ChapList from '$comps/ChapList.svelte'
-  import relative_time from '$utils/relative_time'
+  import ChapList from '$comps/ChapList'
 
   import Outline from '$routes/_partial/BookIndex/Outline.svelte'
 
@@ -96,8 +96,9 @@
     book = update_last_chap(book, seed, chlist, mftime)
   }
 
-  function change_tab(new_tab) {
+  function change_tab(evt, new_tab) {
     // TODO: scrolling?
+    evt.preventDefault()
     tab = new_tab
   }
 
@@ -158,7 +159,7 @@
         class="-tab"
         class:_active={tab == 'overview'}
         href="/~{book.slug}?tab=overview"
-        on:click|preventDefault={() => change_tab('overview')}>
+        on:click={(evt) => change_tab(evt, 'overview')}>
         Tổng quan
       </a>
 
@@ -166,7 +167,7 @@
         class="-tab"
         class:_active={tab == 'content'}
         href="/~{book.slug}?tab=content&seed={seed}"
-        on:click|preventDefault={() => change_tab('content')}>
+        on:click={(evt) => change_tab(evt, 'content')}>
         Mục lục
       </a>
 
@@ -174,7 +175,7 @@
         class="-tab"
         class:_active={tab == 'reviews'}
         href="/~{book.slug}?tab=reviews"
-        on:click|preventDefault={() => change_tab('reviews')}>
+        on:click={(evt) => change_tab(evt, 'reviews')}>
         Bình luận
       </a>
     </header>
@@ -213,12 +214,13 @@
                 <td class="latest-time">
                   <span
                     class="latest-text _update"
-                    class:_loading={seed == name && _loading}
                     on:click={() => change_seed(name, 1)}>
                     {#if seed == name && _loading}
-                      <AIcon name="loader" />
+                      <AIcon name="loader" spin={_loading} />
                     {:else}
-                      <span>{relative_time(book.seed_mftimes[name], name)}</span>
+                      <span><ARtime
+                          time={book.seed_mftimes[name]}
+                          seed={name} /></span>
                     {/if}
                   </span>
                 </td>
@@ -251,7 +253,7 @@
                     rel="nofollow">
                     <span class="-name">{name}</span>
                     <span class="-time">
-                      ({relative_time(book.seed_mftimes[name], name)})
+                      <ARtime time={book.seed_mftimes[name]} seed={name} />
                     </span>
                   </a>
                 {/each}
@@ -262,22 +264,13 @@
           <div class="-right">
             <button
               class="m-button _text"
-              class:_loading
               on:click={() => change_seed(seed, $self_power > 2 ? 2 : 1)}>
-              {#if _loading}
-                <AIcon name="loader" />
-              {:else}
-                <AIcon name="clock" />
-              {/if}
-              <span>{relative_time(book.seed_mftimes[seed], seed)}</span>
+              <AIcon name={_loading ? 'loader' : 'clock'} spin={_loading} />
+              <span><ARtime time={book.seed_mftimes[seed]} {seed} /></span>
             </button>
 
             <button class="m-button _text" on:click={() => (desc = !desc)}>
-              {#if desc}
-                <AIcon name="arrow-down" />
-              {:else}
-                <AIcon name="arrow-up" />
-              {/if}
+              <AIcon name={desc ? 'arrow-down' : 'arrow-up'} />
               <span class="-hide">Sắp xếp</span>
             </button>
           </div>
@@ -316,26 +309,6 @@
 
       $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
       @include apply(font-size, $font-sizes);
-    }
-  }
-
-  ._loading {
-    @include fgcolor(neutral, 5);
-
-    :global(svg) {
-      animation-name: spin;
-      animation-duration: 1000ms;
-      animation-iteration-count: infinite;
-      animation-timing-function: linear;
-    }
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
     }
   }
 
