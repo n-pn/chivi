@@ -239,6 +239,10 @@
     lower = $upsert_lower
     upper = $upsert_upper
   }
+
+  function term_exists(meta, tab) {
+    return meta.dicts[tab].vals.length > 0
+  }
 </script>
 
 <svelte:window on:keydown={handle_keypress} />
@@ -300,6 +304,7 @@
           <span
             class="tab"
             class:_active={name == $atab}
+            class:_exists={term_exists(meta, name)}
             on:click={() => change_tab(name)}>
             {label}
           </span>
@@ -474,7 +479,7 @@
   .tabs {
     // margin-top: 0.75rem;
     @include border($sides: bottom);
-    @include flex($gap: 0.5rem);
+    @include flex($gap: 0.375rem);
     padding: 0 0.75rem;
     height: 2rem;
     line-height: 2rem;
@@ -490,13 +495,17 @@
     margin-top: 0.25px;
 
     @include font-size(2);
-    @include fgcolor(neutral, 6);
+    @include fgcolor(neutral, 5);
 
     @include radius();
     @include radius(0, $sides: bottom);
 
     @include border($color: neutral);
     @include border($color: none, $sides: bottom);
+
+    &._exists {
+      @include fgcolor(neutral, 7);
+    }
 
     &._active {
       @include bgcolor(#fff);
