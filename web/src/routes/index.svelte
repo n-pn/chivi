@@ -37,9 +37,9 @@
   import Vessel from '$layout/Vessel.svelte'
 
   export let items = []
-  export let total = 0
+  export let total: number = 0
   export let query = {}
-  export let page = 1
+  export let page: number = 1
 
   const order_names = {
     access: 'Vừa xem',
