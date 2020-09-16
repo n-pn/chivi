@@ -69,6 +69,7 @@
 </script>
 
 <script>
+  import { onMount } from 'svelte'
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
   import UpsertFooter from './Upsert/Footer.svelte'
@@ -91,6 +92,7 @@
   $: if ($actived && input) preload_input(input)
 
   let val_field
+  onMount(() => val_field.focus())
 
   let meta = {
     dicts: {
@@ -148,7 +150,7 @@
 
   async function submit_val() {
     const dic = $atab == 'special' ? $udic : $atab
-    const res = await dict_upsert(fetch, dic, key.trim(), out_val.trim())
+    const res = await dict_upsert(fetch, dic, input, out_val.trim())
 
     $actived = false
     $changed = res === 'ok' && updated
