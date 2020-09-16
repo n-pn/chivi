@@ -80,6 +80,9 @@
 - [ ] using user name as primary key for users related records
 - [ ] using book slug instead of uuid for dict names and other indexes
 
+- [ ] automatically add words to `suggest.dic` and `dich-nhanh.dic`
+- [ ] add context for upsert keys (add more text files?)
+
 ## Current
 
 ### Fix hanviet
@@ -102,3 +105,13 @@ main activity:
 - [ ] instead of providing the exact hanzi string, rewrite it by providing the whole line and range indexes instead
 - [ ] add button to move focus
 - [ ] add keyboard shortcut to move focus
+
+## Performance improvement
+
+- [ ] tweak order_map performance
+- [ ] split chap heads to label_maps instead of keeping it in a huge json file
+
+## Refactoring
+
+- [ ] using seconds instead of milliseconds for mftimes
+- [ ] using minutes in book access/ book update order_maps for practical reason
