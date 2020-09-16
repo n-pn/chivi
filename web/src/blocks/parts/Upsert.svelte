@@ -287,9 +287,9 @@
           </button>
         </div>
 
-        <button class="m-button _text" on:click={reset_bounds}>
+        <!-- <button class="m-button _text" on:click={reset_bounds}>
           <AIcon name="rotate-ccw" />
-        </button>
+        </button> -->
 
         <button
           type="button"
@@ -414,7 +414,8 @@
   .header {
     display: flex;
     position: relative;
-    padding: 0.75rem 0.375rem;
+    padding: 0.75rem;
+    // padding-right: 0.5rem;
     // height: $header-height;
 
     .m-button {
@@ -427,7 +428,7 @@
 
   .hanzi {
     display: inline-flex;
-    margin: 0 0.375rem;
+    margin-right: 0.5rem;
 
     height: $header-inner-height;
     line-height: $header-inner-height;

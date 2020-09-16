@@ -2,7 +2,7 @@
   function gen_links(input) {
     return [
       [
-        'Gtrans',
+        'G.Trans',
         `https://translate.google.com/#view=home&op=translate&sl=zh-CN&tl=en&text=${input}`,
       ],
       ['Google', `https://www.google.com/search?q=${input}`],
