@@ -123,7 +123,7 @@
     @include shadow(1);
 
     @include clearfix;
-    @include hover {
+    &:hover {
       @include shadow(2);
       .title {
         @include fgcolor(primary, 5);

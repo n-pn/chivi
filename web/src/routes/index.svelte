@@ -12,7 +12,7 @@
     return { page, ...data }
   }
 
-  export function makePageUrl(page = 1, query = {}) {
+  function makePageUrl(page = 1, query = {}) {
     const opts = {}
     if (page > 1) opts.page = page
     if (query.order !== 'access') opts.order = query.order
@@ -26,20 +26,6 @@
     if (params) return `/?${params}`
     return '/'
   }
-</script>
-
-<script lang="ts">
-  import paginate_range from '$utils/paginate_range.ts'
-
-  import AIcon from '$atoms/AIcon.svelte'
-  import BookList from '$comps/BookList.svelte'
-
-  import Vessel from '$parts/Vessel'
-
-  export let items = []
-  export let total: number = 0
-  export let query = {}
-  export let page: number = 1
 
   const order_names = {
     access: 'Vừa xem',
@@ -47,6 +33,20 @@
     rating: 'Đánh giá',
     weight: 'Tổng hợp',
   }
+</script>
+
+<script>
+  import paginate_range from '$utils/paginate_range'
+
+  import AIcon from '$atoms/AIcon.svelte'
+  import BookList from '$comps/BookList.svelte'
+
+  import Vessel from '$parts/Vessel'
+
+  export let items = []
+  export let total = 0
+  export let query = {}
+  export let page = 1
 
   $: page_max = Math.floor((total - 1) / 20) + 1
   $: page_ary = paginate_range(page, page_max)

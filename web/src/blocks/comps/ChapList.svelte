@@ -18,8 +18,8 @@
   }
 </script>
 
-<script lang="ts">
-  import AIcon from '$atoms/AIcon.svelte'
+<script>
+  import AIcon from '$atoms/AIcon'
   import paginate_range from '$utils/paginate_range'
 
   export let chaps = []
@@ -137,7 +137,7 @@
   </nav>
 {/if}
 
-<style type="text/scss">
+<style lang="scss">
   $chap-size: 17.5rem;
   $chap-break: $chap-size * 2 + 0.75 * 5;
 
@@ -186,7 +186,7 @@
       }
     }
 
-    @include hover {
+    &:hover {
       .title {
         @include fgcolor(primary, 5);
       }

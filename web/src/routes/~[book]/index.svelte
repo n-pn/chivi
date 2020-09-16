@@ -60,7 +60,7 @@
   import Vessel from '$parts/Vessel'
   import ChapList from '$comps/ChapList'
 
-  import Outline from '$routes/_partial/BookIndex/Outline.svelte'
+  import Outline from './_outline'
 
   import { self_uname, self_power } from '$src/stores'
 
@@ -129,7 +129,7 @@
   </a>
 
   <span slot="header-right" class="header-item _menu">
-    <AIcon name={mark ? mark_icons[mark] : 'star'} />
+    <AIcon name={mark ? mark_icons[mark] : 'bookmark'} />
     <span
       class="header-text _show-md">{mark ? mark_names[mark] : 'Đánh dấu'}</span>
 

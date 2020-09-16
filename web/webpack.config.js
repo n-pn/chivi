@@ -18,7 +18,7 @@ const alias = {
   $utils: path.resolve(__dirname, 'src/utils'),
 }
 
-const extensions = ['.mjs', '.js', '.json', '.svelte', '.html', '.ts']
+const extensions = ['.mjs', '.js', '.json', '.svelte', '.html']
 const mainFields = ['svelte', 'module', 'browser', 'main']
 
 const { preprocess } = require('./svelte.config')
@@ -88,7 +88,6 @@ module.exports = {
             },
           ].filter(Boolean),
         },
-        { test: /\.ts$/, loader: 'ts-loader' },
       ],
     },
     mode,

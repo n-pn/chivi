@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import AIcon from '$atoms/AIcon.svelte'
   import ACover from '$atoms/ACover.svelte'
 
@@ -37,7 +37,7 @@
 
     margin-bottom: 3rem;
 
-    @include hover {
+    &:hover {
       .title {
         @include fgcolor(primary, 5);
       }

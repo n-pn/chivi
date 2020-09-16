@@ -77,7 +77,7 @@
 
       {#each book.vi_genres as genre}
         <span class="stat">
-          <AIcon name="bookmark" />
+          <AIcon name="folder" />
           <a class="link" href="/?genre={genre}">{genre}</a>
         </span>
       {/each}

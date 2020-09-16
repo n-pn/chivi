@@ -158,6 +158,7 @@
   :global(.header-item) {
     display: inline-flex;
     position: relative;
+    cursor: pointer;
 
     text-decoration: none;
     padding: 0 0.5rem;
@@ -171,8 +172,7 @@
 
     @include radius();
 
-    @include hover() {
-      cursor: pointer;
+    &:hover {
       @include bgcolor(primary, 5);
     }
 

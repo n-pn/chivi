@@ -4,7 +4,7 @@
   const day_span = hour_span * 24
   const month_span = day_span * 30
 
-  export function reltime_text(time: number, seed: string = ' ') {
+  export function reltime_text(time, seed = ' ') {
     const date = new Date(time)
     const span = (new Date().getTime() - time) / 1000
 
@@ -16,7 +16,7 @@
     return `${rounding(span, minute_span)} phút trước`
   }
 
-  function uncertain(seed: string) {
+  function uncertain(seed) {
     switch (seed) {
       case '69shu':
       case 'zhwenpg':
@@ -27,7 +27,7 @@
     }
   }
 
-  function iso_date(input: Date) {
+  function iso_date(input) {
     const year = input.getFullYear()
     const month = input.getMonth() + 1
     const date = input.getDate() + 1
@@ -35,19 +35,19 @@
     return `${year}-${pad_zero(month)}-${pad_zero(date)}`
   }
 
-  function pad_zero(input: number) {
+  function pad_zero(input) {
     return input.toString().padStart(2, '0')
   }
 
-  function rounding(input: number, unit: number) {
+  function rounding(input, unit) {
     if (input <= unit) return 1
     return Math.round((input - 1) / unit) + 1
   }
 </script>
 
-<script lang="ts">
-  export let time: number = 0
-  export let seed: string = ''
+<script>
+  export let time = 0
+  export let seed = ''
 
   $: text = reltime_text(time, seed)
 </script>

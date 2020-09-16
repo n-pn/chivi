@@ -22,7 +22,7 @@
   }
 </script>
 
-<script lang="ts">
+<script>
   import AIcon from '$atoms/AIcon.svelte'
   import Vessel from '$parts/Vessel'
   import BookList from '$comps/BookList.svelte'

@@ -105,7 +105,7 @@ $-button-text-sizes: (
       @include fgcolor(neutral, 7);
       @include bgcolor(neutral, 2);
 
-      @include hover {
+      &:hover {
         @include bgcolor(neutral, 3);
       }
 
@@ -118,7 +118,7 @@ $-button-text-sizes: (
       @include fgcolor(white);
       @include bgcolor($color, 5);
 
-      @include hover {
+      &:hover {
         @include bgcolor($color, 4);
       }
 
@@ -132,7 +132,7 @@ $-button-text-sizes: (
       @include fgcolor($color, 7);
       @include bgcolor(none);
 
-      @include hover {
+      &:hover {
         @include bgcolor($color, 2);
       }
 
@@ -145,7 +145,7 @@ $-button-text-sizes: (
       @include fgcolor($color, 6);
       @include bgcolor(none);
 
-      @include hover {
+      &:hover {
         @include bgcolor($color, 1);
       }
 

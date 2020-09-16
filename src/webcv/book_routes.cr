@@ -27,9 +27,9 @@ module Params
     page
   end
 
-  def search_limit(limit : String?)
-    return 15 unless limit = limit.try(&.to_i?)
-    limit < 1 || limit > 15 ? 15 : limit
+  def search_limit(limit : String?, upper = 20)
+    return upper unless limit = limit.try(&.to_i?)
+    limit < 1 || limit > upper ? upper : limit
   end
 end
 

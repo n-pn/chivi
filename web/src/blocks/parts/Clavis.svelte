@@ -265,18 +265,6 @@
     }
   }
 
-  @mixin token($color: blue) {
-    @include bdcolor($color, 3);
-
-    &._active {
-      color: color($color, 6);
-    }
-
-    @include hover {
-      color: color($color, 6);
-    }
-  }
-
   // $vi-height: 0.75rem + (1.25 * 6rem);
   // $vi-height: 0;
   $zh-height: 0.75rem + (1.25 * 5rem);
@@ -314,7 +302,7 @@
     :global(x-v) {
       cursor: pointer;
 
-      @include hover {
+      &:hover {
         @include fgcolor(primary, 5);
       }
 

@@ -47,7 +47,7 @@
     ['hanviet', 'Hán việt'],
   ]
 
-  export async function dict_search(fetch, key: String, dic = 'dich-nhanh') {
+  export async function dict_search(fetch, key, dic = 'dich-nhanh') {
     const url = `/_dicts/search/${key}?dic=${dic}`
     const res = await fetch(url)
     const data = await res.json()
@@ -55,7 +55,7 @@
     return data
   }
 
-  export async function dict_upsert(fetch, dic: string, key: String, val = '') {
+  export async function dict_upsert(fetch, dic, key, val = '') {
     const url = `/_dicts/upsert/${dic}`
     const res = await fetch(url, {
       method: 'PUT',
@@ -68,7 +68,7 @@
   }
 </script>
 
-<script lang="ts">
+<script>
   import { onMount } from 'svelte'
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
@@ -116,7 +116,7 @@
 
   $: if ($actived) preload_input(key)
 
-  async function preload_input(key: string) {
+  async function preload_input(key) {
     out_val = ''
     meta = await dict_search(fetch, key, $udic)
     update_val()
@@ -125,12 +125,12 @@
   let out_val = ''
   let hints = []
 
-  function change_tab(new_tab: string) {
+  function change_tab(new_tab) {
     $atab = new_tab
     update_val()
   }
 
-  function update_val(new_val: string) {
+  function update_val(new_val) {
     new_val = new_val || meta.dicts[$atab].vals[0]
 
     if (new_val) {
@@ -235,7 +235,7 @@
 <svelte:window on:keydown={handle_keypress} />
 
 <div
-  class="container"
+  class="holder"
   class:_active={$actived}
   on:click={() => actived.set(false)}>
   <div class="dialog" on:click|stopPropagation={() => out_field.focus()}>
@@ -340,7 +340,7 @@
 <style lang="scss">
   $gutter: 0.75rem;
 
-  .container {
+  .holder {
     display: none;
     &._active {
       display: flex;
@@ -380,8 +380,8 @@
     .m-button {
       margin: 0.25rem 0.5rem;
       // top: 0.375rem;
-      @include hover {
-        color: color(primary, 5);
+      &:hover {
+        @include fgcolor(primary, 5);
       }
     }
   }
@@ -389,9 +389,9 @@
   .label {
     line-height: $header-height;
     text-transform: uppercase;
-    @include font-size(2);
     font-weight: 500;
     margin: 0 0.75rem;
+    @include font-size(2);
     @include fgcolor(neutral, 6);
   }
 
@@ -401,19 +401,13 @@
 
     padding: 0 0.375rem;
     line-height: $header-height - 0.875rem;
-
     flex-grow: 1;
 
     @include truncate(null);
     @include radius();
 
     @include bgcolor(neutral, 1);
-    @include border($color: color(neutral, 1));
-
-    &:focus {
-      // @include bgcolor(white);
-      @include bdcolor($color: primary, $shade: 4);
-    }
+    @include border($color: neutral, $shade: 2);
   }
 
   .tabs {

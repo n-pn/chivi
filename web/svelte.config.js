@@ -1,30 +1,33 @@
 const path = require('path')
-const prep = require('svelte-preprocess')
+const sass = require('node-sass')
 
 module.exports = {
-  preprocess: prep({
-    // babel: {
-    //   presets: [
-    //     [
-    //       '@babel/preset-env',
-    //       {
-    //         loose: true,
-    //         modules: false,
-    //         targets: { esmodules: true },
-    //       },
-    //     ],
-    //   ],
-    // },
-    defaults: { style: 'scss', script: 'typescript' },
-    sourceMap: process.env.NODE_ENV === 'development',
-    css: { includePaths: ['src', 'node_modules'] },
-    scss: {
-      includePaths: [
-        path.resolve(__dirname, 'src/styles'),
-        path.resolve(__dirname, 'node_modules'),
-      ],
-      prependData: "@import 'essence';",
+  preprocess: {
+    style: async ({ content, attributes, filename }) => {
+      if (content.length === 0) return { code: content }
+
+      const { lang } = attributes
+      if (lang !== 'scss') return
+
+      const prepend_content = '@import "essence.scss";\n'
+      content = prepend_content + content
+
+      const options = {
+        data: content,
+        sourceMap: true,
+        includePaths: [path.resolve(__dirname, 'src/styles')],
+        outFile: filename + '.css',
+      }
+
+      return new Promise((resolve, reject) => {
+        sass.render(options, (err, result) => {
+          if (err) return reject(err)
+          resolve({
+            code: result.css.toString(),
+            map: result.map.toString(),
+          })
+        })
+      })
     },
-    typescript: { transpileOnly: true },
-  }),
+  },
 }

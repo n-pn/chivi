@@ -6,26 +6,26 @@
 @import 'essence/settings/props';
 
 @import 'essence/patterns/bgcolors';
-@import 'essence/patterns/borders';
-@import 'essence/patterns/clearfix';
-@import 'essence/patterns/cursors';
 @import 'essence/patterns/fgcolors';
+@import 'essence/patterns/borders';
+@import 'essence/patterns/radiuses';
+// @import 'essence/patterns/cursors';
 @import 'essence/patterns/font-families';
 @import 'essence/patterns/font-sizes';
-@import 'essence/patterns/gradients';
-@import 'essence/patterns/hovers';
-@import 'essence/patterns/images';
+// @import 'essence/patterns/gradients';
+// @import 'essence/patterns/hovers';
+// @import 'essence/patterns/images';
 @import 'essence/patterns/positions';
-@import 'essence/patterns/radiuses';
 @import 'essence/patterns/shadows';
 @import 'essence/patterns/sizings';
 @import 'essence/patterns/spacings';
 @import 'essence/patterns/texts';
 @import 'essence/patterns/zindexes';
+@import 'essence/patterns/clearfix';
 
-@import 'essence/elements/articles';
+// @import 'essence/elements/articles';
 @import 'essence/elements/buttons';
-@import 'essence/elements/inputs';
-@import 'essence/elements/icons';
+// @import 'essence/elements/inputs';
+// @import 'essence/elements/icons';
 @import 'essence/elements/layouts';
 @import 'essence/elements/resets';

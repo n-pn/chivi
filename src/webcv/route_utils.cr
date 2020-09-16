@@ -7,7 +7,7 @@ require "../appcv"
 module Server::Utils
   extend self
 
-  def parse_page(input : String, limit = 15)
+  def parse_page(input : String, limit = 20)
     page = input.to_i? || 1
 
     offset = (page - 1) * limit
