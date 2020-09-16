@@ -14,9 +14,26 @@ function escape_html(str = '') {
 }
 
 export function parse_content(body) {
-  return body
-    .split('\n')
-    .map((line) => line.split('ǁ').map((x) => x.split('¦')))
+  const vp_data = []
+  const zh_data = []
+
+  const lines = body.split('\n')
+  for (const line of lines) {
+    let vp_line = []
+    let zh_line = ''
+
+    const words = line.split('ǁ')
+    for (const word of words) {
+      const term = word.split('¦')
+      vp_line.push(term)
+      zh_line += term[0]
+    }
+
+    vp_data.push(vp_line)
+    zh_data.push(zh_line)
+  }
+
+  return [vp_data, zh_data]
 }
 
 export function render_convert(tokens, mode = 0) {

@@ -40,31 +40,34 @@
     else if (old_val == '') return ['success', 'Thêm từ']
     else return ['primary', 'Sửa từ']
   }
-</script>
-
-<script>
-  import { onMount } from 'svelte'
-  import relative_time from '$utils/relative_time'
-  import UpsertFooter from './Upsert/Footer.svelte'
-
-  import { dict_search, dict_upsert } from '$src/api'
 
   const tabs = [
     ['special', 'VP riêng'],
     ['generic', 'VP chung'],
     ['hanviet', 'Hán việt'],
   ]
+</script>
 
-  export let key = ''
-  export let tab = 'special'
-  export let dname = ''
+<script lang="ts">
+  import { onMount } from 'svelte'
+  import relative_time from '$utils/relative_time'
+  import UpsertFooter from './Upsert/Footer.svelte'
 
-  export let actived = true
-  export let changed = false
+  import { dict_search, dict_upsert } from '$src/api'
 
-  import { auth } from '$src/stores'
-  $: uname = $auth.uname
-  $: power = $auth.power
+  import {
+    self_uname,
+    self_power,
+    upsert_atab as atab,
+    upsert_udic as udic,
+    upsert_inp as inp,
+    upsert_idx as idx,
+    upsert_len as len,
+    upsert_actived as actived,
+    upsert_changed as changed,
+  } from '$src/stores'
+
+  $: key = $inp.substring($idx, $len)
 
   let inp_field
   let out_field
@@ -85,42 +88,42 @@
     suggest: [],
   }
 
-  $: current = meta.dicts[tab]
+  $: current = meta.dicts[$atab]
   $: existed = current.vals[0] || ''
   $: updated = out_val != existed
 
-  $: [prevail, btn_power] = compare_power($auth.power, current.power)
+  $: [prevail, btn_power] = compare_power($self_power, current.power)
   $: [btn_class, btn_label] = compare_value(out_val, existed)
 
-  $: if (key) preload_input()
+  $: if ($actived) preload_input(key)
 
-  async function preload_input() {
+  async function preload_input(key: string) {
     out_val = ''
-    meta = await dict_search(fetch, key, dname)
+    meta = await dict_search(fetch, key, $udic)
     update_val()
   }
 
   let out_val = ''
   let hints = []
 
-  function change_tab(new_tab) {
-    tab = new_tab
+  function change_tab(new_tab: string) {
+    $atab = new_tab
     update_val()
   }
 
-  function update_val(new_val) {
-    new_val = new_val || meta.dicts[tab].vals[0]
+  function update_val(new_val: string) {
+    new_val = new_val || meta.dicts[$atab].vals[0]
 
     if (new_val) {
       out_val = new_val
       hints = generate_hints(meta, out_val)
     } else {
       let new_val = meta.hanviet
-      if (tab == 'special') new_val = titleize(new_val, 9)
+      if ($atab == 'special') new_val = titleize(new_val, 9)
 
       hints = generate_hints(meta, new_val)
 
-      if (tab == 'hanviet' || hints.length == 0) out_val = new_val
+      if ($atab == 'hanviet' || hints.length == 0) out_val = new_val
       else {
         out_val = hints.pop()
         hints = hints
@@ -131,11 +134,11 @@
   }
 
   async function submit_val() {
-    const dic = tab == 'special' ? dname : tab
-    const res = await dict_upsert(fetch, dic, key.trim(), out_val.trim())
+    const dic = $atab == 'special' ? dname : $atab
+    const res = await dict_upsert(fetch, $udic, key.trim(), out_val.trim())
 
-    changed = res === 'ok' && updated
-    actived = false
+    $actived = false
+    $changed = res === 'ok' && updated
   }
 
   function upcase_val(count = 100) {
@@ -158,7 +161,7 @@
 
     if (evt.keyCode === 27) {
       evt.preventDefault()
-      return (actived = false)
+      return actived.set(false)
     }
 
     if (!evt.altKey) return
@@ -212,7 +215,10 @@
 
 <svelte:window on:keydown={handle_keypress} />
 
-<div class="container" on:click={() => (actived = false)}>
+<div
+  class="container"
+  class:_active={$actived}
+  on:click={() => actived.set(false)}>
   <div class="dialog" on:click|stopPropagation={() => out_field.focus()}>
     <header class="header">
       <span class="label">Thêm từ:</span>
@@ -228,7 +234,7 @@
       <button
         type="button"
         class="m-button _text"
-        on:click={() => (actived = false)}>
+        on:click={() => actived.set(false)}>
         <svg class="m-icon _x">
           <use xlink:href="/icons.svg#x" />
         </svg>
@@ -239,7 +245,7 @@
       {#each tabs as [name, label]}
         <span
           class="tab"
-          class:_active={name == tab}
+          class:_active={name == $atab}
           on:click={() => change_tab(name)}>
           {label}
         </span>
@@ -318,16 +324,19 @@
   $gutter: 0.75rem;
 
   .container {
-    position: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 999;
-    @include bgcolor(rgba(#000, 0.65));
+    display: none;
+    &._active {
+      display: flex;
+      position: fixed;
+      align-items: center;
+      justify-content: center;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 999;
+      @include bgcolor(rgba(#000, 0.65));
+    }
   }
 
   .dialog {

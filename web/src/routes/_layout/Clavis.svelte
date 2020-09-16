@@ -121,7 +121,7 @@
     const data = await res.json()
 
     entries = data.entries
-    hanviet = parse_content(data.hanviet)[0]
+    hanviet = parse_content(data.hanviet)[0][0]
     from = from
   }
 

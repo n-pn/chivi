@@ -54,7 +54,6 @@
 </script>
 
 <script>
-  import { auth } from '$src/stores'
   import MIcon from '$mould/MIcon.svelte'
 
   import Vessel from '$layout/Vessel.svelte'
@@ -62,6 +61,7 @@
 
   import ChapList from '$reused/ChapList.svelte'
   import relative_time from '$utils/relative_time'
+  import { self_uname, self_power } from '$src/stores'
 
   export let book
   export let mark = ''
@@ -131,7 +131,7 @@
     <span
       class="header-text _show-md">{mark ? mark_names[mark] : 'Đánh dấu'}</span>
 
-    {#if $auth.power > 0}
+    {#if $self_power > 0}
       <div class="header-menu">
         {#each mark_types as type}
           <div class="-item" on:click={() => mark_book(type)}>
@@ -260,7 +260,7 @@
             <button
               class="m-button _text"
               class:_loading
-              on:click={() => change_seed(seed, $auth.power > 2 ? 2 : 1)}>
+              on:click={() => change_seed(seed, $self_power > 2 ? 2 : 1)}>
               {#if _loading}
                 <MIcon class="m-icon" name="loader" />
               {:else}

@@ -2,7 +2,7 @@
   import MIcon from '$mould/MIcon'
   import Vessel from '$layout/Vessel'
 
-  import { auth } from '$src/stores'
+  import { self_uname, self_power } from '$src/stores'
 
   let email = ''
   let upass = ''
@@ -20,7 +20,8 @@
     const data = await res.json()
 
     if (data._stt == 'ok') {
-      $auth = { uname: data.uname, power: data.power }
+      $self_uname = data.uname
+      $self_power = data.power
       _goto('/')
     } else {
       error = true

@@ -25,8 +25,18 @@
   import read_selection from '$utils/read_selection'
   import { render_convert, parse_content } from '$utils/render_convert'
 
-  import { auth } from '$src/stores'
   import { dict_upsert, load_chtext } from '$src/api'
+  import {
+    self_uname,
+    self_power,
+    upsert_inp,
+    upsert_idx,
+    upsert_len,
+    upsert_atab,
+    upsert_udic,
+    upsert_actived,
+    upsert_changed,
+  } from '$src/stores'
 
   export let bslug = ''
   export let bname = ''
@@ -37,7 +47,7 @@
 
   export let mftime = 0
   export let cvdata = ''
-  $: lines = parse_content(cvdata)
+  $: [vp_data, zh_data] = parse_content(cvdata)
 
   export let ch_total = 1
   export let ch_index = 1
@@ -54,6 +64,9 @@
   $: prev_path = prev_url ? `/~${bslug}/${prev_url}` : book_path
   $: next_path = next_url ? `/~${bslug}/${next_url}` : book_path
 
+  $: $upsert_udic = ubid
+  $: if ($upsert_changed) reconvert(1)
+
   let hovered_line = 0
   let focused_line = 0
 
@@ -61,18 +74,11 @@
 
   let clavis_enabled = false
   let clavis_actived = false
-  let clavis_input = ''
+  let clavis_line = ''
   let clavis_from = 0
 
-  let upsert_actived = false
-  let upsert_key = ''
-  let upsert_tab = 'special'
-
-  let should_reload = false
-  $: if (should_reload) reconvert(1)
-
   function handleKeypress(evt) {
-    if (upsert_actived) return
+    if ($upsert_actived) return
     if (evt.ctrlKey) return
 
     // if (!evt.altKey) return
@@ -111,21 +117,21 @@
       case 13:
       case 90:
         evt.preventDefault()
-        showUpsertModal()
+        show_upsert_modal()
         break
 
       case 88:
         evt.preventDefault()
-        showUpsertModal('special')
+        show_upsert_modal('special')
         break
 
       case 67:
         evt.preventDefault()
-        showUpsertModal('generic')
+        show_upsert_modal('generic')
         break
 
       case 82:
-        if ($auth.power > 0) {
+        if ($self_power > 0) {
           evt.preventDefault()
           reconvert(1)
         }
@@ -138,7 +144,7 @@
   }
 
   async function deleteFocusedWord() {
-    if (!focused_elem || $auth.power < 1) return
+    if (!focused_elem || $self_power < 1) return
 
     const dic = +focused_elem.dataset.d == 3 ? ubid : 'generic'
     const key = focused_elem.dataset.k
@@ -151,8 +157,11 @@
     const evt = document.addEventListener('selectionchange', () => {
       const selection = read_selection()
       if (selection) {
-        upsert_key = selection
-        upsert_tab = 'special'
+        $upsert_inp = selection
+        $upsert_idx = 0
+        $upsert_len = selection.length
+
+        $upsert_atab = 'special'
       }
     })
 
@@ -164,18 +173,23 @@
   function handleClick({ target }, idx) {
     if (target.nodeName !== 'X-V') return
 
-    upsert_key = target.dataset.k
-    upsert_tab = +target.dataset.d > 2 ? 'special' : 'generic'
+    const zh_line = zh_data[idx]
 
-    if (target === focused_elem) return showUpsertModal()
+    // TODO: import from target
+    $upsert_inp = target.dataset.k
+    $upsert_idx = 0
+    $upsert_len = $upsert_inp.length
+
+    $upsert_atab = +target.dataset.d > 2 ? 'special' : 'generic'
+
+    if (target === focused_elem) return show_upsert_modal()
     if (focused_elem) focused_elem.classList.remove('_active')
 
     focused_line = idx
-    clavis_input = lines[idx].map((x) => x[0]).join('')
-
     focused_elem = target
     focused_elem.classList.add('_active')
 
+    clavis_line = zh_line
     clavis_from = +focused_elem.dataset.p
     if (clavis_enabled) clavis_actived = true
   }
@@ -195,22 +209,22 @@
 
   // $: console.log({ upsert_key, upsert_tab })
 
-  function showUpsertModal(tab = null) {
-    upsert_tab = tab || upsert_tab
-    upsert_actived = true
+  function show_upsert_modal(new_tab = null) {
+    upsert_atab.update((atab) => new_tab || atab)
+    $upsert_actived = true
   }
 
-  let __reloading = false
+  let _reloading = false
   async function reconvert(mode = 1) {
     // console.log(`reloading page with mode: ${mode}`)
 
-    __reloading = true
+    _reloading = true
     const data = await load_chtext(window.fetch, bslug, seed, scid, mode)
 
-    should_reload = false
+    $upsert_changed = false
     mftime = data.mftime
     cvdata = data.cvdata
-    __reloading = false
+    _reloading = false
   }
 </script>
 
@@ -236,10 +250,10 @@
     slot="header-right"
     type="button"
     class="header-item"
-    disabled={$auth.power < 1}
+    disabled={$self_power < 1}
     on:click={() => reconvert(1)}>
     <MIcon
-      class="m-icon _refresh-ccw {__reloading ? '_reload' : ''}"
+      class="m-icon _refresh-ccw {_reloading ? '_reload' : ''}"
       name="refresh-ccw" />
   </button>
 
@@ -247,8 +261,8 @@
     slot="header-right"
     type="button"
     class="header-item"
-    class:_active={upsert_actived}
-    on:click={() => showUpsertModal()}>
+    class:_active={$upsert_actived}
+    on:click={() => show_upsert_modal()}>
     <MIcon class="m-icon _plus-circle" name="plus-circle" />
   </button>
 
@@ -275,8 +289,8 @@
     <div class="-right"><span>{relative_time(mftime)}</span></div>
   </nav>
 
-  <article class="convert" class:_reload={__reloading}>
-    {#each lines as line, idx}
+  <article class="convert" class:_reload={_reloading}>
+    {#each vp_data as data, idx}
       <p
         class="line"
         class:_head={idx == 0}
@@ -285,7 +299,7 @@
         class:_hover={idx == hovered_line}
         on:mouseenter={() => (hovered_line = idx)}
         on:click={(event) => handleClick(event, idx)}>
-        {@html render_convert(line, renderMode(idx, hovered_line, focused_line))}
+        {@html render_convert(data, renderMode(idx, hovered_line, focused_line))}
       </p>
     {/each}
   </article>
@@ -316,19 +330,12 @@
     <Clavis
       on_top={!upsert_actived}
       bind:active={clavis_actived}
-      input={clavis_input}
+      input={clavis_line}
       dname={ubid}
       from={clavis_from} />
   {/if}
 
-  {#if upsert_actived}
-    <Upsert
-      tab={upsert_tab}
-      key={upsert_key}
-      dname={ubid}
-      bind:actived={upsert_actived}
-      bind:changed={should_reload} />
-  {/if}
+  <Upsert />
 </Vessel>
 
 <style lang="scss">

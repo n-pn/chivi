@@ -1,5 +1,5 @@
 <script>
-  import { auth } from '$src/stores'
+  import { self_uname, self_power } from '$src/stores'
   import MIcon from '$mould/MIcon.svelte'
 
   export let segment = ''
@@ -7,7 +7,8 @@
   export let clear = false
 
   async function logout() {
-    $auth = { uname: 'Guest', power: -1 }
+    $self_uname = 'Khách'
+    $self_power = -1
     const res = await fetch('_logout')
   }
 
@@ -47,11 +48,11 @@
       <span class="header-item _menu">
         <MIcon class="m-icon _user" name="user" />
         <span class="header-text _show-md">
-          {#if $auth.power > 0}{$auth.uname} [{$auth.power}]{:else}Khách{/if}
+          {#if $self_power > 0}{$self_uname} [{$self_power}]{:else}Khách{/if}
         </span>
 
         <div class="header-menu">
-          {#if $auth.power < 0}
+          {#if $self_power < 0}
             <a href="/auth/login" class="-item">
               <MIcon class="m-icon _log-in" name="log-in" />
               <span>Đăng nhập</span>
@@ -61,7 +62,7 @@
               <span>Đăng ký</span>
             </a>
           {:else}
-            <a href="/@{$auth.uname}" class="-item">
+            <a href="/@{$self_uname}" class="-item">
               <MIcon class="m-icon _layers" name="layers" />
               <span>Tủ truyện</span>
             </a>
