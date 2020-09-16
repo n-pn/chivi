@@ -479,7 +479,7 @@
   .tabs {
     // margin-top: 0.75rem;
     @include border($sides: bottom);
-    @include flex($gap: 0.375rem);
+    @include flex($gap: 0.75rem);
     padding: 0 0.75rem;
     height: 2rem;
     line-height: 2rem;
