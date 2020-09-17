@@ -21,7 +21,7 @@
   }
 
   function render_zh(tokens, from, upto) {
-    let res = ''
+    let output = ''
     let i = 0
     let p = 0
 
@@ -30,56 +30,54 @@
       let keys = key.split('')
 
       for (let j = 0; j < keys.length; j++) {
-        res += '<x-v '
-        if (is_active(from, upto, p)) res += 'class="_active" '
+        output += '<x-v '
+        if (is_active(from, upto, p)) output += 'class="_active" '
 
         const k = escape_html(keys[j])
-        res += `data-k=${k} data-i=${i} data-p=${p} data-d=1>${k}</x-v>`
+        output += `data-k=${k} data-i=${i} data-p=${p} data-d=1>${k}</x-v>`
         p += 1
       }
 
       i += 1
     }
 
-    return res
+    return output
   }
 
   function render_hv(tokens, from, upto) {
-    let res = ''
-    let idx = 0
-    let pos = 0
+    let output = ''
+    let i = 0
+    let p = 0
 
     for (const [key, val, dic] of tokens) {
       let key_chars = key.split('')
       let val_chars = val.split(' ')
 
-      if (dic == 0 || key_chars.length != val_chars.length) {
-        res += val
-        idx += 1
-        pos += key_chars.length
+      if (key_chars.length != val_chars.length) {
+        output += val
+        i += 1
+        p += key_chars.length
         continue
       }
 
-      for (let jdx = 0; jdx < key_chars.length; jdx++) {
-        const key_char = key_chars[jdx]
-        const val_char = val_chars[jdx]
+      for (let j = 0; j < key_chars.length; j++) {
+        const key_char = key_chars[j]
+        const val_char = val_chars[j]
 
-        if (jdx > 0) res += ' '
-        res += '<x-v '
-        if (is_active(from, upto, pos)) res += 'class=_active '
+        if (j > 0) output += ' '
+        output += '<x-v '
+        if (is_active(from, upto, p)) output += 'class=_active '
 
-        res += `data-k=${escape_html(key_char)} `
-        res += `data-i=${idx} `
-        res += `data-p=${pos}>`
-        res += escape_html(val_char)
-        res += '</x-v>'
-        pos += 1
+        output += `data-k=${escape_html(key_char)} `
+        output += `data-i=${i} data-p=${p} data-d=${dic}>`
+        output += `${escape_html(val_char)}</x-v>`
+        p += 1
       }
 
-      idx += 1
+      i += 1
     }
 
-    return res
+    return output
   }
 </script>
 

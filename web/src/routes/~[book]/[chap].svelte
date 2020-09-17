@@ -465,8 +465,8 @@
       @include token(gray);
     }
 
-    &:hover,
-    &._active {
+    .line > &:hover,
+    .line > &._active {
       &:before {
         position: absolute;
         display: inline-block;
