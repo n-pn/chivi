@@ -195,7 +195,7 @@
     return [input, lower]
   }
 
-  function handleClick({ target }, idx) {
+  function handle_click({ target }, idx) {
     if (target.nodeName !== 'X-V') return
 
     const zh_line = zh_data[idx]
@@ -237,7 +237,7 @@
     clavis_actived = clavis_enabled
   }
 
-  function renderMode(idx, hover, focus) {
+  function render_mode(idx, hover, focus) {
     if (idx == focus || idx == hover) return 2
     return 1
     // if (idx < hover - 5) return 1
@@ -336,8 +336,8 @@
         class:_focus={idx == focused_line}
         class:_hover={idx == hovered_line}
         on:mouseenter={() => (hovered_line = idx)}
-        on:click={(event) => handleClick(event, idx)}>
-        {@html render_convert(data, renderMode(idx, hovered_line, focused_line))}
+        on:click={(event) => handle_click(event, idx)}>
+        {@html render_convert(data, render_mode(idx, hovered_line, focused_line))}
       </p>
     {/each}
   </article>
@@ -465,7 +465,6 @@
       @include token(gray);
     }
 
-    .line > &:hover,
     .line > &._active {
       &:before {
         position: absolute;
