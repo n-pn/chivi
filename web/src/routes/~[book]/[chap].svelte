@@ -183,13 +183,13 @@
     }
   })
 
-  function truncate_line(input, lower, limit = 8) {
-    if (lower >= 3) {
-      const caret = lower - 3
-      input = input.substr(caret, limit + 6)
-      lower = 3
+  function truncate_line(input, lower, length = 1) {
+    if (lower >= 4) {
+      const caret = lower - 4
+      input = input.substr(caret, length + 10)
+      lower = 4
     } else {
-      input = input.substr(0, limit + 6 - lower)
+      input = input.substr(0, length + 10)
     }
 
     return [input, lower]
@@ -206,8 +206,6 @@
       const key = target.dataset.k
       const pos = +target.dataset.p
       const dic = +target.dataset.d
-
-      console.log({ key, pos, dic, zh_line })
 
       const [input, lower] = truncate_line(zh_line, pos, key.length)
 

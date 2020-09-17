@@ -18,21 +18,24 @@ export default function read_selection() {
     input += key
     pos += key.length
   }
+
   lower = pos
+
+  // for (; idx < nodes.length; idx++) {
+  //   const [key, dic] = nodes[idx]
+  //   if (dic < 1) break
+
+  //   input += key
+
+  // }
+
+  // upper = pos
 
   for (; idx < nodes.length; idx++) {
     const [key, dic] = nodes[idx]
-    if (dic < 1) break
-
     input += key
     pos += key.length
-  }
-
-  upper = pos
-
-  for (; idx < nodes.length; idx++) {
-    const [key] = nodes[idx]
-    input += key
+    if (dic > 0) upper = pos
   }
 
   return [input, lower, upper]

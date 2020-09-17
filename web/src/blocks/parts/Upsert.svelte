@@ -444,7 +444,7 @@
       display: inline-flex;
       overflow: hidden;
       justify-content: center;
-      @include fgcolor(neutral, 5);
+      @include fgcolor(neutral, 4);
 
       > .-key {
         font-weight: 500;
