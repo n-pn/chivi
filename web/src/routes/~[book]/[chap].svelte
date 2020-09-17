@@ -371,7 +371,9 @@
       from={clavis_from} />
   {/if}
 
-  <Upsert />
+  {#if $upsert_actived}
+    <Upsert />
+  {/if}
 </Vessel>
 
 <style lang="scss">
