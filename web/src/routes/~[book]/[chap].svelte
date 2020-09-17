@@ -465,27 +465,27 @@
       @include token(gray);
     }
 
-    .line > &._active {
-      &:before {
-        position: absolute;
-        display: inline-block;
-        content: attr(data-k);
+    // .line > &._active {
+    //   &:before {
+    //     position: absolute;
+    //     display: inline-block;
+    //     content: attr(data-k);
 
-        left: 0;
-        top: -1.5em;
-        width: 100%;
-        text-align: center;
-        overflow: hidden;
+    //     left: 0;
+    //     top: -1.5em;
+    //     width: 100%;
+    //     text-align: center;
+    //     overflow: hidden;
 
-        font-size: 0.75em;
-        line-height: 1.5em;
-        font-style: normal;
+    //     font-size: 0.75em;
+    //     line-height: 1.5em;
+    //     font-style: normal;
 
-        @include radius();
-        @include fgcolor(neutral, 2);
-        @include bgcolor(neutral, 7);
-      }
-    }
+    //     @include radius();
+    //     @include fgcolor(neutral, 2);
+    //     @include bgcolor(neutral, 7);
+    //   }
+    // }
   }
 
   .bread {
