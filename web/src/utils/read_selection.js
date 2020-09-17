@@ -1,35 +1,41 @@
 export default function read_selection() {
   const nodes = get_selected()
+    .filter((x) => x.nodeName == 'X-V')
+    .map((x) => [x.dataset.k, +x.dataset.d])
+    .filter(([k]) => k != '')
 
-  let res = ''
+  let input = ''
+  let lower = 0
+  let upper = 0
+
   let idx = 0
+  let pos = 0
 
   for (; idx < nodes.length; idx++) {
-    const node = nodes[idx]
-    const name = node.nodeName
+    const [key, dic] = nodes[idx]
+    if (dic > 0) break
 
-    if (name === 'X-Z') break
-    else if (name === 'X-V') {
-      const dic = +node.dataset.d
-      const key = node.dataset.k
-      if (dic > 0 || key === '的' || key === '') break
-    }
+    input += key
+    pos += key.length
   }
+  lower = pos
 
   for (; idx < nodes.length; idx++) {
-    const node = nodes[idx]
-    const name = node.nodeName
+    const [key, dic] = nodes[idx]
+    if (dic < 1) break
 
-    if (name === 'X-V') {
-      const dic = +node.dataset.d
-      const key = node.dataset.k
-      if (dic > 0 || key === '的' || key === '') res += key
-      else break
-    } else if (name === 'X-Z') res += node.textContent.trim()
-    else if (name !== '#text') break
+    input += key
+    pos += key.length
   }
 
-  return res
+  upper = pos
+
+  for (; idx < nodes.length; idx++) {
+    const [key] = nodes[idx]
+    input += key
+  }
+
+  return [input, lower, upper]
 }
 
 function get_selected() {

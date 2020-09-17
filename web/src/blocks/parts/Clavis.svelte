@@ -22,28 +22,23 @@
 
   function render_zh(tokens, from, upto) {
     let res = ''
-    let idx = 0
-    let pos = 0
+    let i = 0
+    let p = 0
 
     for (const [key] of tokens) {
       if (key == '') continue
-      let chars = key.split('')
+      let keys = key.split('')
 
-      for (let jdx = 0; jdx < chars.length; jdx++) {
-        const char = chars[jdx]
+      for (let j = 0; j < keys.length; j++) {
+        res += '<x-v '
+        if (is_active(from, upto, p)) res += 'class="_active" '
 
-        res += '<x-z '
-        if (is_active(from, upto, pos)) res += 'class=_active '
-
-        res += `data-i=${idx} `
-        res += `data-p=${pos}>`
-        res += escape_html(char)
-        res += '</x-z>'
-
-        pos += 1
+        const k = escape_html(keys[j])
+        res += `data-k=${k} data-i=${i} data-p=${p} data-d=1>${k}</x-v>`
+        p += 1
       }
 
-      idx += 1
+      i += 1
     }
 
     return res

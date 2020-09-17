@@ -169,12 +169,11 @@
 
   onMount(() => {
     const evt = document.addEventListener('selectionchange', () => {
-      const selection = read_selection()
-      if (selection) {
-        $upsert_input = selection
-        $upsert_lower = 0
-        $upsert_upper = selection.length
-
+      const [input, lower, upper] = read_selection()
+      if (input) {
+        $upsert_input = input
+        $upsert_lower = lower
+        $upsert_upper = upper
         $upsert_atab = 'special'
       }
     })
@@ -184,19 +183,44 @@
     }
   })
 
+  function truncate_line(input, lower, limit = 8) {
+    if (lower >= 3) {
+      const caret = lower - 3
+      input = input.substr(caret, limit + 6)
+      lower = 3
+    } else {
+      input = input.substr(0, limit + 6 - lower)
+    }
+
+    return [input, lower]
+  }
+
   function handleClick({ target }, idx) {
     if (target.nodeName !== 'X-V') return
 
     const zh_line = zh_data[idx]
 
     // TODO: import from target
-    $upsert_input = target.dataset.k
-    $upsert_lower = 0
-    $upsert_upper = $upsert_input.length
 
-    $upsert_atab = +target.dataset.d > 2 ? 'special' : 'generic'
+    if (target === focused_elem) {
+      const key = target.dataset.k
+      const pos = +target.dataset.p
+      const dic = +target.dataset.d
 
-    if (target === focused_elem) return show_upsert_modal()
+      console.log({ key, pos, dic, zh_line })
+
+      const [input, lower] = truncate_line(zh_line, pos, key.length)
+
+      $upsert_input = input
+      $upsert_lower = lower
+      $upsert_upper = lower + key.length
+
+      $upsert_atab = dic > 2 ? 'special' : 'generic'
+      $upsert_actived = true
+
+      return
+    }
+
     if (focused_elem) focused_elem.classList.remove('_active')
 
     focused_line = idx
@@ -423,6 +447,7 @@
 
   :global(x-v) {
     cursor: pointer;
+    position: relative;
 
     &[data-d='1'] {
       @include token(teal);
@@ -438,6 +463,29 @@
 
     &[data-d='9'] {
       @include token(gray);
+    }
+
+    &:hover,
+    &._active {
+      &:before {
+        position: absolute;
+        display: inline-block;
+        content: attr(data-k);
+
+        left: 0;
+        top: -1.5em;
+        width: 100%;
+        text-align: center;
+        overflow: hidden;
+
+        font-size: 0.75em;
+        line-height: 1.5em;
+        font-style: normal;
+
+        @include radius();
+        @include fgcolor(neutral, 2);
+        @include bgcolor(neutral, 7);
+      }
     }
   }
 
