@@ -42,9 +42,9 @@
   }
 
   const tabs = [
-    ['special', 'Riêng Bộ'],
-    ['generic', 'VP Chung'],
-    ['hanviet', 'Hán Việt'],
+    ['special', 'Riêng bộ'],
+    ['generic', 'VP chung'],
+    ['hanviet', 'Hán việt'],
   ]
 
   export async function dict_search(fetch, key, dic = 'dich-nhanh') {
