@@ -266,9 +266,9 @@
         </button>
 
         <span class="-inp">
-          <span class="-sub">{$upsert_input.substring(0, lower)}</span>
+          <span class="-sub">{$upsert_input.substring(lower - 2, lower)}</span>
           <span class="-key">{input}</span>
-          <span class="-sub">{$upsert_input.substring(upper)}</span>
+          <span class="-sub">{$upsert_input.substring(upper, upper + 2)}</span>
         </span>
 
         <button
@@ -436,11 +436,14 @@
     @include border($color: neutral, $shade: 3);
 
     > .-inp {
-      flex-grow: 1;
       display: inline-flex;
-      overflow: hidden;
+      flex-grow: 1;
       justify-content: center;
-      @include fgcolor(neutral, 4);
+      overflow: hidden;
+
+      > .-sub {
+        @include fgcolor(neutral, 4);
+      }
 
       > .-key {
         font-weight: 500;
