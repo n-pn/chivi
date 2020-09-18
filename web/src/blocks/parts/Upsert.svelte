@@ -389,6 +389,7 @@
 
     flex-shrink: 0;
     &:first-child {
+      max-width: 35%;
       flex-shrink: 1;
     }
 
