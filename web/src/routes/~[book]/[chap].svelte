@@ -36,7 +36,7 @@
   import MDiglot, { parse as parse_vp } from '$melds/MDiglot'
 
   import Vessel from '$parts/Vessel'
-  import Clavis from '$parts/Clavis'
+  import Lookup from '$parts/Lookup'
   import Upsert, { dict_upsert } from '$parts/Upsert'
 
   import read_selection from '$utils/read_selection'
@@ -92,10 +92,10 @@
 
   let focused_elem = null
 
-  let clavis_enabled = false
-  let clavis_actived = false
-  let clavis_line = ''
-  let clavis_from = 0
+  let lookup_enabled = false
+  let lookup_actived = false
+  let lookup_line = ''
+  let lookup_from = 0
 
   function handle_keypress(evt) {
     if ($upsert_actived) return
@@ -105,7 +105,7 @@
 
     switch (evt.keyCode) {
       case 220:
-        triggerClavisSidebar()
+        triggerLookupSidebar()
         break
 
       case 72:
@@ -192,14 +192,14 @@
     focused_elem = target
     focused_elem.classList.add('_active')
 
-    clavis_line = zh_line
-    clavis_from = +focused_elem.dataset.p
-    if (clavis_enabled) clavis_actived = true
+    lookup_line = zh_line
+    lookup_from = +focused_elem.dataset.p
+    if (lookup_enabled) lookup_actived = true
   }
 
-  function triggerClavisSidebar() {
-    clavis_enabled = !clavis_enabled
-    clavis_actived = clavis_enabled
+  function triggerLookupSidebar() {
+    lookup_enabled = !lookup_enabled
+    lookup_actived = lookup_enabled
   }
 
   function show_upsert_modal(new_tab = null) {
@@ -226,7 +226,7 @@
 
 <svelte:body on:keydown={handle_keypress} />
 
-<Vessel shift={clavis_actived}>
+<Vessel shift={lookup_actived}>
   <a slot="header-left" href={book_path} class="header-item _title">
     <AIcon name="book-open" />
     <span class="header-text _show-sm _title">{bname}</span>
@@ -259,8 +259,8 @@
     type="button"
     class="header-item"
     slot="header-right"
-    class:_active={clavis_enabled}
-    on:click={triggerClavisSidebar}>
+    class:_active={lookup_enabled}
+    on:click={triggerLookupSidebar}>
     <AIcon name="compass" />
   </button>
 
@@ -326,13 +326,13 @@
     </a>
   </footer>
 
-  {#if clavis_enabled}
-    <Clavis
+  {#if lookup_enabled}
+    <Lookup
       on_top={!upsert_actived}
-      bind:active={clavis_actived}
-      input={clavis_line}
+      bind:active={lookup_actived}
+      input={lookup_line}
       dname={ubid}
-      from={clavis_from} />
+      from={lookup_from} />
   {/if}
 
   {#if $upsert_actived}
