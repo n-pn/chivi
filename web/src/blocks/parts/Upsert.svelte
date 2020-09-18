@@ -1,17 +1,17 @@
 <script context="module">
-  function make_hints(search, reject, accept) {
+  function make_hints(inquire, reject, accept) {
     let res = []
 
-    for (let { vals, hints } of search.entries) {
+    for (let { vals, hints } of inquire.entries) {
       for (let x of vals) res.push(x)
       for (let x of hints) res.push(x)
     }
 
-    for (let x of search.suggest) res.push(x)
+    for (let x of inquire.suggest) res.push(x)
     if (accept) res.push(accept)
 
     return res.filter(
-      (v, i, s) => v !== search.hanviet && v !== reject && s.indexOf(v) === i
+      (v, i, s) => v !== inquire.hanviet && v !== reject && s.indexOf(v) === i
     )
   }
 
@@ -42,7 +42,7 @@
   }
 
   export async function dict_search(fetch, hanzi, dicts = ['dich-nhanh']) {
-    const url = `/_dicts/search/${hanzi}?dict=${dicts.join('|')}`
+    const url = `/_dicts/search/${hanzi}?dicts=${dicts.join('|')}`
     const res = await fetch(url)
     const data = await res.json()
 
@@ -82,20 +82,16 @@
   let [input, lower, upper] = $upsert_input
   $: hanzi = input.substring(lower, upper)
   $: if ($actived && hanzi) inquire_hanzi(hanzi)
-  // let cached = {}
-  let search = {
-    entries: [],
-    hanviet: '',
-    binh_am: '',
-    suggest: [],
-  }
 
   let output = ''
-  let hints = []
 
-  $: current = search.entries[$d_idx] || { key: '', vals: [], hints: [] }
-  $: existed = (current && current.vals[0]) || ''
-  $: updated = output != existed
+  // let cached = {}
+  let inquire = { entries: [], hanviet: '', binh_am: '', suggest: [] }
+  let current = { key: '', vals: [], hints: [] }
+
+  let existed = ''
+  let updated = false
+  let hints = []
 
   let value_elem // to be focused
   $: if ($actived) value_elem && value_elem.focus()
@@ -105,7 +101,7 @@
 
   async function inquire_hanzi(hanzi) {
     const dnames = $dicts.map((x) => x[0])
-    search = await dict_search(fetch, hanzi, dnames)
+    inquire = await dict_search(fetch, hanzi, dnames)
     update_val()
   }
 
@@ -115,24 +111,29 @@
   }
 
   function shoud_cap(index) {
-    console.log({ caps: $dicts[index][2] })
     return $dicts[index][2]
   }
 
-  function update_val(new_val = null) {
-    if (!new_val) new_val = current.vals[0]
+  function update_val(new_output = null) {
+    current = inquire.entries[$d_idx]
+    console.log({ current })
 
-    if (new_val) {
-      output = new_val
-      hints = make_hints(search, output)
+    existed = current.vals[0]
+    updated = existed != output
+
+    if (!new_output) new_output = existed
+
+    if (new_output) {
+      output = new_output
+      hints = make_hints(inquire, output)
     } else {
-      let new_val = search.hanviet
-      if (shoud_cap($d_idx)) new_val = titleize(new_val, 9)
+      let new_output = inquire.hanviet
+      if (shoud_cap($d_idx)) new_output = titleize(new_output, 9)
 
-      hints = make_hints(search, new_val)
+      hints = make_hints(inquire, new_output)
 
       if ($d_idx > 1 || hints.length == 0) {
-        output = new_val
+        output = new_output
       } else {
         output = hints.shift()
         hints = hints
@@ -215,11 +216,11 @@
     }
   }
 
-  function term_exists(search, index) {
-    const entry = search.entries[index]
+  function term_exists(inquire, index) {
+    const current = inquire.entries[index]
 
-    if (!entry) return false
-    return entry.vals.length > 0
+    if (!current) return false
+    return current.vals.length > 0
   }
 </script>
 
@@ -245,7 +246,7 @@
         <span
           class="tab"
           class:_active={index == $d_idx}
-          class:_exists={term_exists(search, index)}
+          class:_exists={term_exists(inquire, index)}
           on:click={() => change_tab(index)}>
           {label}
         </span>
@@ -255,15 +256,15 @@
     <section class="body">
       <div class="output">
         <div class="hints">
-          <span class="-hint" on:click={() => update_val(search.hanviet)}>
-            {search.hanviet}
+          <span class="-hint" on:click={() => update_val(inquire.hanviet)}>
+            {inquire.hanviet}
           </span>
 
           {#each hints as hint}
             <span class="-hint" on:click={() => update_val(hint)}>{hint}</span>
           {/each}
 
-          <span class="-hint _right">[{search.binh_am}]</span>
+          <span class="-hint _right">[{inquire.binh_am}]</span>
         </div>
 
         <input
