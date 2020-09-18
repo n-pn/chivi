@@ -360,7 +360,7 @@
   .seed-menu {
     position: relative;
 
-    @include hover .-menu {
+    &:hover .-menu {
       display: block;
     }
 
