@@ -33,15 +33,19 @@
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
 
+  import MDiglot, {
+    parse as parse_vp,
+    render as render_vp,
+  } from '$melds/MDiglot'
+
   import Vessel from '$parts/Vessel'
   import Clavis from '$parts/Clavis'
   import Upsert, { dict_upsert } from '$parts/Upsert'
 
   import read_selection from '$utils/read_selection'
-  import { render_convert, parse_content } from '$utils/render_convert'
 
   import {
-    self_uname,
+    // self_uname,
     self_power,
     upsert_input,
     upsert_lower,
@@ -61,7 +65,7 @@
 
   export let mftime = 0
   export let cvdata = ''
-  $: [vp_data, zh_data] = parse_content(cvdata)
+  $: cvlines = cvdata.split('\n').map((x) => parse_vp(x))
 
   export let ch_total = 1
   export let ch_index = 1
@@ -74,12 +78,16 @@
   export let next_url = ''
 
   $: book_path = `/~${bslug}?tab=content&seed=${seed}`
-  $: curr_path = `/~${bslug}/${curr_url}`
+  // $: curr_path = `/~${bslug}/${curr_url}`
   $: prev_path = prev_url ? `/~${bslug}/${prev_url}` : book_path
   $: next_path = next_url ? `/~${bslug}/${next_url}` : book_path
 
+  $: power_user = $self_power > 0
+
   $: $upsert_udic = ubid
-  $: if ($upsert_changed) reconvert(1)
+
+  let dirty = false
+  $: if (dirty) reload_content(1)
 
   let hovered_line = 0
   let focused_line = 0
@@ -91,7 +99,7 @@
   let clavis_line = ''
   let clavis_from = 0
 
-  function handleKeypress(evt) {
+  function handle_keypress(evt) {
     if ($upsert_actived) return
     if (evt.ctrlKey) return
 
@@ -130,24 +138,20 @@
 
       case 13:
       case 90:
-        evt.preventDefault()
-        show_upsert_modal()
-        break
-
       case 88:
         evt.preventDefault()
-        show_upsert_modal('special')
-        break
 
-      case 67:
-        evt.preventDefault()
-        show_upsert_modal('generic')
+        let tab = null
+        if (evt.keyCode == 88) tab = 'special'
+        else if (evt.keyCode == '67') tab = 'generic'
+
+        show_upsert_modal(tab)
         break
 
       case 82:
-        if ($self_power > 0) {
+        if (power_user) {
           evt.preventDefault()
-          reconvert(1)
+          reload_content(1)
         }
 
         break
@@ -164,7 +168,7 @@
     const key = focused_elem.dataset.k
 
     const res = await dict_upsert(fetch, dic, key, '')
-    should_reload = res == 'ok'
+    dirty = res.ok
   }
 
   onMount(() => {
@@ -200,25 +204,6 @@
 
     const zh_line = zh_data[idx]
 
-    // TODO: import from target
-
-    if (target === focused_elem) {
-      const key = target.dataset.k
-      const pos = +target.dataset.p
-      const dic = +target.dataset.d
-
-      const [input, lower] = truncate_line(zh_line, pos, key.length)
-
-      $upsert_input = input
-      $upsert_lower = lower
-      $upsert_upper = lower + key.length
-
-      $upsert_atab = 'special'
-      $upsert_actived = true
-
-      return
-    }
-
     if (focused_elem) focused_elem.classList.remove('_active')
 
     focused_line = idx
@@ -235,32 +220,22 @@
     clavis_actived = clavis_enabled
   }
 
-  function render_mode(idx, hover, focus) {
-    if (idx == focus || idx == hover) return 2
-    return 1
-    // if (idx < hover - 5) return 1
-    // if (idx > hover + 5) return 1
-    // return 2
-  }
-
-  // $: console.log({ upsert_key, upsert_tab })
-
   function show_upsert_modal(new_tab = null) {
-    upsert_atab.update((atab) => new_tab || atab)
-    $upsert_actived = true
+    upsert_atab.update((x) => new_tab || x)
+    upsert_actived.set(true)
   }
 
-  let _reloading = false
-  async function reconvert(mode = 1) {
+  let _loading = false
+  async function reload_content(mode = 1) {
     // console.log(`reloading page with mode: ${mode}`)
 
-    _reloading = true
+    _loading = true
     const data = await load_chtext(window.fetch, bslug, seed, scid, mode)
 
     $upsert_changed = false
     mftime = data.mftime
     cvdata = data.cvdata
-    _reloading = false
+    _loading = false
   }
 </script>
 
@@ -269,7 +244,7 @@
   <meta property="og:url" content="{bslug}/{curr_url}" />
 </svelte:head>
 
-<svelte:window on:keydown={handleKeypress} />
+<svelte:body on:keydown={handle_keypress} />
 
 <Vessel shift={clavis_actived}>
   <a slot="header-left" href={book_path} class="header-item _title">
@@ -283,27 +258,27 @@
   </span>
 
   <button
-    slot="header-right"
     type="button"
     class="header-item"
-    disabled={$self_power < 1}
-    on:click={() => reconvert(1)}>
-    <AIcon name="refresh-ccw" spin={_reloading} />
+    slot="header-right"
+    disabled={!power_user}
+    on:click={() => reload_content(1)}>
+    <AIcon name="refresh-ccw" spin={_loading} />
   </button>
 
   <button
-    slot="header-right"
     type="button"
     class="header-item"
+    slot="header-right"
     class:_active={$upsert_actived}
     on:click={() => show_upsert_modal()}>
     <AIcon name="plus-circle" />
   </button>
 
   <button
-    slot="header-right"
     type="button"
     class="header-item"
+    slot="header-right"
     class:_active={clavis_enabled}
     on:click={triggerClavisSidebar}>
     <AIcon name="compass" />
@@ -325,18 +300,27 @@
     </div>
   </nav>
 
-  <article class="convert" class:_reload={_reloading}>
-    {#each vp_data as data, idx}
-      <p
-        class="line"
-        class:_head={idx == 0}
-        class:_para={idx != 0}
-        class:_focus={idx == focused_line}
-        class:_hover={idx == hovered_line}
-        on:mouseenter={() => (hovered_line = idx)}
-        on:click={(event) => handle_click(event, idx)}>
-        {@html render_convert(data, render_mode(idx, hovered_line, focused_line))}
-      </p>
+  <article class="convert" class:_load={_loading}>
+    {#each cvlines as nodes, index}
+      {#if index == 0}
+        <h1>
+          <MDiglot
+            {nodes}
+            {index}
+            bind:focus={focused_line}
+            bind:hover={hovered_line}
+            bind:cursor={focused_elem} />
+        </h1>
+      {:else}
+        <p>
+          <MDiglot
+            {nodes}
+            {index}
+            bind:focus={focused_line}
+            bind:hover={hovered_line}
+            bind:cursor={focused_elem} />
+        </p>
+      {/if}
     {/each}
   </article>
 
@@ -372,54 +356,18 @@
   {/if}
 
   {#if $upsert_actived}
-    <Upsert />
+    <Upsert bind:dirty />
   {/if}
 </Vessel>
 
 <style lang="scss">
-  .convert {
+  article {
     padding: 0.75rem 0;
     word-wrap: break-word;
 
-    // &._reload {
+    // &._load {
     //   @include fgcolor(neutral, 6);
     // }
-
-    .line {
-      &._head {
-        font-weight: 300;
-        @include fgcolor(neutral, 9);
-
-        $font-sizes: screen-vals(
-          rem(24px),
-          rem(25px),
-          rem(26px),
-          rem(28px),
-          rem(30px)
-        );
-        $line-heights: screen-vals(1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
-
-        @include apply(font-size, $font-sizes);
-        @include apply(line-height, $line-heights);
-      }
-
-      &._para {
-        $font-sizes: screen-vals(
-          rem(18px),
-          rem(19px),
-          rem(20px),
-          rem(21px),
-          rem(22px)
-        );
-        $margin-tops: screen-vals(1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
-
-        text-align: justify;
-        text-justify: auto;
-
-        @include apply(font-size, $font-sizes);
-        @include apply(margin-top, $margin-tops);
-      }
-    }
 
     :global(cite) {
       text-transform: capitalize;
@@ -428,64 +376,44 @@
     }
   }
 
+  h1 {
+    font-weight: 300;
+    @include fgcolor(neutral, 9);
+
+    $font-sizes: screen-vals(
+      rem(24px),
+      rem(25px),
+      rem(26px),
+      rem(28px),
+      rem(30px)
+    );
+    $line-heights: screen-vals(1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
+
+    @include apply(font-size, $font-sizes);
+    @include apply(line-height, $line-heights);
+  }
+
+  p {
+    $font-sizes: screen-vals(
+      rem(18px),
+      rem(19px),
+      rem(20px),
+      rem(21px),
+      rem(22px)
+    );
+    $margin-tops: screen-vals(1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
+
+    text-align: justify;
+    text-justify: auto;
+
+    @include apply(font-size, $font-sizes);
+    @include apply(margin-top, $margin-tops);
+  }
+
   .footer {
     margin: 0.75rem 0 1.75rem;
     @include flex($gap: 0.375rem);
     justify-content: center;
-  }
-
-  @mixin token($color: blue) {
-    &._active,
-    &:hover {
-      @include fgcolor($color, 6);
-    }
-
-    ._hover & {
-      @include border($color: $color, $shade: 3, $sides: bottom);
-    }
-  }
-
-  :global(x-v) {
-    cursor: pointer;
-    position: relative;
-
-    &[data-d='1'] {
-      @include token(teal);
-    }
-
-    &[data-d='2'] {
-      @include token(blue);
-    }
-
-    &[data-d='3'] {
-      @include token(green);
-    }
-
-    &[data-d='9'] {
-      @include token(gray);
-    }
-
-    // .line > &._active {
-    //   &:before {
-    //     position: absolute;
-    //     display: inline-block;
-    //     content: attr(data-k);
-
-    //     left: 0;
-    //     top: -1.5em;
-    //     width: 100%;
-    //     text-align: center;
-    //     overflow: hidden;
-
-    //     font-size: 0.75em;
-    //     line-height: 1.5em;
-    //     font-style: normal;
-
-    //     @include radius();
-    //     @include fgcolor(neutral, 2);
-    //     @include bgcolor(neutral, 7);
-    //   }
-    // }
   }
 
   .bread {

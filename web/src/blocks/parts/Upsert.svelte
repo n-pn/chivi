@@ -1,5 +1,16 @@
 <script context="module">
-  function generate_hints(meta, reject, accept) {
+  import {
+    // self_uname,
+    self_power,
+    upsert_atab as atab,
+    upsert_udic as udic,
+    upsert_input,
+    upsert_lower,
+    upsert_upper,
+    upsert_actived as actived,
+  } from '$src/stores'
+
+  function make_hints(meta, reject, accept) {
     let res = [
       ...meta.dicts.special.vals,
       ...meta.dicts.special.hints,
@@ -63,36 +74,25 @@
       body: JSON.stringify({ key, val }),
     })
 
-    const { _stt } = await res.json()
-    return _stt
+    return res
   }
 </script>
 
 <script>
-  // import { onMount } from 'svelte'
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
   import UpsertFooter from './Upsert/Footer.svelte'
 
-  import {
-    self_uname,
-    self_power,
-    upsert_atab as atab,
-    upsert_udic as udic,
-    upsert_input,
-    upsert_lower,
-    upsert_upper,
-    upsert_actived as actived,
-    upsert_changed as changed,
-  } from '$src/stores'
+  // export let dirty = false
+  export let dirty = false
 
   $: lower = $upsert_lower
   $: upper = $upsert_upper
   $: input = $upsert_input.substring(lower, upper)
   $: if ($actived && input) preload_input(input)
 
-  let val_field
-  // onMount(() => val_field.focus())
+  let value_elem
+  $: if ($actived && value_elem) value_elem.focus()
 
   let meta = {
     dicts: {
@@ -131,12 +131,12 @@
 
     if (new_val) {
       out_val = new_val
-      hints = generate_hints(meta, out_val)
+      hints = make_hints(meta, out_val)
     } else {
       let new_val = meta.hanviet
       if ($atab == 'special') new_val = titleize(new_val, 9)
 
-      hints = generate_hints(meta, new_val)
+      hints = make_hints(meta, new_val)
 
       if ($atab == 'hanviet' || hints.length == 0) out_val = new_val
       else {
@@ -145,7 +145,7 @@
       }
     }
 
-    val_field.focus()
+    value_elem.focus()
   }
 
   async function submit_val() {
@@ -153,7 +153,7 @@
     const res = await dict_upsert(fetch, dic, input, out_val.trim())
 
     $actived = false
-    $changed = res === 'ok' && updated
+    dirty = res.ok
   }
 
   function upcase_val(count = 100) {
@@ -169,6 +169,9 @@
   }
 
   function handle_keypress(evt) {
+    if (!$actived) return
+    // evt.preventDefault()
+
     if (evt.keyCode == 13) {
       evt.preventDefault()
       return submit_val()
@@ -200,7 +203,6 @@
         break
 
       case 48:
-      case 53:
       case 192:
         upcase_val(0)
         break
@@ -219,7 +221,7 @@
 
       case 69:
         out_val = ''
-        val_field.focus()
+        value_elem.focus()
         break
 
       default:
@@ -227,28 +229,19 @@
     }
   }
 
-  function dec(caret, lower) {
-    return caret == lower ? caret : caret - 1
-  }
-
-  function inc(caret, upper) {
-    return caret == upper ? caret : caret + 1
-  }
-
-  function reset_bounds() {
-    lower = $upsert_lower
-    upper = $upsert_upper
-  }
-
   function term_exists(meta, tab) {
     return meta.dicts[tab].vals.length > 0
   }
 </script>
 
-<svelte:window on:keydown={handle_keypress} />
+<svelte:window />
 
-<div class="holder" on:click={() => actived.set(false)}>
-  <div class="dialog" on:click|stopPropagation={() => val_field.focus()}>
+<div
+  class="holder"
+  tabindex="0"
+  on:keydown={handle_keypress}
+  on:click={() => actived.set(false)}>
+  <div class="dialog" on:click|stopPropagation={() => value_elem.focus()}>
     <header class="header">
       <div class="hanzi">
         <button
@@ -330,9 +323,8 @@
           class="val-field"
           class:_fresh={!existed}
           name="value"
-          id="val_field"
           on:keypress={handle_enter}
-          bind:this={val_field}
+          bind:this={value_elem}
           bind:value={out_val} />
 
         <div class="format">

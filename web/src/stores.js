@@ -15,3 +15,7 @@ export const upsert_udic = writable('dich-nhanh')
 
 export const upsert_actived = writable(false)
 export const upsert_changed = writable(false)
+
+// export const cv_input = writable('')
+// export const cv_lower = writable(0)
+// export const cv_upper = writable(1)
