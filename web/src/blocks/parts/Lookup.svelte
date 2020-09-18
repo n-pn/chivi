@@ -15,12 +15,12 @@
     return str.replace(/[&<>'"]/g, replace_tag)
   }
 
-  function is_active(from, upto, idx) {
+  function is_active(from, upper, idx) {
     if (idx < from) return false
-    return idx < upto
+    return idx < upper
   }
 
-  function render_zh(tokens, from, upto) {
+  function render_zh(tokens, from, upper) {
     let output = ''
     let i = 0
     let p = 0
@@ -31,7 +31,7 @@
 
       for (let j = 0; j < keys.length; j++) {
         output += '<x-v '
-        if (is_active(from, upto, p)) output += 'class="_active" '
+        if (is_active(from, upper, p)) output += 'class="_active" '
 
         const k = escape_html(keys[j])
         output += `data-k=${k} data-i=${i} data-p=${p} data-d=1>${k}</x-v>`
@@ -44,7 +44,7 @@
     return output
   }
 
-  function render_hv(tokens, from, upto) {
+  function render_hv(tokens, from, upper) {
     let output = ''
     let i = 0
     let p = 0
@@ -66,7 +66,7 @@
 
         if (j > 0) output += ' '
         output += '<x-v '
-        if (is_active(from, upto, p)) output += 'class=_active '
+        if (is_active(from, upper, p)) output += 'class=_active '
 
         output += `data-k=${escape_html(key_char)} `
         output += `data-i=${i} data-p=${p} data-d=${dic}>`
@@ -79,33 +79,33 @@
 
     return output
   }
+
+  import { parse_content } from '$utils/render_convert'
+  import AIcon from '$atoms/AIcon.svelte'
+  import {
+    lookup_input,
+    lookup_dname,
+    lookup_actived as actived,
+  } from '$src/stores'
 </script>
 
 <script>
-  import { parse_content } from '$utils/render_convert'
-  import AIcon from '$atoms/AIcon.svelte'
+  $: [input, lower, upper] = $lookup_input
 
-  export let input = ''
-  export let dname = 'dich-nhanh'
-
-  export let active = false
   export let on_top = false
-
-  export let from = 0
-  let upto = from + 1
 
   let hanviet = []
   let entries = []
   let current = []
 
-  $: if (input !== '') lookup_line(input)
-  $: if (from < entries.length) updateFocus()
+  $: if (input) lookup_line(input)
+  $: if (lower < entries.length) update_focus()
 
-  $: zh_html = render_zh(hanviet, from, upto)
-  $: hv_html = render_hv(hanviet, from, upto)
+  $: zh_html = render_zh(hanviet, lower, upper)
+  $: hv_html = render_hv(hanviet, lower, upper)
 
   async function lookup_line(input) {
-    const url = `/_dicts/lookup?dname=${dname}`
+    const url = `/_dicts/lookup?dname=${$lookup_dname}`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -115,30 +115,26 @@
 
     entries = data.entries
     hanviet = parse_content(data.hanviet)[0][0]
-    from = from
   }
 
-  function updateFocus() {
-    if (entries.length < from) {
+  function update_focus() {
+    if (entries.length < lower) {
       current = []
-      upto = from + 1
+      upper = lower + 1
     } else {
-      current = entries[from]
-
-      if (current.length == 0) upto = from + 1
-      else upto = from + +current[0][0]
+      current = entries[lower]
+      if (current.length == 0) upper = lower + 1
+      else upper = lower + +current[0][0]
     }
   }
 
-  function handleClick(event) {
-    const target = event.target
-    if (target.nodeName == 'X-Z' || target.nodeName == 'X-V') {
-      from = +target.dataset['p']
-    }
+  function hanlde_click({ target }) {
+    if (target.nodeName !== 'X-V') return
+    lower = +target.dataset['p']
   }
 
-  function handleKeypress(evt) {
-    if (evt.keyCode == 27 && on_top) active = false
+  function handle_keydown(evt) {
+    if (evt.keyCode == 27 && on_top) $actived = false
   }
 
   function renderVietphrase(words) {
@@ -151,29 +147,27 @@
   }
 </script>
 
-<svelte:window on:keydown={handleKeypress} />
-
-<aside class:_active={active}>
+<aside class:_active={$actived} tabindex="0" on:keydown={handle_keydown}>
   <header>
     <h2>Giải nghĩa</h2>
 
-    <button on:click={() => (active = false)}>
+    <button on:click={() => ($actived = false)}>
       <AIcon name="x" />
     </button>
   </header>
 
   <section class="lookup">
-    <div class="source _zh" on:click={handleClick} lang="zh">
+    <div class="source _zh" on:click={hanlde_click} lang="zh">
       {@html zh_html}
     </div>
 
-    <div class="source _hv" on:click={handleClick}>
+    <div class="source _hv" on:click={hanlde_click}>
       {@html hv_html}
     </div>
 
     {#each current as [size, entries]}
       <div class="entry">
-        <h3 class="word" lang="zh">{input.substr(from, size)}</h3>
+        <h3 class="word" lang="zh">{input.substr(lower, size)}</h3>
         {#each Object.entries(entries) as [name, items]}
           {#if items.length > 0}
             <div class="item">
@@ -196,14 +190,14 @@
 </aside>
 
 <style lang="scss">
-  $sidebar-width: 30rem;
+  $width: 30rem;
 
   aside {
     position: fixed;
     display: block;
     top: 0;
     right: 0;
-    width: $sidebar-width;
+    width: $width;
     // min-width: 20rem;
     max-width: 90vw;
 

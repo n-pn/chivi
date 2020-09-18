@@ -4,7 +4,7 @@ module Server
   alias LookupEntry = Hash(String, Array(String))
 
   post "/_dicts/lookup" do |env|
-    dname = env.params.query.fetch("dname", "combine")
+    dname = env.params.query.fetch("dname", "dich-nhanh")
     dicts = Libcv::Library.for_convert(dname)
 
     input = env.params.json["input"].as(String)
@@ -33,26 +33,26 @@ module Server
       entry.to_a.sort_by(&.[0].-)
     end
 
-    hanviet = Libcv.hanviet(input, apply_cap: true).to_s
+    hanviet = Libcv.hanviet(input, apply_cap: false).to_s
     {hanviet: hanviet, entries: entries}.to_json(env.response)
   end
 
   # # default upsert dicts
   DICTS = "dich-nhanh|generic|hanviet"
 
-  get "/_dicts/search/:hanzi" do |env|
-    hanzi = env.params.url["hanzi"]
+  get "/_dicts/search/:input" do |env|
+    input = env.params.url["input"]
     dicts = env.params.query.fetch("dicts", DICTS).split("|")
 
     entries = dicts.map do |dname|
-      Libcv::Library.load_dict(dname).find(hanzi)
+      Libcv::Library.load_dict(dname).find(input)
     end
 
-    suggest = Libcv::Library.suggest.dict.find(hanzi).try(&.vals)
+    suggest = Libcv::Library.suggest.dict.find(input).try(&.vals)
     {
       entries: entries,
-      hanviet: Libcv.hanviet(hanzi, false).vi_text,
-      binh_am: Libcv.binh_am(hanzi, false).vi_text,
+      hanviet: Libcv.hanviet(input, false).vi_text,
+      binh_am: Libcv.binh_am(input, false).vi_text,
       suggest: suggest || [] of String,
     }.to_json(env.response)
   end

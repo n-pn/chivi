@@ -25,15 +25,11 @@
       this.error(500, err.message)
     }
   }
-</script>
-
-<script>
-  import { onMount } from 'svelte'
 
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
 
-  import MDiglot, { parse as parse_vp } from '$melds/MDiglot'
+  import MDiglot, { parse as parse_vp_input } from '$melds/MDiglot'
 
   import Vessel from '$parts/Vessel'
   import Lookup from '$parts/Lookup'
@@ -48,7 +44,13 @@
     upsert_dicts,
     upsert_d_idx,
     upsert_actived,
+    lookup_dname,
+    lookup_actived,
   } from '$src/stores'
+</script>
+
+<script>
+  import { onMount } from 'svelte'
 
   export let bslug = ''
   export let bname = ''
@@ -59,7 +61,7 @@
 
   export let mftime = 0
   export let cvdata = ''
-  $: cvlines = cvdata.split('\n').map((x) => parse_vp(x))
+  $: cvlines = cvdata.split('\n').map((x) => parse_vp_input(x))
 
   export let ch_total = 1
   export let ch_index = 1
@@ -84,18 +86,16 @@
     ['hanviet', 'Hán việt'],
   ]
 
+  $: $lookup_dname = ubid
+
   let dirty = false
   $: if (dirty) reload_content(1)
 
-  let hovered_line = 0
-  let focused_line = 0
-
-  let focused_elem = null
+  let line_hover = 0
+  let line_focus = 0
+  let cursor
 
   let lookup_enabled = false
-  let lookup_actived = false
-  let lookup_line = ''
-  let lookup_from = 0
 
   function handle_keypress(evt) {
     if ($upsert_actived) return
@@ -105,7 +105,7 @@
 
     switch (evt.keyCode) {
       case 220:
-        triggerLookupSidebar()
+        trigger_lookup()
         break
 
       case 72:
@@ -181,25 +181,9 @@
     return () => document.removeEventListener('selectionchange', evt)
   })
 
-  function handle_click({ target }, idx) {
-    if (target.nodeName !== 'X-V') return
-
-    const zh_line = zh_data[idx]
-
-    if (focused_elem) focused_elem.classList.remove('_active')
-
-    focused_line = idx
-    focused_elem = target
-    focused_elem.classList.add('_active')
-
-    lookup_line = zh_line
-    lookup_from = +focused_elem.dataset.p
-    if (lookup_enabled) lookup_actived = true
-  }
-
-  function triggerLookupSidebar() {
+  function trigger_lookup() {
     lookup_enabled = !lookup_enabled
-    lookup_actived = lookup_enabled
+    lookup_actived.set(lookup_enabled)
   }
 
   function show_upsert_modal(new_tab = null) {
@@ -226,7 +210,7 @@
 
 <svelte:body on:keydown={handle_keypress} />
 
-<Vessel shift={lookup_actived}>
+<Vessel shift={lookup_enabled && $lookup_actived}>
   <a slot="header-left" href={book_path} class="header-item _title">
     <AIcon name="book-open" />
     <span class="header-text _show-sm _title">{bname}</span>
@@ -260,7 +244,7 @@
     class="header-item"
     slot="header-right"
     class:_active={lookup_enabled}
-    on:click={triggerLookupSidebar}>
+    on:click={trigger_lookup}>
     <AIcon name="compass" />
   </button>
 
@@ -287,18 +271,18 @@
           <MDiglot
             {nodes}
             {index}
-            bind:focus={focused_line}
-            bind:hover={hovered_line}
-            bind:cursor={focused_elem} />
+            bind:focus={line_focus}
+            bind:cursor
+            bind:hover={line_hover} />
         </h1>
       {:else}
         <p>
           <MDiglot
             {nodes}
             {index}
-            bind:focus={focused_line}
-            bind:hover={hovered_line}
-            bind:cursor={focused_elem} />
+            bind:focus={line_focus}
+            bind:cursor
+            bind:hover={line_hover} />
         </p>
       {/if}
     {/each}
@@ -327,12 +311,7 @@
   </footer>
 
   {#if lookup_enabled}
-    <Lookup
-      on_top={!upsert_actived}
-      bind:active={lookup_actived}
-      input={lookup_line}
-      dname={ubid}
-      from={lookup_from} />
+    <Lookup on_top={!$upsert_actived} />
   {/if}
 
   {#if $upsert_actived}

@@ -61,32 +61,38 @@
     return `<x-v data-k="${key}" data-d=${dic} data-i=${idx} data-p=${pos}>${val}</x-v>`
   }
 
-  import { upsert_input, upsert_d_idx, upsert_actived } from '$src/stores'
-
-  function make_bounds(nodes = [], i = 0) {
+  function make_bounds(nodes = [], idx = 0, min = 4, max = 10) {
     let output = ''
 
-    for (let j = i - 1; j >= 0; j--) {
+    for (let j = idx - 1; j >= 0; j--) {
       const [key] = nodes[j]
       output = key + output
-      if (output.length >= 4) break
+      if (output.length >= min) break
     }
 
     const lower = output.length
-    output += nodes[i][0]
+    output += nodes[idx][0]
     const upper = output.length
 
-    let limit = upper + 4
-    if (limit < 10) limit = 10
+    let limit = upper + min
+    if (limit < max) limit = max
 
-    for (let j = i + 1; j < nodes.length; j++) {
+    for (let j = idx + 1; j < nodes.length; j++) {
       const [key] = nodes[j]
       output = output + key
       if (output.length > limit) break
     }
 
-    upsert_input.set([output, lower, upper])
+    return [output, lower, upper]
   }
+
+  import {
+    upsert_actived,
+    upsert_input,
+    upsert_d_idx,
+    lookup_actived,
+    lookup_input,
+  } from '$src/stores'
 </script>
 
 <script>
@@ -107,8 +113,9 @@
   function handle_click({ target }) {
     if (focus != index) focus = index
     if (target.nodeName != 'X-V') return
+    const idx = +target.dataset.i
 
-    make_bounds(nodes, +target.dataset.i)
+    upsert_input.set(make_bounds(nodes, idx))
 
     if (target === cursor) {
       upsert_d_idx.set(0)
@@ -117,6 +124,9 @@
       if (cursor) cursor.classList.remove('_focus')
       cursor = target
       cursor.classList.add('_focus')
+
+      lookup_input.set(make_bounds(nodes, idx, 8, 20))
+      lookup_actived.set(true)
     }
   }
 </script>
