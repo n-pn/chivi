@@ -10,7 +10,9 @@
     for (let x of search.suggest) res.push(x)
     if (accept) res.push(accept)
 
-    return res.filter((v, i, s) => v !== reject && s.indexOf(v) === i)
+    return res.filter(
+      (v, i, s) => v !== search.hanviet && v !== reject && s.indexOf(v) === i
+    )
   }
 
   function capitalize(input) {
@@ -123,6 +125,10 @@
     update_val()
   }
 
+  function shoud_cap(index) {
+    return $dicts[index][2]
+  }
+
   function update_val(new_val) {
     let current = search.entries[$d_idx]
 
@@ -135,14 +141,13 @@
       hints = make_hints(search, out_val)
     } else {
       let new_val = search.hanviet
-
-      const [_1, _2, shoud_cap] = $dicts[$d_idx]
-      if (shoud_cap) new_val = titleize(new_val, 9)
+      if (shoud_cap[$d_idx]) new_val = titleize(new_val, 9)
 
       hints = make_hints(search, new_val)
 
-      if ($d_idx > 1 || hints.length == 0) out_val = new_val
-      else {
+      if ($d_idx > 1 || hints.length == 0) {
+        out_val = new_val
+      } else {
         out_val = hints.pop()
         hints = hints
       }
@@ -153,7 +158,7 @@
 
   async function submit_val() {
     const dname = $dicts[$d_idx][0]
-    const res = await dict_upsert(fetch, dname, input, out_val.trim())
+    const res = await dict_upsert(fetch, dname, hanzi, out_val.trim())
 
     $actived = false
     dirty = res.ok
@@ -164,14 +169,7 @@
     update_val(new_val)
   }
 
-  function handle_enter(evt) {
-    if (evt.keyCode == 13) {
-      evt.preventDefault()
-      return submit_val()
-    }
-  }
-
-  function handle_keypress(evt) {
+  function handle_down(evt) {
     if (!$actived) return
     // evt.preventDefault()
 
@@ -242,11 +240,7 @@
 
 <svelte:window />
 
-<div
-  class="holder"
-  tabindex="0"
-  on:keydown={handle_keypress}
-  on:click={() => actived.set(false)}>
+<div class="holder" tabindex="0" on:click={() => actived.set(false)}>
   <div class="dialog" on:click|stopPropagation={() => value_elem.focus()}>
     <header class="header">
       <div class="hanzi">
@@ -291,12 +285,12 @@
         </div>
 
         <input
-          type="text"
-          lang="vi"
           class="val-field"
           class:_fresh={!existed}
+          type="text"
           name="value"
-          on:keypress={handle_enter}
+          lang="vi"
+          on:keydown={handle_down}
           bind:this={value_elem}
           bind:value={out_val} />
 
@@ -358,14 +352,13 @@
     width: 100%;
     height: 100%;
     z-index: 999;
-    @include bgcolor(rgba(#000, 0.65));
+    @include bgcolor(rgba(#000, 0.75));
   }
 
   .dialog {
     width: rem(30);
     min-width: 320px;
     max-width: 100%;
-    // margin-top: -10%;
     @include bgcolor(neutral, 1);
     @include radius();
     @include shadow(3);
@@ -383,20 +376,17 @@
     }
 
     > .hanzi {
-      margin-right: 0.5rem;
       flex-grow: 1;
+      margin-right: 0.5rem;
     }
   }
 
   .tabs {
-    // margin-top: 0.75rem;
-    @include border($sides: bottom);
-    @include flex($gap: 0.75rem);
     padding: 0 0.75rem;
     height: 2rem;
     line-height: 2rem;
-    // flex: auto 1 1;
-    // justify-content: center;
+    @include flex($gap: 0.75rem);
+    @include border($sides: bottom);
   }
 
   .tab {
@@ -411,11 +401,13 @@
     @include font-size(2);
     @include fgcolor(neutral, 5);
 
-    @include radius();
-    @include radius(0, $sides: bottom);
+    @include radius($sides: top);
+    @include border($color: neutral, $sides: top-left-right);
 
-    @include border($color: neutral);
-    @include border($color: none, $sides: bottom);
+    flex-shrink: 0;
+    &:first-child {
+      flex-shrink: 1;
+    }
 
     &._exists {
       @include fgcolor(neutral, 7);
@@ -424,14 +416,7 @@
     &._active {
       @include bgcolor(#fff);
       @include fgcolor(primary, 6);
-      @include bdcolor($color: primary, $shade: 4);
-      // @include bdwidth(2px, $sides: top);
-      @include bdcolor($color: none, $sides: bottom);
-    }
-
-    flex-shrink: 0;
-    &:first-child {
-      flex-shrink: 1;
+      @include bdcolor($color: primary, $shade: 4, $sides: top-left-right);
     }
   }
 
@@ -599,7 +584,7 @@
 
     @include flex($gap: 0.5rem, $child: '.m-button');
 
-    .m-button {
+    button {
       margin-left: auto;
     }
   }

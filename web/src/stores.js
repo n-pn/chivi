@@ -13,7 +13,7 @@ export const upsert_upper = writable(1)
 export const upsert_d_idx = writable(0)
 export const upsert_dicts = writable([
   ['dich-nhanh', 'Dịch nhanh', true],
-  ['generic', 'VP chung'],
+  ['generic', 'Thông dụng'],
   ['hanviet', 'Hán việt'],
 ])
 

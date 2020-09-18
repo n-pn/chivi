@@ -86,7 +86,7 @@
 
   $: $upsert_dicts = [
     [ubid, bname, true],
-    ['generic', 'VP chung'],
+    ['generic', 'Thông dụng'],
     ['hanviet', 'Hán việt'],
   ]
 
