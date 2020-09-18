@@ -186,9 +186,7 @@
       }
     })
 
-    return () => {
-      document.removeEventListener('selectionchange', evt)
-    }
+    return () => document.removeEventListener('selectionchange', evt)
   })
 
   function handle_click({ target }, idx) {
@@ -219,14 +217,12 @@
 
   let _loading = false
   async function reload_content(mode = 1) {
-    // console.log(`reloading page with mode: ${mode}`)
-
     _loading = true
     const data = await load_chtext(window.fetch, bslug, seed, scid, mode)
 
-    $upsert_changed = false
     mftime = data.mftime
     cvdata = data.cvdata
+    dirty = false
     _loading = false
   }
 </script>
