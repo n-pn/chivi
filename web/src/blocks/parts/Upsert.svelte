@@ -296,8 +296,8 @@
       </div>
 
       <div class="action">
-        {#if current.uname != ''}
-          <div class="edit">
+        {#if current && current.uname}
+          <div class="latest">
             <span class="-text">Lưu:</span>
             <span class="-time"><ARtime time={current.mtime} /></span>
             <span class="-text">bởi</span>
@@ -541,7 +541,7 @@
     }
   }
 
-  .edit {
+  .latest {
     font-style: italic;
 
     line-height: 2.25rem;
