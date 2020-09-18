@@ -37,19 +37,23 @@ module Server
     {hanviet: hanviet, entries: entries}.to_json(env.response)
   end
 
-  get "/_dicts/search/:key" do |env|
-    key = env.params.url["key"]
-    dic = env.params.query.fetch("dic", "_tonghop")
+  # # default upsert dicts
+  DICTS = "dich-nhanh|generic|hanviet"
 
+  get "/_dicts/search/:hanzi" do |env|
+    hanzi = env.params.url["hanzi"]
+    dicts = env.params.query.fetch("dicts", DICTS).split("|")
+
+    entries = dicts.map do |dname|
+      Libcv::Library.load_dict(dname).find(hanzi)
+    end
+
+    suggest = Libcv::Library.suggest.dict.find(hanzi).try(&.vals)
     {
-      dicts: {
-        special: Libcv::Library.load_dict(dic).find(key),
-        generic: Libcv::Library.generic.find(key),
-        hanviet: Libcv::Library.hanviet.find(key),
-      },
-      hanviet: Libcv.hanviet(key, false).vi_text,
-      binh_am: Libcv.binh_am(key, false).vi_text,
-      suggest: Libcv::Library.suggest.dict.find(key).try(&.vals) || [] of String,
+      entries: entries,
+      hanviet: Libcv.hanviet(hanzi, false).vi_text,
+      binh_am: Libcv.binh_am(hanzi, false).vi_text,
+      suggest: suggest || [] of String,
     }.to_json(env.response)
   end
 

@@ -1,29 +1,16 @@
 <script context="module">
-  import {
-    // self_uname,
-    self_power,
-    upsert_atab as atab,
-    upsert_udic as udic,
-    upsert_input,
-    upsert_lower,
-    upsert_upper,
-    upsert_actived as actived,
-  } from '$src/stores'
+  function make_hints(search, reject, accept) {
+    let res = []
 
-  function make_hints(meta, reject, accept) {
-    let res = [
-      ...meta.dicts.special.vals,
-      ...meta.dicts.special.hints,
-      ...meta.dicts.generic.vals,
-      ...meta.dicts.generic.hints,
-      ...meta.suggest,
-    ]
-    if (accept && accept !== '') res.push(accept)
+    for (let { vals, hints } of search.entries) {
+      for (let x of vals) res.push(x)
+      for (let x of hints) res.push(x)
+    }
 
-    return res.filter(
-      (v, i, s) =>
-        v !== reject && v.toLowerCase() !== meta.hanviet && s.indexOf(v) === i
-    )
+    for (let x of search.suggest) res.push(x)
+    if (accept) res.push(accept)
+
+    return res.filter((v, i, s) => v !== reject && s.indexOf(v) === i)
   }
 
   function capitalize(input) {
@@ -52,14 +39,8 @@
     else return ['primary', 'Sửa từ']
   }
 
-  const tabs = [
-    ['special', 'Riêng bộ'],
-    ['generic', 'VP chung'],
-    ['hanviet', 'Hán việt'],
-  ]
-
-  export async function dict_search(fetch, key, dic = 'dich-nhanh') {
-    const url = `/_dicts/search/${key}?dic=${dic}`
+  export async function dict_search(fetch, hanzi, dicts = ['dich-nhanh']) {
+    const url = `/_dicts/search/${hanzi}?dict=${dicts.join('|')}`
     const res = await fetch(url)
     const data = await res.json()
 
@@ -76,71 +57,91 @@
 
     return res
   }
-</script>
 
-<script>
+  import {
+    // self_uname,
+    self_power,
+    upsert_dicts as dicts,
+    upsert_d_idx as d_idx,
+    upsert_input,
+    upsert_lower,
+    upsert_upper,
+    upsert_actived as actived,
+  } from '$src/stores'
+
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
 
   import UpsertInput from './Upsert/Input.svelte'
-  import UpsertFooter from './Upsert/Footer.svelte'
+  import UpsertLinks from './Upsert/Links.svelte'
+</script>
 
-  // export let dirty = false
+<script>
   export let dirty = false
 
   $: lower = $upsert_lower
   $: upper = $upsert_upper
-  $: input = $upsert_input.substring(lower, upper)
-  $: if ($actived && input) preload_input(input)
+  $: hanzi = $upsert_input.substring(lower, upper)
 
   let value_elem
-  $: if ($actived) value_elem && value_elem.focus()
 
-  let meta = {
-    dicts: {
-      special: { vals: [], hints: [], mtime: 0, uname: '', power: 0 },
-      generic: { vals: [], hints: [], mtime: 0, uname: '', power: 0 },
-      hanviet: { vals: [], hints: [], mtime: 0, uname: '', power: 0 },
-    },
+  // let cached = {}
+  let search = {
+    entries: [],
     hanviet: '',
     binh_am: '',
     suggest: [],
   }
 
-  $: current = meta.dicts[$atab]
-  $: existed = current.vals[0] || ''
+  $: if ($actived && hanzi) inquire_hanzi(hanzi, false)
+
+  $: current = search.entries[$d_idx] || { key: '', vals: [], hints: [] }
+  $: existed = (current && current.vals[0]) || ''
   $: updated = out_val != existed
+
+  $: if ($actived) value_elem && value_elem.focus()
 
   $: [prevail, btn_power] = compare_power($self_power, current.power)
   $: [btn_class, btn_label] = compare_value(out_val, existed)
 
-  async function preload_input(input) {
-    out_val = ''
-    meta = await dict_search(fetch, input, $udic)
+  async function inquire_hanzi(hanzi, refresh = false) {
+    // search = cached[hanzi]
+    // if (search && !refresh) return
+
+    const dnames = $dicts.map((x) => x[0])
+    search = await dict_search(fetch, hanzi, dnames)
+
+    // cached[hanzi] = search
     update_val()
   }
 
   let out_val = ''
   let hints = []
 
-  function change_tab(new_tab) {
-    $atab = new_tab
+  function change_tab(index) {
+    $d_idx = index
     update_val()
   }
 
   function update_val(new_val) {
-    new_val = new_val || meta.dicts[$atab].vals[0]
+    let current = search.entries[$d_idx]
+
+    if (!new_val) {
+      if (current) new_val = current.vals[0]
+    }
 
     if (new_val) {
       out_val = new_val
-      hints = make_hints(meta, out_val)
+      hints = make_hints(search, out_val)
     } else {
-      let new_val = meta.hanviet
-      if ($atab == 'special') new_val = titleize(new_val, 9)
+      let new_val = search.hanviet
 
-      hints = make_hints(meta, new_val)
+      const [_1, _2, shoud_cap] = $dicts[$d_idx]
+      if (shoud_cap) new_val = titleize(new_val, 9)
 
-      if ($atab == 'hanviet' || hints.length == 0) out_val = new_val
+      hints = make_hints(search, new_val)
+
+      if ($d_idx > 1 || hints.length == 0) out_val = new_val
       else {
         out_val = hints.pop()
         hints = hints
@@ -151,8 +152,8 @@
   }
 
   async function submit_val() {
-    const dic = $atab == 'special' ? $udic : $atab
-    const res = await dict_upsert(fetch, dic, input, out_val.trim())
+    const dname = $dicts[$d_idx][0]
+    const res = await dict_upsert(fetch, dname, input, out_val.trim())
 
     $actived = false
     dirty = res.ok
@@ -210,11 +211,11 @@
         break
 
       case 88:
-        change_tab('special')
+        change_tab(0)
         break
 
       case 67:
-        change_tab('generic')
+        change_tab(1)
         break
 
       case 82:
@@ -231,8 +232,11 @@
     }
   }
 
-  function term_exists(meta, tab) {
-    return meta.dicts[tab].vals.length > 0
+  function term_exists(search, index) {
+    const entry = search.entries[index]
+
+    if (!entry) return false
+    return entry.vals.length > 0
   }
 </script>
 
@@ -250,13 +254,8 @@
           input={$upsert_input}
           bind:lower
           bind:upper
-          bind:output={input} />
+          bind:output={hanzi} />
       </div>
-
-      <!-- <button class="m-button _text" on:click={reset_bounds}>
-          <AIcon name="rotate-ccw" />
-        </button> -->
-
       <button
         type="button"
         class="m-button _text"
@@ -266,12 +265,12 @@
     </header>
 
     <section class="tabs">
-      {#each tabs as [name, label]}
+      {#each $dicts as [_dname, label], index}
         <span
           class="tab"
-          class:_active={name == $atab}
-          class:_exists={term_exists(meta, name)}
-          on:click={() => change_tab(name)}>
+          class:_active={index == $d_idx}
+          class:_exists={term_exists(search, index)}
+          on:click={() => change_tab(index)}>
           {label}
         </span>
       {/each}
@@ -280,15 +279,15 @@
     <section class="body">
       <div class="output">
         <div class="hints">
-          <span class="-hint" on:click={() => update_val(meta.hanviet)}>
-            {meta.hanviet}
+          <span class="-hint" on:click={() => update_val(search.hanviet)}>
+            {search.hanviet}
           </span>
 
           {#each hints as hint}
             <span class="-hint" on:click={() => update_val(hint)}>{hint}</span>
           {/each}
 
-          <span class="-hint _right">[{meta.binh_am}]</span>
+          <span class="-hint _right">[{search.binh_am}]</span>
         </div>
 
         <input
@@ -319,7 +318,7 @@
         </div>
       </div>
 
-      <div class="footer">
+      <div class="action">
         {#if current.uname != ''}
           <div class="edit">
             <span class="-text">Lưu:</span>
@@ -340,7 +339,9 @@
       </div>
     </section>
 
-    <UpsertFooter {input} />
+    <footer>
+      <UpsertLinks {hanzi} />
+    </footer>
   </div>
 </div>
 
@@ -370,27 +371,21 @@
     @include shadow(3);
   }
 
-  $header-height: 2.75rem;
-  $header-inner-height: 2.25rem;
-
-  .header {
+  header {
     display: flex;
-    position: relative;
     padding: 0.75rem;
-    // padding-right: 0.5rem;
-    // height: $header-height;
 
-    .m-button {
+    > button {
       @include fgcolor(neutral, 6);
       @include hover {
         @include fgcolor(primary, 6);
       }
     }
-  }
 
-  .hanzi {
-    margin-right: 0.5rem;
-    flex-grow: 1;
+    > .hanzi {
+      margin-right: 0.5rem;
+      flex-grow: 1;
+    }
   }
 
   .tabs {
@@ -400,6 +395,7 @@
     padding: 0 0.75rem;
     height: 2rem;
     line-height: 2rem;
+    // flex: auto 1 1;
     // justify-content: center;
   }
 
@@ -411,6 +407,7 @@
     height: 2rem;
     margin-top: 0.25px;
 
+    @include truncate(null);
     @include font-size(2);
     @include fgcolor(neutral, 5);
 
@@ -430,6 +427,11 @@
       @include bdcolor($color: primary, $shade: 4);
       // @include bdwidth(2px, $sides: top);
       @include bdcolor($color: none, $sides: bottom);
+    }
+
+    flex-shrink: 0;
+    &:first-child {
+      flex-shrink: 1;
     }
   }
 
@@ -592,7 +594,7 @@
     }
   }
 
-  .footer {
+  .action {
     margin-top: 0.75rem;
 
     @include flex($gap: 0.5rem, $child: '.m-button');
@@ -600,5 +602,9 @@
     .m-button {
       margin-left: auto;
     }
+  }
+
+  footer {
+    border-top: 1px solid color(neutral, 3);
   }
 </style>

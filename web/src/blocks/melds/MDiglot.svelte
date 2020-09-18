@@ -65,7 +65,7 @@
     upsert_input,
     upsert_lower,
     upsert_upper,
-    upsert_atab,
+    upsert_d_idx,
     upsert_actived,
   } from '$src/stores'
 
@@ -117,7 +117,7 @@
     make_bounds(nodes, +target.dataset.i)
 
     if (target === cursor) {
-      upsert_atab.set('special')
+      upsert_d_idx.set(0)
       upsert_actived.set(true)
     } else {
       if (cursor) cursor.classList.remove('_focus')

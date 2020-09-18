@@ -10,8 +10,12 @@ export const upsert_input = writable('')
 export const upsert_lower = writable(0)
 export const upsert_upper = writable(1)
 
-export const upsert_atab = writable('special')
-export const upsert_udic = writable('dich-nhanh')
+export const upsert_d_idx = writable(0)
+export const upsert_dicts = writable([
+  ['dich-nhanh', 'Dịch nhanh', true],
+  ['generic', 'VP chung'],
+  ['hanviet', 'Hán việt'],
+])
 
 export const upsert_actived = writable(false)
 export const upsert_changed = writable(false)

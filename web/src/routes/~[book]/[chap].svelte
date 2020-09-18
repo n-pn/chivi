@@ -50,8 +50,8 @@
     upsert_input,
     upsert_lower,
     upsert_upper,
-    upsert_atab,
-    upsert_udic,
+    upsert_dicts,
+    upsert_d_idx,
     upsert_actived,
     upsert_changed,
   } from '$src/stores'
@@ -84,7 +84,11 @@
 
   $: power_user = $self_power > 0
 
-  $: $upsert_udic = ubid
+  $: $upsert_dicts = [
+    [ubid, bname, true],
+    ['generic', 'VP chung'],
+    ['hanviet', 'Hán việt'],
+  ]
 
   let dirty = false
   $: if (dirty) reload_content(1)
@@ -142,8 +146,8 @@
         evt.preventDefault()
 
         let tab = null
-        if (evt.keyCode == 88) tab = 'special'
-        else if (evt.keyCode == '67') tab = 'generic'
+        if (evt.keyCode == 88) tab = 0
+        else if (evt.keyCode == '67') tab = 1
 
         show_upsert_modal(tab)
         break
@@ -178,7 +182,7 @@
         $upsert_input = input
         $upsert_lower = lower
         $upsert_upper = upper
-        $upsert_atab = 'special'
+        $upsert_d_idx = 0
       }
     })
 
@@ -186,18 +190,6 @@
       document.removeEventListener('selectionchange', evt)
     }
   })
-
-  function truncate_line(input, lower, length = 1) {
-    if (lower >= 4) {
-      const caret = lower - 4
-      input = input.substr(caret, length + 10)
-      lower = 4
-    } else {
-      input = input.substr(0, length + 10)
-    }
-
-    return [input, lower]
-  }
 
   function handle_click({ target }, idx) {
     if (target.nodeName !== 'X-V') return
@@ -221,7 +213,7 @@
   }
 
   function show_upsert_modal(new_tab = null) {
-    upsert_atab.update((x) => new_tab || x)
+    upsert_d_idx.update((x) => new_tab || x)
     upsert_actived.set(true)
   }
 
