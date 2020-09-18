@@ -134,7 +134,7 @@
       if ($d_idx > 1 || hints.length == 0) {
         output = new_val
       } else {
-        output = hints.pop()
+        output = hints.shift()
         hints = hints
       }
     }
