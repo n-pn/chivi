@@ -10,9 +10,11 @@
     for (let x of inquire.suggest) res.push(x)
     if (accept) res.push(accept)
 
-    return res.filter(
-      (v, i, s) => v !== inquire.hanviet && v !== reject && s.indexOf(v) === i
-    )
+    return res.filter((v, i, s) => {
+      if (v == inquire.hanviet) return false
+      if (v == reject) return false
+      return s.indexOf(v) === i
+    })
   }
 
   function capitalize(input) {
@@ -27,18 +29,6 @@
     for (let i = count; i < res.length; i++) res[i] = res[i].toLowerCase()
 
     return res.join(' ')
-  }
-
-  function compare_power(user, prev) {
-    if (user < prev) return [false, 'text']
-    else if (user == prev) return [false, 'line']
-    else return [true, 'solid']
-  }
-
-  function compare_value(new_val, old_val) {
-    if (new_val == '') return ['harmful', 'Xoá từ']
-    else if (old_val == '') return ['success', 'Thêm từ']
-    else return ['primary', 'Sửa từ']
   }
 
   export async function dict_search(fetch, hanzi, dicts = ['dich-nhanh']) {
@@ -90,17 +80,17 @@
   let current = { key: '', vals: [], hints: [] }
 
   let existed = ''
-  let updated = false
+  $: updated = existed != output
+
   let hints = []
 
   let value_elem // to be focused
   $: if ($actived) value_elem && value_elem.focus()
 
-  $: [prevail, btn_power] = compare_power($self_power, current.power)
-  $: [btn_class, btn_label] = compare_value(output, existed)
-
   async function inquire_hanzi(hanzi) {
     const dnames = $dicts.map((x) => x[0])
+
+    output = ''
     inquire = await dict_search(fetch, hanzi, dnames)
     update_val()
   }
@@ -114,11 +104,41 @@
     return $dicts[index][2]
   }
 
+  let prevail = true
+  let btn_power = 'solid'
+
+  let btn_class = 'success'
+  let btn_label = 'Thêm từ'
+
+  function update_power(user, prev) {
+    if (user < prev) {
+      prevail = false
+      btn_power = 'text'
+    } else if (user == prev) {
+      prevail = false
+      btn_power = 'line'
+    } else {
+      prevail = true
+      btn_power = 'solid'
+    }
+  }
+
+  function update_label(new_val, old_val) {
+    if (!old_val) {
+      btn_class = 'success'
+      btn_label = 'Thêm từ'
+    } else if (new_val) {
+      btn_class = 'primary'
+      btn_label = 'Sửa từ'
+    } else {
+      btn_class = 'harmful'
+      btn_label = 'Xoá từ'
+    }
+  }
+
   function update_val(new_output = null) {
     current = inquire.entries[$d_idx]
-
     existed = current.vals[0]
-    updated = existed != output
 
     if (!new_output) new_output = existed
 
@@ -139,6 +159,8 @@
       }
     }
 
+    update_power($self_power, current.power)
+    update_label(output, existed)
     value_elem.focus()
   }
 
