@@ -251,8 +251,12 @@
       padding: 0 0.5rem;
       @include fgcolor(neutral, 6);
       @include bgcolor(transparent);
-      &._active,
-      &:hover {
+
+      &._active {
+        @include fgcolor(primary, 6);
+      }
+
+      @include hover {
         @include fgcolor(primary, 6);
       }
     }
@@ -295,7 +299,7 @@
     :global(x-v) {
       cursor: pointer;
 
-      &:hover {
+      @include hover {
         @include fgcolor(primary, 5);
       }
 

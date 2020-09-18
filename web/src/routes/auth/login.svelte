@@ -130,10 +130,12 @@
 
     @include border();
     @include radius();
+
     &:focus,
     &:hover {
       @include bdcolor($color: primary, $shade: 3);
     }
+
     &:focus {
       box-shadow: 0 0 1px 1px color(primary, 2);
     }

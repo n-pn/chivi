@@ -296,7 +296,7 @@
 <style lang="scss">
   .genre > a {
     @include fgcolor(neutral, 6);
-    &:hover {
+    @include hover {
       @include fgcolor(primary, 6);
     }
   }
@@ -360,7 +360,7 @@
   .seed-menu {
     position: relative;
 
-    &:hover .-menu {
+    @include hover .-menu {
       display: block;
     }
 
@@ -420,7 +420,7 @@
         @include fgcolor(primary, 5);
       }
 
-      &:hover {
+      @include hover {
         @include bgcolor(neutral, 2);
       }
 
@@ -564,7 +564,7 @@
     .latest-time & {
       @include font-size(2);
       cursor: pointer;
-      &:hover {
+      @include hover {
         @include fgcolor(primary, 5);
       }
       // @include fgcolor(neutral, 5);
@@ -601,7 +601,7 @@
       @include fgcolor(neutral, 5);
     }
 
-    &:hover {
+    @include hover {
       @include fgcolor(primary, 6);
     }
   }

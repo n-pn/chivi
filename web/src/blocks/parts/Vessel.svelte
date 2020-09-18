@@ -172,7 +172,7 @@
 
     @include radius();
 
-    &:hover {
+    @include hover {
       @include bgcolor(primary, 5);
     }
 
@@ -306,7 +306,7 @@
       @include font-size(2);
       @include fgcolor(neutral, 6);
 
-      &:hover {
+      @include hover {
         @include fgcolor(primary, 6);
         @include bgcolor(neutral, 2);
       }

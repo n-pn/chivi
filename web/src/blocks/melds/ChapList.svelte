@@ -186,7 +186,7 @@
       }
     }
 
-    &:hover {
+    @include hover {
       .title {
         @include fgcolor(primary, 5);
       }

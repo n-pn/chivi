@@ -52,7 +52,7 @@
     @include font-size(2);
     @include fgcolor(neutral, 7);
 
-    &:hover {
+    @include hover {
       @include bgcolor(neutral, 3);
     }
   }

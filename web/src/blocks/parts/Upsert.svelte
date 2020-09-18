@@ -81,6 +81,8 @@
 <script>
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
+
+  import UpsertInput from './Upsert/Input.svelte'
   import UpsertFooter from './Upsert/Footer.svelte'
 
   // export let dirty = false
@@ -92,7 +94,7 @@
   $: if ($actived && input) preload_input(input)
 
   let value_elem
-  $: if ($actived && value_elem) value_elem.focus()
+  $: if ($actived) value_elem && value_elem.focus()
 
   let meta = {
     dicts: {
@@ -244,39 +246,11 @@
   <div class="dialog" on:click|stopPropagation={() => value_elem.focus()}>
     <header class="header">
       <div class="hanzi">
-        <button
-          class="-btn"
-          disabled={lower == 0}
-          on:click={() => (lower -= 1)}>
-          <AIcon name="chevron-left" />
-        </button>
-
-        <button
-          class="-btn _bd"
-          disabled={lower == upper - 1}
-          on:click={() => (lower += 1)}>
-          <AIcon name="chevron-right" />
-        </button>
-
-        <span class="-inp">
-          <span class="-sub">{$upsert_input.substring(lower - 2, lower)}</span>
-          <span class="-key">{input}</span>
-          <span class="-sub">{$upsert_input.substring(upper, upper + 2)}</span>
-        </span>
-
-        <button
-          class="-btn _bd"
-          disabled={upper == lower + 1}
-          on:click={() => (upper -= 1)}>
-          <AIcon name="chevron-left" />
-        </button>
-
-        <button
-          class="-btn"
-          disabled={upper == $upsert_input.length}
-          on:click={() => (upper += 1)}>
-          <AIcon name="chevron-right" />
-        </button>
+        <UpsertInput
+          input={$upsert_input}
+          bind:lower
+          bind:upper
+          bind:output={input} />
       </div>
 
       <!-- <button class="m-button _text" on:click={reset_bounds}>
@@ -408,64 +382,15 @@
 
     .m-button {
       @include fgcolor(neutral, 6);
-      &:hover {
+      @include hover {
         @include fgcolor(primary, 6);
       }
     }
   }
 
   .hanzi {
-    display: inline-flex;
     margin-right: 0.5rem;
-
-    height: $header-inner-height;
-    line-height: $header-inner-height;
     flex-grow: 1;
-
-    @include radius();
-
-    @include bgcolor(neutral, 1);
-    @include border($color: neutral, $shade: 3);
-
-    > .-inp {
-      display: inline-flex;
-      flex-grow: 1;
-      justify-content: center;
-      overflow: hidden;
-
-      > .-sub {
-        @include fgcolor(neutral, 4);
-      }
-
-      > .-key {
-        font-weight: 500;
-        @include fgcolor(neutral, 7);
-      }
-    }
-
-    > .-btn {
-      background: transparent;
-      padding: 0 0.375rem;
-      margin: 0;
-      line-height: 1em;
-      @include font-size(4);
-      @include fgcolor(neutral, 7);
-
-      &:hover {
-        background-color: #fff;
-        @include fgcolor(primary, 5);
-      }
-
-      &:disabled {
-        cursor: pointer;
-        @include fgcolor(neutral, 5);
-        background: transparent;
-      }
-
-      &._bd {
-        @include border($sides: left-right);
-      }
-    }
   }
 
   .tabs {
@@ -574,7 +499,7 @@
       @include bgcolor(neutral, 1);
       @include radius;
 
-      &:hover {
+      @include hover {
         @include fgcolor(primary, 6);
         @include bgcolor(primary, 1);
       }
@@ -635,7 +560,7 @@
       // max-width: 14vw;
       @include truncate(null);
 
-      &:hover {
+      @include hover {
         @include fgcolor(primary, 5);
         @include bgcolor(white);
       }
