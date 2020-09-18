@@ -290,6 +290,7 @@
           type="text"
           name="value"
           lang="vi"
+          autocapitalize={shoud_cap($d_idx) ? 'words' : 'off'}
           on:keydown={handle_down}
           bind:this={value_elem}
           bind:value={out_val} />
