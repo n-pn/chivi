@@ -72,7 +72,7 @@
   function make_bounds(nodes = [], i = 0) {
     let output = ''
 
-    for (let j = i; j >= 0; j--) {
+    for (let j = i - 1; j >= 0; j--) {
       const [key] = nodes[j]
       output = key + output
       if (output.length >= 4) break
