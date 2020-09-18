@@ -33,10 +33,7 @@
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
 
-  import MDiglot, {
-    parse as parse_vp,
-    render as render_vp,
-  } from '$melds/MDiglot'
+  import MDiglot, { parse as parse_vp } from '$melds/MDiglot'
 
   import Vessel from '$parts/Vessel'
   import Clavis from '$parts/Clavis'
@@ -48,12 +45,9 @@
     // self_uname,
     self_power,
     upsert_input,
-    upsert_lower,
-    upsert_upper,
     upsert_dicts,
     upsert_d_idx,
     upsert_actived,
-    upsert_changed,
   } from '$src/stores'
 
   export let bslug = ''
@@ -177,11 +171,9 @@
 
   onMount(() => {
     const evt = document.addEventListener('selectionchange', () => {
-      const [input, lower, upper] = read_selection()
+      const input = read_selection()
       if (input) {
         $upsert_input = input
-        $upsert_lower = lower
-        $upsert_upper = upper
         $upsert_d_idx = 0
       }
     })

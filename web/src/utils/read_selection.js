@@ -4,6 +4,8 @@ export default function read_selection() {
     .map((x) => [x.dataset.k, +x.dataset.d])
     .filter(([k]) => k != '')
 
+  if (nodes.length == 0) return
+
   let input = ''
   let lower = 0
   let upper = 0
@@ -20,16 +22,6 @@ export default function read_selection() {
   }
 
   lower = pos
-
-  // for (; idx < nodes.length; idx++) {
-  //   const [key, dic] = nodes[idx]
-  //   if (dic < 1) break
-
-  //   input += key
-
-  // }
-
-  // upper = pos
 
   for (; idx < nodes.length; idx++) {
     const [key, dic] = nodes[idx]

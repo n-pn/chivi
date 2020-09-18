@@ -61,13 +61,7 @@
     return `<x-v data-k="${key}" data-d=${dic} data-i=${idx} data-p=${pos}>${val}</x-v>`
   }
 
-  import {
-    upsert_input,
-    upsert_lower,
-    upsert_upper,
-    upsert_d_idx,
-    upsert_actived,
-  } from '$src/stores'
+  import { upsert_input, upsert_d_idx, upsert_actived } from '$src/stores'
 
   function make_bounds(nodes = [], i = 0) {
     let output = ''
@@ -78,11 +72,11 @@
       if (output.length >= 4) break
     }
 
-    upsert_lower.set(output.length)
+    const lower = output.length
     output += nodes[i][0]
-    upsert_upper.set(output.length)
+    const upper = output.length
 
-    let limit = output.length + 4
+    let limit = upper + 4
     if (limit < 10) limit = 10
 
     for (let j = i + 1; j < nodes.length; j++) {
@@ -91,7 +85,7 @@
       if (output.length > limit) break
     }
 
-    upsert_input.set(output)
+    upsert_input.set([output, lower, upper])
   }
 </script>
 

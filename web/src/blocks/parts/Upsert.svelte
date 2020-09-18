@@ -63,11 +63,9 @@
   import {
     // self_uname,
     self_power,
+    upsert_input,
     upsert_dicts as dicts,
     upsert_d_idx as d_idx,
-    upsert_input,
-    upsert_lower,
-    upsert_upper,
     upsert_actived as actived,
   } from '$src/stores'
 
@@ -81,12 +79,9 @@
 <script>
   export let dirty = false
 
-  $: lower = $upsert_lower
-  $: upper = $upsert_upper
-  $: hanzi = $upsert_input.substring(lower, upper)
-
-  let value_elem
-
+  let [input, lower, upper] = $upsert_input
+  $: hanzi = input.substring(lower, upper)
+  $: if ($actived && hanzi) inquire_hanzi(hanzi)
   // let cached = {}
   let search = {
     entries: [],
@@ -95,30 +90,24 @@
     suggest: [],
   }
 
-  $: if ($actived && hanzi) inquire_hanzi(hanzi, false)
+  let output = ''
+  let hints = []
 
   $: current = search.entries[$d_idx] || { key: '', vals: [], hints: [] }
   $: existed = (current && current.vals[0]) || ''
-  $: updated = out_val != existed
+  $: updated = output != existed
 
+  let value_elem // to be focused
   $: if ($actived) value_elem && value_elem.focus()
 
   $: [prevail, btn_power] = compare_power($self_power, current.power)
-  $: [btn_class, btn_label] = compare_value(out_val, existed)
+  $: [btn_class, btn_label] = compare_value(output, existed)
 
-  async function inquire_hanzi(hanzi, refresh = false) {
-    // search = cached[hanzi]
-    // if (search && !refresh) return
-
+  async function inquire_hanzi(hanzi) {
     const dnames = $dicts.map((x) => x[0])
     search = await dict_search(fetch, hanzi, dnames)
-
-    // cached[hanzi] = search
     update_val()
   }
-
-  let out_val = ''
-  let hints = []
 
   function change_tab(index) {
     $d_idx = index
@@ -126,29 +115,26 @@
   }
 
   function shoud_cap(index) {
+    console.log({ caps: $dicts[index][2] })
     return $dicts[index][2]
   }
 
-  function update_val(new_val) {
-    let current = search.entries[$d_idx]
-
-    if (!new_val) {
-      if (current) new_val = current.vals[0]
-    }
+  function update_val(new_val = null) {
+    if (!new_val) new_val = current.vals[0]
 
     if (new_val) {
-      out_val = new_val
-      hints = make_hints(search, out_val)
+      output = new_val
+      hints = make_hints(search, output)
     } else {
       let new_val = search.hanviet
-      if (shoud_cap[$d_idx]) new_val = titleize(new_val, 9)
+      if (shoud_cap($d_idx)) new_val = titleize(new_val, 9)
 
       hints = make_hints(search, new_val)
 
       if ($d_idx > 1 || hints.length == 0) {
-        out_val = new_val
+        output = new_val
       } else {
-        out_val = hints.pop()
+        output = hints.pop()
         hints = hints
       }
     }
@@ -158,14 +144,14 @@
 
   async function submit_val() {
     const dname = $dicts[$d_idx][0]
-    const res = await dict_upsert(fetch, dname, hanzi, out_val.trim())
+    const res = await dict_upsert(fetch, dname, hanzi, output.trim())
 
     $actived = false
     dirty = res.ok
   }
 
   function upcase_val(count = 100) {
-    const new_val = titleize(out_val, count)
+    const new_val = titleize(output, count)
     update_val(new_val)
   }
 
@@ -179,7 +165,6 @@
     }
 
     if (evt.keyCode === 27) {
-      evt.preventDefault()
       return actived.set(false)
     }
 
@@ -221,7 +206,7 @@
         break
 
       case 69:
-        out_val = ''
+        output = ''
         value_elem.focus()
         break
 
@@ -244,12 +229,9 @@
   <div class="dialog" on:click|stopPropagation={() => value_elem.focus()}>
     <header class="header">
       <div class="hanzi">
-        <UpsertInput
-          input={$upsert_input}
-          bind:lower
-          bind:upper
-          bind:output={hanzi} />
+        <UpsertInput {input} bind:lower bind:upper bind:output={hanzi} />
       </div>
+
       <button
         type="button"
         class="m-button _text"
@@ -293,7 +275,7 @@
           autocapitalize={shoud_cap($d_idx) ? 'words' : 'off'}
           on:keydown={handle_down}
           bind:this={value_elem}
-          bind:value={out_val} />
+          bind:value={output} />
 
         <div class="format">
           <span class="-lbl _show-sm">V.hoa:</span>
@@ -303,7 +285,7 @@
           <span class="-btn" on:click={() => upcase_val(9)}>Tất cả</span>
           <span class="-btn" on:click={() => upcase_val(0)}>Không</span>
 
-          <span class="-btn _right" on:click={() => (out_val = '')}>Xoá</span>
+          <span class="-btn _right" on:click={() => (output = '')}>Xoá</span>
 
           {#if updated}
             <span class="-btn _right" on:click={() => update_val(existed)}>
