@@ -213,7 +213,7 @@
       $upsert_lower = lower
       $upsert_upper = lower + key.length
 
-      $upsert_atab = dic > 2 ? 'special' : 'generic'
+      $upsert_atab = 'special'
       $upsert_actived = true
 
       return
