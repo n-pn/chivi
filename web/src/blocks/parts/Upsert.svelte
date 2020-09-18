@@ -116,7 +116,6 @@
 
   function update_val(new_output = null) {
     current = inquire.entries[$d_idx]
-    console.log({ current })
 
     existed = current.vals[0]
     updated = existed != output
