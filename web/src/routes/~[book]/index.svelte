@@ -359,19 +359,14 @@
 
   .seed-menu {
     position: relative;
-
-    &:hover .-menu {
-      display: block;
-    }
-
     .-text {
+      cursor: pointer;
       display: inline-block;
       height: 2.25rem;
 
-      cursor: pointer;
-      padding: 0 0.75rem;
+      padding: 0 0.5rem;
       font-weight: 500;
-      line-height: 2rem;
+      line-height: 2.25rem;
       text-transform: uppercase;
       @include border();
       @include radius();
@@ -389,15 +384,27 @@
       }
     }
 
+    &:hover {
+      .-menu {
+        display: block;
+      }
+
+      .-text {
+        @include bgcolor(neutral, 2);
+      }
+    }
+
     .-menu {
       display: none;
+      // prettier-ignore
+
       position: absolute;
       top: 2.25rem;
       left: 0;
-      min-width: 13rem;
-      padding: 0.75rem 0;
-      background-color: #fff;
+      min-width: 12rem;
+      padding: 0.5rem 0;
 
+      @include bgcolor(white);
       @include radius();
       @include shadow(2);
     }
@@ -420,7 +427,7 @@
         @include fgcolor(primary, 5);
       }
 
-      @include hover {
+      &:hover {
         @include bgcolor(neutral, 2);
       }
 

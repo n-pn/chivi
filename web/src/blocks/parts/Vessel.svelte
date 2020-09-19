@@ -271,32 +271,29 @@
 
   :global(.header-menu) {
     position: absolute;
+    width: 12rem;
+    padding: 0.5rem 0;
+    top: $header-inner-height;
+    right: 0;
+
+    @include bgcolor(#fff);
+    @include shadow;
+    @include radius;
+
     display: none;
-    width: 11rem;
-
-    :global(.header-item):hover > & {
+    :global(.header-item:hover) & {
       display: block;
-      top: $header-inner-height;
-      right: 0;
-      @include bgcolor(#fff);
-      @include shadow;
-      @include radius;
-      padding: 0.5rem 0;
-    }
-
-    :global(svg) {
-      margin: 0;
     }
 
     :global(.-item) {
-      display: block;
+      display: flex;
 
-      padding: 0 0.5rem;
-      line-height: 2.25rem;
+      padding: 0 0.25rem;
+      // line-height: 2.25rem;
       text-transform: uppercase;
       font-weight: 500;
 
-      @include flex(0.25rem);
+      @include flex(0);
 
       @include border($sides: top);
       &:last-child {
@@ -311,15 +308,12 @@
         @include bgcolor(neutral, 2);
       }
 
-      > :global(svg) {
+      :global(svg) {
         margin: 0.5rem;
-        // width: 1.25rem;
-        // height: 1.25rem;
+      }
 
-        // margin-top: -0.125rem;
-        &._right {
-          margin-left: auto;
-        }
+      :global(._right) {
+        margin-left: auto;
       }
     }
   }
