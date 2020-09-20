@@ -1,5 +1,5 @@
 <script context="module">
-  function make_hints(inquire, reject, accept) {
+  function make_hints(inquire, accept) {
     let res = []
 
     for (let { vals, hints } of inquire.entries) {
@@ -12,7 +12,6 @@
 
     return res.filter((v, i, s) => {
       if (v == inquire.hanviet) return false
-      if (v == reject) return false
       return s.indexOf(v) === i
     })
   }
@@ -100,12 +99,14 @@
 
   let value_elem // to be focused
   $: if ($actived) value_elem && value_elem.focus()
+  // $: hints = make_hints(inquire, output)
 
   async function inquire_hanzi(hanzi) {
     const dnames = $dicts.map((x) => x[0])
 
     output = ''
     inquire = await dict_search(fetch, hanzi, dnames)
+    hints = make_hints(inquire)
     update_val()
   }
 
@@ -126,19 +127,12 @@
 
     if (new_output) {
       output = new_output
-      hints = make_hints(inquire, output)
     } else {
       let new_output = inquire.hanviet
       if (shoud_cap($d_idx)) new_output = titleize(new_output, 9)
 
-      hints = make_hints(inquire, new_output)
-
-      if ($d_idx > 1 || hints.length == 0) {
-        output = new_output
-      } else {
-        output = hints.shift()
-        hints = hints
-      }
+      if ($d_idx > 1 || hints.length == 0) output = new_output
+      else output = hints[0]
     }
 
     value_elem.focus()
@@ -174,42 +168,67 @@
     evt.preventDefault()
 
     switch (evt.keyCode) {
-      case 49:
+      // upcase value
+
+      case 49: // key: `1`
         upcase_val(1)
         break
 
-      case 50:
+      case 50: // key: `2`
         upcase_val(2)
         break
 
-      case 51:
+      case 51: // key: `3`
         upcase_val(3)
         break
 
-      case 52:
+      case 52: // key: `4`
         upcase_val(9)
         break
 
-      case 48:
-      case 192:
+      case 48: // key: `0`
+      case 192: // key: `~`
         upcase_val(0)
         break
 
-      case 88:
+      // change dict tab
+
+      case 88: // key: `x`
         change_tab(0)
         break
 
-      case 67:
+      case 67: // key: `c`
         change_tab(1)
         break
 
-      case 82:
-        update_val(existed)
+      case 86: // key: `v`
+        change_tab(2)
         break
 
-      case 69:
+      // handle changing input bound
+      case 72: // key: `h`
+        if (lower > 0) lower -= 1
+        break
+
+      case 74: // key: `j`
+        if (lower + 1 < upper) lower += 1
+        break
+
+      case 75: // key: `k`
+        if (upper - 1 > lower) upper -= 1
+        break
+
+      case 76: // key: `l`
+        if (upper < input.length) upper += 1
+        break
+
+      case 82: // key: `r`
+        output = existed
+        break
+
+      case 69: // key: `e`
         output = ''
-        value_elem.focus()
+        // value_elem.focus()
         break
 
       default:
@@ -262,30 +281,41 @@
           </span>
 
           {#each hints as hint}
-            <span class="-hint" on:click={() => update_val(hint)}>{hint}</span>
+            {#if hint != output}
+              <span
+                class="-hint"
+                class:_exist={hint == existed}
+                on:click={() => update_val(hint)}>{hint}</span>
+            {/if}
           {/each}
 
           <span class="-hint _right">[{inquire.binh_am}]</span>
         </div>
 
         <input
-          class="val-field"
-          class:_fresh={!existed}
+          lang="vi"
           type="text"
           name="value"
-          lang="vi"
+          class="val-field"
+          class:_fresh={!existed}
           autocapitalize={shoud_cap($d_idx) ? 'words' : 'off'}
           on:keydown={handle_down}
           bind:this={value_elem}
           bind:value={output} />
 
         <div class="format">
-          <span class="-lbl _show-sm">V.hoa:</span>
-          <span class="-btn" on:click={() => upcase_val(1)}>Một chữ</span>
-          <span class="-btn" on:click={() => upcase_val(2)}>Hai chữ</span>
-          <span class="-btn _show-md" on:click={() => upcase_val(3)}>Ba chữ</span>
-          <span class="-btn" on:click={() => upcase_val(9)}>Tất cả</span>
-          <span class="-btn" on:click={() => upcase_val(0)}>Không</span>
+          <span class="-btn" on:click={() => upcase_val(1)}>
+            <span class="_show-sm">hoa</span> một chữ
+          </span>
+
+          <span class="-btn" on:click={() => upcase_val(2)}>hai chữ</span>
+
+          <span class="-btn _show-md" on:click={() => upcase_val(3)}>ba chữ</span>
+
+          <span class="-btn" on:click={() => upcase_val(9)}>tất cả</span>
+
+          <span class="-btn" on:click={() => upcase_val(0)}>không <span class="_show-sm"> hoa</span>
+          </span>
 
           <span class="-btn _right" on:click={() => (output = '')}>Xoá</span>
 
@@ -450,17 +480,17 @@
     // height: $suggests-height;
 
     padding: 0.25rem 0.5rem;
+    font-style: italic;
 
     @include border();
     border-bottom: none;
     @include radius($sides: top);
 
-    @include flex($gap: 0.25rem, $child: '.-hint');
+    @include flex($gap: 0.25rem);
     @include font-size(2);
 
     .-hint {
       cursor: pointer;
-      font-style: italic;
       line-height: 1.5rem;
       height: 1.5rem;
 
@@ -475,6 +505,11 @@
       @include hover {
         @include fgcolor(primary, 6);
         @include bgcolor(primary, 1);
+      }
+
+      &._exist {
+        font-style: normal;
+        font-weight: 500;
       }
 
       &._right {
@@ -502,15 +537,27 @@
       font-size: rem(12px);
     }
 
-    .-lbl,
     .-btn {
+      cursor: pointer;
+
       float: left;
       padding: 0 0.375rem;
       line-height: $height;
       font-weight: 500;
       text-transform: uppercase;
-
       @include fgcolor(neutral, 5);
+
+      // max-width: 14vw;
+      @include truncate(null);
+
+      @include hover {
+        @include fgcolor(primary, 5);
+        @include bgcolor(white);
+      }
+
+      &._right {
+        float: right;
+      }
     }
 
     ._show-sm {
@@ -524,22 +571,6 @@
       display: none;
       @include screen-min(md) {
         display: inline-block;
-      }
-    }
-
-    .-btn {
-      cursor: pointer;
-
-      // max-width: 14vw;
-      @include truncate(null);
-
-      @include hover {
-        @include fgcolor(primary, 5);
-        @include bgcolor(white);
-      }
-
-      &._right {
-        float: right;
       }
     }
   }

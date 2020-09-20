@@ -141,7 +141,7 @@
 
         let tab = null
         if (evt.keyCode == 88) tab = 0
-        else if (evt.keyCode == '67') tab = 1
+        else if (evt.keyCode == 67) tab = 1
 
         show_upsert_modal(tab)
         break
