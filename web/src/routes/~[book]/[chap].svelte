@@ -31,9 +31,9 @@
 
   import MDiglot, { parse as parse_vp_input } from '$melds/MDiglot'
   import MUpsert, { dict_upsert } from '$melds/MUpsert'
+  import MLookup from '$melds/MLookup'
 
   import Vessel from '$parts/Vessel'
-  import Lookup from '$parts/Lookup'
 
   import read_selection from '$utils/read_selection'
 
@@ -311,7 +311,7 @@
   </footer>
 
   {#if lookup_enabled}
-    <Lookup on_top={!$upsert_actived} />
+    <MLookup on_top={!$upsert_actived} />
   {/if}
 
   {#if $upsert_actived}
