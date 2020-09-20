@@ -24,7 +24,7 @@
 <script>
   import AIcon from '$atoms/AIcon'
   import ACover from '$atoms/ACover'
-  import ARtime from '$atoms/ARtime'
+  import ATime from '$atoms/ATime'
 
   export let book
 
@@ -91,7 +91,7 @@
 
       <span class="stat _mftime">
         <AIcon name="clock" />
-        <span><ARtime time={book.mftime} /></span>
+        <span><ATime time={book.mftime} /></span>
       </span>
     </div>
 

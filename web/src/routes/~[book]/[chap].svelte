@@ -27,7 +27,7 @@
   }
 
   import AIcon from '$atoms/AIcon'
-  import ARtime from '$atoms/ARtime'
+  import ATime from '$atoms/ATime'
 
   import MDiglot, { parse as parse_vp_input } from '$melds/MDiglot'
   import MUpsert, { dict_upsert } from '$melds/MUpsert'
@@ -260,7 +260,7 @@
     <div class="-crumb"><span class="-text">{ch_label}</span></div>
 
     <div class="-right">
-      <span><ARtime time={mftime} /></span>
+      <span><ATime time={mftime} /></span>
     </div>
   </nav>
 
