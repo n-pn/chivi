@@ -50,57 +50,69 @@
     <AIcon name="search" />
   </form>
 
-  <h1 class="label">
-    Hiển thị kết quả {offset + 1}~{offset + items.length}/{total} cho từ khoá "{word}"
-    :
-  </h1>
+  {#if items.length > 0}
+    <h1>
+      Hiển thị kết quả {offset + 1}~{offset + items.length}/{total} cho từ khoá "{word}":
+    </h1>
 
-  <div class="list" data-page={page}>
-    {#each items as book}
-      <a class="book" href="/~{book.slug}" rel="prefetch">
-        <div class="cover">
-          <ACover ubid={book.ubid} path={book.main_cover} />
-        </div>
-
-        <div class="name">
-          <h2 class="title">{book.vi_title} <span>({book.zh_title})</span></h2>
-        </div>
-
-        <div class="extra">
-          <div><span class="author">{book.vi_author}</span></div>
-
-          <div>
-            <span>
-              Đánh giá: <strong>{book.rating == 0 ? '--' : book.rating}</strong>
-              /10
-            </span>
+    <div class="list" data-page={page}>
+      {#each items as book}
+        <a class="book" href="/~{book.slug}" rel="prefetch">
+          <div class="cover">
+            <ACover ubid={book.ubid} path={book.main_cover} />
           </div>
 
-          <div><span class="genre">Thể loại: {book.vi_genres[0]}</span></div>
-        </div>
+          <div class="infos">
+            <div class="extra">
+              <h2>{book.vi_title}</h2>
+            </div>
+
+            <div class="extra _sep">
+              <h3>{book.zh_title}</h3>
+            </div>
+
+            <div class="extra">
+              <span class="label">Tác giả:</span>
+              <span class="value">{book.vi_author}</span>
+            </div>
+
+            <div class="extra">
+              <span class="label">Thể loại:</span>
+              <span class="value">{book.vi_genres[0]}</span>
+            </div>
+
+            <div class="extra">
+              <span class="label">Đánh giá:</span>
+              <span class="value">{book.rating == 0 ? '--' : book.rating}</span>
+              <span class="label _cram">/10</span>
+            </div>
+          </div>
+        </a>
+      {/each}
+    </div>
+
+    <div class="pagi">
+      <a
+        class="m-button _line"
+        class:_disable={page == 1}
+        href={searchUrl(page - 1)}>
+        <AIcon name="chevron-left" />
+        <span>Trước</span>
       </a>
-    {/each}
-  </div>
 
-  <div class="pagi">
-    <a
-      class="m-button _line"
-      class:_disable={page == 1}
-      href={searchUrl(page - 1)}>
-      <AIcon name="chevron-left" />
-      <span>Trước</span>
-    </a>
+      <span class="m-button _line _primary _disable"><span>{page}</span></span>
 
-    <span class="m-button _line _primary _disable"><span>{page}</span></span>
-
-    <a
-      class="m-button _solid _primary"
-      class:_disable={page == pmax}
-      href={searchUrl(page + 1)}>
-      <span>Kế tiếp</span>
-      <AIcon name="chevron-right" />
-    </a>
-  </div>
+      <a
+        class="m-button _solid _primary"
+        class:_disable={page == pmax}
+        href={searchUrl(page + 1)}>
+        <span>Kế tiếp</span>
+        <AIcon name="chevron-right" />
+      </a>
+    </div>
+  {:else}
+    <h1>Không tìm được kết quả phù hợp cho từ khoá "{word}"</h1>
+  {/if}
 </Vessel>
 
 <style lang="scss">
@@ -114,6 +126,19 @@
     @include grid($gap: 0.75rem, $size: minmax(18rem, 1fr));
   }
 
+  h1 {
+    text-align: center;
+
+    @include apply(margin-top, screen-vals(1rem, 1.5rem, 2rem));
+    @include apply(margin-bottom, screen-vals(0rem, 0.5rem, 1rem));
+    @include apply(
+      font-size,
+      screen-vals(font-size(5), font-size(6), font-size(7))
+    );
+    @include apply(line-height, screen-vals(1.5rem, 1.75rem, 2rem));
+    @include fgcolor(neutral, 6);
+  }
+
   .book {
     display: block;
     padding: 0.5rem;
@@ -123,23 +148,15 @@
     @include shadow(1);
 
     @include clearfix;
-    @include hover {
+
+    &:hover {
       @include shadow(2);
-      .title {
+
+      h2,
+      h3 {
         @include fgcolor(primary, 5);
       }
     }
-  }
-
-  .title {
-    // font-weight: 300;
-    @include font-size(5);
-    line-height: 1.75rem;
-    @include fgcolor(neutral, 7);
-  }
-
-  strong {
-    font-weight: 500;
   }
 
   .cover {
@@ -172,51 +189,51 @@
     }
   }
 
-  .name {
+  .infos {
     float: right;
-    margin-bottom: 0.375rem;
-    padding-left: 0.5rem;
     @include apply(width, screen-vals(65%, 70%));
+    padding-left: 0.5rem;
+
+    > * + * {
+      margin-top: 0.25rem;
+    }
+  }
+
+  h2,
+  h3 {
+    line-height: 1.5rem;
+    font-weight: 400;
+    @include truncate();
+  }
+
+  h2 {
+    margin-top: 0.5rem;
+    @include font-size(5);
+    @include fgcolor(neutral, 8);
+    // margin-bottom: 0.25rem;
+  }
+
+  h3 {
+    margin-bottom: 0.5rem;
+    @include font-size(4);
+    @include fgcolor(neutral, 7);
   }
 
   .extra {
-    float: right;
-    padding-left: 0.5rem;
+    @include flex(0.5rem);
 
-    @include apply(width, screen-vals(65%, 70%));
-
-    > div {
-      @include clearfix;
-      margin-bottom: 0.25rem;
-      > * {
-        float: left;
-
-        & + * {
-          margin-left: 0.5rem;
-        }
-      }
-    }
-
-    & {
-      @include fgcolor(neutral, 6);
-    }
-
-    :global(svg) {
-      margin-top: -0.125rem;
+    ._cram {
+      margin-left: 0;
     }
   }
 
   .label {
-    text-align: center;
-
-    @include apply(margin-top, screen-vals(1rem, 1.5rem, 2rem));
-    @include apply(margin-bottom, screen-vals(0rem, 0.5rem, 1rem));
-    @include apply(
-      font-size,
-      screen-vals(font-size(5), font-size(6), font-size(7))
-    );
-    @include apply(line-height, screen-vals(1.5rem, 1.75rem, 2rem));
     @include fgcolor(neutral, 6);
+  }
+
+  .value {
+    font-weight: 500;
+    @include fgcolor(neutral, 7);
   }
 
   .pagi {

@@ -35,13 +35,15 @@ $-button-text-sizes: (
   display: inline-flex;
   text-transform: uppercase;
   font-weight: 500;
+  cursor: pointer;
+  outline: none;
 
   @include radius;
   @include border($color: none);
 
   &:disabled,
   &._disable {
-    &:hover {
+    @include hover {
       cursor: text;
     }
   }

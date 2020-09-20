@@ -281,7 +281,7 @@
     @include radius;
 
     display: none;
-    :global(.header-item:hover) & {
+    :global(.header-item):hover & {
       display: block;
     }
 
@@ -303,7 +303,7 @@
       @include font-size(2);
       @include fgcolor(neutral, 6);
 
-      @include hover {
+      &:hover {
         @include fgcolor(primary, 6);
         @include bgcolor(neutral, 2);
       }

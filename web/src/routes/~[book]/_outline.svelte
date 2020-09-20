@@ -59,7 +59,8 @@
 <div class="main-info">
   <h1 class="title">
     <span class="-main">{book.vi_title}</span>
-    <span class="-sub">({book.zh_title})</span>
+    <span class="-sep">-</span>
+    <span class="-sub">{book.zh_title}</span>
   </h1>
 
   <div class="cover">
@@ -68,17 +69,19 @@
 
   <section class="extra">
     <div class="line">
-      <span class="stat author">
+      <span class="stat">
         <AIcon name="pen-tool" />
         <a class="link" href="/search?kw={book.vi_author}&type=author">
-          {book.vi_author}
+          <span class="label">{book.vi_author}</span>
         </a>
       </span>
 
       {#each book.vi_genres as genre}
-        <span class="stat">
+        <span class="stat _genre">
           <AIcon name="folder" />
-          <a class="link" href="/?genre={genre}">{genre}</a>
+          <a class="link" href="/?genre={genre}">
+            <span class="label">{genre}</span>
+          </a>
         </span>
       {/each}
     </div>
@@ -97,10 +100,10 @@
 
     <div class="line">
       <span class="stat">
-        Đánh giá: <strong>{book.voters < 10 ? '--' : book.rating}</strong> /10
+        Đánh giá: <span
+          class="label">{book.voters < 10 ? '--' : book.rating}</span>/10
       </span>
-
-      <span class="stat">({book.voters} lượt đánh giá)</span>
+      <span class="stat">({book.voters} lượt)</span>
     </div>
 
     {#if has_links}
@@ -152,14 +155,9 @@
     @include apply(line-height, $line-heights);
     @include apply(font-size, $font-sizes);
 
-    // .-main,
-    // .-sub {
-    //   float: left;
-    // }
-
     .-sub {
-      font-size: 90%;
-      line-height: inherit;
+      font-size: 0.875em;
+      line-height: 1em;
     }
   }
 
@@ -200,11 +198,7 @@
     }
   }
 
-  .author {
-    font-weight: 500;
-  }
-
-  strong {
+  .label {
     font-weight: 500;
   }
 </style>
