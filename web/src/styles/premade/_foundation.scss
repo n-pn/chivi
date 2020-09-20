@@ -10,6 +10,7 @@
 
 html {
   font-size: 100%;
+  overflow-y: scroll;
 }
 
 $-body-color: color(neutral, 8) !default;
@@ -26,7 +27,6 @@ body {
 
   text-align: left;
   vertical-align: baseline;
-  overflow-y: scroll;
 
   background-color: $-body-bgcolor;
   color: $-body-color;
