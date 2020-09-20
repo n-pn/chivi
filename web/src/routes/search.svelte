@@ -72,7 +72,7 @@
             </div>
 
             <div class="extra">
-              <span class="label">Tác giả:</span>
+              <span class="label _sub">Tác giả:</span>
               <span class="value">{book.vi_author}</span>
             </div>
 
@@ -207,20 +207,29 @@
   }
 
   h2 {
-    margin-top: 0.5rem;
     @include font-size(5);
     @include fgcolor(neutral, 8);
-    // margin-bottom: 0.25rem;
+
+    @include screen(md) {
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+    }
   }
 
   h3 {
-    margin-bottom: 0.5rem;
     @include font-size(4);
     @include fgcolor(neutral, 7);
   }
 
   .extra {
-    @include flex(0.5rem);
+    // @include clearfix;
+    // > * {
+    //   float: left;
+    // }
+
+    // > * + * {
+    //   margin-left: 0.5rem;
+    // }
 
     ._cram {
       margin-left: 0;
@@ -229,10 +238,18 @@
 
   .label {
     @include fgcolor(neutral, 6);
+
+    &._sub {
+      display: none;
+      @include screen(md) {
+        display: inline-block;
+      }
+    }
   }
 
   .value {
     font-weight: 500;
+    @include truncate(null);
     @include fgcolor(neutral, 7);
   }
 
