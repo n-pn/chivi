@@ -73,8 +73,8 @@
   import AIcon from '$atoms/AIcon'
   import ARtime from '$atoms/ARtime'
 
-  import UpsertInput from './Upsert/Input.svelte'
-  import UpsertLinks from './Upsert/Links.svelte'
+  import UpsertInput from './MUpsert/Input.svelte'
+  import UpsertLinks from './MUpsert/Links.svelte'
 </script>
 
 <script>

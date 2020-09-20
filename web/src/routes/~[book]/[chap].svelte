@@ -30,10 +30,10 @@
   import ARtime from '$atoms/ARtime'
 
   import MDiglot, { parse as parse_vp_input } from '$melds/MDiglot'
+  import MUpsert, { dict_upsert } from '$melds/MUpsert'
 
   import Vessel from '$parts/Vessel'
   import Lookup from '$parts/Lookup'
-  import Upsert, { dict_upsert } from '$parts/Upsert'
 
   import read_selection from '$utils/read_selection'
 
@@ -315,7 +315,7 @@
   {/if}
 
   {#if $upsert_actived}
-    <Upsert bind:dirty />
+    <MUpsert bind:dirty />
   {/if}
 </Vessel>
 
