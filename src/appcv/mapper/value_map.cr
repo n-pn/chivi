@@ -1,4 +1,33 @@
+require "../../../src/utils/time_util"
+
 class Appcv::ValueMap
+  class Node
+    getter key : String
+    getter val : String
+    getter alt : String
+
+    getter mtime : Int32
+    getter extra : String
+
+    def initialize(@key, @val, @alt = "", @mtime = TimeUtil.mtime, @extra = "")
+    end
+
+    def self.from(line : String, trunc = false)
+      cls = line.split('\t', 5)
+
+      key = cls[0]
+      val = cls[1]? || ""
+      alt = cls[2]? || ""
+
+      if trunc || !(mtime = cls[3]?.try(&.to_i?))
+        return new(key, val, alt, mtime: 0)
+      end
+
+      extra = cls[4]? || ""
+      new(key, val, alt, mtime: mtime, extra: extra)
+    end
+  end
+
   class_property cwd = File.join("var", "appcv")
   class_property tab = "appcv"
 
