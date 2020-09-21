@@ -137,6 +137,7 @@
       case 13:
       case 90:
       case 88:
+      case 67:
         evt.preventDefault()
 
         let tab = null

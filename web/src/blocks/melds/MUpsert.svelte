@@ -550,7 +550,7 @@
       // max-width: 14vw;
       @include truncate(null);
 
-      @include hover {
+      &:hover {
         @include fgcolor(primary, 5);
         @include bgcolor(white);
       }
