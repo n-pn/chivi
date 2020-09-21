@@ -385,7 +385,7 @@
 
     > button {
       @include fgcolor(neutral, 6);
-      @include hover {
+      &:hover {
         @include fgcolor(primary, 6);
       }
     }
@@ -502,7 +502,7 @@
       @include bgcolor(neutral, 1);
       @include radius;
 
-      @include hover {
+      &:hover {
         @include fgcolor(primary, 6);
         @include bgcolor(primary, 1);
       }

@@ -37,7 +37,7 @@
 
     margin-bottom: 3rem;
 
-    @include hover {
+    &:hover {
       .title {
         @include fgcolor(primary, 5);
       }

@@ -240,17 +240,17 @@
       @include font-size(sm);
     }
 
-    :global(button) {
+    button {
       // margin-right: 0.75rem;
       padding: 0 0.5rem;
       @include fgcolor(neutral, 6);
       @include bgcolor(transparent);
 
-      &._active {
-        @include fgcolor(primary, 6);
-      }
+      // &._active {
+      //   @include fgcolor(primary, 6);
+      // }
 
-      @include hover {
+      &:hover {
         @include fgcolor(primary, 6);
       }
     }
@@ -293,10 +293,7 @@
     :global(x-v) {
       cursor: pointer;
 
-      @include hover {
-        @include fgcolor(primary, 5);
-      }
-
+      &:hover,
       &._active {
         @include fgcolor(primary, 5);
       }

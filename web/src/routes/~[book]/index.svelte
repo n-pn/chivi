@@ -296,7 +296,7 @@
 <style lang="scss">
   .genre > a {
     @include fgcolor(neutral, 6);
-    @include hover {
+    &:hover {
       @include fgcolor(primary, 6);
     }
   }
@@ -608,7 +608,7 @@
       @include fgcolor(neutral, 5);
     }
 
-    @include hover {
+    &:hover {
       @include fgcolor(primary, 6);
     }
   }

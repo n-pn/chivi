@@ -401,7 +401,7 @@
 
     .-link {
       color: inherit;
-      @include hover {
+      &:hover {
         @include fgcolor(primary, 6);
       }
     }

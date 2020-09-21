@@ -100,7 +100,7 @@
     @include fgcolor(neutral, 6);
     @include truncate(null);
 
-    @include hover {
+    &:hover {
       @include fgcolor(primary, 6);
     }
 

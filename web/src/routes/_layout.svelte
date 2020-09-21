@@ -92,7 +92,7 @@
     margin-left: 0.375rem;
     font-weight: 500;
     @include fgcolor(primary, 6);
-    @include hover {
+    &:hover {
       @include fgcolor(primary, 4);
     }
   }

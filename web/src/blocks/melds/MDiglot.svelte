@@ -144,7 +144,7 @@
     cursor: pointer;
     position: relative;
 
-    @include hover {
+    &:hover {
       @include fgcolor($color, 6);
     }
 

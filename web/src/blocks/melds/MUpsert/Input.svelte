@@ -82,7 +82,7 @@
     @include font-size(4);
     @include fgcolor(neutral, 7);
 
-    @include hover {
+    &:hover {
       background-color: #fff;
       @include fgcolor(primary, 5);
     }
