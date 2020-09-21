@@ -1,5 +1,9 @@
 /// links
 
+a {
+  touch-action: manipulation;
+}
+
 a[class] {
   text-decoration: none;
 }
@@ -15,6 +19,7 @@ a:not([class]) {
   padding: 0.125em 0.25em;
   margin: -0.125em -0.25em;
   font-weight: 500;
+
   // transition: all 0.1s ease-in-out;
   @include radius();
 
