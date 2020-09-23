@@ -122,6 +122,12 @@
   }
 </script>
 
+<svelte:head>
+  <script>
+    ;(adsbygoogle = window.adsbygoogle || []).push({})
+  </script>
+</svelte:head>
+
 <Vessel>
   <a slot="header-left" href="/~{book.slug}" class="header-item _active">
     <AIcon name="book-open" />
@@ -187,6 +193,14 @@
           <p>{line}</p>
         {/each}
       </div>
+
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-5468438393284967"
+        data-ad-slot="2323076740"
+        data-ad-format="auto"
+        data-full-width-responsive="true" />
 
       {#if hasContent}
         <h2>Chương tiết:</h2>
