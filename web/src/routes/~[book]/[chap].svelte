@@ -291,13 +291,20 @@
 
   <footer class="footer">
     {#if prev_url}
-      <a class="m-button _line" class:_disable={!prev_url} href={prev_path}>
+      <a
+        class="m-button _line"
+        class:_disable={!prev_url}
+        href={prev_path}
+        rel={$self_power < 2 ? 'external' : ''}>
         <AIcon name="chevron-left" />
         <span>Trước</span>
       </a>
     {/if}
 
-    <a class="m-button _line" href={book_path}>
+    <a
+      class="m-button _line"
+      href={book_path}
+      rel={$self_power < 2 ? 'external' : ''}>
       <AIcon name="list" />
       <span>Mục lục</span>
     </a>
@@ -305,7 +312,8 @@
     <a
       class="m-button _line _primary"
       class:_disable={!next_url}
-      href={next_path}>
+      href={next_path}
+      rel={$self_power < 2 ? 'external' : ''}>
       <span>Kế tiếp</span>
       <AIcon name="chevron-right" />
     </a>
