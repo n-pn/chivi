@@ -205,10 +205,6 @@
 
   $: ad_max = cvlines.length < 8 ? cvlines.length : 8
   $: ad_idx = Math.floor(Math.random() * ad_max) + 2
-
-  $: if (process.browser && curr_path) {
-    ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-  }
 </script>
 
 <svelte:head>
@@ -302,6 +298,9 @@
           data-ad-format="fluid"
           data-ad-client="ca-pub-5468438393284967"
           data-ad-slot="4952630589" />
+        <script>
+          ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+        </script>
       {/if}
     {/each}
   </article>

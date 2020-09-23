@@ -120,10 +120,6 @@
 
     await fetch(`/_self/book_mark/${book.ubid}?mark=${mark}`, { method: 'PUT' })
   }
-
-  $: if (process.browser && book.slug) {
-    ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-  }
 </script>
 
 <Vessel>
@@ -199,7 +195,9 @@
         data-ad-slot="2323076740"
         data-ad-format="auto"
         data-full-width-responsive="true" />
-
+      <script>
+        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+      </script>
       {#if hasContent}
         <h2>Chương tiết:</h2>
 
