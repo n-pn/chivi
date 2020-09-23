@@ -249,8 +249,7 @@
                     class="-item"
                     class:_active={seed === name}
                     href="/~{book.slug}?tab=content&seed={name}"
-                    on:click|preventDefault={() => change_seed(name, 0)}
-                    rel="nofollow">
+                    on:click|preventDefault={() => change_seed(name, 0)}>
                     <span class="-name">{name}</span>
                     <span class="-time">
                       <ATime time={book.seed_mftimes[name]} seed={name} />

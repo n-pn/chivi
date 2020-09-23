@@ -85,8 +85,7 @@
       <li class="chap-item">
         <a
           class="chap-link"
-          href="/~{bslug}/{chap.url_slug}-{sname}-{chap.scid}"
-          rel="prefetch">
+          href="/~{bslug}/{chap.url_slug}-{sname}-{chap.scid}">
           <span class="label">{chap.vi_label}</span>
           <span class="title">{chap.vi_title}</span>
         </a>
