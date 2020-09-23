@@ -1,15 +1,3 @@
-<script>
-  import { afterUpdate } from 'svelte'
-
-  afterUpdate(() => {
-    try {
-      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-    } catch (err) {
-      console.log(err)
-    }
-  })
-</script>
-
 <section>
   <ins
     class="adsbygoogle"
@@ -19,6 +7,13 @@
     data-ad-slot="4952630589">
     <div>Quảng cáo để kiếm tiền nuôi server, xin đừng vội block 😢</div>
   </ins>
+  <script>
+    try {
+      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+    } catch (err) {
+      console.log(err)
+    }
+  </script>
 </section>
 
 <style lang="scss">

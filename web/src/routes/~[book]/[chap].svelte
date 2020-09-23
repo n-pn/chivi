@@ -62,7 +62,10 @@
 
   export let mftime = 0
   export let cvdata = ''
+
   $: cvlines = cvdata.split('\n').map((x) => parse_vp_input(x))
+  $: ads_max = cvlines.length < 8 ? cvlines.length : 8
+  $: ads_idx = Math.floor(Math.random() * ads_max) + 2
 
   export let ch_total = 1
   export let ch_index = 1
@@ -175,9 +178,6 @@
     dirty = false
     _load = false
   }
-
-  $: ad_max = cvlines.length < 8 ? cvlines.length : 8
-  $: ad_idx = Math.floor(Math.random() * ad_max) + 2
 </script>
 
 <svelte:head>
@@ -261,7 +261,7 @@
 
   <article class="convert" class:_load>
     {#each cvlines as nodes, index}
-      {#if index == ad_idx}
+      {#if index == ads_idx}
         <AdArticle />
       {/if}
 
