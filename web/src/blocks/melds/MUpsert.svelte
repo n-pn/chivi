@@ -121,8 +121,9 @@
 
   function update_val(new_output = null) {
     current = inquire.entries[$d_idx]
-    existed = current.vals[0]
+    if (!current) return
 
+    existed = current.vals[0]
     if (!new_output) new_output = existed
 
     if (new_output) {
@@ -151,7 +152,7 @@
     update_val(new_val)
   }
 
-  function handle_down(evt) {
+  function handle_keydown(evt) {
     if (!$actived) return
     // evt.preventDefault()
 
@@ -167,68 +168,29 @@
     if (!evt.altKey) return
     evt.preventDefault()
 
-    switch (evt.keyCode) {
-      // upcase value
+    switch (evt.key) {
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '0':
 
-      case 49: // key: `1`
-        upcase_val(1)
+      case 'x':
+      case 'c':
+      case 'v':
+
+      case 'h':
+      case 'j':
+      case 'k':
+      case 'l':
+        evt.stopPropagation()
+
+        let elem = holder.querySelector(`[data-kbd="${evt.key}"]`)
+        if (elem) elem.click()
         break
 
-      case 50: // key: `2`
-        upcase_val(2)
-        break
-
-      case 51: // key: `3`
-        upcase_val(3)
-        break
-
-      case 52: // key: `4`
-        upcase_val(9)
-        break
-
-      case 48: // key: `0`
-      case 192: // key: `~`
+      case '~':
         upcase_val(0)
-        break
-
-      // change dict tab
-
-      case 88: // key: `x`
-        change_tab(0)
-        break
-
-      case 67: // key: `c`
-        change_tab(1)
-        break
-
-      case 86: // key: `v`
-        change_tab(2)
-        break
-
-      // handle changing input bound
-      case 72: // key: `h`
-        if (lower > 0) lower -= 1
-        break
-
-      case 74: // key: `j`
-        if (lower + 1 < upper) lower += 1
-        break
-
-      case 75: // key: `k`
-        if (upper - 1 > lower) upper -= 1
-        break
-
-      case 76: // key: `l`
-        if (upper < input.length) upper += 1
-        break
-
-      case 82: // key: `r`
-        output = existed
-        break
-
-      case 69: // key: `e`
-        output = ''
-        // value_elem.focus()
         break
 
       default:
@@ -242,11 +204,16 @@
     if (!current) return false
     return current.vals.length > 0
   }
+
+  let holder
 </script>
 
-<svelte:window />
-
-<div class="holder" tabindex="0" on:click={() => actived.set(false)}>
+<div
+  class="holder"
+  tabindex="0"
+  bind:this={holder}
+  on:keydown={handle_keydown}
+  on:click={() => actived.set(false)}>
   <div class="dialog" on:click|stopPropagation={() => value_elem.focus()}>
     <header class="header">
       <div class="hanzi">
@@ -267,6 +234,7 @@
           class="tab"
           class:_active={index == $d_idx}
           class:_exists={term_exists(inquire, index)}
+          data-kbd={index == 0 ? 'x' : index == 1 ? 'c' : 'v'}
           on:click={() => change_tab(index)}>
           {label}
         </span>
@@ -292,37 +260,46 @@
           <span class="-hint _right">[{inquire.binh_am}]</span>
         </div>
 
-        <input
-          lang="vi"
-          type="text"
-          name="value"
-          class="val-field"
-          class:_fresh={!existed}
-          autocapitalize={shoud_cap($d_idx) ? 'words' : 'off'}
-          on:keydown={handle_down}
-          bind:this={value_elem}
-          bind:value={output} />
+        <div class="value">
+          <input
+            lang="vi"
+            type="text"
+            name="value"
+            class:_fresh={!existed}
+            bind:this={value_elem}
+            bind:value={output}
+            autocapitalize={shoud_cap($d_idx) ? 'words' : 'off'} />
+        </div>
 
         <div class="format">
-          <span class="-btn" on:click={() => upcase_val(1)}>
+          <button data-kbd="1" on:click={() => upcase_val(1)}>
             <span class="_show-sm">hoa</span> một chữ
-          </span>
+          </button>
 
-          <span class="-btn" on:click={() => upcase_val(2)}>hai chữ</span>
+          <button data-kbd="2" on:click={() => upcase_val(2)}>hai chữ</button>
 
-          <span class="-btn _show-md" on:click={() => upcase_val(3)}>ba chữ</span>
+          <button
+            class="_show-md"
+            data-kbd="3"
+            on:click={() => upcase_val(3)}>ba chữ</button>
 
-          <span class="-btn" on:click={() => upcase_val(9)}>tất cả</span>
+          <button data-kbd="4" on:click={() => upcase_val(9)}>tất cả</button>
 
-          <span class="-btn" on:click={() => upcase_val(0)}>không <span class="_show-sm"> hoa</span>
-          </span>
+          <button data-kbd="0" on:click={() => upcase_val(0)}>không <span class="_show-sm"> hoa</span>
+          </button>
 
-          <span class="-btn _right" on:click={() => (output = '')}>Xoá</span>
+          <button
+            class="_right"
+            data-kbd="e"
+            on:click={() => (output = '')}>Xoá</button>
 
           {#if updated}
-            <span class="-btn _right" on:click={() => update_val(existed)}>
+            <button
+              class="_right"
+              data-kbd="r"
+              on:click={() => update_val(existed)}>
               Phục
-            </span>
+            </button>
           {/if}
         </div>
       </div>
@@ -339,7 +316,6 @@
         {/if}
 
         <button
-          type="button"
           class="m-button _{btn_class} _{btn_power}"
           disabled={!(updated || prevail)}
           on:click|once={submit_val}>
@@ -451,7 +427,7 @@
     @include bgcolor(neutral, 1);
   }
 
-  .val-field {
+  .value > input {
     display: block;
     width: 100%;
 
@@ -537,14 +513,13 @@
       font-size: rem(12px);
     }
 
-    .-btn {
-      cursor: pointer;
-
+    button {
       float: left;
       padding: 0 0.375rem;
       line-height: $height;
       font-weight: 500;
       text-transform: uppercase;
+      background: none;
       @include fgcolor(neutral, 5);
 
       // max-width: 14vw;
@@ -552,7 +527,7 @@
 
       &:hover {
         @include fgcolor(primary, 5);
-        @include bgcolor(white);
+        background: #fff;
       }
 
       &._right {

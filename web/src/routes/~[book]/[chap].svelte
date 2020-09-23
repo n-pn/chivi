@@ -101,62 +101,31 @@
     if ($upsert_actived) return
     if (evt.ctrlKey) return
 
-    // if (!evt.altKey) return
-
-    switch (evt.keyCode) {
-      case 220:
+    switch (evt.key) {
+      case '\\':
         trigger_lookup()
         break
 
-      case 72:
-        evt.preventDefault()
-        _goto(book_path)
-        break
-
-      // case 37:
-      case 74:
-        if (!evt.altKey) {
+      case 'h':
+      case 'j':
+      case 'k':
+      case 'r':
+      case 'x':
+        let elm = document.querySelector(`[data-kbd="${evt.key}"]`)
+        if (elm) {
           evt.preventDefault()
-          _goto(prev_path)
-        }
-        break
-
-      // case 39:
-      case 75:
-        if (!evt.altKey) {
-          evt.preventDefault()
-          _goto(next_path)
-        }
-        break
-
-      case 46:
-        evt.preventDefault()
-        if (evt.shiftKey) deleteFocusedWord()
-        break
-
-      case 13:
-      case 90:
-      case 88:
-      case 67:
-        evt.preventDefault()
-
-        let tab = null
-        if (evt.keyCode == 88) tab = 0
-        else if (evt.keyCode == 67) tab = 1
-
-        show_upsert_modal(tab)
-        break
-
-      case 82:
-        if (power_user) {
-          evt.preventDefault()
-          reload_content(1)
+          elm.click()
         }
 
+        break
+
+      case 'c':
+        show_upsert_modal(1)
         break
 
       default:
-        break
+        if (evt.keyCode == 13) show_upsert_modal()
+        else if (evt.keycode == 46 && evt.shiftKey) deleteFocusedWord()
     }
   }
 
@@ -192,15 +161,18 @@
     upsert_actived.set(true)
   }
 
-  let _loading = false
+  let _load = false
   async function reload_content(mode = 1) {
-    _loading = true
+    if (!power_user) return
+
+    _load = true
     const data = await load_chtext(window.fetch, bslug, seed, scid, mode)
 
     mftime = data.mftime
     cvdata = data.cvdata
+
     dirty = false
-    _loading = false
+    _load = false
   }
 
   $: ad_max = cvlines.length < 8 ? cvlines.length : 8
@@ -215,7 +187,11 @@
 <svelte:body on:keydown={handle_keypress} />
 
 <Vessel shift={lookup_enabled && $lookup_actived}>
-  <a slot="header-left" href={book_path} class="header-item _title">
+  <a
+    slot="header-left"
+    href={book_path}
+    class="header-item _title"
+    rel={$self_power < 2 ? 'external' : ''}>
     <AIcon name="book-open" />
     <span class="header-text _show-sm _title">{bname}</span>
   </a>
@@ -226,39 +202,53 @@
   </span>
 
   <button
+    slot="header-right"
     type="button"
     class="header-item"
-    slot="header-right"
     disabled={!power_user}
-    on:click={() => reload_content(1)}>
-    <AIcon name="refresh-ccw" spin={_loading} />
+    on:click={() => reload_content(1)}
+    data-kbd="r">
+    <AIcon name="refresh-ccw" spin={_load} />
   </button>
 
   <button
+    slot="header-right"
     type="button"
     class="header-item"
-    slot="header-right"
     class:_active={$upsert_actived}
-    on:click={() => show_upsert_modal()}>
+    on:click={() => show_upsert_modal(0)}
+    data-kbd="x">
     <AIcon name="plus-circle" />
   </button>
 
   <button
+    slot="header-right"
     type="button"
     class="header-item"
-    slot="header-right"
     class:_active={lookup_enabled}
-    on:click={trigger_lookup}>
+    on:click={trigger_lookup}
+    data-kbd="\">
     <AIcon name="compass" />
   </button>
 
   <nav class="bread">
-    <div class="-crumb _sep"><a href="/" class="-link">Chivi</a></div>
-
-    <div class="-crumb _sep"><a href="/~{bslug}" class="-link">{bname}</a></div>
+    <div class="-crumb _sep">
+      <a href="/" class="-link" rel={$self_power < 2 ? 'external' : ''}><AIcon
+          name="home" /></a>
+    </div>
 
     <div class="-crumb _sep">
-      <a href={book_path} class="-link">[{seed}]</a>
+      <a
+        href="/~{bslug}"
+        class="-link"
+        rel={$self_power < 2 ? 'external' : ''}>{bname}</a>
+    </div>
+
+    <div class="-crumb _sep">
+      <a
+        href={book_path}
+        class="-link"
+        rel={$self_power < 2 ? 'external' : ''}>[{seed}]</a>
     </div>
 
     <div class="-crumb"><span class="-text">{ch_label}</span></div>
@@ -268,7 +258,7 @@
     </div>
   </nav>
 
-  <article class="convert" class:_load={_loading}>
+  <article class="convert" class:_load>
     {#each cvlines as nodes, index}
       {#if index == 0}
         <h1>
@@ -311,7 +301,8 @@
         class="m-button _line"
         class:_disable={!prev_url}
         href={prev_path}
-        rel={$self_power < 2 ? 'external' : ''}>
+        rel={$self_power < 2 ? 'external' : ''}
+        data-kbd="j">
         <AIcon name="chevron-left" />
         <span>Trước</span>
       </a>
@@ -320,7 +311,8 @@
     <a
       class="m-button _line"
       href={book_path}
-      rel={$self_power < 2 ? 'external' : ''}>
+      rel={$self_power < 2 ? 'external' : ''}
+      data-kbd="h">
       <AIcon name="list" />
       <span>Mục lục</span>
     </a>
@@ -329,7 +321,8 @@
       class="m-button _line _primary"
       class:_disable={!next_url}
       href={next_path}
-      rel={$self_power < 2 ? 'external' : ''}>
+      rel={$self_power < 2 ? 'external' : ''}
+      data-kbd="k">
       <span>Kế tiếp</span>
       <AIcon name="chevron-right" />
     </a>
@@ -404,9 +397,8 @@
     // display: flex;
     // flex-wrap: wrap;
 
-    margin: 0.375rem 0;
-    line-height: 1.5rem;
-    padding-bottom: 0.375rem;
+    padding: 0.5rem 0;
+    line-height: 1.25rem;
 
     @include font-size(2);
     @include border($sides: bottom);
@@ -435,6 +427,10 @@
       // margin-left: auto;
       font-style: italic;
       @include fgcolor(neutral, 5);
+    }
+
+    :global(svg) {
+      margin-top: -0.25rem;
     }
   }
 </style>

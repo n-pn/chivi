@@ -12,14 +12,19 @@
 </script>
 
 <div>
-  <button disabled={lower == 0} on:click={() => (lower -= 1)}>
+  <button
+    class="_left"
+    disabled={lower == 0}
+    data-kbd="h"
+    on:click={() => (lower -= 1)}>
     <AIcon name="chevron-left" />
   </button>
 
   <button
-    class="_bd"
+    class="_left"
     disabled={lower == upper - 1}
-    on:click={() => (lower += 1)}>
+    on:click={() => (lower += 1)}
+    data-kbd="j">
     <AIcon name="chevron-right" />
   </button>
 
@@ -30,13 +35,18 @@
   </span>
 
   <button
-    class="_bd"
+    class="_right"
+    data-kbd="k"
     disabled={upper == lower + 1}
     on:click={() => (upper -= 1)}>
     <AIcon name="chevron-left" />
   </button>
 
-  <button disabled={upper == input.length} on:click={() => (upper += 1)}>
+  <button
+    class="_right"
+    disabled={upper == input.length}
+    data-kbd="l"
+    on:click={() => (upper += 1)}>
     <AIcon name="chevron-right" />
   </button>
 </div>
@@ -93,8 +103,12 @@
       background: transparent;
     }
 
-    &._bd {
-      @include border($sides: left-right);
+    &._left {
+      @include border($sides: right);
+    }
+
+    &._right {
+      @include border($sides: left);
     }
   }
 </style>

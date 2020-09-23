@@ -96,4 +96,36 @@
       @include fgcolor(primary, 4);
     }
   }
+
+  :global([data-kbd]) {
+    position: relative;
+    &:after {
+      display: none;
+      position: absolute;
+      content: attr(data-kbd);
+
+      top: 0.375rem;
+      right: 0.375rem;
+
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 1rem;
+      height: 1.1rem;
+
+      padding: 0 0.25rem;
+
+      @include font-size(2);
+      @include fgcolor(neutral, 6);
+      @include bgcolor(yellow, 1);
+      @include border();
+      @include shadow(3);
+      @include radius();
+    }
+
+    @include hover {
+      &:after {
+        display: block;
+      }
+    }
+  }
 </style>
