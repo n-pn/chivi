@@ -112,14 +112,14 @@ module Libcv::Convert
 
     0.upto(chars.size) do |idx|
       dicts.each_with_index do |dict, jdx|
-        cost = 2 + (jdx + 1) * 0.25
+        cost = 1 + (jdx &+ 2) / 4
 
         dict.scan(norms, idx) do |item|
           next if item.vals.empty?
 
           size = item.key.size
           jump = idx &+ size
-          weight = weights[idx] + size ** cost
+          weight = weights[idx] + size + size ** cost + cost ** size
 
           if weight >= weights[jump]
             weights[jump] = weight

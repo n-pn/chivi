@@ -89,7 +89,7 @@ class MapRemote
 
     limit = queue.size
     limit = 8 if limit > 8
-    limit = 1 if @seed == "qu_la"
+    limit = 1 if @seed == "shubaow"
 
     channel = Channel(Nil).new(limit)
 
@@ -98,6 +98,7 @@ class MapRemote
 
       spawn do
         parse!(sbid, expiry, "#{idx + 1}/#{queue.size}")
+        sleep 500.milliseconds
       ensure
         channel.send(nil)
       end
