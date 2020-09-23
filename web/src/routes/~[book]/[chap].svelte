@@ -206,7 +206,9 @@
   $: ad_max = cvlines.length < 8 ? cvlines.length : 8
   $: ad_idx = Math.floor(Math.random() * ad_max) + 2
 
-  $: if (curr_path) (window.adsbygoogle = window.adsbygoogle || []).push({})
+  $: if (process.browser && curr_path) {
+    ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+  }
 </script>
 
 <svelte:head>

@@ -121,7 +121,9 @@
     await fetch(`/_self/book_mark/${book.ubid}?mark=${mark}`, { method: 'PUT' })
   }
 
-  $: if (book.slug) (window.adsbygoogle = window.adsbygoogle || []).push({})
+  $: if (process.browser && book.slug) {
+    ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+  }
 </script>
 
 <Vessel>
