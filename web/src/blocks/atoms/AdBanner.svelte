@@ -1,20 +1,26 @@
-<script>
-  import { onMount } from 'svelte'
-  onMount(() => {
-    try {
-      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-    } catch (err) {
-      console.log(err)
-    }
-  })
-</script>
-
 <ins
   class="adsbygoogle"
-  style="display:block"
   data-ad-client="ca-pub-5468438393284967"
-  data-ad-slot="2323076740"
   data-ad-format="auto"
+  data-ad-slot="2323076740"
   data-full-width-responsive="true">
-  Quảng cáo để kiếm tiền nuôi server, đừng block :(
+  <div>Quảng cáo để kiếm tiền nuôi server, xin đừng vội block 😢</div>
 </ins>
+
+<style lang="scss">
+  ins {
+    display: block;
+    min-width: 250px;
+    max-width: 100%;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  div {
+    padding: 2rem;
+    text-transform: uppercase;
+    @include radius();
+    @include fgcolor(neutral, 7);
+    @include bgcolor(yellow, 1);
+  }
+</style>

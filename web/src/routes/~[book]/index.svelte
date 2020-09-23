@@ -57,7 +57,7 @@
   import SvgIcon from '$atoms/SvgIcon'
   import RelTime from '$atoms/RelTime'
 
-  import AdArticle from '$atoms/AdArticle'
+  import AdBanner from '$atoms/AdBanner'
 
   import Vessel from '$parts/Vessel'
   import ChapList from '$melds/ChapList'
@@ -165,13 +165,23 @@
         Tổng quan
       </a>
 
-      <a
-        class="-tab"
-        class:_active={tab == 'content'}
-        href="/~{book.slug}?tab=content&seed={seed}"
-        on:click={(evt) => change_tab(evt, 'content')}>
-        Mục lục
-      </a>
+      {#if $self_power < 2}
+        <a
+          class="-tab"
+          class:_active={tab == 'content'}
+          href="/~{book.slug}?tab=content&seed={seed}"
+          rel="{$self_power < 2 ? 'external' : ''}}">
+          Mục lục
+        </a>
+      {:else}
+        <a
+          class="-tab"
+          class:_active={tab == 'content'}
+          href="/~{book.slug}?tab=content&seed={seed}"
+          on:click={(evt) => change_tab(evt, 'content')}>
+          Mục lục
+        </a>
+      {/if}
 
       <a
         class="-tab"
@@ -235,7 +245,16 @@
 
     <div class="meta-tab" class:_active={tab == 'content'}>
       {#if hasContent}
-        <AdArticle />
+        {#if $self_power < 2}
+          <AdBanner />
+          <script>
+            try {
+              ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+            } catch (err) {
+              console.log(err)
+            }
+          </script>
+        {/if}
 
         <div class="sources">
           <div class="-left">

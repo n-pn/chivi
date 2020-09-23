@@ -1,21 +1,30 @@
 <section>
   <ins
     class="adsbygoogle"
-    data-ad-layout="in-article"
-    data-ad-format="fluid"
     data-ad-client="ca-pub-5468438393284967"
-    data-ad-slot="4952630589">
+    data-ad-format="fluid"
+    data-ad-slot="4952630589"
+    data-ad-layout="in-article">
     <div>Quảng cáo để kiếm tiền nuôi server, xin đừng vội block 😢</div>
   </ins>
   <script>
-    ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+    try {
+      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+    } catch (err) {
+      console.log(err)
+    }
   </script>
 </section>
 
 <style lang="scss">
+  section {
+    width: 100%;
+  }
+
   ins {
-    max-width: 100%;
     display: block;
+    min-width: 250px;
+    max-width: 100%;
     text-align: center;
     text-decoration: none;
   }
