@@ -70,7 +70,7 @@
     upsert_actived as actived,
   } from '$src/stores'
 
-  import AIcon from '$atoms/AIcon'
+  import SvgIcon from '$atoms/SvgIcon'
   import RelTime from '$atoms/RelTime'
 
   import UpsertInput from './MUpsert/Input.svelte'
@@ -224,7 +224,7 @@
         type="button"
         class="m-button _text"
         on:click={() => actived.set(false)}>
-        <AIcon name="x" />
+        <SvgIcon name="x" />
       </button>
     </header>
 

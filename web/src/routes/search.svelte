@@ -20,8 +20,8 @@
 <script>
   import Vessel from '$parts/Vessel'
 
-  import AIcon from '$atoms/AIcon.svelte'
-  import ACover from '$atoms/ACover.svelte'
+  import SvgIcon from '$atoms/SvgIcon.svelte'
+  import BookCover from '$atoms/BookCover.svelte'
 
   export let word = ''
   export let page = 1
@@ -47,7 +47,7 @@
 <Vessel>
   <form slot="header-left" class="header-field" action="/search" method="get">
     <input type="search" name="kw" placeholder="Tìm kiếm" value={word} />
-    <AIcon name="search" />
+    <SvgIcon name="search" />
   </form>
 
   {#if items.length > 0}
@@ -59,7 +59,7 @@
       {#each items as book}
         <a class="book" href="/~{book.slug}" rel="prefetch">
           <div class="cover">
-            <ACover ubid={book.ubid} path={book.main_cover} />
+            <BookCover ubid={book.ubid} path={book.main_cover} />
           </div>
 
           <div class="infos">
@@ -96,7 +96,7 @@
         class="m-button _line"
         class:_disable={page == 1}
         href={searchUrl(page - 1)}>
-        <AIcon name="chevron-left" />
+        <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
 
@@ -107,7 +107,7 @@
         class:_disable={page == pmax}
         href={searchUrl(page + 1)}>
         <span>Kế tiếp</span>
-        <AIcon name="chevron-right" />
+        <SvgIcon name="chevron-right" />
       </a>
     </div>
   {:else}

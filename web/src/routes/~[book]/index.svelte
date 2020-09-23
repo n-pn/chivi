@@ -54,7 +54,7 @@
 </script>
 
 <script>
-  import AIcon from '$atoms/AIcon'
+  import SvgIcon from '$atoms/SvgIcon'
   import RelTime from '$atoms/RelTime'
 
   import Vessel from '$parts/Vessel'
@@ -124,12 +124,12 @@
 
 <Vessel>
   <a slot="header-left" href="/~{book.slug}" class="header-item _active">
-    <AIcon name="book-open" />
+    <SvgIcon name="book-open" />
     <span class="header-text _title">{book.vi_title}</span>
   </a>
 
   <span slot="header-right" class="header-item _menu">
-    <AIcon name={mark ? mark_icons[mark] : 'bookmark'} />
+    <SvgIcon name={mark ? mark_icons[mark] : 'bookmark'} />
     <span
       class="header-text _show-md">{mark ? mark_names[mark] : 'Đánh dấu'}</span>
 
@@ -137,12 +137,12 @@
       <div class="header-menu">
         {#each mark_types as type}
           <div class="-item" on:click={() => mark_book(type)}>
-            <AIcon name={mark_icons[type]} />
+            <SvgIcon name={mark_icons[type]} />
             <span>{mark_names[type]}</span>
 
             {#if mark == type}
               <span class="_right">
-                <AIcon name="check" />
+                <SvgIcon name="check" />
               </span>
             {/if}
           </div>
@@ -226,7 +226,7 @@
                     class="latest-text _update"
                     on:click={() => change_seed(name, 1)}>
                     {#if seed == name && _loading}
-                      <AIcon name="loader" spin={_loading} />
+                      <SvgIcon name="loader" spin={_loading} />
                     {:else}
                       <span><RelTime
                           time={book.seed_mftimes[name]}
@@ -274,12 +274,12 @@
             <button
               class="m-button _text"
               on:click={() => change_seed(seed, $self_power > 2 ? 2 : 1)}>
-              <AIcon name={_loading ? 'loader' : 'clock'} spin={_loading} />
+              <SvgIcon name={_loading ? 'loader' : 'clock'} spin={_loading} />
               <span><RelTime time={book.seed_mftimes[seed]} {seed} /></span>
             </button>
 
             <button class="m-button _text" on:click={() => (desc = !desc)}>
-              <AIcon name={desc ? 'arrow-down' : 'arrow-up'} />
+              <SvgIcon name={desc ? 'arrow-down' : 'arrow-up'} />
               <span class="-hide">Sắp xếp</span>
             </button>
           </div>

@@ -38,7 +38,7 @@
 <script>
   import paginate_range from '$utils/paginate_range'
 
-  import AIcon from '$atoms/AIcon.svelte'
+  import SvgIcon from '$atoms/SvgIcon.svelte'
   import BookList from '$melds/BookList.svelte'
 
   import Vessel from '$parts/Vessel'
@@ -109,7 +109,7 @@
       placeholder="Tìm kiếm"
       on:focus={() => (searching = true)}
       on:onfocusout={() => (searching = false)} />
-    <AIcon name="search" />
+    <SvgIcon name="search" />
   </form>
 
   {#if items.length == 0}
@@ -133,7 +133,7 @@
         class="page m-button _line"
         class:_disable={page == 1}
         href={makePageUrl(+page - 1, query)}>
-        <AIcon name="chevron-left" />
+        <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
 
@@ -153,7 +153,7 @@
         class:_disable={page == page_max}
         href={makePageUrl(page + 1, query)}>
         <span>Kế tiếp</span>
-        <AIcon name="chevron-right" />
+        <SvgIcon name="chevron-right" />
       </a>
     </div>
   {/if}

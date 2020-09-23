@@ -22,8 +22,8 @@
 </script>
 
 <script>
-  import AIcon from '$atoms/AIcon'
-  import ACover from '$atoms/ACover'
+  import SvgIcon from '$atoms/SvgIcon'
+  import BookCover from '$atoms/BookCover'
   import RelTime from '$atoms/RelTime'
 
   export let book
@@ -64,13 +64,13 @@
   </h1>
 
   <div class="cover">
-    <ACover ubid={book.ubid} path={book.main_cover} />
+    <BookCover ubid={book.ubid} path={book.main_cover} />
   </div>
 
   <section class="extra">
     <div class="line">
       <span class="stat">
-        <AIcon name="pen-tool" />
+        <SvgIcon name="pen-tool" />
         <a class="link" href="/search?kw={book.vi_author}&type=author">
           <span class="label">{book.vi_author}</span>
         </a>
@@ -78,7 +78,7 @@
 
       {#each book.vi_genres as genre}
         <span class="stat _genre">
-          <AIcon name="folder" />
+          <SvgIcon name="folder" />
           <a class="link" href="/?genre={genre}">
             <span class="label">{genre}</span>
           </a>
@@ -88,12 +88,12 @@
 
     <div class="line">
       <span class="stat _status">
-        <AIcon name="activity" />
+        <SvgIcon name="activity" />
         <span>{vi_status}</span>
       </span>
 
       <span class="stat _mftime">
-        <AIcon name="clock" />
+        <SvgIcon name="clock" />
         <span><RelTime time={book.mftime} /></span>
       </span>
     </div>

@@ -1,6 +1,6 @@
 <script>
-  import AIcon from '$atoms/AIcon.svelte'
-  import ACover from '$atoms/ACover.svelte'
+  import SvgIcon from '$atoms/SvgIcon.svelte'
+  import BookCover from '$atoms/BookCover.svelte'
 
   export let books = []
 </script>
@@ -9,7 +9,7 @@
   {#each books as book}
     <a class="book" href="~{book.slug}" rel="prefetch">
       <div class="cover">
-        <ACover ubid={book.ubid} path={book.main_cover} />
+        <BookCover ubid={book.ubid} path={book.main_cover} />
       </div>
 
       <div class="title">{book.vi_title}</div>

@@ -1,5 +1,5 @@
 <script>
-  import AIcon from '$atoms/AIcon'
+  import SvgIcon from '$atoms/SvgIcon'
 
   export let input = ''
   export let lower = 0
@@ -17,7 +17,7 @@
     disabled={lower == 0}
     data-kbd="h"
     on:click={() => (lower -= 1)}>
-    <AIcon name="chevron-left" />
+    <SvgIcon name="chevron-left" />
   </button>
 
   <button
@@ -25,7 +25,7 @@
     disabled={lower == upper - 1}
     on:click={() => (lower += 1)}
     data-kbd="j">
-    <AIcon name="chevron-right" />
+    <SvgIcon name="chevron-right" />
   </button>
 
   <span class="output">
@@ -39,7 +39,7 @@
     data-kbd="k"
     disabled={upper == lower + 1}
     on:click={() => (upper -= 1)}>
-    <AIcon name="chevron-left" />
+    <SvgIcon name="chevron-left" />
   </button>
 
   <button
@@ -47,7 +47,7 @@
     disabled={upper == input.length}
     data-kbd="l"
     on:click={() => (upper += 1)}>
-    <AIcon name="chevron-right" />
+    <SvgIcon name="chevron-right" />
   </button>
 </div>
 

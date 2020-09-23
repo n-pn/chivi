@@ -81,7 +81,7 @@
   }
 
   import { parse_content } from '$utils/render_convert'
-  import AIcon from '$atoms/AIcon.svelte'
+  import SvgIcon from '$atoms/SvgIcon.svelte'
   import {
     lookup_input,
     lookup_dname,
@@ -152,7 +152,7 @@
     <h2>Giải nghĩa</h2>
 
     <button on:click={() => ($actived = false)}>
-      <AIcon name="x" />
+      <SvgIcon name="x" />
     </button>
   </header>
 

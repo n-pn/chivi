@@ -23,7 +23,7 @@
 </script>
 
 <script>
-  import AIcon from '$atoms/AIcon.svelte'
+  import SvgIcon from '$atoms/SvgIcon.svelte'
   import Vessel from '$parts/Vessel'
   import BookList from '$melds/BookList.svelte'
 
@@ -39,7 +39,7 @@
 
 <Vessel>
   <span slot="header-left" class="header-item _active">
-    <AIcon name="layers" />
+    <SvgIcon name="layers" />
     <span class="header-text">Tủ truyện của @{uname}</span>
   </span>
 
@@ -62,7 +62,7 @@
         class="page m-button _line"
         class:_disable={page == 1}
         href="/@{uname}?mark={mark}&page={+page - 1}">
-        <AIcon name="chevron-left" />
+        <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
 
@@ -75,7 +75,7 @@
         class:_disable={page == page_max}
         href="/@{uname}?mark={mark}&page={+page + 1}">
         <span>Kế tiếp</span>
-        <AIcon name="chevron-right" />
+        <SvgIcon name="chevron-right" />
       </a>
     </div>
   {/if}

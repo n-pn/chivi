@@ -1,5 +1,5 @@
 <script>
-  import AIcon from '$atoms/AIcon'
+  import SvgIcon from '$atoms/SvgIcon'
   import Vessel from '$parts/Vessel'
 
   import { self_uname, self_power } from '$src/stores'
@@ -66,7 +66,7 @@
         </a>
 
         <button type="submit" class="m-button _primary login">
-          <AIcon name="log-in" />
+          <SvgIcon name="log-in" />
           <span>Đăng nhập</span>
         </button>
       </footer>

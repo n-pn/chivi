@@ -19,7 +19,7 @@
 </script>
 
 <script>
-  import AIcon from '$atoms/AIcon'
+  import SvgIcon from '$atoms/SvgIcon'
   import paginate_range from '$utils/paginate_range'
 
   export let chaps = []
@@ -101,14 +101,14 @@
       class="page m-button _line"
       on:click={() => changeFocus(1)}
       disabled={focus == 1}>
-      <AIcon name="chevrons-left" />
+      <SvgIcon name="chevrons-left" />
     </button>
 
     <button
       class="page m-button _line"
       on:click={() => changeFocus(focus - 1)}
       disabled={focus == 1}>
-      <AIcon name="chevron-left" />
+      <SvgIcon name="chevron-left" />
     </button>
 
     {#each range as [index, level]}
@@ -125,14 +125,14 @@
       class="page m-button _line"
       on:click={() => changeFocus(focus + 1)}
       disabled={focus == total}>
-      <AIcon name="chevron-right" />
+      <SvgIcon name="chevron-right" />
     </button>
 
     <button
       class="page m-button _line"
       on:click={() => changeFocus(total)}
       disabled={focus == total}>
-      <AIcon name="chevrons-right" />
+      <SvgIcon name="chevrons-right" />
     </button>
   </nav>
 {/if}

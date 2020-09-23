@@ -26,7 +26,7 @@
     }
   }
 
-  import AIcon from '$atoms/AIcon'
+  import SvgIcon from '$atoms/SvgIcon'
   import RelTime from '$atoms/RelTime'
 
   import MDiglot, { parse as parse_vp_input } from '$melds/MDiglot'
@@ -192,7 +192,7 @@
     href={book_path}
     class="header-item _title"
     rel={$self_power < 2 ? 'external' : ''}>
-    <AIcon name="book-open" />
+    <SvgIcon name="book-open" />
     <span class="header-text _show-sm _title">{bname}</span>
   </a>
 
@@ -208,7 +208,7 @@
     disabled={!power_user}
     on:click={() => reload_content(1)}
     data-kbd="r">
-    <AIcon name="refresh-ccw" spin={_load} />
+    <SvgIcon name="refresh-ccw" spin={_load} />
   </button>
 
   <button
@@ -218,7 +218,7 @@
     class:_active={$upsert_actived}
     on:click={() => show_upsert_modal(0)}
     data-kbd="x">
-    <AIcon name="plus-circle" />
+    <SvgIcon name="plus-circle" />
   </button>
 
   <button
@@ -228,12 +228,12 @@
     class:_active={lookup_enabled}
     on:click={trigger_lookup}
     data-kbd="\">
-    <AIcon name="compass" />
+    <SvgIcon name="compass" />
   </button>
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/" class="-link" rel={$self_power < 2 ? 'external' : ''}><AIcon
+      <a href="/" class="-link" rel={$self_power < 2 ? 'external' : ''}><SvgIcon
           name="home" /></a>
     </div>
 
@@ -303,7 +303,7 @@
         href={prev_path}
         rel={$self_power < 2 ? 'external' : ''}
         data-kbd="j">
-        <AIcon name="chevron-left" />
+        <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
     {/if}
@@ -313,7 +313,7 @@
       href={book_path}
       rel={$self_power < 2 ? 'external' : ''}
       data-kbd="h">
-      <AIcon name="list" />
+      <SvgIcon name="list" />
       <span>Mục lục</span>
     </a>
 
@@ -324,7 +324,7 @@
       rel={$self_power < 2 ? 'external' : ''}
       data-kbd="k">
       <span>Kế tiếp</span>
-      <AIcon name="chevron-right" />
+      <SvgIcon name="chevron-right" />
     </a>
   </footer>
 
