@@ -202,11 +202,17 @@
     dirty = false
     _loading = false
   }
+
+  $: ad_max = cvlines.length < 8 ? cvlines.length : 8
+  $: ad_idx = Math.floor(Math.random() * ad_max) + 2
 </script>
 
 <svelte:head>
   <title>{ch_title} - {bname} - Chivi</title>
   <meta property="og:url" content="{bslug}/{curr_url}" />
+  <script>
+    ;(adsbygoogle = window.adsbygoogle || []).push({})
+  </script>
 </svelte:head>
 
 <svelte:body on:keydown={handle_keypress} />
@@ -285,6 +291,16 @@
             bind:cursor
             bind:hover={line_hover} />
         </p>
+      {/if}
+
+      {#if index == ad_idx}
+        <ins
+          class="adsbygoogle"
+          style="display:block; text-align:center;"
+          data-ad-layout="in-article"
+          data-ad-format="fluid"
+          data-ad-client="ca-pub-5468438393284967"
+          data-ad-slot="4952630589" />
       {/if}
     {/each}
   </article>

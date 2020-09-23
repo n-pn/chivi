@@ -131,12 +131,12 @@
   }
 </script>
 
-<div on:mouseenter={() => (hover = index)} on:click={handle_click}>
+<c-v on:mouseenter={() => (hover = index)} on:click={handle_click}>
   {@html html_x}
-</div>
+</c-v>
 
 <style lang="scss">
-  div {
+  c-v {
     font-size: 1em;
   }
 
@@ -148,7 +148,7 @@
       @include fgcolor($color, 6);
     }
 
-    div:hover & {
+    c-v:hover & {
       @include border($color: $color, $shade: 3, $sides: bottom);
     }
 
