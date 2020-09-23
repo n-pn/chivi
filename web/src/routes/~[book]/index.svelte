@@ -57,6 +57,8 @@
   import SvgIcon from '$atoms/SvgIcon'
   import RelTime from '$atoms/RelTime'
 
+  import AdArticle from '$atoms/AdArticle'
+
   import Vessel from '$parts/Vessel'
   import ChapList from '$melds/ChapList'
 
@@ -188,16 +190,6 @@
         {/each}
       </div>
 
-      <ins
-        class="adsbygoogle"
-        style="display:block"
-        data-ad-client="ca-pub-5468438393284967"
-        data-ad-slot="2323076740"
-        data-ad-format="auto"
-        data-full-width-responsive="true" />
-      <script>
-        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-      </script>
       {#if hasContent}
         <h2>Chương tiết:</h2>
 
@@ -243,6 +235,8 @@
 
     <div class="meta-tab" class:_active={tab == 'content'}>
       {#if hasContent}
+        <AdArticle />
+
         <div class="sources">
           <div class="-left">
             <div class="-hint">Nguồn:</div>

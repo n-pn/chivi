@@ -51,6 +51,7 @@
 
 <script>
   import { onMount } from 'svelte'
+  import AdArticle from '$atoms/AdArticle'
 
   export let bslug = ''
   export let bname = ''
@@ -74,7 +75,7 @@
   export let next_url = ''
 
   $: book_path = `/~${bslug}?tab=content&seed=${seed}`
-  $: curr_path = `/~${bslug}/${curr_url}`
+  // $: curr_path = `/~${bslug}/${curr_url}`
   $: prev_path = prev_url ? `/~${bslug}/${prev_url}` : book_path
   $: next_path = next_url ? `/~${bslug}/${next_url}` : book_path
 
@@ -260,6 +261,10 @@
 
   <article class="convert" class:_load>
     {#each cvlines as nodes, index}
+      {#if index == ad_idx}
+        <AdArticle />
+      {/if}
+
       {#if index == 0}
         <h1>
           <MDiglot
@@ -278,19 +283,6 @@
             bind:cursor
             bind:hover={line_hover} />
         </p>
-      {/if}
-
-      {#if index == ad_idx}
-        <ins
-          class="adsbygoogle"
-          style="display:block; text-align:center;"
-          data-ad-layout="in-article"
-          data-ad-format="fluid"
-          data-ad-client="ca-pub-5468438393284967"
-          data-ad-slot="4952630589" />
-        <script>
-          ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-        </script>
       {/if}
     {/each}
   </article>
@@ -351,40 +343,43 @@
       font-style: normal;
       // font-variant: small-caps;
     }
-  }
 
-  h1 {
-    font-weight: 300;
-    @include fgcolor(neutral, 9);
+    h1 {
+      font-weight: 300;
+      @include fgcolor(neutral, 9);
 
-    $font-sizes: screen-vals(
-      rem(24px),
-      rem(25px),
-      rem(26px),
-      rem(28px),
-      rem(30px)
-    );
-    $line-heights: screen-vals(1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
+      $font-sizes: screen-vals(
+        rem(24px),
+        rem(25px),
+        rem(26px),
+        rem(28px),
+        rem(30px)
+      );
+      $line-heights: screen-vals(1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
 
-    @include apply(font-size, $font-sizes);
-    @include apply(line-height, $line-heights);
-  }
+      @include apply(font-size, $font-sizes);
+      @include apply(line-height, $line-heights);
+    }
 
-  p {
-    $font-sizes: screen-vals(
-      rem(18px),
-      rem(19px),
-      rem(20px),
-      rem(21px),
-      rem(22px)
-    );
-    $margin-tops: screen-vals(1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
+    p,
+    > :global(section) {
+      $margin-tops: screen-vals(1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
+      @include apply(margin-top, $margin-tops);
+    }
 
-    text-align: justify;
-    text-justify: auto;
+    p {
+      text-align: justify;
+      text-justify: auto;
 
-    @include apply(font-size, $font-sizes);
-    @include apply(margin-top, $margin-tops);
+      $font-sizes: screen-vals(
+        rem(18px),
+        rem(19px),
+        rem(20px),
+        rem(21px),
+        rem(22px)
+      );
+      @include apply(font-size, $font-sizes);
+    }
   }
 
   .footer {
