@@ -73,8 +73,8 @@
   import SvgIcon from '$atoms/SvgIcon'
   import RelTime from '$atoms/RelTime'
 
-  import UpsertInput from './MUpsert/Input.svelte'
-  import UpsertLinks from './MUpsert/Links.svelte'
+  import UpsertInput from './UpsertModal/Input.svelte'
+  import UpsertLinks from './UpsertModal/Links.svelte'
 </script>
 
 <script>

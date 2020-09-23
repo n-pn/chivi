@@ -30,7 +30,7 @@
   import RelTime from '$atoms/RelTime'
 
   import MDiglot, { parse as parse_vp_input } from '$melds/MDiglot'
-  import MUpsert, { dict_upsert } from '$melds/MUpsert'
+  import UpsertModal, { dict_upsert } from '$melds/UpsertModal'
   import MLookup from '$melds/MLookup'
 
   import Vessel from '$parts/Vessel'
@@ -333,7 +333,7 @@
   {/if}
 
   {#if $upsert_actived}
-    <MUpsert bind:dirty />
+    <UpsertModal bind:dirty />
   {/if}
 </Vessel>
 
