@@ -65,6 +65,7 @@
   import Outline from './_outline'
 
   import { self_uname, self_power } from '$src/stores'
+  import AdArticle from '../../blocks/atoms/AdArticle.svelte'
 
   export let book
   export let mark = ''
@@ -182,115 +183,125 @@
       </a>
     </header>
 
-    <div class="meta-tab" class:_active={tab == 'overview'}>
-      <div class="summary">
-        <h2>Giới thiệu:</h2>
-        {#each book.vi_intro.split('\n') as line}
-          <p>{line}</p>
-        {/each}
-      </div>
+    {#if tab == 'overview'}
+      <div class="meta-tab">
+        <div class="summary">
+          <h2>Giới thiệu:</h2>
+          {#each book.vi_intro.split('\n') as line}
+            <p>{line}</p>
+          {/each}
+        </div>
 
-      {#if hasContent}
-        <h2>Chương tiết:</h2>
+        {#if hasContent}
+          {#if $self_power < 2}
+            <AdArticle />
+          {/if}
 
-        <table class="latests">
-          <thead>
-            <tr>
-              <th class="latest-seed">Nguồn</th>
-              <th class="latest-chap">Chương mới nhất</th>
-              <th class="latest-time">Cập nhật</th>
-            </tr>
-          </thead>
+          <h2>Chương tiết:</h2>
 
-          <tbody>
-            {#each book.seed_names as name}
+          <table class="latests">
+            <thead>
               <tr>
-                <td class="latest-seed">
-                  <span class="latest-text">{name}</span>
-                </td>
-                <td class="latest-chap">
-                  <a class="latest-link" href={last_chap_link(name)}>
-                    {last_chap_text(name)}
-                  </a>
-                </td>
-                <td class="latest-time">
-                  <span
-                    class="latest-text _update"
-                    on:click={() => change_seed(name, 1)}>
-                    {#if seed == name && _loading}
-                      <SvgIcon name="loader" spin={_loading} />
-                    {:else}
-                      <span><RelTime
-                          time={book.seed_mftimes[name]}
-                          seed={name} /></span>
-                    {/if}
-                  </span>
-                </td>
+                <th class="latest-seed">Nguồn</th>
+                <th class="latest-chap">Chương mới nhất</th>
+                <th class="latest-time">Cập nhật</th>
               </tr>
-            {/each}
-          </tbody>
-        </table>
-      {/if}
-    </div>
+            </thead>
 
-    <div class="meta-tab" class:_active={tab == 'content'}>
-      {#if hasContent}
-        <div class="sources">
-          <div class="-left">
-            <div class="-hint">Nguồn:</div>
-
-            <div class="seed-menu">
-              <div class="-text">
-                <span class="-label">{seed}</span>
-                <span class="-count">({chlist.length} chương)</span>
-              </div>
-
-              <div class="-menu">
-                {#each book.seed_names as name}
-                  <a
-                    class="-item"
-                    class:_active={seed === name}
-                    href="/~{book.slug}?tab=content&seed={name}"
-                    on:click|preventDefault={() => change_seed(name, 0)}>
-                    <span class="-name">{name}</span>
-                    <span class="-time">
-                      <RelTime time={book.seed_mftimes[name]} seed={name} />
+            <tbody>
+              {#each book.seed_names as name}
+                <tr>
+                  <td class="latest-seed">
+                    <span class="latest-text">{name}</span>
+                  </td>
+                  <td class="latest-chap">
+                    <a class="latest-link" href={last_chap_link(name)}>
+                      {last_chap_text(name)}
+                    </a>
+                  </td>
+                  <td class="latest-time">
+                    <span
+                      class="latest-text _update"
+                      on:click={() => change_seed(name, 1)}>
+                      {#if seed == name && _loading}
+                        <SvgIcon name="loader" spin={_loading} />
+                      {:else}
+                        <span><RelTime
+                            time={book.seed_mftimes[name]}
+                            seed={name} /></span>
+                      {/if}
                     </span>
-                  </a>
-                {/each}
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        {/if}
+      </div>
+    {:else if tab == 'content'}
+      <div class="meta-tab">
+        {#if hasContent}
+          {#if $self_power < 2}
+            <AdArticle />
+          {/if}
+
+          <div class="sources">
+            <div class="-left">
+              <div class="-hint">Nguồn:</div>
+
+              <div class="seed-menu">
+                <div class="-text">
+                  <span class="-label">{seed}</span>
+                  <span class="-count">({chlist.length} chương)</span>
+                </div>
+
+                <div class="-menu">
+                  {#each book.seed_names as name}
+                    <a
+                      class="-item"
+                      class:_active={seed === name}
+                      href="/~{book.slug}?tab=content&seed={name}"
+                      on:click|preventDefault={() => change_seed(name, 0)}>
+                      <span class="-name">{name}</span>
+                      <span class="-time">
+                        <RelTime time={book.seed_mftimes[name]} seed={name} />
+                      </span>
+                    </a>
+                  {/each}
+                </div>
               </div>
+            </div>
+
+            <div class="-right">
+              <button
+                class="m-button _text"
+                on:click={() => change_seed(seed, $self_power > 2 ? 2 : 1)}>
+                <SvgIcon name={_loading ? 'loader' : 'clock'} spin={_loading} />
+                <span><RelTime time={book.seed_mftimes[seed]} {seed} /></span>
+              </button>
+
+              <button class="m-button _text" on:click={() => (desc = !desc)}>
+                <SvgIcon name={desc ? 'arrow-down' : 'arrow-up'} />
+                <span class="-hide">Sắp xếp</span>
+              </button>
             </div>
           </div>
 
-          <div class="-right">
-            <button
-              class="m-button _text"
-              on:click={() => change_seed(seed, $self_power > 2 ? 2 : 1)}>
-              <SvgIcon name={_loading ? 'loader' : 'clock'} spin={_loading} />
-              <span><RelTime time={book.seed_mftimes[seed]} {seed} /></span>
-            </button>
-
-            <button class="m-button _text" on:click={() => (desc = !desc)}>
-              <SvgIcon name={desc ? 'arrow-down' : 'arrow-up'} />
-              <span class="-hide">Sắp xếp</span>
-            </button>
-          </div>
-        </div>
-
-        <ChapList
-          bslug={book.slug}
-          sname={seed}
-          chaps={chlist}
-          focus={page}
-          reverse={desc} />
-      {:else}
-        <div class="empty">Không có nội dung</div>
-      {/if}
-    </div>
-
-    <div class="meta-tab" class:_active={tab == 'reviews'}>
-      <div class="empty">Đang hoàn thiện :(</div>
-    </div>
+          <ChapList
+            bslug={book.slug}
+            sname={seed}
+            chaps={chlist}
+            focus={page}
+            reverse={desc} />
+        {:else}
+          <div class="empty">Không có nội dung</div>
+        {/if}
+      </div>
+    {:else}
+      <div class="meta-tab">
+        <div class="empty">Đang hoàn thiện :(</div>
+      </div>
+    {/if}
   </section>
 </Vessel>
 
@@ -491,12 +502,9 @@
   }
 
   .meta-tab {
-    display: none;
-    &._active {
-      padding: 0.75rem 0;
-      display: block;
-      min-height: 50vh;
-    }
+    padding: 0.75rem 0;
+    display: block;
+    min-height: 50vh;
   }
 
   .empty {

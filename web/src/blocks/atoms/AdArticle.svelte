@@ -1,19 +1,24 @@
-<section>
-  <ins
-    class="adsbygoogle"
-    data-ad-client="ca-pub-5468438393284967"
-    data-ad-format="fluid"
-    data-ad-slot="4952630589"
-    data-ad-layout="in-article">
-    <div>Quảng cáo để kiếm tiền nuôi server, xin đừng vội block 😢</div>
-  </ins>
-  <script>
+<script>
+  import { afterUpdate } from 'svelte'
+
+  afterUpdate(() => {
     try {
       ;(window.adsbygoogle = window.adsbygoogle || []).push({})
     } catch (err) {
       console.log(err)
     }
-  </script>
+  })
+</script>
+
+<section>
+  <ins
+    class="adsbygoogle"
+    data-ad-layout="in-article"
+    data-ad-format="fluid"
+    data-ad-client="ca-pub-5468438393284967"
+    data-ad-slot="4952630589">
+    <div>Quảng cáo để kiếm tiền nuôi server, xin đừng vội block 😢</div>
+  </ins>
 </section>
 
 <style lang="scss">

@@ -103,7 +103,7 @@
   export let hover = 0
   export let focus = 0
 
-  export let cursor
+  export let cursor = null
 
   $: if (rmode < 2) rmode = index == hover || index == focus ? 0 : 1
   $: html_0 = render(nodes, 0)
