@@ -120,13 +120,9 @@
 
     await fetch(`/_self/book_mark/${book.ubid}?mark=${mark}`, { method: 'PUT' })
   }
-</script>
 
-<svelte:head>
-  <script>
-    ;(adsbygoogle = window.adsbygoogle || []).push({})
-  </script>
-</svelte:head>
+  $: if (book.slug) (window.adsbygoogle = window.adsbygoogle || []).push({})
+</script>
 
 <Vessel>
   <a slot="header-left" href="/~{book.slug}" class="header-item _active">

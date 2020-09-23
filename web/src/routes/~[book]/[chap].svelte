@@ -74,7 +74,7 @@
   export let next_url = ''
 
   $: book_path = `/~${bslug}?tab=content&seed=${seed}`
-  // $: curr_path = `/~${bslug}/${curr_url}`
+  $: curr_path = `/~${bslug}/${curr_url}`
   $: prev_path = prev_url ? `/~${bslug}/${prev_url}` : book_path
   $: next_path = next_url ? `/~${bslug}/${next_url}` : book_path
 
@@ -205,14 +205,13 @@
 
   $: ad_max = cvlines.length < 8 ? cvlines.length : 8
   $: ad_idx = Math.floor(Math.random() * ad_max) + 2
+
+  $: if (curr_path) (window.adsbygoogle = window.adsbygoogle || []).push({})
 </script>
 
 <svelte:head>
   <title>{ch_title} - {bname} - Chivi</title>
   <meta property="og:url" content="{bslug}/{curr_url}" />
-  <script>
-    ;(adsbygoogle = window.adsbygoogle || []).push({})
-  </script>
 </svelte:head>
 
 <svelte:body on:keydown={handle_keypress} />
