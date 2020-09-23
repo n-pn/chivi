@@ -27,7 +27,7 @@
   }
 
   import AIcon from '$atoms/AIcon'
-  import ATime from '$atoms/ATime'
+  import RelTime from '$atoms/RelTime'
 
   import MDiglot, { parse as parse_vp_input } from '$melds/MDiglot'
   import MUpsert, { dict_upsert } from '$melds/MUpsert'
@@ -254,7 +254,7 @@
     <div class="-crumb"><span class="-text">{ch_label}</span></div>
 
     <div class="-right">
-      <span><ATime time={mftime} /></span>
+      <span><RelTime time={mftime} /></span>
     </div>
   </nav>
 

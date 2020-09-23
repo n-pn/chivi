@@ -55,7 +55,7 @@
 
 <script>
   import AIcon from '$atoms/AIcon'
-  import ATime from '$atoms/ATime'
+  import RelTime from '$atoms/RelTime'
 
   import Vessel from '$parts/Vessel'
   import ChapList from '$melds/ChapList'
@@ -228,7 +228,7 @@
                     {#if seed == name && _loading}
                       <AIcon name="loader" spin={_loading} />
                     {:else}
-                      <span><ATime
+                      <span><RelTime
                           time={book.seed_mftimes[name]}
                           seed={name} /></span>
                     {/if}
@@ -262,7 +262,7 @@
                     on:click|preventDefault={() => change_seed(name, 0)}>
                     <span class="-name">{name}</span>
                     <span class="-time">
-                      <ATime time={book.seed_mftimes[name]} seed={name} />
+                      <RelTime time={book.seed_mftimes[name]} seed={name} />
                     </span>
                   </a>
                 {/each}
@@ -275,7 +275,7 @@
               class="m-button _text"
               on:click={() => change_seed(seed, $self_power > 2 ? 2 : 1)}>
               <AIcon name={_loading ? 'loader' : 'clock'} spin={_loading} />
-              <span><ATime time={book.seed_mftimes[seed]} {seed} /></span>
+              <span><RelTime time={book.seed_mftimes[seed]} {seed} /></span>
             </button>
 
             <button class="m-button _text" on:click={() => (desc = !desc)}>

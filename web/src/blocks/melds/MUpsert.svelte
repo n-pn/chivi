@@ -71,7 +71,7 @@
   } from '$src/stores'
 
   import AIcon from '$atoms/AIcon'
-  import ATime from '$atoms/ATime'
+  import RelTime from '$atoms/RelTime'
 
   import UpsertInput from './MUpsert/Input.svelte'
   import UpsertLinks from './MUpsert/Links.svelte'
@@ -308,7 +308,7 @@
         {#if current && current.uname}
           <div class="latest">
             <span class="-text">Lưu:</span>
-            <span class="-time"><ATime time={current.mtime} /></span>
+            <span class="-time"><RelTime time={current.mtime} /></span>
             <span class="-text">bởi</span>
             <span class="-user">{current.uname}</span>
             <span class="-text _hide">[Q.hạn {current.power}]</span>
