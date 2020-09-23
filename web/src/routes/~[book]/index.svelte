@@ -165,23 +165,13 @@
         Tổng quan
       </a>
 
-      {#if $self_power < 2}
-        <a
-          class="-tab"
-          class:_active={tab == 'content'}
-          href="/~{book.slug}?tab=content&seed={seed}"
-          rel="{$self_power < 2 ? 'external' : ''}}">
-          Mục lục
-        </a>
-      {:else}
-        <a
-          class="-tab"
-          class:_active={tab == 'content'}
-          href="/~{book.slug}?tab=content&seed={seed}"
-          on:click={(evt) => change_tab(evt, 'content')}>
-          Mục lục
-        </a>
-      {/if}
+      <a
+        class="-tab"
+        class:_active={tab == 'content'}
+        href="/~{book.slug}?tab=content&seed={seed}"
+        on:click={(evt) => change_tab(evt, 'content')}>
+        Mục lục
+      </a>
 
       <a
         class="-tab"
@@ -245,17 +235,6 @@
 
     <div class="meta-tab" class:_active={tab == 'content'}>
       {#if hasContent}
-        {#if $self_power < 2}
-          <AdBanner />
-          <script>
-            try {
-              ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-            } catch (err) {
-              console.log(err)
-            }
-          </script>
-        {/if}
-
         <div class="sources">
           <div class="-left">
             <div class="-hint">Nguồn:</div>
