@@ -85,7 +85,8 @@
 
   $: if (scid != older_chap) {
     older_chap = scid
-    if (view_count++ > 4) anchor_rel = 'external'
+    if (view_count++ >= 4) anchor_rel = 'external'
+    // console.log({ older_chap, anchor_rel })
   }
 
   $: cvlines = cvdata.split('\n').map((x) => parse_vp_input(x))
@@ -216,7 +217,7 @@
     slot="header-left"
     href={book_path}
     class="header-item _title"
-    rel={anchor_rel}>
+    rel="external">
     <SvgIcon name="book-open" />
     <span class="header-text _show-sm _title">{bname}</span>
   </a>
@@ -258,13 +259,15 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/" class="-link"><SvgIcon name="home" /></a>
+      <a href="/" class="-link" rel="external"><SvgIcon name="home" /></a>
     </div>
 
-    <div class="-crumb _sep"><a href="/~{bslug}" class="-link">{bname}</a></div>
+    <div class="-crumb _sep">
+      <a href="/~{bslug}" class="-link" rel="external">{bname}</a>
+    </div>
 
     <div class="-crumb _sep">
-      <a href={book_path} class="-link">[{seed}]</a>
+      <a href={book_path} class="-link" rel="external">[{seed}]</a>
     </div>
 
     <div class="-crumb"><span class="-text">{ch_label}</span></div>
@@ -315,7 +318,7 @@
       </a>
     {/if}
 
-    <a href={book_path} class="m-button _line" rel={anchor_rel} data-kbd="h">
+    <a href={book_path} class="m-button _line" rel="external" data-kbd="h">
       <SvgIcon name="list" />
       <span>Mục lục</span>
     </a>
