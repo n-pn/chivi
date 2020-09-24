@@ -23,8 +23,6 @@ const mainFields = ['svelte', 'module', 'browser', 'main']
 
 // postcss
 
-const autoprefixer = require('autoprefixer')
-const cssnano = require('cssnano')({ preset: 'default' })
 const purgecss = require('@fullhuman/postcss-purgecss')({
   content: ['./src/**/*.html', './src/**/*.svelte'],
   keyframes: true,
@@ -50,7 +48,7 @@ module.exports = {
               preprocess,
               hydratable: true,
               hotReload: true,
-              emitCss: !dev,
+              emitCss: false,
               hotOptions: {
                 noPreserveState: false, // Default: false
                 optimistic: true, // Default: false
@@ -72,13 +70,15 @@ module.exports = {
             !dev && {
               loader: 'postcss-loader',
               options: {
-                parsers: 'postcss',
-                plugins: [autoprefixer, cssnano, purgecss],
+                postcssOptions: {
+                  parsers: 'postcss',
+                  plugins: ['autoprefixer', 'cssnano', purgecss],
+                },
               },
             },
             {
               loader: 'sass-loader',
-              options: { sourceMap: false },
+              options: { sourceMap: dev },
             },
           ].filter(Boolean),
         },

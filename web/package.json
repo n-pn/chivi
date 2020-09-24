@@ -16,18 +16,19 @@
     "sirv": "^1.0.6"
   },
   "devDependencies": {
-    "@fullhuman/postcss-purgecss": "^2.0.0",
-    "autoprefixer": "^9.8.6",
-    "css-loader": "^4.2.2",
+    "@fullhuman/postcss-purgecss": "^3.0.0",
+    "autoprefixer": "^10.0.0",
+    "css-loader": "^4.3.0",
     "cssnano": "^4.1.10",
-    "mini-css-extract-plugin": "^0.11.0",
+    "mini-css-extract-plugin": "^0.11.2",
     "node-sass": "^4.14.1",
-    "postcss-loader": "^3.0.0",
+    "postcss": "^8.0.9",
+    "postcss-loader": "^4.0.2",
     "sapper": "^0.28.0",
     "sass-loader": "^10.0.2",
-    "svelte": "^3.24.1",
+    "svelte": "^3.27.0",
     "svelte-loader-hot": "^0.3.1",
-    "webpack": "^4.44.1"
+    "webpack": "^4.44.2"
   },
   "browserslist": [
     "> 1%",
