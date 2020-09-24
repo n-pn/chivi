@@ -29,17 +29,17 @@
   export let limit = 40
   export let reverse = false
 
-  let scroll = null
+  let scroll_top = null
 
   $: items = paginate(chaps, focus, limit, reverse)
   $: total = Math.floor((chaps.length - 1) / limit) + 1
   $: range = paginate_range(focus, total, 7)
 
-  function changeFocus(newFocus) {
-    if (newFocus < 1) newFocus = 1
-    if (newFocus > total) newFocus = total
-    focus = newFocus
-    scroll.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  function change_focus(new_focus) {
+    if (new_focus < 1) new_focus = 1
+    if (new_focus > total) new_focus = total
+    focus = new_focus
+    scroll_top.scrollIntoView({ behavior: 'smooth', block: 'start' })
     // window.scrollBy(0, -20)
   }
 
@@ -47,19 +47,19 @@
     switch (evt.keyCode) {
       case 72:
         evt.preventDefault()
-        changeFocus(1)
+        change_focus(1)
         break
 
       case 76:
         evt.preventDefault()
-        changeFocus(total)
+        change_focus(total)
         break
 
       case 37:
       case 74:
         if (!evt.altKey) {
           evt.preventDefault()
-          changeFocus(focus - 1)
+          change_focus(focus - 1)
         }
         break
 
@@ -67,7 +67,7 @@
       case 75:
         if (!evt.altKey) {
           evt.preventDefault()
-          changeFocus(focus + 1)
+          change_focus(focus + 1)
         }
         break
 
@@ -79,7 +79,7 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<div class="chap" data-site={sname} id="chap" bind:this={scroll}>
+<div class="chap" data-site={sname} id="chap" bind:this={scroll_top}>
   <ul class="chap-list">
     {#each items as chap}
       <li class="chap-item">
@@ -99,14 +99,14 @@
   <nav class="pagi">
     <button
       class="page m-button _line"
-      on:click={() => changeFocus(1)}
+      on:click={() => change_focus(1)}
       disabled={focus == 1}>
       <SvgIcon name="chevrons-left" />
     </button>
 
     <button
       class="page m-button _line"
-      on:click={() => changeFocus(focus - 1)}
+      on:click={() => change_focus(focus - 1)}
       disabled={focus == 1}>
       <SvgIcon name="chevron-left" />
     </button>
@@ -115,7 +115,7 @@
       <button
         class="page m-button _line"
         disabled={focus == index}
-        on:click={() => changeFocus(index)}
+        on:click={() => change_focus(index)}
         data-level={level}>
         <span>{index}</span>
       </button>
@@ -123,14 +123,14 @@
 
     <button
       class="page m-button _line"
-      on:click={() => changeFocus(focus + 1)}
+      on:click={() => change_focus(focus + 1)}
       disabled={focus == total}>
       <SvgIcon name="chevron-right" />
     </button>
 
     <button
       class="page m-button _line"
-      on:click={() => changeFocus(total)}
+      on:click={() => change_focus(total)}
       disabled={focus == total}>
       <SvgIcon name="chevrons-right" />
     </button>
