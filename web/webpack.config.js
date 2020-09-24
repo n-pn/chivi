@@ -94,7 +94,7 @@ module.exports = {
       new MiniCssExtractPlugin({
         filename: '[hash]/[name].css',
         chunkFilename: '[hash]/[name].[id].css',
-        ignoreOrder: false, // Enable to remove warnings about conflicting order
+        ignoreOrder: true, // Enable to remove warnings about conflicting order
       }),
     ].filter(Boolean),
     devtool: dev && 'inline-source-map',

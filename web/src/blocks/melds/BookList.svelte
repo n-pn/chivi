@@ -1,13 +1,11 @@
 <script>
-  import SvgIcon from '$atoms/SvgIcon.svelte'
   import BookCover from '$atoms/BookCover.svelte'
-
   export let books = []
 </script>
 
 <div class="list">
   {#each books as book}
-    <a class="book" href="~{book.slug}" rel="prefetch">
+    <a class="book" href="/~{book.slug}" rel="prefetch">
       <div class="cover">
         <BookCover ubid={book.ubid} path={book.main_cover} />
       </div>
