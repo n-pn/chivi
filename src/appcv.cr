@@ -18,7 +18,7 @@ module Appcv
   def load_list(info : BookInfo, seed : String, mode = 0) : Tuple(ChapList, Int64)?
     return unless sbid = info.seed_sbids[seed]?
 
-    chlist = ChapList.get_or_create(info.ubid, seed)
+    chlist = ChapList.preload_or_create!(info.ubid, seed)
     expiry = mode > 0 ? (Time.utc - 5.minutes) : Time.unix_ms(info.mftime)
 
     # jx_la is dead :()

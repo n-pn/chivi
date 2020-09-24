@@ -88,14 +88,12 @@
 
     switch (evt.key) {
       case '\\':
+        evt.preventDefault()
         toggle_lookup()
         break
 
-      case 'x':
-        active_upsert(0)
-        break
-
       case 'c':
+        evt.preventDefault()
         active_upsert(1)
         break
 
@@ -103,9 +101,10 @@
       case 'j':
       case 'k':
       case 'r':
+      case 'x':
         let elm = document.querySelector(`[data-kbd="${evt.key}"]`)
         if (elm) {
-          evt.stopPropagation()
+          evt.preventDefault()
           elm.click()
         }
 

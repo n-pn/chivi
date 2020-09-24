@@ -224,7 +224,7 @@ class ChapList
   # cache chap lists for faster access
   CACHE = {} of String => ChapList
   # only cache newest ones due to low memory constraint
-  CACHE_LIMIT = 1000
+  LIMIT = 1000
 
   # load with caching, raise error if chap list does not exists.
   def self.preload!(ubid : String, seed : String) : ChapList
