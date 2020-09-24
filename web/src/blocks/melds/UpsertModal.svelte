@@ -66,7 +66,7 @@
     self_power,
     upsert_input,
     upsert_dicts as dicts,
-    upsert_d_idx as d_idx,
+    upsert_ontab as d_idx,
     upsert_actived as actived,
   } from '$src/stores'
 

@@ -236,7 +236,7 @@ class CvData
     @data.unsafe_fetch(0).to_s(io)
 
     1.upto(@data.size - 1) do |i|
-      io << CvNode::SEP_0
+      io << '\t'
       @data.unsafe_fetch(i).to_s(io)
     end
 
@@ -251,7 +251,7 @@ class CvData
 
   def self.zh_text(text : String)
     String.build do |io|
-      text.split(CvNode::SEP_0).each do |node|
+      text.split(/[\tǁ]/).each do |node|
         io << node.split(CvNode::SEP_1, 2).first
       end
     end

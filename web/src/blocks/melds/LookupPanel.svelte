@@ -80,7 +80,10 @@
     return output
   }
 
-  import { parse_content } from '$utils/render_convert'
+  function parse_hanviet(input) {
+    return input.split('\t').map((x) => x.split('¦'))
+  }
+
   import SvgIcon from '$atoms/SvgIcon.svelte'
   import {
     lookup_input,
@@ -114,7 +117,7 @@
     const data = await res.json()
 
     entries = data.entries
-    hanviet = parse_content(data.hanviet)[0][0]
+    hanviet = parse_hanviet(data.hanviet)
   }
 
   function update_focus() {
@@ -137,7 +140,7 @@
     if (evt.keyCode == 27 && on_top) $actived = false
   }
 
-  function renderVietphrase(words) {
+  function fix_vietphrase(words) {
     let res = []
     for (let word of words) {
       if (word === '') res.push('<em>&lt;đã xoá&gt;</em>')
@@ -174,7 +177,7 @@
               <h4 class="name">{name}</h4>
               {#if name == 'vietphrase'}
                 <p class="viet">
-                  {@html renderVietphrase(items)}
+                  {@html fix_vietphrase(items)}
                 </p>
               {:else}
                 {#each items as line}

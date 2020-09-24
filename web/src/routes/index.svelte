@@ -112,6 +112,11 @@
     <SvgIcon name="search" />
   </form>
 
+  <a slot="header-right" class="header-item" href="/translate">
+    <SvgIcon name="zap" />
+    <span class="header-text _show-md">Dịch nhanh</span>
+  </a>
+
   {#if items.length == 0}
     <div class="empty">Danh sách trống</div>
   {:else}

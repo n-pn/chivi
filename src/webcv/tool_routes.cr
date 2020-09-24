@@ -3,9 +3,9 @@ require "./route_utils"
 
 module Server
   post "/_tools/convert" do |env|
-    input = env.params.json["input"].as(String)
+    input = env.params.json["input"]?.as(String?) || ""
     lines = TextUtil.split_text(input)
-    dname = env.params.json.fetch("dname", "tonghop").as(String)
+    dname = env.params.json.fetch("dname", "dich-nhanh").as(String)
     Libcv.cv_mixed(lines, dname).map(&.to_s).to_json(env.response)
   end
 

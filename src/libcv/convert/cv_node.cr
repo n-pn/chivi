@@ -20,20 +20,23 @@ class CvNode
     @key = @val = char.to_s
   end
 
-  def to_s
+  def to_s : String
     String.build { |io| to_s(io) }
   end
 
-  def to_s(io : IO)
-    io << @key << SEP_1 << @val << SEP_1 << @dic
+  def to_s(io : IO) : Nil
+    {@key, @val, @dic}.join(io, SEP_1)
   end
 
-  def capitalize!
+  def capitalize! : self
     @val = TextUtil.capitalize(@val)
+    self
   end
 
-  def combine!(other : self)
+  def combine!(other : self) : self
     @key = other.key + @key
     @val = other.val + @val
+
+    self
   end
 end
