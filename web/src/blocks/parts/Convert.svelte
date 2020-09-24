@@ -1,22 +1,18 @@
 <script context="module">
   import { onMount } from 'svelte'
 
-  import AdBanner from '$atoms/AdBanner'
-
   import LookupPanel from '$melds/LookupPanel'
-  import UpsertModal, { dict_upsert } from '$melds/UpsertModal'
+  import UpsertModal from '$melds/UpsertModal'
 
   import ConvertLine from './Convert/Line'
 
   import {
-    // self_uname,
-    self_power,
-    upsert_input,
     lookup_input,
+    upsert_input,
     upsert_ontab,
-    upsert_actived,
     lookup_actived,
     lookup_enabled,
+    upsert_actived,
   } from '$src/stores'
 
   export function toggle_lookup() {
@@ -31,23 +27,7 @@
     upsert_actived.set(true)
   }
 
-  // function make_ads_array(limit = 1, max = 30, min = 20) {
-  //   const res = []
-  //   let idx = random_int(15, 5)
-
-  //   while (idx < limit) {
-  //     res.push(idx)
-  //     idx += random_int(max, min)
-  //   }
-
-  //   return res
-  // }
-
-  // function random_int(max = 30, min = 20) {
-  //   return Math.floor(Math.random() * (max - min)) + min
-  // }
-
-  function make_bounds(nodes = [], idx = 0, min = 4, max = 10) {
+  function gen_context(nodes = [], idx = 0, min = 4, max = 10) {
     let output = ''
 
     for (let j = idx - 1; j >= 0; j--) {
@@ -82,11 +62,6 @@
   $: lines = input.split('\n').map((x) => parse_chivi(x))
 
   export let dirty = false
-  export let dname = 'dich-nhanh'
-
-  // $: place_ads_here = make_ads_array(input.length)
-
-  let holder = null
 
   let hover_line = 0
   let focus_line = 0
@@ -95,8 +70,6 @@
   import read_selection from '$utils/read_selection'
 
   onMount(() => {
-    if (holder) holder.focus()
-
     const event = document.addEventListener('selectionchange', () => {
       const input = read_selection()
 
@@ -115,7 +88,7 @@
 
     const idx = +target.dataset.i
     const nodes = lines[index]
-    upsert_input.set(make_bounds(nodes, idx))
+    upsert_input.set(gen_context(nodes, idx))
 
     if (target === focus_word) {
       upsert_ontab.set(0)
@@ -125,38 +98,13 @@
       focus_word = target
       focus_word.classList.add('_focus')
 
-      lookup_input.set(make_bounds(nodes, idx, 8, 20))
+      lookup_input.set(gen_context(nodes, idx, 10, 20))
       lookup_actived.set(true)
     }
   }
-
-  function handle_keypress(evt) {
-    if ($upsert_actived) return
-    if (evt.ctrlKey) return
-
-    switch (evt.key) {
-      default:
-        if (evt.keycode == 46 && evt.shiftKey) delete_focus_word()
-        else if (evt.keyCode == 13) active_upsert()
-    }
-  }
-
-  async function delete_focus_word() {
-    if (!focus_word || $self_power < 1) return
-
-    const key = focus_word.dataset.k
-    const dic = +focus_word.dataset.d == 2 ? 'generic' : dname
-
-    const res = await dict_upsert(fetch, dic, key, '')
-    return res.ok
-  }
 </script>
 
-<article
-  class:dirty
-  tabindex="-1"
-  bind:this={holder}
-  on:keydown={handle_keypress}>
+<article class:dirty>
   {#each lines as nodes, index (index)}
     <div
       class="chivi"
@@ -164,14 +112,9 @@
       on:mouseenter={() => (hover_line = index)}>
       <ConvertLine
         {nodes}
-        {index}
         frags={index == hover_line || index == focus_line}
         title={index == 0} />
     </div>
-
-    <!-- {#if place_ads_here.includes(index)}
-      <AdBanner type="in-article" />
-    {/if} -->
   {/each}
 </article>
 
