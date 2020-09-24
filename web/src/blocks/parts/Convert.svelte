@@ -31,21 +31,21 @@
     upsert_actived.set(true)
   }
 
-  function make_ads_array(limit = 1, max = 30, min = 20) {
-    const res = []
-    let idx = random_int(15, 5)
+  // function make_ads_array(limit = 1, max = 30, min = 20) {
+  //   const res = []
+  //   let idx = random_int(15, 5)
 
-    while (idx < limit) {
-      res.push(idx)
-      idx += random_int(max, min)
-    }
+  //   while (idx < limit) {
+  //     res.push(idx)
+  //     idx += random_int(max, min)
+  //   }
 
-    return res
-  }
+  //   return res
+  // }
 
-  function random_int(max = 30, min = 20) {
-    return Math.floor(Math.random() * (max - min)) + min
-  }
+  // function random_int(max = 30, min = 20) {
+  //   return Math.floor(Math.random() * (max - min)) + min
+  // }
 
   function make_bounds(nodes = [], idx = 0, min = 4, max = 10) {
     let output = ''
@@ -84,7 +84,7 @@
   export let dirty = false
   export let dname = 'dich-nhanh'
 
-  $: place_ads_here = make_ads_array(input.length)
+  // $: place_ads_here = make_ads_array(input.length)
 
   let holder = null
 
@@ -188,9 +188,9 @@
         title={index == 0} />
     </div>
 
-    {#if place_ads_here.includes(index)}
+    <!-- {#if place_ads_here.includes(index)}
       <AdBanner type="in-article" />
-    {/if}
+    {/if} -->
   {/each}
 </article>
 

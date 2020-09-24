@@ -191,7 +191,7 @@
         </div>
 
         {#if has_seeds}
-          <AdBanner />
+          <!-- <AdBanner /> -->
 
           <h2>Chương tiết:</h2>
 
@@ -237,7 +237,7 @@
     {:else if tab == 'content'}
       <div class="meta-tab">
         {#if has_seeds}
-          <AdBanner />
+          <!-- <AdBanner /> -->
 
           <div class="sources">
             <div class="-left">
