@@ -45,25 +45,27 @@ module Appcv
   # 2 => fetch text from external hosts then convert
 
   def get_text(ubid : String, seed : String, sbid : String, scid : String, mode : Int32 = 0)
-    chtext = ChapText.new(ubid, seed, sbid, scid, mode: 0)
+    chtext = ChapText.load(ubid, seed, sbid, scid, mode: 1)
     cached = File.exists?(chtext.file)
 
     if remote?(seed) && (mode == 2 || !cached)
       source = SeedText.init(seed, sbid, scid, freeze: false)
-      lines = [source.title].concat(source.paras)
+      zh_data = [source.title].concat(source.paras)
+      chtext.tap(&.zh_data = zh_data).save!
     elsif cached
-      chtext.load!
-      return chtext if mode == 0 && recent?(chtext.time, 30.minutes)
-      lines = chtext.zh_lines
+      return chtext if mode == 0 && recent?(chtext.cv_time, 2.hours)
+      zh_data = chtext.zh_data
     else
-      lines = [
+      zh_data = [
         "Lỗi: Chương tiết không có nội dung!",
         "Xin liên hệ với ban quản trị để khắc phục.",
       ]
     end
 
-    chtext.data = Libcv.cv_mixed(lines, ubid).map(&.to_s).join("\n")
-    chtext.tap(&.save!)
+    chtext.tap do |x|
+      x.cv_text = Libcv.cv_mixed(zh_data, ubid).map(&.to_s).join("\n")
+      x.cv_time = Time.utc.to_unix_ms
+    end
   end
 
   SEEDS = {
@@ -77,8 +79,8 @@ module Appcv
     SEEDS.includes?(seed)
   end
 
-  def recent?(time : Time, span = 1.hours)
-    time + span > Time.utc
+  def recent?(mftime : Int64, span = 1.hours)
+    mftime > (Time.utc - span).to_unix_ms
   end
 end
 

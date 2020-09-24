@@ -146,8 +146,8 @@ module Server
     chap = Appcv.get_text(info.ubid, seed, list.sbid, scid, mode: mode)
 
     {
-      cvdata: chap.data,
-      mftime: chap.time.to_unix_ms,
+      cvdata: chap.cv_text,
+      mftime: chap.cv_time,
 
       bslug: info.slug,
       bname: info.vi_title,

@@ -4,100 +4,63 @@ require "file_utils"
 require "../../utils/file_util"
 
 class ChapText
-  LABEL = "chap_text"
-  SEP_0 = "ǁ"
-  SEP_1 = "¦"
-
-  property ubid = ""
-  property seed = ""
-  property sbid = ""
-  property scid = ""
-
-  property file = ""
-  property data = ""
-  property time = Time.utc
-
-  def initialize(@ubid, @seed, @sbid, @scid, mode : Int32 = 1)
-    @file = File.join(DIR, "#{@ubid}.#{@seed}", "#{sbid}.#{@scid}.txt")
-    return if mode == 0
-
-    load!(@file) if mode == 2 || File.exists?(@file)
-  end
-
-  def load!(file : String = @file) : self
-    if File.exists?(file)
-      @data = File.read(file)
-      @time = File.info(file).modification_time
-
-      puts "- <#{LABEL}> [#{file.colorize.cyan}] loaded."
-    else
-      puts "- <#{LABEL}> [#{file.colorize.red}] not found!"
-    end
-
-    self
-  end
-
-  def save!(file : String = @file) : Void
-    @time = Time.utc
-    FileUtils.mkdir_p(File.dirname(file))
-    FileUtil.save(file, LABEL, @data.size) { |io| @data.to_s(io) }
-  end
-
-  def to_s(io : IO)
-    @data.to_s(io)
-  end
-
-  def zh_lines : Array(String)
-    @data.split("\n").map do |line|
-      line.split(/[\tǁ]/).map { |x| x.split(SEP_1, 2)[0] }.join("")
-    end
-  end
-
-  def vi_lines : Array(String)
-    @data.split("\n").map do |line|
-      line.split(/[\tǁ]/).map { |x| x.split(SEP_1, 3)[1] }.join("")
-    end
-  end
-
   # class methods
 
   DIR = File.join("var", "appcv", "chtexts")
   FileUtils.mkdir_p(DIR)
 
-  # def self.path_for(ubid : String, seed : String)
-  #   File.join(DIR, "#{ubid}.#{seed}")
-  # end
+  SEP_0 = "ǁ"
+  SEP_1 = "¦"
 
-  # # extract ubid from file name
-  # def self.ubid_for(file : String)
-  #   File.basename(File.dirname(file)).split(".").first
-  # end
+  CACHE = {} of String => ChapText
+  LIMIT = 5000
 
-  # # extract seed from file name
-  # def self.seed_for(file : String)
-  #   File.basename(File.dirname(file)).split(".").last
-  # end
+  def self.load(ubid : String,
+                seed : String,
+                sbid : String,
+                scid : String,
+                mode : Int32 = 1)
+    file = File.join(DIR, "#{ubid}.#{seed}/#{sbid}.#{scid}.txt")
+    CACHE.shift if CACHE.size > LIMIT
+    CACHE[file] ||= new(file, mode)
+  end
 
-  # # extract scid from file name
-  # def self.scid_for(file : String)
-  #   File.basename(file, ".json")
-  # end
+  getter file : String
+  property zh_data = [] of String
 
-  # # load all chap file in folder
-  # def self.files(ubid : String, seed : String)
-  #   Dir.glob(File.join(path_for(ubid, seed), "*.json"))
-  # end
+  property cv_text = ""
+  property cv_time = 0_i64
 
-  # # load all chap scids in folder
-  # def self.scids(ubid : String, seed : String)
-  #   files(ubid, seed).map { |file| scid_for(file) }
-  # end
+  def initialize(@file, mode : Int32 = 1)
+    return if mode == 0
+    return unless mode == 2 || File.exists?(@file)
 
-  # def self.path_for(ubid : String, seed : String, scid : String)
-  #   File.join(DIR, "#{ubid}.#{seed}", "#{scid}.json")
-  # end
+    dirty = false
 
-  # def self.load!(ubid : String, seed : String, scid : String)
-  #   new(ubid, seed, scid, preload: true)
-  # end
+    File.each_line(file) do |line|
+      if dirty
+        @zh_data << zh_line(line)
+      elsif line =~ /[\tǁ]/
+        dirty = true
+        @zh_data << zh_line(line)
+      else
+        @zh_data << line
+      end
+    end
+
+    save!(@file) if dirty
+  end
+
+  def zh_line(line : String)
+    line.split(/[\tǁ]/).map(&.split("¦", 2)[0]).join
+  end
+
+  def save!(file : String = @file) : Void
+    FileUtils.mkdir_p(File.dirname(file))
+    File.write(file, self)
+  end
+
+  def to_s(io : IO)
+    @zh_data.join(io, "\n")
+  end
 end
