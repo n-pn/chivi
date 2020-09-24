@@ -91,6 +91,14 @@
         toggle_lookup()
         break
 
+      case 'x':
+        active_upsert(0)
+        break
+
+      case 'c':
+        active_upsert(1)
+        break
+
       case 'h':
       case 'j':
       case 'k':
@@ -107,7 +115,7 @@
 
   let _load = false
   async function reload_chap(mode = 1) {
-    if (!$self_power < 1) return
+    if ($self_power < 1) return
 
     _load = true
     const data = await load_chap(window.fetch, bslug, seed, scid, mode)

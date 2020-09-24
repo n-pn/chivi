@@ -53,7 +53,7 @@ module Appcv
       lines = [source.title].concat(source.paras)
     elsif cached
       chtext.load!
-      return chtext if mode == 0 && recent?(chtext.time, 1.hours)
+      return chtext if mode == 0 && recent?(chtext.time, 30.minutes)
       lines = chtext.zh_lines
     else
       lines = [

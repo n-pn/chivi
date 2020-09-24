@@ -135,25 +135,6 @@
     if (evt.ctrlKey) return
 
     switch (evt.key) {
-      case '\\':
-        trigger_lookup()
-        break
-
-      case 'r':
-        evt.stopPropagation()
-        if ($self_power > 0) dirty = true
-        break
-
-      case 'x':
-        evt.stopPropagation()
-        active_upsert(0)
-        break
-
-      case 'c':
-        evt.stopPropagation()
-        active_upsert(1)
-        break
-
       default:
         if (evt.keycode == 46 && evt.shiftKey) delete_focus_word()
         else if (evt.keyCode == 13) active_upsert()

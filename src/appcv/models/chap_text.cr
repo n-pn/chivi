@@ -49,13 +49,13 @@ class ChapText
 
   def zh_lines : Array(String)
     @data.split("\n").map do |line|
-      line.split(SEP_0).map { |x| x.split(SEP_1, 2)[0] }.join("")
+      line.split(/[\tǁ]/).map { |x| x.split(SEP_1, 2)[0] }.join("")
     end
   end
 
   def vi_lines : Array(String)
     @data.split("\n").map do |line|
-      line.split(SEP_0).map { |x| x.split(SEP_1, 3)[1] }.join("")
+      line.split(/[\tǁ]/).map { |x| x.split(SEP_1, 3)[1] }.join("")
     end
   end
 
