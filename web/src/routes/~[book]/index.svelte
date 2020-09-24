@@ -57,7 +57,7 @@
   import SvgIcon from '$atoms/SvgIcon'
   import RelTime from '$atoms/RelTime'
 
-  import AdBanner, { refresh_ads } from '$atoms/AdBanner'
+  import AdBanner from '$atoms/AdBanner'
 
   import Vessel from '$parts/Vessel'
   import ChapList from '$melds/ChapList'
@@ -78,7 +78,7 @@
 
   let chlist = []
   $: chlist = chlists[seed] || []
-  $: hasContent = book.seed_names.length > 0
+  $: has_seeds = book.seed_names.length > 0
 
   $: if (tab == 'content') change_seed(seed, 0)
 
@@ -190,7 +190,7 @@
           {/each}
         </div>
 
-        {#if hasContent}
+        {#if has_seeds}
           <AdBanner />
 
           <h2>Chương tiết:</h2>
@@ -236,7 +236,7 @@
       </div>
     {:else if tab == 'content'}
       <div class="meta-tab">
-        {#if hasContent}
+        {#if has_seeds}
           <AdBanner />
 
           <div class="sources">

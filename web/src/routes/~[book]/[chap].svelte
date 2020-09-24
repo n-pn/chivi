@@ -47,6 +47,26 @@
     lookup_dname,
     lookup_actived,
   } from '$src/stores'
+
+  function make_ads_index(limit = 1, max = 15, min = 5) {
+    const res = []
+    let idx = 0
+
+    while (idx < limit) {
+      idx += random_int(max, min)
+      res.push(idx)
+    }
+
+    return res
+  }
+
+  function random_int(max = 15, min = 5) {
+    return Math.floor(Math.random() * (max - min)) + min
+  }
+
+  let view_count = 0
+  let older_chap = ''
+  let anchor_rel = ''
 </script>
 
 <script>
@@ -63,9 +83,13 @@
   export let mftime = 0
   export let cvdata = ''
 
+  $: if (scid != older_chap) {
+    older_chap = scid
+    if (view_count++ > 4) anchor_rel = 'external'
+  }
+
   $: cvlines = cvdata.split('\n').map((x) => parse_vp_input(x))
-  $: ads_max = cvlines.length < 8 ? cvlines.length : 8
-  $: ads_idx = Math.floor(Math.random() * ads_max) + 2
+  $: ads_idx = make_ads_index(cvlines.length)
 
   export let ch_total = 1
   export let ch_index = 1
@@ -188,7 +212,11 @@
 <svelte:body on:keydown={handle_keypress} />
 
 <Vessel shift={lookup_enabled && $lookup_actived}>
-  <a slot="header-left" href={book_path} class="header-item _title">
+  <a
+    slot="header-left"
+    href={book_path}
+    class="header-item _title"
+    rel={anchor_rel}>
     <SvgIcon name="book-open" />
     <span class="header-text _show-sm _title">{bname}</span>
   </a>
@@ -248,7 +276,7 @@
 
   <article class="convert" class:_load>
     {#each cvlines as nodes, index (index)}
-      {#if index == ads_idx}
+      {#if ads_idx.includes(index)}
         <AdBanner type="in-article" />
       {/if}
 
@@ -277,24 +305,26 @@
   <footer class="footer">
     {#if prev_url}
       <a
+        href={prev_path}
         class="m-button _line"
         class:_disable={!prev_url}
-        href={prev_path}
+        rel={anchor_rel}
         data-kbd="j">
         <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
     {/if}
 
-    <a class="m-button _line" href={book_path} data-kbd="h">
+    <a href={book_path} class="m-button _line" rel={anchor_rel} data-kbd="h">
       <SvgIcon name="list" />
       <span>Mục lục</span>
     </a>
 
     <a
+      href={next_path}
       class="m-button _line _primary"
       class:_disable={!next_url}
-      href={next_path}
+      rel={anchor_rel}
       data-kbd="k">
       <span>Kế tiếp</span>
       <SvgIcon name="chevron-right" />
