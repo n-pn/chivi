@@ -7,20 +7,9 @@
     data-ad-slot="4952630589">
     <div>Quảng cáo để kiếm tiền nuôi server, xin đừng vội block 😢</div>
   </ins>
-  <script>
-    try {
-      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-    } catch (err) {
-      console.log(err)
-    }
-  </script>
 </section>
 
 <style lang="scss">
-  section {
-    width: 100%;
-  }
-
   ins {
     display: block;
     min-width: 250px;

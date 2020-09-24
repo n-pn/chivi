@@ -57,7 +57,7 @@
   import SvgIcon from '$atoms/SvgIcon'
   import RelTime from '$atoms/RelTime'
 
-  import AdBanner from '$atoms/AdBanner'
+  import AdBanner, { refresh_ads } from '$atoms/AdBanner'
 
   import Vessel from '$parts/Vessel'
   import ChapList from '$melds/ChapList'
@@ -65,7 +65,6 @@
   import Outline from './_outline'
 
   import { self_uname, self_power } from '$src/stores'
-  import AdArticle from '../../blocks/atoms/AdArticle.svelte'
 
   export let book
   export let mark = ''
@@ -100,7 +99,6 @@
   }
 
   function change_tab(evt, new_tab) {
-    // TODO: scrolling?
     evt.preventDefault()
     tab = new_tab
   }
@@ -193,9 +191,7 @@
         </div>
 
         {#if hasContent}
-          {#if $self_power < 2}
-            <AdArticle />
-          {/if}
+          <AdBanner />
 
           <h2>Chương tiết:</h2>
 
@@ -241,9 +237,7 @@
     {:else if tab == 'content'}
       <div class="meta-tab">
         {#if hasContent}
-          {#if $self_power < 2}
-            <AdArticle />
-          {/if}
+          <AdBanner />
 
           <div class="sources">
             <div class="-left">

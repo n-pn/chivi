@@ -1,26 +1,32 @@
+<script>
+  export let type = 'banner'
+  $: ad_slot = type == 'banner' ? 2323076740 : 4952630589
+  $: ad_format = type == 'banner' ? 'auto' : 'fluid'
+  $: ad_layout = type == 'banner' ? '' : 'in-article'
+</script>
+
 <section>
   <ins
     class="adsbygoogle"
     data-ad-client="ca-pub-5468438393284967"
-    data-ad-slot="2323076740"
-    data-ad-format="auto"
+    data-ad-slot={ad_slot}
+    data-ad-format={ad_format}
+    data-ad-layout={ad_layout}
     data-full-width-responsive="true">
     <div>Quảng cáo để kiếm tiền nuôi server, xin đừng vội block 😢</div>
   </ins>
   <script>
     try {
-      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-    } catch (err) {
-      console.log(err)
+      setTimeout(() => {
+        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+      }, 300)
+    } catch (ads_error) {
+      console.log(ads_error)
     }
   </script>
 </section>
 
 <style lang="scss">
-  section {
-    width: 100%;
-  }
-
   ins {
     display: block;
     min-width: 250px;

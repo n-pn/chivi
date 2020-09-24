@@ -51,7 +51,7 @@
 
 <script>
   import { onMount } from 'svelte'
-  import AdArticle from '$atoms/AdArticle'
+  import AdBanner from '$atoms/AdBanner'
 
   export let bslug = ''
   export let bname = ''
@@ -188,11 +188,7 @@
 <svelte:body on:keydown={handle_keypress} />
 
 <Vessel shift={lookup_enabled && $lookup_actived}>
-  <a
-    slot="header-left"
-    href={book_path}
-    class="header-item _title"
-    rel={$self_power < 2 ? 'external' : ''}>
+  <a slot="header-left" href={book_path} class="header-item _title">
     <SvgIcon name="book-open" />
     <span class="header-text _show-sm _title">{bname}</span>
   </a>
@@ -234,22 +230,13 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/" class="-link" rel={$self_power < 2 ? 'external' : ''}><SvgIcon
-          name="home" /></a>
+      <a href="/" class="-link"><SvgIcon name="home" /></a>
     </div>
 
-    <div class="-crumb _sep">
-      <a
-        href="/~{bslug}"
-        class="-link"
-        rel={$self_power < 2 ? 'external' : ''}>{bname}</a>
-    </div>
+    <div class="-crumb _sep"><a href="/~{bslug}" class="-link">{bname}</a></div>
 
     <div class="-crumb _sep">
-      <a
-        href={book_path}
-        class="-link"
-        rel={$self_power < 2 ? 'external' : ''}>[{seed}]</a>
+      <a href={book_path} class="-link">[{seed}]</a>
     </div>
 
     <div class="-crumb"><span class="-text">{ch_label}</span></div>
@@ -260,9 +247,9 @@
   </nav>
 
   <article class="convert" class:_load>
-    {#each cvlines as nodes, index}
+    {#each cvlines as nodes, index (index)}
       {#if index == ads_idx}
-        <AdArticle />
+        <AdBanner type="in-article" />
       {/if}
 
       {#if index == 0}
@@ -293,18 +280,13 @@
         class="m-button _line"
         class:_disable={!prev_url}
         href={prev_path}
-        rel={$self_power < 2 ? 'external' : ''}
         data-kbd="j">
         <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
     {/if}
 
-    <a
-      class="m-button _line"
-      href={book_path}
-      rel={$self_power < 2 ? 'external' : ''}
-      data-kbd="h">
+    <a class="m-button _line" href={book_path} data-kbd="h">
       <SvgIcon name="list" />
       <span>Mục lục</span>
     </a>
@@ -313,7 +295,6 @@
       class="m-button _line _primary"
       class:_disable={!next_url}
       href={next_path}
-      rel={$self_power < 2 ? 'external' : ''}
       data-kbd="k">
       <span>Kế tiếp</span>
       <SvgIcon name="chevron-right" />
