@@ -19,7 +19,7 @@
     try {
       setTimeout(() => {
         ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-      }, 300)
+      }, 200)
     } catch (ads_error) {
       console.log(ads_error)
     }
