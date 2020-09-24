@@ -135,7 +135,11 @@
 <svelte:body on:keydown={handle_keypress} />
 
 <Vessel shift={$lookup_enabled && $lookup_actived}>
-  <a slot="header-left" href={book_path} class="header-item _title">
+  <a
+    slot="header-left"
+    href={book_path}
+    class="header-item _title"
+    rel="external">
     <SvgIcon name="book-open" />
     <span class="header-text _show-sm _title">{bname}</span>
   </a>
@@ -177,13 +181,15 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/" class="-link"><SvgIcon name="home" /></a>
+      <a href="/" class="-link" rel="external"><SvgIcon name="home" /></a>
     </div>
 
-    <div class="-crumb _sep"><a href="/~{bslug}" class="-link">{bname}</a></div>
+    <div class="-crumb _sep">
+      <a href="/~{bslug}" class="-link" rel="external">{bname}</a>
+    </div>
 
     <div class="-crumb _sep">
-      <a href={book_path} class="-link">[{seed}]</a>
+      <a href={book_path} class="-link" rel="external">[{seed}]</a>
     </div>
 
     <div class="-crumb"><span class="-text">{ch_label}</span></div>
@@ -201,13 +207,14 @@
         href={prev_path}
         class="m-button _line"
         class:_disable={!prev_url}
+        rel="external"
         data-kbd="j">
         <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
     {/if}
 
-    <a href={book_path} class="m-button _line" data-kbd="h">
+    <a href={book_path} class="m-button _line" rel="external" data-kbd="h">
       <SvgIcon name="list" />
       <span>Mục lục</span>
     </a>
@@ -216,6 +223,7 @@
       href={next_path}
       class="m-button _line _primary"
       class:_disable={!next_url}
+      rel="external"
       data-kbd="k">
       <span>Kế tiếp</span>
       <SvgIcon name="chevron-right" />

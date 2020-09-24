@@ -41,7 +41,7 @@
 </script>
 
 <svelte:head>
-  <title>Tìm kiếm - Chivi</title>
+  <title>Kết quả tìm kiếm cho "{word}" - Chivi</title>
 </svelte:head>
 
 <Vessel>
@@ -57,7 +57,7 @@
 
     <div class="list" data-page={page}>
       {#each items as book}
-        <a class="book" href="/~{book.slug}" rel="prefetch">
+        <a class="book" href="/~{book.slug}" rel="external">
           <div class="cover">
             <BookCover ubid={book.ubid} path={book.main_cover} />
           </div>
@@ -250,7 +250,7 @@
   .value {
     font-weight: 500;
     @include truncate(null);
-    @include fgcolor(neutral, 7);
+    @include fgcolor(neutral, 6);
   }
 
   .pagi {
