@@ -48,19 +48,19 @@
     lookup_actived,
   } from '$src/stores'
 
-  function make_ads_index(limit = 1, max = 15, min = 5) {
+  function make_ads_index(limit = 1, max = 30, min = 20) {
     const res = []
-    let idx = 0
+    let idx = random_int(15, 5)
 
     while (idx < limit) {
-      idx += random_int(max, min)
       res.push(idx)
+      idx += random_int(max, min)
     }
 
     return res
   }
 
-  function random_int(max = 15, min = 5) {
+  function random_int(max = 30, min = 20) {
     return Math.floor(Math.random() * (max - min)) + min
   }
 
