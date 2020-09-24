@@ -79,7 +79,7 @@
   let dirty = false
   $: if (dirty) reload_chap(1)
 
-  $: $lookup_enabled = !edit_mode
+  $: $lookup_enabled = false
   $: $lookup_actived = false
 
   function handle_keypress(evt) {
