@@ -268,6 +268,7 @@
             class:_fresh={!existed}
             bind:this={value_elem}
             bind:value={output}
+            autocomplete="off"
             autocapitalize={shoud_cap($d_idx) ? 'words' : 'off'} />
         </div>
 
