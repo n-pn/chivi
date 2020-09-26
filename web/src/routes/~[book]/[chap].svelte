@@ -44,6 +44,9 @@
 </script>
 
 <script>
+  import { stores } from '@sapper/app'
+  const { preloading } = stores()
+
   export let bslug = ''
   export let bname = ''
 
@@ -211,6 +214,11 @@
     </a>
 
     <button class="m-button _solid">
+      {#if $preloading}
+        <SvgIcon name="loader" spin="true" />
+      {:else}
+        <SvgIcon name="list" />
+      {/if}
       <span>{ch_index}/{ch_total}</span>
     </button>
 
