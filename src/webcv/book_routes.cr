@@ -166,5 +166,7 @@ module Server
       next_url: next_chap.try(&.slug_for(seed)),
 
     }.to_json(env.response)
+  rescue err
+    halt env, status_code: 500, response: Utils.json_error(err.message)
   end
 end

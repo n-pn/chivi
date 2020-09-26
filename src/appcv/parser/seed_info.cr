@@ -86,7 +86,7 @@ class SeedInfo
     if html = FileUtil.read(file_path, @expiry)
       from_cache = true
     else
-      raise "Dead sites" if @seed == "jx_la" || @seed == "duokan8"
+      raise "Site is blacklisted or dead" if @seed == "jx_la"
 
       html = HttpUtil.fetch_html(html_link, HttpUtil.encoding_for(seed))
       File.write(file_path, html) if @freeze

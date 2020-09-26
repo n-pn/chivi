@@ -56,10 +56,7 @@ module Appcv
       return chtext if mode == 0 && recent?(chtext.cv_time, 2.hours)
       zh_data = chtext.zh_data
     else
-      zh_data = [
-        "Lỗi: Chương tiết không có nội dung!",
-        "Xin liên hệ với ban quản trị để khắc phục.",
-      ]
+      raise "No data!"
     end
 
     chtext.tap do |x|
@@ -72,7 +69,7 @@ module Appcv
     "hetushu", "rengshu", "xbiquge",
     "nofff", "paoshu8", "69shu",
     "zhwenpg", "5200", "biquge5200",
-    "shubaow",
+    "duokan8",
   }
 
   def remote?(seed : String)
