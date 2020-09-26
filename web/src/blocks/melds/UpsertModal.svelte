@@ -162,39 +162,46 @@
     }
 
     if (evt.keyCode === 27) {
-      return actived.set(false)
+      $actived = false
+      return
     }
 
     if (!evt.altKey) return
     evt.preventDefault()
 
     switch (evt.key) {
+      // change tab
+      case 'x':
+      case 'c':
+      case 'v':
+
+      // moving input range
+      case 'h':
+      case 'j':
+      case 'k':
+      case 'l':
+
+      // capitalize
       case '1':
       case '2':
       case '3':
       case '4':
       case '0':
 
-      case 'x':
-      case 'c':
-      case 'v':
-
-      case 'h':
-      case 'j':
-      case 'k':
-      case 'l':
-        evt.stopPropagation()
-
+      // empty/restore
+      case 'e':
+      case 'r':
         let elem = holder.querySelector(`[data-kbd="${evt.key}"]`)
         if (elem) elem.click()
         break
 
+      // manual mapping
       case '~':
         upcase_val(0)
         break
 
-      default:
-        break
+      // default:
+      //   break
     }
   }
 
@@ -213,7 +220,7 @@
   tabindex="0"
   bind:this={holder}
   on:keydown={handle_keydown}
-  on:click={() => actived.set(false)}>
+  on:click={() => ($actived = false)}>
   <div class="dialog" on:click|stopPropagation={() => value_elem.focus()}>
     <header class="header">
       <div class="hanzi">
@@ -223,7 +230,7 @@
       <button
         type="button"
         class="m-button _text"
-        on:click={() => actived.set(false)}>
+        on:click={() => ($actived = false)}>
         <SvgIcon name="x" />
       </button>
     </header>
@@ -317,7 +324,7 @@
         {/if}
 
         <button
-          class="m-button _{btn_class} _{btn_power}"
+          class="m-button _{btn_class} _{btn_power} _right"
           disabled={!(updated || prevail)}
           on:click|once={submit_val}>
           <span class="-text">{btn_label}</span>
@@ -344,7 +351,7 @@
     width: 100%;
     height: 100%;
     z-index: 999;
-    @include bgcolor(rgba(#000, 0.75));
+    background: rgba(#000, 0.75);
   }
 
   .dialog {
@@ -360,14 +367,14 @@
     display: flex;
     padding: 0.75rem;
 
-    > button {
+    button {
       @include fgcolor(neutral, 6);
       &:hover {
         @include fgcolor(primary, 6);
       }
     }
 
-    > .hanzi {
+    .hanzi {
       flex-grow: 1;
       margin-right: 0.5rem;
     }
@@ -573,11 +580,10 @@
   }
 
   .action {
+    @include flex($gap: 0.5rem);
     margin-top: 0.75rem;
 
-    @include flex($gap: 0.5rem, $child: '.m-button');
-
-    button {
+    ._right {
       margin-left: auto;
     }
   }

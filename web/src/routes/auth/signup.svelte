@@ -108,6 +108,7 @@
 
 <style lang="scss">
   section {
+    display: flex;
     position: absolute;
     top: 0;
     left: 0;
@@ -115,7 +116,6 @@
     height: 100%;
     z-index: 700;
     background: color(neutral, 3, 0.3);
-    @include flex;
     @include flex-center;
   }
 

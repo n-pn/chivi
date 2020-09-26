@@ -28,7 +28,7 @@
 <style lang="scss">
   section {
     min-height: 80vh;
-    @include flex;
+    display: flex;
     @include flex-center;
   }
 

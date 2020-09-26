@@ -77,13 +77,13 @@
 <style lang="scss">
   section {
     position: absolute;
+    display: flex;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 700;
     background: color(neutral, 3, 0.3);
-    @include flex;
     @include flex-center;
   }
 

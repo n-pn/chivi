@@ -303,13 +303,6 @@
 </Vessel>
 
 <style lang="scss">
-  .genre > a {
-    @include fgcolor(neutral, 6);
-    &:hover {
-      @include fgcolor(primary, 6);
-    }
-  }
-
   .summary {
     p {
       margin: 0.75rem 0;

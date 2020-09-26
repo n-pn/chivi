@@ -114,7 +114,7 @@
           <a
             class="stat link _outer"
             href={book.origin_url}
-            rel="nofollow noreferer"
+            rel="noopener noreferer"
             target="_blank">
             Trang gốc
           </a>
@@ -124,7 +124,7 @@
           <a
             class="stat link _outer"
             href="https://www.yousuu.com/book/{book.yousuu_bid}"
-            rel="nofollow noreferer"
+            rel="noopener noreferer"
             target="_blank">
             Ưu thư võng
           </a>
