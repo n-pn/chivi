@@ -206,22 +206,20 @@
 
   <Convert input={cvdata} bind:dirty />
 
-  <footer class="footer">
-    {#if prev_url}
-      <a
-        href={prev_path}
-        class="m-button _line"
-        class:_disable={!prev_url}
-        rel="prefetch"
-        data-kbd="j">
+  <div slot="footer" class="footer">
+    <a
+      href={prev_path}
+      class="m-button _line"
+      class:_disable={!prev_url}
+      rel="prefetch"
+      data-kbd="j">
+      {#if prev_url}
         <SvgIcon name="chevron-left" />
         <span>Trước</span>
-      </a>
-    {/if}
-
-    <a href={book_path} class="m-button _line" rel="prefetch" data-kbd="h">
-      <SvgIcon name="list" />
-      <span>Mục lục</span>
+      {:else}
+        <SvgIcon name="list" />
+        <span>Mục lục</span>
+      {/if}
     </a>
 
     <a
@@ -230,17 +228,27 @@
       class:_disable={!next_url}
       rel="prefetch"
       data-kbd="k">
-      <span>Kế tiếp</span>
-      <SvgIcon name="chevron-right" />
+      {#if next_url}
+        <span>Kế tiếp</span>
+        <SvgIcon name="chevron-right" />
+      {:else}
+        <SvgIcon name="list" />
+        <span>Mục lục</span>
+      {/if}
     </a>
-  </footer>
+  </div>
 </Vessel>
 
 <style lang="scss">
   .footer {
-    margin: 0.75rem 0 1.75rem;
+    width: 100%;
+    margin: 0.75rem 0;
     @include flex($gap: 0.375rem);
     justify-content: center;
+
+    a {
+      background: #fff;
+    }
   }
 
   .bread {

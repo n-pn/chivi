@@ -90,6 +90,10 @@
   </section>
 </main>
 
+<footer class:__clear={clear}>
+  <slot name="footer" />
+</footer>
+
 <style lang="scss">
   .__shift {
     @include screen-min(lg) {
@@ -320,5 +324,20 @@
 
   .vessel {
     padding-top: $header-height;
+  }
+
+  footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    background: linear-gradient(
+      rgba(color(neutral, 1), 0.1),
+      rgba(color(neutral, 7), 0.7)
+    );
+
+    &.__clear {
+      background: transparent;
+      position: static;
+    }
   }
 </style>

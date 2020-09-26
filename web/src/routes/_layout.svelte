@@ -84,8 +84,9 @@
     text-align: center;
     padding: 0.75rem;
     @include font-size(2);
-    @include fgcolor(neutral, 5);
-    @include bgcolor(neutral, 8);
+    @include fgcolor(neutral, 6);
+    @include bgcolor(neutral, 2);
+    @include border($sides: top);
   }
 
   .link {
