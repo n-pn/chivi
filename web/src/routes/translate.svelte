@@ -106,12 +106,12 @@
       placeholder="Nhập dữ liệu vào đây" />
 
     <footer>
-      <button class="m-button _primary _right" on:click={convert}>
-        <span>Dịch nhanh</span>
+      <button class="m-button _line" on:click={() => (zh_text = '')}>
+        <span>Xoá</span>
       </button>
 
-      <button class="m-button _line _right" on:click={() => (zh_text = '')}>
-        <span>Xoá</span>
+      <button class="m-button _primary" on:click={convert}>
+        <span>Dịch nhanh</span>
       </button>
     </footer>
   {:else if cv_data}
@@ -148,33 +148,32 @@
 
   textarea {
     width: 100%;
-    min-height: 65vh;
+    min-height: calc(100vh - 10rem);
 
     padding: 0.75rem;
 
     @include border();
     @include radius();
+
     &:hover,
     &:focus {
-      @include bdcolor(primary, 6);
+      background-color: #fff;
+      @include bdcolor(primary, 3);
+    }
+
+    &:focus {
+      box-shadow: 0 0 1px 1px color(primary, 2);
     }
 
     &::placeholder {
       font-style: italic;
-      @include fgcolor(neutral, 6);
+      @include fgcolor(neutral, 4);
     }
   }
 
   footer {
-    margin-top: 0.75rem;
-    @include clearfix();
-
-    ._right {
-      float: right;
-    }
-
-    button + button {
-      margin: 0 0.75rem;
-    }
+    margin: 0.5rem 0;
+    @include flex($gap: 0.5rem);
+    justify-content: right;
   }
 </style>

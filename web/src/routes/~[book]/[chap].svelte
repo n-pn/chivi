@@ -149,10 +149,9 @@
     <span class="header-text _show-sm _title">{bname}</span>
   </a>
 
-  <span slot="header-left" class="header-item _active">
-    <span class="header-text">{ch_index}</span>
-    <span class="header-text _show-md">/{ch_total}</span>
-  </span>
+  <button slot="header-left" class="header-item _active">
+    <span class="header-text">[{seed}]</span>
+  </button>
 
   <button
     slot="header-right"
@@ -186,22 +185,16 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/" class="-link" rel="prefetch"><SvgIcon name="home" /></a>
-    </div>
-
-    <div class="-crumb _sep">
-      <a href="/~{bslug}" class="-link" rel="prefetch">{bname}</a>
-    </div>
-
-    <div class="-crumb _sep">
-      <a href={book_path} class="-link" rel="prefetch">[{seed}]</a>
+      <a href="/~{bslug}" class="-link" rel="prefetch"> {bname}</a>
     </div>
 
     <div class="-crumb"><span class="-text">{ch_label}</span></div>
 
+    <!--
     <div class="-right">
       <span><RelTime time={mftime} /></span>
     </div>
+    -->
   </nav>
 
   <Convert input={cvdata} bind:dirty />
@@ -209,7 +202,7 @@
   <div slot="footer" class="footer">
     <a
       href={prev_path}
-      class="m-button _line"
+      class="m-button _solid"
       class:_disable={!prev_url}
       rel="prefetch"
       data-kbd="j">
@@ -217,9 +210,13 @@
       <span>Trước</span>
     </a>
 
+    <button class="m-button _solid">
+      <span>{ch_index}/{ch_total}</span>
+    </button>
+
     <a
       href={next_path}
-      class="m-button _line _primary"
+      class="m-button _solid _primary"
       class:_disable={!next_url}
       rel="prefetch"
       data-kbd="k">
@@ -232,13 +229,16 @@
 <style lang="scss">
   .footer {
     width: 100%;
-    margin: 0.75rem 0;
-    @include flex($gap: 0.375rem);
+    margin: 0.5rem 0;
+    @include flex($gap: 0.5rem);
     justify-content: center;
 
-    a {
-      background: #fff;
-    }
+    // a {
+    //   @include bgcolor(neutral, 1);
+    //   &:hover {
+    //     @include bgcolor(neutral, 2);
+    //   }
+    // }
   }
 
   .bread {
@@ -250,10 +250,11 @@
 
     @include font-size(2);
     @include border($sides: bottom);
-    @include clearfix;
+    // @include clearfix;
 
     .-crumb {
-      float: left;
+      display: inline;
+      // float: left;
       @include fgcolor(neutral, 6);
 
       &._sep:after {
@@ -268,13 +269,6 @@
       &:hover {
         @include fgcolor(primary, 6);
       }
-    }
-
-    .-right {
-      float: right;
-      // margin-left: auto;
-      font-style: italic;
-      @include fgcolor(neutral, 5);
     }
 
     :global(svg) {

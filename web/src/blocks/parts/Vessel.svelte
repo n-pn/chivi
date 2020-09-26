@@ -330,10 +330,11 @@
     position: fixed;
     width: 100%;
     bottom: 0;
-    background: linear-gradient(
-      rgba(color(neutral, 1), 0.1),
-      rgba(color(neutral, 7), 0.7)
-    );
+
+    $bgc-top: rgba(color(neutral, 1), 0.1);
+    $bgc-bottom: rgba(color(neutral, 7), 0.7);
+
+    background: linear-gradient($bgc-top, $bgc-bottom);
 
     &.__clear {
       background: transparent;
