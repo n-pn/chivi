@@ -130,9 +130,9 @@
     padding: 0.75rem 0;
     word-wrap: break-word;
 
-    &.dirty {
-      @include fgcolor(neutral, 6);
-    }
+    // &.dirty {
+    // @include fgcolor(neutral, 6);
+    // }
 
     :global(h1) {
       font-weight: 300;
@@ -169,12 +169,6 @@
     > :global(section) {
       $margin-tops: screen-vals(1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
       @include apply(margin-top, $margin-tops);
-    }
-
-    :global(cite) {
-      text-transform: capitalize;
-      font-style: normal;
-      // font-variant: small-caps;
     }
   }
 </style>

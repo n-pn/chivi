@@ -1,6 +1,6 @@
 <script context="module">
   export function render(nodes) {
-    let html_frag = ''
+    let res_0 = ''
     let res_1 = ''
 
     let idx = 0
@@ -11,26 +11,18 @@
       const e_val = escape_html(val)
 
       switch (val.charAt(0)) {
-        case '⟨':
-          html_frag += '<cite>'
-          res_1 += '<cite>'
-          break
         case '“':
-          html_frag += '<em>'
+          res_0 += '<em>'
           res_1 += '<em>'
           break
       }
 
-      html_frag += render_node(e_key, e_val, dic, idx, pos)
+      res_0 += render_node(e_key, e_val, dic, idx, pos)
       res_1 += e_val
 
       switch (val.charAt(val.length - 1)) {
-        case '⟩':
-          html_frag += '</cite>'
-          res_1 += '</cite>'
-          break
         case '”':
-          html_frag += '</em>'
+          res_0 += '</em>'
           res_1 += '</em>'
           break
       }
@@ -39,7 +31,7 @@
       pos += key.length
     }
 
-    return [html_frag, res_1]
+    return [res_0, res_1]
   }
 
   const escape_tags = {

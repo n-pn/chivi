@@ -134,29 +134,33 @@ class CvData
   end
 
   def capitalize!
-    apply_cap = true
+    cap_mode = 1
 
     @data.each do |node|
       next if node.val.empty?
 
-      if apply_cap && node.dic > 0
+      if cap_mode > 0 && node.dic > 0
         node.capitalize! if node.dic > 1
-        apply_cap = false
+        cap_mode = 0 unless cap_mode > 1
       else
-        apply_cap ||= should_cap_after?(node)
+        cap_mode = get_cap_mode(node, cap_mode)
       end
     end
 
     self
   end
 
-  def should_cap_after?(node : CvNode)
+  def get_cap_mode(node : CvNode, prev_mode = 0) : Int32
     case node.val[-1]?
-    when '“', '‘', '⟨', '[', '{',
+    when '“', '‘', '[', '{',
          ':', '!', '?', '.'
-      return true
+      prev_mode > 1 ? 2 : 1
+    when '⟨'
+      2
+    when '⟩'
+      0
     else
-      return false
+      prev_mode
     end
   end
 
