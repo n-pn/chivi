@@ -196,7 +196,7 @@
         break
 
       // manual mapping
-      case '~':
+      case '`':
         upcase_val(0)
         break
 
