@@ -167,6 +167,7 @@ module Server
 
     }.to_json(env.response)
   rescue err
-    halt env, status_code: 500, response: Utils.json_error(err.message)
+    message = err.message || "Unknown error!"
+    halt env, status_code: 500, response: Utils.json_error(message)
   end
 end
