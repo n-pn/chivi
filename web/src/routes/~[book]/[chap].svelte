@@ -213,13 +213,8 @@
       class:_disable={!prev_url}
       rel="prefetch"
       data-kbd="j">
-      {#if prev_url}
-        <SvgIcon name="chevron-left" />
-        <span>Trước</span>
-      {:else}
-        <SvgIcon name="list" />
-        <span>Mục lục</span>
-      {/if}
+      <SvgIcon name="chevron-left" />
+      <span>Trước</span>
     </a>
 
     <a
@@ -228,13 +223,8 @@
       class:_disable={!next_url}
       rel="prefetch"
       data-kbd="k">
-      {#if next_url}
-        <span>Kế tiếp</span>
-        <SvgIcon name="chevron-right" />
-      {:else}
-        <SvgIcon name="list" />
-        <span>Mục lục</span>
-      {/if}
+      <span>Kế tiếp</span>
+      <SvgIcon name="chevron-right" />
     </a>
   </div>
 </Vessel>
