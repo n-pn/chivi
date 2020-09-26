@@ -117,22 +117,24 @@
     <span class="header-text _show-md">Dịch nhanh</span>
   </a>
 
-  {#if items.length == 0}
-    <div class="empty">Danh sách trống</div>
-  {:else}
-    <div class="order">
-      {#each Object.entries(order_names) as [type, label]}
-        <a
-          class="-type"
-          class:_active={query.order === type}
-          href={makePageUrl(1, { ...query, order: type })}>
-          <span>{label}</span>
-        </a>
-      {/each}
-    </div>
+  <div class="order">
+    {#each Object.entries(order_names) as [type, label]}
+      <a
+        class="-type"
+        class:_active={query.order === type}
+        href={makePageUrl(1, { ...query, order: type })}>
+        <span>{label}</span>
+      </a>
+    {/each}
+  </div>
 
+  {#if items.length > 0}
     <BookList books={items} />
+  {:else}
+    <div class="empty">Danh sách trống</div>
+  {/if}
 
+  {#if items.length > 0}
     <div class="pagi">
       <a
         class="page m-button _line"
@@ -215,6 +217,7 @@
 
   .page {
     display: inline-flex;
+
     > span {
       margin-top: rem(1px);
     }
