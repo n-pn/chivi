@@ -140,7 +140,7 @@ class CvData
       next if node.val.empty?
 
       if cap_mode > 0 && node.dic > 0
-        node.capitalize! if node.dic > 1
+        node.capitalize!(cap_mode) if node.dic > 1
         cap_mode = 0 unless cap_mode > 1
       else
         cap_mode = get_cap_mode(node, cap_mode)

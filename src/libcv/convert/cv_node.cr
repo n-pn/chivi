@@ -28,8 +28,9 @@ class CvNode
     {@key, @val, @dic}.join(io, SEP_1)
   end
 
-  def capitalize! : self
-    @val = TextUtil.capitalize(@val)
+  def capitalize!(mode = 1) : self
+    @val = mode > 1 ? TextUtil.titleize(@val) : TextUtil.capitalize(@val)
+
     self
   end
 
