@@ -41,6 +41,9 @@
     lookup_enabled,
     lookup_actived,
   } from '$src/stores'
+
+  let old_scid = ''
+  let vc_count = 0
 </script>
 
 <script>
@@ -133,6 +136,12 @@
     dirty = false
     _load = false
   }
+
+  let external = ''
+  $: if (old_scid != scid) {
+    old_scid = scid
+    if (vc_count++ > 3) external = 'external'
+  }
 </script>
 
 <svelte:head>
@@ -147,7 +156,7 @@
     slot="header-left"
     href={book_path}
     class="header-item _title"
-    rel="prefetch">
+    rel="external">
     <SvgIcon name="book-open" />
     <span class="header-text _show-sm _title">{bname}</span>
   </a>
@@ -207,7 +216,7 @@
       href={prev_path}
       class="m-button _solid"
       class:_disable={!prev_url}
-      rel="prefetch"
+      rel={external}
       data-kbd="j">
       <SvgIcon name="chevron-left" />
       <span>Trước</span>
@@ -226,7 +235,7 @@
       href={next_path}
       class="m-button _solid _primary"
       class:_disable={!next_url}
-      rel="prefetch"
+      rel={external}
       data-kbd="k">
       <span>Kế tiếp</span>
       <SvgIcon name="chevron-right" />
