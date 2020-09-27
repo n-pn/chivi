@@ -167,7 +167,6 @@
 
   <button
     slot="header-right"
-    type="button"
     class="header-item"
     disabled={$self_power < 1}
     on:click={() => reload_chap(1)}
@@ -175,26 +174,20 @@
     <SvgIcon name="refresh-ccw" spin={_load} />
   </button>
 
+  <button
+    slot="header-right"
+    class="header-item"
+    class:_active={$lookup_enabled}
+    on:click={toggle_lookup}
+    data-kbd="\">
+    <SvgIcon name="compass" />
+  </button>
+
+  <!--
   <div slot="header-right" class="header-item _menu">
     <SvgIcon name="settings" />
-    <div class="header-menu">
-      <div class="-item" on:click={() => active_upsert(0)} data-kbd="x">
-        <SvgIcon name="plus-square" />
-        <span>Thêm từ</span>
-      </div>
 
-      <div class="-item" on:click={toggle_lookup} data-kbd="\">
-        <SvgIcon name="compass" />
-        <span>Giải nghĩa</span>
-
-        {#if $lookup_enabled}
-          <span class="_right">
-            <SvgIcon name="check" />
-          </span>
-        {/if}
-      </div>
-    </div>
-  </div>
+  </div> -->
 
   <nav class="bread">
     <div class="-crumb _sep">
