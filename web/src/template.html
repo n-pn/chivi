@@ -27,11 +27,6 @@
 	     lazily loaded when it precaches secondary pages -->
     %sapper.styles%
 
-    <!-- Sapper creates a <script> tag containing `src/client.js`
-	     and anything else it needs to hydrate the app and
-	     initialise the router -->
-    %sapper.scripts%
-
     <style>
       /* roboto-300 - vietnamese_latin */
       @font-face {
@@ -92,12 +87,6 @@
             url('/fonts/roboto-v20-vietnamese_latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
       }
     </style>
-  </head>
-
-  <body>
-    <!-- The application will be rendered inside this element,
-	     because `src/client.js` references it -->
-    <div id="sapper">%sapper.html%</div>
 
     <script
       data-ad-client="ca-pub-5468438393284967"
@@ -118,5 +107,16 @@
       gtag('js', new Date())
       gtag('config', 'UA-160000714-1')
     </script>
+  </head>
+
+  <body>
+    <!-- The application will be rendered inside this element,
+	     because `src/client.js` references it -->
+    <div id="sapper">%sapper.html%</div>
+
+    <!-- Sapper creates a <script> tag containing `src/client.js`
+	     and anything else it needs to hydrate the app and
+	     initialise the router -->
+    %sapper.scripts%
   </body>
 </html>
