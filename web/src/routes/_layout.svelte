@@ -26,7 +26,7 @@
   })
 </script>
 
-<div>
+<div class="vessel">
   <slot {segment} />
 </div>
 

@@ -133,7 +133,7 @@ $-button-text-sizes: (
   } @else {
     @if $color == neutral {
       @include fgcolor($color, 7);
-      @include bgcolor(none);
+      @include bgcolor(neutral, 1);
 
       &:hover {
         @include bgcolor($color, 2);
@@ -142,11 +142,11 @@ $-button-text-sizes: (
       &:disabled,
       &._disable {
         @include fgcolor($color, 4);
-        @include bgcolor(none);
+        @include bgcolor(neutral, 1);
       }
     } @else {
       @include fgcolor($color, 6);
-      @include bgcolor(none);
+      @include bgcolor(neutral, 1);
 
       &:hover {
         @include bgcolor($color, 1);
@@ -155,7 +155,7 @@ $-button-text-sizes: (
       &:disabled,
       &._disable {
         @include fgcolor($color, 3);
-        @include bgcolor(none);
+        @include bgcolor(neutral, 1);
       }
     }
   }

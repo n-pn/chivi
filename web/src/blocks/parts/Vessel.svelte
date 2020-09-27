@@ -4,7 +4,6 @@
 
   export let segment = ''
   export let shift = false
-  export let clear = false
 
   async function logout() {
     $self_uname = 'Khách'
@@ -13,24 +12,23 @@
   }
 
   let lastScrollTop = 0
+  let scroll = 0
 
   // Credits: "https://github.com/qeremy/so/blob/master/so.dom.js#L426"
-  function handleScroll(evt) {
+  function handle_croll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
 
-    const scrollDown = scrollTop > lastScrollTop
+    scroll = scrollTop - lastScrollTop
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop
-
-    clear = scrollDown
   }
 </script>
 
-<svelte:window on:scroll={handleScroll} />
+<svelte:window on:scroll={handle_croll} />
 
 <header
   class="app-header"
   data-page={segment}
-  class:_clear={clear}
+  class:_clear={scroll > 0}
   class:_shift={shift}>
   <nav class="center -wrap">
     <div class="-left">
@@ -86,7 +84,7 @@
   </section>
 </main>
 
-<footer class:_show={!clear} class:_shift={shift}>
+<footer class:_stick={scroll < 0} class:_shift={shift}>
   <slot name="footer" />
 </footer>
 
@@ -106,18 +104,25 @@
     padding: 0 0.75rem;
   }
 
-  main {
-    padding-top: 3rem;
+  $footer-height: 3.25rem;
+
+  :global(.vessel) {
+    position: relative;
+    margin-bottom: $footer-height;
   }
 
   footer {
-    // transition: all 100ms ease-in-out;
-    // will-change: transform;
+    will-change: transform;
+    transition: transform 100ms ease-in-out;
 
-    &._show {
+    position: absolute;
+    bottom: -$footer-height;
+    width: 100%;
+
+    &._stick {
       position: fixed;
-      width: 100%;
-      bottom: 0;
+      transform: translateY(-$footer-height);
+
       $bgc-top: rgba(color(neutral, 1), 0.1);
       $bgc-bottom: rgba(color(neutral, 7), 0.7);
       background: linear-gradient($bgc-top, $bgc-bottom);

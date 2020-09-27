@@ -41,6 +41,7 @@ article {
   > * + * {
     $margins: screen-vals(1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
     @include apply(margin-top, $margins);
+    margin-bottom: 0;
   }
 
   h1 {

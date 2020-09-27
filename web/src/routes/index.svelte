@@ -134,36 +134,34 @@
     <div class="empty">Danh sách trống</div>
   {/if}
 
-  {#if items.length > 0}
-    <div class="pagi">
+  <div class="pagi" slot="footer">
+    <a
+      class="page m-button _line"
+      class:_disable={page == 1}
+      href={makePageUrl(+page - 1, query)}>
+      <SvgIcon name="chevron-left" />
+      <span>Trước</span>
+    </a>
+
+    {#each page_ary as [index, level]}
       <a
         class="page m-button _line"
-        class:_disable={page == 1}
-        href={makePageUrl(+page - 1, query)}>
-        <SvgIcon name="chevron-left" />
-        <span>Trước</span>
+        class:_primary={page == index}
+        class:_disable={page == index}
+        data-level={level}
+        href={makePageUrl(index, query)}>
+        <span>{index}</span>
       </a>
+    {/each}
 
-      {#each page_ary as [index, level]}
-        <a
-          class="page m-button _line"
-          class:_primary={page == index}
-          class:_disable={page == index}
-          data-level={level}
-          href={makePageUrl(index, query)}>
-          <span>{index}</span>
-        </a>
-      {/each}
-
-      <a
-        class="page m-button _solid _primary"
-        class:_disable={page == page_max}
-        href={makePageUrl(page + 1, query)}>
-        <span>Kế tiếp</span>
-        <SvgIcon name="chevron-right" />
-      </a>
-    </div>
-  {/if}
+    <a
+      class="page m-button _solid _primary"
+      class:_disable={page == page_max}
+      href={makePageUrl(page + 1, query)}>
+      <span>Kế tiếp</span>
+      <SvgIcon name="chevron-right" />
+    </a>
+  </div>
 </Vessel>
 
 <style lang="scss">
@@ -210,7 +208,7 @@
   // }
 
   .pagi {
-    margin: 0.75rem 0;
+    padding: 0.5rem 0;
     @include flex($gap: 0.375rem);
     justify-content: center;
   }

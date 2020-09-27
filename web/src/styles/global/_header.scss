@@ -3,9 +3,11 @@ $header-inner-height: 2.25rem;
 $header-gutter: ($header-height - $header-inner-height) / 2;
 
 .app-header {
-  display: block;
-  position: fixed;
-  z-index: 800;
+  transition: transform 100ms ease-in-out;
+  will-change: transform;
+
+  position: sticky;
+  z-index: 100;
 
   top: 0;
   left: 0;
@@ -14,17 +16,13 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   height: $header-height;
   padding: $header-gutter 0;
 
-  color: #fff;
-  transition: transform 100ms ease-in-out;
-  will-change: transform;
-
+  @include fgcolor(white);
   @include bgcolor(primary, 7);
   @include shadow(2);
 
   &._clear {
-    // position: absolute;
     // top: -$header-height;
-    transform: translateY(-100%);
+    transform: translateY(-$header-height);
   }
 
   .-wrap {
