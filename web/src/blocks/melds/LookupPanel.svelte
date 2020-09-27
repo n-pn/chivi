@@ -89,10 +89,13 @@
     lookup_input,
     lookup_dname,
     lookup_actived as actived,
+    lookup_enabled as enabled,
   } from '$src/stores'
 </script>
 
 <script>
+  import { stop_propagation } from 'svelte/internal'
+
   $: [input, lower, upper] = $lookup_input
 
   export let on_top = false
@@ -155,6 +158,10 @@
     <h2>Giải nghĩa</h2>
 
     <button on:click={() => ($actived = false)}>
+      <SvgIcon name="eye-off" />
+    </button>
+
+    <button on:click={() => ($enabled = false)}>
       <SvgIcon name="x" />
     </button>
   </header>
@@ -235,7 +242,8 @@
 
     h2 {
       // display: flex;
-      margin-right: auto;
+      flex-grow: 1;
+      // padding: 0 0.375rem;
       font-weight: 500;
       text-transform: uppercase;
       line-height: $hd-height - 0.75rem;
@@ -246,17 +254,24 @@
     button {
       // margin-right: 0.75rem;
       padding: 0 0.5rem;
+      @include radius;
       @include fgcolor(neutral, 6);
       @include bgcolor(transparent);
 
       // &._active {
       //   @include fgcolor(primary, 6);
+      //   @include bgcolor(neutral, 2);
       // }
 
       &:hover {
         @include fgcolor(primary, 6);
+        @include bgcolor(neutral, 2);
       }
     }
+
+    // button + button {
+    //   margin-left: 0.375rem;
+    // }
   }
 
   // $vi-height: 0.75rem + (1.25 * 6rem);

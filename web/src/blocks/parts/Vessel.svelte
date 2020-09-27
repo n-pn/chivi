@@ -28,10 +28,10 @@
 <svelte:window on:scroll={handleScroll} />
 
 <header
-  class="header"
+  class="app-header"
   data-page={segment}
   class:_clear={clear}
-  class:__shift={shift}>
+  class:_shift={shift}>
   <nav class="center -wrap">
     <div class="-left">
       <a href="/" class="header-item _brand">
@@ -80,18 +80,18 @@
   </nav>
 </header>
 
-<main class="vessel" class:__clear={clear} class:__shift={shift}>
+<main class:_shift={shift}>
   <section class="center">
     <slot />
   </section>
 </main>
 
-<footer class:__clear={clear}>
+<footer class:_show={!clear} class:_shift={shift}>
   <slot name="footer" />
 </footer>
 
 <style lang="scss">
-  .__shift {
+  ._shift {
     @include screen-min(lg) {
       padding-right: 30rem;
     }
@@ -106,235 +106,21 @@
     padding: 0 0.75rem;
   }
 
-  $header-height: 3rem;
-  $header-inner-height: 2.25rem;
-  $header-gutter: ($header-height - $header-inner-height) / 2;
-
-  .header {
-    display: block;
-    position: fixed;
-    z-index: 800;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: $header-height;
-
-    color: #fff;
-    transition: transform 100ms ease-in-out;
-    will-change: transform;
-
-    @include bgcolor(primary, 7);
-    @include shadow(2);
-
-    &._clear {
-      // position: absolute;
-      // top: -$header-height;
-      transform: translateY(-100%);
-    }
-
-    .-wrap {
-      display: flex;
-      padding-top: $header-gutter;
-      padding-bottom: $header-gutter;
-    }
-
-    .-left,
-    .-right {
-      @include flex($gap: $header-gutter, $child: ':global(*)');
-    }
-
-    .-left {
-      flex-grow: 1;
-    }
-
-    .-right {
-      margin-left: auto;
-      padding-left: $header-gutter;
-    }
-  }
-
-  :global(.header-item) {
-    cursor: pointer;
-    display: inline-flex;
-    position: relative;
-    outline: none;
-    text-decoration: none;
-    user-select: none;
-
-    padding: 0 0.5rem;
-    height: $header-inner-height;
-    line-height: $header-inner-height;
-
-    @include fgcolor(neutral, 2);
-    @include bgcolor(primary, 6);
-
-    @include radius();
-
-    @include hover {
-      @include bgcolor(primary, 5);
-    }
-
-    &._active {
-      @include bgcolor(primary, 5);
-    }
-
-    &:disabled {
-      cursor: text;
-      @include fgcolor(neutral, 4);
-      @include bgcolor(primary, 6);
-    }
-
-    :global(img),
-    :global(svg) {
-      margin: 0.5rem 0;
-      width: 1.25rem;
-      height: 1.25rem;
-
-      & + :global(.header-text) {
-        margin-left: 0.25rem;
-      }
-    }
-  }
-
-  :global(.header-text) {
-    text-transform: uppercase;
-    font-weight: 500;
-
-    @include font-size(2);
-
-    &._show-sm {
-      display: none;
-      @include screen-min(sm) {
-        display: inline-block;
-      }
-    }
-
-    &._show-md {
-      display: none;
-      @include screen-min(md) {
-        display: inline-block;
-      }
-    }
-
-    ._brand & {
-      @include font-size(3);
-      letter-spacing: 0.1em;
-    }
-
-    &._title {
-      max-width: 40vw;
-      @include truncate(null);
-    }
-  }
-
-  :global(.header-field) {
-    position: relative;
-    padding: 0;
-    // flex-grow: 1;
-
-    cursor: text;
-    border-radius: $header-inner-height / 2;
-    height: $header-inner-height;
-    line-height: $header-inner-height;
-
-    > :global(input) {
-      color: inherit;
-      padding: 0 1rem;
-      display: block;
-      // font-weight: 500;
-      width: 100%;
-      border: none;
-      outline: none;
-      border-radius: $header-inner-height / 2;
-
-      @include bgcolor(darken(color(primary, 7), 5%));
-
-      &::placeholder {
-        @include fgcolor(neutral, 5);
-      }
-    }
-
-    > :global(svg) {
-      position: absolute;
-      // display: flex;
-      padding: 0;
-      margin: 0;
-      right: 0.875rem;
-      top: 0.625rem;
-      width: 1.125rem;
-      height: 1.125rem;
-      @include fgcolor(neutral, 5);
-    }
-  }
-
-  :global(.header-menu) {
-    position: absolute;
-    width: 12rem;
-    padding: 0.5rem 0;
-    top: $header-inner-height;
-    right: 0;
-
-    @include bgcolor(#fff);
-    @include shadow;
-    @include radius;
-
-    display: none;
-    :global(.header-item):hover & {
-      display: block;
-    }
-
-    :global(.-item) {
-      display: flex;
-
-      padding: 0 0.25rem;
-      // line-height: 2.25rem;
-      text-transform: uppercase;
-      font-weight: 500;
-
-      @include flex(0);
-
-      @include border($sides: top);
-      &:last-child {
-        @include border($sides: bottom);
-      }
-
-      @include font-size(2);
-      @include fgcolor(neutral, 6);
-
-      &:hover {
-        @include fgcolor(primary, 6);
-        @include bgcolor(neutral, 2);
-      }
-
-      :global(svg) {
-        margin: 0.5rem;
-      }
-
-      :global(._right) {
-        margin-left: auto;
-      }
-    }
-  }
-
-  .vessel {
-    padding-top: $header-height;
+  main {
+    padding-top: 3rem;
   }
 
   footer {
-    position: fixed;
-    width: 100%;
-    bottom: 0;
+    // transition: all 100ms ease-in-out;
+    // will-change: transform;
 
-    $bgc-top: rgba(color(neutral, 1), 0.1);
-    $bgc-bottom: rgba(color(neutral, 7), 0.7);
-
-    background: linear-gradient($bgc-top, $bgc-bottom);
-
-    &.__clear {
-      background: transparent;
-      position: static;
+    &._show {
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+      $bgc-top: rgba(color(neutral, 1), 0.1);
+      $bgc-bottom: rgba(color(neutral, 7), 0.7);
+      background: linear-gradient($bgc-top, $bgc-bottom);
     }
   }
 </style>

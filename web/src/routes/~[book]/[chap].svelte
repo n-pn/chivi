@@ -162,7 +162,7 @@
   </a>
 
   <button slot="header-left" class="header-item _active">
-    <span class="header-text">[{seed}]</span>
+    <span class="header-text _seed">[{seed}]</span>
   </button>
 
   <button
@@ -175,29 +175,30 @@
     <SvgIcon name="refresh-ccw" spin={_load} />
   </button>
 
-  <button
-    slot="header-right"
-    type="button"
-    class="header-item"
-    class:_active={$upsert_actived}
-    on:click={() => active_upsert(0)}
-    data-kbd="x">
-    <SvgIcon name="plus-circle" />
-  </button>
+  <div slot="header-right" class="header-item _menu">
+    <SvgIcon name="settings" />
+    <div class="header-menu">
+      <div class="-item" on:click={() => active_upsert(0)} data-kbd="x">
+        <SvgIcon name="plus-square" />
+        <span>Thêm từ</span>
+      </div>
 
-  <button
-    slot="header-right"
-    type="button"
-    class="header-item"
-    class:_active={$lookup_enabled}
-    on:click={toggle_lookup}
-    data-kbd="\">
-    <SvgIcon name="compass" />
-  </button>
+      <div class="-item" on:click={toggle_lookup} data-kbd="\">
+        <SvgIcon name="compass" />
+        <span>Giải nghĩa</span>
+
+        {#if $lookup_enabled}
+          <span class="_right">
+            <SvgIcon name="check" />
+          </span>
+        {/if}
+      </div>
+    </div>
+  </div>
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/~{bslug}" class="-link" rel="prefetch"> {bname}</a>
+      <a href="/~{bslug}" class="-link" rel="external"> {bname}</a>
     </div>
 
     <div class="-crumb"><span class="-text">{ch_label}</span></div>
@@ -246,7 +247,7 @@
 <style lang="scss">
   .footer {
     width: 100%;
-    margin: 0.5rem 0;
+    padding: 0.5rem 0;
     @include flex($gap: 0.5rem);
     justify-content: center;
 
