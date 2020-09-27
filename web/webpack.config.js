@@ -78,7 +78,12 @@ module.exports = {
             },
             {
               loader: 'sass-loader',
-              options: { sourceMap: dev },
+              options: {
+                sourceMap: dev,
+                sassOptions: {
+                  includePaths: [path.resolve(__dirname, 'src/styles')],
+                },
+              },
             },
           ].filter(Boolean),
         },
