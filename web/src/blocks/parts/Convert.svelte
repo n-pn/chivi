@@ -126,49 +126,4 @@
 {/if}
 
 <style lang="scss">
-  article {
-    padding: 0.75rem 0;
-    word-wrap: break-word;
-
-    // &.dirty {
-    // @include fgcolor(neutral, 6);
-    // }
-
-    :global(h1) {
-      font-weight: 300;
-      @include fgcolor(neutral, 9);
-
-      $font-sizes: screen-vals(
-        rem(24px),
-        rem(25px),
-        rem(26px),
-        rem(28px),
-        rem(30px)
-      );
-      $line-heights: screen-vals(1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
-
-      @include apply(font-size, $font-sizes);
-      @include apply(line-height, $line-heights);
-    }
-
-    :global(p) {
-      text-align: justify;
-      text-justify: auto;
-
-      $font-sizes: screen-vals(
-        rem(18px),
-        rem(19px),
-        rem(20px),
-        rem(21px),
-        rem(22px)
-      );
-      @include apply(font-size, $font-sizes);
-    }
-
-    :global(p),
-    > :global(section) {
-      $margin-tops: screen-vals(1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
-      @include apply(margin-top, $margin-tops);
-    }
-  }
 </style>
