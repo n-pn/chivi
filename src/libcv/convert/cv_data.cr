@@ -117,16 +117,16 @@ class CvData
     yield node
   end
 
-  private def border?(idx : Int32)
-    match_node?(idx) { |x| x.dic == 0 }
+  private def border?(idx : Int32) : Bool
+    !match_node?(idx, &.dic.> 0)
   end
 
-  private def lexicon?(idx : Int32)
-    match_node?(idx) { |x| x.dic > 1 }
+  private def lexicon?(idx : Int32) : Bool
+    match_node?(idx, &.dic.> 1)
   end
 
   private def match_key?(idx : Int32, key : String)
-    match_node?(idx) { |x| x.key == key }
+    match_node?(idx, &.key.== key)
   end
 
   def concat(other : self)
