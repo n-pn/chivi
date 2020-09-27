@@ -120,8 +120,8 @@
   }
 
   function update_val(new_output = null) {
-    current = inquire.entries[$d_idx]
-    if (!current) return
+    current = inquire.entries[$d_idx] || { key: '', vals: [], hints: [] }
+    if (current.key == '') return
 
     existed = current.vals[0]
     if (!new_output) new_output = existed
