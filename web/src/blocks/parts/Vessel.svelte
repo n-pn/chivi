@@ -80,11 +80,7 @@
   </nav>
 </header>
 
-<main
-  class="vessel"
-  class:__clear={clear}
-  class:__shift={shift}
-  on:click={() => (clear = false)}>
+<main class="vessel" class:__clear={clear} class:__shift={shift}>
   <section class="center">
     <slot />
   </section>
