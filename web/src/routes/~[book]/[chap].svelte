@@ -98,6 +98,11 @@
         toggle_lookup()
         break
 
+      case 'x':
+        evt.preventDefault()
+        active_upsert(0)
+        break
+
       case 'c':
         evt.preventDefault()
         active_upsert(1)
