@@ -24,6 +24,7 @@ module Libcv::Convert
   TITLE_RE_2 = /^(第?([零〇一二两三四五六七八九十百千]+|\d+)([章节幕回]))([,.:\s]*)(.*)$/
 
   TITLE_RE_3 = /^((\d+)([,.:]))(\s*)(.+)$/
+  TITLE_RE_4 = /^楔子(\s+)(.+)$/
 
   def cv_title(input : String, *dicts : BaseDict)
     res = CvData.new
@@ -70,6 +71,15 @@ module Libcv::Convert
 
         if !title.empty?
           res << CvNode.new(trash, " ", 0)
+        elsif !trash.empty?
+          res << CvNode.new(trash, "", 0)
+        end
+      elsif match = TITLE_RE_4.match(title)
+        _, trash, title = match
+        res << CvNode.new("楔子", "Phần đệm", 1)
+
+        if !title.empty?
+          res << CvNode.new(trash, ": ", 0)
         elsif !trash.empty?
           res << CvNode.new(trash, "", 0)
         end

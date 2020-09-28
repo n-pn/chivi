@@ -112,7 +112,6 @@
       case 'j':
       case 'k':
       case 'r':
-      case 'x':
         let elm = document.querySelector(`[data-kbd="${evt.key}"]`)
         if (elm) {
           evt.preventDefault()

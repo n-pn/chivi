@@ -35,23 +35,33 @@
   ]
 
   function handle_keypress(evt) {
-    if ($upsert_actived) return
-    if (evt.ctrlKey) return
+    if (edit_mode) return
 
     switch (evt.key) {
       case '\\':
         toggle_lookup()
         break
 
-      case 'r':
       case 'x':
-        let elm = document.querySelector(`[data-kbd="${evt.key}"]`)
-        if (elm) {
-          evt.preventDefault()
-          elm.click()
-        }
-
+        evt.preventDefault()
+        active_upsert(0)
         break
+
+      case 'c':
+        evt.preventDefault()
+        active_upsert(1)
+        break
+
+      case 'r':
+        evt.preventDefault()
+        dirty = true
+        break
+
+      default:
+        if (evt.keyCode == 13) {
+          evt.preventDefault()
+          active_upsert()
+        }
     }
   }
 
