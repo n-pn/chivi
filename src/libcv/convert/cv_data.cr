@@ -20,96 +20,81 @@ class CvData
     # - apply other grammar rule
     # - ...
 
+    prev = nil
+
     @data.each_with_index do |node, i|
       case node.key
+      when "的"
+        # TODO: handle `的`
+        node.dic = 9
+        node.val = ""
       when "了"
-        if border?(i + 1) || match_key?(i - 2, "了") || match_key?(i + 2, "了")
-          node.val = "rồi"
-        else
-          node.val = ""
-        end
+        # TODO: remove "了" only if prev is a verb
         node.dic = 9
+        node.val = border?(i + 1) || match_key?(i + 2, "了") ? "rồi" : ""
       when "对"
-        if border?(i + 1) || match_key?(i + 1, "的")
-          node.val = "đúng"
-        else
-          node.val = "đối với"
-        end
-
+        # TODO: handle nouns?
         node.dic = 9
+        node.val = border?(i + 1) || match_key?(i + 1, "的") ? "đúng" : "đối với"
       when "也"
-        if border?(i + 1)
-          node.val = "vậy"
-        else
-          node.val = "cũng"
-        end
-
         node.dic = 9
+        node.val = border?(i + 1) ? "vậy" : "cũng"
       when "地"
-        if border?(i - 1)
-          node.val = "địa"
-        else
-          # TODO: check noun, verb?
-          node.val = "mà"
-        end
-
+        # TODO: check noun, verb?
         node.dic = 9
+        node.val = border?(i - 1) ? "địa" : "mà"
       when "原来"
-        if border?(i - 1) && !match_key?(i + 1, "的")
-          node.val = "thì ra"
-        else
-          node.val = "ban đầu"
-        end
-
         node.dic = 9
+        node.val = border?(i - 1) && !match_key?(i + 1, "的") ? "thì ra" : " ban đầu"
+
         # when "不过"
         # TODO!
       when "行"
-        if border?(i - 1) && border?(i + 1)
-          node.val = "được"
-          node.dic = 9
-        end
-      when "的"
-        node.val = ""
+        next unless border?(i - 1) && border?(i + 1)
         node.dic = 9
-      else
-        next unless node.number?
-        next unless succ = @data[i + 1]?
+        node.val = "được"
+      when "两"
+        fix_unit(node, @data[i - 1]?, "lượng")
+      when "里"
+        fix_unit(node, @data[i - 1]?, "dặm")
+      when "米"
+        fix_unit(node, @data[i - 1]?, "mét")
+      when "年"
+        # TODO: handle special cases for year
+        next unless prev = @data[i - 1]?
+        next unless prev.to_i?
 
-        case succ.key
-        when "米"
-          succ.val = "mét"
-          succ.dic = 9
-        when "里"
-          succ.val = "dặm"
-          succ.dic = 9
-        when "两"
-          succ.val = "lượng"
-          succ.dic = 9
-        when "年", "月", "日"
-          # TODO: handle special cases
-          node.key += succ.key
-          node.val = "#{cv_key(succ.key)} #{node.val}"
-          node.dic = 9
+        fix_date(node, prev, "năm")
+      when "月"
+        next unless prev = @data[i - 1]?
+        next unless prev.to_i?.try(&.<= 12)
 
-          succ.key = ""
-          succ.val = ""
-          succ.dic = 0
-        end
+        fix_date(node, prev, "tháng")
+      when "日"
+        next unless prev = @data[i - 1]?
+        next unless prev.to_i?.try(&.<= 31)
+
+        fix_date(node, prev, "ngày")
       end
     end
 
     self
   end
 
-  private def cv_key(key : String)
-    case key
-    when "年" then "năm"
-    when "月" then "tháng"
-    when "日" then "ngày"
-    else
-      raise "unknown key #{key}"
-    end
+  private def fix_unit(node : CvNode, prev : CvNode?, val : String)
+    return unless prev && prev.number?
+    node.dic = 9
+    node.val = val
+  end
+
+  private def fix_date(node : CvNode, prev : CvNode, val : String)
+    prev.dic = 9
+    prev.key += node.key
+    prev.val = "#{val} #{prev.val}"
+
+    node.dic = 0
+    node.key = ""
+    node.val = ""
   end
 
   private def match_node?(idx : Int32)

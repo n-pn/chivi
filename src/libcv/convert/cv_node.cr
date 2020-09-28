@@ -46,4 +46,9 @@ class CvNode
     return @key =~ /^\d+(\.\d+)?$/ if @dic == 1
     @key =~ /^[零〇一二两三四五六七八九十百千]+$/
   end
+
+  def to_i? : Int32?
+    return if @dic != 1
+    @key.to_i?
+  end
 end
