@@ -73,7 +73,7 @@ class CvData
         node.val = ""
         node.dic = 9
       else
-        next unless node.dic == 1 && node.key =~ /^\d+$/
+        next unless node.number?
         next unless succ = @data[i + 1]?
 
         case succ.key

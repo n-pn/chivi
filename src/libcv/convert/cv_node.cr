@@ -40,4 +40,10 @@ class CvNode
 
     self
   end
+
+  def number?
+    return false if @dic < 1
+    return @key =~ /^\d+(\.\d+)?$/ if @dic == 1
+    @key =~ /^[零〇一二两三四五六七八九十百千]+$/
+  end
 end
