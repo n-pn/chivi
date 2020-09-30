@@ -36,6 +36,8 @@
 
   function handle_keypress(evt) {
     if (edit_mode) return
+    if (evt.ctrlKey) return
+    if ($upsert_actived) return
 
     switch (evt.key) {
       case '\\':

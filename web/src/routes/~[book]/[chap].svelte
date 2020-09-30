@@ -89,8 +89,8 @@
   $: $lookup_actived = false
 
   function handle_keypress(evt) {
-    if ($upsert_actived) return
     if (evt.ctrlKey) return
+    if ($upsert_actived) return
 
     switch (evt.key) {
       case '\\':

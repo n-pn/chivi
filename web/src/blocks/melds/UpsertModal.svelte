@@ -161,10 +161,7 @@
       return submit_val()
     }
 
-    if (evt.keyCode === 27) {
-      $actived = false
-      return
-    }
+    if (evt.keyCode == 27) return actived.set(fail)
 
     if (!evt.altKey) return
     evt.preventDefault()
