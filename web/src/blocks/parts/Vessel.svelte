@@ -108,6 +108,7 @@
 
   :global(.vessel) {
     position: relative;
+    min-height: calc(100% - #{$footer-height + 3rem});
     margin-bottom: $footer-height;
   }
 

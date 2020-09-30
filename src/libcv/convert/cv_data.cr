@@ -53,6 +53,13 @@ class CvData
         next unless border?(i - 1) && border?(i + 1)
         node.dic = 9
         node.val = "được"
+        # when "斤"
+        #   next unless prev = @data[i - 1]?
+        #   next unless num = prev.to_i?
+        #   val = (num / 2 * 10).round / 10
+        # node.dic = 9
+        # node.val = val.to_s
+
       when "两"
         fix_unit(node, @data[i - 1]?, "lượng")
       when "里"
