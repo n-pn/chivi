@@ -84,6 +84,8 @@ module Server
       mark = ""
     end
 
+    env.response.headers.add("ETag", info.mftime.to_s)
+    env.response.headers.add("Cache-Control", "max-age=300")
     {book: info, mark: mark}.to_json(env.response)
   end
 
@@ -113,6 +115,8 @@ module Server
       }
     end
 
+    env.response.headers.add("ETag", mftime.to_s)
+    env.response.headers.add("Cache-Control", "max-age=300")
     {chlist: chlist, mftime: mftime}.to_json(env.response)
   end
 
