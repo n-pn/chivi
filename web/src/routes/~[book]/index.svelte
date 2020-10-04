@@ -106,7 +106,7 @@
   function last_chap_link(seed) {
     const latest = book.seed_latests[seed]
     if (!latest) return `/~${book.slug}?seed=${seed}&refresh=true`
-    return `/~${book.slug}/${latest.url_slug}-${seed}-${latest.scid}`
+    return `/~${book.slug}/-${latest.url_slug}-${seed}-${latest.scid}`
   }
 
   function last_chap_text(seed) {

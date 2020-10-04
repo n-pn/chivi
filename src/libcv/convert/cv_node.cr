@@ -51,4 +51,9 @@ class CvNode
     return if @dic != 1
     @key.to_i?
   end
+
+  def to_f? : Float32?
+    return if @dic != 1
+    @key.to_f?
+  end
 end

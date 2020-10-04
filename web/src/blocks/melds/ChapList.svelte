@@ -84,7 +84,7 @@
     {#each items as chap}
       <li class="chap-item">
         <a
-          href="/~{bslug}/{chap.url_slug}-{sname}-{chap.scid}"
+          href="/~{bslug}/-{chap.url_slug}-{sname}-{chap.scid}"
           class="chap-link"
           rel="external">
           <span class="label">{chap.vi_label}</span>
