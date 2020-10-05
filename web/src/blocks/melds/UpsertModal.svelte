@@ -161,7 +161,7 @@
       return submit_val()
     }
 
-    if (evt.keyCode == 27) return actived.set(fail)
+    if (evt.keyCode == 27) return actived.set(false)
 
     if (!evt.altKey) return
     evt.preventDefault()
@@ -278,7 +278,8 @@
 
         <div class="format">
           <button data-kbd="1" on:click={() => upcase_val(1)}>
-            <span class="_show-sm">hoa</span> một chữ
+            <span class="_show-sm">hoa</span>
+            một chữ
           </button>
 
           <button data-kbd="2" on:click={() => upcase_val(2)}>hai chữ</button>
@@ -290,7 +291,8 @@
 
           <button data-kbd="4" on:click={() => upcase_val(9)}>tất cả</button>
 
-          <button data-kbd="0" on:click={() => upcase_val(0)}>không <span class="_show-sm"> hoa</span>
+          <button data-kbd="0" on:click={() => upcase_val(0)}>không
+            <span class="_show-sm"> hoa</span>
           </button>
 
           <button
