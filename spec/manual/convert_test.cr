@@ -1,4 +1,4 @@
-require "../../src/library/base_dict""
+require "../../src/libcv/library"
 require "../../src/libcv/convert"
 
 text = "第十三集 龙章凤仪 第一章 屠龙之术
@@ -12,13 +12,13 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-DICTS = BaseDict.for_convert("tong-hop")
+DICTS = Libcv::Library.for_convert("tong-hop")
 
 def translate(input : String, title = false)
   if title
-    Convert.cv_title(input, *DICTS).vi_text
+    Libcv::Convert.cv_title(input, *DICTS).vi_text
   else
-    Convert.cv_plain(input, *DICTS).vi_text
+    Libcv::Convert.cv_plain(input, *DICTS).vi_text
   end
 end
 
@@ -36,6 +36,15 @@ puts translate("1第一章")
 puts translate("一. 屠龙之术")
 puts translate("朥负已定")
 
-pp Convert.cv_title("1, 屠龙之术", *DICTS)
+puts Libcv::Convert.cv_title("1, 屠龙之术", *DICTS)
 
 puts translate("第三千七百九十八章 历史的本质就是套娃", true)
+puts Libcv::Convert.cv_plain("能让我坐在这里无病呻－吟", *DICTS)
+puts Libcv::Convert.cv_plain("无病呻－吟", *DICTS)
+
+generic = Libcv::Library.generic.dict
+puts generic.find("无病呻－吟")
+generic.upsert("无病呻－吟", "không ốm mà rên", freeze: true)
+generic.scan("无病呻－吟".chars, from: 0) do |node|
+  puts node
+end

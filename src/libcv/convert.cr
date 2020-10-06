@@ -124,7 +124,7 @@ module Libcv::Convert
       dicts.each_with_index do |dict, jdx|
         cost = 1 + (jdx &+ 2) / 4
 
-        dict.scan(norms, idx) do |item|
+        dict.scan(chars, idx) do |item|
           next if item.vals.empty?
 
           size = item.key.size
