@@ -1,10 +1,8 @@
 #! /bin/bash
 
-INP=nipin@ssh.nipin.xyz:web/chivi/var
-OUT=var
+REMOTE=nipin@ssh.nipin.xyz:web/chivi
 
-rsync -azi "$INP/appcv/members" "$OUT/appcv"
-# rsync -aiz "$INP/appcv/serials/indexes" "$OUT/appcv/serials"
-rsync --ignore-existing -aiz "$INP/appcv/chtexts" "$OUT/appcv"
-# rsync -az "$INP/bookdb/serials" "$OUT/bookdb"
-# rsync -az "$INP/bookdb/chlists" "$OUT/bookdb"
+rsync -azi "$REMOTE/var/appcv/members/" "var/appcv/members/"
+rsync -aiz --ignore-existing "$REMOTE/_db/prime/chtexts/" "_db/prime/chtexts/"
+# rsync -az "$REMOTE/var/appcv/chlists/" "var/appcv/chlists/"
+# rsync -az "$REMOTE/var/appcv/serials/" "var/appcv/serials/"
