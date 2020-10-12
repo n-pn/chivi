@@ -62,7 +62,7 @@ class InfoCrawler
       puts "\n[<#{step}> queue: #{queue.size}, proxies: #{proxy_size}]".yellow
       fails = []
 
-      Parallel.each_with_index(queue, in_threads: 30) do |ybid, idx|
+      Parallel.each_with_index(queue, in_threads: 20) do |ybid, idx|
         out_file = book_path(ybid)
         next if still_good?(out_file)
 
