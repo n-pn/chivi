@@ -1,7 +1,7 @@
 require_relative "./crawl_utils"
 
 class InfoCrawler
-  INFO_DIR = "var/appcv/.cached/yousuu/serials"
+  INFO_DIR = "_db/inits/seeds/yousuu/_infos"
 
   def initialize(load_proxy = false, debug_mode = false)
     @http = HttpClient.new(load_proxy, debug_mode)
@@ -88,7 +88,7 @@ load_proxy = ARGV.include?("proxy")
 debug_mode = ARGV.include?("debug")
 crawler = InfoCrawler.new(load_proxy, debug_mode)
 
-total = 242100
+total = 245300
 
 order = :sequel
 order = :reverse if ARGV.include?("reverse")

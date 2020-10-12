@@ -8,7 +8,7 @@ require "fileutils"
 class HttpClient
   attr_reader :proxies
 
-  PROXY_DIR = "var/appcv/.cached/yousuu/proxies"
+  PROXY_DIR = "_db/prime/proxies"
 
   def initialize(load_proxy = false, debug_mode = false)
     @debug_mode = debug_mode
@@ -40,7 +40,7 @@ class HttpClient
     end
   end
 
-  private def read_proxy_file(file)
+  def read_proxy_file(file)
     ret = []
     return ret unless File.exists?(file)
 
