@@ -1,7 +1,8 @@
 #! /bin/bash
 
-INP=nipin@ssh.nipin.xyz:web/chivi/var/appcv/.cached/yousuu
-OUT=_db/inits/seeds/yousuu
+REMOTE=nipin@ssh.nipin.xyz:web/chivi
+SEEDS_DIR=_db/inits/seeds/yousuu
+SEEDS_SSH="$REMOTE/$SEEDS_DIR"
 
-rsync -azui "$INP/serials/" "$OUT/_infos/"
-rsync -azui "$INP/reviews/" "$OUT/_crits/"
+rsync -azui "$SEEDS_SSH/_infos/" "$SEEDS_DIR/_infos/"
+rsync -azui "$SEEDS_SSH/_crits/" "$SEEDS_DIR/_crits/"
