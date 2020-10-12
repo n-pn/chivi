@@ -1,8 +1,24 @@
 version: 2.0
 shards:
+  crest:
+    git: https://github.com/mamantoha/crest.git
+    version: 0.26.1
+
   exception_page:
     git: https://github.com/crystal-loot/exception_page.git
     version: 0.1.4
+
+  http-client-digest_auth:
+    git: https://github.com/mamantoha/http-client-digest_auth.git
+    version: 0.4.0
+
+  http_proxy:
+    git: https://github.com/mamantoha/http_proxy.git
+    version: 0.7.1
+
+  icu:
+    git: https://github.com/olbat/icu.cr.git
+    version: 0.1.0+git.commit.83edbbc63c9e51f0a16a58c41fade72404494857
 
   kemal:
     git: https://github.com/kemalcr/kemal.git

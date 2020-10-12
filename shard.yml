@@ -1,5 +1,5 @@
 name: chivi
-version: 0.2.1
+version: 0.3.0
 
 authors:
   - Nipinium <nipinium@gmail.com>
@@ -49,3 +49,9 @@ dependencies:
 
   myhtml:
     github: kostya/myhtml
+
+  crest:
+    github: mamantoha/crest
+
+  icu:
+    github: olbat/icu.cr
