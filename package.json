@@ -1,26 +1,24 @@
 {
   "private": true,
   "scripts": {
-    "db-up": "bash etc/script/upload/assets.sh",
-    "db-dn": "bash etc/script/backup/assets.sh",
-    "ys-up": "bash etc/script/upload/yousuu.sh",
-    "ys-dn": "bash etc/script/backup/yousuu.sh",
+    "db-up": "bash etc/script/upload-assets.sh",
+    "db-dn": "bash etc/script/backup-assets.sh",
+    "ys-up": "bash etc/script/upload-yousuu.sh",
+    "ys-dn": "bash etc/script/backup-yousuu.sh",
     "build": "shards build --release",
     "build-mt": "shards build --release -Dpreview_mt",
     "web-up": "cd web && yarn build && git push prod",
     "web-rs": "ssh nipin@ssh.nipin.xyz \"systemctl restart chivi-client.service\"",
     "srv-rs": "ssh nipin@ssh.nipin.xyz \"systemctl restart chivi-server.service\"",
     "report": "ssh nipin@ssh.nipin.xyz \"/bin/bash -ic 'gen_cv_report'\"",
-    "cv_book_info": "wsl bin/cv_book_info",
-    "cv_chap_list": "wsl bin/cv_chap_list",
-    "map_yousuu": "wsl bin/map_yousuu",
+    "map-yousuu": "wsl bin/map_yousuu",
+    "map-zhwenpg": "wsl bin/map_zhwenpg",
+    "map-remotes": "wsl cli/infos/map_remote.sh",
     "map_remote": "wsl bin/map_remote",
-    "map_remotes": "wsl cli/infos/map_remote.sh",
-    "map_zhwenpg": "wsl bin/map_zhwenpg",
-    "ys_review": "ruby etc/script/yousuu/crawl_crits.rb",
-    "ys_serial": "ruby etc/script/yousuu/crawl_infos.rb",
-    "add_cover": "wsl bin/fetch_covers && ruby cli/cover/webp_format.rb",
+    "cr-ys-crit": "ruby etc/script/yousuu/crawl_crits.rb",
+    "cr-ys-info": "ruby etc/script/yousuu/crawl_infos.rb",
+    "fix-covers": "wsl bin/fetch_covers && ruby cli/cover/webp_format.rb",
     "backup": "wsl bin/migrate_dicts && yarn db-dn && yarn ys-dn",
-    "update": "yarn map_yousuu && yarn map_zhwenpg && yarn map_remotes && yarn add_cover"
+    "update": "yarn map-yousuu && yarn map-zhwenpg && yarn map-remotes && yarn fix-covers"
   }
 }
