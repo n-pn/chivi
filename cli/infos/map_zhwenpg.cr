@@ -3,9 +3,9 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../src/utils/file_util"
-require "../../src/utils/http_util"
-require "../../src/utils/time_util"
+require "../../src/_utils/file_util"
+require "../../src/_utils/http_util"
+require "../../src/_utils/time_util"
 
 require "../../src/appcv/bookdb"
 require "../../src/appcv/chapdb"

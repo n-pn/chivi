@@ -1,4 +1,4 @@
-require "../utils/text_util"
+require "../_utils/text_util"
 require "./route_utils"
 
 module Server

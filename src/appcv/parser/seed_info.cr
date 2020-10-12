@@ -2,10 +2,10 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../utils/han_to_int"
-require "../../utils/http_util"
-require "../../utils/file_util"
-require "../../utils/time_util"
+require "../../_utils/han_to_int"
+require "../../_utils/http_util"
+require "../../_utils/file_util"
+require "../../_utils/time_util"
 
 require "../models/chap_info"
 

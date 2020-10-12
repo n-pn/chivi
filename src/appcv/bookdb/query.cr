@@ -1,4 +1,4 @@
-require "../../utils/text_util"
+require "../../_utils/text_util"
 require "../lookup/token_map"
 require "../lookup/order_map"
 require "../models/book_info"

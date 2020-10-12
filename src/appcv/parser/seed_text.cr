@@ -2,9 +2,9 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../utils/file_util"
-require "../../utils/http_util"
-require "../../utils/text_util"
+require "../../_utils/file_util"
+require "../../_utils/http_util"
+require "../../_utils/text_util"
 
 class SeedText
   DIR = File.join("var", "appcv", ".cached")

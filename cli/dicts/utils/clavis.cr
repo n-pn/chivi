@@ -1,4 +1,4 @@
-require "../../../src/utils/normalize"
+require "../../../src/_utils/normalize"
 
 class Clavis
   DIR = File.join("var", "libcv", "initial")

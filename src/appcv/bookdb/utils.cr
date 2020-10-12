@@ -1,5 +1,5 @@
 require "../../libcv"
-require "../../utils/text_util"
+require "../../_utils/text_util"
 require "../lookup/*"
 
 module BookDB::Utils

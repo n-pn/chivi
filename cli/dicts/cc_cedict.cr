@@ -7,7 +7,7 @@ require "./utils/common"
 require "./utils/pinyin"
 
 require "../../src/libcv/library"
-require "../../src/utils/normalize"
+require "../../src/_utils/normalize"
 
 class Entry
   getter trad : String

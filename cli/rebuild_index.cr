@@ -2,7 +2,7 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../src/utils/text_util"
+require "../src/_utils/text_util"
 require "../src/appcv/models/book_info"
 require "../src/appcv/bookdb"
 
