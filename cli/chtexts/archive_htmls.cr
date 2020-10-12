@@ -12,8 +12,8 @@ infos = infos.values.sort_by(&.tally.-)
 
 puts "- input: #{infos.size} entries".colorize(:cyan)
 
-HTML_DIR = File.join("data", ".inits", "txt-inp")
-TEXT_DIR = File.join("data", "zh_texts")
+HTML_DIR = File.join("var", ".inits", "txt-inp")
+TEXT_DIR = File.join("var", "zh_texts")
 
 infos.each_with_index do |info, idx|
   info.cr_sitemap.each do |site, bsid|

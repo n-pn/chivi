@@ -6,21 +6,17 @@ require "../../_utils/file_util"
 class ChapText
   # class methods
 
-  DIR = File.join("var", "appcv", "chtexts")
+  DIR = File.join("_db", "prime", "chtexts")
   FileUtils.mkdir_p(DIR)
 
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 
   CACHE = {} of String => ChapText
-  LIMIT = 5000
+  LIMIT = 3000
 
-  def self.load(ubid : String,
-                seed : String,
-                sbid : String,
-                scid : String,
-                mode : Int32 = 1)
-    file = File.join(DIR, "#{ubid}.#{seed}/#{sbid}.#{scid}.txt")
+  def self.load(sname : String, s_bid : String, s_cid : String, mode = 1)
+    file = File.join(DIR, sname, s_bid, "#{s_cid}.txt")
     CACHE.shift if CACHE.size > LIMIT
     CACHE[file] ||= new(file, mode)
   end

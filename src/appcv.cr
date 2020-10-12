@@ -4,25 +4,13 @@ require "./appcv/*"
 module Appcv
   extend self
 
-  def gen_expiry(status)
-    case status
-    when 0
-      6.hours
-    when 1
-      6.weeks
-    else
-      6.months
-    end
-  end
-
   def load_list(info : BookInfo, seed : String, mode = 0) : Tuple(ChapList, Int64)?
     return unless sbid = info.seed_sbids[seed]?
 
     chlist = ChapList.preload_or_create!(info.ubid, seed)
     expiry = mode > 0 ? (Time.utc - 5.minutes) : Time.unix_ms(info.mftime)
 
-    # jx_la is dead :()
-    expiry -= 1.years if seed == "jx_la"
+    expiry -= 20.years unless remote?(seed)
 
     if ChapList.outdated?(info.ubid, seed, expiry)
       remote = SeedInfo.new(seed, sbid, expiry: expiry, freeze: false)
@@ -44,12 +32,12 @@ module Appcv
   # 1 => load saved chap_text then convert
   # 2 => fetch text from external hosts then convert
 
-  def get_text(ubid : String, seed : String, sbid : String, scid : String, mode : Int32 = 0)
-    chtext = ChapText.load(ubid, seed, sbid, scid, mode: 1)
+  def get_text(bhash : String, sname : String, s_bid : String, s_cid : String, mode = 0)
+    chtext = ChapText.load(sname, s_bid, s_cid, mode: 1)
     cached = File.exists?(chtext.file)
 
-    if remote?(seed) && (mode == 2 || !cached)
-      source = SeedText.init(seed, sbid, scid, freeze: false)
+    if remote?(sname) && (mode == 2 || !cached)
+      source = SeedText.init(sname, s_bid, s_cid, freeze: false)
       zh_data = [source.title].concat(source.paras)
       chtext.tap(&.zh_data = zh_data).save!
     elsif cached
@@ -60,7 +48,7 @@ module Appcv
     end
 
     chtext.tap do |x|
-      x.cv_text = Libcv.cv_mixed(zh_data, ubid).map(&.to_s).join("\n")
+      x.cv_text = Libcv.cv_mixed(zh_data, bhash).map(&.to_s).join("\n")
       x.cv_time = Time.utc.to_unix_ms
     end
   end
@@ -69,7 +57,7 @@ module Appcv
     "hetushu", "rengshu", "xbiquge",
     "nofff", "paoshu8", "69shu",
     "zhwenpg", "5200", "biquge5200",
-    "duokan8",
+    "duokan8", "shubaow",
   }
 
   def remote?(seed : String)
@@ -80,12 +68,3 @@ module Appcv
     mftime > (Time.utc - span).to_unix_ms
   end
 end
-
-# info = BookDB.load("akpwpjf3").not_nil!
-# puts info.vi_title
-
-# chaps = Kernel.load_list(info, info.cr_site_df, refresh: true)
-# puts chaps.reverse.first(4)
-
-# paras = Kernel.load_chap(info, info.cr_site_df, "3183122")
-# puts paras.first(10).map(&.vi_text)

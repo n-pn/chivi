@@ -18,7 +18,7 @@ module ChapDB
     translate_list(chlist, force: force)
   end
 
-  def translate_list(chlist : ChapList, force : Bool = false)
+  def translate_list(chlist : ChapList, force = false)
     chlist.update_each { |chap| Utils.convert(chap, chlist.ubid, force: force) }
     chlist
   end
