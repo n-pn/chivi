@@ -13,7 +13,7 @@
     "report": "ssh nipin@ssh.nipin.xyz \"/bin/bash -ic 'gen_cv_report'\"",
     "map-yousuu": "wsl bin/map_yousuu",
     "map-zhwenpg": "wsl bin/map_zhwenpg",
-    "map-remotes": "wsl cli/infos/map_remote.sh",
+    "map-remotes": "wsl cli/serials/map_remote.sh",
     "map_remote": "wsl bin/map_remote",
     "cr-ys-crit": "ruby etc/script/yousuu/crawl_crits.rb",
     "cr-ys-info": "ruby etc/script/yousuu/crawl_infos.rb",

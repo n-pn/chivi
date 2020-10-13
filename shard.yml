@@ -9,13 +9,13 @@ targets:
     main: src/webcv.cr
 
   map_yousuu:
-    main: cli/infos/map_yousuu.cr
+    main: cli/serials/map_yousuu.cr
 
   map_zhwenpg:
-    main: cli/infos/map_zhwenpg.cr
+    main: cli/serials/map_zhwenpg.cr
 
   map_remote:
-    main: cli/infos/map_remote.cr
+    main: cli/serials/map_remote.cr
 
   rebuild_index:
     main: cli/rebuild_index.cr

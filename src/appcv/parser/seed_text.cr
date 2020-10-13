@@ -7,7 +7,7 @@ require "../../_utils/http_util"
 require "../../_utils/text_util"
 
 class SeedText
-  DIR = File.join("var", "appcv", ".cached")
+  DIR = File.join("_db", "inits", "seeds")
   FileUtils.mkdir_p(DIR)
 
   def self.mkdir!(seed : String, sbid : String)
@@ -15,7 +15,7 @@ class SeedText
   end
 
   def self.root(seed : String, sbid : String)
-    File.join(DIR, seed, "texts", sbid)
+    File.join(DIR, seed, "_texts", sbid)
   end
 
   def self.path_for(seed : String, sbid : String, scid : String)

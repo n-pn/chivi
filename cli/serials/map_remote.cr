@@ -120,7 +120,7 @@ class MapRemote
 
   def expiry_for(sbid : String)
     if CACHED || @seed == "jx_la" || @seed == "duokan8"
-      return Time.utc - 1.year
+      return Time.utc - 10.year
     end
 
     return Time.utc - 9.months unless ubid = @crawled[sbid]?
