@@ -15,7 +15,7 @@ module Libcv::Library
   class_getter binh_am : BaseDict { BaseDict.load!("_binh_am") }
 
   class_getter hanviet : UserDict { UserDict.load("core/hanviet", power: 3) }
-  class_getter generic : UserDict { UserDict.load("core/generic", power: 1) }
+  class_getter generic : UserDict { UserDict.load("core/generic", power: 2) }
   class_getter suggest : UserDict { UserDict.load("core/suggest", power: 1) }
 
   def for_convert(name : String) : Tuple(BaseDict, BaseDict)
