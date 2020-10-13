@@ -27,7 +27,7 @@ targets:
   #   main: cli/cv_chap_list.cr
 
   fetch_covers:
-    main: cli/cover/fetch_covers.cr
+    main: cli/covers/fetch_covers.cr
 
   migrate_dicts:
     main: cli/migrate_dicts.cr

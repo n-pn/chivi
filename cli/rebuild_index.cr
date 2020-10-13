@@ -17,10 +17,10 @@ TAGS   = TokenMap.init("indexes/tokens/vi_tags")
 EPOCH = Time.utc(2020, 1, 1).to_unix_ms
 
 SEEDS = {
-  "hetushu", "xbiquge", "69shu",
-  "biquge5200", "5200", "zhwenpg",
-  "duokan8", "rengshu", "nofff",
-  "paoshu8", "kenwen", "mxguan",
+  "hetushu", "xbiquge", "rengshu",
+  "biquge5200", "69shu", "zhwenpg",
+  "duokan8", "paoshu8", "5200",
+  "nofff", "kenwen", "mxguan",
   "shubaow", "jx_la", "qu_la",
 }
 
