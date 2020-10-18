@@ -9,10 +9,11 @@ class HttpClient
   attr_reader :proxies
 
   PROXY_DIR = "_db/prime/proxies"
+  INTERVAL = 3600 * 10
 
   def initialize(load_proxy = false, debug_mode = false)
     @debug_mode = debug_mode
-    @proxy_file = "#{PROXY_DIR}/working/#{Time.new.to_i / (3600 * 6)}.txt"
+    @proxy_file = "#{PROXY_DIR}/working/#{Time.new.to_i / INTERVAL}.txt"
 
     proxies = read_proxy_file(@proxy_file)
     load_previous_working_proxies(proxies) if proxies.size < 200

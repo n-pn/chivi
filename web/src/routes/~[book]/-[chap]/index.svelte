@@ -7,27 +7,22 @@
     const scid = cols[cols.length - 1]
 
     const mode = +query.mode || 0
-    const data = await load_chap(this.fetch, bslug, seed, scid, mode)
 
-    return data
+    const res = await load_chap(this.fetch, bslug, seed, scid, mode)
+    const data = await res.json()
+
+    if (res.ok) return data
+    this.error(res.status, data._msg)
   }
 
   async function load_chap(fetch, bslug, seed, scid, mode = 0) {
     const url = `/_texts/${bslug}/${seed}/${scid}?mode=${mode}`
+    const res = await fetch(url)
 
-    try {
-      const res = await fetch(url)
-      const data = await res.json()
-
-      if (res.status == 200) return data
-      else this.error(res.status, data._msg)
-    } catch (err) {
-      this.error(500, err.message)
-    }
+    return res
   }
 
   import SvgIcon from '$atoms/SvgIcon'
-  import RelTime from '$atoms/RelTime'
 
   import Vessel from '$parts/Vessel'
   import Convert, { toggle_lookup, active_upsert } from '$parts/Convert'
@@ -132,7 +127,8 @@
     if ($self_power < 1) return
 
     _load = true
-    const data = await load_chap(window.fetch, bslug, seed, scid, mode)
+    const res = await load_chap(window.fetch, bslug, seed, scid, mode)
+    const data = await res.json()
 
     mftime = data.mftime
     cvdata = data.cvdata

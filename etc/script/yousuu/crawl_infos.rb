@@ -62,7 +62,7 @@ class InfoCrawler
       puts "\n[<#{step}> queue: #{queue.size}, proxies: #{proxy_size}]".yellow
       fails = []
 
-      Parallel.each_with_index(queue, in_threads: 20) do |ybid, idx|
+      Parallel.each_with_index(queue, in_threads: 25) do |ybid, idx|
         out_file = book_path(ybid)
         next if still_good?(out_file)
 
@@ -88,7 +88,7 @@ load_proxy = ARGV.include?("proxy")
 debug_mode = ARGV.include?("debug")
 crawler = InfoCrawler.new(load_proxy, debug_mode)
 
-total = 245300
+total = 245900
 
 order = :sequel
 order = :reverse if ARGV.include?("reverse")
