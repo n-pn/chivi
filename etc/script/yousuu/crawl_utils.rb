@@ -20,7 +20,7 @@ class HttpClient
     load_bootstrap_proxies(proxies) if proxies.size < 200 || load_proxy
     puts "- <load_proxy> total proxies: #{proxies.size.to_s.yellow} entries."
 
-    @proxies = proxies.map { |x| [x, 0, 0] }
+    @proxies = proxies.shuffle.map { |x| [x, 0, 0] }
   end
 
   def load_previous_working_proxies(proxies)
