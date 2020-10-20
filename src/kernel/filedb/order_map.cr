@@ -1,6 +1,6 @@
 require "./_filedb"
 
-class OrderMap
+class OldOrderMap
   class Node
     getter key : String
     property val : Int64
@@ -81,7 +81,7 @@ class OrderMap
     end
   end
 
-  include FlatFile(Int64)
+  include OldFlatFile(Int64)
 
   getter file : String
   getter data = {} of String => Node
@@ -177,17 +177,17 @@ class OrderMap
     load(path_for(name), mode: mode)
   end
 
-  class_getter author_rating : OrderMap { load_name("_import/author_rating") }
-  class_getter author_voters : OrderMap { load_name("_import/author_voters") }
-  class_getter author_weight : OrderMap { load_name("_import/author_weight") }
+  class_getter author_rating : OldOrderMap { load_name("_import/author_rating") }
+  class_getter author_voters : OldOrderMap { load_name("_import/author_voters") }
+  class_getter author_weight : OldOrderMap { load_name("_import/author_weight") }
 
-  class_getter book_access : OrderMap { load_name("indexes/orders/book_access") }
-  class_getter book_update : OrderMap { load_name("indexes/orders/book_update") }
-  class_getter book_weight : OrderMap { load_name("indexes/orders/book_weight") }
-  class_getter book_rating : OrderMap { load_name("indexes/orders/book_rating") }
+  class_getter book_access : OldOrderMap { load_name("indexes/orders/book_access") }
+  class_getter book_update : OldOrderMap { load_name("indexes/orders/book_update") }
+  class_getter book_weight : OldOrderMap { load_name("indexes/orders/book_weight") }
+  class_getter book_rating : OldOrderMap { load_name("indexes/orders/book_rating") }
 end
 
-# test = OrderMap.new("tmp/order_map.txt", false)
+# test = OldOrderMap.new("tmp/order_map.txt", false)
 
 # test.upsert!("a", 10_i64)
 # test.upsert!("b", 20_i64)

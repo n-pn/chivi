@@ -1,7 +1,7 @@
 require "colorize"
 require "file_utils"
 
-module FlatFile(T)
+module OldFlatFile(T)
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 

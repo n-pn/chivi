@@ -39,8 +39,8 @@ puts count
 #   Engine.cv_plain(input, dname).vi_text
 # end
 
-# TITLE_ZH  = LabelMap.load!("override/zh_title")
-# AUTHOR_ZH = LabelMap.load!("override/zh_author")
+# TITLE_ZH  = OldLabelMap.load!("override/zh_title")
+# AUTHOR_ZH = OldLabelMap.load!("override/zh_author")
 
 # # move seed info from removed entry to remained entry
 # private def transfer_info(remove : BookInfo, remain : BookInfo)
@@ -115,28 +115,28 @@ puts count
 # INPUT = INFOS.values.sort_by(&.weight.-)
 
 # HIATUS  = Time.utc(2019, 1, 1).to_unix_ms
-# TITLES  = LabelMap.load!("override/vi_title")
-# AUTHORS = LabelMap.load!("override/vi_author")
+# TITLES  = OldLabelMap.load!("override/vi_title")
+# AUTHORS = OldLabelMap.load!("override/vi_author")
 
 # FULL_SLUGS = {} of String => String
-# SLUG_UBIDS = LabelMap.init("slug--ubid")
+# SLUG_UBIDS = OldLabelMap.init("slug--ubid")
 
 # puts "[-- Convert! --]".colorize.cyan.bold
 
-# book_rating = OrderMap.init("rating")
-# book_weight = OrderMap.init("weight")
-# book_update = OrderMap.init("update")
-# book_access = OrderMap.init("access")
+# book_rating = OldOrderMap.init("rating")
+# book_weight = OldOrderMap.init("weight")
+# book_update = OldOrderMap.init("update")
+# book_access = OldOrderMap.init("access")
 
-# title_zh_map = TokenMap.init("zh_title")
-# title_vi_map = TokenMap.init("vi_title")
-# title_hv_map = TokenMap.init("hv_title")
+# title_zh_map = OldTokenMap.init("zh_title")
+# title_vi_map = OldTokenMap.init("vi_title")
+# title_hv_map = OldTokenMap.init("hv_title")
 
-# author_zh_map = TokenMap.init("zh_author")
-# author_vi_map = TokenMap.init("vi_author")
+# author_zh_map = OldTokenMap.init("zh_author")
+# author_vi_map = OldTokenMap.init("vi_author")
 
-# genres_vi_map = TokenMap.init("vi_genres")
-# tags_vi_map = TokenMap.init("vi_tags")
+# genres_vi_map = OldTokenMap.init("vi_genres")
+# tags_vi_map = OldTokenMap.init("vi_tags")
 
 # INPUT.each_with_index do |info, idx|
 #   puts "\n- <#{idx + 1}/#{INPUT.size}> [#{info.ubid}] {#{info.slug}}".colorize.cyan

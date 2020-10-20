@@ -16,7 +16,7 @@ files = Dir.glob(File.join(DIR, "*.json")).sort_by do |file|
 end
 
 inp_total = inp_count = created = updated = 0
-sitemap = LabelMap.load_name("_import/sites/yousuu")
+sitemap = OldLabelMap.load_name("_import/sites/yousuu")
 
 input = {} of String => YsSerial
 
@@ -63,15 +63,15 @@ input.each_with_index do |source, idx|
   puts "\n- <#{idx + 1}/#{input.size}> #{info.zh_title} ".colorize(color)
 
   info.save!
-  OrderMap.author_voters.upsert!(info.zh_author, info.voters.to_i64)
-  OrderMap.author_rating.upsert!(info.zh_author, info.scored)
-  OrderMap.author_weight.upsert!(info.zh_author, info.weight)
+  OldOrderMap.author_voters.upsert!(info.zh_author, info.voters.to_i64)
+  OldOrderMap.author_rating.upsert!(info.zh_author, info.scored)
+  OldOrderMap.author_weight.upsert!(info.zh_author, info.weight)
 end
 
 puts "- <INP> total: #{inp_total}, keeps: #{inp_count} ".colorize.yellow
 puts "- <OUT> create: #{created}, update: #{updated}".colorize.yellow
 
 sitemap.save!
-OrderMap.flush!
-TokenMap.flush!
-LabelMap.flush!
+OldOrderMap.flush!
+OldTokenMap.flush!
+OldLabelMap.flush!

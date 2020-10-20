@@ -18,14 +18,14 @@ module BookDB::Utils
   def fix_zh_title(title : String, author : String = "")
     title = TextUtil.fix_spaces(title).sub(/[（\(].+[\)）]\s*$/, "").strip
 
-    fix_map = LabelMap.zh_title
+    fix_map = OldLabelMap.zh_title
     fix_map.fetch("#{title}--#{author}") || fix_map.fetch(title) || title
   end
 
   def fix_zh_author(author : String, title : String = "")
     author = TextUtil.fix_spaces(author).sub(/[（\(].+[\)）]|\.QD\s*$/, "").strip
 
-    fix_map = LabelMap.zh_author
+    fix_map = OldLabelMap.zh_author
     fix_map.fetch("#{title}--#{author}") || fix_map.fetch(author) || author
   end
 
@@ -51,7 +51,7 @@ module BookDB::Utils
   def split_zh_genre(genre : String)
     genre = genre.sub(/小说$/, "") unless genre == "轻小说"
 
-    if genres = LabelMap.zh_genre.fetch(genre)
+    if genres = OldLabelMap.zh_genre.fetch(genre)
       genres.split("¦")
     else
       if !genre.blank? || genre.includes?("其他")
@@ -63,11 +63,11 @@ module BookDB::Utils
   end
 
   def fake_rating(zh_author : String)
-    voters_max = OrderMap.author_voters.value(zh_author) || 100_i64
+    voters_max = OldOrderMap.author_voters.value(zh_author) || 100_i64
     voters_min = voters_max // 2
     voters = Random.rand(voters_min..voters_max).to_i32
 
-    scored_max = OrderMap.author_rating.value(zh_author) || 60_i64
+    scored_max = OldOrderMap.author_rating.value(zh_author) || 60_i64
     scored_min = scored_max &* 2 // 3
 
     scored = Random.rand(scored_min..scored_max)
@@ -78,18 +78,18 @@ module BookDB::Utils
 
   def map_vi_genres(zh_genres : Array(String))
     return ["Loại khác"] if zh_genres.empty?
-    zh_genres.map { |genre| LabelMap.vi_genre.fetch(genre).not_nil! }
+    zh_genres.map { |genre| OldLabelMap.vi_genre.fetch(genre).not_nil! }
   end
 
-  def update_token(map : TokenMap, key : String, vals : Array(String))
+  def update_token(map : OldTokenMap, key : String, vals : Array(String))
     map.upsert!(key, vals.map { |x| TextUtil.slugify(x) })
   end
 
-  def update_token(map : TokenMap, key : String, vals : String)
+  def update_token(map : OldTokenMap, key : String, vals : String)
     map.upsert!(key, TextUtil.tokenize(vals))
   end
 
-  def update_order(map : OrderMap, key : String, value : Int64)
+  def update_order(map : OldOrderMap, key : String, value : Int64)
     map.upsert!(key, value)
   end
 end

@@ -14,7 +14,7 @@ module BookDB
   delegate get!, to: BookInfo
 
   def find(slug : String)
-    return unless ubid = LabelMap.book_slug.fetch(slug)
+    return unless ubid = OldLabelMap.book_slug.fetch(slug)
     BookInfo.get(ubid)
   end
 
@@ -32,7 +32,7 @@ module BookDB
   end
 
   def whitelist?(author : String)
-    return false unless weight = OrderMap.author_weight.value(author)
+    return false unless weight = OldOrderMap.author_weight.value(author)
     weight >= 2000
   end
 
@@ -112,8 +112,8 @@ module BookDB
   def upsert_info(info : BookInfo, force = false)
     return unless force || info.slug.empty?
 
-    Utils.update_token(TokenMap.zh_title, info.ubid, info.zh_title)
-    Utils.update_token(TokenMap.zh_author, info.ubid, info.zh_author)
+    Utils.update_token(OldTokenMap.zh_title, info.ubid, info.zh_title)
+    Utils.update_token(OldTokenMap.zh_author, info.ubid, info.zh_author)
 
     set_hv_title(info, force: force)
     set_vi_title(info, force: force)
@@ -138,7 +138,7 @@ module BookDB
     return unless force || info.hv_title.empty?
     hv_title = Utils.hanviet(info.zh_title) if hv_title.empty?
 
-    Utils.update_token(TokenMap.hv_title, info.ubid, hv_title)
+    Utils.update_token(OldTokenMap.hv_title, info.ubid, hv_title)
     info.hv_title = hv_title
   end
 
@@ -146,7 +146,7 @@ module BookDB
     return unless force || info.vi_title.empty?
 
     if vi_title.empty?
-      if title = LabelMap.vi_title.fetch(info.zh_title)
+      if title = OldLabelMap.vi_title.fetch(info.zh_title)
         vi_title = TextUtil.titleize(title)
       elsif info.hv_title.empty?
         vi_title = Utils.hanviet(info.zh_title)
@@ -156,7 +156,7 @@ module BookDB
       end
     end
 
-    Utils.update_token(TokenMap.vi_title, info.ubid, vi_title)
+    Utils.update_token(OldTokenMap.vi_title, info.ubid, vi_title)
     info.vi_title = vi_title
   end
 
@@ -164,20 +164,20 @@ module BookDB
     return unless force || info.vi_author.empty?
 
     if vi_author.empty?
-      unless vi_author = LabelMap.vi_author.fetch(info.zh_author)
+      unless vi_author = OldLabelMap.vi_author.fetch(info.zh_author)
         vi_author = Utils.hanviet(info.zh_author)
       end
     end
 
-    Utils.update_token(TokenMap.vi_author, info.ubid, vi_author)
+    Utils.update_token(OldTokenMap.vi_author, info.ubid, vi_author)
     info.vi_author = vi_author
   end
 
   def check_slug(info : BookInfo, slug : String) : String?
-    if ubid = LabelMap.book_slug.fetch(slug)
+    if ubid = OldLabelMap.book_slug.fetch(slug)
       return if ubid != info.ubid
     else
-      LabelMap.book_slug.upsert!(slug, info.ubid)
+      OldLabelMap.book_slug.upsert!(slug, info.ubid)
       slug
     end
   end
@@ -208,7 +208,7 @@ module BookDB
     zh_genres = Utils.fix_zh_genres(info.zh_genres)
     info.vi_genres = Utils.map_vi_genres(zh_genres.first(3))
 
-    Utils.update_token(TokenMap.vi_genres, info.ubid, info.vi_genres)
+    Utils.update_token(OldTokenMap.vi_genres, info.ubid, info.vi_genres)
   end
 
   def set_tags(info : BookInfo, site : String, tags : Array(String), force = false)
@@ -216,7 +216,7 @@ module BookDB
     info.add_zh_tags(site, tags.join("¦"))
     tags.each { |tag_zh| info.add_vi_tag(Utils.hanviet(tag_zh)) }
 
-    Utils.update_token(TokenMap.vi_tags, info.ubid, info.vi_tags)
+    Utils.update_token(OldTokenMap.vi_tags, info.ubid, info.vi_tags)
   end
 
   def set_cover(info : BookInfo, site : String, cover : String, force = false)
@@ -238,8 +238,8 @@ module BookDB
 
   def set_mftime(info : BookInfo, mftime = 0_i64, force = false)
     return unless force || info.mftime < mftime
-    Utils.update_order(OrderMap.book_update, info.ubid, mftime)
-    Utils.update_order(OrderMap.book_access, info.ubid, mftime)
+    Utils.update_order(OldOrderMap.book_update, info.ubid, mftime)
+    Utils.update_order(OldOrderMap.book_access, info.ubid, mftime)
     info.mftime = mftime
   end
 
@@ -250,13 +250,13 @@ module BookDB
 
   def set_rating(info : BookInfo, rating : Float, force = false)
     return unless force || info.rating < rating
-    Utils.update_order(OrderMap.book_rating, info.ubid, (rating * 10).to_i64)
+    Utils.update_order(OldOrderMap.book_rating, info.ubid, (rating * 10).to_i64)
     info.rating = rating
   end
 
   def set_weight(info : BookInfo, weight : Int64, force = true)
     return unless force || info.weight < weight
-    Utils.update_order(OrderMap.book_weight, info.ubid, weight)
+    Utils.update_order(OldOrderMap.book_weight, info.ubid, weight)
     info.weight = weight
   end
 
@@ -268,6 +268,6 @@ module BookDB
   # end
 
   def bump_access(info : BookInfo, value : Int64 = Time.utc.to_unix_ms)
-    Utils.update_order(OrderMap.book_access, info.ubid, value)
+    Utils.update_order(OldOrderMap.book_access, info.ubid, value)
   end
 end

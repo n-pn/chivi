@@ -1,7 +1,7 @@
 require "./_filedb"
 
-class LabelMap
-  include FlatFile(String)
+class OldLabelMap
+  include OldFlatFile(String)
 
   getter data = Hash(String, String).new
   delegate size, to: @data
@@ -50,19 +50,19 @@ class LabelMap
     load(path_for(name), mode: mode)
   end
 
-  class_getter book_slug : LabelMap { load_name("indexes/book_slug") }
+  class_getter book_slug : OldLabelMap { load_name("indexes/book_slug") }
 
-  class_getter zh_author : LabelMap { load_name("_import/fixes/zh_author") }
-  class_getter vi_author : LabelMap { load_name("_import/fixes/vi_author") }
+  class_getter zh_author : OldLabelMap { load_name("_import/fixes/zh_author") }
+  class_getter vi_author : OldLabelMap { load_name("_import/fixes/vi_author") }
 
-  class_getter zh_title : LabelMap { load_name("_import/fixes/zh_title") }
-  class_getter vi_title : LabelMap { load_name("_import/fixes/vi_title") }
+  class_getter zh_title : OldLabelMap { load_name("_import/fixes/zh_title") }
+  class_getter vi_title : OldLabelMap { load_name("_import/fixes/vi_title") }
 
-  class_getter zh_genre : LabelMap { load_name("_import/fixes/zh_genre") }
-  class_getter vi_genre : LabelMap { load_name("_import/fixes/vi_genre") }
+  class_getter zh_genre : OldLabelMap { load_name("_import/fixes/zh_genre") }
+  class_getter vi_genre : OldLabelMap { load_name("_import/fixes/vi_genre") }
 end
 
-# map = LabelMap.load("tmp/test.txt", mode: 0)
+# map = OldLabelMap.load("tmp/test.txt", mode: 0)
 
 # map.upsert!("a", "b")
 # map.upsert!("a", "b")

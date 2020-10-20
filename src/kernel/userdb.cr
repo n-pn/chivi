@@ -12,8 +12,8 @@ module UserDB
   FileUtils.mkdir_p(ID_DIR)
   FileUtils.mkdir_p(SR_DIR)
 
-  class_getter emails : LabelMap { LabelMap.load("#{ID_DIR}/emails.txt") }
-  class_getter unames : LabelMap { LabelMap.load("#{ID_DIR}/unames.txt") }
+  class_getter emails : OldLabelMap { OldLabelMap.load("#{ID_DIR}/emails.txt") }
+  class_getter unames : OldLabelMap { OldLabelMap.load("#{ID_DIR}/unames.txt") }
 
   def find_by_mail(email : String)
     return unless uslug = emails.fetch(email.downcase)
@@ -49,10 +49,10 @@ module UserDB
     unames.upsert!(info.uname.downcase, info.uslug)
   end
 
-  UBIDS = {} of String => TokenMap
+  UBIDS = {} of String => OldTokenMap
 
   def ubids(uslug : String)
-    UBIDS[uslug] ||= TokenMap.read(File.join(SR_DIR, "#{uslug}.txt"))
+    UBIDS[uslug] ||= OldTokenMap.read(File.join(SR_DIR, "#{uslug}.txt"))
   end
 
   # tags: reading, finish, dropped, onhold, pending

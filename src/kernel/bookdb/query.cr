@@ -24,7 +24,7 @@ class BookDB::Query
     end
   end
 
-  class_getter book_count : Int32 { OrderMap.book_weight.size }
+  class_getter book_count : Int32 { OldOrderMap.book_weight.size }
 
   def self.fetch!(opts : Opts)
     query = new
@@ -46,7 +46,7 @@ class BookDB::Query
     return if @no_match
 
     genre = TextUtil.slugify(genre)
-    unless ubids = TokenMap.vi_genres.keys(genre)
+    unless ubids = OldTokenMap.vi_genres.keys(genre)
       @no_match = true
     else
       @ubids = @filtered ? @ubids & ubids : ubids
@@ -66,18 +66,18 @@ class BookDB::Query
 
     if type == :fuzzy || type == :title
       if is_hanzi
-        @ubids.concat TokenMap.zh_title.search(tokens)
+        @ubids.concat OldTokenMap.zh_title.search(tokens)
       else
-        @ubids.concat TokenMap.vi_title.search(tokens)
-        @ubids.concat TokenMap.hv_title.search(tokens)
+        @ubids.concat OldTokenMap.vi_title.search(tokens)
+        @ubids.concat OldTokenMap.hv_title.search(tokens)
       end
     end
 
     if type == :fuzzy || type == :author
       if is_hanzi
-        @ubids.concat TokenMap.zh_author.search(tokens)
+        @ubids.concat OldTokenMap.zh_author.search(tokens)
       else
-        @ubids.concat TokenMap.vi_author.search(tokens)
+        @ubids.concat OldTokenMap.vi_author.search(tokens)
       end
     end
 
@@ -105,7 +105,7 @@ class BookDB::Query
     output
   end
 
-  def scan_sorted(sorted : OrderMap, limit = 24, offset = 0, anchor = "")
+  def scan_sorted(sorted : OldOrderMap, limit = 24, offset = 0, anchor = "")
     output = [] of BookInfo
 
     cursor = sorted.fetch(anchor) || seek_cursor(sorted, offset)
@@ -122,15 +122,15 @@ class BookDB::Query
 
   def order_map(sort : Symbol)
     case sort
-    when :access then OrderMap.book_access
-    when :update then OrderMap.book_update
-    when :rating then OrderMap.book_rating
-    when :weight then OrderMap.book_weight
-    else              OrderMap.book_weight
+    when :access then OldOrderMap.book_access
+    when :update then OldOrderMap.book_update
+    when :rating then OldOrderMap.book_rating
+    when :weight then OldOrderMap.book_weight
+    else              OldOrderMap.book_weight
     end
   end
 
-  def seek_cursor(sorted : OrderMap, offset = 0)
+  def seek_cursor(sorted : OldOrderMap, offset = 0)
     return sorted.first if offset == 0
 
     sorted.each do |node|

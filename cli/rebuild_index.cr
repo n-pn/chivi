@@ -6,13 +6,13 @@ require "../src/_utils/text_util"
 require "../src/kernel/models/book_info"
 require "../src/kernel/bookdb"
 
-ACCESS = OrderMap.load_name("indexes/orders/book_access", mode: 0)
-UPDATE = OrderMap.load_name("indexes/orders/book_update", mode: 0)
-RATING = OrderMap.load_name("indexes/orders/book_rating", mode: 0)
-WEIGHT = OrderMap.load_name("indexes/orders/book_weight", mode: 0)
+ACCESS = OldOrderMap.load_name("indexes/orders/book_access", mode: 0)
+UPDATE = OldOrderMap.load_name("indexes/orders/book_update", mode: 0)
+RATING = OldOrderMap.load_name("indexes/orders/book_rating", mode: 0)
+WEIGHT = OldOrderMap.load_name("indexes/orders/book_weight", mode: 0)
 
-GENRES = TokenMap.init("indexes/tokens/vi_genres")
-TAGS   = TokenMap.init("indexes/tokens/vi_tags")
+GENRES = OldTokenMap.init("indexes/tokens/vi_genres")
+TAGS   = OldTokenMap.init("indexes/tokens/vi_tags")
 
 EPOCH = Time.utc(2020, 1, 1).to_unix_ms
 
@@ -74,7 +74,7 @@ infos.each_with_index do |info, idx|
   conflicts["#{title}--#{author}"] << "#{info.zh_title}--#{info.zh_author}"
 end
 
-# TokenMap.flush!
+# OldTokenMap.flush!
 
 ACCESS.save!
 UPDATE.save!

@@ -1,7 +1,7 @@
 require "./_filedb"
 
 # mapping key to a list of tokens
-class TokenMap
+class OldTokenMap
   LABEL = "token_map"
   SEP_0 = "ǁ"
   SEP_1 = "¦"
@@ -172,36 +172,36 @@ class TokenMap
   end
 
   # read random file, raising FileNotFound if not existed
-  def self.read!(file : String) : TokenMap
+  def self.read!(file : String) : OldTokenMap
     new(file, mode: 2)
   end
 
-  def self.read(file : String) : TokenMap
+  def self.read(file : String) : OldTokenMap
     new(file, mode: 1)
   end
 
   # load file if exists, else raising exception
-  def self.load!(name : String) : TokenMap
+  def self.load!(name : String) : OldTokenMap
     new(path_for(name), mode: 2)
   end
 
   # load file if exists, else create a new one
-  def self.load(name : String) : TokenMap
+  def self.load(name : String) : OldTokenMap
     new(path_for(name), mode: 1)
   end
 
   # create new file from fresh
-  def self.init(name : String) : TokenMap
+  def self.init(name : String) : OldTokenMap
     new(path_for(name), mode: 0)
   end
 
-  CACHE = {} of String => TokenMap
+  CACHE = {} of String => OldTokenMap
 
-  def self.preload!(name : String) : TokenMap
+  def self.preload!(name : String) : OldTokenMap
     CACHE[name] ||= load!(name)
   end
 
-  def self.preload(name : String) : TokenMap
+  def self.preload(name : String) : OldTokenMap
     CACHE[name] ||= load(name)
   end
 
@@ -209,18 +209,18 @@ class TokenMap
     CACHE.each_value { |map| map.save! }
   end
 
-  class_getter zh_author : TokenMap { preload("indexes/tokens/zh_author") }
-  class_getter vi_author : TokenMap { preload("indexes/tokens/vi_author") }
+  class_getter zh_author : OldTokenMap { preload("indexes/tokens/zh_author") }
+  class_getter vi_author : OldTokenMap { preload("indexes/tokens/vi_author") }
 
-  class_getter zh_title : TokenMap { preload("indexes/tokens/zh_title") }
-  class_getter vi_title : TokenMap { preload("indexes/tokens/vi_title") }
-  class_getter hv_title : TokenMap { preload("indexes/tokens/hv_title") }
+  class_getter zh_title : OldTokenMap { preload("indexes/tokens/zh_title") }
+  class_getter vi_title : OldTokenMap { preload("indexes/tokens/vi_title") }
+  class_getter hv_title : OldTokenMap { preload("indexes/tokens/hv_title") }
 
-  class_getter vi_genres : TokenMap { preload("indexes/tokens/vi_genres") }
-  class_getter vi_tags : TokenMap { preload("indexes/tokens/vi_tags") }
+  class_getter vi_genres : OldTokenMap { preload("indexes/tokens/vi_genres") }
+  class_getter vi_tags : OldTokenMap { preload("indexes/tokens/vi_tags") }
 end
 
-# test = TokenMap.new("tmp/token_map.txt")
+# test = OldTokenMap.new("tmp/token_map.txt")
 
 # test.upsert("a", ["a", "b", "c"])
 # test.upsert("b", ["b", "c"])
