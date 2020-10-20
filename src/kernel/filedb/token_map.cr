@@ -1,4 +1,4 @@
-require "./_lookup"
+require "./_filedb"
 
 # mapping key to a list of tokens
 class TokenMap

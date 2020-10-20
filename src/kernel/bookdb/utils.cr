@@ -1,6 +1,6 @@
 require "../../engine"
 require "../../_utils/text_util"
-require "../lookup/*"
+require "../filedb/*"
 
 module BookDB::Utils
   extend self

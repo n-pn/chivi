@@ -1,6 +1,6 @@
-require "./lookup/*"
+require "./filedb/*"
 
-module Lookup
+module FileDB
   extend self
 
   # class_getter book_slug : LabelMap { preload("indexes/book_slug") }

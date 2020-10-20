@@ -1,4 +1,5 @@
-require "./lookup"
+require "./filedb/label_map"
+require "./filedb/token_map"
 require "./models/user_info"
 
 module UserDB

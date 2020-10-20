@@ -1,5 +1,5 @@
 require "../../src/kernel/models/book_info"
-require "../../src/kernel/lookup/value_set"
+require "../../src/kernel/filedb/value_set"
 
 def split_chars(input)
   input.split("").each do |char|

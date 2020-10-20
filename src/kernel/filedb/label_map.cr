@@ -1,4 +1,4 @@
-require "./_lookup"
+require "./_filedb"
 
 class LabelMap
   include FlatFile(String)

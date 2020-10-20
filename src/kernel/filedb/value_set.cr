@@ -1,4 +1,4 @@
-require "./_lookup"
+require "./_filedb"
 
 class ValueSet
   LABEL = "value_set"
