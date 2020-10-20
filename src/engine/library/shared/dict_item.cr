@@ -1,4 +1,4 @@
-class Libcv::DictItem
+class Engine::DictItem
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 

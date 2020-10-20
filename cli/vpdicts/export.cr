@@ -1,7 +1,7 @@
 require "./utils/common"
 require "./utils/clavis"
 
-require "../../src/libcv"
+require "../../src/engine"
 require "../../src/kernel/lookup/value_set"
 
 puts "\n[Load deps]".colorize.cyan.bold
@@ -31,14 +31,14 @@ end
 puts "\n[Export generic]".colorize.cyan.bold
 
 inp_generic = Clavis.load("autogen/output/generic.txt", true)
-out_generic = Libcv::BaseDict.load("core/generic", mode: 0)
+out_generic = Engine::BaseDict.load("core/generic", mode: 0)
 
 inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if should_skip?(key)
 
-    unless Libcv.hanviet(key).vi_text.downcase == vals.first.downcase
-      next if Libcv.cv_plain(key, "combine").vi_text == vals.first
+    unless Engine.hanviet(key).vi_text.downcase == vals.first.downcase
+      next if Engine.cv_plain(key, "combine").vi_text == vals.first
     end
   end
 
@@ -47,7 +47,7 @@ end
 
 puts "- load hanviet".colorize.cyan.bold
 
-Libcv::Library.hanviet.each do |node|
+Engine::Library.hanviet.each do |node|
   next if node.key.size > 1
   out_generic.upsert(node.key, freeze: false) do |item|
     item.vals = node.vals if item.vals.empty?
@@ -59,14 +59,14 @@ out_generic.save!
 puts "\n[Export suggest]".colorize.cyan.bold
 
 inp_suggest = Clavis.load("autogen/output/suggest.txt", true)
-out_suggest = Libcv::BaseDict.load("core/suggest", 0)
+out_suggest = Engine::BaseDict.load("core/suggest", 0)
 
 inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if key =~ /[的了是]/
     next if should_skip?(key)
-    next if Libcv.hanviet(key, false).vi_text == vals.first
-    next if Libcv.cv_plain(key, "combine").vi_text.downcase == vals.first.downcase
+    next if Engine.hanviet(key, false).vi_text == vals.first
+    next if Engine.cv_plain(key, "combine").vi_text.downcase == vals.first.downcase
   end
 
   out_suggest.upsert(key, vals)
@@ -76,7 +76,7 @@ out_suggest.save!
 puts "\n[Export combine]".colorize.cyan.bold
 
 inp_combine = Clavis.load("autogen/output/combine.txt", true)
-out_combine = Libcv::BaseDict.load("uniq/_tonghop", 0)
+out_combine = Engine::BaseDict.load("uniq/_tonghop", 0)
 
 inp_combine.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
@@ -90,7 +90,7 @@ out_combine.save!
 puts "\n[Export recycle]".colorize.cyan.bold
 
 inp_recycle = Clavis.load("autogen/output/recycle.txt", true)
-out_recycle = Libcv::BaseDict.load("salvation", 0)
+out_recycle = Engine::BaseDict.load("salvation", 0)
 
 inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)

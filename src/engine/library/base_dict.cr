@@ -5,7 +5,7 @@ require "../../_utils/file_util"
 require "./base_dict/dict_trie"
 
 # TODO: rename?
-class Libcv::BaseDict
+class Engine::BaseDict
   LABEL = "base_dict"
 
   getter file : String

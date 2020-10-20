@@ -40,7 +40,7 @@ module ChapDB
   #     zh_lines = SeedText.fetch!(host, bsid, csid, keep_html: false)
   #   end
 
-  #   chap.data = Libcv.cv_mixed(zh_lines, bdic, udic).map(&.to_s).join("\n")
+  #   chap.data = Engine.cv_mixed(zh_lines, bdic, udic).map(&.to_s).join("\n")
   #   chap.save!
   # end
 end

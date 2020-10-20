@@ -48,7 +48,7 @@ module Kernel
     end
 
     chtext.tap do |x|
-      x.cv_text = Libcv.cv_mixed(zh_data, bhash).map(&.to_s).join("\n")
+      x.cv_text = Engine.cv_mixed(zh_data, bhash).map(&.to_s).join("\n")
       x.cv_time = Time.utc.to_unix_ms
     end
   end

@@ -13,7 +13,7 @@ def cleanup(input : String)
     .join("; ")
 end
 
-out_dict = Libcv::BaseDict.load("trungviet", mode: 0)
+out_dict = Engine::BaseDict.load("trungviet", mode: 0)
 out_dict.load!(Utils.inp_path("initial/lacviet-mtd.txt"), legacy: true)
 
 hv_chars = Clavis.load("hanviet/lacviet-chars.txt", false)

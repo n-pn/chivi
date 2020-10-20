@@ -1,6 +1,6 @@
 require "../../src/library/base_dict"
 
-test = Libcv::BaseDict.new "spec/fixtures/test.txt"
+test = Engine::BaseDict.new "spec/fixtures/test.txt"
 
 print "\nset abc to abc: ", test.set("abc", "abc")
 

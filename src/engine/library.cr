@@ -1,7 +1,7 @@
 require "./library/base_dict"
 require "./library/user_dict"
 
-module Libcv::Library
+module Engine::Library
   extend self
 
   # DIR = File.join("var", "libcv")

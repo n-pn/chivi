@@ -7,7 +7,7 @@ require "./shared/dict_item"
 require "./shared/dict_trie"
 
 # TODO: rename?
-class Libcv::Lexicon
+class Engine::Lexicon
   LABEL = "lexicon"
 
   getter file : String

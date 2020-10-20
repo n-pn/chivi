@@ -5,7 +5,7 @@ module Server
 
   post "/_dicts/lookup" do |env|
     dname = env.params.query.fetch("dname", "dich-nhanh")
-    dicts = Libcv::Library.for_convert(dname)
+    dicts = Engine::Library.for_convert(dname)
 
     input = env.params.json["input"].as(String)
     chars = input.chars
@@ -22,18 +22,18 @@ module Server
         end
       end
 
-      Libcv::Library.trungviet.scan(chars, idx) do |item|
+      Engine::Library.trungviet.scan(chars, idx) do |item|
         entry[item.key.size]["trungviet"] = item.vals
       end
 
-      Libcv::Library.cc_cedict.scan(chars, idx) do |item|
+      Engine::Library.cc_cedict.scan(chars, idx) do |item|
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
       entry.to_a.sort_by(&.[0].-)
     end
 
-    hanviet = Libcv.hanviet(input, apply_cap: false).to_s
+    hanviet = Engine.hanviet(input, apply_cap: false).to_s
     {hanviet: hanviet, entries: entries}.to_json(env.response)
   end
 
@@ -45,14 +45,14 @@ module Server
     dicts = env.params.query.fetch("dicts", DICTS).split("|")
 
     entries = dicts.map do |dname|
-      Libcv::Library.load_dict(dname).find(input)
+      Engine::Library.load_dict(dname).find(input)
     end
 
-    suggest = Libcv::Library.suggest.dict.find(input).try(&.vals)
+    suggest = Engine::Library.suggest.dict.find(input).try(&.vals)
     {
       entries: entries,
-      hanviet: Libcv.hanviet(input, false).vi_text,
-      binh_am: Libcv.binh_am(input, false).vi_text,
+      hanviet: Engine.hanviet(input, false).vi_text,
+      binh_am: Engine.binh_am(input, false).vi_text,
       suggest: suggest || [] of String,
     }.to_json(env.response)
   end
@@ -72,7 +72,7 @@ module Server
       power = 0
     end
 
-    Libcv::Library.upsert(dic, uname, power, key, val)
+    Engine::Library.upsert(dic, uname, power, key, val)
     {_stt: "ok", _msg: "accepted"}.to_json(env.response)
   rescue err
     {_stt: "err", _msg: err.message}.to_json(env.response)

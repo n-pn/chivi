@@ -1,6 +1,6 @@
 require "./dict_item"
 
-class Libcv::DictTrie
+class Engine::DictTrie
   property item : DictItem? = nil
 
   alias Trie = Hash(Char, DictTrie)

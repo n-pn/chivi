@@ -7,7 +7,7 @@ require "./base_dict"
 require "./user_dict/*"
 
 # dict modification log
-class Libcv::UserDict
+class Engine::UserDict
   LABEL = "user_dict"
 
   getter file : String

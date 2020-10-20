@@ -4,7 +4,7 @@ require "json"
 require "./utils/common"
 require "./utils/clavis"
 
-require "../../src/libcv/library"
+require "../../src/engine/library"
 require "../../src/kernel/lookup"
 
 puts "\n[Load counters]".colorize.cyan.bold

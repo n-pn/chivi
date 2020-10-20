@@ -1,14 +1,14 @@
 require "./utils/common"
 require "./utils/clavis"
 
-require "../../src/libcv/library"
+require "../../src/engine/library"
 require "../../src/kernel/lookup/value_set"
 
 CRUCIAL = ValueSet.read!(Utils.inp_path("autogen/crucial-chars.txt"))
 HANZIDB = ValueSet.read!(Utils.inp_path("initial/hanzidb.txt"))
 
-TRADSIM = Libcv::BaseDict.tradsim
-BINH_AM = Libcv::BaseDict.binh_am
+TRADSIM = Engine::BaseDict.tradsim
+BINH_AM = Engine::BaseDict.binh_am
 
 def should_keep_hanviet?(input : String)
   return true if CRUCIAL.includes?(input)
@@ -21,7 +21,7 @@ def should_keep_hanviet?(input : String)
   true
 end
 
-def merge(dict : Libcv::BaseDict, file : String, mode = :old_first)
+def merge(dict : Engine::BaseDict, file : String, mode = :old_first)
   input = Clavis.load(file)
 
   input.each do |key, vals|
@@ -56,7 +56,7 @@ def merge(dict : Libcv::BaseDict, file : String, mode = :old_first)
   dict
 end
 
-def transform_from_trad!(dict : Libcv::BaseDict)
+def transform_from_trad!(dict : Engine::BaseDict)
   HANZIDB.each do |key|
     next unless trad = TRADSIM.find(key)
     next unless item = dict.find(key)
@@ -95,7 +95,7 @@ def save_dict!(dict)
   dict.save!
 end
 
-hanviet = Libcv::BaseDict.load("core/hanviet", mode: 0)
+hanviet = Engine::BaseDict.load("core/hanviet", mode: 0)
 
 hanviet = merge(hanviet, "localqt/hanviet.txt", mode: :old_first)
 hanviet = merge(hanviet, "hanviet/checked-chars.txt", mode: :old_first)

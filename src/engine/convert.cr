@@ -5,7 +5,7 @@ require "../_utils/chap_util"
 require "./library/base_dict"
 require "./convert/*"
 
-module Libcv::Convert
+module Engine::Convert
   extend self
 
   def translit(input : String, dict : BaseDict, apply_cap = fase)

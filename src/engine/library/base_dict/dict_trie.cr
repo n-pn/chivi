@@ -1,4 +1,4 @@
-class Libcv::DictTrie
+class Engine::DictTrie
   SEP_0 = "ǁ"
   SEP_1 = "¦"
 

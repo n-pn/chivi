@@ -1,4 +1,4 @@
-require "../../libcv"
+require "../../engine"
 require "../models/chap_info"
 
 module ChapDB::Utils
@@ -19,6 +19,6 @@ module ChapDB::Utils
 
   def cv_title(input : String, dname : String)
     return input if input.empty?
-    Libcv.cv_title(input, dname).vi_text
+    Engine.cv_title(input, dname).vi_text
   end
 end

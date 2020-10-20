@@ -1,4 +1,4 @@
-class Libcv::DictEdit
+class Engine::DictEdit
   EPOCH = Time.utc(2020, 1, 1)
   SEP_0 = "ǁ"
 

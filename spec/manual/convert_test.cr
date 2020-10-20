@@ -1,5 +1,5 @@
-require "../../src/libcv/library"
-require "../../src/libcv/convert"
+require "../../src/engine/library"
+require "../../src/engine/convert"
 
 text = "第十三集 龙章凤仪 第一章 屠龙之术
 贾文和一个玩阴谋的，突然间客串了一把热血刺客，效果立竿见影。一万个道理都未必能说服的廖群玉，被一把错刀给说得心服口服，当即赶到宋国馆邸，通过官方渠道传讯临安，以自己的身家性命作保，顺利说服贾师宪，由其举荐宝钞局主事，工部员外郎程宗扬为唐国正使，通问昭南事宜。
@@ -12,13 +12,13 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-DICTS = Libcv::Library.for_convert("tong-hop")
+DICTS = Engine::Library.for_convert("tong-hop")
 
 def translate(input : String, title = false)
   if title
-    Libcv::Convert.cv_title(input, *DICTS).vi_text
+    Engine::Convert.cv_title(input, *DICTS).vi_text
   else
-    Libcv::Convert.cv_plain(input, *DICTS).vi_text
+    Engine::Convert.cv_plain(input, *DICTS).vi_text
   end
 end
 
@@ -36,13 +36,13 @@ puts translate("1第一章")
 puts translate("一. 屠龙之术")
 puts translate("朥负已定")
 
-puts Libcv::Convert.cv_title("1, 屠龙之术", *DICTS)
+puts Engine::Convert.cv_title("1, 屠龙之术", *DICTS)
 
 puts translate("第三千七百九十八章 历史的本质就是套娃", true)
-puts Libcv::Convert.cv_plain("能让我坐在这里无病呻－吟", *DICTS)
-puts Libcv::Convert.cv_plain("无病呻－吟", *DICTS)
+puts Engine::Convert.cv_plain("能让我坐在这里无病呻－吟", *DICTS)
+puts Engine::Convert.cv_plain("无病呻－吟", *DICTS)
 
-generic = Libcv::Library.generic.dict
+generic = Engine::Library.generic.dict
 puts generic.find("无病呻－吟")
 generic.upsert("无病呻－吟", "không ốm mà rên", freeze: true)
 generic.scan("无病呻－吟".chars, from: 0) do |node|

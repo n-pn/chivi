@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../../src/libcv/library"
+require "../../../src/engine/library"
 require "../../../src/kernel/lookup/value_set"
 
 module Utils
@@ -36,7 +36,7 @@ module Utils
     dict.tap(&.load_legacy!(file))
   end
 
-  def convert(dict : Libcv::BaseDict, input : String, sep = "")
+  def convert(dict : Engine::BaseDict, input : String, sep = "")
     res = [] of String
 
     chars = input.chars

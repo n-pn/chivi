@@ -1,4 +1,4 @@
-require "../../libcv"
+require "../../engine"
 require "../../_utils/text_util"
 require "../lookup/*"
 
@@ -6,11 +6,11 @@ module BookDB::Utils
   extend self
 
   def cv_intro(lines : Array(String), dname : String)
-    Libcv.cv_plain(lines, dname).map(&.vi_text).join("\n")
+    Engine.cv_plain(lines, dname).map(&.vi_text).join("\n")
   end
 
   def hanviet(label : String, titleize = true)
-    output = Libcv.hanviet(label, apply_cap: titleize).vi_text
+    output = Engine.hanviet(label, apply_cap: titleize).vi_text
     output = TextUtil.titleize(output) if titleize
     output
   end

@@ -95,7 +95,7 @@ class MapZhwenpg
 
     if (intro = rows[4]?) && info.zh_intro.empty?
       intro_text = TextUtil.split_html(intro.inner_text("\n"))
-      # intro_text = Libcv.tradsim(intro_text)
+      # intro_text = Engine.tradsim(intro_text)
       BookDB.set_intro(info, intro_text.join("\n"), force: false)
     end
 

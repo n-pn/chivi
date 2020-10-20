@@ -1,6 +1,6 @@
-require "./libcv/*"
+require "./engine/*"
 
-module Libcv
+module Engine
   extend self
 
   def tradsim(input : String)

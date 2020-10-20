@@ -1,5 +1,5 @@
 require "file_utils"
-require "../src/libcv/library"
+require "../src/engine/library"
 
 INP = File.join("var", "libcv", ".backup", "lexicon")
 OUT = File.join("var", "libcv", "lexicon")
@@ -16,16 +16,16 @@ def copy_files(dir)
 end
 
 def update_dicts(type)
-  Libcv::UserDict.ext = type
+  Engine::UserDict.ext = type
 
-  Libcv::Library.generic.save!
-  Libcv::Library.suggest.save!
-  Libcv::Library.hanviet.save!
+  Engine::Library.generic.save!
+  Engine::Library.suggest.save!
+  Engine::Library.hanviet.save!
 
   Dir.glob("#{OUT}/uniq/*.#{type}").each do |file|
     name = File.basename(file, ".#{type}")
     next if name.includes?(".")
-    Libcv::UserDict.load!("uniq/#{name}").save!
+    Engine::UserDict.load!("uniq/#{name}").save!
   rescue err
     puts err
     puts file
