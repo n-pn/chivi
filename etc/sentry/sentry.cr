@@ -68,7 +68,7 @@ module Sentry
     @build : String?
 
     def build
-      @build ||= "crystal build ./src/webcv.cr"
+      @build ||= "crystal build ./src/server.cr -o ./bin/server"
     end
 
     def build=(new_command : String)
@@ -83,7 +83,7 @@ module Sentry
     @run : String?
 
     def run
-      @run ||= "./webcv"
+      @run ||= "./bin/server"
     end
 
     def run=(new_command : String)

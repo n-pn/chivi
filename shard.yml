@@ -6,7 +6,7 @@ authors:
 
 targets:
   server:
-    main: src/webcv.cr
+    main: src/server.cr
 
   map_yousuu:
     main: cli/serials/map_yousuu.cr
