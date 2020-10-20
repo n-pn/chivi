@@ -1,8 +1,8 @@
 require "file_utils"
 require "option_parser"
 
-require "../../src/appcv/parser/seed_info"
-require "../../src/appcv/lookup"
+require "../../src/kernel/parser/seed_info"
+require "../../src/kernel/lookup"
 
 SEEDS = {
   "hetushu", "jx_la", "rengshu",

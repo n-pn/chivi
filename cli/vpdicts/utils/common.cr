@@ -1,7 +1,7 @@
 require "file_utils"
 
 require "../../../src/libcv/library"
-require "../../../src/appcv/lookup/value_set"
+require "../../../src/kernel/lookup/value_set"
 
 module Utils
   extend self

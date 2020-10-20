@@ -1,6 +1,6 @@
 require "colorize"
 
-require "../../src/appcv/parser/seed_text.cr"
+require "../../src/kernel/parser/seed_text.cr"
 
 def fetch_chap(seed : String, sbid : String, scid : String)
   puts "\n[ #{seed}/#{sbid}/#{scid} ]\n".colorize(:yellow)

@@ -2,7 +2,7 @@ require "kemal"
 require "kemal-session"
 
 require "../libcv"
-require "../appcv"
+require "../kernel"
 
 module Server::Utils
   extend self

@@ -2,8 +2,8 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/appcv/models/chap_list"
-require "../../src/appcv/parser/seed_text"
+require "../../src/kernel/models/chap_list"
+require "../../src/kernel/parser/seed_text"
 
 def fetch_text(file : String, site : String, bsid : String, chap : ZhChap, label : String) : Void
   return if File.exists?(file)

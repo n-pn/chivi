@@ -1,5 +1,5 @@
-require "../../src/appcv/bookdb"
-require "../../src/appcv/chapdb"
+require "../../src/kernel/bookdb"
+require "../../src/kernel/chapdb"
 
 SITES = {
   "hetushu", "jx_la", "rengshu",

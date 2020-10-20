@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../src/appcv/parser/seed_info.cr"
+require "../../src/kernel/parser/seed_info.cr"
 
 def fetch_info(info, sbid, expiry = Time.utc) : Void
   puts "\n[ #{info} - #{sbid} ]\n".colorize(:yellow)

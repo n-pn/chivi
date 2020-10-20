@@ -1,7 +1,7 @@
 require "file_utils"
-require "./appcv/*"
+require "./kernel/*"
 
-module Appcv
+module Kernel
   extend self
 
   def load_list(info : BookInfo, seed : String, mode = 0) : Tuple(ChapList, Int64)?

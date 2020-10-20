@@ -98,7 +98,7 @@ module Server
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    unless fetched = Appcv.load_list(info, seed, mode: mode)
+    unless fetched = Kernel.load_list(info, seed, mode: mode)
       halt env, status_code: 404, response: Utils.json_error("Seed not found!")
     end
 
@@ -131,7 +131,7 @@ module Server
     # BookDB.inc_counter(info, read: true)
 
     seed = env.params.url["seed"]
-    unless fetched = Appcv.load_list(info, seed, mode: 0)
+    unless fetched = Kernel.load_list(info, seed, mode: 0)
       halt env, status_code: 404, response: Utils.json_error("Seed not found!")
     end
 
@@ -147,7 +147,7 @@ module Server
     next_chap = list.chaps[index + 1] if index < list.size - 1
 
     mode = env.params.query.fetch("mode", "0").try(&.to_i?) || 0
-    chap = Appcv.get_text(info.ubid, seed, list.sbid, scid, mode: mode)
+    chap = Kernel.get_text(info.ubid, seed, list.sbid, scid, mode: mode)
 
     {
       cvdata: chap.cv_text,

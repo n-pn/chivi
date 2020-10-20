@@ -2,7 +2,7 @@ require "./utils/common"
 require "./utils/clavis"
 
 require "../../src/libcv"
-require "../../src/appcv/lookup/value_set"
+require "../../src/kernel/lookup/value_set"
 
 puts "\n[Load deps]".colorize.cyan.bold
 

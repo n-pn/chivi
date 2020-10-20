@@ -2,7 +2,7 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../src/appcv/models/book_info"
+require "../src/kernel/models/book_info"
 
 count = 0
 BookInfo.load_all!.each do |info|

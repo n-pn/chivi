@@ -1,4 +1,4 @@
-require "../../src/appcv/bookdb"
+require "../../src/kernel/bookdb"
 
 def should_keep?(source : YsSerial)
   return false if source.title.empty? || source.author.empty?

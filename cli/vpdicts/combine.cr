@@ -5,7 +5,7 @@ require "./utils/common"
 require "./utils/clavis"
 
 require "../../src/libcv/library"
-require "../../src/appcv/lookup"
+require "../../src/kernel/lookup"
 
 puts "\n[Load counters]".colorize.cyan.bold
 

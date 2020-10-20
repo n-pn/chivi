@@ -7,8 +7,8 @@ require "../../src/_utils/file_util"
 require "../../src/_utils/http_util"
 require "../../src/_utils/time_util"
 
-require "../../src/appcv/bookdb"
-require "../../src/appcv/chapdb"
+require "../../src/kernel/bookdb"
+require "../../src/kernel/chapdb"
 
 class MapZhwenpg
   DIR = File.join("_db", "inits", "seeds", "zhwenpg", "_pages")
