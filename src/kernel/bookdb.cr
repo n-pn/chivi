@@ -24,7 +24,7 @@ module BookDB
   end
 
   def blacklist?(title : String)
-    ValueSet.skip_titles.includes?(title)
+    OldValueSet.skip_titles.includes?(title)
   end
 
   def whitelist?(info : BookInfo)

@@ -55,7 +55,7 @@ module BookDB::Utils
       genres.split("¦")
     else
       if !genre.blank? || genre.includes?("其他")
-        ValueSet.skip_genres.upsert!(genre)
+        OldValueSet.skip_genres.upsert!(genre)
       end
 
       [] of String

@@ -1,4 +1,4 @@
-require "./_filedb"
+require "./_old_filedb"
 
 # mapping key to a list of tokens
 class OldTokenMap

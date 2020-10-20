@@ -13,9 +13,9 @@ puts count
 
 # require "../src/_utils/text_utils"
 
-# require "../src/filedb/label_map"
-# require "../src/filedb/token_map"
-# require "../src/filedb/value_set"
+# require "../src/filedb/old_label_map"
+# require "../src/filedb/old_token_map"
+# require "../src/filedb/old_value_set"
 
 # require "../src/models/book_info"
 # require "../src/models/chap_list"

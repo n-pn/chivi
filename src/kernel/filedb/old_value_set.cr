@@ -1,6 +1,6 @@
-require "./_filedb"
+require "./_old_filedb"
 
-class ValueSet
+class OldValueSet
   LABEL = "value_set"
 
   getter file : String
@@ -72,36 +72,36 @@ class ValueSet
   end
 
   # read random file, raising FileNotFound if not existed
-  def self.read!(file : String) : ValueSet
+  def self.read!(file : String) : OldValueSet
     new(file, mode: 2)
   end
 
-  def self.read(file : String) : ValueSet
+  def self.read(file : String) : OldValueSet
     new(file, mode: 1)
   end
 
   # load file if exists, else raising exception
-  def self.load!(name : String) : ValueSet
+  def self.load!(name : String) : OldValueSet
     new(path_for(name), mode: 2)
   end
 
   # load file if exists, else return nil
-  def self.load(name : String) : ValueSet?
+  def self.load(name : String) : OldValueSet?
     new(path_for(name), mode: 1)
   end
 
   # create new file from fresh
-  def self.init(name : String) : ValueSet
+  def self.init(name : String) : OldValueSet
     new(path_for(name), mode: 0)
   end
 
-  CACHE = {} of String => ValueSet
+  CACHE = {} of String => OldValueSet
 
-  def self.preload!(name : String) : ValueSet
+  def self.preload!(name : String) : OldValueSet
     CACHE[name] ||= load!(name)
   end
 
-  def self.preload(name : String) : ValueSet
+  def self.preload(name : String) : OldValueSet
     CACHE[name] ||= load(name)
   end
 
@@ -109,6 +109,6 @@ class ValueSet
     CACHE.each_value { |item| item.save! }
   end
 
-  class_getter skip_titles : ValueSet { preload("_import/skip_titles") }
-  class_getter skip_genres : ValueSet { preload("_import/skip_genres") }
+  class_getter skip_titles : OldValueSet { preload("_import/skip_titles") }
+  class_getter skip_genres : OldValueSet { preload("_import/skip_genres") }
 end

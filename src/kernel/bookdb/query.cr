@@ -1,6 +1,6 @@
 require "../../_utils/text_util"
-require "../filedb/token_map"
-require "../filedb/order_map"
+require "../filedb/old_token_map"
+require "../filedb/old_order_map"
 require "../models/book_info"
 
 # TODO: change class to module?
