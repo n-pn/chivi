@@ -1,8 +1,8 @@
 require "file_utils"
 require "crypto/bcrypt/password"
 
-require "../../_utils/json_data"
-require "../../_utils/uuid_util"
+require "../_utils/json_data"
+require "../_utils/uuid_util"
 
 class UserInfo
   include JsonData

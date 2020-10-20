@@ -1,6 +1,6 @@
 require "./filedb/old_label_map"
 require "./filedb/old_token_map"
-require "./models/user_info"
+require "./user_info"
 
 module UserDB
   extend self

@@ -1,8 +1,6 @@
 require "colorize"
 require "file_utils"
 
-require "../../_utils/file_util"
-
 class ChapText
   # class methods
 

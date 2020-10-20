@@ -1,8 +1,10 @@
 require "colorize"
 
-require "../../_utils/text_util"
-require "../../_utils/chap_util"
-require "../../_utils/json_data"
+require "../_utils/text_util"
+require "../_utils/chap_util"
+require "../_utils/json_data"
+
+require "../engine"
 
 class ChapInfo
   include JsonData
@@ -52,5 +54,21 @@ class ChapInfo
     self.zh_label = other.zh_label
 
     self.url_slug = other.url_slug
+  end
+
+  def translate!(dname : String, force = false) : Nil
+    if force || @vi_label.empty?
+      @vi_label = cv_title(@zh_label, dname)
+    end
+
+    if force || @vi_title.empty?
+      @vi_title = cv_title(@zh_title, dname)
+      set_slug(@vi_title)
+    end
+  end
+
+  private def cv_title(input : String, dname : String)
+    return input if input.empty?
+    Engine.cv_title(input, dname).vi_text
   end
 end

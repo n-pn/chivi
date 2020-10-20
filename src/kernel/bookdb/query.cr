@@ -1,7 +1,7 @@
 require "../../_utils/text_util"
 require "../filedb/old_token_map"
 require "../filedb/old_order_map"
-require "../models/book_info"
+require "../book_info"
 
 # TODO: change class to module?
 require "json"

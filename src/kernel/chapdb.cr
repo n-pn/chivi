@@ -1,12 +1,11 @@
 require "json"
 require "colorize"
 
-require "./models/chap_list"
-require "./models/chap_text"
+require "./chap_list"
+require "./chap_text"
+
 require "./source/seed_info"
 require "./source/seed_text"
-
-require "./chapdb/*"
 
 module ChapDB
   extend self
@@ -19,8 +18,11 @@ module ChapDB
   end
 
   def translate_list(chlist : ChapList, force = false)
-    chlist.update_each { |chap| Utils.convert(chap, chlist.ubid, force: force) }
-    chlist
+    chlist.tap do |x|
+      x.update_each do |chap|
+        chap.tap &.translate!(chlist.ubid, force: force)
+      end
+    end
   end
 
   # # modes:

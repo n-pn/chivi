@@ -5,7 +5,6 @@ require "./source/ys_serial"
 require "./source/seed_info"
 
 require "./bookdb/*"
-require "./chapdb/utils"
 
 module BookDB
   extend self
@@ -103,7 +102,7 @@ module BookDB
   end
 
   def update_seed(info : BookInfo, seed_name : String, latest : ChapInfo, mftime : Int64)
-    latest = ChapDB::Utils.convert(latest, info.ubid)
+    latest.translate!(info.ubid, force: false)
     info.set_seed_latest(seed_name, latest, mftime)
     mftime = info.seed_mftimes[seed_name]
     set_mftime(info, mftime)

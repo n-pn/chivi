@@ -7,7 +7,7 @@ require "../../_utils/http_util"
 require "../../_utils/file_util"
 require "../../_utils/time_util"
 
-require "../models/chap_info"
+require "../chap_info"
 
 class SeedInfo
   getter seed : String
