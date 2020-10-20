@@ -1,8 +1,8 @@
 require "json"
 require "colorize"
 
-require "./parser/ys_serial"
-require "./parser/seed_info"
+require "./source/ys_serial"
+require "./source/seed_info"
 
 require "./bookdb/*"
 require "./chapdb/utils"

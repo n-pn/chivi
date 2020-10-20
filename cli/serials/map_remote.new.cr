@@ -1,7 +1,7 @@
 require "file_utils"
 require "option_parser"
 
-require "../../src/kernel/parser/seed_info"
+require "../../src/kernel/source/seed_info"
 require "../../src/kernel/lookup"
 
 SEEDS = {

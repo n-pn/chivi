@@ -3,8 +3,8 @@ require "colorize"
 
 require "./models/chap_list"
 require "./models/chap_text"
-require "./parser/seed_info"
-require "./parser/seed_text"
+require "./source/seed_info"
+require "./source/seed_text"
 
 require "./chapdb/*"
 

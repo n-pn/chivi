@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../../src/kernel/models/chap_list"
-require "../../src/kernel/parser/seed_text"
+require "../../src/kernel/source/seed_text"
 
 def fetch_text(file : String, site : String, bsid : String, chap : ZhChap, label : String) : Void
   return if File.exists?(file)
