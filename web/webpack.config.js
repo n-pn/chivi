@@ -1,8 +1,10 @@
 const webpack = require('webpack')
-const path = require('path')
-const config = require('sapper/config/webpack.js')
-const pkg = require('./package.json')
+const WebpackModules = require('webpack-modules')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+
+const path = require('path')
+const pkg = require('./package.json')
+const config = require('sapper/config/webpack.js')
 
 const mode = process.env.NODE_ENV
 const dev = mode === 'development'
@@ -61,10 +63,7 @@ module.exports = {
           use: [
             {
               loader: MiniCssExtractPlugin.loader,
-              options: {
-                hmr: dev,
-                reloadAll: true,
-              },
+              options: { hmr: dev, reloadAll: dev },
             },
             'css-loader',
             !dev && {
@@ -128,9 +127,8 @@ module.exports = {
       ],
     },
     mode: process.env.NODE_ENV,
-    performance: {
-      hints: false, // it doesn't matter if server.js is large
-    },
+    plugins: [new WebpackModules()],
+    performance: { hints: false },
   },
 
   serviceworker: {

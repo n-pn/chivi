@@ -18,17 +18,18 @@
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^3.0.0",
     "autoprefixer": "^10.0.0",
-    "css-loader": "^4.3.0",
+    "css-loader": "^5.0.0",
     "cssnano": "^4.1.10",
-    "mini-css-extract-plugin": "^0.11.2",
+    "mini-css-extract-plugin": "^1.0.0",
     "node-sass": "^4.14.1",
     "postcss": "^8.0.9",
     "postcss-loader": "^4.0.2",
     "sapper": "^0.28.0",
     "sass-loader": "^10.0.2",
-    "svelte": "^3.27.0",
+    "svelte": "^3.28.0",
     "svelte-loader-hot": "^0.3.1",
-    "webpack": "^4.44.2"
+    "webpack": "^4.44.2",
+    "webpack-modules": "^1.0.0"
   },
   "browserslist": [
     "> 1%",
