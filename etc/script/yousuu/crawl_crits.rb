@@ -21,7 +21,7 @@ class CritCrawler
       puts("\n[<#{step}-#{page}> queue: #{queue.size}, proxies: #{proxy_size}]".yellow)
       fails = []
 
-      Parallel.each_with_index(queue, in_threads: 20) do |ybid, idx|
+      Parallel.each_with_index(queue, in_threads: 15) do |ybid, idx|
         out_file = review_path(ybid, page)
         next if still_good?(out_file)
         case @http.get!(review_url(ybid, page), out_file)
