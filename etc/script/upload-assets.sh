@@ -1,6 +1,6 @@
 #! /bin/bash
 
-REMOTE=nipin@ssh.nipin.xyz:web/chivi
+REMOTE=deploy@ssh.chivi.xyz:web/chivi
 
 # rsync -azi --exclude '*.tab' "var/libcv/lexicon" "$REMOTE/var/libcv"
 

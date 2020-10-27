@@ -1,20 +1,24 @@
 require "json"
 
 INP = "_db/prime/chdata/texts"
-OUT = "nipin@ssh.nipin.xyz:web/chivi/#{INP}"
+OUT = "deploy@ssh.chivi.xyz:web/chivi/#{INP}"
 
 def upload_texts(seed)
-  list = Dir.glob(File.join(INP, seed))
+  # TODO: skip low rating books
 
-  puts "- #{seed}: #{list.size} entries"
+  inp_dir = File.join(INP, seed)
+  folders = Dir.children(inp_dir)
+  puts "- #{seed}: #{folders.size} folders"
 
-  list.each do |path|
-    puts path
-    `rsync -azi #{path} #{OUT}`
+  folders.each_with_index do |folder, idx|
+    files_count = Dir.children(File.join(inp_dir, folder)).size
+
+    puts "-- <#{idx + 1}/#{folders.size}> [#{seed}/#{folder}]: #{files_count} files"
+    `rsync -aziI --no-p "#{inp_dir}/#{folder}" #{OUT}/#{seed}`
   end
 end
 
 upload_texts("zhwenpg")
-upload_texts("paoshu8")
 upload_texts("hetushu")
+upload_texts("paoshu8")
 # upload_texts("jx_la")

@@ -32,7 +32,7 @@ def update_dicts(type)
   end
 end
 
-system "rsync -azi nipin@ssh.nipin.xyz:web/chivi/var/libcv/lexicon var/libcv/.backup"
+system "rsync -azi deploy@ssh.chivi.xyz:web/chivi/var/libcv/lexicon var/libcv/.backup"
 
 copy_files("core")
 copy_files("uniq")
