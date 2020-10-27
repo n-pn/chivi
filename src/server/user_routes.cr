@@ -2,9 +2,13 @@ require "./route_utils"
 
 module Server
   post "/_signup" do |env|
-    email = env.params.json["email"].as(String).strip
-    uname = env.params.json["uname"].as(String).strip
-    upass = env.params.json["upass"].as(String).strip
+    email = env.params.json["email"]?.as(String?) || ""
+    uname = env.params.json["uname"]?.as(String?) || ""
+    upass = env.params.json["upass"]?.as(String?) || ""
+
+    email = email.strip
+    uname = uname.strip
+    upass = upass.strip
 
     raise "email too short" if email.size < 3
     raise "invalid email format" if email !~ /@/
@@ -19,10 +23,10 @@ module Server
   end
 
   post "/_login" do |env|
-    email = env.params.json["email"].as(String).strip
-    upass = env.params.json["upass"].as(String).strip
+    email = env.params.json["email"]?.as(String?) || ""
+    upass = env.params.json["upass"]?.as(String?) || ""
 
-    user = UserDB.authenticate(email, upass)
+    user = UserDB.authenticate(email.strip, upass.strip)
     Utils.return_user(env, user)
   rescue err
     puts err
