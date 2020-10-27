@@ -1,13 +1,13 @@
 [Unit]
-Description=yousuu-serials
+Description=yousuu-infos
 After=network.target
 StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
 User=nipin
-WorkingDirectory=/home/nipin/web/chivi/
-ExecStart=/home/nipin/.rbenv/shims/ruby etc/script/yousuu/crawl-serials.rb
+WorkingDirectory=/home/nipin/www/chivi/
+ExecStart=/usr/bin/ruby etc/script/yousuu/crawl_infos.rb
 
 [Install]
 WantedBy=multi-user.target

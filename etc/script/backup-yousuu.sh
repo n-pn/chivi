@@ -1,6 +1,6 @@
 #! /bin/bash
 
-REMOTE=deploy@ssh.chivi.xyz:web/chivi
+REMOTE=deploy@ssh.chivi.xyz:www/chivi
 SEEDS_DIR=_db/inits/seeds/yousuu
 SEEDS_SSH="$REMOTE/$SEEDS_DIR"
 
