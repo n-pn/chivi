@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=5
-User=nipin
+User=deploy
 Environment=PORT=5110
 Environment=KEMAL_ENV=production
 WorkingDirectory=/home/deploy/www/chivi
