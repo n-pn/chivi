@@ -2,6 +2,7 @@
 
 CWD=/home/deploy/www/chivi/etc/deploy/configs
 
+sudo rm /etc/nginx/sites-enabled/chivi.conf
 sudo ln -s "$CWD/chivi.nginx.conf" /etc/nginx/sites-enabled/chivi.conf
 
 sudo cp "$CWD/chivi-client.systemd.service" /etc/systemd/system/chivi-client.service
