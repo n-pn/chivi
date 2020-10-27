@@ -1,7 +1,7 @@
 require "json"
 
 INP = "_db/prime/chdata/texts"
-OUT = "deploy@ssh.chivi.xyz:web/chivi/#{INP}"
+OUT = "deploy@ssh.chivi.xyz:www/chivi/#{INP}"
 
 def upload_texts(seed)
   # TODO: skip low rating books
