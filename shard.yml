@@ -9,13 +9,13 @@ targets:
     main: src/server.cr
 
   map_yousuu:
-    main: cli/serials/map_yousuu.cr
+    main: cli/serial/map_yousuu.cr
 
   map_zhwenpg:
-    main: cli/serials/map_zhwenpg.cr
+    main: cli/serial/map_zhwenpg.cr
 
   map_remote:
-    main: cli/serials/map_remote.cr
+    main: cli/serial/map_remote.cr
 
   rebuild_index:
     main: cli/rebuild_index.cr
@@ -27,7 +27,7 @@ targets:
   #   main: cli/cv_chap_list.cr
 
   fetch_covers:
-    main: cli/covers/fetch_covers.cr
+    main: cli/_cover/fetch_covers.cr
 
   migrate_dicts:
     main: cli/migrate_dicts.cr
