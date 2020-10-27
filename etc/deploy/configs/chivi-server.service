@@ -10,8 +10,8 @@ RestartSec=5
 User=nipin
 Environment=PORT=5110
 Environment=KEMAL_ENV=production
-WorkingDirectory=/home/nipin/srv/chivi
-ExecStart=/home/nipin/srv/chivi/bin/chivi
+WorkingDirectory=/home/deploy/www/chivi
+ExecStart=/home/deploy/www/chivi/bin/server
 
 [Install]
 WantedBy=multi-user.target
