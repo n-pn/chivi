@@ -1,168 +1,120 @@
 require "colorize"
 require "../_utils/time_utils"
 
-module MapItem(T)
-  getter key : String
-
-  getter val : T
-  getter alt : String
-
-  getter mtime : Int32
-
-  def initialize(@key, @val, @alt = "", @mtime = TimeUtils.mtime)
-  end
-
-  def rtime
-    TimeUtils.rtime(mtime)
-  end
-
-  abstract def empty? : Bool
-
-  def val_str : String
-    String.build { |io| val_str(io) }
-  end
-
-  def val_str(io : IO) : Nil
-    io << @val
-  end
-
-  def blank?
-    empty? && @alt.empty?
-  end
-
-  def fixed?
-    @mtime > 0
-  end
-
-  def eql?(other : self)
-    @val == other.val && @alt == other.alt
-  end
-
-  def to_s
-    String.build { |io| to_s(io) }
-  end
-
-  def to_s(io : IO) : Nil
-    io << key
-
-    if fixed?
-      io << '\t' << val_str << '\t' << @alt << '\t' << @mtime
-    elsif @alt.empty?
-      io << '\t' << val_str unless empty?
-    else
-      io << '\t' << val_str << '\t' << @alt
-    end
-  end
-
-  def puts(io : IO)
-    to_s(io)
-    io << '\n'
-  end
-
-  def inspect(io : IO) : Nil
-    io << '⟨' << @key
-
-    if fixed?
-      io << '|' << val_str << '|' << @alt << '|' << @mtime
-    elsif @alt.empty?
-      io << '|' << val_str unless empty?
-    else
-      io << '|' << val_str << '|' << @alt
-    end
-
-    io << '⟩'
-  end
-
-  def consume(other : self) : Bool
-    return false if other.mtime < @mtime
-    return false if self.eql?(other)
-
-    @val = other.val
-    @alt = other.alt
-    @mtime = other.mtime
-
-    true
-  end
-end
-
 module FlatMap(T)
-  getter file : String
-  getter items = {} of String => T
+  FLUSH_MAX = 20
 
-  getter ins_count = 0
-  getter upd_count = 0
+  getter file : String
+
+  getter values = {} of String => T
+  getter mtimes = {} of String => Int32
+  getter buffer = Array(String).new(FLUSH_MAX)
 
   delegate size, to: @items
-  delegate fetch, to: @items
   delegate has_key?, to: @items
 
   def initialize(@file : String, preload : Bool = true)
+    @label = "#{File.basename(File.dirname(file))}/#{File.basename(@file, ".tsv")}"
     load!(@file) if preload && File.exists?(@file)
   end
 
-  getter label : String { {{ @type.stringify.underscore }} }
+  def get_value(key : String) : T?
+    @values[key]?
+  end
 
-  def load!(file : String) : Nil
-    load!(file) do |line|
-      upsert(T.from(line))
-    rescue err
-      puts "- <#{label}> [#{File.basename(file)}] error: #{err} on `#{line}`".colorize.red
+  def get_mtime(key : String) : Int32
+    @mtimes[key]? || 0
+  end
+
+  def get_rtime(key : String) : Time
+    TimeUtils.rtime(get_mtime(key))
+  end
+
+  abstract def value_decode(inp : String) : T
+  abstract def value_encode(val : T) : String
+  abstract def value_empty?(value : T) : Bool
+
+  def entry_encode(io : IO, key : String, value : T, mtime : Int32) : Nil
+    io << key << '\t' << value_encode(value)
+    io << '\t' << mtime if mtime > 0
+  end
+
+  abstract def upsert(key : String, value : T, mtime = TimeUtils.mtime)
+
+  def upsert!(key : String, value : T, mtime = TimeUtils.mtime) : Nil
+    return unless upsert(key, value, mtime)
+
+    @buffer << key
+    flush! if @buffer.size >= FLUSH_MAX
+  end
+
+  def flush! : Nil
+    File.open(@file, "a") do |io|
+      @buffer.uniq.each do |key|
+        entry_encode(io, key, @values[key], get_mtime(key))
+        io << '\n'
+      end
     end
+
+    @buffer.clear
+  end
+
+  def reset! : Nil
+    @values.clear
+    @mtimes.clear
+  end
+
+  def inspect(io : IO) : Nil
+    io << '['
+
+    @values.each do |key, value|
+      io << '⟨' << key
+      io << "|" << value_encode(value)
+
+      mtime = get_mtime(key)
+      io << "|" << mtime if mtime > 0
+
+      io << '⟩'
+    end
+
+    io << ']'
   end
 
   def load!(file : String) : Nil
     count = 0
 
-    time = Time.measure do
+    timer = Time.measure do
       File.each_line(file) do |line|
-        line = line.strip
-        next if line.blank?
+        cls = line.split('\t')
 
-        yield line
+        key = cls[0]
+        value = value_decode(cls[1]?)
+        mtime = cls[2]?.try(&.to_i?) || 0
+
+        upsert(key, value, mtime)
         count += 1
+      rescue err
+        puts "- <#{@label}> error: #{err} on `#{line}`".colorize.red
       end
     end
 
-    time = time.total_milliseconds.round.to_i
-    puts "- <#{label}> [#{File.basename(file)}] loaded (lines: #{count}, time: #{time}ms)".colorize.blue
+    time = timer.total_milliseconds.round.to_i
+    puts "- <#{@label}> loaded (lines: #{count}, time: #{time}ms)".colorize.blue
   end
 
-  abstract def upsert(item : T) : T?
-
-  def upsert!(item : T)
-    return unless upsert(item)
-    File.open(@file, "a", &.puts(item))
-  end
-
-  def save!(skip_blank : Bool = true)
+  def save! : Nil
     File.open(file, "w") do |io|
-      @items.each_value do |item|
-        next if skip_blank && item.blank?
-        io.puts(item)
+      @values.each do |key, value|
+        mtime = get_mtime(key)
+        next if mtime == 0 && value_empty?(value)
+
+        entry_encode(io, key, value, mtime)
+        io << '\n'
       end
     end
 
-    puts "- <#{label}> saved (insert: #{@ins_count}, update: #{@upd_count})".colorize.cyan
-
-    # reset counter after save
-    @ins_count = 0
-    @upd_count = 0
+    puts "- <#{@label}> saved (values: #{@values.size}, mtimes: #{@mtimes.size})".colorize.cyan
   rescue err
-    puts "- <#{label}> saving error: #{err}".colorize.red
-  end
-
-  def clear! : Nil
-    @items.clear
-    @ins_count = 0
-    @upd_count = 0
-  end
-
-  abstract def each(&block : T -> _)
-  abstract def reverse_each(&block : T -> _)
-
-  def inspect(io : IO)
-    io << '['
-    each(&.inspect(io))
-    io << ']'
+    puts "- <#{@label}> saves error: #{err}".colorize.red
   end
 end

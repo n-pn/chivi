@@ -1,46 +1,41 @@
 require "./_map_utils"
 
 class ValueMap
-  class Item
-    include MapItem(String)
-
-    def empty? : Bool
-      @val.empty?
-    end
-
-    def self.from(line : String)
-      cls = line.split('\t', 5)
-
-      key = cls[0]
-      val = cls[1]? || ""
-      alt = cls[2]? || ""
-      mtime = cls[3]?.try(&.to_i?) || 0
-
-      new(key, val, alt, mtime)
-    end
-  end
-
-  include FlatMap(Item)
+  include FlatMap(String)
 
   delegate each, to: @items
   delegate reverse_each, to: @items
 
-  def upsert(item : Item) : Item?
-    if old_item = @items[item.key]?
-      return if old_item.consume(item) # skip if outdated or duplicate
-      @upd_count += 1
-      old_item
-    else
-      @ins_count += 1
-      @items[item.key] = item
+  def upsert(key : String, value : String, mtime = TimeUtils.mtime) : String?
+    if old_value = get_value(key)
+      case get_mtime(key) <=> mtime
+      when 1
+        return
+      when 0
+        return if value == old_value
+      end
     end
+
+    @mtimes[key] = mtime if mtime > 0
+    @values[key] = value
+  end
+
+  def value_decode(inp : String?) : String
+    inp || ""
+  end
+
+  def value_encode(value : String) : String
+    value
+  end
+
+  def value_empty?(value : String) : Bool
+    value.empty?
   end
 end
 
-test = ValueMap.new("tmp/value_map.tsv", preload: false)
-test.upsert!(ValueMap::Item.new(key: "a", val: "a"))
-test.upsert!(ValueMap::Item.new(key: "b", val: "b", mtime: 0))
+# test = ValueMap.new("tmp/value_map.tsv", preload: false)
+# test.upsert!("a", "a")
+# test.upsert!("b", "b", mtime: 0)
 
-pp test.items
-
-test.save!
+# pp test
+# test.save!

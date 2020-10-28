@@ -1,4 +1,4 @@
-requrie "./_map_utils"
+require "./_map_utils"
 
 class TokenMap
   class Item
@@ -15,7 +15,7 @@ class TokenMap
       new(key, val, alt, mtime)
     end
 
-    def empty?
+    def empty? : Bool
       @val.empty? || @val.first.empty?
     end
 
@@ -26,9 +26,8 @@ class TokenMap
 
   include FlatMap(Item)
 
-  getter index = Hash(String, Hash(String, Item)).new do |h, k|
-    h[k] = {} of String => Item
-  end
+  alias Index = Hash(String, Item)
+  getter _keys = Hash(String, Index).new { |h, k| h[k] = Index.new }
 
   delegate each, to: @items
   delegate reverse_each, to: @items
@@ -38,14 +37,14 @@ class TokenMap
       old_val = old_item.val
       return if old_item.consume(item) # skip if outdated or duplicate
 
-      (old_val - item.val).each { |val| index[val].delete(item.key) }
-      (item.val - old_val).each { |val| index[val][item.key] = item }
+      (old_val - item.val).each { |val| _keys[val].delete(item.key) }
+      (item.val - old_val).each { |val| _keys[val][item.key] = item }
 
       @upd_count += 1
       old_item
     else
       @ins_count += 1
-      item.val.each { |val| index[val][item.key] = item }
+      item.val.each { |val| _keys[val][item.key] = item }
       @items[item.key] = item
     end
   end
