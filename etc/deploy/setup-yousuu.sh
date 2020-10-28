@@ -1,9 +1,9 @@
 #! /bin/sh
 DIR=/home/deploy/www/chivi/etc/deploy/yousuu
 
-sudo cp "$DIR/yousuu-serials.service" /etc/systemd/system/yousuu-serials.service
-sudo cp "$DIR/yousuu-serials.timer" /etc/systemd/system/yousuu-serials.timer
+sudo cp "$DIR/yousuu-infos.systemd.service" /etc/systemd/system/yousuu-infos.service
+sudo cp "$DIR/yousuu-infos.systemd.timer" /etc/systemd/system/yousuu-infos.timer
 
 sudo systemctl daemon-reload
-sudo systemctl enable yousuu-serials.service
-sudo systemctl enable --now yousuu-serials.timer
+sudo systemctl enable yousuu-infos.service
+sudo systemctl enable --now yousuu-infos.timer
