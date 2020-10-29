@@ -10,11 +10,11 @@ module FlatMap(T)
   getter mtimes = {} of String => Int32
   getter buffer = Array(String).new(FLUSH_MAX)
 
-  delegate size, to: @items
-  delegate has_key?, to: @items
+  delegate size, to: @values
+  delegate has_key?, to: @values
 
   def initialize(@file : String, preload : Bool = true)
-    @label = "#{File.basename(File.dirname(file))}/#{File.basename(@file, ".tsv")}"
+    @label = "#{{{ @type.stringify.underscore }}}: #{file}"
     load!(@file) if preload && File.exists?(@file)
   end
 
@@ -30,8 +30,8 @@ module FlatMap(T)
     TimeUtils.rtime(get_mtime(key))
   end
 
-  abstract def value_decode(inp : String) : T
-  abstract def value_encode(val : T) : String
+  abstract def value_decode(input : String) : T
+  abstract def value_encode(value : T) : String
   abstract def value_empty?(value : T) : Bool
 
   def entry_encode(io : IO, key : String, value : T, mtime : Int32) : Nil
@@ -39,7 +39,7 @@ module FlatMap(T)
     io << '\t' << mtime if mtime > 0
   end
 
-  abstract def upsert(key : String, value : T, mtime = TimeUtils.mtime)
+  abstract def upsert(key : String, value : T, mtime = TimeUtils.mtime) : Bool
 
   def upsert!(key : String, value : T, mtime = TimeUtils.mtime) : Nil
     return unless upsert(key, value, mtime)
@@ -91,7 +91,7 @@ module FlatMap(T)
         cls = line.split('\t')
 
         key = cls[0]
-        value = value_decode(cls[1]?)
+        value = value_decode(cls[1]? || "")
         mtime = cls[2]?.try(&.to_i?) || 0
 
         upsert(key, value, mtime)
@@ -107,7 +107,8 @@ module FlatMap(T)
 
   def save! : Nil
     File.open(file, "w") do |io|
-      @values.each do |key, value|
+      each do |key, value|
+        # pp [key, value]
         mtime = get_mtime(key)
         next if mtime == 0 && value_empty?(value)
 
@@ -116,7 +117,7 @@ module FlatMap(T)
       end
     end
 
-    puts "- <#{@label}> saved (values: #{@values.size}, mtimes: #{@mtimes.size})".colorize.cyan
+    puts "- <#{@label}> saved (value: #{@values.size}, fixed: #{@mtimes.size})".colorize.cyan
   rescue err
     puts "- <#{@label}> saves error: #{err}".colorize.red
   end

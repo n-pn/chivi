@@ -1,53 +1,42 @@
 require "./_map_utils"
 
 class OrderMap
-  class Item
-    include MapItem(Int32)
+  class Node
+    getter key : String
+    property value : Int32
 
-    property prev : Item? = nil
-    property succ : Item? = nil
-
-    def self.from(line : String)
-      cols = line.split('\t')
-
-      key = cols[0]
-      val = cols[1]?.try(&.to_i?) || 0
-      alt = cols[2]? || ""
-      mtime = cols[3]?.try(&.to_i?) || 0
-
-      new(key, val, alt, mtime)
+    def initialize(@key, @value = -1)
     end
 
-    def empty? : Bool
-      @val == 0
-    end
+    property _prev : Node? = nil
+    property _succ : Node? = nil
 
-    def set_prev(other : self) : Nil
-      if node = @prev
-        node.succ = other
-        other.prev = node
+    def set_prev(node : self) : Nil
+      if prev = @_prev
+        prev._succ = node
+        node._prev = prev
       end
 
-      @prev = other
-      other.succ = self
+      @_prev = node
+      node._succ = self
     end
 
-    def set_succ(other : self) : Nil
-      if node = @succ
-        node.prev = other
-        other.succ = node
+    def set_succ(node : self) : Nil
+      if succ = @_succ
+        succ._prev = node
+        node._succ = succ
       end
 
-      @succ = other
-      other.prev = self
+      @_succ = node
+      node._prev = self
     end
 
-    def set_far_prev(other : self) : Nil
-      node = self
+    def set_far_prev(node : self) : Nil
+      prev = self
 
-      while node = node.prev
-        if node.val < other.val
-          return node.set_succ(other)
+      while prev = prev._prev
+        if prev.value < node.value
+          return prev.set_succ(node)
         end
       end
     end
@@ -55,96 +44,102 @@ class OrderMap
     def set_far_succ(other : self) : Nil
       node = self
 
-      while node = node.succ
-        if node.val > other.val
+      while node = node._succ
+        if node.value > other.value
           return node.set_prev(other)
         end
       end
     end
 
     def unlink!
-      @prev.try(&.succ = @succ)
-      @succ.try(&.prev = @prev)
+      @_prev.try(&._succ = @_succ)
+      @_succ.try(&._prev = @_prev)
     end
   end
 
-  include FlatMap(Item)
+  include FlatMap(Int32)
 
-  getter head = Item.new(key: "", val: Int32::MIN, mtime: 0)
-  getter tail = Item.new(key: "", val: Int32::MAX, mtime: 0)
+  getter _order = {} of String => Node
 
-  @min = Int32::MAX
-  @max = Int32::MIN
-  @avg = 0
+  getter _head = Node.new("_head", Int32::MIN)
+  getter _tail = Node.new("_tail", Int32::MAX)
 
-  def upsert(item : Item) : Item?
-    if old_item = @items[item.key]?
-      return unless old_item.consume(item) # skip if outdated or duplicate
+  @_min = 0
+  @_max = 0
+  @_avg = 0
 
-      @upd_count += 1
-      old_item.unlink!
-    else
-      @ins_count += 1
-      @items[item.key] = item
+  def initialize(@file : String, preload : Bool = true)
+    @_head.set_succ(@_tail)
+    super(file, preload)
+  end
 
-      if @items.size == 1
-        @min = item.val
-        @max = item.val
-        @avg = item.val
-        @tail.set_prev(item)
-
-        return item
+  def upsert(key : String, value : Int32, mtime = TimeUtils.mtime) : Bool
+    if old_value = get_value(key)
+      case get_mtime(key) <=> mtime
+      when 1
+        return false
+      when 0
+        return false if value == old_value
+      else
+        if value == old_value
+          @mtimes[key] = mtime
+          return true
+        end
       end
+
+      node = @_order[key]
+      node.value = value
+      node.unlink!
+    else
+      @_order[key] = node = Node.new(key, value)
     end
+
+    @values[key] = value
+    @mtimes[key] = mtime if mtime > 0
 
     # fix order
-    if item.val >= @max
-      @max = item.val
-      @avg = (@max - @min) // 2
-      @tail.set_prev(item)
-    elsif item.val <= @min
-      @min = item.val
-      @avg = (@max - @min) // 2
-      @head.set_succ(item)
-    elsif old_item
-      prev = old_item.prev.not_nil!
-      succ = old_item.succ.not_nil!
-
-      if item.val < prev.val
-        if item.val >= @avg
-          prev.set_far_prev(item)
-        else
-          @head.set_far_succ(item)
-        end
-      elsif item.val > succ.val
-        if item.val <= @avg
-          succ.set_far_succ(item)
-        else
-          @tail.set_far_prev(item)
-        end
-      else
-        prev.set_succ(item)
-      end
-    elsif item.val >= @avg
-      @tail.set_far_prev(item)
+    if @_order.size == 1
+      @_max = value
+      @_min = value
+      @_tail.set_prev(node)
+    elsif value >= @_max
+      @_max = value
+      @_tail.set_prev(node)
+    elsif value <= @_min
+      @_min = value
+      @_head.set_succ(node)
+    elsif @_max &- value < value &- @_min
+      @_tail.set_far_prev(node)
     else
-      @head.set_far_succ(item)
+      @_head.set_far_succ(node)
     end
 
-    item
+    true
   end
 
-  def each(node = @head) : Nil
-    while node = node.succ
-      break if node == @tail
-      yield node
+  def each(node = @_head) : Nil
+    while node = node._succ
+      break if node == @_tail
+      yield ({node.key, node.value})
     end
   end
 
-  def reverse_each(node = @tail) : Nil
-    while node = node.prev
-      break if node == @head
-      yield node
+  def reverse_each(node = @_tail) : Nil
+    while node = node._prev
+      break if node == @_head
+      yield ({node.key, node.value})
     end
+  end
+
+  def value_decode(input : String) : Int32
+    input.to_i? || -1
+  end
+
+  def value_encode(value : Int32) : String
+    value.to_s
+  end
+
+  def value_empty?(value : Int32) : Bool
+    value == -1
   end
 end

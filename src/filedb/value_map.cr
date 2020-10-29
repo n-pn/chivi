@@ -3,22 +3,24 @@ require "./_map_utils"
 class ValueMap
   include FlatMap(String)
 
-  def upsert(key : String, value : String, mtime = TimeUtils.mtime) : String?
+  def upsert(key : String, value : String, mtime = TimeUtils.mtime) : Bool
     if old_value = get_value(key)
       case get_mtime(key) <=> mtime
       when 1
-        return
+        return false
       when 0
-        return if value == old_value
+        return false if value == old_value
       end
     end
 
-    @mtimes[key] = mtime if mtime > 0
     @values[key] = value
+    @mtimes[key] = mtime if mtime > 0
+
+    true
   end
 
-  def value_decode(input : String?) : String
-    input || ""
+  def value_decode(input : String) : String
+    input
   end
 
   def value_encode(value : String) : String

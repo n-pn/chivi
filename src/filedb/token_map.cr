@@ -6,29 +6,29 @@ class TokenMap
   alias Index = Hash(String, Array(String))
   getter _index = Hash(String, Index).new { |h, k| h[k] = Index.new }
 
-  def upsert(key : String, value : Array(String), mtime = TimeUtils.mtime) : Array(String)?
+  def upsert(key : String, value : Array(String), mtime = TimeUtils.mtime) : Bool
     if old_value = get_value(key)
       case get_mtime(key) <=> mtime
       when 1
-        return
+        return false
       when 0
-        return if value == old_value
+        return false if value == old_value
       end
 
-      (old_val - value).each { |val| @_index[val].delete(key) }
+      (old_value - value).each { |v| @_index[v].delete(key) }
     end
 
-    value.each { |val| @_index[value][key] = value }
-
-    @mtimes[key] = mtime if mtime > 0
     @values[key] = value
+    @mtimes[key] = mtime if mtime > 0
+    value.each { |v| @_index[v][key] = value }
+
+    true
   end
 
   VAL_SPLIT = "  "
 
-  def value_decode(input : String?) : Array(String)
-    return [] of String if input.nil? || input.blank?
-    input.split(VAL_SPLIT)
+  def value_decode(input : String) : Array(String)
+    input.blank? ? [] of String : input.split(VAL_SPLIT)
   end
 
   def value_encode(value : Array(String)) : String
