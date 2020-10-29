@@ -3,9 +3,6 @@ require "./_map_utils"
 class ValueMap
   include FlatMap(String)
 
-  delegate each, to: @items
-  delegate reverse_each, to: @items
-
   def upsert(key : String, value : String, mtime = TimeUtils.mtime) : String?
     if old_value = get_value(key)
       case get_mtime(key) <=> mtime
@@ -20,8 +17,8 @@ class ValueMap
     @values[key] = value
   end
 
-  def value_decode(inp : String?) : String
-    inp || ""
+  def value_decode(input : String?) : String
+    input || ""
   end
 
   def value_encode(value : String) : String

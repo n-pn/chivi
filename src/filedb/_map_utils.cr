@@ -64,10 +64,13 @@ module FlatMap(T)
     @mtimes.clear
   end
 
+  delegate each, to: @values
+  delegate reverse_each, to: @values
+
   def inspect(io : IO) : Nil
     io << '['
 
-    @values.each do |key, value|
+    each do |key, value|
       io << '⟨' << key
       io << "|" << value_encode(value)
 
