@@ -124,6 +124,3 @@
 {#if $upsert_actived}
   <UpsertModal bind:dirty />
 {/if}
-
-<style lang="scss">
-</style>

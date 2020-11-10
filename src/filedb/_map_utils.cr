@@ -117,7 +117,7 @@ module FlatMap(T)
       end
     end
 
-    puts "- <#{@label}> saved (value: #{@values.size}, fixed: #{@mtimes.size})".colorize.cyan
+    puts "- <#{@label}> saved (count: #{@values.size}, fixed: #{@mtimes.size})".colorize.cyan
   rescue err
     puts "- <#{@label}> saves error: #{err}".colorize.red
   end
