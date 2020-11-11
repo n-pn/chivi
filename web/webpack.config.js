@@ -61,10 +61,7 @@ module.exports = {
         {
           test: /\.s?css$/,
           use: [
-            {
-              loader: MiniCssExtractPlugin.loader,
-              options: { hmr: dev, reloadAll: dev },
-            },
+            MiniCssExtractPlugin.loader,
             'css-loader',
             !dev && {
               loader: 'postcss-loader',
