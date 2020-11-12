@@ -6,8 +6,6 @@ SSH = "deploy@ssh.chivi.xyz"
 OUT = "#{SSH}:www/chivi/#{INP}"
 
 def upload_texts(seed)
-  puts `ssh #{SSH} mkdir -p www/chivi/#{INP}/#{seed}`
-
   indir = File.join(INP, seed)
   files = Dir.glob(File.join(indir, "*.zip"))
 
@@ -24,8 +22,9 @@ def upload_texts(seed)
 end
 
 seeds = ARGV.empty? ? Dir.children(INP) : ARGV
-puts "INPUT: #{seeds}"
+puts "INPUT: #{seeds}".colorize.yellow
 
 seeds.each do |seed|
+  puts `ssh #{SSH} mkdir -p www/chivi/#{INP}/#{seed}`
   upload_texts(seed)
 end
