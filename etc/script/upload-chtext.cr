@@ -13,8 +13,6 @@ def upload_texts(seed)
 
   files.each_with_index do |file, idx|
     puts "-- <#{idx + 1}/#{files.size}> [#{seed}/#{File.basename(file)}]".colorize.blue
-
-    puts file
     puts `rsync -azi --no-p #{file} #{OUT}/#{seed}`
   rescue err
     puts err.colorize.red
