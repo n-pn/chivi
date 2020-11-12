@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../src/_utils/text_util"
-require "../src/kernel/models/book_info"
+require "../src/kernel/book_info"
 require "../src/kernel/bookdb"
 
 ACCESS = OldOrderMap.load_name("indexes/orders/book_access", mode: 0)

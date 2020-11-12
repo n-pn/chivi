@@ -33,18 +33,19 @@ module Kernel
   # 2 => fetch text from external hosts then convert
 
   def get_text(bhash : String, sname : String, s_bid : String, s_cid : String, mode = 0)
-    chtext = ChapText.load(sname, s_bid, s_cid, mode: 1)
-    cached = File.exists?(chtext.file)
+    chtext = ChapText.load(sname, s_bid, s_cid)
+    return chtext if mode == 0 && recent?(chtext.cv_time, 2.hours)
 
-    if remote?(sname) && (mode == 2 || !cached)
-      source = SeedText.init(sname, s_bid, s_cid, freeze: false)
-      zh_data = [source.title].concat(source.paras)
-      chtext.tap(&.zh_data = zh_data).save!
-    elsif cached
-      return chtext if mode == 0 && recent?(chtext.cv_time, 2.hours)
-      zh_data = chtext.zh_data
-    else
-      raise "No data!"
+    zh_data = mode < 2 ? chtext.zh_data : [] of String
+
+    if zh_data.empty?
+      if remote?(sname)
+        source = SeedText.init(sname, s_bid, s_cid, freeze: false)
+        zh_data = [source.title].concat(source.paras)
+        chtext.tap(&.zh_data = zh_data).save!
+      else
+        raise "Không có text, mời liên hệ admin."
+      end
     end
 
     chtext.tap do |x|
