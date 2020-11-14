@@ -1,3 +1,5 @@
+#!/usr/bin/crystal
+
 # require "json"
 require "colorize"
 
@@ -13,7 +15,7 @@ def upload_texts(seed)
 
   files.each_with_index do |file, idx|
     puts "-- <#{idx + 1}/#{files.size}> [#{seed}/#{File.basename(file)}]".colorize.blue
-    puts `rsync -azi --no-p #{file} #{OUT}/#{seed}`
+    puts `rsync -ai --no-p #{file} #{OUT}/#{seed}`
   rescue err
     puts err.colorize.red
   end
@@ -24,5 +26,6 @@ puts "INPUT: #{seeds}".colorize.yellow
 
 seeds.each do |seed|
   puts `ssh #{SSH} mkdir -p www/chivi/#{INP}/#{seed}`
-  upload_texts(seed)
+  puts `rsync -ai --no-p --ignore-existing #{INP}/#{seed} #{OUT}`
+  # upload_texts(seed)
 end

@@ -88,7 +88,7 @@ load_proxy = ARGV.include?("proxy")
 debug_mode = ARGV.include?("debug")
 crawler = InfoCrawler.new(load_proxy, debug_mode)
 
-total = 245900
+total = 248000
 
 order = :sequel
 order = :reverse if ARGV.include?("reverse")
