@@ -16,14 +16,14 @@ class InfoCrawler
     "https://www.yousuu.com/api/book/#{ybid}?t=#{time}"
   end
 
-  INTERVAL = 3600 * 24 * 3 # 3 days
+  INTERVAL = 3600 * 24 * 2 # 2 days
 
   def still_good?(file)
     return false unless File.exists?(file)
 
     data = File.read(file)
     if data.include?("未找到该图书")
-      interval = INTERVAL * 5 # try again in 15 days
+      interval = INTERVAL * 5 # try again in 10 days
     else
       interval = get_interval_by_status(data)
     end
@@ -35,10 +35,10 @@ class InfoCrawler
     json = JSON.parse(data)
 
     status = json["data"]["bookInfo"]["status"] || 0
-    interval = INTERVAL * (status + 1) # try again in 6 days or 9 days if completed or axed
+    interval = INTERVAL * (status + 1) # try again in 4 days or 6 days if completed or axed
 
     score = json["data"]["bookInfo"]["score"] || 0
-    interval *= 3 if score == 0 # try again in 9, 12 or 18 days if no score
+    interval *= 3 if score == 0 # try again in 6, 8 or 12 days if no score
 
     interval
   end
@@ -47,13 +47,13 @@ class InfoCrawler
     @http.proxies.size
   end
 
-  def crawl!(total = 212500, order = :sequel)
+  def crawl!(total = 212500, order = :latest)
     puts "-- [total: #{total}, order: #{order}] --".yellow
 
     queue = (1..total).to_a
-    if order == :shuffle
+    if order == :random
       queue.shuffle!
-    elsif order == :reverse
+    elsif order == :latest
       queue.reverse!
     end
 
@@ -70,7 +70,7 @@ class InfoCrawler
         when :success
           puts " - <#{idx}/#{queue.size}> [#{ybid}] saved.".green
         when :proxy_error
-          puts " - <#{idx}/#{queue.size}> [#{ybid}] proxy error!".red
+          puts " - <#{idx}/#{queue.size}> [#{ybid}] proxy failed, remain: #{proxy_size}.".red
           fails << ybid
         when :no_more_proxy
           puts " - Ran out of proxy, aborting!".red
@@ -90,8 +90,8 @@ crawler = InfoCrawler.new(load_proxy, debug_mode)
 
 total = 248000
 
-order = :sequel
-order = :reverse if ARGV.include?("reverse")
-order = :shuffle if ARGV.include?("shuffle")
+order = :latest
+order = :oldest if ARGV.include?("oldest")
+order = :random if ARGV.include?("random")
 
 crawler.crawl!(total, order)
