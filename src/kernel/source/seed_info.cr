@@ -63,7 +63,7 @@ class SeedInfo
       "http://www.paoshu8.com/#{group}_#{@sbid}/"
     when "5200"
       group = @sbid.to_i // 1000
-      "https://www.5200.net/#{group}_#{@sbid}/"
+      "https://www.5200.tv/#{group}_#{@sbid}/"
     when "biquge5200"
       group = @sbid.to_i // 1000
       "https://www.biquge5200.com/#{group}_#{@sbid}/"

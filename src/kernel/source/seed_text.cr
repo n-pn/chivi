@@ -48,7 +48,7 @@ class SeedText
       "http://www.paoshu8.com/#{group}_#{sbid}/#{scid}.html"
     when "5200"
       group = sbid.to_i // 1000
-      "https://www.5200.net/#{group}_#{sbid}/#{scid}.html"
+      "https://www.5200.tv/#{group}_#{sbid}/#{scid}.html"
     when "biquge5200"
       group = sbid.to_i // 1000
       "https://www.biquge5200.com/#{group}_#{sbid}/#{scid}.html"
