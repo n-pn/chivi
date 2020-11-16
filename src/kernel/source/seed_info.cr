@@ -88,7 +88,11 @@ class SeedInfo
       raise "Site is blacklisted or dead" if @seed == "jx_la"
 
       html = HttpUtil.fetch_html(html_link, HttpUtil.encoding_for(seed))
-      File.write(file_path, html) if @freeze
+
+      if @freeze
+        FileUtils.mkdir_p(File.dirname(file_path))
+        File.write(file_path, html)
+      end
     end
 
     html
