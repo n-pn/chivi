@@ -75,11 +75,10 @@ class SeedInfo
     end
   end
 
-  DIR = File.join("_db", "inits", "seeds")
-  FileUtils.mkdir_p(DIR)
+  DIR = "_db/seeds"
 
   private def gen_file_path
-    File.join(DIR, @seed, "_infos", "#{@sbid}.html")
+    File.join(DIR, @seed, "raw-infos", "#{@sbid}.html")
   end
 
   private def fetch_html

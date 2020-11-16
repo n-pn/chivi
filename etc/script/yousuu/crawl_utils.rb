@@ -63,7 +63,7 @@ class HttpClient
     begin
       puts "- GET: <#{url.blue}> using proxy [#{proxy[0].blue}]" if @debug_mode
 
-      body = URI.open(url, proxy: "http://#{proxy[0]}", read_timeout: 15, "User-Agent" => USER_AGENT) { |f| f.read }
+      body = URI.open(url, proxy: "http://#{proxy[0]}", read_timeout: 20, "User-Agent" => USER_AGENT) { |f| f.read }
 
       unless valid_response?(body)
         if @debug_mode
@@ -80,9 +80,7 @@ class HttpClient
 
       :success
     rescue Exception => err
-      puts "- ERROR: #{err.message.red}" if @debug_mode
-      handle_failed_proxy(proxy)
-
+      handle_failed_proxy(proxy, err.message)
       :proxy_error
     end
   end
@@ -105,8 +103,13 @@ class HttpClient
     end
   end
 
-  def handle_failed_proxy(proxy)
-    return if proxy[2] > 2
+  def handle_failed_proxy(proxy, message)
+    return if message.start_with?('400 "Bad Request"')
+    return if message.start_with?('501 "Tor is not an HTTP Proxy"')
+    return if message.start_with?('Failed to open TCP connection')
+
+    puts "- ERROR: #{message.red}" if @debug_mode
+    return if proxy[2] >= 2
 
     proxy[2] += 1
     if proxy[1] > 0

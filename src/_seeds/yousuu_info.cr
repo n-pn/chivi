@@ -83,7 +83,7 @@ class YousuuInfo
   end
 end
 
-# info = YousuuInfo.load("_db/inits/seeds/yousuu/_infos/176814.json").not_nil!
+# info = YousuuInfo.load("_db/seeds/yousuu/raw-infos/176814.json").not_nil!
 # puts info.intro
 # puts info.genre
 # puts info.tags_fixed

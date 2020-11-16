@@ -4,10 +4,10 @@ require "../../src/filedb/*"
 require "../../src/_seeds/yousuu_info"
 
 class MapYousuu
-  JSON_DIR = "_db/inits/seeds/yousuu/_infos"
+  INIT_DIR = "_db/seeds/yousuu/"
 
-  INIT_DIR = "_db/inits/seeds/yousuu/infos"
-  FileUtils.mkdir_p(INIT_DIR)
+  JSON_DIR = "#{INIT_DIR}/raw-infos"
+  FileUtils.mkdir_p(JSON_DIR)
 
   SEED_DIR = "_db/prime/serial/seeds/yousuu"
   FileUtils.mkdir_p(SEED_DIR)
@@ -40,7 +40,7 @@ class MapYousuu
 
   getter seed_word_count : ValueMap { load_seed("word_count", @preload) }
 
-  getter author_wl = ValueMap.new("_db/inits/seeds/_keeps/author_wl.tsv")
+  getter author_wl = ValueMap.new("_db/seeds/_keeps/author_wl.tsv")
 
   def initialize(@preload : Bool = true)
   end

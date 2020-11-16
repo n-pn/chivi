@@ -45,7 +45,7 @@ class CritCrawler
     @http.proxies.size
   end
 
-  ROOT_DIR = "_db/inits/seeds/yousuu/_crits"
+  ROOT_DIR = "_db/seeds/yousuu/raw-crits"
 
   def review_path(ybid, page = 1)
     "#{ROOT_DIR}/#{ybid}-#{page}.json"

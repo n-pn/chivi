@@ -1,8 +1,8 @@
 #! /bin/bash
 
 REMOTE=deploy@ssh.chivi.xyz:www/chivi
-SEEDS_DIR=_db/inits/seeds/yousuu
+SEEDS_DIR=_db/seeds/yousuu
 SEEDS_SSH="$REMOTE/$SEEDS_DIR"
 
-rsync -azui --no-p "$SEEDS_SSH/_infos" $SEEDS_DIR
-rsync -azui --no-p "$SEEDS_SSH/_crits" $SEEDS_DIR
+rsync -azui --no-p "$SEEDS_SSH/raw-infos" $SEEDS_DIR
+rsync -azui --no-p "$SEEDS_SSH/raw-crits" $SEEDS_DIR

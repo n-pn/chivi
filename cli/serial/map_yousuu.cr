@@ -10,7 +10,7 @@ def should_keep?(source : YsSerial)
   BookDB.whitelist?(source.author)
 end
 
-DIR = File.join("_db", "inits", "seeds", "yousuu", "_infos")
+DIR = "_db/seeds/yousuu/raw-infos"
 files = Dir.glob(File.join(DIR, "*.json")).sort_by do |file|
   File.basename(file, ".json").to_i
 end
