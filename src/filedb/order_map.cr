@@ -59,7 +59,7 @@ class OrderMap
 
   include FlatMap(Int32)
 
-  getter _order = {} of String => Node
+  getter _index = {} of String => Node
 
   getter _head = Node.new("_head", Int32::MIN)
   getter _tail = Node.new("_tail", Int32::MAX)
@@ -87,18 +87,18 @@ class OrderMap
         end
       end
 
-      node = @_order[key]
+      node = @_index[key]
       node.value = value
       node.unlink!
     else
-      @_order[key] = node = Node.new(key, value)
+      @_index[key] = node = Node.new(key, value)
     end
 
     @values[key] = value
     @mtimes[key] = mtime if mtime > 0
 
     # fix order
-    if @_order.size == 1
+    if @_index.size == 1
       @_max = value
       @_min = value
       @_tail.set_prev(node)
@@ -115,6 +115,10 @@ class OrderMap
     end
 
     true
+  end
+
+  def get_index(key : String) : Node?
+    @_index[key]?
   end
 
   def each(node = @_head) : Nil
@@ -141,5 +145,13 @@ class OrderMap
 
   def value_empty?(value : Int32) : Bool
     value == -1
+  end
+
+  def first_key
+    @_head.succ.not_nil!.key
+  end
+
+  def last_key
+    @_tail.prev.not_nil!.key
   end
 end
