@@ -2,7 +2,7 @@ require "colorize"
 require "../_utils/time_utils"
 
 module FlatMap(T)
-  FLUSH_MAX = 20
+  FLUSH_MAX = 10
 
   getter file : String
 
@@ -41,11 +41,13 @@ module FlatMap(T)
 
   abstract def upsert(key : String, value : T, mtime = TimeUtils.mtime) : Bool
 
-  def upsert!(key : String, value : T, mtime = TimeUtils.mtime) : Nil
-    return unless upsert(key, value, mtime)
+  def upsert!(key : String, value : T, mtime = TimeUtils.mtime) : Bool
+    return false unless upsert(key, value, mtime)
 
     @buffer << key
     flush! if @buffer.size >= FLUSH_MAX
+
+    true # return true if the value is inserted/updated
   end
 
   def flush! : Nil
