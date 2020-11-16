@@ -11,7 +11,7 @@ require "../../src/kernel/bookdb"
 require "../../src/kernel/chapdb"
 
 class MapZhwenpg
-  DIR = "_db/inits/seeds/zhwenpg/idx_pages"
+  DIR = "_db/seeds/zhwenpg/idx-pages"
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
