@@ -1,6 +1,6 @@
 require "compress/zip"
 
-class ZipFolder
+class ZipStore
   getter target : String
   getter source : String
 
@@ -48,12 +48,3 @@ class ZipFolder
     puts `zip #{options} "#{target}" #{source}/*.*`
   end
 end
-
-zip = ZipFolder.new("/mnt/e/test.zip")
-
-puts zip.exists?("515065.txt")
-puts zip.mtime("515065.txt")
-
-puts zip.extract("515065.txt")
-
-zip.compress!
