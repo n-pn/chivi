@@ -13,11 +13,11 @@
     "report": "ssh deploy@ssh.chivi.xyz \"/bin/bash -ic 'gen_cv_report'\"",
     "map-yousuu": "wsl bin/map_yousuu",
     "map-zhwenpg": "wsl bin/map_zhwenpg",
-    "map-remotes": "wsl bash cli/serial/map_remote.sh",
     "map_remote": "wsl bin/map_remote",
+    "map-remotes": "wsl bash cli/serial/map_remote.sh",
     "cr-ys-crit": "ruby etc/script/yousuu/crawl_crits.rb",
     "cr-ys-info": "ruby etc/script/yousuu/crawl_infos.rb",
-    "fix-covers": "wsl bin/fetch_covers && ruby cli/_cover/webp_format.rb",
+    "fix-covers": "wsl bin/fetch_covers && ruby cli/covers/webp_format.rb",
     "backup": "wsl bin/migrate_dicts && yarn db-dn && yarn ys-dn",
     "update": "yarn map-yousuu && yarn map-zhwenpg && yarn map-remotes && yarn fix-covers"
   }

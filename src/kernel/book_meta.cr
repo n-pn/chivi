@@ -70,22 +70,22 @@ module BookMeta
   class_getter bslug_map : ValueMap { load_value_map("bslug") }
 
   class_getter title_zh_map : ValueMap { load_value_map("title_zh") }
-  class_getter title_zh_tks : TokenMap { load_token_map("title_zh_tks") }
+  class_getter title_zh_tks : TokenMap { load_token_map("title_zh_qs") }
 
   class_getter title_hv_map : ValueMap { load_value_map("title_hv") }
-  class_getter title_hv_tks : TokenMap { load_token_map("title_hv_tks") }
+  class_getter title_hv_tks : TokenMap { load_token_map("title_hv_qs") }
 
   class_getter title_vi_map : ValueMap { load_value_map("title_vi") }
-  class_getter title_vi_tks : TokenMap { load_token_map("title_vi_tks") }
+  class_getter title_vi_tks : TokenMap { load_token_map("title_vi_qs") }
 
   class_getter author_zh_map : ValueMap { load_value_map("author_zh") }
-  class_getter author_zh_tks : TokenMap { load_token_map("author_zh_tks") }
+  class_getter author_zh_tks : TokenMap { load_token_map("author_zh_qs") }
 
   class_getter author_vi_map : ValueMap { load_value_map("author_vi") }
-  class_getter author_vi_tks : TokenMap { load_token_map("author_vi_tks") }
+  class_getter author_vi_tks : TokenMap { load_token_map("author_vi_qs") }
 
   class_getter genre_vi_map : ValueMap { load_value_map("genre_vi") }
-  class_getter genre_vi_tks : TokenMap { load_token_map("genre_vi_tks") }
+  class_getter genre_vi_tks : TokenMap { load_token_map("genre_vi_qs") }
 
   class_getter intro_zh_map : ValueMap { load_value_map("intro_zh") }
   class_getter intro_vi_map : ValueMap { load_value_map("intro_vi") }
