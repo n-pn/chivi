@@ -31,8 +31,8 @@ genres_vi_qs = TokenMap.new("#{OUT}/infos/genres_vi_qs.tsv")
 intro_zh = ValueMap.new("#{OUT}/infos/intro_zh.tsv")
 intro_vi = ValueMap.new("#{OUT}/infos/intro_vi.tsv")
 
-voters = ValueMap.new("#{OUT}/infos/voters.tsv")
-rating = ValueMap.new("#{OUT}/infos/rating.tsv")
+voters = OrderMap.new("#{OUT}/infos/voters.tsv")
+rating = OrderMap.new("#{OUT}/infos/rating.tsv")
 weight = OrderMap.new("#{OUT}/infos/weight.tsv")
 
 shield = ValueMap.new("#{OUT}/infos/shield.tsv")
@@ -43,7 +43,7 @@ access = OrderMap.new("#{OUT}/infos/access.tsv")
 count_words = ValueMap.new("#{OUT}/infos/count_words.tsv")
 count_crits = ValueMap.new("#{OUT}/infos/count_crits.tsv")
 
-cover_name = ValueMap.new("#{OUT}/infos/bcover.tsv")
+cover_name = ValueMap.new("#{OUT}/infos/cover_name.tsv")
 yousuu_bid = ValueMap.new("#{OUT}/infos/yousuu_bid.tsv")
 origin_url = ValueMap.new("#{OUT}/infos/origin_url.tsv")
 
@@ -101,8 +101,8 @@ infos.values.each_with_index do |info, idx|
   intro_zh.upsert!(info.ubid, info.zh_intro.gsub("\n", "  "), mtime: 0)
   intro_vi.upsert!(info.ubid, info.vi_intro.gsub("\n", "  "), mtime: 0)
 
-  voters.upsert!(info.ubid, info.voters.to_s, mtime: 0)
-  rating.upsert!(info.ubid, info.rating.*(10).to_s, mtime: 0)
+  voters.upsert!(info.ubid, info.voters, mtime: 0)
+  rating.upsert!(info.ubid, info.rating.*(10).to_i, mtime: 0)
 
   weight_value = info.voters > 0 ? info.rating * Math.log(info.voters) * 100 : 0.0
   weight.upsert!(info.ubid, weight_value.to_i, mtime: 0)

@@ -17,12 +17,15 @@ module BookMeta
     property author_zh = ""
     property author_vi = ""
 
-    property genre_vi = ""
     property intro_vi = ""
+    property genres_vi = ""
 
-    property cover = ""
-    property state : Int32 = 0
-    property mtime : Int32 = 0
+    property cover_name = ""
+    property yousuu_bid = ""
+    property origin_url = ""
+
+    property status : Int32 = 0
+    property update : Int32 = 0
 
     property voters : Int32 = 0
     property rating : Int32 = 0
@@ -37,8 +40,8 @@ module BookMeta
       end
     end
 
-    set_int_field state
-    set_int_field mtime
+    set_int_field status
+    set_int_field update
 
     set_int_field voters
     set_int_field rating
@@ -66,74 +69,62 @@ module BookMeta
     ORDERS[name] ||= OrderMap.new("#{DIR}/#{name}.tsv")
   end
 
-  class_getter bhash_map : ValueMap { load_value_map("bhash") }
-  class_getter bslug_map : ValueMap { load_value_map("bslug") }
+  class_getter bhash_fs : ValueMap { load_value_map("bhash") }
+  class_getter bslug_fs : ValueMap { load_value_map("bslug") }
 
-  class_getter title_zh_map : ValueMap { load_value_map("title_zh") }
-  class_getter title_zh_tks : TokenMap { load_token_map("title_zh_qs") }
+  class_getter title_zh_fs : ValueMap { load_value_map("title_zh") }
+  class_getter title_zh_qs : TokenMap { load_token_map("title_zh_qs") }
 
-  class_getter title_hv_map : ValueMap { load_value_map("title_hv") }
-  class_getter title_hv_tks : TokenMap { load_token_map("title_hv_qs") }
+  class_getter title_hv_fs : ValueMap { load_value_map("title_hv") }
+  class_getter title_hv_qs : TokenMap { load_token_map("title_hv_qs") }
 
-  class_getter title_vi_map : ValueMap { load_value_map("title_vi") }
-  class_getter title_vi_tks : TokenMap { load_token_map("title_vi_qs") }
+  class_getter title_vi_fs : ValueMap { load_value_map("title_vi") }
+  class_getter title_vi_qs : TokenMap { load_token_map("title_vi_qs") }
 
-  class_getter author_zh_map : ValueMap { load_value_map("author_zh") }
-  class_getter author_zh_tks : TokenMap { load_token_map("author_zh_qs") }
+  class_getter author_zh_fs : ValueMap { load_value_map("author_zh") }
+  class_getter author_zh_qs : TokenMap { load_token_map("author_zh_qs") }
 
-  class_getter author_vi_map : ValueMap { load_value_map("author_vi") }
-  class_getter author_vi_tks : TokenMap { load_token_map("author_vi_qs") }
+  class_getter author_vi_fs : ValueMap { load_value_map("author_vi") }
+  class_getter author_vi_qs : TokenMap { load_token_map("author_vi_qs") }
 
-  class_getter genre_vi_map : ValueMap { load_value_map("genre_vi") }
-  class_getter genre_vi_tks : TokenMap { load_token_map("genre_vi_qs") }
+  class_getter genres_vi_fs : ValueMap { load_value_map("genres_vi") }
+  class_getter genres_vi_qs : TokenMap { load_token_map("genres_vi_qs") }
 
-  class_getter intro_zh_map : ValueMap { load_value_map("intro_zh") }
-  class_getter intro_vi_map : ValueMap { load_value_map("intro_vi") }
+  class_getter intro_zh_fs : ValueMap { load_value_map("intro_zh") }
+  class_getter intro_vi_fs : ValueMap { load_value_map("intro_vi") }
 
-  class_getter cover_map : ValueMap { load_value_map("cover") }
-  class_getter state_map : ValueMap { load_value_map("state") }
-  class_getter mtime_map : ValueMap { load_value_map("mtime") }
+  class_getter shield_fs : ValueMap { load_value_map("shield") }
+  class_getter status_fs : ValueMap { load_value_map("status") }
 
-  class_getter words_map : ValueMap { load_value_map("words") }
-  class_getter crits_map : ValueMap { load_value_map("crits") }
+  class_getter update_fs : OrderMap { load_order_map("update") }
+  class_getter access_fs : OrderMap { load_order_map("access") }
 
-  class_getter voters_map : ValueMap { load_value_map("voters") }
-  class_getter rating_map : ValueMap { load_value_map("rating") }
-  class_getter weight_map : OrderMap { load_order_map("weight") }
+  class_getter words_fs : ValueMap { load_value_map("words") }
+  class_getter crits_fs : ValueMap { load_value_map("crits") }
 
-  class_getter yousuu_map : ValueMap { load_value_map("yousuu") }
-  class_getter origin_map : ValueMap { load_value_map("origin") }
+  class_getter voters_fs : OrderMap { load_order_map("voters") }
+  class_getter rating_fs : OrderMap { load_order_map("rating") }
+  class_getter weight_fs : OrderMap { load_order_map("weight") }
 
-  class_getter seeds_map : TokenMap { load_token_map("seeds") }
+  class_getter cover_name_fs : ValueMap { load_value_map("cover_name") }
+  class_getter yousuu_bid_fs : ValueMap { load_value_map("yousuu_bid") }
+  class_getter origin_url_fs : ValueMap { load_value_map("origin_url") }
+
+  class_getter seeds_fs : TokenMap { load_token_map("seeds") }
+
   # class_getter seed_top : ValueMap { load_value_map("seed_top") }
-
-  INFOS = {} of String => Info
-
-  def get_info(bhash : String)
-    INFOS[bhash] ||= begin
-      info = Info.new(bhash)
-
-      {% for ivar in Info.instance_vars %}
-        {% if ivar.stringify != "bhash" %}
-          info.{{ivar}} = {{ivar}}_map.get_value(bhash) || ""
-        {% end %}
-      {% end %}
-
-      info
-    end
-  end
 
   macro def_prop(field, type = :value)
     def get_{{field}}(bhash : String)
-      {{field}}_map.get_value(bhash)
+      {{field}}_fs.get_value(bhash)
     end
 
     def set_{{field}}(bhash : String, input, cache : Bool = false) : Nil
       mtime = cache ? TimeUtils.mtime : 0
-      {{field}}_map.upsert!(bhash, input.to_s, mtime: mtime)
+      {{field}}_fs.upsert!(bhash, input.to_s, mtime: mtime)
 
       {% if type == :token %}
-        {{field}}_tks.upsert!(bhash, TextUtil.tokenize(input), mtime: mtime)
+        {{field}}_qs.upsert!(bhash, TextUtil.tokenize(input), mtime: mtime)
       {% end %}
 
       return unless cache && (info = INFOS[bhash]?)
@@ -151,9 +142,40 @@ module BookMeta
   def_prop genre_vi, :token
   def_prop genre_vi, :token
 
-  def_prop cover, :value
-  def_prop state, :value
-  def_prop mtime, :value
+  def_prop cover_name, :value
+  def_prop yousuu_bid, :value
+  def_prop origin_url, :value
+
+  def_prop status, :value
+  def_prop shield, :value
+
+  def_prop update, :order
+  def_prop access, :order
+
+  def_prop weight, :order
+  def_prop rating, :value
+  def_prop voters, :value
+
+  INFOS = {} of String => Info
+
+  def get_by_hash(bhash : String)
+    INFOS[bhash] ||= begin
+      info = Info.new(bhash)
+
+      {% for ivar in Info.instance_vars %}
+        {% if ivar.stringify != "bhash" %}
+          info.{{ivar}} = {{ivar}}_fs.get_value(bhash) || ""
+        {% end %}
+      {% end %}
+
+      info
+    end
+  end
+
+  def get_by_slug(bslug : String)
+    return nil unless bhash = bhash_fs.get_value(bslug)
+    get_by_hash(bhash)
+  end
 end
 
 # BookMeta.set_title_zh("1", "a")
@@ -163,3 +185,5 @@ end
 # puts BookMeta.get_mtime("1")
 
 # puts BookMeta.get_info("1").to_pretty_json
+
+puts BookMeta.get_by_slug("chue-te").try(&.to_pretty_json)
