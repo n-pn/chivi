@@ -39,14 +39,14 @@ class TokenMap
     value.empty? || value.first.empty?
   end
 
-  def get_index(val : String) : Index?
-    @_index[val]?
+  def get_index(val : String) : Index
+    @_index[val]? || Index.new
   end
 
   def search(query : Array(String)) : Index
     return get_index(query.first) if query.size == 1
     return Index.new unless index = get_min_index(query)
-    index.select { |_key, value| fuzzy_match?(value, query) }
+    index.select { |_key, value| fuzzy_match?(value, query) } || Index.new
   end
 
   private def get_min_index(query : Array(String))

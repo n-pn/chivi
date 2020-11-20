@@ -23,7 +23,7 @@ author_zh = ValueMap.new("#{OUT}/infos/author_zh.tsv")
 author_zh_qs = TokenMap.new("#{OUT}/infos/author_zh_qs.tsv")
 
 author_vi = ValueMap.new("#{OUT}/infos/author_vi.tsv")
-author_vi_qs = TokenMap.new("#{OUT}/infos/author_zh_qs.tsv")
+author_vi_qs = TokenMap.new("#{OUT}/infos/author_vi_qs.tsv")
 
 genres_vi = ValueMap.new("#{OUT}/infos/genres_vi.tsv")
 genres_vi_qs = TokenMap.new("#{OUT}/infos/genres_vi_qs.tsv")

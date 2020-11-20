@@ -31,6 +31,8 @@ module BookMeta
     property rating : Int32 = 0
     property weight : Int32 = 0
 
+    property seeds : Array(String) = [] of String
+
     def initialize(@bhash)
     end
 
@@ -46,6 +48,10 @@ module BookMeta
     set_int_field voters
     set_int_field rating
     set_int_field weight
+
+    def seeds=(input : String)
+      @seeds = input.split("  ")
+    end
   end
 
   extend self
@@ -158,7 +164,7 @@ module BookMeta
 
   INFOS = {} of String => Info
 
-  def get_by_hash(bhash : String)
+  def find_by_hash(bhash : String)
     INFOS[bhash] ||= begin
       info = Info.new(bhash)
 
@@ -172,18 +178,133 @@ module BookMeta
     end
   end
 
-  def get_by_slug(bslug : String)
+  def find_by_slug(bslug : String)
     return nil unless bhash = bhash_fs.get_value(bslug)
-    get_by_hash(bhash)
+    find_by_hash(bhash)
+  end
+
+  def search(limit : Int32 = 20, offset : Int32 = 0,
+             order : String = "", cursor : String = "",
+             title : String = "", author : String = "",
+             genre : String = "", seed : String = "") : Void
+    # search by title
+    unless title.empty?
+      bhash_map = filter_by_title(title)
+      return if bhash_map.empty?
+    end
+
+    unless author.empty?
+      bhash_map = filter_by_author(author, bhash_map)
+      return if bhash_map.empty?
+    end
+
+    unless genre.empty?
+      bhash_map = filter_by_genre(genre, bhash_map)
+      return if bhash_map.empty?
+    end
+
+    unless seed.empty?
+      bhash_map = filter_by_seed(seed, bhash_map)
+      return if bhash_map.empty?
+    end
+
+    order_map = map_order_fs(order)
+
+    if bhash_map && bhash_map.size < 100
+      bhash_map.keys.map { |bhash| {bhash, order_map.get_value(bhash) || 0} }
+        .sort_by { |(_, val)| -val }
+        .each do |(bhash, _)|
+          next unless info = find_by_hash(bhash)
+          if offset > 0
+            offset -= 1
+          else
+            yield info
+            return if limit < 2
+            limit -= 1
+          end
+        end
+    else
+      order_map.reverse_each do |bhash, _|
+        next if bhash_map && !bhash_map.has_key?(bhash)
+        next unless info = find_by_hash(bhash)
+
+        if offset > 0
+          offset -= 1
+        else
+          yield info
+          return if limit < 2
+          limit -= 1
+        end
+      end
+    end
+  end
+
+  def filter_by_title(title : String, prevs : TokenMap::Index? = nil)
+    query = TextUtil.tokenize(title)
+
+    output =
+      if title =~ /\p{Han}/
+        title_zh_qs.search(query)
+      else
+        title_hv_qs.search(query).merge(title_vi_qs.search(query))
+      end
+
+    merge_filters(output, prevs)
+  end
+
+  def filter_by_author(author : String, prevs : TokenMap::Index? = nil)
+    query = TextUtil.tokenize(author)
+
+    output =
+      if author =~ /\p{Han}/
+        author_zh_qs.search(query)
+      else
+        author_vi_qs.search(query)
+      end
+
+    merge_filters(output, prevs)
+  end
+
+  def filter_by_genre(genre : String, prevs : TokenMap::Index? = nil)
+    query = TextUtil.slugify(genre)
+    output = genres_vi_qs.search([query])
+    merge_filters(output, prevs)
+  end
+
+  def filter_by_seed(seed : String, prevs : TokenMap::Index? = nil)
+    output = seeds_fs.search(seed.split(" "))
+    merge_filters(output, prevs)
+  end
+
+  def merge_filters(currs : TokenMap::Index, prevs : TokenMap::Index?) : TokenMap::Index
+    return currs unless prevs
+    currs.select { |bhash, _| prevs.includes?(bhash).as(Bool) }
+  end
+
+  def map_order_fs(type : String)
+    case type
+    when "access" then access_fs
+    when "update" then update_fs
+    when "rating" then rating_fs
+    else               weight_fs
+    end
   end
 end
 
-# BookMeta.set_title_zh("1", "a")
-# BookMeta.set_genre_vi("1", "x")
+# puts BookMeta.find_by_slug("chue-te").try(&.to_pretty_json)
 
-# BookMeta.set_mtime("1", 10)
-# puts BookMeta.get_mtime("1")
+# BookMeta.search(title: "chue te", limit: 10) do |info|
+#   puts info.to_pretty_json
+# end
 
-# puts BookMeta.get_info("1").to_pretty_json
+# BookMeta.search(author: "愤怒", limit: 10) do |info|
+#   puts info.to_pretty_json
+# end
 
-puts BookMeta.get_by_slug("chue-te").try(&.to_pretty_json)
+# BookMeta.search(genre: "Đô thị", limit: 10) do |info|
+#   puts info.to_pretty_json
+# end
+
+BookMeta.search(seed: "zhwenpg", limit: 10) do |info|
+  puts info.to_pretty_json
+end
