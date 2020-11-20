@@ -1,6 +1,6 @@
-require "../src/kernel/chap_list"
-require "../src/filedb/*"
-require "../src/_utils/text_util"
+require "../../src/kernel/chap_list"
+require "../../src/filedb/*"
+require "../../src/_utils/text_util"
 
 INP = "var/appcv/chlists"
 OUT = "_db/prime/chdata"

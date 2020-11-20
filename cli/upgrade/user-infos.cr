@@ -1,7 +1,6 @@
-require "../src/filedb/*"
-require "../src/_utils/text_util"
-
-require "../src/kernel/user_info"
+require "../../src/filedb/*"
+require "../../src/_utils/text_util"
+require "../../src/kernel/user_info"
 
 files = Dir.glob("var/appcv/members/*.json")
 

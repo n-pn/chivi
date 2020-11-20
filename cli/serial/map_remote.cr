@@ -13,8 +13,7 @@ class MapRemote
     "hetushu", "xbiquge", "69shu",
     "biquge5200", "5200", "zhwenpg",
     "duokan8", "rengshu", "nofff",
-    "paoshu8", "jx_la", "qu_la",
-    "shubaow",
+    "paoshu8", "jx_la", "shubaow",
   }
 
   def self.run!(argv = ARGV)

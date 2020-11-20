@@ -1,6 +1,6 @@
-require "../src/kernel/book_info"
-require "../src/filedb/*"
-require "../src/_utils/text_util"
+require "../../src/kernel/book_info"
+require "../../src/filedb/*"
+require "../../src/_utils/text_util"
 
 infos = BookInfo.preload_all!
 puts "- Total: #{infos.size} entries".colorize.cyan
@@ -35,9 +35,10 @@ voters = ValueMap.new("#{OUT}/infos/voters.tsv")
 rating = ValueMap.new("#{OUT}/infos/rating.tsv")
 weight = OrderMap.new("#{OUT}/infos/weight.tsv")
 
-hidden = ValueMap.new("#{OUT}/infos/hidden.tsv")
+shield = ValueMap.new("#{OUT}/infos/shield.tsv")
 status = ValueMap.new("#{OUT}/infos/status.tsv")
 update = OrderMap.new("#{OUT}/infos/update.tsv")
+access = OrderMap.new("#{OUT}/infos/access.tsv")
 
 count_words = ValueMap.new("#{OUT}/infos/count_words.tsv")
 count_crits = ValueMap.new("#{OUT}/infos/count_crits.tsv")
@@ -106,9 +107,12 @@ infos.values.each_with_index do |info, idx|
   weight_value = info.voters > 0 ? info.rating * Math.log(info.voters) * 100 : 0.0
   weight.upsert!(info.ubid, weight_value.to_i, mtime: 0)
 
-  hidden.upsert!(info.ubid, info.shield.to_s, mtime: 0)
+  shield.upsert!(info.ubid, info.shield.to_s, mtime: 0)
   status.upsert!(info.ubid, info.status.to_s, mtime: 0)
-  update.upsert!(info.ubid, (info.mftime // 1000).to_i, mtime: 0)
+
+  mftime = (info.mftime // 1000).to_i # by 1 seconds
+  update.upsert!(info.ubid, mftime, mtime: 0)
+  access.upsert!(info.ubid, mftime // 600, mtime: 0) # by 5 minutes
 
   count_words.upsert!(info.ubid, info.word_count.to_s, mtime: 0)
   count_crits.upsert!(info.ubid, info.crit_count.to_s, mtime: 0)
@@ -165,9 +169,11 @@ voters.save!
 rating.save!
 weight.save!
 
-hidden.save!
+shield.save!
 status.save!
+
 update.save!
+access.save!
 
 count_words.save!
 count_crits.save!
