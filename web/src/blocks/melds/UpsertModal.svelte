@@ -338,256 +338,256 @@
 </div>
 
 <style lang="scss">
-  $gutter: 0.75rem;
+  // $gutter: 0.75rem;
 
-  .holder {
-    display: flex;
-    position: fixed;
-    align-items: center;
-    justify-content: center;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 999;
-    background: rgba(#000, 0.75);
-  }
+  // .holder {
+  //   display: flex;
+  //   position: fixed;
+  //   align-items: center;
+  //   justify-content: center;
+  //   top: 0;
+  //   left: 0;
+  //   width: 100%;
+  //   height: 100%;
+  //   z-index: 999;
+  //   background: rgba(#000, 0.75);
+  // }
 
-  .dialog {
-    width: rem(30);
-    min-width: 320px;
-    max-width: 100%;
-    @include bgcolor(neutral, 1);
-    @include radius();
-    @include shadow(3);
-  }
+  // .dialog {
+  //   width: rem(30);
+  //   min-width: 320px;
+  //   max-width: 100%;
+  //   @include bgcolor(neutral, 1);
+  //   @include radius();
+  //   @include shadow(3);
+  // }
 
-  header {
-    display: flex;
-    padding: 0.75rem;
+  // header {
+  //   display: flex;
+  //   padding: 0.75rem;
 
-    button {
-      @include fgcolor(neutral, 6);
-      &:hover {
-        @include fgcolor(primary, 6);
-      }
-    }
+  //   button {
+  //     @include fgcolor(neutral, 6);
+  //     &:hover {
+  //       @include fgcolor(primary, 6);
+  //     }
+  //   }
 
-    .hanzi {
-      flex-grow: 1;
-      margin-right: 0.5rem;
-    }
-  }
+  //   .hanzi {
+  //     flex-grow: 1;
+  //     margin-right: 0.5rem;
+  //   }
+  // }
 
-  .tabs {
-    padding: 0 0.75rem;
-    height: 2rem;
-    line-height: 2rem;
-    @include flex($gap: 0.75rem);
-    @include border($sides: bottom);
-  }
+  // .tabs {
+  //   padding: 0 0.75rem;
+  //   height: 2rem;
+  //   line-height: 2rem;
+  //   @include flex($gap: 0.75rem);
+  //   @include border($sides: bottom);
+  // }
 
-  .tab {
-    cursor: pointer;
-    text-transform: uppercase;
-    font-weight: 500;
-    padding: 0 0.75rem;
-    height: 2rem;
-    margin-top: 0.25px;
+  // .tab {
+  //   cursor: pointer;
+  //   text-transform: uppercase;
+  //   font-weight: 500;
+  //   padding: 0 0.75rem;
+  //   height: 2rem;
+  //   margin-top: 0.25px;
 
-    @include truncate(null);
-    @include font-size(2);
-    @include fgcolor(neutral, 5);
+  //   @include truncate(null);
+  //   @include font-size(2);
+  //   @include fgcolor(neutral, 5);
 
-    @include radius($sides: top);
-    @include border($color: neutral, $sides: top-left-right);
+  //   @include radius($sides: top);
+  //   @include border($color: neutral, $sides: top-left-right);
 
-    flex-shrink: 0;
-    &:first-child {
-      max-width: 35%;
-      flex-shrink: 1;
-    }
+  //   flex-shrink: 0;
+  //   &:first-child {
+  //     max-width: 35%;
+  //     flex-shrink: 1;
+  //   }
 
-    &._exists {
-      @include fgcolor(neutral, 7);
-    }
+  //   &._exists {
+  //     @include fgcolor(neutral, 7);
+  //   }
 
-    &._active {
-      @include bgcolor(#fff);
-      @include fgcolor(primary, 6);
-      @include bdcolor($color: primary, $shade: 4, $sides: top-left-right);
-    }
-  }
+  //   &._active {
+  //     @include bgcolor(#fff);
+  //     @include fgcolor(primary, 6);
+  //     @include bdcolor($color: primary, $shade: 4, $sides: top-left-right);
+  //   }
+  // }
 
-  .body {
-    @include bgcolor(#fff);
-    padding: 0.75rem;
-  }
+  // .body {
+  //   @include bgcolor(#fff);
+  //   padding: 0.75rem;
+  // }
 
-  $label-width: 3rem;
+  // $label-width: 3rem;
 
-  $suggests-height: 2rem;
-  $titleize-height: 2rem;
-  $val-line-height: 2.5rem;
+  // $suggests-height: 2rem;
+  // $titleize-height: 2rem;
+  // $val-line-height: 2.5rem;
 
-  .output {
-    @include bgcolor(neutral, 1);
-  }
+  // .output {
+  //   @include bgcolor(neutral, 1);
+  // }
 
-  .value > input {
-    display: block;
-    width: 100%;
+  // .value > input {
+  //   display: block;
+  //   width: 100%;
 
-    margin: 0;
+  //   margin: 0;
 
-    line-height: 1.5rem;
-    padding: 0.75rem;
+  //   line-height: 1.5rem;
+  //   padding: 0.75rem;
 
-    outline: none;
-    @include border();
-    @include bgcolor(neutral, 1);
+  //   outline: none;
+  //   @include border();
+  //   @include bgcolor(neutral, 1);
 
-    &:focus,
-    &:active {
-      @include bgcolor(white);
-      @include bdcolor($color: primary, $shade: 3);
-    }
+  //   &:focus,
+  //   &:active {
+  //     @include bgcolor(white);
+  //     @include bdcolor($color: primary, $shade: 3);
+  //   }
 
-    &._fresh {
-      font-style: italic;
-    }
-  }
+  //   &._fresh {
+  //     font-style: italic;
+  //   }
+  // }
 
-  .hints {
-    // width: 100%;
-    // height: $suggests-height;
+  // .hints {
+  //   // width: 100%;
+  //   // height: $suggests-height;
 
-    padding: 0.25rem 0.5rem;
-    font-style: italic;
+  //   padding: 0.25rem 0.5rem;
+  //   font-style: italic;
 
-    @include border();
-    border-bottom: none;
-    @include radius($sides: top);
+  //   @include border();
+  //   border-bottom: none;
+  //   @include radius($sides: top);
 
-    @include flex($gap: 0.25rem);
-    @include font-size(2);
+  //   @include flex($gap: 0.25rem);
+  //   @include font-size(2);
 
-    .-hint {
-      cursor: pointer;
-      line-height: 1.5rem;
-      height: 1.5rem;
+  //   .-hint {
+  //     cursor: pointer;
+  //     line-height: 1.5rem;
+  //     height: 1.5rem;
 
-      padding: 0 0.25rem;
-      max-width: 25vw;
-      @include truncate(null);
+  //     padding: 0 0.25rem;
+  //     max-width: 25vw;
+  //     @include truncate(null);
 
-      @include fgcolor(neutral, 6);
-      @include bgcolor(neutral, 1);
-      @include radius;
+  //     @include fgcolor(neutral, 6);
+  //     @include bgcolor(neutral, 1);
+  //     @include radius;
 
-      &:hover {
-        @include fgcolor(primary, 6);
-        @include bgcolor(primary, 1);
-      }
+  //     &:hover {
+  //       @include fgcolor(primary, 6);
+  //       @include bgcolor(primary, 1);
+  //     }
 
-      &._exist {
-        font-style: normal;
-        font-weight: 500;
-      }
+  //     &._exist {
+  //       font-style: normal;
+  //       font-weight: 500;
+  //     }
 
-      &._right {
-        margin-left: auto;
-      }
-    }
-  }
+  //     &._right {
+  //       margin-left: auto;
+  //     }
+  //   }
+  // }
 
-  .format {
-    $height: 2.25rem;
+  // .format {
+  //   $height: 2.25rem;
 
-    padding: 0 0.375rem;
-    overflow: hidden;
-    height: $height;
+  //   padding: 0 0.375rem;
+  //   overflow: hidden;
+  //   height: $height;
 
-    @include wrap();
+  //   @include wrap();
 
-    @include border();
-    border-top: none;
-    @include radius($sides: bottom);
+  //   @include border();
+  //   border-top: none;
+  //   @include radius($sides: bottom);
 
-    font-size: rem(11px);
+  //   font-size: rem(11px);
 
-    @include bp-min(md) {
-      font-size: rem(12px);
-    }
+  //   @include bp-min(md) {
+  //     font-size: rem(12px);
+  //   }
 
-    button {
-      float: left;
-      padding: 0 0.375rem;
-      line-height: $height;
-      font-weight: 500;
-      text-transform: uppercase;
-      background: none;
-      @include fgcolor(neutral, 5);
+  //   button {
+  //     float: left;
+  //     padding: 0 0.375rem;
+  //     line-height: $height;
+  //     font-weight: 500;
+  //     text-transform: uppercase;
+  //     background: none;
+  //     @include fgcolor(neutral, 5);
 
-      // max-width: 14vw;
-      @include truncate(null);
+  //     // max-width: 14vw;
+  //     @include truncate(null);
 
-      &:hover {
-        @include fgcolor(primary, 5);
-        background: #fff;
-      }
+  //     &:hover {
+  //       @include fgcolor(primary, 5);
+  //       background: #fff;
+  //     }
 
-      &._right {
-        float: right;
-      }
-    }
+  //     &._right {
+  //       float: right;
+  //     }
+  //   }
 
-    ._show-sm {
-      display: none;
-      @include bp-min(sm) {
-        display: inline-block;
-      }
-    }
+  //   ._show-sm {
+  //     display: none;
+  //     @include bp-min(sm) {
+  //       display: inline-block;
+  //     }
+  //   }
 
-    ._show-md {
-      display: none;
-      @include bp-min(md) {
-        display: inline-block;
-      }
-    }
-  }
+  //   ._show-md {
+  //     display: none;
+  //     @include bp-min(md) {
+  //       display: inline-block;
+  //     }
+  //   }
+  // }
 
-  .latest {
-    font-style: italic;
+  // .latest {
+  //   font-style: italic;
 
-    line-height: 2.25rem;
-    @include fgcolor(neutral, 6);
-    @include font-size(2);
+  //   line-height: 2.25rem;
+  //   @include fgcolor(neutral, 6);
+  //   @include font-size(2);
 
-    .-time,
-    .-user {
-      font-weight: 500;
-      @include fgcolor(primary, 8);
-    }
+  //   .-time,
+  //   .-user {
+  //     font-weight: 500;
+  //     @include fgcolor(primary, 8);
+  //   }
 
-    ._hide {
-      display: none;
-      @include bp-min(sm) {
-        display: inline-block;
-      }
-    }
-  }
+  //   ._hide {
+  //     display: none;
+  //     @include bp-min(sm) {
+  //       display: inline-block;
+  //     }
+  //   }
+  // }
 
-  .action {
-    @include flex($gap: 0.5rem);
-    margin-top: 0.75rem;
+  // .action {
+  //   @include flex($gap: 0.5rem);
+  //   margin-top: 0.75rem;
 
-    ._right {
-      margin-left: auto;
-    }
-  }
+  //   ._right {
+  //     margin-left: auto;
+  //   }
+  // }
 
-  footer {
-    border-top: 1px solid color(neutral, 3);
-  }
+  // footer {
+  //   border-top: 1px solid color(neutral, 3);
+  // }
 </style>

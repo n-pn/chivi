@@ -90,7 +90,7 @@
 
   function changePage(newPage = 2) {
     if (newPage >= 1 && newPage <= page_max) {
-      _goto(makePageUrl(newPage, query))
+      _goto_(makePageUrl(newPage, query))
     }
   }
 </script>
@@ -192,25 +192,14 @@
 
   $footer-height: 4rem;
 
-  // :global(.footer) {
-  //   position: sticky;
-  //   bottom: 0;
-  //   left: 0;
-  //   width: 100%;
-  //   transition: transform 0.1s ease-in-out;
-  //   @include bgcolor(rgba(color(neutral, 1), 0.8));
-
-  //   :global(.main._clear) & {
-  //     transform: translateY($footer-height);
-  //     background-color: transparent;
-  //     margin-bottom: 0;
-  //   }
-  // }
-
   .pagi {
     padding: 0.5rem 0;
     @include flex($gap: 0.375rem);
     justify-content: center;
+
+    > * + * {
+      margin-left: 0.375rem;
+    }
   }
 
   .page {
@@ -218,10 +207,6 @@
 
     > span {
       margin-top: rem(1px);
-    }
-
-    & + & {
-      margin-left: 0.375rem;
     }
 
     &[data-level] {

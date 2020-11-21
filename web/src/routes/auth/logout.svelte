@@ -2,6 +2,6 @@
   export async function preload({ query }) {
     await this.fetch('/_logout')
     const url = query.ret || '/'
-    _goto(url)
+    _goto_(url)
   }
 </script>

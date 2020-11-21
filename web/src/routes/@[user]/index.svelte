@@ -82,43 +82,43 @@
 </Vessel>
 
 <style lang="scss">
-  .tabs {
-    display: flex;
-    margin: 0.75rem 0;
-    @include border($sides: bottom);
-  }
+  // .tabs {
+  //   display: flex;
+  //   margin: 0.75rem 0;
+  //   @include border($sides: bottom);
+  // }
 
-  .tab {
-    line-height: 2rem;
-    text-transform: uppercase;
-    cursor: pointer;
-    font-weight: 500;
-    padding: 0 0.5rem;
-    // max-width: 30vw;
+  // .tab {
+  //   line-height: 2rem;
+  //   text-transform: uppercase;
+  //   cursor: pointer;
+  //   font-weight: 500;
+  //   padding: 0 0.5rem;
+  //   // max-width: 30vw;
 
-    @include font-size(2);
-    @include fgcolor(neutral, 6);
-    @include truncate(null);
+  //   @include font-size(2);
+  //   @include fgcolor(neutral, 6);
+  //   @include truncate(null);
 
-    &:hover {
-      @include fgcolor(primary, 6);
-    }
+  //   &:hover {
+  //     @include fgcolor(primary, 6);
+  //   }
 
-    &._active {
-      @include border($sides: bottom, $width: 2px, $color: primary, $shade: 6);
-    }
-  }
+  //   &._active {
+  //     @include border($sides: bottom, $width: 2px, $color: primary, $shade: 6);
+  //   }
+  // }
 
-  .pagi {
-    margin: 0.75rem 0;
-    @include flex($gap: 0.375rem);
-    justify-content: center;
-  }
+  // .pagi {
+  //   margin: 0.75rem 0;
+  //   @include flex($gap: 0.375rem);
+  //   justify-content: center;
+  // }
 
-  .page {
-    display: inline-flex;
-    > span {
-      margin-top: rem(1px);
-    }
-  }
+  // .page {
+  //   display: inline-flex;
+  //   > span {
+  //     margin-top: rem(1px);
+  //   }
+  // }
 </style>

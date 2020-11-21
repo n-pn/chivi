@@ -22,7 +22,7 @@
     if (data._stt == 'ok') {
       $self_uname = data.uname
       $self_power = data.power
-      _goto('/')
+      _goto_('/')
     } else {
       error = true
     }
@@ -78,13 +78,13 @@
   section {
     position: absolute;
     display: flex;
+    @include center-flex;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 700;
     background: color(neutral, 3, 0.3);
-    @include center-flex;
   }
 
   form {
@@ -157,8 +157,7 @@
     // @include border($sides: top);
     // margin-top: 1.5rem;
     padding: 0.75rem 0 1.5rem;
-
-    @include flex;
+    // @include flex;
 
     .login {
       margin-left: auto;

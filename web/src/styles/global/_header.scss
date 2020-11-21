@@ -94,17 +94,11 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   @include font-size(2);
 
   &._show-sm {
-    display: none;
-    @include bp-min(sm) {
-      display: inline-block;
-    }
+    @include bp-all(inline-block, none, $sm: inline-block);
   }
 
   &._show-md {
-    display: none;
-    @include bp-min(md) {
-      display: inline-block;
-    }
+    @include bp-all(inline-block, none, $md: inline-block);
   }
 
   ._brand & {

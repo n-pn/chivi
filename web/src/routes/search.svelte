@@ -118,136 +118,136 @@
 </Vessel>
 
 <style lang="scss">
-  .list {
-    // width: 35rem;
-    max-width: 100%;
+  // .list {
+  //   // width: 35rem;
+  //   max-width: 100%;
 
-    padding: 0.75rem 0;
-    margin: 0 auto;
+  //   padding: 0.75rem 0;
+  //   margin: 0 auto;
 
-    @include grid($gap: 0.75rem, $size: minmax(18rem, 1fr));
-  }
+  //   @include grid($gap: 0.75rem, $size: minmax(18rem, 1fr));
+  // }
 
-  h1 {
-    text-align: center;
+  // h1 {
+  //   text-align: center;
 
-    @include bp-all(margin-top, 1rem, 1.5rem, 2rem);
-    @include bp-all(margin-bottom, 0rem, 0.5rem, 1rem);
-    @include bp-all(font-size, font-size(5), font-size(6), font-size(7));
-    @include bp-all(line-height, 1.5rem, 1.75rem, 2rem);
-    @include fgcolor(neutral, 6);
-  }
+  //   @include bp-all(margin-top, 1rem, 1.5rem, 2rem);
+  //   @include bp-all(margin-bottom, 0rem, 0.5rem, 1rem);
+  //   @include bp-all(font-size, font-size(5), font-size(6), font-size(7));
+  //   @include bp-all(line-height, 1.5rem, 1.75rem, 2rem);
+  //   @include fgcolor(neutral, 6);
+  // }
 
-  .book {
-    display: block;
-    padding: 0.5rem;
+  // .book {
+  //   display: block;
+  //   padding: 0.5rem;
 
-    @include bgcolor(white);
-    @include radius();
-    @include shadow(1);
+  //   @include bgcolor(white);
+  //   @include radius();
+  //   @include shadow(1);
 
-    @include wrap;
+  //   @include wrap;
 
-    &:hover {
-      @include shadow(2);
+  //   &:hover {
+  //     @include shadow(2);
 
-      h2,
-      h3 {
-        @include fgcolor(primary, 5);
-      }
-    }
-  }
+  //     h2,
+  //     h3 {
+  //       @include fgcolor(primary, 5);
+  //     }
+  //   }
+  // }
 
-  .cover {
-    float: left;
-    @include radius();
-    @include bp-all(width, 35%, 30%);
+  // .cover {
+  //   float: left;
+  //   @include radius();
+  //   @include bp-all(width, 35%, 30%);
 
-    position: relative;
-    overflow: hidden;
+  //   position: relative;
+  //   overflow: hidden;
 
-    @include wrap;
+  //   @include wrap;
 
-    &:before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 0;
-      padding-top: #{4 / 3} * 100%;
-      @include bgcolor(primary, 7);
-      z-index: -1;
-    }
+  //   &:before {
+  //     content: '';
+  //     display: block;
+  //     position: absolute;
+  //     top: 0;
+  //     left: 0;
+  //     width: 100%;
+  //     height: 0;
+  //     padding-top: #{4 / 3} * 100%;
+  //     @include bgcolor(primary, 7);
+  //     z-index: -1;
+  //   }
 
-    :global(img) {
-      width: 100%;
-      height: auto;
-      @include radius();
-    }
-  }
+  //   :global(img) {
+  //     width: 100%;
+  //     height: auto;
+  //     @include radius();
+  //   }
+  // }
 
-  .infos {
-    float: right;
-    @include bp-all(width, 65%, 70%);
-    padding-left: 0.5rem;
+  // .infos {
+  //   float: right;
+  //   @include bp-all(width, 65%, 70%);
+  //   padding-left: 0.5rem;
 
-    > * + * {
-      margin-top: 0.25rem;
-    }
-  }
+  //   > * + * {
+  //     margin-top: 0.25rem;
+  //   }
+  // }
 
-  h2,
-  h3 {
-    line-height: 1.5rem;
-    font-weight: 400;
-    @include truncate();
-  }
+  // h2,
+  // h3 {
+  //   line-height: 1.5rem;
+  //   font-weight: 400;
+  //   @include truncate();
+  // }
 
-  h2 {
-    @include font-size(5);
-    @include fgcolor(neutral, 8);
+  // h2 {
+  //   @include font-size(5);
+  //   @include fgcolor(neutral, 8);
 
-    @include bp-all(padding-top, $md: 0.25rem);
-    @include bp-all(padding-bottom, $md: 0.25rem);
-  }
+  //   @include bp-all(padding-top, $md: 0.25rem);
+  //   @include bp-all(padding-bottom, $md: 0.25rem);
+  // }
 
-  h3 {
-    @include font-size(4);
-    @include fgcolor(neutral, 7);
-  }
+  // h3 {
+  //   @include font-size(4);
+  //   @include fgcolor(neutral, 7);
+  // }
 
-  .extra {
-    ._cram {
-      margin-left: 0;
-    }
-  }
+  // .extra {
+  //   ._cram {
+  //     margin-left: 0;
+  //   }
+  // }
 
-  .label {
-    @include fgcolor(neutral, 6);
+  // .label {
+  //   @include fgcolor(neutral, 6);
 
-    &._sub {
-      display: none;
-      @include bp-all(display, $md: inline-block);
-    }
-  }
+  //   &._sub {
+  //     display: none;
+  //     @include bp-all(display, $md: inline-block);
+  //   }
+  // }
 
-  .value {
-    font-weight: 500;
-    @include truncate(null);
-    @include fgcolor(neutral, 6);
-  }
+  // .value {
+  //   font-weight: 500;
+  //   @include truncate(null);
+  //   @include fgcolor(neutral, 6);
+  // }
 
-  .pagi {
-    @include flex($gap: 0.75rem);
-    justify-content: center;
-    margin-bottom: 0.75rem;
+  // .pagi {
+  //   @include flex($gap: 0.75rem);
+  //   justify-content: center;
+  //   margin-bottom: 0.75rem;
 
-    .m-button {
-      span {
-        padding-top: rem(1px);
-      }
-    }
-  }
+  //   .m-button {
+  //     span {
+  //       padding-top: rem(1px);
+  //     }
+  //   }
+  // }
 </style>

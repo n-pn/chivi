@@ -52,63 +52,63 @@
 </div>
 
 <style lang="scss">
-  $height: 2.25rem;
+  // $height: 2.25rem;
 
-  div {
-    display: flex;
-    width: 100%;
-    height: $height;
-    overflow: hidden;
-    line-height: $height;
+  // div {
+  //   display: flex;
+  //   width: 100%;
+  //   height: $height;
+  //   overflow: hidden;
+  //   line-height: $height;
 
-    @include radius();
-    @include bgcolor(neutral, 1);
-    @include border($color: neutral, $shade: 3);
-  }
+  //   @include radius();
+  //   @include bgcolor(neutral, 1);
+  //   @include border($color: neutral, $shade: 3);
+  // }
 
-  .output {
-    flex-grow: 1;
-    display: inline-flex;
-    justify-content: center;
-    overflow: hidden;
-  }
+  // .output {
+  //   flex-grow: 1;
+  //   display: inline-flex;
+  //   justify-content: center;
+  //   overflow: hidden;
+  // }
 
-  .key {
-    font-weight: 500;
-    @include fgcolor(neutral, 7);
-    @include truncate(null);
-    max-width: 8em;
-  }
+  // .key {
+  //   font-weight: 500;
+  //   @include fgcolor(neutral, 7);
+  //   @include truncate(null);
+  //   max-width: 8em;
+  // }
 
-  .sub {
-    @include fgcolor(neutral, 4);
-  }
+  // .sub {
+  //   @include fgcolor(neutral, 4);
+  // }
 
-  button {
-    background: transparent;
-    padding: 0 0.375rem;
-    margin: 0;
-    line-height: 1em;
-    @include font-size(4);
-    @include fgcolor(neutral, 7);
+  // button {
+  //   background: transparent;
+  //   padding: 0 0.375rem;
+  //   margin: 0;
+  //   line-height: 1em;
+  //   @include font-size(4);
+  //   @include fgcolor(neutral, 7);
 
-    &:hover {
-      background-color: #fff;
-      @include fgcolor(primary, 5);
-    }
+  //   &:hover {
+  //     background-color: #fff;
+  //     @include fgcolor(primary, 5);
+  //   }
 
-    &:disabled {
-      cursor: pointer;
-      @include fgcolor(neutral, 5);
-      background: transparent;
-    }
+  //   &:disabled {
+  //     cursor: pointer;
+  //     @include fgcolor(neutral, 5);
+  //     background: transparent;
+  //   }
 
-    &._left {
-      @include border($sides: right);
-    }
+  //   &._left {
+  //     @include border($sides: right);
+  //   }
 
-    &._right {
-      @include border($sides: left);
-    }
-  }
+  //   &._right {
+  //     @include border($sides: left);
+  //   }
+  // }
 </style>

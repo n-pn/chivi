@@ -238,51 +238,51 @@
 </Vessel>
 
 <style lang="scss">
-  .footer {
-    width: 100%;
-    padding: 0.5rem 0;
-    @include flex($gap: 0.5rem);
-    justify-content: center;
+  // .footer {
+  //   width: 100%;
+  //   padding: 0.5rem 0;
+  //   @include flex($gap: 0.5rem);
+  //   justify-content: center;
 
-    // a {
-    //   @include bgcolor(neutral, 1);
-    //   &:hover {
-    //     @include bgcolor(neutral, 2);
-    //   }
-    // }
-  }
+  //   // a {
+  //   //   @include bgcolor(neutral, 1);
+  //   //   &:hover {
+  //   //     @include bgcolor(neutral, 2);
+  //   //   }
+  //   // }
+  // }
 
-  .bread {
-    // display: flex;
-    // flex-wrap: wrap;
+  // .bread {
+  //   // display: flex;
+  //   // flex-wrap: wrap;
 
-    padding: 0.5rem 0;
-    line-height: 1.25rem;
+  //   padding: 0.5rem 0;
+  //   line-height: 1.25rem;
 
-    @include font-size(2);
-    @include border($sides: bottom);
+  //   @include font-size(2);
+  //   @include border($sides: bottom);
 
-    .-crumb {
-      display: inline;
-      // float: left;
-      @include fgcolor(neutral, 6);
+  //   .-crumb {
+  //     display: inline;
+  //     // float: left;
+  //     @include fgcolor(neutral, 6);
 
-      &._sep:after {
-        content: '>';
-        @include fgcolor(neutral, 5);
-        padding: 0 0.25rem;
-      }
-    }
+  //     &._sep:after {
+  //       content: '>';
+  //       @include fgcolor(neutral, 5);
+  //       padding: 0 0.25rem;
+  //     }
+  //   }
 
-    .-link {
-      color: inherit;
-      &:hover {
-        @include fgcolor(primary, 6);
-      }
-    }
+  //   .-link {
+  //     color: inherit;
+  //     &:hover {
+  //       @include fgcolor(primary, 6);
+  //     }
+  //   }
 
-    :global(svg) {
-      margin-top: -0.25rem;
-    }
-  }
+  //   :global(svg) {
+  //     margin-top: -0.25rem;
+  //   }
+  // }
 </style>

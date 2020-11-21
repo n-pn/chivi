@@ -305,6 +305,6 @@ end
 #   puts info.to_pretty_json
 # end
 
-BookMeta.search(seed: "zhwenpg", limit: 10) do |info|
-  puts info.to_pretty_json
-end
+# BookMeta.search(seed: "zhwenpg", limit: 10) do |info|
+#   puts info.to_pretty_json
+# end

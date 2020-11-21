@@ -9,7 +9,7 @@ module.exports = {
       const { lang } = attributes
       if (lang !== 'scss') return
 
-      const prepend_content = '@import "helpers.scss";\n'
+      const prepend_content = '@import "helpers";\n'
       content = prepend_content + content
 
       const options = {

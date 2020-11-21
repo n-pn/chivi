@@ -138,127 +138,127 @@
 {/if}
 
 <style lang="scss">
-  $chap-size: 17.5rem;
-  $chap-break: $chap-size * 2 + 0.75 * 5;
+  // $chap-size: 17.5rem;
+  // // $chap-break: $chap-size * 2 + 0.75 * 5;
 
-  .chap-list {
-    @include grid($size: minmax($chap-size, 1fr), $gap: 0 0.75rem);
-  }
-
-  .chap-item {
-    display: block;
-
-    @include border($sides: bottom);
-
-    &:first-child {
-      @include border($sides: top);
-    }
-
-    &:nth-child(even) {
-      @include bgcolor(neutral, 1);
-    }
-
-    @include bp-min($chap-break) {
-      &:nth-child(2) {
-        @include border($sides: top);
-      }
-
-      &:nth-child(4n),
-      &:nth-child(4n + 1) {
-        background-color: #fff;
-      }
-
-      &:nth-child(4n + 2),
-      &:nth-child(4n + 3) {
-        @include bgcolor(neutral, 1);
-      }
-    }
-  }
-
-  .chap-link {
-    display: block;
-    padding: 0.375rem 0.75rem;
-
-    &:visited {
-      .title {
-        font-style: italic;
-        @include fgcolor(neutral, 5);
-      }
-    }
-
-    &:hover {
-      .title {
-        @include fgcolor(primary, 5);
-      }
-    }
-  }
-
-  // .label {
-  //   padding-top: 0.5rem;
-  //   padding-left: 0.5rem;
+  // .chap-list {
+  //   @include grid($size: minmax($chap-size, 1fr), $gap: 0 0.75rem);
   // }
 
-  .label {
-    display: block;
-    padding: 0;
-    line-height: 1.25rem;
-    @include font-size(1);
-    text-transform: uppercase;
-    @include fgcolor(neutral, 5);
-    @include truncate(100%);
-  }
+  // .chap-item {
+  //   display: block;
 
-  .title {
-    display: block;
-    padding: 0;
-    line-height: 1.5rem;
-    // $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
-    // @include bp-all(font-size, $font-sizes);
+  //   @include border($sides: bottom);
 
-    @include fgcolor(neutral, 8);
-    @include truncate(100%);
-  }
+  //   &:first-child {
+  //     @include border($sides: top);
+  //   }
 
-  .pagi {
-    margin-top: 0.75rem;
-    @include flex($gap: 0.375rem);
-    justify-content: center;
-  }
+  //   &:nth-child(even) {
+  //     @include bgcolor(neutral, 1);
+  //   }
 
-  .page {
-    &:disabled {
-      cursor: text;
-    }
+  //   @include bp-min(md) {
+  //     &:nth-child(2) {
+  //       @include border($sides: top);
+  //     }
 
-    & + & {
-      margin-left: 0.375rem;
-    }
+  //     &:nth-child(4n),
+  //     &:nth-child(4n + 1) {
+  //       background-color: #fff;
+  //     }
 
-    &[data-level] {
-      display: none;
-    }
+  //     &:nth-child(4n + 2),
+  //     &:nth-child(4n + 3) {
+  //       @include bgcolor(neutral, 1);
+  //     }
+  //   }
+  // }
 
-    &[data-level='0'] {
-      display: inline-block;
-    }
+  // .chap-link {
+  //   display: block;
+  //   padding: 0.375rem 0.75rem;
 
-    &[data-level='1'] {
-      @include bp-min(sm) {
-        display: inline-block;
-      }
-    }
+  //   &:visited {
+  //     .title {
+  //       font-style: italic;
+  //       @include fgcolor(neutral, 5);
+  //     }
+  //   }
 
-    &[data-level='2'] {
-      @include bp-min(md) {
-        display: inline-block;
-      }
-    }
+  //   &:hover {
+  //     .title {
+  //       @include fgcolor(primary, 5);
+  //     }
+  //   }
+  // }
 
-    &[data-level='3'],
-    &[data-level='4'] {
-      @include bp-min(lg) {
-        display: inline-block;
-      }
-    }
-  }
+  // // .label {
+  // //   padding-top: 0.5rem;
+  // //   padding-left: 0.5rem;
+  // // }
+
+  // .label {
+  //   display: block;
+  //   padding: 0;
+  //   line-height: 1.25rem;
+  //   @include font-size(1);
+  //   text-transform: uppercase;
+  //   @include fgcolor(neutral, 5);
+  //   @include truncate(100%);
+  // }
+
+  // .title {
+  //   display: block;
+  //   padding: 0;
+  //   line-height: 1.5rem;
+  //   // $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
+  //   // @include bp-all(font-size, $font-sizes);
+
+  //   @include fgcolor(neutral, 8);
+  //   @include truncate(100%);
+  // }
+
+  // .pagi {
+  //   margin-top: 0.75rem;
+  //   @include flex($gap: 0.375rem);
+  //   justify-content: center;
+  // }
+
+  // .page {
+  //   &:disabled {
+  //     cursor: text;
+  //   }
+
+  //   & + & {
+  //     margin-left: 0.375rem;
+  //   }
+
+  //   &[data-level] {
+  //     display: none;
+  //   }
+
+  //   &[data-level='0'] {
+  //     display: inline-block;
+  //   }
+
+  //   &[data-level='1'] {
+  //     @include bp-min(sm) {
+  //       display: inline-block;
+  //     }
+  //   }
+
+  //   &[data-level='2'] {
+  //     @include bp-min(md) {
+  //       display: inline-block;
+  //     }
+  //   }
+
+  //   &[data-level='3'],
+  //   &[data-level='4'] {
+  //     @include bp-min(lg) {
+  //       display: inline-block;
+  //     }
+  //   }
+  // }
 </style>

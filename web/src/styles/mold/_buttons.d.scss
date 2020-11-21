@@ -33,50 +33,51 @@ $-button-text-sizes: (
 
 @mixin button-common() {
   display: inline-flex;
+  text-transform: uppercase;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  touch-action: manipulation;
 
   @include radius;
-  @include uppercase;
   @include border($color: none);
 
-  &._disabled,
   &:disabled,
   &._disable {
-    &:hover {
+    @include hover {
       cursor: text;
     }
+  }
+
+  > span {
+    margin: 0 rem(1x);
   }
 }
 
 @mixin button-sizing($size: $-button-size-df) {
   $height: map-get($-button-heights, $size);
+
   $icon-size: map-get($-button-icon-sizes, $size);
   $text-size: map-get($-button-text-sizes, $size);
 
-  $icon-pad: ($height - $icon-size - rem(2px)) / 2;
-  $text-pad: ($icon-size - $text-size) / 2;
+  $gutter: ($height - $icon-size - rem(2px)) / 2;
 
   height: $height;
-  padding: $icon-pad;
+  padding: $gutter;
   line-height: $icon-size;
   font-size: $text-size;
   // vertical-align: bottom;
 
   > svg,
   > img {
-    width: $icon-size;
-    height: $icon-size;
-  }
-
-  > span {
-    // margin-top: rem(1px);
-    padding: 0 $text-pad;
+    width: $icon-size !important;
+    height: $icon-size !important;
   }
 
   @at-root {
     input#{&} {
-      padding-top: ($height - $icon-size) / 2;
-      padding-left: ($height - $text-size - rem(2px)) / 2;
-      padding-right: ($height - $text-size - rem(2px)) / 2;
+      padding-left: $gutter + rem(1x);
+      padding-right: $gutter + rem(1x);
     }
   }
 }
@@ -85,12 +86,14 @@ $-button-text-sizes: (
   @if $style == line {
     @if $color == neutral {
       @include bdcolor($color: $color, $shade: 4);
+
       &:disabled,
       &._disable {
         @include bdcolor($color: $color, $shade: 3);
       }
     } @else {
       @include bdcolor($color: $color, $shade: 3);
+
       &:disabled,
       &._disable {
         @include bdcolor($color: $color, $shade: 2);
@@ -104,6 +107,7 @@ $-button-text-sizes: (
     @if $color == neutral {
       @include fgcolor(neutral, 7);
       @include bgcolor(neutral, 2);
+
       &:hover {
         @include bgcolor(neutral, 3);
       }
@@ -116,6 +120,7 @@ $-button-text-sizes: (
     } @else {
       @include fgcolor(white);
       @include bgcolor($color, 5);
+
       &:hover {
         @include bgcolor($color, 4);
       }
@@ -128,7 +133,7 @@ $-button-text-sizes: (
   } @else {
     @if $color == neutral {
       @include fgcolor($color, 7);
-      @include bgcolor(none);
+      @include bgcolor(neutral, 1);
 
       &:hover {
         @include bgcolor($color, 2);
@@ -137,11 +142,11 @@ $-button-text-sizes: (
       &:disabled,
       &._disable {
         @include fgcolor($color, 4);
-        @include bgcolor(none);
+        @include bgcolor(neutral, 1);
       }
     } @else {
       @include fgcolor($color, 6);
-      @include bgcolor(none);
+      @include bgcolor(neutral, 1);
 
       &:hover {
         @include bgcolor($color, 1);
@@ -150,7 +155,7 @@ $-button-text-sizes: (
       &:disabled,
       &._disable {
         @include fgcolor($color, 3);
-        @include bgcolor(none);
+        @include bgcolor(neutral, 1);
       }
     }
   }

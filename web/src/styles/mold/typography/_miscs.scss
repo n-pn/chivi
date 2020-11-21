@@ -1,10 +1,10 @@
-article {
-  @include flow(1rem);
-}
+// article {
+//   @include flow(1rem);
+// }
 
-p {
-  font-size: rem(4x);
-}
+// p {
+//   font-size: rem(4x);
+// }
 
 b,
 strong {
@@ -31,43 +31,43 @@ sup {
   top: -0.5em;
 }
 
-del,
-ins,
-mark {
-  padding: 0 rem(1x);
-  line-height: inherit;
-  @include radius();
-}
+// del,
+// ins,
+// mark {
+//   padding: 0 rem(1x);
+//   line-height: inherit;
+//   @include radius();
+// }
 
-del {
-  @include fgcolor(red, 7);
-  @include bgcolor(red, 2);
-}
+// del {
+//   @include fgcolor(red, 7);
+//   @include bgcolor(red, 2);
+// }
 
-ins {
-  @include fgcolor(green, 7);
-  @include bgcolor(green, 2);
-}
+// ins {
+//   @include fgcolor(green, 7);
+//   @include bgcolor(green, 2);
+// }
 
-mark {
-  @include fgcolor(yellow, 7);
-  @include bgcolor(yellow, 2);
-}
+// mark {
+//   @include fgcolor(yellow, 7);
+//   @include bgcolor(yellow, 2);
+// }
 
-time,
-var {
-  @include fgcolor(primary, 6);
-}
+// time,
+// var {
+//   @include fgcolor(primary, 6);
+// }
 
-abbr[title],
-abbr[data-original-title] {
-  cursor: help;
-  text-decoration: underline;
-  text-decoration: underline dotted;
-  text-decoration-skip-ink: none;
-}
+// abbr[title],
+// abbr[data-original-title] {
+//   cursor: help;
+//   text-decoration: underline;
+//   text-decoration: underline dotted;
+//   text-decoration-skip-ink: none;
+// }
 
-address {
-  font-style: normal;
-  line-height: inherit;
-}
+// address {
+//   font-style: normal;
+//   line-height: inherit;
+// }
