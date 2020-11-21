@@ -350,7 +350,6 @@
   }
 
   .item {
-    // @include clearfix;
     & + & {
       margin-top: 0.25rem;
     }

@@ -90,7 +90,7 @@
 
 <style lang="scss">
   ._shift {
-    @include screen-min(lg) {
+    @include bp-min(lg) {
       padding-right: 30rem;
     }
   }

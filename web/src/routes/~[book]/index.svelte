@@ -308,9 +308,7 @@
       margin: 0.75rem 0;
       word-wrap: break-word;
       @include fgcolor(neutral, 7);
-
-      $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
-      @include apply(font-size, $font-sizes);
+      @include bp-all(font-size, rem(15px), rem(16px), rem(17px));
     }
   }
 
@@ -325,7 +323,7 @@
 
     .-hint {
       // display: none;
-      // @include screen-min(sm) {
+      // @include bp-min(sm) {
       //   display: inline-block;
       // }
 
@@ -340,7 +338,7 @@
 
     .-hide {
       display: none;
-      @include screen-min(sm) {
+      @include bp-min(sm) {
         display: inline-block;
       }
     }
@@ -379,7 +377,7 @@
 
     .-count {
       display: none;
-      @include screen-min(sm) {
+      @include bp-min(sm) {
         margin-left: 0.25rem;
         display: inline-block;
         @include fgcolor(neutral, 6);
@@ -451,7 +449,7 @@
     padding: 0 0.75rem;
     border-radius: 0.75rem;
     @include shadow(2);
-    @include screen-min(md) {
+    @include bp-min(md) {
       margin-left: 0;
       margin-right: 0;
       padding-left: 1.5rem;
@@ -474,7 +472,7 @@
       text-transform: uppercase;
 
       @include font-size(2);
-      @include screen-min(sm) {
+      @include bp-min(sm) {
         @include font-size(3);
       }
 
@@ -554,7 +552,7 @@
 
     .latest-time {
       display: none;
-      @include screen-min(sm) {
+      @include bp-min(sm) {
         display: table-cell;
         max-width: 8.5rem;
         text-align: right;
@@ -582,10 +580,10 @@
     @include truncate(null);
 
     max-width: 60vw;
-    @include screen-min(sm) {
+    @include bp-min(sm) {
       max-width: 50vw;
     }
-    @include screen-min(lg) {
+    @include bp-min(lg) {
       max-width: 40vw;
     }
   }

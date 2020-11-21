@@ -1,25 +1,15 @@
 // clearfix
 
-@mixin wrap($gap: 0, $right: '.-fr') {
+@mixin wrap($gap: 0) {
   &:after {
     display: block;
     content: '';
     clear: both;
   }
 
-  > * {
-    float: left;
-  }
-
   @if $gap and $gap > 0 {
     > * + * {
-      @include bps(margin-left, $gap);
-    }
-  }
-
-  @if right {
-    > #{right} {
-      float: right;
+      @include bp-all(margin-left, $gap);
     }
   }
 }
@@ -29,7 +19,7 @@
 
   @if $gap and $gap > 0 {
     > * + * {
-      @include bps(margin-left, $gap);
+      @include bp-all(margin-left, $gap);
     }
   }
 }
@@ -39,7 +29,7 @@
 
   @if $gap and $gap > 0 {
     > * + * {
-      @include bps(margin-top, $gap);
+      @include bp-all(margin-top, $gap);
     }
   }
 }
@@ -47,7 +37,7 @@
 @mixin grid($size, $gap: 0) {
   display: grid;
   grid-template-columns: repeat(auto-fill, $size);
-  @include bps(grid-gap, $gap);
+  @include bp-all(grid-gap, $gap);
 }
 
 @mixin center-flex {

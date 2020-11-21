@@ -107,9 +107,9 @@ $m-screen-names: map-keys($m-screen-sizes);
     $props: ($props);
   }
 
-  @if type-of($xs) == map {
-    $map: $xs;
-  } @else {
+  $map: $xs;
+
+  @if type-of($xs) != map {
     $map: (
       xs: $xs or $df,
       sm: $sm or $df,

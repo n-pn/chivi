@@ -100,8 +100,8 @@
 
     <div class="line">
       <span class="stat">
-        Đánh giá: <span
-          class="label">{book.voters < 10 ? '--' : book.rating}</span>/10
+        Đánh giá:
+        <span class="label">{book.voters < 10 ? '--' : book.rating}</span>/10
       </span>
       <span class="stat">({book.voters} lượt đánh giá)</span>
     </div>
@@ -137,40 +137,31 @@
 <style lang="scss">
   .main-info {
     padding-top: 0.75rem;
-    @include clearfix;
+    @include wrap();
   }
 
   .title {
-    $line-heights: screen-vals(1.5rem, 1.75rem, 2rem);
-    $font-sizes: screen-vals(rem(26px), rem(28px), rem(30px));
-
     font-weight: 300;
     margin-bottom: 0.75rem;
-    // @include clearfix;
 
-    @include apply(float, screen-vals(left, right));
-    @include apply(width, screen-vals(100%, 70%, 75%));
-    @include apply(padding-left, screen-vals(0, 0.75rem));
+    @include bp-all(float, left, right);
+    @include bp-all(width, 100%, 70%, 75%);
+    @include bp-all(padding-left, 0, 0.75rem);
 
-    @include apply(line-height, $line-heights);
-    @include apply(font-size, $font-sizes);
-
-    .-sub {
-      font-size: 0.875em;
-      line-height: 1em;
-    }
+    @include bp-all(line-height, 1.5rem, 1.75rem, 2rem);
+    @include bp-all(font-size, rem(26px), rem(28px), rem(30px));
   }
 
   .cover {
     float: left;
-    @include apply(width, screen-vals(40%, 30%, 25%));
+    @include bp-all(width, 40%, 30%, 25%);
   }
 
   .extra {
     float: right;
     padding-left: 0.75rem;
 
-    @include apply(width, screen-vals(60%, 70%, 75%));
+    @include bp-all(width, 60%, 70%, 75%);
 
     :global(svg) {
       margin-top: -0.125rem;

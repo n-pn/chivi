@@ -28,25 +28,24 @@ $-border-shade-df: 3 !default;
 @mixin bdcolor(
   $color: $-border-color-df,
   $shade: $-border-shade-df,
-  $sides: all,
-  $trump: false
+  $sides: all
 ) {
   $props: border-props($sides, color);
-  @include apply($props, color($color, $shade), $trump);
+  @include bp-all($props, color($color, $shade));
 }
 
 // styles
 
-@mixin bdstyle($style: $-border-style-df, $sides: all, $trump: false) {
+@mixin bdstyle($style: $-border-style-df, $sides: all) {
   $props: border-props($sides, style);
-  @include apply($props, $style, $trump);
+  @include bp-all($props, $style);
 }
 
 // widths
 
-@mixin bdwidth($width: $-border-width-df, $sides: all, $trump: false) {
+@mixin bdwidth($width: $-border-width-df, $sides: all) {
   $props: border-props($sides, width);
-  @include apply($props, $width, $trump);
+  @include bp-all($props, $width);
 }
 
 // borders
@@ -56,10 +55,9 @@ $-border-shade-df: 3 !default;
   $color: $-border-color-df,
   $shade: $-border-shade-df,
   $style: $-border-style-df,
-  $sides: all,
-  $trump: false
+  $sides: all
 ) {
   $props: border-props($sides);
   $value: $width $style color($color, $shade);
-  @include apply($props, $value, $trump);
+  @include bp-all($props, $value);
 }

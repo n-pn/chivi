@@ -508,7 +508,7 @@
     overflow: hidden;
     height: $height;
 
-    @include clearfix;
+    @include wrap();
 
     @include border();
     border-top: none;
@@ -516,7 +516,7 @@
 
     font-size: rem(11px);
 
-    @include screen-min(md) {
+    @include bp-min(md) {
       font-size: rem(12px);
     }
 
@@ -544,14 +544,14 @@
 
     ._show-sm {
       display: none;
-      @include screen-min(sm) {
+      @include bp-min(sm) {
         display: inline-block;
       }
     }
 
     ._show-md {
       display: none;
-      @include screen-min(md) {
+      @include bp-min(md) {
         display: inline-block;
       }
     }
@@ -572,7 +572,7 @@
 
     ._hide {
       display: none;
-      @include screen-min(sm) {
+      @include bp-min(sm) {
         display: inline-block;
       }
     }

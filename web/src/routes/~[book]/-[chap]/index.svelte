@@ -261,7 +261,6 @@
 
     @include font-size(2);
     @include border($sides: bottom);
-    // @include clearfix;
 
     .-crumb {
       display: inline;

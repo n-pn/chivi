@@ -35,7 +35,7 @@ $m-size-names: map-keys($m-font-sizes);
 
     $key: nth($m-size-names, $key + 1);
     // prettier-ignore
-    @if $key { @return mat-get($m-font-sizes, $key); }
+    @if $key { @return map-get($m-font-sizes, $key); }
     @error "font size index `#{$key}`out of range";
   } @else {
     $value: map-get($m-font-sizes, $key);

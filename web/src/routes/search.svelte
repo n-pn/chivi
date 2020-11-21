@@ -52,7 +52,9 @@
 
   {#if items.length > 0}
     <h1>
-      Hiển thị kết quả {offset + 1}~{offset + items.length}/{total} cho từ khoá "{word}":
+      Hiển thị kết quả
+      {offset + 1}~{offset + items.length}/{total}
+      cho từ khoá "{word}":
     </h1>
 
     <div class="list" data-page={page}>
@@ -129,13 +131,10 @@
   h1 {
     text-align: center;
 
-    @include apply(margin-top, screen-vals(1rem, 1.5rem, 2rem));
-    @include apply(margin-bottom, screen-vals(0rem, 0.5rem, 1rem));
-    @include apply(
-      font-size,
-      screen-vals(font-size(5), font-size(6), font-size(7))
-    );
-    @include apply(line-height, screen-vals(1.5rem, 1.75rem, 2rem));
+    @include bp-all(margin-top, 1rem, 1.5rem, 2rem);
+    @include bp-all(margin-bottom, 0rem, 0.5rem, 1rem);
+    @include bp-all(font-size, font-size(5), font-size(6), font-size(7));
+    @include bp-all(line-height, 1.5rem, 1.75rem, 2rem);
     @include fgcolor(neutral, 6);
   }
 
@@ -147,7 +146,7 @@
     @include radius();
     @include shadow(1);
 
-    @include clearfix;
+    @include wrap;
 
     &:hover {
       @include shadow(2);
@@ -162,12 +161,12 @@
   .cover {
     float: left;
     @include radius();
-    @include apply(width, screen-vals(35%, 30%));
+    @include bp-all(width, 35%, 30%);
 
     position: relative;
     overflow: hidden;
 
-    @include clearfix;
+    @include wrap;
 
     &:before {
       content: '';
@@ -191,7 +190,7 @@
 
   .infos {
     float: right;
-    @include apply(width, screen-vals(65%, 70%));
+    @include bp-all(width, 65%, 70%);
     padding-left: 0.5rem;
 
     > * + * {
@@ -210,10 +209,8 @@
     @include font-size(5);
     @include fgcolor(neutral, 8);
 
-    @include screen(md) {
-      padding-top: 0.25rem;
-      padding-bottom: 0.25rem;
-    }
+    @include bp-all(padding-top, $md: 0.25rem);
+    @include bp-all(padding-bottom, $md: 0.25rem);
   }
 
   h3 {
@@ -222,15 +219,6 @@
   }
 
   .extra {
-    // @include clearfix;
-    // > * {
-    //   float: left;
-    // }
-
-    // > * + * {
-    //   margin-left: 0.5rem;
-    // }
-
     ._cram {
       margin-left: 0;
     }
@@ -241,9 +229,7 @@
 
     &._sub {
       display: none;
-      @include screen(md) {
-        display: inline-block;
-      }
+      @include bp-all(display, $md: inline-block);
     }
   }
 
@@ -254,7 +240,7 @@
   }
 
   .pagi {
-    @include flex($gap: 0.75rem, $child: '.m-button');
+    @include flex($gap: 0.75rem);
     justify-content: center;
     margin-bottom: 0.75rem;
 

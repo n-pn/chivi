@@ -17,7 +17,7 @@ $-body-bgcolor: color(neutral, 1) !default;
 $-body-font-family: font-family(sans) !default;
 
 body {
-  min-width: $-screen-xs;
+  min-width: $m-screen-xs;
 
   font-size: 1rem;
   font-weight: 400;
@@ -39,7 +39,9 @@ body {
 }
 
 html,
-body {
+body,
+#sapper,
+main {
   height: 100%;
 }
 

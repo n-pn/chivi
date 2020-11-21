@@ -43,5 +43,5 @@ $m-radiuses: map-keys($m-radius-sizes);
   $props: radius-props($sides);
   $value: radius($value);
 
-  @include bps($props, $value);
+  @include bp-all($props, $value);
 }

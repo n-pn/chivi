@@ -116,7 +116,7 @@
     height: 100%;
     z-index: 700;
     background: color(neutral, 3, 0.3);
-    @include flex-center;
+    @include center-flex;
   }
 
   form {
@@ -136,7 +136,7 @@
     font-weight: 300;
     padding: 1.5rem 1rem 0.5rem 0;
     @include flex($gap: 0.5rem);
-    @include flex-center;
+    @include center-flex;
     @include border($sides: bottom);
     @include font-size(7);
   }

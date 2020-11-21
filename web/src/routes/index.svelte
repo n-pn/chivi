@@ -233,23 +233,17 @@
     }
 
     &[data-level='1'] {
-      @include screen-min(sm) {
-        display: inline-block;
-      }
+      @include bp-all(display, $sm: inline-block);
     }
 
     &[data-level='2'] {
-      @include screen-min(md) {
-        display: inline-block;
-      }
+      @include bp-all(display, $md: inline-block);
     }
 
     &[data-level='3'],
     &[data-level='4'],
     &[data-level='5'] {
-      @include screen-min(lg) {
-        display: inline-block;
-      }
+      @include bp-all(display, $lg: inline-block);
     }
   }
 

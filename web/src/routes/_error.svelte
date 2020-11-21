@@ -29,7 +29,7 @@
   section {
     min-height: 80vh;
     display: flex;
-    @include flex-center;
+    @include center-flex;
   }
 
   article {
@@ -46,7 +46,7 @@
     @include fgcolor(neutral, 7);
     // margin: 0 0 0.5em 0;
 
-    @include screen-min(sm) {
+    @include bp-min(sm) {
       font-size: 4.5rem;
     }
   }
