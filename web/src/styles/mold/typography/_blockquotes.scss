@@ -1,0 +1,17 @@
+/// blockquotes
+
+$bq-padding: rem(3x) !default;
+$bq-fgcolor: color(neutral, 6) !default;
+$bq-bgcolor: color(neutral, 6, 0.05) !default;
+$bq-bdcolor: color(neutral, 6) !default;
+$bq-bdwidth: rem(1x) !default;
+
+blockquote {
+  padding: $bq-padding;
+  color: $bq-fgcolor;
+  background-color: $bq-bgcolor;
+
+  // @include radius();
+  @include flow($bq-padding);
+  @include border($width: $bq-bdwidth, $color: $bq-bdcolor, $sides: left);
+}

@@ -1,0 +1,49 @@
+pre,
+code,
+kbd,
+samp {
+  @include font-family(mono);
+}
+
+kbd,
+code {
+  padding: 0.125rem 0.25rem;
+  font-size: em(14);
+  line-height: inherit;
+  font-weight: 500;
+  vertical-align: text-top;
+  @include radius();
+}
+
+kbd {
+  // margin: -0.2em 0;
+  // display: inline-block;
+  @include fgcolor(neutral, 7);
+  @include border($color: color(neutral, 4));
+  @include shadow(1);
+}
+
+code {
+  // margin: 0 -0.2em;
+  @include fgcolor(neutral, 7);
+  @include bgcolor(neutral, 2);
+  & + & {
+    margin-left: 0.4em;
+  }
+}
+
+pre {
+  display: block;
+  margin: 0.5rem 0;
+
+  & > code {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em 1em;
+    font-size: rem(15px);
+    color: color(gray, 1);
+    background: color(gray, 8);
+    font-weight: normal;
+    @include radius();
+  }
+}

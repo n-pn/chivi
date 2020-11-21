@@ -1,4 +1,4 @@
-$-radius-sizes: (
+$m-radius-sizes: (
   0: 0,
   1: 1px,
   2: 2px,
@@ -12,8 +12,8 @@ $-radius-sizes: (
   x: 100vmax,
 ) !default;
 
-$-radius-df: 4 !default;
-$-radiuses: map-keys($-radius-sizes);
+$m-radius-df: 4 !default;
+$m-radiuses: map-keys($m-radius-sizes);
 
 // functions
 
@@ -24,7 +24,7 @@ $-radiuses: map-keys($-radius-sizes);
 
   $props: ();
 
-  @each $corner in $-corners {
+  @each $corner in $m-corners {
     @if match-side($corner, $sides) {
       $props: append($props, border-#{$corner}-radius);
     }
@@ -34,14 +34,14 @@ $-radiuses: map-keys($-radius-sizes);
 }
 
 @function radius($value) {
-  @return map-get($-radius-sizes, $value) or $value;
+  @return map-get($m-radius-sizes, $value) or $value;
 }
 
 // mixins
 
-@mixin radius($value: $-radius-df, $sides: all, $trump: false) {
+@mixin radius($value: $m-radius-df, $sides: all) {
   $props: radius-props($sides);
   $value: radius($value);
 
-  @include apply($props, $value, $trump);
+  @include bps($props, $value);
 }

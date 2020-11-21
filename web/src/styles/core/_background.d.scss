@@ -1,3 +1,12 @@
+// Background colors
+
+@mixin bgcolor($color, $shade: null, $alpha: null) {
+  @if $shade and not in-palette($color) {
+    @warn "$shade #{$shade} is not supported for custom color";
+  }
+  @include bp-all(background-color, color($color, $shade, $alpha));
+}
+
 // Gradients
 
 @mixin gradient-bg($color) {

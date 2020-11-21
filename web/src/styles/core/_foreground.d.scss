@@ -1,0 +1,9 @@
+// Foreground color
+
+@mixin fgcolor($color, $shade: null, $alpha: null) {
+  @if $shade and not in-palette($color) {
+    @warn "$shade #{$shade} is not supported for custom color";
+  }
+
+  @include bps(color, color($color, $shade, $alpha));
+}

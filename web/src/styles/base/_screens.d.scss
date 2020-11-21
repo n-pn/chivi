@@ -1,0 +1,135 @@
+/// screen breakpoints
+
+// variables
+
+$m-screen-xs: rem(320px) !default;
+$m-screen-sm: rem(360px) !default;
+$m-screen-md: rem(600px) !default;
+$m-screen-lg: rem(840px) !default;
+$m-screen-xl: rem(1080px) !default;
+$m-screen-x2: rem(1320px) !default; // reserved
+$m-screen-x3: rem(1560px) !default; // reserved
+
+$m-screen-sizes: (
+  xs: $m-screen-xs,
+  sm: $m-screen-sm,
+  md: $m-screen-md,
+  lg: $m-screen-lg,
+  xl: $m-screen-xl,
+  x2: $m-screen-x2,
+  x3: $m-screen-x3,
+) !default;
+
+$m-screen-names: map-keys($m-screen-sizes);
+
+// functions
+
+@function screen-size($key) {
+  $val: map-get($m-screen-sizes, $key);
+
+  @if not $val {
+    @warn "custom screen size [#{$key}] is not recommended";
+    @return $key;
+  }
+
+  @return $val;
+}
+
+// mixins
+
+@mixin bp-min($min: sm) {
+  @if $min == null or $min == xs {
+    @content;
+  } @else {
+    $size: screen-size($min);
+    @media screen and (min-width: $size) {
+      @content;
+    }
+  }
+}
+
+@mixin bp-max($max: xl) {
+  @if $max == null {
+    @content;
+  } @else {
+    $size: screen-size($max) - rem(1px);
+    @media screen and (max-width: $size) {
+      @content;
+    }
+  }
+}
+
+@mixin bp-minmax($min: sm, $max: xl) {
+  $size-min: screen-size($min);
+  $size-max: screen-size($max) - rem(1px);
+  @media screen and (min-width: $size-min) and (max-width: $size-max) {
+    @content;
+  }
+}
+
+@mixin bp-height($min: sm) {
+  // default is small tablet
+  @if $min == null {
+    @content;
+  } @else {
+    $size-min: screen-size($min);
+    @media screen and (min-height: $size-min) {
+      @content;
+    }
+  }
+}
+
+@mixin bp-max-height($max: xl) {
+  // default is large tablet
+  @if $max == null {
+    @content;
+  } @else {
+    $size-max: screen-size($max) - 1px;
+    @media screen and (max-height: $size-max) {
+      @content;
+    }
+  }
+}
+
+@mixin bp-minmax-height($min: sm, $max: xl) {
+  $size-min: screen-size($min);
+  $size-max: screen-size($max) - 1px;
+  @media screen and (min-height: $size-min) and (max-height: $size-max) {
+    @content;
+  }
+}
+
+// primary
+
+// prettier-ignore
+@mixin bp-all( $props, $xs: null, $sm: null, $md: null, $lg: null, $xl: null, $df: null ) {
+  @if type-of($props) != list {
+    $props: ($props);
+  }
+
+  @if type-of($xs) == map {
+    $map: $xs;
+  } @else {
+    $map: (
+      xs: $xs or $df,
+      sm: $sm or $df,
+      md: $md or $df,
+      lg: $lg or $df,
+      xl: $xl or $df,
+    );
+  }
+
+  $old: null;
+
+  @each $key, $val in $map {
+    @if ($val and $val != $old) {
+      @include bp-min($key) {
+        @each $prop in $props {
+          #{$prop}: $val;
+        }
+      }
+    }
+
+    $old: $val;
+  }
+}

@@ -1,0 +1,64 @@
+// clearfix
+
+@mixin wrap($gap: 0, $right: '.-fr') {
+  &:after {
+    display: block;
+    content: '';
+    clear: both;
+  }
+
+  > * {
+    float: left;
+  }
+
+  @if $gap and $gap > 0 {
+    > * + * {
+      @include bps(margin-left, $gap);
+    }
+  }
+
+  @if right {
+    > #{right} {
+      float: right;
+    }
+  }
+}
+
+@mixin flex($gap: 0) {
+  display: flex;
+
+  @if $gap and $gap > 0 {
+    > * + * {
+      @include bps(margin-left, $gap);
+    }
+  }
+}
+
+@mixin flow($gap: 0) {
+  display: block;
+
+  @if $gap and $gap > 0 {
+    > * + * {
+      @include bps(margin-top, $gap);
+    }
+  }
+}
+
+@mixin grid($size, $gap: 0) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, $size);
+  @include bps(grid-gap, $gap);
+}
+
+@mixin center-flex {
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin center-auto($width, $child: '*') {
+  > #{$child} {
+    width: $size;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}

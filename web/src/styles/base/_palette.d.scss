@@ -1,0 +1,311 @@
+/// color palette
+
+$m-color-gray-1: #f7fafc !default;
+$m-color-gray-2: #edf2f7 !default;
+$m-color-gray-3: #e2e8f0 !default;
+$m-color-gray-4: #cbd5e0 !default;
+$m-color-gray-5: #a0aec0 !default;
+$m-color-gray-6: #718096 !default;
+$m-color-gray-7: #4a5568 !default;
+$m-color-gray-8: #2d3748 !default;
+$m-color-gray-9: #1a202c !default;
+
+$m-color-red-1: #fff5f5 !default;
+$m-color-red-2: #fed7d7 !default;
+$m-color-red-3: #feb2b2 !default;
+$m-color-red-4: #fc8181 !default;
+$m-color-red-5: #f56565 !default;
+$m-color-red-6: #e53e3e !default;
+$m-color-red-7: #c53030 !default;
+$m-color-red-8: #9b2c2c !default;
+$m-color-red-9: #742a2a !default;
+
+$m-color-orange-1: #fffaf0 !default;
+$m-color-orange-2: #feebc8 !default;
+$m-color-orange-3: #fbd38d !default;
+$m-color-orange-4: #f6ad55 !default;
+$m-color-orange-5: #ed8936 !default;
+$m-color-orange-6: #dd6b20 !default;
+$m-color-orange-7: #c05621 !default;
+$m-color-orange-8: #9c4221 !default;
+$m-color-orange-9: #7b341e !default;
+
+$m-color-yellow-1: #fffff0 !default;
+$m-color-yellow-2: #fefcbf !default;
+$m-color-yellow-3: #faf089 !default;
+$m-color-yellow-4: #f6e05e !default;
+$m-color-yellow-5: #ecc94b !default;
+$m-color-yellow-6: #d69e2e !default;
+$m-color-yellow-7: #b7791f !default;
+$m-color-yellow-8: #975a16 !default;
+$m-color-yellow-9: #744210 !default;
+
+$m-color-green-1: #f0fff4 !default;
+$m-color-green-2: #c6f6d5 !default;
+$m-color-green-3: #9ae6b4 !default;
+$m-color-green-4: #68d391 !default;
+$m-color-green-5: #48bb78 !default;
+$m-color-green-6: #38a169 !default;
+$m-color-green-7: #2f855a !default;
+$m-color-green-8: #276749 !default;
+$m-color-green-9: #22543d !default;
+
+$m-color-teal-1: #e6fffa !default;
+$m-color-teal-2: #b2f5ea !default;
+$m-color-teal-3: #81e6d9 !default;
+$m-color-teal-4: #4fd1c5 !default;
+$m-color-teal-5: #38b2ac !default;
+$m-color-teal-6: #319795 !default;
+$m-color-teal-7: #2c7a7b !default;
+$m-color-teal-8: #285e61 !default;
+$m-color-teal-9: #234e52 !default;
+
+$m-color-blue-1: #ebf8ff !default;
+$m-color-blue-2: #bee3f8 !default;
+$m-color-blue-3: #90cdf4 !default;
+$m-color-blue-4: #63b3ed !default;
+$m-color-blue-5: #4299e1 !default;
+$m-color-blue-6: #3182ce !default;
+$m-color-blue-7: #2b6cb0 !default;
+$m-color-blue-8: #2c5282 !default;
+$m-color-blue-9: #2a4365 !default;
+
+$m-color-indigo-1: #ebf4ff !default;
+$m-color-indigo-2: #c3dafe !default;
+$m-color-indigo-3: #a3bffa !default;
+$m-color-indigo-4: #7f9cf5 !default;
+$m-color-indigo-5: #667eea !default;
+$m-color-indigo-6: #5a67d8 !default;
+$m-color-indigo-7: #4c51bf !default;
+$m-color-indigo-8: #434190 !default;
+$m-color-indigo-9: #3c366b !default;
+
+$m-color-purple-1: #faf5ff !default;
+$m-color-purple-2: #e9d8fd !default;
+$m-color-purple-3: #d6bcfa !default;
+$m-color-purple-4: #b794f4 !default;
+$m-color-purple-5: #9f7aea !default;
+$m-color-purple-6: #805ad5 !default;
+$m-color-purple-7: #6b46c1 !default;
+$m-color-purple-8: #553c9a !default;
+$m-color-purple-9: #44337a !default;
+
+$m-color-pink-1: #fff5f7 !default;
+$m-color-pink-2: #fed7e2 !default;
+$m-color-pink-3: #fbb6ce !default;
+$m-color-pink-4: #f687b3 !default;
+$m-color-pink-5: #ed64a6 !default;
+$m-color-pink-6: #d53f8c !default;
+$m-color-pink-7: #b83280 !default;
+$m-color-pink-8: #97266d !default;
+$m-color-pink-9: #702459 !default;
+
+$m-color-grays: (
+  1: $m-color-gray-1,
+  2: $m-color-gray-2,
+  3: $m-color-gray-3,
+  4: $m-color-gray-4,
+  5: $m-color-gray-5,
+  6: $m-color-gray-6,
+  7: $m-color-gray-7,
+  8: $m-color-gray-8,
+  9: $m-color-gray-9,
+);
+
+$m-color-reds: (
+  1: $m-color-red-1,
+  2: $m-color-red-2,
+  3: $m-color-red-3,
+  4: $m-color-red-4,
+  5: $m-color-red-5,
+  6: $m-color-red-6,
+  7: $m-color-red-7,
+  8: $m-color-red-8,
+  9: $m-color-red-9,
+);
+
+$m-color-oranges: (
+  1: $m-color-orange-1,
+  2: $m-color-orange-2,
+  3: $m-color-orange-3,
+  4: $m-color-orange-4,
+  5: $m-color-orange-5,
+  6: $m-color-orange-6,
+  7: $m-color-orange-7,
+  8: $m-color-orange-8,
+  9: $m-color-orange-9,
+);
+
+$m-color-yellows: (
+  1: $m-color-yellow-1,
+  2: $m-color-yellow-2,
+  3: $m-color-yellow-3,
+  4: $m-color-yellow-4,
+  5: $m-color-yellow-5,
+  6: $m-color-yellow-6,
+  7: $m-color-yellow-7,
+  8: $m-color-yellow-8,
+  9: $m-color-yellow-9,
+);
+
+$m-color-greens: (
+  1: $m-color-green-1,
+  2: $m-color-green-2,
+  3: $m-color-green-3,
+  4: $m-color-green-4,
+  5: $m-color-green-5,
+  6: $m-color-green-6,
+  7: $m-color-green-7,
+  8: $m-color-green-8,
+  9: $m-color-green-9,
+);
+
+$m-color-teals: (
+  1: $m-color-teal-1,
+  2: $m-color-teal-2,
+  3: $m-color-teal-3,
+  4: $m-color-teal-4,
+  5: $m-color-teal-5,
+  6: $m-color-teal-6,
+  7: $m-color-teal-7,
+  8: $m-color-teal-8,
+  9: $m-color-teal-9,
+);
+
+$m-color-blues: (
+  1: $m-color-blue-1,
+  2: $m-color-blue-2,
+  3: $m-color-blue-3,
+  4: $m-color-blue-4,
+  5: $m-color-blue-5,
+  6: $m-color-blue-6,
+  7: $m-color-blue-7,
+  8: $m-color-blue-8,
+  9: $m-color-blue-9,
+);
+
+$m-color-indigos: (
+  1: $m-color-indigo-1,
+  2: $m-color-indigo-2,
+  3: $m-color-indigo-3,
+  4: $m-color-indigo-4,
+  5: $m-color-indigo-5,
+  6: $m-color-indigo-6,
+  7: $m-color-indigo-7,
+  8: $m-color-indigo-8,
+  9: $m-color-indigo-9,
+);
+
+$m-color-purples: (
+  1: $m-color-purple-1,
+  2: $m-color-purple-2,
+  3: $m-color-purple-3,
+  4: $m-color-purple-4,
+  5: $m-color-purple-5,
+  6: $m-color-purple-6,
+  7: $m-color-purple-7,
+  8: $m-color-purple-8,
+  9: $m-color-purple-9,
+);
+
+$m-color-pinks: (
+  1: $m-color-pink-1,
+  2: $m-color-pink-2,
+  3: $m-color-pink-3,
+  4: $m-color-pink-4,
+  5: $m-color-pink-5,
+  6: $m-color-pink-6,
+  7: $m-color-pink-7,
+  8: $m-color-pink-8,
+  9: $m-color-pink-9,
+);
+
+$m-color-palette: (
+  gray: $m-color-grays,
+  red: $m-color-reds,
+  orange: $m-color-oranges,
+  yellow: $m-color-yellows,
+  green: $m-color-greens,
+  teal: $m-color-teals,
+  blue: $m-color-blues,
+  indigo: $m-color-indigos,
+  purple: $m-color-purples,
+  pink: $m-color-pinks,
+) !default;
+
+$m-color-mapping: (
+  neutral: gray,
+  primary: indigo,
+  success: teal,
+  warning: orange,
+  harmful: red,
+) !default;
+
+$m-color-names: map-keys($m-color-palette);
+
+// functions
+
+@function in-palette($color) {
+  @return map-has-key($m-color-palette, $color) or
+    map-has-key($m-color-mapping, $color);
+}
+
+@function alpha($color, $alpha: 1) {
+  @if $alpha == null or $alpha == 1 {
+    @return $color;
+  }
+
+  @return rgba($color, $alpha);
+}
+
+/// generate color by name, shade and alpha transparency
+@function color($color, $shade: 5, $alpha: 1) {
+  @if $color == none {
+    @return transparent;
+  }
+  @if $color == white {
+    @return alpha(#fff, $alpha);
+  }
+  @if $color == black {
+    @return alpha(#000, $alpha);
+  }
+
+  $value: map-get($m-color-mapping, $color);
+  @if $value {
+    $color: $value;
+  }
+
+  $color-shades: map-get($m-color-palette, $color);
+
+  @if not $color-shades {
+    @if type-of($color) == color {
+      @return alpha($color, $alpha);
+    } @else {
+      @error "#{$color} is not a valid color";
+    }
+  }
+
+  @if type-of($shade) != number {
+    @error "color shade must be a number, got #{$shade}";
+  }
+
+  @if $shade < 1 or $shade > 9 {
+    @error "color shade should be in range 1..9, got #{$shade}";
+  }
+
+  @return alpha(map-get($color-shades, $shade), $alpha);
+}
+
+@function colors($colors, $shade: 5, $alpha: null) {
+  @if type-of($colors) != list {
+    // TODO: add support for map?
+    @error "expecting a list of colors";
+  }
+
+  $output: ();
+  @each $color in $colors {
+    $output: append($output, color($color, $shade, $alpha));
+  }
+
+  @return $output;
+}
