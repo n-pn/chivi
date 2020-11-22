@@ -1,17 +1,17 @@
-@mixin flow-gap($gap: 0.5rem) {
-  & + & {
+@mixin flow-gap($gap: 0.5rem, $child: '*') {
+  > #{$child} + #{$child} {
     @include props(margin-left, $gap);
   }
 }
 
-@mixin flex-gap($gap: 0.5rem) {
-  & + & {
+@mixin flex-gap($gap: 0.5rem, $child: '*') {
+  > #{$child} + #{$child} {
     @include props(margin-left, $gap);
   }
 }
 
-@mixin line-gap($gap: 0.5rem) {
-  & + & {
+@mixin line-gap($gap: 0.5rem, $child: '*') {
+  > #{$child} + #{$child} {
     @include props(margin-top, $gap);
   }
 }
@@ -39,8 +39,10 @@
   @if $mode == content or $mode == both { justify-content: center; }
 }
 
-@mixin flex($center: null) {
+@mixin flex($center: null, $wrap: false) {
   display: flex;
+  // prettier-ignore
+  @if ($wrap) { flex-wrap: wrap; }
   @include flex-center($mode: $center);
 }
 

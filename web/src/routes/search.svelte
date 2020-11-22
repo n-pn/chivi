@@ -241,12 +241,10 @@
   }
 
   .pagi {
-    @include flex($center: content);
     margin-bottom: 0.75rem;
+    @include flex($center: content);
+    @include flex-gap($gap: 0.75rem, $child: ':global(*)');
 
-    // > * {
-    //   @include flex-gap($gap: 0.75rem);
-    // }
     .m-button {
       span {
         padding-top: rem(1px);

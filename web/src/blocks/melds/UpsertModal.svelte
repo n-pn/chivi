@@ -383,8 +383,9 @@
     padding: 0 0.75rem;
     height: 2rem;
     line-height: 2rem;
-    display: flex;
     @include border($sides: bottom);
+    @include flex();
+    @include flex-gap(0.75rem, $child: '.tab');
   }
 
   .tab {
@@ -396,7 +397,6 @@
     margin-top: 0.25px;
 
     flex-shrink: 0;
-    @include flex-gap(0.75rem);
 
     @include truncate(null);
     @include font-size(2);
@@ -471,6 +471,7 @@
     @include radius($sides: top);
 
     @include flex();
+    @include flex-gap(0.25rem, $child: '.-hint');
     @include font-size(2);
 
     .-hint {
@@ -480,7 +481,6 @@
       padding: 0 0.25rem;
       max-width: 25vw;
       @include truncate(null);
-      @include flex-gap(0.25rem);
 
       @include fgcolor(neutral, 6);
       @include bgcolor(neutral, 1);
@@ -580,12 +580,9 @@
   }
 
   .action {
-    @include flex();
     margin-top: 0.75rem;
-
-    > * {
-      @include flex-gap($gap: 0.5rem);
-    }
+    @include flex();
+    @include flex-gap($gap: 0.5rem, $child: ':global(*)');
 
     ._right {
       margin-left: auto;

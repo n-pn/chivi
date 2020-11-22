@@ -344,12 +344,9 @@
     }
 
     .-right {
-      @include flex();
       margin-left: auto;
-
-      > * {
-        @include flex-gap($gap: 0.5rem);
-      }
+      @include flex();
+      @include flex-gap($gap: 0.5rem, $child: ':global(*)');
     }
 
     .m-button {

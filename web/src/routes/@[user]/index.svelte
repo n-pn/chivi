@@ -112,10 +112,7 @@
   .pagi {
     margin: 0.75rem 0;
     @include flex($center: content);
-
-    // > * {
-    //   @include flex-gap($gap: 0.375rem);
-    // }
+    @include flex-gap($gap: 0.375rem, $child: ':global(*)');
   }
 
   .page {

@@ -223,11 +223,10 @@
   .pagi {
     margin-top: 0.75rem;
     @include flex($center: content);
+    @include flex-gap(0.375rem, $child: '.page');
   }
 
   .page {
-    @include flex-gap(0.375rem);
-
     &:disabled {
       cursor: text;
     }

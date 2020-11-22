@@ -242,10 +242,7 @@
     width: 100%;
     padding: 0.5rem 0;
     @include flex($center: content);
-
-    // > * {
-    //   @include flex-gap($gap: 0.5rem);
-    // }
+    @include flex-gap($gap: 0.5rem, $child: ':global(*)');
 
     // a {
     //   @include bgcolor(neutral, 1);

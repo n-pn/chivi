@@ -135,12 +135,9 @@
     font-weight: 300;
     padding: 1.5rem 1rem 0.5rem 0;
     @include flex($center: both);
+    @include flex-gap($gap: 0.5rem, $child: ':global(*)');
     @include border($sides: bottom);
     @include font-size(7);
-
-    // > * {
-    //   @include flex-gap($gap: 0.5rem);
-    // }
   }
 
   .input {

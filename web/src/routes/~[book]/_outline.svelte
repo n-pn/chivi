@@ -170,12 +170,9 @@
 
   .line {
     margin-bottom: 0.5rem;
-    @include flex();
-    flex-wrap: wrap;
     @include fgcolor(neutral, 6);
-    // > * {
-    //   @include flex-gap($gap: 0);
-    // }
+    @include flex($wrap: true);
+    @include flex-gap($gap: 0, $child: ':global(*)');
   }
 
   .stat {

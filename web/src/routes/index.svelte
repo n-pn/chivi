@@ -167,6 +167,8 @@
 <style lang="scss">
   .order {
     @include flex($center: content);
+    @include flex-gap($gap: 0.375rem, $child: ':global(*)');
+
     overflow: auto;
 
     margin: 0.75rem 0;
@@ -177,7 +179,6 @@
       padding: 0 0.5rem;
       font-weight: 500;
       @include truncate(null);
-      @include flex-gap($gap: 0.375rem);
 
       @include fgcolor(neutral, 7);
       @include font-size(2);
@@ -195,11 +196,11 @@
   .pagi {
     padding: 0.5rem 0;
     @include flex($center: content);
+    @include flex-gap($gap: 0.375rem, $child: ':global(*)');
   }
 
   .page {
     display: inline-flex;
-    @include flex-gap(0.375rem);
 
     > span {
       margin-top: rem(1px);

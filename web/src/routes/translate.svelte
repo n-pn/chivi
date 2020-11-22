@@ -185,10 +185,8 @@
 
   footer {
     margin: 0.5rem 0;
-    @include flex();
     justify-content: right;
-    // > * {
-    //   @include flex-gap(0.5rem);
-    // }
+    @include flex();
+    @include flex-gap($gap: 0.5, $child: ':global(*)');
   }
 </style>

@@ -15,7 +15,7 @@ $-border-shade-df: 3 !default;
   $props: ();
 
   @each $side in $m-sides {
-    @if match-side($side, $sides) {
+    @if match-edge($side, $sides) {
       $props: append($props, join-props(border, $side, $type));
     }
   }
