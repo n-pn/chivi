@@ -10,6 +10,7 @@
 
 html {
   font-size: 100%;
+  height: 100vh;
 }
 
 $-body-color: color(neutral, 8) !default;
@@ -18,6 +19,7 @@ $-body-font-family: font-family(sans) !default;
 
 body {
   min-width: $m-screen-xs;
+  height: 100%;
 
   font-size: 1rem;
   font-weight: 400;
@@ -36,13 +38,6 @@ body {
 
   // scroll-behavior: smooth;
   text-rendering: optimizeSpeed;
-}
-
-html,
-body,
-#sapper,
-main {
-  min-height: 100%;
 }
 
 $-selection-bgcolor: color(neutral, 6) !default;

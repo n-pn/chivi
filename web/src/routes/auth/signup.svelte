@@ -110,7 +110,7 @@
 
 <style lang="scss">
   section {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -190,7 +190,6 @@
     // @include border($sides: top);
     // margin-top: 1.5rem;
     padding: 0.75rem 0 1.5rem;
-
     @include flex;
 
     .login {

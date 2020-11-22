@@ -62,7 +62,7 @@
 </footer>
 
 <style lang="scss">
-  div {
+  .vessel {
     flex: 1;
   }
 
@@ -83,5 +83,11 @@
     &:hover {
       @include fgcolor(primary, 4);
     }
+  }
+
+  :global(#sapper) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
   }
 </style>

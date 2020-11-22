@@ -4471,6 +4471,14 @@ svelte-loader-hot@^0.3.1:
     svelte-dev-helper "^1.1.9"
     svelte-hmr "^0.10.3"
 
+svelte-loader@^2.13.6:
+  version "2.13.6"
+  resolved "https://registry.yarnpkg.com/svelte-loader/-/svelte-loader-2.13.6.tgz#3d5efd5886c2bab034606d5af0cce659da3ee555"
+  integrity sha512-7uf7ZQdPAl+lwb1ldUYJFY/raZRUCuaNx7lMJ+F16jrVwN1+c35C2pBMGIY0mCqdKm5sm45jqELJJLGM3UG9Pw==
+  dependencies:
+    loader-utils "^1.1.0"
+    svelte-dev-helper "^1.1.9"
+
 svelte@^3.29.7:
   version "3.29.7"
   resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.29.7.tgz#e254eb2d0d609ce0fd60f052d444ac4a66d90f7d"

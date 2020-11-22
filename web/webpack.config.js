@@ -32,6 +32,30 @@ const purgecss = require('@fullhuman/postcss-purgecss')({
   defaultExtractor: (content) => content.match(/[A-Za-z0-9-_:/]+/g) || [],
 })
 
+const loader_dev = {
+  loader: 'svelte-loader-hot',
+  options: {
+    dev,
+    preprocess,
+    hydratable: true,
+    hotReload: dev,
+    emitCss: false,
+  },
+}
+
+// const loader_prod = {
+//   loader: 'svelte-loader',
+//   options: {
+//     dev,
+//     preprocess,
+//     hydratable: true,
+//     hotReload: false,
+//     emitCss: false,
+//   },
+// }
+
+const svelte_loader = loader_dev
+
 // exports
 
 module.exports = {
@@ -43,16 +67,7 @@ module.exports = {
       rules: [
         {
           test: /\.(svelte|html)$/,
-          use: {
-            loader: 'svelte-loader-hot',
-            options: {
-              dev,
-              preprocess,
-              hydratable: true,
-              hotReload: true,
-              emitCss: false,
-            },
-          },
+          use: svelte_loader,
         },
         {
           test: /\.s?css$/,

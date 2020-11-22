@@ -79,14 +79,14 @@
 
 <style lang="scss">
   section {
-    position: absolute;
-    @include flex($center: both);
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 700;
-    background: color(neutral, 3, 0.3);
+    @include bgcolor(neutral, 3, 0.3);
+    @include flex($center: both);
   }
 
   form {
@@ -159,7 +159,7 @@
     // @include border($sides: top);
     // margin-top: 1.5rem;
     padding: 0.75rem 0 1.5rem;
-    // @include flex;
+    @include flex;
 
     .login {
       margin-left: auto;
