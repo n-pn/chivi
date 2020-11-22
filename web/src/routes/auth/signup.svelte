@@ -53,7 +53,7 @@
 <Vessel>
   <section>
     <form action="/_login" method="POST" on:submit|preventDefault={submit}>
-      <header><img src="/logo.svg" alt="logo" /> <span>Chivi</span></header>
+      <header><img src="/logo.svg" alt="logo" /><span>Chivi</span></header>
 
       <div class="input">
         <label for="email">Hòm thư</label>
@@ -107,93 +107,95 @@
 </Vessel>
 
 <style lang="scss">
-  // section {
-  //   display: flex;
-  //   position: absolute;
-  //   top: 0;
-  //   left: 0;
-  //   width: 100%;
-  //   height: 100%;
-  //   z-index: 700;
-  //   background: color(neutral, 3, 0.3);
-  //   @include center-flex;
-  // }
+  section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 700;
+    background: color(neutral, 3, 0.3);
+    @include flex($center: both);
+  }
 
-  // form {
-  //   display: block;
-  //   width: 24rem;
-  //   // margin: 0 auto;
-  //   // margin-top: 20vh;
-  //   max-width: 100%;
-  //   padding: 0 1.5rem;
-  //   @include bgcolor(#fff);
-  //   @include shadow(3);
-  //   @include radius();
-  // }
+  form {
+    display: block;
+    width: 24rem;
+    // margin: 0 auto;
+    // margin-top: 20vh;
+    max-width: 100%;
+    padding: 0 1.5rem;
+    @include bgcolor(#fff);
+    @include shadow(3);
+    @include radius();
+  }
 
-  // header {
-  //   line-height: 2.5rem;
-  //   font-weight: 300;
-  //   padding: 1.5rem 1rem 0.5rem 0;
-  //   @include flex($gap: 0.5rem);
-  //   @include center-flex;
-  //   @include border($sides: bottom);
-  //   @include font-size(7);
-  // }
+  header {
+    line-height: 2.5rem;
+    font-weight: 300;
+    padding: 1.5rem 1rem 0.5rem 0;
+    @include flex($center: both);
+    @include border($sides: bottom);
+    @include font-size(7);
 
-  // .input {
-  //   margin: 0.75rem 0;
-  // }
+    // > * {
+    //   @include flex-gap($gap: 0.5rem);
+    // }
+  }
 
-  // label {
-  //   display: block;
-  //   text-transform: uppercase;
-  //   font-weight: 500;
-  //   line-height: 1.5rem;
-  //   margin-bottom: 0.25rem;
-  //   @include font-size(1);
-  //   @include fgcolor(neutral, 6);
-  // }
+  .input {
+    margin: 0.75rem 0;
+  }
 
-  // input {
-  //   display: block;
-  //   width: 100%;
-  //   padding: 0.375rem 0.75rem;
+  label {
+    display: block;
+    text-transform: uppercase;
+    font-weight: 500;
+    line-height: 1.5rem;
+    margin-bottom: 0.25rem;
+    @include font-size(1);
+    @include fgcolor(neutral, 6);
+  }
 
-  //   @include border();
-  //   @include radius();
+  input {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
 
-  //   &:focus,
-  //   &:hover {
-  //     @include bdcolor($color: primary, $shade: 3);
-  //   }
+    @include border();
+    @include radius();
 
-  //   &:focus {
-  //     box-shadow: 0 0 1px 1px color(primary, 2);
-  //   }
+    &:focus,
+    &:hover {
+      @include bdcolor($color: primary, $shade: 3);
+    }
 
-  //   &::placeholder {
-  //     font-style: italic;
-  //     @include fgcolor(neutral, 5);
-  //   }
-  // }
+    &:focus {
+      box-shadow: 0 0 1px 1px color(primary, 2);
+    }
 
-  // .error {
-  //   margin-bottom: 0.75rem;
-  //   // text-align: center;
-  //   @include fgcolor(harmful, 5);
-  //   @include font-size(2);
-  // }
+    &::placeholder {
+      font-style: italic;
+      @include fgcolor(neutral, 5);
+    }
+  }
 
-  // footer {
-  //   // @include border($sides: top);
-  //   // margin-top: 1.5rem;
-  //   padding: 0.75rem 0 1.5rem;
+  .error {
+    margin-bottom: 0.75rem;
+    // text-align: center;
+    @include fgcolor(harmful, 5);
+    @include font-size(2);
+  }
 
-  //   @include flex;
+  footer {
+    // @include border($sides: top);
+    // margin-top: 1.5rem;
+    padding: 0.75rem 0 1.5rem;
 
-  //   .login {
-  //     margin-left: auto;
-  //   }
-  // }
+    @include flex;
+
+    .login {
+      margin-left: auto;
+    }
+  }
 </style>

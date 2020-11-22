@@ -31,7 +31,9 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
 
   .-left,
   .-right {
-    @include flex($gap: $header-gutter);
+    > * {
+      @include flex-gap($header-gutter);
+    }
   }
 
   .-left {
@@ -94,11 +96,11 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   @include font-size(2);
 
   &._show-sm {
-    @include bp-all(inline-block, none, $sm: inline-block);
+    @include props(inline-block, none, $sm: inline-block);
   }
 
   &._show-md {
-    @include bp-all(inline-block, none, $md: inline-block);
+    @include props(inline-block, none, $md: inline-block);
   }
 
   ._brand & {

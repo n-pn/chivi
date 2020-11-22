@@ -238,51 +238,54 @@
 </Vessel>
 
 <style lang="scss">
-  // .footer {
-  //   width: 100%;
-  //   padding: 0.5rem 0;
-  //   @include flex($gap: 0.5rem);
-  //   justify-content: center;
+  .footer {
+    width: 100%;
+    padding: 0.5rem 0;
+    @include flex($center: content);
 
-  //   // a {
-  //   //   @include bgcolor(neutral, 1);
-  //   //   &:hover {
-  //   //     @include bgcolor(neutral, 2);
-  //   //   }
-  //   // }
-  // }
+    // > * {
+    //   @include flex-gap($gap: 0.5rem);
+    // }
 
-  // .bread {
-  //   // display: flex;
-  //   // flex-wrap: wrap;
+    // a {
+    //   @include bgcolor(neutral, 1);
+    //   &:hover {
+    //     @include bgcolor(neutral, 2);
+    //   }
+    // }
+  }
 
-  //   padding: 0.5rem 0;
-  //   line-height: 1.25rem;
+  .bread {
+    // display: flex;
+    // flex-wrap: wrap;
 
-  //   @include font-size(2);
-  //   @include border($sides: bottom);
+    padding: 0.5rem 0;
+    line-height: 1.25rem;
 
-  //   .-crumb {
-  //     display: inline;
-  //     // float: left;
-  //     @include fgcolor(neutral, 6);
+    @include font-size(2);
+    @include border($sides: bottom);
 
-  //     &._sep:after {
-  //       content: '>';
-  //       @include fgcolor(neutral, 5);
-  //       padding: 0 0.25rem;
-  //     }
-  //   }
+    .-crumb {
+      display: inline;
+      // float: left;
+      @include fgcolor(neutral, 6);
 
-  //   .-link {
-  //     color: inherit;
-  //     &:hover {
-  //       @include fgcolor(primary, 6);
-  //     }
-  //   }
+      &._sep:after {
+        content: '>';
+        @include fgcolor(neutral, 5);
+        padding: 0 0.25rem;
+      }
+    }
 
-  //   :global(svg) {
-  //     margin-top: -0.25rem;
-  //   }
-  // }
+    .-link {
+      color: inherit;
+      &:hover {
+        @include fgcolor(primary, 6);
+      }
+    }
+
+    :global(svg) {
+      margin-top: -0.25rem;
+    }
+  }
 </style>

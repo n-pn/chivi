@@ -26,22 +26,20 @@
 </div>
 
 <style lang="scss">
-  // div {
-  //   display: flex;
-  //   // align-items: center;
-  //   justify-content: center;
-  // }
+  div {
+    @include flex($center: content);
+  }
 
-  // a {
-  //   cursor: pointer;
-  //   padding: 0.5rem;
-  //   line-height: 1rem;
+  a {
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1rem;
 
-  //   @include font-size(2);
-  //   @include fgcolor(neutral, 7);
+    @include font-size(2);
+    @include fgcolor(neutral, 7);
 
-  //   &:hover {
-  //     @include bgcolor(neutral, 3);
-  //   }
-  // }
+    &:hover {
+      @include bgcolor(neutral, 3);
+    }
+  }
 </style>

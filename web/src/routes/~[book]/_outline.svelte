@@ -135,61 +135,64 @@
 </div>
 
 <style lang="scss">
-  // .main-info {
-  //   padding-top: 0.75rem;
-  //   @include wrap();
-  // }
+  .main-info {
+    padding-top: 0.75rem;
+    @include flow();
+  }
 
-  // .title {
-  //   font-weight: 300;
-  //   margin-bottom: 0.75rem;
+  .title {
+    font-weight: 300;
+    margin-bottom: 0.75rem;
 
-  //   @include bp-all(float, left, right);
-  //   @include bp-all(width, 100%, 70%, 75%);
-  //   @include bp-all(padding-left, 0, 0.75rem);
+    @include props(float, left, right);
+    @include props(width, 100%, 70%, 75%);
+    @include props(padding-left, 0, 0.75rem);
 
-  //   @include bp-all(line-height, 1.5rem, 1.75rem, 2rem);
-  //   @include bp-all(font-size, rem(26px), rem(28px), rem(30px));
-  // }
+    @include props(line-height, 1.5rem, 1.75rem, 2rem);
+    @include props(font-size, rem(26px), rem(28px), rem(30px));
+  }
 
-  // .cover {
-  //   float: left;
-  //   @include bp-all(width, 40%, 30%, 25%);
-  // }
+  .cover {
+    float: left;
+    @include props(width, 40%, 30%, 25%);
+  }
 
-  // .extra {
-  //   float: right;
-  //   padding-left: 0.75rem;
+  .extra {
+    float: right;
+    padding-left: 0.75rem;
 
-  //   @include bp-all(width, 60%, 70%, 75%);
+    @include props(width, 60%, 70%, 75%);
 
-  //   :global(svg) {
-  //     margin-top: -0.125rem;
-  //   }
-  // }
+    :global(svg) {
+      margin-top: -0.125rem;
+    }
+  }
 
-  // .line {
-  //   margin-bottom: 0.5rem;
-  //   @include flex($gap: 0);
-  //   flex-wrap: wrap;
-  //   @include fgcolor(neutral, 6);
-  // }
+  .line {
+    margin-bottom: 0.5rem;
+    @include flex();
+    flex-wrap: wrap;
+    @include fgcolor(neutral, 6);
+    // > * {
+    //   @include flex-gap($gap: 0);
+    // }
+  }
 
-  // .stat {
-  //   margin-right: 0.5rem;
-  // }
+  .stat {
+    margin-right: 0.5rem;
+  }
 
-  // .link {
-  //   // font-weight: 500;
-  //   color: inherit;
-  //   // @include fgcolor(primary, 7);
-  //   &._outer,
-  //   &:hover {
-  //     @include fgcolor(primary, 6);
-  //   }
-  // }
+  .link {
+    // font-weight: 500;
+    color: inherit;
+    // @include fgcolor(primary, 7);
+    &._outer,
+    &:hover {
+      @include fgcolor(primary, 6);
+    }
+  }
 
-  // .label {
-  //   font-weight: 500;
-  // }
+  .label {
+    font-weight: 500;
+  }
 </style>

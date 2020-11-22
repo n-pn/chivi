@@ -8,10 +8,10 @@ $-spacing-df: rem(4x) !default;
 
 @mixin margin($size: $-spacing-df, $sides: all) {
   $props: side-props($sides, $m-sides, margin);
-  @include bp-all($props, $size);
+  @include props($props, $size);
 }
 
 @mixin padding($size: $-spacing-df, $sides: all) {
   $props: side-props($sides, $m-sides, padding);
-  @include bp-all($props, $size);
+  @include props($props, $size);
 }

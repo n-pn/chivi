@@ -10,8 +10,9 @@ blockquote {
   padding: $bq-padding;
   color: $bq-fgcolor;
   background-color: $bq-bgcolor;
-
   // @include radius();
-  @include flow($bq-padding);
+
   @include border($width: $bq-bdwidth, $color: $bq-bdcolor, $sides: left);
+  // prettier-ignore
+  > * { @include line-gap($bq-padding); }
 }

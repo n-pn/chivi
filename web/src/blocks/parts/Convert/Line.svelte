@@ -74,40 +74,40 @@
 {/if}
 
 <style lang="scss">
-  // @mixin mixed($color: blue) {
-  //   cursor: pointer;
-  //   position: relative;
+  @mixin mixed($color: blue) {
+    cursor: pointer;
+    position: relative;
 
-  //   &:hover {
-  //     @include fgcolor($color, 6);
-  //   }
+    &:hover {
+      @include fgcolor($color, 6);
+    }
 
-  //   :global(.chivi):hover & {
-  //     @include border($color: $color, $shade: 3, $sides: bottom);
-  //   }
+    :global(.chivi):hover & {
+      @include border($color: $color, $shade: 3, $sides: bottom);
+    }
 
-  //   &._focus {
-  //     @include fgcolor($color, 6);
-  //   }
-  // }
+    &._focus {
+      @include fgcolor($color, 6);
+    }
+  }
 
-  // .chivi {
-  //   :global(x-v) {
-  //     &[data-d='1'] {
-  //       @include mixed(teal);
-  //     }
+  .chivi {
+    :global(x-v) {
+      &[data-d='1'] {
+        @include mixed(teal);
+      }
 
-  //     &[data-d='2'] {
-  //       @include mixed(blue);
-  //     }
+      &[data-d='2'] {
+        @include mixed(blue);
+      }
 
-  //     &[data-d='3'] {
-  //       @include mixed(green);
-  //     }
+      &[data-d='3'] {
+        @include mixed(green);
+      }
 
-  //     &[data-d='9'] {
-  //       @include mixed(gray);
-  //     }
-  //   }
-  // }
+      &[data-d='9'] {
+        @include mixed(gray);
+      }
+    }
+  }
 </style>

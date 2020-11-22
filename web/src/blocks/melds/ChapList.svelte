@@ -138,127 +138,115 @@
 {/if}
 
 <style lang="scss">
-  // $chap-size: 17.5rem;
-  // // $chap-break: $chap-size * 2 + 0.75 * 5;
+  $chap-size: 17.5rem;
+  // $chap-break: $chap-size * 2 + 0.75 * 5;
 
-  // .chap-list {
-  //   @include grid($size: minmax($chap-size, 1fr), $gap: 0 0.75rem);
-  // }
+  .chap-list {
+    @include grid($size: minmax($chap-size, 1fr));
+    @include grid-gap($gap: 0 0.75rem);
+  }
 
-  // .chap-item {
-  //   display: block;
+  .chap-item {
+    display: block;
 
-  //   @include border($sides: bottom);
+    @include border($sides: bottom);
 
-  //   &:first-child {
-  //     @include border($sides: top);
-  //   }
+    &:first-child {
+      @include border($sides: top);
+    }
 
-  //   &:nth-child(even) {
-  //     @include bgcolor(neutral, 1);
-  //   }
+    &:nth-child(even) {
+      @include bgcolor(neutral, 1);
+    }
 
-  //   @include bp-min(md) {
-  //     &:nth-child(2) {
-  //       @include border($sides: top);
-  //     }
+    @include screen-min(md) {
+      &:nth-child(2) {
+        @include border($sides: top);
+      }
 
-  //     &:nth-child(4n),
-  //     &:nth-child(4n + 1) {
-  //       background-color: #fff;
-  //     }
+      &:nth-child(4n),
+      &:nth-child(4n + 1) {
+        background-color: #fff;
+      }
 
-  //     &:nth-child(4n + 2),
-  //     &:nth-child(4n + 3) {
-  //       @include bgcolor(neutral, 1);
-  //     }
-  //   }
-  // }
+      &:nth-child(4n + 2),
+      &:nth-child(4n + 3) {
+        @include bgcolor(neutral, 1);
+      }
+    }
+  }
 
-  // .chap-link {
-  //   display: block;
-  //   padding: 0.375rem 0.75rem;
+  .chap-link {
+    display: block;
+    padding: 0.375rem 0.75rem;
 
-  //   &:visited {
-  //     .title {
-  //       font-style: italic;
-  //       @include fgcolor(neutral, 5);
-  //     }
-  //   }
+    &:visited {
+      .title {
+        font-style: italic;
+        @include fgcolor(neutral, 5);
+      }
+    }
 
-  //   &:hover {
-  //     .title {
-  //       @include fgcolor(primary, 5);
-  //     }
-  //   }
-  // }
-
-  // // .label {
-  // //   padding-top: 0.5rem;
-  // //   padding-left: 0.5rem;
-  // // }
+    &:hover {
+      .title {
+        @include fgcolor(primary, 5);
+      }
+    }
+  }
 
   // .label {
-  //   display: block;
-  //   padding: 0;
-  //   line-height: 1.25rem;
-  //   @include font-size(1);
-  //   text-transform: uppercase;
-  //   @include fgcolor(neutral, 5);
-  //   @include truncate(100%);
+  //   padding-top: 0.5rem;
+  //   padding-left: 0.5rem;
   // }
 
-  // .title {
-  //   display: block;
-  //   padding: 0;
-  //   line-height: 1.5rem;
-  //   // $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
-  //   // @include bp-all(font-size, $font-sizes);
+  .label {
+    display: block;
+    padding: 0;
+    line-height: 1.25rem;
+    @include font-size(1);
+    text-transform: uppercase;
+    @include fgcolor(neutral, 5);
+    @include truncate(100%);
+  }
 
-  //   @include fgcolor(neutral, 8);
-  //   @include truncate(100%);
-  // }
+  .title {
+    display: block;
+    padding: 0;
+    line-height: 1.5rem;
+    // $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
+    // @include props(font-size, $font-sizes);
 
-  // .pagi {
-  //   margin-top: 0.75rem;
-  //   @include flex($gap: 0.375rem);
-  //   justify-content: center;
-  // }
+    @include fgcolor(neutral, 8);
+    @include truncate(100%);
+  }
 
-  // .page {
-  //   &:disabled {
-  //     cursor: text;
-  //   }
+  .pagi {
+    margin-top: 0.75rem;
+    @include flex($center: content);
+  }
 
-  //   & + & {
-  //     margin-left: 0.375rem;
-  //   }
+  .page {
+    @include flex-gap(0.375rem);
 
-  //   &[data-level] {
-  //     display: none;
-  //   }
+    &:disabled {
+      cursor: text;
+    }
 
-  //   &[data-level='0'] {
-  //     display: inline-block;
-  //   }
+    &[data-level='0'] {
+      display: inline-block;
+    }
 
-  //   &[data-level='1'] {
-  //     @include bp-min(sm) {
-  //       display: inline-block;
-  //     }
-  //   }
+    &[data-level='1'] {
+      @include props(display, none, $sm: inline-block);
+    }
 
-  //   &[data-level='2'] {
-  //     @include bp-min(md) {
-  //       display: inline-block;
-  //     }
-  //   }
+    &[data-level='2'] {
+      @include props(display, none, $md: inline-block);
+    }
 
-  //   &[data-level='3'],
-  //   &[data-level='4'] {
-  //     @include bp-min(lg) {
-  //       display: inline-block;
-  //     }
-  //   }
-  // }
+    &[data-level='3'],
+    &[data-level='4'] {
+      @include props(display, none, $lg: inline-block);
+    }
+  }
 </style>

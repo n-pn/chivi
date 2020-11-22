@@ -1,5 +1,5 @@
 import * as sapper from '@sapper/app'
-import '$src/styles/generic.scss'
+import '$src/styles/globals.scss'
 
 import { fetch } from 'sapper'
 window._http_ = window.fetch || fetch

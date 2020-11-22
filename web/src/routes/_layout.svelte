@@ -62,26 +62,26 @@
 </footer>
 
 <style lang="scss">
-  // div {
-  //   flex: 1;
-  // }
+  div {
+    flex: 1;
+  }
 
-  // footer {
-  //   width: 100%;
-  //   text-align: center;
-  //   padding: 0.75rem;
-  //   @include font-size(2);
-  //   @include fgcolor(neutral, 6);
-  //   @include bgcolor(neutral, 2);
-  //   @include border($sides: top);
-  // }
+  footer {
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem;
+    @include font-size(2);
+    @include fgcolor(neutral, 6);
+    @include bgcolor(neutral, 2);
+    @include border($sides: top);
+  }
 
-  // .link {
-  //   margin-left: 0.375rem;
-  //   font-weight: 500;
-  //   @include fgcolor(primary, 6);
-  //   &:hover {
-  //     @include fgcolor(primary, 4);
-  //   }
-  // }
+  .link {
+    margin-left: 0.375rem;
+    font-weight: 500;
+    @include fgcolor(primary, 6);
+    &:hover {
+      @include fgcolor(primary, 4);
+    }
+  }
 </style>

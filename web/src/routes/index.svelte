@@ -166,9 +166,8 @@
 
 <style lang="scss">
   .order {
-    @include flex($gap: 0.375rem);
+    @include flex($center: content);
     overflow: auto;
-    justify-content: center;
 
     margin: 0.75rem 0;
     line-height: 2rem;
@@ -178,6 +177,7 @@
       padding: 0 0.5rem;
       font-weight: 500;
       @include truncate(null);
+      @include flex-gap($gap: 0.375rem);
 
       @include fgcolor(neutral, 7);
       @include font-size(2);
@@ -194,16 +194,12 @@
 
   .pagi {
     padding: 0.5rem 0;
-    @include flex($gap: 0.375rem);
-    justify-content: center;
-
-    > * + * {
-      margin-left: 0.375rem;
-    }
+    @include flex($center: content);
   }
 
   .page {
     display: inline-flex;
+    @include flex-gap(0.375rem);
 
     > span {
       margin-top: rem(1px);
@@ -218,17 +214,17 @@
     }
 
     &[data-level='1'] {
-      @include bp-all(display, $sm: inline-block);
+      @include props(display, $sm: inline-block);
     }
 
     &[data-level='2'] {
-      @include bp-all(display, $md: inline-block);
+      @include props(display, $md: inline-block);
     }
 
     &[data-level='3'],
     &[data-level='4'],
     &[data-level='5'] {
-      @include bp-all(display, $lg: inline-block);
+      @include props(display, $lg: inline-block);
     }
   }
 

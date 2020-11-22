@@ -37,7 +37,7 @@ $m-screen-names: map-keys($m-screen-sizes);
 
 // mixins
 
-@mixin bp-min($min: sm) {
+@mixin screen-min($min: sm) {
   @if $min == null or $min == xs {
     @content;
   } @else {
@@ -48,7 +48,7 @@ $m-screen-names: map-keys($m-screen-sizes);
   }
 }
 
-@mixin bp-max($max: xl) {
+@mixin screen-max($max: xl) {
   @if $max == null {
     @content;
   } @else {
@@ -59,7 +59,7 @@ $m-screen-names: map-keys($m-screen-sizes);
   }
 }
 
-@mixin bp-minmax($min: sm, $max: xl) {
+@mixin breakpoint($min: sm, $max: xl) {
   $size-min: screen-size($min);
   $size-max: screen-size($max) - rem(1px);
   @media screen and (min-width: $size-min) and (max-width: $size-max) {
@@ -67,50 +67,21 @@ $m-screen-names: map-keys($m-screen-sizes);
   }
 }
 
-@mixin bp-height($min: sm) {
-  // default is small tablet
-  @if $min == null {
-    @content;
-  } @else {
-    $size-min: screen-size($min);
-    @media screen and (min-height: $size-min) {
-      @content;
-    }
-  }
-}
-
-@mixin bp-max-height($max: xl) {
-  // default is large tablet
-  @if $max == null {
-    @content;
-  } @else {
-    $size-max: screen-size($max) - 1px;
-    @media screen and (max-height: $size-max) {
-      @content;
-    }
-  }
-}
-
-@mixin bp-minmax-height($min: sm, $max: xl) {
-  $size-min: screen-size($min);
-  $size-max: screen-size($max) - 1px;
-  @media screen and (min-height: $size-min) and (max-height: $size-max) {
-    @content;
-  }
-}
-
 // primary
 
-// prettier-ignore
-@mixin bp-all( $props, $xs: null, $sm: null, $md: null, $lg: null, $xl: null, $df: null ) {
-  @if type-of($props) != list {
-    $props: ($props);
-  }
-
-  $map: $xs;
+@mixin props(
+  $props,
+  $xs: null,
+  $sm: null,
+  $md: null,
+  $lg: null,
+  $xl: null,
+  $df: null
+) {
+  $bp-map: $xs;
 
   @if type-of($xs) != map {
-    $map: (
+    $bp-map: (
       xs: $xs or $df,
       sm: $sm or $df,
       md: $md or $df,
@@ -121,9 +92,13 @@ $m-screen-names: map-keys($m-screen-sizes);
 
   $old: null;
 
-  @each $key, $val in $map {
+  @if type-of($props) != list {
+    $props: ($props);
+  }
+
+  @each $key, $val in $bp-map {
     @if ($val and $val != $old) {
-      @include bp-min($key) {
+      @include screen-min($key) {
         @each $prop in $props {
           #{$prop}: $val;
         }

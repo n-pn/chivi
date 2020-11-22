@@ -77,8 +77,7 @@
 <style lang="scss">
   section {
     position: absolute;
-    display: flex;
-    @include center-flex;
+    @include flex($center: both);
     top: 0;
     left: 0;
     width: 100%;
@@ -103,10 +102,12 @@
     line-height: 2.5rem;
     font-weight: 300;
     padding: 1.5rem 1rem 0.5rem 0;
-    @include flex($gap: 0.5rem);
-    @include center-flex;
+    @include flex($center: both);
     @include border($sides: bottom);
     @include font-size(7);
+    // > * {
+    //   @include flex-gap(0.5rem);
+    // }
   }
 
   .input {

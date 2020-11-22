@@ -89,13 +89,11 @@
 </footer>
 
 <style lang="scss">
-  ._shift {
-    @include bp-min(lg) {
-      padding-right: 30rem;
-    }
-  }
-
   $page-width: 54rem;
+
+  ._shift {
+    @include props(padding-right, $lg: 30rem);
+  }
 
   .center {
     width: $page-width;
@@ -123,10 +121,10 @@
     &._stick {
       position: fixed;
       transform: translateY(-$footer-height);
-
-      $bgc-top: rgba(color(neutral, 1), 0.1);
-      $bgc-bottom: rgba(color(neutral, 7), 0.7);
-      background: linear-gradient($bgc-top, $bgc-bottom);
+      background: linear-gradient(
+        color(neutral, 1, 0.1),
+        color(neutral, 7, 0.7)
+      );
     }
   }
 </style>

@@ -51,10 +51,6 @@ module.exports = {
               hydratable: true,
               hotReload: true,
               emitCss: false,
-              hotOptions: {
-                noPreserveState: false, // Default: false
-                optimistic: true, // Default: false
-              },
             },
           },
         },

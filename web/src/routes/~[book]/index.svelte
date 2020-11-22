@@ -303,310 +303,314 @@
 </Vessel>
 
 <style lang="scss">
-  // .summary {
-  //   p {
-  //     margin: 0.75rem 0;
-  //     word-wrap: break-word;
-  //     @include fgcolor(neutral, 7);
-  //     @include bp-all(font-size, rem(15px), rem(16px), rem(17px));
-  //   }
-  // }
+  .summary {
+    p {
+      margin: 0.75rem 0;
+      word-wrap: break-word;
+      @include fgcolor(neutral, 7);
+      @include props(font-size, rem(15px), rem(16px), rem(17px));
+    }
+  }
 
-  // .sources {
-  //   margin: 0.75rem 0 1.25rem;
-  //   display: flex;
+  .sources {
+    margin: 0.75rem 0 1.25rem;
+    display: flex;
 
-  //   .-left {
-  //     display: flex;
-  //     margin-right: 0.5rem;
-  //   }
+    .-left {
+      display: flex;
+      margin-right: 0.5rem;
+    }
 
-  //   .-hint {
-  //     // display: none;
-  //     // @include bp-min(sm) {
-  //     //   display: inline-block;
-  //     // }
+    .-hint {
+      // display: none;
+      // @include screen-min(sm) {
+      //   display: inline-block;
+      // }
 
-  //     height: 2.25rem;
-  //     line-height: 2.25rem;
-  //     text-transform: uppercase;
-  //     margin-right: 0.5rem;
-  //     font-weight: 500;
-  //     @include font-size(2);
-  //     @include fgcolor(neutral, 7);
-  //   }
+      height: 2.25rem;
+      line-height: 2.25rem;
+      text-transform: uppercase;
+      margin-right: 0.5rem;
+      font-weight: 500;
+      @include font-size(2);
+      @include fgcolor(neutral, 7);
+    }
 
-  //   .-hide {
-  //     display: none;
-  //     @include bp-min(sm) {
-  //       display: inline-block;
-  //     }
-  //   }
+    .-hide {
+      display: none;
+      @include screen-min(sm) {
+        display: inline-block;
+      }
+    }
 
-  //   .-right {
-  //     @include flex($gap: 0.5rem);
-  //     margin-left: auto;
-  //   }
+    .-right {
+      @include flex();
+      margin-left: auto;
 
-  //   .m-button {
-  //     @include border();
-  //     > span {
-  //       @include truncate(null);
-  //       max-width: 25vw;
-  //     }
-  //   }
-  // }
+      > * {
+        @include flex-gap($gap: 0.5rem);
+      }
+    }
 
-  // .seed-menu {
-  //   position: relative;
-  //   .-text {
-  //     cursor: pointer;
-  //     display: inline-block;
-  //     height: 2.25rem;
+    .m-button {
+      @include border();
+      > span {
+        @include truncate(null);
+        max-width: 25vw;
+      }
+    }
+  }
 
-  //     padding: 0 0.5rem;
-  //     font-weight: 500;
-  //     line-height: 2.25rem;
-  //     text-transform: uppercase;
-  //     @include border();
-  //     @include radius();
+  .seed-menu {
+    position: relative;
+    .-text {
+      cursor: pointer;
+      display: inline-block;
+      height: 2.25rem;
 
-  //     @include font-size(2);
-  //     @include fgcolor(neutral, 7);
-  //   }
+      padding: 0 0.5rem;
+      font-weight: 500;
+      line-height: 2.25rem;
+      text-transform: uppercase;
+      @include border();
+      @include radius();
 
-  //   .-count {
-  //     display: none;
-  //     @include bp-min(sm) {
-  //       margin-left: 0.25rem;
-  //       display: inline-block;
-  //       @include fgcolor(neutral, 6);
-  //     }
-  //   }
+      @include font-size(2);
+      @include fgcolor(neutral, 7);
+    }
 
-  //   &:hover {
-  //     .-menu {
-  //       display: block;
-  //     }
+    .-count {
+      display: none;
+      @include screen-min(sm) {
+        margin-left: 0.25rem;
+        display: inline-block;
+        @include fgcolor(neutral, 6);
+      }
+    }
 
-  //     .-text {
-  //       @include bgcolor(neutral, 2);
-  //     }
-  //   }
+    &:hover {
+      .-menu {
+        display: block;
+      }
 
-  //   .-menu {
-  //     display: none;
-  //     // prettier-ignore
+      .-text {
+        @include bgcolor(neutral, 2);
+      }
+    }
 
-  //     position: absolute;
-  //     top: 2.25rem;
-  //     left: 0;
-  //     min-width: 12rem;
-  //     padding: 0.5rem 0;
+    .-menu {
+      display: none;
+      // prettier-ignore
 
-  //     @include bgcolor(white);
-  //     @include radius();
-  //     @include shadow(2);
-  //   }
+      position: absolute;
+      top: 2.25rem;
+      left: 0;
+      min-width: 12rem;
+      padding: 0.5rem 0;
 
-  //   .-item {
-  //     cursor: pointer;
-  //     display: flex;
-  //     padding: 0 0.75rem;
+      @include bgcolor(white);
+      @include radius();
+      @include shadow(2);
+    }
 
-  //     line-height: 2.25rem;
-  //     @include border($sides: top);
-  //     &:last-child {
-  //       @include border($sides: bottom);
-  //     }
+    .-item {
+      cursor: pointer;
+      display: flex;
+      padding: 0 0.75rem;
 
-  //     @include font-size(2);
-  //     @include fgcolor(neutral, 7);
+      line-height: 2.25rem;
+      @include border($sides: top);
+      &:last-child {
+        @include border($sides: bottom);
+      }
 
-  //     &._active {
-  //       @include fgcolor(primary, 5);
-  //     }
+      @include font-size(2);
+      @include fgcolor(neutral, 7);
 
-  //     &:hover {
-  //       @include bgcolor(neutral, 2);
-  //     }
+      &._active {
+        @include fgcolor(primary, 5);
+      }
 
-  //     .-name {
-  //       font-weight: 500;
-  //       text-transform: uppercase;
-  //     }
+      &:hover {
+        @include bgcolor(neutral, 2);
+      }
 
-  //     .-time {
-  //       margin-left: auto;
-  //       @include fgcolor(neutral, 5);
-  //     }
-  //   }
-  // }
+      .-name {
+        font-weight: 500;
+        text-transform: uppercase;
+      }
 
-  // .meta {
-  //   background-color: #fff;
-  //   margin: 0.75rem -0.75rem;
-  //   padding: 0 0.75rem;
-  //   border-radius: 0.75rem;
-  //   @include shadow(2);
-  //   @include bp-min(md) {
-  //     margin-left: 0;
-  //     margin-right: 0;
-  //     padding-left: 1.5rem;
-  //     padding-right: 1.5rem;
-  //   }
-  // }
+      .-time {
+        margin-left: auto;
+        @include fgcolor(neutral, 5);
+      }
+    }
+  }
 
-  // $meta-height: 3rem;
-  // .meta-header {
-  //   height: $meta-height;
-  //   display: flex;
-  //   @include border($sides: bottom, $color: neutral, $shade: 3);
+  .meta {
+    background-color: #fff;
+    margin: 0.75rem -0.75rem;
+    padding: 0 0.75rem;
+    border-radius: 0.75rem;
+    @include shadow(2);
+    @include screen-min(md) {
+      margin-left: 0;
+      margin-right: 0;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
 
-  //   .-tab {
-  //     height: $meta-height;
-  //     line-height: $meta-height;
-  //     width: 50%;
-  //     font-weight: 500;
-  //     text-align: center;
-  //     text-transform: uppercase;
+  $meta-height: 3rem;
+  .meta-header {
+    height: $meta-height;
+    display: flex;
+    @include border($sides: bottom, $color: neutral, $shade: 3);
 
-  //     @include font-size(2);
-  //     @include bp-min(sm) {
-  //       @include font-size(3);
-  //     }
+    .-tab {
+      height: $meta-height;
+      line-height: $meta-height;
+      width: 50%;
+      font-weight: 500;
+      text-align: center;
+      text-transform: uppercase;
 
-  //     @include fgcolor(neutral, 6);
-  //     &._active {
-  //       @include fgcolor(primary, 6);
-  //       @include border(
-  //         $sides: bottom,
-  //         $color: primary,
-  //         $shade: 5,
-  //         $width: 2px
-  //       );
-  //     }
-  //   }
-  // }
+      @include font-size(2);
+      @include screen-min(sm) {
+        @include font-size(3);
+      }
 
-  // .meta-tab {
-  //   padding: 0.75rem 0;
-  //   display: block;
-  //   min-height: 50vh;
-  // }
+      @include fgcolor(neutral, 6);
+      &._active {
+        @include fgcolor(primary, 6);
+        @include border(
+          $sides: bottom,
+          $color: primary,
+          $shade: 5,
+          $width: 2px
+        );
+      }
+    }
+  }
 
-  // .empty {
-  //   min-height: 50vh;
-  //   display: flex;
-  //   align-items: center;
-  //   justify-content: center;
-  //   text-align: center;
-  //   font-style: italic;
-  //   @include font-size(4);
-  //   @include fgcolor(neutral, 5);
-  // }
+  .meta-tab {
+    padding: 0.75rem 0;
+    display: block;
+    min-height: 50vh;
+  }
 
-  // .latests {
-  //   width: 100%;
-  //   max-width: 100%;
-  //   margin-bottom: 0.75rem;
+  .empty {
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-style: italic;
+    @include font-size(4);
+    @include fgcolor(neutral, 5);
+  }
 
-  //   tr {
-  //     width: 100%;
-  //     @include border($sides: bottom);
-  //     &:nth-child(even) {
-  //       @include bgcolor(neutral, 1);
-  //     }
-  //   }
+  .latests {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 0.75rem;
 
-  //   thead,
-  //   thead tr {
-  //     background: transparent;
-  //   }
+    tr {
+      width: 100%;
+      @include border($sides: bottom);
+      &:nth-child(even) {
+        @include bgcolor(neutral, 1);
+      }
+    }
 
-  //   th {
-  //     border: none;
-  //     padding: 0.375rem 0.75rem;
-  //     text-transform: uppercase;
-  //     font-weight: 500;
-  //     @include font-size(2);
-  //     @include fgcolor(neutral, 6);
-  //   }
+    thead,
+    thead tr {
+      background: transparent;
+    }
 
-  //   th,
-  //   td {
-  //     border: none;
-  //     @include truncate(null);
-  //   }
+    th {
+      border: none;
+      padding: 0.375rem 0.75rem;
+      text-transform: uppercase;
+      font-weight: 500;
+      @include font-size(2);
+      @include fgcolor(neutral, 6);
+    }
 
-  //   td {
-  //     padding: 0;
-  //   }
+    th,
+    td {
+      border: none;
+      @include truncate(null);
+    }
 
-  //   td.latest-seed {
-  //     max-width: 5rem;
-  //     text-transform: uppercase;
-  //     font-weight: 500;
-  //     @include font-size(1);
-  //   }
+    td {
+      padding: 0;
+    }
 
-  //   .latest-time {
-  //     display: none;
-  //     @include bp-min(sm) {
-  //       display: table-cell;
-  //       max-width: 8.5rem;
-  //       text-align: right;
-  //     }
-  //   }
-  // }
+    td.latest-seed {
+      max-width: 5rem;
+      text-transform: uppercase;
+      font-weight: 500;
+      @include font-size(1);
+    }
 
-  // .latest-text {
-  //   display: block;
-  //   padding: 0.375rem 0.75rem;
-  //   @include fgcolor(neutral, 6);
+    .latest-time {
+      display: none;
+      @include screen-min(sm) {
+        display: table-cell;
+        max-width: 8.5rem;
+        text-align: right;
+      }
+    }
+  }
 
-  //   .latest-time & {
-  //     @include font-size(2);
-  //     cursor: pointer;
-  //     @include hover {
-  //       @include fgcolor(primary, 5);
-  //     }
-  //     // @include fgcolor(neutral, 5);
-  //   }
-  // }
+  .latest-text {
+    display: block;
+    padding: 0.375rem 0.75rem;
+    @include fgcolor(neutral, 6);
 
-  // .latest-chap {
-  //   width: 40vw;
-  //   @include truncate(null);
+    .latest-time & {
+      @include font-size(2);
+      cursor: pointer;
+      @include hover {
+        @include fgcolor(primary, 5);
+      }
+      // @include fgcolor(neutral, 5);
+    }
+  }
 
-  //   max-width: 60vw;
-  //   @include bp-min(sm) {
-  //     max-width: 50vw;
-  //   }
-  //   @include bp-min(lg) {
-  //     max-width: 40vw;
-  //   }
-  // }
+  .latest-chap {
+    width: 40vw;
+    @include truncate(null);
 
-  // .latest-link {
-  //   display: block;
-  //   @include truncate(null);
+    max-width: 60vw;
+    @include screen-min(sm) {
+      max-width: 50vw;
+    }
+    @include screen-min(lg) {
+      max-width: 40vw;
+    }
+  }
 
-  //   width: auto;
-  //   padding: 0.375rem 0.75rem;
+  .latest-link {
+    display: block;
+    @include truncate(null);
 
-  //   font-style: normal;
-  //   font-weight: 400;
+    width: auto;
+    padding: 0.375rem 0.75rem;
 
-  //   @include fgcolor(neutral, 8);
+    font-style: normal;
+    font-weight: 400;
 
-  //   &:visited {
-  //     font-style: italic;
-  //     @include fgcolor(neutral, 5);
-  //   }
+    @include fgcolor(neutral, 8);
 
-  //   &:hover {
-  //     @include fgcolor(primary, 6);
-  //   }
-  // }
+    &:visited {
+      font-style: italic;
+      @include fgcolor(neutral, 5);
+    }
+
+    &:hover {
+      @include fgcolor(primary, 6);
+    }
+  }
 </style>

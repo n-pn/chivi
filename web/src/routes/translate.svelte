@@ -134,58 +134,61 @@
 </Vessel>
 
 <style lang="scss">
-  // .tabs {
-  //   margin: 0.5rem 0;
-  //   display: flex;
-  //   line-height: 2.5rem;
-  //   text-transform: uppercase;
-  //   font-weight: 500;
-  //   @include font-size(2);
-  //   @include fgcolor(neutral, 6);
-  //   @include border($sides: bottom);
-  // }
+  .tabs {
+    margin: 0.5rem 0;
+    display: flex;
+    line-height: 2.5rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    @include font-size(2);
+    @include fgcolor(neutral, 6);
+    @include border($sides: bottom);
+  }
 
-  // .tab {
-  //   cursor: pointer;
-  //   padding: 0 0.75rem;
-  //   height: 2.5rem;
+  .tab {
+    cursor: pointer;
+    padding: 0 0.75rem;
+    height: 2.5rem;
 
-  //   &:hover {
-  //     @include fgcolor(primary, 5);
-  //   }
-  //   &._active {
-  //     @include border($sides: bottom, $width: 2px, $color: primary, $shade: 5);
-  //   }
-  // }
+    &:hover {
+      @include fgcolor(primary, 5);
+    }
+    &._active {
+      @include border($sides: bottom, $width: 2px, $color: primary, $shade: 5);
+    }
+  }
 
-  // textarea {
-  //   width: 100%;
-  //   min-height: calc(100vh - 10rem);
+  textarea {
+    width: 100%;
+    min-height: calc(100vh - 10rem);
 
-  //   padding: 0.75rem;
+    padding: 0.75rem;
 
-  //   @include border();
-  //   @include radius();
+    @include border();
+    @include radius();
 
-  //   &:hover,
-  //   &:focus {
-  //     background-color: #fff;
-  //     @include bdcolor(primary, 3);
-  //   }
+    &:hover,
+    &:focus {
+      background-color: #fff;
+      @include bdcolor(primary, 3);
+    }
 
-  //   &:focus {
-  //     box-shadow: 0 0 1px 1px color(primary, 2);
-  //   }
+    &:focus {
+      box-shadow: 0 0 1px 1px color(primary, 2);
+    }
 
-  //   &::placeholder {
-  //     font-style: italic;
-  //     @include fgcolor(neutral, 4);
-  //   }
-  // }
+    &::placeholder {
+      font-style: italic;
+      @include fgcolor(neutral, 4);
+    }
+  }
 
-  // footer {
-  //   margin: 0.5rem 0;
-  //   @include flex($gap: 0.5rem);
-  //   justify-content: right;
-  // }
+  footer {
+    margin: 0.5rem 0;
+    @include flex();
+    justify-content: right;
+    // > * {
+    //   @include flex-gap(0.5rem);
+    // }
+  }
 </style>

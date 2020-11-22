@@ -5,5 +5,5 @@
     @warn "$shade #{$shade} is not supported for custom color";
   }
 
-  @include bp-all(color, color($color, $shade, $alpha));
+  @include props(color, color($color, $shade, $alpha));
 }
