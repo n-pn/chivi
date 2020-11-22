@@ -32,7 +32,10 @@
 <Vessel>
   <section>
     <form action="/_login" method="POST" on:submit|preventDefault={submit}>
-      <header><img src="/logo.svg" alt="logo" /> <span>Chivi</span></header>
+      <header>
+        <img src="/chivi-logo.svg" alt="logo" />
+        <span>Chivi</span>
+      </header>
 
       <div class="input">
         <label for="email">Hòm thư</label>

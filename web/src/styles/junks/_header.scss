@@ -31,7 +31,8 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
 
   .-left,
   .-right {
-    @include flex-gap($gap: $header-gutter, $child: ':global(*)');
+    @include flex;
+    @include flex-gap($header-gutter, $child: '*');
   }
 
   .-left {

@@ -93,7 +93,7 @@
     bottom: -1.75rem;
     font-weight: 500;
     @include fgcolor(neutral, 7);
-    @include truncate();
+    @include truncate(null);
     @include font-size(3);
     // line-height: 1rem;
     // @include font-family(narrow);

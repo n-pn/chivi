@@ -33,7 +33,7 @@
   <nav class="center -wrap">
     <div class="-left">
       <a href="/" class="header-item _brand">
-        <img src="/logo.svg" alt="logo" />
+        <img src="/chivi-logo.svg" alt="logo" />
         <span class="header-text _show-md">Chivi</span>
       </a>
 
