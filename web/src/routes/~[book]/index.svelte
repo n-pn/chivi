@@ -322,10 +322,10 @@
     }
 
     .-hint {
-      // display: none;
-      // @include screen-min(sm) {
-      //   display: inline-block;
-      // }
+      display: none;
+      @include screen-min(md) {
+        display: inline-block;
+      }
 
       height: 2.25rem;
       line-height: 2.25rem;
@@ -378,7 +378,7 @@
 
     .-count {
       display: none;
-      @include screen-min(sm) {
+      @include screen-min(md) {
         margin-left: 0.25rem;
         display: inline-block;
         @include fgcolor(neutral, 6);
@@ -450,7 +450,7 @@
     padding: 0 0.75rem;
     border-radius: 0.75rem;
     @include shadow(2);
-    @include screen-min(md) {
+    @include screen-min(lg) {
       margin-left: 0;
       margin-right: 0;
       padding-left: 1.5rem;
@@ -473,7 +473,7 @@
       text-transform: uppercase;
 
       @include font-size(2);
-      @include screen-min(sm) {
+      @include screen-min(md) {
         @include font-size(3);
       }
 

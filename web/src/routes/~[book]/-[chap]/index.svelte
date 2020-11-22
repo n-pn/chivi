@@ -158,7 +158,7 @@
     class="header-item _title"
     rel="external">
     <SvgIcon name="book-open" />
-    <span class="header-text _show-sm _title">{bname}</span>
+    <span class="header-text _show-md _title">{bname}</span>
   </a>
 
   <button slot="header-left" class="header-item _active">

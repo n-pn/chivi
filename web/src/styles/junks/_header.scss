@@ -95,11 +95,11 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   @include font-size(2);
 
   &._show-sm {
-    @include props(inline-block, none, $sm: inline-block);
+    @include props(display, none, $sm: inline-block);
   }
 
   &._show-md {
-    @include props(inline-block, none, $md: inline-block);
+    @include props(display, none, $md: inline-block);
   }
 
   ._brand & {
