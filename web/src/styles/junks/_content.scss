@@ -36,7 +36,10 @@
 
 article {
   padding: 1rem 0;
-  word-wrap: break-word;
+  // hyphens: manual;
+  // word-wrap: break-word;
+  // word-break: break-word;
+  overflow-wrap: break-word;
 
   > * + * {
     @include props(margin-top, 1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);

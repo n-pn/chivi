@@ -8,7 +8,7 @@
 
     for (const [key, val, dic] of nodes) {
       const e_key = escape_html(key)
-      const e_val = escape_html(val)
+      const e_val = escape_html(val).replace(/_/, '\xAD_') // force break words
 
       switch (val.charAt(0)) {
         case '“':
