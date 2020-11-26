@@ -3613,6 +3613,16 @@ postcss@7.0.32, postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.27:
     source-map "^0.6.1"
     supports-color "^6.1.0"
 
+postcss@^8.1.10:
+  version "8.1.10"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.1.10.tgz#129834f94c720554d2cfdaeb27d5542ac4a026ea"
+  integrity sha512-iBXEV5VTTYaRRdxiFYzTtuv2lGMQBExqkZKSzkJe+Fl6rvQrA/49UVGKqB+LG54hpW/TtDBMGds8j33GFNW7pg==
+  dependencies:
+    colorette "^1.2.1"
+    nanoid "^3.1.18"
+    source-map "^0.6.1"
+    vfile-location "^3.2.0"
+
 postcss@^8.1.4:
   version "8.1.7"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.1.7.tgz#ff6a82691bd861f3354fd9b17b2332f88171233f"
@@ -3622,16 +3632,6 @@ postcss@^8.1.4:
     line-column "^1.0.2"
     nanoid "^3.1.16"
     source-map "^0.6.1"
-
-postcss@^8.1.9:
-  version "8.1.9"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.1.9.tgz#20ff4b598a6f5015c5f7fe524b8ed5313d7ecade"
-  integrity sha512-oWuBpEl1meaMKkQXn0ic78TUrgsMvrAZLE/6ZY0H3LTteq2O3L8PGWwMbPLctpksTJIHjQeossMUMNQW7qRIHQ==
-  dependencies:
-    colorette "^1.2.1"
-    nanoid "^3.1.18"
-    source-map "^0.6.1"
-    vfile-location "^3.2.0"
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
@@ -4479,10 +4479,10 @@ svelte-loader@^2.13.6:
     loader-utils "^1.1.0"
     svelte-dev-helper "^1.1.9"
 
-svelte@^3.29.7:
-  version "3.29.7"
-  resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.29.7.tgz#e254eb2d0d609ce0fd60f052d444ac4a66d90f7d"
-  integrity sha512-rx0g311kBODvEWUU01DFBUl3MJuJven04bvTVFUG/w0On/wuj0PajQY/QlXcJndFxG+W1s8iXKaB418tdHWc3A==
+svelte@^3.30.0:
+  version "3.30.0"
+  resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.30.0.tgz#cbde341e96bf34f4ac73c8f14f8a014e03bfb7d6"
+  integrity sha512-z+hdIACb9TROGvJBQWcItMtlr4s0DBUgJss6qWrtFkOoIInkG+iAMo/FJZQFyDBQZc+dul2+TzYSi/tpTT5/Ag==
 
 svgo@^1.0.0:
   version "1.3.2"
