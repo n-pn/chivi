@@ -182,13 +182,18 @@ class SeedText
     end
 
     res
+  rescue err
+    puts client
+    raise err
   end
 
   private def get_hetushu_encrypt_string
-    rdom.css("meta[name=client]").first?.try { |n| return n.attributes["content"] }
+    if node = rdom.css("meta[name=client]").first?
+      return node.attributes["content"]
+    end
 
     out_file = file.sub(".html", ".meta")
-    FileUtil.read(file, @expiry).try { |content| return content }
+    FileUtil.read(out_file, @expiry).try { |content| return content }
 
     HTTP::Client.get(hetushu_content_url, hetushu_ajax_header) do |res|
       token = res.headers["token"]

@@ -7,17 +7,22 @@ class ZipStore
   def initialize(@target, @source = target.sub(/.zip$/, ""))
   end
 
-  def entries
+  def entries(min_size = 100)
     entries = [] of String
 
     if File.exists?(@target)
-      open_zip { |zip| entries.concat(zip.entries.map(&.filename)) }
+      open_zip do |zip|
+        files = zip.entries
+        files = files.reject { |x| x.uncompressed_size < min_size }
+
+        entries.concat(files.map(&.filename))
+      end
     end
 
     if File.directory?(@source)
       files = Dir.children(@source).reject do |name|
         path = File.join(@source, name)
-        File.directory?(path) || File.size(path) == 0
+        File.directory?(path) || File.size(path) < min_size
       end
 
       entries.concat(files)
