@@ -182,9 +182,6 @@ class SeedText
     end
 
     res
-  rescue err
-    puts client
-    raise err
   end
 
   private def get_hetushu_encrypt_string
@@ -197,6 +194,7 @@ class SeedText
 
     HTTP::Client.get(hetushu_content_url, hetushu_ajax_header) do |res|
       token = res.headers["token"]
+      puts "-- seed token for [#{@sbid}/#{@scid}] saved -- ".colorize.dark_gray
       token.tap { |token| File.write(out_file, token) if @freeze }
     end
   end
