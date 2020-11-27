@@ -2,82 +2,85 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/kernel/models/chap_list"
+require "../../src/_utils/zip_store"
+require "../../src/filedb/value_map"
 require "../../src/kernel/source/seed_text"
 
-def fetch_text(file : String, site : String, bsid : String, chap : ZhChap, label : String) : Void
-  return if File.exists?(file)
+LIST_DIR = "_db/prime/chdata/infos"
+TEXT_DIR = "_db/prime/chdata/texts"
 
-  crawler = TextSpider.load(site, bsid, chap.csid)
-  title = crawler.get_title!
-  paras = crawler.get_paras!
+class PreloadBook
+  getter indexed : Array(String)
+  getter existed : Array(String)
+  getter missing : Array(String)
 
-  puts "-- <#{label.colorize(:blue)}> [#{site}-#{bsid}] #{title.colorize(:blue)}"
-  File.open(file, "w") do |io|
-    io << title
-    paras.each { |para| io << "\n" << para }
+  def initialize(@seed : String, @sbid : String)
+    @out_dir = "#{TEXT_DIR}/#{@seed}/#{@sbid}"
+    FileUtils.mkdir_p(@out_dir)
+
+    @indexed = ValueMap.new("#{LIST_DIR}/#{@seed}/#{@sbid}/_indexed.tsv").values.values
+    @existed = ZipStore.new("#{TEXT_DIR}/#{@seed}/#{@sbid}.zip").entries.map(&.sub(".txt", ""))
+
+    @missing = indexed - existed
   end
-rescue err
-  puts "-- <#{label.colorize(:red)}> #{err.colorize(:red)}"
-  File.write(file, chap.title)
-  File.delete SpiderUtil.text_path(site, bsid, chap.csid)
+
+  def crawl!(threads = 4)
+    threads = @missing.size if threads > @missing.size
+    channel = Channel(Nil).new(threads)
+
+    @missing.each_with_index do |scid, idx|
+      channel.receive unless idx < threads
+
+      spawn do
+        fetch_text(scid, "#{idx + 1}/#{@missing.size}")
+      ensure
+        channel.send(nil)
+      end
+    end
+
+    threads.times { channel.receive }
+  end
+
+  def fetch_text(scid : String, label : String) : Nil
+    crawler = SeedText.new(@seed, @sbid, scid, freeze: true)
+    File.write("#{@out_dir}/#{scid}.txt", crawler)
+    puts "-- <#{label}> [#{@seed}/#{@sbid}/#{scid}] saved! --\n".colorize.yellow
+  rescue err
+    puts "-- <#{label}> [#{@seed}/#{@sbid}/#{scid}] #{err.message}}".colorize.red
+  end
+
+  def self.crawl!(seed : String, sbid : String, threads = 4)
+    new(seed, sbid).crawl!(threads)
+  end
 end
 
-LIST_DIR = File.join("data", "zh_lists")
+class PreloadSeed
+  getter sbids
 
-TEXT_DIR = File.join("data", "zh_texts")
-FileUtils.mkdir_p(TEXT_DIR)
+  def initialize(@seed : String)
+    @sbids = Dir.children("#{LIST_DIR}/#{seed}")
+  end
 
-def fetch_book(info, label)
-  site = info.cr_site_df
-  bsid = info.cr_sitemap[site]
+  def crawl!(text_threads = 4)
+    @sbids.each { |sbid| PreloadBook.crawl!(@seed, sbid, text_threads) }
+  end
 
-  name = "#{info.ubid}.#{site}.#{bsid}"
-
-  list_file = File.join(LIST_DIR, "#{name}.json")
-  return unless File.exists?(list_file)
-
-  text_dir = File.join(TEXT_DIR, name)
-  FileUtils.mkdir_p(text_dir)
-
-  FileUtils.mkdir_p(SpiderUtil.text_dir(site, bsid))
-
-  chaps = ZhList.from_json(File.read(list_file))
-  puts "- <#{label.colorize(:cyan)}> [#{site}-#{bsid}-#{info.zh_title}] #{chaps.size.colorize(:cyan)} entries"
-
-  limit = 4
-  limit = chaps.size if limit > chaps.size
-  channel = Channel(Nil).new(limit)
-
-  chaps.each_with_index do |chap, idx|
-    channel.receive unless idx < limit
-
-    spawn same_thread: true do
-      file = File.join(text_dir, "#{chap.csid}.txt")
-      fetch_text(file, site, bsid, chap, "#{idx + 1}/#{chaps.size}")
-      channel.send(nil)
+  def self.crawl!(argv = ARGV)
+    seeds = ARGV.empty? ? ["zhwenpg", "shubaow"] : ARGV
+    seeds.each do |seed|
+      crawler = PreloadSeed.new(seed)
+      crawler.crawl!(text_threads: ideal_thread_limit_for(seed))
     end
   end
 
-  limit.times { channel.receive }
-end
-
-crawls = BookInfo.load_all.reject do |ubid, info|
-  info.cr_sitemap.empty?
-end
-
-puts "- to crawl: #{crawls.size} entries".colorize(:cyan)
-
-limit = 4
-channel = Channel(Nil).new(limit)
-
-crawls.values.sort_by(&.tally.-).each_with_index do |info, idx|
-  channel.receive unless idx < limit
-
-  spawn do
-    fetch_book(info, "#{idx + 1}/#{crawls.size}")
-    channel.send(nil)
+  def self.ideal_thread_limit_for(seed : String)
+    case seed
+    when "zhwenpg", "shubaow", "qu_la"
+      1
+    else
+      4
+    end
   end
 end
 
-limit.times { channel.receive }
+PreloadSeed.crawl!(ARGV)

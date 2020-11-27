@@ -6,13 +6,13 @@ INP = "var/appcv/chlists"
 OUT = "_db/prime/chdata"
 
 struct SeedList
-  getter s_cid, zh_title, vi_title, vi_label, url_slug
+  getter _indexed, zh_title, vi_title, vi_label, url_slug
 
   def initialize(sname : String, s_bid : String)
     dir = "#{OUT}/infos/#{sname}/#{s_bid}"
     FileUtils.mkdir_p(dir)
 
-    @s_cid = ValueMap.new("#{dir}/s_cid.tsv")
+    @_indexed = ValueMap.new("#{dir}/_indexed.tsv")
     @zh_title = ValueMap.new("#{dir}/zh_title.tsv")
     @vi_title = ValueMap.new("#{dir}/vi_title.tsv")
     @vi_label = ValueMap.new("#{dir}/vi_label.tsv")
@@ -20,7 +20,7 @@ struct SeedList
   end
 
   def save!
-    @s_cid.save!
+    @_indexed.save!
     @zh_title.save!
     @vi_title.save!
     @vi_label.save!
@@ -36,8 +36,8 @@ input.each_with_index do |file, idx|
 
   output = SeedList.new(chlist.seed, chlist.sbid)
 
-  chlist.chaps.each do |chap|
-    output.s_cid.upsert!(idx.+(1).*(10).to_s, chap.scid, mtime: 0)
+  chlist.chaps.each_with_index do |chap, index|
+    output._indexed.upsert!(index.+(1).*(10).to_s, chap.scid, mtime: 0)
     output.zh_title.upsert!(chap.scid, "#{chap.zh_label}  #{chap.zh_title}", mtime: 0)
     output.vi_title.upsert!(chap.scid, chap.vi_title, mtime: 0)
     output.vi_label.upsert!(chap.scid, chap.vi_label, mtime: 0) if chap.vi_label != "Chính văn"

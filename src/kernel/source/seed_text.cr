@@ -9,71 +9,66 @@ require "../../_utils/text_util"
 class SeedText
   DIR = "_db/seeds"
 
-  def self.mkdir!(seed : String, sbid : String)
-    FileUtils.mkdir_p(root(seed, sbid))
-  end
+  getter seed : String
+  getter sbid : String
+  getter scid : String
 
-  def self.root(seed : String, sbid : String)
-    File.join(DIR, seed, "raw-texts", sbid)
-  end
+  getter file : String { "#{DIR}/#{seed}/raw-texts/#{sbid}/#{scid}.html" }
+  getter html : String { load_html }
+  getter rdom : Myhtml::Parser { Myhtml::Parser.new(html) }
 
-  def self.path_for(seed : String, sbid : String, scid : String)
-    File.join(root(seed, sbid), "#{scid}.html")
-  end
+  getter title : String { parse_title! }
+  getter paras : Array(String) { parse_paras! }
 
-  def self.text_url(seed : String, sbid : String, scid : String)
-    case seed
-    when "zhwenpg"
-      "https://novel.zhwenpg.com/r.php?id=#{scid}"
-    when "nofff"
-      "https://www.nofff.com/#{sbid}/#{scid}/"
-    when "69shu"
-      "https://www.69shu.com/txt/#{sbid}/#{scid}"
-    when "qu_la"
-      "https://www.qu.la/book/#{sbid}/#{scid}.html"
-    when "jx_la"
-      "https://www.jx.la/book/#{sbid}/#{scid}.html"
-    when "rengshu"
-      "http://www.rengshu.com/book/#{sbid}/#{scid}"
-    when "xbiquge"
-      "https://www.xbiquge.cc/book/#{sbid}/#{scid}.html"
-    when "hetushu"
-      "https://www.hetushu.com/book/#{sbid}/#{scid}.html"
-    when "duokan8"
-      group = sbid.to_i // 1000
-      "http://www.duokan8.com/#{group}_#{sbid}/#{scid}.html"
-    when "paoshu8"
-      group = sbid.to_i // 1000
-      "http://www.paoshu8.com/#{group}_#{sbid}/#{scid}.html"
-    when "5200"
-      group = sbid.to_i // 1000
-      "https://www.5200.tv/#{group}_#{sbid}/#{scid}.html"
-    when "biquge5200"
-      group = sbid.to_i // 1000
-      "https://www.biquge5200.com/#{group}_#{sbid}/#{scid}.html"
-    when "shubaow"
-      group = sbid.to_i // 1000
-      "https://www.shubaow.net/#{group}_#{sbid}/#{scid}.html"
-    else
-      raise "- seed `#{seed}` not supported!"
-    end
-  end
-
-  def self.init(seed : String, sbid : String, scid : String, expiry = Time.utc(2010, 1, 1), freeze = false)
-    url = text_url(seed, sbid, scid)
-    file = path_for(seed, sbid, scid)
+  def initialize(@seed, @sbid, @scid, @expiry : Time = Time.utc(2010, 1, 1), @freeze : Bool = false)
     FileUtils.mkdir_p(File.dirname(file))
-
-    unless html = FileUtil.read(file, expiry)
-      html = HttpUtil.fetch_html(url, HttpUtil.encoding_for(seed))
-      File.write(file, html) if freeze
-    end
-
-    new(seed, html)
   end
 
-  def initialize(@seed : String, html : String)
-    @doc = Myhtml::Parser.new(html)
+  private def load_html
+    unless html = FileUtil.read(file, @expiry)
+      html = HttpUtil.fetch_html(chap_url, HttpUtil.encoding_for(seed))
+      File.write(file, html) if @freeze
+    end
+
+    html
+  end
+
+  private def chap_url
+    case @seed
+    when "zhwenpg"
+      "https://novel.zhwenpg.com/r.php?id=#{@scid}"
+    when "nofff"
+      "https://www.nofff.com/#{@sbid}/#{@scid}/"
+    when "69shu"
+      "https://www.69shu.com/txt/#{@sbid}/#{@scid}"
+    when "qu_la"
+      "https://www.qu.la/book/#{@sbid}/#{@scid}.html"
+    when "jx_la"
+      "https://www.jx.la/book/#{@sbid}/#{@scid}.html"
+    when "rengshu"
+      "http://www.rengshu.com/book/#{@sbid}/#{@scid}"
+    when "xbiquge"
+      "https://www.xbiquge.cc/book/#{@sbid}/#{@scid}.html"
+    when "hetushu"
+      "https://www.hetushu.com/book/#{@sbid}/#{@scid}.html"
+    when "duokan8"
+      group = @sbid.to_i // 1000
+      "http://www.duokan8.com/#{group}_#{@sbid}/#{@scid}.html"
+    when "paoshu8"
+      group = @sbid.to_i // 1000
+      "http://www.paoshu8.com/#{group}_#{@sbid}/#{@scid}.html"
+    when "5200"
+      group = @sbid.to_i // 1000
+      "https://www.5200.tv/#{group}_#{@sbid}/#{@scid}.html"
+    when "biquge5200"
+      group = @sbid.to_i // 1000
+      "https://www.biquge5200.com/#{group}_#{@sbid}/#{@scid}.html"
+    when "shubaow"
+      group = @sbid.to_i // 1000
+      "https://www.shubaow.net/#{group}_#{@sbid}/#{@scid}.html"
+    else
+      raise "- seed `#{@seed}` not supported!"
+    end
   end
 
   def to_s(io : IO)
@@ -85,13 +80,10 @@ class SeedText
     String.build { |io| to_s(io) }
   end
 
-  def save!(path : String) : Void
+  def save!(path = file) : Void
     File.write(path, self)
     puts "- <remote_text> saved to file [#{path}]."
   end
-
-  getter title : String { parse_title! }
-  getter paras : Array(String) { parse_paras! }
 
   def parse_title!
     case @seed
@@ -117,7 +109,7 @@ class SeedText
   end
 
   private def title_text(query : String)
-    return "" unless node = @doc.css(query).first?
+    return "" unless node = rdom.css(query).first?
     clean_text(node.inner_text)
   end
 
@@ -141,7 +133,7 @@ class SeedText
   end
 
   private def parse_paras!(selector : String)
-    return [] of String unless node = @doc.css(selector).first?
+    return [] of String unless node = rdom.css(selector).first?
     node.children.each do |tag|
       tag.remove! if {"script", "div"}.includes?(tag.tag_name)
     end
@@ -171,13 +163,13 @@ class SeedText
   end
 
   private def parse_hetushu_paras!
-    client = @doc.css("meta[name=client]").first.attributes["content"]
+    client = get_hetushu_encrypt_string
     orders = Base64.decode_string(client).split(/[A-Z]+%/)
 
     res = Array(String).new(orders.size, "")
     jmp = 0
 
-    inp = @doc.css("#content div:not([class])").map_with_index do |node, idx|
+    inp = rdom.css("#content div:not([class])").map_with_index do |node, idx|
       ord = orders[idx].to_i
 
       if ord < 5
@@ -192,11 +184,32 @@ class SeedText
     res
   end
 
+  private def get_hetushu_encrypt_string
+    rdom.css("meta[name=client]").first?.try { |n| return n.attributes["content"] }
+
+    out_file = file.sub(".html", ".meta")
+    FileUtil.read(file, @expiry).try { |content| return content }
+
+    HTTP::Client.get(hetushu_content_url, hetushu_ajax_header) do |res|
+      token = res.headers["token"]
+      token.tap { |token| File.write(out_file, token) if @freeze }
+    end
+  end
+
+  private def hetushu_ajax_header
+    HTTP::Headers{
+      "X-Requested-With" => "XMLHttpRequest",
+      "Referer"          => chap_url,
+    }
+  end
+
+  private def hetushu_content_url
+    "https://www.hetushu.com/book/#{sbid}/r#{@scid}.json"
+  end
+
   private def clean_text(input)
     input = TextUtil.clean_html(input)
     input = TextUtil.fix_spaces(input)
     input.strip
   end
 end
-
-# pp TextUtil.clean_html("    三位大儒默契的没有接，而是彼此交换眼神。").strip

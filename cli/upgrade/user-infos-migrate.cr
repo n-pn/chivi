@@ -5,6 +5,11 @@ require "../../src/kernel/user_info"
 files = Dir.glob("var/appcv/members/*.json")
 
 OUT = "_db/prime/member/infos"
+FileUtils.rm_rf(OUT)
+
+# TODO:
+# - sort users by creation time
+# - fake join dates
 
 umail_map = ValueMap.new("#{OUT}/umail.tsv")
 uname_map = ValueMap.new("#{OUT}/uname.tsv")

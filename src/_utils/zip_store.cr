@@ -7,12 +7,30 @@ class ZipStore
   def initialize(@target, @source = target.sub(/.zip$/, ""))
   end
 
-  def exists?(file : String)
+  def entries
+    entries = [] of String
+
+    if File.exists?(@target)
+      open_zip { |zip| entries.concat(zip.entries.map(&.filename)) }
+    end
+
+    if File.directory?(@source)
+      files = Dir.children(@source).reject do |name|
+        path = File.join(@source, name)
+        File.directory?(path) || File.size(path) == 0
+      end
+
+      entries.concat(files)
+    end
+
+    entries.uniq
+  end
+
+  def exists?(file : String) : Bool
     return true if File.exists?(file_path(file))
     return false unless File.exists?(@target)
 
-    Compress::Zip::File.open(target) { |zip| return true if zip[file]? }
-    false
+    open_zip { |zip| !!zip[file]? } || false
   end
 
   def extract(basename : String)
@@ -20,9 +38,7 @@ class ZipStore
     return File.read(file) if File.exists?(file)
     return unless File.exists?(@target)
 
-    Compress::Zip::File.open(target) do |zip|
-      zip[basename]?.try(&.open(&.gets_to_end))
-    end
+    open_zip { |zip| zip[basename]?.try(&.open(&.gets_to_end)) }
   end
 
   def mtime(basename : String)
@@ -30,9 +46,7 @@ class ZipStore
     return File.info(file).modification_time if File.exists?(file)
     return unless File.exists?(@target)
 
-    Compress::Zip::File.open(target) do |zip|
-      zip[basename]?.try(&.time)
-    end
+    open_zip { |zip| zip[basename]?.try(&.time) }
   end
 
   private def file_path(file : String)
@@ -46,5 +60,11 @@ class ZipStore
     options += "m" if move
 
     puts `zip #{options} "#{target}" #{source}/*.*`
+  end
+
+  private def open_zip
+    Compress::Zip::File.open(target) do |zip|
+      yield zip
+    end
   end
 end

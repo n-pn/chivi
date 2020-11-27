@@ -40,7 +40,7 @@ module Kernel
 
     if zh_data.empty?
       if remote?(sname)
-        source = SeedText.init(sname, s_bid, s_cid, freeze: false)
+        source = SeedText.new(sname, s_bid, s_cid, freeze: false)
         zh_data = [source.title].concat(source.paras)
         chtext.tap(&.zh_data = zh_data).save!
       else
