@@ -13,7 +13,7 @@ module HttpUtil
   alias SSL = OpenSSL::SSL::Context::Client
 
   def fetch_html(url : String, encoding = "GBK") : String
-    puts "-- <http_util> GET: [#{url}] --".colorize.magenta
+    puts "-- HIT: [#{url}] --".colorize.magenta
     tls = url.starts_with?("https") ? SSL.insecure : nil
     html = fetch_html(url, encoding, tls, retry: 0)
   end
@@ -28,8 +28,7 @@ module HttpUtil
       res.body_io.try(&.gets_to_end) || "404 Not Found!"
     end
   rescue err
-    puts "-- <http_util> error fetching [#{url}]: \
-            {#{err.class}} #{err.colorize.red} (retry: #{retry}) --"
+    puts "-- error [#{url}]: {#{err.class}} #{err} (retry: #{retry}) --".colorize.red
 
     retry += 1
     return "500 Server Error!" if retry > 2 # stop trying after 2 times

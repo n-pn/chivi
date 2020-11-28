@@ -62,7 +62,10 @@ class PreloadSeed
   end
 
   def crawl!(text_threads = 4)
-    @sbids.each { |sbid| PreloadBook.crawl!(@seed, sbid, text_threads) }
+    @sbids.each_with_index do |sbid, idx|
+      puts "- #{idx + 1}/#{@sbids.size} [#{@seed}/#{sbid}]".colorize.light_cyan
+      PreloadBook.crawl!(@seed, sbid, text_threads)
+    end
   end
 
   def self.crawl!(argv = ARGV)
