@@ -34,6 +34,14 @@ class PreloadBook
 
       spawn do
         fetch_text(scid, "#{idx + 1}/#{@missing.size}")
+
+        # throttling
+        case @seed
+        when "shubaow"
+          sleep Random.rand(2000..3000).milliseconds
+        when "zhwenpg"
+          sleep Random.rand(1000..2000).milliseconds
+        end
       ensure
         channel.send(nil)
       end
@@ -44,8 +52,20 @@ class PreloadBook
 
   def fetch_text(scid : String, label : String) : Nil
     crawler = SeedText.new(@seed, @sbid, scid, freeze: true)
-    File.write("#{@out_dir}/#{scid}.txt", crawler)
-    puts "-- <#{label}> [#{crawler.title}] saved! --\n".colorize.yellow
+    out_file = "#{@out_dir}/#{scid}.txt"
+
+    if File.exists?(out_file) && File.size(out_file) < 50
+      puts "-- delete empty file [#{out_file}] --".colorize.light_red
+      File.delete(out_file)
+    end
+
+    if crawler.title.empty?
+      puts "-- delete empty html [#{crawler.file}] --\n".colorize.light_red
+      File.delete(crawler.file)
+    else
+      puts "-- <#{label}> [#{crawler.title}] saved! --\n".colorize.yellow
+      File.write(out_file, crawler)
+    end
   rescue err
     puts "-- <#{label}> [#{@seed}/#{@sbid}/#{scid}] #{err.message}}".colorize.red
   end
