@@ -31,10 +31,7 @@ class SeedInfo
   getter latest : ChapInfo { parse_latest || ChapInfo.new("", "") }
   getter chapters : Array(ChapInfo) { parse_chapters || [] of ChapInfo }
 
-  def initialize(@seed : String,
-                 @sbid : String,
-                 @expiry : Time = Time.utc - 1.years,
-                 @freeze : Bool = false)
+  def initialize(@seed, @sbid, @expiry : Time = Time.utc - 1.years, @freeze : Bool = false)
   end
 
   private def gen_html_link

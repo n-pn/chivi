@@ -11,22 +11,22 @@ bhash = ValueMap.new("#{OUT}/infos/bhash.tsv")
 bslug = ValueMap.new("#{OUT}/infos/bslug.tsv")
 
 title_zh = ValueMap.new("#{OUT}/infos/title_zh.tsv")
-title_zh_qs = TokenMap.new("#{OUT}/infos/title_zh_qs.tsv")
+title_zh_ts = TokenMap.new("#{OUT}/infos/title_zh_ts.tsv")
 
 title_vi = ValueMap.new("#{OUT}/infos/title_vi.tsv")
-title_vi_qs = TokenMap.new("#{OUT}/infos/title_vi_qs.tsv")
+title_vi_ts = TokenMap.new("#{OUT}/infos/title_vi_ts.tsv")
 
 title_hv = ValueMap.new("#{OUT}/infos/title_hv.tsv")
-title_hv_qs = TokenMap.new("#{OUT}/infos/title_hv_qs.tsv")
+title_hv_ts = TokenMap.new("#{OUT}/infos/title_hv_ts.tsv")
 
 author_zh = ValueMap.new("#{OUT}/infos/author_zh.tsv")
-author_zh_qs = TokenMap.new("#{OUT}/infos/author_zh_qs.tsv")
+author_zh_ts = TokenMap.new("#{OUT}/infos/author_zh_ts.tsv")
 
 author_vi = ValueMap.new("#{OUT}/infos/author_vi.tsv")
-author_vi_qs = TokenMap.new("#{OUT}/infos/author_vi_qs.tsv")
+author_vi_ts = TokenMap.new("#{OUT}/infos/author_vi_ts.tsv")
 
 genres_vi = ValueMap.new("#{OUT}/infos/genres_vi.tsv")
-genres_vi_qs = TokenMap.new("#{OUT}/infos/genres_vi_qs.tsv")
+genres_vi_ts = TokenMap.new("#{OUT}/infos/genres_vi_ts.tsv")
 
 intro_zh = ValueMap.new("#{OUT}/infos/intro_zh.tsv")
 intro_vi = ValueMap.new("#{OUT}/infos/intro_vi.tsv")
@@ -50,23 +50,23 @@ origin_url = ValueMap.new("#{OUT}/infos/origin_url.tsv")
 seeds = TokenMap.new("#{OUT}/infos/seeds.tsv")
 
 struct SeedInfo
-  getter s_bid, utime, ch_text, ch_link, ch_slug, cover
+  getter _index, utimes, covers, ch_text, ch_link
 
   def initialize(seed : String)
     dir = "#{OUT}/seeds/#{seed}"
     FileUtils.mkdir_p(dir)
 
-    @s_bid = ValueMap.new("#{dir}/s_bid.tsv")
-    @utime = ValueMap.new("#{dir}/utime.tsv")
-    @cover = ValueMap.new("#{dir}/cover.tsv")
+    @_index = ValueMap.new("#{dir}/_index.tsv")
+    @utimes = ValueMap.new("#{dir}/utimes.tsv")
+    @covers = ValueMap.new("#{dir}/covers.tsv")
     @ch_text = ValueMap.new("#{dir}/ch_text.tsv")
     @ch_link = ValueMap.new("#{dir}/ch_link.tsv")
   end
 
   def save!
-    @s_bid.save!
-    @utime.save!
-    @cover.save!
+    @_index.save!
+    @utimes.save!
+    @covers.save!
     @ch_text.save!
     @ch_link.save!
   end
@@ -81,22 +81,22 @@ infos.values.each_with_index do |info, idx|
   bslug.upsert!(info.ubid, info.slug, mtime: 0)
 
   title_zh.upsert!(info.ubid, info.zh_title, mtime: 0)
-  title_zh_qs.upsert!(info.ubid, TextUtil.tokenize(info.zh_title), mtime: 0)
+  title_zh_ts.upsert!(info.ubid, TextUtil.tokenize(info.zh_title), mtime: 0)
 
   title_vi.upsert!(info.ubid, info.vi_title, mtime: 0)
-  title_vi_qs.upsert!(info.ubid, TextUtil.tokenize(info.vi_title), mtime: 0)
+  title_vi_ts.upsert!(info.ubid, TextUtil.tokenize(info.vi_title), mtime: 0)
 
   title_hv.upsert!(info.ubid, info.hv_title, mtime: 0)
-  title_hv_qs.upsert!(info.ubid, TextUtil.tokenize(info.hv_title), mtime: 0)
+  title_hv_ts.upsert!(info.ubid, TextUtil.tokenize(info.hv_title), mtime: 0)
 
   author_zh.upsert!(info.ubid, info.zh_author, mtime: 0)
-  author_zh_qs.upsert!(info.ubid, TextUtil.tokenize(info.zh_author), mtime: 0)
+  author_zh_ts.upsert!(info.ubid, TextUtil.tokenize(info.zh_author), mtime: 0)
 
   author_vi.upsert!(info.ubid, info.vi_author, mtime: 0)
-  author_vi_qs.upsert!(info.ubid, TextUtil.tokenize(info.vi_author), mtime: 0)
+  author_vi_ts.upsert!(info.ubid, TextUtil.tokenize(info.vi_author), mtime: 0)
 
   genres_vi.upsert!(info.ubid, info.vi_genres.join("  "), mtime: 0)
-  genres_vi_qs.upsert!(info.ubid, info.vi_genres.map { |x| TextUtil.slugify(x) }, mtime: 0)
+  genres_vi_ts.upsert!(info.ubid, info.vi_genres.map { |x| TextUtil.slugify(x) }, mtime: 0)
 
   intro_zh.upsert!(info.ubid, info.zh_intro.gsub("\n", "  "), mtime: 0)
   intro_vi.upsert!(info.ubid, info.vi_intro.gsub("\n", "  "), mtime: 0)
@@ -123,18 +123,18 @@ infos.values.each_with_index do |info, idx|
 
   seeds.upsert!(info.ubid, info.seed_names, mtime: 0)
 
-  SEEDS["yousuu"].tap do |seed|
-    seed.s_bid.upsert!(info.ubid, info.yousuu_bid, mtime: 0)
+  SEEDS["yousuu"].tap do |seed_map|
+    seed_map._index.upsert!(info.ubid, info.yousuu_bid, mtime: 0)
   end
 
-  info.seed_sbids.each do |sname, s_bid|
+  info.seed_sbids.each do |sname, sbid|
     SEEDS[sname].tap do |seed|
-      seed.s_bid.upsert!(info.ubid, s_bid, mtime: 0)
+      seed._index.upsert!(info.ubid, sbid, mtime: 0)
 
       utime = info.seed_mftimes[sname]?.try(&.//(1000).to_i) || 0
-      seed.utime.upsert!(info.ubid, utime.to_s, mtime: 0)
+      seed.utimes.upsert!(info.ubid, utime.to_s, mtime: 0)
 
-      seed.cover.upsert!(info.ubid, info.cover_urls[sname]? || "", mtime: 0)
+      seed.covers.upsert!(info.ubid, info.cover_urls[sname]? || "", mtime: 0)
 
       if chap = info.seed_latests[sname]?
         seed.ch_text.upsert!(info.ubid, chap.vi_title, mtime: 0)
@@ -148,19 +148,19 @@ bhash.save!
 bslug.save!
 
 title_zh.save!
-title_zh_qs.save!
+title_zh_ts.save!
 title_vi.save!
-title_vi_qs.save!
+title_vi_ts.save!
 title_hv.save!
-title_hv_qs.save!
+title_hv_ts.save!
 
 author_zh.save!
-author_zh_qs.save!
+author_zh_ts.save!
 author_vi.save!
-author_vi_qs.save!
+author_vi_ts.save!
 
 genres_vi.save!
-genres_vi_qs.save!
+genres_vi_ts.save!
 
 intro_zh.save!
 intro_vi.save!

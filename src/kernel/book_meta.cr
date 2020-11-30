@@ -79,22 +79,22 @@ module BookMeta
   class_getter bslug_fs : ValueMap { load_value_map("bslug") }
 
   class_getter title_zh_fs : ValueMap { load_value_map("title_zh") }
-  class_getter title_zh_qs : TokenMap { load_token_map("title_zh_qs") }
+  class_getter title_zh_ts : TokenMap { load_token_map("title_zh_ts") }
 
   class_getter title_hv_fs : ValueMap { load_value_map("title_hv") }
-  class_getter title_hv_qs : TokenMap { load_token_map("title_hv_qs") }
+  class_getter title_hv_ts : TokenMap { load_token_map("title_hv_ts") }
 
   class_getter title_vi_fs : ValueMap { load_value_map("title_vi") }
-  class_getter title_vi_qs : TokenMap { load_token_map("title_vi_qs") }
+  class_getter title_vi_ts : TokenMap { load_token_map("title_vi_ts") }
 
   class_getter author_zh_fs : ValueMap { load_value_map("author_zh") }
-  class_getter author_zh_qs : TokenMap { load_token_map("author_zh_qs") }
+  class_getter author_zh_ts : TokenMap { load_token_map("author_zh_ts") }
 
   class_getter author_vi_fs : ValueMap { load_value_map("author_vi") }
-  class_getter author_vi_qs : TokenMap { load_token_map("author_vi_qs") }
+  class_getter author_vi_ts : TokenMap { load_token_map("author_vi_ts") }
 
   class_getter genres_vi_fs : ValueMap { load_value_map("genres_vi") }
-  class_getter genres_vi_qs : TokenMap { load_token_map("genres_vi_qs") }
+  class_getter genres_vi_ts : TokenMap { load_token_map("genres_vi_ts") }
 
   class_getter intro_zh_fs : ValueMap { load_value_map("intro_zh") }
   class_getter intro_vi_fs : ValueMap { load_value_map("intro_vi") }
@@ -130,7 +130,7 @@ module BookMeta
       {{field}}_fs.upsert!(bhash, input.to_s, mtime: mtime)
 
       {% if type == :token %}
-        {{field}}_qs.upsert!(bhash, TextUtil.tokenize(input), mtime: mtime)
+        {{field}}_ts.upsert!(bhash, TextUtil.tokenize(input), mtime: mtime)
       {% end %}
 
       return unless cache && (info = INFOS[bhash]?)
@@ -165,17 +165,15 @@ module BookMeta
   INFOS = {} of String => Info
 
   def find_by_hash(bhash : String)
-    INFOS[bhash] ||= begin
-      info = Info.new(bhash)
+    info = Info.new(bhash)
 
-      {% for ivar in Info.instance_vars %}
-        {% if ivar.stringify != "bhash" %}
-          info.{{ivar}} = {{ivar}}_fs.get_value(bhash) || ""
-        {% end %}
+    {% for ivar in Info.instance_vars %}
+      {% if ivar.stringify != "bhash" %}
+        info.{{ivar}} = {{ivar}}_fs.get_value(bhash) || ""
       {% end %}
+    {% end %}
 
-      info
-    end
+    info
   end
 
   def find_by_slug(bslug : String)
@@ -183,11 +181,9 @@ module BookMeta
     find_by_hash(bhash)
   end
 
-  def search(limit : Int32 = 20, offset : Int32 = 0,
-             order : String = "", cursor : String = "",
-             title : String = "", author : String = "",
-             genre : String = "", seed : String = "") : Void
-    # search by title
+  def each_hash(order : String = "",
+                title : String = "", author : String = "",
+                genre : String = "", seed : String = "") : Void
     unless title.empty?
       bhash_map = filter_by_title(title)
       return if bhash_map.empty?
@@ -210,31 +206,14 @@ module BookMeta
 
     order_map = map_order_fs(order)
 
-    if bhash_map && bhash_map.size < 100
+    if bhash_map && bhash_map.size < 1000
       bhash_map.keys.map { |bhash| {bhash, order_map.get_value(bhash) || 0} }
         .sort_by { |(_, val)| -val }
-        .each do |(bhash, _)|
-          next unless info = find_by_hash(bhash)
-          if offset > 0
-            offset -= 1
-          else
-            yield info
-            return if limit < 2
-            limit -= 1
-          end
-        end
+        .each { |(bhash, _)| yield bhash }
     else
       order_map.reverse_each do |bhash, _|
         next if bhash_map && !bhash_map.has_key?(bhash)
-        next unless info = find_by_hash(bhash)
-
-        if offset > 0
-          offset -= 1
-        else
-          yield info
-          return if limit < 2
-          limit -= 1
-        end
+        yield bhash
       end
     end
   end
@@ -244,9 +223,9 @@ module BookMeta
 
     output =
       if title =~ /\p{Han}/
-        title_zh_qs.search(query)
+        title_zh_ts.search(query)
       else
-        title_hv_qs.search(query).merge(title_vi_qs.search(query))
+        title_hv_ts.search(query).merge(title_vi_ts.search(query))
       end
 
     merge_filters(output, prevs)
@@ -257,9 +236,9 @@ module BookMeta
 
     output =
       if author =~ /\p{Han}/
-        author_zh_qs.search(query)
+        author_zh_ts.search(query)
       else
-        author_vi_qs.search(query)
+        author_vi_ts.search(query)
       end
 
     merge_filters(output, prevs)
@@ -267,7 +246,7 @@ module BookMeta
 
   def filter_by_genre(genre : String, prevs : TokenMap::Index? = nil)
     query = TextUtil.slugify(genre)
-    output = genres_vi_qs.search([query])
+    output = genres_vi_ts.search([query])
     merge_filters(output, prevs)
   end
 
@@ -290,21 +269,3 @@ module BookMeta
     end
   end
 end
-
-# puts BookMeta.find_by_slug("chue-te").try(&.to_pretty_json)
-
-# BookMeta.search(title: "chue te", limit: 10) do |info|
-#   puts info.to_pretty_json
-# end
-
-# BookMeta.search(author: "愤怒", limit: 10) do |info|
-#   puts info.to_pretty_json
-# end
-
-# BookMeta.search(genre: "Đô thị", limit: 10) do |info|
-#   puts info.to_pretty_json
-# end
-
-# BookMeta.search(seed: "zhwenpg", limit: 10) do |info|
-#   puts info.to_pretty_json
-# end
