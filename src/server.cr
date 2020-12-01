@@ -1,15 +1,15 @@
-require "./server/*"
+require "./_oldcv/server/*"
 
 Kemal::Session.config do |config|
   config.cookie_name = "chivi"
-  config.secret = ENV["SECRET"]? || "d954684990fd34f6232918376e4e9f93423423444d"
+  config.secret = ENV["SECRET"]? || "chivi-session"
   config.timeout = 3.days
   config.engine = Kemal::Session::FileEngine.new({:sessions_dir => "tmp/"})
-  config.gc_interval = 5.minutes # 5 minutes
+  config.gc_interval = 5.minutes
   config.secure = Kemal.config.env == "production"
 end
 
-module Server
+module Oldcv::Server
   Kemal.config.port = 5110
   serve_static false
 
@@ -18,7 +18,7 @@ module Server
   end
 
   get "/" do |env|
-    {msg: "ok"}.to_json env.response
+    {msg: "welcome to chivi!"}.to_json env.response
   end
 
   Kemal.run

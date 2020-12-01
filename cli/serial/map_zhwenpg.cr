@@ -15,7 +15,7 @@ class MapZhwenpg
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-    @sitemap = OldLabelMap.load_name("_import/sites/zhwenpg")
+    @sitemap = Oldcv::LabelMap.load_name("_import/sites/zhwenpg")
     @checked = Set(String).new
   end
 
@@ -111,9 +111,9 @@ class MapZhwenpg
       weight = (rating * 10).to_i64 * voters
       BookDB.set_weight(info, weight, force: false)
 
-      OldOrderMap.author_voters.upsert!(info.zh_author, info.voters.to_i64)
-      OldOrderMap.author_rating.upsert!(info.zh_author, info.scored)
-      OldOrderMap.author_weight.upsert!(info.zh_author, info.weight)
+      OrderMap.author_voters.upsert!(info.zh_author, info.voters.to_i64)
+      OrderMap.author_rating.upsert!(info.zh_author, info.scored)
+      OrderMap.author_weight.upsert!(info.zh_author, info.weight)
     end
 
     color = fresh ? :light_cyan : :light_blue
@@ -156,9 +156,9 @@ class MapZhwenpg
   def save_indexes!
     puts "\n[-- Save indexes --]".colorize.cyan.bold
 
-    OldOrderMap.flush!
-    OldLabelMap.flush!
-    OldTokenMap.flush!
+    OrderMap.flush!
+    Oldcv::LabelMap.flush!
+    Oldcv::TokenMap.flush!
 
     @sitemap.save!
   end

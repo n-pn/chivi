@@ -13,9 +13,9 @@ puts count
 
 # require "../src/_utils/text_utils"
 
-# require "../src/filedb/old_label_map"
-# require "../src/filedb/old_token_map"
-# require "../src/filedb/old_value_set"
+# require "../src/mapper/label_map"
+# require "../src/mapper/token_map"
+# require "../src/mapper/value_set"
 
 # require "../src/models/book_info"
 # require "../src/models/chap_list"
@@ -39,8 +39,8 @@ puts count
 #   Engine.cv_plain(input, dname).vi_text
 # end
 
-# TITLE_ZH  = OldLabelMap.load!("override/zh_title")
-# AUTHOR_ZH = OldLabelMap.load!("override/zh_author")
+# TITLE_ZH  = Oldcv::LabelMap.load!("override/zh_title")
+# AUTHOR_ZH = Oldcv::LabelMap.load!("override/zh_author")
 
 # # move seed info from removed entry to remained entry
 # private def transfer_info(remove : BookInfo, remain : BookInfo)
@@ -115,28 +115,28 @@ puts count
 # INPUT = INFOS.values.sort_by(&.weight.-)
 
 # HIATUS  = Time.utc(2019, 1, 1).to_unix_ms
-# TITLES  = OldLabelMap.load!("override/vi_title")
-# AUTHORS = OldLabelMap.load!("override/vi_author")
+# TITLES  = Oldcv::LabelMap.load!("override/vi_title")
+# AUTHORS = Oldcv::LabelMap.load!("override/vi_author")
 
 # FULL_SLUGS = {} of String => String
-# SLUG_UBIDS = OldLabelMap.init("slug--ubid")
+# SLUG_UBIDS = Oldcv::LabelMap.init("slug--ubid")
 
 # puts "[-- Convert! --]".colorize.cyan.bold
 
-# book_rating = OldOrderMap.init("rating")
-# book_weight = OldOrderMap.init("weight")
-# book_update = OldOrderMap.init("update")
-# book_access = OldOrderMap.init("access")
+# book_rating = OrderMap.init("rating")
+# book_weight = OrderMap.init("weight")
+# book_update = OrderMap.init("update")
+# book_access = OrderMap.init("access")
 
-# title_zh_map = OldTokenMap.init("zh_title")
-# title_vi_map = OldTokenMap.init("vi_title")
-# title_hv_map = OldTokenMap.init("hv_title")
+# title_zh_map = Oldcv::TokenMap.init("zh_title")
+# title_vi_map = Oldcv::TokenMap.init("vi_title")
+# title_hv_map = Oldcv::TokenMap.init("hv_title")
 
-# author_zh_map = OldTokenMap.init("zh_author")
-# author_vi_map = OldTokenMap.init("vi_author")
+# author_zh_map = Oldcv::TokenMap.init("zh_author")
+# author_vi_map = Oldcv::TokenMap.init("vi_author")
 
-# genres_vi_map = OldTokenMap.init("vi_genres")
-# tags_vi_map = OldTokenMap.init("vi_tags")
+# genres_vi_map = Oldcv::TokenMap.init("vi_genres")
+# tags_vi_map = Oldcv::TokenMap.init("vi_tags")
 
 # INPUT.each_with_index do |info, idx|
 #   puts "\n- <#{idx + 1}/#{INPUT.size}> [#{info.ubid}] {#{info.slug}}".colorize.cyan

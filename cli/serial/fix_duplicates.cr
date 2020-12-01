@@ -12,7 +12,7 @@ SITES = {
 DELETED = Set(String).new
 
 SITES.each do |site|
-  infos = OldLabelMap.load_name("_import/sites/#{site}")
+  infos = Oldcv::LabelMap.load_name("_import/sites/#{site}")
 
   infos.each do |sbid, info|
     ubid, title, author = info.split("¦")
@@ -46,15 +46,15 @@ BookInfo.ubids.each do |ubid|
   File.delete(BookInfo.path_for(ubid))
   FileUtils.rm_rf(ChapList.path_for(ubid))
 
-  OldOrderMap.book_access.delete!(ubid)
-  OldOrderMap.book_update.delete!(ubid)
-  OldOrderMap.book_weight.delete!(ubid)
-  OldOrderMap.book_rating.delete!(ubid)
+  OrderMap.book_access.delete!(ubid)
+  OrderMap.book_update.delete!(ubid)
+  OrderMap.book_weight.delete!(ubid)
+  OrderMap.book_rating.delete!(ubid)
 
-  OldTokenMap.zh_author.delete!(ubid)
-  OldTokenMap.vi_author.delete!(ubid)
-  OldTokenMap.zh_title.delete!(ubid)
-  OldTokenMap.vi_title.delete!(ubid)
-  OldTokenMap.vi_genres.delete!(ubid)
-  OldTokenMap.vi_tags.delete!(ubid)
+  Oldcv::TokenMap.zh_author.delete!(ubid)
+  Oldcv::TokenMap.vi_author.delete!(ubid)
+  Oldcv::TokenMap.zh_title.delete!(ubid)
+  Oldcv::TokenMap.vi_title.delete!(ubid)
+  Oldcv::TokenMap.vi_genres.delete!(ubid)
+  Oldcv::TokenMap.vi_tags.delete!(ubid)
 end

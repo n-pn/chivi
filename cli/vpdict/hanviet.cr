@@ -2,10 +2,10 @@ require "./utils/common"
 require "./utils/clavis"
 
 require "../../src/engine/library"
-require "../../src/kernel/filedb/old_value_set"
+require "../../src/kernel/mapper/old_value_set"
 
-CRUCIAL = OldValueSet.read!(Utils.inp_path("autogen/crucial-chars.txt"))
-HANZIDB = OldValueSet.read!(Utils.inp_path("initial/hanzidb.txt"))
+CRUCIAL = ValueSet.read!(Utils.inp_path("autogen/crucial-chars.txt"))
+HANZIDB = ValueSet.read!(Utils.inp_path("initial/hanzidb.txt"))
 
 TRADSIM = Engine::BaseDict.tradsim
 BINH_AM = Engine::BaseDict.binh_am

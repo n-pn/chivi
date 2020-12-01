@@ -1,7 +1,7 @@
 require "file_utils"
 
 require "../../../src/engine/library"
-require "../../../src/kernel/filedb/old_value_set"
+require "../../../src/kernel/mapper/old_value_set"
 
 module Utils
   extend self
@@ -21,10 +21,10 @@ module Utils
     FileUtils.mkdir_p(File.dirname(file))
   end
 
-  @@ondicts : OldValueSet? = nil
+  @@ondicts : ValueSet? = nil
 
-  def ondicts_words : OldValueSet
-    @@ondicts ||= OldValueSet.read!(inp_path("autogen/ondicts-words.txt"))
+  def ondicts_words : ValueSet
+    @@ondicts ||= ValueSet.read!(inp_path("autogen/ondicts-words.txt"))
   end
 
   def has_hanzi?(input : String)

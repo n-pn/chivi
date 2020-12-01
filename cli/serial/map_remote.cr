@@ -66,7 +66,7 @@ class MapRemote
 
   def initialize(@seed : String, @type = 0)
     @existed = Set(String).new(BookInfo.ubids)
-    @sitemap = OldLabelMap.load_name("_import/sites/#{@seed}")
+    @sitemap = Oldcv::LabelMap.load_name("_import/sites/#{@seed}")
 
     @crawled = {} of String => String
     @sitemap.each do |key, val|
@@ -106,9 +106,9 @@ class MapRemote
     limit.times { channel.receive }
 
     puts "\n[-- Save indexes --]".colorize.cyan.bold
-    OldOrderMap.flush!
-    OldLabelMap.flush!
-    OldTokenMap.flush!
+    OrderMap.flush!
+    Oldcv::LabelMap.flush!
+    Oldcv::TokenMap.flush!
 
     @sitemap.save!
 
@@ -124,7 +124,7 @@ class MapRemote
 
     return Time.utc - 9.months unless ubid = @crawled[sbid]?
     return Time.utc - 6.months unless @existed.includes?(ubid)
-    return Time.utc - 3.months unless time = OldOrderMap.book_update.value(ubid)
+    return Time.utc - 3.months unless time = OrderMap.book_update.value(ubid)
     Time.unix_ms(time) + 6.hours
   end
 

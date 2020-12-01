@@ -2,11 +2,11 @@ require "./utils/common"
 require "./utils/clavis"
 
 require "../../src/engine"
-require "../../src/kernel/filedb/old_value_set"
+require "../../src/kernel/mapper/old_value_set"
 
 puts "\n[Load deps]".colorize.cyan.bold
 
-CHECKED = OldValueSet.read!(Utils.inp_path("autogen/checked.txt"))
+CHECKED = ValueSet.read!(Utils.inp_path("autogen/checked.txt"))
 ONDICTS = Utils.ondicts_words
 
 REJECT_STARTS = File.read_lines("cli/dicts/cfgs/reject-starts.txt")

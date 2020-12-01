@@ -22,18 +22,18 @@ class MapRemote
     root = File.join(DIR, @seed)
     FileUtils.mkdir_p(root)
 
-    @unames = OldLabelMap.load(File.join(root, "unames.txt"))
+    @unames = Oldcv::LabelMap.load(File.join(root, "unames.txt"))
 
-    @intros = OldLabelMap.load(File.join(root, "intros.txt"))
-    @covers = OldLabelMap.load(File.join(root, "covers.txt"))
+    @intros = Oldcv::LabelMap.load(File.join(root, "intros.txt"))
+    @covers = Oldcv::LabelMap.load(File.join(root, "covers.txt"))
 
-    @genres = OldLabelMap.load(File.join(root, "genres.txt"))
-    @labels = OldLabelMap.load(File.join(root, "labels.txt"))
+    @genres = Oldcv::LabelMap.load(File.join(root, "genres.txt"))
+    @labels = Oldcv::LabelMap.load(File.join(root, "labels.txt"))
 
-    @states = OldLabelMap.load(File.join(root, "states.txt"))
-    @mtimes = OldLabelMap.load(File.join(root, "mtimes.txt"))
+    @states = Oldcv::LabelMap.load(File.join(root, "states.txt"))
+    @mtimes = Oldcv::LabelMap.load(File.join(root, "mtimes.txt"))
 
-    @ctimes = OldLabelMap.load(File.join(root, "ctimes.txt"))
+    @ctimes = Oldcv::LabelMap.load(File.join(root, "ctimes.txt"))
   end
 
   def run!
@@ -73,7 +73,7 @@ class MapRemote
     end
 
     worker.times { map_entry(channel.receive) }
-    OldLabelMap.flush!
+    Oldcv::LabelMap.flush!
   end
 
   OLD = Time.utc - 12.months
@@ -113,11 +113,11 @@ class MapRemote
   def map_entry(info : SeedInfo) : Void
     @unames.upsert!(info.sbid, "#{info.title}--#{info.author}")
 
-    @intros.upsert!(info.sbid, info.intro.gsub('\n', OldLabelMap::SEP_1))
+    @intros.upsert!(info.sbid, info.intro.gsub('\n', Oldcv::LabelMap::SEP_1))
     @covers.upsert!(info.sbid, info.cover)
 
     @genres.upsert!(info.sbid, info.genre)
-    @labels.upsert!(info.sbid, info.tags.join(OldLabelMap::SEP_1))
+    @labels.upsert!(info.sbid, info.tags.join(Oldcv::LabelMap::SEP_1))
 
     @states.upsert!(info.sbid, info.status.to_s)
     @mtimes.upsert!(info.sbid, info.mftime.to_s)
