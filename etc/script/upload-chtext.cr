@@ -4,28 +4,39 @@
 require "colorize"
 
 INP = "_db/prime/chdata/texts"
-SSH = "deploy@ssh.chivi.xyz"
-OUT = "#{SSH}:www/chivi/#{INP}"
+SSH = "nipin@ssh.nipin.xyz"
+OUT = "#{SSH}:www/chivi/_db/texts"
 
-def upload_texts(seed)
-  indir = File.join(INP, seed)
-  files = Dir.glob(File.join(indir, "*.zip"))
+def upload_texts(seed, flags = "")
+  puts `ssh #{SSH} mkdir -p ~/www/chivi/_db/texts/#{seed}`
 
-  puts "[#{seed}: #{files.size} files]".colorize.cyan
+  seed_dir = File.join(INP, seed)
+  children = Dir.glob(File.join(seed_dir, "*.zip"))
 
-  files.each_with_index do |file, idx|
-    puts "-- <#{idx + 1}/#{files.size}> [#{seed}/#{File.basename(file)}]".colorize.blue
-    puts `rsync -ai --no-p #{file} #{OUT}/#{seed}`
+  puts "[#{seed}: #{children.size} files]".colorize.cyan
+
+  children.each_with_index do |file, idx|
+    puts "-- <#{idx + 1}/#{children.size}> [#{seed}/#{File.basename(file)}]".colorize.blue
+    puts `rsync -ai --no-p #{flags} #{file} #{OUT}/#{seed}`
   rescue err
     puts err.colorize.red
   end
 end
 
-seeds = ARGV.empty? ? Dir.children(INP) : ARGV
-puts "INPUT: #{seeds}".colorize.yellow
+exist = Dir.children(INP)
+seeds = ARGV.empty? ? exist : ARGV.select { |x| exist.includes?(x) }
 
-seeds.each do |seed|
-  puts `ssh #{SSH} mkdir -p www/chivi/#{INP}/#{seed}`
-  puts `rsync -ai --no-p --ignore-existing #{INP}/#{seed} #{OUT}`
-  # upload_texts(seed)
+if ARGV.includes?("--delete")
+  flags = "--delete"
+elsif ARGV.includes?("--ignore")
+  flags = "--ignore-existing"
+else
+  flags = ""
+end
+
+puts "[INPUT: #{seeds}, FLAGS: #{flags}]".colorize.yellow.bold
+
+seeds.each_with_index do |seed, idx|
+  puts "- <#{idx + 1}/#{seeds.size}> #{seed}".colorize.cyan.bold
+  upload_texts(seed, flags)
 end

@@ -7,7 +7,7 @@ class ZipStore
   def initialize(@target, @source = target.sub(/.zip$/, ""))
   end
 
-  def entries(min_size = 100)
+  def entries(min_size = 20)
     entries = [] of String
 
     if File.exists?(@target)
@@ -58,13 +58,19 @@ class ZipStore
     File.join(@source, file)
   end
 
-  def compress!(move : Bool = true) : Nil
+  def compress!(mode : Symbol = :update) : Nil
     return puts "Nothing to compress!" if Dir.empty?(source)
 
-    options = "-j"
-    options += "m" if move
+    case mode
+    when :archive
+      flags = "m"
+    when :freshen
+      flags = "fm"
+    else
+      flags = "u"
+    end
 
-    puts `zip #{options} "#{target}" #{source}/*.*`
+    puts `zip -jq#{flags} "#{target}" #{source}/*.*`
   end
 
   private def open_zip

@@ -10,19 +10,24 @@ require "../../src/kernel/source/seed_text"
 LIST_DIR = "_db/prime/chdata/infos"
 TEXT_DIR = "_db/prime/chdata/texts"
 
+MIN_SIZE = 20
+
 class PreloadBook
-  getter indexed : Array(String)
-  getter existed : Array(String)
+  getter indexed_map : ValueMap
+  getter existed_zip : ZipStore
   getter missing : Array(String)
 
   def initialize(@seed : String, @sbid : String)
     @out_dir = "#{TEXT_DIR}/#{@seed}/#{@sbid}"
     FileUtils.mkdir_p(@out_dir)
 
-    @indexed = ValueMap.new("#{LIST_DIR}/#{@seed}/#{@sbid}/_indexed.tsv").values.values
-    @existed = ZipStore.new("#{TEXT_DIR}/#{@seed}/#{@sbid}.zip").entries.map(&.sub(".txt", ""))
+    @indexed_map = ValueMap.new("#{LIST_DIR}/#{@seed}/#{@sbid}/_indexed.tsv")
+    @existed_zip = ZipStore.new("#{TEXT_DIR}/#{@seed}/#{@sbid}.zip")
 
-    @missing = indexed - existed
+    indexed_sbids = @indexed_map.values.values
+    existed_sbids = @existed_zip.entries(MIN_SIZE).map(&.sub(".txt", ""))
+
+    @missing = indexed_sbids - existed_sbids
   end
 
   def crawl!(threads = 4)
@@ -41,6 +46,8 @@ class PreloadBook
           sleep Random.rand(2000..3000).milliseconds
         when "zhwenpg"
           sleep Random.rand(1000..2000).milliseconds
+        when "biquge5200"
+          sleep Random.rand(500..1000).milliseconds
         end
       ensure
         channel.send(nil)
@@ -48,26 +55,28 @@ class PreloadBook
     end
 
     threads.times { channel.receive }
+    @existed_zip.compress!(mode: :archive) # save texts to zip files
   end
 
   def fetch_text(scid : String, label : String) : Nil
     crawler = SeedText.new(@seed, @sbid, scid, freeze: true)
     out_file = "#{@out_dir}/#{scid}.txt"
 
-    if File.exists?(out_file) && File.size(out_file) < 50
-      puts "-- delete empty file [#{out_file}] --".colorize.light_red
+    if File.exists?(out_file) && File.size(out_file) < MIN_SIZE
+      puts "- delete empty file [#{out_file}]".colorize.light_red
       File.delete(out_file)
     end
 
-    if crawler.title.empty?
-      puts "-- delete empty html [#{crawler.file}] --\n".colorize.light_red
+    case crawler.title
+    when .empty?, "Server Error", "524 Origin Time-out", "503 Service Temporarily Unavailable"
+      puts "- delete empty html [#{crawler.file}]\n".colorize.light_red
       File.delete(crawler.file)
     else
-      puts "-- <#{label}> [#{crawler.title}] saved! --\n".colorize.yellow
+      puts "- <#{label}> [#{crawler.title}] saved!\n".colorize.yellow
       File.write(out_file, crawler)
     end
   rescue err
-    puts "-- <#{label}> [#{@seed}/#{@sbid}/#{scid}] #{err.message}}".colorize.red
+    puts "- <#{label}> [#{@seed}/#{@sbid}/#{scid}]: #{err.message}".colorize.red
   end
 
   def self.crawl!(seed : String, sbid : String, threads = 4)
@@ -106,9 +115,13 @@ class PreloadSeed
   private def is_main_seed(bhash : String)
     return false unless seeds = BookMeta.seeds_fs.get_value(bhash)
 
-    if @seed == "shubaow"
-      # dirty hack for shubaow
-      seeds = seeds.reject { |x| x == "nofff" || x == "jx_la" }
+    case @seed
+    when "zhwenpg", "nofff"
+      # not considered main source if there are more than two sources
+      return false if seeds.size > 2
+    else
+      # nofff is a shitty source
+      seeds.shift if seeds.first == "nofff"
     end
 
     @seed == seeds.first
@@ -133,17 +146,21 @@ class PreloadSeed
 
   def self.ideal_crawl_mode_for(seed : String)
     case seed
+    when "hetushu", "rengshu"
+      :best
     when "zhwenpg", "shubaow"
       :main
     else
-      :best
+      :main
     end
   end
 
   def self.ideal_thread_limit_for(seed : String)
     case seed
-    when "zhwenpg", "shubaow", "qu_la"
+    when "zhwenpg", "shubaow", "qu_la", "biquge5200"
       1
+    when "paoshu8", "69shu"
+      2
     else
       4
     end
