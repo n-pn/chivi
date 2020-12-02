@@ -1,5 +1,5 @@
-time bin/map_remote -s hetushu -u 5102 -m 1
-time bin/map_remote -s xbiquge -u 53203 -m 1
+time bin/map_remote -s hetushu -u 5135 -m 1
+time bin/map_remote -s xbiquge -u 53210 -m 1
 time bin/map_remote -s rengshu -u 4275 -m 1
 time bin/map_remote -s 69shu -u 35256 -m 1
 time bin/map_remote -s 5200 -u 30206 -m 1

@@ -1,14 +1,14 @@
 require "file_utils"
 require "option_parser"
 
-require "../../src/_utils/file_util"
-require "../../src/_utils/http_util"
-require "../../src/_utils/time_util"
+require "../../src/_oldcv/_utils/file_util"
+require "../../src/_oldcv/_utils/http_util"
+require "../../src/_oldcv/_utils/time_util"
 
-require "../../src/kernel/bookdb"
-require "../../src/kernel/chapdb"
+require "../../src/_oldcv/kernel/bookdb"
+require "../../src/_oldcv/kernel/chapdb"
 
-class MapRemote
+class Oldcv::MapRemote
   SEEDS = {
     "hetushu", "xbiquge", "69shu",
     "biquge5200", "5200", "zhwenpg",
@@ -66,7 +66,7 @@ class MapRemote
 
   def initialize(@seed : String, @type = 0)
     @existed = Set(String).new(BookInfo.ubids)
-    @sitemap = Oldcv::LabelMap.load_name("_import/sites/#{@seed}")
+    @sitemap = LabelMap.load_name("_import/sites/#{@seed}")
 
     @crawled = {} of String => String
     @sitemap.each do |key, val|
@@ -107,8 +107,8 @@ class MapRemote
 
     puts "\n[-- Save indexes --]".colorize.cyan.bold
     OrderMap.flush!
-    Oldcv::LabelMap.flush!
-    Oldcv::TokenMap.flush!
+    LabelMap.flush!
+    TokenMap.flush!
 
     @sitemap.save!
 
@@ -179,4 +179,4 @@ class MapRemote
   end
 end
 
-MapRemote.run!
+Oldcv::MapRemote.run!
