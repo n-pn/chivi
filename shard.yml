@@ -9,31 +9,31 @@ targets:
     main: src/server.cr
 
   map_yousuu:
-    main: cli/serial/map_yousuu.cr
+    main: tasks/_oldcv/map_yousuu.cr
 
   map_zhwenpg:
-    main: cli/serial/map_zhwenpg.cr
+    main: tasks/_oldcv/map_zhwenpg.cr
 
   map_remote:
-    main: cli/serial/map_remote.cr
+    main: tasks/_oldcv/map_remote.cr
 
   rebuild_index:
-    main: cli/rebuild_index.cr
+    main: tasks/_oldcv/rebuild_index.cr
 
   # cv_book_info:
-  #   main: cli/cv_book_info.cr
+  #   main: tasks/cv_book_info.cr
 
   # cv_chap_list:
-  #   main: cli/cv_chap_list.cr
+  #   main: tasks/cv_chap_list.cr
 
   fetch_covers:
-    main: cli/_cover/fetch_covers.cr
+    main: tasks/_cover/fetch_covers.cr
 
   migrate_dicts:
-    main: cli/migrate_dicts.cr
+    main: tasks/migrate_dicts.cr
 
   # preload_texts:
-  #   main: cli/texts/preload_texts.cr
+  #   main: tasks/texts/preload_texts.cr
 
 crystal: 0.35.0
 

@@ -15,10 +15,11 @@
     "map-zhwenpg": "wsl bin/map_zhwenpg",
     "map_remote": "wsl bin/map_remote",
     "map-remotes": "wsl bash cli/serial/map_remote.sh",
-    "cr-ys-crit": "ruby etc/script/yousuu/crawl_crits.rb",
-    "cr-ys-info": "ruby etc/script/yousuu/crawl_infos.rb",
+    "cr-ys-info": "ruby tasks/workers/yousuu_infos.rb",
+    "cr-ys-crit": "ruby tasks/workers/yousuu_crits.rb",
     "fix-covers": "wsl bin/fetch_covers && ruby cli/covers/webp_format.rb",
     "backup": "wsl bin/migrate_dicts && yarn db-dn && yarn ys-dn",
-    "update": "yarn map-yousuu && yarn map-zhwenpg && yarn map-remotes && yarn fix-covers"
+    "update": "yarn map-yousuu && yarn map-zhwenpg && yarn map-remotes && yarn fix-covers",
+    "gen-sentry": "crystal build --release config/.sentry/sentry_cli.cr -o bin/sentry"
   }
 }
