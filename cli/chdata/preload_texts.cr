@@ -2,27 +2,27 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/_utils/zip_store"
-require "../../src/filedb/value_map"
+require "../../src/shared/zip_store"
 require "../../src/kernel/book_meta"
+require "../../src/kernel/mapper/value_map"
 require "../../src/kernel/source/seed_text"
 
 LIST_DIR = "_db/prime/chdata/infos"
 TEXT_DIR = "_db/prime/chdata/texts"
 
-MIN_SIZE = 20
-
 class PreloadBook
-  getter indexed_map : ValueMap
-  getter existed_zip : ZipStore
+  MIN_SIZE = 20
+
+  getter indexed_map : Chivi::ValueMap
+  getter existed_zip : Chivi::ZipStore
   getter missing : Array(String)
 
   def initialize(@seed : String, @sbid : String)
     @out_dir = "#{TEXT_DIR}/#{@seed}/#{@sbid}"
     FileUtils.mkdir_p(@out_dir)
 
-    @indexed_map = ValueMap.new("#{LIST_DIR}/#{@seed}/#{@sbid}/_indexed.tsv")
-    @existed_zip = ZipStore.new("#{TEXT_DIR}/#{@seed}/#{@sbid}.zip")
+    @indexed_map = Chivi::ValueMap.new("#{LIST_DIR}/#{@seed}/#{@sbid}/_indexed.tsv")
+    @existed_zip = Chivi::ZipStore.new("#{TEXT_DIR}/#{@seed}/#{@sbid}.zip")
 
     indexed_sbids = @indexed_map.values.values
     existed_sbids = @existed_zip.entries(MIN_SIZE).map(&.sub(".txt", ""))
@@ -97,15 +97,15 @@ class PreloadSeed
   end
 
   private def get_sbids_by_weight(main_seed = false)
-    map = ValueMap.new("_db/prime/serial/seeds/#{@seed}/_index.tsv")
+    map = Chivi::ValueMap.new("_db/prime/serial/seeds/#{@seed}/_index.tsv")
 
     res = [] of String
 
-    BookMeta.each_hash(order: "weight", seed: @seed) do |bhash|
+    Chivi::BookMeta.each_hash(order: "weight", seed: @seed) do |bhash|
       next unless value = map.get_value(bhash)
       next if main_seed && !is_main_seed(bhash)
 
-      puts "- #{bhash}: #{BookMeta.get_title_vi(bhash)}".colorize.cyan
+      puts "- #{bhash}: #{Chivi::BookMeta.get_title_vi(bhash)}".colorize.cyan
       res << value
     end
 
@@ -113,7 +113,7 @@ class PreloadSeed
   end
 
   private def is_main_seed(bhash : String)
-    return false unless seeds = BookMeta.seeds_fs.get_value(bhash)
+    return false unless seeds = Chivi::BookMeta.seeds_fs.get_value(bhash)
 
     case @seed
     when "zhwenpg", "nofff"

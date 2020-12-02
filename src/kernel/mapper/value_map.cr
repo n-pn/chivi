@@ -1,6 +1,6 @@
 require "./_shared"
 
-class ValueMap
+class Chivi::ValueMap
   include FlatMap(String)
 
   def upsert(key : String, value : String, mtime = TimeUtils.mtime) : Bool

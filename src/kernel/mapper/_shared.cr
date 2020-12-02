@@ -1,7 +1,7 @@
 require "colorize"
-require "../../_utils/time_utils"
+require "../../shared/time_utils"
 
-module FlatMap(T)
+module Chivi::FlatMap(T)
   FLUSH_MAX = 10
 
   getter file : String

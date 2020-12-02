@@ -1,9 +1,9 @@
 require "json"
 require "file_utils"
-require "../filedb/*"
+require "../mapper/*"
 require "../../_utils/text_util"
 
-module BookMeta
+module Chivi::BookMeta
   class Info
     include JSON::Serializable
 

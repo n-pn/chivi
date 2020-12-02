@@ -1,6 +1,6 @@
 require "./_shared"
 
-class TokenMap
+class Chivi::TokenMap
   include FlatMap(Array(String))
 
   alias Index = Hash(String, Array(String))

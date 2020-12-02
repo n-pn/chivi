@@ -1,6 +1,6 @@
 require "./_shared"
 
-class OrderMap
+class Chivi::OrderMap
   class Node
     getter key : String
     property value : Int32
