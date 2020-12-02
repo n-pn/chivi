@@ -13,7 +13,7 @@ module Oldcv::Kernel
     expiry -= 20.years unless remote?(seed)
 
     if ChapList.outdated?(info.ubid, seed, expiry)
-      remote = SeedInfo.new(seed, sbid, expiry: expiry, freeze: false)
+      remote = SeedInfo.new(seed, sbid, expiry: expiry, freeze: true)
 
       BookDB.update_info(info, remote)
       info.save! if info.changed?
@@ -40,7 +40,7 @@ module Oldcv::Kernel
 
     if zh_data.empty?
       if remote?(sname)
-        source = SeedText.new(sname, s_bid, s_cid, freeze: false)
+        source = SeedText.new(sname, s_bid, s_cid, freeze: true)
         zh_data = [source.title].concat(source.paras)
         chtext.tap(&.zh_data = zh_data).save!
       else

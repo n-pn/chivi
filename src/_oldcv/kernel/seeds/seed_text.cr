@@ -7,13 +7,11 @@ require "../../_utils/http_util"
 require "../../_utils/text_util"
 
 class Oldcv::SeedText
-  DIR = "_db/seeds"
-
   getter seed : String
   getter sbid : String
   getter scid : String
 
-  getter file : String { "#{DIR}/#{seed}/raw-texts/#{sbid}/#{scid}.html" }
+  getter file : String { "_db/.cache/#{seed}/texts/#{sbid}/#{scid}.html" }
   getter html : String { load_html }
   getter rdom : Myhtml::Parser { Myhtml::Parser.new(html) }
 

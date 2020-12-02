@@ -17,7 +17,7 @@ class Oldcv::SeedInfo
   getter rdoc : Myhtml::Parser { Myhtml::Parser.new(html) }
 
   getter html_link : String { gen_html_link }
-  getter file_path : String { gen_file_path }
+  getter file_path : String { "_db/.cache/#{@seed}/infos/#{@sbid}.html" }
   getter from_cache = false
 
   getter title : String { parse_title || "" }
@@ -70,12 +70,6 @@ class Oldcv::SeedInfo
     else
       raise "- site `#{@seed}` not supported!"
     end
-  end
-
-  DIR = "_db/seeds"
-
-  private def gen_file_path
-    File.join(DIR, @seed, "raw-infos", "#{@sbid}.html")
   end
 
   private def fetch_html

@@ -8,12 +8,12 @@ require "fileutils"
 class HttpClient
   attr_reader :proxies
 
-  PROXY_DIR = "_db/prime/_proxy"
+  PROXY_DIR = "_db/_proxy"
   INTERVAL = 3600 * 10
 
   def initialize(load_proxy = false, debug_mode = false)
     @debug_mode = debug_mode
-    @proxy_file = "#{PROXY_DIR}/working/#{Time.new.to_i / INTERVAL}.txt"
+    @proxy_file = "#{PROXY_DIR}/.works/#{Time.new.to_i / INTERVAL}.txt"
 
     proxies = read_proxy_file(@proxy_file)
     load_previous_working_proxies(proxies) if proxies.size < 200
@@ -24,7 +24,7 @@ class HttpClient
   end
 
   def load_previous_working_proxies(proxies)
-    files = Dir.glob("#{PROXY_DIR}/working/*.txt").sort_by do |file|
+    files = Dir.glob("#{PROXY_DIR}/.works/*.txt").sort_by do |file|
       File.basename(file, ".txt").to_i
     end
 
