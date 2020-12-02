@@ -8,8 +8,8 @@ require "../../src/kernel/mapper/value_map"
 
 require "../../src/_oldcv/kernel/seeds/seed_text"
 
-LIST_DIR = "_db/prime/chdata/infos"
-TEXT_DIR = "_db/prime/chdata/texts"
+LIST_DIR = "_db/_extra/chlist"
+TEXT_DIR = "_db/zhtext"
 
 class PreloadBook
   MIN_SIZE = 20
