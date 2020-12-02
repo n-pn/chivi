@@ -2,8 +2,8 @@ require "../../src/kernel/chap_list"
 require "../../src/filedb/*"
 require "../../src/_utils/text_util"
 
-INP = "var/appcv/chlists"
-OUT = "_db/prime/chdata"
+INP = "_db/_oldcv/chlists"
+OUT = "_db/_extra/chlist"
 
 struct SeedList
   getter _indexed, zh_title, vi_title, vi_label, url_slug

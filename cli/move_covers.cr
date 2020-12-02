@@ -6,7 +6,7 @@ require "file_utils"
 
 require "../src/kernel/models/book_info"
 
-TMP_DIR = File.join("var", "appcv", ".covers")
+TMP_DIR = "_db/_covers"
 # FILE_DF = File.join(TMP_DIR, "blank.jpg")
 infos = BookInfo.load_all!
 infos.each do |info|

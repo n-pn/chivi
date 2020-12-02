@@ -51,9 +51,9 @@ class Oldcv::ValueSet
     FileUtil.save(file, LABEL, @list.size) { |io| to_s(io) }
   end
 
-  # class Oldcv::methods
+  # class methods
 
-  DIR = File.join("var", "appcv")
+  DIR = "_db/_oldcv"
   FileUtils.mkdir_p(File.join(DIR, "_import"))
 
   # file path relative to `DIR`

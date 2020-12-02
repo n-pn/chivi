@@ -165,7 +165,7 @@ class Oldcv::OrderMap
 
   # class Oldcv::methods
 
-  DIR = File.join("var", "appcv")
+  DIR = "_db/_oldcv"
   FileUtils.mkdir_p(File.join(DIR, "indexes", "orders"))
 
   # file path relative to `DIR`

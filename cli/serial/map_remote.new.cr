@@ -13,7 +13,7 @@ SEEDS = {
 }
 
 class MapRemote
-  DIR = File.join("var", "appcv", ".mapped")
+  DIR = "_db/_oldcv/.mapped"
 
   getter seed : String
   getter upto = 1

@@ -198,7 +198,7 @@ class Oldcv::BookInfo
 
   # class Oldcv::methods
 
-  DIR = File.join("var", "appcv", "serials")
+  DIR = "_db/_oldcv/serials"
   FileUtils.mkdir_p(DIR)
 
   # all book infos file in the `DIR` folder

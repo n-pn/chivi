@@ -5,7 +5,7 @@ require "./models/user_info"
 module Oldcv::UserDB
   extend self
 
-  DIR    = File.join("var", "appcv", "members")
+  DIR    = "_db/_oldcv/members"
   ID_DIR = File.join(DIR, "indexes")
   SR_DIR = File.join(DIR, "serials")
 

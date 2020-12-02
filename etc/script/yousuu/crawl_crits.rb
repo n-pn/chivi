@@ -4,7 +4,7 @@ class CritCrawler
   def initialize(load_proxy = false, debug_mode = false)
     @http = HttpClient.new(load_proxy, debug_mode)
     @ybids = []
-    files = Dir.glob("var/appcv/serials/*.json")
+    files = Dir.glob("_db/_oldcv/serials/*.json")
     puts("- inputs: #{files.size}")
 
     files.each do |file|

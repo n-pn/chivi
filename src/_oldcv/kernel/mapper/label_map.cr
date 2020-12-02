@@ -39,7 +39,7 @@ class Oldcv::Oldcv::LabelMap
 
   # class Oldcv::methods
 
-  DIR = File.join("var", "appcv")
+  DIR = "_db/_oldcv"
   FileUtils.mkdir_p(File.join(DIR, "indexes"))
 
   def self.path_for(name : String) : String

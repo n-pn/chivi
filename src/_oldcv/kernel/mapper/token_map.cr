@@ -152,8 +152,8 @@ class Oldcv::Oldcv::TokenMap
     end
   end
 
-  # class Oldcv::methods
-  DIR = File.join("var", "appcv")
+  # class methods
+  DIR = "_db/_oldcv"
   FileUtils.mkdir_p(File.join(DIR, "indexes", "tokens"))
 
   # file path relative to `DIR`

@@ -98,7 +98,7 @@ class PreloadSeed
   end
 
   private def get_sbids_by_weight(main_seed = false)
-    map = Chivi::ValueMap.new("_db/prime/serial/seeds/#{@seed}/_index.tsv")
+    map = Chivi::ValueMap.new("_db/_extra/source/#{@seed}/_index.tsv")
 
     res = [] of String
 

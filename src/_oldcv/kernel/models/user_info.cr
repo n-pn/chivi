@@ -65,9 +65,8 @@ class Oldcv::UserInfo
     File.write(file, self)
   end
 
-  # class Oldcv::methods
-
-  DIR = File.join("var", "appcv", "members")
+  # class methods
+  DIR = "_db/_oldcv/members"
   FileUtils.mkdir_p(DIR)
 
   def self.path_for(uslug : String)

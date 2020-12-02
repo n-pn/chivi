@@ -135,7 +135,7 @@ class Oldcv::ChapList
 
   # class Oldcv::methods
 
-  DIR = File.join("var", "appcv", "chlists")
+  DIR = "_db/_oldcv/chlists"
   FileUtils.mkdir_p(DIR)
 
   # creat new folder inside `DIR` for this book

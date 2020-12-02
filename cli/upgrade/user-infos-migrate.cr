@@ -2,9 +2,9 @@ require "../../src/filedb/*"
 require "../../src/_utils/text_util"
 require "../../src/kernel/user_info"
 
-files = Dir.glob("var/appcv/members/*.json")
+files = Dir.glob("_db/_oldcv/members/*.json")
 
-OUT = "_db/prime/member/infos"
+OUT = "_db/_extra/member"
 FileUtils.rm_rf(OUT)
 
 # TODO:

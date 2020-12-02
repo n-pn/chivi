@@ -1,13 +1,15 @@
 #! /bin/bash
 
-REMOTE=deploy@ssh.chivi.xyz:www/chivi
+SSH=deploy@ssh.chivi.xyz:www/chivi
 
-# rsync -azi --exclude '*.tab' "var/libcv/lexicon" "$REMOTE/var/libcv"
-rsync -azi --no-p "var/libcv/lexicon" "$REMOTE/var/libcv"
+# rsync -azi --no-p "var/libcv/lexicon" "$SSH/var/libcv"
+rsync -azi --exclude '*.log' "_db/cvdict/legacy" "$SSH/db/cvdict"
 
-rsync -azi --no-p "var/appcv/members" "$REMOTE/var/appcv"
-rsync -azi --no-p "var/appcv/serials" "$REMOTE/var/appcv"
-rsync -azi --no-p "var/appcv/indexes" "$REMOTE/var/appcv"
-rsync -azi --no-p "var/appcv/chlists" "$REMOTE/var/appcv"
+DIR = "_db/_oldcv"
 
-rsync -azi --no-p "web/public" "$REMOTE/web"
+rsync -azi --no-p "$DIR/members" "$SSH/$DIR"
+rsync -azi --no-p "$DIR/serials" "$SSH/$DIR"
+rsync -azi --no-p "$DIR/indexes" "$SSH/$DIR"
+rsync -azi --no-p "$DIR/chlists" "$SSH/$DIR"
+
+rsync -azi --no-p "web/public" "$SSH/web"
