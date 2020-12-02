@@ -3,15 +3,15 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../src/_utils/file_util"
-require "../../src/_utils/http_util"
-require "../../src/_utils/time_util"
+require "../../src/_oldcv/_utils/file_util"
+require "../../src/_oldcv/_utils/http_util"
+require "../../src/_oldcv/_utils/time_util"
 
-require "../../src/kernel/bookdb"
-require "../../src/kernel/chapdb"
+require "../../src/_oldcv/kernel/bookdb"
+require "../../src/_oldcv/kernel/chapdb"
 
-class MapZhwenpg
-  DIR = "_db/seeds/zhwenpg/idx-pages"
+class Oldcv::MapZhwenpg
+  DIR = "_db/.cache/zhwenpg/pages"
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
