@@ -52,19 +52,14 @@ class Oldcv::BookInfo
   property seed_sbids = {} of String => String
   property seed_mftimes = {} of String => Int64
 
-  getter seed_latests
-
-  alias Latests = Hash(String, ChapInfo)
+  getter seed_latests = Hash(String, ::Oldcv::ChapInfo).new
 
   def initialize
-    @seed_latests = Latests.new
   end
 
   def initialize(@zh_title : String, @zh_author : String, @ubid = "")
     fix_ubid if @ubid.empty?
     @changes = 1
-
-    @seed_latests = Latests.new
   end
 
   # regenerate ubid

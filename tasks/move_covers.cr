@@ -4,7 +4,7 @@ require "colorize"
 require "http/client"
 require "file_utils"
 
-require "../src/kernel/models/book_info"
+require "../src/_oldcv/kernel/models/book_info"
 
 TMP_DIR = "_db/_covers"
 # FILE_DF = File.join(TMP_DIR, "blank.jpg")

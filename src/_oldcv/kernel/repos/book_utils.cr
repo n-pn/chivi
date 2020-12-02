@@ -18,14 +18,14 @@ module Oldcv::BookDB::Utils
   def fix_zh_title(title : String, author : String = "")
     title = TextUtil.fix_spaces(title).sub(/[（\(].+[\)）]\s*$/, "").strip
 
-    fix_map = Oldcv::LabelMap.zh_title
+    fix_map = LabelMap.zh_title
     fix_map.fetch("#{title}--#{author}") || fix_map.fetch(title) || title
   end
 
   def fix_zh_author(author : String, title : String = "")
     author = TextUtil.fix_spaces(author).sub(/[（\(].+[\)）]|\.QD\s*$/, "").strip
 
-    fix_map = Oldcv::LabelMap.zh_author
+    fix_map = LabelMap.zh_author
     fix_map.fetch("#{title}--#{author}") || fix_map.fetch(author) || author
   end
 
@@ -51,7 +51,7 @@ module Oldcv::BookDB::Utils
   def split_zh_genre(genre : String)
     genre = genre.sub(/小说$/, "") unless genre == "轻小说"
 
-    if genres = Oldcv::LabelMap.zh_genre.fetch(genre)
+    if genres = LabelMap.zh_genre.fetch(genre)
       genres.split("¦")
     else
       if !genre.blank? || genre.includes?("其他")
@@ -78,14 +78,14 @@ module Oldcv::BookDB::Utils
 
   def map_vi_genres(zh_genres : Array(String))
     return ["Loại khác"] if zh_genres.empty?
-    zh_genres.map { |genre| Oldcv::LabelMap.vi_genre.fetch(genre).not_nil! }
+    zh_genres.map { |genre| LabelMap.vi_genre.fetch(genre).not_nil! }
   end
 
-  def update_token(map : Oldcv::TokenMap, key : String, vals : Array(String))
+  def update_token(map : TokenMap, key : String, vals : Array(String))
     map.upsert!(key, vals.map { |x| TextUtil.slugify(x) })
   end
 
-  def update_token(map : Oldcv::TokenMap, key : String, vals : String)
+  def update_token(map : TokenMap, key : String, vals : String)
     map.upsert!(key, TextUtil.tokenize(vals))
   end
 

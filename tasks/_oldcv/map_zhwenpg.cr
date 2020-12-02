@@ -15,7 +15,7 @@ class Oldcv::MapZhwenpg
 
   def initialize
     puts "\n[-- Load indexes --]".colorize.cyan.bold
-    @sitemap = Oldcv::LabelMap.load_name("_import/sites/zhwenpg")
+    @sitemap = LabelMap.load_name("_import/sites/zhwenpg")
     @checked = Set(String).new
   end
 
@@ -58,7 +58,7 @@ class Oldcv::MapZhwenpg
     {Random.rand(50..100), Random.rand(50..70)/10}
   end
 
-  RATING_TEXT = File.read("#{__DIR__}/fix-ratings.json")
+  RATING_TEXT = File.read("#{__DIR__}/zhwenpg-ratings.json")
   RATING_DATA = Hash(String, Tuple(Int32, Float32)).from_json RATING_TEXT
 
   def fetch_score(caption : String)
@@ -157,14 +157,14 @@ class Oldcv::MapZhwenpg
     puts "\n[-- Save indexes --]".colorize.cyan.bold
 
     OrderMap.flush!
-    Oldcv::LabelMap.flush!
-    Oldcv::TokenMap.flush!
+    LabelMap.flush!
+    TokenMap.flush!
 
     @sitemap.save!
   end
 end
 
-worker = MapZhwenpg.new
+worker = Oldcv::MapZhwenpg.new
 
 1.upto(3) { |page| worker.parse_page!(page, status: 1) }
 1.upto(12) { |page| worker.parse_page!(page, status: 0) }

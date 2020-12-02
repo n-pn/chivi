@@ -1,7 +1,7 @@
 require "./_shared"
 
 # mapping key to a list of tokens
-class Oldcv::Oldcv::TokenMap
+class Oldcv::TokenMap
   LABEL = "token_map"
   SEP_0 = "ǁ"
   SEP_1 = "¦"
