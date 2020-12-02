@@ -57,7 +57,7 @@ module Chivi::BookMeta
 
   extend self
 
-  DIR = "_db/prime/serial/infos"
+  DIR = "_db/_extra/serial"
   FileUtils.mkdir_p(DIR)
 
   VALUES = {} of String => ValueMap
