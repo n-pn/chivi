@@ -1,8 +1,7 @@
 /docs/
 /lib/
 /bin/
+/_db/
 /.shards/
 *.dwarf
-/data
-/webcv
 node_modules

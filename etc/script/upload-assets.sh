@@ -2,8 +2,8 @@
 
 SSH=deploy@ssh.chivi.xyz:www/chivi
 
-# rsync -azi --no-p "var/libcv/lexicon" "$SSH/var/libcv"
-rsync -azi --exclude '*.log' "_db/cvdict/legacy" "$SSH/db/cvdict"
+rsync -azi --exclude '*.log' "_db/cvdict/legacy" "$SSH/_db/cvdict"
+rsync -azi --exclude '*.tab' "_db/cvdict/active" "$SSH/_db/cvdict"
 
 DIR = "_db/_oldcv"
 

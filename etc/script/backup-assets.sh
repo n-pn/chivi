@@ -1,9 +1,11 @@
 #! /bin/bash
 
-REMOTE=deploy@ssh.chivi.xyz:www/chivi
+SSH=deploy@ssh.chivi.xyz:www/chivi
 
-DIR=_db/_oldcv
+rsync -azi --no-p "$SSH/_db/_oldcv/members" "_db/_oldcv"
 
-rsync -azi --no-p "$REMOTE/$DIR/members" $DIR
-rsync -aiz --no-p "$REMOTE/_db/.cache" "_db/"
-rsync -aiz --no-p "$REMOTE/_db/chtext" "_db/"
+rsync -aiz --no-p "$SSH/_db/cvdict/legacy" "_db/cvdict"
+# rsync -aiz --no-p "$SSH/_db/cvdict/active/" "_db/cvdict/remote/"
+
+rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
+rsync -aiz --no-p --include="*.txt" "$SSH/_db/zhtext/_chivi" "_db/zhtext/"
