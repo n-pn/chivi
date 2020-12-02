@@ -33,7 +33,7 @@ class PreloadBook
 
   def crawl!(threads = 4)
     threads = @missing.size if threads > @missing.size
-    channel = Channel(Nil).new(threads)
+    channel = Channel(Nil).new(threads + 1)
 
     @missing.each_with_index do |scid, idx|
       channel.receive unless idx < threads
@@ -63,10 +63,10 @@ class PreloadBook
     crawler = Oldcv::SeedText.new(@seed, @sbid, scid, freeze: true)
     out_file = "#{@out_dir}/#{scid}.txt"
 
-    if File.exists?(out_file) && File.size(out_file) < MIN_SIZE
-      puts "- delete empty file [#{out_file}]".colorize.light_red
-      File.delete(out_file)
-    end
+    # if File.exists?(out_file) && File.size(out_file) < MIN_SIZE
+    #   puts "- delete empty file [#{out_file}]".colorize.light_red
+    #   File.delete(out_file)
+    # end
 
     case crawler.title
     when .empty?, "Server Error", "524 Origin Time-out", "503 Service Temporarily Unavailable"

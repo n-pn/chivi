@@ -86,14 +86,10 @@ class Oldcv::Engine::UserDict
     end
   end
 
-  # class Oldcv::methods
-
-  DIR = File.join("var", "libcv", "lexicon")
-
-  class_property ext = ENV["KEMAL_ENV"]? == "production" ? "log" : "test.log"
+  DIR = "_db/cvdict/legacy"
 
   def self.path_for(name : String)
-    File.join(DIR, "#{name}.#{ext}")
+    File.join(DIR, "#{name}.log")
   end
 
   CACHE = {} of String => UserDict

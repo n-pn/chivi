@@ -5,7 +5,7 @@ require "compress/zip"
 class Oldcv::ChapText
   # class Oldcv::methods
 
-  DIR = File.join("_db", "prime", "chdata", "texts")
+  DIR = "_db/zhtext"
   FileUtils.mkdir_p(DIR)
 
   # SEP_0 = "ǁ"

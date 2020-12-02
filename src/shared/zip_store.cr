@@ -79,6 +79,7 @@ class Chivi::ZipStore
       flags = "-jqu" # update if newer
     end
 
+    puts "[Archive files to zip: #{zip_file}]"
     puts `zip #{flags} #{zip_file} #{root_dir}/#{glob}`
   end
 
