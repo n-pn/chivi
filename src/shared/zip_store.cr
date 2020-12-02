@@ -64,7 +64,7 @@ class Chivi::ZipStore
   end
 
   def compress!(mode : Symbol = :update, glob = "*.*") : Nil
-    return puts "[Nothing to compress!]" if Dir.empty?(zip_file)
+    return puts "[Nothing to compress!]" if Dir.empty?(root_dir)
 
     # set flags
     # `-j` means remove folder root

@@ -3,9 +3,10 @@ require "colorize"
 require "file_utils"
 
 require "../../src/shared/zip_store"
-require "../../src/kernel/book_meta"
+require "../../src/kernel/import/book_meta"
 require "../../src/kernel/mapper/value_map"
-require "../../src/kernel/source/seed_text"
+
+require "../../src/_oldcv/kernel/seeds/seed_text"
 
 LIST_DIR = "_db/prime/chdata/infos"
 TEXT_DIR = "_db/prime/chdata/texts"
@@ -59,7 +60,7 @@ class PreloadBook
   end
 
   def fetch_text(scid : String, label : String) : Nil
-    crawler = SeedText.new(@seed, @sbid, scid, freeze: true)
+    crawler = Oldcv::SeedText.new(@seed, @sbid, scid, freeze: true)
     out_file = "#{@out_dir}/#{scid}.txt"
 
     if File.exists?(out_file) && File.size(out_file) < MIN_SIZE

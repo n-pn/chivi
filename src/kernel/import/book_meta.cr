@@ -1,7 +1,8 @@
 require "json"
 require "file_utils"
 require "../mapper/*"
-require "../../_utils/text_util"
+
+require "../../shared/text_utils"
 
 module Chivi::BookMeta
   class Info
@@ -130,7 +131,7 @@ module Chivi::BookMeta
       {{field}}_fs.upsert!(bhash, input.to_s, mtime: mtime)
 
       {% if type == :token %}
-        {{field}}_ts.upsert!(bhash, TextUtil.tokenize(input), mtime: mtime)
+        {{field}}_ts.upsert!(bhash, TextUtils.tokenize(input), mtime: mtime)
       {% end %}
 
       return unless cache && (info = INFOS[bhash]?)
@@ -219,7 +220,7 @@ module Chivi::BookMeta
   end
 
   def filter_by_title(title : String, prevs : TokenMap::Index? = nil)
-    query = TextUtil.tokenize(title)
+    query = TextUtils.tokenize(title)
 
     output =
       if title =~ /\p{Han}/
@@ -232,7 +233,7 @@ module Chivi::BookMeta
   end
 
   def filter_by_author(author : String, prevs : TokenMap::Index? = nil)
-    query = TextUtil.tokenize(author)
+    query = TextUtils.tokenize(author)
 
     output =
       if author =~ /\p{Han}/
@@ -245,7 +246,7 @@ module Chivi::BookMeta
   end
 
   def filter_by_genre(genre : String, prevs : TokenMap::Index? = nil)
-    query = TextUtil.slugify(genre)
+    query = TextUtils.slugify(genre)
     output = genres_vi_ts.search([query])
     merge_filters(output, prevs)
   end
