@@ -65,11 +65,7 @@ module Sentry
       display_name.not_nil!
     end
 
-    @build : String?
-
-    def build
-      @build ||= "crystal build ./src/server.cr -o ./bin/server"
-    end
+    getter build : String { "crystal build ./src/server.cr -o ./bin/chivi" }
 
     def build=(new_command : String)
       @sets_build_command = true
@@ -80,11 +76,7 @@ module Sentry
       @build_args.strip.split(" ").reject(&.empty?)
     end
 
-    @run : String?
-
-    def run
-      @run ||= "./bin/server"
-    end
+    getter run : String { "./bin/chivi" }
 
     def run=(new_command : String)
       @sets_run_command = true

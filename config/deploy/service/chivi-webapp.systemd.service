@@ -1,5 +1,5 @@
 [Unit]
-Description=chivi-client
+Description=chivi-webapp
 After=network.target
 StartLimitIntervalSec=0
 
@@ -7,9 +7,10 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=5
-User=deploy
+User=nipin
 Environment=PORT=5100
-WorkingDirectory=/home/deploy/www/chivi/web
+WorkingDirectory=/home/nipin/www/chivi/web
 ExecStart=/usr/bin/node __sapper__/build
+
 [Install]
 WantedBy=multi-user.target

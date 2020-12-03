@@ -1,3 +1,3 @@
 #! /bin/sh
 
-shards build --release chivi && sudo service chivi-server restart
+shards install && shards build --release chivi && sudo service chivi-server restart

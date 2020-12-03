@@ -1,5 +1,5 @@
 #! /bin/sh
-DIR=/home/deploy/www/chivi/etc/deploy/yousuu
+DIR=/home/deploy/www/chivi/deploy/runner
 
 sudo cp "$DIR/yousuu-infos.systemd.service" /etc/systemd/system/yousuu-infos.service
 sudo cp "$DIR/yousuu-infos.systemd.timer" /etc/systemd/system/yousuu-infos.timer

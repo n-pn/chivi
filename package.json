@@ -1,10 +1,10 @@
 {
   "private": true,
   "scripts": {
-    "db-up": "bash etc/script/upload-assets.sh",
-    "db-dn": "bash etc/script/backup-assets.sh",
-    "ys-up": "bash etc/script/upload-yousuu.sh",
-    "ys-dn": "bash etc/script/backup-yousuu.sh",
+    "db-up": "bash config/scripts/upload-assets.sh",
+    "db-dn": "bash config/scripts/backup-assets.sh",
+    "ys-up": "bash config/scripts/upload-yousuu.sh",
+    "ys-dn": "bash config/scripts/backup-yousuu.sh",
     "build": "shards build --release",
     "build-mt": "shards build --release -Dpreview_mt",
     "web-up": "cd web && yarn build && git push prod",
