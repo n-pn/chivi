@@ -3,7 +3,7 @@ time bin/map_remote -s xbiquge -u 53210 -m 1
 time bin/map_remote -s rengshu -u 4275 -m 1
 time bin/map_remote -s 69shu -u 35256 -m 1
 time bin/map_remote -s 5200 -u 30206 -m 1
-time bin/map_remote -s duokan8 -u 39333 -m 1
+time bin/map_remote -s duokan8 -u 40967 -m 1
 time bin/map_remote -s nofff -u 97383 -m 1
 time bin/map_remote -s biquge5200 -u 142154 -m 1
 time bin/map_remote -s paoshu8 -u 155217 -m 1

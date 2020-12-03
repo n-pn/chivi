@@ -36,7 +36,7 @@ class PreloadBook
     channel = Channel(Nil).new(threads + 1)
 
     @missing.each_with_index do |scid, idx|
-      channel.receive unless idx < threads
+      channel.receive if idx > threads
 
       spawn do
         fetch_text(scid, "#{idx + 1}/#{@missing.size}")

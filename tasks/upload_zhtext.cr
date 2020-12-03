@@ -3,12 +3,12 @@
 # require "json"
 require "colorize"
 
-INP = "_db/prime/chdata/texts"
+INP = "_db/zhtext"
 SSH = "nipin@ssh.nipin.xyz"
-OUT = "#{SSH}:www/chivi/_db/texts"
+OUT = "#{SSH}:www/chivi/_db/zhtext"
 
 def upload_texts(seed, flags = "")
-  puts `ssh #{SSH} mkdir -p ~/www/chivi/_db/texts/#{seed}`
+  puts `ssh #{SSH} mkdir -p ~/www/chivi/_db/zhtext/#{seed}`
 
   seed_dir = File.join(INP, seed)
   children = Dir.glob(File.join(seed_dir, "*.zip"))
@@ -35,8 +35,4 @@ else
 end
 
 puts "[INPUT: #{seeds}, FLAGS: #{flags}]".colorize.yellow.bold
-
-seeds.each_with_index do |seed, idx|
-  puts "- <#{idx + 1}/#{seeds.size}> #{seed}".colorize.cyan.bold
-  upload_texts(seed, flags)
-end
+seeds.each { |seed| upload_texts(seed, flags) }
