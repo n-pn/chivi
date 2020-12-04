@@ -18,7 +18,7 @@ module Oldcv::Server
   end
 
   get "/" do |env|
-    {msg: "welcome to chivi!"}.to_json env.response
+    {msg: "Welcome to chivi!"}.to_json env.response
   end
 
   Kemal.run

@@ -1,4 +1,4 @@
-require_relative("./crawl_utils")
+require_relative "./yousuu_utils"
 
 class CritCrawler
   def initialize(load_proxy = false, debug_mode = false)

@@ -1,4 +1,4 @@
-require_relative "./crawl_utils"
+require_relative "./yousuu_utils"
 
 class InfoCrawler
   INFO_DIR = "_db/.cache/yousuu/infos"
