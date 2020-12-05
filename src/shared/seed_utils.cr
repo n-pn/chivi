@@ -1,40 +1,64 @@
 require "html"
+require "colorize"
 
-module Chivi::TextUtils
+module Chivi::SeedUtils
   extend self
 
-  def split_html(input : String, split : String | Regex = /\s{2,}|\n+/)
-    split_text(clean_html(input), split)
+  LOCATION = Time::Location.fixed(3600 * 8) # chinese timezone
+  DEF_TIME = Time.utc(2000, 1, 1)
+
+  TIME_FMT = {
+    "%-m/%-d/%Y %r", "%-m/%-d/%Y %T", "%Y/%-m/%-d %T",
+    "%F %T", "%F %R", "%F",
+  }
+
+  # parse remote info update times
+  def parse_time(input : String) : Time
+    TIME_FMT.each do |format|
+      return Time.parse(input, format, LOCATION)
+    rescue
+      next
+    end
+
+    puts "[ERROR parsing time`#{input}`: unknown format!]".colorize.red
+    DEF_TIME
   end
 
-  def clean_html(input : String)
-    HTML.unescape(input)
-      .gsub(/<br\s*\/?>/i, "\n")
-      .gsub("【】", "")
-      .gsub("...", "…")
+  def split_html(input : String, fix_br : Bool = true)
+    input = HTML.unescape(input)
+    input = fix_spaces(input)
+    input = replace_br(input) if fix_br
+    split_text(input)
   end
 
-  def split_text(input : String, split : String | Regex = "\n")
-    fix_spaces(input).split(split).map(&.strip).reject(&.empty?)
+  def replace_br(input : String)
+    input.gsub(/<br\s*\/?>|\s{2,}/i, "\n")
   end
 
-  # replace unicode whitespaces with " "
+  def split_text(input : String)
+    input.split("\n").map(&.strip).reject(&.empty?)
+  end
+
+  SPACES = "\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000"
+
   def fix_spaces(input : String)
-    input.tr("\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000", " ")
+    input.tr(SPACES, " ")
   end
 
   # capitalize all words
   def titleize(input : String)
-    input.split(" ").map { |x| capitalize(x) }.join(" ")
+    input.split(' ').map { |x| capitalize(x) }.join(' ')
   end
 
-  # don't downcase extra characters
+  # smart capitalize:
+  # - don't downcase extra characters
+  # - treat unicode alphanumeric chars as upcase-able
   def capitalize(input : String) : String
     # TODO: handle punctuation?
-    return input if input.blank?
 
     String.build do |io|
       uncap = true
+
       input.each_char do |char|
         if uncap && char.alphanumeric?
           io << char.upcase
@@ -94,9 +118,5 @@ module Chivi::TextUtils
   end
 end
 
-# puts Chivi::TextUtils.tokenize("Diablo Chi Hủy Diệt")
-# puts Chivi::TextUtils.split_words("abc")
-# puts Chivi::TextUtils.split_words("重返2008年")
-# puts Chivi::TextUtils.split_words("Trọng phản 2008 niên")
-# puts Chivi::TextUtils.slugify("Trọng phản 2008 niên", keep_accent: true)
-# puts Chivi::TextUtils.slugify("Trọng phản 2008 niên 重返2008年")
+# puts Chivi::SeedUtils.parse_time("5/14/2020 7:00:48 AM")
+# puts Chivi::SeedUtils.parse_time("2020-09-08 10:00")
