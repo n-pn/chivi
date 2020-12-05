@@ -34,21 +34,31 @@ module Chivi::Library
     DICTS[dname] ||= Lexicon.new(file_path(dname), plock)
   end
 
-  def file_path(dname : String)
+  def file_path(dname : String, ext : String = "tsv")
     case dname
     when "trungviet", "cc_cedict", "trich_dan"
-      "#{DIR}/#{dname}.tsv"
+      "#{DIR}/#{dname}.#{ext}"
     when "tradsim", "binh_am", "hanviet"
-      "#{DIR}/common/#{dname}.tsv"
+      "#{DIR}/common/#{dname}.#{ext}"
     when "regular", "suggest", "various"
-      "#{DIR}/common/#{dname}.tsv"
+      "#{DIR}/common/#{dname}.#{ext}"
     else
-      "#{DIR}/unique/#{dname}.tsv"
+      "#{DIR}/unique/#{dname}.#{ext}"
     end
   end
 
   class_getter history : History { History.new(DIR) }
 
-  def upsert(dname : String, key : String, vals : Array(String), attr = "", mtime = 0, plock = 0, dname = 0)
+  def upsert(dname : String, key : String, vals : Array(String), attr = "", uname = 0, plock = 1, mtime = 0, ctx = "")
+    dict = load_dict(dname)
 
+    mtime = Lexicon::Item.mtime if mtime <= 0
+    new_item = Lexicon::Item.new(key, vals, attr, mtime, uname, plock)
+    old_item = dict.upsert!(new_item)
+
+    history.record!(file_path(dname, "tab"), new_item, old_item, ctx: ctx)
+  end
+
+  def lookup(dname : String, key : String)
+  end
 end

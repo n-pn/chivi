@@ -3,7 +3,7 @@ require "http/client"
 
 # require "crest"
 
-module HttpUtils
+module Chivi::HttpUtils
   extend self
 
   HEADERS = HTTP::Headers{

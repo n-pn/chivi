@@ -7,7 +7,7 @@ require "./utils/common"
 require "./utils/pinyin"
 
 require "../../src/engine/library"
-require "../../src/_utils/normalize"
+require "../../src/shared/normalize"
 
 class Entry
   getter trad : String
@@ -53,7 +53,7 @@ class Entry
 end
 
 class CE_DICT
-  CEDICT_URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
+  URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 
   HANZIDB_FILE = Utils.inp_path("initial/hanzidb.txt")
   HANZIDB_DICT = Engine::BaseDict.read!(HANZIDB_FILE, legacy: true)
@@ -76,7 +76,7 @@ class CE_DICT
 
     if outdated?(zip_file)
       puts "- fetching latest CC_CEDICT from internet... ".colorize.light_cyan
-      HTTP::Client.get(CEDICT_URL) { |res| File.write(zip_file, res.body_io) }
+      HTTP::Client.get(URL) { |res| File.write(zip_file, res.body_io) }
     end
 
     Compress::Zip::File.open(zip_file) do |zip|

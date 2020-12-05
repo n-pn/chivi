@@ -1,14 +1,16 @@
-require "../../../src/_utils/normalize"
-
 class Clavis
-  DIR = File.join("var", "libcv", "initial")
+  DIR = "_db/cvdict/_inits"
 
-  def self.path_for(file : String)
-    File.join(DIR, file)
+  def self.load(fname : String, preload = true)
+    new("#{DIR}/#{fname}").tap { |x| x.load! if preload }
   end
 
-  def self.load(file : String, preload = true)
-    new(path_for(file), preload: preload)
+  def self.vals(input : String, seps = /[\/\|]/)
+    input
+      .split(seps)
+      .map(&.strip)
+      .reject(&.empty?)
+      .reject(&.includes?(":"))
   end
 
   SEP_0 = "="
@@ -17,67 +19,56 @@ class Clavis
   getter data = Hash(String, Array(String)).new
   forward_missing_to @data
 
-  def initialize(@file : String, preload = true)
-    load!(@file) if preload && File.exists?(@file)
+  def initialize(@file : String)
   end
 
-  def load!(file : String = @file, mode = :keep_new)
-    count = 0
+  def load!(file = @file, mode = :keep_new)
+    label = File.basename(file)
+    lines = 0
 
-    elapsed_time = Time.measure do
+    elapse = Time.measure do
       File.each_line(file) do |line|
-        key, vals = line.strip.split(SEP_0, 2)
+        line = line.strip
+        next if line.empty?
 
-        key = Utils.normalize(key).join("")
-        vals =
-          vals.split(/[\/\|]/)
-            .map(&.strip)
-            .reject(&.empty?)
-            .reject(&.includes?(":"))
+        key, value = line.split(SEP_0)
+        upsert(key, Clavis.vals(value), mode)
 
-        upsert(key, vals, mode)
-        count += 1
-      rescue
-        puts "- <old_dict> error parsing line ##{count}: `#{line}`.".colorize(:red)
+        lines += 1
+      rescue err
+        puts "[<#{label}> error parsing ##{lines} `#{line}`: #{err}".colorize.red
       end
     end
 
-    elapse_time = elapsed_time.total_milliseconds.round.to_i
-    puts "- <old_dict> [#{file.colorize(:yellow)}] loaded, \
-            lines: #{count.colorize(:yellow)}, \
-            time: #{elapse_time.colorize(:yellow)}ms"
-  end
-
-  def upsert(key : String, new_vals : Array(String), mode = :keep_new)
-    if old_vals = @data[key]?
-      case mode
-      when :keep_new
-        @data[key] = new_vals
-      when :old_first
-        old_vals.concat(new_vals)
-      when :new_first
-        @data[key] = new_vals.concat(old_vals)
-      else
-        return
-      end
-    else
-      @data[key] = new_vals
-    end
-  end
-
-  def delete(key)
-    @data.delete(key)
+    elapse = elapse.total_milliseconds.round.to_i
+    puts "[CLAVIS: #{file} loaded: #{lines} lines, time: #{elapse}ms]".colorize.green
   end
 
   def save!(file : String = @file)
     File.open(file, "w") do |io|
       @data.each do |key, vals|
-        io << key << SEP_0
-        vals.uniq.join(io, SEP_1)
-        io << "\n"
+        io << key << SEP_0 << vals.uniq.join(SEP_1) << "\n"
       end
     end
 
-    puts "- <old_dict> [#{file.colorize(:yellow)}] saved, entries: #{size.colorize(:yellow)}."
+    puts "[CLAVIS: #{file}] saved, entries: #{size}]".colorize(:yellow)
+  end
+
+  def upsert(key : String, new_vals : Array(String), mode = :keep_new)
+    unless old_vals = @data[key]?
+      old_vals = [] of String
+    end
+
+    @data[key] =
+      case mode
+      when :keep_new
+        new_vals
+      when :old_first
+        old_vals.concat(new_vals)
+      when :new_first
+        new_vals.concat(old_vals)
+      else
+        old_vals.empty? ? new_vals : old_vals
+      end
   end
 end
