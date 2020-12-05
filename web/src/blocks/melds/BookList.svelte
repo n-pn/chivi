@@ -5,7 +5,7 @@
 
 <div class="list">
   {#each books as book}
-    <a class="book" href="/~{book.slug}" rel="prefetch">
+    <a class="book" href="/~{book.slug}">
       <div class="cover">
         <BookCover ubid={book.ubid} path={book.main_cover} />
       </div>

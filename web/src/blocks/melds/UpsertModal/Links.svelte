@@ -21,7 +21,7 @@
 
 <div>
   {#each links as [name, href]}
-    <a {href} target="_blank" rel="noopener noreferer"> {name} </a>
+    <a {href} target="_blank" rel="noopener noreferer">{name}</a>
   {/each}
 </div>
 

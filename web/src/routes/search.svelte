@@ -59,7 +59,7 @@
 
     <div class="list" data-page={page}>
       {#each items as book}
-        <a class="book" href="/~{book.slug}" rel="prefetch">
+        <a class="book" href="/~{book.slug}">
           <div class="cover">
             <BookCover ubid={book.ubid} path={book.main_cover} />
           </div>

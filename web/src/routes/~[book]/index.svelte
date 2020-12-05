@@ -211,10 +211,7 @@
                     <span class="latest-text">{name}</span>
                   </td>
                   <td class="latest-chap">
-                    <a
-                      class="latest-link"
-                      href={last_chap_link(name)}
-                      rel="external">
+                    <a class="latest-link" href={last_chap_link(name)}>
                       {last_chap_text(name)}
                     </a>
                   </td>
