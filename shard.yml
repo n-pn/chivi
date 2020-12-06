@@ -8,6 +8,9 @@ targets:
   chivi:
     main: src/server.cr
 
+  server:
+    main: src/server.cr
+
   map_yousuu:
     main: tasks/_oldcv/map_yousuu.cr
 
