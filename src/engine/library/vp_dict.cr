@@ -31,7 +31,7 @@ class Chivi::VpDict
     end
 
     elapse = elapse.total_milliseconds.round.to_i
-    puts "[DICT <#{label}> loaded: #{lines} lines, elapse: #{elapse}ms]".colorize.green
+    puts "<VP_DICT> [#{label}] loaded: #{lines} lines, elapse: #{elapse}ms".colorize.green
 
     # set mtime from file stats
     @mtime = VpTerm.mtime(File.info(file).modification_time) if @mtime == 0
@@ -51,7 +51,7 @@ class Chivi::VpDict
       end
     end
 
-    puts "[DICT <#{label}> saved: #{items.size} entries]".colorize.yellow
+    puts "<VP_DICT> [#{label}] saved: #{items.size} entries".colorize.yellow
   end
 
   # return old entry if exists

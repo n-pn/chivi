@@ -67,20 +67,24 @@ module QtUtil
       .join(" ")
   end
 
-  # def convert(dict : Chivi::VpDict, input : String, sep = "")
-  #   res = [] of String
+  def convert(dict : Chivi::VpDict, text : String, join = "")
+    res = [] of String
 
-  #   chars = input.chars
+    chars = text.chars
+    from = 0
 
-  #   from = 0
-  #   while from < chars.size
-  #     keep = chars[from].to_s
-  #     dict.scan(chars, from) { |node| keep = node.vals.first }
+    while from < chars.size
+      char = chars[from]
+      keep = Chivi::VpTerm.new(char.to_s, [char.to_s])
 
-  #     res << keep
-  #     from += keep.size
-  #   end
+      dict.scan(chars, from) do |term|
+        keep = term unless term.vals.first.empty?
+      end
 
-  #   res.join(sep)
-  # end
+      res << keep.vals.first
+      from += keep.key.size
+    end
+
+    res.join(join)
+  end
 end

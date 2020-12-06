@@ -12,6 +12,7 @@ class QtDict
   SEP_1 = "/"
 
   getter data = Hash(String, Array(String)).new
+  forward_missing_to @data
 
   def initialize(@file : String)
   end
@@ -35,7 +36,7 @@ class QtDict
     end
 
     elapse = elapse.total_milliseconds.round.to_i
-    puts "[QT_DICT: #{label} loaded: #{lines} lines, time: #{elapse}ms]".colorize.green
+    puts "<QT_DICT> [#{label}] loaded: #{lines} lines, time: #{elapse}ms".colorize.green
   end
 
   def save!(file : String = @file)
@@ -45,7 +46,7 @@ class QtDict
       end
     end
 
-    puts "[QT_DICT: #{file}] saved, entries: #{@data.size}]".colorize(:yellow)
+    puts "<QT_DICT> [#{file}] saved, entries: #{@data.size}".colorize(:yellow)
   end
 
   def parse_line(line : String)

@@ -74,4 +74,4 @@ module Chivi::Library
   end
 end
 
-puts Chivi::Library.lookup("trungviet", "覆盖面")
+# puts Chivi::Library.lookup("trungviet", "覆盖面")

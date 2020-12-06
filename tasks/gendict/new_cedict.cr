@@ -126,8 +126,119 @@ class CeInput
 
     output.save!
   end
+
+  HANZIDB = QtDict.load("_system/hanzidb.txt")
+
+  alias Counter = Hash(String, Int32)
+
+  def is_trad?(input : String)
+    input.includes?("old variant of") || input.includes?("archaic variant of")
+  end
+
+  def export_tradsim!
+    puts "\n[-- Export tradsim --]".colorize.cyan.bold
+
+    counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
+    tswords = QtDict.new(".result/tradsimp-words.txt")
+
+    @entries.each do |entry|
+      next if is_trad?(entry.defins)
+
+      if entry.trad.size > 1
+        tswords.upsert(entry.trad, [entry.simp], :old_first)
+      end
+
+      simps = entry.simp.split("")
+      trads = entry.trad.split("")
+
+      trads.each_with_index do |trad, i|
+        counter[trad][simps[i]] += 1
+      end
+    end
+
+    output = Chivi::VpDict.new(Chivi::Library.file_path("tradsim"))
+
+    counter.each do |trad, counts|
+      best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
+      next if best.includes?(trad) || HANZIDB.has_key?(trad)
+      output.upsert(Chivi::VpTerm.new(trad, best)) unless trad == best.first
+    end
+
+    puts "- trad chars count: #{output.size.colorize(:green)}"
+
+    output.upsert(Chivi::VpTerm.new("扶馀", ["扶余"]))
+
+    words = tswords.to_a.sort_by(&.[0].size)
+    words.each do |key, vals|
+      simp = vals.uniq
+      next if simp.first == key
+
+      convert = QtUtil.convert(output, key)
+      next if simp.first == convert
+
+      output.upsert(Chivi::VpTerm.new(key, simp))
+    end
+
+    output.save!(mode: :best)
+  end
+
+  def export_pinyins!
+    puts "\n[-- Export pinyins --]".colorize.cyan.bold
+
+    counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
+    pywords = QtDict.new(".result/pinyins-words.txt")
+
+    @entries.each do |entry|
+      next if is_trad?(entry.defins)
+
+      if entry.simp.size > 1
+        pywords.upsert(entry.simp, [entry.pinyin], :old_first)
+      end
+
+      chars = entry.simp.split("")
+      pinyins = entry.pinyin.split(" ")
+      next if chars.size != pinyins.size
+
+      chars.each_with_index do |char, i|
+        next if char =~ /\P{Han}/
+        counter[char][pinyins[i]] += 1
+      end
+    end
+
+    output = Chivi::VpDict.new(Chivi::Library.file_path("binh_am"))
+
+    HANZIDB.each do |key, vals|
+      next if vals.empty? || vals.first.empty?
+      output.upsert(Chivi::VpTerm.new(key, vals))
+    end
+
+    counter.each do |char, counts|
+      best = counts.to_a.sort_by { |pinyin, count| -count }.map(&.first)
+      output.upsert(Chivi::VpTerm.new(char, best.first(4)))
+    end
+
+    extras = QtDict.load("_system/extra-pinyins.txt")
+    extras.each do |key, vals|
+      output.upsert(Chivi::VpTerm.new(key, vals))
+    end
+
+    words = pywords.to_a.sort_by(&.[0].size)
+    words.each do |key, vals|
+      next if key.size > 3
+      vals = vals.uniq
+
+      convert = QtUtil.convert(output, key, " ")
+      next if vals.first == convert
+
+      output.upsert(Chivi::VpTerm.new(key, vals))
+    end
+
+    output.save!(mode: :best)
+  end
 end
 
 cedict = CeInput.load_data(expiry: 24.hours)
 
 cedict.export_ce_dict!
+cedict.export_tradsim!
+cedict.export_pinyins!
