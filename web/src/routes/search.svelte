@@ -1,4 +1,10 @@
 <script context="module">
+  import { anchor_rel } from '$src/stores'
+  import Vessel from '$parts/Vessel'
+
+  import SvgIcon from '$atoms/SvgIcon.svelte'
+  import BookCover from '$atoms/BookCover.svelte'
+
   export const limit = 8
 
   export async function preload({ query }) {
@@ -18,11 +24,6 @@
 </script>
 
 <script>
-  import Vessel from '$parts/Vessel'
-
-  import SvgIcon from '$atoms/SvgIcon.svelte'
-  import BookCover from '$atoms/BookCover.svelte'
-
   export let word = ''
   export let page = 1
   export let type = 'fuzzy'
@@ -59,7 +60,7 @@
 
     <div class="list" data-page={page}>
       {#each items as book}
-        <a class="book" href="/~{book.slug}">
+        <a href="/~{book.slug}" class="book" rel={$anchor_rel}>
           <div class="cover">
             <BookCover ubid={book.ubid} path={book.main_cover} />
           </div>
@@ -95,9 +96,10 @@
 
     <div class="pagi">
       <a
+        href={searchUrl(page - 1)}
         class="m-button _line"
         class:_disable={page == 1}
-        href={searchUrl(page - 1)}>
+        rel={$anchor_rel}>
         <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
@@ -105,9 +107,10 @@
       <span class="m-button _line _primary _disable"><span>{page}</span></span>
 
       <a
+        href={searchUrl(page + 1)}
         class="m-button _solid _primary"
         class:_disable={page == pmax}
-        href={searchUrl(page + 1)}>
+        rel={$anchor_rel}>
         <span>Kế tiếp</span>
         <SvgIcon name="chevron-right" />
       </a>

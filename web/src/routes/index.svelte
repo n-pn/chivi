@@ -1,4 +1,12 @@
 <script context="module">
+  import { anchor_rel } from '$src/stores.js'
+  import paginate_range from '$utils/paginate_range'
+
+  import SvgIcon from '$atoms/SvgIcon.svelte'
+  import BookList from '$melds/BookList.svelte'
+
+  import Vessel from '$parts/Vessel'
+
   export async function preload({ query }) {
     const page = +(query.page || 1)
     let url = `/_books?page=${page}`
@@ -36,13 +44,6 @@
 </script>
 
 <script>
-  import paginate_range from '$utils/paginate_range'
-
-  import SvgIcon from '$atoms/SvgIcon.svelte'
-  import BookList from '$melds/BookList.svelte'
-
-  import Vessel from '$parts/Vessel'
-
   export let items = []
   export let total = 0
   export let query = {}
@@ -112,7 +113,11 @@
     <SvgIcon name="search" />
   </form>
 
-  <a slot="header-right" class="header-item" href="/translate">
+  <a
+    slot="header-right"
+    href="/translate"
+    class="header-item"
+    rel={$anchor_rel}>
     <SvgIcon name="zap" />
     <span class="header-text _show-md">Dịch nhanh</span>
   </a>
@@ -120,9 +125,10 @@
   <div class="order">
     {#each Object.entries(order_names) as [type, label]}
       <a
+        href={makePageUrl(1, { ...query, order: type })}
         class="-type"
         class:_active={query.order === type}
-        href={makePageUrl(1, { ...query, order: type })}>
+        rel={$anchor_rel}>
         <span>{label}</span>
       </a>
     {/each}
@@ -136,28 +142,31 @@
 
   <div class="pagi" slot="footer">
     <a
+      href={makePageUrl(+page - 1, query)}
       class="page m-button _line"
       class:_disable={page == 1}
-      href={makePageUrl(+page - 1, query)}>
+      rel={$anchor_rel}>
       <SvgIcon name="chevron-left" />
       <span>Trước</span>
     </a>
 
     {#each page_ary as [index, level]}
       <a
+        href={makePageUrl(index, query)}
         class="page m-button _line"
         class:_primary={page == index}
         class:_disable={page == index}
-        data-level={level}
-        href={makePageUrl(index, query)}>
+        rel={$anchor_rel}
+        data-level={level}>
         <span>{index}</span>
       </a>
     {/each}
 
     <a
+      href={makePageUrl(page + 1, query)}
       class="page m-button _solid _primary"
       class:_disable={page == page_max}
-      href={makePageUrl(page + 1, query)}>
+      rel={$anchor_rel}>
       <span>Kế tiếp</span>
       <SvgIcon name="chevron-right" />
     </a>

@@ -1,7 +1,9 @@
-<script>
-  import { self_uname, self_power } from '$src/stores'
+<script context="module">
+  import { self_uname, self_power, anchor_rel } from '$src/stores'
   import SvgIcon from '$atoms/SvgIcon.svelte'
+</script>
 
+<script>
   export let segment = ''
   export let shift = false
 
@@ -32,7 +34,7 @@
   class:_shift={shift}>
   <nav class="center -wrap">
     <div class="-left">
-      <a href="/" class="header-item _brand">
+      <a href="/" class="header-item _brand" rel={$anchor_rel}>
         <img src="/chivi-logo.svg" alt="logo" />
         <span class="header-text _show-md">Chivi</span>
       </a>
@@ -60,7 +62,7 @@
               <span>Đăng ký</span>
             </a>
           {:else}
-            <a href="/@{$self_uname}" class="-item">
+            <a href="/@{$self_uname}" class="-item" rel={$anchor_rel}>
               <SvgIcon name="layers" />
               <span>Tủ truyện</span>
             </a>

@@ -1,4 +1,6 @@
 <script context="module">
+  import { anchor_rel } from '$src/stores.js'
+
   export function paginate(chaps, focus, limit = 50, reverse = false) {
     let offset = (focus - 1) * limit
     if (offset < 0) offset = 0
@@ -85,7 +87,8 @@
       <li class="chap-item">
         <a
           href="/~{bslug}/-{chap.url_slug}-{sname}-{chap.scid}"
-          class="chap-link">
+          class="chap-link"
+          rel={$anchor_rel}>
           <span class="label">{chap.vi_label}</span>
           <span class="title">{chap.vi_title}</span>
         </a>

@@ -1,5 +1,16 @@
 <script context="module">
+  import SvgIcon from '$atoms/SvgIcon'
+  import RelTime from '$atoms/RelTime'
+
+  // import AdBanner from '$atoms/AdBanner'
+
+  import Vessel from '$parts/Vessel'
+  import ChapList from '$melds/ChapList'
+
+  import Outline from './_outline'
+
   import { mark_types, mark_names, mark_icons } from '$utils/constants'
+  import { self_power, anchor_rel } from '$src/stores'
 
   export async function preload({ params, query }) {
     const bslug = params.book
@@ -54,18 +65,6 @@
 </script>
 
 <script>
-  import SvgIcon from '$atoms/SvgIcon'
-  import RelTime from '$atoms/RelTime'
-
-  import AdBanner from '$atoms/AdBanner'
-
-  import Vessel from '$parts/Vessel'
-  import ChapList from '$melds/ChapList'
-
-  import Outline from './_outline'
-
-  import { self_uname, self_power } from '$src/stores'
-
   export let book
   export let mark = ''
   export let seed
@@ -124,7 +123,11 @@
 </script>
 
 <Vessel>
-  <a slot="header-left" href="/~{book.slug}" class="header-item _active">
+  <a
+    slot="header-left"
+    href="/~{book.slug}"
+    class="header-item _active"
+    rel={$anchor_rel}>
     <SvgIcon name="book-open" />
     <span class="header-text _title">{book.vi_title}</span>
   </a>
@@ -157,25 +160,28 @@
   <section class="meta">
     <header class="meta-header">
       <a
+        href="/~{book.slug}?tab=overview"
         class="-tab"
         class:_active={tab == 'overview'}
-        href="/~{book.slug}?tab=overview"
+        rel={$anchor_rel}
         on:click={(evt) => change_tab(evt, 'overview')}>
         Tổng quan
       </a>
 
       <a
+        href="/~{book.slug}?tab=content&seed={seed}"
         class="-tab"
         class:_active={tab == 'content'}
-        href="/~{book.slug}?tab=content&seed={seed}"
+        rel={$anchor_rel}
         on:click={(evt) => change_tab(evt, 'content')}>
         Mục lục
       </a>
 
       <a
+        href="/~{book.slug}?tab=reviews"
         class="-tab"
         class:_active={tab == 'reviews'}
-        href="/~{book.slug}?tab=reviews"
+        rel={$anchor_rel}
         on:click={(evt) => change_tab(evt, 'reviews')}>
         Bình luận
       </a>
@@ -211,7 +217,10 @@
                     <span class="latest-text">{name}</span>
                   </td>
                   <td class="latest-chap">
-                    <a class="latest-link" href={last_chap_link(name)}>
+                    <a
+                      class="latest-link"
+                      href={last_chap_link(name)}
+                      rel={$anchor_rel}>
                       {last_chap_text(name)}
                     </a>
                   </td>
@@ -255,6 +264,7 @@
                       class="-item"
                       class:_active={seed === name}
                       href="/~{book.slug}?tab=content&seed={name}"
+                      rel={$anchor_rel}
                       on:click|preventDefault={() => change_seed(name, 0)}>
                       <span class="-name">{name}</span>
                       <span class="-time">

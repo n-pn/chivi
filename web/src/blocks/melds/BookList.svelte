@@ -1,11 +1,15 @@
-<script>
+<script context="module">
   import BookCover from '$atoms/BookCover.svelte'
+  import { anchor_rel } from '$src/stores.js'
+</script>
+
+<script>
   export let books = []
 </script>
 
 <div class="list">
   {#each books as book}
-    <a class="book" href="/~{book.slug}">
+    <a class="book" href="/~{book.slug}" rel={$anchor_rel}>
       <div class="cover">
         <BookCover ubid={book.ubid} path={book.main_cover} />
       </div>

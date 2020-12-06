@@ -1,4 +1,6 @@
 <script context="module">
+  import { anchor_rel } from '$src/stores'
+
   export function map_status(status) {
     switch (status) {
       case 0:
@@ -71,7 +73,10 @@
     <div class="line">
       <span class="stat">
         <SvgIcon name="pen-tool" />
-        <a class="link" href="/search?kw={book.vi_author}&type=author">
+        <a
+          class="link"
+          href="/search?kw={book.vi_author}&type=author"
+          rel={$anchor_rel}>
           <span class="label">{book.vi_author}</span>
         </a>
       </span>
@@ -79,7 +84,7 @@
       {#each book.vi_genres as genre}
         <span class="stat _genre">
           <SvgIcon name="folder" />
-          <a class="link" href="/?genre={genre}">
+          <a class="link" href="/?genre={genre}" rel={$anchor_rel}>
             <span class="label">{genre}</span>
           </a>
         </span>
