@@ -121,6 +121,7 @@ class CeInput
     output = Chivi::VpDict.new(Chivi::Library.file_path("cc_cedict"))
 
     input.each do |key, vals|
+      QtUtil.lexicon.add(key)
       output.upsert(Chivi::VpTerm.new(key, vals))
     end
 
@@ -168,7 +169,7 @@ class CeInput
 
     output.upsert(Chivi::VpTerm.new("扶馀", ["扶余"]))
 
-    words = tswords.to_a.sort_by(&.[0].size)
+    words = tswords.data.to_a.sort_by(&.[0].size)
     words.each do |key, vals|
       simp = vals.uniq
       next if simp.first == key

@@ -15,6 +15,8 @@ class Chivi::VpDict
   end
 
   def load!(file = @file) : Nil
+    return unless File.exists?(file)
+
     label = File.basename(file)
     lines = 0
 

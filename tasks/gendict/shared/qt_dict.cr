@@ -69,9 +69,9 @@ class QtDict
       when :keep_new
         new_vals
       when :old_first
-        old_vals.concat(new_vals)
+        old_vals.concat(new_vals).uniq
       when :new_first
-        new_vals.concat(old_vals)
+        new_vals.concat(old_vals).uniq
       else
         old_vals.empty? ? new_vals : old_vals
       end

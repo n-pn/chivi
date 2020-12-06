@@ -1,111 +1,68 @@
-require "./utils/common"
-require "./utils/clavis"
-
+require "./shared/*"
 require "../../src/engine/library"
-require "../../src/kernel/mapper/old_value_set"
 
-CRUCIAL = ValueSet.read!(Utils.inp_path("autogen/crucial-chars.txt"))
-HANZIDB = ValueSet.read!(Utils.inp_path("initial/hanzidb.txt"))
+class Hanviet
+  HANZIDB = QtDict.load("_system/hanzidb.txt")
 
-TRADSIM = Engine::BaseDict.tradsim
-BINH_AM = Engine::BaseDict.binh_am
+  TRADSIM = Chivi::Library.tradsim
+  BINH_AM = Chivi::Library.binh_am
 
-def should_keep_hanviet?(input : String)
-  return true if CRUCIAL.includes?(input)
-  return true if HANZIDB.includes?(input)
+  getter input : QtDict = QtDict.load("_autogen/hanviet.txt", false)
 
-  input.split("").each do |char|
-    return false if TRADSIM.has_key?(char)
+  def merge!(file : String, mode = :old_first)
+    QtDict.load(file).each do |key, vals|
+      next if key =~ /\P{Han}/
+      @input.upsert(key, vals, mode)
+    end
   end
 
-  true
-end
+  def gen_from_trad!
+    TRADSIM.each do |term|
+      next if term.key.size > 0
+      next unless vals = @input[term.key]?
 
-def merge(dict : Engine::BaseDict, file : String, mode = :old_first)
-  input = Clavis.load(file)
+      term.vals.each do |simp|
+        next if @input.has_key?(simp)
+        @input.upsert(simp, vals)
+      end
+    end
+  end
 
-  input.each do |key, vals|
-    next if key =~ /\P{Han}/
+  def save!
+    output = Chivi::Library.hanviet
 
-    dict.upsert(key) do |node|
-      if node.removed?
-        node.vals = vals
-      else
-        case mode
-        when :keep_old
-          # do nothing
-        when :keep_new
-          node.vals = vals
-        when :old_first
-          node.vals.concat(vals).uniq!
-        when :new_first
-          node.vals = vals.concat(node.vals).uniq!
-        when :first_if_exists
-          if node.vals.includes?(vals.first)
-            node.vals = vals.concat(node.vals).uniq!
-          else
-            node.vals.concat(vals).uniq!
-          end
-        end
+    input = @input.to_a.sort_by(&.[0].size)
+    input.each do |(key, vals)|
+      next if key.size > 4
+      next unless first = vals.first?
+
+      if key.size > 1
+        convert = QtUtil.convert(output, key, " ")
+        next if first == convert
+        pp [key, vals, convert]
       end
 
-      node.vals.concat(vals).uniq!
+      term = Chivi::VpTerm.new(key, vals.uniq.first(3)).tap(&.plock = 3)
+      output.upsert(term)
     end
-  end
 
-  dict
+    output.save!(mode: :best)
+  end
 end
 
-def transform_from_trad!(dict : Engine::BaseDict)
-  HANZIDB.each do |key|
-    next unless trad = TRADSIM.find(key)
-    next unless item = dict.find(key)
+task = Hanviet.new
 
-    dict.upsert(trad.vals.first) do |node|
-      break unless node.vals.empty?
-      node.vals = item.vals
-      puts item
-    end
-  end
+task.merge!("localqt/hanviet.txt")
+task.merge!("hanviet/lacviet-chars.txt")
+task.merge!("hanviet/lacviet-words.txt")
 
-  dict
-end
+task.merge!("hanviet/trichdan-chars.txt")
+task.merge!("hanviet/trichdan-words.txt")
 
-def extract_conflicts(dict)
-  conflict = Clavis.load("hanviet/conflict.txt", false)
-  resolved = Clavis.load("hanviet/verified-chars.txt", true)
-  # lacviet = Clavis.load("localqt/hanviet.txt", true)
+task.merge!("hanviet/verified-chars.txt", mode: :keep_new)
+task.merge!("hanviet/verified-words.txt", mode: :keep_new)
 
-  dict.each do |node|
-    next if node.vals.size < 2
-    next unless CRUCIAL.includes?(node.key)
-    next if resolved.has_key?(node.key)
-    conflict.upsert(node.key, node.vals)
-  end
+task.merge!("hanviet/correct-chars.txt", mode: :keep_new)
 
-  conflict.save!
-end
-
-def save_dict!(dict)
-  CRUCIAL.each do |key|
-    next if dict.has_key?(key)
-    puts "#{key}="
-  end
-
-  dict.save!
-end
-
-hanviet = Engine::BaseDict.load("core/hanviet", mode: 0)
-
-hanviet = merge(hanviet, "localqt/hanviet.txt", mode: :old_first)
-hanviet = merge(hanviet, "hanviet/checked-chars.txt", mode: :old_first)
-hanviet = merge(hanviet, "hanviet/lacviet-chars.txt", mode: :old_first)
-hanviet = merge(hanviet, "hanviet/trichdan-chars.txt", mode: :old_first)
-hanviet = merge(hanviet, "hanviet/verified-chars.txt", mode: :keep_new)
-
-hanviet = merge(hanviet, "hanviet/lacviet-words.txt", mode: :old_first)
-hanviet = merge(hanviet, "hanviet/trichdan-words.txt", mode: :old_first)
-hanviet = merge(hanviet, "hanviet/verified-words.txt", mode: :keep_new)
-
-extract_conflicts(hanviet)
-hanviet.save!
+task.gen_from_trad!
+task.save!
