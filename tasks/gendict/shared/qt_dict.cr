@@ -1,4 +1,4 @@
-class Clavis
+class QtDict
   DIR = "_db/cvdict/_inits"
 
   def self.load(fname : String, preload = true)
@@ -6,23 +6,17 @@ class Clavis
   end
 
   def self.vals(input : String, seps = /[\/\|]/)
-    input
-      .split(seps)
-      .map(&.strip)
-      .reject(&.empty?)
-      .reject(&.includes?(":"))
   end
 
   SEP_0 = "="
   SEP_1 = "/"
 
   getter data = Hash(String, Array(String)).new
-  forward_missing_to @data
 
   def initialize(@file : String)
   end
 
-  def load!(file = @file, mode = :keep_new)
+  def load!(file : String = @file, mode : Symbol = :keep_new)
     label = File.basename(file)
     lines = 0
 
@@ -31,17 +25,17 @@ class Clavis
         line = line.strip
         next if line.empty?
 
-        key, value = line.split(SEP_0)
-        upsert(key, Clavis.vals(value), mode)
+        key, vals = parse_line(line)
+        upsert(key, vals, mode)
 
         lines += 1
       rescue err
-        puts "[<#{label}> error parsing ##{lines} `#{line}`: #{err}".colorize.red
+        puts "[ERROR loading <#{label}>: #{err}, line: `#{line}`]".colorize.red
       end
     end
 
     elapse = elapse.total_milliseconds.round.to_i
-    puts "[CLAVIS: #{file} loaded: #{lines} lines, time: #{elapse}ms]".colorize.green
+    puts "[QT_DICT: #{label} loaded: #{lines} lines, time: #{elapse}ms]".colorize.green
   end
 
   def save!(file : String = @file)
@@ -51,10 +45,20 @@ class Clavis
       end
     end
 
-    puts "[CLAVIS: #{file}] saved, entries: #{size}]".colorize(:yellow)
+    puts "[QT_DICT: #{file}] saved, entries: #{@data.size}]".colorize(:yellow)
   end
 
-  def upsert(key : String, new_vals : Array(String), mode = :keep_new)
+  def parse_line(line : String)
+    key, value = line.split(SEP_0, 2)
+    vals = value
+      .split(/[\/|]/)
+      .map(&.strip)
+      .reject(&.empty?)
+
+    {key, vals}
+  end
+
+  def upsert(key : String, new_vals : Array(String), mode : Symbol = :keep_new)
     unless old_vals = @data[key]?
       old_vals = [] of String
     end

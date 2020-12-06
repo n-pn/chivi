@@ -1,7 +1,7 @@
 require "./vp_term"
 
 class Chivi::VpTrie
-  alias Trie = Hash(String, VpTrie)
+  alias Trie = Hash(Char, VpTrie)
 
   property item : VpTerm?
   getter trie : Trie
@@ -21,11 +21,11 @@ class Chivi::VpTrie
     node
   end
 
-  def scan(chars : Array(String), caret : Int32 = 0) : Nil
+  def scan(chars : Array(Char), caret : Int32 = 0) : Nil
     node = self
 
     caret.upto(chars.size - 1) do |i|
-      char = chars.unsafe_fecth(i)
+      char = chars.unsafe_fetch(i)
       break unless node = node.trie[char]?
       node.item.try { |x| yield x }
     end

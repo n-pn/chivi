@@ -1,5 +1,5 @@
-require "./utils/common"
-require "./utils/clavis"
+require "./shared/qt_util"
+require "./shared/qt_dict"
 
 def cleanup(input : String)
   input.split("\\t")
@@ -13,33 +13,33 @@ def cleanup(input : String)
     .join("; ")
 end
 
-out_dict = Engine::BaseDict.load("trungviet", mode: 0)
-out_dict.load!(Utils.inp_path("initial/lacviet-mtd.txt"), legacy: true)
+inp_dict = QtDict.load("_system/lacviet-mtd.txt")
+hv_chars = QtDict.load("hanviet/lacviet-chars.txt", false)
+hv_words = QtDict.load("hanviet/lacviet-words.txt", false)
+out_dict = Chivi::VpDict.new(Chivi::Library.file_path("trungviet"))
 
-hv_chars = Clavis.load("hanviet/lacviet-chars.txt", false)
-hv_words = Clavis.load("hanviet/lacviet-words.txt", false)
+inp_dict.data.each do |key, vals|
+  QtUtil.lexicon.add(key) if QtUtil.has_hanzi?(key)
 
-ondicts = Utils.ondicts_words
+  vals = vals.first.split("\\n").map { |x| cleanup(x) }
+  out_dict.upsert(Chivi::VpTerm.new(key, vals))
 
-out_dict.each do |item|
-  ondicts.upsert(item.key) if Utils.has_hanzi?(item.key)
-
-  item.vals = item.vals.first.split("\\n").map { |x| cleanup(x) }
-  item.vals.each do |val|
+  vals.each do |val|
     if match = val.match(/{(.+?)}/)
       val = match[1].downcase
 
-      if item.key.size > 1
-        hv_words.upsert(item.key, [val])
+      if key.size > 1
+        hv_words.upsert(key, [val])
       else
         vals = val.split(/[,;]\s*/)
-        hv_chars.upsert(item.key, vals)
+        hv_chars.upsert(key, vals)
       end
     end
   end
+rescue
+  pp [key, vals]
 end
 
-out_dict.save!
 hv_chars.save!
 hv_words.save!
-ondicts.save!
+out_dict.save!

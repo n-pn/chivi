@@ -37,12 +37,17 @@ class Chivi::VpDict
     @mtime = VpTerm.mtime(File.info(file).modification_time) if @mtime == 0
   end
 
-  def save!(file = @file) : Nil
+  def save!(file = @file, mode : Symbol = :full) : Nil
     label = File.basename(file)
 
-    File.open(file, "a") do |io|
-      @items.each do |item|
-        item.println(io, @dlock)
+    File.open(file, "w") do |io|
+      case mode
+      when :full
+        @items.each(&.println(io, @dlock))
+      when :best
+        @index.each(&.println(io, @dlock))
+      else
+        raise "Unsupported write mode <#{mode}>!"
       end
     end
 
@@ -54,13 +59,14 @@ class Chivi::VpDict
     @items << new_item
     @mtime = new_item.mtime if @mtime < new_item.mtime
 
-    node = @index.find!(key) # find existing node or force creating new ones
+    # find existing node or force creating new one
+    node = @index.find!(new_item.key)
 
     if item = node.item
       {item.merge!(new_item), item}
     else
-      # treat non existing entries as deleted one
-      node.item = item = VpTerm.new(new_item.key, [""]).tap(&.plock = @dlock)
+      node.item = item = VpTerm.new(new_item.key, [] of String)
+      item.plock = @dlock
       @size += 1
 
       {item.merge!(new_item), nil}

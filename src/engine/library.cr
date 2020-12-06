@@ -28,10 +28,10 @@ module Chivi::Library
   class_getter various : VpDict { load_dict("various", 1) }
   class_getter suggest : VpDict { load_dict("suggest", 0) }
 
-  DICTS = {} of String => LEXICON
+  DICTS = {} of String => VpDict
 
   def load_dict(dname : String, plock = 1)
-    DICTS[dname] ||= VpDict.new(file_path(dname), plock)
+    DICTS[dname] ||= VpDict.new(file_path(dname), plock).tap(&.load!)
   end
 
   def file_path(dname : String, ext : String = "tsv")
@@ -63,5 +63,15 @@ module Chivi::Library
   end
 
   def lookup(dname : String, key : String)
+    # TODO!
+    output = {} of String => Array(String)
+
+    load_dict(dname).scan(key.chars) do |term|
+      output[term.key] = term.vals
+    end
+
+    output
   end
 end
+
+puts Chivi::Library.lookup("trungviet", "覆盖面")

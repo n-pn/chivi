@@ -14,7 +14,8 @@ class Chivi::VpTerm
     attr = cols[2]? || ""
 
     new(key, vals, attr).tap do |this|
-      if this.mtime = cols[3]?.try(&.to_i?)
+      if mtime = cols[3]?.try(&.to_i?)
+        this.mtime = mtime
         this.uname = cols[4]? || "<init>"
         this.plock = cols[5]?.try(&.to_i?) || dlock
       end
