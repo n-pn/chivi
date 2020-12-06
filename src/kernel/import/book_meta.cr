@@ -2,7 +2,7 @@ require "json"
 require "file_utils"
 require "../mapper/*"
 
-require "../../shared/text_utils"
+require "../../shared/seed_utils"
 
 module Chivi::BookMeta
   class Info
@@ -220,7 +220,7 @@ module Chivi::BookMeta
   end
 
   def filter_by_title(title : String, prevs : TokenMap::Index? = nil)
-    query = TextUtils.tokenize(title)
+    query = SeedUtils.tokenize(title)
 
     output =
       if title =~ /\p{Han}/
@@ -233,7 +233,7 @@ module Chivi::BookMeta
   end
 
   def filter_by_author(author : String, prevs : TokenMap::Index? = nil)
-    query = TextUtils.tokenize(author)
+    query = SeedUtils.tokenize(author)
 
     output =
       if author =~ /\p{Han}/
@@ -246,7 +246,7 @@ module Chivi::BookMeta
   end
 
   def filter_by_genre(genre : String, prevs : TokenMap::Index? = nil)
-    query = TextUtils.slugify(genre)
+    query = SeedUtils.slugify(genre)
     output = genres_vi_ts.search([query])
     merge_filters(output, prevs)
   end

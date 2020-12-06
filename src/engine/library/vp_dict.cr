@@ -1,7 +1,7 @@
 require "colorize"
-require "./lexicon/*"
+require "./vp_dict/*"
 
-class Chivi::Lexicon
+class Chivi::VpDict
   getter file : String # default read/save file
   getter size = 0      # dict size by unique keys
 
@@ -9,7 +9,7 @@ class Chivi::Lexicon
   getter mtime = 0 # dict's modification time
 
   getter index = VpTrie.new   # fast trie lookup
-  getter items = [] of VpItem # all items loaded from files or memory
+  getter items = [] of VpTerm # all items loaded from files or memory
 
   def initialize(@file : String, @dlock : Int32 = 1)
   end
@@ -23,7 +23,7 @@ class Chivi::Lexicon
         line = line.strip
         next if line.blank?
 
-        upsert(VpItem.parse(line, @dlock))
+        upsert(VpTerm.parse(line, @dlock))
         lines += 1
       rescue err
         puts "[ERROR parsing <#{lines}> `#{label}`>: #{err}]".colorize.red
@@ -34,7 +34,7 @@ class Chivi::Lexicon
     puts "[DICT <#{label}> loaded: #{lines} lines, elapse: #{elapse}ms]".colorize.green
 
     # set mtime from file stats
-    @mtime = VpItem.mtime(File.info(file).modification_time) if @mtime == 0
+    @mtime = VpTerm.mtime(File.info(file).modification_time) if @mtime == 0
   end
 
   def save!(file = @file) : Nil
@@ -50,34 +50,30 @@ class Chivi::Lexicon
   end
 
   # return old entry if exists
-  def upsert(new_item : VpItem) : VpItem?
+  def upsert(new_item : VpTerm) : Tuple(Bool, VpTerm?)
     @items << new_item
     @mtime = new_item.mtime if @mtime < new_item.mtime
 
     node = @index.find!(key) # find existing node or force creating new ones
 
-    if old_item = node.item
-      old_item.merge!(new_item)
+    if item = node.item
+      {item.merge!(new_item), item}
     else
-      item = VpItem.new(new_item.key, [""]) # treat non existing entries as deleted one
-
-      item.plock = @dlock
-      item.merge!(new_item) # only merge if new_item has better plock
-
-      node.item = item
+      # treat non existing entries as deleted one
+      node.item = item = VpTerm.new(new_item.key, [""]).tap(&.plock = @dlock)
       @size += 1
-    end
 
-    old_item
+      {item.merge!(new_item), nil}
+    end
   end
 
   # save to disk, return old entry if exists
-  def upsert!(new_item : VpItem) : VpItem?
+  def upsert!(new_item : VpTerm) : Tuple(Bool, VpTerm?)
     File.open(@file, "a") { |io| item.println(io, @dlock) }
     upsert(item)
   end
 
-  def find(key : String) : VpItem?
+  def find(key : String) : VpTerm?
     @index.find(key).try(&.item)
   end
 

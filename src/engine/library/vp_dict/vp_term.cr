@@ -1,5 +1,5 @@
-class Chivi::VpItem
-  DELIM = "ǀ"
+class Chivi::VpTerm
+  SEP_0 = "ǀ"
   EPOCH = Time.utc(2020, 1, 1)
 
   def self.mtime(rtime = Time.utc)
@@ -10,7 +10,7 @@ class Chivi::VpItem
     cols = line.split('\t')
 
     key = cols[0]
-    vals = (cols[1]? || "").split(DELIM)
+    vals = (cols[1]? || "").split(SEP_0)
     attr = cols[2]? || ""
 
     new(key, vals, attr).tap do |this|
@@ -48,11 +48,11 @@ class Chivi::VpItem
     EPOCH + @mtime.minutes
   end
 
-  def merge!(other : self) : Nil
-    return if @plock > other.plock
+  def merge!(other : self) : Bool
+    return false if @plock > other.plock
 
     if @plock == other.plock
-      return if @mtime > other.mtime
+      return false if @mtime > other.mtime
     else
       @plock = other.plock
     end
@@ -62,6 +62,8 @@ class Chivi::VpItem
 
     @mtime = other.mtime
     @uname = other.uname
+
+    true
   end
 
   def clear! : Void
@@ -73,7 +75,7 @@ class Chivi::VpItem
   def println(io : IO, dlock = 1) : Nil
     return if @vals.empty?
 
-    io << key << '\t' << @vals.join(DELIM)
+    io << key << '\t' << @vals.join(SEP_0)
 
     if @mtime > 0
       io << '\t' << @attr << '\t' << @mtime << '\t' << @uname

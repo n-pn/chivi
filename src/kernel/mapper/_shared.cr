@@ -1,5 +1,4 @@
 require "colorize"
-require "../../shared/time_utils"
 
 module Chivi::FlatMap(T)
   FLUSH_MAX = 10
@@ -27,7 +26,7 @@ module Chivi::FlatMap(T)
   end
 
   def get_rtime(key : String) : Time
-    TimeUtils.rtime(get_mtime(key))
+    Time.utc(get_mtime(key))
   end
 
   abstract def value_decode(input : String) : T
@@ -39,9 +38,9 @@ module Chivi::FlatMap(T)
     io << '\t' << mtime if mtime > 0
   end
 
-  abstract def upsert(key : String, value : T, mtime = TimeUtils.mtime) : Bool
+  abstract def upsert(key : String, value : T, mtime = Time.utc.to_unix) : Bool
 
-  def upsert!(key : String, value : T, mtime = TimeUtils.mtime) : Bool
+  def upsert!(key : String, value : T, mtime = Time.utc.to_unix) : Bool
     return false unless upsert(key, value, mtime)
 
     @buffer << key

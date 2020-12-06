@@ -9,29 +9,29 @@ module Chivi::Library
   FileUtils.mkdir_p(DIR)
 
   alias Lookups = NamedTuple(
-    trungviet: Lexicon,
-    cc_cedict: Lexicon,
-    trich_dan: Lexicon)
+    trungviet: VpDict,
+    cc_cedict: VpDict,
+    trich_dan: VpDict)
   class_getter lookups : Lookups {
     {
-      trungviet: Lexicon.new(file_path("trungviet")),
-      cc_cedict: Lexicon.new(file_path("cc_cedict")),
-      trich_dan: Lexicon.new(file_path("trich_dan")),
+      trungviet: VpDict.new(file_path("trungviet")),
+      cc_cedict: VpDict.new(file_path("cc_cedict")),
+      trich_dan: VpDict.new(file_path("trich_dan")),
     }
   }
 
-  class_getter tradsim : Lexicon { load_dict("tradsim", 3) }
-  class_getter binh_am : Lexicon { load_dict("binh_am", 3) }
-  class_getter hanviet : Lexicon { load_dict("hanviet", 3) }
+  class_getter tradsim : VpDict { load_dict("tradsim", 3) }
+  class_getter binh_am : VpDict { load_dict("binh_am", 3) }
+  class_getter hanviet : VpDict { load_dict("hanviet", 3) }
 
-  class_getter regular : Lexicon { load_dict("regular", 2) }
-  class_getter various : Lexicon { load_dict("various", 1) }
-  class_getter suggest : Lexicon { load_dict("suggest", 0) }
+  class_getter regular : VpDict { load_dict("regular", 2) }
+  class_getter various : VpDict { load_dict("various", 1) }
+  class_getter suggest : VpDict { load_dict("suggest", 0) }
 
   DICTS = {} of String => LEXICON
 
   def load_dict(dname : String, plock = 1)
-    DICTS[dname] ||= Lexicon.new(file_path(dname), plock)
+    DICTS[dname] ||= VpDict.new(file_path(dname), plock)
   end
 
   def file_path(dname : String, ext : String = "tsv")
@@ -47,16 +47,19 @@ module Chivi::Library
     end
   end
 
-  class_getter history : History { History.new(DIR) }
+  class_getter dict_logs : VpLogs { VpLogs.new(DIR) }
 
-  def upsert(dname : String, key : String, vals : Array(String), attr = "", uname = 0, plock = 1, mtime = 0, ctx = "")
+  def upsert(dname : String, key : String, vals : Array(String), attr = "", uname = 0, plock = 1, mtime = 0, context = "") : Bool
+    mtime = VpTerm.mtime if mtime <= 0
+    new_term = VpTerm.new(key, vals, attr, mtime, uname, plock)
+
     dict = load_dict(dname)
+    prevail, old_term = dict.upsert!(new_term)
 
-    mtime = Lexicon::Item.mtime if mtime <= 0
-    new_item = Lexicon::Item.new(key, vals, attr, mtime, uname, plock)
-    old_item = dict.upsert!(new_item)
+    log_entry = VpLogs::Entry.new(dname, new_term, old_term, prevail, context)
+    dict_logs.insert!(file_path(dname, "tab"), log_entry)
 
-    history.record!(file_path(dname, "tab"), new_item, old_item, ctx: ctx)
+    prevail
   end
 
   def lookup(dname : String, key : String)

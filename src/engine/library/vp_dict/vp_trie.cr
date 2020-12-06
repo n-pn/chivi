@@ -1,9 +1,9 @@
-require "./vp_item"
+require "./vp_term"
 
 class Chivi::VpTrie
   alias Trie = Hash(String, VpTrie)
 
-  property item : VpItem?
+  property item : VpTerm?
   getter trie : Trie
 
   def initialize(@item = nil, @trie = Trie.new)
