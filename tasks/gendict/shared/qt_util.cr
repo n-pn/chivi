@@ -8,8 +8,12 @@ class ValueSet
   getter data = Set(String).new
   forward_missing_to @data
 
-  def initialize(@file)
-    load!(@file) if File.exists?(@file)
+  def self.load(path : String, preload = true)
+    new("_db/cvdict/_inits/#{path}", preload)
+  end
+
+  def initialize(@file, preload = false)
+    load!(@file) if preload && File.exists?(@file)
   end
 
   def load!(file : String = @file)
@@ -34,6 +38,14 @@ class ValueSet
     return unless @data.delete(key)
     File.open(@file, "a") { |io| io.puts "#{key}\tF" }
   end
+
+  def save!
+    File.open(@file, "w") do |io|
+      @data.each do |key|
+        io.puts("#{key}\tF")
+      end
+    end
+  end
 end
 
 module QtUtil
@@ -50,7 +62,7 @@ module QtUtil
     File.join(OUT_DIR, file)
   end
 
-  class_getter lexicon : ValueSet { ValueSet.new(inp_path(".result/lexicon.tsv")) }
+  class_getter lexicon : ValueSet { ValueSet.load(".result/lexicon.tsv") }
 
   def has_hanzi?(input : String)
     input =~ /\p{Han}/

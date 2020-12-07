@@ -29,7 +29,7 @@ class Hanviet
   end
 
   def save!
-    output = Chivi::Library.hanviet
+    output = Chivi::Library.load_dict("hanviet", dlock: 3, preload: false)
 
     input = @input.to_a.sort_by(&.[0].size)
     input.each do |(key, vals)|
@@ -42,11 +42,10 @@ class Hanviet
         pp [key, vals, convert]
       end
 
-      term = Chivi::VpTerm.new(key, vals.uniq.first(3)).tap(&.plock = 3)
-      output.upsert(term)
+      output.upsert(key, vals.uniq.first(3))
     end
 
-    output.save!(mode: :best)
+    output.save!(mode: :full)
   end
 end
 

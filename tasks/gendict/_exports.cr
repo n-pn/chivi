@@ -1,20 +1,17 @@
-require "./utils/common"
-require "./utils/clavis"
-
-require "../../src/engine"
-require "../../src/kernel/mapper/old_value_set"
+require "./shared/*"
+require "../../src/engine/library"
 
 puts "\n[Load deps]".colorize.cyan.bold
 
-CHECKED = ValueSet.read!(Utils.inp_path("autogen/checked.txt"))
-ONDICTS = Utils.ondicts_words
+LEXICON = ValueSet.load(".result/lexicon.txt", true)
+CHECKED = ValueSet.load(".result/checked.txt", true)
 
-REJECT_STARTS = File.read_lines("cli/dicts/cfgs/reject-starts.txt")
-REJECT_ENDS   = File.read_lines("cli/dicts/cfgs/reject-ends.txt")
+REJECT_STARTS = File.read_lines("#{__DIR__}/consts/reject-starts.txt")
+REJECT_ENDS   = File.read_lines("#{__DIR__}/consts/reject-ends.txt")
 
 def should_keep?(key : String)
   return true if key.size == 1
-  return true if ONDICTS.includes?(key)
+  return true if LEXICON.includes?(key)
   return true if CHECKED.includes?(key)
   return true if key.ends_with?("目的")
 
@@ -28,12 +25,12 @@ def should_skip?(key : String)
   key !~ /\p{Han}/
 end
 
-puts "\n[Export generic]".colorize.cyan.bold
+puts "\n[Export regular]".colorize.cyan.bold
 
-inp_generic = Clavis.load("autogen/output/generic.txt", true)
-out_generic = Engine::BaseDict.load("core/generic", mode: 0)
+inp_regular = QtDict.load(".result/regular.txt", true)
+out_regular = Chivi::Library.regular
 
-inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
+inp_regular.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if should_skip?(key)
 
@@ -42,24 +39,24 @@ inp_generic.to_a.sort_by(&.[0].size).each do |key, vals|
     end
   end
 
-  out_generic.upsert(key, vals)
+  out_regular.upsert(key, vals)
 end
 
 puts "- load hanviet".colorize.cyan.bold
 
 Engine::Library.hanviet.each do |node|
   next if node.key.size > 1
-  out_generic.upsert(node.key, freeze: false) do |item|
+  out_regular.upsert(node.key, freeze: false) do |item|
     item.vals = node.vals if item.vals.empty?
   end
 end
 
-out_generic.save!
+out_regular.save!
 
 puts "\n[Export suggest]".colorize.cyan.bold
 
-inp_suggest = Clavis.load("autogen/output/suggest.txt", true)
-out_suggest = Engine::BaseDict.load("core/suggest", 0)
+inp_suggest = QtDict.load(".result/suggest.txt", true)
+out_suggest = Chivi::Library.suggest
 
 inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
@@ -75,8 +72,8 @@ out_suggest.save!
 
 puts "\n[Export combine]".colorize.cyan.bold
 
-inp_combine = Clavis.load("autogen/output/combine.txt", true)
-out_combine = Engine::BaseDict.load("uniq/_tonghop", 0)
+inp_combine = QtDict.load(".result/combine.txt", true)
+out_combine = Chivi::Library.load("uniq/_tonghop", 0)
 
 inp_combine.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
@@ -89,8 +86,8 @@ out_combine.save!
 
 puts "\n[Export recycle]".colorize.cyan.bold
 
-inp_recycle = Clavis.load("autogen/output/recycle.txt", true)
-out_recycle = Engine::BaseDict.load("salvation", 0)
+inp_recycle = QtDict.load(".result/recycle.txt", true)
+out_recycle = Chivi::Library.load("salvation", 0)
 
 inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)

@@ -118,14 +118,14 @@ class CeInput
       input[entry.simp] << "[#{entry.pinyin}] #{entry.defins}"
     end
 
-    output = Chivi::VpDict.new(Chivi::Library.file_path("cc_cedict"))
+    output = Chivi::Library.load_dict("cc_cedict", dlock: 4, preload: false)
 
     input.each do |key, vals|
       QtUtil.lexicon.add(key)
-      output.upsert(Chivi::VpTerm.new(key, vals))
+      output.upsert(key, vals)
     end
 
-    output.save!
+    output.save!(mode: :full)
   end
 
   HANZIDB = QtDict.load("_system/hanzidb.txt")
@@ -157,17 +157,18 @@ class CeInput
       end
     end
 
-    output = Chivi::VpDict.new(Chivi::Library.file_path("tradsim"))
+    output = Chivi::Library.load_dict("tradsim", dlock: 3, preload: false)
 
     counter.each do |trad, counts|
+      next if HANZIDB.has_key?(trad) || counts.has_key?(trad)
+
       best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
-      next if best.includes?(trad) || HANZIDB.has_key?(trad)
-      output.upsert(Chivi::VpTerm.new(trad, best)) unless trad == best.first
+      output.upsert(trad, best)
     end
 
     puts "- trad chars count: #{output.size.colorize(:green)}"
 
-    output.upsert(Chivi::VpTerm.new("扶馀", ["扶余"]))
+    output.upsert("扶馀", ["扶余"])
 
     words = tswords.data.to_a.sort_by(&.[0].size)
     words.each do |key, vals|
@@ -177,10 +178,10 @@ class CeInput
       convert = QtUtil.convert(output, key)
       next if simp.first == convert
 
-      output.upsert(Chivi::VpTerm.new(key, simp))
+      output.upsert(key, simp)
     end
 
-    output.save!(mode: :best)
+    output.save!(mode: :full)
   end
 
   def export_pinyins!
@@ -206,35 +207,35 @@ class CeInput
       end
     end
 
-    output = Chivi::VpDict.new(Chivi::Library.file_path("binh_am"))
+    output = Chivi::Library.load_dict("binh_am", dlock: 3, preload: false)
 
     HANZIDB.each do |key, vals|
       next if vals.empty? || vals.first.empty?
-      output.upsert(Chivi::VpTerm.new(key, vals))
+      output.upsert(key, vals)
     end
 
     counter.each do |char, counts|
       best = counts.to_a.sort_by { |pinyin, count| -count }.map(&.first)
-      output.upsert(Chivi::VpTerm.new(char, best.first(4)))
+      output.upsert(char, best.first(4))
     end
 
     extras = QtDict.load("_system/extra-pinyins.txt")
     extras.each do |key, vals|
-      output.upsert(Chivi::VpTerm.new(key, vals))
+      output.upsert(key, vals)
     end
 
     words = pywords.to_a.sort_by(&.[0].size)
     words.each do |key, vals|
-      next if key.size > 3
+      next if key.size > 4
       vals = vals.uniq
 
       convert = QtUtil.convert(output, key, " ")
       next if vals.first == convert
 
-      output.upsert(Chivi::VpTerm.new(key, vals))
+      output.upsert(key, vals)
     end
 
-    output.save!(mode: :best)
+    output.save!(mode: :full)
   end
 end
 

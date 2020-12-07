@@ -21,7 +21,7 @@ class QtDict
     label = File.basename(file)
     lines = 0
 
-    elapse = Time.measure do
+    tspan = Time.measure do
       File.each_line(file) do |line|
         line = line.strip
         next if line.empty?
@@ -35,18 +35,22 @@ class QtDict
       end
     end
 
-    elapse = elapse.total_milliseconds.round.to_i
-    puts "<QT_DICT> [#{label}] loaded: #{lines} lines, time: #{elapse}ms".colorize.green
+    tspan = tspan.total_milliseconds.round.to_i
+    puts "<QT_DICT> [#{label}] loaded: #{lines} lines, time: #{tspan}ms".colorize.green
   end
 
   def save!(file : String = @file)
-    File.open(file, "w") do |io|
-      @data.each do |key, vals|
-        io << key << SEP_0 << vals.uniq.join(SEP_1) << "\n"
+    tspan = Time.measure do
+      File.open(file, "w") do |io|
+        @data.each do |key, vals|
+          io << key << SEP_0 << vals.uniq.join(SEP_1) << "\n"
+        end
       end
     end
 
-    puts "<QT_DICT> [#{file}] saved, entries: #{@data.size}".colorize(:yellow)
+    label = File.basename(file)
+    tspan = tspan.total_milliseconds.round.to_i
+    puts "<QT_DICT> [#{label}] saved: #{@data.size} entries, time: #{tspan}ms".colorize.yellow
   end
 
   def parse_line(line : String)

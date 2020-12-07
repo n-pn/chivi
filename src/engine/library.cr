@@ -8,30 +8,36 @@ module Chivi::Library
   DIR = "_db/cvdict/active"
   FileUtils.mkdir_p(DIR)
 
-  alias Lookups = NamedTuple(
-    trungviet: VpDict,
-    cc_cedict: VpDict,
-    trich_dan: VpDict)
-  class_getter lookups : Lookups {
-    {
-      trungviet: VpDict.new(file_path("trungviet")),
-      cc_cedict: VpDict.new(file_path("cc_cedict")),
-      trich_dan: VpDict.new(file_path("trich_dan")),
-    }
-  }
+  class_getter trungviet : VpDict { load_dict("trungviet", dtype: 1, dlock: 4) }
+  class_getter cc_cedict : VpDict { load_dict("cc_cedict", dtype: 1, dlock: 4) }
 
-  class_getter tradsim : VpDict { load_dict("tradsim", 3) }
-  class_getter binh_am : VpDict { load_dict("binh_am", 3) }
-  class_getter hanviet : VpDict { load_dict("hanviet", 3) }
+  alias Lookups = NamedTuple(trungviet: VpDict, cc_cedict: VpDict)
+  class_getter lookups : Lookups { {trungviet: trungviet, cc_cedict: cc_cedict} }
 
-  class_getter regular : VpDict { load_dict("regular", 2) }
-  class_getter various : VpDict { load_dict("various", 1) }
-  class_getter suggest : VpDict { load_dict("suggest", 0) }
+  class_getter tradsim : VpDict { find_dict("tradsim") }
+  class_getter binh_am : VpDict { find_dict("binh_am") }
+  class_getter hanviet : VpDict { find_dict("hanviet") }
+
+  class_getter regular : VpDict { find_dict("regular") }
+  class_getter various : VpDict { find_dict("various") }
+  class_getter suggest : VpDict { find_dict("suggest") }
 
   DICTS = {} of String => VpDict
 
-  def load_dict(dname : String, plock = 1)
-    DICTS[dname] ||= VpDict.new(file_path(dname), plock).tap(&.load!)
+  def find_dict(dname : String)
+    DICTS[dname] ||=
+      case dname
+      when "tradsim", "binh_am", "hanviet"
+        load_dict(dname, dtype: 1, dlock: 3, preload: true)
+      when "regular", "suggest", "various"
+        load_dict(dname, dtype: 2, dlock: 2, preload: true)
+      else
+        load_dict(dname, dtype: 3, dlock: 1, preload: true)
+      end
+  end
+
+  def load_dict(dname : String, dtype = 1, dlock = 0, preload = true)
+    VpDict.new(file_path(dname), dtype: dtype, dlock: dlock, preload: preload)
   end
 
   def file_path(dname : String, ext : String = "tsv")

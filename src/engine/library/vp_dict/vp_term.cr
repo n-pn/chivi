@@ -2,18 +2,14 @@ class Chivi::VpTerm
   SEP_0 = "ǀ"
   EPOCH = Time.utc(2020, 1, 1)
 
-  def self.mtime(rtime = Time.utc)
-    (rtime - EPOCH).total_minutes.round.to_i
-  end
-
-  def self.parse(line : String, dlock : Int32 = 1)
+  def self.parse(line : String, dtype : Int32 = 0, dlock : Int32 = 1)
     cols = line.split('\t')
 
     key = cols[0]
     vals = (cols[1]? || "").split(SEP_0)
     attr = cols[2]? || ""
 
-    new(key, vals, attr).tap do |this|
+    new(key, vals, attr, dtype: dtype).tap do |this|
       if mtime = cols[3]?.try(&.to_i?)
         this.mtime = mtime
         this.uname = cols[4]? || "<init>"
@@ -22,15 +18,22 @@ class Chivi::VpTerm
     end
   end
 
+  def self.mtime(rtime = Time.utc)
+    (rtime - EPOCH).total_minutes.round.to_i
+  end
+
   getter key : String           # primary key
   property vals : Array(String) # primary values
   property attr : String = ""   # for extra attributes
 
   property mtime : Int32 = 0   # modification time
   property uname : String = "" # username
-  property plock : Int32 = 1   # permission lock
+  property plock : Int32       # permission lock
 
-  def initialize(@key, @vals, @attr = "")
+  getter dtype : Int32
+  getter worth : Float64 { calc_worth }
+
+  def initialize(@key, @vals, @attr = "", @dtype = 2, @plock = 1)
   end
 
   def empty?
@@ -49,6 +52,12 @@ class Chivi::VpTerm
     EPOCH + @mtime.minutes
   end
 
+  def clear! : Void
+    @vals.empty
+    @attr = ""
+    @mtime = 0
+  end
+
   def merge!(other : self) : Bool
     return false if @plock > other.plock
 
@@ -64,19 +73,15 @@ class Chivi::VpTerm
     @mtime = other.mtime
     @uname = other.uname
 
-    true
-  end
+    @worth = nil # old worth is now worthless :)
 
-  def clear! : Void
-    @vals.empty
-    @attr = ""
-    @mtime = 0
+    true
   end
 
   def println(io : IO, dlock = 1) : Nil
     return if @vals.empty?
 
-    io << key << '\t' << @vals.join(SEP_0)
+    io << @key << '\t' << @vals.join(SEP_0)
 
     if @mtime > 0
       io << '\t' << @attr << '\t' << @mtime << '\t' << @uname
@@ -86,5 +91,19 @@ class Chivi::VpTerm
     end
 
     io << '\n'
+  end
+
+  private def calc_worth
+    size = @key.size
+    cost = @dtype / 5 + 1
+
+    case attr[0]?
+    when '🅷'
+      cost += 0.25
+    when '🅻'
+      cost -= 0.25
+    end
+
+    size + size ** cost + cost ** size
   end
 end
