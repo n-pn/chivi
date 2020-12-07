@@ -35,7 +35,7 @@ class Chivi::CvEntry
     @key.to_f?
   end
 
-  def cap_mode(prev_mode : In32 = 0) : Int32
+  def cap_mode(prev_mode : Int32 = 0) : Int32
     case @val[-1]?
     when '“', '‘', '[', '{',
          ':', '!', '?', '.'
@@ -49,7 +49,7 @@ class Chivi::CvEntry
     end
   end
 
-  def space_before?(prev : Self)
+  def space_before?(prev : self)
     return false if @val.blank? || prev.val.blank?
 
     # handle .jpg case

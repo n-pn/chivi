@@ -13,12 +13,12 @@ class Chivi::CvToken
     @costs = [0.0]
 
     @input.each_with_index do |char, idx|
-      nomr = DictUtils.normalize(char)
+      norm = DictUtils.normalize(char).to_s
       # TODO: just check char.alphanumeric?
-      dic = norm.to_s =~ /[_\p{L}\p{N}]/ ? 1 : 0
+      dic = norm =~ /[_\p{L}\p{N}]/ ? 1 : 0
 
-      nodes << CvEntry.new(char, norm, dic)
-      costs << idx + 1.0
+      @nodes << CvEntry.new(char.to_s, norm, dic)
+      @costs << idx + 1.0
     end
   end
 
@@ -26,12 +26,12 @@ class Chivi::CvToken
     dict.scan(@input, caret) do |term|
       next if term.vals.empty? || term.vals.first.empty?
 
-      cost = costs[caret] + term.worth
+      cost = @costs[caret] + term.worth
       jump = caret &+ term.key.size
 
-      if cost > costs[jump]
-        costs[jump] = cost
-        nodes[jump] = CvEntry.new(term.key, term.vals.first, 2, term.attr)
+      if cost > @costs[jump]
+        @costs[jump] = cost
+        @nodes[jump] = CvEntry.new(term.key, term.vals.first, 2, term.attr)
       end
     end
   end
@@ -61,7 +61,7 @@ class Chivi::CvToken
         end
       elsif entry.dic == 0
         while caret > 0
-          node = choices[caret]
+          node = @nodes[caret]
           break if node.dic > 0 || entry.key[0] != node.key[0]
 
           entry.combine!(node)

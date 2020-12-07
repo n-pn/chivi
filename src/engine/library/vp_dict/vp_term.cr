@@ -14,6 +14,8 @@ class Chivi::VpTerm
         this.mtime = mtime
         this.uname = cols[4]? || "<init>"
         this.plock = cols[5]?.try(&.to_i?) || dlock
+      else
+        this.plock = dlock
       end
     end
   end
@@ -80,7 +82,11 @@ class Chivi::VpTerm
 
   def println(io : IO, dlock = 1) : Nil
     return if @vals.empty?
+    to_s(io, dlock)
+    io << '\n'
+  end
 
+  def to_s(io : IO, dlock = 1)
     io << @key << '\t' << @vals.join(SEP_0)
 
     if @mtime > 0
@@ -89,8 +95,6 @@ class Chivi::VpTerm
     elsif !attr.empty?
       io << '\t' << @attr
     end
-
-    io << '\n'
   end
 
   private def calc_worth

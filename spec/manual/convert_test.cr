@@ -12,13 +12,13 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-DICTS = Engine::Library.for_convert("tong-hop")
+MTL = Chivi::Convert.content("various")
 
 def translate(input : String, title = false)
   if title
-    Engine::Convert.cv_title(input, *DICTS).vi_text
+    MTL.cv_title(input).to_text
   else
-    Engine::Convert.cv_plain(input, *DICTS).vi_text
+    MTL.cv_plain(input).to_text
   end
 end
 
@@ -36,15 +36,9 @@ puts translate("1第一章")
 puts translate("一. 屠龙之术")
 puts translate("朥负已定")
 
-puts Engine::Convert.cv_title("1, 屠龙之术", *DICTS)
+puts MTL.cv_title("1, 屠龙之术")
 
 puts translate("第三千七百九十八章 历史的本质就是套娃", true)
-puts Engine::Convert.cv_plain("能让我坐在这里无病呻－吟", *DICTS)
-puts Engine::Convert.cv_plain("无病呻－吟", *DICTS)
 
-generic = Engine::Library.generic.dict
-puts generic.find("无病呻－吟")
-generic.upsert("无病呻－吟", "không ốm mà rên", freeze: true)
-generic.scan("无病呻－吟".chars, from: 0) do |node|
-  puts node
-end
+puts MTL.cv_plain("能让我坐在这里无病呻－吟")
+puts MTL.cv_plain("无病呻－吟")

@@ -134,7 +134,7 @@ class Chivi::CvGroup
     self
   end
 
-  def pad_spaces!(@data : Array(CvEntry)) : self
+  def pad_spaces! : self
     return self if @data.empty?
 
     prev = @data.first
@@ -144,7 +144,7 @@ class Chivi::CvGroup
       curr = @data.unsafe_fetch(i)
 
       unless curr.val.empty?
-        temp << CvEntry.new("", " ", 0) if curr.should_space?(prev)
+        temp << CvEntry.new("", " ", 0) if curr.space_before?(prev)
         prev = curr
       end
 
@@ -155,12 +155,12 @@ class Chivi::CvGroup
     self
   end
 
-  def to_text
+  def to_text : String
     String.build { |io| to_text(io) }
   end
 
-  def to_text(io : IO)
-    @data.map(&.val).join(io)
+  def to_text(io : IO) : Nil
+    @data.each { |x| io << x.val }
   end
 
   def to_json(io : IO)
