@@ -65,6 +65,9 @@ puts "- localqt: #{INPUT.size} entries.".colorize.blue
 puts "\n[Parse localqt]".colorize.cyan.bold
 
 INPUT.each do |key, vals|
+  vals = vals.reject(&.includes?("*"))
+  next if vals.empty?
+
   book_count = COUNT_BOOKS[key]? || 0
   word_count = COUNT_WORDS[key]? || 0
 
@@ -149,6 +152,9 @@ end
 puts "\n[Load outerqt]".colorize.cyan.bold
 
 QtDict.load("outerqt/combined-lowercase.txt").each do |key, vals|
+  vals = vals.reject(&.includes?("*"))
+  next if vals.empty?
+
   next if EXISTED.includes?(key)
 
   book_count = COUNT_BOOKS[key]? || 0
@@ -166,6 +172,9 @@ QtDict.load("outerqt/combined-lowercase.txt").each do |key, vals|
 end
 
 QtDict.load("outerqt/combined-uppercase.txt").each do |key, vals|
+  vals = vals.reject(&.includes?("*"))
+  next if vals.empty?
+
   next if EXISTED.includes?(key)
 
   book_count = COUNT_BOOKS[key]? || 0

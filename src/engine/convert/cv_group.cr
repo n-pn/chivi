@@ -57,13 +57,13 @@ class Chivi::CvGroup
       when "原来"
         entry.dic = 9
 
-        if @data[i + 1]?.try(&.key.== "的") || @data[i - 1].try(&.dic.> 1)
+        if @data[i + 1]?.try(&.key.== "的") || @data[i - 1]?.try(&.dic.> 1)
           entry.val = "ban đầu"
         else
           entry.val = "thì ra"
         end
       when "行"
-        next unless @data[i + 1].try(&.dic.> 0)
+        next unless @data[i + 1]?.try(&.dic.> 0)
         entry.dic = 9
         entry.val = "được"
 

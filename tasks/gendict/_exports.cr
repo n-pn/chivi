@@ -1,10 +1,11 @@
 require "./shared/*"
 require "../../src/engine/library"
+require "../../src/engine/convert"
 
 puts "\n[Load deps]".colorize.cyan.bold
 
-LEXICON = ValueSet.load(".result/lexicon.txt", true)
-CHECKED = ValueSet.load(".result/checked.txt", true)
+LEXICON = ValueSet.load(".result/lexicon.tsv", true)
+CHECKED = ValueSet.load(".result/checked.tsv", true)
 
 REJECT_STARTS = File.read_lines("#{__DIR__}/consts/reject-starts.txt")
 REJECT_ENDS   = File.read_lines("#{__DIR__}/consts/reject-ends.txt")
@@ -27,73 +28,91 @@ end
 
 puts "\n[Export regular]".colorize.cyan.bold
 
-inp_regular = QtDict.load(".result/regular.txt", true)
-out_regular = Chivi::Library.regular
+OUT_REGULAR = Chivi::Library.load_dict("regular", dtype: 2, dlock: 2, preload: false)
 
+HANVIET = Chivi::Convert.hanviet
+REGULAR = Chivi::Convert.new(OUT_REGULAR)
+
+inp_regular = QtDict.load(".result/regular.txt", true)
 inp_regular.to_a.sort_by(&.[0].size).each do |key, vals|
+  next unless value = vals.first?
+  next if value.empty?
+  regex = /^#{Regex.escape(value)}$/i
+
   unless should_keep?(key)
     next if should_skip?(key)
 
-    unless Engine.hanviet(key).vi_text.downcase == vals.first.downcase
-      next if Engine.cv_plain(key, "combine").vi_text == vals.first
+    unless HANVIET.translit(key, false).to_text =~ regex
+      next if REGULAR.cv_plain(key).to_text =~ regex
     end
   end
 
-  out_regular.upsert(key, vals)
+  OUT_REGULAR.upsert(key, vals)
 end
 
 puts "- load hanviet".colorize.cyan.bold
 
-Engine::Library.hanviet.each do |node|
-  next if node.key.size > 1
-  out_regular.upsert(node.key, freeze: false) do |item|
-    item.vals = node.vals if item.vals.empty?
-  end
+Chivi::Library.hanviet.each do |term|
+  next if term.key.size > 1
+  next if OUT_REGULAR.find(term.key)
+  OUT_REGULAR.upsert(term)
 end
 
-out_regular.save!
+OUT_REGULAR.load!("_db/cvdict/remote/common/regular.tsv")
+OUT_REGULAR.save!
 
 puts "\n[Export suggest]".colorize.cyan.bold
 
-inp_suggest = QtDict.load(".result/suggest.txt", true)
-out_suggest = Chivi::Library.suggest
+OUT_SUGGEST = Chivi::Library.load_dict("suggest", dtype: 2, dlock: 2, preload: false)
 
+inp_suggest = QtDict.load(".result/suggest.txt", true)
 inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
+  next if key.size > 4
+
+  next unless value = vals.first?
+  next if value.empty?
+  regex = /^#{Regex.escape(value)}$/i
+
   unless should_keep?(key)
     next if key =~ /[的了是]/
     next if should_skip?(key)
-    next if Engine.hanviet(key, false).vi_text == vals.first
-    next if Engine.cv_plain(key, "combine").vi_text.downcase == vals.first.downcase
+    next if HANVIET.translit(key, false).to_text =~ regex
+    next if REGULAR.cv_plain(key).to_text =~ regex
   end
 
-  out_suggest.upsert(key, vals)
+  OUT_SUGGEST.upsert(key, vals)
+rescue err
+  pp [err, key, vals]
 end
-out_suggest.save!
+OUT_SUGGEST.save!
 
-puts "\n[Export combine]".colorize.cyan.bold
+puts "\n[Export various]".colorize.cyan.bold
 
-inp_combine = QtDict.load(".result/combine.txt", true)
-out_combine = Chivi::Library.load("uniq/_tonghop", 0)
+OUT_VARIOUS = Chivi::Library.load_dict("various", dtype: 2, dlock: 2, preload: false)
 
-inp_combine.to_a.sort_by(&.[0].size).each do |key, vals|
+inp_various = QtDict.load(".result/various.txt", true)
+inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
+  next if key.size < 2
+  next if key.size > 6
+
   unless should_keep?(key)
     next if should_skip?(key)
   end
 
-  out_combine.upsert(key, vals)
+  OUT_VARIOUS.upsert(key, vals)
 end
-out_combine.save!
+OUT_VARIOUS.save!
 
-puts "\n[Export recycle]".colorize.cyan.bold
+# puts "\n[Export recycle]".colorize.cyan.bold
 
-inp_recycle = QtDict.load(".result/recycle.txt", true)
-out_recycle = Chivi::Library.load("salvation", 0)
+# inp_recycle = QtDict.load(".result/recycle.txt", true)
+# out_recycle = Chivi::Library.load("salvation", 0)
 
-inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
-  unless should_keep?(key)
-    next if should_skip?(key)
-  end
+# inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
+#   unless should_keep?(key)
+#     next if should_skip?(key)
+#   end
 
-  out_recycle.upsert(key, vals)
-end
-out_recycle.save!
+#   out_recycle.upsert(key, vals)
+# end
+# out_recycle.save!
