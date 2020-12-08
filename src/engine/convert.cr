@@ -92,7 +92,10 @@ class Chivi::Convert
         end
       end
 
-      title.split(/\s+/).each { |text| res.concat(cv_plain(text).data) }
+      title.split(/\s+/).each_with_index do |text, idx|
+        res << CvEntry.new(" ", " ", 0) if idx > 0
+        res.concat(cv_plain(text).data)
+      end
     end
 
     CvGroup.new(res)

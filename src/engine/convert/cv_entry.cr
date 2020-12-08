@@ -63,7 +63,7 @@ class Chivi::CvEntry
     when '·'
       return true
     when '…'
-      case @val[-1]?
+      case prev.val[-1]?
       when '.', ','
         return true
       else
@@ -71,7 +71,7 @@ class Chivi::CvEntry
       end
     end
 
-    case @val[-1]?
+    case prev.val[-1]?
     when '“', '‘', '⟨', '(', '[', '{'
       return false
     when '”', '’', '⟩', ')', ']', '}',

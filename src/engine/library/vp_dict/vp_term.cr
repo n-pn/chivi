@@ -99,7 +99,7 @@ class Chivi::VpTerm
 
   private def calc_worth
     size = @key.size
-    cost = @dtype / 5 + 1
+    cost = @dtype / 5 + 2
 
     case attr[0]?
     when '🅷'
@@ -108,6 +108,6 @@ class Chivi::VpTerm
       cost -= 0.25
     end
 
-    size + size ** cost + cost ** size
+    size + size ** cost
   end
 end
