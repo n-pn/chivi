@@ -14,6 +14,7 @@ end
 
 def migrate(file : String)
   label = File.basename(file, ".log")
+  next if label == "hanviet" # skipping hanviet
 
   label = "regular" if label == "generic"
   dlock = dlock_df(label)
