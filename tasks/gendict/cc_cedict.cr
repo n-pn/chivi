@@ -125,6 +125,7 @@ class CeInput
       output.upsert(key, vals)
     end
 
+    QtUtil.lexicon.save!
     output.save!(mode: :full)
   end
 

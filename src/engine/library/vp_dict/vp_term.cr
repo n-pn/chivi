@@ -12,7 +12,7 @@ class Chivi::VpTerm
     new(key, vals, attr, dtype: dtype).tap do |this|
       if mtime = cols[3]?.try(&.to_i?)
         this.mtime = mtime
-        this.uname = cols[4]? || "<init>"
+        this.uname = cols[4]? || ""
         this.plock = cols[5]?.try(&.to_i?) || dlock
       else
         this.plock = dlock
@@ -95,6 +95,10 @@ class Chivi::VpTerm
     elsif !attr.empty?
       io << '\t' << @attr
     end
+  end
+
+  def inspect(io : IO)
+    {@key, @vals, @attr, @mtime, @uname, @plock}.join(io, '\t')
   end
 
   private def calc_worth

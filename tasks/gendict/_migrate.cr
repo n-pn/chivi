@@ -12,13 +12,22 @@ def dlock_df(label)
   end
 end
 
-def migrate(file : String)
-  label = File.basename(file, ".log")
-  next if label == "hanviet" # skipping hanviet
+def parse_term(cols : Array(String), dlock = 1)
+  key = cols[0]
+  vals = (cols[1]? || "").split(/[\/¦]/)
 
-  label = "regular" if label == "generic"
-  dlock = dlock_df(label)
+  mtime = cols[2]?.try(&.to_i?) || 0
 
+  uname = cols[3]? || "<init>"
+  uname = "<init>" if uname == "Guest"
+
+  Chivi::VpTerm.new(key, vals, plock: dlock).tap do |x|
+    x.mtime = mtime
+    x.uname = uname
+  end
+end
+
+def load_relic(file : String, dlock : Int32)
   input = {} of String => Array(String)
 
   File.each_line(file) do |line|
@@ -27,30 +36,36 @@ def migrate(file : String)
     input[cols[0]] = cols
   end
 
-  out_file = Chivi::Library.file_path(label).sub("active", "remote")
-  out_dict = Chivi::VpDict.new(out_file, dlock: dlock, preload: true)
+  input.values.map { |cols| parse_term(cols, dlock) }.sort_by(&.mtime)
+end
 
-  values = input.values.sort_by { |cols| cols[2]?.try(&.to_i?) || 0 }
+def migrate(file : String, unique = false)
+  label = File.basename(file, ".log")
 
-  values.each do |cols|
-    key = cols[0]
-    vals = (cols[1]? || "").split(/[\/¦]/)
-
-    mtime = cols[2]?.try(&.to_i?) || 0
-    uname = cols[3]? || "<init>"
-    uname = "<init>" if uname == "Guest"
-
-    term = Chivi::VpTerm.new(key, vals, plock: dlock).tap do |x|
-      x.mtime = mtime
-      x.uname = uname
-    end
-
-    out_dict.upsert(term)
+  if unique
+    return if label == "_tonghop"
+    dlock = 1
+  else
+    return if label == "hanviet" # skipping hanviet
+    label = "regular" if label == "generic"
+    dlock = dlock_df(label)
   end
 
-  FileUtils.mkdir_p(File.dirname(out_dict.file))
+  values = load_relic(file, dlock)
+
+  out_file = Chivi::Library.file_path(label).sub("active", "remote")
+  out_dict = Chivi::VpDict.new(out_file, dlock: dlock, preload: false)
+
+  values.each do |term|
+    out_dict.upsert(term)
+    Chivi::Library.suggest.upsert(term) if unique && !term.empty?
+  end
+
   out_dict.save!
 end
 
-files = Dir.glob("_db/cvdict/legacy/**/*.log")
-files.each { |file| migrate(file) }
+Dir.glob("_db/cvdict/legacy/core/*.log").each { |x| migrate(x) }
+Dir.glob("_db/cvdict/legacy/uniq/*.log").each { |x| migrate(x, unique: true) }
+Chivi::Library.suggest.save!(mode: :best)
+
+# pp parse_term("保安州ǁBảo An châuǁ319179ǁFenix12ǁ1".split('ǁ'))

@@ -43,3 +43,5 @@ end
 hv_chars.save!
 hv_words.save!
 out_dict.save!(mode: :full)
+
+QtUtil.lexicon.save!

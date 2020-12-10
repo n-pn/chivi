@@ -11,6 +11,8 @@ class Hanviet
 
   def merge!(file : String, mode = :old_first)
     QtDict.load(file).each do |key, vals|
+      QtUtil.lexicon.add(key)
+
       next if key =~ /\P{Han}/
       @input.upsert(key, vals, mode)
     end
@@ -66,3 +68,5 @@ task.merge!("hanviet/correct-chars.txt", mode: :keep_new)
 
 task.gen_from_trad!
 task.save!
+
+QtUtil.lexicon.save!

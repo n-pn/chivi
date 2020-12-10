@@ -50,7 +50,7 @@ inp_regular.to_a.sort_by(&.[0].size).each do |key, vals|
   OUT_REGULAR.upsert(key, vals)
 end
 
-puts "- load hanviet".colorize.cyan.bold
+puts "\n- load hanviet".colorize.cyan.bold
 
 Chivi::Library.hanviet.each do |term|
   next if term.key.size > 1
@@ -84,6 +84,8 @@ inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
 rescue err
   pp [err, key, vals]
 end
+
+OUT_SUGGEST.load!("_db/cvdict/remote/common/suggest.tsv")
 OUT_SUGGEST.save!
 
 puts "\n[Export various]".colorize.cyan.bold
@@ -101,6 +103,9 @@ inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
 
   OUT_VARIOUS.upsert(key, vals)
 end
+
+EXT_VARIOUS = "_db/cvdict/remote/common/various.tsv"
+OUT_VARIOUS.load!(EXT_VARIOUS) if File.exists?(EXT_VARIOUS)
 OUT_VARIOUS.save!
 
 # puts "\n[Export recycle]".colorize.cyan.bold

@@ -16,7 +16,7 @@ class ValueSet
     load!(@file) if preload && File.exists?(@file)
   end
 
-  def load!(file : String = @file)
+  def load!(file : String = @file) : Nil
     File.each_line(file) do |line|
       key, val = line.split('\t')
 
@@ -27,24 +27,26 @@ class ValueSet
     rescue err
       puts "[ERROR loading #{file}: #{err}, line: #{line}]".colorize.red
     end
+
+    puts "<value_set> [#{@file}] loaded: #{@data.size} entries".colorize.green
   end
 
-  def add(key : String)
+  def add!(key : String)
     return unless @data.add(key)
     File.open(@file, "a") { |io| io.puts "#{key}\tT" }
   end
 
-  def delete(key : String)
+  def delete!(key : String)
     return unless @data.delete(key)
     File.open(@file, "a") { |io| io.puts "#{key}\tF" }
   end
 
-  def save!
+  def save! : Nil
     File.open(@file, "w") do |io|
-      @data.each do |key|
-        io.puts("#{key}\tF")
-      end
+      @data.each { |key| io.puts("#{key}\tT") }
     end
+
+    puts "<value_set> [#{@file}] saved: #{@data.size} entries".colorize.yellow
   end
 end
 
