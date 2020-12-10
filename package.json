@@ -20,6 +20,7 @@
     "fix-covers": "./bin/fetch_covers && ruby tasks/seeding/cover_webp.rb",
     "backup": "./bin/migrate_dicts && yarn db-dn",
     "update": "yarn map-yousuu && yarn map-zhwenpg && yarn map-remotes && yarn fix-covers",
-    "gen-sentry": "crystal build --release config/.sentry/sentry_cli.cr -o bin/sentry"
+    "gen-sentry": "crystal build --release config/.sentry/sentry_cli.cr -o bin/sentry",
+    "clear": "crystal tasks/clear_cli.cr --"
   }
 }

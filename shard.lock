@@ -5,8 +5,8 @@ shards:
     version: 1.11.2+git.commit.c3c3467953654554b72c24e7b853d6fbb23f10c0
 
   clear:
-    git: https://github.com/anykeyh/clear.git
-    version: 0.9+git.commit.3bdaa44a7d0382fd8f6846afe8b8da95d58d9452
+    git: https://github.com/nipinium/clear.git
+    version: 0.9+git.commit.2985c2e1cd762cbc94d16bf70c7c9c43c0f30a6a
 
   crest:
     git: https://github.com/mamantoha/crest.git
@@ -30,7 +30,7 @@ shards:
 
   http_proxy:
     git: https://github.com/mamantoha/http_proxy.git
-    version: 0.7.1
+    version: 0.7.2
 
   icu:
     git: https://github.com/olbat/icu.cr.git
@@ -42,11 +42,11 @@ shards:
 
   kemal:
     git: https://github.com/kemalcr/kemal.git
-    version: 0.26.1+git.commit.dfe7dca08f4c9a9456d6132af5f6b59fcd6865e4
+    version: 0.27.0+git.commit.bf9f627ac789d2ebe573629904f02beb9e4089d5
 
   kemal-session:
     git: https://github.com/kemalcr/kemal-session.git
-    version: 0.12.1
+    version: 0.12.1+git.commit.a9d25e5c851c5bab84be51ee2af47c21adbe3726
 
   kilt:
     git: https://github.com/jeromegn/kilt.git
@@ -54,7 +54,7 @@ shards:
 
   myhtml:
     git: https://github.com/kostya/myhtml.git
-    version: 1.5.1
+    version: 1.5.2
 
   pg:
     git: https://github.com/will/crystal-pg.git

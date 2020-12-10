@@ -12,7 +12,27 @@ class Chivi::Convert
     MACHINES[udict] ||= new(Library.regular, Library.find_dict(udict))
   end
 
+  def self.convert(input : String, udict = "")
+    case udict
+    when "hanviet" then hanviet.translit(input).to_text
+    when "binh_am" then binh_am.translit(input).to_text
+    when "tradsim" then tradsim.tokenize(input.chars).to_text
+    else                content(udict).cv_plain(input).to_text
+    end
+  end
+
   def initialize(@bdict : VpDict, @udict : VpDict? = nil)
+  end
+
+  def tokenize(chars : Array(Char))
+    token = CvToken.new(chars)
+
+    token.size.times do |caret|
+      token.weighing(@bdict, caret)
+      token.weighing(@udict.not_nil!, caret) if @udict
+    end
+
+    token.to_group
   end
 
   def translit(input : String, apply_cap : Bool = false)
@@ -122,16 +142,5 @@ class Chivi::Convert
     when "折" then "Chiết"
     else          "Chương"
     end
-  end
-
-  private def tokenize(chars : Array(Char))
-    token = CvToken.new(chars)
-
-    token.size.times do |caret|
-      token.weighing(@bdict, caret)
-      token.weighing(@udict.not_nil!, caret) if @udict
-    end
-
-    token.to_group
   end
 end

@@ -20,23 +20,11 @@ targets:
   map_remote:
     main: tasks/_oldcv/map_remote.cr
 
-  rebuild_index:
-    main: tasks/_oldcv/rebuild_index.cr
-
-  # cv_book_info:
-  #   main: tasks/cv_book_info.cr
-
-  # cv_chap_list:
-  #   main: tasks/cv_chap_list.cr
-
   fetch_covers:
     main: tasks/_cover/fetch_covers.cr
 
-  migrate_dicts:
-    main: tasks/migrate_dicts.cr
-
-  # preload_texts:
-  #   main: tasks/texts/preload_texts.cr
+  preload_texts:
+    main: tasks/routine/preload_texts.cr
 
 crystal: 0.35.0
 
@@ -61,5 +49,5 @@ dependencies:
     github: olbat/icu.cr
 
   clear:
-    github: anykeyh/clear
+    github: nipinium/clear
     branch: master
