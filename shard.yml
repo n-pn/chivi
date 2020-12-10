@@ -49,6 +49,7 @@ dependencies:
 
   kemal-session:
     github: kemalcr/kemal-session
+    branch: master
 
   myhtml:
     github: kostya/myhtml
@@ -58,3 +59,7 @@ dependencies:
 
   icu:
     github: olbat/icu.cr
+
+  clear:
+    github: anykeyh/clear
+    branch: master
