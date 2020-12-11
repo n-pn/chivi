@@ -8,40 +8,36 @@ class Chivi::Author
 
   column id : Int32, primary: true, presence: false
 
-  column zh_name : String
-  column zh_name_tsv : Array(String) = [] of String
+  column name_zh : String
+  column name_zh_tsv : Array(String) = [] of String
 
-  column vi_name : String = ""
-  column vi_name_tsv : Array(String) = [] of String
+  column name_vi : String = ""
+  column name_vi_tsv : Array(String) = [] of String
 
-  def set_name(zh_name : String, vi_name : String = "")
-    set_zh_name(zh_name)
+  def set_name(name_zh : String, name_vi : String = "")
+    set_name_zh(name_zh)
 
-    if vi_name.empty?
-      vi_name = Chivi::Convert.convert(zh_name, "hanviet")
-      vi_name = SeedUtils.titleize(vi_name)
-    end
-
-    set_vi_name(vi_name)
+    name_vi = ModelUtils.to_hanviet(name_zh, as_title: true) if name_vi.empty?
+    set_name_vi(name_vi)
   end
 
-  def set_zh_name(zh_name : String)
-    self.zh_name = zh_name
-    self.zh_name_tsv = Chivi::SeedUtils.tokenize(zh_name, keep_accent: true)
+  def set_name_zh(name_zh : String)
+    self.name_zh = name_zh
+    self.name_zh_tsv = SeedUtils.tokenize(name_zh)
   end
 
-  def set_vi_name(vi_name : String)
-    self.vi_name = vi_name
-    self.vi_name_tsv = Chivi::SeedUtils.tokenize(vi_name)
+  def set_name_vi(name_vi : String)
+    self.name_vi = name_vi
+    self.name_vi_tsv = SeedUtils.tokenize(name_vi)
   end
 
   def self.find(name : String)
-    query.where { (zh_name == name) | (vi_name == name) }.first
+    query.where { (name_zh == name) | (name_vi == name) }.first
   end
 
   def self.glob(name : String)
-    tsv = Chivi::SeedUtils.tokenize(name)
-    query.where("zh_name_tsv @> :tsv OR vi_name_tsv @> :tsv", tsv: tsv)
+    tsv = SeedUtils.tokenize(name)
+    query.where("name_zh_tsv @> :tsv OR name_vi_tsv @> :tsv", tsv: tsv)
   end
 end
 
