@@ -9,40 +9,41 @@ class Chivi::Serial
 
   column id : Int32, primary: true, presence: false
 
-  column bhash : String = ""
-  column bslug : String = ""
+  column hv_slug : String
+  column vi_slug : String
 
   belongs_to author : Author
   belongs_to btitle : Btitle
 
-  column bgenre_ids : Array(Int32)
-  column source_ids : Array(Int32)
+  column bgenre_ids : Array(Int32), presence: false
+  # column source_ids : Array(Int32), presence: false
 
-  column intro_zh : String
-  column intro_sn : String
-  column intro_vi : String
+  column zh_intro : String
+  column vi_intro : String
+  column intro_by : String # source name
 
-  column hidden : Int32 = 0
-  column status : Int32 = 0
-  column update : Int32 = 0
-  column access : Int32 = 0
+  column hidden : Int32, presence: false
+  column status : Int32, presence: false
 
-  column voters_zh : Int32 = 0 # seed voters (yousuu or custom)
-  column voters_vi : Int32 = 0 # chivi genuine voters
+  column update_at : Int32, presence: false
+  column access_at : Int32, presence: false
 
-  column rating_zh : Int32 = 0 # seed rating (yousuu or custom)
-  column rating_vi : Int32 = 0 # chivi genuine rating
+  column zh_voters : Int32, presence: false # seed voters (yousuu or custom)
+  column zh_rating : Int32, presence: false # seed rating (yousuu or custom)
 
-  column word_count : Int32 = 0
-  column chap_count : Int32 = 0
+  column vi_voters : Int32, presence: false # chivi genuine voters
+  column vi_rating : Int32, presence: false # chivi genuine rating
 
-  column view_count : Int32 = 0
-  column read_count : Int32 = 0
+  column word_count : Int32, presence: false
+  column chap_count : Int32, presence: false
 
-  column review_count : Int32 = 0
-  column follow_count : Int32 = 0
+  column view_count : Int32, presence: false
+  column read_count : Int32, presence: false
 
-  column popularity : Int32 = 0 # to be sorted by
+  column review_count : Int32, presence: false
+  column follow_count : Int32, presence: false
+
+  column popularity : Int32, presence: false # to be sorted by
 
   column cover_name : String
   column yousuu_bid : String

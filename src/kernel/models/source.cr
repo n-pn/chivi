@@ -10,15 +10,15 @@ class Chivi::Source
   column name : String
   column sbid : String
 
-  column _index : Int32 = 0
-  column status : Int32 = 0
+  column _index : Int32, presence: false
+  column status : Int32, presence: false
 
-  column update : Int32 = 0
-  column access : Int32 = 0
+  column update_at : Int32, presence: false
+  column access_at : Int32, presence: false
 
-  column word_count : Int32 = 0
-  column chap_count : Int32 = 0
+  column word_count : Int32, presence: false
+  column chap_count : Int32, presence: false
 
-  column view_count : Int32 = 0
-  column read_count : Int32 = 0
+  column view_count : Int32, presence: false
+  column read_count : Int32, presence: false
 end

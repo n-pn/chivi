@@ -6,18 +6,27 @@ class Chivi::Bgenre
 
   column id : Int32, primary: true, presence: false
 
-  column name_zh : String
-  column name_vi : String = ""
-  column slug_vi : String = ""
+  column zh_name : String
+  column vi_name : String
+  column vi_slug : String
 
-  def set_name(name_zh : String, name_vi : String = "")
-    self.name_zh = name_zh
-    name_vi = ModelUtils.to_hanviet(name_zh, as_title: true) if name_vi.empty?
-    self.name_vi = name_vi
-    self.slug_vi = SeedUtil.slugify(name_vi)
+  def self.find_by_slug(name : String)
+    find({vi_slug: SeedUtil.slugify(name)})
   end
 
-  def self.find(name : String)
-    query.where(slug_vi: SeedUtil.slugify(name)).first
+  def upsert!(zh_name : String, vi_name : String? = nil)
+    model = find({zh_name: zh_name}) || new({zh_name: zh_name})
+
+    unless vi_name || model.vi_name_column.defined?
+      vi_name = ModelUtils.to_hanviet(zh_name, as_title: true)
+    end
+
+    if vi_name && vi_name != model.vi_name_column.value(nil)
+      model.vi_name = vi_name
+      model.vi_slug = SeedUtil.slugify(vi_name)
+    end
+
+    model.save! if model.vi_name_column.changed?
+    model
   end
 end

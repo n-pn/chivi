@@ -8,41 +8,46 @@ class Chivi::Author
 
   column id : Int32, primary: true, presence: false
 
-  column name_zh : String
-  column name_zh_tsv : Array(String) = [] of String
+  column zh_name : String
+  column vi_name : String
 
-  column name_vi : String = ""
-  column name_vi_tsv : Array(String) = [] of String
+  column zh_name_tsv : Array(String) = [] of String
+  column vi_name_tsv : Array(String) = [] of String
 
-  def set_name(name_zh : String, name_vi : String = "")
-    set_name_zh(name_zh)
-
-    name_vi = ModelUtils.to_hanviet(name_zh, as_title: true) if name_vi.empty?
-    set_name_vi(name_vi)
+  def self.find_any(name : String)
+    query.where { (zh_name == name) | (vi_name == name) }.first
   end
 
-  def set_name_zh(name_zh : String)
-    self.name_zh = name_zh
-    self.name_zh_tsv = SeedUtils.tokenize(name_zh)
+  def self.glob_all(name : String)
+    glob_all(SeedUtils.tokenize(name))
   end
 
-  def set_name_vi(name_vi : String)
-    self.name_vi = name_vi
-    self.name_vi_tsv = SeedUtils.tokenize(name_vi)
+  def self.glob_all(tokens : Array(String))
+    query.where("zh_name_tsv @> :a OR vi_name_tsv @> :a", a: tokens)
   end
 
-  def self.find(name : String)
-    query.where { (name_zh == name) | (name_vi == name) }.first
-  end
+  def self.upsert!(zh_name : String, vi_name : String? = nil) : self
+    unless model = find({zh_name: zh_name})
+      model = new({zh_name: zh_name, zh_name_tsv: SeedUtils.tokenize(zh_name)})
+    end
 
-  def self.glob(name : String)
-    tsv = SeedUtils.tokenize(name)
-    query.where("name_zh_tsv @> :tsv OR name_vi_tsv @> :tsv", tsv: tsv)
+    unless vi_name || model.vi_name_column.defined?
+      vi_name = ModelUtils.to_hanviet(zh_name, as_title: true)
+    end
+
+    if vi_name && vi_name != model.vi_name_column.value(nil)
+      model.vi_name = vi_name
+      model.vi_name_tsv = SeedUtils.tokenize(vi_name)
+    end
+
+    model.save! if model.vi_name_column.changed?
+    model
   end
 end
 
-# author = Chivi::Author.new
-# author.set_name("卖报小郎君")
-# author.save!
-# puts Chivi::Author.find("卖报小郎君").to_pretty_json
-# puts Chivi::Author.glob("卖报").to_a.to_json
+# puts Chivi::Author.upsert!("小郎君").to_json
+# puts Chivi::Author.upsert!("小郎君").to_json
+
+# puts Chivi::Author.find_any("卖报小郎君").to_json
+# puts Chivi::Author.glob_all("小郎君").to_a.to_json
+# puts Chivi::Author.glob_all("tieu lang").to_a.to_json

@@ -11,13 +11,17 @@ class Chivi::Chinfo
   belongs_to Source
 
   column scid : String
-  column _idx : Int32
+  column _index : Int32
+  column status : Int32
 
-  column title_zh : String
-  column title_vi : String
-  column label_vi : String
+  column zh_title : String
+  column vi_title : String
+  column vi_label : String
   column url_slug : String
 
-  column word_count : Int32 = 0
-  column read_count : Int32 = 0
+  column update_at : Int32, presence: false
+  column access_at : Int32, presence: false
+
+  column word_count : Int32, presence: false
+  column read_count : Int32, presence: false
 end

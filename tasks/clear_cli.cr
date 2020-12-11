@@ -7,4 +7,5 @@ end
 
 Clear.with_cli do
   puts "Usage: crystal sample/cli/cli.cr -- clear [args]"
+  Clear::Migration::Manager.instance.apply_all
 end

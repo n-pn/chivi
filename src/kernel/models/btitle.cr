@@ -6,41 +6,44 @@ class Chivi::Btitle
 
   column id : Int32, primary: true, presence: false
 
-  column name_zh : String
-  column name_zh_tsv : Array(String) = [] of String
+  column zh_name : String
+  column hv_name : String
+  column vi_name : String
 
-  column name_vi : String = ""
-  column name_vi_tsv : Array(String) = [] of String
+  column zh_name_tsv : Array(String)
+  column hv_name_tsv : Array(String)
+  column vi_name_tsv : Array(String)
 
-  def set_name(name_zh : String, name_vi : String = "")
-    set_name_zh(name_zh)
-
-    name_vi = ModelUtils.to_hanviet(name_zh, as_title: true) if name_vi.empty?
-    set_name_vi(name_vi)
+  def self.glob_all(name : String)
+    glob_all(SeedUtils.tokenize(name))
   end
 
-  def set_name_zh(name_zh : String)
-    self.name_zh = name_zh
-    self.name_zh_tsv = SeedUtils.tokenize(name_zh)
+  def self.glob_all(tokens : Array(String))
+    query.where("zh_name_tsv @> :a OR hv_name_tsv @> :a OR vi_name_tsv @> :a", a: tokens)
   end
 
-  def set_name_vi(name_vi : String)
-    self.name_vi = name_vi
-    self.name_vi_tsv = SeedUtils.tokenize(name_vi)
-  end
+  def self.upsert!(zh_name : String, hv_name : String? = nil, vi_name : String? = nil) : self
+    unless model = find({zh_name: zh_name})
+      model = new({zh_name: zh_name, zh_name_tsv: SeedUtils.tokenize(zh_name)})
+    end
 
-  def self.find(name : String)
-    query.where { (name_zh == name) | (name_vi == name) }.first
-  end
+    unless hv_name || model.hv_name_column.defined?
+      hv_name = ModelUtils.to_hanviet(zh_name, as_title: true)
+    end
 
-  def self.glob(name : String)
-    tsv = SeedUtils.tokenize(name)
-    query.where("name_zh_tsv @> :tsv OR name_vi_tsv @> :tsv", tsv: tsv)
+    if hv_name && hv_name != model.hv_name_column.value(nil)
+      model.hv_name = hv_name
+      model.hv_name_tsv = SeedUtils.tokenize(hv_name)
+    end
+
+    if vi_name && vi_name != model.vi_name_column.value(nil)
+      model.vi_name = vi_name
+      model.vi_name_tsv = SeedUtils.tokenize(vi_name)
+    end
+
+    model.save! if model.hv_name_column.changed? || model.vi_name_column.changed?
+    model
   end
 end
 
-# btitle = Chivi::Btitle.new
-# btitle.set_name("卖报小郎君")
-# btitle.save!
-# puts Chivi::Btitle.find("卖报小郎君").to_pretty_json
-# puts Chivi::Btitle.glob("卖报").to_a.to_json
+puts Chivi::Btitle.upsert!("小郎君").to_json
