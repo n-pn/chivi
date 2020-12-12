@@ -1,7 +1,7 @@
 require "json"
-require "./_seed_utils"
+require "../../shared/seed_utils"
 
-struct YsSource
+struct Chivi::YsSource
   include JSON::Serializable
 
   @[JSON::Field(key: "siteName")]
@@ -11,7 +11,7 @@ struct YsSource
   property link : String
 end
 
-class YousuuInfo
+class Chivi::YsInfo
   include JSON::Serializable
 
   getter _id : Int32
@@ -21,7 +21,7 @@ class YousuuInfo
   property author = ""
 
   getter introduction = ""
-  getter intro : String { SeedUtils.clean_split(introduction).join("  ") }
+  getter intro : Array(String) { SeedUtils.split_html(introduction) }
 
   getter classInfo : NamedTuple(classId: Int32, className: String)?
   getter genre : String { @classInfo.try(&.[:className]) || "" }
@@ -32,18 +32,17 @@ class YousuuInfo
   getter cover = ""
   getter cover_fixed : String { get_fixed_cover }
 
-  FALLBACK_TIME = Time.utc(2000, 1, 1)
-
-  getter updateAt = Time.utc(2000, 1, 1)
-  getter updated_at : Time { @updateAt < Time.utc ? @updateAt : FALLBACK_TIME }
+  DF_TIME = Time.utc(2000, 1, 1)
+  getter updateAt : Time = DF_TIME
+  getter updated_at : Time { @updateAt < Time.utc ? @updateAt : DF_TIME }
 
   getter scorerCount = 0_i32
   getter voters : Int32 { scorerCount }
 
   getter score = 0_f32
-  getter rating : Float32 { (score * 10).round / 10 }
+  getter rating : Float32 { score.*(10).round / 10 }
 
-  getter weight : Int32 { (Math.log(voters) * rating * 100).round.to_i }
+  # getter weight : Int32 { (Math.log(voters) * rating * 100).round.to_i }
 
   getter countWord = 0_f32
   getter word_count : Int32 { @countWord.round.to_i }
@@ -69,7 +68,7 @@ class YousuuInfo
     @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
   end
 
-  alias Data = NamedTuple(bookInfo: YousuuInfo, bookSource: Array(YsSource))
+  alias Data = NamedTuple(bookInfo: YsInfo, bookSource: Array(YsSource))
 
   def self.load(file : String)
     text = File.read(file)
@@ -83,7 +82,7 @@ class YousuuInfo
   end
 end
 
-# info = YousuuInfo.load("_db/seeds/yousuu/raw-infos/176814.json").not_nil!
+# info = Chivi::YsInfo.load("_db/seeds/yousuu/raw-infos/176814.json").not_nil!
 # puts info.intro
 # puts info.genre
 # puts info.tags_fixed

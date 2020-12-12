@@ -13,6 +13,10 @@ module Chivi::SeedUtils
   }
 
   # parse remote info update times
+  def parse_time(input : Nil) : Time
+    Time.utc
+  end
+
   def parse_time(input : String) : Time
     TIME_FMT.each do |format|
       return Time.parse(input, format, LOCATION)
@@ -20,7 +24,7 @@ module Chivi::SeedUtils
       next
     end
 
-    puts "[ERROR parsing time`#{input}`: unknown format!]".colorize.red
+    puts "[ERROR parsing time <#{input}>: unknown format]".colorize.red
     DEF_TIME
   end
 
@@ -121,44 +125,55 @@ module Chivi::SeedUtils
   TAGS = "章节幕回折"
   SEPS = ".，,、：: "
 
-  FIX_RE_0 = /^(第[#{NUMS}\d]+[集卷].*?)(第?[#{NUMS}\d]+[#{TAGS}].*)$/
-  FIX_RE_1 = /^(第[#{NUMS}\d]+[集卷].*?)(（\p{N}+）.*)$/
-  FIX_RE_2 = /^【?(第[#{NUMS}\d]+[集卷])】?\s*(.+)$/
+  FORMAT_RE_0 = {
+    /^(第[#{NUMS}\d]+[集卷].*?)(第?[#{NUMS}\d]+[#{TAGS}].*)$/,
+    /^(第[#{NUMS}\d]+[集卷].*?)(（\p{N}+）.*)$/,
 
-  def fix_title(title : String, label = "正文")
-    if match = FIX_RE_0.match(title) || FIX_RE_1.match(title) || FIX_RE_2.match(title)
+    /^【?(第[#{NUMS}\d]+[集卷])】?\s*(.+)$/,
+  }
+
+  def format_title(title : String, label = "正文")
+    title = fix_spaces(title).strip
+
+    FORMAT_RE_0.each do |regex|
+      next unless match = regex.match(title)
       _, label, title = match
       label = fix_spaces(label)
+      break
     end
 
-    "#{label}  #{format_title(title)}"
+    title = fix_title(title).gsub(/\s{2,}/, " ")
+    label.empty? || label == "正文" ? title : "#{label}  #{title}"
   end
 
-  FORMAT_RE_0 = /^第?([#{NUMS}\d]+)([#{TAGS}])[#{SEPS}]*(.*)$/
-  FORMAT_RE_1 = /^\d+\.\s*第(.+)([#{TAGS}])[#{SEPS}]*(.+)/ # 69shu 1
-  FORMAT_RE_2 = /^第(.+)([#{TAGS}])\s\d+\.\s*(.+)/         # 69shu 2
-  FORMAT_RE_3 = /^([#{NUMS}\d]+)[#{SEPS}]+(.*)$/
-  FORMAT_RE_4 = /^\（(\p{N}+)\）[#{SEPS}]*(.*)$/
+  FIX_RE_0 = {
+    /^第?([#{NUMS}\d]+)([#{TAGS}])[#{SEPS}]*(.*)$/, # generic
+    /^\d+\.\s*第(.+)([#{TAGS}])[#{SEPS}]*(.*)/,     # 69shu 1
+    /^第(.+)([#{TAGS}])\s\d+\.\s*(.*)/,             # 69shu 2
+  }
 
-  def format_title(title : String)
-    if match = FORMAT_RE_0.match(title)
+  FIX_RE_1 = {
+    /^([#{NUMS}\d]+)[#{SEPS}]+(.*)$/,
+    /^\（(\p{N}+)\）[#{SEPS}]*(.*)$/,
+  }
+
+  def fix_title(title : String)
+    FIX_RE_0.each do |regex|
+      next unless match = regex.match(title)
       _, idx, tag, title = match
-      return "第#{idx}#{tag} #{fix_spaces(title)}"
+      return title.empty? ? "第#{idx}#{tag}" : "第#{idx}#{tag} #{title}"
     end
 
-    if match = FORMAT_RE_1.match(title) || FORMAT_RE_2.match(title)
-      _, idx, tag, title = match
-      return "第#{idx}#{tag} #{title}"
-    end
-
-    if match = FORMAT_RE_3.match(title) || FORMAT_RE_4.match(title)
+    FIX_RE_1.each do |regex|
+      next unless match = regex.match(title)
       _, idx, title = match
-      return "#{idx}. #{fix_spaces(title)}"
+      return title.empty? ? "#{idx}." : "#{idx}: #{title}"
     end
 
-    fix_spaces(title)
+    title
   end
 end
 
 # puts Chivi::SeedUtils.parse_time("5/14/2020 7:00:48 AM")
 # puts Chivi::SeedUtils.parse_time("2020-09-08 10:00")
+# pp Chivi::SeedUtils.format_title("第二十集 红粉骷髅 第八章")

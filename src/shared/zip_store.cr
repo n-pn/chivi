@@ -63,27 +63,44 @@ class Chivi::ZipStore
     zip_entry(fname, &.try(&.time))
   end
 
+  def add_file!(fname : String, mode : Symbol = :update) : Nil
+    fpath = root_path(fname)
+    unless File.exists?(fpath)
+      return puts "[File <#{fname}> not found, skip zipping!]".colorize.red
+    end
+
+    flags = zip_flags(mode)
+    puts "[Add file <#{fname}> to zip: <#{@zip_file}>]"
+    puts `zip #{flags} #{@zip_file} #{fpath}`
+  end
+
   def compress!(mode : Symbol = :update, glob = "*.*") : Nil
-    return puts "[Nothing to compress!]" if Dir.empty?(root_dir)
+    if Dir.empty?(root_dir)
+      return puts "[Nothing to compress!]".colorize.red
+    end
 
     # set flags
     # `-j` means remove folder root
     # `-q` means quiet output mode
 
-    case mode
-    when :archive
-      flags = "-jqm" # move file to zip
-    when :freshen
-      flags = "-jqfm" # only move existed (in zip) files
-    else
-      flags = "-jqu" # update if newer
-    end
+    flags = zip_flags(mode)
 
-    puts "[Archive files to zip: #{zip_file}]"
-    puts `zip #{flags} #{zip_file} #{root_dir}/#{glob}`
+    puts "[Add files to zip: <#{@zip_file}>]"
+    puts `zip #{flags} #{@zip_file} #{root_dir}/#{glob}`
   end
 
-  private def root_path(fname : String)
+  def zip_flags(mode : Symbol)
+    case mode
+    when :archive
+      "-jqm" # move file to zip
+    when :freshen
+      "-jqfm" # only move existed (in zip) files
+    else
+      "-jqu" # update if newer
+    end
+  end
+
+  def root_path(fname : String)
     File.join(@root_dir, fname)
   end
 

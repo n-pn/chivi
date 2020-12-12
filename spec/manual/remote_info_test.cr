@@ -1,34 +1,38 @@
 require "file_utils"
 
-require "../../src/kernel/source/seed_info.cr"
+require "../../src/kernel/source/rm_info.cr"
 
-def fetch_info(info, sbid, expiry = Time.utc - 20.minutes) : Void
-  puts "\n[ #{info} - #{sbid} ]\n".colorize(:yellow)
+def fetch_info(seed, sbid, expiry = Time.utc - 1.month) : Void
+  puts "\n[#{seed} - #{sbid}]\n".colorize.cyan.bold
 
-  task = SeedInfo.new(info, sbid, expiry: expiry, freeze: true)
+  task = Chivi::RmInfo.init(seed, sbid, expiry)
 
   info = {
-    title:  task.title,
-    author: task.author,
-    intro:  task.intro,
-    cover:  task.cover,
-    genre:  task.genre,
-    tags:   task.tags,
-    status: task.status,
-    mftime: task.mftime,
-    latest: task.latest,
+    btitle: task.btitle, author: task.author, bgenre: task.bgenre,
+    intro: task.intro, cover: task.cover, tags: task.tags,
+    status: task.status, update: task.update,
   }
-  puts info.to_pretty_json
 
-  puts task.chapters.size
-  puts task.chapters.first(4).to_pretty_json
-  puts task.chapters.last(4).to_pretty_json
+  puts task.html_url
+  puts "------".colorize.green
+
+  pp info
+  puts "------".colorize.green
+
+  puts "chap_count: #{task.chlist.size}"
+  puts "------".colorize.green
+
+  pp task.chlist.first(4)
+  puts "------".colorize.green
+
+  pp task.chlist.last(4)
+  puts "------".colorize.green
 end
 
 # fetch_info("qu_la", "7")
 # fetch_info("qu_la", "9923")
 
-# fetch_info("jx_la", "7")
+fetch_info("jx_la", "7")
 # fetch_info("jx_la", "179402")
 # fetch_info("jx_la", "250502")
 
