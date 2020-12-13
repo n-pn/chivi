@@ -1,18 +1,20 @@
 require "./_models"
+require "../mapper/value_map"
 
 class Chivi::Btitle
   include Clear::Model
   self.table = "btitles"
 
-  column id : Int32, primary: true, presence: false
+  primary_key type: :serial
+  timestamps
 
   column zh_name : String
   column hv_name : String
-  column vi_name : String
+  column vi_name : String?
 
-  column zh_name_tsv : Array(String)
-  column hv_name_tsv : Array(String)
-  column vi_name_tsv : Array(String)
+  column zh_name_tsv : Array(String), presence: false
+  column hv_name_tsv : Array(String), presence: false
+  column vi_name_tsv : Array(String), presence: false
 
   def self.glob_all(name : String)
     glob_all(SeedUtils.tokenize(name))
@@ -36,6 +38,10 @@ class Chivi::Btitle
       model.hv_name_tsv = SeedUtils.tokenize(hv_name)
     end
 
+    unless vi_name || model.vi_name_column.defined?
+      vi_name = fix_vi_name(zh_name)
+    end
+
     if vi_name && vi_name != model.vi_name_column.value(nil)
       model.vi_name = vi_name
       model.vi_name_tsv = SeedUtils.tokenize(vi_name)
@@ -44,6 +50,20 @@ class Chivi::Btitle
     model.save! if model.hv_name_column.changed? || model.vi_name_column.changed?
     model
   end
+
+  ZH_BTITLES = ValueMap.new("src/kernel/_fixes/zh_btitles.tsv")
+  VI_BTITLES = ValueMap.new("src/kernel/_fixes/vi_btitles.tsv")
+
+  def self.fix_zh_name(zh_title : String, author : String = "")
+    # cleanup trashes
+    title = SeedUtils.fix_spaces(zh_title).sub(/[（\(].+[\)）]\s*$/, "").strip
+
+    ZH_BTITLES.get_value("#{title}  #{author}") || ZH_BTITLES.get_value(title) || title
+  end
+
+  def self.fix_vi_name(zh_title : String)
+    VI_BTITLES.get_value(zh_title).try { |x| SeedUtils.titleize(x) }
+  end
 end
 
-puts Chivi::Btitle.upsert!("小郎君").to_json
+# puts Chivi::Btitle.upsert!("小郎君").to_json

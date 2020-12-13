@@ -6,7 +6,8 @@ class Chivi::Author
   include Clear::Model
   self.table = "authors"
 
-  column id : Int32, primary: true, presence: false
+  primary_key type: :serial
+  timestamps
 
   column zh_name : String
   column vi_name : String
@@ -32,7 +33,7 @@ class Chivi::Author
     end
 
     unless vi_name || model.vi_name_column.defined?
-      vi_name = ModelUtils.to_hanviet(zh_name, as_title: true)
+      vi_name = fix_vi_name(zh_name) || ModelUtils.to_hanviet(zh_name, as_title: true)
     end
 
     if vi_name && vi_name != model.vi_name_column.value(nil)
@@ -42,6 +43,20 @@ class Chivi::Author
 
     model.save! if model.vi_name_column.changed?
     model
+  end
+
+  ZH_AUTHORS = ValueMap.new("src/kernel/_fixes/zh_authors.tsv")
+  VI_AUTHORS = ValueMap.new("src/kernel/_fixes/vi_authors.tsv")
+
+  def self.fix_zh_name(zh_author : String, title : String = "")
+    # cleanup trashes
+    author = SeedUtils.fix_spaces(zh_author).sub(/[（\(].+[\)）]|\.QD\s*$/, "").strip
+
+    ZH_AUTHORS.get_value("#{title}  #{author}") || ZH_AUTHORS.get_value(author) || author
+  end
+
+  def self.fix_vi_name(zh_author : String)
+    VI_AUTHORS.get_value(zh_author)
   end
 end
 

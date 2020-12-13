@@ -66,7 +66,7 @@ class Chivi::ZipStore
   def add_file!(fname : String, mode : Symbol = :update) : Nil
     fpath = root_path(fname)
     unless File.exists?(fpath)
-      return puts "[File <#{fname}> not found, skip zipping!]".colorize.red
+      return puts "[File <#{fname}> not found, skip zipping!]".colorize.dark_gray
     end
 
     flags = zip_flags(mode)
@@ -76,7 +76,7 @@ class Chivi::ZipStore
 
   def compress!(mode : Symbol = :update, glob = "*.*") : Nil
     if Dir.empty?(root_dir)
-      return puts "[Nothing to compress!]".colorize.red
+      return puts "[Nothing to compress!]".colorize.dark_gray
     end
 
     # set flags

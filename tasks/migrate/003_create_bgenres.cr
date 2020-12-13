@@ -4,7 +4,7 @@ class Chivi::Migration::CreateBgenres
   include Clear::Migration
 
   def change(dir)
-    create_table(:bgenres) do |t|
+    create_table(:bgenres, id: :serial) do |t|
       t.column :zh_name, :string, unique: true, null: false
       t.column :vi_name, :string, null: false
       t.column :vi_slug, :string, unique: true, null: false

@@ -3,7 +3,7 @@ require "./_shared"
 class Chivi::ValueMap
   include FlatMap(String)
 
-  def upsert(key : String, value : String, mtime = TimeUtils.mtime) : Bool
+  def upsert(key : String, value : String, mtime = 0) : Bool
     if old_value = get_value(key)
       case get_mtime(key) <=> mtime
       when 1

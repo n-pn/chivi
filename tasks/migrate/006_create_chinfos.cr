@@ -4,7 +4,7 @@ class Chivi::Migration::CreateChtitles
   include Clear::Migration
 
   def change(dir)
-    create_table(:chtitles) do |t|
+    create_table(:chtitles, id: :serial) do |t|
       t.column :serial_id, :integer, null: false, index: true
       t.column :source_id, :integer, null: false
 
@@ -19,8 +19,8 @@ class Chivi::Migration::CreateChtitles
       t.column :vi_label, :string
       t.column :url_slug, :string
 
-      t.column :update_at, :integer, null: false, default: 0
-      t.column :access_at, :integer, null: false, default: 0
+      t.column :update_at, :int64, null: false, default: 0
+      t.column :access_at, :int64, null: false, default: 0
 
       t.column :word_count, :integer, null: false, default: 0
       t.column :read_count, :integer, null: false, default: 0

@@ -6,7 +6,7 @@ module Chivi::Library
   extend self
 
   DIR = "_db/cvdict/active"
-  FileUtils.mkdir_p(DIR)
+  ::FileUtils.mkdir_p(DIR)
 
   class_getter trungviet : VpDict { load_dict("trungviet", dtype: 1, dlock: 4) }
   class_getter cc_cedict : VpDict { load_dict("cc_cedict", dtype: 1, dlock: 4) }
