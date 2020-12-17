@@ -31,7 +31,7 @@
   }
 
   export async function dict_search(fetch, hanzi, dicts = ['dich-nhanh']) {
-    const url = `/_dicts/search/${hanzi}?dicts=${dicts.join('|')}`
+    const url = `_dicts/search/${hanzi}?dicts=${dicts.join('|')}`
     const res = await fetch(url)
     const data = await res.json()
 
@@ -39,7 +39,7 @@
   }
 
   export async function dict_upsert(fetch, dic, key, val = '') {
-    const url = `/_dicts/upsert/${dic}`
+    const url = `_dicts/upsert/${dic}`
     const res = await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -383,6 +383,7 @@
     padding: 0 0.75rem;
     height: 2rem;
     line-height: 2rem;
+
     @include border($sides: bottom);
     @include flex();
     @include flex-gap(0.75rem, $child: '.tab');
@@ -417,7 +418,7 @@
     &._active {
       @include bgcolor(#fff);
       @include fgcolor(primary, 6);
-      @include bdcolor($color: primary, $shade: 4, $sides: top-left-right);
+      @include bdcolor($color: primary, $shade: 4);
     }
   }
 
