@@ -1,6 +1,6 @@
 #! /bin/bash
 
-DIR=/home/deploy/www/chivi/config/services
+DIR=/home/nipin/www/chivi/config/services
 
 sudo cp "$DIR/chivi-srv.service" /etc/systemd/system/chivi-srv.service
 sudo cp "$DIR/chivi-web.service" /etc/systemd/system/chivi-web.service

@@ -6,7 +6,7 @@ rsync -azi "_db/cvdict/legacy" "$SSH/_db/cvdict"
 rsync -azi "_db/cvdict/active" "$SSH/_db/cvdict"
 # rsync -azi --exclude '*.tab' "_db/cvdict/active" "$SSH/_db/cvdict"
 
-DIR = "_db/_oldcv"
+DIR="_db/_oldcv"
 
 rsync -azi --no-p "$DIR/members" "$SSH/$DIR"
 rsync -azi --no-p "$DIR/serials" "$SSH/$DIR"
