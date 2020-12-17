@@ -39,7 +39,7 @@ const loader_dev = {
     preprocess,
     hydratable: true,
     hotReload: dev,
-    emitCss: false,
+    emitCss: !dev,
   },
 }
 
@@ -72,7 +72,7 @@ module.exports = {
         {
           test: /\.s?css$/,
           use: [
-            MiniCssExtractPlugin.loader,
+            !dev && MiniCssExtractPlugin.loader,
             'css-loader',
             !dev && {
               loader: 'postcss-loader',
@@ -104,8 +104,8 @@ module.exports = {
         'process.env.NODE_ENV': JSON.stringify(mode),
       }),
       new MiniCssExtractPlugin({
-        filename: '[hash]/[name].css',
-        chunkFilename: '[hash]/[name].[id].css',
+        // filename: '[hash]/[name].css',
+        // chunkFilename: '[hash]/[name].[id].css',
         ignoreOrder: true, // Enable to remove warnings about conflicting order
       }),
     ].filter(Boolean),
