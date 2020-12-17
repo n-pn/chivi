@@ -16,7 +16,7 @@
   import { self_uname, self_power } from '$src/stores'
 
   onMount(async () => {
-    const res = await fetch('_self')
+    const res = await fetch('/api/self')
     const data = await res.json()
 
     if (data._stt == 'ok') {

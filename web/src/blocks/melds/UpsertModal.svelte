@@ -31,7 +31,7 @@
   }
 
   export async function dict_search(fetch, hanzi, dicts = ['dich-nhanh']) {
-    const url = `_dicts/search/${hanzi}?dicts=${dicts.join('|')}`
+    const url = `/api/dicts/search/${hanzi}?dicts=${dicts.join('|')}`
     const res = await fetch(url)
     const data = await res.json()
 
@@ -39,7 +39,7 @@
   }
 
   export async function dict_upsert(fetch, dic, key, val = '') {
-    const url = `_dicts/upsert/${dic}`
+    const url = `/api/dicts/upsert/${dic}`
     const res = await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

@@ -32,7 +32,7 @@
   }
 
   async function load_chap(fetch, bslug, seed, scid, mode = 0) {
-    const url = `/_texts/${bslug}/${seed}/${scid}?mode=${mode}`
+    const url = `/api/texts/${bslug}/${seed}/${scid}?mode=${mode}`
     const res = await fetch(url)
 
     return res

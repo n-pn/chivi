@@ -10,7 +10,7 @@
   async function logout() {
     $self_uname = 'Khách'
     $self_power = -1
-    const res = await fetch('_logout')
+    const res = await fetch('api/logout')
   }
 
   let lastScrollTop = 0

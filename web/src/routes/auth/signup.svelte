@@ -12,7 +12,7 @@
   async function submit(evt) {
     error = null
 
-    const res = await fetch('_signup', {
+    const res = await fetch('api/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, uname, upass }),
@@ -52,7 +52,7 @@
 
 <Vessel>
   <section>
-    <form action="/_login" method="POST" on:submit|preventDefault={submit}>
+    <form action="/api/signup" method="POST" on:submit|preventDefault={submit}>
       <header>
         <img src="/chivi-logo.svg" alt="logo" /><span>Chivi</span>
       </header>

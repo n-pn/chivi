@@ -15,7 +15,7 @@
   export async function preload({ params, query }) {
     const bslug = params.book
 
-    const res = await this.fetch(`/_books/${bslug}`)
+    const res = await this.fetch(`/api/books/${bslug}`)
     const data = await res.json()
 
     if (res.status == 200) {
@@ -50,7 +50,7 @@
   }
 
   export async function fetch_chaps(api, bslug, sname, mode = 0) {
-    const url = `/_chaps/${bslug}/${sname}?mode=${mode}`
+    const url = `/api/chaps/${bslug}/${sname}?mode=${mode}`
 
     try {
       const res = await api(url)
@@ -118,7 +118,8 @@
     if (mark == new_mark) mark = ''
     else mark = new_mark
 
-    await fetch(`/_self/book_mark/${book.ubid}?mark=${mark}`, { method: 'PUT' })
+    const url = `/api/self/book_mark/${book.ubid}?mark=${mark}`
+    await fetch(url, { method: 'PUT' })
   }
 </script>
 

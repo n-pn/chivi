@@ -10,7 +10,7 @@ Kemal::Session.config do |config|
 end
 
 module Oldcv::Server
-  Kemal.config.port = ENV["PORT"].try(&.to_i?) || 5010
+  Kemal.config.port = ENV["PORT"]?.try(&.to_i?) || 5010
   serve_static false
 
   before_all do |env|

@@ -70,7 +70,7 @@
   async function convert() {
     // if ($self_power < 1) return
 
-    const url = `/_tools/convert?dname=dich-nhanh`
+    const url = `/api/tools/convert?dname=dich-nhanh`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

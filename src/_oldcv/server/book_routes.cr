@@ -34,7 +34,7 @@ module Oldcv::Server::Params
 end
 
 module Oldcv::Server
-  get "/_books" do |env|
+  get "/api/books" do |env|
     word = env.params.query.fetch("word", "")
     type = Params.search_type(env.params.query["type"]?)
 
@@ -68,7 +68,7 @@ module Oldcv::Server
     {items: items, total: total, query: opts}.to_json(env.response)
   end
 
-  get "/_books/:slug" do |env|
+  get "/api/books/:slug" do |env|
     slug = env.params.url["slug"]
 
     unless info = BookDB.find(slug)
@@ -89,7 +89,7 @@ module Oldcv::Server
     {book: info, mark: mark}.to_json(env.response)
   end
 
-  get "/_chaps/:slug/:seed" do |env|
+  get "/api/chaps/:slug/:seed" do |env|
     slug = env.params.url["slug"]
     seed = env.params.url["seed"]
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
@@ -120,7 +120,7 @@ module Oldcv::Server
     {chlist: chlist, mftime: mftime}.to_json(env.response)
   end
 
-  get "/_texts/:slug/:seed/:scid" do |env|
+  get "/api/texts/:slug/:seed/:scid" do |env|
     slug = env.params.url["slug"]
 
     unless info = BookDB.find(slug)

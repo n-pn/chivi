@@ -3,7 +3,7 @@ require "./_shared"
 module Oldcv::Server
   alias LookupEntry = Hash(String, Array(String))
 
-  post "/_dicts/lookup" do |env|
+  post "/api/dicts/lookup" do |env|
     dname = env.params.query.fetch("dname", "dich-nhanh")
     dicts = Engine::Library.for_convert(dname)
 
@@ -40,7 +40,7 @@ module Oldcv::Server
   # # default upsert dicts
   DICTS = "dich-nhanh|generic|hanviet"
 
-  get "/_dicts/search/:input" do |env|
+  get "/api/dicts/search/:input" do |env|
     input = env.params.url["input"]
     dicts = env.params.query.fetch("dicts", DICTS).split("|")
 
@@ -57,7 +57,7 @@ module Oldcv::Server
     }.to_json(env.response)
   end
 
-  put "/_dicts/upsert/:dic" do |env|
+  put "/api/dicts/upsert/:dic" do |env|
     dic = env.params.url["dic"]
     key = env.params.json["key"].as(String)
     val = env.params.json["val"].as(String?) || ""

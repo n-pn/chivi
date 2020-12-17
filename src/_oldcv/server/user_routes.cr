@@ -1,7 +1,7 @@
 require "./_shared"
 
 module Oldcv::Server
-  post "/_signup" do |env|
+  post "/api/signup" do |env|
     email = env.params.json["email"]?.as(String?) || ""
     uname = env.params.json["uname"]?.as(String?) || ""
     upass = env.params.json["upass"]?.as(String?) || ""
@@ -22,7 +22,7 @@ module Oldcv::Server
     {_stt: "err", _msg: err.message}.to_json(env.response)
   end
 
-  post "/_login" do |env|
+  post "/api/login" do |env|
     email = env.params.json["email"]?.as(String?) || ""
     upass = env.params.json["upass"]?.as(String?) || ""
 
@@ -33,12 +33,12 @@ module Oldcv::Server
     {_stt: "err", _msg: "email or password incorrect"}.to_json(env.response)
   end
 
-  get "/_logout" do |env|
+  get "/api/logout" do |env|
     env.session.destroy
     env.redirect("/")
   end
 
-  get "/_self" do |env|
+  get "/api/self" do |env|
     uslug = env.session.string("uslug")
     user = UserInfo.get!(uslug)
     {_stt: "ok", uname: user.uname, power: user.power}.to_json(env.response)
@@ -46,7 +46,7 @@ module Oldcv::Server
     {_stt: "err", _msg: "user not logged in"}.to_json(env.response)
   end
 
-  get "/_self/book_mark/:ubid" do |env|
+  get "/api/self/book_mark/:ubid" do |env|
     uslug = env.session.string("uslug")
     ubid = env.params.url["ubid"]
 
@@ -56,7 +56,7 @@ module Oldcv::Server
     {_stt: "err", _msg: "user not logged in"}.to_json(env.response)
   end
 
-  put "/_self/book_mark/:ubid" do |env|
+  put "/api/self/book_mark/:ubid" do |env|
     uslug = env.session.string("uslug")
     ubid = env.params.url["ubid"]
     mark = env.params.query["mark"]? || ""
@@ -72,7 +72,7 @@ module Oldcv::Server
     {_stt: "err", _msg: "user not logged in"}.to_json(env.response)
   end
 
-  get "/_users/:uname/marked_books" do |env|
+  get "/api/users/:uname/marked_books" do |env|
     uname = env.params.url["uname"]
     unless user = UserDB.find_by_uname(uname)
       halt env, status_code: 404, response: Utils.json_error("user not found!")

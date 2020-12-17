@@ -8,7 +8,7 @@ const dev = NODE_ENV === 'development'
 
 import { createProxyMiddleware } from 'http-proxy-middleware'
 
-const proxy = createProxyMiddleware('/_', {
+const proxy = createProxyMiddleware('/api/', {
   target: 'http://localhost:5010',
   changeOrigin: true,
   pathRewrite: (path) => encodeURI(path),

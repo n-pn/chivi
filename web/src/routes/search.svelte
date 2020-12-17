@@ -13,7 +13,7 @@
     const type = query.type || 'fuzzy'
 
     if (word) {
-      const url = `/_books?word=${word}&page=${page}&limit=${limit}&order=weight&type=${type}`
+      const url = `/api/books?word=${word}&page=${page}&limit=${limit}&order=weight&type=${type}`
       const res = await this.fetch(url)
       const data = await res.json()
       return { word, page, type, total: data.total, items: data.items }
