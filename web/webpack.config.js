@@ -32,30 +32,6 @@ const purgecss = require('@fullhuman/postcss-purgecss')({
   defaultExtractor: (content) => content.match(/[A-Za-z0-9-_:/]+/g) || [],
 })
 
-const loader_dev = {
-  loader: 'svelte-loader-hot',
-  options: {
-    dev,
-    preprocess,
-    hydratable: true,
-    hotReload: dev,
-    emitCss: !dev,
-  },
-}
-
-// const loader_prod = {
-//   loader: 'svelte-loader',
-//   options: {
-//     dev,
-//     preprocess,
-//     hydratable: true,
-//     hotReload: false,
-//     emitCss: false,
-//   },
-// }
-
-const svelte_loader = loader_dev
-
 // exports
 
 module.exports = {
@@ -67,12 +43,21 @@ module.exports = {
       rules: [
         {
           test: /\.(svelte|html)$/,
-          use: svelte_loader,
+          use: {
+            loader: 'svelte-loader-hot',
+            options: {
+              dev,
+              preprocess,
+              hydratable: true,
+              hotReload: dev,
+              emitCss: false,
+            },
+          },
         },
         {
           test: /\.s?css$/,
           use: [
-            !dev && MiniCssExtractPlugin.loader,
+            MiniCssExtractPlugin.loader,
             'css-loader',
             !dev && {
               loader: 'postcss-loader',
@@ -104,8 +89,8 @@ module.exports = {
         'process.env.NODE_ENV': JSON.stringify(mode),
       }),
       new MiniCssExtractPlugin({
-        // filename: '[hash]/[name].css',
-        // chunkFilename: '[hash]/[name].[id].css',
+        filename: '[hash]/[name].css',
+        chunkFilename: '[hash]/[name].[id].css',
         ignoreOrder: true, // Enable to remove warnings about conflicting order
       }),
     ].filter(Boolean),

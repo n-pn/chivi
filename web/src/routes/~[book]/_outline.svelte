@@ -31,7 +31,7 @@
   export let book
 
   $: vi_status = map_status(book.status)
-  $: book_url = `https://chivi.xyz/~${book.slug}/`
+  $: book_url = `https://chivi.xyz/~${book.slug}`
   $: book_intro = book.vi_intro.substring(0, 300)
   $: book_cover = `https://chivi.xyz/images/${book.ubid}.webp`
   $: updated_at = new Date(book.mftime)

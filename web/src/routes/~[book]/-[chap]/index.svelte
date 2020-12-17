@@ -37,9 +37,6 @@
 
     return res
   }
-
-  // let old_scid = ''
-  // let vc_count = 0
 </script>
 
 <script>
@@ -244,19 +241,9 @@
     padding: 0.5rem 0;
     @include flex($center: content);
     @include flex-gap($gap: 0.5rem, $child: ':global(*)');
-
-    // a {
-    //   @include bgcolor(neutral, 1);
-    //   &:hover {
-    //     @include bgcolor(neutral, 2);
-    //   }
-    // }
   }
 
   .bread {
-    // display: flex;
-    // flex-wrap: wrap;
-
     padding: 0.5rem 0;
     line-height: 1.25rem;
 
