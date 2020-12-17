@@ -1,5 +1,5 @@
 [Unit]
-Description=chivi-webapp
+Description=chivi webapp
 After=network.target
 StartLimitIntervalSec=0
 
@@ -8,7 +8,7 @@ Type=simple
 Restart=always
 RestartSec=5
 User=nipin
-Environment=PORT=5100
+Environment=PORT=5000
 WorkingDirectory=/home/nipin/www/chivi/web
 ExecStart=/usr/bin/node __sapper__/build
 

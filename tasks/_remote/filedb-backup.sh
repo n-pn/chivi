@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SSH=deploy@ssh.chivi.xyz:www/chivi
+SSH=deploy@dev.chivi.xyz:www/chivi
 
 rsync -azi --no-p "$SSH/_db/_oldcv/members" "_db/_oldcv"
 

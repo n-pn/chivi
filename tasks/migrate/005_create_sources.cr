@@ -5,11 +5,11 @@ class Chivi::Migration::CreateSources
 
   def change(dir)
     create_table(:sources, id: :serial) do |t|
-      t.column :serial_id, :integer, index: true, null: false
-
       t.column :name, :string, null: false
       t.column :sbid, :string, null: false
       t.index [:name, :sbid], unique: true
+
+      t.column :serial_id, :integer, index: true
 
       t.column :author, :string
       t.column :btitle, :string

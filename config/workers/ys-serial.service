@@ -1,5 +1,5 @@
 [Unit]
-Description=yousuu-infos
+Description=yousuu serial crawler
 After=network.target
 StartLimitIntervalSec=0
 
@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=oneshot
 User=nipin
 WorkingDirectory=/home/nipin/www/chivi/
-ExecStart=/usr/bin/ruby etc/script/yousuu/crawl_infos.rb
+ExecStart=/usr/bin/ruby tasks/workers/yousuu_infos.rb
 
 [Install]
 WantedBy=multi-user.target

@@ -10,15 +10,11 @@ Kemal::Session.config do |config|
 end
 
 module Oldcv::Server
-  Kemal.config.port = 5110
+  Kemal.config.port = ENV["PORT"].try(&.to_i?) || 5010
   serve_static false
 
   before_all do |env|
     env.response.content_type = "application/json"
-  end
-
-  get "/" do |env|
-    {msg: "Welcome to chivi!"}.to_json env.response
   end
 
   Kemal.run

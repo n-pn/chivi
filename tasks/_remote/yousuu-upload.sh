@@ -1,6 +1,6 @@
 #! /bin/bash
 
-REMOTE=deploy@ssh.chivi.xyz:www/chivi
+REMOTE=nipin@ssh.chivi.xyz:www/chivi
 
 PROXY_DIR=_db/_proxy
 PROXY_SSH="$REMOTE/$PROXY_DIR"

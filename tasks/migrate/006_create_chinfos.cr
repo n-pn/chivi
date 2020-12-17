@@ -1,18 +1,17 @@
 require "clear"
 
-class Chivi::Migration::CreateChtitles
+class Chivi::Migration::CreateChinfos
   include Clear::Migration
 
   def change(dir)
-    create_table(:chtitles, id: :serial) do |t|
-      t.column :serial_id, :integer, null: false, index: true
+    create_table(:chinfos, id: :serial) do |t|
       t.column :source_id, :integer, null: false
 
       t.column :scid, :string, null: false
-      t.index [:source_id, :scid], unique: true
+      t.index [:source_id, :scid]
 
       t.column :_index, :integer, null: false, default: 0
-      t.column :status, :integer, null: false, default: 0
+      t.index [:source_id, :_index], unique: true
 
       t.column :zh_title, :string, null: false
       t.column :vi_title, :string

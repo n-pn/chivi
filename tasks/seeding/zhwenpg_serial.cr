@@ -1,13 +1,4 @@
-require "json"
-require "myhtml"
-require "colorize"
-require "file_utils"
-
-require "../../src/shared/file_utils"
-require "../../src/shared/http_utils"
-require "../../src/shared/seed_utils"
-
-require "../../src/kernel/book_repo"
+require "./_seed_serial.cr"
 
 class Chivi::ZhwenpgParser
   def initialize(@node : Myhtml::Node, @status : Int32)
@@ -22,7 +13,7 @@ class Chivi::ZhwenpgParser
   getter bgenre : String { rows[2].css(".fontgt").first.inner_text }
 
   getter intro : Array(String) { extract_intro || [] of String }
-  getter cover : String { node.css("img").first.attributes["data-src"] }
+  getter cover : String { @node.css("img").first.attributes["data-src"] }
 
   getter mftime : String { rows[3].css(".fontime").first.inner_text }
   getter update : Time { SeedUtils.parse_time(mftime) }
@@ -33,11 +24,11 @@ class Chivi::ZhwenpgParser
   end
 end
 
-class Chivi::SeedZhwenpg
+class Chivi::Seeds::ZhwenpgSerial
   getter checked = Set(String).new
 
   def expiry(page : Int32 = 1)
-    Time.utc - 12.hours * page
+    Time.utc - 10.hours * page
   end
 
   def page_url(page : Int32, status = 0)
@@ -96,12 +87,12 @@ class Chivi::SeedZhwenpg
 
     serial.set_bgenre(parser.bgenre)
 
-    # .concat().uniq!
-    # serial.vi_bgenres.concat(bgenres.map(&.vi_name)).uniq!
-
     serial.status = status if serial.status < status
 
-    update_at = parser.update.to_unix
+    update_at = parser.update + 1.days
+    update_at = Time.utc if update_at > Time.utc
+    update_at = update_at.to_unix
+
     serial.update_at = update_at if serial.update_at < update_at
     serial.access_at = update_at if serial.access_at < update_at
 
@@ -114,13 +105,50 @@ class Chivi::SeedZhwenpg
 
     serial.save!
 
+    source = Source.upsert!("zhwenpg", sbid) do |x|
+      x.serial_id = serial.id
+
+      x.author = zh_author
+      x.btitle = zh_btitle
+      x.bgenre = parser.bgenre
+
+      x.intro = parser.intro.join("\n")
+      x.cover = parser.cover
+    end
+
+    source.status = status
+    source.update_at = update_at
+    source.access_at = Time.utc.to_unix
+    souce.save!
+
+    # spider = RmInfo.init("zhwenpg", sbid, expiry: parser.update)
+
+    # source.chap_count = spider.chlist.size
+    # source.save!
+
+    # spider.chlist.each_with_index do |info, index|
+    #   chinfo = Chinfo.new({
+    #     source_id: source.id,
+    #     _index:    (index + 1) * 10,
+    #     scid:      info.scid,
+    #     zh_title:  info.text,
+    #   })
+
+    #   chinfo.save! do |qry|
+    #     qry.on_conflict("(source_id, _index)").do_update do |upd|
+    #       upd.set(scid: info.scid, zh_title: info.text, vi_title: "", vi_label: "", url_slug: "")
+    #     end
+    #   end
+    # end
+
     puts "\n<#{label}> {#{sbid}} [#{zh_btitle}  #{zh_author}]"
   rescue err
     puts "ERROR: #{err}".colorize.red
   end
 end
 
-worker = Chivi::SeedZhwenpg.new
+worker = Chivi::Seeds::ZhwenpgSerial.new
+FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
 
 puts "\n[-- Load indexes --]".colorize.cyan.bold
 1.upto(3) { |page| worker.parse_page!(page, status: 1) }

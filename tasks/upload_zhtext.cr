@@ -4,11 +4,12 @@
 require "colorize"
 
 INP = "_db/zhtext"
-SSH = "nipin@ssh.nipin.xyz"
+# SSH = "deploy@dev.chivi.xyz"
+SSH = "nipin@ssh.chivi.xyz"
 OUT = "#{SSH}:www/chivi/_db/zhtext"
 
 def upload_texts(seed, flags = "")
-  puts `ssh #{SSH} mkdir -p ~/www/chivi/_db/zhtext/#{seed}`
+  puts `ssh #{SSH} mkdir -p /home/nipin/www/chivi/_db/zhtext/#{seed}`
 
   seed_dir = File.join(INP, seed)
   children = Dir.glob(File.join(seed_dir, "*.zip"))

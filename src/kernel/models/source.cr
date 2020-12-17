@@ -30,6 +30,13 @@ class Chivi::Source
   column view_count : Int32, presence: false
   column read_count : Int32, presence: false
 
-  # def self.upsert!
-  # end
+  def self.upsert!(name : String, sbid : String) : self
+    unless model = find({name: name, sbid: sbid})
+      model = new({name: name, sbid: sbid})
+      yield model
+      model.save!
+    end
+
+    model
+  end
 end
