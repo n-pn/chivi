@@ -11,13 +11,6 @@ class Chivi::Migration::CreateSources
 
       t.column :serial_id, :integer, index: true
 
-      t.column :author, :string
-      t.column :btitle, :string
-      t.column :bgenre, :string
-
-      t.column :intro, :string
-      t.column :cover, :string
-
       t.column :_order, :integer, null: false, default: "0"
       t.column :status, :integer, null: false, default: "0"
 

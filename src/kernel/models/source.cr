@@ -11,13 +11,6 @@ class Chivi::Source
   column name : String
   column sbid : String
 
-  column author : String?
-  column btitle : String?
-  column bgenre : String?
-
-  column intro : String?
-  column cover : String?
-
   column _order : Int32, presence: false
   column status : Int32, presence: false
 
@@ -29,6 +22,18 @@ class Chivi::Source
 
   column view_count : Int32, presence: false
   column read_count : Int32, presence: false
+
+  def set_status(new_status : Int32, force : Bool = false)
+    self.status = new_status if force || new_status > self.status
+  end
+
+  def set_update(mftime : Int64, force : Bool = false)
+    self.update_at = mftime if force || mftime > self.update_at
+  end
+
+  def set_access(mftime : Int64, force : Bool = false)
+    self.access_at = mftime if force || mftime > self.access_at
+  end
 
   def self.upsert!(name : String, sbid : String) : self
     unless model = find({name: name, sbid: sbid})

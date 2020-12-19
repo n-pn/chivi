@@ -65,12 +65,24 @@ class Chivi::Serial
     bgenres = Bgenre.upsert_all!(zh_genre)
 
     ids = bgenre_ids_column.value([] of Int32)
-    self.bgenre_ids = ids.concat(bgenres.map(&.id))
+    self.bgenre_ids = ids.concat(bgenres.map(&.id)).uniq
 
     names = vi_bgenres_column.value([] of String)
-    self.vi_bgenres = names.concat(bgenres.map(&.vi_name))
+    self.vi_bgenres = names.concat(bgenres.map(&.vi_name)).uniq
 
     self
+  end
+
+  def set_status(new_status : Int32, force : Bool = false)
+    self.status = new_status if force || new_status > self.status
+  end
+
+  def set_update(mftime : Int64, force : Bool = false)
+    self.update_at = mftime if force || mftime > self.update_at
+  end
+
+  def set_access(mftime : Int64, force : Bool = false)
+    self.access_at = mftime if force || mftime > self.access_at
   end
 
   def fix_hv_slug!(slug : String? = nil)
@@ -105,6 +117,8 @@ class Chivi::Serial
   end
 
   def set_intro(zh_intro : Array(String), intro_by : String)
+    return if zh_intro.empty?
+
     self.zh_intro = zh_intro.join("\n")
     self.intro_by = intro_by
 
@@ -112,16 +126,16 @@ class Chivi::Serial
     self.vi_intro = zh_intro.map { |line| mtl.cv_plain(line).to_text }.join("\n")
   end
 
-  def self.find(author : Author, btitle : Btitle)
-    find({author_id: author.id, btitle_id: btitle.id})
+  def self.find(btitle : Btitle, author : Author)
+    find({btitle_id: btitle.id, author_id: author.id})
   end
 
-  def self.upsert!(zh_author : String, zh_btitle : String) : self
-    author = Author.upsert!(zh_author)
+  def self.upsert!(zh_btitle : String, zh_author : String) : self
     btitle = Btitle.upsert!(zh_btitle)
+    author = Author.upsert!(zh_author)
 
-    unless model = find(author, btitle)
-      model = new({author_id: author.id, btitle_id: btitle.id})
+    unless model = find(btitle, author)
+      model = new({btitle: btitle, author: author})
 
       # TODO: replace `--` with `  `
       zh_slug = CoreUtils.digest32("#{btitle}--#{author}")
