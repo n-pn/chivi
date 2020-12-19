@@ -1,9 +1,10 @@
 require "colorize"
+require "../../src/shared/zip_store"
 
-INP = "_db/prime/chdata/texts"
+DIR = "_db/zhtext"
 
 def archive(seed : String)
-  seed_path = File.join(INP, seed)
+  seed_path = "#{DIR}/#{seed}"
   unless File.exists?(seed_path) && File.directory?(seed_path)
     return puts "#{seed} not found!".colorize.red
   end
@@ -16,14 +17,15 @@ def archive(seed : String)
     zip_name = File.join(seed_path, "#{book_uid}.zip")
 
     puts "- <#{idx + 1}/#{book_dirs.size}> [#{seed}/#{book_uid}.zip]".colorize.blue
-    puts `zip -rjm "#{zip_name}" #{File.join(book_dir, "*.txt")}`
+    zip_file = Chivi::ZipStore.new(zip_name, book_dir)
+    zip_file.compress!(:archive)
   rescue err
     puts err.colorize.red
     gets
   end
 end
 
-seeds = ARGV.empty? ? Dir.children(INP) : ARGV
+seeds = ARGV.empty? ? Dir.children(DIR) : ARGV
 seeds.each do |seed|
   archive(seed)
 end

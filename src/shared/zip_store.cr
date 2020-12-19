@@ -79,10 +79,6 @@ class Chivi::ZipStore
       return puts "[Nothing to compress!]".colorize.dark_gray
     end
 
-    # set flags
-    # `-j` means remove folder root
-    # `-q` means quiet output mode
-
     flags = zip_flags(mode)
 
     puts "[Add files to zip: <#{@zip_file}>]"
@@ -90,6 +86,10 @@ class Chivi::ZipStore
   end
 
   def zip_flags(mode : Symbol)
+    # zip flags:
+    # `-j` means remove folder root
+    # `-q` means quiet output mode
+
     case mode
     when :archive
       "-jqm" # move file to zip
