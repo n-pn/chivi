@@ -1,6 +1,6 @@
 require "clear"
 
-class Chivi::Migration::CreateSerials
+class Chivi::Migration::CreateSerialsTable
   include Clear::Migration
 
   def change(dir)

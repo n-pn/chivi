@@ -1,6 +1,6 @@
 require "./_models"
 require "./serial"
-require "./source"
+require "./chseed"
 
 # Chapter info
 class Chivi::Chinfo
@@ -10,7 +10,7 @@ class Chivi::Chinfo
   primary_key type: :serial
   timestamps
 
-  belongs_to source : Source, foreign_key_type: Int32
+  belongs_to chseed : Chseed, foreign_key_type: Int32
 
   column scid : String
   column text : String
@@ -26,16 +26,16 @@ class Chivi::Chinfo
   column word_count : Int32, presence: false
   column read_count : Int32, presence: false
 
-  def self.glob(source_id : Int32, limit = 50, offset = 0, order_by = :asc)
-    query.where(source_id: source_id)
+  def self.glob(chseed_id : Int32, limit = 50, offset = 0, order_by = :asc)
+    query.where(chseed_id: chseed_id)
       .limit(limit).offset(offset)
       .order_by("_ord", order_by)
   end
 
-  def self.bulk_upsert!(source : Source, new_chaps : Array(String), force : Bool = false) : Nil
-    return if !force && source.chap_count == new_chaps.size
+  def self.bulk_upsert!(chseed : Chseed, new_chaps : Array(String), force : Bool = false) : Nil
+    return if !force && chseed.chap_count == new_chaps.size
 
-    old_chaps = glob(source.id, limit: 100000).to_a
+    old_chaps = glob(chseed.id, limit: 100000).to_a
 
     old_chaps.each_with_index do |old_chap, idx|
       next unless new_chap = new_chaps[idx]?
@@ -59,11 +59,11 @@ class Chivi::Chinfo
       new_scid, new_text = new_chap.split('\t')
 
       chinfo = Chinfo.new({
-        source: source, _ord: (idx + 1) * 10, scid: new_scid, text: new_text,
+        chseed: chseed, _ord: (idx + 1) * 10, scid: new_scid, text: new_text,
       })
 
       chinfo.save! do |qry|
-        qry.on_conflict("(source_id, _ord)").do_update do |upd|
+        qry.on_conflict("(chseed_id, _ord)").do_update do |upd|
           upd.set(
             scid: new_scid, text: new_text,
             title: nil, label: nil, uslug: nil)
@@ -71,9 +71,9 @@ class Chivi::Chinfo
       end
     end
 
-    if source.chap_count < new_chaps.size
-      source.chap_count = new_chaps.size
-      source.save!
+    if chseed.chap_count < new_chaps.size
+      chseed.chap_count = new_chaps.size
+      chseed.save!
     end
   end
 end

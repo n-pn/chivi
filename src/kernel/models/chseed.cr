@@ -1,14 +1,14 @@
 require "./_models"
 require "./serial"
 
-class Chivi::Source
+class Chivi::Chseed
   include Clear::Model
-  self.table = "sources"
+  self.table = "chseeds"
 
   primary_key type: :serial
   belongs_to serial : Serial, foreign_key_type: Int32
 
-  column name : String
+  column seed : String
   column sbid : String
 
   column _order : Int32, presence: false
@@ -35,9 +35,9 @@ class Chivi::Source
     self.access_at = mftime if force || mftime > self.access_at
   end
 
-  def self.upsert!(name : String, sbid : String) : self
-    unless model = find({name: name, sbid: sbid})
-      model = new({name: name, sbid: sbid})
+  def self.upsert!(seed : String, sbid : String) : self
+    unless model = find({seed: seed, sbid: sbid})
+      model = new({seed: seed, sbid: sbid})
       yield model
       model.save!
     end

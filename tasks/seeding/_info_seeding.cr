@@ -107,11 +107,11 @@ class Chivi::InfoSeeding
     serial.save!
   end
 
-  def upsert_source!(sbid : String, serial_id : Int32)
-    source = Source.upsert!(@name, sbid, &.serial_id = serial_id)
-    source.set_update(get_update(sbid))
-    source.set_access(Time.utc.to_unix)
-    source.save!
+  def upsert_chseed!(sbid : String, serial_id : Int32)
+    chseed = Chseed.upsert!(@name, sbid, &.serial_id = serial_id)
+    chseed.set_update(get_update(sbid))
+    chseed.set_access(Time.utc.to_unix)
+    chseed.save!
   end
 
   def save!

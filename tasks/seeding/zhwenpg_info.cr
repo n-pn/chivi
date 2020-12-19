@@ -107,8 +107,8 @@ class Chivi::ZhwenpgInfoSeeding
         end
       end
 
-      source = @seeding.upsert_source!(sbid, serial.id)
-      Chinfo.bulk_upsert!(source, @seeding.get_chaps(sbid))
+      chseed = @seeding.upsert_chseed!(sbid, serial.id)
+      Chinfo.bulk_upsert!(chseed, @seeding.get_chaps(sbid))
 
       puts "- <#{idx + 1}/#{@checked.size}> [#{serial.hv_slug}] saved!".colorize.yellow
     end

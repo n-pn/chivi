@@ -1,6 +1,6 @@
 require "clear"
 
-class Chivi::Migration::CreateAuthor
+class Chivi::Migration::CreateAuthorsTable
   include Clear::Migration
 
   def change(dir)

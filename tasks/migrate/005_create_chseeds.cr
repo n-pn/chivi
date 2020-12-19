@@ -1,13 +1,13 @@
 require "clear"
 
-class Chivi::Migration::CreateSources
+class Chivi::Migration::CreateChseedsTable
   include Clear::Migration
 
   def change(dir)
-    create_table(:sources, id: :serial) do |t|
-      t.column :name, :string, null: false
+    create_table(:chseeds, id: :serial) do |t|
+      t.column :seed, :string, null: false
       t.column :sbid, :string, null: false
-      t.index [:name, :sbid], unique: true
+      t.index [:seed, :sbid], unique: true
 
       t.column :serial_id, :integer, index: true
 

@@ -1,6 +1,6 @@
 require "clear"
 
-class Chivi::Migration::CreateBgenres
+class Chivi::Migration::CreateBgenresTable
   include Clear::Migration
 
   def change(dir)

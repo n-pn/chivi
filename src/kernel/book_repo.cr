@@ -3,7 +3,7 @@ require "./models/btitle"
 require "./models/bgenre"
 require "./models/serial"
 
-require "./models/source"
+require "./models/chseed"
 require "./models/chinfo"
 require "./models/chtext"
 
