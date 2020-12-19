@@ -113,7 +113,7 @@ class Oldcv::OrderMap
 
   def upsert(key : String, val : Int64, force = false) : Node?
     if node = fetch(key)
-      return unless force || node.val < val
+      return unless force || node.val != val
 
       node.val = val
       @first.set_right(node) if val >= @first.right!.val

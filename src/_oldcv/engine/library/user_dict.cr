@@ -31,7 +31,10 @@ class Oldcv::Engine::UserDict
 
   def load!(file : String = @file) : Void
     FileUtil.each_line(file, LABEL) do |line|
-      insert(DictEdit.parse!(line), freeze: false)
+      item = DictEdit.parse!(line)
+      # fix for old entries
+      item.power = @power if item.power < power
+      insert(item, freeze: false)
     rescue err
       FileUtil.log_error(LABEL, line, err)
     end

@@ -167,6 +167,6 @@ end
 worker = Oldcv::MapZhwenpg.new
 
 1.upto(3) { |page| worker.parse_page!(page, status: 1) }
-1.upto(12) { |page| worker.parse_page!(page, status: 0) }
+1.upto(10) { |page| worker.parse_page!(page, status: 0) }
 
 worker.save_indexes!

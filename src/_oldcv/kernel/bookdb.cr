@@ -57,9 +57,9 @@ module Oldcv::BookDB
     set_status(info, source.status, force: force)
     set_mftime(info, source.mftime, force: force)
 
-    set_voters(info, source.voters, force: force)
-    set_rating(info, source.rating, force: force)
-    set_weight(info, source.weight, force: force)
+    set_voters(info, source.voters, force: true)
+    set_rating(info, source.rating, force: true)
+    set_weight(info, source.weight, force: true)
 
     info.yousuu_bid = source.ysid
     info.origin_url = source.origin_url
@@ -112,8 +112,8 @@ module Oldcv::BookDB
   def upsert_info(info : BookInfo, force = false)
     return unless force || info.slug.empty?
 
-    Utils.update_token(Oldcv::TokenMap.zh_title, info.ubid, info.zh_title)
-    Utils.update_token(Oldcv::TokenMap.zh_author, info.ubid, info.zh_author)
+    Utils.update_token(TokenMap.zh_title, info.ubid, info.zh_title)
+    Utils.update_token(TokenMap.zh_author, info.ubid, info.zh_author)
 
     set_hv_title(info, force: force)
     set_vi_title(info, force: force)

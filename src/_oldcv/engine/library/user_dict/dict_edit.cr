@@ -20,11 +20,11 @@ class Oldcv::Engine::DictEdit
   end
 
   getter key : String
-  getter val : String
+  property val : String
 
-  getter mtime : Int32  # time by total minutes since `EPOCH`
-  getter uname : String # user handle dname
-  getter power : Int32  # entry lock level
+  property mtime : Int32  # time by total minutes since `EPOCH`
+  property uname : String # user handle dname
+  property power : Int32  # entry lock level
 
   def initialize(@key, @val = "", @mtime = DictEdit.mtime, @uname = "Guest", @power = 1)
   end
