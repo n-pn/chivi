@@ -21,7 +21,7 @@ targets:
     main: tasks/_oldcv/map_remote.cr
 
   fetch_covers:
-    main: tasks/_cover/fetch_covers.cr
+    main: tasks/seeding/fetch_covers.cr
 
   preload_texts:
     main: tasks/routine/preload_texts.cr
