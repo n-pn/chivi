@@ -57,7 +57,7 @@
   {#if books.length == 0}
     <div class="empty">Danh sách trống</div>
   {:else}
-    <BookList {books} />
+    <BookList {books} atab="content" />
 
     <div class="pagi">
       <a

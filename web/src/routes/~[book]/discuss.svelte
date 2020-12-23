@@ -17,22 +17,19 @@
   export let mark = ''
 </script>
 
-<Serial {book} {mark} atab="overview">
-  <div class="summary">
-    <h2>Giới thiệu:</h2>
-    {#each book.vi_intro.split('\n') as line}
-      <p>{line}</p>
-    {/each}
-  </div>
+<Serial {book} {mark} atab="threads">
+  <div class="empty">Chưa hoàn thiện :(</div>
 </Serial>
 
 <style lang="scss">
-  .summary {
-    p {
-      margin: 0.75rem 0;
-      word-wrap: break-word;
-      @include fgcolor(neutral, 7);
-      @include props(font-size, rem(15px), rem(16px), rem(17px));
-    }
+  .empty {
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-style: italic;
+    @include font-size(4);
+    @include fgcolor(neutral, 5);
   }
 </style>

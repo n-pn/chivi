@@ -75,7 +75,7 @@ module Oldcv::Server
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
 
-    # BookDB.bump_access(info)
+    BookDB.bump_access(info)
     # BookDB.inc_counter(info, read: false)
 
     if uslug = env.session.string?("uslug")
@@ -89,35 +89,40 @@ module Oldcv::Server
     {book: info, mark: mark}.to_json(env.response)
   end
 
-  get "/api/chaps/:slug/:seed" do |env|
-    slug = env.params.url["slug"]
-    seed = env.params.url["seed"]
-    mode = env.params.query["mode"]?.try(&.to_i?) || 0
+  get "/api/chaps/:ubid/:seed" do |env|
+    ubid = env.params.url["ubid"]
 
-    unless info = BookDB.find(slug)
+    unless info = BookInfo.get(ubid)
       halt env, status_code: 404, response: Utils.json_error("Book not found!")
     end
+
+    seed = env.params.url["seed"]
+    mode = env.params.query["mode"]?.try(&.to_i?) || 0
 
     unless fetched = Kernel.load_list(info, seed, mode: mode)
       halt env, status_code: 404, response: Utils.json_error("Seed not found!")
     end
 
-    BookDB.bump_access(info, Time.utc.to_unix_ms)
-    # BookDB.inc_counter(info, read: false)
+    chdata, mftime = fetched
 
-    chlist, mftime = fetched
-    chlist = chlist.chaps.map do |chap|
+    limit = env.params.query["limit"]?.try(&.to_i?) || 30
+    limit = 30 if limit > 30
+    offset = env.params.query["offset"]?.try(&.to_i?) || 0
+    offset = 0 if offset < 0
+
+    chlist = chdata.chaps[offset, limit].map do |chap|
       {
-        scid:     chap.scid,
-        vi_label: chap.vi_label,
-        vi_title: chap.vi_title,
-        url_slug: chap.url_slug,
+        scid:  chap.scid,
+        label: chap.vi_label,
+        title: chap.vi_title,
+        uslug: chap.url_slug,
       }
     end
 
     env.response.headers.add("ETag", mftime.to_s)
     env.response.headers.add("Cache-Control", "max-age=300")
-    {chlist: chlist, mftime: mftime}.to_json(env.response)
+
+    {total: chdata.chaps.size, chaps: chlist}.to_json(env.response)
   end
 
   get "/api/texts/:slug/:seed/:scid" do |env|
