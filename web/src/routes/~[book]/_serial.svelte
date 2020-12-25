@@ -200,7 +200,7 @@
         class="header-tab"
         class:_active={atab == 'content'}
         rel="{$anchor_rel}}">
-        Mục lục
+        Chương tiết
       </a>
 
       <a

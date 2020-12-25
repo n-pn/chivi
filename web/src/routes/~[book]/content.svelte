@@ -81,8 +81,8 @@
       if (new_page < 1) new_page = 1
       if (new_page > pmax) new_page = pmax
 
-      url.searchParams.set('page', page)
       page = new_page
+      url.searchParams.set('page', page)
     } else {
       opts.page = page
     }
@@ -176,8 +176,8 @@
               <a
                 class="-item"
                 class:_active={seed === name}
-                href={page_url(name, page)}
-                on:click={(e) => reload(e, { seed: name })}
+                href={page_url(name, 1)}
+                on:click={(e) => reload(e, { seed: name, page: 1 })}
                 rel={$anchor_rel}>
                 <span class="-name">{name}</span>
                 <span class="-time">
