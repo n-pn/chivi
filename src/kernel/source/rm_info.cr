@@ -19,18 +19,18 @@ module Chivi::RmInfo
 
   def parser_for(seed : String) : Class
     case seed
-    when "5200"       then Ri5200
-    when "jx_la"      then RiJx_la
-    when "69shu"      then Ri69shu
-    when "nofff"      then RiNofff
-    when "rengshu"    then RiRengshu
-    when "xbiquge"    then RiXbiquge
-    when "paoshu8"    then RiPaoshu8
-    when "duokan8"    then RiDuokan8
-    when "shubaow"    then RiShubaow
-    when "hetushu"    then RiHetushu
-    when "zhwenpg"    then RiZhwenpg
-    when "biquge5200" then RiBiquge5200
+    when "5200"       then RI_5200
+    when "jx_la"      then RI_Jx_la
+    when "69shu"      then RI_69shu
+    when "nofff"      then RI_Nofff
+    when "rengshu"    then RI_Rengshu
+    when "xbiquge"    then RI_Xbiquge
+    when "paoshu8"    then RI_Paoshu8
+    when "duokan8"    then RI_Duokan8
+    when "shubaow"    then RI_Shubaow
+    when "hetushu"    then RI_Hetushu
+    when "zhwenpg"    then RI_Zhwenpg
+    when "biquge5200" then RI_Biquge5200
     else                   raise "Unsupported remote source <#{seed}>!"
     end
   end
@@ -66,7 +66,7 @@ module Chivi::RmInfo
 
   alias ChList = Array(ChInfo)
 
-  class RiBase
+  class RI_Generic
     # input
 
     getter html_url : String
@@ -183,33 +183,33 @@ module Chivi::RmInfo
     end
   end
 
-  class RiNofff < RiBase; end
+  class RI_Nofff < RI_Generic; end
 
-  class RiPaoshu8 < RiBase; end
+  class RI_Paoshu8 < RI_Generic; end
 
-  class RiXbiquge < RiBase; end
+  class RI_Xbiquge < RI_Generic; end
 
-  class RiShubaow < RiBase; end
+  class RI_Shubaow < RI_Generic; end
 
-  class RiRengshu < RiBase; end
+  class RI_Rengshu < RI_Generic; end
 
-  class Ri5200 < RiBase
+  class RI_5200 < RI_Generic
     getter chlist : ChList { extract_chlist(".listmain > dl") }
   end
 
-  class RiBiquge5200 < RiBase
+  class RI_Biquge5200 < RI_Generic
     def raw_update
       node_text("#info > p:last-child").not_nil!.sub("最后更新：", "")
     end
   end
 
-  class RiJx_la < RiBase
+  class RI_Jx_la < RI_Generic
     def raw_cover
       meta_data("og:image").try(&.sub("qu.la", "jx.la"))
     end
   end
 
-  class RiDuokan8 < RiBase
+  class RI_Duokan8 < RI_Generic
     getter chlist : ChList { extract_chlist }
 
     private def extract_chlist
@@ -225,7 +225,7 @@ module Chivi::RmInfo
     end
   end
 
-  class RiHetushu < RiBase
+  class RI_Hetushu < RI_Generic
     getter author : String { node_text("h2") || "" }
     getter btitle : String { node_text(".book_info a:first-child") || "" }
     getter intro : Array(String) { rdoc.css(".intro > p").map(&.inner_text).to_a }
@@ -253,7 +253,7 @@ module Chivi::RmInfo
     end
   end
 
-  class RiZhwenpg < RiBase
+  class RI_Zhwenpg < RI_Generic
     getter author : String { node_text(".fontwt") || "" }
     getter btitle : String { node_text(".cbooksingle h2") || "" }
     getter bgenre = ""
@@ -292,7 +292,7 @@ module Chivi::RmInfo
     end
   end
 
-  class Ri69shu < RiBase
+  class RI_69shu < RI_Generic
     getter author : String { node_text(".mu_beizhu > a[target]") || "" }
     getter btitle : String { node_text(".weizhi > a:last-child") || "" }
     getter bgenre : String { node_text(".weizhi > a:nth-child(2)") || "" }

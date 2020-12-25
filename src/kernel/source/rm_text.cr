@@ -21,18 +21,18 @@ module Chivi::RmText
 
   def parser_for(seed : String) : Class
     case seed
-    when "5200"       then Rt5200
-    when "jx_la"      then RtJx_la
-    when "69shu"      then Rt69shu
-    when "nofff"      then RtNofff
-    when "rengshu"    then RtRengshu
-    when "xbiquge"    then RtXbiquge
-    when "paoshu8"    then RtPaoshu8
-    when "duokan8"    then RtDuokan8
-    when "shubaow"    then RtShubaow
-    when "hetushu"    then RtHetushu
-    when "zhwenpg"    then RtZhwenpg
-    when "biquge5200" then RtBiquge5200
+    when "5200"       then RT_5200
+    when "jx_la"      then RT_Jx_la
+    when "69shu"      then RT_69shu
+    when "nofff"      then RT_Nofff
+    when "rengshu"    then RT_Rengshu
+    when "xbiquge"    then RT_Xbiquge
+    when "paoshu8"    then RT_Paoshu8
+    when "duokan8"    then RT_Duokan8
+    when "shubaow"    then RT_Shubaow
+    when "hetushu"    then RT_Hetushu
+    when "zhwenpg"    then RT_Zhwenpg
+    when "biquge5200" then RT_Biquge5200
     else                   raise "Unsupported remote source <#{seed}>!"
     end
   end
@@ -60,7 +60,7 @@ module Chivi::RmText
     "#{sbid.to_i // 1000}_#{sbid}/#{scid}.html"
   end
 
-  class RtBase
+  class RT_Generic
     # input
 
     getter html_url : String
@@ -107,11 +107,11 @@ module Chivi::RmText
     end
   end
 
-  class Rt69shu < RtBase
+  class RT_69shu < RT_Generic
     getter paras : Array(String) { raw_paras(".yd_text2") }
   end
 
-  class Rt5200 < RtBase
+  class RT_5200 < RT_Generic
     getter paras : Array(String) { extract_paras }
 
     def extract_paras
@@ -121,7 +121,7 @@ module Chivi::RmText
     end
   end
 
-  class RtJx_la < RtBase
+  class RT_Jx_la < RT_Generic
     getter paras : Array(String) { extract_paras }
 
     def extract_paras
@@ -131,7 +131,7 @@ module Chivi::RmText
     end
   end
 
-  class RtNofff < RtBase
+  class RT_Nofff < RT_Generic
     getter paras : Array(String) { extract_paras }
 
     def extract_paras
@@ -144,9 +144,9 @@ module Chivi::RmText
     end
   end
 
-  class RtPaoshu8 < RtBase; end
+  class RT_Paoshu8 < RT_Generic; end
 
-  class RtXbiquge < RtBase
+  class RT_Xbiquge < RT_Generic
     getter paras : Array(String) { extract_paras }
 
     def extract_paras
@@ -156,13 +156,13 @@ module Chivi::RmText
     end
   end
 
-  class RtShubaow < RtBase; end
+  class RT_Shubaow < RT_Generic; end
 
-  class RtRengshu < RtBase; end
+  class RT_Rengshu < RT_Generic; end
 
-  class RtBiquge5200 < RtBase; end
+  class RT_Biquge5200 < RT_Generic; end
 
-  class RtZhwenpg < RtBase
+  class RT_Zhwenpg < RT_Generic
     getter title : String { raw_title("h2") }
     getter paras : Array(String) { extract_paras }
 
@@ -177,7 +177,7 @@ module Chivi::RmText
     end
   end
 
-  class RtHetushu < RtBase
+  class RT_Hetushu < RT_Generic
     getter title : String { raw_title("#content .h2") }
     getter paras : Array(String) { extract_paras }
 
@@ -231,7 +231,7 @@ module Chivi::RmText
     end
   end
 
-  class RtDuokan8 < RtBase
+  class RT_Duokan8 < RT_Generic
     getter title : String { extract_title }
     getter paras : Array(String) { extract_paras }
 
