@@ -34,10 +34,9 @@
     if (opts.desc) url += `&order=desc`
     if (opts.mode && opts.mode > 0) url += `&mode=${opts.mode}`
 
-    const res = await api(url)
-    const data = await res.json()
-
     try {
+      const res = await api(url)
+      const data = await res.json()
       if (res.ok) return data
       else throw data.msg
     } catch (err) {
@@ -181,7 +180,6 @@
                 class="-item"
                 class:_active={seed === name}
                 href={page_url(name, 1)}
-                on:click={(e) => reload(e, { seed: name, page: 1 })}
                 rel={$anchor_rel}>
                 <span class="-name">{name}</span>
                 <span class="-time">
