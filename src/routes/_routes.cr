@@ -46,17 +46,6 @@ module Chivi::Server::Utils
     limit < 1 || limit > upper ? upper : limit
   end
 
-  def json_error(message : String)
-    {_stt: "err", _msg: message}.to_json
-  end
-
-  def return_user(env, user : Oldcv::UserInfo)
-    env.session.string("uslug", user.uslug)
-    json(env) do |res|
-      {_stt: "ok", uname: user.uname, power: user.power}.to_json(res)
-    end
-  end
-
   def json(env, cached = 0)
     if cached > 0
       env.response.headers.add("ETag", cached.to_s)
@@ -65,6 +54,17 @@ module Chivi::Server::Utils
 
     env.response.content_type = "application/json"
     yield env.response
+  end
+
+  def json_error(env, message : String)
+    {_stt: "err", _msg: message}.to_json
+  end
+
+  def return_user(env, user : Oldcv::UserInfo)
+    env.session.string("uslug", user.uslug)
+    json(env) do |res|
+      {_stt: "ok", uname: user.uname, power: user.power}.to_json(res)
+    end
   end
 
   def books_json(io : IO, books : Array(Oldcv::BookInfo), total = books.size)

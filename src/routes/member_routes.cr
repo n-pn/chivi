@@ -80,7 +80,7 @@ module Chivi::Server
   get "/api/users/:uname/marked_books" do |env|
     uname = env.params.url["uname"]
     unless user = Oldcv::UserDB.find_by_uname(uname)
-      halt env, status_code: 404, response: Utils.json_error("user not found!")
+      halt env, status_code: 404, response: "user not found!"
     end
 
     mark = env.params.query["mark"]? || "reading"

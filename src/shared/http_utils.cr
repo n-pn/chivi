@@ -18,13 +18,22 @@ module Chivi::HttpUtils
 
   def client_for(uri : URI)
     CLIENTS[uri.host.not_nil!] ||= begin
-      client = HTTP::Client.new(uri)
+      client = HTTP::Client.new(uri, tls: tls_for(uri))
 
       client.dns_timeout = 20
       client.connect_timeout = 20
       client.read_timeout = 40
 
       client
+    end
+  end
+
+  def tls_for(uri : URI)
+    case uri.host
+    when "novel.zhwenpg.com", "www.nofff.com"
+      OpenSSL::SSL::Context::Client.insecure
+    else
+      uri.scheme == "https"
     end
   end
 
@@ -50,15 +59,6 @@ module Chivi::HttpUtils
     sleep 500.milliseconds * try
     get_html(client, path, encoding, try: try + 1)
   end
-
-  # def tls_for(uri : URI)
-  #   case uri
-  #   when "novel.zhwenpg.com"
-  #     OpenSSL::SSL::Context::Client.insecure
-  #   else
-  #     uri.scheme == "https"
-  #   end
-  # end
 
   def encoding_for(uri : URI)
     case uri.host

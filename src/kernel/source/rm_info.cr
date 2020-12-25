@@ -45,16 +45,16 @@ module Chivi::RmInfo
     when "xbiquge"    then "https://www.xbiquge.cc/book/#{sbid}/"
     when "zhwenpg"    then "https://novel.zhwenpg.com/b.php?id=#{sbid}"
     when "hetushu"    then "https://www.hetushu.com/book/#{sbid}/index.html"
-    when "duokan8"    then "http://www.duokan8.com/#{prefix_sbid(sbid)}/"
-    when "paoshu8"    then "http://www.paoshu8.com/#{prefix_sbid(sbid)}/"
-    when "5200"       then "https://www.5200.tv/#{prefix_sbid(sbid)}/"
-    when "shubaow"    then "https://www.shubaow.net/#{prefix_sbid(sbid)}/"
-    when "biquge5200" then "https://www.biquge5200.com/#{prefix_sbid(sbid)}/"
+    when "duokan8"    then "http://www.duokan8.com/#{prefixed(sbid)}/"
+    when "paoshu8"    then "http://www.paoshu8.com/#{prefixed(sbid)}/"
+    when "5200"       then "https://www.5200.tv/#{prefixed(sbid)}/"
+    when "shubaow"    then "https://www.shubaow.net/#{prefixed(sbid)}/"
+    when "biquge5200" then "https://www.biquge5200.com/#{prefixed(sbid)}/"
     else                   raise "Unsupported remote source <#{seed}>!"
     end
   end
 
-  private def prefix_sbid(sbid : String)
+  private def prefixed(sbid : String)
     "#{sbid.to_i // 1000}_#{sbid}"
   end
 
