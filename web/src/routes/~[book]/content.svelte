@@ -1,6 +1,7 @@
 <script context="module">
   export async function preload({ params, query }) {
     const bslug = params.book
+    const desc = query.order == 'desc'
 
     const res = await this.fetch(`/api/books/${bslug}`)
     const data = await res.json()
@@ -12,17 +13,20 @@
     const seed = query.seed || book.seed_names[0] || ''
     const page = +(query.page || 1)
 
-    const res2 = await fetch_data(this.fetch, book.ubid, seed, page, 0)
-    return { book, mark, seed, page, chaps: res2.chaps, total: res2.total }
+    const res2 = await fetch_data(this.fetch, book.ubid, seed, page, desc)
+    return { ...data, ...res2, seed, page, desc }
   }
 
   const limit = 30
 
-  async function fetch_data(api, ubid, seed, page = 1, mode = 0) {
+  async function fetch_data(api, ubid, seed, page = 1, desc = false, mode = 0) {
     let offset = (page - 1) * limit
     if (offset < 0) offset = 0
 
-    const url = `/api/chaps/${ubid}/${seed}?mode=${mode}&limit=${limit}&offset=${offset}`
+    let url = `/api/chaps/${ubid}/${seed}?limit=${limit}&offset=${offset}`
+    if (mode > 0) url += `&mode=${mode}`
+    if (desc) url += `&order=desc`
+
     const res = await api(url)
     const data = await res.json()
 
@@ -51,6 +55,7 @@
 
   export let seed
   export let page = 1
+  export let desc = false
 
   export let chaps = []
   export let total = []
@@ -64,10 +69,10 @@
 
   async function refresh_chaps(new_seed, mode = 0) {
     seed = new_seed
-    if (mode == 0) return
+    // if (mode == 0) return
 
     _load = true
-    const res = await fetch_data(fetch, book.ubid, seed, page, mode)
+    const res = await fetch_data(fetch, book.ubid, seed, page, desc, mode)
 
     chaps = res.chaps
     total = res.total
@@ -75,24 +80,29 @@
   }
 
   function page_url(page) {
-    return `/~${book.slug}/content?seed=${seed}&page=${page}`
+    let url = `/~${book.slug}/content?seed=${seed}`
+    if (page > 1) url += `&page=${page}`
+    if (desc) url += '&order=desc'
+    return url
   }
 
   let scroll_top
-  function change_page(evt, new_page) {
+  function change_page(evt, new_page, new_desc) {
     evt.preventDefault()
 
     if (new_page < 1) new_page = 1
     if (new_page > pmax) new_page = pmax
-    if (new_page == page) return
+    if (new_page == page && new_desc == desc) return
 
     page = new_page
+    desc = new_desc
 
     refresh_chaps(seed, $self_power > 1)
     scroll_top.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
     const url = new URL(window.location)
     url.searchParams.set('page', page)
+    url.searchParams.set('order', desc ? 'desc' : 'asc')
     window.history.pushState({}, '', url)
   }
 
@@ -165,6 +175,13 @@
           on:click={() => refresh_chaps(seed, $self_power > 2 ? 2 : 1)}>
           <SvgIcon name={_load ? 'loader' : 'clock'} spin={_load} />
           <span><RelTime time={book.seed_mftimes[seed]} {seed} /></span>
+        </button>
+
+        <button
+          class="m-button _text"
+          on:click={(e) => change_page(e, page, !desc)}>
+          <SvgIcon name={desc ? 'arrow-down' : 'arrow-up'} />
+          <span class="-hide">Sắp xếp</span>
         </button>
       </div>
     </div>

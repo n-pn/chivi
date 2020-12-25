@@ -6,6 +6,6 @@ Clear.seed do
 end
 
 Clear.with_cli do
-  puts "Usage: crystal sample/cli/cli.cr -- clear [args]"
-  Clear::Migration::Manager.instance.apply_all
+  puts "Usage: crystal tasks/clear_cli.cr -- clear [args]"
+  Clear::CLI.run
 end

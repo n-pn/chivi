@@ -4,7 +4,7 @@
   function book_url(book, atab) {
     switch (atab) {
       case 'content':
-        return `/~${book.slug}/content`
+        return `/~${book.slug}/content?order=desc`
       case 'discuss':
         return `/~${book.slug}/discuss`
       default:

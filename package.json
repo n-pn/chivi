@@ -22,6 +22,6 @@
     "build": "shards build --release",
     "build-mt": "shards build --release -Dpreview_mt",
     "gen-sentry": "crystal build --release config/.sentry/sentry_cli.cr -o bin/sentry",
-    "clear": "crystal tasks/clear_cli.cr --"
+    "clear": "crystal tasks/clear_cli.cr -- clear"
   }
 }

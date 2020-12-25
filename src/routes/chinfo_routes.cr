@@ -17,18 +17,26 @@ module Chivi::Server
 
     chdata, mftime = fetched
 
+    chaps = chdata.chaps
+    chaps = chaps.reverse if env.params.query["order"]? == "desc"
+
     limit = env.params.query["limit"]?.try(&.to_i?) || 30
     limit = 30 if limit > 30
+
     offset = env.params.query["offset"]?.try(&.to_i?) || 0
     offset = 0 if offset < 0
 
-    chlist = chdata.chaps[offset, limit].map do |chap|
-      {
-        scid:  chap.scid,
-        label: chap.vi_label,
-        title: chap.vi_title,
-        uslug: chap.url_slug,
-      }
+    if offset >= chaps.size
+      chlist = [] of String
+    else
+      chlist = chaps[offset, limit].map do |chap|
+        {
+          scid:  chap.scid,
+          label: chap.vi_label,
+          title: chap.vi_title,
+          uslug: chap.url_slug,
+        }
+      end
     end
 
     Utils.json(env, cached: mftime) do |res|
