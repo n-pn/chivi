@@ -37,12 +37,7 @@
 </svelte:head>
 
 <div class="loader" class:_active={$preloading}>
-  <svg
-    class="spinner"
-    width="40px"
-    height="40px"
-    viewBox="0 0 66 66"
-    xmlns="http://www.w3.org/2000/svg">
+  <svg class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
     <circle
       class="path"
       fill="none"
@@ -124,21 +119,17 @@
     z-index: 99999;
     bottom: 0;
     right: 0;
-    width: 3rem;
-    height: 3rem;
-
-    // @include bgcolor(neutral, 2, 1);
-    @include flex($center: both);
 
     visibility: hidden;
 
     &._active {
       visibility: visible;
     }
+
     > svg {
+      margin: 1rem;
       width: 2rem;
       height: 2rem;
-      margin: 0.5rem;
     }
   }
 
