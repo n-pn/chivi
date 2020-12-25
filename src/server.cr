@@ -1,4 +1,4 @@
-require "./_oldcv/server/*"
+require "./routes/*"
 
 Kemal::Session.config do |config|
   config.cookie_name = "chivi"
@@ -9,13 +9,9 @@ Kemal::Session.config do |config|
   config.secure = Kemal.config.env == "production"
 end
 
-module Oldcv::Server
+module Chivi::Server
   Kemal.config.port = ENV["PORT"]?.try(&.to_i?) || 5010
   serve_static false
-
-  before_all do |env|
-    env.response.content_type = "application/json"
-  end
 
   Kemal.run
 end

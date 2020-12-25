@@ -1,11 +1,11 @@
-require "./_shared"
+require "./_routes"
 
-module Oldcv::Server
+module Chivi::Server
   alias LookupEntry = Hash(String, Array(String))
 
   post "/api/dicts/lookup" do |env|
     dname = env.params.query.fetch("dname", "dich-nhanh")
-    dicts = Engine::Library.for_convert(dname)
+    dicts = Oldcv::Engine::Library.for_convert(dname)
 
     input = env.params.json["input"].as(String)
     chars = input.chars
@@ -22,19 +22,22 @@ module Oldcv::Server
         end
       end
 
-      Engine::Library.trungviet.scan(chars, idx) do |item|
+      Oldcv::Engine::Library.trungviet.scan(chars, idx) do |item|
         entry[item.key.size]["trungviet"] = item.vals
       end
 
-      Engine::Library.cc_cedict.scan(chars, idx) do |item|
+      Oldcv::Engine::Library.cc_cedict.scan(chars, idx) do |item|
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
       entry.to_a.sort_by(&.[0].-)
     end
 
-    hanviet = Engine.hanviet(input, apply_cap: false).to_s
-    {hanviet: hanviet, entries: entries}.to_json(env.response)
+    hanviet = Oldcv::Engine.hanviet(input, apply_cap: false).to_s
+
+    Utils.json(env) do |res|
+      {hanviet: hanviet, entries: entries}.to_json(res)
+    end
   end
 
   # # default upsert dicts
@@ -45,16 +48,19 @@ module Oldcv::Server
     dicts = env.params.query.fetch("dicts", DICTS).split("|")
 
     entries = dicts.map do |dname|
-      Engine::Library.load_dict(dname).find(input)
+      Oldcv::Engine::Library.load_dict(dname).find(input)
     end
 
-    suggest = Engine::Library.suggest.dict.find(input).try(&.vals)
-    {
-      entries: entries,
-      hanviet: Engine.hanviet(input, false).vi_text,
-      binh_am: Engine.binh_am(input, false).vi_text,
-      suggest: suggest || [] of String,
-    }.to_json(env.response)
+    suggest = Oldcv::Engine::Library.suggest.dict.find(input).try(&.vals)
+
+    Utils.json(env) do |res|
+      {
+        entries: entries,
+        hanviet: Oldcv::Engine.hanviet(input, false).vi_text,
+        binh_am: Oldcv::Engine.binh_am(input, false).vi_text,
+        suggest: suggest || [] of String,
+      }.to_json(res)
+    end
   end
 
   put "/api/dicts/upsert/:dic" do |env|
@@ -64,7 +70,7 @@ module Oldcv::Server
     # power = env.params.json["power"].as(Int64).to_i
 
     if uslug = env.session.string?("uslug")
-      user = UserInfo.get!(uslug)
+      user = Oldcv::UserInfo.get!(uslug)
       uname = user.uname
       power = user.power
     else
@@ -72,9 +78,9 @@ module Oldcv::Server
       power = 0
     end
 
-    Engine::Library.upsert(dic, uname, power, key, val)
-    {_stt: "ok", _msg: "accepted"}.to_json(env.response)
+    Oldcv::Engine::Library.upsert(dic, uname, power, key, val)
+    Utils.json(env) { |res| {_stt: "ok"}.to_json(res) }
   rescue err
-    {_stt: "err", _msg: err.message}.to_json(env.response)
+    Utils.json(env) { |res| {_stt: "err", _msg: err.message}.to_json(res) }
   end
 end

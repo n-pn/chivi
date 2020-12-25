@@ -63,7 +63,7 @@
   export let prev_url = ''
   export let next_url = ''
 
-  $: book_path = `/~${bslug}?tab=content&seed=${seed}`
+  $: book_path = `/~${bslug}/content?seed=${seed}`
   // $: curr_path = `/~${bslug}/${curr_url}`
   $: prev_path = prev_url ? `/~${bslug}/-${prev_url}` : book_path
   $: next_path = next_url ? `/~${bslug}/-${next_url}` : book_path
