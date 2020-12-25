@@ -156,6 +156,9 @@
     if (desc) url += '&order=desc'
     return url
   }
+
+  import { stores } from '@sapper/app'
+  const { preloading } = stores()
 </script>
 
 <svelte:window on:keydown={handleKeypress} />
@@ -195,7 +198,9 @@
         <button
           class="m-button _text"
           on:click={(e) => reload(e, { page: 1, desc: true, mode: 2 })}>
-          <SvgIcon name={_load ? 'loader' : 'clock'} spin={_load} />
+          <SvgIcon
+            name={_load || $preloading ? 'loader' : 'clock'}
+            spin={_load || $preloading} />
           <span><RelTime time={book.seed_mftimes[seed]} {seed} /></span>
         </button>
 
