@@ -9,23 +9,26 @@
     if (!res.ok) return this.error(res.status, data.msg)
 
     let { book, mark } = data
+    const ubid = book.ubid
 
     const seed = query.seed || book.seed_names[0] || ''
     const page = +(query.page || 1)
 
-    const res2 = await fetch_data(this.fetch, book.ubid, seed, page, desc)
-    return { ...data, ...res2, seed, page, desc }
+    const opts = { seed, page, desc, mode: 0 }
+    const { chaps, total } = await fetch_data(this.fetch, ubid, opts)
+    return { book, mark, chaps, total, seed, page, desc }
   }
 
   const limit = 30
 
-  async function fetch_data(api, ubid, seed, page = 1, desc = false, mode = 0) {
+  async function fetch_data(api, ubid, opts) {
+    const page = opts.page || 1
     let offset = (page - 1) * limit
     if (offset < 0) offset = 0
 
-    let url = `/api/chaps/${ubid}/${seed}?limit=${limit}&offset=${offset}`
-    if (mode > 0) url += `&mode=${mode}`
-    if (desc) url += `&order=desc`
+    let url = `/api/chaps/${ubid}/${opts.seed}?limit=${limit}&offset=${offset}`
+    if (opts.desc) url += `&order=desc`
+    if (opts.mode && opts.mode > 0) url += `&mode=${opts.mode}`
 
     const res = await api(url)
     const data = await res.json()
@@ -58,52 +61,61 @@
   export let desc = false
 
   export let chaps = []
-  export let total = []
+  export let total = 0
 
   $: has_seeds = book.seed_names.length > 0
 
   $: pmax = Math.floor((total - 1) / limit) + 1
   $: page_list = paginate_range(page, pmax, 7)
 
+  let scroll_top
+
   let _load = false
 
-  async function refresh_chaps(new_seed, mode = 0) {
-    seed = new_seed
-    // if (mode == 0) return
+  async function reload(evt, opts = {}) {
+    evt.preventDefault()
+    const url = new URL(window.location)
+
+    if (opts.page) {
+      let new_page = opts.page
+      if (new_page < 1) new_page = 1
+      if (new_page > pmax) new_page = pmax
+
+      url.searchParams.set('page', page)
+      page = new_page
+    } else {
+      opts.page = page
+    }
+
+    if (opts.seed) {
+      seed = opts.seed
+      url.searchParams.set('seed', seed)
+    } else {
+      opts.seed = seed
+    }
+
+    if (opts.desc) {
+      desc = true
+      url.searchParams.set('order', 'desc')
+    } else {
+      desc = false
+      url.searchParams.set('order', 'asc')
+    }
+
+    if (opts.mode) {
+      if (opts.mode > $self_power) opts.mode = $self_power
+    } else {
+      opts.mode = 0
+    }
 
     _load = true
-    const res = await fetch_data(fetch, book.ubid, seed, page, desc, mode)
-
+    const res = await fetch_data(fetch, book.ubid, opts)
     chaps = res.chaps
     total = res.total
-    _load = false
-  }
 
-  function page_url(page) {
-    let url = `/~${book.slug}/content?seed=${seed}`
-    if (page > 1) url += `&page=${page}`
-    if (desc) url += '&order=desc'
-    return url
-  }
-
-  let scroll_top
-  function change_page(evt, new_page, new_desc) {
-    evt.preventDefault()
-
-    if (new_page < 1) new_page = 1
-    if (new_page > pmax) new_page = pmax
-    if (new_page == page && new_desc == desc) return
-
-    page = new_page
-    desc = new_desc
-
-    refresh_chaps(seed, $self_power > 1)
     scroll_top.scrollIntoView({ behavior: 'smooth', block: 'start' })
-
-    const url = new URL(window.location)
-    url.searchParams.set('page', page)
-    url.searchParams.set('order', desc ? 'desc' : 'asc')
     window.history.pushState({}, '', url)
+    _load = false
   }
 
   function handleKeypress(evt) {
@@ -111,28 +123,35 @@
 
     switch (evt.keyCode) {
       case 72:
-        change_page(evt, 1)
+        reload(evt, { page: 1 })
         break
 
       case 76:
-        change_page(evt, total)
+        reload(evt, { page: pmax })
         break
 
       case 37:
       case 74:
-        if (!evt.altKey) change_page(evt, page - 1)
+        if (!evt.altKey) reload(evt, { page: page - 1 })
 
         break
 
       case 39:
       case 75:
-        if (!evt.altKey) change_page(evt, page + 1)
+        if (!evt.altKey) reload(evt, { page: page + 1 })
 
         break
 
       default:
         break
     }
+  }
+
+  function page_url(seed, page) {
+    let url = `/~${book.slug}/content?seed=${seed}`
+    if (page > 1) url += `&page=${page}`
+    if (desc) url += '&order=desc'
+    return url
   }
 </script>
 
@@ -142,7 +161,7 @@
   {#if has_seeds}
     <!-- <AdBanner /> -->
 
-    <div class="seeds">
+    <div class="seeds" bind:this={scroll_top}>
       <div class="-left">
         <div class="-hint">Nguồn:</div>
 
@@ -157,7 +176,8 @@
               <a
                 class="-item"
                 class:_active={seed === name}
-                href="/~{book.slug}/chlist?seed={name}"
+                href={page_url(name, page)}
+                on:click={(e) => reload(e, { seed: name })}
                 rel={$anchor_rel}>
                 <span class="-name">{name}</span>
                 <span class="-time">
@@ -172,65 +192,66 @@
       <div class="-right">
         <button
           class="m-button _text"
-          on:click={() => refresh_chaps(seed, $self_power > 2 ? 2 : 1)}>
+          on:click={(e) => reload(e, { page: 1, desc: true, mode: 2 })}>
           <SvgIcon name={_load ? 'loader' : 'clock'} spin={_load} />
           <span><RelTime time={book.seed_mftimes[seed]} {seed} /></span>
         </button>
 
         <button
           class="m-button _text"
-          on:click={(e) => change_page(e, page, !desc)}>
+          on:click={(e) => reload(e, { desc: !desc })}>
           <SvgIcon name={desc ? 'arrow-down' : 'arrow-up'} />
           <span class="-hide">Sắp xếp</span>
         </button>
       </div>
     </div>
 
-    <div class="chaps" bind:this={scroll_top}>
+    <div class="chaps">
       <ChapList bslug={book.slug} sname={seed} {chaps} />
 
       {#if pmax > 1}
         <nav class="pagi">
           <a
-            href={page_url(1)}
-            class="page m-button _line"
+            href={page_url(seed, 1)}
+            class="page m-button"
             class:_disable={page == 1}
-            on:click={(e) => change_page(e, 1)}>
+            on:click={(e) => reload(e, { page: 1 })}>
             <SvgIcon name="chevrons-left" />
           </a>
 
           <a
-            href={page_url(page - 1)}
-            class="page m-button _line"
+            href={page_url(seed, page - 1)}
+            class="page m-button"
             class:_disable={page < 2}
-            on:click={(e) => change_page(e, page - 1)}>
+            on:click={(e) => reload(e, { page: page - 1 })}>
             <SvgIcon name="chevron-left" />
           </a>
 
           {#each page_list as [curr, level]}
             <a
-              href={page_url(curr)}
-              class="page m-button _line"
+              href={page_url(seed, curr)}
+              class="page m-button"
+              class:_primary={page == curr}
               class:_disable={page == curr}
               data-level={level}
-              on:click={(e) => change_page(e, curr)}>
+              on:click={(e) => reload(e, { page: curr })}>
               <span>{curr}</span>
             </a>
           {/each}
 
           <a
-            href={page_url(page + 1)}
-            class="page m-button _line"
+            href={page_url(seed, page + 1)}
+            class="page m-button"
             class:_disable={page + 1 >= pmax}
-            on:click={(e) => change_page(e, page + 1)}>
+            on:click={(e) => reload(e, { page: page + 1 })}>
             <SvgIcon name="chevron-right" />
           </a>
 
           <a
-            href={page_url(pmax)}
-            class="page m-button _line"
+            href={page_url(seed, pmax)}
+            class="page m-button"
             class:_disable={page == pmax}
-            on:click={(e) => change_page(e, pmax)}>
+            on:click={(e) => reload(e, { page: page + 1 })}>
             <SvgIcon name="chevrons-right" />
           </a>
         </nav>
