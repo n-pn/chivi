@@ -143,7 +143,7 @@
   <div class="pagi" slot="footer">
     <a
       href={makePageUrl(+page - 1, query)}
-      class="page m-button _line"
+      class="page m-button"
       class:_disable={page == 1}
       rel={$anchor_rel}>
       <SvgIcon name="chevron-left" />
@@ -153,7 +153,7 @@
     {#each page_ary as [index, level]}
       <a
         href={makePageUrl(index, query)}
-        class="page m-button _line"
+        class="page m-button"
         class:_primary={page == index}
         class:_disable={page == index}
         rel={$anchor_rel}

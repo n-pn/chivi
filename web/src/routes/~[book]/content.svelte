@@ -15,8 +15,12 @@
     const page = +(query.page || 1)
 
     const opts = { seed, page, desc, mode: 0 }
-    const { chaps, total } = await fetch_data(this.fetch, ubid, opts)
-    return { book, mark, chaps, total, seed, page, desc }
+    try {
+      const { chaps, total } = await fetch_data(this.fetch, ubid, opts)
+      return { book, mark, chaps, total, seed, page, desc }
+    } catch (e) {
+      return { book, mark, chaps: [], total: 0, seed, page, desc }
+    }
   }
 
   const limit = 30

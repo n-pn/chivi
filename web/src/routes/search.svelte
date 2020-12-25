@@ -97,14 +97,14 @@
     <div class="pagi">
       <a
         href={searchUrl(page - 1)}
-        class="m-button _line"
+        class="m-button"
         class:_disable={page == 1}
         rel={$anchor_rel}>
         <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
 
-      <span class="m-button _line _primary _disable"><span>{page}</span></span>
+      <div class="m-button _primary _disable"><span>{page}</span></div>
 
       <a
         href={searchUrl(page + 1)}
