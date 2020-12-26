@@ -99,7 +99,7 @@
 
   let _load = false
 
-  async function reload(evt, opts = {}) {
+  async function reload(evt, opts = {}, scroll = false) {
     evt.preventDefault()
     const url = new URL(window.location)
 
@@ -136,11 +136,15 @@
     }
 
     _load = true
+
     const res = await fetch_data(fetch, book.ubid, opts)
     chaps = res.chaps
     total = res.total
 
-    scroll_top.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (scroll) {
+      scroll_top.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
     window.history.replaceState({}, '', url)
     _load = false
   }
@@ -150,22 +154,22 @@
 
     switch (evt.keyCode) {
       case 72:
-        reload(evt, { page: 1 })
+        reload(evt, { page: 1 }, true)
         break
 
       case 76:
-        reload(evt, { page: pmax })
+        reload(evt, { page: pmax }, true)
         break
 
       case 37:
       case 74:
-        if (!evt.altKey) reload(evt, { page: page - 1 })
+        if (!evt.altKey) reload(evt, { page: page - 1 }, true)
 
         break
 
       case 39:
       case 75:
-        if (!evt.altKey) reload(evt, { page: page + 1 })
+        if (!evt.altKey) reload(evt, { page: page + 1 }, true)
 
         break
 
@@ -249,7 +253,7 @@
             href={page_url(seed, 1)}
             class="page m-button"
             class:_disable={page == 1}
-            on:click={(e) => reload(e, { page: 1 })}>
+            on:click={(e) => reload(e, { page: 1 }, true)}>
             <SvgIcon name="chevrons-left" />
           </a>
 
@@ -257,7 +261,7 @@
             href={page_url(seed, page - 1)}
             class="page m-button"
             class:_disable={page < 2}
-            on:click={(e) => reload(e, { page: page - 1 })}>
+            on:click={(e) => reload(e, { page: page - 1 }, true)}>
             <SvgIcon name="chevron-left" />
           </a>
 
@@ -268,7 +272,7 @@
               class:_primary={page == curr}
               class:_disable={page == curr}
               data-level={level}
-              on:click={(e) => reload(e, { page: curr })}>
+              on:click={(e) => reload(e, { page: curr }, true)}>
               <span>{curr}</span>
             </a>
           {/each}
@@ -277,7 +281,7 @@
             href={page_url(seed, page + 1)}
             class="page m-button"
             class:_disable={page + 1 >= pmax}
-            on:click={(e) => reload(e, { page: page + 1 })}>
+            on:click={(e) => reload(e, { page: page + 1 }, true)}>
             <SvgIcon name="chevron-right" />
           </a>
 
@@ -285,7 +289,7 @@
             href={page_url(seed, pmax)}
             class="page m-button"
             class:_disable={page == pmax}
-            on:click={(e) => reload(e, { page: page + 1 })}>
+            on:click={(e) => reload(e, { page: page + 1 }, true)}>
             <SvgIcon name="chevrons-right" />
           </a>
         </nav>
