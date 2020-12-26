@@ -289,7 +289,7 @@
             href={page_url(seed, pmax)}
             class="page m-button"
             class:_disable={page == pmax}
-            on:click={(e) => reload(e, { page: page + 1 }, true)}>
+            on:click={(e) => reload(e, { page: pmax }, true)}>
             <SvgIcon name="chevrons-right" />
           </a>
         </nav>
