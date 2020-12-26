@@ -1,5 +1,5 @@
 <script context="module">
-  import Serial from './_serial'
+  import Shared from './_shared'
 
   export async function preload({ params }) {
     const bslug = params.book
@@ -17,14 +17,14 @@
   export let mark = ''
 </script>
 
-<Serial {book} {mark} atab="overview">
+<Shared {book} {mark} atab="overview">
   <div class="summary">
     <h2>Giới thiệu:</h2>
     {#each book.vi_intro.split('\n') as line}
       <p>{line}</p>
     {/each}
   </div>
-</Serial>
+</Shared>
 
 <style lang="scss">
   .summary {

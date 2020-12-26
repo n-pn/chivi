@@ -1,5 +1,5 @@
 <script context="module">
-  import Serial from './_serial'
+  import Shared from './_shared'
 
   export async function preload({ params }) {
     const bslug = params.book
@@ -17,9 +17,9 @@
   export let mark = ''
 </script>
 
-<Serial {book} {mark} atab="threads">
+<Shared {book} {mark} atab="threads">
   <div class="empty">Chưa hoàn thiện :(</div>
-</Serial>
+</Shared>
 
 <style lang="scss">
   .empty {

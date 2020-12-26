@@ -30,7 +30,7 @@
 
       <div class="score">
         <span class="-icon">⭐</span>
-        <span class="-text">{book.voters < 10 ? '--' : book.rating}</span>
+        <span class="-text">{book.voters <= 10 ? '--' : book.rating}</span>
       </div>
     </a>
   {/each}

@@ -53,7 +53,7 @@
 
   import { self_power, anchor_rel } from '$src/stores'
 
-  import Serial from './_serial'
+  import Shared from './_shared'
   import ChapList from '$melds/ChapList'
 
   export let book
@@ -160,7 +160,7 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Serial {book} {mark} atab="content">
+<Shared {book} {mark} atab="content">
   {#if has_seeds}
     <!-- <AdBanner /> -->
 
@@ -262,7 +262,7 @@
   {:else}
     <div class="empty">Không có nội dung.</div>
   {/if}
-</Serial>
+</Shared>
 
 <style lang="scss">
   .seeds {
