@@ -49,6 +49,8 @@
       (a, b) => book.seed_mftimes[a] - book.seed_mftimes[b]
     )
 
+    if (seeds.length < 6) return [seeds, []]
+
     const main_seeds = seeds.slice(0, 4)
     let extra_seeds
 
