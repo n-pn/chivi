@@ -117,7 +117,7 @@
     total = res.total
 
     scroll_top.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    window.history.pushState({}, '', url)
+    window.history.replaceState({}, '', url)
     _load = false
   }
 
