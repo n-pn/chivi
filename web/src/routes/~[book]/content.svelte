@@ -142,7 +142,7 @@
     total = res.total
 
     if (scroll) {
-      scroll_top.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      scroll_top.scrollIntoView({ block: 'start' })
     }
 
     window.history.replaceState({}, '', url)
