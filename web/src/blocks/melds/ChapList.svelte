@@ -52,12 +52,12 @@
 
       &:nth-child(4n),
       &:nth-child(4n + 1) {
-        background-color: #fff;
+        @include bgcolor(neutral, 1);
       }
 
       &:nth-child(4n + 2),
       &:nth-child(4n + 3) {
-        @include bgcolor(neutral, 1);
+        background-color: #fff;
       }
     }
   }

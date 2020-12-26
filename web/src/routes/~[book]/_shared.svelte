@@ -225,27 +225,28 @@
   }
 
   .title {
-    font-weight: 300;
+    font-weight: 400;
+    @include fgcolor(neutral, 9);
     margin-bottom: 0.75rem;
 
-    @include props(float, left, right);
-    @include props(width, 100%, 70%, 75%);
-    @include props(padding-left, 0, 0.75rem);
+    @include props(float, left, left, right);
+    @include props(width, 100%, 100%, 70%, 75%);
+    @include props(padding-left, 0, 0, 0.75rem);
 
     @include props(line-height, 1.5rem, 1.75rem, 2rem);
-    @include props(font-size, rem(26px), rem(28px), rem(30px));
+    @include props(font-size, rem(20px), rem(22px), rem(22px), rem(24px));
   }
 
   .cover {
     float: left;
-    @include props(width, 40%, 30%, 25%);
+    @include props(width, 40%, 35%, 30%, 25%);
   }
 
   .extra {
     float: right;
     padding-left: 0.75rem;
 
-    @include props(width, 60%, 70%, 75%);
+    @include props(width, 60%, 65%, 70%, 75%);
 
     :global(svg) {
       margin-top: -0.125rem;
@@ -275,6 +276,7 @@
 
   .label {
     font-weight: 500;
+    // @include fgcolor(neutral, 8);
   }
 
   .page {

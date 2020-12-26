@@ -106,10 +106,10 @@ $-button-text-sizes: (
   @if $style == fill {
     @if $color == neutral {
       @include fgcolor(neutral, 7);
-      @include bgcolor(neutral, 2);
+      @include bgcolor(neutral, 1);
 
       &:hover {
-        @include bgcolor(neutral, 3);
+        @include bgcolor(neutral, 2);
       }
 
       &:disabled,

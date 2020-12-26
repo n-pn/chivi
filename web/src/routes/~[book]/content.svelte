@@ -43,6 +43,32 @@
       throw err.message
     }
   }
+
+  function split_seeds(book, curr) {
+    const seeds = book.seed_names.sort(
+      (a, b) => book.seed_mftimes[a] - book.seed_mftimes[b]
+    )
+
+    const main_seeds = []
+    const extra_seeds = []
+
+    for (let i = 0; i < seeds.length; i++) {
+      const seed = seeds[i]
+      main_seeds.push(seed)
+      if (i >= 4) break
+    }
+
+    if (!main_seeds.includes(curr)) main_seeds.push(curr)
+
+    for (let i = 0; i < seeds.length; i++) {
+      const seed = seeds[i]
+      if (!main_seeds.includes(seed)) {
+        extra_seeds.push(seed)
+      }
+    }
+
+    return [main_seeds, extra_seeds]
+  }
 </script>
 
 <script>
@@ -70,6 +96,9 @@
 
   $: pmax = Math.floor((total - 1) / limit) + 1
   $: page_list = paginate_range(page, pmax, 7)
+
+  $: [main_seeds, extra_seeds] = split_seeds(book, seed)
+  let show_extra = false
 
   let scroll_top
 
@@ -164,51 +193,59 @@
   {#if has_seeds}
     <!-- <AdBanner /> -->
 
-    <div class="seeds" bind:this={scroll_top}>
+    <div class="chseed" bind:this={scroll_top}>
+      <span class="-text">Chọn nguồn:</span>
+      {#each main_seeds as name}
+        <a
+          class="-seed"
+          class:_active={seed === name}
+          href={page_url(name, 1)}
+          rel={$anchor_rel}>{name}
+        </a>
+      {/each}
+
+      {#if extra_seeds.length > 0}
+        {#if show_extra}
+          {#each extra_seeds as name}
+            <a class="-seed" href={page_url(name, 1)} rel={$anchor_rel}>{name}
+            </a>
+          {/each}
+        {:else}
+          <button class="-seed" on:click={() => (show_extra = true)}>
+            <SvgIcon name="more-horizontal" />
+            <span>({extra_seeds.length})</span>
+          </button>
+        {/if}
+      {/if}
+    </div>
+
+    <div class="chinfo">
       <div class="-left">
-        <div class="-hint">Nguồn:</div>
-
-        <div class="seed-menu">
-          <div class="-text">
-            <span class="-label">{seed}</span>
-            <span class="-count">({total} chương)</span>
-          </div>
-
-          <div class="-menu">
-            {#each book.seed_names as name}
-              <a
-                class="-item"
-                class:_active={seed === name}
-                href={page_url(name, 1)}
-                rel={$anchor_rel}>
-                <span class="-name">{name}</span>
-                <span class="-time">
-                  <RelTime time={book.seed_mftimes[name]} seed={name} />
-                </span>
-              </a>
-            {/each}
-          </div>
-        </div>
+        <span class="-text -hide">Nguồn:</span>
+        <span class="-seed">{seed}</span>
+        <span class="-size">{total} chương</span>
+        <span class="-time">
+          <span class="-hide">Cập nhật:</span>
+          <RelTime time={book.seed_mftimes[seed]} {seed} />
+        </span>
       </div>
 
       <div class="-right">
         <button
-          class="m-button _text"
+          class="m-button"
           on:click={(e) => reload(e, { page: 1, desc: true, mode: 2 })}>
-          <SvgIcon name={_load ? 'loader' : 'clock'} spin={_load} />
-          <span><RelTime time={book.seed_mftimes[seed]} {seed} /></span>
+          <SvgIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
+          <span class="-hide">Đổi mới</span>
         </button>
 
-        <button
-          class="m-button _text"
-          on:click={(e) => reload(e, { desc: !desc })}>
+        <button class="m-button" on:click={(e) => reload(e, { desc: !desc })}>
           <SvgIcon name={desc ? 'arrow-down' : 'arrow-up'} />
           <span class="-hide">Sắp xếp</span>
         </button>
       </div>
     </div>
 
-    <div class="chaps">
+    <div class="chlist">
       <ChapList bslug={book.slug} sname={seed} {chaps} />
 
       {#if pmax > 1}
@@ -265,28 +302,54 @@
 </Shared>
 
 <style lang="scss">
-  .seeds {
-    margin: 0.75rem 0 1.25rem;
+  @mixin label {
+    text-transform: uppercase;
+    font-weight: 500;
+    @include fgcolor(neutral, 6);
+  }
+
+  .chseed {
+    @include flex();
+    flex-wrap: wrap;
+
+    .-text,
+    .-seed {
+      margin-top: 0.25rem;
+
+      @include label();
+      @include props(font-size, 12px, 13px, 14px);
+      @include props(line-height, 1.5rem, 1.75rem, 2rem);
+    }
+
+    .-text {
+      // margin-right: 0.5rem;
+      padding-top: 1px;
+      // margin-top: 0.25rem;
+    }
+
+    .-seed {
+      // float: left;
+      @include props(margin-left, 0.25rem, 0.375rem, 0.5rem);
+
+      @include border();
+      border-radius: 1rem;
+      padding: 0 0.75rem;
+      background-color: #fff;
+
+      &._active {
+        border-color: color(primary, 5);
+        color: color(primary, 5);
+      }
+    }
+  }
+
+  .chinfo {
+    margin: 1rem 0 1.25rem;
     display: flex;
 
     .-left {
       display: flex;
       margin-right: 0.5rem;
-    }
-
-    .-hint {
-      display: none;
-      @include screen-min(md) {
-        display: inline-block;
-      }
-
-      height: 2.25rem;
-      line-height: 2.25rem;
-      text-transform: uppercase;
-      margin-right: 0.5rem;
-      font-weight: 500;
-      @include font-size(2);
-      @include fgcolor(neutral, 7);
     }
 
     .-right {
@@ -295,97 +358,38 @@
       @include flex-gap($gap: 0.5rem, $child: ':global(*)');
     }
 
-    .m-button {
-      @include border();
-      > span {
-        @include truncate(null);
-        max-width: 25vw;
-      }
+    .-hide {
+      @include props(display, none, $md: inline-block);
     }
-  }
 
-  .seed-menu {
-    position: relative;
-    .-text {
-      cursor: pointer;
-      display: inline-block;
-      height: 2.25rem;
+    line-height: 2.25rem;
 
-      padding: 0 0.5rem;
-      font-weight: 500;
-      line-height: 2.25rem;
-      text-transform: uppercase;
-      @include border();
-      @include radius();
+    @include props(font-size, 12px, 13px, 14px, 15px);
 
-      @include font-size(2);
+    .-text,
+    .-seed {
+      @include label();
+    }
+
+    .-seed {
+      // @include border();
+      // border-radius: 1rem;
       @include fgcolor(neutral, 7);
+      margin-left: 0.5rem;
     }
 
-    .-count {
-      display: none;
-      @include screen-min(md) {
-        margin-left: 0.25rem;
+    .-time {
+      font-style: italic;
+    }
+
+    .-size,
+    .-time {
+      @include fgcolor(neutral, 6);
+      &:before {
         display: inline-block;
-        @include fgcolor(neutral, 6);
-      }
-    }
-
-    &:hover {
-      .-menu {
-        display: block;
-      }
-
-      .-text {
-        @include bgcolor(neutral, 2);
-      }
-    }
-
-    .-menu {
-      display: none;
-      // prettier-ignore
-
-      position: absolute;
-      top: 2.25rem;
-      left: 0;
-      min-width: 12rem;
-      padding: 0.5rem 0;
-
-      @include bgcolor(white);
-      @include radius();
-      @include shadow(2);
-    }
-
-    .-item {
-      cursor: pointer;
-      display: flex;
-      padding: 0 0.75rem;
-
-      line-height: 2.25rem;
-      @include border($sides: top);
-      &:last-child {
-        @include border($sides: bottom);
-      }
-
-      @include font-size(2);
-      @include fgcolor(neutral, 7);
-
-      &._active {
-        @include fgcolor(primary, 5);
-      }
-
-      &:hover {
-        @include bgcolor(neutral, 2);
-      }
-
-      .-name {
-        font-weight: 500;
-        text-transform: uppercase;
-      }
-
-      .-time {
-        margin-left: auto;
-        @include fgcolor(neutral, 5);
+        content: '·';
+        text-align: center;
+        width: 1rem;
       }
     }
   }
