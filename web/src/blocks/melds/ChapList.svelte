@@ -41,7 +41,7 @@
       @include border($sides: top);
     }
 
-    &:nth-child(even) {
+    &:nth-child(odd) {
       @include bgcolor(neutral, 1);
     }
 
