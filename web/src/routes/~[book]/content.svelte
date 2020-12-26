@@ -193,7 +193,7 @@
     <!-- <AdBanner /> -->
 
     <div class="chseed" bind:this={scroll_top}>
-      <span class="-text">Chọn nguồn:</span>
+      <span class="-text"><span class="-hide">Chọn</span> nguồn:</span>
       {#each main_seeds as name}
         <a
           class="-seed"
@@ -342,8 +342,12 @@
     }
   }
 
+  .-hide {
+    @include props(display, none, $md: inline-block);
+  }
+
   .chinfo {
-    margin: 1rem 0 1.25rem;
+    margin: 0.5rem 0 0.75rem;
     display: flex;
 
     .-left {
@@ -355,10 +359,6 @@
       margin-left: auto;
       @include flex();
       @include flex-gap($gap: 0.5rem, $child: ':global(*)');
-    }
-
-    .-hide {
-      @include props(display, none, $md: inline-block);
     }
 
     line-height: 2.25rem;
