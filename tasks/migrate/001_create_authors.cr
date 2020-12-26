@@ -4,7 +4,7 @@ class Chivi::Migration::CreateAuthorsTable
   include Clear::Migration
 
   def change(dir)
-    create_table(:authors) do |t|
+    create_table(:authors, id: :serial) do |t|
       t.column :zh_name, :citext, unique: true, null: false
       t.column :vi_name, :citext, null: false
 

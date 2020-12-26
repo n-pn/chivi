@@ -1,6 +1,6 @@
 require "clear"
 
-class Chivi::Migrate::SetupDB
+class Chivi::Migration::CreateExtensions
   include Clear::Migration
 
   def change(dir)

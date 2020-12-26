@@ -24,7 +24,7 @@ class Chivi::ZhwenpgParser
   end
 end
 
-class Chivi::ZhwenpgInfoSeeding
+class Chivi::SeedInfoZhwenpg
   getter checked = Set(String).new
   getter seeding = InfoSeeding.new("zhwenpg")
 
@@ -69,7 +69,7 @@ class Chivi::ZhwenpgInfoSeeding
     return if @checked.includes?(sbid)
     @checked << sbid
 
-    author, btitle = parser.author, parser.btitle
+    btitle, author = parser.btitle, parser.author
 
     if @seeding._index.upsert(sbid, "#{btitle}  #{author}")
       @seeding.set_intro(sbid, parser.intro)
@@ -98,31 +98,32 @@ class Chivi::ZhwenpgInfoSeeding
 
   def upsert_all!
     @checked.each_with_index do |sbid, idx|
-      serial = @seeding.upsert_serial!(sbid) do |s|
+      nvinfo = @seeding.upsert_nvinfo!(sbid) do |s|
         unless s.yousuu_bid
-          author, btitle = @seeding.get_bname(sbid)
-          s.zh_voters, s.zh_rating = fake_rating(author, btitle)
+          btitle, author = @seeding.get_bname(sbid)
+          s.zh_voters, s.zh_rating = fake_rating(btitle, author)
 
-          s.fix_popularity
+          s.fix_weight
         end
       end
 
-      chseed = @seeding.upsert_chseed!(sbid, serial.id)
+      chseed = @seeding.upsert_chseed!(sbid, nvinfo.id)
       Chinfo.bulk_upsert!(chseed, @seeding.get_chaps(sbid))
 
-      puts "- <#{idx + 1}/#{@checked.size}> [#{serial.hv_slug}] saved!".colorize.yellow
+      puts "- <#{idx + 1}/#{@checked.size}> [#{nvinfo.hv_slug}] saved!".colorize.yellow
     end
   end
 
   RATING_TEXT = File.read("tasks/seeding/consts/ratings.json")
   RATING_DATA = Hash(String, Tuple(Int32, Float32)).from_json RATING_TEXT
 
-  def fake_rating(author : String, btitle : String)
-    RATING_DATA["#{btitle}--#{author}"]? || {0, 0_f32}
+  def fake_rating(btitle : String, author : String)
+    voters, rating = RATING_DATA["#{btitle}--#{author}"]? || {0, 0_f32}
+    {voters, (rating * 10).to_i}
   end
 end
 
-worker = Chivi::ZhwenpgInfoSeeding.new
+worker = Chivi::SeedInfoZhwenpg.new
 FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
 
 puts "\n[-- Load indexes --]".colorize.cyan.bold

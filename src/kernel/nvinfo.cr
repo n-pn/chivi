@@ -2,41 +2,36 @@ require "./_models"
 require "./author"
 require "./btitle"
 require "./bgenre"
-require "../../shared/core_utils"
+
+require "../shared/core_utils"
 
 # Book info
-class Chivi::Serial
+class Chivi::Nvinfo
   include Clear::Model
-  self.table = "serials"
+  self.table = "nvinfos"
 
   primary_key type: :serial
-  timestamps
+
+  belongs_to author : Author, foreign_key_type: Int32
+  belongs_to btitle : Btitle, foreign_key_type: Int32
 
   column zh_slug : String
   column hv_slug : String
   column vi_slug : String?
 
-  belongs_to author : Author, foreign_key_type: Int32
-  belongs_to btitle : Btitle, foreign_key_type: Int32
-
   column bgenre_ids : Array(Int32), presence: false
   column vi_bgenres : Array(String), presence: false
 
+  column intro_by : String? # source name
   column zh_intro : String?
   column vi_intro : String?
-  column intro_by : String? # source name
 
-  column hidden : Int32, presence: false
   column status : Int32, presence: false
+  column shield : Int32, presence: false
 
-  column update_at : Int64, presence: false
-  column access_at : Int64, presence: false
-
-  column zh_voters : Int32, presence: false   # seed voters (yousuu or custom)
-  column zh_rating : Float32, presence: false # seed rating (yousuu or custom)
-
-  column vi_voters : Int32, presence: false   # chivi genuine voters
-  column vi_rating : Float32, presence: false # chivi genuine rating
+  column cover_name : String?
+  column yousuu_bid : String?
+  column origin_url : String?
 
   column word_count : Int32, presence: false
   column chap_count : Int32, presence: false
@@ -44,24 +39,33 @@ class Chivi::Serial
   column view_count : Int32, presence: false
   column read_count : Int32, presence: false
 
-  column review_count : Int32, presence: false
-  column follow_count : Int32, presence: false
+  column nvmark_count : Int32, presence: false
 
-  column popularity : Int32, presence: false # to be sorted by
+  column zh_voters : Int32, presence: false # seed voters (yousuu or custom)
+  column zh_rating : Int32, presence: false # seed rating (yousuu or custom)
 
-  column cover_name : String?
-  column yousuu_bid : String?
-  column origin_url : String?
+  column vi_voters : Int32, presence: false # chivi genuine voters
+  column vi_rating : Int32, presence: false # chivi genuine rating
 
-  def fix_popularity
-    zh_score = Math.log(zh_voters) * zh_rating
-    vi_score = Math.log(vi_voters) * vi_rating
+  column cv_voters : Int32, presence: false # chivi genuine voters
+  column cv_rating : Int32, presence: false # chivi genuine rating
 
-    self.popularity = (zh_score + vi_score).*(100).round.to_i
-    self
+  column cv_weight : Int32, presence: false # to be sorted by
+
+  column update_tz : Int64, presence: false
+  column access_tz : Int64, presence: false
+
+  timestamps
+
+  def fix_weight : Nil
+    cv_voters = zh_voters + vi_voters
+    return if cv_voters < 1
+
+    cv_rating = (zh_voters * zh_rating + vi_voters * vi_rating) // cv_voters
+    cv_weight = Math.log(cv_voters).*(cv_rating * 100).round.to_i
   end
 
-  def set_bgenre(zh_genre : String)
+  def set_bgenre(zh_genre : String) : Nil
     bgenres = Bgenre.upsert_all!(zh_genre)
 
     ids = bgenre_ids_column.value([] of Int32)
@@ -69,23 +73,21 @@ class Chivi::Serial
 
     names = vi_bgenres_column.value([] of String)
     self.vi_bgenres = names.concat(bgenres.map(&.vi_name)).uniq
-
-    self
   end
 
-  def set_status(new_status : Int32, force : Bool = false)
-    self.status = new_status if force || new_status > self.status
+  def set_status(value : Int32, force : Bool = false) : Nil
+    self.status = value if force || value > status_column.value(0)
   end
 
-  def set_update(mftime : Int64, force : Bool = false)
-    self.update_at = mftime if force || mftime > self.update_at
+  def set_update_tz(value : Int64, force : Bool = false) : Nil
+    self.update_tz = value if force || value > update_tz_column.value(0)
   end
 
-  def set_access(mftime : Int64, force : Bool = false)
-    self.access_at = mftime if force || mftime > self.access_at
+  def set_access_tz(value : Int64, force : Bool = false) : Nil
+    self.access_tz = value if force || value > access_tz_column.value(0)
   end
 
-  def fix_hv_slug!(slug : String? = nil)
+  def fix_hv_slug!(slug : String? = nil) : Nil
     slug = short_slug(self.hv_slug) unless slug
 
     if slug != self.hv_slug
@@ -98,7 +100,7 @@ class Chivi::Serial
     end
   end
 
-  def fix_vi_slug!(slug : String? = nil)
+  def fix_vi_slug!(slug : String? = nil) : Nil
     return unless slug || vi_slug_column.value(nil)
     slug = short_slug(self.vi_slug.not_nil!) unless slug
 
@@ -119,11 +121,11 @@ class Chivi::Serial
   def set_intro(zh_intro : Array(String), intro_by : String)
     return if zh_intro.empty?
 
-    self.zh_intro = zh_intro.join("\n")
     self.intro_by = intro_by
+    self.zh_intro = zh_intro.join("\n")
 
-    mtl = Convert.content(zh_slug) # TODO: change to hv_slug
-    self.vi_intro = zh_intro.map { |line| mtl.cv_plain(line).to_text }.join("\n")
+    engine = Convert.content(zh_slug) # TODO: change to hv_slug
+    self.vi_intro = zh_intro.map { |x| engine.tl_plain(x) }.join("\n")
   end
 
   def self.find(btitle : Btitle, author : Author)

@@ -88,29 +88,31 @@ class Chivi::InfoSeeding
     {Btitle.fix_zh_name(btitle), Author.fix_zh_name(author)}
   end
 
-  def upsert_serial!(sbid : String) : Serial
+  def upsert_nvinfo!(sbid : String) : Nvinfo
     btitle, author = get_bname(sbid)
-    serial = Serial.upsert!(btitle, author)
+    nvinfo = Nvinfo.upsert!(btitle, author)
 
-    serial.set_intro(get_intro(sbid), @name) unless serial.zh_intro
+    nvinfo.set_intro(get_intro(sbid), @name) unless nvinfo.zh_intro
 
     bgenre = genres.get_value(sbid).not_nil!
-    serial.set_bgenre(bgenre)
+    nvinfo.set_bgenre(bgenre)
 
-    serial.set_status(get_status(sbid))
+    nvinfo.set_status(get_status(sbid))
 
     mftime = get_update(sbid)
-    serial.set_update(mftime)
-    serial.set_access(mftime // 300)
+    nvinfo.set_update_tz(mftime)
+    nvinfo.set_access_tz(mftime // 300)
 
-    yield serial
-    serial.save!
+    yield nvinfo
+    nvinfo.save!
   end
 
-  def upsert_chseed!(sbid : String, serial_id : Int32)
-    chseed = Chseed.upsert!(@name, sbid, &.serial_id = serial_id)
-    chseed.set_update(get_update(sbid))
-    chseed.set_access(Time.utc.to_unix)
+  def upsert_chseed!(sbid : String, nvinfo_id : Int32)
+    chseed = Chseed.upsert!(@name, sbid, &.nvinfo_id = nvinfo_id)
+
+    chseed.set_update_tz(get_update(sbid))
+    chseed.set_access_tz(Time.utc.to_unix)
+
     chseed.save!
   end
 

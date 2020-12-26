@@ -1,12 +1,11 @@
 require "./_models"
-require "../mapper/value_map"
+require "./mapper/value_map"
 
 class Chivi::Btitle
   include Clear::Model
   self.table = "btitles"
 
   primary_key type: :serial
-  timestamps
 
   column zh_name : String
   column hv_name : String
@@ -15,6 +14,8 @@ class Chivi::Btitle
   column zh_name_tsv : Array(String), presence: false
   column hv_name_tsv : Array(String), presence: false
   column vi_name_tsv : Array(String), presence: false
+
+  timestamps
 
   def self.glob_all(name : String)
     glob_all(SeedUtils.tokenize(name))

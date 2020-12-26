@@ -1,6 +1,6 @@
 require "clear"
-require "../../engine/convert"
-require "../../shared/seed_utils"
+require "../engine/convert"
+require "../shared/seed_utils"
 
 Clear::SQL.init("postgres://postgres:postgres@localhost/chivi")
 

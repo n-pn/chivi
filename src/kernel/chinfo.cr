@@ -1,5 +1,4 @@
 require "./_models"
-require "./serial"
 require "./chseed"
 
 # Chapter info
@@ -8,7 +7,6 @@ class Chivi::Chinfo
   self.table = "chinfos"
 
   primary_key type: :serial
-  timestamps
 
   belongs_to chseed : Chseed, foreign_key_type: Int32
 
@@ -25,6 +23,8 @@ class Chivi::Chinfo
 
   column word_count : Int32, presence: false
   column read_count : Int32, presence: false
+
+  timestamps
 
   def self.glob(chseed_id : Int32, limit = 50, offset = 0, order_by = :asc)
     query.where(chseed_id: chseed_id)

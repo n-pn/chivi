@@ -41,6 +41,14 @@ class Chivi::Convert
     group.pad_spaces!
   end
 
+  def tl_plain(input : String) : String
+    cv_plain(input).to_text
+  end
+
+  def tl_title(input : String) : String
+    cv_title(input).to_text
+  end
+
   def cv_plain(input : String)
     tokenize(input.chars).fix_grammar!.capitalize!.pad_spaces!
   end

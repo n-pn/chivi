@@ -2,9 +2,9 @@ require "./_models"
 
 # user infos
 
-class Chivi::Member
+class Chivi::Viuser
   include Clear::Model
-  self.table = "members"
+  self.table = "viusers"
 
   primary_key type: :serial
   timestamps
