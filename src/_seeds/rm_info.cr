@@ -9,12 +9,16 @@ require "../shared/http_utils"
 module Chivi::RmInfo
   extend self
 
-  def init(seed : String, sbid : String, expiry = Time.utc - 6.months, freeze = true)
+  def init(seed : String, sbid : String, expiry = Time.utc - 30.weeks, freeze = true)
     html_url = seed_url(seed, sbid)
-    out_file = "_db/.cache/#{seed}/infos/#{sbid}.html"
+    out_file = path_for(seed, sbid)
 
     expiry = SeedUtils::DEF_TIME if seed == "jx_la"
     parser_for(seed).new(html_url, out_file, expiry, freeze)
+  end
+
+  def path_for(seed : String, sbid : String)
+    "_db/.cache/#{seed}/infos/#{sbid}.html"
   end
 
   def parser_for(seed : String) : Class
@@ -231,7 +235,7 @@ module Chivi::RmInfo
     getter intro : Array(String) { rdoc.css(".intro > p").map(&.inner_text).to_a }
     getter tags : Array(String) { rdoc.css(".tag a").map(&.inner_text).to_a }
 
-    getter update = SeedUtils::DEF_TIME
+    getter update : Time { SeedUtils::DEF_TIME }
     getter chlist : ChList { extract_chlist("#dir") }
 
     def raw_genre
@@ -256,8 +260,8 @@ module Chivi::RmInfo
   class RI_Zhwenpg < RI_Generic
     getter author : String { node_text(".fontwt") || "" }
     getter btitle : String { node_text(".cbooksingle h2") || "" }
-    getter bgenre = ""
-    getter update = SeedUtils::DEF_TIME
+    getter bgenre : String { "" }
+    getter update : Time { SeedUtils::DEF_TIME }
     getter chlist : ChList { extract_chlist }
 
     def raw_intro
@@ -297,8 +301,8 @@ module Chivi::RmInfo
     getter btitle : String { node_text(".weizhi > a:last-child") || "" }
     getter bgenre : String { node_text(".weizhi > a:nth-child(2)") || "" }
 
-    getter intro = [] of String
-    getter status = 0
+    getter intro : Array(String) { [] of String }
+    getter status : Int32 { 0 }
 
     COVER_URI = "https://www.69shu.com/files/article/image/"
 

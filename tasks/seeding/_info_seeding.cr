@@ -11,28 +11,33 @@ require "../../src/kernel"
 
 class Chivi::InfoSeeding
   getter name : String
+  getter rdir : String
 
-  getter _index : ValueMap { ValueMap.new("#{@root}/_index.tsv") }
+  getter _index : ValueMap { ValueMap.new(map_path("_index")) }
 
-  getter genres : ValueMap { ValueMap.new("#{@root}/genres.tsv") }
-  getter covers : ValueMap { ValueMap.new("#{@root}/covers.tsv") }
+  getter genres : ValueMap { ValueMap.new(map_path("genres")) }
+  getter covers : ValueMap { ValueMap.new(map_path("covers")) }
 
-  getter update : ValueMap { ValueMap.new("#{@root}/update.tsv") }
-  getter access : ValueMap { ValueMap.new("#{@root}/access.tsv") }
+  getter update : ValueMap { ValueMap.new(map_path("update")) }
+  getter access : ValueMap { ValueMap.new(map_path("access")) }
 
-  getter status : ValueMap { ValueMap.new("#{@root}/status.tsv") }
-  getter rating : ValueMap { ValueMap.new("#{@root}/rating.tsv") }
+  getter status : ValueMap { ValueMap.new(map_path("status")) }
+  getter rating : ValueMap { ValueMap.new(map_path("rating")) }
 
   getter intro_cache = {} of String => Array(String)
   getter chaps_cache = {} of String => Array(String)
 
-  def initialize(@name)
-    @root = "_db/_seeds/#{@name}"
-    @intro_dir = "#{@root}/intro"
-    @chaps_dir = "#{@root}/chaps"
+  def map_path(fname : String)
+    "#{@rdir}/#{fname}.tsv"
+  end
 
-    ::FileUtils.mkdir_p(@intro_dir)
-    ::FileUtils.mkdir_p(@chaps_dir)
+  def initialize(@name)
+    @rdir = "_db/_seeds/#{@name}"
+    @intros_dir = "#{@rdir}/intros"
+    @chlist_dir = "#{@rdir}/chlist"
+
+    ::FileUtils.mkdir_p(@intros_dir)
+    ::FileUtils.mkdir_p(@chlist_dir)
   end
 
   def get_intro(sbid : String) : Array(String)
@@ -50,7 +55,7 @@ class Chivi::InfoSeeding
   end
 
   def intro_path(sbid)
-    "#{@intro_dir}/#{sbid}.txt"
+    "#{@intros_dir}/#{sbid}.txt"
   end
 
   def get_chaps(sbid : String)
@@ -72,7 +77,7 @@ class Chivi::InfoSeeding
   end
 
   def chaps_path(sbid)
-    "#{@chaps_dir}/#{sbid}.tsv"
+    "#{@chlist_dir}/#{sbid}.tsv"
   end
 
   def get_status(sbid : String)

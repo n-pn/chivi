@@ -1,5 +1,5 @@
 require "json"
-require "../../shared/seed_utils"
+require "../shared/seed_utils"
 
 struct Chivi::YsSource
   include JSON::Serializable
@@ -33,16 +33,14 @@ class Chivi::YsInfo
   getter cover_fixed : String { get_fixed_cover }
 
   DF_TIME = Time.utc(2000, 1, 1)
-  getter updateAt : Time = DF_TIME
+  getter updateAt : Time
   getter updated_at : Time { @updateAt < Time.utc ? @updateAt : DF_TIME }
 
   getter scorerCount = 0_i32
   getter voters : Int32 { scorerCount }
 
   getter score = 0_f32
-  getter rating : Float32 { score.*(10).round / 10 }
-
-  # getter weight : Int32 { (Math.log(voters) * rating * 100).round.to_i }
+  getter rating : Int32 { score.*(10).to_i }
 
   getter countWord = 0_f32
   getter word_count : Int32 { @countWord.round.to_i }
@@ -54,7 +52,7 @@ class Chivi::YsInfo
   getter shielded = false
   # getter recom_ignore = false
 
-  property sources = [] of YsSource
+  property sources = [] of Chivi::YsSource
   getter source : String { sources.first?.try(&.link) || "" }
 
   getter addListCount = 0_i32

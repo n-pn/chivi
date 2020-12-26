@@ -38,9 +38,9 @@ module Chivi::FlatMap(T)
     io << '\t' << mtime if mtime > 0
   end
 
-  abstract def upsert(key : String, value : T, mtime = Time.utc.to_unix) : Bool
+  abstract def upsert(key : String, value : T, mtime = 0_i32) : Bool
 
-  def upsert!(key : String, value : T, mtime = Time.utc.to_unix) : Bool
+  def upsert!(key : String, value : T, mtime = 0_i32) : Bool
     return false unless upsert(key, value, mtime)
 
     @buffer << key

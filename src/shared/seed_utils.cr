@@ -28,29 +28,29 @@ module Chivi::SeedUtils
     DEF_TIME
   end
 
-  def split_html(input : String, fix_br : Bool = true)
+  def split_html(input : String, fix_br : Bool = true) : Array(String)
     input = HTML.unescape(input)
     input = fix_spaces(input)
     input = replace_br(input) if fix_br
     split_text(input)
   end
 
-  def replace_br(input : String)
+  def replace_br(input : String) : String
     input.gsub(/<br\s*\/?>|\s{2,}/i, "\n")
   end
 
-  def split_text(input : String)
+  def split_text(input : String) : Array(String)
     input.split("\n").map(&.strip).reject(&.empty?)
   end
 
   SPACES = "\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000"
 
-  def fix_spaces(input : String)
+  def fix_spaces(input : String) : String
     input.tr(SPACES, " ")
   end
 
   # capitalize all words
-  def titleize(input : String)
+  def titleize(input : String) : String
     input.split(' ').map { |x| capitalize(x) }.join(' ')
   end
 
@@ -75,18 +75,18 @@ module Chivi::SeedUtils
   end
 
   # split input to words
-  def tokenize(input : String, keep_accent : Bool = false)
+  def tokenize(input : String, keep_accent : Bool = false) : Array(String)
     input = unaccent(input) unless keep_accent
     split_words(input.downcase)
   end
 
   # make url friendly string
-  def slugify(input : String, keep_accent : Bool = false)
+  def slugify(input : String, keep_accent : Bool = false) : String
     tokenize(input, keep_accent).join("-")
   end
 
   # strip vietnamese accents
-  def unaccent(input : String)
+  def unaccent(input : String) : String
     input
       .tr("áàãạảAÁÀÃẠẢăắằẵặẳĂẮẰẴẶẲâầấẫậẩÂẤẦẪẬẨ", "a")
       .tr("éèẽẹẻEÉÈẼẸẺêếềễệểÊẾỀỄỆỂ", "e")
@@ -98,7 +98,7 @@ module Chivi::SeedUtils
   end
 
   # :nodoc:
-  def split_words(input : String)
+  def split_words(input : String) : Array(String)
     res = [] of String
     acc = ""
 
@@ -132,7 +132,7 @@ module Chivi::SeedUtils
     /^【?(第[#{NUMS}\d]+[集卷])】?\s*(.+)$/,
   }
 
-  def format_title(title : String, label = "正文")
+  def format_title(title : String, label = "正文") : String
     title = fix_spaces(title).strip
 
     FORMAT_RE_0.each do |regex|
@@ -157,7 +157,7 @@ module Chivi::SeedUtils
     /^\（(\p{N}+)\）[#{SEPS}]*(.*)$/,
   }
 
-  def fix_title(title : String)
+  private def fix_title(title : String) : String
     FIX_RE_0.each do |regex|
       next unless match = regex.match(title)
       _, idx, tag, title = match
