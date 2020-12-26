@@ -366,11 +366,12 @@
       @include label();
     }
 
+    .-text {
+      margin-right: 0.5rem;
+    }
+
     .-seed {
-      // @include border();
-      // border-radius: 1rem;
       @include fgcolor(neutral, 7);
-      margin-left: 0.5rem;
     }
 
     .-time {
