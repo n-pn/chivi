@@ -49,22 +49,15 @@
       (a, b) => book.seed_mftimes[a] - book.seed_mftimes[b]
     )
 
-    const main_seeds = []
-    const extra_seeds = []
+    const main_seeds = seeds.slice(0, 4)
+    let extra_seeds
 
-    for (let i = 0; i < seeds.length; i++) {
-      const seed = seeds[i]
-      main_seeds.push(seed)
-      if (i >= 4) break
-    }
-
-    if (!main_seeds.includes(curr)) main_seeds.push(curr)
-
-    for (let i = 0; i < seeds.length; i++) {
-      const seed = seeds[i]
-      if (!main_seeds.includes(seed)) {
-        extra_seeds.push(seed)
-      }
+    if (main_seeds.includes(curr)) {
+      main_seeds.push(seeds[4])
+      extra_seeds = seeds.slice(5)
+    } else {
+      main_seeds.push(curr)
+      extra_seeds = seeds.slice(4).filter((x) => x != curr)
     }
 
     return [main_seeds, extra_seeds]
