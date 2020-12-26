@@ -1,6 +1,6 @@
 require "colorize"
 require "file_utils"
-require "../../shared/zip_store"
+require "../shared/zip_store"
 
 class Chivi::Chtext
   alias Cache = Hash(String, self)

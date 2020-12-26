@@ -7,7 +7,7 @@ require "../../src/shared/file_utils"
 require "../../src/shared/http_utils"
 require "../../src/shared/seed_utils"
 
-require "../../src/kernel/book_repo"
+require "../../src/kernel"
 
 class Chivi::InfoSeeding
   getter name : String

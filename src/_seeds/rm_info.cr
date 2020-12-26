@@ -2,9 +2,9 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../shared/file_utils"
-require "../../shared/seed_utils"
-require "../../shared/http_utils"
+require "../shared/file_utils"
+require "../shared/seed_utils"
+require "../shared/http_utils"
 
 module Chivi::RmInfo
   extend self

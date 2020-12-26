@@ -36,8 +36,8 @@ class Chivi::Bgenre
     model
   end
 
-  ZH_FIXES_FILE = "src/kernel/_fixes/zh_genres.tsv"
-  VI_FIXES_FILE = "src/kernel/_fixes/vi_genres.tsv"
+  ZH_FIXES_FILE = "src/kernel/_fixes/zh_bgenres.tsv"
+  VI_FIXES_FILE = "src/kernel/_fixes/vi_bgenres.tsv"
 
   class_getter zh_bgenres : ValueMap { ValueMap.new(ZH_FIXES_FILE) }
   class_getter vi_bgenres : ValueMap { ValueMap.new(VI_FIXES_FILE) }

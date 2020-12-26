@@ -23,7 +23,7 @@ class Oldcv::UserInfo
   property crit_count = 0
   property post_count = 0
 
-  def initialize(email : String, uname = "Guest", upass = "chivi.xyz")
+  def initialize(email : String, uname : String, upass = "chivi.xyz")
     set_email(email)
     set_uname(uname)
     set_cpass(upass)

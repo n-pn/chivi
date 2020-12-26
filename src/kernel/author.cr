@@ -46,11 +46,11 @@ class Chivi::Author
       model = new.tap(&.set_zh_name(zh_name))
     end
 
-    unless vi_name || mode.vi_name_column.defined?
+    unless vi_name || model.vi_name_column.defined?
       vi_name = fix_vi_name(zh_name)
     end
 
-    mode.set_vi_name(vi_name) if vi_name
+    model.set_vi_name(vi_name) if vi_name
 
     model.save! if model.vi_name_column.changed?
     model
@@ -69,15 +69,12 @@ class Chivi::Author
         .sub(/\.QD\s*$/, "")
         .sub(/[（\(].+[\)）]$/, "")
 
-    unless zh_authors.get_value("#{title}  #{author}")
+    zh_authors.get_value("#{title}  #{author}") ||
       zh_authors.get_value(author) || author
-    end
   end
 
   def self.fix_vi_name(zh_name : String) : String
-    unless vi_authors.get_value(zh_name)
-      ModelUtils.to_hanviet(zh_name, as_title: true)
-    end
+    vi_authors.get_value(zh_name) || ModelUtils.to_hanviet(zh_name, as_title: true)
   end
 end
 
