@@ -384,7 +384,7 @@
         display: inline-block;
         content: '·';
         text-align: center;
-        width: 1rem;
+        @include props(width, 0.5rem, 0.75rem, 1rem);
       }
     }
   }
