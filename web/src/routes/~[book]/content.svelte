@@ -46,7 +46,7 @@
 
   function split_seeds(book, curr) {
     const seeds = book.seed_names.sort(
-      (a, b) => book.seed_mftimes[a] - book.seed_mftimes[b]
+      (a, b) => book.seed_mftimes[b] - book.seed_mftimes[a]
     )
 
     if (seeds.length < 6) return [seeds, []]
