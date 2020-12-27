@@ -20,14 +20,6 @@
     return res.join(',')
   }
 
-  async function mark_book(bslug, new_mark) {
-    if (mark == new_mark) mark = ''
-    else mark = new_mark
-
-    const url = `/api/self/book_mark/${bslug}?mark=${mark}`
-    await fetch(url, { method: 'PUT' })
-  }
-
   import { anchor_rel, self_power } from '$src/stores'
   import { mark_types, mark_names, mark_icons } from '$utils/constants'
 
@@ -50,6 +42,14 @@
   $: updated_at = new Date(book.mftime)
   $: keywords = gen_keywords(book)
   $: has_links = book.yousuu_bid || book.origin_url
+
+  async function mark_book(bslug, new_mark) {
+    if (mark == new_mark) mark = ''
+    else mark = new_mark
+
+    const url = `/api/self/book_mark/${bslug}?mark=${mark}`
+    await fetch(url, { method: 'PUT' })
+  }
 </script>
 
 <svelte:head>
