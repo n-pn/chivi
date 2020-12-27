@@ -152,7 +152,7 @@
       <div class="line">
         <span class="stat">
           Đánh giá:
-          <span class="label">{book.voters < 10 ? '--' : book.rating}</span>/10
+          <span class="label">{book.voters <= 10 ? '--' : book.rating}</span>/10
         </span>
         <span class="stat">({book.voters} lượt đánh giá)</span>
       </div>
