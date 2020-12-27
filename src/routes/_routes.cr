@@ -7,7 +7,7 @@ require "../_oldcv/kernel"
 module Chivi::Server::Utils
   extend self
 
-  def parse_page(page : String, limit = 20)
+  def parse_page(page : String, limit = 24)
     page = page.to_i? || 1
 
     offset = (page - 1) * limit
@@ -41,7 +41,7 @@ module Chivi::Server::Utils
     page
   end
 
-  def search_limit(limit : String?, upper = 20)
+  def search_limit(limit : String?, upper = 24)
     return upper unless limit = limit.try(&.to_i?)
     limit < 1 || limit > upper ? upper : limit
   end

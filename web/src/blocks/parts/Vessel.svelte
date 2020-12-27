@@ -91,7 +91,7 @@
 </footer>
 
 <style lang="scss">
-  $page-width: 54rem;
+  $page-width: 56rem;
 
   ._shift {
     @include props(padding-right, $lg: 30rem);
@@ -101,7 +101,7 @@
     width: $page-width;
     max-width: 100%;
     margin: 0 auto;
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
   }
 
   $footer-height: 3.25rem;
