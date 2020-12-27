@@ -54,28 +54,10 @@
 
 <style lang="scss">
   .list {
-    max-width: 100%;
-    margin: 0;
-
-    display: grid;
-    grid-gap: 0.5rem;
-
-    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
-
+    @include grid($size: minmax(6.5rem, 1fr));
+    @include grid-gap(0.5rem);
     @include screen-min(md) {
       grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
-    }
-  }
-
-  .book {
-    display: block;
-
-    // margin-bottom: 3.75rem;
-
-    &:hover {
-      .title {
-        @include fgcolor(primary, 5);
-      }
     }
   }
 
@@ -107,7 +89,7 @@
 
   .score {
     margin-left: auto;
-    font-size: rem(12px);
+    @include props(font-size, 10px, 11px, 12px);
     line-height: 1.25rem;
 
     > .-text {
@@ -131,6 +113,10 @@
     font-size: rem(14px);
     font-weight: 500;
     @include fgcolor(neutral, 7);
+
+    .book:hover & {
+      @include fgcolor(primary, 5);
+    }
   }
 
   .genre {
@@ -140,17 +126,5 @@
     line-height: 1rem;
     margin-top: 0.125rem;
     @include fgcolor(neutral, 5);
-    // @include truncate(null);
   }
-
-  // .score {
-  //   @include font-size(1);
-
-  //   > .-icon {
-  //     display: inline-block;
-  //     font-size: 0.9em;
-  //     margin-top: -0.05rem;
-  //     vertical-align: top;
-  //   }
-  // }
 </style>

@@ -179,22 +179,23 @@
     @include flex-gap($gap: 0.375rem, $child: ':global(*)');
 
     overflow: auto;
+    margin: 1rem 0 0.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
 
-    margin: 0.75rem 0;
-    line-height: 2rem;
+    @include props(font-size, 12px, 13px, 14px);
+    @include props(line-height, 1.5rem, 1.75rem, 2rem);
 
     .-type {
-      text-transform: uppercase;
-      padding: 0 0.5rem;
-      font-weight: 500;
+      padding: 0 0.75em;
       @include truncate(null);
+      @include fgcolor(neutral, 6);
 
-      @include fgcolor(neutral, 7);
-      @include font-size(2);
       @include border();
-      @include radius();
+      @include radius(9);
+
       &._active {
-        @include fgcolor(primary, 5);
+        @include fgcolor(primary, 6);
         @include bdcolor($color: primary, $shade: 5);
       }
     }
