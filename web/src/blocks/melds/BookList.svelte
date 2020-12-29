@@ -110,7 +110,7 @@
 
     margin-top: 0.375rem;
     line-height: 1.125rem;
-    font-size: rem(14px);
+    font-size: rem(15px);
     font-weight: 500;
     @include fgcolor(neutral, 7);
 
