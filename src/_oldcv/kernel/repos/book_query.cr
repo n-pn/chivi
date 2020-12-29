@@ -124,6 +124,7 @@ class Oldcv::BookDB::Query
     case sort
     when :access then OrderMap.book_access
     when :update then OrderMap.book_update
+    when :voters then OrderMap.book_voters
     when :rating then OrderMap.book_rating
     when :weight then OrderMap.book_weight
     else              OrderMap.book_weight

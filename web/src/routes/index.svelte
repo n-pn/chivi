@@ -38,7 +38,7 @@
   const order_names = {
     access: 'Vừa xem',
     update: 'Đổi mới',
-    voters: 'Đánh giá',
+    rating: 'Đánh giá',
     weight: 'Tổng hợp',
   }
 </script>

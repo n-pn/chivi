@@ -185,6 +185,7 @@ class Oldcv::OrderMap
   class_getter book_update : OrderMap { load_name("indexes/orders/book_update") }
   class_getter book_weight : OrderMap { load_name("indexes/orders/book_weight") }
   class_getter book_rating : OrderMap { load_name("indexes/orders/book_rating") }
+  class_getter book_voters : OrderMap { load_name("indexes/orders/book_voters") }
 end
 
 # test = OrderMap.new("tmp/order_map.txt", false)
