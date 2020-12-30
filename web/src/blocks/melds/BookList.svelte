@@ -57,7 +57,7 @@
     @include grid($size: minmax(6.5rem, 1fr));
     @include grid-gap(0.5rem);
     @include screen-min(md) {
-      grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
     }
   }
 
