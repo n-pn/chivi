@@ -38,9 +38,9 @@
         <div class="extra">
           <div class="score">
             {#each stars(book.rating, book.voters) as star}
-              <span class="-icon">{star}</span>
+              <span class="-star">{star}</span>
             {/each}
-            <span class="-text">{book.voters <= 10 ? '--' : book.rating}</span>
+            <span class="-text">{book.voters <= 10 ? '—' : book.rating}</span>
           </div>
         </div>
       </div>
@@ -83,22 +83,28 @@
     bottom: 0;
     right: 0;
     width: 100%;
-    padding: 0.375rem;
+    padding: 0.25rem;
     background: linear-gradient(color(neutral, 1, 0.1), color(neutral, 7, 0.7));
   }
 
   .score {
     margin-left: auto;
-    @include props(font-size, 10px, 11px, 12px);
+    display: inline-flex;
     line-height: 1.25rem;
+    @include props(font-size, 10px, 11px, 12px);
 
+    > .-star {
+      @include screen-min(md) {
+        margin-left: 1px;
+      }
+    }
     > .-text {
-      display: inline-block;
-      @include bgcolor(primary, 6, 0.9);
-      color: #fff;
-      @include radius;
-      padding: 0 0.375rem;
+      margin-left: 0.25rem;
+      padding: 0 0.25rem;
       font-weight: 500;
+      @include radius;
+      @include fgcolor(#fff);
+      @include bgcolor(primary, 6, 0.8);
     }
   }
 
