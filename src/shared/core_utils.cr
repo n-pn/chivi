@@ -1,6 +1,6 @@
 require "digest"
 
-module Chivi::CoreUtils
+module CV::CoreUtils
   extend self
 
   BASE_32 = {
@@ -81,7 +81,7 @@ module Chivi::CoreUtils
   end
 end
 
-# puts Chivi::CoreUtils.digest32("95410")
-# puts Chivi::CoreUtils.encode32(95410).ljust(8, '0')
-# puts Chivi::CoreUtils.decode32("j5x20000")
-# puts Chivi::CoreUtils.decode32("j5x20")
+# puts CV::CoreUtils.digest32("95410")
+# puts CV::CoreUtils.encode32(95410).ljust(8, '0')
+# puts CV::CoreUtils.decode32("j5x20000")
+# puts CV::CoreUtils.decode32("j5x20")

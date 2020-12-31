@@ -1,6 +1,6 @@
 require "compress/gzip"
 
-module Chivi::FileUtils
+module CV::FileUtils
   extend self
 
   EXPIRY = Time.utc(2000, 1, 1)
@@ -30,5 +30,5 @@ module Chivi::FileUtils
 end
 
 # file = ".tmp/test.txt.gz"
-# Chivi::FileUtils.save_gz(file, "test test test!")
-# puts Chivi::FileUtils.read_gz(file)
+# CV::FileUtils.save_gz(file, "test test test!")
+# puts CV::FileUtils.read_gz(file)

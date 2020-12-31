@@ -1,6 +1,6 @@
 require "./consts/normalize"
 
-module Chivi::DictUtils
+module CV::DictUtils
   extend self
 
   # Convert chinese punctuations to english punctuations
@@ -73,8 +73,8 @@ module Chivi::DictUtils
   end
 end
 
-# puts Chivi::DictUtils.normalize("０")
-# puts Chivi::DictUtils.normalize('０')
+# puts CV::DictUtils.normalize("０")
+# puts CV::DictUtils.normalize('０')
 
-# puts Chivi::DictUtils.to_integer("1245")
-# puts Chivi::DictUtils.to_integer("四")
+# puts CV::DictUtils.to_integer("1245")
+# puts CV::DictUtils.to_integer("四")
