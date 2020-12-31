@@ -6,7 +6,7 @@ require "./bgenre"
 require "../shared/core_utils"
 
 # Book info
-class Chivi::Nvinfo
+class CV::Models::Nvinfo
   include Clear::Model
   self.table = "nvinfos"
 

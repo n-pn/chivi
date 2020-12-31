@@ -1,7 +1,7 @@
 require "./_models"
 require "./viuser"
 
-class Chivi::Vicrit
+class CV::Models::Vicrit
   include Clear::Model
   self.table = "vicrits"
 

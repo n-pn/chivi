@@ -80,4 +80,4 @@ module CV::Library
   end
 end
 
-# puts Chivi::Library.lookup("trungviet", "覆盖面")
+# puts CV::Library.lookup("trungviet", "覆盖面")

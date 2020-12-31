@@ -1,7 +1,7 @@
 require "./_models"
 require "./mapper/value_map"
 
-class Chivi::Btitle
+class CV::Models::Btitle
   include Clear::Model
   self.table = "btitles"
 

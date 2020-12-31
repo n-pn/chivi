@@ -1,6 +1,6 @@
 require "./_models"
 
-class Chivi::Bgenre
+class CV::Models::Bgenre
   include Clear::Model
   self.table = "bgenres"
 

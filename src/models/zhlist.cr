@@ -1,7 +1,7 @@
 require "./_models"
 require "./zhuser"
 
-class Chivi::Zhlist
+class CV::Models::Zhlist
   include Clear::Model
   self.table = "zhlists"
 

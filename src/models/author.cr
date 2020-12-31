@@ -1,7 +1,7 @@
 require "./_models"
 require "./mapper/value_map"
 
-class Chivi::Author
+class CV::Models::Author
   include Clear::Model
   self.table = "authors"
 

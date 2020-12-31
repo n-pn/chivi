@@ -2,7 +2,7 @@ require "./_models"
 require "./chseed"
 
 # Chapter info
-class Chivi::Chinfo
+class CV::Models::Chinfo
   include Clear::Model
   self.table = "chinfos"
 

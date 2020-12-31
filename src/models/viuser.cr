@@ -2,7 +2,7 @@ require "./_models"
 
 # user infos
 
-class Chivi::Viuser
+class CV::Models::Viuser
   include Clear::Model
   self.table = "viusers"
 

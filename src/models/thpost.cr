@@ -1,9 +1,9 @@
 require "./_models"
 require "./member"
-require "./serial"
+require "./nvinfo"
 require "./thread"
 
-class Chivi::Remark
+class CV::Models::Remark
   include Clear::Model
   self.table = "remarks"
 
@@ -11,6 +11,6 @@ class Chivi::Remark
   timestamps
 
   belongs_to member : Member, foreign_key_type: Int32
-  belongs_to serial : Serial, foreign_key_type: Int32
+  belongs_to nvinfo : Nvinfo, foreign_key_type: Int32
   belongs_to thread : Thread, foreign_key_type: Int32
 end

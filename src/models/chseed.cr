@@ -1,7 +1,7 @@
 require "./_models"
 require "./nvinfo"
 
-class Chivi::Chseed
+class CV::Models::Chseed
   include Clear::Model
   self.table = "chseeds"
 

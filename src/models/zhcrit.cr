@@ -3,7 +3,7 @@ require "./zhuser"
 require "./zhlist"
 require "./nvlist"
 
-class Chivi::Zhcrit
+class CV::Models::Zhcrit
   include Clear::Model
   self.table = "zhcrits"
 
