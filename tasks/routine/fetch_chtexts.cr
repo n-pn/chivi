@@ -2,14 +2,12 @@ require "json"
 require "colorize"
 require "file_utils"
 
-require "../../src/shared/zip_store"
-require "../../src/kernel/import/book_meta"
-require "../../src/kernel/mapper/value_map"
+require "../../src/filedb/nvinfo"
+require "../../src/filedb/chtext"
+require "../../src/filedb/nvinit/rm_text"
 
-require "../../src/_oldcv/kernel/seeds/seed_text"
-
-LIST_DIR = "_db/_extra/chlist"
-TEXT_DIR = "_db/zhtext"
+LIST_DIR = "_db/nvdata/chinfos"
+TEXT_DIR = "_db/nvdata/chtexts"
 
 class PreloadBook
   MIN_SIZE = 20

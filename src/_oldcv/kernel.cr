@@ -8,9 +8,9 @@ module Oldcv::Kernel
     return unless sbid = info.seed_sbids[seed]?
 
     chlist = ChapList.preload_or_create!(info.ubid, seed)
-    expiry = mode > 0 ? (Time.utc - 5.minutes) : Time.unix_ms(info.mftime)
+    expiry = mode > 0 ? (Time.utc - 5.minutes) : Time.utc(2010, 1, 1)
 
-    expiry -= 20.years unless remote?(seed)
+    expiry -= 10.years unless remote?(seed)
 
     if ChapList.outdated?(info.ubid, seed, expiry)
       remote = SeedInfo.new(seed, sbid, expiry: expiry, freeze: true)

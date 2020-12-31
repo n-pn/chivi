@@ -9,8 +9,8 @@ SSH=nipin@ssh.chivi.xyz:www/chivi.xyz
 DIR="_db/_oldcv"
 
 # rsync -azi --no-p "$DIR/members" "$SSH/$DIR"
-# rsync -azi --no-p "$DIR/serials" "$SSH/$DIR"
-# rsync -azi --no-p "$DIR/indexes" "$SSH/$DIR"
-# rsync -azi --no-p "$DIR/chlists" "$SSH/$DIR"
+rsync -azi --no-p "$DIR/serials" "$SSH/$DIR"
+rsync -azi --no-p "$DIR/indexes" "$SSH/$DIR"
+rsync -azi --no-p "$DIR/chlists" "$SSH/$DIR"
 
 rsync -azi --no-p "web/public" "$SSH/web"

@@ -1,5 +1,5 @@
 require "colorize"
-require "../../src/shared/zip_store"
+require "../../src/filedb/stores/zip_store"
 
 DIR = "_db/nvdata/chtexts"
 
@@ -17,7 +17,7 @@ def archive(seed : String)
     zip_name = File.join(seed_path, "#{book_uid}.zip")
 
     puts "- <#{idx + 1}/#{book_dirs.size}> [#{seed}/#{book_uid}.zip]".colorize.blue
-    zip_file = Chivi::ZipStore.new(zip_name, book_dir)
+    zip_file = CV::ZipStore.new(zip_name, book_dir)
     zip_file.compress!(:archive)
   rescue err
     puts err.colorize.red
