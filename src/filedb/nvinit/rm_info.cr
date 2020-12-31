@@ -2,18 +2,16 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../shared/file_utils"
-require "../shared/seed_utils"
-require "../shared/http_utils"
+require "../../shared/*"
 
-module Chivi::RmInfo
+module CV::RmInfo
   extend self
 
   def init(seed : String, sbid : String, expiry = Time.utc - 30.weeks, freeze = true)
     html_url = seed_url(seed, sbid)
     out_file = path_for(seed, sbid)
 
-    expiry = SeedUtils::DEF_TIME if seed == "jx_la"
+    expiry = TimeUtils::DEF_TIME if seed == "jx_la"
     parser_for(seed).new(html_url, out_file, expiry, freeze)
   end
 
@@ -159,7 +157,7 @@ module Chivi::RmInfo
         next unless href = link.attributes["href"]?
 
         scid = extract_scid(href)
-        text = SeedUtils.format_title(link.inner_text, label)
+        text = TextUtils.format_title(link.inner_text, label)
         chlist << ChInfo.new(scid, text)
       end
 
@@ -221,7 +219,7 @@ module Chivi::RmInfo
 
       rdoc.css(".chapter-list a").each do |link|
         next unless href = link.attributes["href"]?
-        text = SeedUtils.format_title(link.inner_text)
+        text = TextUtils.format_title(link.inner_text)
         chlist << ChInfo.new(extract_scid(href), text)
       end
 
@@ -235,7 +233,7 @@ module Chivi::RmInfo
     getter intro : Array(String) { rdoc.css(".intro > p").map(&.inner_text).to_a }
     getter tags : Array(String) { rdoc.css(".tag a").map(&.inner_text).to_a }
 
-    getter update : Time { SeedUtils::DEF_TIME }
+    getter update : Time { TimeUtils::DEF_TIME }
     getter chlist : ChList { extract_chlist("#dir") }
 
     def raw_genre
@@ -261,7 +259,7 @@ module Chivi::RmInfo
     getter author : String { node_text(".fontwt") || "" }
     getter btitle : String { node_text(".cbooksingle h2") || "" }
     getter bgenre : String { "" }
-    getter update : Time { SeedUtils::DEF_TIME }
+    getter update : Time { TimeUtils::DEF_TIME }
     getter chlist : ChList { extract_chlist }
 
     def raw_intro
@@ -281,7 +279,7 @@ module Chivi::RmInfo
 
       rdoc.css(".clistitem > a").each do |link|
         scid = extract_scid(link.attributes["href"])
-        text = SeedUtils.format_title(link.inner_text)
+        text = TextUtils.format_title(link.inner_text)
         chlist << ChInfo.new(scid, text)
       end
 

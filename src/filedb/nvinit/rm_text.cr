@@ -2,11 +2,9 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../shared/file_utils"
-require "../shared/seed_utils"
-require "../shared/http_utils"
+require "../../*"
 
-module Chivi::RmText
+module CV::RmText
   extend self
 
   def init(seed : String, sbid : String, scid : String, expiry = Time.utc - 2.years, freeze = true)
@@ -15,7 +13,7 @@ module Chivi::RmText
     out_file = "_db/.cache/#{seed}/texts/#{sbid}/#{scid}.html"
     ::FileUtils.mkdir_p(File.dirname(out_file)) if freeze
 
-    expiry = SeedUtils::DEF_TIME if seed == "jx_la"
+    expiry = TimeUtils::DEF_TIME if seed == "jx_la"
     parser_for(seed).new(html_url, out_file, expiry, freeze)
   end
 
@@ -88,7 +86,7 @@ module Chivi::RmText
 
     protected def raw_title(sel : String = "h1")
       return "" unless node = rdoc.css(sel).first?
-      SeedUtils.format_title(node.inner_text)
+      TextUtils.format_title(node.inner_text)
     end
 
     protected def raw_paras(sel : String = "#content")
@@ -98,7 +96,7 @@ module Chivi::RmText
         tag.remove! if {"script", "div"}.includes?(tag.tag_name)
       end
 
-      lines = SeedUtils.split_html(node.inner_text("\n"))
+      lines = TextUtils.split_html(node.inner_text("\n"))
 
       lines.shift if lines.first == title
       lines.pop if lines.last == "(本章完)"

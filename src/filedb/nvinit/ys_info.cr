@@ -1,7 +1,7 @@
 require "json"
-require "../shared/seed_utils"
+require "../../shared/*"
 
-struct Chivi::YsSource
+struct CV::YsSource
   include JSON::Serializable
 
   @[JSON::Field(key: "siteName")]
@@ -11,7 +11,7 @@ struct Chivi::YsSource
   property link : String
 end
 
-class Chivi::YsInfo
+class CV::YsInfo
   include JSON::Serializable
 
   getter _id : Int32
@@ -21,7 +21,7 @@ class Chivi::YsInfo
   property author = ""
 
   getter introduction = ""
-  getter intro : Array(String) { SeedUtils.split_html(introduction) }
+  getter intro : Array(String) { TextUtils.split_html(introduction) }
 
   getter classInfo : NamedTuple(classId: Int32, className: String)?
   getter genre : String { @classInfo.try(&.[:className]) || "" }
@@ -32,9 +32,8 @@ class Chivi::YsInfo
   getter cover = ""
   getter cover_fixed : String { get_fixed_cover }
 
-  DF_TIME = Time.utc(2000, 1, 1)
   getter updateAt : Time
-  getter updated_at : Time { @updateAt < Time.utc ? @updateAt : DF_TIME }
+  getter updated_at : Time { @updateAt < Time.utc ? @updateAt : TimeUtils::DF_TIME }
 
   getter scorerCount = 0_i32
   getter voters : Int32 { scorerCount }
@@ -52,7 +51,7 @@ class Chivi::YsInfo
   getter shielded = false
   # getter recom_ignore = false
 
-  property sources = [] of Chivi::YsSource
+  property sources = [] of CV::YsSource
   getter source : String { sources.first?.try(&.link) || "" }
 
   getter addListCount = 0_i32
@@ -80,7 +79,7 @@ class Chivi::YsInfo
   end
 end
 
-# info = Chivi::YsInfo.load("_db/seeds/yousuu/raw-infos/176814.json").not_nil!
+# info = CV::YsInfo.load("_db/seeds/yousuu/raw-infos/176814.json").not_nil!
 # puts info.intro
 # puts info.genre
 # puts info.tags_fixed
