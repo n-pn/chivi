@@ -1,17 +1,19 @@
 require "colorize"
 
-require "../../src/kernel/source/rm_text.cr"
+require "../../src/filedb/nvinit/rm_text.cr"
 
 def fetch_chap(seed : String, sbid : String, scid : String)
   puts "\n[ #{seed}/#{sbid}/#{scid} ]\n".colorize(:yellow)
 
-  chap = Chivi::RmText.init(seed, sbid, scid, freeze: true)
+  chap = CV::RmText.init(seed, sbid, scid, freeze: true)
 
   puts chap.title
   puts "---".colorize.blue
   puts chap.paras.first(4).join("\n")
   puts "---".colorize.blue
   puts chap.paras.last(4).join("\n")
+rescue err
+  puts err.colorize.red
 end
 
 # fetch_chap("hetushu", "5124", "3814265")

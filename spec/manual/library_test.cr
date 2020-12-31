@@ -1,6 +1,6 @@
 require "../../src/engine/library"
 
-module Chivi
+module CV
   puts Library.hanviet.size
   puts Library.hanviet.find("坚")
 

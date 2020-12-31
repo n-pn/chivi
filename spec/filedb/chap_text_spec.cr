@@ -1,18 +1,17 @@
 require "spec"
 require "file_utils"
-require "../../src/models/chap_text"
+require "../../src/filedb/chtext"
 
-describe ChapText do
+describe CV::Chtext do
   it "correctly save text" do
-    test = ChapText.new("test", "test", "test")
+    test = CV::Chtext.load("test", "test", "test")
     FileUtils.mkdir_p(test.root)
 
     lines = ["1", "2", "3"]
     text = lines.join("\n")
-    test.data = text
+    test.zh_lines = lines
 
-    test.save!.load!
-    test.data.should eq(text)
+    test.tap(&.save!).load!
     test.zh_lines.should eq(lines)
 
     FileUtils.rm_rf(test.root)

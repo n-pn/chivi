@@ -66,7 +66,7 @@ module CV::RmInfo
     end
   end
 
-  alias ChList = Array(ChInfo)
+  alias Chlist = Array(ChInfo)
 
   class RI_Generic
     # input
@@ -82,14 +82,14 @@ module CV::RmInfo
     getter author : String { meta_data("og:novel:author") || "" }
     getter btitle : String { meta_data("og:novel:book_name") || "" }
     getter bgenre : String { meta_data("og:novel:category") || "" }
-    getter intro : Array(String) { SeedUtils.split_html(raw_intro || "") }
+    getter intro : Array(String) { TextUtils.split_html(raw_intro || "") }
     getter cover : String { raw_cover || "" }
     getter tags : Array(String) { [] of String }
 
     getter status : Int32 { map_status(raw_status) || 0 }
-    getter update : Time { SeedUtils.parse_time(raw_update) }
+    getter update : Time { TimeUtils.parse_time(raw_update) }
 
-    getter chlist : ChList { extract_chlist("#list > dl") }
+    getter chlist : Chlist { extract_chlist("#list > dl") }
 
     def initialize(@html_url, @out_file, @expiry : Time, @freeze : Bool = true)
     end
@@ -140,7 +140,7 @@ module CV::RmInfo
     end
 
     def extract_chlist(sel : String)
-      chlist = ChList.new
+      chlist = Chlist.new
       return chlist unless node = find_node(sel)
 
       label = "正文"
@@ -196,7 +196,7 @@ module CV::RmInfo
   class RI_Rengshu < RI_Generic; end
 
   class RI_5200 < RI_Generic
-    getter chlist : ChList { extract_chlist(".listmain > dl") }
+    getter chlist : Chlist { extract_chlist(".listmain > dl") }
   end
 
   class RI_Biquge5200 < RI_Generic
@@ -212,10 +212,10 @@ module CV::RmInfo
   end
 
   class RI_Duokan8 < RI_Generic
-    getter chlist : ChList { extract_chlist }
+    getter chlist : Chlist { extract_chlist }
 
     private def extract_chlist
-      chlist = ChList.new
+      chlist = Chlist.new
 
       rdoc.css(".chapter-list a").each do |link|
         next unless href = link.attributes["href"]?
@@ -234,7 +234,7 @@ module CV::RmInfo
     getter tags : Array(String) { rdoc.css(".tag a").map(&.inner_text).to_a }
 
     getter update : Time { TimeUtils::DEF_TIME }
-    getter chlist : ChList { extract_chlist("#dir") }
+    getter chlist : Chlist { extract_chlist("#dir") }
 
     def raw_genre
       node_text(".title > a:nth-child(2)")
@@ -260,7 +260,7 @@ module CV::RmInfo
     getter btitle : String { node_text(".cbooksingle h2") || "" }
     getter bgenre : String { "" }
     getter update : Time { TimeUtils::DEF_TIME }
-    getter chlist : ChList { extract_chlist }
+    getter chlist : Chlist { extract_chlist }
 
     def raw_intro
       node_text("tr:nth-of-type(3)")
@@ -275,7 +275,7 @@ module CV::RmInfo
     end
 
     def extract_chlist
-      chlist = ChList.new
+      chlist = Chlist.new
 
       rdoc.css(".clistitem > a").each do |link|
         scid = extract_scid(link.attributes["href"])

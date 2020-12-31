@@ -12,13 +12,13 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
-MTL = Chivi::Convert.content("various")
+ENGINE = CV::Convert.content("various")
 
 def translate(input : String, title = false)
   if title
-    MTL.cv_title(input).to_text
+    ENGINE.cv_title(input).to_text
   else
-    MTL.cv_plain(input).to_text
+    ENGINE.cv_plain(input).to_text
   end
 end
 
@@ -37,6 +37,6 @@ puts translate("一. 屠龙之术")
 puts translate("朥负已定")
 puts translate("第三千七百九十八章 历史的本质就是套娃", true)
 
-pp MTL.cv_title("1, 屠龙之术")
-pp MTL.cv_plain("能让我坐在这里无病呻－吟")
-pp MTL.cv_plain("无病呻－吟")
+pp ENGINE.cv_title("1, 屠龙之术")
+pp ENGINE.cv_plain("能让我坐在这里无病呻－吟")
+pp ENGINE.cv_plain("无病呻－吟")

@@ -1,11 +1,11 @@
 require "file_utils"
 
-require "../../src/kernel/source/rm_info.cr"
+require "../../src/filedb/nvinit/rm_info.cr"
 
 def fetch_info(seed, sbid, expiry = Time.utc - 1.month) : Void
   puts "\n[#{seed} - #{sbid}]\n".colorize.cyan.bold
 
-  task = Chivi::RmInfo.init(seed, sbid, expiry)
+  task = CV::RmInfo.init(seed, sbid, expiry)
 
   info = {
     btitle: task.btitle, author: task.author, bgenre: task.bgenre,
@@ -27,12 +27,14 @@ def fetch_info(seed, sbid, expiry = Time.utc - 1.month) : Void
 
   pp task.chlist.last(4)
   puts "------".colorize.green
+rescue err
+  puts err.colorize.red
 end
 
 # fetch_info("qu_la", "7")
 # fetch_info("qu_la", "9923")
 
-fetch_info("jx_la", "7")
+# fetch_info("jx_la", "7")
 # fetch_info("jx_la", "179402")
 # fetch_info("jx_la", "250502")
 
