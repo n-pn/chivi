@@ -54,6 +54,3 @@ dependencies:
   clear:
     github: nipinium/clear
     branch: master
-
-  icu:
-    github: olbat/icu.cr
