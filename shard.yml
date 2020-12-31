@@ -51,12 +51,9 @@ dependencies:
   myhtml:
     github: kostya/myhtml
 
-  crest:
-    github: mamantoha/crest
-
-  icu:
-    github: olbat/icu.cr
-
   clear:
     github: nipinium/clear
     branch: master
+
+  icu:
+    github: olbat/icu.cr

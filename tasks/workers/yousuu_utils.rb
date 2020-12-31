@@ -59,11 +59,12 @@ class HttpClient
 
   def get!(url, file)
     return :no_more_proxy unless proxy = @proxies.pop
+    puts "- GET: <#{url.blue}> using proxy [#{proxy[0].blue}]" if @debug_mode
 
     begin
-      puts "- GET: <#{url.blue}> using proxy [#{proxy[0].blue}]" if @debug_mode
 
       body = URI.open(url, proxy: "http://#{proxy[0]}", read_timeout: 20, "User-Agent" => USER_AGENT) { |f| f.read }
+      puts body
 
       unless valid_response?(body)
         if @debug_mode
