@@ -1,7 +1,7 @@
 require "colorize"
 require "./vp_dict/*"
 
-class Chivi::VpDict
+class CV::VpDict
   getter file : String    # default read/save file
   getter size : Int32 = 0 # dict size by unique keys
 

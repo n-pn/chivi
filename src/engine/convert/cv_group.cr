@@ -1,6 +1,6 @@
 require "./cv_entry"
 
-class Chivi::CvGroup
+class CV::CvGroup
   getter data : Array(CvEntry)
 
   def initialize(@data = [] of CvEntry)

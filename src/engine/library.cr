@@ -2,7 +2,7 @@ require "file_utils"
 
 require "./library/*"
 
-module Chivi::Library
+module CV::Library
   extend self
 
   DIR = "_db/cvdict/active"

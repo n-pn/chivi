@@ -4,7 +4,7 @@ require "../library/vp_dict"
 require "./cv_entry"
 require "./cv_group"
 
-class Chivi::CvToken
+class CV::CvToken
   getter input : Array(Char)
   delegate size, to: @input
 

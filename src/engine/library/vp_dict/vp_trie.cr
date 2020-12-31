@@ -1,6 +1,6 @@
 require "./vp_term"
 
-class Chivi::VpTrie
+class CV::VpTrie
   alias Trie = Hash(Char, VpTrie)
 
   property item : VpTerm?

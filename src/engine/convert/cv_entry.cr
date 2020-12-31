@@ -1,6 +1,6 @@
 require "../../shared/seed_utils"
 
-class Chivi::CvEntry
+class CV::CvEntry
   property key : String
   property val : String
 

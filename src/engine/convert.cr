@@ -1,7 +1,7 @@
 require "./library"
 require "./convert/*"
 
-class Chivi::Convert
+class CV::Convert
   class_getter hanviet : self { new(Library.hanviet) }
   class_getter binh_am : self { new(Library.binh_am) }
   class_getter tradsim : self { new(Library.tradsim) }

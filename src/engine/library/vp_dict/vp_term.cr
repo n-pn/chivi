@@ -1,4 +1,4 @@
-class Chivi::VpTerm
+class CV::VpTerm
   SEP_0 = "ǀ"
   EPOCH = Time.utc(2020, 1, 1)
 

@@ -1,6 +1,6 @@
 require "./vp_dict/vp_term"
 
-class Chivi::VpLogs
+class CV::VpLogs
   SEP_0 = 'ǀ'
   SEP_1 = '¦'
 
