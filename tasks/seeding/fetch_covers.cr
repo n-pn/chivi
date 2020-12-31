@@ -7,7 +7,7 @@ require "file_utils"
 require "../../src/_oldcv/kernel/models/book_info"
 
 class Oldcv::FetchCovers
-  TMP_DIR = "_db/.cover/.miscs"
+  TMP_DIR = "_db/_seeds/.cover/.miscs"
   OUT_DIR = "web/public/covers"
 
   # FILE_DF = File.join(TMP_DIR, "blank.jpg")

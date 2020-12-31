@@ -1,7 +1,7 @@
 require "./value_map"
 
 class CV::TokenMap < CV::ValueMap
-  alias Index = Hash(String, Array(String))
+  alias Index = Set(String)
   getter _idx = Hash(String, Index).new { |h, k| h[k] = Index.new }
 
   def set(key : String, vals : Array(String)) : Bool
@@ -9,7 +9,7 @@ class CV::TokenMap < CV::ValueMap
     return false unless super
 
     (old_vals - vals).each { |v| @_idx[v].delete(key) } if old_vals
-    vals.each { |v| @_idx[v][key] = vals }
+    vals.each { |v| @_idx[v].add(key) }
 
     true
   end
@@ -19,33 +19,40 @@ class CV::TokenMap < CV::ValueMap
     super
   end
 
-  def glob(val : String) : Index
+  def keys(val : String) : Index
     @_idx[val]? || Index.new
   end
 
-  def glob(tsv : Array(String)) : Index
-    return glob(tsv.first) if tsv.size == 1
-    return Index.new unless index = glob_min(tsv)
-    index.select { |_key, vals| fuzzy_match?(vals, tsv) } || Index.new
+  def keys(tsv : Array(String)) : Index
+    return keys(tsv.first) if tsv.size == 1
+
+    if set = keys_min(tsv)
+      set.each do |key|
+        next unless vals = get(key)
+        return set if fuzzy_match?(tsv, vals)
+      end
+    end
+
+    Index.new
   end
 
-  private def glob_min(tsv : Array(String))
+  private def keys_min(tsv : Array(String)) : Index?
     ret = nil
     min = Int32::MAX
 
     tsv.each do |val|
-      return unless index = glob(val)
+      return unless set = keys(val)
 
-      if index.size < min
-        ret = index
-        min = index.size
+      if set.size < min
+        ret = set
+        min = set.size
       end
     end
 
     ret
   end
 
-  private def fuzzy_match?(vals : Array(String), tsv : Array(String))
+  private def fuzzy_match?(tsv : Array(String), vals : Array(String))
     return false if vals.size < tsv.size
 
     idx = 0
@@ -64,5 +71,5 @@ end
 # test.set("a", "a")
 # test.set("b", "b\ta")
 
-# puts test.glob("a")
-# puts test.glob(["b"])
+# puts test.keys("a")
+# puts test.keys(["b"])

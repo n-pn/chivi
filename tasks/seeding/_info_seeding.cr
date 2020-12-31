@@ -3,11 +3,11 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../src/shared/file_utils"
-require "../../src/shared/http_utils"
-require "../../src/shared/seed_utils"
+require "../../src/shared/*"
 
-require "../../src/kernel"
+require "../../src/filedb/butils"
+require "../../src/filedb/nvinfo"
+require "../../src/filedb/nvseed"
 
 class Chivi::InfoSeeding
   getter name : String
@@ -15,17 +15,14 @@ class Chivi::InfoSeeding
 
   getter _index : ValueMap { ValueMap.new(map_path("_index")) }
 
-  getter genres : ValueMap { ValueMap.new(map_path("genres")) }
-  getter covers : ValueMap { ValueMap.new(map_path("covers")) }
-
-  getter update : ValueMap { ValueMap.new(map_path("update")) }
-  getter access : ValueMap { ValueMap.new(map_path("access")) }
+  getter bgenre : ValueMap { ValueMap.new(map_path("bgenre")) }
+  getter bcover : ValueMap { ValueMap.new(map_path("bcover")) }
 
   getter status : ValueMap { ValueMap.new(map_path("status")) }
   getter rating : ValueMap { ValueMap.new(map_path("rating")) }
 
-  getter intro_cache = {} of String => Array(String)
-  getter chaps_cache = {} of String => Array(String)
+  getter access_tz : ValueMap { ValueMap.new(map_path("tz_access")) }
+  getter update_tz : ValueMap { ValueMap.new(map_path("tz_update")) }
 
   def map_path(fname : String)
     "#{@rdir}/#{fname}.tsv"
@@ -33,104 +30,80 @@ class Chivi::InfoSeeding
 
   def initialize(@name)
     @rdir = "_db/_seeds/#{@name}"
-    @intros_dir = "#{@rdir}/intros"
-    @chlist_dir = "#{@rdir}/chlist"
-
-    ::FileUtils.mkdir_p(@intros_dir)
-    ::FileUtils.mkdir_p(@chlist_dir)
-  end
-
-  def get_intro(sbid : String) : Array(String)
-    @intro_cache[sbid] ||= begin
-      File.read_lines(intro_path(sbid))
-    rescue
-      [] of String
-    end
+    @intro_dir = "#{@rdir}/intros"
+    ::FileUtils.mkdir_p(@intro_dir)
   end
 
   def set_intro(sbid : String, intro : Array(String)) : Nil
     puts "- [#{@name}/#{sbid}] book intro saved!".colorize.yellow
     File.write(intro_path(sbid), intro.join("\n"))
-    @intro_cache[sbid] = intro
+  end
+
+  def get_intro(sbid : String) : Array(String)
+    File.read_lines(intro_path(sbid))
+  rescue
+    [] of String
   end
 
   def intro_path(sbid)
-    "#{@intros_dir}/#{sbid}.txt"
-  end
-
-  def get_chaps(sbid : String)
-    @chaps_cache[sbid] ||= begin
-      File.read_lines(chaps_path(sbid))
-    rescue
-      [] of String
-    end
-  end
-
-  def set_chaps(sbid : String, chaps : Array(String)) : Nil
-    puts "- [#{@name}/#{sbid}] chapter list saved!".colorize.yellow
-    File.write(chaps_path(sbid), chaps.join("\n"))
-    @chaps_cache[sbid] = chaps
-  end
-
-  def has_chaps?(sbid : String)
-    File.exists?(chaps_path(sbid))
-  end
-
-  def chaps_path(sbid)
-    "#{@chlist_dir}/#{sbid}.tsv"
+    "#{@intro_dir}/#{sbid}.txt"
   end
 
   def get_status(sbid : String)
-    status.get_value(sbid).try(&.to_i?) || 0
+    status.fval(sbid).try(&.to_i?) || 0
   end
 
-  def get_update(sbid : String)
-    update.get_value(sbid).try(&.to_i64?) || 0_i64
+  def get_update_tz(sbid : String)
+    update_tz.fval(sbid).try(&.to_i64?) || 0_i64
   end
 
-  def get_bname(sbid : String)
-    btitle, author = _index.get_value(sbid).not_nil!.split("  ", 2)
-    {Btitle.fix_zh_name(btitle), Author.fix_zh_name(author)}
+  def get_access_tz(sbid : String)
+    access_tz.fval(sbid).try(&.to_i64?) || 0_i64
   end
 
-  def upsert_nvinfo!(sbid : String) : Nvinfo
-    btitle, author = get_bname(sbid)
-    nvinfo = Nvinfo.upsert!(btitle, author)
-
-    nvinfo.set_intro(get_intro(sbid), @name) unless nvinfo.zh_intro
-
-    bgenre = genres.get_value(sbid).not_nil!
-    nvinfo.set_bgenre(bgenre)
-
-    nvinfo.set_status(get_status(sbid))
-
-    mftime = get_update(sbid)
-    nvinfo.set_update_tz(mftime)
-    nvinfo.set_access_tz(mftime // 300)
-
-    yield nvinfo
-    nvinfo.save!
+  def get_labels(sbid : String)
+    btitle, author = _index.get(sbid).not_nil!
+    {Butils.fix_zh_btitle(btitle), Butils.fix_zh_author(author)}
   end
 
-  def upsert_chseed!(sbid : String, nvinfo_id : Int32)
-    chseed = Chseed.upsert!(@name, sbid, &.nvinfo_id = nvinfo_id)
+  # def upsert_nvinfo!(sbid : String) : Nvinfo
+  #   btitle, author = get_labels(sbid)
+  #   nvinfo = Nvinfo.upsert!(btitle, author)
 
-    chseed.set_update_tz(get_update(sbid))
-    chseed.set_access_tz(Time.utc.to_unix)
+  #   nvinfo.set_intro(get_intro(sbid), @name) unless nvinfo.zh_intro
 
-    chseed.save!
-  end
+  #   bgenre = genres.get_value(sbid).not_nil!
+  #   nvinfo.set_bgenre(bgenre)
 
-  def save!
-    @_index.try(&.save!)
+  #   nvinfo.set_status(get_status(sbid))
 
-    @genres.try(&.save!)
-    @covers.try(&.save!)
+  #   mftime = get_update(sbid)
+  #   nvinfo.set_update_tz(mftime)
+  #   nvinfo.set_access_tz(mftime // 300)
 
-    @update.try(&.save!)
-    @access.try(&.save!)
+  #   yield nvinfo
+  #   nvinfo.save!
+  # end
 
-    @status.try(&.save!)
-    @rating.try(&.save!)
+  # def upsert_nvseed!(sbid : String, zh_slug : Int32)
+  #   chseed = Chseed.upsert!(@name, sbid, &.nvinfo_id = nvinfo_id)
+
+  #   chseed.set_update_tz(get_update(sbid))
+  #   chseed.set_access_tz(Time.utc.to_unix)
+
+  #   chseed.save!
+  # end
+
+  def save!(mode : Symbol = :full)
+    @_index.try(&.save!(mode))
+
+    @bgenre.try(&.save!(mode))
+    @bcover.try(&.save!(mode))
+
+    @status.try(&.save!(mode))
+    @rating.try(&.save!(mode))
+
+    @update_tz.try(&.save!(mode))
+    @access_tz.try(&.save!(mode))
   end
 end

@@ -1,4 +1,4 @@
-require "../../shared/seed_utils"
+require "../../shared/text_utils"
 
 class CV::CvEntry
   property key : String
@@ -11,7 +11,7 @@ class CV::CvEntry
   end
 
   def capitalize!(cap_mode : Int32 = 1) : Nil
-    @val = cap_mode > 1 ? SeedUtils.titleize(@val) : SeedUtils.capitalize(@val)
+    @val = cap_mode > 1 ? TextUtils.titleize(@val) : TextUtils.capitalize(@val)
   end
 
   def combine!(other : self) : Nil

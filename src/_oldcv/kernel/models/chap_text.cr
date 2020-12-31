@@ -3,31 +3,25 @@ require "file_utils"
 require "compress/zip"
 
 class Oldcv::ChapText
-  # class Oldcv::methods
+  DIR = "_db/nvdata/chtexts"
+  ::FileUtils.mkdir_p(DIR)
 
-  DIR = "_db/zhtext"
-  FileUtils.mkdir_p(DIR)
+  alias Cache = Hash(String, self)
 
-  # SEP_0 = "ǁ"
-  # SEP_1 = "¦"
+  CACHE_SIZE = 1024
+  @@a_cache = Cache.new
+  @@b_cache = Cache.new
 
-  alias CACHE_HASH = Hash(String, self)
+  def self.load(seed : String, sbid : String, scid : String)
+    file = File.join(DIR, seed, sbid, "#{scid}.txt")
 
-  CACHE_LIMIT = 1000
-  @@back_cache = CACHE_HASH.new
-  @@front_cache = CACHE_HASH.new
+    unless item = @@a_cache[file]?
+      item = @@b_cache[file]? || new(file)
+      @@a_cache[file] = item
 
-  def self.load(sname : String, s_bid : String, s_cid : String)
-    file = File.join(DIR, sname, s_bid, "#{s_cid}.txt")
-
-    unless item = @@front_cache[file]?
-      item = @@back_cache[file]? || new(file)
-
-      @@front_cache[file] = item
-
-      if @@front_cache.size >= CACHE_LIMIT
-        @@back_cache = @@front_cache
-        @@front_cache = CACHE_HASH.new
+      if @@a_cache.size >= CACHE_SIZE
+        @@b_cache = @@a_cache
+        @@a_cache = Cache.new
       end
     end
 
@@ -35,7 +29,7 @@ class Oldcv::ChapText
   end
 
   getter file : String
-  property zh_data : Array(String) { load_data }
+  property zh_data : Array(String) { load_zh_data }
 
   property cv_text = ""
   property cv_time = 0_i64
@@ -43,7 +37,7 @@ class Oldcv::ChapText
   def initialize(@file : String)
   end
 
-  def load_data
+  def load_zh_data
     puts "- <chap_text> loading [#{@file}]".colorize.blue
     return File.read_lines(@file) if File.exists?(@file)
 
@@ -61,18 +55,9 @@ class Oldcv::ChapText
     [] of String
   end
 
-  # def zh_line(line : String)
-  #   line.split(/[\tǁ]/).map(&.split("¦", 2)[0]).join
-  # end
-
-  def save!(file : String = @file) : Void
+  def save!(file : String = @file) : Nil
     FileUtils.mkdir_p(File.dirname(file))
-    File.write(file, self)
-
+    File.write(file, zh_data.join("\n"))
     puts "- <chap_text> [#{@file}] saved.".colorize.green
-  end
-
-  def to_s(io : IO)
-    zh_data.join(io, "\n")
   end
 end

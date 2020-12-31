@@ -3,13 +3,13 @@
 # require "json"
 require "colorize"
 
-INP = "_db/zhtext"
+INP = "_db/nvdata/chtexts"
 # SSH = "deploy@dev.chivi.xyz"
 SSH = "nipin@ssh.chivi.xyz"
-OUT = "#{SSH}:www/chivi.xyz/_db/zhtext"
+OUT = "#{SSH}:www/chivi.xyz/#{INP}"
 
 def upload_texts(seed, flags = "")
-  puts `ssh #{SSH} mkdir -p /home/nipin/www/chivi.xyz/_db/zhtext/#{seed}`
+  puts `ssh #{SSH} mkdir -p /home/nipin/www/chivi.xyz/#{INP}/#{seed}`
 
   seed_dir = File.join(INP, seed)
   children = Dir.glob(File.join(seed_dir, "*.zip"))

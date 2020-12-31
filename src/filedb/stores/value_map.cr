@@ -61,6 +61,10 @@ class CV::ValueMap
     @data.delete(key)
   end
 
+  def fval(key : String)
+    get(key).try(&.first?)
+  end
+
   def unsaved
     @ups.size
   end

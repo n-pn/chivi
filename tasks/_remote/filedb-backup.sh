@@ -8,4 +8,4 @@ rsync -aiz --no-p "$SSH/_db/cvdict/legacy" "_db/cvdict"
 rsync -aiz --no-p "$SSH/_db/cvdict/active/" "_db/cvdict/remote/"
 
 rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
-rsync -aiz --no-p --include="*.txt" "$SSH/_db/zhtext/_chivi" "_db/zhtext/"
+rsync -aiz --no-p --include="*.txt" "$SSH/_db/nvdata/chtexts/_chivi" "_db/nvdata/chtexts/"
