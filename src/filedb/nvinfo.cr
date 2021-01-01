@@ -3,7 +3,7 @@ require "file_utils"
 
 require "./nvinfo/*"
 
-module Cv::Nvinfo
+module CV::Nvinfo
   extend self
 
   class_getter _index : TokenMap { load_token_map("_index") }

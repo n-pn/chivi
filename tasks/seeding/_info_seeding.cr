@@ -4,12 +4,10 @@ require "colorize"
 require "file_utils"
 
 require "../../src/shared/*"
-
-require "../../src/filedb/butils"
 require "../../src/filedb/nvinfo"
 require "../../src/filedb/nvseed"
 
-class Chivi::InfoSeeding
+class CV::InfoSeeding
   getter name : String
   getter rdir : String
 
@@ -95,15 +93,15 @@ class Chivi::InfoSeeding
   # end
 
   def save!(mode : Symbol = :full)
-    @_index.try(&.save!(mode))
+    @_index.try(&.save!(mode: mode))
 
-    @bgenre.try(&.save!(mode))
-    @bcover.try(&.save!(mode))
+    @bgenre.try(&.save!(mode: mode))
+    @bcover.try(&.save!(mode: mode))
 
-    @status.try(&.save!(mode))
-    @rating.try(&.save!(mode))
+    @status.try(&.save!(mode: mode))
+    @rating.try(&.save!(mode: mode))
 
-    @update_tz.try(&.save!(mode))
-    @access_tz.try(&.save!(mode))
+    @update_tz.try(&.save!(mode: mode))
+    @access_tz.try(&.save!(mode: mode))
   end
 end

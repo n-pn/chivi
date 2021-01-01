@@ -1,14 +1,14 @@
 require "file_utils"
 require "option_parser"
 
-require "../../src/_seeds/rm_info"
+require "../../src/filedb/nvinit/rm_info"
 require "./_info_seeding.cr"
 
-class Chivi::SeedRemoteInfo
+class CV::SeedRemoteInfo
   getter name : String
 
   def initialize(@name)
-    @seeding = InfoSeeding.new(@name)
+    @input = InfoSeeding.new(@name)
   end
 
   def init!(upto = 1, skip_missing = false)
@@ -17,29 +17,29 @@ class Chivi::SeedRemoteInfo
     1.upto(upto) do |idx|
       sbid = idx.to_s
 
-      unless access = access_time(sbid)
+      unless access_tz = access_time(sbid)
         next if skip_missing
-        access = Time.utc.to_unix
+        access_tz = Time.utc.to_unix
       end
 
-      next if @seeding.access.get_value(sbid).try(&.to_i64.> access)
-      @seeding.access.upsert(sbid, access.to_s)
+      next if @input.access_tz.fval(sbid).try(&.to_i64.> access_tz)
+      @input.access_tz.add(sbid, access_tz)
 
       parser = RmInfo.init(@name, sbid, expiry: Time.utc - 1.years)
 
-      if @seeding._index.upsert(sbid, "#{parser.btitle}  #{parser.author}")
-        @seeding.set_intro(sbid, parser.intro)
-        @seeding.genres.upsert(sbid, parser.bgenre)
-        @seeding.covers.upsert(sbid, parser.cover)
+      if @input._index.add(sbid, [parser.btitle, parser.author])
+        @input.set_intro(sbid, parser.bintro)
+        @input.bgenre.add(sbid, [parser.bgenre].concat(parser.tags))
+        @input.bcover.add(sbid, parser.bcover)
       end
 
-      @seeding.status.upsert(sbid, parser.status.to_s)
-      @seeding.update.upsert(sbid, parser.update.to_s)
+      @input.status.add(sbid, parser.status)
+      @input.update_tz.add(sbid, parser.update)
     rescue err
       puts err.colorize.red
     end
 
-    @seeding.save!
+    @input.save!
   end
 
   def access_time(sbid : String) : Int64?
@@ -49,7 +49,7 @@ class Chivi::SeedRemoteInfo
 end
 
 remote_file = File.join({{ __DIR__ }}, "consts/remotes.json")
-remote_data = Hash(String, Int32).from_json(File.read(remote_file)).reject
+remote_data = Hash(String, Int32).from_json(File.read(remote_file))
 
 skip_missing = ARGV.includes?("!skip")
 
@@ -59,6 +59,6 @@ puts "- SEEDS: #{selected}".colorize.blue
 remote_data.each do |seed, upto|
   next unless selected.includes?(seed)
 
-  worker = Chivi::SeedRemoteInfo.new(seed)
+  worker = CV::SeedRemoteInfo.new(seed)
   worker.init!(upto, skip_missing)
 end

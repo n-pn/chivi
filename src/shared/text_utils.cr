@@ -108,7 +108,7 @@ module CV::TextUtils
     /^【?(第[#{NUMS}\d]+[集卷])】?\s*(.+)$/,
   }
 
-  def format_title(title : String, label = "正文") : String
+  def format_title(title : String, label = "正文") : Tuple(String, String)
     title = fix_spaces(title).strip
 
     FORMAT_RE_0.each do |regex|
@@ -119,7 +119,7 @@ module CV::TextUtils
     end
 
     title = fix_title(title).gsub(/\s{2,}/, " ")
-    label.empty? || label == "正文" ? title : "#{label}  #{title}"
+    {title, label != "正文" ? label : ""}
   end
 
   FIX_RE_0 = {

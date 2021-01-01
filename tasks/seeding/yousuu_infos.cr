@@ -1,18 +1,15 @@
 require "file_utils"
 
-require "../../src/_seeds/ys_info"
-require "../../src/kernel/mapper/value_map"
+require "../../src/filedb/nvinit/ys_info"
 require "./_info_seeding.cr"
 
-class Chivi::SeedInfoYousuu
-  getter seeding = InfoSeeding.new("yousuu")
+class CV::SeedInfoYousuu
+  getter input = InfoSeeding.new("yousuu")
 
-  getter extra_tags : ValueMap { ValueMap.new(seeding.map_path("extra_tags")) }
-
-  getter source_url : ValueMap { ValueMap.new(seeding.map_path("source_url")) }
-  getter crit_count : ValueMap { ValueMap.new(seeding.map_path("crit_count")) }
-  getter list_count : ValueMap { ValueMap.new(seeding.map_path("list_count")) }
-  getter word_count : ValueMap { ValueMap.new(seeding.map_path("word_count")) }
+  getter source_url : ValueMap { ValueMap.new(input.map_path("source_url")) }
+  getter count_word : ValueMap { ValueMap.new(input.map_path("count_word")) }
+  getter count_crit : ValueMap { ValueMap.new(input.map_path("count_crit")) }
+  getter count_list : ValueMap { ValueMap.new(input.map_path("count_list")) }
 
   def init!
     input = Dir.glob("_db/.cache/yousuu/infos/*.json").sort_by do |file|
@@ -24,53 +21,45 @@ class Chivi::SeedInfoYousuu
     input.each_with_index do |file, idx|
       ybid = File.basename(file, ".json")
 
-      access = File.info(file).modification_time.to_unix
-      next if @seeding.access.get_value(ybid).try(&.to_i64.> access)
-      @seeding.access.upsert(ybid, access.to_s)
+      access_tz = File.info(file).modification_time.to_unix
+      next if @input.access_tz.fval(ybid).try(&.to_i64.> access_tz)
+      @input.access_tz.add(ybid, access_tz)
 
       next unless info = YsInfo.load(file)
       puts "- <#{idx + 1}/#{input.size}> [#{info.title}  #{info.author}]".colorize.blue
 
-      @seeding._index.upsert(ybid, "#{info.title}  #{info.author}")
-      @seeding.set_intro(ybid, info.intro)
-      @seeding.genres.upsert(ybid, info.genre)
-      @seeding.covers.upsert(ybid, info.cover_fixed)
+      @input._index.add(ybid, [info.title, info.author])
 
-      @seeding.rating.upsert(ybid, "#{info.voters}  #{info.rating}")
-      @seeding.update.upsert(ybid, info.updated_at.to_unix.to_s)
+      @input.bgenre.add(ybid, [info.genre].concat(info.tags_fixed))
+      @input.bcover.add(ybid, info.cover_fixed)
 
-      extra_tags.upsert(ybid, info.tags_fixed.join("  "))
-      source_url.upsert(ybid, info.source)
-      crit_count.upsert(ybid, info.crit_count.to_s)
-      list_count.upsert(ybid, info.addListTotal.to_s)
-      word_count.upsert(ybid, info.word_count.to_s)
+      @input.status.add(ybid, [info.status.to_s, info.shielded ? "1" : "0"])
+      @input.rating.add(ybid, [info.voters.to_s, info.rating.to_s])
+      @input.update_tz.add(ybid, info.updated_at.to_unix)
+
+      @input.set_intro(ybid, info.intro)
+
+      source_url.add(ybid, info.source)
+      count_word.add(ybid, info.word_count)
+      count_crit.add(ybid, info.crit_count)
+      count_list.add(ybid, info.addListTotal)
     rescue err
       puts "- error loading [#{ybid}]: #{err}".colorize.red
     end
 
-    @seeding.save!
+    @input.save!
 
-    extra_tags.save!
     source_url.save!
-    crit_count.save!
-    list_count.save!
-    word_count.save!
+    count_word.save!
+    count_crit.save!
+    count_list.save!
   end
 
   def seed!
-    # seed_intros.upsert!(ybid, data.intro, mtime: 0)
-    # seed_covers.upsert!(ybid, data.cover_fixed, mtime: 0)
-
-    # seed_genres.upsert!(ybid, data.genre, mtime: 0)
-    # seed_labels.upsert!(ybid, data.tags_fixed.join("  "), mtime: 0)
-    # seed_source.upsert!(ybid, data.source, mtime: 0)
-    # seed_status.upsert!(ybid, data.status.to_s, mtime: 0)
-
-    # seed_word_count.upsert!(ybid, data.word_count.to_s, mtime: 0)
   end
 end
 
-worker = Chivi::SeedInfoYousuu.new
+worker = CV::SeedInfoYousuu.new
 worker.init! unless ARGV.includes?("-init")
 
 worker.seed!

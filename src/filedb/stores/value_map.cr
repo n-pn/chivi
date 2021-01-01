@@ -43,14 +43,22 @@ class CV::ValueMap
     true
   end
 
-  def set(key : String, vals : String) : Bool
-    set(key, vals.split('\t'))
+  def add(key : String, val : String)
+    add(key, [val])
+  end
+
+  def add(key : String, val)
+    add(key, [val.to_s])
   end
 
   def set(key : String, vals : Array(String)) : Bool
     return false if get(key) == vals
     @data[key] = vals
     true
+  end
+
+  def set(key : String, vals : String) : Bool
+    set(key, vals.split('\t'))
   end
 
   def get(key : String) : Array(String)?

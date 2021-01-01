@@ -60,9 +60,9 @@ module CV::RmInfo
     "#{sbid.to_i // 1000}_#{sbid}"
   end
 
-  record ChInfo, scid : String, text : String do
+  record ChInfo, scid : String, title : String, label : String do
     def inspect(io : IO)
-      io << "{#{scid}: #{text}}"
+      {scid, title, label}.join(io)
     end
   end
 
@@ -81,10 +81,12 @@ module CV::RmInfo
 
     getter author : String { meta_data("og:novel:author") || "" }
     getter btitle : String { meta_data("og:novel:book_name") || "" }
+
     getter bgenre : String { meta_data("og:novel:category") || "" }
-    getter intro : Array(String) { TextUtils.split_html(raw_intro || "") }
-    getter cover : String { raw_cover || "" }
     getter tags : Array(String) { [] of String }
+
+    getter bintro : Array(String) { TextUtils.split_html(raw_intro || "") }
+    getter bcover : String { raw_cover || "" }
 
     getter status : Int32 { map_status(raw_status) || 0 }
     getter update : Time { TimeUtils.parse_time(raw_update) }
@@ -157,8 +159,8 @@ module CV::RmInfo
         next unless href = link.attributes["href"]?
 
         scid = extract_scid(href)
-        text = TextUtils.format_title(link.inner_text, label)
-        chlist << ChInfo.new(scid, text)
+        title, label = TextUtils.format_title(link.inner_text, label)
+        chlist << ChInfo.new(scid, title, label)
       end
 
       chlist
@@ -230,7 +232,7 @@ module CV::RmInfo
   class RI_Hetushu < RI_Generic
     getter author : String { node_text("h2") || "" }
     getter btitle : String { node_text(".book_info a:first-child") || "" }
-    getter intro : Array(String) { rdoc.css(".intro > p").map(&.inner_text).to_a }
+    getter bintro : Array(String) { rdoc.css(".intro > p").map(&.inner_text).to_a }
     getter tags : Array(String) { rdoc.css(".tag a").map(&.inner_text).to_a }
 
     getter update : Time { TimeUtils::DEF_TIME }
@@ -279,8 +281,8 @@ module CV::RmInfo
 
       rdoc.css(".clistitem > a").each do |link|
         scid = extract_scid(link.attributes["href"])
-        text = TextUtils.format_title(link.inner_text)
-        chlist << ChInfo.new(scid, text)
+        title, label = TextUtils.format_title(link.inner_text)
+        chlist << ChInfo.new(scid, title, label)
       end
 
       # check if the list is in correct orlder
@@ -299,8 +301,9 @@ module CV::RmInfo
     getter btitle : String { node_text(".weizhi > a:last-child") || "" }
     getter bgenre : String { node_text(".weizhi > a:nth-child(2)") || "" }
 
-    getter intro : Array(String) { [] of String }
+    getter bintro : Array(String) { [] of String }
     getter status : Int32 { 0 }
+    getter chlist : Chlist { extract_chlist }
 
     COVER_URI = "https://www.69shu.com/files/article/image/"
 
@@ -315,6 +318,33 @@ module CV::RmInfo
 
     def extract_scid(href : String)
       File.basename(href)
+    end
+
+    def extract_chlist
+      chlist = Chlist.new
+      return chlist unless nodes = rdoc.css(".mu_contain").to_a
+
+      nodes.shift if nodes.size > 0
+      label = "正文"
+
+      nodes.each do |mulu|
+        mulu.children.each do |node|
+          case node.tag_sym
+          when :h2
+            label = node.inner_text.strip
+          when :ul
+            node.css("a").each do |link|
+              title = link.inner_text
+              next if title.starts_with?("我要报错！")
+
+              scid = parse_scid(link.attributes["href"])
+              chlist << Chinfo.new(scid, title, label)
+            end
+          end
+        end
+      end
+
+      chlist
     end
   end
 end

@@ -1,6 +1,6 @@
 require "./_info_seeding.cr"
 
-class Chivi::ZhwenpgParser
+class CV::ZhwenpgParser
   def initialize(@node : Myhtml::Node, @status : Int32)
   end
 
@@ -16,17 +16,17 @@ class Chivi::ZhwenpgParser
   getter cover : String { @node.css("img").first.attributes["data-src"] }
 
   getter mftime : String { rows[3].css(".fontime").first.inner_text }
-  getter update : Time { SeedUtils.parse_time(mftime) }
+  getter update : Time { TimeUtils.parse_time(mftime) }
 
   def extract_intro
     return unless node = rows[4]?
-    SeedUtils.split_html(node.inner_text("\n"))
+    TextUtils.split_html(node.inner_text("\n"))
   end
 end
 
-class Chivi::SeedInfoZhwenpg
-  getter checked = Set(String).new
-  getter seeding = InfoSeeding.new("zhwenpg")
+class CV::SeedInfoZhwenpg
+  getter check = Set(String).new
+  getter input = InfoSeeding.new("zhwenpg")
 
   def expiry(page : Int32 = 1)
     Time.utc - 8.hours * page
@@ -66,30 +66,30 @@ class Chivi::SeedInfoZhwenpg
     parser = ZhwenpgParser.new(node, status)
     sbid = parser.sbid
 
-    return if @checked.includes?(sbid)
-    @checked << sbid
+    return if @check.includes?(sbid)
+    @check << sbid
 
     btitle, author = parser.btitle, parser.author
 
-    if @seeding._index.upsert(sbid, "#{btitle}  #{author}")
-      @seeding.set_intro(sbid, parser.intro)
-      @seeding.genres.upsert(sbid, parser.bgenre)
-      @seeding.covers.upsert(sbid, parser.cover)
+    if @input._index.add(sbid, [btitle, author])
+      @input.set_intro(sbid, parser.intro)
+      @input.bgenre.add(sbid, parser.bgenre)
+      @input.bcover.add(sbid, parser.cover)
     end
 
-    @seeding.status.upsert(sbid, status.to_s)
-    @seeding.access.upsert(sbid, Time.utc.to_unix./(60).to_s)
+    @input.status.add(sbid, status)
+    @input.access_tz.add(sbid, Time.utc.to_unix)
 
-    update_at = parser.update + 1.days
+    update_at = parser.update + 12.hours
     update_at = Time.utc if update_at > Time.utc
 
-    @seeding.update.upsert(sbid, update_at.to_unix.to_s)
+    @input.update_tz.add(sbid, update_at.to_unix)
 
-    spider = RmInfo.init("zhwenpg", sbid, expiry: update_at)
-    unless spider.cached? && @seeding.has_chaps?(sbid)
-      chaps = spider.chlist.map { |x| "#{x.scid}\t#{x.text}" }
-      @seeding.set_chaps(sbid, chaps)
-    end
+    # spider = RmInfo.init("zhwenpg", sbid, expiry: update_at)
+    # unless spider.cached? && @input.has_chaps?(sbid)
+    #   chaps = spider.chlist.map { |x| "#{x.scid}\t#{x.text}" }
+    #   @input.set_chaps(sbid, chaps)
+    # end
 
     puts "\n<#{label}> {#{sbid}} [#{btitle}  #{author}]"
   rescue err
@@ -97,20 +97,20 @@ class Chivi::SeedInfoZhwenpg
   end
 
   def upsert_all!
-    @checked.each_with_index do |sbid, idx|
-      nvinfo = @seeding.upsert_nvinfo!(sbid) do |s|
+    @check.each_with_index do |sbid, idx|
+      nvinfo = @input.upsert_nvinfo!(sbid) do |s|
         unless s.yousuu_bid
-          btitle, author = @seeding.get_bname(sbid)
+          btitle, author = @input.get_bname(sbid)
           s.zh_voters, s.zh_rating = fake_rating(btitle, author)
 
           s.fix_weight
         end
       end
 
-      chseed = @seeding.upsert_chseed!(sbid, nvinfo.id)
-      Chinfo.bulk_upsert!(chseed, @seeding.get_chaps(sbid))
+      chseed = @input.upsert_chseed!(sbid, nvinfo.id)
+      Chinfo.bulk_upsert!(chseed, @input.get_chaps(sbid))
 
-      puts "- <#{idx + 1}/#{@checked.size}> [#{nvinfo.hv_slug}] saved!".colorize.yellow
+      puts "- <#{idx + 1}/#{@check.size}> [#{nvinfo.hv_slug}] saved!".colorize.yellow
     end
   end
 
@@ -123,12 +123,12 @@ class Chivi::SeedInfoZhwenpg
   end
 end
 
-worker = Chivi::SeedInfoZhwenpg.new
+worker = CV::SeedInfoZhwenpg.new
 FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
 
 puts "\n[-- Load indexes --]".colorize.cyan.bold
 1.upto(3) { |page| worker.update!(page, status: 1) }
 1.upto(10) { |page| worker.update!(page, status: 0) }
 
-worker.upsert_all!
-worker.seeding.save!
+worker.input.save!
+# worker.upsert_all!
