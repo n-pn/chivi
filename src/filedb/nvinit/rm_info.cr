@@ -122,13 +122,12 @@ class CV::RmInfo
     when "69shu", "zhwenpg" then "连载"
     when "hetushu"
       node_attr(".book_info", "class").includes?("finish") ? "完本" : "连载"
-    else
-      map_status(meta_data("og:novel:status"))
+    else meta_data("og:novel:status")
     end
   end
 
   getter status_int : Int32 do
-    case status_str
+    case status = status_str
     when "连载", "连载中....", "连载中", ""
       0
     when "完成", "完本", "已经完结", "已经完本", "完结", "已完结"
@@ -152,7 +151,9 @@ class CV::RmInfo
         meta_data("og:novel:update_time")
       end
 
-    TimeUtils.parse_time(timestamp)
+    return TimeUtils.parse_time(timestamp) unless timestamp.empty?
+    puts "- ERROR: <#{RmInfo.url_for(@seed, @sbid)}> missing time!"
+    TimeUtils::DEF_TIME
   end
 
   getter chap_list : Chlist do

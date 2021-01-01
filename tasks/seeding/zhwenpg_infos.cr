@@ -47,11 +47,11 @@ class CV::SeedInfoZhwenpg
   def update!(page = 1, status = 0)
     puts "\n[-- Page: #{page} --]".colorize.light_cyan.bold
 
-    url = page_url(page, status)
     file = page_path(page, status)
 
     unless html = FileUtils.read(file, expiry: expiry(page))
-      html = HttpUtils.get_html(url)
+      url = page_url(page, status)
+      html = HttpUtils.get_html(url, encoding: "UTF-8")
       File.write(file, html)
     end
 

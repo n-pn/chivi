@@ -5,14 +5,14 @@ require "../../src/filedb/nvinit/rm_info"
 require "./_info_seeding.cr"
 
 class CV::SeedRemoteInfo
-  getter name : String
+  getter seed : String
 
-  def initialize(@name)
-    @input = InfoSeeding.new(@name)
+  def initialize(@seed)
+    @input = InfoSeeding.new(@seed)
   end
 
   def init!(upto = 1, skip_missing = false)
-    skip_missing = true if @name == "jx_la"
+    skip_missing = true if @seed == "jx_la"
 
     1.upto(upto) do |idx|
       sbid = idx.to_s
@@ -25,7 +25,7 @@ class CV::SeedRemoteInfo
       next if @input.access_tz.fval(sbid).try(&.to_i64.> access_tz)
       @input.access_tz.add(sbid, access_tz)
 
-      parser = RmInfo.init(@name, sbid, expiry: Time.utc - 1.years)
+      parser = RmInfo.init(@seed, sbid, expiry: Time.utc - 1.years)
 
       if @input._index.add(sbid, [parser.btitle, parser.author])
         @input.set_intro(sbid, parser.bintro)
@@ -33,8 +33,10 @@ class CV::SeedRemoteInfo
         @input.bcover.add(sbid, parser.bcover)
       end
 
-      @input.status.add(sbid, parser.status_int)
-      @input.update_tz.add(sbid, parser.updated_at)
+      unless parser.btitle.empty?
+        @input.status.add(sbid, parser.status_int)
+        @input.update_tz.add(sbid, parser.updated_at)
+      end
     rescue err
       puts err.colorize.red
     end
@@ -43,7 +45,7 @@ class CV::SeedRemoteInfo
   end
 
   def access_time(sbid : String) : Int64?
-    file = RmInfo.path_for(@name, sbid)
+    file = RmInfo.path_for(@seed, sbid)
     File.info?(file).try(&.modification_time.to_unix)
   end
 end
