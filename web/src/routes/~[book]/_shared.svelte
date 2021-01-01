@@ -13,10 +13,11 @@
   }
 
   function gen_keywords(book) {
-    let res = [book.zh_title, book.hv_title, book.vi_title]
+    let res = [book.zh_title, book.hv_title]
+    if (book.vi_title != book.hv_title) res.push(book.vi_title)
     res.push(book.zh_author, book.vi_author)
     res.push(...book.vi_genres)
-    res.push(...book.vi_tags)
+    res.push('Truyện tàu', 'Truyện convert', 'Truyện mạng')
     return res.join(',')
   }
 
