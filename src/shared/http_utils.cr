@@ -6,15 +6,15 @@ require "http/client"
 module CV::HttpUtils
   extend self
 
-  def get_html(url : String) : String
-    puts "-- GET: [#{url}]".colorize.magenta
-
+  def get_html(url : String, encoding : String) : String
     cmd = "curl #{url} -L -k -s -m 30"
-    cmd += " | iconv -f GBK -t UTF-8" if is_gbk?(url)
+    cmd += " | iconv -f #{encoding} -t UTF-8" if encoding != "UTF-8"
 
     try = 0
 
     loop do
+      puts "[GET: <#{url}> (try: #{try})]".colorize.magenta
+
       html = `#{cmd}`
       return html unless html.empty?
 
@@ -24,16 +24,12 @@ module CV::HttpUtils
     end
   end
 
-  def is_gbk?(url : String) : Bool
-    case URI.parse(url).host
-    when "www.jx.la",
-         "www.hetushu.com",
-         "www.paoshu8.com",
-         "novel.zhwenpg.com",
-         "www.zxcs.me"
-      false
+  def encoding_for(seed : String) : String
+    case seed
+    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me"
+      "UTF-8"
     else
-      true
+      "GBK"
     end
   end
 end

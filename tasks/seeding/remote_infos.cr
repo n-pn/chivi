@@ -29,12 +29,12 @@ class CV::SeedRemoteInfo
 
       if @input._index.add(sbid, [parser.btitle, parser.author])
         @input.set_intro(sbid, parser.bintro)
-        @input.bgenre.add(sbid, [parser.bgenre].concat(parser.tags))
+        @input.bgenre.add(sbid, parser.bgenre)
         @input.bcover.add(sbid, parser.bcover)
       end
 
-      @input.status.add(sbid, parser.status)
-      @input.update_tz.add(sbid, parser.update)
+      @input.status.add(sbid, parser.status_int)
+      @input.update_tz.add(sbid, parser.updated_at)
     rescue err
       puts err.colorize.red
     end

@@ -4,40 +4,26 @@ require "file_utils"
 
 require "../../shared/*"
 
-module CV::RmInfo
-  extend self
-
-  def init(seed : String, sbid : String, expiry = Time.utc - 30.weeks, freeze = true)
-    html_url = seed_url(seed, sbid)
-    out_file = path_for(seed, sbid)
-
+class CV::RmInfo
+  def self.init(seed : String, sbid : String,
+                expiry : Time = Time.utc - 1.hour, freeze : Bool = true)
+    file = path_for(seed, sbid)
     expiry = TimeUtils::DEF_TIME if seed == "jx_la"
-    parser_for(seed).new(html_url, out_file, expiry, freeze)
+
+    unless html = FileUtils.read(file, expiry)
+      url = url_for(seed, sbid)
+      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(seed))
+      File.write(file, html) if freeze
+    end
+
+    new(seed, sbid, file: file, html: html)
   end
 
-  def path_for(seed : String, sbid : String)
+  def self.path_for(seed : String, sbid : String)
     "_db/.cache/#{seed}/infos/#{sbid}.html"
   end
 
-  def parser_for(seed : String) : Class
-    case seed
-    when "5200"       then RI_5200
-    when "jx_la"      then RI_Jx_la
-    when "69shu"      then RI_69shu
-    when "nofff"      then RI_Nofff
-    when "rengshu"    then RI_Rengshu
-    when "xbiquge"    then RI_Xbiquge
-    when "paoshu8"    then RI_Paoshu8
-    when "duokan8"    then RI_Duokan8
-    when "shubaow"    then RI_Shubaow
-    when "hetushu"    then RI_Hetushu
-    when "zhwenpg"    then RI_Zhwenpg
-    when "biquge5200" then RI_Biquge5200
-    else                   raise "Unsupported remote source <#{seed}>!"
-    end
-  end
-
-  def seed_url(seed : String, sbid : String) : String
+  def self.url_for(seed : String, sbid : String) : String
     case seed
     when "nofff"      then "https://www.nofff.com/#{sbid}/"
     when "69shu"      then "https://www.69shu.com/#{sbid}/"
@@ -56,295 +42,243 @@ module CV::RmInfo
     end
   end
 
-  private def prefixed(sbid : String)
+  private def self.prefixed(sbid : String)
     "#{sbid.to_i // 1000}_#{sbid}"
   end
 
-  record ChInfo, scid : String, title : String, label : String do
-    def inspect(io : IO)
-      {scid, title, label}.join(io)
+  getter seed : String
+  getter sbid : String
+  getter file : String
+
+  def initialize(@seed, @sbid, @file, html = File.read(@file))
+    @rdoc = Myhtml::Parser.new(html)
+  end
+
+  def cached?(expiry = Time.utc - 6.months)
+    FileUtils.recent?(@file, expiry)
+  end
+
+  def uncache!
+    File.delete(@file) if File.exists?(@file)
+  end
+
+  getter author : String do
+    case @seed
+    when "hetushu" then node_text("h2")
+    when "zhwenpg" then node_text(".fontwt")
+    when "69shu"   then node_text(".mu_beizhu > a[target]")
+    else                meta_data("og:novel:author")
     end
   end
 
-  alias Chlist = Array(ChInfo)
-
-  class RI_Generic
-    # input
-
-    getter html_url : String
-    getter out_file : String
-
-    # output
-
-    getter html : String { fetch! }
-    getter rdoc : Myhtml::Parser { Myhtml::Parser.new(html) }
-
-    getter author : String { meta_data("og:novel:author") || "" }
-    getter btitle : String { meta_data("og:novel:book_name") || "" }
-
-    getter bgenre : String { meta_data("og:novel:category") || "" }
-    getter tags : Array(String) { [] of String }
-
-    getter bintro : Array(String) { TextUtils.split_html(raw_intro || "") }
-    getter bcover : String { raw_cover || "" }
-
-    getter status : Int32 { map_status(raw_status) || 0 }
-    getter update : Time { TimeUtils.parse_time(raw_update) }
-
-    getter chlist : Chlist { extract_chlist("#list > dl") }
-
-    def initialize(@html_url, @out_file, @expiry : Time, @freeze : Bool = true)
+  getter btitle : String do
+    case @seed
+    when "hetushu" then node_text(".book_info a:first-child")
+    when "zhwenpg" then node_text(".cbooksingle h2")
+    when "69shu"   then node_text(".weizhi > a:last-child")
+    else                meta_data("og:novel:book_name")
     end
+  end
 
-    def fetch!
-      unless html = FileUtils.read(@out_file, @expiry)
-        html = HttpUtils.get_html(@html_url)
-        File.write(@out_file, html) if @freeze
-      end
-
-      html
+  getter bgenre : Array(String) do
+    case @seed
+    when "hetushu"
+      tags = @rdoc.css(".tag a").map(&.inner_text).to_a
+      [node_text(".title > a:nth-child(2)").not_nil!].concat(tags)
+    when "zhwenpg" then [] of String
+    when "69shu"   then [node_text(".weizhi > a:nth-child(2)")]
+    else                [meta_data("og:novel:category")]
     end
+  end
 
-    def cached?(expiry : Time = @expiry)
-      FileUtils.recent?(@out_file, expiry)
+  getter bintro : Array(String) do
+    case @seed
+    when "69shu"   then [] of String
+    when "hetushu" then @rdoc.css(".intro > p").map(&.inner_text).to_a
+    when "zhwenpg" then TextUtils.split_html(node_text("tr:nth-of-type(3)"))
+    else                TextUtils.split_html(meta_data("og:description"))
     end
+  end
 
-    def uncache!
-      File.delete(@out_file) if File.exists?(@out_file)
-    end
-
-    def map_status(status : String?) : Int32
-      case status
-      when "完成", "完本", "已经完结", "已经完本", "完结", "已完结"
-        1
-      when "连载", "连载中....", "连载中", nil
-        0
-      else
-        puts "[UNKNOWN SOURCE STATUS: `#{status}`]".colorize.red
-        0
-      end
-    end
-
-    def raw_intro
-      meta_data("og:description")
-    end
-
-    def raw_cover
+  getter bcover : String do
+    case @seed
+    when "hetushu"
+      image_url = node_attr(".book_info img", "src")
+      "https://www.hetushu.com#{image_url}"
+    when "69shu"
+      image_url = "/#{@sbid.to_i % 1000}/#{@sbid}/#{@sbid}s.jpg"
+      "https://www.69shu.com/files/article/image#{image_url}"
+    when "zhwenpg"
+      node_attr(".cover_wrapper_m img", "data-src")
+    when "jx_la"
+      meta_data("og:image").sub("qu.la", "jx.la")
+    else
       meta_data("og:image")
     end
+  end
 
-    def raw_status
-      meta_data("og:novel:status")
+  getter status_str : String do
+    case @seed
+    when "69shu", "zhwenpg" then "连载"
+    when "hetushu"
+      node_attr(".book_info", "class").includes?("finish") ? "完本" : "连载"
+    else
+      map_status(meta_data("og:novel:status"))
+    end
+  end
+
+  getter status_int : Int32 do
+    case status_str
+    when "连载", "连载中....", "连载中", ""
+      0
+    when "完成", "完本", "已经完结", "已经完本", "完结", "已完结"
+      1
+    else
+      puts "UNKNOWN SEED STATUS: `#{status}`".colorize.red
+      1
+    end
+  end
+
+  getter updated_at : Time do
+    return TimeUtils::DEF_TIME if @seed == "zhwenpg" || @seed == "hetushu"
+
+    timestamp =
+      case @seed
+      when "69shu"
+        node_text(".mu_beizhu").sub(/.+时间：/m, "")
+      when "biquge5200"
+        node_text("#info > p:last-child").sub("最后更新：", "")
+      else
+        meta_data("og:novel:update_time")
+      end
+
+    TimeUtils.parse_time(timestamp)
+  end
+
+  getter chap_list : Chlist do
+    case @seed
+    when "69shu"   then extract_69shu_chlist
+    when "zhwenpg" then extract_zhwenpg_chlist
+    when "duokan8" then extract_duokan8_chlist
+    when "hetushu" then extract_generic_chlist("#dir")
+    when "5200"    then extract_generic_chlist(".listmain > dl")
+    else                extract_generic_chlist("#list > dl")
+    end
+  end
+
+  def extract_generic_chlist(sel : String)
+    chlist = Chlist.new
+    return chlist unless node = find_node(sel)
+
+    label = "正文"
+
+    node.children.each do |node|
+      case node.tag_sym
+      when :dt
+        label = node.inner_text.gsub(/《.*》/, "").strip
+      when :dd
+        next if label.includes?("最新章节")
+      end
+
+      next unless link = node.css("a").first?
+      next unless href = link.attributes["href"]?
+
+      scid = extract_scid(href)
+      title, label = TextUtils.format_title(link.inner_text, label)
+      chlist << Chinfo.new(scid, title, label)
     end
 
-    def raw_update
-      meta_data("og:novel:update_time")
-    end
+    chlist
+  end
 
-    def extract_chlist(sel : String)
-      chlist = Chlist.new
-      return chlist unless node = find_node(sel)
+  def extract_69shu_chlist
+    chlist = Chlist.new
+    return chlist unless nodes = @rdoc.css(".mu_contain").to_a
 
-      label = "正文"
+    nodes.shift if nodes.size > 0
+    label = "正文"
 
-      node.children.each do |node|
+    nodes.each do |mulu|
+      mulu.children.each do |node|
         case node.tag_sym
-        when :dt
-          label = node.inner_text.gsub(/《.*》/, "").strip
-        when :dd
-          next if label.includes?("最新章节")
-        end
+        when :h2
+          label = node.inner_text.strip
+        when :ul
+          node.css("a").each do |link|
+            title = link.inner_text
+            next if title.starts_with?("我要报错！")
 
-        next unless link = node.css("a").first?
-        next unless href = link.attributes["href"]?
-
-        scid = extract_scid(href)
-        title, label = TextUtils.format_title(link.inner_text, label)
-        chlist << ChInfo.new(scid, title, label)
-      end
-
-      chlist
-    end
-
-    def extract_scid(href : String)
-      File.basename(href, ".html")
-    end
-
-    private def find_node(sel : String)
-      rdoc.css(sel).first?
-    end
-
-    private def node_attr(sel : String, attr : String)
-      find_node(sel).try(&.attributes[attr]?)
-    end
-
-    private def meta_data(sel : String)
-      node_attr("meta[property=\"#{sel}\"]", "content")
-    end
-
-    private def node_text(sel : String)
-      find_node(sel).try(&.inner_text.strip)
-    end
-  end
-
-  class RI_Nofff < RI_Generic; end
-
-  class RI_Paoshu8 < RI_Generic; end
-
-  class RI_Xbiquge < RI_Generic; end
-
-  class RI_Shubaow < RI_Generic; end
-
-  class RI_Rengshu < RI_Generic; end
-
-  class RI_5200 < RI_Generic
-    getter chlist : Chlist { extract_chlist(".listmain > dl") }
-  end
-
-  class RI_Biquge5200 < RI_Generic
-    def raw_update
-      node_text("#info > p:last-child").not_nil!.sub("最后更新：", "")
-    end
-  end
-
-  class RI_Jx_la < RI_Generic
-    def raw_cover
-      meta_data("og:image").try(&.sub("qu.la", "jx.la"))
-    end
-  end
-
-  class RI_Duokan8 < RI_Generic
-    getter chlist : Chlist { extract_chlist }
-
-    private def extract_chlist
-      chlist = Chlist.new
-
-      rdoc.css(".chapter-list a").each do |link|
-        next unless href = link.attributes["href"]?
-        text = TextUtils.format_title(link.inner_text)
-        chlist << ChInfo.new(extract_scid(href), text)
-      end
-
-      chlist
-    end
-  end
-
-  class RI_Hetushu < RI_Generic
-    getter author : String { node_text("h2") || "" }
-    getter btitle : String { node_text(".book_info a:first-child") || "" }
-    getter bintro : Array(String) { rdoc.css(".intro > p").map(&.inner_text).to_a }
-    getter tags : Array(String) { rdoc.css(".tag a").map(&.inner_text).to_a }
-
-    getter update : Time { TimeUtils::DEF_TIME }
-    getter chlist : Chlist { extract_chlist("#dir") }
-
-    def raw_genre
-      node_text(".title > a:nth-child(2)")
-    end
-
-    def raw_cover
-      url = node_attr(".book_info img", "src")
-      "https://www.hetushu.com/#{url.not_nil!}"
-    end
-
-    def status : Int32
-      unless @status
-        classes = node_attr(".book_info", "class").not_nil!
-        @status = classes.includes?("finish") ? 1 : 0
-      end
-
-      @status.not_nil!
-    end
-  end
-
-  class RI_Zhwenpg < RI_Generic
-    getter author : String { node_text(".fontwt") || "" }
-    getter btitle : String { node_text(".cbooksingle h2") || "" }
-    getter bgenre : String { "" }
-    getter update : Time { TimeUtils::DEF_TIME }
-    getter chlist : Chlist { extract_chlist }
-
-    def raw_intro
-      node_text("tr:nth-of-type(3)")
-    end
-
-    def raw_cover
-      node_attr(".cover_wrapper_m img", "data-src")
-    end
-
-    def extract_scid(href : String)
-      href.sub("r.php?id=", "")
-    end
-
-    def extract_chlist
-      chlist = Chlist.new
-
-      rdoc.css(".clistitem > a").each do |link|
-        scid = extract_scid(link.attributes["href"])
-        title, label = TextUtils.format_title(link.inner_text)
-        chlist << ChInfo.new(scid, title, label)
-      end
-
-      # check if the list is in correct orlder
-      if node = find_node(".fontwt0 + a")
-        latest_link = node.attributes["href"]
-        latest_scid = extract_scid(latest_link)
-        chlist.reverse! if latest_scid == chlist.first.scid
-      end
-
-      chlist
-    end
-  end
-
-  class RI_69shu < RI_Generic
-    getter author : String { node_text(".mu_beizhu > a[target]") || "" }
-    getter btitle : String { node_text(".weizhi > a:last-child") || "" }
-    getter bgenre : String { node_text(".weizhi > a:nth-child(2)") || "" }
-
-    getter bintro : Array(String) { [] of String }
-    getter status : Int32 { 0 }
-    getter chlist : Chlist { extract_chlist }
-
-    COVER_URI = "https://www.69shu.com/files/article/image/"
-
-    def raw_cover
-      sbid = File.basename(@out_file, ".html")
-      "#{COVER_URI}/#{sbid.to_i % 1000}/#{sbid}/#{sbid}s.jpg"
-    end
-
-    def raw_update
-      node_text(".mu_beizhu").not_nil!.sub(/.+时间：/m, "")
-    end
-
-    def extract_scid(href : String)
-      File.basename(href)
-    end
-
-    def extract_chlist
-      chlist = Chlist.new
-      return chlist unless nodes = rdoc.css(".mu_contain").to_a
-
-      nodes.shift if nodes.size > 0
-      label = "正文"
-
-      nodes.each do |mulu|
-        mulu.children.each do |node|
-          case node.tag_sym
-          when :h2
-            label = node.inner_text.strip
-          when :ul
-            node.css("a").each do |link|
-              title = link.inner_text
-              next if title.starts_with?("我要报错！")
-
-              scid = parse_scid(link.attributes["href"])
-              chlist << Chinfo.new(scid, title, label)
-            end
+            scid = extract_scid(link.attributes["href"])
+            chlist << Chinfo.new(scid, title, label)
           end
         end
       end
+    end
 
-      chlist
+    chlist
+  end
+
+  def extract_zhwenpg_chlist
+    chlist = Chlist.new
+
+    @rdoc.css(".clistitem > a").each do |link|
+      scid = extract_scid(link.attributes["href"])
+      title, label = TextUtils.format_title(link.inner_text)
+      chlist << Chinfo.new(scid, title, label)
+    end
+
+    # check if the list is in correct orlder
+    if node = find_node(".fontwt0 + a")
+      latest_link = node.attributes["href"]
+      latest_scid = extract_scid(latest_link)
+      chlist.reverse! if latest_scid == chlist.first.scid
+    end
+
+    chlist
+  end
+
+  private def extract_duokan8_chlist
+    chlist = Chlist.new
+
+    @rdoc.css(".chapter-list a").each do |link|
+      next unless href = link.attributes["href"]?
+      title, label = TextUtils.format_title(link.inner_text)
+      chlist << Chinfo.new(extract_scid(href), title, label)
+    end
+
+    chlist
+  end
+
+  private def extract_scid(href : String)
+    case @seed
+    when "69shu"   then File.basename(href)
+    when "zhwenpg" then href.sub("r.php?id=", "")
+    else                File.basename(href, ".html")
     end
   end
+
+  private def node_attr(sel : String, attr : String, df : String? = "")
+    find_node(sel).try(&.attributes[attr]?) || df
+  end
+
+  private def meta_data(sel : String, df : String? = "")
+    node_attr("meta[property=\"#{sel}\"]", "content") || df
+  end
+
+  private def node_text(sel : String, df : String? = "")
+    find_node(sel).try(&.inner_text.strip) || df
+  end
+
+  private def find_node(sel : String)
+    @rdoc.css(sel).first?
+  end
+
+  record Chinfo, scid : String, title : String, label : String do
+    def inspect(io : IO)
+      io << "<" << scid << "> " << title
+      io << "  " << label unless label.empty?
+    end
+  end
+
+  alias Chlist = Array(Chinfo)
 end
