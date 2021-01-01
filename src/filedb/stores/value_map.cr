@@ -1,6 +1,8 @@
 require "colorize"
 
 class CV::ValueMap
+  @@klass = "value_map"
+
   getter file : String
 
   getter data = {} of String => Array(String)
@@ -13,14 +15,18 @@ class CV::ValueMap
   delegate clear, to: @data
 
   def initialize(@file, mode : Int32 = 1)
-    @label = "<#{{{ @type.stringify.underscore }}}> [#{File.basename(@file)}]"
-
     return if mode < 1
     load!(@file) if mode > 1 || File.exists?(@file)
   end
 
+  def label_for(file : String = @file)
+    dir = File.basename(File.dirname(file))
+    "<#{@@klass}> [#{dir}/#{File.basename(file, ".tsv")}]"
+  end
+
   def load!(file : String = @file) : Nil
     count = 0
+    label = label_for(file)
 
     timer = Time.measure do
       File.each_line(file) do |line|
@@ -29,12 +35,12 @@ class CV::ValueMap
         set(cls[0], cls[1]? || "")
         count += 1
       rescue err
-        puts "- #{@label} error: #{err} on `#{line}`".colorize.red
+        puts "- #{label} error: #{err} on `#{line}`".colorize.red
       end
     end
 
     time = timer.total_milliseconds.round.to_i
-    puts "- #{@label} loaded (lines: #{count}, time: #{time}ms)".colorize.blue
+    puts "- #{label} loaded (lines: #{count}, time: #{time}ms)".colorize.blue
   end
 
   def add(key : String, vals : Array(String))
@@ -78,16 +84,18 @@ class CV::ValueMap
   end
 
   def save!(out_file : String = @file, mode : Symbol = :full) : Nil
+    label = label_for(file)
+
     case mode
     when :full
-      puts "- #{@label} saved (entries: #{@data.size})".colorize.yellow
+      puts "- #{label} saved (entries: #{@data.size})".colorize.yellow
       File.open(out_file, "w") do |io|
         each do |key, vals|
           io << key << '\t' << vals.join('\t') << "\n"
         end
       end
     when :upds
-      puts "- #{@label} updated (entries: #{@upds.size})".colorize.light_yellow
+      puts "- #{label} updated (entries: #{@upds.size})".colorize.light_yellow
       File.open(out_file, "a") do |io|
         @upds.each do |key, vals|
           io << key << '\t' << vals.join('\t') << "\n"
@@ -99,7 +107,7 @@ class CV::ValueMap
 
     @upds.clear
   rescue err
-    puts "- #{@label} saves error: #{err}".colorize.red
+    puts "- #{out_file} saves error: #{err}".colorize.red
   end
 end
 

@@ -1,6 +1,8 @@
 require "./value_map"
 
 class CV::TokenMap < CV::ValueMap
+  @@klass = "token_map"
+
   alias Index = Set(String)
   getter _idx = Hash(String, Index).new { |h, k| h[k] = Index.new }
 

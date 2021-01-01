@@ -1,6 +1,8 @@
 require "./value_map"
 
 class CV::OrderMap < CV::ValueMap
+  @@klass = "order_map"
+
   class Node
     getter key : String
     property val : Int32

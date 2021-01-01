@@ -33,7 +33,6 @@ class CV::InfoSeeding
   end
 
   def set_intro(sbid : String, intro : Array(String)) : Nil
-    puts "- [#{@name}/#{sbid}] book intro saved!".colorize.yellow
     File.write(intro_path(sbid), intro.join("\n"))
   end
 

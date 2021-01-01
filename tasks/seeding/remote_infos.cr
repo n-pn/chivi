@@ -26,17 +26,17 @@ class CV::SeedRemoteInfo
       @input.access_tz.add(sbid, access_tz)
 
       parser = RmInfo.init(@seed, sbid, expiry: Time.utc - 1.years)
+      btitle, author = parser.btitle, parser.author
+      next if btitle.empty? || author.empty?
 
-      if @input._index.add(sbid, [parser.btitle, parser.author])
+      if @input._index.add(sbid, [btitle, author])
         @input.set_intro(sbid, parser.bintro)
         @input.bgenre.add(sbid, parser.bgenre)
         @input.bcover.add(sbid, parser.bcover)
       end
 
-      unless parser.btitle.empty?
-        @input.status.add(sbid, parser.status_int)
-        @input.update_tz.add(sbid, parser.updated_at)
-      end
+      @input.status.add(sbid, parser.status_int)
+      @input.update_tz.add(sbid, parser.updated_at)
     rescue err
       puts err.colorize.red
     end
