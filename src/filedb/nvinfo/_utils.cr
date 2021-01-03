@@ -72,7 +72,6 @@ module CV::Nvinfo::Utils
   class_getter vi_bgenres : ValueMap { fix_map("vi_bgenres") }
 
   def fix_zh_genre(zh_genre : String) : Array(String)
-    zh_genre = zh_genre.sub(/小说$/, "") unless zh_genre == "轻小说"
     zh_bgenres.get(zh_genre) || [] of String
   end
 

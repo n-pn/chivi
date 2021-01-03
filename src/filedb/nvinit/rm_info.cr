@@ -64,7 +64,7 @@ class CV::RmInfo
 
   getter author : String do
     case @seed
-    when "hetushu" then node_text("h2")
+    when "hetushu" then node_text(".book_info a:first-child")
     when "zhwenpg" then node_text(".fontwt")
     when "69shu"   then node_text(".mu_beizhu > a[target]")
     else                meta_data("og:novel:author")
@@ -73,7 +73,7 @@ class CV::RmInfo
 
   getter btitle : String do
     case @seed
-    when "hetushu" then node_text(".book_info a:first-child")
+    when "hetushu" then node_text("h2")
     when "zhwenpg" then node_text(".cbooksingle h2")
     when "69shu"   then node_text(".weizhi > a:last-child")
     else                meta_data("og:novel:book_name")
@@ -83,8 +83,9 @@ class CV::RmInfo
   getter bgenre : Array(String) do
     case @seed
     when "hetushu"
+      genre = node_text(".title > a:last-child").not_nil!
       tags = @rdoc.css(".tag a").map(&.inner_text).to_a
-      [node_text(".title > a:nth-child(2)").not_nil!].concat(tags)
+      [genre].concat(tags).uniq
     when "zhwenpg" then [] of String
     when "69shu"   then [node_text(".weizhi > a:nth-child(2)")]
     else                [meta_data("og:novel:category")]

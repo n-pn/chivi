@@ -9,27 +9,36 @@ class CV::Seeds::MapRemote
     @seeding = InfoSeed.new(@seed)
   end
 
-  def init!(upto = 1, skip_missing = false)
-    skip_missing = true if @seed == "jx_la"
+  def init!(upto = 1, mode = 1)
+    mode = 0 if @seed == "jx_la"
 
     1.upto(upto) do |idx|
       sbid = idx.to_s
 
       unless access_tz = access_time(sbid)
-        next if skip_missing
+        next if mode < 1
         access_tz = (Time.utc + 3.minutes).to_unix
       end
 
-      next if @seeding.access_tz.ival_64(sbid) >= access_tz
+      expiry = Time.utc
+
+      if mode < 2 || @seeding._index.has_key?(sbid)
+        next if @seeding.access_tz.ival_64(sbid) >= access_tz
+      elsif mode > 0
+        expiry -= 1.years
+      else
+        expiry -= 10.years
+      end
+
       @seeding.access_tz.add(sbid, access_tz)
 
-      parser = RmInfo.init(@seed, sbid, expiry: Time.utc - 1.years)
+      parser = RmInfo.init(@seed, sbid, expiry: expiry)
       btitle, author = parser.btitle, parser.author
       next if btitle.empty? || author.empty?
 
       if @seeding._index.add(sbid, [btitle, author])
         @seeding.set_intro(sbid, parser.bintro)
-        @seeding.bgenre.add(sbid, parser.bgenre)
+        @seeding.bgenre.add(sbid, clean_bgenre(parser.bgenre))
         @seeding.bcover.add(sbid, parser.bcover)
       end
 
@@ -45,6 +54,13 @@ class CV::Seeds::MapRemote
     end
 
     @seeding.save!(mode: :full)
+  end
+
+  private def clean_bgenre(genres : Array(String))
+    genres.map do |genre|
+      genre.sub(/小说$/, "") unless genre == "轻小说"
+      genre
+    end
   end
 
   private def access_time(sbid : String) : Int64?
@@ -88,13 +104,13 @@ class CV::Seeds::MapRemote
   def self.run!(argv = ARGV)
     seed = ""
     upto = 1
-    skip_missing = false
+    mode = 1
 
     OptionParser.parse(argv) do |parser|
       parser.banner = "Usage: map_remote [arguments]"
       parser.on("-s SEED", "--seed=SEED", "Seed name") { |x| seed = x }
       parser.on("-u UPTO", "--upto=UPTO", "Latest id") { |x| upto = x.to_i }
-      parser.on("-m", "--skip-missing", "Skip missing") { skip_missing = true }
+      parser.on("-m MODE", "--mode=MODE", "Seed mode") { |x| mode = x.to_i }
 
       parser.invalid_option do |flag|
         STDERR.puts "ERROR: `#{flag}` is not a valid option."
@@ -104,7 +120,7 @@ class CV::Seeds::MapRemote
     end
 
     worker = new(seed)
-    worker.init!(upto, skip_missing)
+    worker.init!(upto, mode: mode)
     worker.seed!
   end
 end
