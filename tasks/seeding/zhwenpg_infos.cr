@@ -60,6 +60,8 @@ class CV::SeedInfoZhwenpg
     nodes.each_with_index do |node, idx|
       update_info!(node, status, label: "#{idx + 1}/#{nodes.size}")
     end
+
+    @input.save!(mode: :upds)
   end
 
   def update_info!(node, status, label = "1/1") : Void
@@ -130,5 +132,5 @@ puts "\n[-- Load indexes --]".colorize.cyan.bold
 1.upto(3) { |page| worker.update!(page, status: 1) }
 1.upto(10) { |page| worker.update!(page, status: 0) }
 
-worker.input.save!
+worker.input.save!(mode: :full)
 # worker.upsert_all!

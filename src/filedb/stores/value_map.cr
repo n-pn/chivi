@@ -95,6 +95,8 @@ class CV::ValueMap
         end
       end
     when :upds
+      return if upds.size == 0
+
       puts "- #{label} updated (entries: #{@upds.size})".colorize.light_yellow
       File.open(out_file, "a") do |io|
         @upds.each do |key, vals|

@@ -22,11 +22,11 @@ class CV::SeedInfoYousuu
       ybid = File.basename(file, ".json")
 
       access_tz = File.info(file).modification_time.to_unix
-      next if @input.access_tz.fval(ybid).try(&.to_i64.> access_tz)
+      next if @input.access_tz.fval(ybid).try(&.to_i64.>= access_tz)
       @input.access_tz.add(ybid, access_tz)
 
       next unless info = YsInfo.load(file)
-      puts "- <#{idx + 1}/#{input.size}> [#{info.title}  #{info.author}]".colorize.blue
+      # puts "- <#{idx + 1}/#{input.size}> [#{info.title}  #{info.author}]".colorize.blue
 
       @input._index.add(ybid, [info.title, info.author])
 
@@ -43,16 +43,25 @@ class CV::SeedInfoYousuu
       count_word.add(ybid, info.word_count)
       count_crit.add(ybid, info.crit_count)
       count_list.add(ybid, info.addListTotal)
+
+      if idx % 100 == 99
+        puts "- [yousuu] <#{idx + 1}/#{input.size}>"
+        save!(mode: :upds)
+      end
     rescue err
       puts "- error loading [#{ybid}]: #{err}".colorize.red
     end
 
-    @input.save!
+    save!(mode: :full)
+  end
 
-    source_url.save!
-    count_word.save!
-    count_crit.save!
-    count_list.save!
+  def save!(mode : Symbol = :full)
+    @input.save!(mode: mode)
+
+    source_url.save!(mode: mode)
+    count_word.save!(mode: mode)
+    count_crit.save!(mode: mode)
+    count_list.save!(mode: mode)
   end
 
   def seed!

@@ -32,7 +32,7 @@ class CV::YsInfo
   getter cover = ""
   getter cover_fixed : String { get_fixed_cover }
 
-  getter updateAt : Time
+  getter updateAt : Time = Time.utc(2010, 1, 1)
   getter updated_at : Time { @updateAt < Time.utc ? @updateAt : TimeUtils::DEF_TIME }
 
   getter scorerCount = 0_i32

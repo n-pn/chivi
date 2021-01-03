@@ -19,10 +19,10 @@ class CV::SeedRemoteInfo
 
       unless access_tz = access_time(sbid)
         next if skip_missing
-        access_tz = Time.utc.to_unix
+        access_tz = (Time.utc + 3.minutes).to_unix
       end
 
-      next if @input.access_tz.fval(sbid).try(&.to_i64.> access_tz)
+      next if @input.access_tz.fval(sbid).try(&.to_i64.>= access_tz)
       @input.access_tz.add(sbid, access_tz)
 
       parser = RmInfo.init(@seed, sbid, expiry: Time.utc - 1.years)
@@ -37,11 +37,16 @@ class CV::SeedRemoteInfo
 
       @input.status.add(sbid, parser.status_int)
       @input.update_tz.add(sbid, parser.updated_at)
+
+      if idx % 100 == 99
+        puts "- [#{@seed}]: <#{idx + 1}/#{upto}>"
+        @input.save!(mode: :upds)
+      end
     rescue err
       puts err.colorize.red
     end
 
-    @input.save!
+    @input.save!(mode: :full)
   end
 
   def access_time(sbid : String) : Int64?

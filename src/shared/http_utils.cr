@@ -7,7 +7,7 @@ module CV::HttpUtils
   extend self
 
   def get_html(url : String, encoding : String) : String
-    cmd = "curl #{url} -L -k -s -m 30"
+    cmd = "curl -L -k -s -m 30 '#{url}'"
     cmd += " | iconv -f #{encoding} -t UTF-8" if encoding != "UTF-8"
 
     try = 0
