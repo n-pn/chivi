@@ -47,18 +47,6 @@ class CV::InfoSeed
     "#{@intro_dir}/#{sbid}.txt"
   end
 
-  def get_status(sbid : String)
-    status.fval(sbid).try(&.to_i?) || 0
-  end
-
-  def get_update_tz(sbid : String)
-    update_tz.fval(sbid).try(&.to_i64?) || 0_i64
-  end
-
-  def get_access_tz(sbid : String)
-    access_tz.fval(sbid).try(&.to_i64?) || 0_i64
-  end
-
   def save!(mode : Symbol = :full)
     @_index.try(&.save!(mode: mode))
 
@@ -82,7 +70,7 @@ class CV::InfoSeed
     genres = get_genres(sbid)
     Nvinfo.set_bgenre(zh_slug, genres) unless genres.empty?
 
-    mftime = get_update_tz(sbid)
+    mftime = update_tz.ival_64(sbid)
     Nvinfo.set_update_tz(zh_slug, mftime)
     Nvinfo.set_access_tz(zh_slug, mftime)
 

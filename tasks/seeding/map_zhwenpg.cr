@@ -1,7 +1,7 @@
 require "./_info_seed.cr"
 
-class CV::ZhwenpgParser
-  def initialize(@node : Myhtml::Node, @status : Int32)
+class CV::Seeds::ZhwenpgParser
+  def initialize(@node : Myhtml::Node)
   end
 
   getter rows : Array(Myhtml::Node) { @node.css("tr").to_a }
@@ -12,24 +12,26 @@ class CV::ZhwenpgParser
   getter btitle : String { link.inner_text.strip }
   getter bgenre : String { rows[2].css(".fontgt").first.inner_text }
 
-  getter intro : Array(String) { extract_intro || [] of String }
+  getter intro : Array(String) { extract_intro }
   getter cover : String { @node.css("img").first.attributes["data-src"] }
 
   getter mftime : String { rows[3].css(".fontime").first.inner_text }
   getter update : Time { TimeUtils.parse_time(mftime) }
 
   def extract_intro
-    return unless node = rows[4]?
+    return [] of String unless node = rows[4]?
     TextUtils.split_html(node.inner_text("\n"))
   end
 end
 
-class CV::SeedInfoZhwenpg
-  getter check = Hash(String, Int32).new
-  getter input = InfoSeed.new("zhwenpg")
+class CV::Seeds::MapZhwenpg
+  def initialize
+    @seeding = InfoSeed.new("zhwenpg")
+    @checked = Set(String).new
+  end
 
   def expiry(page : Int32 = 1)
-    Time.utc - 8.hours * page
+    Time.utc - 4.hours * page
   end
 
   def page_url(page : Int32, status = 0)
@@ -44,7 +46,7 @@ class CV::SeedInfoZhwenpg
     "_db/.cache/zhwenpg/pages/#{"#{page}-#{status}.html"}"
   end
 
-  def update!(page = 1, status = 0)
+  def init!(page = 1, status = 0)
     puts "\n[-- Page: #{page} --]".colorize.light_cyan.bold
 
     file = page_path(page, status)
@@ -58,76 +60,79 @@ class CV::SeedInfoZhwenpg
     doc = Myhtml::Parser.new(html)
     nodes = doc.css(".cbooksingle").to_a[2..-2]
     nodes.each_with_index do |node, idx|
-      update_info!(node, status, label: "#{idx + 1}/#{nodes.size}")
+      update!(node, status, label: "#{idx + 1}/#{nodes.size}")
     end
 
-    @input.save!(mode: :upds)
+    save!(mode: :upds)
   end
 
-  def update_info!(node, status, label = "1/1") : Void
-    parser = ZhwenpgParser.new(node, status)
+  def save!(mode : Symbol = :full)
+    @seeding.save!(mode: mode)
+  end
+
+  def update!(node, status, label = "1/1") : Void
+    parser = ZhwenpgParser.new(node)
     sbid = parser.sbid
 
-    return if @check.has_key?(sbid)
-    @check[sbid] = status
+    return if @checked.includes?(sbid)
+    @checked.add(sbid)
 
     btitle, author = parser.btitle, parser.author
 
-    if @input._index.add(sbid, [btitle, author])
-      @input.set_intro(sbid, parser.intro)
-      @input.bgenre.add(sbid, parser.bgenre)
-      @input.bcover.add(sbid, parser.cover)
+    if @seeding._index.add(sbid, [btitle, author])
+      @seeding.set_intro(sbid, parser.intro)
+      @seeding.bgenre.add(sbid, parser.bgenre)
+      @seeding.bcover.add(sbid, parser.cover)
     end
 
-    @input.status.add(sbid, status)
-    @input.access_tz.add(sbid, Time.utc.to_unix)
+    @seeding.status.add(sbid, status)
+    @seeding.access_tz.add(sbid, Time.utc.to_unix)
 
     update_at = parser.update + 12.hours
     update_at = Time.utc if update_at > Time.utc
 
-    @input.update_tz.add(sbid, update_at.to_unix)
+    @seeding.update_tz.add(sbid, update_at.to_unix)
 
     puts "\n<#{label}> {#{sbid}} [#{btitle}  #{author}]"
   rescue err
     puts "ERROR: #{err}".colorize.red
   end
 
-  def upsert_all!
-    @check.each_with_index do |(sbid, status), idx|
-      zh_slug, existed = @input.upsert!(sbid)
+  def seed!
+    @checked.each_with_index do |sbid, idx|
+      zh_slug, existed = @seeding.upsert!(sbid)
 
       unless existed
-        btitle, author = @input._index.get(sbid).not_nil!
+        btitle, author = @seeding._index.get(sbid).not_nil!
         voters, rating = fake_rating(btitle, author)
         Nvinfo.set_score(zh_slug, voters, rating)
       end
 
       hv_slug = Nvinfo._index.fval(zh_slug)
-      colored = existed ? :yellow : (status ? :green : :blue)
+      colored = existed ? :yellow : :green
 
-      puts "- <#{idx + 1}/#{@check.size}> [#{hv_slug}] saved!".colorize(colored)
+      puts "- <#{idx + 1}/#{@checked.size}> [#{hv_slug}] saved!".colorize(colored)
       Nvinfo.save!(mode: :upds) if idx % 10 == 9
     end
 
     Nvinfo.save!(mode: :full)
   end
 
-  RATING_TEXT = File.read("tasks/seeding/consts/ratings.json")
-  RATING_DATA = Hash(String, Tuple(Int32, Float32)).from_json RATING_TEXT
+  FAKE_RATING = ValueMap.new("tasks/seeding/fake_ratings.tsv", mode: 2)
 
   def fake_rating(btitle : String, author : String)
-    voters, rating = RATING_DATA["#{btitle}--#{author}"]? || {0, 0_f32}
-    {voters, (rating * 10).round.to_i}
+    voters, rating = FAKE_RATING.get("#{btitle}  #{author}") || ["0", "0"]
+    {voters.to_i, rating.to_i}
   end
 end
 
-worker = CV::SeedInfoZhwenpg.new
+worker = CV::Seeds::MapZhwenpg.new
 FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
 
 puts "\n[-- Load indexes --]".colorize.cyan.bold
 
-1.upto(3) { |page| worker.update!(page, status: 1) }
-1.upto(10) { |page| worker.update!(page, status: 0) }
-worker.input.save!(mode: :full)
+1.upto(3) { |page| worker.init!(page, status: 1) }
+1.upto(10) { |page| worker.init!(page, status: 0) }
 
-worker.upsert_all!
+worker.save!(mode: :full)
+worker.seed!
