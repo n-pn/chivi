@@ -31,8 +31,14 @@ class CV::ValueMap
     timer = Time.measure do
       File.each_line(file) do |line|
         cls = line.split('\t', 2)
+        key = cls[0]
 
-        set(cls[0], cls[1]? || "")
+        if vals = cls[1]?
+          set(key, vals.split('\t'))
+        else
+          del(key)
+        end
+
         count += 1
       rescue err
         puts "- #{label} error: #{err} on `#{line}`".colorize.red
@@ -41,6 +47,10 @@ class CV::ValueMap
 
     time = timer.total_milliseconds.round.to_i
     puts "- #{label} loaded (lines: #{count}, time: #{time}ms)".colorize.blue
+  end
+
+  def vals
+    @data.values
   end
 
   def add(key : String, vals : Array(String))
@@ -77,6 +87,14 @@ class CV::ValueMap
 
   def fval(key : String)
     get(key).try(&.first?)
+  end
+
+  def ival(key : String, df : Int32 = 0)
+    fval(key).try(&.to_i?) || df
+  end
+
+  def ival_64(key : String, df : Int64 = 0_i64)
+    fval(key).try(&.to_i64?) || df
   end
 
   def unsaved

@@ -1,4 +1,4 @@
-require "./_info_seeding.cr"
+require "./_info_seed.cr"
 
 class CV::ZhwenpgParser
   def initialize(@node : Myhtml::Node, @status : Int32)
@@ -25,8 +25,8 @@ class CV::ZhwenpgParser
 end
 
 class CV::SeedInfoZhwenpg
-  getter check = Set(String).new
-  getter input = InfoSeeding.new("zhwenpg")
+  getter check = Hash(String, Int32).new
+  getter input = InfoSeed.new("zhwenpg")
 
   def expiry(page : Int32 = 1)
     Time.utc - 8.hours * page
@@ -68,8 +68,8 @@ class CV::SeedInfoZhwenpg
     parser = ZhwenpgParser.new(node, status)
     sbid = parser.sbid
 
-    return if @check.includes?(sbid)
-    @check << sbid
+    return if @check.has_key?(sbid)
+    @check[sbid] = status
 
     btitle, author = parser.btitle, parser.author
 
@@ -87,33 +87,29 @@ class CV::SeedInfoZhwenpg
 
     @input.update_tz.add(sbid, update_at.to_unix)
 
-    # spider = RmInfo.init("zhwenpg", sbid, expiry: update_at)
-    # unless spider.cached? && @input.has_chaps?(sbid)
-    #   chaps = spider.chlist.map { |x| "#{x.scid}\t#{x.text}" }
-    #   @input.set_chaps(sbid, chaps)
-    # end
-
     puts "\n<#{label}> {#{sbid}} [#{btitle}  #{author}]"
   rescue err
     puts "ERROR: #{err}".colorize.red
   end
 
   def upsert_all!
-    @check.each_with_index do |sbid, idx|
-      nvinfo = @input.upsert_nvinfo!(sbid) do |s|
-        unless s.yousuu_bid
-          btitle, author = @input.get_bname(sbid)
-          s.zh_voters, s.zh_rating = fake_rating(btitle, author)
+    @check.each_with_index do |(sbid, status), idx|
+      zh_slug, existed = @input.upsert!(sbid)
 
-          s.fix_weight
-        end
+      unless existed
+        btitle, author = @input._index.get(sbid).not_nil!
+        voters, rating = fake_rating(btitle, author)
+        Nvinfo.set_score(zh_slug, voters, rating)
       end
 
-      chseed = @input.upsert_chseed!(sbid, nvinfo.id)
-      Chinfo.bulk_upsert!(chseed, @input.get_chaps(sbid))
+      hv_slug = Nvinfo._index.fval(zh_slug)
+      colored = existed ? :yellow : (status ? :green : :blue)
 
-      puts "- <#{idx + 1}/#{@check.size}> [#{nvinfo.hv_slug}] saved!".colorize.yellow
+      puts "- <#{idx + 1}/#{@check.size}> [#{hv_slug}] saved!".colorize(colored)
+      Nvinfo.save!(mode: :upds) if idx % 10 == 9
     end
+
+    Nvinfo.save!(mode: :full)
   end
 
   RATING_TEXT = File.read("tasks/seeding/consts/ratings.json")
@@ -121,7 +117,7 @@ class CV::SeedInfoZhwenpg
 
   def fake_rating(btitle : String, author : String)
     voters, rating = RATING_DATA["#{btitle}--#{author}"]? || {0, 0_f32}
-    {voters, (rating * 10).to_i}
+    {voters, (rating * 10).round.to_i}
   end
 end
 
@@ -129,8 +125,9 @@ worker = CV::SeedInfoZhwenpg.new
 FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
 
 puts "\n[-- Load indexes --]".colorize.cyan.bold
+
 1.upto(3) { |page| worker.update!(page, status: 1) }
 1.upto(10) { |page| worker.update!(page, status: 0) }
-
 worker.input.save!(mode: :full)
-# worker.upsert_all!
+
+worker.upsert_all!

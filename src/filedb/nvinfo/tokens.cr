@@ -29,7 +29,7 @@ module CV::Nvinfo::Tokens
 
   def save!(mode : Symbol = :full)
     {% for type in TYPES %}
-      @@{{ type.id }}.try(&.save!(mode))
+      @@{{ type.id }}.try(&.save!(mode: mode))
     {% end %}
   end
 

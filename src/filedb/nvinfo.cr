@@ -1,179 +1,175 @@
-require "json"
-require "file_utils"
-
 require "./nvinfo/*"
 
 module CV::Nvinfo
   extend self
 
-  class_getter _index : TokenMap { load_token_map("_index") }
+  class_getter _index : TokenMap { Utils.token_map("_index") }
 
-  class_getter btitle : ValueMap { load_value_map("btitle") }
-  class_getter btitle_zh : TokenMap { load_token_map("btitle_zh") }
-  class_getter btitle_hv : TokenMap { load_token_map("btitle_hv") }
-  class_getter btitle_vi : TokenMap { load_token_map("btitle_vi") }
+  class_getter btitle : ValueMap { Utils.value_map("btitle") }
+  class_getter author : ValueMap { Utils.value_map("author") }
 
-  class_getter bgenre : ValueMap { load_value_map("bgenre") }
-  class_getter bgenre_tsv : TokenMap { load_token_map("bgenre") }
+  class_getter bgenre : ValueMap { Utils.value_map("bgenre") }
+  class_getter chseed : ValueMap { Utils.value_map("chseed") }
 
-  class_getter chseed : TokenMap { load_token_map("chseed") }
-  class_getter chsbid : TokenMap { load_token_map("chsbid") }
+  class_getter bcover : ValueMap { Utils.value_map("bcover") }
+  class_getter yousuu : ValueMap { Utils.value_map("yousuu") }
+  class_getter origin : ValueMap { Utils.value_map("origin") }
 
-  class_getter bcover : ValueMap { load_value_map("bcover") }
-  class_getter yousuu : ValueMap { load_value_map("yousuu") }
-  class_getter origin : ValueMap { load_value_map("origin") }
+  class_getter shield : ValueMap { Utils.value_map("shield") }
+  class_getter status : ValueMap { Utils.value_map("status") }
 
-  class_getter shield : ValueMap { load_value_map("shield") }
-  class_getter status : ValueMap { load_value_map("status") }
+  class_getter voters : OrderMap { Utils.order_map("voters") }
+  class_getter rating : OrderMap { Utils.order_map("rating") }
+  class_getter weight : OrderMap { Utils.order_map("weight") }
 
-  class_getter rating : OrderMap { load_order_map("rating") }
-  class_getter weight : OrderMap { load_order_map("weight") }
+  class_getter access_tz : OrderMap { Utils.order_map("tz_access") }
+  class_getter update_tz : OrderMap { Utils.order_map("tz_update") }
 
-  class_getter access_tz : OrderMap { load_order_map("tz_access") }
-  class_getter update_tz : OrderMap { load_order_map("tz_update") }
+  class_getter bintro = {} of String => String
 
-  macro def_prop(field, type = :value)
-    def get_{{field}}(zh_slug : String)
-      {{field}}.get(zh_slug)
+  def upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)
+    unless fixed
+      zh_btitle = Utils.fix_zh_btitle(zh_btitle)
+      zh_author = Utils.fix_zh_author(zh_author)
     end
 
-    def set_{{field}}(zh_slug : String, input) : Nil
-      {{field}}.set(zh_slug, input.to_s)
+    zh_slug = CoreUtils.digest32("#{zh_btitle}--#{zh_author}")
+    existed = _index.has_key?(zh_slug)
 
-      {% if type == :token %}
-        {{field}}_tsv.set(zh_slug, TextUtils.tokenize(input))
-      {% end %}
-    end
-  end
+    unless existed
+      set_author(zh_slug, zh_author)
+      set_btitle(zh_slug, zh_btitle)
 
-  def_prop title_zh, :token
-  def_prop title_hv, :token
-  def_prop title_vi, :token
+      hv_slug = Tokens.btitle_hv.get(zh_slug).not_nil!.join("-")
+      hv_slug += "-#{zh_slug}" if _index.has_val?(hv_slug)
 
-  def_prop author_zh, :token
-  def_prop author_vi, :token
-
-  def_prop genre_vi, :token
-  def_prop genre_vi, :token
-
-  def_prop cover_name, :value
-  def_prop yousuu_bid, :value
-  def_prop origin_url, :value
-
-  def_prop status, :value
-  def_prop shield, :value
-
-  def_prop update, :order
-  def_prop access, :order
-
-  def_prop weight, :order
-  def_prop rating, :value
-  def_prop voters, :value
-
-  INFOS = {} of String => Info
-
-  def find_by_hash(bhash : String)
-    info = Info.new(bhash)
-
-    {% for ivar in Info.instance_vars %}
-      {% if ivar.stringify != "bhash" %}
-        info.{{ivar}} = {{ivar}}_fs.get_value(bhash) || ""
-      {% end %}
-    {% end %}
-
-    info
-  end
-
-  def find_by_slug(bslug : String)
-    return nil unless bhash = bhash_fs.get_value(bslug)
-    find_by_hash(bhash)
-  end
-
-  def each_hash(order : String = "",
-                title : String = "", author : String = "",
-                genre : String = "", seed : String = "") : Void
-    unless title.empty?
-      bhash_map = filter_by_title(title)
-      return if bhash_map.empty?
-    end
-
-    unless author.empty?
-      bhash_map = filter_by_author(author, bhash_map)
-      return if bhash_map.empty?
-    end
-
-    unless genre.empty?
-      bhash_map = filter_by_genre(genre, bhash_map)
-      return if bhash_map.empty?
-    end
-
-    unless seed.empty?
-      bhash_map = filter_by_seed(seed, bhash_map)
-      return if bhash_map.empty?
-    end
-
-    order_map = map_order_fs(order)
-
-    if bhash_map && bhash_map.size < 1000
-      bhash_map.keys.map { |bhash| {bhash, order_map.get_value(bhash) || 0} }
-        .sort_by { |(_, val)| -val }
-        .each { |(bhash, _)| yield bhash }
-    else
-      order_map.reverse_each do |bhash, _|
-        next if bhash_map && !bhash_map.has_key?(bhash)
-        yield bhash
-      end
-    end
-  end
-
-  def filter_by_title(title : String, prevs : TokenMap::Index? = nil)
-    query = SeedUtils.tokenize(title)
-
-    output =
-      if title =~ /\p{Han}/
-        title_zh_ts.search(query)
-      else
-        title_hv_ts.search(query).merge(title_vi_ts.search(query))
+      slugs = [hv_slug]
+      if vi_tokens = Tokens.btitle_vi.get(zh_slug)
+        vi_slug = vi_tokens.join("-")
+        slugs << vi_slug unless _index.has_val?(vi_slug)
       end
 
-    merge_filters(output, prevs)
-  end
-
-  def filter_by_author(author : String, prevs : TokenMap::Index? = nil)
-    query = SeedUtils.tokenize(author)
-
-    output =
-      if author =~ /\p{Han}/
-        author_zh_ts.search(query)
-      else
-        author_vi_ts.search(query)
-      end
-
-    merge_filters(output, prevs)
-  end
-
-  def filter_by_genre(genre : String, prevs : TokenMap::Index? = nil)
-    query = SeedUtils.slugify(genre)
-    output = genres_vi_ts.search([query])
-    merge_filters(output, prevs)
-  end
-
-  def filter_by_seed(seed : String, prevs : TokenMap::Index? = nil)
-    output = seeds_fs.search(seed.split(" "))
-    merge_filters(output, prevs)
-  end
-
-  def merge_filters(currs : TokenMap::Index, prevs : TokenMap::Index?) : TokenMap::Index
-    return currs unless prevs
-    currs.select { |bhash, _| prevs.includes?(bhash).as(Bool) }
-  end
-
-  def map_order_fs(type : String)
-    case type
-    when "access" then access_fs
-    when "update" then update_fs
-    when "rating" then rating_fs
-    else               weight_fs
+      _index.add(zh_slug, slugs)
     end
+
+    {zh_slug, existed}
+  end
+
+  def set_btitle(zh_slug : String,
+                 zh_btitle : String,
+                 hv_btitle : String? = nil,
+                 vi_btitle : String? = nil) : Nil
+    hv_btitle ||= Utils.to_hanviet(zh_btitle)
+    vi_btitle ||= Utils.fix_vi_btitle(zh_btitle)
+    vi_btitle = nil if vi_btitle == hv_btitle
+
+    vals = [zh_btitle, hv_btitle]
+    vals << vi_btitle if vi_btitle
+
+    if btitle.add(zh_slug, vals)
+      Tokens.set_btitle_zh(zh_slug, zh_btitle)
+      Tokens.set_btitle_hv(zh_slug, hv_btitle)
+      Tokens.set_btitle_vi(zh_slug, vi_btitle) if vi_btitle
+    end
+  end
+
+  def set_author(zh_slug : String,
+                 zh_author : String,
+                 vi_author : String? = nil) : Nil
+    vi_author ||= Utils.fix_vi_author(zh_author)
+
+    if author.add(zh_slug, [zh_author, vi_author])
+      Tokens.set_author_zh(zh_slug, zh_author)
+      Tokens.set_author_vi(zh_slug, vi_author)
+    end
+  end
+
+  def set_bgenre(zh_slug : String, genres : Array(String)) : Nil
+    if bgenre.add(zh_slug, genres)
+      Tokens.set_bgenre(zh_slug, genres)
+    end
+  end
+
+  def set_chseed(zh_slug : String, seed : String, sbid : String) : Nil
+    seeds = chseed.get(zh_slug) || [] of String
+    seeds = seeds.each_with_object({} of String => String) do |x, h|
+      a, b = x.split("/")
+      h[a] = b
+    end
+
+    return if seeds[seed]? == sbid
+    seeds[seed] = sbid
+
+    chseed.add(zh_slug, seeds.to_a.map { |a, b| "#{a}/#{b}" })
+    Tokens.set_chseed(zh_slug, seeds.keys)
+  end
+
+  def set_bintro(zh_slug : String, lines : Array(String), force : Bool = false) : Nil
+    zh_file = Utils.intro_file(zh_slug, "zh")
+    return unless force || File.exists?((zh_file))
+    File.write(zh_file, lines.join("\n"))
+
+    vi_file = Utils.intro_file(zh_slug, "vi")
+    cv_tool = Convert.content(zh_slug)
+
+    vi_intro = lines.map { |line| cv_tool.tl_plain(line) }
+    File.write(vi_file, vi_intro.join("\n"))
+  end
+
+  def get_bintro(zh_slug : String) : Array(String)
+    bintro[zh_slug] ||= begin
+      vi_file = Utils.intro_file(zh_slug, "vi")
+      File.read_lines(vi_file) || [] of String
+    end
+  end
+
+  {% for field in {:shield, :status} %}
+    def set_{{field.id}}(zh_slug, value : Int32, force : Bool = false)
+      return unless force || ({{field.id}}.ival(zh_slug) < value)
+      {{field.id}}.add(zh_slug, value)
+    end
+  {% end %}
+
+  def set_score(zh_slug : String, z_voters : Int32, z_rating : Int32)
+    return unless voters.add(zh_slug, z_voters) || rating.add(zh_slug, z_rating)
+    score = z_voters > 0 ? Math.log(z_voters).*(z_rating).round.to_i : 0
+    weight.add(zh_slug, score)
+  end
+
+  {% for field in {:access_tz, :update_tz} %}
+    def set_{{field.id}}(zh_slug, value : Int64, force : Bool = false)
+      return unless force || ({{field.id}}.ival_64(zh_slug) < value)
+      {{field.id}}.add(zh_slug, value)
+    end
+
+    def set_{{field.id}}(zh_slug, value : Time, force : Bool = false)
+      set_{{field.id}}(zh_slug, value.to_unix, force: force)
+    end
+  {% end %}
+
+  def save!(mode : Symbol = :full)
+    @@_index.try(&.save!(mode: mode))
+
+    @@btitle.try(&.save!(mode: mode))
+    @@author.try(&.save!(mode: mode))
+
+    @@bgenre.try(&.save!(mode: mode))
+    @@chseed.try(&.save!(mode: mode))
+
+    @@bcover.try(&.save!(mode: mode))
+    @@yousuu.try(&.save!(mode: mode))
+    @@origin.try(&.save!(mode: mode))
+
+    @@shield.try(&.save!(mode: mode))
+    @@status.try(&.save!(mode: mode))
+
+    @@voters.try(&.save!(mode: mode))
+    @@rating.try(&.save!(mode: mode))
+    @@weight.try(&.save!(mode: mode))
+
+    @@access_tz.try(&.save!(mode: mode))
+    @@update_tz.try(&.save!(mode: mode))
+
+    Tokens.save!(mode: mode)
   end
 end

@@ -1,4 +1,4 @@
-module Chivi
+module CV
   NORMALIZE = {
     '〈' => '⟨',
     '〉' => '⟩',

@@ -14,8 +14,20 @@ module CV::Nvinfo::Utils
     "#{DIR}/#{name}.tsv"
   end
 
-  def fix_file(name : String)
-    "src/kernel/_fixes/#{name}.tsv"
+  def intro_file(slug : String, type : String = "vi")
+    "#{DIR}/intros/#{slug}-#{type}.txt"
+  end
+
+  def value_map(name : String, mode : Int32 = 1)
+    ValueMap.new(map_file(name), mode: mode)
+  end
+
+  def token_map(name : String, mode : Int32 = 1)
+    TokenMap.new(map_file(name), mode: mode)
+  end
+
+  def order_map(name : String, mode : Int32 = 1)
+    OrderMap.new(map_file(name), mode: mode)
   end
 
   def to_hanviet(input : String, caps : Bool = true)
@@ -27,8 +39,12 @@ module CV::Nvinfo::Utils
     name.sub(/[（\(].+[\)）]$/, "").strip
   end
 
-  class_getter zh_authors : ValueMap { ValueMap.new(fix_file("zh_authors")) }
-  class_getter vi_authors : ValueMap { ValueMap.new(fix_file("vi_authors")) }
+  def fix_map(name : String)
+    ValueMap.new("src/filedb/_fixes/#{name}.tsv", mode: 2)
+  end
+
+  class_getter zh_authors : ValueMap { fix_map("zh_authors") }
+  class_getter vi_authors : ValueMap { fix_map("vi_authors") }
 
   def fix_zh_author(author : String, btitle : String = "") : String
     # cleanup trashes
@@ -40,8 +56,8 @@ module CV::Nvinfo::Utils
     vi_authors.fval(zh_author) || to_hanviet(zh_author)
   end
 
-  class_getter zh_btitles : ValueMap { ValueMap.new(fix_file("zh_btitles")) }
-  class_getter vi_btitles : ValueMap { ValueMap.new(fix_file("vi_btitles")) }
+  class_getter zh_btitles : ValueMap { fix_map("zh_btitles") }
+  class_getter vi_btitles : ValueMap { fix_map("vi_btitles") }
 
   def fix_zh_btitle(btitle : String, author : String = "")
     btitle = cleanup_name(btitle)
@@ -52,8 +68,8 @@ module CV::Nvinfo::Utils
     vi_btitles.fval(zh_title).try { |x| TextUtils.titleize(x) }
   end
 
-  class_getter zh_bgenres : ValueMap { ValueMap.new(fix_file("zh_bgenres")) }
-  class_getter vi_bgenres : ValueMap { ValueMap.new(fix_file("vi_bgenres")) }
+  class_getter zh_bgenres : ValueMap { fix_map("zh_bgenres") }
+  class_getter vi_bgenres : ValueMap { fix_map("vi_bgenres") }
 
   def fix_zh_genre(zh_genre : String) : Array(String)
     zh_genre = zh_genre.sub(/小说$/, "") unless zh_genre == "轻小说"
@@ -64,10 +80,8 @@ module CV::Nvinfo::Utils
     vi_bgenres.fval(zh_genre) || to_hanviet(zh_genre)
   end
 
-  def fix_name(btitle : String, author : String)
-    btitle = fix_zh_btitle
-    author = fix_zh_author
-
-    {btitle, author, CoreUtils.digest("#{btitle}--#{author}")}
+  # fix novel name
+  def fix_nvname(btitle : String, author : String)
+    {fix_zh_btitle(btitle), fix_zh_author(author)}
   end
 end

@@ -11,23 +11,23 @@ targets:
   server:
     main: src/server.cr
 
-  map_yousuu:
+  old_map_remote:
+    main: tasks/_oldcv/map_remote.cr
+
+  old_map_yousuu:
     main: tasks/_oldcv/map_yousuu.cr
 
-  map_zhwenpg:
+  old_map_zhwenpg:
     main: tasks/_oldcv/map_zhwenpg.cr
 
   map_remote:
-    main: tasks/_oldcv/map_remote.cr
+    main: tasks/seeding/map_remote.cr
 
-  seed_yousuu_infos:
-    main: tasks/seeding/yousuu_infos.cr
+  map_yousuu:
+    main: tasks/seeding/map_yousuu.cr
 
-  seed_zhwenpg_infos:
-    main: tasks/seeding/zhwenpg_infos.cr
-
-  seed_remote_infos:
-    main: tasks/seeding/remote_infos.cr
+  map_zhwenpg:
+    main: tasks/seeding/map_zhwenpg.cr
 
   fetch_covers:
     main: tasks/seeding/fetch_covers.cr

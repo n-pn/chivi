@@ -7,7 +7,7 @@ require "../../src/shared/*"
 require "../../src/filedb/nvinfo"
 require "../../src/filedb/nvseed"
 
-class CV::InfoSeeding
+class CV::InfoSeed
   getter name : String
   getter rdir : String
 
@@ -17,6 +17,7 @@ class CV::InfoSeeding
   getter bcover : ValueMap { ValueMap.new(map_path("bcover")) }
 
   getter status : ValueMap { ValueMap.new(map_path("status")) }
+  getter shield : ValueMap { ValueMap.new(map_path("shield")) }
   getter rating : ValueMap { ValueMap.new(map_path("rating")) }
 
   getter access_tz : ValueMap { ValueMap.new(map_path("tz_access")) }
@@ -58,39 +59,6 @@ class CV::InfoSeeding
     access_tz.fval(sbid).try(&.to_i64?) || 0_i64
   end
 
-  def get_labels(sbid : String)
-    btitle, author = _index.get(sbid).not_nil!
-    {Butils.fix_zh_btitle(btitle), Butils.fix_zh_author(author)}
-  end
-
-  # def upsert_nvinfo!(sbid : String) : Nvinfo
-  #   btitle, author = get_labels(sbid)
-  #   nvinfo = Nvinfo.upsert!(btitle, author)
-
-  #   nvinfo.set_intro(get_intro(sbid), @name) unless nvinfo.zh_intro
-
-  #   bgenre = genres.get_value(sbid).not_nil!
-  #   nvinfo.set_bgenre(bgenre)
-
-  #   nvinfo.set_status(get_status(sbid))
-
-  #   mftime = get_update(sbid)
-  #   nvinfo.set_update_tz(mftime)
-  #   nvinfo.set_access_tz(mftime // 300)
-
-  #   yield nvinfo
-  #   nvinfo.save!
-  # end
-
-  # def upsert_nvseed!(sbid : String, zh_slug : Int32)
-  #   chseed = Chseed.upsert!(@name, sbid, &.nvinfo_id = nvinfo_id)
-
-  #   chseed.set_update_tz(get_update(sbid))
-  #   chseed.set_access_tz(Time.utc.to_unix)
-
-  #   chseed.save!
-  # end
-
   def save!(mode : Symbol = :full)
     @_index.try(&.save!(mode: mode))
 
@@ -102,5 +70,35 @@ class CV::InfoSeeding
 
     @update_tz.try(&.save!(mode: mode))
     @access_tz.try(&.save!(mode: mode))
+  end
+
+  def upsert!(sbid : String, force : Bool = false) : Tuple(String, Bool)
+    btitle, author = _index.get(sbid).not_nil!
+    zh_slug, existed = Nvinfo.upsert!(btitle, author)
+
+    bintro = get_intro(sbid)
+    Nvinfo.set_bintro(zh_slug, bintro, force: force) unless bintro.empty?
+
+    genres = get_genres(sbid)
+    Nvinfo.set_bgenre(zh_slug, genres) unless genres.empty?
+
+    mftime = get_update_tz(sbid)
+    Nvinfo.set_update_tz(zh_slug, mftime)
+    Nvinfo.set_access_tz(zh_slug, mftime)
+
+    Nvinfo.set_status(zh_slug, status.ival(sbid, 0))
+    Nvinfo.set_chseed(zh_slug, @name, sbid) unless @name == "yousuu"
+
+    {zh_slug, existed}
+  end
+
+  def get_genres(sbid : String)
+    zh_genres = bgenre.get(sbid) || [] of String
+    zh_genres = zh_genres.map { |x| Nvinfo::Utils.fix_zh_genre(x) }.flatten.uniq
+
+    vi_genres = zh_genres.map { |x| Nvinfo::Utils.fix_vi_genre(x) }.uniq
+    vi_genres.reject!("Loại khác")
+
+    vi_genres.empty? ? ["Loại khác"] : vi_genres
   end
 end

@@ -25,6 +25,10 @@ class CV::TokenMap < CV::ValueMap
     @_idx[val]? || Index.new
   end
 
+  def has_val?(val : String)
+    !keys(val).empty?
+  end
+
   def keys(tsv : Array(String)) : Index
     return keys(tsv.first) if tsv.size == 1
 

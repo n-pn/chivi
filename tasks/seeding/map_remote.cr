@@ -2,13 +2,13 @@ require "file_utils"
 require "option_parser"
 
 require "../../src/filedb/nvinit/rm_info"
-require "./_info_seeding.cr"
+require "./_info_seed.cr"
 
 class CV::SeedRemoteInfo
   getter seed : String
 
   def initialize(@seed)
-    @input = InfoSeeding.new(@seed)
+    @input = InfoSeed.new(@seed)
   end
 
   def init!(upto = 1, skip_missing = false)

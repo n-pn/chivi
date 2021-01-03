@@ -39,7 +39,7 @@ class CV::YsInfo
   getter voters : Int32 { scorerCount }
 
   getter score = 0_f32
-  getter rating : Int32 { score.*(10).to_i }
+  getter rating : Int32 { score.*(10).round.to_i }
 
   getter countWord = 0_f32
   getter word_count : Int32 { @countWord.round.to_i }
