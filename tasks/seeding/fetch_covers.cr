@@ -1,143 +1,63 @@
 require "mime"
-require "digest"
 require "colorize"
-require "http/client"
 require "file_utils"
 
-require "../../src/_oldcv/kernel/models/book_info"
+require "../../src/filedb/stores/*"
+require "../../src/shared/http_utils"
 
-class Oldcv::FetchCovers
-  TMP_DIR = "_db/_seeds/.cover/.miscs"
-  OUT_DIR = "web/public/covers"
-
-  # FILE_DF = File.join(TMP_DIR, "blank.jpg")
-
+class CV::Seed::FetchCovers
   def initialize(@skip_empty = true)
   end
 
-  TLS = OpenSSL::SSL::Context::Client.insecure
+  def fetch_yousuu!
+    dir = "_db/_seeds/yousuu/covers"
+    ::FileUtils.mkdir_p(dir)
 
-  def download_cover(url : String, file : String, label = "1/1") : Void
-    return if !@skip_empty && File.exists?(file)
+    queue = {} of String => String
 
-    puts "- <#{label}> [#{url.colorize(:blue)}]"
+    sbids = ValueMap.new("_db/nvdata/nvinfos/yousuu.tsv", mode: 2).vals
+    covers = ValueMap.new("_db/_seeds/yousuu/bcover.tsv", mode: 2)
+    sbids.each do |vals|
+      sbid = vals.first
+      out_file = "#{dir}/#{sbid}.jpg"
+      next if valid_file?(out_file)
 
-    uri = URI.parse(url)
-    return unless uri.host && uri.full_path
-
-    tls = url.starts_with?("https") ? TLS : false # TODO: check by uri?
-    http = HTTP::Client.new(uri.host.not_nil!, tls: tls)
-
-    http.dns_timeout = 10
-    http.connect_timeout = 10
-    http.read_timeout = 30
-
-    http.get(uri.full_path.not_nil!) do |res|
-      # if ext = MIME.extensions(res.mime_type.to_s).first?
-      #   if ext != ".jpg" || ext != ".jpeg"
-      #     puts "#{url.colorize(:yellow)} : #{ext.colorize(:yellow)}"
-      #   end
-      # end
-      File.write(file, res.body_io.try(&.gets_to_end))
-    end
-  rescue err
-    FileUtils.touch(file)
-    puts "- <#{label}> [#{url}] #{err}".colorize.red
-  end
-
-  def glob_dir(dir : String)
-    glob = {} of String => String
-
-    Dir.children(dir).each do |file|
-      name = file.split(".", 2).first
-      file = File.join(dir, file)
-
-      next if @skip_empty && File.size(file) == 0
-      glob[name] = file
+      next unless image_url = covers.fval(sbid)
+      next if image_url.empty?
+      queue[image_url] = out_file
     end
 
-    glob
+    fetch!(queue)
   end
 
-  getter infos : Array(BookInfo) { BookInfo.load_all! }
+  def fetch!(queue : Hash(String, String), limit = 8) : Nil
+    puts queue.size
 
-  def fetch!
-    queue = [] of Tuple(String, String)
+    limit = queue.size if limit > queue.size
+    channel = Channel(Nil).new(limit)
 
-    infos.each do |info|
-      cover_dir = File.join(TMP_DIR, info.ubid)
-      FileUtils.mkdir_p(cover_dir)
-      indexed = glob_dir(cover_dir)
+    queue.each_with_index do |(link, file), idx|
+      channel.receive if idx > limit
 
-      info.cover_urls.each do |site, cover|
-        case site
-        when "jx_la", "duokan8", "shubaow"
-          next
-        else
-          next if cover.empty?
-        end
-
-        # puts info.to_json unless cover.starts_with?("http")
-
-        name = Digest::SHA1.hexdigest(cover)[0..10]
-        next if indexed.has_key?(name)
-
-        queue << {cover, File.join(cover_dir, name + ".jpg")}
+      spawn do
+        HttpUtils.save_file(link, file)
+      rescue err
+        puts err
+        FileUtils.touch(file)
+      ensure
+        channel.send(nil)
       end
     end
 
-    puts "- pending: #{queue.size}"
-
-    unless queue.size < 12
-      limit = 12
-      limit = queue.size if queue.size < limit
-
-      channel = Channel(Nil).new(limit)
-
-      queue.each_with_index do |(url, file), idx|
-        channel.receive unless idx < limit
-        spawn do
-          download_cover(url, file, "#{idx + 1}/#{queue.size}")
-        ensure
-          channel.send(nil)
-        end
-      end
-
-      limit.times { channel.receive }
-    end
+    limit.times { channel.receive }
   end
 
-  def save!
-    # TODO: copy best covers to web/upload folder
-    infos.each do |info|
-      best_file = ""
-      best_size = 0
-
-      cover_dir = File.join(TMP_DIR, info.ubid)
-      cover_files = glob_dir(cover_dir).values
-
-      cover_files.each do |file|
-        size = File.size(file)
-
-        if size > best_size
-          best_file = file
-          best_size = size
-        end
-      end
-
-      next if best_file.empty?
-
-      main_cover = File.basename(best_file)
-      info.main_cover = main_cover
-      next unless info.changed?
-
-      info.save!
-      out_file = File.join(OUT_DIR, "#{info.ubid}.#{main_cover}")
-      FileUtils.cp(best_file, out_file)
-    end
+  def valid_file?(file : String)
+    return false unless File.exists?(file)
+    @skip_empty || File.size(file) > 0
   end
 end
 
-worker = Oldcv::FetchCovers.new(ARGV.includes?("skip_empty"))
-worker.fetch!
-worker.save!
+worker = CV::Seed::FetchCovers.new(ARGV.includes?("skip_empty"))
+worker.fetch_yousuu!
+# worker.fetch_chseed!

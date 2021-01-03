@@ -39,7 +39,7 @@ class CV::InfoSeed
 
   def get_intro(sbid : String) : Array(String)
     File.read_lines(intro_path(sbid))
-  rescue
+  rescue err
     [] of String
   end
 

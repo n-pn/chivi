@@ -106,7 +106,8 @@ module CV::Nvinfo
 
   def set_bintro(zh_slug : String, lines : Array(String), force : Bool = false) : Nil
     zh_file = Utils.intro_file(zh_slug, "zh")
-    return unless force || File.exists?((zh_file))
+    return unless force || !File.exists?(zh_file)
+
     File.write(zh_file, lines.join("\n"))
 
     vi_file = Utils.intro_file(zh_slug, "vi")
@@ -132,7 +133,7 @@ module CV::Nvinfo
 
   def set_score(zh_slug : String, z_voters : Int32, z_rating : Int32)
     return unless voters.add(zh_slug, z_voters) || rating.add(zh_slug, z_rating)
-    score = z_voters > 0 ? Math.log(z_voters).*(z_rating).round.to_i : 0
+    score = Math.log(z_voters + 10).*(z_rating).round.to_i
     weight.add(zh_slug, score)
   end
 

@@ -32,4 +32,19 @@ module CV::HttpUtils
       "GBK"
     end
   end
+
+  def save_file(url : String, out_file : String) : Nil
+    cmd = "curl -L -k -s -m 60 '#{url}' -o '#{out_file}'"
+    try = 0
+
+    loop do
+      puts "[SAVE_FILE: <#{url}> (try: #{try})]".colorize.magenta
+      `#{cmd}`
+      return if File.exists?(out_file)
+
+      try += 1
+      sleep 500.milliseconds * try
+      raise "500 Server Error!" if try > 3
+    end
+  end
 end

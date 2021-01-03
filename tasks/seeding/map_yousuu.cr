@@ -68,10 +68,11 @@ class CV::Seeds::MapYousuu
   def seed!(mode : Symbol = :best)
     wl_authors = Set(String).new(Nvinfo.author.vals.map(&.first))
 
-    input = @input.rating.data.to_a.map { |k, v| {k, v[0].to_i, v[1].to_i} }
     output = {} of String => String
 
+    input = @input.rating.data.to_a.map { |k, v| {k, v[0].to_i, v[1].to_i} }
     input.sort_by! { |a, b, c| -b }
+
     input.each_with_index do |(sbid, voters, rating), idx|
       btitle, author = @input._index.get(sbid).not_nil!
       btitle, author = Nvinfo::Utils.fix_nvname(btitle, author)
