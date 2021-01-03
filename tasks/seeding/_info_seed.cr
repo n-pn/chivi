@@ -68,7 +68,7 @@ class CV::InfoSeed
     Nvinfo.set_bintro(zh_slug, bintro, force: force) unless bintro.empty?
 
     genres = get_genres(sbid)
-    Nvinfo.set_bgenre(zh_slug, genres) unless genres.empty?
+    Nvinfo.set_bgenre(zh_slug, genres, force: force) unless genres.empty?
 
     mftime = update_tz.ival_64(sbid)
     Nvinfo.set_update_tz(zh_slug, mftime)

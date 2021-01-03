@@ -84,7 +84,8 @@ module CV::Nvinfo
     end
   end
 
-  def set_bgenre(zh_slug : String, genres : Array(String)) : Nil
+  def set_bgenre(zh_slug : String, genres : Array(String), force : Bool = false) : Nil
+    return unless force || !bgenre.has_key?(zh_slug)
     if bgenre.add(zh_slug, genres)
       Tokens.set_bgenre(zh_slug, genres)
     end
