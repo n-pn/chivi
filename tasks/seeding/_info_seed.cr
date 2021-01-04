@@ -5,7 +5,7 @@ require "file_utils"
 
 require "../../src/shared/text_utils"
 require "../../src/filedb/nvinfo"
-require "../../src/filedb/nvseed"
+require "../../src/filedb/chseed"
 require "../../src/filedb/chinfo"
 require "../../src/filedb/nvinit/rm_info"
 
@@ -72,7 +72,7 @@ class CV::InfoSeed
     vi_genres.empty? ? ["Loại khác"] : vi_genres
   end
 
-  getter nvseed : Nvseed { Nvseed.load(@name) }
+  getter chseed : Chseed { Chseed.load(@name) }
 
   def upsert!(sbid : String) : Tuple(String, Bool)
     btitle, author = _index.get(sbid).not_nil!
@@ -94,8 +94,8 @@ class CV::InfoSeed
       Nvinfo.set_chseed(bhash, @name, sbid)
 
       mftime = Nvinfo.update_tz.ival_64(bhash) if @name == "hetushu"
-      nvseed.update_tz.add(sbid, mftime)
-      nvseed.access_tz.add(sbid, access_tz.ival_64(sbid))
+      chseed.update_tz.add(sbid, mftime)
+      chseed.access_tz.add(sbid, access_tz.ival_64(sbid))
 
       upsert_chinfo!(sbid, bhash, expiry: Time.unix(mftime))
     end
@@ -104,13 +104,13 @@ class CV::InfoSeed
   end
 
   def upsert_chinfo!(sbid : String, bhash : String, expiry : Time) : Nil
-    nvseed._index.add(bhash, sbid)
+    chseed._index.add(bhash, sbid)
 
     parser = RmInfo.init(@name, sbid, expiry: expiry)
-    return unless nvseed.last_chap.add(sbid, parser.last_chap)
+    return unless chseed.last_chap.add(sbid, parser.last_chap)
 
     chaps = parser.chap_list
-    nvseed.count_chap.add(sbid, chaps.size)
+    chseed.count_chap.add(sbid, chaps.size)
 
     chinfo = Chinfo.new(@name, sbid)
     cvtool = Convert.content(bhash)

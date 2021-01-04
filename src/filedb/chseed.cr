@@ -1,7 +1,7 @@
 require "./stores/*"
 require "file_utils"
 
-class CV::Nvseed
+class CV::Chseed
   getter name : String
   getter rdir : String
 

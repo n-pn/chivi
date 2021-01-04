@@ -2,7 +2,7 @@ require "colorize"
 require "file_utils"
 require "./stores/zip_store"
 
-class CV::Chtext
+class CV::Zhtext
   alias Cache = Hash(String, self)
   CACHE_LIMIT = 512
 
@@ -36,7 +36,7 @@ class CV::Chtext
 
   def load_zh_text : Array(String)
     if zh_text = ZipStore.read("#{@dir}.zip", @file)
-      puts "- <chtext> [#{@file}] loaded".colorize.green
+      puts "- <zhtext> [#{@file}] loaded".colorize.green
       zh_text.split("\n")
     else
       [] of String
@@ -52,6 +52,6 @@ class CV::Chtext
   def save!(file : String = @file) : Nil
     ::FileUtils.mkdir_p(@dir) unless File.exists(@dir)
     File.open(file, "w") { |io| @zh_lines.join(io, "\n") }
-    puts "- <chtext> [#{file}] saved.".colorize.yellow
+    puts "- <zhtext> [#{file}] saved.".colorize.yellow
   end
 end
