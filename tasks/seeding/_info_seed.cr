@@ -97,15 +97,15 @@ class CV::InfoSeed
       nvseed.update_tz.add(sbid, mftime)
       nvseed.access_tz.add(sbid, access_tz.ival_64(sbid))
 
-      if nvseed._index.add(bhash, sbid)
-        upsert_chinfo!(sbid, bhash, expiry: Time.unix(mftime))
-      end
+      upsert_chinfo!(sbid, bhash, expiry: Time.unix(mftime))
     end
 
     {bhash, existed}
   end
 
   def upsert_chinfo!(sbid : String, bhash : String, expiry : Time) : Nil
+    nvseed._index.add(bhash, sbid)
+
     parser = RmInfo.init(@name, sbid, expiry: expiry)
     return unless nvseed.last_chap.add(sbid, parser.last_chap)
 
