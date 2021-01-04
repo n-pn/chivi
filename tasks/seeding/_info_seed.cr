@@ -72,7 +72,7 @@ class CV::InfoSeed
 
     mftime = update_tz.ival_64(sbid)
     Nvinfo.set_update_tz(bhash, mftime)
-    Nvinfo.set_access_tz(bhash, mftime)
+    Nvinfo.set_access_tz(bhash, mftime // 60)
 
     Nvinfo.set_status(bhash, status.ival(sbid, 0))
     Nvinfo.set_chseed(bhash, @name, sbid) unless @name == "yousuu"

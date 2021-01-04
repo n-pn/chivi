@@ -1,3 +1,4 @@
+require "json"
 require "./nvinfo/*"
 
 module CV::Nvinfo
@@ -24,8 +25,6 @@ module CV::Nvinfo
 
   class_getter access_tz : OrderMap { Utils.order_map("tz_access") }
   class_getter update_tz : OrderMap { Utils.order_map("tz_update") }
-
-  class_getter bintro = {} of String => String
 
   def upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)
     unless fixed
@@ -119,10 +118,8 @@ module CV::Nvinfo
   end
 
   def get_bintro(bhash : String) : Array(String)
-    bintro[bhash] ||= begin
-      vi_file = Utils.intro_file(bhash, "vi")
-      File.read_lines(vi_file) || [] of String
-    end
+    vi_file = Utils.intro_file(bhash, "vi")
+    File.read_lines(vi_file) || [] of String
   end
 
   {% for field in {:shield, :status} %}
@@ -134,7 +131,7 @@ module CV::Nvinfo
 
   def set_score(bhash : String, z_voters : Int32, z_rating : Int32)
     return unless voters.add(bhash, z_voters) || rating.add(bhash, z_rating)
-    score = Math.log(z_voters + 10).*(z_rating).round.to_i
+    score = Math.log(z_voters + 10).*(z_rating * 10).round.to_i
     weight.add(bhash, score)
   end
 
@@ -174,4 +171,89 @@ module CV::Nvinfo
 
     Tokens.save!(mode: mode)
   end
+
+  def bump_access!(bhash : String, atime : Time = Time.utc) : Nil
+    return unless access_tz.add(atime.to_unix // 60)
+    access_tz.save!(mode: :upds) if access_tz.unsaved > 20
+  end
+
+  struct BasicInfo
+    include JSON::Serializable
+
+    getter bhash : String
+    getter bslug : String
+
+    getter btitle : Array(String)
+    getter author : Array(String)
+    getter genres : Array(String)
+
+    getter bcover : String?
+    getter voters : Int32
+    getter rating : Int32
+
+    def initialize(@bhash, @bslug, @btitle, @author, @genres, @bcover, @voters, @rating)
+    end
+
+    def inspect(io : IO)
+      to_pretty_json(io)
+    end
+  end
+
+  def get_basic_info(bhash : String)
+    BasicInfo.new(
+      bhash: bhash,
+      bslug: _index.fval(bhash) || bhash,
+
+      btitle: btitle.get(bhash).not_nil!,
+      author: author.get(bhash).not_nil!,
+
+      genres: bgenre.get(bhash) || [] of String,
+      bcover: bcover.fval(bhash),
+
+      voters: voters.ival(bhash),
+      rating: rating.ival(bhash),
+    )
+  end
+
+  struct ExtraInfo
+    include JSON::Serializable
+
+    getter chseed : Array(String)
+
+    getter bintro : Array(String)
+    getter status : Int32
+
+    getter yousuu : String?
+    getter origin : String?
+    getter update_tz : Int64
+
+    def initialize(@chseed, @bintro, @status, @yousuu, @origin, @update_tz)
+    end
+
+    def inspect(io : IO)
+      to_pretty_json(io)
+    end
+  end
+
+  def get_extra_info(bhash : String)
+    ExtraInfo.new(
+      chseed: chseed.get(bhash) || [] of String,
+      bintro: get_bintro(bhash),
+
+      status: status.ival(bhash),
+
+      yousuu: yousuu.fval(bhash),
+      origin: origin.fval(bhash),
+
+      update_tz: update_tz.ival_64(bhash),
+    )
+  end
+
+  def find_by_slug(slug : String)
+    _index.keys(slug).first
+  end
 end
+
+# puts CV::Nvinfo.find_by_slug("quy-bi-chi-chu")
+puts CV::Nvinfo.get_basic_info("h6cxpsr4")
+puts CV::Nvinfo.get_extra_info("h6cxpsr4")
