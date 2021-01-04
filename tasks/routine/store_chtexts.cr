@@ -1,7 +1,7 @@
 require "colorize"
 require "../../src/filedb/stores/zip_store"
 
-DIR = "_db/nvdata/chtexts"
+DIR = "_db/nvdata/zhtexts"
 
 def archive(seed : String)
   seed_path = "#{DIR}/#{seed}"

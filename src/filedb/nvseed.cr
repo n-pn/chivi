@@ -1,4 +1,5 @@
 require "./stores/*"
+require "file_utils"
 
 class CV::Nvseed
   getter name : String
@@ -6,6 +7,7 @@ class CV::Nvseed
 
   def initialize(@name)
     @rdir = "_db/nvdata/nvseeds/#{@name}"
+    ::FileUtils.mkdir_p(@rdir) unless File.exists?(@rdir)
   end
 
   getter _index : ValueMap { ValueMap.new("#{@rdir}/_index.tsv") }

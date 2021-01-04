@@ -3,7 +3,7 @@
 # require "json"
 require "colorize"
 
-INP = "_db/nvdata/chtexts"
+INP = "_db/nvdata/zhtexts"
 # SSH = "deploy@dev.chivi.xyz"
 SSH = "nipin@ssh.chivi.xyz"
 OUT = "#{SSH}:www/chivi.xyz/#{INP}"

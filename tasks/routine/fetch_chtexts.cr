@@ -7,7 +7,7 @@ require "../../src/filedb/chtext"
 require "../../src/filedb/nvinit/rm_text"
 
 LIST_DIR = "_db/nvdata/chinfos"
-TEXT_DIR = "_db/nvdata/chtexts"
+TEXT_DIR = "_db/nvdata/zhtexts"
 
 class PreloadBook
   MIN_SIZE = 20

@@ -3,7 +3,7 @@ require "file_utils"
 require "compress/zip"
 
 class Oldcv::ChapText
-  DIR = "_db/nvdata/chtexts"
+  DIR = "_db/nvdata/zhtexts"
   ::FileUtils.mkdir_p(DIR)
 
   alias Cache = Hash(String, self)

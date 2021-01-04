@@ -10,7 +10,7 @@ class CV::Chtext
   @@bcache = Cache.new
 
   def self.load(seed : String, sbid : String, scid : String)
-    file = "_db/nvdata/chtexts/#{seed}/#{sbid}/#{scid}.txt"
+    file = "_db/nvdata/zhtexts/#{seed}/#{sbid}/#{scid}.txt"
 
     unless item = @@acache[file]?
       item = @@bcache[file]? || new(file)
