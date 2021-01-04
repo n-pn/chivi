@@ -3,9 +3,11 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../src/shared/*"
+require "../../src/shared/text_utils"
 require "../../src/filedb/nvinfo"
 require "../../src/filedb/nvseed"
+require "../../src/filedb/chinfo"
+require "../../src/filedb/nvinit/rm_info"
 
 class CV::InfoSeed
   getter name : String
@@ -23,14 +25,27 @@ class CV::InfoSeed
   getter access_tz : ValueMap { ValueMap.new(map_path("tz_access")) }
   getter update_tz : ValueMap { ValueMap.new(map_path("tz_update")) }
 
-  def map_path(fname : String)
-    "#{@rdir}/#{fname}.tsv"
-  end
-
   def initialize(@name)
     @rdir = "_db/_seeds/#{@name}"
     @intro_dir = "#{@rdir}/intros"
     ::FileUtils.mkdir_p(@intro_dir)
+  end
+
+  def map_path(fname : String)
+    "#{@rdir}/#{fname}.tsv"
+  end
+
+  def save!(mode : Symbol = :full)
+    @_index.try(&.save!(mode: mode))
+
+    @bgenre.try(&.save!(mode: mode))
+    @bcover.try(&.save!(mode: mode))
+
+    @status.try(&.save!(mode: mode))
+    @rating.try(&.save!(mode: mode))
+
+    @update_tz.try(&.save!(mode: mode))
+    @access_tz.try(&.save!(mode: mode))
   end
 
   def set_intro(sbid : String, intro : Array(String)) : Nil
@@ -47,39 +62,6 @@ class CV::InfoSeed
     "#{@intro_dir}/#{sbid}.txt"
   end
 
-  def save!(mode : Symbol = :full)
-    @_index.try(&.save!(mode: mode))
-
-    @bgenre.try(&.save!(mode: mode))
-    @bcover.try(&.save!(mode: mode))
-
-    @status.try(&.save!(mode: mode))
-    @rating.try(&.save!(mode: mode))
-
-    @update_tz.try(&.save!(mode: mode))
-    @access_tz.try(&.save!(mode: mode))
-  end
-
-  def upsert!(sbid : String, force : Bool = false) : Tuple(String, Bool)
-    btitle, author = _index.get(sbid).not_nil!
-    bhash, existed = Nvinfo.upsert!(btitle, author)
-
-    bintro = get_intro(sbid)
-    Nvinfo.set_bintro(bhash, bintro, force: force) unless bintro.empty?
-
-    genres = get_genres(sbid)
-    Nvinfo.set_bgenre(bhash, genres, force: force) unless genres.empty?
-
-    mftime = update_tz.ival_64(sbid)
-    Nvinfo.set_update_tz(bhash, mftime)
-    Nvinfo.set_access_tz(bhash, mftime // 60)
-
-    Nvinfo.set_status(bhash, status.ival(sbid, 0))
-    Nvinfo.set_chseed(bhash, @name, sbid) unless @name == "yousuu"
-
-    {bhash, existed}
-  end
-
   def get_genres(sbid : String)
     zh_genres = bgenre.get(sbid) || [] of String
     zh_genres = zh_genres.map { |x| Nvinfo::Utils.fix_zh_genre(x) }.flatten.uniq
@@ -88,5 +70,65 @@ class CV::InfoSeed
     vi_genres.reject!("Loại khác")
 
     vi_genres.empty? ? ["Loại khác"] : vi_genres
+  end
+
+  getter nvseed : Nvseed { Nvseed.load(@name) }
+
+  def upsert!(sbid : String) : Tuple(String, Bool)
+    btitle, author = _index.get(sbid).not_nil!
+    bhash, existed = Nvinfo.upsert!(btitle, author)
+
+    bintro = get_intro(sbid)
+    Nvinfo.set_bintro(bhash, bintro) unless bintro.empty?
+
+    genres = get_genres(sbid)
+    Nvinfo.set_bgenre(bhash, genres) unless genres.empty?
+
+    mftime = update_tz.ival_64(sbid)
+    Nvinfo.set_update_tz(bhash, mftime)
+    Nvinfo.set_access_tz(bhash, mftime // 60)
+
+    Nvinfo.set_status(bhash, status.ival(sbid, 0))
+
+    if @name != "yousuu"
+      Nvinfo.set_chseed(bhash, @name, sbid)
+
+      mftime = Nvinfo.update_tz.ival_64(bhash) if @name == "hetushu"
+      nvseed.update_tz.add(sbid, mftime)
+      nvseed.access_tz.add(sbid, access_tz.ival_64(sbid))
+
+      if nvseed._index.add(bhash, sbid)
+        upsert_chinfo!(sbid, bhash, expiry: Time.unix(mftime))
+      end
+    end
+
+    {bhash, existed}
+  end
+
+  def upsert_chinfo!(sbid : String, bhash : String, expiry : Time) : Nil
+    parser = RmInfo.init(@name, sbid, expiry: expiry)
+    return unless nvseed.last_chap.add(sbid, parser.last_chap)
+
+    chaps = parser.chap_list
+    nvseed.count_chap.add(sbid, chaps.size)
+
+    chinfo = Chinfo.new(@name, sbid)
+    cvtool = Convert.content(bhash)
+
+    chaps.each_with_index do |entry, idx|
+      scid, title, label = entry
+
+      _idx = (idx + 1).to_s
+      vals = label.empty? ? [_idx, title] : [_idx, title, label]
+      next unless chinfo.index.add(scid, vals)
+
+      vi_title = cvtool.tl_title(title)
+      vi_label = label.empty? ? "Chính văn" : cvtool.tl_title(label)
+      url_slug = TextUtils.tokenize(vi_title).first(12).join("-")
+
+      chinfo.trans.add(scid, [vi_title, vi_label, url_slug])
+    end
+
+    chinfo.save!(mode: :full)
   end
 end

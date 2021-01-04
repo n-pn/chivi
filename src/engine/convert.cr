@@ -61,32 +61,8 @@ class CV::Convert
   TITLE_RE_3 = /^((\d+)([,.:]))(\s*)(.+)$/
   TITLE_RE_4 = /^楔子(\s+)(.+)$/
 
-  def cv_title(input : String)
+  def cv_title(title : String)
     res = [] of CvEntry
-
-    title, label = split_title(input)
-
-    unless label.empty? || label == "正文"
-      if match = LABEL_RE_1.match(label)
-        _, group, idx, tag, trash, label = match
-
-        num = DictUtils.to_integer(idx)
-        res << CvEntry.new(group, "#{cv_title_tag(tag)} #{num}", 1)
-
-        if !label.empty?
-          res << CvEntry.new(trash, ": ", 0)
-        elsif !trash.empty?
-          res << CvEntry.new(trash, "", 0)
-        end
-      end
-
-      if label.empty?
-        res << CvEntry.new("", ": ", 0) unless title.empty?
-      else
-        res.concat(cv_plain(label).data)
-        res << CvEntry.new("", " - ", 0) unless title.empty?
-      end
-    end
 
     unless title.empty?
       if match = TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
@@ -127,16 +103,6 @@ class CV::Convert
     end
 
     CvGroup.new(res)
-  end
-
-  private def split_title(input : String)
-    cols = SeedUtils.fix_title(input).split("  ")
-
-    if title = cols[2]?
-      {title, cols[1]}
-    else
-      {cols[1], ""}
-    end
   end
 
   private def cv_title_tag(label = "")

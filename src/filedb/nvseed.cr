@@ -1,30 +1,41 @@
 require "./stores/*"
 
-module CV::Nvseed
-  extend self
+class CV::Nvseed
+  getter name : String
+  getter rdir : String
 
-  class Seed
-    getter name : String
-    getter rdir : String
-
-    def initialize(@name)
-      @rdir = "_db/nvdata/nvseeds/#{@name}"
-    end
-
-    getter _index : ValueMap { ValueMap.new("#{@rdir}/_index.tsv") }
-
-    getter access_tz : ValueMap { ValueMap.new("#{@rdir}/access_tz.tsv") }
-    getter update_tz : ValueMap { ValueMap.new("#{@rdir}/update_tz.tsv") }
-
-    getter last_chap : ValueMap { ValueMap.new("#{@rdir}/last_chap.tsv") }
-
-    getter count_chap : ValueMap { ValueMap.new("#{@rdir}/count_chap.tsv") }
-    getter count_file : ValueMap { ValueMap.new("#{@rdir}/count_file.tsv") }
+  def initialize(@name)
+    @rdir = "_db/nvdata/nvseeds/#{@name}"
   end
 
-  class_getter seeds = {} of String => Seed
+  getter _index : ValueMap { ValueMap.new("#{@rdir}/_index.tsv") }
 
-  def load(name) : Seed
-    @@seeds[name] ||= Seed.new(name)
+  getter access_tz : ValueMap { ValueMap.new("#{@rdir}/access_tz.tsv") }
+  getter update_tz : ValueMap { ValueMap.new("#{@rdir}/update_tz.tsv") }
+
+  getter last_chap : ValueMap { ValueMap.new("#{@rdir}/last_chap.tsv") }
+
+  getter count_chap : ValueMap { ValueMap.new("#{@rdir}/count_chap.tsv") }
+  getter count_file : ValueMap { ValueMap.new("#{@rdir}/count_file.tsv") }
+
+  def save!(mode : Symbol = :full) : Nil
+    @_index.try(&.save!(mode: mode))
+    @last_chap.try(&.save!(mode: mode))
+
+    @access_tz.try(&.save!(mode: mode))
+    @update_tz.try(&.save!(mode: mode))
+
+    @count_chap.try(&.save!(mode: mode))
+    @count_file.try(&.save!(mode: mode))
+  end
+
+  class_getter cache = {} of String => self
+
+  def self.load(name) : self
+    @@cache[name] ||= new(name)
+  end
+
+  def self.save!(mode : Symbol = :full) : Nil
+    @@cache.each_value(&.save!(mode: mode))
   end
 end

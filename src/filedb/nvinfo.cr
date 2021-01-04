@@ -255,5 +255,5 @@ module CV::Nvinfo
 end
 
 # puts CV::Nvinfo.find_by_slug("quy-bi-chi-chu")
-puts CV::Nvinfo.get_basic_info("h6cxpsr4")
-puts CV::Nvinfo.get_extra_info("h6cxpsr4")
+# puts CV::Nvinfo.get_basic_info("h6cxpsr4")
+# puts CV::Nvinfo.get_extra_info("h6cxpsr4")

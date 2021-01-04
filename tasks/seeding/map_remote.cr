@@ -89,10 +89,12 @@ class CV::Seeds::MapRemote
       if idx % 100 == 99
         puts "- [#{@seed}] <#{idx + 1}/#{input.size}>".colorize.blue
         Nvinfo.save!(mode: :upds)
+        @seeding.nvseed.save!(mode: :upds)
       end
     end
 
     Nvinfo.save!(mode: :full)
+    @seeding.nvseed.save!(mode: :full)
   end
 
   private def should_pick?(sbid : String)

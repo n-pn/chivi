@@ -10,7 +10,7 @@ class CV::Seed::FetchCovers
   end
 
   def fetch_yousuu!
-    dir = "_db/_seeds/yousuu/covers"
+    dir = "_db/nvdata/_covers/yousuu"
     ::FileUtils.mkdir_p(dir)
 
     queue = {} of String => String

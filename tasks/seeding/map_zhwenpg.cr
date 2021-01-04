@@ -112,10 +112,14 @@ class CV::Seeds::MapZhwenpg
       colored = existed ? :yellow : :green
 
       puts "- <#{idx + 1}/#{@checked.size}> [#{bslug}] saved!".colorize(colored)
-      Nvinfo.save!(mode: :upds) if idx % 10 == 9
+      if idx % 10 == 9
+        Nvinfo.save!(mode: :upds)
+        @seeding.nvseed.save!(mode: :upds)
+      end
     end
 
     Nvinfo.save!(mode: :full)
+    @seeding.nvseed.save!(mode: :full)
   end
 
   FAKE_RATING = ValueMap.new("tasks/seeding/fake_ratings.tsv", mode: 2)

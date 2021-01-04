@@ -3,7 +3,7 @@ require "file_utils"
 
 require "./stores/*"
 
-module CV::Chinfo
+class CV::Chinfo
   DIR = "_db/nvdata/chinfos"
   ::FileUtils.mkdir_p(DIR)
 
@@ -15,8 +15,8 @@ module CV::Chinfo
   getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
 
   def initialize(@seed, @sbid)
-    @dir = File.join(DIR, @seed, @sbid)
-    ::FileUtils.mkdir_p(@dir) unless File.exists(@dir)
+    @dir = "#{DIR}/#{@seed}/#{@sbid}"
+    ::FileUtils.mkdir_p(@dir) unless File.exists?(@dir)
   end
 
   private def map_path(name : String)
@@ -31,7 +31,15 @@ module CV::Chinfo
     end
   end
 
-  def self.load(seed : String, sbid : String)
-    List.new(seed, sbid)
+  def save!(mode : Symbol = :full)
+    @index.try(&.save!(mode: mode))
+    @trans.try(&.save!(mode: mode))
+    @stats.try(&.save!(mode: mode))
+  end
+
+  @@cache = {} of String => self
+
+  def self.load(seed : String, sbid : String) : self
+    @@cache["#{seed}/#{sbid}"] ||= new(seed, sbid)
   end
 end

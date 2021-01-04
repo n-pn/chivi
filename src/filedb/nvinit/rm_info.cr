@@ -163,6 +163,41 @@ class CV::RmInfo
     TimeUtils::DEF_TIME
   end
 
+  getter last_chap : Array(String) do
+    case @seed
+    when "hetushu" then extract_latest_by_css("#dir :last-child a:last-of-type")
+    when "69shu"   then extract_latest_by_css(".mulu_list:first-of-type a:first-child")
+    when "zhwenpg" then extract_latest_by_css(".fontwt0 + a")
+    else                extract_latest_by_meta
+    end
+  end
+
+  private def extract_latest_by_css(sel : String)
+    node = find_node(sel).not_nil!
+    href = node.attributes["href"]
+    title, label = TextUtils.format_title(node.inner_text)
+
+    [extract_scid(href), title, label]
+  end
+
+  private def extract_latest_by_meta
+    href = meta_data("og:novel:latest_chapter_url").not_nil!
+    text = meta_data("og:novel:latest_chapter_name").not_nil!
+
+    if @seed == "duokan8"
+      text = text.sub(/^.*正文\s*/, "").sub(/^.*章节目录\s*/, "")
+    elsif @seed == "xbiquge"
+      text = text.sub(/^.+?\s/, "")
+    end
+
+    scid = @seed != "biquge5200" ? extract_scid(href) : File.basename(href, ".htm")
+
+    title, label = TextUtils.format_title(text)
+    [scid, title, label]
+  end
+
+  alias Chlist = Array(Array(String))
+
   getter chap_list : Chlist do
     case @seed
     when "69shu"   then extract_69shu_chlist
@@ -178,22 +213,22 @@ class CV::RmInfo
     chlist = Chlist.new
     return chlist unless node = find_node(sel)
 
-    label = "正文"
+    label = ""
 
     node.children.each do |node|
       case node.tag_sym
       when :dt
         label = node.inner_text.gsub(/《.*》/, "").strip
+        label = "" if label == "正文"
       when :dd
         next if label.includes?("最新章节")
       end
 
       next unless link = node.css("a").first?
-      next unless href = link.attributes["href"]?
+      href, text = link.attributes["href"], link.inner_text
 
-      scid = extract_scid(href)
-      title, label = TextUtils.format_title(link.inner_text, label)
-      chlist << Chinfo.new(scid, title, label)
+      title, label = TextUtils.format_title(text, label)
+      chlist << [extract_scid(href), title, label]
     end
 
     chlist
@@ -204,20 +239,20 @@ class CV::RmInfo
     return chlist unless nodes = @rdoc.css(".mu_contain").to_a
 
     nodes.shift if nodes.size > 0
-    label = "正文"
+    label = ""
 
     nodes.each do |mulu|
       mulu.children.each do |node|
         case node.tag_sym
         when :h2
           label = node.inner_text.strip
+          label = "" if label == "正文"
         when :ul
           node.css("a").each do |link|
             title = link.inner_text
             next if title.starts_with?("我要报错！")
-
-            scid = extract_scid(link.attributes["href"])
-            chlist << Chinfo.new(scid, title, label)
+            href = link.attributes["href"]
+            chlist << [extract_scid(href), title, label]
           end
         end
       end
@@ -227,22 +262,19 @@ class CV::RmInfo
   end
 
   def extract_zhwenpg_chlist
-    chlist = Chlist.new
+    output = Chlist.new
 
     @rdoc.css(".clistitem > a").each do |link|
-      scid = extract_scid(link.attributes["href"])
+      href = link.attributes["href"]
       title, label = TextUtils.format_title(link.inner_text)
-      chlist << Chinfo.new(scid, title, label)
+      output << [extract_scid(href), title, label]
     end
 
     # check if the list is in correct orlder
-    if node = find_node(".fontwt0 + a")
-      latest_link = node.attributes["href"]
-      latest_scid = extract_scid(latest_link)
-      chlist.reverse! if latest_scid == chlist.first.scid
-    end
+    latest_scid, _ = last_chap
+    output.reverse! if latest_scid == output.first.first
 
-    chlist
+    output
   end
 
   private def extract_duokan8_chlist
@@ -251,7 +283,7 @@ class CV::RmInfo
     @rdoc.css(".chapter-list a").each do |link|
       next unless href = link.attributes["href"]?
       title, label = TextUtils.format_title(link.inner_text)
-      chlist << Chinfo.new(extract_scid(href), title, label)
+      chlist << [extract_scid(href), title, label]
     end
 
     chlist
@@ -280,13 +312,4 @@ class CV::RmInfo
   private def find_node(sel : String)
     @rdoc.css(sel).first?
   end
-
-  record Chinfo, scid : String, title : String, label : String do
-    def inspect(io : IO)
-      io << "<" << scid << "> " << title
-      io << "  " << label unless label.empty?
-    end
-  end
-
-  alias Chlist = Array(Chinfo)
 end
