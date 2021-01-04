@@ -12,8 +12,8 @@ class CV::Nvseed
 
   getter _index : ValueMap { ValueMap.new("#{@rdir}/_index.tsv") }
 
-  getter access_tz : ValueMap { ValueMap.new("#{@rdir}/access_tz.tsv") }
-  getter update_tz : ValueMap { ValueMap.new("#{@rdir}/update_tz.tsv") }
+  getter access_tz : ValueMap { ValueMap.new("#{@rdir}/tz_access.tsv") }
+  getter update_tz : ValueMap { ValueMap.new("#{@rdir}/tz_update.tsv") }
 
   getter last_chap : ValueMap { ValueMap.new("#{@rdir}/last_chap.tsv") }
 
