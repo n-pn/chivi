@@ -229,6 +229,8 @@ class CV::RmInfo
 
       title, label = TextUtils.format_title(text, label)
       chlist << [extract_scid(href), title, label]
+    rescue err
+      puts err.colorize.red
     end
 
     chlist

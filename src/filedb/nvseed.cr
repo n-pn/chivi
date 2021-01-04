@@ -6,7 +6,7 @@ class CV::Nvseed
   getter rdir : String
 
   def initialize(@name)
-    @rdir = "_db/nvdata/nvseeds/#{@name}"
+    @rdir = "_db/nvdata/chseeds/#{@name}"
     ::FileUtils.mkdir_p(@rdir) unless File.exists?(@rdir)
   end
 
