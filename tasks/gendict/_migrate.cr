@@ -21,7 +21,7 @@ def parse_term(cols : Array(String), dlock = 1)
   uname = cols[3]? || "<init>"
   uname = "<init>" if uname == "Guest"
 
-  Chivi::VpTerm.new(key, vals, plock: dlock).tap do |x|
+  CV::VpTerm.new(key, vals, plock: dlock).tap do |x|
     x.mtime = mtime
     x.uname = uname
   end
@@ -46,19 +46,18 @@ def migrate(file : String, unique = false)
     return if label == "_tonghop"
     dlock = 1
   else
-    return if label == "hanviet" # skipping hanviet
     label = "regular" if label == "generic"
     dlock = dlock_df(label)
   end
 
   values = load_relic(file, dlock)
 
-  out_file = Chivi::Library.file_path(label).sub("active", "remote")
-  out_dict = Chivi::VpDict.new(out_file, dlock: dlock, preload: false)
+  out_file = CV::Library.file_path(label).sub("active", "remote")
+  out_dict = CV::VpDict.new(out_file, dlock: dlock, preload: false)
 
   values.each do |term|
     out_dict.upsert(term)
-    Chivi::Library.suggest.upsert(term) if unique && !term.empty?
+    CV::Library.suggest.upsert(term) if unique && !term.empty?
   end
 
   out_dict.save!
@@ -66,6 +65,6 @@ end
 
 Dir.glob("_db/cvdict/legacy/core/*.log").each { |x| migrate(x) }
 Dir.glob("_db/cvdict/legacy/uniq/*.log").each { |x| migrate(x, unique: true) }
-Chivi::Library.suggest.save!(mode: :best)
+CV::Library.suggest.save!(mode: :best)
 
 # pp parse_term("保安州ǁBảo An châuǁ319179ǁFenix12ǁ1".split('ǁ'))

@@ -43,9 +43,9 @@ module CV::Library
   def file_path(dname : String, ext : String = "tsv")
     case dname
     when "trungviet", "cc_cedict", "trich_dan"
-      "#{DIR}/#{dname}.#{ext}"
+      "#{DIR}/lookup/#{dname}.#{ext}"
     when "tradsim", "binh_am", "hanviet"
-      "#{DIR}/common/#{dname}.#{ext}"
+      "#{DIR}/system/#{dname}.#{ext}"
     when "regular", "suggest", "various"
       "#{DIR}/common/#{dname}.#{ext}"
     else

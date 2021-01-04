@@ -4,8 +4,8 @@ require "../../src/engine/library"
 class Hanviet
   HANZIDB = QtDict.load("_system/hanzidb.txt")
 
-  TRADSIM = Chivi::Library.tradsim
-  BINH_AM = Chivi::Library.binh_am
+  TRADSIM = CV::Library.tradsim
+  BINH_AM = CV::Library.binh_am
 
   getter input : QtDict = QtDict.load("_autogen/hanviet.txt", false)
 
@@ -31,7 +31,7 @@ class Hanviet
   end
 
   def save!
-    output = Chivi::Library.load_dict("hanviet", dlock: 3, preload: false)
+    output = CV::Library.load_dict("hanviet", dlock: 3, preload: false)
 
     input = @input.to_a.sort_by(&.[0].size)
     input.each do |(key, vals)|
@@ -47,7 +47,7 @@ class Hanviet
       output.upsert(key, vals.uniq.first(3))
     end
 
-    output.load!("_db/cvdict/remote/common/hanviet.tsv")
+    output.load!("_db/cvdict/remote/system/hanviet.tsv")
     output.save!(mode: :full)
   end
 end

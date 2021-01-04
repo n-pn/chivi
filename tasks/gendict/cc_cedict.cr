@@ -118,7 +118,7 @@ class CeInput
       input[entry.simp] << "[#{entry.pinyin}] #{entry.defins}"
     end
 
-    output = Chivi::Library.load_dict("cc_cedict", dlock: 4, preload: false)
+    output = CV::Library.load_dict("cc_cedict", dlock: 4, preload: false)
 
     input.each do |key, vals|
       QtUtil.lexicon.add(key)
@@ -158,7 +158,7 @@ class CeInput
       end
     end
 
-    output = Chivi::Library.load_dict("tradsim", dlock: 3, preload: false)
+    output = CV::Library.load_dict("tradsim", dlock: 3, preload: false)
 
     counter.each do |trad, counts|
       next if HANZIDB.has_key?(trad) || counts.has_key?(trad)
@@ -208,7 +208,7 @@ class CeInput
       end
     end
 
-    output = Chivi::Library.load_dict("binh_am", dlock: 3, preload: false)
+    output = CV::Library.load_dict("binh_am", dlock: 3, preload: false)
 
     HANZIDB.each do |key, vals|
       next if vals.empty? || vals.first.empty?

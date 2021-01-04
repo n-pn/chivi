@@ -28,10 +28,10 @@ end
 
 puts "\n[Export regular]".colorize.cyan.bold
 
-OUT_REGULAR = Chivi::Library.load_dict("regular", dtype: 2, dlock: 2, preload: false)
+OUT_REGULAR = CV::Library.load_dict("regular", dtype: 2, dlock: 2, preload: false)
 
-HANVIET = Chivi::Convert.hanviet
-REGULAR = Chivi::Convert.new(OUT_REGULAR)
+HANVIET = CV::Convert.hanviet
+REGULAR = CV::Convert.new(OUT_REGULAR)
 
 inp_regular = QtDict.load(".result/regular.txt", true)
 inp_regular.to_a.sort_by(&.[0].size).each do |key, vals|
@@ -52,7 +52,7 @@ end
 
 puts "\n- load hanviet".colorize.cyan.bold
 
-Chivi::Library.hanviet.each do |term|
+CV::Library.hanviet.each do |term|
   next if term.key.size > 1
   next if OUT_REGULAR.find(term.key)
   OUT_REGULAR.upsert(term)
@@ -63,7 +63,7 @@ OUT_REGULAR.save!
 
 puts "\n[Export suggest]".colorize.cyan.bold
 
-OUT_SUGGEST = Chivi::Library.load_dict("suggest", dtype: 2, dlock: 2, preload: false)
+OUT_SUGGEST = CV::Library.load_dict("suggest", dtype: 2, dlock: 2, preload: false)
 
 inp_suggest = QtDict.load(".result/suggest.txt", true)
 inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
@@ -90,7 +90,7 @@ OUT_SUGGEST.save!
 
 puts "\n[Export various]".colorize.cyan.bold
 
-OUT_VARIOUS = Chivi::Library.load_dict("various", dtype: 2, dlock: 2, preload: false)
+OUT_VARIOUS = CV::Library.load_dict("various", dtype: 2, dlock: 2, preload: false)
 
 inp_various = QtDict.load(".result/various.txt", true)
 inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
@@ -111,7 +111,7 @@ OUT_VARIOUS.save!
 # puts "\n[Export recycle]".colorize.cyan.bold
 
 # inp_recycle = QtDict.load(".result/recycle.txt", true)
-# out_recycle = Chivi::Library.load("salvation", 0)
+# out_recycle = CV::Library.load("salvation", 0)
 
 # inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
 #   unless should_keep?(key)

@@ -81,7 +81,7 @@ module QtUtil
       .join(" ")
   end
 
-  def convert(dict : Chivi::VpDict, text : String, join = "")
+  def convert(dict : CV::VpDict, text : String, join = "")
     output = [] of String
 
     chars = text.chars
@@ -89,7 +89,7 @@ module QtUtil
 
     while caret < chars.size
       char = chars[caret]
-      keep = Chivi::VpTerm.new(char.to_s, [char.to_s])
+      keep = CV::VpTerm.new(char.to_s, [char.to_s])
 
       dict.scan(chars, caret) do |term|
         next if term.vals.empty? || term.vals.first.empty?
