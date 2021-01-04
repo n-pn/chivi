@@ -33,29 +33,29 @@ module CV::Nvinfo
       zh_author = Utils.fix_zh_author(zh_author)
     end
 
-    zh_slug = CoreUtils.digest32("#{zh_btitle}--#{zh_author}")
-    existed = _index.has_key?(zh_slug)
+    bhash = CoreUtils.digest32("#{zh_btitle}--#{zh_author}")
+    existed = _index.has_key?(bhash)
 
     unless existed
-      set_author(zh_slug, zh_author)
-      set_btitle(zh_slug, zh_btitle)
+      set_author(bhash, zh_author)
+      set_btitle(bhash, zh_btitle)
 
-      hv_slug = Tokens.btitle_hv.get(zh_slug).not_nil!.join("-")
-      hv_slug += "-#{zh_slug}" if _index.has_val?(hv_slug)
+      bslug = Tokens.btitle_hv.get(bhash).not_nil!.join("-")
+      bslug += "-#{bhash}" if _index.has_val?(bslug)
 
-      slugs = [hv_slug]
-      if vi_tokens = Tokens.btitle_vi.get(zh_slug)
-        vi_slug = vi_tokens.join("-")
-        slugs << vi_slug unless _index.has_val?(vi_slug)
+      slugs = [bslug]
+      if vi_tokens = Tokens.btitle_vi.get(bhash)
+        vslug = vi_tokens.join("-")
+        slugs << vslug unless _index.has_val?(vslug)
       end
 
-      _index.add(zh_slug, slugs)
+      _index.add(bhash, slugs)
     end
 
-    {zh_slug, existed}
+    {bhash, existed}
   end
 
-  def set_btitle(zh_slug : String,
+  def set_btitle(bhash : String,
                  zh_btitle : String,
                  hv_btitle : String? = nil,
                  vi_btitle : String? = nil) : Nil
@@ -66,33 +66,33 @@ module CV::Nvinfo
     vals = [zh_btitle, hv_btitle]
     vals << vi_btitle if vi_btitle
 
-    if btitle.add(zh_slug, vals)
-      Tokens.set_btitle_zh(zh_slug, zh_btitle)
-      Tokens.set_btitle_hv(zh_slug, hv_btitle)
-      Tokens.set_btitle_vi(zh_slug, vi_btitle) if vi_btitle
+    if btitle.add(bhash, vals)
+      Tokens.set_btitle_zh(bhash, zh_btitle)
+      Tokens.set_btitle_hv(bhash, hv_btitle)
+      Tokens.set_btitle_vi(bhash, vi_btitle) if vi_btitle
     end
   end
 
-  def set_author(zh_slug : String,
+  def set_author(bhash : String,
                  zh_author : String,
                  vi_author : String? = nil) : Nil
     vi_author ||= Utils.fix_vi_author(zh_author)
 
-    if author.add(zh_slug, [zh_author, vi_author])
-      Tokens.set_author_zh(zh_slug, zh_author)
-      Tokens.set_author_vi(zh_slug, vi_author)
+    if author.add(bhash, [zh_author, vi_author])
+      Tokens.set_author_zh(bhash, zh_author)
+      Tokens.set_author_vi(bhash, vi_author)
     end
   end
 
-  def set_bgenre(zh_slug : String, genres : Array(String), force : Bool = false) : Nil
-    return unless force || !bgenre.has_key?(zh_slug)
-    if bgenre.add(zh_slug, genres)
-      Tokens.set_bgenre(zh_slug, genres)
+  def set_bgenre(bhash : String, genres : Array(String), force : Bool = false) : Nil
+    return unless force || !bgenre.has_key?(bhash)
+    if bgenre.add(bhash, genres)
+      Tokens.set_bgenre(bhash, genres)
     end
   end
 
-  def set_chseed(zh_slug : String, seed : String, sbid : String) : Nil
-    seeds = chseed.get(zh_slug) || [] of String
+  def set_chseed(bhash : String, seed : String, sbid : String) : Nil
+    seeds = chseed.get(bhash) || [] of String
     seeds = seeds.each_with_object({} of String => String) do |x, h|
       a, b = x.split("/")
       h[a] = b
@@ -101,51 +101,51 @@ module CV::Nvinfo
     return if seeds[seed]? == sbid
     seeds[seed] = sbid
 
-    chseed.add(zh_slug, seeds.to_a.map { |a, b| "#{a}/#{b}" })
-    Tokens.set_chseed(zh_slug, seeds.keys)
+    chseed.add(bhash, seeds.to_a.map { |a, b| "#{a}/#{b}" })
+    Tokens.set_chseed(bhash, seeds.keys)
   end
 
-  def set_bintro(zh_slug : String, lines : Array(String), force : Bool = false) : Nil
-    zh_file = Utils.intro_file(zh_slug, "zh")
+  def set_bintro(bhash : String, lines : Array(String), force : Bool = false) : Nil
+    zh_file = Utils.intro_file(bhash, "zh")
     return unless force || !File.exists?(zh_file)
 
     File.write(zh_file, lines.join("\n"))
 
-    vi_file = Utils.intro_file(zh_slug, "vi")
-    cv_tool = Convert.content(zh_slug)
+    vi_file = Utils.intro_file(bhash, "vi")
+    cv_tool = Convert.content(bhash)
 
     vi_intro = lines.map { |line| cv_tool.tl_plain(line) }
     File.write(vi_file, vi_intro.join("\n"))
   end
 
-  def get_bintro(zh_slug : String) : Array(String)
-    bintro[zh_slug] ||= begin
-      vi_file = Utils.intro_file(zh_slug, "vi")
+  def get_bintro(bhash : String) : Array(String)
+    bintro[bhash] ||= begin
+      vi_file = Utils.intro_file(bhash, "vi")
       File.read_lines(vi_file) || [] of String
     end
   end
 
   {% for field in {:shield, :status} %}
-    def set_{{field.id}}(zh_slug, value : Int32, force : Bool = false)
-      return unless force || ({{field.id}}.ival(zh_slug) < value)
-      {{field.id}}.add(zh_slug, value)
+    def set_{{field.id}}(bhash, value : Int32, force : Bool = false)
+      return unless force || ({{field.id}}.ival(bhash) < value)
+      {{field.id}}.add(bhash, value)
     end
   {% end %}
 
-  def set_score(zh_slug : String, z_voters : Int32, z_rating : Int32)
-    return unless voters.add(zh_slug, z_voters) || rating.add(zh_slug, z_rating)
+  def set_score(bhash : String, z_voters : Int32, z_rating : Int32)
+    return unless voters.add(bhash, z_voters) || rating.add(bhash, z_rating)
     score = Math.log(z_voters + 10).*(z_rating).round.to_i
-    weight.add(zh_slug, score)
+    weight.add(bhash, score)
   end
 
   {% for field in {:access_tz, :update_tz} %}
-    def set_{{field.id}}(zh_slug, value : Int64, force : Bool = false)
-      return unless force || ({{field.id}}.ival_64(zh_slug) < value)
-      {{field.id}}.add(zh_slug, value)
+    def set_{{field.id}}(bhash, value : Int64, force : Bool = false)
+      return unless force || ({{field.id}}.ival_64(bhash) < value)
+      {{field.id}}.add(bhash, value)
     end
 
-    def set_{{field.id}}(zh_slug, value : Time, force : Bool = false)
-      set_{{field.id}}(zh_slug, value.to_unix, force: force)
+    def set_{{field.id}}(bhash, value : Time, force : Bool = false)
+      set_{{field.id}}(bhash, value.to_unix, force: force)
     end
   {% end %}
 

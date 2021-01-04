@@ -12,7 +12,7 @@ module CV::Chinfo
 
   getter index : OrderMap { OrderMap.new(map_path("index"), mode: 1) }
   getter trans : ValueMap { ValueMap.new(map_path("trans"), mode: 1) }
-  getter _meta : ValueMap { ValueMap.new(map_path("_meta"), mode: 1) }
+  getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
 
   def initialize(@seed, @sbid)
     @dir = File.join(DIR, @seed, @sbid)

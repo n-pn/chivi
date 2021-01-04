@@ -10,6 +10,7 @@ class CV::Seeds::MapRemote
   end
 
   def init!(upto = 1, mode = 1)
+    puts "[ seed: #{@seed}, upto: #{upto}, mode: #{mode} ]".colorize.cyan.bold
     mode = 0 if @seed == "jx_la"
 
     1.upto(upto) do |idx|
@@ -21,13 +22,11 @@ class CV::Seeds::MapRemote
       end
 
       expiry = Time.utc
-
       if mode < 2 || @seeding._index.has_key?(sbid)
         next if @seeding.access_tz.ival_64(sbid) >= access_tz
-      elsif mode > 0
         expiry -= 1.years
-      else
-        expiry -= 10.years
+      elsif mode < 2
+        expiry -= 1.years
       end
 
       @seeding.access_tz.add(sbid, access_tz)

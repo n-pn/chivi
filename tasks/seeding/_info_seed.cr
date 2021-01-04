@@ -62,22 +62,22 @@ class CV::InfoSeed
 
   def upsert!(sbid : String, force : Bool = false) : Tuple(String, Bool)
     btitle, author = _index.get(sbid).not_nil!
-    zh_slug, existed = Nvinfo.upsert!(btitle, author)
+    bhash, existed = Nvinfo.upsert!(btitle, author)
 
     bintro = get_intro(sbid)
-    Nvinfo.set_bintro(zh_slug, bintro, force: force) unless bintro.empty?
+    Nvinfo.set_bintro(bhash, bintro, force: force) unless bintro.empty?
 
     genres = get_genres(sbid)
-    Nvinfo.set_bgenre(zh_slug, genres, force: force) unless genres.empty?
+    Nvinfo.set_bgenre(bhash, genres, force: force) unless genres.empty?
 
     mftime = update_tz.ival_64(sbid)
-    Nvinfo.set_update_tz(zh_slug, mftime)
-    Nvinfo.set_access_tz(zh_slug, mftime)
+    Nvinfo.set_update_tz(bhash, mftime)
+    Nvinfo.set_access_tz(bhash, mftime)
 
-    Nvinfo.set_status(zh_slug, status.ival(sbid, 0))
-    Nvinfo.set_chseed(zh_slug, @name, sbid) unless @name == "yousuu"
+    Nvinfo.set_status(bhash, status.ival(sbid, 0))
+    Nvinfo.set_chseed(bhash, @name, sbid) unless @name == "yousuu"
 
-    {zh_slug, existed}
+    {bhash, existed}
   end
 
   def get_genres(sbid : String)

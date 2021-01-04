@@ -8,12 +8,12 @@ class CV::Models::Bgenre
 
   column zh_name : String
   column vi_name : String
-  column vi_slug : String
+  column vslug : String
 
   timestamps
 
   def self.find_by_slug(name : String)
-    find({vi_slug: SeedUtils.slugify(name)})
+    find({vslug: SeedUtils.slugify(name)})
   end
 
   def self.upsert_all!(zh_name : String)
@@ -29,7 +29,7 @@ class CV::Models::Bgenre
 
     if vi_name && vi_name != model.vi_name_column.value(nil)
       model.vi_name = vi_name
-      model.vi_slug = SeedUtils.slugify(vi_name)
+      model.vslug = SeedUtils.slugify(vi_name)
     end
 
     model.save! if model.vi_name_column.changed?

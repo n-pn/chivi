@@ -15,9 +15,9 @@ class CV::Models::Nvinfo
   belongs_to author : Author, foreign_key_type: Int32
   belongs_to btitle : Btitle, foreign_key_type: Int32
 
-  column zh_slug : String
-  column hv_slug : String
-  column vi_slug : String?
+  column bhash : String
+  column bslug : String
+  column vslug : String?
 
   column bgenre_ids : Array(Int32), presence: false
   column vi_bgenres : Array(String), presence: false
@@ -87,35 +87,35 @@ class CV::Models::Nvinfo
     self.access_tz = value if force || value > access_tz_column.value(0)
   end
 
-  def fix_hv_slug!(slug : String? = nil) : Nil
-    slug = short_slug(self.hv_slug) unless slug
+  def fix_bslug!(slug : String? = nil) : Nil
+    slug = short_slug(self.bslug) unless slug
 
-    if slug != self.hv_slug
+    if slug != self.bslug
       begin
-        self.hv_slug = slug
+        self.bslug = slug
         save!
       rescue
-        self.hv_slug_column.revert
+        self.bslug_column.revert
       end
     end
   end
 
-  def fix_vi_slug!(slug : String? = nil) : Nil
-    return unless slug || vi_slug_column.value(nil)
-    slug = short_slug(self.vi_slug.not_nil!) unless slug
+  def fix_vslug!(slug : String? = nil) : Nil
+    return unless slug || vslug_column.value(nil)
+    slug = short_slug(self.vslug.not_nil!) unless slug
 
-    unless slug.empty? || slug == self.vi_slug
+    unless slug.empty? || slug == self.vslug
       begin
-        self.vi_slug = slug
+        self.vslug = slug
         save!
       rescue
-        self.vi_slug_column.revert
+        self.vslug_column.revert
       end
     end
   end
 
   def short_slug(slug : String)
-    slug.sub(/-#{self.zh_slug}$/, "")
+    slug.sub(/-#{self.bhash}$/, "")
   end
 
   def set_intro(zh_intro : Array(String), intro_by : String)
@@ -124,7 +124,7 @@ class CV::Models::Nvinfo
     self.intro_by = intro_by
     self.zh_intro = zh_intro.join("\n")
 
-    engine = Convert.content(zh_slug) # TODO: change to hv_slug
+    engine = Convert.content(bhash) # TODO: change to bslug
     self.vi_intro = zh_intro.map { |x| engine.tl_plain(x) }.join("\n")
   end
 
@@ -140,20 +140,20 @@ class CV::Models::Nvinfo
       model = new({btitle: btitle, author: author})
 
       # TODO: replace `--` with `  `
-      zh_slug = CoreUtils.digest32("#{btitle}--#{author}")
-      hv_slug = btitle.hv_name_tsv.join("-")
-      vi_slug = btitle.vi_name_tsv.join("-")
+      bhash = CoreUtils.digest32("#{btitle}--#{author}")
+      bslug = btitle.hv_name_tsv.join("-")
+      vslug = btitle.vi_name_tsv.join("-")
 
-      model.zh_slug = zh_slug
-      model.hv_slug = "#{hv_slug}-#{zh_slug}"
-      model.vi_slug = "#{vi_slug}-#{zh_slug}" unless vi_slug.empty?
+      model.bhash = bhash
+      model.bslug = "#{bslug}-#{bhash}"
+      model.vslug = "#{vslug}-#{bhash}" unless vslug.empty?
 
       model.save!
     end
 
     model.tap do |x|
-      x.fix_hv_slug!
-      x.fix_vi_slug!
+      x.fix_bslug!
+      x.fix_vslug!
     end
   end
 end

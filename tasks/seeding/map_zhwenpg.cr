@@ -100,18 +100,18 @@ class CV::Seeds::MapZhwenpg
 
   def seed!
     @checked.each_with_index do |sbid, idx|
-      zh_slug, existed = @seeding.upsert!(sbid)
+      bhash, existed = @seeding.upsert!(sbid)
 
       unless existed
         btitle, author = @seeding._index.get(sbid).not_nil!
         voters, rating = fake_rating(btitle, author)
-        Nvinfo.set_score(zh_slug, voters, rating)
+        Nvinfo.set_score(bhash, voters, rating)
       end
 
-      hv_slug = Nvinfo._index.fval(zh_slug)
+      bslug = Nvinfo._index.fval(bhash)
       colored = existed ? :yellow : :green
 
-      puts "- <#{idx + 1}/#{@checked.size}> [#{hv_slug}] saved!".colorize(colored)
+      puts "- <#{idx + 1}/#{@checked.size}> [#{bslug}] saved!".colorize(colored)
       Nvinfo.save!(mode: :upds) if idx % 10 == 9
     end
 

@@ -8,9 +8,9 @@ class Chivi::Migration::CreateNvinfosTable
       t.column :author_id, :integer, null: false
       t.column :btitle_id, :integer, null: false
 
-      t.column :zh_slug, :string, unique: true, null: false
-      t.column :hv_slug, :string, unique: true, null: false
-      t.column :vi_slug, :string, unique: true
+      t.column :bhash, :string, unique: true, null: false
+      t.column :bslug, :string, unique: true, null: false
+      t.column :vslug, :string, unique: true
 
       t.column :vi_bgenres, :string, array: true, null: false, default: "'{}'"
       t.column :bgenre_ids, :integer, array: true, null: false, default: "'{}'"

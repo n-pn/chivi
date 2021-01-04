@@ -85,14 +85,14 @@ class CV::Seeds::MapYousuu
       if (voters > 10 && rating >= 3.75) || authors.includes?(author) || popular?(sbid)
         authors.add(author)
 
-        zh_slug, existed = @seeding.upsert!(sbid)
-        Nvinfo.set_score(zh_slug, voters, rating)
+        bhash, existed = @seeding.upsert!(sbid)
+        Nvinfo.set_score(bhash, voters, rating)
 
         origin = source_url.fval(sbid)
-        Nvinfo.origin.add(zh_slug, origin) if origin && !origin.empty?
+        Nvinfo.origin.add(bhash, origin) if origin && !origin.empty?
 
-        Nvinfo.yousuu.add(zh_slug, sbid)
-        Nvinfo.shield.add(zh_slug, @seeding.shield.fval(sbid) || "0")
+        Nvinfo.yousuu.add(bhash, sbid)
+        Nvinfo.shield.add(bhash, @seeding.shield.fval(sbid) || "0")
       end
 
       if idx % 100 == 99
