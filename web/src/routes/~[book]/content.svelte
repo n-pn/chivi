@@ -1,7 +1,7 @@
 <script context="module">
   export async function preload({ params, query }) {
     const bslug = params.book
-    const desc = query.order == 'desc'
+    const order = query.order || 'asc'
 
     const res = await this.fetch(`/api/books/${bslug}`)
     const data = await res.json()
@@ -15,12 +15,12 @@
     const seed = query.seed || main_seeds[0] || ''
     const page = +(query.page || 1)
 
-    const opts = { seed, page, desc, mode: 0 }
+    const opts = { seed, page, order, mode: 0 }
     try {
       const { chaps, total } = await fetch_data(this.fetch, ubid, opts)
-      return { book, mark, chaps, total, seed, page, desc }
+      return { book, mark, chaps, total, seed, page, order }
     } catch (e) {
-      return { book, mark, chaps: [], total: 0, seed, page, desc }
+      return { book, mark, chaps: [], total: 0, seed, page, order }
     }
   }
 
@@ -32,8 +32,8 @@
     if (offset < 0) offset = 0
 
     let url = `/api/chaps/${ubid}/${opts.seed}?limit=${limit}&offset=${offset}`
-    if (opts.desc) url += `&order=desc`
-    if (opts.mode && opts.mode > 0) url += `&mode=${opts.mode}`
+    if (opts.order) url += `&order=${opts.order}`
+    if (opts.mode) url += `&mode=${opts.mode}`
 
     try {
       const res = await api(url)
@@ -101,14 +101,14 @@
 
   export let seed
   export let page = 1
-  export let desc = false
+  export let order = 'asc'
 
   export let chaps = []
   export let total = 0
 
   $: has_seeds = book.seed_names.length > 0
-
   $: pmax = fix_pmax(total)
+  $: reverse_order = order == 'desc' ? 'asc' : 'desc'
 
   function fix_pmax(total) {
     const pmax = Math.floor((total - 1) / limit) + 1
@@ -134,25 +134,30 @@
       if (new_page < 1) new_page = 1
       if (new_page > pmax) new_page = pmax
 
-      page = new_page
-      url.searchParams.set('page', page)
+      if (page != new_page) {
+        page = new_page
+        url.searchParams.set('page', page)
+      }
     } else {
       opts.page = page
     }
 
     if (opts.seed) {
-      seed = opts.seed
-      url.searchParams.set('seed', seed)
+      if (seed != opts.seed) {
+        seed = opts.seed
+        url.searchParams.set('seed', seed)
+      }
     } else {
       opts.seed = seed
     }
 
-    if (opts.desc) {
-      desc = true
-      url.searchParams.set('order', 'desc')
+    if (opts.order) {
+      if (order != opts.order) {
+        order = opts.order
+        url.searchParams.set('order', opts.order)
+      }
     } else {
-      desc = false
-      url.searchParams.set('order', 'asc')
+      opts.order = order
     }
 
     if (opts.mode) {
@@ -192,13 +197,11 @@
       case 37:
       case 74:
         if (!evt.altKey) reload(evt, { page: page - 1 }, true)
-
         break
 
       case 39:
       case 75:
         if (!evt.altKey) reload(evt, { page: page + 1 }, true)
-
         break
 
       default:
@@ -209,7 +212,7 @@
   function page_url(seed, page) {
     let url = `/~${book.slug}/content?seed=${seed}`
     if (page > 1) url += `&page=${page}`
-    if (desc) url += '&order=desc'
+    if (order == 'desc') url += '&order=desc'
     return url
   }
 </script>
@@ -218,8 +221,6 @@
 
 <Shared {book} {mark} atab="content">
   {#if has_seeds}
-    <!-- <AdBanner /> -->
-
     <div class="chseed" bind:this={scroll_top}>
       <span class="-text"><span class="-hide">Chọn</span> nguồn:</span>
       {#each main_seeds as name}
@@ -263,13 +264,15 @@
       <div class="-right">
         <button
           class="m-button"
-          on:click={(e) => reload(e, { page: 1, desc: true, mode: 2 })}>
+          on:click={(e) => reload(e, { page: 1, order: 'desc', mode: 2 })}>
           <SvgIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
           <span class="-hide">Đổi mới</span>
         </button>
 
-        <button class="m-button" on:click={(e) => reload(e, { desc: !desc })}>
-          <SvgIcon name={desc ? 'arrow-down' : 'arrow-up'} />
+        <button
+          class="m-button"
+          on:click={(e) => reload(e, { order: reverse_order })}>
+          <SvgIcon name={order == 'desc' ? 'arrow-down' : 'arrow-up'} />
           <span class="-hide">Sắp xếp</span>
         </button>
       </div>
