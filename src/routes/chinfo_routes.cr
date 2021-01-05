@@ -27,20 +27,20 @@ module Chivi::Server
     offset = 0 if offset < 0
 
     if offset >= chaps.size
-      chlist = [] of String
-    else
-      chlist = chaps[offset, limit].map do |chap|
-        {
-          scid:  chap.scid,
-          label: chap.vi_label,
-          title: chap.vi_title,
-          uslug: chap.url_slug,
-        }
-      end
+      offset = (chaps.size // limit) * limit
+    end
+
+    chlist = chaps[offset, limit].map do |chap|
+      {
+        scid:  chap.scid,
+        label: chap.vi_label,
+        title: chap.vi_title,
+        uslug: chap.url_slug,
+      }
     end
 
     Utils.json(env, cached: mftime) do |res|
-      {total: chdata.chaps.size, chaps: chlist}.to_json(res)
+      {total: chdata.chaps.size, chaps: chlist, mftime: mftime}.to_json(res)
     end
   end
 end

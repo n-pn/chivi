@@ -77,6 +77,12 @@
         return book.seed_mftimes[seed] || 0
     }
   }
+
+  function update_mftime(book, seed, mftime) {
+    book.seed_mftimes[seed] = mftime
+    if (book.mftime < mftime) book.mftime = mftime
+    return book
+  }
 </script>
 
 <script>
@@ -102,7 +108,14 @@
 
   $: has_seeds = book.seed_names.length > 0
 
-  $: pmax = Math.floor((total - 1) / limit) + 1
+  $: pmax = fix_pmax(total)
+
+  function fix_pmax(total) {
+    const pmax = Math.floor((total - 1) / limit) + 1
+    if (page > pmax) page = pmax
+    return pmax
+  }
+
   $: page_list = paginate_range(page, pmax, 7)
 
   $: [main_seeds, extra_seeds] = split_seeds(book, seed)
@@ -153,6 +166,8 @@
     const res = await fetch_data(fetch, book.ubid, opts)
     chaps = res.chaps
     total = res.total
+
+    book = update_mftime(book, seed, res.mftime)
 
     if (scroll) {
       scroll_top.scrollIntoView({ block: 'start' })
@@ -211,14 +226,19 @@
         <a
           class="-seed"
           class:_active={seed === name}
-          href={page_url(name, 1)}>{name}
+          href={page_url(name, page)}
+          on:click={(e) => reload(e, { seed: name })}>{name}
         </a>
       {/each}
 
       {#if extra_seeds.length > 0}
         {#if show_extra}
           {#each extra_seeds as name}
-            <a class="-seed" href={page_url(name, 1)}>{name} </a>
+            <a
+              class="-seed"
+              href={page_url(name, page)}
+              on:click={(e) => reload(e, { seed: name })}>{name}
+            </a>
           {/each}
         {:else}
           <button class="-seed" on:click={() => (show_extra = true)}>
