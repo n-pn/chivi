@@ -69,8 +69,9 @@
 
   function seed_mftime(book, seed) {
     switch (seed) {
-      case 'shubaow':
+      case '69shu':
       case 'jx_la':
+      case 'shubaow':
       case 'paoshu8':
         return 0
       default:
