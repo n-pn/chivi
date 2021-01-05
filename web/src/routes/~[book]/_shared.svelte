@@ -29,6 +29,23 @@
   import RelTime from '$atoms/RelTime'
 
   import Vessel from '$parts/Vessel'
+
+  const firstTLDs = 'ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|be|bf|bg|bh|bi|bj|bm|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|cl|cm|cn|co|cr|cu|cv|cw|cx|cz|de|dj|dk|dm|do|dz|ec|ee|eg|es|et|eu|fi|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|im|in|io|iq|ir|is|it|je|jo|jp|kg|ki|km|kn|kp|kr|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|na|nc|ne|nf|ng|nl|no|nr|nu|nz|om|pa|pe|pf|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|yt'.split(
+    '|'
+  )
+  const secondTLDs = 'com|edu|gov|net|mil|org|nom|sch|caa|res|off|gob|int|tur|ip6|uri|urn|asn|act|nsw|qld|tas|vic|pro|biz|adm|adv|agr|arq|art|ato|bio|bmd|cim|cng|cnt|ecn|eco|emp|eng|esp|etc|eti|far|fnd|fot|fst|g12|ggf|imb|ind|inf|jor|jus|leg|lel|mat|med|mus|not|ntr|odo|ppg|psc|psi|qsl|rec|slg|srv|teo|tmp|trd|vet|zlg|web|ltd|sld|pol|fin|k12|lib|pri|aip|fie|eun|sci|prd|cci|pvt|mod|idv|rel|sex|gen|nic|abr|bas|cal|cam|emr|fvg|laz|lig|lom|mar|mol|pmn|pug|sar|sic|taa|tos|umb|vao|vda|ven|mie|北海道|和歌山|神奈川|鹿児島|ass|rep|tra|per|ngo|soc|grp|plc|its|air|and|bus|can|ddr|jfk|mad|nrw|nyc|ski|spy|tcm|ulm|usa|war|fhs|vgs|dep|eid|fet|fla|flå|gol|hof|hol|sel|vik|cri|iwi|ing|abo|fam|gok|gon|gop|gos|aid|atm|gsm|sos|elk|waw|est|aca|bar|cpa|jur|law|sec|plo|www|bir|cbg|jar|khv|msk|nov|nsk|ptz|rnd|spb|stv|tom|tsk|udm|vrn|cmw|kms|nkz|snz|pub|fhv|red|ens|nat|rns|rnu|bbs|tel|bel|kep|nhs|dni|fed|isa|nsn|gub|e12|tec|орг|обр|упр|alt|nis|jpn|mex|ath|iki|nid|gda|inc'.split(
+    '|'
+  )
+
+  function host_name(origin_url) {
+    const uri = new URL(origin_url)
+    const host = uri.hostname.split('.')
+
+    if (firstTLDs.includes(host[host.length - 1])) host.pop()
+    if (secondTLDs.includes(host[host.length - 1])) host.pop()
+
+    return host.pop()
+  }
 </script>
 
 <script>
@@ -102,11 +119,10 @@
   </span>
 
   <div class="main-info">
-    <h1 class="title">
-      <span class="-main">{book.vi_title}</span>
-      <span class="-sep">-</span>
-      <span class="-sub">{book.zh_title}</span>
-    </h1>
+    <div class="title">
+      <h1 class="-main">{book.vi_title}</h1>
+      <h2 class="-sub">({book.zh_title})</h2>
+    </div>
 
     <div class="cover">
       <BookCover ubid={book.ubid} path={book.main_cover} />
@@ -160,8 +176,9 @@
               class="stat link _outer"
               href={book.origin_url}
               rel="noopener noreferer"
-              target="_blank">
-              Trang gốc
+              target="_blank"
+              title="Trang nguồn">
+              {host_name(book.origin_url)}
             </a>
           {/if}
 
@@ -170,8 +187,9 @@
               class="stat link _outer"
               href="https://www.yousuu.com/book/{book.yousuu_bid}"
               rel="noopener noreferer"
-              target="_blank">
-              Ưu thư võng
+              target="_blank"
+              title="Đánh giá">
+              yousuu
             </a>
           {/if}
         </div>
@@ -216,16 +234,27 @@
   }
 
   .title {
-    font-weight: 400;
-    @include fgcolor(neutral, 9);
     margin-bottom: 0.75rem;
 
     @include props(float, left, left, right);
     @include props(width, 100%, 100%, 70%, 75%);
     @include props(padding-left, 0, 0, 0.75rem);
 
-    @include props(line-height, 1.5rem, 1.75rem, 2rem);
-    @include props(font-size, rem(20px), rem(22px), rem(22px), rem(24px));
+    > .-main,
+    > .-sub {
+      @include fgcolor(neutral, 8);
+      display: inline-block;
+      font-weight: 400;
+      @include props(line-height, 1.5rem, 1.75rem, 2rem);
+    }
+
+    > .-main {
+      @include props(font-size, rem(20px), rem(22px), rem(22px), rem(24px));
+    }
+
+    > .-sub {
+      @include props(font-size, rem(18px), rem(20px), rem(20px), rem(22px));
+    }
   }
 
   .cover {
@@ -259,6 +288,11 @@
     // font-weight: 500;
     color: inherit;
     // @include fgcolor(primary, 7);
+
+    &._outer {
+      text-transform: capitalize;
+    }
+
     &._outer,
     &:hover {
       @include fgcolor(primary, 6);
