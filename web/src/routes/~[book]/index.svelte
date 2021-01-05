@@ -17,7 +17,7 @@
   export let mark = ''
 </script>
 
-<Shared {book} {mark} atab="overview">
+<Shared {book} {mark} atab="summary">
   <div class="summary">
     <h2>Giới thiệu:</h2>
     {#each book.vi_intro.split('\n') as line}

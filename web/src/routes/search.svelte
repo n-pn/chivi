@@ -1,5 +1,4 @@
 <script context="module">
-  import { anchor_rel } from '$src/stores'
   import Vessel from '$parts/Vessel'
 
   import SvgIcon from '$atoms/SvgIcon.svelte'
@@ -60,7 +59,7 @@
 
     <div class="list" data-page={page}>
       {#each items as book}
-        <a href="/~{book.slug}" class="book" rel={$anchor_rel}>
+        <a href="/~{book.slug}" class="book">
           <div class="cover">
             <BookCover ubid={book.ubid} path={book.main_cover} />
           </div>
@@ -95,11 +94,7 @@
     </div>
 
     <div class="pagi">
-      <a
-        href={searchUrl(page - 1)}
-        class="m-button"
-        class:_disable={page == 1}
-        rel={$anchor_rel}>
+      <a href={searchUrl(page - 1)} class="m-button" class:_disable={page == 1}>
         <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
@@ -109,8 +104,7 @@
       <a
         href={searchUrl(page + 1)}
         class="m-button _solid _primary"
-        class:_disable={page == pmax}
-        rel={$anchor_rel}>
+        class:_disable={page == pmax}>
         <span>Kế tiếp</span>
         <SvgIcon name="chevron-right" />
       </a>

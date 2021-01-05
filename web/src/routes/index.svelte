@@ -1,5 +1,4 @@
 <script context="module">
-  import { anchor_rel } from '$src/stores.js'
   import paginate_range from '$utils/paginate_range'
 
   import SvgIcon from '$atoms/SvgIcon.svelte'
@@ -113,11 +112,7 @@
     <SvgIcon name="search" />
   </form>
 
-  <a
-    slot="header-right"
-    href="/translate"
-    class="header-item"
-    rel={$anchor_rel}>
+  <a slot="header-right" href="/translate" class="header-item">
     <SvgIcon name="zap" />
     <span class="header-text _show-md">Dịch nhanh</span>
   </a>
@@ -127,8 +122,7 @@
       <a
         href={makePageUrl(1, { ...query, order: type })}
         class="-type"
-        class:_active={query.order === type}
-        rel={$anchor_rel}>
+        class:_active={query.order === type}>
         <span>{label}</span>
       </a>
     {/each}
@@ -144,8 +138,7 @@
     <a
       href={makePageUrl(+page - 1, query)}
       class="page m-button"
-      class:_disable={page == 1}
-      rel={$anchor_rel}>
+      class:_disable={page == 1}>
       <SvgIcon name="chevron-left" />
       <span>Trước</span>
     </a>
@@ -156,7 +149,6 @@
         class="page m-button"
         class:_primary={page == index}
         class:_disable={page == index}
-        rel={$anchor_rel}
         data-level={level}>
         <span>{index}</span>
       </a>
@@ -165,8 +157,7 @@
     <a
       href={makePageUrl(page + 1, query)}
       class="page m-button _solid _primary"
-      class:_disable={page == page_max}
-      rel={$anchor_rel}>
+      class:_disable={page == page_max}>
       <span>Kế tiếp</span>
       <SvgIcon name="chevron-right" />
     </a>

@@ -1,6 +1,6 @@
 <script context="module">
   import BookCover from '$atoms/BookCover.svelte'
-  import { anchor_rel } from '$src/stores.js'
+
   function book_url(book, atab) {
     switch (atab) {
       case 'content':
@@ -26,12 +26,12 @@
 
 <script>
   export let books = []
-  export let atab = 'overview'
+  export let atab = 'summary'
 </script>
 
 <div class="list">
   {#each books as book}
-    <a class="book" href={book_url(book, atab)} rel={$anchor_rel}>
+    <a class="book" href={book_url(book, atab)}>
       <div class="cover">
         <BookCover ubid={book.ubid} path={book.main_cover} />
 

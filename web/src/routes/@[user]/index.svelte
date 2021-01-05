@@ -1,5 +1,4 @@
 <script context="module">
-  import { anchor_rel } from '$src/stores'
   import { mark_types, mark_names } from '$utils/constants'
 
   export async function preload({ params, query }) {
@@ -49,8 +48,7 @@
       <a
         href="/@{uname}?mark={type}"
         class="tab"
-        class:_active={type == mark}
-        rel={$anchor_rel}>{mark_names[type]}</a>
+        class:_active={type == mark}>{mark_names[type]}</a>
     {/each}
   </div>
 
@@ -63,8 +61,7 @@
       <a
         href="/@{uname}?mark={mark}&page={+page - 1}"
         class="page m-button _line"
-        class:_disable={page == 1}
-        rel={$anchor_rel}>
+        class:_disable={page == 1}>
         <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
@@ -76,8 +73,7 @@
       <a
         href="/@{uname}?mark={mark}&page={+page + 1}"
         class="page m-button _solid _primary"
-        class:_disable={page == page_max}
-        rel={$anchor_rel}>
+        class:_disable={page == page_max}>
         <span>Kế tiếp</span>
         <SvgIcon name="chevron-right" />
       </a>

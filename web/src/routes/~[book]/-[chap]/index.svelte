@@ -5,9 +5,7 @@
   import Convert, { toggle_lookup, active_upsert } from '$parts/Convert'
 
   import {
-    // self_uname,
     self_power,
-    anchor_rel,
     upsert_dicts,
     lookup_dname,
     upsert_actived,
@@ -147,11 +145,7 @@
 <svelte:body on:keydown={handle_keypress} />
 
 <Vessel shift={$lookup_enabled && $lookup_actived}>
-  <a
-    slot="header-left"
-    href={book_path}
-    class="header-item _title"
-    rel={$anchor_rel}>
+  <a slot="header-left" href={book_path} class="header-item _title">
     <SvgIcon name="book-open" />
     <span class="header-text _show-md _title">{bname}</span>
   </a>
@@ -180,7 +174,7 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/~{bslug}" class="-link" rel={$anchor_rel}> {bname}</a>
+      <a href="/~{bslug}" class="-link"> {bname}</a>
     </div>
 
     <div class="-crumb"><span class="-text">{ch_label}</span></div>
@@ -205,7 +199,6 @@
       href={prev_path}
       class="m-button _solid"
       class:_disable={!prev_url}
-      rel={$anchor_rel}
       data-kbd="j">
       <SvgIcon name="chevron-left" />
       <span>Trước</span>
@@ -220,7 +213,6 @@
       href={next_path}
       class="m-button _solid _primary"
       class:_disable={!next_url}
-      rel={$anchor_rel}
       data-kbd="k">
       <span>Kế tiếp</span>
       <SvgIcon name="chevron-right" />

@@ -26,16 +26,6 @@
   })
 </script>
 
-<svelte:head>
-  {#if $self_power < 2}
-    <script
-      async
-      data-ad-client="ca-pub-5468438393284967"
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
-    </script>
-  {/if}
-</svelte:head>
-
 <div class="loader" class:_active={$preloading}>
   <svg class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
     <circle

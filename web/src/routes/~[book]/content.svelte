@@ -85,7 +85,7 @@
   import paginate_range from '$utils/paginate_range'
   // import AdBanner from '$atoms/AdBanner'
 
-  import { self_power, anchor_rel } from '$src/stores'
+  import { self_power } from '$src/stores'
 
   import Shared from './_shared'
   import ChapList from '$melds/ChapList'
@@ -211,16 +211,14 @@
         <a
           class="-seed"
           class:_active={seed === name}
-          href={page_url(name, 1)}
-          rel={$anchor_rel}>{name}
+          href={page_url(name, 1)}>{name}
         </a>
       {/each}
 
       {#if extra_seeds.length > 0}
         {#if show_extra}
           {#each extra_seeds as name}
-            <a class="-seed" href={page_url(name, 1)} rel={$anchor_rel}>{name}
-            </a>
+            <a class="-seed" href={page_url(name, 1)}>{name} </a>
           {/each}
         {:else}
           <button class="-seed" on:click={() => (show_extra = true)}>

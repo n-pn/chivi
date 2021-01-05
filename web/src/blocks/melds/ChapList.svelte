@@ -1,7 +1,3 @@
-<script context="module">
-  import { anchor_rel } from '$src/stores.js'
-</script>
-
 <script>
   export let bslug = ''
   export let sname = ''
@@ -15,7 +11,7 @@
 <ul class="list">
   {#each chaps as chap}
     <li class="item">
-      <a href={chap_url(chap)} class="link" rel="{$anchor_rel} nofollow">
+      <a href={chap_url(chap)} class="link" rel="nofollow">
         <span class="label">{chap.label}</span>
         <span class="title">{chap.title}</span>
       </a>

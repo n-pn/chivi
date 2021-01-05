@@ -21,7 +21,7 @@
     return res.join(',')
   }
 
-  import { anchor_rel, self_power } from '$src/stores'
+  import { self_power } from '$src/stores'
   import { mark_types, mark_names, mark_icons } from '$utils/constants'
 
   import SvgIcon from '$atoms/SvgIcon'
@@ -34,7 +34,7 @@
 <script>
   export let book
   export let mark = ''
-  export let atab = 'overview'
+  export let atab = 'summary'
 
   $: vi_status = map_status(book.status)
   $: book_url = `https://chivi.xyz/~${book.slug}`
@@ -73,11 +73,7 @@
 </svelte:head>
 
 <Vessel>
-  <a
-    slot="header-left"
-    href="/~{book.slug}"
-    class="header-item _active"
-    rel={$anchor_rel}>
+  <a slot="header-left" href="/~{book.slug}" class="header-item _active">
     <SvgIcon name="book-open" />
     <span class="header-text _title">{book.vi_title}</span>
   </a>
@@ -120,10 +116,7 @@
       <div class="line">
         <span class="stat">
           <SvgIcon name="pen-tool" />
-          <a
-            class="link"
-            href="/search?kw={book.vi_author}&type=author"
-            rel={$anchor_rel}>
+          <a class="link" href="/search?kw={book.vi_author}&type=author">
             <span class="label">{book.vi_author}</span>
           </a>
         </span>
@@ -131,7 +124,7 @@
         {#each book.vi_genres as genre}
           <span class="stat _genre">
             <SvgIcon name="folder" />
-            <a class="link" href="/?genre={genre}" rel={$anchor_rel}>
+            <a class="link" href="/?genre={genre}">
               <span class="label">{genre}</span>
             </a>
           </span>
@@ -191,24 +184,21 @@
       <a
         href="/~{book.slug}"
         class="header-tab"
-        class:_active={atab == 'overview'}
-        rel="{$anchor_rel}}">
+        class:_active={atab == 'summary'}>
         Tổng quan
       </a>
 
       <a
         href="/~{book.slug}/content"
         class="header-tab"
-        class:_active={atab == 'content'}
-        rel="{$anchor_rel}}">
+        class:_active={atab == 'content'}>
         Chương tiết
       </a>
 
       <a
         href="/~{book.slug}/discuss"
         class="header-tab"
-        class:_active={atab == 'discuss'}
-        rel="{$anchor_rel}}">
+        class:_active={atab == 'discuss'}>
         Thảo luận
       </a>
     </header>
