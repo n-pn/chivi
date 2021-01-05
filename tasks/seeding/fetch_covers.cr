@@ -2,7 +2,7 @@ require "mime"
 require "colorize"
 require "file_utils"
 
-require "../../src/filedb/stores/*"
+require "../../src/filedb/stores/value_map"
 require "../../src/shared/http_utils"
 
 class CV::Seed::FetchCovers
@@ -23,14 +23,68 @@ class CV::Seed::FetchCovers
       next if valid_file?(out_file)
 
       next unless image_url = covers.fval(sbid)
-      next if image_url.empty?
-      queue[image_url] = out_file
+      queue[image_url] = out_file unless image_url.empty?
     end
 
     fetch!(queue)
   end
 
-  def fetch!(queue : Hash(String, String), limit = 8) : Nil
+  def valid_file?(file : String)
+    return false unless File.exists?(file)
+    @skip_empty || File.size(file) > 0
+  end
+
+  def fetch_chseed!
+    input = ValueMap.new("_db/nvdata/nvinfos/chseed.tsv", mode: 2).vals
+
+    queues = Hash(String, Hash(String, String)).new do |h, k|
+      h[k] = {} of String => String
+    end
+
+    input.each do |seeds|
+      seeds.each do |entry|
+        seed, sbid = entry.split("/")
+        next if seed == "jx_la"
+
+        out_file = "_db/nvdata/_covers/#{seed}/#{sbid}.jpg"
+        next if valid_file?(out_file)
+
+        next unless image_url = cover_map(seed).fval(sbid)
+        queues[seed][image_url] = out_file unless image_url.empty?
+      end
+    end
+
+    channel = Channel(Nil).new(queues.size)
+
+    queues.each do |seed, queue|
+      limit, delayed =
+        case seed
+        when "shubaow" then {1, 2.seconds}
+        when "duokan8" then {1, 1.seconds}
+        when "zhwenpg" then {1, 500.milliseconds}
+        when "paoshu8" then {2, 500.milliseconds}
+        when "69shu"   then {4, 200.milliseconds}
+        when "5200"    then {4, 100.milliseconds}
+        else                {8, 10.milliseconds}
+        end
+
+      spawn do
+        fetch!(queue, limit, delayed)
+      ensure
+        channel.send(nil)
+      end
+    end
+
+    queues.size.times { channel.receive }
+  end
+
+  getter cache = {} of String => ValueMap
+
+  def cover_map(seed : String)
+    cache[seed] ||= ValueMap.new("_db/_seeds/#{seed}/bcover.tsv", mode: 2)
+  end
+
+  def fetch!(queue : Hash(String, String), limit = 8, delayed = 10.milliseconds)
     puts queue.size
 
     limit = queue.size if limit > queue.size
@@ -41,8 +95,9 @@ class CV::Seed::FetchCovers
 
       spawn do
         HttpUtils.save_file(link, file)
+        sleep delayed
       rescue err
-        puts err
+        puts err.colorize.red
         FileUtils.touch(file)
       ensure
         channel.send(nil)
@@ -51,13 +106,8 @@ class CV::Seed::FetchCovers
 
     limit.times { channel.receive }
   end
-
-  def valid_file?(file : String)
-    return false unless File.exists?(file)
-    @skip_empty || File.size(file) > 0
-  end
 end
 
 worker = CV::Seed::FetchCovers.new(ARGV.includes?("skip_empty"))
 worker.fetch_yousuu!
-# worker.fetch_chseed!
+worker.fetch_chseed!
