@@ -51,14 +51,19 @@
     return [output, lower, upper]
   }
 
-  function parse_chivi(line) {
+  function split_input(input) {
+    if (!input) return []
+    return input.split('\n').map((x) => parse_input(x))
+  }
+
+  function parse_input(line) {
     return line.split('\t').map((x) => x.split('¦'))
   }
 </script>
 
 <script>
   export let input = ''
-  $: lines = input.split('\n').map((x) => parse_chivi(x))
+  $: lines = split_input(input)
 
   export let dirty = false
 

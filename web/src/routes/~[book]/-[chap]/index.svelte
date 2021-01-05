@@ -24,17 +24,23 @@
 
     const mode = +query.mode || 0
 
-    const res = await load_chap(this.fetch, bslug, seed, scid, mode)
-    const data = await res.json()
-
-    if (res.ok) return data
-    this.error(res.status, data._msg)
+    try {
+      const res = await load_chap(this.fetch, bslug, seed, scid, mode)
+      if (res.ok) {
+        const data = await res.json()
+        return data
+      } else {
+        const data = await res.text()
+        this.error(res.status, data)
+      }
+    } catch (err) {
+      this.error(500, 'Unknown error!')
+    }
   }
 
   async function load_chap(fetch, bslug, seed, scid, mode = 0) {
     const url = `/api/texts/${bslug}/${seed}/${scid}?mode=${mode}`
     const res = await fetch(url)
-
     return res
   }
 </script>
@@ -131,12 +137,6 @@
     dirty = false
     _load = false
   }
-
-  // let external = ''
-  // $: if (old_scid != scid) {
-  //   old_scid = scid
-  //   if (vc_count++ > 3) external = 'external'
-  // }
 </script>
 
 <svelte:head>
@@ -178,12 +178,6 @@
     <SvgIcon name="compass" />
   </button>
 
-  <!--
-  <div slot="header-right" class="header-item _menu">
-    <SvgIcon name="settings" />
-
-  </div> -->
-
   <nav class="bread">
     <div class="-crumb _sep">
       <a href="/~{bslug}" class="-link" rel={$anchor_rel}> {bname}</a>
@@ -198,7 +192,13 @@
     -->
   </nav>
 
-  <Convert input={cvdata} bind:dirty />
+  {#if cvdata}
+    <Convert input={cvdata} bind:dirty />
+  {:else}
+    <div class="empty">
+      Chương tiết không có nội dung, mời liên hệ ban quản trị.
+    </div>
+  {/if}
 
   <div slot="footer" class="footer">
     <a
@@ -265,5 +265,14 @@
     :global(svg) {
       margin-top: -0.25rem;
     }
+  }
+
+  .empty {
+    height: 70vh;
+
+    font-style: italic;
+    @include flex($center: both);
+    @include fgcolor(neutral, 6);
+    @include font-size(4);
   }
 </style>

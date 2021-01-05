@@ -43,13 +43,15 @@ module Oldcv::Kernel
         source = SeedText.new(sname, s_bid, s_cid, freeze: true)
         zh_data = [source.title].concat(source.paras)
         chtext.tap(&.zh_data = zh_data).save!
-      else
-        raise "Không có text, mời liên hệ admin."
       end
     end
 
     chtext.tap do |x|
-      x.cv_text = Engine.cv_mixed(zh_data, bhash).map(&.to_s).join("\n")
+      if zh_data.empty?
+        x.cv_text = ""
+      else
+        x.cv_text = Engine.cv_mixed(zh_data, bhash).map(&.to_s).join("\n")
+      end
       x.cv_time = Time.utc.to_unix_ms
     end
   end

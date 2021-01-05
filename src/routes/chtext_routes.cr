@@ -5,7 +5,7 @@ module Chivi::Server
     slug = env.params.url["slug"]
 
     unless info = Oldcv::BookDB.find(slug)
-      halt env, status_code: 404, response: "Book not found!"
+      halt env, status_code: 404, response: "Quyển sách không tồn tại!"
     end
 
     Oldcv::BookDB.bump_access(info, Time.utc.to_unix_ms)
@@ -13,14 +13,14 @@ module Chivi::Server
 
     seed = env.params.url["seed"]
     unless fetched = Oldcv::Kernel.load_list(info, seed, mode: 0)
-      halt env, status_code: 404, response: "Seed not found!"
+      halt env, status_code: 404, response: "Nguồn truyện không tồn tại!"
     end
 
     scid = env.params.url["scid"]
     list, _ = fetched
 
     unless index = list.index[scid]?
-      halt env, status_code: 404, response: "Chapter not found!"
+      halt env, status_code: 404, response: "Chương tiết không tồn tại!"
     end
 
     curr_chap = list.chaps[index]
@@ -54,6 +54,8 @@ module Chivi::Server
       }.to_json(res)
     end
   rescue err
+    puts "- Error loading chap_text: #{err}"
+    pp err.backtrace
     message = err.message || "Unknown error!"
     halt env, status_code: 500, response: message
   end
