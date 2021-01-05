@@ -15,7 +15,7 @@
 <ul class="list">
   {#each chaps as chap}
     <li class="item">
-      <a href={chap_url(chap)} class="link" rel={$anchor_rel}>
+      <a href={chap_url(chap)} class="link" rel="{$anchor_rel} nofollow">
         <span class="label">{chap.label}</span>
         <span class="title">{chap.title}</span>
       </a>
