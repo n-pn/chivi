@@ -11,7 +11,8 @@
     let { book, mark } = data
     const ubid = book.ubid
 
-    const seed = query.seed || book.seed_names[0] || ''
+    const [main_seeds] = split_seeds(book, query.seed)
+    const seed = query.seed || main_seeds[0] || ''
     const page = +(query.page || 1)
 
     const opts = { seed, page, desc, mode: 0 }
@@ -45,8 +46,9 @@
   }
 
   function split_seeds(book, curr) {
-    const seeds = book.seed_names.sort(
-      (a, b) => book.seed_mftimes[b] - book.seed_mftimes[a]
+    const input = book.seed_names || []
+    const seeds = input.sort(
+      (a, b) => seed_mftime(book, b) - seed_mftime(book, a)
     )
 
     if (seeds.length < 6) return [seeds, []]
@@ -57,12 +59,23 @@
     if (main_seeds.includes(curr)) {
       main_seeds.push(seeds[4])
       extra_seeds = seeds.slice(5)
-    } else {
+    } else if (curr) {
       main_seeds.push(curr)
       extra_seeds = seeds.slice(4).filter((x) => x != curr)
     }
 
     return [main_seeds, extra_seeds]
+  }
+
+  function seed_mftime(book, seed) {
+    switch (seed) {
+      case 'shubaow':
+      case 'jx_la':
+      case 'paoshu8':
+        return 0
+      default:
+        return book.seed_mftimes[seed] || 0
+    }
   }
 </script>
 
