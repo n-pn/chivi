@@ -1,16 +1,8 @@
 <script>
   import { stores } from '@sapper/app'
-  const { page, preloading } = stores()
+  const { preloading } = stores()
 
   export let segment = ''
-
-  $: {
-    if (typeof gtag === 'function') {
-      window.gtag('config', 'UA-160000714-1', {
-        page_path: $page.path,
-      })
-    }
-  }
 
   import { onMount } from 'svelte'
   import { self_uname, self_power } from '$src/stores'

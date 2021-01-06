@@ -64,25 +64,9 @@
           url('/fonts/roboto-v20-vietnamese_latin-500.woff') format('woff');
       }
     </style>
-
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=UA-160000714-1"
-    ></script>
-
-    <script>
-      window.dataLayer = window.dataLayer || []
-      function gtag() {
-        dataLayer.push(arguments)
-      }
-      gtag('js', new Date())
-      gtag('config', 'UA-160000714-1')
-    </script>
   </head>
 
   <body>
-    <!-- The application will be rendered inside this element,
-	     because `src/client.js` references it -->
     <div id="sapper">%sapper.html%</div>
   </body>
 </html>
