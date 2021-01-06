@@ -8,10 +8,9 @@
     const date = new Date(time)
     const span = (new Date().getTime() - time) / 1000
 
-    if (uncertain(seed)) return span < day_span ? 'hôm nay' : iso_date(date)
-
     if (span > month_span) return iso_date(date)
     if (span > day_span) return `${rounding(span, day_span)} ngày trước`
+    if (uncertain(seed)) return 'hôm nay'
     if (span > hour_span) return `${rounding(span, hour_span)} giờ trước`
     return `${rounding(span, minute_span)} phút trước`
   }
@@ -41,7 +40,7 @@
 
   function rounding(input, unit) {
     if (input <= unit) return 1
-    return Math.round((input - 1) / unit) + 1
+    return Math.floor(input / unit)
   }
 </script>
 

@@ -70,10 +70,13 @@
   function seed_mftime(book, seed) {
     switch (seed) {
       case '69shu':
-      case 'jx_la':
-      case 'shubaow':
+        return 4
       case 'paoshu8':
-        return 0
+        return 3
+      case 'shubaow':
+        return 2
+      case 'jx_la':
+        return 1
       default:
         return book.seed_mftimes[seed] || 0
     }
