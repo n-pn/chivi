@@ -48,15 +48,15 @@ article {
 
   h1 {
     font-weight: 400;
-    @include fgcolor(neutral, 9);
+    // @include fgcolor(neutral, 8);
 
     @include props(
       font-size,
       rem(22px),
       rem(23px),
-      rem(24px),
-      rem(26px),
-      rem(28px)
+      rem(25px),
+      rem(27px),
+      rem(30px)
     );
     @include props(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
   }
