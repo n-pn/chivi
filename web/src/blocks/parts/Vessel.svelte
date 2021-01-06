@@ -91,7 +91,7 @@
 </footer>
 
 <style lang="scss">
-  $page-width: 55rem;
+  $page-width: 54rem;
 
   ._shift {
     @include props(padding-right, $lg: 30rem);
