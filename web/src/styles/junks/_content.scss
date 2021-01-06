@@ -36,9 +36,6 @@
 
 article {
   padding: 1rem 0;
-  // hyphens: manual;
-  // word-wrap: break-word;
-  // word-break: break-word;
   overflow-wrap: break-word;
 
   > * + * {
@@ -54,9 +51,9 @@ article {
       font-size,
       rem(22px),
       rem(23px),
-      rem(25px),
-      rem(27px),
-      rem(30px)
+      rem(24px),
+      rem(26px),
+      rem(28px)
     );
     @include props(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
   }

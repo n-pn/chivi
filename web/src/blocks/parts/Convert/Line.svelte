@@ -1,5 +1,7 @@
 <script context="module">
   export function render(nodes) {
+    if (nodes.length == 0) return ['', '']
+
     let res_0 = ''
     let res_1 = ''
 
@@ -8,7 +10,7 @@
 
     for (const [key, val, dic] of nodes) {
       const e_key = escape_html(key)
-      const e_val = escape_html(val).replace(/_/, '\xAD_') // force break words
+      const e_val = escape_html(val).replace(/_/, '_\xAD') // force break words
 
       switch (val.charAt(0)) {
         case '“':
