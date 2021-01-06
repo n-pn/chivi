@@ -55,7 +55,6 @@ module Chivi::Server
     end
   rescue err
     puts "- Error loading chap_text: #{err}"
-    pp err.backtrace
     message = err.message || "Unknown error!"
     halt env, status_code: 500, response: message
   end
