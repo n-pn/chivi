@@ -81,8 +81,13 @@ class CV::ValueMap
     @data[key]?
   end
 
-  def del(key : String) : Nil
-    @data.delete(key)
+  def del(key : String) : Bool
+    !!@data.delete(key)
+  end
+
+  def rem(key : String) : Nil
+    return unless del(key)
+    File.open(@file, "a") { |io| io.puts(key) }
   end
 
   def fval(key : String)

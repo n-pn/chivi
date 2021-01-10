@@ -1,4 +1,5 @@
 require "./_routes"
+require "../filedb/nvmark"
 
 module CV::Server
   get "/api/books" do |env|
@@ -35,22 +36,22 @@ module CV::Server
     RouteUtils.json_res(env, {items: items, total: total, query: opts})
   end
 
-  get "/api/books/:slug" do |env|
-    slug = env.params.url["slug"]
+  get "/api/books/:bslug" do |env|
+    bslug = env.params.url["bslug"]
 
-    unless info = Oldcv::BookDB.find(slug)
+    unless info = Oldcv::BookDB.find(bslug)
       halt env, status_code: 404, response: "Book not found!"
     end
 
     Oldcv::BookDB.bump_access(info)
     # BookDB.inc_counter(info, read: false)
 
-    if uslug = env.session.string?("uslug")
-      mark = Oldcv::UserDB.get_book_mark(uslug, info.ubid) || ""
+    if uname = env.session.string?("dname").try(&.downcase)
+      bmark = Nvmark.user_books(uname).fval(info.ubid) || ""
     else
-      mark = ""
+      bmark = ""
     end
 
-    RouteUtils.json_res(env, {book: info, mark: mark}, cached: info.mftime)
+    RouteUtils.json_res(env, {book: info, mark: bmark}, cached: info.mftime)
   end
 end

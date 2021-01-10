@@ -6,7 +6,7 @@
     const mark = query.mark || 'reading'
     const page = query.page || '1'
 
-    const url = `/api/users/${user}/marked_books?mark=${mark}&page=${page}`
+    const url = `/api/user-books/${user}/?bmark=${mark}&page=${page}`
     const res = await this.fetch(url)
     const data = await res.json()
 

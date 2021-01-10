@@ -1,5 +1,6 @@
 require "colorize"
 require "file_utils"
+require "../../_utils/file_util"
 
 module Oldcv::OldFlatFile(T)
   SEP_0 = "ǁ"

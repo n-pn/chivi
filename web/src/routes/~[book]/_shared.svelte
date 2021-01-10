@@ -65,7 +65,7 @@
     if (mark == new_mark) mark = ''
     else mark = new_mark
 
-    const url = `/api/self/book_mark/${bslug}?mark=${mark}`
+    const url = `/api/book-marks/${bslug}?bmark=${mark}`
     await fetch(url, { method: 'PUT' })
   }
 </script>

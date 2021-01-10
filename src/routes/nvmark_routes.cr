@@ -2,49 +2,51 @@ require "./_routes"
 require "../filedb/nvmark"
 
 module CV::Server
-  get "/api/self/book_mark/:ubid" do |env|
-    uslug = env.session.string("uslug")
-    ubid = env.params.url["ubid"]
-
-    mark = Oldcv::UserDB.get_book_mark(uslug, ubid) || ""
-    RouteUtils.json_res(env) { |res| {_stt: "ok", mark: mark}.to_json(res) }
-  rescue err
-    RouteUtils.json_res(env) { |res| {_stt: "err", _msg: "User not logged in"}.to_json(res) }
-  end
-
-  put "/api/self/book_mark/:ubid" do |env|
-    uslug = env.session.string("uslug")
-    ubid = env.params.url["ubid"]
-    mark = env.params.query["mark"]? || ""
-
-    if mark.empty?
-      Oldcv::UserDB.unmark_book(uslug, ubid)
-    else
-      Oldcv::UserDB.mark_book(uslug, ubid, mark)
+  get "/api/book-marks/:bhash" do |env|
+    unless uname = env.session.string?("dname").try(&.downcase)
+      halt env, status_code: 403, response: "user not logged in"
     end
 
-    RouteUtils.json_res(env) { |res| {_stt: "ok", mark: mark}.to_json(res) }
-  rescue err
-    RouteUtils.json_res(env) { |res| {_stt: "err", _msg: "User not logged in"}.to_json(res) }
+    bhash = env.params.url["bhash"]
+    bmark = Nvmark.book_users(bhash).fval(uname) || ""
+    RouteUtils.json_res(env, {bmark: bmark})
   end
 
-  get "/api/users/:uname/marked_books" do |env|
+  put "/api/book-marks/:bhash" do |env|
+    unless uname = env.session.string?("dname").try(&.downcase)
+      halt env, status_code: 403, response: "user not logged in"
+    end
+
+    bhash = env.params.url["bhash"]
+    bmark = env.params.query["bmark"]? || ""
+
+    if bmark.empty?
+      Nvmark.unmark_book(uname, bhash)
+    else
+      Nvmark.mark_book(uname, bhash, bmark)
+    end
+
+    RouteUtils.json_res(env, {bmark: bmark})
+  end
+
+  get "/api/user-books/:uname" do |env|
     uname = env.params.url["uname"]
     unless user = Oldcv::UserDB.find_by_uname(uname)
       halt env, status_code: 404, response: "user not found!"
     end
 
-    mark = env.params.query["mark"]? || "reading"
-    limit, offset = RouteUtils.parse_page(env.params.query.fetch("page", "1"))
+    bmark = env.params.query["bmark"]? || "reading"
+    books = Nvmark.all_user_books(uname, bmark)
 
-    uuids = Oldcv::UserDB.marked_books(user.uslug, mark)
-    infos = uuids.compact_map do |ubid|
-      Oldcv::BookInfo.get!(ubid)
+    infos = books.compact_map do |bhash|
+      Oldcv::BookInfo.get!(bhash)
     rescue
-      Oldcv::UserDB.unmark_book(user.uslug, ubid)
+      Nvmark.unmark_book(uname, bhash)
     end
 
+    limit, offset = RouteUtils.parse_page(env.params.query.fetch("page", "1"))
     infos = infos.sort_by(&.mftime.-)[offset, limit]
-    RouteUtils.json_res(env) { |res| RouteUtils.books_json(res, infos, uuids.size) }
+
+    RouteUtils.json_res(env) { |res| RouteUtils.books_json(res, infos, books.size) }
   end
 end
