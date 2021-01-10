@@ -36,18 +36,22 @@
   $: if (pmax < 1) pmax = 1
 </script>
 
+<svelte:head>
+  <title>Tủ truyện của {uname} - Chivi</title>
+</svelte:head>
+
 <Vessel>
   <span slot="header-left" class="header-item _active">
     <SvgIcon name="layers" />
-    <span class="header-text">Tủ truyện của @{uname}</span>
+    <span class="header-text">Tủ truyện của [{uname}]</span>
   </span>
 
   <div class="tabs">
-    {#each mark_types as type}
+    {#each mark_types as mtype}
       <a
-        href="/@{uname}?bmark={type}"
+        href="/@{uname}?bmark={mtype}"
         class="tab"
-        class:_active={type == bmark}>{mark_names[type]}</a>
+        class:_active={mtype == bmark}>{mark_names[mtype]}</a>
     {/each}
   </div>
 
@@ -112,12 +116,5 @@
     margin: 0.75rem 0;
     @include flex($center: content);
     @include flex-gap($gap: 0.375rem, $child: ':global(*)');
-  }
-
-  .page {
-    display: inline-flex;
-    > span {
-      margin-top: rem(1px);
-    }
   }
 </style>
