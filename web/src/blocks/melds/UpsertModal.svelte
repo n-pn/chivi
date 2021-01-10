@@ -62,7 +62,7 @@
   }
 
   import {
-    // self_uname,
+    // self_dname,
     self_power,
     upsert_input,
     upsert_dicts as dicts,

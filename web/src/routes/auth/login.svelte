@@ -2,13 +2,15 @@
   import SvgIcon from '$atoms/SvgIcon'
   import Vessel from '$parts/Vessel'
 
-  import { self_uname, self_power } from '$src/stores'
+  import { self_dname, self_power } from '$src/stores'
 
   let email = ''
   let upass = ''
   let error
 
   async function submit(evt) {
+    evt.preventDefault()
+
     error = null
 
     const res = await fetch('api/login', {
@@ -17,10 +19,10 @@
       body: JSON.stringify({ email, upass }),
     })
 
-    const data = await res.json()
+    if (res.ok) {
+      const data = await res.json()
 
-    if (data._stt == 'ok') {
-      $self_uname = data.uname
+      $self_dname = data.dname
       $self_power = data.power
       _goto_('/')
     } else {
@@ -31,7 +33,7 @@
 
 <Vessel>
   <section>
-    <form action="/_login" method="POST" on:submit|preventDefault={submit}>
+    <form action="/_login" method="POST" on:submit={submit}>
       <header>
         <img src="/chivi-logo.svg" alt="logo" />
         <span>Chivi</span>

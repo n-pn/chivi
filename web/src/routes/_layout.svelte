@@ -1,35 +1,23 @@
 <script>
   import { stores } from '@sapper/app'
   const { preloading } = stores()
-
+  import { self_dname, self_power } from '$src/stores'
   export let segment = ''
 
   import { onMount } from 'svelte'
-  import { self_uname, self_power } from '$src/stores'
-
   onMount(async () => {
-    const res = await fetch('/api/self')
-    const data = await res.json()
+    try {
+      const res = await fetch('/api/self')
+      const user = await res.json()
 
-    if (data._stt == 'ok') {
-      $self_uname = data.uname
-      $self_power = data.power
+      $self_dname = user.dname
+      $self_power = user.power
+    } catch (err) {
+      $self_dname = 'Khách'
+      $self_power = -1
     }
   })
 </script>
-
-<div class="loader" class:_active={$preloading}>
-  <svg class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
-    <circle
-      class="path"
-      fill="none"
-      stroke-width="6"
-      stroke-linecap="round"
-      cx="33"
-      cy="33"
-      r="30" />
-  </svg>
-</div>
 
 <div class="vessel">
   <slot {segment} />
@@ -65,6 +53,19 @@
     Discord
   </a>
 </footer>
+
+<div class="loader" class:_active={$preloading}>
+  <svg class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+    <circle
+      class="path"
+      fill="none"
+      stroke-width="6"
+      stroke-linecap="round"
+      cx="33"
+      cy="33"
+      r="30" />
+  </svg>
+</div>
 
 <style lang="scss">
   .vessel {

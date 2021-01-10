@@ -1,6 +1,6 @@
 require "./_routes"
 
-module Chivi::Server
+module CV::Server
   get "/api/chaps/:ubid/:seed" do |env|
     ubid = env.params.url["ubid"]
 
@@ -39,8 +39,6 @@ module Chivi::Server
       }
     end
 
-    Utils.json(env, cached: mftime) do |res|
-      {total: chdata.chaps.size, chaps: chlist, mftime: mftime}.to_json(res)
-    end
+    RouteUtils.json_res(env, {total: chdata.chaps.size, chaps: chlist, mftime: mftime}, cached: mftime)
   end
 end

@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
 
-export const self_uname = writable('Khách')
+export const self_dname = writable('Khách')
 export const self_power = writable(-1)
 
 export const anchor_rel = derived(self_power, ($p) =>

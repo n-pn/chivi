@@ -5,7 +5,7 @@
   import Vessel from '$parts/Vessel'
 
   import {
-    // self_uname,
+    // self_dname,
     self_power,
     upsert_dicts,
     lookup_dname,

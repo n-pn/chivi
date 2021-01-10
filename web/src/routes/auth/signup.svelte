@@ -2,7 +2,7 @@
   import SvgIcon from '$atoms/SvgIcon'
   import Vessel from '$parts/Vessel'
 
-  import { self_uname, self_power } from '$src/stores'
+  import { self_dname, self_power } from '$src/stores'
 
   let email = ''
   let uname = ''
@@ -10,22 +10,24 @@
   let error
 
   async function submit(evt) {
-    error = null
+    evt.preventDefault()
 
+    error = null
     const res = await fetch('api/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, uname, upass }),
     })
 
-    const data = await res.json()
+    if (res.ok) {
+      const data = await res.json()
 
-    if (data._stt == 'ok') {
-      $self_uname = data.uname
+      $self_dname = data.dname
       $self_power = data.power
       _goto_('/')
     } else {
-      error = error_message(data._msg)
+      const msg = await res.text()
+      error = error_message(msg)
     }
   }
 
@@ -52,21 +54,10 @@
 
 <Vessel>
   <section>
-    <form action="/api/signup" method="POST" on:submit|preventDefault={submit}>
+    <form action="/api/signup" method="POST" on:submit={submit}>
       <header>
         <img src="/chivi-logo.svg" alt="logo" /><span>Chivi</span>
       </header>
-
-      <div class="input">
-        <label for="email">Hòm thư</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Hòm thư"
-          required
-          bind:value={email} />
-      </div>
 
       <div class="input">
         <label for="cname">Tên người dùng</label>
@@ -77,6 +68,17 @@
           placeholder="Tên người dùng"
           required
           bind:value={uname} />
+      </div>
+
+      <div class="input">
+        <label for="email">Hòm thư</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Hòm thư"
+          required
+          bind:value={email} />
       </div>
 
       <div class="input">

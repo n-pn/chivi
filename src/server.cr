@@ -9,7 +9,7 @@ Kemal::Session.config do |config|
   config.secure = Kemal.config.env == "production"
 end
 
-module Chivi::Server
+module CV::Server
   Kemal.config.port = ENV["PORT"]?.try(&.to_i?) || 5010
   serve_static false
 

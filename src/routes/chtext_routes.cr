@@ -1,6 +1,6 @@
 require "./_routes"
 
-module Chivi::Server
+module CV::Server
   get "/api/texts/:slug/:seed/:scid" do |env|
     slug = env.params.url["slug"]
 
@@ -30,7 +30,7 @@ module Chivi::Server
     mode = env.params.query.fetch("mode", "0").try(&.to_i?) || 0
     chap = Oldcv::Kernel.get_text(info.ubid, seed, list.sbid, scid, mode: mode)
 
-    Utils.json(env) do |res|
+    RouteUtils.json_res(env) do |res|
       {
         cvdata: chap.cv_text,
         mftime: chap.cv_time,

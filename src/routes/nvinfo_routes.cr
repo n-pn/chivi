@@ -1,17 +1,17 @@
 require "./_routes"
 
-module Chivi::Server
+module CV::Server
   get "/api/books" do |env|
     word = env.params.query.fetch("word", "")
-    type = Utils.search_type(env.params.query["type"]?)
+    type = RouteUtils.search_type(env.params.query["type"]?)
 
     genre = env.params.query.fetch("genre", "")
 
-    order = Utils.search_order(env.params.query["order"]?)
+    order = RouteUtils.search_order(env.params.query["order"]?)
     anchor = env.params.query.fetch("anchor", "")
 
-    page = Utils.search_page(env.params.query["page"]?)
-    limit = Utils.search_limit(env.params.query["limit"]?)
+    page = RouteUtils.search_page(env.params.query["page"]?)
+    limit = RouteUtils.search_limit(env.params.query["limit"]?)
     offset = (page - 1) * limit
 
     opts = Oldcv::BookDB::Query::Opts.new(word, type, genre, order, limit, offset, anchor)
@@ -32,9 +32,7 @@ module Chivi::Server
       }
     end
 
-    Utils.json(env) do |res|
-      {items: items, total: total, query: opts}.to_json(res)
-    end
+    RouteUtils.json_res(env, {items: items, total: total, query: opts})
   end
 
   get "/api/books/:slug" do |env|
@@ -53,8 +51,6 @@ module Chivi::Server
       mark = ""
     end
 
-    Utils.json(env, cached: info.mftime) do |env|
-      {book: info, mark: mark}.to_json(env)
-    end
+    RouteUtils.json_res(env, {book: info, mark: mark}, cached: info.mftime)
   end
 end

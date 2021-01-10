@@ -1,6 +1,6 @@
 require "./_routes"
 
-module Chivi::Server
+module CV::Server
   alias LookupEntry = Hash(String, Array(String))
 
   post "/api/dicts/lookup" do |env|
@@ -35,7 +35,7 @@ module Chivi::Server
 
     hanviet = Oldcv::Engine.hanviet(input, apply_cap: false).to_s
 
-    Utils.json(env) do |res|
+    RouteUtils.json_res(env) do |res|
       {hanviet: hanviet, entries: entries}.to_json(res)
     end
   end
@@ -53,7 +53,7 @@ module Chivi::Server
 
     suggest = Oldcv::Engine::Library.suggest.dict.find(input).try(&.vals)
 
-    Utils.json(env) do |res|
+    RouteUtils.json_res(env) do |res|
       {
         entries: entries,
         hanviet: Oldcv::Engine.hanviet(input, false).vi_text,
@@ -79,8 +79,8 @@ module Chivi::Server
     end
 
     Oldcv::Engine::Library.upsert(dic, uname, power, key, val)
-    Utils.json(env) { |res| {_stt: "ok"}.to_json(res) }
+    RouteUtils.json_res(env) { |res| {_stt: "ok"}.to_json(res) }
   rescue err
-    Utils.json(env) { |res| {_stt: "err", _msg: err.message}.to_json(res) }
+    RouteUtils.json_res(env) { |res| {_stt: "err", _msg: err.message}.to_json(res) }
   end
 end
