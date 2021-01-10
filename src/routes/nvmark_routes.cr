@@ -29,11 +29,8 @@ module CV::Server
     RouteUtils.json_res(env, {bmark: bmark})
   end
 
-  get "/api/user-books/:uname" do |env|
-    uname = env.params.url["uname"]
-    unless user = Oldcv::UserDB.find_by_uname(uname)
-      halt env, status_code: 404, response: "user not found!"
-    end
+  get "/api/user-books/:dname" do |env|
+    uname = env.params.url["dname"].downcase
 
     bmark = env.params.query["bmark"]? || "reading"
     books = Nvmark.all_user_books(uname, bmark)

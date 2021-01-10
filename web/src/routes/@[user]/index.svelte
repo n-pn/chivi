@@ -2,22 +2,19 @@
   import { mark_types, mark_names } from '$utils/constants'
 
   export async function preload({ params, query }) {
-    const user = params.user
-    const mark = query.mark || 'reading'
+    const uname = params.user
+    const bmark = query.bmark || 'reading'
     const page = query.page || '1'
 
-    const url = `/api/user-books/${user}/?bmark=${mark}&page=${page}`
+    const url = `/api/user-books/${uname}/?bmark=${bmark}&page=${page}`
     const res = await this.fetch(url)
-    const data = await res.json()
 
-    if (data._stt == 'err') return this.error(res.status, data._msg)
-
-    return {
-      mark,
-      page,
-      uname: params.user,
-      books: data.books,
-      total: data.total,
+    if (res.ok) {
+      const { books, total } = await res.json()
+      return { uname, bmark, books, total, page }
+    } else {
+      const msg = await res.text()
+      this.error(res.status, msg)
     }
   }
 </script>
@@ -27,14 +24,16 @@
   import Vessel from '$parts/Vessel'
   import BookList from '$melds/BookList.svelte'
 
-  export let mark = 'reading'
-  export let page = ''
   export let uname = ''
+  export let bmark = 'reading'
 
   export let books = []
   export let total = 0
 
-  $: page_max = Math.floor((total - 1) / 20) + 1
+  export let page = ''
+
+  $: pmax = Math.floor((total - 1) / 24) + 1
+  $: if (pmax < 1) pmax = 1
 </script>
 
 <Vessel>
@@ -46,9 +45,9 @@
   <div class="tabs">
     {#each mark_types as type}
       <a
-        href="/@{uname}?mark={type}"
+        href="/@{uname}?bmark={type}"
         class="tab"
-        class:_active={type == mark}>{mark_names[type]}</a>
+        class:_active={type == bmark}>{mark_names[type]}</a>
     {/each}
   </div>
 
@@ -59,7 +58,7 @@
 
     <div class="pagi">
       <a
-        href="/@{uname}?mark={mark}&page={+page - 1}"
+        href="/@{uname}?bmark={bmark}&page={+page - 1}"
         class="page m-button _line"
         class:_disable={page == 1}>
         <SvgIcon name="chevron-left" />
@@ -71,9 +70,9 @@
       </div>
 
       <a
-        href="/@{uname}?mark={mark}&page={+page + 1}"
+        href="/@{uname}?bmark={bmark}&page={+page + 1}"
         class="page m-button _solid _primary"
-        class:_disable={page == page_max}>
+        class:_disable={page == pmax}>
         <span>Kế tiếp</span>
         <SvgIcon name="chevron-right" />
       </a>
