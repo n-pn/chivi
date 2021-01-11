@@ -21,7 +21,7 @@ class CV::Seeds::FixIntros
         h[seed] = sbid
       end
 
-      {"hetushu", "shubaow", "zhwenpg", "5200", "duokan8", "noff",
+      {"hetushu", "shubaow", "zhwenpg", "5200", "duokan8", "nofff",
        "zxcs_me", "paoshu8", "rengshu", "xbiquge", "biquge5200"}.each do |seed|
         next unless sbid = seeds[seed]?
         bintro = get_intro(seed, sbid)
@@ -42,11 +42,8 @@ class CV::Seeds::FixIntros
 
       if idx % 100 == 99
         puts "- [fix_intros] <#{idx + 1}/#{@chseed.size}>".colorize.blue
-        save!(mode: :upds)
       end
     end
-
-    save!(mode: :full)
   end
 
   def get_intro(seed : String, sbid : String)
@@ -54,17 +51,6 @@ class CV::Seeds::FixIntros
     File.read_lines(intro_file)
   rescue err
     [] of String
-  end
-
-  getter cache = {} of String => ValueMap
-
-  def genre_map(seed : String)
-    cache[seed] ||= ValueMap.new("_db/_seeds/#{seed}/bgenre.tsv", mode: 2)
-  end
-
-  def save!(mode : Symbol = :full)
-    Nvinfo.bgenre.save!(mode: mode)
-    Nvinfo::Tokens.bgenre.save!(mode: mode)
   end
 end
 

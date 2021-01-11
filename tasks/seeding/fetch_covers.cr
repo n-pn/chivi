@@ -6,9 +6,6 @@ require "../../src/filedb/stores/value_map"
 require "../../src/shared/http_utils"
 
 class CV::Seed::FetchCovers
-  def initialize(@skip_empty = true)
-  end
-
   def fetch_yousuu!
     dir = "_db/nvdata/_covers/yousuu"
     ::FileUtils.mkdir_p(dir)
@@ -20,18 +17,13 @@ class CV::Seed::FetchCovers
     sbids.each do |vals|
       sbid = vals.first
       out_file = "#{dir}/#{sbid}.jpg"
-      next if valid_file?(out_file)
+      next if File.exists?(out_file)
 
       next unless image_url = covers.fval(sbid)
       queue[image_url] = out_file unless image_url.empty?
     end
 
     fetch!(queue)
-  end
-
-  def valid_file?(file : String)
-    return false unless File.exists?(file)
-    @skip_empty || File.size(file) > 0
   end
 
   def fetch_chseed!
@@ -47,7 +39,7 @@ class CV::Seed::FetchCovers
         next if seed == "jx_la"
 
         out_file = "_db/nvdata/_covers/#{seed}/#{sbid}.jpg"
-        next if valid_file?(out_file)
+        next if File.exists?(out_file)
 
         next unless image_url = cover_map(seed).fval(sbid)
         queues[seed][image_url] = out_file unless image_url.empty?
@@ -95,6 +87,7 @@ class CV::Seed::FetchCovers
 
       spawn do
         HttpUtils.save_file(link, file)
+        fix_image_ext(file)
         sleep delayed
       rescue err
         puts err.colorize.red
@@ -106,8 +99,28 @@ class CV::Seed::FetchCovers
 
     limit.times { channel.receive }
   end
+
+  def fix_image_ext(inp_file : String)
+    return if File.size(inp_file) == 0
+
+    return unless type = image_type(inp_file)
+    return if type == "jpeg"
+
+    out_file = inp_file.sub(".jpg", image_ext(type))
+    File.copy(inp_file, out_file)
+  rescue err
+    puts err
+  end
+
+  private def image_type(file : String)
+    `file -b "#{file}"`.split(" ").first?.try(&.downcase)
+  end
+
+  private def image_ext(type : String)
+    type == "gzip" ? ".jpg.gz" : ".#{type}"
+  end
 end
 
-worker = CV::Seed::FetchCovers.new(ARGV.includes?("skip_empty"))
+worker = CV::Seed::FetchCovers.new
 worker.fetch_yousuu!
 worker.fetch_chseed!
