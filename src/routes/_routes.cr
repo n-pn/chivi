@@ -2,7 +2,7 @@ require "kemal"
 require "kemal-session"
 
 require "../_oldcv/engine"
-require "../_oldcv/kernel"
+require "../kernel"
 
 module CV::Server::RouteUtils
   extend self

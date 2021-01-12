@@ -12,7 +12,7 @@ module CV::Server
     # BookDB.inc_counter(info, read: true)
 
     seed = env.params.url["seed"]
-    unless fetched = Oldcv::Kernel.load_list(info, seed, mode: 0)
+    unless fetched = Kernel.load_list(info, seed, mode: 0)
       halt env, status_code: 404, response: "Nguồn truyện không tồn tại!"
     end
 
@@ -28,7 +28,7 @@ module CV::Server
     next_chap = list.chaps[index + 1] if index < list.size - 1
 
     mode = env.params.query.fetch("mode", "0").try(&.to_i?) || 0
-    chap = Oldcv::Kernel.get_text(info.ubid, seed, list.sbid, scid, mode: mode)
+    chap = Kernel.get_text(info.ubid, seed, list.sbid, scid, mode: mode)
 
     RouteUtils.json_res(env) do |res|
       {
