@@ -107,8 +107,8 @@ class CV::RmInfo
       image_url = node_attr(".book_info img", "src")
       "https://www.hetushu.com#{image_url}"
     when "69shu"
-      image_url = "/#{@sbid.to_i % 1000}/#{@sbid}/#{@sbid}s.jpg"
-      "https://www.69shu.com/files/article/image#{image_url}"
+      image_url = "/#{@sbid.to_i // 1000}/#{@sbid}/#{@sbid}s.jpg"
+      "https://www.69shu.com/files/article/image/#{image_url}"
     when "zhwenpg"
       node_attr(".cover_wrapper_m img", "data-src")
     when "jx_la"
