@@ -67,18 +67,13 @@ module CV::Server
     dic = env.params.url["dic"]
     key = env.params.json["key"].as(String)
     val = env.params.json["val"].as(String?) || ""
-    # power = env.params.json["power"].as(Int64).to_i
 
-    if uslug = env.session.string?("uslug")
-      user = Oldcv::UserInfo.get!(uslug)
-      uname = user.uname
-      power = user.power
-    else
-      uname = "Guest"
-      power = 0
-    end
+    dname = env.session.string?("dname") || "Khách"
+    power = env.session.int?("power") || -1
 
-    Oldcv::Engine::Library.upsert(dic, uname, power, key, val)
+    # power = env.params.json["power"]?.as(Int32?) ||
+
+    Oldcv::Engine::Library.upsert(dic, dname, power, key, val)
     RouteUtils.json_res(env) { |res| {_stt: "ok"}.to_json(res) }
   rescue err
     RouteUtils.json_res(env) { |res| {_stt: "err", _msg: err.message}.to_json(res) }
