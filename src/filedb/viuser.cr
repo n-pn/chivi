@@ -57,11 +57,13 @@ module CV::Viuser
     raise "email existed" if uname = get_uname_by_email(email)
 
     raise "db corrupted" unless uname = set_uname(dname)
+
     set_email(uname, email)
     set_cpass(uname, upass)
     set_power(uname, power)
 
     create_tz.add(uname, Time.utc.to_unix)
+    save!(mode: :upds)
   end
 
   def dname_exists?(dname : String) : Bool
