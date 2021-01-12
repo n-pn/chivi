@@ -43,12 +43,10 @@ module CV::Kernel
 
     zh_data = mode < 2 ? chtext.zh_data : [] of String
 
-    if zh_data.empty?
-      if remote?(sname)
-        source = Oldcv::SeedText.new(sname, s_bid, s_cid, freeze: true)
-        zh_data = [source.title].concat(source.paras)
-        chtext.tap(&.zh_data = zh_data).save!
-      end
+    if zh_data.empty? && remote?(sname)
+      source = Oldcv::SeedText.new(sname, s_bid, s_cid, freeze: true)
+      zh_data = [source.title].concat(source.paras)
+      chtext.tap(&.zh_data = zh_data).save!
     end
 
     chtext.tap do |x|
@@ -57,19 +55,20 @@ module CV::Kernel
       else
         x.cv_text = Oldcv::Engine.cv_mixed(zh_data, bhash).map(&.to_s).join("\n")
       end
+
       x.cv_time = Time.utc.to_unix_ms
     end
   end
 
-  SEEDS = {
+  REMOTE_SEEDS = {
     "hetushu", "rengshu", "xbiquge",
-    "nofff", "paoshu8", "69shu",
-    "zhwenpg", "5200", "biquge5200",
-    "duokan8", "shubaow",
+    "nofff", "zhwenpg", "5200",
+    "biquge5200", "duokan8",
+    # "shubaow", "69shu", "paoshu8"
   }
 
   def remote?(seed : String)
-    SEEDS.includes?(seed)
+    REMOTE_SEEDS.includes?(seed)
   end
 
   def recent?(mftime : Int64, span = 1.hours)
