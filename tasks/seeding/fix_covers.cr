@@ -61,7 +61,7 @@ class CV::Seeds::FixCovers
   end
 
   private def convert_img(inp_file : String, out_file : String)
-    `convert "#{inp_file}" -resize "400>x" "#{out_file}"`
+    `convert "#{inp_file}" -resize "300>x" "#{out_file}"`
   rescue err
     puts err
   end

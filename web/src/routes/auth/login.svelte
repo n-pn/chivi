@@ -67,7 +67,7 @@
 
       <footer>
         <a href="/auth/signup" class="m-button _line">
-          <span>Tài khoải mới</span>
+          <span>Tài khoản mới</span>
         </a>
 
         <button type="submit" class="m-button _primary login">
