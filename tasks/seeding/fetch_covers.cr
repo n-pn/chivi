@@ -23,7 +23,7 @@ class CV::Seed::FetchCovers
       queue[image_url] = out_file unless image_url.empty?
     end
 
-    fetch!(queue)
+    fetch!(queue, limit: 16)
   end
 
   def fetch_chseed!
@@ -122,5 +122,5 @@ class CV::Seed::FetchCovers
 end
 
 worker = CV::Seed::FetchCovers.new
-worker.fetch_yousuu!
-worker.fetch_chseed!
+worker.fetch_yousuu! unless ARGV.includes?("-yousuu")
+worker.fetch_chseed! unless ARGV.includes?("-chseed")

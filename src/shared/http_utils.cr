@@ -34,7 +34,7 @@ module CV::HttpUtils
   end
 
   def save_file(url : String, out_file : String) : Nil
-    cmd = "curl -L -k -s -m 60 '#{url}' -o '#{out_file}'"
+    cmd = "curl -L -k -s -m 100 '#{url}' -o '#{out_file}'"
     try = 0
 
     loop do
