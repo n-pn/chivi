@@ -5,7 +5,6 @@ require "./filedb/nvinit/rm_text"
 
 require "./_oldcv/kernel/bookdb"
 require "./_oldcv/kernel/chapdb"
-require "./_oldcv/kernel/models/chap_text"
 
 module CV::Kernel
   extend self
@@ -40,25 +39,25 @@ module CV::Kernel
 
   def load_chtext(seed : String, sbid : String, scid : String,
                   dict : String = "various", mode : Int32 = 0)
-    chtext = Oldcv::ChapText.load(seed, sbid, scid)
-    return chtext if mode == 0 && recent?(chtext.cv_time, 3.hours)
+    chtext = Zhtext.load(seed, sbid, scid)
+    return chtext if mode == 0 && recent?(chtext.cv_mtime, 3.hours)
 
-    zh_data = mode < 2 ? chtext.zh_data : [] of String
+    lines = chtext.zh_lines
 
-    if zh_data.empty? && remote?(seed)
+    if remote?(seed) && (mode > 1 || lines.empty?)
       source = RmText.init(seed, sbid, scid)
-      zh_data = [source.title].concat(source.paras)
-      chtext.tap(&.zh_data = zh_data).save!
+      lines = [source.title].concat(source.paras)
+      chtext.tap(&.zh_lines = lines).save!
     end
 
     chtext.tap do |x|
-      if zh_data.empty?
-        x.cv_text = ""
+      if lines.empty?
+        x.cv_trans = ""
       else
-        x.cv_text = Oldcv::Engine.cv_mixed(zh_data, dict).map(&.to_s).join("\n")
+        x.cv_trans = Oldcv::Engine.cv_mixed(lines, dict).map(&.to_s).join("\n")
       end
 
-      x.cv_time = Time.utc.to_unix_ms
+      x.cv_mtime = Time.utc.to_unix
     end
   end
 
@@ -73,7 +72,7 @@ module CV::Kernel
     REMOTE_SEEDS.includes?(seed)
   end
 
-  def recent?(mftime : Int64, span = 1.hours)
-    mftime > (Time.utc - span).to_unix_ms
+  def recent?(mftime : Int64, span = 3.hours)
+    mftime >= (Time.utc - span).to_unix
   end
 end

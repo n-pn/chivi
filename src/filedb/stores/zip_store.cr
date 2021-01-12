@@ -1,7 +1,14 @@
 require "compress/zip"
 
 class CV::ZipStore
-  def self.read!(zip_file : String, entry_name : String)
+  def self.read(file : String)
+    dir_path = File.dirname(file)
+    zip_file = "#{dir_path}.zip"
+
+    new(zip_file, dir_path).read(File.basename(file))
+  end
+
+  def self.read(zip_file : String, entry_name : String)
     new(zip_file).read(entry_name)
   end
 
@@ -16,7 +23,7 @@ class CV::ZipStore
   end
 
   def zip_entries(min_size : Int32 = 1)
-    return [] of String unless zip_exists?
+    return [] of String unless File.exists?(@zip_file)
 
     open_zip do |zip|
       zip.entries
@@ -27,7 +34,7 @@ class CV::ZipStore
   end
 
   def dir_entries(min_size : Int32 = 1)
-    return [] of String unless dir_exists?
+    return [] of String unless File.directory?(@root_dir)
 
     Dir.children(@root_dir).reject do |fname|
       fpath = root_path(fname)
@@ -36,29 +43,14 @@ class CV::ZipStore
     end
   end
 
-  def zip_exists?
-    File.exists?(@zip_file)
-  end
-
-  def dir_exists?
-    File.directory?(@root_dir)
-  end
-
   def exists?(fname : String) : Bool
     return true if File.exists?(root_path(fname))
-
-    if zip_exists?
-      open_zip { |zip| return true if zip[fname]? }
-    end
-
-    false
+    open_zip { |zip| return true if zip[fname]? } || false
   end
 
   def read(fname : String)
     fpath = root_path(fname)
     return File.read(fpath) if File.exists?(fpath)
-
-    return unless zip_exists?
     open_zip(&.[fname]?.try(&.open(&.gets_to_end)))
   end
 
@@ -109,11 +101,11 @@ class CV::ZipStore
   end
 
   private def open_zip
-    Compress::Zip::File.open(zip_file) { |zip| yield zip }
+    return unless File.exists?(@zip_file)
+    Compress::Zip::File.open(@zip_file) { |zip| yield zip }
   end
 
   private def zip_entry(fname : String)
-    return unless zip_exists?
     open_zip { |zip| yield zip[fname]? }
   end
 end

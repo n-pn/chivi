@@ -31,11 +31,11 @@ class CV::Zhtext
   property cv_mtime = 0_i64
 
   def initialize(@file : String)
-    @dir = File.dirname(@file)
   end
 
   def load_zh_text : Array(String)
-    if zh_text = ZipStore.read("#{@dir}.zip", @file)
+    zip_file = "#{File.dirname(file)}.zip"
+    if zh_text = ZipStore.read(zip_file, File.basename(@file))
       puts "- <zhtext> [#{@file}] loaded".colorize.green
       zh_text.split("\n")
     else
@@ -50,8 +50,10 @@ class CV::Zhtext
   end
 
   def save!(file : String = @file) : Nil
-    ::FileUtils.mkdir_p(@dir) unless File.exists(@dir)
-    File.open(file, "w") { |io| @zh_lines.join(io, "\n") }
+    text_dir = File.dirname(file)
+    ::FileUtils.mkdir_p(text_dir) unless File.exists?(text_dir)
+
+    File.open(file, "w") { |io| zh_lines.join(io, "\n") }
     puts "- <zhtext> [#{file}] saved.".colorize.yellow
   end
 end

@@ -66,7 +66,7 @@ module CV::Server
     chap = Kernel.load_chtext(seed, sbid, scid, dict: dict, mode: mode)
 
     RouteUtils.json_res(env) do |res|
-      {cvdata: chap.cv_text, mftime: chap.cv_time}.to_json(res)
+      {cvdata: chap.cv_trans, mftime: chap.cv_mtime}.to_json(res)
     end
   rescue err
     puts "- Error loading chap_text: #{err}"
