@@ -197,8 +197,8 @@
     </section>
   </div>
 
-  <div class="page">
-    <header class="page-header">
+  <div class="section">
+    <header class="section-header">
       <a
         href="/~{book.slug}"
         class="header-tab"
@@ -221,9 +221,9 @@
       </a>
     </header>
 
-    <section class="page-content">
+    <div class="section-content">
       <slot />
-    </section>
+    </div>
   </div>
 </Vessel>
 
@@ -304,30 +304,34 @@
     // @include fgcolor(neutral, 8);
   }
 
-  .page {
+  .section {
     background-color: #fff;
-    margin: 0.75rem -0.75rem;
-    padding: 0 0.75rem;
-    border-radius: 0.75rem;
+
+    margin: 0 -0.5rem;
+    padding: 0 0.5rem;
+
+    border-radius: 0.5rem;
+
     @include shadow(2);
-    @include screen-min(lg) {
-      margin-left: 0;
-      margin-right: 0;
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
+
+    @include screen-min(md) {
+      margin: 0.75rem 0;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      border-radius: 1rem;
     }
   }
 
-  $page-height: 3rem;
-  .page-header {
-    height: $page-height;
+  $section-height: 3rem;
+  .section-header {
+    height: $section-height;
     display: flex;
     @include border($sides: bottom, $color: neutral, $shade: 3);
   }
 
   .header-tab {
-    height: $page-height;
-    line-height: $page-height;
+    height: $section-height;
+    line-height: $section-height;
     width: 50%;
     font-weight: 500;
     text-align: center;
@@ -345,7 +349,7 @@
     }
   }
 
-  .page-content {
+  .section-content {
     padding: 0.75rem 0;
     display: block;
     min-height: 50vh;

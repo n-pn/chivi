@@ -12,20 +12,20 @@
   {#each chaps as chap}
     <li class="item">
       <a href={chap_url(chap)} class="link" rel="nofollow">
-        <span class="label">{chap.label}</span>
-        <span class="title">{chap.title}</span>
+        <div class="label">{chap.label}</div>
+        <div class="title">{chap.title}</div>
       </a>
     </li>
   {/each}
 </ul>
 
 <style lang="scss">
-  $chap-size: 17.5rem;
+  $chap-size: 17rem;
   // $chap-break: $chap-size * 2 + 0.75 * 5;
 
   .list {
     @include grid($size: minmax($chap-size, 1fr));
-    @include grid-gap($gap: 0 0.75rem);
+    @include props(grid-gap, $sm: 0 0.5rem, $md: 0 0.75rem);
   }
 
   .item {
@@ -60,7 +60,11 @@
 
   .link {
     display: block;
-    padding: 0.375rem 0.75rem;
+    padding: 0.375rem 0.5rem;
+
+    @include screen-min(md) {
+      padding: 0.5rem 0.75rem;
+    }
 
     &:visited {
       .title {
@@ -76,28 +80,19 @@
     }
   }
 
-  // .label {
-  //   padding-top: 0.5rem;
-  //   padding-left: 0.5rem;
-  // }
-
   .label {
-    display: block;
     padding: 0;
-    line-height: 1.25rem;
-    @include font-size(1);
+    line-height: 1rem;
+    margin-bottom: 0.25rem;
     text-transform: uppercase;
+
+    @include font-size(1);
     @include fgcolor(neutral, 5);
     @include truncate(100%);
   }
 
   .title {
-    display: block;
-    padding: 0;
-    line-height: 1.5rem;
-    // $font-sizes: screen-vals(rem(15px), rem(16px), rem(17px));
-    // @include props(font-size, $font-sizes);
-
+    line-height: 1.25rem;
     @include fgcolor(neutral, 8);
     @include truncate(100%);
   }
