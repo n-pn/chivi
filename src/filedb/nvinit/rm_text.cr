@@ -6,7 +6,7 @@ require "../../shared/*"
 
 class CV::RmText
   def self.init(seed : String, sbid : String, scid : String,
-                expiry : Time = Time.utc - 2.years, freeze : Bool = true)
+                expiry : Time = Time.utc - 10.years, freeze : Bool = true)
     file = path_for(seed, sbid, scid)
     expiry = TimeUtils::DEF_TIME if seed == "jx_la"
 

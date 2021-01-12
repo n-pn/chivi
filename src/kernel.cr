@@ -1,6 +1,7 @@
 require "./shared/*"
 require "./engine/*"
 require "./filedb/*"
+require "./filedb/nvinit/rm_text"
 
 require "./_oldcv/kernel/bookdb"
 require "./_oldcv/kernel/chapdb"
@@ -45,7 +46,7 @@ module CV::Kernel
     zh_data = mode < 2 ? chtext.zh_data : [] of String
 
     if zh_data.empty? && remote?(seed)
-      source = Oldcv::SeedText.new(seed, sbid, scid, freeze: true)
+      source = RmText.init(seed, sbid, scid)
       zh_data = [source.title].concat(source.paras)
       chtext.tap(&.zh_data = zh_data).save!
     end
