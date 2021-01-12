@@ -37,14 +37,15 @@ module CV::Kernel
   # 1 => load saved chap_text then convert
   # 2 => fetch text from external hosts then convert
 
-  def get_text(bhash : String, sname : String, s_bid : String, s_cid : String, mode = 0)
-    chtext = Oldcv::ChapText.load(sname, s_bid, s_cid)
-    return chtext if mode == 0 && recent?(chtext.cv_time, 2.hours)
+  def load_chtext(seed : String, sbid : String, scid : String,
+                  dict : String = "various", mode : Int32 = 0)
+    chtext = Oldcv::ChapText.load(seed, sbid, scid)
+    return chtext if mode == 0 && recent?(chtext.cv_time, 3.hours)
 
     zh_data = mode < 2 ? chtext.zh_data : [] of String
 
-    if zh_data.empty? && remote?(sname)
-      source = Oldcv::SeedText.new(sname, s_bid, s_cid, freeze: true)
+    if zh_data.empty? && remote?(seed)
+      source = Oldcv::SeedText.new(seed, sbid, scid, freeze: true)
       zh_data = [source.title].concat(source.paras)
       chtext.tap(&.zh_data = zh_data).save!
     end
@@ -53,7 +54,7 @@ module CV::Kernel
       if zh_data.empty?
         x.cv_text = ""
       else
-        x.cv_text = Oldcv::Engine.cv_mixed(zh_data, bhash).map(&.to_s).join("\n")
+        x.cv_text = Oldcv::Engine.cv_mixed(zh_data, dict).map(&.to_s).join("\n")
       end
 
       x.cv_time = Time.utc.to_unix_ms

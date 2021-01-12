@@ -13,68 +13,63 @@
     lookup_actived,
   } from '$src/stores'
 
-  export async function preload({ params, query }) {
+  export async function preload({ params }) {
     const bslug = params.book
 
     const cols = params.chap.split('-')
     const seed = cols[cols.length - 2]
     const scid = cols[cols.length - 1]
 
-    const mode = +query.mode || 0
-
     try {
-      const res = await load_chap(this.fetch, bslug, seed, scid, mode)
+      const url = `/api/chinfos/${bslug}/${seed}/${scid}`
+      const res = await this.fetch(url)
+
       if (res.ok) {
-        const data = await res.json()
-        return data
+        const chinfo = await res.json()
+        const { cvdata, mftime } = await load_chtext(this.fetch, chinfo)
+        return { chinfo, cvdata, mftime }
       } else {
         const data = await res.text()
         this.error(res.status, data)
       }
     } catch (err) {
-      this.error(500, 'Unknown error!')
+      this.error(500, err.toString())
     }
   }
 
-  async function load_chap(fetch, bslug, seed, scid, mode = 0) {
-    const url = `/api/texts/${bslug}/${seed}/${scid}?mode=${mode}`
+  async function load_chtext(fetch, { seed, sbid, scid, bhash }, mode = 0) {
+    const url = `/api/chtexts/${seed}/${sbid}/${scid}?dict=${bhash}&mode=${mode}`
     const res = await fetch(url)
-    return res
+    const data = await res.json()
+    return data
+  }
+
+  function gen_paths(chinfo) {
+    const book_path = `/~${chinfo.bslug}/content?seed=${chinfo.seed}`
+    const prev_path = gen_rel_path(chinfo.bslug, chinfo.prev_url) || book_path
+    const next_path = gen_rel_path(chinfo.bslug, chinfo.next_url) || book_path
+
+    return [book_path, prev_path, next_path]
+  }
+
+  function gen_rel_path(bslug, rel_url) {
+    return rel_url ? `/~${bslug}/-${rel_url}` : null
   }
 </script>
 
 <script>
-  export let bslug = ''
-  export let bname = ''
-
-  export let ubid = ''
-  export let seed = ''
-  export let scid = ''
-
-  export let mftime = 0
+  export let chinfo = {}
   export let cvdata = ''
+  export let mftime = 0
 
-  export let ch_total = 1
-  export let ch_index = 1
-
-  export let ch_title = ''
-  export let ch_label = ''
-
-  export let curr_url = ''
-  export let prev_url = ''
-  export let next_url = ''
-
-  $: book_path = `/~${bslug}/content?seed=${seed}`
-  // $: curr_path = `/~${bslug}/${curr_url}`
-  $: prev_path = prev_url ? `/~${bslug}/-${prev_url}` : book_path
-  $: next_path = next_url ? `/~${bslug}/-${next_url}` : book_path
+  $: [book_path, prev_path, next_path] = gen_paths(chinfo)
 
   $: $upsert_dicts = [
-    [ubid, bname, true],
+    [chinfo.bhash, chinfo.bname, true],
     ['generic', 'Thông dụng'],
     ['hanviet', 'Hán việt'],
   ]
-  $: $lookup_dname = ubid
+  $: $lookup_dname = chinfo.bhash
 
   let dirty = false
   $: if (dirty) reload_chap(1)
@@ -123,11 +118,11 @@
 
   let _load = false
   async function reload_chap(mode = 1) {
-    if ($self_power < 1) return
+    if (mode > $self_power) mode = $self_power
+    if (mode < 1) return
 
     _load = true
-    const res = await load_chap(window.fetch, bslug, seed, scid, mode)
-    const data = await res.json()
+    const data = await load_chtext(window.fetch, chinfo, mode)
 
     mftime = data.mftime
     cvdata = data.cvdata
@@ -138,8 +133,7 @@
 </script>
 
 <svelte:head>
-  <title>{ch_title} - {bname} - Chivi</title>
-  <meta property="og:url" content="{bslug}/{curr_url}" />
+  <title>{chinfo.title} - {chinfo.bname} - Chivi</title>
 </svelte:head>
 
 <svelte:body on:keydown={handle_keypress} />
@@ -147,11 +141,11 @@
 <Vessel shift={$lookup_enabled && $lookup_actived}>
   <a slot="header-left" href={book_path} class="header-item _title">
     <SvgIcon name="book-open" />
-    <span class="header-text _show-md _title">{bname}</span>
+    <span class="header-text _show-md _title">{chinfo.bname}</span>
   </a>
 
   <button slot="header-left" class="header-item _active">
-    <span class="header-text _seed">[{seed}]</span>
+    <span class="header-text _seed">[{chinfo.seed}]</span>
   </button>
 
   <button
@@ -174,10 +168,10 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/~{bslug}" class="-link"> {bname}</a>
+      <a href="/~{chinfo.bslug}" class="-link"> {chinfo.bname}</a>
     </div>
 
-    <div class="-crumb"><span class="-text">{ch_label}</span></div>
+    <div class="-crumb"><span class="-text">{chinfo.label}</span></div>
 
     <!--
     <div class="-right">
@@ -198,7 +192,7 @@
     <a
       href={prev_path}
       class="m-button _solid"
-      class:_disable={!prev_url}
+      class:_disable={!chinfo.prev_url}
       data-kbd="j">
       <SvgIcon name="chevron-left" />
       <span>Trước</span>
@@ -206,13 +200,13 @@
 
     <button class="m-button _solid">
       <SvgIcon name="list" />
-      <span>{ch_index}/{ch_total}</span>
+      <span>{chinfo.ch_index}/{chinfo.ch_total}</span>
     </button>
 
     <a
       href={next_path}
       class="m-button _solid _primary"
-      class:_disable={!next_url}
+      class:_disable={!chinfo.next_url}
       data-kbd="k">
       <span>Kế tiếp</span>
       <SvgIcon name="chevron-right" />

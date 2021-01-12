@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-  <title>{status}</title>
+  <title>{status} - Chivi</title>
 </svelte:head>
 
 <Vessel>

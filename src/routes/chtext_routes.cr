@@ -1,10 +1,10 @@
 require "./_routes"
 
 module CV::Server
-  get "/api/texts/:slug/:seed/:scid" do |env|
-    slug = env.params.url["slug"]
+  get "/api/chinfos/:bslug/:seed/:scid" do |env|
+    bslug = env.params.url["bslug"]
 
-    unless info = Oldcv::BookDB.find(slug)
+    unless info = Oldcv::BookDB.find(bslug)
       halt env, status_code: 404, response: "Quyển sách không tồn tại!"
     end
 
@@ -27,31 +27,46 @@ module CV::Server
     prev_chap = list.chaps[index - 1] if index > 0
     next_chap = list.chaps[index + 1] if index < list.size - 1
 
-    mode = env.params.query.fetch("mode", "0").try(&.to_i?) || 0
-    chap = Kernel.get_text(info.ubid, seed, list.sbid, scid, mode: mode)
-
     RouteUtils.json_res(env) do |res|
       {
-        cvdata: chap.cv_text,
-        mftime: chap.cv_time,
-
+        bhash: info.ubid,
         bslug: info.slug,
         bname: info.vi_title,
 
-        ubid: info.ubid,
         seed: seed,
-        scid: curr_chap.scid,
+        sbid: info.seed_sbids[seed],
+        scid: scid,
 
-        ch_title: curr_chap.vi_title,
-        ch_label: curr_chap.vi_label,
+        title: curr_chap.vi_title,
+        label: curr_chap.vi_label,
+
         ch_index: index + 1,
         ch_total: list.size,
 
-        curr_url: curr_chap.try(&.slug_for(seed)),
         prev_url: prev_chap.try(&.slug_for(seed)),
         next_url: next_chap.try(&.slug_for(seed)),
-
       }.to_json(res)
+    end
+  rescue err
+    puts "- Error loading chap_text: #{err}"
+    message = err.message || "Unknown error!"
+    halt env, status_code: 500, response: message
+  end
+
+  get "/api/chtexts/:seed/:sbid/:scid" do |env|
+    seed = env.params.url["seed"]
+    sbid = env.params.url["sbid"]
+    scid = env.params.url["scid"]
+    dict = env.params.query["dict"]? || "various"
+
+    power = env.session.int?("power") || 0
+    mode = env.params.query["mode"]?.try(&.to_i?) || 0
+    mode = power if mode > power
+
+    chap = Kernel.load_chtext(seed, sbid, scid, dict: dict, mode: mode)
+
+    RouteUtils.json_res(env) do |res|
+      {cvdata: chap.cv_text, mftime: chap.cv_time}.to_json(res)
     end
   rescue err
     puts "- Error loading chap_text: #{err}"
