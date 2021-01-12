@@ -12,7 +12,7 @@ module CV::Server
     # BookDB.inc_counter(info, read: true)
 
     seed = env.params.url["seed"]
-    unless fetched = Kernel.load_list(info, seed, mode: 0)
+    unless fetched = Kernel.load_chlist(info, seed, mode: 0)
       halt env, status_code: 404, response: "Nguồn truyện không tồn tại!"
     end
 

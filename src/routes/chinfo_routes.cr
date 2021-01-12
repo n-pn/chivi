@@ -11,7 +11,7 @@ module CV::Server
     seed = env.params.url["seed"]
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
 
-    unless fetched = Kernel.load_list(info, seed, mode: mode)
+    unless fetched = Kernel.load_chlist(info, seed, mode: mode)
       halt env, status_code: 404, response: "Seed not found!"
     end
 

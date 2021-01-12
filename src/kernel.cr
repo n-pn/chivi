@@ -4,12 +4,12 @@ require "./filedb/*"
 require "./filedb/nvinit/rm_text"
 
 require "./_oldcv/kernel/bookdb"
-require "./_oldcv/kernel/chapdb"
+require "./_oldcv/kernel/models/chap_list"
 
 module CV::Kernel
   extend self
 
-  def load_list(info : Oldcv::BookInfo, seed : String, mode = 0) : Tuple(Oldcv::ChapList, Int64)?
+  def load_chlist(info : Oldcv::BookInfo, seed : String, mode : Int32 = 0) : Tuple(Oldcv::ChapList, Int64)?
     return unless sbid = info.seed_sbids[seed]?
 
     chlist = Oldcv::ChapList.preload_or_create!(info.ubid, seed)
@@ -23,13 +23,21 @@ module CV::Kernel
       Oldcv::BookDB.update_info(info, remote)
       info.save! if info.changed?
 
-      Oldcv::ChapDB.update_list(chlist, remote, dirty: mode < 2, force: mode > 0)
-      chlist.save! if chlist.changed?
-    else
-      Oldcv::ChapDB.translate_list(chlist, force: mode > 0)
+      chlist.merge!(remote.chapters, dirty: mode < 2)
     end
 
+    tranlate_chlist(chlist, force: mode > 0)
+    chlist.save! if chlist.changed?
+
     {chlist, info.seed_mftimes[seed]}
+  end
+
+  def tranlate_chlist(chlist : Oldcv::ChapList, force : Bool = false)
+    chlist.tap do |x|
+      x.update_each do |chap|
+        chap.tap &.translate!(chlist.ubid, force: force)
+      end
+    end
   end
 
   # # modes:
