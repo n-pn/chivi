@@ -30,8 +30,9 @@ module CV::Server
       offset = (chaps.size // limit) * limit
     end
 
-    chlist = chaps[offset, limit].map do |chap|
+    chlist = chaps[offset, limit].map_with_index do |chap, idx|
       {
+        _idx:  idx + offset + 1,
         scid:  chap.scid,
         label: chap.vi_label,
         title: chap.vi_title,

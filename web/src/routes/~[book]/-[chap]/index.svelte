@@ -4,6 +4,8 @@
   import Vessel from '$parts/Vessel'
   import Convert, { toggle_lookup, active_upsert } from '$parts/Convert'
 
+  import { get_chinfo, get_chtext } from '$utils/api_calls'
+
   import {
     self_power,
     upsert_dicts,
@@ -20,28 +22,10 @@
     const seed = cols[cols.length - 2]
     const scid = cols[cols.length - 1]
 
-    try {
-      const url = `/api/chinfos/${bslug}/${seed}/${scid}`
-      const res = await this.fetch(url)
+    const [ok, data] = await get_chinfo(this.fetch, bslug, seed, scid)
 
-      if (res.ok) {
-        const chinfo = await res.json()
-        const { cvdata, mftime } = await load_chtext(this.fetch, chinfo)
-        return { chinfo, cvdata, mftime }
-      } else {
-        const data = await res.text()
-        this.error(res.status, data)
-      }
-    } catch (err) {
-      this.error(500, err.toString())
-    }
-  }
-
-  async function load_chtext(fetch, { seed, sbid, scid, bhash }, mode = 0) {
-    const url = `/api/chtexts/${seed}/${sbid}/${scid}?dict=${bhash}&mode=${mode}`
-    const res = await fetch(url)
-    const data = await res.json()
-    return data
+    if (ok) return data
+    else this.error(data.status, data.message)
   }
 
   function gen_paths(chinfo) {
@@ -60,7 +44,6 @@
 <script>
   export let chinfo = {}
   export let cvdata = ''
-  export let mftime = 0
 
   $: [book_path, prev_path, next_path] = gen_paths(chinfo)
 
@@ -116,19 +99,13 @@
     }
   }
 
-  let _load = false
   async function reload_chap(mode = 1) {
     if (mode > $self_power) mode = $self_power
     if (mode < 1) return
 
-    _load = true
-    const data = await load_chtext(window.fetch, chinfo, mode)
-
-    mftime = data.mftime
-    cvdata = data.cvdata
-
+    const [ok, data] = await get_chtext(window.fetch, chinfo, mode)
+    cvdata = ok ? data.cvdata : data.message
     dirty = false
-    _load = false
   }
 </script>
 
@@ -152,9 +129,9 @@
     slot="header-right"
     class="header-item"
     disabled={$self_power < 1}
-    on:click={() => reload_chap(1)}
+    on:click={() => (dirty = true)}
     data-kbd="r">
-    <SvgIcon name="refresh-ccw" spin={_load} />
+    <SvgIcon name="refresh-ccw" spin={dirty} />
   </button>
 
   <button
@@ -172,12 +149,6 @@
     </div>
 
     <div class="-crumb"><span class="-text">{chinfo.label}</span></div>
-
-    <!--
-    <div class="-right">
-      <span><RelTime time={mftime} /></span>
-    </div>
-    -->
   </nav>
 
   {#if cvdata}

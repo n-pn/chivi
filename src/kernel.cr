@@ -26,18 +26,28 @@ module CV::Kernel
       chlist.merge!(remote.chapters, dirty: mode < 2)
     end
 
-    tranlate_chlist(chlist, force: mode > 0)
-    chlist.save! if chlist.changed?
+    chlist.tap do |x|
+      x.update_each do |chap|
+        chap.tap do |x|
+          if mode > 0 || x.vi_label.empty?
+            x.vi_label = cv_title(x.zh_label, info.ubid)
+          end
 
+          if mode > 0 || x.vi_title.empty?
+            x.vi_title = cv_title(x.zh_title, info.ubid)
+            x.set_slug(x.vi_title)
+          end
+        end
+      end
+    end
+
+    chlist.save! if chlist.changed?
     {chlist, info.seed_mftimes[seed]}
   end
 
-  def tranlate_chlist(chlist : Oldcv::ChapList, force : Bool = false)
-    chlist.tap do |x|
-      x.update_each do |chap|
-        chap.tap &.translate!(chlist.ubid, force: force)
-      end
-    end
+  private def cv_title(input : String, dname : String)
+    return input if input.empty?
+    Oldcv::Engine.cv_title(input, dname).vi_text
   end
 
   # # modes:
