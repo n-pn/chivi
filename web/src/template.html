@@ -35,11 +35,28 @@
 	     initialise the router -->
     %sapper.scripts%
 
+    <link
+      rel="preload"
+      href="/fonts/roboto-v20-vietnamese_latin-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+
+    <link
+      rel="preload"
+      href="/fonts/roboto-v20-vietnamese_latin-500.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+
     <style>
       @font-face {
         font-family: 'Roboto';
         font-style: normal;
         font-weight: 400;
+        font-display: fallback;
         src: local('Roboto'), local('Roboto-Regular'),
           url('/fonts/roboto-v20-vietnamese_latin-regular.woff2')
             format('woff2'),
@@ -50,6 +67,7 @@
         font-family: 'Roboto';
         font-style: italic;
         font-weight: 400;
+        font-display: fallback;
         src: local('Roboto Italic'), local('Roboto-Italic'),
           url('/fonts/roboto-v20-vietnamese_latin-italic.woff2') format('woff2'),
           url('/fonts/roboto-v20-vietnamese_latin-italic.woff') format('woff');
@@ -59,6 +77,7 @@
         font-family: 'Roboto';
         font-style: normal;
         font-weight: 500;
+        font-display: fallback;
         src: local('Roboto Medium'), local('Roboto-Medium'),
           url('/fonts/roboto-v20-vietnamese_latin-500.woff2') format('woff2'),
           url('/fonts/roboto-v20-vietnamese_latin-500.woff') format('woff');
