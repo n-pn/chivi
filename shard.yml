@@ -32,8 +32,8 @@ targets:
   fetch_covers:
     main: tasks/seeding/fetch_covers.cr
 
-  preload_texts:
-    main: tasks/routine/preload_texts.cr
+  fetch_zhtexts:
+    main: tasks/routine/fetch_zhtexts.cr
 
 crystal: 0.35.0
 

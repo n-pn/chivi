@@ -23,14 +23,10 @@ class CV::ZipStore
   end
 
   def zip_entries(min_size : Int32 = 1)
-    return [] of String unless File.exists?(@zip_file)
-
     open_zip do |zip|
-      zip.entries
-        # skip files if file size smaller than min_size
-        .reject { |x| x.uncompressed_size < min_size }
-        .map(&.filename)
-    end
+      # skip files if file size smaller than min_size
+      zip.entries.reject { |x| x.uncompressed_size < min_size }.map(&.filename)
+    end || [] of String
   end
 
   def dir_entries(min_size : Int32 = 1)

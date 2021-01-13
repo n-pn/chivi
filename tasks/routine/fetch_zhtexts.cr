@@ -3,30 +3,30 @@ require "colorize"
 require "file_utils"
 
 require "../../src/filedb/nvinfo"
-require "../../src/filedb/chtext"
+require "../../src/filedb/zhtext"
 require "../../src/filedb/nvinit/rm_text"
 
 LIST_DIR = "_db/nvdata/chinfos"
 TEXT_DIR = "_db/nvdata/zhtexts"
 
-class PreloadBook
+class CV::PreloadBook
   MIN_SIZE = 20
 
-  getter indexed_map : Chivi::ValueMap
-  getter existed_zip : Chivi::ZipStore
+  getter indexed_map : CV::ValueMap
+  getter existed_zip : CV::ZipStore
   getter missing : Array(String)
 
   def initialize(@seed : String, @sbid : String)
     @out_dir = "#{TEXT_DIR}/#{@seed}/#{@sbid}"
-    FileUtils.mkdir_p(@out_dir)
+    ::FileUtils.mkdir_p(@out_dir)
 
-    @indexed_map = Chivi::ValueMap.new("#{LIST_DIR}/#{@seed}/#{@sbid}/_indexed.tsv")
-    @existed_zip = Chivi::ZipStore.new("#{TEXT_DIR}/#{@seed}/#{@sbid}.zip")
+    @indexed_map = CV::ValueMap.new("#{LIST_DIR}/#{@seed}/#{@sbid}/index.tsv")
+    @existed_zip = CV::ZipStore.new("#{TEXT_DIR}/#{@seed}/#{@sbid}.zip")
 
-    indexed_sbids = @indexed_map.values.values
-    existed_sbids = @existed_zip.entries(MIN_SIZE).map(&.sub(".txt", ""))
+    indexed_scids = @indexed_map.data.keys
+    existed_scids = @existed_zip.entries(MIN_SIZE).map(&.sub(".txt", ""))
 
-    @missing = indexed_sbids - existed_sbids
+    @missing = indexed_scids - existed_scids
   end
 
   def crawl!(threads = 4)
@@ -58,21 +58,14 @@ class PreloadBook
   end
 
   def fetch_text(scid : String, label : String) : Nil
-    crawler = Oldcv::SeedText.new(@seed, @sbid, scid, freeze: true)
+    source = CV::RmText.init(@seed, @sbid, scid)
     out_file = "#{@out_dir}/#{scid}.txt"
 
-    # if File.exists?(out_file) && File.size(out_file) < MIN_SIZE
-    #   puts "- delete empty file [#{out_file}]".colorize.light_red
-    #   File.delete(out_file)
-    # end
+    puts "- <#{label}> [#{source.title}] saved!\n".colorize.yellow
 
-    case crawler.title
-    when .empty?, "Server Error", "524 Origin Time-out", "503 Service Temporarily Unavailable"
-      puts "- delete empty html [#{crawler.file}]\n".colorize.light_red
-      File.delete(crawler.file)
-    else
-      puts "- <#{label}> [#{crawler.title}] saved!\n".colorize.yellow
-      File.write(out_file, crawler)
+    File.open(out_file, "w") do |io|
+      io.puts(source.title)
+      source.paras.join(io, "\n")
     end
   rescue err
     puts "- <#{label}> [#{@seed}/#{@sbid}/#{scid}]: #{err.message}".colorize.red
@@ -83,7 +76,7 @@ class PreloadBook
   end
 end
 
-class PreloadSeed
+class CV::PreloadSeed
   getter sbids
 
   def initialize(@seed : String, mode = :all)
@@ -96,34 +89,31 @@ class PreloadSeed
   end
 
   private def get_sbids_by_weight(main_seed = false)
-    map = Chivi::ValueMap.new("_db/_extra/source/#{@seed}/_index.tsv")
-
-    res = [] of String
-
-    Chivi::BookMeta.each_hash(order: "weight", seed: @seed) do |bhash|
-      next unless value = map.get_value(bhash)
-      next if main_seed && !is_main_seed(bhash)
-
-      puts "- #{bhash}: #{Chivi::BookMeta.get_title_vi(bhash)}".colorize.cyan
-      res << value
+    input = Nvinfo.chseed.data.compact_map do |bhash, chseed|
+      next unless sbid = extract_seed(chseed, main_seed)
+      {bhash, sbid}
     end
 
-    res
+    input.sort_by { |(bhash, _)| Nvinfo.weight.ival(bhash).- }.map(&.[1])
   end
 
-  private def is_main_seed(bhash : String)
-    return false unless seeds = Chivi::BookMeta.seeds_fs.get_value(bhash)
-
+  private def extract_seed(seeds : Array(String), main_only : Bool = false)
     case @seed
     when "zhwenpg", "nofff"
       # not considered main source if there are more than two sources
-      return false if seeds.size > 2
+      return if seeds.size > 2
     else
       # nofff is a shitty source
-      seeds.shift if seeds.first == "nofff"
+      seeds.shift if seeds.first.starts_with?("nofff")
     end
 
-    @seed == seeds.first
+    seeds.each_with_index do |input, index|
+      name, sbid = input.split("/")
+      next unless name == @seed
+      return (main_only && index > 0) ? nil : sbid
+    end
+
+    nil
   end
 
   def crawl!(text_threads = 4)
@@ -166,4 +156,4 @@ class PreloadSeed
   end
 end
 
-PreloadSeed.crawl!(ARGV)
+CV::PreloadSeed.crawl!(ARGV)
