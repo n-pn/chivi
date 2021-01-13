@@ -28,16 +28,20 @@
     else this.error(data.status, data.message)
   }
 
-  function gen_paths(chinfo) {
-    const book_path = `/~${chinfo.bslug}/content?seed=${chinfo.seed}`
-    const prev_path = gen_rel_path(chinfo.bslug, chinfo.prev_url) || book_path
-    const next_path = gen_rel_path(chinfo.bslug, chinfo.next_url) || book_path
+  function gen_paths({ bslug, seed, ch_index, prev_url, next_url }) {
+    const book_path = gen_book_path(bslug, seed, 0)
+    const list_path = gen_book_path(bslug, seed, ch_index)
 
-    return [book_path, prev_path, next_path]
+    const prev_path = prev_url ? `/~${bslug}/-${prev_url}` : book_path
+    const next_path = next_url ? `/~${bslug}/-${next_url}` : list_path
+
+    return [book_path, list_path, prev_path, next_path]
   }
 
-  function gen_rel_path(bslug, rel_url) {
-    return rel_url ? `/~${bslug}/-${rel_url}` : null
+  function gen_book_path(bslug, seed, index) {
+    let url = `/~${bslug}/content?seed=${seed}`
+    const page = Math.floor(index / 30) + 1
+    return page > 1 ? url + `&page=${page}` : url
   }
 </script>
 
@@ -45,7 +49,7 @@
   export let chinfo = {}
   export let cvdata = ''
 
-  $: [book_path, prev_path, next_path] = gen_paths(chinfo)
+  $: [book_path, list_path, prev_path, next_path] = gen_paths(chinfo)
 
   $: $upsert_dicts = [
     [chinfo.bhash, chinfo.bname, true],
@@ -169,10 +173,10 @@
       <span>Trước</span>
     </a>
 
-    <button class="m-button _solid">
+    <a href={list_path} class="m-button _solid">
       <SvgIcon name="list" />
       <span>{chinfo.ch_index}/{chinfo.ch_total}</span>
-    </button>
+    </a>
 
     <a
       href={next_path}
