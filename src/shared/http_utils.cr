@@ -20,7 +20,7 @@ module CV::HttpUtils
 
       try += 1
       sleep 500.milliseconds * try
-      raise "500 Server Error!" if try > 5
+      raise "500 Server Error!" if try > 3
     end
   end
 
