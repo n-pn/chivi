@@ -1,6 +1,7 @@
 require "json"
 require "colorize"
 require "file_utils"
+require "option_parser"
 
 require "../../src/filedb/nvinfo"
 require "../../src/filedb/zhtext"
@@ -31,7 +32,7 @@ class CV::PreloadBook
 
   def crawl!(threads = 4)
     threads = @missing.size if threads > @missing.size
-    channel = Channel(Nil).new(threads + 1)
+    channel = Channel(Nil).new(threads)
 
     @missing.each_with_index do |scid, idx|
       channel.receive if idx > threads
@@ -77,27 +78,19 @@ class CV::PreloadBook
 end
 
 class CV::PreloadSeed
-  getter sbids
+  @sbids : Array(String)
 
-  def initialize(@seed : String, mode = :all)
-    @sbids =
-      case mode
-      when :main then get_sbids_by_weight(main_seed: true)
-      when :best then get_sbids_by_weight(main_seed: false)
-      else            Dir.children("#{LIST_DIR}/#{seed}")
-      end
-  end
-
-  private def get_sbids_by_weight(main_seed = false)
+  def initialize(@seed : String, fetch_all : Bool = false)
     input = Nvinfo.chseed.data.compact_map do |bhash, chseed|
-      next unless sbid = extract_seed(chseed, main_seed)
-      {bhash, sbid}
+      next unless sbid = extract_seed(chseed, fetch_all)
+      weight = Nvinfo.weight.ival(bhash)
+      {sbid, weight} if weight > 10
     end
 
-    input.sort_by { |(bhash, _)| Nvinfo.weight.ival(bhash).- }.map(&.[1])
+    @sbids = input.sort_by { |_, weight| -weight }.map(&.[0])
   end
 
-  private def extract_seed(seeds : Array(String), main_only : Bool = false)
+  private def extract_seed(seeds : Array(String), fetch_all : Bool = false)
     case @seed
     when "zhwenpg", "nofff"
       # not considered main source if there are more than two sources
@@ -110,48 +103,48 @@ class CV::PreloadSeed
     seeds.each_with_index do |input, index|
       name, sbid = input.split("/")
       next unless name == @seed
-      return (main_only && index > 0) ? nil : sbid
+      return sbid if fetch_all || index == 0
     end
-
-    nil
   end
 
-  def crawl!(text_threads = 4)
+  def crawl!(threads = 4)
+    puts "[#{@seed}: #{@sbids.size} entries]".colorize.green.bold
+
     @sbids.each_with_index do |sbid, idx|
       puts "- #{idx + 1}/#{@sbids.size} [#{@seed}/#{sbid}]".colorize.light_cyan
-      PreloadBook.crawl!(@seed, sbid, text_threads)
+      PreloadBook.crawl!(@seed, sbid, threads)
     end
   end
 
-  def self.crawl!(argv = ARGV, mode = :best)
-    seeds = ARGV.empty? ? ["zhwenpg", "shubaow"] : ARGV
-    seeds.each do |seed|
-      crawler = PreloadSeed.new(seed, ideal_crawl_mode_for(seed))
-      puts "[#{seed}: #{crawler.sbids.size} entries]".colorize.green.bold
+  def self.crawl!(argv = ARGV)
+    seed = "zhwenpg"
 
-      crawler.crawl!(text_threads: ideal_thread_limit_for(seed))
+    threads = nil
+    fetch_all = nil
+
+    OptionParser.parse(argv) do |parser|
+      parser.banner = "Usage: fetch_zhtexts [arguments]"
+      parser.on("-s SEED", "Seed name") { |x| seed = x }
+      parser.on("-a", "Fetch all") { |x| fetch_all = !!x }
+      parser.on("-t THREADS", "Parallel threads") { |x| threads = x.to_i? }
+
+      parser.invalid_option do |flag|
+        STDERR.puts "ERROR: `#{flag}` is not a valid option."
+        STDERR.puts parser
+        exit(1)
+      end
     end
+
+    fetch_all ||= seed == "hetushu"
+    threads ||= default_threads_for(seed)
+    PreloadSeed.new(seed, fetch_all.not_nil!).crawl!(threads: threads.not_nil!)
   end
 
-  def self.ideal_crawl_mode_for(seed : String)
+  def self.default_threads_for(seed : String) : Int32
     case seed
-    when "hetushu", "rengshu"
-      :best
-    when "zhwenpg", "shubaow"
-      :main
-    else
-      :main
-    end
-  end
-
-  def self.ideal_thread_limit_for(seed : String)
-    case seed
-    when "zhwenpg", "shubaow", "qu_la", "biquge5200"
-      1
-    when "paoshu8", "69shu"
-      2
-    else
-      4
+    when "zhwenpg", "shubaow", "biquge5200" then 1
+    when "paoshu8", "69shu"                 then 2
+    else                                         4
     end
   end
 end

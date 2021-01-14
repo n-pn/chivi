@@ -116,6 +116,9 @@ class CV::RmText
     end
 
     lines
+  rescue err
+    puts "<remote_text> [#{@seed}/#{@sbid}/#{@scid}] error: #{err}".colorize.red
+    [] of String
   end
 
   private def extract_hetushu_paras
