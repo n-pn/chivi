@@ -39,11 +39,11 @@ class CV::ZipStore
     end
   end
 
-  def exists?(fname : String) : Bool
-    File.exists?(root_path(fname)) || in_zip?(fname)
+  def contains?(fname : String) : Bool
+    File.exists?(root_path(fname)) || archives?(fname)
   end
 
-  def in_zip?(fname : String) : Bool
+  def archives?(fname : String) : Bool
     open_zip { |zip| return true if zip[fname]? } || false
   end
 
