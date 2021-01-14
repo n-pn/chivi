@@ -15,8 +15,8 @@ class CV::Seeds::FixCovers
         covers["yousuu"] = ybid
       end
 
-      seeds.each_with_object() do |x, h|
-        seed, sbid = x.split("/")
+      seeds.each do |chseed|
+        seed, sbid = chseed.split("/")
         covers[seed] = sbid
       end
 
@@ -38,7 +38,7 @@ class CV::Seeds::FixCovers
       out_file = "#{DIR}/_chivi/#{bhash}.webp"
       convert_img(bcover, out_file)
 
-      if idx % 100 == 99
+      if idx % 20 == 19
         puts "- [fix_intros] <#{idx + 1}/#{@chseed.size}>".colorize.blue
         save!(mode: :upds)
       end
@@ -47,17 +47,23 @@ class CV::Seeds::FixCovers
     save!(mode: :full)
   end
 
-  def cover_path(seed : String, sbid : String)
-    {"gif", "png", "tiff", "jpg"}.each do |ext|
+  def cover_path(seed : String, sbid : String) : String?
+    {"html", "jpg.gz", ".pc", ".apple"}.each do |ext|
       file = "#{DIR}/#{seed}/#{sbid}.#{ext}"
-      return file if File.exists(file)
+      return if File.exists?(file)
     end
 
-    nil
+    {"gif", "png", "tiff", "jpg"}.each do |ext|
+      file = "#{DIR}/#{seed}/#{sbid}.#{ext}"
+      return file if File.exists?(file)
+    end
   end
 
   private def image_width(file : String) : Int32
-    `identify -format '%w %h' "#{file}"`.split(" ").first.try(&.to_i?) || 0
+    return 0 if File.size(file) < 100
+    `identify -format '%w %h' "#{file}"`.split(" ").first.to_i? || 0
+  rescue
+    0
   end
 
   private def convert_img(inp_file : String, out_file : String)

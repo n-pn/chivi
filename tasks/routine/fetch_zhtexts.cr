@@ -11,7 +11,7 @@ LIST_DIR = "_db/nvdata/chinfos"
 TEXT_DIR = "_db/nvdata/zhtexts"
 
 class CV::PreloadBook
-  MIN_SIZE = 20
+  MIN_SIZE = 10
 
   getter indexed_map : CV::ValueMap
   getter existed_zip : CV::ZipStore
