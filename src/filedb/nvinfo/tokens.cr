@@ -1,4 +1,4 @@
-require "./_utils"
+require "./butils"
 
 module CV::Nvinfo::Tokens
   extend self
@@ -11,7 +11,7 @@ module CV::Nvinfo::Tokens
 
   {% for type in TYPES %}
     class_getter {{type.id}} : TokenMap do
-      TokenMap.new(Utils.map_file("tokens/#{{{type}}}"))
+      TokenMap.new(Butils.map_file("tokens/#{{{type}}}"))
     end
 
     def set_{{type.id}}(key : String, vals : Array(String))

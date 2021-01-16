@@ -3,7 +3,7 @@ require "../../shared/core_utils"
 require "../../shared/text_utils"
 require "../../engine/convert"
 
-module CV::Nvinfo::Utils
+module CV::Nvinfo::Butils
   extend self
 
   DIR = "_db/nvdata/nvinfos"

@@ -1,35 +1,34 @@
-require "json"
 require "./nvinfo/*"
 
 module CV::Nvinfo
   extend self
 
-  class_getter _index : TokenMap { Utils.token_map("_index") }
+  class_getter _index : TokenMap { Butils.token_map("_index") }
 
-  class_getter btitle : ValueMap { Utils.value_map("btitle") }
-  class_getter author : ValueMap { Utils.value_map("author") }
+  class_getter btitle : ValueMap { Butils.value_map("btitle") }
+  class_getter author : ValueMap { Butils.value_map("author") }
 
-  class_getter bgenre : ValueMap { Utils.value_map("bgenre") }
-  class_getter chseed : ValueMap { Utils.value_map("chseed") }
+  class_getter bgenre : ValueMap { Butils.value_map("bgenre") }
+  class_getter chseed : ValueMap { Butils.value_map("chseed") }
 
-  class_getter bcover : ValueMap { Utils.value_map("bcover") }
-  class_getter yousuu : ValueMap { Utils.value_map("yousuu") }
-  class_getter origin : ValueMap { Utils.value_map("origin") }
+  class_getter bcover : ValueMap { Butils.value_map("bcover") }
+  class_getter yousuu : ValueMap { Butils.value_map("yousuu") }
+  class_getter origin : ValueMap { Butils.value_map("origin") }
 
-  class_getter shield : ValueMap { Utils.value_map("shield") }
-  class_getter status : ValueMap { Utils.value_map("status") }
+  class_getter shield : ValueMap { Butils.value_map("shield") }
+  class_getter status : ValueMap { Butils.value_map("status") }
 
-  class_getter voters : OrderMap { Utils.order_map("voters") }
-  class_getter rating : OrderMap { Utils.order_map("rating") }
-  class_getter weight : OrderMap { Utils.order_map("weight") }
+  class_getter voters : OrderMap { Butils.order_map("voters") }
+  class_getter rating : OrderMap { Butils.order_map("rating") }
+  class_getter weight : OrderMap { Butils.order_map("weight") }
 
-  class_getter access_tz : OrderMap { Utils.order_map("tz_access") }
-  class_getter update_tz : OrderMap { Utils.order_map("tz_update") }
+  class_getter access_tz : OrderMap { Butils.order_map("tz_access") }
+  class_getter update_tz : OrderMap { Butils.order_map("tz_update") }
 
   def upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)
     unless fixed
-      zh_btitle = Utils.fix_zh_btitle(zh_btitle)
-      zh_author = Utils.fix_zh_author(zh_author)
+      zh_btitle = Butils.fix_zh_btitle(zh_btitle)
+      zh_author = Butils.fix_zh_author(zh_author)
     end
 
     bhash = CoreUtils.digest32("#{zh_btitle}--#{zh_author}")
@@ -90,20 +89,6 @@ module CV::Nvinfo
     end
   end
 
-  def set_chseed(bhash : String, seed : String, sbid : String) : Nil
-    seeds = chseed.get(bhash) || [] of String
-    seeds = seeds.each_with_object({} of String => String) do |x, h|
-      a, b = x.split("/")
-      h[a] = b
-    end
-
-    return if seeds[seed]? == sbid
-    seeds[seed] = sbid
-
-    chseed.add(bhash, seeds.to_a.map { |a, b| "#{a}/#{b}" })
-    Tokens.set_chseed(bhash, seeds.keys)
-  end
-
   def set_bintro(bhash : String, lines : Array(String), force : Bool = false) : Nil
     zh_file = Utils.intro_file(bhash, "zh")
     return unless force || !File.exists?(zh_file)
@@ -120,6 +105,45 @@ module CV::Nvinfo
   def get_bintro(bhash : String) : Array(String)
     vi_file = Utils.intro_file(bhash, "vi")
     File.read_lines(vi_file) || [] of String
+  end
+
+  BINTROS = {} of String => Array(String)
+
+  def get_cached_bintro(bhash : String)
+    BINTROS[bhash] ||= get_bintro(bhash)
+  end
+
+  def set_chseed(bhash : String, seed : String, sbid : String) : Nil
+    seeds = chseed.get(bhash) || [] of String
+    seeds = seeds.each_with_object({} of String => String) do |x, h|
+      a, b = x.split("/")
+      h[a] = b
+    end
+
+    return if seeds[seed]? == sbid
+    seeds[seed] = sbid
+
+    chseed.add(bhash, seeds.to_a.map { |a, b| "#{a}/#{b}" })
+    Tokens.set_chseed(bhash, seeds.keys)
+  end
+
+  def get_chseed(bhash : String) : Hash(String, String)
+    output = {} of String => String
+
+    return output unless seeds = chseed.get(bhash)
+
+    seeds.each do |entry|
+      seed, sbid = entry.split("/")
+      output[seed] = sbid
+    end
+
+    output
+  end
+
+  CHSEED = {} of String => Hash(String, String)
+
+  def get_cached_chseed(bhash : String)
+    CHSEED[bhash] ||= get_chseed(bhash)
   end
 
   {% for field in {:shield, :status} %}
@@ -177,28 +201,6 @@ module CV::Nvinfo
     access_tz.save!(mode: :upds) if access_tz.unsaved > 20
   end
 
-  struct BasicInfo
-    include JSON::Serializable
-
-    getter bhash : String
-    getter bslug : String
-
-    getter btitle : Array(String)
-    getter author : Array(String)
-    getter genres : Array(String)
-
-    getter bcover : String?
-    getter voters : Int32
-    getter rating : Int32
-
-    def initialize(@bhash, @bslug, @btitle, @author, @genres, @bcover, @voters, @rating)
-    end
-
-    def inspect(io : IO)
-      to_pretty_json(io)
-    end
-  end
-
   def get_basic_info(bhash : String)
     BasicInfo.new(
       bhash: bhash,
@@ -215,30 +217,10 @@ module CV::Nvinfo
     )
   end
 
-  struct ExtraInfo
-    include JSON::Serializable
-
-    getter chseed : Array(String)
-
-    getter bintro : Array(String)
-    getter status : Int32
-
-    getter yousuu : String?
-    getter origin : String?
-    getter update_tz : Int64
-
-    def initialize(@chseed, @bintro, @status, @yousuu, @origin, @update_tz)
-    end
-
-    def inspect(io : IO)
-      to_pretty_json(io)
-    end
-  end
-
   def get_extra_info(bhash : String)
     ExtraInfo.new(
-      chseed: chseed.get(bhash) || [] of String,
-      bintro: get_bintro(bhash),
+      chseed: get_cached_chseed(bhash),
+      bintro: get_cached_bintro(bhash),
 
       status: status.ival(bhash),
 
@@ -254,10 +236,10 @@ module CV::Nvinfo
   end
 
   def each(order = "weight", skip = 0, take = 24, matched : Set(String)? = nil)
-    ordered = order_map(order)
+    order_map = get_order_map(order)
 
     if !matched
-      iter = ordered._idx.reverse_each
+      iter = order_map._idx.reverse_each
       skip.times { return unless iter.next }
 
       take.times do
@@ -265,7 +247,7 @@ module CV::Nvinfo
         yield node.key
       end
     elsif matched.size > 512
-      iter = ordered._idx.reverse_each
+      iter = order_map._idx.reverse_each
 
       while skip > 0
         return unless node = iter.next
@@ -281,14 +263,14 @@ module CV::Nvinfo
         end
       end
     else
-      list = matched.to_a.sort_by { |bhash| ordered.get_val(bhash).- }
+      list = matched.to_a.sort_by { |bhash| order_map.get_val(bhash).- }
       upto = skip + take
       upto = list.size if upto > list.size
       skip.upto(upto) { |i| yield list.unsafe_fetch(i) }
     end
   end
 
-  def order_map(order : String)
+  def get_order_map(order : String)
     case order
     when "access" then access_tz
     when "update" then update_tz
