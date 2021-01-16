@@ -39,7 +39,7 @@ class CV::Seeds::FixCovers
       convert_img(bcover, out_file)
 
       if idx % 20 == 19
-        puts "- [fix_intros] <#{idx + 1}/#{@chseed.size}>".colorize.blue
+        puts "- [fix_covers] <#{idx + 1}/#{@chseed.size}>".colorize.blue
         save!(mode: :upds)
       end
     end

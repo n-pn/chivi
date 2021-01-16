@@ -9,7 +9,7 @@ seeds = Dir.children(DIR).each do |seed|
   puts "#{seed}: #{folders.size} folders".colorize.cyan.bold
 
   folders.each_with_index do |folder, idx|
-    if idx % 100 == 99
+    if idx % 50 == 49
       puts "- <#{idx + 1}/#{folders.size}> #{folder}".colorize.blue
     end
 
@@ -22,5 +22,7 @@ seeds = Dir.children(DIR).each do |seed|
       File.delete(file)
       puts "-- <#{file}> deleted".colorize.light_red
     end
+
+    # zip_store.compress!(:archive)
   end
 end
