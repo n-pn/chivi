@@ -21,25 +21,26 @@ class CV::TokenMap < CV::ValueMap
     super
   end
 
-  def keys(val : String) : Index
-    @_idx[val]? || Index.new
-  end
-
   def has_val?(val : String)
     !keys(val).empty?
+  end
+
+  def keys(val : String) : Index
+    @_idx[val]? || Index.new
   end
 
   def keys(tsv : Array(String)) : Index
     return keys(tsv.first) if tsv.size == 1
 
-    if set = keys_min(tsv)
-      set.each do |key|
-        next unless vals = get(key)
-        return set if fuzzy_match?(tsv, vals)
-      end
+    res = Index.new
+    return res unless set = keys_min(tsv)
+
+    set.each do |key|
+      next unless vals = get(key)
+      res.add(key) if fuzzy_match?(tsv, vals)
     end
 
-    Index.new
+    res
   end
 
   private def keys_min(tsv : Array(String)) : Index?
@@ -58,7 +59,7 @@ class CV::TokenMap < CV::ValueMap
     ret
   end
 
-  private def fuzzy_match?(tsv : Array(String), vals : Array(String))
+  private def fuzzy_match?(tsv : Array(String), vals : Array(String)) : Bool
     return false if vals.size < tsv.size
 
     idx = 0

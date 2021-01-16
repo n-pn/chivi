@@ -252,8 +252,66 @@ module CV::Nvinfo
   def find_by_slug(slug : String)
     _index.keys(slug).first
   end
+
+  def each(order = "weight", skip = 0, take = 24, matched : Set(String)? = nil)
+    ordered = order_map(order)
+
+    if !matched
+      iter = ordered._idx.reverse_each
+      skip.times { return unless iter.next }
+
+      take.times do
+        return unless node = iter.next
+        yield node.key
+      end
+    elsif matched.size > 512
+      iter = ordered._idx.reverse_each
+
+      while skip > 0
+        return unless node = iter.next
+        skip -= 1 if matched.includes?(node.key)
+      end
+
+      while take > 0
+        return unless node = iter.next
+
+        if matched.includes?(node.key)
+          yield node.key
+          take -= 1
+        end
+      end
+    else
+      list = matched.to_a.sort_by { |bhash| ordered.get_val(bhash).- }
+      upto = skip + take
+      upto = list.size if upto > list.size
+      skip.upto(upto) { |i| yield list.unsafe_fetch(i) }
+    end
+  end
+
+  def order_map(order : String)
+    case order
+    when "access" then access_tz
+    when "update" then update_tz
+    when "rating" then rating
+    when "voters" then voters
+    else               weight
+    end
+  end
 end
 
 # puts CV::Nvinfo.find_by_slug("quy-bi-chi-chu")
 # puts CV::Nvinfo.get_basic_info("h6cxpsr4")
 # puts CV::Nvinfo.get_extra_info("h6cxpsr4")
+
+# CV::Nvinfo.each("voters", take: 10) do |bhash|
+#   puts CV::Nvinfo.get_basic_info(bhash)
+# end
+
+# CV::Nvinfo.each("voters", skip: 5, take: 5) do |bhash|
+#   puts CV::Nvinfo.get_basic_info(bhash).btitle
+# end
+
+# matched = CV::Nvinfo::Tokens.glob(genre: "kinh di")
+# CV::Nvinfo.each("weight", take: 10, matched: matched) do |bhash|
+#   puts CV::Nvinfo.get_basic_info(bhash)
+# end

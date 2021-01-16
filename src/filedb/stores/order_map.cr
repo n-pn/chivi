@@ -59,8 +59,6 @@ class CV::OrderMap < CV::ValueMap
   end
 
   class PrevIter
-    include Iterator(Node)
-
     def initialize(@curr : Node, @done : Node)
     end
 
@@ -68,14 +66,12 @@ class CV::OrderMap < CV::ValueMap
       if @curr != @done
         @curr = @curr.prev.not_nil!
       else
-        stop
+        nil
       end
     end
   end
 
   class SuccIter
-    include Iterator(Node)
-
     def initialize(@curr : Node, @done : Node)
     end
 
@@ -83,7 +79,7 @@ class CV::OrderMap < CV::ValueMap
       if @curr != @done
         @curr = @curr.succ.not_nil!
       else
-        stop
+        nil
       end
     end
   end
@@ -192,8 +188,8 @@ class CV::OrderMap < CV::ValueMap
     @_idx.data[key]?
   end
 
-  def get_val(key : String) : Int32?
-    get_idx(key).try(&.val)
+  def get_val(key : String) : Int32
+    get_idx(key).try(&.val) || -1
   end
 
   def each

@@ -80,7 +80,7 @@ module CV::Nvinfo::Tokens
   end
 
   def glob_chseed(query : String, prevs : Set(String)? = nil)
-    res = chseeed.keys(query.downcase)
+    res = chseed.keys(query.downcase)
     prevs.try(&.&(res)) || res
   end
 end
