@@ -21,7 +21,7 @@ const alias = {
 
 const { preprocess } = require('./svelte.config')
 const extensions = ['.mjs', '.js', '.json', '.svelte', '.html']
-const mainFields = ['svelte', 'module', 'browser', 'main']
+const mainNvFields = ['svelte', 'module', 'browser', 'main']
 
 // postcss
 
@@ -38,7 +38,7 @@ module.exports = {
   client: {
     entry: config.client.entry(),
     output: config.client.output(),
-    resolve: { alias, extensions, mainFields },
+    resolve: { alias, extensions, mainNvFields },
     module: {
       rules: [
         {
@@ -101,7 +101,7 @@ module.exports = {
     entry: config.server.entry(),
     output: config.server.output(),
     target: 'node',
-    resolve: { alias, extensions, mainFields },
+    resolve: { alias, extensions, mainNvFields },
     externals: Object.keys(pkg.dependencies).concat('encoding'),
     module: {
       rules: [

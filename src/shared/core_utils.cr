@@ -16,7 +16,7 @@ module CV::CoreUtils
     length = (limit &* 6 / 5).ceil.to_i
 
     number = digest[0, length].to_i64(base: 16)
-    encode32(number).rjust(limit, '0')
+    encode32(number).ljust(limit, '0')
   end
 
   # convert integer to zbase32

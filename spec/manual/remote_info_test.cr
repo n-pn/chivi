@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../src/filedb/nvinit/rm_info.cr"
+require "../../src/filedb/_inits/rm_info.cr"
 
 def fetch_info(seed, sbid, fresh = false) : Void
   puts "\n[#{CV::RmInfo.url_for(seed, sbid)}]".colorize.green.bold

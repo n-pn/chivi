@@ -7,7 +7,7 @@ require "../../src/shared/text_utils"
 require "../../src/filedb/nvinfo"
 require "../../src/filedb/chseed"
 require "../../src/filedb/chinfo"
-require "../../src/filedb/nvinit/rm_info"
+require "../../src/filedb/_inits/rm_info"
 
 class CV::InfoSeed
   getter name : String
@@ -64,9 +64,9 @@ class CV::InfoSeed
 
   def get_genres(sbid : String)
     zh_genres = bgenre.get(sbid) || [] of String
-    zh_genres = zh_genres.map { |x| Nvinfo::Utils.fix_zh_genre(x) }.flatten.uniq
+    zh_genres = zh_genres.map { |x| NvShared.fix_zh_genre(x) }.flatten.uniq
 
-    vi_genres = zh_genres.map { |x| Nvinfo::Utils.fix_vi_genre(x) }.uniq
+    vi_genres = zh_genres.map { |x| NvShared.fix_vi_genre(x) }.uniq
     vi_genres.reject!("Loại khác")
 
     vi_genres.empty? ? ["Loại khác"] : vi_genres
@@ -79,21 +79,21 @@ class CV::InfoSeed
     bhash, existed = Nvinfo.upsert!(btitle, author)
 
     bintro = get_intro(sbid)
-    Nvinfo.set_bintro(bhash, bintro) unless bintro.empty?
+    NvFields.set_bintro(bhash, bintro) unless bintro.empty?
 
     genres = get_genres(sbid)
-    Nvinfo.set_bgenre(bhash, genres) unless genres.empty?
+    NvFields.set_bgenre(bhash, genres) unless genres.empty?
 
     mftime = update_tz.ival_64(sbid)
-    Nvinfo.set_update_tz(bhash, mftime)
-    Nvinfo.set_access_tz(bhash, mftime // 60)
+    NvFields.set_update_tz(bhash, mftime)
+    NvFields.set_access_tz(bhash, mftime // 60)
 
-    Nvinfo.set_status(bhash, status.ival(sbid, 0))
+    NvFields.set_status(bhash, status.ival(sbid, 0))
 
     if @name != "yousuu"
-      Nvinfo.set_chseed(bhash, @name, sbid)
+      NvFields.set_chseed(bhash, @name, sbid)
 
-      mftime = Nvinfo.update_tz.ival_64(bhash) if @name == "hetushu"
+      mftime = NvFields.update_tz.ival_64(bhash) if @name == "hetushu"
       chseed.update_tz.add(sbid, mftime)
       chseed.access_tz.add(sbid, access_tz.ival_64(sbid))
 

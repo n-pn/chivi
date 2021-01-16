@@ -3,35 +3,35 @@
     const bslug = params.book
     const order = query.order || 'asc'
 
-    const res = await this.fetch(`/api/books/${bslug}`)
-    const data = await res.json()
+    const res = await this.fetch(`/api/nvinfos/${bslug}`)
+    if (!res.ok) this.error(res.status, await res.text())
 
-    if (!res.ok) return this.error(res.status, data.msg)
+    const { nvinfo, nvmark } = await res.json()
 
-    let { book, mark } = data
-    const ubid = book.ubid
-
-    const [main_seeds] = split_seeds(book, query.seed)
+    const [main_seeds] = split_seeds(nvinfo.chseed, query.seed)
     const seed = query.seed || main_seeds[0] || ''
     const page = +(query.page || 1)
 
     const opts = { seed, page, order, mode: 0 }
+    const result = { nvinfo, nvmark, seed, page, order }
+
     try {
-      const { chaps, total } = await fetch_data(this.fetch, ubid, opts)
-      return { book, mark, chaps, total, seed, page, order }
+      const res2 = await fetch_data(this.fetch, nvinfo.bhash, opts)
+
+      return { ...result, ...res2 }
     } catch (e) {
-      return { book, mark, chaps: [], total: 0, seed, page, order }
+      return { ...result, chaps: [], total: 0, mftime: 0 }
     }
   }
 
   const limit = 30
 
-  async function fetch_data(api, ubid, opts) {
+  async function fetch_data(api, bhash, opts) {
     const page = opts.page || 1
     let offset = (page - 1) * limit
     if (offset < 0) offset = 0
 
-    let url = `/api/chaps/${ubid}/${opts.seed}?limit=${limit}&offset=${offset}`
+    let url = `/api/chaps/${bhash}/${opts.seed}?limit=${limit}&offset=${offset}`
     if (opts.order) url += `&order=${opts.order}`
     if (opts.mode) url += `&mode=${opts.mode}`
 
@@ -45,11 +45,9 @@
     }
   }
 
-  function split_seeds(book, curr) {
-    const input = book.seed_names || []
-    const seeds = input.sort(
-      (a, b) => seed_mftime(book, b) - seed_mftime(book, a)
-    )
+  function split_seeds(chseed, curr) {
+    const input = Object.keys(chseed)
+    const seeds = input.sort((a, b) => seed_order(a) - seed_order(b))
 
     if (seeds.length < 6) return [seeds, []]
 
@@ -67,7 +65,7 @@
     return [main_seeds, extra_seeds]
   }
 
-  function seed_mftime(book, seed) {
+  function seed_order(seed) {
     switch (seed) {
       case '69shu':
         return 4
@@ -78,14 +76,13 @@
       case 'jx_la':
         return 1
       default:
-        return book.seed_mftimes[seed] || 0
+        return 0
     }
   }
 
-  function update_mftime(book, seed, mftime) {
-    book.seed_mftimes[seed] = mftime
-    if (book.mftime < mftime) book.mftime = mftime
-    return book
+  function update_mftime(nvinfo, mftime) {
+    if (nvinfo.update_tz < mftime) nvinfo.update_tz = mftime
+    return nvinfo
   }
 </script>
 
@@ -97,11 +94,11 @@
 
   import { self_power } from '$src/stores'
 
-  import Shared from './_shared'
+  import Common from './_common'
   import ChapList from '$melds/ChapList'
 
-  export let book
-  export let mark = ''
+  export let nvinfo
+  export let nvmark = ''
 
   export let seed
   export let page = 1
@@ -109,8 +106,8 @@
 
   export let chaps = []
   export let total = 0
+  export let mftime = 0
 
-  $: has_seeds = book.seed_names.length > 0
   $: pmax = fix_pmax(total)
   $: reverse_order = order == 'desc' ? 'asc' : 'desc'
 
@@ -122,7 +119,7 @@
 
   $: page_list = paginate_range(page, pmax, 7)
 
-  $: [main_seeds, extra_seeds] = split_seeds(book, seed)
+  $: [main_seeds, extra_seeds] = split_seeds(nvinfo.chseed, seed)
   let show_extra = false
 
   let scroll_top
@@ -172,17 +169,15 @@
 
     _load = true
 
-    const res = await fetch_data(fetch, book.ubid, opts)
+    const res = await fetch_data(fetch, nvinfo.bhash, opts)
     chaps = res.chaps
     total = res.total
 
-    book = update_mftime(book, seed, res.mftime)
+    nvinfo = update_mftime(nvinfo, res.mftime)
 
-    if (scroll) {
-      scroll_top.scrollIntoView({ block: 'start' })
-    }
-
+    if (scroll) scroll_top.scrollIntoView({ block: 'start' })
     window.history.replaceState({}, '', url)
+
     _load = false
   }
 
@@ -214,7 +209,7 @@
   }
 
   function page_url(seed, page) {
-    let url = `/~${book.slug}/content?seed=${seed}`
+    let url = `/~${nvinfo.bslug}/content?seed=${seed}`
     if (page > 1) url += `&page=${page}`
     if (order == 'desc') url += '&order=desc'
     return url
@@ -223,8 +218,8 @@
 
 <svelte:window on:keydown={handleKeypress} />
 
-<Shared {book} {mark} atab="content">
-  {#if has_seeds}
+<Common {...nvinfo} {nvmark} atab="content">
+  {#if seed}
     <div class="chseed" bind:this={scroll_top}>
       <span class="-text"><span class="-hide">Chọn</span> nguồn:</span>
       {#each main_seeds as name}
@@ -261,7 +256,7 @@
         <span class="-size">{total} chương</span>
         <span class="-time">
           <span class="-hide">Cập nhật:</span>
-          <RelTime time={book.seed_mftimes[seed]} {seed} />
+          <RelTime time={mftime} {seed} />
         </span>
       </div>
 
@@ -283,7 +278,7 @@
     </div>
 
     <div class="chlist">
-      <ChapList bslug={book.slug} sname={seed} {chaps} />
+      <ChapList bslug={nvinfo.bslug} sname={seed} {chaps} />
 
       {#if pmax > 1}
         <nav class="pagi">
@@ -336,7 +331,7 @@
   {:else}
     <div class="empty">Không có nội dung.</div>
   {/if}
-</Shared>
+</Common>
 
 <style lang="scss">
   @mixin label {

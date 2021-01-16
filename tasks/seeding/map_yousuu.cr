@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../src/filedb/nvinit/ys_info"
+require "../../src/filedb/_inits/ys_info"
 require "./_info_seed.cr"
 
 class CV::Seeds::MapYousuu
@@ -68,7 +68,7 @@ class CV::Seeds::MapYousuu
   end
 
   def seed!(mode : Symbol = :best)
-    authors = Set(String).new(Nvinfo.author.vals.map(&.first))
+    authors = Set(String).new(NvFields.author.vals.map(&.first))
     checked = Set(String).new
 
     input = @seeding.rating.data.to_a.map { |k, v| {k, v[0].to_i, v[1].to_i} }
@@ -76,7 +76,7 @@ class CV::Seeds::MapYousuu
 
     input.each_with_index do |(sbid, voters, rating), idx|
       btitle, author = @seeding._index.get(sbid).not_nil!
-      btitle, author = Nvinfo::Utils.fix_nvname(btitle, author)
+      btitle, author = NvShared.fix_nvname(btitle, author)
 
       nvname = "#{btitle}\t#{author}"
       next if checked.includes?(nvname)
@@ -86,13 +86,13 @@ class CV::Seeds::MapYousuu
         authors.add(author)
 
         bhash, existed = @seeding.upsert!(sbid)
-        Nvinfo.set_score(bhash, voters, rating)
+        NvFields.set_score(bhash, voters, rating)
 
         origin = source_url.fval(sbid)
-        Nvinfo.origin.add(bhash, origin) if origin && !origin.empty?
+        NvFields.origin.add(bhash, origin) if origin && !origin.empty?
 
-        Nvinfo.yousuu.add(bhash, sbid)
-        Nvinfo.shield.add(bhash, @seeding.shield.fval(sbid) || "0")
+        NvFields.yousuu.add(bhash, sbid)
+        NvFields.shield.add(bhash, @seeding.shield.fval(sbid) || "0")
       end
 
       if idx % 100 == 99

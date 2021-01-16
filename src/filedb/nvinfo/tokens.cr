@@ -1,6 +1,6 @@
-require "./butils"
+require "./shared"
 
-module CV::Nvinfo::Tokens
+module CV::NvTokens
   extend self
 
   TYPES = {
@@ -11,7 +11,7 @@ module CV::Nvinfo::Tokens
 
   {% for type in TYPES %}
     class_getter {{type.id}} : TokenMap do
-      TokenMap.new(Butils.map_file("tokens/#{{{type}}}"))
+      TokenMap.new(NvShared.map_file("tokens/#{{{type}}}"))
     end
 
     def set_{{type.id}}(key : String, vals : Array(String))

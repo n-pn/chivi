@@ -1,5 +1,5 @@
 <script context="module">
-  import Shared from './_shared'
+  import Common from './_common'
 
   export async function preload({ params }) {
     const bslug = params.book
@@ -13,13 +13,13 @@
 </script>
 
 <script>
-  export let book
-  export let mark = ''
+  export let nvinfo
+  export let nvmark = ''
 </script>
 
-<Shared {book} {mark} atab="threads">
+<Common {...nvinfo} {nvmark} atab="threads">
   <div class="empty">Chưa hoàn thiện :(</div>
-</Shared>
+</Common>
 
 <style lang="scss">
   .empty {

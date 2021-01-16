@@ -1,6 +1,6 @@
 require "colorize"
 
-require "../../src/filedb/nvinit/rm_text.cr"
+require "../../src/filedb/_inits/rm_text.cr"
 
 def fetch_chap(seed : String, sbid : String, scid : String, fresh = false)
   puts "\n[#{CV::RmText.url_for(seed, sbid, scid)}]\n".colorize.blue.bold

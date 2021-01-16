@@ -2,16 +2,21 @@ require "file_utils"
 require "../../src/filedb/nvinfo"
 
 class CV::Seeds::FixCovers
-  getter chseed : ValueMap = Nvinfo.chseed
+  getter chseed : ValueMap = NvFields.chseed
 
   DIR = "_db/nvdata/_covers"
   ::FileUtils.mkdir_p("#{DIR}/_chivi")
 
-  def fix!
+  def fix!(mode : Symbol = :fast)
+    checked = Set(String).new
+
     @chseed.data.each_with_index do |(bhash, seeds), idx|
+      checked.add(bhash)
+      next if mode == :fast && NvFields.bcover.has_key?(bhash)
+
       covers = {} of String => String
 
-      if ybid = Nvinfo.yousuu.fval(bhash)
+      if ybid = NvFields.yousuu.fval(bhash)
         covers["yousuu"] = ybid
       end
 
@@ -33,13 +38,28 @@ class CV::Seeds::FixCovers
         end
       end
 
-      next unless bcover && Nvinfo.bcover.add(bhash, bcover.sub("#{DIR}/", ""))
+      next unless bcover && NvFields.bcover.add(bhash, bcover.sub("#{DIR}/", ""))
 
       out_file = "#{DIR}/_chivi/#{bhash}.webp"
       convert_img(bcover, out_file)
 
       if idx % 20 == 19
-        puts "- [fix_covers] <#{idx + 1}/#{@chseed.size}>".colorize.blue
+        puts "- [chseed_covers] <#{idx + 1}/#{@chseed.size}>".colorize.blue
+        save!(mode: :upds)
+      end
+    end
+
+    yousuu = NvFields.yousuu.data
+    yousuu.each_with_index do |(bhash, array), idx|
+      next if checked.includes?(bhash)
+      next if mode == :fast && NvFields.bcover.has_key?(bhash)
+
+      next unless cover_file = cover_path("yosuuu", array.first)
+      next if image_width(cover_file) < 10
+      NvFields.bcover.add(bhash, cover_file.sub("#{DIR}/", ""))
+
+      if idx % 20 == 19
+        puts "- [yousuu_covers] <#{idx + 1}/#{yousuu.size}>".colorize.blue
         save!(mode: :upds)
       end
     end
@@ -61,6 +81,7 @@ class CV::Seeds::FixCovers
 
   private def image_width(file : String) : Int32
     return 0 if File.size(file) < 100
+    return 9999 if file.ends_with?(".gif")
     `identify -format '%w %h' "#{file}"`.split(" ").first.to_i? || 0
   rescue
     0
@@ -73,9 +94,9 @@ class CV::Seeds::FixCovers
   end
 
   def save!(mode : Symbol = :full)
-    Nvinfo.bcover.save!(mode: mode)
+    NvFields.bcover.save!(mode: mode)
   end
 end
 
 worker = CV::Seeds::FixCovers.new
-worker.fix!
+worker.fix!(ARGV.includes?("full") ? :full : :fast)

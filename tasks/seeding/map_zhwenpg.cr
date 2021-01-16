@@ -105,10 +105,10 @@ class CV::Seeds::MapZhwenpg
       unless existed
         btitle, author = @seeding._index.get(sbid).not_nil!
         voters, rating = fake_rating(btitle, author)
-        Nvinfo.set_score(bhash, voters, rating)
+        NvFields.set_score(bhash, voters, rating)
       end
 
-      bslug = Nvinfo._index.fval(bhash)
+      bslug = NvFields._index.fval(bhash)
       colored = existed ? :yellow : :green
 
       puts "- <#{idx + 1}/#{@checked.size}> [#{bslug}] saved!".colorize(colored)

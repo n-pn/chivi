@@ -12,15 +12,6 @@
     }
   }
 
-  function gen_keywords(book) {
-    let res = [book.zh_title, book.hv_title]
-    if (book.vi_title != book.hv_title) res.push(book.vi_title)
-    res.push(book.zh_author, book.vi_author)
-    res.push(...book.vi_genres)
-    res.push('Truyện tàu', 'Truyện convert', 'Truyện mạng')
-    return res.join(',')
-  }
-
   import { self_power } from '$src/stores'
   import { mark_types, mark_names, mark_icons } from '$utils/constants'
 
@@ -49,65 +40,93 @@
 </script>
 
 <script>
-  export let book
-  export let mark = ''
+  export let bslug
+  export let bhash
+
+  export let btitle = []
+  export let author = []
+  export let genres = []
+
+  export let status
+  export let bcover = 'blank.png'
+  export let bintro = []
+  export let update_tz = 0
+
+  export let rating
+  export let voters
+
+  export let bmark = ''
   export let atab = 'summary'
 
-  $: vi_status = map_status(book.status)
-  $: book_url = `https://chivi.xyz/~${book.slug}`
-  $: book_intro = book.vi_intro.substring(0, 300)
-  $: book_cover = `https://chivi.xyz/images/${book.ubid}.webp`
-  $: updated_at = new Date(book.mftime)
-  $: keywords = gen_keywords(book)
-  $: has_links = book.yousuu_bid || book.origin_url
+  export let origin = null
+  export let yousuu = null
 
-  async function mark_book(bslug, new_mark) {
+  $: zh_title = btitle[0]
+  $: vi_title = btitle[2] || btitle[1]
+
+  $: vi_author = author[1] || author[0]
+
+  $: vi_status = map_status(status)
+
+  $: book_url = `https://chivi.xyz/~${bslug}`
+  $: book_intro = bintro.join('').substring(0, 300)
+  $: book_cover = `https://chivi.xyz/covers/${bcover}`
+  $: updated_at = new Date(update_tz)
+  $: keywords = gen_keywords()
+
+  async function mark_book(new_mark) {
     if (mark == new_mark) mark = ''
     else mark = new_mark
 
-    const url = `/api/book-marks/${bslug}?bmark=${mark}`
+    const url = `/api/book-marks/${bhash}?bmark=${mark}`
     await fetch(url, { method: 'PUT' })
+  }
+
+  function gen_keywords() {
+    let res = [...btitle, ...author, ...genres]
+    res.push('Truyện tàu', 'Truyện convert', 'Truyện mạng')
+    return res.join(',')
   }
 </script>
 
 <svelte:head>
-  <title>{book.vi_title} - Chivi</title>
+  <title>{vi_title} - Chivi</title>
   <meta name="keywords" content={keywords} />
   <meta name="description" content={book_intro} />
 
-  <meta property="og:title" content={book.vi_title} />
+  <meta property="og:title" content={vi_title} />
   <meta property="og:type" content="novel" />
   <meta property="og:description" content={book_intro} />
   <meta property="og:url" content={book_url} />
   <meta property="og:image" content={book_cover} />
 
-  <meta property="og:novel:category" content={book.vi_genres[0]} />
-  <meta property="og:novel:author" content={book.vi_author} />
-  <meta property="og:novel:book_name" content={book.vi_title} />
+  <meta property="og:novel:category" content={genres[0]} />
+  <meta property="og:novel:author" content={vi_author} />
+  <meta property="og:novel:book_name" content={vi_title} />
   <meta property="og:novel:read_url" content="{book_url}&tab=content" />
   <meta property="og:novel:status" content={vi_status} />
   <meta property="og:novel:update_time" content={updated_at.toISOString()} />
 </svelte:head>
 
 <Vessel>
-  <a slot="header-left" href="/~{book.slug}" class="header-item _active">
+  <a slot="header-left" href="/~{bslug}" class="header-item _active">
     <SvgIcon name="book-open" />
-    <span class="header-text _title">{book.vi_title}</span>
+    <span class="header-text _title">{vi_title}</span>
   </a>
 
   <span slot="header-right" class="header-item _menu">
-    <SvgIcon name={mark ? mark_icons[mark] : 'bookmark'} />
-    <span
-      class="header-text _show-md">{mark ? mark_names[mark] : 'Đánh dấu'}</span>
+    <SvgIcon name={bmark ? mark_icons[bmark] : 'bookmark'} />
+    <span class="header-text _show-md"
+      >{bmark ? mark_names[bmark] : 'Đánh dấu'}</span>
 
     {#if $self_power > 0}
       <div class="header-menu">
-        {#each mark_types as type}
-          <div class="-item" on:click={() => mark_book(book.ubid, type)}>
-            <SvgIcon name={mark_icons[type]} />
-            <span>{mark_names[type]}</span>
+        {#each mark_types as mtype}
+          <div class="-item" on:click={() => mark_book(mtype)}>
+            <SvgIcon name={mark_icons[mtype]} />
+            <span>{mark_names[mtype]}</span>
 
-            {#if mark == type}
+            {#if bmark == mtype}
               <span class="_right">
                 <SvgIcon name="check" />
               </span>
@@ -120,24 +139,24 @@
 
   <div class="main-info">
     <div class="title">
-      <h1 class="-main">{book.vi_title}</h1>
-      <h2 class="-sub">({book.zh_title})</h2>
+      <h1 class="-main">{vi_title}</h1>
+      <h2 class="-sub">({zh_title})</h2>
     </div>
 
     <div class="cover">
-      <BookCover ubid={book.ubid} path={book.main_cover} />
+      <BookCover {bhash} cover={bcover} />
     </div>
 
     <section class="extra">
       <div class="line">
         <span class="stat">
           <SvgIcon name="pen-tool" />
-          <a class="link" href="/search?kw={book.vi_author}&type=author">
-            <span class="label">{book.vi_author}</span>
+          <a class="link" href="/search?kw={vi_author}&type=author">
+            <span class="label">{vi_author}</span>
           </a>
         </span>
 
-        {#each book.vi_genres as genre}
+        {#each genres as genre}
           <span class="stat _genre">
             <SvgIcon name="folder" />
             <a class="link" href="/?genre={genre}">
@@ -155,42 +174,40 @@
 
         <span class="stat _mftime">
           <SvgIcon name="clock" />
-          <span><RelTime time={book.mftime} /></span>
+          <span><RelTime time={update_tz} /></span>
         </span>
       </div>
 
       <div class="line">
         <span class="stat">
           Đánh giá:
-          <span class="label">{book.voters <= 10 ? '--' : book.rating}</span>/10
+          <span class="label">{voters <= 10 ? '--' : rating / 10}</span>/10
         </span>
-        <span class="stat">({book.voters} lượt đánh giá)</span>
+        <span class="stat">({voters} lượt đánh giá)</span>
       </div>
 
-      {#if has_links}
+      {#if yousuu || origin}
         <div class="line">
           <span class="stat">Liên kết:</span>
 
-          {#if book.origin_url != ''}
+          {#if origin != ''}
             <a
               class="stat link _outer"
-              href={book.origin_url}
+              href={origin}
               rel="noopener noreferer"
               target="_blank"
               title="Trang nguồn">
-              {host_name(book.origin_url)}
+              {host_name(origin)}
             </a>
           {/if}
 
-          {#if book.yousuu_bid !== ''}
+          {#if yousuu !== ''}
             <a
               class="stat link _outer"
-              href="https://www.yousuu.com/book/{book.yousuu_bid}"
+              href="https://www.yousuu.com/book/{yousuu}"
               rel="noopener noreferer"
               target="_blank"
-              title="Đánh giá">
-              yousuu
-            </a>
+              title="Đánh giá"> yousuu </a>
           {/if}
         </div>
       {/if}
@@ -199,26 +216,19 @@
 
   <div class="section">
     <header class="section-header">
-      <a
-        href="/~{book.slug}"
-        class="header-tab"
-        class:_active={atab == 'summary'}>
+      <a href="/~{bslug}" class="header-tab" class:_active={atab == 'summary'}>
         Tổng quan
       </a>
 
       <a
-        href="/~{book.slug}/content"
+        href="/~{bslug}/content"
         class="header-tab"
-        class:_active={atab == 'content'}>
-        Chương tiết
-      </a>
+        class:_active={atab == 'content'}> Chương tiết </a>
 
       <a
-        href="/~{book.slug}/discuss"
+        href="/~{bslug}/discuss"
         class="header-tab"
-        class:_active={atab == 'discuss'}>
-        Thảo luận
-      </a>
+        class:_active={atab == 'discuss'}> Thảo luận </a>
     </header>
 
     <div class="section-content">

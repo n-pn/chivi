@@ -1,38 +1,45 @@
 <script context="module">
-  import Shared from './_shared'
+  import Common from './_common'
 
   export async function preload({ params }) {
-    const bslug = params.book
-
-    const res = await this.fetch(`/api/books/${bslug}`)
-    const data = await res.json()
-
-    if (res.ok) return { book: data.book, mark: data.mark }
-    else this.error(res.status, data.msg)
+    const res = await this.fetch(`/api/nvinfos/${params.book}`)
+    if (res.ok) return await res.json()
+    else this.error(res.status, await res.text())
   }
 </script>
 
 <script>
-  export let book
-  export let mark = ''
+  export let nvinfo
+  export let nvmark = ''
+
+  let short_intro = false
 </script>
 
-<Shared {book} {mark} atab="summary">
-  <div class="summary">
-    <h2>Giới thiệu:</h2>
-    {#each book.vi_intro.split('\n') as line}
-      <p>{line}</p>
+<Common {...nvinfo} {nvmark} atab="summary">
+  <h2>Giới thiệu:</h2>
+  <div class="intro" class:_short={short_intro}>
+    {#each nvinfo.bintro as para}
+      <p>{para}</p>
     {/each}
   </div>
-</Shared>
+</Common>
 
 <style lang="scss">
-  .summary {
-    p {
-      margin: 0.75rem 0;
-      word-wrap: break-word;
-      @include fgcolor(neutral, 7);
-      @include props(font-size, rem(15px), rem(16px), rem(17px));
+  .intro {
+    @include fgcolor(neutral, 7);
+    // @include props(padding, $md: 0 0.75rem);
+    @include props(font-size, rem(15px), rem(16px), rem(17px));
+    word-wrap: break-word;
+
+    &._short {
+      height: 20rem;
+      overflow-y: scroll;
+      scrollbar-width: thin;
+      scrollbar-color: color(neutral, 8, 0.2);
     }
+  }
+
+  p {
+    margin-top: 0.5rem;
   }
 </style>

@@ -1,7 +1,7 @@
 require "file_utils"
 require "option_parser"
 
-require "../../src/filedb/nvinit/rm_info"
+require "../../src/filedb/_inits/rm_info"
 require "./_info_seed.cr"
 
 class CV::Seeds::MapRemote
@@ -68,7 +68,7 @@ class CV::Seeds::MapRemote
   end
 
   def seed!
-    authors = Set(String).new(Nvinfo.author.vals.map(&.first))
+    authors = Set(String).new(NvFields.author.vals.map(&.first))
     checked = Set(String).new
 
     input = @seeding._index.data.to_a
@@ -76,7 +76,7 @@ class CV::Seeds::MapRemote
 
     input.each_with_index do |(sbid, vals), idx|
       btitle, author = vals
-      btitle, author = Nvinfo::Utils.fix_nvname(btitle, author)
+      btitle, author = NvShared.fix_nvname(btitle, author)
 
       nvname = "#{btitle}\t#{author}"
       next if checked.includes?(nvname)

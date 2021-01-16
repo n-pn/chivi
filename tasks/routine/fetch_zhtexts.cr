@@ -5,7 +5,7 @@ require "option_parser"
 
 require "../../src/filedb/nvinfo"
 require "../../src/filedb/zhtext"
-require "../../src/filedb/nvinit/rm_text"
+require "../../src/filedb/_inits/rm_text"
 
 LIST_DIR = "_db/nvdata/chinfos"
 TEXT_DIR = "_db/nvdata/zhtexts"

@@ -1,7 +1,7 @@
 require "./shared/*"
 require "./engine/*"
 require "./filedb/*"
-require "./filedb/nvinit/rm_text"
+require "./filedb/_inits/rm_text"
 
 require "./_oldcv/kernel/bookdb"
 require "./_oldcv/kernel/models/chap_list"

@@ -1,7 +1,7 @@
 require "../../src/filedb/nvinfo"
 
 class CV::Seeds::FixGenres
-  getter input : ValueMap = Nvinfo.chseed
+  getter input : ValueMap = NvFields.chseed
 
   def fix!
     @input.data.each_with_index do |(bhash, seeds), idx|
@@ -11,14 +11,14 @@ class CV::Seeds::FixGenres
       seeds.each do |entry|
         seed, sbid = entry.split("/")
         get_genres(seed, sbid).each do |genre|
-          genres.concat(Nvinfo::Utils.fix_zh_genre(genre))
+          genres.concat(NvShared.fix_zh_genre(genre))
         end
       end
 
-      if ybid = Nvinfo.yousuu.fval(bhash)
+      if ybid = NvFields.yousuu.fval(bhash)
         get_genres("yousuu", ybid).each do |genre|
-          yousuu.concat(Nvinfo::Utils.fix_zh_genre(genre))
-          genres.concat(Nvinfo::Utils.fix_zh_genre(genre))
+          yousuu.concat(NvShared.fix_zh_genre(genre))
+          genres.concat(NvShared.fix_zh_genre(genre))
         end
       end
 
@@ -35,9 +35,9 @@ class CV::Seeds::FixGenres
         zh_genres = [] of String
       end
 
-      vi_genres = zh_genres.map { |g| Nvinfo::Utils.fix_vi_genre(g) }
+      vi_genres = zh_genres.map { |g| NvShared.fix_vi_genre(g) }
       vi_genres = ["Loại khác"] if vi_genres.empty?
-      Nvinfo.set_bgenre(bhash, vi_genres, force: true)
+      NvFields.set_bgenre(bhash, vi_genres, force: true)
 
       if idx % 100 == 99
         puts "- [fix_genres] <#{idx + 1}/#{@input.size}>".colorize.blue
@@ -59,8 +59,8 @@ class CV::Seeds::FixGenres
   end
 
   def save!(mode : Symbol = :full)
-    Nvinfo.bgenre.save!(mode: mode)
-    Nvinfo::Tokens.bgenre.save!(mode: mode)
+    NvFields.bgenre.save!(mode: mode)
+    NvTokens.bgenre.save!(mode: mode)
   end
 end
 
