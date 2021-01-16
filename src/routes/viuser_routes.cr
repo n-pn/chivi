@@ -1,4 +1,4 @@
-require "./_routes"
+require "./_route_utils"
 require "../filedb/viuser"
 
 module CV::Server

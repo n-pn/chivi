@@ -1,4 +1,4 @@
-require "./_routes"
+require "./_route_utils"
 
 module CV::Server
   get "/api/chinfos/:bslug/:seed/:scid" do |env|

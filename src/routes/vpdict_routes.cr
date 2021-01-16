@@ -1,4 +1,4 @@
-require "./_routes"
+require "./_route_utils"
 
 module CV::Server
   alias LookupEntry = Hash(String, Array(String))

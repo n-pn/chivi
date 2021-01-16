@@ -1,4 +1,4 @@
-require "./_routes"
+require "./_route_utils"
 require "../_oldcv/_utils/text_util"
 
 module CV::Server
