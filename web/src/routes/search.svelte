@@ -4,20 +4,26 @@
   import SvgIcon from '$atoms/SvgIcon.svelte'
   import BookCover from '$atoms/BookCover.svelte'
 
-  export const limit = 8
+  export const take = 8
 
   export async function preload({ query }) {
     const word = (query.kw || '').replace(/\+|-/g, ' ')
     const page = +(query.page || '1')
-    const type = query.type || 'fuzzy'
+    const type = query.type || 'btitle'
 
     if (word) {
-      const url = `/api/books?word=${word}&page=${page}&limit=${limit}&order=weight&type=${type}`
+      let skip = (page - 1) * take
+      if (skip < 0) skip = 0
+
+      let url = `/api/nvinfos?skip=${skip}&take=${take}`
+      if (type == 'author') url += `&author=${word}`
+      else url += `&btitle=${word}`
+
       const res = await this.fetch(url)
-      const data = await res.json()
-      return { word, page, type, total: data.total, items: data.items }
+      const { books, total } = await res.json()
+      return { word, page, type, books, total }
     } else {
-      return { word, page: 1, type, total: 0, items: [] }
+      return { word, page: 1, type, total: 0, books: [] }
     }
   }
 </script>
@@ -25,18 +31,22 @@
 <script>
   export let word = ''
   export let page = 1
-  export let type = 'fuzzy'
+  export let type = 'btitle'
 
-  export let items = []
+  export let books = []
   export let total = 0
 
-  $: offset = (+page - 1) * limit
-  $: pmax = Math.floor((+total - 1) / limit) + 1
+  $: skip = (page - 1) * take
+  $: pmax = Math.floor((+total - 1) / take) + 1
 
-  function searchUrl(page) {
+  function make_url(page) {
     if (page < 1) page = 1
     if (page > pmax) page = pmax
-    return `/search?kw=${word}&page=${page}&type=${type}`
+
+    let url = `/search?kw=${word}&page=${page}`
+    if (type != 'btitle') url += `&type=${type}`
+
+    return url
   }
 </script>
 
@@ -50,42 +60,43 @@
     <SvgIcon name="search" />
   </form>
 
-  {#if items.length > 0}
+  {#if books.length > 0}
     <h1>
       Hiển thị kết quả
-      {offset + 1}~{offset + items.length}/{total}
+      {skip + 1}~{skip + books.length}/{total}
       cho từ khoá "{word}":
     </h1>
 
     <div class="list" data-page={page}>
-      {#each items as book}
-        <a href="/~{book.slug}" class="book">
+      {#each books as book}
+        <a href="/~{book.bslug}" class="book">
           <div class="cover">
-            <BookCover ubid={book.ubid} path={book.main_cover} />
+            <BookCover bhash={book.bhash} cover={book.bcover || 'blank.png'} />
           </div>
 
           <div class="infos">
             <div class="extra">
-              <h2>{book.vi_title}</h2>
+              <h2>{book.btitle[2] || book.btitle[1]}</h2>
             </div>
 
             <div class="extra _sep">
-              <h3>{book.zh_title}</h3>
+              <h3>{book.btitle[0]}</h3>
             </div>
 
             <div class="extra">
               <span class="label _sub">Tác giả:</span>
-              <span class="value">{book.vi_author}</span>
+              <span class="value">{book.author[1]}</span>
             </div>
 
             <div class="extra">
               <span class="label">Thể loại:</span>
-              <span class="value">{book.vi_genres[0]}</span>
+              <span class="value">{book.genres[0]}</span>
             </div>
 
             <div class="extra">
               <span class="label">Đánh giá:</span>
-              <span class="value">{book.rating == 0 ? '--' : book.rating}</span>
+              <span class="value"
+                >{book.rating == 0 ? '--' : book.rating / 10}</span>
               <span class="label _cram">/10</span>
             </div>
           </div>
@@ -94,7 +105,7 @@
     </div>
 
     <div class="pagi">
-      <a href={searchUrl(page - 1)} class="m-button" class:_disable={page == 1}>
+      <a href={make_url(page - 1)} class="m-button" class:_disable={page == 1}>
         <SvgIcon name="chevron-left" />
         <span>Trước</span>
       </a>
@@ -102,7 +113,7 @@
       <div class="m-button _primary _disable"><span>{page}</span></div>
 
       <a
-        href={searchUrl(page + 1)}
+        href={make_url(page + 1)}
         class="m-button _solid _primary"
         class:_disable={page == pmax}>
         <span>Kế tiếp</span>

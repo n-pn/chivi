@@ -103,7 +103,7 @@ class CV::ValueMap
   end
 
   def unsaved
-    @ups.size
+    @upds.size
   end
 
   def save!(out_file : String = @file, mode : Symbol = :full) : Nil

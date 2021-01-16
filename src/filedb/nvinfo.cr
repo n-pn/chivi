@@ -90,12 +90,12 @@ module CV::Nvinfo
   end
 
   def set_bintro(bhash : String, lines : Array(String), force : Bool = false) : Nil
-    zh_file = Utils.intro_file(bhash, "zh")
+    zh_file = Butils.intro_file(bhash, "zh")
     return unless force || !File.exists?(zh_file)
 
     File.write(zh_file, lines.join("\n"))
 
-    vi_file = Utils.intro_file(bhash, "vi")
+    vi_file = Butils.intro_file(bhash, "vi")
     cv_tool = Convert.content(bhash)
 
     vi_intro = lines.map { |line| cv_tool.tl_plain(line) }
@@ -103,7 +103,7 @@ module CV::Nvinfo
   end
 
   def get_bintro(bhash : String) : Array(String)
-    vi_file = Utils.intro_file(bhash, "vi")
+    vi_file = Butils.intro_file(bhash, "vi")
     File.read_lines(vi_file) || [] of String
   end
 
@@ -197,8 +197,8 @@ module CV::Nvinfo
   end
 
   def bump_access!(bhash : String, atime : Time = Time.utc) : Nil
-    return unless access_tz.add(atime.to_unix // 60)
-    access_tz.save!(mode: :upds) if access_tz.unsaved > 20
+    return unless access_tz.add(bhash, atime.to_unix // 60)
+    access_tz.save!(mode: :upds) if access_tz.unsaved > 10
   end
 
   def get_basic_info(bhash : String)
@@ -215,6 +215,12 @@ module CV::Nvinfo
       voters: voters.ival(bhash),
       rating: rating.ival(bhash),
     )
+  end
+
+  BASIC_INFOS = {} of String => BasicInfo
+
+  def get_cached_basic_info(bhash : String)
+    BASIC_INFOS[bhash] ||= get_basic_info(bhash)
   end
 
   def get_extra_info(bhash : String)
@@ -235,9 +241,7 @@ module CV::Nvinfo
     _index.keys(slug).first
   end
 
-  def each(order = "weight", skip = 0, take = 24, matched : Set(String)? = nil)
-    order_map = get_order_map(order)
-
+  def each(order_map = weight, skip = 0, take = 24, matched : Set(String)? = nil)
     if !matched
       iter = order_map._idx.reverse_each
       skip.times { return unless iter.next }
@@ -262,15 +266,15 @@ module CV::Nvinfo
           take -= 1
         end
       end
-    else
+    elsif matched.size > skip
       list = matched.to_a.sort_by { |bhash| order_map.get_val(bhash).- }
       upto = skip + take
       upto = list.size if upto > list.size
-      skip.upto(upto) { |i| yield list.unsafe_fetch(i) }
+      skip.upto(upto - 1) { |i| yield list.unsafe_fetch(i) }
     end
   end
 
-  def get_order_map(order : String)
+  def get_order_map(order : String? = nil)
     case order
     when "access" then access_tz
     when "update" then update_tz

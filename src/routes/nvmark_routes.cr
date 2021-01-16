@@ -30,20 +30,20 @@ module CV::Server
   end
 
   get "/api/user-books/:dname" do |env|
+    skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
+    take = RouteUtils.parse_int(env.params.query["take"]?, min: 1, max: 24)
+
     uname = env.params.url["dname"].downcase
-
     bmark = env.params.query["bmark"]? || "reading"
-    books = Nvmark.all_user_books(uname, bmark)
+    matched = Nvmark.all_user_books(uname, bmark)
 
-    infos = books.compact_map do |bhash|
-      Oldcv::BookInfo.get!(bhash)
+    books = [] of Nvinfo::BasicInfo
+    Nvinfo.each(skip: skip, take: take, matched: matched) do |bhash|
+      books << Nvinfo.get_cached_basic_info(bhash)
     rescue
       Nvmark.unmark_book(uname, bhash)
     end
 
-    limit, offset = RouteUtils.parse_page(env.params.query.fetch("page", "1"))
-    infos = infos.sort_by(&.mftime.-)[offset, limit]
-
-    RouteUtils.json_res(env) { |res| RouteUtils.books_json(res, infos, books.size) }
+    RouteUtils.json_res(env, {books: books, total: matched.size})
   end
 end

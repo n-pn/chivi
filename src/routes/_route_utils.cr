@@ -7,24 +7,9 @@ require "../kernel"
 module CV::Server::RouteUtils
   extend self
 
-  def parse_page(page : String, limit = 24)
-    page = page.to_i? || 1
-
-    offset = (page - 1) * limit
-    offset = 0 if offset < 0
-
-    {limit, offset}
-  end
-
-  def search_page(page : String?)
-    return 1 unless page = page.try(&.to_i?)
-    page = 1 if page < 1
-    page
-  end
-
-  def search_limit(limit : String?, upper = 24)
-    return upper unless limit = limit.try(&.to_i?)
-    limit < 1 || limit > upper ? upper : limit
+  def parse_int(str : String?, min = 1, max = 24)
+    return max unless str && (int = str.to_i?)
+    int > max ? max : int > min ? int : min
   end
 
   def json_res(env, data, cached = 0)

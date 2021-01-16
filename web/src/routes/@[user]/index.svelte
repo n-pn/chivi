@@ -1,12 +1,19 @@
 <script context="module">
   import { mark_types, mark_names } from '$utils/constants'
 
+  const take = 24
+
   export async function preload({ params, query }) {
     const uname = params.user
     const bmark = query.bmark || 'reading'
-    const page = query.page || '1'
+    const page = +(query.page || '1')
 
-    const url = `/api/user-books/${uname}/?bmark=${bmark}&page=${page}`
+    let skip = (page - 1) * take
+    if (skip < 0) skip = 0
+
+    let url = `/api/user-books/${uname}/?skip=${skip}&take=${take}`
+    if (bmark != 'reading') url += `&bmark=${bmark}`
+
     const res = await this.fetch(url)
 
     if (res.ok) {

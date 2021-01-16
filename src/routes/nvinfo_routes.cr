@@ -2,56 +2,39 @@ require "./_route_utils"
 require "../filedb/nvmark"
 
 module CV::Server
-  get "/api/books" do |env|
-    word = env.params.query.fetch("word", "")
-    type = RouteUtils.search_type(env.params.query["type"]?)
+  get "/api/nvinfos" do |env|
+    skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
+    take = RouteUtils.parse_int(env.params.query["take"]?, min: 1, max: 24)
 
-    genre = env.params.query.fetch("genre", "")
+    matched = Nvinfo::Tokens.glob(env.params.query)
+    ordered = Nvinfo.get_order_map(env.params.query["order"]?)
 
-    order = RouteUtils.search_order(env.params.query["order"]?)
-    anchor = env.params.query.fetch("anchor", "")
+    total = matched ? matched.size : ordered.size
 
-    page = RouteUtils.search_page(env.params.query["page"]?)
-    limit = RouteUtils.search_limit(env.params.query["limit"]?)
-    offset = (page - 1) * limit
-
-    opts = Oldcv::BookDB::Query::Opts.new(word, type, genre, order, limit, offset, anchor)
-
-    infos, total = Oldcv::BookDB::Query.fetch!(opts)
-
-    items = infos.map do |info|
-      {
-        ubid:       info.ubid,
-        slug:       info.slug,
-        vi_title:   info.vi_title,
-        zh_title:   info.zh_title,
-        vi_author:  info.vi_author,
-        vi_genres:  info.vi_genres,
-        main_cover: info.main_cover,
-        rating:     info.rating,
-        voters:     info.voters,
-      }
+    books = [] of Nvinfo::BasicInfo
+    Nvinfo.each(ordered, skip: skip, take: take, matched: matched) do |bhash|
+      books << Nvinfo.get_cached_basic_info(bhash)
     end
 
-    RouteUtils.json_res(env, {items: items, total: total, query: opts})
+    RouteUtils.json_res(env, {books: books, total: total})
   end
 
-  get "/api/books/:bslug" do |env|
-    bslug = env.params.url["bslug"]
-
-    unless info = Oldcv::BookDB.find(bslug)
+  get "/api/nvinfos/:bslug" do |env|
+    unless bhash = Nvinfo.find_by_slug(env.params.url["bslug"])
       halt env, status_code: 404, response: "Book not found!"
     end
 
-    Oldcv::BookDB.bump_access(info)
-    # BookDB.inc_counter(info, read: false)
+    Nvinfo.bump_access!(bhash)
 
     if uname = env.session.string?("dname").try(&.downcase)
-      bmark = Nvmark.user_books(uname).fval(info.ubid) || ""
+      bmark = Nvmark.user_books(uname).fval(bhash) || ""
     else
       bmark = ""
     end
 
-    RouteUtils.json_res(env, {book: info, mark: bmark}, cached: info.mftime)
+    basic_info = Nvinfo.get_cached_basic_info(bhash)
+    extra_info = Nvinfo.get_extra_info(bhash)
+
+    RouteUtils.json_res(env, {basic: basic_info, extra: extra_info, bmark: bmark}, cached: extra_info.update_tz)
   end
 end

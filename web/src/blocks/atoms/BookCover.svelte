@@ -1,17 +1,11 @@
 <script>
-  export let ubid = ''
-  export let path = ''
-
-  $: image_url = `/images/${ubid}.webp`
-  $: cover_url = `/covers/${ubid}.${path}`
+  export let bhash = ''
+  export let cover = ''
 </script>
 
 <picture>
-  {#if path}
-    <source srcset={image_url} type="image/webp" />
-    <source srcset={cover_url} type="image/jpeg" />
-    <img src={cover_url} alt="" loading="lazy" />
-  {:else}<img src="/nocover.png" alt="" loading="lazy" />{/if}
+  <source srcset="/covers/_chivi/{bhash}.webp" type="image/webp" />
+  <img alt="" src="/covers/{cover}" loading="lazy" />
 </picture>
 
 <style lang="scss">
@@ -24,6 +18,5 @@
     width: 100%;
     min-height: 100%;
     object-fit: cover;
-    @include radius();
   }
 </style>

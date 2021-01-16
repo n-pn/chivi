@@ -6,47 +6,58 @@
 
   import Vessel from '$parts/Vessel'
 
+  const take = 24
+
   export async function preload({ query }) {
     const page = +(query.page || 1)
-    let url = `/api/books?page=${page}`
+    let skip = (page - 1) * take
+    if (skip < 1) skip = 0
 
-    if (query.order) url += `&order=${query.order}`
-    if (query.genre) url += `&genre=${query.genre}`
-    if (query.anchor) url += `&anchor=${query.anchor}`
+    let url = `/api/nvinfos?skip=${skip}&take=${take}`
+    const opts = extract_opts(query)
+    if (opts != {}) url += `&${merge_params(opts)}`
 
     const res = await this.fetch(url)
-    const data = await res.json()
-    return { page, ...data }
+    const { books, total } = await res.json()
+    return { books, total, page, opts }
   }
 
-  function makePageUrl(page = 1, query = {}) {
-    const opts = {}
-    if (page > 1) opts.page = page
-    if (query.order !== 'access') opts.order = query.order
-    if (query.genre) opts.genre = query.genre
-    // if (query.anchor) opts.anchor = query.anchor
+  function extract_opts({ order, genre, bseed }, opts = {}) {
+    opts.order = order || 'access'
+    if (genre) opts.genre = genre
+    if (bseed) opts.bseed = genre
 
-    const params = Object.entries(opts)
+    return opts
+  }
+
+  function merge_params(opts) {
+    return Object.entries(opts)
       .map(([k, v]) => `${k}=${v}`)
       .join('&')
+  }
 
-    if (params) return `/?${params}`
-    return '/'
+  function gen_page_url(page = 1, opts = {}) {
+    if (page > 1) opts.page = page
+    if (opts.order == 'access') delete opts.order
+
+    const query = merge_params(opts)
+    return query ? `/?${query}` : '/'
   }
 
   const order_names = {
     access: 'Vừa xem',
     update: 'Đổi mới',
-    rating: 'Đánh giá',
+    voters: 'Đánh giá',
     weight: 'Tổng hợp',
   }
 </script>
 
 <script>
-  export let items = []
+  export let books = []
   export let total = 0
-  export let query = {}
+
   export let page = 1
+  export let opts = { order: 'access' }
 
   $: page_max = Math.floor((total - 1) / 20) + 1
   $: page_ary = paginate_range(page, page_max)
@@ -90,7 +101,7 @@
 
   function changePage(newPage = 2) {
     if (newPage >= 1 && newPage <= page_max) {
-      _goto_(makePageUrl(newPage, query))
+      _goto_(gen_page_url(newPage, query))
     }
   }
 </script>
@@ -120,23 +131,23 @@
   <div class="order">
     {#each Object.entries(order_names) as [type, label]}
       <a
-        href={makePageUrl(1, { ...query, order: type })}
+        href={gen_page_url(1, { ...opts, order: type })}
         class="-type"
-        class:_active={query.order === type}>
+        class:_active={opts.order === type}>
         <span>{label}</span>
       </a>
     {/each}
   </div>
 
-  {#if items.length > 0}
-    <BookList books={items} />
+  {#if books.length > 0}
+    <BookList {books} />
   {:else}
     <div class="empty">Danh sách trống</div>
   {/if}
 
   <div class="pagi" slot="footer">
     <a
-      href={makePageUrl(+page - 1, query)}
+      href={gen_page_url(+page - 1, opts)}
       class="page m-button"
       class:_disable={page == 1}>
       <SvgIcon name="chevron-left" />
@@ -145,7 +156,7 @@
 
     {#each page_ary as [index, level]}
       <a
-        href={makePageUrl(index, query)}
+        href={gen_page_url(index, opts)}
         class="page m-button"
         class:_primary={page == index}
         class:_disable={page == index}
@@ -155,7 +166,7 @@
     {/each}
 
     <a
-      href={makePageUrl(page + 1, query)}
+      href={gen_page_url(page + 1, opts)}
       class="page m-button _solid _primary"
       class:_disable={page == page_max}>
       <span>Kế tiếp</span>

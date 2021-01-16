@@ -33,31 +33,31 @@ module CV::Nvinfo::Tokens
     {% end %}
   end
 
-  def glob(btitle = "", author = "", genre = "", bseed = "", res : Set(String)? = nil)
-    unless btitle.empty?
-      res = glob_btitle(btitle, res)
-      return res if res.empty?
+  def glob(query, matched : Set(String)? = nil)
+    if btitle = query["btitle"]?
+      matched = glob_btitle(btitle, matched)
+      return matched if matched.empty?
     end
 
-    unless author.empty?
-      res = glob_author(author, res)
-      return res if res.empty?
+    if author = query["author"]?
+      matched = glob_author(author, matched)
+      return matched if matched.empty?
     end
 
-    unless genre.empty?
-      res = glob_bgenre(genre, res)
-      return res if res.empty?
+    if genre = query["genre"]?
+      matched = glob_bgenre(genre, matched)
+      return matched if matched.empty?
     end
 
-    unless bseed.empty?
-      res = glob_chseed(bseed, res)
-      return res if res.empty?
+    if bseed = query["bseed"]?
+      matched = glob_chseed(bseed, matched)
+      return matched if matched.empty?
     end
 
-    res
+    matched
   end
 
-  def glob_btitle(query : String, prevs : Set(String)? = nil)
+  def glob_btitle(query : String, matched : Set(String)? = nil)
     tsv = TextUtils.tokenize(query)
     res = if query =~ /\p{Han}/
             btitle_zh.keys(tsv)
@@ -65,22 +65,22 @@ module CV::Nvinfo::Tokens
             btitle_hv.keys(tsv) + btitle_vi.keys(tsv)
           end
 
-    prevs.try(&.&(res)) || res
+    matched ? matched & res : res
   end
 
-  def glob_author(query : String, prevs : Set(String)? = nil)
+  def glob_author(query : String, matched : Set(String)? = nil)
     tsv = TextUtils.tokenize(query)
     res = query =~ /\p{Han}/ ? author_zh.keys(tsv) : author_vi.keys(tsv)
-    prevs.try(&.&(res)) || res
+    matched ? matched & res : res
   end
 
-  def glob_bgenre(query : String, prevs : Set(String)? = nil)
+  def glob_bgenre(query : String, matched : Set(String)? = nil)
     res = bgenre.keys(TextUtils.slugify(query))
-    prevs.try(&.&(res)) || res
+    matched ? matched & res : res
   end
 
-  def glob_chseed(query : String, prevs : Set(String)? = nil)
+  def glob_chseed(query : String, matched : Set(String)? = nil)
     res = chseed.keys(query.downcase)
-    prevs.try(&.&(res)) || res
+    matched ? matched & res : res
   end
 end
