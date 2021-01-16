@@ -54,7 +54,7 @@ class CV::Seeds::FixCovers
       next if checked.includes?(bhash)
       next if mode == :fast && NvFields.bcover.has_key?(bhash)
 
-      next unless cover_file = cover_path("yosuuu", array.first)
+      next unless cover_file = cover_path("yousuu", array.first)
       next if image_width(cover_file) < 10
       NvFields.bcover.add(bhash, cover_file.sub("#{DIR}/", ""))
 
@@ -68,7 +68,7 @@ class CV::Seeds::FixCovers
   end
 
   def cover_path(seed : String, sbid : String) : String?
-    {"html", "jpg.gz", ".pc", ".apple"}.each do |ext|
+    {"html", "jpg.gz", ".pc", ".apple", ".ascii"}.each do |ext|
       file = "#{DIR}/#{seed}/#{sbid}.#{ext}"
       return if File.exists?(file)
     end

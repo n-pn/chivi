@@ -101,12 +101,7 @@ class CV::Seeds::MapZhwenpg
   def seed!
     @checked.each_with_index do |sbid, idx|
       bhash, existed = @seeding.upsert!(sbid)
-
-      unless existed
-        btitle, author = @seeding._index.get(sbid).not_nil!
-        voters, rating = fake_rating(btitle, author)
-        NvFields.set_score(bhash, voters, rating)
-      end
+      fake_rating!(bhash, sbid) if NvFields.rating.ival(bhash) == 0
 
       bslug = NvFields._index.fval(bhash)
       colored = existed ? :yellow : :green
@@ -124,9 +119,14 @@ class CV::Seeds::MapZhwenpg
 
   FAKE_RATING = ValueMap.new("tasks/seeding/fake_ratings.tsv", mode: 2)
 
-  def fake_rating(btitle : String, author : String)
-    voters, rating = FAKE_RATING.get("#{btitle}  #{author}") || ["0", "0"]
-    {voters.to_i, rating.to_i}
+  def fake_rating!(bhash : String, sbid : String)
+    btitle, author = @seeding._index.get(sbid).not_nil!
+    return unless vals = FAKE_RATING.get("#{btitle}  #{author}")
+
+    voters, rating = vals[0].to_i, vals[1].to_i
+    pp [voters, rating]
+
+    NvFields.set_score(bhash, voters, rating)
   end
 end
 

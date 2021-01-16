@@ -174,6 +174,12 @@ class CV::Nvinfo
     else               NvFields.weight
     end
   end
+
+  CACHE = {} of String => self
+
+  def self.load(bhash : String)
+    CACHE[bhash] ||= new(bhash)
+  end
 end
 
 # puts CV::Nvinfo.find_by_slug("quy-bi-chi-chu")

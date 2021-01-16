@@ -77,8 +77,6 @@ class CV::Seed::FetchCovers
   end
 
   def fetch!(queue : Hash(String, String), limit = 8, delayed = 10.milliseconds)
-    puts queue.size
-
     limit = queue.size if limit > queue.size
     channel = Channel(Nil).new(limit)
 

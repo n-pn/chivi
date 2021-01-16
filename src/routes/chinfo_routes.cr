@@ -1,10 +1,10 @@
 require "./_route_utils"
 
 module CV::Server
-  get "/api/chaps/:bhash/:seed" do |env|
-    bhash = env.params.url["bhash"]
+  get "/api/chaps/:ubid/:seed" do |env|
+    ubid = env.params.url["ubid"]
 
-    unless info = Oldcv::BookInfo.get(bhash)
+    unless info = Oldcv::BookInfo.get(ubid)
       halt env, status_code: 404, response: "Book not found!"
     end
 

@@ -79,9 +79,10 @@ class CV::YsInfo
   end
 end
 
-# info = CV::YsInfo.load("_db/seeds/yousuu/raw-infos/176814.json").not_nil!
+# info = CV::YsInfo.load("_db/.cache/yousuu/infos/153426.json").not_nil!
 # puts info.intro
 # puts info.genre
-# puts info.tags_fixed
-# puts info.cover_fixed
+# # puts info.tags_fixed
+# # puts info.cover_fixed
 # puts info.updated_at
+# puts info.rating

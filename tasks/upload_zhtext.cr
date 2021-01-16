@@ -18,7 +18,7 @@ def upload_texts(seed, flags = "")
 
   children.each_with_index do |file, idx|
     puts "-- <#{idx + 1}/#{children.size}> [#{seed}/#{File.basename(file)}]".colorize.blue
-    puts `rsync -ai --no-p #{flags} #{file} #{OUT}/#{seed}`
+    puts `rsync -ai --no-p #{flags} "#{file}" #{OUT}/#{seed}`
   rescue err
     puts err.colorize.red
   end

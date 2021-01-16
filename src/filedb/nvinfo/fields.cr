@@ -71,7 +71,7 @@ module CV::NvFields
 
   def get_bintro(bhash : String) : Array(String)
     vi_file = NvShared.intro_file(bhash, "vi")
-    File.read_lines(vi_file) || [] of String
+    File.exists?(vi_file) ? File.read_lines(vi_file) : [] of String
   end
 
   def set_chseed(bhash : String, seed : String, sbid : String) : Nil
@@ -102,7 +102,9 @@ module CV::NvFields
   end
 
   def set_score(bhash : String, z_voters : Int32, z_rating : Int32)
-    return unless voters.add(bhash, z_voters) || rating.add(bhash, z_rating)
+    voters.add(bhash, z_voters)
+    rating.add(bhash, z_rating)
+
     score = Math.log(z_voters + 10).*(z_rating * 10).round.to_i
     weight.add(bhash, score)
   end

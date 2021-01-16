@@ -15,7 +15,7 @@ module CV::Server
       halt env, status_code: 404, response: "Book not found!"
     end
 
-    nvinfo = Nvinfo.new(bhash)
+    nvinfo = Nvinfo.load(bhash)
     nvinfo.bump_access!
 
     if uname = env.session.string?("dname").try(&.downcase)

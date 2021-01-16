@@ -71,7 +71,7 @@
   $: book_url = `https://chivi.xyz/~${bslug}`
   $: book_intro = bintro.join('').substring(0, 300)
   $: book_cover = `https://chivi.xyz/covers/${bcover}`
-  $: updated_at = new Date(update_tz)
+  $: updated_at = new Date(update_tz * 1000)
   $: keywords = gen_keywords()
 
   async function mark_book(new_mark) {
@@ -174,7 +174,7 @@
 
         <span class="stat _mftime">
           <SvgIcon name="clock" />
-          <span><RelTime time={update_tz} /></span>
+          <span><RelTime time={update_tz * 1000} /></span>
         </span>
       </div>
 

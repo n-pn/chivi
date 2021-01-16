@@ -256,7 +256,7 @@
         <span class="-size">{total} chương</span>
         <span class="-time">
           <span class="-hide">Cập nhật:</span>
-          <RelTime time={mftime} {seed} />
+          <RelTime time={mftime * 1000} {seed} />
         </span>
       </div>
 
