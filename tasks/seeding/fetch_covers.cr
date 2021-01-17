@@ -7,7 +7,7 @@ require "../../src/shared/http_utils"
 
 class CV::Seed::FetchCovers
   def fetch_yousuu!
-    dir = "_db/nvdata/_covers/yousuu"
+    dir = "_db/bcover/yousuu"
     ::FileUtils.mkdir_p(dir)
 
     queue = {} of String => String
@@ -38,7 +38,7 @@ class CV::Seed::FetchCovers
         seed, sbid = entry.split("/")
         next if seed == "jx_la"
 
-        out_file = "_db/nvdata/_covers/#{seed}/#{sbid}.jpg"
+        out_file = "_db/bcover/#{seed}/#{sbid}.jpg"
         next if File.exists?(out_file)
 
         next unless image_url = cover_map(seed).fval(sbid)

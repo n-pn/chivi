@@ -5,7 +5,7 @@ require "./library/*"
 module CV::Library
   extend self
 
-  DIR = "_db/cvdict/active"
+  DIR = "_db/dictdb/active"
   ::FileUtils.mkdir_p(DIR)
 
   class_getter trungviet : VpDict { load_dict("trungviet", dtype: 1, dlock: 4) }

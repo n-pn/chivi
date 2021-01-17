@@ -9,7 +9,7 @@ class ValueSet
   forward_missing_to @data
 
   def self.load(path : String, preload = true)
-    new("_db/cvdict/_inits/#{path}", preload)
+    new("_db/dictdb/_inits/#{path}", preload)
   end
 
   def initialize(@file, preload = false)
@@ -53,8 +53,8 @@ end
 module QtUtil
   extend self
 
-  INP_DIR = "_db/cvdict/_inits"
-  OUT_DIR = "_db/cvdict/active"
+  INP_DIR = "_db/dictdb/_inits"
+  OUT_DIR = "_db/dictdb/active"
 
   def inp_path(file : String)
     File.join(INP_DIR, file)

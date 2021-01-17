@@ -1,5 +1,5 @@
 class QtDict
-  DIR = "_db/cvdict/_inits"
+  DIR = "_db/dictdb/_inits"
 
   def self.load(fname : String, preload = true)
     new("#{DIR}/#{fname}").tap { |x| x.load! if preload }

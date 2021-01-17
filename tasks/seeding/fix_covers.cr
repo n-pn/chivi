@@ -4,7 +4,7 @@ require "../../src/filedb/nvinfo"
 class CV::Seeds::FixCovers
   getter chseed : ValueMap = NvFields.chseed
 
-  DIR = "_db/nvdata/_covers"
+  DIR = "_db/bcover"
   ::FileUtils.mkdir_p("#{DIR}/_chivi")
 
   def fix!(mode : Symbol = :fast)

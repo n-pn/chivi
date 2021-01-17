@@ -3,7 +3,7 @@ require "./stores/*"
 module CV::Nvmark
   extend self
 
-  DIR = "_db/nvdata/nvmarks"
+  DIR = "_db/marked"
   ::FileUtils.mkdir_p("#{DIR}/book-users")
   ::FileUtils.mkdir_p("#{DIR}/user-books")
   ::FileUtils.mkdir_p("#{DIR}/user-seeds")

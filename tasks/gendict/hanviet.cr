@@ -47,7 +47,7 @@ class Hanviet
       output.upsert(key, vals.uniq.first(3))
     end
 
-    output.load!("_db/cvdict/remote/system/hanviet.tsv")
+    output.load!("_db/dictdb/remote/system/hanviet.tsv")
     output.save!(mode: :full)
   end
 end

@@ -58,7 +58,7 @@ CV::Library.hanviet.each do |term|
   OUT_REGULAR.upsert(term)
 end
 
-OUT_REGULAR.load!("_db/cvdict/remote/common/regular.tsv")
+OUT_REGULAR.load!("_db/dictdb/remote/common/regular.tsv")
 OUT_REGULAR.save!
 
 puts "\n[Export suggest]".colorize.cyan.bold
@@ -85,7 +85,7 @@ rescue err
   pp [err, key, vals]
 end
 
-OUT_SUGGEST.load!("_db/cvdict/remote/common/suggest.tsv")
+OUT_SUGGEST.load!("_db/dictdb/remote/common/suggest.tsv")
 OUT_SUGGEST.save!
 
 puts "\n[Export various]".colorize.cyan.bold
@@ -104,7 +104,7 @@ inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
   OUT_VARIOUS.upsert(key, vals)
 end
 
-EXT_VARIOUS = "_db/cvdict/remote/common/various.tsv"
+EXT_VARIOUS = "_db/dictdb/remote/common/various.tsv"
 OUT_VARIOUS.load!(EXT_VARIOUS) if File.exists?(EXT_VARIOUS)
 OUT_VARIOUS.save!
 

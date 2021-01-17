@@ -20,7 +20,7 @@ class CV::Chtext
   property cv_mtime : Time = Time.unix(0)
 
   def initialize(@seed, @sbid, @scid)
-    @file = "_db/nvdata/zhtexts/#{@seed}/#{@sbid}/#{@scid}.txt"
+    @file = "_db/chdata/zhtexts/#{@seed}/#{@sbid}/#{@scid}.txt"
   end
 
   def fetch!(power = 3) : Nil

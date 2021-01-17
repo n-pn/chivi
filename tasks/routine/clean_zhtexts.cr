@@ -1,7 +1,7 @@
 require "colorize"
 require "../../src/filedb/stores/zip_store"
 
-DIR = "_db/nvdata/zhtexts"
+DIR = "_db/chdata/zhtexts"
 
 seeds = Dir.children(DIR).each do |seed|
   folders = Dir.glob("#{DIR}/#{seed}/*/")

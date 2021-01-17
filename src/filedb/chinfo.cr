@@ -4,7 +4,7 @@ require "file_utils"
 require "./stores/*"
 
 class CV::Chinfo
-  DIR = "_db/nvdata/chinfos"
+  DIR = "_db/chdata/chinfos"
   ::FileUtils.mkdir_p(DIR)
 
   getter seed : String

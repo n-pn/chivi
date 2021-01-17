@@ -89,7 +89,7 @@ class Oldcv::Engine::UserDict
     end
   end
 
-  DIR = "_db/cvdict/legacy"
+  DIR = "_db/dictdb/legacy"
 
   def self.path_for(name : String)
     File.join(DIR, "#{name}.log")

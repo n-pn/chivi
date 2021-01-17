@@ -1,6 +1,6 @@
 require "colorize"
 
-DIR = "_db/nvdata/chinfos"
+DIR = "_db/chdata/chinfos"
 Dir.glob("#{DIR}/*/").each do |dir|
   puts dir
 

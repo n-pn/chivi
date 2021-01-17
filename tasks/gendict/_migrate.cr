@@ -63,8 +63,8 @@ def migrate(file : String, unique = false)
   out_dict.save!
 end
 
-Dir.glob("_db/cvdict/legacy/core/*.log").each { |x| migrate(x) }
-Dir.glob("_db/cvdict/legacy/uniq/*.log").each { |x| migrate(x, unique: true) }
+Dir.glob("_db/dictdb/legacy/core/*.log").each { |x| migrate(x) }
+Dir.glob("_db/dictdb/legacy/uniq/*.log").each { |x| migrate(x, unique: true) }
 CV::Library.suggest.save!(mode: :best)
 
 # pp parse_term("保安州ǁBảo An châuǁ319179ǁFenix12ǁ1".split('ǁ'))

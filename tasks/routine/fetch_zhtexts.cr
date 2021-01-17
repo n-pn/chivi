@@ -7,8 +7,8 @@ require "../../src/filedb/nvinfo"
 require "../../src/filedb/zhtext"
 require "../../src/filedb/_inits/rm_text"
 
-LIST_DIR = "_db/nvdata/chinfos"
-TEXT_DIR = "_db/nvdata/zhtexts"
+LIST_DIR = "_db/chdata/chinfos"
+TEXT_DIR = "_db/chdata/zhtexts"
 
 class CV::PreloadBook
   MIN_SIZE = 10

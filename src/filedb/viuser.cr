@@ -15,7 +15,7 @@ module CV::Viuser
 
   class_getter create_tz : ValueMap { ValueMap.new(map_path("tz_create")) }
 
-  DIR = "_db/nvdata/viusers"
+  DIR = "_db/userdb/viusers"
   ::FileUtils.mkdir_p(DIR)
 
   def map_path(label : String)

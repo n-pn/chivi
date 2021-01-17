@@ -64,7 +64,7 @@ class Oldcv::Engine::BaseDict
 
   # class Oldcv::methods
 
-  DIR = "_db/cvdict/legacy"
+  DIR = "_db/dictdb/legacy"
 
   def self.path_for(name : String)
     File.join(DIR, "#{name}.dic")
