@@ -16,4 +16,4 @@ rsync -azi --no-p "$DIR/nvinfos" "$SSH/$DIR"
 rsync -azi --no-p "$DIR/chseeds" "$SSH/$DIR"
 rsync -azi --no-p "$DIR/chinfos" "$SSH/$DIR"
 
-rsync -azi --no-p "web/public" "$SSH/web"
+rsync -azi --no-p "$DIR/_covers/" "$SSH/web/public/covers/"

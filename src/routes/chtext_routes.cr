@@ -57,16 +57,21 @@ module CV::Server
     seed = env.params.url["seed"]
     sbid = env.params.url["sbid"]
     scid = env.params.url["scid"]
-    dict = env.params.query["dict"]? || "various"
 
     power = env.session.int?("power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
     mode = power if mode > power
 
-    chap = Kernel.load_chtext(seed, sbid, scid, dict: dict, mode: mode)
+    chtext = Chtext.load(seed, sbid, scid)
+    chtext.fetch!(power) if mode > 1 || chtext.zh_lines.empty?
+
+    unless mode == 0 && chtext.cv_mtime > (Time.utc - 3.hours)
+      dname = env.params.query["dict"]? || "various"
+      chtext.trans!(dname)
+    end
 
     RouteUtils.json_res(env) do |res|
-      {cvdata: chap.cv_trans, mftime: chap.cv_mtime}.to_json(res)
+      {cvdata: chtext.cv_trans, mftime: chtext.cv_mtime.to_unix}.to_json(res)
     end
   rescue err
     puts "- Error loading chap_text: #{err}"

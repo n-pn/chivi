@@ -118,9 +118,8 @@ class CV::InfoSeed
     chaps.each_with_index do |entry, idx|
       scid, title, label = entry
 
-      _idx = (idx + 1).to_s
-      vals = label.empty? ? [_idx, title] : [_idx, title, label]
-      next unless chinfo.index.add(scid, vals)
+      vals = label.empty? ? [title] : [title, label]
+      next unless chinfo._seed.add(scid, vals)
 
       vi_title = cvtool.tl_title(title)
       vi_label = label.empty? ? "Chính văn" : cvtool.tl_title(label)

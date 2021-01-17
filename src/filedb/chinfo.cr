@@ -10,7 +10,7 @@ class CV::Chinfo
   getter seed : String
   getter sbid : String
 
-  getter index : OrderMap { OrderMap.new(map_path("index"), mode: 1) }
+  getter _seed : OrderMap { OrderMap.new(map_path("_seed"), mode: 1) }
   getter trans : ValueMap { ValueMap.new(map_path("trans"), mode: 1) }
   getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
 
@@ -23,11 +23,11 @@ class CV::Chinfo
     File.join(@dir, "#{name}.tsv")
   end
 
-  def each(skip : Int32 = 0, take : Int32 = 30, reverse : Bool = false)
-    iter = reverse ? index._idx.reverse_each : index._idx.each
-    iter = iter.skip(skip)
-    iter.first(take) do |node|
-      yield({node.key, index.get(node.key)})
+  def each(skip : Int32 = 0, take : Int32 = 30)
+    trans.data.each_with_index(skip) do |(key, vals), idx|
+      return if take == 0
+      yield idx, key, vals[0], vals[1], vals[2]
+      take -= 1
     end
   end
 

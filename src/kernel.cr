@@ -50,47 +50,14 @@ module CV::Kernel
     Oldcv::Engine.cv_title(input, dname).vi_text
   end
 
-  # # modes:
-  # 0 => load saved chap_text
-  # 1 => load saved chap_text then convert
-  # 2 => fetch text from external hosts then convert
-
-  def load_chtext(seed : String, sbid : String, scid : String,
-                  dict : String = "various", mode : Int32 = 0)
-    chtext = Zhtext.load(seed, sbid, scid)
-    return chtext if mode == 0 && recent?(chtext.cv_mtime, 3.hours)
-
-    lines = chtext.zh_lines
-
-    if remote?(seed) && (mode > 1 || lines.empty?)
-      source = RmText.init(seed, sbid, scid)
-      lines = [source.title].concat(source.paras)
-      chtext.tap(&.zh_lines = lines).save!
-    end
-
-    chtext.tap do |x|
-      if lines.empty?
-        x.cv_trans = ""
-      else
-        x.cv_trans = Oldcv::Engine.cv_mixed(lines, dict).map(&.to_s).join("\n")
-      end
-
-      x.cv_mtime = Time.utc.to_unix
-    end
-  end
-
   REMOTE_SEEDS = {
     "hetushu", "rengshu", "xbiquge",
     "nofff", "zhwenpg", "5200",
     "biquge5200", "duokan8",
-    # "shubaow", "69shu", "paoshu8"
+    "shubaow", "69shu", "paoshu8",
   }
 
   def remote?(seed : String)
     REMOTE_SEEDS.includes?(seed)
-  end
-
-  def recent?(mftime : Int64, span = 3.hours)
-    mftime >= (Time.utc - span).to_unix
   end
 end
