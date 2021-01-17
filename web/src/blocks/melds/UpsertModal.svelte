@@ -2,12 +2,12 @@
   function make_hints(inquire, accept) {
     let res = []
 
-    for (let { vals, hints } of inquire.entries) {
-      for (let x of vals) res.push(x)
-      for (let x of hints) res.push(x)
+    for (let entry of inquire.entries) {
+      if (!entry) continue
+      for (let x of entry.vals) res.push(x)
     }
 
-    for (let x of inquire.suggest) res.push(x)
+    for (let x of inquire.suggest || []) res.push(x)
     if (accept) res.push(accept)
 
     return res.filter((v, i, s) => {
@@ -30,8 +30,8 @@
     return res.join(' ')
   }
 
-  export async function dict_search(fetch, hanzi, dicts = ['dich-nhanh']) {
-    const url = `/api/dicts/search/${hanzi}?dicts=${dicts.join('|')}`
+  export async function dict_search(fetch, hanzi, udict = 'various') {
+    const url = `/api/dicts/search/${hanzi}?dname=${udict}`
     const res = await fetch(url)
     const data = await res.json()
 
@@ -46,7 +46,7 @@
       body: JSON.stringify({ key, val }),
     })
 
-    return res
+    return await res.json()
   }
 
   function fix_power(user, prev) {
@@ -88,7 +88,7 @@
 
   // let cached = {}
   let inquire = { entries: [], hanviet: '', binh_am: '', suggest: [] }
-  let current = { key: '', vals: [], hints: [] }
+  let current = { key: '', vals: [] }
 
   let existed = ''
   $: updated = existed != output
@@ -102,10 +102,8 @@
   // $: hints = make_hints(inquire, output)
 
   async function inquire_hanzi(hanzi) {
-    const dnames = $dicts.map((x) => x[0])
-
     output = ''
-    inquire = await dict_search(fetch, hanzi, dnames)
+    inquire = await dict_search(fetch, hanzi, $dicts[0][0])
     hints = make_hints(inquire)
     update_val()
   }
@@ -120,7 +118,7 @@
   }
 
   function update_val(new_output = null) {
-    current = inquire.entries[$d_idx] || { key: '', vals: [], hints: [] }
+    current = inquire.entries[$d_idx] || { key: '', vals: [] }
     if (current.key == '') return
 
     existed = current.vals[0]
@@ -141,10 +139,10 @@
 
   async function submit_val() {
     const dname = $dicts[$d_idx][0]
-    const res = await dict_upsert(fetch, dname, hanzi, output.trim())
+    const { _stt } = await dict_upsert(fetch, dname, hanzi, output.trim())
 
     $actived = false
-    dirty = res.ok
+    dirty = _stt == 'ok'
   }
 
   function upcase_val(count = 100) {
@@ -284,29 +282,24 @@
 
           <button data-kbd="2" on:click={() => upcase_val(2)}>hai chữ</button>
 
-          <button
-            class="_show-md"
-            data-kbd="3"
-            on:click={() => upcase_val(3)}>ba chữ</button>
+          <button class="_show-md" data-kbd="3" on:click={() => upcase_val(3)}
+            >ba chữ</button>
 
           <button data-kbd="4" on:click={() => upcase_val(9)}>tất cả</button>
 
-          <button data-kbd="0" on:click={() => upcase_val(0)}>không
+          <button data-kbd="0" on:click={() => upcase_val(0)}
+            >không
             <span class="_show-sm"> hoa</span>
           </button>
 
-          <button
-            class="_right"
-            data-kbd="e"
-            on:click={() => (output = '')}>Xoá</button>
+          <button class="_right" data-kbd="e" on:click={() => (output = '')}
+            >Xoá</button>
 
           {#if updated}
             <button
               class="_right"
               data-kbd="r"
-              on:click={() => update_val(existed)}>
-              Phục
-            </button>
+              on:click={() => update_val(existed)}> Phục </button>
           {/if}
         </div>
       </div>
@@ -318,7 +311,7 @@
             <span class="-time"><RelTime time={current.mtime} /></span>
             <span class="-text">bởi</span>
             <span class="-user">{current.uname}</span>
-            <span class="-text _hide">[Q.hạn {current.power}]</span>
+            <span class="-text _hide">[Q.hạn {current.plock}]</span>
           </div>
         {/if}
 

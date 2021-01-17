@@ -42,25 +42,21 @@ module CV::Server
     end
   end
 
-  # # default upsert dicts
-  DICTS = "dich-nhanh|generic|hanviet"
-
   get "/api/dicts/search/:input" do |env|
     input = env.params.url["input"]
-    dicts = env.params.query.fetch("dicts", DICTS).split("|")
-
-    entries = dicts.map do |dname|
-      Oldcv::Engine::Library.load_dict(dname).find(input)
-    end
-
-    suggest = Oldcv::Engine::Library.suggest.dict.find(input).try(&.vals)
+    dname = env.params.query.fetch("dname", "various")
 
     RouteUtils.json_res(env) do |res|
       {
-        entries: entries,
+        entries: [
+          Library.find_dict(dname).find(input).try(&.to_tuple),
+          Library.regular.find(input).try(&.to_tuple),
+          Library.hanviet.find(input).try(&.to_tuple),
+        ],
+
         hanviet: Oldcv::Engine.hanviet(input, false).vi_text,
         binh_am: Oldcv::Engine.binh_am(input, false).vi_text,
-        suggest: suggest || [] of String,
+        suggest: Library.suggest.find(input).try(&.vals),
       }.to_json(res)
     end
   end
@@ -70,14 +66,15 @@ module CV::Server
     key = env.params.json["key"].as(String)
     val = env.params.json["val"].as(String?) || ""
 
-    dname = env.session.string?("dname") || "Khách"
+    uname = env.session.string?("dname") || "Khách"
     power = env.session.int?("power") || -1
 
     # power = env.params.json["power"]?.as(Int32?) ||
 
-    Oldcv::Engine::Library.upsert(dic, dname, power, key, val)
-    RouteUtils.json_res(env) { |res| {_stt: "ok"}.to_json(res) }
-  rescue err
-    RouteUtils.json_res(env) { |res| {_stt: "err", _msg: err.message}.to_json(res) }
+    if Library.upsert(dic, key, val.split("/"), uname: uname, plock: power)
+      RouteUtils.json_res(env) { |res| {_stt: "ok"}.to_json(res) }
+    else
+      RouteUtils.json_res(env) { |res| {_stt: "err", _msg: "Không đủ quyền hạn!"}.to_json(res) }
+    end
   end
 end

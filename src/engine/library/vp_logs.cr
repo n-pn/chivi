@@ -31,8 +31,8 @@ class CV::VpLogs
       @uname = new_term.uname
       @plock = new_term.plock
 
-      e.context = context
-      e.prevail = prevail
+      @context = context
+      @prevail = prevail
     end
 
     def render_vals(term : VpTerm)
@@ -81,7 +81,7 @@ class CV::VpLogs
       line = line.strip
       next if line.empty?
 
-      insert(Entry.from(line, label))
+      insert(Entry.parse(line, label))
     end
   end
 

@@ -101,6 +101,17 @@ class CV::VpTerm
     {@key, @vals, @attr, @mtime, @uname, @plock}.join(io, '\t')
   end
 
+  def to_tuple
+    {
+      key:   @key,
+      vals:  @vals,
+      attr:  @attr,
+      mtime: rtime.to_unix_ms,
+      uname: @uname,
+      plock: @plock,
+    }
+  end
+
   private def calc_worth
     size = @key.size
     cost = @dtype / 5 + 2

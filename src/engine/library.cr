@@ -56,10 +56,12 @@ module CV::Library
   class_getter dict_logs : VpLogs { VpLogs.new(DIR) }
 
   def upsert(dname : String, key : String, vals : Array(String), attr = "", uname = 0, plock = 1, mtime = 0, context = "") : Bool
-    mtime = VpTerm.mtime if mtime <= 0
-    new_term = VpTerm.new(key, vals, attr, mtime, uname, plock)
-
     dict = load_dict(dname)
+    new_term = VpTerm.new(key, vals, attr, dtype: dict.dtype, plock: plock)
+
+    new_term.uname = uname
+    new_term.mtime = mtime <= 0 ? VpTerm.mtime : mtime
+
     prevail, old_term = dict.upsert!(new_term)
 
     log_entry = VpLogs::Entry.new(dname, new_term, old_term, prevail, context)

@@ -85,8 +85,8 @@ class CV::VpDict
 
   # save to disk, return old entry if exists
   def upsert!(new_item : VpTerm) : Tuple(Bool, VpTerm?)
-    File.open(@file, "a") { |io| item.println(io, @dlock) }
-    upsert(item)
+    File.open(@file, "a") { |io| new_item.println(io, @dlock) }
+    upsert(new_item)
   end
 
   def find(key : String) : VpTerm?
