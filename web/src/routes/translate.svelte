@@ -70,17 +70,15 @@
   async function convert() {
     // if ($self_power < 1) return
 
-    const url = `/api/tools/convert?dname=dich-nhanh`
+    const url = `/api/convert/various`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ input: zh_text }),
     })
 
-    const data = await res.json()
-
     dirty = false
-    cv_data = data.join('\n')
+    cv_data = await res.text()
     edit_mode = false
   }
 </script>
@@ -187,6 +185,10 @@
     margin: 0.5rem 0;
     justify-content: right;
     @include flex();
-    @include flex-gap($gap: 0.5, $child: ':global(*)');
+    // @include flex-gap($gap: 0.5, $child: '.button');
+  }
+
+  .m-button + .m-button {
+    margin-left: 0.75rem;
   }
 </style>

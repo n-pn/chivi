@@ -12,6 +12,15 @@ class CV::Convert
     MACHINES[udict] ||= new(Library.regular, Library.find_dict(udict))
   end
 
+  def self.machine(dname : String)
+    case udict
+    when "hanviet" then hanviet
+    when "binh_am" then binh_am
+    when "tradsim" then tradsim
+    else                content(dname)
+    end
+  end
+
   def self.convert(input : String, udict = "")
     case udict
     when "hanviet" then hanviet.translit(input).to_text

@@ -1,41 +1,24 @@
 require "./_route_utils"
-require "../_oldcv/_utils/text_util"
+require "../shared/text_utils"
+
+require "../engine/convert"
 
 module CV::Server
-  post "/api/tools/convert" do |env|
-    input = env.params.json["input"]?.as(String?) || ""
-    lines = Oldcv::TextUtil.split_text(input)
-    dname = env.params.json.fetch("dname", "combine").as(String)
+  post "/api/convert/:dname" do |env|
+    dname = env.params.url["dname"]
+    cvter = Convert.content(dname)
 
-    RouteUtils.json_res(env) do |res|
-      Oldcv::Engine.cv_mixed(lines, dname).map(&.to_s).to_json(res)
-    end
-  end
+    input = env.params.json.fetch("input", "").as(String)
+    lines = TextUtils.split_text(input)
 
-  post "/api/tools/hanviet" do |env|
-    input = env.params.json["input"].as(String)
-    lines = Oldcv::TextUtil.split_text(input)
+    unless lines.empty?
+      cvter.cv_title(lines[0]).to_json(env.response)
 
-    RouteUtils.json_res(env) do |res|
-      Oldcv::Engine.hanviet(lines, apply_cap: true).map(&.to_s).to_json(res)
-    end
-  end
-
-  post "/api/tools/binh_am" do |env|
-    input = env.params.json["input"].as(String)
-    lines = Oldcv::TextUtil.split_text(input)
-
-    RouteUtils.json_res(env) do |res|
-      Oldcv::Engine.binh_am(lines, apply_cap: true).map(&.to_s).to_json(res)
-    end
-  end
-
-  post "/api/tools/tradsim" do |env|
-    input = env.params.json["input"].as(String)
-    lines = Oldcv::TextUtil.split_text(input)
-
-    RouteUtils.json_res(env) do |res|
-      Oldcv::Engine.tradsim(lines).map(&.to_s).to_json(res)
+      1.upto(lines.size - 1) do |i|
+        env.response << "\n"
+        para = lines.unsafe_fetch(i)
+        cvter.cv_plain(para).to_json(env.response)
+      end
     end
   end
 end
