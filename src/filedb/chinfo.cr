@@ -105,9 +105,15 @@ class CV::Chinfo
 
     while skip < upto
       idx = desc ? chaps.size - skip - 1 : skip
-      yield skip, chaps.unsafe_fetch(idx)
+      yield idx, chaps.unsafe_fetch(idx)
       skip += 1
     end
+  end
+
+  def url_for(idx : Int32, bslug : String)
+    return unless chap = chaps[idx]?
+    uslug = chap[1][2]
+    "/~#{bslug}/-#{uslug}-#{seed}-#{idx + 1}"
   end
 
   def save!(mode : Symbol = :full)

@@ -19,6 +19,7 @@ module CV::Server
     if mode > 0 || chinfo.last_chap.empty?
       chinfo.fetch!(power, mode > 1)
       chinfo.trans!(bhash, power > 1)
+      chinfo.save!
     end
 
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)

@@ -4,7 +4,6 @@ require "file_utils"
 require "option_parser"
 
 require "../../src/filedb/nvinfo"
-require "../../src/filedb/zhtext"
 require "../../src/filedb/_inits/rm_text"
 
 LIST_DIR = "_db/chdata/chinfos"
@@ -21,7 +20,7 @@ class CV::PreloadBook
     @out_dir = "#{TEXT_DIR}/#{@seed}/#{@sbid}"
     ::FileUtils.mkdir_p(@out_dir)
 
-    @indexed_map = CV::ValueMap.new("#{LIST_DIR}/#{@seed}/#{@sbid}/index.tsv")
+    @indexed_map = CV::ValueMap.new("#{LIST_DIR}/#{@seed}/origs/#{@sbid}.tsv")
     @existed_zip = CV::ZipStore.new("#{TEXT_DIR}/#{@seed}/#{@sbid}.zip")
 
     indexed_scids = @indexed_map.data.keys
@@ -81,9 +80,9 @@ class CV::PreloadSeed
   @sbids : Array(String)
 
   def initialize(@seed : String, fetch_all : Bool = false)
-    input = Nvinfo.chseed.data.compact_map do |bhash, chseed|
+    input = NvFields.chseed.data.compact_map do |bhash, chseed|
       next unless sbid = extract_seed(chseed, fetch_all)
-      weight = Nvinfo.weight.ival(bhash)
+      weight = NvFields.weight.ival(bhash)
       {sbid, weight} if weight > 10
     end
 

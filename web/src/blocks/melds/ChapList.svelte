@@ -4,7 +4,7 @@
   export let chaps = []
 
   function chap_url(chap) {
-    return `/~${bslug}/-${chap.uslug}-${sname}-${chap.scid}`
+    return `/~${bslug}/-${chap.uslug}-${sname}-${chap._idx}`
   }
 </script>
 

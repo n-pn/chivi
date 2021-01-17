@@ -32,8 +32,8 @@
     const book_path = gen_book_path(bslug, seed, 0)
     const list_path = gen_book_path(bslug, seed, ch_index)
 
-    const prev_path = prev_url ? `/~${bslug}/-${prev_url}` : book_path
-    const next_path = next_url ? `/~${bslug}/-${next_url}` : list_path
+    const prev_path = prev_url || book_path
+    const next_path = next_url || list_path
 
     return [book_path, list_path, prev_path, next_path]
   }

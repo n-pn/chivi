@@ -4,7 +4,7 @@ require "file_utils"
 require "./stores/zip_store"
 require "./_inits/rm_text"
 
-require "../_oldcv/engine"
+require "../engine/convert"
 
 class CV::Chtext
   getter seed : String
@@ -57,8 +57,17 @@ class CV::Chtext
       @cv_trans = ""
     else
       # TODO: replace with new engine
-      converted = Oldcv::Engine.cv_mixed(zh_lines, dname)
-      @cv_trans = converted.map(&.to_s).join("\n")
+      converter = Convert.content(dname)
+
+      @cv_trans = String.build do |io|
+        converter.cv_title(zh_lines[0]).to_json(io)
+
+        1.upto(zh_lines.size - 1) do |i|
+          io << "\n"
+          para = zh_lines.unsafe_fetch(i)
+          converter.cv_plain(para).to_json(io)
+        end
+      end
     end
   end
 
