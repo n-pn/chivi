@@ -11,15 +11,6 @@ targets:
   server:
     main: src/server.cr
 
-  old_map_remote:
-    main: tasks/_oldcv/map_remote.cr
-
-  old_map_yousuu:
-    main: tasks/_oldcv/map_yousuu.cr
-
-  old_map_zhwenpg:
-    main: tasks/_oldcv/map_zhwenpg.cr
-
   map_remote:
     main: tasks/seeding/map_remote.cr
 

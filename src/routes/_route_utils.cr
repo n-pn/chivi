@@ -7,8 +7,8 @@ require "../kernel"
 module CV::Server::RouteUtils
   extend self
 
-  def parse_int(str : String?, min = 1, max = 24)
-    return max unless str && (int = str.to_i?)
+  def parse_int(str : String?, min = 1, max = 9999999)
+    return min unless str && (int = str.to_i?)
     int > max ? max : int > min ? int : min
   end
 

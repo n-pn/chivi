@@ -1,8 +1,8 @@
 require "colorize"
 require "file_utils"
 
-require "./_inits/rm_text"
 require "./stores/zip_store"
+require "./_inits/rm_text"
 
 require "../_oldcv/engine"
 
@@ -25,8 +25,6 @@ class CV::Chtext
 
   def fetch!(power = 3) : Nil
     return unless remote?(power)
-
-    puts "fetching!"
 
     source = RmText.init(@seed, @sbid, @scid)
     @zh_lines = [source.title].concat(source.paras)

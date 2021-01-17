@@ -1,6 +1,6 @@
 require "./stores/*"
 
-module CV::Nvmark
+module CV::Marked
   extend self
 
   DIR = "_db/marked"

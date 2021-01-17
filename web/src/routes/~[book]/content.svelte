@@ -20,18 +20,18 @@
 
       return { ...result, ...res2 }
     } catch (e) {
-      return { ...result, chaps: [], total: 0, mftime: 0 }
+      return { ...result, chaps: [], total: 0, mtime: 0 }
     }
   }
 
-  const limit = 30
+  const take = 30
 
   async function fetch_data(api, bhash, opts) {
     const page = opts.page || 1
-    let offset = (page - 1) * limit
-    if (offset < 0) offset = 0
+    let skip = (page - 1) * take
+    if (skip < 0) skip = 0
 
-    let url = `/api/chaps/${bhash}/${opts.seed}?limit=${limit}&offset=${offset}`
+    let url = `/api/chaps/${bhash}/${opts.seed}?take=${take}&skip=${skip}`
     if (opts.order) url += `&order=${opts.order}`
     if (opts.mode) url += `&mode=${opts.mode}`
 
@@ -80,8 +80,8 @@
     }
   }
 
-  function update_mftime(nvinfo, mftime) {
-    if (nvinfo.update_tz < mftime) nvinfo.update_tz = mftime
+  function update_mtime(nvinfo, mtime) {
+    if (nvinfo.update_tz < mtime) nvinfo.update_tz = mtime
     return nvinfo
   }
 </script>
@@ -106,13 +106,13 @@
 
   export let chaps = []
   export let total = 0
-  export let mftime = 0
+  export let mtime = 0
 
   $: pmax = fix_pmax(total)
   $: reverse_order = order == 'desc' ? 'asc' : 'desc'
 
   function fix_pmax(total) {
-    const pmax = Math.floor((total - 1) / limit) + 1
+    const pmax = Math.floor((total - 1) / take) + 1
     if (page > pmax) page = pmax
     return pmax
   }
@@ -170,10 +170,12 @@
     _load = true
 
     const res = await fetch_data(fetch, nvinfo.bhash, opts)
+
     chaps = res.chaps
     total = res.total
+    mtime = res.mtime
 
-    nvinfo = update_mftime(nvinfo, res.mftime)
+    nvinfo = update_mtime(nvinfo, res.mtime)
 
     if (scroll) scroll_top.scrollIntoView({ block: 'start' })
     window.history.replaceState({}, '', url)
@@ -256,7 +258,7 @@
         <span class="-size">{total} chương</span>
         <span class="-time">
           <span class="-hide">Cập nhật:</span>
-          <RelTime time={mftime * 1000} {seed} />
+          <RelTime time={mtime * 1000} {seed} />
         </span>
       </div>
 

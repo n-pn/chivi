@@ -1,29 +1,32 @@
 require "colorize"
+require "file_utils"
 
-DIR = "_db/chdata/chinfos"
-Dir.glob("#{DIR}/*/").each do |dir|
-  puts dir
+SEEDS = "_db/chdata/chseeds"
+INFOS = "_db/chdata/chinfos"
 
-  Dir.glob("#{dir}*/index.tsv").each do |file|
-    puts file
-    out_file = file.sub("index.tsv", "_seed.tsv")
-    out_data = [] of String
+Dir.glob("#{SEEDS}/*/").each do |seed_dir|
+  sname = File.basename(seed_dir)
+  puts sname
 
-    File.each_line(file) do |line|
-      next if line.strip.empty?
-      cols = line.strip.split('\t')
+  FileUtils.mkdir_p(seed_dir + "stats")
 
-      item = [cols[0], cols[2]]
+  orig_dir = seed_dir + "origs"
+  FileUtils.mkdir_p(orig_dir)
 
-      if label = cols[3]?
-        item << label
-      end
+  info_dir = seed_dir + "infos"
+  FileUtils.mkdir_p(info_dir)
 
-      out_data << item.join('\t')
-    rescue
-      puts line.colorize.red
+  Dir.glob("#{INFOS}/#{sname}/*/").each do |book_dir|
+    puts book_dir
+
+    orig_file = book_dir + "_seed.tsv"
+    if File.exists?(orig_file)
+      FileUtils.mv orig_file, "#{orig_dir}/#{File.basename(book_dir)}.tsv"
     end
 
-    File.write(out_file, out_data.join('\n'))
+    info_file = book_dir + "trans.tsv"
+    if File.exists?(info_file)
+      FileUtils.mv info_file, "#{info_dir}/#{File.basename(book_dir)}.tsv"
+    end
   end
 end

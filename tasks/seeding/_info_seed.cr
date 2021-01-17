@@ -119,7 +119,7 @@ class CV::InfoSeed
       scid, title, label = entry
 
       vals = label.empty? ? [title] : [title, label]
-      next unless chinfo._seed.add(scid, vals)
+      next unless chinfo.origs.add(scid, vals)
 
       vi_title = cvtool.tl_title(title)
       vi_label = label.empty? ? "Chính văn" : cvtool.tl_title(label)

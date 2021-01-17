@@ -146,24 +146,24 @@ class CV::RmInfo
   end
 
   getter updated_at : Time do
-    return TimeUtils::DEF_TIME if @seed == "zhwenpg" || @seed == "hetushu"
-
-    timestamp =
-      case @seed
-      when "69shu"
-        node_text(".mu_beizhu").sub(/.+时间：/m, "")
-      when "biquge5200"
-        node_text("#info > p:last-child").sub("最后更新：", "")
-      else
-        meta_data("og:novel:update_time")
-      end
-
-    return TimeUtils.parse_time(timestamp) unless timestamp.empty?
+    return Time.utc if @seed == "zhwenpg" || @seed == "hetushu"
+    return TimeUtils.parse_time(update_str) unless update_str.empty?
     puts "- ERROR: <#{RmInfo.url_for(@seed, @sbid)}> missing time!"
     TimeUtils::DEF_TIME
   end
 
-  getter last_chap : Array(String) do
+  getter update_str : String do
+    case @seed
+    when "69shu"
+      node_text(".mu_beizhu").sub(/.+时间：/m, "")
+    when "biquge5200"
+      node_text("#info > p:last-child").sub("最后更新：", "")
+    else
+      meta_data("og:novel:update_time")
+    end
+  end
+
+  getter last_chap : String do
     case @seed
     when "hetushu" then extract_latest_by_css("#dir :last-child a:last-of-type")
     when "69shu"   then extract_latest_by_css(".mulu_list:first-of-type a:first-child")
@@ -174,26 +174,12 @@ class CV::RmInfo
 
   private def extract_latest_by_css(sel : String)
     node = find_node(sel).not_nil!
-    href = node.attributes["href"]
-    title, label = TextUtils.format_title(node.inner_text)
-
-    [extract_scid(href), title, label]
+    extract_scid(node.attributes["href"])
   end
 
   private def extract_latest_by_meta
     href = meta_data("og:novel:latest_chapter_url").not_nil!
-    text = meta_data("og:novel:latest_chapter_name").not_nil!
-
-    if @seed == "duokan8"
-      text = text.sub(/^.*正文\s*/, "").sub(/^.*章节目录\s*/, "")
-    elsif @seed == "xbiquge"
-      text = text.sub(/^.+?\s/, "")
-    end
-
-    scid = @seed != "biquge5200" ? extract_scid(href) : File.basename(href, ".htm")
-
-    title, label = TextUtils.format_title(text)
-    [scid, title, label]
+    @seed != "biquge5200" ? extract_scid(href) : File.basename(href, ".htm")
   end
 
   alias Chlist = Array(Array(String))
@@ -228,7 +214,7 @@ class CV::RmInfo
       href, text = link.attributes["href"], link.inner_text
 
       title, label = TextUtils.format_title(text, label)
-      chlist << [extract_scid(href), title, label]
+      chlist << [extract_scid(href), title, label] unless title.empty?
     rescue err
       puts err.colorize.red
     end
@@ -254,7 +240,7 @@ class CV::RmInfo
             title = link.inner_text
             next if title.starts_with?("我要报错！")
             href = link.attributes["href"]
-            chlist << [extract_scid(href), title, label]
+            chlist << [extract_scid(href), title, label] unless title.empty?
           end
         end
       end
@@ -269,7 +255,7 @@ class CV::RmInfo
     @rdoc.css(".clistitem > a").each do |link|
       href = link.attributes["href"]
       title, label = TextUtils.format_title(link.inner_text)
-      output << [extract_scid(href), title, label]
+      output << [extract_scid(href), title, label] unless title.empty?
     end
 
     # check if the list is in correct orlder
@@ -285,7 +271,7 @@ class CV::RmInfo
     @rdoc.css(".chapter-list a").each do |link|
       next unless href = link.attributes["href"]?
       title, label = TextUtils.format_title(link.inner_text)
-      chlist << [extract_scid(href), title, label]
+      chlist << [extract_scid(href), title, label] unless title.empty?
     end
 
     chlist

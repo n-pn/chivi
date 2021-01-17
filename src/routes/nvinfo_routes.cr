@@ -1,5 +1,5 @@
 require "./_route_utils"
-require "../filedb/nvmark"
+require "../filedb/marked"
 
 module CV::Server
   get "/api/nvinfos" do |env|
@@ -19,7 +19,7 @@ module CV::Server
     nvinfo.bump_access!
 
     if uname = env.session.string?("dname").try(&.downcase)
-      nvmark = Nvmark.user_books(uname).fval(bhash) || ""
+      nvmark = Marked.user_books(uname).fval(bhash) || ""
     else
       nvmark = ""
     end

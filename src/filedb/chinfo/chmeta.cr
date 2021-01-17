@@ -1,12 +1,12 @@
-require "./stores/*"
 require "file_utils"
+require "../stores/*"
 
-class CV::Chseed
-  getter name : String
+class CV::ChMeta
+  getter seed : String
   getter rdir : String
 
-  def initialize(@name)
-    @rdir = "_db/nvdata/chseeds/#{@name}"
+  def initialize(@seed)
+    @rdir = "_db/chdata/chinfos/#{@seed}"
     ::FileUtils.mkdir_p(@rdir) unless File.exists?(@rdir)
   end
 
@@ -31,13 +31,13 @@ class CV::Chseed
     @count_file.try(&.save!(mode: mode))
   end
 
-  class_getter cache = {} of String => self
+  CACHE = {} of String => self
 
-  def self.load(name) : self
-    @@cache[name] ||= new(name)
+  def self.load(seed) : self
+    CACHE[seed] ||= new(seed)
   end
 
   def self.save!(mode : Symbol = :full) : Nil
-    @@cache.each_value(&.save!(mode: mode))
+    CACHE.each_value(&.save!(mode: mode))
   end
 end

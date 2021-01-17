@@ -1,5 +1,5 @@
 require "./_route_utils"
-require "../filedb/nvmark"
+require "../filedb/marked"
 
 module CV::Server
   get "/api/book-marks/:bhash" do |env|
@@ -8,7 +8,7 @@ module CV::Server
     end
 
     bhash = env.params.url["bhash"]
-    bmark = Nvmark.book_users(bhash).fval(uname) || ""
+    bmark = Marked.book_users(bhash).fval(uname) || ""
     RouteUtils.json_res(env, {bmark: bmark})
   end
 
@@ -21,9 +21,9 @@ module CV::Server
     bmark = env.params.query["bmark"]? || ""
 
     if bmark.empty?
-      Nvmark.unmark_book(uname, bhash)
+      Marked.unmark_book(uname, bhash)
     else
-      Nvmark.mark_book(uname, bhash, bmark)
+      Marked.mark_book(uname, bhash, bmark)
     end
 
     RouteUtils.json_res(env, {bmark: bmark})
@@ -32,12 +32,12 @@ module CV::Server
   get "/api/user-books/:dname" do |env|
     uname = env.params.url["dname"].downcase
     bmark = env.params.query["bmark"]? || "reading"
-    matched = Nvmark.all_user_books(uname, bmark)
+    matched = Marked.all_user_books(uname, bmark)
 
     matched.each do |bhash|
       next if NvFields._index.has_key?(bhash)
       puts bhash
-      # Nvmark.unmark_book(uname, bhash)
+      # Marked.unmark_book(uname, bhash)
       # matched.delete(bhash)
     end
 
