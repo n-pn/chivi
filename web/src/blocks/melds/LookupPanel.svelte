@@ -80,10 +80,6 @@
     return output
   }
 
-  function parse_hanviet(input) {
-    return input.split('\t').map((x) => x.split('¦'))
-  }
-
   import SvgIcon from '$atoms/SvgIcon.svelte'
   import {
     lookup_input,
@@ -94,8 +90,6 @@
 </script>
 
 <script>
-  import { stop_propagation } from 'svelte/internal'
-
   $: [input, lower, upper] = $lookup_input
 
   export let on_top = false
@@ -111,16 +105,16 @@
   $: hv_html = render_hv(hanviet, lower, upper)
 
   async function lookup_line(input) {
-    const url = `/api/dicts/lookup?dname=${$lookup_dname}`
+    const url = `/api/dicts/lookup/${$lookup_dname}`
     const res = await fetch(url, {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ input: input }),
     })
-    const data = await res.json()
 
+    const data = await res.json()
     entries = data.entries
-    hanviet = parse_hanviet(data.hanviet)
+    hanviet = data.hanviet.split('\v').map((x) => x.split('\t'))
   }
 
   function update_focus() {

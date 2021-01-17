@@ -3,9 +3,9 @@ require "./_route_utils"
 module CV::Server
   alias LookupEntry = Hash(String, Array(String))
 
-  post "/api/dicts/lookup" do |env|
-    dname = env.params.query.fetch("dname", "dich-nhanh")
-    dicts = Oldcv::Engine::Library.for_convert(dname)
+  put "/api/dicts/lookup/:dname" do |env|
+    dname = env.params.url["dname"]
+    dicts = {Library.find_dict(dname), Library.regular}
 
     input = env.params.json["input"].as(String)
     chars = input.chars
@@ -16,24 +16,26 @@ module CV::Server
         hash[key] = LookupEntry.new { |h, k| h[k] = [] of String }
       end
 
-      dicts.reverse_each do |dict|
+      dicts.each do |dict|
         dict.scan(chars, idx) do |item|
           entry[item.key.size]["vietphrase"].concat(item.vals).uniq!
         end
       end
 
-      Oldcv::Engine::Library.trungviet.scan(chars, idx) do |item|
+      Library.trungviet.scan(chars, idx) do |item|
         entry[item.key.size]["trungviet"] = item.vals
       end
 
-      Oldcv::Engine::Library.cc_cedict.scan(chars, idx) do |item|
+      Library.cc_cedict.scan(chars, idx) do |item|
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
       entry.to_a.sort_by(&.[0].-)
     end
 
-    hanviet = Oldcv::Engine.hanviet(input, apply_cap: false).to_s
+    hanviet = String.build do |io|
+      Convert.hanviet.translit(input, apply_cap: false).to_json(io)
+    end
 
     RouteUtils.json_res(env) do |res|
       {hanviet: hanviet, entries: entries}.to_json(res)
