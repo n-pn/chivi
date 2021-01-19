@@ -2,7 +2,7 @@ require "file_utils"
 require "../../src/filedb/nvinfo"
 
 class CV::Seeds::FixCovers
-  getter chseed : ValueMap = NvFields.chseed
+  getter chseed : ValueMap = NvValues.chseed
 
   DIR = "_db/bcover"
   ::FileUtils.mkdir_p("#{DIR}/_chivi")
@@ -10,13 +10,13 @@ class CV::Seeds::FixCovers
   def fix!(mode : Symbol = :fast)
     checked = Set(String).new
 
-    @chseed.data.each_with_index do |(bhash, seeds), idx|
-      checked.add(bhash)
-      next if mode == :fast && NvFields.bcover.has_key?(bhash)
+    @chseed.data.each_with_index do |(b_hash, seeds), idx|
+      checked.add(b_hash)
+      next if mode == :fast && NvValues.bcover.has_key?(b_hash)
 
       covers = {} of String => String
 
-      if ybid = NvFields.yousuu.fval(bhash)
+      if ybid = NvValues.yousuu.fval(b_hash)
         covers["yousuu"] = ybid
       end
 
@@ -38,9 +38,9 @@ class CV::Seeds::FixCovers
         end
       end
 
-      next unless bcover && NvFields.bcover.add(bhash, bcover.sub("#{DIR}/", ""))
+      next unless bcover && NvValues.bcover.add(b_hash, bcover.sub("#{DIR}/", ""))
 
-      out_file = "#{DIR}/_chivi/#{bhash}.webp"
+      out_file = "#{DIR}/_chivi/#{b_hash}.webp"
       convert_img(bcover, out_file)
 
       if idx % 20 == 19
@@ -49,14 +49,14 @@ class CV::Seeds::FixCovers
       end
     end
 
-    yousuu = NvFields.yousuu.data
-    yousuu.each_with_index do |(bhash, array), idx|
-      next if checked.includes?(bhash)
-      next if mode == :fast && NvFields.bcover.has_key?(bhash)
+    yousuu = NvValues.yousuu.data
+    yousuu.each_with_index do |(b_hash, array), idx|
+      next if checked.includes?(b_hash)
+      next if mode == :fast && NvValues.bcover.has_key?(b_hash)
 
       next unless cover_file = cover_path("yousuu", array.first)
       next if image_width(cover_file) < 10
-      NvFields.bcover.add(bhash, cover_file.sub("#{DIR}/", ""))
+      NvValues.bcover.add(b_hash, cover_file.sub("#{DIR}/", ""))
 
       if idx % 20 == 19
         puts "- [yousuu_covers] <#{idx + 1}/#{yousuu.size}>".colorize.blue
@@ -94,7 +94,7 @@ class CV::Seeds::FixCovers
   end
 
   def save!(mode : Symbol = :full)
-    NvFields.bcover.save!(mode: mode)
+    NvValues.bcover.save!(mode: mode)
   end
 end
 

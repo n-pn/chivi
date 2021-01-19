@@ -16,12 +16,12 @@ class CV::PreloadBook
   getter existed_zip : CV::ZipStore
   getter missing : Array(String)
 
-  def initialize(@seed : String, @sbid : String)
-    @out_dir = "#{TEXT_DIR}/#{@seed}/#{@sbid}"
+  def initialize(@s_name : String, @s_nvid : String)
+    @out_dir = "#{TEXT_DIR}/#{@s_name}/#{@s_nvid}"
     ::FileUtils.mkdir_p(@out_dir)
 
-    @indexed_map = CV::ValueMap.new("#{LIST_DIR}/#{@seed}/origs/#{@sbid}.tsv")
-    @existed_zip = CV::ZipStore.new("#{TEXT_DIR}/#{@seed}/#{@sbid}.zip")
+    @indexed_map = CV::ValueMap.new("#{LIST_DIR}/#{@s_name}/origs/#{@s_nvid}.tsv")
+    @existed_zip = CV::ZipStore.new("#{TEXT_DIR}/#{@s_name}/#{@s_nvid}.zip")
 
     indexed_scids = @indexed_map.data.keys
     existed_scids = @existed_zip.entries(MIN_SIZE).map(&.sub(".txt", ""))
@@ -40,7 +40,7 @@ class CV::PreloadBook
         fetch_text(scid, "#{idx + 1}/#{@missing.size}")
 
         # throttling
-        case @seed
+        case @s_name
         when "shubaow"
           sleep Random.rand(2000..3000).milliseconds
         when "zhwenpg"
@@ -58,7 +58,7 @@ class CV::PreloadBook
   end
 
   def fetch_text(scid : String, label : String) : Nil
-    source = CV::RmText.init(@seed, @sbid, scid)
+    source = CV::RmText.init(@s_name, @s_nvid, scid)
     out_file = "#{@out_dir}/#{scid}.txt"
 
     puts "- <#{label}> [#{source.title}] saved!\n".colorize.yellow
@@ -68,7 +68,7 @@ class CV::PreloadBook
       source.paras.join(io, "\n")
     end
   rescue err
-    puts "- <#{label}> [#{@seed}/#{@sbid}/#{scid}]: #{err.message}".colorize.red
+    puts "- <#{label}> [#{@s_name}/#{@s_nvid}/#{scid}]: #{err.message}".colorize.red
   end
 
   def self.crawl!(seed : String, sbid : String, threads = 4)
@@ -79,10 +79,10 @@ end
 class CV::PreloadSeed
   @sbids : Array(String)
 
-  def initialize(@seed : String, fetch_all : Bool = false)
-    input = NvFields.chseed.data.compact_map do |bhash, chseed|
+  def initialize(@s_name : String, fetch_all : Bool = false)
+    input = NvValues.chseed.data.compact_map do |b_hash, chseed|
       next unless sbid = extract_seed(chseed, fetch_all)
-      weight = NvFields.weight.ival(bhash)
+      weight = NvValues.weight.ival(b_hash)
       {sbid, weight} if weight > 10
     end
 
@@ -90,7 +90,7 @@ class CV::PreloadSeed
   end
 
   private def extract_seed(seeds : Array(String), fetch_all : Bool = false)
-    case @seed
+    case @s_name
     when "zhwenpg", "nofff"
       # not considered main source if there are more than two sources
       return if seeds.size > 2
@@ -101,17 +101,17 @@ class CV::PreloadSeed
 
     seeds.each_with_index do |input, index|
       name, sbid = input.split("/")
-      next unless name == @seed
+      next unless name == @s_name
       return sbid if fetch_all || index == 0
     end
   end
 
   def crawl!(threads = 4)
-    puts "[#{@seed}: #{@sbids.size} entries]".colorize.green.bold
+    puts "[#{@s_name}: #{@sbids.size} entries]".colorize.green.bold
 
     @sbids.each_with_index do |sbid, idx|
-      puts "- #{idx + 1}/#{@sbids.size} [#{@seed}/#{sbid}]".colorize.light_cyan
-      PreloadBook.crawl!(@seed, sbid, threads)
+      puts "- #{idx + 1}/#{@sbids.size} [#{@s_name}/#{sbid}]".colorize.light_cyan
+      PreloadBook.crawl!(@s_name, sbid, threads)
     end
   end
 

@@ -40,8 +40,8 @@
 </script>
 
 <script>
-  export let bslug
-  export let bhash
+  export let b_slug
+  export let b_hash
 
   export let btitle = []
   export let author = []
@@ -68,7 +68,7 @@
 
   $: vi_status = map_status(status)
 
-  $: book_url = `https://chivi.xyz/~${bslug}`
+  $: book_url = `https://chivi.xyz/~${b_slug}`
   $: book_intro = bintro.join('').substring(0, 300)
   $: book_cover = `https://chivi.xyz/covers/${bcover}`
   $: updated_at = new Date(update_tz * 1000)
@@ -78,7 +78,7 @@
     if (mark == new_mark) mark = ''
     else mark = new_mark
 
-    const url = `/api/book-marks/${bhash}?bmark=${mark}`
+    const url = `/api/book-marks/${b_hash}?bmark=${mark}`
     await fetch(url, { method: 'PUT' })
   }
 
@@ -109,7 +109,7 @@
 </svelte:head>
 
 <Vessel>
-  <a slot="header-left" href="/~{bslug}" class="header-item _active">
+  <a slot="header-left" href="/~{b_slug}" class="header-item _active">
     <SvgIcon name="book-open" />
     <span class="header-text _title">{vi_title}</span>
   </a>
@@ -144,7 +144,7 @@
     </div>
 
     <div class="cover">
-      <BookCover {bhash} cover={bcover} />
+      <BookCover {b_hash} cover={bcover} />
     </div>
 
     <section class="extra">
@@ -216,17 +216,17 @@
 
   <div class="section">
     <header class="section-header">
-      <a href="/~{bslug}" class="header-tab" class:_active={atab == 'summary'}>
+      <a href="/~{b_slug}" class="header-tab" class:_active={atab == 'summary'}>
         Tổng quan
       </a>
 
       <a
-        href="/~{bslug}/content"
+        href="/~{b_slug}/content"
         class="header-tab"
         class:_active={atab == 'content'}> Chương tiết </a>
 
       <a
-        href="/~{bslug}/discuss"
+        href="/~{b_slug}/discuss"
         class="header-tab"
         class:_active={atab == 'discuss'}> Thảo luận </a>
     </header>

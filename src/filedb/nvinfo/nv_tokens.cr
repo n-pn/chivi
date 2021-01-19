@@ -1,4 +1,4 @@
-require "./shared"
+require "./nv_helper"
 
 module CV::NvTokens
   extend self
@@ -11,7 +11,7 @@ module CV::NvTokens
 
   {% for type in TYPES %}
     class_getter {{type.id}} : TokenMap do
-      TokenMap.new(NvShared.map_file("tokens/#{{{type}}}"))
+      TokenMap.new(NvHelper.map_file("tokens/#{{{type}}}"))
     end
 
     def set_{{type.id}}(key : String, vals : Array(String))

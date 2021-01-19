@@ -1,7 +1,7 @@
 require "colorize"
 require "file_utils"
 
-require "../../../src/engine/library"
+require "../../../src/engine/vp_dict"
 
 class ValueSet
   getter file : String
@@ -89,7 +89,7 @@ module QtUtil
 
     while caret < chars.size
       char = chars[caret]
-      keep = CV::VpTerm.new(char.to_s, [char.to_s])
+      keep = CV::VpEntry.new(char.to_s, [char.to_s])
 
       dict.scan(chars, caret) do |term|
         next if term.vals.empty? || term.vals.first.empty?

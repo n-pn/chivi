@@ -68,7 +68,7 @@ class CV::Seeds::MapYousuu
   end
 
   def seed!(mode : Symbol = :best)
-    authors = Set(String).new(NvFields.author.vals.map(&.first))
+    authors = Set(String).new(NvValues.author.vals.map(&.first))
     checked = Set(String).new
 
     input = @seeding.rating.data.to_a.map { |k, v| {k, v[0].to_i, v[1].to_i} }
@@ -76,7 +76,7 @@ class CV::Seeds::MapYousuu
 
     input.each_with_index do |(sbid, voters, rating), idx|
       btitle, author = @seeding._index.get(sbid).not_nil!
-      btitle, author = NvShared.fix_nvname(btitle, author)
+      btitle, author = NvHelper.fix_nvname(btitle, author)
 
       nvname = "#{btitle}\t#{author}"
       next if checked.includes?(nvname)
@@ -85,14 +85,14 @@ class CV::Seeds::MapYousuu
       if (voters > 10 && rating >= 3.75) || authors.includes?(author) || popular?(sbid)
         authors.add(author)
 
-        bhash, existed = @seeding.upsert!(sbid)
-        NvFields.set_score(bhash, voters, rating)
+        b_hash, existed = @seeding.upsert!(sbid)
+        NvValues.set_score(b_hash, voters, rating)
 
         origin = source_url.fval(sbid)
-        NvFields.origin.add(bhash, origin) if origin && !origin.empty?
+        NvValues.origin.add(b_hash, origin) if origin && !origin.empty?
 
-        NvFields.yousuu.add(bhash, sbid)
-        NvFields.shield.add(bhash, @seeding.shield.fval(sbid) || "0")
+        NvValues.yousuu.add(b_hash, sbid)
+        NvValues.shield.add(b_hash, @seeding.shield.fval(sbid) || "0")
       end
 
       if idx % 100 == 99

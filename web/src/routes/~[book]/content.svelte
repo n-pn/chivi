@@ -1,9 +1,9 @@
 <script context="module">
   export async function preload({ params, query }) {
-    const bslug = params.book
+    const b_slug = params.book
     const order = query.order || 'asc'
 
-    const res = await this.fetch(`/api/nvinfos/${bslug}`)
+    const res = await this.fetch(`/api/nvinfos/${b_slug}`)
     if (!res.ok) this.error(res.status, await res.text())
 
     const { nvinfo, nvmark } = await res.json()
@@ -16,7 +16,7 @@
     const result = { nvinfo, nvmark, seed, page, order }
 
     try {
-      const res2 = await fetch_data(this.fetch, nvinfo.bhash, opts)
+      const res2 = await fetch_data(this.fetch, nvinfo.b_hash, opts)
 
       return { ...result, ...res2 }
     } catch (e) {
@@ -26,12 +26,12 @@
 
   const take = 30
 
-  async function fetch_data(api, bhash, opts) {
+  async function fetch_data(api, b_hash, opts) {
     const page = opts.page || 1
     let skip = (page - 1) * take
     if (skip < 0) skip = 0
 
-    let url = `/api/chaps/${bhash}/${opts.seed}?take=${take}&skip=${skip}`
+    let url = `/api/chaps/${b_hash}/${opts.seed}?take=${take}&skip=${skip}`
     if (opts.order) url += `&order=${opts.order}`
     if (opts.mode) url += `&mode=${opts.mode}`
 
@@ -169,7 +169,7 @@
 
     _load = true
 
-    const res = await fetch_data(fetch, nvinfo.bhash, opts)
+    const res = await fetch_data(fetch, nvinfo.b_hash, opts)
 
     chaps = res.chaps
     total = res.total
@@ -211,7 +211,7 @@
   }
 
   function page_url(seed, page) {
-    let url = `/~${nvinfo.bslug}/content?seed=${seed}`
+    let url = `/~${nvinfo.b_slug}/content?seed=${seed}`
     if (page > 1) url += `&page=${page}`
     if (order == 'desc') url += '&order=desc'
     return url
@@ -280,7 +280,7 @@
     </div>
 
     <div class="chlist">
-      <ChapList bslug={nvinfo.bslug} sname={seed} {chaps} />
+      <ChapList b_slug={nvinfo.b_slug} sname={seed} {chaps} />
 
       {#if pmax > 1}
         <nav class="pagi">

@@ -1,17 +1,17 @@
 require "../../src/filedb/nvinfo"
 
 class CV::Seeds::FixIntros
-  getter chseed : ValueMap = NvFields.chseed
+  getter chseed : ValueMap = NvValues.chseed
 
   def fix!
-    @chseed.data.each_with_index do |(bhash, seeds), idx|
+    @chseed.data.each_with_index do |(b_hash, seeds), idx|
       yintro, bintro = nil, nil
 
-      if ybid = NvFields.yousuu.fval(bhash)
+      if ybid = NvValues.yousuu.fval(b_hash)
         yintro = get_intro("yosuu", ybid)
 
         if yintro.size > 1
-          NvFields.set_bintro(bhash, yintro, force: true)
+          NvValues.set_bintro(b_hash, yintro, force: true)
           next
         end
       end
@@ -38,7 +38,7 @@ class CV::Seeds::FixIntros
         end
       end
 
-      NvFields.set_bintro(bhash, bintro, force: true)
+      NvValues.set_bintro(b_hash, bintro, force: true)
 
       if idx % 100 == 99
         puts "- [fix_intros] <#{idx + 1}/#{@chseed.size}>".colorize.blue

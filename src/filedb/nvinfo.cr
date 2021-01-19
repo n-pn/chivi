@@ -4,30 +4,30 @@ require "./nvinfo/*"
 class CV::Nvinfo
   # include JSON::Serializable
 
-  getter bhash : String
-  getter bslug : String { NvFields._index.fval(bhash) || bhash }
+  getter b_hash : String
+  getter b_slug : String { NvValues._index.fval(b_hash) || b_hash }
 
-  getter btitle : Array(String) { NvFields.btitle.get(bhash).not_nil! }
-  getter author : Array(String) { NvFields.author.get(bhash).not_nil! }
-  getter genres : Array(String) { NvFields.bgenre.get(bhash) || [] of String }
+  getter btitle : Array(String) { NvValues.btitle.get(b_hash).not_nil! }
+  getter author : Array(String) { NvValues.author.get(b_hash).not_nil! }
+  getter genres : Array(String) { NvValues.bgenre.get(b_hash) || [] of String }
 
-  getter bcover : String { NvFields.bcover.fval(bhash) || "blank.png" }
-  getter voters : Int32 { NvFields.voters.ival(bhash) }
-  getter rating : Int32 { NvFields.rating.ival(bhash) }
+  getter bcover : String { NvValues.bcover.fval(b_hash) || "blank.png" }
+  getter voters : Int32 { NvValues.voters.ival(b_hash) }
+  getter rating : Int32 { NvValues.rating.ival(b_hash) }
 
-  getter chseed : Hash(String, String) { NvFields.get_chseed(bhash) }
-  getter bintro : Array(String) { NvFields.get_bintro(bhash) }
+  getter chseed : Hash(String, String) { NvValues.get_chseed(b_hash) }
+  getter bintro : Array(String) { NvValues.get_bintro(b_hash) }
 
-  getter status : Int32 { NvFields.status.ival(bhash) }
-  getter shield : Int32 { NvFields.shield.ival(bhash) }
+  getter status : Int32 { NvValues.status.ival(b_hash) }
+  getter shield : Int32 { NvValues.shield.ival(b_hash) }
 
-  getter yousuu : String { NvFields.yousuu.fval(bhash) || "" }
-  getter origin : String { NvFields.origin.fval(bhash) || "" }
+  getter yousuu : String { NvValues.yousuu.fval(b_hash) || "" }
+  getter origin : String { NvValues.origin.fval(b_hash) || "" }
 
-  getter access_tz : Int64 { NvFields.access_tz.ival_64(bhash) }
-  getter update_tz : Int64 { NvFields.update_tz.ival_64(bhash) }
+  getter access_tz : Int64 { NvValues.access_tz.ival_64(b_hash) }
+  getter update_tz : Int64 { NvValues.update_tz.ival_64(b_hash) }
 
-  def initialize(@bhash)
+  def initialize(@b_hash)
   end
 
   def inspect(io : IO, full : Bool = false)
@@ -36,8 +36,8 @@ class CV::Nvinfo
 
   def to_json(json : JSON::Builder, full : Bool = false)
     json.object do
-      json.field "bhash", bhash
-      json.field "bslug", bslug
+      json.field "b_hash", b_hash
+      json.field "b_slug", b_slug
 
       json.field "btitle", btitle
       json.field "author", author
@@ -62,77 +62,77 @@ class CV::Nvinfo
 
   def bump_access!(atime : Time = Time.utc) : Nil
     @access_tz = atime.to_unix // 60
-    return unless NvFields.access_tz.add(bhash, @access_tz)
-    NvFields.access_tz.save!(mode: :upds) if NvFields.access_tz.unsaved > 10
+    return unless NvValues.access_tz.add(b_hash, @access_tz)
+    NvValues.access_tz.save!(mode: :upds) if NvValues.access_tz.unsaved > 10
   end
 
   def self.upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)
     unless fixed
-      zh_btitle = NvShared.fix_zh_btitle(zh_btitle)
-      zh_author = NvShared.fix_zh_author(zh_author)
+      zh_btitle = NvHelper.fix_zh_btitle(zh_btitle)
+      zh_author = NvHelper.fix_zh_author(zh_author)
     end
 
-    bhash = CoreUtils.digest32("#{zh_btitle}--#{zh_author}")
-    existed = NvFields._index.has_key?(bhash)
+    b_hash = CoreUtils.digest32("#{zh_btitle}--#{zh_author}")
+    existed = NvValues._index.has_key?(b_hash)
 
     unless existed
-      set_author(bhash, zh_author)
-      set_btitle(bhash, zh_btitle)
+      set_author(b_hash, zh_author)
+      set_btitle(b_hash, zh_btitle)
 
-      bslug = NvTokens.btitle_hv.get(bhash).not_nil!.join("-")
-      bslug += "-#{bhash}" if NvFields._index.has_val?(bslug)
+      b_slug = NvTokens.btitle_hv.get(b_hash).not_nil!.join("-")
+      b_slug += "-#{b_hash}" if NvValues._index.has_val?(b_slug)
 
-      slugs = [bslug]
-      if vi_tokens = NvTokens.btitle_vi.get(bhash)
+      slugs = [b_slug]
+      if vi_tokens = NvTokens.btitle_vi.get(b_hash)
         vslug = vi_tokens.join("-")
-        slugs << vslug unless NvFields._index.has_val?(vslug)
+        slugs << vslug unless NvValues._index.has_val?(vslug)
       end
 
-      NvFields._index.add(bhash, slugs)
+      NvValues._index.add(b_hash, slugs)
     end
 
-    {bhash, existed}
+    {b_hash, existed}
   end
 
-  def self.set_btitle(bhash : String,
+  def self.set_btitle(b_hash : String,
                       zh_btitle : String,
                       hv_btitle : String? = nil,
                       vi_btitle : String? = nil) : Nil
-    hv_btitle ||= NvShared.to_hanviet(zh_btitle)
-    vi_btitle ||= NvShared.fix_vi_btitle(zh_btitle)
+    hv_btitle ||= NvHelper.to_hanviet(zh_btitle)
+    vi_btitle ||= NvHelper.fix_vi_btitle(zh_btitle)
     vi_btitle = nil if vi_btitle == hv_btitle
 
     vals = [zh_btitle, hv_btitle]
     vals << vi_btitle if vi_btitle
 
-    if NvFields.btitle.add(bhash, vals)
-      NvTokens.set_btitle_zh(bhash, zh_btitle)
-      NvTokens.set_btitle_hv(bhash, hv_btitle)
-      NvTokens.set_btitle_vi(bhash, vi_btitle) if vi_btitle
+    if NvValues.btitle.add(b_hash, vals)
+      NvTokens.set_btitle_zh(b_hash, zh_btitle)
+      NvTokens.set_btitle_hv(b_hash, hv_btitle)
+      NvTokens.set_btitle_vi(b_hash, vi_btitle) if vi_btitle
     end
   end
 
-  def self.set_author(bhash : String,
+  def self.set_author(b_hash : String,
                       zh_author : String,
                       vi_author : String? = nil) : Nil
-    vi_author ||= NvShared.fix_vi_author(zh_author)
+    vi_author ||= NvHelper.fix_vi_author(zh_author)
 
-    if NvFields.author.add(bhash, [zh_author, vi_author])
-      NvTokens.set_author_zh(bhash, zh_author)
-      NvTokens.set_author_vi(bhash, vi_author)
+    if NvValues.author.add(b_hash, [zh_author, vi_author])
+      NvTokens.set_author_zh(b_hash, zh_author)
+      NvTokens.set_author_vi(b_hash, vi_author)
     end
   end
 
   def self.save!(mode : Symbol = :full)
-    NvFields.save!(mode: mode)
+    NvValues.save!(mode: mode)
     NvTokens.save!(mode: mode)
   end
 
   def self.find_by_slug(slug : String)
-    NvFields._index.keys(slug).first
+    NvValues._index.keys(slug).first
   end
 
-  def self.each(order_map = NvFields.weight, skip = 0, take = 24, matched : Set(String)? = nil)
+  def self.each(order_map = NvValues.weight, skip = 0, take = 24, matched : Set(String)? = nil)
     if !matched
       iter = order_map._idx.reverse_each
       skip.times { return unless iter.next }
@@ -158,7 +158,7 @@ class CV::Nvinfo
         end
       end
     elsif matched.size > skip
-      list = matched.to_a.sort_by { |bhash| order_map.get_val(bhash).- }
+      list = matched.to_a.sort_by { |b_hash| order_map.get_val(b_hash).- }
       upto = skip + take
       upto = list.size if upto > list.size
       skip.upto(upto - 1) { |i| yield list.unsafe_fetch(i) }
@@ -167,33 +167,33 @@ class CV::Nvinfo
 
   def self.get_order_map(order : String? = nil)
     case order
-    when "access" then NvFields.access_tz
-    when "update" then NvFields.update_tz
-    when "rating" then NvFields.rating
-    when "voters" then NvFields.voters
-    else               NvFields.weight
+    when "access" then NvValues.access_tz
+    when "update" then NvValues.update_tz
+    when "rating" then NvValues.rating
+    when "voters" then NvValues.voters
+    else               NvValues.weight
     end
   end
 
   CACHE = {} of String => self
 
-  def self.load(bhash : String)
-    CACHE[bhash] ||= new(bhash)
+  def self.load(b_hash : String)
+    CACHE[b_hash] ||= new(b_hash)
   end
 end
 
 # puts CV::Nvinfo.find_by_slug("quy-bi-chi-chu")
 # pp CV::Nvinfo.new("h6cxpsr4")
 
-# CV::Nvinfo.each("voters", take: 10) do |bhash|
-#   puts CV::Nvinfo.load(bhash)
+# CV::Nvinfo.each("voters", take: 10) do |b_hash|
+#   puts CV::Nvinfo.load(b_hash)
 # end
 
-# CV::Nvinfo.each("voters", skip: 5, take: 5) do |bhash|
-#   puts CV::Nvinfo.load(bhash).btitle
+# CV::Nvinfo.each("voters", skip: 5, take: 5) do |b_hash|
+#   puts CV::Nvinfo.load(b_hash).btitle
 # end
 
 # matched = CV::Nvinfo::NvTokens.glob(genre: "kinh di")
-# CV::Nvinfo.each("weight", take: 10, matched: matched) do |bhash|
-#   puts CV::Nvinfo.load(bhash)
+# CV::Nvinfo.each("weight", take: 10, matched: matched) do |b_hash|
+#   puts CV::Nvinfo.load(b_hash)
 # end

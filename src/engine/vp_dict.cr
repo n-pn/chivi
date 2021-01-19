@@ -25,7 +25,7 @@ class CV::VpDict
     CACHE[dname] ||=
       case dname
       when "trungviet", "cc_cedict", "trich_dan"
-        new("loockup/#{dname}", dtype: 1, p_min: 4, regen: regen)
+        new("lookup/#{dname}", dtype: 1, p_min: 4, regen: regen)
       when "tradsim", "binh_am", "hanviet"
         new("system/#{dname}", dtype: 2, p_min: 3, regen: regen)
       when "regular", "suggest", "various"
@@ -33,44 +33,6 @@ class CV::VpDict
       else
         new("unique/#{dname}", dtype: 3, p_min: 1, regen: regen)
       end
-  end
-
-  #########################
-
-  class Node
-    alias Trie = Hash(Char, Node)
-
-    property entry : VpEntry?
-    property emend : VpEmend?
-
-    getter _hint : Array(String) { [] of String }
-    getter _trie : Trie
-
-    def initialize(@entry = nil, @emend = nil, @_trie = Trie.new)
-    end
-
-    def find!(key : String) : Node
-      node = self
-      key.each_char { |c| node = node._trie[c] ||= Node.new }
-      node
-    end
-
-    def find(key : String) : Node?
-      node = self
-      key.each_char { |c| return unless node = node._trie[c]? }
-      node
-    end
-
-    def each : Nil
-      queue = [self]
-
-      while node = queue.pop?
-        node._trie.each_value do |node|
-          queue << node
-          yield node if node.entry
-        end
-      end
-    end
   end
 
   #########################
@@ -89,9 +51,9 @@ class CV::VpDict
   # count all newest entries
   getter rsize : Int32 = 0
 
-  def initialize(@label : String, @dtype = 0, @p_min = 1, regen = false)
-    @afile = "#{DIR}/#{@label}.tsv"
-    @efile = "#{DIR}/#{@label}.tab"
+  def initialize(label : String, @dtype = 0, @p_min = 1, regen : Bool = false)
+    @afile = "#{DIR}/#{label}.tsv"
+    @efile = "#{DIR}/#{label}.tab"
 
     unless regen
       load!(@afile) if File.exists?(@afile)
@@ -108,12 +70,12 @@ class CV::VpDict
         upsert(line.split('\t'))
         count += 1
       rescue err
-        puts "- <vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red
+        puts "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red
       end
     end
 
-    puts "- <vp_dict> [#{file}] loaded: #{count} lines, \
-            time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
+    puts "<vp_dict> [#{file}] loaded: #{count} lines, \
+          time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
     bump_mtime!(File.info(file).modification_time)
   end
 
@@ -146,7 +108,7 @@ class CV::VpDict
   end
 
   # return old entry if exists
-  def upsert(new_entry : VpEntry, new_emend : VpEmend?) : Bool
+  def upsert(new_entry : VpEntry, new_emend : VpEmend? = nil) : Bool
     @items << {new_entry, new_emend}
 
     # find existing node or force creating new one
@@ -209,7 +171,7 @@ class CV::VpDict
     output = [] of Tuple(VpEntry, VpEmend?)
 
     @_root.each do |node|
-      output << {node.entry, node.emend} if node.entry
+      output << {node.entry.not_nil!, node.emend} if node.entry
     end
 
     output
@@ -232,7 +194,45 @@ class CV::VpDict
     end
 
     count = trim ? @items.size : @rsize
-    puts "- <vp_dict> [#{File.basename(@afile)}] saved: #{count} entries,
-            time: #{tspan.total_milliseconds.round.to_i}ms".colorize.yellow
+    puts "<vp_dict> [#{File.basename(@afile)}] saved: #{count} entries, \
+          time: #{tspan.total_milliseconds.round.to_i}ms".colorize.yellow
+  end
+
+  #########################
+
+  class Node
+    alias Trie = Hash(Char, Node)
+
+    property entry : VpEntry?
+    property emend : VpEmend?
+
+    getter _hint : Array(String) { [] of String }
+    getter _trie : Trie
+
+    def initialize(@entry = nil, @emend = nil, @_trie = Trie.new)
+    end
+
+    def find!(key : String) : Node
+      node = self
+      key.each_char { |c| node = node._trie[c] ||= Node.new }
+      node
+    end
+
+    def find(key : String) : Node?
+      node = self
+      key.each_char { |c| return unless node = node._trie[c]? }
+      node
+    end
+
+    def each : Nil
+      queue = [self]
+
+      while node = queue.pop?
+        node._trie.each_value do |node|
+          queue << node
+          yield node if node.entry
+        end
+      end
+    end
   end
 end

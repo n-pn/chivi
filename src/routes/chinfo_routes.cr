@@ -2,15 +2,15 @@ require "./_route_utils"
 require "../filedb/chinfo"
 
 module CV::Server
-  get "/api/chaps/:bhash/:seed" do |env|
-    bhash = env.params.url["bhash"]
-    seed = env.params.url["seed"]
+  get "/api/chaps/:b_hash/:s_name" do |env|
+    b_hash = env.params.url["b_hash"]
+    s_name = env.params.url["s_name"]
 
-    unless sbid = ChMeta.load(seed)._index.fval(bhash)
+    unless s_nvid = ChSource.load(s_name)._index.fval(b_hash)
       halt env, status_code: 404, response: "Nguồn truyện không tồn tại!"
     end
 
-    chinfo = Chinfo.load(seed, sbid)
+    chinfo = Chinfo.load(s_name, s_nvid)
 
     power = env.session.int?("u_power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
@@ -18,7 +18,7 @@ module CV::Server
 
     if mode > 0 || chinfo.last_chap.empty?
       chinfo.fetch!(power, mode > 1)
-      chinfo.trans!(bhash, power > 1)
+      chinfo.trans!(b_hash, power > 1)
       chinfo.save!
     end
 
@@ -29,20 +29,21 @@ module CV::Server
     #   skip = (chinfo.chaps.size // limit) * limit
     # end
 
-    RouteUtils.json_res(env, cached: chinfo.update_tz) do |res|
+    RouteUtils.json_res(env, cached: chinfo._utime) do |res|
       JSON.build(res) do |json|
         json.object do
           json.field "total", chinfo.infos.size
-          json.field "mtime", chinfo.update_tz
+          json.field "mtime", chinfo._utime
 
           json.field "chaps" do
             json.array do
               desc = env.params.query["order"]? == "desc"
 
-              chinfo.each(skip, take, desc) do |idx, (scid, vals)|
+              chinfo.each(skip, take, desc) do |idx, (s_chid, vals)|
                 json.object do
-                  json.field "_idx", idx + 1
-                  json.field "scid", scid
+                  json.field "ch_idx", idx + 1
+                  json.field "s_chid", s_chid
+
                   json.field "title", vals[0]
                   json.field "label", vals[1]
                   json.field "uslug", vals[2]

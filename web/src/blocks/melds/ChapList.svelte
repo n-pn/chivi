@@ -1,10 +1,10 @@
 <script>
-  export let bslug = ''
+  export let b_slug = ''
   export let sname = ''
   export let chaps = []
 
   function chap_url(chap) {
-    return `/~${bslug}/-${chap.uslug}-${sname}-${chap._idx}`
+    return `/~${b_slug}/-${chap.uslug}-${sname}-${chap._idx}`
   }
 </script>
 

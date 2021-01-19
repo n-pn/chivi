@@ -69,9 +69,11 @@
 
     <div class="list" data-page={page}>
       {#each books as book}
-        <a href="/~{book.bslug}" class="book">
+        <a href="/~{book.b_slug}" class="book">
           <div class="cover">
-            <BookCover bhash={book.bhash} cover={book.bcover || 'blank.png'} />
+            <BookCover
+              b_hash={book.b_hash}
+              cover={book.bcover || 'blank.png'} />
           </div>
 
           <div class="infos">

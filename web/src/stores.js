@@ -3,10 +3,6 @@ import { writable, derived } from 'svelte/store'
 export const self_dname = writable('Khách')
 export const self_power = writable(-1)
 
-export const anchor_rel = derived(self_power, ($p) =>
-  $p < 2 ? 'external' : ''
-)
-
 export const lookup_enabled = writable(false)
 export const lookup_actived = writable(false)
 export const lookup_sticked = writable(false)

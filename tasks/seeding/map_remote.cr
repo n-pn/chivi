@@ -5,13 +5,13 @@ require "../../src/filedb/_inits/rm_info"
 require "./_info_seed.cr"
 
 class CV::Seeds::MapRemote
-  def initialize(@seed : String)
-    @seeding = InfoSeed.new(@seed)
+  def initialize(@s_name : String)
+    @seeding = InfoSeed.new(@s_name)
   end
 
   def init!(upto = 1, mode = 1)
-    puts "[ seed: #{@seed}, upto: #{upto}, mode: #{mode} ]".colorize.cyan.bold
-    mode = 0 if @seed == "jx_la"
+    puts "[ seed: #{@s_name}, upto: #{upto}, mode: #{mode} ]".colorize.cyan.bold
+    mode = 0 if @s_name == "jx_la"
 
     1.upto(upto) do |idx|
       sbid = idx.to_s
@@ -31,7 +31,7 @@ class CV::Seeds::MapRemote
 
       @seeding.access_tz.add(sbid, access_tz)
 
-      parser = RmInfo.init(@seed, sbid, expiry: expiry)
+      parser = RmInfo.init(@s_name, sbid, expiry: expiry)
       btitle, author = parser.btitle, parser.author
       next if btitle.empty? || author.empty?
 
@@ -45,7 +45,7 @@ class CV::Seeds::MapRemote
       @seeding.update_tz.add(sbid, parser.updated_at)
 
       if idx % 100 == 99
-        puts "- [#{@seed}]: <#{idx + 1}/#{upto}>"
+        puts "- [#{@s_name}]: <#{idx + 1}/#{upto}>"
         @seeding.save!(mode: :upds)
       end
     rescue err
@@ -63,12 +63,12 @@ class CV::Seeds::MapRemote
   end
 
   private def access_time(sbid : String) : Int64?
-    file = RmInfo.path_for(@seed, sbid)
+    file = RmInfo.path_for(@s_name, sbid)
     File.info?(file).try(&.modification_time.to_unix)
   end
 
   def seed!
-    authors = Set(String).new(NvFields.author.vals.map(&.first))
+    authors = Set(String).new(NvValues.author.vals.map(&.first))
     checked = Set(String).new
 
     input = @seeding._index.data.to_a
@@ -76,7 +76,7 @@ class CV::Seeds::MapRemote
 
     input.each_with_index do |(sbid, vals), idx|
       btitle, author = vals
-      btitle, author = NvShared.fix_nvname(btitle, author)
+      btitle, author = NvHelper.fix_nvname(btitle, author)
 
       nvname = "#{btitle}\t#{author}"
       next if checked.includes?(nvname)
@@ -87,7 +87,7 @@ class CV::Seeds::MapRemote
       end
 
       if idx % 100 == 99
-        puts "- [#{@seed}] <#{idx + 1}/#{input.size}>".colorize.blue
+        puts "- [#{@s_name}] <#{idx + 1}/#{input.size}>".colorize.blue
         Nvinfo.save!(mode: :upds)
         @seeding.chseed.save!(mode: :upds)
       end
@@ -98,7 +98,7 @@ class CV::Seeds::MapRemote
   end
 
   private def should_pick?(sbid : String)
-    return true if @seed == "hetushu" || @seed == "rengshu"
+    return true if @s_name == "hetushu" || @s_name == "rengshu"
     false
   end
 

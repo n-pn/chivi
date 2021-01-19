@@ -15,8 +15,8 @@ class CV::Models::Nvinfo
   belongs_to author : Author, foreign_key_type: Int32
   belongs_to btitle : Btitle, foreign_key_type: Int32
 
-  column bhash : String
-  column bslug : String
+  column b_hash : String
+  column b_slug : String
   column vslug : String?
 
   column bgenre_ids : Array(Int32), presence: false
@@ -87,15 +87,15 @@ class CV::Models::Nvinfo
     self.access_tz = value if force || value > access_tz_column.value(0)
   end
 
-  def fix_bslug!(slug : String? = nil) : Nil
-    slug = short_slug(self.bslug) unless slug
+  def fix_b_slug!(slug : String? = nil) : Nil
+    slug = short_slug(self.b_slug) unless slug
 
-    if slug != self.bslug
+    if slug != self.b_slug
       begin
-        self.bslug = slug
+        self.b_slug = slug
         save!
       rescue
-        self.bslug_column.revert
+        self.b_slug_column.revert
       end
     end
   end
@@ -115,7 +115,7 @@ class CV::Models::Nvinfo
   end
 
   def short_slug(slug : String)
-    slug.sub(/-#{self.bhash}$/, "")
+    slug.sub(/-#{self.b_hash}$/, "")
   end
 
   def set_intro(zh_intro : Array(String), intro_by : String)
@@ -124,7 +124,7 @@ class CV::Models::Nvinfo
     self.intro_by = intro_by
     self.zh_intro = zh_intro.join("\n")
 
-    engine = Convert.content(bhash) # TODO: change to bslug
+    engine = Convert.content(b_hash) # TODO: change to b_slug
     self.vi_intro = zh_intro.map { |x| engine.tl_plain(x) }.join("\n")
   end
 
@@ -140,19 +140,19 @@ class CV::Models::Nvinfo
       model = new({btitle: btitle, author: author})
 
       # TODO: replace `--` with `  `
-      bhash = CoreUtils.digest32("#{btitle}--#{author}")
-      bslug = btitle.hv_name_tsv.join("-")
+      b_hash = CoreUtils.digest32("#{btitle}--#{author}")
+      b_slug = btitle.hv_name_tsv.join("-")
       vslug = btitle.vi_name_tsv.join("-")
 
-      model.bhash = bhash
-      model.bslug = "#{bslug}-#{bhash}"
-      model.vslug = "#{vslug}-#{bhash}" unless vslug.empty?
+      model.b_hash = b_hash
+      model.b_slug = "#{b_slug}-#{b_hash}"
+      model.vslug = "#{vslug}-#{b_hash}" unless vslug.empty?
 
       model.save!
     end
 
     model.tap do |x|
-      x.fix_bslug!
+      x.fix_b_slug!
       x.fix_vslug!
     end
   end

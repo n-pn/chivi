@@ -1,10 +1,10 @@
 <script>
-  export let bhash = ''
+  export let b_hash = ''
   export let cover = ''
 </script>
 
 <picture>
-  <source srcset="/covers/_chivi/{bhash}.webp" type="image/webp" />
+  <source srcset="/covers/_chivi/{b_hash}.webp" type="image/webp" />
   <img alt="" src="/covers/{cover}" loading="lazy" />
 </picture>
 

@@ -2,9 +2,9 @@
   import Common from './_common'
 
   export async function preload({ params }) {
-    const bslug = params.book
+    const b_slug = params.book
 
-    const res = await this.fetch(`/api/books/${bslug}`)
+    const res = await this.fetch(`/api/books/${b_slug}`)
     const data = await res.json()
 
     if (res.ok) return { book: data.book, mark: data.mark }

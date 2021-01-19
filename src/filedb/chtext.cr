@@ -19,14 +19,14 @@ class CV::Chtext
   property cv_trans = ""
   property cv_mtime : Time = Time.unix(0)
 
-  def initialize(@seed, @sbid, @scid)
-    @file = "_db/chdata/zhtexts/#{@seed}/#{@sbid}/#{@scid}.txt"
+  def initialize(@s_name, @s_nvid, @s_chid)
+    @file = "_db/chdata/zhtexts/#{@s_name}/#{@s_nvid}/#{@s_chid}.txt"
   end
 
-  def fetch!(power = 3) : Nil
+  def fetch!(power = 3, expiry = Time.utc - 10.years) : Nil
     return unless remote?(power)
 
-    source = RmText.init(@seed, @sbid, @scid)
+    source = RmText.init(@s_name, @s_nvid, @s_chid, expiry: expiry)
     @zh_lines = [source.title].concat(source.paras)
 
     cv_trans = ""
@@ -36,7 +36,7 @@ class CV::Chtext
   end
 
   private def remote?(power = 3)
-    case @seed
+    case @s_name
     when "rengshu", "xbiquge",
          "nofff", "5200",
          "biquge5200", "duokan8"

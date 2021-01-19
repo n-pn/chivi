@@ -3,7 +3,7 @@ require "../../shared/core_utils"
 require "../../shared/text_utils"
 require "../../engine/convert"
 
-module CV::NvShared
+module CV::NvHelper
   extend self
 
   DIR = "_db/nvdata/nvinfos"
@@ -31,7 +31,7 @@ module CV::NvShared
   end
 
   def to_hanviet(input : String, caps : Bool = true)
-    output = Convert.hanviet.translit(input, false).to_text
+    output = Convert.hanviet.translit(input, false).to_s
     caps ? TextUtils.titleize(output) : output
   end
 

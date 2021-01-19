@@ -13,16 +13,17 @@ def cleanup(input : String)
     .join("; ")
 end
 
-inp_dict = QtDict.load("_system/lacviet-mtd.txt")
+inp_dict = QtDict.load("_system/lacviet-mtd.txt", preload: true)
 hv_chars = QtDict.load("hanviet/lacviet-chars.txt", preload: false)
 hv_words = QtDict.load("hanviet/lacviet-words.txt", preload: false)
-out_dict = Chivi::VpDict.load_dict("trungviet", dlock: 4, preload: false)
+out_dict = CV::VpDict.load("trungviet", regen: true)
 
+puts "- input: #{inp_dict.size}"
 inp_dict.data.each do |key, vals|
   QtUtil.lexicon.add(key) if QtUtil.has_hanzi?(key)
 
   vals = vals.first.split("\\n").map { |x| cleanup(x) }
-  out_dict.upsert(key, vals)
+  out_dict.upsert(CV::VpEntry.new(key, vals))
 
   vals.each do |val|
     if match = val.match(/{(.+?)}/)
@@ -42,6 +43,6 @@ end
 
 hv_chars.save!
 hv_words.save!
-out_dict.save!(mode: :full)
+out_dict.save!(trim: false)
 
 QtUtil.lexicon.save!

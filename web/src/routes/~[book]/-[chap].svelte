@@ -16,21 +16,21 @@
   } from '$src/stores'
 
   export async function preload({ params }) {
-    const bslug = params.book
+    const b_slug = params.book
 
     const cols = params.chap.split('-')
     const seed = cols[cols.length - 2]
     const scid = cols[cols.length - 1]
 
-    const [ok, data] = await get_chinfo(this.fetch, bslug, seed, scid)
+    const [ok, data] = await get_chinfo(this.fetch, b_slug, seed, scid)
 
     if (ok) return data
     else this.error(data.status, data.message)
   }
 
-  function gen_paths({ bslug, seed, ch_index, prev_url, next_url }) {
-    const book_path = gen_book_path(bslug, seed, 0)
-    const list_path = gen_book_path(bslug, seed, ch_index)
+  function gen_paths({ b_slug, seed, ch_index, prev_url, next_url }) {
+    const book_path = gen_book_path(b_slug, seed, 0)
+    const list_path = gen_book_path(b_slug, seed, ch_index)
 
     const prev_path = prev_url || book_path
     const next_path = next_url || list_path
@@ -38,8 +38,8 @@
     return [book_path, list_path, prev_path, next_path]
   }
 
-  function gen_book_path(bslug, seed, index) {
-    let url = `/~${bslug}/content?seed=${seed}`
+  function gen_book_path(b_slug, seed, index) {
+    let url = `/~${b_slug}/content?seed=${seed}`
     const page = Math.floor(index / 30) + 1
     return page > 1 ? url + `&page=${page}` : url
   }
@@ -52,11 +52,11 @@
   $: [book_path, list_path, prev_path, next_path] = gen_paths(chinfo)
 
   $: $upsert_dicts = [
-    [chinfo.bhash, chinfo.bname, true],
+    [chinfo.b_hash, chinfo.bname, true],
     ['regular', 'Thông dụng'],
     ['hanviet', 'Hán việt'],
   ]
-  $: $lookup_dname = chinfo.bhash
+  $: $lookup_dname = chinfo.b_hash
 
   let dirty = false
   $: if (dirty) reload_chap(1)
@@ -149,7 +149,7 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/~{chinfo.bslug}" class="-link"> {chinfo.bname}</a>
+      <a href="/~{chinfo.b_slug}" class="-link"> {chinfo.bname}</a>
     </div>
 
     <div class="-crumb"><span class="-text">{chinfo.label}</span></div>

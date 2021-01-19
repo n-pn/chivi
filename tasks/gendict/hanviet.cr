@@ -1,5 +1,4 @@
 require "./shared/*"
-require "../../src/engine/library"
 
 class Hanviet
   HANZIDB = QtDict.load("_system/hanzidb.txt")
@@ -19,11 +18,13 @@ class Hanviet
   end
 
   def gen_from_trad!
-    TRADSIM.each do |term|
-      next if term.key.size > 0
-      next unless vals = @input[term.key]?
+    TRADSIM._root.each do |node|
+      next unless entry = node.entry
 
-      term.vals.each do |simp|
+      next if entry.key.size > 0
+      next unless vals = @input[entry.key]?
+
+      entry.vals.each do |simp|
         next if @input.has_key?(simp)
         @input.upsert(simp, vals)
       end
@@ -31,7 +32,7 @@ class Hanviet
   end
 
   def save!
-    output = CV::VpDict.load_dict("hanviet", dlock: 3, preload: false)
+    output = CV::VpDict.load("hanviet", regen: true)
 
     input = @input.to_a.sort_by(&.[0].size)
     input.each do |(key, vals)|
@@ -44,11 +45,11 @@ class Hanviet
         pp [key, vals, convert]
       end
 
-      output.upsert(key, vals.uniq.first(3))
+      output.upsert(CV::VpEntry.new(key, vals.uniq.first(3)))
     end
 
     output.load!("_db/dictdb/remote/system/hanviet.tsv")
-    output.save!(mode: :full)
+    output.save!(trim: false)
   end
 end
 

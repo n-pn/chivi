@@ -1,15 +1,15 @@
 require "./_route_utils"
 
 module CV::Server
-  get "/api/chinfos/:bslug/:seed/:cidx" do |env|
-    bslug = env.params.url["bslug"]
+  get "/api/chinfos/:b_slug/:seed/:cidx" do |env|
+    b_slug = env.params.url["b_slug"]
 
-    unless bhash = Nvinfo.find_by_slug(bslug)
+    unless b_hash = Nvinfo.find_by_slug(b_slug)
       halt env, status_code: 404, response: "Quyển sách không tồn tại!"
     end
 
     seed = env.params.url["seed"]
-    unless sbid = ChMeta.load(seed)._index.fval(bhash)
+    unless sbid = ChSource.load(seed)._index.fval(b_hash)
       halt env, status_code: 404, response: "Nguồn truyện không tồn tại!"
     end
 
@@ -21,15 +21,15 @@ module CV::Server
       halt env, status_code: 404, response: "Chương tiết không tồn tại!"
     end
 
-    btitle = NvFields.btitle.get(bhash).not_nil!
+    btitle = NvValues.btitle.get(b_hash).not_nil!
     ch_title = curr_chap[1][0]
     ch_label = curr_chap[1][1]
 
     RouteUtils.json_res(env) do |res|
       {
-        bhash: bhash,
-        bslug: bslug,
-        bname: btitle[2]? || btitle[1],
+        b_hash: b_hash,
+        b_slug: b_slug,
+        bname:  btitle[2]? || btitle[1],
 
         seed: seed,
         sbid: sbid,
@@ -41,8 +41,8 @@ module CV::Server
         ch_index: index,
         ch_total: chinfo.chaps.size,
 
-        prev_url: chinfo.url_for(index - 2, bslug),
-        next_url: chinfo.url_for(index, bslug),
+        prev_url: chinfo.url_for(index - 2, b_slug),
+        next_url: chinfo.url_for(index, b_slug),
       }.to_json(res)
     end
   rescue err

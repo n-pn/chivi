@@ -14,14 +14,14 @@
     return output
   }
 
-  function book_url(bslug, nvtab) {
+  function book_url(b_slug, nvtab) {
     switch (nvtab) {
       case 'content':
-        return `/~${bslug}/content?order=desc`
+        return `/~${b_slug}/content?order=desc`
       case 'discuss':
-        return `/~${bslug}/discuss`
+        return `/~${b_slug}/discuss`
       default:
-        return `/~${bslug}`
+        return `/~${b_slug}`
     }
   }
 </script>
@@ -29,8 +29,8 @@
 <script>
   export let nvtab = ''
 
-  export let bhash = ''
-  export let bslug = ''
+  export let b_hash = ''
+  export let b_slug = ''
 
   export let btitle = []
   export let genres = []
@@ -41,13 +41,13 @@
 
   $: title = btitle[2] || btitle[1]
   $: genre = genres[0] || 'Loại khác'
-  $: href = book_url(bslug, nvtab)
+  $: href = book_url(b_slug, nvtab)
   $: stars = rating_stars(rating, voters)
 </script>
 
 <a class="book" {href}>
   <div class="cover">
-    <BookCover {bhash} cover={bcover} />
+    <BookCover {b_hash} cover={bcover} />
 
     <div class="extra">
       <div class="score">

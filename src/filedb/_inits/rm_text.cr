@@ -55,12 +55,12 @@ class CV::RmText
   getter scid : String
   getter file : String
 
-  def initialize(@seed, @sbid, @scid, @file, html = File.read(@file))
+  def initialize(@s_name, @s_nvid, @s_chid, @file, html = File.read(@file))
     @rdoc = Myhtml::Parser.new(html)
   end
 
   getter title : String do
-    case @seed
+    case @s_name
     when "duokan8"
       extract_title("#read-content > h2")
         .sub(/^章节目录\s*/, "")
@@ -77,7 +77,7 @@ class CV::RmText
   end
 
   getter paras : Array(String) do
-    case @seed
+    case @s_name
     when "hetushu" then extract_hetushu_paras
     when "69shu"   then extract_paras(".yd_text2")
     when "zhwenpg" then extract_paras("#tdcontent .content")
@@ -96,7 +96,7 @@ class CV::RmText
     lines = TextUtils.split_html(node.inner_text("\n"))
     lines.shift if lines.first == title
 
-    case @seed
+    case @s_name
     when "zhwenpg"
       title.split(/\s+/).each { |x| lines[0] = lines[0].sub(/^#{x}\s*/, "") }
     when "jx_la"
@@ -117,7 +117,7 @@ class CV::RmText
 
     lines
   rescue err
-    puts "<remote_text> [#{@seed}/#{@sbid}/#{@scid}] error: #{err}".colorize.red
+    puts "<remote_text> [#{@s_name}/#{@s_nvid}/#{@s_chid}] error: #{err}".colorize.red
     [] of String
   end
 
@@ -151,8 +151,8 @@ class CV::RmText
     meta_file = @file.sub(".html", ".meta")
     return File.read(meta_file) if File.exists?(meta_file)
 
-    html_url = RmText.url_for(@seed, @sbid, @scid)
-    json_url = html_url.sub("#{@scid}.html", "r#{@scid}.json")
+    html_url = RmText.url_for(@s_name, @s_nvid, @s_chid)
+    json_url = html_url.sub("#{@s_chid}.html", "r#{@s_chid}.json")
 
     headers = HTTP::Headers{
       "Referer"          => html_url,

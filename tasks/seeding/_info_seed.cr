@@ -5,25 +5,22 @@ require "file_utils"
 
 require "../../src/shared/text_utils"
 require "../../src/filedb/nvinfo"
-require "../../src/filedb/chseed"
 require "../../src/filedb/chinfo"
-require "../../src/filedb/_inits/rm_info"
 
 class CV::InfoSeed
   getter name : String
   getter rdir : String
 
   getter _index : ValueMap { ValueMap.new(map_path("_index")) }
+  getter _atime : ValueMap { ValueMap.new(map_path("_atime")) }
+  getter _utime : ValueMap { ValueMap.new(map_path("_utime")) }
 
-  getter bgenre : ValueMap { ValueMap.new(map_path("bgenre")) }
   getter bcover : ValueMap { ValueMap.new(map_path("bcover")) }
+  getter genres : ValueMap { ValueMap.new(map_path("genres")) }
 
-  getter status : ValueMap { ValueMap.new(map_path("status")) }
-  getter shield : ValueMap { ValueMap.new(map_path("shield")) }
   getter rating : ValueMap { ValueMap.new(map_path("rating")) }
-
-  getter access_tz : ValueMap { ValueMap.new(map_path("tz_access")) }
-  getter update_tz : ValueMap { ValueMap.new(map_path("tz_update")) }
+  getter shield : ValueMap { ValueMap.new(map_path("shield")) }
+  getter status : ValueMap { ValueMap.new(map_path("status")) }
 
   def initialize(@name)
     @rdir = "_db/_seeds/#{@name}"
@@ -37,15 +34,16 @@ class CV::InfoSeed
 
   def save!(mode : Symbol = :full)
     @_index.try(&.save!(mode: mode))
+    @_atime.try(&.save!(mode: mode))
+    @_mtime.try(&.save!(mode: mode))
 
-    @bgenre.try(&.save!(mode: mode))
     @bcover.try(&.save!(mode: mode))
+    @genres.try(&.save!(mode: mode))
 
-    @status.try(&.save!(mode: mode))
     @rating.try(&.save!(mode: mode))
+    @status.try(&.save!(mode: mode))
 
-    @update_tz.try(&.save!(mode: mode))
-    @access_tz.try(&.save!(mode: mode))
+    @shield.try(&.save!(mode: mode))
   end
 
   def set_intro(sbid : String, intro : Array(String)) : Nil
@@ -63,70 +61,51 @@ class CV::InfoSeed
   end
 
   def get_genres(sbid : String)
-    zh_genres = bgenre.get(sbid) || [] of String
-    zh_genres = zh_genres.map { |x| NvShared.fix_zh_genre(x) }.flatten.uniq
+    zh_genres = genres.get(sbid) || [] of String
+    zh_genres = zh_genres.map { |x| NvHelper.fix_zh_genre(x) }.flatten.uniq
 
-    vi_genres = zh_genres.map { |x| NvShared.fix_vi_genre(x) }.uniq
+    vi_genres = zh_genres.map { |x| NvHelper.fix_vi_genre(x) }.uniq
     vi_genres.reject!("Loại khác")
-
     vi_genres.empty? ? ["Loại khác"] : vi_genres
   end
 
-  getter chseed : Chseed { Chseed.load(@name) }
+  getter source : ChSource { ChSource.load(@name) }
 
   def upsert!(sbid : String) : Tuple(String, Bool)
     btitle, author = _index.get(sbid).not_nil!
-    bhash, existed = Nvinfo.upsert!(btitle, author)
+    b_hash, existed = Nvinfo.upsert!(btitle, author)
 
     bintro = get_intro(sbid)
-    NvFields.set_bintro(bhash, bintro) unless bintro.empty?
+    NvValues.set_bintro(b_hash, bintro) unless bintro.empty?
 
     genres = get_genres(sbid)
-    NvFields.set_bgenre(bhash, genres) unless genres.empty?
+    NvValues.set_bgenre(b_hash, genres) unless genres.empty?
 
-    mftime = update_tz.ival_64(sbid)
-    NvFields.set_update_tz(bhash, mftime)
-    NvFields.set_access_tz(bhash, mftime // 60)
+    mftime = mtime.ival_64(sbid)
+    NvValues.set_mtime(b_hash, mftime)
+    NvValues.set_atime(b_hash, mftime // 60)
 
-    NvFields.set_status(bhash, status.ival(sbid, 0))
+    NvValues.set_status(b_hash, status.ival(sbid, 0))
 
     if @name != "yousuu"
-      NvFields.set_chseed(bhash, @name, sbid)
+      NvValues.set_chseed(b_hash, @name, sbid)
 
-      mftime = NvFields.update_tz.ival_64(bhash) if @name == "hetushu"
-      chseed.update_tz.add(sbid, mftime)
-      chseed.access_tz.add(sbid, access_tz.ival_64(sbid))
+      mftime = NvValues.mtime.ival_64(b_hash) if @name == "hetushu"
 
-      upsert_chinfo!(sbid, bhash, expiry: Time.unix(mftime))
+      source._index.add(b_hash, sbid)
+      source._mtime.add(sbid, mftime)
+      source._atime.add(sbid, atime.ival_64(sbid))
+
+      upsert_chinfo!(sbid, b_hash, expiry: Time.unix(mftime))
     end
 
-    {bhash, existed}
+    {b_hash, existed}
   end
 
-  def upsert_chinfo!(sbid : String, bhash : String, expiry : Time) : Nil
-    chseed._index.add(bhash, sbid)
-
-    parser = RmInfo.init(@name, sbid, expiry: expiry)
-    return unless chseed.last_chap.add(sbid, parser.last_chap)
-
-    chaps = parser.chap_list
-    chseed.count_chap.add(sbid, chaps.size)
-
+  def upsert_chinfo!(sbid : String, b_hash : String, expiry : Time) : Nil
     chinfo = Chinfo.new(@name, sbid)
-    cvtool = Convert.content(bhash)
-
-    chaps.each_with_index do |entry, idx|
-      scid, title, label = entry
-
-      vals = label.empty? ? [title] : [title, label]
-      next unless chinfo.origs.add(scid, vals)
-
-      vi_title = cvtool.tl_title(title)
-      vi_label = label.empty? ? "Chính văn" : cvtool.tl_title(label)
-      url_slug = TextUtils.tokenize(vi_title).first(12).join("-")
-
-      chinfo.trans.add(scid, [vi_title, vi_label, url_slug])
-    end
+    chinfo.fetch!(expiry: expiry)
+    chinfo.trans!(dname: b_hash)
 
     chinfo.save!(mode: :full)
   end

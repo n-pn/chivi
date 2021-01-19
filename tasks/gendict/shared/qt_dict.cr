@@ -1,11 +1,8 @@
 class QtDict
   DIR = "_db/dictdb/_inits"
 
-  def self.load(fname : String, preload = true)
-    new("#{DIR}/#{fname}").tap { |x| x.load! if preload }
-  end
-
-  def self.vals(input : String, seps = /[\/\|]/)
+  def self.load(fname : String, preload : Bool = true)
+    new("#{DIR}/#{fname}", preload: preload)
   end
 
   SEP_0 = "="
@@ -14,7 +11,8 @@ class QtDict
   getter data = Hash(String, Array(String)).new
   forward_missing_to @data
 
-  def initialize(@file : String)
+  def initialize(@file : String, preload : Bool = false)
+    load!(@file) if preload && File.exists?(@file)
   end
 
   def load!(file : String = @file, mode : Symbol = :keep_new)
@@ -36,7 +34,7 @@ class QtDict
     end
 
     tspan = tspan.total_milliseconds.round.to_i
-    puts "<QT_DICT> [#{label}] loaded: #{lines} lines, time: #{tspan}ms".colorize.green
+    puts "<qt_dict> [#{label}] loaded: #{lines} lines, time: #{tspan}ms".colorize.green
   end
 
   def save!(file : String = @file)
@@ -50,7 +48,7 @@ class QtDict
 
     label = File.basename(file)
     tspan = tspan.total_milliseconds.round.to_i
-    puts "<QT_DICT> [#{label}] saved: #{@data.size} entries, time: #{tspan}ms".colorize.yellow
+    puts "<qt_dict> [#{label}] saved: #{@data.size} entries, time: #{tspan}ms".colorize.yellow
   end
 
   def parse_line(line : String)

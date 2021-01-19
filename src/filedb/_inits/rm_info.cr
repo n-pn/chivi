@@ -50,7 +50,7 @@ class CV::RmInfo
   getter sbid : String
   getter file : String
 
-  def initialize(@seed, @sbid, @file, html = File.read(@file))
+  def initialize(@s_name, @s_nvid, @file, html = File.read(@file))
     @rdoc = Myhtml::Parser.new(html)
   end
 
@@ -63,7 +63,7 @@ class CV::RmInfo
   end
 
   getter author : String do
-    case @seed
+    case @s_name
     when "hetushu" then node_text(".book_info a:first-child")
     when "zhwenpg" then node_text(".fontwt")
     when "69shu"   then node_text(".mu_beizhu > a[target]")
@@ -72,7 +72,7 @@ class CV::RmInfo
   end
 
   getter btitle : String do
-    case @seed
+    case @s_name
     when "hetushu" then node_text("h2")
     when "zhwenpg" then node_text(".cbooksingle h2")
     when "69shu"   then node_text(".weizhi > a:last-child")
@@ -81,7 +81,7 @@ class CV::RmInfo
   end
 
   getter bgenre : Array(String) do
-    case @seed
+    case @s_name
     when "hetushu"
       genre = node_text(".title > a:last-child").not_nil!
       tags = @rdoc.css(".tag a").map(&.inner_text).to_a
@@ -93,7 +93,7 @@ class CV::RmInfo
   end
 
   getter bintro : Array(String) do
-    case @seed
+    case @s_name
     when "69shu"   then [] of String
     when "hetushu" then @rdoc.css(".intro > p").map(&.inner_text).to_a
     when "zhwenpg" then TextUtils.split_html(node_text("tr:nth-of-type(3)"))
@@ -102,12 +102,12 @@ class CV::RmInfo
   end
 
   getter bcover : String do
-    case @seed
+    case @s_name
     when "hetushu"
       image_url = node_attr(".book_info img", "src")
       "https://www.hetushu.com#{image_url}"
     when "69shu"
-      image_url = "/#{@sbid.to_i // 1000}/#{@sbid}/#{@sbid}s.jpg"
+      image_url = "/#{@s_nvid.to_i // 1000}/#{@s_nvid}/#{@s_nvid}s.jpg"
       "https://www.69shu.com/files/article/image/#{image_url}"
     when "zhwenpg"
       node_attr(".cover_wrapper_m img", "data-src")
@@ -119,7 +119,7 @@ class CV::RmInfo
   end
 
   getter status_str : String do
-    case @seed
+    case @s_name
     when "69shu", "zhwenpg" then "连载"
     when "hetushu"
       node_attr(".book_info", "class").includes?("finish") ? "完本" : "连载"
@@ -140,20 +140,20 @@ class CV::RmInfo
     when "暂停", "暂 停", "暂　停"
       2
     else
-      puts "<#{@seed}/#{@sbid}> UNKNOWN STATUS: `#{status}`".colorize.red
+      puts "<#{@s_name}/#{@s_nvid}> UNKNOWN STATUS: `#{status}`".colorize.red
       0
     end
   end
 
   getter updated_at : Time do
-    return Time.utc if @seed == "zhwenpg" || @seed == "hetushu"
+    return Time.utc if @s_name == "zhwenpg" || @s_name == "hetushu"
     return TimeUtils.parse_time(update_str) unless update_str.empty?
-    puts "- ERROR: <#{RmInfo.url_for(@seed, @sbid)}> missing time!"
+    puts "- ERROR: <#{RmInfo.url_for(@s_name, @s_nvid)}> missing time!"
     TimeUtils::DEF_TIME
   end
 
   getter update_str : String do
-    case @seed
+    case @s_name
     when "69shu"
       node_text(".mu_beizhu").sub(/.+时间：/m, "")
     when "biquge5200"
@@ -164,7 +164,7 @@ class CV::RmInfo
   end
 
   getter last_chap : String do
-    case @seed
+    case @s_name
     when "hetushu" then extract_latest_by_css("#dir :last-child a:last-of-type")
     when "69shu"   then extract_latest_by_css(".mulu_list:first-of-type a:first-child")
     when "zhwenpg" then extract_latest_by_css(".fontwt0 + a")
@@ -179,13 +179,13 @@ class CV::RmInfo
 
   private def extract_latest_by_meta
     href = meta_data("og:novel:latest_chapter_url").not_nil!
-    @seed != "biquge5200" ? extract_scid(href) : File.basename(href, ".htm")
+    @s_name != "biquge5200" ? extract_scid(href) : File.basename(href, ".htm")
   end
 
   alias Chlist = Array(Array(String))
 
   getter chap_list : Chlist do
-    case @seed
+    case @s_name
     when "69shu"   then extract_69shu_chlist
     when "zhwenpg" then extract_zhwenpg_chlist
     when "duokan8" then extract_duokan8_chlist
@@ -278,7 +278,7 @@ class CV::RmInfo
   end
 
   private def extract_scid(href : String)
-    case @seed
+    case @s_name
     when "69shu"   then File.basename(href)
     when "zhwenpg" then href.sub("r.php?id=", "")
     else                File.basename(href, ".html")

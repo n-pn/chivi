@@ -10,32 +10,31 @@ class CV::Chinfo
   DIR = "_db/chdata/chinfos"
   ::FileUtils.mkdir_p(DIR)
 
-  getter seed : String
-  getter sbid : String
+  getter s_name : String
+  getter s_nvid : String
 
   getter origs : ValueMap { ValueMap.new(map_path("origs"), mode: 1) }
   getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
   getter infos : ValueMap { ValueMap.new(map_path("infos"), mode: 1) }
   getter chaps : Array(Tuple(String, Array(String))) { infos.data.to_a }
 
-  getter last_chap : String { @meta.last_chap.fval(@sbid) || "" }
+  getter _atime : Int64 { @meta._atime.ival_64(@s_nvid) }
+  getter _utime : Int64 { @meta._utime.ival_64(@s_nvid) }
+  getter l_chid : String { @meta.l_chid.fval(@s_nvid) || "" }
 
-  getter access_tz : Int64 { @meta.access_tz.ival_64(@sbid) }
-  getter update_tz : Int64 { @meta.update_tz.ival_64(@sbid) }
-
-  def initialize(@seed, @sbid)
-    @meta = ChMeta.load(@seed)
+  def initialize(@s_name, @s_nvid)
+    @meta = ChSource.load(@s_name)
   end
 
-  def fetch!(power = 3, redo = false) : Nil
-    set_access_tz
+  def fetch!(power = 3, regen = false, expiry = Time.utc - 5.minutes) : Nil
+    set_atime
 
     return unless remote?(power)
-    source = RmInfo.init(@seed, @sbid, expiry: Time.utc - 5.minutes)
+    source = RmInfo.init(@s_name, @s_nvid, expiry: expiry)
 
     # update last_chap
-    return unless redo || set_last_chap(source.last_chap)
-    set_update_tz(source.updated_at.to_unix)
+    return unless regen || set_last_chid(source.last_chap)
+    set_utime(source.updated_at.to_unix)
 
     source.chap_list.each do |entry|
       scid, title, label = entry
@@ -44,11 +43,11 @@ class CV::Chinfo
     end
   end
 
-  def trans!(dname = "various", redo = false) : Nil
+  def trans!(dname = "various", regen = false) : Nil
     cvter = Convert.generic(dname)
 
     origs.each do |scid, vals|
-      next if !redo && infos.has_key?(scid)
+      next unless regen || !infos.has_key?(scid)
 
       zh_title = vals[0]
       vi_title = cvter.tl_title(zh_title)
@@ -63,8 +62,8 @@ class CV::Chinfo
     @chaps = nil
   end
 
-  def set_last_chap(scid : String)
-    return unless @meta.last_chap.add(@sbid, scid)
+  def set_last_chid(scid : String)
+    return unless @meta.last_chap.add(@s_nvid, scid)
     @last_chap = scid
   end
 
@@ -73,13 +72,13 @@ class CV::Chinfo
     @update_tz = mftime
   end
 
-  def set_access_tz(mftime = Time.utc.to_unix)
-    return unless @meta.access_tz.add(sbid, mftime)
-    @access_tz = mftime
+  def set_atime(mftime = Time.utc.to_unix)
+    return unless @meta.atime.add(sbid, mftime)
+    @atime = mftime
   end
 
   private def remote?(power = 3)
-    case @seed
+    case @s_name
     when "rengshu", "xbiquge",
          "nofff", "5200",
          "biquge5200", "duokan8"
@@ -110,10 +109,10 @@ class CV::Chinfo
     end
   end
 
-  def url_for(idx : Int32, bslug : String)
+  def url_for(idx : Int32, b_slug : String)
     return unless chap = chaps[idx]?
     uslug = chap[1][2]
-    "/~#{bslug}/-#{uslug}-#{seed}-#{idx + 1}"
+    "/~#{b_slug}/-#{uslug}-#{seed}-#{idx + 1}"
   end
 
   def save!(mode : Symbol = :full)
@@ -132,6 +131,6 @@ class CV::Chinfo
 
   def self.save!(mode : Symbol = :full) : Nil
     CHINFOS.each(&.save!(mode: mode))
-    ChMeta.save!(mode: mode)
+    ChSource.save!(mode: mode)
   end
 end

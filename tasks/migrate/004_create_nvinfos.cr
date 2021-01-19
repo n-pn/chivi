@@ -8,8 +8,8 @@ class Chivi::Migration::CreateNvinfosTable
       t.column :author_id, :integer, null: false
       t.column :btitle_id, :integer, null: false
 
-      t.column :bhash, :string, unique: true, null: false
-      t.column :bslug, :string, unique: true, null: false
+      t.column :b_hash, :string, unique: true, null: false
+      t.column :b_slug, :string, unique: true, null: false
       t.column :vslug, :string, unique: true
 
       t.column :vi_bgenres, :string, array: true, null: false, default: "'{}'"
