@@ -105,8 +105,6 @@
   export let total = 0
   export let chaps = []
 
-  $: console.log({ utime })
-
   $: pmax = fix_pmax(total)
   $: reverse_order = order == 'desc' ? 'asc' : 'desc'
 

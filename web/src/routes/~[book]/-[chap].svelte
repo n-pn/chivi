@@ -52,7 +52,7 @@
   $: [book_path, list_path, prev_path, next_path] = gen_paths(chinfo)
 
   $: $upsert_dicts = [
-    [chinfo.b_hash, chinfo.bname, true],
+    [chinfo.b_hash, chinfo.b_name, true],
     ['regular', 'Thông dụng'],
     ['hanviet', 'Hán việt'],
   ]
@@ -114,7 +114,7 @@
 </script>
 
 <svelte:head>
-  <title>{chinfo.title} - {chinfo.bname} - Chivi</title>
+  <title>{chinfo.title} - {chinfo.b_name} - Chivi</title>
 </svelte:head>
 
 <svelte:body on:keydown={handle_keypress} />
@@ -122,7 +122,7 @@
 <Vessel shift={$lookup_enabled && $lookup_actived}>
   <a slot="header-left" href={book_path} class="header-item _title">
     <SvgIcon name="book-open" />
-    <span class="header-text _show-md _title">{chinfo.bname}</span>
+    <span class="header-text _show-md _title">{chinfo.b_name}</span>
   </a>
 
   <button slot="header-left" class="header-item _active">
@@ -149,7 +149,7 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/~{chinfo.b_slug}" class="-link"> {chinfo.bname}</a>
+      <a href="/~{chinfo.b_slug}" class="-link"> {chinfo.b_name}</a>
     </div>
 
     <div class="-crumb"><span class="-text">{chinfo.label}</span></div>
@@ -175,7 +175,7 @@
 
     <a href={list_path} class="m-button _solid">
       <SvgIcon name="list" />
-      <span>{chinfo.ch_index}/{chinfo.ch_total}</span>
+      <span>{chinfo.ch_idx}/{chinfo.s_size}</span>
     </a>
 
     <a
