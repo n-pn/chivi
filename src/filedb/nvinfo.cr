@@ -82,7 +82,7 @@ class CV::Nvinfo
 
       b_slug = NvTokens.btitle_hv.get(b_hash).not_nil!.join("-")
 
-      values = [b_slug += "-#{b_hash}"]
+      values = ["#{b_slug}-#{b_hash}"]
       values << b_slug unless NvValues._index.has_val?(b_slug)
 
       if vi_tokens = NvTokens.btitle_vi.get(b_hash)
@@ -90,7 +90,7 @@ class CV::Nvinfo
         values << vslug unless NvValues._index.has_val?(vslug)
       end
 
-      NvValues._index.add(b_hash, values)
+      NvValues._index.add(b_hash, values.uniq)
     end
 
     {b_hash, existed}

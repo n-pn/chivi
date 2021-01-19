@@ -115,6 +115,5 @@ class CV::InfoSeed
 
     chinfo.origs.save!(mode: :full)
     chinfo.infos.save!(mode: :full)
-    chinfo.stats.save!(mode: :full)
   end
 end

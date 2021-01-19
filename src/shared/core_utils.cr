@@ -19,6 +19,12 @@ module CV::CoreUtils
     encode32(number).ljust(limit, '0')
   end
 
+  # from base16 to base32
+  def hexto32(input : String, limit : Int32 = 8)
+    number = input[0, (limit &* 6 / 5).ceil.to_i].to_i64(base: 16)
+    encode32(number).ljust(limit, '0')
+  end
+
   # convert integer to zbase32
   def encode32(number : Int32 | Int64)
     String.build do |io|
