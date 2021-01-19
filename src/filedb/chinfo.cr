@@ -118,8 +118,8 @@ class CV::Chinfo
     @meta.save!(mode: mode)
 
     @origs.try(&.save!(mode: mode))
-    @stats.try(&.save!(mode: mode))
     @infos.try(&.save!(mode: mode))
+    @stats.try(&.save!(mode: mode))
   end
 
   CHINFOS = {} of String => self

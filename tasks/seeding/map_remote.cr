@@ -94,6 +94,10 @@ class CV::Seeds::MapRemote
         Nvinfo.save!(mode: :upds)
         @seeding.source.save!(mode: :upds)
       end
+    rescue err
+      puts err
+      puts [s_nvid, vals]
+      gets
     end
 
     Nvinfo.save!(mode: :full)

@@ -109,8 +109,12 @@ class CV::InfoSeed
 
   def upsert_chinfo!(s_nvid : String, b_hash : String, expiry : Time) : Nil
     chinfo = Chinfo.new(@name, s_nvid)
+
     chinfo.fetch!(expiry: expiry)
     chinfo.trans!(dname: b_hash)
-    chinfo.save!(mode: :full)
+
+    chinfo.origs.save!(mode: :full)
+    chinfo.infos.save!(mode: :full)
+    chinfo.stats.save!(mode: :full)
   end
 end
