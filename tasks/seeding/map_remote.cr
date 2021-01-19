@@ -112,9 +112,9 @@ class CV::Seeds::MapRemote
 
     OptionParser.parse(argv) do |parser|
       parser.banner = "Usage: map_remote [arguments]"
-      parser.on("-s SITE", "--site=SITE", "Site name") { |x| site = x }
-      parser.on("-u UPTO", "--upto=UPTO", "Latest id") { |x| upto = x.to_i }
-      parser.on("-m MODE", "--mode=MODE", "Seed mode") { |x| mode = x.to_i }
+      parser.on("-s SITE", "Site name") { |x| site = x }
+      parser.on("-u UPTO", "Latest id") { |x| upto = x.to_i }
+      parser.on("-m MODE", "Seed mode") { |x| mode = x.to_i }
 
       parser.invalid_option do |flag|
         STDERR.puts "ERROR: `#{flag}` is not a valid option."
@@ -125,7 +125,7 @@ class CV::Seeds::MapRemote
 
     worker = new(site)
     worker.init!(upto, mode: mode)
-    worker.seed!
+    worker.seed! if mode >= 0
   end
 end
 
