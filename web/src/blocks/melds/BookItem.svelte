@@ -49,14 +49,16 @@
   <div class="cover">
     <BookCover {b_hash} cover={bcover} />
 
-    <div class="extra">
-      <div class="score">
-        {#each stars as star}
-          <span class="-star">{star}</span>
-        {/each}
-        <span class="-text">{voters <= 10 ? '—' : rating / 10}</span>
+    {#if voters >= 10}
+      <div class="extra">
+        <div class="score">
+          {#each stars as star}
+            <span class="-star">{star}</span>
+          {/each}
+          <span class="-text">{rating / 10}</span>
+        </div>
       </div>
-    </div>
+    {/if}
   </div>
 
   <div class="title">{title}</div>
