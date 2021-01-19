@@ -25,14 +25,14 @@ class CV::Chinfo
     @meta = ChSource.load(@s_name)
   end
 
-  def fetch!(power = 3, regen = false, expiry = Time.utc - 5.minutes) : Nil
-    set_atime
+  def fetch!(power = 3, force = false, expiry = Time.utc - 5.minutes) : Bool
+    set_atime(Time.utc.to_unix)
 
-    return unless remote?(power)
+    return false unless remote?(power)
     source = RmInfo.init(@s_name, @s_nvid, expiry: expiry)
 
     # update last_chap
-    return unless regen || set_last_chid(source.last_chid)
+    return false unless force || set_last_chid(source.last_chid)
     set_utime(source.updated_at.to_unix)
 
     source.chap_list.each do |entry|
@@ -40,13 +40,15 @@ class CV::Chinfo
       values = label.empty? ? [title] : [title, label]
       next unless origs.add(s_chid, values)
     end
+
+    true
   end
 
-  def trans!(dname = "various", regen = false) : Nil
+  def trans!(dname = "various", force = false) : Nil
     cvter = Convert.generic(dname)
 
     origs.each do |s_chid, values|
-      next unless regen || !infos.has_key?(s_chid)
+      next unless force || !infos.has_key?(s_chid)
 
       zh_title = values[0]
       vi_title = cvter.tl_title(zh_title)
