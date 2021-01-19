@@ -107,11 +107,10 @@ class CV::Nvinfo
     vals = [zh_btitle, hv_btitle]
     vals << vi_btitle if vi_btitle
 
-    if NvValues.btitle.add(b_hash, vals)
-      NvTokens.set_btitle_zh(b_hash, zh_btitle)
-      NvTokens.set_btitle_hv(b_hash, hv_btitle)
-      NvTokens.set_btitle_vi(b_hash, vi_btitle) if vi_btitle
-    end
+    NvValues.btitle.add(b_hash, vals)
+    NvTokens.set_btitle_zh(b_hash, zh_btitle)
+    NvTokens.set_btitle_hv(b_hash, hv_btitle)
+    NvTokens.set_btitle_vi(b_hash, vi_btitle) if vi_btitle
   end
 
   def self.set_author(b_hash : String,
@@ -119,17 +118,16 @@ class CV::Nvinfo
                       vi_author : String? = nil) : Nil
     vi_author ||= NvHelper.fix_vi_author(zh_author)
 
-    if NvValues.author.add(b_hash, [zh_author, vi_author])
-      NvTokens.set_author_zh(b_hash, zh_author)
-      NvTokens.set_author_vi(b_hash, vi_author)
-    end
+    NvValues.author.add(b_hash, [zh_author, vi_author])
+    NvTokens.set_author_zh(b_hash, zh_author)
+    NvTokens.set_author_vi(b_hash, vi_author)
   end
 
   def self.set_genres(b_hash : String, input : Array(String), force = false) : Nil
     return unless force || !NvValues.genres.has_key?(b_hash)
-    if NvValues.genres.add(b_hash, input)
-      NvTokens.set_genres(b_hash, input)
-    end
+
+    NvValues.genres.add(b_hash, input)
+    NvTokens.set_genres(b_hash, input)
   end
 
   def self.set_source(b_hash : String, s_name : String, s_nvid : String) : Nil
