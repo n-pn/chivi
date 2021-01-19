@@ -77,6 +77,7 @@ class CV::Seeds::MapYousuu
     input.each_with_index(1) do |(s_nvid, voters, rating), idx|
       btitle, author = @seeding._index.get(s_nvid).not_nil!
       btitle, author = NvHelper.fix_nvname(btitle, author)
+      next if btitle.empty? || author.empty?
 
       nvname = "#{btitle}\t#{author}"
       next if checked.includes?(nvname)
@@ -99,6 +100,9 @@ class CV::Seeds::MapYousuu
         puts "- [yousuu] <#{idx}/#{input.size}>".colorize.blue
         Nvinfo.save!(mode: :upds)
       end
+    rescue err
+      puts s_nvid
+      puts err.backtrace
     end
 
     Nvinfo.save!(mode: :full)
