@@ -109,8 +109,8 @@ class CV::Seeds::MapYousuu
   end
 
   def popular?(s_nvid : String)
-    return true if count_crit.fval(s_nvid).try(&.to_i.>= 5)
-    return true if count_list.fval(s_nvid).try(&.to_i.>= 3)
+    return true if count_crit.fval(s_nvid).try(&.to_i.>= 7)
+    return true if count_list.fval(s_nvid).try(&.to_i.>= 5)
     false
   end
 end
