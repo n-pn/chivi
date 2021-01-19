@@ -1,7 +1,7 @@
 require "file_utils"
 
 require "../../src/source/ys_info"
-require "./_info_seed.cr"
+require "./_seeding.cr"
 
 class CV::Seeds::MapYousuu
   getter source_url : ValueMap { ValueMap.new(@seeding.map_path("source_url")) }

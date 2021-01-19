@@ -65,7 +65,7 @@ module Sentry
       display_name.not_nil!
     end
 
-    getter build : String { "crystal build ./src/server.cr -o ./bin/chivi" }
+    getter build : String { "crystal build ./src/chivi.cr -o ./bin/chivi" }
 
     def build=(new_command : String)
       @sets_build_command = true

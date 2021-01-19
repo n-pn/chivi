@@ -77,14 +77,16 @@ module CV::NvValues
   end
 
   def set_score(b_hash : String, z_voters : Int32, z_rating : Int32)
-    voters.add(b_hash, z_voters)
-
     if z_voters == 0
+      z_voters = Random.rand(1..9)
       z_rating = Random.rand(30..50)
     elsif z_voters < 10
       sum = Random.rand(30..50) * (10 - z_voters) + z_voters * z_rating
       z_rating = sum // 10
     end
+
+    voters.add(b_hash, z_voters)
+    rating.add(b_hash, z_rating)
 
     score = Math.log(z_voters + 10).*(z_rating * 10).round.to_i
     weight.add(b_hash, score)

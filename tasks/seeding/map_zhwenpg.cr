@@ -1,4 +1,4 @@
-require "./_info_seed.cr"
+require "./_seeding.cr"
 
 class CV::Seeds::ZhwenpgParser
   def initialize(@node : Myhtml::Node)
@@ -127,11 +127,10 @@ class CV::Seeds::MapZhwenpg
     if vals = FAKE_RATING.get("#{btitle}  #{author}")
       voters, rating = vals[0].to_i, vals[1].to_i
     else
-      voters, rating = 5, Random.rand(40..50)
+      voters, rating = Random.rand(10..50), Random.rand(40..60)
     end
 
     NvValues.set_score(b_hash, voters, rating)
-    pp [voters, rating]
   end
 end
 

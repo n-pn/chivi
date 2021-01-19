@@ -81,7 +81,15 @@ class CV::Seeds::FixCovers
 
   private def image_width(file : String) : Int32
     return 0 if File.size(file) < 100
-    return 9999 if file.ends_with?(".gif")
+
+    if file.ends_with?(".gif")
+      case file
+      when .includes?("jx_la")  then 0
+      when .includes?("yousuu") then 9999
+      else                           400
+      end
+    end
+
     `identify -format '%w %h' "#{file}"`.split(" ").first.to_i? || 0
   rescue
     0

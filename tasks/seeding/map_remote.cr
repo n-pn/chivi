@@ -2,7 +2,7 @@ require "file_utils"
 require "option_parser"
 
 require "../../src/source/rm_info"
-require "./_info_seed.cr"
+require "./_seeding.cr"
 
 class CV::Seeds::MapRemote
   def initialize(@s_name : String)
