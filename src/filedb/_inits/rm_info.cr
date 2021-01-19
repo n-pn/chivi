@@ -16,7 +16,7 @@ class CV::RmInfo
       File.write(file, html) if freeze
     end
 
-    new(s_name, s_nvid, file: file, html: html)
+    new(s_name, s_nvid, file, html: html)
   end
 
   def self.path_for(s_name : String, s_nvid : String)
@@ -174,12 +174,12 @@ class CV::RmInfo
 
   private def extract_last_chid(sel : String)
     node = find_node(sel).not_nil!
-    extract_scid(node.attributes["href"])
+    extract_chid(node.attributes["href"])
   end
 
   private def extract_last_chid_by_meta
     href = meta_data("og:novel:latest_chapter_url").not_nil!
-    @s_name != "bqg_5200" ? extract_scid(href) : File.basename(href, ".htm")
+    @s_name != "bqg_5200" ? extract_chid(href) : File.basename(href, ".htm")
   end
 
   alias Chlist = Array(Array(String))
@@ -214,7 +214,7 @@ class CV::RmInfo
       href, text = link.attributes["href"], link.inner_text
 
       title, label = TextUtils.format_title(text, label)
-      chlist << [extract_scid(href), title, label] unless title.empty?
+      chlist << [extract_chid(href), title, label] unless title.empty?
     rescue err
       puts err.colorize.red
     end

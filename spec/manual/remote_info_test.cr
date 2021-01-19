@@ -10,13 +10,13 @@ def fetch_info(s_name, s_nvid, fresh = false) : Void
   parser = CV::RmInfo.init(s_name, s_nvid, expiry)
 
   info = {
-    btitle:    parser.btitle,
-    author:    parser.author,
-    genres:    parser.genres.join(" "),
-    bintro:    parser.bintro.join("\t"),
-    bcover:    parser.bcover,
-    status:    parser.status_int,
-    update_tz: parser.updated_at,
+    btitle: parser.btitle,
+    author: parser.author,
+    genres: parser.genres.join(" "),
+    bintro: parser.bintro.join("\t"),
+    bcover: parser.bcover,
+    status: parser.status_int,
+    update: parser.updated_at,
   }
 
   pp info

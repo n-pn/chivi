@@ -37,7 +37,7 @@ module CV::Server
     matched.each do |b_hash|
       next if NvValues._index.has_key?(b_hash)
       # puts b_hash
-      Marked.unmark_book(uname, b_hash)
+      Marked.unmark_book(u_name, b_hash)
       matched.delete(b_hash)
     end
 

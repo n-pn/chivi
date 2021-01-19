@@ -8,9 +8,9 @@ seeds = Dir.children(DIR).each do |seed|
 
   puts "#{seed}: #{folders.size} folders".colorize.cyan.bold
 
-  folders.each_with_index do |folder, idx|
-    if idx % 50 == 49
-      puts "- <#{idx + 1}/#{folders.size}> #{folder}".colorize.blue
+  folders.each_with_index(1) do |folder, idx|
+    if idx % 50 == 0
+      puts "- <#{idx}/#{folders.size}> #{folder}".colorize.blue
     end
 
     folder = folder.sub(/\/$/, "") # remove trailing `/`

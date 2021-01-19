@@ -126,7 +126,7 @@
   </a>
 
   <button slot="header-left" class="header-item _active">
-    <span class="header-text _s_name">[{chinfo.s_name}]</span>
+    <span class="header-text _seed">[{chinfo.s_name}]</span>
   </button>
 
   <button

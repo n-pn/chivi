@@ -12,7 +12,7 @@ class CV::Seeds::FixCovers
 
     @source.data.each_with_index(1) do |(b_hash, values), idx|
       checked.add(b_hash)
-      next unless edo || !NvValues.bcover.has_key?(b_hash)
+      next unless redo || !NvValues.bcover.has_key?(b_hash)
 
       covers = {} of String => String
 
@@ -44,7 +44,7 @@ class CV::Seeds::FixCovers
       convert_img(bcover, out_file)
 
       if idx % 20 == 0
-        puts "- [chseed_covers] <#{idx}/#{@chseed.size}>".colorize.blue
+        puts "- [remote_covers] <#{idx}/#{@source.size}>".colorize.blue
         save!(mode: :upds)
       end
     end

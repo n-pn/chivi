@@ -6,17 +6,17 @@ class CV::Seeds::ZhwenpgParser
 
   getter rows : Array(Myhtml::Node) { @node.css("tr").to_a }
   getter link : Myhtml::Node { rows[0].css("a").first }
-  getter sbid : String { link.attributes["href"].sub("b.php?id=", "") }
 
+  getter s_nvid : String { link.attributes["href"].sub("b.php?id=", "") }
   getter author : String { rows[1].css(".fontwt").first.inner_text.strip }
   getter btitle : String { link.inner_text.strip }
-  getter bgenre : String { rows[2].css(".fontgt").first.inner_text }
 
   getter intro : Array(String) { extract_intro }
+  getter genre : String { rows[2].css(".fontgt").first.inner_text }
   getter cover : String { @node.css("img").first.attributes["data-src"] }
 
-  getter mftime : String { rows[3].css(".fontime").first.inner_text }
-  getter update : Time { TimeUtils.parse_time(mftime) }
+  getter update_str : String { rows[3].css(".fontime").first.inner_text }
+  getter updated_at : Time { TimeUtils.parse_time(update_str) }
 
   def extract_intro
     return [] of String unless node = rows[4]?
@@ -59,8 +59,8 @@ class CV::Seeds::MapZhwenpg
 
     doc = Myhtml::Parser.new(html)
     nodes = doc.css(".cbooksingle").to_a[2..-2]
-    nodes.each_with_index do |node, idx|
-      update!(node, status, label: "#{idx + 1}/#{nodes.size}")
+    nodes.each_with_index(1) do |node, idx|
+      update!(node, status, label: "#{idx}/#{nodes.size}")
     end
 
     save!(mode: :upds)
@@ -72,61 +72,64 @@ class CV::Seeds::MapZhwenpg
 
   def update!(node, status, label = "1/1") : Void
     parser = ZhwenpgParser.new(node)
-    sbid = parser.sbid
+    s_nvid = parser.s_nvid
 
-    return if @checked.includes?(sbid)
-    @checked.add(sbid)
+    return if @checked.includes?(s_nvid)
+    @checked.add(s_nvid)
 
     btitle, author = parser.btitle, parser.author
 
-    if @seeding._index.add(sbid, [btitle, author])
-      @seeding.set_intro(sbid, parser.intro)
-      @seeding.bgenre.add(sbid, parser.bgenre)
-      @seeding.bcover.add(sbid, parser.cover)
+    if @seeding._index.add(s_nvid, [btitle, author])
+      @seeding.set_intro(s_nvid, parser.intro)
+      @seeding.genres.add(s_nvid, parser.genre)
+      @seeding.bcover.add(s_nvid, parser.cover)
     end
 
-    @seeding.status.add(sbid, status)
-    @seeding.access_tz.add(sbid, Time.utc.to_unix)
+    @seeding.status.add(s_nvid, status)
+    @seeding._atime.add(s_nvid, Time.utc.to_unix)
 
-    update_at = parser.update + 12.hours
+    update_at = parser.updated_at + 12.hours
     update_at = Time.utc if update_at > Time.utc
 
-    @seeding.update_tz.add(sbid, update_at.to_unix)
+    @seeding._utime.add(s_nvid, update_at.to_unix)
 
-    puts "\n<#{label}> {#{sbid}} [#{btitle}  #{author}]"
+    puts "\n<#{label}> {#{s_nvid}} [#{btitle}  #{author}]"
   rescue err
     puts "ERROR: #{err}".colorize.red
   end
 
   def seed!
-    @checked.each_with_index do |sbid, idx|
-      b_hash, existed = @seeding.upsert!(sbid)
-      fake_rating!(b_hash, sbid) if NvValues.rating.ival(b_hash) == 0
+    @checked.each_with_index(1) do |s_nvid, idx|
+      b_hash, existed = @seeding.upsert!(s_nvid)
+      fake_rating!(b_hash, s_nvid) if NvValues.voters.ival(b_hash) == 0
 
       b_slug = NvValues._index.fval(b_hash)
       colored = existed ? :yellow : :green
 
-      puts "- <#{idx + 1}/#{@checked.size}> [#{b_slug}] saved!".colorize(colored)
-      if idx % 10 == 9
+      puts "- <#{idx}/#{@checked.size}> [#{b_slug}] saved!".colorize(colored)
+      if idx % 10 == 0
         Nvinfo.save!(mode: :upds)
-        @seeding.chseed.save!(mode: :upds)
+        @seeding.source.save!(mode: :upds)
       end
     end
 
     Nvinfo.save!(mode: :full)
-    @seeding.chseed.save!(mode: :full)
+    @seeding.source.save!(mode: :full)
   end
 
   FAKE_RATING = ValueMap.new("tasks/seeding/fake_ratings.tsv", mode: 2)
 
-  def fake_rating!(b_hash : String, sbid : String)
-    btitle, author = @seeding._index.get(sbid).not_nil!
-    return unless vals = FAKE_RATING.get("#{btitle}  #{author}")
+  def fake_rating!(b_hash : String, s_nvid : String)
+    btitle, author = @seeding._index.get(s_nvid).not_nil!
 
-    voters, rating = vals[0].to_i, vals[1].to_i
-    pp [voters, rating]
+    if vals = FAKE_RATING.get("#{btitle}  #{author}")
+      voters, rating = vals[0].to_i, vals[1].to_i
+    else
+      voters, rating = 5, Random.rand(40..50)
+    end
 
     NvValues.set_score(b_hash, voters, rating)
+    pp [voters, rating]
   end
 end
 

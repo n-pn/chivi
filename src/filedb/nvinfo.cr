@@ -124,8 +124,8 @@ class CV::Nvinfo
     end
   end
 
-  def self.set_genres(b_hash : String, input : Array(String), regen = false) : Nil
-    return unless regen || !NvValues.genres.has_key?(b_hash)
+  def self.set_genres(b_hash : String, input : Array(String), force = false) : Nil
+    return unless force || !NvValues.genres.has_key?(b_hash)
     if NvValues.genres.add(b_hash, input)
       NvTokens.set_genres(b_hash, input)
     end

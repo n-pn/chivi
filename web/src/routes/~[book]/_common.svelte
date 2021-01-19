@@ -50,7 +50,7 @@
   export let status
   export let bcover = 'blank.png'
   export let bintro = []
-  export let update_tz = 0
+  export let _utime = 0
 
   export let rating
   export let voters
@@ -71,7 +71,7 @@
   $: book_url = `https://chivi.xyz/~${b_slug}`
   $: book_intro = bintro.join('').substring(0, 300)
   $: book_cover = `https://chivi.xyz/covers/${bcover}`
-  $: updated_at = new Date(update_tz * 1000)
+  $: updated_at = new Date(_utime * 1000)
   $: keywords = gen_keywords()
 
   async function mark_book(new_mark) {
@@ -174,7 +174,7 @@
 
         <span class="stat _mftime">
           <SvgIcon name="clock" />
-          <span><RelTime time={update_tz * 1000} /></span>
+          <span><RelTime time={_utime * 1000} /></span>
         </span>
       </div>
 

@@ -58,7 +58,7 @@ module CV::Server
 
     u_power = env.session.int?("u_power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
-    mode = power if mode > u_power
+    mode = u_power if mode > u_power
 
     chtext = Chtext.load(s_name, s_nvid, s_chid)
     chtext.fetch!(u_power) if mode > 1 || chtext.zh_lines.empty?

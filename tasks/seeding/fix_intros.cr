@@ -1,14 +1,14 @@
 require "../../src/filedb/nvinfo"
 
 class CV::Seeds::FixIntros
-  getter chseed : ValueMap = NvValues.chseed
+  getter source : ValueMap = NvValues.source
 
   def fix!
-    @chseed.data.each_with_index do |(b_hash, seeds), idx|
+    @source.data.each_with_index(1) do |(b_hash, values), idx|
       yintro, bintro = nil, nil
 
-      if ybid = NvValues.yousuu.fval(b_hash)
-        yintro = get_intro("yosuu", ybid)
+      if y_nvid = NvValues.yousuu.fval(b_hash)
+        yintro = get_intro("yousuu", y_nvid)
 
         if yintro.size > 1
           NvValues.set_bintro(b_hash, yintro, force: true)
@@ -16,23 +16,23 @@ class CV::Seeds::FixIntros
         end
       end
 
-      seeds = seeds.each_with_object({} of String => String) do |x, h|
-        seed, sbid = x.split("/")
-        h[seed] = sbid
+      seeds = values.each_with_object({} of String => String) do |x, h|
+        s_name, s_nvid = x.split("/")
+        h[s_name] = s_nvid
       end
 
       {"hetushu", "shubaow", "zhwenpg", "5200", "duokan8", "nofff",
        "zxcs_me", "paoshu8", "rengshu", "xbiquge", "bqg_5200"}.each do |seed|
-        next unless sbid = seeds[seed]?
-        bintro = get_intro(seed, sbid)
+        next unless s_nvid = seeds[seed]?
+        bintro = get_intro(seed, s_nvid)
         break unless bintro.empty?
       end
 
       unless bintro && !bintro.empty?
         if yintro
           bintro = yintro
-        elsif sbid = seeds["jx_la"]?
-          bintro = get_intro("jx_la", sbid)
+        elsif s_nvid = seeds["jx_la"]?
+          bintro = get_intro("jx_la", s_nvid)
         else
           next
         end
@@ -40,14 +40,14 @@ class CV::Seeds::FixIntros
 
       NvValues.set_bintro(b_hash, bintro, force: true)
 
-      if idx % 100 == 99
-        puts "- [fix_intros] <#{idx + 1}/#{@chseed.size}>".colorize.blue
+      if idx % 100 == 0
+        puts "- [fix_intros] <#{idx}/#{@source.size}>".colorize.blue
       end
     end
   end
 
-  def get_intro(seed : String, sbid : String)
-    intro_file = "_db/_seeds/#{seed}/intros/#{sbid}.txt"
+  def get_intro(seed : String, s_nvid : String)
+    intro_file = "_db/_seeds/#{seed}/intros/#{s_nvid}.txt"
     File.read_lines(intro_file)
   rescue err
     [] of String

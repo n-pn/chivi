@@ -1,15 +1,15 @@
 require "file_utils"
 require "../../../src/_utils/http_utils"
 
-INFO_DIR = File.join("var/seeds/zxcs_me/htmls/infos")
+INFO_DIR = File.join("_db/_seeds/zxcs_me/infos")
 FileUtils.mkdir_p(INFO_DIR)
 
-def info_link(sbid : Int32)
-  "http://www.zxcs.me/post/#{sbid}"
+def info_link(s_nvid : Int32)
+  "http://www.zxcs.me/post/#{s_nvid}"
 end
 
-def info_file(sbid : Int32)
-  File.join INFO_DIR, "#{sbid}.html"
+def info_file(s_nvid : Int32)
+  File.join INFO_DIR, "#{s_nvid}.html"
 end
 
 def save_html(link : String, file : String, mark = "1/1")
@@ -28,10 +28,10 @@ end
 
 def fetch_htmls(lower = 1, upper = 12092)
   queue = (lower..upper).to_a.shuffle
-  queue.each_with_index do |sbid, idx|
-    mark = "#{idx + 1}/#{queue.size}"
+  queue.each_with_index(1) do |s_nvid, idx|
+    mark = "#{idx}/#{queue.size}"
 
-    save_html(info_link(sbid), info_file(sbid), mark)
+    save_html(info_link(s_nvid), info_file(s_nvid), mark)
     sleep Random.rand(500).milliseconds
   end
 end

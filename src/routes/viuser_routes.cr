@@ -11,7 +11,7 @@ module CV::Server
         env.session.int("u_power", u_power)
       end
 
-      json_res(env, {dname: dname, power: power})
+      json_res(env, {dname: u_dname, power: u_power})
     end
   end
 

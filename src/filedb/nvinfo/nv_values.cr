@@ -78,7 +78,13 @@ module CV::NvValues
 
   def set_score(b_hash : String, z_voters : Int32, z_rating : Int32)
     voters.add(b_hash, z_voters)
-    rating.add(b_hash, z_rating)
+
+    if z_voters == 0
+      z_rating = Random.rand(30..50)
+    elsif z_voters < 10
+      sum = Random.rand(30..50) * (10 - z_voters) + z_voters * z_rating
+      z_rating = sum // 10
+    end
 
     score = Math.log(z_voters + 10).*(z_rating * 10).round.to_i
     weight.add(b_hash, score)
@@ -92,13 +98,13 @@ module CV::NvValues
   {% end %}
 
   {% for field in {:_atime, :_utime} %}
-    def set_{{field.id}}(b_hash, value : Int64, force : Bool = false)
+    def set{{field.id}}(b_hash, value : Int64, force : Bool = false)
       return unless force || ({{field.id}}.ival_64(b_hash) < value)
       {{field.id}}.add(b_hash, value)
     end
 
-    def set_{{field.id}}(b_hash, value : Time, force : Bool = false)
-      set_{{field.id}}(b_hash, value.to_unix, force: force)
+    def set{{field.id}}(b_hash, value : Time, force : Bool = false)
+      set{{field.id}}(b_hash, value.to_unix, force: force)
     end
   {% end %}
 end

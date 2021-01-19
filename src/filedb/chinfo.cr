@@ -33,48 +33,48 @@ class CV::Chinfo
     source = RmInfo.init(@s_name, @s_nvid, expiry: expiry)
 
     # update last_chap
-    return unless regen || set_last_chid(source.last_chap)
+    return unless regen || set_last_chid(source.last_chid)
     set_utime(source.updated_at.to_unix)
 
     source.chap_list.each do |entry|
-      scid, title, label = entry
-      vals = label.empty? ? [title] : [title, label]
-      next unless origs.add(scid, vals)
+      s_chid, title, label = entry
+      values = label.empty? ? [title] : [title, label]
+      next unless origs.add(s_chid, values)
     end
   end
 
   def trans!(dname = "various", regen = false) : Nil
     cvter = Convert.generic(dname)
 
-    origs.each do |scid, vals|
-      next unless regen || !infos.has_key?(scid)
+    origs.each do |s_chid, values|
+      next unless regen || !infos.has_key?(s_chid)
 
-      zh_title = vals[0]
+      zh_title = values[0]
       vi_title = cvter.tl_title(zh_title)
       url_slug = TextUtils.tokenize(vi_title).first(12).join("-")
 
-      zh_label = vals[1]? || ""
+      zh_label = values[1]? || ""
       vi_label = zh_label.empty? ? "Chính văn" : cvter.tl_title(zh_label)
 
-      infos.add(scid, [vi_title, vi_label, url_slug])
+      infos.add(s_chid, [vi_title, vi_label, url_slug])
     end
 
     @chaps = nil
   end
 
-  def set_last_chid(scid : String)
-    return unless @meta.last_chap.add(@s_nvid, scid)
-    @last_chap = scid
+  def set_last_chid(s_chid : String)
+    return unless @meta.l_chid.add(@s_nvid, s_chid)
+    @l_chid = s_chid
   end
 
-  def set_update_tz(mftime = Time.utc.to_unix)
-    return unless @meta.update_tz.add(s_nvid, mftime)
-    @update_tz = mftime
+  def set_atime(mtime = Time.utc.to_unix)
+    return unless @meta._atime.add(s_nvid, mtime)
+    @_atime = mtime
   end
 
-  def set_atime(mftime = Time.utc.to_unix)
-    return unless @meta.atime.add(s_nvid, mftime)
-    @atime = mftime
+  def set_utime(mtime = Time.utc.to_unix)
+    return unless @meta._utime.add(s_nvid, mtime)
+    @_utime = mtime
   end
 
   private def remote?(power = 3)

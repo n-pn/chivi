@@ -14,38 +14,38 @@ class CV::Seeds::MapRemote
     mode = 0 if @s_name == "jx_la"
 
     1.upto(upto) do |idx|
-      sbid = idx.to_s
+      s_nvid = idx.to_s
 
-      unless access_tz = access_time(sbid)
+      unless atime = access_time(s_nvid)
         next if mode < 1
-        access_tz = (Time.utc + 3.minutes).to_unix
+        atime = (Time.utc + 3.minutes).to_unix
       end
 
       expiry = Time.utc
-      if mode < 2 || @seeding._index.has_key?(sbid)
-        next if @seeding.access_tz.ival_64(sbid) >= access_tz
+      if mode < 2 || @seeding._index.has_key?(s_nvid)
+        next if @seeding._atime.ival_64(s_nvid) >= atime
         expiry -= 1.years
       elsif mode < 2
         expiry -= 1.years
       end
 
-      @seeding.access_tz.add(sbid, access_tz)
+      @seeding._atime.add(s_nvid, atime)
 
-      parser = RmInfo.init(@s_name, sbid, expiry: expiry)
+      parser = RmInfo.init(@s_name, s_nvid, expiry: expiry)
       btitle, author = parser.btitle, parser.author
       next if btitle.empty? || author.empty?
 
-      if @seeding._index.add(sbid, [btitle, author])
-        @seeding.set_intro(sbid, parser.bintro)
-        @seeding.bgenre.add(sbid, clean_bgenre(parser.bgenre))
-        @seeding.bcover.add(sbid, parser.bcover)
+      if @seeding._index.add(s_nvid, [btitle, author])
+        @seeding.set_intro(s_nvid, parser.bintro)
+        @seeding.genres.add(s_nvid, clean_genres(parser.genres))
+        @seeding.bcover.add(s_nvid, parser.bcover)
       end
 
-      @seeding.status.add(sbid, parser.status_int)
-      @seeding.update_tz.add(sbid, parser.updated_at)
+      @seeding.status.add(s_nvid, parser.status_int)
+      @seeding._utime.add(s_nvid, parser.updated_at)
 
-      if idx % 100 == 99
-        puts "- [#{@s_name}]: <#{idx + 1}/#{upto}>"
+      if idx % 100 == 0
+        puts "- [#{@s_name}]: <#{idx}/#{upto}>"
         @seeding.save!(mode: :upds)
       end
     rescue err
@@ -55,15 +55,14 @@ class CV::Seeds::MapRemote
     @seeding.save!(mode: :full)
   end
 
-  private def clean_bgenre(genres : Array(String))
-    genres.map do |genre|
-      genre.sub(/小说$/, "") unless genre == "轻小说"
-      genre
+  private def clean_genres(input : Array(String))
+    input.map do |genre|
+      genre == "轻小说" ? genre : genre.sub(/小说$/, "")
     end
   end
 
-  private def access_time(sbid : String) : Int64?
-    file = RmInfo.path_for(@s_name, sbid)
+  private def access_time(s_nvid : String) : Int64?
+    file = RmInfo.path_for(@s_name, s_nvid)
     File.info?(file).try(&.modification_time.to_unix)
   end
 
@@ -74,7 +73,7 @@ class CV::Seeds::MapRemote
     input = @seeding._index.data.to_a
     input.sort_by!(&.[0].to_i.-)
 
-    input.each_with_index do |(sbid, vals), idx|
+    input.each_with_index(1) do |(s_nvid, vals), idx|
       btitle, author = vals
       btitle, author = NvHelper.fix_nvname(btitle, author)
 
@@ -82,34 +81,38 @@ class CV::Seeds::MapRemote
       next if checked.includes?(nvname)
       checked.add(nvname)
 
-      if authors.includes?(author) || should_pick?(sbid)
-        @seeding.upsert!(sbid)
+      if authors.includes?(author) || should_pick?(s_nvid)
+        b_hash, _ = @seeding.upsert!(s_nvid)
+
+        if NvValues.voters.ival(b_hash) == 0
+          NvValues.set_score(b_hash, Random.rand(1..5), Random.rand(30..50))
+        end
       end
 
-      if idx % 100 == 99
-        puts "- [#{@s_name}] <#{idx + 1}/#{input.size}>".colorize.blue
+      if idx % 100 == 0
+        puts "- [#{@s_name}] <#{idx}/#{input.size}>".colorize.blue
         Nvinfo.save!(mode: :upds)
-        @seeding.chseed.save!(mode: :upds)
+        @seeding.source.save!(mode: :upds)
       end
     end
 
     Nvinfo.save!(mode: :full)
-    @seeding.chseed.save!(mode: :full)
+    @seeding.source.save!(mode: :full)
   end
 
-  private def should_pick?(sbid : String)
+  private def should_pick?(s_nvid : String)
     return true if @s_name == "hetushu" || @s_name == "rengshu"
     false
   end
 
   def self.run!(argv = ARGV)
-    seed = ""
+    site = ""
     upto = 1
     mode = 1
 
     OptionParser.parse(argv) do |parser|
       parser.banner = "Usage: map_remote [arguments]"
-      parser.on("-s SEED", "--seed=SEED", "Seed name") { |x| seed = x }
+      parser.on("-s SITE", "--site=SITE", "Site name") { |x| site = x }
       parser.on("-u UPTO", "--upto=UPTO", "Latest id") { |x| upto = x.to_i }
       parser.on("-m MODE", "--mode=MODE", "Seed mode") { |x| mode = x.to_i }
 
@@ -120,7 +123,7 @@ class CV::Seeds::MapRemote
       end
     end
 
-    worker = new(seed)
+    worker = new(site)
     worker.init!(upto, mode: mode)
     worker.seed!
   end

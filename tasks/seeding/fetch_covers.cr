@@ -11,16 +11,15 @@ class CV::Seed::FetchCovers
     ::FileUtils.mkdir_p(dir)
 
     queue = {} of String => String
-
-    nv_ids = ValueMap.new("_db/nvdata/nvinfos/yousuu.tsv", mode: 2).vals
     covers = ValueMap.new("_db/_seeds/yousuu/bcover.tsv", mode: 2)
+    s_nvids = ValueMap.new("_db/nvdata/nvinfos/yousuu.tsv", mode: 2).vals
 
-    nv_ids.each do |vals|
-      sbid = vals.first
-      out_file = "#{dir}/#{sbid}.jpg"
+    s_nvids.each do |vals|
+      s_nvid = vals.first
+      out_file = "#{dir}/#{s_nvid}.jpg"
       next if File.exists?(out_file)
 
-      next unless image_url = covers.fval(sbid)
+      next unless image_url = covers.fval(s_nvid)
       queue[image_url] = out_file unless image_url.empty?
     end
 
@@ -72,8 +71,8 @@ class CV::Seed::FetchCovers
 
   getter cache = {} of String => ValueMap
 
-  def cover_map(seed : String)
-    cache[seed] ||= ValueMap.new("_db/_seeds/#{seed}/bcover.tsv", mode: 2)
+  def cover_map(s_name : String)
+    cache[s_name] ||= ValueMap.new("_db/_seeds/#{s_name}/bcover.tsv", mode: 2)
   end
 
   def fetch!(queue : Hash(String, String), limit = 8, delayed = 10.milliseconds)

@@ -3,12 +3,12 @@ require "colorize"
 require "file_utils"
 
 csdet = ICU::CharsetDetector.new
-files = Dir.glob("var/seeds/zxcs_me/text_files/unrar/*.txt")
+files = Dir.glob("_db/_seeds/zxcs_me/texts/unrar/*.txt")
 files.sort_by! { |x| File.basename(x, ".txt").to_i }
 
 puts "[- input: #{files.size} files -]".colorize.light_cyan
 
-files.each_with_index do |inp_file, idx|
+files.each_with_index(1) do |inp_file, idx|
   out_file = inp_file.sub("unrar", "fixed")
   next if File.exists?(out_file)
 

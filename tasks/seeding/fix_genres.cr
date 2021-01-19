@@ -1,22 +1,22 @@
 require "../../src/filedb/nvinfo"
 
-class CV::Seeds::FixGenres
-  getter input : ValueMap = NvValues.chseed
+class CV::S_names::FixGenres
+  getter source : ValueMap = NvValues.source
 
   def fix!
-    @input.data.each_with_index(1) do |(b_hash, seeds), idx|
+    @source.data.each_with_index(1) do |(b_hash, values), idx|
       genres = [] of String
       yousuu = [] of String
 
-      seeds.each do |entry|
-        seed, sbid = entry.split("/")
-        get_genres(seed, sbid).each do |genre|
+      values.each do |entry|
+        s_name, s_nvid = entry.split("/")
+        get_genres(s_name, s_nvid).each do |genre|
           genres.concat(NvHelper.fix_zh_genre(genre))
         end
       end
 
-      if ybid = NvValues.yousuu.fval(b_hash)
-        get_genres("yousuu", ybid).each do |genre|
+      if y_nvid = NvValues.yousuu.fval(b_hash)
+        get_genres("yousuu", y_nvid).each do |genre|
           yousuu.concat(NvHelper.fix_zh_genre(genre))
           genres.concat(NvHelper.fix_zh_genre(genre))
         end
@@ -37,10 +37,10 @@ class CV::Seeds::FixGenres
 
       vi_genres = zh_genres.map { |g| NvHelper.fix_vi_genre(g) }
       vi_genres = ["Loại khác"] if vi_genres.empty?
-      NvValues.set_bgenre(b_hash, vi_genres, force: true)
+      Nvinfo.set_genres(b_hash, vi_genres, force: true)
 
       if idx % 100 == 0
-        puts "- [fix_genres] <#{idx}/#{@input.size}>".colorize.blue
+        puts "- [fix_genres] <#{idx}/#{@source.size}>".colorize.blue
         save!(mode: :upds)
       end
     end
@@ -48,21 +48,21 @@ class CV::Seeds::FixGenres
     save!(mode: :full)
   end
 
-  def get_genres(seed : String, sbid : String)
-    genre_map(seed).get(sbid) || [] of String
+  def get_genres(s_name : String, s_nvid : String)
+    genre_map(s_name).get(s_nvid) || [] of String
   end
 
   getter cache = {} of String => ValueMap
 
-  def genre_map(seed : String)
-    cache[seed] ||= ValueMap.new("_db/_seeds/#{seed}/bgenre.tsv", mode: 2)
+  def genre_map(s_name : String)
+    cache[s_name] ||= ValueMap.new("_db/_seeds/#{s_name}/genres.tsv", mode: 2)
   end
 
   def save!(mode : Symbol = :full)
-    NvValues.bgenre.save!(mode: mode)
-    NvTokens.bgenre.save!(mode: mode)
+    NvValues.genres.save!(mode: mode)
+    NvTokens.genres.save!(mode: mode)
   end
 end
 
-worker = CV::Seeds::FixGenres.new
+worker = CV::S_names::FixGenres.new
 worker.fix!

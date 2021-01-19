@@ -14,9 +14,9 @@ module CV::Server
 
     u_power = env.session.int?("u_power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
-    mode = power if mode > power
+    mode = u_power if mode > u_power
 
-    if mode > 0 || chinfo.last_chap.empty?
+    if mode > 0 || chinfo.l_chid.empty?
       chinfo.fetch!(u_power, mode > 1)
       chinfo.trans!(b_hash, u_power > 1)
       chinfo.save!

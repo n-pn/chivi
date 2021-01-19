@@ -14,7 +14,7 @@
     if (skip < 1) skip = 0
 
     let url = `/api/nvinfos?skip=${skip}&take=${take}`
-    const opts = extract_opts(query)
+    const opts = parse_params(query)
     if (opts != {}) url += `&${merge_params(opts)}`
 
     const res = await this.fetch(url)
@@ -22,12 +22,13 @@
     return { books, total, page, opts }
   }
 
-  function extract_opts({ order, genre, bseed }, opts = {}) {
-    opts.order = order || 'access'
-    if (genre) opts.genre = genre
-    if (bseed) opts.bseed = genre
+  function parse_params({ order, bgenre, source }, params = {}) {
+    params.order = order || 'access'
 
-    return opts
+    if (bgenre) params.bgenre = bgenre
+    if (source) params.source = bgenre
+
+    return params
   }
 
   function merge_params(opts) {
