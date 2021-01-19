@@ -81,9 +81,10 @@ class CV::Nvinfo
       set_btitle(b_hash, zh_btitle)
 
       b_slug = NvTokens.btitle_hv.get(b_hash).not_nil!.join("-")
-      b_slug += "-#{b_hash}" if NvValues._index.has_val?(b_slug)
 
-      slugs = [b_slug]
+      slugs = [b_slug += "-#{b_hash}"]
+      slugs << bslug unless NvValues._index.has_val?(b_slug)
+
       if vi_tokens = NvTokens.btitle_vi.get(b_hash)
         vslug = vi_tokens.join("-")
         slugs << vslug unless NvValues._index.has_val?(vslug)
