@@ -3,7 +3,7 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../../src/shared/text_utils"
+require "../../src/_utils/text_utils"
 require "../../src/filedb/nvinfo"
 require "../../src/filedb/chinfo"
 

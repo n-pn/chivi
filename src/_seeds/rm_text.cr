@@ -2,7 +2,7 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../shared/*"
+require "../_utils/*"
 
 class CV::RmText
   def self.init(s_name : String, s_nvid : String, s_chid : String,

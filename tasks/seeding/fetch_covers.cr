@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../../src/mapper/value_map"
-require "../../src/shared/http_utils"
+require "../../src/_utils/http_utils"
 
 class CV::Seed::FetchCovers
   def fetch_yousuu!

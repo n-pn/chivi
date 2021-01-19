@@ -1,5 +1,5 @@
 require "./_route_utils"
-require "../shared/text_utils"
+require "../_utils/text_utils"
 
 require "../engine/convert"
 

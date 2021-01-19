@@ -1,4 +1,4 @@
-require "../../shared/text_utils"
+require "../../_utils/text_utils"
 require "../vp_dict/vp_entry"
 
 class CV::CvEntry
