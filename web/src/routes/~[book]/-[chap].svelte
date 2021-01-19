@@ -15,14 +15,16 @@
     lookup_actived,
   } from '$src/stores'
 
-  export async function preload({ params }) {
+  export async function preload({ params, query }) {
     const b_slug = params.book
 
     const cols = params.chap.split('-')
     const s_name = cols[cols.length - 2]
     const ch_idx = cols[cols.length - 1]
 
-    const [ok, data] = await get_chinfo(this.fetch, b_slug, s_name, ch_idx)
+    const mode = +query.mode
+    // prettier-ignore
+    const [ok, data] = await get_chinfo(this.fetch, b_slug, s_name, ch_idx, mode)
 
     if (ok) return data
     else this.error(data.status, data.message)
