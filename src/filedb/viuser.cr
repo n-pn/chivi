@@ -1,6 +1,7 @@
 require "file_utils"
 require "crypto/bcrypt/password"
-require "./stores/*"
+
+require "../mapper/*"
 
 module CV::Viuser
   extend self

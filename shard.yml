@@ -32,7 +32,7 @@ targets:
   fix_intros:
     main: tasks/seeding/fix_intros.cr
 
-crystal: 0.35.0
+crystal: 0.35.1
 
 license: MIT
 

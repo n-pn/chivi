@@ -2,7 +2,7 @@ require "mime"
 require "colorize"
 require "file_utils"
 
-require "../../src/filedb/stores/value_map"
+require "../../src/mapper/value_map"
 require "../../src/shared/http_utils"
 
 class CV::Seed::FetchCovers

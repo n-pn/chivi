@@ -1,5 +1,6 @@
 require "json"
-require "../../shared/*"
+
+require "../shared/*"
 
 struct CV::YsSource
   include JSON::Serializable
@@ -15,10 +16,10 @@ class CV::YsInfo
   include JSON::Serializable
 
   getter _id : Int32
-  getter y_bid : String { _id.to_s }
+  getter y_nvid : String { _id.to_s }
 
-  property title = ""
-  property author = ""
+  getter title = ""
+  getter author = ""
 
   getter introduction = ""
   getter intro : Array(String) { TextUtils.split_html(introduction) }

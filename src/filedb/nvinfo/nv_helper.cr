@@ -1,4 +1,4 @@
-require "../stores/*"
+require "../../mapper/*"
 require "../../shared/core_utils"
 require "../../shared/text_utils"
 require "../../engine/convert"

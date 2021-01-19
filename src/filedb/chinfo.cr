@@ -1,9 +1,8 @@
 require "file_utils"
 
-require "./stores/*"
 require "./chinfo/*"
 
-require "./_inits/rm_info"
+require "../_seeds/rm_info"
 require "../engine/convert"
 
 class CV::Chinfo

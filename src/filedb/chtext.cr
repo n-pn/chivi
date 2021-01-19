@@ -1,9 +1,8 @@
 require "colorize"
 require "file_utils"
 
-require "./stores/zip_store"
-require "./_inits/rm_text"
-
+require "../mapper/zip_store"
+require "../_seeds/rm_text"
 require "../engine/convert"
 
 class CV::Chtext

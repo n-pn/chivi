@@ -1,5 +1,6 @@
 require "file_utils"
-require "../stores/*"
+
+require "../../mapper/*"
 
 class CV::ChSource
   getter s_name : String

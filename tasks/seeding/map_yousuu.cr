@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../src/filedb/_inits/ys_info"
+require "../../src/_seeds/ys_info"
 require "./_info_seed.cr"
 
 class CV::Seeds::MapYousuu

@@ -1,4 +1,4 @@
-require "./stores/*"
+require "../mapper/*"
 
 module CV::Marked
   extend self
