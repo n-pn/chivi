@@ -170,4 +170,10 @@ class CV::CvGroup
   def to_str(io : IO) : Nil
     @data.map { |x| {x.key, x.val, x.dic}.join('\t') }.join(io, '\v')
   end
+
+  def inspect(io : IO) : Nil
+    @data.map do |x|
+      x.key.empty? ? x.val : "[#{x.key}¦#{x.val}¦#{x.dic}]"
+    end.join(io, " ")
+  end
 end

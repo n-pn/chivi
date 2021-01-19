@@ -32,7 +32,7 @@ class Hanviet
   end
 
   def save!
-    output = CV::VpDict.load("hanviet", regen: true)
+    output = CV::VpDict.load("hanviet", regen: false)
 
     input = @input.to_a.sort_by(&.[0].size)
     input.each do |(key, vals)|

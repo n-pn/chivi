@@ -178,6 +178,8 @@ class CV::VpDict
   end
 
   def save!(trim : Bool = false) : Nil
+    ::FileUtils.mkdir_p(File.dirname(@afile))
+
     tspan = Time.measure do
       entry_io = File.open(@afile, "w")
       emend_io = File.open(@efile, "w")

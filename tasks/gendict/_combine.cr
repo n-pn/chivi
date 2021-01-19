@@ -1,6 +1,5 @@
 require "json"
 require "./shared/*"
-require "../../src/engine/library"
 
 puts "\n[Load counters]".colorize.cyan.bold
 

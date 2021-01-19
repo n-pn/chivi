@@ -44,6 +44,10 @@ class CV::VpEntry
     {@key, @vals.join(DELIMIT), @attrs}.join(io, '\t')
   end
 
+  def to_str
+    String.build { |io| to_str(io) }
+  end
+
   def to_str(io : IO) : Nil
     io << @key
     if @vals.empty?

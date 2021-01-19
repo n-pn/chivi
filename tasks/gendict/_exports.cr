@@ -1,5 +1,4 @@
 require "./shared/*"
-require "../../src/engine/library"
 require "../../src/engine/convert"
 
 puts "\n[Load deps]".colorize.cyan.bold
@@ -28,7 +27,7 @@ end
 
 puts "\n[Export regular]".colorize.cyan.bold
 
-OUT_REGULAR = CV::VpDict.load_dict("regular", dtype: 2, dlock: 2, preload: false)
+OUT_REGULAR = CV::VpDict.load("regular", regen: true)
 
 HANVIET = CV::Convert.hanviet
 REGULAR = CV::Convert.new(OUT_REGULAR)
@@ -42,28 +41,29 @@ inp_regular.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if should_skip?(key)
 
-    unless HANVIET.translit(key, false).to_text =~ regex
-      next if REGULAR.cv_plain(key).to_text =~ regex
+    unless HANVIET.translit(key, false).to_s =~ regex
+      next if REGULAR.cv_plain(key).to_s =~ regex
     end
   end
 
-  OUT_REGULAR.upsert(key, vals)
+  OUT_REGULAR.upsert(CV::VpEntry.new(key, vals))
 end
 
 puts "\n- load hanviet".colorize.cyan.bold
 
-CV::VpDict.hanviet.each do |term|
-  next if term.key.size > 1
-  next if OUT_REGULAR.find(term.key)
-  OUT_REGULAR.upsert(term)
+CV::VpDict.hanviet._root.each do |node|
+  next unless entry = node.entry
+  next if entry.key.size > 1
+  next if OUT_REGULAR.find(entry.key)
+  OUT_REGULAR.upsert(entry)
 end
 
-OUT_REGULAR.load!("_db/dictdb/remote/common/regular.tsv")
+OUT_REGULAR.load!("_db/dictdb/remote/common/regular.tab")
 OUT_REGULAR.save!
 
 puts "\n[Export suggest]".colorize.cyan.bold
 
-OUT_SUGGEST = CV::VpDict.load_dict("suggest", dtype: 2, dlock: 2, preload: false)
+OUT_SUGGEST = CV::VpDict.load("suggest", regen: true)
 
 inp_suggest = QtDict.load(".result/suggest.txt", true)
 inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
@@ -76,21 +76,21 @@ inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
   unless should_keep?(key)
     next if key =~ /[的了是]/
     next if should_skip?(key)
-    next if HANVIET.translit(key, false).to_text =~ regex
-    next if REGULAR.cv_plain(key).to_text =~ regex
+    next if HANVIET.translit(key, false).to_s =~ regex
+    next if REGULAR.cv_plain(key).to_s =~ regex
   end
 
-  OUT_SUGGEST.upsert(key, vals)
+  OUT_SUGGEST.upsert(CV::VpEntry.new(key, vals))
 rescue err
   pp [err, key, vals]
 end
 
-OUT_SUGGEST.load!("_db/dictdb/remote/common/suggest.tsv")
+OUT_SUGGEST.load!("_db/dictdb/remote/common/suggest.tab")
 OUT_SUGGEST.save!
 
 puts "\n[Export various]".colorize.cyan.bold
 
-OUT_VARIOUS = CV::VpDict.load_dict("various", dtype: 2, dlock: 2, preload: false)
+OUT_VARIOUS = CV::VpDict.load("various", regen: true)
 
 inp_various = QtDict.load(".result/various.txt", true)
 inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
@@ -101,10 +101,10 @@ inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
     next if should_skip?(key)
   end
 
-  OUT_VARIOUS.upsert(key, vals)
+  OUT_VARIOUS.upsert(CV::VpEntry.new(key, vals))
 end
 
-EXT_VARIOUS = "_db/dictdb/remote/common/various.tsv"
+EXT_VARIOUS = "_db/dictdb/remote/common/various.tab"
 OUT_VARIOUS.load!(EXT_VARIOUS) if File.exists?(EXT_VARIOUS)
 OUT_VARIOUS.save!
 

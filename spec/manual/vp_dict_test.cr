@@ -1,6 +1,6 @@
-require "../../src/engine/library/vp_dict"
+require "../../src/engine/vp_dict"
 
-test = Chivi::VpDict.new "spec/fixtures/test.txt"
+test = Chivi::VpDict.new "test"
 
 print "\nset abc to abc: ", test.upsert("abc", ["abc"])
 

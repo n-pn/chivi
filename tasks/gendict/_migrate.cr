@@ -1,16 +1,5 @@
 require "file_utils"
-require "../../src/engine/library"
-
-def dlock_df(label)
-  case label
-  when "tradsim", "binh_am", "hanviet"
-    3
-  when "regular", "suggest", "various"
-    2
-  else
-    1
-  end
-end
+require "../../src/engine/vp_dict"
 
 def parse_term(cols : Array(String), dlock = 1)
   key = cols[0]
@@ -30,41 +19,50 @@ end
 def load_relic(file : String, dlock : Int32)
   input = {} of String => Array(String)
 
-  File.each_line(file) do |line|
-    next if line.empty?
-    cols = line.split("ǁ")
-    input[cols[0]] = cols
-  end
-
   input.values.map { |cols| parse_term(cols, dlock) }.sort_by(&.mtime)
 end
 
-def migrate(file : String, unique = false)
-  label = File.basename(file, ".log")
+def migrate(file : String, uniq = false)
+  input = {} of String => Array(String)
 
-  if unique
-    return if label == "_tonghop"
-    dlock = 1
-  else
-    label = "regular" if label == "generic"
-    dlock = dlock_df(label)
+  File.each_line(file) do |line|
+    next if line.empty?
+    cols = line.split("ǁ")
+
+    input[cols[0]] = cols
   end
 
-  values = load_relic(file, dlock)
+  dname = File.basename(file, ".log")
+  return if dname == "_tonghop"
+  dname = "regular" if dname == "generic"
 
-  out_file = CV::VpDict.file_path(label).sub("active", "remote")
-  out_dict = CV::VpDict.new(out_file, dlock: dlock, preload: false)
+  vdict = CV::VpDict.load(dname)
 
-  values.each do |term|
-    out_dict.upsert(term)
-    CV::VpDict.suggest.upsert(term) if unique && !term.empty?
+  input.each_value do |cols|
+    key = cols[0]
+    vals = cols.fetch(1, "").sub("", "").strip.split(/[\/¦]/)
+
+    entry = CV::VpEntry.new(key, vals)
+
+    if mtime = cols[2]?.try(&.to_i?) || 0
+      uname = cols[3]? || "Guest"
+      uname = "<old>" if uname == "Guest"
+
+      next if dname == "hanviet" && uname != "Nipin"
+
+      power = cols[4]?.try(&.to_i?) || 4
+      power = vdict.p_min if power > vdict.p_min
+
+      emend = CV::VpEmend.new(mtime, uname, power)
+    end
+
+    vdict.upsert(entry, emend)
+    CV::VpDict.suggest.upsert(entry, emend) if uniq
   end
 
-  out_dict.save!
+  vdict.save!
 end
 
 Dir.glob("_db/dictdb/legacy/core/*.log").each { |x| migrate(x) }
-Dir.glob("_db/dictdb/legacy/uniq/*.log").each { |x| migrate(x, unique: true) }
-CV::VpDict.suggest.save!(mode: :best)
-
-# pp parse_term("保安州ǁBảo An châuǁ319179ǁFenix12ǁ1".split('ǁ'))
+Dir.glob("_db/dictdb/legacy/uniq/*.log").each { |x| migrate(x, uniq: true) }
+CV::VpDict.suggest.save!

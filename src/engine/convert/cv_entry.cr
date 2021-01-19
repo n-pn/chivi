@@ -56,10 +56,8 @@ class CV::CvEntry
     case @val[0]?
     when '”', '’', '⟩', ')', ']', '}',
          ',', '.', ';', '!', '?',
-         '%'
+         '%', ':'
       return false
-    when ':'
-      return !prev.is_int
     when '·'
       return true
     when '~', '-', '—'
@@ -72,9 +70,11 @@ class CV::CvEntry
     when '“', '‘', '⟨', '(', '[', '{'
       return false
     when '”', '’', '⟩', ')', ']', '}',
-         ',', '.', ':', ';', '!', '?',
+         ',', '.', ';', '!', '?',
          '…', '·'
       return true
+    when ':'
+      return !is_int
     when '~', '-', '—'
       @dic > 1 || prev.dic > 1
     end
