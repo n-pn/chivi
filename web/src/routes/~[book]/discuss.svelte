@@ -2,13 +2,11 @@
   import Common from './_common'
 
   export async function preload({ params }) {
-    const b_slug = params.book
-
-    const res = await this.fetch(`/api/books/${b_slug}`)
+    const res = await this.fetch(`/api/nvinfos/${params.book}`)
     const data = await res.json()
 
-    if (res.ok) return { book: data.book, mark: data.mark }
-    else this.error(res.status, data.msg)
+    if (res.ok) return data
+    else this.error(res.status, res.text())
   }
 </script>
 
@@ -17,7 +15,7 @@
   export let nvmark = ''
 </script>
 
-<Common {...nvinfo} {nvmark} atab="threads">
+<Common {nvinfo} {nvmark} atab="discuss">
   <div class="empty">Chưa hoàn thiện :(</div>
 </Common>
 

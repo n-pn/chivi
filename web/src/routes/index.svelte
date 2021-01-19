@@ -26,7 +26,7 @@
     params.order = order || 'access'
 
     if (bgenre) params.bgenre = bgenre
-    if (source) params.source = bgenre
+    if (source) params.source = source
 
     return params
   }

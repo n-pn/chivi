@@ -217,7 +217,7 @@
 
 <svelte:window on:keydown={handle_keypress} />
 
-<Common {...nvinfo} {nvmark} atab="content">
+<Common {nvinfo} {nvmark} atab="content">
   {#if source}
     <div class="source" bind:this={scroll_top}>
       <span class="-text"><span class="-hide">Chọn</span> nguồn:</span>

@@ -15,7 +15,7 @@
   let short_intro = false
 </script>
 
-<Common {...nvinfo} {nvmark} atab="summary">
+<Common {nvinfo} {nvmark} atab="summary">
   <h2>Giới thiệu:</h2>
   <div class="intro" class:_short={short_intro}>
     {#each nvinfo.bintro as para}

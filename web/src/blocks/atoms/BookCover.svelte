@@ -1,11 +1,11 @@
 <script>
   export let b_hash = ''
-  export let cover = ''
+  export let bcover = 'blank.png'
 </script>
 
 <picture>
   <source srcset="/covers/_chivi/{b_hash}.webp" type="image/webp" />
-  <img alt="" src="/covers/{cover}" loading="lazy" />
+  <img alt="" src="/covers/{bcover}" loading="lazy" />
 </picture>
 
 <style lang="scss">

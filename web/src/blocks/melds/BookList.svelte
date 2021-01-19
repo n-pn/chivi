@@ -6,8 +6,8 @@
 </script>
 
 <div class="list">
-  {#each books as book}
-    <BookItem nvtab={atab} {...book} />
+  {#each books as nvinfo}
+    <BookItem {nvinfo} {atab} />
   {/each}
 </div>
 

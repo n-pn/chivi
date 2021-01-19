@@ -73,7 +73,7 @@
           <div class="cover">
             <BookCover
               b_hash={book.b_hash}
-              cover={book.bcover || 'blank.png'} />
+              bcover={book.bcover || 'blank.png'} />
           </div>
 
           <div class="infos">

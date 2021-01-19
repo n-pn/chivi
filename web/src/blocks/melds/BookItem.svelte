@@ -14,8 +14,8 @@
     return output
   }
 
-  function book_url(b_slug, nvtab) {
-    switch (nvtab) {
+  function book_url(b_slug, atab) {
+    switch (atab) {
       case 'content':
         return `/~${b_slug}/content?order=desc`
       case 'discuss':
@@ -27,35 +27,36 @@
 </script>
 
 <script>
-  export let nvtab = ''
+  export let nvinfo = {}
+  export let atab = ''
 
-  export let b_hash = ''
-  export let b_slug = ''
+  // export let b_hash = ''
+  // export let b_slug = ''
 
-  export let btitle = []
-  export let genres = []
+  // export let btitle = []
+  // export let genres = []
 
-  export let bcover = 'blank.png'
-  export let voters = 0
-  export let rating = 0
+  // export let bcover = 'blank.png'
+  // export let voters = 0
+  // export let rating = 0
 
-  $: title = btitle[2] || btitle[1]
-  $: genre = genres[0] || 'Loại khác'
-  $: href = book_url(b_slug, nvtab)
-  $: stars = rating_stars(rating, voters)
+  $: title = nvinfo.btitle[2] || nvinfo.btitle[1]
+  $: genre = nvinfo.genres[0] || 'Loại khác'
+  $: href = book_url(nvinfo.b_slug, atab)
+  $: stars = rating_stars(nvinfo.rating, nvinfo.voters)
 </script>
 
 <a class="book" {href}>
   <div class="cover">
-    <BookCover {b_hash} cover={bcover} />
+    <BookCover b_hash={nvinfo.b_hash} bcover={nvinfo.bcover} />
 
-    {#if voters >= 10}
+    {#if nvinfo.voters > 10}
       <div class="extra">
         <div class="score">
           {#each stars as star}
             <span class="-star">{star}</span>
           {/each}
-          <span class="-text">{rating / 10}</span>
+          <span class="-text">{nvinfo.rating / 10}</span>
         </div>
       </div>
     {/if}

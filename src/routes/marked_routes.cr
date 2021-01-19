@@ -18,7 +18,7 @@ module CV::Server
     end
 
     b_hash = env.params.url["b_hash"]
-    nvmark = env.params.query["bmark"]? || ""
+    nvmark = env.params.query["nvmark"]? || ""
 
     if nvmark.empty?
       Marked.unmark_book(u_name, b_hash)
@@ -26,18 +26,18 @@ module CV::Server
       Marked.mark_book(u_name, b_hash, nvmark)
     end
 
-    RouteUtils.json_res(env, {bmark: nvmark})
+    RouteUtils.json_res(env, {nvmark: nvmark})
   end
 
-  get "/api/user-books/:dname" do |env|
-    u_name = env.params.url["dname"].downcase
-    nvmark = env.params.query["bmark"]? || "reading"
-    matched = Marked.all_user_books(u_name, nvmark)
+  get "/api/user-books/:u_dname" do |env|
+    u_uname = env.params.url["u_dname"].downcase
+    nvmark = env.params.query["nvmark"]? || "reading"
+    matched = Marked.all_user_books(u_uname, nvmark)
 
     matched.each do |b_hash|
       next if NvValues._index.has_key?(b_hash)
       # puts b_hash
-      Marked.unmark_book(u_name, b_hash)
+      Marked.unmark_book(u_uname, b_hash)
       matched.delete(b_hash)
     end
 
