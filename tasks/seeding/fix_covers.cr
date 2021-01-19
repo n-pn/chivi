@@ -2,34 +2,34 @@ require "file_utils"
 require "../../src/filedb/nvinfo"
 
 class CV::Seeds::FixCovers
-  getter chseed : ValueMap = NvValues.chseed
+  getter source : ValueMap = NvValues.source
 
   DIR = "_db/bcover"
   ::FileUtils.mkdir_p("#{DIR}/_chivi")
 
-  def fix!(mode : Symbol = :fast)
+  def fix!(redo : Bool = false)
     checked = Set(String).new
 
-    @chseed.data.each_with_index do |(b_hash, seeds), idx|
+    @source.data.each_with_index(1) do |(b_hash, values), idx|
       checked.add(b_hash)
-      next if mode == :fast && NvValues.bcover.has_key?(b_hash)
+      next unless edo || !NvValues.bcover.has_key?(b_hash)
 
       covers = {} of String => String
 
-      if ybid = NvValues.yousuu.fval(b_hash)
-        covers["yousuu"] = ybid
+      if y_nvid = NvValues.yousuu.fval(b_hash)
+        covers["yousuu"] = y_nvid
       end
 
-      seeds.each do |chseed|
-        seed, sbid = chseed.split("/")
-        covers[seed] = sbid
+      values.each do |entry|
+        s_name, s_nvid = entry.split("/")
+        covers[s_name] = s_nvid
       end
 
       bcover = nil
       mwidth = 0
 
-      covers.each do |seed, sbid|
-        next unless cover_file = cover_path(seed, sbid)
+      covers.each do |s_name, s_nvid|
+        next unless cover_file = cover_path(s_name, s_nvid)
         cover_width = image_width(cover_file)
 
         if cover_width > mwidth
@@ -43,23 +43,23 @@ class CV::Seeds::FixCovers
       out_file = "#{DIR}/_chivi/#{b_hash}.webp"
       convert_img(bcover, out_file)
 
-      if idx % 20 == 19
-        puts "- [chseed_covers] <#{idx + 1}/#{@chseed.size}>".colorize.blue
+      if idx % 20 == 0
+        puts "- [chseed_covers] <#{idx}/#{@chseed.size}>".colorize.blue
         save!(mode: :upds)
       end
     end
 
     yousuu = NvValues.yousuu.data
-    yousuu.each_with_index do |(b_hash, array), idx|
+    yousuu.each_with_index(1) do |(b_hash, values), idx|
       next if checked.includes?(b_hash)
-      next if mode == :fast && NvValues.bcover.has_key?(b_hash)
+      next unless redo || !NvValues.bcover.has_key?(b_hash)
 
-      next unless cover_file = cover_path("yousuu", array.first)
+      next unless cover_file = cover_path("yousuu", values.first)
       next if image_width(cover_file) < 10
       NvValues.bcover.add(b_hash, cover_file.sub("#{DIR}/", ""))
 
-      if idx % 20 == 19
-        puts "- [yousuu_covers] <#{idx + 1}/#{yousuu.size}>".colorize.blue
+      if idx % 20 == 0
+        puts "- [yousuu_covers] <#{idx}/#{yousuu.size}>".colorize.blue
         save!(mode: :upds)
       end
     end
@@ -67,14 +67,14 @@ class CV::Seeds::FixCovers
     save!(mode: :full)
   end
 
-  def cover_path(seed : String, sbid : String) : String?
+  def cover_path(s_name : String, s_nvid : String) : String?
     {"html", "jpg.gz", ".pc", ".apple", ".ascii"}.each do |ext|
-      file = "#{DIR}/#{seed}/#{sbid}.#{ext}"
+      file = "#{DIR}/#{s_name}/#{s_nvid}.#{ext}"
       return if File.exists?(file)
     end
 
     {"gif", "png", "tiff", "jpg"}.each do |ext|
-      file = "#{DIR}/#{seed}/#{sbid}.#{ext}"
+      file = "#{DIR}/#{s_name}/#{s_nvid}.#{ext}"
       return file if File.exists?(file)
     end
   end
@@ -99,4 +99,4 @@ class CV::Seeds::FixCovers
 end
 
 worker = CV::Seeds::FixCovers.new
-worker.fix!(ARGV.includes?("full") ? :full : :fast)
+worker.fix!(ARGV.includes?("redo"))

@@ -12,9 +12,10 @@ class CV::Seed::FetchCovers
 
     queue = {} of String => String
 
-    sbids = ValueMap.new("_db/nvdata/nvinfos/yousuu.tsv", mode: 2).vals
+    nv_ids = ValueMap.new("_db/nvdata/nvinfos/yousuu.tsv", mode: 2).vals
     covers = ValueMap.new("_db/_seeds/yousuu/bcover.tsv", mode: 2)
-    sbids.each do |vals|
+
+    nv_ids.each do |vals|
       sbid = vals.first
       out_file = "#{dir}/#{sbid}.jpg"
       next if File.exists?(out_file)
@@ -26,31 +27,30 @@ class CV::Seed::FetchCovers
     fetch!(queue, limit: 16)
   end
 
-  def fetch_chseed!
-    input = ValueMap.new("_db/nvdata/nvinfos/chseed.tsv", mode: 2).vals
-
+  def fetch_remote!
     queues = Hash(String, Hash(String, String)).new do |h, k|
       h[k] = {} of String => String
     end
 
-    input.each do |seeds|
-      seeds.each do |entry|
-        seed, sbid = entry.split("/")
-        next if seed == "jx_la"
+    input = ValueMap.new("_db/nvdata/nvinfos/source.tsv", mode: 2).vals
+    input.each do |source|
+      source.each do |entry|
+        s_name, s_nvid = entry.split("/")
+        next if s_name == "jx_la"
 
-        out_file = "_db/bcover/#{seed}/#{sbid}.jpg"
+        out_file = "_db/bcover/#{s_name}/#{s_nvid}.jpg"
         next if File.exists?(out_file)
 
-        next unless image_url = cover_map(seed).fval(sbid)
-        queues[seed][image_url] = out_file unless image_url.empty?
+        next unless image_url = cover_map(s_name).fval(s_nvid)
+        queues[s_name][image_url] = out_file unless image_url.empty?
       end
     end
 
     channel = Channel(Nil).new(queues.size)
 
-    queues.each do |seed, queue|
+    queues.each do |s_name, queue|
       limit, delayed =
-        case seed
+        case s_name
         when "shubaow" then {1, 2.seconds}
         when "duokan8" then {1, 1.seconds}
         when "zhwenpg" then {1, 500.milliseconds}
@@ -121,4 +121,4 @@ end
 
 worker = CV::Seed::FetchCovers.new
 worker.fetch_yousuu! unless ARGV.includes?("-yousuu")
-worker.fetch_chseed! unless ARGV.includes?("-chseed")
+worker.fetch_remote! unless ARGV.includes?("-remote")

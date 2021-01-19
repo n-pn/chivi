@@ -11,11 +11,7 @@ module CV::TimeUtils
     "%F %T", "%F %R", "%F",
   }
 
-  # parse remote info update times
-  def parse_time(input : Nil) : Time
-    Time.utc
-  end
-
+  # parse remote source info update times
   def parse_time(input : String) : Time
     TIME_FMT.each do |format|
       return Time.parse(input, format, LOCATION)
@@ -25,6 +21,11 @@ module CV::TimeUtils
 
     puts "[ERROR parsing time <#{input}>: unknown format]".colorize.red
     DEF_TIME
+  end
+
+  # :ditto:
+  def parse_time(input : Nil) : Time
+    Time.utc
   end
 end
 

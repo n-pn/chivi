@@ -9,23 +9,23 @@ class CV::Nvinfo
 
   getter btitle : Array(String) { NvValues.btitle.get(b_hash).not_nil! }
   getter author : Array(String) { NvValues.author.get(b_hash).not_nil! }
-  getter genres : Array(String) { NvValues.bgenre.get(b_hash) || [] of String }
 
+  getter genres : Array(String) { NvValues.genres.get(b_hash) || [] of String }
   getter bcover : String { NvValues.bcover.fval(b_hash) || "blank.png" }
+
   getter voters : Int32 { NvValues.voters.ival(b_hash) }
   getter rating : Int32 { NvValues.rating.ival(b_hash) }
 
-  getter chseed : Hash(String, String) { NvValues.get_chseed(b_hash) }
   getter bintro : Array(String) { NvValues.get_bintro(b_hash) }
-
   getter status : Int32 { NvValues.status.ival(b_hash) }
-  getter shield : Int32 { NvValues.shield.ival(b_hash) }
+  getter source : Hash(String, String) { NvValues.get_source(b_hash) }
 
+  getter hidden : Int32 { NvValues.hidden.ival(b_hash) }
   getter yousuu : String { NvValues.yousuu.fval(b_hash) || "" }
   getter origin : String { NvValues.origin.fval(b_hash) || "" }
 
-  getter access_tz : Int64 { NvValues.access_tz.ival_64(b_hash) }
-  getter update_tz : Int64 { NvValues.update_tz.ival_64(b_hash) }
+  getter _atime : Int64 { NvValues._atime.ival_64(b_hash) }
+  getter _utime : Int64 { NvValues._utime.ival_64(b_hash) }
 
   def initialize(@b_hash)
   end
@@ -41,29 +41,30 @@ class CV::Nvinfo
 
       json.field "btitle", btitle
       json.field "author", author
-      json.field "genres", genres
 
+      json.field "genres", genres
       json.field "bcover", bcover
+
       json.field "voters", voters
       json.field "rating", rating
 
       if full
-        json.field "chseed", chseed
+        json.field "source", source
         json.field "bintro", bintro
         json.field "status", status
 
         json.field "yousuu", yousuu
         json.field "origin", origin
 
-        json.field "update_tz", update_tz
+        json.field "_utime", _utime
       end
     end
   end
 
   def bump_access!(atime : Time = Time.utc) : Nil
-    @access_tz = atime.to_unix // 60
-    return unless NvValues.access_tz.add(b_hash, @access_tz)
-    NvValues.access_tz.save!(mode: :upds) if NvValues.access_tz.unsaved > 10
+    @_atime = atime.to_unix // 60
+    return unless NvValues._atime.add(b_hash, @_atime)
+    NvValues._atime.save!(mode: :upds) if NvValues._atime.unsaved > 10
   end
 
   def self.upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)
@@ -123,13 +124,34 @@ class CV::Nvinfo
     end
   end
 
+  def self.set_genres(b_hash : String, input : Array(String), regen = false) : Nil
+    return unless regen || !NvValues.genres.has_key?(b_hash)
+    if NvValues.genres.add(b_hash, input)
+      NvTokens.set_genres(b_hash, input)
+    end
+  end
+
+  def self.set_source(b_hash : String, s_name : String, s_nvid : String) : Nil
+    source = NvValues.source.get(b_hash) || [] of String
+    source = source.each_with_object({} of String => String) do |x, h|
+      a, b = x.split("/")
+      h[a] = b
+    end
+
+    return if source[s_name]? == s_nvid
+    source[s_name] = s_nvid
+
+    NvValues.source.add(b_hash, source.to_a.map { |a, b| "#{a}/#{b}" })
+    NvTokens.set_source(b_hash, source.keys)
+  end
+
   def self.save!(mode : Symbol = :full)
     NvValues.save!(mode: mode)
     NvTokens.save!(mode: mode)
   end
 
-  def self.find_by_slug(slug : String)
-    NvValues._index.keys(slug).first
+  def self.find_by_slug(b_slug : String)
+    NvValues._index.keys(b_slug).first
   end
 
   def self.each(order_map = NvValues.weight, skip = 0, take = 24, matched : Set(String)? = nil)
@@ -167,8 +189,8 @@ class CV::Nvinfo
 
   def self.get_order_map(order : String? = nil)
     case order
-    when "access" then NvValues.access_tz
-    when "update" then NvValues.update_tz
+    when "access" then NvValues._atime
+    when "update" then NvValues._utime
     when "rating" then NvValues.rating
     when "voters" then NvValues.voters
     else               NvValues.weight

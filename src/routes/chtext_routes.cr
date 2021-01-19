@@ -1,19 +1,19 @@
 require "./_route_utils"
 
 module CV::Server
-  get "/api/chinfos/:b_slug/:seed/:cidx" do |env|
+  get "/api/chinfos/:b_slug/:s_name/:cidx" do |env|
     b_slug = env.params.url["b_slug"]
 
     unless b_hash = Nvinfo.find_by_slug(b_slug)
       halt env, status_code: 404, response: "Quyển sách không tồn tại!"
     end
 
-    seed = env.params.url["seed"]
-    unless sbid = ChSource.load(seed)._index.fval(b_hash)
+    s_name = env.params.url["s_name"]
+    unless s_nvid = ChSource.load(s_name)._index.fval(b_hash)
       halt env, status_code: 404, response: "Nguồn truyện không tồn tại!"
     end
 
-    chinfo = Chinfo.load(seed, sbid)
+    chinfo = Chinfo.load(s_name, s_nvid)
 
     index = env.params.url["cidx"].to_i? || 100000
 
@@ -29,17 +29,17 @@ module CV::Server
       {
         b_hash: b_hash,
         b_slug: b_slug,
-        bname:  btitle[2]? || btitle[1],
+        b_name: btitle[2]? || btitle[1],
 
-        seed: seed,
-        sbid: sbid,
-        scid: curr_chap[0],
+        s_name: s_name,
+        s_nvid: s_nvid,
+        s_size: chinfo.chaps.size,
+
+        s_chid: curr_chap[0],
+        ch_idx: index,
 
         title: ch_title,
         label: ch_label,
-
-        ch_index: index,
-        ch_total: chinfo.chaps.size,
 
         prev_url: chinfo.url_for(index - 2, b_slug),
         next_url: chinfo.url_for(index, b_slug),
@@ -51,20 +51,20 @@ module CV::Server
     halt env, status_code: 500, response: message
   end
 
-  get "/api/chtexts/:seed/:sbid/:scid" do |env|
-    seed = env.params.url["seed"]
-    sbid = env.params.url["sbid"]
-    scid = env.params.url["scid"]
+  get "/api/chtexts/:s_name/:s_nvid/:s_chid" do |env|
+    s_name = env.params.url["s_name"]
+    s_nvid = env.params.url["s_nvid"]
+    s_chid = env.params.url["s_chid"]
 
-    power = env.session.int?("u_power") || 0
+    u_power = env.session.int?("u_power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
-    mode = power if mode > power
+    mode = power if mode > u_power
 
-    chtext = Chtext.load(seed, sbid, scid)
-    chtext.fetch!(power) if mode > 1 || chtext.zh_lines.empty?
+    chtext = Chtext.load(s_name, s_nvid, s_chid)
+    chtext.fetch!(u_power) if mode > 1 || chtext.zh_lines.empty?
 
     unless mode == 0 && chtext.cv_mtime > (Time.utc - 3.hours)
-      dname = env.params.query["dict"]? || "various"
+      dname = env.params.query["dname"]? || "various"
       chtext.trans!(dname)
     end
 

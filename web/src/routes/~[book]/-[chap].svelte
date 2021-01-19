@@ -19,18 +19,18 @@
     const b_slug = params.book
 
     const cols = params.chap.split('-')
-    const seed = cols[cols.length - 2]
-    const scid = cols[cols.length - 1]
+    const s_name = cols[cols.length - 2]
+    const ch_idx = cols[cols.length - 1]
 
-    const [ok, data] = await get_chinfo(this.fetch, b_slug, seed, scid)
+    const [ok, data] = await get_chinfo(this.fetch, b_slug, s_name, ch_idx)
 
     if (ok) return data
     else this.error(data.status, data.message)
   }
 
-  function gen_paths({ b_slug, seed, ch_index, prev_url, next_url }) {
-    const book_path = gen_book_path(b_slug, seed, 0)
-    const list_path = gen_book_path(b_slug, seed, ch_index)
+  function gen_paths({ b_slug, s_name, ch_idx, prev_url, next_url }) {
+    const book_path = gen_book_path(b_slug, s_name, 0)
+    const list_path = gen_book_path(b_slug, s_name, ch_idx)
 
     const prev_path = prev_url || book_path
     const next_path = next_url || list_path
@@ -38,9 +38,9 @@
     return [book_path, list_path, prev_path, next_path]
   }
 
-  function gen_book_path(b_slug, seed, index) {
-    let url = `/~${b_slug}/content?seed=${seed}`
-    const page = Math.floor(index / 30) + 1
+  function gen_book_path(b_slug, s_name, ch_idx) {
+    let url = `/~${b_slug}/content?source=${s_name}`
+    const page = Math.floor(ch_idx / 30) + 1
     return page > 1 ? url + `&page=${page}` : url
   }
 </script>
@@ -126,7 +126,7 @@
   </a>
 
   <button slot="header-left" class="header-item _active">
-    <span class="header-text _seed">[{chinfo.seed}]</span>
+    <span class="header-text _s_name">[{chinfo.s_name}]</span>
   </button>
 
   <button

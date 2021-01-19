@@ -4,7 +4,7 @@ class CV::Seeds::FixGenres
   getter input : ValueMap = NvValues.chseed
 
   def fix!
-    @input.data.each_with_index do |(b_hash, seeds), idx|
+    @input.data.each_with_index(1) do |(b_hash, seeds), idx|
       genres = [] of String
       yousuu = [] of String
 
@@ -39,8 +39,8 @@ class CV::Seeds::FixGenres
       vi_genres = ["Loại khác"] if vi_genres.empty?
       NvValues.set_bgenre(b_hash, vi_genres, force: true)
 
-      if idx % 100 == 99
-        puts "- [fix_genres] <#{idx + 1}/#{@input.size}>".colorize.blue
+      if idx % 100 == 0
+        puts "- [fix_genres] <#{idx}/#{@input.size}>".colorize.blue
         save!(mode: :upds)
       end
     end

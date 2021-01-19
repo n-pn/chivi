@@ -13,7 +13,7 @@ module CV::Viuser
   class_getter ugroup : ValueMap { ValueMap.new(map_path("ugroup")) }
   class_getter upower : ValueMap { ValueMap.new(map_path("upower")) }
 
-  class_getter create_tz : ValueMap { ValueMap.new(map_path("tz_create")) }
+  class_getter _ctime : ValueMap { ValueMap.new(map_path("_ctime")) }
 
   DIR = "_db/userdb/viusers"
   ::FileUtils.mkdir_p(DIR)
@@ -49,7 +49,7 @@ module CV::Viuser
     @@ugroup.try(&.save!(mode: mode))
     @@upower.try(&.save!(mode: mode))
 
-    @@create_tz.try(&.save!(mode: mode))
+    @@_ctime.try(&.save!(mode: mode))
   end
 
   def insert!(dname : String, email : String, upass : String, power = 1) : Nil
@@ -62,7 +62,7 @@ module CV::Viuser
     set_cpass(uname, upass)
     set_power(uname, power)
 
-    create_tz.add(uname, Time.utc.to_unix)
+    _ctime.add(uname, Time.utc.to_unix)
     save!(mode: :upds)
   end
 

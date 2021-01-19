@@ -1,19 +1,19 @@
 <script>
   export let b_slug = ''
-  export let sname = ''
-  export let chaps = []
+  export let s_name = ''
 
-  function chap_url(chap) {
-    return `/~${b_slug}/-${chap.uslug}-${sname}-${chap._idx}`
-  }
+  export let chaps = []
 </script>
 
 <ul class="list">
-  {#each chaps as chap}
+  {#each chaps as { ch_idx, title, label, uslug }}
     <li class="item">
-      <a href={chap_url(chap)} class="link" rel="nofollow">
-        <div class="label">{chap.label}</div>
-        <div class="title">{chap.title}</div>
+      <a
+        href="/~{b_slug}/-{uslug}-{s_name}-{ch_idx}"
+        class="link"
+        rel="nofollow">
+        <div class="label">{label}</div>
+        <div class="title">{title}</div>
       </a>
     </li>
   {/each}

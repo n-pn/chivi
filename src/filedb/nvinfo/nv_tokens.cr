@@ -6,7 +6,7 @@ module CV::NvTokens
   TYPES = {
     :author_zh, :author_vi,
     :btitle_zh, :btitle_hv, :btitle_vi,
-    :bgenre, :chseed,
+    :genres, :source,
   }
 
   {% for type in TYPES %}
@@ -44,13 +44,13 @@ module CV::NvTokens
       return matched if matched.empty?
     end
 
-    if genre = query["genre"]?
-      matched = glob_bgenre(genre, matched)
+    if bgenre = query["bgenre"]?
+      matched = glob_bgenre(bgenre, matched)
       return matched if matched.empty?
     end
 
-    if bseed = query["bseed"]?
-      matched = glob_chseed(bseed, matched)
+    if s_name = query["source"]?
+      matched = glob_source(s_name, matched)
       return matched if matched.empty?
     end
 
@@ -75,12 +75,12 @@ module CV::NvTokens
   end
 
   def glob_bgenre(query : String, matched : Set(String)? = nil)
-    res = bgenre.keys(TextUtils.slugify(query))
+    res = genres.keys(TextUtils.slugify(query))
     matched ? matched & res : res
   end
 
-  def glob_chseed(query : String, matched : Set(String)? = nil)
-    res = chseed.keys(query.downcase)
+  def glob_source(query : String, matched : Set(String)? = nil)
+    res = source.keys(query.downcase)
     matched ? matched & res : res
   end
 end

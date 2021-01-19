@@ -5,14 +5,14 @@ require "file_utils"
 require "../../shared/*"
 
 class CV::RmText
-  def self.init(seed : String, sbid : String, scid : String,
+  def self.init(s_name : String, s_nvid : String, s_chid : String,
                 expiry : Time = Time.utc - 10.years, freeze : Bool = true)
-    file = path_for(seed, sbid, scid)
-    expiry = TimeUtils::DEF_TIME if seed == "jx_la"
+    file = path_for(s_name, s_nvid, s_chid)
+    expiry = TimeUtils::DEF_TIME if s_name == "jx_la"
 
     unless html = FileUtils.read(file, expiry)
-      url = url_for(seed, sbid, scid)
-      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(seed))
+      url = url_for(s_name, s_nvid, s_chid)
+      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(s_name))
 
       if freeze
         ::FileUtils.mkdir_p(File.dirname(file))
@@ -20,39 +20,40 @@ class CV::RmText
       end
     end
 
-    new(seed, sbid, scid, file: file, html: html)
+    new(s_name, s_nvid, s_chid, file: file, html: html)
   end
 
-  def self.path_for(seed : String, sbid : String, scid : String)
-    "_db/.cache/#{seed}/texts/#{sbid}/#{scid}.html"
+  def self.path_for(s_name : String, s_nvid : String, s_chid : String)
+    "_db/.cache/#{s_name}/texts/#{s_nvid}/#{s_chid}.html"
   end
 
-  def self.url_for(seed : String, sbid : String, scid : String) : String
-    case seed
-    when "nofff"      then "https://www.nofff.com/#{sbid}/#{scid}/"
-    when "69shu"      then "https://www.69shu.com/txt/#{sbid}/#{scid}"
-    when "jx_la"      then "https://www.jx.la/book/#{sbid}/#{scid}.html"
-    when "qu_la"      then "https://www.qu.la/book/#{sbid}/#{scid}.html"
-    when "rengshu"    then "http://www.rengshu.com/book/#{sbid}/#{scid}"
-    when "xbiquge"    then "https://www.xbiquge.cc/book/#{sbid}/#{scid}.html"
-    when "zhwenpg"    then "https://novel.zhwenpg.com/r.php?id=#{scid}"
-    when "hetushu"    then "https://www.hetushu.com/book/#{sbid}/#{scid}.html"
-    when "duokan8"    then "http://www.duokan8.com/#{prefixed(sbid, scid)}"
-    when "paoshu8"    then "http://www.paoshu8.com/#{prefixed(sbid, scid)}"
-    when "5200"       then "https://www.5200.tv/#{prefixed(sbid, scid)}"
-    when "shubaow"    then "https://www.shubaow.net/#{prefixed(sbid, scid)}"
-    when "biquge5200" then "https://www.biquge5200.com/#{prefixed(sbid, scid)}"
-    else                   raise "Unsupported remote source <#{seed}>!"
+  def self.url_for(s_name : String, s_nvid : String, s_chid : String) : String
+    case s_name
+    when "nofff"    then "https://www.nofff.com/#{s_nvid}/#{s_chid}/"
+    when "69shu"    then "https://www.69shu.com/txt/#{s_nvid}/#{s_chid}"
+    when "jx_la"    then "https://www.jx.la/book/#{s_nvid}/#{s_chid}.html"
+    when "qu_la"    then "https://www.qu.la/book/#{s_nvid}/#{s_chid}.html"
+    when "rengshu"  then "http://www.rengshu.com/book/#{s_nvid}/#{s_chid}"
+    when "xbiquge"  then "https://www.xbiquge.cc/book/#{s_nvid}/#{s_chid}.html"
+    when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{s_chid}"
+    when "hetushu"  then "https://www.hetushu.com/book/#{s_nvid}/#{s_chid}.html"
+    when "duokan8"  then "http://www.duokan8.com/#{prefixed(s_nvid, s_chid)}"
+    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed(s_nvid, s_chid)}"
+    when "5200"     then "https://www.5200.tv/#{prefixed(s_nvid, s_chid)}"
+    when "shubaow"  then "https://www.shubaow.net/#{prefixed(s_nvid, s_chid)}"
+    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed(s_nvid, s_chid)}"
+    else
+      raise "Unsupported remote source <#{s_name}>!"
     end
   end
 
-  private def self.prefixed(sbid : String, scid : String)
-    "#{sbid.to_i // 1000}_#{sbid}/#{scid}.html"
+  private def self.prefixed(s_nvid : String, s_chid : String)
+    "#{s_nvid.to_i // 1000}_#{s_nvid}/#{s_chid}.html"
   end
 
-  getter seed : String
-  getter sbid : String
-  getter scid : String
+  getter s_name : String
+  getter s_nvid : String
+  getter s_chid : String
   getter file : String
 
   def initialize(@s_name, @s_nvid, @s_chid, @file, html = File.read(@file))

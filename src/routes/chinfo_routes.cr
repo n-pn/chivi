@@ -12,13 +12,13 @@ module CV::Server
 
     chinfo = Chinfo.load(s_name, s_nvid)
 
-    power = env.session.int?("u_power") || 0
+    u_power = env.session.int?("u_power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
     mode = power if mode > power
 
     if mode > 0 || chinfo.last_chap.empty?
-      chinfo.fetch!(power, mode > 1)
-      chinfo.trans!(b_hash, power > 1)
+      chinfo.fetch!(u_power, mode > 1)
+      chinfo.trans!(b_hash, u_power > 1)
       chinfo.save!
     end
 
@@ -33,20 +33,20 @@ module CV::Server
       JSON.build(res) do |json|
         json.object do
           json.field "total", chinfo.infos.size
-          json.field "mtime", chinfo._utime
+          json.field "utime", chinfo._utime
 
           json.field "chaps" do
             json.array do
               desc = env.params.query["order"]? == "desc"
 
-              chinfo.each(skip, take, desc) do |idx, (s_chid, vals)|
+              chinfo.each(skip, take, desc) do |idx, (s_chid, chitem)|
                 json.object do
                   json.field "ch_idx", idx + 1
                   json.field "s_chid", s_chid
 
-                  json.field "title", vals[0]
-                  json.field "label", vals[1]
-                  json.field "uslug", vals[2]
+                  json.field "title", chitem[0]
+                  json.field "label", chitem[1]
+                  json.field "uslug", chitem[2]
                 end
               end
             end

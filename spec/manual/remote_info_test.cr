@@ -2,17 +2,17 @@ require "file_utils"
 
 require "../../src/filedb/_inits/rm_info.cr"
 
-def fetch_info(seed, sbid, fresh = false) : Void
-  puts "\n[#{CV::RmInfo.url_for(seed, sbid)}]".colorize.green.bold
+def fetch_info(s_name, s_nvid, fresh = false) : Void
+  puts "\n[#{CV::RmInfo.url_for(s_name, s_nvid)}]".colorize.green.bold
   puts "------".colorize.green
 
   expiry = fresh ? Time.utc : Time.utc - 1.years
-  parser = CV::RmInfo.init(seed, sbid, expiry)
+  parser = CV::RmInfo.init(s_name, s_nvid, expiry)
 
   info = {
     btitle:    parser.btitle,
     author:    parser.author,
-    bgenre:    parser.bgenre.join(" "),
+    genres:    parser.genres.join(" "),
     bintro:    parser.bintro.join("\t"),
     bcover:    parser.bcover,
     status:    parser.status_int,
@@ -66,7 +66,7 @@ fetch_info("zhwenpg", "aun4tm", fresh: false)
 
 fetch_info("5200", "28208", fresh: false)
 
-fetch_info("biquge5200", "139570", fresh: false)
-# fetch_info("biquge5200", "131878", fresh: true)
+fetch_info("bqg_5200", "139570", fresh: false)
+# fetch_info("bqg_5200", "131878", fresh: true)
 
 fetch_info("shubaow", "150092", fresh: false)

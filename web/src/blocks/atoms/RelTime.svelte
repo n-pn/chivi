@@ -19,7 +19,7 @@
     switch (seed) {
       case '69shu':
       case 'zhwenpg':
-      case 'biquge5200':
+      case 'bqg_5200':
         return true
       default:
         return false

@@ -154,4 +154,4 @@ module CV::TextUtils
   end
 end
 
-# pp CV::SeedUtils.format_title("第二十集 红粉骷髅 第八章")
+# pp CV::TextUtils.format_title("第二十集 红粉骷髅 第八章")

@@ -22,7 +22,7 @@ class CV::Seeds::FixIntros
       end
 
       {"hetushu", "shubaow", "zhwenpg", "5200", "duokan8", "nofff",
-       "zxcs_me", "paoshu8", "rengshu", "xbiquge", "biquge5200"}.each do |seed|
+       "zxcs_me", "paoshu8", "rengshu", "xbiquge", "bqg_5200"}.each do |seed|
         next unless sbid = seeds[seed]?
         bintro = get_intro(seed, sbid)
         break unless bintro.empty?

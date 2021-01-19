@@ -2,11 +2,11 @@ require "colorize"
 
 require "../../src/filedb/_inits/rm_text.cr"
 
-def fetch_chap(seed : String, sbid : String, scid : String, fresh = false)
-  puts "\n[#{CV::RmText.url_for(seed, sbid, scid)}]\n".colorize.blue.bold
+def fetch_chap(s_name : String, s_nvid : String, s_chid : String, fresh = false)
+  puts "\n[#{CV::RmText.url_for(s_name, s_nvid, s_chid)}]\n".colorize.blue.bold
 
   expiry = fresh ? Time.utc : Time.utc - 1.years
-  chap = CV::RmText.init(seed, sbid, scid, expiry: expiry)
+  chap = CV::RmText.init(s_name, s_nvid, s_chid, expiry: expiry)
 
   puts chap.title
   puts "---".colorize.blue
@@ -40,8 +40,8 @@ fetch_chap("paoshu8", "1986", "1447835", fresh: false)
 
 fetch_chap("5200", "28208", "12163631", fresh: false)
 
-fetch_chap("biquge5200", "139731", "174666986", fresh: false)
-# fetch_chap("biquge5200", "131878", "174602931")
+fetch_chap("bqg_5200", "139731", "174666986", fresh: false)
+# fetch_chap("bqg_5200", "131878", "174602931")
 
 fetch_chap("shubaow", "150092", "32706021", fresh: false)
 # fetch_chap("shubaow", "149926", "32662664")

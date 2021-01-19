@@ -45,7 +45,7 @@ class CV::PreloadBook
           sleep Random.rand(2000..3000).milliseconds
         when "zhwenpg"
           sleep Random.rand(1000..2000).milliseconds
-        when "biquge5200"
+        when "bqg_5200"
           sleep Random.rand(500..1000).milliseconds
         end
       ensure
@@ -141,9 +141,9 @@ class CV::PreloadSeed
 
   def self.default_threads_for(seed : String) : Int32
     case seed
-    when "zhwenpg", "shubaow", "biquge5200" then 1
-    when "paoshu8", "69shu"                 then 2
-    else                                         4
+    when "zhwenpg", "shubaow", "bqg_5200" then 1
+    when "paoshu8", "69shu"               then 2
+    else                                       4
     end
   end
 end

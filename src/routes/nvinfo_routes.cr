@@ -18,13 +18,13 @@ module CV::Server
     nvinfo = Nvinfo.load(b_hash)
     nvinfo.bump_access!
 
-    if uname = env.session.string?("u_dname").try(&.downcase)
-      nvmark = Marked.user_books(uname).fval(b_hash) || ""
+    if u_uname = env.session.string?("u_dname").try(&.downcase)
+      nvmark = Marked.user_books(u_uname).fval(b_hash) || ""
     else
       nvmark = ""
     end
 
-    RouteUtils.json_res(env, cached: nvinfo.update_tz) do |res|
+    RouteUtils.json_res(env, cached: nvinfo._utime) do |res|
       JSON.build(res) do |json|
         json.object do
           json.field "nvinfo" { nvinfo.to_json(json, true) }

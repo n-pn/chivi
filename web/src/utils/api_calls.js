@@ -1,5 +1,5 @@
-export async function get_chinfo(fetch, b_slug, seed, scid, mode = 1) {
-  const url = `/api/chinfos/${b_slug}/${seed}/${scid}`
+export async function get_chinfo(fetch, b_slug, s_name, ch_idx, mode = 1) {
+  const url = `/api/chinfos/${b_slug}/${s_name}/${ch_idx}`
 
   const res = await fetch(url)
   if (!res.ok) return await wrap_error(res)
@@ -12,8 +12,8 @@ export async function get_chinfo(fetch, b_slug, seed, scid, mode = 1) {
 }
 
 export async function get_chtext(fetch, chinfo, mode = 0) {
-  const { seed, sbid, scid, b_hash } = chinfo
-  const url = `/api/chtexts/${seed}/${sbid}/${scid}?dict=${b_hash}&mode=${mode}`
+  const { s_name, s_nvid, ch_idx, b_hash } = chinfo
+  const url = `/api/chtexts/${s_name}/${s_nvid}/${ch_idx}?dname=${b_hash}&mode=${mode}`
 
   const res = await fetch(url)
   if (!res.ok) return await wrap_error(res)

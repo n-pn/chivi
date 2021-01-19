@@ -5,61 +5,61 @@ require "file_utils"
 require "../../shared/*"
 
 class CV::RmInfo
-  def self.init(seed : String, sbid : String,
+  def self.init(s_name : String, s_nvid : String,
                 expiry : Time = Time.utc - 1.hour, freeze : Bool = true)
-    file = path_for(seed, sbid)
-    expiry = TimeUtils::DEF_TIME if seed == "jx_la"
+    file = path_for(s_name, s_nvid)
+    expiry = TimeUtils::DEF_TIME if s_name == "jx_la"
 
     unless html = FileUtils.read(file, expiry)
-      url = url_for(seed, sbid)
-      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(seed))
+      url = url_for(s_name, s_nvid)
+      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(s_name))
       File.write(file, html) if freeze
     end
 
-    new(seed, sbid, file: file, html: html)
+    new(s_name, s_nvid, file: file, html: html)
   end
 
-  def self.path_for(seed : String, sbid : String)
-    "_db/.cache/#{seed}/infos/#{sbid}.html"
+  def self.path_for(s_name : String, s_nvid : String)
+    "_db/.cache/#{s_name}/infos/#{s_nvid}.html"
   end
 
-  def self.url_for(seed : String, sbid : String) : String
-    case seed
-    when "nofff"      then "https://www.nofff.com/#{sbid}/"
-    when "69shu"      then "https://www.69shu.com/#{sbid}/"
-    when "jx_la"      then "https://www.jx.la/book/#{sbid}/"
-    when "qu_la"      then "https://www.qu.la/book/#{sbid}/"
-    when "rengshu"    then "http://www.rengshu.com/book/#{sbid}"
-    when "xbiquge"    then "https://www.xbiquge.cc/book/#{sbid}/"
-    when "zhwenpg"    then "https://novel.zhwenpg.com/b.php?id=#{sbid}"
-    when "hetushu"    then "https://www.hetushu.com/book/#{sbid}/index.html"
-    when "duokan8"    then "http://www.duokan8.com/#{prefixed(sbid)}/"
-    when "paoshu8"    then "http://www.paoshu8.com/#{prefixed(sbid)}/"
-    when "5200"       then "https://www.5200.tv/#{prefixed(sbid)}/"
-    when "shubaow"    then "https://www.shubaow.net/#{prefixed(sbid)}/"
-    when "biquge5200" then "https://www.biquge5200.com/#{prefixed(sbid)}/"
-    else                   raise "Unsupported remote source <#{seed}>!"
+  def self.url_for(s_name : String, s_nvid : String) : String
+    case s_name
+    when "nofff"    then "https://www.nofff.com/#{s_nvid}/"
+    when "69shu"    then "https://www.69shu.com/#{s_nvid}/"
+    when "jx_la"    then "https://www.jx.la/book/#{s_nvid}/"
+    when "qu_la"    then "https://www.qu.la/book/#{s_nvid}/"
+    when "rengshu"  then "http://www.rengshu.com/book/#{s_nvid}"
+    when "xbiquge"  then "https://www.xbiquge.cc/book/#{s_nvid}/"
+    when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{s_nvid}"
+    when "hetushu"  then "https://www.hetushu.com/book/#{s_nvid}/index.html"
+    when "duokan8"  then "http://www.duokan8.com/#{prefixed(s_nvid)}/"
+    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed(s_nvid)}/"
+    when "5200"     then "https://www.5200.tv/#{prefixed(s_nvid)}/"
+    when "shubaow"  then "https://www.shubaow.net/#{prefixed(s_nvid)}/"
+    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed(s_nvid)}/"
+    else                 raise "Unsupported remote source <#{s_name}>!"
     end
   end
 
-  private def self.prefixed(sbid : String)
-    "#{sbid.to_i // 1000}_#{sbid}"
+  private def self.prefixed(s_nvid : String)
+    "#{s_nvid.to_i // 1000}_#{s_nvid}"
   end
 
-  getter seed : String
-  getter sbid : String
-  getter file : String
+  getter s_name : String
+  getter s_nvid : String
+  getter c_file : String
 
-  def initialize(@s_name, @s_nvid, @file, html = File.read(@file))
+  def initialize(@s_name, @s_nvid, @c_file, html = File.read(@c_file))
     @rdoc = Myhtml::Parser.new(html)
   end
 
   def cached?(expiry = Time.utc - 6.months)
-    FileUtils.recent?(@file, expiry)
+    FileUtils.recent?(@c_file, expiry)
   end
 
   def uncache!
-    File.delete(@file) if File.exists?(@file)
+    File.delete(@c_file) if File.exists?(@c_file)
   end
 
   getter author : String do
@@ -80,7 +80,7 @@ class CV::RmInfo
     end
   end
 
-  getter bgenre : Array(String) do
+  getter genres : Array(String) do
     case @s_name
     when "hetushu"
       genre = node_text(".title > a:last-child").not_nil!
@@ -156,30 +156,30 @@ class CV::RmInfo
     case @s_name
     when "69shu"
       node_text(".mu_beizhu").sub(/.+时间：/m, "")
-    when "biquge5200"
+    when "bqg_5200"
       node_text("#info > p:last-child").sub("最后更新：", "")
     else
       meta_data("og:novel:update_time")
     end
   end
 
-  getter last_chap : String do
+  getter last_chid : String do
     case @s_name
-    when "hetushu" then extract_latest_by_css("#dir :last-child a:last-of-type")
-    when "69shu"   then extract_latest_by_css(".mulu_list:first-of-type a:first-child")
-    when "zhwenpg" then extract_latest_by_css(".fontwt0 + a")
-    else                extract_latest_by_meta
+    when "hetushu" then extract_last_chid("#dir :last-child a:last-of-type")
+    when "69shu"   then extract_last_chid(".mulu_list:first-of-type a:first-child")
+    when "zhwenpg" then extract_last_chid(".fontwt0 + a")
+    else                extract_last_chid_by_meta
     end
   end
 
-  private def extract_latest_by_css(sel : String)
+  private def extract_last_chid(sel : String)
     node = find_node(sel).not_nil!
     extract_scid(node.attributes["href"])
   end
 
-  private def extract_latest_by_meta
+  private def extract_last_chid_by_meta
     href = meta_data("og:novel:latest_chapter_url").not_nil!
-    @s_name != "biquge5200" ? extract_scid(href) : File.basename(href, ".htm")
+    @s_name != "bqg_5200" ? extract_scid(href) : File.basename(href, ".htm")
   end
 
   alias Chlist = Array(Array(String))
@@ -240,7 +240,7 @@ class CV::RmInfo
             title = link.inner_text
             next if title.starts_with?("我要报错！")
             href = link.attributes["href"]
-            chlist << [extract_scid(href), title, label] unless title.empty?
+            chlist << [extract_chid(href), title, label] unless title.empty?
           end
         end
       end
@@ -255,12 +255,11 @@ class CV::RmInfo
     @rdoc.css(".clistitem > a").each do |link|
       href = link.attributes["href"]
       title, label = TextUtils.format_title(link.inner_text)
-      output << [extract_scid(href), title, label] unless title.empty?
+      output << [extract_chid(href), title, label] unless title.empty?
     end
 
     # check if the list is in correct orlder
-    latest_scid, _ = last_chap
-    output.reverse! if latest_scid == output.first.first
+    output.reverse! if last_chid == output[0].first
 
     output
   end
@@ -271,13 +270,13 @@ class CV::RmInfo
     @rdoc.css(".chapter-list a").each do |link|
       next unless href = link.attributes["href"]?
       title, label = TextUtils.format_title(link.inner_text)
-      chlist << [extract_scid(href), title, label] unless title.empty?
+      chlist << [extract_chid(href), title, label] unless title.empty?
     end
 
     chlist
   end
 
-  private def extract_scid(href : String)
+  private def extract_chid(href : String)
     case @s_name
     when "69shu"   then File.basename(href)
     when "zhwenpg" then href.sub("r.php?id=", "")

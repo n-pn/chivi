@@ -68,12 +68,12 @@ class CV::Chinfo
   end
 
   def set_update_tz(mftime = Time.utc.to_unix)
-    return unless @meta.update_tz.add(sbid, mftime)
+    return unless @meta.update_tz.add(s_nvid, mftime)
     @update_tz = mftime
   end
 
   def set_atime(mftime = Time.utc.to_unix)
-    return unless @meta.atime.add(sbid, mftime)
+    return unless @meta.atime.add(s_nvid, mftime)
     @atime = mftime
   end
 
@@ -81,7 +81,7 @@ class CV::Chinfo
     case @s_name
     when "rengshu", "xbiquge",
          "nofff", "5200",
-         "biquge5200", "duokan8"
+         "bqg_5200", "duokan8"
       power > 0
     when "hetushu", "zhwenpg"
       power > 1
@@ -92,8 +92,8 @@ class CV::Chinfo
     end
   end
 
-  private def map_path(name : String)
-    "#{DIR}/#{seed}/#{name}/#{sbid}.tsv"
+  private def map_path(label : String)
+    "#{DIR}/#{s_name}/#{label}/#{s_nvid}.tsv"
   end
 
   def each(skip : Int32 = 0, take : Int32 = 30, desc = false)
@@ -112,7 +112,7 @@ class CV::Chinfo
   def url_for(idx : Int32, b_slug : String)
     return unless chap = chaps[idx]?
     uslug = chap[1][2]
-    "/~#{b_slug}/-#{uslug}-#{seed}-#{idx + 1}"
+    "/~#{b_slug}/-#{uslug}-#{s_name}-#{idx + 1}"
   end
 
   def save!(mode : Symbol = :full)
@@ -125,8 +125,8 @@ class CV::Chinfo
 
   CHINFOS = {} of String => self
 
-  def self.load(seed : String, sbid : String) : self
-    CHINFOS["#{seed}/#{sbid}"] ||= new(seed, sbid)
+  def self.load(s_name : String, s_nvid : String) : self
+    CHINFOS["#{s_name}/#{s_nvid}"] ||= new(s_name, s_nvid)
   end
 
   def self.save!(mode : Symbol = :full) : Nil

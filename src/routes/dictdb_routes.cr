@@ -1,7 +1,7 @@
 require "./_route_utils"
 
 module CV::Server
-  alias LookupEntry = Hash(String, Array(String))
+  alias Lookup = Hash(String, Array(String))
 
   put "/api/dicts/lookup/:dname" do |env|
     dname = env.params.url["dname"]
@@ -12,8 +12,8 @@ module CV::Server
     upper = chars.size - 1
 
     entries = (0..upper).map do |idx|
-      entry = Hash(Int32, LookupEntry).new do |hash, key|
-        hash[key] = LookupEntry.new { |h, k| h[k] = [] of String }
+      entry = Hash(Int32, Lookup).new do |hash, key|
+        hash[key] = Lookup.new { |h, k| h[k] = [] of String }
       end
 
       dicts.each do |dict|
@@ -59,21 +59,21 @@ module CV::Server
   end
 
   put "/api/dicts/upsert/:dname" do |env|
-    uname = env.session.string?("u_dname") || "Khách"
-    p_max = env.session.int?("u_power") || 0
+    u_dname = env.session.string?("u_dname") || "Khách"
+    u_power = env.session.int?("u_power") || 0
 
-    power = env.params.json["power"]?.as(Int32?) || p_max
-    power = p_max if power > p_max
+    power = env.params.json["power"]?.as(Int32?) || u_power
+    power = u_power if power > u_power
 
     halt env, status_code: 500, response: "Access denied!" if power < 1
 
     key = env.params.json["key"].as(String)
-    vals = env.params.json["vals"]?.as(String?) || ""
+    vals = env.params.json.fetch("vals", "").as(String)
     attrs = env.params.json["attrs"]?.as(String?) || ""
 
     dict = VpDict.load(env.params.url["dname"])
     entry = VpEntry.new(key, vals.split(/[\/|]/), attrs)
-    emend = VpEmend.new(uname: uname, power: power)
+    emend = VpEmend.new(uname: u_dname, power: power)
 
     # TODO: save context
 

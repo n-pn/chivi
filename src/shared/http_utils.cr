@@ -24,8 +24,8 @@ module CV::HttpUtils
     end
   end
 
-  def encoding_for(seed : String) : String
-    case seed
+  def encoding_for(s_name : String) : String
+    case s_name
     when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me"
       "UTF-8"
     else

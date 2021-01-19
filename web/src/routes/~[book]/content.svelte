@@ -8,32 +8,31 @@
 
     const { nvinfo, nvmark } = await res.json()
 
-    const [main_seeds] = split_seeds(nvinfo.chseed, query.seed)
-    const seed = query.seed || main_seeds[0] || ''
+    const [main_sources] = split_source(nvinfo.source, query.source)
+    const source = query.source || main_sources[0] || ''
     const page = +(query.page || 1)
 
-    const opts = { seed, page, order, mode: 0 }
-    const result = { nvinfo, nvmark, seed, page, order }
+    const ret = { nvinfo, nvmark, source, page, order }
 
     try {
-      const res2 = await fetch_data(this.fetch, nvinfo.b_hash, opts)
-
-      return { ...result, ...res2 }
+      const params = { source, page, order, mode: 0 }
+      const data_2 = await fetch_data(this.fetch, nvinfo.b_hash, params)
+      return { ...ret, ...data_2 }
     } catch (e) {
-      return { ...result, chaps: [], total: 0, mtime: 0 }
+      return { ...ret, chaps: [], total: 0, mtime: 0 }
     }
   }
 
   const take = 30
 
-  async function fetch_data(api, b_hash, opts) {
-    const page = opts.page || 1
+  async function fetch_data(api, b_hash, params) {
+    const page = params.page || 1
     let skip = (page - 1) * take
     if (skip < 0) skip = 0
 
-    let url = `/api/chaps/${b_hash}/${opts.seed}?take=${take}&skip=${skip}`
-    if (opts.order) url += `&order=${opts.order}`
-    if (opts.mode) url += `&mode=${opts.mode}`
+    let url = `/api/chaps/${b_hash}/${params.source}?take=${take}&skip=${skip}`
+    if (params.order) url += `&order=${params.order}`
+    if (params.mode) url += `&mode=${params.mode}`
 
     try {
       const res = await api(url)
@@ -45,28 +44,28 @@
     }
   }
 
-  function split_seeds(chseed, curr) {
-    const input = Object.keys(chseed)
-    const seeds = input.sort((a, b) => seed_order(a) - seed_order(b))
+  function split_source(source, curr) {
+    const input = Object.keys(source)
+    const names = input.sort((a, b) => source_order(a) - source_order(b))
 
-    if (seeds.length < 6) return [seeds, []]
+    if (names.length < 6) return [names, []]
 
-    const main_seeds = seeds.slice(0, 4)
-    let extra_seeds
+    let show = names.slice(0, 4)
+    let hide
 
-    if (main_seeds.includes(curr)) {
-      main_seeds.push(seeds[4])
-      extra_seeds = seeds.slice(5)
+    if (show.includes(curr)) {
+      show.push(names[4])
+      hide = names.slice(5)
     } else if (curr) {
-      main_seeds.push(curr)
-      extra_seeds = seeds.slice(4).filter((x) => x != curr)
+      show.push(curr)
+      hide = names.slice(4).filter((x) => x != curr)
     }
 
-    return [main_seeds, extra_seeds]
+    return [show, hide]
   }
 
-  function seed_order(seed) {
-    switch (seed) {
+  function source_order(s_name) {
+    switch (s_name) {
       case '69shu':
         return 4
       case 'paoshu8':
@@ -81,7 +80,7 @@
   }
 
   function update_mtime(nvinfo, mtime) {
-    if (nvinfo.update_tz < mtime) nvinfo.update_tz = mtime
+    if (nvinfo._utime < mtime) nvinfo._utime = mtime
     return nvinfo
   }
 </script>
@@ -99,14 +98,14 @@
 
   export let nvinfo
   export let nvmark = ''
+  export let s_name
 
-  export let seed
   export let page = 1
   export let order = 'asc'
 
-  export let chaps = []
-  export let total = 0
   export let mtime = 0
+  export let total = 0
+  export let chaps = []
 
   $: pmax = fix_pmax(total)
   $: reverse_order = order == 'desc' ? 'asc' : 'desc'
@@ -117,10 +116,10 @@
     return pmax
   }
 
-  $: page_list = paginate_range(page, pmax, 7)
+  $: page_list = paginate_range(page, pmax, 9)
 
-  $: [main_seeds, extra_seeds] = split_seeds(nvinfo.chseed, seed)
-  let show_extra = false
+  $: [show_source, hide_source] = split_source(nvinfo.source, s_name)
+  let show_more = false
 
   let scroll_top
 
@@ -143,13 +142,13 @@
       opts.page = page
     }
 
-    if (opts.seed) {
-      if (seed != opts.seed) {
-        seed = opts.seed
-        url.searchParams.set('seed', seed)
+    if (opts.source) {
+      if (source != opts.source) {
+        source = opts.source
+        url.searchParams.set('source', source)
       }
     } else {
-      opts.seed = seed
+      opts.source = source
     }
 
     if (opts.order) {
@@ -183,7 +182,7 @@
     _load = false
   }
 
-  function handleKeypress(evt) {
+  function handle_keypress(evt) {
     if ($self_power < 1) return
 
     switch (evt.keyCode) {
@@ -210,42 +209,42 @@
     }
   }
 
-  function page_url(seed, page) {
-    let url = `/~${nvinfo.b_slug}/content?seed=${seed}`
+  function page_url(s_name, page) {
+    let url = `/~${nvinfo.b_slug}/content?source=${s_name}`
     if (page > 1) url += `&page=${page}`
     if (order == 'desc') url += '&order=desc'
     return url
   }
 </script>
 
-<svelte:window on:keydown={handleKeypress} />
+<svelte:window on:keydown={handle_keypress} />
 
 <Common {...nvinfo} {nvmark} atab="content">
-  {#if seed}
-    <div class="chseed" bind:this={scroll_top}>
+  {#if s_name}
+    <div class="source" bind:this={scroll_top}>
       <span class="-text"><span class="-hide">Chọn</span> nguồn:</span>
-      {#each main_seeds as name}
+      {#each show_source as source}
         <a
-          class="-seed"
-          class:_active={seed === name}
-          href={page_url(name, page)}
-          on:click={(e) => reload(e, { seed: name })}>{name}
+          class="-name"
+          class:_active={s_name === source}
+          href={page_url(source, page)}
+          on:click={(e) => reload(e, { source })}>{source}
         </a>
       {/each}
 
-      {#if extra_seeds.length > 0}
-        {#if show_extra}
-          {#each extra_seeds as name}
+      {#if hide_source.length > 0}
+        {#if show_more}
+          {#each hide_source as source}
             <a
-              class="-seed"
-              href={page_url(name, page)}
-              on:click={(e) => reload(e, { seed: name })}>{name}
+              class="-name"
+              href={page_url(source, page)}
+              on:click={(e) => reload(e, { source })}>{source}
             </a>
           {/each}
         {:else}
-          <button class="-seed" on:click={() => (show_extra = true)}>
+          <button class="-name" on:click={() => (show_more = true)}>
             <SvgIcon name="more-horizontal" />
-            <span>({extra_seeds.length})</span>
+            <span>({hide_source.length})</span>
           </button>
         {/if}
       {/if}
@@ -254,11 +253,11 @@
     <div class="chinfo">
       <div class="-left">
         <span class="-text -hide">Nguồn:</span>
-        <span class="-seed">{seed}</span>
+        <span class="-name">{s_name}</span>
         <span class="-size">{total} chương</span>
         <span class="-time">
           <span class="-hide">Cập nhật:</span>
-          <RelTime time={mtime * 1000} {seed} />
+          <RelTime time={mtime * 1000} {s_name} />
         </span>
       </div>
 
@@ -280,29 +279,21 @@
     </div>
 
     <div class="chlist">
-      <ChapList b_slug={nvinfo.b_slug} sname={seed} {chaps} />
+      <ChapList b_slug={nvinfo.b_slug} sname={s_name} {chaps} />
 
       {#if pmax > 1}
         <nav class="pagi">
           <a
-            href={page_url(seed, 1)}
+            href={page_url(s_name, 1)}
             class="page m-button"
             class:_disable={page == 1}
             on:click={(e) => reload(e, { page: 1 }, true)}>
             <SvgIcon name="chevrons-left" />
           </a>
 
-          <a
-            href={page_url(seed, page - 1)}
-            class="page m-button"
-            class:_disable={page < 2}
-            on:click={(e) => reload(e, { page: page - 1 }, true)}>
-            <SvgIcon name="chevron-left" />
-          </a>
-
           {#each page_list as [curr, level]}
             <a
-              href={page_url(seed, curr)}
+              href={page_url(s_name, curr)}
               class="page m-button"
               class:_primary={page == curr}
               class:_disable={page == curr}
@@ -313,15 +304,7 @@
           {/each}
 
           <a
-            href={page_url(seed, page + 1)}
-            class="page m-button"
-            class:_disable={page + 1 >= pmax}
-            on:click={(e) => reload(e, { page: page + 1 }, true)}>
-            <SvgIcon name="chevron-right" />
-          </a>
-
-          <a
-            href={page_url(seed, pmax)}
+            href={page_url(s_name, pmax)}
             class="page m-button"
             class:_disable={page == pmax}
             on:click={(e) => reload(e, { page: pmax }, true)}>
@@ -342,12 +325,12 @@
     @include fgcolor(neutral, 6);
   }
 
-  .chseed {
+  .source {
     @include flex();
     flex-wrap: wrap;
 
     .-text,
-    .-seed {
+    .-name {
       margin-top: 0.25rem;
 
       @include label();
@@ -361,7 +344,7 @@
       // margin-top: 0.25rem;
     }
 
-    .-seed {
+    .-name {
       // float: left;
       @include props(margin-left, 0.25rem, 0.375rem, 0.5rem);
 
@@ -401,7 +384,7 @@
     @include props(font-size, 12px, 13px, 14px, 15px);
 
     .-text,
-    .-seed {
+    .-name {
       @include label();
     }
 
@@ -409,7 +392,7 @@
       margin-right: 0.5rem;
     }
 
-    .-seed {
+    .-name {
       @include fgcolor(neutral, 7);
     }
 
@@ -451,20 +434,21 @@
       cursor: text;
     }
 
-    &[data-level='0'] {
+    &[data-level='0'],
+    &[data-level='1'] {
       display: inline-block;
     }
 
-    &[data-level='1'] {
+    &[data-level='2'] {
       @include props(display, none, $sm: inline-block);
     }
 
-    &[data-level='2'] {
+    &[data-level='3'] {
       @include props(display, none, $md: inline-block);
     }
 
-    &[data-level='3'],
-    &[data-level='4'] {
+    &[data-level='4'],
+    &[data-level='5'] {
       @include props(display, none, $lg: inline-block);
     }
   }

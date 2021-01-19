@@ -3,12 +3,12 @@ require "../filedb/viuser"
 
 module CV::Server
   module RouteUtils
-    def self.user_res(env, dname : String, power : Int32? = nil, cached : Bool = false)
-      power ||= Viuser.upower.ival(dname.downcase)
+    def self.user_res(env, u_dname : String, u_power : Int32? = nil, cached : Bool = false)
+      u_power ||= Viuser.upower.ival(u_dname.downcase)
 
       unless cached
-        env.session.string("u_dname", dname)
-        env.session.int("u_power", power)
+        env.session.string("u_dname", u_dname)
+        env.session.int("u_power", u_power)
       end
 
       json_res(env, {dname: dname, power: power})

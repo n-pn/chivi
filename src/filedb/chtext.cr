@@ -7,10 +7,11 @@ require "./_inits/rm_text"
 require "../engine/convert"
 
 class CV::Chtext
-  getter seed : String
-  getter sbid : String
-  getter scid : String
-  getter file : String
+  getter s_name : String
+  getter s_nvid : String
+  getter s_chid : String
+
+  getter zh_file : String
 
   property zh_lines : Array(String) { load_zh_text }
   property zh_words : Int32 { zh_lines.map(&.size).sum }
@@ -20,7 +21,7 @@ class CV::Chtext
   property cv_mtime : Time = Time.unix(0)
 
   def initialize(@s_name, @s_nvid, @s_chid)
-    @file = "_db/chdata/zhtexts/#{@s_name}/#{@s_nvid}/#{@s_chid}.txt"
+    @zh_file = "_db/chdata/zhtexts/#{@s_name}/#{@s_nvid}/#{@s_chid}.txt"
   end
 
   def fetch!(power = 3, expiry = Time.utc - 10.years) : Nil
@@ -32,14 +33,14 @@ class CV::Chtext
     cv_trans = ""
     cv_mtime = Time.unix(0)
 
-    self.save!
+    self.save_zh!
   end
 
   private def remote?(power = 3)
     case @s_name
     when "rengshu", "xbiquge",
          "nofff", "5200",
-         "biquge5200", "duokan8"
+         "bqg_5200", "duokan8"
       power > 0
     when "hetushu", "zhwenpg"
       power > 1
@@ -72,11 +73,11 @@ class CV::Chtext
   end
 
   def load_zh_text : Array(String)
-    store = ZipStore.new("#{File.dirname(@file)}.zip")
-    fname = File.basename(@file)
+    store = ZipStore.new("#{File.dirname(@zh_file)}.zip")
+    fname = File.basename(@zh_file)
 
     if zh_text = store.read(fname)
-      puts "- <zhtext> [#{@file}] loaded".colorize.green
+      puts "- <zh_text> [#{@zh_file}] loaded".colorize.green
       zh_mtime = store.mtime(fname).try(&.to_unix) || 0_i64
       zh_text.split("\n")
     else
@@ -90,12 +91,12 @@ class CV::Chtext
     save!
   end
 
-  def save!(file : String = @file) : Nil
+  def save_zh!(file : String = @zh_file) : Nil
     text_dir = File.dirname(file)
     ::FileUtils.mkdir_p(text_dir) unless File.exists?(text_dir)
 
     File.open(file, "w") { |io| zh_lines.join(io, "\n") }
-    puts "- <zhtext> [#{file}] saved.".colorize.yellow
+    puts "- <zh_text> [#{file}] saved.".colorize.yellow
   end
 
   alias Cache = Hash(String, self)
@@ -104,11 +105,11 @@ class CV::Chtext
   @@acache = Cache.new
   @@bcache = Cache.new
 
-  def self.load(seed : String, sbid : String, scid : String)
-    label = "#{seed}/#{sbid}/#{scid}"
+  def self.load(s_name : String, s_nvid : String, s_chid : String)
+    label = "#{s_name}/#{s_nvid}/#{s_chid}"
 
     unless item = @@acache[label]?
-      item = @@bcache[label]? || new(seed, sbid, scid)
+      item = @@bcache[label]? || new(s_name, s_nvid, s_chid)
       @@acache[label] = item
 
       if @@acache.size >= CACHE_LIMIT
