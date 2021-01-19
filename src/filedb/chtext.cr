@@ -78,7 +78,7 @@ class CV::Chtext
     if zh_text = store.read(fname)
       puts "- <zh_text> [#{@zh_file}] loaded".colorize.green
       zh_mtime = store.mtime(fname).try(&.to_unix) || 0_i64
-      zh_text.split("\n")
+      zh_text.split("\n").reject(&.empty?)
     else
       [] of String
     end
