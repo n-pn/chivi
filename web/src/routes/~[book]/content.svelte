@@ -8,18 +8,18 @@
 
     const { nvinfo, nvmark } = await res.json()
 
-    const [main_sources] = split_source(nvinfo.source, query.source)
-    const source = query.source || main_sources[0] || ''
-    const page = +(query.page || 1)
+    const [source_main] = split_seeds(nvinfo.source, query.source)
+    const source = query.source || source_main[0] || ''
 
+    const page = +(query.page || 1)
     const ret = { nvinfo, nvmark, source, page, order }
 
     try {
-      const params = { source, page, order, mode: 0 }
+      const params = { source: source, page, order, mode: 0 }
       const data_2 = await fetch_data(this.fetch, nvinfo.b_hash, params)
       return { ...ret, ...data_2 }
     } catch (e) {
-      return { ...ret, chaps: [], total: 0, mtime: 0 }
+      return { ...ret, chaps: [], total: 0, utime: 0 }
     }
   }
 
@@ -44,28 +44,26 @@
     }
   }
 
-  function split_source(source, curr) {
-    const input = Object.keys(source)
-    const names = input.sort((a, b) => source_order(a) - source_order(b))
+  function split_seeds(chseed, picked) {
+    const input = Object.keys(chseed).sort((a, b) => _order(a) - _order(b))
+    if (input.length < 6) return [input, []]
 
-    if (names.length < 6) return [names, []]
+    let source_main = input.slice(0, 4)
+    let source_hide
 
-    let show = names.slice(0, 4)
-    let hide
-
-    if (show.includes(curr)) {
-      show.push(names[4])
-      hide = names.slice(5)
-    } else if (curr) {
-      show.push(curr)
-      hide = names.slice(4).filter((x) => x != curr)
+    if (source_main.includes(picked)) {
+      source_main.push(input[4])
+      source_hide = input.slice(5)
+    } else if (picked) {
+      source_main.push(picked)
+      source_hide = input.slice(4).filter((x) => x != picked)
     }
 
-    return [show, hide]
+    return [source_main, source_hide]
   }
 
-  function source_order(s_name) {
-    switch (s_name) {
+  function _order(source) {
+    switch (source) {
       case '69shu':
         return 4
       case 'paoshu8':
@@ -79,8 +77,8 @@
     }
   }
 
-  function update_mtime(nvinfo, mtime) {
-    if (nvinfo._utime < mtime) nvinfo._utime = mtime
+  function update_utime(nvinfo, utime) {
+    if (nvinfo._utime < utime) nvinfo._utime = utime
     return nvinfo
   }
 </script>
@@ -98,14 +96,16 @@
 
   export let nvinfo
   export let nvmark = ''
-  export let s_name
+  export let source
 
   export let page = 1
   export let order = 'asc'
 
-  export let mtime = 0
+  export let utime = 0
   export let total = 0
   export let chaps = []
+
+  $: console.log({ utime })
 
   $: pmax = fix_pmax(total)
   $: reverse_order = order == 'desc' ? 'asc' : 'desc'
@@ -118,7 +118,7 @@
 
   $: page_list = paginate_range(page, pmax, 9)
 
-  $: [show_source, hide_source] = split_source(nvinfo.source, s_name)
+  $: [source_main, source_hide] = split_seeds(nvinfo.source, source)
   let show_more = false
 
   let scroll_top
@@ -172,9 +172,9 @@
 
     chaps = res.chaps
     total = res.total
-    mtime = res.mtime
+    utime = res.utime
 
-    nvinfo = update_mtime(nvinfo, res.mtime)
+    nvinfo = update_utime(nvinfo, res.utime)
 
     if (scroll) scroll_top.scrollIntoView({ block: 'start' })
     window.history.replaceState({}, '', url)
@@ -209,8 +209,8 @@
     }
   }
 
-  function page_url(s_name, page) {
-    let url = `/~${nvinfo.b_slug}/content?source=${s_name}`
+  function page_url(source, page) {
+    let url = `/~${nvinfo.b_slug}/content?source=${source}`
     if (page > 1) url += `&page=${page}`
     if (order == 'desc') url += '&order=desc'
     return url
@@ -220,31 +220,31 @@
 <svelte:window on:keydown={handle_keypress} />
 
 <Common {...nvinfo} {nvmark} atab="content">
-  {#if s_name}
+  {#if source}
     <div class="source" bind:this={scroll_top}>
       <span class="-text"><span class="-hide">Chọn</span> nguồn:</span>
-      {#each show_source as source}
+      {#each source_main as m_name}
         <a
           class="-name"
-          class:_active={s_name === source}
-          href={page_url(source, page)}
-          on:click={(e) => reload(e, { source })}>{source}
+          class:_active={source === m_name}
+          href={page_url(m_name, page)}
+          on:click={(e) => reload(e, { source: m_name })}>{m_name}
         </a>
       {/each}
 
-      {#if hide_source.length > 0}
+      {#if source_hide.length > 0}
         {#if show_more}
-          {#each hide_source as source}
+          {#each source_hide as h_name}
             <a
               class="-name"
-              href={page_url(source, page)}
-              on:click={(e) => reload(e, { source })}>{source}
+              href={page_url(h_name, page)}
+              on:click={(e) => reload(e, { source: h_name })}>{h_name}
             </a>
           {/each}
         {:else}
           <button class="-name" on:click={() => (show_more = true)}>
             <SvgIcon name="more-horizontal" />
-            <span>({hide_source.length})</span>
+            <span>({source_hide.length})</span>
           </button>
         {/if}
       {/if}
@@ -253,11 +253,11 @@
     <div class="chinfo">
       <div class="-left">
         <span class="-text -hide">Nguồn:</span>
-        <span class="-name">{s_name}</span>
+        <span class="-name">{source}</span>
         <span class="-size">{total} chương</span>
         <span class="-time">
           <span class="-hide">Cập nhật:</span>
-          <RelTime time={mtime * 1000} {s_name} />
+          <RelTime m_time={utime * 1000} {source} />
         </span>
       </div>
 
@@ -279,12 +279,12 @@
     </div>
 
     <div class="chlist">
-      <ChapList b_slug={nvinfo.b_slug} sname={s_name} {chaps} />
+      <ChapList b_slug={nvinfo.b_slug} {source} {chaps} />
 
       {#if pmax > 1}
         <nav class="pagi">
           <a
-            href={page_url(s_name, 1)}
+            href={page_url(source, 1)}
             class="page m-button"
             class:_disable={page == 1}
             on:click={(e) => reload(e, { page: 1 }, true)}>
@@ -293,7 +293,7 @@
 
           {#each page_list as [curr, level]}
             <a
-              href={page_url(s_name, curr)}
+              href={page_url(source, curr)}
               class="page m-button"
               class:_primary={page == curr}
               class:_disable={page == curr}
@@ -304,7 +304,7 @@
           {/each}
 
           <a
-            href={page_url(s_name, pmax)}
+            href={page_url(source, pmax)}
             class="page m-button"
             class:_disable={page == pmax}
             on:click={(e) => reload(e, { page: pmax }, true)}>

@@ -174,7 +174,7 @@
 
         <span class="stat _mftime">
           <SvgIcon name="clock" />
-          <span><RelTime time={_utime * 1000} /></span>
+          <span><RelTime m_time={_utime * 1000} /></span>
         </span>
       </div>
 

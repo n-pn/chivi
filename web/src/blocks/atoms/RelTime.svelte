@@ -4,19 +4,19 @@
   const day_span = hour_span * 24
   const month_span = day_span * 30
 
-  export function reltime_text(m_time, s_name = ' ') {
+  export function reltime_text(m_time, source = ' ') {
     const date = new Date(m_time)
     const span = (new Date().getTime() - m_time) / 1000
 
     if (span > month_span) return iso_date(date)
     if (span > day_span) return `${rounding(span, day_span)} ngày trước`
-    if (uncertain(s_name)) return 'hôm nay'
+    if (uncertain(source)) return 'hôm nay'
     if (span > hour_span) return `${rounding(span, hour_span)} giờ trước`
     return `${rounding(span, minute_span)} phút trước`
   }
 
-  function uncertain(s_name) {
-    switch (s_name) {
+  function uncertain(source) {
+    switch (source) {
       case '69shu':
       case 'zhwenpg':
       case 'bqg_5200':
@@ -46,7 +46,7 @@
 
 <script>
   export let m_time = 0
-  export let s_name = ''
+  export let source = ''
 </script>
 
-<time>{reltime_text(m_time, s_name)}</time>
+<time>{reltime_text(m_time, source)}</time>

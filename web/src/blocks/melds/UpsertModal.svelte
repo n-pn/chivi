@@ -306,7 +306,7 @@
         {#if current && current.uname}
           <div class="latest">
             <span class="-text">Lưu:</span>
-            <span class="-time"><RelTime time={current.mtime} /></span>
+            <span class="-time"><RelTime m_time={current.mtime} /></span>
             <span class="-text">bởi</span>
             <span class="-user">{current.uname}</span>
             <span class="-text _hide">[Q.hạn {current.power}]</span>
