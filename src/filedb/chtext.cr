@@ -23,8 +23,8 @@ class CV::Chtext
     @zh_file = "_db/chdata/zhtexts/#{@s_name}/#{@s_nvid}/#{@s_chid}.txt"
   end
 
-  def fetch!(power = 3, expiry = Time.utc - 10.minutes) : Nil
-    return unless remote?(power)
+  def fetch!(u_power = 4, expiry = Time.utc - 10.minutes) : Nil
+    return unless remote?(u_power)
 
     source = RmText.init(@s_name, @s_nvid, @s_chid, expiry: expiry)
     @zh_lines = [source.title].concat(source.paras)
@@ -35,16 +35,15 @@ class CV::Chtext
     self.save_zh!
   end
 
-  private def remote?(power = 3)
+  private def remote?(u_power = 4)
     case @s_name
-    when "rengshu", "xbiquge",
-         "nofff", "5200",
-         "bqg_5200", "duokan8"
-      power > 0
+    when "rengshu", "xbiquge", "nofff",
+         "5200", "bqg_5200", "duokan8"
+      u_power > 0
     when "hetushu", "zhwenpg"
-      power > 1
+      u_power > 1
     when "shubaow", "69shu", "paoshu8"
-      power > 2
+      u_power > 2
     else
       false
     end
