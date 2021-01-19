@@ -62,9 +62,7 @@ class HttpClient
     puts "- GET: <#{url.blue}> using proxy [#{proxy[0].blue}]" if @debug_mode
 
     begin
-
       body = URI.open(url, proxy: "http://#{proxy[0]}", read_timeout: 20, "User-Agent" => USER_AGENT) { |f| f.read }
-      puts body
 
       unless valid_response?(body)
         if @debug_mode

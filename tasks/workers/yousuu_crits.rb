@@ -3,20 +3,20 @@ require_relative "./yousuu_utils"
 class CritCrawler
   def initialize(load_proxy = false, debug_mode = false)
     @http = HttpClient.new(load_proxy, debug_mode)
-    @ybids = []
-    files = Dir.glob("_db/_oldcv/serials/*.json")
-    puts("- inputs: #{files.size}")
 
-    files.each do |file|
-      json = JSON.parse(File.read(file))
-      ybid = json["yousuu_bid"]
-      @ybids << ybid unless ybid.empty?
+    @nvids = []
+
+    File.read("_db/nvdata/nvinfos/yousuu.tsv").split("\n").each do |line|
+      @nvids << line.split("\t")[1]
     end
+
+    puts("- inputs: #{@nvids.size}")
   end
 
   def crawl!(page = 1)
     step = 1
-    queue = @ybids.dup
+    queue = @nvids.dup
+
     until queue.empty? || proxy_size == 0
       puts("\n[<#{step}-#{page}> queue: #{queue.size}, proxies: #{proxy_size}]".yellow)
       fails = []
@@ -70,6 +70,7 @@ end
 load_proxy = ARGV.include?("proxy")
 debug_mode = ARGV.include?("debug")
 crawler = CritCrawler.new(load_proxy, debug_mode)
+
 page = 1
 while crawler.proxy_size > 0
   crawler.crawl!(page)

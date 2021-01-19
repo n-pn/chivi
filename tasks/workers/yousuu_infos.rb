@@ -87,7 +87,7 @@ load_proxy = ARGV.include?("proxy")
 debug_mode = ARGV.include?("debug")
 crawler = InfoCrawler.new(load_proxy, debug_mode)
 
-total = 249000
+total = 251000
 
 order = :latest
 order = :oldest if ARGV.include?("oldest")
