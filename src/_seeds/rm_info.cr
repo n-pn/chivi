@@ -146,7 +146,7 @@ class CV::RmInfo
   end
 
   getter updated_at : Time do
-    return Time.utc if @s_name == "zhwenpg" || @s_name == "hetushu"
+    return Time.utc(2020, 1, 1) if @s_name == "zhwenpg" || @s_name == "hetushu"
     return TimeUtils.parse_time(update_str) unless update_str.empty?
     puts "- ERROR: <#{RmInfo.url_for(@s_name, @s_nvid)}> missing time!"
     TimeUtils::DEF_TIME

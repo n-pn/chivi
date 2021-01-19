@@ -83,7 +83,7 @@ class CV::Seeds::MapYousuu
       next if checked.includes?(nvname)
       checked.add(nvname)
 
-      if (voters > 10 && rating >= 3.75) || authors.includes?(author) || popular?(s_nvid)
+      if (voters >= 10 && rating >= 3.75) || authors.includes?(author) || popular?(s_nvid)
         authors.add(author)
 
         b_hash, existed = @seeding.upsert!(s_nvid)
