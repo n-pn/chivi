@@ -143,7 +143,7 @@ class CV::Nvinfo
     source[s_name] = s_nvid
 
     NvValues.source.add(b_hash, source.to_a.map { |a, b| "#{a}/#{b}" })
-    NvTokens.set_source(b_hash, source.keys)
+    NvTokens.source.add(b_hash, source.keys)
   end
 
   def self.save!(mode : Symbol = :full)

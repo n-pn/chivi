@@ -42,7 +42,7 @@ class CV::Seeds::MapRemote
       end
 
       @seeding.status.add(s_nvid, parser.status_int)
-      @seeding._utime.add(s_nvid, parser.updated_at)
+      @seeding._utime.add(s_nvid, parser.updated_at.to_unix)
 
       if idx % 100 == 0
         puts "- [#{@s_name}]: <#{idx}/#{upto}>"
