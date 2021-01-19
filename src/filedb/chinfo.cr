@@ -2,7 +2,7 @@ require "file_utils"
 
 require "./chinfo/*"
 
-require "../_seeds/rm_info"
+require "../source/rm_info"
 require "../engine/convert"
 
 class CV::Chinfo

@@ -2,7 +2,9 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../_utils/*"
+require "../_utils/time_utils"
+require "../_utils/text_utils"
+require "../_utils/http_utils"
 
 class CV::RmInfo
   def self.init(s_name : String, s_nvid : String,

@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../src/_seeds/rm_info.cr"
+require "../../src/source/rm_info.cr"
 
 def fetch_info(s_name, s_nvid, fresh = false) : Void
   puts "\n[#{CV::RmInfo.url_for(s_name, s_nvid)}]".colorize.green.bold

@@ -4,7 +4,7 @@ require "file_utils"
 require "option_parser"
 
 require "../../src/filedb/nvinfo"
-require "../../src/_seeds/rm_text"
+require "../../src/source/rm_text"
 
 LIST_DIR = "_db/chdata/chinfos"
 TEXT_DIR = "_db/chdata/zhtexts"
