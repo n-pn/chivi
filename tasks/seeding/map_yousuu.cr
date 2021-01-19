@@ -95,7 +95,7 @@ class CV::Seeds::MapYousuu
         NvValues.hidden.add(b_hash, @seeding.hidden.fval(s_nvid) || "0")
       end
 
-      if idx % 100
+      if idx % 100 == 0
         puts "- [yousuu] <#{idx}/#{input.size}>".colorize.blue
         Nvinfo.save!(mode: :upds)
       end

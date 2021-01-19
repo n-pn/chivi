@@ -26,6 +26,12 @@ class CV::InfoSeed
     @rdir = "_db/_seeds/#{@name}"
     @intro_dir = "#{@rdir}/intros"
     ::FileUtils.mkdir_p(@intro_dir)
+
+    if @name != "yousuu"
+      ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/origs")
+      ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/infos")
+      ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/stats")
+    end
   end
 
   def map_path(fname : String)

@@ -28,6 +28,8 @@ class CV::Seeds::MapZhwenpg
   def initialize
     @seeding = InfoSeed.new("zhwenpg")
     @checked = Set(String).new
+
+    ::FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
   end
 
   def expiry(page : Int32 = 1)
@@ -134,8 +136,6 @@ class CV::Seeds::MapZhwenpg
 end
 
 worker = CV::Seeds::MapZhwenpg.new
-FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
-
 puts "\n[-- Load indexes --]".colorize.cyan.bold
 
 1.upto(3) { |page| worker.init!(page, status: 1) }
