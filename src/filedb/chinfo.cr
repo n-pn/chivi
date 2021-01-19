@@ -45,7 +45,7 @@ class CV::Chinfo
   end
 
   def trans!(dname = "various", redo = false) : Nil
-    cvter = Convert.content(dname)
+    cvter = Convert.generic(dname)
 
     origs.each do |scid, vals|
       next if !redo && infos.has_key?(scid)

@@ -12,7 +12,7 @@ module CV::Server
 
     chinfo = Chinfo.load(seed, sbid)
 
-    power = env.session.int?("power") || 0
+    power = env.session.int?("u_power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
     mode = power if mode > power
 

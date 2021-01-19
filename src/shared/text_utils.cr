@@ -6,13 +6,15 @@ module CV::TextUtils
 
   def split_html(input : String, fix_br : Bool = true) : Array(String)
     input = HTML.unescape(input)
+
     input = fix_spaces(input)
     input = replace_br(input) if fix_br
+
     split_text(input)
   end
 
   def replace_br(input : String) : String
-    input.gsub(/<br\s*\/?>|\s{2,}/i, "\n")
+    input.gsub(/<br\s*\/?>|\s{4,}/i, "\n")
   end
 
   def split_text(input : String) : Array(String)
@@ -113,8 +115,10 @@ module CV::TextUtils
 
     FORMAT_RE_0.each do |regex|
       next unless match = regex.match(title)
+
       _, label, title = match
       label = fix_spaces(label)
+
       break
     end
 

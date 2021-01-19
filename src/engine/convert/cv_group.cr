@@ -3,7 +3,7 @@ require "./cv_entry"
 class CV::CvGroup
   getter data : Array(CvEntry)
 
-  def initialize(@data = [] of CvEntry)
+  def initialize(@data)
   end
 
   def fix_grammar!
@@ -75,15 +75,15 @@ class CV::CvGroup
         # entry.val = val.to_s
 
       when "两"
-        next unless @data[i - 1]?.try(&.number?)
+        next unless @data[i - 1]?.try(&.is_num)
         entry.dic = 9
         entry.val = "lượng"
       when "里"
-        next unless @data[i - 1]?.try(&.number?)
+        next unless @data[i - 1]?.try(&.is_num)
         entry.dic = 9
         entry.val = "dặm"
       when "米"
-        next unless @data[i - 1]?.try(&.number?)
+        next unless @data[i - 1]?.try(&.is_num)
         entry.dic = 9
         entry.val = "mét"
       when "年"
@@ -155,15 +155,19 @@ class CV::CvGroup
     self
   end
 
-  def to_text : String
-    String.build { |io| to_text(io) }
+  def to_s : String
+    String.build { |io| to_s(io) }
   end
 
-  def to_text(io : IO) : Nil
+  def to_s(io : IO) : Nil
     @data.each { |x| io << x.val }
   end
 
-  def to_json(io : IO)
+  def to_str : String
+    String.build { |io| to_str(io) }
+  end
+
+  def to_str(io : IO) : Nil
     @data.map { |x| {x.key, x.val, x.dic}.join('\t') }.join(io, '\v')
   end
 end

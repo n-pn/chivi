@@ -5,7 +5,7 @@ module CV::Server
 
   put "/api/dicts/lookup/:dname" do |env|
     dname = env.params.url["dname"]
-    dicts = {Library.find_dict(dname), Library.regular}
+    dicts = {VpDict.load(dname), VpDict.regular}
 
     input = env.params.json["input"].as(String)
     chars = input.chars
@@ -22,20 +22,18 @@ module CV::Server
         end
       end
 
-      Library.trungviet.scan(chars, idx) do |item|
+      VpDict.trungviet.scan(chars, idx) do |item|
         entry[item.key.size]["trungviet"] = item.vals
       end
 
-      Library.cc_cedict.scan(chars, idx) do |item|
+      VpDict.cc_cedict.scan(chars, idx) do |item|
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
       entry.to_a.sort_by(&.[0].-)
     end
 
-    hanviet = String.build do |io|
-      Convert.hanviet.translit(input, apply_cap: false).to_json(io)
-    end
+    hanviet = Convert.hanviet.translit(input).to_str
 
     RouteUtils.json_res(env) do |res|
       {hanviet: hanviet, entries: entries}.to_json(res)
@@ -48,33 +46,41 @@ module CV::Server
 
     RouteUtils.json_res(env) do |res|
       {
-        entries: [
-          Library.find_dict(dname).find(input).try(&.to_tuple),
-          Library.regular.find(input).try(&.to_tuple),
-          Library.hanviet.find(input).try(&.to_tuple),
-        ],
-
-        hanviet: Oldcv::Engine.hanviet(input, false).vi_text,
-        binh_am: Oldcv::Engine.binh_am(input, false).vi_text,
-        suggest: Library.suggest.find(input).try(&.vals),
+        entries: {
+          VpDict.load(dname).info(input),
+          VpDict.regular.info(input),
+          VpDict.hanviet.info(input),
+        },
+        hanviet: Convert.hanviet.translit(input).to_s,
+        binh_am: Convert.binh_am.translit(input).to_s,
+        suggest: VpDict.suggest.find(input).try(&.vals),
       }.to_json(res)
     end
   end
 
-  put "/api/dicts/upsert/:dic" do |env|
-    dic = env.params.url["dic"]
+  put "/api/dicts/upsert/:dname" do |env|
+    uname = env.session.string?("u_dname") || "Khách"
+    p_max = env.session.int?("u_power") || 0
+
+    power = env.params.json["power"]?.as(Int32?) || p_max
+    power = p_max if power > p_max
+
+    halt env, status_code: 500, response: "Access denied!" if power < 1
+
     key = env.params.json["key"].as(String)
-    val = env.params.json["val"].as(String?) || ""
+    vals = env.params.json["vals"]?.as(String?) || ""
+    attrs = env.params.json["attrs"]?.as(String?) || ""
 
-    uname = env.session.string?("dname") || "Khách"
-    power = env.session.int?("power") || -1
+    dict = VpDict.load(env.params.url["dname"])
+    entry = VpEntry.new(key, vals.split(/[\/|]/), attrs)
+    emend = VpEmend.new(uname: uname, power: power)
 
-    # power = env.params.json["power"]?.as(Int32?) ||
+    # TODO: save context
 
-    if Library.upsert(dic, key, val.split("/"), uname: uname, plock: power)
-      RouteUtils.json_res(env) { |res| {_stt: "ok"}.to_json(res) }
+    if dict.upsert!(entry, emend)
+      RouteUtils.json_res(env, [1])
     else
-      RouteUtils.json_res(env) { |res| {_stt: "err", _msg: "Không đủ quyền hạn!"}.to_json(res) }
+      halt env, status_code: 501, response: "Unchanged!"
     end
   end
 end

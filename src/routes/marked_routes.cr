@@ -3,7 +3,7 @@ require "../filedb/marked"
 
 module CV::Server
   get "/api/book-marks/:bhash" do |env|
-    unless uname = env.session.string?("dname").try(&.downcase)
+    unless uname = env.session.string?("u_dname").try(&.downcase)
       halt env, status_code: 403, response: "user not logged in"
     end
 
@@ -13,7 +13,7 @@ module CV::Server
   end
 
   put "/api/book-marks/:bhash" do |env|
-    unless uname = env.session.string?("dname").try(&.downcase)
+    unless uname = env.session.string?("u_dname").try(&.downcase)
       halt env, status_code: 403, response: "user not logged in"
     end
 

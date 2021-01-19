@@ -1,4 +1,4 @@
-module CV
+module CV::CvUtils
   NORMALIZE = {
     '〈' => '⟨',
     '〉' => '⟩',

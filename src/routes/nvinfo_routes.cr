@@ -18,7 +18,7 @@ module CV::Server
     nvinfo = Nvinfo.load(bhash)
     nvinfo.bump_access!
 
-    if uname = env.session.string?("dname").try(&.downcase)
+    if uname = env.session.string?("u_dname").try(&.downcase)
       nvmark = Marked.user_books(uname).fval(bhash) || ""
     else
       nvmark = ""

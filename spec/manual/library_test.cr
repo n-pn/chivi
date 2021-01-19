@@ -1,10 +1,10 @@
 require "../../src/engine/library"
 
 module CV
-  puts Library.hanviet.size
-  puts Library.hanviet.find("坚")
+  puts VpDict.hanviet.size
+  puts VpDict.hanviet.find("坚")
 
-  Library.hanviet.each do |term|
+  VpDict.hanviet.each do |term|
     puts term
   end
 end

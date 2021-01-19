@@ -52,12 +52,12 @@ def migrate(file : String, unique = false)
 
   values = load_relic(file, dlock)
 
-  out_file = CV::Library.file_path(label).sub("active", "remote")
+  out_file = CV::VpDict.file_path(label).sub("active", "remote")
   out_dict = CV::VpDict.new(out_file, dlock: dlock, preload: false)
 
   values.each do |term|
     out_dict.upsert(term)
-    CV::Library.suggest.upsert(term) if unique && !term.empty?
+    CV::VpDict.suggest.upsert(term) if unique && !term.empty?
   end
 
   out_dict.save!
@@ -65,6 +65,6 @@ end
 
 Dir.glob("_db/dictdb/legacy/core/*.log").each { |x| migrate(x) }
 Dir.glob("_db/dictdb/legacy/uniq/*.log").each { |x| migrate(x, unique: true) }
-CV::Library.suggest.save!(mode: :best)
+CV::VpDict.suggest.save!(mode: :best)
 
 # pp parse_term("保安州ǁBảo An châuǁ319179ǁFenix12ǁ1".split('ǁ'))

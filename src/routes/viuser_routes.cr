@@ -7,8 +7,8 @@ module CV::Server
       power ||= Viuser.upower.ival(dname.downcase)
 
       unless cached
-        env.session.string("dname", dname)
-        env.session.int("power", power)
+        env.session.string("u_dname", dname)
+        env.session.int("u_power", power)
       end
 
       json_res(env, {dname: dname, power: power})
@@ -16,10 +16,10 @@ module CV::Server
   end
 
   get "/api/self" do |env|
-    dname = env.session.string("dname")
-    power = env.session.int("power")
+    u_dname = env.session.string("u_dname")
+    u_power = env.session.int("u_power")
 
-    RouteUtils.user_res(env, dname, power, cached: true)
+    RouteUtils.user_res(env, u_dname, u_power, cached: true)
   rescue err
     halt env, status_code: 403, response: "user not logged in"
   end
@@ -34,9 +34,9 @@ module CV::Server
     upass = env.params.json["upass"]?.as(String?) || ""
 
     if uname = CV::Viuser.validate(email.strip, upass.strip)
-      dname = Viuser._index.fval(uname).not_nil!
-      power = Viuser.upower.ival(uname).not_nil!
-      RouteUtils.user_res(env, dname, power, cached: false)
+      u_dname = Viuser._index.fval(uname).not_nil!
+      u_power = Viuser.upower.ival(uname).not_nil!
+      RouteUtils.user_res(env, u_dname, u_power, cached: false)
     else
       halt env, status_code: 403, response: "email or password incorrect"
     end

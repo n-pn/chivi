@@ -12,7 +12,7 @@ export const lookup_actived = writable(false)
 export const lookup_sticked = writable(false)
 
 export const lookup_input = writable(['', 0, 0])
-export const lookup_dname = writable('dich-nhanh')
+export const lookup_dname = writable('various')
 
 export const upsert_enabled = writable(false)
 export const upsert_actived = writable(false)
@@ -21,7 +21,7 @@ export const upsert_input = writable(['', 0, 0])
 export const upsert_ontab = writable(0)
 
 export const upsert_dicts = writable([
-  ['dich-nhanh', 'Dịch nhanh', true],
-  ['generic', 'Thông dụng'],
-  ['hanviet', 'Hán việt'],
+  ['various', 'Tổng hợp', true],
+  ['regular', 'Thông dụng'],
+  ['hanviet', 'Hán Việt'],
 ])

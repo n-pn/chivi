@@ -38,15 +38,15 @@
     return data
   }
 
-  export async function dict_upsert(fetch, dic, key, val = '') {
+  export async function dict_upsert(fetch, dic, key, vals = '') {
     const url = `/api/dicts/upsert/${dic}`
     const res = await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key, val }),
+      body: JSON.stringify({ key, vals }),
     })
 
-    return await res.json()
+    return res.ok
   }
 
   function fix_power(user, prev) {
@@ -139,10 +139,8 @@
 
   async function submit_val() {
     const dname = $dicts[$d_idx][0]
-    const { _stt } = await dict_upsert(fetch, dname, hanzi, output.trim())
-
+    dirty = await dict_upsert(fetch, dname, hanzi, output.trim())
     $actived = false
-    dirty = _stt == 'ok'
   }
 
   function upcase_val(count = 100) {
@@ -311,7 +309,7 @@
             <span class="-time"><RelTime time={current.mtime} /></span>
             <span class="-text">bởi</span>
             <span class="-user">{current.uname}</span>
-            <span class="-text _hide">[Q.hạn {current.plock}]</span>
+            <span class="-text _hide">[Q.hạn {current.power}]</span>
           </div>
         {/if}
 

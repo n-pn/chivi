@@ -56,7 +56,7 @@ module CV::Server
     sbid = env.params.url["sbid"]
     scid = env.params.url["scid"]
 
-    power = env.session.int?("power") || 0
+    power = env.session.int?("u_power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
     mode = power if mode > power
 

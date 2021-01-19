@@ -53,7 +53,7 @@
 
   $: $upsert_dicts = [
     [chinfo.bhash, chinfo.bname, true],
-    ['generic', 'Thông dụng'],
+    ['regular', 'Thông dụng'],
     ['hanviet', 'Hán việt'],
   ]
   $: $lookup_dname = chinfo.bhash

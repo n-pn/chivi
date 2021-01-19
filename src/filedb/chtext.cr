@@ -57,15 +57,15 @@ class CV::Chtext
       @cv_trans = ""
     else
       # TODO: replace with new engine
-      converter = Convert.content(dname)
+      cvter = Convert.generic(dname)
 
       @cv_trans = String.build do |io|
-        converter.cv_title(zh_lines[0]).to_json(io)
+        cvter.cv_title(zh_lines[0]).to_str(io)
 
         1.upto(zh_lines.size - 1) do |i|
           io << "\n"
           para = zh_lines.unsafe_fetch(i)
-          converter.cv_plain(para).to_json(io)
+          cvter.cv_plain(para).to_str(io)
         end
       end
     end

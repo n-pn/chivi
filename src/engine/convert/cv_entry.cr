@@ -1,38 +1,36 @@
 require "../../shared/text_utils"
+require "../vp_dict/vp_entry"
 
 class CV::CvEntry
   property key : String
   property val : String
-
   property dic : Int32
-  property etc : String
 
-  def initialize(@key : String, @val : String, @dic : Int32 = 0, @etc = "")
+  getter etc : String
+
+  getter is_noun : Bool { @etc.includes?('🅽') }
+  getter is_verb : Bool { @etc.includes?('🆅') }
+  getter is_pro : Bool { @etc.includes?('🅿') }
+  getter is_adj : Bool { @etc.includes?('🅰') }
+
+  NUM_RE = /[\d零〇一二两三四五六七八九十百千万亿]/
+  getter is_num : Bool { NUM_RE === @key }
+
+  INT_RE = /^\d+$/
+  getter is_int : Bool { INT_RE === @key }
+
+  def initialize(entry : VpEntry)
+    @key = entry.key
+    @val = entry.vals.first
+    @dic = entry.dtype
+    @etc = entry.attrs
+  end
+
+  def initialize(@key, @val = @key, @dic = 0, @etc = "")
   end
 
   def capitalize!(cap_mode : Int32 = 1) : Nil
     @val = cap_mode > 1 ? TextUtils.titleize(@val) : TextUtils.capitalize(@val)
-  end
-
-  def combine!(other : self) : Nil
-    @key = "#{other.key}#{@key}"
-    @val = "#{other.val}#{@val}"
-  end
-
-  def number?
-    return false if @dic < 1
-    return @key =~ /^\d+(\.\d+)?$/ if @dic == 1
-    @key =~ /^[零〇一二两三四五六七八九十百千]+$/
-  end
-
-  def to_i? : Int32?
-    return if @dic != 1
-    @key.to_i?
-  end
-
-  def to_f? : Float32?
-    return if @dic != 1
-    @key.to_f?
   end
 
   def cap_mode(prev_mode : Int32 = 0) : Int32
@@ -49,26 +47,25 @@ class CV::CvEntry
     end
   end
 
-  def space_before?(prev : self)
+  def space_before?(prev : CvEntry)
     return false if @val.blank? || prev.val.blank?
 
     # handle .jpg case
-    return false if @dic == 1 && @key[0]? == '.'
+    return false if @dic == 1 && @key =~ /^\.\w/
 
     case @val[0]?
     when '”', '’', '⟩', ')', ']', '}',
-         ',', '.', ':', ';', '!', '?',
-         '%', '~'
+         ',', '.', ';', '!', '?',
+         '%'
       return false
+    when ':'
+      return !prev.is_int
     when '·'
       return true
+    when '~', '-', '—'
+      return @dic > 1 || prev.dic > 1
     when '…'
-      case prev.val[-1]?
-      when '.', ','
-        return true
-      else
-        return false
-      end
+      return prev.val[-1]? == '.'
     end
 
     case prev.val[-1]?
@@ -76,8 +73,10 @@ class CV::CvEntry
       return false
     when '”', '’', '⟩', ')', ']', '}',
          ',', '.', ':', ';', '!', '?',
-         '…', '~', '—', '·'
+         '…', '·'
       return true
+    when '~', '-', '—'
+      @dic > 1 || prev.dic > 1
     end
 
     @dic > 0 || prev.dic > 0
@@ -101,15 +100,18 @@ class CV::CvEntry
     end
   end
 
-  def fix_unit!(prev : CvEntry?, val : String) : Void
-    return unless prev && prev.number?
-    @dic = 9
-    @val = val
+  def combine!(other : CvEntry) : Nil
+    @key = "#{other.key}#{@key}"
+    @val = "#{other.val}#{@val}"
+  end
+
+  def to_i?
+    @key.to_i?
   end
 
   def clear!
-    @dic = 0
     @key = ""
     @val = ""
+    @dic = 0
   end
 end
