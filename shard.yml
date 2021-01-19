@@ -1,15 +1,12 @@
 name: chivi
-version: 0.4.0
+version: 0.5.0
 
 authors:
   - Nipinium <nipinium@gmail.com>
 
 targets:
   chivi:
-    main: src/server.cr
-
-  server:
-    main: src/server.cr
+    main: src/chivi.cr
 
   map_remote:
     main: tasks/seeding/map_remote.cr
@@ -50,7 +47,3 @@ dependencies:
 
   myhtml:
     github: kostya/myhtml
-
-  clear:
-    github: nipinium/clear
-    branch: master
