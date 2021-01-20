@@ -117,7 +117,7 @@ class CV::Chinfo
   end
 
   def save!(mode : Symbol = :full)
-    @meta.save!(mode: mode)
+    @meta.save!(mode: :upds)
 
     @origs.try(&.save!(mode: mode))
     @infos.try(&.save!(mode: mode))
