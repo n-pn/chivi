@@ -30,16 +30,6 @@
   export let nvinfo = {}
   export let atab = ''
 
-  // export let b_hash = ''
-  // export let b_slug = ''
-
-  // export let btitle = []
-  // export let genres = []
-
-  // export let bcover = 'blank.png'
-  // export let voters = 0
-  // export let rating = 0
-
   $: title = nvinfo.btitle[2] || nvinfo.btitle[1]
   $: genre = nvinfo.genres[0] || 'Loại khác'
   $: href = book_url(nvinfo.b_slug, atab)
@@ -69,17 +59,6 @@
 <style lang="scss">
   .cover {
     position: relative;
-    height: 0;
-    padding-top: (4 / 3) * 100%;
-    overflow: hidden;
-    @include radius();
-    @include bgcolor(primary, 7);
-
-    > :global(picture) {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
   }
 
   .extra {

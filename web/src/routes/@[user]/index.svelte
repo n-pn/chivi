@@ -12,7 +12,7 @@
     if (skip < 0) skip = 0
 
     let url = `/api/user-books/${uname}/?skip=${skip}&take=${take}&order=update`
-    if (bmark != 'reading') url += `&bmark=${bmark}`
+    if (bmark != 'reading') url += `&nvmark=${bmark}`
 
     const res = await this.fetch(url)
 
@@ -58,7 +58,9 @@
       <a
         href="/@{uname}?bmark={mtype}"
         class="tab"
-        class:_active={mtype == bmark}>{mark_names[mtype]}</a>
+        class:_active={mtype == bmark}>
+        {mark_names[mtype]}
+      </a>
     {/each}
   </div>
 
@@ -94,28 +96,37 @@
 <style lang="scss">
   .tabs {
     display: flex;
-    margin: 0.75rem 0;
-    @include border($sides: bottom);
+    margin: 0.25rem 0 0.75rem;
+    justify-content: center;
   }
 
   .tab {
-    line-height: 2rem;
-    text-transform: uppercase;
-    cursor: pointer;
     font-weight: 500;
-    padding: 0 0.5rem;
-    // max-width: 30vw;
+    text-transform: uppercase;
 
-    @include font-size(2);
-    @include fgcolor(neutral, 6);
+    line-height: 1rem;
+    margin-top: 0.5rem;
+    border-radius: 1rem;
+
     @include truncate(null);
+    @include border;
+    @include fgcolor(neutral, 6);
 
-    &:hover {
+    @include props(padding, 0.25rem, 0.375rem, 0.5rem);
+    @include props(margin-right, 0.25rem, 0.375rem, 0.5rem);
+    @include props(font-size, rem(10px), rem(12px), rem(13px), rem(14px));
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &:hover,
+    &._active {
       @include fgcolor(primary, 6);
     }
 
     &._active {
-      @include border($sides: bottom, $width: 2px, $color: primary, $shade: 6);
+      @include bdcolor($color: primary, $shade: 6);
     }
   }
 

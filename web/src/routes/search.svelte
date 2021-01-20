@@ -71,9 +71,7 @@
       {#each books as book}
         <a href="/~{book.b_slug}" class="book">
           <div class="cover">
-            <BookCover
-              b_hash={book.b_hash}
-              bcover={book.bcover || 'blank.png'} />
+            <BookCover b_hash={book.b_hash} bcover={book.bcover} />
           </div>
 
           <div class="infos">

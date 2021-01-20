@@ -11,7 +11,7 @@ class CV::Nvinfo
   getter author : Array(String) { NvValues.author.get(b_hash).not_nil! }
 
   getter genres : Array(String) { NvValues.genres.get(b_hash) || [] of String }
-  getter bcover : String { NvValues.bcover.fval(b_hash) || "blank.png" }
+  getter bcover : String { NvValues.bcover.fval(b_hash) }
 
   getter voters : Int32 { NvValues.voters.ival(b_hash) }
   getter rating : Int32 { NvValues.rating.ival(b_hash) }
