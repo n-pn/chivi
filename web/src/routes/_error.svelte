@@ -1,5 +1,5 @@
 <script>
-  import Vessel from '$parts/Vessel'
+  import Vessel from '$layout/Vessel'
 
   export let status
   export let error

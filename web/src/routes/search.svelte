@@ -1,5 +1,5 @@
 <script context="module">
-  import Vessel from '$parts/Vessel'
+  import Vessel from '$layout/Vessel'
 
   import SvgIcon from '$atoms/SvgIcon.svelte'
   import BookCover from '$atoms/BookCover.svelte'

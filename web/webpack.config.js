@@ -10,13 +10,14 @@ const mode = process.env.NODE_ENV
 const dev = mode === 'development'
 
 const alias = {
-  svelte: path.resolve(__dirname, 'node_modules', 'svelte'),
+  svelte: path.resolve(__dirname, 'node_modules/svelte'),
   $src: path.resolve(__dirname, 'src'),
   $routes: path.resolve(__dirname, 'src/routes'),
-  $atoms: path.resolve(__dirname, 'src', 'blocks/atoms'),
-  $melds: path.resolve(__dirname, 'src', 'blocks/melds'),
-  $parts: path.resolve(__dirname, 'src', 'blocks/parts'),
+  $atoms: path.resolve(__dirname, 'src/blocks/atoms'),
+  $melds: path.resolve(__dirname, 'src/blocks/melds'),
   $utils: path.resolve(__dirname, 'src/utils'),
+  $widget: path.resolve(__dirname, 'src/routes/_widget'),
+  $layout: path.resolve(__dirname, 'src/routes/_layout'),
 }
 
 const { preprocess } = require('./svelte.config')

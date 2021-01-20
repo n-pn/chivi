@@ -1,7 +1,7 @@
 <script>
   import { stores } from '@sapper/app'
   const { preloading } = stores()
-  import { self_dname, self_power } from '$src/stores'
+  import { u_dname, u_power } from '$src/stores'
   export let segment = ''
 
   import { onMount } from 'svelte'
@@ -10,11 +10,11 @@
       const res = await fetch('/api/self')
       const user = await res.json()
 
-      $self_dname = user.dname
-      $self_power = user.power
+      $u_dname = user.dname
+      $u_power = user.power
     } catch (err) {
-      $self_dname = 'Khách'
-      $self_power = -1
+      $u_dname = 'Khách'
+      $u_power = -1
     }
   })
 </script>
@@ -33,25 +33,19 @@
     class="link"
     href="https://voz.vn/t/truyen-tau-dich-may-mtl.95881/"
     target="_blank"
-    rel="noreferer noopener">
-    Vozforums
-  </a>
+    rel="noreferer noopener"> Vozforums </a>
 
   <a
     class="link"
     href="https://www.facebook.com/chivi.xyz/"
     target="_blank"
-    rel="noreferer noopener">
-    Facebook
-  </a>
+    rel="noreferer noopener"> Facebook </a>
 
   <a
     class="link"
     href="https://discord.gg/mdC3KQH"
     target="_blank"
-    rel="noreferer noopener">
-    Discord
-  </a>
+    rel="noreferer noopener"> Discord </a>
 </footer>
 
 <div class="loader" class:_active={$preloading}>

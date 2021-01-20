@@ -1,11 +1,10 @@
 <script>
   import SvgIcon from '$atoms/SvgIcon'
 
-  export let input = ''
-  export let lower = 0
-  export let upper = 0
-  export let output = ''
+  export let phrase
+  export let output
 
+  $: [input, lower, upper] = phrase
   $: prefix = input.substring(lower - 2, lower)
   $: output = input.substring(lower, upper)
   $: suffix = input.substring(upper, upper + 2)
@@ -86,7 +85,7 @@
 
   button {
     background: transparent;
-    padding: 0 0.375rem;
+    padding: 0 0.5rem;
     margin: 0;
     line-height: 1em;
     @include font-size(4);

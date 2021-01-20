@@ -1,16 +1,15 @@
 <script context="module">
   import SvgIcon from '$atoms/SvgIcon'
 
-  import Vessel from '$parts/Vessel'
-  import Convert, { toggle_lookup, active_upsert } from '$parts/Convert'
+  import Vessel from '$layout/Vessel'
+  import Cvdata, { toggle_lookup, active_upsert } from '$layout/Cvdata'
+  import { active as upsert_active } from '$widget/Upsert'
 
   import { get_chinfo, get_chtext } from '$utils/api_calls'
 
   import {
-    self_power,
-    upsert_dicts,
+    u_power,
     lookup_dname,
-    upsert_actived,
     lookup_enabled,
     lookup_actived,
   } from '$src/stores'
@@ -53,22 +52,17 @@
 
   $: [book_path, list_path, prev_path, next_path] = gen_paths(chinfo)
 
-  $: $upsert_dicts = [
-    [chinfo.b_hash, chinfo.b_name, true],
-    ['regular', 'Thông dụng'],
-    ['hanviet', 'Hán việt'],
-  ]
   $: $lookup_dname = chinfo.b_hash
 
-  let dirty = false
-  $: if (dirty) reload_chap(1)
+  let changed = false
+  $: if (changed) reload_chap(1)
 
   $: $lookup_enabled = false
   $: $lookup_actived = false
 
   function handle_keypress(evt) {
     if (evt.ctrlKey) return
-    if ($upsert_actived) return
+    if ($upsert_active) return
 
     switch (evt.key) {
       case '\\':
@@ -106,12 +100,12 @@
   }
 
   async function reload_chap(mode = 1) {
-    if (mode > $self_power) mode = $self_power
+    if (mode > $u_power) mode = $u_power
     if (mode < 1) return
 
     const [ok, data] = await get_chtext(window.fetch, chinfo, mode)
     cvdata = ok ? data.cvdata : data.message
-    dirty = false
+    changed = false
   }
 </script>
 
@@ -134,10 +128,10 @@
   <button
     slot="header-right"
     class="header-item"
-    disabled={$self_power < 1}
-    on:click={() => (dirty = true)}
+    disabled={$u_power < 1}
+    on:click={() => (changed = true)}
     data-kbd="r">
-    <SvgIcon name="refresh-ccw" spin={dirty} />
+    <SvgIcon name="refresh-ccw" spin={changed} />
   </button>
 
   <button
@@ -158,7 +152,11 @@
   </nav>
 
   {#if cvdata}
-    <Convert input={cvdata} bind:dirty />
+    <Cvdata
+      {cvdata}
+      d_name={chinfo.b_hash}
+      b_name={chinfo.b_name}
+      bind:changed />
   {:else}
     <div class="empty">
       Chương tiết không có nội dung, mời liên hệ ban quản trị.
@@ -175,7 +173,7 @@
       <span>Trước</span>
     </a>
 
-    <a href={list_path} class="m-button _solid">
+    <a href={list_path} class="m-button _solid" data-kbd="h">
       <SvgIcon name="list" />
       <span>{chinfo.ch_idx}/{chinfo.s_size}</span>
     </a>

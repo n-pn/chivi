@@ -1,18 +1,16 @@
 <script context="module">
   import { onMount } from 'svelte'
 
-  import LookupPanel from '$melds/LookupPanel'
-  import UpsertModal from '$melds/UpsertModal'
-  import ConvertLine from './Convert/Line'
+  import Lookup from '$widget/Lookup'
+  import Upsert, {
+    phrase as upsert_phrase,
+    on_tab as upsert_target,
+    active as upsert_active,
+  } from '$widget/Upsert'
 
-  import {
-    lookup_input,
-    upsert_input,
-    upsert_ontab,
-    lookup_actived,
-    lookup_enabled,
-    upsert_actived,
-  } from '$src/stores'
+  import Cvline from './Cvdata/Line'
+
+  import { lookup_input, lookup_actived, lookup_enabled } from '$src/stores'
 
   export function toggle_lookup() {
     lookup_enabled.update((x) => {
@@ -21,34 +19,34 @@
     })
   }
 
-  export function active_upsert(focus) {
-    upsert_ontab.update((x) => focus || x)
-    upsert_actived.set(true)
+  export function active_upsert(target) {
+    upsert_target.update((x) => target || x)
+    upsert_active.set(true)
   }
 
   function gen_context(nodes = [], idx = 0, min = 4, max = 10) {
-    let output = ''
+    let input = ''
 
     for (let j = idx - 1; j >= 0; j--) {
       const [key] = nodes[j]
-      output = key + output
-      if (output.length >= min) break
+      input = key + input
+      if (input.length >= min) break
     }
 
-    const lower = output.length
-    output += nodes[idx][0]
-    const upper = output.length
+    const lower = input.length
+    input += nodes[idx][0]
+    const upper = input.length
 
     let limit = upper + min
     if (limit < max) limit = max
 
     for (let j = idx + 1; j < nodes.length; j++) {
       const [key] = nodes[j]
-      output = output + key
-      if (output.length > limit) break
+      input = input + key
+      if (input.length > limit) break
     }
 
-    return [output, lower, upper]
+    return [input, lower, upper]
   }
 
   function split_input(input) {
@@ -62,10 +60,13 @@
 </script>
 
 <script>
-  export let input = ''
-  $: lines = split_input(input)
+  export let cvdata = ''
+  export let d_name = 'various'
+  export let b_name = 'Tổng hợp'
 
   export let dirty = false
+
+  $: lines = split_input(cvdata)
 
   let hover_line = 0
   let focus_line = 0
@@ -74,16 +75,12 @@
   import read_selection from '$utils/read_selection'
 
   onMount(() => {
-    const event = document.addEventListener('selectionchange', () => {
-      const input = read_selection()
-
-      if (input) {
-        $upsert_input = input
-        $upsert_ontab = 0
-      }
+    const action = document.addEventListener('selectionchange', () => {
+      const phrase = read_selection()
+      if (phrase) $upsert_phrase = phrase
     })
 
-    return () => document.removeEventListener('selectionchange', event)
+    return () => document.removeEventListener('selectionchange', action)
   })
 
   function handle_click({ target }, index) {
@@ -92,11 +89,11 @@
 
     const idx = +target.dataset.i
     const nodes = lines[index]
-    upsert_input.set(gen_context(nodes, idx))
+    $upsert_phrase = gen_context(nodes, idx)
 
     if (target === focus_word) {
-      upsert_ontab.set(0)
-      upsert_actived.set(true)
+      $upsert_target = 0
+      $upsert_active = true
     } else {
       if (focus_word) focus_word.classList.remove('_focus')
       focus_word = target
@@ -114,7 +111,7 @@
       class="chivi"
       on:click={(e) => handle_click(e, index)}
       on:mouseenter={() => (hover_line = index)}>
-      <ConvertLine
+      <Cvline
         {nodes}
         frags={index == hover_line || index == focus_line}
         title={index == 0} />
@@ -123,9 +120,9 @@
 </article>
 
 {#if $lookup_enabled}
-  <LookupPanel on_top={!$upsert_actived} />
+  <Lookup on_top={!$upsert_active} />
 {/if}
 
-{#if $upsert_actived}
-  <UpsertModal bind:dirty />
+{#if $upsert_active}
+  <Upsert {d_name} {b_name} bind:changed={dirty} />
 {/if}

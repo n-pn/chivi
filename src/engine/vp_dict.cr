@@ -114,6 +114,9 @@ class CV::VpDict
     # find existing node or force creating new one
     node = @_root.find!(new_entry.key)
 
+    # old_power = node.emend.try(&.power) || @p_min
+    # old_mtime = node.emend.try(&.mtime) || 0
+
     if old_entry = node.entry
       newer = new_emend ? new_emend.newer?(node.emend) : false
 
@@ -128,10 +131,14 @@ class CV::VpDict
       return newer
     end
 
-    node.entry = new_entry
-    node.emend = new_emend
+    if new_emend.try(&.power.< p_min)
+      node._hint.concat(new_entry.vals)
+      return false
+    end
 
     @rsize += 1
+    node.entry = new_entry
+    node.emend = new_emend
     true
   end
 
@@ -152,6 +159,7 @@ class CV::VpDict
       key:   entry.key,
       vals:  entry.vals,
       attrs: entry.attrs,
+      hints: node._hint,
       mtime: node.emend.try(&.rtime.to_unix_ms),
       uname: node.emend.try(&.uname),
       power: node.emend.try(&.power),

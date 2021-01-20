@@ -28,7 +28,7 @@
 
 <script>
   import SvgIcon from '$atoms/SvgIcon.svelte'
-  import Vessel from '$parts/Vessel'
+  import Vessel from '$layout/Vessel'
   import BookList from '$melds/BookList.svelte'
 
   export let uname = ''

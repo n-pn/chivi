@@ -24,3 +24,20 @@ export async function get_chtext(fetch, chinfo, mode = 0) {
 async function wrap_error(res) {
   return [false, { status: res.status, message: await res.text() }]
 }
+
+export async function dict_search(fetch, key, dname = 'various') {
+  const url = `/api/dicts/search/${key}?dname=${dname}`
+  const res = await fetch(url)
+  return await res.json()
+}
+
+export async function dict_upsert(fetch, dname, params) {
+  const url = `/api/dicts/upsert/${dname}`
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  })
+
+  return res
+}

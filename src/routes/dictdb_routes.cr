@@ -44,16 +44,38 @@ module CV::Server
     input = env.params.url["input"]
     dname = env.params.query.fetch("dname", "various")
 
+    hints = [] of String
+
+    if special_info = VpDict.load(dname).info(input)
+      hints.concat(special_info[:vals])
+      hints.concat(special_info[:hints])
+    end
+
+    if regular_info = VpDict.regular.info(input)
+      hints.concat(regular_info[:vals])
+      hints.concat(regular_info[:hints])
+    end
+
+    if hanviet_info = VpDict.hanviet.info(input)
+      hints.concat(hanviet_info[:vals])
+      hints.concat(hanviet_info[:hints])
+    end
+
+    if suggest_info = VpDict.suggest._root.find(input)
+      suggest_info.entry.try { |x| hints.concat(x.vals) }
+      hints.concat(suggest_info._hint)
+    end
+
+    binh_am = Convert.binh_am.translit(input).to_s
+    hanviet = Convert.hanviet.translit(input).to_s
+
     RouteUtils.json_res(env) do |res|
       {
-        entries: {
-          VpDict.load(dname).info(input),
-          VpDict.regular.info(input),
-          VpDict.hanviet.info(input),
-        },
-        hanviet: Convert.hanviet.translit(input).to_s,
-        binh_am: Convert.binh_am.translit(input).to_s,
-        suggest: VpDict.suggest.find(input).try(&.vals),
+        binh_am: binh_am,
+        hanviet: hanviet,
+
+        infos: {special_info, regular_info, hanviet_info},
+        hints: hints.uniq,
       }.to_json(res)
     end
   end
@@ -62,25 +84,24 @@ module CV::Server
     u_dname = env.session.string?("u_dname") || "Khách"
     u_power = env.session.int?("u_power") || 0
 
-    power = env.params.json["power"]?.as(Int32?) || u_power
-    power = u_power if power > u_power
-
-    halt env, status_code: 500, response: "Access denied!" if power < 1
+    halt env, status_code: 500, response: "Access denied!" if u_power < 1
 
     key = env.params.json["key"].as(String)
-    vals = env.params.json.fetch("vals", "").as(String)
-    attrs = env.params.json["attrs"]?.as(String?) || ""
+    value = env.params.json.fetch("value", "").as(String).split(/[\/|]/)
+    attrs = env.params.json.fetch("value", "").as(String)
+
+    power = env.params.json.fetch("power", u_power).as(Int64).to_i
+    power = u_power if power > u_power
 
     dict = VpDict.load(env.params.url["dname"])
-    entry = VpEntry.new(key, vals.split(/[\/|]/), attrs)
+    entry = VpEntry.new(key, value.reject(&.empty?), attrs)
     emend = VpEmend.new(uname: u_dname, power: power)
 
     # TODO: save context
-
-    if dict.upsert!(entry, emend)
-      RouteUtils.json_res(env, [1])
-    else
+    unless dict.upsert!(entry, emend)
       halt env, status_code: 501, response: "Unchanged!"
     end
+
+    RouteUtils.json_res(env, dict.info(key))
   end
 end

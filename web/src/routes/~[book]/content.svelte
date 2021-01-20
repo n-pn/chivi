@@ -89,7 +89,7 @@
   import paginate_range from '$utils/paginate_range'
   // import AdBanner from '$atoms/AdBanner'
 
-  import { self_power } from '$src/stores'
+  import { u_power } from '$src/stores'
 
   import Common from './_common'
   import ChapList from '$melds/ChapList'
@@ -159,7 +159,7 @@
     }
 
     if (opts.mode) {
-      if (opts.mode > $self_power) opts.mode = $self_power
+      if (opts.mode > $u_power) opts.mode = $u_power
     } else {
       opts.mode = 0
     }
@@ -181,7 +181,7 @@
   }
 
   function handle_keypress(evt) {
-    if ($self_power < 1) return
+    if ($u_power < 1) return
 
     switch (evt.keyCode) {
       case 72:

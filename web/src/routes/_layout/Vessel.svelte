@@ -1,5 +1,5 @@
 <script context="module">
-  import { self_dname, self_power } from '$src/stores'
+  import { u_dname, u_power } from '$src/stores'
   import SvgIcon from '$atoms/SvgIcon.svelte'
 </script>
 
@@ -8,8 +8,8 @@
   export let shift = false
 
   async function logout() {
-    $self_dname = 'Khách'
-    $self_power = -1
+    $u_dname = 'Khách'
+    $u_power = -1
     await fetch('api/logout')
   }
 
@@ -48,11 +48,11 @@
       <span class="header-item _menu">
         <SvgIcon name="user" />
         <span class="header-text _show-md">
-          {#if $self_power > 0}{$self_dname} [{$self_power}]{:else}Khách{/if}
+          {#if $u_power > 0}{$u_dname} [{$u_power}]{:else}Khách{/if}
         </span>
 
         <div class="header-menu">
-          {#if $self_power < 0}
+          {#if $u_power < 0}
             <a href="/auth/login" class="-item">
               <SvgIcon name="log-in" />
               <span>Đăng nhập</span>
@@ -62,7 +62,7 @@
               <span>Đăng ký</span>
             </a>
           {:else}
-            <a href="/@{$self_dname}" class="-item">
+            <a href="/@{$u_dname}" class="-item">
               <SvgIcon name="layers" />
               <span>Tủ truyện</span>
             </a>

@@ -62,7 +62,7 @@ class CV::VpEntry
 
   def self.from(cols : Array(String), dtype : Int32 = 0)
     key = cols[0]
-    vals = cols.fetch(1, "").split(DELIMIT)
+    vals = cols.fetch(1, "").split(DELIMIT).reject(&.empty?)
     attrs = cols.fetch(2, "")
     new(key, vals, attrs, dtype: dtype)
   end

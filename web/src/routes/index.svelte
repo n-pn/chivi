@@ -4,7 +4,7 @@
   import SvgIcon from '$atoms/SvgIcon.svelte'
   import BookList from '$melds/BookList.svelte'
 
-  import Vessel from '$parts/Vessel'
+  import Vessel from '$layout/Vessel'
 
   const take = 24
 

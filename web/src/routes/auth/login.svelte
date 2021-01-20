@@ -1,8 +1,8 @@
 <script>
   import SvgIcon from '$atoms/SvgIcon'
-  import Vessel from '$parts/Vessel'
+  import Vessel from '$layout/Vessel'
 
-  import { self_dname, self_power } from '$src/stores'
+  import { u_dname, u_power } from '$src/stores'
 
   let email = ''
   let upass = ''
@@ -22,8 +22,8 @@
     if (res.ok) {
       const data = await res.json()
 
-      $self_dname = data.dname
-      $self_power = data.power
+      $u_dname = data.dname
+      $u_power = data.power
       _goto_('/')
     } else {
       error = true

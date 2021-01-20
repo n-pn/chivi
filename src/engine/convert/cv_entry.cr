@@ -91,6 +91,18 @@ class CV::CvEntry
     end
   end
 
+  def match_rule_对?
+    if @dic == 0
+      @val[0]? == '“'
+    else
+      @key != "的"
+    end
+  end
+
+  def letter?
+    @dic > 0
+  end
+
   def special_end_char?
     case @key[0]?
     when '-', '+', '?', '%', '°'

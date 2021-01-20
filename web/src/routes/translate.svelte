@@ -1,18 +1,10 @@
 <script context="module">
   import SvgIcon from '$atoms/SvgIcon'
 
-  import Convert, { toggle_lookup, active_upsert } from '$parts/Convert'
-  import Vessel from '$parts/Vessel'
+  import Cvdata, { toggle_lookup, active_upsert } from '$layout/Cvdata'
+  import Vessel from '$layout/Vessel'
 
-  import {
-    // self_dname,
-    self_power,
-    upsert_dicts,
-    lookup_dname,
-    upsert_actived,
-    lookup_enabled,
-    lookup_actived,
-  } from '$src/stores'
+  import { lookup_dname, lookup_enabled, lookup_actived } from '$src/stores'
 </script>
 
 <script>
@@ -24,20 +16,14 @@
 
   $: if (edit_mode && text_elem) text_elem.focus()
 
-  let dirty = false
-  $: if (dirty) convert()
+  let changed = false
+  $: if (changed) convert()
 
   $: $lookup_dname = 'dich-nhanh'
-  $: $upsert_dicts = [
-    ['dich-nhanh', 'Dịch Nhanh', true],
-    ['generic', 'Thông dụng'],
-    ['hanviet', 'Hán việt'],
-  ]
 
   function handle_keypress(evt) {
     if (edit_mode) return
     if (evt.ctrlKey) return
-    if ($upsert_actived) return
 
     switch (evt.key) {
       case '\\':
@@ -56,7 +42,7 @@
 
       case 'r':
         evt.preventDefault()
-        dirty = true
+        changed = true
         break
 
       default:
@@ -68,7 +54,7 @@
   }
 
   async function convert() {
-    // if ($self_power < 1) return
+    // if ($u_power < 1) return
 
     const url = `/api/convert/various`
     const res = await fetch(url, {
@@ -77,7 +63,7 @@
       body: JSON.stringify({ input: zh_text }),
     })
 
-    dirty = false
+    changed = false
     cv_data = await res.text()
     edit_mode = false
   }
@@ -125,7 +111,7 @@
       </button>
     </footer>
   {:else if cv_data}
-    <Convert input={cv_data} bind:dirty />
+    <Cvdata {cv_data} bind:changed />
   {:else}
     <div class="empty">Mời nhập dữ liệu trong ô tiếng Trung</div>
   {/if}

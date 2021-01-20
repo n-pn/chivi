@@ -39,14 +39,20 @@ class CV::CvGroup
         entry.dic = 9
 
         # TODO: handle succ type?
-        succ = @data[i + 1]?
-        if succ && succ.dic > 0 && succ.key != "的"
-          entry.val = "đối với"
+        if @data[i + 1]?.try(&.match_rule_对?)
+          "đối với"
         else
           entry.val = "đúng"
         end
-        # when "不过"
-        # TODO!
+      when "不过"
+        entry.dic = 9
+
+        # TODO: handle succ type?
+        if @data[i + 1]?.try(&.match_rule_对?)
+          "không đối với"
+        else
+          entry.val = "không đúng"
+        end
       when "也"
         entry.dic = 9
         entry.val = @data[i + 1]?.try(&.dic.> 0) ? "cũng" : "vậy"
