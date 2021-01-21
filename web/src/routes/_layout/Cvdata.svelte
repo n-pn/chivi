@@ -19,8 +19,8 @@
     })
   }
 
-  export function active_upsert(target) {
-    upsert_target.update((x) => target || x)
+  export function active_upsert(tab) {
+    upsert_target.set(tab)
     upsert_active.set(true)
   }
 

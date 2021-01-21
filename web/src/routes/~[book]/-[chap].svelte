@@ -80,6 +80,11 @@
         active_upsert(1)
         break
 
+      case 'v':
+        evt.preventDefault()
+        active_upsert(3)
+        break
+
       case 'h':
       case 'j':
       case 'k':
