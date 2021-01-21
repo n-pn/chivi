@@ -11,13 +11,25 @@
 
   const btn_class = { Thêm: 'success', Sửa: 'primary', Xoá: 'harmful' }
   const map_status = (val, old) => (!val ? 'Xoá' : old ? 'Sửa' : 'Thêm')
+
+  function get_curr(infos, idx) {
+    const info = infos[idx] || { vals: [], hints: [] }
+    const orig = info.vals[0]
+    const prev = info.hints[0]
+    return { info, orig, prev }
+  }
+
+  const get_dict = (dicts, idx) => dicts[idx][0]
 </script>
 
 <script>
   import SvgIcon from '$atoms/SvgIcon'
-  import RelTime from '$atoms/RelTime'
 
   import Input from './Upsert/Input'
+  import Dname from './Upsert/Dname'
+  import Value from './Upsert/Value'
+  import Emend from './Upsert/Emend'
+  import Power from './Upsert/Power'
   import Links from './Upsert/Links'
 
   export let changed = false
@@ -30,66 +42,55 @@
     ['hanviet', 'Hán Việt'],
   ]
 
-  let value_field
-  $: if ($active && value_field) value_field.focus()
-
-  let key = $phrase[0].substring($phrase[1], $phrase[2])
-  let value
-  let attrs = ''
-
-  let hanviet = ''
-  let binh_am = ''
-
+  let trans = {}
   let infos = []
   let hints = []
+
+  let value_field
+  $: if ($active && value_field) value_field.focus()
+  $: key = $phrase[0].substring($phrase[1], $phrase[2])
+
+  let curr = get_curr(infos, $on_tab)
+
+  let value = curr.orig
+  $: attrs = curr.info.attrs
 
   $: if ($active && key) init_search(d_name)
 
   async function init_search(dname) {
     const data = await dict_search(fetch, key, dname)
-
-    hanviet = data.hanviet
-    binh_am = data.binh_am
+    trans = data.trans
     infos = data.infos
-    hints = data.hints.filter((x) => x != hanviet)
+    hints = data.hints
 
-    update_val()
+    change_tab($on_tab)
   }
 
-  let _curr = {}
-  let _orig, _prev
-
-  $: p_min = _curr.power || $on_tab + 1
+  $: p_min = curr.info.power || $on_tab + 1
   $: power = p_min < $u_power ? p_min : $u_power
 
-  $: updated = value != _orig
+  $: updated = value !== curr.orig
   $: prevail = power >= p_min
   $: btn_power = power < p_min ? 'text' : power == p_min ? 'line' : 'solid'
-  $: status = map_status(value, _orig)
-
-  async function submit_val() {
-    const dname = dicts[$on_tab][0]
-    const res = await dict_upsert(fetch, dname, { key, value, attrs, power })
-
-    changed = res.ok
-    console.log({ changed })
-
-    $active = false
-  }
-
-  function update_val(new_val) {
-    _curr = infos[$on_tab] || { vals: [], hints: [] }
-    _orig = _curr.vals[0]
-    _prev = _curr.hints[0] || new_val
-
-    new_val = new_val || _orig || hints[0]
-    value = new_val || titleize(hanviet, $on_tab < 1 ? 10 : 0)
-    value_field.focus()
-  }
+  $: status = map_status(value, curr.orig)
 
   function change_tab(idx) {
     on_tab.set(idx)
+    curr = get_curr(infos, idx)
     update_val()
+  }
+
+  function update_val(new_val = curr.orig) {
+    value = new_val || hints[0] || titleize(trans.hanviet, $on_tab < 1)
+    value_field.focus()
+  }
+
+  async function submit_val() {
+    const dname = get_dict(dicts, $on_tab)
+    const res = await dict_upsert(fetch, dname, { key, value, attrs, power })
+
+    changed = res.ok
+    $active = false
   }
 
   function upcase_val(node, count) {
@@ -111,15 +112,23 @@
       case 27:
         return active.set(false)
 
+      case 38:
+        if (evt.altKey && power < $u_power) power += 1
+        break
+
+      case 40:
+        if (evt.altKey && power > 0) power -= 1
+        break
+
       default:
         if (!evt.altKey) return
 
         // make `~` alias of `0`
         const key = evt.keyCode == 192 ? '0' : evt.key
-        let elem = documemt.querySelector(`.upsert [data-kbd="${key}"]`)
+        let elem = document.querySelector(`.upsert [data-kbd="${key}"]`)
 
         if (elem) {
-          // evt.preventDefault()
+          evt.preventDefault()
           elem.click()
         }
     }
@@ -144,48 +153,42 @@
       </button>
     </header>
 
-    <section class="tabs">
+    <section class="dicts">
       {#each dicts as [_dname, label], idx}
-        <span
-          class="tab"
-          class:_actived={idx == $on_tab}
-          class:_existed={infos[idx] && infos[idx].vals.length > 0}
-          data-kbd={idx == 0 ? 'x' : idx == 1 ? 'c' : 'v'}
-          on:click={() => change_tab(idx)}>
-          {label}
-        </span>
+        <Dname
+          d_name={label}
+          active={idx == $on_tab}
+          exists={get_curr(infos, idx).info.vals.length > 0}
+          {idx}
+          on:click={() => change_tab(idx)} />
       {/each}
     </section>
 
-    <section class="body">
+    <section class="vform">
       <div class="value">
         <div class="hints">
-          <span class="-hint" on:click={() => update_val(hanviet)}>
-            {hanviet}
+          <span class="-hint" on:click={() => update_val(trans.hanviet)}>
+            {trans.hanviet}
           </span>
 
-          {#each hints as _hint}
-            {#if _hint != value}
+          {#each hints as hint}
+            {#if hint != value}
               <span
                 class="-hint"
-                class:_exist={_hint == _orig}
-                on:click={() => update_val(_hint)}>{_hint}</span>
+                class:_exist={hint == curr.orig}
+                on:click={() => update_val(hint)}>{hint}</span>
             {/if}
           {/each}
 
-          <span class="-hint _right">[{binh_am}]</span>
+          <span class="-hint _right">[{trans.binh_am}]</span>
         </div>
 
-        <div class="value">
-          <input
-            lang="vi"
-            type="text"
-            name="value"
-            class:_fresh={!_orig}
-            bind:this={value_field}
+        <div class="output">
+          <Value
             bind:value
-            autocomplete="off"
-            autocapitalize={$on_tab < 1 ? 'words' : 'off'} />
+            bind:field={value_field}
+            fresh={!curr.orig}
+            autocap={$on_tab < 1 ? 'words' : 'off'} />
         </div>
 
         <div class="format">
@@ -193,7 +196,6 @@
             <span class="_md">hoa</span>
             một chữ
           </button>
-
           <button data-kbd="2" use:upcase_val={2}>hai chữ</button>
           <button class="_md" data-kbd="3" use:upcase_val={3}>ba chữ</button>
           <button data-kbd="4" use:upcase_val={99}>tất cả</button>
@@ -201,54 +203,24 @@
             không
             <span class="_sm">hoa</span>
           </button>
-
           <button class="_right" data-kbd="e" on:click={() => (value = '')}
             >Xoá</button>
-
           {#if updated}
             <button
               class="_right"
               data-kbd="r"
-              on:click={() => update_val(_orig || _prev)}>Phục</button>
+              on:click={() => update_val(curr.orig)}>Phục</button>
           {/if}
         </div>
       </div>
 
       <div class="action">
-        {#if _curr && _curr.uname}
-          <div class="-emend">
-            <div class="-line">
-              <span class="-text"
-                >{map_status(_orig, _curr && _curr.hints[0])} bởi:
-              </span>
-              <span class="-user">{_curr.uname}</span>
-              <span class="-text">Q.hạn:</span>
-              <span class="-user">{_curr.power}</span>
-            </div>
-
-            <div class="-line">
-              <span class="-text">Thời gian:</span>
-              <span class="-time"><RelTime m_time={_curr.mtime} /></span>
-            </div>
-          </div>
+        {#if curr.info.uname}
+          <Emend {curr} />
         {/if}
 
         <div class="-right">
-          <div class="-power">
-            <div class="-value"><span>Q.h:</span>{power}</div>
-
-            <button
-              class="-up"
-              disabled={power == $u_power}
-              on:click={() => (power += 1)}
-              ><SvgIcon name="chevron-up" /></button>
-            <button
-              class="-dn"
-              disabled={power == 0}
-              on:click={() => (power -= 1)}
-              ><SvgIcon name="chevron-down" /></button>
-          </div>
-
+          <Power bind:power p_max={$u_power} />
           <button
             class="m-button _large _{btn_class[status]} _{btn_power}"
             disabled={!(updated || prevail)}
@@ -307,86 +279,23 @@
     }
   }
 
-  .tabs {
+  .dicts {
+    height: 2.25rem;
     padding: 0 0.75rem;
-    height: 2rem;
-    line-height: 2rem;
 
-    @include border($sides: bottom);
     @include flex();
-    @include flex-gap(0.75rem, $child: '.tab');
-  }
+    @include border($sides: bottom);
 
-  .tab {
-    cursor: pointer;
-    text-transform: uppercase;
-    font-weight: 500;
-    padding: 0 0.75rem;
-    height: 2rem;
-    margin-top: 0.25px;
-
-    flex-shrink: 0;
-
-    @include truncate(null);
-    @include font-size(2);
-    @include fgcolor(neutral, 5);
-
-    @include radius($sides: top);
-    @include border($color: neutral, $sides: top-left-right);
-
-    &:first-child {
-      max-width: 35%;
-      flex-shrink: 1;
-    }
-
-    &._existed {
-      @include fgcolor(neutral, 7);
-    }
-
-    &._actived {
-      @include bgcolor(#fff);
-      @include fgcolor(primary, 6);
-      @include bdcolor($color: primary, $shade: 4);
+    // prettier-ignore
+    > :global(*) {
+      margin-right: 0.75rem;
+      &:last-child { margin-right: 0; }
     }
   }
 
-  .body {
+  .vform {
     @include bgcolor(#fff);
     padding: 0.75rem;
-  }
-
-  $label-width: 3rem;
-
-  $suggests-height: 2rem;
-  $titleize-height: 2rem;
-  $val-line-height: 2.5rem;
-
-  .value {
-    @include bgcolor(neutral, 1);
-  }
-
-  .value > input {
-    display: block;
-    width: 100%;
-
-    margin: 0;
-
-    line-height: 1.5rem;
-    padding: 0.75rem;
-
-    outline: none;
-    @include border();
-    @include bgcolor(neutral, 1);
-
-    &:focus,
-    &:active {
-      @include bgcolor(white);
-      @include bdcolor($color: primary, $shade: 3);
-    }
-
-    &._fresh {
-      font-style: italic;
-    }
   }
 
   .hints {
@@ -483,69 +392,14 @@
   }
 
   .action {
-    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    @include bgcolor(#fff);
     @include flex();
     @include flex-gap($gap: 0.5rem, $child: ':global(*)');
 
     .-right {
       display: flex;
       margin-left: auto;
-    }
-  }
-
-  .-emend {
-    @include fgcolor(neutral, 6);
-    @include font-size(2);
-
-    .-text {
-      font-style: italic;
-    }
-
-    .-time,
-    .-user {
-      @include fgcolor(primary, 8);
-    }
-
-    .-user {
-      font-weight: 500;
-      @include truncate(5vw);
-    }
-  }
-
-  .-power {
-    padding-left: 0.5rem;
-    padding-right: 1.75rem;
-
-    position: relative;
-    margin-right: 0.5rem;
-    font-weight: 500;
-
-    @include border;
-    @include radius;
-
-    > .-value {
-      display: inline-block;
-      line-height: 2.625rem;
-
-      span {
-        padding-right: 0.125rem;
-        @include fgcolor(neutral, 5);
-      }
-    }
-
-    > button {
-      position: absolute;
-
-      right: 0;
-      background-color: transparent;
-
-      &.-up {
-        top: 0;
-      }
-
-      &.-dn {
-        bottom: 0;
-      }
     }
   }
 

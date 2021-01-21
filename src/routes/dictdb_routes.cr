@@ -71,11 +71,9 @@ module CV::Server
 
     RouteUtils.json_res(env) do |res|
       {
-        binh_am: binh_am,
-        hanviet: hanviet,
-
+        trans: {binh_am: binh_am, hanviet: hanviet},
         infos: {special_info, regular_info, hanviet_info},
-        hints: hints.uniq,
+        hints: hints.uniq.reject(&.== hanviet),
       }.to_json(res)
     end
   end
