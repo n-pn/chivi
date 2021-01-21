@@ -68,14 +68,16 @@
     display: flex;
     justify-content: center;
     line-height: $height;
+    overflow: hidden;
+    flex-wrap: nowrap;
     @include font-size(4);
   }
 
   .-key {
     font-weight: 500;
     max-width: 8rem;
-    @include fgcolor(neutral, 7);
     @include truncate(null);
+    @include fgcolor(neutral, 7);
   }
 
   .-sub {
