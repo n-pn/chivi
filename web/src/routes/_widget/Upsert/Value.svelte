@@ -24,13 +24,15 @@
     padding: 0.75rem;
 
     outline: none;
-    @include border();
-    @include bgcolor(neutral, 1);
+    border: none;
+    background-color: inherit;
+    box-shadow: 0 0 0 1px color(neutral, 3);
+    z-index: 2;
 
     &:focus,
     &:active {
+      box-shadow: 0 0 0 1px color(primary, 3);
       @include bgcolor(white);
-      @include bdcolor($color: primary, $shade: 3);
     }
   }
 

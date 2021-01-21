@@ -27,9 +27,14 @@
 
   import Input from './Upsert/Input'
   import Dname from './Upsert/Dname'
+
+  import Vhint from './Upsert/Vhint'
   import Value from './Upsert/Value'
+  import Vutil from './Upsert/Vutil'
+
   import Emend from './Upsert/Emend'
   import Power from './Upsert/Power'
+
   import Links from './Upsert/Links'
 
   export let changed = false
@@ -59,9 +64,9 @@
 
   async function init_search(dname) {
     const data = await dict_search(fetch, key, dname)
-    trans = data.trans
-    infos = data.infos
-    hints = data.hints
+    trans = data.trans || { hanviet: '', binh_am: '' }
+    infos = data.infos || []
+    hints = data.hints || []
 
     change_tab($on_tab)
   }
@@ -91,15 +96,6 @@
 
     changed = res.ok
     $active = false
-  }
-
-  function upcase_val(node, count) {
-    const handle_click = (_) => update_val(titleize(value, count))
-    node.addEventListener('click', handle_click)
-
-    return {
-      destroy: () => node.removeEventListener('click', handle_click),
-    }
   }
 
   function handle_keydown(evt) {
@@ -165,23 +161,8 @@
     </section>
 
     <section class="vform">
-      <div class="value">
-        <div class="hints">
-          <span class="-hint" on:click={() => update_val(trans.hanviet)}>
-            {trans.hanviet}
-          </span>
-
-          {#each hints as hint}
-            {#if hint != value}
-              <span
-                class="-hint"
-                class:_exist={hint == curr.orig}
-                on:click={() => update_val(hint)}>{hint}</span>
-            {/if}
-          {/each}
-
-          <span class="-hint _right">[{trans.binh_am}]</span>
-        </div>
+      <div class="forms">
+        <Vhint {hints} {trans} bind:value _orig={curr.orig} />
 
         <div class="output">
           <Value
@@ -191,43 +172,23 @@
             autocap={$on_tab < 1 ? 'words' : 'off'} />
         </div>
 
-        <div class="format">
-          <button data-kbd="1" use:upcase_val={1}>
-            <span class="_md">hoa</span>
-            một chữ
-          </button>
-          <button data-kbd="2" use:upcase_val={2}>hai chữ</button>
-          <button class="_md" data-kbd="3" use:upcase_val={3}>ba chữ</button>
-          <button data-kbd="4" use:upcase_val={99}>tất cả</button>
-          <button data-kbd="0" use:upcase_val={0}>
-            không
-            <span class="_sm">hoa</span>
-          </button>
-          <button class="_right" data-kbd="e" on:click={() => (value = '')}
-            >Xoá</button>
-          {#if updated}
-            <button
-              class="_right"
-              data-kbd="r"
-              on:click={() => update_val(curr.orig)}>Phục</button>
-          {/if}
-        </div>
+        <Vutil bind:value _orig={curr.orig} />
       </div>
 
-      <div class="action">
-        {#if curr.info.uname}
-          <Emend {curr} />
-        {/if}
-
-        <div class="-right">
-          <Power bind:power p_max={$u_power} />
-          <button
-            class="m-button _large _{btn_class[status]} _{btn_power}"
-            disabled={!(updated || prevail)}
-            on:click|once={submit_val}>
-            <span class="-text">{status}</span>
-          </button>
+      <div class="vfoot">
+        <div class="-emend">
+          {#if curr.info.uname}
+            <Emend {curr} />
+          {/if}
         </div>
+
+        <Power bind:power p_max={$u_power} />
+        <button
+          class="m-button _large _{btn_class[status]} _{btn_power}"
+          disabled={!(updated || prevail)}
+          on:click|once={submit_val}>
+          <span class="-text">{status}</span>
+        </button>
       </div>
     </section>
 
@@ -241,16 +202,14 @@
   $gutter: 0.75rem;
 
   .window {
-    display: flex;
     position: fixed;
-    align-items: center;
-    justify-content: center;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    bottom: 0;
+    right: 0;
     z-index: 999;
     background: rgba(#000, 0.75);
+    @include flex($center: both);
   }
 
   .upsert {
@@ -298,108 +257,26 @@
     padding: 0.75rem;
   }
 
-  .hints {
-    // width: 100%;
-    // height: $suggests-height;
-
-    padding: 0.25rem 0.5rem;
-    font-style: italic;
-
-    @include border($sides: top-left-right);
-    @include radius($sides: top);
-
-    @include flex();
-    @include flex-gap(0.25rem, $child: '.-hint');
-    @include font-size(2);
-
-    .-hint {
-      cursor: pointer;
-      line-height: 1.5rem;
-      height: 1.5rem;
-      padding: 0 0.25rem;
-      @include truncate(null);
-
-      @include fgcolor(neutral, 6);
-      @include bgcolor(neutral, 1);
-      @include radius;
-
-      &:hover {
-        @include fgcolor(primary, 6);
-        @include bgcolor(primary, 1);
-      }
-
-      &._exist {
-        font-style: normal;
-        font-weight: 500;
-      }
-
-      &._right {
-        margin-left: auto;
-      }
-    }
-  }
-
-  .format {
-    $height: 2.25rem;
-
-    padding: 0 0.375rem;
-    overflow: hidden;
-    height: $height;
-
-    @include flow();
-
+  .forms {
+    @include radius();
+    @include bgcolor(neutral, 1, 0.5);
     @include border();
-    border-top: none;
-    @include radius($sides: bottom);
-
-    @include props(font-size, rem(11px), $md: rem(12px));
-
-    button {
-      float: left;
-      padding: 0 0.375rem;
-      line-height: $height;
-      font-weight: 500;
-      text-transform: uppercase;
-      background: none;
-      @include fgcolor(neutral, 5);
-
-      // max-width: 14vw;
-      @include truncate(null);
-
-      &:hover {
-        @include fgcolor(primary, 5);
-        background: #fff;
-      }
-
-      &._right {
-        float: right;
-      }
-    }
-
-    ._md {
-      display: none;
-      @include screen-min(md) {
-        display: inline-block;
-      }
-    }
-
-    ._sm {
-      display: none;
-      @include screen-min(sm) {
-        display: inline-block;
-      }
-    }
   }
 
-  .action {
+  .vfoot {
     padding-top: 0.75rem;
     @include bgcolor(#fff);
     @include flex();
-    @include flex-gap($gap: 0.5rem, $child: ':global(*)');
 
-    .-right {
-      display: flex;
-      margin-left: auto;
+    .-emend {
+      flex: 1;
+    }
+
+    > :global(*) {
+      margin-right: 0.75rem;
+      &:last-child {
+        margin-right: 0;
+      }
     }
   }
 
