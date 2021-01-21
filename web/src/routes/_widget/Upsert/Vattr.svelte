@@ -1,6 +1,6 @@
 <script context="module">
   const prios = { H: 'Cao', M: 'Bình', L: 'Thấp' }
-  const types = { N: 'Danh', V: 'Động', A: 'Tĩnh' }
+  const types = { N: 'Danh', V: 'Động', A: 'Tính' }
 </script>
 
 <script>
@@ -23,6 +23,7 @@
       <button
         class="-attr"
         class:active={prio == val}
+        data-tip="Ưu tiên: {lbl}"
         data-kbd={val}
         on:click={() => update_prio(val)}>{lbl}</button>
     {/each}
@@ -33,6 +34,7 @@
       <button
         class="-attr"
         data-kbd={val}
+        data-tip="{lbl} từ"
         class:active={attrs.includes(val)}
         on:click={() => update_type(val)}>{lbl}</button>
     {/each}
@@ -44,19 +46,16 @@
     position: absolute;
     top: 0;
     right: 0;
-    height: 3rem;
-    padding: 0.325rem 0.375rem;
+    height: 3.25rem;
+    padding: 0.25rem;
   }
 
   .-line {
-    line-height: 1rem;
-    width: 7rem;
-    font-weight: 500;
     @include flex;
     justify-content: right;
 
     &:first-child {
-      margin-bottom: 0.375rem;
+      margin-bottom: 0.25rem;
     }
   }
 
@@ -65,7 +64,9 @@
     display: inline-block;
     text-align: center;
     padding: 0 0.25rem;
-    font-size: rem(10px);
+    line-height: 1.25rem;
+    font-size: rem(12px);
+    font-weight: 500;
     text-transform: uppercase;
 
     @include fgcolor(neutral, 5);

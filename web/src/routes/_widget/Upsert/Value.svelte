@@ -20,9 +20,10 @@
     display: block;
     width: 100%;
     margin: 0;
-    line-height: 1.5rem;
+    line-height: 1.75rem;
     padding: 0.75rem;
-    padding-right: 7.75rem;
+    padding-right: 8.5rem;
+    @include font-size(3);
 
     outline: none;
     border: none;

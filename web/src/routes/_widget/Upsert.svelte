@@ -58,7 +58,7 @@
   let attrs = curr.info.attrs || ''
 
   let value_field
-  $: if ($active && value_field) value_field.focus()
+  $: if (value) value_field.focus()
 
   let key = ''
   $: if ($active && key) init_search(key, d_name)
@@ -89,7 +89,6 @@
 
   function update_val(new_val = curr.orig) {
     value = new_val || hints[0] || titleize(trans.hanviet, $on_tab < 1)
-    value_field.focus()
   }
 
   async function submit_val() {
