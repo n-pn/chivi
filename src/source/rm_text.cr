@@ -114,6 +114,9 @@ class CV::RmText
       lines.update(0, &.sub(/.+<\/h1>\s*/, ""))
       lines.map!(&.sub("</div>", "")).reject!(&.empty?)
     when "bqg_5200"
+      trash = title.tr(" ", "").sub(/（.+）/, "")
+      lines[0] = lines[0].gsub(/^.*#{trash}\s*/, "")
+
       lines.map! do |line|
         line.gsub(/厺厽\s.+\s厺厽。?/, "").gsub("攫欝攫欝。?", "")
       end
