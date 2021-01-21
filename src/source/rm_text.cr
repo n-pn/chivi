@@ -110,8 +110,13 @@ class CV::RmText
     when "xbiquge"
       lines.shift if lines.first.starts_with?("笔趣阁")
     when "duokan8"
+      lines.shift if lines.first == "<b></b>"
       lines.update(0, &.sub(/.+<\/h1>\s*/, ""))
       lines.map!(&.sub("</div>", "")).reject!(&.empty?)
+    when "bqg_5200"
+      lines.map! do |line|
+        line.gsub(/厺厽\s.+\s厺厽。?/, "").gsub("攫欝攫欝。?", "")
+      end
     else
       lines.pop if lines.last == "(本章完)"
     end

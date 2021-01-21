@@ -18,7 +18,7 @@ module CV::Server::RouteUtils
   def json_res(env, cached = 0)
     if cached > 0
       env.response.headers.add("ETag", cached.to_s)
-      env.response.headers.add("Cache-Control", "max-age=300")
+      env.response.headers.add("Cache-Control", "max-age=60")
     end
 
     env.response.content_type = "application/json"

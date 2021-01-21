@@ -21,7 +21,7 @@
     display: block;
     width: 100%;
     margin: 0;
-    line-height: 2.25rem;
+    line-height: 2.5rem;
     padding: 2rem 0.75rem 2.25rem;
     outline: none;
 

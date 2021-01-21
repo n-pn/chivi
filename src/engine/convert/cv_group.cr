@@ -133,7 +133,7 @@ class CV::CvGroup
         entry.capitalize!(cap_mode) if entry.dic > 1
         cap_mode = 0 unless cap_mode > 1
       else
-        cap_mode = entry.cap_mode
+        cap_mode = entry.cap_mode(cap_mode)
       end
     end
 

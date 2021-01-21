@@ -17,9 +17,10 @@ module CV::Server
     mode = u_power if mode > u_power
 
     if mode > 0 || chinfo.l_chid.empty?
-      chinfo.fetch!(u_power, mode > 1)
-      chinfo.trans!(b_hash, u_power > 1)
-      chinfo.save!
+      if chinfo.fetch!(u_power, mode > 1)
+        chinfo.trans!(b_hash, u_power > 1)
+        chinfo.save!
+      end
     end
 
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)

@@ -26,14 +26,12 @@ class CV::Chinfo
   end
 
   def fetch!(power = 3, force = false, expiry = Time.utc - 5.minutes) : Bool
-    set_atime(Time.utc.to_unix)
-
     return false unless remote?(power)
     source = RmInfo.init(@s_name, @s_nvid, expiry: expiry)
 
     # update last_chap
     return false unless force || set_last_chid(source.last_chid)
-    set_utime(source.updated_at.to_unix)
+    changed = set_utime(source.updated_at.to_unix)
 
     source.chap_list.each do |entry|
       s_chid, title, label = entry
@@ -41,7 +39,8 @@ class CV::Chinfo
       next unless origs.add(s_chid, values)
     end
 
-    true
+    set_atime(Time.utc.to_unix)
+    changed
   end
 
   def trans!(dname = "various", force = false) : Nil
@@ -63,19 +62,22 @@ class CV::Chinfo
     @chaps = nil
   end
 
-  def set_last_chid(s_chid : String)
-    return unless @meta.l_chid.add(@s_nvid, s_chid)
+  def set_last_chid(s_chid : String) : Bool
+    return false unless @meta.l_chid.add(@s_nvid, s_chid)
     @l_chid = s_chid
+    true
   end
 
-  def set_atime(mtime = Time.utc.to_unix)
-    return unless @meta._atime.add(s_nvid, mtime)
+  def set_atime(mtime = Time.utc.to_unix) : Bool
+    return false unless @meta._atime.add(s_nvid, mtime)
     @_atime = mtime
+    true
   end
 
-  def set_utime(mtime = Time.utc.to_unix)
-    return unless @meta._utime.add(s_nvid, mtime)
+  def set_utime(mtime = Time.utc.to_unix) : Bool
+    return false unless @meta._utime.add(s_nvid, mtime)
     @_utime = mtime
+    true
   end
 
   private def remote?(power = 3)
