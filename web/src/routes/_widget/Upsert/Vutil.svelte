@@ -16,10 +16,10 @@
 </script>
 
 <div class="vutil">
-  <button class="-txt" data-kbd="4" use:upcase_val={9}>Hoa tất cả</button>
-  <button class="-txt _md" data-kbd="3" use:upcase_val={3}>H. 3 chữ</button>
+  <button class="-txt" data-kbd="1" use:upcase_val={1}>Hoa 1 chữ</button>
   <button class="-txt" data-kbd="2" use:upcase_val={2}>H. 2 chữ</button>
-  <button class="-txt" data-kbd="1" use:upcase_val={1}>H. 1 chữ</button>
+  <button class="-txt _md" data-kbd="3" use:upcase_val={3}>H. 3 chữ</button>
+  <button class="-txt" data-kbd="4" use:upcase_val={9}>H. tất cả</button>
   <button class="-txt" data-kbd="0" use:upcase_val={0}>Không hoa</button>
 
   <div class="right">
