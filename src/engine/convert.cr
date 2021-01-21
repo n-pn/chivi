@@ -150,7 +150,7 @@ class CV::Convert
         cost = @costs[idx] + entry.worth
         jump = idx &+ entry.key.size
 
-        if cost > @costs[jump]
+        if cost >= @costs[jump]
           @costs[jump] = cost
           @nodes[jump] = CvEntry.new(entry)
         end
