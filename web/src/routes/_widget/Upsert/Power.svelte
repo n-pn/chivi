@@ -18,7 +18,7 @@
 <style lang="scss">
   .power {
     padding-left: 0.5rem;
-    padding-right: 1.625rem;
+    padding-right: 1.75rem;
 
     position: relative;
     font-weight: 500;

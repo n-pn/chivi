@@ -6,9 +6,10 @@
 </script>
 
 <input
-  lang="vi"
-  type="text"
   name="value"
+  lang="vi"
+  type="vi"
+  class="input"
   class:fresh
   bind:this={field}
   bind:value
@@ -16,24 +17,22 @@
   autocapitalize={autocap} />
 
 <style lang="scss">
-  input {
+  .input {
     display: block;
     width: 100%;
     margin: 0;
-    line-height: 1.75rem;
-    padding: 0.75rem;
-    padding-right: 8.5rem;
-    @include font-size(3);
-
+    line-height: 2.25rem;
+    padding: 2rem 0.75rem 2.25rem;
     outline: none;
-    border: none;
-    background-color: inherit;
-    box-shadow: 0 0 0 1px color(neutral, 3);
-    z-index: 2;
+
+    @include radius;
+    @include border;
+    @include bgcolor(neutral, 1);
+    @include font-size(4);
 
     &:focus,
     &:active {
-      box-shadow: 0 0 0 1px color(primary, 3);
+      @include bdcolor(primary, 3);
       @include bgcolor(white);
     }
   }

@@ -32,7 +32,7 @@
   import Vutil from './Upsert/Vutil'
 
   import Value from './Upsert/Value'
-  import Vattr from './Upsert/Vattr'
+  import Attrs from './Upsert/Attrs'
 
   import Emend from './Upsert/Emend'
   import Power from './Upsert/Power'
@@ -139,7 +139,7 @@
   <div class="upsert" on:click|stopPropagation={() => value_field.focus()}>
     <header class="header">
       <div class="hanzi">
-        <Input phrase={$phrase} bind:output={key} />
+        <Input phrase={$phrase} bind:output={key} binh_am={trans.binh_am} />
       </div>
 
       <button
@@ -163,21 +163,19 @@
 
     <section class="vform">
       <div class="forms">
-        <Vhint {hints} {trans} bind:value _orig={curr.orig} />
-
         <div class="value">
+          <Vhint {hints} hanviet={trans.hanviet} bind:value _orig={curr.orig} />
+
           <Value
             bind:value
             bind:field={value_field}
             fresh={!curr.orig}
             autocap={$on_tab < 1 ? 'words' : 'off'} />
 
-          {#if $on_tab < 2}
-            <Vattr bind:attrs />
-          {/if}
+          <Vutil bind:value _orig={curr.orig} />
         </div>
 
-        <Vutil bind:value _orig={curr.orig} />
+        <Attrs bind:attrs dtype={$on_tab} />
       </div>
 
       <div class="vfoot">
@@ -188,6 +186,7 @@
         </div>
 
         <Power bind:power p_max={$u_power} />
+
         <button
           class="m-button _large _{btn_class[status]} _{btn_power}"
           disabled={!(updated || prevail)}
@@ -244,7 +243,7 @@
   }
 
   .dicts {
-    height: 2.25rem;
+    height: 2rem;
     padding: 0 0.75rem;
 
     @include flex();
@@ -263,9 +262,7 @@
   }
 
   .forms {
-    @include radius();
-    @include bgcolor(neutral, 1, 0.5);
-    @include border();
+    position: relative;
   }
 
   .value {
@@ -273,8 +270,7 @@
   }
 
   .vfoot {
-    padding-top: 0.75rem;
-    @include bgcolor(#fff);
+    margin-top: 0.75rem;
     @include flex();
 
     .-emend {
@@ -283,6 +279,7 @@
 
     > :global(*) {
       margin-right: 0.75rem;
+
       &:last-child {
         margin-right: 0;
       }

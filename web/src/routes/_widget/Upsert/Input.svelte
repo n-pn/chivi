@@ -3,6 +3,7 @@
 
   export let phrase
   export let output
+  export let binh_am = ''
 
   $: [input, lower, upper] = phrase
   $: prefix = input.substring(lower - 2, lower)
@@ -10,7 +11,7 @@
   $: suffix = input.substring(upper, upper + 2)
 </script>
 
-<div>
+<div class="input">
   <button
     class="_left"
     disabled={lower == 0}
@@ -27,11 +28,12 @@
     <SvgIcon name="chevron-right" />
   </button>
 
-  <span class="output">
-    <span class="sub">{prefix}</span>
-    <span class="key">{output}</span>
-    <span class="sub">{suffix}</span>
-  </span>
+  <div class="hanzi">
+    <span class="-sub">{prefix}</span>
+    <span class="-key">{output}</span>
+    <span class="-sub">{suffix}</span>
+    <span class="-lit"><span class="-val">[{binh_am}]</span></span>
+  </div>
 
   <button
     class="_right"
@@ -53,34 +55,55 @@
 <style lang="scss">
   $height: 2.25rem;
 
-  div {
+  .input {
     display: flex;
     width: 100%;
     height: $height;
-    overflow: hidden;
-    line-height: $height;
 
     @include radius();
     @include bgcolor(neutral, 1);
     @include border($color: neutral, $shade: 3);
   }
 
-  .output {
+  .hanzi {
     flex-grow: 1;
-    display: inline-flex;
+    display: flex;
     justify-content: center;
-    overflow: hidden;
+    line-height: 2rem;
+    position: relative;
+    // white-space: nowrap;
+    @include font-size(4);
   }
 
-  .key {
+  .-key {
     font-weight: 500;
+    max-width: 8rem;
     @include fgcolor(neutral, 7);
     @include truncate(null);
-    max-width: 8em;
   }
 
-  .sub {
+  .-sub {
     @include fgcolor(neutral, 4);
+  }
+
+  .-lit {
+    position: absolute;
+    text-align: center;
+    left: 0;
+    top: 1.625rem;
+    width: 100%;
+    line-height: 1rem;
+  }
+
+  .-val {
+    display: inline-block;
+    padding: 0 0.25rem;
+    max-width: 100%;
+    @include radius;
+    @include truncate(null);
+    @include bgcolor(neutral, 1);
+    @include font-size(1);
+    @include fgcolor(neutral, 6);
   }
 
   button {

@@ -17,9 +17,8 @@
     font-weight: 500;
     padding: 0 0.75rem;
 
-    height: 2.25rem;
-    line-height: 2.25rem;
-    // margin-top: 0.25px;
+    height: 2rem;
+    line-height: 2rem;
 
     flex-shrink: 0;
 
@@ -31,7 +30,7 @@
     @include border($color: neutral, $sides: top-left-right);
 
     &:first-child {
-      max-width: 35%;
+      max-width: 40%;
       flex-shrink: 1;
     }
 
