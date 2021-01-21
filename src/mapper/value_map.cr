@@ -47,6 +47,7 @@ class CV::ValueMap
 
     time = timer.total_milliseconds.round.to_i
     puts "- #{label} loaded (lines: #{count}, time: #{time}ms)".colorize.blue
+    save!(mode: :full) if @data.size != count
   end
 
   def vals
