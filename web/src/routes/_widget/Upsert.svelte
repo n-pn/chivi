@@ -30,8 +30,6 @@
 
   import Vhint from './Upsert/Vhint'
   import Vutil from './Upsert/Vutil'
-
-  import Value from './Upsert/Value'
   import Attrs from './Upsert/Attrs'
 
   import Emend from './Upsert/Emend'
@@ -164,13 +162,18 @@
     <section class="vform">
       <div class="forms">
         <div class="value">
-          <Vhint {hints} hanviet={trans.hanviet} bind:value _orig={curr.orig} />
+          <Vhint {hints} {trans} bind:value _orig={curr.orig} />
 
-          <Value
+          <input
+            name="value"
+            lang="vi"
+            type="vi"
+            class="-input"
+            class:_fresh={!curr.orig}
+            bind:this={value_field}
             bind:value
-            bind:field={value_field}
-            fresh={!curr.orig}
-            autocap={$on_tab < 1 ? 'words' : 'off'} />
+            autocomplete="off"
+            autocapitalize={$on_tab < 1 ? 'words' : 'off'} />
 
           <Vutil bind:value _orig={curr.orig} />
         </div>
@@ -243,7 +246,7 @@
   }
 
   .dicts {
-    height: 2rem;
+    height: 2.25rem;
     padding: 0 0.75rem;
 
     @include flex();
@@ -267,6 +270,31 @@
 
   .value {
     position: relative;
+
+    .-input {
+      display: block;
+      width: 100%;
+      margin: 0;
+      line-height: 2.5rem;
+      padding: 2rem 0.75rem;
+      // text-align: center;
+      outline: none;
+
+      @include radius;
+      @include border;
+      @include bgcolor(neutral, 1);
+      @include font-size(4);
+
+      &:focus,
+      &:active {
+        @include bdcolor(primary, 3);
+        @include bgcolor(white);
+      }
+    }
+
+    ._fresh {
+      font-style: italic;
+    }
   }
 
   .vfoot {

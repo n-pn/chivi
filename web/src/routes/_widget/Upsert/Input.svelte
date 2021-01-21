@@ -3,7 +3,6 @@
 
   export let phrase
   export let output
-  export let binh_am = ''
 
   $: [input, lower, upper] = phrase
   $: prefix = input.substring(lower - 2, lower)
@@ -32,7 +31,6 @@
     <span class="-sub">{prefix}</span>
     <span class="-key">{output}</span>
     <span class="-sub">{suffix}</span>
-    <span class="-lit"><span class="-val">[{binh_am}]</span></span>
   </div>
 
   <button
@@ -69,9 +67,7 @@
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    line-height: 2rem;
-    position: relative;
-    // white-space: nowrap;
+    line-height: $height;
     @include font-size(4);
   }
 
@@ -84,26 +80,6 @@
 
   .-sub {
     @include fgcolor(neutral, 4);
-  }
-
-  .-lit {
-    position: absolute;
-    text-align: center;
-    left: 0;
-    top: 1.625rem;
-    width: 100%;
-    line-height: 1rem;
-  }
-
-  .-val {
-    display: inline-block;
-    padding: 0 0.25rem;
-    max-width: 100%;
-    @include radius;
-    @include truncate(null);
-    @include bgcolor(neutral, 1);
-    @include font-size(1);
-    @include fgcolor(neutral, 6);
   }
 
   button {

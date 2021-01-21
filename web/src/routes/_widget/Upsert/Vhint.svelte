@@ -2,14 +2,14 @@
   export let hints
   export let value
   export let _orig
+  export let trans
 
-  export let hanviet = ''
+  $: hanviet = trans.hanviet || ''
+  $: binh_am = trans.binh_am || ''
 </script>
 
 <div class="hints">
-  <span class="hint" on:click={() => (value = hanviet)}>
-    {hanviet}
-  </span>
+  <span class="hint" on:click={() => (value = hanviet)}>{hanviet}</span>
 
   {#each hints as hint}
     {#if hint != value}
@@ -20,13 +20,7 @@
     {/if}
   {/each}
 
-  <span class="_right">
-    {#if value != _orig}
-      <button class="-btn" data-kbd="r" on:click={() => (value = _orig)}
-        >Phục</button>
-    {/if}
-    <button class="-btn" data-kbd="e" on:click={() => (value = '')}>Xoá</button>
-  </span>
+  <span class="right">[{binh_am}]</span>
 </div>
 
 <style lang="scss">
@@ -39,20 +33,19 @@
     font-style: italic;
     line-height: 1.25rem;
 
-    @include border($sides: bottom);
     @include flex();
+    @include border($sides: bottom);
+
+    @include font-size(2);
+    @include fgcolor(neutral, 6);
   }
 
   .hint {
     cursor: pointer;
-
     padding: 0 0.25rem;
-    @include font-size(2);
 
-    @include truncate(null);
     @include radius;
-
-    @include fgcolor(neutral, 6);
+    @include truncate(null);
     @include bgcolor(neutral, 1);
 
     &:hover {
@@ -69,21 +62,10 @@
     font-weight: 500;
   }
 
-  ._right {
+  .right {
+    font-style: normal;
     margin-left: auto;
-  }
-
-  .-btn {
-    float: left;
-    padding: 0 0.375rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    @include font-size(1);
-    background: none;
-    @include fgcolor(neutral, 5);
-
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
+    font-size: rem(12px);
+    @include truncate(null);
   }
 </style>

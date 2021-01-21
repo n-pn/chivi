@@ -1,7 +1,9 @@
 <script>
   import { titleize } from '$utils/text_utils'
+  import SvgIcon from '$atoms/SvgIcon'
 
   export let value
+  export let _orig
 
   function upcase_val(node, count) {
     const handle_click = (_) => (value = titleize(value, count))
@@ -14,15 +16,26 @@
 </script>
 
 <div class="vutil">
-  <button data-kbd="4" use:upcase_val={9}>Hoa tất cả</button>
-  <button data-kbd="3" class="_md" use:upcase_val={3}>H. 3 chữ</button>
-  <button data-kbd="2" use:upcase_val={2}>H. 2 chữ</button>
-  <button data-kbd="1" use:upcase_val={1}>H. 1 chữ</button>
-  <button data-kbd="0" use:upcase_val={0}>Không hoa</button>
+  <button class="-txt" data-kbd="4" use:upcase_val={9}>Hoa tất cả</button>
+  <button class="-txt _md" data-kbd="3" use:upcase_val={3}>H. 3 chữ</button>
+  <button class="-txt" data-kbd="2" use:upcase_val={2}>H. 2 chữ</button>
+  <button class="-txt" data-kbd="1" use:upcase_val={1}>H. 1 chữ</button>
+  <button class="-txt" data-kbd="0" use:upcase_val={0}>Không hoa</button>
+
+  <div class="right">
+    {#if _orig && value != _orig}
+      <button class="-btn" data-kbd="r" on:click={() => (value = _orig)}>
+        <SvgIcon name="rotate-ccw" />
+      </button>
+    {/if}
+    <button class="-btn" data-kbd="e" on:click={() => (value = '')}>
+      <SvgIcon name="trash" />
+    </button>
+  </div>
 </div>
 
 <style lang="scss">
-  $height: 2.25rem;
+  $height: 2rem;
 
   .vutil {
     position: absolute;
@@ -30,14 +43,13 @@
     left: 0;
     width: 100%;
     padding: 0 0.375rem;
-    height: $height;
     font-size: rem(11px);
 
-    @include flow();
+    @include flex();
     @include border($sides: top);
   }
 
-  button {
+  .-txt {
     float: left;
     padding: 0 0.375rem;
     line-height: $height;
@@ -52,12 +64,26 @@
     &:hover {
       @include fgcolor(primary, 5);
     }
+
+    &._md {
+      @include props(display, none, $md: inline-block);
+    }
   }
 
-  ._md {
-    display: none;
-    @include screen-min(md) {
-      display: inline-block;
+  .right {
+    margin-left: auto;
+  }
+
+  .-btn {
+    padding: 0.25rem 0.25rem;
+    line-height: 1.25rem;
+    background: none;
+
+    @include font-size(3);
+    @include fgcolor(neutral, 5);
+
+    &:hover {
+      @include fgcolor(primary, 5);
     }
   }
 </style>
