@@ -3,11 +3,14 @@
   export let hints
   export let value
   export let _orig
+
+  $: hanviet = trans.hanviet || ''
+  $: binh_am = trans.binh_am || ''
 </script>
 
 <div class="hints">
-  <span class="hint" on:click={() => (value = trans.hanviet)}>
-    {trans.hanviet}
+  <span class="hint" on:click={() => (value = hanviet)}>
+    {hanviet}
   </span>
 
   {#each hints as hint}
@@ -19,7 +22,9 @@
     {/if}
   {/each}
 
-  <span class="hint _right">[{trans.binh_am}]</span>
+  {#if binh_am}
+    <span class="hint _right">[{binh_am}]</span>
+  {/if}
 </div>
 
 <style lang="scss">

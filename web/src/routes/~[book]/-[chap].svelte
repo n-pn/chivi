@@ -154,9 +154,9 @@
   {#if cvdata}
     <Cvdata
       {cvdata}
+      bind:changed
       d_name={chinfo.b_hash}
-      b_name={chinfo.b_name}
-      bind:changed />
+      b_name={chinfo.b_name} />
   {:else}
     <div class="empty">
       Chương tiết không có nội dung, mời liên hệ ban quản trị.

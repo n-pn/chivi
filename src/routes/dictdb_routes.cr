@@ -86,13 +86,13 @@ module CV::Server
 
     key = env.params.json["key"].as(String)
     value = env.params.json.fetch("value", "").as(String).split(/[\/|]/)
-    attrs = env.params.json.fetch("value", "").as(String)
+    attrs = env.params.json.fetch("attrs", "").as(String)
 
     power = env.params.json.fetch("power", u_power).as(Int64).to_i
     power = u_power if power > u_power
 
     dict = VpDict.load(env.params.url["dname"])
-    entry = VpEntry.new(key, value.reject(&.empty?), attrs)
+    entry = VpEntry.new(key, value.reject(&.empty?), attrs, dtype: dict.dtype)
     emend = VpEmend.new(uname: u_dname, power: power)
 
     # TODO: save context

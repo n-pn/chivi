@@ -22,6 +22,7 @@
     margin: 0;
     line-height: 1.5rem;
     padding: 0.75rem;
+    padding-right: 7.75rem;
 
     outline: none;
     border: none;

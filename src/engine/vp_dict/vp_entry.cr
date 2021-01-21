@@ -22,9 +22,9 @@ class CV::VpEntry
     cost = @dtype / 5 + 2
 
     case @attrs[0]?
-    when '🅷'
+    when 'H'
       cost += 0.25
-    when '🅻'
+    when 'L'
       cost -= 0.25
     end
 

@@ -61,10 +61,10 @@
 
 <script>
   export let cvdata = ''
+  export let changed = false
+
   export let d_name = 'various'
   export let b_name = 'Tổng hợp'
-
-  export let dirty = false
 
   $: lines = split_input(cvdata)
 
@@ -105,7 +105,7 @@
   }
 </script>
 
-<article class:dirty>
+<article class:changed>
   {#each lines as nodes, index (index)}
     <div
       class="chivi"
@@ -124,5 +124,5 @@
 {/if}
 
 {#if $upsert_active}
-  <Upsert {d_name} {b_name} bind:changed={dirty} />
+  <Upsert {d_name} {b_name} bind:changed />
 {/if}

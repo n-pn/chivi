@@ -29,8 +29,10 @@
   import Dname from './Upsert/Dname'
 
   import Vhint from './Upsert/Vhint'
-  import Value from './Upsert/Value'
   import Vutil from './Upsert/Vutil'
+
+  import Value from './Upsert/Value'
+  import Vattr from './Upsert/Vattr'
 
   import Emend from './Upsert/Emend'
   import Power from './Upsert/Power'
@@ -48,21 +50,20 @@
   ]
 
   let trans = {}
-  let infos = []
   let hints = []
+  let infos = []
+  let curr = get_curr(infos, $on_tab)
+
+  let value = curr.orig || null
+  let attrs = curr.info.attrs || ''
 
   let value_field
   $: if ($active && value_field) value_field.focus()
-  $: key = $phrase[0].substring($phrase[1], $phrase[2])
 
-  let curr = get_curr(infos, $on_tab)
+  let key = ''
+  $: if ($active && key) init_search(key, d_name)
 
-  let value = curr.orig
-  $: attrs = curr.info.attrs
-
-  $: if ($active && key) init_search(d_name)
-
-  async function init_search(dname) {
+  async function init_search(key, dname) {
     const data = await dict_search(fetch, key, dname)
     trans = data.trans || { hanviet: '', binh_am: '' }
     infos = data.infos || []
@@ -82,6 +83,7 @@
   function change_tab(idx) {
     on_tab.set(idx)
     curr = get_curr(infos, idx)
+    attrs = curr.info.attrs || ''
     update_val()
   }
 
@@ -164,12 +166,16 @@
       <div class="forms">
         <Vhint {hints} {trans} bind:value _orig={curr.orig} />
 
-        <div class="output">
+        <div class="value">
           <Value
             bind:value
             bind:field={value_field}
             fresh={!curr.orig}
             autocap={$on_tab < 1 ? 'words' : 'off'} />
+
+          {#if $on_tab < 2}
+            <Vattr bind:attrs />
+          {/if}
         </div>
 
         <Vutil bind:value _orig={curr.orig} />
@@ -261,6 +267,10 @@
     @include radius();
     @include bgcolor(neutral, 1, 0.5);
     @include border();
+  }
+
+  .value {
+    position: relative;
   }
 
   .vfoot {

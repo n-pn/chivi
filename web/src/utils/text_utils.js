@@ -3,7 +3,8 @@ export function capitalize(str) {
 }
 
 export function titleize(str, count = 9) {
-  if (isNaN(count)) count = count ? 9 : 1
+  if (!str) return ''
+  if (typeof count == 'boolean') count = count ? 9 : 0
 
   const res = str.split(' ')
   if (count > res.length) count = res.length

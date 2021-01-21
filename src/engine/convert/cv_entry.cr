@@ -8,10 +8,9 @@ class CV::CvEntry
 
   getter etc : String
 
-  getter is_noun : Bool { @etc.includes?('🅽') }
-  getter is_verb : Bool { @etc.includes?('🆅') }
-  getter is_pro : Bool { @etc.includes?('🅿') }
-  getter is_adj : Bool { @etc.includes?('🅰') }
+  getter is_noun : Bool { @etc.includes?('N') }
+  getter is_verb : Bool { @etc.includes?('V') }
+  getter is_adjv : Bool { @etc.includes?('A') }
 
   NUM_RE = /[\d零〇一二两三四五六七八九十百千万亿]/
   getter is_num : Bool { NUM_RE === @key }
