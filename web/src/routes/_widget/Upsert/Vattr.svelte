@@ -48,12 +48,12 @@
     right: 0;
     height: 3.25rem;
     padding: 0.25rem;
+    width: 8.25rem;
   }
 
   .-line {
     @include flex;
-    justify-content: right;
-
+    justify-content: flex-end;
     &:first-child {
       margin-bottom: 0.25rem;
     }
