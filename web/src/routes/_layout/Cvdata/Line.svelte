@@ -8,29 +8,38 @@
     let idx = 0
     let pos = 0
 
+    let nest = 0
+
     for (const [key, val, dic] of nodes) {
       const e_key = escape_html(key)
       const e_val = escape_html(val).replace(/_/, '_\xAD') // force break words
 
-      switch (val.charAt(0)) {
-        case '“':
-          res_0 += '<em>'
-          res_1 += '<em>'
-          break
+      if (val.charAt(0) == '“') {
+        nest += 1
+        res_0 += '<em>'
+        res_1 += '<em>'
       }
 
       res_0 += render_node(e_key, e_val, dic, idx, pos)
       res_1 += e_val
 
-      switch (val.charAt(val.length - 1)) {
-        case '”':
-          res_0 += '</em>'
-          res_1 += '</em>'
-          break
+      const last = val.charAt(val.length - 1)
+      if (last == '”') {
+        nest -= 1
+        res_0 += '</em>'
+        res_1 += '</em>'
       }
 
       idx += 1
       pos += key.length
+    }
+
+    if (nest < 0) {
+      res_0 = '<em>“' + res_0
+      res_1 = '<em>“' + res_1
+    } else if (nest > 0) {
+      res_0 += '”</em>'
+      res_1 += '”</em>'
     }
 
     return [res_0, res_1]
