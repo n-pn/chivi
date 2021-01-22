@@ -69,6 +69,6 @@ fetch_info("zhwenpg", "aun4tm", fresh: false)
 fetch_info("5200", "28208", fresh: false)
 
 fetch_info("bqg_5200", "139570", fresh: false)
-fetch_info("bqg_5200", "131878", fresh: true)
+# fetch_info("bqg_5200", "131878", fresh: true)
 
-# fetch_info("shubaow", "150092", fresh: false)
+fetch_info("shubaow", "150092", fresh: false)

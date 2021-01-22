@@ -153,23 +153,22 @@ class CV::RmInfo
   end
 
   getter updated_at : Time do
-    case @s_name
-    when "zhwenpg", "hetushu"
-      Time.utc(2020, 1, 1)
-    when "69shu", "bqg_5200"
-      unless update_str.empty?
-        return TimeUtils.parse_time(update_str)
-      end
+    raise "missing time!" if update_str.empty?
+    output = TimeUtils.parse_time(update_str)
 
-      puts "- ERROR: <#{RmInfo.url_for(@s_name, @s_nvid)}> missing time!"
-      TimeUtils::DEF_TIME
+    case @s_name
+    when "69shu", "bqg_5200", "shubaow"
+      output += 12.hours
+      output < Time.utc ? output : Time.utc
     else
-      TimeUtils::DEF_TIME
+      output
     end
   end
 
   getter update_str : String do
     case @s_name
+    when "zhwenpg", "hetushu"
+      "2020-01-01 12:00:00"
     when "69shu"
       node_text(".mu_beizhu").sub(/.+时间：/m, "")
     when "bqg_5200"

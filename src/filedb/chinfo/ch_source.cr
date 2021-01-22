@@ -33,11 +33,15 @@ class CV::ChSource
 
   CACHE = {} of String => self
 
-  def self.load(s_name) : self
+  def self.load(s_name : String) : self
     CACHE[s_name] ||= new(s_name)
   end
 
   def self.save!(mode : Symbol = :full) : Nil
     CACHE.each_value(&.save!(mode: mode))
+  end
+
+  def self.utime(s_name : String, s_nvid : String)
+    load(s_name)._utime.fval_64(s_nvid)
   end
 end
