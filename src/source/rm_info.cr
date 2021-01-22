@@ -153,10 +153,19 @@ class CV::RmInfo
   end
 
   getter updated_at : Time do
-    return Time.utc(2020, 1, 1) if @s_name == "zhwenpg" || @s_name == "hetushu"
-    return TimeUtils.parse_time(update_str) unless update_str.empty?
-    puts "- ERROR: <#{RmInfo.url_for(@s_name, @s_nvid)}> missing time!"
-    TimeUtils::DEF_TIME
+    case @s_name
+    when "zhwenpg", "hetushu"
+      Time.utc(2020, 1, 1)
+    when "69shu", "bqg_5200"
+      unless update_str.empty?
+        return TimeUtils.parse_time(update_str)
+      end
+
+      puts "- ERROR: <#{RmInfo.url_for(@s_name, @s_nvid)}> missing time!"
+      TimeUtils::DEF_TIME
+    else
+      TimeUtils::DEF_TIME
+    end
   end
 
   getter update_str : String do

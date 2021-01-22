@@ -15,9 +15,11 @@ module CV::HttpUtils
     loop do
       puts "[GET: <#{url}> (try: #{try})]".colorize.magenta
 
-      html = `#{cmd}`
-      return html unless html.empty?
-
+      html = `#{cmd}`.strip
+      return html.sub(/\b#{encoding}\b/i, "utf-8") unless html.empty?
+    rescue err
+      puts err.colorize.red
+    ensure
       try += 1
       sleep 500.milliseconds * try
       raise "500 Server Error!" if try > 3
