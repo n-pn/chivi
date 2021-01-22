@@ -114,7 +114,7 @@
 
     const data = await res.json()
     entries = data.entries
-    hanviet = data.hanviet.split('\v').map((x) => x.split('\t'))
+    hanviet = data.hanviet.split('\t').map((x) => x.split('ǀ'))
   }
 
   function update_focus() {

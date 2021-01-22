@@ -19,7 +19,7 @@ class CV::VpEntry
   end
 
   private def calc_worth
-    cost = @dtype / 5 + 1.5
+    cost = @dtype / 5 + 1.4
 
     case @attrs[0]?
     when 'H'
