@@ -14,8 +14,8 @@ rsync -azi "_db/dictdb/active" "$SSH/_db/dictdb"
 # rsync -azi --no-p "_db/chdata/chinfos" "$SSH/_db/chdata"
 
 ## upload book covers
-# rsync -azi --no-p --exclude "covers" "web/public" "$SSH/web"
-# rsync -azi --no-p "_db/bcover/" "$SSH/web/public/covers/"
+rsync -azi --no-p --exclude "covers" "web/public" "$SSH/web"
+rsync -azi --no-p "_db/bcover/" "$SSH/web/public/covers/"
 
 ## upload user data
 rsync -azi --no-p "_db/userdb/viusers" "$SSH/_db/userdb"

@@ -16,7 +16,11 @@ class CV::RmInfo
     unless html = FileUtils.read(file, expiry)
       url = url_for(s_name, s_nvid)
       html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(s_name))
-      File.write(file, html) if freeze
+
+      if freeze
+        ::FileUtils.mkdir_p(File.dirname(file))
+        File.write(file, html)
+      end
     end
 
     new(s_name, s_nvid, file, html: html)
