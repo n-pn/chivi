@@ -17,12 +17,12 @@ seeds = Dir.children(DIR).each do |seed|
     zip_store = CV::ZipStore.new("#{folder}.zip", folder)
 
     Dir.glob("#{folder}/*.txt").each do |file|
-      next unless File.size(file) < 5 || zip_store.archives?(File.basename(file))
+      next unless File.size(file) < 5
 
       File.delete(file)
       puts "-- <#{file}> deleted".colorize.light_red
     end
 
-    # zip_store.compress!(:archive)
+    zip_store.compress!(:archive)
   end
 end

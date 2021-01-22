@@ -13,7 +13,7 @@ def upload_texts(s_name : String, flags = "")
   files = Dir.glob(File.join(INP, s_name, "*.zip"))
   puts "[#{s_name}: #{files.size} files]".colorize.cyan
 
-  files.sort_by! { |x| File.basename(x, ".zip").to_i }
+  files.sort_by! { |x| File.basename(x, ".zip").to_i } unless s_name == "zhwenpg"
   files.each_with_index(1) do |file, idx|
     puts "-- <#{idx}/#{files.size}> [#{s_name}/#{File.basename(file)}]".colorize.blue
     puts `rsync -ai --no-p #{flags} "#{file}" "#{OUT}/#{s_name}"`

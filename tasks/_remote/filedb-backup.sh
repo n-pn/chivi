@@ -2,11 +2,10 @@
 
 SSH=nipin@ssh.chivi.xyz:www/chivi.xyz
 
-rsync -aiz --no-p "$SSH/_db/cvdict/legacy" "_db/dictdb"
-# rsync -aiz --no-p "$SSH/_db/dictdb/active/" "_db/dictdb/remote/"
+rsync -aiz --no-p "$SSH/_db/dictdb/active/" "_db/dictdb/remote/"
 
-rsync -aiz --no-p "$SSH/_db/nvdata/viusers/" "_db/userdb/viusers/"
-rsync -aiz --no-p "$SSH/_db/nvdata/nvmarks/" "_db/marked/"
+rsync -aiz --no-p "$SSH/_db/userdb/viusers" "_db/userdb"
+rsync -aiz --no-p "$SSH/_db/marked/" "_db/marked/"
 
-# rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
-rsync -aiz --no-p --exclude "biquge_5200/" --exclude "*.zip" "$SSH/_db/nvdata/zhtexts" "_db/chdata"
+rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
+rsync -aiz --no-p --exclude "*.zip" "$SSH/_db/chdata/zhtexts" "_db/chdata"

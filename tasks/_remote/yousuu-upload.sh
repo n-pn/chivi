@@ -1,6 +1,6 @@
 #! /bin/bash
 
-REMOTE=nipin@ssh.chivi.xyz:www/chivi.xyz
+REMOTE=nipin@dev.chivi.xyz:www/chivi.xyz
 
 PROXY_DIR=_db/_proxy
 PROXY_SSH="$REMOTE/$PROXY_DIR"
