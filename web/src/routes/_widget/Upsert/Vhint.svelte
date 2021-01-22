@@ -19,9 +19,7 @@
   $: binh_am = trans.binh_am || ''
 
   $: _hint = hints.filter((x) => x != value)
-  $: words = hanviet.split(' ').length * (_hint.length + 2)
-  $: console.log({ words })
-  $: _show = show_class_for(words)
+  $: _show = show_class_for(hanviet.split(' ').length * (_hint.length + 2))
 </script>
 
 <div class="hints">

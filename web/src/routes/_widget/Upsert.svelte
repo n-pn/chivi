@@ -56,7 +56,7 @@
   let attrs = curr.info.attrs || ''
 
   let value_field
-  $: if (value) value_field.focus()
+  $: if (value && value_field) value_field.focus()
 
   let key = ''
   $: if ($active && key) init_search(key, d_name)
@@ -85,7 +85,7 @@
     curr = get_curr(infos, idx)
 
     value = curr.orig || hints[0] || titleize(trans.hanviet, idx < 1)
-    attrs = curr.info.attrs
+    attrs = curr.info.attrs || ''
   }
 
   async function submit_val() {
@@ -136,7 +136,7 @@
   <div class="upsert" on:click|stopPropagation={() => value_field.focus()}>
     <header class="header">
       <div class="hanzi">
-        <Input phrase={$phrase} bind:output={key} binh_am={trans.binh_am} />
+        <Input phrase={$phrase} bind:output={key} />
       </div>
 
       <button
@@ -164,7 +164,7 @@
           <Vhint {hints} {trans} bind:value _orig={curr.orig} />
 
           <input
-            name="value"
+            id="value"
             lang="vi"
             type="vi"
             class="-input"
@@ -192,7 +192,7 @@
         <button
           class="m-button _large _{btn_class[status]} _{btn_power}"
           disabled={!(updated || prevail)}
-          on:click|once={submit_val}>
+          on:click|stopPropagation|once={submit_val}>
           <span class="-text">{status}</span>
         </button>
       </div>
