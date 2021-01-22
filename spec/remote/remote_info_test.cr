@@ -3,6 +3,8 @@ require "file_utils"
 require "../../src/source/rm_info.cr"
 
 def fetch_info(s_name, s_nvid, fresh = false) : Void
+  ::FileUtils.mkdir_p("_db/.cache/#{s_name}/infos")
+
   puts "\n[#{CV::RmInfo.url_for(s_name, s_nvid)}]".colorize.green.bold
   puts "------".colorize.green
 

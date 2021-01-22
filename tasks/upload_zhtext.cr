@@ -5,7 +5,7 @@ require "colorize"
 
 INP = "_db/chdata/zhtexts"
 # SSH = "deploy@dev.chivi.xyz"
-SSH = "nipin@ssh.chivi.xyz"
+SSH = "nipin@dev.chivi.xyz"
 OUT = "#{SSH}:www/chivi.xyz/_db/nvdata/zhtexts"
 
 def upload_texts(s_name : String, flags = "")
