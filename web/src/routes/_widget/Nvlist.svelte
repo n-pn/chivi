@@ -2,12 +2,12 @@
   export let books = []
   export let atab = 'summary'
 
-  import BookItem from './BookItem.svelte'
+  import Nvinfo from './Nvinfo.svelte'
 </script>
 
 <div class="list">
   {#each books as nvinfo}
-    <BookItem {nvinfo} {atab} />
+    <Nvinfo {nvinfo} {atab} />
   {/each}
 </div>
 

@@ -1,5 +1,5 @@
 <script>
-  import SvgIcon from '$atoms/SvgIcon'
+  import SIcon from '$blocks/SIcon'
 
   export let phrase
   export let output
@@ -16,7 +16,7 @@
     disabled={lower == 0}
     data-kbd="h"
     on:click={() => (lower -= 1)}>
-    <SvgIcon name="chevron-left" />
+    <SIcon name="chevron-left" />
   </button>
 
   <button
@@ -24,7 +24,7 @@
     disabled={lower == upper - 1}
     on:click={() => (lower += 1)}
     data-kbd="j">
-    <SvgIcon name="chevron-right" />
+    <SIcon name="chevron-right" />
   </button>
 
   <div class="hanzi">
@@ -38,7 +38,7 @@
     data-kbd="k"
     disabled={upper == lower + 1}
     on:click={() => (upper -= 1)}>
-    <SvgIcon name="chevron-left" />
+    <SIcon name="chevron-left" />
   </button>
 
   <button
@@ -46,7 +46,7 @@
     disabled={upper == input.length}
     data-kbd="l"
     on:click={() => (upper += 1)}>
-    <SvgIcon name="chevron-right" />
+    <SIcon name="chevron-right" />
   </button>
 </div>
 

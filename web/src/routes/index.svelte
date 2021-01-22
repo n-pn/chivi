@@ -1,8 +1,8 @@
 <script context="module">
   import paginate_range from '$utils/paginate_range'
 
-  import SvgIcon from '$atoms/SvgIcon.svelte'
-  import BookList from '$melds/BookList.svelte'
+  import SIcon from '$blocks/SIcon.svelte'
+  import Nvlist from '$widget/Nvlist.svelte'
 
   import Vessel from '$layout/Vessel'
 
@@ -121,11 +121,11 @@
       placeholder="Tìm kiếm"
       on:focus={() => (searching = true)}
       on:onfocusout={() => (searching = false)} />
-    <SvgIcon name="search" />
+    <SIcon name="search" />
   </form>
 
   <a slot="header-right" href="/translate" class="header-item">
-    <SvgIcon name="zap" />
+    <SIcon name="zap" />
     <span class="header-text _show-md">Dịch nhanh</span>
   </a>
 
@@ -141,7 +141,7 @@
   </div>
 
   {#if books.length > 0}
-    <BookList {books} />
+    <Nvlist {books} />
   {:else}
     <div class="empty">Danh sách trống</div>
   {/if}
@@ -151,7 +151,7 @@
       href={gen_page_url(+page - 1, opts)}
       class="page m-button"
       class:_disable={page == 1}>
-      <SvgIcon name="chevron-left" />
+      <SIcon name="chevron-left" />
       <span>Trước</span>
     </a>
 
@@ -171,7 +171,7 @@
       class="page m-button _solid _primary"
       class:_disable={page == page_max}>
       <span>Kế tiếp</span>
-      <SvgIcon name="chevron-right" />
+      <SIcon name="chevron-right" />
     </a>
   </div>
 </Vessel>

@@ -1,5 +1,5 @@
 <script>
-  import SvgIcon from '$atoms/SvgIcon'
+  import SIcon from '$blocks/SIcon'
   import Vessel from '$layout/Vessel'
 
   import { u_dname, u_power } from '$src/stores'
@@ -102,7 +102,7 @@
         </a>
 
         <button type="submit" class="m-button _success login">
-          <SvgIcon name="user-plus" />
+          <SIcon name="user-plus" />
           <span>Tạo tài khoản</span>
         </button>
       </footer>

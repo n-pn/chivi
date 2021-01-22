@@ -84,15 +84,15 @@
 </script>
 
 <script>
-  import SvgIcon from '$atoms/SvgIcon'
-  import RelTime from '$atoms/RelTime'
+  import SIcon from '$blocks/SIcon'
+  import RTime from '$blocks/RTime'
   import paginate_range from '$utils/paginate_range'
-  // import AdBanner from '$atoms/AdBanner'
+  // import AdBanner from '$blocks/AdBanner'
 
   import { u_power } from '$src/stores'
 
   import Common from './_common'
-  import ChapList from '$melds/ChapList'
+  import Chlist from '$widget/Chlist'
 
   export let nvinfo
   export let nvmark = ''
@@ -241,7 +241,7 @@
           {/each}
         {:else}
           <button class="-name" on:click={() => (show_more = true)}>
-            <SvgIcon name="more-horizontal" />
+            <SIcon name="more-horizontal" />
             <span>({source_hide.length})</span>
           </button>
         {/if}
@@ -255,7 +255,7 @@
         <span class="-size">{total} chương</span>
         <span class="-time">
           <span class="-hide">Cập nhật:</span>
-          <RelTime m_time={utime * 1000} {source} />
+          <RTime m_time={utime * 1000} {source} />
         </span>
       </div>
 
@@ -263,21 +263,21 @@
         <button
           class="m-button"
           on:click={(e) => reload(e, { page: 1, order: 'desc', mode: 2 })}>
-          <SvgIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
+          <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
           <span class="-hide">Đổi mới</span>
         </button>
 
         <button
           class="m-button"
           on:click={(e) => reload(e, { order: reverse_order })}>
-          <SvgIcon name={order == 'desc' ? 'arrow-down' : 'arrow-up'} />
+          <SIcon name={order == 'desc' ? 'arrow-down' : 'arrow-up'} />
           <span class="-hide">Sắp xếp</span>
         </button>
       </div>
     </div>
 
     <div class="chlist">
-      <ChapList b_slug={nvinfo.b_slug} {source} {chaps} />
+      <Chlist b_slug={nvinfo.b_slug} {source} {chaps} />
 
       {#if pmax > 1}
         <nav class="pagi">
@@ -286,7 +286,7 @@
             class="page m-button"
             class:_disable={page == 1}
             on:click={(e) => reload(e, { page: 1 }, true)}>
-            <SvgIcon name="chevrons-left" />
+            <SIcon name="chevrons-left" />
           </a>
 
           {#each page_list as [curr, level]}
@@ -306,7 +306,7 @@
             class="page m-button"
             class:_disable={page == pmax}
             on:click={(e) => reload(e, { page: pmax }, true)}>
-            <SvgIcon name="chevrons-right" />
+            <SIcon name="chevrons-right" />
           </a>
         </nav>
       {/if}

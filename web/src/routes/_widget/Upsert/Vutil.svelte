@@ -1,6 +1,6 @@
 <script>
   import { titleize } from '$utils/text_utils'
-  import SvgIcon from '$atoms/SvgIcon'
+  import SIcon from '$blocks/SIcon'
 
   export let value
   export let _orig
@@ -25,11 +25,11 @@
   <div class="right">
     {#if _orig && value != _orig}
       <button class="-btn" data-kbd="r" on:click={() => (value = _orig)}>
-        <SvgIcon name="rotate-ccw" />
+        <SIcon name="rotate-ccw" />
       </button>
     {/if}
     <button class="-btn" data-kbd="e" on:click={() => (value = '')}>
-      <SvgIcon name="trash" />
+      <SIcon name="trash" />
     </button>
   </div>
 </div>

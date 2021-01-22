@@ -1,5 +1,5 @@
 <script>
-  import RelTime from '$atoms/RelTime'
+  import RTime from '$blocks/RTime'
 
   export let curr
   $: status = !curr.orig ? 'Xoá' : curr.prev ? 'Sửa' : 'Thêm'
@@ -15,7 +15,7 @@
 
   <div class="-line">
     <span class="-text">Thời gian:</span>
-    <span class="-time"><RelTime m_time={curr.info.mtime} /></span>
+    <span class="-time"><RTime m_time={curr.info.mtime} /></span>
   </div>
 </div>
 

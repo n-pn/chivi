@@ -1,5 +1,5 @@
 <script context="module">
-  import BookCover from '$atoms/BookCover.svelte'
+  import BCover from '$blocks/BCover.svelte'
 
   function rating_stars(rating, voters) {
     if (voters <= 10) return []
@@ -38,7 +38,7 @@
 
 <a class="book" {href}>
   <div class="cover">
-    <BookCover b_hash={nvinfo.b_hash} bcover={nvinfo.bcover} />
+    <BCover b_hash={nvinfo.b_hash} bcover={nvinfo.bcover} />
 
     {#if nvinfo.voters > 10}
       <div class="extra">

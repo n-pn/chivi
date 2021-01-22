@@ -2,7 +2,8 @@
 
 SSH=nipin@ssh.chivi.xyz:www/chivi.xyz
 
-# rsync -azi "_db/dictdb/legacy" --exclude '*.log' "$SSH/_db/dictdb"
+rsync -azi "_db/dictdb/active/" "$SSH/_db/dictdb/remote/"
+
 rsync -azi "_db/dictdb/active" "$SSH/_db/dictdb"
 # rsync -azi --exclude '*.tab' "_db/dictdb/active" "$SSH/_db/dictdb"
 

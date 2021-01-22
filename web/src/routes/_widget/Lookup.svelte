@@ -80,7 +80,7 @@
     return output
   }
 
-  import SvgIcon from '$atoms/SvgIcon.svelte'
+  import SIcon from '$blocks/SIcon.svelte'
   import {
     lookup_input,
     lookup_dname,
@@ -152,11 +152,11 @@
     <h2>Giải nghĩa</h2>
 
     <button on:click={() => ($actived = false)}>
-      <SvgIcon name="eye-off" />
+      <SIcon name="eye-off" />
     </button>
 
     <button on:click={() => ($enabled = false)}>
-      <SvgIcon name="x" />
+      <SIcon name="x" />
     </button>
   </header>
 

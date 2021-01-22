@@ -1,5 +1,5 @@
 <script context="module">
-  import SvgIcon from '$atoms/SvgIcon'
+  import SIcon from '$blocks/SIcon'
 
   import Vessel from '$layout/Vessel'
   import Cvdata, { toggle_lookup, active_upsert } from '$layout/Cvdata'
@@ -122,7 +122,7 @@
 
 <Vessel shift={$lookup_enabled && $lookup_actived}>
   <a slot="header-left" href={book_path} class="header-item _title">
-    <SvgIcon name="book-open" />
+    <SIcon name="book-open" />
     <span class="header-text _show-md _title">{chinfo.b_name}</span>
   </a>
 
@@ -136,7 +136,7 @@
     disabled={$u_power < 1}
     on:click={() => (changed = true)}
     data-kbd="r">
-    <SvgIcon name="refresh-ccw" spin={changed} />
+    <SIcon name="refresh-ccw" spin={changed} />
   </button>
 
   <button
@@ -145,7 +145,7 @@
     class:_active={$lookup_enabled}
     on:click={toggle_lookup}
     data-kbd="\">
-    <SvgIcon name="compass" />
+    <SIcon name="compass" />
   </button>
 
   <nav class="bread">
@@ -174,12 +174,12 @@
       class="m-button _solid"
       class:_disable={!chinfo.prev_url}
       data-kbd="j">
-      <SvgIcon name="chevron-left" />
+      <SIcon name="chevron-left" />
       <span>Trước</span>
     </a>
 
     <a href={list_path} class="m-button _solid" data-kbd="h">
-      <SvgIcon name="list" />
+      <SIcon name="list" />
       <span>{chinfo.ch_idx}/{chinfo.s_size}</span>
     </a>
 
@@ -189,7 +189,7 @@
       class:_disable={!chinfo.next_url}
       data-kbd="k">
       <span>Kế tiếp</span>
-      <SvgIcon name="chevron-right" />
+      <SIcon name="chevron-right" />
     </a>
   </div>
 </Vessel>

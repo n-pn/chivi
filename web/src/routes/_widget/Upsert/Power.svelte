@@ -1,5 +1,5 @@
 <script>
-  import SvgIcon from '$atoms/SvgIcon'
+  import SIcon from '$blocks/SIcon'
 
   export let power
   export let p_max
@@ -10,9 +10,9 @@
   <button
     class="btn -up"
     disabled={power == p_max}
-    on:click={() => (power += 1)}><SvgIcon name="chevron-up" /></button>
+    on:click={() => (power += 1)}><SIcon name="chevron-up" /></button>
   <button class="btn -dn" disabled={power == 0} on:click={() => (power -= 1)}
-    ><SvgIcon name="chevron-down" /></button>
+    ><SIcon name="chevron-down" /></button>
 </div>
 
 <style lang="scss">

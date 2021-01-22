@@ -1,5 +1,5 @@
 <script context="module">
-  import SvgIcon from '$atoms/SvgIcon'
+  import SIcon from '$blocks/SIcon'
 
   import Cvdata, { toggle_lookup, active_upsert } from '$layout/Cvdata'
   import Vessel from '$layout/Vessel'
@@ -77,7 +77,7 @@
 
 <Vessel shift={$lookup_enabled && $lookup_actived}>
   <span slot="header-left" class="header-item _active">
-    <SvgIcon name="zap" />
+    <SIcon name="zap" />
     <span class="header-text">Dịch nhanh</span>
   </span>
 

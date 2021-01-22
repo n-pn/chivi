@@ -15,9 +15,9 @@
   import { u_power } from '$src/stores'
   import { mark_types, mark_names, mark_icons } from '$utils/constants'
 
-  import SvgIcon from '$atoms/SvgIcon'
-  import BookCover from '$atoms/BookCover'
-  import RelTime from '$atoms/RelTime'
+  import SIcon from '$blocks/SIcon'
+  import BCover from '$blocks/BCover'
+  import RTime from '$blocks/RTime'
 
   import Vessel from '$layout/Vessel'
 
@@ -93,12 +93,12 @@
 
 <Vessel>
   <a slot="header-left" href="/~{nvinfo.b_slug}" class="header-item _active">
-    <SvgIcon name="book-open" />
+    <SIcon name="book-open" />
     <span class="header-text _title">{vi_title}</span>
   </a>
 
   <span slot="header-right" class="header-item _menu">
-    <SvgIcon name={nvmark ? mark_icons[nvmark] : 'bookmark'} />
+    <SIcon name={nvmark ? mark_icons[nvmark] : 'bookmark'} />
     <span class="header-text _show-md"
       >{nvmark ? mark_names[nvmark] : 'Đánh dấu'}</span>
 
@@ -106,12 +106,12 @@
       <div class="header-menu">
         {#each mark_types as m_type}
           <div class="-item" on:click={() => mark_book(m_type)}>
-            <SvgIcon name={mark_icons[m_type]} />
+            <SIcon name={mark_icons[m_type]} />
             <span>{mark_names[m_type]}</span>
 
             {#if nvmark == m_type}
               <span class="_right">
-                <SvgIcon name="check" />
+                <SIcon name="check" />
               </span>
             {/if}
           </div>
@@ -127,13 +127,13 @@
     </div>
 
     <div class="cover">
-      <BookCover b_hash={nvinfo.b_hash} bcover={nvinfo.bcover} />
+      <BCover b_hash={nvinfo.b_hash} bcover={nvinfo.bcover} />
     </div>
 
     <section class="extra">
       <div class="line">
         <span class="stat">
-          <SvgIcon name="pen-tool" />
+          <SIcon name="pen-tool" />
           <a class="link" href="/search?kw={vi_author}&type=author">
             <span class="label">{vi_author}</span>
           </a>
@@ -141,7 +141,7 @@
 
         {#each nvinfo.genres as bgenre}
           <span class="stat _genre">
-            <SvgIcon name="folder" />
+            <SIcon name="folder" />
             <a class="link" href="/?bgenre={bgenre}">
               <span class="label">{bgenre}</span>
             </a>
@@ -151,13 +151,13 @@
 
       <div class="line">
         <span class="stat _status">
-          <SvgIcon name="activity" />
+          <SIcon name="activity" />
           <span>{vi_status}</span>
         </span>
 
         <span class="stat _mftime">
-          <SvgIcon name="clock" />
-          <span><RelTime m_time={nvinfo._utime * 1000} /></span>
+          <SIcon name="clock" />
+          <span><RTime m_time={nvinfo._utime * 1000} /></span>
         </span>
       </div>
 

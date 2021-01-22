@@ -1,8 +1,8 @@
 <script context="module">
   import Vessel from '$layout/Vessel'
 
-  import SvgIcon from '$atoms/SvgIcon.svelte'
-  import BookCover from '$atoms/BookCover.svelte'
+  import SIcon from '$blocks/SIcon.svelte'
+  import BCover from '$blocks/BCover.svelte'
 
   export const take = 8
 
@@ -57,7 +57,7 @@
 <Vessel>
   <form slot="header-left" class="header-field" action="/search" method="get">
     <input type="search" name="kw" placeholder="Tìm kiếm" value={word} />
-    <SvgIcon name="search" />
+    <SIcon name="search" />
   </form>
 
   {#if books.length > 0}
@@ -71,7 +71,7 @@
       {#each books as book}
         <a href="/~{book.b_slug}" class="book">
           <div class="cover">
-            <BookCover b_hash={book.b_hash} bcover={book.bcover} />
+            <BCover b_hash={book.b_hash} bcover={book.bcover} />
           </div>
 
           <div class="infos">
@@ -106,7 +106,7 @@
 
     <div class="pagi">
       <a href={make_url(page - 1)} class="m-button" class:_disable={page == 1}>
-        <SvgIcon name="chevron-left" />
+        <SIcon name="chevron-left" />
         <span>Trước</span>
       </a>
 
@@ -117,7 +117,7 @@
         class="m-button _solid _primary"
         class:_disable={page == pmax}>
         <span>Kế tiếp</span>
-        <SvgIcon name="chevron-right" />
+        <SIcon name="chevron-right" />
       </a>
     </div>
   {:else}

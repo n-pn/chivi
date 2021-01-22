@@ -1,6 +1,6 @@
 <script context="module">
   import { u_dname, u_power } from '$src/stores'
-  import SvgIcon from '$atoms/SvgIcon.svelte'
+  import SIcon from '$blocks/SIcon.svelte'
 </script>
 
 <script>
@@ -46,7 +46,7 @@
       <slot name="header-right" />
 
       <span class="header-item _menu">
-        <SvgIcon name="user" />
+        <SIcon name="user" />
         <span class="header-text _show-md">
           {#if $u_power > 0}{$u_dname} [{$u_power}]{:else}Khách{/if}
         </span>
@@ -54,23 +54,23 @@
         <div class="header-menu">
           {#if $u_power < 0}
             <a href="/auth/login" class="-item">
-              <SvgIcon name="log-in" />
+              <SIcon name="log-in" />
               <span>Đăng nhập</span>
             </a>
             <a href="/auth/signup" class="-item">
-              <SvgIcon name="user-plus" />
+              <SIcon name="user-plus" />
               <span>Đăng ký</span>
             </a>
           {:else}
             <a href="/@{$u_dname}" class="-item">
-              <SvgIcon name="layers" />
+              <SIcon name="layers" />
               <span>Tủ truyện</span>
             </a>
             <a
               href="/auth/logout"
               class="-item"
               on:click|preventDefault={logout}>
-              <SvgIcon name="log-out" />
+              <SIcon name="log-out" />
               <span>Đăng xuất</span>
             </a>
           {/if}

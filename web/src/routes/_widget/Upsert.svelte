@@ -23,7 +23,7 @@
 </script>
 
 <script>
-  import SvgIcon from '$atoms/SvgIcon'
+  import SIcon from '$blocks/SIcon'
 
   import Input from './Upsert/Input'
   import Dname from './Upsert/Dname'
@@ -143,7 +143,7 @@
         type="button"
         class="m-button _text"
         on:click={() => ($active = false)}>
-        <SvgIcon name="x" />
+        <SIcon name="x" />
       </button>
     </header>
 
