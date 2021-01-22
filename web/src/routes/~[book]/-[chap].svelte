@@ -21,7 +21,7 @@
     const s_name = cols[cols.length - 2]
     const ch_idx = cols[cols.length - 1]
 
-    const mode = +query.mode || 1
+    const mode = +query.mode || 0
     // prettier-ignore
     const [ok, data] = await get_chinfo(this.fetch, b_slug, s_name, ch_idx, mode)
 
