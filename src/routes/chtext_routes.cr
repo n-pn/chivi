@@ -68,6 +68,7 @@ module CV::Server
       chtext.trans!(dname)
     end
 
+    env.response.content_type = "text/plain; charset=utf-8"
     chtext.cv_trans
   rescue err
     puts "- Error loading chap_text: #{err}"
