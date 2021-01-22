@@ -39,11 +39,11 @@ class CV::Chtext
     case @s_name
     when "rengshu", "xbiquge", "nofff",
          "5200", "bqg_5200", "duokan8"
-      u_power > 0
-    when "hetushu", "zhwenpg"
-      u_power > 1
-    when "shubaow", "69shu", "paoshu8"
-      u_power > 2
+      u_power >= 0
+    when "hetushu", "zhwenpg", "69shu"
+      u_power >= 1
+    when "shubaow", "paoshu8"
+      u_power >= 2
     else
       false
     end

@@ -23,6 +23,7 @@ def load_relic(file : String, dlock : Int32)
 end
 
 def migrate(file : String, uniq = false)
+  puts file
   input = {} of String => Array(String)
 
   File.each_line(file) do |line|
@@ -57,7 +58,14 @@ def migrate(file : String, uniq = false)
     end
 
     vdict.upsert(entry, emend)
-    CV::VpDict.suggest.upsert(entry, emend) if uniq
+
+    next unless uniq
+    CV::VpDict.suggest.upsert(entry, emend)
+
+    next if vals.empty?
+    next if vals[0].downcase == vals[0]
+    next if CV::VpDict.regular.find(key)
+    CV::VpDict.various.upsert(entry, emend)
   end
 
   vdict.save!
@@ -65,4 +73,6 @@ end
 
 Dir.glob("_db/dictdb/legacy/core/*.log").each { |x| migrate(x) }
 Dir.glob("_db/dictdb/legacy/uniq/*.log").each { |x| migrate(x, uniq: true) }
+
 CV::VpDict.suggest.save!
+CV::VpDict.various.save!

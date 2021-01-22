@@ -5,7 +5,10 @@ require "./vp_dict/*"
 
 class CV::VpDict
   DIR = "_db/dictdb/active"
-  ::FileUtils.mkdir_p(DIR)
+  ::FileUtils.mkdir_p("#{DIR}/common")
+  ::FileUtils.mkdir_p("#{DIR}/lookup")
+  ::FileUtils.mkdir_p("#{DIR}/system")
+  ::FileUtils.mkdir_p("#{DIR}/unique")
 
   class_getter trungviet : self { load("trungviet") }
   class_getter cc_cedict : self { load("cc_cedict") }

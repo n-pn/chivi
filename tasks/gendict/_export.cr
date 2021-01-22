@@ -105,7 +105,7 @@ inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
 end
 
 EXT_VARIOUS = "_db/dictdb/remote/common/various.tab"
-OUT_VARIOUS.load!(EXT_VARIOUS) if File.exists?(EXT_VARIOUS)
+OUT_VARIOUS.load!(EXT_VARIOUS)
 OUT_VARIOUS.save!
 
 # puts "\n[Export recycle]".colorize.cyan.bold

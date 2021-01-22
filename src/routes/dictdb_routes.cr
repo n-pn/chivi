@@ -87,19 +87,29 @@ module CV::Server
     halt env, status_code: 500, response: "Access denied!" if u_power < 1
 
     key = env.params.json["key"].as(String)
-    value = env.params.json.fetch("value", "").as(String).split(/[\/|]/)
+    value = env.params.json.fetch("value", "").as(String).split(/[\/|]/).reject(&.empty?)
     attrs = env.params.json.fetch("attrs", "").as(String)
 
     power = env.params.json.fetch("power", u_power).as(Int64).to_i
     power = u_power if power > u_power
 
     dict = VpDict.load(env.params.url["dname"])
-    entry = VpEntry.new(key, value.reject(&.empty?), attrs, dtype: dict.dtype)
+    entry = VpEntry.new(key, value, attrs, dtype: dict.dtype)
     emend = VpEmend.new(uname: u_dname, power: power)
 
     # TODO: save context
     unless dict.upsert!(entry, emend)
       halt env, status_code: 501, response: "Unchanged!"
+    end
+
+    if dict.dtype == 3 # unique dict
+      # add to suggestion
+      CV::VpDict.suggest.upsert!(entry, emend)
+
+      # add to quick translation dict if entry is a name
+      unless value.empty? || value[0].dowcase == value[0]
+        CV::VpDict.various.upsert!(entry, emend) unless CV::VpDict.regular.find(key)
+      end
     end
 
     RouteUtils.json_res(env, dict.info(key))
