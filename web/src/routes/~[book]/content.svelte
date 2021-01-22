@@ -87,7 +87,6 @@
   import SIcon from '$blocks/SIcon'
   import RTime from '$blocks/RTime'
   import paginate_range from '$utils/paginate_range'
-  // import AdBanner from '$blocks/AdBanner'
 
   import { u_power } from '$src/stores'
 

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SSH=nipin@ssh.chivi.xyz:www/chivi.xyz
+SSH=nipin@dev.chivi.xyz:www/chivi.xyz
 
 rsync -azi "_db/dictdb/active/" "$SSH/_db/dictdb/remote/"
 
@@ -17,5 +17,5 @@ rsync -azi --no-p "_db/chdata/chinfos" "$SSH/_db/chdata"
 rsync -azi --no-p "_db/bcover/" "$SSH/web/public/covers/"
 
 ## upload user data
-# rsync -azi --no-p "_db/userdb/viusers" "$SSH/_db/userdb"
-# rsync -azi "_db/marked" "$SSH/_db"
+rsync -azi --no-p "_db/userdb/viusers" "$SSH/_db/userdb"
+rsync -azi "_db/marked" "$SSH/_db"
