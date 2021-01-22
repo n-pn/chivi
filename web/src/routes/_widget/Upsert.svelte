@@ -63,10 +63,12 @@
 
   async function init_search(key, dname) {
     const data = await dict_search(fetch, key, dname)
+
     trans = data.trans || { hanviet: '', binh_am: '' }
     infos = data.infos || []
     hints = data.hints || []
 
+    infos[0].attrs = infos[0].attrs || infos[1].key ? infos[1].attrs : 'N'
     change_tab($on_tab)
   }
 
@@ -81,12 +83,9 @@
   function change_tab(idx) {
     on_tab.set(idx)
     curr = get_curr(infos, idx)
-    attrs = curr.info.attrs || ''
-    update_val()
-  }
 
-  function update_val(new_val = curr.orig) {
-    value = new_val || hints[0] || titleize(trans.hanviet, $on_tab < 1)
+    value = curr.orig || hints[0] || titleize(trans.hanviet, idx < 1)
+    attrs = curr.info.attrs
   }
 
   async function submit_val() {
