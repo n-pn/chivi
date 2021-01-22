@@ -107,7 +107,7 @@ module CV::Server
       CV::VpDict.suggest.upsert!(entry, emend)
 
       # add to quick translation dict if entry is a name
-      unless value.empty? || value[0].dowcase == value[0]
+      unless value.empty? || value[0].downcase == value[0]
         CV::VpDict.various.upsert!(entry, emend) unless CV::VpDict.regular.find(key)
       end
     end
