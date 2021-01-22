@@ -80,18 +80,20 @@ class CV::Chinfo
     true
   end
 
-  private def remote?(power = 3)
+  private def remote?(u_power = 4)
     case @s_name
-    when "rengshu", "xbiquge",
-         "nofff", "5200",
-         "bqg_5200", "duokan8"
-      power > 0
-    when "hetushu", "zhwenpg"
-      power > 1
-    when "shubaow", "69shu", "paoshu8"
-      power > 2
-    else
+    when "_chivi", "_miscs", "zxcs_me", "zadzs"
       false
+    when "5200", "bqg_5200", "rengshu", "nofff"
+      true
+    when "xbiquge", "duokan8", "hetushu"
+      u_power > 0
+    when "zhwenpg", "69shu", "paoshu8"
+      u_power > 1
+    when "shubaow"
+      u_power > 2
+    else
+      u_power > 3
     end
   end
 
