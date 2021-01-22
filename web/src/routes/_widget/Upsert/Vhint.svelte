@@ -1,3 +1,14 @@
+<script context="module">
+  function show_class_for(words) {
+    if (words < 7) return '_ss'
+    if (words < 9) return '_sm'
+    if (words < 13) return '_md'
+    if (words < 17) return '_lg'
+    // if (words < 18) return '_xl'
+    return '_xx'
+  }
+</script>
+
 <script>
   export let hints
   export let value
@@ -6,12 +17,17 @@
 
   $: hanviet = trans.hanviet || ''
   $: binh_am = trans.binh_am || ''
+
+  $: _hint = hints.filter((x) => x != value)
+  $: words = hanviet.split(' ').length * (_hint.length + 2)
+  $: console.log({ words })
+  $: _show = show_class_for(words)
 </script>
 
 <div class="hints">
   <span class="hint" on:click={() => (value = hanviet)}>{hanviet}</span>
 
-  {#each hints as hint}
+  {#each _hint as hint}
     {#if hint != value}
       <span
         class="hint"
@@ -20,7 +36,9 @@
     {/if}
   {/each}
 
-  <span class="right">[{binh_am}]</span>
+  {#if binh_am}
+    <span class="pinyin {_show}">[{binh_am}]</span>
+  {/if}
 </div>
 
 <style lang="scss">
@@ -62,10 +80,17 @@
     font-weight: 500;
   }
 
-  .right {
+  // prettier-ignore
+  .pinyin {
     font-style: normal;
     margin-left: auto;
     font-size: rem(12px);
     @include truncate(null);
+
+    &._sm { @include props(display, none, $sm: inline-block); }
+    &._md { @include props(display, none, $md: inline-block); }
+    &._lg { @include props(display, none, $lg: inline-block); }
+    &._xl { @include props(display, none, $xl: inline-block); }
+    &._xx { display: none; }
   }
 </style>

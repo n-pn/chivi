@@ -5,10 +5,10 @@
       'G.Trans',
       `https://translate.google.com/?sl=zh-CN&tl=en&text=${key}&op=translate`,
     ],
-    ['G.Search', `https://www.google.com/search?q=${key}`],
     ['Fanyi', `https://fanyi.baidu.com/#zh/en/${key}`],
-    ['Baidu', `http://www.baidu.com/s?wd=${key}`],
     ['iCIBA', `https://www.iciba.com/word?w=${key}`],
+    ['Baidu', `http://www.baidu.com/s?wd=${key}`],
+    ['G.Search', `https://www.google.com/search?q=${key}`],
   ]
 </script>
 
