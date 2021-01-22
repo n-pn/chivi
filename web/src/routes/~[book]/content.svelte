@@ -8,14 +8,15 @@
 
     const { nvinfo, nvmark } = await res.json()
 
-    const [source_main] = split_seeds(nvinfo.source, query.source)
-    const source = query.source || source_main[0] || ''
+    const chseed = Object.keys(nvinfo.source)
+
+    const source = query.source || chseed[0] || '_chivi'
 
     const page = +(query.page || 1)
     const ret = { nvinfo, nvmark, source, page, order }
 
     try {
-      const params = { source: source, page, order, mode: 0 }
+      const params = { source, page, order, mode: 0 }
       const data_2 = await fetch_data(this.fetch, nvinfo.b_hash, params)
       return { ...ret, ...data_2 }
     } catch (e) {
@@ -44,37 +45,22 @@
     }
   }
 
-  function split_seeds(chseed, picked) {
-    const input = Object.keys(chseed).sort((a, b) => _order(a) - _order(b))
+  function split_chseed(nvinfo, picked) {
+    const input = Object.keys(nvinfo.source)
     if (input.length < 6) return [input, []]
 
-    let source_main = input.slice(0, 4)
-    let source_hide
+    let main_seeds = input.slice(0, 4)
+    let hide_seeds
 
-    if (source_main.includes(picked)) {
-      source_main.push(input[4])
-      source_hide = input.slice(5)
+    if (main_seeds.includes(picked)) {
+      main_seeds.push(input[4])
+      hide_seeds = input.slice(5)
     } else if (picked) {
-      source_main.push(picked)
-      source_hide = input.slice(4).filter((x) => x != picked)
+      main_seeds.push(picked)
+      hide_seeds = input.slice(4).filter((x) => x != picked)
     }
 
-    return [source_main, source_hide]
-  }
-
-  function _order(source) {
-    switch (source) {
-      case '69shu':
-        return 4
-      case 'paoshu8':
-        return 3
-      case 'shubaow':
-        return 2
-      case 'jx_la':
-        return 1
-      default:
-        return 0
-    }
+    return [main_seeds, hide_seeds]
   }
 
   function update_utime(nvinfo, utime) {
@@ -115,7 +101,7 @@
 
   $: page_list = paginate_range(page, pmax, 9)
 
-  $: [source_main, source_hide] = split_seeds(nvinfo.source, source)
+  $: [main_seeds, hide_seeds] = split_chseed(nvinfo, source)
   let show_more = false
 
   let scroll_top
@@ -171,6 +157,7 @@
     total = res.total
     utime = res.utime
 
+    if (res.chseed) nvinfo.source = res.chseed
     nvinfo = update_utime(nvinfo, res.utime)
 
     if (scroll) scroll_top.scrollIntoView({ block: 'start' })
@@ -217,10 +204,10 @@
 <svelte:window on:keydown={handle_keypress} />
 
 <Common {nvinfo} {nvmark} atab="content">
-  {#if source}
+  {#if main_seeds.length > 0}
     <div class="source" bind:this={scroll_top}>
       <span class="-text"><span class="-hide">Chọn</span> nguồn:</span>
-      {#each source_main as m_name}
+      {#each main_seeds as m_name}
         <a
           class="-name"
           class:_active={source === m_name}
@@ -229,9 +216,9 @@
         </a>
       {/each}
 
-      {#if source_hide.length > 0}
+      {#if hide_seeds.length > 0}
         {#if show_more}
-          {#each source_hide as h_name}
+          {#each hide_seeds as h_name}
             <a
               class="-name"
               href={page_url(h_name, page)}
@@ -241,7 +228,7 @@
         {:else}
           <button class="-name" on:click={() => (show_more = true)}>
             <SIcon name="more-horizontal" />
-            <span>({source_hide.length})</span>
+            <span>({hide_seeds.length})</span>
           </button>
         {/if}
       {/if}

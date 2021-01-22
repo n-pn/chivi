@@ -54,7 +54,7 @@ fetch_info("rengshu", "181", fresh: false)
 fetch_info("hetushu", "5", fresh: false)
 fetch_info("hetushu", "4420", fresh: false)
 # fetch_info("hetushu", "162", fresh: true)
-# fetch_info("hetushu", "350", fresh: true)
+fetch_info("hetushu", "350", fresh: true)
 
 fetch_info("duokan8", "6293", fresh: false)
 

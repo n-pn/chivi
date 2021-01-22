@@ -7,15 +7,17 @@ module CV::HttpUtils
   extend self
 
   def get_html(url : String, encoding : String) : String
-    cmd = "curl -L -k -s -m 30 '#{url}'"
-    cmd += " | iconv -c -f #{encoding} -t UTF-8" if encoding != "UTF-8"
-
     try = 0
+    tls = OpenSSL::SSL::Context::Client.insecure if url.starts_with?("https")
 
     loop do
       puts "[GET: <#{url}> (try: #{try})]".colorize.magenta
-      html = `#{cmd}`.strip
-      return fix_charset(html, encoding) if html.size > 10
+
+      HTTP::Client.get(url, tls: tls) do |res|
+        res.body_io.set_encoding(encoding, invalid: :skip) unless encoding == "UTF-8"
+        html = res.body_io.gets_to_end
+        return fix_charset(html, encoding) unless html.empty?
+      end
     rescue err
       puts err.colorize.red
     ensure

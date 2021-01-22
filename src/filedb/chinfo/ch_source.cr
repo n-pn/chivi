@@ -42,6 +42,6 @@ class CV::ChSource
   end
 
   def self.utime(s_name : String, s_nvid : String)
-    load(s_name)._utime.fval_64(s_nvid)
+    load(s_name)._utime.ival_64(s_nvid)
   end
 end

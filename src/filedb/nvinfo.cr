@@ -68,6 +68,26 @@ class CV::Nvinfo
     NvValues._atime.save!(mode: :upds) if NvValues._atime.unsaved > 10
   end
 
+  def fix_source! : Hash(String, String)
+    chseed = source.to_a.sort_by do |s_name, s_nvid|
+      source_order(s_name) || -ChSource.utime(s_name, s_nvid)
+    end
+
+    NvValues.source.add(b_hash, chseed.map { |a, b| "#{a}/#{b}" })
+    source = chseed.to_h
+  end
+
+  private def source_order(s_name : String)
+    case s_name
+    when "69shu"   then 1
+    when "paoshu8" then 2
+    when "shubaow" then 3
+    when "jx_la"   then 4
+    else
+      nil
+    end
+  end
+
   def self.upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)
     unless fixed
       zh_btitle = NvHelper.fix_zh_btitle(zh_btitle)

@@ -20,6 +20,9 @@ module CV::Server
       if chinfo.fetch!(u_power, mode > 1)
         chinfo.trans!(b_hash, u_power > 1)
         chinfo.save!
+
+        chseed = Nvinfo.load(b_hash).fix_source!
+        NvValues.source.save!(mode: :upds)
       end
     end
 
@@ -33,6 +36,7 @@ module CV::Server
     RouteUtils.json_res(env, cached: chinfo._utime) do |res|
       JSON.build(res) do |json|
         json.object do
+          json.field "chseed", chseed
           json.field "total", chinfo.infos.size
           json.field "utime", chinfo._utime
 
