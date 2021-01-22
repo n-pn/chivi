@@ -9,7 +9,6 @@
     const { nvinfo, nvmark } = await res.json()
 
     const chseed = Object.keys(nvinfo.source)
-
     const source = query.source || chseed[0] || '_chivi'
 
     const page = +(query.page || 1)
