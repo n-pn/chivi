@@ -9,4 +9,4 @@ rsync -aiz --no-p "$SSH/_db/nvdata/viusers/" "_db/userdb/viusers/"
 rsync -aiz --no-p "$SSH/_db/nvdata/nvmarks/" "_db/marked/"
 
 # rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
-# rsync -aiz --no-p --include="*.txt" "$SSH/_db/nvdata/zhtexts" "_db/chdata"
+rsync -aiz --no-p --exclude "biquge_5200/" --exclude "*.zip" "$SSH/_db/nvdata/zhtexts" "_db/chdata"

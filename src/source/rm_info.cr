@@ -3,6 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../_utils/time_utils"
+require "../_utils/file_utils"
 require "../_utils/text_utils"
 require "../_utils/http_utils"
 
