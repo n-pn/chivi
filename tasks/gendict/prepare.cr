@@ -71,7 +71,7 @@ INPUT.each do |key, vals|
   word_count = COUNT_WORDS[key]? || 0
 
   checked = CHECKED.includes?(key)
-  ondicts = LEXICON.includes?(key)
+  ondicts = LEXICON.includes?(key) || key.size == 1
 
   words, names = vals.uniq.partition { |x| x == x.downcase }
   words = words.first(4)

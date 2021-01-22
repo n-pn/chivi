@@ -68,11 +68,14 @@
     infos = data.infos || []
     hints = data.hints || []
 
-    infos[0].attrs = infos[0].attrs || infos[1].key ? infos[1].attrs : 'N'
+    if (!infos[0].key) {
+      infos[0].attrs = infos[0].attrs || infos[1].key ? infos[1].attrs : 'N'
+    }
     change_tab($on_tab)
   }
 
-  $: p_min = curr.info.power || $on_tab + 1
+  $: p_min = curr.info.power || 0
+  $: if (p_min < $on_tab + 1) p_min = $on_tab + 1
   $: power = p_min < $u_power ? p_min : $u_power
 
   $: updated = value !== curr.orig

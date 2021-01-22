@@ -41,19 +41,19 @@ def migrate(file : String, uniq = false)
 
   input.each_value do |cols|
     key = cols[0]
-    vals = cols.fetch(1, "").sub("", "").strip.split(/[\/¦]/)
+    vals = cols.fetch(1, "").sub("", "").strip.split(/[\/¦\/]/).uniq
 
     entry = CV::VpEntry.new(key, vals)
 
     if mtime = cols[2]?.try(&.to_i?) || 0
       uname = cols[3]? || "Guest"
-      uname = "<old>" if uname == "Guest"
+      uname = "_" if uname == "Guest"
 
       next if dname == "hanviet" && uname != "Nipin"
 
       power = cols[4]?.try(&.to_i?) || 4
-      power = vdict.p_min if power > vdict.p_min
 
+      power = vdict.p_min if power > vdict.p_min
       emend = CV::VpEmend.new(mtime, uname, power)
     end
 

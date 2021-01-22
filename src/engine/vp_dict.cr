@@ -105,7 +105,7 @@ class CV::VpDict
 
   def add(cols : Array(String))
     entry = VpEntry.from(cols, dtype: @dtype)
-    emend = VpEmend.from(cols, p_min: @p_min)
+    emend = VpEmend.from(cols, p_min: @p_min) if cols.size > 3
 
     add(entry, emend)
   end
@@ -116,33 +116,25 @@ class CV::VpDict
 
     # find existing node or force creating new one
     node = @_root.find!(new_entry.key)
+    @rsize += 1 unless old_entry = node.entry
 
-    # old_power = node.emend.try(&.power) || @p_min
-    # old_mtime = node.emend.try(&.mtime) || 0
+    p_new = new_emend.try(&.power) || @p_min
+    p_old = node.emend.try(&.power) || @p_min
 
-    if old_entry = node.entry
-      newer = new_emend ? new_emend.newer?(node.emend) : false
+    t_new = new_emend.try(&.mtime) || 0
+    t_old = node.emend.try(&.mtime) || 0
 
-      if newer
-        node.entry = new_entry
-        node._hint.concat(old_entry.vals).uniq!
-        node.emend = new_emend
-      else
-        node._hint.concat(new_entry.vals).uniq!
-      end
+    newer = p_new == p_old ? t_new >= t_old : p_new > p_old
 
-      return newer
+    if newer
+      node.entry = new_entry
+      node.emend = new_emend
+      node._hint.concat(old_entry.vals).uniq! if old_entry
+    else
+      node._hint.concat(new_entry.vals).uniq!
     end
 
-    if new_emend.try(&.power.< p_min)
-      node._hint.concat(new_entry.vals)
-      return false
-    end
-
-    @rsize += 1
-    node.entry = new_entry
-    node.emend = new_emend
-    true
+    newer
   end
 
   def bump_mtime!(time : Time)

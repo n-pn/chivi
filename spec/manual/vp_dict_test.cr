@@ -30,3 +30,6 @@ puts special.dtype
 if entry = special.find("码")
   pp entry, entry.worth
 end
+
+pp regular._root.find("体味")
+pp regular._root.find("三人").try { |x| {x.entry, x.emend, x._hint} }

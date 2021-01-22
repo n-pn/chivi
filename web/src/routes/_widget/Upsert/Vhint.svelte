@@ -47,6 +47,7 @@
     width: 100%;
     padding: 0.375rem 0.5rem;
     font-style: italic;
+    height: 2rem;
     line-height: 1.25rem;
 
     @include flex();
