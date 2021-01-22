@@ -57,15 +57,15 @@ def migrate(file : String, uniq = false)
       emend = CV::VpEmend.new(mtime, uname, power)
     end
 
-    vdict.upsert(entry, emend)
+    vdict.add(entry, emend)
 
     next unless uniq
-    CV::VpDict.suggest.upsert(entry, emend)
+    CV::VpDict.suggest.add(entry, emend)
 
     next if vals.empty?
     next if vals[0].downcase == vals[0]
     next if CV::VpDict.regular.find(key)
-    CV::VpDict.various.upsert(entry, emend)
+    CV::VpDict.various.add(entry, emend)
   end
 
   vdict.save!

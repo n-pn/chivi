@@ -67,7 +67,7 @@ class CV::Nvinfo
     NvValues._atime.save!(mode: :upds) if NvValues._atime.unsaved > 10
   end
 
-  def self.upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)
+  def self.set(zh_btitle : String, zh_author : String, fixed : Bool = false)
     unless fixed
       zh_btitle = NvHelper.fix_zh_btitle(zh_btitle)
       zh_author = NvHelper.fix_zh_author(zh_author)

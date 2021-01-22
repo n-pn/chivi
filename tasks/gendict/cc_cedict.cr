@@ -122,7 +122,7 @@ class CeInput
 
     input.each do |key, vals|
       QtUtil.lexicon.add(key)
-      output.upsert(CV::VpEntry.new(key, vals))
+      output.add(CV::VpEntry.new(key, vals))
     end
 
     QtUtil.lexicon.save!
@@ -164,12 +164,12 @@ class CeInput
       next if HANZIDB.has_key?(trad) || counts.has_key?(trad)
 
       best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
-      output.upsert(CV::VpEntry.new(trad, best))
+      output.add(CV::VpEntry.new(trad, best))
     end
 
     puts "- trad chars count: #{output.rsize.colorize(:green)}"
 
-    output.upsert(CV::VpEntry.new("扶馀", ["扶余"]))
+    output.add(CV::VpEntry.new("扶馀", ["扶余"]))
 
     words = tswords.data.to_a.sort_by(&.[0].size)
     words.each do |key, vals|
@@ -179,7 +179,7 @@ class CeInput
       convert = QtUtil.convert(output, key)
       next if simp.first == convert
 
-      output.upsert(CV::VpEntry.new(key, simp))
+      output.add(CV::VpEntry.new(key, simp))
     end
 
     output.save!
@@ -212,17 +212,17 @@ class CeInput
 
     HANZIDB.each do |key, vals|
       next if vals.empty? || vals.first.empty?
-      output.upsert(CV::VpEntry.new(key, vals))
+      output.add(CV::VpEntry.new(key, vals))
     end
 
     counter.each do |char, counts|
       best = counts.to_a.sort_by { |pinyin, count| -count }.map(&.first)
-      output.upsert(CV::VpEntry.new(char, best.first(3)))
+      output.add(CV::VpEntry.new(char, best.first(3)))
     end
 
     extras = QtDict.load("_system/extra-pinyins.txt")
     extras.each do |key, vals|
-      output.upsert(CV::VpEntry.new(key, vals))
+      output.add(CV::VpEntry.new(key, vals))
     end
 
     words = pywords.to_a.sort_by(&.[0].size)
@@ -233,7 +233,7 @@ class CeInput
       convert = QtUtil.convert(output, key, " ")
       next if vals.first == convert
 
-      output.upsert(CV::VpEntry.new(key, vals))
+      output.add(CV::VpEntry.new(key, vals))
     end
 
     output.save!

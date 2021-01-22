@@ -70,7 +70,7 @@ class CV::VpDict
     tspan = Time.measure do
       File.each_line(file) do |line|
         next if line.strip.blank?
-        upsert(line.split('\t'))
+        add(line.split('\t'))
         count += 1
       rescue err
         puts "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red
@@ -93,25 +93,25 @@ class CV::VpDict
   end
 
   # save to disk, return old entry if exists
-  def upsert!(entry : VpEntry, emend : VpEmend? = nil) : Bool
+  def set(entry : VpEntry, emend : VpEmend? = nil) : Bool
     File.open(emend ? @efile : @afile, "a") do |io|
       io << '\n'
       to_str(io, entry, emend)
     end
 
     bump_mtime!(emend.rtime) if emend
-    upsert(entry, emend)
+    add(entry, emend)
   end
 
-  def upsert(cols : Array(String))
+  def add(cols : Array(String))
     entry = VpEntry.from(cols, dtype: @dtype)
     emend = VpEmend.from(cols, p_min: @p_min)
 
-    upsert(entry, emend)
+    add(entry, emend)
   end
 
   # return old entry if exists
-  def upsert(new_entry : VpEntry, new_emend : VpEmend? = nil) : Bool
+  def add(new_entry : VpEntry, new_emend : VpEmend? = nil) : Bool
     @items << {new_entry, new_emend}
 
     # find existing node or force creating new one

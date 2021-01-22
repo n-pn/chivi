@@ -1,7 +1,7 @@
 require "../../src/engine/convert"
 
 GENERIC = CV::Convert.generic("various")
-CV::VpDict.various.upsert(["贾文和", "Giả Văn Hoà"])
+CV::VpDict.various.add(["贾文和", "Giả Văn Hoà"])
 
 HANVIET = CV::Convert.hanviet
 

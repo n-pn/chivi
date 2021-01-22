@@ -46,7 +46,7 @@ inp_regular.to_a.sort_by(&.[0].size).each do |key, vals|
     end
   end
 
-  OUT_REGULAR.upsert(CV::VpEntry.new(key, vals))
+  OUT_REGULAR.add(CV::VpEntry.new(key, vals))
 end
 
 puts "\n- load hanviet".colorize.cyan.bold
@@ -55,7 +55,7 @@ CV::VpDict.hanviet._root.each do |node|
   next unless entry = node.entry
   next if entry.key.size > 1
   next if OUT_REGULAR.find(entry.key)
-  OUT_REGULAR.upsert(entry)
+  OUT_REGULAR.add(entry)
 end
 
 OUT_REGULAR.load!("_db/dictdb/remote/common/regular.tab")
@@ -80,7 +80,7 @@ inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
     next if REGULAR.cv_plain(key).to_s =~ regex
   end
 
-  OUT_SUGGEST.upsert(CV::VpEntry.new(key, vals))
+  OUT_SUGGEST.add(CV::VpEntry.new(key, vals))
 rescue err
   pp [err, key, vals]
 end
@@ -101,7 +101,7 @@ inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
     next if should_skip?(key)
   end
 
-  OUT_VARIOUS.upsert(CV::VpEntry.new(key, vals))
+  OUT_VARIOUS.add(CV::VpEntry.new(key, vals))
 end
 
 EXT_VARIOUS = "_db/dictdb/remote/common/various.tab"
@@ -118,6 +118,6 @@ OUT_VARIOUS.save!
 #     next if should_skip?(key)
 #   end
 
-#   out_recycle.upsert(key, vals)
+#   out_recycle.add(key, vals)
 # end
 # out_recycle.save!

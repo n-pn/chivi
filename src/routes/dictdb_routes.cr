@@ -98,17 +98,17 @@ module CV::Server
     emend = VpEmend.new(uname: u_dname, power: power)
 
     # TODO: save context
-    unless dict.upsert!(entry, emend)
+    unless dict.set(entry, emend)
       halt env, status_code: 501, response: "Unchanged!"
     end
 
     if dict.dtype == 3 # unique dict
       # add to suggestion
-      CV::VpDict.suggest.upsert!(entry, emend)
+      CV::VpDict.suggest.set(entry, emend)
 
       # add to quick translation dict if entry is a name
       unless value.empty? || value[0].downcase == value[0]
-        CV::VpDict.various.upsert!(entry, emend) unless CV::VpDict.regular.find(key)
+        CV::VpDict.various.set(entry, emend) unless CV::VpDict.regular.find(key)
       end
     end
 
