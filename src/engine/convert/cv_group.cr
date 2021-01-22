@@ -1,6 +1,8 @@
 require "./cv_entry"
 
 class CV::CvGroup
+  SEP = 'ǀ'
+
   getter data : Array(CvEntry)
 
   def initialize(@data)
@@ -174,7 +176,7 @@ class CV::CvGroup
   end
 
   def to_str(io : IO) : Nil
-    @data.map { |x| {x.key, x.val, x.dic}.join('\t') }.join(io, '\v')
+    @data.map { |x| {x.key, x.val, x.dic}.join(SEP) }.join(io, '\t')
   end
 
   def inspect(io : IO) : Nil

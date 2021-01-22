@@ -55,7 +55,7 @@
   }
 
   function parse_input(line) {
-    return line.split('\v').map((x) => x.split('\t'))
+    return line.split('\t').map((x) => x.split('ǀ'))
   }
 </script>
 

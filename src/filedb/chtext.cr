@@ -17,7 +17,7 @@ class CV::Chtext
   property zh_mtime = 0_i64
 
   property cv_trans = ""
-  property cv_mtime : Time = Time.unix(0)
+  property cv_mtime = 0_i64
 
   def initialize(@s_name, @s_nvid, @s_chid)
     @zh_file = "_db/chdata/zhtexts/#{@s_name}/#{@s_nvid}/#{@s_chid}.txt"
@@ -30,7 +30,7 @@ class CV::Chtext
     @zh_lines = [source.title].concat(source.paras)
 
     cv_trans = ""
-    cv_mtime = Time.unix(0)
+    cv_mtime = 0_i64
 
     self.save_zh!
   end
@@ -53,24 +53,24 @@ class CV::Chtext
   end
 
   def trans!(dname = "various")
-    @cv_mtime = Time.utc
+    @cv_mtime = Time.utc.to_unix
+    return if zh_lines.empty?
 
-    if zh_lines.empty?
-      @cv_trans = ""
-    else
-      # TODO: replace with new engine
-      cvter = Convert.generic(dname)
+    cvter = Convert.generic(dname)
 
-      @cv_trans = String.build do |io|
-        cvter.cv_title(zh_lines[0]).to_str(io)
+    @cv_trans = String.build do |io|
+      cvter.cv_title(zh_lines[0]).to_str(io)
 
-        1.upto(zh_lines.size - 1) do |i|
-          io << "\n"
-          para = zh_lines.unsafe_fetch(i)
-          cvter.cv_plain(para).to_str(io)
-        end
+      1.upto(zh_lines.size - 1) do |i|
+        io << "\n"
+        para = zh_lines.unsafe_fetch(i)
+        cvter.cv_plain(para).to_str(io)
       end
     end
+  end
+
+  def translated?(time = Time.utc - 3.hours)
+    @cv_mtime >= time.to_unix
   end
 
   def load_zh_text : Array(String)

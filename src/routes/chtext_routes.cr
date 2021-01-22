@@ -63,14 +63,12 @@ module CV::Server
     chtext = Chtext.load(s_name, s_nvid, s_chid)
     chtext.fetch!(u_power) if mode > 1 || chtext.zh_lines.empty?
 
-    unless mode == 0 && chtext.cv_mtime > (Time.utc - 3.hours)
+    unless mode == 0 && chtext.translated?(Time.utc - 3.hours)
       dname = env.params.query["dname"]? || "various"
       chtext.trans!(dname)
     end
 
-    RouteUtils.json_res(env) do |res|
-      {cvdata: chtext.cv_trans, mftime: chtext.cv_mtime.to_unix}.to_json(res)
-    end
+    chtext.cv_trans
   rescue err
     puts "- Error loading chap_text: #{err}"
     message = err.message || "Unknown error!"

@@ -108,8 +108,8 @@
     if (mode > $u_power) mode = $u_power
     if (mode < 1) return
 
-    const [ok, data] = await get_chtext(window.fetch, chinfo, mode)
-    cvdata = ok ? data.cvdata : data.message
+    const [_ok, chdata] = await get_chtext(window.fetch, chinfo, mode)
+    cvdata = chdata
     changed = false
   }
 </script>
