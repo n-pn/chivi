@@ -8,7 +8,7 @@
     {#if bcover}
       <source srcset="/covers/_chivi/{b_hash}.webp" type="image/webp" />
     {/if}
-    <img alt={b_hash} src="/covers/{bcover || 'blank.png'}" loading="lazy" />
+    <img alt="" src="/covers/{bcover || 'blank.png'}" loading="lazy" />
   </picture>
 </div>
 
