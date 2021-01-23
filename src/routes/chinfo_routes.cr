@@ -33,7 +33,7 @@ module CV::Server
     #   skip = (chinfo.chaps.size // limit) * limit
     # end
 
-    RouteUtils.json_res(env, cached: chinfo._utime) do |res|
+    RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
         json.object do
           json.field "chseed", chseed

@@ -17,7 +17,7 @@ seeds = Dir.children(DIR).each do |seed|
     zip_store = CV::ZipStore.new("#{folder}.zip", folder)
 
     Dir.glob("#{folder}/*.txt").each do |file|
-      next unless File.size(file) < 5
+      next unless File.size(file) < 10
 
       File.delete(file)
       puts "-- <#{file}> deleted".colorize.light_red

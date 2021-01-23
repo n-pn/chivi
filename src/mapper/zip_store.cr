@@ -70,14 +70,13 @@ class CV::ZipStore
   end
 
   def compress!(mode : Symbol = :update, glob = "*.*") : Nil
-    if Dir.empty?(root_dir)
-      return puts "[Nothing to compress!]".colorize.dark_gray
-    end
+    return puts "[Nothing to compress!]".colorize.gray if Dir.empty?(root_dir)
 
     flags = zip_flags(mode)
+    files = Dir.glob("#{root_dir}/#{glob}")
 
-    puts "[Add files to zip: <#{@zip_file}>]"
     puts `zip #{flags} #{@zip_file} #{root_dir}/#{glob}`
+    puts "[Add #{files.size} files to zip: <#{@zip_file}>]"
   end
 
   def zip_flags(mode : Symbol)
