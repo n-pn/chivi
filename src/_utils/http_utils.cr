@@ -8,16 +8,12 @@ module CV::HttpUtils
 
   def get_html(url : String, encoding : String) : String
     try = 0
-    tls = OpenSSL::SSL::Context::Client.insecure if url.starts_with?("https")
+    internal = url.includes?("biquge5200")
 
     loop do
       puts "[GET: <#{url}> (try: #{try})]".colorize.magenta
-
-      HTTP::Client.get(url, tls: tls) do |res|
-        res.body_io.set_encoding(encoding, invalid: :skip) unless encoding == "UTF-8"
-        html = res.body_io.gets_to_end
-        return fix_charset(html, encoding) unless html.empty?
-      end
+      html = internal ? get_by_crystal(url, encoding) : get_by_curl(url, encoding)
+      return fix_charset(html, encoding) unless html.empty?
     rescue err
       puts err.colorize.red
     ensure
@@ -25,6 +21,26 @@ module CV::HttpUtils
       sleep 500.milliseconds * try
       raise "500 Server Error!" if try > 3
     end
+  end
+
+  def get_by_crystal(url : String, encoding : String)
+    tls = OpenSSL::SSL::Context::Client.insecure if url.starts_with?("https")
+
+    HTTP::Client.get(url, tls: tls) do |res|
+      res.body_io.set_encoding(encoding, invalid: :skip)
+      res.body_io.gets_to_end
+    end
+  end
+
+  def get_by_curl(url : String, encoding : String) : String
+    cmd = "curl -L -k -s -m 30 '#{url}'"
+    cmd += " | iconv -c -f #{encoding} -t UTF-8" if encoding != "UTF-8"
+    `#{cmd}`.strip
+  end
+
+  private def fix_charset(html : String, encoding : String)
+    return html if encoding == "UTF-8"
+    html.sub(/charset=#{encoding}/i, "charset=utf-8")
   end
 
   private def fix_charset(html : String, encoding : String)
