@@ -1,9 +1,9 @@
 export async function get_chlist(fetch, b_hash, opts) {
   const page = opts.page || 1
-  let skip = (page - 1) * take
+  let skip = (page - 1) * 30
   if (skip < 0) skip = 0
 
-  let url = `/api/chaps/${b_hash}/${opts.source}?take=${take}&skip=${skip}`
+  let url = `/api/chseeds/${b_hash}/${opts.source}?take=30&skip=${skip}`
   if (opts.order) url += `&order=${opts.order}`
   if (opts.mode) url += `&mode=${opts.mode}`
 
@@ -26,7 +26,6 @@ export async function get_chinfo(fetch, b_slug, s_name, ch_idx, mode = 0) {
   if (mode < 0) return [true, { chinfo, cvdata: '' }]
 
   const [ok, cvdata] = await get_chtext(fetch, chinfo, mode)
-
   return [ok, ok ? { chinfo, cvdata } : cvdata]
 }
 
@@ -46,13 +45,13 @@ async function wrap_error(res) {
 }
 
 export async function dict_search(fetch, key, dname = 'various') {
-  const url = `/api/dicts/search/${key}?dname=${dname}`
+  const url = `/api/dictdb/search/${key}?dname=${dname}`
   const res = await fetch(url)
   return await res.json()
 }
 
 export async function dict_upsert(fetch, dname, params) {
-  const url = `/api/dicts/upsert/${dname}`
+  const url = `/api/dictdb/upsert/${dname}`
   const res = await fetch(url, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -60,4 +59,17 @@ export async function dict_upsert(fetch, dname, params) {
   })
 
   return res
+}
+
+export async function dict_lookup(input, dname) {
+  const url = `/api/dictdb/lookup/${dname}`
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ input: input }),
+  })
+
+  const data = await res.json()
+  entries = data.entries
+  hanviet = data.hanviet.split('\t').map((x) => x.split('ǀ'))
 }

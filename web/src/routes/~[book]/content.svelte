@@ -25,8 +25,6 @@
     }
   }
 
-  const take = 30
-
   function split_chseed(nvinfo, picked) {
     const input = Object.keys(nvinfo.source)
     if (input.length < 6) return [input, []]
@@ -76,7 +74,7 @@
   $: reverse_order = order == 'desc' ? 'asc' : 'desc'
 
   function fix_pmax(total) {
-    const pmax = Math.floor((total - 1) / take) + 1
+    const pmax = Math.floor((total - 1) / 30) + 1
     if (page > pmax) page = pmax
     return pmax
   }
@@ -133,7 +131,7 @@
 
     _load = true
 
-    const res = await load_chlist(fetch, nvinfo.b_hash, opts)
+    const res = await get_chlist(fetch, nvinfo.b_hash, opts)
 
     chaps = res.chaps
     total = res.total

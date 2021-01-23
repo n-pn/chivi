@@ -2,7 +2,7 @@ require "./_route_utils"
 require "../filedb/chinfo"
 
 module CV::Server
-  get "/api/chaps/:b_hash/:s_name" do |env|
+  get "/api/chseeds/:b_hash/:s_name" do |env|
     b_hash = env.params.url["b_hash"]
     s_name = env.params.url["s_name"]
 
@@ -13,7 +13,7 @@ module CV::Server
     chinfo = Chinfo.load(s_name, s_nvid)
 
     u_power = env.session.int?("u_power") || 0
-    mode = env.params.query["mode"]?.try(&.to_i?) || 2
+    mode = env.params.query["mode"]?.try(&.to_i?) || 1
     mode = u_power if mode > u_power
 
     if mode > 0 || chinfo.l_chid.empty?

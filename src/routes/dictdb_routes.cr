@@ -3,7 +3,7 @@ require "./_route_utils"
 module CV::Server
   alias Lookup = Hash(String, Array(String))
 
-  put "/api/dicts/lookup/:dname" do |env|
+  put "/api/dictdb/lookup/:dname" do |env|
     dname = env.params.url["dname"]
     dicts = {VpDict.load(dname), VpDict.regular}
 
@@ -40,7 +40,7 @@ module CV::Server
     end
   end
 
-  get "/api/dicts/search/:input" do |env|
+  get "/api/dictdb/search/:input" do |env|
     input = env.params.url["input"]
     dname = env.params.query.fetch("dname", "various")
 
@@ -80,7 +80,7 @@ module CV::Server
     end
   end
 
-  put "/api/dicts/upsert/:dname" do |env|
+  put "/api/dictdb/upsert/:dname" do |env|
     u_dname = env.session.string?("u_dname") || "Khách"
     u_power = env.session.int?("u_power") || 0
 

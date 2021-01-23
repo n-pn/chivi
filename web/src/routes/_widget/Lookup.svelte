@@ -1,4 +1,6 @@
 <script context="module">
+  import { dict_lookup } from '$utils/api_calls'
+
   const tags = {
     '&': '&amp;',
     '<': '&lt;',
@@ -79,7 +81,9 @@
 
     return output
   }
+</script>
 
+<script>
   import SIcon from '$blocks/SIcon.svelte'
   import {
     lookup_input,
@@ -87,9 +91,7 @@
     lookup_actived as actived,
     lookup_enabled as enabled,
   } from '$src/stores'
-</script>
 
-<script>
   $: [input, lower, upper] = $lookup_input
 
   export let on_top = false
@@ -98,24 +100,11 @@
   let entries = []
   let current = []
 
-  $: if (input) lookup_line(input)
+  $: if (input) dict_lookup(input, $lookup_dname)
   $: if (lower < entries.length) update_focus()
 
   $: zh_html = render_zh(hanviet, lower, upper)
   $: hv_html = render_hv(hanviet, lower, upper)
-
-  async function lookup_line(input) {
-    const url = `/api/dicts/lookup/${$lookup_dname}`
-    const res = await fetch(url, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input: input }),
-    })
-
-    const data = await res.json()
-    entries = data.entries
-    hanviet = data.hanviet.split('\t').map((x) => x.split('ǀ'))
-  }
 
   function update_focus() {
     if (entries.length < lower) {
