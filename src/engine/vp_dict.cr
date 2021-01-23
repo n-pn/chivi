@@ -118,13 +118,7 @@ class CV::VpDict
     node = @_root.find!(new_entry.key)
     @rsize += 1 unless old_entry = node.entry
 
-    p_new = new_emend.try(&.power) || @p_min
-    p_old = node.emend.try(&.power) || @p_min
-
-    t_new = new_emend.try(&.mtime) || 0
-    t_old = node.emend.try(&.mtime) || 0
-
-    newer = p_new == p_old ? t_new >= t_old : p_new > p_old
+    newer = newer?(node, new_emend)
 
     if newer
       node.entry = new_entry
@@ -135,6 +129,20 @@ class CV::VpDict
     end
 
     newer
+  end
+
+  def newer?(node : Node, new_emend : VpEmend?)
+    t_new = new_emend.try(&.mtime) || 0
+    t_old = node.emend.try(&.mtime) || 0
+
+    u_new = new_emend.try(&.uname) || '_'
+    u_old = node.emend.try(&.uname) || '_'
+
+    return t_new >= t_old if u_new == u_old
+
+    p_new = new_emend.try(&.power) || @p_min
+    p_old = node.emend.try(&.power) || @p_min
+    p_new == p_old ? t_new >= t_old : p_new > p_old
   end
 
   def bump_mtime!(time : Time)
