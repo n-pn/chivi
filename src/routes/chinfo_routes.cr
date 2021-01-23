@@ -13,17 +13,15 @@ module CV::Server
     chinfo = Chinfo.load(s_name, s_nvid)
 
     u_power = env.session.int?("u_power") || 0
-    mode = env.params.query["mode"]?.try(&.to_i?) || 1
+    mode = env.params.query["mode"]?.try(&.to_i?) || 0
     mode = u_power if mode > u_power
 
-    if mode > 0 || chinfo.l_chid.empty?
-      if chinfo.fetch!(u_power, mode > 1)
-        chinfo.trans!(b_hash, u_power > 1)
-        chinfo.save!
+    if mode > 0 && chinfo.fetch!(u_power, mode > 1)
+      chinfo.trans!(b_hash, u_power > 1)
+      chinfo.save!
 
-        chseed = Nvinfo.load(b_hash).fix_source!
-        NvValues.source.save!(mode: :upds)
-      end
+      chseed = Nvinfo.load(b_hash).fix_source!
+      NvValues.source.save!(mode: :upds)
     end
 
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
