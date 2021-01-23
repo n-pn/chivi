@@ -46,7 +46,7 @@
       if (input.length > limit) break
     }
 
-    return [input, lower, upper]
+    return [input, lower, upper > lower ? upper : lower + 1]
   }
 
   function split_input(input) {
