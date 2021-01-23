@@ -17,14 +17,24 @@ const proxy = createProxyMiddleware('/api/', {
 const maxAge = 3 * 30 * 24 * 3600
 const assetOpts = { dev, maxAge, etag: true }
 
-polka() // You can also use Express
-  .use(
+const app = polka() // You can also use Express
+if (dev) {
+  app.use(
     proxy,
-    compression({ threshold: dev ? 0 : 1 }),
+    compression({ threshold: 0 }),
     sirv('static', assetOpts),
     sirv('public', assetOpts),
     sapper.middleware()
   )
-  .listen(PORT || 5000, '0.0.0.0', (err) => {
-    if (err) console.log('error: ', err)
-  })
+} else {
+  app.use(
+    proxy,
+    compression({ threshold: 1 }),
+    sirv('static', assetOpts),
+    sapper.middleware()
+  )
+}
+
+app.listen(PORT || 5000, '0.0.0.0', (err) => {
+  if (err) console.log('error: ', err)
+})
