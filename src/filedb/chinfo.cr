@@ -41,6 +41,9 @@ class CV::Chinfo
 
     set_atime(Time.utc.to_unix)
     changed
+  rescue err
+    puts err
+    false
   end
 
   def trans!(dname = "various", force = false) : Nil
@@ -63,6 +66,8 @@ class CV::Chinfo
   end
 
   def set_last_chid(s_chid : String) : Bool
+    raise "empty last_child!" if s_chid.empty?
+
     return false unless @meta.l_chid.add(@s_nvid, s_chid)
     @l_chid = s_chid
     true
@@ -75,7 +80,10 @@ class CV::Chinfo
   end
 
   def set_utime(mtime = Time.utc.to_unix) : Bool
-    return false unless @meta._utime.add(s_nvid, mtime)
+    otime = @meta._utime.ival_64(@s_nvid)
+    return false if otime > mtime
+
+    @meta._utime.add(@s_nvid, mtime)
     @_utime = mtime
     true
   end

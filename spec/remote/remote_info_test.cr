@@ -15,7 +15,7 @@ def fetch_info(s_name, s_nvid, fresh = false) : Void
     btitle: parser.btitle,
     author: parser.author,
     genres: parser.genres.join(" "),
-    bintro: parser.bintro.join("\t"),
+    bintro: parser.bintro.join("\n"),
     bcover: parser.bcover,
     status: parser.status_int,
     update: parser.updated_at,
@@ -54,7 +54,7 @@ fetch_info("rengshu", "181", fresh: false)
 fetch_info("hetushu", "5", fresh: false)
 fetch_info("hetushu", "4420", fresh: false)
 # fetch_info("hetushu", "162", fresh: true)
-fetch_info("hetushu", "350", fresh: true)
+# fetch_info("hetushu", "350", fresh: true)
 
 fetch_info("duokan8", "6293", fresh: false)
 
@@ -72,3 +72,5 @@ fetch_info("bqg_5200", "139570", fresh: false)
 # fetch_info("bqg_5200", "131878", fresh: true)
 
 fetch_info("shubaow", "150092", fresh: false)
+
+fetch_info("paoshu8", "151780", fresh: true)

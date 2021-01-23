@@ -21,11 +21,11 @@ class CV::Seeds::FixIntros
         h[s_name] = s_nvid
       end
 
-      {"hetushu", "shubaow", "zhwenpg", "5200", "duokan8", "nofff",
-       "zxcs_me", "paoshu8", "rengshu", "xbiquge", "bqg_5200"}.each do |seed|
+      {"hetushu", "shubaow", "paoshu8", "zhwenpg", "5200", "nofff",
+       "zxcs_me", "duokan8", "rengshu", "xbiquge", "bqg_5200"}.each do |seed|
         next unless s_nvid = seeds[seed]?
         bintro = get_intro(seed, s_nvid)
-        break unless bintro.empty?
+        break if bintro.size > 1
       end
 
       unless bintro && !bintro.empty?

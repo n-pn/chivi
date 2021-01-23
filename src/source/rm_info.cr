@@ -153,16 +153,15 @@ class CV::RmInfo
   end
 
   getter updated_at : Time do
-    raise "missing time!" if update_str.empty?
     output = TimeUtils.parse_time(update_str)
 
     case @s_name
     when "69shu", "bqg_5200", "shubaow"
       output += 12.hours
       output < Time.utc ? output : Time.utc
-    else
-      output
     end
+
+    output
   end
 
   getter update_str : String do

@@ -4,7 +4,7 @@ module CV::TimeUtils
   extend self
 
   LOCATION = Time::Location.fixed(3600 * 8) # chinese timezone
-  DEF_TIME = Time.utc(2000, 1, 1)
+  DEF_TIME = Time.utc(2020, 1, 1)
 
   TIME_FMT = {
     "%-m/%-d/%Y %r", "%-m/%-d/%Y %T", "%Y/%-m/%-d %T",
