@@ -10,7 +10,7 @@ REJECT_STARTS = File.read_lines("#{__DIR__}/consts/reject-starts.txt")
 REJECT_ENDS   = File.read_lines("#{__DIR__}/consts/reject-ends.txt")
 
 def should_keep?(key : String)
-  return true if key.size == 1
+  return true if key =~ /^\p{Han}$/
   return true if LEXICON.includes?(key)
   return true if CHECKED.includes?(key)
   return true if key.ends_with?("目的")

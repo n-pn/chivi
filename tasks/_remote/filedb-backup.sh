@@ -8,4 +8,4 @@ rsync -aiz --no-p "$SSH/_db/userdb/viusers" "_db/userdb"
 rsync -aiz --no-p "$SSH/_db/marked/" "_db/marked/"
 
 # rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
-rsync -aiz --no-p --exclude "*.zip" "$SSH/_db/chdata/zhtexts" "_db/chdata"
+# rsync -aiz --no-p --exclude "*.zip" "$SSH/_db/chdata/zhtexts" "_db/chdata"
