@@ -51,6 +51,8 @@
   let hints = []
   let infos = []
   let curr = get_curr(infos, $on_tab)
+  let p_min = curr.info.power || 0
+  let power = $u_power
 
   let value = curr.orig || null
   let attrs = curr.info.attrs || ''
@@ -74,16 +76,15 @@
     change_tab($on_tab)
   }
 
-  $: p_min = curr.info.power || 0
-  $: if (p_min < $on_tab + 1) p_min = $on_tab + 1
-  $: power = p_min < $u_power ? p_min : $u_power
-
   $: btn_power = power < p_min ? 'text' : power == p_min ? 'line' : 'solid'
   $: status = map_status(value, curr.orig)
 
   function change_tab(idx) {
     on_tab.set(idx)
     curr = get_curr(infos, idx)
+    p_min = curr.info.power || 0
+    if (p_min < idx + 1) p_min = idx + 1
+    power = p_min < $u_power ? p_min : $u_power
 
     value = curr.orig || hints[0] || titleize(trans.hanviet, idx < 1)
     attrs = curr.info.attrs || ''
