@@ -8,18 +8,6 @@
   export const phrase = writable(['', 0, 1])
   export const on_tab = writable(0)
   export const active = writable(false)
-
-  const btn_class = { Thêm: 'success', Sửa: 'primary', Xoá: 'harmful' }
-  const map_status = (val, old) => (!val ? 'Xoá' : old ? 'Sửa' : 'Thêm')
-
-  function get_curr(infos, idx) {
-    const info = infos[idx] || { vals: [], hints: [] }
-    const orig = info.vals[0]
-    const prev = info.hints[0]
-    return { info, orig, prev }
-  }
-
-  const get_dict = (dicts, idx) => dicts[idx][0]
 </script>
 
 <script>
@@ -34,6 +22,7 @@
 
   import Emend from './Upsert/Emend'
   import Power from './Upsert/Power'
+  import Bsend from './Upsert/Bsend'
 
   import Links from './Upsert/Links'
 
@@ -49,51 +38,49 @@
 
   let trans = {}
   let hints = []
-  let infos = []
-  let curr = get_curr(infos, $on_tab)
-  let p_min = curr.info.power || 0
-  let power = $u_power
-
-  let value = curr.orig || null
-  let attrs = curr.info.attrs || ''
-
-  let value_field
-  $: if (value && value_field) value_field.focus()
+  let infos = [{}, {}, {}]
 
   let key = ''
   $: if ($active && key) init_search(key, d_name)
 
+  let origs = ['', '', '']
+  let attrs = ['', '', '']
+
+  let value = ['', '', '']
+
+  let p_min = [1, 2, 3]
+  let power = [1, 2, 3]
+
+  let value_field
+  $: if (value[$on_tab] && value_field) value_field.focus()
+
   async function init_search(key, dname) {
     const data = await dict_search(fetch, key, dname)
 
-    trans = data.trans || { hanviet: '', binh_am: '' }
-    infos = data.infos || []
-    hints = data.hints || []
+    trans = data.trans
+    hints = data.hints
+    infos = data.infos
 
-    if (!infos[0].key) {
-      infos[0].attrs = infos[0].attrs || infos[1].key ? infos[1].attrs : 'N'
+    p_min = infos.map((v, i) => (+v.power > i + 1 ? +v.power : i + 1))
+    power = p_min.map((x) => (x < $u_power ? x : $u_power))
+
+    origs = infos.map((v) => v.vals[0] || '')
+    value = origs.map((v, i) => v || hints[0] || titleize(trans.hanviet, i < 1))
+
+    let _attr = value[1] ? infos[1].attrs : 'N'
+    attrs = infos.map((v, i) => (v.attrs || i == 0 ? _attr : ''))
+  }
+
+  async function submit_val(tab = $on_tab) {
+    const dname = dicts[tab][0]
+    const params = {
+      key,
+      value: value[tab],
+      attrs: attrs[tab],
+      power: power[tab],
     }
-    change_tab($on_tab)
-  }
 
-  $: btn_power = power < p_min ? 'text' : power == p_min ? 'line' : 'solid'
-  $: status = map_status(value, curr.orig)
-
-  function change_tab(idx) {
-    on_tab.set(idx)
-    curr = get_curr(infos, idx)
-    p_min = curr.info.power || 0
-    if (p_min < idx + 1) p_min = idx + 1
-    power = p_min < $u_power ? p_min : $u_power
-
-    value = curr.orig || hints[0] || titleize(trans.hanviet, idx < 1)
-    attrs = curr.info.attrs || ''
-  }
-
-  async function submit_val() {
-    const dname = get_dict(dicts, $on_tab)
-    const res = await dict_upsert(fetch, dname, { key, value, attrs, power })
-
+    const res = await dict_upsert(fetch, dname, params)
     changed = res.ok
     $active = false
   }
@@ -103,7 +90,7 @@
 
     switch (evt.keyCode) {
       case 13:
-        return submit_val()
+        return submit_val($on_tab)
 
       case 27:
         return active.set(false)
@@ -154,49 +141,53 @@
         <Dname
           d_name={label}
           active={idx == $on_tab}
-          exists={get_curr(infos, idx).info.vals.length > 0}
+          exists={origs[idx]}
           {idx}
-          on:click={() => change_tab(idx)} />
+          on:click={() => ($on_tab = idx)} />
       {/each}
     </section>
 
     <section class="vform">
       <div class="forms">
         <div class="value">
-          <Vhint {hints} {trans} bind:value _orig={curr.orig} />
+          <Vhint
+            {hints}
+            {trans}
+            bind:value={value[$on_tab]}
+            _orig={origs[$on_tab]} />
 
           <input
             id="value"
             lang="vi"
-            type="vi"
+            type="text"
             class="-input"
-            class:_fresh={!curr.orig}
+            class:_fresh={!origs[$on_tab]}
             bind:this={value_field}
-            bind:value
+            bind:value={value[$on_tab]}
             autocomplete="off"
             autocapitalize={$on_tab < 1 ? 'words' : 'off'} />
 
-          <Vutil bind:value _orig={curr.orig} />
+          <Vutil bind:value={value[$on_tab]} _orig={origs[$on_tab]} />
         </div>
 
-        <Attrs bind:attrs dtype={$on_tab} />
+        <Attrs bind:attrs={attrs[$on_tab]} dtype={$on_tab} />
       </div>
 
       <div class="vfoot">
         <div class="-emend">
-          {#if curr.info.uname}
-            <Emend {curr} />
+          {#if infos[$on_tab].uname}
+            <Emend info={infos[$on_tab]} />
           {/if}
         </div>
 
-        <Power bind:power p_max={$u_power} />
+        <Power bind:power={power[$on_tab]} p_max={$u_power} />
 
-        <button
-          class="m-button _large _{btn_class[status]} _{btn_power}"
-          disabled={power < 1}
-          on:click|once={submit_val}>
-          <span class="-text">{status}</span>
-        </button>
+        <Bsend
+          value={value[$on_tab]}
+          _orig={origs[$on_tab]}
+          power={power[$on_tab]}
+          p_min={p_min[$on_tab]}
+          on:click={() => submit_val($on_tab)} />
       </div>
     </section>
 

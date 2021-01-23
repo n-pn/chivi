@@ -1,21 +1,23 @@
 <script>
   import RTime from '$blocks/RTime'
 
-  export let curr
-  $: status = !curr.orig ? 'Xoá' : curr.prev ? 'Sửa' : 'Thêm'
+  export let info
+  $: _orig = info.vals[0]
+  $: _prev = info.hints[0]
+  $: state = !_orig ? 'Xoá' : _prev ? 'Sửa' : 'Thêm'
 </script>
 
 <div class="emend">
   <div class="-line">
-    <span class="-text">{status} bởi: </span>
-    <span class="-user">{curr.info.uname}</span>
+    <span class="-text">{state} bởi: </span>
+    <span class="-user">{info.uname}</span>
     <span class="-text">Q.hạn:</span>
-    <span class="-user">{curr.info.power}</span>
+    <span class="-user">{info.power}</span>
   </div>
 
   <div class="-line">
     <span class="-text">Thời gian:</span>
-    <span class="-time"><RTime m_time={curr.info.mtime} /></span>
+    <span class="-time"><RTime m_time={info.mtime} /></span>
   </div>
 </div>
 

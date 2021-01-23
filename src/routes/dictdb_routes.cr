@@ -69,13 +69,13 @@ module CV::Server
     binh_am = Convert.binh_am.translit(input).to_s
     hanviet = Convert.hanviet.translit(input).to_s
 
-    blank = {vals: [] of String, hints: [] of String}
+    blank = {vals: [] of String, hints: [] of String, attr: "", power: 0}
 
     RouteUtils.json_res(env) do |res|
       {
         trans: {binh_am: binh_am, hanviet: hanviet},
-        infos: {special_info || blank, regular_info || blank, hanviet_info || blank},
         hints: hints.uniq.reject(&.== hanviet),
+        infos: {special_info || blank, regular_info || blank, hanviet_info || blank},
       }.to_json(res)
     end
   end
@@ -85,19 +85,21 @@ module CV::Server
     u_power = env.session.int?("u_power") || 0
 
     halt env, status_code: 500, response: "Access denied!" if u_power < 1
+    dict = VpDict.load(env.params.url["dname"])
 
-    key = env.params.json["key"].as(String)
+    key = env.params.json["key"].as(String).strip
+
     value = env.params.json.fetch("value", "").as(String)
     value = value.strip.split(/[\/|]/).reject(&.empty?)
 
     attrs = env.params.json.fetch("attrs", "").as(String)
     attrs = "" if value.empty?
 
+    entry = VpEntry.new(key, value, attrs, dtype: dict.dtype)
+
     power = env.params.json.fetch("power", u_power).as(Int64).to_i
     power = u_power if power > u_power
 
-    dict = VpDict.load(env.params.url["dname"])
-    entry = VpEntry.new(key, value, attrs, dtype: dict.dtype)
     emend = VpEmend.new(uname: u_dname, power: power)
 
     # TODO: save context
