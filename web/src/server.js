@@ -18,19 +18,11 @@ const maxAge = 3 * 30 * 24 * 3600
 const assetOpts = { dev, maxAge, etag: true }
 
 const app = polka() // You can also use Express
-if (dev) {
   app.use(
     proxy,
     compression({ threshold: 0 }),
     sirv('static', assetOpts),
     sirv('public', assetOpts),
-    sapper.middleware()
-  )
-} else {
-  app.use(
-    proxy,
-    compression({ threshold: 1 }),
-    sirv('static', assetOpts),
     sapper.middleware()
   )
 }
