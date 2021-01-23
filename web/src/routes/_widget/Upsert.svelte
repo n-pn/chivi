@@ -78,8 +78,6 @@
   $: if (p_min < $on_tab + 1) p_min = $on_tab + 1
   $: power = p_min < $u_power ? p_min : $u_power
 
-  $: updated = value !== curr.orig || attrs !== infos[$on_tab].attrs
-  $: prevail = power >= p_min
   $: btn_power = power < p_min ? 'text' : power == p_min ? 'line' : 'solid'
   $: status = map_status(value, curr.orig)
 
@@ -194,7 +192,7 @@
 
         <button
           class="m-button _large _{btn_class[status]} _{btn_power}"
-          disabled={!(updated || prevail)}
+          disabled={power < 1}
           on:click|once={submit_val}>
           <span class="-text">{status}</span>
         </button>

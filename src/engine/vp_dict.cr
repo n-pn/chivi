@@ -77,7 +77,7 @@ class CV::VpDict
       end
     end
 
-    puts "<vp_dict> [#{file}] loaded: #{count} lines, \
+    puts "- <vp_dict> [#{file}] loaded: #{count} lines, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
     bump_mtime!(File.info(file).modification_time)
   end
@@ -199,7 +199,7 @@ class CV::VpDict
     end
 
     count = trim ? @items.size : @rsize
-    puts "<vp_dict> [#{File.basename(@afile)}] saved: #{count} entries, \
+    puts "- <vp_dict> [#{File.basename(@afile)}] saved: #{count} entries, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.yellow
   end
 
