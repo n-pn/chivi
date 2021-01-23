@@ -3,8 +3,6 @@
 
   export let power
   export let p_max
-
-  $: console.log({ power, p_max })
 </script>
 
 <div class="power">
@@ -13,7 +11,7 @@
     class="btn -up"
     disabled={power >= p_max}
     on:click={() => (power += 1)}><SIcon name="chevron-up" /></button>
-  <button class="btn -dn" disabled={power < 1} on:click={() => (power -= 1)}
+  <button class="btn -dn" disabled={power < 2} on:click={() => (power -= 1)}
     ><SIcon name="chevron-down" /></button>
 </div>
 

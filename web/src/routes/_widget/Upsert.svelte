@@ -113,7 +113,7 @@
         break
 
       case 40:
-        if (evt.altKey && power > 0) power -= 1
+        if (evt.altKey && power > 1) power -= 1
         break
 
       default:

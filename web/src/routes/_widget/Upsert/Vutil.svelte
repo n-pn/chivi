@@ -23,13 +23,16 @@
   <button class="-txt" data-kbd="0" use:upcase_val={0}>Không hoa</button>
 
   <div class="right">
-    {#if _orig && value != _orig}
-      <button class="-btn" data-kbd="r" on:click={() => (value = _orig)}>
-        <SIcon name="rotate-ccw" />
-      </button>
-    {/if}
+    <button
+      class="-btn"
+      data-kbd="r"
+      disabled={_orig == value || !_orig}
+      on:click={() => (value = _orig)}>
+      <SIcon name="corner-up-left" />
+    </button>
+
     <button class="-btn" data-kbd="e" on:click={() => (value = '')}>
-      <SIcon name="trash" />
+      <SIcon name="erase" />
     </button>
   </div>
 </div>
@@ -84,6 +87,10 @@
 
     &:hover {
       @include fgcolor(primary, 5);
+    }
+
+    &[disabled] {
+      @include fgcolor(neutral, 3);
     }
   }
 </style>
