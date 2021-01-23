@@ -13,7 +13,7 @@ module CV::Server
     chinfo = Chinfo.load(s_name, s_nvid)
 
     u_power = env.session.int?("u_power") || 0
-    mode = env.params.query["mode"]?.try(&.to_i?) || 0
+    mode = env.params.query["mode"]?.try(&.to_i?) || 2
     mode = u_power if mode > u_power
 
     if mode > 0 || chinfo.l_chid.empty?

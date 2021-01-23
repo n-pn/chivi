@@ -30,7 +30,7 @@ class CV::Chinfo
     source = RmInfo.init(@s_name, @s_nvid, expiry: expiry)
 
     # update last_chap
-    return false unless force || set_last_chid(source.last_chid)
+    return false unless set_last_chid(source.last_chid) || force
     changed = set_utime(source.updated_at.to_unix)
 
     source.chap_list.each do |entry|

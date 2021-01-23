@@ -1,4 +1,6 @@
 <script context="module">
+  import { get_chlist } from '$utils/api_calls'
+
   export async function preload({ params, query }) {
     const b_slug = params.book
     const order = query.order || 'asc'
@@ -16,7 +18,7 @@
 
     try {
       const params = { source, page, order, mode: 0 }
-      const data_2 = await fetch_data(this.fetch, nvinfo.b_hash, params)
+      const data_2 = await get_chlist(this.fetch, nvinfo.b_hash, params)
       return { ...ret, ...data_2 }
     } catch (e) {
       return { ...ret, chaps: [], total: 0, utime: 0 }
@@ -24,25 +26,6 @@
   }
 
   const take = 30
-
-  async function fetch_data(api, b_hash, params) {
-    const page = params.page || 1
-    let skip = (page - 1) * take
-    if (skip < 0) skip = 0
-
-    let url = `/api/chaps/${b_hash}/${params.source}?take=${take}&skip=${skip}`
-    if (params.order) url += `&order=${params.order}`
-    if (params.mode) url += `&mode=${params.mode}`
-
-    try {
-      const res = await api(url)
-      const data = await res.json()
-      if (res.ok) return data
-      else throw data.msg
-    } catch (err) {
-      throw err.message
-    }
-  }
 
   function split_chseed(nvinfo, picked) {
     const input = Object.keys(nvinfo.source)
@@ -150,7 +133,7 @@
 
     _load = true
 
-    const res = await fetch_data(fetch, nvinfo.b_hash, opts)
+    const res = await load_chlist(fetch, nvinfo.b_hash, opts)
 
     chaps = res.chaps
     total = res.total

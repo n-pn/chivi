@@ -1,3 +1,22 @@
+export async function get_chlist(fetch, b_hash, opts) {
+  const page = opts.page || 1
+  let skip = (page - 1) * take
+  if (skip < 0) skip = 0
+
+  let url = `/api/chaps/${b_hash}/${opts.source}?take=${take}&skip=${skip}`
+  if (opts.order) url += `&order=${opts.order}`
+  if (opts.mode) url += `&mode=${opts.mode}`
+
+  try {
+    const res = await fetch(url)
+    const data = await res.json()
+    if (res.ok) return data
+    else throw data.msg
+  } catch (err) {
+    throw err.message
+  }
+}
+
 export async function get_chinfo(fetch, b_slug, s_name, ch_idx, mode = 0) {
   const url = `/api/chinfos/${b_slug}/${s_name}/${ch_idx}`
   const res = await fetch(url)
