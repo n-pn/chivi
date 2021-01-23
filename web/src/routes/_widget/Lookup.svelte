@@ -1,6 +1,4 @@
 <script context="module">
-  import { dict_lookup } from '$utils/api_calls'
-
   const tags = {
     '&': '&amp;',
     '<': '&lt;',
@@ -87,10 +85,11 @@
   import SIcon from '$blocks/SIcon.svelte'
   import {
     lookup_input,
-    lookup_dname,
+    lookup_dname as dname,
     lookup_actived as actived,
     lookup_enabled as enabled,
   } from '$src/stores'
+  import { dict_lookup } from '$utils/api_calls'
 
   $: [input, lower, upper] = $lookup_input
 
@@ -100,7 +99,7 @@
   let entries = []
   let current = []
 
-  $: if (input) dict_lookup(input, $lookup_dname)
+  $: if (input) lookup_entry(input)
   $: if (lower < entries.length) update_focus()
 
   $: zh_html = render_zh(hanviet, lower, upper)
@@ -133,6 +132,12 @@
       else res.push(word)
     }
     return res.join('; ')
+  }
+
+  async function lookup_entry(input) {
+    const data = await dict_lookup(fetch, input, $dname)
+    entries = data.entries
+    hanviet = data.hanviet.split('\t').map((x) => x.split('ǀ'))
   }
 </script>
 

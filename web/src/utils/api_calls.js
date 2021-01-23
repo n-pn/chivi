@@ -61,7 +61,7 @@ export async function dict_upsert(fetch, dname, params) {
   return res
 }
 
-export async function dict_lookup(input, dname) {
+export async function dict_lookup(fetch, input, dname) {
   const url = `/api/dictdb/lookup/${dname}`
   const res = await fetch(url, {
     method: 'PUT',
@@ -70,6 +70,5 @@ export async function dict_lookup(input, dname) {
   })
 
   const data = await res.json()
-  entries = data.entries
-  hanviet = data.hanviet.split('\t').map((x) => x.split('ǀ'))
+  return data
 }
