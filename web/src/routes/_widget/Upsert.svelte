@@ -43,19 +43,18 @@
   let key = ''
   $: if ($active && key) init_search(key, d_name)
 
+  let value = ['', '', '']
   let origs = ['', '', '']
   let attrs = ['', '', '']
-
-  let value = ['', '', '']
 
   let p_min = [1, 2, 3]
   let power = [1, 2, 3]
 
   let value_field
-  $: if (value[$on_tab] && value_field) value_field.focus()
+  $: if (value_field && value[$on_tab]) value_field.focus()
 
-  async function init_search(key, dname) {
-    const data = await dict_search(fetch, key, dname)
+  async function init_search(input, dname) {
+    const data = await dict_search(fetch, input, dname)
 
     trans = data.trans
     hints = data.hints
@@ -67,7 +66,7 @@
     origs = infos.map((v) => v.vals[0] || '')
     value = origs.map((v, i) => v || hints[0] || titleize(trans.hanviet, i < 1))
 
-    let _attr = value[1] ? infos[1].attrs : 'N'
+    let _attr = value[1] ? infos[1].attrs || '' : 'N'
     attrs = infos.map((v, i) => (v.attrs || i == 0 ? _attr : ''))
   }
 
