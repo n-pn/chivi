@@ -169,7 +169,7 @@
           <Vutil bind:value={value[$on_tab]} _orig={origs[$on_tab]} />
         </div>
 
-        <Attrs bind:attrs={attrs[$on_tab]} dtype={$on_tab} />
+        <Attrs bind:attrs={attrs[$on_tab]} with_types={$on_tab < 2} />
       </div>
 
       <div class="vfoot">

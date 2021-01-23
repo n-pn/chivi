@@ -1,17 +1,17 @@
 <script context="module">
-  const prios = { H: 'Cao', M: 'Bình', L: 'Thấp' }
+  const priorities = { H: 'Cao', M: 'Bình', L: 'Thấp' }
   const types = { N: 'Danh', V: 'Động', A: 'Tính' }
 </script>
 
 <script>
   export let attrs
-  export let dtype
+  export let with_types = true
 
-  $: prio = attrs.includes('H') ? 'H' : attrs.includes('L') ? 'L' : 'M'
+  $: priority = attrs.includes('H') ? 'H' : attrs.includes('L') ? 'L' : 'M'
 
   function update_prio(val) {
     if (val == 'M') val = ''
-    attrs = prio == 'M' ? val + attrs : attrs.replace(prio, val)
+    attrs = priority == 'M' ? val + attrs : attrs.replace(priority, val)
   }
 
   function update_type(attr) {
@@ -21,17 +21,17 @@
 
 <div class="attrs">
   <div class="-line _prio">
-    <span class="-text {dtype < 2 ? '_hide' : ''}">Ưu tiên:</span>
-    {#each Object.entries(prios) as [val, lbl]}
+    <span class="-text" class:_hide={with_types}>Ưu tiên:</span>
+    {#each Object.entries(priorities) as [val, lbl]}
       <button
         class="-attr"
-        class:active={prio == val}
+        class:active={priority == val}
         data-kbd={val}
         on:click={() => update_prio(val)}>{lbl}</button>
     {/each}
   </div>
 
-  {#if dtype < 2}
+  {#if with_types}
     <div class="-line _type">
       <span class="-text _hide">Phân loại:</span>
       {#each Object.entries(types) as [val, lbl]}
