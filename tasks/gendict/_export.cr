@@ -9,8 +9,10 @@ CHECKED = ValueSet.load(".result/checked.tsv", true)
 REJECT_STARTS = File.read_lines("#{__DIR__}/consts/reject-starts.txt")
 REJECT_ENDS   = File.read_lines("#{__DIR__}/consts/reject-ends.txt")
 
-def should_keep?(key : String)
-  return true if key =~ /^\p{Han}$/
+def should_keep?(key : String, val : String = "")
+  return key =~ /^\p{Han}$/ if key.size == 1
+  return false if val =~ /[(\/{})]/
+
   return true if LEXICON.includes?(key)
   return true if CHECKED.includes?(key)
   return true if key.ends_with?("目的")
@@ -27,7 +29,9 @@ end
 
 puts "\n[Export regular]".colorize.cyan.bold
 
-OUT_REGULAR = CV::VpDict.load("regular", regen: true)
+REGULAR_FILE = "_db/dictdb/active/common/regular.tsv"
+File.delete(REGULAR_FILE) if File.exists?(REGULAR_FILE)
+OUT_REGULAR = CV::VpDict.load("regular", regen: false)
 
 HANVIET = CV::Convert.hanviet
 REGULAR = CV::Convert.new(OUT_REGULAR)
@@ -38,7 +42,7 @@ inp_regular.to_a.sort_by(&.[0].size).each do |key, vals|
   next if value.empty?
   regex = /^#{Regex.escape(value)}$/i
 
-  unless should_keep?(key)
+  unless should_keep?(key, value)
     next if should_skip?(key)
 
     unless HANVIET.translit(key, false).to_s =~ regex
@@ -63,7 +67,9 @@ OUT_REGULAR.save!
 
 puts "\n[Export suggest]".colorize.cyan.bold
 
-OUT_SUGGEST = CV::VpDict.load("suggest", regen: true)
+SUGGEST_FILE = "_db/dictdb/active/common/suggest.tsv"
+File.delete(SUGGEST_FILE) if File.exists?(SUGGEST_FILE)
+OUT_SUGGEST = CV::VpDict.load("suggest", regen: false)
 
 inp_suggest = QtDict.load(".result/suggest.txt", true)
 inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
@@ -73,7 +79,7 @@ inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
   next if value.empty?
   regex = /^#{Regex.escape(value)}$/i
 
-  unless should_keep?(key)
+  unless should_keep?(key, value)
     next if key =~ /[的了是]/
     next if should_skip?(key)
     next if HANVIET.translit(key, false).to_s =~ regex
@@ -90,14 +96,16 @@ OUT_SUGGEST.save!
 
 puts "\n[Export various]".colorize.cyan.bold
 
-OUT_VARIOUS = CV::VpDict.load("various", regen: true)
+VARIOUS_FILE = "_db/dictdb/active/common/various.tsv"
+File.delete(VARIOUS_FILE) if File.exists?(VARIOUS_FILE)
+OUT_VARIOUS = CV::VpDict.load("various", regen: false)
 
 inp_various = QtDict.load(".result/various.txt", true)
 inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
   next if key.size < 2
   next if key.size > 6
 
-  unless should_keep?(key)
+  unless should_keep?(key, vals.first)
     next if should_skip?(key)
   end
 

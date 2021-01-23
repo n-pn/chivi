@@ -32,7 +32,10 @@ class Hanviet
   end
 
   def save!
-    output = CV::VpDict.load("hanviet", regen: false)
+    hanviet_file = "_db/dictdb/active/system/hanviet.tsv"
+    File.delete(hanviet_file) if File.exists?(hanviet_file)
+
+    output = CV::VpDict.load("hanviet", regen: true)
 
     input = @input.to_a.sort_by(&.[0].size)
     input.each do |(key, vals)|
