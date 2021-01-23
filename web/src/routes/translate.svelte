@@ -8,8 +8,8 @@
 </script>
 
 <script>
-  let zh_text = ''
-  let cv_data = ''
+  let zhtext = ''
+  let cvdata = ''
 
   let edit_mode = true
   let text_elem = null
@@ -60,11 +60,11 @@
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input: zh_text }),
+      body: JSON.stringify({ input: zhtext }),
     })
 
     changed = false
-    cv_data = await res.text()
+    cvdata = await res.text()
     edit_mode = false
   }
 </script>
@@ -86,7 +86,7 @@
       class="tab"
       class:_active={edit_mode}
       on:click={() => (edit_mode = true)}>Nguồn tiếng Trung</span>
-    {#if cv_data}
+    {#if cvdata}
       <span
         class="tab"
         class:_active={!edit_mode}
@@ -97,12 +97,12 @@
   {#if edit_mode}
     <textarea
       lang="zh"
-      bind:value={zh_text}
+      bind:value={zhtext}
       bind:this={text_elem}
       placeholder="Nhập dữ liệu vào đây" />
 
     <footer>
-      <button class="m-button _line" on:click={() => (zh_text = '')}>
+      <button class="m-button _line" on:click={() => (zhtext = '')}>
         <span>Xoá</span>
       </button>
 
@@ -110,8 +110,8 @@
         <span>Dịch nhanh</span>
       </button>
     </footer>
-  {:else if cv_data}
-    <Cvdata {cv_data} bind:changed />
+  {:else if cvdata}
+    <Cvdata {cvdata} bind:changed />
   {:else}
     <div class="empty">Mời nhập dữ liệu trong ô tiếng Trung</div>
   {/if}
