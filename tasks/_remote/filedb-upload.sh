@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SSH=nipin@dev.chivi.xyz:www/chivi.xyz
+SSH=nipin@ssh.chivi.xyz:www/chivi.xyz
 
 # rsync -azi "_db/dictdb/active/" "$SSH/_db/dictdb/remote/"
 
