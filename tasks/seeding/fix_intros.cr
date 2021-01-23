@@ -48,7 +48,7 @@ class CV::Seeds::FixIntros
 
   def get_intro(seed : String, s_nvid : String)
     intro_file = "_db/_seeds/#{seed}/intros/#{s_nvid}.txt"
-    File.read_lines(intro_file)
+    File.read_lines(intro_file).map(&.strip).reject(&.empty?)
   rescue err
     [] of String
   end

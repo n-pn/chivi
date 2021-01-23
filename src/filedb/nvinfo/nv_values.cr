@@ -94,14 +94,14 @@ module CV::NvValues
 
   {% for field in {:hidden, :status} %}
     def set_{{field.id}}(b_hash, value : Int32, force : Bool = false)
-      return unless force || ({{field.id}}.ival(b_hash) < value)
+      return false unless force || ({{field.id}}.ival(b_hash) < value)
       {{field.id}}.add(b_hash, value)
     end
   {% end %}
 
   {% for field in {:_atime, :_utime} %}
     def set{{field.id}}(b_hash, value : Int64, force : Bool = false)
-      return unless force || ({{field.id}}.ival_64(b_hash) < value)
+      return false unless force || ({{field.id}}.ival_64(b_hash) < value)
       {{field.id}}.add(b_hash, value)
     end
 
