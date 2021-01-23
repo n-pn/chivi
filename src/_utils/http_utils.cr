@@ -8,18 +8,29 @@ module CV::HttpUtils
 
   def get_html(url : String, encoding : String) : String
     try = 0
-    internal = url.includes?("biquge5200") || url.includes?("paoshu8")
+
+    internal = use_crystal?(url)
 
     loop do
       puts "[GET: <#{url}> (try: #{try})]".colorize.magenta
       html = internal ? get_by_crystal(url, encoding) : get_by_curl(url, encoding)
-      return fix_charset(html, encoding) if html.includes?("<html>")
+      return fix_charset(html, encoding) if html.includes?("<html")
+      puts html
     rescue err
       puts err.colorize.red
     ensure
       try += 1
       sleep 500.milliseconds * try
-      raise "500 Server Error!" if try > 2
+      raise "<<Server Error!>>" if try > 2
+    end
+  end
+
+  def use_crystal?(url : String)
+    case url
+    when .includes?("biquge5200"), .includes?("paoshu8")
+      true
+    else
+      false
     end
   end
 
@@ -33,8 +44,6 @@ module CV::HttpUtils
   def get_by_curl(url : String, encoding : String) : String
     cmd = "curl -L -k -s -m 60 '#{url}'"
     cmd += " | iconv -c -f #{encoding} -t UTF-8" if encoding != "UTF-8"
-    puts cmd
-
     `#{cmd}`.strip
   end
 
