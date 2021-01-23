@@ -61,7 +61,7 @@
     if (nvmark == new_mark) nvmark = ''
     else nvmark = new_mark
 
-    const url = `/api/book-marks/${b_hash}?nvmark=${nvmark}`
+    const url = `/api/book-marks/${nvinfo.b_hash}?nvmark=${nvmark}`
     await fetch(url, { method: 'PUT' })
   }
 
