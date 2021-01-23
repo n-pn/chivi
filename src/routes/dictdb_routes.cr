@@ -87,8 +87,11 @@ module CV::Server
     halt env, status_code: 500, response: "Access denied!" if u_power < 1
 
     key = env.params.json["key"].as(String)
-    value = env.params.json.fetch("value", "").as(String).split(/[\/|]/).reject(&.empty?)
+    value = env.params.json.fetch("value", "").as(String)
+    value = value.strip.split(/[\/|]/).reject(&.empty?)
+
     attrs = env.params.json.fetch("attrs", "").as(String)
+    attrs = "" if value.empty?
 
     power = env.params.json.fetch("power", u_power).as(Int64).to_i
     power = u_power if power > u_power
