@@ -2,15 +2,15 @@ require "./_route_utils"
 require "../filedb/chinfo"
 
 module CV::Server
-  get "/api/chseeds/:bhash/:s_name" do |env|
+  get "/api/chseeds/:bhash/:sname" do |env|
     bhash = env.params.url["bhash"]
-    s_name = env.params.url["s_name"]
+    sname = env.params.url["sname"]
 
-    unless snvid = ChSource.load(s_name)._index.fval(bhash)
+    unless snvid = ChSource.load(sname)._index.fval(bhash)
       halt env, status_code: 404, response: "Nguồn truyện không tồn tại!"
     end
 
-    chinfo = Chinfo.load(s_name, snvid)
+    chinfo = Chinfo.load(sname, snvid)
 
     u_power = env.session.int?("u_power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0

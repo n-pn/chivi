@@ -50,8 +50,8 @@ module CV::HttpUtils
     html.sub(/charset=#{encoding}/i, "charset=utf-8")
   end
 
-  def encoding_for(s_name : String) : String
-    case s_name
+  def encoding_for(sname : String) : String
+    case sname
     when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me"
       "UTF-8"
     else

@@ -1,6 +1,6 @@
 require "../../src/filedb/nvinfo"
 
-class CV::S_names::FixGenres
+class CV::snames::FixGenres
   getter source : ValueMap = NvValues.source
 
   def fix!
@@ -9,8 +9,8 @@ class CV::S_names::FixGenres
       yousuu = [] of String
 
       values.each do |entry|
-        s_name, snvid = entry.split("/")
-        get_genres(s_name, snvid).each do |genre|
+        sname, snvid = entry.split("/")
+        get_genres(sname, snvid).each do |genre|
           genres.concat(NvHelper.fix_zh_genre(genre))
         end
       end
@@ -48,14 +48,14 @@ class CV::S_names::FixGenres
     save!(mode: :full)
   end
 
-  def get_genres(s_name : String, snvid : String)
-    genre_map(s_name).get(snvid) || [] of String
+  def get_genres(sname : String, snvid : String)
+    genre_map(sname).get(snvid) || [] of String
   end
 
   getter cache = {} of String => ValueMap
 
-  def genre_map(s_name : String)
-    cache[s_name] ||= ValueMap.new("_db/_seeds/#{s_name}/genres.tsv", mode: 2)
+  def genre_map(sname : String)
+    cache[sname] ||= ValueMap.new("_db/_seeds/#{sname}/genres.tsv", mode: 2)
   end
 
   def save!(mode : Symbol = :full)
@@ -64,5 +64,5 @@ class CV::S_names::FixGenres
   end
 end
 
-worker = CV::S_names::FixGenres.new
+worker = CV::snames::FixGenres.new
 worker.fix!

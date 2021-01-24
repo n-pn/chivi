@@ -8,14 +8,14 @@ require "../_utils/text_utils"
 require "../_utils/http_utils"
 
 class CV::RmText
-  def self.init(s_name : String, snvid : String, schid : String,
+  def self.init(sname : String, snvid : String, schid : String,
                 expiry : Time = Time.utc - 10.years, freeze : Bool = true)
-    file = path_for(s_name, snvid, schid)
-    expiry = TimeUtils::DEF_TIME if s_name == "jx_la"
+    file = path_for(sname, snvid, schid)
+    expiry = TimeUtils::DEF_TIME if sname == "jx_la"
 
     unless html = FileUtils.read(file, expiry)
-      url = url_for(s_name, snvid, schid)
-      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(s_name))
+      url = url_for(sname, snvid, schid)
+      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(sname))
 
       if freeze
         ::FileUtils.mkdir_p(File.dirname(file))
@@ -23,15 +23,15 @@ class CV::RmText
       end
     end
 
-    new(s_name, snvid, schid, file: file, html: html)
+    new(sname, snvid, schid, file: file, html: html)
   end
 
-  def self.path_for(s_name : String, snvid : String, schid : String)
-    "_db/.cache/#{s_name}/texts/#{snvid}/#{schid}.html"
+  def self.path_for(sname : String, snvid : String, schid : String)
+    "_db/.cache/#{sname}/texts/#{snvid}/#{schid}.html"
   end
 
-  def self.url_for(s_name : String, snvid : String, schid : String) : String
-    case s_name
+  def self.url_for(sname : String, snvid : String, schid : String) : String
+    case sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/#{schid}/"
     when "69shu"    then "https://www.69shu.com/txt/#{snvid}/#{schid}"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/#{schid}.html"
@@ -46,7 +46,7 @@ class CV::RmText
     when "shubaow"  then "https://www.shubaow.net/#{prefixed(snvid, schid)}"
     when "bqg_5200" then "https://www.biquge5200.com/#{prefixed(snvid, schid)}"
     else
-      raise "Unsupported remote source <#{s_name}>!"
+      raise "Unsupported remote source <#{sname}>!"
     end
   end
 
@@ -54,17 +54,17 @@ class CV::RmText
     "#{snvid.to_i // 1000}_#{snvid}/#{schid}.html"
   end
 
-  getter s_name : String
+  getter sname : String
   getter snvid : String
   getter schid : String
   getter file : String
 
-  def initialize(@s_name, @snvid, @schid, @file, html = File.read(@file))
+  def initialize(@sname, @snvid, @schid, @file, html = File.read(@file))
     @rdoc = Myhtml::Parser.new(html)
   end
 
   getter title : String do
-    case @s_name
+    case @sname
     when "duokan8"
       extract_title("#read-content > h2")
         .sub(/^章节目录\s*/, "")
@@ -81,7 +81,7 @@ class CV::RmText
   end
 
   getter paras : Array(String) do
-    case @s_name
+    case @sname
     when "hetushu" then extract_hetushu_paras
     when "69shu"   then extract_paras(".yd_text2")
     when "zhwenpg" then extract_paras("#tdcontent .content")
@@ -100,7 +100,7 @@ class CV::RmText
     lines = TextUtils.split_html(node.inner_text("\n"))
     lines.shift if lines.first == title
 
-    case @s_name
+    case @sname
     when "zhwenpg"
       title.split(/\s+/).each { |x| lines[0] = lines[0].sub(/^#{x}\s*/, "") }
     when "jx_la"
@@ -129,7 +129,7 @@ class CV::RmText
 
     lines
   rescue err
-    puts "<remote_text> [#{@s_name}/#{@snvid}/#{@schid}] error: #{err}".colorize.red
+    puts "<remote_text> [#{@sname}/#{@snvid}/#{@schid}] error: #{err}".colorize.red
     [] of String
   end
 
@@ -163,7 +163,7 @@ class CV::RmText
     meta_file = @file.sub(".html", ".meta")
     return File.read(meta_file) if File.exists?(meta_file)
 
-    html_url = RmText.url_for(@s_name, @snvid, @schid)
+    html_url = RmText.url_for(@sname, @snvid, @schid)
     json_url = html_url.sub("#{@schid}.html", "r#{@schid}.json")
 
     headers = HTTP::Headers{

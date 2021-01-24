@@ -71,8 +71,8 @@ module CV::NvValues
   def get_source(bhash : String) : Hash(String, String)
     source = NvValues.source.get(bhash) || [] of String
     source.each_with_object({} of String => String) do |entry, output|
-      s_name, snvid = entry.split("/")
-      output[s_name] = snvid
+      sname, snvid = entry.split("/")
+      output[sname] = snvid
     end
   end
 
@@ -94,14 +94,14 @@ module CV::NvValues
 
   {% for field in {:hidden, :status} %}
     def set_{{field.id}}(bhash, value : Int32, force : Bool = false)
-      return false unless force || ({{field.id}}.ival(bhash) < value)
+      return false unless force || value > {{field.id}}.ival(bhash)
       {{field.id}}.add(bhash, value)
     end
   {% end %}
 
   {% for field in {:_atime, :_utime} %}
     def set{{field.id}}(bhash, value : Int64, force : Bool = false)
-      return false unless force || ({{field.id}}.ival_64(bhash) < value)
+      return false unless force || value > {{field.id}}.ival_64(bhash)
       {{field.id}}.add(bhash, value)
     end
 

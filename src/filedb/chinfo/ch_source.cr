@@ -3,11 +3,11 @@ require "file_utils"
 require "../../mapper/*"
 
 class CV::ChSource
-  getter s_name : String
+  getter sname : String
   getter ch_dir : String
 
-  def initialize(@s_name)
-    @ch_dir = "_db/chdata/chinfos/#{@s_name}"
+  def initialize(@sname)
+    @ch_dir = "_db/chdata/chinfos/#{@sname}"
     ::FileUtils.mkdir_p(@ch_dir) unless File.exists?(@ch_dir)
   end
 
@@ -16,7 +16,7 @@ class CV::ChSource
   getter _atime : ValueMap { ValueMap.new("#{@ch_dir}/_atime.tsv") }
   getter _utime : ValueMap { ValueMap.new("#{@ch_dir}/_utime.tsv") }
 
-  getter l_chid : ValueMap { ValueMap.new("#{@ch_dir}/l_chid.tsv") }
+  getter lastch : ValueMap { ValueMap.new("#{@ch_dir}/l_chid.tsv") }
 
   getter chap_count : ValueMap { ValueMap.new("#{@ch_dir}/chap_count.tsv") }
   getter text_count : ValueMap { ValueMap.new("#{@ch_dir}/text_count.tsv") }
@@ -25,18 +25,18 @@ class CV::ChSource
     @_index.try(&.save!(mode: mode))
     @_atime.try(&.save!(mode: mode))
     @_utime.try(&.save!(mode: mode))
-    @l_chid.try(&.save!(mode: mode))
+    @lastch.try(&.save!(mode: mode))
 
     @chap_count.try(&.save!(mode: mode))
     @text_count.try(&.save!(mode: mode))
   end
 
-  def get_lchid(snvid : String) : String
-    l_child.fval(snvid) || ""
+  def get_lastch(snvid : String) : String
+    lastch.fval(snvid) || ""
   end
 
-  def set_lchid(snvid : String, l_chid) : Bool
-    return false if get_lchid(snvid)
+  def set_lastch(snvid : String, schid : String) : Bool
+    lastch.add(snvid, schid)
   end
 
   def get_atime(snvid : String) : Int64
@@ -44,7 +44,7 @@ class CV::ChSource
   end
 
   def set_atime(snvid : String, mtime : Int64, force : Bool = false) : Bool
-    return false unless force || get_atime(snvid) > mtime
+    return false unless force || mtime > get_atime(snvid)
     _atime.add(snvid, mtime)
   end
 
@@ -53,21 +53,21 @@ class CV::ChSource
   end
 
   def set_utime(snvid : String, mtime : Int64, force : Bool = false) : Bool
-    return false unless force || get_utime(snvid) > mtime
+    return false unless force || mtime > get_utime(snvid)
     _utime.add(snvid, mtime)
   end
 
   CACHE = {} of String => self
 
-  def self.load(s_name : String) : self
-    CACHE[s_name] ||= new(s_name)
+  def self.load(sname : String) : self
+    CACHE[sname] ||= new(sname)
   end
 
   def self.save!(mode : Symbol = :full) : Nil
     CACHE.each_value(&.save!(mode: mode))
   end
 
-  def self.get_utime(s_name : String, snvid : String)
-    load(s_name).get_utime(snvid)
+  def self.get_utime(sname : String, snvid : String)
+    load(sname).get_utime(snvid)
   end
 end

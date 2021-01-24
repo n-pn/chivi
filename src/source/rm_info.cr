@@ -8,14 +8,14 @@ require "../_utils/text_utils"
 require "../_utils/http_utils"
 
 class CV::RmInfo
-  def self.init(s_name : String, snvid : String,
+  def self.init(sname : String, snvid : String,
                 expiry : Time = Time.utc - 1.hour, freeze : Bool = true)
-    file = path_for(s_name, snvid)
-    expiry = TimeUtils::DEF_TIME if s_name == "jx_la"
+    file = path_for(sname, snvid)
+    expiry = TimeUtils::DEF_TIME if sname == "jx_la"
 
     unless html = FileUtils.read(file, expiry)
-      url = url_for(s_name, snvid)
-      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(s_name))
+      url = url_for(sname, snvid)
+      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(sname))
 
       if freeze
         ::FileUtils.mkdir_p(File.dirname(file))
@@ -23,15 +23,15 @@ class CV::RmInfo
       end
     end
 
-    new(s_name, snvid, file, html: html)
+    new(sname, snvid, file, html: html)
   end
 
-  def self.path_for(s_name : String, snvid : String)
-    "_db/.cache/#{s_name}/infos/#{snvid}.html"
+  def self.path_for(sname : String, snvid : String)
+    "_db/.cache/#{sname}/infos/#{snvid}.html"
   end
 
-  def self.url_for(s_name : String, snvid : String) : String
-    case s_name
+  def self.url_for(sname : String, snvid : String) : String
+    case sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/"
     when "69shu"    then "https://www.69shu.com/#{snvid}/"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
@@ -45,7 +45,7 @@ class CV::RmInfo
     when "5200"     then "https://www.5200.tv/#{prefixed(snvid)}/"
     when "shubaow"  then "https://www.shubaow.net/#{prefixed(snvid)}/"
     when "bqg_5200" then "https://www.biquge5200.com/#{prefixed(snvid)}/"
-    else                 raise "Unsupported remote source <#{s_name}>!"
+    else                 raise "Unsupported remote source <#{sname}>!"
     end
   end
 
@@ -53,11 +53,11 @@ class CV::RmInfo
     "#{snvid.to_i // 1000}_#{snvid}"
   end
 
-  getter s_name : String
+  getter sname : String
   getter snvid : String
   getter c_file : String
 
-  def initialize(@s_name, @snvid, @c_file, html = File.read(@c_file))
+  def initialize(@sname, @snvid, @c_file, html = File.read(@c_file))
     @rdoc = Myhtml::Parser.new(html)
   end
 
@@ -70,7 +70,7 @@ class CV::RmInfo
   end
 
   getter author : String do
-    case @s_name
+    case @sname
     when "hetushu" then node_text(".book_info a:first-child")
     when "zhwenpg" then node_text(".fontwt")
     when "69shu"   then node_text(".mu_beizhu > a[target]")
@@ -79,7 +79,7 @@ class CV::RmInfo
   end
 
   getter btitle : String do
-    case @s_name
+    case @sname
     when "hetushu" then node_text("h2")
     when "zhwenpg" then node_text(".cbooksingle h2")
     when "69shu"   then node_text(".weizhi > a:last-child")
@@ -88,7 +88,7 @@ class CV::RmInfo
   end
 
   getter genres : Array(String) do
-    case @s_name
+    case @sname
     when "hetushu"
       genre = node_text(".title > a:last-child").not_nil!
       tags = @rdoc.css(".tag a").map(&.inner_text).to_a
@@ -100,7 +100,7 @@ class CV::RmInfo
   end
 
   getter bintro : Array(String) do
-    case @s_name
+    case @sname
     when "69shu"   then [] of String
     when "hetushu" then @rdoc.css(".intro > p").map(&.inner_text).to_a
     when "zhwenpg" then TextUtils.split_html(node_text("tr:nth-of-type(3)"))
@@ -109,7 +109,7 @@ class CV::RmInfo
   end
 
   getter bcover : String do
-    case @s_name
+    case @sname
     when "hetushu"
       image_url = node_attr(".book_info img", "src")
       "https://www.hetushu.com#{image_url}"
@@ -126,7 +126,7 @@ class CV::RmInfo
   end
 
   getter status_str : String do
-    case @s_name
+    case @sname
     when "69shu", "zhwenpg" then "连载"
     when "hetushu"
       node_attr(".book_info", "class").includes?("finish") ? "完本" : "连载"
@@ -147,25 +147,26 @@ class CV::RmInfo
     when "暂停", "暂 停", "暂　停"
       2
     else
-      puts "<#{@s_name}/#{@snvid}> UNKNOWN STATUS: `#{status}`".colorize.red
+      puts "<#{@sname}/#{@snvid}> UNKNOWN STATUS: `#{status}`".colorize.red
       0
     end
   end
 
   getter updated_at : Time do
-    output = TimeUtils.parse_time(update_str)
-
-    case @s_name
+    case @sname
     when "69shu", "bqg_5200", "shubaow"
-      output += 12.hours
-      output < Time.utc ? output : Time.utc
+      mtime = TimeUtils.parse_time(update_str)
+      mtime += 12.hours
+      mtime < Time.utc ? mtime : Time.utc
+    when "zhwenpg", "hetushu"
+      Time.utc
+    else
+      TimeUtils.parse_time(update_str)
     end
-
-    output
   end
 
   getter update_str : String do
-    case @s_name
+    case @sname
     when "zhwenpg", "hetushu"
       "2020-01-01 12:00:00"
     when "69shu"
@@ -178,7 +179,7 @@ class CV::RmInfo
   end
 
   getter last_chid : String do
-    case @s_name
+    case @sname
     when "hetushu" then extract_last_chid("#dir :last-child a:last-of-type")
     when "69shu"   then extract_last_chid(".mulu_list:first-of-type a:first-child")
     when "zhwenpg" then extract_last_chid(".fontwt0 + a")
@@ -193,13 +194,13 @@ class CV::RmInfo
 
   private def extract_last_chid_by_meta
     href = meta_data("og:novel:latest_chapter_url").not_nil!
-    @s_name != "bqg_5200" ? extract_chid(href) : File.basename(href, ".htm")
+    @sname != "bqg_5200" ? extract_chid(href) : File.basename(href, ".htm")
   end
 
   alias Chlist = Array(Array(String))
 
   getter chap_list : Chlist do
-    case @s_name
+    case @sname
     when "69shu"   then extract_69shu_chlist
     when "zhwenpg" then extract_zhwenpg_chlist
     when "duokan8" then extract_duokan8_chlist
@@ -291,7 +292,7 @@ class CV::RmInfo
   end
 
   private def extract_chid(href : String)
-    case @s_name
+    case @sname
     when "69shu"   then File.basename(href)
     when "zhwenpg" then href.sub("r.php?id=", "")
     else                File.basename(href, ".html")

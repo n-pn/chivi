@@ -6,7 +6,7 @@ require "../source/rm_text"
 require "../engine/convert"
 
 class CV::Chtext
-  getter s_name : String
+  getter sname : String
   getter snvid : String
   getter schid : String
 
@@ -19,14 +19,14 @@ class CV::Chtext
   property cv_trans = ""
   property cv_mtime = 0_i64
 
-  def initialize(@s_name, @snvid, @schid)
-    @zh_file = "_db/chdata/zhtexts/#{@s_name}/#{@snvid}/#{@schid}.txt"
+  def initialize(@sname, @snvid, @schid)
+    @zh_file = "_db/chdata/zhtexts/#{@sname}/#{@snvid}/#{@schid}.txt"
   end
 
   def fetch!(u_power = 4, expiry = Time.utc - 10.minutes) : Nil
     return unless remote?(u_power)
 
-    source = RmText.init(@s_name, @snvid, @schid, expiry: expiry)
+    source = RmText.init(@sname, @snvid, @schid, expiry: expiry)
     @zh_lines = [source.title].concat(source.paras)
 
     cv_trans = ""
@@ -36,7 +36,7 @@ class CV::Chtext
   end
 
   private def remote?(u_power = 4)
-    case @s_name
+    case @sname
     when "_chivi", "_miscs", "zxcs_me", "zadzs"
       false
     when "5200", "bqg_5200", "rengshu", "nofff"
@@ -106,11 +106,11 @@ class CV::Chtext
   @@acache = Cache.new
   @@bcache = Cache.new
 
-  def self.load(s_name : String, snvid : String, schid : String)
-    label = "#{s_name}/#{snvid}/#{schid}"
+  def self.load(sname : String, snvid : String, schid : String)
+    label = "#{sname}/#{snvid}/#{schid}"
 
     unless item = @@acache[label]?
-      item = @@bcache[label]? || new(s_name, snvid, schid)
+      item = @@bcache[label]? || new(sname, snvid, schid)
       @@acache[label] = item
 
       if @@acache.size >= CACHE_LIMIT

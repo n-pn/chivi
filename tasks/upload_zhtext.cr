@@ -7,21 +7,21 @@ INP = "_db/chdata/zhtexts"
 SSH = "nipin@ssh.chivi.xyz"
 OUT = "#{SSH}:www/chivi.xyz/#{INP}"
 
-def upload_texts(s_name : String, flags = "")
-  puts `ssh #{SSH} mkdir -p /home/nipin/www/chivi.xyz/#{INP}/#{s_name}`
+def upload_texts(sname : String, flags = "")
+  puts `ssh #{SSH} mkdir -p /home/nipin/www/chivi.xyz/#{INP}/#{sname}`
 
-  files = Dir.glob(File.join(INP, s_name, "*.zip"))
-  puts "[#{s_name}: #{files.size} files]".colorize.cyan
+  files = Dir.glob(File.join(INP, sname, "*.zip"))
+  puts "[#{sname}: #{files.size} files]".colorize.cyan
 
-  files.sort_by! { |x| File.basename(x, ".zip").to_i } unless s_name == "zhwenpg"
+  files.sort_by! { |x| File.basename(x, ".zip").to_i } unless sname == "zhwenpg"
   channel = Channel(Nil).new(8)
 
   files.each_with_index(1) do |file, idx|
     channel.receive if idx > 8
 
     spawn do
-      puts "-- <#{idx}/#{files.size}> [#{s_name}/#{File.basename(file)}]".colorize.blue
-      puts `rsync -ai --no-p #{flags} "#{file}" "#{OUT}/#{s_name}"` || "<#{file}> existed!"
+      puts "-- <#{idx}/#{files.size}> [#{sname}/#{File.basename(file)}]".colorize.blue
+      puts `rsync -ai --no-p #{flags} "#{file}" "#{OUT}/#{sname}"` || "<#{file}> existed!"
     rescue err
       puts err.colorize.red
     ensure
@@ -33,7 +33,7 @@ def upload_texts(s_name : String, flags = "")
 end
 
 existed = Dir.children(INP)
-s_names = ARGV.empty? ? existed : ARGV.select { |x| existed.includes?(x) }
+snames = ARGV.empty? ? existed : ARGV.select { |x| existed.includes?(x) }
 
 if ARGV.includes?("--delete")
   flags = "--delete"
@@ -43,5 +43,5 @@ else
   flags = ""
 end
 
-puts "[INPUT: #{s_names}, FLAGS: #{flags}]".colorize.yellow.bold
-s_names.each { |s_name| upload_texts(s_name, flags) }
+puts "[INPUT: #{snames}, FLAGS: #{flags}]".colorize.yellow.bold
+snames.each { |sname| upload_texts(sname, flags) }

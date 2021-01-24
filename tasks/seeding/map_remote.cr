@@ -5,13 +5,13 @@ require "../../src/source/rm_info"
 require "./_seeding.cr"
 
 class CV::Seeds::MapRemote
-  def initialize(@s_name : String)
-    @seeding = InfoSeed.new(@s_name)
+  def initialize(@sname : String)
+    @seeding = InfoSeed.new(@sname)
   end
 
   def init!(upto = 1, mode = 1)
-    puts "[ seed: #{@s_name}, upto: #{upto}, mode: #{mode} ]".colorize.cyan.bold
-    mode = 0 if @s_name == "jx_la"
+    puts "[ seed: #{@sname}, upto: #{upto}, mode: #{mode} ]".colorize.cyan.bold
+    mode = 0 if @sname == "jx_la"
 
     1.upto(upto) do |idx|
       snvid = idx.to_s
@@ -31,7 +31,7 @@ class CV::Seeds::MapRemote
 
       @seeding._atime.add(snvid, atime)
 
-      parser = RmInfo.init(@s_name, snvid, expiry: expiry)
+      parser = RmInfo.init(@sname, snvid, expiry: expiry)
       btitle, author = parser.btitle, parser.author
       next if btitle.empty? || author.empty?
 
@@ -45,7 +45,7 @@ class CV::Seeds::MapRemote
       @seeding._utime.add(snvid, parser.updated_at.to_unix)
 
       if idx % 100 == 0
-        puts "- [#{@s_name}]: <#{idx}/#{upto}>"
+        puts "- [#{@sname}]: <#{idx}/#{upto}>"
         @seeding.save!(mode: :upds)
       end
     rescue err
@@ -62,7 +62,7 @@ class CV::Seeds::MapRemote
   end
 
   private def access_time(snvid : String) : Int64?
-    file = RmInfo.path_for(@s_name, snvid)
+    file = RmInfo.path_for(@sname, snvid)
     File.info?(file).try(&.modification_time.to_unix)
   end
 
@@ -90,7 +90,7 @@ class CV::Seeds::MapRemote
       end
 
       if idx % 100 == 0
-        puts "- [#{@s_name}] <#{idx}/#{input.size}>".colorize.blue
+        puts "- [#{@sname}] <#{idx}/#{input.size}>".colorize.blue
         Nvinfo.save!(mode: :upds)
         @seeding.source.save!(mode: :upds)
       end
@@ -105,7 +105,7 @@ class CV::Seeds::MapRemote
   end
 
   private def should_pick?(snvid : String)
-    return true if @s_name == "hetushu" || @s_name == "rengshu"
+    return true if @sname == "hetushu" || @sname == "rengshu"
     false
   end
 

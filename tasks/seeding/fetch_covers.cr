@@ -34,22 +34,22 @@ class CV::Seed::FetchCovers
     input = ValueMap.new("_db/nvdata/nvinfos/source.tsv", mode: 2).vals
     input.each do |source|
       source.each do |entry|
-        s_name, snvid = entry.split("/")
-        next if s_name == "jx_la"
+        sname, snvid = entry.split("/")
+        next if sname == "jx_la"
 
-        out_file = "_db/bcover/#{s_name}/#{snvid}.jpg"
+        out_file = "_db/bcover/#{sname}/#{snvid}.jpg"
         next if File.exists?(out_file)
 
-        next unless image_url = cover_map(s_name).fval(snvid)
-        queues[s_name][image_url] = out_file unless image_url.empty?
+        next unless image_url = cover_map(sname).fval(snvid)
+        queues[sname][image_url] = out_file unless image_url.empty?
       end
     end
 
     channel = Channel(Nil).new(queues.size)
 
-    queues.each do |s_name, queue|
+    queues.each do |sname, queue|
       limit, delayed =
-        case s_name
+        case sname
         when "shubaow" then {1, 2.seconds}
         when "duokan8" then {1, 1.seconds}
         when "zhwenpg" then {1, 500.milliseconds}
@@ -71,8 +71,8 @@ class CV::Seed::FetchCovers
 
   getter cache = {} of String => ValueMap
 
-  def cover_map(s_name : String)
-    cache[s_name] ||= ValueMap.new("_db/_seeds/#{s_name}/bcover.tsv", mode: 2)
+  def cover_map(sname : String)
+    cache[sname] ||= ValueMap.new("_db/_seeds/#{sname}/bcover.tsv", mode: 2)
   end
 
   def fetch!(queue : Hash(String, String), limit = 8, delayed = 10.milliseconds)

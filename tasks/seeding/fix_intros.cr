@@ -17,8 +17,8 @@ class CV::Seeds::FixIntros
       end
 
       seeds = values.each_with_object({} of String => String) do |x, h|
-        s_name, snvid = x.split("/")
-        h[s_name] = snvid
+        sname, snvid = x.split("/")
+        h[sname] = snvid
       end
 
       {"hetushu", "shubaow", "paoshu8", "zhwenpg", "5200", "nofff",

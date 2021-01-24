@@ -73,11 +73,9 @@ class CV::Nvinfo
   end
 
   def fix_source! : Hash(String, String)
-    chseed = source.to_a.sort_by do |s_name, snvid|
-      source_order(s_name) || -ChSource.get_utime(s_name, snvid)
+    chseed = source.to_a.sort_by do |sname, snvid|
+      source_order(sname) || -ChSource.get_utime(sname, snvid)
     end
-
-    pp chseed
 
     NvValues.source.add(bhash, chseed.map { |a, b| "#{a}/#{b}" })
     source = chseed.to_h
@@ -88,13 +86,12 @@ class CV::Nvinfo
     NvTokens.save!(mode: :upds)
   end
 
-  private def source_order(s_name : String)
-    case s_name
-    when "jx_la"   then 4
-    when "shubaow" then 3
-    when "paoshu8" then 2
-    when "69shu"   then 1
-    else                nil
+  private def source_order(sname : String)
+    case sname
+    when "_chivi", "zxcs_me" then 1
+    when "paoshu8", "69shu"  then 2
+    when "jx_la", "shubaow"  then 3
+    else                          nil
     end
   end
 
@@ -161,15 +158,15 @@ class CV::Nvinfo
     NvTokens.set_genres(bhash, input)
   end
 
-  def self.set_source(bhash : String, s_name : String, snvid : String) : Nil
+  def self.set_source(bhash : String, sname : String, snvid : String) : Nil
     source = NvValues.source.get(bhash) || [] of String
     source = source.each_with_object({} of String => String) do |x, h|
       a, b = x.split("/")
       h[a] = b
     end
 
-    return if source[s_name]? == snvid
-    source[s_name] = snvid
+    return if source[sname]? == snvid
+    source[sname] = snvid
 
     NvValues.source.add(bhash, source.to_a.map { |a, b| "#{a}/#{b}" })
     NvTokens.source.add(bhash, source.keys)

@@ -10,8 +10,8 @@
 
     const { nvinfo, nvmark } = await res.json()
 
-    const s_names = Object.keys(nvinfo.source)
-    const source = query.source || s_names[0] || '_chivi'
+    const snames = Object.keys(nvinfo.source)
+    const source = query.source || snames[0] || '_chivi'
 
     const page = +(query.page || 1)
     const ret = { nvinfo, nvmark, source, page, order }
@@ -228,7 +228,7 @@
       <div class="-right">
         <button
           class="m-button"
-          on:click={(e) => reload(e, { page: 1, order: 'desc', mode: 2 })}>
+          on:click={(e) => reload(e, { page: 1, order: 'desc', mode: 1 })}>
           <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
           <span class="-hide">Đổi mới</span>
         </button>

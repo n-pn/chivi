@@ -9,7 +9,7 @@ class CV::Chinfo
   DIR = "_db/chdata/chinfos"
   ::FileUtils.mkdir_p(DIR)
 
-  getter s_name : String
+  getter sname : String
   getter snvid : String
 
   getter origs : ValueMap { ValueMap.new(map_path("origs"), mode: 1) }
@@ -19,30 +19,30 @@ class CV::Chinfo
 
   getter _atime : Int64 { @meta.get_atime(@snvid) }
   getter _utime : Int64 { @meta.get_utime(@snvid) }
-  getter l_chid : String { @meta.get_lchid(@snvid) }
+  getter lastch : String { @meta.get_lastch(@snvid) }
 
-  def initialize(@s_name, @snvid)
-    @meta = ChSource.load(@s_name)
+  def initialize(@sname, @snvid)
+    @meta = ChSource.load(@sname)
   end
 
   def fetch!(power = 3, force = false, expiry = Time.utc - 1.minutes) : Bool
+    # set_atime(Time.utc.to_unix)
     return false unless remote?(power)
-    source = RmInfo.init(@s_name, @snvid, expiry: expiry)
+    source = RmInfo.init(@sname, @snvid, expiry: expiry)
 
     # update last_chap
-    return false unless set_last_chid(source.last_chid) || force
-    changed = set_utime(source.updated_at.to_unix)
+    changed = set_lastch(source.last_chid)
+    return false unless changed || force
 
     source.chap_list.each do |entry|
       schid, title, label = entry
-      values = label.empty? ? [title] : [title, label]
-      next unless origs.add(schid, values)
+      origs.add(schid, label.empty? ? [title] : [title, label])
     end
 
-    set_atime(Time.utc.to_unix)
-    changed
+    origs.save!(mode: :upds)
+    set_utime(source.updated_at.to_unix) || changed
   rescue err
-    puts err
+    puts "- Fetch chinfo error: #{err}".colorize.red
     false
   end
 
@@ -65,12 +65,9 @@ class CV::Chinfo
     @chaps = nil
   end
 
-  def set_last_chid(schid : String) : Bool
+  def set_lastch(schid : String) : Bool
     raise "empty last_child!" if schid.empty?
-
-    return false unless @meta.l_chid.add(@snvid, schid)
-    @l_chid = schid
-    true
+    @meta.set_lastch(@snvid, schid).tap { |x| @lastch == schid if x }
   end
 
   def set_atime(mtime = Time.utc.to_unix) : Bool
@@ -82,7 +79,7 @@ class CV::Chinfo
   end
 
   private def remote?(u_power = 4)
-    case @s_name
+    case @sname
     when "_chivi", "_miscs", "zxcs_me", "zadzs"
       false
     when "5200", "bqg_5200", "rengshu", "nofff"
@@ -99,7 +96,7 @@ class CV::Chinfo
   end
 
   private def map_path(label : String)
-    "#{DIR}/#{s_name}/#{label}/#{snvid}.tsv"
+    "#{DIR}/#{sname}/#{label}/#{snvid}.tsv"
   end
 
   def each(skip : Int32 = 0, take : Int32 = 30, desc = false)
@@ -118,7 +115,7 @@ class CV::Chinfo
   def url_for(idx : Int32, bslug : String)
     return unless chap = chaps[idx]?
     uslug = chap[1][2]
-    "/~#{bslug}/-#{uslug}-#{s_name}-#{idx + 1}"
+    "/~#{bslug}/-#{uslug}-#{sname}-#{idx + 1}"
   end
 
   def save!(mode : Symbol = :full)
@@ -131,8 +128,8 @@ class CV::Chinfo
 
   CHINFOS = {} of String => self
 
-  def self.load(s_name : String, snvid : String) : self
-    CHINFOS["#{s_name}/#{snvid}"] ||= new(s_name, snvid)
+  def self.load(sname : String, snvid : String) : self
+    CHINFOS["#{sname}/#{snvid}"] ||= new(sname, snvid)
   end
 
   def self.save!(mode : Symbol = :full) : Nil

@@ -49,8 +49,8 @@ module CV::NvTokens
       return matched if matched.empty?
     end
 
-    if s_name = query["source"]?
-      matched = glob_source(s_name, matched)
+    if sname = query["source"]?
+      matched = glob_source(sname, matched)
       return matched if matched.empty?
     end
 

@@ -16,12 +16,12 @@ class CV::PreloadBook
   getter existed_zip : CV::ZipStore
   getter missing : Array(String)
 
-  def initialize(@s_name : String, @snvid : String)
-    @out_dir = "#{TEXT_DIR}/#{@s_name}/#{@snvid}"
+  def initialize(@sname : String, @snvid : String)
+    @out_dir = "#{TEXT_DIR}/#{@sname}/#{@snvid}"
     ::FileUtils.mkdir_p(@out_dir)
 
-    @indexed_map = CV::ValueMap.new("#{LIST_DIR}/#{@s_name}/origs/#{@snvid}.tsv")
-    @existed_zip = CV::ZipStore.new("#{TEXT_DIR}/#{@s_name}/#{@snvid}.zip")
+    @indexed_map = CV::ValueMap.new("#{LIST_DIR}/#{@sname}/origs/#{@snvid}.tsv")
+    @existed_zip = CV::ZipStore.new("#{TEXT_DIR}/#{@sname}/#{@snvid}.zip")
 
     indexed_chids = @indexed_map.data.keys
     existed_chids = @existed_zip.entries(MIN_SIZE).map(&.sub(".txt", ""))
@@ -40,7 +40,7 @@ class CV::PreloadBook
         fetch_text(schid, "#{idx}/#{@missing.size}")
 
         # throttling
-        case @s_name
+        case @sname
         when "shubaow"
           sleep Random.rand(2000..3000).milliseconds
         when "zhwenpg"
@@ -58,7 +58,7 @@ class CV::PreloadBook
   end
 
   def fetch_text(schid : String, label : String) : Nil
-    source = CV::RmText.init(@s_name, @snvid, schid)
+    source = CV::RmText.init(@sname, @snvid, schid)
     out_file = "#{@out_dir}/#{schid}.txt"
 
     puts "- <#{label}> [#{source.title}] saved!\n".colorize.yellow
@@ -68,7 +68,7 @@ class CV::PreloadBook
       source.paras.join(io, "\n")
     end
   rescue err
-    puts "- <#{label}> [#{@s_name}/#{@snvid}/#{schid}]: #{err.message}".colorize.red
+    puts "- <#{label}> [#{@sname}/#{@snvid}/#{schid}]: #{err.message}".colorize.red
   end
 
   def self.crawl!(seed : String, snvid : String, threads = 4)
@@ -79,7 +79,7 @@ end
 class CV::PreloadSeed
   @snvids : Array(String)
 
-  def initialize(@s_name : String, fetch_all : Bool = false)
+  def initialize(@sname : String, fetch_all : Bool = false)
     input = NvValues.source.data.compact_map do |bhash, chseed|
       next unless snvid = extract_seed(chseed, fetch_all)
       weight = NvValues.weight.ival(bhash)
@@ -90,7 +90,7 @@ class CV::PreloadSeed
   end
 
   private def extract_seed(input : Array(String), fetch_all : Bool = false)
-    case @s_name
+    case @sname
     when "zhwenpg", "nofff"
       # not considered main source if there are more than two sources
       return if input.size > 2
@@ -100,18 +100,18 @@ class CV::PreloadSeed
     end
 
     input.each_with_index do |entry, idx|
-      s_name, snvid = entry.split("/")
-      next unless s_name == @s_name
+      sname, snvid = entry.split("/")
+      next unless sname == @sname
       return snvid if fetch_all || idx == 0
     end
   end
 
   def crawl!(threads = 4)
-    puts "[#{@s_name}: #{@snvids.size} entries]".colorize.green.bold
+    puts "[#{@sname}: #{@snvids.size} entries]".colorize.green.bold
 
     @snvids.each_with_index(1) do |snvid, idx|
-      puts "- #{idx}/#{@snvids.size} [#{@s_name}/#{snvid}]".colorize.light_cyan
-      PreloadBook.crawl!(@s_name, snvid, threads)
+      puts "- #{idx}/#{@snvids.size} [#{@sname}/#{snvid}]".colorize.light_cyan
+      PreloadBook.crawl!(@sname, snvid, threads)
     end
   end
 

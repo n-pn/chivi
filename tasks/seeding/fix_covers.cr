@@ -21,15 +21,15 @@ class CV::Seeds::FixCovers
       end
 
       values.each do |entry|
-        s_name, snvid = entry.split("/")
-        covers[s_name] = snvid
+        sname, snvid = entry.split("/")
+        covers[sname] = snvid
       end
 
       bcover = nil
       mwidth = 0
 
-      covers.each do |s_name, snvid|
-        next unless cover_file = cover_path(s_name, snvid)
+      covers.each do |sname, snvid|
+        next unless cover_file = cover_path(sname, snvid)
         cover_width = image_width(cover_file)
 
         if cover_width > mwidth
@@ -67,14 +67,14 @@ class CV::Seeds::FixCovers
     save!(mode: :full)
   end
 
-  def cover_path(s_name : String, snvid : String) : String?
+  def cover_path(sname : String, snvid : String) : String?
     {"html", "jpg.gz", ".pc", ".apple", ".ascii"}.each do |ext|
-      file = "#{DIR}/#{s_name}/#{snvid}.#{ext}"
+      file = "#{DIR}/#{sname}/#{snvid}.#{ext}"
       return if File.exists?(file)
     end
 
     {"gif", "png", "tiff", "jpg"}.each do |ext|
-      file = "#{DIR}/#{s_name}/#{snvid}.#{ext}"
+      file = "#{DIR}/#{sname}/#{snvid}.#{ext}"
       return file if File.exists?(file)
     end
   end

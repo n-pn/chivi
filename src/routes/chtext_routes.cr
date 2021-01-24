@@ -1,19 +1,19 @@
 require "./_route_utils"
 
 module CV::Server
-  get "/api/chinfos/:bslug/:s_name/:cidx" do |env|
+  get "/api/chinfos/:bslug/:sname/:cidx" do |env|
     bslug = env.params.url["bslug"]
 
     unless bhash = Nvinfo.find_by_slug(bslug)
       halt env, status_code: 404, response: "Quyển sách không tồn tại!"
     end
 
-    s_name = env.params.url["s_name"]
-    unless snvid = ChSource.load(s_name)._index.fval(bhash)
+    sname = env.params.url["sname"]
+    unless snvid = ChSource.load(sname)._index.fval(bhash)
       halt env, status_code: 404, response: "Nguồn truyện không tồn tại!"
     end
 
-    chinfo = Chinfo.load(s_name, snvid)
+    chinfo = Chinfo.load(sname, snvid)
 
     index = env.params.url["cidx"].to_i? || 100000
 
@@ -31,7 +31,7 @@ module CV::Server
         bslug:  bslug,
         b_name: btitle[2]? || btitle[1],
 
-        s_name: s_name,
+        sname:  sname,
         snvid:  snvid,
         s_size: chinfo.chaps.size,
 
@@ -51,8 +51,8 @@ module CV::Server
     halt env, status_code: 500, response: message
   end
 
-  get "/api/chtexts/:s_name/:snvid/:schid" do |env|
-    s_name = env.params.url["s_name"]
+  get "/api/chtexts/:sname/:snvid/:schid" do |env|
+    sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
     schid = env.params.url["schid"]
 
@@ -60,7 +60,7 @@ module CV::Server
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
     mode = u_power if mode > u_power
 
-    chtext = Chtext.load(s_name, snvid, schid)
+    chtext = Chtext.load(sname, snvid, schid)
     chtext.fetch!(u_power) if mode > 1 || chtext.zh_lines.empty?
 
     unless mode == 0 && chtext.translated?(Time.utc - 3.hours)

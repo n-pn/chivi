@@ -18,20 +18,20 @@
     const bslug = params.book
 
     const cols = params.chap.split('-')
-    const s_name = cols[cols.length - 2]
+    const sname = cols[cols.length - 2]
     const ch_idx = cols[cols.length - 1]
 
     const mode = +query.mode || 0
     // prettier-ignore
-    const [ok, data] = await get_chinfo(this.fetch, bslug, s_name, ch_idx, mode)
+    const [ok, data] = await get_chinfo(this.fetch, bslug, sname, ch_idx, mode)
 
     if (ok) return data
     else this.error(data.status, data.message)
   }
 
-  function gen_paths({ bslug, s_name, ch_idx, prev_url, next_url }) {
-    const book_path = gen_book_path(bslug, s_name, 0)
-    const list_path = gen_book_path(bslug, s_name, ch_idx)
+  function gen_paths({ bslug, sname, ch_idx, prev_url, next_url }) {
+    const book_path = gen_book_path(bslug, sname, 0)
+    const list_path = gen_book_path(bslug, sname, ch_idx)
 
     const prev_path = prev_url || book_path
     const next_path = next_url || list_path
@@ -39,8 +39,8 @@
     return [book_path, list_path, prev_path, next_path]
   }
 
-  function gen_book_path(bslug, s_name, ch_idx) {
-    let url = `/~${bslug}/content?source=${s_name}`
+  function gen_book_path(bslug, sname, ch_idx) {
+    let url = `/~${bslug}/content?source=${sname}`
     const page = Math.floor(ch_idx / 30) + 1
     return page > 1 ? url + `&page=${page}` : url
   }
@@ -127,7 +127,7 @@
   </a>
 
   <button slot="header-left" class="header-item _active">
-    <span class="header-text _seed">[{chinfo.s_name}]</span>
+    <span class="header-text _seed">[{chinfo.sname}]</span>
   </button>
 
   <button

@@ -17,8 +17,8 @@ export async function get_chlist(fetch, bhash, opts) {
   }
 }
 
-export async function get_chinfo(fetch, bslug, s_name, ch_idx, mode = 0) {
-  const url = `/api/chinfos/${bslug}/${s_name}/${ch_idx}`
+export async function get_chinfo(fetch, bslug, sname, ch_idx, mode = 0) {
+  const url = `/api/chinfos/${bslug}/${sname}/${ch_idx}`
   const res = await fetch(url)
   if (!res.ok) return await wrap_error(res)
 
@@ -30,8 +30,8 @@ export async function get_chinfo(fetch, bslug, s_name, ch_idx, mode = 0) {
 }
 
 export async function get_chtext(fetch, chinfo, mode = 0) {
-  const { s_name, snvid, schid, bhash } = chinfo
-  const url = `/api/chtexts/${s_name}/${snvid}/${schid}?dname=${bhash}&mode=${mode}`
+  const { sname, snvid, schid, bhash } = chinfo
+  const url = `/api/chtexts/${sname}/${snvid}/${schid}?dname=${bhash}&mode=${mode}`
 
   const res = await fetch(url)
   if (!res.ok) return await wrap_error(res)
