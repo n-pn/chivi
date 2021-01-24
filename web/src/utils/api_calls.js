@@ -85,7 +85,7 @@ export async function get_chtext(fetch, chinfo, mode = 0) {
 export async function dict_search(fetch, key, dname = 'various') {
   const url = `/api/dictdb/search/${key}?dname=${dname}`
   const res = await fetch(url)
-  return [0, await res.text()]
+  return await res.json()
 }
 
 export async function dict_upsert(fetch, dname, params) {

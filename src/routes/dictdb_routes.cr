@@ -69,13 +69,17 @@ module CV::Server
     binh_am = Convert.binh_am.translit(input).to_s
     hanviet = Convert.hanviet.translit(input).to_s
 
-    blank = {vals: [] of String, hints: [] of String, attr: "", power: 0}
+    blank = {vals: [] of String, hints: [] of String, attrs: "", power: 0}
 
     RouteUtils.json_res(env) do |res|
       {
         trans: {binh_am: binh_am, hanviet: hanviet},
         hints: hints.uniq.reject(&.== hanviet),
-        infos: {special_info || blank, regular_info || blank, hanviet_info || blank},
+        infos: {
+          special_info || blank,
+          regular_info || blank,
+          hanviet_info || blank,
+        },
       }.to_json(res)
     end
   end
