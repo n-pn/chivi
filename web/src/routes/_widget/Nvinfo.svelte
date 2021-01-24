@@ -6,10 +6,10 @@
 
     const output = ['⭐']
 
-    if (rating >= 1.25) output.push('⭐')
-    if (rating >= 3.75) output.push('⭐')
-    if (rating >= 6.25) output.push('⭐')
-    if (rating >= 8.75) output.push('⭐')
+    if (rating > 12) output.push('⭐')
+    if (rating > 37) output.push('⭐')
+    if (rating > 62) output.push('⭐')
+    if (rating > 87) output.push('⭐')
 
     return output
   }
