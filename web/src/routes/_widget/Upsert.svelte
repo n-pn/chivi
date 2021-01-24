@@ -51,7 +51,16 @@
   let power = [1, 2, 3]
 
   let value_field
-  $: if (value_field && value[$on_tab]) value_field.focus()
+  $: if (value[$on_tab]) focus_on_value()
+
+  function focus_on_value() {
+    value_field && value_field.focus()
+  }
+
+  function hide_modal(_evt, edited = false) {
+    changed = edited
+    $active = false
+  }
 
   async function init_search(input, dname) {
     const data = await dict_search(fetch, input, dname)
@@ -60,14 +69,24 @@
     hints = data.hints
     infos = data.infos
 
-    p_min = infos.map((v, i) => (+v.power > i + 1 ? +v.power : i + 1))
-    power = p_min.map((x) => (x < $u_power ? x : $u_power))
+    p_min = infos.map((info, i) => (+info.power > i + 1 ? +info.power : i + 1))
+    power = p_min.map((min) => (min < $u_power ? min : $u_power))
 
-    origs = infos.map((v) => v.vals[0] || '')
-    value = origs.map((v, i) => v || hints[0] || titleize(trans.hanviet, i < 1))
+    origs = infos.map((info) => info.vals[0] || '')
 
-    let _attr = value[1] ? infos[1].attrs || '' : 'N'
-    attrs = infos.map((v, i) => (v.attrs || i == 0 ? _attr : ''))
+    value = origs.map((val, i) => {
+      if (val) return val
+
+      val = hints[0]
+      if (val) return i < 2 ? val : val.toLowerCase()
+
+      return i < 1 ? titleize(trans.hanviet, 9) : trans.hanviet
+    })
+
+    attrs = infos.map((info, i) => {
+      if (origs[i] || info.attrs) return info.attrs || ''
+      return i > 0 ? '' : infos[1].attrs || 'N'
+    })
   }
 
   async function submit_val(tab = $on_tab) {
@@ -80,8 +99,7 @@
     }
 
     const res = await dict_upsert(fetch, dname, params)
-    changed = res.ok
-    $active = false
+    hide_modal(null, res.ok)
   }
 
   function handle_keydown(evt) {
@@ -92,7 +110,7 @@
         return submit_val($on_tab)
 
       case 27:
-        return active.set(false)
+        return hide_modal(evt, false)
 
       case 38:
         if (evt.altKey && power < $u_power) power += 1
@@ -121,16 +139,13 @@
   class="window"
   on:click={() => active.set(false)}
   on:keydown={handle_keydown}>
-  <div class="upsert" on:click|stopPropagation={() => value_field.focus()}>
+  <div class="upsert" on:click|stopPropagation={focus_on_value}>
     <header class="header">
       <div class="hanzi">
         <Input phrase={$phrase} bind:output={key} />
       </div>
 
-      <button
-        type="button"
-        class="m-button _text"
-        on:click={() => ($active = false)}>
+      <button type="button" class="m-button _text" on:click={hide_modal}>
         <SIcon name="x" />
       </button>
     </header>
