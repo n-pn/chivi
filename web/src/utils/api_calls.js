@@ -107,6 +107,5 @@ export async function dict_lookup(fetch, input, dname) {
     body: JSON.stringify({ input: input }),
   })
 
-  const data = await res.json()
-  return data
+  return await res.json()
 }

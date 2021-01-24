@@ -85,7 +85,7 @@
 
     attrs = infos.map((info, i) => {
       if (origs[i] || info.attrs) return info.attrs || ''
-      return i > 0 ? '' : infos[1].attrs || 'N'
+      return i > 0 ? '' : origs[1] ? infos[1].attrs : 'N'
     })
   }
 
