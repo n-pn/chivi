@@ -2,6 +2,15 @@ require "./_route_utils"
 require "../filedb/marked"
 
 module CV::Server
+  get "/api/_self/nvmarks/:bhash" do |env|
+    if uname = env.session.string?("u_dname").try(&.downcase)
+      marked = Marked.user_books(uname).fval(env.params.url["bhash"]) || ""
+      RouteUtils.json_res(env, {nvmark: marked})
+    else
+      RouteUtils.json_res(env, {nvmark: ""})
+    end
+  end
+
   get "/api/book-marks/:bhash" do |env|
     unless uname = env.session.string?("u_dname").try(&.downcase)
       halt env, status_code: 403, response: "user not logged in"

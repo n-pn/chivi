@@ -63,8 +63,8 @@
   export let cvdata = ''
   export let changed = false
 
-  export let d_name = 'various'
-  export let b_name = 'Tổng hợp'
+  export let dname = 'various'
+  export let bname = 'Tổng hợp'
 
   $: lines = split_input(cvdata)
 
@@ -124,5 +124,5 @@
 {/if}
 
 {#if $upsert_active}
-  <Upsert {d_name} {b_name} bind:changed />
+  <Upsert {dname} {bname} bind:changed />
 {/if}

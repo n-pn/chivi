@@ -1,43 +1,44 @@
 <script context="module">
-  import { get_chlist } from '$utils/api_calls'
+  import { get_nvinfo, get_chseed, get_chlist } from '$utils/api_calls'
 
-  export async function preload({ params, query }) {
-    const bslug = params.book
-    const order = query.order || 'asc'
+  export async function preload(req) {
+    const [err1, nvinfo] = await get_nvinfo(this.fetch, req.params.book)
+    if (err1) this.error(err1, nvinfo)
 
-    const res = await this.fetch(`/api/nvinfos/${bslug}`)
-    if (!res.ok) this.error(res.status, await res.text())
+    const bhash = nvinfo.bhash
 
-    const { nvinfo, nvmark } = await res.json()
+    const seeds = Object.keys(nvinfo.source)
+    const sname = req.query.sname || seeds[0] || '_chivi'
+    const snvid = nvinfo.source[sname] || bhash
 
-    const snames = Object.keys(nvinfo.source)
-    const source = query.source || snames[0] || '_chivi'
+    const page = +(req.query.page || 1)
+    const params = { sname, snvid, page }
 
-    const page = +(query.page || 1)
-    const ret = { nvinfo, nvmark, source, page, order }
+    const _res = { nvinfo, params }
+    if (!params.snvid) return _res
 
-    try {
-      const params = { source, page, order, mode: 0 }
-      const data_2 = await get_chlist(this.fetch, nvinfo.bhash, params)
-      return { ...ret, ...data_2 }
-    } catch (e) {
-      return { ...ret, chaps: [], total: 0, utime: 0 }
-    }
+    const [err2, chseed] = await get_chseed(this.fetch, params, bhash)
+    if (err2) this.error(err2, chseed)
+
+    const [err3, chlist] = await get_chlist(this.fetch, params)
+    if (err3) this.error(err3, chlist)
+
+    return { nvinfo, chseed, chlist, params }
   }
 
-  function split_chseed(nvinfo, picked) {
-    const input = Object.keys(nvinfo.source)
-    if (input.length < 6) return [input, []]
+  function split_chseed({ source }, { sname }) {
+    const seeds = Object.keys(source)
+    if (seeds.length < 6) return [seeds, []]
 
-    let main_seeds = input.slice(0, 4)
+    let main_seeds = seeds.slice(0, 4)
     let hide_seeds
 
-    if (main_seeds.includes(picked)) {
-      main_seeds.push(input[4])
-      hide_seeds = input.slice(5)
-    } else if (picked) {
-      main_seeds.push(picked)
-      hide_seeds = input.slice(4).filter((x) => x != picked)
+    if (main_seeds.includes(sname)) {
+      main_seeds.push(seeds[4])
+      hide_seeds = seeds.slice(5)
+    } else if (sname) {
+      main_seeds.push(sname)
+      hide_seeds = seeds.slice(4).filter((x) => x != sname)
     }
 
     return [main_seeds, hide_seeds]
@@ -46,6 +47,11 @@
   function update_utime(nvinfo, utime) {
     if (nvinfo._utime < utime) nvinfo._utime = utime
     return nvinfo
+  }
+
+  function get_pmax({ total }, { page }) {
+    const p_max = Math.floor((total - 1) / 30) + 1
+    return p_max > page ? p_max : page
   }
 </script>
 
@@ -60,90 +66,56 @@
   import Chlist from '$widget/Chlist'
 
   export let nvinfo
-  export let nvmark = ''
-  export let source
+  export let chseed = { chaps: [], total: 0, mtime: 0 }
+  export let chlist = []
+  export let params = {}
 
-  export let page = 1
-  export let order = 'asc'
+  $: pmax = get_pmax(chseed, params)
+  $: page_list = paginate_range(params.page, pmax, 9)
 
-  export let utime = 0
-  export let total = 0
-  export let chaps = []
-
-  $: pmax = fix_pmax(total)
-  $: reverse_order = order == 'desc' ? 'asc' : 'desc'
-
-  function fix_pmax(total) {
-    const pmax = Math.floor((total - 1) / 30) + 1
-    if (page > pmax) page = pmax
-    return pmax
-  }
-
-  $: page_list = paginate_range(page, pmax, 9)
-
-  $: [main_seeds, hide_seeds] = split_chseed(nvinfo, source)
+  $: [main_seeds, hide_seeds] = split_chseed(nvinfo, params)
   let show_more = false
 
   let scroll_top
-
   let _load = false
 
-  async function reload(evt, opts = {}, scroll = false) {
+  async function load_chseed(evt, sname, mode = 0) {
     evt.preventDefault()
-    const url = new URL(window.location)
 
-    if (opts.page) {
-      let new_page = opts.page
-      if (new_page < 1) new_page = 1
-      if (new_page > pmax) new_page = pmax
+    const snvid = nvinfo.source[sname]
 
-      if (page != new_page) {
-        page = new_page
-        url.searchParams.set('page', page)
-      }
-    } else {
-      opts.page = page
-    }
-
-    if (opts.source) {
-      if (source != opts.source) {
-        source = opts.source
-        url.searchParams.set('source', source)
-      }
-    } else {
-      opts.source = source
-    }
-
-    if (opts.order) {
-      if (order != opts.order) {
-        order = opts.order
-        url.searchParams.set('order', opts.order)
-      }
-    } else {
-      opts.order = order
-    }
-
-    if (opts.mode) {
-      if (opts.mode > $u_power) opts.mode = $u_power
-    } else {
-      opts.mode = 0
+    if (params.sname != sname) {
+      params = { ...params, sname, snvid }
+      const url = new URL(window.location)
+      url.searchParams.set('sname', sname)
+      window.history.replaceState({}, '', url)
     }
 
     _load = true
 
-    const res = await get_chlist(fetch, nvinfo.bhash, opts)
+    const [err, data] = await get_chseed(fetch, params, nvinfo.bhash, mode)
+    if (err) throw data
 
-    chaps = res.chaps
-    total = res.total
-    utime = res.utime
+    chseed = data
+    nvinfo = update_utime(nvinfo, chseed.utime)
 
-    if (res.chseed) nvinfo.source = res.chseed
-    nvinfo = update_utime(nvinfo, res.utime)
+    await load_chlist(params.page, false)
+    _load = false
+  }
 
-    if (scroll) scroll_top.scrollIntoView({ block: 'start' })
+  async function load_chlist(page = 1, scroll = true) {
+    if (page < 1) page = 1
+    if (page > pmax) page = pmax
+    params = { ...params, page }
+
+    const [_err, data] = await get_chlist(fetch, params)
+    chlist = data
+
+    const url = new URL(window.location)
+    url.searchParams.set('page', page)
     window.history.replaceState({}, '', url)
 
-    _load = false
+    if (scroll) scroll_top.scrollIntoView({ block: 'start' })
   }
 
   function handle_keypress(evt) {
@@ -151,21 +123,21 @@
 
     switch (evt.keyCode) {
       case 72:
-        reload(evt, { page: 1 }, true)
+        load_chlist(1)
         break
 
       case 76:
-        reload(evt, { page: pmax }, true)
+        load_chlist(pmax)
         break
 
       case 37:
       case 74:
-        if (!evt.altKey) reload(evt, { page: page - 1 }, true)
+        if (!evt.altKey) load_chlist(params.page - 1)
         break
 
       case 39:
       case 75:
-        if (!evt.altKey) reload(evt, { page: page + 1 }, true)
+        if (!evt.altKey) load_chlist(params.page + 1)
         break
 
       default:
@@ -173,36 +145,36 @@
     }
   }
 
-  function page_url(source, page) {
-    let url = `/~${nvinfo.bslug}/content?source=${source}`
+  function page_url(sname, page) {
+    let url = `/~${nvinfo.bslug}/content?sname=${sname}`
     if (page > 1) url += `&page=${page}`
-    if (order == 'desc') url += '&order=desc'
+    if (params.order == 'desc') url += '&order=desc'
+
     return url
   }
 </script>
 
 <svelte:window on:keydown={handle_keypress} />
 
-<Common {nvinfo} {nvmark} atab="content">
+<Common {nvinfo} atab="content">
   {#if main_seeds.length > 0}
-    <div class="source" bind:this={scroll_top}>
-      <span class="-text"><span class="-hide">Chọn</span> nguồn:</span>
-      {#each main_seeds as m_name}
+    <div class="source">
+      {#each main_seeds as mname}
         <a
           class="-name"
-          class:_active={source === m_name}
-          href={page_url(m_name, page)}
-          on:click={(e) => reload(e, { source: m_name })}>{m_name}
+          class:_active={params.sname === mname}
+          href={page_url(mname, params.page)}
+          on:click={(e) => load_chseed(e, mname)}>{mname}
         </a>
       {/each}
 
       {#if hide_seeds.length > 0}
         {#if show_more}
-          {#each hide_seeds as h_name}
+          {#each hide_seeds as hname}
             <a
               class="-name"
-              href={page_url(h_name, page)}
-              on:click={(e) => reload(e, { source: h_name })}>{h_name}
+              href={page_url(hname, params.page)}
+              on:click={(e) => load_chseed(e, hname)}>{hname}
             </a>
           {/each}
         {:else}
@@ -216,67 +188,70 @@
 
     <div class="chinfo">
       <div class="-left">
-        <span class="-text -hide">Nguồn:</span>
-        <span class="-name">{source}</span>
-        <span class="-size">{total} chương</span>
-        <span class="-time">
-          <span class="-hide">Cập nhật:</span>
-          <RTime m_time={utime * 1000} {source} />
+        <span class="-name">{params.sname}</span>
+        <span class="-text">Mới nhất</span>
+        <span class="-span">
+          <RTime m_time={chseed.utime * 1000} source={params.sname} />
         </span>
       </div>
 
       <div class="-right">
         <button
           class="m-button"
-          on:click={(e) => reload(e, { page: 1, order: 'desc', mode: 2 })}>
+          on:click={(e) => load_chseed(e, params.sname, 2)}>
           <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
           <span class="-hide">Đổi mới</span>
-        </button>
-
-        <button
-          class="m-button"
-          on:click={(e) => reload(e, { order: reverse_order })}>
-          <SIcon name={order == 'desc' ? 'arrow-down' : 'arrow-up'} />
-          <span class="-hide">Sắp xếp</span>
         </button>
       </div>
     </div>
 
     <div class="chlist">
-      <Chlist bslug={nvinfo.bslug} {source} {chaps} />
-
-      {#if pmax > 1}
-        <nav class="pagi">
-          <a
-            href={page_url(source, 1)}
-            class="page m-button"
-            class:_disable={page == 1}
-            on:click={(e) => reload(e, { page: 1 }, true)}>
-            <SIcon name="chevrons-left" />
-          </a>
-
-          {#each page_list as [curr, level]}
-            <a
-              href={page_url(source, curr)}
-              class="page m-button"
-              class:_primary={page == curr}
-              class:_disable={page == curr}
-              data-level={level}
-              on:click={(e) => reload(e, { page: curr }, true)}>
-              <span>{curr}</span>
-            </a>
-          {/each}
-
-          <a
-            href={page_url(source, pmax)}
-            class="page m-button"
-            class:_disable={page == pmax}
-            on:click={(e) => reload(e, { page: pmax }, true)}>
-            <SIcon name="chevrons-right" />
-          </a>
-        </nav>
-      {/if}
+      <Chlist bslug={nvinfo.bslug} sname={params.sname} chaps={chseed.lasts} />
     </div>
+
+    <div class="chinfo" bind:this={scroll_top}>
+      <div class="-left">
+        <span class="-name">{params.sname}</span>
+        <span class="-text">Mục lục</span>
+        <span class="-span">{chseed.total} chương</span>
+      </div>
+    </div>
+
+    <div class="chlist">
+      <Chlist bslug={nvinfo.bslug} sname={params.sname} chaps={chlist} />
+    </div>
+
+    {#if pmax > 1}
+      <nav class="pagi">
+        <a
+          href={page_url(params.sname, 1)}
+          class="page m-button"
+          class:_disable={params.page == 1}
+          on:click={() => load_chlist(1)}>
+          <SIcon name="chevrons-left" />
+        </a>
+
+        {#each page_list as [curr, level]}
+          <a
+            href={page_url(params.sname, curr)}
+            class="page m-button"
+            class:_primary={params.page == curr}
+            class:_disable={params.page == curr}
+            data-level={level}
+            on:click={() => load_chlist(curr)}>
+            <span>{curr}</span>
+          </a>
+        {/each}
+
+        <a
+          href={page_url(params.sname, pmax)}
+          class="page m-button"
+          class:_disable={params.page == pmax}
+          on:click={() => load_chlist(pmax)}>
+          <SIcon name="chevrons-right" />
+        </a>
+      </nav>
+    {/if}
   {:else}
     <div class="empty">Không có nội dung.</div>
   {/if}
@@ -290,22 +265,15 @@
   }
 
   .source {
-    @include flex();
+    @include flex($center: content);
     flex-wrap: wrap;
 
-    .-text,
     .-name {
       margin-top: 0.25rem;
 
       @include label();
       @include props(font-size, 12px, 13px, 14px);
       @include props(line-height, 1.5rem, 1.75rem, 2rem);
-    }
-
-    .-text {
-      // margin-right: 0.5rem;
-      padding-top: 1px;
-      // margin-top: 0.25rem;
     }
 
     .-name {
@@ -329,8 +297,8 @@
   }
 
   .chinfo {
-    margin: 0.5rem 0 0.75rem;
     display: flex;
+    padding: 0.75rem 0;
 
     .-left {
       display: flex;
@@ -344,36 +312,38 @@
     }
 
     line-height: 2.25rem;
+    @include props(font-size, 12px, 13px, 14px);
 
-    @include props(font-size, 12px, 13px, 14px, 15px);
-
-    .-text,
-    .-name {
+    .-name,
+    .-text {
       @include label();
     }
 
-    .-text {
-      margin-right: 0.5rem;
-    }
-
     .-name {
+      padding-left: 0.75rem;
+
       @include fgcolor(neutral, 7);
     }
 
-    .-time {
+    .-span {
       font-style: italic;
+      @include fgcolor(neutral, 6);
     }
 
-    .-size,
-    .-time {
-      @include fgcolor(neutral, 6);
+    .-text,
+    .-span {
       &:before {
         display: inline-block;
         content: '·';
         text-align: center;
+        font-weight: 500;
         @include props(width, 0.5rem, 0.75rem, 1rem);
       }
     }
+  }
+
+  .chlist {
+    padding-bottom: 1rem;
   }
 
   .empty {
@@ -388,7 +358,7 @@
   }
 
   .pagi {
-    margin-top: 0.75rem;
+    margin: 0.75rem 0;
     @include flex($center: content);
     @include flex-gap(0.375rem, $child: '.page');
   }

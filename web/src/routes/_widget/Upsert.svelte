@@ -26,12 +26,12 @@
 
   import Links from './Upsert/Links'
 
+  export let dname = 'various'
+  export let bname = 'Tổng hợp'
   export let changed = false
-  export let d_name = 'various'
-  export let b_name = 'Tổng hợp'
 
   $: dicts = [
-    [d_name, b_name],
+    [dname, bname],
     ['regular', 'Thông dụng'],
     ['hanviet', 'Hán Việt'],
   ]
@@ -41,7 +41,7 @@
   let infos = [{}, {}, {}]
 
   let key = ''
-  $: if ($active && key) init_search(key, d_name)
+  $: if ($active && key) init_search(key, dname)
 
   let value = ['', '', '']
   let origs = ['', '', '']
@@ -153,7 +153,7 @@
     <section class="dicts">
       {#each dicts as [_dname, label], idx}
         <Dname
-          d_name={label}
+          dname={label}
           active={idx == $on_tab}
           exists={origs[idx]}
           {idx}

@@ -1,21 +1,19 @@
 <script context="module">
-  import Common from './_common'
+  import { get_nvinfo } from '$utils/api_calls'
 
   export async function preload({ params }) {
-    const res = await this.fetch(`/api/nvinfos/${params.book}`)
-    const data = await res.json()
-
-    if (res.ok) return data
-    else this.error(res.status, res.text())
+    const [err, data] = await get_nvinfo(this.fetch, params.book)
+    if (err) this.error(err, data)
+    else return { nvinfo: data }
   }
 </script>
 
 <script>
+  import Common from './_common'
   export let nvinfo
-  export let nvmark = ''
 </script>
 
-<Common {nvinfo} {nvmark} atab="discuss">
+<Common {nvinfo} atab="discuss">
   <div class="empty">Chưa hoàn thiện :(</div>
 </Common>
 

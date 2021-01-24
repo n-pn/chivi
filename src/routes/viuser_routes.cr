@@ -15,7 +15,7 @@ module CV::Server
     end
   end
 
-  get "/api/self" do |env|
+  get "/api/_self" do |env|
     u_dname = env.session.string("u_dname")
     u_power = env.session.int("u_power")
 

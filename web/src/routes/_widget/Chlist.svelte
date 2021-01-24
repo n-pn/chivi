@@ -1,17 +1,14 @@
 <script>
   export let bslug = ''
-  export let source = ''
+  export let sname = ''
 
   export let chaps = []
 </script>
 
 <ul class="list">
-  {#each chaps as { ch_idx, title, label, uslug }}
+  {#each chaps as { chidx, title, label, uslug }}
     <li class="item">
-      <a
-        href="/~{bslug}/-{uslug}-{source}-{ch_idx}"
-        class="link"
-        rel="nofollow">
+      <a href="/~{bslug}/-{uslug}-{sname}-{chidx}" class="link" rel="nofollow">
         <div class="label">{label}</div>
         <div class="title">{title}</div>
       </a>

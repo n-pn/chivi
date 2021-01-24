@@ -16,22 +16,17 @@
 
   export async function preload({ params, query }) {
     const bslug = params.book
+    const [chidx, sname] = params.chap.split('-').reverse()
+    const mode = +query.mode || process.browser ? 1 : 0
 
-    const cols = params.chap.split('-')
-    const sname = cols[cols.length - 2]
-    const ch_idx = cols[cols.length - 1]
-
-    const mode = +query.mode || 0
-    // prettier-ignore
-    const [ok, data] = await get_chinfo(this.fetch, bslug, sname, ch_idx, mode)
-
-    if (ok) return data
-    else this.error(data.status, data.message)
+    const [err, data] = await get_chinfo(this.fetch, bslug, sname, chidx, mode)
+    if (err) this.error(err, data)
+    else return data
   }
 
-  function gen_paths({ bslug, sname, ch_idx, prev_url, next_url }) {
+  function gen_paths({ bslug, sname, chidx, prev_url, next_url }) {
     const book_path = gen_book_path(bslug, sname, 0)
-    const list_path = gen_book_path(bslug, sname, ch_idx)
+    const list_path = gen_book_path(bslug, sname, chidx)
 
     const prev_path = prev_url || book_path
     const next_path = next_url || list_path
@@ -39,9 +34,9 @@
     return [book_path, list_path, prev_path, next_path]
   }
 
-  function gen_book_path(bslug, sname, ch_idx) {
+  function gen_book_path(bslug, sname, chidx) {
     let url = `/~${bslug}/content?source=${sname}`
-    const page = Math.floor(ch_idx / 30) + 1
+    const page = Math.floor(chidx / 30) + 1
     return page > 1 ? url + `&page=${page}` : url
   }
 </script>
@@ -108,14 +103,14 @@
     if (mode > $u_power) mode = $u_power
     if (mode < 1) return
 
-    const [_ok, chdata] = await get_chtext(window.fetch, chinfo, mode)
-    cvdata = chdata
-    changed = false
+    const [err, data] = await get_chtext(window.fetch, chinfo, mode)
+    cvdata = data
+    changed = !err
   }
 </script>
 
 <svelte:head>
-  <title>{chinfo.title} - {chinfo.b_name} - Chivi</title>
+  <title>{chinfo.title} - {chinfo.bname} - Chivi</title>
 </svelte:head>
 
 <svelte:body on:keydown={handle_keypress} />
@@ -123,7 +118,7 @@
 <Vessel shift={$lookup_enabled && $lookup_actived}>
   <a slot="header-left" href={book_path} class="header-item _title">
     <SIcon name="book-open" />
-    <span class="header-text _show-md _title">{chinfo.b_name}</span>
+    <span class="header-text _show-md _title">{chinfo.sname}</span>
   </a>
 
   <button slot="header-left" class="header-item _active">
@@ -150,18 +145,14 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/~{chinfo.bslug}" class="-link"> {chinfo.b_name}</a>
+      <a href="/~{chinfo.bslug}" class="-link"> {chinfo.bname}</a>
     </div>
 
     <div class="-crumb"><span class="-text">{chinfo.label}</span></div>
   </nav>
 
   {#if cvdata}
-    <Cvdata
-      {cvdata}
-      bind:changed
-      d_name={chinfo.bhash}
-      b_name={chinfo.b_name} />
+    <Cvdata {cvdata} bind:changed dname={chinfo.bhash} bname={chinfo.bname} />
   {:else}
     <div class="empty">
       Chương tiết không có nội dung, mời liên hệ ban quản trị.
@@ -180,7 +171,7 @@
 
     <a href={list_path} class="m-button _solid" data-kbd="h">
       <SIcon name="list" />
-      <span>{chinfo.ch_idx}/{chinfo.s_size}</span>
+      <span>{chinfo.chidx}/{chinfo.total}</span>
     </a>
 
     <a

@@ -2,11 +2,13 @@ import sirv from 'sirv'
 import polka from 'polka'
 import compression from 'compression'
 import * as sapper from '@sapper/server'
+import { createProxyMiddleware } from 'http-proxy-middleware'
+
+import { LocalStorage } from 'node-localstorage'
+global.localStorage = new LocalStorage('public/._chivi')
 
 const { PORT, NODE_ENV } = process.env
 const dev = NODE_ENV === 'development'
-
-import { createProxyMiddleware } from 'http-proxy-middleware'
 
 const proxy = createProxyMiddleware('/api/', {
   target: 'http://localhost:5010',

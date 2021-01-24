@@ -1,5 +1,5 @@
 <script>
-  export let d_name
+  export let dname
   export let active
   export let exists
   export let idx
@@ -7,7 +7,7 @@
 </script>
 
 <span class="tab" class:active class:exists data-kbd={kbd} on:click>
-  {d_name}
+  {dname}
 </span>
 
 <style lang="scss">

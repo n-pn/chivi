@@ -27,16 +27,16 @@ module CV::Server
 
     RouteUtils.json_res(env) do |res|
       {
-        bhash:  bhash,
-        bslug:  bslug,
-        b_name: btitle[2]? || btitle[1],
+        bhash: bhash,
+        bslug: bslug,
+        bname: btitle[2]? || btitle[1],
 
-        sname:  sname,
-        snvid:  snvid,
-        s_size: chinfo.chaps.size,
+        sname: sname,
+        snvid: snvid,
+        total: chinfo.chaps.size,
 
-        schid:  curr_chap[0],
-        ch_idx: index,
+        schid: curr_chap[0],
+        chidx: index,
 
         title: ch_title,
         label: ch_label,

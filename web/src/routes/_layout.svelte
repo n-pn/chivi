@@ -1,20 +1,20 @@
 <script>
   import { stores } from '@sapper/app'
+  import { get_self } from '$utils/api_calls'
+
   const { preloading } = stores()
   import { u_dname, u_power } from '$src/stores'
   export let segment = ''
 
   import { onMount } from 'svelte'
   onMount(async () => {
-    try {
-      const res = await fetch('/api/self')
-      const user = await res.json()
-
+    const [err, user] = await get_self(fetch)
+    if (err) {
+      $u_dname = 'Khách'
+      $u_power = 0
+    } else {
       $u_dname = user.dname
       $u_power = user.power
-    } catch (err) {
-      $u_dname = 'Khách'
-      $u_power = -1
     }
   })
 </script>

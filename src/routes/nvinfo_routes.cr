@@ -18,18 +18,9 @@ module CV::Server
     nvinfo = Nvinfo.load(bhash)
     nvinfo.bump_access!
 
-    if u_uname = env.session.string?("u_dname").try(&.downcase)
-      nvmark = Marked.user_books(u_uname).fval(bhash) || ""
-    else
-      nvmark = ""
-    end
-
     RouteUtils.json_res(env, cached: nvinfo._utime) do |res|
       JSON.build(res) do |json|
-        json.object do
-          json.field "nvinfo" { nvinfo.to_json(json, true) }
-          json.field "nvmark", nvmark
-        end
+        nvinfo.to_json(json, true)
       end
     end
   end

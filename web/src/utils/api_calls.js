@@ -1,47 +1,84 @@
-export async function get_chlist(fetch, bhash, opts) {
-  const page = opts.page || 1
-  let skip = (page - 1) * 30
-  if (skip < 0) skip = 0
+async function api_call(fetch, url, key = url, ttl = 1, fresh = false) {
+  const now = Math.round(new Date().getTime() / 60000)
 
-  let url = `/api/chseeds/${bhash}/${opts.source}?take=30&skip=${skip}`
-  if (opts.order) url += `&order=${opts.order}`
-  if (opts.mode) url += `&mode=${opts.mode}`
+  if (localStorage && !fresh) {
+    const value = localStorage.getItem(key)
+    if (value) {
+      let cached = JSON.parse(value)
+      if (cached[2] >= now) return cached
+    }
+  }
 
-  try {
-    const res = await fetch(url)
-    const data = await res.json()
-    if (res.ok) return data
-    else throw data.msg
-  } catch (err) {
-    throw err.message
+  const res = await fetch(`/api/${url}`)
+  let value = res.ok ? [0, await res.json()] : [res.status, await res.text()]
+
+  if (localStorage) {
+    value.push(now + ttl)
+    localStorage.setItem(key, JSON.stringify(value))
+  }
+
+  return value
+}
+
+export async function get_self(fetch) {
+  return await api_call(fetch, `_self`, `_self`, 10)
+}
+
+export async function get_nvinfo(fetch, bslug) {
+  return await api_call(fetch, `nvinfos/${bslug}`, `nvinfo:${bslug}`, 3)
+}
+
+function nvmark_key(bslug, uname) {
+  return `nvmark:${uname.toLowerCase()}-${bslug}`
+}
+
+export async function get_nvmark(fetch, bhash, uname, ttl = 3) {
+  const key = nvmark_key(bhash, uname)
+  return await api_call(fetch, `_self/nvmarks/${bhash}`, key, ttl)
+}
+
+export async function set_nvmark(fetch, bhash, nvmark, uname) {
+  if (uname == 'Khách') return
+
+  const url = `/api/book-marks/${bhash}?nvmark=${nvmark}`
+  await fetch(url, { method: 'PUT' })
+
+  if (localStorage) {
+    const key = nvmark_key(bslug, uname)
+    const val = [0, nvmark, new Date().getTime() + 3]
+    localStorage.setItem(key, val)
   }
 }
 
-export async function get_chinfo(fetch, bslug, sname, ch_idx, mode = 0) {
-  const url = `/api/chinfos/${bslug}/${sname}/${ch_idx}`
+export async function get_chseed(fetch, { sname, snvid }, bhash, mode = 0) {
+  let url = `chseeds/${sname}/${snvid}?bhash=${bhash}&mode=${mode}`
+  return await api_call(fetch, url, `chseed:${sname}/${snvid}`, 3, mode > 0)
+}
+
+export async function get_chlist(fetch, { sname, snvid, page }) {
+  let skip = (page - 1) * 30
+  if (skip < 0) skip = 0
+
+  let url = `chitems/${sname}/${snvid}?take=30&skip=${skip}`
+  return await api_call(fetch, url, `chlist:${sname}/${snvid}/${page}`, 3)
+}
+
+export async function get_chinfo(fetch, bslug, sname, chidx, mode = 0) {
+  const url = `/api/chinfos/${bslug}/${sname}/${chidx}`
   const res = await fetch(url)
   if (!res.ok) return await wrap_error(res)
 
   const chinfo = await res.json()
   if (mode < 0) return [true, { chinfo, cvdata: '' }]
 
-  const [ok, cvdata] = await get_chtext(fetch, chinfo, mode)
-  return [ok, ok ? { chinfo, cvdata } : cvdata]
+  const [err, data] = await get_chtext(fetch, chinfo, mode)
+  return err ? [err, data] : [0, { chinfo, cvdata: data }]
 }
 
 export async function get_chtext(fetch, chinfo, mode = 0) {
   const { sname, snvid, schid, bhash } = chinfo
   const url = `/api/chtexts/${sname}/${snvid}/${schid}?dname=${bhash}&mode=${mode}`
-
-  const res = await fetch(url)
-  if (!res.ok) return await wrap_error(res)
-
-  const data = await res.text()
-  return [true, data]
-}
-
-async function wrap_error(res) {
-  return [false, { status: res.status, message: await res.text() }]
+  return await api_call(fetch, url)
 }
 
 export async function dict_search(fetch, key, dname = 'various') {

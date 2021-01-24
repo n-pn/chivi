@@ -1,3 +1,4 @@
+require "json"
 require "file_utils"
 
 require "./chinfo/*"
@@ -25,7 +26,11 @@ class CV::Chinfo
     @meta = ChSource.load(@sname)
   end
 
-  def fetch!(power = 3, force = false, expiry = Time.utc - 1.minutes) : Bool
+  def chsize
+    chaps.size
+  end
+
+  def fetch!(power = 3, force = false, expiry = Time.utc - 5.minutes) : Bool
     # set_atime(Time.utc.to_unix)
     return false unless remote?(power)
     source = RmInfo.init(@sname, @snvid, expiry: expiry)
@@ -109,6 +114,21 @@ class CV::Chinfo
       idx = desc ? chaps.size - skip - 1 : skip
       yield idx, chaps.unsafe_fetch(idx)
       skip += 1
+    end
+  end
+
+  def json_each(json : JSON::Builder, skip : Int32, take : Int32, desc : Bool)
+    json.array do
+      each(skip, take, desc) do |idx, (schid, chinfo)|
+        json.object do
+          json.field "schid", schid
+          json.field "chidx", idx + 1
+
+          json.field "title", chinfo[0]
+          json.field "label", chinfo[1]
+          json.field "uslug", chinfo[2]
+        end
+      end
     end
   end
 
