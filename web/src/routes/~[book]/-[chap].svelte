@@ -1,7 +1,4 @@
 <script context="module">
-  import SIcon from '$blocks/SIcon'
-
-  import Vessel from '$layout/Vessel'
   import Cvdata, { toggle_lookup, active_upsert } from '$layout/Cvdata'
   import { active as upsert_active } from '$widget/Upsert'
 
@@ -42,6 +39,9 @@
 </script>
 
 <script>
+  import SIcon from '$blocks/SIcon'
+  import Vessel from '$layout/Vessel'
+
   export let chinfo = {}
   export let cvdata = ''
 

@@ -69,7 +69,7 @@ export async function get_chinfo(fetch, bslug, sname, chidx, mode = 0) {
   if (!res.ok) return await wrap_error(res)
 
   const chinfo = await res.json()
-  if (mode < 0) return [true, { chinfo, cvdata: '' }]
+  if (mode < 0) return [500, { chinfo, cvdata: '' }]
 
   const [err, data] = await get_chtext(fetch, chinfo, mode)
   return err ? [err, data] : [0, { chinfo, cvdata: data }]
@@ -78,13 +78,14 @@ export async function get_chinfo(fetch, bslug, sname, chidx, mode = 0) {
 export async function get_chtext(fetch, chinfo, mode = 0) {
   const { sname, snvid, schid, bhash } = chinfo
   const url = `/api/chtexts/${sname}/${snvid}/${schid}?dname=${bhash}&mode=${mode}`
-  return await api_call(fetch, url)
+  const res = await fetch(url)
+  return [0, await res.text()]
 }
 
 export async function dict_search(fetch, key, dname = 'various') {
   const url = `/api/dictdb/search/${key}?dname=${dname}`
   const res = await fetch(url)
-  return await res.json()
+  return [0, await res.text()]
 }
 
 export async function dict_upsert(fetch, dname, params) {
