@@ -228,7 +228,7 @@
       <div class="-right">
         <button
           class="m-button"
-          on:click={(e) => reload(e, { page: 1, order: 'desc', mode: 1 })}>
+          on:click={(e) => reload(e, { page: 1, order: 'desc', mode: 2 })}>
           <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
           <span class="-hide">Đổi mới</span>
         </button>
