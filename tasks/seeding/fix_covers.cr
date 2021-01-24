@@ -10,26 +10,26 @@ class CV::Seeds::FixCovers
   def fix!(redo : Bool = false)
     checked = Set(String).new
 
-    @source.data.each_with_index(1) do |(b_hash, values), idx|
-      checked.add(b_hash)
-      next unless redo || !NvValues.bcover.has_key?(b_hash)
+    @source.data.each_with_index(1) do |(bhash, values), idx|
+      checked.add(bhash)
+      next unless redo || !NvValues.bcover.has_key?(bhash)
 
       covers = {} of String => String
 
-      if y_nvid = NvValues.yousuu.fval(b_hash)
+      if y_nvid = NvValues.yousuu.fval(bhash)
         covers["yousuu"] = y_nvid
       end
 
       values.each do |entry|
-        s_name, s_nvid = entry.split("/")
-        covers[s_name] = s_nvid
+        s_name, snvid = entry.split("/")
+        covers[s_name] = snvid
       end
 
       bcover = nil
       mwidth = 0
 
-      covers.each do |s_name, s_nvid|
-        next unless cover_file = cover_path(s_name, s_nvid)
+      covers.each do |s_name, snvid|
+        next unless cover_file = cover_path(s_name, snvid)
         cover_width = image_width(cover_file)
 
         if cover_width > mwidth
@@ -38,9 +38,9 @@ class CV::Seeds::FixCovers
         end
       end
 
-      next unless bcover && NvValues.bcover.add(b_hash, bcover.sub("#{DIR}/", ""))
+      next unless bcover && NvValues.bcover.add(bhash, bcover.sub("#{DIR}/", ""))
 
-      out_file = "#{DIR}/_chivi/#{b_hash}.webp"
+      out_file = "#{DIR}/_chivi/#{bhash}.webp"
       convert_img(bcover, out_file)
 
       if idx % 20 == 0
@@ -50,13 +50,13 @@ class CV::Seeds::FixCovers
     end
 
     yousuu = NvValues.yousuu.data
-    yousuu.each_with_index(1) do |(b_hash, values), idx|
-      next if checked.includes?(b_hash)
-      next unless redo || !NvValues.bcover.has_key?(b_hash)
+    yousuu.each_with_index(1) do |(bhash, values), idx|
+      next if checked.includes?(bhash)
+      next unless redo || !NvValues.bcover.has_key?(bhash)
 
       next unless cover_file = cover_path("yousuu", values.first)
       next if image_width(cover_file) < 10
-      NvValues.bcover.add(b_hash, cover_file.sub("#{DIR}/", ""))
+      NvValues.bcover.add(bhash, cover_file.sub("#{DIR}/", ""))
 
       if idx % 20 == 0
         puts "- [yousuu_covers] <#{idx}/#{yousuu.size}>".colorize.blue
@@ -67,14 +67,14 @@ class CV::Seeds::FixCovers
     save!(mode: :full)
   end
 
-  def cover_path(s_name : String, s_nvid : String) : String?
+  def cover_path(s_name : String, snvid : String) : String?
     {"html", "jpg.gz", ".pc", ".apple", ".ascii"}.each do |ext|
-      file = "#{DIR}/#{s_name}/#{s_nvid}.#{ext}"
+      file = "#{DIR}/#{s_name}/#{snvid}.#{ext}"
       return if File.exists?(file)
     end
 
     {"gif", "png", "tiff", "jpg"}.each do |ext|
-      file = "#{DIR}/#{s_name}/#{s_nvid}.#{ext}"
+      file = "#{DIR}/#{s_name}/#{snvid}.#{ext}"
       return file if File.exists?(file)
     end
   end

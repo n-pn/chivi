@@ -15,7 +15,7 @@
   } from '$src/stores'
 
   export async function preload({ params, query }) {
-    const b_slug = params.book
+    const bslug = params.book
 
     const cols = params.chap.split('-')
     const s_name = cols[cols.length - 2]
@@ -23,15 +23,15 @@
 
     const mode = +query.mode || 0
     // prettier-ignore
-    const [ok, data] = await get_chinfo(this.fetch, b_slug, s_name, ch_idx, mode)
+    const [ok, data] = await get_chinfo(this.fetch, bslug, s_name, ch_idx, mode)
 
     if (ok) return data
     else this.error(data.status, data.message)
   }
 
-  function gen_paths({ b_slug, s_name, ch_idx, prev_url, next_url }) {
-    const book_path = gen_book_path(b_slug, s_name, 0)
-    const list_path = gen_book_path(b_slug, s_name, ch_idx)
+  function gen_paths({ bslug, s_name, ch_idx, prev_url, next_url }) {
+    const book_path = gen_book_path(bslug, s_name, 0)
+    const list_path = gen_book_path(bslug, s_name, ch_idx)
 
     const prev_path = prev_url || book_path
     const next_path = next_url || list_path
@@ -39,8 +39,8 @@
     return [book_path, list_path, prev_path, next_path]
   }
 
-  function gen_book_path(b_slug, s_name, ch_idx) {
-    let url = `/~${b_slug}/content?source=${s_name}`
+  function gen_book_path(bslug, s_name, ch_idx) {
+    let url = `/~${bslug}/content?source=${s_name}`
     const page = Math.floor(ch_idx / 30) + 1
     return page > 1 ? url + `&page=${page}` : url
   }
@@ -52,7 +52,7 @@
 
   $: [book_path, list_path, prev_path, next_path] = gen_paths(chinfo)
 
-  $: $lookup_dname = chinfo.b_hash
+  $: $lookup_dname = chinfo.bhash
 
   let changed = false
   $: if (changed) reload_chap(1)
@@ -150,7 +150,7 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/~{chinfo.b_slug}" class="-link"> {chinfo.b_name}</a>
+      <a href="/~{chinfo.bslug}" class="-link"> {chinfo.b_name}</a>
     </div>
 
     <div class="-crumb"><span class="-text">{chinfo.label}</span></div>
@@ -160,7 +160,7 @@
     <Cvdata
       {cvdata}
       bind:changed
-      d_name={chinfo.b_hash}
+      d_name={chinfo.bhash}
       b_name={chinfo.b_name} />
   {:else}
     <div class="empty">

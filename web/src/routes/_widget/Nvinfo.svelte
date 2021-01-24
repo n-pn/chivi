@@ -14,14 +14,14 @@
     return output
   }
 
-  function book_url(b_slug, atab) {
+  function book_url(bslug, atab) {
     switch (atab) {
       case 'content':
-        return `/~${b_slug}/content?order=desc`
+        return `/~${bslug}/content?order=desc`
       case 'discuss':
-        return `/~${b_slug}/discuss`
+        return `/~${bslug}/discuss`
       default:
-        return `/~${b_slug}`
+        return `/~${bslug}`
     }
   }
 </script>
@@ -32,13 +32,13 @@
 
   $: title = nvinfo.btitle[2] || nvinfo.btitle[1]
   $: genre = nvinfo.genres[0] || 'Loại khác'
-  $: href = book_url(nvinfo.b_slug, atab)
+  $: href = book_url(nvinfo.bslug, atab)
   $: stars = rating_stars(nvinfo.rating, nvinfo.voters)
 </script>
 
 <a class="book" {href}>
   <div class="cover">
-    <BCover b_hash={nvinfo.b_hash} bcover={nvinfo.bcover} />
+    <BCover bhash={nvinfo.bhash} bcover={nvinfo.bcover} />
 
     {#if nvinfo.voters > 10}
       <div class="extra">

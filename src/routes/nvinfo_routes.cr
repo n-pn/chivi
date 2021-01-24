@@ -10,16 +10,16 @@ module CV::Server
     RouteUtils.books_res(env, matched)
   end
 
-  get "/api/nvinfos/:b_slug" do |env|
-    unless b_hash = Nvinfo.find_by_slug(env.params.url["b_slug"])
+  get "/api/nvinfos/:bslug" do |env|
+    unless bhash = Nvinfo.find_by_slug(env.params.url["bslug"])
       halt env, status_code: 404, response: "Book not found!"
     end
 
-    nvinfo = Nvinfo.load(b_hash)
+    nvinfo = Nvinfo.load(bhash)
     nvinfo.bump_access!
 
     if u_uname = env.session.string?("u_dname").try(&.downcase)
-      nvmark = Marked.user_books(u_uname).fval(b_hash) || ""
+      nvmark = Marked.user_books(u_uname).fval(bhash) || ""
     else
       nvmark = ""
     end

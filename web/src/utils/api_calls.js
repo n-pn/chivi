@@ -1,9 +1,9 @@
-export async function get_chlist(fetch, b_hash, opts) {
+export async function get_chlist(fetch, bhash, opts) {
   const page = opts.page || 1
   let skip = (page - 1) * 30
   if (skip < 0) skip = 0
 
-  let url = `/api/chseeds/${b_hash}/${opts.source}?take=30&skip=${skip}`
+  let url = `/api/chseeds/${bhash}/${opts.source}?take=30&skip=${skip}`
   if (opts.order) url += `&order=${opts.order}`
   if (opts.mode) url += `&mode=${opts.mode}`
 
@@ -17,8 +17,8 @@ export async function get_chlist(fetch, b_hash, opts) {
   }
 }
 
-export async function get_chinfo(fetch, b_slug, s_name, ch_idx, mode = 0) {
-  const url = `/api/chinfos/${b_slug}/${s_name}/${ch_idx}`
+export async function get_chinfo(fetch, bslug, s_name, ch_idx, mode = 0) {
+  const url = `/api/chinfos/${bslug}/${s_name}/${ch_idx}`
   const res = await fetch(url)
   if (!res.ok) return await wrap_error(res)
 
@@ -30,8 +30,8 @@ export async function get_chinfo(fetch, b_slug, s_name, ch_idx, mode = 0) {
 }
 
 export async function get_chtext(fetch, chinfo, mode = 0) {
-  const { s_name, s_nvid, s_chid, b_hash } = chinfo
-  const url = `/api/chtexts/${s_name}/${s_nvid}/${s_chid}?dname=${b_hash}&mode=${mode}`
+  const { s_name, snvid, schid, bhash } = chinfo
+  const url = `/api/chtexts/${s_name}/${snvid}/${schid}?dname=${bhash}&mode=${mode}`
 
   const res = await fetch(url)
   if (!res.ok) return await wrap_error(res)

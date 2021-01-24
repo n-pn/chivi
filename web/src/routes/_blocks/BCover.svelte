@@ -1,12 +1,12 @@
 <script>
-  export let b_hash
+  export let bhash
   export let bcover
 </script>
 
 <div>
   <picture>
     {#if bcover}
-      <source srcset="/covers/_chivi/{b_hash}.webp" type="image/webp" />
+      <source srcset="/covers/_chivi/{bhash}.webp" type="image/webp" />
     {/if}
     <img alt="" src="/covers/{bcover || 'blank.png'}" loading="lazy" />
   </picture>

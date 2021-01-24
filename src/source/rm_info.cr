@@ -8,13 +8,13 @@ require "../_utils/text_utils"
 require "../_utils/http_utils"
 
 class CV::RmInfo
-  def self.init(s_name : String, s_nvid : String,
+  def self.init(s_name : String, snvid : String,
                 expiry : Time = Time.utc - 1.hour, freeze : Bool = true)
-    file = path_for(s_name, s_nvid)
+    file = path_for(s_name, snvid)
     expiry = TimeUtils::DEF_TIME if s_name == "jx_la"
 
     unless html = FileUtils.read(file, expiry)
-      url = url_for(s_name, s_nvid)
+      url = url_for(s_name, snvid)
       html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(s_name))
 
       if freeze
@@ -23,41 +23,41 @@ class CV::RmInfo
       end
     end
 
-    new(s_name, s_nvid, file, html: html)
+    new(s_name, snvid, file, html: html)
   end
 
-  def self.path_for(s_name : String, s_nvid : String)
-    "_db/.cache/#{s_name}/infos/#{s_nvid}.html"
+  def self.path_for(s_name : String, snvid : String)
+    "_db/.cache/#{s_name}/infos/#{snvid}.html"
   end
 
-  def self.url_for(s_name : String, s_nvid : String) : String
+  def self.url_for(s_name : String, snvid : String) : String
     case s_name
-    when "nofff"    then "https://www.nofff.com/#{s_nvid}/"
-    when "69shu"    then "https://www.69shu.com/#{s_nvid}/"
-    when "jx_la"    then "https://www.jx.la/book/#{s_nvid}/"
-    when "qu_la"    then "https://www.qu.la/book/#{s_nvid}/"
-    when "rengshu"  then "http://www.rengshu.com/book/#{s_nvid}"
-    when "xbiquge"  then "https://www.xbiquge.cc/book/#{s_nvid}/"
-    when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{s_nvid}"
-    when "hetushu"  then "https://www.hetushu.com/book/#{s_nvid}/index.html"
-    when "duokan8"  then "http://www.duokan8.com/#{prefixed(s_nvid)}/"
-    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed(s_nvid)}/"
-    when "5200"     then "https://www.5200.tv/#{prefixed(s_nvid)}/"
-    when "shubaow"  then "https://www.shubaow.net/#{prefixed(s_nvid)}/"
-    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed(s_nvid)}/"
+    when "nofff"    then "https://www.nofff.com/#{snvid}/"
+    when "69shu"    then "https://www.69shu.com/#{snvid}/"
+    when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
+    when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
+    when "rengshu"  then "http://www.rengshu.com/book/#{snvid}"
+    when "xbiquge"  then "https://www.xbiquge.cc/book/#{snvid}/"
+    when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
+    when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/index.html"
+    when "duokan8"  then "http://www.duokan8.com/#{prefixed(snvid)}/"
+    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed(snvid)}/"
+    when "5200"     then "https://www.5200.tv/#{prefixed(snvid)}/"
+    when "shubaow"  then "https://www.shubaow.net/#{prefixed(snvid)}/"
+    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed(snvid)}/"
     else                 raise "Unsupported remote source <#{s_name}>!"
     end
   end
 
-  private def self.prefixed(s_nvid : String)
-    "#{s_nvid.to_i // 1000}_#{s_nvid}"
+  private def self.prefixed(snvid : String)
+    "#{snvid.to_i // 1000}_#{snvid}"
   end
 
   getter s_name : String
-  getter s_nvid : String
+  getter snvid : String
   getter c_file : String
 
-  def initialize(@s_name, @s_nvid, @c_file, html = File.read(@c_file))
+  def initialize(@s_name, @snvid, @c_file, html = File.read(@c_file))
     @rdoc = Myhtml::Parser.new(html)
   end
 
@@ -114,7 +114,7 @@ class CV::RmInfo
       image_url = node_attr(".book_info img", "src")
       "https://www.hetushu.com#{image_url}"
     when "69shu"
-      image_url = "/#{@s_nvid.to_i // 1000}/#{@s_nvid}/#{@s_nvid}s.jpg"
+      image_url = "/#{@snvid.to_i // 1000}/#{@snvid}/#{@snvid}s.jpg"
       "https://www.69shu.com/files/article/image/#{image_url}"
     when "zhwenpg"
       node_attr(".cover_wrapper_m img", "data-src")
@@ -147,7 +147,7 @@ class CV::RmInfo
     when "暂停", "暂 停", "暂　停"
       2
     else
-      puts "<#{@s_name}/#{@s_nvid}> UNKNOWN STATUS: `#{status}`".colorize.red
+      puts "<#{@s_name}/#{@snvid}> UNKNOWN STATUS: `#{status}`".colorize.red
       0
     end
   end

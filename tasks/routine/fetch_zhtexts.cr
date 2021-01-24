@@ -16,12 +16,12 @@ class CV::PreloadBook
   getter existed_zip : CV::ZipStore
   getter missing : Array(String)
 
-  def initialize(@s_name : String, @s_nvid : String)
-    @out_dir = "#{TEXT_DIR}/#{@s_name}/#{@s_nvid}"
+  def initialize(@s_name : String, @snvid : String)
+    @out_dir = "#{TEXT_DIR}/#{@s_name}/#{@snvid}"
     ::FileUtils.mkdir_p(@out_dir)
 
-    @indexed_map = CV::ValueMap.new("#{LIST_DIR}/#{@s_name}/origs/#{@s_nvid}.tsv")
-    @existed_zip = CV::ZipStore.new("#{TEXT_DIR}/#{@s_name}/#{@s_nvid}.zip")
+    @indexed_map = CV::ValueMap.new("#{LIST_DIR}/#{@s_name}/origs/#{@snvid}.tsv")
+    @existed_zip = CV::ZipStore.new("#{TEXT_DIR}/#{@s_name}/#{@snvid}.zip")
 
     indexed_chids = @indexed_map.data.keys
     existed_chids = @existed_zip.entries(MIN_SIZE).map(&.sub(".txt", ""))
@@ -33,11 +33,11 @@ class CV::PreloadBook
     threads = @missing.size if threads > @missing.size
     channel = Channel(Nil).new(threads)
 
-    @missing.each_with_index(1) do |s_chid, idx|
+    @missing.each_with_index(1) do |schid, idx|
       channel.receive if idx > threads
 
       spawn do
-        fetch_text(s_chid, "#{idx}/#{@missing.size}")
+        fetch_text(schid, "#{idx}/#{@missing.size}")
 
         # throttling
         case @s_name
@@ -57,9 +57,9 @@ class CV::PreloadBook
     @existed_zip.compress!(mode: :archive) # save texts to zip files
   end
 
-  def fetch_text(s_chid : String, label : String) : Nil
-    source = CV::RmText.init(@s_name, @s_nvid, s_chid)
-    out_file = "#{@out_dir}/#{s_chid}.txt"
+  def fetch_text(schid : String, label : String) : Nil
+    source = CV::RmText.init(@s_name, @snvid, schid)
+    out_file = "#{@out_dir}/#{schid}.txt"
 
     puts "- <#{label}> [#{source.title}] saved!\n".colorize.yellow
 
@@ -68,25 +68,25 @@ class CV::PreloadBook
       source.paras.join(io, "\n")
     end
   rescue err
-    puts "- <#{label}> [#{@s_name}/#{@s_nvid}/#{s_chid}]: #{err.message}".colorize.red
+    puts "- <#{label}> [#{@s_name}/#{@snvid}/#{schid}]: #{err.message}".colorize.red
   end
 
-  def self.crawl!(seed : String, s_nvid : String, threads = 4)
-    new(seed, s_nvid).crawl!(threads)
+  def self.crawl!(seed : String, snvid : String, threads = 4)
+    new(seed, snvid).crawl!(threads)
   end
 end
 
 class CV::PreloadSeed
-  @s_nvids : Array(String)
+  @snvids : Array(String)
 
   def initialize(@s_name : String, fetch_all : Bool = false)
-    input = NvValues.source.data.compact_map do |b_hash, chseed|
-      next unless s_nvid = extract_seed(chseed, fetch_all)
-      weight = NvValues.weight.ival(b_hash)
-      {s_nvid, weight} if weight > 10
+    input = NvValues.source.data.compact_map do |bhash, chseed|
+      next unless snvid = extract_seed(chseed, fetch_all)
+      weight = NvValues.weight.ival(bhash)
+      {snvid, weight} if weight > 10
     end
 
-    @s_nvids = input.sort_by { |_, weight| -weight }.map(&.[0])
+    @snvids = input.sort_by { |_, weight| -weight }.map(&.[0])
   end
 
   private def extract_seed(input : Array(String), fetch_all : Bool = false)
@@ -100,18 +100,18 @@ class CV::PreloadSeed
     end
 
     input.each_with_index do |entry, idx|
-      s_name, s_nvid = entry.split("/")
+      s_name, snvid = entry.split("/")
       next unless s_name == @s_name
-      return s_nvid if fetch_all || idx == 0
+      return snvid if fetch_all || idx == 0
     end
   end
 
   def crawl!(threads = 4)
-    puts "[#{@s_name}: #{@s_nvids.size} entries]".colorize.green.bold
+    puts "[#{@s_name}: #{@snvids.size} entries]".colorize.green.bold
 
-    @s_nvids.each_with_index(1) do |s_nvid, idx|
-      puts "- #{idx}/#{@s_nvids.size} [#{@s_name}/#{s_nvid}]".colorize.light_cyan
-      PreloadBook.crawl!(@s_name, s_nvid, threads)
+    @snvids.each_with_index(1) do |snvid, idx|
+      puts "- #{idx}/#{@snvids.size} [#{@s_name}/#{snvid}]".colorize.light_cyan
+      PreloadBook.crawl!(@s_name, snvid, threads)
     end
   end
 

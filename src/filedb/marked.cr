@@ -31,8 +31,8 @@ module CV::Marked
     USER_BOOKS[uname] ||= TokenMap.new(map_path("user-books/#{uname}"))
   end
 
-  def book_users(b_hash : String)
-    BOOK_USERS[b_hash] ||= TokenMap.new(map_path("book-users/#{b_hash}"))
+  def book_users(bhash : String)
+    BOOK_USERS[bhash] ||= TokenMap.new(map_path("book-users/#{bhash}"))
   end
 
   def user_seeds(uname : String)
@@ -47,17 +47,17 @@ module CV::Marked
     user_books(uname).keys(bmark)
   end
 
-  def all_book_users(b_hash : String, bmark : String)
-    book_users(b_hash).keys(bmark)
+  def all_book_users(bhash : String, bmark : String)
+    book_users(bhash).keys(bmark)
   end
 
-  def mark_book(uname : String, b_hash : String, bmark : String) : Nil
-    user_books(uname).tap(&.add(b_hash, [bmark])).save!(mode: :upds)
-    book_users(b_hash).tap(&.add(uname, [bmark])).save!(mode: :upds)
+  def mark_book(uname : String, bhash : String, bmark : String) : Nil
+    user_books(uname).tap(&.add(bhash, [bmark])).save!(mode: :upds)
+    book_users(bhash).tap(&.add(uname, [bmark])).save!(mode: :upds)
   end
 
-  def unmark_book(uname : String, b_hash : String) : Nil
-    user_books(uname).tap(&.rem(b_hash)).save!(mode: :upds)
-    user_books(b_hash).tap(&.rem(uname)).save!(mode: :upds)
+  def unmark_book(uname : String, bhash : String) : Nil
+    user_books(uname).tap(&.rem(bhash)).save!(mode: :upds)
+    user_books(bhash).tap(&.rem(uname)).save!(mode: :upds)
   end
 end

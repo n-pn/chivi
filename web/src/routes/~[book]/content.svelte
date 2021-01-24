@@ -2,23 +2,23 @@
   import { get_chlist } from '$utils/api_calls'
 
   export async function preload({ params, query }) {
-    const b_slug = params.book
+    const bslug = params.book
     const order = query.order || 'asc'
 
-    const res = await this.fetch(`/api/nvinfos/${b_slug}`)
+    const res = await this.fetch(`/api/nvinfos/${bslug}`)
     if (!res.ok) this.error(res.status, await res.text())
 
     const { nvinfo, nvmark } = await res.json()
 
-    const chseed = Object.keys(nvinfo.source)
-    const source = query.source || chseed[0] || '_chivi'
+    const s_names = Object.keys(nvinfo.source)
+    const source = query.source || s_names[0] || '_chivi'
 
     const page = +(query.page || 1)
     const ret = { nvinfo, nvmark, source, page, order }
 
     try {
       const params = { source, page, order, mode: 0 }
-      const data_2 = await get_chlist(this.fetch, nvinfo.b_hash, params)
+      const data_2 = await get_chlist(this.fetch, nvinfo.bhash, params)
       return { ...ret, ...data_2 }
     } catch (e) {
       return { ...ret, chaps: [], total: 0, utime: 0 }
@@ -131,7 +131,7 @@
 
     _load = true
 
-    const res = await get_chlist(fetch, nvinfo.b_hash, opts)
+    const res = await get_chlist(fetch, nvinfo.bhash, opts)
 
     chaps = res.chaps
     total = res.total
@@ -174,7 +174,7 @@
   }
 
   function page_url(source, page) {
-    let url = `/~${nvinfo.b_slug}/content?source=${source}`
+    let url = `/~${nvinfo.bslug}/content?source=${source}`
     if (page > 1) url += `&page=${page}`
     if (order == 'desc') url += '&order=desc'
     return url
@@ -243,7 +243,7 @@
     </div>
 
     <div class="chlist">
-      <Chlist b_slug={nvinfo.b_slug} {source} {chaps} />
+      <Chlist bslug={nvinfo.bslug} {source} {chaps} />
 
       {#if pmax > 1}
         <nav class="pagi">

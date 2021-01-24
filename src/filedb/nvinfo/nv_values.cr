@@ -50,33 +50,33 @@ module CV::NvValues
     @@_utime.try(&.save!(mode: mode))
   end
 
-  def set_bintro(b_hash : String, lines : Array(String), force : Bool = false) : Nil
-    zh_file = NvHelper.intro_file(b_hash, "zh")
+  def set_bintro(bhash : String, lines : Array(String), force : Bool = false) : Nil
+    zh_file = NvHelper.intro_file(bhash, "zh")
     return unless force || !File.exists?(zh_file)
 
     File.write(zh_file, lines.join("\n"))
 
-    vi_file = NvHelper.intro_file(b_hash, "vi")
-    cv_tool = Convert.generic(b_hash)
+    vi_file = NvHelper.intro_file(bhash, "vi")
+    cv_tool = Convert.generic(bhash)
 
     vi_intro = lines.map { |line| cv_tool.tl_plain(line) }
     File.write(vi_file, vi_intro.join("\n"))
   end
 
-  def get_bintro(b_hash : String) : Array(String)
-    vi_file = NvHelper.intro_file(b_hash, "vi")
+  def get_bintro(bhash : String) : Array(String)
+    vi_file = NvHelper.intro_file(bhash, "vi")
     File.exists?(vi_file) ? File.read_lines(vi_file) : [] of String
   end
 
-  def get_source(b_hash : String) : Hash(String, String)
-    source = NvValues.source.get(b_hash) || [] of String
+  def get_source(bhash : String) : Hash(String, String)
+    source = NvValues.source.get(bhash) || [] of String
     source.each_with_object({} of String => String) do |entry, output|
-      s_name, s_nvid = entry.split("/")
-      output[s_name] = s_nvid
+      s_name, snvid = entry.split("/")
+      output[s_name] = snvid
     end
   end
 
-  def set_score(b_hash : String, z_voters : Int32, z_rating : Int32)
+  def set_score(bhash : String, z_voters : Int32, z_rating : Int32)
     if z_voters == 0
       z_voters = Random.rand(1..9)
       z_rating = Random.rand(30..50)
@@ -85,28 +85,28 @@ module CV::NvValues
       z_rating = sum // 10
     end
 
-    voters.add(b_hash, z_voters)
-    rating.add(b_hash, z_rating)
+    voters.add(bhash, z_voters)
+    rating.add(bhash, z_rating)
 
     score = Math.log(z_voters + 10).*(z_rating * 10).round.to_i
-    weight.add(b_hash, score)
+    weight.add(bhash, score)
   end
 
   {% for field in {:hidden, :status} %}
-    def set_{{field.id}}(b_hash, value : Int32, force : Bool = false)
-      return false unless force || ({{field.id}}.ival(b_hash) < value)
-      {{field.id}}.add(b_hash, value)
+    def set_{{field.id}}(bhash, value : Int32, force : Bool = false)
+      return false unless force || ({{field.id}}.ival(bhash) < value)
+      {{field.id}}.add(bhash, value)
     end
   {% end %}
 
   {% for field in {:_atime, :_utime} %}
-    def set{{field.id}}(b_hash, value : Int64, force : Bool = false)
-      return false unless force || ({{field.id}}.ival_64(b_hash) < value)
-      {{field.id}}.add(b_hash, value)
+    def set{{field.id}}(bhash, value : Int64, force : Bool = false)
+      return false unless force || ({{field.id}}.ival_64(bhash) < value)
+      {{field.id}}.add(bhash, value)
     end
 
-    def set{{field.id}}(b_hash, value : Time, force : Bool = false)
-      set{{field.id}}(b_hash, value.to_unix, force: force)
+    def set{{field.id}}(bhash, value : Time, force : Bool = false)
+      set{{field.id}}(bhash, value.to_unix, force: force)
     end
   {% end %}
 end

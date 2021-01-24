@@ -8,13 +8,13 @@ require "../_utils/text_utils"
 require "../_utils/http_utils"
 
 class CV::RmText
-  def self.init(s_name : String, s_nvid : String, s_chid : String,
+  def self.init(s_name : String, snvid : String, schid : String,
                 expiry : Time = Time.utc - 10.years, freeze : Bool = true)
-    file = path_for(s_name, s_nvid, s_chid)
+    file = path_for(s_name, snvid, schid)
     expiry = TimeUtils::DEF_TIME if s_name == "jx_la"
 
     unless html = FileUtils.read(file, expiry)
-      url = url_for(s_name, s_nvid, s_chid)
+      url = url_for(s_name, snvid, schid)
       html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(s_name))
 
       if freeze
@@ -23,43 +23,43 @@ class CV::RmText
       end
     end
 
-    new(s_name, s_nvid, s_chid, file: file, html: html)
+    new(s_name, snvid, schid, file: file, html: html)
   end
 
-  def self.path_for(s_name : String, s_nvid : String, s_chid : String)
-    "_db/.cache/#{s_name}/texts/#{s_nvid}/#{s_chid}.html"
+  def self.path_for(s_name : String, snvid : String, schid : String)
+    "_db/.cache/#{s_name}/texts/#{snvid}/#{schid}.html"
   end
 
-  def self.url_for(s_name : String, s_nvid : String, s_chid : String) : String
+  def self.url_for(s_name : String, snvid : String, schid : String) : String
     case s_name
-    when "nofff"    then "https://www.nofff.com/#{s_nvid}/#{s_chid}/"
-    when "69shu"    then "https://www.69shu.com/txt/#{s_nvid}/#{s_chid}"
-    when "jx_la"    then "https://www.jx.la/book/#{s_nvid}/#{s_chid}.html"
-    when "qu_la"    then "https://www.qu.la/book/#{s_nvid}/#{s_chid}.html"
-    when "rengshu"  then "http://www.rengshu.com/book/#{s_nvid}/#{s_chid}"
-    when "xbiquge"  then "https://www.xbiquge.cc/book/#{s_nvid}/#{s_chid}.html"
-    when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{s_chid}"
-    when "hetushu"  then "https://www.hetushu.com/book/#{s_nvid}/#{s_chid}.html"
-    when "duokan8"  then "http://www.duokan8.com/#{prefixed(s_nvid, s_chid)}"
-    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed(s_nvid, s_chid)}"
-    when "5200"     then "https://www.5200.tv/#{prefixed(s_nvid, s_chid)}"
-    when "shubaow"  then "https://www.shubaow.net/#{prefixed(s_nvid, s_chid)}"
-    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed(s_nvid, s_chid)}"
+    when "nofff"    then "https://www.nofff.com/#{snvid}/#{schid}/"
+    when "69shu"    then "https://www.69shu.com/txt/#{snvid}/#{schid}"
+    when "jx_la"    then "https://www.jx.la/book/#{snvid}/#{schid}.html"
+    when "qu_la"    then "https://www.qu.la/book/#{snvid}/#{schid}.html"
+    when "rengshu"  then "http://www.rengshu.com/book/#{snvid}/#{schid}"
+    when "xbiquge"  then "https://www.xbiquge.cc/book/#{snvid}/#{schid}.html"
+    when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
+    when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/#{schid}.html"
+    when "duokan8"  then "http://www.duokan8.com/#{prefixed(snvid, schid)}"
+    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed(snvid, schid)}"
+    when "5200"     then "https://www.5200.tv/#{prefixed(snvid, schid)}"
+    when "shubaow"  then "https://www.shubaow.net/#{prefixed(snvid, schid)}"
+    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed(snvid, schid)}"
     else
       raise "Unsupported remote source <#{s_name}>!"
     end
   end
 
-  private def self.prefixed(s_nvid : String, s_chid : String)
-    "#{s_nvid.to_i // 1000}_#{s_nvid}/#{s_chid}.html"
+  private def self.prefixed(snvid : String, schid : String)
+    "#{snvid.to_i // 1000}_#{snvid}/#{schid}.html"
   end
 
   getter s_name : String
-  getter s_nvid : String
-  getter s_chid : String
+  getter snvid : String
+  getter schid : String
   getter file : String
 
-  def initialize(@s_name, @s_nvid, @s_chid, @file, html = File.read(@file))
+  def initialize(@s_name, @snvid, @schid, @file, html = File.read(@file))
     @rdoc = Myhtml::Parser.new(html)
   end
 
@@ -129,7 +129,7 @@ class CV::RmText
 
     lines
   rescue err
-    puts "<remote_text> [#{@s_name}/#{@s_nvid}/#{@s_chid}] error: #{err}".colorize.red
+    puts "<remote_text> [#{@s_name}/#{@snvid}/#{@schid}] error: #{err}".colorize.red
     [] of String
   end
 
@@ -163,8 +163,8 @@ class CV::RmText
     meta_file = @file.sub(".html", ".meta")
     return File.read(meta_file) if File.exists?(meta_file)
 
-    html_url = RmText.url_for(@s_name, @s_nvid, @s_chid)
-    json_url = html_url.sub("#{@s_chid}.html", "r#{@s_chid}.json")
+    html_url = RmText.url_for(@s_name, @snvid, @schid)
+    json_url = html_url.sub("#{@schid}.html", "r#{@schid}.json")
 
     headers = HTTP::Headers{
       "Referer"          => html_url,

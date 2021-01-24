@@ -31,6 +31,32 @@ class CV::ChSource
     @text_count.try(&.save!(mode: mode))
   end
 
+  def get_lchid(snvid : String) : String
+    l_child.fval(snvid) || ""
+  end
+
+  def set_lchid(snvid : String, l_chid) : Bool
+    return false if get_lchid(snvid)
+  end
+
+  def get_atime(snvid : String) : Int64
+    _atime.ival_64(snvid)
+  end
+
+  def set_atime(snvid : String, mtime : Int64, force : Bool = false) : Bool
+    return false unless force || get_atime(snvid) > mtime
+    _atime.add(snvid, mtime)
+  end
+
+  def get_utime(snvid : String) : Int64
+    _utime.ival_64(snvid)
+  end
+
+  def set_utime(snvid : String, mtime : Int64, force : Bool = false) : Bool
+    return false unless force || get_utime(snvid) > mtime
+    _utime.add(snvid, mtime)
+  end
+
   CACHE = {} of String => self
 
   def self.load(s_name : String) : self
@@ -41,7 +67,7 @@ class CV::ChSource
     CACHE.each_value(&.save!(mode: mode))
   end
 
-  def self.utime(s_name : String, s_nvid : String)
-    load(s_name)._utime.ival_64(s_nvid)
+  def self.get_utime(s_name : String, snvid : String)
+    load(s_name).get_utime(snvid)
   end
 end

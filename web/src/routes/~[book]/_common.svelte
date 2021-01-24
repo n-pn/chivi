@@ -51,7 +51,7 @@
 
   $: vi_status = map_status(nvinfo.status)
 
-  $: book_url = `https://chivi.xyz/~${nvinfo.b_slug}`
+  $: book_url = `https://chivi.xyz/~${nvinfo.bslug}`
   $: book_intro = nvinfo.bintro.join('').substring(0, 300)
   $: book_cover = `https://chivi.xyz/covers/${nvinfo.bcover}`
   $: updated_at = new Date(nvinfo._utime * 1000)
@@ -61,7 +61,7 @@
     if (nvmark == new_mark) nvmark = ''
     else nvmark = new_mark
 
-    const url = `/api/book-marks/${nvinfo.b_hash}?nvmark=${nvmark}`
+    const url = `/api/book-marks/${nvinfo.bhash}?nvmark=${nvmark}`
     await fetch(url, { method: 'PUT' })
   }
 
@@ -92,7 +92,7 @@
 </svelte:head>
 
 <Vessel>
-  <a slot="header-left" href="/~{nvinfo.b_slug}" class="header-item _active">
+  <a slot="header-left" href="/~{nvinfo.bslug}" class="header-item _active">
     <SIcon name="book-open" />
     <span class="header-text _title">{vi_title}</span>
   </a>
@@ -127,7 +127,7 @@
     </div>
 
     <div class="cover">
-      <BCover b_hash={nvinfo.b_hash} bcover={nvinfo.bcover} />
+      <BCover bhash={nvinfo.bhash} bcover={nvinfo.bcover} />
     </div>
 
     <section class="extra">
@@ -202,17 +202,17 @@
   <div class="section">
     <header class="section-header">
       <a
-        href="/~{nvinfo.b_slug}"
+        href="/~{nvinfo.bslug}"
         class="header-tab"
         class:_active={atab == 'summary'}> Tổng quan </a>
 
       <a
-        href="/~{nvinfo.b_slug}/content"
+        href="/~{nvinfo.bslug}/content"
         class="header-tab"
         class:_active={atab == 'content'}> Chương tiết </a>
 
       <a
-        href="/~{nvinfo.b_slug}/discuss"
+        href="/~{nvinfo.bslug}/discuss"
         class="header-tab"
         class:_active={atab == 'discuss'}> Thảo luận </a>
     </header>

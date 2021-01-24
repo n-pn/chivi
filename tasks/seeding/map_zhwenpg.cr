@@ -7,7 +7,7 @@ class CV::Seeds::ZhwenpgParser
   getter rows : Array(Myhtml::Node) { @node.css("tr").to_a }
   getter link : Myhtml::Node { rows[0].css("a").first }
 
-  getter s_nvid : String { link.attributes["href"].sub("b.php?id=", "") }
+  getter snvid : String { link.attributes["href"].sub("b.php?id=", "") }
   getter author : String { rows[1].css(".fontwt").first.inner_text.strip }
   getter btitle : String { link.inner_text.strip }
 
@@ -74,41 +74,41 @@ class CV::Seeds::MapZhwenpg
 
   def update!(node, status, label = "1/1") : Void
     parser = ZhwenpgParser.new(node)
-    s_nvid = parser.s_nvid
+    snvid = parser.snvid
 
-    return if @checked.includes?(s_nvid)
-    @checked.add(s_nvid)
+    return if @checked.includes?(snvid)
+    @checked.add(snvid)
 
     btitle, author = parser.btitle, parser.author
 
-    if @seeding._index.add(s_nvid, [btitle, author])
-      @seeding.set_intro(s_nvid, parser.intro)
-      @seeding.genres.add(s_nvid, parser.genre)
-      @seeding.bcover.add(s_nvid, parser.cover)
+    if @seeding._index.add(snvid, [btitle, author])
+      @seeding.set_intro(snvid, parser.intro)
+      @seeding.genres.add(snvid, parser.genre)
+      @seeding.bcover.add(snvid, parser.cover)
     end
 
-    @seeding.status.add(s_nvid, status)
-    @seeding._atime.add(s_nvid, Time.utc.to_unix)
+    @seeding.status.add(snvid, status)
+    @seeding._atime.add(snvid, Time.utc.to_unix)
 
     update_at = parser.updated_at + 12.hours
     update_at = Time.utc if update_at > Time.utc
 
-    @seeding._utime.add(s_nvid, update_at.to_unix)
+    @seeding._utime.add(snvid, update_at.to_unix)
 
-    puts "\n<#{label}> {#{s_nvid}} [#{btitle}  #{author}]"
+    puts "\n<#{label}> {#{snvid}} [#{btitle}  #{author}]"
   rescue err
     puts "ERROR: #{err}".colorize.red
   end
 
   def seed!
-    @checked.each_with_index(1) do |s_nvid, idx|
-      b_hash, existed = @seeding.upsert!(s_nvid)
-      fake_rating!(b_hash, s_nvid) if NvValues.voters.ival(b_hash) == 0
+    @checked.each_with_index(1) do |snvid, idx|
+      bhash, existed = @seeding.upsert!(snvid)
+      fake_rating!(bhash, snvid) if NvValues.voters.ival(bhash) == 0
 
-      b_slug = NvValues._index.fval(b_hash)
+      bslug = NvValues._index.fval(bhash)
       colored = existed ? :yellow : :green
 
-      puts "- <#{idx}/#{@checked.size}> [#{b_slug}] saved!".colorize(colored)
+      puts "- <#{idx}/#{@checked.size}> [#{bslug}] saved!".colorize(colored)
       if idx % 10 == 0
         Nvinfo.save!(mode: :upds)
         @seeding.source.save!(mode: :upds)
@@ -121,8 +121,8 @@ class CV::Seeds::MapZhwenpg
 
   FAKE_RATING = ValueMap.new("tasks/seeding/fake_ratings.tsv", mode: 2)
 
-  def fake_rating!(b_hash : String, s_nvid : String)
-    btitle, author = @seeding._index.get(s_nvid).not_nil!
+  def fake_rating!(bhash : String, snvid : String)
+    btitle, author = @seeding._index.get(snvid).not_nil!
 
     if vals = FAKE_RATING.get("#{btitle}  #{author}")
       voters, rating = vals[0].to_i, vals[1].to_i
@@ -130,7 +130,7 @@ class CV::Seeds::MapZhwenpg
       voters, rating = Random.rand(10..50), Random.rand(40..60)
     end
 
-    NvValues.set_score(b_hash, voters, rating)
+    NvValues.set_score(bhash, voters, rating)
   end
 end
 

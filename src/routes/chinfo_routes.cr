@@ -2,26 +2,28 @@ require "./_route_utils"
 require "../filedb/chinfo"
 
 module CV::Server
-  get "/api/chseeds/:b_hash/:s_name" do |env|
-    b_hash = env.params.url["b_hash"]
+  get "/api/chseeds/:bhash/:s_name" do |env|
+    bhash = env.params.url["bhash"]
     s_name = env.params.url["s_name"]
 
-    unless s_nvid = ChSource.load(s_name)._index.fval(b_hash)
+    unless snvid = ChSource.load(s_name)._index.fval(bhash)
       halt env, status_code: 404, response: "Nguồn truyện không tồn tại!"
     end
 
-    chinfo = Chinfo.load(s_name, s_nvid)
+    chinfo = Chinfo.load(s_name, snvid)
 
     u_power = env.session.int?("u_power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
     mode = u_power if mode > u_power
 
     if mode > 0 && chinfo.fetch!(u_power, mode > 1)
-      chinfo.trans!(b_hash, u_power > 1)
+      chinfo.trans!(bhash, u_power > 1)
       chinfo.save!
 
-      chseed = Nvinfo.load(b_hash).fix_source!
-      NvValues.source.save!(mode: :upds)
+      nvinfo = Nvinfo.load(bhash)
+      nvinfo.set_utime(chinfo._utime)
+      chseed = nvinfo.fix_source!
+      nvinfo.save!
     end
 
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
@@ -42,10 +44,10 @@ module CV::Server
             json.array do
               desc = env.params.query["order"]? == "desc"
 
-              chinfo.each(skip, take, desc) do |idx, (s_chid, chitem)|
+              chinfo.each(skip, take, desc) do |idx, (schid, chitem)|
                 json.object do
                   json.field "ch_idx", idx + 1
-                  json.field "s_chid", s_chid
+                  json.field "schid", schid
 
                   json.field "title", chitem[0]
                   json.field "label", chitem[1]

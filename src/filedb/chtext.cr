@@ -7,8 +7,8 @@ require "../engine/convert"
 
 class CV::Chtext
   getter s_name : String
-  getter s_nvid : String
-  getter s_chid : String
+  getter snvid : String
+  getter schid : String
 
   getter zh_file : String
 
@@ -19,14 +19,14 @@ class CV::Chtext
   property cv_trans = ""
   property cv_mtime = 0_i64
 
-  def initialize(@s_name, @s_nvid, @s_chid)
-    @zh_file = "_db/chdata/zhtexts/#{@s_name}/#{@s_nvid}/#{@s_chid}.txt"
+  def initialize(@s_name, @snvid, @schid)
+    @zh_file = "_db/chdata/zhtexts/#{@s_name}/#{@snvid}/#{@schid}.txt"
   end
 
   def fetch!(u_power = 4, expiry = Time.utc - 10.minutes) : Nil
     return unless remote?(u_power)
 
-    source = RmText.init(@s_name, @s_nvid, @s_chid, expiry: expiry)
+    source = RmText.init(@s_name, @snvid, @schid, expiry: expiry)
     @zh_lines = [source.title].concat(source.paras)
 
     cv_trans = ""
@@ -106,11 +106,11 @@ class CV::Chtext
   @@acache = Cache.new
   @@bcache = Cache.new
 
-  def self.load(s_name : String, s_nvid : String, s_chid : String)
-    label = "#{s_name}/#{s_nvid}/#{s_chid}"
+  def self.load(s_name : String, snvid : String, schid : String)
+    label = "#{s_name}/#{snvid}/#{schid}"
 
     unless item = @@acache[label]?
-      item = @@bcache[label]? || new(s_name, s_nvid, s_chid)
+      item = @@bcache[label]? || new(s_name, snvid, schid)
       @@acache[label] = item
 
       if @@acache.size >= CACHE_LIMIT

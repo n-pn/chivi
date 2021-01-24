@@ -2,14 +2,14 @@ require "file_utils"
 
 require "../../src/source/rm_info.cr"
 
-def fetch_info(s_name, s_nvid, fresh = false) : Void
+def fetch_info(s_name, snvid, fresh = false) : Void
   ::FileUtils.mkdir_p("_db/.cache/#{s_name}/infos")
 
-  puts "\n[#{CV::RmInfo.url_for(s_name, s_nvid)}]".colorize.green.bold
+  puts "\n[#{CV::RmInfo.url_for(s_name, snvid)}]".colorize.green.bold
   puts "------".colorize.green
 
   expiry = fresh ? Time.utc : Time.utc - 1.years
-  parser = CV::RmInfo.init(s_name, s_nvid, expiry)
+  parser = CV::RmInfo.init(s_name, snvid, expiry)
 
   info = {
     btitle: parser.btitle,

@@ -21,38 +21,38 @@ class CV::Seeds::MapYousuu
     puts "- Input: #{input.size} files.".colorize.cyan
 
     input.each_with_index(1) do |file, idx|
-      s_nvid = File.basename(file, ".json")
+      snvid = File.basename(file, ".json")
 
       atime = File.info(file).modification_time.to_unix
-      next if @seeding._atime.ival_64(s_nvid) >= atime
-      @seeding._atime.add(s_nvid, atime)
+      next if @seeding._atime.ival_64(snvid) >= atime
+      @seeding._atime.add(snvid, atime)
 
       next unless info = YsInfo.load(file)
 
-      @seeding._index.add(s_nvid, [info.title, info.author])
+      @seeding._index.add(snvid, [info.title, info.author])
 
-      @seeding.genres.add(s_nvid, [info.genre].concat(info.tags_fixed))
-      @seeding.bcover.add(s_nvid, info.cover_fixed)
+      @seeding.genres.add(snvid, [info.genre].concat(info.tags_fixed))
+      @seeding.bcover.add(snvid, info.cover_fixed)
 
-      @seeding.status.add(s_nvid, info.status)
-      @seeding.hidden.add(s_nvid, info.shielded ? "1" : "0")
+      @seeding.status.add(snvid, info.status)
+      @seeding.hidden.add(snvid, info.shielded ? "1" : "0")
 
-      @seeding.rating.add(s_nvid, [info.voters.to_s, info.rating.to_s])
-      @seeding._utime.add(s_nvid, info.updated_at.to_unix)
+      @seeding.rating.add(snvid, [info.voters.to_s, info.rating.to_s])
+      @seeding._utime.add(snvid, info.updated_at.to_unix)
 
-      @seeding.set_intro(s_nvid, info.intro)
+      @seeding.set_intro(snvid, info.intro)
 
-      source_url.add(s_nvid, info.source)
-      count_word.add(s_nvid, info.word_count)
-      count_crit.add(s_nvid, info.crit_count)
-      count_list.add(s_nvid, info.addListTotal)
+      source_url.add(snvid, info.source)
+      count_word.add(snvid, info.word_count)
+      count_crit.add(snvid, info.crit_count)
+      count_list.add(snvid, info.addListTotal)
 
       if idx % 100 == 0
         puts "- [yousuu] <#{idx}/#{input.size}>".colorize.cyan
         save!(mode: :upds)
       end
     rescue err
-      puts "- error loading [#{s_nvid}]: #{err}".colorize.red
+      puts "- error loading [#{snvid}]: #{err}".colorize.red
     end
 
     save!(mode: :full)
@@ -74,8 +74,8 @@ class CV::Seeds::MapYousuu
     input = @seeding.rating.data.to_a.map { |k, v| {k, v[0].to_i, v[1].to_i} }
     input.sort_by! { |a, b, c| -b }
 
-    input.each_with_index(1) do |(s_nvid, voters, rating), idx|
-      btitle, author = @seeding._index.get(s_nvid).not_nil!
+    input.each_with_index(1) do |(snvid, voters, rating), idx|
+      btitle, author = @seeding._index.get(snvid).not_nil!
       btitle, author = NvHelper.fix_nvname(btitle, author)
       next if btitle.empty? || author.empty?
 
@@ -83,17 +83,17 @@ class CV::Seeds::MapYousuu
       next if checked.includes?(nvname)
       checked.add(nvname)
 
-      if (voters >= 10 && rating >= 3.75) || authors.includes?(author) || popular?(s_nvid)
+      if (voters >= 10 && rating >= 3.75) || authors.includes?(author) || popular?(snvid)
         authors.add(author)
 
-        b_hash, existed = @seeding.upsert!(s_nvid)
-        NvValues.set_score(b_hash, voters, rating)
+        bhash, existed = @seeding.upsert!(snvid)
+        NvValues.set_score(bhash, voters, rating)
 
-        origin = source_url.fval(s_nvid)
-        NvValues.origin.add(b_hash, origin) if origin && !origin.empty?
+        origin = source_url.fval(snvid)
+        NvValues.origin.add(bhash, origin) if origin && !origin.empty?
 
-        NvValues.yousuu.add(b_hash, s_nvid)
-        NvValues.hidden.add(b_hash, @seeding.hidden.fval(s_nvid) || "0")
+        NvValues.yousuu.add(bhash, snvid)
+        NvValues.hidden.add(bhash, @seeding.hidden.fval(snvid) || "0")
       end
 
       if idx % 100 == 0
@@ -101,16 +101,16 @@ class CV::Seeds::MapYousuu
         Nvinfo.save!(mode: :upds)
       end
     rescue err
-      puts s_nvid
+      puts snvid
       puts err.backtrace
     end
 
     Nvinfo.save!(mode: :full)
   end
 
-  def popular?(s_nvid : String)
-    return true if count_crit.fval(s_nvid).try(&.to_i.>= 7)
-    return true if count_list.fval(s_nvid).try(&.to_i.>= 5)
+  def popular?(snvid : String)
+    return true if count_crit.fval(snvid).try(&.to_i.>= 7)
+    return true if count_list.fval(snvid).try(&.to_i.>= 5)
     false
   end
 end

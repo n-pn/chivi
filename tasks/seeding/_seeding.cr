@@ -53,22 +53,22 @@ class CV::InfoSeed
     @hidden.try(&.save!(mode: mode))
   end
 
-  def set_intro(s_nvid : String, intro : Array(String)) : Nil
-    File.write(intro_path(s_nvid), intro.join("\n"))
+  def set_intro(snvid : String, intro : Array(String)) : Nil
+    File.write(intro_path(snvid), intro.join("\n"))
   end
 
-  def get_intro(s_nvid : String) : Array(String)
-    File.read_lines(intro_path(s_nvid))
+  def get_intro(snvid : String) : Array(String)
+    File.read_lines(intro_path(snvid))
   rescue err
     [] of String
   end
 
-  def intro_path(s_nvid : String)
-    "#{@intro_dir}/#{s_nvid}.txt"
+  def intro_path(snvid : String)
+    "#{@intro_dir}/#{snvid}.txt"
   end
 
-  def get_genres(s_nvid : String)
-    zh_genres = genres.get(s_nvid) || [] of String
+  def get_genres(snvid : String)
+    zh_genres = genres.get(snvid) || [] of String
     zh_genres = zh_genres.map { |x| NvHelper.fix_zh_genre(x) }.flatten.uniq
 
     vi_genres = zh_genres.map { |x| NvHelper.fix_vi_genre(x) }.uniq
@@ -78,42 +78,42 @@ class CV::InfoSeed
 
   getter source : ChSource { ChSource.load(@name) }
 
-  def upsert!(s_nvid : String) : Tuple(String, Bool)
-    btitle, author = _index.get(s_nvid).not_nil!
-    b_hash, existed = Nvinfo.upsert!(btitle, author)
+  def upsert!(snvid : String) : Tuple(String, Bool)
+    btitle, author = _index.get(snvid).not_nil!
+    bhash, existed = Nvinfo.upsert!(btitle, author)
 
-    genres = get_genres(s_nvid)
-    Nvinfo.set_genres(b_hash, genres) unless genres.empty?
+    genres = get_genres(snvid)
+    Nvinfo.set_genres(bhash, genres) unless genres.empty?
 
-    bintro = get_intro(s_nvid)
-    NvValues.set_bintro(b_hash, bintro) unless bintro.empty?
+    bintro = get_intro(snvid)
+    NvValues.set_bintro(bhash, bintro) unless bintro.empty?
 
-    mtime = _utime.ival_64(s_nvid)
-    NvValues.set_atime(b_hash, mtime // 60)
-    NvValues.set_utime(b_hash, mtime)
+    mtime = _utime.ival_64(snvid)
+    NvValues.set_atime(bhash, mtime // 60)
+    NvValues.set_utime(bhash, mtime)
 
-    NvValues.set_status(b_hash, status.ival(s_nvid, 0))
+    NvValues.set_status(bhash, status.ival(snvid, 0))
 
     if @name != "yousuu"
-      Nvinfo.set_source(b_hash, @name, s_nvid)
+      Nvinfo.set_source(bhash, @name, snvid)
 
-      mtime = NvValues._utime.ival_64(b_hash) if @name == "hetushu"
+      mtime = NvValues._utime.ival_64(bhash) if @name == "hetushu"
 
-      source._index.add(b_hash, s_nvid)
-      source._utime.add(s_nvid, mtime)
-      source._atime.add(s_nvid, _atime.ival_64(s_nvid))
+      source._index.add(bhash, snvid)
+      source._utime.add(snvid, mtime)
+      source._atime.add(snvid, _atime.ival_64(snvid))
 
-      upsert_chinfo!(s_nvid, b_hash, expiry: Time.unix(mtime))
+      upsert_chinfo!(snvid, bhash, expiry: Time.unix(mtime))
     end
 
-    {b_hash, existed}
+    {bhash, existed}
   end
 
-  def upsert_chinfo!(s_nvid : String, b_hash : String, expiry : Time) : Nil
-    chinfo = Chinfo.new(@name, s_nvid)
+  def upsert_chinfo!(snvid : String, bhash : String, expiry : Time) : Nil
+    chinfo = Chinfo.new(@name, snvid)
     return false unless chinfo.fetch!(expiry: expiry - 2.weeks)
 
-    chinfo.trans!(dname: b_hash)
+    chinfo.trans!(dname: bhash)
     chinfo.origs.save!(mode: :full)
     chinfo.infos.save!(mode: :full)
   end

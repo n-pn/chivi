@@ -12,14 +12,14 @@ class CV::Seed::FetchCovers
 
     queue = {} of String => String
     covers = ValueMap.new("_db/_seeds/yousuu/bcover.tsv", mode: 2)
-    s_nvids = ValueMap.new("_db/nvdata/nvinfos/yousuu.tsv", mode: 2).vals
+    snvids = ValueMap.new("_db/nvdata/nvinfos/yousuu.tsv", mode: 2).vals
 
-    s_nvids.each do |vals|
-      s_nvid = vals.first
-      out_file = "#{dir}/#{s_nvid}.jpg"
+    snvids.each do |vals|
+      snvid = vals.first
+      out_file = "#{dir}/#{snvid}.jpg"
       next if File.exists?(out_file)
 
-      next unless image_url = covers.fval(s_nvid)
+      next unless image_url = covers.fval(snvid)
       queue[image_url] = out_file unless image_url.empty?
     end
 
@@ -34,13 +34,13 @@ class CV::Seed::FetchCovers
     input = ValueMap.new("_db/nvdata/nvinfos/source.tsv", mode: 2).vals
     input.each do |source|
       source.each do |entry|
-        s_name, s_nvid = entry.split("/")
+        s_name, snvid = entry.split("/")
         next if s_name == "jx_la"
 
-        out_file = "_db/bcover/#{s_name}/#{s_nvid}.jpg"
+        out_file = "_db/bcover/#{s_name}/#{snvid}.jpg"
         next if File.exists?(out_file)
 
-        next unless image_url = cover_map(s_name).fval(s_nvid)
+        next unless image_url = cover_map(s_name).fval(snvid)
         queues[s_name][image_url] = out_file unless image_url.empty?
       end
     end

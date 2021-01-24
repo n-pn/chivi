@@ -2,11 +2,11 @@ require "colorize"
 
 require "../../src/source/rm_text.cr"
 
-def fetch_chap(s_name : String, s_nvid : String, s_chid : String, fresh = false)
-  puts "\n[#{CV::RmText.url_for(s_name, s_nvid, s_chid)}]\n".colorize.blue.bold
+def fetch_chap(s_name : String, snvid : String, schid : String, fresh = false)
+  puts "\n[#{CV::RmText.url_for(s_name, snvid, schid)}]\n".colorize.blue.bold
 
   expiry = fresh ? Time.utc : Time.utc - 1.years
-  chap = CV::RmText.init(s_name, s_nvid, s_chid, expiry: expiry)
+  chap = CV::RmText.init(s_name, snvid, schid, expiry: expiry)
 
   puts chap.title
   puts "---".colorize.blue

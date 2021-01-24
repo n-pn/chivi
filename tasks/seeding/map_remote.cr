@@ -14,35 +14,35 @@ class CV::Seeds::MapRemote
     mode = 0 if @s_name == "jx_la"
 
     1.upto(upto) do |idx|
-      s_nvid = idx.to_s
+      snvid = idx.to_s
 
-      unless atime = access_time(s_nvid)
+      unless atime = access_time(snvid)
         next if mode < 1
         atime = (Time.utc + 3.minutes).to_unix
       end
 
       expiry = Time.utc
-      if mode < 2 || @seeding._index.has_key?(s_nvid)
-        next if @seeding._atime.ival_64(s_nvid) >= atime
+      if mode < 2 || @seeding._index.has_key?(snvid)
+        next if @seeding._atime.ival_64(snvid) >= atime
         expiry -= 1.years
       elsif mode < 2
         expiry -= 1.years
       end
 
-      @seeding._atime.add(s_nvid, atime)
+      @seeding._atime.add(snvid, atime)
 
-      parser = RmInfo.init(@s_name, s_nvid, expiry: expiry)
+      parser = RmInfo.init(@s_name, snvid, expiry: expiry)
       btitle, author = parser.btitle, parser.author
       next if btitle.empty? || author.empty?
 
-      if @seeding._index.add(s_nvid, [btitle, author])
-        @seeding.set_intro(s_nvid, parser.bintro)
-        @seeding.genres.add(s_nvid, clean_genres(parser.genres))
-        @seeding.bcover.add(s_nvid, parser.bcover)
+      if @seeding._index.add(snvid, [btitle, author])
+        @seeding.set_intro(snvid, parser.bintro)
+        @seeding.genres.add(snvid, clean_genres(parser.genres))
+        @seeding.bcover.add(snvid, parser.bcover)
       end
 
-      @seeding.status.add(s_nvid, parser.status_int)
-      @seeding._utime.add(s_nvid, parser.updated_at.to_unix)
+      @seeding.status.add(snvid, parser.status_int)
+      @seeding._utime.add(snvid, parser.updated_at.to_unix)
 
       if idx % 100 == 0
         puts "- [#{@s_name}]: <#{idx}/#{upto}>"
@@ -61,8 +61,8 @@ class CV::Seeds::MapRemote
     end
   end
 
-  private def access_time(s_nvid : String) : Int64?
-    file = RmInfo.path_for(@s_name, s_nvid)
+  private def access_time(snvid : String) : Int64?
+    file = RmInfo.path_for(@s_name, snvid)
     File.info?(file).try(&.modification_time.to_unix)
   end
 
@@ -73,7 +73,7 @@ class CV::Seeds::MapRemote
     input = @seeding._index.data.to_a
     input.sort_by!(&.[0].to_i.-)
 
-    input.each_with_index(1) do |(s_nvid, vals), idx|
+    input.each_with_index(1) do |(snvid, vals), idx|
       btitle, author = vals
       btitle, author = NvHelper.fix_nvname(btitle, author)
 
@@ -81,11 +81,11 @@ class CV::Seeds::MapRemote
       next if checked.includes?(nvname)
       checked.add(nvname)
 
-      if authors.includes?(author) || should_pick?(s_nvid)
-        b_hash, _ = @seeding.upsert!(s_nvid)
+      if authors.includes?(author) || should_pick?(snvid)
+        bhash, _ = @seeding.upsert!(snvid)
 
-        if NvValues.voters.ival(b_hash) == 0
-          NvValues.set_score(b_hash, Random.rand(1..5), Random.rand(30..50))
+        if NvValues.voters.ival(bhash) == 0
+          NvValues.set_score(bhash, Random.rand(1..5), Random.rand(30..50))
         end
       end
 
@@ -96,7 +96,7 @@ class CV::Seeds::MapRemote
       end
     rescue err
       puts err
-      puts [s_nvid, vals]
+      puts [snvid, vals]
       gets
     end
 
@@ -104,7 +104,7 @@ class CV::Seeds::MapRemote
     @seeding.source.save!(mode: :full)
   end
 
-  private def should_pick?(s_nvid : String)
+  private def should_pick?(snvid : String)
     return true if @s_name == "hetushu" || @s_name == "rengshu"
     false
   end

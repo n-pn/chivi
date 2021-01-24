@@ -4,18 +4,18 @@ class CV::S_names::FixGenres
   getter source : ValueMap = NvValues.source
 
   def fix!
-    @source.data.each_with_index(1) do |(b_hash, values), idx|
+    @source.data.each_with_index(1) do |(bhash, values), idx|
       genres = [] of String
       yousuu = [] of String
 
       values.each do |entry|
-        s_name, s_nvid = entry.split("/")
-        get_genres(s_name, s_nvid).each do |genre|
+        s_name, snvid = entry.split("/")
+        get_genres(s_name, snvid).each do |genre|
           genres.concat(NvHelper.fix_zh_genre(genre))
         end
       end
 
-      if y_nvid = NvValues.yousuu.fval(b_hash)
+      if y_nvid = NvValues.yousuu.fval(bhash)
         get_genres("yousuu", y_nvid).each do |genre|
           yousuu.concat(NvHelper.fix_zh_genre(genre))
           genres.concat(NvHelper.fix_zh_genre(genre))
@@ -37,7 +37,7 @@ class CV::S_names::FixGenres
 
       vi_genres = zh_genres.map { |g| NvHelper.fix_vi_genre(g) }
       vi_genres = ["Loại khác"] if vi_genres.empty?
-      Nvinfo.set_genres(b_hash, vi_genres, force: true)
+      Nvinfo.set_genres(bhash, vi_genres, force: true)
 
       if idx % 100 == 0
         puts "- [fix_genres] <#{idx}/#{@source.size}>".colorize.blue
@@ -48,8 +48,8 @@ class CV::S_names::FixGenres
     save!(mode: :full)
   end
 
-  def get_genres(s_name : String, s_nvid : String)
-    genre_map(s_name).get(s_nvid) || [] of String
+  def get_genres(s_name : String, snvid : String)
+    genre_map(s_name).get(snvid) || [] of String
   end
 
   getter cache = {} of String => ValueMap
