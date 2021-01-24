@@ -9,7 +9,9 @@
 
   async function logout() {
     $u_dname = 'Khách'
-    $u_power = -1
+    $u_power = 0
+
+    localStorage.removeItem('_self')
     await fetch('api/logout')
   }
 
@@ -52,7 +54,7 @@
         </span>
 
         <div class="header-menu">
-          {#if $u_power < 0}
+          {#if $u_power < 1}
             <a href="/auth/login" class="-item">
               <SIcon name="log-in" />
               <span>Đăng nhập</span>
