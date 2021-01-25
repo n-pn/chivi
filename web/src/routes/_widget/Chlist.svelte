@@ -10,12 +10,11 @@
     <li class="item">
       <a href="/~{bslug}/-{uslug}-{sname}-{chidx}" class="link" rel="nofollow">
         <div class="text">
-          <div class="chidx">{chidx}.</div>
           <div class="title">{title}</div>
+          <span class="chidx">{chidx}</span>
         </div>
-
         <div class="meta">
-          <div class="label">{label}</div>
+          <span class="label">{label}</span>
         </div>
       </a>
     </li>
@@ -63,22 +62,24 @@
   .link {
     display: block;
     padding: 0.375rem 0.5rem;
+  }
 
-    @include screen-min(md) {
-      padding: 0.5rem 0.75rem;
+  .text {
+    @include flex();
+    line-height: 1.5rem;
+  }
+
+  .title {
+    flex: 1;
+    @include fgcolor(neutral, 8);
+    @include truncate(null);
+
+    .link:visited & {
+      @include fgcolor(neutral, 6);
     }
 
-    &:visited {
-      .title {
-        font-style: italic;
-        @include fgcolor(neutral, 5);
-      }
-    }
-
-    &:hover {
-      .title {
-        @include fgcolor(primary, 5);
-      }
+    .link:hover & {
+      @include fgcolor(primary, 5);
     }
   }
 
@@ -93,27 +94,26 @@
     @include font-size(1);
   }
 
-  .text {
-    @include flex();
-    line-height: 1.25rem;
-  }
-
   .label {
     flex: 1;
     @include fgcolor(neutral, 5);
-    @include truncate(100%);
+    @include truncate(null);
   }
 
   .chidx {
+    margin-left: 0.125rem;
     user-select: none;
-    margin-right: 0.25rem;
     @include fgcolor(neutral, 5);
-    @include font-size(2);
-  }
+    @include font-size(1);
 
-  .title {
-    flex: 1;
-    @include fgcolor(neutral, 8);
-    @include truncate(100%);
+    // &:before {
+    //   content: '#';
+    //   padding-right: rem(1px);
+    //   font-size: rem(10px);
+    // }
+
+    &:after {
+      content: '.';
+    }
   }
 </style>
