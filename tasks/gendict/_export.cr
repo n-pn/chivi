@@ -63,7 +63,7 @@ CV::VpDict.hanviet._root.each do |node|
 end
 
 OUT_REGULAR.load!("_db/dictdb/remote/common/regular.tab")
-OUT_REGULAR.save!
+OUT_REGULAR.save!(trim: true)
 
 puts "\n[Export suggest]".colorize.cyan.bold
 
@@ -92,7 +92,7 @@ rescue err
 end
 
 OUT_SUGGEST.load!("_db/dictdb/remote/common/suggest.tab")
-OUT_SUGGEST.save!
+OUT_SUGGEST.save!(trim: true)
 
 puts "\n[Export various]".colorize.cyan.bold
 
@@ -114,7 +114,7 @@ end
 
 EXT_VARIOUS = "_db/dictdb/remote/common/various.tab"
 OUT_VARIOUS.load!(EXT_VARIOUS)
-OUT_VARIOUS.save!
+OUT_VARIOUS.save!(trim: true)
 
 # puts "\n[Export recycle]".colorize.cyan.bold
 

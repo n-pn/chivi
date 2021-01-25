@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SSH=nipin@dev.chivi.xyz:www/chivi.xyz
+SSH=nipin@ssh.chivi.xyz:www/chivi.xyz
 DIR=_db/.cache/yousuu
 
 rsync -azui --no-p "$SSH/$DIR/infos" $DIR
