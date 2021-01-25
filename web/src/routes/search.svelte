@@ -253,10 +253,6 @@
     @include truncate(null);
   }
 
-  .-hide {
-    @include props(display, none, $md: inline-block);
-  }
-
   .pagi {
     margin-bottom: 0.75rem;
     @include flex($center: content);

@@ -9,8 +9,14 @@
   {#each chaps as { chidx, title, label, uslug }}
     <li class="item">
       <a href="/~{bslug}/-{uslug}-{sname}-{chidx}" class="link" rel="nofollow">
-        <div class="label">{label}</div>
-        <div class="title">{title}</div>
+        <div class="text">
+          <div class="chidx">{chidx}.</div>
+          <div class="title">{title}</div>
+        </div>
+
+        <div class="meta">
+          <div class="label">{label}</div>
+        </div>
       </a>
     </li>
   {/each}
@@ -27,7 +33,6 @@
 
   .item {
     display: block;
-
     @include border($sides: bottom);
 
     &:first-child {
@@ -77,19 +82,37 @@
     }
   }
 
-  .label {
+  .meta {
     padding: 0;
+    height: 1rem;
     line-height: 1rem;
-    margin-bottom: 0.25rem;
+    margin-top: 0.25rem;
     text-transform: uppercase;
 
+    @include flex();
     @include font-size(1);
+  }
+
+  .text {
+    @include flex();
+    line-height: 1.25rem;
+  }
+
+  .label {
+    flex: 1;
     @include fgcolor(neutral, 5);
     @include truncate(100%);
   }
 
+  .chidx {
+    user-select: none;
+    margin-right: 0.25rem;
+    @include fgcolor(neutral, 5);
+    @include font-size(2);
+  }
+
   .title {
-    line-height: 1.25rem;
+    flex: 1;
     @include fgcolor(neutral, 8);
     @include truncate(100%);
   }

@@ -4,8 +4,12 @@ async function api_call(fetch, url, key = url, ttl = 1, fresh = false) {
   if (localStorage && !fresh) {
     const value = localStorage.getItem(key)
     if (value) {
-      let cached = JSON.parse(value)
-      if (cached[2] >= now) return cached
+      try {
+        let cached = JSON.parse(value)
+        if (cached[2] >= now) return cached
+      } catch (err) {
+        console.log({ value, err })
+      }
     }
   }
 
@@ -66,7 +70,7 @@ export async function get_chlist(fetch, { sname, snvid, page }) {
 export async function get_chinfo(fetch, bslug, sname, chidx, mode = 0) {
   const url = `/api/chinfos/${bslug}/${sname}/${chidx}`
   const res = await fetch(url)
-  if (!res.ok) return await wrap_error(res)
+  if (!res.ok) return [res.status, res.text()]
 
   const chinfo = await res.json()
   if (mode < 0) return [500, { chinfo, cvdata: '' }]

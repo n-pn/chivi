@@ -188,21 +188,18 @@
 
     <div class="chinfo">
       <div class="-left">
-        <span class="-name">{params.sname}</span>
-        <span class="-text">Mới nhất</span>
+        <span class="-text">Chương mới nhất</span>
         <span class="-span">
           <RTime m_time={chseed.utime * 1000} source={params.sname} />
         </span>
       </div>
 
-      <div class="-right">
-        <button
-          class="m-button"
-          on:click={(e) => load_chseed(e, params.sname, 2)}>
-          <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
-          <span class="-hide">Đổi mới</span>
-        </button>
-      </div>
+      <button
+        class="m-button"
+        on:click={(e) => load_chseed(e, params.sname, 2)}>
+        <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
+        <span class="-hide">Đổi mới</span>
+      </button>
     </div>
 
     <div class="chlist">
@@ -211,8 +208,7 @@
 
     <div class="chinfo" bind:this={scroll_top}>
       <div class="-left">
-        <span class="-name">{params.sname}</span>
-        <span class="-text">Mục lục</span>
+        <span class="-text">Danh sách chương</span>
         <span class="-span">{chseed.total} chương</span>
       </div>
     </div>
@@ -259,8 +255,8 @@
 
 <style lang="scss">
   @mixin label {
-    text-transform: uppercase;
     font-weight: 500;
+    text-transform: uppercase;
     @include fgcolor(neutral, 6);
   }
 
@@ -268,26 +264,23 @@
     @include flex($center: content);
     flex-wrap: wrap;
 
+    @include props(font-size, 12px, 13px, 14px);
+    @include props(line-height, 1.5rem, 1.75rem, 2rem);
+
     .-name {
       margin-top: 0.25rem;
 
-      @include label();
-      @include props(font-size, 12px, 13px, 14px);
-      @include props(line-height, 1.5rem, 1.75rem, 2rem);
-    }
-
-    .-name {
-      // float: left;
-      @include props(margin-left, 0.25rem, 0.375rem, 0.5rem);
-
-      @include border();
-      border-radius: 1rem;
-      padding: 0 0.75rem;
+      border-radius: 0.75rem;
+      padding: 0 0.75em;
       background-color: #fff;
 
+      @include label();
+      @include border();
+      @include props(margin-left, 0.25rem, 0.375rem, 0.5rem);
+
       &._active {
-        border-color: color(primary, 5);
-        color: color(primary, 5);
+        @include fgcolor(primary, 5);
+        @include bdcolor(primary, 5);
       }
     }
   }
@@ -302,41 +295,32 @@
 
     .-left {
       display: flex;
-      margin-right: 0.5rem;
+      flex: 1;
+      margin: 0.25rem 0;
+      line-height: 1.75rem;
+      transform: translateX(1px);
+      @include props(font-size, 12px, 13px, 14px);
     }
 
-    .-right {
-      margin-left: auto;
-      @include flex();
-      @include flex-gap($gap: 0.5rem, $child: ':global(*)');
+    .m-button {
+      margin-left: 0.25rem;
     }
 
-    line-height: 2.25rem;
-    @include props(font-size, 12px, 13px, 14px);
-
-    .-name,
     .-text {
+      padding-left: 0.5rem;
       @include label();
-    }
-
-    .-name {
-      padding-left: 0.75rem;
-
       @include fgcolor(neutral, 7);
+      @include border($sides: left, $width: 4px, $color: primary, $shade: 5);
     }
 
     .-span {
       font-style: italic;
       @include fgcolor(neutral, 6);
-    }
 
-    .-text,
-    .-span {
       &:before {
         display: inline-block;
         content: '·';
         text-align: center;
-        font-weight: 500;
         @include props(width, 0.5rem, 0.75rem, 1rem);
       }
     }
