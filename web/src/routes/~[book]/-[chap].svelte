@@ -32,7 +32,7 @@
   }
 
   function gen_book_path(bslug, sname, chidx) {
-    let url = `/~${bslug}/content?source=${sname}`
+    let url = `/~${bslug}/content?sname=${sname}`
     const page = Math.floor(chidx / 30) + 1
     return page > 1 ? url + `&page=${page}` : url
   }
