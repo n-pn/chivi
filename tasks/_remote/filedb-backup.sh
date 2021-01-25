@@ -3,6 +3,7 @@
 SSH=nipin@ssh.chivi.xyz:www/chivi.xyz
 
 rsync -aiz --no-p "$SSH/_db/dictdb/active/" "_db/dictdb/remote/"
+rsync -aiz --no-p "$SSH/_db/dictdb/active/" "_db/dictdb"
 
 rsync -aiz --no-p "$SSH/_db/userdb/viusers" "_db/userdb"
 rsync -aiz --no-p "$SSH/_db/marked/" "_db/marked/"

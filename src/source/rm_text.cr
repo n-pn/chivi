@@ -122,8 +122,9 @@ class CV::RmText
 
       lines.map! do |line|
         line
-          .gsub(/厺厽\s.+\s厺厽。?/, "")
-          .gsub("攫欝攫欝?。?", "")
+          .gsub(/^厺厽\s.+\s厺厽。?/, "")
+          .gsub(/^攫欝攫欝?。?/, "")
+          .gsub(/^巘戅.+戅。?/, "")
       end
     else
       lines.pop if lines.last == "(本章完)"
