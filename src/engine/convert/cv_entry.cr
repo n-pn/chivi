@@ -37,10 +37,10 @@ class CV::CvEntry
     when '“', '‘', '[', '{',
          ':', '!', '?', '.'
       prev_mode > 1 ? 2 : 1
+    when ',', '⟩', '}', ']'
+      0
     when '⟨'
       2
-    when '⟩'
-      0
     else
       prev_mode
     end
@@ -55,12 +55,12 @@ class CV::CvEntry
     case @val[0]?
     when '”', '’', '⟩', ')', ']', '}',
          ',', '.', ';', '!', '?',
-         '%', ':'
+         '%', ':', '~'
       return false
     when '·'
       return true
-    when '~', '-', '—'
-      return @dic > 1 || prev.dic > 1
+    when '-', '—'
+      return prev.dic > 1
     when '…'
       return prev.val[-1]? == '.'
     end
@@ -75,7 +75,7 @@ class CV::CvEntry
     when ':'
       return !is_int
     when '~', '-', '—'
-      @dic > 1 || prev.dic > 1
+      @dic > 1
     end
 
     @dic > 0 || prev.dic > 0

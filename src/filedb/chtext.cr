@@ -12,7 +12,7 @@ class CV::Chtext
 
   getter zh_file : String
 
-  property zh_lines : Array(String) { load_zh_text }
+  property zh_lines : Array(String) { load_zhtext }
   property zh_words : Int32 { zh_lines.map(&.size).sum }
   property zh_mtime = 0_i64
 
@@ -73,30 +73,36 @@ class CV::Chtext
     @cv_mtime >= time.to_unix
   end
 
-  def load_zh_text : Array(String)
+  def load_zhtext : Array(String)
     store = ZipStore.new("#{File.dirname(@zh_file)}.zip")
     fname = File.basename(@zh_file)
 
-    if zh_text = store.read(fname)
+    if input = store.read(fname)
       puts "- <zh_text> [#{@zh_file}] loaded".colorize.green
       zh_mtime = store.mtime(fname).try(&.to_unix) || 0_i64
-      zh_text.split("\n").reject(&.empty?)
+      fix_zhtext!(input.split("\n"))
     else
       [] of String
     end
   end
 
-  def fix_zh_text! : Nil
-    return unless @zh_lines.first?.try(&.includes?('¦'))
-    zh_lines.map &.split(/[\tǁ]/).map(&.split('¦', 2)[0]).join
-    save!
+  def fix_zhtext!(lines : Array(String) = zh_lines) : Array(String)
+    lines = lines.reject(&.empty?)
+    return lines unless lines.first?.try(&.includes?('¦'))
+
+    lines = lines.map do |line|
+      line.split(/[\tǁ]/).map(&.split('¦', 2)[0]).join
+    end
+
+    save_zh!(lines: lines)
+    lines
   end
 
-  def save_zh!(file : String = @zh_file) : Nil
+  def save_zh!(file : String = @zh_file, lines = zh_lines) : Nil
     text_dir = File.dirname(file)
     ::FileUtils.mkdir_p(text_dir) unless File.exists?(text_dir)
 
-    File.open(file, "w") { |io| zh_lines.join(io, "\n") }
+    File.open(file, "w") { |io| lines.join(io, "\n") }
     puts "- <zh_text> [#{file}] saved.".colorize.yellow
   end
 
