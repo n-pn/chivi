@@ -29,7 +29,7 @@ module CV::Server
           json.field "utime", chinfo._utime
 
           json.field "lasts" do
-            chinfo.json_each(json, 0, 4, true)
+            chinfo.json_each(json, 0, 6, true)
           end
         end
       end
