@@ -96,14 +96,14 @@
 
   .label {
     flex: 1;
-    @include fgcolor(neutral, 5);
+    @include fgcolor(neutral, 5, 0.9);
     @include truncate(null);
   }
 
   .chidx {
     margin-left: 0.125rem;
     user-select: none;
-    @include fgcolor(neutral, 5);
+    @include fgcolor(neutral, 5, 0.7);
     @include font-size(1);
 
     // &:before {
