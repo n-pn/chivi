@@ -108,7 +108,7 @@
 
     <section class="extra">
       <div class="line">
-        <span class="stat">
+        <span class="stat -trim">
           <SIcon name="pen-tool" />
           <a class="link" href="/search?kw={vi_author}&type=author">
             <span class="label">{vi_author}</span>
@@ -269,6 +269,11 @@
     &:hover {
       @include fgcolor(primary, 6);
     }
+  }
+
+  .-trim {
+    max-width: 100%;
+    @include truncate(null);
   }
 
   .label {

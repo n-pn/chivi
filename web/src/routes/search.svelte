@@ -75,17 +75,16 @@
           </div>
 
           <div class="infos">
-            <div class="extra">
-              <h2>{book.btitle[2] || book.btitle[1]}</h2>
+            <div class="extra _title">
+              <span class="-vi -trim">{book.btitle[2] || book.btitle[1]}</span>
             </div>
 
-            <div class="extra _sep">
-              <h3>{book.btitle[0]}</h3>
+            <div class="extra _subtitle">
+              <small class="-zh -trim">{book.btitle[0]}</small>
             </div>
 
-            <div class="extra">
-              <span class="label _sub">Tác giả:</span>
-              <span class="value">{book.author[1]}</span>
+            <div class="extra _author">
+              <span class="value -trim">{book.author[1]}</span>
             </div>
 
             <div class="extra">
@@ -96,8 +95,8 @@
             <div class="extra">
               <span class="label">Đánh giá:</span>
               <span class="value"
-                >{book.rating == 0 ? '--' : book.rating / 10}</span>
-              <span class="label _cram">/10</span>
+                >{book.rating == 0 ? '--' : book.rating / 10}</span
+              ><span class="label">/10</span>
             </div>
           </div>
         </a>
@@ -160,8 +159,8 @@
     &:hover {
       @include shadow(2);
 
-      h2,
-      h3 {
+      .-zh,
+      .-vi {
         @include fgcolor(primary, 5);
       }
     }
@@ -199,64 +198,68 @@
 
   .infos {
     float: right;
-    @include props(width, 65%, 70%);
-    padding-left: 0.5rem;
 
+    padding-left: 0.5rem;
+    width: 65%;
+    @include props(width, 65%, 70%);
+  }
+
+  .extra {
+    @include flow();
+    margin-top: 0.25rem;
+
+    > * {
+      float: left;
+    }
     > * + * {
-      margin-top: 0.25rem;
+      margin-left: 0.25rem;
     }
   }
 
-  h2,
-  h3 {
-    line-height: 1.5rem;
-    font-weight: 400;
-    @include truncate();
+  .-vi,
+  .-zh {
+    display: inline-block;
   }
 
-  h2 {
+  .-vi {
+    line-height: 1.5rem;
+    font-weight: 500;
+
     @include font-size(5);
-    @include fgcolor(neutral, 8);
+    @include fgcolor(neutral, 7);
 
     @include props(padding-top, $md: 0.25rem);
     @include props(padding-bottom, $md: 0.25rem);
   }
 
-  h3 {
-    @include font-size(4);
-    @include fgcolor(neutral, 7);
-  }
-
-  .extra {
-    ._cram {
-      margin-left: 0;
-    }
+  .-zh {
+    line-height: 1.25rem;
+    @include font-size(3);
+    @include fgcolor(neutral, 6);
   }
 
   .label {
     @include fgcolor(neutral, 6);
-
-    &._sub {
-      display: none;
-      @include props(display, $md: inline-block);
-    }
   }
 
   .value {
     font-weight: 500;
-    @include truncate(null);
     @include fgcolor(neutral, 6);
+  }
+
+  .-trim {
+    display: inline-block;
+    max-width: 100%;
+    @include truncate(null);
+  }
+
+  .-hide {
+    @include props(display, none, $md: inline-block);
   }
 
   .pagi {
     margin-bottom: 0.75rem;
     @include flex($center: content);
-    @include flex-gap($gap: 0.75rem, $child: ':global(*)');
-
-    .m-button {
-      span {
-        padding-top: rem(1px);
-      }
-    }
+    @include flex-gap($gap: 0.75rem, $child: '.m-button');
   }
 </style>
