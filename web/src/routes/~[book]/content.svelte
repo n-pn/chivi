@@ -310,7 +310,7 @@
       padding-left: 0.5rem;
       @include label();
       @include fgcolor(neutral, 7);
-      @include border($sides: left, $width: 4px, $color: primary, $shade: 5);
+      @include border($sides: left, $width: 3px, $color: primary, $shade: 5);
     }
 
     .-span {

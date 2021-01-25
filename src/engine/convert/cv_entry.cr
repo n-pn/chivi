@@ -52,20 +52,24 @@ class CV::CvEntry
     # handle .jpg case
     return false if @dic == 1 && @key =~ /^\.\w/
 
+    prev_val = prev.val[-1]?
+
     case @val[0]?
     when '”', '’', '⟩', ')', ']', '}',
-         ',', '.', ';', '!', '?',
-         '%', ':', '~'
+         ',', '.', ';', '!',
+         '%', '~', '?'
+      return prev_val == ':'
+    when '…'
+      return prev_val == ':' || prev_val == '.'
+    when ':'
       return false
-    when '·'
-      return true
     when '-', '—'
       return prev.dic > 1
-    when '…'
-      return prev.val[-1]? == '.'
+    when '·'
+      return true
     end
 
-    case prev.val[-1]?
+    case prev_val
     when '“', '‘', '⟨', '(', '[', '{'
       return false
     when '”', '’', '⟩', ')', ']', '}',
