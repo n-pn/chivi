@@ -173,6 +173,12 @@ class CV::Convert
             curr.combine!(node)
             idx -= node.key.size
           end
+
+          # handling +1+1+1 or -1-1-1
+          case curr.key[0]?
+          when '+' then curr.val = curr.key.gsub("+", " +").strip
+          when '-' then curr.val = curr.key.gsub("-", " -").strip
+          end
         elsif curr.dic == 1
           while idx > 0
             node = @nodes.unsafe_fetch(idx)
