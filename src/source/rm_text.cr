@@ -115,7 +115,7 @@ class CV::RmText
     when "duokan8"
       lines.shift if lines.first == "<b></b>"
       lines.update(0, &.sub(/.+<\/h1>\s*/, ""))
-      lines.map!(&.sub("</div>", "")).reject!(&.empty?)
+      lines.map!(&.sub("</div>", "").sub("<r />", "")).reject!(&.empty?)
     when "bqg_5200"
       trash = title.tr(" ", "").sub(/（.+）/, "")
       lines[0] = lines[0].gsub(/^.*#{trash}\s*/, "")

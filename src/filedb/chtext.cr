@@ -23,7 +23,7 @@ class CV::Chtext
     @zh_file = "_db/chdata/zhtexts/#{@sname}/#{@snvid}/#{@schid}.txt"
   end
 
-  def fetch!(u_power = 4, expiry = Time.utc - 10.minutes) : Nil
+  def fetch!(u_power = 4, expiry = Time.utc - 5.minutes) : Nil
     return unless remote?(u_power)
 
     source = RmText.init(@sname, @snvid, @schid, expiry: expiry)

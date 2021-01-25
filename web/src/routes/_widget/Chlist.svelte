@@ -75,7 +75,7 @@
     @include truncate(null);
 
     .link:visited & {
-      @include fgcolor(neutral, 6);
+      @include fgcolor(neutral, 6, 0.6);
     }
 
     .link:hover & {
@@ -96,14 +96,14 @@
 
   .label {
     flex: 1;
-    @include fgcolor(neutral, 5, 0.9);
+    @include fgcolor(neutral, 5, 0.8);
     @include truncate(null);
   }
 
   .chidx {
     margin-left: 0.125rem;
     user-select: none;
-    @include fgcolor(neutral, 5, 0.7);
+    @include fgcolor(neutral, 5, 0.6);
     @include font-size(1);
 
     // &:before {
