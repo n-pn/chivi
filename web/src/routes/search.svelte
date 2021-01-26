@@ -80,7 +80,7 @@
             </div>
 
             <div class="extra _subtitle">
-              <small class="-zh -trim">{book.btitle_hv}</small>
+              <small class="-zh -trim">{book.btitle_zh}</small>
             </div>
 
             <div class="extra _author">
@@ -222,19 +222,16 @@
 
   .-vi {
     line-height: 1.5rem;
-    font-weight: 500;
-
+    // font-weight: 500;
     @include font-size(5);
-    @include fgcolor(neutral, 7);
-
-    @include props(padding-top, $md: 0.25rem);
-    @include props(padding-bottom, $md: 0.25rem);
+    @include fgcolor(neutral, 8);
   }
 
   .-zh {
     line-height: 1.25rem;
-    @include font-size(3);
-    @include fgcolor(neutral, 6);
+    margin-bottom: 0.25rem;
+    @include font-size(4);
+    @include fgcolor(neutral, 7);
   }
 
   .label {

@@ -7,7 +7,7 @@
 
 <div class="list">
   {#each books as nvinfo, idx (nvinfo)}
-    <Nvinfo {nvinfo} {nvtab} _last={idx == 24} />
+    <Nvinfo {nvinfo} {nvtab} />
   {/each}
 </div>
 
