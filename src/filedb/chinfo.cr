@@ -31,7 +31,8 @@ class CV::Chinfo
   end
 
   def fetch!(power = 3, force = false, expiry = Time.utc - 5.minutes) : Bool
-    # set_atime(Time.utc.to_unix)
+    set_atime(Time.utc.to_unix)
+
     return false unless remote?(power)
     source = RmInfo.init(@sname, @snvid, expiry: expiry)
 
@@ -45,7 +46,7 @@ class CV::Chinfo
     end
 
     origs.save!(mode: :upds)
-    set_utime(source.updated_at.to_unix) || changed
+    changed && set_utime(source.updated_at.to_unix)
   rescue err
     puts "- Fetch chinfo error: #{err}".colorize.red
     false
