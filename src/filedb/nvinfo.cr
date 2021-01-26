@@ -73,10 +73,7 @@ class CV::Nvinfo
   end
 
   def fix_source! : Hash(String, String)
-    chseed = source.to_a.sort_by do |sname, snvid|
-      source_order(sname) || -ChSource.get_utime(sname, snvid)
-    end
-
+    chseed = source.to_a.sort_by { |sname, snvid| -source_order(sname, snvid) }
     NvValues.source.add(bhash, chseed.map { |a, b| "#{a}/#{b}" })
     source = chseed.to_h
   end
@@ -86,13 +83,15 @@ class CV::Nvinfo
     NvTokens.save!(mode: :upds)
   end
 
-  private def source_order(sname : String)
+  private def source_order(sname : String, snvid : String)
     case sname
-    when "_chivi", "zxcs_me" then 1
-    when "paoshu8", "69shu"  then 2
-    when "jx_la", "shubaow"  then 3
-    else                          nil
+    when "jx_la", "shubaow", "69shu"
+      0_i64
+    else
+      ChSource.get_utime(sname, snvid)
     end
+  rescue
+    -1_i64
   end
 
   def self.upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)

@@ -156,7 +156,7 @@ class CV::RmInfo
     case @sname
     when "69shu", "bqg_5200", "shubaow"
       mtime = TimeUtils.parse_time(update_str)
-      mtime += 12.hours
+      mtime += 1.days
       mtime < Time.utc ? mtime : Time.utc
     when "zhwenpg", "hetushu"
       Time.utc
