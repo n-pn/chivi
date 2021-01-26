@@ -29,14 +29,14 @@ export async function get_self(fetch) {
 }
 
 export async function get_nvinfo(fetch, bslug) {
-  return await api_call(fetch, `nvinfos/${bslug}`, `nvinfo:${bslug}`, 3)
+  return await api_call(fetch, `nvinfos/${bslug}`, `nvinfo:${bslug}`, 1)
 }
 
 function nvmark_key(bslug, uname) {
   return `nvmark:${uname.toLowerCase()}-${bslug}`
 }
 
-export async function get_nvmark(fetch, bhash, uname, ttl = 3) {
+export async function get_nvmark(fetch, bhash, uname, ttl = 1) {
   const key = nvmark_key(bhash, uname)
   return await api_call(fetch, `_self/nvmarks/${bhash}`, key, ttl)
 }
@@ -49,8 +49,8 @@ export async function set_nvmark(fetch, bhash, nvmark, uname) {
 
   if (localStorage) {
     const key = nvmark_key(bslug, uname)
-    const val = [0, nvmark, new Date().getTime() + 3]
-    localStorage.setItem(key, val)
+    const val = [0, nvmark, new Date().getTime() + 1]
+    localStorage.setItem(key, JSON.stringify(val))
   }
 }
 
