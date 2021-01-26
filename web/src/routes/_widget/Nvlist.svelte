@@ -6,8 +6,8 @@
 </script>
 
 <div class="list">
-  {#each books as nvinfo}
-    <Nvinfo {nvinfo} {nvtab} />
+  {#each books as nvinfo, idx (nvinfo)}
+    <Nvinfo {nvinfo} {nvtab} _last={idx == 24} />
   {/each}
 </div>
 

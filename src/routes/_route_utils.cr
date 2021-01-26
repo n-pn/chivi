@@ -23,11 +23,7 @@ module CV::Server::RouteUtils
   end
 
   def json_res(env, cached = 0)
-    if cached > 0
-      env.response.headers.add("ETag", cached.to_s)
-      env.response.headers.add("Cache-Control", "max-age=60")
-    end
-
+    env.response.headers.add("ETag", cached.to_s) if cached > 0
     env.response.content_type = "application/json"
     yield env.response
   end
@@ -46,7 +42,7 @@ module CV::Server::RouteUtils
 
           json.field "books" do
             json.array do
-              Nvinfo.each(sorts, skip: skip, take: take, matched: matched) do |bhash|
+              Nvinfo.each(sorts, skip: skip, take: take + 1, matched: matched) do |bhash|
                 Nvinfo.load(bhash).to_json(json, false)
               end
             end

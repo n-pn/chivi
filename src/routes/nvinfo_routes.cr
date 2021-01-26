@@ -3,9 +3,6 @@ require "../filedb/marked"
 
 module CV::Server
   get "/api/nvinfos" do |env|
-    skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
-    take = RouteUtils.parse_int(env.params.query["take"]?, min: 1, max: 24)
-
     matched = NvTokens.glob(env.params.query)
     RouteUtils.books_res(env, matched)
   end
@@ -19,9 +16,7 @@ module CV::Server
     nvinfo.bump_access!
 
     RouteUtils.json_res(env, cached: nvinfo._utime) do |res|
-      JSON.build(res) do |json|
-        nvinfo.to_json(json, true)
-      end
+      JSON.build(res) { |json| nvinfo.to_json(json, true) }
     end
   end
 end

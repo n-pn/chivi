@@ -13,29 +13,19 @@
 
     return output.join('')
   }
-
-  function tab_url(nvtab) {
-    return
-    switch (nvtab) {
-      case 'content':
-        return `/~${bslug}/content`
-      case 'discuss':
-        return `/~${bslug}/discuss`
-      default:
-        return `/~${bslug}`
-    }
-  }
 </script>
 
 <script>
   export let nvinfo = {}
+
   export let nvtab = ''
+  export let _last = ''
 
   $: stars = rating_stars(nvinfo.rating, nvinfo.voters)
   $: route = nvtab == 'summary' ? '' : nvtab
 </script>
 
-<a class="book" href="/~{nvinfo.bslug}/{route}">
+<a class="book" class:_last href="/~{nvinfo.bslug}/{route}">
   <div class="cover">
     <BCover bhash={nvinfo.bhash} bcover={nvinfo.bcover} />
     {#if nvinfo.voters > 10}
@@ -52,6 +42,14 @@
 </a>
 
 <style lang="scss">
+  ._last {
+    display: none;
+    // show hidden book if the grid is 5 columns
+    @media screen and (min-width: 689px) and (max-width: 809px) {
+      display: block;
+    }
+  }
+
   .cover {
     position: relative;
   }
