@@ -1,6 +1,7 @@
 <script context="module">
   import { u_power, u_dname } from '$src/stores'
-  import { set_nvmark, get_nvmark } from '$utils/api_calls'
+  import { set_nvmark, get_nvmark } from '$api/marked_api'
+
   import { host_name, map_status } from '$utils/book_utils'
   import { mark_types, mark_names, mark_icons } from '$utils/constants'
 </script>
@@ -32,13 +33,13 @@
 
   let nvmark = ''
   onMount(async () => {
-    const [err, data] = await get_nvmark(fetch, nvinfo.bhash, $u_dname)
+    const [err, data] = await get_nvmark(fetch, $u_dname, nvinfo.bhash)
     if (!err) nvmark = data.nvmark
   })
 
   async function mark_book(new_mark) {
     nvmark = nvmark == new_mark ? '' : new_mark
-    await set_nvmark(fetch, nvinfo.bhash, nvmark, $u_dname)
+    await set_nvmark(fetch, $u_dname, nvinfo.bhash, nvmark)
   }
 
   function gen_keywords() {

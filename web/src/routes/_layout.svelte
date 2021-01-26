@@ -1,6 +1,6 @@
 <script>
   import { stores } from '@sapper/app'
-  import { get_self } from '$utils/api_calls'
+  import { get_self } from '$api/viuser_api'
 
   const { preloading } = stores()
   import { u_dname, u_power } from '$src/stores'

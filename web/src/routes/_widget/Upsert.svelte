@@ -3,7 +3,7 @@
   import { writable } from 'svelte/store'
 
   import { titleize } from '$utils/text_utils'
-  import { dict_upsert, dict_search } from '$utils/api_calls'
+  import { dict_upsert, dict_search } from '$api/dictdb_api'
 
   export const phrase = writable(['', 0, 1])
   export const on_tab = writable(0)

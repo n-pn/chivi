@@ -12,6 +12,7 @@ const dev = mode === 'development'
 const alias = {
   svelte: path.resolve(__dirname, 'node_modules/svelte'),
   $src: path.resolve(__dirname, 'src'),
+  $api: path.resolve(__dirname, 'src/api'),
   $utils: path.resolve(__dirname, 'src/utils'),
   $routes: path.resolve(__dirname, 'src/routes'),
   $blocks: path.resolve(__dirname, 'src/routes/_blocks'),

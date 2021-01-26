@@ -2,7 +2,7 @@
   import Cvdata, { toggle_lookup, active_upsert } from '$layout/Cvdata'
   import { active as upsert_active } from '$widget/Upsert'
 
-  import { get_chinfo, get_chtext } from '$utils/api_calls'
+  import { get_chinfo, get_chtext } from '$api/chtext_api'
 
   import {
     u_power,

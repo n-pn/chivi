@@ -1,5 +1,7 @@
 <script context="module">
-  import { get_nvinfo, get_chseed, get_chlist } from '$utils/api_calls'
+  import { get_nvinfo } from '$api/nvinfo_api'
+
+  import { get_chseed, get_chlist } from '$api/chinfo_api'
 
   export async function preload(req) {
     const [err1, nvinfo] = await get_nvinfo(this.fetch, req.params.book)

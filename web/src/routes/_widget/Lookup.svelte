@@ -89,7 +89,7 @@
     lookup_actived as actived,
     lookup_enabled as enabled,
   } from '$src/stores'
-  import { dict_lookup } from '$utils/api_calls'
+  import { dict_lookup } from '$api/dictdb_api'
 
   $: [input, lower, upper] = $lookup_input
 

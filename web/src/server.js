@@ -4,8 +4,8 @@ import compression from 'compression'
 import * as sapper from '@sapper/server'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 
-import { LocalStorage } from 'node-localstorage'
-global.localStorage = new LocalStorage('public/._chivi')
+import MemoryStorage from './utils/memory_storage'
+global.localStorage = new MemoryStorage()
 
 const { PORT, NODE_ENV } = process.env
 const dev = NODE_ENV === 'development'

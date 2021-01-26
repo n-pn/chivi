@@ -1,5 +1,5 @@
 <script context="module">
-  import { get_nvinfo } from '$utils/api_calls'
+  import { get_nvinfo } from '$api/nvinfo_api'
 
   export async function preload({ params }) {
     const [err, data] = await get_nvinfo(this.fetch, params.book)
