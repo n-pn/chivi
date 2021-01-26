@@ -158,7 +158,7 @@
 
 <svelte:window on:keydown={handle_keypress} />
 
-<Common {nvinfo} atab="content">
+<Common {nvinfo} nvtab="content">
   {#if main_seeds.length > 0}
     <div class="source">
       {#each main_seeds as mname}

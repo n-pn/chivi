@@ -133,10 +133,9 @@ class CV::Chinfo
     end
   end
 
-  def url_for(idx : Int32, bslug : String)
+  def url_for(idx : Int32)
     return unless chap = chaps[idx]?
-    uslug = chap[1][2]
-    "/~#{bslug}/-#{uslug}-#{sname}-#{idx + 1}"
+    "-#{chap[1][2]}-#{sname}-#{idx + 1}"
   end
 
   def save!(mode : Symbol = :full)

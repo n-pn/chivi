@@ -76,15 +76,15 @@
 
           <div class="infos">
             <div class="extra _title">
-              <span class="-vi -trim">{book.btitle[2] || book.btitle[1]}</span>
+              <span class="-vi -trim">{book.btitle_vi}</span>
             </div>
 
             <div class="extra _subtitle">
-              <small class="-zh -trim">{book.btitle[0]}</small>
+              <small class="-zh -trim">{book.btitle_hv}</small>
             </div>
 
             <div class="extra _author">
-              <span class="value -trim">{book.author[1]}</span>
+              <span class="value -trim">{book.author_vi}</span>
             </div>
 
             <div class="extra">
@@ -94,8 +94,7 @@
 
             <div class="extra">
               <span class="label">Đánh giá:</span>
-              <span class="value"
-                >{book.rating == 0 ? '--' : book.rating / 10}</span
+              <span class="value">{book.rating == 0 ? '--' : book.rating}</span
               ><span class="label">/10</span>
             </div>
           </div>

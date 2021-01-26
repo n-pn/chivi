@@ -40,14 +40,18 @@ class CV::Nvinfo
       json.field "bhash", bhash
       json.field "bslug", bslug
 
-      json.field "btitle", btitle
-      json.field "author", author
+      json.field "btitle_zh", btitle[0]
+      json.field "btitle_hv", btitle[1]? || btitle[0]
+      json.field "btitle_vi", btitle[2]? || btitle[1]? || btitle[0]
+
+      json.field "author_zh", author[0]
+      json.field "author_vi", author[1]? || author[0]
 
       json.field "genres", genres
       json.field "bcover", bcover
 
       json.field "voters", voters
-      json.field "rating", rating
+      json.field "rating", rating / 10
 
       if full
         json.field "source", source

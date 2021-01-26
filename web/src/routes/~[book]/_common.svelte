@@ -7,29 +7,19 @@
 </script>
 
 <script>
-  import SIcon from '$blocks/SIcon'
-  import BCover from '$blocks/BCover'
-  import RTime from '$blocks/RTime'
-
-  import Vessel from '$layout/Vessel'
-
   import { onMount } from 'svelte'
 
+  import SIcon from '$blocks/SIcon'
+  import RTime from '$blocks/RTime'
+  import BCover from '$blocks/BCover'
+  import Vessel from '$layout/Vessel'
+
   export let nvinfo = {}
-  export let atab = 'summary'
-
-  $: zh_title = nvinfo.btitle[0]
-  $: vi_title = nvinfo.btitle[2] || nvinfo.btitle[1]
-
-  $: vi_author = nvinfo.author[1] || nvinfo.author[0]
+  export let nvtab = 'summary'
 
   $: vi_status = map_status(nvinfo.status)
-
-  $: book_url = `https://chivi.xyz/~${nvinfo.bslug}`
   $: book_intro = nvinfo.bintro.join('').substring(0, 300)
-  $: book_cover = `https://chivi.xyz/covers/${nvinfo.bcover}`
   $: updated_at = new Date(nvinfo._utime * 1000)
-  $: keywords = gen_keywords()
 
   let nvmark = ''
   onMount(async () => {
@@ -42,28 +32,31 @@
     await set_nvmark(fetch, $u_dname, nvinfo.bhash, nvmark)
   }
 
-  function gen_keywords() {
-    let res = [...nvinfo.btitle, ...nvinfo.author, ...nvinfo.genres]
-    res.push('Truyện tàu', 'Truyện convert', 'Truyện mạng')
+  function gen_keywords(nvinfo) {
+    // prettier-ignore
+    let res = [
+      nvinfo.btitle_zh, nvinfo.btitle_vi, nvinfo.btitle_hv,
+      nvinfo.author_zh, nvinfo.author_vi, ...nvinfo.genres,
+      'Truyện tàu', 'Truyện convert', 'Truyện mạng' ]
     return res.join(',')
   }
 </script>
 
+<!-- prettier-ignore -->
 <svelte:head>
-  <title>{vi_title} - Chivi</title>
-  <meta name="keywords" content={keywords} />
+  <title>{nvinfo.btitle_vi} - Chivi</title>
+  <meta name="keywords" content={gen_keywords(nvinfo)} />
   <meta name="description" content={book_intro} />
 
-  <meta property="og:title" content={vi_title} />
+  <meta property="og:title" content={nvinfo.btitle_vi} />
   <meta property="og:type" content="novel" />
   <meta property="og:description" content={book_intro} />
-  <meta property="og:url" content={book_url} />
-  <meta property="og:image" content={book_cover} />
+  <meta property="og:url" content="https://chivi.xyz/~{nvinfo.bslug}" />
+  <meta property="og:image" content="https://chivi.xyz/covers/{nvinfo.bcover}" />
 
   <meta property="og:novel:category" content={nvinfo.genres[0]} />
-  <meta property="og:novel:author" content={vi_author} />
-  <meta property="og:novel:book_name" content={vi_title} />
-  <meta property="og:novel:read_url" content="{book_url}&tab=content" />
+  <meta property="og:novel:author" content={nvinfo.author_vi} />
+  <meta property="og:novel:book_name" content={nvinfo.btitle_vi} />
   <meta property="og:novel:status" content={vi_status} />
   <meta property="og:novel:update_time" content={updated_at.toISOString()} />
 </svelte:head>
@@ -71,7 +64,7 @@
 <Vessel>
   <a slot="header-left" href="/~{nvinfo.bslug}" class="header-item _active">
     <SIcon name="book-open" />
-    <span class="header-text _title">{vi_title}</span>
+    <span class="header-text _title">{nvinfo.btitle_vi}</span>
   </a>
 
   <span slot="header-right" class="header-item _menu">
@@ -99,8 +92,8 @@
 
   <div class="main-info">
     <div class="title">
-      <h1 class="-main">{vi_title}</h1>
-      <h2 class="-sub">({zh_title})</h2>
+      <h1 class="-main">{nvinfo.btitle_vi}</h1>
+      <h2 class="-sub">({nvinfo.btitle_zh})</h2>
     </div>
 
     <div class="cover">
@@ -111,8 +104,8 @@
       <div class="line">
         <span class="stat -trim">
           <SIcon name="pen-tool" />
-          <a class="link" href="/search?kw={vi_author}&type=author">
-            <span class="label">{vi_author}</span>
+          <a class="link" href="/search?kw={nvinfo.author_vi}&type=author">
+            <span class="label">{nvinfo.author_vi}</span>
           </a>
         </span>
 
@@ -141,8 +134,7 @@
       <div class="line">
         <span class="stat">
           Đánh giá:
-          <span class="label"
-            >{nvinfo.voters <= 10 ? '--' : nvinfo.rating / 10}</span
+          <span class="label">{nvinfo.voters <= 10 ? '--' : nvinfo.rating}</span
           >/10
         </span>
         <span class="stat">({nvinfo.voters} lượt đánh giá)</span>
@@ -181,17 +173,17 @@
       <a
         href="/~{nvinfo.bslug}"
         class="header-tab"
-        class:_active={atab == 'summary'}> Tổng quan </a>
+        class:_active={nvtab == 'summary'}> Tổng quan </a>
 
       <a
         href="/~{nvinfo.bslug}/content"
         class="header-tab"
-        class:_active={atab == 'content'}> Chương tiết </a>
+        class:_active={nvtab == 'content'}> Chương tiết </a>
 
       <a
         href="/~{nvinfo.bslug}/discuss"
         class="header-tab"
-        class:_active={atab == 'discuss'}> Thảo luận </a>
+        class:_active={nvtab == 'discuss'}> Thảo luận </a>
     </header>
 
     <div class="section-content">

@@ -1,13 +1,13 @@
 <script>
   export let books = []
-  export let atab = 'summary'
+  export let nvtab = 'summary'
 
   import Nvinfo from './Nvinfo.svelte'
 </script>
 
 <div class="list">
   {#each books as nvinfo}
-    <Nvinfo {nvinfo} {atab} />
+    <Nvinfo {nvinfo} {nvtab} />
   {/each}
 </div>
 

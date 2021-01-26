@@ -6,18 +6,19 @@
 
     const output = ['⭐']
 
-    if (rating > 12) output.push('⭐')
-    if (rating > 37) output.push('⭐')
-    if (rating > 62) output.push('⭐')
-    if (rating > 87) output.push('⭐')
+    if (rating > 1.2) output.push('⭐')
+    if (rating > 3.7) output.push('⭐')
+    if (rating > 6.2) output.push('⭐')
+    if (rating > 8.7) output.push('⭐')
 
-    return output
+    return output.join('')
   }
 
-  function book_url(bslug, atab) {
-    switch (atab) {
+  function tab_url(nvtab) {
+    return
+    switch (nvtab) {
       case 'content':
-        return `/~${bslug}/content?order=desc`
+        return `/~${bslug}/content`
       case 'discuss':
         return `/~${bslug}/discuss`
       default:
@@ -28,32 +29,26 @@
 
 <script>
   export let nvinfo = {}
-  export let atab = ''
+  export let nvtab = ''
 
-  $: title = nvinfo.btitle[2] || nvinfo.btitle[1]
-  $: genre = nvinfo.genres[0] || 'Loại khác'
-  $: href = book_url(nvinfo.bslug, atab)
   $: stars = rating_stars(nvinfo.rating, nvinfo.voters)
+  $: route = nvtab == 'summary' ? '' : nvtab
 </script>
 
-<a class="book" {href}>
+<a class="book" href="/~{nvinfo.bslug}/{route}">
   <div class="cover">
     <BCover bhash={nvinfo.bhash} bcover={nvinfo.bcover} />
-
     {#if nvinfo.voters > 10}
       <div class="extra">
         <div class="score">
-          {#each stars as star}
-            <span class="-star">{star}</span>
-          {/each}
-          <span class="-text">{nvinfo.rating / 10}</span>
+          <span class="-star">{stars}</span>
+          <span class="-text">{nvinfo.rating}</span>
         </div>
       </div>
     {/if}
   </div>
-
-  <div class="title">{title}</div>
-  <div class="genre">{genre}</div>
+  <div class="title">{nvinfo.btitle_vi}</div>
+  <div class="genre">{nvinfo.genres[0] || 'Loại khác'}</div>
 </a>
 
 <style lang="scss">
@@ -77,11 +72,6 @@
     line-height: 1.25rem;
     @include props(font-size, 10px, 11px, 12px);
 
-    > .-star {
-      @include screen-min(md) {
-        margin-left: 1px;
-      }
-    }
     > .-text {
       margin-left: 0.25rem;
       padding: 0 0.25rem;

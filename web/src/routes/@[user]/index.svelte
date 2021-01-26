@@ -67,7 +67,7 @@
   {#if books.length == 0}
     <div class="empty">Danh sách trống</div>
   {:else}
-    <Nvlist {books} atab="content" />
+    <Nvlist {books} nvtab="content" />
 
     <div class="pagi">
       <a

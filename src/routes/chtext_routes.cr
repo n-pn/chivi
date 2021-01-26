@@ -1,48 +1,26 @@
 require "./_route_utils"
 
 module CV::Server
-  get "/api/chinfos/:bslug/:sname/:cidx" do |env|
-    bslug = env.params.url["bslug"]
-
-    unless bhash = Nvinfo.find_by_slug(bslug)
-      halt env, status_code: 404, response: "Quyển sách không tồn tại!"
-    end
-
+  get "/api/chinfos/:sname/:snvid/:chidx" do |env|
     sname = env.params.url["sname"]
-    unless snvid = ChSource.load(sname)._index.fval(bhash)
-      halt env, status_code: 404, response: "Nguồn truyện không tồn tại!"
-    end
+    snvid = env.params.url["snvid"]
+    index = env.params.url["chidx"].to_i? || 100000
 
     chinfo = Chinfo.load(sname, snvid)
-
-    index = env.params.url["cidx"].to_i? || 100000
-
     unless curr_chap = chinfo.chaps[index - 1]?
       halt env, status_code: 404, response: "Chương tiết không tồn tại!"
     end
 
-    btitle = NvValues.btitle.get(bhash).not_nil!
-    ch_title = curr_chap[1][0]
-    ch_label = curr_chap[1][1]
-
     RouteUtils.json_res(env) do |res|
       {
-        bhash: bhash,
-        bslug: bslug,
-        bname: btitle[2]? || btitle[1],
-
-        sname: sname,
-        snvid: snvid,
         total: chinfo.chaps.size,
-
         schid: curr_chap[0],
-        chidx: index,
 
-        title: ch_title,
-        label: ch_label,
+        title: curr_chap[1][0],
+        label: curr_chap[1][1],
 
-        prev_url: chinfo.url_for(index - 2, bslug),
-        next_url: chinfo.url_for(index, bslug),
+        prev_url: chinfo.url_for(index - 2),
+        next_url: chinfo.url_for(index),
       }.to_json(res)
     end
   rescue err

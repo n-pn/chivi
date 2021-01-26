@@ -13,7 +13,7 @@
   export let nvinfo
 </script>
 
-<Common {nvinfo} atab="discuss">
+<Common {nvinfo} nvtab="discuss">
   <div class="empty">Chưa hoàn thiện :(</div>
 </Common>
 

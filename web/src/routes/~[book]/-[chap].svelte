@@ -2,6 +2,7 @@
   import Cvdata, { toggle_lookup, active_upsert } from '$layout/Cvdata'
   import { active as upsert_active } from '$widget/Upsert'
 
+  import { get_nvinfo } from '$api/nvinfo_api'
   import { get_chinfo, get_chtext } from '$api/chtext_api'
 
   import {
@@ -12,28 +13,35 @@
   } from '$src/stores'
 
   export async function preload({ params, query }) {
-    const bslug = params.book
-    const [chidx, sname] = params.chap.split('-').reverse()
-    const mode = +query.mode || process.browser ? 1 : 0
+    const [err1, nvinfo] = await get_nvinfo(this.fetch, params.book)
+    if (err1) return this.error(404, nvinfo)
 
-    const [err, data] = await get_chinfo(this.fetch, bslug, sname, chidx, mode)
+    const [chidx, sname] = params.chap.split('-').reverse()
+    const snvid = nvinfo.source[sname]
+
+    if (!snvid) return this.error(404, 'Nguồn truyện không tồn tại!')
+    const chinfo = { sname, snvid, chidx }
+
+    const mode = +query.mode || process.browser ? 1 : 0
+    const [err, data] = await get_chinfo(this.fetch, chinfo, nvinfo, mode)
+
     if (err) this.error(err, data)
-    else return data
+    else return { ...data, nvinfo }
   }
 
-  function gen_paths({ bslug, sname, chidx, prev_url, next_url }) {
+  function gen_paths({ bslug }, { sname, chidx, prev_url, next_url }) {
     const book_path = gen_book_path(bslug, sname, 0)
     const list_path = gen_book_path(bslug, sname, chidx)
 
-    const prev_path = prev_url || book_path
-    const next_path = next_url || list_path
+    const prev_path = prev_url ? `/~${bslug}/${prev_url}` : book_path
+    const next_path = next_url ? `/~${bslug}/${next_url}` : list_path
 
     return [book_path, list_path, prev_path, next_path]
   }
 
   function gen_book_path(bslug, sname, chidx) {
     let url = `/~${bslug}/content?sname=${sname}`
-    const page = Math.floor(chidx / 30) + 1
+    const page = Math.floor((chidx - 1) / 30) + 1
     return page > 1 ? url + `&page=${page}` : url
   }
 </script>
@@ -42,12 +50,13 @@
   import SIcon from '$blocks/SIcon'
   import Vessel from '$layout/Vessel'
 
+  export let nvinfo = {}
   export let chinfo = {}
   export let cvdata = ''
 
-  $: [book_path, list_path, prev_path, next_path] = gen_paths(chinfo)
+  $: [book_path, list_path, prev_path, next_path] = gen_paths(nvinfo, chinfo)
 
-  $: $lookup_dname = chinfo.bhash
+  $: $lookup_dname = nvinfo.bhash
 
   let changed = false
   $: if (changed) reload_chap(1)
@@ -103,14 +112,14 @@
     if (mode > $u_power) mode = $u_power
     if (mode < 1) return
 
-    const [_err, data] = await get_chtext(window.fetch, chinfo, mode)
+    const [_, data] = await get_chtext(window.fetch, chinfo, nvinfo.bhash, mode)
     cvdata = data
     changed = false
   }
 </script>
 
 <svelte:head>
-  <title>{chinfo.title} - {chinfo.bname} - Chivi</title>
+  <title>{chinfo.title} - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
 
 <svelte:body on:keydown={handle_keypress} />
@@ -118,7 +127,7 @@
 <Vessel shift={$lookup_enabled && $lookup_actived}>
   <a slot="header-left" href={book_path} class="header-item _title">
     <SIcon name="book-open" />
-    <span class="header-text _show-md _title">{chinfo.sname}</span>
+    <span class="header-text _show-md _title">{nvinfo.btitle_vi}</span>
   </a>
 
   <button slot="header-left" class="header-item _active">
@@ -145,14 +154,18 @@
 
   <nav class="bread">
     <div class="-crumb _sep">
-      <a href="/~{chinfo.bslug}" class="-link"> {chinfo.bname}</a>
+      <a href="/~{nvinfo.bslug}" class="-link"> {nvinfo.btitle_vi}</a>
     </div>
 
     <div class="-crumb"><span class="-text">{chinfo.label}</span></div>
   </nav>
 
   {#if cvdata}
-    <Cvdata {cvdata} bind:changed dname={chinfo.bhash} bname={chinfo.bname} />
+    <Cvdata
+      {cvdata}
+      bind:changed
+      dname={nvinfo.bhash}
+      bname={nvinfo.btitle_vi} />
   {:else}
     <div class="empty">
       Chương tiết không có nội dung, mời liên hệ ban quản trị.
