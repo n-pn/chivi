@@ -79,7 +79,7 @@
 
   <section class="content">
     <header class="label">
-      <SIcon name="book" />
+      <SIcon name="folder" />
       <span>Phân loại</span>
     </header>
 
