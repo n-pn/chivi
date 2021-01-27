@@ -14,10 +14,11 @@
 <header class="app-header" class:_shift={shift} class:_clear={$l_scroll > 0}>
   <nav class="center -wrap">
     <div class="-left">
-      <a
-        href="/"
-        class="header-item _brand"
-        on:click|preventDefault={() => (active_appnav = true)}>
+      <button class="header-item" on:click={() => (active_appnav = true)}>
+        <SIcon name="menu" />
+      </button>
+
+      <a href="/" class="header-item _brand">
         <img src="/chivi-logo.svg" alt="logo" />
         <span class="header-text _show-md">Chivi</span>
       </a>
@@ -106,4 +107,8 @@
       );
     }
   }
+
+  // ._brand {
+  //   @include props(display, none, $md: inline-block);
+  // }
 </style>
