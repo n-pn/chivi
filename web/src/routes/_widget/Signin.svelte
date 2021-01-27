@@ -82,24 +82,24 @@
         {#if type == 'login'}
           <button
             type="button"
-            class="m-button _large _text"
+            class="m-button _text"
             on:click={() => (type = 'signup')}>
             <span class="-text">Tài khoản mới</span>
           </button>
 
-          <button type="submit" class="m-button _large _primary">
+          <button type="submit" class="m-button _primary">
             <SIcon name="log-in" />
             <span class="-text">Đăng nhập</span>
           </button>
         {:else}
           <button
             type="button"
-            class="m-button _large _text"
+            class="m-button _text"
             on:click={() => (type = 'login')}>
             <span class="-text">Đăng nhập</span>
           </button>
 
-          <button type="submit" class="m-button _large _success">
+          <button type="submit" class="m-button _success">
             <SIcon name="user-plus" />
             <span class="-text">Tạo tài khoản</span>
           </button>
@@ -191,10 +191,15 @@
 
   footer {
     margin-top: 1.5rem;
+
     @include flex($center: content);
 
+    button {
+      @include truncate(null);
+    }
+
     button + button {
-      margin-left: 1.5rem;
+      margin-left: 1rem;
     }
   }
 </style>
