@@ -2,9 +2,10 @@
   import SIcon from '$blocks/SIcon'
   export let actived = false
   export let sticked = false
-  export let _sticky = false
 
-  export let width = 30
+  export let _sticky = false
+  export let _slider = 'right'
+  export let _rwidth = 25
 
   function handle_keydown(evt) {
     if (evt.keyCode == 27 && on_top) active = false
@@ -19,8 +20,10 @@
   on:keydown|stopPropagation={handle_keydown}>
   <aside
     class="slider"
+    class:_left={_slider == 'left'}
+    class:_right={_slider == 'right'}
     class:_active={actived}
-    style="--width: {width}rem;"
+    style="--width: {_rwidth}rem;"
     on:click={(e) => e.stopPropagation()}>
     <header class="head">
       <slot name="header-left" />
@@ -77,9 +80,6 @@
     flex-direction: column;
 
     top: 0;
-    right: 0;
-    left: 100%;
-
     width: var(--width);
     max-width: 90vw;
     height: 100%;
@@ -89,12 +89,26 @@
     @include bgcolor(white);
     @include shadow(2);
 
+    &._left {
+      right: 0;
+      right: 100%;
+
+      &._active {
+        transform: translateX(100%);
+      }
+    }
+
+    &._right {
+      right: 0;
+      left: 100%;
+
+      &._active {
+        transform: translateX(-100%);
+      }
+    }
+
     // transition: all 0.1s ease-in-out;
     // transform: translateX(100%);
-
-    &._active {
-      transform: translateX(-100%);
-    }
   }
 
   $hd-height: 3rem;

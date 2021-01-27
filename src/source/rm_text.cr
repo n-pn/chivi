@@ -40,7 +40,7 @@ class CV::RmText
     when "xbiquge"  then "https://www.xbiquge.cc/book/#{snvid}/#{schid}.html"
     when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/#{schid}.html"
-    when "duokan8"  then "http://www.duokan8.com/#{prefixed(snvid, schid)}"
+    when "duokan8"  then "http://www.duokanba.info/#{prefixed(snvid, schid)}"
     when "paoshu8"  then "http://www.paoshu8.com/#{prefixed(snvid, schid)}"
     when "5200"     then "https://www.5200.tv/#{prefixed(snvid, schid)}"
     when "shubaow"  then "https://www.shubaow.net/#{prefixed(snvid, schid)}"

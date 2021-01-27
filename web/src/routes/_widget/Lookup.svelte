@@ -138,7 +138,11 @@
   }
 </script>
 
-<Slider bind:actived={$actived} bind:sticked={$sticked} _sticky={true}>
+<Slider
+  _rwidth={30}
+  _sticky={true}
+  bind:actived={$actived}
+  bind:sticked={$sticked}>
   <div slot="header-left" class="-icon">
     <SIcon name="compass" />
   </div>
