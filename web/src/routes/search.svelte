@@ -60,44 +60,46 @@
     <SIcon name="search" />
   </form>
 
-  <h1>
-    Hiển thị kết quả
-    {skip + 1}~{skip + books.length}/{total}
-    cho từ khoá "{word}":
-  </h1>
+  {#if pmax > 1}
+    <h1>
+      Hiển thị kết quả
+      {skip + 1}~{skip + books.length}/{total}
+      cho từ khoá "{word}":
+    </h1>
 
-  {#each books as book}
     <div class="list" data-page={page}>
-      <a href="/~{book.bslug}" class="book">
-        <div class="cover">
-          <BCover bhash={book.bhash} bcover={book.bcover} />
-        </div>
-
-        <div class="infos">
-          <div class="extra _title">
-            <span class="-vi -trim">{book.btitle_vi}</span>
+      {#each books as book}
+        <a href="/~{book.bslug}" class="book">
+          <div class="cover">
+            <BCover bhash={book.bhash} bcover={book.bcover} />
           </div>
 
-          <div class="extra _subtitle">
-            <small class="-zh -trim">{book.btitle_zh}</small>
-          </div>
+          <div class="infos">
+            <div class="extra _title">
+              <span class="-vi -trim">{book.btitle_vi}</span>
+            </div>
 
-          <div class="extra _author">
-            <span class="value -trim">{book.author_vi}</span>
-          </div>
+            <div class="extra _subtitle">
+              <small class="-zh -trim">{book.btitle_zh}</small>
+            </div>
 
-          <div class="extra">
-            <span class="label">Thể loại:</span>
-            <span class="value">{book.genres[0]}</span>
-          </div>
+            <div class="extra _author">
+              <span class="value -trim">{book.author_vi}</span>
+            </div>
 
-          <div class="extra">
-            <span class="label">Đánh giá:</span>
-            <span class="value">{book.rating == 0 ? '--' : book.rating}</span
-            ><span class="label">/10</span>
+            <div class="extra">
+              <span class="label">Thể loại:</span>
+              <span class="value">{book.genres[0]}</span>
+            </div>
+
+            <div class="extra">
+              <span class="label">Đánh giá:</span>
+              <span class="value">{book.rating == 0 ? '--' : book.rating}</span
+              ><span class="label">/10</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
+      {/each}
     </div>
 
     <div class="pagi">
@@ -118,7 +120,7 @@
     </div>
   {:else}
     <h1>Không tìm được kết quả phù hợp cho từ khoá "{word}"</h1>
-  {/each}
+  {/if}
 </Vessel>
 
 <style lang="scss">
@@ -129,8 +131,9 @@
     padding: 0.75rem 0;
     margin: 0 auto;
 
-    @include grid($size: minmax(18rem, 1fr));
-    @include grid-gap($gap: 0.75rem);
+    display: grid;
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
   }
 
   h1 {
