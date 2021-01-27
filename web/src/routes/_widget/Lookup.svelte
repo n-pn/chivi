@@ -4,7 +4,7 @@
 
   export const enabled = writable(false)
   export const actived = writable(false)
-  export const sticked = writable(true)
+  export const sticked = writable(false)
 
   export const input = writable(['', 0, 0])
   export const dname = writable('various')

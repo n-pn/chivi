@@ -63,7 +63,7 @@
   let changed = false
   $: if (changed) reload_chap(1)
 
-  $: $lookup_enabled = true
+  $: $lookup_enabled = false
   $: $lookup_actived = false
 
   function handle_keypress(evt) {
