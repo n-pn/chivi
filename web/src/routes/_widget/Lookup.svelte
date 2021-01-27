@@ -138,14 +138,14 @@
   }
 </script>
 
-<Slider bind:actived={$actived} bind:sticked={$sticked}>
+<Slider bind:actived={$actived} bind:sticked={$sticked} _sticky={true}>
   <div slot="header-left" class="-icon">
     <SIcon name="compass" />
   </div>
   <div slot="header-left" class="-text">Giải nghĩa</div>
 
   <button slot="header-right" class="-btn" on:click={() => ($enabled = false)}>
-    <SIcon name="power" />
+    <SIcon name="slash" />
   </button>
 
   <section class="lookup">

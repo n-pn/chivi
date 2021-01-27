@@ -2,6 +2,7 @@
   import SIcon from '$blocks/SIcon'
   export let actived = false
   export let sticked = false
+  export let _sticky = false
 
   export let width = 30
 
@@ -25,12 +26,14 @@
       <slot name="header-left" />
       <slot name="header-right" />
 
-      <button
-        class="-btn"
-        class:_active={sticked}
-        on:click={() => (sticked = !sticked)}>
-        <SIcon name="pin" />
-      </button>
+      {#if _sticky}
+        <button
+          class="-btn"
+          class:_active={sticked}
+          on:click={() => (sticked = !sticked)}>
+          <SIcon name="pin" />
+        </button>
+      {/if}
 
       <button class="-btn" on:click={() => (actived = false)}>
         <SIcon name="x" />
@@ -58,7 +61,7 @@
     z-index: 1000;
 
     &._active {
-      background: rgba(#000, 0.3);
+      background: rgba(#000, 0.5);
       pointer-events: auto;
     }
 

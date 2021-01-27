@@ -22,8 +22,15 @@
   </div>
   <div slot="header-left" class="-text">{$u_dname} [{$u_power}]</div>
 
+  <button slot="header-right" class="-btn" on:click={logout}>
+    <SIcon name="log-out" />
+  </button>
+
   <section class="content">
-    <header class="label">Tủ truyện</header>
+    <header class="label">
+      <SIcon name="layers" />
+      <span>Tủ truyện</span>
+    </header>
     <div class="chips">
       {#each mark_types as mtype}
         <a href="/@{$u_dname}?bmark={mtype}" class="-chip">
@@ -34,16 +41,12 @@
   </section>
 
   <section class="content">
-    <header class="label">Đọc tiếp</header>
+    <header class="label">
+      <SIcon name="book-open" />
+      <span>Lịch sử đọc</span>
+    </header>
     <div>Đang hoàn thiện!</div>
   </section>
-
-  <div slot="footer" class="logout">
-    <a class="-link" href="/api/logout" on:click|preventDefault={logout}>
-      <SIcon name="log-out" />
-      <span class="-text">Đăng xuất</span>
-    </a>
-  </div>
 </Slider>
 
 <style lang="scss">
@@ -59,16 +62,26 @@
   }
 
   .label {
+    @include flex();
     // @include label();
     font-weight: 500;
-    line-height: 1.75rem;
+    line-height: 2.25rem;
     margin: 0 -0.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     padding: 0 0.5rem;
     text-transform: uppercase;
     @include font-size(2);
-    @include fgcolor(neutral, 7);
-    @include border($sides: left, $width: 3px, $color: primary, $shade: 5);
+    @include fgcolor(neutral, 6);
+
+    :global(svg) {
+      margin-top: 0.5rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    span {
+      margin-left: 0.5rem;
+    }
   }
 
   .chips {
@@ -76,8 +89,8 @@
     @include props(margin-top, -0.25rem, -0.375rem);
     @include props(margin-left, -0.25rem, -0.375rem);
 
-    @include props(font-size, 12px, 13px);
-    @include props(line-height, 1.5rem, 1.75rem);
+    @include props(font-size, 11px, 12px, 13px);
+    @include props(line-height, 1.25rem, 1.5rem, 1.75rem);
   }
 
   .-chip {
@@ -92,27 +105,8 @@
     @include props(margin-left, 0.25rem, 0.375rem);
 
     &:hover {
-      @include fgcolor(primary, 5);
-    }
-  }
-
-  .logout {
-    display: block;
-    line-height: 2.5rem;
-    padding: 1rem;
-    text-align: center;
-
-    > .-link {
-      display: block;
-      @include label();
-
-      // @include bgcolor(neutral, 1);
-      @include radius();
-
-      &:hover {
-        @include bgcolor(neutral, 1);
-        @include fgcolor(primary, 5);
-      }
+      @include bdcolor(primary, 5);
+      @include fgcolor(primary, 6);
     }
   }
 </style>
