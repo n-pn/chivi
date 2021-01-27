@@ -14,6 +14,16 @@
   }
 
   import { mark_types, mark_names } from '$utils/constants'
+
+  function jumpto(node, url) {
+    const action = () => {
+      _goto_(url)
+      actived = false
+    }
+
+    node.addEventListener('click', action)
+    return { destroy: () => node.removeEventListener('click', action) }
+  }
 </script>
 
 <Slider bind:actived width={26}>
@@ -34,9 +44,9 @@
 
     <div class="chips">
       {#each mark_types as mtype}
-        <a href="/@{$u_dname}?bmark={mtype}" class="-chip">
+        <button use:jumpto={`/@${$u_dname}?bmark=${mtype}`} class="-chip">
           {mark_names[mtype]}
-        </a>
+        </button>
       {/each}
     </div>
   </section>
