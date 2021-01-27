@@ -3,16 +3,21 @@
   import SIcon from '$blocks/SIcon'
 
   import Signin from '$widget/Signin'
+  import Appnav from '$widget/Appnav'
   import Usercp from '$widget/Usercp'
 
   export let shift = false
   let active_usercp = false
+  let active_appnav = false
 </script>
 
 <header class="app-header" class:_shift={shift} class:_clear={$l_scroll > 0}>
   <nav class="center -wrap">
     <div class="-left">
-      <a href="/" class="header-item _brand">
+      <a
+        href="/"
+        class="header-item _brand"
+        on:click|preventDefault={() => (active_appnav = true)}>
         <img src="/chivi-logo.svg" alt="logo" />
         <span class="header-text _show-md">Chivi</span>
       </a>
@@ -42,6 +47,10 @@
     <slot name="footer" />
   </footer>
 </main>
+
+{#if active_appnav}
+  <Appnav bind:actived={active_appnav} />
+{/if}
 
 {#if active_usercp}
   {#if $u_dname == 'Khách'}

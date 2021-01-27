@@ -128,10 +128,6 @@
     @include fgcolor(neutral, 6);
     @include shadow(1);
 
-    :global(* + *) {
-      margin-left: 0.375rem;
-    }
-
     :global(svg) {
       width: 1.25rem;
       height: 1.25rem;
@@ -141,6 +137,7 @@
     :global(& .-text) {
       flex-grow: 1;
       font-weight: 500;
+      margin-left: 0.5rem;
       text-transform: uppercase;
       @include font-size(3);
     }
