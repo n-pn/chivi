@@ -1,4 +1,4 @@
-<script>
+<!--<script>
   import SIcon from '$blocks/SIcon'
   import Vessel from '$layout/Vessel'
 
@@ -29,9 +29,7 @@
       error = true
     }
   }
-</script>
-
-<Vessel>
+</script><Vessel>
   <section>
     <form action="/_login" method="POST" on:submit={submit}>
       <header>
@@ -77,9 +75,7 @@
       </footer>
     </form>
   </section>
-</Vessel>
-
-<style lang="scss">
+</Vessel><style lang="scss">
   section {
     position: fixed;
     top: 0;
@@ -167,4 +163,4 @@
       margin-left: auto;
     }
   }
-</style>
+</style>-->

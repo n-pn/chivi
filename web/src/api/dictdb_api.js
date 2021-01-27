@@ -18,12 +18,7 @@ export async function dict_upsert(fetch, dname, params) {
 }
 
 export async function dict_lookup(fetch, input, dname) {
-  const url = `/api/dictdb/lookup/${dname}`
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ input: input }),
-  })
-
+  const url = `/api/dictdb/lookup/${input}?dname=${dname}`
+  const res = await fetch(url)
   return await res.json()
 }

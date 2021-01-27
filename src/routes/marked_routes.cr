@@ -11,16 +11,6 @@ module CV::Server
     end
   end
 
-  get "/api/book-marks/:bhash" do |env|
-    unless uname = env.session.string?("u_dname").try(&.downcase)
-      halt env, status_code: 403, response: "user not logged in"
-    end
-
-    bhash = env.params.url["bhash"]
-    bmark = Marked.book_users(bhash).fval(uname) || ""
-    RouteUtils.json_res(env, {bmark: bmark})
-  end
-
   put "/api/book-marks/:bhash" do |env|
     unless u_name = env.session.string?("u_dname").try(&.downcase)
       halt env, status_code: 403, response: "user not logged in"

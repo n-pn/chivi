@@ -5,12 +5,14 @@
   import { get_nvinfo } from '$api/nvinfo_api'
   import { get_chinfo, get_chtext } from '$api/chtext_api'
 
+  import { u_power } from '$src/stores'
+
   import {
-    u_power,
-    lookup_dname,
-    lookup_enabled,
-    lookup_actived,
-  } from '$src/stores'
+    dname as lookup_dname,
+    enabled as lookup_enabled,
+    actived as lookup_actived,
+    sticked as lookup_sticked,
+  } from '$widget/Lookup'
 
   export async function preload({ params, query }) {
     const [err1, nvinfo] = await get_nvinfo(this.fetch, params.book)
@@ -61,7 +63,7 @@
   let changed = false
   $: if (changed) reload_chap(1)
 
-  $: $lookup_enabled = false
+  $: $lookup_enabled = true
   $: $lookup_actived = false
 
   function handle_keypress(evt) {
@@ -124,7 +126,7 @@
 
 <svelte:body on:keydown={handle_keypress} />
 
-<Vessel shift={$lookup_enabled && $lookup_actived}>
+<Vessel shift={$lookup_enabled && $lookup_actived && $lookup_sticked}>
   <a slot="header-left" href={book_path} class="header-item _title">
     <SIcon name="book-open" />
     <span class="header-text _show-md _title">{nvinfo.btitle_vi}</span>
@@ -151,7 +153,6 @@
     data-kbd="\">
     <SIcon name="compass" />
   </button>
-
   <nav class="bread">
     <div class="-crumb _sep">
       <a href="/~{nvinfo.bslug}" class="-link"> {nvinfo.btitle_vi}</a>
@@ -172,7 +173,7 @@
     </div>
   {/if}
 
-  <div slot="footer" class="footer">
+  <div class="footer" slot="footer">
     <a
       href={prev_path}
       class="m-button _solid"
@@ -238,8 +239,8 @@
   }
 
   .empty {
-    height: 70vh;
-
+    height: calc(100vh - 10rem);
+    margin-bottom: 3rem;
     font-style: italic;
     @include flex($center: both);
     @include fgcolor(neutral, 6);

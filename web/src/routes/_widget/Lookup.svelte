@@ -1,4 +1,14 @@
 <script context="module">
+  import { writable } from 'svelte/store'
+  import { dict_lookup } from '$api/dictdb_api'
+
+  export const enabled = writable(false)
+  export const actived = writable(false)
+  export const sticked = writable(true)
+
+  export const input = writable(['', 0, 0])
+  export const dname = writable('various')
+
   const tags = {
     '&': '&amp;',
     '<': '&lt;',
@@ -82,24 +92,15 @@
 </script>
 
 <script>
-  import SIcon from '$blocks/SIcon.svelte'
-  import {
-    lookup_input,
-    lookup_dname as dname,
-    lookup_actived as actived,
-    lookup_enabled as enabled,
-  } from '$src/stores'
-  import { dict_lookup } from '$api/dictdb_api'
-
-  $: [input, lower, upper] = $lookup_input
-
+  import SIcon from '$blocks/SIcon'
   export let on_top = false
 
   let hanviet = []
   let entries = []
   let current = []
 
-  $: if (input) lookup_entry(input)
+  $: [key, lower, upper] = $input
+  $: if (key) lookup_entry(key)
   $: if (lower < entries.length) update_focus()
 
   $: zh_html = render_zh(hanviet, lower, upper)
@@ -141,74 +142,112 @@
   }
 </script>
 
-<aside class:_active={$actived} tabindex="0" on:keydown={handle_keydown}>
-  <header>
-    <h2>Giải nghĩa</h2>
+<div
+  class="holder"
+  class:_active={$enabled && $actived}
+  class:_sticky={$sticked}
+  on:click={(_) => ($actived = false)}>
+  <aside
+    class:_active={$actived}
+    on:keydown={handle_keydown}
+    on:click={(e) => e.stopPropagation()}>
+    <header>
+      <h2>Giải nghĩa</h2>
 
-    <button on:click={() => ($actived = false)}>
-      <SIcon name="eye-off" />
-    </button>
+      <button
+        class="-btn"
+        class:_active={$sticked}
+        on:click={() => sticked.update((x) => !x)}>
+        <SIcon name="pin" />
+      </button>
 
-    <button on:click={() => ($enabled = false)}>
-      <SIcon name="x" />
-    </button>
-  </header>
+      <button class="-btn" on:click={() => ($actived = false)}>
+        <SIcon name="eye-off" />
+      </button>
 
-  <section class="lookup">
-    <div class="source _zh" on:click={hanlde_click} lang="zh">
-      {@html zh_html}
-    </div>
+      <button class="-btn" on:click={() => ($enabled = false)}>
+        <SIcon name="x" />
+      </button>
+    </header>
 
-    <div class="source _hv" on:click={hanlde_click}>
-      {@html hv_html}
-    </div>
-
-    {#each current as [size, entries]}
-      <div class="entry">
-        <h3 class="word" lang="zh">{input.substr(lower, size)}</h3>
-        {#each Object.entries(entries) as [name, items]}
-          {#if items.length > 0}
-            <div class="item">
-              <h4 class="name">{name}</h4>
-              {#if name == 'vietphrase'}
-                <p class="viet">
-                  {@html fix_vietphrase(items)}
-                </p>
-              {:else}
-                {#each items as line}
-                  <p class="term">{line}</p>
-                {/each}
-              {/if}
-            </div>
-          {/if}
-        {/each}
+    <section class="lookup">
+      <div class="source _zh" on:click={hanlde_click} lang="zh">
+        {@html zh_html}
       </div>
-    {/each}
-  </section>
-</aside>
+
+      <div class="source _hv" on:click={hanlde_click}>
+        {@html hv_html}
+      </div>
+
+      {#each current as [size, entries]}
+        <div class="entry">
+          <h3 class="word" lang="zh">{key.substr(lower, size)}</h3>
+          {#each Object.entries(entries) as [name, items]}
+            {#if items.length > 0}
+              <div class="item">
+                <h4 class="name">{name}</h4>
+                {#if name == 'vietphrase'}
+                  <p class="viet">
+                    {@html fix_vietphrase(items)}
+                  </p>
+                {:else}
+                  {#each items as line}
+                    <p class="term">{line}</p>
+                  {/each}
+                {/if}
+              </div>
+            {/if}
+          {/each}
+        </div>
+      {/each}
+    </section>
+  </aside>
+</div>
 
 <style lang="scss">
   $width: 30rem;
+
+  .holder {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: 1000;
+
+    &._active {
+      pointer-events: auto;
+    }
+
+    &._sticky {
+      background: transparent;
+      pointer-events: none;
+    }
+  }
 
   aside {
     position: fixed;
     display: block;
     top: 0;
     right: 0;
+    left: 100%;
     width: $width;
-    // min-width: 20rem;
     max-width: 90vw;
-
     height: 100%;
-    z-index: 900;
+
+    z-index: 1001;
+    pointer-events: auto;
 
     @include bgcolor(white);
     @include shadow(2);
 
-    // transition: transform 0.1s ease;
-    transform: translateX(100%);
+    transition: all 0.1s ease-in-out;
+    // transform: translateX(100%);
+
     &._active {
-      transform: translateX(0);
+      transform: translateX(-100%);
     }
   }
 
@@ -238,28 +277,28 @@
       @include fgcolor(neutral, 6);
       @include font-size(sm);
     }
+  }
 
-    button {
-      // margin-right: 0.75rem;
-      padding: 0 0.5rem;
-      @include radius;
-      @include fgcolor(neutral, 6);
-      @include bgcolor(transparent);
+  .-btn {
+    // margin-right: 0.75rem;
+    padding: 0 0.5rem;
+    @include radius;
+    @include fgcolor(neutral, 6);
+    @include bgcolor(transparent);
 
-      // &._active {
-      //   @include fgcolor(primary, 6);
-      //   @include bgcolor(neutral, 2);
-      // }
-
-      &:hover {
-        @include fgcolor(primary, 6);
-        @include bgcolor(neutral, 2);
-      }
+    &._active {
+      @include fgcolor(primary, 6);
+      @include bgcolor(neutral, 2);
     }
 
-    // button + button {
-    //   margin-left: 0.375rem;
-    // }
+    &:hover {
+      @include fgcolor(primary, 6);
+      @include bgcolor(neutral, 2);
+    }
+
+    & + & {
+      margin-left: 0.375rem;
+    }
   }
 
   // $vi-height: 0.75rem + (1.25 * 6rem);

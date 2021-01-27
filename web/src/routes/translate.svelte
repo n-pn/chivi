@@ -1,13 +1,17 @@
 <script context="module">
-  import SIcon from '$blocks/SIcon'
-
   import Cvdata, { toggle_lookup, active_upsert } from '$layout/Cvdata'
-  import Vessel from '$layout/Vessel'
 
-  import { lookup_dname, lookup_enabled, lookup_actived } from '$src/stores'
+  import {
+    dname,
+    enabled as lookup_enabled,
+    actived as lookup_actived,
+  } from '$widget/Lookup'
 </script>
 
 <script>
+  import SIcon from '$blocks/SIcon'
+  import Vessel from '$layout/Vessel'
+
   let zhtext = ''
   let cvdata = ''
 
@@ -19,7 +23,7 @@
   let changed = false
   $: if (changed) convert()
 
-  $: $lookup_dname = 'dich-nhanh'
+  $: $dname = 'dich-nhanh'
 
   function handle_keypress(evt) {
     if (edit_mode) return

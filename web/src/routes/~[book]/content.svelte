@@ -1,6 +1,5 @@
 <script context="module">
   import { get_nvinfo } from '$api/nvinfo_api'
-
   import { get_chseed, get_chlist } from '$api/chinfo_api'
 
   export async function preload(req) {
@@ -215,41 +214,41 @@
       </div>
     </div>
 
-    <div class="chlist">
+    <div class="chlist _page">
       <Chlist bslug={nvinfo.bslug} sname={params.sname} chaps={chlist} />
-    </div>
 
-    {#if pmax > 1}
-      <nav class="pagi">
-        <a
-          href={page_url(params.sname, 1)}
-          class="page m-button"
-          class:_disable={params.page == 1}
-          on:click={() => load_chlist(1)}>
-          <SIcon name="chevrons-left" />
-        </a>
-
-        {#each page_list as [curr, level]}
+      {#if pmax > 1}
+        <nav class="pagi">
           <a
-            href={page_url(params.sname, curr)}
+            href={page_url(params.sname, 1)}
             class="page m-button"
-            class:_primary={params.page == curr}
-            class:_disable={params.page == curr}
-            data-level={level}
-            on:click={() => load_chlist(curr)}>
-            <span>{curr}</span>
+            class:_disable={params.page == 1}
+            on:click|preventDefault={() => load_chlist(1)}>
+            <SIcon name="chevrons-left" />
           </a>
-        {/each}
 
-        <a
-          href={page_url(params.sname, pmax)}
-          class="page m-button"
-          class:_disable={params.page == pmax}
-          on:click={() => load_chlist(pmax)}>
-          <SIcon name="chevrons-right" />
-        </a>
-      </nav>
-    {/if}
+          {#each page_list as [curr, level]}
+            <a
+              href={page_url(params.sname, curr)}
+              class="page m-button"
+              class:_primary={params.page == curr}
+              class:_disable={params.page == curr}
+              data-level={level}
+              on:click|preventDefault={() => load_chlist(curr)}>
+              <span>{curr}</span>
+            </a>
+          {/each}
+
+          <a
+            href={page_url(params.sname, pmax)}
+            class="page m-button"
+            class:_disable={params.page == pmax}
+            on:click|preventDefault={() => load_chlist(pmax)}>
+            <SIcon name="chevrons-right" />
+          </a>
+        </nav>
+      {/if}
+    </div>
   {:else}
     <div class="empty">Không có nội dung.</div>
   {/if}
@@ -329,7 +328,9 @@
   }
 
   .chlist {
-    padding-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    // position: relative;
+    // padding-bottom: 3rem;
   }
 
   .empty {
@@ -344,7 +345,7 @@
   }
 
   .pagi {
-    margin: 0.75rem 0;
+    margin-top: 1rem;
     @include flex($center: content);
     @include flex-gap(0.375rem, $child: '.page');
   }

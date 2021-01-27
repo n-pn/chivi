@@ -44,12 +44,12 @@ module CV::NvTokens
       return matched if matched.empty?
     end
 
-    if bgenre = query["bgenre"]?
-      matched = glob_bgenre(bgenre, matched)
+    if genre = query["genre"]?
+      matched = glob_bgenre(genre, matched)
       return matched if matched.empty?
     end
 
-    if sname = query["source"]?
+    if sname = query["sname"]?
       matched = glob_source(sname, matched)
       return matched if matched.empty?
     end

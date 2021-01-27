@@ -1,8 +1,8 @@
 <script context="module">
-  import Vessel from '$layout/Vessel'
+  import SIcon from '$blocks/SIcon'
+  import BCover from '$blocks/BCover'
 
-  import SIcon from '$blocks/SIcon.svelte'
-  import BCover from '$blocks/BCover.svelte'
+  import Vessel from '$layout/Vessel'
 
   export const take = 8
 
@@ -60,46 +60,44 @@
     <SIcon name="search" />
   </form>
 
-  {#if books.length > 0}
-    <h1>
-      Hiển thị kết quả
-      {skip + 1}~{skip + books.length}/{total}
-      cho từ khoá "{word}":
-    </h1>
+  <h1>
+    Hiển thị kết quả
+    {skip + 1}~{skip + books.length}/{total}
+    cho từ khoá "{word}":
+  </h1>
 
+  {#each books as book}
     <div class="list" data-page={page}>
-      {#each books as book}
-        <a href="/~{book.bslug}" class="book">
-          <div class="cover">
-            <BCover bhash={book.bhash} bcover={book.bcover} />
+      <a href="/~{book.bslug}" class="book">
+        <div class="cover">
+          <BCover bhash={book.bhash} bcover={book.bcover} />
+        </div>
+
+        <div class="infos">
+          <div class="extra _title">
+            <span class="-vi -trim">{book.btitle_vi}</span>
           </div>
 
-          <div class="infos">
-            <div class="extra _title">
-              <span class="-vi -trim">{book.btitle_vi}</span>
-            </div>
-
-            <div class="extra _subtitle">
-              <small class="-zh -trim">{book.btitle_zh}</small>
-            </div>
-
-            <div class="extra _author">
-              <span class="value -trim">{book.author_vi}</span>
-            </div>
-
-            <div class="extra">
-              <span class="label">Thể loại:</span>
-              <span class="value">{book.genres[0]}</span>
-            </div>
-
-            <div class="extra">
-              <span class="label">Đánh giá:</span>
-              <span class="value">{book.rating == 0 ? '--' : book.rating}</span
-              ><span class="label">/10</span>
-            </div>
+          <div class="extra _subtitle">
+            <small class="-zh -trim">{book.btitle_zh}</small>
           </div>
-        </a>
-      {/each}
+
+          <div class="extra _author">
+            <span class="value -trim">{book.author_vi}</span>
+          </div>
+
+          <div class="extra">
+            <span class="label">Thể loại:</span>
+            <span class="value">{book.genres[0]}</span>
+          </div>
+
+          <div class="extra">
+            <span class="label">Đánh giá:</span>
+            <span class="value">{book.rating == 0 ? '--' : book.rating}</span
+            ><span class="label">/10</span>
+          </div>
+        </div>
+      </a>
     </div>
 
     <div class="pagi">
@@ -120,7 +118,7 @@
     </div>
   {:else}
     <h1>Không tìm được kết quả phù hợp cho từ khoá "{word}"</h1>
-  {/if}
+  {/each}
 </Vessel>
 
 <style lang="scss">

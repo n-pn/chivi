@@ -3,11 +3,11 @@ require "./_route_utils"
 module CV::Server
   alias Lookup = Hash(String, Array(String))
 
-  put "/api/dictdb/lookup/:dname" do |env|
-    dname = env.params.url["dname"]
+  get "/api/dictdb/lookup/:input" do |env|
+    dname = env.params.query.fetch("dname", "various")
     dicts = {VpDict.load(dname), VpDict.regular}
 
-    input = env.params.json["input"].as(String)
+    input = env.params.url["input"]
     chars = input.chars
     upper = chars.size - 1
 

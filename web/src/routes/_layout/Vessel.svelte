@@ -1,105 +1,30 @@
-<script context="module">
-  import { u_dname, u_power } from '$src/stores'
-  import SIcon from '$blocks/SIcon.svelte'
-</script>
-
 <script>
-  export let segment = ''
+  import { l_scroll } from '$src/stores'
+
+  import Header from '$layout/Header'
+
   export let shift = false
-
-  async function logout() {
-    $u_dname = 'Khách'
-    $u_power = 0
-
-    localStorage.removeItem('_self')
-    await fetch('api/logout')
-  }
-
-  let lastScrollTop = 0
-  let scroll = 0
-
-  // Credits: "https://github.com/qeremy/so/blob/master/so.dom.js#L426"
-  function handle_croll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-
-    scroll = scrollTop - lastScrollTop
-    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop
-  }
 </script>
 
-<svelte:window on:scroll={handle_croll} />
+<main class="main" class:_shift={shift}>
+  <Header>
+    <slot name="header-left" slot="header-left" />
+    <slot name="header-right" slot="header-right" />
+  </Header>
 
-<header
-  class="app-header"
-  data-page={segment}
-  class:_clear={scroll > 0}
-  class:_shift={shift}>
-  <nav class="center -wrap">
-    <div class="-left">
-      <a href="/" class="header-item _brand">
-        <img src="/chivi-logo.svg" alt="logo" />
-        <span class="header-text _show-md">Chivi</span>
-      </a>
-
-      <slot name="header-left" />
-    </div>
-
-    <div class="-right">
-      <slot name="header-right" />
-
-      <span class="header-item _menu">
-        <SIcon name="user" />
-        <span class="header-text _show-md">
-          {#if $u_power > 0}{$u_dname} [{$u_power}]{:else}Khách{/if}
-        </span>
-
-        <div class="header-menu">
-          {#if $u_power < 1}
-            <a href="/auth/login" class="-item">
-              <SIcon name="log-in" />
-              <span>Đăng nhập</span>
-            </a>
-            <a href="/auth/signup" class="-item">
-              <SIcon name="user-plus" />
-              <span>Đăng ký</span>
-            </a>
-          {:else}
-            <a href="/@{$u_dname}" class="-item">
-              <SIcon name="layers" />
-              <span>Tủ truyện</span>
-            </a>
-            <a
-              href="/auth/logout"
-              class="-item"
-              on:click|preventDefault={logout}>
-              <SIcon name="log-out" />
-              <span>Đăng xuất</span>
-            </a>
-          {/if}
-        </div>
-      </span>
-    </div>
-  </nav>
-</header>
-
-<main class:_shift={shift}>
-  <section class="center">
+  <div class="center">
     <slot />
-  </section>
-</main>
+  </div>
 
-<footer class:_stick={scroll < 0} class:_shift={shift}>
-  <slot name="footer" />
-</footer>
+  <footer class="footer" class:_stick={$l_scroll < 0}>
+    <slot name="footer" />
+  </footer>
+</main>
 
 <style lang="scss">
   $page-width: 54rem;
 
-  ._shift {
-    @include props(padding-right, $lg: 30rem);
-  }
-
-  .center {
+  :global(.center) {
     width: $page-width;
     max-width: 100%;
     margin: 0 auto;
@@ -108,23 +33,34 @@
 
   $footer-height: 3.25rem;
 
-  :global(.vessel) {
+  .main {
+    flex: 1;
+    flex-direction: column;
     position: relative;
-    min-height: calc(100% - #{$footer-height + 3rem});
-    margin-bottom: $footer-height;
+    // margin-bottom: $footer-height;
+
+    &._shift {
+      @include props(padding-right, $lg: 30rem);
+    }
   }
 
-  footer {
+  .center {
+    min-height: calc(100vh - 3rem);
+  }
+
+  .footer {
     will-change: transform;
     transition: transform 100ms ease-in-out;
 
-    position: absolute;
+    position: sticky;
+    bottom: 0;
     bottom: -$footer-height;
     width: 100%;
 
     &._stick {
-      position: fixed;
+      position: sticky;
       transform: translateY(-$footer-height);
+
       background: linear-gradient(
         color(neutral, 1, 0.1),
         color(neutral, 7, 0.7)

@@ -1,4 +1,4 @@
-<script>
+<!--<script>
   import SIcon from '$blocks/SIcon'
   import Vessel from '$layout/Vessel'
 
@@ -50,9 +50,7 @@
         return 'Không rõ lỗi, xin liên hệ ban quản trị'
     }
   }
-</script>
-
-<Vessel>
+</script><Vessel>
   <section>
     <form action="/api/signup" method="POST" on:submit={submit}>
       <header>
@@ -108,9 +106,7 @@
       </footer>
     </form>
   </section>
-</Vessel>
-
-<style lang="scss">
+</Vessel><style lang="scss">
   section {
     position: fixed;
     top: 0;
@@ -198,4 +194,4 @@
       margin-left: auto;
     }
   }
-</style>
+</style>-->

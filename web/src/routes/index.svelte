@@ -1,8 +1,8 @@
 <script context="module">
   import paginate_range from '$utils/paginate_range'
 
-  import SIcon from '$blocks/SIcon.svelte'
-  import Nvlist from '$widget/Nvlist.svelte'
+  import SIcon from '$blocks/SIcon'
+  import Nvlist from '$widget/Nvlist'
 
   import Vessel from '$layout/Vessel'
 
@@ -22,11 +22,11 @@
     return { books, total, page, opts }
   }
 
-  function parse_params({ order, bgenre, source }, params = {}) {
+  function parse_params({ order, genre, sname }, params = {}) {
     params.order = order || 'access'
 
-    if (bgenre) params.bgenre = bgenre
-    if (source) params.source = source
+    if (genre) params.genre = genre
+    if (sname) params.sname = sname
 
     return params
   }
@@ -203,8 +203,6 @@
       }
     }
   }
-
-  $footer-height: 4rem;
 
   .pagi {
     padding: 0.5rem 0;

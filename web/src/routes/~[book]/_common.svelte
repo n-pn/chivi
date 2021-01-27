@@ -12,6 +12,7 @@
   import SIcon from '$blocks/SIcon'
   import RTime from '$blocks/RTime'
   import BCover from '$blocks/BCover'
+
   import Vessel from '$layout/Vessel'
 
   export let nvinfo = {}
@@ -109,11 +110,11 @@
           </a>
         </span>
 
-        {#each nvinfo.genres as bgenre}
+        {#each nvinfo.genres as genre}
           <span class="stat _genre">
             <SIcon name="folder" />
-            <a class="link" href="/?bgenre={bgenre}">
-              <span class="label">{bgenre}</span>
+            <a class="link" href="/?genre={genre}">
+              <span class="label">{genre}</span>
             </a>
           </span>
         {/each}

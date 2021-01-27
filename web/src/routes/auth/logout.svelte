@@ -1,7 +1,6 @@
 <script context="module">
   export async function preload({ query }) {
-    await this.fetch('/_logout')
-    const url = query.ret || '/'
-    _goto_(url)
+    await this.fetch('/api/logout')
+    _goto_(query.ret || '/')
   }
 </script>

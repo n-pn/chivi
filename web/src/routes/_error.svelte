@@ -12,10 +12,9 @@
 </svelte:head>
 
 <Vessel>
-  <section>
-    <article>
+  <section class="wrapper">
+    <article class="content">
       <h1>{status}</h1>
-
       <p>{error.message}</p>
 
       {#if dev && error.stack}
@@ -26,12 +25,12 @@
 </Vessel>
 
 <style lang="scss">
-  section {
+  .wrapper {
     min-height: 80vh;
     @include flex($center: both);
   }
 
-  article {
+  .content {
     padding: 2rem;
     // width: 20rem;
     text-align: center;

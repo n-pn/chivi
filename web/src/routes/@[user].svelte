@@ -27,9 +27,10 @@
 </script>
 
 <script>
-  import SIcon from '$blocks/SIcon.svelte'
+  import SIcon from '$blocks/SIcon'
+  import Nvlist from '$widget/Nvlist'
+
   import Vessel from '$layout/Vessel'
-  import Nvlist from '$widget/Nvlist.svelte'
 
   export let uname = ''
   export let bmark = 'reading'
@@ -52,7 +53,6 @@
     <SIcon name="layers" />
     <span class="header-text">Tủ truyện của [{uname}]</span>
   </span>
-
   <div class="tabs">
     {#each mark_types as mtype}
       <a
@@ -68,29 +68,29 @@
     <div class="empty">Danh sách trống</div>
   {:else}
     <Nvlist {books} nvtab="content" />
-
-    <div class="pagi">
-      <a
-        href="/@{uname}?bmark={bmark}&page={+page - 1}"
-        class="page m-button _line"
-        class:_disable={page == 1}>
-        <SIcon name="chevron-left" />
-        <span>Trước</span>
-      </a>
-
-      <div class="page m-button _line _primary _disable">
-        <span>{page}</span>
-      </div>
-
-      <a
-        href="/@{uname}?bmark={bmark}&page={+page + 1}"
-        class="page m-button _solid _primary"
-        class:_disable={page == pmax}>
-        <span>Kế tiếp</span>
-        <SIcon name="chevron-right" />
-      </a>
-    </div>
   {/if}
+
+  <div class="pagi" slot="footer">
+    <a
+      href="/@{uname}?bmark={bmark}&page={+page - 1}"
+      class="page m-button _line"
+      class:_disable={page == 1}>
+      <SIcon name="chevron-left" />
+      <span>Trước</span>
+    </a>
+
+    <div class="page m-button _line _primary _disable">
+      <span>{page}</span>
+    </div>
+
+    <a
+      href="/@{uname}?bmark={bmark}&page={+page + 1}"
+      class="page m-button _solid _primary"
+      class:_disable={page == pmax}>
+      <span>Kế tiếp</span>
+      <SIcon name="chevron-right" />
+    </a>
+  </div>
 </Vessel>
 
 <style lang="scss">
@@ -131,7 +131,8 @@
   }
 
   .pagi {
-    margin: 0.75rem 0;
+    padding: 0.5rem 0;
+
     @include flex($center: content);
     @include flex-gap($gap: 0.375rem, $child: ':global(*)');
   }

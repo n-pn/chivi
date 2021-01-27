@@ -2,7 +2,7 @@ const storage = process.browser
   ? sessionStorage || localStorage
   : global.localStorage
 
-function get_now(date = new Date()) {
+export function get_now(date = new Date()) {
   return Math.round(date.getTime() / 1000)
 }
 
