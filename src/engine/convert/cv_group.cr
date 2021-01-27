@@ -70,6 +70,11 @@ class CV::CvGroup
         else
           entry.val = "thì ra"
         end
+      when "高达"
+        if @data[i + 1]?.try(&.is_num)
+          entry.val = "cao đến"
+          entry.dic = 9
+        end
       when "行"
         next unless @data[i + 1]?.try(&.dic.> 0)
         entry.dic = 9

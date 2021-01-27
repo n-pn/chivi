@@ -122,9 +122,9 @@ class CV::RmText
 
       lines.map! do |line|
         line
-          .gsub(/^厺厽\s.+\s厺厽。?/, "")
-          .gsub(/^攫欝攫欝?。?/, "")
-          .gsub(/^巘戅.+戅。?/, "")
+          .gsub(/厺厽\s.+\s厺厽。?/, "")
+          .gsub(/攫欝攫欝?。?/, "")
+          .gsub(/巘戅.+戅。?/, "")
       end
 
       lines.shift if lines[0]?.try(&.starts_with?("恋上你看书网"))
