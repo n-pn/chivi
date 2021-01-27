@@ -60,7 +60,7 @@
     <SIcon name="search" />
   </form>
 
-  {#if pmax > 1}
+  {#if pmax > 0}
     <h1>
       Hiển thị kết quả
       {skip + 1}~{skip + books.length}/{total}
