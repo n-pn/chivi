@@ -93,7 +93,7 @@
 
 <script>
   import SIcon from '$blocks/SIcon'
-  export let on_top = false
+  import Slider from './Slider'
 
   let hanviet = []
   let entries = []
@@ -122,10 +122,6 @@
     lower = +target.dataset['p']
   }
 
-  function handle_keydown(evt) {
-    if (evt.keyCode == 27 && on_top) $actived = false
-  }
-
   function fix_vietphrase(words) {
     let res = []
     for (let word of words) {
@@ -142,165 +138,50 @@
   }
 </script>
 
-<div
-  class="holder"
-  class:_active={$enabled && $actived}
-  class:_sticky={$sticked}
-  on:click={(_) => ($actived = false)}>
-  <aside
-    class:_active={$actived}
-    on:keydown={handle_keydown}
-    on:click={(e) => e.stopPropagation()}>
-    <header>
-      <h2>Giải nghĩa</h2>
+<Slider bind:actived={$actived} bind:sticked={$sticked}>
+  <div slot="header-left" class="-icon">
+    <SIcon name="compass" />
+  </div>
+  <div slot="header-left" class="-text">Giải nghĩa</div>
 
-      <button
-        class="-btn"
-        class:_active={$sticked}
-        on:click={() => sticked.update((x) => !x)}>
-        <SIcon name="pin" />
-      </button>
+  <button slot="header-right" class="-btn" on:click={() => ($enabled = false)}>
+    <SIcon name="power" />
+  </button>
 
-      <button class="-btn" on:click={() => ($actived = false)}>
-        <SIcon name="eye-off" />
-      </button>
+  <section class="lookup">
+    <div class="source _zh" on:click={hanlde_click} lang="zh">
+      {@html zh_html}
+    </div>
 
-      <button class="-btn" on:click={() => ($enabled = false)}>
-        <SIcon name="x" />
-      </button>
-    </header>
+    <div class="source _hv" on:click={hanlde_click}>
+      {@html hv_html}
+    </div>
 
-    <section class="lookup">
-      <div class="source _zh" on:click={hanlde_click} lang="zh">
-        {@html zh_html}
+    {#each current as [size, entries]}
+      <div class="entry">
+        <h3 class="word" lang="zh">{key.substr(lower, size)}</h3>
+        {#each Object.entries(entries) as [name, items]}
+          {#if items.length > 0}
+            <div class="item">
+              <h4 class="name">{name}</h4>
+              {#if name == 'vietphrase'}
+                <p class="viet">
+                  {@html fix_vietphrase(items)}
+                </p>
+              {:else}
+                {#each items as line}
+                  <p class="term">{line}</p>
+                {/each}
+              {/if}
+            </div>
+          {/if}
+        {/each}
       </div>
-
-      <div class="source _hv" on:click={hanlde_click}>
-        {@html hv_html}
-      </div>
-
-      {#each current as [size, entries]}
-        <div class="entry">
-          <h3 class="word" lang="zh">{key.substr(lower, size)}</h3>
-          {#each Object.entries(entries) as [name, items]}
-            {#if items.length > 0}
-              <div class="item">
-                <h4 class="name">{name}</h4>
-                {#if name == 'vietphrase'}
-                  <p class="viet">
-                    {@html fix_vietphrase(items)}
-                  </p>
-                {:else}
-                  {#each items as line}
-                    <p class="term">{line}</p>
-                  {/each}
-                {/if}
-              </div>
-            {/if}
-          {/each}
-        </div>
-      {/each}
-    </section>
-  </aside>
-</div>
+    {/each}
+  </section>
+</Slider>
 
 <style lang="scss">
-  $width: 30rem;
-
-  .holder {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    pointer-events: none;
-    z-index: 1000;
-
-    &._active {
-      pointer-events: auto;
-    }
-
-    &._sticky {
-      background: transparent;
-      pointer-events: none;
-    }
-  }
-
-  aside {
-    position: fixed;
-    display: block;
-    top: 0;
-    right: 0;
-    left: 100%;
-    width: $width;
-    max-width: 90vw;
-    height: 100%;
-
-    z-index: 1001;
-    pointer-events: auto;
-
-    @include bgcolor(white);
-    @include shadow(2);
-
-    transition: all 0.1s ease-in-out;
-    // transform: translateX(100%);
-
-    &._active {
-      transform: translateX(-100%);
-    }
-  }
-
-  $hd-height: 3rem;
-
-  header {
-    display: flex;
-    height: $hd-height;
-    padding: 0.375rem 0.75rem;
-    border-bottom: 1px solid color(neutral, 3);
-
-    :global(svg) {
-      display: inline-block;
-      // vertical-align: top;
-      vertical-align: text-top;
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-
-    h2 {
-      // display: flex;
-      flex-grow: 1;
-      // padding: 0 0.375rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      line-height: $hd-height - 0.75rem;
-      @include fgcolor(neutral, 6);
-      @include font-size(sm);
-    }
-  }
-
-  .-btn {
-    // margin-right: 0.75rem;
-    padding: 0 0.5rem;
-    @include radius;
-    @include fgcolor(neutral, 6);
-    @include bgcolor(transparent);
-
-    &._active {
-      @include fgcolor(primary, 6);
-      @include bgcolor(neutral, 2);
-    }
-
-    &:hover {
-      @include fgcolor(primary, 6);
-      @include bgcolor(neutral, 2);
-    }
-
-    & + & {
-      margin-left: 0.375rem;
-    }
-  }
-
   // $vi-height: 0.75rem + (1.25 * 6rem);
   // $vi-height: 0;
   $zh-height: 0.75rem + (1.25 * 5rem);
@@ -343,13 +224,6 @@
         @include fgcolor(primary, 5);
       }
     }
-  }
-
-  // $top-height: $hd-height + $zh-height + $vi-height;
-
-  section {
-    height: calc(100% - #{$hd-height});
-    overflow-y: auto;
   }
 
   .word {

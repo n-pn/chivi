@@ -1,16 +1,13 @@
 <script context="module">
   import { u_dname, u_power, l_scroll } from '$src/stores'
-  import SIcon from '$blocks/SIcon.svelte'
+  import SIcon from '$blocks/SIcon'
+
+  import Signin from '$widget/Signin'
+  import Usercp from '$widget/Usercp'
 </script>
 
 <script>
-  async function logout() {
-    $u_dname = 'Khách'
-    $u_power = 0
-
-    localStorage.removeItem('_self')
-    await fetch('api/logout')
-  }
+  let active_usercp = false
 </script>
 
 <header class="app-header" class:_clear={$l_scroll > 0}>
@@ -27,37 +24,18 @@
     <div class="-right">
       <slot name="header-right" />
 
-      <span class="header-item _menu">
+      <button class="header-item" on:click={() => (active_usercp = true)}>
         <SIcon name="user" />
         <span class="header-text _show-md">
           {#if $u_power > 0}{$u_dname} [{$u_power}]{:else}Khách{/if}
         </span>
-
-        <div class="header-menu">
-          {#if $u_power < 1}
-            <a href="/auth/login" class="-item">
-              <SIcon name="log-in" />
-              <span>Đăng nhập</span>
-            </a>
-            <a href="/auth/signup" class="-item">
-              <SIcon name="user-plus" />
-              <span>Đăng ký</span>
-            </a>
-          {:else}
-            <a href="/@{$u_dname}" class="-item">
-              <SIcon name="layers" />
-              <span>Tủ truyện</span>
-            </a>
-            <a
-              href="/auth/logout"
-              class="-item"
-              on:click|preventDefault={logout}>
-              <SIcon name="log-out" />
-              <span>Đăng xuất</span>
-            </a>
-          {/if}
-        </div>
-      </span>
+      </button>
     </div>
   </nav>
 </header>
+
+{#if $u_dname == 'Khách'}
+  <Signin bind:actived={active_usercp} />
+{:else}
+  <Usercp bind:actived={active_usercp} />
+{/if}

@@ -30,32 +30,28 @@ module CV::Server
   end
 
   post "/api/login" do |env|
-    email = env.params.json["email"]?.as(String?) || ""
-    upass = env.params.json["upass"]?.as(String?) || ""
+    email = env.params.json.fetch("email", "").as(String).strip
+    upass = env.params.json.fetch("upass", "").as(String).strip
 
-    if uname = CV::Viuser.validate(email.strip, upass.strip)
+    if uname = CV::Viuser.validate(email, upass)
       u_dname = Viuser._index.fval(uname).not_nil!
       u_power = Viuser.upower.ival(uname).not_nil!
       RouteUtils.user_res(env, u_dname, u_power, cached: false)
     else
-      halt env, status_code: 403, response: "email or password incorrect"
+      halt env, status_code: 403, response: "Thông tin đăng nhập không chính xác."
     end
   end
 
   post "/api/signup" do |env|
-    dname = env.params.json["uname"]?.as(String?) || ""
-    email = env.params.json["email"]?.as(String?) || ""
-    upass = env.params.json["upass"]?.as(String?) || ""
+    dname = env.params.json.fetch("dname", "").as(String).strip
+    email = env.params.json.fetch("email", "").as(String).strip
+    upass = env.params.json.fetch("upass", "").as(String).strip
 
-    dname = dname.strip
-    email = email.strip
-    upass = upass.strip
-
-    raise "email too short" if email.size < 3
-    raise "invalid email format" if email !~ /@/
-    raise "username too short" if dname.size < 5
-    raise "invalid username format" unless dname =~ /^[\p{L}\p{N}\s_]+$/
-    raise "password too short" if upass.size < 7
+    raise "Địa chỉ hòm thư quá ngắn" if email.size < 3
+    raise "Địa chỉ hòm thư không hợp lệ" if email !~ /@/
+    raise "Tên người dùng quá ngắn (cần ít nhất 5 ký tự)" if dname.size < 5
+    raise "Tên người dùng không hợp lệ" unless dname =~ /^[\p{L}\p{N}\s_]+$/
+    raise "Mật khẩu quá ngắn (cần ít nhất 7 ký tự)" if upass.size < 7
 
     CV::Viuser.insert!(dname, email, upass)
     RouteUtils.user_res(env, dname, cached: false)

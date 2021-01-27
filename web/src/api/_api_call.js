@@ -23,6 +23,10 @@ export function set_item(key, state, value, ttl = get_now() + 60) {
   storage.setItem(key, JSON.stringify([state, value, ttl]))
 }
 
+export function remove_item(key) {
+  storage.removeItem(key)
+}
+
 export async function api_call(fetch, url, opts) {
   const now = get_now()
   const key = opts.key || url

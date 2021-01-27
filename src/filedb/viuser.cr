@@ -54,10 +54,9 @@ module CV::Viuser
   end
 
   def insert!(dname : String, email : String, upass : String, power = 1) : Nil
-    raise "username existed" if dname_exists?(dname)
-    raise "email existed" if uname = get_uname_by_email(email)
-
-    raise "db corrupted" unless uname = set_uname(dname)
+    raise "Tên người dùng đã được sử dụng" if dname_exists?(dname)
+    raise "Địa chỉ hòm thư đã được sử dụng" if uname = get_uname_by_email(email)
+    raise "Lỗi không biết, xin liên hệ ban quản trị" unless uname = set_uname(dname)
 
     set_email(uname, email)
     set_cpass(uname, upass)
