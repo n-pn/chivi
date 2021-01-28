@@ -73,11 +73,9 @@ class CV::CvEntry
     when '“', '‘', '⟨', '(', '[', '{'
       return false
     when '”', '’', '⟩', ')', ']', '}',
-         ',', '.', ';', '!', '?',
+         ',', '.', ';', '!', '?', ':',
          '…', '·'
       return true
-    when ':'
-      return !is_int
     when '~', '-', '—'
       @dic > 1
     end

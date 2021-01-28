@@ -68,6 +68,7 @@ class CV::Chinfo
       infos.add(schid, [vi_title, vi_label, url_slug])
     end
 
+    infos.save!(mode: :upds)
     @chaps = nil
   end
 

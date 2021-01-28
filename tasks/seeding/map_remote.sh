@@ -7,5 +7,5 @@ time bin/map_remote -s duokan8 -u 44609
 time bin/map_remote -s nofff -u 117792
 time bin/map_remote -s bqg_5200 -u 144874
 time bin/map_remote -s paoshu8 -u 158959
-time bin/map_remote -s shubaow -u 174509
+time bin/map_remote -s shubaow -u 174509 -m 0
 time bin/map_remote -s jx_la -u 259742 -m 0

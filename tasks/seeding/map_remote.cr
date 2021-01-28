@@ -182,7 +182,7 @@ class CV::Seeds::MapRemote
     end
 
     worker = new(site)
-    worker.prep!(upto) if mode > 0 && site != "shubaow"
+    worker.prep!(upto) if mode > 0
     worker.init!(upto, mode: mode)
     worker.seed!(mode) if mode >= 0
   end
