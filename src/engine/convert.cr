@@ -49,6 +49,19 @@ class CV::Convert
     tokenize(input.chars).fix_grammar!.capitalize!.pad_spaces!
   end
 
+  def cv_title_full(title : String)
+    title, label = TextUtils.format_title(title)
+
+    title_res = cv_title(title)
+    return title_res if label.empty?
+
+    label_res = cv_title(label)
+    label_res.data << CvEntry.new("", " - ", 0)
+    label_res.data.concat(title_res.data)
+
+    label_res
+  end
+
   LABEL_RE_1 = /^(第?([零〇一二两三四五六七八九十百千]+|\d+)([集卷]))([,.:\s]*)(.*)$/
 
   TITLE_RE_1 = /^(第(.+)\s*([章节幕回折])\s\d+\.)(\s)(.+)/
@@ -61,11 +74,11 @@ class CV::Convert
     res = [] of CvEntry
 
     unless title.empty?
-      if match = TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
-        _, group, chidx, label, trash, title = match
+      if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
+        _, group, num, lbl, trash, title = match
 
-        num = CvUtils.to_integer(chidx)
-        res << CvEntry.new(group, "#{vi_label(label)} #{num}", 1)
+        num = CvUtils.to_integer(num)
+        res << CvEntry.new(group, "#{vi_label(lbl)} #{num}", 1)
 
         if !title.empty?
           res << CvEntry.new(trash, ": ", 0)
@@ -73,8 +86,8 @@ class CV::Convert
           res << CvEntry.new(trash, "", 0)
         end
       elsif match = TITLE_RE_3.match(title)
-        _, group, chidx, label, trash, title = match
-        res << CvEntry.new(group, "#{chidx}#{label}", 1)
+        _, group, num, lbl, trash, title = match
+        res << CvEntry.new(group, "#{num}#{lbl}", 1)
 
         if !title.empty?
           res << CvEntry.new(trash, " ", 0)
@@ -101,8 +114,8 @@ class CV::Convert
     CvGroup.new(res)
   end
 
-  private def vi_label(label = "")
-    case label
+  private def vi_label(lbl = "")
+    case lbl
     when "章" then "Chương"
     when "卷" then "Quyển"
     when "集" then "Tập"

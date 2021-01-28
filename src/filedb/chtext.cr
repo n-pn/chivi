@@ -59,7 +59,7 @@ class CV::Chtext
     cvter = Convert.generic(dname)
 
     @cv_trans = String.build do |io|
-      cvter.cv_title(zh_lines[0]).to_str(io)
+      cvter.cv_title_full(zh_lines[0]).to_str(io)
 
       1.upto(zh_lines.size - 1) do |i|
         io << "\n"
