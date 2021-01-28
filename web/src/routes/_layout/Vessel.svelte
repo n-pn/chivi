@@ -40,12 +40,14 @@
 </header>
 
 <main class="main" class:_shift={shift}>
-  <div class="center">
+  <div class="center _main">
     <slot />
   </div>
 
-  <footer class="footer" class:_stick={$l_scroll < 0}>
-    <slot name="footer" />
+  <footer class="footer" class:_shift={shift} class:_stick={$l_scroll < 0}>
+    <div class="center">
+      <slot name="footer" />
+    </div>
   </footer>
 </main>
 
@@ -64,11 +66,15 @@
 <style lang="scss">
   $page-width: 54rem;
 
-  :global(.center) {
+  .center {
     width: $page-width;
     max-width: 100%;
     margin: 0 auto;
     padding: 0 0.5rem;
+
+    &._main {
+      min-height: calc(100vh - 3rem);
+    }
   }
 
   $footer-height: 3.25rem;
@@ -77,11 +83,7 @@
     flex: 1;
     flex-direction: column;
     position: relative;
-    // margin-bottom: $footer-height;
-
-    .center {
-      min-height: calc(100vh - 3rem);
-    }
+    margin-bottom: $footer-height;
   }
 
   ._shift {
@@ -92,13 +94,13 @@
     will-change: transform;
     transition: transform 100ms ease-in-out;
 
-    position: sticky;
-    bottom: 0;
+    position: absolute;
+    // bottom: 0;
     bottom: -$footer-height;
     width: 100%;
 
     &._stick {
-      position: sticky;
+      position: fixed;
       transform: translateY(-$footer-height);
 
       background: linear-gradient(

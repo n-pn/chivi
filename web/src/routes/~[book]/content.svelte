@@ -165,7 +165,8 @@
           class="-name"
           class:_active={params.sname === mname}
           href={page_url(mname, params.page)}
-          on:click={(e) => load_chseed(e, mname)}>{mname}
+          on:click={(e) => load_chseed(e, mname)}
+          >{mname}
         </a>
       {/each}
 
@@ -175,7 +176,8 @@
             <a
               class="-name"
               href={page_url(hname, params.page)}
-              on:click={(e) => load_chseed(e, hname)}>{hname}
+              on:click={(e) => load_chseed(e, hname)}
+              >{hname}
             </a>
           {/each}
         {:else}

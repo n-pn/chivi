@@ -18,5 +18,5 @@ rsync -azi --no-p --exclude "covers" "web/public" "$SSH/web"
 rsync -azi --no-p "_db/bcover/" "$SSH/web/public/covers/"
 
 ## upload user data
-rsync -azi --no-p "_db/userdb/viusers" "$SSH/_db/userdb"
-rsync -azi "_db/marked/" "$SSH/_db/marked/"
+# rsync -azi --no-p "_db/userdb/viusers" "$SSH/_db/userdb"
+# rsync -azi "_db/marked/" "$SSH/_db/marked/"

@@ -42,12 +42,12 @@
 
 <slot />
 
-<footer class="guide">
+<div class="guide">
   <span> Liên kết hỗ trợ: </span>
   {#each links as [text, href]}
     <a {href} class="link" target="_blank" rel="noreferer noopener">{text}</a>
   {/each}
-</footer>
+</div>
 
 <Loader active={$preloading} />
 
