@@ -78,7 +78,7 @@ class CV::InfoSeed
 
   getter source : ChSource { ChSource.load(@name) }
 
-  def upsert!(snvid : String) : Tuple(String, Bool)
+  def upsert!(snvid : String, mode = 0) : Tuple(String, Bool)
     btitle, author = _index.get(snvid).not_nil!
     bhash, existed = Nvinfo.upsert!(btitle, author)
 
@@ -103,18 +103,17 @@ class CV::InfoSeed
       source._utime.add(snvid, mtime)
       source._atime.add(snvid, _atime.ival_64(snvid))
 
-      upsert_chinfo!(snvid, bhash, expiry: Time.unix(mtime))
+      upsert_chinfo!(snvid, bhash, expiry: Time.unix(mtime) - 1.days, mode: mode)
     end
 
     {bhash, existed}
   end
 
-  def upsert_chinfo!(snvid : String, bhash : String, expiry : Time) : Nil
+  def upsert_chinfo!(snvid : String, bhash : String, expiry : Time, mode = 0) : Nil
     chinfo = Chinfo.new(@name, snvid)
-    return false unless chinfo.fetch!(expiry: expiry - 2.weeks)
+    expiry -= 1.months if @name == "hetushu"
 
+    return unless chinfo.fetch!(expiry: expiry) || mode > 1
     chinfo.trans!(dname: bhash)
-    chinfo.origs.save!(mode: :full)
-    chinfo.infos.save!(mode: :full)
   end
 end

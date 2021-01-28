@@ -16,7 +16,9 @@ module CV::Server
       chinfo.save!
 
       nvinfo = Nvinfo.load(bhash)
-      nvinfo.set_utime(chinfo._utime)
+      if sname != "hetushu" || sname != "zhwenpg"
+        nvinfo.set_utime(chinfo._utime)
+      end
 
       chseed = nvinfo.fix_source!
       nvinfo.save!

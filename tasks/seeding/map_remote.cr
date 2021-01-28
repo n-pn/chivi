@@ -9,6 +9,59 @@ class CV::Seeds::MapRemote
     @seeding = InfoSeed.new(@sname)
   end
 
+  def prep!(upto = 1)
+    queue = [] of String
+
+    1.upto(upto) do |idx|
+      snvid = idx.to_s
+      next if access_time(snvid)
+      queue << snvid
+    end
+
+    puts "[ seed: #{@sname}, upto: #{upto}, queue: #{queue.size} ]".colorize.cyan.bold
+
+    threads = ideal_threads_for(@sname)
+    threads = queue.size if threads > queue.size
+    channel = Channel(Nil).new(threads)
+
+    queue.each_with_index(1) do |snvid, idx|
+      channel.receive if idx > threads
+
+      spawn do
+        url = RmInfo.url_for(@sname, snvid)
+        file = RmInfo.path_for(@sname, snvid)
+
+        encoding = HttpUtils.encoding_for(@sname)
+        html = HttpUtils.get_html(url, encoding: encoding)
+        File.write(file, html)
+
+        # throttling
+        case @sname
+        when "shubaow"
+          sleep Random.rand(1000..2000).milliseconds
+        when "zhwenpg"
+          sleep Random.rand(500..1000).milliseconds
+        when "bqg_5200"
+          sleep Random.rand(100..500).milliseconds
+        end
+      rescue err
+        puts err
+      ensure
+        channel.send(nil)
+      end
+    end
+
+    threads.times { channel.receive }
+  end
+
+  def ideal_threads_for(sname : String)
+    case sname
+    when "zhwenpg", "shubaow", "bqg_5200" then 1
+    when "paoshu8", "69shu"               then 2
+    else                                       4
+    end
+  end
+
   def init!(upto = 1, mode = 1)
     puts "[ seed: #{@sname}, upto: #{upto}, mode: #{mode} ]".colorize.cyan.bold
     mode = 0 if @sname == "jx_la"
@@ -66,7 +119,7 @@ class CV::Seeds::MapRemote
     File.info?(file).try(&.modification_time.to_unix)
   end
 
-  def seed!
+  def seed!(mode = 0)
     authors = Set(String).new(NvValues.author.vals.map(&.first))
     checked = Set(String).new
 
@@ -82,7 +135,7 @@ class CV::Seeds::MapRemote
       checked.add(nvname)
 
       if authors.includes?(author) || should_pick?(snvid)
-        bhash, _ = @seeding.upsert!(snvid)
+        bhash, _ = @seeding.upsert!(snvid, mode: mode)
 
         if NvValues.voters.ival(bhash) == 0
           NvValues.set_score(bhash, Random.rand(1..5), Random.rand(30..50))
@@ -128,8 +181,9 @@ class CV::Seeds::MapRemote
     end
 
     worker = new(site)
+    worker.prep!(upto) if mode > 0
     worker.init!(upto, mode: mode)
-    worker.seed! if mode >= 0
+    worker.seed!(mode) if mode >= 0
   end
 end
 

@@ -1,6 +1,6 @@
 require "../../src/filedb/nvinfo"
 
-class CV::snames::FixGenres
+class CV::Seeds::FixGenres
   getter source : ValueMap = NvValues.source
 
   def fix!
@@ -64,5 +64,5 @@ class CV::snames::FixGenres
   end
 end
 
-worker = CV::snames::FixGenres.new
+worker = CV::Seeds::FixGenres.new
 worker.fix!
