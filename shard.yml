@@ -1,36 +1,36 @@
 name: chivi
-version: 0.5.0
+version: 0.5.1
 
 authors:
   - Nipinium <nipinium@gmail.com>
 
 targets:
-  chivi:
-    main: src/chivi.cr
-
-  map_remote:
-    main: tasks/seeding/map_remote.cr
+  map_zhwenpg:
+    main: tasks/seeding/map_zhwenpg.cr
 
   map_yousuu:
     main: tasks/seeding/map_yousuu.cr
 
-  map_zhwenpg:
-    main: tasks/seeding/map_zhwenpg.cr
+  map_remote:
+    main: tasks/seeding/map_remote.cr
 
   fetch_covers:
     main: tasks/seeding/fetch_covers.cr
 
-  fetch_zhtexts:
-    main: tasks/routine/fetch_zhtexts.cr
+  fix_covers:
+    main: tasks/seeding/fix_covers.cr
 
   fix_genres:
     main: tasks/seeding/fix_genres.cr
 
-  fix_covers:
-    main: tasks/seeding/fix_covers.cr
-
   fix_intros:
     main: tasks/seeding/fix_intros.cr
+
+  fetch_zhtexts:
+    main: tasks/routine/fetch_zhtexts.cr
+
+  chivi:
+    main: src/chivi.cr
 
 crystal: 0.35.1
 
