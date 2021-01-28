@@ -83,7 +83,7 @@ class CV::Seeds::MapYousuu
       next if checked.includes?(nvname)
       checked.add(nvname)
 
-      if (voters >= 10 && rating >= 3.75) || authors.includes?(author) || popular?(snvid)
+      if authors.includes?(author) || qualified?(voters, rating)
         authors.add(author)
 
         bhash, existed = @seeding.upsert!(snvid)
@@ -108,10 +108,13 @@ class CV::Seeds::MapYousuu
     Nvinfo.save!(mode: :full)
   end
 
-  def popular?(snvid : String)
-    return true if count_crit.fval(snvid).try(&.to_i.>= 7)
-    return true if count_list.fval(snvid).try(&.to_i.>= 5)
-    false
+  def qualified?(voters : Int32, rating : Int32)
+    return rating >= 30 if voters >= 70
+    return rating >= 40 if voters >= 50
+    return rating >= 50 if voters >= 30
+    return rating >= 60 if voters >= 10
+
+    rating >= 70
   end
 end
 

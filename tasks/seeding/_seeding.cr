@@ -111,9 +111,8 @@ class CV::InfoSeed
 
   def upsert_chinfo!(snvid : String, bhash : String, expiry : Time, mode = 0) : Nil
     chinfo = Chinfo.new(@name, snvid)
-    expiry -= 1.months if @name == "hetushu"
 
-    return unless chinfo.fetch!(expiry: expiry) || mode > 1
-    chinfo.trans!(dname: bhash)
+    chinfo.fetch!(force: mode > 1, expiry: expiry)
+    chinfo.trans!(dname: bhash, force: mode > 1)
   end
 end

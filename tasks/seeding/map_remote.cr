@@ -95,7 +95,8 @@ class CV::Seeds::MapRemote
       end
 
       @seeding.status.add(snvid, parser.status_int)
-      @seeding._utime.add(snvid, parser.updated_at.to_unix)
+      mtime = @sname == "hetushu" ? Time.utc(2020, 1, 1) : parser.updated_at
+      @seeding._utime.add(snvid, mtime.to_unix)
 
       if idx % 100 == 0
         puts "- [#{@sname}]: <#{idx}/#{upto}>"
@@ -181,7 +182,7 @@ class CV::Seeds::MapRemote
     end
 
     worker = new(site)
-    worker.prep!(upto) if mode > 0
+    worker.prep!(upto) if mode > 0 && site != "shubaow"
     worker.init!(upto, mode: mode)
     worker.seed!(mode) if mode >= 0
   end

@@ -62,12 +62,15 @@ class CV::Convert
     label_res
   end
 
-  LABEL_RE_1 = /^(第?([零〇一二两三四五六七八九十百千]+|\d+)([集卷]))([,.:\s]*)(.*)$/
+  NUMS = "零〇一二两三四五六七八九十百千"
+  SEPS = ".，,、：:"
 
-  TITLE_RE_1 = /^(第(.+)\s*([章节幕回折])\s\d+\.)(\s)(.+)/
-  TITLE_RE_2 = /^(第?([零〇一二两三四五六七八九十百千]+|\d+)\s*([章节幕回]))([,.:\s]*)(.*)$/
+  LABEL_RE_1 = /^(第?([#{NUMS}]+|\d+)([集卷]))([#{SEPS}\s]*)(.*)$/
 
-  TITLE_RE_3 = /^((\d+)([,.:]))(\s*)(.+)$/
+  TITLE_RE_1 = /^(第.*?([#{NUMS}]+|\d+).*?([章节幕回折]))(.*?\d+\.\s)(.+)/
+  TITLE_RE_2 = /^(.*?([#{NUMS}]+|\d+).*?([章节幕回折]))([#{SEPS}\s]*)(.*)$/
+
+  TITLE_RE_3 = /^(\d+)([#{SEPS}\s]*)(.*)$/
   TITLE_RE_4 = /^楔子(\s+)(.+)$/
 
   def cv_title(title : String)
@@ -86,11 +89,11 @@ class CV::Convert
           res << CvEntry.new(trash, "", 0)
         end
       elsif match = TITLE_RE_3.match(title)
-        _, group, num, lbl, trash, title = match
-        res << CvEntry.new(group, "#{num}#{lbl}", 1)
+        _, num, trash, title = match
+        res << CvEntry.new(num, num, 1)
 
         if !title.empty?
-          res << CvEntry.new(trash, " ", 0)
+          res << CvEntry.new(trash, ". ", 0)
         elsif !trash.empty?
           res << CvEntry.new(trash, "", 0)
         end

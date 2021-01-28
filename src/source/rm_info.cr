@@ -226,9 +226,9 @@ class CV::RmInfo
       end
 
       next unless link = node.css("a").first?
-      href, text = link.attributes["href"], link.inner_text
+      next unless href = link.attributes["href"]?
 
-      title, label = TextUtils.format_title(text, label)
+      title, label = TextUtils.format_title(link.inner_text, label)
       chlist << [extract_chid(href), title, label] unless title.empty?
     rescue err
       puts err.colorize.red
@@ -252,10 +252,12 @@ class CV::RmInfo
           label = "" if label == "正文"
         when :ul
           node.css("a").each do |link|
-            title = link.inner_text
-            next if title.starts_with?("我要报错！")
-            href = link.attributes["href"]
-            chlist << [extract_chid(href), title, label] unless title.empty?
+            next unless href = link.attributes["href"]?
+
+            title, _ = TextUtils.format_title(link.inner_text, trim: true)
+            next if title.empty? || title.starts_with?("我要报错！")
+
+            chlist << [extract_chid(href), title, label]
           end
         end
       end
@@ -270,6 +272,7 @@ class CV::RmInfo
     @rdoc.css(".clistitem > a").each do |link|
       href = link.attributes["href"]
       title, label = TextUtils.format_title(link.inner_text)
+
       output << [extract_chid(href), title, label] unless title.empty?
     end
 

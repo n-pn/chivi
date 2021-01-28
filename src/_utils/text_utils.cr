@@ -103,25 +103,25 @@ module CV::TextUtils
   TAGS = "章节幕回折"
   SEPS = ".，,、：: "
 
-  FORMAT_RE_0 = {
+  LABEL_RE = {
     /^(第[#{NUMS}\d]+[集卷].*?)(第?[#{NUMS}\d]+[#{TAGS}].*)$/,
     /^(第[#{NUMS}\d]+[集卷].*?)(（\p{N}+）.*)$/,
     /^【?(第[#{NUMS}\d]+[集卷])】?\s*(.+)$/,
   }
 
-  def format_title(title : String, label = "正文") : Tuple(String, String)
+  def format_title(title : String, label = "正文", trim = false) : Tuple(String, String)
     title = fix_spaces(title).strip
 
-    FORMAT_RE_0.each do |regex|
+    LABEL_RE.each do |regex|
       next unless match = regex.match(title)
 
       _, label, title = match
-      label = fix_spaces(label)
+      label = fix_spaces(label).strip
 
       break
     end
 
-    title = fix_title(title).gsub(/\s{2,}/, " ")
+    title = fix_title(title, trim: false).gsub(/\s{2,}/, " ")
     {title, label != "正文" ? label : ""}
   end
 
@@ -136,7 +136,7 @@ module CV::TextUtils
     /^\（(\p{N}+)\）[#{SEPS}]*(.*)$/,
   }
 
-  private def fix_title(title : String) : String
+  private def fix_title(title : String, trim = false) : String
     FIX_RE_0.each do |regex|
       next unless match = regex.match(title)
       _, idx, tag, title = match
@@ -146,7 +146,7 @@ module CV::TextUtils
     FIX_RE_1.each do |regex|
       next unless match = regex.match(title)
       _, idx, title = match
-      return title.empty? ? "#{idx}." : "#{idx}: #{title}"
+      return title.empty? ? "#{idx}." : trim ? title : "#{idx}. #{title}"
     end
 
     title
@@ -154,3 +154,5 @@ module CV::TextUtils
 end
 
 # pp CV::TextUtils.format_title("第二十集 红粉骷髅 第八章")
+# pp CV::TextUtils.format_title("9205.第9205章")
+# pp CV::TextUtils.format_title("340.番外：林薇实习（1）", trim: false)
