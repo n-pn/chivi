@@ -38,6 +38,7 @@ $-button-text-sizes: (
   outline: none;
   cursor: pointer;
   touch-action: manipulation;
+  user-select: none;
 
   @include radius;
   @include border($color: none);
@@ -50,7 +51,7 @@ $-button-text-sizes: (
   }
 
   > span {
-    margin: 0 rem(1x);
+    margin: 0 0.25rem;
   }
 }
 

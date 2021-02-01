@@ -8,50 +8,49 @@
   export let _rwidth = 25
 
   function handle_keydown(evt) {
-    if (evt.keyCode == 27 && on_top) active = false
+    if (evt.keyCode == 27) actived = false
   }
 </script>
 
-<div
-  class="holder"
+<svelte:window on:keydown|stopPropagation={handle_keydown} />
+
+{#if actived && !sticked}
+  <div class="holder" on:click={() => (actived = false)} />
+{/if}
+
+<aside
+  class="slider"
+  class:_left={_slider == 'left'}
+  class:_right={_slider == 'right'}
   class:_active={actived}
-  class:_sticky={sticked}
-  on:click={() => (actived = false)}
-  on:keydown|stopPropagation={handle_keydown}>
-  <aside
-    class="slider"
-    class:_left={_slider == 'left'}
-    class:_right={_slider == 'right'}
-    class:_active={actived}
-    style="--width: {_rwidth}rem;"
-    on:click={(e) => e.stopPropagation()}>
-    <header class="head">
-      <slot name="header-left" />
-      <slot name="header-right" />
+  style="--width: {_rwidth}rem;"
+  on:click={(e) => e.stopPropagation()}>
+  <header class="head">
+    <slot name="header-left" />
+    <slot name="header-right" />
 
-      {#if _sticky}
-        <button
-          class="-btn"
-          class:_active={sticked}
-          on:click={() => (sticked = !sticked)}>
-          <SIcon name="pin" />
-        </button>
-      {/if}
-
-      <button class="-btn" on:click={() => (actived = false)}>
-        <SIcon name="x" />
+    {#if _sticky}
+      <button
+        class="-btn"
+        class:_active={sticked}
+        on:click={() => (sticked = !sticked)}>
+        <SIcon name="pin" />
       </button>
-    </header>
+    {/if}
 
-    <section class="body">
-      <slot />
-    </section>
+    <button class="-btn" on:click={() => (actived = false)}>
+      <SIcon name="x" />
+    </button>
+  </header>
 
-    <footer class="foot">
-      <slot name="footer" />
-    </footer>
-  </aside>
-</div>
+  <section class="body">
+    <slot />
+  </section>
+
+  <footer class="foot">
+    <slot name="footer" />
+  </footer>
+</aside>
 
 <style lang="scss">
   .holder {
@@ -60,18 +59,8 @@
     left: 0;
     bottom: 0;
     right: 0;
-    pointer-events: none;
     z-index: 1000;
-
-    &._active {
-      background: rgba(#000, 0.5);
-      pointer-events: auto;
-    }
-
-    &._sticky {
-      background: transparent;
-      pointer-events: none;
-    }
+    background: rgba(#000, 0.5);
   }
 
   .slider {
@@ -83,8 +72,7 @@
     width: var(--width);
     max-width: 90vw;
     height: 100%;
-
-    pointer-events: auto;
+    z-index: 1001;
 
     @include bgcolor(white);
     @include shadow(2);
