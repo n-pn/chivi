@@ -30,7 +30,7 @@ class CV::Chinfo
     chaps.size
   end
 
-  def fetch!(power = 3, force = false, expiry = Time.utc - 5.minutes) : Bool
+  def fetch!(power = 4, force = false, expiry = Time.utc - 5.minutes) : Bool
     set_atime(Time.utc.to_unix)
 
     return false unless remote?(power)
@@ -96,7 +96,7 @@ class CV::Chinfo
     when "zhwenpg", "69shu", "paoshu8"
       u_power > 1
     when "shubaow"
-      u_power > 3
+      u_power > 2
     else
       u_power > 3
     end

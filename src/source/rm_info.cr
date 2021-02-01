@@ -11,7 +11,7 @@ class CV::RmInfo
   def self.init(sname : String, snvid : String,
                 expiry : Time = Time.utc - 1.hour, freeze : Bool = true)
     file = path_for(sname, snvid)
-    expiry = TimeUtils::DEF_TIME if sname == "jx_la"
+    expiry = Time.utc(2010, 1, 1) if sname == "jx_la"
 
     unless html = FileUtils.read(file, expiry)
       url = url_for(sname, snvid)

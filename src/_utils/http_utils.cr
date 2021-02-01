@@ -25,7 +25,7 @@ module CV::HttpUtils
 
   def use_crystal?(url : String)
     case url
-    when .includes?("biquge5200"), .includes?("paoshu8")
+    when .includes?("biquge5200")
       true
     else
       false
