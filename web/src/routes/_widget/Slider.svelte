@@ -62,14 +62,14 @@
 
   .slider {
     position: fixed;
-    // will-change: translateX;
+    will-change: transform;
 
     top: 0;
     width: var(--width);
     max-width: 90vw;
     height: 100%;
     z-index: 1001;
-    // transition: all 0.1s ease-in-out;
+    transition: transform 0.1s ease-in-out;
 
     @include bgcolor(white);
     @include shadow(2);
@@ -85,16 +85,16 @@
     }
 
     &._active {
-      animation: slide-in 0.1s forwards;
-      // transform: translateX(0);
-    }
-  }
-
-  @keyframes slide-in {
-    100% {
+      // animation: slide-in 0.1s forwards;
       transform: translateX(0);
     }
   }
+
+  // @keyframes slide-in {
+  //   100% {
+  //     transform: translateX(0);
+  //   }
+  // }
 
   $hd-height: 3rem;
   $hd-line-height: 2.25rem;
