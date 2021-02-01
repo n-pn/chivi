@@ -46,10 +46,6 @@
   <section class="body">
     <slot />
   </section>
-
-  <footer class="foot">
-    <slot name="footer" />
-  </footer>
 </aside>
 
 <style lang="scss">
@@ -61,42 +57,43 @@
     right: 0;
     z-index: 1000;
     background: rgba(#000, 0.5);
+    transition: background 0.5s ease-in-out;
   }
 
   .slider {
     position: fixed;
-    display: flex;
-    flex-direction: column;
+    // will-change: translateX;
 
     top: 0;
     width: var(--width);
     max-width: 90vw;
     height: 100%;
     z-index: 1001;
+    // transition: all 0.1s ease-in-out;
 
     @include bgcolor(white);
     @include shadow(2);
 
     &._left {
-      right: 0;
-      right: 100%;
-
-      &._active {
-        transform: translateX(100%);
-      }
+      left: 0;
+      transform: translateX(-100%);
     }
 
     &._right {
       right: 0;
-      left: 100%;
-
-      &._active {
-        transform: translateX(-100%);
-      }
+      transform: translateX(100%);
     }
 
-    // transition: all 0.1s ease-in-out;
-    // transform: translateX(100%);
+    &._active {
+      animation: slide-in 0.1s forwards;
+      // transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-in {
+    100% {
+      transform: translateX(0);
+    }
   }
 
   $hd-height: 3rem;
