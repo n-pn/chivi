@@ -8,11 +8,13 @@
   export let _rwidth = 25
 
   function handle_keydown(evt) {
+    if (!actived) return
+    evt.stopPropagation()
     if (evt.keyCode == 27) actived = false
   }
 </script>
 
-<svelte:window on:keydown|stopPropagation={handle_keydown} />
+<svelte:window on:keydown={handle_keydown} />
 
 {#if actived && !sticked}
   <div class="holder" on:click={() => (actived = false)} />
@@ -57,19 +59,27 @@
     right: 0;
     z-index: 1000;
     background: rgba(#000, 0.5);
+
     transition: background 0.5s ease-in-out;
+    @media (prefers-reduced-motion) {
+      transition: none;
+    }
   }
 
   .slider {
     position: fixed;
-    will-change: transform;
 
     top: 0;
     width: var(--width);
     max-width: 90vw;
     height: 100%;
     z-index: 1001;
+
+    will-change: transform;
     transition: transform 0.1s ease-in-out;
+    @media (prefers-reduced-motion) {
+      transition: none;
+    }
 
     @include bgcolor(white);
     @include shadow(2);
