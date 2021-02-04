@@ -41,11 +41,7 @@
 
 <style lang="scss">
   .book:nth-child(25) {
-    display: none;
-    // show hidden book if the grid is 5 columns
-    @media screen and (min-width: 689px) and (max-width: 823px) {
-      display: block;
-    }
+    @include props(display, none, $md: block, $lg: none);
   }
 
   .cover {

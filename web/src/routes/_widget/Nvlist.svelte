@@ -13,10 +13,22 @@
 
 <style lang="scss">
   .list {
+    display: grid;
     @include grid($size: minmax(6.5rem, 1fr));
     @include grid-gap(0.5rem);
+
+    grid-template-columns: repeat(3, 1fr);
+
+    @include screen-min(480px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
     @include screen-min(md) {
-      grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    @include screen-min(lg) {
+      grid-template-columns: repeat(6, 1fr);
     }
   }
 </style>
