@@ -18,7 +18,7 @@
   let edit_mode = true
   let text_elem = null
 
-  $: if (edit_mode && text_elem) text_elem.focus()
+  $: if (edit_mode) text_elem && text_elem.focus()
 
   let changed = false
   $: if (changed) convert()

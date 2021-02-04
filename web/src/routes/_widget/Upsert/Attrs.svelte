@@ -4,7 +4,7 @@
 </script>
 
 <script>
-  export let attrs
+  export let attrs = ''
   export let with_types = true
 
   $: priority = attrs.includes('H') ? 'H' : attrs.includes('L') ? 'L' : 'M'

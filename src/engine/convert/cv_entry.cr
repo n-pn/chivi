@@ -13,7 +13,7 @@ class CV::CvEntry
   getter is_adjv : Bool { @etc.includes?('A') }
 
   # TODO: add more words
-  NUM_RE = /^[\d零〇一二两三四五六七八九十百千万亿]+$/
+  NUM_RE = /^[\p{N}零〇一二两三四五六七八九十百千万亿]+$/
   getter is_num : Bool { NUM_RE === @key }
 
   INT_RE = /^\d+$/

@@ -13,7 +13,8 @@ module CV::HttpUtils
     loop do
       puts "[GET: <#{url}> (try: #{try})]".colorize.magenta
       html = internal ? get_by_crystal(url, encoding) : get_by_curl(url, encoding)
-      return fix_charset(html, encoding) if html.includes?("<html")
+      return fix_charset(html, encoding) if valid_html?(html)
+      puts html
     rescue err
       puts err.colorize.red
     ensure
@@ -23,9 +24,18 @@ module CV::HttpUtils
     end
   end
 
-  def use_crystal?(url : String)
+  private def use_crystal?(url : String)
     case url
-    when .includes?("biquge5200")
+    when .includes?("biquge5200"), .includes?("shubaow")
+      true
+    else
+      false
+    end
+  end
+
+  private def valid_html?(html : String)
+    case html
+    when .starts_with?("<!doctype"), .includes?("<html"), .includes?("<head>")
       true
     else
       false
