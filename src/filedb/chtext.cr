@@ -46,7 +46,7 @@ class CV::Chtext
     when "zhwenpg", "69shu", "paoshu8"
       u_power > 1
     when "shubaow"
-      u_power > 3
+      u_power > 2
     else
       u_power > 3
     end

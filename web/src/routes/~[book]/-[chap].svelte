@@ -24,7 +24,8 @@
     if (!snvid) return this.error(404, 'Nguồn truyện không tồn tại!')
     const chinfo = { sname, snvid, chidx }
 
-    const mode = +query.mode || process.browser ? 1 : 0
+    const mode = +query.mode || (process.browser ? 1 : 0)
+
     const [err, data] = await get_chinfo(this.fetch, chinfo, nvinfo, mode)
 
     if (err) this.error(err, data)
