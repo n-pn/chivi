@@ -46,7 +46,7 @@ class CV::CvGroup
         else
           entry.val = "đúng"
         end
-      when "不过"
+      when "不对"
         entry.dic = 9
 
         # TODO: handle succ type?
@@ -76,7 +76,7 @@ class CV::CvGroup
           entry.dic = 9
         end
       when "行"
-        next unless @data[i + 1]?.try(&.dic.> 0)
+        next if @data[i + 1]?.try(&.dic.> 0)
         entry.dic = 9
         entry.val = "được"
 
