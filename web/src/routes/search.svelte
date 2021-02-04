@@ -68,7 +68,7 @@
     </h1>
 
     <div class="list" data-page={page}>
-      {#each books as book}
+      {#each books.slice(0, 8) as book}
         <a href="/~{book.bslug}" class="book">
           <div class="cover">
             <BCover bhash={book.bhash} bcover={book.bcover} />

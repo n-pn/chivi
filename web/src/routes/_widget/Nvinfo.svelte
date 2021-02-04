@@ -17,7 +17,6 @@
 
 <script>
   export let nvinfo = {}
-
   export let nvtab = ''
 
   $: stars = rating_stars(nvinfo.rating, nvinfo.voters)
@@ -44,7 +43,7 @@
   .book:nth-child(25) {
     display: none;
     // show hidden book if the grid is 5 columns
-    @media screen and (min-width: 689px) and (max-width: 809px) {
+    @media screen and (min-width: 689px) and (max-width: 823px) {
       display: block;
     }
   }
