@@ -10,6 +10,18 @@ $m-screen-xl: rem(1080px) !default;
 $m-screen-x2: rem(1320px) !default; // reserved
 $m-screen-x3: rem(1560px) !default; // reserved
 
+// $m-screen-ps: rem(320px) !default; // minimal size
+// $m-screen-pm: rem(360px) !default; // + 40px
+// $m-screen-pl: rem(480px) !default; // + 120px
+
+// $m-screen-ts: rem(600px) !default; // + 120px
+// $m-screen-tm: rem(780px) !default; // + 180px
+// $m-screen-tl: rem(960px) !default; // + 180px
+
+// $m-screen-ds: rem(1200px) !default; // + 240px
+// $m-screen-dm: rem(1500px) !default; // + 300px
+// $m-screen-dl: rem(1800px) !default; // + 300px
+
 $m-screen-sizes: (
   xs: $m-screen-xs,
   sm: $m-screen-sm,

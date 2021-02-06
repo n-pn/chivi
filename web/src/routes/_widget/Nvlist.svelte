@@ -14,8 +14,7 @@
 <style lang="scss">
   .list {
     display: grid;
-    @include grid($size: minmax(6.5rem, 1fr));
-    @include grid-gap(0.5rem);
+    grid-gap: 0.5rem;
 
     grid-template-columns: repeat(3, 1fr);
 

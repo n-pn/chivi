@@ -33,6 +33,8 @@ class CV::Chtext
     cv_mtime = 0_i64
 
     self.save_zh!
+  rescue err
+    puts "- Fetch chtext error: #{err}".colorize.red
   end
 
   private def remote?(u_power = 4)

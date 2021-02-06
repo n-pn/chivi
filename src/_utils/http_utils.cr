@@ -14,6 +14,7 @@ module CV::HttpUtils
       puts "[GET: <#{url}> (try: #{try})]".colorize.magenta
       html = internal ? get_by_crystal(url, encoding) : get_by_curl(url, encoding)
       return fix_charset(html, encoding) if valid_html?(html)
+      puts html
     rescue err
       puts err.colorize.red
     ensure
@@ -41,7 +42,12 @@ module CV::HttpUtils
     end
   end
 
+  # TLS = OpenSSL::SSL::Context::Client.insecure
+
   def get_by_crystal(url : String, encoding : String)
+    # tls = url.starts_with?("https") ? TLS : nil
+    # HTTP::Client.get(url, tls: tls) do |res|
+
     HTTP::Client.get(url) do |res|
       res.body_io.set_encoding(encoding, invalid: :skip)
       res.body_io.gets_to_end
