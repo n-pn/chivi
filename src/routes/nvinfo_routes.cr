@@ -14,9 +14,6 @@ module CV::Server
 
     nvinfo = Nvinfo.load(bhash)
 
-    u_power = env.session.int?("u_power") || 0
-    nvinfo.bump_access! if u_power > 0
-
     RouteUtils.json_res(env, cached: nvinfo._utime) do |res|
       JSON.build(res) { |json| nvinfo.to_json(json, true) }
     end

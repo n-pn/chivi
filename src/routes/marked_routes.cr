@@ -4,7 +4,10 @@ require "../filedb/marked"
 module CV::Server
   get "/api/_self/nvmarks/:bhash" do |env|
     if uname = env.session.string?("u_dname").try(&.downcase)
-      marked = Marked.user_books(uname).fval(env.params.url["bhash"]) || ""
+      bhash = env.params.url["bhash"]
+      Nvinfo.load(bhash).bump_access!
+
+      marked = Marked.user_books(uname).fval(bhash) || ""
       RouteUtils.json_res(env, {nvmark: marked})
     else
       RouteUtils.json_res(env, {nvmark: ""})
