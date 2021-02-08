@@ -13,6 +13,7 @@ module CV::Server
     end
 
     nvinfo = Nvinfo.load(bhash)
+    Nvinfo.load(bhash).bump_access!
 
     RouteUtils.json_res(env, cached: nvinfo._utime) do |res|
       JSON.build(res) { |json| nvinfo.to_json(json, true) }
