@@ -48,7 +48,7 @@ class Hanviet
         pp [key, vals, convert]
       end
 
-      output.add(CV::VpEntry.new(key, vals.uniq.first(3)))
+      output.add(CV::VpTerm.new(key, vals.uniq.first(3)))
     end
 
     output.load!("_db/dictdb/remote/system/hanviet.tsv")

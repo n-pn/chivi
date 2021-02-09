@@ -50,7 +50,7 @@ inp_regular.to_a.sort_by(&.[0].size).each do |key, vals|
     end
   end
 
-  OUT_REGULAR.add(CV::VpEntry.new(key, vals))
+  OUT_REGULAR.add(CV::VpTerm.new(key, vals))
 end
 
 puts "\n- load hanviet".colorize.cyan.bold
@@ -86,7 +86,7 @@ inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
     next if REGULAR.cv_plain(key).to_s =~ regex
   end
 
-  OUT_SUGGEST.add(CV::VpEntry.new(key, vals))
+  OUT_SUGGEST.add(CV::VpTerm.new(key, vals))
 rescue err
   pp [err, key, vals]
 end
@@ -109,7 +109,7 @@ inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
     next if should_skip?(key)
   end
 
-  OUT_VARIOUS.add(CV::VpEntry.new(key, vals))
+  OUT_VARIOUS.add(CV::VpTerm.new(key, vals))
 end
 
 EXT_VARIOUS = "_db/dictdb/remote/common/various.tab"

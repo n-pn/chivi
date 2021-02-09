@@ -43,7 +43,7 @@ def migrate(file : String, uniq = false)
     key = cols[0]
     vals = cols.fetch(1, "").sub("", "").strip.split(/[\/¦\/]/).uniq
 
-    entry = CV::VpEntry.new(key, vals)
+    entry = CV::VpTerm.new(key, vals)
 
     if mtime = cols[2]?.try(&.to_i?) || 0
       uname = cols[3]? || "Guest"

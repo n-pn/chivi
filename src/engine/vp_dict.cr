@@ -5,6 +5,7 @@ require "./vp_dict/*"
 
 class CV::VpDict
   DIR = "_db/dictdb/active"
+
   ::FileUtils.mkdir_p("#{DIR}/common")
   ::FileUtils.mkdir_p("#{DIR}/lookup")
   ::FileUtils.mkdir_p("#{DIR}/system")
@@ -24,44 +25,37 @@ class CV::VpDict
 
   CACHE = {} of String => self
 
-  def self.load(dname : String, regen : Bool = false)
+  def self.load(dname : String, reset : Bool = false)
     CACHE[dname] ||=
       case dname
       when "trungviet", "cc_cedict", "trich_dan"
-        new("lookup/#{dname}", dtype: 1, p_min: 4, regen: regen)
+        new(path("lookup/#{dname}"), dtype: 1, p_min: 4, reset: reset)
       when "tradsim", "binh_am", "hanviet"
-        new("system/#{dname}", dtype: 2, p_min: 3, regen: regen)
+        new(path("system/#{dname}"), dtype: 2, p_min: 3, reset: reset)
       when "regular", "suggest", "various"
-        new("common/#{dname}", dtype: 2, p_min: 2, regen: regen)
+        new(path("common/#{dname}"), dtype: 2, p_min: 2, reset: reset)
       else
-        new("unique/#{dname}", dtype: 3, p_min: 1, regen: regen)
+        new(path("unique/#{dname}"), dtype: 3, p_min: 1, reset: reset)
       end
+  end
+
+  def self.path(label : String)
+    File.join(DIR, "#{label}.tsv")
   end
 
   #########################
 
-  getter afile : String # dict file for auto generated content
-  getter efile : String # dict file for user submitted content
+  getter file : String
+  getter trie = VpTrie.new
+  getter logs = [] of VpTerm
+  getter size = 0
 
-  getter dtype : Int32         # dict type
-  getter p_min : Int32         # minimal user power required
-  getter mtime : Int64 = 0_i64 # dict's modification time
+  getter dtype : Int32 # dict type
+  getter p_min : Int32 # minimal user power required
 
-  # all existing entries
-  getter items = [] of Tuple(VpEntry, VpEmend?)
-  # fast trie lookup for newest entries
-  getter _root = Node.new
-  # count all newest entries
-  getter rsize : Int32 = 0
-
-  def initialize(label : String, @dtype = 0, @p_min = 1, regen : Bool = false)
-    @afile = "#{DIR}/#{label}.tsv"
-    @efile = "#{DIR}/#{label}.tab"
-
-    unless regen
-      load!(@afile) if File.exists?(@afile)
-      load!(@efile) if File.exists?(@efile)
-    end
+  def initialize(@file : String, @dtype = 0, @p_min = 1, reset = false)
+    @flog = @file.sub(".tsv", ".tab")
+    load!(@file) unless reset || !File.exists?(@file)
   end
 
   def load!(file : String) : Nil
@@ -70,7 +64,10 @@ class CV::VpDict
     tspan = Time.measure do
       File.each_line(file) do |line|
         next if line.strip.blank?
-        add(line.split('\t'))
+
+        cols = line.split('\t')
+        add(VpTerm.new(cols, @dtype, @p_min))
+
         count += 1
       rescue err
         puts "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red
@@ -79,173 +76,63 @@ class CV::VpDict
 
     puts "- <vp_dict> [#{file}] loaded: #{count} lines, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
-    bump_mtime!(File.info(file).modification_time)
   end
 
-  def to_str(io : IO, entry : VpEntry, emend : VpEmend?) : Nil
-    if emend
-      entry.to_s(io)
-      io << '\t'
-      emend.to_s(io)
-    else
-      entry.to_str(io)
-    end
-  end
-
-  # save to disk, return old entry if exists
-  def set(entry : VpEntry, emend : VpEmend? = nil) : Bool
-    File.open(emend ? @efile : @afile, "a") do |io|
-      io << '\n'
-      to_str(io, entry, emend)
-    end
-
-    bump_mtime!(emend.rtime) if emend
-    add(entry, emend)
-  end
-
-  def add(cols : Array(String))
-    entry = VpEntry.from(cols, dtype: @dtype)
-    emend = VpEmend.from(cols, p_min: @p_min) if cols.size > 3
-
-    add(entry, emend)
-  end
-
-  # return old entry if exists
-  def add(new_entry : VpEntry, new_emend : VpEmend? = nil) : Bool
-    @items << {new_entry, new_emend}
+  # return true if new term prevails
+  def add(new_term : VpTerm) : Bool
+    @logs << new_term if new_term.mtime > 0
 
     # find existing node or force creating new one
-    node = @_root.find!(new_entry.key)
-    @rsize += 1 unless old_entry = node.entry
+    node = @trie.find!(new_term.key)
 
-    newer = newer?(node, new_emend)
-
-    if newer
-      node.entry = new_entry
-      node.emend = new_emend
-      node._hint.concat(old_entry.vals).uniq! if old_entry
+    if old_term = node.term
+      newer = new_term.beats?(old_term)
     else
-      node._hint.concat(new_entry.vals).uniq!
+      newer = new_term >= @p_min
+      @size += 1
     end
 
+    if newer
+      node.term = new_term
+      node.edits.reject!(&.uname.== new_term.uname)
+    end
+
+    node.edits << new_term
     newer
   end
 
-  def newer?(node : Node, new_emend : VpEmend?)
-    t_new = new_emend.try(&.mtime) || 0
-    t_old = node.emend.try(&.mtime) || 0
+  # save to disk, return old entry if exists
+  def add!(new_term : VpTerm) : Bool
+    line = "\n#{new_term}"
+    File.write(@file, line, mode: "a")
+    File.write(@flog, line, mode: "a") if new_term.mtime > 0
 
-    u_new = new_emend.try(&.uname) || '_'
-    u_old = node.emend.try(&.uname) || '_'
-
-    return t_new >= t_old if u_new == u_old
-
-    p_new = new_emend.try(&.power) || @p_min
-    p_old = node.emend.try(&.power) || @p_min
-    p_new == p_old ? t_new >= t_old : p_new > p_old
+    add(new_term, emend)
   end
 
-  def bump_mtime!(time : Time)
-    mtime = time.to_unix
-    @mtime == mtime if @mtime < mtime
+  def find(key : String) : VpTerm?
+    @trie.find(key).try(&.term)
   end
 
-  def find(key : String) : VpEntry?
-    @_root.find(key).try(&.entry)
-  end
-
-  def info(key : String)
-    return unless node = @_root.find(key)
-    return unless entry = node.entry
-
-    {
-      key:   entry.key,
-      vals:  entry.vals,
-      attrs: entry.attrs,
-      hints: node._hint,
-      mtime: node.emend.try(&.rtime.to_unix_ms),
-      uname: node.emend.try(&.uname),
-      power: node.emend.try(&.power),
-    }
-  end
-
-  def scan(chars : Array(Char), idx : Int32 = 0) : Nil
-    node = @_root
-    idx.upto(chars.size - 1) do |i|
-      char = chars.unsafe_fetch(i)
-      break unless node = node._trie[char]?
-      node.entry.try { |x| yield x }
-    end
-  end
-
-  def newest
-    output = [] of Tuple(VpEntry, VpEmend?)
-
-    @_root.each do |node|
-      output << {node.entry.not_nil!, node.emend} if node.entry
-    end
-
-    output
-  end
+  delegate scan, to: @trie
+  delegate to_a, to: @trie
 
   def save!(trim : Bool = false) : Nil
-    ::FileUtils.mkdir_p(File.dirname(@afile))
+    ::FileUtils.mkdir_p(File.dirname(@file))
 
     tspan = Time.measure do
-      entry_io = File.open(@afile, "w")
-      emend_io = File.open(@efile, "w")
-
-      data = trim ? newest : @items
-      data.each do |entry, emend|
-        io = emend ? emend_io : entry_io
-        to_str(io, entry, emend)
-        io << '\n'
+      File.open(@file, "w") do |io|
+        @trie.each(full: !trim) { |term| io.puts(term) }
       end
 
-      entry_io.close
-      emend_io.close
+      next if @dtype < 2
+
+      File.open(@flog, "w") do |io|
+        @logs.each { |term| io.puts(term) }
+      end
     end
 
-    count = trim ? @items.size : @rsize
-    puts "- <vp_dict> [#{File.basename(@afile)}] saved: #{count} entries, \
+    puts "- <vp_dict> [#{File.basename(@afile)}] saved: #{@size} entries, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.yellow
-  end
-
-  #########################
-
-  class Node
-    alias Trie = Hash(Char, Node)
-
-    property entry : VpEntry?
-    property emend : VpEmend?
-
-    getter _hint : Array(String) { [] of String }
-    getter _trie : Trie
-
-    def initialize(@entry = nil, @emend = nil, @_trie = Trie.new)
-    end
-
-    def find!(key : String) : Node
-      node = self
-      key.each_char { |c| node = node._trie[c] ||= Node.new }
-      node
-    end
-
-    def find(key : String) : Node?
-      node = self
-      key.each_char { |c| return unless node = node._trie[c]? }
-      node
-    end
-
-    def each : Nil
-      queue = [self]
-
-      while node = queue.pop?
-        node._trie.each_value do |node|
-          queue << node
-          yield node if node.entry
-        end
-      end
-    end
   end
 end

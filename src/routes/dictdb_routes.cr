@@ -99,7 +99,7 @@ module CV::Server
     attrs = env.params.json.fetch("attrs", "").as(String)
     attrs = "" if value.empty?
 
-    entry = VpEntry.new(key, value, attrs, dtype: dict.dtype)
+    entry = VpTerm.new(key, value, attrs, dtype: dict.dtype)
 
     power = env.params.json.fetch("power", u_power).as(Int64).to_i
     power = u_power if power > u_power
