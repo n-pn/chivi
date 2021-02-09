@@ -77,7 +77,7 @@ class CV::Nvinfo
   end
 
   def fix_source! : Hash(String, String)
-    chseed = source.to_a.sort_by { |sname, snvid| -source_order(sname, snvid) }
+    chseed = source.to_a.sort_by { |sname, snvid| -source_utime(sname, snvid) }
 
     values = chseed.map { |a, b| "#{a}/#{b}" }
     return source unless NvValues.source.add(bhash, values)
@@ -86,12 +86,14 @@ class CV::Nvinfo
     source = chseed.to_h
   end
 
-  private def source_order(sname : String, snvid : String)
+  private def source_utime(sname : String, snvid : String)
+    utime = ChSource.get_utime(sname, snvid) || Time.utc.to_unix
+
     case sname
-    when "jx_la", "shubaow", "69shu"
-      0_i64
-    else
-      ChSource.get_utime(sname, snvid) || 1_i64
+    when "jx_la"   then utime - 5_000_000
+    when "shubaow" then utime - 2_000_000
+    when "69shu"   then utime - 1_000_000
+    else                utime
     end
   end
 
