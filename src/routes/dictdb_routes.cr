@@ -46,41 +46,42 @@ module CV::Server
 
     hints = [] of String
 
-    if special_info = VpDict.load(dname).info(input)
-      hints.concat(special_info[:vals])
-      hints.concat(special_info[:hints])
+    if special_node = VpDict.load(dname).trie.find(input)
+      special_node.edits.each { |term| hints.concat(term.vals) }
     end
 
-    if regular_info = VpDict.regular.info(input)
-      hints.concat(regular_info[:vals])
-      hints.concat(regular_info[:hints])
+    if regular_node = VpDict.regular.trie.find(input)
+      regular_node.edits.each { |term| hints.concat(term.vals) }
     end
 
-    if hanviet_info = VpDict.hanviet.info(input)
-      hints.concat(hanviet_info[:vals])
-      hints.concat(hanviet_info[:hints])
+    if suggest_node = VpDict.suggest.trie.find(input)
+      suggest_node.edits.each { |term| hints.concat(term.vals) }
     end
 
-    if suggest_info = VpDict.suggest._root.find(input)
-      suggest_info.entry.try { |x| hints.concat(x.vals) }
-      hints.concat(suggest_info._hint)
+    if hanviet_node = VpDict.hanviet.trie.find(input)
+      hanviet_node.edits.each { |term| hints.concat(term.vals) }
     end
 
     binh_am = Convert.binh_am.translit(input).to_s
     hanviet = Convert.hanviet.translit(input).to_s
 
-    blank = {vals: [] of String, hints: [] of String, attrs: "", power: 0}
+    # blank = {vals: [] of String, hints: [] of String, attrs: "", power: 0}
 
     RouteUtils.json_res(env) do |res|
-      {
-        trans: {binh_am: binh_am, hanviet: hanviet},
-        hints: hints.uniq.reject(&.== hanviet),
-        infos: {
-          special_info || blank,
-          regular_info || blank,
-          hanviet_info || blank,
-        },
-      }.to_json(res)
+      JSON.build(res) do |json|
+        json.object do
+          json.field "trans", {binh_am: binh_am, hanviet: hanviet}
+          json.field "hints", hints.uniq.reject(&.== hanviet)
+
+          json.field "infos" do
+            json.array do
+              special_node.try(&.term.to_json(json))
+              regular_node.try(&.term.to_json(json))
+              hanviet_node.try(&.term.to_json(json))
+            end
+          end
+        end
+      end
     end
   end
 
@@ -93,34 +94,35 @@ module CV::Server
 
     key = env.params.json["key"].as(String).strip
 
-    value = env.params.json.fetch("value", "").as(String)
-    value = value.strip.split(/[\/|]/).reject(&.empty?)
+    vals = env.params.json.fetch("vals", "").as(String)
+    vals = vals.strip.split(/[\/|]/).reject(&.empty?)
 
-    attrs = env.params.json.fetch("attrs", "").as(String)
-    attrs = "" if value.empty?
+    attr = env.params.json.fetch("attr", "").as(String)
+    attr = "---" if attr.empty?
 
-    entry = VpTerm.new(key, value, attrs, dtype: dict.dtype)
+    prio = env.params.json.fetch("prio", "M").as(String)
+    prio = prio[0]? || 'M'
 
     power = env.params.json.fetch("power", u_power).as(Int64).to_i
     power = u_power if power > u_power
 
-    emend = VpEmend.new(uname: u_dname, power: power)
+    new_term = VpTerm.new(key, vals, attr, prio, uname: u_dname, power: power, dtype: dict.dtype)
 
     # TODO: save context
-    unless dict.set(entry, emend)
+    unless dict.add!(new_term)
       halt env, status_code: 501, response: "Unchanged!"
     end
 
     if dict.dtype == 3 # unique dict
       # add to suggestion
-      CV::VpDict.suggest.set(entry, emend)
+      CV::VpDict.suggest.add!(new_term)
 
       # add to quick translation dict if entry is a name
-      unless value.empty? || value[0].downcase == value[0]
-        CV::VpDict.various.set(entry, emend) unless CV::VpDict.regular.find(key)
+      unless vals.empty? || vals[0].downcase == vals[0]
+        CV::VpDict.various.add!(new_term) unless CV::VpDict.regular.find(key)
       end
     end
 
-    RouteUtils.json_res(env, dict.info(key))
+    RouteUtils.json_res(env, dict.find(key))
   end
 end

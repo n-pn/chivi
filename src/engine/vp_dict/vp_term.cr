@@ -18,7 +18,7 @@ class CV::VpTerm
   getter power : Int32 = 1
 
   getter dtype : Int32 = 1
-  getter point : Float32 { calc_point }
+  getter point : Float64 { calc_point }
 
   def initialize(cols : Array(String), @dtype = 2, p_min = 2)
     @key = cols[0]
@@ -27,12 +27,13 @@ class CV::VpTerm
     return if @dtype < 2 # skip for lookup dicts
 
     @attr = cols[2]? || "---"
-    @prio = cols[3]?.try(&.first) || 'M'
+    @prio = cols[3]?.try(&.[0]?) || 'M'
 
-    return unless @mtime = cols[4]?.try(&.to_i?)
+    return unless mtime = cols[4]?.try(&.to_i?)
+    @mtime = mtime
 
     @uname = cols[5]? || "_"
-    @uname = cols[6]?.try(&.to_i?) || p_min
+    @power = cols[6]?.try(&.to_i?) || p_min
   end
 
   def initialize(@key,
@@ -85,7 +86,7 @@ class CV::VpTerm
 
       json.field vals, @vals
       json.field attr, @attr
-      json.field prio, @prio
+      json.field prio, @prio.to_s
 
       json.field mtime, rtime.to_unix_ms
       json.field uname, @uname

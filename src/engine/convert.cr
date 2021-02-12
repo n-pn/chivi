@@ -163,7 +163,7 @@ class CV::Convert
       dict.scan(@input, idx) do |entry|
         next if entry.empty?
 
-        cost = @costs[idx] + entry.worth
+        cost = @costs[idx] + entry.point
         jump = idx &+ entry.key.size
 
         if cost >= @costs[jump]

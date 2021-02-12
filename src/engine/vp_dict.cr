@@ -46,8 +46,11 @@ class CV::VpDict
   #########################
 
   getter file : String
+  getter flog : String
+
   getter trie = VpTrie.new
   getter logs = [] of VpTerm
+
   getter size = 0
 
   getter dtype : Int32 # dict type
@@ -88,7 +91,7 @@ class CV::VpDict
     if old_term = node.term
       newer = new_term.beats?(old_term)
     else
-      newer = new_term >= @p_min
+      newer = new_term.power >= @p_min
       @size += 1
     end
 
@@ -107,7 +110,7 @@ class CV::VpDict
     File.write(@file, line, mode: "a")
     File.write(@flog, line, mode: "a") if new_term.mtime > 0
 
-    add(new_term, emend)
+    add(new_term)
   end
 
   def find(key : String) : VpTerm?

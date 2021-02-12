@@ -20,10 +20,10 @@ class CV::CvEntry
   getter is_int : Bool { INT_RE === @key }
 
   def initialize(term : VpTerm)
+    @dic = term.dtype
     @key = term.key
     @val = term.vals.first
-    @etc = term.attrs
-    @dic = term.dtype
+    @etc = term.attr
   end
 
   def initialize(@key, @val = @key, @dic = 0, @etc = "")
