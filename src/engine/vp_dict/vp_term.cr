@@ -66,7 +66,7 @@ class CV::VpTerm
   private def calc_point
     # add 0.25 for medium priority, 0.5 for high priority
     # add 0.4 for regular, 0.6 for unique
-    base = 1.0 + @prio * 0.25 + @dtype * 0.2
+    base = 1.4 + @prio * 0.25 + @dtype * 0.2
     base ** @key.size + @key.size ** base
   end
 
