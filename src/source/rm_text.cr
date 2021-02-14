@@ -83,11 +83,27 @@ class CV::RmText
   getter paras : Array(String) do
     case @sname
     when "hetushu" then extract_hetushu_paras
-    when "69shu"   then extract_paras(".yd_text2")
+    when "69shu"   then extract_69shu_paras
     when "zhwenpg" then extract_paras("#tdcontent .content")
     when "duokan8" then extract_paras("#htmlContent > p")
     else                extract_paras("#content")
     end
+  end
+
+  private def extract_69shu_paras
+    unless node = @rdoc.css(".txtnav").first?
+      return extract_paras(".yd_text2")
+    end
+
+    node.children.each do |tag|
+      tag.remove! if {"script", "div", "h1"}.includes?(tag.tag_name)
+    end
+
+    lines = TextUtils.split_html(node.inner_text("\n"))
+    lines.shift if lines.first == title
+    lines.pop if lines.last == "(本章完)"
+
+    lines
   end
 
   private def extract_paras(sel : String)

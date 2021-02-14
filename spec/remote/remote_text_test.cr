@@ -50,3 +50,5 @@ fetch_chap("hetushu", "5124", "3814265", fresh: false)
 
 # fetch_chap("qu_la", "7", "3382573")
 # fetch_chap("qu_la", "7", "3382447")
+
+fetch_chap("69shu", "35875", "25117266", fresh: false)
