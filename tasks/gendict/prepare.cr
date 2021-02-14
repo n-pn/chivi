@@ -63,16 +63,17 @@ NOUNS = Set(String).new
 ADJES = Set(String).new
 
 def categorize(key : String, val : String)
-  if key.includes?("的")
-    left, right = key.split("的")
-    unless right.empty?
-      NOUNS << right
-      if val.includes?("của")
-        NOUNS << left
-      else
-        ADJES << left
-      end
-    end
+  return unless key.includes?("的")
+
+  left, right = key.split("的")
+
+  return if right.empty?
+  NOUNS << right
+
+  if val.includes?("của")
+    NOUNS << left
+  else
+    ADJES << left
   end
 end
 
@@ -218,4 +219,6 @@ CHECKED.save!
 EXISTED.save!
 
 File.write(QtUtil.path(".result/qt-nouns.txt"), NOUNS.to_a.join("\n"))
+
+ADJES.reject { |x| NOUNS.includes?(x) }
 File.write(QtUtil.path(".result/qt-adjes.txt"), ADJES.to_a.join("\n"))

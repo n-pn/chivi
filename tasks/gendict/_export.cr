@@ -114,8 +114,6 @@ class CV::ExportDicts
       term.attr ^= 1 if is_noun?(term.key, term.vals.first)
       term.attr ^= 2 if @verbs.includes?(term.key)
       term.attr ^= 4 if is_adje?(term.key, term.vals.first)
-
-      # TODO: import nouns, verbs, adjvs from cedict
     end
 
     @out_regular.save!(trim: true)
@@ -193,6 +191,22 @@ class CV::ExportDicts
 
     out_various.save!(trim: true)
   end
+
+  def export_recycle!
+    puts "\n[Export recycle]".colorize.cyan.bold
+
+    inp_recycle = QtDict.load(".result/recycle.txt", true)
+    out_recycle = CV::VpDict.load("recycle", 0)
+
+    inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
+      unless should_keep?(key)
+        next if should_skip?(key)
+      end
+
+      out_recycle.add(key, vals)
+    end
+    out_recycle.save!
+  end
 end
 
 tasks = CV::ExportDicts.new
@@ -201,17 +215,3 @@ tasks.export_regular!
 tasks.export_uniques!
 tasks.export_suggest!
 tasks.export_various!
-
-# puts "\n[Export recycle]".colorize.cyan.bold
-
-# inp_recycle = QtDict.load(".result/recycle.txt", true)
-# out_recycle = CV::VpDict.load("salvation", 0)
-
-# inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
-#   unless should_keep?(key)
-#     next if should_skip?(key)
-#   end
-
-#   out_recycle.add(key, vals)
-# end
-# out_recycle.save!
