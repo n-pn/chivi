@@ -53,15 +53,8 @@ end
 module QtUtil
   extend self
 
-  INP_DIR = "_db/dictdb/_inits"
-  OUT_DIR = "_db/dictdb/active"
-
-  def inp_path(file : String)
-    File.join(INP_DIR, file)
-  end
-
-  def out_path(file : String)
-    File.join(OUT_DIR, file)
+  def path(file : String)
+    File.join("_db/dictdb/_inits", file)
   end
 
   class_getter lexicon : ValueSet { ValueSet.load(".result/lexicon.tsv") }

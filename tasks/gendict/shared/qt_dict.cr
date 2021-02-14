@@ -34,7 +34,7 @@ class QtDict
     end
 
     tspan = tspan.total_milliseconds.round.to_i
-    puts "<qt_dict> [#{label}] loaded: #{lines} lines, time: #{tspan}ms".colorize.green
+    puts "- <qt_dict> [#{label}] loaded: #{lines} lines, time: #{tspan}ms".colorize.green
   end
 
   def save!(file : String = @file)
@@ -48,7 +48,7 @@ class QtDict
 
     label = File.basename(file)
     tspan = tspan.total_milliseconds.round.to_i
-    puts "<qt_dict> [#{label}] saved: #{@data.size} entries, time: #{tspan}ms".colorize.yellow
+    puts "- <qt_dict> [#{label}] saved: #{@data.size} entries, time: #{tspan}ms".colorize.yellow
   end
 
   def parse_line(line : String)

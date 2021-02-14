@@ -31,10 +31,51 @@ class CV::ExportDicts
   getter cv_hanviet : Convert { Convert.hanviet }
   getter cv_regular : Convert { Convert.new(@out_regular) }
 
+  def match_hanviet?(key : String, val : String)
+    cv_hanviet.translit(key, false).to_s == val
+  end
+
   def match_convert?(key : String, val : String)
-    return false if cv_hanviet.translit(key, false).to_s == val
-    convert = cv_regular.tl_plain(key).downcase
-    convert == val
+    cv_regular.tl_plain(key).downcase == val
+  end
+
+  def initialize
+    @nouns = Set(String).new
+    @nouns.concat File.read_lines(::QtUtil.path(".result/ce-nouns.txt"))
+    @nouns.concat File.read_lines(::QtUtil.path(".result/qt-nouns.txt"))
+
+    @verbs = Set(String).new
+    @verbs.concat File.read_lines(::QtUtil.path(".result/ce-verbs.txt"))
+
+    @adjes = Set(String).new
+    @adjes.concat File.read_lines(::QtUtil.path(".result/ce-adjes.txt"))
+    @adjes.concat File.read_lines(::QtUtil.path(".result/qt-adjes.txt"))
+  end
+
+  def is_noun?(key : String, val : String)
+    return true if @nouns.includes?(key)
+    return true if val != val.downcase
+    return true if match_hanviet?(key, val.downcase)
+
+    noun_and_adje?(key, val)
+  end
+
+  def is_adje?(key : String, val : String)
+    return false if val != val.downcase
+    return true if @adjes.includes?(key)
+
+    noun_and_adje?(key, val)
+  end
+
+  def noun_and_adje?(key : String, val : String)
+    return true if key.ends_with?("色") && val.starts_with?("màu ")
+    return true if key.ends_with?("上") && val.starts_with?("trên ")
+    return true if key.ends_with?("下") && val.starts_with?("dưới ")
+    return true if key.ends_with?("中") && val.starts_with?("trong ")
+    return true if key.ends_with?("里") && val.starts_with?("trong ")
+    return true if key.ends_with?("内") && val.starts_with?("trong ")
+
+    false
   end
 
   def export_regular!
@@ -48,7 +89,9 @@ class CV::ExportDicts
       match = value.downcase
       unless should_keep?(key, value)
         next if should_reject?(key)
-        next if match_convert?(key, match)
+        unless match_hanviet?(key, match)
+          next if match_convert?(key, match)
+        end
       end
 
       @out_regular.put(key, vals)
@@ -68,13 +111,14 @@ class CV::ExportDicts
       term.prio = 0_i8 if term.key.size < 2
       term.prio = 2_i8 if term.key.size > 3
 
-      fval = term.vals.first
-      term.attr ^= 1 if fval != fval.downcase
+      term.attr ^= 1 if is_noun?(term.key, term.vals.first)
+      term.attr ^= 2 if @verbs.includes?(term.key)
+      term.attr ^= 4 if is_adje?(term.key, term.vals.first)
 
       # TODO: import nouns, verbs, adjvs from cedict
     end
 
-    @out_regular.save!
+    @out_regular.save!(trim: true)
   end
 
   def export_uniques!
@@ -88,9 +132,7 @@ class CV::ExportDicts
         unless term.empty?
           term.prio = 0_i8 if term.key.size < 2
           term.prio = 2_i8 if term.key.size > 2
-
-          fval = term.vals.first
-          term.attr ^= 1 if fval != fval.downcase
+          term.attr ^= 1 if is_noun?(term.key, term.vals.first)
         end
 
         # add to quick translation dict if entry is a name
