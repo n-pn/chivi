@@ -4,13 +4,9 @@ require "../vp_dict/vp_term"
 class CV::CvEntry
   property key : String
   property val : String
-  property dic : Int32
 
-  getter etc : String
-
-  getter is_noun : Bool { @etc.includes?('N') }
-  getter is_verb : Bool { @etc.includes?('V') }
-  getter is_adjv : Bool { @etc.includes?('A') }
+  property dic : Int8
+  getter cat : Int8 = 0_i8
 
   # TODO: add more words
   NUM_RE = /^[\p{N}零〇一二两三四五六七八九十百千万亿]+$/
@@ -23,25 +19,52 @@ class CV::CvEntry
     @dic = term.dtype
     @key = term.key
     @val = term.vals.first
-    @etc = term.attr
+    @cat = term.attr
   end
 
-  def initialize(@key, @val = @key, @dic = 0, @etc = "")
+  def initialize(@key, @val = @key, @dic = 0_i8, @cat = 0_i8)
   end
 
-  def capitalize!(cap_mode : Int32 = 1) : Nil
+  def fix(@val : String, @dic = 9_i8) : Nil
+  end
+
+  def match_key?(key : String)
+    @key == key
+  end
+
+  @[AlwaysInline]
+  def word?
+    @dic > 0_i8
+  end
+
+  @[AlwaysInline]
+  def noun?
+    @cat & 1_i8 != 0_i8
+  end
+
+  @[AlwaysInline]
+  def verb?
+    @cat & 2_i8 != 0_i8
+  end
+
+  @[AlwaysInline]
+  def adjv?
+    @cat & 4_i8 != 0_i8
+  end
+
+  def capitalize!(cap_mode : Int8 = 1) : Nil
     @val = cap_mode > 1 ? TextUtils.titleize(@val) : TextUtils.capitalize(@val)
   end
 
-  def cap_mode(prev_mode : Int32 = 0) : Int32
+  def cap_mode(prev_mode : Int8 = 0) : Int8
     case @val[-1]?
     when '“', '‘', '[', '{',
          ':', '!', '?', '.'
-      prev_mode > 1 ? 2 : 1
+      prev_mode > 1_i8 ? 2_i8 : 1_i8
     when ',', '⟩', '}', ']'
-      0
+      0_i8
     when '⟨'
-      2
+      2_i8
     else
       prev_mode
     end
@@ -126,6 +149,6 @@ class CV::CvEntry
   def clear!
     @key = ""
     @val = ""
-    @dic = 0
+    @dic = 0_i8
   end
 end

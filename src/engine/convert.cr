@@ -56,7 +56,7 @@ class CV::Convert
     return title_res if label.empty?
 
     label_res = cv_title(label)
-    label_res.data << CvEntry.new("", " - ", 0)
+    label_res.data << CvEntry.new("", " - ")
     label_res.data.concat(title_res.data)
 
     label_res
@@ -81,35 +81,35 @@ class CV::Convert
         _, group, num, lbl, trash, title = match
 
         num = CvUtils.to_integer(num)
-        res << CvEntry.new(group, "#{vi_label(lbl)} #{num}", 1)
+        res << CvEntry.new(group, "#{vi_label(lbl)} #{num}", 1_i8)
 
         if !title.empty?
-          res << CvEntry.new(trash, ": ", 0)
+          res << CvEntry.new(trash, ": ")
         elsif !trash.empty?
-          res << CvEntry.new(trash, "", 0)
+          res << CvEntry.new(trash, "")
         end
       elsif match = TITLE_RE_3.match(title)
         _, num, trash, title = match
-        res << CvEntry.new(num, num, 1)
+        res << CvEntry.new(num, num, 1_i8)
 
         if !title.empty?
-          res << CvEntry.new(trash, ". ", 0)
+          res << CvEntry.new(trash, ". ")
         elsif !trash.empty?
-          res << CvEntry.new(trash, "", 0)
+          res << CvEntry.new(trash, "")
         end
       elsif match = TITLE_RE_4.match(title)
         _, trash, title = match
-        res << CvEntry.new("楔子", "Phần đệm", 1)
+        res << CvEntry.new("楔子", "Phần đệm", 1_i8)
 
         if !title.empty?
-          res << CvEntry.new(trash, ": ", 0)
+          res << CvEntry.new(trash, ": ")
         elsif !trash.empty?
-          res << CvEntry.new(trash, "", 0)
+          res << CvEntry.new(trash, "")
         end
       end
 
       title.split(/\s+/).each_with_index do |text, idx|
-        res << CvEntry.new(" ", " ", 0) if idx > 0
+        res << CvEntry.new(" ", " ") if idx > 0
         res.concat(cv_plain(text).data)
       end
     end
@@ -150,7 +150,7 @@ class CV::Convert
 
       @input.each_with_index(1) do |char, idx|
         norm = CvUtils.normalize(char)
-        @nodes << CvEntry.new(char.to_s, norm.to_s, alnum?(norm) ? 1 : 0)
+        @nodes << CvEntry.new(char.to_s, norm.to_s, alnum?(norm) ? 1_i8 : 0_i8)
         @costs << idx.to_f
       end
     end
@@ -201,7 +201,7 @@ class CV::Convert
 
           if (last = ary.last?) && last.special_end_char?
             last.combine!(curr)
-            last.dic = 1
+            last.dic = 1_i8
             next
           end
 

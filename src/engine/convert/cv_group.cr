@@ -23,63 +23,39 @@ class CV::CvGroup
     @data.each_with_index do |entry, i|
       case entry.key
       when "的"
-        entry.dic = 9
-
         # TODO: handle `的`
-        entry.val = ""
+        entry.fix("")
       when "了"
-        entry.dic = 9
+        succ = @data[i + 1]?
 
         # TODO: remove "了" only if prev is a verb
-        succ = @data[i + 1]?
-        if succ && succ.dic > 0 && succ.key != @data[i - 1]?.try(&.key)
-          entry.val = ""
+        if succ && succ.word? && succ.key != @data[i - 1]?.try(&.key)
+          val = ""
         else
-          entry.val = "rồi"
+          val = "rồi"
         end
+
+        entry.fix(val)
       when "对"
-        entry.dic = 9
-
-        # TODO: handle succ type?
-        if @data[i + 1]?.try(&.match_rule_对?)
-          "đối với"
-        else
-          entry.val = "đúng"
-        end
+        entry.fix(@data[i + 1]?.try(&.noun?) ? "đối với" : "đúng")
       when "不对"
-        entry.dic = 9
-
-        # TODO: handle succ type?
-        if @data[i + 1]?.try(&.match_rule_对?)
-          "không đối với"
-        else
-          entry.val = "không đúng"
-        end
+        entry.fix(@data[i + 1]?.try(&.noun?) ? "không đối với" : "không đúng")
       when "也"
-        entry.dic = 9
-        entry.val = @data[i + 1]?.try(&.dic.> 0) ? "cũng" : "vậy"
+        entry.fix(@data[i + 1]?.try(&.word?) ? "cũng" : "vậy")
       when "地"
-        entry.dic = 9
         # TODO: check noun, verb?
-        entry.val = @data[i - 1]?.try(&.dic.> 0) ? "mà" : "địa"
+        entry.fix(@data[i - 1]?.try(&.word?) ? "mà" : "địa")
       when "原来"
-        entry.dic = 9
-
-        if @data[i + 1]?.try(&.key.== "的") || @data[i - 1]?.try(&.dic.> 1)
-          entry.val = "ban đầu"
+        if @data[i + 1]?.try(&.match_key?("的")) || @data[i - 1]?.try(&.word?)
+          val = "ban đầu"
         else
-          entry.val = "thì ra"
+          val = "thì ra"
         end
+        entry.fix(val)
       when "高达"
-        if @data[i + 1]?.try(&.is_num)
-          entry.val = "cao đến"
-          entry.dic = 9
-        end
+        entry.fix("cao đến") if @data[i + 1]?.try(&.is_num)
       when "行"
-        next if @data[i + 1]?.try(&.dic.> 0)
-        entry.dic = 9
-        entry.val = "được"
-
+        entry.fix("được") unless @data[i + 1]?.try(&.word?)
         # when "斤"
         #   next unless prev = @data[i - 1]?
         #   next unless num = prev.to_i?
@@ -88,41 +64,35 @@ class CV::CvGroup
         # entry.val = val.to_s
 
       when "两"
-        next unless @data[i - 1]?.try(&.is_num)
-        entry.dic = 9
-        entry.val = "lượng"
+        entry.fix("lượng") if @data[i - 1]?.try(&.is_num)
       when "里"
-        next unless @data[i - 1]?.try(&.is_num)
-        entry.dic = 9
-        entry.val = "dặm"
+        entry.fix("dặm") if @data[i - 1]?.try(&.is_num)
       when "米"
-        next unless @data[i - 1]?.try(&.is_num)
-        entry.dic = 9
-        entry.val = "mét"
+        entry.fix("mét") if @data[i - 1]?.try(&.is_num)
       when "年"
         # TODO: handle special cases for year
         next unless prev = @data[i - 1]?
         next unless prev.to_i?.try(&.>= 100)
 
-        entry.dic = 9
         entry.key = "#{prev.key}#{entry.key}"
-        entry.val = "năm #{prev.key}"
+        entry.fix("năm #{prev.key}")
+
         prev.clear!
       when "月"
         next unless prev = @data[i - 1]?
         next unless prev.to_i?.try(&.<= 15)
 
-        entry.dic = 9
         entry.key = "#{prev.key}#{entry.key}"
-        entry.val = "tháng #{prev.key}"
+        entry.fix("tháng #{prev.key}")
+
         prev.clear!
       when "日"
         next unless prev = @data[i - 1]?
         next unless prev.to_i?.try(&.<= 40)
 
-        entry.dic = 9
         entry.key = "#{prev.key}#{entry.key}"
-        entry.val = "ngày #{prev.key}"
+        entry.fix("ngày #{prev.key}")
+
         prev.clear!
       end
     end
@@ -131,14 +101,14 @@ class CV::CvGroup
   end
 
   def capitalize! : self
-    cap_mode = 1
+    cap_mode = 1_i8
 
     @data.each do |entry|
       next if entry.val.empty?
 
       if cap_mode > 0 && entry.dic > 0
         entry.capitalize!(cap_mode) if entry.dic > 1
-        cap_mode = 0 unless cap_mode > 1
+        cap_mode = 0_i8 unless cap_mode > 1
       else
         cap_mode = entry.cap_mode(cap_mode)
       end
@@ -157,7 +127,7 @@ class CV::CvGroup
       curr = @data.unsafe_fetch(i)
 
       unless curr.val.empty?
-        temp << CvEntry.new("", " ", 0) if curr.space_before?(prev)
+        temp << CvEntry.new("", " ") if curr.space_before?(prev)
         prev = curr
       end
 

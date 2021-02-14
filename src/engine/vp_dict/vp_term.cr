@@ -10,49 +10,53 @@ class CV::VpTerm
   getter key : String
 
   getter vals : Array(String)
-  getter attr : String = ""
-  getter prio : Char = 'M'
+  getter prio : Int8 = 1_i8
+  getter attr : Int8 = 0_i8
 
   getter mtime : Int32 = 0
   getter uname : String = "_"
-  getter power : Int32 = 1
+  getter power : Int8 = 1_i8
 
-  getter dtype : Int32 = 1
+  getter dtype : Int8 = 1_i8
   getter point : Float64 { calc_point }
 
-  def initialize(cols : Array(String), @dtype = 2, p_min = 2)
+  def initialize(cols : Array(String), @dtype = 2_i8, p_min = 2_i8)
     @key = cols[0]
-    @vals = cols.fetch(1, "").split(SEP)
+    @vals = cols[1]?.try(&.split(SEP)) || [""]
 
     return if @dtype < 2 # skip for lookup dicts
 
-    @attr = cols[2]? || "---"
-    @prio = cols[3]?.try(&.[0]?) || 'M'
+    if attrs = cols[2]?
+      @prio = case attrs[0]?
+              when 'H' then 2_i8
+              when 'L' then 0_i8
+              else          1_i8
+              end
 
-    return unless mtime = cols[4]?.try(&.to_i?)
+      @attr = 0_i8
+      @attr += 1_i8 if attrs.includes?('N')
+      @attr += 2_i8 if attrs.includes?('V')
+      @attr += 4_i8 if attrs.includes?('A')
+    end
+
+    return unless mtime = cols[3]?.try(&.to_i?)
     @mtime = mtime
 
-    @uname = cols[5]? || "_"
-    @power = cols[6]?.try(&.to_i?) || p_min
+    @uname = cols[4]? || "_"
+    @power = cols[5]?.try(&.to_i8?) || p_min
   end
 
   def initialize(@key,
-                 @vals = [""], @attr = "---", @prio = 'M',
-                 @mtime = VpTerm.mtime, @uname = "_", @power = 1,
-                 @dtype = 2)
+                 @vals = [""], @prio = 1_i8, @attr = 0_i8,
+                 @mtime = VpTerm.mtime, @uname = "_", @power = 1_i8,
+                 @dtype = 2_i8)
   end
 
   private def calc_point
-    base = base_point + @dtype * 0.2 # => add 0.4 for regular, 0.6 for unique
+    # add 0.25 for medium priority, 0.5 for high priority
+    # add 0.4 for regular, 0.6 for unique
+    base = 1.0 + @prio * 0.25 + @dtype * 0.2
     base ** @key.size + @key.size ** base
-  end
-
-  private def base_point
-    case @prio
-    when 'H' then 1.5 # highest priority
-    when 'L' then 1   # lowest priority
-    else          1.25
-    end
   end
 
   def empty?
@@ -74,7 +78,17 @@ class CV::VpTerm
     @vals.join(io, SEP)
 
     return if @dtype < 2 # skip for lookup dicts
-    {@attr, @prio}.join(io, '\t')
+
+    case @prio
+    when 2 then io << 'H'
+    when 0 then io << 'L'
+    end
+
+    io << 'N' if @attr & 1 != 0
+    io << 'V' if @attr & 2 != 0
+    io << 'A' if @attr & 4 != 0
+
+    io << '\t'
 
     return if @mtime <= 0 # skip if no user activity
     {@mtime, @uname, @power}.join(io, '\t')
@@ -85,8 +99,8 @@ class CV::VpTerm
       json.field key, @key
 
       json.field vals, @vals
+      json.field prio, @prio
       json.field attr, @attr
-      json.field prio, @prio.to_s
 
       json.field mtime, rtime.to_unix_ms
       json.field uname, @uname

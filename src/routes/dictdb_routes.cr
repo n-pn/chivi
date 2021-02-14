@@ -95,18 +95,15 @@ module CV::Server
     key = env.params.json["key"].as(String).strip
 
     vals = env.params.json.fetch("vals", "").as(String)
-    vals = vals.strip.split(/[\/|]/).reject(&.empty?)
+    vals = [vals.strip]
 
-    attr = env.params.json.fetch("attr", "").as(String)
-    attr = "---" if attr.empty?
+    prio = env.params.json.fetch("prio", 1).as(Int64).to_i8
+    attr = env.params.json.fetch("attr", 0).as(Int64).to_i8
 
-    prio = env.params.json.fetch("prio", "M").as(String)
-    prio = prio[0]? || 'M'
+    power = env.params.json.fetch("power", u_power).as(Int64).to_i8
+    power = u_power.to_i8 if power > u_power
 
-    power = env.params.json.fetch("power", u_power).as(Int64).to_i
-    power = u_power if power > u_power
-
-    new_term = VpTerm.new(key, vals, attr, prio, uname: u_dname, power: power, dtype: dict.dtype)
+    new_term = VpTerm.new(key, vals, prio, attr, uname: u_dname, power: power, dtype: dict.dtype)
 
     # TODO: save context
     unless dict.add!(new_term)
