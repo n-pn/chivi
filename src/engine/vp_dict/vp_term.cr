@@ -8,8 +8,8 @@ class CV::VpTerm
   getter key : String
   getter vals : Array(String)
 
-  getter prio : Int8 = 1_i8
-  getter attr : Int8 = 0_i8
+  property prio : Int8 = 1_i8
+  property attr : Int8 = 0_i8
 
   getter mtime : Int32 = 0
   getter rtime : Time { EPOCH + @mtime.minutes }

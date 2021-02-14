@@ -62,6 +62,18 @@ class CV::ExportDicts
     end
 
     @out_regular.load!("_db/dictdb/remote/common/regular.tab")
+    @out_regular.trie.each do |term|
+      next if term.empty?
+
+      term.prio = 0_i8 if term.key.size < 2
+      term.prio = 2_i8 if term.key.size > 3
+
+      fval = term.vals.first
+      term.attr ^= 1 if fval != fval.downcase
+
+      # TODO: import nouns, verbs, adjvs from cedict
+    end
+
     @out_regular.save!
   end
 
@@ -71,12 +83,19 @@ class CV::ExportDicts
     Dir.glob("_db/dictdb/remote/unique/*.tab").each do |file|
       dict = VpDict.load(File.basename(file, ".tab"))
       dict.load!(file)
-      dict.save!(trim: true)
 
       dict.trie.each do |term|
+        unless term.empty?
+          term.prio = 0_i8 if term.key.size < 2
+          term.prio = 2_i8 if term.key.size > 2
+
+          fval = term.vals.first
+          term.attr ^= 1 if fval != fval.downcase
+        end
+
         # add to quick translation dict if entry is a name
         unless term.key.size < 3 && term.vals.empty? || term.vals[0].downcase == term.vals[0]
-          various_term = @out_various.gen_term(term.key, term.vals)
+          various_term = @out_various.gen_term(term.key, term.vals, 2_i8, 1_i8)
           @out_various.add(various_term)
         end
 
@@ -88,6 +107,8 @@ class CV::ExportDicts
 
         @out_suggest.add(suggest_term)
       end
+
+      dict.save!(trim: true)
     end
   end
 

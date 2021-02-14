@@ -128,7 +128,7 @@ module CV::Server
     if dict.dtype == 3 # unique dict
       # add to quick translation dict if entry is a name
       unless key.size < 3 || vals.empty? || vals[0].downcase == vals[0]
-        various_term = VpDict.various.gen_term(key, vals)
+        various_term = VpDict.various.gen_term(key, vals, 2_i8, 1_i8)
         VpDict.various.add!(various_term)
       end
 
