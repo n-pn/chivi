@@ -45,7 +45,9 @@
 
   let value = ['', '', '']
   let origs = ['', '', '']
-  let attrs = ['', '', '']
+
+  let prios = [0, 0, 0]
+  let attrs = [0, 0, 0]
 
   let p_min = [1, 2, 3]
   let power = [1, 2, 3]
@@ -72,7 +74,8 @@
     p_min = infos.map((info, i) => (+info.power > i + 1 ? +info.power : i + 1))
     power = p_min.map((min) => (min < $u_power ? min : $u_power))
 
-    origs = infos.map((info) => info.vals[0] || '')
+    origs = infos.map((info) => (info.vals || [])[0] || '')
+    prios = infos.map((info) => info.prio || 0)
 
     value = origs.map((val, i) => {
       if (val) return val
@@ -84,8 +87,8 @@
     })
 
     attrs = infos.map((info, i) => {
-      if (origs[i] || info.attrs) return info.attrs || ''
-      return i > 0 ? '' : origs[1] ? infos[1].attrs : 'N'
+      if (origs[i] || info.attr) return info.attr || 0
+      return i > 0 ? 0 : origs[1] ? infos[1].attr : 1
     })
   }
 
@@ -93,8 +96,9 @@
     const dname = dicts[tab][0]
     const params = {
       key,
-      value: value[tab],
-      attrs: attrs[tab],
+      vals: value[tab],
+      prio: prios[tab],
+      attr: attrs[tab],
       power: power[tab],
     }
 
@@ -184,12 +188,15 @@
           <Vutil bind:value={value[$on_tab]} _orig={origs[$on_tab]} />
         </div>
 
-        <Attrs bind:attrs={attrs[$on_tab]} with_types={$on_tab < 2} />
+        <Attrs
+          bind:prio={prios[$on_tab]}
+          bind:attr={attrs[$on_tab]}
+          with_types={$on_tab < 2} />
       </div>
 
       <div class="vfoot">
         <div class="-emend">
-          {#if infos[$on_tab].uname}
+          {#if infos[$on_tab].uname != '_'}
             <Emend info={infos[$on_tab]} />
           {/if}
         </div>

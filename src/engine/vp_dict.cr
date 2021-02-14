@@ -85,7 +85,7 @@ class CV::VpDict
     add(gen_term(key, vals, prio, attr))
   end
 
-  def gen_term(key : String, vals : Array(String), prio = 1_i8, attr = 0_i8)
+  def gen_term(key : String, vals = [""], prio = 1_i8, attr = 0_i8)
     VpTerm.new(key, vals, prio: prio, attr: attr, mtime: 0, dtype: @dtype, power: @p_min)
   end
 
@@ -105,6 +105,7 @@ class CV::VpDict
 
     if newer
       node.term = new_term
+      new_term._prev = old_term
       node.edits.reject! { |old_term| old_term.uname == new_term.uname }
     end
 
@@ -123,6 +124,10 @@ class CV::VpDict
 
   def find(key : String) : VpTerm?
     @trie.find(key).try(&.term)
+  end
+
+  def find!(key : String) : VpTerm
+    find(key) || gen_term(key, [""])
   end
 
   delegate scan, to: @trie

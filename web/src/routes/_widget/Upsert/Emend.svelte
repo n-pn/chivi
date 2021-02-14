@@ -2,14 +2,11 @@
   import RTime from '$blocks/RTime'
 
   export let info
-  $: _orig = info.vals[0]
-  $: _prev = info.hints[0]
-  $: state = !_orig ? 'Xoá' : _prev ? 'Sửa' : 'Thêm'
 </script>
 
 <div class="emend">
   <div class="-line">
-    <span class="-text">{state} bởi: </span>
+    <span class="-text">{info.state} bởi: </span>
     <span class="-user">{info.uname}</span>
     <span class="-text">Q.hạn:</span>
     <span class="-user">{info.power}</span>

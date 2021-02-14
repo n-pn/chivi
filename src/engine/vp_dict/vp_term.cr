@@ -20,6 +20,8 @@ class CV::VpTerm
   getter dtype : Int8 = 1_i8
   getter point : Float64 { calc_point }
 
+  property _prev : VpTerm? = nil
+
   def self.parse_prio(attrs : String)
     case attrs[0]?
     when 'H' then 2_i8
@@ -105,15 +107,17 @@ class CV::VpTerm
 
   def to_json(json : JSON::Builder)
     json.object do
-      json.field key, @key
+      json.field "key", @key
+      json.field "vals", @vals
 
-      json.field vals, @vals
-      json.field prio, @prio
-      json.field attr, @attr
+      json.field "prio", @prio
+      json.field "attr", @attr
 
-      json.field mtime, rtime.to_unix_ms
-      json.field uname, @uname
-      json.field power, @power
+      json.field "mtime", rtime.to_unix_ms
+      json.field "uname", @uname
+      json.field "power", @power
+
+      json.field "state", empty? ? "Xoá" : (@_prev ? "Sửa" : "Thêm")
     end
   end
 

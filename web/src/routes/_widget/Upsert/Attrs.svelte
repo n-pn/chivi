@@ -1,45 +1,35 @@
 <script context="module">
-  const priorities = { H: 'Cao', M: 'Bình', L: 'Thấp' }
+  const priorities = { L: 'Thấp', M: 'Bình', H: 'Cao' }
   const types = { N: 'Danh', V: 'Động', A: 'Tính' }
 </script>
 
 <script>
-  export let attrs = ''
+  export let prio = 1
+  export let attr = 0
   export let with_types = true
-
-  $: priority = attrs.includes('H') ? 'H' : attrs.includes('L') ? 'L' : 'M'
-
-  function update_prio(val) {
-    if (val == 'M') val = ''
-    attrs = priority == 'M' ? val + attrs : attrs.replace(priority, val)
-  }
-
-  function update_type(attr) {
-    attrs = attrs.includes(attr) ? attrs.replace(attr, '') : attrs + attr
-  }
 </script>
 
 <div class="attrs">
   <div class="-line _prio">
     <span class="-text" class:_hide={with_types}>Ưu tiên:</span>
-    {#each Object.entries(priorities) as [val, lbl]}
+    {#each Object.entries(priorities) as [val, lbl], idx}
       <button
         class="-attr"
-        class:active={priority == val}
+        class:active={prio == idx}
         data-kbd={val}
-        on:click={() => update_prio(val)}>{lbl}</button>
+        on:click={() => (prio = idx)}>{lbl}</button>
     {/each}
   </div>
 
   {#if with_types}
     <div class="-line _type">
       <span class="-text _hide">Phân loại:</span>
-      {#each Object.entries(types) as [val, lbl]}
+      {#each Object.entries(types) as [val, lbl], idx}
         <button
           class="-attr"
           data-kbd={val}
-          class:active={attrs.includes(val)}
-          on:click={() => update_type(val)}>{lbl}</button>
+          class:active={attr & (1 << idx)}
+          on:click={() => (attr = attr ^ (1 << idx))}>{lbl}</button>
       {/each}
     </div>
   {/if}

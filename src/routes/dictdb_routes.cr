@@ -46,20 +46,24 @@ module CV::Server
 
     hints = [] of String
 
-    if special_node = VpDict.load(dname).trie.find(input)
+    special_dict = VpDict.load(dname)
+    regular_dict = VpDict.regular
+    hanviet_dict = VpDict.hanviet
+
+    if special_node = special_dict.trie.find(input)
       special_node.edits.each { |term| hints.concat(term.vals) }
     end
 
-    if regular_node = VpDict.regular.trie.find(input)
+    if regular_node = regular_dict.trie.find(input)
       regular_node.edits.each { |term| hints.concat(term.vals) }
+    end
+
+    if hanviet_node = hanviet_dict.trie.find(input)
+      hanviet_node.edits.each { |term| hints.concat(term.vals) }
     end
 
     if suggest_node = VpDict.suggest.trie.find(input)
       suggest_node.edits.each { |term| hints.concat(term.vals) }
-    end
-
-    if hanviet_node = VpDict.hanviet.trie.find(input)
-      hanviet_node.edits.each { |term| hints.concat(term.vals) }
     end
 
     binh_am = Convert.binh_am.translit(input).to_s
@@ -75,9 +79,20 @@ module CV::Server
 
           json.field "infos" do
             json.array do
-              special_node.try(&.term.to_json(json))
-              regular_node.try(&.term.to_json(json))
-              hanviet_node.try(&.term.to_json(json))
+              unless special_term = special_node.try(&.term)
+                special_term = special_dict.gen_term(input)
+              end
+              special_term.to_json(json)
+
+              unless regular_term = regular_node.try(&.term)
+                regular_term = regular_dict.gen_term(input)
+              end
+              regular_term.to_json(json)
+
+              unless hanviet_term = hanviet_node.try(&.term)
+                hanviet_term = hanviet_dict.gen_term(input)
+              end
+              hanviet_term.to_json(json)
             end
           end
         end
