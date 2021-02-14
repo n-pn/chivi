@@ -4,46 +4,55 @@ class CV::VpTerm
   SEP = "ǀ"
 
   EPOCH = Time.utc(2020, 1, 1)
-  getter rtime : Time { EPOCH + @mtime.minutes }
 
   getter key : String
-  getter key : String
-
   getter vals : Array(String)
+
   getter prio : Int8 = 1_i8
   getter attr : Int8 = 0_i8
 
   getter mtime : Int32 = 0
+  getter rtime : Time { EPOCH + @mtime.minutes }
+
   getter uname : String = "_"
   getter power : Int8 = 1_i8
 
   getter dtype : Int8 = 1_i8
   getter point : Float64 { calc_point }
 
-  def initialize(cols : Array(String), @dtype = 2_i8, p_min = 2_i8)
+  def self.parse_prio(attrs : String)
+    case attrs[0]?
+    when 'H' then 2_i8
+    when 'L' then 0_i8
+    else          1_i8
+    end
+  end
+
+  def self.parse_attr(attrs : String)
+    res = 0_i8
+    res += 1_i8 if attrs.includes?('N')
+    res += 2_i8 if attrs.includes?('V')
+    res += 4_i8 if attrs.includes?('A')
+
+    res
+  end
+
+  def initialize(cols : Array(String), @dtype = 2_i8, @power = 2_i8)
     @key = cols[0]
     @vals = cols[1]?.try(&.split(SEP)) || [""]
 
     return if @dtype < 2 # skip for lookup dicts
 
     if attrs = cols[2]?
-      @prio = case attrs[0]?
-              when 'H' then 2_i8
-              when 'L' then 0_i8
-              else          1_i8
-              end
-
-      @attr = 0_i8
-      @attr += 1_i8 if attrs.includes?('N')
-      @attr += 2_i8 if attrs.includes?('V')
-      @attr += 4_i8 if attrs.includes?('A')
+      @prio = VpTerm.parse_prio(attrs)
+      @attr = VpTerm.parse_attr(attrs)
     end
 
     return unless mtime = cols[3]?.try(&.to_i?)
     @mtime = mtime
 
     @uname = cols[4]? || "_"
-    @power = cols[5]?.try(&.to_i8?) || p_min
+    @power = cols[5]?.try(&.to_i8?) || @power
   end
 
   def initialize(@key,
@@ -80,8 +89,8 @@ class CV::VpTerm
     return if @dtype < 2 # skip for lookup dicts
 
     case @prio
-    when 2 then io << 'H'
-    when 0 then io << 'L'
+    when 2_i8 then io << 'H'
+    when 0_i8 then io << 'L'
     end
 
     io << 'N' if @attr & 1 != 0

@@ -97,7 +97,7 @@ class CV::VpDict
 
     if newer
       node.term = new_term
-      node.edits.reject!(&.uname.== new_term.uname)
+      node.edits.reject! { |old_term| old_term.uname == new_term.uname }
     end
 
     node.edits << new_term
