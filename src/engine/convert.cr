@@ -10,7 +10,7 @@ class CV::Convert
     new(VpDict.regular, VpDict.load(bdict))
   end
 
-  def self.convert(input : String, dname = "various")
+  def self.convert(input : String, dname = "various") : Convert
     case dname
     when "hanviet" then hanviet.translit(input).to_s
     when "binh_am" then binh_am.translit(input).to_s

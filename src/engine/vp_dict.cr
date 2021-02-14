@@ -81,6 +81,14 @@ class CV::VpDict
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
   end
 
+  def put(key : String, vals : Array(String), prio = 1_i8, attr = 0_i8)
+    add(gen_term(key, vals, prio, attr))
+  end
+
+  def gen_term(key : String, vals : Array(String), prio = 1_i8, attr = 0_i8)
+    VpTerm.new(key, vals, prio: prio, attr: attr, mtime: 0, dtype: @dtype, power: @p_min)
+  end
+
   # return true if new term prevails
   def add(new_term : VpTerm) : Bool
     @logs << new_term if new_term.mtime > 0
@@ -128,14 +136,12 @@ class CV::VpDict
         @trie.each(full: !trim) { |term| io.puts(term) }
       end
 
-      next if @dtype < 2
-
       File.open(@flog, "w") do |io|
-        @logs.each { |term| io.puts(term) }
+        @logs.sort_by(&.mtime).each { |term| io.puts(term) }
       end
     end
 
-    puts "- <vp_dict> [#{File.basename(@afile)}] saved: #{@size} entries, \
+    puts "- <vp_dict> [#{File.basename(@file)}] saved: #{@size} entries, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.yellow
   end
 end

@@ -16,14 +16,14 @@ end
 inp_dict = QtDict.load("_system/lacviet-mtd.txt", preload: true)
 hv_chars = QtDict.load("hanviet/lacviet-chars.txt", preload: false)
 hv_words = QtDict.load("hanviet/lacviet-words.txt", preload: false)
-out_dict = CV::VpDict.load("trungviet", regen: true)
+out_dict = CV::VpDict.load("trungviet", reset: true)
 
 puts "- input: #{inp_dict.size}"
 inp_dict.data.each do |key, vals|
   QtUtil.lexicon.add(key) if QtUtil.has_hanzi?(key)
 
   vals = vals.first.split("\\n").map { |x| cleanup(x) }
-  out_dict.add(CV::VpTerm.new(key, vals))
+  out_dict.put(key, vals)
 
   vals.each do |val|
     if match = val.match(/{(.+?)}/)
@@ -43,6 +43,6 @@ end
 
 hv_chars.save!
 hv_words.save!
-out_dict.save!(trim: false)
+out_dict.save!(trim: true)
 
 QtUtil.lexicon.save!

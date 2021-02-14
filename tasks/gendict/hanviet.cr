@@ -18,13 +18,11 @@ class Hanviet
   end
 
   def gen_from_trad!
-    TRADSIM._root.each do |node|
-      next unless entry = node.entry
+    TRADSIM.trie.each do |term|
+      next if term.key.size > 0
+      next unless vals = @input[term.key]?
 
-      next if entry.key.size > 0
-      next unless vals = @input[entry.key]?
-
-      entry.vals.each do |simp|
+      term.vals.each do |simp|
         next if @input.has_key?(simp)
         @input.upsert(simp, vals)
       end
@@ -35,7 +33,7 @@ class Hanviet
     hanviet_file = "_db/dictdb/active/system/hanviet.tsv"
     File.delete(hanviet_file) if File.exists?(hanviet_file)
 
-    output = CV::VpDict.load("hanviet", regen: true)
+    output = CV::VpDict.load("hanviet", reset: true)
 
     input = @input.to_a.sort_by(&.[0].size)
     input.each do |(key, vals)|
@@ -48,11 +46,11 @@ class Hanviet
         pp [key, vals, convert]
       end
 
-      output.add(CV::VpTerm.new(key, vals.uniq.first(3)))
+      output.put(key, vals.uniq.first(3))
     end
 
-    output.load!("_db/dictdb/remote/system/hanviet.tsv")
-    output.save!
+    output.load!("_db/dictdb/remote/system/hanviet.tab")
+    output.save!(trim: true)
   end
 end
 

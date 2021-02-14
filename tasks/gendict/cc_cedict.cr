@@ -118,15 +118,15 @@ class CeInput
       input[entry.simp] << "[#{entry.pinyin}] #{entry.defins}"
     end
 
-    output = CV::VpDict.load("cc_cedict", regen: true)
+    output = CV::VpDict.load("cc_cedict", reset: true)
 
     input.each do |key, vals|
       QtUtil.lexicon.add(key)
-      output.add(CV::VpTerm.new(key, vals))
+      output.put(key, vals)
     end
 
     QtUtil.lexicon.save!
-    output.save!
+    output.save!(trim: true)
   end
 
   HANZIDB = QtDict.load("_system/hanzidb.txt")
@@ -158,18 +158,18 @@ class CeInput
       end
     end
 
-    output = CV::VpDict.load("tradsim", regen: true)
+    output = CV::VpDict.load("tradsim", reset: true)
 
     counter.each do |trad, counts|
       next if HANZIDB.has_key?(trad) || counts.has_key?(trad)
 
       best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
-      output.add(CV::VpTerm.new(trad, best))
+      output.put(trad, best)
     end
 
-    puts "- trad chars count: #{output.rsize.colorize(:green)}"
+    puts "- trad chars count: #{output.size.colorize(:green)}"
 
-    output.add(CV::VpTerm.new("扶馀", ["扶余"]))
+    output.put("扶馀", ["扶余"])
 
     words = tswords.data.to_a.sort_by(&.[0].size)
     words.each do |key, vals|
@@ -179,10 +179,10 @@ class CeInput
       convert = QtUtil.convert(output, key)
       next if simp.first == convert
 
-      output.add(CV::VpTerm.new(key, simp))
+      output.put(key, simp)
     end
 
-    output.save!
+    output.save!(trim: true)
   end
 
   def export_pinyins!
@@ -208,21 +208,21 @@ class CeInput
       end
     end
 
-    output = CV::VpDict.load("binh_am", regen: true)
+    output = CV::VpDict.load("binh_am", reset: true)
 
     HANZIDB.each do |key, vals|
       next if vals.empty? || vals.first.empty?
-      output.add(CV::VpTerm.new(key, vals))
+      output.put(key, vals)
     end
 
     counter.each do |char, counts|
       best = counts.to_a.sort_by { |pinyin, count| -count }.map(&.first)
-      output.add(CV::VpTerm.new(char, best.first(3)))
+      output.put(char, best.first(3))
     end
 
     extras = QtDict.load("_system/extra-pinyins.txt")
     extras.each do |key, vals|
-      output.add(CV::VpTerm.new(key, vals))
+      output.put(key, vals)
     end
 
     words = pywords.to_a.sort_by(&.[0].size)
@@ -233,10 +233,10 @@ class CeInput
       convert = QtUtil.convert(output, key, " ")
       next if vals.first == convert
 
-      output.add(CV::VpTerm.new(key, vals))
+      output.put(key, vals)
     end
 
-    output.save!
+    output.save!(trim: true)
   end
 end
 

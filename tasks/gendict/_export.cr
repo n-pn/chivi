@@ -3,118 +3,141 @@ require "../../src/engine/convert"
 
 puts "\n[Load deps]".colorize.cyan.bold
 
-LEXICON = ValueSet.load(".result/lexicon.tsv", true)
-CHECKED = ValueSet.load(".result/checked.tsv", true)
+class CV::ExportDicts
+  LEXICON = ::ValueSet.load(".result/lexicon.tsv", true)
+  CHECKED = ::ValueSet.load(".result/checked.tsv", true)
 
-REJECT_STARTS = File.read_lines("#{__DIR__}/consts/reject-starts.txt")
-REJECT_ENDS   = File.read_lines("#{__DIR__}/consts/reject-ends.txt")
+  REJECT_STARTS = File.read_lines("#{__DIR__}/consts/reject-starts.txt")
+  REJECT_ENDS   = File.read_lines("#{__DIR__}/consts/reject-ends.txt")
 
-def should_keep?(key : String, val : String = "")
-  return key =~ /^\p{Han}$/ if key.size == 1
-  return false if val =~ /[(\/{})]/
+  def should_keep?(key : String, val : String = "")
+    return key =~ /\p{Han}/ if key.size == 1
+    return false if val =~ /[:(\/{})]/
+    # return true if key.ends_with?("目的")
+    LEXICON.includes?(key) || CHECKED.includes?(key)
+  end
 
-  return true if LEXICON.includes?(key)
-  return true if CHECKED.includes?(key)
-  return true if key.ends_with?("目的")
+  def should_reject?(key : String)
+    REJECT_STARTS.each { |word| return true if key.starts_with?(word) }
+    REJECT_ENDS.each { |word| return true if key.ends_with?(word) }
 
-  false
-end
+    key !~ /\p{Han}/
+  end
 
-def should_skip?(key : String)
-  REJECT_STARTS.each { |word| return true if key.starts_with?(word) }
-  REJECT_ENDS.each { |word| return true if key.ends_with?(word) }
+  getter out_regular : VpDict = VpDict.load("regular", reset: true)
+  getter out_various : VpDict = VpDict.load("various", reset: true)
+  getter out_suggest : VpDict = VpDict.load("suggest", reset: true)
 
-  key !~ /\p{Han}/
-end
+  getter cv_hanviet : Convert { Convert.hanviet }
+  getter cv_regular : Convert { Convert.new(@out_regular) }
 
-puts "\n[Export regular]".colorize.cyan.bold
+  def match_convert?(key : String, val : String)
+    return false if cv_hanviet.translit(key, false).to_s == val
+    convert = cv_regular.tl_plain(key).downcase
+    convert == val
+  end
 
-REGULAR_FILE = "_db/dictdb/active/common/regular.tsv"
-File.delete(REGULAR_FILE) if File.exists?(REGULAR_FILE)
-OUT_REGULAR = CV::VpDict.load("regular", regen: false)
+  def export_regular!
+    puts "\n[Export regular]".colorize.cyan.bold
 
-HANVIET = CV::Convert.hanviet
-REGULAR = CV::Convert.new(OUT_REGULAR)
+    input = QtDict.load(".result/regular.txt", true)
+    input.to_a.sort_by(&.[0].size).each do |key, vals|
+      next unless value = vals.first?
+      next if value.empty?
 
-inp_regular = QtDict.load(".result/regular.txt", true)
-inp_regular.to_a.sort_by(&.[0].size).each do |key, vals|
-  next unless value = vals.first?
-  next if value.empty?
-  regex = /^#{Regex.escape(value)}$/i
+      match = value.downcase
+      unless should_keep?(key, value)
+        next if should_reject?(key)
+        next if match_convert?(key, match)
+      end
 
-  unless should_keep?(key, value)
-    next if should_skip?(key)
+      @out_regular.put(key, vals)
+    end
 
-    unless HANVIET.translit(key, false).to_s =~ regex
-      next if REGULAR.cv_plain(key).to_s =~ regex
+    puts "\n- load hanviet".colorize.cyan.bold
+
+    CV::VpDict.hanviet.trie.each do |term|
+      next if term.key.size > 1 || @out_regular.find(term.key)
+      @out_regular.put(term.key, term.vals)
+    end
+
+    @out_regular.load!("_db/dictdb/remote/common/regular.tab")
+    @out_regular.save!
+  end
+
+  def export_uniques!
+    puts "\n[Export uniques]".colorize.cyan.bold
+
+    Dir.glob("_db/dictdb/remote/unique/*.tab").each do |file|
+      dict = VpDict.load(File.basename(file, ".tab"))
+      dict.load!(file)
+      dict.save!(trim: true)
+
+      dict.trie.each do |term|
+        # add to quick translation dict if entry is a name
+        unless term.key.size < 3 && term.vals.empty? || term.vals[0].downcase == term.vals[0]
+          various_term = @out_various.gen_term(term.key, term.vals)
+          @out_various.add(various_term)
+        end
+
+        # add to suggestion
+        suggest_term = @out_suggest.gen_term(term.key, term.vals)
+        if old_term = @out_suggest.find(term.key)
+          suggest_term.vals.concat(old_term.vals).uniq!
+        end
+
+        @out_suggest.add(suggest_term)
+      end
     end
   end
 
-  OUT_REGULAR.add(CV::VpTerm.new(key, vals))
-end
+  def export_suggest!
+    puts "\n[Export suggest]".colorize.cyan.bold
 
-puts "\n- load hanviet".colorize.cyan.bold
+    inp_suggest = ::QtDict.load(".result/suggest.txt", true)
+    inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
+      next unless value = vals.first?
 
-CV::VpDict.hanviet._root.each do |node|
-  next unless entry = node.entry
-  next if entry.key.size > 1
-  next if OUT_REGULAR.find(entry.key)
-  OUT_REGULAR.add(entry)
-end
+      next if value.empty?
+      match = value.downcase
 
-OUT_REGULAR.load!("_db/dictdb/remote/common/regular.tab")
-OUT_REGULAR.save!(trim: true)
+      unless should_keep?(key, value)
+        next if should_reject?(key)
+        next if key =~ /[的了是]/
+        next if match_convert?(key, match)
+      end
 
-puts "\n[Export suggest]".colorize.cyan.bold
+      out_suggest.put(key, vals)
+    rescue err
+      pp [err, key, vals]
+    end
 
-SUGGEST_FILE = "_db/dictdb/active/common/suggest.tsv"
-File.delete(SUGGEST_FILE) if File.exists?(SUGGEST_FILE)
-OUT_SUGGEST = CV::VpDict.load("suggest", regen: false)
-
-inp_suggest = QtDict.load(".result/suggest.txt", true)
-inp_suggest.to_a.sort_by(&.[0].size).each do |key, vals|
-  next if key.size > 4
-
-  next unless value = vals.first?
-  next if value.empty?
-  regex = /^#{Regex.escape(value)}$/i
-
-  unless should_keep?(key, value)
-    next if key =~ /[的了是]/
-    next if should_skip?(key)
-    next if HANVIET.translit(key, false).to_s =~ regex
-    next if REGULAR.cv_plain(key).to_s =~ regex
+    out_suggest.save!(trim: true)
   end
 
-  OUT_SUGGEST.add(CV::VpTerm.new(key, vals))
-rescue err
-  pp [err, key, vals]
-end
+  def export_various!
+    puts "\n[Export various]".colorize.cyan.bold
 
-OUT_SUGGEST.load!("_db/dictdb/remote/common/suggest.tab")
-OUT_SUGGEST.save!(trim: true)
+    inp_various = ::QtDict.load(".result/various.txt", true)
+    inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
+      next if key.size < 2 || key.size > 6
+      unless should_keep?(key, vals.first)
+        next if should_reject?(key)
+      end
 
-puts "\n[Export various]".colorize.cyan.bold
+      out_various.put(key, vals)
+    end
 
-VARIOUS_FILE = "_db/dictdb/active/common/various.tsv"
-File.delete(VARIOUS_FILE) if File.exists?(VARIOUS_FILE)
-OUT_VARIOUS = CV::VpDict.load("various", regen: false)
-
-inp_various = QtDict.load(".result/various.txt", true)
-inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
-  next if key.size < 2
-  next if key.size > 6
-
-  unless should_keep?(key, vals.first)
-    next if should_skip?(key)
+    out_various.save!(trim: true)
   end
-
-  OUT_VARIOUS.add(CV::VpTerm.new(key, vals))
 end
 
-EXT_VARIOUS = "_db/dictdb/remote/common/various.tab"
-OUT_VARIOUS.load!(EXT_VARIOUS)
-OUT_VARIOUS.save!(trim: true)
+tasks = CV::ExportDicts.new
+
+tasks.export_regular!
+tasks.export_uniques!
+tasks.export_suggest!
+tasks.export_various!
 
 # puts "\n[Export recycle]".colorize.cyan.bold
 

@@ -16,7 +16,7 @@ puts "\n[Load history]".colorize.cyan.bold
 
 CHECKED = ValueSet.load(".result/checked.tsv", false)
 EXISTED = ValueSet.load(".result/existed.tsv", false)
-LEXICON = ValueSet.load(".result/existed.tsv", true)
+LEXICON = ValueSet.load(".result/lexicon.tsv", true)
 
 Dir.glob(QtUtil.inp_path("localqt/logs/*.log")) do |file|
   puts "- load file: [#{file.colorize(:blue)}]"
@@ -78,32 +78,29 @@ INPUT.each do |key, vals|
   names = names.first(4)
 
   unless words.empty?
-    if (ondicts || word_count >= 100) && (checked || book_count >= 20)
+    if (ondicts || book_count >= 40) && (checked || word_count >= 200)
       inp_regular.upsert(key, words)
-    elsif checked || ondicts || book_count >= 10
+    elsif checked || ondicts || book_count >= 20 || word_count >= 100
       inp_suggest.upsert(key, words)
-    elsif word_count >= 100 && key.size < 8
-      inp_suggest.upsert(key, words)
-    elsif word_count >= 10
+    elsif word_count >= 20
       inp_recycle.upsert(key, words)
     end
   end
 
   unless names.empty?
-    if (ondicts || checked || word_count >= 100) && book_count >= 20
+    if (ondicts || checked || key.size > 2) && (book_count >= 40 || word_count >= 200)
       inp_regular.upsert(key, vals, :new_first)
-    elsif checked || ondicts || book_count >= 10
+    elsif checked || ondicts || book_count >= 20 || word_count >= 100
       inp_suggest.upsert(key, vals, :new_first)
-    elsif word_count >= 100 && key.size < 8
-      inp_suggest.upsert(key, vals, :new_first)
-    elsif word_count >= 10
+    elsif word_count >= 20
       inp_recycle.upsert(key, vals, :new_first)
     end
 
     next unless words.empty? && key !~ /^\P{Han}/
-    if checked || (book_count >= 20 && word_count >= 500)
-      inp_various.upsert(key, vals, :new_first)
-    end
+    next unless inp_regular.has_key?(key)
+
+    next unless checked && word_count >= 200 && key.size > 1
+    inp_various.upsert(key, vals, :new_first)
   end
 end
 
@@ -114,7 +111,7 @@ Dir.glob(QtUtil.inp_path("fixture/*.txt")).each do |file|
     CHECKED.add(key)
     EXISTED.add(key)
 
-    if COUNT_WORDS.fetch(key, 0) >= 200
+    if COUNT_WORDS.fetch(key, 0) >= 100
       inp_regular.upsert(key, vals, :new_first)
     else
       inp_suggest.upsert(key, vals, :new_first)
@@ -161,11 +158,11 @@ QtDict.load("outerqt/combined-lowercase.txt").each do |key, vals|
 
   ondicts = LEXICON.includes?(key)
 
-  if ondicts && book_count >= 20 && word_count >= 200
+  if ondicts && book_count >= 40 && word_count >= 400
     inp_regular.upsert(key, vals, :old_first)
-  elsif ondicts || book_count >= 20 || word_count >= 200
+  elsif (ondicts || key.size != 2) && (book_count >= 40 || word_count >= 400)
     inp_suggest.upsert(key, vals, :old_first)
-  elsif word_count >= 200
+  elsif word_count >= 100
     inp_recycle.upsert(key, vals, :old_first)
   end
 end
@@ -181,11 +178,11 @@ QtDict.load("outerqt/combined-uppercase.txt").each do |key, vals|
 
   ondicts = LEXICON.includes?(key)
 
-  if ondicts && book_count >= 40 && word_count >= 400
+  if (ondicts || key.size > 2) && book_count >= 40 && word_count >= 400
     inp_regular.upsert(key, vals, :old_first)
-  elsif ondicts || book_count >= 20 || word_count >= 200
+  elsif (ondicts || key.size > 2) && (book_count >= 20 || word_count >= 200)
     inp_suggest.upsert(key, vals, :old_first)
-  elsif word_count >= 200
+  elsif word_count >= 100
     inp_recycle.upsert(key, vals, :old_first)
   end
 end

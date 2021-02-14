@@ -28,7 +28,7 @@ class ValueSet
       puts "[ERROR loading #{file}: #{err}, line: #{line}]".colorize.red
     end
 
-    puts "<value_set> [#{@file}] loaded: #{@data.size} entries".colorize.green
+    puts "- <value_set> [#{@file}] loaded: #{@data.size} entries".colorize.green
   end
 
   def add!(key : String)
@@ -46,7 +46,7 @@ class ValueSet
       @data.each { |key| io.puts("#{key}\tT") }
     end
 
-    puts "<value_set> [#{@file}] saved: #{@data.size} entries".colorize.yellow
+    puts "- <value_set> [#{@file}] saved: #{@data.size} entries".colorize.yellow
   end
 end
 

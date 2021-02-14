@@ -111,13 +111,19 @@ module CV::Server
     end
 
     if dict.dtype == 3 # unique dict
-      # add to suggestion
-      CV::VpDict.suggest.add!(new_term)
-
       # add to quick translation dict if entry is a name
-      unless vals.empty? || vals[0].downcase == vals[0]
-        CV::VpDict.various.add!(new_term) unless CV::VpDict.regular.find(key)
+      unless key.size < 3 || vals.empty? || vals[0].downcase == vals[0]
+        various_term = VpDict.various.gen_term(key, vals)
+        VpDict.various.add!(various_term)
       end
+
+      # add to suggestion
+      suggest_term = VpDict.suggest.gen_term(key, vals)
+      if old_term = VpDict.suggest.find(key)
+        suggest_term.vals.concat(old_term.vals).uniq!
+      end
+
+      VpDict.suggest.add!(suggest_term)
     end
 
     RouteUtils.json_res(env, dict.find(key))

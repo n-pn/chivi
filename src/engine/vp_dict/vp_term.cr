@@ -88,6 +88,8 @@ class CV::VpTerm
 
     return if @dtype < 2 # skip for lookup dicts
 
+    io << '\t'
+
     case @prio
     when 2_i8 then io << 'H'
     when 0_i8 then io << 'L'
@@ -97,10 +99,8 @@ class CV::VpTerm
     io << 'V' if @attr & 2 != 0
     io << 'A' if @attr & 4 != 0
 
-    io << '\t'
-
     return if @mtime <= 0 # skip if no user activity
-    {@mtime, @uname, @power}.join(io, '\t')
+    io << '\t' << @mtime << '\t' << @uname << '\t' << @power
   end
 
   def to_json(json : JSON::Builder)
