@@ -37,9 +37,9 @@ class CV::CvGroup
 
         entry.fix(val)
       when "对"
-        entry.fix(@data[i + 1]?.try(&.noun?) ? "đối với" : "đúng")
+        entry.fix(@data[i + 1]?.try(&.word?) ? "đối với" : "đúng")
       when "不对"
-        entry.fix(@data[i + 1]?.try(&.noun?) ? "không đối với" : "không đúng")
+        entry.fix(@data[i + 1]?.try(&.word?) ? "không đối với" : "không đúng")
       when "也"
         entry.fix(@data[i + 1]?.try(&.word?) ? "cũng" : "vậy")
       when "地"
