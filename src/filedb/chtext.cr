@@ -109,7 +109,7 @@ class CV::Chtext
   end
 
   alias Cache = Hash(String, self)
-  CACHE_LIMIT = 512
+  CACHE_LIMIT = 256
 
   @@acache = Cache.new
   @@bcache = Cache.new
