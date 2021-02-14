@@ -38,7 +38,7 @@
 
   let trans = {}
   let hints = []
-  let infos = [{}, {}, {}]
+  let infos = [{ uname: '_' }, { uname: '_' }, { uname: '_' }]
 
   let key = ''
   $: if ($active && key) init_search(key, dname)
