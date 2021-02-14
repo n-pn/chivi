@@ -180,11 +180,20 @@ class CV::RmInfo
 
   getter last_chid : String do
     case @sname
+    when "69shu"   then extract_last_chid_69shu
     when "hetushu" then extract_last_chid("#dir :last-child a:last-of-type")
-    when "69shu"   then extract_last_chid(".mulu_list:first-of-type a:first-child")
     when "zhwenpg" then extract_last_chid(".fontwt0 + a")
     else                extract_last_chid_by_meta
     end
+  end
+
+  private def extract_last_chid_69shu
+    unless node = @rdoc.css("#catalog").first?
+      return extract_last_chid(".mulu_list:first-of-type a:first-of-type")
+    end
+
+    return "" unless link = node.css("li:last-of-type > a").first?
+    extract_chid(link.attributes["href"])
   end
 
   private def extract_last_chid(sel : String)
@@ -238,8 +247,11 @@ class CV::RmInfo
   end
 
   def extract_69shu_chlist
+    nodes = @rdoc.css(".catalog").to_a
+    nodes = @rdoc.css(".mu_contain").to_a if nodes.empty?
+
     chlist = Chlist.new
-    return chlist unless nodes = @rdoc.css(".mu_contain").to_a
+    return chlist if nodes.empty?
 
     nodes.shift if nodes.size > 0
     label = ""

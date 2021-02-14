@@ -25,6 +25,7 @@ def fetch_info(sname, snvid, fresh = false) : Void
   puts "------".colorize.green
 
   puts "chap_count: #{parser.chap_list.size}"
+  puts "last_ch_id: #{parser.last_chid}"
   puts "------".colorize.green
 
   parser.chap_list.first(4).map { |x| pp x }
@@ -73,4 +74,6 @@ fetch_info("bqg_5200", "139570", fresh: false)
 
 fetch_info("shubaow", "150092", fresh: false)
 
-fetch_info("paoshu8", "151780", fresh: true)
+fetch_info("paoshu8", "151780", fresh: false)
+
+fetch_info("69shu", "35875", fresh: false)
