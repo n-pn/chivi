@@ -18,80 +18,86 @@ class CV::CvGroup
     # - apply other grammar rule
     # - ...
 
-    prev = nil
+    @data.each_with_index do |curr, i|
+      case curr.key
+      when "那么"
+        next unless succ = @data[i + 1]?
+        next unless succ.adjv?
 
-    @data.each_with_index do |entry, i|
-      case entry.key
+        succ.key = "#{curr.key}#{succ.key}"
+        succ.val = "#{succ.val} như vậy"
+        curr.clear!
       when "的"
-        # TODO: handle `的`
-        entry.fix("")
+        curr.fix("")
       when "了"
         succ = @data[i + 1]?
 
         # TODO: remove "了" only if prev is a verb
-        if succ && succ.word? && succ.key != @data[i - 1]?.try(&.key)
+        if @data[i - 1]?.try(&.adjv?)
+          val = "rồi"
+        elsif succ && succ.word? && succ.key != @data[i - 1]?.try(&.key)
           val = ""
         else
           val = "rồi"
         end
 
-        entry.fix(val)
+        curr.fix(val)
       when "对"
-        entry.fix(@data[i + 1]?.try(&.word?) ? "đối với" : "đúng")
+        curr.fix(@data[i + 1]?.try(&.word?) ? "đối với" : "đúng")
       when "不对"
-        entry.fix(@data[i + 1]?.try(&.word?) ? "không đối với" : "không đúng")
+        curr.fix(@data[i + 1]?.try(&.word?) ? "không đối với" : "không đúng")
       when "也"
-        entry.fix(@data[i + 1]?.try(&.word?) ? "cũng" : "vậy")
+        curr.fix(@data[i + 1]?.try(&.word?) ? "cũng" : "vậy")
       when "地"
         # TODO: check noun, verb?
-        entry.fix(@data[i - 1]?.try(&.word?) ? "mà" : "địa")
+        curr.fix(@data[i - 1]?.try(&.word?) ? "mà" : "địa")
       when "原来"
         if @data[i + 1]?.try(&.match_key?("的")) || @data[i - 1]?.try(&.word?)
           val = "ban đầu"
         else
           val = "thì ra"
         end
-        entry.fix(val)
+        curr.fix(val)
       when "高达"
-        entry.fix("cao đến") if @data[i + 1]?.try(&.is_num)
+        curr.fix("cao đến") if @data[i + 1]?.try(&.is_num)
       when "行"
-        entry.fix("được") unless @data[i + 1]?.try(&.word?)
+        curr.fix("được") unless @data[i + 1]?.try(&.word?)
         # when "斤"
         #   next unless prev = @data[i - 1]?
         #   next unless num = prev.to_i?
         #   val = (num / 2 * 10).round / 10
-        # entry.dic = 9
-        # entry.val = val.to_s
+        # curr.dic = 9
+        # curr.val = val.to_s
 
       when "两"
-        entry.fix("lượng") if @data[i - 1]?.try(&.is_num)
+        curr.fix("lượng") if @data[i - 1]?.try(&.is_num)
       when "里"
-        entry.fix("dặm") if @data[i - 1]?.try(&.is_num)
+        curr.fix("dặm") if @data[i - 1]?.try(&.is_num)
       when "米"
-        entry.fix("mét") if @data[i - 1]?.try(&.is_num)
+        curr.fix("mét") if @data[i - 1]?.try(&.is_num)
       when "年"
         # TODO: handle special cases for year
         next unless prev = @data[i - 1]?
         next unless prev.to_i?.try(&.>= 100)
 
-        entry.key = "#{prev.key}#{entry.key}"
-        entry.fix("năm #{prev.key}")
+        curr.key = "#{prev.key}#{curr.key}"
+        curr.fix("năm #{prev.key}")
 
         prev.clear!
       when "月"
         next unless prev = @data[i - 1]?
         next unless prev.to_i?.try(&.<= 15)
 
-        entry.key = "#{prev.key}#{entry.key}"
-        entry.fix("tháng #{prev.key}")
+        curr.key = "#{prev.key}#{curr.key}"
+        curr.fix("tháng #{prev.key}")
 
         prev.clear!
       when "日"
         next unless prev = @data[i - 1]?
         next unless prev.to_i?.try(&.<= 40)
 
-        entry.key = "#{prev.key}#{entry.key}"
-        entry.fix("ngày #{prev.key}")
+        curr.key = "#{prev.key}#{curr.key}"
+        curr.fix("ngày #{prev.key}")
 
         prev.clear!
       end
