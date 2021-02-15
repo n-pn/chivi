@@ -32,10 +32,7 @@ class CV::CvGroup
       when "了"
         succ = @data[i + 1]?
 
-        # TODO: remove "了" only if prev is a verb
-        if @data[i - 1]?.try(&.adjv?)
-          val = "rồi"
-        elsif succ && succ.word? && succ.key != @data[i - 1]?.try(&.key)
+        if succ && succ.word? && succ.key != @data[i - 1]?.try(&.key)
           val = ""
         else
           val = "rồi"
