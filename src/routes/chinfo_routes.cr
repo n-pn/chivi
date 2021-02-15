@@ -9,19 +9,20 @@ module CV::Server
 
     u_power, mode = RouteUtils.get_privi(env)
 
-    if mode > 0 && chinfo.fetch!(u_power, mode > 1)
+    if mode > 0
       bhash = env.params.query["bhash"]? || "various"
+
+      if chinfo.fetch!(u_power, mode > 1)
+        if sname != "hetushu" || sname != "zhwenpg" || sname != "69shu"
+          nvinfo = Nvinfo.load(bhash)
+          nvinfo.set_utime(chinfo._utime)
+          chseed = nvinfo.fix_source!
+          nvinfo.save!
+        end
+      end
 
       chinfo.trans!(bhash, u_power > 1)
       chinfo.save!
-
-      nvinfo = Nvinfo.load(bhash)
-      if sname != "hetushu" || sname != "zhwenpg"
-        nvinfo.set_utime(chinfo._utime)
-      end
-
-      chseed = nvinfo.fix_source!
-      nvinfo.save!
     end
 
     RouteUtils.json_res(env) do |res|
