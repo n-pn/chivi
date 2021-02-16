@@ -13,7 +13,6 @@ class CV::ChSource
 
   getter _index : ValueMap { ValueMap.new("#{@ch_dir}/_index.tsv") }
 
-  getter _atime : ValueMap { ValueMap.new("#{@ch_dir}/_atime.tsv") }
   getter _utime : ValueMap { ValueMap.new("#{@ch_dir}/_utime.tsv") }
 
   getter lastch : ValueMap { ValueMap.new("#{@ch_dir}/l_chid.tsv") }
@@ -23,7 +22,6 @@ class CV::ChSource
 
   def save!(mode : Symbol = :full) : Nil
     @_index.try(&.save!(mode: mode))
-    @_atime.try(&.save!(mode: mode))
     @_utime.try(&.save!(mode: mode))
     @lastch.try(&.save!(mode: mode))
 
@@ -37,15 +35,6 @@ class CV::ChSource
 
   def set_lastch(snvid : String, schid : String) : Bool
     lastch.add(snvid, schid)
-  end
-
-  def get_atime(snvid : String) : Int64
-    _atime.ival_64(snvid)
-  end
-
-  def set_atime(snvid : String, mtime : Int64, force : Bool = false) : Bool
-    return false unless force || mtime > get_atime(snvid)
-    _atime.add(snvid, mtime)
   end
 
   def get_utime(snvid : String) : Int64

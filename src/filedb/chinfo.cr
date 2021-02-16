@@ -18,7 +18,6 @@ class CV::Chinfo
   getter infos : ValueMap { ValueMap.new(map_path("infos"), mode: 1) }
   getter chaps : Array(Tuple(String, Array(String))) { infos.data.to_a }
 
-  getter _atime : Int64 { @meta.get_atime(@snvid) }
   getter _utime : Int64 { @meta.get_utime(@snvid) }
   getter lastch : String { @meta.get_lastch(@snvid) }
 
@@ -31,8 +30,6 @@ class CV::Chinfo
   end
 
   def fetch!(power = 4, force = false, expiry = Time.utc - 5.minutes) : Bool
-    set_atime(Time.utc.to_unix)
-
     return false unless remote?(power)
     source = RmInfo.init(@sname, @snvid, expiry: expiry)
 
@@ -75,10 +72,6 @@ class CV::Chinfo
   def set_lastch(schid : String) : Bool
     raise "empty last_child!" if schid.empty?
     @meta.set_lastch(@snvid, schid).tap { |x| @lastch == schid if x }
-  end
-
-  def set_atime(mtime = Time.utc.to_unix) : Bool
-    @meta.set_atime(@snvid, mtime).tap { |x| @_atime = mtime if x }
   end
 
   def set_utime(mtime = Time.utc.to_unix) : Bool
