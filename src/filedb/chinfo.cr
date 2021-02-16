@@ -58,7 +58,7 @@ class CV::Chinfo
     end
 
     @origs = puller.chap_list
-    save_list("origs", origs)
+    spawn save_list("origs", origs)
     true
   rescue err
     puts "- Fetch chinfo error: #{err}".colorize.red
@@ -70,7 +70,7 @@ class CV::Chinfo
 
     infos.clear if force
     infos.size.upto(origs.size - 1) do |idx|
-      row = origs.unsafe_fetch(idx)
+      row = origs[idx]
       schid = row[0]
 
       zh_title = row[1]
@@ -85,7 +85,7 @@ class CV::Chinfo
       next
     end
 
-    save_list("infos", infos)
+    spawn save_list("infos", infos)
   end
 
   def chsize
@@ -126,7 +126,7 @@ class CV::Chinfo
 
     while skip < upto
       idx = desc ? infos.size - skip - 1 : skip
-      yield idx, infos.unsafe_fetch(idx)
+      yield idx, infos[idx]
       skip += 1
     end
   end

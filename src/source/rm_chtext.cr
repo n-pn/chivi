@@ -9,8 +9,8 @@ class CV::RmChtext
   getter schid : String
 
   def initialize(@sname, @snvid, @schid, ttl = 10.years)
-    file = RmSpider.chinfo_file(@sname, @snvid)
-    link = RmSpider.chinfo_link(@sname, @snvid)
+    file = RmSpider.chtext_file(@sname, @snvid, @schid)
+    link = RmSpider.chtext_link(@sname, @snvid, @schid)
 
     html = RmSpider.fetch(file, link, sname: @sname, ttl: ttl)
     @rdoc = Myhtml::Parser.new(html)
