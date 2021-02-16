@@ -14,7 +14,6 @@ class CV::Chtext
 
   property zh_lines : Array(String) { load_zhtext }
   property zh_words : Int32 { zh_lines.map(&.size).sum }
-  property zh_mtime = 0_i64
 
   property cv_trans = ""
   property cv_mtime = 0_i64
@@ -23,7 +22,7 @@ class CV::Chtext
     @zh_file = "_db/chdata/zhtexts/#{@sname}/#{@snvid}/#{@schid}.txt"
   end
 
-  def fetch!(u_power = 4, ttl = 1.minutes) : Nil
+  def fetch!(u_power = 4, ttl = 3.minutes) : Nil
     return unless remote?(u_power)
     puts "FETCHING!"
 
@@ -82,7 +81,6 @@ class CV::Chtext
 
     if input = store.read(fname)
       puts "- <zh_text> [#{@zh_file}] loaded".colorize.green
-      zh_mtime = store.mtime(fname).try(&.to_unix) || 0_i64
       fix_zhtext!(input.split("\n"))
     else
       [] of String
