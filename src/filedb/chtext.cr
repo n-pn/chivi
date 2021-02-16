@@ -10,8 +10,6 @@ class CV::Chtext
   getter snvid : String
   getter schid : String
 
-  getter zh_file : String
-
   property zh_lines : Array(String) { load_zhtext }
   property zh_words : Int32 { zh_lines.map(&.size).sum }
 
@@ -19,7 +17,8 @@ class CV::Chtext
   property cv_mtime = 0_i64
 
   def initialize(@sname, @snvid, @schid)
-    @zh_file = "_db/chdata/zhtexts/#{@sname}/#{@snvid}/#{@schid}.txt"
+    @zip_file = "_db/chdata/zh_zips/#{@sname}/#{@snvid}.zip"
+    @txt_file = "_db/chdata/zh_txts/#{@sname}/#{@snvid}/#{@schid}.txt"
   end
 
   def fetch!(u_power = 4, ttl = 3.minutes) : Nil
@@ -76,11 +75,11 @@ class CV::Chtext
   end
 
   def load_zhtext : Array(String)
-    store = ZipStore.new("#{File.dirname(@zh_file)}.zip")
-    fname = File.basename(@zh_file)
+    store = ZipStore.new(@zip_file, File.dirname(@txt_file))
+    fname = File.basename(@txt_file)
 
     if input = store.read(fname)
-      puts "- <zh_text> [#{@zh_file}] loaded".colorize.green
+      puts "- <zh_text> [#{@txt_file}] loaded".colorize.green
       fix_zhtext!(input.split("\n"))
     else
       [] of String
@@ -99,7 +98,7 @@ class CV::Chtext
     lines
   end
 
-  def save_zh!(file : String = @zh_file, lines = zh_lines) : Nil
+  def save_zh!(file : String = @txt_file, lines = zh_lines) : Nil
     text_dir = File.dirname(file)
     ::FileUtils.mkdir_p(text_dir) unless File.exists?(text_dir)
 
