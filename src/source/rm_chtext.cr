@@ -7,7 +7,7 @@ require "../_utils/file_utils"
 require "../_utils/text_utils"
 require "../_utils/http_utils"
 
-class CV::RmText
+class CV::RmChtext
   def self.init(sname : String, snvid : String, schid : String,
                 expiry : Time = Time.utc - 10.years, freeze : Bool = true)
     file = path_for(sname, snvid, schid)
@@ -184,7 +184,7 @@ class CV::RmText
     meta_file = @file.sub(".html", ".meta")
     return File.read(meta_file) if File.exists?(meta_file)
 
-    html_url = RmText.url_for(@sname, @snvid, @schid)
+    html_url = RmChtext.url_for(@sname, @snvid, @schid)
     json_url = html_url.sub("#{@schid}.html", "r#{@schid}.json")
 
     headers = HTTP::Headers{

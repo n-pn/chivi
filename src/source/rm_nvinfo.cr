@@ -1,72 +1,17 @@
-require "myhtml"
-require "colorize"
-require "file_utils"
+require "./rm_spider"
 
 require "../_utils/time_utils"
-require "../_utils/file_utils"
 require "../_utils/text_utils"
-require "../_utils/http_utils"
 
-class CV::RmInfo
-  def self.init(sname : String, snvid : String,
-                expiry : Time = Time.utc - 1.hour, freeze : Bool = true)
-    file = path_for(sname, snvid)
-    expiry = Time.utc(2010, 1, 1) if sname == "jx_la"
-
-    unless html = FileUtils.read(file, expiry)
-      url = url_for(sname, snvid)
-      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(sname))
-
-      if freeze
-        ::FileUtils.mkdir_p(File.dirname(file))
-        File.write(file, html)
-      end
-    end
-
-    new(sname, snvid, file, html: html)
-  end
-
-  def self.path_for(sname : String, snvid : String)
-    "_db/.cache/#{sname}/infos/#{snvid}.html"
-  end
-
-  def self.url_for(sname : String, snvid : String) : String
-    case sname
-    when "nofff"    then "https://www.nofff.com/#{snvid}/"
-    when "69shu"    then "https://www.69shu.com/#{snvid}/"
-    when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
-    when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
-    when "rengshu"  then "http://www.rengshu.com/book/#{snvid}"
-    when "xbiquge"  then "https://www.xbiquge.cc/book/#{snvid}/"
-    when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
-    when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/index.html"
-    when "duokan8"  then "http://www.duokanba.info/#{prefixed(snvid)}/"
-    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed(snvid)}/"
-    when "5200"     then "https://www.5200.tv/#{prefixed(snvid)}/"
-    when "shubaow"  then "https://www.shubaow.net/#{prefixed(snvid)}/"
-    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed(snvid)}/"
-    else                 raise "Unsupported remote source <#{sname}>!"
-    end
-  end
-
-  private def self.prefixed(snvid : String)
-    "#{snvid.to_i // 1000}_#{snvid}"
-  end
-
+class CV::RmNvinfo
   getter sname : String
   getter snvid : String
-  getter c_file : String
 
-  def initialize(@sname, @snvid, @c_file, html = File.read(@c_file))
+  def initialize(@sname, @snvid, ttl = 1.month)
+    file = RmSpider.info_file(@sname, @snvid)
+    link = RmSpider.info_link(@sname, @snvid)
+    html = RmSpider.fetch(file, link, sname: @sname, ttl: ttl)
     @rdoc = Myhtml::Parser.new(html)
-  end
-
-  def cached?(expiry = Time.utc - 6.months)
-    FileUtils.recent?(@c_file, expiry)
-  end
-
-  def uncache!
-    File.delete(@c_file) if File.exists?(@c_file)
   end
 
   getter author : String do

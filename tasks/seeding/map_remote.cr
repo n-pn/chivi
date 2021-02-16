@@ -1,7 +1,7 @@
 require "file_utils"
 require "option_parser"
 
-require "../../src/source/rm_info"
+require "../../src/source/rm_nvinfo"
 require "./_seeding.cr"
 
 class CV::Seeds::MapRemote
@@ -28,8 +28,8 @@ class CV::Seeds::MapRemote
       channel.receive if idx > threads
 
       spawn do
-        url = RmInfo.url_for(@sname, snvid)
-        file = RmInfo.path_for(@sname, snvid)
+        url = RmNvinfo.url_for(@sname, snvid)
+        file = RmNvinfo.path_for(@sname, snvid)
 
         encoding = HttpUtils.encoding_for(@sname)
         html = HttpUtils.get_html(url, encoding: encoding)
@@ -84,7 +84,7 @@ class CV::Seeds::MapRemote
 
       @seeding._atime.add(snvid, atime)
 
-      parser = RmInfo.init(@sname, snvid, expiry: expiry)
+      parser = RmNvinfo.new(@sname, snvid, expiry: expiry)
       btitle, author = parser.btitle, parser.author
       next if btitle.empty? || author.empty?
 
@@ -116,7 +116,7 @@ class CV::Seeds::MapRemote
   end
 
   private def access_time(snvid : String) : Int64?
-    file = RmInfo.path_for(@sname, snvid)
+    file = RmNvinfo.path_for(@sname, snvid)
     File.info?(file).try(&.modification_time.to_unix)
   end
 

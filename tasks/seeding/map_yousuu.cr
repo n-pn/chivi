@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../src/source/ys_info"
+require "../../src/source/ys_nvinfo"
 require "./_seeding.cr"
 
 class CV::Seeds::MapYousuu
@@ -27,7 +27,7 @@ class CV::Seeds::MapYousuu
       next if @seeding._atime.ival_64(snvid) >= atime
       @seeding._atime.add(snvid, atime)
 
-      next unless info = YsInfo.load(file)
+      next unless info = YsNvinfo.load(file)
 
       @seeding._index.add(snvid, [info.title, info.author])
 

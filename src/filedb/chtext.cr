@@ -2,7 +2,7 @@ require "colorize"
 require "file_utils"
 
 require "../mapper/zip_store"
-require "../source/rm_text"
+require "../source/rm_chtext"
 require "../engine/convert"
 
 class CV::Chtext
@@ -26,7 +26,7 @@ class CV::Chtext
   def fetch!(u_power = 4, expiry = Time.utc - 5.minutes) : Nil
     return unless remote?(u_power)
 
-    source = RmText.init(@sname, @snvid, @schid, expiry: expiry)
+    source = RmChtext.init(@sname, @snvid, @schid, expiry: expiry)
     @zh_lines = [source.title].concat(source.paras)
 
     cv_trans = ""

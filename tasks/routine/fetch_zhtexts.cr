@@ -4,7 +4,7 @@ require "file_utils"
 require "option_parser"
 
 require "../../src/filedb/nvinfo"
-require "../../src/source/rm_text"
+require "../../src/source/rm_chtext"
 
 LIST_DIR = "_db/chdata/chinfos"
 TEXT_DIR = "_db/chdata/zhtexts"
@@ -58,7 +58,7 @@ class CV::PreloadBook
   end
 
   def fetch_text(schid : String, label : String) : Nil
-    source = CV::RmText.init(@sname, @snvid, schid)
+    source = CV::RmChtext.init(@sname, @snvid, schid)
     out_file = "#{@out_dir}/#{schid}.txt"
 
     puts "- <#{label}> [#{source.title}] saved!\n".colorize.yellow

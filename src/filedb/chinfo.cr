@@ -3,7 +3,8 @@ require "file_utils"
 
 require "./chinfo/*"
 
-require "../source/rm_info"
+require "../source/rm_nvinfo"
+
 require "../engine/convert"
 
 class CV::Chinfo
@@ -29,9 +30,9 @@ class CV::Chinfo
     chaps.size
   end
 
-  def fetch!(power = 4, force = false, expiry = Time.utc - 5.minutes) : Bool
+  def fetch!(power = 4, force = false, ttl = 5.minutes) : Bool
     return false unless remote?(power)
-    source = RmInfo.init(@sname, @snvid, expiry: expiry)
+    source = RmNvinfo.new(@sname, @snvid, ttl: ttl)
 
     # update last_chap
     changed = set_lastch(source.last_chid)
@@ -116,10 +117,11 @@ class CV::Chinfo
     json.array do
       each(skip, take, desc) do |idx, (schid, chinfo)|
         json.object do
-          json.field "schid", schid
           json.field "chidx", idx + 1
+          json.field "schid", schid
 
           json.field "title", chinfo[0]
+
           json.field "label", chinfo[1]
           json.field "uslug", chinfo[2]
         end
