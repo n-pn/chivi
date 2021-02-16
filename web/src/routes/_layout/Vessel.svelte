@@ -51,12 +51,14 @@
   </footer>
 </main>
 
-<Appnav bind:actived={active_appnav} />
+{#if process.browser}
+  <Appnav bind:actived={active_appnav} />
 
-{#if $u_dname == 'Khách'}
-  <Signin bind:actived={active_usercp} />
-{:else}
-  <Usercp bind:actived={active_usercp} />
+  {#if $u_dname == 'Khách'}
+    <Signin bind:actived={active_usercp} />
+  {:else}
+    <Usercp bind:actived={active_usercp} />
+  {/if}
 {/if}
 
 <style lang="scss">

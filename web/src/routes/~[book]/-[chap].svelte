@@ -24,12 +24,13 @@
     if (!snvid) return this.error(404, 'Nguồn truyện không tồn tại!')
     const chinfo = { sname, snvid, chidx }
 
-    const mode = +query.mode || (process.browser ? 1 : 0)
+    let mode = process.browser ? 1 : 0
+    if (query.mode) mode = +query.mode
 
     const [err, data] = await get_chinfo(this.fetch, chinfo, nvinfo, mode)
 
     if (err) this.error(err, data)
-    else return { ...data, nvinfo }
+    else return { ...data, nvinfo, changed: mode < 1 }
   }
 
   function gen_paths({ bslug }, { sname, chidx, prev_url, next_url }) {
@@ -57,15 +58,14 @@
   export let chinfo = {}
   export let cvdata = ''
 
-  $: [book_path, list_path, prev_path, next_path] = gen_paths(nvinfo, chinfo)
+  export let changed = false
+  $: if ($u_power > 0 && changed) reload_chap()
 
+  $: [book_path, list_path, prev_path, next_path] = gen_paths(nvinfo, chinfo)
   $: $lookup_dname = nvinfo.bhash
 
-  let changed = false
-  $: if (changed) reload_chap(1)
-
-  $: $lookup_enabled = false
-  $: $lookup_actived = false
+  // $: $lookup_enabled = false
+  // $: $lookup_actived = false
 
   function handle_keypress(evt) {
     if (evt.ctrlKey) return
@@ -111,13 +111,15 @@
     }
   }
 
-  async function reload_chap(mode = 1) {
-    if (mode > $u_power) mode = $u_power
-    if (mode < 1) return
-
-    const [_, data] = await get_chtext(window.fetch, chinfo, nvinfo.bhash, mode)
-    cvdata = data
+  let _reload = false
+  async function reload_chap() {
     changed = false
+
+    _reload = true
+    const [_, data] = await get_chtext(window.fetch, chinfo, nvinfo.bhash, 1)
+    _reload = false
+
+    cvdata = data
   }
 </script>
 
@@ -141,9 +143,9 @@
     slot="header-right"
     class="header-item"
     disabled={$u_power < 1}
-    on:click={() => (changed = true)}
+    on:click={reload_chap}
     data-kbd="r">
-    <SIcon name="refresh-ccw" spin={changed} />
+    <SIcon name="refresh-ccw" spin={_reload} />
   </button>
 
   <button
@@ -170,7 +172,41 @@
       bname={nvinfo.btitle_vi} />
   {:else}
     <div class="empty">
-      Chương tiết không có nội dung, mời liên hệ ban quản trị.
+      <h1>Chương tiết không có nội dung.</h1>
+      <p>Một số khả năng:</p>
+      <ul>
+        <li>
+          Javascript chưa được bật.
+          <p>Hoặc là bạn đang xem nội dung trang web qua bên thứ ba.</p>
+        </li>
+        <li>
+          Chưa có text tiếng trung trên server, phải tải từ các nguồn ngoài.
+          <p>Việc này hiện nay có một số hạn chế nhất định:</p>
+          <ul>
+            <li>
+              Các nguồn <strong>xbiquge</strong>, <strong>hetushu</strong> hay
+              <strong>duokan8</strong> cần thiết bạn phải đăng nhập.
+            </li>
+            <li>
+              Các nguồn <strong>zhwenpg</strong>, <strong>69shu</strong> hay
+              <strong>paoshu8</strong> chỉ dành cho power users.
+              <br />
+              (Nguồn <strong>69shu</strong> hiện tại đang gặp lỗi.)
+            </li>
+
+            <li>
+              Các nguồn <strong>shubaow</strong>, <strong>jx_la</strong> hiện nay
+              không hoạt động.
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <p>
+        <em>
+          Lưu ý: Hiện nay thì mọi người đều xem được các chương tiết đã được lưu
+          trữ trên server, nhưng điều này có thể thay đổi trong tương lai!
+        </em>
+      </p>
     </div>
   {/if}
 
@@ -240,11 +276,38 @@
   }
 
   .empty {
-    height: calc(100vh - 10rem);
-    margin-bottom: 3rem;
-    font-style: italic;
-    @include flex($center: both);
-    @include fgcolor(neutral, 6);
-    @include font-size(4);
+    // height: calc(100vh - 10rem);
+    margin: 3rem auto;
+    max-width: 40rem;
+
+    // font-style: italic;
+
+    // @include flex($center: both);
+    @include fgcolor(neutral, 7);
+
+    h1 {
+      font-weight: 500;
+      @include font-size(7);
+      @include fgcolor(neutral, 7);
+    }
+
+    li {
+      margin-top: 0.75rem;
+      li {
+        margin-top: 0rem;
+      }
+    }
+
+    :global(ul) {
+      margin-top: 0.5rem;
+    }
+
+    p {
+      margin-top: 0.5rem;
+    }
+
+    strong {
+      font-weight: 500;
+    }
   }
 </style>

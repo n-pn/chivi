@@ -2,14 +2,14 @@
 
 export async function get_chinfo(fetch, chinfo, { bhash }, mode = 0) {
   const { sname, snvid, chidx } = chinfo
-  const url = `/api/chinfos/${sname}/${snvid}/${chidx}`
+  const url = `/api/chinfos/${sname}/${snvid}/${chidx}?mode=${mode}`
 
   const res = await fetch(url)
   if (!res.ok) return [res.status, res.text()]
 
   const data = await res.json()
   chinfo = { ...chinfo, ...data }
-  if (mode < 0) return [500, { chinfo, cvdata: '' }]
+  // if (mode < 1) return [0, { chinfo, cvdata: '' }]
 
   const [err, cvdata] = await get_chtext(fetch, chinfo, bhash, mode)
   return err ? [err, cvdata] : [0, { chinfo, cvdata }]
