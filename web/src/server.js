@@ -21,11 +21,12 @@ const assetOpts = { dev, maxAge, etag: true }
 
 const app = polka() // You can also use Express
 
+app.use('covers', sirv('../_db/bcover', assetOpts))
+
 app.use(
   proxy,
   compression({ threshold: 0 }),
   sirv('static', assetOpts),
-  sirv('public', assetOpts),
   sapper.middleware()
 )
 
