@@ -8,8 +8,9 @@ class CV::RmChinfo
   getter snvid : String
 
   def initialize(@sname, @snvid, ttl = 1.month)
-    file = RmSpider.info_file(@sname, @snvid)
-    link = RmSpider.info_link(@sname, @snvid)
+    file = RmSpider.chinfo_file(@sname, @snvid)
+    link = RmSpider.chinfo_link(@sname, @snvid)
+
     html = RmSpider.fetch(file, link, sname: @sname, ttl: ttl)
     @rdoc = Myhtml::Parser.new(html)
   end
@@ -38,6 +39,10 @@ class CV::RmChinfo
     else
       meta_data("og:novel:update_time")
     end
+  end
+
+  def changed?(prev_chid : String)
+    prev_chid != last_chid
   end
 
   getter last_chid : String do

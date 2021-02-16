@@ -30,15 +30,20 @@ module CV::RmSpider
     end
   end
 
-  def info_file(sname : String, snvid : String)
+  def nvinfo_file(sname : String, snvid : String)
     "_db/.cache/#{sname}/infos/#{snvid}.html"
   end
 
-  def text_file(sname : String, snvid : String, schid : String)
+  def chinfo_file(sname : String, snvid : String)
+    # TODO: update for 69shu
+    "_db/.cache/#{sname}/infos/#{snvid}.html"
+  end
+
+  def chtext_file(sname : String, snvid : String, schid : String)
     "_db/.cache/#{sname}/texts/#{snvid}/#{schid}.html"
   end
 
-  def info_link(sname : String, snvid : String) : String
+  def nvinfo_link(sname : String, snvid : String) : String
     case sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/"
     when "69shu"    then "https://www.69shu.com/#{snvid}/"
@@ -57,7 +62,12 @@ module CV::RmSpider
     end
   end
 
-  def text_link(sname : String, snvid : String, schid : String) : String
+  def chinfo_link(sname : String, snvid : String) : String
+    # TODO: update for 69shu
+    nvinfo_link(sname, snvid)
+  end
+
+  def chtext_link(sname : String, snvid : String, schid : String) : String
     case sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/#{schid}/"
     when "69shu"    then "https://www.69shu.com/txt/#{snvid}/#{schid}"

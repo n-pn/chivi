@@ -23,10 +23,10 @@ class CV::Chtext
     @zh_file = "_db/chdata/zhtexts/#{@sname}/#{@snvid}/#{@schid}.txt"
   end
 
-  def fetch!(u_power = 4, expiry = Time.utc - 5.minutes) : Nil
+  def fetch!(u_power = 4, ttl = 5.minutes) : Nil
     return unless remote?(u_power)
 
-    source = RmChtext.init(@sname, @snvid, @schid, expiry: expiry)
+    source = RmChtext.new(@sname, @snvid, @schid, ttl: ttl)
     @zh_lines = [source.title].concat(source.paras)
 
     cv_trans = ""

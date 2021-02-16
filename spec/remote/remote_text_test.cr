@@ -5,8 +5,7 @@ require "../../src/source/rm_chtext.cr"
 def fetch_chap(sname : String, snvid : String, schid : String, fresh = false)
   puts "\n[#{CV::RmChtext.url_for(sname, snvid, schid)}]\n".colorize.blue.bold
 
-  expiry = fresh ? Time.utc : Time.utc - 1.years
-  chap = CV::RmChtext.init(sname, snvid, schid, expiry: expiry)
+  chap = CV::RmChtext.new(sname, snvid, schid, ttl: fresh ? 1.minute : 10.years)
 
   puts chap.title
   puts "---".colorize.blue

@@ -58,7 +58,7 @@ class CV::PreloadBook
   end
 
   def fetch_text(schid : String, label : String) : Nil
-    source = CV::RmChtext.init(@sname, @snvid, schid)
+    source = CV::RmChtext.new(@sname, @snvid, schid)
     out_file = "#{@out_dir}/#{schid}.txt"
 
     puts "- <#{label}> [#{source.title}] saved!\n".colorize.yellow

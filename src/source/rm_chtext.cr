@@ -1,65 +1,18 @@
-require "myhtml"
-require "colorize"
-require "file_utils"
-
 require "../_utils/time_utils"
-require "../_utils/file_utils"
 require "../_utils/text_utils"
-require "../_utils/http_utils"
+
+require "./rm_spider"
 
 class CV::RmChtext
-  def self.init(sname : String, snvid : String, schid : String,
-                expiry : Time = Time.utc - 10.years, freeze : Bool = true)
-    file = path_for(sname, snvid, schid)
-    expiry = TimeUtils::DEF_TIME if sname == "jx_la"
-
-    unless html = FileUtils.read(file, expiry)
-      url = url_for(sname, snvid, schid)
-      html = HttpUtils.get_html(url, encoding: HttpUtils.encoding_for(sname))
-
-      if freeze
-        ::FileUtils.mkdir_p(File.dirname(file))
-        File.write(file, html)
-      end
-    end
-
-    new(sname, snvid, schid, file: file, html: html)
-  end
-
-  def self.path_for(sname : String, snvid : String, schid : String)
-    "_db/.cache/#{sname}/texts/#{snvid}/#{schid}.html"
-  end
-
-  def self.url_for(sname : String, snvid : String, schid : String) : String
-    case sname
-    when "nofff"    then "https://www.nofff.com/#{snvid}/#{schid}/"
-    when "69shu"    then "https://www.69shu.com/txt/#{snvid}/#{schid}"
-    when "jx_la"    then "https://www.jx.la/book/#{snvid}/#{schid}.html"
-    when "qu_la"    then "https://www.qu.la/book/#{snvid}/#{schid}.html"
-    when "rengshu"  then "http://www.rengshu.com/book/#{snvid}/#{schid}"
-    when "xbiquge"  then "https://www.xbiquge.cc/book/#{snvid}/#{schid}.html"
-    when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
-    when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/#{schid}.html"
-    when "duokan8"  then "http://www.duokanba.info/#{prefixed(snvid, schid)}"
-    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed(snvid, schid)}"
-    when "5200"     then "https://www.5200.tv/#{prefixed(snvid, schid)}"
-    when "shubaow"  then "https://www.shubaow.net/#{prefixed(snvid, schid)}"
-    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed(snvid, schid)}"
-    else
-      raise "Unsupported remote source <#{sname}>!"
-    end
-  end
-
-  private def self.prefixed(snvid : String, schid : String)
-    "#{snvid.to_i // 1000}_#{snvid}/#{schid}.html"
-  end
-
   getter sname : String
   getter snvid : String
   getter schid : String
-  getter file : String
 
-  def initialize(@sname, @snvid, @schid, @file, html = File.read(@file))
+  def initialize(@sname, @snvid, @schid, ttl = 10.years)
+    file = RmSpider.chinfo_file(@sname, @snvid)
+    link = RmSpider.chinfo_link(@sname, @snvid)
+
+    html = RmSpider.fetch(file, link, sname: @sname, ttl: ttl)
     @rdoc = Myhtml::Parser.new(html)
   end
 
@@ -181,18 +134,19 @@ class CV::RmChtext
       return node.attributes["content"]
     end
 
-    meta_file = @file.sub(".html", ".meta")
+    html_file = RmSpider.chtext_file(@sname, @snvid, @schid)
+    meta_file = html_file.sub(".html", ".meta")
     return File.read(meta_file) if File.exists?(meta_file)
 
-    html_url = RmChtext.url_for(@sname, @snvid, @schid)
-    json_url = html_url.sub("#{@schid}.html", "r#{@schid}.json")
+    html_link = RmSpider.chtext_link(@sname, @snvid, @schid)
+    json_link = html_link.sub("#{@schid}.html", "r#{@schid}.json")
 
     headers = HTTP::Headers{
-      "Referer"          => html_url,
+      "Referer"          => html_link,
       "X-Requested-With" => "XMLHttpRequest",
     }
 
-    HTTP::Client.get(json_url, headers: headers) do |res|
+    HTTP::Client.get(json_link, headers: headers) do |res|
       res.headers["token"].tap { |token| File.write(meta_file, token) }
     end
   end

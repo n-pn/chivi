@@ -8,8 +8,9 @@ class CV::RmNvinfo
   getter snvid : String
 
   def initialize(@sname, @snvid, ttl = 1.month)
-    file = RmSpider.info_file(@sname, @snvid)
-    link = RmSpider.info_link(@sname, @snvid)
+    file = RmSpider.nvinfo_file(@sname, @snvid)
+    link = RmSpider.nvinfo_link(@sname, @snvid)
+
     html = RmSpider.fetch(file, link, sname: @sname, ttl: ttl)
     @rdoc = Myhtml::Parser.new(html)
   end

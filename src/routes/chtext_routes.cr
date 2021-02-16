@@ -4,24 +4,26 @@ module CV::Server
   get "/api/chinfos/:sname/:snvid/:chidx" do |env|
     sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
+
     index = env.params.url["chidx"].to_i? || 100000
+    index = 1 if index < 1
 
     chinfo = Chinfo.load(sname, snvid)
-    unless curr_chap = chinfo.chaps[index - 1]?
+    unless curr_chap = chinfo.infos[index - 1]?
       halt env, status_code: 404, response: "Chương tiết không tồn tại!"
     end
 
     RouteUtils.json_res(env) do |res|
-      {
-        total: chinfo.chaps.size,
-        schid: curr_chap[0],
-
-        title: curr_chap[1][0],
-        label: curr_chap[1][1],
-
-        prev_url: chinfo.url_for(index - 2),
-        next_url: chinfo.url_for(index),
-      }.to_json(res)
+      JSON.build(res) do |json|
+        json.object do
+          json.field "total", chinfo.infos.size
+          json.field "schid", curr_chap[0]
+          json.field "title", curr_chap[1]
+          json.field "label", curr_chap[2]
+          json.field "prev_url", chinfo.url_for(index - 2)
+          json.field "next_url", chinfo.url_for(index)
+        end
+      end
     end
   rescue err
     puts "- Error loading chap_text: #{err}"
