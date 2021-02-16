@@ -9,16 +9,15 @@ require "../engine/convert"
 
 class CV::Chinfo
   DIR = "_db/chdata/chinfos"
-  ::FileUtils.mkdir_p(DIR)
 
   getter sname : String
   getter snvid : String
 
   alias Chlist = Array(Array(String))
   getter origs : Chlist { load_list("origs") }
-  getter infos : Chlist { load_list("infos") }
+  getter heads : Chlist { load_list("heads") }
 
-  getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
+  # getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
 
   getter _utime : Int64 { @meta.get_utime(@snvid) }
   getter lastch : String { @meta.get_lastch(@snvid) }
@@ -43,7 +42,7 @@ class CV::Chinfo
   end
 
   private def map_path(label : String)
-    "#{DIR}/#{sname}/#{label}/#{snvid}.tsv"
+    "_db/chdata/ch#{label}/#{@sname}/#{@snvid}.tsv"
   end
 
   def fetch!(power = 4, force = false, ttl = 5.minutes) : Bool
@@ -68,8 +67,8 @@ class CV::Chinfo
   def trans!(dname = "various", force = false) : Nil
     cvter = Convert.generic(dname)
 
-    infos.clear if force
-    infos.size.upto(origs.size - 1) do |idx|
+    heads.clear if force
+    heads.size.upto(origs.size - 1) do |idx|
       row = origs[idx]
       schid = row[0]
 
@@ -80,16 +79,16 @@ class CV::Chinfo
       vi_label = zh_label.empty? ? "Chính văn" : cvter.tl_title(zh_label)
       url_slug = TextUtils.tokenize(vi_title).first(12).join("-")
 
-      infos << [schid, vi_title, vi_label, url_slug]
+      heads << [schid, vi_title, vi_label, url_slug]
     rescue
       next
     end
 
-    spawn save_list("infos", infos)
+    spawn save_list("heads", heads)
   end
 
   def chsize
-    infos.size
+    heads.size
   end
 
   # def set_lastch(schid : String) : Bool
@@ -119,14 +118,14 @@ class CV::Chinfo
   end
 
   def each(skip : Int32 = 0, take : Int32 = 30, desc = false)
-    return if skip >= infos.size
+    return if skip >= heads.size
 
     upto = skip + take
-    upto = infos.size if upto > infos.size
+    upto = heads.size if upto > heads.size
 
     while skip < upto
-      idx = desc ? infos.size - skip - 1 : skip
-      yield idx, infos[idx]
+      idx = desc ? heads.size - skip - 1 : skip
+      yield idx, heads[idx]
       skip += 1
     end
   end
@@ -148,13 +147,13 @@ class CV::Chinfo
   end
 
   def url_for(idx : Int32)
-    return unless chap = infos[idx]?
+    return unless chap = heads[idx]?
     "-#{chap[3]}-#{sname}-#{idx + 1}"
   end
 
   def save!(mode : Symbol = :full)
     @meta.save!(mode: :upds)
-    @stats.try(&.save!(mode: mode))
+    # @stats.try(&.save!(mode: mode))
   end
 
   CHINFOS = {} of String => self

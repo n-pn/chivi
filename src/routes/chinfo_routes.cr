@@ -28,7 +28,7 @@ module CV::Server
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
         json.object do
-          json.field "total", chinfo.chsize
+          json.field "total", chinfo.heads.size
           json.field "utime", chinfo._utime
 
           json.field "lasts" do
@@ -46,7 +46,7 @@ module CV::Server
 
     take = RouteUtils.parse_int(env.params.query["take"]?, min: 1, max: 30)
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
-    skip = (chinfo.infos.size // take) * take if skip >= chinfo.infos.size
+    skip = (chinfo.heads.size // take) * take if skip >= chinfo.heads.size
 
     desc = env.params.query["order"]? == "desc"
 
