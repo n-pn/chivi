@@ -12,7 +12,6 @@
   "dependencies": {
     "compression": "^1.7.4",
     "http-proxy-middleware": "^1.0.3",
-    "node-localstorage": "^2.1.6",
     "polka": "next",
     "sirv": "^1.0.10"
   },
