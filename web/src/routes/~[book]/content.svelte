@@ -117,7 +117,7 @@
     _load = true
 
     const [err, data] = await get_chseed(fetch, params, nvinfo.bhash, mode)
-    if (err) throw data
+    if (err) return console.log({ err })
 
     chseed = data
     nvinfo = update_utime(nvinfo, chseed.utime)
