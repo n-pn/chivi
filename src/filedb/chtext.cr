@@ -38,7 +38,7 @@ class CV::Chtext
 
   private def remote?(u_power = 4)
     case @sname
-    when "_chivi", "_miscs", "zxcs_me", "zadzs"
+    when "chivi", "_miscs", "zxcs_me", "zadzs"
       false
     when "5200", "bqg_5200", "rengshu", "nofff"
       true

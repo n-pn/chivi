@@ -9,8 +9,8 @@
     const bhash = nvinfo.bhash
 
     const seeds = Object.keys(nvinfo.chseed)
-    const sname = req.query.sname || seeds[0] || '_chivi'
-    const snvid = nvinfo.chseed[sname][0]
+    const sname = req.query.sname || seeds[0] || 'chivi'
+    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
 
     const page = +(req.query.page || 1)
     const params = { sname, snvid, page }
@@ -83,7 +83,7 @@
   async function load_chseed(evt, sname, mode = 0) {
     evt.preventDefault()
 
-    const snvid = nvinfo.chseed[sname][0]
+    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
 
     if (params.sname != sname) {
       params = { ...params, sname, snvid }

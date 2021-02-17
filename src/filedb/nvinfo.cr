@@ -99,17 +99,6 @@ class CV::Nvinfo
     NvChseed.set_snames(bhash, chseed.keys)
   end
 
-  private def source_utime(sname : String, snvid : String)
-    utime = ChSource.get_utime(sname, snvid) || Time.utc.to_unix
-
-    case sname
-    when "jx_la"   then utime - 5_000_000
-    when "shubaow" then utime - 2_000_000
-    when "69shu"   then utime - 1_000_000
-    else                utime
-    end
-  end
-
   def save!(mode = :upds)
     NvValues.save!(mode: :upds)
     NvTokens.save!(mode: :upds)
@@ -176,20 +165,6 @@ class CV::Nvinfo
 
     NvValues.genres.add(bhash, input)
     NvTokens.set_genres(bhash, input)
-  end
-
-  def self.set_source(bhash : String, sname : String, snvid : String) : Nil
-    source = NvValues.source.get(bhash) || [] of String
-    source = source.each_with_object({} of String => String) do |x, h|
-      a, b = x.split("/")
-      h[a] = b
-    end
-
-    return if source[sname]? == snvid
-    source[sname] = snvid
-
-    NvValues.source.add(bhash, source.to_a.map { |a, b| "#{a}/#{b}" })
-    NvTokens.source.add(bhash, source.keys)
   end
 
   def self.save!(mode : Symbol = :full)
