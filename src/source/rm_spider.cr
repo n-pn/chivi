@@ -21,6 +21,23 @@ module CV::RmSpider
     html
   end
 
+  def remote?(sname : String, power : Int32 = 4)
+    case sname
+    when "chivi", "_miscs", "zxcs_me", "zadzs"
+      false
+    when "5200", "bqg_5200", "rengshu", "nofff"
+      true
+    when "xbiquge", "duokan8", "hetushu"
+      power > 0
+    when "zhwenpg", "69shu", "paoshu8"
+      power > 1
+    when "shubaow", "biqubao", "bxwxorg"
+      power > 2
+    else
+      power > 3
+    end
+  end
+
   def encoding_for(sname : String) : String
     case sname
     when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg"

@@ -22,8 +22,7 @@ class CV::Chtext
   end
 
   def fetch!(u_power = 4, ttl = 3.minutes) : Nil
-    return unless remote?(u_power)
-    puts "FETCHING!"
+    return unless RmSpider.remote?(@sname, u_power)
 
     puller = RmChtext.new(@sname, @snvid, @schid, ttl: ttl)
     @zh_lines = [puller.title].concat(puller.paras)
@@ -34,23 +33,6 @@ class CV::Chtext
     self.save_zh!
   rescue err
     puts "- Fetch chtext error: #{err}".colorize.red
-  end
-
-  private def remote?(u_power = 4)
-    case @sname
-    when "chivi", "_miscs", "zxcs_me", "zadzs"
-      false
-    when "5200", "bqg_5200", "rengshu", "nofff"
-      true
-    when "xbiquge", "duokan8", "hetushu"
-      u_power > 0
-    when "zhwenpg", "69shu", "paoshu8"
-      u_power > 1
-    when "shubaow"
-      u_power > 2
-    else
-      u_power > 3
-    end
   end
 
   def trans!(dname = "various")

@@ -32,6 +32,7 @@ class CV::Chinfo
 
   def save_list(label : String, data : Chlist) : Nil
     file = map_path(label)
+    ::FileUtils.mkdir_p(File.dirname(file))
 
     File.write(file, data.map(&.join('\t')).join('\n'))
     puts "- <chap_#{label}> [#{@sname}/#{@snvid}] saved (entries: #{data.size})".colorize.yellow
@@ -44,7 +45,7 @@ class CV::Chinfo
   def fetch!(power = 4, force = false, ttl = 5.minutes) : Tuple(Int64, Int32)
     utime = -1_i64
 
-    if remote?(power)
+    if RmSpider.remote?(@sname, power)
       puller = RmChinfo.new(@sname, @snvid, ttl: ttl)
       latest = origs.last?.try(&.first?) || ""
 
@@ -82,23 +83,6 @@ class CV::Chinfo
   end
 
   delegate size, to: heads
-
-  private def remote?(u_power = 4)
-    case @sname
-    when "chivi", "_miscs", "zxcs_me", "zadzs"
-      false
-    when "5200", "bqg_5200", "rengshu", "nofff"
-      true
-    when "xbiquge", "duokan8", "hetushu"
-      u_power > 0
-    when "zhwenpg", "69shu", "paoshu8"
-      u_power > 1
-    when "shubaow"
-      u_power > 2
-    else
-      u_power > 3
-    end
-  end
 
   def each(skip : Int32 = 0, take : Int32 = 30, desc = false)
     return if skip >= heads.size

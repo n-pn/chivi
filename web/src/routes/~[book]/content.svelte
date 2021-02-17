@@ -54,6 +54,26 @@
     const p_max = Math.floor((total - 1) / 30) + 1
     return p_max > page ? p_max : page
   }
+
+  const all_seeds = [
+    'biqubao',
+    'bxwxorg',
+    '5200',
+    'nofff',
+    'bqg_5200',
+    'rengshu',
+    'hetushu',
+    'xbiquge',
+    'duokan8',
+    'zhwenpg',
+    'paoshu8',
+    '69shu',
+    'shubaow',
+  ]
+
+  function seed_choices(chseed = {}) {
+    return all_seeds.filter((sname) => !chseed[sname])
+  }
 </script>
 
 <script>
@@ -153,6 +173,18 @@
 
     return url
   }
+
+  let add_seed = false
+
+  let new_seeds = seed_choices(nvinfo.chseed)
+  let new_sname = new_seeds[0]
+  let new_snvid = ''
+
+  async function add_new_seed(evt) {
+    nvinfo.chseed[new_sname] = [new_snvid, 0, 0]
+    add_seed = false
+    await load_chseed(evt, new_sname, 1)
+  }
 </script>
 
 <svelte:window on:keydown={handle_keypress} />
@@ -187,7 +219,37 @@
           </button>
         {/if}
       {/if}
+
+      {#if $u_power > 2}
+        <button class="-name" on:click={() => (add_seed = !add_seed)}>
+          <SIcon name={add_seed ? 'minus' : 'plus'} />
+        </button>
+      {/if}
     </div>
+
+    {#if add_seed}
+      <div class="add-seed">
+        <select class="m-input" name="new_sname" bind:value={new_sname}>
+          {#each new_seeds as label}
+            <option value={label}>{label}</option>
+          {/each}
+        </select>
+
+        <input
+          class="m-input"
+          type="text"
+          bind:value={new_snvid}
+          required
+          placeholder="Book ID" />
+
+        <button
+          class="m-button _primary"
+          disabled={!new_snvid}
+          on:click={add_new_seed}>
+          <span class="-text">Thêm</span>
+        </button>
+      </div>
+    {/if}
 
     <div class="chinfo">
       <div class="-left">
@@ -373,6 +435,22 @@
     &[data-level='4'],
     &[data-level='5'] {
       @include props(display, none, $lg: inline-block);
+    }
+  }
+
+  .add-seed {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+
+    > select,
+    > input {
+      margin-right: 0.5rem;
+      max-width: 10rem;
+      text-transform: uppercase;
+      font-weight: 500;
+      @include font-size(2);
+      @include fgcolor(neutral, 6);
     }
   }
 </style>
