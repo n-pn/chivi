@@ -109,8 +109,8 @@ class CV::Chtext
   alias Cache = Hash(String, self)
   CACHE_LIMIT = 256
 
-  @@acache = Cache.new
-  @@bcache = Cache.new
+  @@acache = Cache.new(initial_capacity: CACHE_LIMIT)
+  @@bcache = Cache.new(initial_capacity: CACHE_LIMIT)
 
   def self.load(sname : String, snvid : String, schid : String)
     label = "#{sname}/#{snvid}/#{schid}"
@@ -121,7 +121,7 @@ class CV::Chtext
 
       if @@acache.size >= CACHE_LIMIT
         @@bcache = @@acache
-        @@acache = Cache.new
+        @@acache = Cache.new(initial_capacity: CACHE_LIMIT)
       end
     end
 
