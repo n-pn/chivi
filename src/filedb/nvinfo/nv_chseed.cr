@@ -13,8 +13,10 @@ module CV::NvChseed
   def get_chseed(bhash : String) : Hash(String, Chseed)
     output = {} of String => Chseed
     return output unless snames = _index.get(bhash)
+
     snames.each_with_object(output) do |sname, hash|
       next unless value = load(sname).get(bhash)
+      next unless value.size == 3
       hash[sname] = {value[0], value[1].to_i, value[2].to_i}
     end
   end
