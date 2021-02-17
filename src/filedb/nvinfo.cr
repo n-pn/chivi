@@ -19,7 +19,7 @@ class CV::Nvinfo
 
   getter bintro : Array(String) { NvBintro.get_bintro(bhash) }
   getter status : Int32 { NvValues.status.ival(bhash) }
-  getter source : Hash(String, String) { NvValues.get_source(bhash) }
+  getter chseed : Hash(String, NvChseed::Chseed) { NvChseed.get_chseed(bhash) }
 
   getter hidden : Int32 { NvValues.hidden.ival(bhash) }
   getter yousuu : String { NvValues.yousuu.fval(bhash) || "" }
@@ -54,7 +54,7 @@ class CV::Nvinfo
       json.field "rating", rating / 10
 
       if full
-        json.field "source", source
+        json.field "chseed", chseed
         json.field "bintro", bintro
         json.field "status", status
 
@@ -76,14 +76,29 @@ class CV::Nvinfo
     NvValues.set_utime(bhash, mtime).tap { |x| @_utime = mtime if x }
   end
 
-  def fix_source! : Hash(String, String)
-    chseed = source.to_a.sort_by { |sname, snvid| -source_utime(sname, snvid) }
+  def put_chseed!(sname : String, value : Tuple(String, Int32, Int32)) : Nil
+    # fix source updated_at
+    if old_value = chseed[sname]?
+      mtime = value[1]
 
-    values = chseed.map { |a, b| "#{a}/#{b}" }
-    return source unless NvValues.source.add(bhash, values)
+      if value[2] > old_value[2] # if newer has more count
+        if mtime <= old_value[1]
+          utime = _utime.//(60).to_i
+          mtime = utime > old_value[1] ? utime : Time.utc.to_unix.//(60).to_i
+        end
+      else
+        mtime = old_value[1] if mtime < old_value[1]
+      end
 
-    NvValues.source.save!(mode: :upds)
-    source = chseed.to_h
+      value = {value[0], mtime, value[1]}
+    end
+
+    chseed[sname] = value
+
+    spawn do
+      NvChseed.put_chseed(sname, bhash, value)
+      NvChseed.set_snames(bhash, chseed)
+    end
   end
 
   private def source_utime(sname : String, snvid : String)

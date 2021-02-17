@@ -9,27 +9,28 @@ module CV::Server
 
     u_power, mode = RouteUtils.get_privi(env)
 
-    if mode > 0
-      bhash = env.params.query["bhash"]? || "various"
+    bhash = env.params.query["bhash"]? || "various"
+    nvinfo = Nvinfo.load(bhash)
 
-      if chinfo.fetch!(u_power, mode > 1)
-        if sname != "hetushu" || sname != "zhwenpg" || sname != "69shu"
-          nvinfo = Nvinfo.load(bhash)
-          nvinfo.set_utime(chinfo._utime)
-          chseed = nvinfo.fix_source!
-          nvinfo.save!
-        end
+    if mode > 0
+      mtime, total = chinfo.fetch!(u_power, mode > 1)
+
+      if mtime >= 0
+        nvinfo.put_chseed!(sname, {snvid, mtime.//(60).to_i, total})
+        nvinfo.set_utime(mtime)
       end
 
       chinfo.trans!(bhash, u_power > 1)
-      chinfo.save!
+      # chinfo.save!
     end
+
+    chmeta = nvinfo.chseed[sname]
 
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
         json.object do
-          json.field "total", chinfo.heads.size
-          json.field "utime", chinfo._utime
+          json.field "total", chmeta[2]
+          json.field "utime", chmeta[1] * 60
 
           json.field "lasts" do
             chinfo.json_each(json, 0, 6, true)

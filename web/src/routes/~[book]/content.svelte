@@ -8,9 +8,9 @@
 
     const bhash = nvinfo.bhash
 
-    const seeds = Object.keys(nvinfo.source)
+    const seeds = Object.keys(nvinfo.chseed)
     const sname = req.query.sname || seeds[0] || '_chivi'
-    const snvid = nvinfo.source[sname] || bhash
+    const snvid = nvinfo.chseed[sname][0]
 
     const page = +(req.query.page || 1)
     const params = { sname, snvid, page }
@@ -27,8 +27,8 @@
     return { nvinfo, chseed, chlist, params }
   }
 
-  function split_chseed({ source }, { sname }) {
-    const seeds = Object.keys(source)
+  function split_chseed({ chseed }, { sname }) {
+    const seeds = Object.keys(chseed)
     if (seeds.length < 6) return [seeds, []]
 
     let main_seeds = seeds.slice(0, 4)
@@ -83,7 +83,7 @@
   async function load_chseed(evt, sname, mode = 0) {
     evt.preventDefault()
 
-    const snvid = nvinfo.source[sname]
+    const snvid = nvinfo.chseed[sname][0]
 
     if (params.sname != sname) {
       params = { ...params, sname, snvid }

@@ -45,23 +45,21 @@ class CV::Chinfo
     "_db/chdata/ch#{label}/#{@sname}/#{@snvid}.tsv"
   end
 
-  def fetch!(power = 4, force = false, ttl = 5.minutes) : Bool
-    return false unless remote?(power)
-    puller = RmChinfo.new(@sname, @snvid, ttl: ttl)
+  def fetch!(power = 4, force = false, ttl = 5.minutes) : Tuple(Int64, Int32)
+    utime = -1_i64
 
-    last_chid = origs.last?.try(&.first?)
-    if puller.changed?(last_chid || "")
-      set_utime(puller.updated_at.to_unix)
-    else
-      return false unless force
+    if remote?(power)
+      puller = RmChinfo.new(@sname, @snvid, ttl: ttl)
+      latest = origs.last?.try(&.first?) || ""
+
+      if force || puller.changed?(latest)
+        @origs = puller.chap_list
+        utime = puller.updated_at.to_unix
+        spawn save_list("origs", origs)
+      end
     end
 
-    @origs = puller.chap_list
-    spawn save_list("origs", origs)
-    true
-  rescue err
-    puts "- Fetch chinfo error: #{err}".colorize.red
-    false
+    {utime, origs.size}
   end
 
   def trans!(dname = "various", force = false) : Nil
