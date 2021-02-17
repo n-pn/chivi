@@ -16,22 +16,13 @@ class CV::RmChinfo
   end
 
   getter updated_at : Time do
-    case @sname
-    when "69shu", "bqg_5200", "shubaow"
-      mtime = TimeUtils.parse_time(update_str)
-      mtime += 1.days
-      mtime < Time.utc ? mtime : Time.utc
-    when "zhwenpg", "hetushu"
-      Time.utc
-    else
-      TimeUtils.parse_time(update_str)
-    end
+    TimeUtils.parse_time(update_str)
   end
 
   getter update_str : String do
     case @sname
     when "zhwenpg", "hetushu"
-      "2020-01-01 12:00:00"
+      "2010-01-01 8:00:00"
     when "69shu"
       node_text(".mu_beizhu").sub(/.+时间：/m, "")
     when "bqg_5200"
