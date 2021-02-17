@@ -17,13 +17,9 @@ class CV::Chinfo
   getter origs : Chlist { load_list("origs") }
   getter heads : Chlist { load_list("heads") }
 
-  # getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
-
-  getter _utime : Int64 { @meta.get_utime(@snvid) }
-  getter lastch : String { @meta.get_lastch(@snvid) }
+  getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
 
   def initialize(@sname, @snvid)
-    @meta = ChSource.load(@sname)
   end
 
   def load_list(label : String)
@@ -85,18 +81,7 @@ class CV::Chinfo
     spawn save_list("heads", heads)
   end
 
-  def chsize
-    heads.size
-  end
-
-  # def set_lastch(schid : String) : Bool
-  #   raise "empty last_child!" if schid.empty?
-  #   @meta.set_lastch(@snvid, schid).tap { |x| @lastch == schid if x }
-  # end
-
-  def set_utime(mtime = Time.utc.to_unix) : Bool
-    @meta.set_utime(@snvid, mtime).tap { |x| @_utime = mtime if x }
-  end
+  delegate size, to: infos
 
   private def remote?(u_power = 4)
     case @sname
@@ -150,8 +135,7 @@ class CV::Chinfo
   end
 
   def save!(mode : Symbol = :full)
-    @meta.save!(mode: :upds)
-    # @stats.try(&.save!(mode: mode))
+    @stats.try(&.save!(mode: mode))
   end
 
   alias Cache = Hash(String, self)
