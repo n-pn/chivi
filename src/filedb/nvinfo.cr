@@ -92,12 +92,11 @@ class CV::Nvinfo
       value = {value[0], mtime, value[1]}
     end
 
-    chseed[sname] = value
+    NvChseed.put_chseed(sname, bhash, value)
 
-    spawn do
-      NvChseed.put_chseed(sname, bhash, value)
-      NvChseed.set_snames(bhash, chseed)
-    end
+    chseed[sname] = value
+    @chseed = chseed.to_a.sort_by { |_, v| {-v[2], -v[1]} }.to_h
+    NvChseed.set_snames(bhash, chseed.keys)
   end
 
   private def source_utime(sname : String, snvid : String)

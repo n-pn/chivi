@@ -23,17 +23,13 @@ module CV::NvChseed
 
   def put_chseed(sname : String, bhash : String, input : Chseed)
     mapper = load(sname)
-    mapper.add(bhash, input.map(&.to_s))
+    mapper.add(bhash, [input[0], input[1].to_s, input[2].to_s])
     mapper.save!(mode: :upds)
   end
 
-  def set_snames(bhash : String, chseed : Hash(String, Tuple)) : Nil
-    snames = chseed.keys.sort_by do |sname|
-      value = chseed[sname]
-      {-value[2], -value[1]}
-    end
-
+  def set_snames(bhash : String, snames : Array(String)) : Nil
     _index.add(bhash, snames)
+    _index.save!(mode: :upds)
   end
 
   def file_path(label : String)
