@@ -1,27 +1,14 @@
 require "file_utils"
 
-require "../../src/source/rm_nvinfo.cr"
+require "../../src/source/rm_chinfo.cr"
 
 def fetch_info(sname, snvid, fresh = false) : Void
-  ::FileUtils.mkdir_p("_db/.cache/#{sname}/infos")
-
-  puts "\n[#{CV::RmNvinfo.url_for(sname, snvid)}]".colorize.green.bold
+  puts "\n[#{CV::RmSpider.chinfo_link(sname, snvid)}]".colorize.green.bold
   puts "------".colorize.green
 
-  expiry = fresh ? Time.utc : Time.utc - 1.years
-  parser = CV::RmNvinfo.new(sname, snvid, expiry)
+  parser = CV::RmChinfo.new(sname, snvid, ttl: fresh ? 1.minute : 1.year)
 
-  info = {
-    btitle: parser.btitle,
-    author: parser.author,
-    genres: parser.genres.join(" "),
-    bintro: parser.bintro.join("\n"),
-    bcover: parser.bcover,
-    status: parser.status_int,
-    update: parser.updated_at,
-  }
-
-  pp info
+  pp "updated_at: #{parser.updated_at}"
   puts "------".colorize.green
 
   puts "chap_count: #{parser.chap_list.size}"
