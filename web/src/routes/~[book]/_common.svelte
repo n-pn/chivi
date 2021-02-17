@@ -128,7 +128,7 @@
 
         <span class="stat _mftime">
           <SIcon name="clock" />
-          <span><RTime m_time={nvinfo._utime * 1000} /></span>
+          <span><RTime mtime={nvinfo._utime * 1000} /></span>
         </span>
       </div>
 
@@ -162,7 +162,9 @@
               href="https://www.yousuu.com/book/{nvinfo.yousuu}"
               rel="noopener noreferer"
               target="_blank"
-              title="Đánh giá"> yousuu </a>
+              title="Đánh giá">
+              yousuu
+            </a>
           {/if}
         </div>
       {/if}
@@ -174,17 +176,23 @@
       <a
         href="/~{nvinfo.bslug}"
         class="header-tab"
-        class:_active={nvtab == 'summary'}> Tổng quan </a>
+        class:_active={nvtab == 'summary'}>
+        Tổng quan
+      </a>
 
       <a
         href="/~{nvinfo.bslug}/content"
         class="header-tab"
-        class:_active={nvtab == 'content'}> Chương tiết </a>
+        class:_active={nvtab == 'content'}>
+        Chương tiết
+      </a>
 
       <a
         href="/~{nvinfo.bslug}/discuss"
         class="header-tab"
-        class:_active={nvtab == 'discuss'}> Thảo luận </a>
+        class:_active={nvtab == 'discuss'}>
+        Thảo luận
+      </a>
     </header>
 
     <div class="section-content">
@@ -193,6 +201,7 @@
   </div>
 </Vessel>
 
+<!-- prettier-ignore -->
 <style lang="scss">
   .main-info {
     padding-top: 0.75rem;

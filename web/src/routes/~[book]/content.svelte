@@ -257,7 +257,7 @@
       <div class="-left">
         <span class="-text">Chương mới nhất</span>
         <span class="-span">
-          <RTime m_time={chseed.utime * 1000} source={params.sname} />
+          <RTime mtime={chseed.utime * 1000} />
         </span>
       </div>
 

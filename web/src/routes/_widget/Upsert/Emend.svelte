@@ -14,7 +14,7 @@
 
   <div class="-line">
     <span class="-text">Thời gian:</span>
-    <span class="-time"><RTime m_time={info.mtime} /></span>
+    <span class="-time"><RTime mtime={info.mtime} /></span>
   </div>
 </div>
 
