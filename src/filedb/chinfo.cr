@@ -81,7 +81,7 @@ class CV::Chinfo
     spawn save_list("heads", heads)
   end
 
-  delegate size, to: infos
+  delegate size, to: heads
 
   private def remote?(u_power = 4)
     case @sname
