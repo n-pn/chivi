@@ -42,8 +42,8 @@ class CV::Chinfo
     "_db/chdata/ch#{label}/#{@sname}/#{@snvid}.tsv"
   end
 
-  def fetch!(power = 4, force = false, ttl = 5.minutes) : Tuple(Int64, Int32)
-    utime = -1_i64
+  def fetch!(power = 4, force = false, ttl = 5.minutes) : Tuple(Int32, Int32)
+    mtime = -1
 
     if RmSpider.remote?(@sname, power)
       puller = RmChinfo.new(@sname, @snvid, ttl: ttl)
@@ -51,12 +51,12 @@ class CV::Chinfo
 
       if force || puller.changed?(latest)
         @origs = puller.chap_list
-        utime = puller.updated_at.to_unix
+        mtime = puller.updated_at.to_unix.//(60).to_i
         spawn save_list("origs", origs)
       end
     end
 
-    {utime, origs.size}
+    {mtime, origs.size}
   end
 
   def trans!(dname = "various", force = false) : Nil
