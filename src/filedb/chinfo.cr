@@ -156,10 +156,26 @@ class CV::Chinfo
     # @stats.try(&.save!(mode: mode))
   end
 
-  CHINFOS = {} of String => self
+  alias Cache = Hash(String, self)
+  CACHE_LIMIT = 256
 
-  def self.load(sname : String, snvid : String) : self
-    CHINFOS["#{sname}/#{snvid}"] ||= new(sname, snvid)
+  @@acache = Cache.new
+  @@bcache = Cache.new
+
+  def self.load(sname : String, snvid : String)
+    label = "#{sname}/#{snvid}"
+
+    unless item = @@acache[label]?
+      item = @@bcache[label]? || new(sname, snvid)
+      @@acache[label] = item
+
+      if @@acache.size >= CACHE_LIMIT
+        @@bcache = @@acache
+        @@acache = Cache.new
+      end
+    end
+
+    item
   end
 
   def self.save!(mode : Symbol = :full) : Nil
