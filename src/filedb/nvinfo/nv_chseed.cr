@@ -48,4 +48,9 @@ module CV::NvChseed
     @@_index.try(&.save!(mode: mode))
     CACHE.each_value(&.save!(mode: mode))
   end
+
+  def glob(query : String, prevs : Set(String)? = nil)
+    res = _index.keys(query.downcase)
+    prevs ? prevs & res : res
+  end
 end

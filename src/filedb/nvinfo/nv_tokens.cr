@@ -1,4 +1,5 @@
 require "./nv_helper"
+require "./nv_chseed"
 
 module CV::NvTokens
   extend self
@@ -6,7 +7,7 @@ module CV::NvTokens
   TYPES = {
     :author_zh, :author_vi,
     :btitle_zh, :btitle_hv, :btitle_vi,
-    :genres, :source,
+    :genres,
   }
 
   {% for type in TYPES %}
@@ -50,7 +51,7 @@ module CV::NvTokens
     end
 
     if sname = query["sname"]?
-      matched = glob_source(sname, matched)
+      matched = NvChseed.glob(sname, matched)
       return matched if matched.empty?
     end
 
@@ -76,11 +77,6 @@ module CV::NvTokens
 
   def glob_bgenre(query : String, matched : Set(String)? = nil)
     res = genres.keys(TextUtils.slugify(query))
-    matched ? matched & res : res
-  end
-
-  def glob_source(query : String, matched : Set(String)? = nil)
-    res = source.keys(query.downcase)
     matched ? matched & res : res
   end
 end
