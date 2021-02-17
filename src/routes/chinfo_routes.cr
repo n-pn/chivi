@@ -23,7 +23,7 @@ module CV::Server
       JSON.build(res) do |json|
         json.object do
           json.field "total", chinfo.heads.size
-          json.field "utime", nvinfo.chseed[sname]?.try(&.[1].* 60) || 0
+          json.field "utime", nvinfo.chseed_mtime(sname)
 
           json.field "lasts" do
             chinfo.json_each(json, 0, 6, true)

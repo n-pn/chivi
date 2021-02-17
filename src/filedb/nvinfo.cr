@@ -105,6 +105,11 @@ class CV::Nvinfo
     NvChseed.put_chseed(sname, bhash, value)
   end
 
+  def chseed_mtime(sname : String)
+    return 0_i64 unless meta = chseed[sname]?
+    meta[1].to_i64 * 60
+  end
+
   def save!(mode = :upds)
     NvValues.save!(mode: :upds)
     NvTokens.save!(mode: :upds)
