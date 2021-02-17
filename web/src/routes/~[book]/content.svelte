@@ -1,4 +1,5 @@
 <script context="module">
+  import { remove_item } from '$api/_api_call'
   import { get_nvinfo } from '$api/nvinfo_api'
   import { get_chseed, get_chlist } from '$api/chinfo_api'
 
@@ -184,6 +185,8 @@
 
   async function add_new_seed(evt) {
     nvinfo.chseed[new_sname] = [new_snvid, 0, 0]
+    remove(`nvinfo:${nvinfo.bslug}`)
+
     add_seed = false
     await load_chseed(evt, new_sname, 1)
   }
