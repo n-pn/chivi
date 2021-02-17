@@ -29,7 +29,7 @@ module CV::Server
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
         json.object do
-          json.field "total", chmeta[2]
+          json.field "total", chinfo.size
           json.field "utime", chmeta[1] * 60
 
           json.field "lasts" do
