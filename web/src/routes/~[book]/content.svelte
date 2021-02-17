@@ -10,7 +10,9 @@
 
     const seeds = Object.keys(nvinfo.chseed)
     const sname = req.query.sname || seeds[0] || 'chivi'
-    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
+    nvinfo.chseed['chivi'] = nvinfo.chseed['chivi'] || [nvinfo.bhash, 0, 0]
+
+    const [snvid] = nvinfo.chseed[sname]
 
     const page = +(req.query.page || 1)
     const params = { sname, snvid, page }

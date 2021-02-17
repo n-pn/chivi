@@ -18,6 +18,8 @@
         </div>
       </a>
     </li>
+  {:else}
+    <p class="empty">Không có nội dung.</p>
   {/each}
 </ul>
 
@@ -115,5 +117,12 @@
     &:after {
       content: '.';
     }
+  }
+
+  .empty {
+    font-style: italic;
+    @include fgcolor(neutral, 6);
+
+    // grid-column: 1;
   }
 </style>
