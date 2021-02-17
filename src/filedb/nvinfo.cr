@@ -17,7 +17,7 @@ class CV::Nvinfo
   getter voters : Int32 { NvValues.voters.ival(bhash) }
   getter rating : Int32 { NvValues.rating.ival(bhash) }
 
-  getter bintro : Array(String) { NvValues.get_bintro(bhash) }
+  getter bintro : Array(String) { NvBintro.get_bintro(bhash) }
   getter status : Int32 { NvValues.status.ival(bhash) }
   getter source : Hash(String, String) { NvValues.get_source(bhash) }
 

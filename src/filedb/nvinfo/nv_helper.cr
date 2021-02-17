@@ -8,14 +8,9 @@ module CV::NvHelper
 
   DIR = "_db/nvdata/nvinfos"
   ::FileUtils.mkdir_p("#{DIR}/tokens")
-  ::FileUtils.mkdir_p("#{DIR}/intros")
 
   def map_file(name : String)
     "#{DIR}/#{name}.tsv"
-  end
-
-  def intro_file(slug : String, type : String = "vi")
-    "#{DIR}/intros/#{slug}-#{type}.txt"
   end
 
   def value_map(name : String, mode : Int32 = 1)

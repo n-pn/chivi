@@ -50,24 +50,6 @@ module CV::NvValues
     @@_utime.try(&.save!(mode: mode))
   end
 
-  def set_bintro(bhash : String, lines : Array(String), force : Bool = false) : Nil
-    zh_file = NvHelper.intro_file(bhash, "zh")
-    return unless force || !File.exists?(zh_file)
-
-    File.write(zh_file, lines.join("\n"))
-
-    vi_file = NvHelper.intro_file(bhash, "vi")
-    cv_tool = Convert.generic(bhash)
-
-    vi_intro = lines.map { |line| cv_tool.tl_plain(line) }
-    File.write(vi_file, vi_intro.join("\n"))
-  end
-
-  def get_bintro(bhash : String) : Array(String)
-    vi_file = NvHelper.intro_file(bhash, "vi")
-    File.exists?(vi_file) ? File.read_lines(vi_file) : [] of String
-  end
-
   def get_source(bhash : String) : Hash(String, String)
     source = NvValues.source.get(bhash) || [] of String
     source.each_with_object({} of String => String) do |entry, output|
