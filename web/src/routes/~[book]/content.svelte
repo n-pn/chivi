@@ -335,14 +335,13 @@
     @include props(line-height, 1.5rem, 1.75rem, 2rem);
 
     .-name {
-      margin-top: 0.25rem;
-
       border-radius: 0.75rem;
       padding: 0 0.75em;
       background-color: #fff;
 
       @include label();
       @include border();
+      @include props(margin-top, 0.25rem, 0.375rem, 0.5rem);
       @include props(margin-left, 0.25rem, 0.375rem, 0.5rem);
 
       &._active {
