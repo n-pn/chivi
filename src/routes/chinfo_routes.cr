@@ -14,12 +14,7 @@ module CV::Server
 
     if mode > 0
       mtime, total = chinfo.fetch!(u_power, mode > 1)
-
-      if mtime >= 0
-        nvinfo.put_chseed!(sname, {snvid, mtime.//(60).to_i, total})
-        nvinfo.set_utime(mtime)
-      end
-
+      nvinfo.put_chseed!(sname, snvid, mtime.to_i, total) if mtime >= 0
       chinfo.trans!(bhash, u_power > 1)
       # chinfo.save!
     end

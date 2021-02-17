@@ -75,28 +75,34 @@ class CV::Nvinfo
     NvValues.set_utime(bhash, mtime).tap { |x| @_utime = mtime if x }
   end
 
-  def put_chseed!(sname : String, value : Tuple(String, Int32, Int32)) : Nil
+  def put_chseed!(sname : String, snvid : String, mtime = 0, total = 0) : Nil
     # fix source updated_at
-    if old_value = chseed[sname]?
-      mtime = value[1]
+    utime = _utime.//(60).to_i
 
-      if value[2] > old_value[2] # if newer has more count
-        if mtime <= old_value[1]
-          utime = _utime.//(60).to_i
-          mtime = utime > old_value[1] ? utime : Time.utc.to_unix.//(60).to_i
+    if old_value = chseed[sname]?
+      _, old_mtime, old_total = old_value
+
+      if total > old_total # if newer has more count
+        if mtime <= old_mtime
+          mtime = utime > old_mtime ? utime : Time.utc.to_unix.//(60).to_i
         end
       else
-        mtime = old_value[1] if mtime < old_value[1]
+        mtime = old_mtime if mtime < old_mtime
       end
 
-      value = {value[0], mtime, value[1]}
+      # elsif mtime < utime
+      #   mtime = utime
+      #   value = {value[0], mtime, value[1]}
     end
 
-    NvChseed.put_chseed(sname, bhash, value)
+    set_utime(mtime.to_i64 * 60)
+    value = {sname, mtime, total}
 
     chseed[sname] = value
     @chseed = chseed.to_a.sort_by { |_, v| {-v[2], -v[1]} }.to_h
+
     NvChseed.set_snames(bhash, chseed.keys)
+    NvChseed.put_chseed(sname, bhash, value)
   end
 
   def save!(mode = :upds)
