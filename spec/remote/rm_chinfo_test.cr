@@ -6,7 +6,7 @@ def fetch_info(sname, snvid, fresh = false) : Void
   puts "\n[#{CV::RmSpider.chinfo_link(sname, snvid)}]".colorize.green.bold
   puts "------".colorize.green
 
-  parser = CV::RmChinfo.new(sname, snvid, ttl: fresh ? 1.minute : 1.year)
+  parser = CV::RmChinfo.new(sname, snvid, ttl: fresh ? 30.seconds : 1.year)
 
   pp "updated_at: #{parser.updated_at}"
   puts "------".colorize.green
@@ -64,3 +64,7 @@ fetch_info("shubaow", "150092", fresh: false)
 fetch_info("paoshu8", "151780", fresh: false)
 
 fetch_info("69shu", "35875", fresh: false)
+
+fetch_info("biqubao", "33775", fresh: false)
+
+fetch_info("bxwxorg", "119227", fresh: false)

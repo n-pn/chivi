@@ -81,6 +81,9 @@ class CV::RmChtext
       lines.pop if lines.last.includes?("eqeq.net")
     when "xbiquge"
       lines.shift if lines.first.starts_with?("笔趣阁")
+    when "bxwxorg"
+      lines.shift if lines.first.includes?("bxwx66.com")
+      lines.pop if lines.last.includes?("bxwxorg.com")
     when "duokan8"
       lines.shift if lines.first == "<b></b>"
       lines.update(0, &.sub(/.+<\/h1>\s*/, ""))

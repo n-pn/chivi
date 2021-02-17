@@ -86,17 +86,22 @@ class CV::RmChinfo
     node.children.each do |node|
       case node.tag_sym
       when :dt
-        label = node.inner_text.gsub(/《.*》/, "").strip
-        label = "" if label == "正文"
+        if inner = node.css("b").first?
+          label = inner.inner_text
+        else
+          label = node.inner_text
+        end
+
+        label = label.gsub(/《.*》/, "").strip
+        label = label == "正文" ? "" : label.sub(/\s{2,}/, " ")
       when :dd
         next if label.includes?("最新章节")
+        next unless link = node.css("a").first?
+        next unless href = link.attributes["href"]?
+
+        title, label = TextUtils.format_title(link.inner_text, label)
+        chlist << [extract_chid(href), title, label] unless title.empty?
       end
-
-      next unless link = node.css("a").first?
-      next unless href = link.attributes["href"]?
-
-      title, label = TextUtils.format_title(link.inner_text, label)
-      chlist << [extract_chid(href), title, label] unless title.empty?
     rescue err
       puts err.colorize.red
     end

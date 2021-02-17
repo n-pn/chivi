@@ -23,7 +23,7 @@ module CV::RmSpider
 
   def encoding_for(sname : String) : String
     case sname
-    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me"
+    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg"
       "UTF-8"
     else
       "GBK"
@@ -51,6 +51,8 @@ module CV::RmSpider
     when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
     when "rengshu"  then "http://www.rengshu.com/book/#{snvid}"
     when "xbiquge"  then "https://www.xbiquge.cc/book/#{snvid}/"
+    when "biqubao"  then "https://www.biqubao.com/book/#{snvid}/"
+    when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/"
     when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/index.html"
     when "duokan8"  then "http://www.duokanba.info/#{scoped(snvid)}/"
@@ -75,6 +77,8 @@ module CV::RmSpider
     when "qu_la"    then "https://www.qu.la/book/#{snvid}/#{schid}.html"
     when "rengshu"  then "http://www.rengshu.com/book/#{snvid}/#{schid}"
     when "xbiquge"  then "https://www.xbiquge.cc/book/#{snvid}/#{schid}.html"
+    when "biqubao"  then "https://www.biqubao.com/book/#{snvid}/#{schid}.html"
+    when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/#{schid}.html"
     when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/#{schid}.html"
     when "duokan8"  then "http://www.duokanba.info/#{scoped(snvid)}/#{schid}.html"
