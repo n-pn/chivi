@@ -185,10 +185,10 @@
 
   async function add_new_seed(evt) {
     nvinfo.chseed[new_sname] = [new_snvid, 0, 0]
-    remove(`nvinfo:${nvinfo.bslug}`)
-
     add_seed = false
+
     await load_chseed(evt, new_sname, 1)
+    remove_item(`nvinfo:${nvinfo.bslug}`)
   }
 </script>
 
