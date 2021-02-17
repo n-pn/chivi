@@ -96,7 +96,7 @@ class CV::Nvinfo
     end
 
     set_utime(mtime.to_i64 * 60)
-    value = {sname, mtime, total}
+    value = {snvid, mtime, total}
 
     chseed[sname] = value
     @chseed = chseed.to_a.sort_by { |_, v| {-v[2], -v[1]} }.to_h
