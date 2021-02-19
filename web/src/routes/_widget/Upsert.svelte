@@ -18,7 +18,8 @@
 
   import Vhint from './Upsert/Vhint'
   import Vutil from './Upsert/Vutil'
-  import Attrs from './Upsert/Attrs'
+  import Vattr from './Upsert/Vattr'
+  import Vprio from './Upsert/Vprio'
 
   import Emend from './Upsert/Emend'
   import Power from './Upsert/Power'
@@ -151,6 +152,8 @@
     </section>
 
     <section class="vform">
+      <Emend info={infos[$on_tab]} />
+
       <div class="forms">
         <div class="value">
           <Vhint
@@ -170,30 +173,22 @@
             autocomplete="off"
             autocapitalize={$on_tab < 1 ? 'words' : 'off'} />
 
+          <Vattr bind:attr={infos[$on_tab].attr} />
+
           <Vutil bind:value={value[$on_tab]} _orig={origs[$on_tab]} />
         </div>
-
-        <Attrs
-          bind:prio={infos[$on_tab].prio}
-          bind:attr={infos[$on_tab].attr}
-          with_types={$on_tab < 2} />
       </div>
 
       <div class="vfoot">
-        <div class="-emend">
-          {#if infos[$on_tab].uname != '_'}
-            <Emend info={infos[$on_tab]} />
-          {/if}
-        </div>
-
-        <Power bind:power={p_now[$on_tab]} p_max={$u_power} />
-
         <Bsend
           value={value[$on_tab]}
           _orig={origs[$on_tab]}
           power={p_now[$on_tab]}
           p_min={p_old[$on_tab]}
           on:click={() => submit_val($on_tab)} />
+
+        <Power bind:power={p_now[$on_tab]} p_max={$u_power} />
+        <Vprio bind:prio={infos[$on_tab].prio} />
       </div>
     </section>
 
@@ -260,6 +255,7 @@
   .vform {
     @include bgcolor(#fff);
     padding: 0.75rem;
+    padding-top: 0;
   }
 
   .forms {
@@ -297,18 +293,10 @@
 
   .vfoot {
     margin-top: 0.75rem;
-    @include flex();
-
-    .-emend {
-      flex: 1;
-    }
-
+    @include flow();
     > :global(*) {
-      margin-right: 0.75rem;
-
-      &:last-child {
-        margin-right: 0;
-      }
+      float: right;
+      margin-left: 0.5rem;
     }
   }
 

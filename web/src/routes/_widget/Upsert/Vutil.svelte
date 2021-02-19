@@ -75,14 +75,17 @@
 
   .right {
     margin-left: auto;
+    display: flex;
   }
 
   .-btn {
-    padding: 0.25rem 0.25rem;
-    line-height: 1.25rem;
+    padding: 0;
+    width: 1.75rem;
+    // height: 1.5rem;
+
     background: none;
 
-    @include font-size(3);
+    font-size: rem(18px);
     @include fgcolor(neutral, 5);
 
     &:hover {

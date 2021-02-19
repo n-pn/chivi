@@ -1,11 +1,11 @@
 <script context="module">
-  const minute_span = 60
-  const hour_span = minute_span * 60
-  const day_span = hour_span * 24
-  const month_span = day_span * 30
+  const minute_span = 60 // 60 seconds
+  const hour_span = minute_span * 60 // 3600 seconds
+  const day_span = hour_span * 24 * 3
+  const month_span = day_span * 30 * 12
 
   export function reltime_text(mtime, rtime) {
-    const span = (new Date().getTime() - mtime) / 1000
+    const span = (new Date().getTime() - mtime) / 1000 // unit: seconds
 
     if (span > month_span) return iso_date(rtime)
     if (span > day_span) return `${rounding(span, day_span)} ngày trước`

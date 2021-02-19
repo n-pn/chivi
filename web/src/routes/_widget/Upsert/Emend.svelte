@@ -4,27 +4,34 @@
   export let info
 </script>
 
-<div class="emend">
-  <div class="-line">
+{#if info.uname && info.uname != '_'}
+  <div class="edit">
     <span class="-text">{info.state} bởi: </span>
     <span class="-user">{info.uname}</span>
     <span class="-text">Q.hạn:</span>
     <span class="-user">{info.power}</span>
-  </div>
-
-  <div class="-line">
     <span class="-text">Thời gian:</span>
     <span class="-time"><RTime mtime={info.mtime} /></span>
   </div>
-</div>
+{:else}
+  <div class="hint" />
+{/if}
 
 <style lang="scss">
-  .emend {
-    height: 2.75rem;
-    line-height: 1.375rem;
+  .edit {
+    text-align: center;
+    height: 2rem;
+
+    line-height: 2rem;
+
+    // height: 2.75rem;
     // padding-top: 1px;
     @include fgcolor(neutral, 6);
-    @include font-size(2);
+    @include font-size(1);
+  }
+
+  .hint {
+    height: 2rem;
   }
 
   .-text {
@@ -33,11 +40,11 @@
 
   .-time,
   .-user {
-    @include fgcolor(primary, 8);
+    @include fgcolor(primary, 8, 0.7);
+    font-weight: 500;
   }
 
   .-user {
-    font-weight: 500;
     @include truncate(5vw);
   }
 </style>
