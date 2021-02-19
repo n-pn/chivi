@@ -51,7 +51,7 @@ class CV::Chinfo
 
       if force || puller.changed?(latest)
         @origs = puller.chap_list
-        mtime = puller.updated_at.to_unix.//(60).to_i
+        mtime = puller.update_int.//(60).to_i
         spawn save_list("origs", origs)
       end
     end

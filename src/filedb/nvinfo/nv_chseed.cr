@@ -3,8 +3,6 @@ require "../../mapper/*"
 
 module CV::NvChseed
   extend self
-  DIR = "_db/nvdata/chseeds"
-  ::FileUtils.mkdir_p(DIR)
 
   class_getter _index : TokenMap { TokenMap.new(file_path("_index"), mode: 1) }
 
@@ -32,8 +30,11 @@ module CV::NvChseed
     _index.save!(mode: :upds)
   end
 
+  DIR = "_db/nvdata/chseeds"
+  ::FileUtils.mkdir_p(DIR)
+
   def file_path(label : String)
-    File.join(DIR, "#{label}.tsv")
+    "#{DIR}/#{label}.tsv"
   end
 
   CACHE = {} of String => ValueMap

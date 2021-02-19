@@ -8,7 +8,7 @@ def fetch_info(sname, snvid, fresh = false) : Void
 
   parser = CV::RmChinfo.new(sname, snvid, ttl: fresh ? 30.seconds : 1.year)
 
-  pp "updated_at: #{parser.updated_at}"
+  pp "updated_at: #{Time.unix(parser.update_int)}"
   puts "------".colorize.green
 
   puts "chap_count: #{parser.chap_list.size}"

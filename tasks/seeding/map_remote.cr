@@ -95,8 +95,7 @@ class CV::Seeds::MapRemote
       end
 
       @seeding.status.add(snvid, parser.status_int)
-      mtime = @sname == "hetushu" ? Time.utc(2020, 1, 1) : parser.updated_at
-      @seeding._utime.add(snvid, mtime.to_unix)
+      @seeding._utime.add(snvid, parser.update_int)
 
       if idx % 100 == 0
         puts "- [#{@sname}]: <#{idx}/#{upto}>"

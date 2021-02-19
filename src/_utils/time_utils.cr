@@ -1,10 +1,7 @@
-require "colorize"
-
 module CV::TimeUtils
   extend self
 
   LOCATION = Time::Location.fixed(3600 * 8) # chinese timezone
-  DEF_TIME = Time.utc(2010, 1, 1)
 
   TIME_FMT = {
     "%-m/%-d/%Y %r", "%-m/%-d/%Y %T", "%Y/%-m/%-d %T",
@@ -13,19 +10,15 @@ module CV::TimeUtils
 
   # parse remote source info update times
   def parse_time(input : String) : Time
+    raise "<parse_time> error: empty string" if input.empty?
+
     TIME_FMT.each do |format|
       return Time.parse(input, format, LOCATION)
     rescue
       next
     end
 
-    puts "[ERROR parsing time <#{input}>: unknown format]".colorize.red
-    DEF_TIME
-  end
-
-  # :ditto:
-  def parse_time(input : Nil) : Time
-    Time.utc
+    raise "<parse_time> [#{input}] error: invalid format]"
   end
 end
 

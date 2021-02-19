@@ -90,7 +90,7 @@ class CV::Seeds::MapZhwenpg
     @seeding.status.add(snvid, status)
     @seeding._atime.add(snvid, Time.utc.to_unix)
 
-    update_at = parser.updated_at + 12.hours
+    update_at = parser.updated_at + 24.hours
     update_at = Time.utc if update_at > Time.utc
 
     @seeding._utime.add(snvid, update_at.to_unix)

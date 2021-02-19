@@ -15,14 +15,20 @@ class CV::RmChinfo
     @rdoc = Myhtml::Parser.new(html)
   end
 
-  getter updated_at : Time do
-    TimeUtils.parse_time(update_str)
+  getter update_int : Int64 do
+    return 0_i64 if @sname == "hetushu" || @sname == "zhwenpg"
+
+    time = TimeUtils.parse_time(update_str)
+    time += 24.hours if @sname == "bqg_5200"
+    time < Time.utc ? time.to_unix : Time.utc.to_unix
+  rescue
+    0_i64
   end
 
   getter update_str : String do
     case @sname
     when "zhwenpg", "hetushu"
-      "2010-01-01 8:00:00"
+      "1970-01-01 8:00:00"
     when "69shu"
       node_text(".mu_beizhu").sub(/.+时间：/m, "")
     when "bqg_5200"

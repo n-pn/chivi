@@ -33,8 +33,8 @@ class CV::YsNvinfo
   getter cover = ""
   getter cover_fixed : String { get_fixed_cover }
 
-  getter updateAt : Time = Time.utc(2010, 1, 1)
-  getter updated_at : Time { @updateAt < Time.utc ? @updateAt : TimeUtils::DEF_TIME }
+  getter updateAt : Time = Time.utc(2020, 1, 1)
+  getter updated_at : Time { @updateAt < Time.utc ? @updateAt : Time.utc(2020, 1, 1) }
 
   getter scorerCount = 0_i32
   getter voters : Int32 { scorerCount }
