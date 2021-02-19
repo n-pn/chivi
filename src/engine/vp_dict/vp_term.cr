@@ -75,8 +75,7 @@ class CV::VpTerm
   end
 
   def beats?(other : self)
-    return @power >= other.power if @uname == other.uname
-    return @mtime >= other.mtime if @power == other.power
+    return @mtime >= other.mtime if @uname == other.uname || @power == other.power
     @power > other.power
   end
 

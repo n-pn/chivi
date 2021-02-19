@@ -71,6 +71,25 @@ module CV::Server
 
     # blank = {vals: [] of String, hints: [] of String, attrs: "", power: 0}
 
+    unless special_term = special_node.try(&.term)
+      if term = regular_node.try(&.term)
+        prio = term.prio
+        attr = term.attr
+      else
+        prio = attr = 1_i8
+      end
+
+      special_term = special_dict.gen_term(input, prio: prio, attr: attr)
+    end
+
+    unless regular_term = regular_node.try(&.term)
+      regular_term = regular_dict.gen_term(input)
+    end
+
+    unless hanviet_term = hanviet_node.try(&.term)
+      hanviet_term = hanviet_dict.gen_term(input)
+    end
+
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
         json.object do
@@ -79,19 +98,10 @@ module CV::Server
 
           json.field "infos" do
             json.array do
-              unless special_term = special_node.try(&.term)
-                special_term = special_dict.gen_term(input)
-              end
               special_term.to_json(json)
 
-              unless regular_term = regular_node.try(&.term)
-                regular_term = regular_dict.gen_term(input)
-              end
               regular_term.to_json(json)
 
-              unless hanviet_term = hanviet_node.try(&.term)
-                hanviet_term = hanviet_dict.gen_term(input)
-              end
               hanviet_term.to_json(json)
             end
           end

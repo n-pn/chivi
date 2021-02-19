@@ -138,8 +138,8 @@ class CV::ExportDicts
         unless term.empty?
           if term.key.size < 2
             term.prio = 0_i8
-          elsif term.key.size > 2
-            term.prio = 2_i8
+          elsif term.key.size > 3
+            term.prio = LEXICON.includes?(term.key) ? 2_i8 : 1_i8
           end
 
           term.attr ^= 1 if is_noun?(term.key, term.vals.first)

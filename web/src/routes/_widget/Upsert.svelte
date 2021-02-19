@@ -36,9 +36,8 @@
     ['hanviet', 'Hán Việt'],
   ]
 
-  let trans = {}
-  let hints = []
-  let infos = [{ uname: '_' }, { uname: '_' }, { uname: '_' }]
+  let props = { trans: {}, hints: [] }
+  let infos = [{}, {}, {}]
 
   let key = ''
   $: if ($active && key) init_search(key, dname)
@@ -46,11 +45,8 @@
   let value = ['', '', '']
   let origs = ['', '', '']
 
-  let prios = [0, 0, 0]
-  let attrs = [0, 0, 0]
-
-  let p_min = [1, 2, 3]
-  let power = [1, 2, 3]
+  let p_old = [1, 2, 3]
+  let p_now = [1, 2, 3]
 
   let value_field
   $: if (value[$on_tab]) focus_on_value()
@@ -65,31 +61,20 @@
   }
 
   async function init_search(input, dname) {
-    const data = await dict_search(fetch, input, dname)
+    props = await dict_search(fetch, input, dname)
+    infos = props.infos
 
-    trans = data.trans
-    hints = data.hints
-    infos = data.infos
+    p_old = infos.map((info) => info.power)
+    p_now = p_old.map((pmin) => (pmin < $u_power ? pmin : $u_power))
 
-    p_min = infos.map((info, i) => (+info.power > i + 1 ? +info.power : i + 1))
-    power = p_min.map((min) => (min < $u_power ? min : $u_power))
+    origs = infos.map((info) => info.vals[0] || '')
 
-    origs = infos.map((info) => (info.vals || [])[0] || '')
-    prios = infos.map((info) => info.prio || 0)
-
-    value = origs.map((val, i) => {
-      if (val) return val
-
-      val = hints[0]
-      if (val) return i < 2 ? val : val.toLowerCase()
-
-      return i < 1 ? titleize(trans.hanviet, 9) : trans.hanviet
-    })
-
-    attrs = infos.map((info, i) => {
-      if (origs[i] || info.attr) return info.attr || 0
-      return i > 0 ? 0 : origs[1] ? infos[1].attr : 1
-    })
+    const hanviet = props.trans.hanviet
+    value = [
+      origs[0] || origs[1] || props.hints[0] || titleize(hanviet, 9),
+      origs[1] || origs[0] || props.hints[0] || hanviet,
+      origs[2] || hanviet,
+    ]
   }
 
   async function submit_val(tab = $on_tab) {
@@ -97,9 +82,9 @@
     const params = {
       key,
       vals: value[tab],
-      prio: prios[tab],
-      attr: attrs[tab],
-      power: power[tab],
+      prio: infos[tab].prio,
+      attr: infos[tab].attr,
+      power: p_now[tab],
     }
 
     const res = await dict_upsert(fetch, dname, params)
@@ -117,11 +102,11 @@
         return hide_modal(evt, false)
 
       case 38:
-        if (evt.altKey && power < $u_power) power += 1
+        if (evt.altKey && p_now[$on_tab] < $u_power) p_now[$on_tab] += 1
         break
 
       case 40:
-        if (evt.altKey && power > 1) power -= 1
+        if (evt.altKey && p_now[$on_tab] > 1) p_now[$on_tab] -= 1
         break
 
       default:
@@ -169,10 +154,10 @@
       <div class="forms">
         <div class="value">
           <Vhint
-            {hints}
-            {trans}
-            bind:value={value[$on_tab]}
-            _orig={origs[$on_tab]} />
+            hints={props.hints}
+            trans={props.trans}
+            _orig={origs[$on_tab]}
+            bind:value={value[$on_tab]} />
 
           <input
             id="value"
@@ -189,8 +174,8 @@
         </div>
 
         <Attrs
-          bind:prio={prios[$on_tab]}
-          bind:attr={attrs[$on_tab]}
+          bind:prio={infos[$on_tab].prio}
+          bind:attr={infos[$on_tab].attr}
           with_types={$on_tab < 2} />
       </div>
 
@@ -201,13 +186,13 @@
           {/if}
         </div>
 
-        <Power bind:power={power[$on_tab]} p_max={$u_power} />
+        <Power bind:power={p_now[$on_tab]} p_max={$u_power} />
 
         <Bsend
           value={value[$on_tab]}
           _orig={origs[$on_tab]}
-          power={power[$on_tab]}
-          p_min={p_min[$on_tab]}
+          power={p_now[$on_tab]}
+          p_min={p_old[$on_tab]}
           on:click={() => submit_val($on_tab)} />
       </div>
     </section>
