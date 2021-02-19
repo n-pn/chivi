@@ -17,3 +17,11 @@
   on:click>
   <span class="-text">{state}</span>
 </button>
+
+<style>
+  button {
+    margin-left: 0.75rem;
+    justify-content: center;
+    width: 4rem;
+  }
+</style>

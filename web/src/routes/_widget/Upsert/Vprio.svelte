@@ -23,10 +23,12 @@
 
   .prio {
     display: flex;
-    margin-top: ($outer-height - $inner-height) / 2;
+    flex: 1;
+    justify-content: center;
+    margin: ($outer-height - $inner-height) / 2 0;
     padding-top: 1px;
     // padding-top: 0.25rem;
-    @include props(font-size, rem(12px), rem(13px));
+    @include props(font-size, rem(11px), rem(12px), rem(13px));
   }
 
   .-txt,
@@ -40,13 +42,14 @@
 
   .-txt {
     margin-top: 1px;
+    margin-right: 0.375rem;
     @include props(display, none, $md: inline-block);
   }
 
   .-btn {
     padding: 0 0.5rem;
     // margin: 0;
-    margin-left: 0.375rem;
+
     background-color: #fff;
 
     @include fgcolor(neutral, 5);
@@ -60,6 +63,10 @@
 
     &.active {
       @include fgcolor(primary, 5);
+    }
+
+    & + & {
+      margin-left: 0.375rem;
     }
   }
 </style>

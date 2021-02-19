@@ -11,14 +11,16 @@
 </span>
 
 <style lang="scss">
+  $height: 2.25rem;
+
   .tab {
     cursor: pointer;
     text-transform: uppercase;
     font-weight: 500;
     padding: 0 0.75rem;
 
-    height: 2.25rem;
-    line-height: 2.25rem;
+    height: $height;
+    line-height: $height;
 
     flex-shrink: 0;
 

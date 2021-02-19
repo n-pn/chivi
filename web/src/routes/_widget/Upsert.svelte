@@ -134,10 +134,6 @@
       <div class="hanzi">
         <Input phrase={$phrase} bind:output={key} />
       </div>
-
-      <button type="button" class="m-button _text" on:click={hide_modal}>
-        <SIcon name="x" />
-      </button>
     </header>
 
     <section class="dicts">
@@ -182,15 +178,14 @@
       </div>
 
       <div class="vfoot">
+        <Vprio bind:prio={infos[$on_tab].prio} />
+        <Power bind:power={p_now[$on_tab]} p_max={$u_power} />
         <Bsend
           value={value[$on_tab]}
           _orig={origs[$on_tab]}
           power={p_now[$on_tab]}
           p_min={p_old[$on_tab]}
           on:click={() => submit_val($on_tab)} />
-
-        <Power bind:power={p_now[$on_tab]} p_max={$u_power} />
-        <Vprio bind:prio={infos[$on_tab].prio} />
       </div>
     </section>
 
@@ -226,13 +221,14 @@
   header {
     display: flex;
     padding: 0.75rem;
+    padding-right: 0.5rem;
 
-    button {
-      @include fgcolor(neutral, 6);
-      &:hover {
-        @include fgcolor(primary, 6);
-      }
-    }
+    // button {
+    //   @include fgcolor(neutral, 6);
+    //   &:hover {
+    //     @include fgcolor(primary, 6);
+    //   }
+    // }
 
     .hanzi {
       flex-grow: 1;
@@ -256,8 +252,7 @@
 
   .vform {
     @include bgcolor(#fff);
-    padding: 0.75rem;
-    padding-top: 0;
+    padding: 0 0.75rem 0.75rem;
   }
 
   .forms {
@@ -272,7 +267,7 @@
       width: 100%;
       margin: 0;
       line-height: 2.5rem;
-      padding: 2rem 0.75rem;
+      padding: 2rem 0.75rem 2.25rem;
       // text-align: center;
       outline: none;
 
@@ -294,12 +289,9 @@
   }
 
   .vfoot {
+    display: flex;
     margin-top: 0.75rem;
-    @include flow();
-    > :global(*) {
-      float: right;
-      margin-left: 0.5rem;
-    }
+    justify-content: right;
   }
 
   footer {

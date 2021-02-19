@@ -38,7 +38,7 @@
 </div>
 
 <style lang="scss">
-  $height: 2rem;
+  $height: 2.25rem;
 
   .vutil {
     position: absolute;

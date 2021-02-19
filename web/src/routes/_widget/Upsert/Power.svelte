@@ -17,6 +17,7 @@
 
 <style lang="scss">
   .power {
+    margin-left: 0.75rem;
     padding-left: 0.5rem;
     padding-right: 1.75rem;
 

@@ -18,20 +18,21 @@
 {/if}
 
 <style lang="scss">
+  $height: 1.75rem;
+
   .edit {
+    height: $height;
+    line-height: $height;
     text-align: center;
-    height: 2rem;
 
-    line-height: 2rem;
-
-    // height: 2.75rem;
     // padding-top: 1px;
-    @include fgcolor(neutral, 6);
     @include font-size(1);
+    @include fgcolor(neutral, 6);
   }
 
   .hint {
-    height: 2rem;
+    height: $height;
+    // height: 0.5rem;
   }
 
   .-text {

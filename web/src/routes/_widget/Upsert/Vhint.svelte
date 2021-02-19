@@ -63,7 +63,6 @@
 
     @include radius;
     @include truncate(null);
-    @include bgcolor(neutral, 1);
 
     &:hover {
       @include fgcolor(primary, 6);
