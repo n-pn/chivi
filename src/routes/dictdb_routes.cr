@@ -69,8 +69,6 @@ module CV::Server
     binh_am = Convert.binh_am.translit(input).to_s
     hanviet = Convert.hanviet.translit(input).to_s
 
-    # blank = {vals: [] of String, hints: [] of String, attrs: "", power: 0}
-
     unless special_term = special_node.try(&.term)
       if term = regular_node.try(&.term)
         prio = term.prio
@@ -94,7 +92,7 @@ module CV::Server
       JSON.build(res) do |json|
         json.object do
           json.field "trans", {binh_am: binh_am, hanviet: hanviet}
-          json.field "hints", hints.uniq.reject(&.== hanviet)
+          json.field "hints", hints.uniq.reject { |x| x.empty? || x == hanviet }
 
           json.field "infos" do
             json.array do
