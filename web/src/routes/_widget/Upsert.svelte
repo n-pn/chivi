@@ -134,6 +134,10 @@
       <div class="hanzi">
         <Input phrase={$phrase} bind:output={key} />
       </div>
+
+      <button type="button" class="m-button _text" on:click={hide_modal}>
+        <SIcon name="x" />
+      </button>
     </header>
 
     <section class="dicts">
@@ -223,16 +227,16 @@
     padding: 0.75rem;
     padding-right: 0.5rem;
 
-    // button {
-    //   @include fgcolor(neutral, 6);
-    //   &:hover {
-    //     @include fgcolor(primary, 6);
-    //   }
-    // }
+    > button {
+      @include fgcolor(neutral, 6);
+      &:hover {
+        @include fgcolor(primary, 6);
+      }
+    }
 
     .hanzi {
       flex-grow: 1;
-      margin-right: 0.5rem;
+      margin-right: 0.25rem;
     }
   }
 
