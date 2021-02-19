@@ -81,7 +81,7 @@
   .-btn {
     padding: 0;
     width: 1.75rem;
-    // height: 1.5rem;
+    padding-bottom: 0.25rem;
 
     background: none;
 
