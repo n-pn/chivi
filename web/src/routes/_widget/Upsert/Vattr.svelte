@@ -44,7 +44,7 @@
     @include radius(0.5rem);
     // @include props(font-size, rem(10px), rem(11px), rem(12px));
 
-    font-size: rem(12px);
+    font-size: rem(11px);
     margin-right: 0.375rem;
 
     &:last-child {

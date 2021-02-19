@@ -173,7 +173,9 @@
             autocomplete="off"
             autocapitalize={$on_tab < 1 ? 'words' : 'off'} />
 
-          <Vattr bind:attr={infos[$on_tab].attr} />
+          {#if $on_tab < 2}
+            <Vattr bind:attr={infos[$on_tab].attr} />
+          {/if}
 
           <Vutil bind:value={value[$on_tab]} _orig={origs[$on_tab]} />
         </div>
