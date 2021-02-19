@@ -29,18 +29,13 @@ class CV::VpTrie
     end
   end
 
-  def each(full : Bool = true) : Nil
+  def each : Nil
     queue = [self]
 
     while last = queue.pop?
       last._next.each_value do |node|
-        if full
-          node.edits.each { |term| yield term }
-        elsif term = node.term
-          yield term
-        end
-
         queue << node
+        yield node unless node.edits.empty?
       end
     end
   end

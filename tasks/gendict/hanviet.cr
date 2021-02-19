@@ -18,7 +18,7 @@ class Hanviet
   end
 
   def gen_from_trad!
-    TRADSIM.trie.each do |term|
+    TRADSIM.each do |term|
       next if term.key.size > 0
       next unless vals = @input[term.key]?
 

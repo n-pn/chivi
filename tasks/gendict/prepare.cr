@@ -63,11 +63,12 @@ NOUNS = Set(String).new
 ADJES = Set(String).new
 
 def categorize(key : String, val : String)
-  return unless key.includes?("的")
+  arr = key.split("的")
+  return if arr.size < 2
 
-  left, right = key.split("的")
+  left, right = arr
+  return if left.empty? || right.empty?
 
-  return if right.empty?
   NOUNS << right
 
   if val.includes?("của")
@@ -107,19 +108,19 @@ INPUT.each do |key, vals|
   end
 
   unless names.empty?
-    if (ondicts || checked || key.size > 2) && (book_count >= 40 || word_count >= 200)
-      inp_regular.upsert(key, vals, :new_first)
+    if (ondicts || book_count >= 40) && (checked || word_count >= 200)
+      inp_regular.upsert(key, names, :new_first)
     elsif checked || ondicts || book_count >= 20 || word_count >= 100
-      inp_suggest.upsert(key, vals, :new_first)
+      inp_suggest.upsert(key, names, :new_first)
     elsif word_count >= 20
-      inp_recycle.upsert(key, vals, :new_first)
+      inp_recycle.upsert(key, names, :new_first)
     end
 
     next unless words.empty? && key !~ /^\P{Han}/
     next unless inp_regular.has_key?(key)
 
     next unless checked && word_count >= 200 && key.size > 1
-    inp_various.upsert(key, vals, :new_first)
+    inp_various.upsert(key, names, :new_first)
   end
 end
 

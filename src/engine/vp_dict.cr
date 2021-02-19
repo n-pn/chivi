@@ -133,12 +133,22 @@ class CV::VpDict
   delegate scan, to: @trie
   delegate to_a, to: @trie
 
+  def each(full : Bool = true) : Nil
+    @trie.each do |node|
+      if full
+        node.edits.each { |term| yield term }
+      elsif term = node.term
+        yield term
+      end
+    end
+  end
+
   def save!(trim : Bool = false) : Nil
     ::FileUtils.mkdir_p(File.dirname(@file))
 
     tspan = Time.measure do
       File.open(@file, "w") do |io|
-        @trie.each(full: !trim) { |term| io.puts(term) }
+        each(full: !trim) { |term| io.puts(term) }
       end
 
       File.open(@flog, "w") do |io|

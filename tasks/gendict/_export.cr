@@ -49,7 +49,7 @@ class CV::ExportDicts
 
     @adjes = Set(String).new
     @adjes.concat File.read_lines(::QtUtil.path(".result/ce-adjes.txt"))
-    @adjes.concat File.read_lines(::QtUtil.path(".result/qt-adjes.txt"))
+    # @adjes.concat File.read_lines(::QtUtil.path(".result/qt-adjes.txt"))
   end
 
   def is_noun?(key : String, val : String)
@@ -99,21 +99,29 @@ class CV::ExportDicts
 
     puts "\n- load hanviet".colorize.cyan.bold
 
-    CV::VpDict.hanviet.trie.each do |term|
+    CV::VpDict.hanviet.each(full: false) do |term|
       next if term.key.size > 1 || @out_regular.find(term.key)
       @out_regular.put(term.key, term.vals)
     end
 
     @out_regular.load!("_db/dictdb/remote/common/regular.tab")
-    @out_regular.trie.each do |term|
+    @out_regular.each do |term|
       next if term.empty?
 
-      term.prio = 0_i8 if term.key.size < 2
-      term.prio = 2_i8 if term.key.size > 3
+      if term.key.size < 2
+        term.prio = 0_i8
+      elsif term.key.size > 3
+        term.prio = LEXICON.includes?(term.key) ? 2_i8 : 1_i8
+      end
 
       term.attr ^= 1 if is_noun?(term.key, term.vals.first)
       term.attr ^= 2 if @verbs.includes?(term.key)
-      term.attr ^= 4 if is_adje?(term.key, term.vals.first)
+
+      if is_adje?(term.key, term.vals.first)
+        term.attr ^= 4_i8
+      elsif term.attr >= 4_i8
+        term.attr -= 4_i8
+      end
     end
 
     @out_regular.save!(trim: true)
@@ -126,10 +134,14 @@ class CV::ExportDicts
       dict = VpDict.load(File.basename(file, ".tab"))
       dict.load!(file)
 
-      dict.trie.each do |term|
+      dict.each do |term|
         unless term.empty?
-          term.prio = 0_i8 if term.key.size < 2
-          term.prio = 2_i8 if term.key.size > 2
+          if term.key.size < 2
+            term.prio = 0_i8
+          elsif term.key.size > 2
+            term.prio = 2_i8
+          end
+
           term.attr ^= 1 if is_noun?(term.key, term.vals.first)
         end
 
