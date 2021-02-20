@@ -28,7 +28,7 @@
     display: flex;
     position: absolute;
     right: 0.5rem;
-    top: 2.5rem;
+    top: 2.75rem;
     line-height: 1.5rem;
   }
 
@@ -38,27 +38,26 @@
     font-weight: 500;
 
     background: transparent;
+    opacity: 0.9;
+
     @include fgcolor(neutral, 5);
 
     @include border();
     @include radius(0.5rem);
-    // @include props(font-size, rem(10px), rem(11px), rem(12px));
 
-    font-size: rem(11px);
-    margin-right: 0.375rem;
-
-    &:last-child {
-      margin-right: 0;
-    }
+    @include props(font-size, rem(14px), $md: rem(12px));
 
     &:hover,
     &.active {
-      border-color: color(primary, 4, 0.8);
+      @include fgcolor(primary, 5);
     }
 
     &.active {
-      @include fgcolor(primary, 5, 0.8);
+      @include bdcolor(primary, 4);
     }
+
+    // prettier-ignore
+    & + & { margin-left: 0.375rem; }
   }
 
   .-full {

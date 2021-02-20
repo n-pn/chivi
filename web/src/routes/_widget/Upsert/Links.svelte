@@ -25,8 +25,8 @@
 
   a {
     cursor: pointer;
-    padding: 0.5rem;
-    line-height: 1.25rem;
+    padding: 0 0.75rem;
+    line-height: 2.25rem;
 
     @include font-size(2);
     @include fgcolor(neutral, 7);

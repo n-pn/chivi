@@ -269,14 +269,17 @@
   .value {
     position: relative;
 
-    .-input {
+    > .-input {
       display: block;
       width: 100%;
       margin: 0;
-      line-height: 2.5rem;
-      padding: 2rem 0.75rem 2.25rem;
-      // text-align: center;
       outline: none;
+      line-height: 3rem;
+
+      padding-top: 2rem;
+      padding-left: 0.75rem;
+      padding-bottom: 2.25rem;
+      @include props(padding-right, 7rem, $md: 9.5rem);
 
       @include radius;
       @include border;

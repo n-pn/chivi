@@ -58,11 +58,11 @@
 
     &:hover,
     &.active {
-      @include bdcolor(primary, 4);
+      @include fgcolor(primary, 5);
     }
 
     &.active {
-      @include fgcolor(primary, 5);
+      @include bdcolor(primary, 4);
     }
 
     & + & {
