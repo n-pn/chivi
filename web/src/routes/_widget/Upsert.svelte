@@ -66,7 +66,11 @@
     infos = props.infos
 
     p_old = infos.map((info) => info.power)
-    p_now = p_old.map((pmin) => (pmin < $u_power ? pmin : $u_power))
+    p_now = p_old.map((pmin, i) => {
+      let outp = i + 2
+      if (outp < pmin) outp = pmin
+      return outp < $u_power ? outp : $u_power
+    })
 
     origs = infos.map((info) => info.vals[0] || '')
 
