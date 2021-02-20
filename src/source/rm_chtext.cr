@@ -8,12 +8,21 @@ class CV::RmChtext
   getter snvid : String
   getter schid : String
 
-  def initialize(@sname, @snvid, @schid, ttl = 10.years)
+  def initialize(@sname, @snvid, @schid, valid = 10.years, label = "1/1")
     file = RmSpider.chtext_file(@sname, @snvid, @schid)
     link = RmSpider.chtext_link(@sname, @snvid, @schid)
 
-    html = RmSpider.fetch(file, link, sname: @sname, ttl: ttl)
+    html = RmSpider.fetch(file, link, sname: @sname, valid: valid, label: label)
     @rdoc = Myhtml::Parser.new(html)
+  end
+
+  def save!(file : String) : Nil
+    File.open(file, "w") do |io|
+      io << title
+      paras.each { |line| io << "\n" << line }
+    end
+
+    puts "- <chtext> `#{file}` saved!".colorize.green
   end
 
   getter title : String do

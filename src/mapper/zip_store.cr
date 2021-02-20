@@ -65,8 +65,8 @@ class CV::ZipStore
     end
 
     flags = zip_flags(mode)
-    puts "[Add file <#{fname}> to zip: <#{@zip_file}>]"
     puts `zip #{flags} #{@zip_file} #{fpath}`
+    puts "- [Added file <#{fname}> to zip: <#{@zip_file}>]\n".colorize.yellow
   end
 
   def compress!(mode : Symbol = :update, glob = "*.*") : Nil
@@ -76,7 +76,7 @@ class CV::ZipStore
     files = Dir.glob("#{root_dir}/#{glob}")
 
     puts `zip #{flags} #{@zip_file} #{root_dir}/#{glob}`
-    puts "[Add #{files.size} files to zip: <#{@zip_file}>]"
+    puts "- [Added #{files.size} files to zip: <#{@zip_file}>]\n".colorize.yellow
   end
 
   def zip_flags(mode : Symbol)

@@ -76,8 +76,6 @@ class CV::InfoSeed
     vi_genres.empty? ? ["Loại khác"] : vi_genres
   end
 
-  getter source : ChSource { ChSource.load(@name) }
-
   def upsert!(snvid : String, mode = 0) : Tuple(String, Bool)
     btitle, author = _index.get(snvid).not_nil!
     bhash, existed = Nvinfo.upsert!(btitle, author)
@@ -86,7 +84,7 @@ class CV::InfoSeed
     Nvinfo.set_genres(bhash, genres) unless genres.empty?
 
     bintro = get_intro(snvid)
-    NvValues.set_bintro(bhash, bintro) unless bintro.empty?
+    NvBintro.set_bintro(bhash, bintro) unless bintro.empty?
 
     mtime = _utime.ival_64(snvid)
     NvValues.set_atime(bhash, mtime // 60)
@@ -95,24 +93,22 @@ class CV::InfoSeed
     NvValues.set_status(bhash, status.ival(snvid, 0))
 
     if @name != "yousuu"
-      Nvinfo.set_source(bhash, @name, snvid)
+      chseed = NvChseed.get_chseed(bhash)
 
-      mtime = NvValues._utime.ival_64(bhash) if @name == "hetushu"
+      NvChseed.put_chseed(@name, bhash, snvid)
 
-      source._index.add(bhash, snvid)
-      source._utime.add(snvid, mtime)
-      source._atime.add(snvid, _atime.ival_64(snvid))
-
-      upsert_chinfo!(snvid, bhash, expiry: Time.unix(mtime) - 1.days, mode: mode)
+      upsert_chinfo!(snvid, bhash, mode: mode)
     end
 
     {bhash, existed}
   end
 
-  def upsert_chinfo!(snvid : String, bhash : String, expiry : Time, mode = 0) : Nil
+  def upsert_chinfo!(snvid : String, bhash : String, mode = 0) : Nil
     chinfo = Chinfo.new(@name, snvid)
 
-    chinfo.fetch!(force: mode > 1, expiry: expiry)
+    mtime, total = chinfo.fetch!(force: mode > 1, ttl: 1.years)
+    Nvinfo.load(bhash).put_chseed!(@name, snvid, mtime, total)
+
     chinfo.trans!(dname: bhash, force: mode > 1)
   end
 end

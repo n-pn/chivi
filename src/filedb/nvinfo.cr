@@ -77,15 +77,13 @@ class CV::Nvinfo
 
   def put_chseed!(sname : String, snvid : String, mtime = 0, total = 0) : Nil
     mtime = fix_mtime(sname, mtime, total)
-
     set_utime(mtime.to_i64 * 60)
-    value = {snvid, mtime, total}
 
-    chseed[sname] = value
+    chseed[sname] = {snvid, mtime, total}
     @chseed = chseed.to_a.sort_by { |_, v| -v[1] }.to_h
 
     NvChseed.set_snames(bhash, chseed.keys)
-    NvChseed.put_chseed(sname, bhash, value)
+    NvChseed.put_chseed(sname, bhash, snvid, mtime, total)
   end
 
   # dirty hack to fix update_time for hetushu or zhwenpg or new 69shu?
@@ -117,8 +115,9 @@ class CV::Nvinfo
   end
 
   def save!(mode = :upds)
-    NvValues.save!(mode: :upds)
-    NvTokens.save!(mode: :upds)
+    NvValues.save!(mode: mode)
+    NvTokens.save!(mode: mode)
+    NvChseed.save!(mode: mode)
   end
 
   def self.upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)

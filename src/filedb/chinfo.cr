@@ -4,7 +4,7 @@ require "file_utils"
 require "./chinfo/*"
 
 require "../source/rm_chinfo"
-
+require "../mapper/zip_store"
 require "../engine/convert"
 
 class CV::Chinfo
@@ -19,7 +19,24 @@ class CV::Chinfo
 
   getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
 
+  getter chaps : ZipStore
+
   def initialize(@sname, @snvid)
+    zip_file = "_db/chdata/zh_zips/#{@sname}/#{@snvid}.zip"
+    text_dir = "_db/chdata/zh_txts/#{@sname}/#{@snvid}"
+    @chaps = ZipStore.new(zip_file, text_dir)
+  end
+
+  def indexed_schids
+    origs.map(&.[0])
+  end
+
+  def existed_schids
+    @chaps.entries.map(&.sub(".txt", ""))
+  end
+
+  def missing_schids
+    indexed_schids - existed_schids
   end
 
   def load_list(label : String)

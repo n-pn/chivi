@@ -19,10 +19,10 @@ module CV::NvChseed
     end
   end
 
-  def put_chseed(sname : String, bhash : String, input : Chseed)
-    mapper = load(sname)
-    mapper.add(bhash, [input[0], input[1].to_s, input[2].to_s])
-    mapper.save!(mode: :upds)
+  def put_chseed(bhash : String, sname : String, snvid : String, mtime = 0, total = 0)
+    load(sname)
+      .tap(&.add(bhash, [snvid, mtime.to_s, total.to_s]))
+      .save!(mode: :upds)
   end
 
   def set_snames(bhash : String, snames : Array(String)) : Nil

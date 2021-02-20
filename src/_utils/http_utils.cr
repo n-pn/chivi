@@ -6,48 +6,33 @@ require "http/client"
 module CV::HttpUtils
   extend self
 
-  def get_html(url : String, encoding : String) : String
+  def get_html(url : String, encoding : String, label = "1/1") : String
     try = 0
     internal = use_crystal?(url)
 
     loop do
-      puts "[GET: <#{url}> (try: #{try})]".colorize.magenta
+      puts "-- <#{label}> [GET: <#{url}> (try: #{try})]".colorize.magenta
       html = internal ? get_by_crystal(url, encoding) : get_by_curl(url, encoding)
-      return fix_charset(html, encoding) if valid_html?(html)
-      puts html
+      return fix_charset(html, encoding) if html[0] == '<'
     rescue err
       puts err.colorize.red
     ensure
       try += 1
-      sleep 500.milliseconds * try
-      raise "<GET: #{url} failed!>" if try > 2
+      sleep 200.milliseconds * try
+      raise "[GET: #{url} failed after 3 attempts.]" if try > 2
     end
   end
 
   private def use_crystal?(url : String)
     case url
-    when .includes?("biquge5200"), .includes?("paoshu8")
+    when .includes?("biquge5200.com"), .includes?("paoshu8")
       true
     else
       false
     end
   end
-
-  private def valid_html?(html : String)
-    case html
-    when .starts_with?("<!doctype"), .includes?("<html"), .includes?("<head>")
-      true
-    else
-      false
-    end
-  end
-
-  # TLS = OpenSSL::SSL::Context::Client.insecure
 
   def get_by_crystal(url : String, encoding : String)
-    # tls = url.starts_with?("https") ? TLS : nil
-    # HTTP::Client.get(url, tls: tls) do |res|
-
     HTTP::Client.get(url) do |res|
       res.body_io.set_encoding(encoding, invalid: :skip)
       res.body_io.gets_to_end

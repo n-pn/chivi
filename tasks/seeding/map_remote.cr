@@ -28,11 +28,11 @@ class CV::Seeds::MapRemote
       channel.receive if idx > threads
 
       spawn do
-        url = RmNvinfo.url_for(@sname, snvid)
-        file = RmNvinfo.path_for(@sname, snvid)
+        link = RmSpider.nvinfo_link(@sname, snvid)
+        file = RmSpider.nvinfo_file(@sname, snvid)
 
         encoding = HttpUtils.encoding_for(@sname)
-        html = HttpUtils.get_html(url, encoding: encoding)
+        html = HttpUtils.get_html(link, encoding: encoding)
         File.write(file, html)
 
         # throttling
@@ -74,17 +74,18 @@ class CV::Seeds::MapRemote
         atime = (Time.utc + 3.minutes).to_unix
       end
 
-      expiry = Time.utc
       if mode < 2 || @seeding._index.has_key?(snvid)
         next if @seeding._atime.ival_64(snvid) >= atime
-        expiry -= 1.years
+        ttl = 1.years
       elsif mode < 2
-        expiry -= 1.years
+        ttl = 2.years
+      else
+        ttl = 1.hours
       end
 
       @seeding._atime.add(snvid, atime)
 
-      parser = RmNvinfo.new(@sname, snvid, expiry: expiry)
+      parser = RmNvinfo.new(@sname, snvid, ttl: ttl)
       btitle, author = parser.btitle, parser.author
       next if btitle.empty? || author.empty?
 
@@ -95,7 +96,6 @@ class CV::Seeds::MapRemote
       end
 
       @seeding.status.add(snvid, parser.status_int)
-      @seeding._utime.add(snvid, parser.update_int)
 
       if idx % 100 == 0
         puts "- [#{@sname}]: <#{idx}/#{upto}>"
@@ -115,7 +115,7 @@ class CV::Seeds::MapRemote
   end
 
   private def access_time(snvid : String) : Int64?
-    file = RmNvinfo.path_for(@sname, snvid)
+    file = RmSpider.nvinfo_file(@sname, snvid)
     File.info?(file).try(&.modification_time.to_unix)
   end
 
@@ -145,7 +145,6 @@ class CV::Seeds::MapRemote
       if idx % 100 == 0
         puts "- [#{@sname}] <#{idx}/#{input.size}>".colorize.blue
         Nvinfo.save!(mode: :upds)
-        @seeding.source.save!(mode: :upds)
       end
     rescue err
       puts err
@@ -154,7 +153,6 @@ class CV::Seeds::MapRemote
     end
 
     Nvinfo.save!(mode: :full)
-    @seeding.source.save!(mode: :full)
   end
 
   private def should_pick?(snvid : String)

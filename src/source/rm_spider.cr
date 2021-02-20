@@ -8,17 +8,66 @@ require "../_utils/file_utils"
 module CV::RmSpider
   extend self
 
-  def fetch(file : String, link : String, sname : String, ttl = 1.week)
-    expiry = sname == "jx_la" ? Time.utc(2010, 1, 1) : Time.utc - ttl
+  def fetch(file : String, link : String, sname : String, valid = 1.week, label = "1/1")
+    expiry = sname == "jx_la" ? Time.utc(2010, 1, 1) : Time.utc - valid
 
     unless html = FileUtils.read(file, expiry)
-      html = HttpUtils.get_html(link, encoding: encoding_for(sname))
+      html = HttpUtils.get_html(link, encoding: encoding_for(sname), label: label)
 
       ::FileUtils.mkdir_p(File.dirname(file))
       File.write(file, html)
     end
 
     html
+  end
+
+  def fetch_all(input : Array(Tuple(String, String)), sname : String, limit : Int32? = nil)
+    encoding = encoding_for(sname)
+
+    limit ||= ideal_workers_count_for(sname)
+    limit = input.size if limit > input.size
+
+    channel = Channel(Nil).new(limit)
+
+    input.each_with_index(1) do |(file, link), idx|
+      channel.receive if idx > limit
+
+      spawn do
+        html = HttpUtils.get_html(link, encoding, label: "#{idx}/#{input.size}")
+
+        # save content
+        ::FileUtils.mkdir_p(File.dirname(file))
+        File.write(file, html)
+
+        # throttling
+        sleep ideal_delayed_time_for(sname)
+      ensure
+        channel.send(nil)
+      end
+    end
+
+    limit.times { channel.receive }
+  end
+
+  def ideal_workers_count_for(sname : String) : Int32
+    case sname
+    when "zhwenpg", "shubaow", "bqg_5200" then 1
+    when "paoshu8", "69shu"               then 2
+    else                                       4
+    end
+  end
+
+  def ideal_delayed_time_for(sname : String)
+    case sname
+    when "shubaow"
+      Random.rand(2000..3000).milliseconds
+    when "zhwenpg"
+      Random.rand(1000..2000).milliseconds
+    when "bqg_5200"
+      Random.rand(500..1000).milliseconds
+    else
+      50.milliseconds
+    end
   end
 
   def remote?(sname : String, power : Int32 = 4)
