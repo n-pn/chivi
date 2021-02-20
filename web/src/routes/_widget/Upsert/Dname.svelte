@@ -11,7 +11,7 @@
 </span>
 
 <style lang="scss">
-  $height: 2.25rem;
+  $height: 2rem;
 
   .tab {
     cursor: pointer;

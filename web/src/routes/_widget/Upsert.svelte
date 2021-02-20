@@ -224,8 +224,11 @@
 
   header {
     display: flex;
-    padding: 0.75rem;
-    padding-right: 0.5rem;
+    // padding: 0.75rem;
+    @include border($color: neutral, $shade: 3, $sides: bottom);
+
+    margin-bottom: 0.75rem;
+    padding-left: 0.75rem;
 
     > button {
       @include fgcolor(neutral, 6);
@@ -236,12 +239,12 @@
 
     .hanzi {
       flex-grow: 1;
-      margin-right: 0.25rem;
+      // margin-right: 0.25rem;
     }
   }
 
   .dicts {
-    height: 2.25rem;
+    height: 2rem;
     padding: 0 0.75rem;
 
     @include flex();

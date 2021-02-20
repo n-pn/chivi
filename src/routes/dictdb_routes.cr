@@ -66,13 +66,9 @@ module CV::Server
       suggest_node.edits.each { |term| hints.concat(term.vals) }
     end
 
-    binh_am = Convert.binh_am.translit(input).to_s
-    hanviet = Convert.hanviet.translit(input).to_s
-
     unless special_term = special_node.try(&.term)
       if term = regular_node.try(&.term)
-        prio = term.prio
-        attr = term.attr
+        prio, attr = term.prio, term.attr
       else
         prio = attr = 1_i8
       end
@@ -87,6 +83,9 @@ module CV::Server
     unless hanviet_term = hanviet_node.try(&.term)
       hanviet_term = hanviet_dict.gen_term(input)
     end
+
+    binh_am = Convert.binh_am.translit(input).to_s
+    hanviet = Convert.hanviet.translit(input).to_s
 
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
