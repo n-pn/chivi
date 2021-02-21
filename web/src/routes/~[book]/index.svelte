@@ -9,6 +9,9 @@
 </script>
 
 <script>
+  import { u_power } from '$src/stores'
+
+  import AdItem from '$blocks/AdItem'
   import Common from './_common'
 
   export let nvinfo
@@ -22,6 +25,10 @@
       <p>{para}</p>
     {/each}
   </div>
+
+  {#if $u_power < 2}
+    <AdItem type="banner" />
+  {/if}
 </Common>
 
 <style lang="scss">

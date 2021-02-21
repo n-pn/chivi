@@ -80,14 +80,15 @@
 </script>
 
 <script>
-  import SIcon from '$blocks/SIcon'
-  import RTime from '$blocks/RTime'
-  import paginate_range from '$utils/paginate_range'
-
   import { u_power } from '$src/stores'
 
-  import Common from './_common'
+  import SIcon from '$blocks/SIcon'
+  import RTime from '$blocks/RTime'
+  import AdItem from '$blocks/AdItem'
   import Chlist from '$widget/Chlist'
+  import Common from './_common'
+
+  import paginate_range from '$utils/paginate_range'
 
   export let nvinfo
   export let chseed = { chaps: [], total: 0, mtime: 0 }
@@ -195,6 +196,10 @@
 <svelte:window on:keydown={handle_keypress} />
 
 <Common {nvinfo} nvtab="content">
+  {#if $u_power < 2}
+    <AdItem type="banner" />
+  {/if}
+
   {#if main_seeds.length > 0}
     <div class="source">
       {#each main_seeds as mname}

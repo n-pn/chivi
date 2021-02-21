@@ -3,7 +3,6 @@
 
   import SIcon from '$blocks/SIcon'
   import Nvlist from '$widget/Nvlist'
-
   import Vessel from '$layout/Vessel'
 
   const take = 24
