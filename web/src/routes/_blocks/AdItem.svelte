@@ -13,13 +13,15 @@
     data-ad-format={ad_format}
     data-ad-layout={ad_layout}
     data-full-width-responsive="true">
-    <div>Quảng cáo để kiếm tiền nuôi server, xin đừng vội block 😢</div>
+    <div>Quảng cáo nuôi server. Xin đừng bật adblock.</div>
   </ins>
+
   <script>
     try {
       setTimeout(() => {
-        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-      }, 200)
+        const ads = (window && window.adsbygoogle) || []
+        ads.push({})
+      }, 100)
     } catch (ads_error) {
       console.log(ads_error)
     }
@@ -29,7 +31,6 @@
 <style lang="scss">
   ins {
     display: block;
-    min-width: 250px;
     max-width: 100%;
     text-align: center;
     text-decoration: none;
@@ -38,8 +39,9 @@
   div {
     padding: 2rem;
     text-transform: uppercase;
+    font-size: 400;
     @include radius();
     @include fgcolor(neutral, 7);
-    @include bgcolor(yellow, 1);
+    @include bgcolor(yellow, 1, 0.9);
   }
 </style>

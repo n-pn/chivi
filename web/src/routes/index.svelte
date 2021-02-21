@@ -67,6 +67,7 @@
 
   function handleKeypress(evt) {
     if (searching) return
+    if (!evt.alt) return
 
     switch (evt.keyCode) {
       case 72:
