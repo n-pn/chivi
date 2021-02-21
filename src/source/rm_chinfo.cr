@@ -7,28 +7,40 @@ class CV::RmChinfo
   getter sname : String
   getter snvid : String
 
-  def initialize(@sname, @snvid, ttl = 1.month)
+  def initialize(@sname, @snvid, valid = 1.month)
     file = RmSpider.chinfo_file(@sname, @snvid)
     link = RmSpider.chinfo_link(@sname, @snvid)
 
-    html = RmSpider.fetch(file, link, sname: @sname, ttl: ttl)
+    html = RmSpider.fetch(file, link, sname: @sname, valid: valid)
     @rdoc = Myhtml::Parser.new(html)
   end
 
-  getter update_int : Int64 do
-    return 0_i64 if @sname == "hetushu" || @sname == "zhwenpg"
-
-    time = TimeUtils.parse_time(update_str)
-    time += 24.hours if @sname == "bqg_5200"
-    time < Time.utc ? time.to_unix : Time.utc.to_unix
-  rescue
-    0_i64
+  getter status_int : Int32 do
+    case @sname
+    when "hetushu"
+      klass = node_attr(".book_info", "class")
+      klass.includes?("finish") ? 1 : 0
+    when "69shu", "zhwenpg"
+      0
+    else
+      status_str = meta_data("og:novel:status")
+      RmSpider.map_status(status_int)
+    end
   end
+
+  getter status_str : String do
+    case @sname
+    when "69shu", "zhwenpg" then "连载"
+    when "hetushu"
+      node_attr(".book_info", "class").includes?("finish") ? "完本" : "连载"
+    else meta_data("og:novel:status")
+    end
+  end
+
+  getter update_int : Int64 { RmSpider.fix_mftime(update_str, @sname) }
 
   getter update_str : String do
     case @sname
-    when "zhwenpg", "hetushu"
-      "1970-01-01 8:00:00"
     when "69shu"
       node_text(".mu_beizhu").sub(/.+时间：/m, "")
     when "bqg_5200"

@@ -158,6 +158,7 @@ class CV::RmChtext
       "X-Requested-With" => "XMLHttpRequest",
     }
 
+    puts "-- HIT: <#{json_link}>".colorize.blue
     HTTP::Client.get(json_link, headers: headers) do |res|
       res.headers["token"].tap { |token| File.write(meta_file, token) }
     end

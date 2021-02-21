@@ -76,20 +76,7 @@ class CV::Nvinfo
   end
 
   def put_chseed!(sname : String, snvid : String, mtime = 0, total = 0) : Nil
-    mtime = fix_mtime(sname, mtime, total)
-    set_utime(mtime.to_i64 * 60)
-
-    chseed[sname] = {snvid, mtime, total}
-    @chseed = chseed.to_a.sort_by { |_, v| -v[1] }.to_h
-
-    NvChseed.set_snames(bhash, chseed.keys)
-    NvChseed.put_chseed(sname, bhash, snvid, mtime, total)
-  end
-
-  # dirty hack to fix update_time for hetushu or zhwenpg or new 69shu?
-  private def fix_mtime(sname : String, mtime : Int32, total : Int32)
-    return mtime if mtime > 0
-
+    # dirty hack to fix update_time for hetushu or zhwenpg...
     utime = _utime.//(60).to_i
 
     if old_value = chseed[sname]?
@@ -100,13 +87,19 @@ class CV::Nvinfo
           mtime = utime > old_mtime ? utime : Time.utc.to_unix.//(60).to_i
         end
       else
-        mtime = old_mtime if mtime < old_mtime
+        mtime = old_mtime
       end
     elsif mtime < utime
       mtime = utime
     end
 
-    mtime
+    set_utime(mtime.to_i64 * 60)
+
+    chseed[sname] = {snvid, mtime, total}
+    @chseed = chseed.to_a.sort_by { |_, v| -v[1] }.to_h
+
+    NvChseed.set_snames(bhash, chseed.keys)
+    NvChseed.put_chseed(sname, bhash, snvid, mtime, total)
   end
 
   def chseed_mtime(sname : String)

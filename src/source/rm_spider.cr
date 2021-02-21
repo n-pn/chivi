@@ -4,6 +4,7 @@ require "file_utils"
 
 require "../_utils/http_utils"
 require "../_utils/file_utils"
+require "../_utils/time_utils"
 
 module CV::RmSpider
   extend self
@@ -16,6 +17,9 @@ module CV::RmSpider
 
       ::FileUtils.mkdir_p(File.dirname(file))
       File.write(file, html)
+
+      # throttling
+      sleep ideal_delayed_time_for(sname)
     end
 
     html
@@ -38,9 +42,6 @@ module CV::RmSpider
         # save content
         ::FileUtils.mkdir_p(File.dirname(file))
         File.write(file, html)
-
-        # throttling
-        sleep ideal_delayed_time_for(sname)
       ensure
         channel.send(nil)
       end
@@ -51,22 +52,23 @@ module CV::RmSpider
 
   def ideal_workers_count_for(sname : String) : Int32
     case sname
-    when "zhwenpg", "shubaow", "bqg_5200" then 1
-    when "paoshu8", "69shu"               then 2
-    else                                       4
+    when "zhwenpg", "shubaow"  then 1
+    when "paoshu8", "bqg_5200" then 2
+    when "duokan8", "69shu"    then 4
+    else                            6
     end
   end
 
   def ideal_delayed_time_for(sname : String)
     case sname
     when "shubaow"
-      Random.rand(2000..3000).milliseconds
-    when "zhwenpg"
       Random.rand(1000..2000).milliseconds
-    when "bqg_5200"
+    when "zhwenpg"
       Random.rand(500..1000).milliseconds
+    when "bqg_5200"
+      Random.rand(200..500).milliseconds
     else
-      50.milliseconds
+      10.milliseconds
     end
   end
 
@@ -159,5 +161,35 @@ module CV::RmSpider
 
   private def scoped(snvid : String)
     "#{snvid.to_i // 1000}_#{snvid}"
+  end
+
+  def map_status(status : String)
+    case status
+    when "连载", "连载中....", "连载中", "新书上传",
+         "情节展开", "精彩纷呈", "接近尾声",
+         ""
+      0
+    when "完成", "完本", "已经完结", "已经完本",
+         "完结", "已完结", "此书已完成", "已完本",
+         "全本", "完结申请"
+      1
+    when "暂停", "暂 停", "暂　停"
+      2
+    else
+      puts "[UNKNOWN STATUS: `#{status}`]".colorize.red
+      0
+    end
+  end
+
+  def fix_mftime(update_str : String, sname : String)
+    return 0_i64 if sname == "hetushu" || sname == "zhwenpg"
+
+    updated_at = TimeUtils.parse_time(update_str)
+    updated_at += 24.hours if sname == "bqg_5200"
+
+    upper_time = Time.utc
+    updated_at < upper_time ? updated_at.to_unix : upper_time.to_unix
+  rescue
+    0_i64
   end
 end

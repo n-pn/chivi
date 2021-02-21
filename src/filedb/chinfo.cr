@@ -59,11 +59,11 @@ class CV::Chinfo
     "_db/chdata/ch#{label}/#{@sname}/#{@snvid}.tsv"
   end
 
-  def fetch!(power = 4, force = false, ttl = 5.minutes) : Tuple(Int32, Int32)
+  def fetch!(power = 4, force = false, valid = 5.minutes) : Tuple(Int32, Int32)
     mtime = -1
 
     if RmSpider.remote?(@sname, power)
-      puller = RmChinfo.new(@sname, @snvid, ttl: ttl)
+      puller = RmChinfo.new(@sname, @snvid, valid: valid)
       latest = origs.last?.try(&.first?) || ""
 
       if force || puller.changed?(latest)

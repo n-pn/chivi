@@ -38,7 +38,6 @@ class CV::PreloadBook
       rescue err
         puts "- <#{label}> [#{@sname}/#{@snvid}/#{schid}]: #{err.message}".colorize.red
       ensure
-        sleep RmSpider.ideal_delayed_time_for(@sname)
         channel.send(nil)
       end
     end
@@ -70,31 +69,16 @@ class CV::PreloadSeed
 
   def should_crawl?(bhash : String)
     snames = NvChseed._index.get(bhash) || [] of String
+    return false if snames.empty?
 
     case @sname
-    when "zhwenpg", "shubaow", "paoshu8", "nofff"
-      snames.size < 2
+    when "zhwenpg", "shubaow", "paoshu8", "nofff", "bqg_5200", "5200"
+      return false if snames.size > 1
     else
       snames = snames.sort_by { |sname| SORT_ORDER.index(sname) || 99 }
-      snames.first == @sname
-    end
-  end
-
-  private def extract_seed(input : Array(String), fetch_all : Bool = false)
-    case @sname
-    when "zhwenpg", "nofff"
-      # not considered main source if there are more than two sources
-      return if input.size > 2
-    else
-      # nofff is a shitty source
-      input.shift if input.first.starts_with?("nofff")
     end
 
-    input.each_with_index do |entry, idx|
-      sname, snvid = entry.split("/")
-      next unless sname == @sname
-      return snvid if fetch_all || idx == 0
-    end
+    snames.first == @sname
   end
 
   def crawl!(threads = 4)

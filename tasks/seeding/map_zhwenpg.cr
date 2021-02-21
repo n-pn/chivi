@@ -8,26 +8,30 @@ class CV::Seeds::ZhwenpgParser
   getter link : Myhtml::Node { rows[0].css("a").first }
 
   getter snvid : String { link.attributes["href"].sub("b.php?id=", "") }
+
   getter author : String { rows[1].css(".fontwt").first.inner_text.strip }
   getter btitle : String { link.inner_text.strip }
 
-  getter intro : Array(String) { extract_intro }
-  getter genre : String { rows[2].css(".fontgt").first.inner_text }
-  getter cover : String { @node.css("img").first.attributes["data-src"] }
+  getter bcover : String { @node.css("img").first.attributes["data-src"] }
+  getter bgenre : String { rows[2].css(".fontgt").first.inner_text }
 
-  getter update_str : String { rows[3].css(".fontime").first.inner_text }
-  getter updated_at : Time { TimeUtils.parse_time(update_str) }
+  getter bintro : Array(String) do
+    TextUtils.split_html(rows[4]?.try(&.inner_text("\n")) || "")
+  end
 
-  def extract_intro
-    return [] of String unless node = rows[4]?
-    TextUtils.split_html(node.inner_text("\n"))
+  getter _utime : Int64 do
+    update_str = rows[3].css(".fontime").first.inner_text
+    updated_at = TimeUtils.parse_time(update_str) + 24.hours
+
+    updated_at = Time.utc if updated_at > Time.utc
+    updated_at.to_unix
   end
 end
 
 class CV::Seeds::MapZhwenpg
   def initialize
     @seeding = InfoSeed.new("zhwenpg")
-    @checked = Set(String).new
+    @mftimes = {} of String => Int64
 
     ::FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
   end
@@ -36,28 +40,23 @@ class CV::Seeds::MapZhwenpg
     Time.utc - 4.hours * page
   end
 
-  def page_url(page : Int32, status = 0)
-    if status > 0
-      "https://novel.zhwenpg.com/index.php?page=#{page}&genre=1"
-    else
-      "https://novel.zhwenpg.com/index.php?page=#{page}&order=1"
-    end
+  def page_link(page : Int32, status = 0)
+    filter = status > 0 ? "genre" : "order"
+    "https://novel.zhwenpg.com/index.php?page=#{page}&#{filter}=1"
   end
 
   def page_path(page : Int32, status = 0)
-    "_db/.cache/zhwenpg/pages/#{"#{page}-#{status}.html"}"
+    "_db/.cache/zhwenpg/pages/#{page}-#{status}.html"
   end
 
   def init!(page = 1, status = 0)
     puts "\n[-- Page: #{page} --]".colorize.light_cyan.bold
 
     file = page_path(page, status)
+    link = page_link(page, status)
 
-    unless html = FileUtils.read(file, expiry: expiry(page))
-      url = page_url(page, status)
-      html = HttpUtils.get_html(url, encoding: "UTF-8")
-      File.write(file, html)
-    end
+    valid = 4.hours * page
+    html = RmSpider.fetch(file, link, "zhwenpg", valid: valid, label: page.to_s)
 
     doc = Myhtml::Parser.new(html)
     nodes = doc.css(".cbooksingle").to_a[2..-2]
@@ -65,35 +64,23 @@ class CV::Seeds::MapZhwenpg
       update!(node, status, label: "#{idx}/#{nodes.size}")
     end
 
-    save!(mode: :upds)
+    @seeding.save!(mode: :upds)
   end
 
-  def save!(mode : Symbol = :full)
-    @seeding.save!(mode: mode)
-  end
-
-  def update!(node, status, label = "1/1") : Void
+  private def update!(node, status, label = "1/1") : Void
     parser = ZhwenpgParser.new(node)
     snvid = parser.snvid
 
-    return if @checked.includes?(snvid)
-    @checked.add(snvid)
+    return if @mftimes.has_key?(snvid)
+    @mftimes[snvid] = parser._utime
 
     btitle, author = parser.btitle, parser.author
 
-    if @seeding._index.add(snvid, [btitle, author])
-      @seeding.set_intro(snvid, parser.intro)
-      @seeding.genres.add(snvid, parser.genre)
-      @seeding.bcover.add(snvid, parser.cover)
-    end
-
+    @seeding._index.add(snvid, [btitle, author])
+    @seeding.set_intro(snvid, parser.bintro)
+    @seeding.genres.add(snvid, parser.bgenre)
+    @seeding.bcover.add(snvid, parser.bcover)
     @seeding.status.add(snvid, status)
-    @seeding._atime.add(snvid, Time.utc.to_unix)
-
-    update_at = parser.updated_at + 24.hours
-    update_at = Time.utc if update_at > Time.utc
-
-    @seeding._utime.add(snvid, update_at.to_unix)
 
     puts "\n<#{label}> {#{snvid}} [#{btitle}  #{author}]"
   rescue err

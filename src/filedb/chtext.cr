@@ -21,10 +21,10 @@ class CV::Chtext
     @txt_file = "_db/chdata/zh_txts/#{@sname}/#{@snvid}/#{@schid}.txt"
   end
 
-  def fetch!(u_power = 4, ttl = 3.minutes) : Nil
+  def fetch!(u_power = 4, valid = 3.minutes) : Nil
     return unless RmSpider.remote?(@sname, u_power)
 
-    puller = RmChtext.new(@sname, @snvid, @schid, ttl: ttl)
+    puller = RmChtext.new(@sname, @snvid, @schid, valid: valid)
     @zh_lines = [puller.title].concat(puller.paras)
 
     cv_trans = ""

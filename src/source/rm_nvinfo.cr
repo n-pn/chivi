@@ -71,30 +71,29 @@ class CV::RmNvinfo
     end
   end
 
-  getter status_str : String do
+  getter status_int : Int32 do
     case @sname
-    when "69shu", "zhwenpg" then "连载"
     when "hetushu"
-      node_attr(".book_info", "class").includes?("finish") ? "完本" : "连载"
-    else meta_data("og:novel:status")
+      klass = node_attr(".book_info", "class")
+      klass.includes?("finish") ? 1 : 0
+    when "69shu", "zhwenpg"
+      0
+    else
+      status_str = meta_data("og:novel:status")
+      RmSpider.map_status(status_int)
     end
   end
 
-  getter status_int : Int32 do
-    case status = status_str
-    when "连载", "连载中....", "连载中", "新书上传",
-         "情节展开", "精彩纷呈", "接近尾声",
-         ""
-      0
-    when "完成", "完本", "已经完结", "已经完本",
-         "完结", "已完结", "此书已完成", "已完本",
-         "全本", "完结申请"
-      1
-    when "暂停", "暂 停", "暂　停"
-      2
+  getter update_int : Int64 { RmSpider.fix_mftime(update_str, @sname) }
+
+  getter update_str : String do
+    case @sname
+    when "69shu"
+      node_text(".mu_beizhu").sub(/.+时间：/m, "")
+    when "bqg_5200"
+      node_text("#info > p:last-child").sub("最后更新：", "")
     else
-      puts "<#{@sname}/#{@snvid}> UNKNOWN STATUS: `#{status}`".colorize.red
-      0
+      meta_data("og:novel:update_time")
     end
   end
 
