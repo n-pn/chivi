@@ -18,8 +18,6 @@ module CV::NvValues
   class_getter rating : OrderMap { NvHelper.order_map("rating") }
   class_getter weight : OrderMap { NvHelper.order_map("weight") }
 
-  class_getter source : ValueMap { NvHelper.value_map("source") }
-
   class_getter hidden : ValueMap { NvHelper.value_map("hidden") }
   class_getter status : ValueMap { NvHelper.value_map("status") }
 
@@ -34,7 +32,6 @@ module CV::NvValues
 
     @@genres.try(&.save!(mode: mode))
     @@bcover.try(&.save!(mode: mode))
-    @@source.try(&.save!(mode: mode))
 
     @@yousuu.try(&.save!(mode: mode))
     @@origin.try(&.save!(mode: mode))
@@ -48,14 +45,6 @@ module CV::NvValues
 
     @@_atime.try(&.save!(mode: mode))
     @@_utime.try(&.save!(mode: mode))
-  end
-
-  def get_source(bhash : String) : Hash(String, String)
-    source = NvValues.source.get(bhash) || [] of String
-    source.each_with_object({} of String => String) do |entry, output|
-      sname, snvid = entry.split("/")
-      output[sname] = snvid
-    end
   end
 
   def set_score(bhash : String, z_voters : Int32, z_rating : Int32)

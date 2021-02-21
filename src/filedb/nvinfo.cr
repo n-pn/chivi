@@ -72,7 +72,8 @@ class CV::Nvinfo
   end
 
   def set_utime(mtime : Int64 = Time.utc.to_unix) : Bool
-    NvValues.set_utime(bhash, mtime).tap { |x| @_utime = mtime if x }
+    @_utime = mtime unless @_utime.try(&.> mtime)
+    NvValues.set_utime(bhash, mtime)
   end
 
   def put_chseed!(sname : String, snvid : String, mtime = 0, total = 0) : Nil
@@ -93,7 +94,7 @@ class CV::Nvinfo
       mtime = utime
     end
 
-    set_utime(mtime.to_i64 * 60)
+    NvValues.save!(mode: :upds) if set_utime(mtime.to_i64 * 60)
 
     chseed[sname] = {snvid, mtime, total}
     @chseed = chseed.to_a.sort_by { |_, v| -v[1] }.to_h
