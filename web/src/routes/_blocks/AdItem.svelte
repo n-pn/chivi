@@ -1,27 +1,25 @@
 <script>
   export let type = 'banner'
-  $: ad_slot = type == 'banner' ? 2323076740 : 4952630589
-  $: ad_format = type == 'banner' ? 'auto' : 'fluid'
-  $: ad_layout = type == 'banner' ? '' : 'in-article'
 </script>
 
 <section>
   <ins
     class="adsbygoogle"
     data-ad-client="ca-pub-5468438393284967"
-    data-ad-slot={ad_slot}
-    data-ad-format={ad_format}
-    data-ad-layout={ad_layout}
+    data-ad-slot={type == 'banner' ? 2323076740 : 4952630589}
+    data-ad-format={type == 'banner' ? 'auto' : 'fluid'}
+    data-ad-layout={type == 'banner' ? '' : 'in-article'}
     data-full-width-responsive="true">
     <div>Quảng cáo nuôi server. Xin đừng bật adblock.</div>
   </ins>
 
+  <script
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
   <script>
     try {
-      setTimeout(() => {
-        const ads = (window && window.adsbygoogle) || []
-        ads.push({})
-      }, 100)
+      setTimeout(() => (window.adsbygoogle || []).push({}), 100)
     } catch (ads_error) {
       console.log(ads_error)
     }
@@ -40,6 +38,7 @@
     padding: 2rem;
     text-transform: uppercase;
     font-size: 400;
+
     @include radius();
     @include fgcolor(neutral, 7);
     @include bgcolor(yellow, 1, 0.9);
