@@ -12,6 +12,14 @@
     data-full-width-responsive="true">
     <div>Quảng cáo nuôi server. Xin đừng bật adblock.</div>
   </ins>
+
+  <script>
+    try {
+      setTimeout(() => window.adsbygoogle.push({}), 300)
+    } catch (ads_error) {
+      console.log(ads_error)
+    }
+  </script>
 </section>
 
 <style lang="scss">

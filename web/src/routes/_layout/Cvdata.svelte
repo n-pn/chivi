@@ -131,11 +131,11 @@
         {nodes}
         frags={index == hover_line || index == focus_line}
         title={index == 0} />
-
-      {#if $u_power < 2 && adidx.includes(index)}
-        <AdItem type="article" />
-      {/if}
     </div>
+
+    {#if $u_power < 2 && adidx.includes(index)}
+      <AdItem type="article" />
+    {/if}
   {/each}
 </article>
 
