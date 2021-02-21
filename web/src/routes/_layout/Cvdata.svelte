@@ -139,6 +139,20 @@
   {/each}
 </article>
 
+{#if $u_power < 2}
+  <script
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <script>
+    try {
+      setTimeout(() => (window.adsbygoogle || []).push({}), 100)
+    } catch (ads_error) {
+      console.log(ads_error)
+    }
+  </script>
+{/if}
+
 {#if $lookup_enabled}
   <Lookup on_top={!$upsert_active} />
 {/if}

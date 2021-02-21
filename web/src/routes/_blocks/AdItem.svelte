@@ -12,18 +12,6 @@
     data-full-width-responsive="true">
     <div>Quảng cáo nuôi server. Xin đừng bật adblock.</div>
   </ins>
-
-  <script
-    async
-    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-  <script>
-    try {
-      setTimeout(() => (window.adsbygoogle || []).push({}), 100)
-    } catch (ads_error) {
-      console.log(ads_error)
-    }
-  </script>
 </section>
 
 <style lang="scss">
