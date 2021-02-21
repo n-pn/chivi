@@ -146,7 +146,7 @@
 
   <script>
     try {
-      setTimeout(() => (window.adsbygoogle || []).push({}), 100)
+      setTimeout(() => window.adsbygoogle.push({}), 300)
     } catch (ads_error) {
       console.log(ads_error)
     }

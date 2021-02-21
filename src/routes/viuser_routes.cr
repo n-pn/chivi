@@ -21,7 +21,7 @@ module CV::Server
 
     RouteUtils.user_res(env, u_dname, u_power, cached: true)
   rescue err
-    halt env, status_code: 403, response: "user not logged in"
+    RouteUtils.user_res(env, "Khách", 0, cached: true)
   end
 
   get "/api/logout" do |env|
