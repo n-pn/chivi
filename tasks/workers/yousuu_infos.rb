@@ -1,7 +1,7 @@
 require_relative "./yousuu_utils"
 
 class InfoCrawler
-  INFO_DIR = "_db/.cache/yousuu/infos"
+  INFO_DIR = "_db/yousuu/.cache/infos"
 
   def initialize(load_proxy = false, debug_mode = false)
     @http = HttpClient.new(load_proxy, debug_mode)

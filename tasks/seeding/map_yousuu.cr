@@ -14,7 +14,7 @@ class CV::Seeds::MapYousuu
   end
 
   def init!
-    input = Dir.glob("_db/.cache/yousuu/infos/*.json").sort_by do |file|
+    input = Dir.glob("_db/yousuu/.cache/infos/*.json").sort_by do |file|
       File.basename(file, ".json").to_i
     end
 

@@ -8,7 +8,7 @@ require "fileutils"
 class HttpClient
   attr_reader :proxies
 
-  PROXY_DIR = "_db/_proxy"
+  PROXY_DIR = "_db/yousuu/_proxy"
   INTERVAL = 3600 * 10
 
   def initialize(load_proxy = false, debug_mode = false)

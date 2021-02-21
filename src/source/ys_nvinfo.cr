@@ -80,7 +80,7 @@ class CV::YsNvinfo
   end
 end
 
-# info = CV::YsNvinfo.load("_db/.cache/yousuu/infos/153426.json").not_nil!
+# info = CV::YsNvinfo.load("_db/yousuu/.cache/infos/153426.json").not_nil!
 # puts info.intro
 # puts info.genre
 # # puts info.tags_fixed

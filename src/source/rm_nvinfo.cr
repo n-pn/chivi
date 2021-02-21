@@ -7,11 +7,11 @@ class CV::RmNvinfo
   getter sname : String
   getter snvid : String
 
-  def initialize(@sname, @snvid, ttl = 1.month)
+  def initialize(@sname, @snvid, valid = 1.month, label = "1")
     file = RmSpider.nvinfo_file(@sname, @snvid)
     link = RmSpider.nvinfo_link(@sname, @snvid)
 
-    html = RmSpider.fetch(file, link, sname: @sname, ttl: ttl)
+    html = RmSpider.fetch(file, link, sname: @sname, valid: valid, label: label)
     @rdoc = Myhtml::Parser.new(html)
   end
 
@@ -79,8 +79,7 @@ class CV::RmNvinfo
     when "69shu", "zhwenpg"
       0
     else
-      status_str = meta_data("og:novel:status")
-      RmSpider.map_status(status_int)
+      RmSpider.map_status(meta_data("og:novel:status"))
     end
   end
 

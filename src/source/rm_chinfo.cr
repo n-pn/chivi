@@ -23,17 +23,7 @@ class CV::RmChinfo
     when "69shu", "zhwenpg"
       0
     else
-      status_str = meta_data("og:novel:status")
-      RmSpider.map_status(status_int)
-    end
-  end
-
-  getter status_str : String do
-    case @sname
-    when "69shu", "zhwenpg" then "连载"
-    when "hetushu"
-      node_attr(".book_info", "class").includes?("finish") ? "完本" : "连载"
-    else meta_data("og:novel:status")
+      RmSpider.map_status(meta_data("og:novel:status"))
     end
   end
 
