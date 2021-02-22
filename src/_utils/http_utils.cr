@@ -35,14 +35,14 @@ module CV::HttpUtils
   def get_by_crystal(url : String, encoding : String)
     HTTP::Client.get(url) do |res|
       res.body_io.set_encoding(encoding, invalid: :skip)
-      res.body_io.gets_to_end
+      res.body_io.gets_to_end.lstrip
     end
   end
 
   def get_by_curl(url : String, encoding : String) : String
     cmd = "curl -L -k -s -m 30 '#{url}'"
     cmd += " | iconv -c -f #{encoding} -t UTF-8" if encoding != "UTF-8"
-    `#{cmd}`.strip
+    `#{cmd}`.lstrip
   end
 
   private def fix_charset(html : String, encoding : String)
