@@ -130,92 +130,85 @@ class CV::Convert
     end
   end
 
-  def tokenize(chars : Array(Char)) : CvGroup
-    tokenizer = Tokenizer.new(chars)
+  def tokenize(input : Array(Char)) : CvGroup
+    nodes = [CvEntry.new("", "")]
+    costs = [0.0]
 
-    chars.size.times do |idx|
-      tokenizer.scan(@rdict, idx)
-      tokenizer.scan(@bdict.not_nil!, idx) if @bdict
+    input.each_with_index(1) do |char, idx|
+      norm = CvUtils.normalize(char)
+      nodes << CvEntry.new(char.to_s, norm.to_s, alnum?(norm) ? 1_i8 : 0_i8)
+      costs << idx.to_f
     end
 
-    tokenizer.to_group
+    input.size.times do |idx|
+      terms = {} of Int32 => VpTerm
+
+      @rdict.scan(input, idx) { |x| terms[x.key.size] = x unless x.empty? }
+
+      @bdict.try do |dict|
+        dict.scan(input, idx) { |x| terms[x.key.size] = x unless x.empty? }
+      end
+
+      terms.each do |key, term|
+        cost = costs[idx] + term.point
+        jump = idx &+ key
+
+        if cost >= costs[jump]
+          costs[jump] = cost
+          nodes[jump] = CvEntry.new(term)
+        end
+      end
+    end
+
+    extract_best(nodes)
   end
 
-  ######################
+  private def alnum?(char : Char)
+    char == '_' || char.ascii_number? || char.letter?
+  end
 
-  class Tokenizer
-    def initialize(@input : Array(Char))
-      @nodes = [CvEntry.new("", "")]
-      @costs = [0.0]
+  private def extract_best(nodes : Array(CvEntry))
+    ary = [] of CvEntry
+    idx = nodes.size - 1
 
-      @input.each_with_index(1) do |char, idx|
-        norm = CvUtils.normalize(char)
-        @nodes << CvEntry.new(char.to_s, norm.to_s, alnum?(norm) ? 1_i8 : 0_i8)
-        @costs << idx.to_f
-      end
-    end
+    while idx > 0
+      curr = nodes.unsafe_fetch(idx)
+      idx -= curr.key.size
 
-    private def alnum?(char : Char)
-      char == '_' || char.ascii_number? || char.letter?
-    end
+      if curr.dic == 0
+        while idx > 0
+          node = nodes.unsafe_fetch(idx)
+          break if node.dic > 0 || curr.key[0] != node.key[0]
 
-    def scan(dict : VpDict, idx : Int32 = 0)
-      dict.scan(@input, idx) do |entry|
-        next if entry.empty?
-
-        cost = @costs[idx] + entry.point
-        jump = idx &+ entry.key.size
-
-        if cost >= @costs[jump]
-          @costs[jump] = cost
-          @nodes[jump] = CvEntry.new(entry)
+          curr.combine!(node)
+          idx -= node.key.size
         end
-      end
-    end
+      elsif curr.dic == 1
+        while idx > 0
+          node = nodes.unsafe_fetch(idx)
+          break if node.dic > 1
+          break if node.dic == 0 && !node.special_mid_char?
 
-    def to_group : CvGroup
-      ary = [] of CvEntry
-      idx = @nodes.size - 1
-
-      while idx > 0
-        curr = @nodes.unsafe_fetch(idx)
-        idx -= curr.key.size
-
-        if curr.dic == 0
-          while idx > 0
-            node = @nodes.unsafe_fetch(idx)
-            break if node.dic > 0 || curr.key[0] != node.key[0]
-
-            curr.combine!(node)
-            idx -= node.key.size
-          end
-        elsif curr.dic == 1
-          while idx > 0
-            node = @nodes.unsafe_fetch(idx)
-            break if node.dic > 1
-            break if node.dic == 0 && !node.special_mid_char?
-
-            curr.combine!(node)
-            idx -= node.key.size
-          end
-
-          if (last = ary.last?) && last.special_end_char?
-            last.combine!(curr)
-            last.dic = 1_i8
-            next
-          end
-
-          # handling +1+1+1 or -1-1-1
-          case curr.key[0]?
-          when '+' then curr.val = curr.key.gsub("+", " +").strip
-          when '-' then curr.val = curr.key.gsub("-", " -").strip
-          end
+          curr.combine!(node)
+          idx -= node.key.size
         end
 
-        ary << curr
+        if (last = ary.last?) && last.special_end_char?
+          last.combine!(curr)
+          last.dic = 1_i8
+          next
+        end
+
+        # handling +1+1+1 or -1-1-1
+        case curr.key[0]?
+        when '+' then curr.val = curr.key.gsub("+", " +").strip
+        when '-' then curr.val = curr.key.gsub("-", " -").strip
+        end
       end
 
-      CvGroup.new(ary.reverse)
+      ary << curr
     end
+
+    CvGroup.new(ary.reverse)
   end
 end
