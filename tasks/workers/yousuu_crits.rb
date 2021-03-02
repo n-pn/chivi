@@ -51,13 +51,13 @@ class CritCrawler
     "#{ROOT_DIR}/#{ybid}-#{page}.json"
   end
 
-  INTERVAL = 3600 * 24 * 5
+  INTERVAL = 3600 * 24 * 30 # 30 days
 
   def still_good?(file)
     return false unless File.exists?(file)
     interval = INTERVAL
     data = File.read(file)
-    interval *= 4 if data.include?("未找到该图书")
+    # interval *= 4 if data.include?("未找到该图书")
     Time.now.to_i - File.mtime(file).to_i <= interval
   end
 
