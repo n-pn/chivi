@@ -63,7 +63,7 @@ class CritCrawler
 
   def review_url(ybid, page = 1)
     time = (Time.now.to_f * 1000).round
-    "https://www.yousuu.com/api/book/#{ybid}/comment?page=#{page}&t=#{time}"
+    "https://api.yousuu.com/api/book/#{ybid}/comment?page=#{page}&t=#{time}"
   end
 end
 

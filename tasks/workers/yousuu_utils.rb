@@ -5,6 +5,8 @@ require "parallel"
 require "colorize"
 require "fileutils"
 
+Encoding.default_external = 'UTF-8'
+
 class HttpClient
   attr_reader :proxies
 

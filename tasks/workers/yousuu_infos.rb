@@ -13,7 +13,7 @@ class InfoCrawler
 
   def book_url(ybid)
     time = (Time.now.to_f * 1000).round
-    "https://www.yousuu.com/api/book/#{ybid}?t=#{time}"
+    "https://api.yousuu.com/api/book/#{ybid}?t=#{time}"
   end
 
   INTERVAL = 3600 * 24 * 2 # 2 days
