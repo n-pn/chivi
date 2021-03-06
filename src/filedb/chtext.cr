@@ -3,7 +3,7 @@ require "file_utils"
 
 require "../mapper/zip_store"
 require "../source/rm_chtext"
-require "../engine/convert"
+require "../engine/cvmtl"
 
 class CV::Chtext
   getter sname : String
@@ -39,7 +39,7 @@ class CV::Chtext
     @cv_mtime = Time.utc.to_unix
     return if zh_lines.empty?
 
-    cvter = Convert.generic(dname)
+    cvter = Cvmtl.generic(dname)
 
     @cv_trans = String.build do |io|
       cvter.cv_title_full(zh_lines[0]).to_str(io)

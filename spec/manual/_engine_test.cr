@@ -1,4 +1,4 @@
-require "../../src/engine/convert"
+require "../../src/engine/cvmtl"
 
 # text = "第十三集 龙章凤仪 第一章 屠龙之术
 # 贾文和一个玩阴谋的，突然间客串了一把热血刺客，效果立竿见影。一万个道理都未必能说服的廖群玉，被一把错刀给说得心服口服，当即赶到宋国馆邸，通过官方渠道传讯临安，以自己的身家性命作保，顺利说服贾师宪，由其举荐宝钞局主事，工部员外郎程宗扬为唐国正使，通问昭南事宜。
@@ -36,7 +36,7 @@ test4 = "红龙M红~~~龙 MUV  LUV AL 红龙 http://test.com/test?q=1"
 test5 = "【实验总分：79.3。排名：6】"
 test6 = "“稍等。”李峥倒是不在意这些议论，更在意身旁失魂落魄的大兄弟，“英男别慌，最惨的是我才对，400分满分，输了一分，输了一生。”"
 
-HANVIET = CV::Convert.hanviet
+HANVIET = CV::Cvmtl.hanviet
 
 puts HANVIET.translit(test1).to_s
 puts HANVIET.translit(test2).to_s
@@ -55,7 +55,7 @@ puts HANVIET.translit("左丰").to_s
 # pp Engine.cv_plain("一试63", "various").to_s
 # pp Engine.hanviet("来自芈骊的愤怒值+678！").to_s
 
-# VARIOUS = Chivi::Convert.content("various")
+# VARIOUS = CV::Cvmtl.content("various")
 
 # pp VARIOUS.cv_plain("郑兴怀16岁进国子监，苦读十年，元景19年，他金榜题名，二甲进士。").to_s
 # pp VARIOUS.cv_plain("无论成败，了却它。").to_s

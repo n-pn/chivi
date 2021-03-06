@@ -1,7 +1,7 @@
 require "./vdict"
-require "./convert/*"
+require "./cvmtl/*"
 
-class CV::Convert
+class CV::Cvmtl
   class_getter hanviet : self { new(Vdict.hanviet) }
   class_getter binh_am : self { new(Vdict.binh_am) }
   class_getter tradsim : self { new(Vdict.tradsim) }
@@ -10,7 +10,7 @@ class CV::Convert
     new(Vdict.regular, Vdict.load(bdict))
   end
 
-  def self.convert(input : String, dname = "various") : Convert
+  def self.convert(input : String, dname = "various") : Cvmtl
     case dname
     when "hanviet" then hanviet.translit(input).to_s
     when "binh_am" then binh_am.translit(input).to_s

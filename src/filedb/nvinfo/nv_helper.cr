@@ -1,7 +1,7 @@
 require "../../mapper/*"
 require "../../_utils/core_utils"
 require "../../_utils/text_utils"
-require "../../engine/convert"
+require "../../engine/cvmtl"
 
 module CV::NvHelper
   extend self
@@ -26,7 +26,7 @@ module CV::NvHelper
   end
 
   def to_hanviet(input : String, caps : Bool = true)
-    output = Convert.hanviet.translit(input, false).to_s
+    output = Cvmtl.hanviet.translit(input, false).to_s
     caps ? TextUtils.titleize(output) : output
   end
 

@@ -1,5 +1,5 @@
 require "./shared/*"
-require "../../src/engine/convert"
+require "../../src/engine/cvmtl"
 
 puts "\n[Load deps]".colorize.cyan.bold
 
@@ -28,8 +28,8 @@ class CV::ExportDicts
   getter out_various : Vdict = Vdict.load("various", reset: true)
   getter out_suggest : Vdict = Vdict.load("suggest", reset: true)
 
-  getter cv_hanviet : Convert { Convert.hanviet }
-  getter cv_regular : Convert { Convert.new(@out_regular) }
+  getter cv_hanviet : Cvmtl { Cvmtl.hanviet }
+  getter cv_regular : Cvmtl { Cvmtl.new(@out_regular) }
 
   def match_hanviet?(key : String, val : String)
     cv_hanviet.translit(key, false).to_s == val

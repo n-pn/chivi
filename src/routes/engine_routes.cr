@@ -1,12 +1,12 @@
 require "./_route_utils"
 require "../_utils/text_utils"
 
-require "../engine/convert"
+require "../engine/cvmtl"
 
 module CV::Server
   post "/api/convert/:dname" do |env|
     dname = env.params.url["dname"]
-    cvter = Convert.generic(dname)
+    cvter = Cvmtl.generic(dname)
 
     input = env.params.json.fetch("input", "").as(String)
     lines = TextUtils.split_text(input)

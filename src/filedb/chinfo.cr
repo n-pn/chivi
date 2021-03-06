@@ -5,7 +5,7 @@ require "./chinfo/*"
 
 require "../source/rm_chinfo"
 require "../mapper/zip_store"
-require "../engine/convert"
+require "../engine/cvmtl"
 
 class CV::Chinfo
   DIR = "_db/chdata/chinfos"
@@ -77,7 +77,7 @@ class CV::Chinfo
   end
 
   def trans!(dname = "various", force = false) : Nil
-    cvter = Convert.generic(dname)
+    cvter = Cvmtl.generic(dname)
 
     heads.clear if force
     heads.size.upto(origs.size - 1) do |idx|

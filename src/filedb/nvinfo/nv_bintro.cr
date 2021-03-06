@@ -1,5 +1,5 @@
 require "file_utils"
-require "../../engine/convert"
+require "../../engine/cvmtl"
 
 module CV::NvBintro
   extend self
@@ -22,7 +22,7 @@ module CV::NvBintro
 
     File.write(zh_file, lines.join("\n"))
 
-    engine = Convert.generic(bhash)
+    engine = Cvmtl.generic(bhash)
     output = lines.map { |line| engine.tl_plain(line) }
 
     vi_file = intro_path(bhash, lang: "vi")

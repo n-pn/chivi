@@ -1,13 +1,13 @@
-require "../../src/engine/convert"
+require "../../src/engine/cvmtl"
 
-GENERIC = CV::Convert.generic("various")
+GENERIC = CV::Cvmtl.generic("various")
 CV::Vdict.various.add(CV::Vterm.new("贾文和", ["Giả Văn Hoà"]))
 
 puts CV::Vdict.regular.find("龙")
 puts CV::Vdict.regular.find("之术")
 puts CV::Vdict.regular.find("历史")
 
-HANVIET = CV::Convert.hanviet
+HANVIET = CV::Cvmtl.hanviet
 
 def translate(input : String, title = false)
   if title

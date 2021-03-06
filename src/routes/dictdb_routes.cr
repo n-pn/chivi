@@ -33,7 +33,7 @@ module CV::Server
       entry.to_a.sort_by(&.[0].-)
     end
 
-    hanviet = Convert.hanviet.translit(input).to_str
+    hanviet = Cvmtl.hanviet.translit(input).to_str
 
     RouteUtils.json_res(env) do |res|
       {hanviet: hanviet, entries: entries}.to_json(res)
@@ -84,8 +84,8 @@ module CV::Server
       hanviet_term = hanviet_dict.gen_term(input)
     end
 
-    binh_am = Convert.binh_am.translit(input).to_s
-    hanviet = Convert.hanviet.translit(input).to_s
+    binh_am = Cvmtl.binh_am.translit(input).to_s
+    hanviet = Cvmtl.hanviet.translit(input).to_s
 
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
