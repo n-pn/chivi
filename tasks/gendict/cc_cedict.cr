@@ -154,20 +154,20 @@ class CeInput
     input = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
 
     @entries.each do |entry|
-      if entry.is_noun?
-        puts "noun: #{entry.defins}"
-        nouns << entry.simp
-      end
+      # if entry.is_noun?
+      #   puts "noun: #{entry.defins}"
+      #   nouns << entry.simp
+      # end
 
-      if entry.is_verb?
-        puts "verb: #{entry.defins}"
-        verbs << entry.simp
-      end
+      # if entry.is_verb?
+      #   puts "verb: #{entry.defins}"
+      #   verbs << entry.simp
+      # end
 
-      if entry.is_adje?
-        puts "adje: #{entry.defins}"
-        adjes << entry.simp
-      end
+      # if entry.is_adje?
+      #   puts "adje: #{entry.defins}"
+      #   adjes << entry.simp
+      # end
 
       input[entry.simp] << "[#{entry.pinyin}] #{entry.defins}"
     end
@@ -184,7 +184,7 @@ class CeInput
     end
 
     QtUtil.lexicon.save!
-    output.save!(trim: true)
+    output.save!(prune: false)
   end
 
   HANZIDB = QtDict.load("_system/hanzidb.txt")
@@ -240,7 +240,7 @@ class CeInput
       output.upsert(key, simp)
     end
 
-    output.save!(trim: true)
+    output.save!(prune: true)
   end
 
   def export_pinyins!
@@ -294,7 +294,7 @@ class CeInput
       output.upsert(key, vals)
     end
 
-    output.save!(trim: true)
+    output.save!(prune: true)
   end
 end
 

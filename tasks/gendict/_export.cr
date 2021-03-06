@@ -124,7 +124,7 @@ class CV::ExportDicts
       end
     end
 
-    @out_regular.save!(trim: true)
+    @out_regular.save!(prune: true)
   end
 
   def export_uniques!
@@ -160,7 +160,7 @@ class CV::ExportDicts
         @out_suggest.upsert(suggest_term)
       end
 
-      dict.save!(trim: true)
+      dict.save!(prune: true)
     end
   end
 
@@ -185,7 +185,7 @@ class CV::ExportDicts
       pp [err, key, vals]
     end
 
-    out_suggest.save!(trim: true)
+    out_suggest.save!(prune: true)
   end
 
   def export_various!
@@ -201,7 +201,7 @@ class CV::ExportDicts
       out_various.upsert(key, vals)
     end
 
-    out_various.save!(trim: true)
+    out_various.save!(prune: true)
   end
 
   def export_recycle!

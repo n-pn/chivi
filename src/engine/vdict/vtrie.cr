@@ -45,4 +45,10 @@ class CV::Vtrie
     each { |term| res << term }
     res
   end
+
+  def prune!
+    map = {} of String => Vterm
+    @edits.sort_by(&.mtime).each { |term| map[term.uname] = term }
+    @edits = map.values
+  end
 end

@@ -43,6 +43,6 @@ end
 
 hv_chars.save!
 hv_words.save!
-out_dict.save!(trim: true)
+out_dict.save!(prune: false)
 
 QtUtil.lexicon.save!

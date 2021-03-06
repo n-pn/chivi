@@ -46,7 +46,7 @@ class CV::Vdict
   #########################
 
   getter file : String
-  getter flog : String
+  getter ftab : String
 
   getter trie = Vtrie.new
   getter logs = [] of Vterm
@@ -57,7 +57,7 @@ class CV::Vdict
   getter p_min : Int8 # minimal user power required
 
   def initialize(@file : String, @dtype = 0_i8, @p_min = 1_i8, reset = false)
-    @flog = @file.sub(".tsv", ".tab")
+    @ftab = @file.sub(".tsv", ".tab")
     load!(@file) unless reset || !File.exists?(@file)
   end
 
@@ -75,6 +75,9 @@ class CV::Vdict
       rescue err
         puts "<vdict> [#{file}] error on `#{line}`: #{err}]".colorize.red
       end
+
+      # remove duplicate entries
+      @trie.each { |node| node.prune! }
     end
 
     puts "- <vdict> [#{file}] loaded: #{count} lines, \
@@ -86,7 +89,9 @@ class CV::Vdict
   end
 
   def gen_term(key : String, vals = [""], prio = 1_i8, attr = 0_i8)
-    Vterm.new(key, vals, prio: prio, attr: attr, mtime: 0, dtype: @dtype, power: @p_min)
+    Vterm.new(
+      key, vals, prio: prio, attr: attr,
+      mtime: 0, dtype: @dtype, power: @p_min)
   end
 
   # return true if new term prevails
@@ -106,7 +111,6 @@ class CV::Vdict
     if newer
       node.term = new_term
       new_term._prev = old_term
-      node.edits.reject! { |old_term| old_term.uname == new_term.uname }
     end
 
     node.edits << new_term
@@ -116,8 +120,9 @@ class CV::Vdict
   # save to disk, return old entry if exists
   def upsert!(new_term : Vterm) : Bool
     line = "\n#{new_term}"
+
     File.write(@file, line, mode: "a")
-    File.write(@flog, line, mode: "a") if new_term.mtime > 0
+    File.write(@ftab, line, mode: "a") if new_term.mtime > 0
 
     upsert(new_term)
   end
@@ -143,16 +148,25 @@ class CV::Vdict
     end
   end
 
-  def save!(trim : Bool = false) : Nil
+  def save!(prune : Bool = true) : Nil
     ::FileUtils.mkdir_p(File.dirname(@file))
 
     tspan = Time.measure do
       File.open(@file, "w") do |io|
-        each(full: !trim) { |term| io.puts(term) }
+        @trie.each do |node|
+          node.prune! if prune
+          node.edits.each { |term| io.puts(term) }
+        end
       end
 
-      File.open(@flog, "w") do |io|
-        @logs.sort_by(&.mtime).each { |term| io.puts(term) }
+      @logs.uniq! { |x| {x.mtime, x.uname} } if prune
+
+      if @logs.empty?
+        File.delete(@ftab) if File.exists?(@ftab)
+      else
+        File.open(@ftab, "w") do |io|
+          @logs.sort_by!(&.mtime).each { |term| io.puts(term) }
+        end
       end
     end
 
