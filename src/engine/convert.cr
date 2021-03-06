@@ -1,13 +1,13 @@
-require "./vp_dict"
+require "./vdict"
 require "./convert/*"
 
 class CV::Convert
-  class_getter hanviet : self { new(VpDict.hanviet) }
-  class_getter binh_am : self { new(VpDict.binh_am) }
-  class_getter tradsim : self { new(VpDict.tradsim) }
+  class_getter hanviet : self { new(Vdict.hanviet) }
+  class_getter binh_am : self { new(Vdict.binh_am) }
+  class_getter tradsim : self { new(Vdict.tradsim) }
 
   def self.generic(bdict : String)
-    new(VpDict.regular, VpDict.load(bdict))
+    new(Vdict.regular, Vdict.load(bdict))
   end
 
   def self.convert(input : String, dname = "various") : Convert
@@ -28,7 +28,7 @@ class CV::Convert
   #   end
   # end
 
-  def initialize(@rdict : VpDict, @bdict : VpDict? = nil)
+  def initialize(@rdict : Vdict, @bdict : Vdict? = nil)
   end
 
   def translit(input : String, apply_cap : Bool = false)

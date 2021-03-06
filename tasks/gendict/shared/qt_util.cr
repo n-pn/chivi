@@ -1,7 +1,7 @@
 require "colorize"
 require "file_utils"
 
-require "../../../src/engine/vp_dict"
+require "../../../src/engine/vdict"
 
 class ValueSet
   getter file : String
@@ -74,7 +74,7 @@ module QtUtil
       .join(" ")
   end
 
-  def convert(dict : CV::VpDict, text : String, join = "")
+  def convert(dict : CV::Vdict, text : String, join = "")
     output = [] of String
 
     chars = text.chars

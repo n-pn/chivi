@@ -24,9 +24,9 @@ class CV::ExportDicts
     key !~ /\p{Han}/
   end
 
-  getter out_regular : VpDict = VpDict.load("regular", reset: true)
-  getter out_various : VpDict = VpDict.load("various", reset: true)
-  getter out_suggest : VpDict = VpDict.load("suggest", reset: true)
+  getter out_regular : Vdict = Vdict.load("regular", reset: true)
+  getter out_various : Vdict = Vdict.load("various", reset: true)
+  getter out_suggest : Vdict = Vdict.load("suggest", reset: true)
 
   getter cv_hanviet : Convert { Convert.hanviet }
   getter cv_regular : Convert { Convert.new(@out_regular) }
@@ -99,7 +99,7 @@ class CV::ExportDicts
 
     puts "\n- load hanviet".colorize.cyan.bold
 
-    CV::VpDict.hanviet.each(full: false) do |term|
+    CV::Vdict.hanviet.each(full: false) do |term|
       next if term.key.size > 1 || @out_regular.find(term.key)
       @out_regular.put(term.key, term.vals)
     end
@@ -131,7 +131,7 @@ class CV::ExportDicts
     puts "\n[Export uniques]".colorize.cyan.bold
 
     Dir.glob("_db/dictdb/remote/unique/*.tab").each do |file|
-      dict = VpDict.load(File.basename(file, ".tab"))
+      dict = Vdict.load(File.basename(file, ".tab"))
       dict.load!(file)
 
       dict.each do |term|
@@ -208,7 +208,7 @@ class CV::ExportDicts
     puts "\n[Export recycle]".colorize.cyan.bold
 
     inp_recycle = QtDict.load(".result/recycle.txt", true)
-    out_recycle = CV::VpDict.load("recycle", 0)
+    out_recycle = CV::Vdict.load("recycle", 0)
 
     inp_recycle.to_a.sort_by(&.[0].size).each do |key, vals|
       unless should_keep?(key)

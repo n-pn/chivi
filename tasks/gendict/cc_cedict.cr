@@ -176,7 +176,7 @@ class CeInput
     File.write(QtUtil.path(".result/ce-verbs.txt"), verbs.uniq.join("\n"))
     File.write(QtUtil.path(".result/ce-adjes.txt"), adjes.uniq.join("\n"))
 
-    output = CV::VpDict.load("cc_cedict", reset: true)
+    output = CV::Vdict.load("cc_cedict", reset: true)
 
     input.each do |key, vals|
       QtUtil.lexicon.add(key)
@@ -216,7 +216,7 @@ class CeInput
       end
     end
 
-    output = CV::VpDict.load("tradsim", reset: true)
+    output = CV::Vdict.load("tradsim", reset: true)
 
     counter.each do |trad, counts|
       next if HANZIDB.has_key?(trad) || counts.has_key?(trad)
@@ -266,7 +266,7 @@ class CeInput
       end
     end
 
-    output = CV::VpDict.load("binh_am", reset: true)
+    output = CV::Vdict.load("binh_am", reset: true)
 
     HANZIDB.each do |key, vals|
       next if vals.empty? || vals.first.empty?

@@ -1,6 +1,6 @@
-require "../../src/engine/vp_dict"
+require "../../src/engine/vdict"
 
-test = CV::VpDict.new "test"
+test = CV::Vdict.new "test"
 
 print "\nset abc to abc: ", test.add(["abc", "abc"])
 
@@ -19,13 +19,13 @@ puts "\n size: #{test.items.size}"
 
 # test.save!
 
-regular = CV::VpDict.regular
+regular = CV::Vdict.regular
 puts regular.dtype
 if entry = regular.find("码")
   pp entry, entry.worth
 end
 
-special = CV::VpDict.load("7c4khz40")
+special = CV::Vdict.load("7c4khz40")
 puts special.dtype
 if entry = special.find("码")
   pp entry, entry.worth

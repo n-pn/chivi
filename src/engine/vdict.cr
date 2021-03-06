@@ -1,9 +1,9 @@
 require "colorize"
 require "file_utils"
 
-require "./vp_dict/*"
+require "./vdict/*"
 
-class CV::VpDict
+class CV::Vdict
   DIR = "_db/dictdb/active"
 
   ::FileUtils.mkdir_p("#{DIR}/common")
@@ -73,11 +73,11 @@ class CV::VpDict
 
         count += 1
       rescue err
-        puts "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red
+        puts "<vdict> [#{file}] error on `#{line}`: #{err}]".colorize.red
       end
     end
 
-    puts "- <vp_dict> [#{file}] loaded: #{count} lines, \
+    puts "- <vdict> [#{file}] loaded: #{count} lines, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
   end
 
@@ -156,7 +156,7 @@ class CV::VpDict
       end
     end
 
-    puts "- <vp_dict> [#{File.basename(@file)}] saved: #{@size} entries, \
+    puts "- <vdict> [#{File.basename(@file)}] saved: #{@size} entries, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.yellow
   end
 end

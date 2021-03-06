@@ -5,7 +5,7 @@ module CV::Server
 
   get "/api/dictdb/lookup/:input" do |env|
     dname = env.params.query.fetch("dname", "various")
-    dicts = {VpDict.load(dname), VpDict.regular}
+    dicts = {Vdict.load(dname), Vdict.regular}
 
     input = env.params.url["input"]
     chars = input.chars
@@ -22,11 +22,11 @@ module CV::Server
         end
       end
 
-      VpDict.trungviet.scan(chars, idx) do |item|
+      Vdict.trungviet.scan(chars, idx) do |item|
         entry[item.key.size]["trungviet"] = item.vals
       end
 
-      VpDict.cc_cedict.scan(chars, idx) do |item|
+      Vdict.cc_cedict.scan(chars, idx) do |item|
         entry[item.key.size]["cc_cedict"] = item.vals
       end
 
@@ -46,9 +46,9 @@ module CV::Server
 
     hints = [] of String
 
-    special_dict = VpDict.load(dname)
-    regular_dict = VpDict.regular
-    hanviet_dict = VpDict.hanviet
+    special_dict = Vdict.load(dname)
+    regular_dict = Vdict.regular
+    hanviet_dict = Vdict.hanviet
 
     if special_node = special_dict.trie.find(input)
       special_node.edits.each { |term| hints.concat(term.vals) }
@@ -62,7 +62,7 @@ module CV::Server
       hanviet_node.edits.each { |term| hints.concat(term.vals) }
     end
 
-    if suggest_node = VpDict.suggest.trie.find(input)
+    if suggest_node = Vdict.suggest.trie.find(input)
       suggest_node.edits.each { |term| hints.concat(term.vals) }
     end
 
@@ -112,7 +112,7 @@ module CV::Server
     u_power = env.session.int?("u_power") || 0
 
     halt env, status_code: 500, response: "Access denied!" if u_power < 1
-    dict = VpDict.load(env.params.url["dname"])
+    dict = Vdict.load(env.params.url["dname"])
 
     key = env.params.json["key"].as(String).strip
 
@@ -135,17 +135,17 @@ module CV::Server
     if dict.dtype == 3 # unique dict
       # add to quick translation dict if entry is a name
       unless key.size < 3 || vals.empty? || vals[0].downcase == vals[0]
-        various_term = VpDict.various.gen_term(key, vals, 2_i8, 1_i8)
-        VpDict.various.add!(various_term)
+        various_term = Vdict.various.gen_term(key, vals, 2_i8, 1_i8)
+        Vdict.various.add!(various_term)
       end
 
       # add to suggestion
-      suggest_term = VpDict.suggest.gen_term(key, vals)
-      if old_term = VpDict.suggest.find(key)
+      suggest_term = Vdict.suggest.gen_term(key, vals)
+      if old_term = Vdict.suggest.find(key)
         suggest_term.vals.concat(old_term.vals).uniq!
       end
 
-      VpDict.suggest.add!(suggest_term)
+      Vdict.suggest.add!(suggest_term)
     end
 
     RouteUtils.json_res(env, dict.find(key))

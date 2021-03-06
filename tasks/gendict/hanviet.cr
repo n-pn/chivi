@@ -3,8 +3,8 @@ require "./shared/*"
 class Hanviet
   HANZIDB = QtDict.load("_system/hanzidb.txt")
 
-  TRADSIM = CV::VpDict.tradsim
-  BINH_AM = CV::VpDict.binh_am
+  TRADSIM = CV::Vdict.tradsim
+  BINH_AM = CV::Vdict.binh_am
 
   getter input : QtDict = QtDict.load("_autogen/hanviet.txt", false)
 
@@ -33,7 +33,7 @@ class Hanviet
     hanviet_file = "_db/dictdb/active/system/hanviet.tsv"
     File.delete(hanviet_file) if File.exists?(hanviet_file)
 
-    output = CV::VpDict.load("hanviet", reset: true)
+    output = CV::Vdict.load("hanviet", reset: true)
 
     input = @input.to_a.sort_by(&.[0].size)
     input.each do |(key, vals)|

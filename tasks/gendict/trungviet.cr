@@ -16,7 +16,7 @@ end
 inp_dict = QtDict.load("_system/lacviet-mtd.txt", preload: true)
 hv_chars = QtDict.load("hanviet/lacviet-chars.txt", preload: false)
 hv_words = QtDict.load("hanviet/lacviet-words.txt", preload: false)
-out_dict = CV::VpDict.load("trungviet", reset: true)
+out_dict = CV::Vdict.load("trungviet", reset: true)
 
 puts "- input: #{inp_dict.size}"
 inp_dict.data.each do |key, vals|

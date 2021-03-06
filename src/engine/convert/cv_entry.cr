@@ -1,5 +1,5 @@
 require "../../_utils/text_utils"
-require "../vp_dict/vp_term"
+require "../vdict/vp_term"
 
 class CV::CvEntry
   property key : String

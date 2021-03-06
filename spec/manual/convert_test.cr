@@ -1,11 +1,11 @@
 require "../../src/engine/convert"
 
 GENERIC = CV::Convert.generic("various")
-CV::VpDict.various.add(CV::VpTerm.new("贾文和", ["Giả Văn Hoà"]))
+CV::Vdict.various.add(CV::VpTerm.new("贾文和", ["Giả Văn Hoà"]))
 
-puts CV::VpDict.regular.find("龙")
-puts CV::VpDict.regular.find("之术")
-puts CV::VpDict.regular.find("历史")
+puts CV::Vdict.regular.find("龙")
+puts CV::Vdict.regular.find("之术")
+puts CV::Vdict.regular.find("历史")
 
 HANVIET = CV::Convert.hanviet
 

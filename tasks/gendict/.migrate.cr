@@ -1,5 +1,5 @@
 require "file_utils"
-require "../../src/engine/vp_dict"
+require "../../src/engine/vdict"
 
 def parse_term(cols : Array(String), dlock = 1)
   key = cols[0]
@@ -37,7 +37,7 @@ def migrate(file : String, uniq = false)
   return if dname == "_tonghop"
   dname = "regular" if dname == "generic"
 
-  vdict = CV::VpDict.load(dname)
+  vdict = CV::Vdict.load(dname)
 
   input.each_value do |cols|
     key = cols[0]
@@ -60,12 +60,12 @@ def migrate(file : String, uniq = false)
     vdict.add(entry, emend)
 
     next unless uniq
-    CV::VpDict.suggest.add(entry, emend)
+    CV::Vdict.suggest.add(entry, emend)
 
     next if vals.empty?
     next if vals[0].downcase == vals[0]
-    next if CV::VpDict.regular.find(key)
-    CV::VpDict.various.add(entry, emend)
+    next if CV::Vdict.regular.find(key)
+    CV::Vdict.various.add(entry, emend)
   end
 
   vdict.save!
@@ -74,5 +74,5 @@ end
 Dir.glob("_db/dictdb/legacy/core/*.log").each { |x| migrate(x) }
 Dir.glob("_db/dictdb/legacy/uniq/*.log").each { |x| migrate(x, uniq: true) }
 
-CV::VpDict.suggest.save!
-CV::VpDict.various.save!
+CV::Vdict.suggest.save!
+CV::Vdict.various.save!
