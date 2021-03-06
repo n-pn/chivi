@@ -48,7 +48,7 @@ class CV::Vdict
   getter file : String
   getter flog : String
 
-  getter trie = VpTrie.new
+  getter trie = Vtrie.new
   getter logs = [] of Vterm
 
   getter size = 0

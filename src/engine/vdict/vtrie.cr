@@ -1,19 +1,19 @@
 require "./vterm"
 
-class CV::VpTrie
-  alias Trie = Hash(Char, VpTrie)
+class CV::Vtrie
+  alias Trie = Hash(Char, Vtrie)
 
   property term : Vterm? = nil
   getter edits = [] of Vterm
   getter _next = Trie.new
 
-  def find!(key : String) : VpTrie
+  def find!(key : String) : Vtrie
     node = self
-    key.each_char { |c| node = node._next[c] ||= VpTrie.new }
+    key.each_char { |c| node = node._next[c] ||= Vtrie.new }
     node
   end
 
-  def find(key : String) : VpTrie?
+  def find(key : String) : Vtrie?
     node = self
     key.each_char { |c| return unless node = node._next[c]? }
     node
