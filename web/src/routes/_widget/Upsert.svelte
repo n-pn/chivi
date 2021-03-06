@@ -8,14 +8,28 @@
   export const phrase = writable(['', 0, 1])
   export const on_tab = writable(0)
   export const active = writable(false)
+
+  function power_class(power, p_old) {
+    if (power < p_old) return 'text'
+    return power == p_old ? 'line' : 'solid'
+  }
+
+  function state_class(state) {
+    switch (state) {
+      case 'Thêm':
+        return 'success'
+      case 'Sửa':
+        return 'primary'
+      default:
+        return 'harmful'
+    }
+  }
 </script>
 
 <script>
   import SIcon from '$blocks/SIcon'
 
   import Input from './Upsert/Input'
-  import Dname from './Upsert/Dname'
-
   import Vhint from './Upsert/Vhint'
   import Vutil from './Upsert/Vutil'
   import Vattr from './Upsert/Vattr'
@@ -23,8 +37,6 @@
 
   import Emend from './Upsert/Emend'
   import Power from './Upsert/Power'
-  import Bsend from './Upsert/Bsend'
-
   import Links from './Upsert/Links'
 
   export let dname = 'various'
@@ -127,6 +139,10 @@
         }
     }
   }
+
+  $: submit_state = !value[$on_tab] ? 'Xoá' : origs[$on_tab] ? 'Sửa' : 'Thêm'
+  $: curr_state_class = state_class(submit_state)
+  $: curr_power_class = power_class(p_now[$on_tab], p_old[$on_tab])
 </script>
 
 <div
@@ -146,12 +162,14 @@
 
     <section class="dicts">
       {#each dicts as [_dname, label], idx}
-        <Dname
-          dname={label}
-          active={idx == $on_tab}
-          exists={origs[idx]}
-          {idx}
-          on:click={() => ($on_tab = idx)} />
+        <button
+          class="-dname"
+          class:_active={idx == $on_tab}
+          class:_edited={origs[idx]}
+          data-kbd={idx == 0 ? 'x' : idx == 1 ? 'c' : 'v'}
+          on:click={() => ($on_tab = idx)}>
+          <span>{label}</span>
+        </button>
       {/each}
     </section>
 
@@ -188,12 +206,13 @@
       <div class="vfoot">
         <Vprio bind:prio={infos[$on_tab].prio} />
         <Power bind:power={p_now[$on_tab]} p_max={$u_power} />
-        <Bsend
-          value={value[$on_tab]}
-          _orig={origs[$on_tab]}
-          power={p_now[$on_tab]}
-          p_min={p_old[$on_tab]}
-          on:click={() => submit_val($on_tab)} />
+
+        <button
+          class="m-button _large _{curr_power_class} _{curr_state_class}"
+          disabled={$u_power <= $on_tab}
+          on:click={() => submit_val($on_tab)}>
+          <span class="-text">{submit_state}</span>
+        </button>
       </div>
     </section>
 
@@ -241,23 +260,57 @@
       }
     }
 
-    .hanzi {
+    > .hanzi {
       flex-grow: 1;
       // margin-right: 0.25rem;
     }
   }
 
+  $tab-height: 2rem;
+
   .dicts {
-    height: 2rem;
+    height: $tab-height;
     padding: 0 0.75rem;
 
     @include flex();
     @include border($sides: bottom);
 
     // prettier-ignore
-    > :global(*) {
-      margin-right: 0.75rem;
-      &:last-child { margin-right: 0; }
+  }
+
+  .-dname {
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 0 0.75rem;
+    background-color: transparent;
+
+    height: $tab-height;
+    line-height: $tab-height;
+    flex-shrink: 0;
+
+    @include font-size(2);
+    @include fgcolor(neutral, 5);
+    @include truncate(null);
+    @include radius($sides: top);
+    @include border($color: neutral, $sides: top-left-right);
+
+    &:first-child {
+      max-width: 36%;
+      flex-shrink: 1;
+    }
+
+    &._edited {
+      @include fgcolor(neutral, 7);
+    }
+
+    &._active {
+      @include bgcolor(#fff);
+      @include fgcolor(primary, 6);
+      @include bdcolor($color: primary, $shade: 4);
+    }
+
+    & + & {
+      margin-left: 0.75rem;
     }
   }
 
@@ -306,6 +359,12 @@
     display: flex;
     margin-top: 0.75rem;
     justify-content: right;
+
+    > button {
+      margin-left: 0.75rem;
+      justify-content: center;
+      width: 4rem;
+    }
   }
 
   footer {
