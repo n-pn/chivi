@@ -128,7 +128,7 @@ module CV::Server
     new_term = Vterm.new(key, vals, prio, attr, uname: u_dname, power: power, dtype: dict.dtype)
 
     # TODO: save context
-    unless dict.add!(new_term)
+    unless dict.upsert!(new_term)
       halt env, status_code: 501, response: "Unchanged!"
     end
 
@@ -136,7 +136,7 @@ module CV::Server
       # add to quick translation dict if entry is a name
       unless key.size < 3 || vals.empty? || vals[0].downcase == vals[0]
         various_term = Vdict.various.gen_term(key, vals, 2_i8, 1_i8)
-        Vdict.various.add!(various_term)
+        Vdict.various.upsert!(various_term)
       end
 
       # add to suggestion
@@ -145,7 +145,7 @@ module CV::Server
         suggest_term.vals.concat(old_term.vals).uniq!
       end
 
-      Vdict.suggest.add!(suggest_term)
+      Vdict.suggest.upsert!(suggest_term)
     end
 
     RouteUtils.json_res(env, dict.find(key))

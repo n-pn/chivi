@@ -46,7 +46,7 @@ class Hanviet
         pp [key, vals, convert]
       end
 
-      output.put(key, vals.uniq.first(3))
+      output.upsert(key, vals.uniq.first(3))
     end
 
     output.load!("_db/dictdb/remote/system/hanviet.tab")

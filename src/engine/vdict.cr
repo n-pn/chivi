@@ -69,7 +69,7 @@ class CV::Vdict
         next if line.strip.blank?
 
         cols = line.split('\t')
-        add(Vterm.new(cols, @dtype, @p_min))
+        upsert(Vterm.new(cols, @dtype, @p_min))
 
         count += 1
       rescue err
@@ -81,8 +81,8 @@ class CV::Vdict
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
   end
 
-  def put(key : String, vals : Array(String), prio = 1_i8, attr = 0_i8)
-    add(gen_term(key, vals, prio, attr))
+  def upsert(key : String, vals : Array(String), prio = 1_i8, attr = 0_i8)
+    upsert(gen_term(key, vals, prio, attr))
   end
 
   def gen_term(key : String, vals = [""], prio = 1_i8, attr = 0_i8)
@@ -90,7 +90,7 @@ class CV::Vdict
   end
 
   # return true if new term prevails
-  def add(new_term : Vterm) : Bool
+  def upsert(new_term : Vterm) : Bool
     @logs << new_term if new_term.mtime > 0
 
     # find existing node or force creating new one
@@ -114,12 +114,12 @@ class CV::Vdict
   end
 
   # save to disk, return old entry if exists
-  def add!(new_term : Vterm) : Bool
+  def upsert!(new_term : Vterm) : Bool
     line = "\n#{new_term}"
     File.write(@file, line, mode: "a")
     File.write(@flog, line, mode: "a") if new_term.mtime > 0
 
-    add(new_term)
+    upsert(new_term)
   end
 
   def find(key : String) : Vterm?

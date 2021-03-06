@@ -23,7 +23,7 @@ inp_dict.data.each do |key, vals|
   QtUtil.lexicon.add(key) if QtUtil.has_hanzi?(key)
 
   vals = vals.first.split("\\n").map { |x| cleanup(x) }
-  out_dict.put(key, vals)
+  out_dict.upsert(key, vals)
 
   vals.each do |val|
     if match = val.match(/{(.+?)}/)
