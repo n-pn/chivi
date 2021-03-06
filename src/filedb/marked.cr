@@ -52,12 +52,12 @@ module CV::Marked
   end
 
   def mark_book(uname : String, bhash : String, bmark : String) : Nil
-    user_books(uname).tap(&.add(bhash, [bmark])).save!(mode: :upds)
-    book_users(bhash).tap(&.add(uname, [bmark])).save!(mode: :upds)
+    user_books(uname).tap(&.upsert!(bhash, [bmark])).save!(mode: :upds)
+    book_users(bhash).tap(&.upsert!(uname, [bmark])).save!(mode: :upds)
   end
 
   def unmark_book(uname : String, bhash : String) : Nil
-    user_books(uname).tap(&.rem(bhash)).save!(mode: :upds)
-    user_books(bhash).tap(&.rem(uname)).save!(mode: :upds)
+    user_books(uname).tap(&.delete!(bhash)).save!(mode: :upds)
+    user_books(bhash).tap(&.delete!(uname)).save!(mode: :upds)
   end
 end

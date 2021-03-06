@@ -21,12 +21,12 @@ module CV::NvChseed
 
   def put_chseed(bhash : String, sname : String, snvid : String, mtime = 0, total = 0)
     load(sname)
-      .tap(&.add(bhash, [snvid, mtime.to_s, total.to_s]))
+      .tap(&.upsert!(bhash, [snvid, mtime.to_s, total.to_s]))
       .save!(mode: :upds)
   end
 
   def set_snames(bhash : String, snames : Array(String)) : Nil
-    _index.add(bhash, snames)
+    _index.upsert!(bhash, snames)
     _index.save!(mode: :upds)
   end
 

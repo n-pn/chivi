@@ -6,7 +6,7 @@ class CV::TokenMap < CV::ValueMap
   alias Index = Set(String)
   getter _idx = Hash(String, Index).new { |h, k| h[k] = Index.new }
 
-  def set(key : String, vals : Array(String)) : Bool
+  def upsert(key : String, vals : Array(String)) : Bool
     old_vals = get(key)
     return false unless super
 
@@ -16,7 +16,7 @@ class CV::TokenMap < CV::ValueMap
     true
   end
 
-  def del(key : String)
+  def delele(key : String)
     get(key).try(&.each { |v| @_idx[v].delete(key) })
     super
   end

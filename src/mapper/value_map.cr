@@ -34,9 +34,9 @@ class CV::ValueMap
         key = cls[0]
 
         if vals = cls[1]?
-          set(key, vals.split('\t'))
+          upsert(key, vals.split('\t'))
         else
-          del(key)
+          delete(key)
         end
 
         count += 1
@@ -54,40 +54,40 @@ class CV::ValueMap
     @data.values
   end
 
-  def add(key : String, vals : Array(String))
-    return false unless set(key, vals)
+  def upsert!(key : String, vals : Array(String))
+    return false unless upsert(key, vals)
     @upds[key] = vals
     true
   end
 
-  def add(key : String, val : String)
-    add(key, [val])
+  def upsert!(key : String, val : String)
+    upsert!(key, [val])
   end
 
-  def add(key : String, val)
-    add(key, [val.to_s])
+  def upsert!(key : String, val)
+    upsert!(key, [val.to_s])
   end
 
-  def set(key : String, vals : Array(String)) : Bool
+  def upsert(key : String, vals : Array(String)) : Bool
     return false if get(key) == vals
     @data[key] = vals
     true
   end
 
-  def set(key : String, vals : String) : Bool
-    set(key, vals.split('\t'))
+  def upsert(key : String, vals : String) : Bool
+    upsert(key, vals.split('\t'))
   end
 
   def get(key : String) : Array(String)?
     @data[key]?
   end
 
-  def del(key : String) : Bool
+  def delete(key : String) : Bool
     !!@data.delete(key)
   end
 
-  def rem(key : String) : Nil
-    return unless del(key)
+  def delete!(key : String) : Nil
+    return unless delete(key)
     File.open(@file, "a") { |io| io.puts(key) }
   end
 
@@ -138,6 +138,6 @@ class CV::ValueMap
 end
 
 # test = CV::ValueMap.new(".tmp/value_map.tsv", mode: 2)
-# test.set("a", "a")
-# test.set("b", "b")
+# test.upsert("a", "a")
+# test.upsert("b", "b")
 # test.save!

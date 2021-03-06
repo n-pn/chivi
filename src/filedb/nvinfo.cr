@@ -67,7 +67,7 @@ class CV::Nvinfo
 
   def bump_access!(atime : Time = Time.utc) : Nil
     @_atime = atime.to_unix
-    return unless NvValues._atime.add(bhash, @_atime)
+    return unless NvValues._atime.upsert!(bhash, @_atime)
     NvValues._atime.save!(mode: :upds) if NvValues._atime.unsaved > 5
   end
 

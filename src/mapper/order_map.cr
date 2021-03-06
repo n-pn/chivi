@@ -101,7 +101,7 @@ class CV::OrderMap < CV::ValueMap
       @_avg = 0
     end
 
-    def add(key : String, val : Int32) : Nil
+    def upsert(key : String, val : Int32) : Nil
       if old_node = @data[key]?
         return if old_node.val == val
 
@@ -130,7 +130,7 @@ class CV::OrderMap < CV::ValueMap
       end
     end
 
-    def del(key : String) : Nil
+    def delete(key : String) : Nil
       @data[key]?.try(&.unlink!)
     end
 
@@ -161,26 +161,26 @@ class CV::OrderMap < CV::ValueMap
 
   getter _idx = List.new
 
-  def set(key : String, val : Int32, ext = [] of String) : Bool
+  def upsert(key : String, val : Int32, ext = [] of String) : Bool
     return false unless super(key, [val.to_s].join(ext))
-    @_idx.add(key, val)
+    @_idx.upsert(key, val)
     true
   end
 
-  def set(key : String, vals : Array(String)) : Bool
+  def upsert(key : String, vals : Array(String)) : Bool
     return false unless super(key, vals)
 
     if val = vals[0]?.try(&.to_i?)
-      @_idx.add(key, val)
+      @_idx.upsert(key, val)
     else
-      @_idx.del(key)
+      @_idx.delete(key)
     end
 
     true
   end
 
-  def del(key : String)
-    @_idx.del(key)
+  def delete(key : String)
+    @_idx.delete(key)
     super
   end
 
