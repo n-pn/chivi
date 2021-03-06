@@ -1,10 +1,10 @@
-require "./vp_term"
+require "./vterm"
 
 class CV::VpTrie
   alias Trie = Hash(Char, VpTrie)
 
-  property term : VpTerm? = nil
-  getter edits = [] of VpTerm
+  property term : Vterm? = nil
+  getter edits = [] of Vterm
   getter _next = Trie.new
 
   def find!(key : String) : VpTrie
@@ -40,8 +40,8 @@ class CV::VpTrie
     end
   end
 
-  def to_a : Array(VpTerm)
-    res = [] of VpTerm
+  def to_a : Array(Vterm)
+    res = [] of Vterm
     each { |term| res << term }
     res
   end

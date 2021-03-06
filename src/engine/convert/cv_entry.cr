@@ -1,5 +1,5 @@
 require "../../_utils/text_utils"
-require "../vdict/vp_term"
+require "../vdict/vterm"
 
 class CV::CvEntry
   property key : String
@@ -15,7 +15,7 @@ class CV::CvEntry
   INT_RE = /^\d+$/
   getter is_int : Bool { INT_RE === @key }
 
-  def initialize(term : VpTerm)
+  def initialize(term : Vterm)
     @key = term.key
     @val = term.vals.first
     @cat = term.attr

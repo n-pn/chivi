@@ -1,7 +1,7 @@
 require "../../src/engine/convert"
 
 GENERIC = CV::Convert.generic("various")
-CV::Vdict.various.add(CV::VpTerm.new("贾文和", ["Giả Văn Hoà"]))
+CV::Vdict.various.add(CV::Vterm.new("贾文和", ["Giả Văn Hoà"]))
 
 puts CV::Vdict.regular.find("龙")
 puts CV::Vdict.regular.find("之术")

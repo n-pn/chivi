@@ -125,7 +125,7 @@ module CV::Server
     power = env.params.json.fetch("power", u_power).as(Int64).to_i8
     power = u_power.to_i8 if power > u_power
 
-    new_term = VpTerm.new(key, vals, prio, attr, uname: u_dname, power: power, dtype: dict.dtype)
+    new_term = Vterm.new(key, vals, prio, attr, uname: u_dname, power: power, dtype: dict.dtype)
 
     # TODO: save context
     unless dict.add!(new_term)

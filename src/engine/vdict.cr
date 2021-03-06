@@ -49,7 +49,7 @@ class CV::Vdict
   getter flog : String
 
   getter trie = VpTrie.new
-  getter logs = [] of VpTerm
+  getter logs = [] of Vterm
 
   getter size = 0
 
@@ -69,7 +69,7 @@ class CV::Vdict
         next if line.strip.blank?
 
         cols = line.split('\t')
-        add(VpTerm.new(cols, @dtype, @p_min))
+        add(Vterm.new(cols, @dtype, @p_min))
 
         count += 1
       rescue err
@@ -86,11 +86,11 @@ class CV::Vdict
   end
 
   def gen_term(key : String, vals = [""], prio = 1_i8, attr = 0_i8)
-    VpTerm.new(key, vals, prio: prio, attr: attr, mtime: 0, dtype: @dtype, power: @p_min)
+    Vterm.new(key, vals, prio: prio, attr: attr, mtime: 0, dtype: @dtype, power: @p_min)
   end
 
   # return true if new term prevails
-  def add(new_term : VpTerm) : Bool
+  def add(new_term : Vterm) : Bool
     @logs << new_term if new_term.mtime > 0
 
     # find existing node or force creating new one
@@ -114,7 +114,7 @@ class CV::Vdict
   end
 
   # save to disk, return old entry if exists
-  def add!(new_term : VpTerm) : Bool
+  def add!(new_term : Vterm) : Bool
     line = "\n#{new_term}"
     File.write(@file, line, mode: "a")
     File.write(@flog, line, mode: "a") if new_term.mtime > 0
@@ -122,11 +122,11 @@ class CV::Vdict
     add(new_term)
   end
 
-  def find(key : String) : VpTerm?
+  def find(key : String) : Vterm?
     @trie.find(key).try(&.term)
   end
 
-  def find!(key : String) : VpTerm
+  def find!(key : String) : Vterm
     find(key) || gen_term(key, [""])
   end
 
