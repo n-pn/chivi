@@ -56,7 +56,7 @@ class CV::Convert
     return title_res if label.empty?
 
     label_res = cv_title(label)
-    label_res.data << CvEntry.new("", " - ")
+    label_res.data << Cword.new("", " - ")
     label_res.data.concat(title_res.data)
 
     label_res
@@ -74,42 +74,42 @@ class CV::Convert
   TITLE_RE_4 = /^楔子(\s+)(.+)$/
 
   def cv_title(title : String)
-    res = [] of CvEntry
+    res = [] of Cword
 
     unless title.empty?
       if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
         _, group, num, lbl, trash, title = match
 
         num = CvUtils.to_integer(num)
-        res << CvEntry.new(group, "#{vi_label(lbl)} #{num}", 1_i8)
+        res << Cword.new(group, "#{vi_label(lbl)} #{num}", 1_i8)
 
         if !title.empty?
-          res << CvEntry.new(trash, ": ")
+          res << Cword.new(trash, ": ")
         elsif !trash.empty?
-          res << CvEntry.new(trash, "")
+          res << Cword.new(trash, "")
         end
       elsif match = TITLE_RE_3.match(title)
         _, num, trash, title = match
-        res << CvEntry.new(num, num, 1_i8)
+        res << Cword.new(num, num, 1_i8)
 
         if !title.empty?
-          res << CvEntry.new(trash, ". ")
+          res << Cword.new(trash, ". ")
         elsif !trash.empty?
-          res << CvEntry.new(trash, "")
+          res << Cword.new(trash, "")
         end
       elsif match = TITLE_RE_4.match(title)
         _, trash, title = match
-        res << CvEntry.new("楔子", "Phần đệm", 1_i8)
+        res << Cword.new("楔子", "Phần đệm", 1_i8)
 
         if !title.empty?
-          res << CvEntry.new(trash, ": ")
+          res << Cword.new(trash, ": ")
         elsif !trash.empty?
-          res << CvEntry.new(trash, "")
+          res << Cword.new(trash, "")
         end
       end
 
       title.split(/\s+/).each_with_index do |text, idx|
-        res << CvEntry.new(" ", " ") if idx > 0
+        res << Cword.new(" ", " ") if idx > 0
         res.concat(cv_plain(text).data)
       end
     end
@@ -131,12 +131,12 @@ class CV::Convert
   end
 
   def tokenize(input : Array(Char)) : CvGroup
-    nodes = [CvEntry.new("", "")]
+    nodes = [Cword.new("", "")]
     costs = [0.0]
 
     input.each_with_index(1) do |char, idx|
       norm = CvUtils.normalize(char)
-      nodes << CvEntry.new(char.to_s, norm.to_s, alnum?(norm) ? 1_i8 : 0_i8)
+      nodes << Cword.new(char.to_s, norm.to_s, alnum?(norm) ? 1_i8 : 0_i8)
       costs << idx.to_f
     end
 
@@ -155,7 +155,7 @@ class CV::Convert
 
         if cost >= costs[jump]
           costs[jump] = cost
-          nodes[jump] = CvEntry.new(term)
+          nodes[jump] = Cword.new(term)
         end
       end
     end
@@ -167,8 +167,8 @@ class CV::Convert
     char == '_' || char.ascii_number? || char.letter?
   end
 
-  private def extract_best(nodes : Array(CvEntry))
-    ary = [] of CvEntry
+  private def extract_best(nodes : Array(Cword))
+    ary = [] of Cword
     idx = nodes.size - 1
 
     while idx > 0

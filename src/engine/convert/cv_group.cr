@@ -1,9 +1,9 @@
-require "./cv_entry"
+require "./cword"
 
 class CV::CvGroup
   SEP = 'ǀ'
 
-  getter data : Array(CvEntry)
+  getter data : Array(Cword)
 
   def initialize(@data)
   end
@@ -130,7 +130,7 @@ class CV::CvGroup
       curr = @data.unsafe_fetch(i)
 
       unless curr.val.empty?
-        temp << CvEntry.new("", " ") if curr.space_before?(prev)
+        temp << Cword.new("", " ") if curr.space_before?(prev)
         prev = curr
       end
 
