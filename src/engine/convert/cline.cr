@@ -1,6 +1,6 @@
 require "./cword"
 
-class CV::CvGroup
+class CV::Cline
   SEP = 'ǀ'
 
   getter data : Array(Cword)

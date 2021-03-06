@@ -80,7 +80,7 @@ class CV::Convert
       if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
         _, group, num, lbl, trash, title = match
 
-        num = CvUtils.to_integer(num)
+        num = Cutil.to_integer(num)
         res << Cword.new(group, "#{vi_label(lbl)} #{num}", 1_i8)
 
         if !title.empty?
@@ -114,7 +114,7 @@ class CV::Convert
       end
     end
 
-    CvGroup.new(res)
+    Cline.new(res)
   end
 
   private def vi_label(lbl = "")
@@ -130,12 +130,12 @@ class CV::Convert
     end
   end
 
-  def tokenize(input : Array(Char)) : CvGroup
+  def tokenize(input : Array(Char)) : Cline
     nodes = [Cword.new("", "")]
     costs = [0.0]
 
     input.each_with_index(1) do |char, idx|
-      norm = CvUtils.normalize(char)
+      norm = Cutil.normalize(char)
       nodes << Cword.new(char.to_s, norm.to_s, alnum?(norm) ? 1_i8 : 0_i8)
       costs << idx.to_f
     end
@@ -209,6 +209,6 @@ class CV::Convert
       ary << curr
     end
 
-    CvGroup.new(ary.reverse)
+    Cline.new(ary.reverse)
   end
 end

@@ -1,6 +1,6 @@
 require "./consts/normalize"
 
-module CV::CvUtils
+module CV::Cutil
   extend self
 
   # Convert chinese punctuations to english punctuations
@@ -73,8 +73,8 @@ module CV::CvUtils
   end
 end
 
-# puts CV::CvUtils.normalize("０")
-# puts CV::CvUtils.normalize('０')
+# puts CV::Cutil.normalize("０")
+# puts CV::Cutil.normalize('０')
 
-# puts CV::CvUtils.to_integer("1245")
-# puts CV::CvUtils.to_integer("四")
+# puts CV::Cutil.to_integer("1245")
+# puts CV::Cutil.to_integer("四")
