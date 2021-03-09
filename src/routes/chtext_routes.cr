@@ -1,14 +1,15 @@
 require "./_route_utils"
 
 module CV::Server
-  get "/api/chinfos/:sname/:snvid/:chidx" do |env|
+  get "/api/chinfos/:bhash/:sname/:snvid/:chidx" do |env|
+    bhash = env.params.url["bhash"]
     sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
 
     index = env.params.url["chidx"].to_i? || 100000
     index = 1 if index < 1
 
-    chinfo = Chinfo.load(sname, snvid)
+    chinfo = Chinfo.load(bhash, sname, snvid)
     unless curr_chap = chinfo.heads[index - 1]?
       halt env, status_code: 404, response: "Chương tiết không tồn tại!"
     end
@@ -31,7 +32,8 @@ module CV::Server
     halt env, status_code: 500, response: message
   end
 
-  get "/api/chtexts/:sname/:snvid/:schid" do |env|
+  get "/api/chtexts/:bhash/:sname/:snvid/:schid" do |env|
+    bhash = env.params.url["bhash"]
     sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
     schid = env.params.url["schid"]
@@ -44,8 +46,7 @@ module CV::Server
     chtext.fetch!(u_power) if mode > 1 || chtext.zh_lines.empty?
 
     unless mode == 0 && chtext.translated?(Time.utc - 3.hours)
-      dname = env.params.query["dname"]? || "various"
-      chtext.trans!(dname)
+      chtext.trans!(bhash)
     end
 
     env.response.content_type = "text/plain; charset=utf-8"

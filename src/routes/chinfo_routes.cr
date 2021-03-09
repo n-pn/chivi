@@ -2,20 +2,19 @@ require "./_route_utils"
 require "../filedb/chinfo"
 
 module CV::Server
-  get "/api/chseeds/:sname/:snvid" do |env|
+  get "/api/chseeds/:bhash/:sname/:snvid" do |env|
+    bhash = env.params.url["bhash"]
     sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
-    chinfo = Chinfo.load(sname, snvid)
 
-    u_power, mode = RouteUtils.get_privi(env)
-
-    bhash = env.params.query["bhash"]? || "various"
     nvinfo = Nvinfo.load(bhash)
+    chinfo = Chinfo.load(bhash, sname, snvid)
+    u_power, mode = RouteUtils.get_privi(env)
 
     if mode > 0
       mtime, total = chinfo.fetch!(u_power, mode > 1)
       nvinfo.put_chseed!(sname, snvid, mtime, total) if mtime >= 0
-      chinfo.trans!(bhash, u_power > 1)
+      chinfo.trans!(u_power > 1)
       # chinfo.save!
     end
 
@@ -33,10 +32,12 @@ module CV::Server
     end
   end
 
-  get "/api/chitems/:sname/:snvid" do |env|
+  get "/api/chitems/:bhash/:sname/:snvid" do |env|
+    bhash = env.params.url["bhash"]
     sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
-    chinfo = Chinfo.load(sname, snvid)
+
+    chinfo = Chinfo.load(bhash, sname, snvid)
 
     take = RouteUtils.parse_int(env.params.query["take"]?, min: 1, max: 30)
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)

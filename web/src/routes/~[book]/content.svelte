@@ -21,10 +21,10 @@
     const _res = { nvinfo, params }
     if (!params.snvid) return _res
 
-    const [err2, chseed] = await get_chseed(this.fetch, params, bhash)
+    const [err2, chseed] = await get_chseed(this.fetch, bhash, params)
     if (err2) this.error(err2, chseed)
 
-    const [err3, chlist] = await get_chlist(this.fetch, params)
+    const [err3, chlist] = await get_chlist(this.fetch, bhash, params)
     if (err3) this.error(err3, chlist)
 
     return { nvinfo, chseed, chlist, params }
@@ -133,7 +133,7 @@
     if (page > pmax) page = pmax
     params = { ...params, page }
 
-    const [_err, data] = await get_chlist(fetch, params)
+    const [_err, data] = await get_chlist(fetch, nvinfo.bhash, params)
     chlist = data
 
     const url = new URL(window.location)

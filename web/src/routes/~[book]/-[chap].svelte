@@ -27,7 +27,7 @@
     let mode = process.browser ? 1 : 0
     if (query.mode) mode = +query.mode
 
-    const [err, data] = await get_chinfo(this.fetch, chinfo, nvinfo, mode)
+    const [err, data] = await get_chinfo(this.fetch, nvinfo.bhash, chinfo, mode)
 
     if (err) this.error(err, data)
     else return { ...data, nvinfo, changed: mode < 1 }
@@ -116,7 +116,7 @@
     changed = false
 
     _reload = true
-    const [_, data] = await get_chtext(window.fetch, chinfo, nvinfo.bhash, 1)
+    const [_, data] = await get_chtext(window.fetch, nvinfo.bhash, chinfo, 1)
     _reload = false
 
     cvdata = data

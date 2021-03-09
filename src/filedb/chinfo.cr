@@ -10,6 +10,29 @@ require "../engine/cvmtl"
 class CV::Chinfo
   DIR = "_db/chdata/chinfos"
 
+  alias Cache = Hash(String, self)
+  CACHE_LIMIT = 256
+
+  @@acache = Cache.new(initial_capacity: CACHE_LIMIT)
+  @@bcache = Cache.new(initial_capacity: CACHE_LIMIT)
+
+  def self.load(bhash : String, sname : String, snvid : String)
+    label = "#{sname}/#{snvid}"
+
+    unless item = @@acache[label]?
+      item = @@bcache[label]? || new(bhash, sname, snvid)
+      @@acache[label] = item
+
+      if @@acache.size >= CACHE_LIMIT
+        @@bcache = @@acache
+        @@acache = Cache.new(initial_capacity: CACHE_LIMIT)
+      end
+    end
+
+    item
+  end
+
+  getter bhash : String
   getter sname : String
   getter snvid : String
 
@@ -21,7 +44,7 @@ class CV::Chinfo
 
   getter chaps : ZipStore
 
-  def initialize(@sname, @snvid)
+  def initialize(@bhash, @sname, @snvid)
     zip_file = "_db/chdata/zh_zips/#{@sname}/#{@snvid}.zip"
     text_dir = "_db/chdata/zh_txts/#{@sname}/#{@snvid}"
     @chaps = ZipStore.new(zip_file, text_dir)
@@ -76,8 +99,8 @@ class CV::Chinfo
     {mtime, origs.size}
   end
 
-  def trans!(dname = "various", force = false) : Nil
-    cvter = Cvmtl.generic(dname)
+  def trans!(force = false) : Nil
+    cvter = Cvmtl.generic(bhash)
 
     heads.clear if force
     heads.size.upto(origs.size - 1) do |idx|
@@ -137,32 +160,5 @@ class CV::Chinfo
 
   def save!(mode : Symbol = :full)
     @stats.try(&.save!(mode: mode))
-  end
-
-  alias Cache = Hash(String, self)
-  CACHE_LIMIT = 256
-
-  @@acache = Cache.new(initial_capacity: CACHE_LIMIT)
-  @@bcache = Cache.new(initial_capacity: CACHE_LIMIT)
-
-  def self.load(sname : String, snvid : String)
-    label = "#{sname}/#{snvid}"
-
-    unless item = @@acache[label]?
-      item = @@bcache[label]? || new(sname, snvid)
-      @@acache[label] = item
-
-      if @@acache.size >= CACHE_LIMIT
-        @@bcache = @@acache
-        @@acache = Cache.new(initial_capacity: CACHE_LIMIT)
-      end
-    end
-
-    item
-  end
-
-  def self.save!(mode : Symbol = :full) : Nil
-    CHINFOS.each(&.save!(mode: mode))
-    ChSource.save!(mode: mode)
   end
 end
