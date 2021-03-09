@@ -206,26 +206,32 @@ class CV::Chinfo
   @cv_times = {} of Int32 => Time
   CV_TRANS = RamCache(String).new(1024)
 
-  def get_cvdata!(chidx : Int32, reset = false, ttl = 3.hours)
+  def get_cvdata!(chidx : Int32, schid : String, mode = 0, power = 0)
     key = "#{@sname}/#{@snvid}/#{chidx}"
-    CV_TRANS.delete(key) if reset || outdated?(chidx, ttl)
-    CV_TRANS.get(key) { trans_zhtext!(chidx, yield) }
+    CV_TRANS.delete(key) if mode > 0 || outdated?(chidx, ttl: 1.day)
+
+    CV_TRANS.get(key) do
+      zh_text = get_zhtext!(chidx, schid, mode > 1, power)
+
+      @cv_times[chidx] = Time.utc
+      break "" if zh_text.empty?
+
+      convert(zh_text).tap do
+        puts "- <chap_cvdata> [#{sname}/#{snvid}/#{chidx}] converted.".colorize.cyan
+      end
+    end
   end
 
-  def trans_zhtext!(chidx : Int32, lines : Array(String))
-    @cv_times[chidx] = Time.utc
-    return "" if lines.empty?
-
-    cvter = Cvmtl.generic(bhash)
-    puts "- <chap_cvdata> [#{sname}/#{snvid}/#{chidx}] converted.".colorize.cyan
+  private def convert(lines : Array(String))
+    mtl = Cvmtl.generic(bhash)
 
     String.build do |io|
-      cvter.cv_title_full(lines[0]).to_str(io)
+      mtl.cv_title_full(lines[0]).to_str(io)
 
       1.upto(lines.size - 1) do |i|
         io << "\n"
         para = lines.unsafe_fetch(i)
-        cvter.cv_plain(para).to_str(io)
+        mtl.cv_plain(para).to_str(io)
       end
     end
   end
