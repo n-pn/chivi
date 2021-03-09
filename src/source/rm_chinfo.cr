@@ -74,6 +74,12 @@ class CV::RmChinfo
 
   alias Chlist = Array(Array(String))
 
+  getter chapters : Chlist do
+    res = chap_list
+    res.each_with_index(1) { |list, idx| list.unshift(idx.to_s) }
+    res
+  end
+
   getter chap_list : Chlist do
     case @sname
     when "69shu"   then extract_69shu_chlist

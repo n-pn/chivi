@@ -37,49 +37,53 @@ class CV::Chinfo
   getter snvid : String
 
   alias Chlist = Array(Array(String))
-  getter origs : Chlist { load_list("origs") }
-  getter heads : Chlist { load_list("heads") }
+  getter origs : Chlist { load_origs }
+  getter heads : Chlist { load_heads }
 
   getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
 
-  getter chaps : ZipStore
-
   def initialize(@bhash, @sname, @snvid)
-    zip_file = "_db/chdata/zh_zips/#{@sname}/#{@snvid}.zip"
-    text_dir = "_db/chdata/zh_txts/#{@sname}/#{@snvid}"
-    @chaps = ZipStore.new(zip_file, text_dir)
+    @orig_dir = "_db/chdata/zhinfos/#{@sname}/#{@snvid}"
+    @text_dir = "_db/chdata/zhtexts/#{@sname}/#{@snvid}"
+    @head_file = "_db/chdata/chheads/#{@sname}/#{@snvid}.tsv"
+
+    ::FileUtils.mkdir_p(@orig_dir)
+    ::FileUtils.mkdir_p(@text_dir)
   end
 
-  def indexed_schids
-    origs.map(&.[0])
+  def load_origs
+    res = Chlist.new
+
+    files = Dir.glob("#{@orig_dir}/*.tsv").sort_by { |x| File.basename(x, ".tsv").to_i }
+    files.each do |file|
+      File.read_lines(file).each do |line|
+        res << line.split('\t')
+      end
+    end
+
+    puts "- <chap_zhdata> [#{@sname}/#{@snvid}] loaded".colorize.blue
+    res.sort_by(&.first.to_i)
   end
 
-  def existed_schids
-    @chaps.entries.map(&.sub(".txt", ""))
+  def save_origs
+    origs.each_slice(100).with_index do |list, idx|
+      group = idx.to_s.rjust(3, '0')
+      file = File.join(@orig_dir, group + ".tsv")
+      File.write(file, list.map(&.join('\t')).join('\n'))
+    end
   end
 
-  def missing_schids
-    indexed_schids - existed_schids
+  def load_heads
+    return Chlist.new unless File.exists?(@head_file)
+
+    puts "- <chap_vpdata> [#{@sname}/#{@snvid}] loaded".colorize.blue
+    File.read_lines(@head_file).map(&.split('\t'))
   end
 
-  def load_list(label : String)
-    file = map_path(label)
-    return Chlist.new unless File.exists?(file)
-
-    puts "- <chap_#{label}> [#{@sname}/#{@snvid}] loaded".colorize.blue
-    File.read_lines(file).map(&.split('\t'))
-  end
-
-  def save_list(label : String, data : Chlist) : Nil
-    file = map_path(label)
-    ::FileUtils.mkdir_p(File.dirname(file))
-
-    File.write(file, data.map(&.join('\t')).join('\n'))
-    puts "- <chap_#{label}> [#{@sname}/#{@snvid}] saved (entries: #{data.size})".colorize.yellow
-  end
-
-  private def map_path(label : String)
-    "_db/chdata/ch#{label}/#{@sname}/#{@snvid}.tsv"
+  def save_heads : Nil
+    ::FileUtils.mkdir_p(File.dirname(@head_file))
+    File.write(@head_file, heads.map(&.join('\t')).join('\n'))
+    puts "- <chap_vpdata> [#{@sname}/#{@snvid}] saved (entries: #{heads.size})".colorize.yellow
   end
 
   def fetch!(power = 4, force = false, valid = 5.minutes) : Tuple(Int32, Int32)
@@ -87,12 +91,12 @@ class CV::Chinfo
 
     if RmSpider.remote?(@sname, power)
       puller = RmChinfo.new(@sname, @snvid, valid: valid)
-      latest = origs.last?.try(&.first?) || ""
+      latest = origs.last?.try(&.[1]?) || ""
 
       if force || puller.changed?(latest)
-        @origs = puller.chap_list
         mtime = puller.update_int.//(60).to_i
-        spawn save_list("origs", origs)
+        @origs = puller.chapters
+        spawn save_origs
       end
     end
 
@@ -105,10 +109,10 @@ class CV::Chinfo
     heads.clear if force
     heads.size.upto(origs.size - 1) do |idx|
       row = origs[idx]
-      schid = row[0]
+      schid = row[1]
 
-      zh_title = row[1]
-      zh_label = row[2]? || ""
+      zh_title = row[2]
+      zh_label = row[3]? || ""
 
       vi_title = cvter.tl_title(zh_title)
       vi_label = zh_label.empty? ? "Chính văn" : cvter.tl_title(zh_label)
@@ -119,7 +123,7 @@ class CV::Chinfo
       next
     end
 
-    spawn save_list("heads", heads)
+    spawn save_heads
   end
 
   delegate size, to: heads

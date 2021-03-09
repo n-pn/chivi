@@ -118,7 +118,7 @@
 
     _load = true
 
-    const [err, data] = await get_chseed(fetch, params, nvinfo.bhash, mode)
+    const [err, data] = await get_chseed(fetch, nvinfo.bhash, params, mode)
     if (err) return console.log({ err })
 
     chseed = data
