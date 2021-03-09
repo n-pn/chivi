@@ -6,11 +6,11 @@ module CV::Server
     sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
 
-    index = env.params.url["chidx"].to_i? || 100000
-    index = 1 if index < 1
+    chidx = env.params.url["chidx"].to_i? || 100000
+    chidx = 1 if chidx < 1
 
     chinfo = Chinfo.load(bhash, sname, snvid)
-    unless curr_chap = chinfo.heads[index - 1]?
+    unless curr_chap = chinfo.heads[chidx - 1]?
       halt env, status_code: 404, response: "Chương tiết không tồn tại!"
     end
 
@@ -18,11 +18,12 @@ module CV::Server
       JSON.build(res) do |json|
         json.object do
           json.field "total", chinfo.heads.size
+          json.field "chidx", chidx
           json.field "schid", curr_chap[0]
           json.field "title", curr_chap[1]
           json.field "label", curr_chap[2]
-          json.field "prev_url", chinfo.url_for(index - 2)
-          json.field "next_url", chinfo.url_for(index)
+          json.field "prev_url", chinfo.url_for(chidx - 2)
+          json.field "next_url", chinfo.url_for(chidx)
         end
       end
     end
@@ -32,25 +33,23 @@ module CV::Server
     halt env, status_code: 500, response: message
   end
 
-  get "/api/chtexts/:bhash/:sname/:snvid/:schid" do |env|
+  get "/api/chtexts/:bhash/:sname/:snvid/:chidx/:schid" do |env|
     bhash = env.params.url["bhash"]
     sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
+
+    chidx = env.params.url["chidx"].to_i
     schid = env.params.url["schid"]
 
     u_power = env.session.int?("u_power") || 0
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
     mode = u_power if mode > u_power
 
-    chtext = Chtext.load(sname, snvid, schid)
-    chtext.fetch!(u_power) if mode > 1 || chtext.zh_lines.empty?
-
-    unless mode == 0 && chtext.translated?(Time.utc - 3.hours)
-      chtext.trans!(bhash)
-    end
+    chinfo = Chinfo.load(bhash, sname, snvid)
+    zhdata = chinfo.get_zhtext!(chidx, schid, mode, u_power)
 
     env.response.content_type = "text/plain; charset=utf-8"
-    chtext.cv_trans
+    chinfo.get_cvdata!(chidx) { zhdata }
   rescue err
     puts "- Error loading chap_text: #{err}"
     message = err.message || "Unknown error!"

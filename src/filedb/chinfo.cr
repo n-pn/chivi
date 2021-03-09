@@ -1,11 +1,10 @@
 require "json"
 require "file_utils"
+require "compress/zip"
 
-require "./chinfo/*"
-
-require "../source/rm_chinfo"
-require "../mapper/zip_store"
 require "../engine/cvmtl"
+require "../source/rm_chinfo"
+require "../source/rm_chtext"
 
 class CV::Chinfo
   DIR = "_db/chdata/chinfos"
@@ -164,5 +163,86 @@ class CV::Chinfo
 
   def save!(mode : Symbol = :full)
     @stats.try(&.save!(mode: mode))
+  end
+
+  @zh_texts = {} of Int32 => Array(String)
+  @cv_times = {} of Int32 => Int64
+  @cv_trans = {} of Int32 => String
+
+  def get_zhtext!(chidx : Int32, schid : String, mode = 0, power = 0)
+    if mode > 1 && RmSpider.remote?(@sname, power)
+      return @zh_texts[chidx] = fetch_zhtext!(chidx, schid, valid: 3.minutes)
+    end
+
+    data = @zh_texts[chidx] ||= load_zhtext!(chidx, schid)
+
+    if data.empty? && RmSpider.remote?(@sname, power)
+      @zh_texts[chidx] = fetch_zhtext!(chidx, schid)
+    else
+      data
+    end
+  end
+
+  def load_zhtext!(chidx : Int32, schid : String)
+    zip_file = group_path(chidx - 1)
+
+    if File.exists?(zip_file)
+      Compress::Zip::File.open(zip_file) do |zip|
+        next unless entry = zip["#{schid}.txt"]?
+        return entry.open(&.gets_to_end).split('\n')
+      end
+    end
+
+    [] of String
+  end
+
+  def fetch_zhtext!(chidx : Int32, schid : String, valid = 10.years)
+    puller = RmChtext.new(@sname, @snvid, schid, valid: valid)
+    lines = [puller.title].concat(puller.paras)
+    save_zhtext!(chidx, schid, lines)
+    lines
+  rescue err
+    puts "- Fetch chtext error: #{err}".colorize.red
+    [] of String
+  end
+
+  def group_path(index : Int32)
+    group = (index // 100).to_s.rjust(3, '0')
+    zip_file = File.join(@text_dir, group + ".zip")
+  end
+
+  def save_zhtext!(chidx : Int32, schid : String, lines : Array(String))
+    out_zip = group_path(chidx - 1)
+    out_file = File.join(@text_dir, "#{schid}.txt")
+
+    File.open(out_file, "w") { |io| lines.join(io, "\n") }
+    puts `zip -jqm "#{out_zip}" "#{out_file}"`
+    puts "- <chap_zhtext> [#{out_file}] saved.".colorize.yellow
+  end
+
+  def get_cvdata!(chidx : Int32, mode = 0, ttl = 3.hours)
+    @cv_trans.delete(chidx) unless mode == 0 && translated?(chidx, ttl)
+    @cv_trans[chidx] ||= trans_zhtext!(chidx, yield)
+  end
+
+  def trans_zhtext!(chidx : Int32, lines : Array(String))
+    @cv_times[chidx] = Time.utc.to_unix
+    return "" if lines.empty?
+
+    cvter = Cvmtl.generic(bhash)
+    @cv_trans[chidx] = String.build do |io|
+      cvter.cv_title_full(lines[0]).to_str(io)
+
+      1.upto(lines.size - 1) do |i|
+        io << "\n"
+        para = lines.unsafe_fetch(i)
+        cvter.cv_plain(para).to_str(io)
+      end
+    end
+  end
+
+  def translated?(chidx : Int32, ttl : Time::Span)
+    return false unless time = @cv_times[chidx]?
+    return Time.unix(time) + ttl >= Time.utc
   end
 end
