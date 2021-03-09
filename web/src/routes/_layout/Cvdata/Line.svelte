@@ -35,11 +35,11 @@
     }
 
     if (nest < 0) {
-      res_0 = '<em>“' + res_0
-      res_1 = '<em>“' + res_1
+      res_0 = '<em>' + res_0
+      res_1 = '<em>' + res_1
     } else if (nest > 0) {
-      res_0 += '”</em>'
-      res_1 += '”</em>'
+      res_0 += '</em>'
+      res_1 += '</em>'
     }
 
     return [res_0, res_1]

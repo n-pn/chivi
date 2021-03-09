@@ -2,7 +2,7 @@
 
 SSH=nipin@ssh.chivi.xyz:www/chivi.xyz
 
-rsync -azi "_db/dictdb/active/" "$SSH/_db/dictdb/remote/"
+# rsync -azi "_db/dictdb/active/" "$SSH/_db/dictdb/remote/"
 # rsync -azi "_db/dictdb/active" "$SSH/_db/dictdb"
 # rsync -azi --exclude '*.tab' "_db/dictdb/active" "$SSH/_db/dictdb"
 
@@ -11,9 +11,9 @@ rsync -azi "_db/dictdb/active/" "$SSH/_db/dictdb/remote/"
 # rsync -azi --no-p "_db/nvdata/chseeds" "$SSH/_db/nvdata"
 
 ## upload chap data
+rsync -azi --no-p "_db/chdata/zhinfos" "$SSH/_db/chdata"
 # rsync -azi --no-p "_db/chdata/chorigs" "$SSH/_db/chdata"
 # rsync -azi --no-p "_db/chdata/chheads" "$SSH/_db/chdata"
-# rsync -azi --no-p "_db/chdata/chinfos" "$SSH/_db/chdata"
 # rsync -azi --no-p "_db/chdata/chstats" "$SSH/_db/chdata"
 
 ## upload book covers
