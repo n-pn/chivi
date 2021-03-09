@@ -9,7 +9,7 @@ OUT = "#{SSH}:www/chivi.xyz/#{INP}"
 
 def upload_texts(sname : String)
   dirs = Dir.glob(File.join(INP, sname, "*/"))
-  dirs.sort_by! { |x| File.basename(x).to_i } unless sname == "zhwenpg"
+  dirs.sort_by! { |x| File.basename(x).to_i? || 0 }
 
   dirs.each_with_index(1) do |txt_dir, i|
     snvid = File.basename(txt_dir)
@@ -21,7 +21,7 @@ def upload_texts(sname : String)
     files.each_with_index(1) do |file, idx|
       puts "-- <#{idx}/#{files.size}> [#{file}]".colorize.blue
       res = `rsync -ai --no-p "#{file}" "#{OUT}/#{sname}/#{snvid}"`
-      puts res.empty? ? "  #{file} skipped!" : res
+      puts res.empty? ? "  existed, skipping!".colorize.dark_gray : res.colorize.yellow
     end
   end
 end

@@ -24,13 +24,13 @@
     if (!snvid) return this.error(404, 'Nguồn truyện không tồn tại!')
     const chinfo = { sname, snvid, chidx }
 
-    let mode = process.browser ? 1 : 0
+    let mode = 0
     if (query.mode) mode = +query.mode
 
     const [err, data] = await get_chinfo(this.fetch, nvinfo.bhash, chinfo, mode)
 
     if (err) this.error(err, data)
-    else return { ...data, nvinfo, changed: mode < 1 }
+    else return { ...data, nvinfo, changed: mode < 0 }
   }
 
   function gen_paths({ bslug }, { sname, chidx, prev_url, next_url }) {

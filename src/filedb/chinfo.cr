@@ -5,30 +5,15 @@ require "compress/zip"
 require "../engine/cvmtl"
 require "../source/rm_chinfo"
 require "../source/rm_chtext"
+require "../_utils/ram_cache"
 
 class CV::Chinfo
   DIR = "_db/chdata/chinfos"
 
-  alias Cache = Hash(String, self)
-  CACHE_LIMIT = 256
-
-  @@acache = Cache.new(initial_capacity: CACHE_LIMIT)
-  @@bcache = Cache.new(initial_capacity: CACHE_LIMIT)
+  INFOS = RamCache(self).new(256)
 
   def self.load(bhash : String, sname : String, snvid : String)
-    label = "#{sname}/#{snvid}"
-
-    unless item = @@acache[label]?
-      item = @@bcache[label]? || new(bhash, sname, snvid)
-      @@acache[label] = item
-
-      if @@acache.size >= CACHE_LIMIT
-        @@bcache = @@acache
-        @@acache = Cache.new(initial_capacity: CACHE_LIMIT)
-      end
-    end
-
-    item
+    INFOS.get("#{sname}/#{snvid}") { new(bhash, sname, snvid) }
   end
 
   getter bhash : String
@@ -166,11 +151,9 @@ class CV::Chinfo
   end
 
   @zh_texts = {} of Int32 => Array(String)
-  @cv_times = {} of Int32 => Int64
-  @cv_trans = {} of Int32 => String
 
-  def get_zhtext!(chidx : Int32, schid : String, mode = 0, power = 0)
-    if mode > 1 && RmSpider.remote?(@sname, power)
+  def get_zhtext!(chidx : Int32, schid : String, reset = false, power = 0)
+    if reset && RmSpider.remote?(@sname, power)
       return @zh_texts[chidx] = fetch_zhtext!(chidx, schid, valid: 3.minutes)
     end
 
@@ -220,17 +203,23 @@ class CV::Chinfo
     puts "- <chap_zhtext> [#{out_file}] saved.".colorize.yellow
   end
 
-  def get_cvdata!(chidx : Int32, mode = 0, ttl = 3.hours)
-    @cv_trans.delete(chidx) unless mode == 0 && translated?(chidx, ttl)
-    @cv_trans[chidx] ||= trans_zhtext!(chidx, yield)
+  @cv_times = {} of Int32 => Time
+  CV_TRANS = RamCache(String).new(1024)
+
+  def get_cvdata!(chidx : Int32, reset = false, ttl = 3.hours)
+    key = "#{@sname}/#{@snvid}/#{chidx}"
+    CV_TRANS.delete(key) if reset || outdated?(chidx, ttl)
+    CV_TRANS.get(key) { trans_zhtext!(chidx, yield) }
   end
 
   def trans_zhtext!(chidx : Int32, lines : Array(String))
-    @cv_times[chidx] = Time.utc.to_unix
+    @cv_times[chidx] = Time.utc
     return "" if lines.empty?
 
     cvter = Cvmtl.generic(bhash)
-    @cv_trans[chidx] = String.build do |io|
+    puts "- <chap_cvdata> [#{sname}/#{snvid}/#{chidx}] converted.".colorize.cyan
+
+    String.build do |io|
       cvter.cv_title_full(lines[0]).to_str(io)
 
       1.upto(lines.size - 1) do |i|
@@ -241,8 +230,8 @@ class CV::Chinfo
     end
   end
 
-  def translated?(chidx : Int32, ttl : Time::Span)
-    return false unless time = @cv_times[chidx]?
-    return Time.unix(time) + ttl >= Time.utc
+  def outdated?(chidx : Int32, ttl : Time::Span)
+    return true unless time = @cv_times[chidx]?
+    return time + ttl < Time.utc
   end
 end

@@ -46,10 +46,10 @@ module CV::Server
     mode = u_power if mode > u_power
 
     chinfo = Chinfo.load(bhash, sname, snvid)
-    zhdata = chinfo.get_zhtext!(chidx, schid, mode, u_power)
+    zhdata = chinfo.get_zhtext!(chidx, schid, mode > 1, u_power)
 
     env.response.content_type = "text/plain; charset=utf-8"
-    chinfo.get_cvdata!(chidx) { zhdata }
+    chinfo.get_cvdata!(chidx, mode > 0) { zhdata }
   rescue err
     puts "- Error loading chap_text: #{err}"
     message = err.message || "Unknown error!"
