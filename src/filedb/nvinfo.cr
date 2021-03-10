@@ -100,7 +100,7 @@ class CV::Nvinfo
     @chseed = chseed.to_a.sort_by { |_, v| -v[1] }.to_h
 
     NvChseed.set_snames(bhash, chseed.keys)
-    NvChseed.put_chseed(sname, bhash, snvid, mtime, total)
+    NvChseed.put_chseed(bhash, sname, snvid, mtime, total)
   end
 
   def chseed_mtime(sname : String)
