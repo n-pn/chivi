@@ -8,7 +8,7 @@ SSH=nipin@ssh.chivi.xyz:www/chivi.xyz
 
 ## upload book data
 # rsync -azi --no-p "_db/nvdata/nvinfos" "$SSH/_db/nvdata"
-# rsync -azi --no-p "_db/nvdata/chseeds" "$SSH/_db/nvdata"
+rsync -azi --no-p "_db/nvdata/chseeds" "$SSH/_db/nvdata"
 
 ## upload chap data
 rsync -azi --no-p "_db/chdata/zhinfos" "$SSH/_db/chdata"

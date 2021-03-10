@@ -24,8 +24,6 @@ class CV::Chinfo
   getter origs : Chlist { load_origs }
   getter heads : Chlist { load_heads }
 
-  getter stats : ValueMap { ValueMap.new(map_path("stats"), mode: 1) }
-
   def initialize(@bhash, @sname, @snvid)
     @orig_dir = "_db/chdata/zhinfos/#{@sname}/#{@snvid}"
     @text_dir = "_db/chdata/zhtexts/#{@sname}/#{@snvid}"
@@ -150,61 +148,10 @@ class CV::Chinfo
     @stats.try(&.save!(mode: mode))
   end
 
-  @zh_texts = {} of Int32 => Array(String)
-
-  def get_zhtext!(chidx : Int32, schid : String, reset = false, power = 0)
-    if reset && RmSpider.remote?(@sname, power)
-      return @zh_texts[chidx] = fetch_zhtext!(chidx, schid, valid: 3.minutes)
-    end
-
-    data = @zh_texts[chidx] ||= load_zhtext!(chidx, schid)
-
-    if data.empty? && RmSpider.remote?(@sname, power)
-      @zh_texts[chidx] = fetch_zhtext!(chidx, schid)
-    else
-      data
-    end
-  end
-
-  def load_zhtext!(chidx : Int32, schid : String)
-    zip_file = group_path(chidx - 1)
-
-    if File.exists?(zip_file)
-      Compress::Zip::File.open(zip_file) do |zip|
-        next unless entry = zip["#{schid}.txt"]?
-        return entry.open(&.gets_to_end).split('\n')
-      end
-    end
-
-    [] of String
-  end
-
-  def fetch_zhtext!(chidx : Int32, schid : String, valid = 10.years)
-    puller = RmChtext.new(@sname, @snvid, schid, valid: valid)
-    lines = [puller.title].concat(puller.paras)
-    save_zhtext!(chidx, schid, lines)
-    lines
-  rescue err
-    puts "- Fetch chtext error: #{err}".colorize.red
-    [] of String
-  end
-
-  def group_path(index : Int32)
-    group = (index // 100).to_s.rjust(3, '0')
-    zip_file = File.join(@text_dir, group + ".zip")
-  end
-
-  def save_zhtext!(chidx : Int32, schid : String, lines : Array(String))
-    out_zip = group_path(chidx - 1)
-    out_file = File.join(@text_dir, "#{schid}.txt")
-
-    File.open(out_file, "w") { |io| lines.join(io, "\n") }
-    puts `zip -jqm "#{out_zip}" "#{out_file}"`
-    puts "- <chap_zhtext> [#{out_file}] saved.".colorize.yellow
-  end
-
   @cv_times = {} of Int32 => Time
   CV_TRANS = RamCache(String).new(1024)
+  ZH_TEXTS = RamCache(Array(String)).new(1024)
+  @zh_texts = {} of Int32 => Array(String)
 
   def get_cvdata!(chidx : Int32, schid : String, mode = 0, power = 0)
     key = "#{@sname}/#{@snvid}/#{chidx}"
@@ -239,5 +186,51 @@ class CV::Chinfo
   def outdated?(chidx : Int32, ttl : Time::Span)
     return true unless time = @cv_times[chidx]?
     return time + ttl < Time.utc
+  end
+
+  def get_zhtext!(chidx : Int32, schid : String, reset = false, power = 0)
+    key = "#{@sname}/#{@snvid}/#{chidx}"
+
+    data = ZH_TEXTS.get(key) { load_zhtext!(chidx, schid) }
+    return data unless RmSpider.remote?(@sname, power)
+
+    ZH_TEXTS.delete(key) if reset || data.empty?
+    ZH_TEXTS.get(key) { fetch_zhtext!(chidx, schid) || data }
+  end
+
+  def load_zhtext!(chidx : Int32, schid : String)
+    zip_file = group_path(chidx - 1)
+
+    if File.exists?(zip_file)
+      Compress::Zip::File.open(zip_file) do |zip|
+        next unless entry = zip["#{schid}.txt"]?
+        return entry.open(&.gets_to_end).split('\n')
+      end
+    end
+
+    [] of String
+  end
+
+  def fetch_zhtext!(chidx : Int32, schid : String, valid = 10.years)
+    puller = RmChtext.new(@sname, @snvid, schid, valid: valid)
+    lines = [puller.title].concat(puller.paras)
+    save_zhtext!(chidx, schid, lines)
+    lines
+  rescue err
+    puts "- Fetch chtext error: #{err}".colorize.red
+  end
+
+  def group_path(index : Int32)
+    group = (index // 100).to_s.rjust(3, '0')
+    zip_file = File.join(@text_dir, group + ".zip")
+  end
+
+  def save_zhtext!(chidx : Int32, schid : String, lines : Array(String))
+    out_zip = group_path(chidx - 1)
+    out_file = File.join(@text_dir, "#{schid}.txt")
+
+    File.open(out_file, "w") { |io| lines.join(io, "\n") }
+    puts `zip -jqm "#{out_zip}" "#{out_file}"`
+    puts "- <chap_zhtext> [#{out_file}] saved.".colorize.yellow
   end
 end
