@@ -22,22 +22,22 @@ module CV::RmSpider
   end
 
   def fetch_all(input : Array(Tuple(String, String)), sname : String, limit : Int32? = nil)
-    encoding = encoding_for(sname)
-
     limit ||= ideal_workers_count_for(sname)
     limit = input.size if limit > input.size
 
-    channel = Channel(Nil).new(limit)
+    channel = Channel(Nil).new(limit + 1)
+    encoding = encoding_for(sname)
+    ::FileUtils.mkdir_p(File.dirname(input.first))
 
     input.each_with_index(1) do |(file, link), idx|
       channel.receive if idx > limit
 
       spawn do
         html = HttpUtils.get_html(link, encoding, label: "#{idx}/#{input.size}")
-
-        # save content
-        ::FileUtils.mkdir_p(File.dirname(file))
         File.write(file, html)
+        sleep ideal_delayed_time_for(sname)
+      rescue err
+        puts err
       ensure
         channel.send(nil)
       end

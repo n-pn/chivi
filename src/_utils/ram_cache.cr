@@ -20,12 +20,17 @@ class CV::RamCache(T)
     item
   end
 
+  def set(key : String, value : T) : T
+    @cold.delete(key) # just in case
+    @main[key] = value
+  end
+
   def delete(key : String)
     @main.delete(key)
     @cold.delete(key)
   end
 
   private def new_cache
-    Hash(String, T).new(initial_capacity: @limit + 1)
+    Hash(String, T).new(initial_capacity: @limit)
   end
 end

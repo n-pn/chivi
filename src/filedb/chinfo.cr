@@ -20,6 +20,8 @@ class CV::Chinfo
   getter sname : String
   getter snvid : String
 
+  getter cvter : Cvmtl { Cvmtl.generic(bhash) }
+
   alias Chlist = Array(Array(String))
   getter origs : Chlist { load_origs }
   getter heads : Chlist { load_heads }
@@ -86,8 +88,6 @@ class CV::Chinfo
   end
 
   def trans!(force = false) : Nil
-    cvter = Cvmtl.generic(bhash)
-
     heads.clear if force
     heads.size.upto(origs.size - 1) do |idx|
       row = origs[idx]
@@ -158,27 +158,22 @@ class CV::Chinfo
     CV_TRANS.delete(key) if mode > 0 || outdated?(chidx, ttl: 1.day)
 
     CV_TRANS.get(key) do
-      zh_text = get_zhtext!(chidx, schid, mode > 1, power)
-
+      puts "- <chap_cvdata> [#{sname}/#{snvid}/#{chidx}] converted.".colorize.cyan
       @cv_times[chidx] = Time.utc
-      break "" if zh_text.empty?
-
-      convert(zh_text).tap do
-        puts "- <chap_cvdata> [#{sname}/#{snvid}/#{chidx}] converted.".colorize.cyan
-      end
+      convert(get_zhtext!(chidx, schid, mode > 1, power))
     end
   end
 
   private def convert(lines : Array(String))
-    mtl = Cvmtl.generic(bhash)
+    return "" if lines.empty?
 
     String.build do |io|
-      mtl.cv_title_full(lines[0]).to_str(io)
+      cvter.cv_title_full(lines[0]).to_str(io)
 
       1.upto(lines.size - 1) do |i|
         io << "\n"
         para = lines.unsafe_fetch(i)
-        mtl.cv_plain(para).to_str(io)
+        cvter.cv_plain(para).to_str(io)
       end
     end
   end
@@ -194,8 +189,8 @@ class CV::Chinfo
     data = ZH_TEXTS.get(key) { load_zhtext!(chidx, schid) }
     return data unless (reset || data.empty?) && RmSpider.remote?(@sname, power)
 
-    ZH_TEXTS.delete(key)
-    ZH_TEXTS.get(key) { fetch_zhtext!(chidx, schid, valid: 3.minutes) || data }
+    valid = reset ? 3.minutes : 3.years
+    ZH_TEXTS.set(key, fetch_zhtext!(chidx, schid, valid: valid) || data)
   end
 
   def load_zhtext!(chidx : Int32, schid : String)
