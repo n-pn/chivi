@@ -13,9 +13,9 @@ module CV::HttpUtils
     loop do
       puts "-- <#{label}> [GET: <#{url}> (try: #{try})]".colorize.magenta
       html = internal ? get_by_crystal(url, encoding) : get_by_curl(url, encoding)
-      return fix_charset(html, encoding) if html[0] == '<'
+      return fix_charset(html, encoding) if html[0]? == '<'
     rescue err
-      puts err.colorize.red
+      puts "<http_utils> #{url} err: #{err}".colorize.red
     ensure
       try += 1
       sleep 200.milliseconds * try

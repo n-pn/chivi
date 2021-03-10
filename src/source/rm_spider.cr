@@ -14,12 +14,8 @@ module CV::RmSpider
 
     unless html = FileUtils.read(file, expiry)
       html = HttpUtils.get_html(link, encoding: encoding_for(sname), label: label)
-
       ::FileUtils.mkdir_p(File.dirname(file))
       File.write(file, html)
-
-      # throttling
-      sleep ideal_delayed_time_for(sname)
     end
 
     html

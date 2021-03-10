@@ -192,10 +192,10 @@ class CV::Chinfo
     key = "#{@sname}/#{@snvid}/#{chidx}"
 
     data = ZH_TEXTS.get(key) { load_zhtext!(chidx, schid) }
-    return data unless RmSpider.remote?(@sname, power)
+    return data unless (reset || data.empty?) && RmSpider.remote?(@sname, power)
 
-    ZH_TEXTS.delete(key) if reset || data.empty?
-    ZH_TEXTS.get(key) { fetch_zhtext!(chidx, schid) || data }
+    ZH_TEXTS.delete(key)
+    ZH_TEXTS.get(key) { fetch_zhtext!(chidx, schid, valid: 3.minutes) || data }
   end
 
   def load_zhtext!(chidx : Int32, schid : String)
