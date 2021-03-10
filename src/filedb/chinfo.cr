@@ -149,8 +149,8 @@ class CV::Chinfo
   end
 
   @cv_times = {} of Int32 => Time
-  CV_TRANS = RamCache(String).new(1024)
-  ZH_TEXTS = RamCache(Array(String)).new(1024)
+  CV_TRANS = RamCache(String).new(2048)
+  ZH_TEXTS = RamCache(Array(String)).new(2048)
   @zh_texts = {} of Int32 => Array(String)
 
   def get_cvdata!(chidx : Int32, schid : String, mode = 0, power = 0)
