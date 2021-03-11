@@ -3,7 +3,6 @@
   import { u_power } from '$src/stores'
 
   import Cvline from './Cvdata/Line'
-  import AdItem from '$blocks/AdItem'
 
   import Lookup, {
     input as lookup_input,
@@ -61,16 +60,6 @@
 
   function parse_input(line) {
     return line.split('\t').map((x) => x.split('ǀ'))
-  }
-
-  function random_int(min = 7, max = 15) {
-    return Math.floor(Math.random() * (max - min) + min)
-  }
-
-  function ads_indexes(max = 100) {
-    const res = []
-    for (let i = random_int(); i < max; i += random_int()) res.push(i)
-    return res
   }
 </script>
 
@@ -132,10 +121,6 @@
         frags={index == hover_line || index == focus_line}
         title={index == 0} />
     </div>
-
-    {#if $u_power < 2 && adidx.includes(index)}
-      <AdItem type="article" />
-    {/if}
   {/each}
 </article>
 
