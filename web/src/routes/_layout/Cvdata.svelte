@@ -1,6 +1,5 @@
 <script context="module">
   import { onMount } from 'svelte'
-  import { u_power } from '$src/stores'
 
   import Cvline from './Cvdata/Line'
 
@@ -71,7 +70,6 @@
   export let bname = 'Tổng hợp'
 
   $: lines = split_input(cvdata)
-  $: adidx = ads_indexes(lines.length)
 
   let hover_line = 0
   let focus_line = 0
