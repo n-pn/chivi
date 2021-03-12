@@ -29,7 +29,7 @@ class CV::Vdict
     CACHE[dname] ||=
       case dname
       when "trungviet", "cc_cedict", "trich_dan"
-        new(path("system/#{dname}"), dtype: 1_i8, p_min: 4_i8, reset: reset)
+        new(path("lookup/#{dname}"), dtype: 1_i8, p_min: 4_i8, reset: reset)
       when "tradsim", "binh_am", "hanviet"
         new(path("system/#{dname}"), dtype: 2_i8, p_min: 3_i8, reset: reset)
       when "regular", "suggest", "various"
