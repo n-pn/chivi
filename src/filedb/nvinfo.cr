@@ -137,7 +137,7 @@ class CV::Nvinfo
         values << vslug unless NvValues._index.has_val?(vslug)
       end
 
-      NvValues._index.add(bhash, values.uniq)
+      NvValues._index.upsert!(bhash, values.uniq)
     end
 
     {bhash, existed}
@@ -154,7 +154,7 @@ class CV::Nvinfo
     vals = [zh_btitle, hv_btitle]
     vals << vi_btitle if vi_btitle
 
-    NvValues.btitle.add(bhash, vals)
+    NvValues.btitle.upsert!(bhash, vals)
     NvTokens.set_btitle_zh(bhash, zh_btitle)
     NvTokens.set_btitle_hv(bhash, hv_btitle)
     NvTokens.set_btitle_vi(bhash, vi_btitle) if vi_btitle
@@ -165,7 +165,7 @@ class CV::Nvinfo
                       vi_author : String? = nil) : Nil
     vi_author ||= NvHelper.fix_vi_author(zh_author)
 
-    NvValues.author.add(bhash, [zh_author, vi_author])
+    NvValues.author.upsert!(bhash, [zh_author, vi_author])
     NvTokens.set_author_zh(bhash, zh_author)
     NvTokens.set_author_vi(bhash, vi_author)
   end
@@ -173,7 +173,7 @@ class CV::Nvinfo
   def self.set_genres(bhash : String, input : Array(String), force = false) : Nil
     return unless force || !NvValues.genres.has_key?(bhash)
 
-    NvValues.genres.add(bhash, input)
+    NvValues.genres.upsert!(bhash, input)
     NvTokens.set_genres(bhash, input)
   end
 

@@ -17,13 +17,13 @@ module CV::NvTokens
 
     def set_{{type.id}}(key : String, vals : Array(String))
       vals.map{|v| TextUtils.slugify(v)}.tap do |arr|
-        {{type.id}}.set(key, arr)
+        {{type.id}}.upsert(key, arr)
       end
     end
 
     def set_{{type.id}}(key : String, vals : String)
       TextUtils.tokenize(vals).tap do |arr|
-        {{type.id}}.set(key, arr)
+        {{type.id}}.upsert(key, arr)
       end
     end
   {% end %}

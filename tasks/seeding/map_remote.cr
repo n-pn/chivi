@@ -76,26 +76,26 @@ class CV::Seeds::MapRemote
 
       if mode < 2 || @seeding._index.has_key?(snvid)
         next if @seeding._atime.ival_64(snvid) >= atime
-        ttl = 1.years
+        valid = 1.years
       elsif mode < 2
-        ttl = 2.years
+        valid = 2.years
       else
-        ttl = 1.hours
+        valid = 1.hours
       end
 
-      @seeding._atime.add(snvid, atime)
+      @seeding._atime.upsert!(snvid, atime)
 
-      parser = RmNvinfo.new(@sname, snvid, ttl: ttl)
+      parser = RmNvinfo.new(@sname, snvid, valid: valid)
       btitle, author = parser.btitle, parser.author
       next if btitle.empty? || author.empty?
 
-      if @seeding._index.add(snvid, [btitle, author])
+      if @seeding._index.upsert!(snvid, [btitle, author])
         @seeding.set_intro(snvid, parser.bintro)
-        @seeding.genres.add(snvid, clean_genres(parser.genres))
-        @seeding.bcover.add(snvid, parser.bcover)
+        @seeding.genres.upsert!(snvid, clean_genres(parser.genres))
+        @seeding.bcover.upsert!(snvid, parser.bcover)
       end
 
-      @seeding.status.add(snvid, parser.status_int)
+      @seeding.status.upsert!(snvid, parser.status_int)
 
       if idx % 100 == 0
         puts "- [#{@sname}]: <#{idx}/#{upto}>"

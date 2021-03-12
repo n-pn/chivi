@@ -104,11 +104,11 @@ class CV::InfoSeed
   end
 
   def upsert_chinfo!(snvid : String, bhash : String, mode = 0) : Nil
-    chinfo = Chinfo.new(@name, snvid)
+    chinfo = Chinfo.new(bhash, @name, snvid)
 
-    mtime, total = chinfo.fetch!(force: mode > 1, ttl: 1.years)
+    mtime, total = chinfo.fetch!(force: mode > 1, valid: 1.years)
     Nvinfo.load(bhash).put_chseed!(@name, snvid, mtime, total)
 
-    chinfo.trans!(dname: bhash, force: mode > 1)
+    chinfo.trans!(force: mode > 1)
   end
 end

@@ -64,7 +64,7 @@ class CV::Seeds::MapZhwenpg
       update!(node, status, label: "#{idx}/#{nodes.size}")
     end
 
-    @seeding.save!(mode: :upds)
+    @seeding.save!(mode: :full)
   end
 
   private def update!(node, status, label = "1/1") : Void
@@ -76,11 +76,11 @@ class CV::Seeds::MapZhwenpg
 
     btitle, author = parser.btitle, parser.author
 
-    @seeding._index.add(snvid, [btitle, author])
+    @seeding._index.upsert!(snvid, [btitle, author])
     @seeding.set_intro(snvid, parser.bintro)
-    @seeding.genres.add(snvid, parser.bgenre)
-    @seeding.bcover.add(snvid, parser.bcover)
-    @seeding.status.add(snvid, status)
+    @seeding.genres.upsert!(snvid, parser.bgenre)
+    @seeding.bcover.upsert!(snvid, parser.bcover)
+    @seeding.status.upsert!(snvid, status)
 
     puts "\n<#{label}> {#{snvid}} [#{btitle}  #{author}]"
   rescue err
@@ -88,14 +88,15 @@ class CV::Seeds::MapZhwenpg
   end
 
   def seed!
-    @checked.each_with_index(1) do |snvid, idx|
+    checked = @mftimes.keys
+    checked.each_with_index(1) do |snvid, idx|
       bhash, existed = @seeding.upsert!(snvid)
       fake_rating!(bhash, snvid) if NvValues.voters.ival(bhash) == 0
 
       bslug = NvValues._index.fval(bhash)
       colored = existed ? :yellow : :green
 
-      puts "- <#{idx}/#{@checked.size}> [#{bslug}] saved!".colorize(colored)
+      puts "- <#{idx}/#{checked.size}> [#{bslug}] saved!".colorize(colored)
       if idx % 10 == 0
         Nvinfo.save!(mode: :upds)
       end
@@ -125,5 +126,4 @@ puts "\n[-- Load indexes --]".colorize.cyan.bold
 1.upto(3) { |page| worker.init!(page, status: 1) }
 1.upto(10) { |page| worker.init!(page, status: 0) }
 
-worker.save!(mode: :full)
 worker.seed!

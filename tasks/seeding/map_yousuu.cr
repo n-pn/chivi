@@ -25,27 +25,27 @@ class CV::Seeds::MapYousuu
 
       atime = File.info(file).modification_time.to_unix
       next if @seeding._atime.ival_64(snvid) >= atime
-      @seeding._atime.add(snvid, atime)
+      @seeding._atime.upsert!(snvid, atime)
 
       next unless info = YsNvinfo.load(file)
 
-      @seeding._index.add(snvid, [info.title, info.author])
+      @seeding._index.upsert!(snvid, [info.title, info.author])
 
-      @seeding.genres.add(snvid, [info.genre].concat(info.tags_fixed))
-      @seeding.bcover.add(snvid, info.cover_fixed)
+      @seeding.genres.upsert!(snvid, [info.genre].concat(info.tags_fixed))
+      @seeding.bcover.upsert!(snvid, info.cover_fixed)
 
-      @seeding.status.add(snvid, info.status)
-      @seeding.hidden.add(snvid, info.shielded ? "1" : "0")
+      @seeding.status.upsert!(snvid, info.status)
+      @seeding.hidden.upsert!(snvid, info.shielded ? "1" : "0")
 
-      @seeding.rating.add(snvid, [info.voters.to_s, info.rating.to_s])
-      @seeding._utime.add(snvid, info.updated_at.to_unix)
+      @seeding.rating.upsert!(snvid, [info.voters.to_s, info.rating.to_s])
+      @seeding._utime.upsert!(snvid, info.updated_at.to_unix)
 
       @seeding.set_intro(snvid, info.intro)
 
-      source_url.add(snvid, info.source)
-      count_word.add(snvid, info.word_count)
-      count_crit.add(snvid, info.crit_count)
-      count_list.add(snvid, info.addListTotal)
+      source_url.upsert!(snvid, info.source)
+      count_word.upsert!(snvid, info.word_count)
+      count_crit.upsert!(snvid, info.crit_count)
+      count_list.upsert!(snvid, info.addListTotal)
 
       if idx % 100 == 0
         puts "- [yousuu] <#{idx}/#{input.size}>".colorize.cyan
@@ -90,10 +90,10 @@ class CV::Seeds::MapYousuu
         NvValues.set_score(bhash, voters, rating)
 
         origin = source_url.fval(snvid)
-        NvValues.origin.add(bhash, origin) if origin && !origin.empty?
+        NvValues.origin.upsert!(bhash, origin) if origin && !origin.empty?
 
-        NvValues.yousuu.add(bhash, snvid)
-        NvValues.hidden.add(bhash, @seeding.hidden.fval(snvid) || "0")
+        NvValues.yousuu.upsert!(bhash, snvid)
+        NvValues.hidden.upsert!(bhash, @seeding.hidden.fval(snvid) || "0")
       end
 
       if idx % 100 == 0
