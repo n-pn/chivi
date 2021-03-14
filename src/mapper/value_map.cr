@@ -46,7 +46,8 @@ class CV::ValueMap
 
     time = timer.total_milliseconds.round.to_i
     puts "- #{label} loaded (lines: #{count}, time: #{time}ms)".colorize.blue
-    save!(mode: :full) if @data.size != count
+
+    save!(clean: true) if @data.size != count
   end
 
   def vals
@@ -115,14 +116,14 @@ class CV::ValueMap
     if clean
       puts "- #{label} saved (entries: #{@data.size})".colorize.yellow
 
-      File.open(out_file, "w") do |io|
+      File.open(@file, "w") do |io|
         each do |key, vals|
           io << key << '\t' << vals.join('\t') << "\n"
         end
       end
     else
       puts "- #{label} updated (entries: #{@upds.size})".colorize.light_yellow
-      File.open(out_file, "a") do |io|
+      File.open(@file, "a") do |io|
         @upds.each do |key, vals|
           io << key << '\t' << vals.join('\t') << "\n"
         end
@@ -131,7 +132,7 @@ class CV::ValueMap
 
     @upds.clear
   rescue err
-    puts "- #{out_file} saves error: #{err}".colorize.red
+    puts "- #{@file} saves error: #{err}".colorize.red
   end
 end
 

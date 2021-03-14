@@ -84,7 +84,6 @@
 
   import SIcon from '$blocks/SIcon'
   import RTime from '$blocks/RTime'
-  import AdItem from '$blocks/AdItem'
   import Chlist from '$widget/Chlist'
   import Common from './_common'
 
@@ -196,10 +195,6 @@
 <svelte:window on:keydown={handle_keypress} />
 
 <Common {nvinfo} nvtab="content">
-  {#if $u_power < 2}
-    <AdItem type="banner" />
-  {/if}
-
   {#if main_seeds.length > 0}
     <div class="source">
       {#each main_seeds as mname}

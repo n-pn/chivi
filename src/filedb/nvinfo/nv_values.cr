@@ -24,27 +24,27 @@ module CV::NvValues
   class_getter _atime : OrderMap { NvHelper.order_map("_atime") }
   class_getter _utime : OrderMap { NvHelper.order_map("_utime") }
 
-  def save!(mode : Symbol = :full)
-    @@_index.try(&.save!(mode: mode))
+  def save!(clean : Bool = false)
+    @@_index.try(&.save!(clean: clean))
 
-    @@btitle.try(&.save!(mode: mode))
-    @@author.try(&.save!(mode: mode))
+    @@btitle.try(&.save!(clean: clean))
+    @@author.try(&.save!(clean: clean))
 
-    @@genres.try(&.save!(mode: mode))
-    @@bcover.try(&.save!(mode: mode))
+    @@genres.try(&.save!(clean: clean))
+    @@bcover.try(&.save!(clean: clean))
 
-    @@yousuu.try(&.save!(mode: mode))
-    @@origin.try(&.save!(mode: mode))
+    @@yousuu.try(&.save!(clean: clean))
+    @@origin.try(&.save!(clean: clean))
 
-    @@hidden.try(&.save!(mode: mode))
-    @@status.try(&.save!(mode: mode))
+    @@hidden.try(&.save!(clean: clean))
+    @@status.try(&.save!(clean: clean))
 
-    @@voters.try(&.save!(mode: mode))
-    @@rating.try(&.save!(mode: mode))
-    @@weight.try(&.save!(mode: mode))
+    @@voters.try(&.save!(clean: clean))
+    @@rating.try(&.save!(clean: clean))
+    @@weight.try(&.save!(clean: clean))
 
-    @@_atime.try(&.save!(mode: mode))
-    @@_utime.try(&.save!(mode: mode))
+    @@_atime.try(&.save!(clean: clean))
+    @@_utime.try(&.save!(clean: clean))
   end
 
   def set_score(bhash : String, z_voters : Int32, z_rating : Int32)

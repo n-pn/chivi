@@ -68,7 +68,7 @@ class CV::Nvinfo
   def bump_access!(atime : Time = Time.utc) : Nil
     @_atime = atime.to_unix
     return unless NvValues._atime.upsert!(bhash, @_atime)
-    NvValues._atime.save!(mode: :upds) if NvValues._atime.unsaved > 5
+    NvValues._atime.save!(clean: false) if NvValues._atime.unsaved > 5
   end
 
   def set_utime(mtime : Int64 = Time.utc.to_unix) : Bool
@@ -94,7 +94,7 @@ class CV::Nvinfo
       mtime = utime
     end
 
-    NvValues.save!(mode: :upds) if set_utime(mtime.to_i64 * 60)
+    NvValues.save!(clean: false) if set_utime(mtime.to_i64 * 60)
 
     chseed[sname] = {snvid, mtime, total}
     @chseed = chseed.to_a.sort_by { |_, v| -v[1] }.to_h
@@ -108,10 +108,10 @@ class CV::Nvinfo
     meta[1].to_i64 * 60
   end
 
-  def save!(mode = :upds)
-    NvValues.save!(mode: mode)
-    NvTokens.save!(mode: mode)
-    NvChseed.save!(mode: mode)
+  def save!(clean : Bool = false)
+    NvValues.save!(clean: clean)
+    NvTokens.save!(clean: clean)
+    NvChseed.save!(clean: clean)
   end
 
   def self.upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)

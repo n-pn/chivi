@@ -41,16 +41,16 @@ module CV::Viuser
     upower.upsert!(uname, power)
   end
 
-  def save!(mode : Symbol = :full)
-    @@_index.try(&.save!(mode: mode))
+  def save!(clean : Bool = false)
+    @@_index.try(&.save!(clean: clean))
 
-    @@emails.try(&.save!(mode: mode))
-    @@passwd.try(&.save!(mode: mode))
+    @@emails.try(&.save!(clean: clean))
+    @@passwd.try(&.save!(clean: clean))
 
-    @@ugroup.try(&.save!(mode: mode))
-    @@upower.try(&.save!(mode: mode))
+    @@ugroup.try(&.save!(clean: clean))
+    @@upower.try(&.save!(clean: clean))
 
-    @@_ctime.try(&.save!(mode: mode))
+    @@_ctime.try(&.save!(clean: clean))
   end
 
   def insert!(dname : String, email : String, upass : String, power = 1) : Nil
@@ -63,7 +63,6 @@ module CV::Viuser
     set_power(uname, power)
 
     _ctime.upsert!(uname, Time.utc.to_unix)
-    save!(mode: :upds)
   end
 
   def dname_exists?(dname : String) : Bool

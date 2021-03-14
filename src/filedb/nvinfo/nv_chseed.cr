@@ -22,12 +22,12 @@ module CV::NvChseed
   def put_chseed(bhash : String, sname : String, snvid : String, mtime = 0, total = 0)
     load(sname)
       .tap(&.upsert!(bhash, [snvid, mtime.to_s, total.to_s]))
-      .save!(mode: :upds)
+      .save!(clean: false)
   end
 
   def set_snames(bhash : String, snames : Array(String)) : Nil
     _index.upsert!(bhash, snames)
-    _index.save!(mode: :upds)
+    _index.save!(clean: false)
   end
 
   DIR = "_db/nvdata/chseeds"
