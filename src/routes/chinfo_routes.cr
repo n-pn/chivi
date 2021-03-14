@@ -12,20 +12,30 @@ module CV::Server
     u_power, mode = RouteUtils.get_privi(env)
 
     if mode > 0
-      mtime, total = chinfo.fetch!(u_power, mode > 1)
+      mtime, total = chinfo.fetch!(u_power, mode)
       nvinfo.put_chseed!(sname, snvid, mtime, total) if mtime >= 0
-      chinfo.trans!(u_power > 1)
-      # chinfo.save!
+    else
+      _, mtime, total = chinfo.get_latest
     end
 
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
         json.object do
-          json.field "total", chinfo.heads.size
-          json.field "utime", nvinfo.chseed_mtime(sname)
+          json.field "total", total
+          json.field "utime", mtime
 
           json.field "lasts" do
-            chinfo.json_each(json, 0, 6, true)
+            chinfo.load_tran("last").data.each do |index, infos|
+              next if index == "_"
+
+              json.object do
+                json.field "chidx", total - index.to_i
+                json.field "schid", infos[0]
+                json.field "title", infos[1]
+                json.field "label", infos[2]
+                json.field "uslug", infos[3]
+              end
+            end
           end
         end
       end
@@ -43,11 +53,9 @@ module CV::Server
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
     skip = (chinfo.heads.size // take) * take if skip >= chinfo.heads.size
 
-    desc = env.params.query["order"]? == "desc"
-
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
-        chinfo.json_each(json, skip, take, desc)
+        chinfo.json_each(json, skip, take)
       end
     end
   rescue err

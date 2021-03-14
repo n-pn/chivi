@@ -10,128 +10,145 @@ require "../_utils/ram_cache"
 class CV::Chinfo
   DIR = "_db/chdata/chinfos"
 
-  INFOS = RamCache(self).new(256)
+  CACHED = RamCache(self).new(256)
 
   def self.load(bhash : String, sname : String, snvid : String)
-    INFOS.get("#{sname}/#{snvid}") { new(bhash, sname, snvid) }
+    CACHED.get("#{sname}/#{snvid}") { new(bhash, sname, snvid) }
   end
 
   getter bhash : String
   getter sname : String
   getter snvid : String
-
   getter cvter : Cvmtl { Cvmtl.generic(bhash) }
 
   alias Chlist = Array(Array(String))
-  getter origs : Chlist { load_origs }
-  getter heads : Chlist { load_heads }
 
   def initialize(@bhash, @sname, @snvid)
+    @tran_dir = "_db/chdata/chinfos/#{@sname}/#{@snvid}"
     @orig_dir = "_db/chdata/zhinfos/#{@sname}/#{@snvid}"
     @text_dir = "_db/chdata/zhtexts/#{@sname}/#{@snvid}"
-    @head_file = "_db/chdata/chheads/#{@sname}/#{@snvid}.tsv"
 
-    ::FileUtils.mkdir_p(@orig_dir)
-    ::FileUtils.mkdir_p(@text_dir)
+    {@tran_dir, @orig_dir, @text_dir}.each { |x| ::FileUtils.mkdir_p(x) }
+
+    @origs = {} of String => ValueMap
+    @trans = {} of String => ValueMap
   end
 
-  def load_origs
-    res = Chlist.new
-
-    files = Dir.glob("#{@orig_dir}/*.tsv").sort_by { |x| File.basename(x, ".tsv").to_i }
-    files.each do |file|
-      File.read_lines(file).each do |line|
-        res << line.split('\t')
-      end
-    end
-
-    puts "- <chap_zhdata> [#{@sname}/#{@snvid}] loaded".colorize.blue
-    res.sort_by(&.first.to_i)
+  def load_orig(label : String)
+    @origs[label] ||= ValueMap.new("#{@orig_dir}/#{label}.tsv", mode: 1)
   end
 
-  def save_origs
-    origs.each_slice(100).with_index do |list, idx|
-      group = idx.to_s.rjust(3, '0')
-      file = File.join(@orig_dir, group + ".tsv")
-      File.write(file, list.map(&.join('\t')).join('\n'))
-    end
+  def load_tran(label : String)
+    @trans[label] ||= ValueMap.new("#{@tran_dir}/#{label}.tsv", mode: 1)
   end
 
-  def load_heads
-    return Chlist.new unless File.exists?(@head_file)
-
-    puts "- <chap_vpdata> [#{@sname}/#{@snvid}] loaded".colorize.blue
-    File.read_lines(@head_file).map(&.split('\t'))
+  def get_state : Tuple(String, Int32, Int32)
+    schid, mtime, total = load_tran("last").get("_") || ["", "0", "0"]
+    {schid, mtime.to_i, total.to_i}
   end
 
-  def save_heads : Nil
-    ::FileUtils.mkdir_p(File.dirname(@head_file))
-    File.write(@head_file, heads.map(&.join('\t')).join('\n'))
-    puts "- <chap_vpdata> [#{@sname}/#{@snvid}] saved (entries: #{heads.size})".colorize.yellow
-  end
-
-  def fetch!(power = 4, force = false, valid = 5.minutes) : Tuple(Int32, Int32)
-    mtime = -1
+  def fetch!(power = 4, mode = 2, valid = 5.minutes) : Tuple(Int32, Int32)
+    schid, mtime, total = get_state
 
     if RmSpider.remote?(@sname, power)
       puller = RmChinfo.new(@sname, @snvid, valid: valid)
-      latest = origs.last?.try(&.[1]?) || ""
-
-      if force || puller.changed?(latest)
+      if mode > 1 || puller.changed?(schid)
         mtime = puller.update_int.//(60).to_i
-        @origs = puller.chapters
-        spawn save_origs
+        total = puller.chap_list.size
+
+        update!(puller.chap_list, power: power)
       end
     end
 
-    {mtime, origs.size}
+    {mtime, total}
   end
 
-  def trans!(force = false) : Nil
-    heads.clear if force
-    heads.size.upto(origs.size - 1) do |idx|
-      row = origs[idx]
-      schid = row[1]
+  def update!(chlist : Chlist, power : Int32 = 0, mtime : Int32 = 0)
+    chlist.each_slice(100).with_index do |list, idx|
+      group = idx.to_s.rjust(3, '0')
 
-      zh_title = row[2]
-      zh_label = row[3]? || ""
+      tran_map = load_tran(group)
+      orig_map = load_orig(group)
 
-      vi_title = cvter.tl_title(zh_title)
-      vi_label = zh_label.empty? ? "Chính văn" : cvter.tl_title(zh_label)
-      url_slug = TextUtils.tokenize(vi_title).first(12).join("-")
+      list.each_with_index(idx * 100 + 1) do |infos, idx|
+        chidx = idx.to_s
 
-      heads << [schid, vi_title, vi_label, url_slug]
-    rescue
-      next
+        if power > 1 || orig_map.upsert(chidx, infos)
+          update_tran!(tran_map, chidx, infos)
+        end
+      end
+
+      tran_map.save!(clean: false)
+      orig_map.save!(clean: false)
     end
 
-    spawn save_heads
+    # save top 6
+
+    orig_last = load_orig("last")
+    tran_last = load_tran("last")
+
+    # update state
+    tran_last.upsert("_", [chlist.last[0], mtime.to_s, chlist.size.to_s])
+
+    chlist.last(6).each_with_index do |infos, idx|
+      chidx = idx.to_s
+      if power > 1 || orig_last.upsert(chidx, infos)
+        update_tran!(tran_last, chidx, infos)
+      end
+    end
+
+    tran_last.save!
+    orig_last.save!
   end
 
-  delegate size, to: heads
+  def update_tran!(tran_map : ValueMap, chidx : String, infos : Array(String))
+    schid = cols[0]
+    zh_title = cols[1]
+    zh_label = cols[2]? || ""
 
-  def each(skip : Int32 = 0, take : Int32 = 30, desc = false)
-    return if skip >= heads.size
+    vi_title = cvter.tl_title(zh_title)
+    vi_label = zh_label.empty? ? "Chính văn" : cvter.tl_title(zh_label)
+    url_slug = TextUtils.tokenize(vi_title).first(12).join("-")
 
-    upto = skip + take
-    upto = heads.size if upto > heads.size
+    tran_map.upsert(chidx, [schid, vi_title, vi_label, url_slug])
+  end
 
+  def retranslate!
+    Dir.glob("#{@orig_dir}/*.tsv") do |file|
+      label = File.basename(file, ".tsv")
+
+      tran_map = load_tran(group)
+      orig_map = load_orig(group)
+
+      orig_map.data.each do |chidx, infos|
+        update_tran!(tran_map, chidx, infos)
+      end
+
+      tran_map.save!(clean: false)
+      orig_map.save!(clean: false)
+    end
+  end
+
+  def each(skip : Int32 = 0, take : Int32 = 30)
+    # TODO: improve performance
     while skip < upto
-      idx = desc ? heads.size - skip - 1 : skip
-      yield idx, heads[idx]
+      tran_map = load_map(skip.to_s.rjust(3, '0'))
+
       skip += 1
+      chidx = skip.to_i
+      yield chidx, tran_map.get(chidx)
     end
   end
 
-  def json_each(json : JSON::Builder, skip : Int32, take : Int32, desc : Bool)
+  def json_each(json : JSON::Builder, skip : Int32, take : Int32)
     json.array do
-      each(skip, take, desc) do |idx, row|
+      each(skip, take, desc) do |chidx, infos|
         json.object do
-          json.field "chidx", idx + 1
-          json.field "schid", row[0]
-          json.field "title", row[1]
-          json.field "label", row[2]
-          json.field "uslug", row[3]
+          json.field "chidx", chidx
+          json.field "schid", infos[0]?
+          json.field "title", infos[1]?
+          json.field "label", infos[2]?
+          json.field "uslug", infos[3]?
         end
       rescue err
         puts err
