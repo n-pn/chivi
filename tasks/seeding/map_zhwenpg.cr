@@ -19,7 +19,7 @@ class CV::Seeds::ZhwenpgParser
     TextUtils.split_html(rows[4]?.try(&.inner_text("\n")) || "")
   end
 
-  getter _utime : Int64 do
+  getter mftime : Int64 do
     update_str = rows[3].css(".fontime").first.inner_text
     updated_at = TimeUtils.parse_time(update_str) + 24.hours
 
@@ -72,15 +72,16 @@ class CV::Seeds::MapZhwenpg
     snvid = parser.snvid
 
     return if @mftimes.has_key?(snvid)
-    @mftimes[snvid] = parser._utime
+    @mftimes[snvid] = parser.mftime
 
     btitle, author = parser.btitle, parser.author
 
-    @seeding._index.upsert!(snvid, [btitle, author])
-    @seeding.set_intro(snvid, parser.bintro)
-    @seeding.genres.upsert!(snvid, parser.bgenre)
-    @seeding.bcover.upsert!(snvid, parser.bcover)
-    @seeding.status.upsert!(snvid, status)
+    if @seeding._index.upsert!(snvid, [btitle, author, parser.mftime])
+      @seeding.set_intro(snvid, parser.bintro)
+      @seeding.genres.upsert!(snvid, parser.bgenre)
+      @seeding.bcover.upsert!(snvid, parser.bcover)
+      @seeding.status.upsert!(snvid, status)
+    end
 
     puts "\n<#{label}> {#{snvid}} [#{btitle}  #{author}]"
   rescue err

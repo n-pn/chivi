@@ -4,7 +4,6 @@ class CV::ValueMap
   @@klass = "value_map"
 
   getter file : String
-
   getter data = {} of String => Array(String)
   getter upds = {} of String => Array(String)
 
@@ -54,9 +53,12 @@ class CV::ValueMap
     @data.values
   end
 
-  def upsert!(key : String, vals : Array(String))
+  def upsert!(key : String, vals : Array(String), flush : Int32 = 1) : Bool
     return false unless upsert(key, vals)
+
     @upds[key] = vals
+    save! if @upds.size >= flush
+
     true
   end
 
@@ -107,28 +109,24 @@ class CV::ValueMap
     @upds.size
   end
 
-  def save!(out_file : String = @file, mode : Symbol = :full) : Nil
-    label = label_for(file)
+  def save!(clean : Bool = false) : Nil
+    label = label_for(@file)
 
-    case mode
-    when :full
+    if clean
       puts "- #{label} saved (entries: #{@data.size})".colorize.yellow
+
       File.open(out_file, "w") do |io|
         each do |key, vals|
           io << key << '\t' << vals.join('\t') << "\n"
         end
       end
-    when :upds
-      return if upds.size == 0
-
+    else
       puts "- #{label} updated (entries: #{@upds.size})".colorize.light_yellow
       File.open(out_file, "a") do |io|
         @upds.each do |key, vals|
           io << key << '\t' << vals.join('\t') << "\n"
         end
       end
-    else
-      raise "Unknown save mode `#{mode}`!"
     end
 
     @upds.clear

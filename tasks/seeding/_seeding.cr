@@ -14,15 +14,15 @@ class CV::InfoSeed
   getter rdir : String
 
   getter _index : ValueMap { ValueMap.new(map_path("_index")) }
-  getter _atime : ValueMap { ValueMap.new(map_path("_atime")) }
-  getter _utime : ValueMap { ValueMap.new(map_path("_utime")) }
 
   getter bcover : ValueMap { ValueMap.new(map_path("bcover")) }
   getter genres : ValueMap { ValueMap.new(map_path("genres")) }
 
   getter rating : ValueMap { ValueMap.new(map_path("rating")) }
-  getter status : ValueMap { ValueMap.new(map_path("status")) }
   getter hidden : ValueMap { ValueMap.new(map_path("hidden")) }
+
+  getter status : ValueMap { ValueMap.new(map_path("status")) }
+  getter mftime : ValueMap { ValueMap.new(map_path("mftime")) }
 
   def initialize(@name)
     @rdir = "_db/_seeds/#{@name}"
@@ -40,17 +40,17 @@ class CV::InfoSeed
     "#{@rdir}/#{fname}.tsv"
   end
 
-  def save!(mode : Symbol = :full)
-    @_index.try(&.save!(mode: mode))
-    @_atime.try(&.save!(mode: mode))
-    @_utime.try(&.save!(mode: mode))
+  def save!(clean : Bool = false)
+    @_index.try(&.save!(clean: clean))
+    @_atime.try(&.save!(clean: clean))
+    @_utime.try(&.save!(clean: clean))
 
-    @bcover.try(&.save!(mode: mode))
-    @genres.try(&.save!(mode: mode))
+    @bcover.try(&.save!(clean: clean))
+    @genres.try(&.save!(clean: clean))
 
-    @rating.try(&.save!(mode: mode))
-    @status.try(&.save!(mode: mode))
-    @hidden.try(&.save!(mode: mode))
+    @rating.try(&.save!(clean: clean))
+    @status.try(&.save!(clean: clean))
+    @hidden.try(&.save!(clean: clean))
   end
 
   def set_intro(snvid : String, intro : Array(String)) : Nil
