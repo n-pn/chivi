@@ -56,24 +56,24 @@ module CV::NvValues
       z_rating = sum // 10
     end
 
-    voters.upsert!(bhash, z_voters)
-    rating.upsert!(bhash, z_rating)
+    voters.set!(bhash, z_voters)
+    rating.set!(bhash, z_rating)
 
     score = Math.log(z_voters + 10).*(z_rating * 10).round.to_i
-    weight.upsert!(bhash, score)
+    weight.set!(bhash, score)
   end
 
   {% for field in {:hidden, :status} %}
     def set_{{field.id}}(bhash, value : Int32, force : Bool = false)
       return false unless force || value > {{field.id}}.ival(bhash)
-      {{field.id}}.upsert!(bhash, value)
+      {{field.id}}.set!(bhash, value)
     end
   {% end %}
 
   {% for field in {:_atime, :_utime} %}
     def set{{field.id}}(bhash, value : Int64, force : Bool = false)
       return false unless force || value > {{field.id}}.ival_64(bhash)
-      {{field.id}}.upsert!(bhash, value)
+      {{field.id}}.set!(bhash, value)
     end
 
     def set{{field.id}}(bhash, value : Time, force : Bool = false)

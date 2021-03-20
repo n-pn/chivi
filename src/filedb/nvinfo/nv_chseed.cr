@@ -4,42 +4,41 @@ require "../../mapper/*"
 module CV::NvChseed
   extend self
 
-  class_getter _index : TokenMap { TokenMap.new(file_path("_index"), mode: 1) }
-
-  alias Chseed = Tuple(String, Int32, Int32)
-
-  def get_chseed(bhash : String) : Hash(String, Chseed)
-    output = {} of String => Chseed
-    return output unless snames = _index.get(bhash)
-
-    snames.each_with_object(output) do |sname, hash|
-      next unless value = load(sname).get(bhash)
-      next unless value.size == 3
-      hash[sname] = {value[0], value[1].to_i, value[2].to_i}
-    end
-  end
-
-  def put_chseed(bhash : String, sname : String, snvid : String, mtime = 0, total = 0)
-    load(sname)
-      .tap(&.upsert!(bhash, [snvid, mtime.to_s, total.to_s]))
-      .save!(clean: false)
-  end
-
-  def set_snames(bhash : String, snames : Array(String)) : Nil
-    _index.upsert!(bhash, snames)
-    _index.save!(clean: false)
-  end
+  alias Seed = Tuple(String, Int32, Int32) # snvid, updated_at, chap_count
+  class_getter _index : TokenMap { TokenMap.new(map_path("_index"), mode: 1) }
 
   DIR = "_db/nvdata/chseeds"
   ::FileUtils.mkdir_p(DIR)
 
-  def file_path(label : String)
-    "#{DIR}/#{label}.tsv"
+  def map_path(label : String)
+    File.join(DIR, "#{label}.tsv")
+  end
+
+  def get_chseed(bhash : String) : Array(Seed)
+    snames = _index.get(bhash) || [] of String
+    output = snames.map do |sname|
+      next unless seed = load_map(sname).get(bhash)
+      next unless seed.size == 3
+      {seed[0], seed[1].to_i, seed[2].to_i}
+    end
+
+    output.sort_by(&[1].-) # sort by updated_at
+  end
+
+  def put_chseed(bhash : String, sname : String, snvid : String, mtime = 0, total = 0)
+    m apper = load_map(sname)
+    mapper.set!(bhash, [snvid, mtime.to_s, total.to_s])
+    mapper.save!(clean: false)
+  end
+
+  def set_snames(bhash : String, snames : Array(String)) : Nil
+    _index.set!(bhash, snames)
+    _index.save!(clean: false)
   end
 
   CACHE = {} of String => ValueMap
 
-  def load(sname : String) : ValueMap
+  def load_map(sname : String) : ValueMap
     CACHE[sname] ||= ValueMap.new(file_path(sname), mode: 1)
   end
 

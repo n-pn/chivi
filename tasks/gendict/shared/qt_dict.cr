@@ -25,7 +25,7 @@ class QtDict
         next if line.empty?
 
         key, vals = parse_line(line)
-        upsert(key, vals, mode)
+        set(key, vals, mode)
 
         lines += 1
       rescue err
@@ -61,7 +61,7 @@ class QtDict
     {key, vals}
   end
 
-  def upsert(key : String, new_vals : Array(String), mode : Symbol = :keep_new)
+  def set(key : String, new_vals : Array(String), mode : Symbol = :keep_new)
     unless old_vals = @data[key]?
       old_vals = [] of String
     end

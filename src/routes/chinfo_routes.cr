@@ -2,6 +2,18 @@ require "./_route_utils"
 require "../filedb/chinfo"
 
 module CV::Server
+  module Utils
+    def self.chap_json(json, chidx, infos)
+      json.object do
+        json.field "chidx", chidx
+        json.field "schid", infos[0]
+        json.field "title", infos[1]?
+        json.field "label", infos[2]?
+        json.field "uslug", infos[3]?
+      end
+    end
+  end
+
   get "/api/chseeds/:bhash/:sname/:snvid" do |env|
     bhash = env.params.url["bhash"]
     sname = env.params.url["sname"]
@@ -15,7 +27,7 @@ module CV::Server
       mtime, total = chinfo.fetch!(u_power, mode)
       nvinfo.put_chseed!(sname, snvid, mtime, total) if mtime >= 0
     else
-      _, mtime, total = chinfo.get_latest
+      _, mtime, total = nvinfo.get_chseed(sname)
     end
 
     RouteUtils.json_res(env) do |res|
@@ -25,16 +37,8 @@ module CV::Server
           json.field "utime", mtime
 
           json.field "lasts" do
-            chinfo.load_tran("last").data.each do |index, infos|
-              next if index == "_"
-
-              json.object do
-                json.field "chidx", total - index.to_i
-                json.field "schid", infos[0]
-                json.field "title", infos[1]
-                json.field "label", infos[2]
-                json.field "uslug", infos[3]
-              end
+            chinfo.load_info("last").data.each do |index, infos|
+              Utils.chap_json(json, total - index.to_s, infos)
             end
           end
         end
@@ -47,15 +51,16 @@ module CV::Server
     sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
 
-    chinfo = Chinfo.load(bhash, sname, snvid)
-
-    take = RouteUtils.parse_int(env.params.query["take"]?, min: 1, max: 30)
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
-    skip = (chinfo.heads.size // take) * take if skip >= chinfo.heads.size
+    chinfo = Chinfo.load(bhash, sname, snvid)
 
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
-        chinfo.json_each(json, skip, take)
+        json.array do
+          chinfo.each(from: skip, upto: skip + 30) do |chidx, infos|
+            Utils.chap_json(json, chidx, infos)
+          end
+        end
       end
     end
   rescue err

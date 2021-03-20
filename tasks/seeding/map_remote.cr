@@ -83,19 +83,19 @@ class CV::Seeds::MapRemote
         valid = 1.hours
       end
 
-      @seeding._atime.upsert!(snvid, atime)
+      @seeding._atime.set!(snvid, atime)
 
       parser = RmNvinfo.new(@sname, snvid, valid: valid)
       btitle, author = parser.btitle, parser.author
       next if btitle.empty? || author.empty?
 
-      if @seeding._index.upsert!(snvid, [btitle, author])
+      if @seeding._index.set!(snvid, [btitle, author])
         @seeding.set_intro(snvid, parser.bintro)
-        @seeding.genres.upsert!(snvid, clean_genres(parser.genres))
-        @seeding.bcover.upsert!(snvid, parser.bcover)
+        @seeding.genres.set!(snvid, clean_genres(parser.genres))
+        @seeding.bcover.set!(snvid, parser.bcover)
       end
 
-      @seeding.status.upsert!(snvid, parser.status_int)
+      @seeding.status.set!(snvid, parser.status_int)
 
       if idx % 100 == 0
         puts "- [#{@sname}]: <#{idx}/#{upto}>"
@@ -135,7 +135,7 @@ class CV::Seeds::MapRemote
       checked.add(nvname)
 
       if authors.includes?(author) || should_pick?(snvid)
-        bhash, _ = @seeding.upsert!(snvid, mode: mode)
+        bhash, _ = @seeding.set!(snvid, mode: mode)
 
         if NvValues.voters.ival(bhash) == 0
           NvValues.set_score(bhash, Random.rand(1..5), Random.rand(30..50))

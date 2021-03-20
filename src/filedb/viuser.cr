@@ -25,20 +25,20 @@ module CV::Viuser
 
   def set_uname(dname : String) : String?
     uname = dname.downcase
-    uname if _index.upsert!(uname, dname)
+    uname if _index.set!(uname, dname)
   end
 
   def set_email(uname : String, email : String) : Nil
-    emails.upsert!(uname, email.downcase)
+    emails.set!(uname, email.downcase)
   end
 
   def set_cpass(uname : String, upass : String) : Nil
     cpass = Crypto::Bcrypt::Password.create(upass, cost: 10).to_s
-    passwd.upsert!(uname, cpass)
+    passwd.set!(uname, cpass)
   end
 
   def set_power(uname : String, power : Int32)
-    upower.upsert!(uname, power)
+    upower.set!(uname, power)
   end
 
   def save!(clean : Bool = false)
@@ -62,7 +62,7 @@ module CV::Viuser
     set_cpass(uname, upass)
     set_power(uname, power)
 
-    _ctime.upsert!(uname, Time.utc.to_unix)
+    _ctime.set!(uname, Time.utc.to_unix)
   end
 
   def dname_exists?(dname : String) : Bool

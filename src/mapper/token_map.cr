@@ -6,7 +6,7 @@ class CV::TokenMap < CV::ValueMap
   alias Index = Set(String)
   getter _idx = Hash(String, Index).new { |h, k| h[k] = Index.new }
 
-  def upsert(key : String, vals : Array(String)) : Bool
+  def set(key : String, vals : Array(String)) : Bool
     old_vals = get(key)
     return false unless super
 

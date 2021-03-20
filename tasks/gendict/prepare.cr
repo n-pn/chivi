@@ -45,7 +45,7 @@ INPUT = QtDict.load(".result/localqt.txt", false)
 }.each do |file|
   QtDict.load(file).each do |key, vals|
     EXISTED << key
-    INPUT.upsert(key, vals, :old_first)
+    INPUT.set(key, vals, :old_first)
   end
 end
 
@@ -55,7 +55,7 @@ Dir.glob(QtUtil.path("localqt/fixes/*.txt")) do |file|
     CHECKED.add(key)
     EXISTED.add(key)
 
-    INPUT.upsert(key, vals, :keep_new)
+    INPUT.set(key, vals, :keep_new)
   end
 end
 
@@ -99,28 +99,28 @@ INPUT.each do |key, vals|
 
   unless words.empty?
     if (ondicts || book_count >= 40) && (checked || word_count >= 200)
-      inp_regular.upsert(key, words)
+      inp_regular.set(key, words)
     elsif checked || ondicts || book_count >= 20 || word_count >= 100
-      inp_suggest.upsert(key, words)
+      inp_suggest.set(key, words)
     elsif word_count >= 20
-      inp_recycle.upsert(key, words)
+      inp_recycle.set(key, words)
     end
   end
 
   unless names.empty?
     if (ondicts || book_count >= 40) && (checked || word_count >= 200)
-      inp_regular.upsert(key, names, :new_first)
+      inp_regular.set(key, names, :new_first)
     elsif checked || ondicts || book_count >= 20 || word_count >= 100
-      inp_suggest.upsert(key, names, :new_first)
+      inp_suggest.set(key, names, :new_first)
     elsif word_count >= 20
-      inp_recycle.upsert(key, names, :new_first)
+      inp_recycle.set(key, names, :new_first)
     end
 
     next unless words.empty? && key !~ /^\P{Han}/
     next unless inp_regular.has_key?(key)
 
     next unless checked && word_count >= 200 && key.size > 1
-    inp_various.upsert(key, names, :new_first)
+    inp_various.set(key, names, :new_first)
   end
 end
 
@@ -132,9 +132,9 @@ Dir.glob(QtUtil.path("fixture/*.txt")).each do |file|
     EXISTED.add(key)
 
     if COUNT_WORDS.fetch(key, 0) >= 100
-      inp_regular.upsert(key, vals, :new_first)
+      inp_regular.set(key, vals, :new_first)
     else
-      inp_suggest.upsert(key, vals, :new_first)
+      inp_suggest.set(key, vals, :new_first)
     end
   end
 end
@@ -145,9 +145,9 @@ Dir.glob(QtUtil.path("fixture/pop-fictions/*.txt")).each do |file|
     EXISTED.add(key)
 
     if COUNT_BOOKS.fetch(key, 0) >= 20
-      inp_regular.upsert(key, vals, :old_first)
+      inp_regular.set(key, vals, :old_first)
     else
-      inp_suggest.upsert(key, vals, :old_first)
+      inp_suggest.set(key, vals, :old_first)
     end
   end
 end
@@ -159,7 +159,7 @@ Dir.glob(QtUtil.path("manmade/other-names/*.txt")).each do |file|
     CHECKED.add(key)
     EXISTED.add(key)
 
-    inp_suggest.upsert(key, vals, :old_first)
+    inp_suggest.set(key, vals, :old_first)
   end
 end
 
@@ -180,11 +180,11 @@ QtDict.load("outerqt/combined-lowercase.txt").each do |key, vals|
   ondicts = LEXICON.includes?(key)
 
   if ondicts && book_count >= 40 && word_count >= 400
-    inp_regular.upsert(key, vals, :old_first)
+    inp_regular.set(key, vals, :old_first)
   elsif (ondicts || key.size != 2) && (book_count >= 40 || word_count >= 400)
-    inp_suggest.upsert(key, vals, :old_first)
+    inp_suggest.set(key, vals, :old_first)
   elsif word_count >= 100
-    inp_recycle.upsert(key, vals, :old_first)
+    inp_recycle.set(key, vals, :old_first)
   end
 end
 
@@ -201,11 +201,11 @@ QtDict.load("outerqt/combined-uppercase.txt").each do |key, vals|
   ondicts = LEXICON.includes?(key)
 
   if (ondicts || key.size > 2) && book_count >= 40 && word_count >= 400
-    inp_regular.upsert(key, vals, :old_first)
+    inp_regular.set(key, vals, :old_first)
   elsif (ondicts || key.size > 2) && (book_count >= 20 || word_count >= 200)
-    inp_suggest.upsert(key, vals, :old_first)
+    inp_suggest.set(key, vals, :old_first)
   elsif word_count >= 100
-    inp_recycle.upsert(key, vals, :old_first)
+    inp_recycle.set(key, vals, :old_first)
   end
 end
 

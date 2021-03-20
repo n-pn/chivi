@@ -76,11 +76,11 @@ class CV::Seeds::MapZhwenpg
 
     btitle, author = parser.btitle, parser.author
 
-    if @seeding._index.upsert!(snvid, [btitle, author, parser.mftime])
+    if @seeding._index.set!(snvid, [btitle, author, parser.mftime])
       @seeding.set_intro(snvid, parser.bintro)
-      @seeding.genres.upsert!(snvid, parser.bgenre)
-      @seeding.bcover.upsert!(snvid, parser.bcover)
-      @seeding.status.upsert!(snvid, status)
+      @seeding.genres.set!(snvid, parser.bgenre)
+      @seeding.bcover.set!(snvid, parser.bcover)
+      @seeding.status.set!(snvid, status)
     end
 
     puts "\n<#{label}> {#{snvid}} [#{btitle}  #{author}]"
@@ -91,7 +91,7 @@ class CV::Seeds::MapZhwenpg
   def seed!
     checked = @mftimes.keys
     checked.each_with_index(1) do |snvid, idx|
-      bhash, existed = @seeding.upsert!(snvid)
+      bhash, existed = @seeding.set!(snvid)
       fake_rating!(bhash, snvid) if NvValues.voters.ival(bhash) == 0
 
       bslug = NvValues._index.fval(bhash)

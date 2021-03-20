@@ -29,11 +29,11 @@ class CV::InfoSeed
     @intro_dir = "#{@rdir}/intros"
     ::FileUtils.mkdir_p(@intro_dir)
 
-    if @name != "yousuu"
-      ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/origs")
-      ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/infos")
-      ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/stats")
-    end
+    # if @name != "yousuu"
+    #   ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/origs")
+    #   ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/infos")
+    #   ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/stats")
+    # end
   end
 
   def map_path(fname : String)
@@ -76,9 +76,9 @@ class CV::InfoSeed
     vi_genres.empty? ? ["Loại khác"] : vi_genres
   end
 
-  def upsert!(snvid : String, mode = 0) : Tuple(String, Bool)
+  def set!(snvid : String, mode = 0) : Tuple(String, Bool)
     btitle, author = _index.get(snvid).not_nil!
-    bhash, existed = Nvinfo.upsert!(btitle, author)
+    bhash, existed = Nvinfo.set!(btitle, author)
 
     genres = get_genres(snvid)
     Nvinfo.set_genres(bhash, genres) unless genres.empty?

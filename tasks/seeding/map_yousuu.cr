@@ -4,13 +4,13 @@ require "../../src/source/ys_nvinfo"
 require "./_seeding.cr"
 
 class CV::Seeds::MapYousuu
-  getter source_url : ValueMap { ValueMap.new(@seeding.map_path("source_url")) }
-  getter count_word : ValueMap { ValueMap.new(@seeding.map_path("count_word")) }
-  getter count_crit : ValueMap { ValueMap.new(@seeding.map_path("count_crit")) }
-  getter count_list : ValueMap { ValueMap.new(@seeding.map_path("count_list")) }
+  getter source_url : ValueMap { ValueMap.new(@meta.map_path("source_url")) }
+  getter count_word : ValueMap { ValueMap.new(@meta.map_path("count_word")) }
+  getter count_crit : ValueMap { ValueMap.new(@meta.map_path("count_crit")) }
+  getter count_list : ValueMap { ValueMap.new(@meta.map_path("count_list")) }
 
   def initialize
-    @seeding = InfoSeed.new("yousuu")
+    @meta = InfoSeed.new("yousuu")
   end
 
   def init!
@@ -24,28 +24,26 @@ class CV::Seeds::MapYousuu
       snvid = File.basename(file, ".json")
 
       atime = File.info(file).modification_time.to_unix
-      next if @seeding._atime.ival_64(snvid) >= atime
-      @seeding._atime.upsert!(snvid, atime)
+      next if @meta._index.ival_64(snvid) >= atime
 
       next unless info = YsNvinfo.load(file)
+      @meta._index.set!(snvid, [atime.to_s, info.title, info.author])
 
-      @seeding._index.upsert!(snvid, [info.title, info.author])
+      # @meta.genres.set!(snvid, [info.genre].concat(info.tags_fixed))
+      # @meta.bcover.set!(snvid, info.cover_fixed)
 
-      @seeding.genres.upsert!(snvid, [info.genre].concat(info.tags_fixed))
-      @seeding.bcover.upsert!(snvid, info.cover_fixed)
+      # @meta.status.set!(snvid, info.status)
+      # @meta.hidden.set!(snvid, info.shielded ? "1" : "0")
 
-      @seeding.status.upsert!(snvid, info.status)
-      @seeding.hidden.upsert!(snvid, info.shielded ? "1" : "0")
+      # @meta.rating.set!(snvid, [info.voters.to_s, info.rating.to_s])
+      # @meta._utime.set!(snvid, info.updated_at.to_unix)
 
-      @seeding.rating.upsert!(snvid, [info.voters.to_s, info.rating.to_s])
-      @seeding._utime.upsert!(snvid, info.updated_at.to_unix)
+      # @meta.set_intro(snvid, info.intro)
 
-      @seeding.set_intro(snvid, info.intro)
-
-      source_url.upsert!(snvid, info.source)
-      count_word.upsert!(snvid, info.word_count)
-      count_crit.upsert!(snvid, info.crit_count)
-      count_list.upsert!(snvid, info.addListTotal)
+      # source_url.set!(snvid, info.source)
+      # count_word.set!(snvid, info.word_count)
+      # count_crit.set!(snvid, info.crit_count)
+      # count_list.set!(snvid, info.addListTotal)
 
       if idx % 100 == 0
         puts "- [yousuu] <#{idx}/#{input.size}>".colorize.cyan
@@ -59,7 +57,7 @@ class CV::Seeds::MapYousuu
   end
 
   private def save!(mode : Symbol = :full)
-    @seeding.save!(mode: mode)
+    @meta.save!(mode: mode)
 
     @source_url.try(&.save!(mode: mode))
     @count_word.try(&.save!(mode: mode))
@@ -71,11 +69,11 @@ class CV::Seeds::MapYousuu
     authors = Set(String).new(NvValues.author.vals.map(&.first))
     checked = Set(String).new
 
-    input = @seeding.rating.data.to_a.map { |k, v| {k, v[0].to_i, v[1].to_i} }
+    input = @meta.rating.data.to_a.map { |k, v| {k, v[0].to_i, v[1].to_i} }
     input.sort_by! { |a, b, c| -b }
 
     input.each_with_index(1) do |(snvid, voters, rating), idx|
-      btitle, author = @seeding._index.get(snvid).not_nil!
+      btitle, author = @meta._index.get(snvid).not_nil!
       btitle, author = NvHelper.fix_nvname(btitle, author)
       next if btitle.empty? || author.empty?
 
@@ -86,14 +84,14 @@ class CV::Seeds::MapYousuu
       if authors.includes?(author) || qualified?(voters, rating)
         authors.add(author)
 
-        bhash, existed = @seeding.upsert!(snvid)
+        bhash, existed = @meta.set!(snvid)
         NvValues.set_score(bhash, voters, rating)
 
         origin = source_url.fval(snvid)
-        NvValues.origin.upsert!(bhash, origin) if origin && !origin.empty?
+        NvValues.origin.set!(bhash, origin) if origin && !origin.empty?
 
-        NvValues.yousuu.upsert!(bhash, snvid)
-        NvValues.hidden.upsert!(bhash, @seeding.hidden.fval(snvid) || "0")
+        NvValues.yousuu.set!(bhash, snvid)
+        NvValues.hidden.set!(bhash, @meta.hidden.fval(snvid) || "0")
       end
 
       if idx % 100 == 0
@@ -119,5 +117,5 @@ class CV::Seeds::MapYousuu
 end
 
 worker = CV::Seeds::MapYousuu.new
-worker.init! unless ARGV.includes?("-init")
-worker.seed!
+worker.init!
+# worker.seed!

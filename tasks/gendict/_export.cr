@@ -94,14 +94,14 @@ class CV::ExportDicts
         end
       end
 
-      @out_regular.upsert(key, vals)
+      @out_regular.set(key, vals)
     end
 
     puts "\n- load hanviet".colorize.cyan.bold
 
     CV::Vdict.hanviet.each(full: false) do |term|
       next if term.key.size > 1 || @out_regular.find(term.key)
-      @out_regular.upsert(term.key, term.vals)
+      @out_regular.set(term.key, term.vals)
     end
 
     @out_regular.load!("_db/dictdb/remote/common/regular.tab")
@@ -148,7 +148,7 @@ class CV::ExportDicts
         # add to quick translation dict if entry is a name
         unless term.key.size < 3 && term.vals.empty? || term.vals[0].downcase == term.vals[0]
           various_term = @out_various.gen_term(term.key, term.vals, 2_i8, 1_i8)
-          @out_various.upsert(various_term)
+          @out_various.set(various_term)
         end
 
         # add to suggestion
@@ -157,7 +157,7 @@ class CV::ExportDicts
           suggest_term.vals.concat(old_term.vals).uniq!
         end
 
-        @out_suggest.upsert(suggest_term)
+        @out_suggest.set(suggest_term)
       end
 
       dict.save!(prune: true)
@@ -180,7 +180,7 @@ class CV::ExportDicts
         next if match_convert?(key, match)
       end
 
-      out_suggest.upsert(key, vals)
+      out_suggest.set(key, vals)
     rescue err
       pp [err, key, vals]
     end
@@ -198,7 +198,7 @@ class CV::ExportDicts
         next if should_reject?(key)
       end
 
-      out_various.upsert(key, vals)
+      out_various.set(key, vals)
     end
 
     out_various.save!(prune: true)
@@ -215,7 +215,7 @@ class CV::ExportDicts
         next if should_skip?(key)
       end
 
-      out_recycle.upsert(key, vals)
+      out_recycle.set(key, vals)
     end
     out_recycle.save!
   end

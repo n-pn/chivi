@@ -33,7 +33,7 @@ class CV::ValueMap
         key = cls[0]
 
         if vals = cls[1]?
-          upsert(key, vals.split('\t'))
+          set(key, vals.split('\t'))
         else
           delete(key)
         end
@@ -54,8 +54,26 @@ class CV::ValueMap
     @data.values
   end
 
-  def upsert!(key : String, vals : Array(String), flush : Int32 = 1) : Bool
-    return false unless upsert(key, vals)
+  def get(key : String)
+    unless value = @data[key]?
+      value = yield
+      set(value)
+    end
+
+    value
+  end
+
+  def get!(key : String, flush : Int32 = 1)
+    unless value = @data[key]?
+      value = yield
+      set!(value, flush: flush)
+    end
+
+    value
+  end
+
+  def set!(key : String, vals : Array(String), flush : Int32 = 1) : Bool
+    return false unless set(key, vals)
 
     @upds[key] = vals
     save! if @upds.size >= flush
@@ -63,22 +81,22 @@ class CV::ValueMap
     true
   end
 
-  def upsert!(key : String, val : String)
-    upsert!(key, [val])
+  def set!(key : String, val : String)
+    set!(key, [val])
   end
 
-  def upsert!(key : String, val)
-    upsert!(key, [val.to_s])
+  def set!(key : String, val)
+    set!(key, [val.to_s])
   end
 
-  def upsert(key : String, vals : Array(String)) : Bool
+  def set(key : String, vals : Array(String)) : Bool
     return false if get(key) == vals
     @data[key] = vals
     true
   end
 
-  def upsert(key : String, vals : String) : Bool
-    upsert(key, vals.split('\t'))
+  def set(key : String, vals : String) : Bool
+    set(key, vals.split('\t'))
   end
 
   def get(key : String) : Array(String)?
@@ -137,6 +155,6 @@ class CV::ValueMap
 end
 
 # test = CV::ValueMap.new(".tmp/value_map.tsv", mode: 2)
-# test.upsert("a", "a")
-# test.upsert("b", "b")
+# test.set("a", "a")
+# test.set("b", "b")
 # test.save!

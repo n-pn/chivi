@@ -52,8 +52,8 @@ module CV::Marked
   end
 
   def mark_book(uname : String, bhash : String, bmark : String) : Nil
-    user_books(uname).tap(&.upsert!(bhash, [bmark])).save!(clean: false)
-    book_users(bhash).tap(&.upsert!(uname, [bmark])).save!(clean: false)
+    user_books(uname).tap(&.set!(bhash, [bmark])).save!(clean: false)
+    book_users(bhash).tap(&.set!(uname, [bmark])).save!(clean: false)
   end
 
   def unmark_book(uname : String, bhash : String) : Nil

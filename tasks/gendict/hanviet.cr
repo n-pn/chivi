@@ -13,7 +13,7 @@ class Hanviet
       QtUtil.lexicon.add(key)
 
       next if key =~ /\P{Han}/
-      @input.upsert(key, vals, mode)
+      @input.set(key, vals, mode)
     end
   end
 
@@ -24,7 +24,7 @@ class Hanviet
 
       term.vals.each do |simp|
         next if @input.has_key?(simp)
-        @input.upsert(simp, vals)
+        @input.set(simp, vals)
       end
     end
   end
@@ -46,7 +46,7 @@ class Hanviet
         pp [key, vals, convert]
       end
 
-      output.upsert(key, vals.uniq.first(3))
+      output.set(key, vals.uniq.first(3))
     end
 
     output.load!("_db/dictdb/remote/system/hanviet.tab")

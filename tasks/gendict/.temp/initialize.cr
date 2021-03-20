@@ -13,8 +13,8 @@ def extract_crucial_chars
 
   infos = BookInfo.load_all!
   infos.each do |info|
-    split_chars(info.zh_title) { |x| dict.upsert(x) }
-    split_chars(info.zh_author) { |x| dict.upsert(x) }
+    split_chars(info.zh_title) { |x| dict.set(x) }
+    split_chars(info.zh_author) { |x| dict.set(x) }
   end
 
   dict.save!

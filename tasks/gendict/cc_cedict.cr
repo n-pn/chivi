@@ -180,7 +180,7 @@ class CeInput
 
     input.each do |key, vals|
       QtUtil.lexicon.add(key)
-      output.upsert(key, vals)
+      output.set(key, vals)
     end
 
     QtUtil.lexicon.save!
@@ -205,7 +205,7 @@ class CeInput
       next if is_trad?(entry.defins)
 
       if entry.trad.size > 1
-        tswords.upsert(entry.trad, [entry.simp], :old_first)
+        tswords.set(entry.trad, [entry.simp], :old_first)
       end
 
       simps = entry.simp.split("")
@@ -222,12 +222,12 @@ class CeInput
       next if HANZIDB.has_key?(trad) || counts.has_key?(trad)
 
       best = counts.to_a.sort_by { |simp, count| -count }.map(&.first)
-      output.upsert(trad, best)
+      output.set(trad, best)
     end
 
     puts "- trad chars count: #{output.size.colorize(:green)}"
 
-    output.upsert("扶馀", ["扶余"])
+    output.set("扶馀", ["扶余"])
 
     words = tswords.data.to_a.sort_by(&.[0].size)
     words.each do |key, vals|
@@ -237,7 +237,7 @@ class CeInput
       convert = QtUtil.convert(output, key)
       next if simp.first == convert
 
-      output.upsert(key, simp)
+      output.set(key, simp)
     end
 
     output.save!(prune: true)
@@ -253,7 +253,7 @@ class CeInput
       next if is_trad?(entry.defins)
 
       if entry.simp.size > 1
-        pywords.upsert(entry.simp, [entry.pinyin], :old_first)
+        pywords.set(entry.simp, [entry.pinyin], :old_first)
       end
 
       chars = entry.simp.split("")
@@ -270,17 +270,17 @@ class CeInput
 
     HANZIDB.each do |key, vals|
       next if vals.empty? || vals.first.empty?
-      output.upsert(key, vals)
+      output.set(key, vals)
     end
 
     counter.each do |char, counts|
       best = counts.to_a.sort_by { |pinyin, count| -count }.map(&.first)
-      output.upsert(char, best.first(3))
+      output.set(char, best.first(3))
     end
 
     extras = QtDict.load("_system/extra-pinyins.txt")
     extras.each do |key, vals|
-      output.upsert(key, vals)
+      output.set(key, vals)
     end
 
     words = pywords.to_a.sort_by(&.[0].size)
@@ -291,7 +291,7 @@ class CeInput
       convert = QtUtil.convert(output, key, " ")
       next if vals.first == convert
 
-      output.upsert(key, vals)
+      output.set(key, vals)
     end
 
     output.save!(prune: true)

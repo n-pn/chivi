@@ -4,30 +4,36 @@ require "./nvinfo/*"
 class CV::Nvinfo
   # include JSON::Serializable
 
+  getter bfile : String
+  getter infos : ValueMap { ValueMap.load(@bfile) }
+
   getter bhash : String
-  getter bslug : String { NvValues._index.fval(bhash) || bhash }
+  getter bslug : String { infos["bslug"].first }
 
-  getter btitle : Array(String) { NvValues.btitle.get(bhash).not_nil! }
-  getter author : Array(String) { NvValues.author.get(bhash).not_nil! }
+  getter btitle : Array(String) { infos["btitle"] }
+  getter author : Array(String) { infos["author"] }
 
-  getter genres : Array(String) { NvValues.genres.get(bhash) || [] of String }
-  getter bcover : String { NvValues.bcover.fval(bhash) }
+  getter genres : Array(String) { infos["genres"] }
+  getter bcover : String { infos["bcover"].first }
+  getter bintro : String { NvBintro.get_bintro(@bhash, lang: "vi") }
 
-  getter voters : Int32 { NvValues.voters.ival(bhash) }
-  getter rating : Int32 { NvValues.rating.ival(bhash) }
+  getter voters : Int32 { infos["voters"]?.try(&.first.to_i) || 0 }
+  getter rating : Int32 { infos["rating"]?.try(&.first.to_i) || 0 }
 
-  getter bintro : Array(String) { NvBintro.get_bintro(bhash) }
-  getter status : Int32 { NvValues.status.ival(bhash) }
-  getter chseed : Hash(String, NvChseed::Chseed) { NvChseed.get_chseed(bhash) }
+  getter status : Int32 { infos["status"]?.try(&.first.to_i) || 0 }
+  getter hidden : Int32 { infos["hidden"]?.try(&.first.to_i) || 0 }
 
-  getter hidden : Int32 { NvValues.hidden.ival(bhash) }
-  getter yousuu : String { NvValues.yousuu.fval(bhash) || "" }
-  getter origin : String { NvValues.origin.fval(bhash) || "" }
+  getter yousuu : String { infos["yousuu"]?.try(&.first) || "" }
+  getter origin : String { infos["origin"]?.try(&.first) || "" }
 
-  getter _atime : Int64 { NvValues._atime.ival_64(bhash) }
-  getter _utime : Int64 { NvValues._utime.ival_64(bhash) }
+  getter update : Array(String) { infos["update"]? || ["chivi", "0", "0"] }
+  getter chseed : Array(NvChseed::Seed) { NvChseed.get_chseed(bhash) }
+
+  DIR = "_db/nvdata/nvinfos"
+  ::FileUtils.mkdir_p(DIR)
 
   def initialize(@bhash)
+    @bfile = File.join(DIR, "#{@bhash}.tsv")
   end
 
   def inspect(io : IO, full : Bool = false)
@@ -52,22 +58,21 @@ class CV::Nvinfo
       json.field "voters", voters
       json.field "rating", rating / 10
 
+      json.field "update", update
+
       if full
-        json.field "chseed", chseed
         json.field "bintro", bintro
         json.field "status", status
-
         json.field "yousuu", yousuu
         json.field "origin", origin
-
-        json.field "_utime", _utime
+        json.field "chseed", chseed
       end
     end
   end
 
   def bump_access!(atime : Time = Time.utc) : Nil
     @_atime = atime.to_unix
-    return unless NvValues._atime.upsert!(bhash, @_atime)
+    return unless NvValues._atime.set!(bhash, @_atime)
     NvValues._atime.save!(clean: false) if NvValues._atime.unsaved > 5
   end
 
@@ -103,18 +108,19 @@ class CV::Nvinfo
     NvChseed.put_chseed(bhash, sname, snvid, mtime, total)
   end
 
-  def chseed_mtime(sname : String)
-    return 0_i64 unless meta = chseed[sname]?
-    meta[1].to_i64 * 60
+  def get_chseed(sname : String)
+    snvid, mtime, total = chseed[sname]? || ["", "0", "0"]
+    {snvid, mtime.to_i, total.to_i}
   end
 
   def save!(clean : Bool = false)
-    NvValues.save!(clean: clean)
-    NvTokens.save!(clean: clean)
+    @infos.try(&.save!(clean: clean))
+
     NvChseed.save!(clean: clean)
+    NvTokens.save!(clean: clean)
   end
 
-  def self.upsert!(zh_btitle : String, zh_author : String, fixed : Bool = false)
+  def self.set!(zh_btitle : String, zh_author : String, fixed : Bool = false)
     unless fixed
       zh_btitle = NvHelper.fix_zh_btitle(zh_btitle)
       zh_author = NvHelper.fix_zh_author(zh_author)
@@ -137,7 +143,7 @@ class CV::Nvinfo
         values << vslug unless NvValues._index.has_val?(vslug)
       end
 
-      NvValues._index.upsert!(bhash, values.uniq)
+      NvValues._index.set!(bhash, values.uniq)
     end
 
     {bhash, existed}
@@ -154,7 +160,7 @@ class CV::Nvinfo
     vals = [zh_btitle, hv_btitle]
     vals << vi_btitle if vi_btitle
 
-    NvValues.btitle.upsert!(bhash, vals)
+    NvValues.btitle.set!(bhash, vals)
     NvTokens.set_btitle_zh(bhash, zh_btitle)
     NvTokens.set_btitle_hv(bhash, hv_btitle)
     NvTokens.set_btitle_vi(bhash, vi_btitle) if vi_btitle
@@ -165,7 +171,7 @@ class CV::Nvinfo
                       vi_author : String? = nil) : Nil
     vi_author ||= NvHelper.fix_vi_author(zh_author)
 
-    NvValues.author.upsert!(bhash, [zh_author, vi_author])
+    NvValues.author.set!(bhash, [zh_author, vi_author])
     NvTokens.set_author_zh(bhash, zh_author)
     NvTokens.set_author_vi(bhash, vi_author)
   end
@@ -173,7 +179,7 @@ class CV::Nvinfo
   def self.set_genres(bhash : String, input : Array(String), force = false) : Nil
     return unless force || !NvValues.genres.has_key?(bhash)
 
-    NvValues.genres.upsert!(bhash, input)
+    NvValues.genres.set!(bhash, input)
     NvTokens.set_genres(bhash, input)
   end
 
