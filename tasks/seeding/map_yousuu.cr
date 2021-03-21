@@ -27,7 +27,7 @@ class CV::Seeds::MapYousuu
       next if @meta._index.ival_64(snvid) >= atime
 
       next unless info = YsNvinfo.load(file)
-      @meta._index.set!(snvid, [atime.to_s, info.title, info.author])
+      @meta._index.set!(snvid, [atime.to_s, info.title, info.author], flush: 100)
 
       # @meta.genres.set!(snvid, [info.genre].concat(info.tags_fixed))
       # @meta.bcover.set!(snvid, info.cover_fixed)
@@ -47,22 +47,13 @@ class CV::Seeds::MapYousuu
 
       if idx % 100 == 0
         puts "- [yousuu] <#{idx}/#{input.size}>".colorize.cyan
-        save!(mode: :upds)
+        @meta._index.save!(clean: false)
       end
     rescue err
       puts "- error loading [#{snvid}]: #{err}".colorize.red
     end
 
-    save!(mode: :full)
-  end
-
-  private def save!(mode : Symbol = :full)
-    @meta.save!(mode: mode)
-
-    @source_url.try(&.save!(mode: mode))
-    @count_word.try(&.save!(mode: mode))
-    @count_crit.try(&.save!(mode: mode))
-    @count_list.try(&.save!(mode: mode))
+    @meta._index.save!(clean: true)
   end
 
   def seed!(mode : Symbol = :best)
@@ -113,6 +104,15 @@ class CV::Seeds::MapYousuu
     return rating >= 60 if voters >= 10
 
     rating >= 70
+  end
+
+  private def save!(clean : Bool = false)
+    @meta.save!(clean: clean)
+
+    @source_url.try(&.save!(clean: clean))
+    @count_word.try(&.save!(clean: clean))
+    @count_crit.try(&.save!(clean: clean))
+    @count_list.try(&.save!(clean: clean))
   end
 end
 

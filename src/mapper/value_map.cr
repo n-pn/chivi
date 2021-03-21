@@ -139,7 +139,7 @@ class CV::ValueMap
           io << key << '\t' << vals.join('\t') << "\n"
         end
       end
-    else
+    elsif @upds.size > 0
       puts "- #{label} updated (entries: #{@upds.size})".colorize.light_yellow
       File.open(@file, "a") do |io|
         @upds.each do |key, vals|

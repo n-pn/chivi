@@ -1,39 +1,19 @@
 require "json"
 require "./nvinfo/*"
+require "../_utils/core_utils"
 
 class CV::Nvinfo
   # include JSON::Serializable
 
-  getter bfile : String
-  getter infos : ValueMap { ValueMap.load(@bfile) }
-
   getter bhash : String
-  getter bslug : String { infos["bslug"].first }
-
-  getter btitle : Array(String) { infos["btitle"] }
-  getter author : Array(String) { infos["author"] }
-
-  getter genres : Array(String) { infos["genres"] }
-  getter bcover : String { infos["bcover"].first }
-  getter bintro : String { NvBintro.get_bintro(@bhash, lang: "vi") }
-
-  getter voters : Int32 { infos["voters"]?.try(&.first.to_i) || 0 }
-  getter rating : Int32 { infos["rating"]?.try(&.first.to_i) || 0 }
-
-  getter status : Int32 { infos["status"]?.try(&.first.to_i) || 0 }
-  getter hidden : Int32 { infos["hidden"]?.try(&.first.to_i) || 0 }
-
-  getter yousuu : String { infos["yousuu"]?.try(&.first) || "" }
-  getter origin : String { infos["origin"]?.try(&.first) || "" }
-
-  getter update : Array(String) { infos["update"]? || ["chivi", "0", "0"] }
-  getter chseed : Array(NvChseed::Seed) { NvChseed.get_chseed(bhash) }
+  getter infos : ValueMap
 
   DIR = "_db/nvdata/nvinfos"
   ::FileUtils.mkdir_p(DIR)
 
   def initialize(@bhash)
-    @bfile = File.join(DIR, "#{@bhash}.tsv")
+    info_file = File.join(DIR, "#{@bhash}.tsv")
+    @infos = ValueMap.new(info_file)
   end
 
   def inspect(io : IO, full : Bool = false)
@@ -42,157 +22,138 @@ class CV::Nvinfo
 
   def to_json(json : JSON::Builder, full : Bool = false)
     json.object do
-      json.field "bhash", bhash
-      json.field "bslug", bslug
+      json.field "bhash", @bhash
+      json.field "bslug", @infos.fval("bslug")
 
-      json.field "btitle_zh", btitle[0]
-      json.field "btitle_hv", btitle[1]? || btitle[0]
-      json.field "btitle_vi", btitle[2]? || btitle[1]? || btitle[0]
+      json.field "btitle", @infos.get("btitle") || [bhash]
+      json.field "author", @infos.get("author") || [bhash]
 
-      json.field "author_zh", author[0]
-      json.field "author_vi", author[1]? || author[0]
+      json.field "genres", @infos.get("gemres") || ["Loại khác"]
+      json.field "bcover", @infos.fval("bcover")
 
-      json.field "genres", genres
-      json.field "bcover", bcover
+      json.field "voters", @infos.ival("voters")
+      json.field "rating", @infos.ival("rating") // 10
 
-      json.field "voters", voters
-      json.field "rating", rating / 10
-
-      json.field "update", update
+      json.field "update", @infos.ival_64("voters")
 
       if full
-        json.field "bintro", bintro
-        json.field "status", status
-        json.field "yousuu", yousuu
-        json.field "origin", origin
-        json.field "chseed", chseed
+        json.field "bintro", NvIntro.get_intro_vi(@bhash)
+
+        json.field "status", @infos.ival("status")
+        json.field "yousuu", @infos.fval("yousuu")
+        json.field "origin", @infos.fval("origin")
+
+        json.field "chseed", @infos.get("chseed")
       end
     end
   end
 
-  def bump_access!(atime : Time = Time.utc) : Nil
-    @_atime = atime.to_unix
-    return unless NvValues._atime.set!(bhash, @_atime)
-    NvValues._atime.save!(clean: false) if NvValues._atime.unsaved > 5
+  def set_btitle!(zh_btitle : String,
+                  hv_btitle = NvUtils.to_hanviet(zh_btitle),
+                  vi_btitle = NvUtils.fix_btitle_vi(zh_btitle)) : Nil
+    @infos.set!("btitle", [zh_btitle, hv_btitle, vi_btitle])
+
+    NvIndex.set_btitle_zh(@bhash, zh_btitle)
+    NvIndex.set_btitle_hv(@bhash, hv_btitle)
+    NvIndex.set_btitle_vi(@bhash, vi_btitle) if vi_btitle != hv_btitle
   end
 
-  def set_utime(mtime : Int64 = Time.utc.to_unix) : Bool
-    @_utime = mtime unless @_utime.try(&.> mtime)
-    NvValues.set_utime(bhash, mtime)
+  def set_author!(zh_author : String, vi_author = NvUtils.fix_vi_author(zh_author)) : Nil
+    @infos.set!("author", [zh_author, vi_author])
+    NvIndex.set_author_zh(@bhash, zh_author)
+    NvIndex.set_author_vi(@bhash, vi_author)
   end
 
-  def put_chseed!(sname : String, snvid : String, mtime = 0, total = 0) : Nil
+  def set_genres(genres : Array(String)) : Nil
+    @infos.set!("genres", genres)
+    NvIndex.set_genres(@bhash, genres)
+  end
+
+  {% for field in {:status, :hidden} %}
+    def set_{{field.id}}(value : Int32, force : Bool = false)
+      return false unless force || value > @infos.ival({{field.stringify}})
+      @infos.set!({{field.stringify}}, value)
+    end
+  {% end %}
+
+  def set_access!(mftime : Int64 = Time.utc.to_unix) : Nil
+    NvIndex.access.set!(@bhash, mftime // 60, flush: 5)
+  end
+
+  def set_update!(mftime : Int64 = Time.utc.to_unix) : Bool
+    return false if @infos.ival_64("update") > mftime
+    NvIndex.update.set!(@bhash, mftime // 60, flush: 5)
+    @infos.set!("update", mftime)
+  end
+
+  def get_chseed(sname : String)
+    return unless vals = @infs.get("$#{sname}")
+    {vals[0], vals[1].to_i64, vals[2].to_i}
+  end
+
+  def set_chseed!(sname : String, snvid : String, mtime = 0_i64, count = 0) : Nil
     # dirty hack to fix update_time for hetushu or zhwenpg...
-    utime = _utime.//(60).to_i
+    seeds = @infos.get("chseed") || [] of String
+    utime = @infos.ival_64("update")
 
-    if old_value = chseed[sname]?
-      _, old_mtime, old_total = old_value
+    if old_value = get_chseed(sname)
+      _svnid, old_mtime, old_count = old_value
 
-      if total > old_total # if newer has more count
+      if count > old_count # if newer has more chapters
         if mtime <= old_mtime
-          mtime = utime > old_mtime ? utime : Time.utc.to_unix.//(60).to_i
+          mtime = utime > old_mtime ? utime : Time.utc.to_unix
         end
       else
         mtime = old_mtime
       end
     elsif mtime < utime
+      seeds << sname
       mtime = utime
     end
 
-    NvValues.save!(clean: false) if set_utime(mtime.to_i64 * 60)
+    @infos.set!("$#{sname}", [snvid, mtime.to_s, count.to_s], flush: 10)
+    seeds = seeds.map { |sname| {sname, get_chseed(sname).not_nil![1]} }
 
-    chseed[sname] = {snvid, mtime, total}
-    @chseed = chseed.to_a.sort_by { |_, v| -v[1] }.to_h
+    seeds = seeds.sort_by(&.[1].-).map(&.[0])
+    @infos.set!("chseed", seeds)
 
-    NvChseed.set_snames(bhash, chseed.keys)
-    NvChseed.put_chseed(bhash, sname, snvid, mtime, total)
-  end
-
-  def get_chseed(sname : String)
-    snvid, mtime, total = chseed[sname]? || ["", "0", "0"]
-    {snvid, mtime.to_i, total.to_i}
+    set_update!(mtime)
   end
 
   def save!(clean : Bool = false)
-    @infos.try(&.save!(clean: clean))
-
-    NvChseed.save!(clean: clean)
-    NvTokens.save!(clean: clean)
+    @infos.save!(clean: clean)
+    NvIndex.save!(clean: clean)
   end
 
-  def self.set!(zh_btitle : String, zh_author : String, fixed : Bool = false)
-    unless fixed
-      zh_btitle = NvHelper.fix_zh_btitle(zh_btitle)
-      zh_author = NvHelper.fix_zh_author(zh_author)
-    end
-
+  def self.upsert!(btitle : String, author : String, fixed : Bool = false)
+    btitle, author = NvUtils.fix_labels(btitle, author) unless fixed
     bhash = CoreUtils.digest32("#{zh_btitle}--#{zh_author}")
-    existed = NvValues._index.has_key?(bhash)
 
-    unless existed
-      set_author(bhash, zh_author)
-      set_btitle(bhash, zh_btitle)
+    nvinfo = new(bhash)
+    exists = nvinfo.infos.has_key?("bslug")
 
-      bslug = NvTokens.btitle_hv.get(bhash).not_nil!.join("-")
+    unless exists
+      nvinfo.set_author(zh_author)
+      nvinfo.set_btitle(zh_btitle)
 
-      values = ["#{bslug}-#{bhash}"]
-      values << bslug unless NvValues._index.has_val?(bslug)
+      half_slug = NvIndex.btitle_hv.get(bhash).not_nil!.join("-")
+      full_slug = "#{half_slug}-#{bhash}"
 
-      if vi_tokens = NvTokens.btitle_vi.get(bhash)
-        vslug = vi_tokens.join("-")
-        values << vslug unless NvValues._index.has_val?(vslug)
-      end
+      nvinfos.infos.set!("bslug", full_slug)
 
-      NvValues._index.set!(bhash, values.uniq)
+      values = [full_slug]
+      values << half_slug unless NvIndex._index.has_val?(half_slug)
+      NvIndex._index.set!(bhash, values)
     end
 
-    {bhash, existed}
-  end
-
-  def self.set_btitle(bhash : String,
-                      zh_btitle : String,
-                      hv_btitle : String? = nil,
-                      vi_btitle : String? = nil) : Nil
-    hv_btitle ||= NvHelper.to_hanviet(zh_btitle)
-    vi_btitle ||= NvHelper.fix_vi_btitle(zh_btitle)
-    vi_btitle = nil if vi_btitle == hv_btitle
-
-    vals = [zh_btitle, hv_btitle]
-    vals << vi_btitle if vi_btitle
-
-    NvValues.btitle.set!(bhash, vals)
-    NvTokens.set_btitle_zh(bhash, zh_btitle)
-    NvTokens.set_btitle_hv(bhash, hv_btitle)
-    NvTokens.set_btitle_vi(bhash, vi_btitle) if vi_btitle
-  end
-
-  def self.set_author(bhash : String,
-                      zh_author : String,
-                      vi_author : String? = nil) : Nil
-    vi_author ||= NvHelper.fix_vi_author(zh_author)
-
-    NvValues.author.set!(bhash, [zh_author, vi_author])
-    NvTokens.set_author_zh(bhash, zh_author)
-    NvTokens.set_author_vi(bhash, vi_author)
-  end
-
-  def self.set_genres(bhash : String, input : Array(String), force = false) : Nil
-    return unless force || !NvValues.genres.has_key?(bhash)
-
-    NvValues.genres.set!(bhash, input)
-    NvTokens.set_genres(bhash, input)
-  end
-
-  def self.save!(mode : Symbol = :full)
-    NvValues.save!(mode: mode)
-    NvTokens.save!(mode: mode)
+    {nvinfo, exists}
   end
 
   def self.find_by_slug(bslug : String)
-    NvValues._index.keys(bslug).first
+    NvIndex._index.keys(bslug).first
   end
 
-  def self.each(order_map = NvValues.weight, skip = 0, take = 24, matched : Set(String)? = nil)
+  def self.each(order_map = NvIndex.weight, skip = 0, take = 24, matched : Set(String)? = nil)
     if !matched
       iter = order_map._idx.reverse_each
       skip.times { return unless iter.next }
@@ -225,16 +186,6 @@ class CV::Nvinfo
     end
   end
 
-  def self.get_order_map(order : String? = nil)
-    case order
-    when "access" then NvValues._atime
-    when "update" then NvValues._utime
-    when "rating" then NvValues.rating
-    when "voters" then NvValues.voters
-    else               NvValues.weight
-    end
-  end
-
   CACHE = {} of String => self
 
   def self.load(bhash : String)
@@ -253,7 +204,7 @@ end
 #   puts CV::Nvinfo.load(bhash).btitle
 # end
 
-# matched = CV::Nvinfo::NvTokens.glob(genre: "kinh di")
+# matched = CV::Nvinfo::NvIndex.glob(genre: "kinh di")
 # CV::Nvinfo.each("weight", take: 10, matched: matched) do |bhash|
 #   puts CV::Nvinfo.load(bhash)
 # end

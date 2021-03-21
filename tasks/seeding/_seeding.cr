@@ -10,6 +10,22 @@ require "../../src/filedb/nvinfo"
 require "../../src/filedb/chinfo"
 
 class CV::InfoSeed
+  class_getter author_scores : ValueMap { "_db/_seeds/author_scores.tsv" }
+
+  def self.qualified_author?(author : String, minimum_score = 2000)
+    return false unless score = author_scores.ival(author)
+    # score 2000 mean 20 people give score 10 or 40 people give score 5
+    score >= minimum_score
+  end
+
+  def self.update_author_score(author : String, score : Int32)
+    if value = author_scores.ival(author)
+      return if value > score
+    end
+
+    author_scores.set!(author, [score.to_s])
+  end
+
   getter name : String
   getter rdir : String
 
@@ -22,7 +38,7 @@ class CV::InfoSeed
   getter hidden : ValueMap { ValueMap.new(map_path("hidden")) }
 
   getter status : ValueMap { ValueMap.new(map_path("status")) }
-  getter mftime : ValueMap { ValueMap.new(map_path("mftime")) }
+  getter update : ValueMap { ValueMap.new(map_path("update")) }
 
   def initialize(@name)
     @rdir = "_db/_seeds/#{@name}"
@@ -42,15 +58,15 @@ class CV::InfoSeed
 
   def save!(clean : Bool = false)
     @_index.try(&.save!(clean: clean))
-    @_atime.try(&.save!(clean: clean))
-    @_utime.try(&.save!(clean: clean))
 
     @bcover.try(&.save!(clean: clean))
     @genres.try(&.save!(clean: clean))
 
-    @rating.try(&.save!(clean: clean))
     @status.try(&.save!(clean: clean))
     @hidden.try(&.save!(clean: clean))
+
+    @rating.try(&.save!(clean: clean))
+    @update.try(&.save!(clean: clean))
   end
 
   def set_intro(snvid : String, intro : Array(String)) : Nil

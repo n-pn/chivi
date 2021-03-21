@@ -10,12 +10,14 @@ class CV::Seeds::MapRemote
   end
 
   def prep!(upto = 1)
-    queue = [] of String
+    queue = [] of Tuple(String, String)
 
     1.upto(upto) do |idx|
       snvid = idx.to_s
-      next if access_time(snvid)
-      queue << snvid
+      file = RmSpider.nvinfo_file(@sname, snvid)
+
+      next if File.exists?(file)
+      queue << {file, RmSpider.nvinfo_link(@sname, snvid)}
     end
 
     puts "[ seed: #{@sname}, upto: #{upto}, queue: #{queue.size} ]".colorize.cyan.bold
@@ -24,15 +26,13 @@ class CV::Seeds::MapRemote
     threads = queue.size if threads > queue.size
     channel = Channel(Nil).new(threads)
 
-    queue.each_with_index(1) do |snvid, idx|
+    queue.each_with_index(1) do |(file, link), idx|
       channel.receive if idx > threads
 
       spawn do
-        link = RmSpider.nvinfo_link(@sname, snvid)
-        file = RmSpider.nvinfo_file(@sname, snvid)
-
         encoding = HttpUtils.encoding_for(@sname)
-        html = HttpUtils.get_html(link, encoding: encoding)
+        html = HttpUtils.get_html(link, encoding, label: "#{idx}/#{queue.size}")
+
         File.write(file, html)
 
         # throttling
@@ -56,9 +56,10 @@ class CV::Seeds::MapRemote
 
   def ideal_threads_for(sname : String)
     case sname
-    when "zhwenpg", "shubaow", "bqg_5200" then 1
-    when "paoshu8", "69shu"               then 2
-    else                                       4
+    when "zhwenpg", "shubaow"           then 1
+    when "paoshu8", "69shu", "bqg_5200" then 3
+    when "hetushu", "duokan8"           then 6
+    else                                     10
     end
   end
 
@@ -180,8 +181,8 @@ class CV::Seeds::MapRemote
 
     worker = new(site)
     worker.prep!(upto) if mode > 0
-    worker.init!(upto, mode: mode)
-    worker.seed!(mode) if mode >= 0
+    # worker.init!(upto, mode: mode)
+    # worker.seed!(mode) if mode >= 0
   end
 end
 
