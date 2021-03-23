@@ -1,14 +1,14 @@
 require "file_utils"
 require "../../engine/cvmtl"
 
-module CV::NvBintro
+module CV::NvIntro
   extend self
 
   DIR = "_db/nvdata/bintros"
   ::FileUtils.mkdir_p(DIR)
 
   def intro_path(bhash : String, lang : String = "vi")
-    File.join(BINTRO_DIR, "#{bhash}-#{lang}.txt")
+    File.join(DIR, "#{bhash}-#{lang}.txt")
   end
 
   CACHE = {} of String => String

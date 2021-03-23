@@ -29,10 +29,10 @@ class CV::Seeds::ZhwenpgParser
 end
 
 class CV::Seeds::MapZhwenpg
-  def initialize
-    @seeding = InfoSeed.new("zhwenpg")
-    @mftimes = {} of String => Int64
+  getter meta = InfoSeed.new("zhwenpg")
 
+  def initialize
+    @mftimes = {} of String => Int64
     ::FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
   end
 
@@ -57,59 +57,54 @@ class CV::Seeds::MapZhwenpg
 
     valid = 4.hours * page
     html = RmSpider.fetch(file, link, "zhwenpg", valid: valid, label: page.to_s)
+    atime = InfoSeed.get_atime(file) || Time.utc.to_unix
 
     doc = Myhtml::Parser.new(html)
     nodes = doc.css(".cbooksingle").to_a[2..-2]
     nodes.each_with_index(1) do |node, idx|
-      update!(node, status, label: "#{idx}/#{nodes.size}")
+      parser = ZhwenpgParser.new(node)
+      snvid = parser.snvid
+
+      next if @mftimes.has_key?(snvid)
+      @mftimes[snvid] = parser.mftime
+
+      btitle, author = parser.btitle, parser.author
+      puts "\n<#{idx}/#{nodes.size}}> {#{snvid}} [#{btitle}  #{author}]"
+
+      if @meta._index.set!(snvid, [atime.to_s, btitle, author])
+        @meta.set_intro(snvid, parser.bintro)
+        @meta.genres.set!(snvid, parser.bgenre)
+        @meta.bcover.set!(snvid, parser.bcover)
+        @meta.status.set!(snvid, status)
+        @meta.update.set!(snvid, parser.mftime)
+      end
+    rescue err
+      puts "ERROR: #{err}".colorize.red
     end
-
-    @seeding.save!(mode: :full)
-  end
-
-  private def update!(node, status, label = "1/1") : Void
-    parser = ZhwenpgParser.new(node)
-    snvid = parser.snvid
-
-    return if @mftimes.has_key?(snvid)
-    @mftimes[snvid] = parser.mftime
-
-    btitle, author = parser.btitle, parser.author
-
-    if @seeding._index.set!(snvid, [btitle, author, parser.mftime])
-      @seeding.set_intro(snvid, parser.bintro)
-      @seeding.genres.set!(snvid, parser.bgenre)
-      @seeding.bcover.set!(snvid, parser.bcover)
-      @seeding.status.set!(snvid, status)
-    end
-
-    puts "\n<#{label}> {#{snvid}} [#{btitle}  #{author}]"
-  rescue err
-    puts "ERROR: #{err}".colorize.red
   end
 
   def seed!
     checked = @mftimes.keys
-    checked.each_with_index(1) do |snvid, idx|
-      bhash, existed = @seeding.set!(snvid)
-      fake_rating!(bhash, snvid) if NvValues.voters.ival(bhash) == 0
 
-      bslug = NvValues._index.fval(bhash)
+    checked.each_with_index(1) do |snvid, idx|
+      nvinfo, existed = @meta.upsert!(snvid)
+      fake_rating!(nvinfo, snvid) if nvinfo.infos.ival("voters") == 0
+
+      bslug = nvinfo.infos.fval("bslug")
       colored = existed ? :yellow : :green
 
       puts "- <#{idx}/#{checked.size}> [#{bslug}] saved!".colorize(colored)
-      if idx % 10 == 0
-        Nvinfo.save!(mode: :upds)
-      end
+      nvinfo.save!(clean: true)
     end
 
-    Nvinfo.save!(mode: :full)
+    NvIndex.save!(clean: true)
   end
 
   FAKE_RATING = ValueMap.new("tasks/seeding/fake_ratings.tsv", mode: 2)
 
-  def fake_rating!(bhash : String, snvid : String)
-    btitle, author = @seeding._index.get(snvid).not_nil!
+  def fake_rating!(nvinfo : Nvinfo, snvid : String)
+    btitle = nvinfo.infos.fval("btitle")
+    author = nvinfo.infos.fval("author")
 
     if vals = FAKE_RATING.get("#{btitle}  #{author}")
       voters, rating = vals[0].to_i, vals[1].to_i
@@ -117,7 +112,7 @@ class CV::Seeds::MapZhwenpg
       voters, rating = Random.rand(10..50), Random.rand(40..60)
     end
 
-    NvValues.set_score(bhash, voters, rating)
+    nvinfo.set_scores(voters, rating)
   end
 end
 
@@ -125,6 +120,6 @@ worker = CV::Seeds::MapZhwenpg.new
 puts "\n[-- Load indexes --]".colorize.cyan.bold
 
 1.upto(3) { |page| worker.init!(page, status: 1) }
-1.upto(10) { |page| worker.init!(page, status: 0) }
-
+1.upto(11) { |page| worker.init!(page, status: 0) }
+worker.meta.save!(clean: true)
 worker.seed!

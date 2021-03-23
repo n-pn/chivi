@@ -5,7 +5,7 @@ require "colorize"
 
 SSH = "nipin@ssh.chivi.xyz"
 INP = "_db/chdata/zhtexts"
-OUT = "/home/nipin/www/chivi.xyz"
+OUT = "/home/nipin/srv/chivi.xyz"
 
 def upload_texts(sname : String)
   seed_dir = File.join(INP, sname)

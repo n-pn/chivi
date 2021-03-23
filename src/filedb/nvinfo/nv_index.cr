@@ -33,22 +33,22 @@ module CV::NvIndex
     end
   {% end %}
 
-  ORDERS = {:access, :update, :voters, :rating, :weight}
+  ORDERS = {"access", "update", "voters", "rating", "weight"}
 
-  {% for label in TOKENS %}
+  {% for label in ORDERS %}
     class_getter {{label.id}} : OrderMap do
       OrderMap.new("#{DIR}/orders.#{{{ label }}}.tsv", mode: 1)
     end
   {% end %}
 
-  {% for field in {:access, :update} %}
+  {% for field in {"access", "update"} %}
     def set_{{field.id}}(bhash, value : Int64, force : Bool = false)
       return false unless force || value > {{field.id}}.ival_64(bhash)
       {{field.id}}.set!(bhash, value)
     end
 
     def set_{{field.id}}(bhash, value : Time, force : Bool = false)
-      set{{field.id}}(bhash, value.to_unix, force: force)
+      set_{{field.id}}(bhash, value.to_unix, force: force)
     end
   {% end %}
 

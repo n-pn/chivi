@@ -21,68 +21,50 @@ class CV::Chinfo
   getter snvid : String
   getter cvter : Cvmtl { Cvmtl.generic(bhash) }
 
-  getter zhinfos : ValueMap { "_db/chdata/zhinfos/#{@sname}/#{@snvid}.tsv" }
+  getter origs : ValueMap { ValueMap.new("_db/chdata/zhinfos/#{@sname}/#{@snvid}.tsv") }
 
   def initialize(@bhash, @sname, @snvid)
+    @infos = {} of String => ValueMap
+
     @info_dir = "_db/chdata/chinfos/#{@sname}/#{@snvid}"
     @text_dir = "_db/chdata/zhtexts/#{@sname}/#{@snvid}"
-    {@info_dir, @text_dir}.each { |x| ::FileUtils.mkdir_p(x) }
 
-    @origs = {} of String => ValueMap
-    @infos = {} of String => ValueMap
+    {@info_dir, @text_dir}.each { |x| ::FileUtils.mkdir_p(x) }
   end
 
   def load_info(label : String)
     @infos[label] ||= ValueMap.new("#{@info_dir}/#{label}.tsv", mode: 1)
   end
 
-  def load_info(slice : Int32)
-    load_info(slice.rjust(3, '0'))
-  end
-
   PAGE = 100
 
-  def fetch!(power = 4, mode = 2, valid = 5.minutes) : Tuple(Int32, Int32)
-    mtime = -1
-    old_schid = zhinfos.last_value[0]
+  def last_schid
+    return "" unless last = origs.data.last_value?
+    last[0]
+  end
+
+  def fetch!(power = 4, mode = 2, valid = 5.minutes) : Tuple(Int64, Int32)
+    mtime = 0_i64
 
     if RmSpider.remote?(@sname, power)
       puller = RmChinfo.new(@sname, @snvid, valid: valid)
-      new_schid = puller.last_chid
 
-      if mode > 1 || old_schid != new_schid
-        mtime = puller.update_int.//(60).to_i
+      if mode > 1 || puller.last_chid != last_schid
+        mtime = puller.update_int
         total = puller.chap_list.size
 
-        update!(puller.chap_list, force: power > 0)
-      end
-    end
-
-    {mtime, total || zhinfos.size}
-  end
-
-  alias Chlist = Array(Array(String))
-
-  def update!(chlist : Chlist, force : Bool = false)
-    chlist.each_slice(PAGE).with_index do |list, page|
-      info_map = load_info(page)
-
-      list.each_with_index(page * PAGE + 1) do |infos, idx|
-        chidx = idx.to_s
-
-        if force || zhinfos.set(chidx, infos)
-          update_info!(info_map, chidx, infos)
+        puller.chap_list.each_with_index(1) do |infos, index|
+          origs.set(index.to_s, infos)
         end
-      end
 
-      info_map.save!(clean: false)
+        origs.save!(clean: false)
+      end
     end
 
-    update_last!(chlist.last(6))
-    zhinfos.save!(clean: false)
+    {mtime, total || origs.size}
   end
 
-  def update_info!(info_map : ValueMap, chidx : String, infos : Array(String))
+  def trans!(info_map : ValueMap, chidx : String, infos : Array(String))
     schid = cols[0]
     vi_title = cvter.tl_title(cols[1])
     vi_label = cols[2]?.try { |x| cvter.tl_title(x) } || "Chính văn"
@@ -91,23 +73,24 @@ class CV::Chinfo
     info_map.set(chidx, [schid, vi_title, vi_label, url_slug])
   end
 
-  def retranslate!
-    chinfo = zhinfos.data.to_a
+  # def trans!(redo : Bool = false)
 
-    chinfo.each_slice(PAGE).with_index do |list, page|
-      info_map = load_info(page)
-      list.each { |chidx, infos| update_info!(info_map, chidx, infos) }
-      info_map.save!(clean: false)
-    end
+  #   chinfo = origs.data.to_a
 
-    update_last!(chinfo.last(6).map(&.[1]))
-  end
+  #   chinfo.each_slice(PAGE).with_index do |list, page|
+  #     info_map = load_info(page)
+  #     list.each { |chidx, infos| update_info!(info_map, chidx, infos) }
+  #     info_map.save!(clean: false)
+  #   end
 
-  def update_last!(chaps : Chlist)
-    tran_map = load_tran("last")
-    chaps.each_with_index { |infos, idx| update_info!(tran_map, idx.to_s, infos) }
-    tran_map.save!(clean: false)
-  end
+  #   update_last!(chinfo.last(6).map(&.[1]))
+  # end
+
+  # def update_last!(chaps : Chlist)
+  #   tran_map = load_tran("last")
+  #   chaps.each_with_index { |infos, idx| update_info!(tran_map, idx.to_s, infos) }
+  #   tran_map.save!(clean: false)
+  # end
 
   def url_for(idx : Int32)
     return unless chap = heads[idx]?

@@ -63,21 +63,18 @@ class CV::ValueMap
     value
   end
 
-  def get!(key : String, flush : Int32 = 1)
+  def get!(key : String)
     unless value = @data[key]?
       value = yield
-      set!(value, flush: flush)
+      set!(key, value)
     end
 
     value
   end
 
-  def set!(key : String, vals : Array(String), flush : Int32 = 1) : Bool
+  def set!(key : String, vals : Array(String)) : Bool
     return false unless set(key, vals)
-
     @upds[key] = vals
-    save! if @upds.size >= flush
-
     true
   end
 
@@ -97,6 +94,10 @@ class CV::ValueMap
 
   def set(key : String, vals : String) : Bool
     set(key, vals.split('\t'))
+  end
+
+  def set(key : String, val)
+    set(key, [val.to_s])
   end
 
   def get(key : String) : Array(String)?

@@ -6,7 +6,7 @@ require "./_seeding.cr"
 
 class CV::Seeds::MapRemote
   def initialize(@sname : String)
-    @seeding = InfoSeed.new(@sname)
+    @meta = InfoSeed.new(@sname)
   end
 
   def prep!(upto = 1)
@@ -75,8 +75,8 @@ class CV::Seeds::MapRemote
         atime = (Time.utc + 3.minutes).to_unix
       end
 
-      if mode < 2 || @seeding._index.has_key?(snvid)
-        next if @seeding._atime.ival_64(snvid) >= atime
+      if mode < 2 || @meta._index.has_key?(snvid)
+        next if @meta._index.ival_64(snvid) >= atime
         valid = 1.years
       elsif mode < 2
         valid = 2.years
@@ -84,29 +84,27 @@ class CV::Seeds::MapRemote
         valid = 1.hours
       end
 
-      @seeding._atime.set!(snvid, atime)
-
       parser = RmNvinfo.new(@sname, snvid, valid: valid)
       btitle, author = parser.btitle, parser.author
-      next if btitle.empty? || author.empty?
 
-      if @seeding._index.set!(snvid, [btitle, author])
-        @seeding.set_intro(snvid, parser.bintro)
-        @seeding.genres.set!(snvid, clean_genres(parser.genres))
-        @seeding.bcover.set!(snvid, parser.bcover)
+      if @meta._index.set!(snvid, [atime.to_s, btitle, author])
+        @meta.set_intro(snvid, parser.bintro)
+        @meta.genres.set!(snvid, clean_genres(parser.genres))
+        @meta.bcover.set!(snvid, parser.bcover)
       end
 
-      @seeding.status.set!(snvid, parser.status_int)
+      @meta.update.set!(snvid, parser.update_int)
+      @meta.status.set!(snvid, parser.status_int)
 
       if idx % 100 == 0
         puts "- [#{@sname}]: <#{idx}/#{upto}>"
-        @seeding.save!(mode: :upds)
+        @meta.save!(clean: false)
       end
     rescue err
       puts err.colorize.red
     end
 
-    @seeding.save!(mode: :full)
+    @meta.save!(clean: true)
   end
 
   private def clean_genres(input : Array(String))
@@ -117,43 +115,39 @@ class CV::Seeds::MapRemote
 
   private def access_time(snvid : String) : Int64?
     file = RmSpider.nvinfo_file(@sname, snvid)
-    File.info?(file).try(&.modification_time.to_unix)
+    InfoSeed.get_atime(file)
   end
 
   def seed!(mode = 0)
-    authors = Set(String).new(NvValues.author.vals.map(&.first))
-    checked = Set(String).new
+    input = {} of Tuple(String, String) => String
 
-    input = @seeding._index.data.to_a
-    input.sort_by!(&.[0].to_i.-)
+    @meta._index.data.each do |snvid, infos|
+      _, btitle, author = infos
 
-    input.each_with_index(1) do |(snvid, vals), idx|
-      btitle, author = vals
-      btitle, author = NvHelper.fix_nvname(btitle, author)
+      tuple = NvUtils.fix_labels(btitle, author)
+      next if input[tuple]?.try(&.to_i.> snvid.to_i)
 
-      nvname = "#{btitle}\t#{author}"
-      next if checked.includes?(nvname)
-      checked.add(nvname)
+      input[tuple] = snvid
+    end
 
-      if authors.includes?(author) || should_pick?(snvid)
-        bhash, _ = @seeding.set!(snvid, mode: mode)
+    input.each_with_index(1) do |(tuple, snvid), idx|
+      btitle, author = tuple
 
-        if NvValues.voters.ival(bhash) == 0
-          NvValues.set_score(bhash, Random.rand(1..5), Random.rand(30..50))
-        end
+      if should_pick?(snvid) || InfoSeed.qualified_author?(author)
+        nvinfo, _exists = @meta.upsert!(snvid, mode: mode)
+        nvinfo.set_scores(Random.rand(10..30), Random.rand(40..60)) if nvinfo.voters == 0
+        nvinfo.save!(clean: true)
       end
 
       if idx % 100 == 0
         puts "- [#{@sname}] <#{idx}/#{input.size}>".colorize.blue
-        Nvinfo.save!(mode: :upds)
+        NvIndex.save!(clean: false)
       end
     rescue err
       puts err
-      puts [snvid, vals]
-      gets
     end
 
-    Nvinfo.save!(mode: :full)
+    NvIndex.save!(clean: true)
   end
 
   private def should_pick?(snvid : String)
@@ -181,8 +175,8 @@ class CV::Seeds::MapRemote
 
     worker = new(site)
     worker.prep!(upto) if mode > 0
-    # worker.init!(upto, mode: mode)
-    # worker.seed!(mode) if mode >= 0
+    worker.init!(upto, mode: mode)
+    worker.seed!(mode) if mode >= 0
   end
 end
 

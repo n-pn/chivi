@@ -10,7 +10,9 @@ require "../../src/filedb/nvinfo"
 require "../../src/filedb/chinfo"
 
 class CV::InfoSeed
-  class_getter author_scores : ValueMap { "_db/_seeds/author_scores.tsv" }
+  class_getter author_scores : ValueMap do
+    ValueMap.new("_db/_seeds/author_scores.tsv")
+  end
 
   def self.qualified_author?(author : String, minimum_score = 2000)
     return false unless score = author_scores.ival(author)
@@ -26,13 +28,17 @@ class CV::InfoSeed
     author_scores.set!(author, [score.to_s])
   end
 
+  def self.get_atime(file : String) : Int64?
+    File.info?(file).try(&.modification_time.to_unix)
+  end
+
   getter name : String
   getter rdir : String
 
   getter _index : ValueMap { ValueMap.new(map_path("_index")) }
 
-  getter bcover : ValueMap { ValueMap.new(map_path("bcover")) }
   getter genres : ValueMap { ValueMap.new(map_path("genres")) }
+  getter bcover : ValueMap { ValueMap.new(map_path("bcover")) }
 
   getter rating : ValueMap { ValueMap.new(map_path("rating")) }
   getter hidden : ValueMap { ValueMap.new(map_path("hidden")) }
@@ -45,11 +51,10 @@ class CV::InfoSeed
     @intro_dir = "#{@rdir}/intros"
     ::FileUtils.mkdir_p(@intro_dir)
 
-    # if @name != "yousuu"
-    #   ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/origs")
-    #   ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/infos")
-    #   ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}/stats")
-    # end
+    if @name != "yousuu"
+      ::FileUtils.mkdir_p("_db/chdata/zhinfos/#{@name}")
+      ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}")
+    end
   end
 
   def map_path(fname : String)
@@ -85,46 +90,37 @@ class CV::InfoSeed
 
   def get_genres(snvid : String)
     zh_genres = genres.get(snvid) || [] of String
-    zh_genres = zh_genres.map { |x| NvHelper.fix_zh_genre(x) }.flatten.uniq
+    zh_genres = zh_genres.map { |x| NvUtils.fix_genre_zh(x) }.flatten.uniq
 
-    vi_genres = zh_genres.map { |x| NvHelper.fix_vi_genre(x) }.uniq
+    vi_genres = zh_genres.map { |x| NvUtils.fix_genre_vi(x) }.uniq
     vi_genres.reject!("Loại khác")
     vi_genres.empty? ? ["Loại khác"] : vi_genres
   end
 
-  def set!(snvid : String, mode = 0) : Tuple(String, Bool)
-    btitle, author = _index.get(snvid).not_nil!
-    bhash, existed = Nvinfo.set!(btitle, author)
+  def upsert!(snvid : String, mode = 0) : Tuple(Nvinfo, Bool)
+    access, btitle, author = _index.get(snvid).not_nil!
+    nvinfo, existed = Nvinfo.upsert!(btitle, author, fixed: false)
 
     genres = get_genres(snvid)
-    Nvinfo.set_genres(bhash, genres) unless genres.empty?
+    nvinfo.set_genres(genres) unless genres.empty?
 
     bintro = get_intro(snvid)
-    NvBintro.set_bintro(bhash, bintro) unless bintro.empty?
+    NvIntro.set_intro(nvinfo.bhash, bintro, force: false) unless bintro.empty?
 
-    mtime = _utime.ival_64(snvid)
-    NvValues.set_atime(bhash, mtime // 60)
-    NvValues.set_utime(bhash, mtime)
+    nvinfo.set_status(status.ival(snvid))
 
-    NvValues.set_status(bhash, status.ival(snvid, 0))
+    mftime = update.ival_64(snvid)
+    nvinfo.set_update(mftime)
+    nvinfo.bump_access!(mftime)
 
-    if @name != "yousuu"
-      chseed = NvChseed.get_chseed(bhash)
+    upsert_chinfo!(nvinfo, snvid, mode: mode) if @name != "yousuu"
 
-      NvChseed.put_chseed(@name, bhash, snvid)
-
-      upsert_chinfo!(snvid, bhash, mode: mode)
-    end
-
-    {bhash, existed}
+    {nvinfo, existed}
   end
 
-  def upsert_chinfo!(snvid : String, bhash : String, mode = 0) : Nil
-    chinfo = Chinfo.new(bhash, @name, snvid)
-
-    mtime, total = chinfo.fetch!(force: mode > 1, valid: 1.years)
-    Nvinfo.load(bhash).put_chseed!(@name, snvid, mtime, total)
-
-    chinfo.trans!(force: mode > 1)
+  def upsert_chinfo!(nvinfo : Nvinfo, snvid : String, mode = 0) : Nil
+    chinfo = Chinfo.new(nvinfo.bhash, @name, snvid)
+    mtime, total = chinfo.fetch!(mode: mode, valid: 1.years)
+    nvinfo.set_chseed(@name, snvid, mtime, total)
   end
 end

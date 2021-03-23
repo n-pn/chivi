@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SSH=nipin@ssh.chivi.xyz:www/chivi.xyz
+SSH=nipin@ssh.chivi.xyz:srv/chivi.xyz
 
 rsync -aiz --no-p "$SSH/_db/userdb/viusers" "_db/userdb"
 rsync -aiz --no-p "$SSH/_db/marked/" "_db/marked/"

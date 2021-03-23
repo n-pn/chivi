@@ -51,11 +51,11 @@ module CV::NvUtils
     authors_vi.fval(author_zh) || to_hanviet(author_zh)
   end
 
-  def fix_zh_genre(zh_genre : String) : Array(String)
+  def fix_genre_zh(zh_genre : String) : Array(String)
     bgenres_zh.get(zh_genre) || [] of String
   end
 
-  def fix_vi_genre(zh_genre : String) : String
+  def fix_genre_vi(zh_genre : String) : String
     bgenres_vi.fval(zh_genre) || to_hanviet(zh_genre)
   end
 end
