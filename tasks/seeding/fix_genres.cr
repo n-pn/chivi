@@ -1,24 +1,33 @@
 require "../../src/filedb/nvinfo"
 
-class CV::Seeds::FixGenres
-  getter source : ValueMap = NvValues.source
+class CV::FixGenres
+  ORDERS = {"hetushu", "shubaow", "paoshu8",
+            "zhwenpg", "5200", "nofff",
+            "zxcs_me", "duokan8", "rengshu",
+            "xbiquge", "bqg_5200"}
 
   def fix!
-    @source.data.each_with_index(1) do |(bhash, values), idx|
+    bhashes = Dir.children(Nvinfo::DIR).map { |x| File.basename(x, ".tsv") }
+    bhashes.each_with_index(1) do |bhash, idx|
+      nvinfo = Nvinfo.new(bhash)
+
       genres = [] of String
       yousuu = [] of String
 
-      values.each do |entry|
-        sname, snvid = entry.split("/")
+      chseed = nvinfo._meta.get("chseed") || ["chivi"]
+      chseed.sort_by! { |sname| ORDERS.index(sname) || 99 }
+
+      chseed.each do |sname|
+        snvid = nvinfo.get_chseed(sname)[0]
         get_genres(sname, snvid).each do |genre|
-          genres.concat(NvHelper.fix_zh_genre(genre))
+          genres.concat(NvUtils.fix_genre_zh(genre))
         end
       end
 
-      if y_nvid = NvValues.yousuu.fval(bhash)
+      if y_nvid = nvinfo._meta.fval("yousuu")
         get_genres("yousuu", y_nvid).each do |genre|
-          yousuu.concat(NvHelper.fix_zh_genre(genre))
-          genres.concat(NvHelper.fix_zh_genre(genre))
+          yousuu.concat(NvUtils.fix_genre_zh(genre))
+          genres.concat(NvUtils.fix_genre_zh(genre))
         end
       end
 
@@ -35,34 +44,29 @@ class CV::Seeds::FixGenres
         zh_genres = [] of String
       end
 
-      vi_genres = zh_genres.map { |g| NvHelper.fix_vi_genre(g) }
+      vi_genres = zh_genres.map { |g| NvUtils.fix_genre_vi(g) }
       vi_genres = ["Loại khác"] if vi_genres.empty?
-      Nvinfo.set_genres(bhash, vi_genres, force: true)
+
+      nvinfo.set_genres(vi_genres, force: true)
+      nvinfo.save!(clean: false)
 
       if idx % 100 == 0
-        puts "- [fix_genres] <#{idx}/#{@source.size}>".colorize.blue
-        save!(mode: :upds)
+        puts "- [fix_genres] <#{idx}/#{bhashes.size}>".colorize.blue
+        NvIndex.save!(clean: false)
       end
     end
 
-    save!(mode: :full)
-  end
-
-  def get_genres(sname : String, snvid : String)
-    genre_map(sname).get(snvid) || [] of String
+    NvIndex.save!(clean: true)
   end
 
   getter cache = {} of String => ValueMap
 
-  def genre_map(sname : String)
-    cache[sname] ||= ValueMap.new("_db/_seeds/#{sname}/genres.tsv", mode: 2)
-  end
-
-  def save!(mode : Symbol = :full)
-    NvValues.genres.save!(mode: mode)
-    NvTokens.genres.save!(mode: mode)
+  def get_genres(sname : String, snvid : String)
+    file = "_db/_seeds/#{sname}/genres.tsv"
+    map = cache[sname] ||= ValueMap.new(file, mode: 1)
+    map.get(snvid) || [] of String
   end
 end
 
-worker = CV::Seeds::FixGenres.new
+worker = CV::FixGenres.new
 worker.fix!
