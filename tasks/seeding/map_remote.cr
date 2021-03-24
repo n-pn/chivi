@@ -134,8 +134,9 @@ class CV::Seeds::MapRemote
       btitle, author = tuple
 
       if should_pick?(snvid) || InfoSeed.qualified_author?(author)
-        nvinfo, _exists = @meta.upsert!(snvid, mode: mode)
+        nvinfo, _exists = @meta.upsert!(snvid)
         nvinfo.set_scores(Random.rand(10..30), Random.rand(40..60)) if nvinfo.voters == 0
+        @meta.upsert_chinfo!(nvinfo, snvid, mode: mode)
         nvinfo.save!(clean: false)
       end
 

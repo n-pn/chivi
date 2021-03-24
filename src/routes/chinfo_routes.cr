@@ -39,7 +39,6 @@ module CV::Server
           json.field "lasts" do
             json.array do
               chinfo.last(4) do |chidx, infos|
-                puts [chidx, infos]
                 Utils.chap_json(json, chidx, infos)
               end
             end

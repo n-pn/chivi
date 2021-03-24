@@ -32,8 +32,8 @@ class CV::InfoSeed
     File.info?(file).try(&.modification_time.to_unix)
   end
 
-  getter name : String
-  getter rdir : String
+  getter sname : String
+  getter seeds_dir : String
 
   getter _index : ValueMap { ValueMap.new(map_path("_index")) }
 
@@ -46,19 +46,16 @@ class CV::InfoSeed
   getter status : ValueMap { ValueMap.new(map_path("status")) }
   getter update : ValueMap { ValueMap.new(map_path("update")) }
 
-  def initialize(@name)
-    @rdir = "_db/_seeds/#{@name}"
-    @intro_dir = "#{@rdir}/intros"
-    ::FileUtils.mkdir_p(@intro_dir)
+  def initialize(@sname)
+    @seeds_dir = "_db/_seeds/#{@sname}"
+    @intro_dir = "#{@seeds_dir}/intros"
 
-    if @name != "yousuu"
-      ::FileUtils.mkdir_p("_db/chdata/zhinfos/#{@name}")
-      ::FileUtils.mkdir_p("_db/chdata/chinfos/#{@name}")
-    end
+    ::FileUtils.mkdir_p(@intro_dir)
+    ::FileUtils.mkdir_p("_db/chdata/zhinfos/#{@sname}") if @sname != "yousuu"
   end
 
   def map_path(fname : String)
-    "#{@rdir}/#{fname}.tsv"
+    "#{@seeds_dir}/#{fname}.tsv"
   end
 
   def save!(clean : Bool = false)
@@ -97,7 +94,7 @@ class CV::InfoSeed
     vi_genres.empty? ? ["Loại khác"] : vi_genres
   end
 
-  def upsert!(snvid : String, mode = 0) : Tuple(Nvinfo, Bool)
+  def upsert!(snvid : String) : Tuple(Nvinfo, Bool)
     access, btitle, author = _index.get(snvid).not_nil!
     nvinfo, existed = Nvinfo.upsert!(btitle, author, fixed: false)
 
@@ -113,14 +110,12 @@ class CV::InfoSeed
     nvinfo.set_update(mftime)
     nvinfo.bump_access!(mftime)
 
-    upsert_chinfo!(nvinfo, snvid, mode: mode) if @name != "yousuu"
-
     {nvinfo, existed}
   end
 
   def upsert_chinfo!(nvinfo : Nvinfo, snvid : String, mode = 0) : Nil
-    chinfo = Chinfo.new(nvinfo.bhash, @name, snvid)
-    mtime, total = chinfo.fetch!(mode: mode, valid: 1.years)
-    nvinfo.set_chseed(@name, snvid, mtime, total)
+    chinfo = Chinfo.new(nvinfo.bhash, @sname, snvid)
+    mtime, total = chinfo.fetch!(mode: mode, valid: 2.years)
+    nvinfo.set_chseed(@sname, snvid, mtime, total)
   end
 end

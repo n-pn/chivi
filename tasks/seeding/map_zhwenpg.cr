@@ -94,6 +94,7 @@ class CV::Seeds::MapZhwenpg
       colored = existed ? :yellow : :green
 
       puts "- <#{idx}/#{checked.size}> [#{bslug}] saved!".colorize(colored)
+      @meta.upsert_chinfo!(nvinfo, snvid, mode: 0)
       nvinfo.save!(clean: false)
     end
 

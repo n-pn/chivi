@@ -19,7 +19,7 @@
     if (err1) return this.error(404, nvinfo)
 
     const [chidx, sname] = params.chap.split('-').reverse()
-    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
+    const [snvid] = nvinfo['$' + sname] || [nvinfo.bhash]
 
     if (!snvid) return this.error(404, 'Nguồn truyện không tồn tại!')
     const chinfo = { sname, snvid, chidx }

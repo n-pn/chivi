@@ -67,8 +67,7 @@ class CV::Chinfo
   PAGE = 100
 
   def last_schid
-    return "" unless last = origs.data.last_value?
-    last[0]
+    origs.data.last_value?.try(&.first?) || ""
   end
 
   def fetch!(power = 4, mode = 2, valid = 5.minutes) : Tuple(Int64, Int32)
@@ -82,13 +81,12 @@ class CV::Chinfo
         total = puller.chap_list.size
 
         puller.chap_list.each_with_index(1) do |infos, index|
-          origs.set(index.to_s, infos)
+          origs.set!(index.to_s, infos)
         end
 
         origs.save!(clean: false)
       end
     end
-
     {mtime, total || origs.size}
   end
 
