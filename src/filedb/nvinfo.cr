@@ -47,6 +47,10 @@ class CV::Nvinfo
     author[1]? || author[0]
   end
 
+  def mftime
+    @_meta.ival_64("update")
+  end
+
   def to_json(json : JSON::Builder, full : Bool = false)
     json.object do
       json.field "bhash", @bhash
@@ -74,7 +78,12 @@ class CV::Nvinfo
         json.field "yousuu", @_meta.fval("yousuu")
         json.field "origin", @_meta.fval("origin")
 
-        json.field "chseed", @_meta.get("chseed") || ["chivi"]
+        chseed = @_meta.get("chseed") || ["chivi"]
+        json.field "chseed", chseed
+
+        chseed.each do |sname|
+          json.field "$#{sname}", get_chseed(sname)
+        end
       end
     end
   end
@@ -202,7 +211,7 @@ class CV::Nvinfo
   end
 
   def self.find_by_slug(bslug : String)
-    NvIndex._index.keys(bslug).first
+    NvIndex._index.keys(bslug).first?
   end
 
   def self.each(order_map = NvIndex.weight, skip = 0, take = 24, matched : Set(String)? = nil)

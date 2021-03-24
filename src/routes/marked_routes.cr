@@ -34,7 +34,7 @@ module CV::Server
     matched = Marked.all_user_books(u_uname, nvmark)
 
     matched.each do |bhash|
-      next if NvValues._index.has_key?(bhash)
+      next if NvIndex._index.has_key?(bhash)
       # puts bhash
       Marked.unmark_book(u_uname, bhash)
       matched.delete(bhash)

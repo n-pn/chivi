@@ -9,17 +9,13 @@
 
     const bhash = nvinfo.bhash
 
-    const seeds = Object.keys(nvinfo.chseed)
-    const sname = req.query.sname || seeds[0] || 'chivi'
-    nvinfo.chseed['chivi'] = nvinfo.chseed['chivi'] || [nvinfo.bhash, 0, 0]
+    const seeds = nvinfo.chseed || ['chivi']
+    const sname = req.query.sname || seeds[0]
 
-    const [snvid] = nvinfo.chseed[sname]
+    const [snvid] = nvinfo['$' + sname] || [bhash]
 
     const page = +(req.query.page || 1)
     const params = { sname, snvid, page }
-
-    const _res = { nvinfo, params }
-    if (!params.snvid) return _res
 
     const [err2, chseed] = await get_chseed(this.fetch, bhash, params)
     if (err2) this.error(err2, chseed)
@@ -30,8 +26,8 @@
     return { nvinfo, chseed, chlist, params }
   }
 
-  function split_chseed({ chseed }, { sname }) {
-    const seeds = Object.keys(chseed)
+  function split_chseed(nvinfo, { sname }) {
+    const seeds = nvinfo.chseed || ['chivi']
     if (seeds.length < 6) return [seeds, []]
 
     let main_seeds = seeds.slice(0, 4)
@@ -106,7 +102,7 @@
   async function load_chseed(evt, sname, mode = 0) {
     evt.preventDefault()
 
-    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
+    const [snvid] = nvinfo['$' + sname] || [nvinfo.bhash]
 
     if (params.sname != sname) {
       params = { ...params, sname, snvid }
@@ -184,7 +180,8 @@
   let new_snvid = ''
 
   async function add_new_seed(evt) {
-    nvinfo.chseed[new_sname] = [new_snvid, 0, 0]
+    nvinfo.chseed.push(new_sname)
+    nvinfo['$' + new_sname] = [new_snvid, 0, 0]
     add_seed = false
 
     await load_chseed(evt, new_sname, 1)

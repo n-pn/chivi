@@ -52,7 +52,7 @@ module CV::NvIndex
     end
   {% end %}
 
-  def self.order_map(order : String? = nil)
+  def order_map(order : String? = nil)
     case order
     when "access" then NvIndex.access
     when "update" then NvIndex.update
@@ -76,6 +76,8 @@ module CV::NvIndex
   end
 
   def save!(clean : Bool = false)
+    _index.try(&.save!(clean: clean))
+
     {% for type in TOKENS %}
       @@{{ type.id }}.try(&.save!(clean: clean))
     {% end %}
@@ -85,7 +87,7 @@ module CV::NvIndex
     {% end %}
   end
 
-  def filter(opts : Hash(String, String), matched : Set(String)? = nil)
+  def filter(opts, matched : Set(String)? = nil)
     {"btitle", "author", "genre", "sname"}.each do |type|
       next unless inp = opts[type]?
 
@@ -95,7 +97,7 @@ module CV::NvIndex
         when "author" then filter_author(inp, matched)
         when "genre"  then filter_bgenre(inp, matched)
         when "sname"  then filter_chseed(inp, matched)
-        else               matched
+        else               Set(String).new
         end
 
       return matched if matched.empty?
@@ -122,7 +124,7 @@ module CV::NvIndex
   end
 
   def filter_chseed(inp : String, prevs : Set(String)? = nil)
-    res = chseed.keys(query.downcase)
+    res = chseed.keys(inp.downcase)
     prevs ? prevs & res : res
   end
 end

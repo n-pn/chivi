@@ -32,7 +32,7 @@ module CV::Server::RouteUtils
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
     take = RouteUtils.parse_int(env.params.query["take"]?, min: 1, max: 24)
 
-    sorts = Nvinfo.get_order_map(env.params.query["order"]?)
+    sorts = NvIndex.order_map(env.params.query["order"]?)
     total = matched ? matched.size : sorts.size
 
     json_res(env) do |res|

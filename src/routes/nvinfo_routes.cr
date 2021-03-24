@@ -3,7 +3,7 @@ require "../filedb/marked"
 
 module CV::Server
   get "/api/nvinfos" do |env|
-    matched = NvTokens.glob(env.params.query)
+    matched = NvIndex.filter(env.params.query)
     RouteUtils.books_res(env, matched)
   end
 
@@ -15,7 +15,7 @@ module CV::Server
     nvinfo = Nvinfo.load(bhash)
     Nvinfo.load(bhash).bump_access!
 
-    RouteUtils.json_res(env, cached: nvinfo._utime) do |res|
+    RouteUtils.json_res(env, cached: nvinfo.mftime) do |res|
       JSON.build(res) { |json| nvinfo.to_json(json, true) }
     end
   end

@@ -1,58 +1,51 @@
 require "../../src/filedb/nvinfo"
 
-class CV::Seeds::FixIntros
-  getter source : ValueMap = NvValues.source
+class CV::FixIntros
+  ORDERS = {"hetushu", "shubaow", "paoshu8",
+            "zhwenpg", "5200", "nofff",
+            "zxcs_me", "duokan8", "rengshu",
+            "xbiquge", "bqg_5200"}
 
   def fix!
-    @source.data.each_with_index(1) do |(bhash, values), idx|
+    bhashes = Dir.children(Nvinfo::DIR).map { |x| File.basename(x, ".tsv") }
+    bhashes.each_with_index(1) do |bhash, idx|
+      nvinfo = Nvinfo.new(bhash)
+
       yintro, bintro = nil, nil
 
-      if y_nvid = NvValues.yousuu.fval(bhash)
+      if y_nvid = nvinfo._meta.fval("yousuu")
         yintro = get_intro("yousuu", y_nvid)
 
         if yintro.size > 1
-          NvValues.set_bintro(bhash, yintro, force: true)
+          nvinfo.set_bintro(yintro, force: true)
           next
         end
       end
 
-      seeds = values.each_with_object({} of String => String) do |x, h|
-        sname, snvid = x.split("/")
-        h[sname] = snvid
-      end
+      chseed = nvinfo._meta.get("chseed") || ["chivi"]
+      chseed.sort_by! { |sname| ORDERS.index(sname) || 99 }
 
-      {"hetushu", "shubaow", "paoshu8", "zhwenpg", "5200", "nofff",
-       "zxcs_me", "duokan8", "rengshu", "xbiquge", "bqg_5200"}.each do |seed|
-        next unless snvid = seeds[seed]?
-        bintro = get_intro(seed, snvid)
+      chseed.each do |sname|
+        snvid = nvinfo.get_chseed(sname)[0]
+        bintro = get_intro(sname, snvid)
         break if bintro.size > 1
       end
 
-      unless bintro && !bintro.empty?
-        if yintro
-          bintro = yintro
-        elsif snvid = seeds["jx_la"]?
-          bintro = get_intro("jx_la", snvid)
-        else
-          next
-        end
-      end
-
-      NvValues.set_bintro(bhash, bintro, force: true)
+      nvinfo.set_bintro(bintro, force: true) if bintro
 
       if idx % 100 == 0
-        puts "- [fix_intros] <#{idx}/#{@source.size}>".colorize.blue
+        puts "- [fix_intros] <#{idx}/#{bhashes.size}>".colorize.blue
       end
     end
   end
 
-  def get_intro(seed : String, snvid : String)
-    intro_file = "_db/_seeds/#{seed}/intros/#{snvid}.txt"
+  def get_intro(sname : String, snvid : String)
+    intro_file = "_db/_seeds/#{sname}/intros/#{snvid}.txt"
     File.read_lines(intro_file).map(&.strip).reject(&.empty?)
   rescue err
     [] of String
   end
 end
 
-worker = CV::Seeds::FixIntros.new
+worker = CV::FixIntros.new
 worker.fix!

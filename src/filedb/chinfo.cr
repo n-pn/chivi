@@ -24,7 +24,7 @@ class CV::Chinfo
   getter origs : ValueMap { ValueMap.new("_db/chdata/zhinfos/#{@sname}/#{@snvid}.tsv") }
 
   def initialize(@bhash, @sname, @snvid)
-    @infos = {} of String => ValueMap
+    @infos = {} of String => Array(String)
 
     @info_dir = "_db/chdata/chinfos/#{@sname}/#{@snvid}"
     @text_dir = "_db/chdata/zhtexts/#{@sname}/#{@snvid}"
@@ -32,8 +32,36 @@ class CV::Chinfo
     {@info_dir, @text_dir}.each { |x| ::FileUtils.mkdir_p(x) }
   end
 
-  def load_info(label : String)
-    @infos[label] ||= ValueMap.new("#{@info_dir}/#{label}.tsv", mode: 1)
+  # def load_info(label : String)
+  #   @infos[label] ||= begin
+  #     file = "#{@info_dir}/#{label}.tsv"
+
+  #     unless File.info?(file).try(&.modification_time.> Time.utc - 1.days)
+  #       build_info(file, label)
+  #     end
+
+  #     ValueMap.new(file, mode: 1)
+  #   end
+  # end
+
+  # private def build_info(file : String, label : String)
+  # end
+
+  def get_info(index : Int32)
+    get_info(index.to_s)
+  end
+
+  def get_info(chidx : String)
+    @infos[chidx] ||= begin
+      orig = origs.get(chidx) || [chidx, ""]
+      schid = orig[0]
+
+      vi_title = cvter.tl_title(orig[1])
+      vi_label = orig[2]?.try { |x| cvter.tl_title(x) } || "Chính văn"
+      url_slug = TextUtils.tokenize(vi_title).first(10).join("-")
+
+      [schid, vi_title, vi_label, url_slug]
+    end
   end
 
   PAGE = 100
@@ -93,15 +121,20 @@ class CV::Chinfo
   # end
 
   def url_for(idx : Int32)
-    return unless chap = heads[idx]?
-    "-#{chap[3]}-#{sname}-#{idx + 1}"
+    return unless info = get_info(idx.to_s)
+    "-#{info[3]}-#{sname}-#{idx + 1}"
+  end
+
+  def last(take = 4)
+    origs.data.keys.to_a.last(take).each do |chidx|
+      yield chidx, get_info(chidx)
+    end
   end
 
   def each(from : Int32 = 0, upto : Int32 = 30)
     from.upto(upto - 1) do |idx|
       chidx = (idx + 1).to_s
-      # TODO: optimize performance
-      yield chidx, load_info(idx // PAGE).get(chidx)
+      yield chidx, get_info(chidx)
     end
   end
 

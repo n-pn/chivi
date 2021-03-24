@@ -20,7 +20,7 @@
 
   $: vi_status = map_status(nvinfo.status)
   $: book_intro = nvinfo.bintro.join('').substring(0, 300)
-  $: updated_at = new Date(nvinfo._utime * 1000)
+  $: updated_at = new Date(nvinfo.update * 1000)
 
   let nvmark = ''
   onMount(async () => {

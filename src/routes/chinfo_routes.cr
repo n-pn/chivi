@@ -25,7 +25,7 @@ module CV::Server
 
     if mode > 0
       mtime, total = chinfo.fetch!(u_power, mode)
-      nvinfo.put_chseed!(sname, snvid, mtime, total) if mtime >= 0
+      nvinfo.set_chseed(sname, snvid, mtime, total) if mtime >= 0
     else
       _, mtime, total = nvinfo.get_chseed(sname)
     end
@@ -37,8 +37,11 @@ module CV::Server
           json.field "utime", mtime
 
           json.field "lasts" do
-            chinfo.load_info("last").data.each do |index, infos|
-              Utils.chap_json(json, total - index.to_s, infos)
+            json.array do
+              chinfo.last(4) do |chidx, infos|
+                puts [chidx, infos]
+                Utils.chap_json(json, chidx, infos)
+              end
             end
           end
         end

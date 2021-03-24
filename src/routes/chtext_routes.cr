@@ -10,14 +10,14 @@ module CV::Server
     chidx = 1 if chidx < 1
 
     chinfo = Chinfo.load(bhash, sname, snvid)
-    unless curr_chap = chinfo.heads[chidx - 1]?
+    unless curr_chap = chinfo.get_info(chidx - 1)
       halt env, status_code: 404, response: "Chương tiết không tồn tại!"
     end
 
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
         json.object do
-          json.field "total", chinfo.heads.size
+          json.field "total", chinfo.origs.size
           json.field "chidx", chidx
           json.field "schid", curr_chap[0]
           json.field "title", curr_chap[1]
