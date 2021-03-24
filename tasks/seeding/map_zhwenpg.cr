@@ -88,13 +88,13 @@ class CV::Seeds::MapZhwenpg
 
     checked.each_with_index(1) do |snvid, idx|
       nvinfo, existed = @meta.upsert!(snvid)
-      fake_rating!(nvinfo, snvid) if nvinfo.infos.ival("voters") == 0
+      fake_rating!(nvinfo, snvid) if nvinfo._meta.ival("voters") == 0
 
-      bslug = nvinfo.infos.fval("bslug")
+      bslug = nvinfo._meta.fval("bslug")
       colored = existed ? :yellow : :green
 
       puts "- <#{idx}/#{checked.size}> [#{bslug}] saved!".colorize(colored)
-      nvinfo.save!(clean: true)
+      nvinfo.save!(clean: false)
     end
 
     NvIndex.save!(clean: true)
@@ -103,8 +103,8 @@ class CV::Seeds::MapZhwenpg
   FAKE_RATING = ValueMap.new("tasks/seeding/fake_ratings.tsv", mode: 2)
 
   def fake_rating!(nvinfo : Nvinfo, snvid : String)
-    btitle = nvinfo.infos.fval("btitle")
-    author = nvinfo.infos.fval("author")
+    btitle = nvinfo._meta.fval("btitle")
+    author = nvinfo._meta.fval("author")
 
     if vals = FAKE_RATING.get("#{btitle}  #{author}")
       voters, rating = vals[0].to_i, vals[1].to_i

@@ -6,66 +6,75 @@ class CV::Nvinfo
   # include JSON::Serializable
 
   getter bhash : String
-  getter infos : ValueMap
+  getter _meta : ValueMap
+
+  getter btitle : Array(String) { @_meta.get("btitle") || [""] }
+  getter author : Array(String) { @_meta.get("author") || [""] }
+  getter genres : Array(String) { @_meta.get("genres") || ["Loại khác"] }
+  getter bcover : String { @_meta.fval("bcover") }
+  getter voters : Int32 { @_meta.ival("voters") }
+  getter rating : Int32 { @_meta.ival("rating") // 10 }
 
   DIR = "_db/nvdata/nvinfos"
   ::FileUtils.mkdir_p(DIR)
 
   def initialize(@bhash)
     info_file = File.join(DIR, "#{@bhash}.tsv")
-    @infos = ValueMap.new(info_file)
+    @_meta = ValueMap.new(info_file)
   end
 
   def inspect(io : IO, full : Bool = false)
     JSON.build(io) { |json| to_json(json, full) }
   end
 
-  def genres
-    @infos.get("genres") || ["Loại khác"]
+  def btitle_zh
+    btitle[0]
   end
 
-  def bcover
-    @infos.fval("bcover")
+  def btitle_hv
+    btitle[1]? || btitle[0]
   end
 
-  def voters
-    @infos.ival("voters")
+  def btitle_vi
+    btitle[2]? || btitle[1]? || btitle[0]
   end
 
-  def rating
-    @infos.ival("rating")
+  def author_zh
+    author[0]
+  end
+
+  def author_vi
+    author[1]? || author[0]
   end
 
   def to_json(json : JSON::Builder, full : Bool = false)
     json.object do
       json.field "bhash", @bhash
-      json.field "bslug", @infos.fval("bslug")
+      json.field "bslug", @_meta.fval("bslug")
 
-      btitle = @infos.get("btitle").not_nil!
-      json.field "btitle_zh", btitle[0]
-      json.field "btitle_hv", btitle[1]? || btitle[0]
-      json.field "btitle_vi", btitle[2]? || btitle[1]? || btitle[0]
+      json.field "btitle_zh", btitle_zh
+      json.field "btitle_hv", btitle_hv
+      json.field "btitle_vi", btitle_vi
 
-      author = @infos.get("author") || [bhash, bhash]
-      json.field "author_zh", author[0]
-      json.field "author_vi", author[1]? || author[0]
+      json.field "author_zh", author_zh
+      json.field "author_vi", author_vi
 
       json.field "genres", genres
       json.field "bcover", bcover
 
       json.field "voters", voters
-      json.field "rating", rating // 10
+      json.field "rating", rating
 
-      json.field "update", @infos.ival_64("update")
+      json.field "update", @_meta.ival_64("update")
 
       if full
-        json.field "bintro", NvIntro.get_intro_vi(@bhash)
+        json.field "bintro", @_meta.get("bintro")
 
-        json.field "status", @infos.ival("status")
-        json.field "yousuu", @infos.fval("yousuu")
-        json.field "origin", @infos.fval("origin")
+        json.field "status", @_meta.ival("status")
+        json.field "yousuu", @_meta.fval("yousuu")
+        json.field "origin", @_meta.fval("origin")
 
-        json.field "chseed", @infos.get("chseed") || ["chivi"]
+        json.field "chseed", @_meta.get("chseed") || ["chivi"]
       end
     end
   end
@@ -73,7 +82,7 @@ class CV::Nvinfo
   def set_btitle(zh_btitle : String,
                  hv_btitle = NvUtils.to_hanviet(zh_btitle),
                  vi_btitle = NvUtils.fix_btitle_vi(zh_btitle)) : Nil
-    @infos.set!("btitle", [zh_btitle, hv_btitle, vi_btitle].uniq)
+    @_meta.set!("btitle", [zh_btitle, hv_btitle, vi_btitle].uniq)
 
     NvIndex.set_btitle_zh(@bhash, zh_btitle)
     NvIndex.set_btitle_hv(@bhash, hv_btitle)
@@ -81,22 +90,32 @@ class CV::Nvinfo
   end
 
   def set_author(zh_author : String, vi_author = NvUtils.fix_author_vi(zh_author)) : Nil
-    @infos.set!("author", [zh_author, vi_author].uniq)
+    @_meta.set!("author", [zh_author, vi_author].uniq)
     NvIndex.set_author_zh(@bhash, zh_author)
     NvIndex.set_author_vi(@bhash, vi_author)
   end
 
   def set_genres(genres : Array(String), force : Bool = false) : Nil
-    return unless force || !@infos.has_key?("genres")
+    return unless force || !@_meta.has_key?("genres")
 
-    @infos.set!("genres", genres)
+    @_meta.set!("genres", genres)
     NvIndex.set_genres(@bhash, genres)
+  end
+
+  def set_bintro(lines : Array(String), force : Bool = false)
+    return unless force || !@_meta.has_key?("bintro")
+    NvIntro.set_intro(@bhash, lines, force: force)
+
+    cvmtl = Cvmtl.generic(@bhash)
+    intro = lines.map { |line| cvmtl.tl_plain(line) }
+
+    @_meta.set!("bintro", intro)
   end
 
   {% for field in {"status", "hidden"} %}
     def set_{{field.id}}(value : Int32, force : Bool = false)
-      return false unless force || value > @infos.ival({{field}})
-      @infos.set!({{field}}, value)
+      return false unless force || value > @_meta.ival({{field}})
+      @_meta.set!({{field}}, value)
     end
   {% end %}
 
@@ -105,33 +124,28 @@ class CV::Nvinfo
   end
 
   def set_update(mftime : Int64 = Time.utc.to_unix) : Bool
-    return false if @infos.ival_64("update") > mftime
+    return false if @_meta.ival_64("update") > mftime
     NvIndex.update.set!(@bhash, [mftime.//(60).to_s])
-    @infos.set!("update", mftime)
+    @_meta.set!("update", mftime)
   end
 
   def set_scores(voters : Int32, rating : Int32) : Nil
-    @infos.set!("voters", voters)
-    @infos.set!("rating", rating)
+    @_meta.set!("voters", voters)
+    @_meta.set!("rating", rating)
     NvIndex.set_scores(@bhash, voters, rating)
-  end
-
-  def get_chseed(sname : String)
-    return unless vals = @infos.get("$#{sname}")
-    {vals[0], vals[1].to_i64, vals[2].to_i}
   end
 
   {% for type in {"origin", "yousuu", "hidden"} %}
     def set_{{type.id}}(value)
-      @infos.set!({{type}}, value)
+      @_meta.set!({{type}}, value)
     end
   {% end %}
 
   def set_chseed(sname : String, snvid : String, mtime = 0_i64, count = 0) : Nil
-    # dirty hack to fix update_time for hetushu or zhwenpg...
-    seeds = @infos.get!("chseed") { [] of String }
-    utime = @infos.ival_64("update")
+    seeds = @_meta.get!("chseed") { ["chivi"] }
+    utime = @_meta.ival_64("update")
 
+    # dirty hack to fix update_time for hetushu or zhwenpg...
     if old_value = get_chseed(sname)
       _svnid, old_mtime, old_count = old_value
 
@@ -143,21 +157,27 @@ class CV::Nvinfo
         mtime = old_mtime
       end
     elsif mtime < utime
-      seeds << sname
       mtime = utime
     end
 
-    @infos.set("$#{sname}", [snvid, mtime.to_s, count.to_s])
-    seeds = seeds.map { |sname| {sname, get_chseed(sname).not_nil![1]} }
+    @_meta.set!("$#{sname}", [snvid, mtime.to_s, count.to_s])
 
-    seeds = seeds.sort_by(&.[1].-).map(&.[0])
-    @infos.set("chseed", seeds)
+    seeds << sname
+    seeds = seeds.uniq.map { |s| {s, get_chseed(s)[1]} }
+
+    chseed = seeds.sort_by(&.[1].-).map(&.[0])
+    @_meta.set!("chseed", chseed)
 
     set_update(mtime)
   end
 
+  def get_chseed(sname : String) : Tuple(String, Int64, Int32)
+    meta = @_meta.get("$#{sname}") || [bhash, "0", "0"]
+    {meta[0], meta[1].to_i64, meta[2].to_i}
+  end
+
   def save!(clean : Bool = false)
-    @infos.save!(clean: clean)
+    @_meta.save!(clean: clean)
   end
 
   def self.upsert!(btitle : String, author : String, fixed : Bool = false)
@@ -165,20 +185,17 @@ class CV::Nvinfo
     bhash = CoreUtils.digest32("#{btitle}--#{author}")
 
     nvinfo = new(bhash)
-    exists = nvinfo.infos.has_key?("bslug")
+    exists = nvinfo._meta.has_key?("bslug")
 
     unless exists
       nvinfo.set_author(author)
       nvinfo.set_btitle(btitle)
 
-      half_slug = NvIndex.btitle_hv.get(bhash).not_nil!.join("-")
+      half_slug = TextUtils.slugify(nvinfo.btitle_hv)
       full_slug = "#{half_slug}-#{bhash}"
 
-      nvinfo.infos.set!("bslug", full_slug)
-
-      values = [full_slug]
-      values << half_slug unless NvIndex._index.has_val?(half_slug)
-      NvIndex._index.set!(bhash, values)
+      nvinfo._meta.set!("bslug", full_slug)
+      NvIndex._index.set!(bhash, [full_slug, half_slug])
     end
 
     {nvinfo, exists}

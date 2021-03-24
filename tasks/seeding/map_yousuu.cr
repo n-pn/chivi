@@ -89,7 +89,7 @@ class CV::MapYousuu
         nvinfo.set_origin(source_url.fval(snvid) || "")
         nvinfo.set_hidden(@meta.hidden.fval(snvid) || "0")
 
-        nvinfo.save!(clean: true)
+        nvinfo.save!(clean: false)
       end
 
       if idx % 100 == 0
@@ -110,7 +110,7 @@ class CV::MapYousuu
     return rating >= 40 if voters >= 50
     return rating >= 50 if voters >= 30
     return rating >= 60 if voters >= 10
-    rating >= 70
+    rating >= 70 && voters >= 5
   end
 end
 

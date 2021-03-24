@@ -29,7 +29,8 @@ class CV::RmNvinfo
     when "hetushu" then node_text("h2")
     when "zhwenpg" then node_text(".cbooksingle h2")
     when "69shu"   then node_text(".weizhi > a:last-child")
-    else                meta_data("og:novel:book_name")
+    else
+      meta_data("og:novel:book_name").sub(/作\s+者[：:].+$/, "")
     end
   end
 

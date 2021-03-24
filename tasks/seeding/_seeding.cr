@@ -105,7 +105,7 @@ class CV::InfoSeed
     nvinfo.set_genres(genres) unless genres.empty?
 
     bintro = get_intro(snvid)
-    NvIntro.set_intro(nvinfo.bhash, bintro, force: false) unless bintro.empty?
+    nvinfo.set_bintro(bintro, force: false) unless bintro.empty?
 
     nvinfo.set_status(status.ival(snvid))
 

@@ -136,7 +136,7 @@ class CV::Seeds::MapRemote
       if should_pick?(snvid) || InfoSeed.qualified_author?(author)
         nvinfo, _exists = @meta.upsert!(snvid, mode: mode)
         nvinfo.set_scores(Random.rand(10..30), Random.rand(40..60)) if nvinfo.voters == 0
-        nvinfo.save!(clean: true)
+        nvinfo.save!(clean: false)
       end
 
       if idx % 100 == 0
