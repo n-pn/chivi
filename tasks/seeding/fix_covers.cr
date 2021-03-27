@@ -2,107 +2,99 @@ require "file_utils"
 require "../../src/filedb/nvinfo"
 
 class CV::Seeds::FixCovers
-  getter source : ValueMap = NvValues.source
+  INP_DIR = "_db/bcover"
+  OUT_DIR = "_db/nvdata/bcovers"
 
-  DIR = "_db/bcover"
-  ::FileUtils.mkdir_p("#{DIR}/_chivi")
+  ::FileUtils.mkdir_p(OUT_DIR)
 
   def fix!(redo : Bool = false)
     checked = Set(String).new
 
-    @source.data.each_with_index(1) do |(bhash, values), idx|
-      checked.add(bhash)
-      next unless redo || !NvValues.bcover.has_key?(bhash)
+    bhashes = Dir.children(Nvinfo::DIR).map { |x| File.basename(x, ".tsv") }
+    bhashes.each_with_index(1) do |bhash, idx|
+      if idx % 20 == 0
+        puts "- [fix_covers] <#{idx}/#{bhashes.size}>".colorize.blue
+        MAP.each_value { |map| map.save!(clean: false) }
+      end
 
+      nvinfo = Nvinfo.new(bhash)
       covers = {} of String => String
 
-      if y_nvid = NvValues.yousuu.fval(bhash)
-        covers["yousuu"] = y_nvid
-      end
+      nvinfo._meta.fval("yousuu").try { |x| covers["yousuu"] = x }
+      snames = nvinfo._meta.get("chseed") || [] of String
+      snames.each { |s| covers[s] = nvinfo.get_chseed(s)[0] }
 
-      values.each do |entry|
-        sname, snvid = entry.split("/")
-        covers[sname] = snvid
-      end
-
-      bcover = nil
-      mwidth = 0
+      max_width = 0
+      out_cover = nil
 
       covers.each do |sname, snvid|
         next unless cover_file = cover_path(sname, snvid)
-        cover_width = image_width(cover_file)
 
-        if cover_width > mwidth
-          bcover = cover_file
-          mwidth = cover_width
+        unless cover_width = width_map(sname).fval(cover_file).try(&.to_i)
+          cover_width = image_width(cover_file)
+
+          if mtime = File.info?(cover_file).try(&.modification_time)
+            values = [cover_width.to_s, mtime.to_unix.to_s]
+            width_map(sname).set!(cover_file, values)
+          end
+        end
+
+        if cover_width > max_width
+          max_width = cover_width
+          out_cover = cover_file
         end
       end
 
-      next unless bcover && NvValues.bcover.add(bhash, bcover.sub("#{DIR}/", ""))
+      next unless out_cover
 
-      out_file = "#{DIR}/_chivi/#{bhash}.webp"
-      convert_img(bcover, out_file)
+      sname = File.basename(File.dirname(out_cover))
+      out_file = "#{OUT_DIR}/#{sname}-#{File.basename(out_cover)}"
 
-      if idx % 20 == 0
-        puts "- [remote_covers] <#{idx}/#{@source.size}>".colorize.blue
-        save!(mode: :upds)
-      end
+      nvinfo._meta.set!("bcover", File.basename(out_file))
+      nvinfo.save!(clean: false)
+
+      FileUtils.cp(out_cover, out_file) unless File.exists?(out_file)
+
+      out_webp = out_file + ".webp"
+      `convert "#{out_file}" -resize "300>x" "#{out_webp}"` unless File.exists?(out_webp)
+    rescue err
+      puts err
     end
 
-    yousuu = NvValues.yousuu.data
-    yousuu.each_with_index(1) do |(bhash, values), idx|
-      next if checked.includes?(bhash)
-      next unless redo || !NvValues.bcover.has_key?(bhash)
-
-      next unless cover_file = cover_path("yousuu", values.first)
-      next if image_width(cover_file) < 10
-      NvValues.bcover.add(bhash, cover_file.sub("#{DIR}/", ""))
-
-      if idx % 20 == 0
-        puts "- [yousuu_covers] <#{idx}/#{yousuu.size}>".colorize.blue
-        save!(mode: :upds)
-      end
-    end
-
-    save!(mode: :full)
+    MAP.each_value { |map| map.save!(clean: true) }
   end
 
+  MAP = {} of String => ValueMap
+
+  private def width_map(sname : String)
+    MAP[sname] ||= ValueMap.new("#{INP_DIR}/_index/#{sname}.tsv")
+  end
+
+  # next unless cover_file = cover_path(snam
   def cover_path(sname : String, snvid : String) : String?
     {"html", "jpg.gz", ".pc", ".apple", ".ascii"}.each do |ext|
-      file = "#{DIR}/#{sname}/#{snvid}.#{ext}"
+      file = "#{INP_DIR}/#{sname}/#{snvid}.#{ext}"
       return if File.exists?(file)
     end
 
-    {"gif", "png", "tiff", "jpg"}.each do |ext|
-      file = "#{DIR}/#{sname}/#{snvid}.#{ext}"
+    {"webp", "gif", "png", "tiff", "jpg"}.each do |ext|
+      file = "#{INP_DIR}/#{sname}/#{snvid}.#{ext}"
       return file if File.exists?(file)
     end
   end
 
-  private def image_width(file : String) : Int32
-    return 0 if File.size(file) < 100
-
-    if file.ends_with?(".gif")
-      case file
+  def image_width(fname : String)
+    if fname.ends_with?(".gif")
+      return case fname
+      when .includes?("yousuu") then 10000
       when .includes?("jx_la")  then 0
-      when .includes?("yousuu") then 9999
       else                           400
       end
     end
 
-    `identify -format '%w %h' "#{file}"`.split(" ").first.to_i? || 0
+    `identify -format '%w %h' "#{fname}"`.split(" ").first.to_i? || 0
   rescue
     0
-  end
-
-  private def convert_img(inp_file : String, out_file : String)
-    `convert "#{inp_file}" -resize "300>x" "#{out_file}"`
-  rescue err
-    puts err
-  end
-
-  def save!(mode : Symbol = :full)
-    NvValues.bcover.save!(mode: mode)
   end
 end
 
