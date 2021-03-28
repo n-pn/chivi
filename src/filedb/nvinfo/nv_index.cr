@@ -1,4 +1,4 @@
-require "../../mapper/*"
+require "../../tabkv/*"
 require "../../_utils/text_utils"
 
 module CV::NvIndex

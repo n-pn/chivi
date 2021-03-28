@@ -1,4 +1,4 @@
-require "../mapper/*"
+require "../tabkv/*"
 
 module CV::Marked
   extend self

@@ -1,7 +1,7 @@
 require "file_utils"
 require "crypto/bcrypt/password"
 
-require "../mapper/*"
+require "../tabkv/*"
 
 module CV::Viuser
   extend self

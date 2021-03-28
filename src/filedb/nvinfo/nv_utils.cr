@@ -1,5 +1,5 @@
 require "../../engine/cvmtl"
-require "../../mapper/value_map"
+require "../../tabkv/value_map"
 require "../../_utils/text_utils"
 
 module CV::NvUtils

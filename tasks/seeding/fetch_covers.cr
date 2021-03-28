@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../../src/_utils/http_utils"
-require "../../src/mapper/value_map"
+require "../../src/tabkv/value_map"
 require "../../src/filedb/nvinfo"
 
 class CV::FetchCovers

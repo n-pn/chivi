@@ -1,5 +1,5 @@
 require "colorize"
-require "../../src/mapper/zip_store"
+require "../../src/tabkv/zip_store"
 
 DIR = "_db/chdata/zh_txts"
 
