@@ -6,9 +6,11 @@
 <div>
   <picture>
     {#if bcover}
-      <source srcset="/covers/_chivi/{bhash}.webp" type="image/webp" />
+      <source srcset="/covers/{bcover}.webp" type="image/webp" />
+      <img alt={bhash} src="/covers/{bcover}" loading="lazy" />
+    {:else}
+      <img alt={bhash} src="/covers/_blank.png" />
     {/if}
-    <img alt="" src="/covers/{bcover || 'blank.png'}" loading="lazy" />
   </picture>
 </div>
 

@@ -128,7 +128,7 @@
 
         <span class="stat _mftime">
           <SIcon name="clock" />
-          <span><RTime mtime={nvinfo._utime * 1000} /></span>
+          <span><RTime mtime={nvinfo.update * 1000} /></span>
         </span>
       </div>
 
