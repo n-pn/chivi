@@ -1,4 +1,4 @@
-require "../../src/appcv/nvinfo"
+require "../../src/appcv/nv_info"
 
 class CV::FixIntros
   ORDERS = {"hetushu", "shubaow", "paoshu8",
@@ -7,9 +7,9 @@ class CV::FixIntros
             "xbiquge", "bqg_5200"}
 
   def fix!
-    bhashes = Dir.children(Nvinfo::DIR).map { |x| File.basename(x, ".tsv") }
+    bhashes = Dir.children(NvInfo::DIR).map { |x| File.basename(x, ".tsv") }
     bhashes.each_with_index(1) do |bhash, idx|
-      nvinfo = Nvinfo.new(bhash)
+      nvinfo = NvInfo.new(bhash)
 
       yintro, bintro = nil, nil
 

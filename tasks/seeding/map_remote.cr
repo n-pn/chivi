@@ -84,7 +84,7 @@ class CV::Seeds::MapRemote
         valid = 1.hours
       end
 
-      parser = RmNvinfo.new(@sname, snvid, valid: valid)
+      parser = RmNvInfo.new(@sname, snvid, valid: valid)
       btitle, author = parser.btitle, parser.author
 
       if @meta._index.set!(snvid, [atime.to_s, btitle, author])

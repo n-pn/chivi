@@ -3,7 +3,7 @@ require "./rm_spider"
 require "../utils/time_utils"
 require "../utils/text_utils"
 
-class CV::RmNvinfo
+class CV::RmNvInfo
   getter sname : String
   getter snvid : String
 

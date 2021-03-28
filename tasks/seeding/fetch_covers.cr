@@ -4,11 +4,11 @@ require "file_utils"
 
 require "../../src/utils/http_utils"
 require "../../src/tabkv/value_map"
-require "../../src/appcv/nvinfo"
+require "../../src/appcv/nv_info"
 
 class CV::FetchCovers
   getter bhashes : Array(String) do
-    files = Dir.glob(File.join(Nvinfo::DIR, "*.tsv"))
+    files = Dir.glob(File.join(NvInfo::DIR, "*.tsv"))
     files.map { |x| File.basename(x, ".tsv") }
   end
 
@@ -20,7 +20,7 @@ class CV::FetchCovers
     cover_map = ValueMap.new("_db/_seeds/yousuu/bcover.tsv", mode: 2)
 
     bhashes.each do |bhash|
-      nvinfo = Nvinfo.load(bhash)
+      nvinfo = NvInfo.load(bhash)
       next unless ynvid = nvinfo._meta.fval("yousuu")
 
       out_file = "#{dir}/#{ynvid}.jpg"
@@ -39,7 +39,7 @@ class CV::FetchCovers
     end
 
     bhashes.each do |bhash|
-      nvinfo = Nvinfo.load(bhash)
+      nvinfo = NvInfo.load(bhash)
       snames = nvinfo._meta.get("chseed") || [] of String
 
       snames.each do |sname|

@@ -103,7 +103,7 @@ class CV::Seeds::MapZhwenpg
 
   FAKE_RATING = ValueMap.new("tasks/seeding/fake_ratings.tsv", mode: 2)
 
-  def fake_rating!(nvinfo : Nvinfo, snvid : String)
+  def fake_rating!(nvinfo : NvInfo, snvid : String)
     btitle = nvinfo._meta.fval("btitle")
     author = nvinfo._meta.fval("author")
 

@@ -42,8 +42,8 @@ module CV::Server::RouteUtils
 
           json.field "books" do
             json.array do
-              Nvinfo.each(sorts, skip: skip, take: take + 1, matched: matched) do |bhash|
-                Nvinfo.load(bhash).to_json(json, false)
+              NvInfo.each(sorts, skip: skip, take: take + 1, matched: matched) do |bhash|
+                NvInfo.load(bhash).to_json(json, false)
               end
             end
           end

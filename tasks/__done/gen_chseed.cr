@@ -1,4 +1,4 @@
-require "./src/appcv/nvinfo"
+require "./src/appcv/nv_info"
 require "./src/appcv/chinfo"
 
 def chap_count(sname, snvid)

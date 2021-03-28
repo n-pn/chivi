@@ -1,8 +1,8 @@
 require "json"
-require "./nvinfo/*"
 require "../utils/core_utils"
+require "./nv_info/*"
 
-class CV::Nvinfo
+class CV::NvInfo
   # include JSON::Serializable
 
   getter bhash : String
@@ -254,18 +254,18 @@ class CV::Nvinfo
   end
 end
 
-# puts CV::Nvinfo.find_by_slug("quy-bi-chi-chu")
-# pp CV::Nvinfo.new("h6cxpsr4")
+# puts CV::NvInfo.find_by_slug("quy-bi-chi-chu")
+# pp CV::NvInfo.new("h6cxpsr4")
 
-# CV::Nvinfo.each("voters", take: 10) do |bhash|
-#   puts CV::Nvinfo.load(bhash)
+# CV::NvInfo.each("voters", take: 10) do |bhash|
+#   puts CV::NvInfo.load(bhash)
 # end
 
-# CV::Nvinfo.each("voters", skip: 5, take: 5) do |bhash|
-#   puts CV::Nvinfo.load(bhash).btitle
+# CV::NvInfo.each("voters", skip: 5, take: 5) do |bhash|
+#   puts CV::NvInfo.load(bhash).btitle
 # end
 
-# matched = CV::Nvinfo::NvIndex.glob(genre: "kinh di")
-# CV::Nvinfo.each("weight", take: 10, matched: matched) do |bhash|
-#   puts CV::Nvinfo.load(bhash)
+# matched = CV::NvInfo::NvIndex.glob(genre: "kinh di")
+# CV::NvInfo.each("weight", take: 10, matched: matched) do |bhash|
+#   puts CV::NvInfo.load(bhash)
 # end

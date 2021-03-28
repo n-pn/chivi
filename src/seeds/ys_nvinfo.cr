@@ -12,7 +12,7 @@ struct CV::YsSource
   property link : String
 end
 
-class CV::YsNvinfo
+class CV::YsNvInfo
   include JSON::Serializable
 
   getter _id : Int32
@@ -66,7 +66,7 @@ class CV::YsNvinfo
     @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
   end
 
-  alias Data = NamedTuple(bookInfo: YsNvinfo, bookSource: Array(YsSource))
+  alias Data = NamedTuple(bookInfo: YsNvInfo, bookSource: Array(YsSource))
 
   def self.load(file : String)
     text = File.read(file)
@@ -80,7 +80,7 @@ class CV::YsNvinfo
   end
 end
 
-# info = CV::YsNvinfo.load("_db/yousuu/.cache/infos/153426.json").not_nil!
+# info = CV::YsNvInfo.load("_db/yousuu/.cache/infos/153426.json").not_nil!
 # puts info.intro
 # puts info.genre
 # # puts info.tags_fixed

@@ -1,5 +1,5 @@
 require "./_route_utils"
-require "../appcv/nvinfo"
+require "../appcv/nv_info"
 require "../appcv/ch_info"
 
 module CV::Server
@@ -20,7 +20,7 @@ module CV::Server
     sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
 
-    nvinfo = Nvinfo.load(bhash)
+    nvinfo = NvInfo.load(bhash)
     chinfo = ChInfo.load(bhash, sname, snvid)
     u_power, mode = RouteUtils.get_privi(env)
 

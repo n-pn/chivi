@@ -6,7 +6,7 @@ require "file_utils"
 require "../../src/utils/text_utils"
 require "../../src/utils/file_utils"
 
-require "../../src/appcv/nvinfo"
+require "../../src/appcv/nv_info"
 require "../../src/appcv/ch_info"
 
 class CV::Seeding
@@ -94,9 +94,9 @@ class CV::Seeding
     vi_genres.empty? ? ["Loại khác"] : vi_genres
   end
 
-  def upsert!(snvid : String) : Tuple(Nvinfo, Bool)
+  def upsert!(snvid : String) : Tuple(NvInfo, Bool)
     access, btitle, author = _index.get(snvid).not_nil!
-    nvinfo, existed = Nvinfo.upsert!(btitle, author, fixed: false)
+    nvinfo, existed = NvInfo.upsert!(btitle, author, fixed: false)
 
     genres = get_genres(snvid)
     nvinfo.set_genres(genres) unless genres.empty?
@@ -113,7 +113,7 @@ class CV::Seeding
     {nvinfo, existed}
   end
 
-  def upsert_chinfo!(nvinfo : Nvinfo, snvid : String, mode = 0) : Nil
+  def upsert_chinfo!(nvinfo : NvInfo, snvid : String, mode = 0) : Nil
     chinfo = ChInfo.new(nvinfo.bhash, @sname, snvid)
     mtime, total = chinfo.fetch!(mode: mode, valid: 10.years)
     chinfo.trans!(reset: false)

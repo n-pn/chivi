@@ -1,5 +1,5 @@
 require "file_utils"
-require "../../src/appcv/nvinfo"
+require "../../src/appcv/nv_info"
 
 class CV::Seeds::FixCovers
   INP_DIR = "_db/bcover"
@@ -10,14 +10,14 @@ class CV::Seeds::FixCovers
   def fix!(redo : Bool = false)
     checked = Set(String).new
 
-    bhashes = Dir.children(Nvinfo::DIR).map { |x| File.basename(x, ".tsv") }
+    bhashes = Dir.children(NvInfo::DIR).map { |x| File.basename(x, ".tsv") }
     bhashes.each_with_index(1) do |bhash, idx|
       if idx % 20 == 0
         puts "- [fix_covers] <#{idx}/#{bhashes.size}>".colorize.blue
         MAP.each_value { |map| map.save!(clean: false) }
       end
 
-      nvinfo = Nvinfo.new(bhash)
+      nvinfo = NvInfo.new(bhash)
       covers = {} of String => String
 
       nvinfo._meta.fval("yousuu").try { |x| covers["yousuu"] = x }
