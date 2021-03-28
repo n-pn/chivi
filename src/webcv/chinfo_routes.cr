@@ -1,5 +1,6 @@
 require "./_route_utils"
-require "../appcv/chinfo"
+require "../appcv/nvinfo"
+require "../appcv/ch_info"
 
 module CV::Server
   module Utils
@@ -20,7 +21,7 @@ module CV::Server
     snvid = env.params.url["snvid"]
 
     nvinfo = Nvinfo.load(bhash)
-    chinfo = Chinfo.load(bhash, sname, snvid)
+    chinfo = ChInfo.load(bhash, sname, snvid)
     u_power, mode = RouteUtils.get_privi(env)
 
     if mode > 0
@@ -54,7 +55,7 @@ module CV::Server
     snvid = env.params.url["snvid"]
 
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
-    chinfo = Chinfo.load(bhash, sname, snvid)
+    chinfo = ChInfo.load(bhash, sname, snvid)
 
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
