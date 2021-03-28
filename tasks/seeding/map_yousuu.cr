@@ -10,7 +10,7 @@ class CV::MapYousuu
   getter count_list : ValueMap { ValueMap.new(@meta.map_path("count_list")) }
 
   def initialize
-    @meta = InfoSeed.new("yousuu")
+    @meta = Seeding.new("yousuu")
   end
 
   def init!
@@ -22,7 +22,7 @@ class CV::MapYousuu
 
     input.each_with_index(1) do |file, idx|
       snvid = File.basename(file, ".json")
-      atime = InfoSeed.get_atime(file) || 0_i64
+      atime = Seeding.get_atime(file) || 0_i64
       next if @meta._index.ival_64(snvid) >= atime
 
       next unless info = YsNvinfo.load(file)
@@ -79,8 +79,8 @@ class CV::MapYousuu
       next if checked.includes?(nvname)
       checked.add(nvname)
 
-      if qualified?(voters, rating) || InfoSeed.qualified_author?(author)
-        InfoSeed.update_author_score(author, voters * rating)
+      if qualified?(voters, rating) || Seeding.qualified_author?(author)
+        Seeding.update_author_score(author, voters * rating)
 
         nvinfo, exists = @meta.upsert!(snvid)
         nvinfo.set_scores(voters, rating)
@@ -102,7 +102,7 @@ class CV::MapYousuu
     end
 
     NvIndex.save!(clean: true)
-    InfoSeed.author_scores.save!(clean: true)
+    Seeding.author_scores.save!(clean: true)
   end
 
   def qualified?(voters : Int32, rating : Int32)

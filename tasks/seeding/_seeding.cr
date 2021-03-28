@@ -7,9 +7,9 @@ require "../../src/utils/text_utils"
 require "../../src/utils/file_utils"
 
 require "../../src/appcv/nvinfo"
-require "../../src/appcv/chinfo"
+require "../../src/appcv/ch_info"
 
-class CV::InfoSeed
+class CV::Seeding
   class_getter author_scores : ValueMap do
     ValueMap.new("_db/_seeds/author_scores.tsv")
   end
@@ -114,8 +114,9 @@ class CV::InfoSeed
   end
 
   def upsert_chinfo!(nvinfo : Nvinfo, snvid : String, mode = 0) : Nil
-    chinfo = Chinfo.new(nvinfo.bhash, @sname, snvid)
-    mtime, total = chinfo.fetch!(mode: mode, valid: 2.years)
+    chinfo = ChInfo.new(nvinfo.bhash, @sname, snvid)
+    mtime, total = chinfo.fetch!(mode: mode, valid: 10.years)
+    chinfo.trans!(reset: false)
     nvinfo.set_chseed(@sname, snvid, mtime, total)
   end
 end

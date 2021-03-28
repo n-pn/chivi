@@ -29,7 +29,7 @@ class CV::Seeds::ZhwenpgParser
 end
 
 class CV::Seeds::MapZhwenpg
-  getter meta = InfoSeed.new("zhwenpg")
+  getter meta = Seeding.new("zhwenpg")
 
   def initialize
     @mftimes = {} of String => Int64
@@ -57,7 +57,7 @@ class CV::Seeds::MapZhwenpg
 
     valid = 4.hours * page
     html = RmSpider.fetch(file, link, "zhwenpg", valid: valid, label: page.to_s)
-    atime = InfoSeed.get_atime(file) || Time.utc.to_unix
+    atime = Seeding.get_atime(file) || Time.utc.to_unix
 
     doc = Myhtml::Parser.new(html)
     nodes = doc.css(".cbooksingle").to_a[2..-2]

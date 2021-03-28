@@ -40,34 +40,34 @@ class CV::RmChinfo
     end
   end
 
-  def changed?(prev_chid : String)
-    prev_chid != last_chid
+  def changed?(prev_schid : String)
+    prev_schid != last_schid
   end
 
-  getter last_chid : String do
+  getter last_schid : String do
     case @sname
-    when "69shu"   then extract_last_chid_69shu
-    when "hetushu" then extract_last_chid("#dir :last-child a:last-of-type")
-    when "zhwenpg" then extract_last_chid(".fontwt0 + a")
-    else                extract_last_chid_by_meta
+    when "69shu"   then extract_last_schid_69shu
+    when "hetushu" then extract_last_schid("#dir :last-child a:last-of-type")
+    when "zhwenpg" then extract_last_schid(".fontwt0 + a")
+    else                extract_last_schid_by_meta
     end
   end
 
-  private def extract_last_chid_69shu
+  private def extract_last_schid_69shu
     unless node = @rdoc.css("#catalog").first?
-      return extract_last_chid(".mulu_list:first-of-type a:first-of-type")
+      return extract_last_schid(".mulu_list:first-of-type a:first-of-type")
     end
 
     return "" unless link = node.css("li:last-of-type > a").first?
     extract_chid(link.attributes["href"])
   end
 
-  private def extract_last_chid(sel : String)
+  private def extract_last_schid(sel : String)
     node = find_node(sel).not_nil!
     extract_chid(node.attributes["href"])
   end
 
-  private def extract_last_chid_by_meta
+  private def extract_last_schid_by_meta
     href = meta_data("og:novel:latest_chapter_url").not_nil!
     @sname != "bqg_5200" ? extract_chid(href) : File.basename(href, ".htm")
   end
@@ -166,7 +166,7 @@ class CV::RmChinfo
     end
 
     # check if the list is in correct orlder
-    output.reverse! if last_chid == output[0].first
+    output.reverse! if last_schid == output[0].first
 
     output
   end

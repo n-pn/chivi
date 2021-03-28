@@ -12,29 +12,25 @@ class CV::ChText
 
   def self.load(bname : String, sname : String, snvid : String,
                 chidx : Int32, schid : String)
-    CACHED.get("#{sname}/#{snvid}/#{schid}") do
+    CACHED.get("#{sname}/#{snvid}/#{schid}") {
       new(bname, sname, snvid, chidx, schid)
-    end
+    }
   end
 
-  getter bname : String
+  @zh_text : Array(String)? = nil
+  @cv_data : String?
+  @cv_time : Time
 
-  getter sname : String
-  getter snvid : String
-
-  getter chidx : Int32
-  getter schid : String
-
-  getter zh_text : Array(String)? = nil
-  getter cv_data : String? = nil
-  getter cv_time : Time = Time.unix(0)
-
-  def initialize(@bname, @sname, @snvid, @chidx, @schid)
+  def initialize(@bname : String, @sname : String, @snvid : String,
+                 @chidx : Int32, @schid : String)
     @text_dir = "#{DIR}/#{@sname}/#{@snvid}"
     ::FileUtils.mkdir_p(@text_dir)
 
     zip_bname = (@chidx // 100).to_s.rjust(3, '0')
     @zip_file = File.join(@text_dir, zip_bname + ".zip")
+
+    @cv_data = nil
+    @cv_time = Time.unix(0)
   end
 
   def get_cv!(power = 4, mode = 0) : String?
@@ -45,7 +41,7 @@ class CV::ChText
     puts "- <ch_text> [#{@sname}/#{@snvid}/#{@chidx}] converted.".colorize.cyan
 
     zh_lines = get_zh!(power, reset: mode > 1) || [""]
-    @cv_data = convert(zh_lines) || ""
+    @cv_data = trans!(zh_lines) || ""
   end
 
   private def cv_ttl(power = 4)
@@ -57,7 +53,7 @@ class CV::ChText
     end
   end
 
-  private def convert(lines : Array(String))
+  private def trans!(lines : Array(String))
     @cv_time = Time.utc
     return "" if lines.empty?
 
@@ -103,7 +99,7 @@ class CV::ChText
   end
 
   def save_zh!(lines : Array(String)) : Nil
-    out_file = File.join(@text_dir, "#{schid}.txt")
+    out_file = File.join(@text_dir, "#{@schid}.txt")
     File.open(out_file, "w") { |io| lines.join(io, "\n") }
 
     puts `zip -jqm "#{@zip_file}" "#{out_file}"`

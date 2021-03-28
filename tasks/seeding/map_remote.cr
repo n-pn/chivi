@@ -6,7 +6,7 @@ require "./_seeding.cr"
 
 class CV::Seeds::MapRemote
   def initialize(@sname : String)
-    @meta = InfoSeed.new(@sname)
+    @meta = Seeding.new(@sname)
   end
 
   def prep!(upto = 1)
@@ -115,7 +115,7 @@ class CV::Seeds::MapRemote
 
   private def access_time(snvid : String) : Int64?
     file = RmSpider.nvinfo_file(@sname, snvid)
-    InfoSeed.get_atime(file)
+    Seeding.get_atime(file)
   end
 
   def seed!(mode = 0)
@@ -133,7 +133,7 @@ class CV::Seeds::MapRemote
     input.each_with_index(1) do |(tuple, snvid), idx|
       btitle, author = tuple
 
-      if should_pick?(snvid) || InfoSeed.qualified_author?(author)
+      if should_pick?(snvid) || Seeding.qualified_author?(author)
         nvinfo, _exists = @meta.upsert!(snvid)
         nvinfo.set_scores(Random.rand(10..30), Random.rand(40..60)) if nvinfo.voters == 0
         @meta.upsert_chinfo!(nvinfo, snvid, mode: mode)

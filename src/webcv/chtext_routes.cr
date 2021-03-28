@@ -9,24 +9,26 @@ module CV::Server
     sname = env.params.url["sname"]
     snvid = env.params.url["snvid"]
 
-    chidx = env.params.url["chidx"].to_i? || 100000
-    chidx = 1 if chidx < 1
+    index = env.params.url["chidx"].to_i? || 1
+    index -= 1
 
     chinfo = ChInfo.load(bname, sname, snvid)
-    unless curr_chap = chinfo.infos[chidx - 1]?
+    unless curr_chap = chinfo.infos[index]?
       halt env, status_code: 404, response: "Chương tiết không tồn tại!"
     end
+
+    chidx, infos = curr_chap
 
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|
         json.object do
           json.field "total", chinfo.infos.size
           json.field "chidx", chidx
-          json.field "schid", curr_chap[0]
-          json.field "title", curr_chap[1]
-          json.field "label", curr_chap[2]
-          json.field "prev_url", chinfo.url_for(chidx - 2)
-          json.field "next_url", chinfo.url_for(chidx)
+          json.field "schid", infos[0]
+          json.field "title", infos[1]
+          json.field "label", infos[2]
+          json.field "prev_url", chinfo.url_for(index - 1)
+          json.field "next_url", chinfo.url_for(index + 1)
         end
       end
     end
