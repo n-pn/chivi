@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../src/source/ys_nvinfo"
+require "../../src/seeds/ys_nvinfo"
 require "./_seeding.cr"
 
 class CV::MapYousuu

@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../src/source/rm_chinfo.cr"
+require "../../src/seeds/rm_chinfo.cr"
 
 def fetch_info(sname, snvid, fresh = false) : Void
   puts "\n[#{CV::RmSpider.chinfo_link(sname, snvid)}]".colorize.green.bold

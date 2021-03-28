@@ -3,8 +3,8 @@ require "file_utils"
 require "compress/zip"
 
 require "../libcv/cvmtl"
-require "../source/rm_chinfo"
-require "../source/rm_chtext"
+require "../seeds/rm_chinfo"
+require "../seeds/rm_chtext"
 require "../utils/ram_cache"
 
 class CV::Chinfo

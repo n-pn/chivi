@@ -1,7 +1,7 @@
 require "file_utils"
 require "option_parser"
 
-require "../../src/source/rm_nvinfo"
+require "../../src/seeds/rm_nvinfo"
 require "./_seeding.cr"
 
 class CV::Seeds::MapRemote

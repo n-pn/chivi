@@ -5,7 +5,7 @@ require "option_parser"
 
 require "../../src/appcv/nvinfo"
 require "../../src/appcv/chinfo"
-require "../../src/source/rm_chtext"
+require "../../src/seeds/rm_chtext"
 
 class CV::PreloadBook
   def self.crawl!(seed : String, snvid : String, threads = 4, label = "1/1")

@@ -1,6 +1,6 @@
 require "file_utils"
 
-require "../../src/source/rm_nvinfo.cr"
+require "../../src/seeds/rm_nvinfo.cr"
 
 def fetch_info(sname, snvid, fresh = false) : Void
   puts "\n[#{CV::RmSpider.nvinfo_link(sname, snvid)}]".colorize.green.bold

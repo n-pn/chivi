@@ -1,6 +1,6 @@
 require "colorize"
 
-require "../../src/source/rm_chtext.cr"
+require "../../src/seeds/rm_chtext.cr"
 
 def fetch_text(sname : String, snvid : String, schid : String, fresh = false)
   puts "\n[#{CV::RmSpider.chtext_link(sname, snvid, schid)}]\n".colorize.blue.bold
