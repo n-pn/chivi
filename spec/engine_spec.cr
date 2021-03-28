@@ -1,5 +1,5 @@
 require "./spec_helper"
-require "../src/engine"
+require "../src/libcv"
 
 describe Libcv do
   # TODO: Write tests

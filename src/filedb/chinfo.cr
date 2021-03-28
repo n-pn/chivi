@@ -2,7 +2,7 @@ require "json"
 require "file_utils"
 require "compress/zip"
 
-require "../engine/cvmtl"
+require "../libcv/cvmtl"
 require "../source/rm_chinfo"
 require "../source/rm_chtext"
 require "../_utils/ram_cache"

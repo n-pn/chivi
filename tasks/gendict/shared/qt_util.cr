@@ -1,7 +1,7 @@
 require "colorize"
 require "file_utils"
 
-require "../../../src/engine/vdict"
+require "../../../src/libcv/vdict"
 
 class ValueSet
   getter file : String

@@ -1,7 +1,7 @@
 require "./_route_utils"
 require "../_utils/text_utils"
 
-require "../engine/cvmtl"
+require "../libcv/cvmtl"
 
 module CV::Server
   post "/api/convert/:dname" do |env|

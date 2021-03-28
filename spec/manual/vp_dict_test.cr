@@ -1,4 +1,4 @@
-require "../../src/engine/vdict"
+require "../../src/libcv/vdict"
 
 test = CV::Vdict.new "test"
 

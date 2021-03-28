@@ -1,5 +1,5 @@
 require "file_utils"
-require "../../engine/cvmtl"
+require "../../libcv/cvmtl"
 
 module CV::NvIntro
   extend self
