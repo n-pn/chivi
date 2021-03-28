@@ -1,7 +1,7 @@
 require "file_utils"
 require "myhtml"
 
-require "../../../src/_utils/http_utils"
+require "../../../src/utils/http_utils"
 
 DLPG_DIR = File.join("_db/_seeds/zxcs_me/htmls/dlpgs")
 FileUtils.mkdir_p(DLPG_DIR)

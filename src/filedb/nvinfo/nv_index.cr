@@ -1,5 +1,5 @@
 require "../../tabkv/*"
-require "../../_utils/text_utils"
+require "../../utils/text_utils"
 
 module CV::NvIndex
   extend self

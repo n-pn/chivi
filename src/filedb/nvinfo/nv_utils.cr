@@ -1,6 +1,6 @@
 require "../../libcv/cvmtl"
 require "../../tabkv/value_map"
-require "../../_utils/text_utils"
+require "../../utils/text_utils"
 
 module CV::NvUtils
   extend self

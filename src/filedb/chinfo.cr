@@ -5,7 +5,7 @@ require "compress/zip"
 require "../libcv/cvmtl"
 require "../source/rm_chinfo"
 require "../source/rm_chtext"
-require "../_utils/ram_cache"
+require "../utils/ram_cache"
 
 class CV::Chinfo
   DIR = "_db/chdata/chinfos"

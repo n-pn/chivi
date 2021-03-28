@@ -1,5 +1,5 @@
 require "file_utils"
-require "../../../src/_utils/http_utils"
+require "../../../src/utils/http_utils"
 
 INFO_DIR = File.join("_db/_seeds/zxcs_me/infos")
 FileUtils.mkdir_p(INFO_DIR)

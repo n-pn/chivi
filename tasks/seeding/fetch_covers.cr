@@ -2,7 +2,7 @@ require "mime"
 require "colorize"
 require "file_utils"
 
-require "../../src/_utils/http_utils"
+require "../../src/utils/http_utils"
 require "../../src/tabkv/value_map"
 require "../../src/filedb/nvinfo"
 

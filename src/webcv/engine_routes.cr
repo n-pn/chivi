@@ -1,5 +1,5 @@
 require "./_route_utils"
-require "../_utils/text_utils"
+require "../utils/text_utils"
 
 require "../libcv/cvmtl"
 

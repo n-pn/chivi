@@ -2,9 +2,9 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../_utils/http_utils"
-require "../_utils/file_utils"
-require "../_utils/time_utils"
+require "../utils/http_utils"
+require "../utils/file_utils"
+require "../utils/time_utils"
 
 module CV::RmSpider
   extend self

@@ -1,6 +1,6 @@
 require "json"
 require "./nvinfo/*"
-require "../_utils/core_utils"
+require "../utils/core_utils"
 
 class CV::Nvinfo
   # include JSON::Serializable

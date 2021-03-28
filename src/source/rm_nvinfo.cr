@@ -1,7 +1,7 @@
 require "./rm_spider"
 
-require "../_utils/time_utils"
-require "../_utils/text_utils"
+require "../utils/time_utils"
+require "../utils/text_utils"
 
 class CV::RmNvinfo
   getter sname : String
