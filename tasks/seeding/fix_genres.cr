@@ -1,4 +1,4 @@
-require "../../src/filedb/nvinfo"
+require "../../src/appcv/nvinfo"
 
 class CV::FixGenres
   ORDERS = {"hetushu", "shubaow", "paoshu8",

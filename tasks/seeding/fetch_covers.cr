@@ -4,7 +4,7 @@ require "file_utils"
 
 require "../../src/utils/http_utils"
 require "../../src/tabkv/value_map"
-require "../../src/filedb/nvinfo"
+require "../../src/appcv/nvinfo"
 
 class CV::FetchCovers
   getter bhashes : Array(String) do

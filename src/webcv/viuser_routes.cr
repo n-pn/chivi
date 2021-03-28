@@ -1,5 +1,5 @@
 require "./_route_utils"
-require "../filedb/viuser"
+require "../appcv/viuser"
 
 module CV::Server
   module RouteUtils

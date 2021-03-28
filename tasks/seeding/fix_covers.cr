@@ -1,5 +1,5 @@
 require "file_utils"
-require "../../src/filedb/nvinfo"
+require "../../src/appcv/nvinfo"
 
 class CV::Seeds::FixCovers
   INP_DIR = "_db/bcover"

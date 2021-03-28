@@ -3,8 +3,8 @@ require "colorize"
 require "file_utils"
 require "option_parser"
 
-require "../../src/filedb/nvinfo"
-require "../../src/filedb/chinfo"
+require "../../src/appcv/nvinfo"
+require "../../src/appcv/chinfo"
 require "../../src/source/rm_chtext"
 
 class CV::PreloadBook

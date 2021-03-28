@@ -1,7 +1,7 @@
 require "kemal"
 require "kemal-session"
 
-require "../filedb/*"
+require "../appcv/*"
 
 module CV::Server::RouteUtils
   extend self

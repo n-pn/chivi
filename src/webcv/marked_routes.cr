@@ -1,5 +1,5 @@
 require "./_route_utils"
-require "../filedb/marked"
+require "../appcv/marked"
 
 module CV::Server
   get "/api/_self/nvmarks/:bhash" do |env|

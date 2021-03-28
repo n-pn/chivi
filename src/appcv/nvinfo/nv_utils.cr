@@ -17,7 +17,7 @@ module CV::NvUtils
   end
 
   def fix_map(name : String)
-    ValueMap.new("src/filedb/_fixes/#{name}.tsv", mode: 2)
+    ValueMap.new("src/appcv/_fixes/#{name}.tsv", mode: 2)
   end
 
   class_getter authors_zh : ValueMap { fix_map("authors_zh") }

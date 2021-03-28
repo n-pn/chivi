@@ -26,4 +26,4 @@ def fix(file)
   File.write(file + ".fixed", input)
 end
 
-fix("src/filedb/_fixes/vi_btitles.tsv")
+fix("src/appcv/_fixes/vi_btitles.tsv")

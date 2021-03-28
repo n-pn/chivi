@@ -1,5 +1,5 @@
 require "./_route_utils"
-require "../filedb/chinfo"
+require "../appcv/chinfo"
 
 module CV::Server
   module Utils

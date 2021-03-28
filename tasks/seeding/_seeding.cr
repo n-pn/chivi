@@ -6,8 +6,8 @@ require "file_utils"
 require "../../src/utils/text_utils"
 require "../../src/utils/file_utils"
 
-require "../../src/filedb/nvinfo"
-require "../../src/filedb/chinfo"
+require "../../src/appcv/nvinfo"
+require "../../src/appcv/chinfo"
 
 class CV::InfoSeed
   class_getter author_scores : ValueMap do
