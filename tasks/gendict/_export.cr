@@ -145,12 +145,6 @@ class CV::ExportDicts
           term.attr ^= 1 if is_noun?(term.key, term.vals.first)
         end
 
-        # add to quick translation dict if entry is a name
-        unless term.key.size < 3 && term.vals.empty? || term.vals[0].downcase == term.vals[0]
-          various_term = @out_various.gen_term(term.key, term.vals, 2_i8, 1_i8)
-          @out_various.set(various_term)
-        end
-
         # add to suggestion
         suggest_term = @out_suggest.gen_term(term.key, term.vals)
         if old_term = @out_suggest.find(term.key)
@@ -158,10 +152,20 @@ class CV::ExportDicts
         end
 
         @out_suggest.set(suggest_term)
+
+        next if term.key.size < 3 || term.key.size > 6 || term.vals.empty?
+        next unless capped?(term.vals[0])
+
+        various_term = @out_various.gen_term(term.key, term.vals, 2_i8, 1_i8)
+        @out_various.set(various_term)
       end
 
       dict.save!(prune: true)
     end
+  end
+
+  private def capped?(val : String)
+    val != val.downcase
   end
 
   def export_suggest!
@@ -193,15 +197,15 @@ class CV::ExportDicts
 
     inp_various = ::QtDict.load(".result/various.txt", true)
     inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
-      next if key.size < 2 || key.size > 6
+      next if key.size < 3 || key.size > 6
       unless should_keep?(key, vals.first)
         next if should_reject?(key)
       end
 
-      out_various.set(key, vals)
+      @out_various.set(key, vals)
     end
 
-    out_various.save!(prune: true)
+    @out_various.save!(prune: true)
   end
 
   def export_recycle!
