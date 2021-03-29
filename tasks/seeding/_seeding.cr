@@ -10,24 +10,6 @@ require "../../src/appcv/nv_info"
 require "../../src/appcv/ch_info"
 
 class CV::Seeding
-  class_getter author_scores : ValueMap do
-    ValueMap.new("_db/_seeds/author_scores.tsv")
-  end
-
-  def self.qualified_author?(author : String, minimum_score = 2000)
-    return false unless score = author_scores.ival(author)
-    # score 2000 mean 20 people give score 10 or 40 people give score 5
-    score >= minimum_score
-  end
-
-  def self.update_author_score(author : String, score : Int32)
-    if value = author_scores.ival(author)
-      return if value > score
-    end
-
-    author_scores.set!(author, [score.to_s])
-  end
-
   def self.get_atime(file : String) : Int64?
     File.info?(file).try(&.modification_time.to_unix)
   end
@@ -95,9 +77,9 @@ class CV::Seeding
     vi_names.empty? ? ["Loại khác"] : vi_names
   end
 
-  def upsert!(snvid : String) : Tuple(String, Bool)
+  def upsert!(snvid : String, fixed = false) : Tuple(String, String, String)
     access, btitle, author = _index.get(snvid).not_nil!
-    bhash, existed = NvInfo.upsert!(btitle, author, fixed: false)
+    bhash, btitle, author = NvInfo.upsert!(btitle, author, fixed: fixed)
 
     genres = get_genres(snvid)
     NvGenres.set!(bhash, genres) unless genres.empty?
@@ -111,11 +93,12 @@ class CV::Seeding
     NvOrders.set_update!(bhash, mftime)
     NvOrders.set_access!(bhash, mftime // 60)
 
-    {bhash, existed}
+    {bhash, btitle, author}
   end
 
   def upsert_chinfo!(bhash : String, snvid : String, mode = 0) : Nil
     chinfo = ChInfo.new(bhash, @sname, snvid)
+
     mtime, total = chinfo.fetch!(mode: mode, valid: 10.years)
     chinfo.trans!(reset: false)
 

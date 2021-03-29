@@ -23,6 +23,14 @@ module CV::NvOrders
     end
   end
 
+  def get_update(bhash : String)
+    update.ival_64(bhash)
+  end
+
+  def get_access(bhash : String)
+    access.ival_64(bhash)
+  end
+
   def set_access!(bhash : String, value : Int64, force : Bool = false)
     return false unless force || value > access.ival_64(bhash)
     access.set!(bhash, value)
@@ -33,11 +41,19 @@ module CV::NvOrders
     update.set!(bhash, value)
   end
 
+  def get_voters(bhash : String)
+    voters.ival(bhash)
+  end
+
+  def get_rating(bhash : String)
+    rating.ival(bhash)
+  end
+
   def set_scores!(bhash : String, voters_val : Int32, rating_val : Int32)
     weight_val = voters_val * rating_val
 
     if voters_val < 25
-      weight_val += (25 - voters_val) + Random.rand(45..60)
+      weight_val += (25 - voters_val) * Random.rand(45..60)
       rating_val = weight_val // 25
     end
 

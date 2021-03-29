@@ -24,6 +24,10 @@ module CV::NvAuthor
     _index.set!(bname, [zh_name, vi_name])
   end
 
+  def exists?(zh_name : String)
+    _index.has_key?(zh_name)
+  end
+
   def filter(inp : String, prevs : Set(String)? = nil)
     tsv = TextUtils.tokenize(inp)
     res = inp =~ /\p{Han}/ ? map_zh.keys(tsv) : map_vi.keys(tsv)

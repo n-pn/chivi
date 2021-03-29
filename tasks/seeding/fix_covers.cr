@@ -10,19 +10,24 @@ class CV::Seeds::FixCovers
   def fix!(redo : Bool = false)
     checked = Set(String).new
 
-    bhashes = Dir.children(NvInfo::DIR).map { |x| File.basename(x, ".tsv") }
+    bhashes = NvFields.bhashes
     bhashes.each_with_index(1) do |bhash, idx|
       if idx % 20 == 0
         puts "- [fix_covers] <#{idx}/#{bhashes.size}>".colorize.blue
-        MAP.each_value { |map| map.save!(clean: false) }
+
+        WIDTHS.each_value { |map| map.save!(clean: false) }
+        NvFields.bcover.save!(clean: false)
       end
 
-      nvinfo = NvInfo.new(bhash)
       covers = {} of String => String
 
-      nvinfo._meta.fval("yousuu").try { |x| covers["yousuu"] = x }
-      snames = nvinfo._meta.get("chseed") || [] of String
-      snames.each { |s| covers[s] = nvinfo.get_chseed(s)[0] }
+      NvFields.yousuu.fval(bhash).try { |x| covers["yousuu"] = x }
+
+      snames = NvChseed.get_list(bhash)
+      snames.each do |sname|
+        next unless seed = NvChseed.get_seed(sname, bhash)
+        covers[sname] = seed[0]
+      end
 
       max_width = 0
       out_cover = nil
@@ -50,9 +55,7 @@ class CV::Seeds::FixCovers
       sname = File.basename(File.dirname(out_cover))
       out_file = "#{OUT_DIR}/#{sname}-#{File.basename(out_cover)}"
 
-      nvinfo._meta.set!("bcover", File.basename(out_file))
-      nvinfo.save!(clean: false)
-
+      NvFields.bcover.set!(bhash, File.basename(out_file))
       FileUtils.cp(out_cover, out_file) unless File.exists?(out_file)
 
       out_webp = out_file + ".webp"
@@ -61,13 +64,14 @@ class CV::Seeds::FixCovers
       puts err
     end
 
-    MAP.each_value { |map| map.save!(clean: true) }
+    WIDTHS.each_value { |map| map.save!(clean: false) }
+    NvFields.bcover.save!(clean: false)
   end
 
-  MAP = {} of String => ValueMap
+  WIDTHS = {} of String => ValueMap
 
   private def width_map(sname : String)
-    MAP[sname] ||= ValueMap.new("#{INP_DIR}/_index/#{sname}.tsv")
+    WIDTHS[sname] ||= ValueMap.new("#{INP_DIR}/_index/#{sname}.tsv")
   end
 
   # next unless cover_file = cover_path(snam

@@ -7,36 +7,37 @@ class CV::FixIntros
             "xbiquge", "bqg_5200"}
 
   def fix!
-    bhashes = Dir.children(NvInfo::DIR).map { |x| File.basename(x, ".tsv") }
+    bhashes = NvFields.bhashes
     bhashes.each_with_index(1) do |bhash, idx|
-      nvinfo = NvInfo.new(bhash)
-
       yintro, bintro = nil, nil
 
-      if y_nvid = nvinfo._meta.fval("yousuu")
-        yintro = get_intro("yousuu", y_nvid)
+      if ynvid = NvFields.yousuu.fval(bhash)
+        yintro = get_intro("yousuu", ynvid)
 
         if yintro.size > 1
-          nvinfo.set_bintro(yintro, force: true)
+          NvBintro.set!(bhash, yintro, force: true)
           next
         end
       end
 
-      chseed = nvinfo._meta.get("chseed") || ["chivi"]
-      chseed.sort_by! { |sname| ORDERS.index(sname) || 99 }
+      snames = NvChseed.get_list(bhash)
+      snames.sort_by! { |s| ORDERS.index(s) || 99 }
 
-      chseed.each do |sname|
-        snvid = nvinfo.get_chseed(sname)[0]
-        bintro = get_intro(sname, snvid)
+      snames.each do |sname|
+        next unless seed = NvChseed.get_seed(sname, bhash)
+        bintro = get_intro(sname, seed[0])
         break if bintro.size > 1
       end
 
-      nvinfo.set_bintro(bintro, force: true) if bintro
+      NvBintro.set!(bhash, bintro, force: true) if bintro
 
       if idx % 100 == 0
         puts "- [fix_intros] <#{idx}/#{bhashes.size}>".colorize.blue
+        NvBintro.save!(clean: false)
       end
     end
+
+    NvBintro.save!(clean: false)
   end
 
   def get_intro(sname : String, snvid : String)

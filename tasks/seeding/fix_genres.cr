@@ -7,27 +7,26 @@ class CV::FixGenres
             "xbiquge", "bqg_5200"}
 
   def fix!
-    bhashes = Dir.children(NvInfo::DIR).map { |x| File.basename(x, ".tsv") }
+    bhashes = NvFields.bhashes
     bhashes.each_with_index(1) do |bhash, idx|
-      nvinfo = NvInfo.new(bhash)
-
-      genres = [] of String
       yousuu = [] of String
+      genres = [] of String
 
-      chseed = nvinfo._meta.get("chseed") || ["chivi"]
-      chseed.sort_by! { |sname| ORDERS.index(sname) || 99 }
-
-      chseed.each do |sname|
-        snvid = nvinfo.get_chseed(sname)[0]
-        get_genres(sname, snvid).each do |genre|
-          genres.concat(NvUtils.fix_genre_zh(genre))
+      if ynvid = NvFields.yousuu.fval(bhash)
+        get_genres("yousuu", ynvid).each do |genre|
+          yousuu.concat(NvGenres.fix_zh_name(genre))
+          genres.concat(NvGenres.fix_zh_name(genre))
         end
       end
 
-      if y_nvid = nvinfo._meta.fval("yousuu")
-        get_genres("yousuu", y_nvid).each do |genre|
-          yousuu.concat(NvUtils.fix_genre_zh(genre))
-          genres.concat(NvUtils.fix_genre_zh(genre))
+      snames = NvChseed.get_list(bhash)
+      snames.sort_by! { |s| ORDERS.index(s) || 99 }
+
+      snames.each do |sname|
+        next unless seed = NvChseed.get_seed(sname, bhash)
+
+        get_genres(sname, seed[0]).each do |genre|
+          genres.concat(NvGenres.fix_zh_name(genre))
         end
       end
 
@@ -37,26 +36,25 @@ class CV::FixGenres
       if top_genres.size > 0
         zh_genres = top_genres.sort_by(&.[1].-).first(3).map(&.[0])
       elsif yousuu.size > 0
-        zh_genres = yousuu.first(3)
+        zh_genres = yousuu.first(2)
       elsif genres.size > 0
         zh_genres = genres.first(3).map(&.[0])
       else
         zh_genres = [] of String
       end
 
-      vi_genres = zh_genres.map { |g| NvUtils.fix_genre_vi(g) }
+      vi_genres = zh_genres.map { |g| NvGenres.fix_vi_name(g) }
       vi_genres = ["Loại khác"] if vi_genres.empty?
 
-      nvinfo.set_genres(vi_genres, force: true)
-      nvinfo.save!(clean: false)
+      NvGenres.set!(bhash, vi_genres, force: true)
 
       if idx % 100 == 0
         puts "- [fix_genres] <#{idx}/#{bhashes.size}>".colorize.blue
-        NvIndex.save!(clean: false)
+        NvGenres.save!(clean: false)
       end
     end
 
-    NvIndex.save!(clean: true)
+    NvGenres.save!(clean: false)
   end
 
   getter cache = {} of String => ValueMap

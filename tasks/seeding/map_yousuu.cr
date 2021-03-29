@@ -72,37 +72,34 @@ class CV::MapYousuu
 
     input.each_with_index(1) do |(snvid, voters, rating), idx|
       _atime, btitle, author = @meta._index.get(snvid).not_nil!
-      btitle, author = NvUtils.fix_labels(btitle, author)
       next if btitle.empty? || author.empty?
 
-      nvname = "#{btitle}\t#{author}"
-      next if checked.includes?(nvname)
-      checked.add(nvname)
+      author = NvAuthor.fix_zh_name(author, btitle)
+      btitle = NvBtitle.fix_zh_name(btitle, author)
 
-      if qualified?(voters, rating) || Seeding.qualified_author?(author)
-        Seeding.update_author_score(author, voters * rating)
+      blabel = "#{btitle}  #{author}"
+      next if checked.includes?(blabel)
+      checked.add(blabel)
 
-        nvinfo, exists = @meta.upsert!(snvid)
-        nvinfo.set_scores(voters, rating)
+      if qualified?(voters, rating) || NvAuthor.exists?(author)
+        bhash, _ = @meta.upsert!(snvid, fixed: true)
+        NvOrders.set_scores!(bhash, voters, rating)
 
-        nvinfo.set_yousuu(snvid)
-        nvinfo.set_origin(source_url.fval(snvid) || "")
-        nvinfo.set_hidden(@meta.hidden.fval(snvid) || "0")
-
-        nvinfo.save!(clean: false)
+        NvFields.yousuu.set!(bhash, snvid)
+        NvFields.origin.set!(bhash, source_url.fval(snvid) || "")
+        NvFields.hidden.set!(bhash, @meta.hidden.fval(snvid) || "0")
       end
 
       if idx % 100 == 0
-        puts "- [yousuu] <#{idx}/#{input.size}>".colorize.blue
-        NvIndex.save!(clean: false)
+        puts "- [map_yousuu] <#{idx}/#{input.size}>".colorize.blue
+        NvInfo.save!(clean: false)
       end
     rescue err
       puts snvid
       puts err.backtrace
     end
 
-    NvIndex.save!(clean: true)
-    Seeding.author_scores.save!(clean: true)
+    NvInfo.save!(clean: false)
   end
 
   def qualified?(voters : Int32, rating : Int32)
@@ -110,7 +107,8 @@ class CV::MapYousuu
     return rating >= 40 if voters >= 50
     return rating >= 50 if voters >= 30
     return rating >= 60 if voters >= 10
-    rating >= 70 && voters >= 5
+
+    rating >= 65 && voters >= 5
   end
 end
 

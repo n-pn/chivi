@@ -18,14 +18,12 @@ class CV::ValueMap
     load!(@file) if mode > 1 || File.exists?(@file)
   end
 
-  def label_for(file : String = @file)
-    dir = File.basename(File.dirname(file))
-    "<#{@@klass}> [#{dir}/#{File.basename(file, ".tsv")}]"
+  private def label(file : String = @file)
+    "<#{@@klass}> [#{file}]"
   end
 
   def load!(file : String = @file) : Nil
     count = 0
-    label = label_for(file)
 
     timer = Time.measure do
       File.each_line(file) do |line|
@@ -40,12 +38,12 @@ class CV::ValueMap
 
         count += 1
       rescue err
-        puts "- #{label} error: #{err} on `#{line}`".colorize.red
+        puts "- #{label(file)} error: #{err} on `#{line}`".colorize.red
       end
     end
 
     time = timer.total_milliseconds.round.to_i
-    puts "- #{label} loaded (lines: #{count}, time: #{time}ms)".colorize.blue
+    puts "- #{label(file)} loaded (lines: #{count}, time: #{time}ms)".colorize.blue
 
     save!(clean: true) if @data.size != count
   end
@@ -130,8 +128,6 @@ class CV::ValueMap
   end
 
   def save!(clean : Bool = false) : Nil
-    label = label_for(@file)
-
     if clean
       puts "- #{label} saved (entries: #{@data.size})".colorize.yellow
 

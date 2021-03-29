@@ -124,7 +124,10 @@ class CV::Seeds::MapRemote
     @meta._index.data.each do |snvid, infos|
       _, btitle, author = infos
 
-      tuple = NvUtils.fix_labels(btitle, author)
+      author = NvAuthor.fix_zh_name(author, btitle)
+      btitle = NvBtitle.fix_zh_name(btitle, author)
+
+      tuple = {btitle, author}
       next if input[tuple]?.try(&.to_i.> snvid.to_i)
 
       input[tuple] = snvid
@@ -133,22 +136,24 @@ class CV::Seeds::MapRemote
     input.each_with_index(1) do |(tuple, snvid), idx|
       btitle, author = tuple
 
-      if should_pick?(snvid) || Seeding.qualified_author?(author)
-        nvinfo, _exists = @meta.upsert!(snvid)
-        nvinfo.set_scores(Random.rand(10..30), Random.rand(40..60)) if nvinfo.voters == 0
-        @meta.upsert_chinfo!(nvinfo, snvid, mode: mode)
-        nvinfo.save!(clean: false)
+      if should_pick?(snvid) || NvAuthor.exists?(author)
+        bhash, _, _ = @meta.upsert!(snvid, fixed: true)
+        if NvOrders.get_voters(bhash) == 0
+          NvOrders.set_scores!(bhash, Random.rand(10..30), Random.rand(50..70))
+        end
+
+        @meta.upsert_chinfo!(bhash, snvid, mode: mode)
       end
 
       if idx % 100 == 0
         puts "- [#{@sname}] <#{idx}/#{input.size}>".colorize.blue
-        NvIndex.save!(clean: false)
+        NvInfo.save!(clean: false)
       end
     rescue err
       puts err
     end
 
-    NvIndex.save!(clean: true)
+    NvInfo.save!(clean: false)
   end
 
   private def should_pick?(snvid : String)

@@ -34,22 +34,18 @@ class CV::ChInfo
 
     if RmSpider.remote?(@sname, power)
       puller = RmChinfo.new(@sname, @snvid, valid: valid)
+      latest = origs.data.last_value?.try(&.first?) || ""
 
-      last_schid = origs.data.last_value?.try(&.first?) || ""
-
-      if mode > 1 || puller.changed?(last_schid)
+      if mode > 1 || puller.changed?(latest)
         mtime = puller.update_int
-        total = puller.chap_list.size
 
         puller.chap_list.each_with_index(1) do |infos, index|
           origs.set!(index.to_s, infos)
         end
-
-        origs.save!(clean: false)
       end
     end
 
-    {mtime, total || origs.size}
+    {mtime, origs.size}
   end
 
   def trans!(reset : Bool = false)
@@ -64,8 +60,9 @@ class CV::ChInfo
       trans.set!(chidx, [infos[0], vi_title, vi_label, url_slug])
     end
 
+    origs.save!(clean: false)
+    trans.save!(clean: false)
     @infos = nil
-    trans.save!
   end
 
   def url_for(index : Int32)

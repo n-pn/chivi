@@ -18,6 +18,8 @@ module CV::NvFields
   delegate get, to: _index
   delegate each, to: _index
 
+  class_getter bhashes : Array(String) { _index.data.keys }
+
   def set_status!(bhash : String, value : Int32, force = false)
     return false unless force || value > status.ival(bhash)
     status.set!(bhash, value.to_s)

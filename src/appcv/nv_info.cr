@@ -38,9 +38,8 @@ class CV::NvInfo
     end
 
     bhash = CoreUtils.digest32("#{btitle}--#{author}")
-    existed = exists?(bhash)
 
-    unless existed
+    unless exists?(bhash)
       NvAuthor.set!(bhash, author)
       NvBtitle.set!(bhash, btitle)
 
@@ -51,7 +50,7 @@ class CV::NvInfo
       NvFields._index.set!(bhash, [full_slug, half_slug])
     end
 
-    {bhash, existed}
+    {bhash, btitle, author}
   end
 
   def self.find_by_slug(bslug : String)

@@ -84,11 +84,14 @@ class CV::Seeds::MapZhwenpg
 
   def seed!
     @checked.to_a.each_with_index(1) do |snvid, idx|
-      bhash, existed = @meta.upsert!(snvid)
-      fake_rating!(bhash, snvid) if NvOrders.voters.ival(bhash) == 0
+      bhash, btitle, author = @meta.upsert!(snvid, fixed: false)
 
-      colored = existed ? :yellow : :green
-      puts "- <#{idx}/#{@checked.size}> [#{bhash}] saved!".colorize(colored)
+      if NvOrders.get_voters(bhash) == 0
+        voters, rating = get_ratings(btitle, author)
+        NvOrders.set_scores!(bhash, voters, rating)
+      end
+
+      puts "- <#{idx}/#{@checked.size}> [#{bhash}] saved!".colorize.yellow
 
       @meta.upsert_chinfo!(bhash, snvid, mode: 0)
       NvInfo.save!(clean: false)
@@ -97,19 +100,14 @@ class CV::Seeds::MapZhwenpg
     NvInfo.save!(clean: false)
   end
 
-  FAKE_RATING = ValueMap.new("tasks/seeding/fake_ratings.tsv", mode: 2)
+  RATINGS = ValueMap.new("src/appcv/nv_info/_fixes/ratings.tsv", mode: 2)
 
-  def fake_rating!(bhash : String, snvid : String)
-    btitle = NvBtitle._index.fval("btitle")
-    author = NvAuthor._index.fval("author")
-
-    if vals = FAKE_RATING.get("#{btitle}  #{author}")
-      voters, rating = vals[0].to_i, vals[1].to_i
+  private def get_ratings(btitle : String, author : String)
+    if vals = RATINGS.get("#{btitle}  #{author}")
+      {vals[0].to_i, vals[1].to_i}
     else
-      voters, rating = Random.rand(10..50), Random.rand(60..70)
+      {Random.rand(30..100), Random.rand(50..70)}
     end
-
-    NvOrders.set_scores!(bhash, voters, rating)
   end
 end
 
