@@ -1,5 +1,5 @@
 name: chivi
-version: 0.5.1
+version: 0.6.0
 
 authors:
   - Nipinium <nipinium@gmail.com>
@@ -32,7 +32,7 @@ targets:
   chivi:
     main: src/chivi.cr
 
-crystal: 0.35.1
+crystal: 1.0.0
 
 license: MIT
 
