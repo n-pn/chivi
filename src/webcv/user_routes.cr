@@ -1,10 +1,10 @@
 require "./_route_utils"
-require "../appcv/viuser"
+require "../appcv/vi_user"
 
 module CV::Server
   module RouteUtils
     def self.user_res(env, u_dname : String, u_power : Int32? = nil, cached : Bool = false)
-      u_power ||= Viuser.upower.ival(u_dname.downcase)
+      u_power ||= ViUser.upower.ival(u_dname.downcase)
 
       unless cached
         env.session.string("u_dname", u_dname)
@@ -33,9 +33,9 @@ module CV::Server
     email = env.params.json.fetch("email", "").as(String).strip
     upass = env.params.json.fetch("upass", "").as(String).strip
 
-    if uname = CV::Viuser.validate(email, upass)
-      u_dname = Viuser._index.fval(uname).not_nil!
-      u_power = Viuser.upower.ival(uname).not_nil!
+    if uname = CV::ViUser.validate(email, upass)
+      u_dname = ViUser._index.fval(uname).not_nil!
+      u_power = ViUser.upower.ival(uname).not_nil!
       RouteUtils.user_res(env, u_dname, u_power, cached: false)
     else
       halt env, status_code: 403, response: "Thông tin đăng nhập không chính xác."
@@ -53,7 +53,7 @@ module CV::Server
     raise "Tên người dùng không hợp lệ" unless dname =~ /^[\p{L}\p{N}\s_]+$/
     raise "Mật khẩu quá ngắn (cần ít nhất 7 ký tự)" if upass.size < 7
 
-    CV::Viuser.insert!(dname, email, upass)
+    CV::ViUser.insert!(dname, email, upass)
     RouteUtils.user_res(env, dname, cached: false)
   rescue err
     halt env, status_code: 400, response: err.message

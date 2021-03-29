@@ -136,7 +136,7 @@ class CV::Seeds::MapRemote
     input.each_with_index(1) do |(tuple, snvid), idx|
       btitle, author = tuple
 
-      if should_pick?(snvid) || NvAuthor.exists?(author)
+      if @sname == "hetushu" || NvAuthor.exists?(author)
         bhash, _, _ = @meta.upsert!(snvid, fixed: true)
         if NvOrders.get_voters(bhash) == 0
           NvOrders.set_scores!(bhash, Random.rand(10..30), Random.rand(50..70))
@@ -154,11 +154,6 @@ class CV::Seeds::MapRemote
     end
 
     NvInfo.save!(clean: false)
-  end
-
-  private def should_pick?(snvid : String)
-    return true if @sname == "hetushu" || @sname == "rengshu"
-    false
   end
 
   def self.run!(argv = ARGV)

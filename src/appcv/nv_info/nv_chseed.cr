@@ -4,6 +4,7 @@ module CV::NvChseed
   extend self
 
   DIR = "_db/nv_infos/chseeds"
+  ::FileUtils.mkdir_p(DIR)
 
   class_getter _index : TokenMap { TokenMap.new "#{DIR}/_index.tsv" }
   CACHE = {} of String => ValueMap

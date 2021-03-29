@@ -33,7 +33,6 @@ class CV::Seeding
     @intro_dir = "#{@seeds_dir}/intros"
 
     ::FileUtils.mkdir_p(@intro_dir)
-    ::FileUtils.mkdir_p("_db/chdata/zhinfos/#{@sname}") if @sname != "yousuu"
   end
 
   def map_path(fname : String)
@@ -99,7 +98,7 @@ class CV::Seeding
   def upsert_chinfo!(bhash : String, snvid : String, mode = 0) : Nil
     chinfo = ChInfo.new(bhash, @sname, snvid)
 
-    mtime, total = chinfo.fetch!(mode: mode, valid: 10.years)
+    mtime, total = chinfo.fetch!(power: 4, mode: mode, valid: 10.years)
     chinfo.trans!(reset: false)
 
     mtime = update.ival_64(snvid) if @sname == "zhwenpg"

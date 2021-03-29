@@ -1,5 +1,5 @@
 require "./_route_utils"
-require "../appcv/marked"
+require "../appcv/vi_mark"
 
 module CV::Server
   get "/api/nvinfos" do |env|

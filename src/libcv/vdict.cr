@@ -4,7 +4,7 @@ require "file_utils"
 require "./vdict/*"
 
 class CV::Vdict
-  DIR = "_db/dictdb/active"
+  DIR = "_db/vp_dicts/active"
 
   ::FileUtils.mkdir_p("#{DIR}/common")
   ::FileUtils.mkdir_p("#{DIR}/lookup")

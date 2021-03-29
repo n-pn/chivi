@@ -1,13 +1,11 @@
 require "../tabkv/*"
 
-module CV::Marked
+module CV::ViMark
   extend self
 
-  DIR = "_db/marked"
-  ::FileUtils.mkdir_p("#{DIR}/book-users")
-  ::FileUtils.mkdir_p("#{DIR}/user-books")
-  ::FileUtils.mkdir_p("#{DIR}/user-seeds")
-  ::FileUtils.mkdir_p("#{DIR}/user-chaps")
+  DIR = "_db/vi_users"
+  ::FileUtils.mkdir_p("#{DIR}/books")
+  ::FileUtils.mkdir_p("#{DIR}/marks")
 
   USER_BOOKS = {} of String => TokenMap
   BOOK_USERS = {} of String => TokenMap
@@ -28,19 +26,11 @@ module CV::Marked
   end
 
   def user_books(uname : String)
-    USER_BOOKS[uname] ||= TokenMap.new(map_path("user-books/#{uname}"))
+    USER_BOOKS[uname] ||= TokenMap.new(map_path("books/#{uname}"))
   end
 
   def book_users(bhash : String)
-    BOOK_USERS[bhash] ||= TokenMap.new(map_path("book-users/#{bhash}"))
-  end
-
-  def user_seeds(uname : String)
-    USER_SEEDS[uname] ||= ValueMap.new(map_path("user-seeds/#{uname}"))
-  end
-
-  def user_chaps(uname : String)
-    USER_CHAPS[uname] ||= ValueMap.new(map_path("user-chaps/#{uname}"))
+    BOOK_USERS[bhash] ||= TokenMap.new(map_path("marks/#{bhash}"))
   end
 
   def all_user_books(uname : String, bmark : String)

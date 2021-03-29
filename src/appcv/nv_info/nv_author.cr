@@ -24,8 +24,14 @@ module CV::NvAuthor
     _index.set!(bname, [zh_name, vi_name])
   end
 
+  class_getter zh_names : Set(String) do
+    names = Set(String).new
+    _index.data.each_value { |vals| names.add(vals[0]) }
+    names
+  end
+
   def exists?(zh_name : String)
-    _index.has_key?(zh_name)
+    zh_names.includes?(zh_name)
   end
 
   def filter(inp : String, prevs : Set(String)? = nil)

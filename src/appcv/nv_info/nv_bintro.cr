@@ -3,7 +3,7 @@ require "./nv_utils"
 module CV::NvBintro
   extend self
 
-  DIR = "_db/nv_infos/bintros"
+  DIR = "_db/nv_infos/intros"
   ::FileUtils.mkdir_p(DIR)
 
   CACHE = {} of String => ValueMap

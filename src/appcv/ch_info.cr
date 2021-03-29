@@ -32,7 +32,7 @@ class CV::ChInfo
   def fetch!(power = 4, mode = 2, valid = 5.minutes) : Tuple(Int64, Int32)
     mtime = 0_i64
 
-    if RmSpider.remote?(@sname, power)
+    if RmSpider.remote?(@sname, power: power)
       puller = RmChinfo.new(@sname, @snvid, valid: valid)
       latest = origs.data.last_value?.try(&.first?) || ""
 

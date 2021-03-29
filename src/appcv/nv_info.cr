@@ -5,9 +5,6 @@ require "./nv_info/*"
 class CV::NvInfo
   # include JSON::Serializable
 
-  DIR = "_db/nvdata/nvinfos"
-  ::FileUtils.mkdir_p(DIR)
-
   CACHE = {} of String => self
 
   def self.load(bhash : String)

@@ -1,11 +1,11 @@
 require "./_route_utils"
-require "../appcv/marked"
+require "../appcv/vi_mark"
 
 module CV::Server
   get "/api/_self/nvmarks/:bhash" do |env|
     if uname = env.session.string?("u_dname").try(&.downcase)
       bhash = env.params.url["bhash"]
-      bmark = Marked.user_books(uname).fval(bhash) || ""
+      bmark = ViMark.user_books(uname).fval(bhash) || ""
     end
 
     RouteUtils.json_res(env, {nvmark: bmark || ""})
@@ -20,9 +20,9 @@ module CV::Server
     nvmark = env.params.query["nvmark"]? || ""
 
     if nvmark.empty?
-      Marked.unmark_book(u_name, bhash)
+      ViMark.unmark_book(u_name, bhash)
     else
-      Marked.mark_book(u_name, bhash, nvmark)
+      ViMark.mark_book(u_name, bhash, nvmark)
     end
 
     RouteUtils.json_res(env, {nvmark: nvmark})
@@ -31,12 +31,12 @@ module CV::Server
   get "/api/user-books/:u_dname" do |env|
     u_uname = env.params.url["u_dname"].downcase
     nvmark = env.params.query["nvmark"]? || "reading"
-    matched = Marked.all_user_books(u_uname, nvmark)
+    matched = ViMark.all_user_books(u_uname, nvmark)
 
     # remove deleted books
     matched.each do |bhash|
       next if NvInfo.exists?(bhash)
-      Marked.unmark_book(u_uname, bhash)
+      ViMark.unmark_book(u_uname, bhash)
       matched.delete(bhash)
     end
 

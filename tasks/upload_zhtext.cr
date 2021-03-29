@@ -4,7 +4,7 @@
 require "colorize"
 
 SSH = "nipin@ssh.chivi.xyz"
-INP = "_db/chdata/zhtexts"
+INP = "_db/zh_texts/origs"
 OUT = "/home/nipin/srv/chivi.xyz"
 
 def upload_texts(sname : String)
@@ -36,4 +36,15 @@ existed = Dir.children(INP)
 snames = ARGV.empty? ? existed : ARGV.select { |x| existed.includes?(x) }
 
 puts "-- INPUT: #{snames} --".colorize.yellow.bold
-snames.each { |sname| upload_texts(sname) }
+
+channel = Channel(Nil).new(snames.size)
+
+snames.each do |sname|
+  spawn do
+    upload_texts(sname)
+  ensure
+    channel.send(nil)
+  end
+end
+
+snames.times { channel.receive }

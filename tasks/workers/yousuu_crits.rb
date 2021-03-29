@@ -6,7 +6,7 @@ class CritCrawler
 
     @nvids = []
 
-    File.read("_db/nvdata/nvinfos/yousuu.tsv").split("\n").each do |line|
+    File.read("_db/nv_infos/yousuu.tsv").split("\n").each do |line|
       @nvids << line.split("\t")[1]
     end
 

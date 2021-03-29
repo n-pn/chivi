@@ -3,7 +3,7 @@ require "../../src/appcv/nv_info"
 
 class CV::Seeds::FixCovers
   INP_DIR = "_db/bcover"
-  OUT_DIR = "_db/nvdata/bcovers"
+  OUT_DIR = "_db/nv_infos/covers"
 
   ::FileUtils.mkdir_p(OUT_DIR)
 

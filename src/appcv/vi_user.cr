@@ -3,25 +3,21 @@ require "crypto/bcrypt/password"
 
 require "../tabkv/*"
 
-module CV::Viuser
+module CV::ViUser
   extend self
 
-  class_getter _index : ValueMap { ValueMap.new(map_path("_index")) }
-
-  class_getter emails : TokenMap { TokenMap.new(map_path("emails")) }
-  class_getter passwd : ValueMap { ValueMap.new(map_path("passwd")) }
-
-  class_getter ugroup : ValueMap { ValueMap.new(map_path("ugroup")) }
-  class_getter upower : ValueMap { ValueMap.new(map_path("upower")) }
-
-  class_getter _ctime : ValueMap { ValueMap.new(map_path("_ctime")) }
-
-  DIR = "_db/userdb/viusers"
+  DIR = "_db/vi_users"
   ::FileUtils.mkdir_p(DIR)
 
-  def map_path(label : String)
-    "#{DIR}/#{label}.tsv"
-  end
+  class_getter _index : ValueMap { ValueMap.new "#{DIR}/_index.tsv" }
+
+  class_getter emails : TokenMap { TokenMap.new "#{DIR}/emails.tsv" }
+  class_getter passwd : ValueMap { ValueMap.new "#{DIR}/passwd.tsv" }
+
+  class_getter ugroup : ValueMap { ValueMap.new "#{DIR}/ugroup.tsv" }
+  class_getter upower : ValueMap { ValueMap.new "#{DIR}/upower.tsv" }
+
+  class_getter _ctime : ValueMap { ValueMap.new "#{DIR}/_ctime.tsv" }
 
   def set_uname(dname : String) : String?
     uname = dname.downcase
