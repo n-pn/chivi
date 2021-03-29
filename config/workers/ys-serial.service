@@ -6,7 +6,7 @@ StartLimitIntervalSec=0
 [Service]
 Type=oneshot
 User=nipin
-WorkingDirectory=/home/nipin/www/chivi.xyz/
+WorkingDirectory=/home/nipin/srv/chivi.xyz/
 ExecStart=/usr/bin/ruby tasks/workers/yousuu_infos.rb
 
 [Install]

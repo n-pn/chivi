@@ -1,5 +1,5 @@
 #! /bin/sh
-DIR=/home/nipin/www/chivi/config/workers
+DIR=/home/nipin/srv/chivi/config/workers
 
 sudo cp "$DIR/ys-serial.service" /etc/systemd/system/ys-serial.service
 sudo cp "$DIR/ys-serial.timer" /etc/systemd/system/ys-serial.timer

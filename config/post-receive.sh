@@ -1,9 +1,9 @@
 #! /bin/bash
 
 # The production directory
-TARGET="/home/deploy/www/chivi.xyz"
+TARGET="/home/nipin/srv/chivi.xyz"
 # The Git repo
-SOURCE="/home/deploy/git/chivi.git"
+SOURCE="/home/nipin/git/chivi.git"
 
 # Deploy the content
 mkdir -p $TARGET
