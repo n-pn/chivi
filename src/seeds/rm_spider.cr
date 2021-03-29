@@ -72,14 +72,12 @@ module CV::RmSpider
     case sname
     when "chivi", "_miscs", "zxcs_me", "zadzs"
       false
-    when "5200", "bqg_5200", "rengshu", "nofff"
+    when "5200", "bqg_5200", "rengshu", "nofff", "xbiquge"
       true
-    when "xbiquge", "duokan8", "hetushu"
+    when "duokan8", "hetushu", "biqubao", "bxwxorg"
       power > 0
-    when "zhwenpg", "69shu", "paoshu8", "biqubao", "bxwxorg"
+    when "zhwenpg", "69shu", "paoshu8"
       power > 1
-    when "shubaow", "jx_la"
-      power > 2
     else
       power > 3
     end
