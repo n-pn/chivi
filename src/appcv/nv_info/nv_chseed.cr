@@ -20,6 +20,10 @@ module CV::NvChseed
     seed_map(sname).get(bhash)
   end
 
+  def get_nvid(sname : String, bhash : String)
+    seed_map(sname).fval(bhash)
+  end
+
   def set_seed!(sname : String, bhash : String, values : Array(String))
     seed_map(sname).set!(bhash, values)
   end

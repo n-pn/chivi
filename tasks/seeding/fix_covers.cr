@@ -19,14 +19,14 @@ class CV::Seeds::FixCovers
         NvFields.bcover.save!(clean: false)
       end
 
+      next unless redo || !NvFields.bcover.has_key?(bhash)
       covers = {} of String => String
 
-      NvFields.yousuu.fval(bhash).try { |x| covers["yousuu"] = x }
+      NvFields.yousuu.fval(bhash).try { |ynvid| covers["yousuu"] = ynvid }
 
       snames = NvChseed.get_list(bhash)
       snames.each do |sname|
-        next unless seed = NvChseed.get_seed(sname, bhash)
-        covers[sname] = seed[0]
+        covers[sname] = NvChseed.get_nvid(sname, bhash) || bhash
       end
 
       max_width = 0
@@ -58,8 +58,10 @@ class CV::Seeds::FixCovers
       NvFields.bcover.set!(bhash, File.basename(out_file))
       FileUtils.cp(out_cover, out_file) unless File.exists?(out_file)
 
-      out_webp = out_file + ".webp"
-      `convert "#{out_file}" -resize "300>x" "#{out_webp}"` unless File.exists?(out_webp)
+      unless out_file.ends_with?(".webp")
+        out_webp = out_file + ".webp"
+        `convert "#{out_file}" -resize "300>x" "#{out_webp}"` unless File.exists?(out_webp)
+      end
     rescue err
       puts err
     end
@@ -76,20 +78,28 @@ class CV::Seeds::FixCovers
 
   # next unless cover_file = cover_path(snam
   def cover_path(sname : String, snvid : String) : String?
+    {"webp", "gif", "png", "tiff"}.each do |ext|
+      file = image_path(sname, snvid, ext)
+      return file if File.exists?(file)
+    end
+
     {"html", "jpg.gz", ".pc", ".apple", ".ascii"}.each do |ext|
-      file = "#{INP_DIR}/#{sname}/#{snvid}.#{ext}"
+      file = image_path(sname, snvid, ext)
       return if File.exists?(file)
     end
 
-    {"webp", "gif", "png", "tiff", "jpg"}.each do |ext|
-      file = "#{INP_DIR}/#{sname}/#{snvid}.#{ext}"
-      return file if File.exists?(file)
-    end
+    file = image_path(sname, snvid, ".jpg")
+    return file if File.exists?(file)
+  end
+
+  private def image_path(sname, snvid, ext)
+    "#{INP_DIR}/#{sname}/#{snvid}.#{ext}"
   end
 
   def image_width(fname : String)
     if fname.ends_with?(".gif")
       return case fname
+      when .includes?("chivi")  then 20000
       when .includes?("yousuu") then 10000
       when .includes?("jx_la")  then 0
       else                           400

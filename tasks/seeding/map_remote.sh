@@ -9,5 +9,5 @@ time bin/map_remote -s nofff -u 143338
 time bin/map_remote -s bqg_5200 -u 146594
 time bin/map_remote -s paoshu8 -u 161541
 time bin/map_remote -s bxwxorg -u 171228
-time bin/map_remote -s shubaow -u 182854 # -m 0
+time bin/map_remote -s shubaow -u 182854
 time bin/map_remote -s jx_la -u 259742 -m 0

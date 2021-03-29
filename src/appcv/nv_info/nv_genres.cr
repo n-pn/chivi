@@ -31,6 +31,10 @@ module CV::NvGenres
     fix_zh.get(zh_name) || [] of String
   end
 
+  def fix_zh_names(zh_names : Array(String)) : Array(String)
+    zh_names.map { |x| fix_zh_name(x) }.flatten
+  end
+
   def fix_vi_name(zh_name : String) : String
     fix_vi.fval(zh_name) || NvUtils.to_hanviet(zh_name)
   end

@@ -7,11 +7,6 @@ require "../../src/tabkv/value_map"
 require "../../src/appcv/nv_info"
 
 class CV::FetchCovers
-  getter bhashes : Array(String) do
-    files = Dir.glob(File.join(NvInfo::DIR, "*.tsv"))
-    files.map { |x| File.basename(x, ".tsv") }
-  end
-
   def fetch_yousuu!
     dir = "_db/bcover/yousuu"
     ::FileUtils.mkdir_p(dir)
@@ -19,9 +14,8 @@ class CV::FetchCovers
     out_queue = {} of String => String
     cover_map = ValueMap.new("_db/_seeds/yousuu/bcover.tsv", mode: 2)
 
-    bhashes.each do |bhash|
-      nvinfo = NvInfo.load(bhash)
-      next unless ynvid = nvinfo._meta.fval("yousuu")
+    NvFields.bhashes.each do |bhash|
+      next unless ynvid = NvFields.yousuu.fval("bhash")
 
       out_file = "#{dir}/#{ynvid}.jpg"
       next if File.exists?(out_file)
@@ -38,13 +32,12 @@ class CV::FetchCovers
       h[k] = {} of String => String
     end
 
-    bhashes.each do |bhash|
-      nvinfo = NvInfo.load(bhash)
-      snames = nvinfo._meta.get("chseed") || [] of String
+    NvFields.bhashes.each do |bhash|
+      snames = NvChseed.get_list(bhash)
 
       snames.each do |sname|
         next if sname == "jx_la" || sname == "chivi"
-        snvid, _ = nvinfo.get_chseed(sname)
+        snvid = NvChseed.get_nvid(sname, bhash) || bhash
 
         out_file = "_db/bcover/#{sname}/#{snvid}.jpg"
         next if File.exists?(out_file)

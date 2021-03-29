@@ -23,11 +23,9 @@ class CV::FixGenres
       snames.sort_by! { |s| ORDERS.index(s) || 99 }
 
       snames.each do |sname|
-        next unless seed = NvChseed.get_seed(sname, bhash)
-
-        get_genres(sname, seed[0]).each do |genre|
-          genres.concat(NvGenres.fix_zh_name(genre))
-        end
+        snvid = NvChseed.get_nvid(sname, bhash) || bhash
+        input = get_genres(sname, snvid)
+        genres.concat(NvGenres.fix_zh_names(input))
       end
 
       genres = genres.reject("其他").tally.to_a

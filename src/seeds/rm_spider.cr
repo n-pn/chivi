@@ -78,7 +78,7 @@ module CV::RmSpider
       power > 0
     when "zhwenpg", "69shu", "paoshu8", "biqubao", "bxwxorg"
       power > 1
-    when "shubaow"
+    when "shubaow", "jx_la"
       power > 2
     else
       power > 3
