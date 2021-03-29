@@ -13,7 +13,9 @@ module CV::RmSpider
     expiry = sname == "jx_la" ? Time.utc(2010, 1, 1) : Time.utc - valid
 
     unless html = FileUtils.read_gz(file, expiry)
-      html = HttpUtils.get_html(link, encoding: encoding_for(sname), label: label)
+      encoding = HttpUtils.encoding_for(sname)
+      html = HttpUtils.get_html(link, encoding: encoding, label: label)
+
       ::FileUtils.mkdir_p(File.dirname(file))
       FileUtils.save_gz(file, html)
     end
@@ -26,7 +28,7 @@ module CV::RmSpider
     limit = input.size if limit > input.size
 
     channel = Channel(Nil).new(limit + 1)
-    encoding = encoding_for(sname)
+    encoding = HttpUtils.encoding_for(sname)
     ::FileUtils.mkdir_p(File.dirname(input.first))
 
     input.each_with_index(1) do |(file, link), idx|
@@ -80,15 +82,6 @@ module CV::RmSpider
       power > 1
     else
       power > 3
-    end
-  end
-
-  def encoding_for(sname : String) : String
-    case sname
-    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg"
-      "UTF-8"
-    else
-      "GBK"
     end
   end
 

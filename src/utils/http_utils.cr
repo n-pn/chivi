@@ -25,9 +25,7 @@ module CV::HttpUtils
 
   private def use_crystal?(url : String)
     case url
-    when .includes?("biquge5200.com"),
-         .includes?("paoshu8"),
-         .includes?("bxwxorg")
+    when .includes?("biquge5200"), .includes?("paoshu8")
       true
     else
       false
@@ -44,6 +42,7 @@ module CV::HttpUtils
   def get_by_curl(url : String, encoding : String) : String
     cmd = "curl -L -k -s -m 30 '#{url}'"
     cmd += " | iconv -c -f #{encoding} -t UTF-8" if encoding != "UTF-8"
+
     `#{cmd}`.lstrip
   end
 
@@ -54,7 +53,7 @@ module CV::HttpUtils
 
   def encoding_for(sname : String) : String
     case sname
-    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me"
+    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg"
       "UTF-8"
     else
       "GBK"

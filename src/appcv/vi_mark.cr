@@ -26,11 +26,11 @@ module CV::ViMark
   end
 
   def user_books(uname : String)
-    USER_BOOKS[uname] ||= TokenMap.new(map_path("books/#{uname}"))
+    USER_BOOKS[uname] ||= TokenMap.new(map_path("marks/#{uname}"))
   end
 
   def book_users(bhash : String)
-    BOOK_USERS[bhash] ||= TokenMap.new(map_path("marks/#{bhash}"))
+    BOOK_USERS[bhash] ||= TokenMap.new(map_path("books/#{bhash}"))
   end
 
   def all_user_books(uname : String, bmark : String)

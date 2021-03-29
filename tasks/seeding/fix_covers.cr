@@ -19,7 +19,6 @@ class CV::Seeds::FixCovers
         NvFields.bcover.save!(clean: false)
       end
 
-      next unless redo || !NvFields.bcover.has_key?(bhash)
       covers = {} of String => String
 
       NvFields.yousuu.fval(bhash).try { |ynvid| covers["yousuu"] = ynvid }
@@ -83,12 +82,12 @@ class CV::Seeds::FixCovers
       return file if File.exists?(file)
     end
 
-    {"html", "jpg.gz", ".pc", ".apple", ".ascii"}.each do |ext|
+    {"html", "pc", "apple", "ascii"}.each do |ext|
       file = image_path(sname, snvid, ext)
       return if File.exists?(file)
     end
 
-    file = image_path(sname, snvid, ".jpg")
+    file = image_path(sname, snvid, "jpg")
     return file if File.exists?(file)
   end
 
@@ -106,6 +105,7 @@ class CV::Seeds::FixCovers
       end
     end
 
+    return 0 if File.size(fname) < 100
     `identify -format '%w %h' "#{fname}"`.split(" ").first.to_i? || 0
   rescue
     0

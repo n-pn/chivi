@@ -2,38 +2,33 @@ require "file_utils"
 require "option_parser"
 
 require "../../src/seeds/rm_nvinfo"
+require "../../src/utils/file_utils"
 require "./_seeding.cr"
 
 class CV::Seeds::MapRemote
   def initialize(@sname : String)
     @meta = Seeding.new(@sname)
+    @encoding = HttpUtils.encoding_for(@sname)
   end
 
   def prep!(upto = 1)
-    queue = [] of Tuple(String, String)
+    queue = [] of String
 
-    1.upto(upto) do |idx|
-      snvid = idx.to_s
-      file = RmSpider.nvinfo_file(@sname, snvid)
+    rdir = "_db/.cache/#{@sname}/infos"
+    ::FileUtils.mkdir_p(rdir)
 
-      next if File.exists?(file)
-      queue << {file, RmSpider.nvinfo_link(@sname, snvid)}
-    end
+    exist = Dir.children(rdir).map(&.split(".")[0])
+    queue = (1..upto).map(&.to_s) - exist
 
-    puts "[ seed: #{@sname}, upto: #{upto}, queue: #{queue.size} ]".colorize.cyan.bold
+    puts "[#{@sname}/#{upto}, prep size: #{queue.size}]".colorize.cyan.bold
 
     threads = ideal_threads_for(@sname)
     threads = queue.size if threads > queue.size
     channel = Channel(Nil).new(threads)
 
-    queue.each_with_index(1) do |(file, link), idx|
-      channel.receive if idx > threads
-
+    queue.each_with_index(1) do |snvid, idx|
       spawn do
-        encoding = HttpUtils.encoding_for(@sname)
-        html = HttpUtils.get_html(link, encoding, label: "#{idx}/#{queue.size}")
-
-        File.write(file, html)
+        fetch!(snvid, label: "#{idx}/#{queue.size}")
 
         # throttling
         case @sname
@@ -44,14 +39,24 @@ class CV::Seeds::MapRemote
         when "bqg_5200"
           sleep Random.rand(100..500).milliseconds
         end
-      rescue err
-        puts err
-      ensure
+
         channel.send(nil)
       end
+
+      channel.receive if idx > threads
     end
 
     threads.times { channel.receive }
+  end
+
+  def fetch!(snvid : String, label = "1/1")
+    link = RmSpider.nvinfo_link(@sname, snvid)
+    html = HttpUtils.get_html(link, @encoding, label: label)
+
+    file = RmSpider.nvinfo_file(@sname, snvid)
+    FileUtils.save_gz(file, html)
+  rescue err
+    puts err
   end
 
   def ideal_threads_for(sname : String)
@@ -64,7 +69,7 @@ class CV::Seeds::MapRemote
   end
 
   def init!(upto = 1, mode = 1)
-    puts "[ seed: #{@sname}, upto: #{upto}, mode: #{mode} ]".colorize.cyan.bold
+    puts "#{@sname}/#{upto}, init mode: #{mode}]".colorize.cyan.bold
     mode = 0 if @sname == "jx_la"
 
     1.upto(upto) do |idx|
