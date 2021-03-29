@@ -3,7 +3,7 @@ require "../appcv/marked"
 
 module CV::Server
   get "/api/nvinfos" do |env|
-    matched = NvIndex.filter(env.params.query)
+    matched = NvInfo.filter(env.params.query)
     RouteUtils.books_res(env, matched)
   end
 
@@ -12,10 +12,10 @@ module CV::Server
       halt env, status_code: 404, response: "Book not found!"
     end
 
-    nvinfo = NvInfo.load(bhash)
-    NvInfo.load(bhash).bump_access!
+    spawn NvOrders.set_access!(bhash, Time.utc.to_unix // 60)
 
-    RouteUtils.json_res(env, cached: nvinfo.mftime) do |res|
+    RouteUtils.json_res(env) do |res|
+      nvinfo = NvInfo.load(bhash)
       JSON.build(res) { |json| nvinfo.to_json(json, true) }
     end
   end

@@ -5,188 +5,24 @@ require "./nv_info/*"
 class CV::NvInfo
   # include JSON::Serializable
 
-  getter bhash : String
-  getter _meta : ValueMap
-
-  getter btitle : Array(String) { @_meta.get("btitle") || [""] }
-  getter author : Array(String) { @_meta.get("author") || [""] }
-  getter genres : Array(String) { @_meta.get("genres") || ["Loại khác"] }
-  getter bcover : String { @_meta.fval("bcover") }
-  getter voters : Int32 { @_meta.ival("voters") }
-  getter rating : Int32 { @_meta.ival("rating") // 10 }
-
   DIR = "_db/nvdata/nvinfos"
   ::FileUtils.mkdir_p(DIR)
 
-  def initialize(@bhash)
-    info_file = File.join(DIR, "#{@bhash}.tsv")
-    @_meta = ValueMap.new(info_file)
+  CACHE = {} of String => self
+
+  def self.load(bhash : String)
+    CACHE[bhash] ||= new(bhash)
   end
 
-  def inspect(io : IO, full : Bool = false)
-    JSON.build(io) { |json| to_json(json, full) }
-  end
+  def self.save!(clean = false)
+    NvAuthor.save!(clean: clean)
+    NvBtitle.save!(clean: clean)
 
-  def btitle_zh
-    btitle[0]
-  end
+    NvGenres.save!(clean: clean)
+    NvBintro.save!(clean: clean)
 
-  def btitle_hv
-    btitle[1]? || btitle[0]
-  end
-
-  def btitle_vi
-    btitle[2]? || btitle[1]? || btitle[0]
-  end
-
-  def author_zh
-    author[0]
-  end
-
-  def author_vi
-    author[1]? || author[0]
-  end
-
-  def mftime
-    @_meta.ival_64("update")
-  end
-
-  def to_json(json : JSON::Builder, full : Bool = false)
-    json.object do
-      json.field "bhash", @bhash
-      json.field "bslug", @_meta.fval("bslug")
-
-      json.field "btitle_zh", btitle_zh
-      json.field "btitle_hv", btitle_hv
-      json.field "btitle_vi", btitle_vi
-
-      json.field "author_zh", author_zh
-      json.field "author_vi", author_vi
-
-      json.field "genres", genres
-      json.field "bcover", bcover
-
-      json.field "voters", voters
-      json.field "rating", rating
-
-      json.field "update", @_meta.ival_64("update")
-
-      if full
-        json.field "bintro", @_meta.get("bintro")
-
-        json.field "status", @_meta.ival("status")
-        json.field "yousuu", @_meta.fval("yousuu")
-        json.field "origin", @_meta.fval("origin")
-
-        chseed = @_meta.get("chseed") || ["chivi"]
-        json.field "chseed", chseed
-
-        chseed.each do |sname|
-          json.field "$#{sname}", get_chseed(sname)
-        end
-      end
-    end
-  end
-
-  def set_btitle(zh_btitle : String,
-                 hv_btitle = NvUtils.to_hanviet(zh_btitle),
-                 vi_btitle = NvUtils.fix_btitle_vi(zh_btitle)) : Nil
-    @_meta.set!("btitle", [zh_btitle, hv_btitle, vi_btitle].uniq)
-
-    NvIndex.set_btitle_zh(@bhash, zh_btitle)
-    NvIndex.set_btitle_hv(@bhash, hv_btitle)
-    NvIndex.set_btitle_vi(@bhash, vi_btitle) if vi_btitle != hv_btitle
-  end
-
-  def set_author(zh_author : String, vi_author = NvUtils.fix_author_vi(zh_author)) : Nil
-    @_meta.set!("author", [zh_author, vi_author].uniq)
-    NvIndex.set_author_zh(@bhash, zh_author)
-    NvIndex.set_author_vi(@bhash, vi_author)
-  end
-
-  def set_genres(genres : Array(String), force : Bool = false) : Nil
-    return unless force || !@_meta.has_key?("genres")
-
-    @_meta.set!("genres", genres)
-    NvIndex.set_genres(@bhash, genres)
-  end
-
-  def set_bintro(lines : Array(String), force : Bool = false)
-    return unless force || !@_meta.has_key?("bintro")
-    NvIntro.set_intro(@bhash, lines, force: force)
-
-    cvmtl = Cvmtl.generic(@bhash)
-    intro = lines.map { |line| cvmtl.tl_plain(line) }
-
-    @_meta.set!("bintro", intro)
-  end
-
-  {% for field in {"status", "hidden"} %}
-    def set_{{field.id}}(value : Int32, force : Bool = false)
-      return false unless force || value > @_meta.ival({{field}})
-      @_meta.set!({{field}}, value)
-    end
-  {% end %}
-
-  def bump_access!(mftime : Int64 = Time.utc.to_unix) : Nil
-    NvIndex.access.set!(@bhash, [mftime.//(60).to_s])
-  end
-
-  def set_update(mftime : Int64 = Time.utc.to_unix) : Bool
-    return false if @_meta.ival_64("update") > mftime
-    NvIndex.update.set!(@bhash, [mftime.//(60).to_s])
-    @_meta.set!("update", mftime)
-  end
-
-  def set_scores(voters : Int32, rating : Int32) : Nil
-    @_meta.set!("voters", voters)
-    @_meta.set!("rating", rating)
-    NvIndex.set_scores(@bhash, voters, rating)
-  end
-
-  {% for type in {"origin", "yousuu", "hidden"} %}
-    def set_{{type.id}}(value)
-      @_meta.set!({{type}}, value)
-    end
-  {% end %}
-
-  def set_chseed(sname : String, snvid : String, mtime = 0_i64, count = 0) : Nil
-    seeds = @_meta.get!("chseed") { ["chivi"] }
-    utime = @_meta.ival_64("update")
-
-    # dirty hack to fix update_time for hetushu or zhwenpg...
-    if old_value = get_chseed(sname)
-      _svnid, old_mtime, old_count = old_value
-
-      if count > old_count # if newer has more chapters
-        if mtime <= old_mtime
-          mtime = utime > old_mtime ? utime : Time.utc.to_unix
-        end
-      else
-        mtime = old_mtime
-      end
-    elsif mtime < utime
-      mtime = utime
-    end
-
-    @_meta.set!("$#{sname}", [snvid, mtime.to_s, count.to_s])
-
-    seeds << sname
-    seeds = seeds.uniq.map { |s| {s, get_chseed(s)[1]} }
-
-    chseed = seeds.sort_by(&.[1].-).map(&.[0])
-    @_meta.set!("chseed", chseed)
-
-    set_update(mtime)
-  end
-
-  def get_chseed(sname : String) : Tuple(String, Int64, Int32)
-    meta = @_meta.get("$#{sname}") || [bhash, "0", "0"]
-    {meta[0], meta[1].to_i64, meta[2].to_i}
-  end
-
-  def save!(clean : Bool = false)
-    @_meta.save!(clean: clean)
+    NvFields.save!(clean: clean)
+    NvOrders.save!(clean: clean)
   end
 
   def self.upsert!(btitle : String, author : String, fixed : Bool = false)
@@ -197,24 +33,46 @@ class CV::NvInfo
     exists = nvinfo._meta.has_key?("bslug")
 
     unless exists
-      nvinfo.set_author(author)
-      nvinfo.set_btitle(btitle)
+      NvAuthor.set!(author)
+      NvBtitle.set!(btitle)
 
       half_slug = TextUtils.slugify(nvinfo.btitle_hv)
       full_slug = "#{half_slug}-#{bhash}"
 
       nvinfo._meta.set!("bslug", full_slug)
-      NvIndex._index.set!(bhash, [full_slug, half_slug])
+      NvFields._index.set!(bhash, [full_slug, half_slug])
     end
 
     {nvinfo, exists}
   end
 
   def self.find_by_slug(bslug : String)
-    NvIndex._index.keys(bslug).first?
+    NvFields._index.keys(bslug).first?
   end
 
-  def self.each(order_map = NvIndex.weight, skip = 0, take = 24, matched : Set(String)? = nil)
+  def self.filter(opts, prev : Set(String)? = nil)
+    {"btitle", "author", "genre", "sname"}.each do |type|
+      next unless str = opts[type]?
+      prev = filter(str, type, prev)
+      break if prev.empty?
+    end
+
+    prev
+  end
+
+  def self.filter(str : String, type : String, prev : Set(String)? = nil)
+    case type
+    when "btitle" then NvBtitle.filter(str, prev)
+    when "author" then NvAuthor.filter(str, prev)
+    when "genre"  then NvGenres.filter(str, prev)
+    when "sname"  then NvChseed.filter(str, prev)
+    else               prev || Set(String).new
+    end
+  end
+
+  def self.each(order : String, skip = 0, take = 25, matched : Set(String)? = nil)
+    order_map = NvOrders.get(order)
+
     if !matched
       iter = order_map._idx.reverse_each
       skip.times { return unless iter.next }
@@ -247,10 +105,103 @@ class CV::NvInfo
     end
   end
 
-  CACHE = {} of String => self
+  getter bhash : String
+  getter bslug : String { NvFields._index.fval(@bhash) || bhash }
 
-  def self.load(bhash : String)
-    CACHE[bhash] ||= new(bhash)
+  getter btitle : Array(String) { NvBtitle.get(@bhash) || ["", "", ""] }
+  getter author : Array(String) { NvAuthor.get(@bhash) || ["", ""] }
+
+  getter genres : Array(String) { NvGenres.get(@bhash) || ["Loại khác"] }
+  getter bintro : Array(String) { NvBintro.get(@bhash, "vi") }
+
+  getter bcover : String { NvFields.bcover.fval(@bhash) || "" }
+  getter yousuu : String { NvFields.yousuu.fval(@bhash) || "" }
+  getter origin : String { NvFields.origin.fval(@bhash) || "" }
+
+  getter status : Int32 { NvOrders.voters.ival(@bhash) }
+  getter hidden : Int32 { NvOrders.voters.ival(@bhash) }
+
+  getter voters : Int32 { NvOrders.voters.ival(@bhash) }
+  getter rating : Float64 { NvOrders.rating.ival(@bhash) / 10 }
+
+  getter update : Int64 { NvOrders.update.ival_64(@bhash) }
+  getter chseed : Array(String) { NvChseed.get_list(@bhash) }
+
+  def initialize(@bhash)
+  end
+
+  def inspect(io : IO, full : Bool = false)
+    JSON.build(io) { |json| to_json(json, full) }
+  end
+
+  def to_json(json : JSON::Builder, full : Bool = false)
+    json.object do
+      json.field "bhash", bhash
+      json.field "bslug", bslug
+
+      json.field "btitle_zh", btitle[0]
+      json.field "btitle_hv", btitle[1]
+      json.field "btitle_vi", btitle[2]
+
+      json.field "author_zh", author[0]
+      json.field "author_vi", author[1]
+
+      json.field "genres", genres
+      json.field "bcover", bcover
+
+      json.field "voters", voters
+      json.field "rating", rating
+
+      if full
+        json.field "bintro", bintro
+
+        json.field "update", update
+        json.field "status", status
+
+        json.field "yousuu", yousuu
+        json.field "origin", origin
+
+        json.field "chseed", chseed
+
+        chseed.each do |sname|
+          json.field "$#{sname}", get_chseed(sname)
+        end
+      end
+    end
+  end
+
+  def get_chseed(sname : String) : Tuple(String, Int64, Int32)
+    seed = NvChseed.get_seed(sname, @bhash) || [@bhash, "0", "0"]
+    {seed[0], seed[1].to_i64, seed[2].to_i}
+  end
+
+  def set_chseed(sname : String, snvid : String, mtime = 0_i64, count = 0) : Nil
+    # dirty hack to fix update_time for hetushu or zhwenpg...
+    if old_value = get_chseed(sname)
+      _svnid, old_mtime, old_count = old_value
+
+      if count > old_count # if newer has more chapters
+        if mtime <= old_mtime
+          mtime = update > old_mtime ? update : Time.utc.to_unix
+        end
+      else
+        mtime = old_mtime
+      end
+    elsif mtime < update
+      mtime = update
+    end
+
+    @update = nil
+    NvOrders.set_update!(@bhash, mtime)
+
+    snames = chseed
+    snames << sname
+
+    snames = snames.uniq.map { |s| {s, -get_chseed(s)[1]} }
+    @chseed = snames.sort_by(&.[1]).map(&.[0])
+
+    NvChseed.set_list!("chseed", chseed)
+    NvChseed.set_seed!(sname, @bhash, [snvid, mtime.to_s, count.to_s])
   end
 end
 

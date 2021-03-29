@@ -32,8 +32,8 @@ module CV::Server::RouteUtils
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
     take = RouteUtils.parse_int(env.params.query["take"]?, min: 1, max: 24)
 
-    sorts = NvIndex.order_map(env.params.query["order"]?)
-    total = matched ? matched.size : sorts.size
+    order = env.params.query["order"]? || "weight"
+    total = matched ? matched.size : NvOrders.get(order).size
 
     json_res(env) do |res|
       JSON.build(res) do |json|
@@ -42,7 +42,7 @@ module CV::Server::RouteUtils
 
           json.field "books" do
             json.array do
-              NvInfo.each(sorts, skip: skip, take: take + 1, matched: matched) do |bhash|
+              NvInfo.each(order, skip: skip, take: take + 1, matched: matched) do |bhash|
                 NvInfo.load(bhash).to_json(json, false)
               end
             end
