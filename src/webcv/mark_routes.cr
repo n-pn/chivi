@@ -33,9 +33,9 @@ module CV::Server
     nvmark = env.params.query["nvmark"]? || "reading"
     matched = Marked.all_user_books(u_uname, nvmark)
 
+    # remove deleted books
     matched.each do |bhash|
-      next if NvIndex._index.has_key?(bhash)
-      # puts bhash
+      next if NvInfo.exists?(bhash)
       Marked.unmark_book(u_uname, bhash)
       matched.delete(bhash)
     end

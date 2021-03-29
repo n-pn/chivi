@@ -29,12 +29,10 @@ class CV::Seeds::ZhwenpgParser
 end
 
 class CV::Seeds::MapZhwenpg
-  getter meta = Seeding.new("zhwenpg")
+  ::FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
 
-  def initialize
-    @mftimes = {} of String => Int64
-    ::FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
-  end
+  getter meta = Seeding.new("zhwenpg")
+  @checked = Set(String).new
 
   def expiry(page : Int32 = 1)
     Time.utc - 4.hours * page
@@ -65,55 +63,53 @@ class CV::Seeds::MapZhwenpg
       parser = ZhwenpgParser.new(node)
       snvid = parser.snvid
 
-      next if @mftimes.has_key?(snvid)
-      @mftimes[snvid] = parser.mftime
+      next if @checked.includes?(snvid)
+      @checked.add(snvid)
 
       btitle, author = parser.btitle, parser.author
       puts "\n<#{idx}/#{nodes.size}}> {#{snvid}} [#{btitle}  #{author}]"
 
-      if @meta._index.set!(snvid, [atime.to_s, btitle, author])
-        @meta.set_intro(snvid, parser.bintro)
-        @meta.genres.set!(snvid, parser.bgenre)
-        @meta.bcover.set!(snvid, parser.bcover)
-        @meta.status.set!(snvid, status)
-        @meta.update.set!(snvid, parser.mftime)
-      end
+      @meta._index.set!(snvid, [atime.to_s, btitle, author])
+
+      @meta.set_intro(snvid, parser.bintro)
+      @meta.genres.set!(snvid, parser.bgenre)
+      @meta.bcover.set!(snvid, parser.bcover)
+
+      @meta.update.set!(snvid, parser.mftime)
+      @meta.status.set!(snvid, status)
     rescue err
       puts "ERROR: #{err}".colorize.red
     end
   end
 
   def seed!
-    checked = @mftimes.keys
+    @checked.to_a.each_with_index(1) do |snvid, idx|
+      bhash, existed = @meta.upsert!(snvid)
+      fake_rating!(bhash, snvid) if NvOrders.voters.ival(bhash) == 0
 
-    checked.each_with_index(1) do |snvid, idx|
-      nvinfo, existed = @meta.upsert!(snvid)
-      fake_rating!(nvinfo, snvid) if nvinfo._meta.ival("voters") == 0
-
-      bslug = nvinfo._meta.fval("bslug")
       colored = existed ? :yellow : :green
+      puts "- <#{idx}/#{@checked.size}> [#{bhash}] saved!".colorize(colored)
 
-      puts "- <#{idx}/#{checked.size}> [#{bslug}] saved!".colorize(colored)
-      @meta.upsert_chinfo!(nvinfo, snvid, mode: 0)
-      nvinfo.save!(clean: false)
+      @meta.upsert_chinfo!(bhash, snvid, mode: 0)
+      NvInfo.save!(clean: false)
     end
 
-    NvIndex.save!(clean: true)
+    NvInfo.save!(clean: false)
   end
 
   FAKE_RATING = ValueMap.new("tasks/seeding/fake_ratings.tsv", mode: 2)
 
-  def fake_rating!(nvinfo : NvInfo, snvid : String)
-    btitle = nvinfo._meta.fval("btitle")
-    author = nvinfo._meta.fval("author")
+  def fake_rating!(bhash : String, snvid : String)
+    btitle = NvBtitle._index.fval("btitle")
+    author = NvAuthor._index.fval("author")
 
     if vals = FAKE_RATING.get("#{btitle}  #{author}")
       voters, rating = vals[0].to_i, vals[1].to_i
     else
-      voters, rating = Random.rand(10..50), Random.rand(40..60)
+      voters, rating = Random.rand(10..50), Random.rand(60..70)
     end
 
-    nvinfo.set_scores(voters, rating)
+    NvOrders.set_scores!(bhash, voters, rating)
   end
 end
 

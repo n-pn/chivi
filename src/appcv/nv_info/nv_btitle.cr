@@ -12,16 +12,16 @@ module CV::NvBtitle
   class_getter map_hv : TokenMap { TokenMap.new "#{DIR}/map_hv.tsv" }
   class_getter map_vi : TokenMap { TokenMap.new "#{DIR}/map_vi.tsv" }
 
-  class_getter fix_zh : ValueMap { ValueMap.new "#{DIR}/fix_zh.tsv" }
-  class_getter fix_vi : ValueMap { ValueMap.new "#{DIR}/fix_vi.tsv" }
+  class_getter fix_zh : ValueMap { NvUtils.fix_map("btitles_zh") }
+  class_getter fix_vi : ValueMap { NvUtils.fix_map("btitles_vi") }
 
   delegate get, to: _index
   delegate each, to: _index
 
   def set!(bname : String, zh_name : String, hv_name = NvUtils.to_hanviet(zh_name), vi_name = fix_vi_name(zh_name))
-    map_zh.set!(bname, TextUtil.tokenize(zh_name))
-    map_hv.set!(bname, TextUtil.tokenize(hv_name))
-    map_vi.set!(bname, TextUtil.tokenize(vi_name)) if hv_name != vi_name
+    map_zh.set!(bname, TextUtils.tokenize(zh_name))
+    map_hv.set!(bname, TextUtils.tokenize(hv_name))
+    map_vi.set!(bname, TextUtils.tokenize(vi_name)) if hv_name != vi_name
 
     _index.set!(bname, [zh_name, hv_name, vi_name])
   end
@@ -40,5 +40,13 @@ module CV::NvBtitle
 
   def fix_vi_name(zh_name : String) : String
     fix_vi.fval(zh_name).try { |x| TextUtils.titleize(x) } || NvUtils.to_hanviet(zh_name)
+  end
+
+  def save!(clean = false)
+    @@_index.try(&.save!(clean: clean))
+
+    @@map_zh.try(&.save!(clean: clean))
+    @@map_hv.try(&.save!(clean: clean))
+    @@map_vi.try(&.save!(clean: clean))
   end
 end

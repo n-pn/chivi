@@ -28,4 +28,8 @@ module CV::NvBintro
 
     intro_map(bhash, "vi").set!(bhash, intro)
   end
+
+  def save!(clean = false)
+    CACHE.each_value(&.save!(clean: clean))
+  end
 end

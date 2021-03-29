@@ -86,37 +86,40 @@ class CV::Seeding
   end
 
   def get_genres(snvid : String)
-    zh_genres = genres.get(snvid) || [] of String
-    zh_genres = zh_genres.map { |x| NvUtils.fix_genre_zh(x) }.flatten.uniq
+    zh_names = genres.get(snvid) || [] of String
 
-    vi_genres = zh_genres.map { |x| NvUtils.fix_genre_vi(x) }.uniq
-    vi_genres.reject!("Loại khác")
-    vi_genres.empty? ? ["Loại khác"] : vi_genres
+    zh_names = zh_names.map { |x| NvGenres.fix_zh_name(x) }.flatten.uniq
+    vi_names = zh_names.map { |x| NvGenres.fix_vi_name(x) }.uniq
+
+    vi_names.reject!("Loại khác")
+    vi_names.empty? ? ["Loại khác"] : vi_names
   end
 
-  def upsert!(snvid : String) : Tuple(NvInfo, Bool)
+  def upsert!(snvid : String) : Tuple(String, Bool)
     access, btitle, author = _index.get(snvid).not_nil!
-    nvinfo, existed = NvInfo.upsert!(btitle, author, fixed: false)
+    bhash, existed = NvInfo.upsert!(btitle, author, fixed: false)
 
     genres = get_genres(snvid)
-    nvinfo.set_genres(genres) unless genres.empty?
+    NvGenres.set!(bhash, genres) unless genres.empty?
 
     bintro = get_intro(snvid)
-    nvinfo.set_bintro(bintro, force: false) unless bintro.empty?
+    NvBintro.set!(bhash, bintro, force: false) unless bintro.empty?
 
-    nvinfo.set_status(status.ival(snvid))
+    NvFields.set_status!(bhash, status.ival(snvid))
 
     mftime = update.ival_64(snvid)
-    nvinfo.set_update(mftime)
-    nvinfo.bump_access!(mftime)
+    NvOrders.set_update!(bhash, mftime)
+    NvOrders.set_access!(bhash, mftime // 60)
 
-    {nvinfo, existed}
+    {bhash, existed}
   end
 
-  def upsert_chinfo!(nvinfo : NvInfo, snvid : String, mode = 0) : Nil
-    chinfo = ChInfo.new(nvinfo.bhash, @sname, snvid)
+  def upsert_chinfo!(bhash : String, snvid : String, mode = 0) : Nil
+    chinfo = ChInfo.new(bhash, @sname, snvid)
     mtime, total = chinfo.fetch!(mode: mode, valid: 10.years)
     chinfo.trans!(reset: false)
-    nvinfo.set_chseed(@sname, snvid, mtime, total)
+
+    mtime = update.ival_64(snvid) if @sname == "zhwenpg"
+    NvInfo.new(bhash).set_chseed(@sname, snvid, mtime, total)
   end
 end

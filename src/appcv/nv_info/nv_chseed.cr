@@ -6,7 +6,6 @@ module CV::NvChseed
   DIR = "_db/nv_infos/chseeds"
 
   class_getter _index : TokenMap { TokenMap.new "#{DIR}/_index.tsv" }
-
   CACHE = {} of String => ValueMap
 
   def get_list(bhash : String)
@@ -29,13 +28,13 @@ module CV::NvChseed
     CACHE[sname] ||= ValueMap.new("#{DIR}/#{sname}.tsv")
   end
 
-  def save!(clean : Bool = false)
-    @@_index.try(&.save!(clean: clean))
-    CACHE.each_value(&.save!(clean: clean))
-  end
-
   def filter(inp : String, prevs : Set(String)? = nil)
     res = _index.keys(inp.downcase)
     prevs ? prevs & res : res
+  end
+
+  def save!(clean : Bool = false)
+    @@_index.try(&.save!(clean: clean))
+    CACHE.each_value(&.save!(clean: clean))
   end
 end

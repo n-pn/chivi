@@ -11,15 +11,15 @@ module CV::NvAuthor
   class_getter map_zh : TokenMap { TokenMap.new "#{DIR}/map_zh.tsv" }
   class_getter map_vi : TokenMap { TokenMap.new "#{DIR}/map_vi.tsv" }
 
-  class_getter fix_zh : ValueMap { ValueMap.new "#{DIR}/fix_zh.tsv" }
-  class_getter fix_vi : ValueMap { ValueMap.new "#{DIR}/fix_vi.tsv" }
+  class_getter fix_zh : ValueMap { NvUtils.fix_map("authors_zh") }
+  class_getter fix_vi : ValueMap { NvUtils.fix_map("authors_vi") }
 
   delegate get, to: _index
   delegate each, to: _index
 
   def set!(bname : String, zh_name : String, vi_name = fix_vi_name(zh_name))
-    map_zh.set!(bname, TextUtil.tokenize(zh_name))
-    map_vi.set!(bname, TextUtil.tokenize(vi_name))
+    map_zh.set!(bname, TextUtils.tokenize(zh_name))
+    map_vi.set!(bname, TextUtils.tokenize(vi_name))
 
     _index.set!(bname, [zh_name, vi_name])
   end
@@ -42,5 +42,8 @@ module CV::NvAuthor
 
   def save!(clean = false)
     @@_index.try(&.save!(clean: clean))
+
+    @@map_zh.try(&.save!(clean: clean))
+    @@map_vi.try(&.save!(clean: clean))
   end
 end

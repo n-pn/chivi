@@ -3,7 +3,7 @@ require "./nv_utils"
 module CV::NvOrders
   extend self
 
-  DIR = "_db/nvdata"
+  DIR = "_db/nv_infos"
 
   ORDERS = {"access", "update", "voters", "rating", "weight"}
 
@@ -37,7 +37,7 @@ module CV::NvOrders
     weight_val = voters_val * rating_val
 
     if voters_val < 25
-      weight_val += (25 - voters_val) + Random.rand(40..60)
+      weight_val += (25 - voters_val) + Random.rand(45..60)
       rating_val = weight_val // 25
     end
 

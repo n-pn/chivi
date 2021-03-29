@@ -8,11 +8,14 @@ module CV::Server
   end
 
   get "/api/nvinfos/:bslug" do |env|
-    unless bhash = NvInfo.find_by_slug(env.params.url["bslug"])
+    bslug = env.params.url["bslug"]
+    unless bhash = NvInfo.find_by_slug(bslug)
       halt env, status_code: 404, response: "Book not found!"
     end
 
-    spawn NvOrders.set_access!(bhash, Time.utc.to_unix // 60)
+    access = Time.utc.to_unix // 60
+    NvOrders.set_access!(bhash, access, force: true)
+    spawn { NvOrders.access.save!(clean: false) }
 
     RouteUtils.json_res(env) do |res|
       nvinfo = NvInfo.load(bhash)

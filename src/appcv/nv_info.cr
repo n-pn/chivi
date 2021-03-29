@@ -23,27 +23,35 @@ class CV::NvInfo
 
     NvFields.save!(clean: clean)
     NvOrders.save!(clean: clean)
+
+    NvChseed.save!(clean: clean)
+  end
+
+  def self.exists?(bhash : String)
+    NvFields._index.has_key?(bhash)
   end
 
   def self.upsert!(btitle : String, author : String, fixed : Bool = false)
-    btitle, author = NvUtils.fix_labels(btitle, author) unless fixed
+    unless fixed
+      author = NvAuthor.fix_zh_name(author, btitle)
+      btitle = NvBtitle.fix_zh_name(btitle, author)
+    end
+
     bhash = CoreUtils.digest32("#{btitle}--#{author}")
+    existed = exists?(bhash)
 
-    nvinfo = new(bhash)
-    exists = nvinfo._meta.has_key?("bslug")
+    unless existed
+      NvAuthor.set!(bhash, author)
+      NvBtitle.set!(bhash, btitle)
 
-    unless exists
-      NvAuthor.set!(author)
-      NvBtitle.set!(btitle)
-
-      half_slug = TextUtils.slugify(nvinfo.btitle_hv)
+      btitle_hv = NvBtitle.get(bhash).not_nil![1]
+      half_slug = TextUtils.slugify(btitle_hv)
       full_slug = "#{half_slug}-#{bhash}"
 
-      nvinfo._meta.set!("bslug", full_slug)
       NvFields._index.set!(bhash, [full_slug, half_slug])
     end
 
-    {nvinfo, exists}
+    {bhash, existed}
   end
 
   def self.find_by_slug(bslug : String)
@@ -200,7 +208,7 @@ class CV::NvInfo
     snames = snames.uniq.map { |s| {s, -get_chseed(s)[1]} }
     @chseed = snames.sort_by(&.[1]).map(&.[0])
 
-    NvChseed.set_list!("chseed", chseed)
+    NvChseed.set_list!(@bhash, chseed)
     NvChseed.set_seed!(sname, @bhash, [snvid, mtime.to_s, count.to_s])
   end
 end

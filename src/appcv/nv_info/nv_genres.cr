@@ -10,8 +10,8 @@ module CV::NvGenres
 
   class_getter map_vi : TokenMap { TokenMap.new "#{DIR}/map_vi.tsv" }
 
-  class_getter fix_zh : ValueMap { ValueMap.new "#{DIR}/fix_zh.tsv" }
-  class_getter fix_vi : ValueMap { ValueMap.new "#{DIR}/fix_vi.tsv" }
+  class_getter fix_zh : ValueMap { NvUtils.fix_map("bgenres_zh") }
+  class_getter fix_vi : ValueMap { NvUtils.fix_map("bgenres_vi") }
 
   delegate get, to: _index
   delegate each, to: _index
@@ -32,6 +32,12 @@ module CV::NvGenres
   end
 
   def fix_vi_name(zh_name : String) : String
-    fix_vi.fval(zh_name) || [] of String || NvUtils.to_hanviet(zh_name)
+    fix_vi.fval(zh_name) || NvUtils.to_hanviet(zh_name)
+  end
+
+  def save!(clean = false)
+    @@_index.try(&.save!(clean: clean))
+
+    @@map_vi.try(&.save!(clean: clean))
   end
 end
