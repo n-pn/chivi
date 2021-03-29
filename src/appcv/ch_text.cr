@@ -23,7 +23,7 @@ class CV::ChText
 
   def initialize(@bname : String, @sname : String, @snvid : String,
                  @chidx : Int32, @schid : String)
-    @text_dir = "#{DIR}/#{@sname}/#{@snvid}"
+    @text_dir = "#{DIR}/origs/#{@sname}/#{@snvid}"
     ::FileUtils.mkdir_p(@text_dir)
 
     zip_bname = (@chidx // 100).to_s.rjust(3, '0')
@@ -37,8 +37,6 @@ class CV::ChText
     if @cv_data && mode == 0
       return @cv_data if @cv_time >= Time.utc - cv_ttl(power)
     end
-
-    puts "- <ch_text> [#{@sname}/#{@snvid}/#{@chidx}] converted.".colorize.cyan
 
     zh_lines = get_zh!(power, reset: mode > 1) || [""]
     @cv_data = trans!(zh_lines) || ""
@@ -66,6 +64,8 @@ class CV::ChText
         para = lines.unsafe_fetch(i)
         mtl.cv_plain(para).to_str(io)
       end
+
+      puts "- <ch_text> [#{@sname}/#{@snvid}/#{@chidx}] converted.".colorize.cyan
     end
   end
 

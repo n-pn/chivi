@@ -54,8 +54,10 @@ class CV::ChInfo
 
     chaps.each do |chidx, infos|
       vi_title = cvmtl.tl_title(infos[1])
-      vi_label = infos[2]?.try { |x| cvmtl.tl_title(x) } || "Chính văn"
       url_slug = TextUtils.tokenize(vi_title).first(10).join("-")
+
+      zh_label = infos[2]? || ""
+      vi_label = zh_label.empty? ? "Chính văn" : cvmtl.tl_title(zh_label)
 
       trans.set!(chidx, [infos[0], vi_title, vi_label, url_slug])
     end

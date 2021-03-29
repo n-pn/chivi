@@ -8,9 +8,9 @@ module CV::Server
       json.object do
         json.field "chidx", chidx
         json.field "schid", infos[0]
-        json.field "title", infos[1]?
-        json.field "label", infos[2]?
-        json.field "uslug", infos[3]?
+        json.field "title", infos[1]
+        json.field "label", infos[2]
+        json.field "uslug", infos[3]
       end
     end
   end
