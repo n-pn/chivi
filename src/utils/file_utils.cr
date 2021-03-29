@@ -10,15 +10,19 @@ module CV::FileUtils
   end
 
   def read_gz(file : String, expiry = EXPIRY)
-    return unless recent?(file, expiry)
+    gz_file = file + ".gz"
 
-    File.open(file) do |io|
-      Compress::Gzip::Reader.open(io, &.gets_to_end)
+    if recent?(gz_file, expiry)
+      File.open(gz_file) { |io|
+        Compress::Gzip::Reader.open(io, &.gets_to_end)
+      }
+    elsif recent?(file, expiry)
+      File.read(file)
     end
   end
 
   def save_gz(file : String, input : String)
-    File.open(file, "w") do |io|
+    File.open(file + ".gz", "w") do |io|
       Compress::Gzip::Writer.open(io, &.print(input))
     end
   end

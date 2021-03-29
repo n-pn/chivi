@@ -51,6 +51,7 @@ class CV::RmNvInfo
     when "69shu"   then [] of String
     when "hetushu" then @rdoc.css(".intro > p").map(&.inner_text).to_a
     when "zhwenpg" then TextUtils.split_html(node_text("tr:nth-of-type(3)"))
+    when "bxwxorg" then TextUtils.split_html(node_text("#intro>p:first-child"))
     else                TextUtils.split_html(meta_data("og:description"))
     end
   end
@@ -80,7 +81,8 @@ class CV::RmNvInfo
     when "69shu", "zhwenpg"
       0
     else
-      RmSpider.map_status(meta_data("og:novel:status"))
+      status = meta_data("og:novel:status")
+      RmSpider.map_status(status)
     end
   end
 

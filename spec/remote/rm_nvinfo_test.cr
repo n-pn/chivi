@@ -57,8 +57,12 @@ fetch_info("5200", "28208", fresh: false)
 fetch_info("bqg_5200", "139570", fresh: false)
 # fetch_info("bqg_5200", "131878", fresh: true)
 
-fetch_info("shubaow", "150092", fresh: true)
+fetch_info("shubaow", "150092", fresh: false)
 
 fetch_info("paoshu8", "151780", fresh: false)
 
 fetch_info("69shu", "35875", fresh: false)
+
+fetch_info("biqubao", "33775", fresh: false)
+
+fetch_info("bxwxorg", "32154", fresh: false)

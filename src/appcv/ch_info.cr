@@ -48,6 +48,10 @@ class CV::ChInfo
     {mtime, origs.size}
   end
 
+  def updated?
+    @origs.try(&.upds.size.> 0)
+  end
+
   def trans!(reset : Bool = false)
     chaps = reset ? origs.data : origs.upds
     cvmtl = Cvmtl.generic(@bname)

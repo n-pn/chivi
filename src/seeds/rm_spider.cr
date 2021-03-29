@@ -12,10 +12,10 @@ module CV::RmSpider
   def fetch(file : String, link : String, sname : String, valid = 1.week, label = "1/1")
     expiry = sname == "jx_la" ? Time.utc(2010, 1, 1) : Time.utc - valid
 
-    unless html = FileUtils.read(file, expiry)
+    unless html = FileUtils.read_gz(file, expiry)
       html = HttpUtils.get_html(link, encoding: encoding_for(sname), label: label)
       ::FileUtils.mkdir_p(File.dirname(file))
-      File.write(file, html)
+      FileUtils.save_gz(file, html)
     end
 
     html

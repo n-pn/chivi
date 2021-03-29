@@ -99,7 +99,7 @@ class CV::Seeding
     chinfo = ChInfo.new(bhash, @sname, snvid)
 
     mtime, total = chinfo.fetch!(power: 4, mode: mode, valid: 10.years)
-    chinfo.trans!(reset: false)
+    chinfo.trans!(reset: false) if chinfo.updated?
 
     mtime = update.ival_64(snvid) if @sname == "zhwenpg"
     NvInfo.new(bhash).set_chseed(@sname, snvid, mtime, total)
