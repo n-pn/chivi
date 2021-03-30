@@ -122,8 +122,8 @@ class CV::NvInfo
   getter yousuu : String { NvFields.yousuu.fval(@bhash) || "" }
   getter origin : String { NvFields.origin.fval(@bhash) || "" }
 
-  getter status : Int32 { NvOrders.voters.ival(@bhash) }
-  getter hidden : Int32 { NvOrders.voters.ival(@bhash) }
+  getter status : Int32 { NvFields.status.ival(@bhash) }
+  getter hidden : Int32 { NvFields.hidden.ival(@bhash) }
 
   getter voters : Int32 { NvOrders.voters.ival(@bhash) }
   getter rating : Float64 { NvOrders.rating.ival(@bhash) / 10 }
