@@ -70,8 +70,12 @@
   export let title = false
   export let frags = false
 
-  $: [html_frag, html_nofrag] = render(nodes)
+  $: [html_frag, html_nofrag] = render_html(nodes)
   $: content = frags ? html_frag : html_nofrag
+
+  function render_html(nodes) {
+    return render(nodes)
+  }
 </script>
 
 {#if title}

@@ -1,10 +1,4 @@
 <script context="module">
-  import paginate_range from '$utils/paginate_range'
-
-  import SIcon from '$blocks/SIcon'
-  import Nvlist from '$widget/Nvlist'
-  import Vessel from '$layout/Vessel'
-
   const take = 24
 
   export async function preload({ query }) {
@@ -12,7 +6,7 @@
     let skip = (page - 1) * take
     if (skip < 1) skip = 0
 
-    let url = `/api/nvinfos?skip=${skip}&take=${take}`
+    let url = `/api/books?skip=${skip}&take=24`
     const opts = parse_params(query)
     if (opts != {}) url += `&${merge_params(opts)}`
 
@@ -53,6 +47,11 @@
 </script>
 
 <script>
+  import SIcon from '$blocks/SIcon'
+  import Nvlist from '$widget/Nvlist'
+  import Vessel from '$layout/Vessel'
+  import paginate_range from '$utils/paginate_range'
+
   export let books = []
   export let total = 0
 
@@ -71,19 +70,19 @@
     switch (evt.keyCode) {
       case 72:
         evt.preventDefault()
-        changePage(1)
+        change_page(1)
         break
 
       case 76:
         evt.preventDefault()
-        changePage(page_max)
+        change_page(page_max)
         break
 
       case 37:
       case 74:
         if (!evt.altKey) {
           evt.preventDefault()
-          changePage(page - 1)
+          change_page(page - 1)
         }
         break
 
@@ -91,7 +90,7 @@
       case 75:
         if (!evt.altKey) {
           evt.preventDefault()
-          changePage(page + 1)
+          change_page(page + 1)
         }
         break
 
@@ -100,9 +99,9 @@
     }
   }
 
-  function changePage(newPage = 2) {
-    if (newPage >= 1 && newPage <= page_max) {
-      _goto_(gen_page_url(newPage, query))
+  function change_page(new_page = 2) {
+    if (new_page >= 1 && new_page <= page_max) {
+      _goto_(gen_page_url(new_page, query))
     }
   }
 </script>
@@ -114,15 +113,17 @@
 <svelte:window on:keydown={handleKeypress} />
 
 <Vessel>
-  <form slot="header-left" class="header-field" action="/search" method="get">
-    <input
-      type="search"
-      name="kw"
-      placeholder="Tìm kiếm"
-      on:focus={() => (searching = true)}
-      on:onfocusout={() => (searching = false)} />
-    <SIcon name="search" />
-  </form>
+  <svelte:fragment slot="header-left">
+    <form class="header-field" action="/search" method="get">
+      <input
+        type="search"
+        name="kw"
+        placeholder="Tìm kiếm"
+        on:focus={() => (searching = true)}
+        on:onfocusout={() => (searching = false)} />
+      <SIcon name="search" />
+    </form>
+  </svelte:fragment>
 
   <a slot="header-right" href="/translate" class="header-item">
     <SIcon name="zap" />

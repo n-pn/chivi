@@ -52,11 +52,6 @@
     return [input, lower, upper > lower ? upper : lower + 1]
   }
 
-  function split_input(input) {
-    if (!input) return []
-    return input.split('\n').map((x) => parse_input(x))
-  }
-
   function parse_input(line) {
     return line.split('\t').map((x) => x.split('ǀ'))
   }
@@ -105,6 +100,11 @@
       lookup_input.set(gen_context(nodes, idx, 10, 20))
       lookup_actived.set(true)
     }
+  }
+
+  function split_input(input) {
+    if (!input) return []
+    return input.split('\n').map((x) => parse_input(x))
   }
 </script>
 

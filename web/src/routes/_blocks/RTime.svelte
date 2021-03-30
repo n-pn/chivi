@@ -33,7 +33,6 @@
 <script>
   export let mtime = 0
   $: rtime = new Date(mtime)
-  $: label = reltime_text(mtime, rtime)
 </script>
 
-<time datetime={rtime}>{label}</time>
+<time datetime={rtime}>{reltime_text(mtime, rtime)}</time>

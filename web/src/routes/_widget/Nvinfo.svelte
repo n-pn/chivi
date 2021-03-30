@@ -1,5 +1,10 @@
 <script context="module">
   import BCover from '$blocks/BCover.svelte'
+</script>
+
+<script>
+  export let nvinfo = {}
+  export let nvtab = ''
 
   function rating_stars(rating, voters) {
     if (voters <= 10) return []
@@ -13,11 +18,6 @@
 
     return output.join('')
   }
-</script>
-
-<script>
-  export let nvinfo = {}
-  export let nvtab = ''
 
   $: stars = rating_stars(nvinfo.rating, nvinfo.voters)
   $: route = nvtab == 'summary' ? '' : nvtab

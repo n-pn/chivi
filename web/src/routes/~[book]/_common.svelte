@@ -1,12 +1,11 @@
 <script context="module">
   import { u_power, u_dname } from '$src/stores'
   import { set_nvmark, get_nvmark } from '$api/marked_api'
-
-  import { host_name, map_status } from '$utils/book_utils'
-  import { mark_types, mark_names, mark_icons } from '$utils/constants'
 </script>
 
 <script>
+  import { host_name, map_status } from '$utils/book_utils'
+  import { mark_types, mark_names, mark_icons } from '$utils/constants'
   import { onMount } from 'svelte'
 
   import SIcon from '$blocks/SIcon'

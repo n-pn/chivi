@@ -26,32 +26,9 @@
     return { nvinfo, chseed, chlist, params }
   }
 
-  function split_chseed(nvinfo, { sname }) {
-    const seeds = nvinfo.chseed || ['chivi']
-    if (seeds.length < 6) return [seeds, []]
-
-    let main_seeds = seeds.slice(0, 4)
-    let hide_seeds
-
-    if (main_seeds.includes(sname)) {
-      main_seeds.push(seeds[4])
-      hide_seeds = seeds.slice(5)
-    } else if (sname) {
-      main_seeds.push(sname)
-      hide_seeds = seeds.slice(4).filter((x) => x != sname)
-    }
-
-    return [main_seeds, hide_seeds]
-  }
-
   function update_utime(nvinfo, utime) {
     if (nvinfo._utime < utime) nvinfo._utime = utime
     return nvinfo
-  }
-
-  function get_pmax({ total }, { page }) {
-    const p_max = Math.floor((total - 1) / 30) + 1
-    return p_max > page ? p_max : page
   }
 
   const all_seeds = [
@@ -186,6 +163,29 @@
 
     await load_chseed(evt, new_sname, 1)
     remove_item(`nvinfo:${nvinfo.bslug}`)
+  }
+
+  function split_chseed(nvinfo, { sname }) {
+    const seeds = nvinfo.chseed || ['chivi']
+    if (seeds.length < 6) return [seeds, []]
+
+    let main_seeds = seeds.slice(0, 4)
+    let hide_seeds
+
+    if (main_seeds.includes(sname)) {
+      main_seeds.push(seeds[4])
+      hide_seeds = seeds.slice(5)
+    } else if (sname) {
+      main_seeds.push(sname)
+      hide_seeds = seeds.slice(4).filter((x) => x != sname)
+    }
+
+    return [main_seeds, hide_seeds]
+  }
+
+  function get_pmax({ total }, { page }) {
+    const p_max = Math.floor((total - 1) / 30) + 1
+    return p_max > page ? p_max : page
   }
 </script>
 

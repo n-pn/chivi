@@ -1,23 +1,15 @@
 <script context="module">
-  import SIcon from '$blocks/SIcon'
-  import BCover from '$blocks/BCover'
-
-  import Vessel from '$layout/Vessel'
-
-  export const take = 8
-
   export async function preload({ query }) {
     const word = (query.kw || '').replace(/\+|-/g, ' ')
     const page = +(query.page || '1')
     const type = query.type || 'btitle'
 
     if (word) {
-      let skip = (page - 1) * take
+      let skip = (page - 1) * 8
       if (skip < 0) skip = 0
 
-      let url = `/api/nvinfos?skip=${skip}&take=${take}`
-      if (type == 'author') url += `&author=${word}`
-      else url += `&btitle=${word}`
+      let url = `/api/books?skip=${skip}&take=8`
+      if (word) url += `&${type}=${word}`
 
       const res = await this.fetch(url)
       const { books, total } = await res.json()
@@ -29,6 +21,11 @@
 </script>
 
 <script>
+  import SIcon from '$blocks/SIcon'
+  import BCover from '$blocks/BCover'
+
+  import Vessel from '$layout/Vessel'
+
   export let word = ''
   export let page = 1
   export let type = 'btitle'
@@ -36,8 +33,8 @@
   export let books = []
   export let total = 0
 
-  $: skip = (page - 1) * take
-  $: pmax = Math.floor((+total - 1) / take) + 1
+  $: skip = (page - 1) * 8
+  $: pmax = Math.floor((+total - 1) / 8) + 1
 
   function make_url(page) {
     if (page < 1) page = 1

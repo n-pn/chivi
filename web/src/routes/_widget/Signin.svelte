@@ -27,10 +27,13 @@
 </script>
 
 <Slider bind:actived width={26}>
-  <div slot="header-left" class="-icon">
-    <SIcon name="user" />
-  </div>
-  <div slot="header-left" class="-text">Tài khoản</div>
+  <svelte:fragment slot="header-left">
+    <div class="-icon">
+      <SIcon name="user" />
+    </div>
+
+    <div class="-text">Tài khoản</div>
+  </svelte:fragment>
 
   <section class="inner">
     <div class="brand">

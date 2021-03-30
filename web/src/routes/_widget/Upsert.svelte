@@ -8,22 +8,6 @@
   export const phrase = writable(['', 0, 1])
   export const on_tab = writable(0)
   export const active = writable(false)
-
-  function power_class(power, p_old) {
-    if (power < p_old) return 'text'
-    return power == p_old ? 'line' : 'solid'
-  }
-
-  function state_class(state) {
-    switch (state) {
-      case 'Thêm':
-        return 'success'
-      case 'Sửa':
-        return 'primary'
-      default:
-        return 'harmful'
-    }
-  }
 </script>
 
 <script>
@@ -143,6 +127,22 @@
   $: submit_state = !value[$on_tab] ? 'Xoá' : origs[$on_tab] ? 'Sửa' : 'Thêm'
   $: curr_state_class = state_class(submit_state)
   $: curr_power_class = power_class(p_now[$on_tab], p_old[$on_tab])
+
+  function power_class(power, p_old) {
+    if (power < p_old) return 'text'
+    return power == p_old ? 'line' : 'solid'
+  }
+
+  function state_class(state) {
+    switch (state) {
+      case 'Thêm':
+        return 'success'
+      case 'Sửa':
+        return 'primary'
+      default:
+        return 'harmful'
+    }
+  }
 </script>
 
 <div

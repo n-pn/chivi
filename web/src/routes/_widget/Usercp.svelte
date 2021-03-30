@@ -27,10 +27,12 @@
 </script>
 
 <Slider bind:actived width={26}>
-  <div slot="header-left" class="-icon">
-    <SIcon name="user" />
-  </div>
-  <div slot="header-left" class="-text">{$u_dname} [{$u_power}]</div>
+  <svelte:fragment slot="header-left">
+    <div class="-icon">
+      <SIcon name="user" />
+    </div>
+    <div class="-text">{$u_dname} [{$u_power}]</div>
+  </svelte:fragment>
 
   <button slot="header-right" class="-btn" on:click={logout}>
     <SIcon name="log-out" />

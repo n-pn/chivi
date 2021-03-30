@@ -1,4 +1,4 @@
-<script context="module">
+<script>
   import { get_self } from '$api/viuser_api'
   import { u_dname, u_power, l_scroll } from '$src/stores'
   import Loader from '$layout/Loader'
@@ -8,9 +8,7 @@
     ['Facebook', 'https://www.facebook.com/chivi.xyz/'],
     ['Discord', 'https://discord.gg/mdC3KQH'],
   ]
-</script>
 
-<script>
   import { onMount } from 'svelte'
 
   import { stores } from '@sapper/app'

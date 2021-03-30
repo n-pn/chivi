@@ -1,4 +1,7 @@
-<script context="module">
+<script>
+  import SIcon from '$blocks/SIcon'
+  import Vessel from '$layout/Vessel'
+
   import Cvdata, { toggle_lookup, active_upsert } from '$layout/Cvdata'
 
   import {
@@ -6,11 +9,6 @@
     enabled as lookup_enabled,
     actived as lookup_actived,
   } from '$widget/Lookup'
-</script>
-
-<script>
-  import SIcon from '$blocks/SIcon'
-  import Vessel from '$layout/Vessel'
 
   let zhtext = ''
   let cvdata = ''

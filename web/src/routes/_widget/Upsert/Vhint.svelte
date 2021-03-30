@@ -1,5 +1,5 @@
 <script context="module">
-  function show_class_for(words) {
+  function showing(words) {
     if (words < 7) return '_ss'
     if (words < 9) return '_sm'
     if (words < 13) return '_md'
@@ -18,8 +18,8 @@
   $: hanviet = trans.hanviet || ''
   $: binh_am = trans.binh_am || ''
 
+  $: words = hanviet.split(' ').length * (_hint.length + 2)
   $: _hint = hints.filter((x) => x != value)
-  $: _show = show_class_for(hanviet.split(' ').length * (_hint.length + 2))
 </script>
 
 <div class="hints">
@@ -35,7 +35,7 @@
   {/each}
 
   {#if binh_am}
-    <span class="pinyin {_show}">[{binh_am}]</span>
+    <span class="pinyin {showing(words)}">[{binh_am}]</span>
   {/if}
 </div>
 

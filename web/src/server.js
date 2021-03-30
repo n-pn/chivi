@@ -1,5 +1,5 @@
 import sirv from 'sirv'
-import polka from 'polka'
+import express from 'express'
 import compression from 'compression'
 import * as sapper from '@sapper/server'
 import { createProxyMiddleware } from 'http-proxy-middleware'
@@ -10,7 +10,7 @@ global.localStorage = new MemoryStorage()
 const { PORT, NODE_ENV } = process.env
 const dev = NODE_ENV === 'development'
 
-const proxy = createProxyMiddleware('/api/', {
+const proxy = createProxyMiddleware('/api', {
   target: 'http://localhost:5010',
   changeOrigin: true,
   pathRewrite: (path) => encodeURI(path),
@@ -19,10 +19,10 @@ const proxy = createProxyMiddleware('/api/', {
 const maxAge = 120 * 24 * 3600
 const assetOpts = { dev, maxAge, etag: true }
 
-const app = polka() // You can also use Express
+const app = express() // You can also use Express
 
-app.use('api', proxy)
-app.use('covers', sirv('../_db/nv_infos/covers', assetOpts))
+app.use('/api', proxy)
+app.use('/covers', sirv('../_db/nv_infos/covers', assetOpts))
 
 app.use(
   compression({ threshold: 0 }),

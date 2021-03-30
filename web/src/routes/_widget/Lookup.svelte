@@ -29,6 +29,53 @@
     if (idx < from) return false
     return idx < upper
   }
+</script>
+
+<script>
+  import SIcon from '$blocks/SIcon'
+  import Slider from './Slider'
+
+  let hanviet = []
+  let entries = []
+  let current = []
+
+  $: [key, lower, upper] = $input
+  $: if (key) lookup_entry(key)
+  $: if (lower < entries.length) update_focus()
+
+  $: zh_html = render_zh(hanviet, lower, upper)
+  $: hv_html = render_hv(hanviet, lower, upper)
+
+  function update_focus() {
+    if (entries.length < lower) {
+      current = []
+      upper = lower + 1
+    } else {
+      current = entries[lower]
+      if (current.length == 0) upper = lower + 1
+      else upper = lower + +current[0][0]
+    }
+  }
+
+  function hanlde_click({ target }) {
+    if (target.nodeName !== 'X-V') return
+    lower = +target.dataset['p']
+  }
+
+  function fix_vietphrase(words) {
+    let res = []
+    for (let word of words) {
+      if (word === '') res.push('<em>&lt;đã xoá&gt;</em>')
+      else res.push(word)
+    }
+    return res.join('; ')
+  }
+
+  async function lookup_entry(input) {
+    const data = await dict_lookup(fetch, input, $dname)
+    entries = data.entries
+    hanviet = data.hanviet.split('\t').map((x) => x.split('ǀ'))
+  }
 
   function render_zh(tokens, from, upper) {
     let output = ''
@@ -91,62 +138,17 @@
   }
 </script>
 
-<script>
-  import SIcon from '$blocks/SIcon'
-  import Slider from './Slider'
-
-  let hanviet = []
-  let entries = []
-  let current = []
-
-  $: [key, lower, upper] = $input
-  $: if (key) lookup_entry(key)
-  $: if (lower < entries.length) update_focus()
-
-  $: zh_html = render_zh(hanviet, lower, upper)
-  $: hv_html = render_hv(hanviet, lower, upper)
-
-  function update_focus() {
-    if (entries.length < lower) {
-      current = []
-      upper = lower + 1
-    } else {
-      current = entries[lower]
-      if (current.length == 0) upper = lower + 1
-      else upper = lower + +current[0][0]
-    }
-  }
-
-  function hanlde_click({ target }) {
-    if (target.nodeName !== 'X-V') return
-    lower = +target.dataset['p']
-  }
-
-  function fix_vietphrase(words) {
-    let res = []
-    for (let word of words) {
-      if (word === '') res.push('<em>&lt;đã xoá&gt;</em>')
-      else res.push(word)
-    }
-    return res.join('; ')
-  }
-
-  async function lookup_entry(input) {
-    const data = await dict_lookup(fetch, input, $dname)
-    entries = data.entries
-    hanviet = data.hanviet.split('\t').map((x) => x.split('ǀ'))
-  }
-</script>
-
 <Slider
   _rwidth={30}
   _sticky={true}
   bind:actived={$actived}
   bind:sticked={$sticked}>
-  <div slot="header-left" class="-icon">
-    <SIcon name="compass" />
-  </div>
-  <div slot="header-left" class="-text">Giải nghĩa</div>
+  <svelte:fragment slot="header-left">
+    <div class="-icon">
+      <SIcon name="compass" />
+    </div>
+    <div class="-text">Giải nghĩa</div>
+  </svelte:fragment>
 
   <button slot="header-right" class="-btn" on:click={() => ($enabled = false)}>
     <SIcon name="slash" />

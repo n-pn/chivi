@@ -32,22 +32,6 @@
     if (err) this.error(err, data)
     else return { ...data, nvinfo, changed: mode < 0 }
   }
-
-  function gen_paths({ bslug }, { sname, chidx, prev_url, next_url }) {
-    const book_path = gen_book_path(bslug, sname, 0)
-    const list_path = gen_book_path(bslug, sname, chidx)
-
-    const prev_path = prev_url ? `/~${bslug}/${prev_url}` : book_path
-    const next_path = next_url ? `/~${bslug}/${next_url}` : list_path
-
-    return [book_path, list_path, prev_path, next_path]
-  }
-
-  function gen_book_path(bslug, sname, chidx) {
-    let url = `/~${bslug}/content?sname=${sname}`
-    const page = Math.floor((chidx - 1) / 30) + 1
-    return page > 1 ? url + `&page=${page}` : url
-  }
 </script>
 
 <script>
@@ -121,6 +105,22 @@
 
     cvdata = data
   }
+
+  function gen_paths({ bslug }, { sname, chidx, prev_url, next_url }) {
+    const book_path = gen_book_path(bslug, sname, 0)
+    const list_path = gen_book_path(bslug, sname, chidx)
+
+    const prev_path = prev_url ? `/~${bslug}/${prev_url}` : book_path
+    const next_path = next_url ? `/~${bslug}/${next_url}` : list_path
+
+    return [book_path, list_path, prev_path, next_path]
+  }
+
+  function gen_book_path(bslug, sname, chidx) {
+    let url = `/~${bslug}/content?sname=${sname}`
+    const page = Math.floor((chidx - 1) / 30) + 1
+    return page > 1 ? url + `&page=${page}` : url
+  }
 </script>
 
 <svelte:head>
@@ -130,32 +130,35 @@
 <svelte:body on:keydown={handle_keypress} />
 
 <Vessel shift={$lookup_enabled && $lookup_actived && $lookup_sticked}>
-  <a slot="header-left" href={book_path} class="header-item _title">
-    <SIcon name="book-open" />
-    <span class="header-text _show-md _title">{nvinfo.btitle_vi}</span>
-  </a>
+  <svelte:fragment slot="header-left">
+    <a href={book_path} class="header-item _title">
+      <SIcon name="book-open" />
+      <span class="header-text _show-md _title">{nvinfo.btitle_vi}</span>
+    </a>
 
-  <button slot="header-left" class="header-item _active">
-    <span class="header-text _seed">[{chinfo.sname}]</span>
-  </button>
+    <button class="header-item _active">
+      <span class="header-text _seed">[{chinfo.sname}]</span>
+    </button>
+  </svelte:fragment>
 
-  <button
-    slot="header-right"
-    class="header-item"
-    disabled={$u_power < 1}
-    on:click={reload_chap}
-    data-kbd="r">
-    <SIcon name="refresh-ccw" spin={_reload} />
-  </button>
+  <svelte:fragment slot="header-right">
+    <button
+      class="header-item"
+      disabled={$u_power < 1}
+      on:click={reload_chap}
+      data-kbd="r">
+      <SIcon name="refresh-ccw" spin={_reload} />
+    </button>
 
-  <button
-    slot="header-right"
-    class="header-item"
-    class:_active={$lookup_enabled}
-    on:click={toggle_lookup}
-    data-kbd="\">
-    <SIcon name="compass" />
-  </button>
+    <button
+      class="header-item"
+      class:_active={$lookup_enabled}
+      on:click={toggle_lookup}
+      data-kbd="\">
+      <SIcon name="compass" />
+    </button>
+  </svelte:fragment>
+
   <nav class="bread">
     <div class="-crumb _sep">
       <a href="/~{nvinfo.bslug}" class="-link"> {nvinfo.btitle_vi}</a>

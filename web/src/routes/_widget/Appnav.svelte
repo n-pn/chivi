@@ -56,8 +56,11 @@
 </script>
 
 <Slider bind:actived _rwidth={22} _slider="left">
-  <img slot="header-left" src="/chivi-logo.svg" alt="logo" class="-icon" />
-  <div slot="header-left" class="-text">Chivi</div>
+  <svelte:fragment slot="header-left">
+    <img src="/chivi-logo.svg" alt="logo" class="-icon" />
+    <div class="-text">Chivi</div>
+  </svelte:fragment>
+
   <a href="/" slot="header-right" class="-btn">
     <SIcon name="home" />
   </a>
