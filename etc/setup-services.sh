@@ -1,8 +1,11 @@
 #! /bin/bash
 
-DIR=/home/nipin/srv/chivi.xyz/config/services
+DIR=/home/nipin/srv/chivi.xyz/etc/services
 
+sudo rm /etc/systemd/system/chivi-srv.service
 sudo cp "$DIR/chivi-srv.service" /etc/systemd/system/chivi-srv.service
+
+sudo rm /etc/systemd/system/chivi-web.service
 sudo cp "$DIR/chivi-web.service" /etc/systemd/system/chivi-web.service
 
 sudo systemctl daemon-reload

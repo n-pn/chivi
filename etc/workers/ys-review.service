@@ -1,0 +1,13 @@
+[Unit]
+Description=yousuu review crawler
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+User=nipin
+WorkingDirectory=/home/nipin/srv/chivi.xyz/
+ExecStart=./bin/ys_review
+
+[Install]
+WantedBy=multi-user.target

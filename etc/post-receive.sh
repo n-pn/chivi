@@ -12,3 +12,5 @@ cd $TARGET
 
 shards build --release chivi && sudo service chivi-srv restart
 cd web && yarn install && yarn build && sudo service chivi-web restart
+
+shards build --release ys_serial ys_review

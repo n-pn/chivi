@@ -25,7 +25,7 @@ class CV::MapYousuu
       atime = Seeding.get_atime(file) || 0_i64
       next if @meta._index.ival_64(snvid) >= atime
 
-      next unless info = YsNvInfo.load(file)
+      next unless info = YsNvinfo.load(file)
       @meta._index.set!(snvid, [atime.to_s, info.title, info.author])
 
       @meta.genres.set!(snvid, [info.genre].concat(info.tags_fixed))

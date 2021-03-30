@@ -12,7 +12,20 @@ struct CV::YsSource
   property link : String
 end
 
-class CV::YsNvInfo
+class CV::YsNvinfo
+  alias Data = NamedTuple(bookInfo: YsNvinfo, bookSource: Array(YsSource))
+
+  def self.load(file : String)
+    text = File.read(file)
+    return unless text.includes?("\"success\"")
+
+    json = NamedTuple(data: Data).from_json(text)
+    info = json[:data][:bookInfo]
+    info.sources = json[:data][:bookSource]
+
+    info
+  end
+
   include JSON::Serializable
 
   getter _id : Int32
@@ -65,22 +78,9 @@ class CV::YsNvInfo
     return "" unless @cover.starts_with?("http")
     @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
   end
-
-  alias Data = NamedTuple(bookInfo: YsNvInfo, bookSource: Array(YsSource))
-
-  def self.load(file : String)
-    text = File.read(file)
-    return unless text.includes?("\"success\"")
-
-    json = NamedTuple(data: Data).from_json(text)
-    info = json[:data][:bookInfo]
-    info.sources = json[:data][:bookSource]
-
-    info
-  end
 end
 
-# info = CV::YsNvInfo.load("_db/yousuu/.cache/infos/153426.json").not_nil!
+# info = CV::YsNvinfo.load("_db/yousuu/.cache/infos/153426.json").not_nil!
 # puts info.intro
 # puts info.genre
 # # puts info.tags_fixed

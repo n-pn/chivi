@@ -1,27 +1,25 @@
 {
   "private": true,
   "scripts": {
-    "db-up": "bash tasks/_remote/filedb-upload.sh",
-    "db-bk": "bash tasks/_remote/filedb-backup.sh",
-    "ys-up": "bash tasks/_remote/yousuu-upload.sh",
-    "ys-bk": "bash tasks/_remote/yousuu-backup.sh",
+    "db-up": "bash cli/scripts/filedb-upload.sh",
+    "db-bk": "bash cli/scripts/filedb-backup.sh",
+    "ys-up": "bash cli/scripts/yousuu-upload.sh",
+    "ys-bk": "bash cli/scripts/yousuu-backup.sh",
     "backup": "yarn db-bk && yarn ys-bk",
     "upload": "yarn db-up && yarn ys-up",
     "rs-web": "ssh nipin@ssh.chivi.xyz \"sudo service chivi-web restart\"",
     "rs-srv": "ssh nipin@ssh.chivi.xyz \"sudo service chivi-srv restart\"",
-    "report": "ssh nipin@ssh.chivi.xyz \"/bin/bash -ic 'go_chivi'\"",
-    "cr-ysinfos": "ruby tasks/workers/yousuu_infos.rb",
-    "cr-yscrits": "ruby tasks/workers/yousuu_crits.rb",
+    "cr-ysinfos": "crystal cli/workers/ys_serial.cr",
+    "cr-yscrits": "crystal cli/workers/ys_review.cr",
     "map-zhwenpg": "./bin/map_zhwenpg",
     "map-yousuu": "./bin/map_yousuu",
     "map_remote": "./bin/map_remote",
-    "map-remotes": "bash tasks/seeding/map_remote.sh",
+    "map-remotes": "bash cli/seeding/map_remote.sh",
     "update-all": "./bin/map_zhwenpg && ./bin/map_yousuu && yarn map-remotes",
     "fix-covers": "./bin/fetch_covers && ./bin/fix_covers",
     "fix-nvinfo": "./bin/fix_intros && ./bin/fix_genres",
     "build": "shards build --release",
     "build-mt": "shards build --release -Dpreview_mt",
-    "gen-sentry": "crystal build --release config/.sentry/sentry_cli.cr -o bin/sentry",
-    "clear": "crystal tasks/clear_cli.cr -- clear"
+    "gen-sentry": "crystal build --release cli/.sentry/sentry_cli.cr -o bin/sentry"
   }
 }

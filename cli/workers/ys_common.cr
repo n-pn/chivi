@@ -16,7 +16,7 @@ class Client
   getter proxies = [] of Proxy
 
   def initialize(regen = false)
-    time_slice = Time.utc.to_unix // 3600 * 12
+    time_slice = Time.utc.to_unix // (3600 * 12)
     @proxy_file = "#{WORKS_DIR}/#{time_slice}.txt"
 
     load_proxies(@proxy_file)
@@ -37,7 +37,7 @@ class Client
     puts "- <proxies> [#{file}] loaded, entries: #{input.size}".colorize.yellow
 
     input.each { |proxy| @proxies << Proxy.new(proxy) }
-    @proxies.uniq!
+    @proxies.uniq!.shuffle!
   end
 
   private def previous_proxy_file : String?
@@ -48,32 +48,33 @@ class Client
     last == @proxy_file ? files[-2]? : last
   end
 
-  def save!(link : String, file : String)
-    return :no_proxy unless proxy = @proxies.pop
+  def save!(link : String, file : String, label : String) : Bool
+    unless proxy = @proxies.pop
+      puts " - Out of proxy, aborting!".colorize.red
+      return false
+    end
 
     body = `curl -s -L -x #{proxy.host} -m 30 "#{link}"`
+
     case body
     when .starts_with?("{\"success"), .includes?("未找到该图书")
-      File.open(@proxy_file, "a", &.puts(proxy.host))
       File.write(file, body)
+      puts "- #{label} saved".colorize.green
 
-      handle_succ(proxy)
-      :ok
+      File.open(@proxy_file, "a", &.puts(proxy.host)) if proxy.succ == 0
+      proxy.succ += 1
+
+      proxy.fail = 0
+      add_proxy(proxy, append: proxy.succ < 50)
+
+      true
     else
-      handle_fail(proxy)
-      :err
+      puts "- #{label} failed, remain proxies: #{@proxies.size}".colorize.yellow
+      proxy.fail += 1
+      add_proxy(proxy, append: proxy.succ == 0) if proxy.fail < 3
+
+      false
     end
-  end
-
-  private def handle_succ(proxy : Proxy)
-    proxy.succ += 1
-    proxy.fail = 0
-    add_proxy(proxy, append: proxy.succ < 50)
-  end
-
-  private def handle_fail(proxy : Proxy)
-    proxy.fail += 1
-    add_proxy(proxy, append: proxy.succ == 0) if proxy.fail < 3
   end
 
   def add_proxy(proxy : Proxy, append = true)
