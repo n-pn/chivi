@@ -54,6 +54,8 @@ class CV::ChInfo
 
   def trans!(reset : Bool = false)
     chaps = reset ? origs.data : origs.upds
+    return if chaps.empty?
+
     cvmtl = Cvmtl.generic(@bname)
 
     chaps.each do |chidx, infos|
