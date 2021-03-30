@@ -27,7 +27,7 @@ class Seeds::YsReview
 
       queue.each_with_index(1) do |snvid, idx|
         spawn do
-          label = "(#{page}) >#{idx}/#{queue.size}> [#{snvid}]"
+          label = "(#{page}) <#{idx}/#{queue.size}> [#{snvid}]"
           inbox.send(crawl_crit!(snvid, page, label: label))
         end
 
