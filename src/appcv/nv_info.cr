@@ -186,10 +186,10 @@ class CV::NvInfo
 
       if count > old_count # if newer has more chapters
         if mtime <= old_mtime
-          mtime = update > old_mtime ? update : Time.utc.to_unix
+          mtime = update > old_mtime ? update : old_mtime
         end
       else
-        mtime = old_mtime > 0 ? old_mtime : Time.utc.to_unix
+        mtime = old_mtime > 0 ? old_mtime : update
       end
     elsif mtime < update
       mtime = update
