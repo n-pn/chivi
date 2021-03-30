@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=oneshot
 User=nipin
 WorkingDirectory=/home/nipin/srv/chivi.xyz/
-ExecStart=./bin/ys_review
+ExecStart=/home/nipin/srv/chivi.xyz/bin/ys_review
 
 [Install]
 WantedBy=multi-user.target

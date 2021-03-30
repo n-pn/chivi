@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=oneshot
 User=nipin
 WorkingDirectory=/home/nipin/srv/chivi.xyz/
-ExecStart=./bin/ys_serial
+ExecStart=/home/nipin/srv/chivi.xyz/bin/ys_serial
 
 [Install]
 WantedBy=multi-user.target
