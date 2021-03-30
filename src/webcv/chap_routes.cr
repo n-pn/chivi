@@ -28,7 +28,11 @@ module CV::Server
       mtime, total = chinfo.fetch!(u_power, mode)
       chinfo.trans!(reset: u_power > 2)
 
-      nvinfo.set_chseed(sname, snvid, mtime, total) if mtime >= 0
+      if mtime >= 0
+        nvinfo.set_chseed(sname, snvid, mtime, total)
+        NvOrders.save!(clean: false)
+        NvChseed.save!(clean: false)
+      end
     else
       _, mtime, total = nvinfo.get_chseed(sname)
     end
