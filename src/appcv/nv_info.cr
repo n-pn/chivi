@@ -189,7 +189,7 @@ class CV::NvInfo
           mtime = update > old_mtime ? update : Time.utc.to_unix
         end
       else
-        mtime = old_mtime
+        mtime = old_mtime > 0 ? old_mtime : Time.utc.to_unix
       end
     elsif mtime < update
       mtime = update
