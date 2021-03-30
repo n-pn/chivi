@@ -22,7 +22,7 @@ const assetOpts = { dev, maxAge, etag: true }
 const app = polka() // You can also use Express
 
 app.use('api', proxy)
-app.use('covers', sirv('../_db/nv_infos/bcovers', assetOpts))
+app.use('covers', sirv('../_db/nv_infos/covers', assetOpts))
 
 app.use(
   compression({ threshold: 0 }),

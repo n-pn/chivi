@@ -19,6 +19,7 @@ class CV::Seeds::FixCovers
         NvFields.bcover.save!(clean: false)
       end
 
+      next unless redo || !NvFields.bcover.has_key?(bhash)
       covers = {} of String => String
 
       NvFields.yousuu.fval(bhash).try { |ynvid| covers["yousuu"] = ynvid }
