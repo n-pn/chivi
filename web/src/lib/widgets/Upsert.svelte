@@ -58,7 +58,10 @@
   }
 
   async function init_search(input, dname) {
-    props = await dict_search(fetch, input, dname)
+    const [err, data] = await dict_search(fetch, input, dname)
+    if (err) return
+
+    props = data
     infos = props.infos
 
     p_old = infos.map((info) => info.power)
@@ -88,8 +91,8 @@
       power: p_now[tab],
     }
 
-    const res = await dict_upsert(fetch, dname, params)
-    hide_modal(null, res.ok)
+    const [status, _payload] = await dict_upsert(fetch, dname, params)
+    hide_modal(null, status == 0)
   }
 
   function handle_keydown(evt) {

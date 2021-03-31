@@ -72,7 +72,9 @@
   }
 
   async function lookup_entry(input) {
-    const data = await dict_lookup(fetch, input, $dname)
+    const [err, data] = await dict_lookup(fetch, input, $dname)
+    if (err) return
+
     entries = data.entries
     hanviet = data.hanviet.split('\t').map((x) => x.split('ǀ'))
   }

@@ -6,7 +6,9 @@ async function fetch_api(fetch, url, params) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
   })
-  return await res.json()
+
+  if (res.ok) return [0, await res.json()]
+  return [res.status, await res.text()]
 }
 
 export async function dict_lookup(fetch, input, dname) {
