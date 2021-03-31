@@ -29,6 +29,11 @@ class CV::ChInfo
     "#{DIR}/#{type}/#{@sname}/#{name}.tsv"
   end
 
+  def set!(chidx : String, schid : String, title : String, label : String)
+    origs.set!(chidx, [schid, title, label])
+    trans!(reset: false)
+  end
+
   def fetch!(power = 4, mode = 2, valid = 5.minutes) : Tuple(Int64, Int32)
     mtime = -1_i64
 

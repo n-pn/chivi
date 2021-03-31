@@ -8,12 +8,13 @@
     if (err) return this.error(404, nvinfo)
 
     const [snvid, _, total] = nvinfo.chseed[sname] || [bhash, '0', '0']
-    const chidx = total + 1
-    return { nvinfo, sname, snvid, chidx }
+    return { nvinfo, sname, snvid, chidx: +total + 1 }
   }
 </script>
 
 <script>
+  import { goto } from '@sapper/app'
+
   import SIcon from '$lib/blocks/SIcon'
   import Vessel from '$lib/layouts/Vessel'
 
@@ -31,10 +32,15 @@
     const res = await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chidx, label, input }),
+      body: JSON.stringify({ chidx: +chidx, label, input }),
     })
-    const data = await res.json()
-    console.log({ data })
+
+    if (res.ok) {
+      const data = await res.json()
+      goto(`/~${nvinfo.bslug}/-${data.uslug}-${sname}-${data.chidx}`)
+    } else {
+      console.log(await res.text())
+    }
   }
 </script>
 

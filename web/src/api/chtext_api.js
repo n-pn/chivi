@@ -2,7 +2,7 @@
 
 export async function get_chinfo(fetch, bhash, chinfo, mode = 0) {
   const { sname, snvid, chidx } = chinfo
-  const url = `/api/chinfos/${bhash}/${sname}/${snvid}/${chidx}?mode=${mode}`
+  const url = `/api/texts/${bhash}/${sname}/${snvid}/${chidx}?mode=${mode}`
 
   const res = await fetch(url)
   if (!res.ok) return [res.status, res.text()]
@@ -17,7 +17,7 @@ export async function get_chinfo(fetch, bhash, chinfo, mode = 0) {
 
 export async function get_chtext(fetch, bhash, chinfo, mode = 0) {
   const { sname, snvid, chidx, schid } = chinfo
-  const url = `/api/chtexts/${bhash}/${sname}/${snvid}/${chidx}/${schid}?mode=${mode}`
+  const url = `/api/texts/${bhash}/${sname}/${snvid}/${chidx}/${schid}?mode=${mode}`
   const res = await fetch(url)
   return [0, await res.text()]
 }
