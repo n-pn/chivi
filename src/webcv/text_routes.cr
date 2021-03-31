@@ -89,7 +89,7 @@ module CV::Server
     NvInfo.load(bname).set_chseed("chivi", bname, Time.utc.to_unix, chinfo.origs.size)
 
     chtext = ChText.load(bname, sname, snvid, chidx - 1, schid)
-    chtext.save_zh!(lines)
+    chtext.set_zh!(lines)
 
     index, infos = chinfo.infos[chidx - 1]
     RouteUtils.json_res(env, {chidx: index, uslug: infos[3]})

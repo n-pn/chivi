@@ -98,6 +98,13 @@ class CV::ChText
     puts "- Fetch zh_text error: #{err}".colorize.red
   end
 
+  def set_zh!(lines : Array(String))
+    @zh_text = lines
+    @cv_data = nil
+
+    save_zh!(lines)
+  end
+
   def save_zh!(lines : Array(String)) : Nil
     out_file = File.join(@text_dir, "#{@schid}.txt")
     File.open(out_file, "w") { |io| lines.join(io, "\n") }
