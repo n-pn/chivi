@@ -34,10 +34,7 @@ module CV::Server
     end
 
     hanviet = Cvmtl.hanviet.translit(input).to_str
-
-    RouteUtils.json_res(env) do |res|
-      {hanviet: hanviet, entries: entries}.to_json(res)
-    end
+    RouteUtils.json_res(env, {hanviet: hanviet, entries: entries})
   end
 
   put "/api/dicts/:dname/search" do |env|
@@ -96,9 +93,7 @@ module CV::Server
           json.field "infos" do
             json.array do
               special_term.to_json(json)
-
               regular_term.to_json(json)
-
               hanviet_term.to_json(json)
             end
           end
