@@ -9,20 +9,20 @@
 </script>
 
 <script>
-  import Common from './_common'
+  import Book from './_book'
 
   export let nvinfo
   let short_intro = false
 </script>
 
-<Common {nvinfo} nvtab="summary">
+<Book {nvinfo} nvtab="summary">
   <h2>Giới thiệu:</h2>
   <div class="intro" class:_short={short_intro}>
     {#each nvinfo.bintro as para}
       <p>{para}</p>
     {/each}
   </div>
-</Common>
+</Book>
 
 <style lang="scss">
   .intro {

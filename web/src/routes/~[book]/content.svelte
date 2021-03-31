@@ -1,4 +1,6 @@
 <script context="module">
+  import { remote_snames } from '$lib/constants'
+
   import { remove_item } from '$api/_api_call'
   import { get_nvinfo } from '$api/nvinfo_api'
   import { get_chseed, get_chlist } from '$api/chinfo_api'
@@ -8,11 +10,9 @@
     if (err1) this.error(err1, nvinfo)
 
     const bhash = nvinfo.bhash
+    const sname = req.query.sname || nvinfo.snames[0]
 
-    const seeds = nvinfo.chseed || ['chivi']
-    const sname = req.query.sname || seeds[0]
-
-    const [snvid] = nvinfo['$' + sname] || [bhash]
+    const [snvid] = nvinfo.chseed[sname] || [bhash]
 
     const page = +(req.query.page || 1)
     const params = { sname, snvid, page }
@@ -27,38 +27,22 @@
   }
 
   function update_utime(nvinfo, utime) {
-    if (nvinfo._utime < utime) nvinfo._utime = utime
+    if (nvinfo.update < utime) nvinfo.update = utime
     return nvinfo
   }
 
-  const all_seeds = [
-    'biqubao',
-    'bxwxorg',
-    '5200',
-    'nofff',
-    'bqg_5200',
-    'rengshu',
-    'hetushu',
-    'xbiquge',
-    'duokan8',
-    'zhwenpg',
-    'paoshu8',
-    '69shu',
-    'shubaow',
-  ]
-
   function seed_choices(chseed = {}) {
-    return all_seeds.filter((sname) => !chseed[sname])
+    return remote_snames.filter((sname) => !chseed[sname])
   }
 </script>
 
 <script>
   import { u_power } from '$src/stores'
 
-  import SIcon from '$lib/blocks/SIcon'
-  import RTime from '$lib/blocks/RTime'
-  import Chlist from '$lib/widgets/Chlist'
-  import Common from './_common'
+  import SIcon from '$lib/blocks/SIcon.svelte'
+  import RTime from '$lib/blocks/RTime.svelte'
+  import Chlist from '$lib/widgets/Chlist.svelte'
+  import Book from './_book.svelte'
 
   import paginate_range from '$utils/paginate_range'
 
@@ -79,7 +63,7 @@
   async function load_chseed(evt, sname, mode = 0) {
     evt.preventDefault()
 
-    const [snvid] = nvinfo['$' + sname] || [nvinfo.bhash]
+    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
 
     if (params.sname != sname) {
       params = { ...params, sname, snvid }
@@ -152,13 +136,13 @@
 
   let add_seed = false
 
-  let new_seeds = seed_choices(nvinfo.chseed)
+  let new_seeds = seed_choices(nvinfo.snames)
   let new_sname = new_seeds[0]
   let new_snvid = ''
 
   async function add_new_seed(evt) {
-    nvinfo.chseed.push(new_sname)
-    nvinfo['$' + new_sname] = [new_snvid, 0, 0]
+    nvinfo.snames.push(new_sname)
+    nvinfo.chseed[new_sname] = [new_snvid, 0, 0]
     add_seed = false
 
     await load_chseed(evt, new_sname, 1)
@@ -166,7 +150,7 @@
   }
 
   function split_chseed(nvinfo, { sname }) {
-    const seeds = nvinfo.chseed || ['chivi']
+    const seeds = nvinfo.snames || ['chivi']
     if (seeds.length < 6) return [seeds, []]
 
     let main_seeds = seeds.slice(0, 4)
@@ -191,7 +175,7 @@
 
 <svelte:window on:keydown={handle_keypress} />
 
-<Common {nvinfo} nvtab="content">
+<Book {nvinfo} nvtab="content">
   {#if main_seeds.length > 0}
     <div class="source">
       {#each main_seeds as mname}
@@ -261,12 +245,19 @@
         </span>
       </div>
 
-      <button
-        class="m-button"
-        on:click={(e) => load_chseed(e, params.sname, 2)}>
-        <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
-        <span class="-hide">Đổi mới</span>
-      </button>
+      {#if params.sname != 'chivi'}
+        <button
+          class="m-button"
+          on:click={(e) => load_chseed(e, params.sname, 2)}>
+          <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
+          <span class="-hide">Đổi mới</span>
+        </button>
+      {:else}
+        <a class="m-button" href="/~{nvinfo.bslug}/+{params.sname}">
+          <SIcon name="plus" />
+          <span class="-hide">Thêm chương</span>
+        </a>
+      {/if}
     </div>
 
     <div class="chlist">
@@ -318,7 +309,7 @@
   {:else}
     <div class="empty">Không có nội dung.</div>
   {/if}
-</Common>
+</Book>
 
 <style lang="scss">
   @mixin label {

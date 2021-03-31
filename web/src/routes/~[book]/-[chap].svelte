@@ -19,7 +19,7 @@
     if (err1) return this.error(404, nvinfo)
 
     const [chidx, sname] = params.chap.split('-').reverse()
-    const [snvid] = nvinfo['$' + sname] || [nvinfo.bhash]
+    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
 
     if (!snvid) return this.error(404, 'Nguồn truyện không tồn tại!')
     const chinfo = { sname, snvid, chidx }
@@ -260,9 +260,10 @@
       @include fgcolor(neutral, 6);
 
       &._sep:after {
+        display: inline-block;
+        padding-left: 0.325em;
         content: '>';
-        @include fgcolor(neutral, 5);
-        padding: 0 0.25rem;
+        @include fgcolor(neutral, 4);
       }
     }
 
@@ -271,10 +272,6 @@
       &:hover {
         @include fgcolor(primary, 6);
       }
-    }
-
-    :global(svg) {
-      margin-top: -0.25rem;
     }
   }
 

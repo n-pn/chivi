@@ -129,7 +129,7 @@ class CV::NvInfo
   getter rating : Float64 { NvOrders.rating.ival(@bhash) / 10 }
 
   getter update : Int64 { NvOrders.update.ival_64(@bhash) }
-  getter chseed : Array(String) { NvChseed.get_list(@bhash) }
+  getter snames : Array(String) { NvChseed.get_list(@bhash) }
 
   def initialize(@bhash)
   end
@@ -165,10 +165,13 @@ class CV::NvInfo
         json.field "yousuu", yousuu
         json.field "origin", origin
 
-        json.field "chseed", chseed
-
-        chseed.each do |sname|
-          json.field "$#{sname}", get_chseed(sname)
+        json.field "snames", snames
+        json.field "chseed" do
+          json.object do
+            snames.each do |sname|
+              json.field sname, get_chseed(sname)
+            end
+          end
         end
       end
     end
@@ -198,13 +201,13 @@ class CV::NvInfo
     @update = nil
     NvOrders.set_update!(@bhash, mtime)
 
-    snames = chseed
-    snames << sname
+    _snames = snames
+    _snames << sname
 
-    snames = snames.uniq.map { |s| {s, -get_chseed(s)[1]} }
-    @chseed = snames.sort_by(&.[1]).map(&.[0])
+    _snames = _snames.uniq.map { |s| {s, -get_chseed(s)[1]} }
+    @snames = _snames.sort_by(&.[1]).map(&.[0])
 
-    NvChseed.set_list!(@bhash, chseed)
+    NvChseed.set_list!(@bhash, snames)
     NvChseed.set_seed!(sname, @bhash, [snvid, mtime.to_s, count.to_s])
   end
 end

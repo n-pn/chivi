@@ -1,0 +1,15 @@
+export const remote_snames = [
+  'biqubao',
+  'bxwxorg',
+  '5200',
+  'bqg_5200',
+  'nofff',
+  'rengshu',
+  'hetushu',
+  'xbiquge',
+  'duokan8',
+  'zhwenpg',
+  'paoshu8',
+  '69shu',
+  'shubaow',
+]

@@ -3,11 +3,11 @@ require "./_route_utils"
 module CV::Server
   alias Lookup = Hash(String, Array(String))
 
-  get "/api/dictdb/lookup/:input" do |env|
-    dname = env.params.query.fetch("dname", "various")
-    dicts = {Vdict.load(dname), Vdict.regular}
+  put "/api/dicts/:dname/lookup" do |env|
+    dname = env.params.url["dname"]
+    input = env.params.json["input"].as(String).strip
 
-    input = env.params.url["input"]
+    dicts = {Vdict.load(dname), Vdict.regular}
     chars = input.chars
     upper = chars.size - 1
 
@@ -40,9 +40,9 @@ module CV::Server
     end
   end
 
-  get "/api/dictdb/search/:input" do |env|
-    input = env.params.url["input"]
-    dname = env.params.query.fetch("dname", "various")
+  put "/api/dicts/:dname/search" do |env|
+    dname = env.params.url[:dname]
+    input = env.params.json["input"].as(String).strip
 
     hints = [] of String
 
@@ -107,25 +107,25 @@ module CV::Server
     end
   end
 
-  put "/api/dictdb/upsert/:dname" do |env|
-    u_dname = env.session.string?("u_dname") || "Khách"
+  put "/api/dicts/:dname/upsert" do |env|
     u_power = env.session.int?("u_power") || 0
-
     halt env, status_code: 500, response: "Access denied!" if u_power < 1
-    dict = Vdict.load(env.params.url["dname"])
-
-    key = env.params.json["key"].as(String).strip
-
-    vals = env.params.json.fetch("vals", "").as(String)
-    vals = [vals.strip]
-
-    prio = env.params.json.fetch("prio", 1).as(Int64).to_i8
-    attr = env.params.json.fetch("attr", 0).as(Int64).to_i8
 
     power = env.params.json.fetch("power", u_power).as(Int64).to_i8
     power = u_power.to_i8 if power > u_power
 
-    new_term = Vterm.new(key, vals, prio, attr, uname: u_dname, power: power, dtype: dict.dtype)
+    uname = env.session.string?("u_dname") || "Khách"
+    dname = env.params.url["dname"]
+
+    dict = Vdict.load(dname)
+
+    key = env.params.json["key"].as(String).strip
+    vals = env.params.json.fetch("vals", "").as(String)
+    vals = [vals.strip]
+    prio = env.params.json.fetch("prio", 1).as(Int64).to_i8
+    attr = env.params.json.fetch("attr", 0).as(Int64).to_i8
+
+    new_term = Vterm.new(key, vals, prio, attr, uname: uname, power: power, dtype: dict.dtype)
 
     # TODO: save context
     unless dict.set!(new_term)

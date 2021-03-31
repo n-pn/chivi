@@ -9,13 +9,13 @@
 </script>
 
 <script>
-  import Common from './_common'
+  import Book from './_book.svelte'
   export let nvinfo
 </script>
 
-<Common {nvinfo} nvtab="discuss">
+<Book {nvinfo} nvtab="discuss">
   <div class="empty">Chưa hoàn thiện :(</div>
-</Common>
+</Book>
 
 <style lang="scss">
   .empty {
