@@ -7,13 +7,13 @@
     input as lookup_input,
     actived as lookup_actived,
     enabled as lookup_enabled,
-  } from '$widget/Lookup'
+  } from '$lib/widgets/Lookup'
 
   import Upsert, {
     phrase as upsert_phrase,
     on_tab as upsert_target,
     active as upsert_active,
-  } from '$widget/Upsert'
+  } from '$lib/widgets/Upsert'
 
   export function toggle_lookup() {
     lookup_enabled.update((x) => {

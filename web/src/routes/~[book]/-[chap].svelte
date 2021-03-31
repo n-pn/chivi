@@ -1,6 +1,6 @@
 <script context="module">
-  import Cvdata, { toggle_lookup, active_upsert } from '$layout/Cvdata'
-  import { active as upsert_active } from '$widget/Upsert'
+  import Cvdata, { toggle_lookup, active_upsert } from '$lib/layouts/Cvdata'
+  import { active as upsert_active } from '$lib/widgets/Upsert'
 
   import { get_nvinfo } from '$api/nvinfo_api'
   import { get_chinfo, get_chtext } from '$api/chtext_api'
@@ -12,7 +12,7 @@
     enabled as lookup_enabled,
     actived as lookup_actived,
     sticked as lookup_sticked,
-  } from '$widget/Lookup'
+  } from '$lib/widgets/Lookup'
 
   export async function preload({ params, query }) {
     const [err1, nvinfo] = await get_nvinfo(this.fetch, params.book)
@@ -35,8 +35,8 @@
 </script>
 
 <script>
-  import SIcon from '$blocks/SIcon'
-  import Vessel from '$layout/Vessel'
+  import SIcon from '$lib/blocks/SIcon'
+  import Vessel from '$lib/layouts/Vessel'
 
   export let nvinfo = {}
   export let chinfo = {}

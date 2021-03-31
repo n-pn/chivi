@@ -8,11 +8,11 @@
   import { mark_types, mark_names, mark_icons } from '$utils/constants'
   import { onMount } from 'svelte'
 
-  import SIcon from '$blocks/SIcon'
-  import RTime from '$blocks/RTime'
-  import BCover from '$blocks/BCover'
+  import SIcon from '$lib/blocks/SIcon'
+  import RTime from '$lib/blocks/RTime'
+  import BCover from '$lib/blocks/BCover'
 
-  import Vessel from '$layout/Vessel'
+  import Vessel from '$lib/layouts/Vessel'
 
   export let nvinfo = {}
   export let nvtab = 'summary'

@@ -13,11 +13,9 @@ const alias = {
   svelte: path.resolve(__dirname, 'node_modules/svelte'),
   $src: path.resolve(__dirname, 'src'),
   $api: path.resolve(__dirname, 'src/api'),
+  $lib: path.resolve(__dirname, 'src/lib'),
   $utils: path.resolve(__dirname, 'src/utils'),
   $routes: path.resolve(__dirname, 'src/routes'),
-  $blocks: path.resolve(__dirname, 'src/routes/_blocks'),
-  $widget: path.resolve(__dirname, 'src/routes/_widget'),
-  $layout: path.resolve(__dirname, 'src/routes/_layout'),
 }
 
 const { preprocess } = require('./svelte.config')

@@ -47,9 +47,9 @@
 </script>
 
 <script>
-  import SIcon from '$blocks/SIcon'
-  import Nvlist from '$widget/Nvlist'
-  import Vessel from '$layout/Vessel'
+  import SIcon from '$lib/blocks/SIcon'
+  import Nvlist from '$lib/widgets/Nvlist'
+  import Vessel from '$lib/layouts/Vessel'
   import paginate_range from '$utils/paginate_range'
 
   export let books = []

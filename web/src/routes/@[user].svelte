@@ -27,10 +27,10 @@
 </script>
 
 <script>
-  import SIcon from '$blocks/SIcon'
-  import Nvlist from '$widget/Nvlist'
+  import SIcon from '$lib/blocks/SIcon'
+  import Nvlist from '$lib/widgets/Nvlist'
 
-  import Vessel from '$layout/Vessel'
+  import Vessel from '$lib/layouts/Vessel'
 
   export let uname = ''
   export let bmark = 'reading'

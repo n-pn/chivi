@@ -1,10 +1,10 @@
 <script>
   import { u_dname, u_power, l_scroll } from '$src/stores'
-  import SIcon from '$blocks/SIcon'
+  import SIcon from '$lib/blocks/SIcon'
 
-  import Signin from '$widget/Signin'
-  import Appnav from '$widget/Appnav'
-  import Usercp from '$widget/Usercp'
+  import Signin from '$lib/widgets/Signin'
+  import Appnav from '$lib/widgets/Appnav'
+  import Usercp from '$lib/widgets/Usercp'
 
   export let shift = false
   let active_usercp = false

@@ -1,4 +1,5 @@
-<!-- trigger purgecss filter lists -->
+<!-- whitelist css classes here to avoid removed by purgecss -->
+
 <button class="m-button _harmful" />
 <button class="m-button _harmful _line" />
 <button class="m-button _harmful _solid" />

@@ -2,7 +2,7 @@
   import { logout_user } from '$api/viuser_api'
   import { u_dname, u_power } from '$src/stores'
 
-  import SIcon from '$blocks/SIcon'
+  import SIcon from '$lib/blocks/SIcon'
   import Slider from './Slider'
 
   export let actived = false

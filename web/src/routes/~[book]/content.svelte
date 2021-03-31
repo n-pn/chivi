@@ -55,9 +55,9 @@
 <script>
   import { u_power } from '$src/stores'
 
-  import SIcon from '$blocks/SIcon'
-  import RTime from '$blocks/RTime'
-  import Chlist from '$widget/Chlist'
+  import SIcon from '$lib/blocks/SIcon'
+  import RTime from '$lib/blocks/RTime'
+  import Chlist from '$lib/widgets/Chlist'
   import Common from './_common'
 
   import paginate_range from '$utils/paginate_range'

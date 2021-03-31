@@ -1,5 +1,5 @@
 <script context="module">
-  import BCover from '$blocks/BCover.svelte'
+  import BCover from '$lib/blocks/BCover.svelte'
 </script>
 
 <script>

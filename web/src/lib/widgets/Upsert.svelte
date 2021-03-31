@@ -11,7 +11,7 @@
 </script>
 
 <script>
-  import SIcon from '$blocks/SIcon'
+  import SIcon from '$lib/blocks/SIcon'
 
   import Input from './Upsert/Input'
   import Vhint from './Upsert/Vhint'

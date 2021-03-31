@@ -32,7 +32,7 @@
 </script>
 
 <script>
-  import SIcon from '$blocks/SIcon'
+  import SIcon from '$lib/blocks/SIcon'
   import Slider from './Slider'
 
   let hanviet = []

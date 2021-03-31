@@ -1,5 +1,5 @@
 <script>
-  import SIcon from '$blocks/SIcon'
+  import SIcon from '$lib/blocks/SIcon'
   import Slider from './Slider'
 
   export let actived = false
