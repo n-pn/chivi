@@ -36,7 +36,6 @@ export async function api_call(fetch, url, opts) {
     if (value) return value
   }
 
-  console.log({ url, fetch })
   const res = await fetch(`/api/${url}`)
 
   let state = res.ok ? 0 : res.status

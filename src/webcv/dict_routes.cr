@@ -41,7 +41,7 @@ module CV::Server
   end
 
   put "/api/dicts/:dname/search" do |env|
-    dname = env.params.url[:dname]
+    dname = env.params.url["dname"]
     input = env.params.json["input"].as(String).strip
 
     hints = [] of String
