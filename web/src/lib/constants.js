@@ -37,3 +37,43 @@ export const mark_icons = {
   dropped: 'trash',
   pending: 'calendar',
 }
+
+export const genres = [
+  'Huyền ảo',
+  'Kỳ huyễn',
+  'Lịch sử',
+  'Đô thị',
+  'Tu chân',
+  'Khoa viễn',
+  'Trò chơi',
+  'Thể thao',
+  'Huyền nghi',
+  'Kinh dị',
+  'Đồng nhân',
+  'Võ hiệp',
+  'Đam mỹ',
+  'Ngôn tình',
+  'Trạch văn',
+]
+
+export const snames = [
+  '5200',
+  'bqg_5200',
+  'hetushu',
+  'rengshu',
+  'xbiquge',
+  'zhwenpg',
+  'nofff',
+  '69shu',
+  'duokan8',
+  'paoshu8',
+  'shubaow',
+  'jx_la',
+]
+
+export const order_names = {
+  access: 'Vừa xem',
+  update: 'Đổi mới',
+  voters: 'Đánh giá',
+  weight: 'Tổng hợp',
+}

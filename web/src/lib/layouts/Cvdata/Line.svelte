@@ -79,11 +79,11 @@
 </script>
 
 {#if title}
-  <h1 class="chivi">
+  <h1 class="mtl">
     {@html content}
   </h1>
 {:else}
-  <p class="chivi">
+  <p class="mtl">
     {@html content}
   </p>
 {/if}
@@ -97,7 +97,7 @@
       @include fgcolor($color, 6);
     }
 
-    :global(.chivi):hover & {
+    :global(.mtl):hover & {
       @include border($color: $color, $shade: 3, $sides: bottom);
     }
 
@@ -106,7 +106,7 @@
     }
   }
 
-  .chivi {
+  .mtl {
     :global(x-v) {
       &[data-d='1'] {
         @include mixed(teal);

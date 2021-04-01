@@ -1,4 +1,6 @@
 <script>
+  import { genres, snames, order_names } from '$lib/constants'
+
   import SIcon from '$lib/blocks/SIcon'
   import Slider from './Slider'
 
@@ -13,46 +15,6 @@
     node.addEventListener('click', action)
     return { destroy: () => node.removeEventListener('click', action) }
   }
-
-  const order_names = {
-    access: 'Vừa xem',
-    update: 'Đổi mới',
-    voters: 'Đánh giá',
-    weight: 'Tổng hợp',
-  }
-
-  const genres = [
-    'Huyền ảo',
-    'Kỳ huyễn',
-    'Lịch sử',
-    'Đô thị',
-    'Tu chân',
-    'Khoa viễn',
-    'Trò chơi',
-    'Thể thao',
-    'Huyền nghi',
-    'Kinh dị',
-    'Đồng nhân',
-    'Võ hiệp',
-    'Đam mỹ',
-    'Ngôn tình',
-    'Trạch văn',
-  ]
-
-  const snames = [
-    '5200',
-    'bqg_5200',
-    'hetushu',
-    'rengshu',
-    'xbiquge',
-    'zhwenpg',
-    'nofff',
-    '69shu',
-    'duokan8',
-    'paoshu8',
-    'shubaow',
-    'jx_la',
-  ]
 </script>
 
 <Slider bind:actived _rwidth={22} _slider="left">
@@ -73,9 +35,9 @@
 
     <div class="chips">
       {#each Object.entries(order_names) as [name, text]}
-        <button use:jumpto={`/?order=${name}`} class="-chip">
+        <a href="/?order={name}" class="-chip">
           {text}
-        </button>
+        </a>
       {/each}
     </div>
   </section>
@@ -87,10 +49,10 @@
     </header>
 
     <div class="chips">
-      {#each genres as _genre}
-        <button use:jumpto={`/?genre=${_genre}`} class="-chip _teal">
-          {_genre}
-        </button>
+      {#each genres as genre}
+        <a href="/?genre={genre}" class="-chip _teal">
+          {genre}
+        </a>
       {/each}
     </div>
   </section>

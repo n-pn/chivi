@@ -25,8 +25,7 @@
   class:_left={_slider == 'left'}
   class:_right={_slider == 'right'}
   class:_active={actived}
-  style="--width: {_rwidth}rem;"
-  on:click={(e) => e.stopPropagation()}>
+  style="--width: {_rwidth}rem;">
   <header class="head">
     <slot name="header-left" />
     <slot name="header-right" />
