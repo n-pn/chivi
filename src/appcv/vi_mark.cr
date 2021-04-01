@@ -43,24 +43,21 @@ module CV::ViMark
     CHAPS[bname] ||= load_map("chaps/#{bname}")
   end
 
-  def all_marks(uname : String, bmark : String)
-    mark_map(uname).keys(bmark)
+  def all_marks(bname : String, bmark : String)
+    mark_map(bname).keys(bmark)
   end
 
-  def all_books(bname : String, bmark : String)
-    book_map(bname).keys(bmark)
+  def all_books(uname : String, bmark : String)
+    book_map(uname).keys(bmark)
   end
 
   def mark_book(uname : String, bname : String, bmark : String = "") : Nil
     if bmark.empty?
-      mark_map(uname).tap(&.delete!(bname)).save!(clean: false)
-      book_map(bname).tap(&.delete!(uname)).save!(clean: false)
+      book_map(uname).tap(&.delete!(bname)).save!(clean: false)
+      mark_map(bname).tap(&.delete!(uname)).save!(clean: false)
     else
-      mark_map(uname).tap(&.set!(bname, [bmark])).save!(clean: false)
-      book_map(bname).tap(&.set!(uname, [bmark])).save!(clean: false)
+      book_map(uname).tap(&.set!(bname, [bmark])).save!(clean: false)
+      mark_map(bname).tap(&.set!(uname, [bmark])).save!(clean: false)
     end
-  end
-
-  def unmark_book(uname : String, bname : String) : Nil
   end
 end
