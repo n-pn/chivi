@@ -13,7 +13,6 @@ const dev = NODE_ENV === 'development'
 const proxy = createProxyMiddleware('/api', {
   target: 'http://localhost:5010',
   changeOrigin: true,
-  pathRewrite: (path) => encodeURI(path),
 })
 
 const maxAge = 120 * 24 * 3600

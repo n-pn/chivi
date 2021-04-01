@@ -117,7 +117,7 @@
     <form class="header-field" action="/search" method="get">
       <input
         type="search"
-        name="kw"
+        name="q"
         placeholder="Tìm kiếm"
         on:focus={() => (searching = true)}
         on:onfocusout={() => (searching = false)} />

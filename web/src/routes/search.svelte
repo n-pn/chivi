@@ -1,15 +1,14 @@
 <script context="module">
   export async function preload({ query }) {
-    const word = (query.kw || '').replace(/\+|-/g, ' ')
-    const page = +(query.page || '1')
-    const type = query.type || 'btitle'
+    const word = (query.q || '').replace(/\+|-/g, ' ')
+    const page = +(query.p || '1')
+    const type = query.t || 'btitle'
 
     if (word) {
       let skip = (page - 1) * 8
       if (skip < 0) skip = 0
 
-      let url = `/api/books?skip=${skip}&take=8`
-      if (word) url += `&${type}=${word}`
+      const url = `/api/books?take=8&skip=${skip}&${type}=${word}`
 
       const res = await this.fetch(url)
       const { books, total } = await res.json()
@@ -40,8 +39,8 @@
     if (page < 1) page = 1
     if (page > pmax) page = pmax
 
-    let url = `/search?kw=${word}&page=${page}`
-    if (type != 'btitle') url += `&type=${type}`
+    let url = `/search?q=${word}&p=${page}`
+    if (type != 'btitle') url += `&t=${type}`
 
     return url
   }
