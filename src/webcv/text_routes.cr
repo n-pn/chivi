@@ -3,6 +3,7 @@ require "./_route_utils"
 require "../appcv/nv_info"
 require "../appcv/ch_info"
 require "../appcv/ch_text"
+require "../appcv/vi_mark"
 
 module CV::Server
   get "/api/texts/:bname/:sname/:snvid/:chidx" do |env|
@@ -19,6 +20,10 @@ module CV::Server
     end
 
     chidx, infos = curr_chap
+
+    if uname = env.session.string?("u_dname").try(&.downcase)
+      ViMark.mark_chap(uname, bname, sname, chidx, infos[1], infos[3])
+    end
 
     RouteUtils.json_res(env) do |res|
       JSON.build(res) do |json|

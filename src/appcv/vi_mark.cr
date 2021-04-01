@@ -12,8 +12,8 @@ module CV::ViMark
   MAKRS = {} of String => TokenMap
   BOOKS = {} of String => TokenMap
 
-  SEEDS = {} of String => ValueMap
-  CHAPS = {} of String => ValueMap
+  SEEDS = {} of String => OrderMap
+  CHAPS = {} of String => OrderMap
 
   def save!(mode : Symbol = :full)
     MAKRS.each_value(&.save!(mode: mode))
@@ -23,24 +23,20 @@ module CV::ViMark
     CHAPS.each_value(&.save!(mode: mode))
   end
 
-  def load_map(label : String) : TokenMap
-    TokenMap.new("#{DIR}/#{label}.tsv")
+  def mark_map(bname : String)
+    MAKRS[bname] ||= TokenMap.new("#{DIR}/marks/#{bname}.tsv")
   end
 
-  def mark_map(uname : String)
-    MAKRS[uname] ||= load_map("marks/#{uname}")
-  end
-
-  def book_map(bname : String)
-    BOOKS[bname] ||= load_map("books/#{bname}")
+  def book_map(uname : String)
+    BOOKS[uname] ||= TokenMap.new("#{DIR}/books/#{uname}.tsv")
   end
 
   def seed_map(uname : String)
-    SEEDS[uname] ||= load_map("seeds/#{uname}")
+    SEEDS[uname] ||= OrderMap.new("#{DIR}/seeds/#{uname}.tsv")
   end
 
-  def info_map(bname : String)
-    CHAPS[bname] ||= load_map("chaps/#{bname}")
+  def chap_map(uname : String)
+    CHAPS[uname] ||= OrderMap.new("#{DIR}/chaps/#{uname}.tsv")
   end
 
   def all_marks(bname : String, bmark : String)
@@ -59,5 +55,13 @@ module CV::ViMark
       book_map(uname).tap(&.set!(bname, [bmark])).save!(clean: false)
       mark_map(bname).tap(&.set!(uname, [bmark])).save!(clean: false)
     end
+  end
+
+  def mark_chap(uname : String, bname : String, sname : String,
+                chidx : String, title : String, uslug : String)
+    atime = Time.utc.to_unix.//(60).to_s
+    chap_mark = ViMark.chap_map(uname)
+    chap_mark.set!(bname, [atime, sname, chidx, title, uslug])
+    chap_mark.save!(clean: false)
   end
 end

@@ -59,6 +59,8 @@ class CV::OrderMap < CV::ValueMap
   end
 
   class PrevIter
+    getter curr
+
     def initialize(@curr : Node, @done : Node)
     end
 
@@ -72,6 +74,8 @@ class CV::OrderMap < CV::ValueMap
   end
 
   class SuccIter
+    getter curr
+
     def initialize(@curr : Node, @done : Node)
     end
 

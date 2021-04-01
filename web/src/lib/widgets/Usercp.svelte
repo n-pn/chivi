@@ -1,4 +1,5 @@
 <script>
+  import { mark_types, mark_names } from '$utils/constants'
   import { logout_user } from '$api/viuser_api'
   import { u_dname, u_power } from '$src/stores'
 
@@ -13,7 +14,14 @@
     await logout_user(window.fetch)
   }
 
-  import { mark_types, mark_names } from '$utils/constants'
+  let chaps = []
+  $: if (actived) load_chaps(0)
+
+  async function load_chaps(skip = 0) {
+    const res = await fetch(`/api/mark-chaps?skip=${skip}`)
+    if (res.ok) chaps = await res.json()
+    console.log({ chaps })
+  }
 
   function jumpto(node, url) {
     const action = () => {
@@ -55,12 +63,28 @@
 
   <section class="content">
     <header class="label">
-      <SIcon name="book-open" />
-      <span>Lịch sử đọc</span>
+      <SIcon name="clock" />
+      <span>Vừa đọc</span>
     </header>
-    <div>Đang hoàn thiện!</div>
-  </section>
-</Slider>
+
+    <div class="chaps">
+      {#each chaps as chap}
+        <a
+          class="chap"
+          href="/~{chap.bslug}/-{chap.uslug}-{chap.sname}-{chap.chidx}">
+          <div class="-text">
+            <div class="-title">{chap.title}</div>
+            <span class="-chidx">{chap.chidx}</span>
+          </div>
+
+          <div class="-meta">
+            <span class="-bname">{chap.bname}</span>
+            <span class="-sname">{chap.sname}</span>
+          </div>
+        </a>
+      {/each}
+    </div>
+  </section></Slider>
 
 <style lang="scss">
   @mixin label {
@@ -120,6 +144,66 @@
     &:hover {
       @include bdcolor(primary, 5);
       @include fgcolor(primary, 6);
+    }
+  }
+
+  .chap {
+    display: block;
+    @include border($sides: bottom);
+
+    padding: 0.375rem 0.5rem;
+    user-select: none;
+
+    &:first-child {
+      @include border($sides: top);
+    }
+
+    &:nth-child(odd) {
+      @include bgcolor(neutral, 1);
+    }
+
+    .-text {
+      display: flex;
+      line-height: 1.5rem;
+    }
+
+    .-meta {
+      display: flex;
+      padding: 0;
+      line-height: 1rem;
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+      font-size: rem(12px);
+      @include fgcolor(neutral, 5, 0.8);
+      @include truncate(null);
+    }
+
+    .-title {
+      flex: 1;
+      @include fgcolor(neutral, 8);
+      @include truncate(null);
+    }
+
+    &:visited .-title {
+      @include fgcolor(neutral, 6, 0.6);
+    }
+
+    &:hover .-title {
+      @include fgcolor(primary, 5);
+    }
+
+    .-chidx {
+      margin-left: 0.125rem;
+      @include fgcolor(neutral, 5, 0.6);
+      @include font-size(1);
+
+      &:after {
+        content: '.';
+      }
+    }
+
+    .-bname {
+      flex: 1;
     }
   }
 </style>
