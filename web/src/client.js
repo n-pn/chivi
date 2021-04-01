@@ -1,8 +1,4 @@
 import * as sapper from '@sapper/app'
-import '$src/styles/globals.scss'
+import '$src/css/globals.scss'
 
-window._goto_ = sapper.goto
-
-sapper.start({
-  target: document.querySelector('#sapper'),
-})
+sapper.start({ target: document.querySelector('#sapper') })

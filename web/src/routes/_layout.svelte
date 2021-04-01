@@ -1,7 +1,7 @@
 <script>
   import { get_self } from '$api/viuser_api'
   import { u_dname, u_power, l_scroll } from '$src/stores'
-  import Loader from '$lib/layouts/Loader'
+  import Loader from '$lib/layouts/Loader.svelte'
 
   const links = [
     ['Vozforums', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],
