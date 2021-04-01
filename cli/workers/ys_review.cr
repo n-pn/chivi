@@ -50,7 +50,7 @@ class Seeds::YsReview
     return snvid unless @http.save!(link, file, label)
   end
 
-  FRESH = 15.days
+  FRESH = 3.days
 
   private def still_good?(file : String, page = 1)
     return false unless info = File.info?(file)
@@ -62,6 +62,6 @@ end
 
 worker = Seeds::YsReview.new(regen_proxy: ARGV.includes?("proxy"))
 
-1.upto(5) do |page|
+1.upto(4) do |page|
   worker.crawl!(page) unless worker.no_proxy?
 end
