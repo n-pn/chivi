@@ -62,7 +62,7 @@
 
     <div class="label">
       <SIcon name="clock" />
-      <span>Vừa đọc</span>
+      <span>Lịch sử đọc</span>
     </div>
 
     <div class="chaps">
@@ -93,39 +93,38 @@
   }
 
   .body {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
     overflow-y: auto;
+    min-height: calc(100vh - 3rem);
   }
 
   .label {
     @include flex();
-    margin: 0.25rem -0.5rem;
+    margin: 0.25rem -0.375rem;
     padding: 0 0.5rem;
 
     line-height: 2.25rem;
     font-weight: 500;
 
-    text-transform: uppercase;
-    @include font-size(2);
+    // text-transform: uppercase;
+    // @include font-size(2);
     @include fgcolor(neutral, 6);
 
     :global(svg) {
-      margin-top: 0.5rem;
-      width: 1.125rem;
-      height: 1.125rem;
+      margin-top: 0.625rem;
+      width: 1rem;
+      height: 1rem;
     }
 
     span {
-      margin-left: 0.5rem;
+      margin-left: 0.25rem;
     }
   }
 
   .chips {
     display: flex;
     padding-top: 1rem;
-    @include props(margin-left, -0.25rem, -0.375rem);
-    @include props(font-size, 11px, 12px, 13px);
-    @include props(line-height, 1.25rem, 1.5rem, 1.75rem);
+    @include props(font-size, 12px, 12px, 13px);
   }
 
   .-chip {
@@ -133,10 +132,10 @@
     border-radius: 0.75rem;
     padding: 0 0.75em;
     background-color: #fff;
+    line-height: 2.25em;
 
     @include label();
     @include border();
-    @include props(margin-left, 0.25rem, 0.375rem);
 
     &:hover {
       @include bdcolor(primary, 5);
@@ -151,8 +150,12 @@
       display: inline-block;
       width: 1.25em;
       height: 1.25em;
-      margin-top: 0.375em;
+      margin-top: 0.5em;
       margin-right: 0.375em;
+    }
+
+    & + & {
+      @include props(margin-left, 0.25rem, 0.375rem);
     }
   }
 

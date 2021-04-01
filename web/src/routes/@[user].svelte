@@ -1,5 +1,5 @@
 <script context="module">
-  import { mark_types, mark_names } from '$utils/constants'
+  import { mark_types, mark_names } from '$lib/constants'
 
   const take = 24
 

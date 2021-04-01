@@ -24,7 +24,7 @@ export const mark_types = [
 
 export const mark_names = {
   reading: 'Đang đọc',
-  onhold: 'Tạm ngừng',
+  onhold: 'Tạm dừng',
   completed: 'Hoàn thành',
   dropped: 'Vứt bỏ',
   pending: 'Đọc sau',

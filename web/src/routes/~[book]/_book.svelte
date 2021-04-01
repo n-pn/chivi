@@ -5,7 +5,7 @@
 
 <script>
   import { host_name, map_status } from '$utils/book_utils'
-  import { mark_types, mark_names, mark_icons } from '$utils/constants'
+  import { mark_types, mark_names, mark_icons } from '$lib/constants'
   import { onMount } from 'svelte'
 
   import SIcon from '$lib/blocks/SIcon'
