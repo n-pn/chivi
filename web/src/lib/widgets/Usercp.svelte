@@ -1,5 +1,5 @@
 <script>
-  import { mark_types, mark_names } from '$utils/constants'
+  import { mark_names, mark_icons } from '$lib/constants'
   import { logout_user } from '$api/viuser_api'
   import { u_dname, u_power } from '$src/stores'
 
@@ -42,30 +42,28 @@
     <div class="-text">{$u_dname} [{$u_power}]</div>
   </svelte:fragment>
 
-  <button slot="header-right" class="-btn" on:click={logout}>
-    <SIcon name="log-out" />
-  </button>
+  <svelte:fragment slot="header-right">
+    <button class="-btn" on:click={logout}>
+      <SIcon name="log-out" />
+    </button>
+  </svelte:fragment>
 
-  <section class="content">
-    <header class="label">
-      <SIcon name="layers" />
-      <span>Tủ truyện</span>
-    </header>
-
+  <section class="body">
     <div class="chips">
-      {#each mark_types as mtype}
+      {#each ['reading', 'onhold', 'pending'] as mtype}
         <button use:jumpto={`/@${$u_dname}?bmark=${mtype}`} class="-chip">
-          {mark_names[mtype]}
+          <SIcon name={mark_icons[mtype]} />
+          <span class="-text">
+            {mark_names[mtype]}
+          </span>
         </button>
       {/each}
     </div>
-  </section>
 
-  <section class="content">
-    <header class="label">
+    <div class="label">
       <SIcon name="clock" />
       <span>Vừa đọc</span>
-    </header>
+    </div>
 
     <div class="chaps">
       {#each chaps as chap}
@@ -84,7 +82,8 @@
         </a>
       {/each}
     </div>
-  </section></Slider>
+  </section>
+</Slider>
 
 <style lang="scss">
   @mixin label {
@@ -93,27 +92,27 @@
     @include fgcolor(neutral, 6);
   }
 
-  .content {
-    margin-top: 0.5rem;
+  .body {
     padding: 0 1rem;
+    overflow-y: auto;
   }
 
   .label {
     @include flex();
-    // @include label();
-    font-weight: 500;
-    line-height: 2.25rem;
-    margin: 0 -0.5rem;
-    margin-bottom: 0.25rem;
+    margin: 0.25rem -0.5rem;
     padding: 0 0.5rem;
+
+    line-height: 2.25rem;
+    font-weight: 500;
+
     text-transform: uppercase;
     @include font-size(2);
     @include fgcolor(neutral, 6);
 
     :global(svg) {
       margin-top: 0.5rem;
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1.125rem;
+      height: 1.125rem;
     }
 
     span {
@@ -122,28 +121,38 @@
   }
 
   .chips {
-    @include flow();
-    @include props(margin-top, -0.25rem, -0.375rem);
+    display: flex;
+    padding-top: 1rem;
     @include props(margin-left, -0.25rem, -0.375rem);
-
     @include props(font-size, 11px, 12px, 13px);
     @include props(line-height, 1.25rem, 1.5rem, 1.75rem);
   }
 
   .-chip {
-    float: left;
+    display: inline-flex;
     border-radius: 0.75rem;
     padding: 0 0.75em;
     background-color: #fff;
 
     @include label();
     @include border();
-    @include props(margin-top, 0.25rem, 0.375rem);
     @include props(margin-left, 0.25rem, 0.375rem);
 
     &:hover {
       @include bdcolor(primary, 5);
       @include fgcolor(primary, 6);
+    }
+
+    > .-text {
+      @include truncate(null);
+    }
+
+    > :global(svg) {
+      display: inline-block;
+      width: 1.25em;
+      height: 1.25em;
+      margin-top: 0.375em;
+      margin-right: 0.375em;
     }
   }
 
@@ -204,6 +213,7 @@
 
     .-bname {
       flex: 1;
+      @include truncate(null);
     }
   }
 </style>

@@ -38,7 +38,8 @@ module CV::Server
     end
 
     skip = env.params.query.fetch("skip", "0").to_i
-    take = env.params.query.fetch("take", "10").to_i
+    take = env.params.query.fetch("take", "15").to_i
+    take = 15 if take > 15
 
     chap_mark = ViMark.chap_map(uname)
     iter = chap_mark._idx.reverse_each
