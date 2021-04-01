@@ -1,6 +1,6 @@
 <script context="module">
   import { u_power, u_dname } from '$src/stores'
-  import { set_nvmark, get_nvmark } from '$api/marked_api'
+  import { set_mark, get_mark } from '$api/marked_api'
 </script>
 
 <script>
@@ -21,15 +21,15 @@
   $: book_intro = nvinfo.bintro.join('').substring(0, 300)
   $: updated_at = new Date(nvinfo.update * 1000)
 
-  let nvmark = ''
+  let bmark = ''
   onMount(async () => {
-    const [err, data] = await get_nvmark(fetch, $u_dname, nvinfo.bhash)
-    if (!err) nvmark = data.nvmark
+    const [err, data] = await get_mark(fetch, $u_dname, nvinfo.bhash)
+    if (!err) bmark = data.bmark
   })
 
   async function mark_book(new_mark) {
-    nvmark = nvmark == new_mark ? '' : new_mark
-    await set_nvmark(fetch, $u_dname, nvinfo.bhash, nvmark)
+    bmark = bmark == new_mark ? '' : new_mark
+    await set_mark(fetch, $u_dname, nvinfo.bhash, bmark)
   }
 
   function gen_keywords(nvinfo) {
@@ -68,18 +68,18 @@
   </a>
 
   <span slot="header-right" class="header-item _menu">
-    <SIcon name={nvmark ? mark_icons[nvmark] : 'bookmark'} />
+    <SIcon name={bmark ? mark_icons[bmark] : 'bookmark'} />
     <span class="header-text _show-md"
-      >{nvmark ? mark_names[nvmark] : 'Đánh dấu'}</span>
+      >{bmark ? mark_names[bmark] : 'Đánh dấu'}</span>
 
     {#if $u_power > 0}
       <div class="header-menu">
-        {#each mark_types as m_type}
-          <div class="-item" on:click={() => mark_book(m_type)}>
-            <SIcon name={mark_icons[m_type]} />
-            <span>{mark_names[m_type]}</span>
+        {#each mark_types as mtype}
+          <div class="-item" on:click={() => mark_book(mtype)}>
+            <SIcon name={mark_icons[mtype]} />
+            <span>{mark_names[mtype]}</span>
 
-            {#if nvmark == m_type}
+            {#if bmark == mtype}
               <span class="_right">
                 <SIcon name="check" />
               </span>

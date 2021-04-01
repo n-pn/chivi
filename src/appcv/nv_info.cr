@@ -85,7 +85,7 @@ class CV::NvInfo
         return unless node = iter.next
         yield node.key
       end
-    elsif matched.size > 512
+    elsif matched.size > 1000
       iter = order_map._idx.reverse_each
 
       while skip > 0

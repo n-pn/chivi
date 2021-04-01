@@ -4,50 +4,63 @@ module CV::ViMark
   extend self
 
   DIR = "_db/vi_users"
-  ::FileUtils.mkdir_p("#{DIR}/books")
   ::FileUtils.mkdir_p("#{DIR}/marks")
+  ::FileUtils.mkdir_p("#{DIR}/books")
+  ::FileUtils.mkdir_p("#{DIR}/seeds")
+  ::FileUtils.mkdir_p("#{DIR}/chaps")
 
-  USER_BOOKS = {} of String => TokenMap
-  BOOK_USERS = {} of String => TokenMap
+  MAKRS = {} of String => TokenMap
+  BOOKS = {} of String => TokenMap
 
-  USER_SEEDS = {} of String => ValueMap
-  USER_CHAPS = {} of String => ValueMap
+  SEEDS = {} of String => ValueMap
+  CHAPS = {} of String => ValueMap
 
   def save!(mode : Symbol = :full)
-    USER_BOOKS.each_value(&.save!(mode: mode))
-    BOOK_USERS.each_value(&.save!(mode: mode))
+    MAKRS.each_value(&.save!(mode: mode))
+    BOOKS.each_value(&.save!(mode: mode))
 
-    USER_SEEDS.each_value(&.save!(mode: mode))
-    USER_CHAPS.each_value(&.save!(mode: mode))
+    SEEDS.each_value(&.save!(mode: mode))
+    CHAPS.each_value(&.save!(mode: mode))
   end
 
-  def map_path(label : String)
-    "#{DIR}/#{label}.tsv"
+  def load_map(label : String) : TokenMap
+    TokenMap.new("#{DIR}/#{label}.tsv")
   end
 
-  def user_books(uname : String)
-    USER_BOOKS[uname] ||= TokenMap.new(map_path("marks/#{uname}"))
+  def mark_map(uname : String)
+    MAKRS[uname] ||= load_map("marks/#{uname}")
   end
 
-  def book_users(bhash : String)
-    BOOK_USERS[bhash] ||= TokenMap.new(map_path("books/#{bhash}"))
+  def book_map(bname : String)
+    BOOKS[bname] ||= load_map("books/#{bname}")
   end
 
-  def all_user_books(uname : String, bmark : String)
-    user_books(uname).keys(bmark)
+  def seed_map(uname : String)
+    SEEDS[uname] ||= load_map("seeds/#{uname}")
   end
 
-  def all_book_users(bhash : String, bmark : String)
-    book_users(bhash).keys(bmark)
+  def info_map(bname : String)
+    CHAPS[bname] ||= load_map("chaps/#{bname}")
   end
 
-  def mark_book(uname : String, bhash : String, bmark : String) : Nil
-    user_books(uname).tap(&.set!(bhash, [bmark])).save!(clean: false)
-    book_users(bhash).tap(&.set!(uname, [bmark])).save!(clean: false)
+  def all_marks(uname : String, bmark : String)
+    mark_map(uname).keys(bmark)
   end
 
-  def unmark_book(uname : String, bhash : String) : Nil
-    user_books(uname).tap(&.delete!(bhash)).save!(clean: false)
-    user_books(bhash).tap(&.delete!(uname)).save!(clean: false)
+  def all_books(bname : String, bmark : String)
+    book_map(bname).keys(bmark)
+  end
+
+  def mark_book(uname : String, bname : String, bmark : String = "") : Nil
+    if bmark.empty?
+      mark_map(uname).tap(&.delete!(bname)).save!(clean: false)
+      book_map(bname).tap(&.delete!(uname)).save!(clean: false)
+    else
+      mark_map(uname).tap(&.set!(bname, [bmark])).save!(clean: false)
+      book_map(bname).tap(&.set!(uname, [bmark])).save!(clean: false)
+    end
+  end
+
+  def unmark_book(uname : String, bname : String) : Nil
   end
 end
