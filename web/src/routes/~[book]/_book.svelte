@@ -104,7 +104,7 @@
       <div class="line">
         <span class="stat -trim">
           <SIcon name="pen-tool" />
-          <a class="link" href="/search?kw={nvinfo.author_vi}&type=author">
+          <a class="link" href="/search?q={nvinfo.author_vi}&t=author">
             <span class="label">{nvinfo.author_vi}</span>
           </a>
         </span>
@@ -200,7 +200,6 @@
   </div>
 </Vessel>
 
-<!-- prettier-ignore -->
 <style lang="scss">
   .main-info {
     padding-top: 0.75rem;
