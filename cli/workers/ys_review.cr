@@ -39,6 +39,7 @@ class Seeds::YsReview
       end
 
       queue = fails
+      break if @http.no_proxy?
     end
   end
 
@@ -56,13 +57,11 @@ class Seeds::YsReview
     info.modification_time + FRESH * page > Time.utc
   end
 
-  def can_continue?
-    @http.size > 0
-  end
+  delegate no_proxy?, to: @http
 end
 
 worker = Seeds::YsReview.new(regen_proxy: ARGV.includes?("proxy"))
 
 1.upto(5) do |page|
-  worker.crawl!(page) if worker.can_continue?
+  worker.crawl!(page) unless worker.no_proxy?
 end

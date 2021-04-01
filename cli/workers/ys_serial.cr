@@ -42,6 +42,7 @@ class Seeds::YsSerial
         inbox.receive.try { |snvid| fails << snvid }
       end
 
+      break if @http.no_proxy?
       queue = fails
     end
   end

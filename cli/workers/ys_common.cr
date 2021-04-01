@@ -21,8 +21,11 @@ class Client
 
     load_proxies(@proxy_file)
 
-    if @proxies.size < 200 || regen
+    if @proxies.size < 200
       previous_proxy_file.try { |file| load_proxies(file) }
+    end
+
+    if @proxies.size < 200 || regen
       Dir.glob("#{PROXY_DIR}/*.txt").each { |file| load_proxies(file) }
     end
   end
@@ -79,5 +82,9 @@ class Client
 
   def add_proxy(proxy : Proxy, append = true)
     append ? @proxies.push(proxy) : @proxies.unshift(proxy)
+  end
+
+  def no_proxy?
+    @proxies.empty?
   end
 end
