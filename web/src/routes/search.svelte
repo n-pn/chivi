@@ -51,10 +51,12 @@
 </svelte:head>
 
 <Vessel>
-  <form slot="header-left" class="header-field" action="/search" method="get">
-    <input type="search" name="kw" placeholder="Tìm kiếm" value={word} />
-    <SIcon name="search" />
-  </form>
+  <svelte:fragment slot="header-left">
+    <form class="header-field" action="/search" method="get">
+      <input type="search" name="q" placeholder="Tìm kiếm" value={word} />
+      <SIcon name="search" />
+    </form>
+  </svelte:fragment>
 
   {#if pmax > 0}
     <h1>
