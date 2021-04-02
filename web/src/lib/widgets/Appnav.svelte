@@ -5,16 +5,6 @@
   import Slider from './Slider'
 
   export let actived = false
-
-  function jumpto(node, url) {
-    const action = () => {
-      _goto_(url)
-      actived = false
-    }
-
-    node.addEventListener('click', action)
-    return { destroy: () => node.removeEventListener('click', action) }
-  }
 </script>
 
 <Slider bind:actived _rwidth={22} _slider="left">
@@ -64,10 +54,10 @@
     </header>
 
     <div class="chips">
-      {#each snames as _sname}
-        <button use:jumpto={`/?sname=${_sname}`} class="-chip _indigo">
-          {_sname}
-        </button>
+      {#each snames as sname}
+        <a href="/?sname={sname}" class="-chip _indigo">
+          {sname}
+        </a>
       {/each}
     </div>
   </section>

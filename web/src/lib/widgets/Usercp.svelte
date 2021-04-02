@@ -22,16 +22,6 @@
     if (res.ok) chaps = await res.json()
     console.log({ chaps })
   }
-
-  function jumpto(node, url) {
-    const action = () => {
-      _goto_(url)
-      actived = false
-    }
-
-    node.addEventListener('click', action)
-    return { destroy: () => node.removeEventListener('click', action) }
-  }
 </script>
 
 <Slider bind:actived width={26}>
