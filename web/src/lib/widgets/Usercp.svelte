@@ -51,12 +51,12 @@
   <section class="body">
     <div class="chips">
       {#each ['reading', 'onhold', 'pending'] as mtype}
-        <button use:jumpto={`/@${$u_dname}?bmark=${mtype}`} class="-chip">
+        <a href="/@{$u_dname}?bmark={mtype}" class="-chip">
           <SIcon name={mark_icons[mtype]} />
           <span class="-text">
             {mark_names[mtype]}
           </span>
-        </button>
+        </a>
       {/each}
     </div>
 
