@@ -71,7 +71,7 @@
     padding: 0 0.5rem;
 
     &._main {
-      min-height: calc(100vh - 2.75rem);
+      min-height: calc(100vh - 3rem);
     }
   }
 
