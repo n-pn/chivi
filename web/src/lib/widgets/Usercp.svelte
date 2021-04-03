@@ -34,7 +34,7 @@
 
   <svelte:fragment slot="header-right">
     <button class="-btn" on:click={() => dark_mode.update((x) => !x)}>
-      <SIcon name={$dark_mode ? 'moon' : 'sun'} />
+      <SIcon name={$dark_mode ? 'sun' : 'moon'} />
     </button>
 
     <button class="-btn" on:click={logout}>
