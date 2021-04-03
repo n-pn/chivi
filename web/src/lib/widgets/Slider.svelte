@@ -71,7 +71,7 @@
     top: 0;
     width: var(--width);
     max-width: 90vw;
-    height: 100%;
+    height: 100vh;
     z-index: 1001;
 
     will-change: transform;
@@ -113,7 +113,7 @@
     position: sticky;
 
     top: 0;
-    z-index: 1;
+    z-index: 1002;
 
     height: $hd-height;
     line-height: $hd-line-height;
@@ -155,7 +155,9 @@
   }
 
   .body {
-    flex: 1;
+    height: 100%;
     overflow-y: auto;
+    padding: 0 0.75rem;
+    // min-height: calc(100vh - 3rem);
   }
 </style>

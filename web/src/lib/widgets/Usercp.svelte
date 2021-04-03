@@ -38,41 +38,39 @@
     </button>
   </svelte:fragment>
 
-  <section class="body">
-    <div class="chips">
-      {#each ['reading', 'onhold', 'pending'] as mtype}
-        <a href="/@{$u_dname}?bmark={mtype}" class="-chip">
-          <SIcon name={mark_icons[mtype]} />
-          <span class="-text">
-            {mark_names[mtype]}
-          </span>
-        </a>
-      {/each}
-    </div>
+  <div class="chips">
+    {#each ['reading', 'onhold', 'pending'] as mtype}
+      <a href="/@{$u_dname}?bmark={mtype}" class="-chip">
+        <SIcon name={mark_icons[mtype]} />
+        <span class="-text">
+          {mark_names[mtype]}
+        </span>
+      </a>
+    {/each}
+  </div>
 
-    <div class="label">
-      <SIcon name="clock" />
-      <span>Lịch sử đọc</span>
-    </div>
+  <div class="label">
+    <SIcon name="clock" />
+    <span>Lịch sử đọc</span>
+  </div>
 
-    <div class="chaps">
-      {#each chaps as chap}
-        <a
-          class="chap"
-          href="/~{chap.bslug}/-{chap.uslug}-{chap.sname}-{chap.chidx}">
-          <div class="-text">
-            <div class="-title">{chap.title}</div>
-            <span class="-chidx">{chap.chidx}</span>
-          </div>
+  <div class="chaps">
+    {#each chaps as chap}
+      <a
+        class="chap"
+        href="/~{chap.bslug}/-{chap.uslug}-{chap.sname}-{chap.chidx}">
+        <div class="-text">
+          <div class="-title">{chap.title}</div>
+          <span class="-chidx">{chap.chidx}</span>
+        </div>
 
-          <div class="-meta">
-            <span class="-bname">{chap.bname}</span>
-            <span class="-sname">{chap.sname}</span>
-          </div>
-        </a>
-      {/each}
-    </div>
-  </section>
+        <div class="-meta">
+          <span class="-bname">{chap.bname}</span>
+          <span class="-sname">{chap.sname}</span>
+        </div>
+      </a>
+    {/each}
+  </div>
 </Slider>
 
 <style lang="scss">
@@ -80,12 +78,6 @@
     font-weight: 500;
     text-transform: uppercase;
     @include fgcolor(neutral, 6);
-  }
-
-  .body {
-    padding: 0 0.75rem;
-    overflow-y: auto;
-    min-height: calc(100vh - 3rem);
   }
 
   .label {

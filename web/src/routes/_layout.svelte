@@ -47,7 +47,9 @@
 
 <svelte:window on:scroll={handleScroll} />
 
-<slot />
+<div class="main">
+  <slot />
+</div>
 
 <div class="links">
   <span> Liên kết: </span>
@@ -64,6 +66,10 @@
     display: flex;
     flex-direction: column;
     min-height: 100%;
+  }
+
+  .main {
+    height: 100%;
   }
 
   .links {
