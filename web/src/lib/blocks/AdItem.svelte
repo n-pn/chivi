@@ -15,9 +15,9 @@
 
   <script>
     try {
-      setTimeout(() => (window.adsbygoogle || []).push({}), 200)
-    } catch (ads_error) {
-      console.log(ads_error)
+      ;(window.adsbygoogle || []).push({})
+    } catch (err) {
+      console.log(err)
     }
   </script>
 </section>

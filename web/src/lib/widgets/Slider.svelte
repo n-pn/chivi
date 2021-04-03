@@ -12,6 +12,10 @@
     evt.stopPropagation()
     if (evt.keyCode == 27) actived = false
   }
+
+  function hide_if_anchor_clicked(e) {
+    if (e.target.tagName == 'A') actived = false
+  }
 </script>
 
 <svelte:window on:keydown={handle_keydown} />
@@ -25,6 +29,7 @@
   class:_left={_slider == 'left'}
   class:_right={_slider == 'right'}
   class:_active={actived}
+  on:click={hide_if_anchor_clicked}
   style="--width: {_rwidth}rem;">
   <header class="head">
     <slot name="header-left" />

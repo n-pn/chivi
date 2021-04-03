@@ -38,16 +38,21 @@
 
   let prevScrollTop = 0
 
-  function handleScroll() {
+  function track_scrolling() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
     $l_scroll = scrollTop - prevScrollTop
     prevScrollTop = scrollTop <= 0 ? 0 : scrollTop
   }
+
+  function disable_router_unless_vip(e) {
+    // disabled until adsense is unblocked
+    // if ($u_power < 2) e.stopPropagation()
+  }
 </script>
 
-<svelte:window on:scroll={handleScroll} />
+<svelte:window on:scroll={track_scrolling} />
 
-<div class="main">
+<div class="main" on:click={disable_router_unless_vip}>
   <slot />
 </div>
 
