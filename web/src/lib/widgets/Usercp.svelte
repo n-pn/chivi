@@ -1,7 +1,7 @@
 <script>
   import { mark_names, mark_icons } from '$lib/constants'
   import { logout_user } from '$api/viuser_api'
-  import { u_dname, u_power } from '$src/stores'
+  import { u_dname, u_power, dark_mode } from '$src/stores'
 
   import SIcon from '$lib/blocks/SIcon'
   import Slider from './Slider'
@@ -33,6 +33,10 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
+    <button class="-btn" on:click={() => dark_mode.update((x) => !x)}>
+      <SIcon name={$dark_mode ? 'moon' : 'sun'} />
+    </button>
+
     <button class="-btn" on:click={logout}>
       <SIcon name="log-out" />
     </button>
