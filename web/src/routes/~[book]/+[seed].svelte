@@ -121,9 +121,20 @@
     }
   }
 
+  .m-input {
+    @include dark {
+      @include fgcolor(neutral, 3);
+      @include bgcolor(neutral, 7, 0.3);
+      @include bdcolor(neutral, 6);
+
+      &:focus {
+        @include bdcolor(primary, 6);
+      }
+    }
+  }
+
   #input {
     height: calc(100vh - 10rem);
-
     padding: 0.75rem;
     font-size: rem(18px);
   }

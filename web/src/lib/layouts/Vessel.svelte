@@ -105,6 +105,13 @@
         color(neutral, 1, 0.1),
         color(neutral, 7, 0.7)
       );
+
+      @include dark {
+        background: linear-gradient(
+          color(neutral, 7, 0.1),
+          color(neutral, 8, 0.7)
+        );
+      }
     }
   }
 

@@ -318,17 +318,17 @@
   .m-button {
     @include dark {
       @include fgcolor(neutral, 2);
-      @include bgcolor(neutral, 7, 0.4);
+      @include bgcolor(neutral, 7);
 
       &:hover {
-        @include bgcolor(neutral, 7, 0.3);
+        @include bgcolor(neutral, 6);
       }
 
       &._primary {
-        @include bgcolor(primary, 7, 0.5);
+        @include bgcolor(primary, 7);
 
         &:hover {
-          @include bgcolor(primary, 7, 0.3);
+          @include bgcolor(primary, 6);
         }
       }
     }

@@ -457,7 +457,7 @@
       @include bgcolor(neutral, 8, 0.4);
 
       &:hover {
-        @include bgcolor(neutral, 6, 0.3);
+        @include bgcolor(neutral, 8, 0.3);
       }
 
       &._primary {
