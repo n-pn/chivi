@@ -154,6 +154,10 @@
   on:keydown={handle_keydown}>
   <div class="upsert" on:click|stopPropagation={focus_on_value}>
     <header class="header">
+      <button type="button" class="m-button _text">
+        <SIcon name="menu" />
+      </button>
+
       <div class="hanzi">
         <Input phrase={$phrase} bind:output={key} />
       </div>
@@ -250,22 +254,19 @@
 
   header {
     display: flex;
-    // padding: 0.75rem;
-
-    padding-left: 0.75rem;
+    padding: 0.5rem 0.25rem;
 
     > button {
-      margin: 0.25rem;
       @include fgcolor(neutral, 6);
       &:hover {
+        background: transparent;
         @include fgcolor(primary, 6);
       }
     }
 
     > .hanzi {
       flex-grow: 1;
-      margin: 0.5rem;
-      margin-right: 0;
+      margin: 0 0.25rem;
     }
   }
 
