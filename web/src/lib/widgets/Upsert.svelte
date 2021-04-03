@@ -251,12 +251,11 @@
   header {
     display: flex;
     // padding: 0.75rem;
-    @include border($color: neutral, $shade: 3, $sides: bottom);
 
-    margin-bottom: 0.75rem;
     padding-left: 0.75rem;
 
     > button {
+      margin: 0.25rem;
       @include fgcolor(neutral, 6);
       &:hover {
         @include fgcolor(primary, 6);
@@ -265,7 +264,8 @@
 
     > .hanzi {
       flex-grow: 1;
-      // margin-right: 0.25rem;
+      margin: 0.5rem;
+      margin-right: 0;
     }
   }
 
@@ -313,7 +313,7 @@
     }
 
     & + & {
-      margin-left: 0.75rem;
+      margin-left: 0.5rem;
     }
   }
 
@@ -336,7 +336,7 @@
       outline: none;
       line-height: 3rem;
 
-      padding-top: 2rem;
+      padding-top: 1.75rem;
       padding-left: 0.75rem;
       padding-bottom: 2.25rem;
       @include props(padding-right, 7rem, $md: 9.5rem);

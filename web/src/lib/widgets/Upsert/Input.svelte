@@ -58,9 +58,9 @@
     width: 100%;
     height: $height;
 
-    // @include radius();
+    @include radius();
     @include bgcolor(neutral, 1);
-    @include border($color: neutral, $shade: 3, $sides: left-right);
+    @include border($color: neutral, $shade: 3);
   }
 
   .hanzi {

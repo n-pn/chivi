@@ -45,9 +45,9 @@
     top: 0;
     left: 0;
     width: 100%;
-    padding: 0.375rem 0.5rem;
+    padding: 0.25rem 0.5rem;
     font-style: italic;
-    height: 2rem;
+    height: 1.75rem;
     line-height: 1.25rem;
 
     @include flex();

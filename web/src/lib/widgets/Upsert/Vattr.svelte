@@ -28,7 +28,7 @@
     display: flex;
     position: absolute;
     right: 0.5rem;
-    top: 2.75rem;
+    top: 2.5rem;
     line-height: 1.5rem;
   }
 
