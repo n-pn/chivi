@@ -49,7 +49,7 @@
 <Vessel>
   <span slot="header-left" class="header-item _active">
     <SIcon name="layers" />
-    <span class="header-text">Tủ truyện của [{uname}]</span>
+    <span class="header-text _title">Tủ truyện của [{uname}]</span>
   </span>
   <div class="tabs">
     {#each mark_types as mtype}
@@ -99,19 +99,22 @@
   }
 
   .tab {
+    @include props(--pad, 0.25rem, 0.375rem, 0.5rem);
+
     font-weight: 500;
     text-transform: uppercase;
 
     line-height: 1rem;
     margin-top: 0.5rem;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
+
+    padding: var(--pad, 0.5rem);
+    margin-right: var(--pad, 0.5rem);
 
     @include truncate(null);
     @include border;
     @include fgcolor(neutral, 6);
 
-    @include props(padding, 0.25rem, 0.375rem, 0.5rem);
-    @include props(margin-right, 0.25rem, 0.375rem, 0.5rem);
     @include props(font-size, rem(10px), rem(12px), rem(13px), rem(14px));
 
     &:last-child {
@@ -125,6 +128,20 @@
 
     &._active {
       @include bdcolor($color: primary, $shade: 6);
+    }
+
+    @include dark {
+      @include bdcolor(neutral, 7);
+      @include fgcolor(neutral, 5);
+
+      &._active,
+      &:hover {
+        @include fgcolor(primary, 4);
+      }
+
+      &._active {
+        @include bdcolor(primary, 5);
+      }
     }
   }
 

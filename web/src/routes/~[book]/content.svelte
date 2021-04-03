@@ -326,7 +326,7 @@
     @include props(line-height, 1.5rem, 1.75rem, 2rem);
 
     .-name {
-      border-radius: 0.75rem;
+      border-radius: 0.5rem;
       padding: 0 0.75em;
       background-color: transparent;
 

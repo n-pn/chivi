@@ -212,13 +212,13 @@
     @include props(float, left, left, right);
     @include props(width, 100%, 100%, 70%, 75%);
     @include props(padding-left, 0, 0, 0.75rem);
-    @include props(line-height, 1.5rem, 1.75rem, 2rem);
 
     > .-main,
     > .-sub {
       font-weight: 400;
       display: inline-block;
       @include fgcolor(neutral, 8);
+      @include props(line-height, 1.5rem, 1.75rem, 2rem);
 
       @include dark {
         @include fgcolor(neutral, 2);
