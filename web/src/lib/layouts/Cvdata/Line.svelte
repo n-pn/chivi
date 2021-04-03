@@ -93,7 +93,8 @@
     cursor: pointer;
     position: relative;
 
-    &:hover {
+    &:hover,
+    &._focus {
       @include fgcolor($color, 6);
     }
 
@@ -101,28 +102,40 @@
       @include border($color: $color, $shade: 3, $sides: bottom);
     }
 
-    &._focus {
-      @include fgcolor($color, 6);
+    @include dark {
+      &:hover,
+      &._focus {
+        @include fgcolor($color, 5);
+      }
+
+      :global(.mtl):hover & {
+        @include bdcolor($color: $color, $shade: 3);
+      }
     }
   }
 
   .mtl {
-    :global(x-v) {
-      &[data-d='1'] {
-        @include mixed(teal);
-      }
+    @include fgcolor(neutral, 8);
+    @include dark {
+      @include fgcolor(neutral, 3);
+    }
+  }
 
-      &[data-d='2'] {
-        @include mixed(blue);
-      }
+  .mtl :global(x-v) {
+    &[data-d='1'] {
+      @include mixed(teal);
+    }
 
-      &[data-d='3'] {
-        @include mixed(green);
-      }
+    &[data-d='2'] {
+      @include mixed(blue);
+    }
 
-      &[data-d='9'] {
-        @include mixed(gray);
-      }
+    &[data-d='3'] {
+      @include mixed(green);
+    }
+
+    &[data-d='9'] {
+      @include mixed(gray);
     }
   }
 </style>

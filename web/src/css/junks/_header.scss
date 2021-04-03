@@ -1,5 +1,5 @@
-$header-height: 3rem;
-$header-inner-height: 2.25rem;
+$header-height: 2.75rem;
+$header-inner-height: 2rem;
 $header-gutter: ($header-height - $header-inner-height) / 2;
 
 .app-header {
@@ -19,6 +19,10 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   @include fgcolor(white);
   @include bgcolor(primary, 7);
   @include shadow(2);
+
+  .--dark & {
+    @include bgcolor(primary, 8);
+  }
 
   &._clear {
     // top: -$header-height;
@@ -57,10 +61,19 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   height: $header-inner-height;
   line-height: $header-inner-height;
 
+  border-radius: 0.5rem;
   @include fgcolor(neutral, 2);
   @include bgcolor(primary, 6);
 
-  @include radius();
+  .--dark & {
+    @include fgcolor(neutral, 3);
+    @include bgcolor(primary, 7);
+
+    &:hover,
+    &._active {
+      @include bgcolor(primary, 6);
+    }
+  }
 
   @include hover {
     @include bgcolor(primary, 5);
@@ -79,8 +92,8 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   img,
   svg {
     margin: 0.5rem 0;
-    width: 1.25rem !important;
-    height: 1.25rem !important;
+    width: 1rem !important;
+    height: 1rem !important;
 
     & + .header-text {
       margin-left: 0.25rem;
@@ -92,7 +105,8 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   text-transform: uppercase;
   font-weight: 500;
 
-  @include font-size(2);
+  font-size: rem(13px);
+  letter-spacing: 0.05rem;
 
   &._show-sm {
     @include props(display, none, $sm: inline-block);
@@ -103,7 +117,7 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   }
 
   ._brand & {
-    @include font-size(3);
+    font-size: rem(15px);
     letter-spacing: 0.1em;
   }
 

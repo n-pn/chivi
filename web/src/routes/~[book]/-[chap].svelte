@@ -254,16 +254,20 @@
     @include font-size(2);
     @include border($sides: bottom);
 
+    @include dark {
+      @include bdcolor(neutral, 7);
+    }
+
     .-crumb {
       display: inline;
       // float: left;
       @include fgcolor(neutral, 6);
+      @include dark {
+        @include fgcolor(neutral, 5);
+      }
 
       &._sep:after {
-        display: inline-block;
-        padding-left: 0.325em;
-        content: '>';
-        @include fgcolor(neutral, 4);
+        content: ' > ';
       }
     }
 
@@ -308,6 +312,25 @@
 
     strong {
       font-weight: 500;
+    }
+  }
+
+  .m-button {
+    @include dark {
+      @include fgcolor(neutral, 2);
+      @include bgcolor(neutral, 7, 0.4);
+
+      &:hover {
+        @include bgcolor(neutral, 7, 0.3);
+      }
+
+      &._primary {
+        @include bgcolor(primary, 7, 0.5);
+
+        &:hover {
+          @include bgcolor(primary, 7, 0.3);
+        }
+      }
     }
   }
 </style>

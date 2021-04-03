@@ -1,5 +1,4 @@
 <script>
-  export let bhash
   export let bcover
 </script>
 
@@ -7,9 +6,9 @@
   <picture>
     {#if bcover}
       <source srcset="/covers/{bcover}.webp" type="image/webp" />
-      <img alt={bhash} src="/covers/{bcover}" loading="lazy" />
+      <img alt="" src="/covers/{bcover}" loading="lazy" />
     {:else}
-      <img alt={bhash} src="/covers/_blank.png" />
+      <img alt="" src="/covers/_blank.png" />
     {/if}
   </picture>
 </div>

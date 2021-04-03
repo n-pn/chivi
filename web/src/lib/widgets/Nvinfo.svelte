@@ -86,6 +86,10 @@
     font-weight: 500;
     @include fgcolor(neutral, 7);
 
+    :global(.--dark) & {
+      @include fgcolor(neutral, 3);
+    }
+
     .book:hover & {
       @include fgcolor(primary, 5);
     }

@@ -212,13 +212,17 @@
     @include props(float, left, left, right);
     @include props(width, 100%, 100%, 70%, 75%);
     @include props(padding-left, 0, 0, 0.75rem);
+    @include props(line-height, 1.5rem, 1.75rem, 2rem);
 
     > .-main,
     > .-sub {
-      @include fgcolor(neutral, 8);
-      display: inline-block;
       font-weight: 400;
-      @include props(line-height, 1.5rem, 1.75rem, 2rem);
+      display: inline-block;
+      @include fgcolor(neutral, 8);
+
+      @include dark {
+        @include fgcolor(neutral, 2);
+      }
     }
 
     > .-main {
@@ -251,6 +255,10 @@
     @include fgcolor(neutral, 6);
     @include flex($wrap: true);
     @include flex-gap($gap: 0, $child: ':global(*)');
+
+    @include dark {
+      @include fgcolor(neutral, 4);
+    }
   }
 
   .stat {
@@ -269,6 +277,10 @@
     &._outer,
     &:hover {
       @include fgcolor(primary, 6);
+
+      @include dark {
+        @include fgcolor(primary, 4);
+      }
     }
   }
 
@@ -292,6 +304,10 @@
 
     @include shadow(2);
 
+    @include dark {
+      @include bgcolor(neutral, 7, 0.5);
+    }
+
     @include screen-min(md) {
       margin: 0.75rem 0;
       padding-left: 1rem;
@@ -302,9 +318,13 @@
 
   $section-height: 3rem;
   .section-header {
-    height: $section-height;
     display: flex;
+    height: $section-height;
     @include border($sides: bottom, $color: neutral, $shade: 3);
+
+    @include dark {
+      @include bdcolor(neutral, 6);
+    }
   }
 
   .header-tab {
@@ -324,6 +344,15 @@
     &._active {
       @include fgcolor(primary, 6);
       @include border($sides: bottom, $color: primary, $shade: 5, $width: 2px);
+    }
+
+    @include dark {
+      @include fgcolor(neutral, 4);
+
+      &._active {
+        @include fgcolor(primary, 3);
+        @include bdcolor(primary, 3);
+      }
     }
   }
 

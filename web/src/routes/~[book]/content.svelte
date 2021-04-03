@@ -328,7 +328,7 @@
     .-name {
       border-radius: 0.75rem;
       padding: 0 0.75em;
-      background-color: #fff;
+      background-color: transparent;
 
       @include label();
       @include border();
@@ -338,6 +338,16 @@
       &._active {
         @include fgcolor(primary, 5);
         @include bdcolor(primary, 5);
+      }
+
+      @include dark {
+        @include bdcolor(neutral, 6);
+        @include fgcolor(neutral, 3);
+
+        &._active {
+          @include fgcolor(primary, 4);
+          @include bdcolor(primary, 4);
+        }
       }
     }
   }
@@ -361,6 +371,14 @@
 
     .m-button {
       margin-left: 0.25rem;
+
+      @include dark {
+        @include bgcolor(neutral, 8, 0.4);
+        @include fgcolor(neutral, 2);
+        &:hover {
+          @include bgcolor(neutral, 8, 0.3);
+        }
+      }
     }
 
     .-text {
@@ -368,6 +386,11 @@
       @include label();
       @include fgcolor(neutral, 7);
       @include border($sides: left, $width: 3px, $color: primary, $shade: 5);
+
+      @include dark {
+        @include fgcolor(neutral, 4);
+        @include bdcolor(primary, 4);
+      }
     }
 
     .-span {
@@ -427,6 +450,19 @@
     &[data-level='4'],
     &[data-level='5'] {
       @include props(display, none, $lg: inline-block);
+    }
+
+    @include dark {
+      @include fgcolor(neutral, 2);
+      @include bgcolor(neutral, 8, 0.4);
+
+      &:hover {
+        @include bgcolor(neutral, 6, 0.3);
+      }
+
+      &._primary {
+        @include bgcolor(primary, 7);
+      }
     }
   }
 

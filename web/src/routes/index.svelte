@@ -196,11 +196,22 @@
       @include fgcolor(neutral, 6);
 
       @include border();
-      @include radius(9);
+      border-radius: 0.5rem;
 
-      &._active {
+      &._active,
+      &:hover {
         @include fgcolor(primary, 6);
         @include bdcolor($color: primary, $shade: 5);
+      }
+
+      @include dark {
+        @include fgcolor(neutral, 4);
+        @include bdcolor(neutral, 7);
+
+        &._active,
+        &:hover {
+          @include fgcolor(primary, 4);
+        }
       }
     }
   }
@@ -238,6 +249,15 @@
     &[data-level='4'],
     &[data-level='5'] {
       @include props(display, $lg: inline-block);
+    }
+
+    @include dark {
+      @include fgcolor(neutral, 2);
+      @include bgcolor(neutral, 7);
+
+      &._primary {
+        @include bgcolor(primary, 7);
+      }
     }
   }
 

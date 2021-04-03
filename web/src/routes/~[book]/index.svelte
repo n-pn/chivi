@@ -25,11 +25,21 @@
 </Book>
 
 <style lang="scss">
+  h2 {
+    :global(.--dark) & {
+      @include fgcolor(neutral, 5);
+    }
+  }
+
   .intro {
+    word-wrap: break-word;
     @include fgcolor(neutral, 7);
     // @include props(padding, $md: 0 0.75rem);
     @include props(font-size, rem(15px), rem(16px), rem(17px));
-    word-wrap: break-word;
+
+    :global(.--dark) & {
+      @include fgcolor(neutral, 3);
+    }
 
     &._short {
       height: 20rem;

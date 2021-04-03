@@ -35,6 +35,11 @@
   .item {
     display: block;
     @include border($sides: bottom);
+    $bg-dark: color(neutral, 8, 0.5);
+
+    @include dark {
+      border-color: color(neutral, 6, 0.5) !important;
+    }
 
     &:first-child {
       @include border($sides: top);
@@ -42,6 +47,9 @@
 
     &:nth-child(odd) {
       @include bgcolor(neutral, 1);
+      @include dark {
+        background: $bg-dark;
+      }
     }
 
     @include screen-min(md) {
@@ -52,11 +60,17 @@
       &:nth-child(4n),
       &:nth-child(4n + 1) {
         @include bgcolor(neutral, 1);
+        @include dark {
+          background: $bg-dark;
+        }
       }
 
       &:nth-child(4n + 2),
       &:nth-child(4n + 3) {
         background-color: #fff;
+        @include dark {
+          @include bgcolor(neutral, 7, 0.5);
+        }
       }
     }
   }
@@ -67,39 +81,40 @@
   }
 
   .text {
-    @include flex();
+    display: flex;
     line-height: 1.5rem;
   }
 
-  .title {
-    flex: 1;
-    @include fgcolor(neutral, 8);
-    @include truncate(null);
-
-    .link:visited & {
-      @include fgcolor(neutral, 6, 0.6);
-    }
-
-    .link:hover & {
-      @include fgcolor(primary, 5);
-    }
-  }
-
   .meta {
+    display: flex;
     padding: 0;
     height: 1rem;
     line-height: 1rem;
     margin-top: 0.25rem;
     text-transform: uppercase;
-
-    @include flex();
     @include font-size(1);
   }
 
-  .label {
+  .title {
     flex: 1;
-    @include fgcolor(neutral, 5, 0.8);
     @include truncate(null);
+    @include fgcolor(neutral, 8);
+
+    @include dark {
+      @include fgcolor(neutral, 4);
+    }
+
+    .link:visited & {
+      @include fgcolor(neutral, 6, 0.6);
+
+      @include dark {
+        @include fgcolor(neutral, 5, 0.6);
+      }
+    }
+
+    .link:hover & {
+      @include fgcolor(primary, 5);
+    }
   }
 
   .chidx {
@@ -117,6 +132,12 @@
     &:after {
       content: '.';
     }
+  }
+
+  .label {
+    flex: 1;
+    @include fgcolor(neutral, 5, 0.8);
+    @include truncate(null);
   }
 
   .empty {

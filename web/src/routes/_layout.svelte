@@ -1,6 +1,6 @@
 <script>
   import { get_self } from '$api/viuser_api'
-  import { u_dname, u_power, l_scroll } from '$src/stores'
+  import { u_dname, u_power, l_scroll, dark_mode } from '$src/stores'
   import Loader from '$lib/layouts/Loader.svelte'
 
   const links = [
@@ -52,16 +52,17 @@
 
 <svelte:window on:scroll={track_scrolling} />
 
-<div class="main" on:click={disable_router_unless_vip}>
+<div class="app" class:--dark={$dark_mode} on:click={disable_router_unless_vip}>
   <slot />
-</div>
 
-<div class="links">
-  <span> Liên kết: </span>
+  <div class="links">
+    <span> Liên kết: </span>
 
-  {#each links as [text, href]}
-    <a {href} class="-link" target="_blank" rel="noreferer noopener">{text}</a>
-  {/each}
+    {#each links as [text, href]}
+      <a {href} class="-link" target="_blank" rel="noreferer noopener"
+        >{text}</a>
+    {/each}
+  </div>
 </div>
 
 <Loader active={$preloading} />
@@ -73,8 +74,12 @@
     min-height: 100%;
   }
 
-  .main {
+  .app {
     height: 100%;
+
+    &.--dark {
+      background: color(neutral, 8);
+    }
   }
 
   .links {
@@ -83,9 +88,15 @@
     padding: 0.75rem;
 
     @include font-size(2);
+    @include border($sides: top);
     @include fgcolor(neutral, 6);
     @include bgcolor(neutral, 2);
-    @include border($sides: top);
+
+    .--dark & {
+      @include fgcolor(neutral, 4);
+      @include bgcolor(neutral, 8);
+      @include bdcolor(neutral, 7);
+    }
   }
 
   .-link {

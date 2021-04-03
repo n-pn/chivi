@@ -25,3 +25,15 @@
 @import 'molds/icons.d';
 @import 'molds/inputs.d';
 @import 'molds/resets.d';
+
+@mixin dark($kit: true) {
+  @if $kit {
+    :global(.--dark) & {
+      @content;
+    }
+  } @else {
+    .--dark & {
+      @content;
+    }
+  }
+}
