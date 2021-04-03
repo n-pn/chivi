@@ -27,6 +27,7 @@ module CV::NvAuthor
   class_getter zh_names : Set(String) do
     names = Set(String).new
     _index.data.each_value { |vals| names.add(vals[0]) }
+
     names
   end
 
