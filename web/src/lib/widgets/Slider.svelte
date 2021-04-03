@@ -75,6 +75,7 @@
 
     top: 0;
     width: var(--width);
+    overflow-y: auto;
     max-width: 90vw;
     height: 100vh;
     z-index: 1001;
@@ -120,6 +121,7 @@
     top: 0;
     z-index: 1002;
 
+    background: #fff;
     height: $hd-height;
     line-height: $hd-line-height;
     padding: 0.375rem 0.75rem;
@@ -157,12 +159,5 @@
         @include bgcolor(neutral, 2);
       }
     }
-  }
-
-  .body {
-    height: 100%;
-    overflow-y: auto;
-    padding: 0 0.75rem;
-    // min-height: calc(100vh - 3rem);
   }
 </style>

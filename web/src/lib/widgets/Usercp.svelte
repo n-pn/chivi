@@ -82,7 +82,7 @@
 
   .label {
     @include flex();
-    margin: 0.25rem -0.375rem;
+    margin: 0.25rem 0.375rem;
     padding: 0 0.5rem;
 
     line-height: 2.25rem;
@@ -105,7 +105,9 @@
 
   .chips {
     display: flex;
-    padding-top: 1rem;
+    padding: 0.75rem;
+    padding-bottom: 0;
+
     @include props(font-size, 12px, 12px, 13px);
   }
 
@@ -143,6 +145,7 @@
 
   .chap {
     display: block;
+    margin: 0 0.75rem;
     @include border($sides: bottom);
 
     padding: 0.375rem 0.5rem;
