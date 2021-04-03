@@ -9,7 +9,7 @@ class CV::FixIntros
   def fix!
     bhashes = NvFields.bhashes
     bhashes.each_with_index(1) do |bhash, idx|
-      yintro, bintro = nil, nil
+      yintro = bintro = fintro = nil
 
       if ynvid = NvFields.yousuu.fval(bhash)
         yintro = get_intro("yousuu", ynvid)
@@ -27,7 +27,10 @@ class CV::FixIntros
         next unless seed = NvChseed.get_seed(sname, bhash)
         bintro = get_intro(sname, seed[0])
         break if bintro.size > 1
+        fintro ||= bintro
       end
+
+      bintro ||= yintro || fintro
 
       NvBintro.set!(bhash, bintro, force: true) if bintro
 

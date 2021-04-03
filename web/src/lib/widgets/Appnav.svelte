@@ -25,7 +25,7 @@
 
     <div class="chips">
       {#each Object.entries(order_names) as [name, text]}
-        <a href="/?order={name}" class="-chip">
+        <a href="/?order={name}" class="_chip">
           {text}
         </a>
       {/each}
@@ -40,7 +40,7 @@
 
     <div class="chips">
       {#each genres as genre}
-        <a href="/?genre={genre}" class="-chip _teal">
+        <a href="/?genre={genre}" class="_chip -teal">
           {genre}
         </a>
       {/each}
@@ -55,7 +55,7 @@
 
     <div class="chips">
       {#each snames as sname}
-        <a href="/?sname={sname}" class="-chip _indigo">
+        <a href="/?sname={sname}" class="_chip -indigo">
           {sname}
         </a>
       {/each}
@@ -86,8 +86,9 @@
     margin: 0 -0.5rem;
     margin-bottom: 0.25rem;
     padding: 0 0.5rem;
-    text-transform: uppercase;
-    @include font-size(2);
+    // text-transform: uppercase;
+
+    font-size: rem(15px);
     @include fgcolor(neutral, 6);
 
     :global(svg) {
@@ -110,40 +111,37 @@
     @include props(line-height, 1.5rem, 1.75rem);
   }
 
-  .-chip {
-    float: left;
-    border-radius: 0.75rem;
-    padding: 0 0.75em;
-    @include label();
+  ._chip {
+    --color: #{color(primary, 6)};
+    --hover: #{color(primary, 5)};
 
-    background-color: #fff;
-    @include fgcolor(primary, 6);
-    @include border($color: primary, $shade: 5);
+    float: left;
+    border-radius: 8px;
+    padding: 0 0.75em;
+
+    background-color: transparent;
+    border: 1px solid var(--hover);
+
+    @include label();
+    color: var(--color);
+    // letter-spacing: 0.05em;
 
     @include props(margin-top, 0.25rem, 0.375rem);
     @include props(margin-left, 0.25rem, 0.375rem);
 
+    &.-indigo {
+      --color: #{color(indigo, 6)};
+      --hover: #{color(indigo, 5)};
+    }
+
+    &.-teal {
+      --color: #{color(teal, 6)};
+      --hover: #{color(teal, 5)};
+    }
+
     &:hover {
-      @include bgcolor($color: primary, $shade: 5);
       color: #fff;
-    }
-
-    &._indigo {
-      @include fgcolor(indigo, 6);
-      @include bdcolor($color: indigo, $shade: 5);
-      &:hover {
-        @include bgcolor($color: indigo, $shade: 5);
-        color: #fff;
-      }
-    }
-
-    &._teal {
-      @include fgcolor(teal, 6);
-      @include bdcolor($color: teal, $shade: 5);
-      &:hover {
-        @include bgcolor($color: teal, $shade: 5);
-        color: #fff;
-      }
+      background: var(--hover);
     }
   }
 </style>
