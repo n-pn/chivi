@@ -11,11 +11,9 @@ FileUtils.mkdir_p(DLPG_DIR)
 FileUtils.mkdir_p(TEXT_DIR)
 
 def dlpg_link(snvid : Int32) : String
-  "http://www.zxcs.me/download.php?id=#{snvid}"
 end
 
 def html_file(snvid : Int32) : String
-  File.join DLPG_DIR, "#{snvid}.html"
 end
 
 def chap_file(snvid : Int32) : String
@@ -62,7 +60,10 @@ def fetch_files(lower = 1, upper = 12092) : Nil
 
     mark = "#{idx}/#{queue.size}"
 
-    html = load_html(dlpg_link(snvid), html_file(snvid), mark)
+    dlpg_link = "http://www.zxcs.me/download.php?id=#{snvid}"
+    html_file = File.join(DLPG_DIR, "#{snvid}.html")
+
+    html = load_html(dlpg_link, html_file(snvid), mark)
     urls = extract_dll(html)
     next if urls.empty?
 

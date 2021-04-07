@@ -30,6 +30,8 @@ class Seeds::YsSerial
       inbox = Channel(String?).new(limit)
 
       queue.each_with_index(1) do |snvid, idx|
+        return if @http.no_proxy?
+
         spawn do
           label = "<#{idx}/#{queue.size}> [#{snvid}]"
           inbox.send(crawl_info!(snvid, label: label))

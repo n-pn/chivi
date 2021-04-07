@@ -26,6 +26,8 @@ class Seeds::YsReview
       inbox = Channel(String?).new(limit)
 
       queue.each_with_index(1) do |snvid, idx|
+        return if @http.no_proxy?
+
         spawn do
           label = "(#{page}) <#{idx}/#{queue.size}> [#{snvid}]"
           inbox.send(crawl_crit!(snvid, page, label: label))
