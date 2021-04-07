@@ -6,7 +6,7 @@ require "http/client"
 module CV::HttpUtils
   extend self
 
-  def get_html(url : String, encoding : String, label = "1/1") : String
+  def get_html(url : String, encoding : String = "UTF-8", label = "1/1") : String
     try = 0
     internal = use_crystal?(url)
 

@@ -1,12 +1,13 @@
 require "file_utils"
+require "compress/gzip"
 require "myhtml"
 
 require "../../../src/utils/http_utils"
 
-DLPG_DIR = File.join("_db/_seeds/zxcs_me/htmls/dlpgs")
-FileUtils.mkdir_p(DLPG_DIR)
+DLPG_DIR = File.join("_db/.cache/zxcs_me/htmls/dlpgs")
+TEXT_DIR = File.join("_db/.cache/zxcs_me/texts/batch")
 
-TEXT_DIR = File.join("_db/_seeds/zxcs_me/texts/batch")
+FileUtils.mkdir_p(DLPG_DIR)
 FileUtils.mkdir_p(TEXT_DIR)
 
 def dlpg_link(snvid : Int32) : String

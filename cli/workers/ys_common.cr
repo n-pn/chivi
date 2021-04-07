@@ -52,7 +52,7 @@ class Client
   end
 
   def save!(link : String, file : String, label : String) : Bool
-    unless proxy = @proxies.pop
+    unless proxy = @proxies.pop?
       puts " - Out of proxy, aborting!".colorize.red
       return false
     end
@@ -81,7 +81,7 @@ class Client
   end
 
   def add_proxy(proxy : Proxy, append = true)
-    append ? @proxies.push(proxy) : @proxies.unshift(proxy)
+    append || @proxies.empty? ? @proxies.push(proxy) : @proxies.unshift(proxy)
   end
 
   def no_proxy?
