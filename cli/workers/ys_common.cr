@@ -57,7 +57,7 @@ class Client
       exit(0)
     end
 
-    body = `curl -s -L -x #{proxy.host} -m 30 "#{link}"`
+    body = `curl -s -L -x #{proxy.host} -m 60 "#{link}"`
 
     case body
     when .starts_with?("{\"success"), .includes?("未找到该图书")
@@ -74,7 +74,7 @@ class Client
     else
       puts "- #{label} failed, remain proxies: #{@proxies.size}".colorize.yellow
       proxy.fail += 1
-      add_proxy(proxy, append: proxy.succ == 0) if proxy.fail < 3
+      add_proxy(proxy, append: proxy.succ == 0) if proxy.fail < 4
 
       false
     end
