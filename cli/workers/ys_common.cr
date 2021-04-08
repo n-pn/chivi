@@ -54,7 +54,7 @@ class Client
   def save!(link : String, file : String, label : String) : Bool
     unless proxy = @proxies.pop?
       puts " - Out of proxy, aborting!".colorize.red
-      return false
+      exit(0)
     end
 
     body = `curl -s -L -x #{proxy.host} -m 30 "#{link}"`
