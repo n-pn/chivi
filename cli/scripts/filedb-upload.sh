@@ -2,7 +2,7 @@
 
 SSH=nipin@ssh.chivi.xyz:srv/chivi.xyz
 
-# ## upload dicts
+## upload dicts
 rsync -azi "_db/vp_dicts/active/" "$SSH/_db/vp_dicts/remote/"
 rsync -azi "_db/vp_dicts/active" "$SSH/_db/vp_dicts"
 

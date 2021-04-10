@@ -27,7 +27,7 @@ class CV::FixIntros
         next unless seed = NvChseed.get_seed(sname, bhash)
         bintro = get_intro(sname, seed[0])
         break if bintro.size > 1
-        fintro ||= bintro
+        fintro ||= bintro unless bintro.empty?
       end
 
       bintro ||= yintro || fintro
