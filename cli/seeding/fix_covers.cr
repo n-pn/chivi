@@ -60,7 +60,12 @@ class CV::Seeds::FixCovers
 
       unless out_file.ends_with?(".webp")
         out_webp = out_file + ".webp"
-        `convert "#{out_file}" -resize "320x>" "#{out_webp}"` unless File.exists?(out_webp)
+        next if File.exists?(out_webp)
+        if out_file.ends_with?(".gif")
+          `gif2webp "#{out_file}" -o "#{out_webp}"`
+        else
+          `convert "#{out_file}" -resize "320x>" "#{out_webp}"`
+        end
       end
     rescue err
       puts err
