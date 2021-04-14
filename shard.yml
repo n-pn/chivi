@@ -8,7 +8,7 @@ targets:
   map_zhwenpg:
     main: cli/seeding/map_zhwenpg.cr
 
-  map_workers:
+  map_yousuu:
     main: cli/seeding/map_yousuu.cr
 
   map_remote:

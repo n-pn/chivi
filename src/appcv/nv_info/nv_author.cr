@@ -25,10 +25,7 @@ module CV::NvAuthor
   end
 
   class_getter zh_names : Set(String) do
-    names = Set(String).new
-    _index.data.each_value { |vals| names.add(vals[0]) }
-
-    names
+    Set(String).new(_index.data.each_value.map(&.[0]))
   end
 
   def exists?(zh_name : String)

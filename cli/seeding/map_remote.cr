@@ -141,7 +141,7 @@ class CV::Seeds::MapRemote
     input.each_with_index(1) do |(tuple, snvid), idx|
       btitle, author = tuple
 
-      if @sname == "hetushu" || NvAuthor.exists?(author)
+      if qualified?(author, btitle)
         bhash, _, _ = @meta.upsert!(snvid, fixed: true)
         if NvOrders.get_voters(bhash) == 0
           NvOrders.set_scores!(bhash, Random.rand(10..30), Random.rand(50..70))
@@ -159,6 +159,14 @@ class CV::Seeds::MapRemote
     end
 
     NvInfo.save!(clean: false)
+  end
+
+  def qualified?(author : String, btitle : String)
+    return true if @sname == "hetushu"
+    return false unless NvAuthor.exists?(author)
+    # 5200 has many duplicate entries, this is a temporary fix
+    # TODO: also detect duplicate entries for other sources and remove them
+    @sname == "5200" ? NvBtitle.exists?(btitle) : true
   end
 
   def self.run!(argv = ARGV)

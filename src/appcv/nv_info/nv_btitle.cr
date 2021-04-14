@@ -26,6 +26,14 @@ module CV::NvBtitle
     _index.set!(bname, [zh_name, hv_name, vi_name])
   end
 
+  class_getter zh_names : Set(String) do
+    Set(String).new(_index.data.each_value.map(&.[0]))
+  end
+
+  def exists?(zh_name : String)
+    zh_names.includes?(zh_name)
+  end
+
   def filter(inp : String, prevs : Set(String)? = nil)
     tsv = TextUtils.tokenize(inp)
     res = inp =~ /\p{Han}/ ? map_zh.keys(tsv) : map_hv.keys(tsv) + map_vi.keys(tsv)
