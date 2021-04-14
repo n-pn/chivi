@@ -11,6 +11,10 @@ require "../../src/appcv/ch_info"
 
 class CV::Seeding
   def self.get_atime(file : String) : Int64?
+    get_mtime(file + ".gz") || get_mtime(file)
+  end
+
+  def self.get_mtime(file : String)
     File.info?(file).try(&.modification_time.to_unix)
   end
 

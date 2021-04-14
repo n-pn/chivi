@@ -120,7 +120,7 @@ class CV::Seeds::MapRemote
 
   private def access_time(snvid : String) : Int64?
     file = RmSpider.nvinfo_file(@sname, snvid)
-    Seeding.get_atime(file + ".gz") || Seeding.get_atime(file)
+    Seeding.get_atime(file)
   end
 
   def seed!(mode = 0)
