@@ -1,27 +1,21 @@
 require "./_route_utils"
-require "../appcv/vi_user"
 
 module CV::Server
   module RouteUtils
-    def self.user_res(env, u_dname : String, u_power : Int32? = nil, cached : Bool = false)
-      u_power ||= ViUser.upower.ival(u_dname.downcase)
+    def self.user_res(env, uname : String, cached : Bool = false)
+      env.session.string("uname", uname) unless cached
 
-      unless cached
-        env.session.string("u_dname", u_dname)
-        env.session.int("u_power", u_power)
-      end
-
-      json_res(env, {dname: u_dname, power: u_power})
+      power = ViUser.get_power(uname)
+      json_res(env, {dname: uname, power: power})
     end
   end
 
   get "/api/_self" do |env|
-    u_dname = env.session.string("u_dname")
-    u_power = env.session.int("u_power")
-
-    RouteUtils.user_res(env, u_dname, u_power, cached: true)
-  rescue err
-    RouteUtils.user_res(env, "Khách", 0, cached: true)
+    if uname = env.session.string?("uname")
+      RouteUtils.user_res(env, uname, cached: true)
+    else
+      RouteUtils.json_res(env, {dname: "Khách", power: 0})
+    end
   end
 
   get "/api/logout" do |env|
@@ -34,9 +28,8 @@ module CV::Server
     upass = env.params.json.fetch("upass", "").as(String).strip
 
     if uname = CV::ViUser.validate(email, upass)
-      u_dname = ViUser._index.fval(uname).not_nil!
-      u_power = ViUser.upower.ival(uname).not_nil!
-      RouteUtils.user_res(env, u_dname, u_power, cached: false)
+      dname = ViUser._index.fval(uname).not_nil!
+      RouteUtils.user_res(env, dname, cached: false)
     else
       halt env, status_code: 403, response: "Thông tin đăng nhập không chính xác."
     end

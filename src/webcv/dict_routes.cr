@@ -103,15 +103,15 @@ module CV::Server
   end
 
   put "/api/dicts/:dname/upsert" do |env|
-    u_power = env.session.int?("u_power") || 0
+    uname = env.session.string?("uname") || "Khách"
+
+    u_power = ViUser.get_power(uname)
     halt env, status_code: 500, response: "Access denied!" if u_power < 1
 
     power = env.params.json.fetch("power", u_power).as(Int64).to_i8
     power = u_power.to_i8 if power > u_power
 
-    uname = env.session.string?("u_dname") || "Khách"
     dname = env.params.url["dname"]
-
     dict = Vdict.load(dname)
 
     key = env.params.json["key"].as(String).strip
@@ -122,10 +122,9 @@ module CV::Server
 
     new_term = Vterm.new(key, vals, prio, attr, uname: uname, power: power, dtype: dict.dtype)
 
+    halt env, status_code: 501, response: "Unchanged!" unless dict.set!(new_term)
+
     # TODO: save context
-    unless dict.set!(new_term)
-      halt env, status_code: 501, response: "Unchanged!"
-    end
 
     if dict.dtype == 3 # unique dict
       # add to quick translation dict if entry is a name

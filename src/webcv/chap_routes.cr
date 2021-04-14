@@ -1,6 +1,4 @@
 require "./_route_utils"
-require "../appcv/nv_info"
-require "../appcv/ch_info"
 
 module CV::Server
   module Utils

@@ -1,7 +1,4 @@
 require "./_route_utils"
-require "../appcv/nv_info"
-require "../appcv/ch_info"
-require "../appcv/vi_mark"
 
 module CV::Server
   get "/api/@:uname/books" do |env|
@@ -12,7 +9,7 @@ module CV::Server
   end
 
   get "/api/mark-books/:bname" do |env|
-    if uname = env.session.string?("u_dname").try(&.downcase)
+    if uname = env.session.string?("uname").try(&.downcase)
       bname = env.params.url["bname"]
       bmark = ViMark.book_map(uname).fval(bname) || ""
     end
@@ -21,7 +18,7 @@ module CV::Server
   end
 
   put "/api/mark-books/:bname" do |env|
-    unless uname = env.session.string?("u_dname").try(&.downcase)
+    unless uname = env.session.string?("uname").try(&.downcase)
       halt env, status_code: 403, response: "user not logged in!"
     end
 
@@ -33,7 +30,7 @@ module CV::Server
   end
 
   get "/api/mark-chaps" do |env|
-    unless uname = env.session.string?("u_dname").try(&.downcase)
+    unless uname = env.session.string?("uname").try(&.downcase)
       halt env, status_code: 403, response: "user not logged in!"
     end
 

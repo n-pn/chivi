@@ -11,11 +11,18 @@ module CV::Server::RouteUtils
     int > max ? max : int > min ? int : min
   end
 
+  def get_power(env)
+    return 0 unless uname = env.session.string?("dname")
+    ViUser.get_power(uname)
+  end
+
   def get_privi(env)
-    u_power = env.session.int?("u_power") || 0
+    power = get_power(env)
+
     mode = env.params.query["mode"]?.try(&.to_i?) || 0
-    mode = u_power if mode > u_power
-    {u_power, mode}
+    mode = power if mode > power
+
+    {power, mode}
   end
 
   def json_res(env, data, cached = 0)

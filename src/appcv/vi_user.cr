@@ -37,6 +37,12 @@ module CV::ViUser
     upower.set!(uname, power)
   end
 
+  POWERS = {} of String => Int32
+
+  def get_power(uname : String)
+    POWERS[uname] ||= upower.ival(uname.downcase)
+  end
+
   def save!(clean : Bool = false)
     @@_index.try(&.save!(clean: clean))
 

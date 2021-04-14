@@ -1,5 +1,4 @@
 require "./_route_utils"
-require "../appcv/vi_mark"
 
 module CV::Server
   get "/api/books" do |env|
@@ -13,9 +12,11 @@ module CV::Server
       halt env, status_code: 404, response: "Book not found!"
     end
 
-    access = Time.utc.to_unix // 60
-    NvOrders.set_access!(bhash, access, force: true)
-    spawn { NvOrders.access.save!(clean: false) }
+    if uname = env.session.string?("uname")
+      access = Time.utc.to_unix // 60
+      NvOrders.set_access!(bhash, access, force: true)
+      spawn { NvOrders.access.save!(clean: false) }
+    end
 
     RouteUtils.json_res(env) do |res|
       nvinfo = NvInfo.load(bhash)

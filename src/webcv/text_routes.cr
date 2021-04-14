@@ -1,10 +1,5 @@
 require "./_route_utils"
 
-require "../appcv/nv_info"
-require "../appcv/ch_info"
-require "../appcv/ch_text"
-require "../appcv/vi_mark"
-
 module CV::Server
   get "/api/texts/:bname/:sname/:snvid/:chidx" do |env|
     bname = env.params.url["bname"]
@@ -21,7 +16,7 @@ module CV::Server
 
     chidx, infos = curr_chap
 
-    if uname = env.session.string?("u_dname").try(&.downcase)
+    if uname = env.session.string?("uname").try(&.downcase)
       ViMark.mark_chap(uname, bname, sname, chidx, infos[1], infos[3])
     end
 
@@ -52,13 +47,10 @@ module CV::Server
     chidx = env.params.url["chidx"].to_i
     schid = env.params.url["schid"]
 
-    u_power = env.session.int?("u_power") || 0
-    mode = env.params.query["mode"]?.try(&.to_i?) || 0
-    mode = u_power if mode > u_power
-
     chtext = ChText.load(bname, sname, snvid, chidx - 1, schid)
-
     env.response.content_type = "text/plain; charset=utf-8"
+
+    u_power, mode = RouteUtils.get_privi(env)
     chtext.get_cv!(u_power, mode: mode)
   rescue err
     puts "- Error loading chap_text: #{err}"
@@ -67,7 +59,7 @@ module CV::Server
   end
 
   put "/api/texts/:bname/:sname/:snvid" do |env|
-    u_power = env.session.int?("u_power") || 0
+    u_power = RouteUtils.get_power(env)
     halt env, status_code: 500, response: "Access denied!" if u_power < 2
 
     bname = env.params.url["bname"]
