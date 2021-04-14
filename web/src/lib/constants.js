@@ -59,6 +59,8 @@ export const genres = [
 export const snames = [
   '5200',
   'bqg_5200',
+  'biqubao',
+  'bxwxorg',
   'hetushu',
   'rengshu',
   'xbiquge',
