@@ -11,26 +11,30 @@ module CV::Server::RouteUtils
     int > max ? max : int > min ? int : min
   end
 
+  def get_uname(env)
+    env.session.string?("uname")
+  end
+
   def get_power(env)
-    return 0 unless uname = env.session.string?("dname")
-    ViUser.get_power(uname)
+    get_uname(env).try { |uname| ViUser.get_power(uname) } || 0
   end
 
   def get_privi(env)
-    power = get_power(env)
+    mode = env.params.query.fetch("mode", "0").to_i? || 0
 
-    mode = env.params.query["mode"]?.try(&.to_i?) || 0
+    power = get_power(env)
     mode = power if mode > power
 
     {power, mode}
   end
 
-  def json_res(env, data, cached = 0)
-    json_res(env, cached: cached) { |res| data.to_json(res) }
+  def json_res(env, data, ttl = 0, etag = "")
+    json_res(env, ttl: ttl, etag: etag) { |res| data.to_json(res) }
   end
 
-  def json_res(env, cached = 0)
-    env.response.headers.add("ETag", cached.to_s) if cached > 0
+  def json_res(env, ttl = 0, etag = "")
+    env.response.headers.add("Cache-Control", "min-fresh=#{ttl * 60}") if ttl > 0
+    env.response.headers.add("ETag", etag) unless etag.empty?
     env.response.content_type = "application/json"
     yield env.response
   end
@@ -42,7 +46,7 @@ module CV::Server::RouteUtils
     order = env.params.query["order"]? || "weight"
     total = matched ? matched.size : NvOrders.get(order).size
 
-    json_res(env) do |res|
+    json_res(env, ttl: 3) do |res|
       JSON.build(res) do |json|
         json.object do
           json.field "total", total

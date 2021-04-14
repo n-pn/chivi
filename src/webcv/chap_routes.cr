@@ -35,7 +35,7 @@ module CV::Server
       _, mtime, total = nvinfo.get_chseed(sname)
     end
 
-    RouteUtils.json_res(env) do |res|
+    RouteUtils.json_res(env, ttl: 2) do |res|
       JSON.build(res) do |json|
         json.object do
           json.field "total", total
@@ -61,7 +61,7 @@ module CV::Server
     skip = RouteUtils.parse_int(env.params.query["skip"]?, min: 0)
     chinfo = ChInfo.load(bhash, sname, snvid)
 
-    RouteUtils.json_res(env) do |res|
+    RouteUtils.json_res(env, ttl: 3) do |res|
       JSON.build(res) do |json|
         json.array do
           chinfo.each(from: skip, upto: skip + 30) do |chidx, infos|

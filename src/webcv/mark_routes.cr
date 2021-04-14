@@ -4,21 +4,22 @@ module CV::Server
   get "/api/@:uname/books" do |env|
     uname = env.params.url["uname"].downcase
     bmark = env.params.query["bmark"]? || "reading"
+
     matched = ViMark.all_books(uname, bmark)
     RouteUtils.books_res(env, matched)
   end
 
   get "/api/mark-books/:bname" do |env|
-    if uname = env.session.string?("uname").try(&.downcase)
+    if uname = RouteUtils.get_uname(env).try(&.downcase)
       bname = env.params.url["bname"]
       bmark = ViMark.book_map(uname).fval(bname) || ""
     end
 
-    RouteUtils.json_res(env, {bmark: bmark || ""})
+    RouteUtils.json_res(env, {bmark: bmark || ""}, ttl: 1)
   end
 
   put "/api/mark-books/:bname" do |env|
-    unless uname = env.session.string?("uname").try(&.downcase)
+    unless uname = RouteUtils.get_uname(env).try(&.downcase)
       halt env, status_code: 403, response: "user not logged in!"
     end
 
@@ -30,7 +31,7 @@ module CV::Server
   end
 
   get "/api/mark-chaps" do |env|
-    unless uname = env.session.string?("uname").try(&.downcase)
+    unless uname = RouteUtils.get_uname(env).try(&.downcase)
       halt env, status_code: 403, response: "user not logged in!"
     end
 
@@ -42,10 +43,9 @@ module CV::Server
     iter = chap_mark._idx.reverse_each
     skip.times { break unless iter.next }
 
-    env.response.headers.add("Cache-Control", "min-fresh=300")
-    env.response.headers.add("ETag", iter.try(&.curr.val.to_s) || "0")
+    etag = iter.try(&.curr.val.to_s) || ""
 
-    RouteUtils.json_res(env) do |res|
+    RouteUtils.json_res(env, ttl: 3, etag: etag) do |res|
       JSON.build(res) do |json|
         json.array do
           take.times do

@@ -47,9 +47,10 @@ module CV::Server
     chidx = env.params.url["chidx"].to_i
     schid = env.params.url["schid"]
 
-    chtext = ChText.load(bname, sname, snvid, chidx - 1, schid)
+    env.response.headers.add("Cache-Control", "min-fresh=60")
     env.response.content_type = "text/plain; charset=utf-8"
 
+    chtext = ChText.load(bname, sname, snvid, chidx - 1, schid)
     u_power, mode = RouteUtils.get_privi(env)
     chtext.get_cv!(u_power, mode: mode)
   rescue err

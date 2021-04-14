@@ -34,7 +34,7 @@ module CV::Server
     end
 
     hanviet = Cvmtl.hanviet.translit(input).to_str
-    RouteUtils.json_res(env, {hanviet: hanviet, entries: entries})
+    RouteUtils.json_res(env, {hanviet: hanviet, entries: entries}, ttl: 5)
   end
 
   put "/api/dicts/:dname/search" do |env|
@@ -84,7 +84,7 @@ module CV::Server
     binh_am = Cvmtl.binh_am.translit(input).to_s
     hanviet = Cvmtl.hanviet.translit(input).to_s
 
-    RouteUtils.json_res(env) do |res|
+    RouteUtils.json_res(env, ttl: 1) do |res|
       JSON.build(res) do |json|
         json.object do
           json.field "trans", {binh_am: binh_am, hanviet: hanviet}
@@ -103,9 +103,9 @@ module CV::Server
   end
 
   put "/api/dicts/:dname/upsert" do |env|
-    uname = env.session.string?("uname") || "Khách"
+    u_dname = RouteUtils.get_uname(env) || "Khách"
+    u_power = ViUser.get_power(u_dname)
 
-    u_power = ViUser.get_power(uname)
     halt env, status_code: 500, response: "Access denied!" if u_power < 1
 
     power = env.params.json.fetch("power", u_power).as(Int64).to_i8
@@ -120,7 +120,7 @@ module CV::Server
     prio = env.params.json.fetch("prio", 1).as(Int64).to_i8
     attr = env.params.json.fetch("attr", 0).as(Int64).to_i8
 
-    new_term = Vterm.new(key, vals, prio, attr, uname: uname, power: power, dtype: dict.dtype)
+    new_term = Vterm.new(key, vals, prio, attr, uname: u_dname, power: power, dtype: dict.dtype)
 
     halt env, status_code: 501, response: "Unchanged!" unless dict.set!(new_term)
 
