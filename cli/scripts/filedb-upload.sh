@@ -10,7 +10,7 @@ SSH=nipin@ssh.chivi.xyz:srv/chivi.xyz
 # rsync -azi --no-p "_db/vi_users/" "$SSH/_db/vi_users/"
 
 ## upload book data
-rsync -azi --no-p "_db/nv_infos/" "$SSH/_db/nv_infos/"
-rsync -azi --no-p "_db/ch_infos/" "$SSH/_db/ch_infos/"
+rsync -azi --no-p --delete "_db/nv_infos/" "$SSH/_db/nv_infos/"
+rsync -azi --no-p --delete "_db/ch_infos/" "$SSH/_db/ch_infos/"
 
 # rsync -azi --no-p --delete "_db/nv_infos/covers" "$SSH/_db/nv_infos/"
