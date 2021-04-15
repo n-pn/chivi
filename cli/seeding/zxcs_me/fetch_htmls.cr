@@ -12,8 +12,7 @@ class CV::SeedInfo::ZxcsMe
       file = File.join(INFO_DIR, "#{snvid}.html.gz")
       next if File.exists?(file)
 
-      link =
-        "http://www.zxcs.me/post/#{snvid}"
+      link = "http://www.zxcs.me/post/#{snvid}"
 
       File.open(file, "w") do |io|
         html = CV::HttpUtils.get_html(link, label: "#{idx}/#{queue.size}")
@@ -28,4 +27,4 @@ class CV::SeedInfo::ZxcsMe
 end
 
 worker = CV::SeedInfo::ZxcsMe.new
-worker.prep!(1, 12602)
+worker.prep!(1, 12526)
