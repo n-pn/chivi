@@ -4,73 +4,61 @@ require "myhtml"
 
 require "../../../src/utils/http_utils"
 
-DLPG_DIR = File.join("_db/.cache/zxcs_me/htmls/dlpgs")
-TEXT_DIR = File.join("_db/.cache/zxcs_me/texts/batch")
+class CV::Seeds::ZxcsText
+  DLPG_DIR = File.join("_db/.cache/zxcs_me/dlpgs")
+  RARS_DIR = File.join("_db/.cache/zxcs_me/.rars")
 
-FileUtils.mkdir_p(DLPG_DIR)
-FileUtils.mkdir_p(TEXT_DIR)
+  FileUtils.mkdir_p(DLPG_DIR)
+  FileUtils.mkdir_p(RARS_DIR)
 
-def dlpg_link(snvid : Int32) : String
-end
+  def fetch!(from = 1, upto = 12092) : Nil
+    queue = (from..upto).to_a.reverse
+    queue.each_with_index(1) do |snvid, idx|
+      html = get_dlpg(snvid, label: "#{idx}/#{queue.size}")
 
-def html_file(snvid : Int32) : String
-end
+      doc = Myhtml::Parser.new(html)
+      urls = doc.css(".downfile > a").to_a.map do |node|
+        node.attributes["href"].not_nil!
+      end
 
-def chap_file(snvid : Int32) : String
-  File.join TEXT_DIR, "#{snvid}.rar"
-end
+      next if urls.empty?
+      rar_file = "#{RARS_DIR}/#{snvid}.rar"
 
-def load_html(link : String, file : String, mark = "1/1") : String
-  if File.exists?(file)
-    puts "- <#{mark}> [#{File.basename(file)}] existed, skipping...".colorize.light_blue
-    File.read(file)
-  else
-    HttpUtils.get_html(link).tap { |html| File.write(file, html) }
+      urls.reverse_each { |url| save_rar(url, rar_file) }
+    rescue err
+      puts err.colorize.red
+    end
+  end
+
+  def get_dlpg(snvid : Int32, label = "1/1")
+    out_file = File.join(DLPG_DIR, "#{snvid}.html.gz")
+
+    if File.exists?(out_file)
+      puts "- <#{label}> [dlpgs/#{snvid}.html.gz] existed, skipping!".colorize.gray
+
+      File.open(out_file) do |io|
+        Compress::Gzip::Reader.open(io, &.gets_to_end)
+      end
+    else
+      dlpg_url = "http://www.zxcs.me/download.php?id=#{snvid}"
+      HttpUtils.get_html(dlpg_url, label: label).tap do |html|
+        File.open(out_file, "w") do |io|
+          Compress::Gzip::Writer.open(io, &.print(html))
+        end
+      end
+    end
+  end
+
+  def save_rar(rar_link : String, out_file : String) : Nil
+    # skipping downloaded files, unless they are 404 pages
+    return if File.exists?(out_file) && File.size(out_file) > 1000
+
+    HTTP::Client.get(rar_link) { |res| File.write(out_file, res.body_io) }
+    puts "- Saving [#{File.basename(rar_link).colorize.green}] \
+            to [#{File.basename(out_file).colorize.green}], \
+            filesize: #{File.size(out_file)} bytes"
   end
 end
 
-def extract_dll(html : String) : Array(String)
-  doc = Myhtml::Parser.new(html)
-  doc.css(".downfile > a").to_a.map do |node|
-    node.attributes["href"].not_nil!
-  end
-end
-
-def save_file(url : String, snvid : Int32) : Nil
-  file = chap_file(snvid)
-
-  # skipping downloaded files, unless they are 404 pages
-  return if File.exists?(file) # && File.size(file) > 1000
-
-  HTTP::Client.get(url) { |res| File.write(file, res.body_io) }
-  puts "- Saving [#{File.basename(url).colorize.green}] \
-          to [#{File.basename(file).colorize.green}], \
-          filesize: #{File.size(file)} bytes"
-end
-
-def file_saved?(snvid : Int32)
-  return true if File.exists?("_db/_seeds/zxcs_me/texts/fixed/#{snvid}.txt")
-  return true if File.exists?("_db/_seeds/zxcs_me/texts/unrar/#{snvid}.txt")
-end
-
-def fetch_files(lower = 1, upper = 12092) : Nil
-  queue = (lower..upper).to_a.shuffle
-  queue.each_with_index(1) do |snvid, idx|
-    next if file_saved?(snvid)
-
-    mark = "#{idx}/#{queue.size}"
-
-    dlpg_link = "http://www.zxcs.me/download.php?id=#{snvid}"
-    html_file = File.join(DLPG_DIR, "#{snvid}.html")
-
-    html = load_html(dlpg_link, html_file(snvid), mark)
-    urls = extract_dll(html)
-    next if urls.empty?
-
-    urls.reverse_each { |url| save_file(url, snvid) }
-  rescue err
-    puts err.colorize.red
-  end
-end
-
-fetch_files(1, 12092)
+worker = CV::Seeds::ZxcsText.new
+worker.fetch!(from: 1, upto: 12602)
