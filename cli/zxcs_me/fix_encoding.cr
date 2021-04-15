@@ -13,7 +13,7 @@ files.each_with_index(1) do |inp_file, idx|
   next if File.exists?(out_file)
 
   File.open(inp_file, "r") do |f|
-    str = f.read_string(250)
+    str = f.read_string(500)
     csm = csdet.detect(str)
     puts "- <#{idx}/#{files.size}> #{inp_file} encoding: #{csm.name} (#{csm.confidence})"
 

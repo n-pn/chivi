@@ -13,9 +13,9 @@ module CV::FileUtils
     gz_file = file + ".gz"
 
     if recent?(gz_file, expiry)
-      File.open(gz_file) { |io|
+      File.open(gz_file) do |io|
         Compress::Gzip::Reader.open(io, &.gets_to_end)
-      }
+      end
     elsif recent?(file, expiry)
       File.read(file)
     end

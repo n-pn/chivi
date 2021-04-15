@@ -1,6 +1,6 @@
 require "file_utils"
 require "compress/gzip"
-require "../../../src/utils/http_utils"
+require "../../src/utils/http_utils"
 
 INFO_DIR = File.join("_db/.cache/zxcs_me/infos")
 FileUtils.mkdir_p(INFO_DIR)
