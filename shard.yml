@@ -53,3 +53,6 @@ dependencies:
 
   myhtml:
     github: kostya/myhtml
+
+  icu:
+    github: olbat/icu.cr
