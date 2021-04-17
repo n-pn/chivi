@@ -4,6 +4,10 @@ shards:
     git: https://github.com/crystal-loot/exception_page.git
     version: 0.1.4
 
+  icu:
+    git: https://github.com/olbat/icu.cr.git
+    version: 0.1.0+git.commit.c4fe39a02a567c2914617bc3568e9ec192e238a4
+
   kemal:
     git: https://github.com/kemalcr/kemal.git
     version: 1.0.0+git.commit.3fee0686362d7ab57048ae555bf875e278a278a3
