@@ -184,19 +184,7 @@ class CV::NvInfo
 
   def set_chseed(sname : String, snvid : String, mtime = 0_i64, count = 0) : Nil
     # dirty hack to fix update_time for hetushu or zhwenpg...
-    if old_value = get_chseed(sname)
-      _svnid, old_mtime, old_count = old_value
-
-      if count > old_count # if newer has more chapters
-        if mtime <= old_mtime
-          mtime = update > old_mtime ? update : old_mtime
-        end
-      else
-        mtime = old_mtime > 0 ? old_mtime : update
-      end
-    elsif mtime < update
-      mtime = update
-    end
+    mtime = fix_seed_mtime(sname, mtime, count)
 
     @update = nil
     NvOrders.set_update!(@bhash, mtime)
@@ -210,6 +198,28 @@ class CV::NvInfo
     NvChseed.set_list!(@bhash, snames)
     NvChseed.set_seed!(sname, @bhash, [snvid, mtime.to_s, count.to_s])
   end
+end
+
+WRONG_MTIMES = {"zhwenpg", "hetushu", "69shu", "bqg_5200"}
+
+private def fix_seed_mtime(sname : String, mtime : Int64, count : Int32)
+  return mtime unless WRONG_MTIMES.includes?(sname)
+
+  if old_value = get_chseed(sname)
+    _svnid, old_mtime, old_count = old_value
+
+    if count > old_count # if newer has more chapters
+      if mtime <= old_mtime
+        mtime = update > old_mtime ? update : old_mtime
+      end
+    else
+      mtime = old_mtime > 0 ? old_mtime : update
+    end
+  elsif mtime < update
+    mtime = update
+  end
+
+  mtime
 end
 
 # puts CV::NvInfo.find_by_slug("quy-bi-chi-chu")
