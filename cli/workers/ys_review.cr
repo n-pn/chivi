@@ -64,6 +64,6 @@ end
 
 worker = Seeds::YsReview.new(regen_proxy: ARGV.includes?("proxy"))
 
-1.upto(4) do |page|
+1.upto(5) do |page|
   worker.crawl!(page) unless worker.no_proxy?
 end
