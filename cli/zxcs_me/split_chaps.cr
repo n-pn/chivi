@@ -44,6 +44,8 @@ class CV::Zxcs::SplitText
       File.write(out_txt, lines.join("\n"))
 
       FileUtils.rm_rf(tmp_dir)
+    rescue err
+      puts err
     end
   end
 
