@@ -71,11 +71,12 @@ class CV::Zxcs::SplitText
 
     if match = FILE_RE_1.match(inp_file) || FILE_RE_2.match(inp_file)
       _, title, author = match
-      while is_garbage?(lines.first, title, author)
-        lines.shift
-      end
     else
       exit(0)
+    end
+
+    while is_garbage?(lines.first, title, author)
+      lines.shift
     end
 
     while is_garbage_end?(lines.last)
@@ -124,16 +125,10 @@ class CV::Zxcs::SplitText
     out_dir = "#{OUT_TXT}/#{snvid}"
 
     return if File.exists?(out_idx)
-    input = File.read(inp_file).split("\n")
+    input = File.read(inp_file).split(/\r\n?|\n/)
 
-    # TODO: remove this hack
-    if input.first.starts_with?("字数：")
-      input.shift
-      while input.first.empty?
-        input.shift
-      end
-      File.write(inp_file, input.join("\n"))
-    end
+    # TODO: remove these hacks
+    input = reclean_text!(inp_file, input)
 
     puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
 
@@ -159,6 +154,30 @@ class CV::Zxcs::SplitText
     else
       puts "\n\n- Entries [#{snvid}] saved!".colorize.yellow
     end
+  end
+
+  def reclean_text!(inp_file : String, lines : Array(String))
+    changed = false
+
+    if lines.first.match(/^\s*===/)
+      changed = true
+
+      3.times { lines.shift; lines.pop }
+
+      lines.shift if lines.first.match(/^\s*===/)
+      lines.pop if lines.last.match(/^\s*===/)
+    end
+
+    while lines.first.empty? || lines.first.match(/^分类：|作者：|类别：|字数：/)
+      changed = true
+      lines.shift
+    end
+
+    File.write(inp_file, lines.join("\n")) if changed
+    lines
+  rescue
+    puts [inp_file, lines]
+    exit(0)
   end
 
   def save_texts!(input : Array(Array(String)), out_dir : String)
@@ -293,13 +312,16 @@ class CV::Zxcs::SplitText
     case chap.first
     when .includes?("简介："),
          .includes?("介绍："),
+         .includes?("内容概要："),
          .includes?("作品介绍"),
          .includes?("作品简介"),
          .includes?("作者简介"),
          .includes?("内容简介"),
          .includes?("内容介绍"),
          .includes?("内容说明"),
-         .includes?("书籍介绍")
+         .includes?("书籍介绍"),
+         .includes?("书籍简介"),
+         .includes?("小说简介")
       true
     else
       false
@@ -313,21 +335,36 @@ class CV::Zxcs::SplitText
     bads = [] of String
 
     index.each do |info|
-      title = info[2]
+      _, _, title, label = info
+
+      case label
+      when "作品相关", "外传", "番外", "外篇", "番外篇"
+        next
+      else
+        if label.size > 20
+          bads << "#{title} -- #{label}"
+          next
+        end
+      end
+
       case title
-      when "引言", "结束语", "引 子", "开始", "感言",
+      when "引言", "结束语", "引 子", "开始", "感言", "前言", "锲子", "结语", "楔子",
+           .includes?("后记"),
            .includes?("作品相关"),
            .includes?("结束感言"),
            .includes?("完本感言"),
            .includes?("完结感言"),
-           .=~(/^(序|第|终卷|楔子|引子|尾声|番外|终章|末章|终曲|后记|后续)/),
-           .=~(/^(最终回|最终章|终之章|大结局|人物介绍)/),
+           .includes?("完稿感言"),
+           .includes?("完稿感言"),
+           .includes?("结后感言"),
+           .=~(/^【?(序|第|终卷|楔子|引子|尾声|番外|终章|末章|终曲|后记|后续)/),
+           .=~(/^【?(外传|尾章|初章|引章|卷末|最终回|最终章|终之章|大结局|人物介绍|更新说明)/),
            .=~(/^\d+、/),
            .=~(/^[【\[\(]\d+[】\]\)]/),
            .=~(/^章?[零〇一二两三四五六七八九十百千+]^/)
         next
       else
-        bads << title
+        bads << "#{title} -- #{label}"
       end
     end
 
@@ -335,7 +372,7 @@ class CV::Zxcs::SplitText
       puts "\nSeems good enough, skip checking!".colorize.green
       true
     else
-      puts "\n- wrong format (#{bads.size}): ", bads.join("\n\n").colorize.red
+      puts "\n- wrong format (#{bads.size}): ", bads.first(30).join("\n\n").colorize.red
       false
     end
   end
