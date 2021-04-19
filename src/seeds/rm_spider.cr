@@ -172,7 +172,7 @@ module CV::RmSpider
     return 0_i64 if sname == "hetushu" || sname == "zhwenpg"
 
     updated_at = TimeUtils.parse_time(update_str)
-    updated_at += 24.hours if sname == "bqg_5200"
+    updated_at += 12.hours if sname == "bqg_5200"
 
     upper_time = Time.utc
     updated_at < upper_time ? updated_at.to_unix : upper_time.to_unix
