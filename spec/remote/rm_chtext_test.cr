@@ -5,7 +5,7 @@ require "../../src/seeds/rm_chtext.cr"
 def fetch_text(sname : String, snvid : String, schid : String, fresh = false)
   puts "\n[#{CV::RmSpider.chtext_link(sname, snvid, schid)}]\n".colorize.blue.bold
 
-  chap = CV::RmChtext.new(sname, snvid, schid, ttl: fresh ? 1.minute : 10.years)
+  chap = CV::RmChtext.new(sname, snvid, schid, valid: fresh ? 1.minute : 10.years)
 
   puts chap.title
   puts "---".colorize.blue
@@ -55,3 +55,5 @@ fetch_text("69shu", "35875", "25117266", fresh: false)
 fetch_text("biqubao", "33775", "18804401", fresh: false)
 
 fetch_text("bxwxorg", "119227", "1367374", fresh: false)
+
+fetch_text("bxwxorg", "170826", "1399584", fresh: false)

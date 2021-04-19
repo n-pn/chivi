@@ -75,6 +75,12 @@ class CV::RmChtext
       tag.remove! if {"script", "div"}.includes?(tag.tag_name)
     end
 
+    if @sname == "bxwxorg"
+      node.children.each do |tag|
+        tag.remove! if tag.attributes["style"]?
+      end
+    end
+
     lines = TextUtils.split_html(node.inner_text("\n"))
     lines.shift if lines.first == title
 
@@ -91,7 +97,7 @@ class CV::RmChtext
     when "xbiquge"
       lines.shift if lines.first.starts_with?("笔趣阁")
     when "bxwxorg"
-      lines.shift if lines.first.includes?("bxwx66.com")
+      lines.shift if lines.first =~ /bxwx66|bxwxorg/
       lines.pop if lines.last.includes?("bxwxorg.com")
     when "duokan8"
       lines.shift if lines.first == "<b></b>"

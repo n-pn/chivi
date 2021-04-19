@@ -209,7 +209,7 @@ class CV::Zxcs::SplitText
     blanks_total, blanks_count, unnest_count, nested_count = 0, 0, 0, 0
 
     lines.each_with_index do |line, idx|
-      break if idx > 200
+      break if idx > 250
 
       if line.empty?
         blanks_count += 1
@@ -299,7 +299,7 @@ class CV::Zxcs::SplitText
       if lines.size == 1
         label = lines.first
       else
-        chaps << Chap.new(label, lines)
+        chaps << Chap.new(label, lines.map(&.strip))
       end
     end
 
@@ -338,7 +338,8 @@ class CV::Zxcs::SplitText
       _, _, title, label = info
 
       case label
-      when "作品相关", "外传", "番外", "外篇", "番外篇"
+      when "序", "外传", "番外", "外篇", "番外篇",
+           "作品相关", "【作品相关】"
         next
       else
         if label.size > 20
@@ -348,8 +349,10 @@ class CV::Zxcs::SplitText
       end
 
       case title
-      when "引言", "结束语", "引 子", "开始", "感言", "前言", "锲子", "结语", "楔子",
+      when "引言", "结束语", "引 子", "开始", "感言", "前言",
+           "锲子", "结语", "楔子", "作者的话", "小结",
            .includes?("后记"),
+           .includes?("完本了"),
            .includes?("作品相关"),
            .includes?("结束感言"),
            .includes?("完本感言"),
@@ -357,8 +360,11 @@ class CV::Zxcs::SplitText
            .includes?("完稿感言"),
            .includes?("完稿感言"),
            .includes?("结后感言"),
-           .=~(/^【?(序|第|终卷|楔子|引子|尾声|番外|终章|末章|终曲|后记|后续)/),
-           .=~(/^【?(外传|尾章|初章|引章|卷末|最终回|最终章|终之章|大结局|人物介绍|更新说明)/),
+           .includes?("全本感言"),
+           .includes?("次卷预告"),
+           .includes?("写在结束的话"),
+           .=~(/^【?(序|第|终卷|楔子|引子|尾声|番外|终章|末章|终曲|后记|后续|结局)/),
+           .=~(/^【?(前记|篇外|前言|后篇|外传|尾章|初章|引章|卷末|最终回|最终章|终结章|终之章|大结局|人物介绍|更新说明)/),
            .=~(/^\d+、/),
            .=~(/^[【\[\(]\d+[】\]\)]/),
            .=~(/^章?[零〇一二两三四五六七八九十百千+]^/)
