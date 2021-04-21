@@ -4,21 +4,20 @@ require "colorize"
 module CV::TextUtils
   extend self
 
+  BR_RE = /\<br\s*\/?\>|\s{4,+}/i
+
   def split_html(input : String, fix_br : Bool = true) : Array(String)
     input = HTML.unescape(input)
 
     input = fix_spaces(input)
-    input = replace_br(input) if fix_br
+    input = input.gsub(BR_RE, "\n") if fix_br
 
-    split_text(input)
+    split_text(input, spaces_is_new_line: true)
   end
 
-  def replace_br(input : String) : String
-    input.gsub(/<br\s*\/?>|\s{4,}/i, "\n")
-  end
-
-  def split_text(input : String) : Array(String)
-    input.split("\n").map(&.strip).reject(&.empty?)
+  def split_text(input : String, spaces_is_new_line = true) : Array(String)
+    input = input.gsub(/\s{2,}/, "\n") if spaces_is_new_line
+    input.split(/\r\n?|\n/).map(&.strip).reject(&.empty?)
   end
 
   SPACES = "\u00A0\u2002\u2003\u2004\u2007\u2008\u205F\u3000"

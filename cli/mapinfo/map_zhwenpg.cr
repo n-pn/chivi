@@ -1,6 +1,6 @@
-require "./_seeding.cr"
+require "./_bookgen.cr"
 
-class CV::Seeds::ZhwenpgParser
+class CV::ZhwenpgParser
   def initialize(@node : Myhtml::Node)
   end
 
@@ -28,11 +28,13 @@ class CV::Seeds::ZhwenpgParser
   end
 end
 
-class CV::Seeds::MapZhwenpg
+class CV::MapZhwenpg
   ::FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
 
-  getter meta = Seeding.new("zhwenpg")
-  @checked = Set(String).new
+  def initialize
+    @meta = Bookgen::Seed.new("zhwenpg")
+    @checked = Set(String).new
+  end
 
   def expiry(page : Int32 = 1)
     Time.utc - 4.hours * page
@@ -48,14 +50,14 @@ class CV::Seeds::MapZhwenpg
   end
 
   def init!(page = 1, status = 0)
-    puts "\n[-- Page: #{page} --]".colorize.light_cyan.bold
+    puts "\n[-- Page: #{page} (status: #{status}) --]".colorize.light_cyan.bold
 
     file = page_path(page, status)
     link = page_link(page, status)
 
     valid = 4.hours * page
     html = RmSpider.fetch(file, link, "zhwenpg", valid: valid, label: page.to_s)
-    atime = Seeding.get_atime(file) || Time.utc.to_unix
+    atime = Bookgen.get_atime(file) || Time.utc.to_unix
 
     doc = Myhtml::Parser.new(html)
     nodes = doc.css(".cbooksingle").to_a[2..-2]
@@ -75,11 +77,15 @@ class CV::Seeds::MapZhwenpg
       @meta.genres.set!(snvid, parser.bgenre)
       @meta.bcover.set!(snvid, parser.bcover)
 
-      @meta.update.set!(snvid, parser.mftime)
-      @meta.status.set!(snvid, status)
+      @meta.update.set!(snvid, parser.mftime.to_s)
+      @meta.status.set!(snvid, status.to_s)
     rescue err
       puts "ERROR: #{err}".colorize.red
     end
+  end
+
+  def save_meta!(clean = false)
+    @meta.save!(clean: clean)
   end
 
   def seed!
@@ -87,34 +93,27 @@ class CV::Seeds::MapZhwenpg
       bhash, btitle, author = @meta.upsert!(snvid, fixed: false)
 
       if NvOrders.get_voters(bhash) == 0
-        voters, rating = get_ratings(btitle, author)
+        voters, rating = Bookgen.get_scores(btitle, author)
         NvOrders.set_scores!(bhash, voters, rating)
       end
 
       puts "- <#{idx}/#{@checked.size}> [#{bhash}] saved!".colorize.yellow
 
-      @meta.upsert_chinfo!(bhash, snvid, mode: 0)
+      # @meta.upsert_chinfo!(bhash, snvid, mode: 0)
       NvInfo.save!(clean: false)
     end
 
     NvInfo.save!(clean: false)
   end
-
-  RATINGS = ValueMap.new("src/appcv/nv_info/_fixes/ratings.tsv", mode: 2)
-
-  private def get_ratings(btitle : String, author : String)
-    if vals = RATINGS.get("#{btitle}  #{author}")
-      {vals[0].to_i, vals[1].to_i}
-    else
-      {Random.rand(30..100), Random.rand(50..70)}
-    end
-  end
 end
 
-worker = CV::Seeds::MapZhwenpg.new
+worker = CV::MapZhwenpg.new
 puts "\n[-- Load indexes --]".colorize.cyan.bold
 
-1.upto(3) { |page| worker.init!(page, status: 1) }
-1.upto(11) { |page| worker.init!(page, status: 0) }
-worker.meta.save!(clean: true)
-worker.seed!
+unless ARGV.includes?("-init")
+  1.upto(3) { |page| worker.init!(page, status: 1) }
+  1.upto(11) { |page| worker.init!(page, status: 0) }
+  worker.save_meta!(clean: true)
+end
+
+worker.seed! unless ARGV.includes?("-seed")

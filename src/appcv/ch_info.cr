@@ -18,7 +18,10 @@ class CV::ChInfo
   getter trans : ValueMap { ValueMap.new(map_file(@snvid, "trans")) }
 
   alias Chitem = Tuple(String, Array(String))
-  getter infos : Array(Chitem) { trans.data.to_a }
+  getter infos : Array(Chitem) do
+    trans!(reset: true) if trans.data.empty?
+    trans.data.to_a
+  end
 
   def initialize(@bname : String, @sname : String, @snvid : String)
     ::FileUtils.mkdir_p("#{DIR}/origs/#{@sname}")

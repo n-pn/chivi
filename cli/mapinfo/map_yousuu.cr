@@ -1,16 +1,16 @@
 require "file_utils"
 
 require "../../src/seeds/ys_nvinfo"
-require "./_seeding.cr"
+require "./_bookgen.cr"
 
 class CV::MapYousuu
-  getter source_url : ValueMap { ValueMap.new(@meta.map_path("source_url")) }
-  getter count_word : ValueMap { ValueMap.new(@meta.map_path("count_word")) }
-  getter count_crit : ValueMap { ValueMap.new(@meta.map_path("count_crit")) }
-  getter count_list : ValueMap { ValueMap.new(@meta.map_path("count_list")) }
+  getter source_url : ValueMap { ValueMap.new("#{@meta.s_dir}/source_url.tsv") }
+  getter count_word : ValueMap { ValueMap.new("#{@meta.s_dir}/count_word.tsv") }
+  getter count_crit : ValueMap { ValueMap.new("#{@meta.s_dir}/count_crit.tsv") }
+  getter count_list : ValueMap { ValueMap.new("#{@meta.s_dir}/count_list.tsv") }
 
   def initialize
-    @meta = Seeding.new("yousuu")
+    @meta = Bookgen::Seed.new("yousuu")
   end
 
   def init!
@@ -22,7 +22,7 @@ class CV::MapYousuu
 
     input.each_with_index(1) do |file, idx|
       snvid = File.basename(file, ".json")
-      atime = Seeding.get_atime(file) || 0_i64
+      atime = Bookgen.get_atime(file) || 0_i64
       next if @meta._index.ival_64(snvid) >= atime
 
       next unless info = YsNvinfo.load(file)
@@ -31,7 +31,7 @@ class CV::MapYousuu
       @meta.genres.set!(snvid, [info.genre].concat(info.tags_fixed))
       @meta.bcover.set!(snvid, info.cover_fixed)
 
-      @meta.status.set!(snvid, info.status)
+      @meta.status.set!(snvid, info.status.to_s)
       @meta.hidden.set!(snvid, info.shielded ? "1" : "0")
 
       @meta.rating.set!(snvid, [info.voters.to_s, info.rating.to_s])
@@ -113,5 +113,5 @@ class CV::MapYousuu
 end
 
 worker = CV::MapYousuu.new
-worker.init!
-worker.seed!
+worker.init! unless ARGV.includes?("-init")
+worker.seed! unless ARGV.includes?("-seed")

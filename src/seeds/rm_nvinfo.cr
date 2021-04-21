@@ -73,16 +73,13 @@ class CV::RmNvInfo
     end
   end
 
-  getter status_int : Int32 do
+  getter status : String do
     case @sname
+    when "69shu", "zhwenpg" then "0"
     when "hetushu"
-      klass = node_attr(".book_info", "class")
-      klass.includes?("finish") ? 1 : 0
-    when "69shu", "zhwenpg"
-      0
+      node_attr(".book_info", "class").includes?("finish") ? "1" : "0"
     else
-      status = meta_data("og:novel:status")
-      RmSpider.map_status(status)
+      meta_data("og:novel:status")
     end
   end
 

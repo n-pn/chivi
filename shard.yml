@@ -6,25 +6,25 @@ authors:
 
 targets:
   map_zhwenpg:
-    main: cli/seeding/map_zhwenpg.cr
+    main: cli/mapinfo/map_zhwenpg.cr
 
   map_yousuu:
-    main: cli/seeding/map_yousuu.cr
+    main: cli/mapinfo/map_yousuu.cr
 
   map_remote:
-    main: cli/seeding/map_remote.cr
+    main: cli/mapinfo/map_remote.cr
 
   fetch_covers:
-    main: cli/seeding/fetch_covers.cr
+    main: cli/mapinfo/fetch_covers.cr
 
   fix_covers:
-    main: cli/seeding/fix_covers.cr
+    main: cli/mapinfo/fix_covers.cr
 
   fix_genres:
-    main: cli/seeding/fix_genres.cr
+    main: cli/mapinfo/fix_genres.cr
 
   fix_intros:
-    main: cli/seeding/fix_intros.cr
+    main: cli/mapinfo/fix_intros.cr
 
   fetch_zhtexts:
     main: cli/routine/fetch_zhtexts.cr

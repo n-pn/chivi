@@ -4,7 +4,7 @@
 require "colorize"
 
 SSH = "nipin@ssh.chivi.xyz"
-INP = "_db/zh_texts/origs"
+INP = "_db/ch_texts/origs"
 OUT = "/home/nipin/srv/chivi.xyz"
 
 def upload_texts(sname : String)
@@ -47,4 +47,4 @@ snames.each do |sname|
   end
 end
 
-snames.times { channel.receive }
+snames.size.times { channel.receive }

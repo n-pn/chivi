@@ -132,9 +132,10 @@ class CV::Zxcs::SplitText
 
     puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
 
-    return unless chaps = split_chapters(input)
+    return unless chaps = split_chapters(snvid, input)
     index = save_texts!(chaps, out_dir)
-    File.write(out_idx, index.map(&.join('\t')).join("\n"))
+    idx_str = index.map(&.map(&.strip).join('\t')).join('\n')
+    File.write(out_idx, idx_str)
 
     return if good_enough?(index)
 
@@ -183,7 +184,7 @@ class CV::Zxcs::SplitText
   def save_texts!(input : Array(Array(String)), out_dir : String)
     chaps = format_chaps(input)
 
-    index = [] of Tuple(Int32, String, String, String)
+    index = [] of Tuple(String, String, String, String)
     FileUtils.mkdir_p(out_dir)
 
     chaps.each_slice(100).with_index do |slice, idx|
@@ -196,7 +197,7 @@ class CV::Zxcs::SplitText
             schid = chidx.to_s.rjust(4, '0')
 
             zip.add("#{schid}.txt", chap.lines.join('\n'))
-            index << ({chidx, schid, chap.lines[0], chap.label})
+            index << ({chidx.to_s, schid, chap.lines[0], chap.label})
           end
         end
       end
@@ -205,18 +206,31 @@ class CV::Zxcs::SplitText
     index
   end
 
-  private def split_chapters(lines : Array(String))
-    blanks_total, blanks_count, unnest_count, nested_count = 0, 0, 0, 0
+  private def split_chapters(snvid : String, lines : Array(String))
+    case snvid
+    when "4683", "3868", "4314", "3199", "4942", "1552"
+      return split_blanks(lines)
+    when "3401"
+      return split_delimit(lines)
+    end
+
+    blanks_single, blanks_double, blanks_count = 0, 0, 0
+    unnest_count, nested_count = 0, 0
 
     lines.each_with_index do |line, idx|
-      break if idx > 250
+      break if idx > 1000
 
       if line.empty?
         blanks_count += 1
         next
       end
 
-      blanks_total += 1 if blanks_count > 1
+      if blanks_count > 1
+        blanks_double += 1
+      elsif blanks_count > 0
+        blanks_single += 1
+      end
+
       blanks_count = 0
 
       if nested?(line)
@@ -226,8 +240,12 @@ class CV::Zxcs::SplitText
       end
     end
 
-    return split_blanks(lines) if blanks_total > 1
+    return split_blanks(lines) if blanks_double > 1
     return split_nested(lines) if nested_count > 1 && unnest_count > 1
+
+    if unnest_count == 0
+      return split_delimit(lines) if blanks_single > 0
+    end
 
     puts "-- [ unsupported file format, skipping! ]".colorize.cyan
     nil
@@ -244,7 +262,7 @@ class CV::Zxcs::SplitText
     blank = 0
 
     input.each do |line|
-      line = line.strip
+      line = line.tr("　", " ").strip
 
       if line.empty?
         blank += 1
@@ -287,6 +305,29 @@ class CV::Zxcs::SplitText
     chaps
   end
 
+  private def split_delimit(input : Array(String))
+    chaps = [] of Array(String)
+    lines = [] of String
+
+    prev_blank = false
+
+    input.each do |line|
+      if line.empty?
+        if lines.size > 1
+          chaps << lines
+          lines = [] of String
+        end
+      else
+        lines << line.strip
+      end
+    end
+
+    chaps << lines unless lines.empty?
+
+    puts "-- [ splited delimit: #{chaps.size} chaps ]".colorize.cyan
+    chaps
+  end
+
   def format_chaps(input : Array(Array(String)))
     while is_intro?(input.first)
       input.shift
@@ -299,7 +340,7 @@ class CV::Zxcs::SplitText
       if lines.size == 1
         label = lines.first
       else
-        chaps << Chap.new(label, lines.map(&.strip))
+        chaps << Chap.new(label.strip, lines.map(&.strip))
       end
     end
 
@@ -328,7 +369,7 @@ class CV::Zxcs::SplitText
     end
   end
 
-  private def good_enough?(index : Array(Tuple(Int32, String, String, String)))
+  private def good_enough?(index : Array(Tuple(String, String, String, String)))
     idx, _, title, _ = index.last
     title.includes?("第#{idx}章")
 
@@ -382,7 +423,23 @@ class CV::Zxcs::SplitText
       false
     end
   end
+
+  def clean_indexes!
+    Dir.glob(OUT_IDX + "/*.tsv").each_with_index do |file, idx|
+      puts "- <#{idx}> #{file}"
+
+      lines = File.read_lines(file)
+      lines.map! do |line|
+        line.split('\t').map(&.tr("　", " ").strip).join('\t')
+      end
+
+      utime = File.info(file).modification_time
+      File.write(file, lines.join('\n'))
+      File.utime(utime, utime, file)
+    end
+  end
 end
 
 worker = CV::Zxcs::SplitText.new
 worker.extract!
+# worker.clean_indexes!

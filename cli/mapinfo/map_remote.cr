@@ -3,11 +3,11 @@ require "option_parser"
 
 require "../../src/seeds/rm_nvinfo"
 require "../../src/utils/file_utils"
-require "./_seeding.cr"
+require "./_bookgen.cr"
 
-class CV::Seeds::MapRemote
+class CV::MapRemote
   def initialize(@sname : String)
-    @meta = Seeding.new(@sname)
+    @meta = Bookgen::Seed.new(@sname)
     @encoding = HttpUtils.encoding_for(@sname)
   end
 
@@ -98,8 +98,8 @@ class CV::Seeds::MapRemote
         @meta.bcover.set!(snvid, parser.bcover)
       end
 
+      @meta.status.set!(snvid, parser.status)
       @meta.update.set!(snvid, parser.update_int)
-      @meta.status.set!(snvid, parser.status_int)
 
       if idx % 100 == 0
         puts "- [#{@sname}]: <#{idx}/#{upto}>"
@@ -120,7 +120,7 @@ class CV::Seeds::MapRemote
 
   private def access_time(snvid : String) : Int64?
     file = RmSpider.nvinfo_file(@sname, snvid)
-    Seeding.get_atime(file)
+    Bookgen.get_atime(file)
   end
 
   def seed!(mode = 0)
@@ -194,4 +194,4 @@ class CV::Seeds::MapRemote
   end
 end
 
-CV::Seeds::MapRemote.run!(ARGV)
+CV::MapRemote.run!(ARGV)

@@ -15,15 +15,13 @@ class CV::RmChinfo
     @rdoc = Myhtml::Parser.new(html)
   end
 
-  getter status_int : Int32 do
+  getter status : String do
     case @sname
+    when "69shu", "zhwenpg" then "0"
     when "hetushu"
-      klass = node_attr(".book_info", "class")
-      klass.includes?("finish") ? 1 : 0
-    when "69shu", "zhwenpg"
-      0
+      node_attr(".book_info", "class").includes?("finish") ? "1" : "0"
     else
-      RmSpider.map_status(meta_data("og:novel:status"))
+      meta_data("og:novel:status")
     end
   end
 
