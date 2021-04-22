@@ -99,7 +99,7 @@ class CV::MapZhwenpg
 
       puts "- <#{idx}/#{@checked.size}> [#{bhash}] saved!".colorize.yellow
 
-      # @meta.upsert_chinfo!(bhash, snvid, mode: 0)
+      @meta.upsert_chinfo!(bhash, snvid, mode: 0)
       NvInfo.save!(clean: false)
     end
 

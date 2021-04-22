@@ -109,6 +109,16 @@ module CV::Bookgen
       {bhash, btitle, author}
     end
 
+    def upsert_chinfo!(bhash : String, snvid : String, mode = 0) : Nil
+      chinfo = ChInfo.new(bhash, @sname, snvid)
+
+      mtime, total = chinfo.fetch!(power: 4, mode: mode, valid: 10.years)
+      chinfo.trans!(reset: false) if chinfo.updated?
+
+      mtime = update.ival_64(snvid) if @sname == "zhwenpg"
+      NvInfo.new(bhash).set_chseed(@sname, snvid, mtime, total)
+    end
+
     def get_status(snvid : String) : Int32
       return 1 if @sname == "zxcs_me"
 

@@ -145,7 +145,7 @@ class CV::MapZxcsMe
   end
 
   def import_prev!
-    atime = Time.utc(2019, 1, 1, 1, 1).to_unix.to_s
+    atime = Time.utc(2019, 1, 1).to_unix.to_s
 
     inputs = Hash(String, Prev).from_json File.read("_db/_seeds/zxcs_me/prevs.json")
     inputs.each do |snvid, input|
@@ -160,9 +160,31 @@ class CV::MapZxcsMe
 
     @meta.save!(clean: false)
   end
+
+  def seed!
+    @snvids.each_with_index(1) do |snvid, idx|
+      bhash, btitle, author = @meta.upsert!(snvid, fixed: false)
+
+      if NvOrders.get_voters(bhash) == 0
+        voters, rating = Bookgen.get_scores(btitle, author)
+        NvOrders.set_scores!(bhash, voters, rating)
+      end
+
+      puts "- <#{idx}/#{@snvids.size}> [#{bhash}] saved!".colorize.yellow
+
+      mtime = @meta._index.ival_64(snvid)
+      total = File.read_lines("#{IDX_DIR}/#{snvid}.tsv").size
+      NvInfo.new(bhash).set_chseed("zxcs_me", snvid, mtime, total)
+
+      NvInfo.save!(clean: false)
+    end
+
+    NvInfo.save!(clean: false)
+  end
 end
 
 worker = CV::MapZxcsMe.new
 worker.prep!
 worker.init!
 worker.import_prev!
+worker.seed!
