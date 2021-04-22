@@ -1,4 +1,5 @@
 require "../../src/appcv/nv_info"
+require "./_bookgen"
 
 class CV::FixIntros
   ORDERS = {"hetushu", "shubaow", "paoshu8",
@@ -33,21 +34,17 @@ class CV::FixIntros
       bintro ||= yintro || fintro
 
       NvBintro.set!(bhash, bintro, force: true) if bintro
-
-      if idx % 100 == 0
-        puts "- [fix_intros] <#{idx}/#{bhashes.size}>".colorize.blue
-        NvBintro.save!(clean: false)
-      end
+      puts "- [fix_intros] <#{idx}/#{bhashes.size}>".colorize.blue if idx % 100 == 0
     end
 
     NvBintro.save!(clean: false)
   end
 
+  SEEDS = {} of String => Bookgen::Seed
+
   def get_intro(sname : String, snvid : String)
-    intro_file = "_db/_seeds/#{sname}/intros/#{snvid}.txt"
-    File.read_lines(intro_file).map(&.strip).reject(&.empty?)
-  rescue err
-    [] of String
+    SEEDS[sname] ||= Bookgen::Seed.new(sname)
+    SEEDS[sname].get_intro(snvid)
   end
 end
 

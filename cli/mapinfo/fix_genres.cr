@@ -45,11 +45,7 @@ class CV::FixGenres
       vi_genres = ["Loại khác"] if vi_genres.empty?
 
       NvGenres.set!(bhash, vi_genres, force: true)
-
-      if idx % 100 == 0
-        puts "- [fix_genres] <#{idx}/#{bhashes.size}>".colorize.blue
-        NvGenres.save!(clean: false)
-      end
+      puts "- [fix_genres] <#{idx}/#{bhashes.size}>".colorize.blue if idx % 100 == 0
     end
 
     NvGenres.save!(clean: false)
