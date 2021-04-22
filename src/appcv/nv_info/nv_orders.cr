@@ -53,7 +53,7 @@ module CV::NvOrders
     weight_val = voters_val * rating_val
 
     if voters_val < 25
-      weight_val += (25 - voters_val) * Random.rand(45..60)
+      weight_val += (25 - voters_val) * Random.rand(40..60)
       rating_val = weight_val // 25
     end
 

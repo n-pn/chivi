@@ -71,6 +71,7 @@ export const snames = [
   'paoshu8',
   'shubaow',
   'jx_la',
+  'zxcs_me',
 ]
 
 export const order_names = {

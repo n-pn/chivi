@@ -177,6 +177,9 @@ class CV::MapZxcsMe
       NvInfo.new(bhash).set_chseed("zxcs_me", snvid, mtime, total)
 
       NvInfo.save!(clean: false)
+    rescue
+      puts snvid
+      gets
     end
 
     NvInfo.save!(clean: false)
@@ -185,6 +188,8 @@ end
 
 worker = CV::MapZxcsMe.new
 worker.prep!
+
 worker.init!
 worker.import_prev!
+
 worker.seed!

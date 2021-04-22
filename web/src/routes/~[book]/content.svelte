@@ -171,6 +171,21 @@
     const p_max = Math.floor((total - 1) / 30) + 1
     return p_max > page ? p_max : page
   }
+
+  function is_remote_seed(sname) {
+    switch (sname) {
+      case 'chivi':
+      case 'jx_la':
+      case 'shubaow':
+      case 'zxcs_me':
+      case 'hotupub':
+      case 'thuyvicu':
+        return false
+
+      default:
+        return true
+    }
+  }
 </script>
 
 <svelte:window on:keydown={handle_keypress} />
@@ -245,14 +260,14 @@
         </span>
       </div>
 
-      {#if params.sname != 'chivi'}
+      {#if is_remote_seed(params.sname)}
         <button
           class="m-button"
           on:click={(e) => load_chseed(e, params.sname, 2)}>
           <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
           <span class="-hide">Đổi mới</span>
         </button>
-      {:else}
+      {:else if params.sname == 'chivi'}
         <a class="m-button" href="/~{nvinfo.bslug}/+{params.sname}">
           <SIcon name="plus" />
           <span class="-hide">Thêm chương</span>
