@@ -26,7 +26,7 @@ class CV::Cline
       when "了"
         curr.fix(val: "rồi")
 
-        if (prev = @data[i - 2]?) && prev.verb?
+        if (prev = @data[i - 2]?) && (prev.verb? || prev.cat == 0)
           next unless succ = @data[i]?
           curr.fix("") if succ.word? && succ.key != prev.key
         end
@@ -227,7 +227,7 @@ class CV::Cline
               next
             end
           end
-        elsif left.pronoun?
+        elsif left.pronoun? && !res[-2]?.try(&.verb?)
           left.key = "#{left.key}的"
           left.val = "của #{left.val}"
           left.cat |= 1
