@@ -193,13 +193,13 @@ class CV::Cline
       if curr.key == "的"
         if (left = res.last?)
           if right = @data[idx + 1]?
-            if right.noun?
+            if right.noun? && !res[-2]?.try(&.verb?)
               skip = false
               if left.adje?
                 left.key = "#{left.key}的#{right.key}"
                 left.val = "#{right.val} #{left.val}"
                 skip = true
-              elsif left.noun? && !res[-2]?.try(&.verb?)
+              elsif left.noun?
                 left.key = "#{left.key}的#{right.key}"
                 left.val = "#{right.val} của #{left.val}"
                 skip = true
