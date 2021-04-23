@@ -130,19 +130,29 @@ class CV::Cline
     prev = nil
 
     @data.each do |curr|
-      if prev && curr.noun? && !curr.adje?
+      if prev && curr.cat == 1
         case prev.key
-        when "这", "那"
+        when "这", "那", "这位", "那位", "这具", "那具"
           prev.key = "#{prev.key}#{curr.key}"
-          prev.val = "#{prev.val} #{curr.val}"
+
+          right = prev.key[0] == '这' ? " này" : " kia"
+          left =
+            case prev.key[1]?
+            when '位' then "vị "
+            when '具' then "cụ "
+            else          ""
+            end
+
+          prev.val = "#{left}#{curr.val}#{right}"
+
           prev.cat |= 1
           prev.dic = curr.dic
           next
-        when "这位", "那位"
+        when "什么"
           prev.key = "#{prev.key}#{curr.key}"
 
-          right = prev.key[0] == '这' ? "này" : "kia"
-          prev.val = "vị #{curr.val} #{right}"
+          left, right = prev.val.split(" ", 2)
+          prev.val = "#{left} #{curr.val} #{right}"
 
           prev.cat |= 1
           prev.dic = curr.dic

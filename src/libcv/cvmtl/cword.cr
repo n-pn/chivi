@@ -156,7 +156,7 @@ class CV::Cword
 
   def pronoun?
     case @key
-    when "她", "我"
+    when "我", "朕", "你", "他", "她"
       true
     else
       false
