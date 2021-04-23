@@ -140,7 +140,11 @@ class CV::Cline
     @data.each do |curr|
       if prev && curr.cat == 1
         case prev.key
-        when "这", "那", "这位", "那位", "这具", "那具", "这个", "那个"
+        when "这", "那",
+             "这位", "那位",
+             "这具", "那具",
+             "这个", "那个",
+             "这种", "那种"
           prev.key = "#{prev.key}#{curr.key}"
 
           right = prev.key[0] == '这' ? " này" : " kia"
@@ -149,6 +153,7 @@ class CV::Cline
             when '位' then "vị "
             when '具' then "cụ "
             when '个' then "cái "
+            when '种' then "chủng "
             else          ""
             end
 
