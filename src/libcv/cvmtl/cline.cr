@@ -143,24 +143,23 @@ class CV::Cline
 
         case prev.key
         when "这", "这位", "这具", "这个", "这种"
-          p! [prev, curr]
           skip, left, right = true, suffix(prev.key[1]?), " này"
         when "那", "那位", "那具", "那个", "那种"
           skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "什么"
           skip, left, right = true, "cái ", " gì"
-        else
-          # combine nouns
-          if prev.cat == 1
-            skip, left = true, "#{prev.val} "
-          end
+          # else
+          #   # combine nouns
+          #   if prev.cat == 1
+          #     skip, left = true, "#{prev.val} "
+          #   end
         end
 
         if skip
           prev.key = "#{prev.key}#{curr.key}"
           prev.val = "#{left}#{curr.val}#{right}"
 
-          prev.cat |= 1
+          prev.cat = 1
           prev.dic = curr.dic if prev.dic < curr.dic
 
           next

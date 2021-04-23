@@ -163,7 +163,7 @@ class CV::Cword
          "朕"
       true
     else
-      false
+      @val[0]?.try(&.uppercase?)
     end
   end
 
