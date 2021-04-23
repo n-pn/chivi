@@ -221,7 +221,7 @@ class CV::Cline
             if skip
               left.key = "#{left.key}的#{right.key}"
               left.dic = 9
-              left.cat ^= 1
+              left.cat |= 1
 
               idx += 2
               next
@@ -230,7 +230,7 @@ class CV::Cline
         elsif left.pronoun?
           left.key = "#{left.key}的"
           left.val = "của #{left.val}"
-
+          left.cat |= 1
           left.dic = 9
           idx += 1
           next

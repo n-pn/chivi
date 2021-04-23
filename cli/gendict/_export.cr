@@ -42,7 +42,7 @@ class CV::ExportDicts
   def initialize
     @nouns = Set(String).new
     @nouns.concat File.read_lines(::QtUtil.path(".result/ce-nouns.txt"))
-    # @nouns.concat File.read_lines(::QtUtil.path(".result/qt-nouns.txt"))
+    @nouns.concat File.read_lines(::QtUtil.path(".result/qt-nouns.txt"))
 
     @verbs = Set(String).new
     @verbs.concat File.read_lines(::QtUtil.path(".result/ce-verbs.txt"))
@@ -99,28 +99,14 @@ class CV::ExportDicts
       @out_regular.set(term.key, term.vals)
     end
 
-    @out_regular.load!("_db/vp_dicts/remote/common/regular.tab")
     @out_regular.each do |term|
       next if term.empty?
 
-      # if term.key.size < 2
-      #   term.prio = 0
-      # elsif term.key.size > 3
-      #   term.prio = LEXICON.includes?(term.key) ? 2 : 1
-      # end
-
       # term.attr = 0
-
-      # term.set_attr!(:noun) if is_noun?(term.key, term.vals.first)
-      # term.set_attr!(:verb) if @verbs.includes?(term.key)
-
-      # if is_adje?(term.key, term.vals.first)
-      #   term.set_attr!(:adje)
-      # else
-      #   term.clear_attr!(:adje)
-      # end
+      term.set_attr!(:noun) if is_noun?(term.key, term.vals.first)
     end
 
+    @out_regular.load!("_db/vp_dicts/remote/common/regular.tab")
     @out_regular.save!(prune: true)
   end
 
