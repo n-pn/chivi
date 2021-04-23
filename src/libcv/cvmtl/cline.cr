@@ -94,7 +94,7 @@ class CV::Cline
 
     self
   rescue err
-    puts err
+    puts err, err.backtrace
     self
   end
 
@@ -117,8 +117,10 @@ class CV::Cline
         if skip
           prev.key = "#{prev.key}#{curr.key}"
           prev.val = "#{left}#{curr.val}#{right}"
+
           prev.cat |= 4
-          prev.dic = curr.dic
+          prev.dic = curr.dic if prev.dic < curr.dic
+
           next
         end
       end
@@ -141,9 +143,10 @@ class CV::Cline
 
         case prev.key
         when "这", "这位", "这具", "这个", "这种"
-          skip, left, right = true, suffix(prev.key[1]), " này"
+          p! [prev, curr]
+          skip, left, right = true, suffix(prev.key[1]?), " này"
         when "那", "那位", "那具", "那个", "那种"
-          skip, left, right = true, suffix(prev.key[1]), " kia"
+          skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "什么"
           skip, left, right = true, "cái ", " gì"
         else
@@ -156,8 +159,9 @@ class CV::Cline
         if skip
           prev.key = "#{prev.key}#{curr.key}"
           prev.val = "#{left}#{curr.val}#{right}"
+
           prev.cat |= 1
-          prev.dic = curr.dic
+          prev.dic = curr.dic if prev.dic < curr.dic
 
           next
         end
@@ -196,10 +200,10 @@ class CV::Cline
                 left.key = "#{left.key}的#{right.key}"
                 left.val = "#{right.val} #{left.val}"
                 skip = true
-                # elsif left.pronoun?
-                #   left.key = "#{left.key}的#{right.key}"
-                #   left.val = "#{right.val} của #{left.val}"
-                #   skip = true
+              elsif left.noun? && !res[-2]?.try(&.verb?)
+                left.key = "#{left.key}的#{right.key}"
+                left.val = "#{right.val} của #{left.val}"
+                skip = true
               end
 
               if skip
