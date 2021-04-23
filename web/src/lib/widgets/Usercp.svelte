@@ -20,7 +20,6 @@
   async function load_chaps(skip = 0) {
     const res = await fetch(`/api/mark-chaps?skip=${skip}`)
     if (res.ok) chaps = await res.json()
-    console.log({ chaps })
   }
 </script>
 

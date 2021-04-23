@@ -149,10 +149,10 @@ class CV::Cline
           skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "什么"
           skip, left, right = true, "cái ", " gì"
-        when "某个"
-          skip, right = true, " nào đó"
         when "哪个"
           skip, left, right = true, "cái ", " nào"
+        when "某个"
+          skip, right = true, " nào đó"
         when "一串", "一个"
           skip, left = true, "#{prev.val} "
         end

@@ -122,8 +122,8 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   }
 
   &._title {
-    max-width: 36vw;
     @include truncate(null);
+    @include props(max-width, $md: 20vw, $lg: 15vw);
   }
 
   &._seed {
