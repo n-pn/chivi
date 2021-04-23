@@ -143,21 +143,18 @@ class CV::Cline
         skip, left, right = false, "", ""
 
         case prev.key
-        when "这", "这位", "这具", "这个", "这种"
+        when "这", "这位", "这具", "这个", "这种", "这些"
           skip, left, right = true, suffix(prev.key[1]?), " này"
-        when "那", "那位", "那具", "那个", "那种"
+        when "那", "那位", "那具", "那个", "那种", "那些"
           skip, left, right = true, suffix(prev.key[1]?), " kia"
-        when "这些"
-          skip, left, right = true, "những ", " này"
-        when "那些"
-          skip, left, right = true, "những ", " kia"
         when "什么"
           skip, left, right = true, "cái ", " gì"
         when "某个"
-          skip, left, right = true, "", " nào đó"
+          skip, right = true, " nào đó"
+        when "哪个"
+          skip, left, right = true, "cái ", " nào"
         when "一串", "一个"
           skip, left = true, "#{prev.val} "
-        else
         end
 
         case prev.cat
@@ -196,6 +193,7 @@ class CV::Cline
     when '具' then "cụ "
     when '个' then "cái "
     when '种' then "chủng "
+    when '些' then "những "
     else          ""
     end
   end
@@ -214,7 +212,7 @@ class CV::Cline
             if left.adje?
               left.val = "#{right.val} #{left.val}"
               skip = true
-            elsif left.noun?
+            elsif left.cat == 1
               left.val = "#{right.val} của #{left.val}"
               skip = true
             end

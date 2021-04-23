@@ -103,22 +103,22 @@ class CV::ExportDicts
     @out_regular.each do |term|
       next if term.empty?
 
-      if term.key.size < 2
-        term.prio = 0
-      elsif term.key.size > 3
-        term.prio = LEXICON.includes?(term.key) ? 2 : 1
-      end
+      # if term.key.size < 2
+      #   term.prio = 0
+      # elsif term.key.size > 3
+      #   term.prio = LEXICON.includes?(term.key) ? 2 : 1
+      # end
 
-      term.attr = 0
+      # term.attr = 0
 
-      term.set_attr!(:noun) if is_noun?(term.key, term.vals.first)
-      term.set_attr!(:verb) if @verbs.includes?(term.key)
+      # term.set_attr!(:noun) if is_noun?(term.key, term.vals.first)
+      # term.set_attr!(:verb) if @verbs.includes?(term.key)
 
-      if is_adje?(term.key, term.vals.first)
-        term.set_attr!(:adje)
-      else
-        term.clear_attr!(:adje)
-      end
+      # if is_adje?(term.key, term.vals.first)
+      #   term.set_attr!(:adje)
+      # else
+      #   term.clear_attr!(:adje)
+      # end
     end
 
     @out_regular.save!(prune: true)
@@ -132,15 +132,15 @@ class CV::ExportDicts
       dict.load!(file)
 
       dict.each do |term|
-        unless term.empty?
-          if term.key.size < 2
-            term.prio = 0
-          elsif term.key.size > 3
-            term.prio = LEXICON.includes?(term.key) ? 2 : 1
-          end
+        # unless term.empty?
+        #   if term.key.size < 2
+        #     term.prio = 0
+        #   elsif term.key.size > 3
+        #     term.prio = LEXICON.includes?(term.key) ? 2 : 1
+        #   end
 
-          term.attr |= 1 if is_noun?(term.key, term.vals.first)
-        end
+        #   term.attr |= 1 if is_noun?(term.key, term.vals.first)
+        # end
 
         # add to suggestion
         suggest_term = @out_suggest.gen_term(term.key, term.vals)
