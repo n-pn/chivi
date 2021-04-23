@@ -108,9 +108,9 @@ class CV::Cline
         skip, left, right = false, "", ""
 
         case prev.key
-        when "不", "很", "太", "多"
+        when "不", "很", "太", "多", "未"
           skip, left = true, "#{prev.val} "
-        when "那么", "这么", "非常", "不太", "很大"
+        when "最", "那么", "这么", "非常", "不太", "很大"
           skip, right = true, " #{prev.val}"
         end
 
