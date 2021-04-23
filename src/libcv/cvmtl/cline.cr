@@ -12,15 +12,19 @@ class CV::Cline
     res = [] of Cword
     i = 0
 
+    handle_adjes!
+    handle_nouns!
+    combine_的!
+
     while i < @data.size
       curr = @data.unsafe_fetch(i)
       i += 1
 
       case curr.key
       when "的"
-        curr.fix("", cat: 0)
+        curr.fix(val: "", cat: 0)
       when "了"
-        curr.fix("rồi")
+        curr.fix(val: "rồi")
 
         if (prev = @data[i - 2]?) && prev.verb?
           next unless succ = @data[i]?
@@ -88,13 +92,8 @@ class CV::Cline
       end
     end
 
-    handle_adjes!
-    handle_nouns!
-    combine_的!
-
     self
   rescue err
-    puts err, err.backtrace
     self
   end
 
