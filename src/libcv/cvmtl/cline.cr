@@ -143,9 +143,9 @@ class CV::Cline
         skip, left, right = false, "", ""
 
         case prev.key
-        when "这", "这位", "这具", "这个", "这种", "这些"
+        when "这", "这位", "这具", "这个", "这种", "这些", "这样"
           skip, left, right = true, suffix(prev.key[1]?), " này"
-        when "那", "那位", "那具", "那个", "那种", "那些"
+        when "那", "那位", "那具", "那个", "那种", "那些", "那样"
           skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "什么"
           skip, left, right = true, "cái ", " gì"
@@ -194,6 +194,7 @@ class CV::Cline
     when '个' then "cái "
     when '种' then "chủng "
     when '些' then "những "
+    when '样' then "dạng "
     else          ""
     end
   end
