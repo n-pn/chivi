@@ -6,7 +6,7 @@ class CV::Cword
   property val : String
 
   property dic : Int32
-  getter cat : Int32 = 0
+  property cat : Int32 = 0
 
   # TODO: add more words
   NUM_RE = /^[\p{N}零〇一二两三四五六七八九十百千万亿]+$/
@@ -48,7 +48,7 @@ class CV::Cword
   end
 
   @[AlwaysInline]
-  def adjv?
+  def adje?
     @cat & 4 != 0
   end
 
@@ -152,5 +152,21 @@ class CV::Cword
     @key = ""
     @val = ""
     @dic = 0
+  end
+
+  def pronoun?
+    case @key
+    when "她", "我"
+      true
+    else
+      false
+    end
+  end
+
+  def merge!(key : String, val : String, cat : Int32 = 0, dic = @dic)
+    @key = "#{@key}#{key}"
+    @val = "#{@val} #{val}"
+    @cat |= cat
+    @dic = dic
   end
 end

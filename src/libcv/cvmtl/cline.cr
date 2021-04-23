@@ -18,63 +18,53 @@ class CV::Cline
     # - apply other grammar rule
     # - ...
 
-    @data.each_with_index do |curr, i|
+    handle_adjes!
+    handle_nouns!
+
+    res = [] of Cword
+    i = 0
+
+    while i < @data.size
+      curr = @data.unsafe_fetch(i)
+      i += 1
+
       case curr.key
-      when "那么"
-        next unless succ = @data[i + 1]?
-        next unless succ.adjv?
-
-        succ.key = "#{curr.key}#{succ.key}"
-        succ.val = "#{succ.val} như vậy"
-        curr.clear!
-      when "的"
-        curr.fix("")
       when "了"
-        succ = @data[i + 1]?
+        curr.fix("rồi")
 
-        if succ && succ.word? && succ.key != @data[i - 1]?.try(&.key)
-          val = ""
-        else
-          val = "rồi"
+        if (prev = @data[i - 2]?) && prev.verb?
+          next unless succ = @data[i]?
+          curr.fix("") if succ.word? && succ.key != prev.key
         end
-
-        curr.fix(val)
       when "对"
-        curr.fix(@data[i + 1]?.try(&.word?) ? "đối với" : "đúng")
+        curr.fix(@data[i]?.try(&.word?) ? "đối với" : "đúng")
       when "不对"
-        curr.fix(@data[i + 1]?.try(&.word?) ? "không đối với" : "không đúng")
+        curr.fix(@data[i]?.try(&.word?) ? "không đối với" : "không đúng")
       when "也"
-        curr.fix(@data[i + 1]?.try(&.word?) ? "cũng" : "vậy")
+        curr.fix(@data[i]?.try(&.word?) ? "cũng" : "vậy")
       when "地"
         # TODO: check noun, verb?
-        curr.fix(@data[i - 1]?.try(&.word?) ? "mà" : "địa")
+        curr.fix(@data[i - 2]?.try(&.word?) ? "mà" : "địa")
       when "原来"
-        if @data[i + 1]?.try(&.match_key?("的")) || @data[i - 1]?.try(&.word?)
+        if @data[i]?.try(&.match_key?("的")) || @data[i - 2]?.try(&.word?)
           val = "ban đầu"
         else
           val = "thì ra"
         end
         curr.fix(val)
-      when "高达"
-        curr.fix("cao đến") if @data[i + 1]?.try(&.is_num)
       when "行"
-        curr.fix("được") unless @data[i + 1]?.try(&.word?)
-        # when "斤"
-        #   next unless prev = @data[i - 1]?
-        #   next unless num = prev.to_i?
-        #   val = (num / 2 * 10).round / 10
-        # curr.dic = 9
-        # curr.val = val.to_s
-
+        curr.fix("được") unless @data[i]?.try(&.word?)
+      when "高达"
+        curr.fix("cao đến") if @data[i]?.try(&.is_num)
       when "两"
-        curr.fix("lượng") if @data[i - 1]?.try(&.is_num)
+        curr.fix("lượng") if @data[i - 2]?.try(&.is_num)
       when "里"
-        curr.fix("dặm") if @data[i - 1]?.try(&.is_num)
+        curr.fix("dặm") if @data[i - 2]?.try(&.is_num)
       when "米"
-        curr.fix("mét") if @data[i - 1]?.try(&.is_num)
+        curr.fix("mét") if @data[i - 2]?.try(&.is_num)
       when "年"
         # TODO: handle special cases for year
-        next unless prev = @data[i - 1]?
+        next unless prev = @data[i - 2]?
         next unless prev.to_i?.try(&.>= 100)
 
         curr.key = "#{prev.key}#{curr.key}"
@@ -82,7 +72,7 @@ class CV::Cline
 
         prev.clear!
       when "月"
-        next unless prev = @data[i - 1]?
+        next unless prev = @data[i - 2]?
         next unless prev.to_i?.try(&.<= 15)
 
         curr.key = "#{prev.key}#{curr.key}"
@@ -90,7 +80,7 @@ class CV::Cline
 
         prev.clear!
       when "日"
-        next unless prev = @data[i - 1]?
+        next unless prev = @data[i - 2]?
         next unless prev.to_i?.try(&.<= 40)
 
         curr.key = "#{prev.key}#{curr.key}"
@@ -100,7 +90,121 @@ class CV::Cline
       end
     end
 
+    combine_的!
     self
+  end
+
+  private def handle_adjes!
+    res = [] of Cword
+    idx = 0
+    prev = nil
+
+    @data.each do |curr|
+      if prev && curr.adje?
+        case prev.key
+        when "不", "很", "太", "非常", "不太", "多"
+          prev.key = "#{prev.key}#{curr.key}"
+          prev.val = "#{prev.val} #{curr.val}"
+          prev.cat |= 4
+          prev.dic = curr.dic
+          next
+        when "那么", "这么"
+          prev.key = "#{prev.key}#{curr.key}"
+          prev.val = "#{curr.val} #{prev.val}"
+          prev.cat |= 4
+          prev.dic = curr.dic
+          next
+        end
+      end
+
+      prev = curr
+      res << curr
+    end
+
+    @data = res
+  end
+
+  private def handle_nouns!
+    res = [] of Cword
+    idx = 0
+    prev = nil
+
+    @data.each do |curr|
+      if prev && curr.noun? && !curr.adje?
+        case prev.key
+        when "这", "那"
+          prev.key = "#{prev.key}#{curr.key}"
+          prev.val = "#{prev.val} #{curr.val}"
+          prev.cat |= 1
+          prev.dic = curr.dic
+          next
+        when "这位", "那位"
+          prev.key = "#{prev.key}#{curr.key}"
+
+          right = prev.key[0] == '这' ? "này" : "kia"
+          prev.val = "vị #{curr.val} #{right}"
+
+          prev.cat |= 1
+          prev.dic = curr.dic
+          next
+        end
+      end
+
+      prev = curr
+      res << curr
+    end
+
+    @data = res
+  end
+
+  private def combine_的!
+    res = [] of Cword
+    idx = 0
+
+    while idx < @data.size
+      curr = @data.unsafe_fetch(idx)
+
+      if curr.key == "的"
+        if (left = res.last?)
+          if right = @data[idx + 1]?
+            if right.noun?
+              skip = false
+              if left.adje?
+                left.key = "#{left.key}的#{right.key}"
+                left.val = "#{right.val} #{left.val}"
+                skip = true
+                # elsif left.pronoun?
+                #   left.key = "#{left.key}的#{right.key}"
+                #   left.val = "#{right.val} của #{left.val}"
+                #   skip = true
+              end
+
+              if skip
+                left.dic = 9
+                left.cat ^= 1
+
+                idx += 2
+                next
+              end
+            end
+          elsif left.pronoun?
+            left.key = "#{left.key}的"
+            left.val = "của #{left.val}"
+
+            left.dic = 9
+            idx += 1
+            next
+          end
+        end
+
+        curr.fix("")
+      end
+
+      res << curr
+      idx += 1
+    end
+
+    @data = res
   end
 
   def capitalize! : self

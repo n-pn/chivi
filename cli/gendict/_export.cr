@@ -61,6 +61,8 @@ class CV::ExportDicts
   end
 
   def noun_and_adje?(key : String, val : String)
+    return false if key.size < 2
+
     return true if key.ends_with?("色") && val.starts_with?("màu ")
     return true if key.ends_with?("上") && val.starts_with?("trên ")
     return true if key.ends_with?("下") && val.starts_with?("dưới ")
