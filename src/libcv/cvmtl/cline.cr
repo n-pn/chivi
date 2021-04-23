@@ -148,6 +148,8 @@ class CV::Cline
           skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "什么"
           skip, left, right = true, "cái ", " gì"
+        when "一串"
+          skip, left = true, "#{prev.val} "
           # else
           #   # combine nouns
           #   if prev.cat == 1
