@@ -18,9 +18,6 @@ class CV::Cline
     # - apply other grammar rule
     # - ...
 
-    handle_adjes!
-    handle_nouns!
-
     res = [] of Cword
     i = 0
 
@@ -29,6 +26,8 @@ class CV::Cline
       i += 1
 
       case curr.key
+      when "的"
+        curr.fix("", cat: 0)
       when "了"
         curr.fix("rồi")
 
@@ -98,6 +97,8 @@ class CV::Cline
       end
     end
 
+    handle_adjes!
+    handle_nouns!
     combine_的!
     self
   end
@@ -109,16 +110,18 @@ class CV::Cline
 
     @data.each do |curr|
       if prev && curr.adje?
+        skip, left, right = false, "", ""
+
         case prev.key
-        when "不", "很", "太", "非常", "不太", "多"
+        when "不", "很", "太", "多"
+          skip, left = true, "#{prev.val} "
+        when "那么", "这么", "非常", "不太", "很大"
+          skip, right = true, " #{prev.val}"
+        end
+
+        if skip
           prev.key = "#{prev.key}#{curr.key}"
-          prev.val = "#{prev.val} #{curr.val}"
-          prev.cat |= 4
-          prev.dic = curr.dic
-          next
-        when "那么", "这么"
-          prev.key = "#{prev.key}#{curr.key}"
-          prev.val = "#{curr.val} #{prev.val}"
+          prev.val = "#{left}#{curr.val}#{right}"
           prev.cat |= 4
           prev.dic = curr.dic
           next
@@ -220,8 +223,6 @@ class CV::Cline
             next
           end
         end
-
-        curr.fix("")
       end
 
       res << curr

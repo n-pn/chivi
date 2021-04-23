@@ -25,7 +25,7 @@ class CV::Cword
   def initialize(@key, @val = @key, @dic = 0, @cat = 0)
   end
 
-  def fix(@val : String, @dic = 9) : Nil
+  def fix(@val : String, @dic = 9, @cat = @cat) : Nil
   end
 
   def match_key?(key : String)
