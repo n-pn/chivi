@@ -8,38 +8,38 @@ class CV::Vterm
   getter key : String
   getter vals : Array(String)
 
-  property prio : Int8 = 1_i8
-  property attr : Int8 = 0_i8
+  property prio : Int32 = 1
+  property attr : Int32 = 0
 
   getter mtime : Int32 = 0
   getter rtime : Time { EPOCH + @mtime.minutes }
 
   getter uname : String = "_"
-  getter power : Int8 = 1_i8
+  getter power : Int32 = 1
 
-  getter dtype : Int8 = 1_i8
+  getter dtype : Int32 = 1
   getter point : Float64 { calc_point }
 
   property _prev : Vterm? = nil
 
   def self.parse_prio(attrs : String)
     case attrs[0]?
-    when 'H' then 2_i8
-    when 'L' then 0_i8
-    else          1_i8
+    when 'H' then 2
+    when 'L' then 0
+    else          1
     end
   end
 
   def self.parse_attr(attrs : String)
-    res = 0_i8
-    res += 1_i8 if attrs.includes?('N')
-    res += 2_i8 if attrs.includes?('V')
-    res += 4_i8 if attrs.includes?('A')
+    res = 0
+    res += 1 if attrs.includes?('N')
+    res += 2 if attrs.includes?('V')
+    res += 4 if attrs.includes?('A')
 
     res
   end
 
-  def initialize(cols : Array(String), @dtype = 2_i8, @power = 2_i8)
+  def initialize(cols : Array(String), @dtype = 2, @power = 2)
     @key = cols[0]
     @vals = cols[1]?.try(&.split(SEP)) || [""]
 
@@ -54,13 +54,13 @@ class CV::Vterm
     @mtime = mtime
 
     @uname = cols[4]? || "_"
-    @power = cols[5]?.try(&.to_i8?) || @power
+    @power = cols[5]?.try(&.to_i?) || @power
   end
 
   def initialize(@key,
-                 @vals = [""], @prio = 1_i8, @attr = 0_i8,
-                 @mtime = Vterm.mtime, @uname = "_", @power = 1_i8,
-                 @dtype = 2_i8)
+                 @vals = [""], @prio = 1, @attr = 0,
+                 @mtime = Vterm.mtime, @uname = "_", @power = 1,
+                 @dtype = 2)
   end
 
   private def calc_point
@@ -92,8 +92,8 @@ class CV::Vterm
     io << '\t'
 
     case @prio
-    when 2_i8 then io << 'H'
-    when 0_i8 then io << 'L'
+    when 2 then io << 'H'
+    when 0 then io << 'L'
     end
 
     io << 'N' if @attr & 1 != 0

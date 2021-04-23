@@ -109,18 +109,18 @@ class CV::ExportDicts
       next if term.empty?
 
       if term.key.size < 2
-        term.prio = 0_i8
+        term.prio = 0
       elsif term.key.size > 3
-        term.prio = LEXICON.includes?(term.key) ? 2_i8 : 1_i8
+        term.prio = LEXICON.includes?(term.key) ? 2 : 1
       end
 
       term.attr ^= 1 if is_noun?(term.key, term.vals.first)
       term.attr ^= 2 if @verbs.includes?(term.key)
 
       if is_adje?(term.key, term.vals.first)
-        term.attr ^= 4_i8
-      elsif term.attr >= 4_i8
-        term.attr -= 4_i8
+        term.attr ^= 4
+      elsif term.attr >= 4
+        term.attr -= 4
       end
     end
 
@@ -137,9 +137,9 @@ class CV::ExportDicts
       dict.each do |term|
         unless term.empty?
           if term.key.size < 2
-            term.prio = 0_i8
+            term.prio = 0
           elsif term.key.size > 3
-            term.prio = LEXICON.includes?(term.key) ? 2_i8 : 1_i8
+            term.prio = LEXICON.includes?(term.key) ? 2 : 1
           end
 
           term.attr ^= 1 if is_noun?(term.key, term.vals.first)
@@ -156,7 +156,7 @@ class CV::ExportDicts
         next if term.key.size < 3 || term.key.size > 6 || term.vals.empty?
         next unless capped?(term.vals[0])
 
-        various_term = @out_various.gen_term(term.key, term.vals, 2_i8, 1_i8)
+        various_term = @out_various.gen_term(term.key, term.vals, 2, 1)
         @out_various.set(various_term)
       end
 

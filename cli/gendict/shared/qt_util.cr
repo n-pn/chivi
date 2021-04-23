@@ -9,7 +9,7 @@ class ValueSet
   forward_missing_to @data
 
   def self.load(path : String, preload = true)
-    new("_db/dictdb/_inits/#{path}", preload)
+    new("_db/vp_dicts/_inits/#{path}", preload)
   end
 
   def initialize(@file, preload = false)
@@ -54,7 +54,7 @@ module QtUtil
   extend self
 
   def path(file : String)
-    File.join("_db/dictdb/_inits", file)
+    File.join("_db/vp_dicts/_inits", file)
   end
 
   class_getter lexicon : ValueSet { ValueSet.load(".result/lexicon.tsv") }

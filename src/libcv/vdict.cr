@@ -29,13 +29,13 @@ class CV::Vdict
     CACHE[dname] ||=
       case dname
       when "trungviet", "cc_cedict", "trich_dan"
-        new(path("lookup/#{dname}"), dtype: 1_i8, p_min: 4_i8, reset: reset)
+        new(path("lookup/#{dname}"), dtype: 1, p_min: 4, reset: reset)
       when "tradsim", "binh_am", "hanviet"
-        new(path("system/#{dname}"), dtype: 2_i8, p_min: 3_i8, reset: reset)
+        new(path("system/#{dname}"), dtype: 2, p_min: 3, reset: reset)
       when "regular", "suggest", "various"
-        new(path("common/#{dname}"), dtype: 2_i8, p_min: 2_i8, reset: reset)
+        new(path("common/#{dname}"), dtype: 2, p_min: 2, reset: reset)
       else
-        new(path("unique/#{dname}"), dtype: 3_i8, p_min: 1_i8, reset: reset)
+        new(path("unique/#{dname}"), dtype: 3, p_min: 1, reset: reset)
       end
   end
 
@@ -53,10 +53,10 @@ class CV::Vdict
 
   getter size = 0
 
-  getter dtype : Int8 # dict type
-  getter p_min : Int8 # minimal user power required
+  getter dtype : Int32 # dict type
+  getter p_min : Int32 # minimal user power required
 
-  def initialize(@file : String, @dtype = 0_i8, @p_min = 1_i8, reset = false)
+  def initialize(@file : String, @dtype = 0, @p_min = 1, reset = false)
     @ftab = @file.sub(".tsv", ".tab")
     load!(@file) unless reset || !File.exists?(@file)
   end
@@ -84,11 +84,11 @@ class CV::Vdict
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
   end
 
-  def set(key : String, vals : Array(String), prio = 1_i8, attr = 0_i8)
+  def set(key : String, vals : Array(String), prio = 1, attr = 0)
     set(gen_term(key, vals, prio, attr))
   end
 
-  def gen_term(key : String, vals = [""], prio = 1_i8, attr = 0_i8)
+  def gen_term(key : String, vals = [""], prio = 1, attr = 0)
     Vterm.new(
       key, vals, prio: prio, attr: attr,
       mtime: 0, dtype: @dtype, power: @p_min)

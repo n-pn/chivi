@@ -6,9 +6,9 @@ def cleanup(input : String)
     .map(&.gsub(/^\d+\.\s*/, "").gsub(/\.\s*$/, ""))
     .reject(&.empty?)
     .join("; ")
-    .sub("]; ", "] ")
-    .sub("}; ", "} ")
-    .split("; ")
+    .gsub("]; ", "] ")
+    .gsub("}; ", "} ")
+    .split(/;\s+/)
     .uniq
     .join("; ")
 end
@@ -37,8 +37,9 @@ inp_dict.data.each do |key, vals|
       end
     end
   end
-rescue
-  pp [key, vals]
+rescue err
+  p! [key, vals]
+  puts err
 end
 
 hv_chars.save!

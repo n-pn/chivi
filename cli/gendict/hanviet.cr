@@ -49,7 +49,7 @@ class Hanviet
       output.set(key, vals.uniq.first(3))
     end
 
-    remote = CV::Vdict.new("_db/dictdb/remote/system/hanviet.tsv", 2_i8, 3_i8)
+    remote = CV::Vdict.new("_db/dictdb/remote/system/hanviet.tsv", 2, 3)
     remote.logs.each do |term|
       output.set(term) unless term.power < 3
     end

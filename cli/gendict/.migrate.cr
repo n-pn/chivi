@@ -51,7 +51,7 @@ def migrate(file : String, uniq = false)
 
       next if dname == "hanviet" && uname != "Nipin"
 
-      power = cols[4]?.try(&.to_i8?) || 4_i8
+      power = cols[4]?.try(&.to_i?) || 4
 
       power = vdict.p_min if power > vdict.p_min
       emend = CV::VpEmend.new(mtime, uname, power)

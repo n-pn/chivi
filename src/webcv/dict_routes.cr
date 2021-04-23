@@ -67,7 +67,7 @@ module CV::Server
       if term = regular_node.try(&.term)
         prio, attr = term.prio, term.attr
       else
-        prio = attr = 1_i8
+        prio = attr = 1
       end
 
       special_term = special_dict.gen_term(input, prio: prio, attr: attr)
@@ -108,8 +108,8 @@ module CV::Server
 
     halt env, status_code: 500, response: "Access denied!" if u_power < 1
 
-    power = env.params.json.fetch("power", u_power).as(Int64).to_i8
-    power = u_power.to_i8 if power > u_power
+    power = env.params.json.fetch("power", u_power).as(Int64).to_i
+    power = u_power.to_i if power > u_power
 
     dname = env.params.url["dname"]
     dict = Vdict.load(dname)
@@ -117,8 +117,8 @@ module CV::Server
     key = env.params.json["key"].as(String).strip
     vals = env.params.json.fetch("vals", "").as(String)
     vals = [vals.strip]
-    prio = env.params.json.fetch("prio", 1).as(Int64).to_i8
-    attr = env.params.json.fetch("attr", 0).as(Int64).to_i8
+    prio = env.params.json.fetch("prio", 1).as(Int64).to_i
+    attr = env.params.json.fetch("attr", 0).as(Int64).to_i
 
     new_term = Vterm.new(key, vals, prio, attr, uname: u_dname, power: power, dtype: dict.dtype)
 
@@ -129,7 +129,7 @@ module CV::Server
     if dict.dtype == 3 # unique dict
       # add to quick translation dict if entry is a name
       unless key.size < 3 || vals.empty? || vals[0].downcase == vals[0]
-        various_term = Vdict.various.gen_term(key, vals, 2_i8, 1_i8)
+        various_term = Vdict.various.gen_term(key, vals, 2, 1)
         Vdict.various.set!(various_term)
       end
 

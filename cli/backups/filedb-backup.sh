@@ -11,4 +11,4 @@ rsync -aiz --no-p --exclude "shubaow" "$SSH/_db/.cache/" "_db/.cache/"
 
 rsync -aiz --no-p "$SSH/_db/ch_texts/" "_db/ch_texts/"
 rsync -aiz --no-p "$SSH/_db/ch_infos/" "_db/ch_infos/"
-# rsync -aiz --no-p "$SSH/_db/nv_infos/" "_db/nv_infos/"
+rsync -aiz --no-p "$SSH/_db/nv_infos/" "_db/nv_infos/"

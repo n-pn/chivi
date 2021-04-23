@@ -5,8 +5,8 @@ class CV::Cword
   property key : String
   property val : String
 
-  property dic : Int8
-  getter cat : Int8 = 0_i8
+  property dic : Int32
+  getter cat : Int32 = 0
 
   # TODO: add more words
   NUM_RE = /^[\p{N}零〇一二两三四五六七八九十百千万亿]+$/
@@ -22,10 +22,10 @@ class CV::Cword
     @dic = term.dtype
   end
 
-  def initialize(@key, @val = @key, @dic = 0_i8, @cat = 0_i8)
+  def initialize(@key, @val = @key, @dic = 0, @cat = 0)
   end
 
-  def fix(@val : String, @dic = 9_i8) : Nil
+  def fix(@val : String, @dic = 9) : Nil
   end
 
   def match_key?(key : String)
@@ -34,37 +34,37 @@ class CV::Cword
 
   @[AlwaysInline]
   def word?
-    @dic > 0_i8
+    @dic > 0
   end
 
   @[AlwaysInline]
   def noun?
-    @cat & 1_i8 != 0_i8
+    @cat & 1 != 0
   end
 
   @[AlwaysInline]
   def verb?
-    @cat & 2_i8 != 0_i8
+    @cat & 2 != 0
   end
 
   @[AlwaysInline]
   def adjv?
-    @cat & 4_i8 != 0_i8
+    @cat & 4 != 0
   end
 
-  def capitalize!(cap_mode : Int8 = 1) : Nil
+  def capitalize!(cap_mode : Int32 = 1) : Nil
     @val = cap_mode > 1 ? TextUtils.titleize(@val) : TextUtils.capitalize(@val)
   end
 
-  def cap_mode(prev_mode : Int8 = 0) : Int8
+  def cap_mode(prev_mode : Int32 = 0) : Int32
     case @val[-1]?
     when '“', '‘', '[', '{',
          ':', '!', '?', '.'
-      prev_mode > 1_i8 ? 2_i8 : 1_i8
+      prev_mode > 1 ? 2 : 1
     when ',', '⟩', '}', ']'
-      0_i8
+      0
     when '⟨'
-      2_i8
+      2
     else
       prev_mode
     end
@@ -149,6 +149,6 @@ class CV::Cword
   def clear!
     @key = ""
     @val = ""
-    @dic = 0_i8
+    @dic = 0
   end
 end

@@ -81,7 +81,7 @@ class CV::Cvmtl
         _, group, num, lbl, trash, title = match
 
         num = Cutil.to_integer(num)
-        res << Cword.new(group, "#{vi_label(lbl)} #{num}", 1_i8)
+        res << Cword.new(group, "#{vi_label(lbl)} #{num}", 1)
 
         if !title.empty?
           res << Cword.new(trash, ": ")
@@ -90,7 +90,7 @@ class CV::Cvmtl
         end
       elsif match = TITLE_RE_3.match(title)
         _, num, trash, title = match
-        res << Cword.new(num, num, 1_i8)
+        res << Cword.new(num, num, 1)
 
         if !title.empty?
           res << Cword.new(trash, ". ")
@@ -99,7 +99,7 @@ class CV::Cvmtl
         end
       elsif match = TITLE_RE_4.match(title)
         _, trash, title = match
-        res << Cword.new("楔子", "Phần đệm", 1_i8)
+        res << Cword.new("楔子", "Phần đệm", 1)
 
         if !title.empty?
           res << Cword.new(trash, ": ")
@@ -136,7 +136,7 @@ class CV::Cvmtl
 
     input.each_with_index(1) do |char, idx|
       norm = Cutil.normalize(char)
-      nodes << Cword.new(char.to_s, norm.to_s, alnum?(norm) ? 1_i8 : 0_i8)
+      nodes << Cword.new(char.to_s, norm.to_s, alnum?(norm) ? 1 : 0)
       costs << idx.to_f
     end
 
@@ -195,7 +195,7 @@ class CV::Cvmtl
 
         if (last = ary.last?) && last.special_end_char?
           last.combine!(curr)
-          last.dic = 1_i8
+          last.dic = 1
           next
         end
 

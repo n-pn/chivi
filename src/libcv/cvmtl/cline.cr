@@ -104,14 +104,14 @@ class CV::Cline
   end
 
   def capitalize! : self
-    cap_mode = 1_i8
+    cap_mode = 1
 
     @data.each do |entry|
       next if entry.val.empty?
 
       if cap_mode > 0 && entry.dic > 0
         entry.capitalize!(cap_mode) if entry.dic > 1
-        cap_mode = 0_i8 unless cap_mode > 1
+        cap_mode = 0 unless cap_mode > 1
       else
         cap_mode = entry.cap_mode(cap_mode)
       end

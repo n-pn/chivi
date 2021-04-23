@@ -1,5 +1,5 @@
 class QtDict
-  DIR = "_db/dictdb/_inits"
+  DIR = "_db/vp_dicts/_inits"
 
   def self.load(fname : String, preload : Bool = true)
     new("#{DIR}/#{fname}", preload: preload)
