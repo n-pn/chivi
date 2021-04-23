@@ -158,8 +158,8 @@ class CV::Cline
         case prev.cat
         when 5 # noun and adje
           skip, left = true, "#{prev.val} "
-        when 4 # only adje
-          skip, right = true, " #{prev.val}"
+          # when 4 # only adje
+          #   skip, right = true, " #{prev.val}"
         when 1 # only nown
           case curr.key
           when "小队"
