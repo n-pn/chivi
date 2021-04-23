@@ -148,13 +148,23 @@ class CV::Cline
           skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "什么"
           skip, left, right = true, "cái ", " gì"
+        when "某个"
+          skip, left, right = true, "", " nào đó"
         when "一串"
           skip, left = true, "#{prev.val} "
-          # else
-          #   # combine nouns
-          #   if prev.cat == 1
-          #     skip, left = true, "#{prev.val} "
-          #   end
+        else
+        end
+
+        case prev.cat
+        when 5 # noun and adje
+          skip, left = true, "#{prev.val} "
+        when 4 # only adje
+          skip, right = true, " #{prev.val}"
+        when 1 # only nown
+          case curr.key
+          when "小队"
+            skip, left = true, "#{prev.val} "
+          end
         end
 
         if skip
