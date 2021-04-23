@@ -112,6 +112,8 @@ class CV::Cline
           skip, left = true, "#{prev.val} "
         when "最", "那么", "这么", "非常", "不太", "很大"
           skip, right = true, " #{prev.val}"
+        else
+          skip, left = true, "#{prev.val} " if prev.cat == 4
         end
 
         if skip
@@ -154,7 +156,7 @@ class CV::Cline
           skip, left, right = true, "cái ", " gì"
         when "某个"
           skip, left, right = true, "", " nào đó"
-        when "一串"
+        when "一串", "一个"
           skip, left = true, "#{prev.val} "
         else
         end
