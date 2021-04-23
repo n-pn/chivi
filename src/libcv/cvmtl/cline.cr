@@ -208,37 +208,34 @@ class CV::Cline
     while idx < @data.size
       curr = @data.unsafe_fetch(idx)
 
-      if curr.key == "的"
-        if (left = res.last?)
-          if right = @data[idx + 1]?
-            if right.noun? && !res[-2]?.try(&.verb?)
-              skip = false
-              if left.adje?
-                left.key = "#{left.key}的#{right.key}"
-                left.val = "#{right.val} #{left.val}"
-                skip = true
-              elsif left.noun?
-                left.key = "#{left.key}的#{right.key}"
-                left.val = "#{right.val} của #{left.val}"
-                skip = true
-              end
-
-              if skip
-                left.dic = 9
-                left.cat ^= 1
-
-                idx += 2
-                next
-              end
+      if curr.key == "的" && (left = res.last?)
+        if right = @data[idx + 1]?
+          if right.noun? && !res[-2]?.try(&.verb?)
+            skip = false
+            if left.adje?
+              left.val = "#{right.val} #{left.val}"
+              skip = true
+            elsif left.noun?
+              left.val = "#{right.val} của #{left.val}"
+              skip = true
             end
-          elsif left.pronoun?
-            left.key = "#{left.key}的"
-            left.val = "của #{left.val}"
 
-            left.dic = 9
-            idx += 1
-            next
+            if skip
+              left.key = "#{left.key}的#{right.key}"
+              left.dic = 9
+              left.cat ^= 1
+
+              idx += 2
+              next
+            end
           end
+        elsif left.pronoun?
+          left.key = "#{left.key}的"
+          left.val = "của #{left.val}"
+
+          left.dic = 9
+          idx += 1
+          next
         end
       end
 
