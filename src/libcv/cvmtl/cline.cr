@@ -9,15 +9,6 @@ class CV::Cline
   end
 
   def fix_grammar!
-    # TODO: handle more special rules, like:
-    # - convert hanzi to number,
-    # - convert hanzi percent
-    # - date and time
-    # - guess special words meaning..
-    # - apply `的` grammar
-    # - apply other grammar rule
-    # - ...
-
     res = [] of Cword
     i = 0
 
@@ -100,6 +91,10 @@ class CV::Cline
     handle_adjes!
     handle_nouns!
     combine_的!
+
+    self
+  rescue err
+    puts err
     self
   end
 
@@ -142,37 +137,28 @@ class CV::Cline
 
     @data.each do |curr|
       if prev && curr.cat == 1
+        skip, left, right = false, "", ""
+
         case prev.key
-        when "这", "那",
-             "这位", "那位",
-             "这具", "那具",
-             "这个", "那个",
-             "这种", "那种"
-          prev.key = "#{prev.key}#{curr.key}"
-
-          right = prev.key[0] == '这' ? " này" : " kia"
-          left =
-            case prev.key[1]?
-            when '位' then "vị "
-            when '具' then "cụ "
-            when '个' then "cái "
-            when '种' then "chủng "
-            else          ""
-            end
-
-          prev.val = "#{left}#{curr.val}#{right}"
-
-          prev.cat |= 1
-          prev.dic = curr.dic
-          next
+        when "这", "这位", "这具", "这个", "这种"
+          skip, left, right = true, suffix(prev.key[1]), " này"
+        when "那", "那位", "那具", "那个", "那种"
+          skip, left, right = true, suffix(prev.key[1]), " kia"
         when "什么"
+          skip, left, right = true, "cái ", " gì"
+        else
+          # combine nouns
+          if prev.cat == 1
+            skip, left = true, "#{prev.val} "
+          end
+        end
+
+        if skip
           prev.key = "#{prev.key}#{curr.key}"
-
-          left, right = prev.val.split(" ", 2)
-          prev.val = "#{left} #{curr.val} #{right}"
-
+          prev.val = "#{left}#{curr.val}#{right}"
           prev.cat |= 1
           prev.dic = curr.dic
+
           next
         end
       end
@@ -182,6 +168,16 @@ class CV::Cline
     end
 
     @data = res
+  end
+
+  private def suffix(char : Char?)
+    case char
+    when '位' then "vị "
+    when '具' then "cụ "
+    when '个' then "cái "
+    when '种' then "chủng "
+    else          ""
+    end
   end
 
   private def combine_的!

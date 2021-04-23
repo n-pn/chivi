@@ -12,9 +12,9 @@ class CV::ChText
 
   def self.load(bname : String, sname : String, snvid : String,
                 chidx : Int32, schid : String)
-    CACHED.get("#{sname}/#{snvid}/#{schid}") {
+    CACHED.get("#{sname}/#{snvid}/#{schid}") do
       new(bname, sname, snvid, chidx, schid)
-    }
+    end
   end
 
   @zh_text : Array(String)? = nil
