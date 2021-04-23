@@ -61,7 +61,9 @@ class CV::Cword
     when '“', '‘', '[', '{',
          ':', '!', '?', '.'
       prev_mode > 1 ? 2 : 1
-    when ',', '⟩', '}', ']'
+    when ',', '}', ']'
+      prev_mode == 2 ? 2 : 0
+    when '⟩'
       0
     when '⟨'
       2

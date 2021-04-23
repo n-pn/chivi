@@ -42,7 +42,7 @@ class CV::ExportDicts
   def initialize
     @nouns = Set(String).new
     @nouns.concat File.read_lines(::QtUtil.path(".result/ce-nouns.txt"))
-    @nouns.concat File.read_lines(::QtUtil.path(".result/qt-nouns.txt"))
+    # @nouns.concat File.read_lines(::QtUtil.path(".result/qt-nouns.txt"))
 
     @verbs = Set(String).new
     @verbs.concat File.read_lines(::QtUtil.path(".result/ce-verbs.txt"))
@@ -53,18 +53,11 @@ class CV::ExportDicts
   end
 
   def is_noun?(key : String, val : String)
-    return true if @nouns.includes?(key)
-    return true if val != val.downcase
-    return true if match_hanviet?(key, val.downcase)
-
-    noun_and_adje?(key, val)
+    @nouns.includes?(key) || val != val.downcase || noun_and_adje?(key, val)
   end
 
   def is_adje?(key : String, val : String)
-    return false if val != val.downcase
-    return true if @adjes.includes?(key)
-
-    noun_and_adje?(key, val)
+    @adjes.includes?(key) || noun_and_adje?(key, val)
   end
 
   def noun_and_adje?(key : String, val : String)
@@ -104,7 +97,7 @@ class CV::ExportDicts
       @out_regular.set(term.key, term.vals)
     end
 
-    @out_regular.load!("_db/dictdb/remote/common/regular.tab")
+    @out_regular.load!("_db/vp_dicts/remote/common/regular.tab")
     @out_regular.each do |term|
       next if term.empty?
 
@@ -114,13 +107,15 @@ class CV::ExportDicts
         term.prio = LEXICON.includes?(term.key) ? 2 : 1
       end
 
-      term.attr ^= 1 if is_noun?(term.key, term.vals.first)
-      term.attr ^= 2 if @verbs.includes?(term.key)
+      term.attr = 0
+
+      term.set_attr!(:noun) if is_noun?(term.key, term.vals.first)
+      term.set_attr!(:verb) if @verbs.includes?(term.key)
 
       if is_adje?(term.key, term.vals.first)
-        term.attr ^= 4
-      elsif term.attr >= 4
-        term.attr -= 4
+        term.set_attr!(:adje)
+      else
+        term.clear_attr!(:adje)
       end
     end
 
@@ -130,7 +125,7 @@ class CV::ExportDicts
   def export_uniques!
     puts "\n[Export uniques]".colorize.cyan.bold
 
-    Dir.glob("_db/dictdb/remote/unique/*.tab").each do |file|
+    Dir.glob("_db/vp_dicts/remote/unique/*.tab").each do |file|
       dict = Vdict.load(File.basename(file, ".tab"))
       dict.load!(file)
 
@@ -142,7 +137,7 @@ class CV::ExportDicts
             term.prio = LEXICON.includes?(term.key) ? 2 : 1
           end
 
-          term.attr ^= 1 if is_noun?(term.key, term.vals.first)
+          term.attr |= 1 if is_noun?(term.key, term.vals.first)
         end
 
         # add to suggestion

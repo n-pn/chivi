@@ -127,4 +127,20 @@ class CV::Vterm
   def self.mtime(time : Time = Time.utc)
     (time - EPOCH).total_minutes.round.to_i
   end
+
+  def set_attr!(type : Symbol) : Nil
+    case type
+    when :noun then @attr |= 1
+    when :verb then @attr |= 2
+    when :adje then @attr |= 4
+    end
+  end
+
+  def clear_attr!(type : Symbol) : Nil
+    case type
+    when :noun then @attr &= ~1
+    when :verb then @attr &= ~2
+    when :adje then @attr &= ~4
+    end
+  end
 end

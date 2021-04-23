@@ -75,7 +75,7 @@ class CeEntry
       words = x.split(" ")
 
       return false if words.size < 2
-      return true if words[0] == "to" && VERBS.includes?(words[1])
+      return true if words[0] == "to"
     end
 
     false
@@ -154,20 +154,20 @@ class CeInput
     input = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
 
     @entries.each do |entry|
-      # if entry.is_noun?
-      #   puts "noun: #{entry.defins}"
-      #   nouns << entry.simp
-      # end
+      if entry.is_noun?
+        # puts "noun: #{entry.defins}"
+        nouns << entry.simp
+      end
 
-      # if entry.is_verb?
-      #   puts "verb: #{entry.defins}"
-      #   verbs << entry.simp
-      # end
+      if entry.is_verb?
+        puts "verb: #{entry.defins}"
+        verbs << entry.simp
+      end
 
-      # if entry.is_adje?
-      #   puts "adje: #{entry.defins}"
-      #   adjes << entry.simp
-      # end
+      if entry.is_adje?
+        # puts "adje: #{entry.defins}"
+        adjes << entry.simp
+      end
 
       input[entry.simp] << "[#{entry.pinyin}] #{entry.defins}"
     end
