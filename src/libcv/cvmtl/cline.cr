@@ -107,7 +107,7 @@ class CV::Cline
         skip, left, right = false, "", ""
 
         case prev.key
-        when "不", "很", "太", "多", "未", "更", "极"
+        when "不", "很", "太", "多", "未", "更", "级"
           skip, left = true, "#{prev.val} "
         when "最", "那么", "这么", "非常", "不太",
              "很大", "如此", "极为"
@@ -172,7 +172,8 @@ class CV::Cline
         when 1 # only nown
           case curr.key
           when "姐", "姐姐", "小姐", "小姐姐", "大小姐",
-               "小队", "老师", "身上"
+               "哥", "哥哥", "大哥",
+               "小队", "老师", "身上", "大人"
             skip, left = true, "#{prev.val} "
           end
         end
