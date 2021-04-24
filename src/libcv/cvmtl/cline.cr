@@ -136,20 +136,24 @@ class CV::Cline
 
   private def handle_nouns!
     res = [] of Cword
-    idx = 0
     prev = nil
 
-    @data.each do |curr|
+    @data.each_with_index do |curr, idx|
       if prev && curr.cat == 1
         skip, left, right = false, "", ""
 
         case prev.key
         when "这", "这位", "这具", "这个", "这种",
-             "这些", "这样", "这段", "这份"
+             "这些", "这样", "这段", "这份", "这帮",
+             "这条"
           skip, left, right = true, suffix(prev.key[1]?), " này"
-        when "那", "那位", "那具", "那个", "那种",
-             "那些", "那样", "那段", "那份"
+        when "那位", "那具", "那个", "那种",
+             "那些", "那样", "那段", "那份", "那帮",
+             "那条"
           skip, left, right = true, suffix(prev.key[1]?), " kia"
+        when "那"
+          # skipping if 那 is in front
+          skip, left, right = true, suffix(prev.key[1]?), " kia" if idx > 1
         when "什么"
           skip, left, right = true, "cái ", " gì"
         when "没什么"
@@ -208,6 +212,8 @@ class CV::Cline
     when '样' then "dạng "
     when '段' then "đoạn "
     when '份' then "phần "
+    when '帮' then "đám "
+    when '条' then "điều "
     else          ""
     end
   end
