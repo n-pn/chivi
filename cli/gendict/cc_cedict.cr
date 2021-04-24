@@ -53,41 +53,6 @@ class CeEntry
 
     false
   end
-
-  NOUN_FILE = QtUtil.path("_system/english-nouns.txt")
-  VERB_FILE = QtUtil.path("_system/english-verbs.txt")
-  ADJE_FILE = QtUtil.path("_system/english-adjectives.txt")
-
-  NOUNS = Set(String).new File.read_lines(NOUN_FILE)
-  VERBS = Set(String).new File.read_lines(VERB_FILE)
-  ADJES = Set(String).new File.read_lines(ADJE_FILE)
-
-  def is_noun?
-    defins.split("; ").each do |x|
-      return true if NOUNS.includes?(x) && !ADJES.includes?(x)
-    end
-
-    false
-  end
-
-  def is_verb?
-    defins.split("; ").each do |x|
-      words = x.split(" ")
-
-      return false if words.size < 2
-      return true if words[0] == "to"
-    end
-
-    false
-  end
-
-  def is_adje?
-    defins.split("; ").each do |x|
-      return true if ADJES.includes?(x)
-    end
-
-    false
-  end
 end
 
 class CeInput
@@ -145,38 +110,14 @@ class CeInput
   end
 
   def export_ce_dict!
-    nouns = [] of String
-    verbs = [] of String
-    adjes = [] of String
-
     puts "\n[-- Export ce_dict --]".colorize.cyan.bold
 
     input = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
+    output = CV::Vdict.load("cc_cedict", reset: true)
 
     @entries.each do |entry|
-      if entry.is_noun?
-        # puts "noun: #{entry.defins}"
-        nouns << entry.simp
-      end
-
-      if entry.is_verb?
-        puts "verb: #{entry.defins}"
-        verbs << entry.simp
-      end
-
-      if entry.is_adje?
-        # puts "adje: #{entry.defins}"
-        adjes << entry.simp
-      end
-
       input[entry.simp] << "[#{entry.pinyin}] #{entry.defins}"
     end
-
-    File.write(QtUtil.path(".result/ce-nouns.txt"), nouns.uniq.join("\n"))
-    File.write(QtUtil.path(".result/ce-verbs.txt"), verbs.uniq.join("\n"))
-    File.write(QtUtil.path(".result/ce-adjes.txt"), adjes.uniq.join("\n"))
-
-    output = CV::Vdict.load("cc_cedict", reset: true)
 
     input.each do |key, vals|
       QtUtil.lexicon.add(key)
