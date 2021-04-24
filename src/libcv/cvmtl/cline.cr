@@ -12,10 +12,6 @@ class CV::Cline
     res = [] of Cword
     i = 0
 
-    handle_adjes!
-    handle_nouns!
-    combine_的!
-
     while i < @data.size
       curr = @data.unsafe_fetch(i)
       i += 1
@@ -24,20 +20,20 @@ class CV::Cline
       when "的"
         curr.fix(val: "", cat: 0)
       when "了"
-        curr.fix(val: "rồi")
+        curr.fix(val: "rồi", cat: 0)
 
         if (prev = @data[i - 2]?) && (prev.verb? || prev.cat == 0)
           next unless succ = @data[i]?
           curr.fix("") if succ.word? && succ.key != prev.key
         end
       when "对"
-        if @data[i]?.try { |x| x.key[0] == '“' || x.cat == 1 }
+        if @data[i]?.try { |x| x.cat > 0 || x.key[0] == '“' }
           curr.fix("đối với")
         else
           curr.fix("đúng")
         end
       when "不对"
-        if @data[i]?.try { |x| x.key[0] == '“' || x.cat == 1 }
+        if @data[i]?.try { |x| x.cat > 0 || x.key[0] == '“' }
           curr.fix("không đối với")
         else
           curr.fix("không đúng")
@@ -91,6 +87,10 @@ class CV::Cline
         prev.clear!
       end
     end
+
+    handle_adjes!
+    handle_nouns!
+    combine_的!
 
     self
   rescue err
