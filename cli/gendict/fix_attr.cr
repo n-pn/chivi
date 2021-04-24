@@ -88,7 +88,7 @@ QtDict.load("localqt/vietphrase.txt").each do |key, vals|
   if fval.includes?("của")
     NOUNS.add(k_left)
   else
-    ADJES.add(k_left)
+    ADJES.add(k_left) unless VERBS.includes?(k_left)
   end
 end
 
