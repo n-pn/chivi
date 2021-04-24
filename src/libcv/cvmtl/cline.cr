@@ -109,7 +109,8 @@ class CV::Cline
         case prev.key
         when "不", "很", "太", "多", "未"
           skip, left = true, "#{prev.val} "
-        when "最", "那么", "这么", "非常", "不太", "很大"
+        when "最", "那么", "这么", "非常", "不太",
+             "很大", "如此", "极为"
           skip, right = true, " #{prev.val}"
         else
           skip, left = true, "#{prev.val} " if prev.cat == 4
@@ -143,9 +144,11 @@ class CV::Cline
         skip, left, right = false, "", ""
 
         case prev.key
-        when "这", "这位", "这具", "这个", "这种", "这些", "这样"
+        when "这", "这位", "这具", "这个", "这种",
+             "这些", "这样", "这段", "这份"
           skip, left, right = true, suffix(prev.key[1]?), " này"
-        when "那", "那位", "那具", "那个", "那种", "那些", "那样"
+        when "那", "那位", "那具", "那个", "那种",
+             "那些", "那样", "那段", "那份"
           skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "什么"
           skip, left, right = true, "cái ", " gì"
@@ -153,8 +156,10 @@ class CV::Cline
           skip, left, right = true, "cái ", " nào"
         when "某个"
           skip, right = true, " nào đó"
-        when "一串", "一个"
+        when "一串", "一个", "一只"
           skip, left = true, "#{prev.val} "
+        when "另一个"
+          skip, left, right = true, "một cái ", " khác"
         end
 
         case prev.cat
@@ -164,7 +169,8 @@ class CV::Cline
           #   skip, right = true, " #{prev.val}"
         when 1 # only nown
           case curr.key
-          when "小队"
+          when "姐", "姐姐", "小姐", "小姐姐", "大小姐",
+               "小队", "老师"
             skip, left = true, "#{prev.val} "
           end
         end
@@ -192,9 +198,11 @@ class CV::Cline
     when '位' then "vị "
     when '具' then "cụ "
     when '个' then "cái "
-    when '种' then "chủng "
+    when '种' then "loại "
     when '些' then "những "
     when '样' then "dạng "
+    when '段' then "đoạn "
+    when '份' then "phần "
     else          ""
     end
   end
