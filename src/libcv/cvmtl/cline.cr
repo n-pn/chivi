@@ -152,6 +152,8 @@ class CV::Cline
           skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "什么"
           skip, left, right = true, "cái ", " gì"
+        when "没什么"
+          skip, left, right = true, "không có ", " gì"
         when "哪个"
           skip, left, right = true, "cái ", " nào"
         when "其他"
