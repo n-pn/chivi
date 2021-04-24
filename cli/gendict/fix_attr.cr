@@ -84,12 +84,7 @@ QtDict.load("localqt/vietphrase.txt").each do |key, vals|
   k_left, k_right = key.split("的", 2)
 
   NOUNS.add(k_right) if TERMS.includes?(k_right)
-
-  if fval.includes?("của")
-    NOUNS.add(k_left)
-  else
-    ADJES.add(k_left) unless VERBS.includes?(k_left)
-  end
+  NOUNS.add(k_left) if fval.includes?("của")
 end
 
 puts "- nouns: #{NOUNS.size}, verbs: #{VERBS.size}, adjes: #{ADJES.size}"
@@ -104,6 +99,8 @@ CV::Vdict.regular.each do |term|
   term.attr |= 1 if NOUNS.includes?(term.key) || VIE.is_noun?(term.key, fval)
   term.attr |= 4 if ADJES.includes?(term.key) || VIE.is_adje?(term.key, fval)
   term.attr |= 2 if VERBS.includes?(term.key)
+
+  # puts term if term.attr > 0
 end
 
 CV::Vdict.regular.save!
