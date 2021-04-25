@@ -3,13 +3,15 @@ require "file_utils"
 
 require "../../../src/libcv/vdict"
 
+DIR = "_db/vp_dicts/_inits"
+
 class ValueSet
   getter file : String
   getter data = Set(String).new
   forward_missing_to @data
 
   def self.load(path : String, preload = true)
-    new("_db/vp_dicts/_inits/#{path}", preload)
+    new(File.join(DIR, path), preload)
   end
 
   def initialize(@file, preload = false)
@@ -54,7 +56,7 @@ module QtUtil
   extend self
 
   def path(file : String)
-    File.join("_db/vp_dicts/_inits", file)
+    File.join(DIR, file)
   end
 
   class_getter lexicon : ValueSet { ValueSet.load(".result/lexicon.tsv") }

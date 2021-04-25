@@ -4,14 +4,39 @@ require "./shared/*"
 module ENG
   extend self
 
-  NOUN_FILE = QtUtil.path("_system/english-nouns.txt")
-  ADJE_FILE = QtUtil.path("_system/english-adjectives.txt")
+  class_getter nouns : Set(String) do
+    res = Set(String).new
 
-  ENG_NOUNS = Set(String).new File.read_lines(NOUN_FILE)
-  ENG_ADJES = Set(String).new File.read_lines(ADJE_FILE)
+    files = [QtUtil.path("_system/english-nouns.txt")]
+
+    # dir = QtUtil.path("_system/wordlists")
+    # files.concat Dir.glob("#{dir}/names/**/*.txt")
+    # files.concat Dir.glob("#{dir}/nouns/*.txt")
+
+    files.each do |file|
+      res.concat File.read_lines(file)
+    end
+
+    res
+  end
+
+  class_getter adjes : Set(String) do
+    res = Set(String).new
+
+    files = [QtUtil.path("_system/english-adjectives.txt")]
+
+    # dir = QtUtil.path("_system/wordlists")
+    # files.concat Dir.glob("#{dir}/adjectives/*.txt")
+
+    files.each do |file|
+      res.concat File.read_lines(file)
+    end
+
+    res
+  end
 
   def is_noun?(words : Array(String))
-    words.any? { |w| ENG_NOUNS.includes?(w) }
+    words.any? { |w| nouns.includes?(w.downcase) }
   end
 
   def is_verb?(words : Array(String))
@@ -19,7 +44,7 @@ module ENG
   end
 
   def is_adje?(words : Array(String))
-    words.any? { |w| ENG_ADJES.includes?(w) }
+    words.any? { |w| adjes.includes?(w) }
   end
 end
 
@@ -71,7 +96,8 @@ input = CV::Vdict.cc_cedict
 puts "- cc_cedict size: #{input.size}"
 
 input.each do |term|
-  words = term.vals.map { |x| x.sub(/\[.+\]\s*/, "").split("; ") }.flatten.uniq
+  words = term.vals.map { |x| x.sub(/\[.+\]\s*/, "").split("; ") }.flatten
+  words = words.map(&.strip).uniq
 
   TERMS.add(term.key)
   NOUNS.add(term.key) if ENG.is_noun?(words)

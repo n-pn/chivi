@@ -2,7 +2,7 @@ class QtDict
   DIR = "_db/vp_dicts/_inits"
 
   def self.load(fname : String, preload : Bool = true)
-    new("#{DIR}/#{fname}", preload: preload)
+    new(File.join(DIR, fname), preload: preload)
   end
 
   SEP_0 = "="
