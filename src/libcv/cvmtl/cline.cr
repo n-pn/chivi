@@ -160,6 +160,8 @@ class CV::Cline
           skip, left, right = true, "cái ", " gì"
         when "没什么"
           skip, left, right = true, "không có ", " gì"
+        when "这样的"
+          skip, right = true, " như vậy"
         when "哪个"
           skip, left, right = true, "cái ", " nào"
         when "其他", "其她", "其它"
@@ -182,7 +184,7 @@ class CV::Cline
         when 1 # only nown
           case curr.key
           when "姐", "姐姐", "小姐", "小姐姐", "大小姐",
-               "哥", "哥哥", "大哥",
+               "哥", "哥哥", "大哥", "先生",
                "小队", "老师", "身上", "大人"
             skip, left = true, "#{prev.val} "
           end
