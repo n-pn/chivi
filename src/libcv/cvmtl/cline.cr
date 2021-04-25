@@ -107,7 +107,7 @@ class CV::Cline
         skip, left, right = false, "", ""
 
         case prev.key
-        when "不", "很", "太", "多", "未", "更", "级"
+        when "不", "很", "太", "多", "未", "更", "级", "超"
           skip, left = true, "#{prev.val} "
         when "最", "那么", "这么", "非常", "不太",
              "很大", "如此", "极为"
@@ -160,8 +160,10 @@ class CV::Cline
           skip, left, right = true, "không có ", " gì"
         when "哪个"
           skip, left, right = true, "cái ", " nào"
-        when "其他"
+        when "其他", "其她", "其它"
           skip, left, right = true, "cái ", " khác"
+        when "别的"
+          skip, right = true, " khác"
         when "某个"
           skip, right = true, " nào đó"
         when "一串", "一个", "一只", "几个"

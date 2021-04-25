@@ -27,7 +27,14 @@ module VIE
   extend self
 
   def is_noun?(key : String, val : String)
-    val != val.downcase || noun_and_adje?(key, val)
+    return true if val != val.downcase || noun_and_adje?(key, val)
+
+    case key
+    when .ends_with?("者"), .ends_with?("人")
+      true
+    else
+      false
+    end
   end
 
   def is_adje?(key : String, val : String)
