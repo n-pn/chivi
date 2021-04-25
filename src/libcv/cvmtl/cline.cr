@@ -54,6 +54,8 @@ class CV::Cline
         curr.fix("được") unless @data[i]?.try(&.word?)
       when "高达"
         curr.fix("cao đến") if @data[i]?.try(&.is_num)
+      when "石"
+        curr.fix("thạch") if @data[i - 2]?.try(&.is_num)
       when "两"
         curr.fix("lượng") if @data[i - 2]?.try(&.is_num)
       when "里"
