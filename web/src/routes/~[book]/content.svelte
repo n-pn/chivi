@@ -17,7 +17,9 @@
     const page = +(req.query.page || 1)
     const params = { sname, snvid, page }
 
-    const [err2, chseed] = await get_chseed(this.fetch, bhash, params)
+    const mode = +req.query.mode
+
+    const [err2, chseed] = await get_chseed(this.fetch, bhash, params, mode)
     if (err2) this.error(err2, chseed)
 
     const [err3, chlist] = await get_chlist(this.fetch, bhash, params)

@@ -72,7 +72,7 @@ module CV::RmSpider
 
   def remote?(sname : String, power : Int32 = 4)
     case sname
-    when "chivi", "_miscs", "zxcs_me", "zadzs"
+    when "chivi", "manual", "zxcs_me", "zadzs", "thuyvicu", "hotupub"
       false
     when "5200", "bqg_5200", "rengshu", "nofff", "xbiquge"
       true
