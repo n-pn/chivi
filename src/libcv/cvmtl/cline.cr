@@ -155,7 +155,12 @@ class CV::Cline
           skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "那"
           # skipping if 那 is in front
-          skip, left, right = true, suffix(prev.key[1]?), " kia" if idx > 1
+          if @data[idx - 2]?.try(&.key.ends_with?("“")) &&
+             @data[idx + 1]?.try(&.word?)
+            prev.fix(val: "vậy")
+          else
+            skip, left, right = true, suffix(prev.key[1]?), " kia"
+          end
         when "什么"
           skip, left, right = true, "cái ", " gì"
         when "没什么"
@@ -183,10 +188,14 @@ class CV::Cline
           #   skip, right = true, " #{prev.val}"
         when 1 # only nown
           case curr.key
-          when "姐", "姐姐", "小姐", "小姐姐", "大小姐",
-               "哥", "哥哥", "大哥", "先生",
+          when "姐", "姐姐", "大姐", "小姐", "大小姐",
+               "哥", "哥哥", "大哥", "先生", "小姐姐",
                "小队", "老师", "身上", "大人"
             skip, left = true, "#{prev.val} "
+          else
+            if prev.pronoun?
+              skip, left = true, "#{prev.val} "
+            end
           end
         end
 
