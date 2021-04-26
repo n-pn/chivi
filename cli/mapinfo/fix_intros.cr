@@ -15,7 +15,7 @@ class CV::FixIntros
       if ynvid = NvFields.yousuu.fval(bhash)
         yintro = get_intro("yousuu", ynvid)
 
-        if yintro.size > 1
+        unless yintro.empty?
           NvBintro.set!(bhash, yintro, force: true)
           next
         end
