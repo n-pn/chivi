@@ -102,7 +102,7 @@
     font-weight: 500;
     position: relative;
     max-width: 100%;
-    line-height: $height - 0.25rem;
+    line-height: $height;
     // max-width: 30vw;
 
     > ._txt {
@@ -132,10 +132,6 @@
     }
   }
 
-  // .-sub {
-  //   @include fgcolor(neutral, 4);
-  // }
-
   ._pinyin {
     display: flex;
     justify-content: center;
@@ -143,7 +139,7 @@
     position: absolute;
     left: 4.5rem;
     right: 4.5rem;
-    bottom: -0.375rem;
+    bottom: -0.5rem;
     height: 1rem;
 
     line-height: 1rem;
