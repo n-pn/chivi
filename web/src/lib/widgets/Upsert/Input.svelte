@@ -1,9 +1,9 @@
 <script>
   import SIcon from '$lib/blocks/SIcon'
 
-  export let phrase
-  export let pinyin
-  export let output
+  export let phrase = ['', 0, 0]
+  export let pinyin = ''
+  export let output = ''
 
   $: [input, lower, upper] = phrase
   $: prefix = input.substring(lower - 2, lower)

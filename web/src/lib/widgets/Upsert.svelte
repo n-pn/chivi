@@ -131,8 +131,8 @@
   $: curr_state_class = state_class(submit_state)
   $: curr_power_class = power_class(p_now[$on_tab], p_old[$on_tab])
 
-  $: binh_am = props.trans.binh_am
-  $: hanviet = props.trans.hanviet
+  $: binh_am = props.trans.binh_am || ''
+  $: hanviet = props.trans.hanviet || ''
 
   function power_class(power, p_old) {
     if (power < p_old) return 'text'
