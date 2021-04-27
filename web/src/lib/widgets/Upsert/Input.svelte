@@ -102,7 +102,7 @@
     font-weight: 500;
     position: relative;
     max-width: 100%;
-    line-height: $height;
+    line-height: $height - 0.125rem;
 
     > ._txt {
       @include truncate(20vw);
@@ -138,7 +138,7 @@
     position: absolute;
     left: 4.5rem;
     right: 4.5rem;
-    bottom: -0.45rem;
+    bottom: -0.4125rem;
     height: 1rem;
 
     line-height: 1rem;
@@ -173,11 +173,11 @@
       background: transparent;
     }
 
-    &:first-child {
+    &:first-of-type {
       @include radius($sides: left);
     }
 
-    &:last-child {
+    &:last-of-type {
       @include radius($sides: right);
     }
 

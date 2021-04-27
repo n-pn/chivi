@@ -309,6 +309,10 @@
       @include fgcolor(neutral, 7);
     }
 
+    &:hover {
+      @include bgcolor(#fff);
+    }
+
     &._active {
       @include bgcolor(#fff);
       @include fgcolor(primary, 6);
