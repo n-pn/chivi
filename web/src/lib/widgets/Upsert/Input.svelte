@@ -103,7 +103,6 @@
     position: relative;
     max-width: 100%;
     line-height: $height;
-    // max-width: 30vw;
 
     > ._txt {
       @include truncate(20vw);
@@ -139,7 +138,7 @@
     position: absolute;
     left: 4.5rem;
     right: 4.5rem;
-    bottom: -0.5rem;
+    bottom: -0.45rem;
     height: 1rem;
 
     line-height: 1rem;
