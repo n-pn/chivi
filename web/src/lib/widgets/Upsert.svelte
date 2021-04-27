@@ -131,6 +131,9 @@
   $: curr_state_class = state_class(submit_state)
   $: curr_power_class = power_class(p_now[$on_tab], p_old[$on_tab])
 
+  $: binh_am = props.trans.binh_am
+  $: hanviet = props.trans.hanviet
+
   function power_class(power, p_old) {
     if (power < p_old) return 'text'
     return power == p_old ? 'line' : 'solid'
@@ -158,9 +161,7 @@
         <SIcon name="menu" />
       </button>
 
-      <div class="hanzi">
-        <Input phrase={$phrase} bind:output={key} />
-      </div>
+        <Input phrase={$phrase} pinyin={binh_am} bind:output={key} />
 
       <button type="button" class="m-button _text" on:click={hide_modal}>
         <SIcon name="x" />
@@ -186,8 +187,8 @@
       <div class="forms">
         <div class="value">
           <Vhint
+            {hanviet}
             hints={props.hints}
-            trans={props.trans}
             _orig={origs[$on_tab]}
             bind:value={value[$on_tab]} />
 
@@ -255,19 +256,18 @@
   header {
     display: flex;
     padding: 0.5rem 0.25rem;
+    overflow: hidden;
 
     > button {
       @include fgcolor(neutral, 6);
+
       &:hover {
         background: transparent;
         @include fgcolor(primary, 6);
       }
     }
 
-    > .hanzi {
-      flex-grow: 1;
-      margin: 0 0.25rem;
-    }
+
   }
 
   $tab-height: 2rem;
@@ -292,6 +292,8 @@
     line-height: $tab-height;
     flex-shrink: 0;
 
+    margin-right: 0.5rem;
+
     @include font-size(2);
     @include fgcolor(neutral, 5);
     @include truncate(null);
@@ -299,7 +301,7 @@
     @include border($color: neutral, $sides: top-left-right);
 
     &:first-child {
-      max-width: 36%;
+      max-width: 38%;
       flex-shrink: 1;
     }
 
@@ -313,8 +315,10 @@
       @include bdcolor($color: primary, $shade: 4);
     }
 
-    & + & {
-      margin-left: 0.5rem;
+
+    &:last-child {
+      margin-left: auto;
+      margin-right: 0;
     }
   }
 

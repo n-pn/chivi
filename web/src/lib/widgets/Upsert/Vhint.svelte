@@ -1,24 +1,12 @@
 <script context="module">
-  function showing(words) {
-    if (words < 7) return '_ss'
-    if (words < 9) return '_sm'
-    if (words < 13) return '_md'
-    if (words < 17) return '_lg'
-    // if (words < 18) return '_xl'
-    return '_xx'
-  }
 </script>
 
 <script>
+  export let hanviet
   export let hints
   export let value
   export let _orig
-  export let trans
 
-  $: hanviet = trans.hanviet || ''
-  $: binh_am = trans.binh_am || ''
-
-  $: words = hanviet.split(' ').length * (_hint.length + 2)
   $: _hint = hints.filter((x) => x != value)
 </script>
 
@@ -33,10 +21,6 @@
         on:click={() => (value = hint)}>{hint}</span>
     {/if}
   {/each}
-
-  {#if binh_am}
-    <span class="pinyin {showing(words)}">[{binh_am}]</span>
-  {/if}
 </div>
 
 <style lang="scss">
@@ -76,19 +60,5 @@
   ._orig {
     font-style: normal;
     font-weight: 500;
-  }
-
-  // prettier-ignore
-  .pinyin {
-    font-style: normal;
-    margin-left: auto;
-    font-size: rem(12px);
-    @include truncate(null);
-
-    &._sm { @include props(display, none, $sm: inline-block); }
-    &._md { @include props(display, none, $md: inline-block); }
-    &._lg { @include props(display, none, $lg: inline-block); }
-    &._xl { @include props(display, none, $xl: inline-block); }
-    &._xx { display: none; }
   }
 </style>

@@ -2,6 +2,7 @@
   import SIcon from '$lib/blocks/SIcon'
 
   export let phrase
+  export let pinyin
   export let output
 
   $: [input, lower, upper] = phrase
@@ -28,9 +29,9 @@
   </button>
 
   <div class="hanzi">
-    <span class="-sub">{prefix}</span>
-    <span class="-key">{output}</span>
-    <span class="-sub">{suffix}</span>
+    <div class="_key" data-left={prefix} data-right={suffix}>
+      <span class="_txt">{output}</span>
+    </div>
   </div>
 
   <button
@@ -48,6 +49,10 @@
     on:click={() => (upper += 1)}>
     <SIcon name="chevron-right" />
   </button>
+
+  <div class="_pinyin">
+    <span class="_text">{pinyin}</span>
+  </div>
 </div>
 
 <style lang="scss">
@@ -55,8 +60,10 @@
 
   .input {
     display: flex;
-    width: 100%;
+    margin: 0 0.25rem;
+    width: calc(100% - 5rem);
     height: $height;
+    position: relative;
 
     @include radius();
     @include bgcolor(neutral, 1);
@@ -67,21 +74,70 @@
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    line-height: $height;
+
     overflow: hidden;
     flex-wrap: nowrap;
     @include font-size(4);
   }
 
-  .-key {
+  ._key {
     font-weight: 500;
-    max-width: 8rem;
-    @include truncate(null);
-    @include fgcolor(neutral, 7);
+    position: relative;
+    max-width: 100%;
+    line-height: $height - 0.25rem;
+    // max-width: 30vw;
+
+    > ._txt {
+      @include truncate(20vw);
+      @include fgcolor(neutral, 7);
+    }
+
+    &:before,
+    &:after {
+      display: block;
+      position: absolute;
+      top: 0;
+      font-weight: 400;
+      height: 100%;
+      white-space: nowrap;
+      @include fgcolor(neutral, 4);
+    }
+
+    &:before {
+      content: attr(data-left);
+      right: 100%;
+    }
+
+    &:after {
+      content: attr(data-right);
+      left: 100%;
+    }
   }
 
-  .-sub {
-    @include fgcolor(neutral, 4);
+  // .-sub {
+  //   @include fgcolor(neutral, 4);
+  // }
+
+  ._pinyin {
+    display: flex;
+    justify-content: center;
+
+    position: absolute;
+    left: 4.5rem;
+    right: 4.5rem;
+    bottom: -0.375rem;
+    height: 1rem;
+
+    line-height: 1rem;
+    font-size: rem(10px);
+
+    ._text {
+      padding: 0 0.25rem;
+      display: inline-block;
+      @include truncate(null);
+      @include fgcolor(neutral, 5);
+      @include bgcolor(neutral, 1);
+    }
   }
 
   button {
@@ -89,6 +145,7 @@
     padding: 0 0.5rem;
     margin: 0;
     line-height: 1em;
+    max-width: 65vw;
     @include font-size(4);
     @include fgcolor(neutral, 7);
 
@@ -101,6 +158,14 @@
       cursor: pointer;
       @include fgcolor(neutral, 5);
       background: transparent;
+    }
+
+    &:first-child {
+      @include radius($sides: left);
+    }
+
+    &:last-child {
+      @include radius($sides: right);
     }
 
     &._left {
