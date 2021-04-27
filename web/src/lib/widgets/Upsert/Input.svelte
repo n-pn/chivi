@@ -9,22 +9,40 @@
   $: prefix = input.substring(lower - 2, lower)
   $: output = input.substring(lower, upper)
   $: suffix = input.substring(upper, upper + 2)
+
+  function move_lower_left() {
+    lower -= 1
+  }
+
+  function move_lower_right() {
+    lower += 1
+    if (upper <= lower) upper += 1
+  }
+
+  function move_upper_left() {
+    upper -= 1
+    if (lower >= upper) lower -= 1
+  }
+
+  function move_upper_right() {
+    upper += 1
+  }
 </script>
 
 <div class="input">
   <button
     class="_left"
-    disabled={lower == 0}
     data-kbd="h"
-    on:click={() => (lower -= 1)}>
+    disabled={lower == 0}
+    on:click={move_lower_left}>
     <SIcon name="chevron-left" />
   </button>
 
   <button
     class="_left"
-    disabled={lower == upper - 1}
-    on:click={() => (lower += 1)}
-    data-kbd="j">
+    data-kbd="j"
+    disabled={lower >= input.length - 1}
+    on:click={move_lower_right}>
     <SIcon name="chevron-right" />
   </button>
 
@@ -37,16 +55,16 @@
   <button
     class="_right"
     data-kbd="k"
-    disabled={upper == lower + 1}
-    on:click={() => (upper -= 1)}>
+    disabled={upper == 1}
+    on:click={move_upper_left}>
     <SIcon name="chevron-left" />
   </button>
 
   <button
     class="_right"
-    disabled={upper == input.length}
     data-kbd="l"
-    on:click={() => (upper += 1)}>
+    disabled={upper == input.length}
+    on:click={move_upper_right}>
     <SIcon name="chevron-right" />
   </button>
 
