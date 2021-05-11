@@ -83,4 +83,4 @@ mode =
   else                         :tail
   end
 
-worker.crawl!(255000, mode: mode)
+worker.crawl!(256000, mode: mode)
