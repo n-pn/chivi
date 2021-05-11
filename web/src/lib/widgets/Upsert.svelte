@@ -161,7 +161,7 @@
         <SIcon name="menu" />
       </button>
 
-        <Input phrase={$phrase} pinyin={binh_am} bind:output={key} />
+      <Input phrase={$phrase} pinyin={binh_am} bind:output={key} />
 
       <button type="button" class="m-button _text" on:click={hide_modal}>
         <SIcon name="x" />
@@ -192,9 +192,18 @@
             _orig={origs[$on_tab]}
             bind:value={value[$on_tab]} />
 
+          <!-- <div
+            id="value"
+            contenteditable="true"
+            spellcheck="false"
+            class="-input"
+            class:_fresh={!origs[$on_tab]}
+            bind:this={value_field}
+            bind:innerHTML={value[$on_tab]}
+            autocomplete="off"
+            autocapitalize={$on_tab < 1 ? 'words' : 'off'} /> -->
           <input
             id="value"
-            lang="vi"
             type="text"
             class="-input"
             class:_fresh={!origs[$on_tab]}
@@ -266,8 +275,6 @@
         @include fgcolor(primary, 6);
       }
     }
-
-
   }
 
   $tab-height: 2rem;
@@ -318,7 +325,6 @@
       @include fgcolor(primary, 6);
       @include bdcolor($color: primary, $shade: 4);
     }
-
 
     &:last-child {
       margin-left: auto;
