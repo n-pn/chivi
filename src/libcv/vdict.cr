@@ -43,6 +43,13 @@ class CV::Vdict
     File.join(DIR, "#{label}.tsv")
   end
 
+  class_getter udicts : Array(String) do
+    files = ::Dir.glob("#{DIR}/unique/*.tsv")
+    files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
+
+    files.map { |f| File.basename(f, ".tsv") }
+  end
+
   #########################
 
   getter file : String

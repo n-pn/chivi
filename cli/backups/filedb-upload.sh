@@ -11,7 +11,7 @@ rsync -azi --no-p "_db/vp_dicts/active/" "$SSH/_db/vp_dicts/remote/"
 # rsync -azi --no-p "_db/vi_users/" "$SSH/_db/vi_users/"
 
 ## upload parsed seed data
-rsync -azi --no-p "_db/_seeds/" "$SSH/_db/_seeds"
+rsync -azi --no-p "_db/_seeds/" "$SSH/_db/_seeds/"
 
 ## upload book data
 rsync -azi --no-p "_db/nv_infos/" "$SSH/_db/nv_infos/"

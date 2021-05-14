@@ -80,6 +80,9 @@ class CV::FetchCovers
   end
 
   def fetch!(queue : Hash(String, String), limit = 8, delayed = 10.milliseconds)
+    # remove invalid image urls
+    queue = queue.reject { |link, _| link.starts_with?("/") }
+
     limit = queue.size if limit > queue.size
     channel = Channel(Nil).new(limit)
 
@@ -89,6 +92,7 @@ class CV::FetchCovers
       spawn do
         HttpUtils.save_file(link, file)
         fix_image_ext(file)
+
         sleep delayed
       rescue err
         puts err.colorize.red

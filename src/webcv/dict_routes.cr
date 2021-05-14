@@ -3,6 +3,25 @@ require "./_route_utils"
 module CV::Server
   alias Lookup = Hash(String, Array(String))
 
+  get "/api/dicts" do |env|
+    res = [] of Tuple(String, String, Int32) # dict name, dict type, entries count
+
+    res << {"regular", "system", Vdict.regular.size}
+    res << {"hanviet", "system", Vdict.hanviet.size}
+
+    page = env.params.query.fetch("page", "1").to_i? || 1
+    page = 1 if page < 1
+    limit = 50
+    offset = (page - 1) * 50
+
+    # TODO: display book names
+    Vdict.udicts[offset, limit].each do |dname|
+      res << {dname, "unique", Vdict.load(dname).size}
+    end
+
+    RouteUtils.json_res(env, res)
+  end
+
   put "/api/dicts/:dname/lookup" do |env|
     dname = env.params.url["dname"]
     input = env.params.json["input"].as(String).strip

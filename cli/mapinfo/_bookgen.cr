@@ -33,7 +33,8 @@ module CV::Bookgen
   PROMPT = !ARGV.includes?("-no-prompt")
 
   def map_status(status : String)
-    return status.to_i if status == "0" || status == " 1" # for hetushu or zhwenpg
+    return 0 if status.empty?
+    return status.to_i if status == "0" || status == "1" # for hetushu or zhwenpg
 
     unless val = status_map.get(status).try(&.first)
       if PROMPT
