@@ -11,6 +11,23 @@ module CV::Server::RouteUtils
     int > max ? max : int > min ? int : min
   end
 
+  def page_to_offset(page : String, limit = 50)
+    page = page.to_i? || 1
+    page = 1 if page < 1
+
+    (page - 1) * limit
+  end
+
+  def get_limit(env, min = 20, max = 50)
+    limit = env.params.query.fetch("limit", "0").to_i? || 0
+    limit < min ? min : (limit > max) ? max : limit
+  end
+
+  def get_offset(env)
+    offset = env.params.query.fetch("offset", "0").to_i? || 0
+    offset < 0 ? 0 : offset
+  end
+
   def get_uname(env)
     env.session.string?("uname")
   end

@@ -9,14 +9,37 @@ module CV::Server
     res << {"regular", "system", Vdict.regular.size}
     res << {"hanviet", "system", Vdict.hanviet.size}
 
-    page = env.params.query.fetch("page", "1").to_i? || 1
-    page = 1 if page < 1
-    limit = 50
-    offset = (page - 1) * 50
+    limit = RouteUtils.get_limit(env, min: 50)
+    offset = RouteUtils.get_offset(env)
 
     # TODO: display book names
     Vdict.udicts[offset, limit].each do |dname|
       res << {dname, "unique", Vdict.load(dname).size}
+    end
+
+    RouteUtils.json_res(env, res)
+  end
+
+  get "/api/dicts/:dname" do |env|
+    dname = env.params.url["dname"]
+    vdict = Vdict.load(dname)
+
+    limit = RouteUtils.get_limit(env, min: 50, max: 100)
+    offset = RouteUtils.get_offset(env)
+
+    res = [] of Vterm
+
+    filter = Vtrie::Filter.init(env.params.query)
+
+    vdict.each do |node|
+      next unless filter.match?(node)
+
+      if offset > 0
+        offset -= 1
+      else
+        res << node
+        break if res.size >= limit
+      end
     end
 
     RouteUtils.json_res(env, res)

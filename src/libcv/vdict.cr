@@ -23,6 +23,13 @@ class CV::Vdict
   class_getter various : self { load("various") }
   class_getter suggest : self { load("suggest") }
 
+  class_getter udicts : Array(String) do
+    files = ::Dir.glob("#{DIR}/unique/*.tsv")
+    files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
+
+    files.map { |f| File.basename(f, ".tsv") }
+  end
+
   CACHE = {} of String => self
 
   def self.load(dname : String, reset : Bool = false)
@@ -41,13 +48,6 @@ class CV::Vdict
 
   def self.path(label : String)
     File.join(DIR, "#{label}.tsv")
-  end
-
-  class_getter udicts : Array(String) do
-    files = ::Dir.glob("#{DIR}/unique/*.tsv")
-    files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
-
-    files.map { |f| File.basename(f, ".tsv") }
   end
 
   #########################
@@ -152,6 +152,12 @@ class CV::Vdict
       elsif term = node.term
         yield term
       end
+    end
+  end
+
+  def each_with_edits : Nil
+    @trie.each do |node|
+      node.edits.each { |term| yield term }
     end
   end
 

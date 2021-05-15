@@ -51,4 +51,38 @@ class CV::Vtrie
     @edits.sort_by(&.mtime).each { |term| map[term.uname] = term }
     @edits = map.values
   end
+
+  class Filter
+    def self.init(query)
+      # TODO: add more filters
+      key_re = query["key"]?.try { |re| Regex.new(re) }
+      val_re = query["val"]?.try { |re| Regex.new(re) }
+
+      prio = query["prio"]?.try { |str| Vterm.parse_prio(str) }
+      attr = query["attr"]?.try { |str| Vterm.parse_attr(str) }
+
+      uname = query["uname"]?
+      power = query["power"]?.try { |str| str.to_i? || 0 }
+
+      new(key_re, val_re, prio, attr, uname, power)
+    end
+
+    def initialize(@key_re : Regex? = nil, @val_re : Regex? = nil,
+                   @prio : Int32? = nil, @attr : Int32? = nil,
+                   @uname : String? = nil, @power : Int32? = nil)
+    end
+
+    def match?(term : Vterm)
+      @key_re.try { |re| return false unless term.key.matches?(re) }
+      @val_re.try { |re| return false unless term.vals.any?(&.matches?(re)) }
+
+      @prio.try { |int| return false unless term.prio == int }
+      @attr.try { |int| return false unless term.attr & int == int }
+
+      @uname.try { |str| return false unless term.uname == str }
+      @power.try { |int| return false unless term.power == int }
+
+      true
+    end
+  end
 end
