@@ -182,7 +182,7 @@ class CV::Cword
 
   QUANTI = ""
 
-  # links: https://chinese.com.vn/luong-tu-trong-tieng-trung.html
+  # link: https://chinese.com.vn/luong-tu-trong-tieng-trung.html
   def quanti?
     case @key[-1]?
     when '个', '块', '双', '盘', '张', '副', '家', '盒', '支', '瓶',
@@ -207,5 +207,18 @@ class CV::Cword
   def quanti_mics?
     return false unless quanti?
     @key.matches?(QUANTI_RE)
+  end
+
+  # link: https://chinese.com.vn/cac-phuong-vi-tu-trong-tieng-trung-va-cach-su-dung-phuong-vi-tu.html
+
+  def locality?
+    case @key
+    when "前", "后", "左", "右", "上", "下", "里", "外",
+         "前面", "后面", "左面", "右面", "上面", "下面", "里面", "外面",
+         "前边", "后边", "左边", "右边", "上边", "下边", "里边", "外边"
+      true
+    else
+      false
+    end
   end
 end
