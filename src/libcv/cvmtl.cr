@@ -74,7 +74,7 @@ class CV::Cvmtl
   TITLE_RE_4 = /^楔子(\s+)(.+)$/
 
   def cv_title(title : String)
-    res = [] of Cword
+    res = Deque(Cword).new
 
     unless title.empty?
       if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
@@ -168,7 +168,7 @@ class CV::Cvmtl
   end
 
   private def extract_best(nodes : Array(Cword))
-    ary = [] of Cword
+    ary = Deque(Cword).new
     idx = nodes.size - 1
 
     while idx > 0
@@ -206,9 +206,9 @@ class CV::Cvmtl
         end
       end
 
-      ary << curr
+      ary.unshift(curr)
     end
 
-    Cline.new(ary.reverse)
+    Cline.new(ary)
   end
 end

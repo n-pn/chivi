@@ -3,13 +3,14 @@ require "./cword"
 class CV::Cline
   SEP = 'ǀ'
 
-  getter data : Array(Cword)
+  alias Input = Deque(Cword)
+  getter data : Input
 
-  def initialize(@data)
+  def initialize(@data : Input)
   end
 
   def fix_grammar!
-    res = [] of Cword
+    res = Input.new
     i = 0
 
     while i < @data.size
@@ -41,6 +42,10 @@ class CV::Cline
       when "吗"
         if @data[i]?.try { |x| x.val[0] == '?' }
           curr.fix("không")
+        end
+      when "呢"
+        if @data[i]?.try { |x| x.val[0] == '?' }
+          curr.fix("đâu")
         end
       when "也"
         curr.fix(@data[i]?.try(&.word?) ? "cũng" : "vậy")
@@ -104,7 +109,7 @@ class CV::Cline
   end
 
   private def handle_adjes!
-    res = [] of Cword
+    res = Input.new
     idx = 0
     prev = nil
 
@@ -143,7 +148,7 @@ class CV::Cline
   end
 
   private def handle_nouns!
-    res = [] of Cword
+    res = Input.new
     prev = nil
 
     @data.each_with_index do |curr, idx|
@@ -240,7 +245,7 @@ class CV::Cline
   end
 
   private def combine_的!
-    res = [] of Cword
+    res = Input.new
     idx = 0
 
     while idx < @data.size
@@ -304,21 +309,21 @@ class CV::Cline
   def pad_spaces! : self
     return self if @data.empty?
 
-    prev = @data.first
-    temp = [prev]
+    res = Input.new
 
-    1.upto(@data.size - 1).each do |i|
-      curr = @data.unsafe_fetch(i)
+    prev = @data.shift
+    res << prev
 
+    while curr = @data.shift?
       unless curr.val.empty?
-        temp << Cword.new("", " ") if curr.space_before?(prev)
+        res << Cword.new("", " ") if curr.space_before?(prev)
         prev = curr
       end
 
-      temp << curr
+      res << curr
     end
 
-    @data = temp
+    @data = res
     self
   end
 
