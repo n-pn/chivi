@@ -38,6 +38,10 @@ class CV::Cline
         else
           curr.fix("không đúng")
         end
+      when "吗"
+        if @data[i]?.try { |x| x.val[0] == '?' }
+          curr.fix("không")
+        end
       when "也"
         curr.fix(@data[i]?.try(&.word?) ? "cũng" : "vậy")
       when "地"
@@ -111,9 +115,11 @@ class CV::Cline
         case prev.key
         when "不", "很", "太", "多", "未", "更", "级", "超"
           skip, left = true, "#{prev.val} "
-        when "最", "那么", "这么", "非常", "不太",
+        when "最", "那么", "这么", "非常",
              "很大", "如此", "极为"
           skip, right = true, " #{prev.val}"
+        when "不太"
+          skip, left, right = true, "không ", " lắm"
         else
           skip, left = true, "#{prev.val} " if prev.cat == 4
         end

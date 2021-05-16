@@ -8,13 +8,6 @@ class CV::Cword
   property dic : Int32
   property cat : Int32 = 0
 
-  # TODO: add more words
-  NUM_RE = /^[\p{N}零〇一二两三四五六七八九十百千万亿]+$/
-  getter is_num : Bool { NUM_RE === @key }
-
-  INT_RE = /^\d+$/
-  getter is_int : Bool { INT_RE === @key }
-
   def initialize(term : Vterm)
     @key = term.key
     @val = term.vals.first
@@ -172,5 +165,45 @@ class CV::Cword
     @val = "#{@val} #{val}"
     @cat |= cat
     @dic = dic
+  end
+
+  NUM = "零〇一二两三四五六七八九十百千万亿"
+  PRE = ""
+  SUB = ""
+
+  # TODO: add more words
+  NUM_RE = /^[\p{N}#{NUM}]+$/
+  getter is_num : Bool { NUM_RE === @key }
+
+  INT_RE = /^\d+$/
+  getter is_int : Bool { INT_RE === @key }
+
+  QUANTI = ""
+
+  # links: https://chinese.com.vn/luong-tu-trong-tieng-trung.html
+  def quanti?
+    case @key[-1]?
+    when '个', '块', '双', '盘', '张', '副', '家', '盒', '支', '瓶',
+         '只', '碗', '件', '朵', '本', '条', '头', '面', '道', '份',
+         '把', '部', '幅', '包', '串', '顶', '堵', '对', '封', '根',
+         '罐', '户', '架', '间', '斤', '句', '卷', '棵', '课', '口',
+         '辆', '轮', '匹', '起', '群', '首', '艘', '台', '位', '枝',
+         '座', '丸', '令', '俩', '具', '出', '刀', '列', '则', '剂',
+         '发', '名', '员', '回', '团', '场', '堂', '杆', '束', '枚',
+         '株', '桩', '桶', '段', '炷', '片', '班', '瓣', '盏', '眼',
+         '种', '窝', '笔', '筒', '管', '箩', '篇', '粒', '纸', '缕',
+         '股', '行', '身', '轴', '通', '重', '铺', '锭', '门', '阵',
+         '项', '顿', '领', '颗'
+      true
+    else
+      false
+    end
+  end
+
+  QUANTI_RE = /^[\p{N}#{NUM}]+/
+
+  def quanti_mics?
+    return false unless quanti?
+    @key.matches?(QUANTI_RE)
   end
 end
