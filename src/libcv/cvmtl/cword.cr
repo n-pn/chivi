@@ -149,15 +149,17 @@ class CV::Cword
 
   def pronoun?
     case @key
-    when "我", "我们", "咱们",
-         "你", "你们",
-         "他", "他们",
-         "她", "她们",
-         "朕"
+    when "我", "你", "您", "他", "她", "它",
+         "我们", "咱们", "你们", "您们", "他们", "她们", "它们",
+         "朕", "人家", "老子"
       true
     else
-      @val[0]?.try(&.uppercase?)
+      false
     end
+  end
+
+  def person?
+    @val[0]?.try(&.uppercase?) || pronoun?
   end
 
   def merge!(key : String, val : String, cat : Int32 = 0, dic = @dic)

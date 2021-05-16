@@ -204,7 +204,7 @@ class CV::Cline
                "小队", "老师", "身上", "大人"
             skip, left = true, "#{prev.val} "
           else
-            if prev.pronoun?
+            if prev.person?
               skip, left = true, "#{prev.val} "
             end
           end
