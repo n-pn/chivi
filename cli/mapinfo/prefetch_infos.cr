@@ -12,7 +12,7 @@ class CV::PrefetchInfoHtml
   end
 
   # cr_mode:
-  # - 0: skip id if existed in `.cache` folder or `_index` file
+  # - 0: skip id if existed in `.cache` folder
   # - 1: skip id if existed in `_index` file
   # - 2: skip id if existed in `.cache` folder or `_index` file
 
@@ -20,7 +20,7 @@ class CV::PrefetchInfoHtml
     RmNvInfo.mkdir!(@sname) # ensure the `cache` folder exists
 
     upper = remote_upper_snvid.to_i if upper < 1
-    queue = build_queue_from_mode!(upper, cr_mode) # find missing info pages
+    queue = build_queue!(upper, cr_mode) # find missing info pages
 
     threads = default_max_threads if threads < 1
     threads = queue.size if threads > queue.size
@@ -48,7 +48,7 @@ class CV::PrefetchInfoHtml
     threads.times { channel.receive }
   end
 
-  def build_queue_from_mode!(upper : Int32, cr_mode : Int32)
+  def build_queue!(upper : Int32, cr_mode : Int32)
     index = ValueMap.new(PathUtils.seeds_map(@sname, "_index"))
     queue = [] of Tuple(String, String)
 
@@ -58,8 +58,8 @@ class CV::PrefetchInfoHtml
       file = RmSpider.nvinfo_file(@sname, snvid, gzip: true)
       link = RmSpider.nvinfo_link(@sname, snvid)
 
-      next if cr_mode > 0 && index.has_key?(snvid)
-      next if cr_mode != 1 && File.exists?(file)
+      next if cr_mode > 0 && index.has_key?(snvid) # cr_mode = 1 or 2
+      next if cr_mode != 1 && File.exists?(file)   # cr_mode = 0 or 2
 
       queue << {link, file}
     end
@@ -78,13 +78,13 @@ class CV::PrefetchInfoHtml
     when "hetushu"
       href = rdoc.css("#list a:first-of-type").first.attributes["href"]
       File.basename(File.dirname(href))
-    when "rengshu", "xbiquge", "biqubao", "bxwxorg", "shubaow"
-      href = rdoc.css("#newscontent > .r .s2 > a").first.attributes["href"]
-      File.basename(href)
     when "nofff"
       href = rdoc.css("#newscontent_n .s2 > a").first.attributes["href"]
       File.basename(href)
-    when "bqg_5200"
+    when "rengshu", "xbiquge", "biqubao", "bxwxorg", "shubaow"
+      href = rdoc.css("#newscontent > .r .s2 > a").first.attributes["href"]
+      File.basename(href)
+    when "bqg_5200", "paoshu8"
       href = rdoc.css("#newscontent > .r .s2 > a").first.attributes["href"]
       File.basename(href).split("_").last
     when "5200"
@@ -134,7 +134,7 @@ end
 
 def run!(argv = ARGV)
   sname, upper = "hetushu", 0
-  cr_mode, threads = 1, 0
+  cr_mode, threads = 0, 0
 
   OptionParser.parse(argv) do |parser|
     parser.banner = "Usage: map_remote [arguments]"

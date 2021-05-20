@@ -5,6 +5,7 @@ require "file_utils"
 require "../utils/http_utils"
 require "../utils/file_utils"
 require "../utils/time_utils"
+require "../utils/path_utils"
 
 module CV::RmSpider
   extend self
@@ -86,17 +87,18 @@ module CV::RmSpider
   end
 
   def nvinfo_file(sname : String, snvid : String, gzip = true)
-    file = gzip ? "#{snvid}.html.gz" : "#{snvid}.html"
-    "_db/.cache/#{sname}/infos/#{file}"
+    ext = gzip ? "html.gz" : "html"
+    PathUtils.cache_file(sname, "infos/#{snvid}.#{ext}")
   end
 
-  def chinfo_file(sname : String, snvid : String)
+  def chinfo_file(sname : String, snvid : String, gzip = true)
     # TODO: update for 69shu
-    "_db/.cache/#{sname}/infos/#{snvid}.html"
+    nvinfo_file(sname, snvid, gzip: gzip)
   end
 
-  def chtext_file(sname : String, snvid : String, schid : String)
-    "_db/.cache/#{sname}/texts/#{snvid}/#{schid}.html"
+  def chtext_file(sname : String, snvid : String, schid : String, gzip = false)
+    ext = gzip ? "html.gz" : "html"
+    PathUtils.cache_file(sname, "texts/#{snvid}/#{schid}.#{ext}")
   end
 
   def nvinfo_link(sname : String, snvid : String) : String
@@ -175,6 +177,7 @@ module CV::RmSpider
     when "bqg_5200" then "https://www.biquge5200.com/"
     when "bxwxorg"  then "https://www.bxwxorg.com/"
     when "shubaow"  then "https://www.shubaow.net/"
+    when "paoshu8"  then "http://www.paoshu8.com/"
     else                 raise "Unsupported source name!"
     end
   end

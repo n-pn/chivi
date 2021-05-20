@@ -14,7 +14,7 @@ module CV::PathUtils
     "#{CACHE_DIR}/#{sname}/#{subdir}"
   end
 
-  # fname: `1.html.gz`, `4.json`, etc.
+  # fname: `1.html.gz`, `infos/4.json`, etc.
   def cache_file(sname : String, fname : String)
     "#{CACHE_DIR}/#{sname}/#{fname}"
   end
