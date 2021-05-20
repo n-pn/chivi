@@ -6,16 +6,18 @@ module CV::FileUtils
   EXPIRY = Time.utc(2000, 1, 1)
 
   def read(file : String, expiry = EXPIRY)
-    File.read(file) if recent?(file, expiry)
+    return unless recent?(file, expiry)
+    return File.read(file) unless file.ends_with?(".gz")
+
+    File.open(gz_file) do |io|
+      Compress::Gzip::Reader.open(io, &.gets_to_end)
+    end
   end
 
   def read_gz(file : String, expiry = EXPIRY)
     gz_file = file + ".gz"
 
     if recent?(gz_file, expiry)
-      File.open(gz_file) do |io|
-        Compress::Gzip::Reader.open(io, &.gets_to_end)
-      end
     elsif recent?(file, expiry)
       File.read(file)
     end

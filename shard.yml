@@ -14,6 +14,9 @@ targets:
   map_remote:
     main: cli/mapinfo/map_remote.cr
 
+  prefetch_infos:
+    main: cli/mapinfo/prefetch_infos.cr
+
   map_zxcs_me:
     main: cli/mapinfo/map_zxcs_me.cr
 

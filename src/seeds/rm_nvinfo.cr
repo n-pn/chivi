@@ -1,17 +1,26 @@
+require "file_utils"
 require "./rm_spider"
 
 require "../utils/time_utils"
 require "../utils/text_utils"
+require "../utils/path_utils"
 
 class CV::RmNvInfo
-  getter sname : String
-  getter snvid : String
+  def self.dir(sname : String)
+    PathUtils.cache_dir(sname, "infos")
+  end
 
-  def initialize(@sname, @snvid, valid = 1.month, label = "1")
-    file = RmSpider.nvinfo_file(@sname, @snvid)
-    link = RmSpider.nvinfo_link(@sname, @snvid)
+  def self.mkdir!(sname : String)
+    ::FileUtils.mkdir_p(dir(sname))
+  end
 
-    html = RmSpider.fetch(file, link, sname: @sname, valid: valid, label: label)
+  def self.init(sname : String, snvid : String, valid = 10.years, label = "1/1")
+    file = RmSpider.nvinfo_file(sname, snvid)
+    link = RmSpider.nvinfo_link(sname, snvid)
+    html = RmSpider.fetch(file, link, sname: sname, valid: valid, label: label)
+  end
+
+  def initialize(@sname, html : String)
     @rdoc = Myhtml::Parser.new(html)
   end
 

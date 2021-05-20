@@ -85,8 +85,9 @@ module CV::RmSpider
     end
   end
 
-  def nvinfo_file(sname : String, snvid : String)
-    "_db/.cache/#{sname}/infos/#{snvid}.html"
+  def nvinfo_file(sname : String, snvid : String, gzip = true)
+    file = gzip ? "#{snvid}.html.gz" : "#{snvid}.html"
+    "_db/.cache/#{sname}/infos/#{file}"
   end
 
   def chinfo_file(sname : String, snvid : String)
@@ -105,7 +106,7 @@ module CV::RmSpider
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
     when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
     when "rengshu"  then "http://www.rengshu.com/book/#{snvid}"
-    when "xbiquge"  then "https://www.xbiquge.cc/book/#{snvid}/"
+    when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/"
     when "biqubao"  then "https://www.biqubao.com/book/#{snvid}/"
     when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/"
     when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
@@ -131,7 +132,7 @@ module CV::RmSpider
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/#{schid}.html"
     when "qu_la"    then "https://www.qu.la/book/#{snvid}/#{schid}.html"
     when "rengshu"  then "http://www.rengshu.com/book/#{snvid}/#{schid}"
-    when "xbiquge"  then "https://www.xbiquge.cc/book/#{snvid}/#{schid}.html"
+    when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/#{schid}.html"
     when "biqubao"  then "https://www.biqubao.com/book/#{snvid}/#{schid}.html"
     when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/#{schid}.html"
     when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
@@ -160,5 +161,21 @@ module CV::RmSpider
     updated_at < upper_time ? updated_at.to_unix : upper_time.to_unix
   rescue
     0_i64
+  end
+
+  def index_url(sname : String) : String
+    case sname
+    when "hetushu"  then "https://www.hetushu.com/book/index.php"
+    when "rengshu"  then "http://www.rengshu.com/"
+    when "xbiquge"  then "https://www.xbiquge.so/"
+    when "biqubao"  then "https://www.biqubao.com/"
+    when "5200"     then "https://www.5200.tv/"
+    when "duokan8"  then "http://www.duokan8.com/"
+    when "nofff"    then "https://www.nofff.com/"
+    when "bqg_5200" then "https://www.biquge5200.com/"
+    when "bxwxorg"  then "https://www.bxwxorg.com/"
+    when "shubaow"  then "https://www.shubaow.net/"
+    else                 raise "Unsupported source name!"
+    end
   end
 end

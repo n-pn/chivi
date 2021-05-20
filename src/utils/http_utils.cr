@@ -1,10 +1,48 @@
 require "colorize"
 require "http/client"
+require "compress/gzip"
 
 # require "crest"
 
 module CV::HttpUtils
   extend self
+
+  TTL = Time.utc(2000, 1, 1)
+
+  def load_html(link : String, file : String, ttl = TTL, encoding = "UTF-8", label = "1/1")
+    unless html = read_html(file, ttl: ttl)
+      html = get_html(link, encoding: encoding, label: label)
+      save_html(file, html)
+    end
+
+    html
+  end
+
+  def read_html(file : String, ttl = TTL) : String?
+    expiry = ttl.is_a?(Time) ? ttl : Time.utc - ttl
+    return if staled?(file, expiry)
+
+    return File.read(file) unless file.ends_with?(".gz")
+
+    File.open(file) do |io|
+      Compress::Gzip::Reader.open(io, &.gets_to_end)
+    end
+  end
+
+  def save_html(file : String, html : String)
+    File.open(file, "w") do |io|
+      if file.ends_with?(".gz")
+        Compress::Gzip::Writer.open(io, &.print(html))
+      else
+        io.print(html)
+      end
+    end
+  end
+
+  def staled?(file : String, expiry : Time) : Bool
+    return true unless stats = File.info?(file)
+    stats.modification_time < expiry
+  end
 
   def get_html(url : String, encoding : String = "UTF-8", label = "1/1") : String
     try = 0
@@ -60,17 +98,18 @@ module CV::HttpUtils
     end
   end
 
-  def save_file(url : String, out_file : String) : Nil
+  def fetch_file(url : String, out_file : String) : Nil
     cmd = "curl -L -k -s -m 100 '#{url}' -o '#{out_file}'"
     try = 0
 
     loop do
-      puts "[SAVE_FILE: <#{url}> (try: #{try})]".colorize.magenta
-      `#{cmd}`
+      puts "[FETCH_FILE: <#{url}> (try: #{try})]".colorize.magenta
+      puts `#{cmd}`
+
       return if File.exists?(out_file)
 
       try += 1
-      sleep 500.milliseconds * try
+      sleep 250.milliseconds * try
       raise "500 Server Error!" if try > 3
     end
   end
