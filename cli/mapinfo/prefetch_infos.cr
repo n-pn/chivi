@@ -11,11 +11,6 @@ class CV::PrefetchInfoHtml
     @encoding = HttpUtils.encoding_for(@sname)
   end
 
-  # cr_mode:
-  # - 0: skip id if existed in `.cache` folder
-  # - 1: skip id if existed in `_index` file
-  # - 2: skip id if existed in `.cache` folder or `_index` file
-
   def run!(upper = 0, cr_mode = 0, threads = 0)
     RmNvInfo.mkdir!(@sname) # ensure the `cache` folder exists
 
@@ -48,23 +43,30 @@ class CV::PrefetchInfoHtml
     threads.times { channel.receive }
   end
 
+  # cr_mode:
+  # - 0: skip id if existed in `.cache` folder or `_index` file
+  # - 1: skip id if existed in `.cache` folder
+  # - 2: skip id if existed in `_index` file
+
   def build_queue!(upper : Int32, cr_mode : Int32)
-    index = ValueMap.new(PathUtils.seeds_map(@sname, "_index"))
-    queue = [] of Tuple(String, String)
+    snvids = (1..upper).map(&.to_s)
 
-    1.upto(upper) do |idx|
-      snvid = idx.to_s
-
-      file = RmSpider.nvinfo_file(@sname, snvid, gzip: true)
-      link = RmSpider.nvinfo_link(@sname, snvid)
-
-      next if cr_mode > 0 && index.has_key?(snvid) # cr_mode = 1 or 2
-      next if cr_mode != 1 && File.exists?(file)   # cr_mode = 0 or 2
-
-      queue << {link, file}
+    if cr_mode != 1 # cr_mode = 0 or 2
+      index = ValueMap.new(PathUtils.seeds_map(@sname, "_index"))
+      snvids -= index.data.keys
     end
 
-    queue
+    if cr_mode < 2 # cr_mode = 0 or 1
+      dir, ext = PathUtils.cache_dir(@sname, "infos"), ".html.gz"
+      existed = Dir.glob("#{dir}/*#{ext}").map { |f| File.basename(f, ext) }
+      snvids -= existed
+    end
+
+    snvids.map do |snvid|
+      file = RmSpider.nvinfo_file(@sname, snvid, gzip: true)
+      link = RmSpider.nvinfo_link(@sname, snvid)
+      {link, file}
+    end
   end
 
   getter remote_upper_snvid : String do
@@ -134,7 +136,7 @@ end
 
 def run!(argv = ARGV)
   sname, upper = "hetushu", 0
-  cr_mode, threads = 0, 0
+  cr_mode, threads = 1, 0
 
   OptionParser.parse(argv) do |parser|
     parser.banner = "Usage: map_remote [arguments]"
