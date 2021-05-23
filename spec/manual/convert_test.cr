@@ -1,7 +1,7 @@
 require "../../src/libcv/cvmtl"
 
 GENERIC = CV::Cvmtl.generic("various")
-CV::Vdict.various.add(CV::Vterm.new("贾文和", ["Giả Văn Hoà"]))
+CV::Vdict.various.set(CV::Vterm.new("贾文和", ["Giả Văn Hoà"]))
 
 puts CV::Vdict.regular.find("龙")
 puts CV::Vdict.regular.find("之术")
@@ -9,11 +9,11 @@ puts CV::Vdict.regular.find("历史")
 
 HANVIET = CV::Cvmtl.hanviet
 
-def translate(input : String, title = false)
-  if title
-    GENERIC.cv_title(input).to_s
-  else
-    GENERIC.cv_plain(input).to_s
+def translate(input : String, mode = 0)
+  case mode
+  when 2 then GENERIC.cv_title_full(input).to_s
+  when 1 then GENERIC.cv_title(input).to_s
+  else        GENERIC.cv_plain(input).to_s
   end
 end
 
@@ -42,20 +42,20 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
 text.split(/\n+/).each_with_index do |line, idx|
-  puts translate(line, title: idx == 0)
+  puts translate(line, idx == 0 ? 1 : 0)
 end
 
-puts translate("第一章", true)
-puts translate("第一章 屠龙之术", true)
-puts translate("一, 屠龙之术", true)
-puts translate("1, 屠龙之术", true)
-puts translate("第十三集 龙章凤仪 第一章屠龙之术", true)
-puts translate("第十三集 龙章凤仪", true)
+puts translate("第一章", mode: 1)
+puts translate("第一章 屠龙之术", mode: 1)
+puts translate("一, 屠龙之术", mode: 1)
+puts translate("1, 屠龙之术", mode: 1)
+puts translate("第十三集 龙章凤仪 第一章屠龙之术", mode: 2)
+puts translate("第十三集 龙章凤仪", mode: 1)
 puts translate("1第一章")
 puts translate("一. 屠龙之术")
 puts translate("朥负已定")
-puts translate("第三千七百九十八章 历史的本质就是套娃", true)
-puts translate("12：12", true)
+puts translate("第三千七百九十八章 历史的本质就是套娃", mode: 1)
+puts translate("12：12", mode: 1)
 
 pp GENERIC.cv_title("1, 屠龙之术")
 pp GENERIC.cv_plain("能让我坐在这里无病呻－吟")

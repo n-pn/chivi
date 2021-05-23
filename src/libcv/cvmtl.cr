@@ -74,44 +74,24 @@ class CV::Cvmtl
   TITLE_RE_4 = /^楔子(\s+)(.+)$/
 
   def cv_title(title : String)
-    res = Deque(Cword).new
+    pre, pad = nil, ""
 
-    unless title.empty?
-      if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
-        _, group, num, lbl, trash, title = match
+    if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
+      _, group, num, lbl, pad, title = match
+      pre = Cword.new(group, "#{vi_label(lbl)} #{Cutil.to_integer(num)}", 1)
+    elsif match = TITLE_RE_3.match(title)
+      _, num, pad, title = match
+      pre = Cword.new(num, num, 1)
+    elsif match = TITLE_RE_4.match(title)
+      _, pad, title = match
+      pre = Cword.new("楔子", "Phần đệm", 1)
+    end
 
-        num = Cutil.to_integer(num)
-        res << Cword.new(group, "#{vi_label(lbl)} #{num}", 1)
+    res = title.empty? ? Deque(Cword).new : cv_plain(title).data
 
-        if !title.empty?
-          res << Cword.new(trash, ": ")
-        elsif !trash.empty?
-          res << Cword.new(trash, "")
-        end
-      elsif match = TITLE_RE_3.match(title)
-        _, num, trash, title = match
-        res << Cword.new(num, num, 1)
-
-        if !title.empty?
-          res << Cword.new(trash, ". ")
-        elsif !trash.empty?
-          res << Cword.new(trash, "")
-        end
-      elsif match = TITLE_RE_4.match(title)
-        _, trash, title = match
-        res << Cword.new("楔子", "Phần đệm", 1)
-
-        if !title.empty?
-          res << Cword.new(trash, ": ")
-        elsif !trash.empty?
-          res << Cword.new(trash, "")
-        end
-      end
-
-      title.split(/\s+/).each_with_index do |text, idx|
-        res << Cword.new(" ", " ") if idx > 0
-        res.concat(cv_plain(text).data)
-      end
+    if pre
+      res.unshift(Cword.new(pad, title.empty? ? "" : ": "))
+      res.unshift(pre)
     end
 
     Cline.new(res)
