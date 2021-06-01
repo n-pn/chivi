@@ -4,7 +4,7 @@ require "../../src/cutil/path_utils"
 require "../../src/cutil/http_utils"
 
 require "../../src/tabkv/value_map"
-require "../../src/seeds/rm_nvinfo"
+require "../../src/seeds/rm_info"
 
 class CV::PrefetchInfoHtml
   def initialize(@sname : String)
@@ -12,7 +12,7 @@ class CV::PrefetchInfoHtml
   end
 
   def run!(upper = 0, cr_mode = 0, threads = 0)
-    RmNvinfo.mkdir!(@sname) # ensure the seed cache folder exists
+    RmInfo.mkdir!(@sname) # ensure the seed cache folder exists
 
     upper = remote_upper_snvid.to_i if upper < 1
     queue = build_queue!(upper, cr_mode) # find missing info pages

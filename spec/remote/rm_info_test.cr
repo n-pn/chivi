@@ -1,23 +1,24 @@
 require "file_utils"
 
-require "../../src/seeds/rm_nvinfo.cr"
+require "../../src/seeds/rm_info.cr"
 
 def fetch_info(sname, snvid, fresh = false) : Void
-  puts "\n[#{CV::RmSpider.nvinfo_link(sname, snvid)}]".colorize.green.bold
+  parser = CV::RmInfo.new(sname, snvid, ttl: fresh ? 1.minute : 1.year)
+
+  puts "\n[#{parser.info_link}]".colorize.green.bold
   puts "------".colorize.green
 
-  parser = CV::RmNvinfo.new(sname, snvid, valid: fresh ? 1.minute : 1.year)
-
-  nvinfo = {
+  output = {
     btitle: parser.btitle,
     author: parser.author,
     genres: parser.genres.join(" "),
     bintro: parser.bintro.join("\n"),
     bcover: parser.bcover,
-    status: parser.status_int,
+    status: parser.status,
+    update: parser.update,
   }
 
-  pp nvinfo
+  pp output
 rescue err
   puts err.colorize.red
 end

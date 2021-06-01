@@ -1,3 +1,5 @@
+require "file_utils"
+
 module CV::PathUtils
   extend self
 

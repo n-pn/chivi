@@ -9,7 +9,7 @@ module CV::HttpUtils
 
   TTL = Time.utc(2000, 1, 1)
 
-  def load_html(link : String, file : String, ttl = TTL, encoding = "UTF-8", label = "1/1")
+  def load_html(link : String, file : String, ttl = TTL, label = "1/1", encoding = "UTF-8")
     unless html = read_html(file, ttl: ttl)
       html = get_html(link, encoding: encoding, label: label)
       save_html(file, html)
