@@ -5,7 +5,7 @@ require "../../src/seeds/rm_info.cr"
 def fetch_info(sname, snvid, fresh = false) : Void
   parser = CV::RmInfo.new(sname, snvid, ttl: fresh ? 1.minute : 1.year)
 
-  puts "\n[#{parser.info_link}]".colorize.green.bold
+  puts "\n[#{parser.link}]".colorize.green.bold
   puts "------".colorize.green
 
   output = {
@@ -16,9 +16,23 @@ def fetch_info(sname, snvid, fresh = false) : Void
     bcover: parser.bcover,
     status: parser.status,
     update: parser.update,
+
+    last_schid: parser.last_schid,
   }
 
   pp output
+
+  puts "------".colorize.green
+
+  puts "chap_count: #{parser.chap_list.size}"
+  puts "last_schid: #{parser.last_schid}"
+  puts "------".colorize.green
+
+  parser.chap_list.first(4).map { |x| puts x }
+  puts "------".colorize.green
+
+  parser.chap_list.last(4).map { |x| puts x }
+  puts "------".colorize.green
 rescue err
   puts err.colorize.red
 end

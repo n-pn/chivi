@@ -1,7 +1,5 @@
-require "../cutil/time_utils"
 require "../cutil/http_utils"
-require "../cutil/path_utils"
-
+require "../cutil/time_utils"
 require "./shared/html_parser"
 
 class CV::RmInfo
@@ -22,16 +20,9 @@ class CV::RmInfo
   def initialize(@sname, @snvid, @ttl : TimeSpan = 10.years, @label = "1/1")
   end
 
-  getter info_file : String do
-    PathUtils.cache_file(@sname, "infos/#{@snvid}.html.gz")
-  end
+  getter file : String { "_db/.cache/#{@sname}/infos/#{@snvid}.html.gz" }
 
-  getter chap_file : String do
-    return info_file unless @sname == "69shu"
-    PathUtils.cache_file("69shu", "infos/#{snvid}-mulu.html.gz")
-  end
-
-  getter info_link : String do
+  getter link : String do
     case @sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
@@ -43,50 +34,45 @@ class CV::RmInfo
     when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/"
     when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/index.html"
-    when "duokan8"  then "http://www.duokanba.info/#{scopped_snvid}/"
-    when "paoshu8"  then "http://www.paoshu8.com/#{scopped_snvid}/"
-    when "5200"     then "https://www.5200.tv/#{scopped_snvid}/"
-    when "shubaow"  then "https://www.shubaow.net/#{scopped_snvid}/"
-    when "bqg_5200" then "https://www.biquge5200.com/#{scopped_snvid}/"
+    when "duokan8"  then "http://www.duokanba.info/#{prefixed_snvid}/"
+    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed_snvid}/"
+    when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/"
+    when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/"
+    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed_snvid}/"
     else                 raise "Unsupported remote source <#{sname}>!"
     end
   end
 
-  def scopped_snvid
+  def prefixed_snvid
     "#{@snvid.to_i // 1000}_#{@snvid}"
   end
 
-  getter chap_link : String do
-    return chap_link unless @sname == "69shu"
-    "https://www.69shu.com/#{snvid}/"
-  end
-
-  getter info_page : HtmlParser do
+  getter page : HtmlParser do
     encoding = HttpUtils.encoding_for(@sname)
-    html = HttpUtils.load_html(info_link, info_file, @ttl, @label, encoding)
+    html = HttpUtils.load_html(link, file, @ttl, @label, encoding)
 
     HtmlParser.new(html)
   end
 
   getter btitle : String do
     case @sname
-    when "zhwenpg" then info_page.text(".cbooksingle h2")
-    when "hetushu" then info_page.text("h2")
+    when "zhwenpg" then page.text(".cbooksingle h2")
+    when "hetushu" then page.text("h2")
     when "69shu"
-      info_page.text("h1 > a", nil) || info_page.text(".weizhi > a:last-child")
+      page.text("h1 > a", nil) || page.text(".weizhi > a:last-child")
     else
-      info_page.meta("og:novel:book_name").sub(/作\s+者[：:].+$/, "")
+      page.meta("og:novel:book_name").sub(/作\s+者[：:].+$/, "")
     end
   end
 
   getter author : String do
     case @sname
-    when "zhwenpg" then info_page.text(".fontwt")
-    when "hetushu" then info_page.text(".book_info a:first-child")
+    when "zhwenpg" then page.text(".fontwt")
+    when "hetushu" then page.text(".book_info a:first-child")
     when "69shu"
-      info_page.text(".booknav2 > p:nth-child(2) > a", nil) || info_page.text(".mu_beizhu > a[target]")
+      page.text(".booknav2 > p:nth-child(2) > a", nil) || page.text(".mu_beizhu > a[target]")
     else
-      info_page.meta("og:novel:author")
+      page.meta("og:novel:author")
     end
   end
 
@@ -94,41 +80,41 @@ class CV::RmInfo
     case @sname
     when "zhwenpg" then [] of String
     when "hetushu"
-      genre = info_page.text(".title > a:last-child")
-      tags = info_page.text_list(".tag a")
+      genre = page.text(".title > a:last-child")
+      tags = page.text_list(".tag a")
       [genre].concat(tags).uniq
     when "69shu"
-      genre = info_page.text(".booknav2 > p:nth-child(3) > a", nil)
-      [genre || info_page.text(".weizhi > a:nth-child(2)")]
+      genre = page.text(".booknav2 > p:nth-child(3) > a", nil)
+      [genre || page.text(".weizhi > a:nth-child(2)")]
     else
-      [info_page.meta("og:novel:category")]
+      [page.meta("og:novel:category")]
     end
   end
 
   getter bintro : Array(String) do
     case @sname
-    when "hetushu" then info_page.text_list(".intro > p")
-    when "zhwenpg" then info_page.text_para("tr:nth-of-type(3)")
-    when "bxwxorg" then info_page.text_para("#intro > p:first-child")
-    when "69shu"   then info_page.text_para(".navtxt > p:first-child")
-    else                info_page.meta_para("og:description")
+    when "hetushu" then page.text_list(".intro > p")
+    when "zhwenpg" then page.text_para("tr:nth-of-type(3)")
+    when "bxwxorg" then page.text_para("#intro > p:first-child")
+    when "69shu"   then page.text_para(".navtxt > p:first-child")
+    else                page.meta_para("og:description")
     end
   end
 
   getter bcover : String do
     case @sname
     when "hetushu"
-      image_url = info_page.attr(".book_info img", "src")
+      image_url = page.attr(".book_info img", "src")
       "https://www.hetushu.com#{image_url}"
     when "69shu"
       image_url = "/#{@snvid.to_i // 1000}/#{@snvid}/#{@snvid}s.jpg"
       "https://www.69shu.com/files/article/image/#{image_url}"
     when "zhwenpg"
-      info_page.attr(".cover_wrapper_m img", "data-src")
+      page.attr(".cover_wrapper_m img", "data-src")
     when "jx_la"
-      info_page.meta("og:image").sub("qu.la", "jx.la")
+      page.meta("og:image").sub("qu.la", "jx.la")
     else
-      info_page.meta("og:image")
+      page.meta("og:image")
     end
   end
 
@@ -136,11 +122,22 @@ class CV::RmInfo
     case @sname
     when "zhwenpg" then "0"
     when "69shu"
-      info_page.text(".booknav2 > p:nth-child(4)").split("  |  ").last
+      page.text(".booknav2 > p:nth-child(4)").split("  |  ").last
     when "hetushu"
-      info_page.attr(".book_info", "class").includes?("finish") ? "1" : "0"
+      page.attr(".book_info", "class").includes?("finish") ? "1" : "0"
     else
-      info_page.meta("og:novel:status")
+      page.meta("og:novel:status")
+    end
+  end
+
+  getter update : String do
+    case @sname
+    when "69shu"
+      page.text(".booknav2 > p:nth-child(5)").sub("更新：", "")
+    when "bqg_5200"
+      page.text("#info > p:last-child").sub("最后更新：", "")
+    else
+      page.meta("og:novel:update_time")
     end
   end
 
@@ -156,14 +153,130 @@ class CV::RmInfo
     0_i64
   end
 
-  getter update : String do
+  getter last_schid : String do
+    extract_schid(last_schid_href)
+  end
+
+  def last_schid_href
     case @sname
-    when "69shu"
-      info_page.text(".booknav2 > p:nth-child(5)").sub("更新：", "")
-    when "bqg_5200"
-      info_page.text("#info > p:last-child").sub("最后更新：", "")
-    else
-      info_page.meta("og:novel:update_time")
+    when "69shu"    then page.attr(".qustime a:first-child", "href")
+    when "hetushu"  then page.attr("#dir :last-child a:last-of-type", "href")
+    when "zhwenpg"  then page.attr(".fontwt0 + a", "href")
+    when "bqg_5200" then page.attr("#list a:first-of-type", "href")
+    else                 page.meta("og:novel:latest_chapter_url")
     end
+  end
+
+  private def extract_schid(href : String)
+    case @sname
+    when "zhwenpg" then href.sub("r.php?id=", "")
+    when "69shu"   then File.basename(href)
+    else                File.basename(href, ".html")
+    end
+  end
+
+  struct Chap
+    getter schid : String, title : String, label : String
+
+    def initialize(@schid, title : String, label : String = "")
+      label = TextUtils.fix_spaces(label).strip
+      @title, @label = TextUtils.format_title(title, label)
+      @label = @label.sub(/\s{2,}/, " ")
+    end
+
+    def invalid?
+      @title.empty?
+    end
+
+    def to_s(io : IO)
+      io << @schid << "  " << @title << "  " << @label
+    end
+
+    def to_s
+      String.build { |io| to_s(io) }
+    end
+  end
+
+  getter chap_list : Array(Chap) do
+    case @sname
+    when "69shu"   then extract_69shu_chaps
+    when "zhwenpg" then extract_zhwenpg_chaps
+    when "duokan8" then extract_duokan8_chaps
+    when "hetushu" then extract_generic_chaps("#dir")
+    when "5200"    then extract_generic_chaps(".listmain > dl")
+    else                extract_generic_chaps("#list > dl")
+    end
+  end
+
+  def extract_generic_chaps(query : String)
+    chaps = [] of Chap
+    return chaps unless node = page.find(query)
+
+    label = ""
+
+    node.children.each do |node|
+      case node.tag_sym
+      when :dt
+        inner = node.css("b").first? || node
+        label = inner.inner_text.gsub(/《.*》/, "")
+      when :dd
+        next if label.includes?("最新章节")
+        next unless link = node.css("a").first?
+        next unless href = link.attributes["href"]?
+
+        chap = Chap.new(extract_schid(href), link.inner_text, label)
+        chaps << chap unless chap.invalid?
+      end
+    rescue err
+      puts err.colorize.red
+    end
+
+    chaps
+  end
+
+  def extract_69shu_chaps
+    page = begin
+      link = "https://www.69shu.com/#{@snvid}/"
+      file = "_db/.cache/69shu/infos/#{@snvid}-mulu.html.gz"
+      html = HttpUtils.load_html(link, file, @ttl, @label, "GBK")
+      HtmlParser.new(html)
+    end
+
+    chaps = [] of Chap
+
+    page.css("#catalog li > a").each do |link|
+      next unless href = link.attributes["href"]?
+      chap = Chap.new(extract_schid(href), link.inner_text)
+      chaps << chap unless chap.invalid?
+    end
+
+    chaps
+  end
+
+  def extract_zhwenpg_chaps
+    chaps = [] of Chap
+
+    page.css(".clistitem > a").each do |link|
+      href = link.attributes["href"]
+      chap = Chap.new(extract_schid(href), link.inner_text)
+      chaps << chap unless chap.invalid?
+    end
+
+    # check if the list is in correct orlder
+    chaps.reverse! if chaps.first.schid == last_schid
+
+    chaps
+  end
+
+  private def extract_duokan8_chaps
+    chaps = [] of Chap
+
+    page.css(".chapter-list a").each do |link|
+      next unless href = link.attributes["href"]?
+      chap = Chap.new(extract_schid(href), link.inner_text)
+      chaps << chap unless chap.invalid?
+    end
+
+    chaps
   end
 end

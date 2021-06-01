@@ -121,7 +121,7 @@ module CV::TextUtils
     end
 
     title = fix_title(title, trim: false).gsub(/\s{2,}/, " ")
-    {title, label != "正文" ? label : ""}
+    {title, label == "正文" ? "" : label}
   end
 
   FIX_RE_0 = {

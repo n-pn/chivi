@@ -6,9 +6,15 @@ class CV::HtmlParser
     @doc = Myhtml::Parser.new(html)
   end
 
+  forward_missing_to @doc
+
   # find the first node matching the query, return nil otherwise
   def find(query : String)
     @doc.css(query).first?
+  end
+
+  def find_list(query : String)
+    @doc.css(query).to_a
   end
 
   # reading attribute data of a node

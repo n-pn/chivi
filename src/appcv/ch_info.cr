@@ -2,8 +2,8 @@ require "json"
 require "file_utils"
 
 require "../libcv/cvmtl"
+require "../seeds/rm_info"
 require "../cutil/ram_cache"
-require "../seeds/rm_chinfo"
 
 class CV::ChInfo
   DIR = "_db/ch_infos"
@@ -37,17 +37,17 @@ class CV::ChInfo
     trans!(reset: false)
   end
 
-  def fetch!(power = 4, mode = 2, valid = 5.minutes) : Tuple(Int64, Int32)
+  def fetch!(power = 4, mode = 2, ttl = 5.minutes) : Tuple(Int64, Int32)
     mtime = -1_i64
 
     if RmSpider.remote?(@sname, power: power)
-      puller = RmChinfo.new(@sname, @snvid, valid: valid)
+      parser = RmInfo.new(@sname, @snvid, ttl: ttl)
       latest = origs.data.last_value?.try(&.first?) || ""
 
-      if mode > 1 || puller.changed?(latest)
-        mtime = puller.update_int
+      if mode > 1 || parser.last_schid != latest
+        mtime = parser.mftime
 
-        puller.chap_list.each_with_index(1) do |infos, index|
+        parser.chap_list.each_with_index(1) do |infos, index|
           origs.set!(index.to_s, infos)
         end
       end
