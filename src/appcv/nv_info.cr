@@ -182,6 +182,13 @@ class CV::NvInfo
     {seed[0], seed[1].to_i64, seed[2].to_i}
   end
 
+  SEED_ORDERS = {
+    "zxcs_me", "hetushu", "bxwxorg",
+    "xbiquge", "rengshu", "biqubao",
+    "bqg_5200", "5200", "nofff",
+    "paoshu8", "zhwenpg", "duokan8", "shubaow",
+  }
+
   def set_chseed(sname : String, snvid : String, mtime = 0_i64, count = 0) : Nil
     # dirty hack to fix update_time for hetushu or zhwenpg...
     mtime = fix_seed_mtime(sname, mtime, count)
@@ -189,11 +196,16 @@ class CV::NvInfo
     @update = nil
     NvOrders.set_update!(@bhash, mtime)
 
-    _snames = snames
-    _snames << sname
+    @snames = begin
+      snames = self.snames.reject("chivi")
 
-    _snames = _snames.uniq.map { |s| {s, -get_chseed(s)[1]} }
-    @snames = _snames.sort_by(&.[1]).map(&.[0])
+      if sname != "chivi"
+        snames.push(sname) unless snames.includes?(sname)
+        snames.sort_by! { |x| SEED_ORDERS.index(x) || 99 }
+      end
+
+      snames.size > 4 ? snames.insert(4, "chivi") : snames.push("chivi")
+    end
 
     NvChseed.set_list!(@bhash, snames)
     NvChseed.set_seed!(sname, @bhash, [snvid, mtime.to_s, count.to_s])
