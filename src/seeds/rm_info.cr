@@ -5,7 +5,7 @@ require "./shared/html_parser"
 class CV::RmInfo
   # cache folder path
   def self.c_dir(sname : String) : String
-    PathUtils.cache_dir(sname, "infos")
+    "_db/.cache/#{sname}/infos"
   end
 
   def self.mkdir!(sname : String)
@@ -20,7 +20,7 @@ class CV::RmInfo
   def initialize(@sname, @snvid, @ttl : TimeSpan = 10.years, @label = "1/1")
   end
 
-  getter file : String { "_db/.cache/#{@sname}/infos/#{@snvid}.html.gz" }
+  getter file : String { "#{RmInfo.c_dir(@sname)}/#{@snvid}.html.gz" }
 
   getter link : String do
     case @sname
@@ -50,7 +50,6 @@ class CV::RmInfo
   getter page : HtmlParser do
     encoding = HttpUtils.encoding_for(@sname)
     html = HttpUtils.load_html(link, file, @ttl, @label, encoding)
-
     HtmlParser.new(html)
   end
 
@@ -194,6 +193,10 @@ class CV::RmInfo
 
     def to_s
       String.build { |io| to_s(io) }
+    end
+
+    def to_a
+      [@schid, @title, @label]
     end
   end
 

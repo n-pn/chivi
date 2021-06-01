@@ -44,7 +44,7 @@ module CV::HttpUtils
     stats.modification_time < expiry
   end
 
-  def get_html(url : String, encoding : String = "UTF-8", label = "1/1") : String
+  def get_html(url : String, label = "1/1", encoding : String = "UTF-8") : String
     try = 0
     internal = use_crystal?(url)
 

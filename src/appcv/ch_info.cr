@@ -47,8 +47,8 @@ class CV::ChInfo
       if mode > 1 || parser.last_schid != latest
         mtime = parser.mftime
 
-        parser.chap_list.each_with_index(1) do |infos, index|
-          origs.set!(index.to_s, infos)
+        parser.chap_list.each_with_index(1) do |chap, index|
+          origs.set!(index.to_s, chap.to_a)
         end
       end
     end
