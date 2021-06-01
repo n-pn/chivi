@@ -6,7 +6,7 @@ def fetch_info(sname, snvid, fresh = false) : Void
   puts "\n[#{CV::RmSpider.nvinfo_link(sname, snvid)}]".colorize.green.bold
   puts "------".colorize.green
 
-  parser = CV::RmNvInfo.new(sname, snvid, valid: fresh ? 1.minute : 1.year)
+  parser = CV::RmNvinfo.new(sname, snvid, valid: fresh ? 1.minute : 1.year)
 
   nvinfo = {
     btitle: parser.btitle,

@@ -2,7 +2,7 @@ require "mime"
 require "colorize"
 require "file_utils"
 
-require "../../src/utils/http_utils"
+require "../../src/cutil/http_utils"
 require "../../src/tabkv/value_map"
 require "../../src/appcv/nv_info"
 
@@ -90,7 +90,7 @@ class CV::FetchCovers
       channel.receive if idx > limit
 
       spawn do
-        HttpUtils.save_file(link, file)
+        HttpUtils.save_html(link, file)
         fix_image_ext(file)
 
         sleep delayed

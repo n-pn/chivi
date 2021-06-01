@@ -1,5 +1,5 @@
-require "../utils/time_utils"
-require "../utils/text_utils"
+require "../cutil/time_utils"
+require "../cutil/text_utils"
 
 require "./rm_spider"
 

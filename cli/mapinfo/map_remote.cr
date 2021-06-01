@@ -2,7 +2,7 @@ require "file_utils"
 require "option_parser"
 
 require "../../src/seeds/rm_nvinfo"
-require "../../src/utils/file_utils"
+require "../../src/cutil/file_utils"
 require "./_bookgen.cr"
 
 class CV::MapRemote
@@ -89,7 +89,7 @@ class CV::MapRemote
         valid = 1.hours
       end
 
-      parser = RmNvInfo.new(@sname, snvid, valid: valid)
+      parser = RmNvinfo.new(@sname, snvid, valid: valid)
       btitle, author = parser.btitle, parser.author
 
       if @meta._index.set!(snvid, [atime.to_s, btitle, author])

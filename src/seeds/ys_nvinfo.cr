@@ -1,6 +1,6 @@
 require "json"
 
-require "../utils/*"
+require "../cutil/*"
 
 struct CV::YsSource
   include JSON::Serializable

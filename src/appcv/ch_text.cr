@@ -3,7 +3,7 @@ require "compress/zip"
 
 require "../libcv/cvmtl"
 require "../seeds/rm_chtext"
-require "../utils/ram_cache"
+require "../cutil/ram_cache"
 
 class CV::ChText
   DIR = "_db/ch_texts"

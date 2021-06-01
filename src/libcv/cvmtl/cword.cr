@@ -1,4 +1,4 @@
-require "../../utils/text_utils"
+require "../../cutil/text_utils"
 require "../vdict/vterm"
 
 class CV::Cword

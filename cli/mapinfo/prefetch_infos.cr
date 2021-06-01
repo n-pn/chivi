@@ -1,7 +1,7 @@
 require "option_parser"
 
-require "../../src/utils/path_utils"
-require "../../src/utils/http_utils"
+require "../../src/cutil/path_utils"
+require "../../src/cutil/http_utils"
 
 require "../../src/tabkv/value_map"
 require "../../src/seeds/rm_nvinfo"
@@ -12,7 +12,7 @@ class CV::PrefetchInfoHtml
   end
 
   def run!(upper = 0, cr_mode = 0, threads = 0)
-    RmNvInfo.mkdir!(@sname) # ensure the `cache` folder exists
+    RmNvinfo.mkdir!(@sname) # ensure the seed cache folder exists
 
     upper = remote_upper_snvid.to_i if upper < 1
     queue = build_queue!(upper, cr_mode) # find missing info pages
@@ -83,10 +83,10 @@ class CV::PrefetchInfoHtml
     when "nofff"
       href = rdoc.css("#newscontent_n .s2 > a").first.attributes["href"]
       File.basename(href)
-    when "rengshu", "xbiquge", "biqubao", "bxwxorg", "shubaow"
+    when "rengshu", "xbiquge", "biqubao", "bxwxorg"
       href = rdoc.css("#newscontent > .r .s2 > a").first.attributes["href"]
       File.basename(href)
-    when "bqg_5200", "paoshu8"
+    when "bqg_5200", "paoshu8", "shubaow"
       href = rdoc.css("#newscontent > .r .s2 > a").first.attributes["href"]
       File.basename(href).split("_").last
     when "5200"

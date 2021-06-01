@@ -2,7 +2,7 @@ require "json"
 require "file_utils"
 
 require "../libcv/cvmtl"
-require "../utils/ram_cache"
+require "../cutil/ram_cache"
 require "../seeds/rm_chinfo"
 
 class CV::ChInfo

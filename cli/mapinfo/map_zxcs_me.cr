@@ -3,7 +3,7 @@ require "compress/gzip"
 require "json"
 
 require "myhtml"
-require "../../src/utils/http_utils"
+require "../../src/cutil/http_utils"
 require "./_bookgen"
 
 class CV::MapZxcsMe
