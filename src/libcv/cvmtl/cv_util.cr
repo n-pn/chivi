@@ -1,6 +1,6 @@
-require "./consts/normalize"
+require "./cv_util/normalize"
 
-module CV::Cutil
+module CV::CvUtil
   extend self
 
   # Convert chinese punctuations to english punctuations

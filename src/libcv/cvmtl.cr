@@ -78,7 +78,7 @@ class CV::Cvmtl
 
     if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
       _, group, num, lbl, pad, title = match
-      pre = CvNode.new(group, "#{vi_label(lbl)} #{Cutil.to_integer(num)}", 1)
+      pre = CvNode.new(group, "#{vi_label(lbl)} #{CvUtil.to_integer(num)}", 1)
     elsif match = TITLE_RE_3.match(title)
       _, num, pad, title = match
       pre = CvNode.new(num, num, 1)
@@ -115,7 +115,7 @@ class CV::Cvmtl
     costs = [0.0]
 
     input.each_with_index(1) do |char, idx|
-      norm = Cutil.normalize(char)
+      norm = CvUtil.normalize(char)
       nodes << CvNode.new(char.to_s, norm.to_s, alnum?(norm) ? 1 : 0)
       costs << idx.to_f
     end
