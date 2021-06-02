@@ -65,6 +65,7 @@ module CV::ViUser
     set_power(uname, power)
 
     _ctime.set!(uname, Time.utc.to_unix)
+    save!(clean: false)
   end
 
   def dname_exists?(dname : String) : Bool
