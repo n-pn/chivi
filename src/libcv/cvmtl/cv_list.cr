@@ -1,13 +1,10 @@
 require "./cv_node"
 
 class CV::CvList
-  SEP = 'ǀ'
-
   alias Input = Deque(CvNode)
-  getter data : Input
 
-  def initialize(@data : Input)
-  end
+  getter data = Input.new
+  forward_missing_to @data
 
   def fix_grammar!
     res = Input.new
@@ -340,7 +337,7 @@ class CV::CvList
   end
 
   def to_str(io : IO) : Nil
-    @data.map { |x| {x.key, x.val, x.dic}.join(SEP) }.join(io, '\t')
+    @data.map { |x| {x.key, x.val, x.dic}.join('ǀ') }.join(io, '\t')
   end
 
   def inspect(io : IO) : Nil

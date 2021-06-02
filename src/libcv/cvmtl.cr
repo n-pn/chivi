@@ -75,15 +75,14 @@ class CV::Cvmtl
 
   def cv_title(title : String)
     pre_zh, pre_vi, pad, title = CvUtil.cv_title(title)
-
-    res = title.empty? ? Deque(CvNode).new : cv_plain(title).data
+    res = title.empty? ? CvList.new : cv_plain(title)
 
     unless pre_zh.empty?
       res.unshift(CvNode.new(pad, title.empty? ? "" : ": "))
       res.unshift(CvNode.new(pre_zh, pre_vi, 1))
     end
 
-    CvList.new(res)
+    res
   end
 
   private def vi_label(lbl = "")
@@ -137,7 +136,7 @@ class CV::Cvmtl
   end
 
   private def extract_best(nodes : Array(CvNode))
-    ary = Deque(CvNode).new
+    ary = CvList.new
     idx = nodes.size - 1
 
     while idx > 0
@@ -178,6 +177,6 @@ class CV::Cvmtl
       ary.unshift(curr)
     end
 
-    CvList.new(ary)
+    ary
   end
 end
