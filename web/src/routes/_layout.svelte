@@ -46,7 +46,7 @@
 
   function disable_router_unless_vip(e) {
     // disabled until adsense is unblocked
-    // if ($u_power < 2) e.stopPropagation()
+    if ($u_power < 2) e.stopPropagation()
   }
 </script>
 
