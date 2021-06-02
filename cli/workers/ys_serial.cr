@@ -1,12 +1,12 @@
 require "json"
-require "./ys_common"
-require "../../src/seeds/ys_nvinfo"
+require "../../src/seeds/ys_book"
+require "./shared/http_client"
 
-class Seeds::YsSerial
+class CV::CrawlYsbook
   DIR = "_db/yousuu/.cache/infos"
 
   def initialize(regen_proxy = false)
-    @http = Client.new(regen_proxy)
+    @http = HttpClient.new(regen_proxy)
   end
 
   def crawl!(upto = 252500, mode = :tail)
@@ -74,7 +74,8 @@ class Seeds::YsSerial
   end
 end
 
-worker = Seeds::YsSerial.new(ARGV.includes?("proxy"))
+reload_proxy = ARGV.includes?("proxy")
+worker = CV::CrawlYsbook.new(reload_proxy)
 
 mode =
   case ARGV

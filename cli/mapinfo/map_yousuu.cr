@@ -25,7 +25,7 @@ class CV::MapYousuu
       atime = Bookgen.get_atime(file) || 0_i64
       next if @meta._index.ival_64(snvid) >= atime
 
-      next unless info = YsNvinfo.load(file)
+      next unless info = YsBook.load(file)
       @meta._index.set!(snvid, [atime.to_s, info.title, info.author])
 
       @meta.genres.set!(snvid, [info.genre].concat(info.tags_fixed))

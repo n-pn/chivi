@@ -1,7 +1,7 @@
 require "colorize"
 require "file_utils"
 
-class Client
+class CV::HttpClient
   class Proxy
     property host, succ, fail
 

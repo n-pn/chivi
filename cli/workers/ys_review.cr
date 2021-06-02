@@ -1,19 +1,29 @@
-require "./ys_common"
+require "./shared/http_client"
 
-class Seeds::YsReview
+class CV::CrawlYscrit
   DIR = "_db/yousuu/.cache/crits"
-  SRC = "_db/nv_infos/yousuu.tsv"
+  SRC = "_db/_seeds/yousuu/count_crit.tsv"
 
-  @input : Array(String)
+  @counter = {} of String => Int32
 
   def initialize(regen_proxy = false)
-    @http = Client.new(regen_proxy)
-    @input = File.read_lines(SRC).map(&.split('\t')[1])
+    @http = HttpClient.new(regen_proxy)
+
+    File.read_lines(SRC).each do |line|
+      snvid, count = line.split('\t')
+      count = count.to_i
+      @counter[snvid] = count if count >= 4
+    end
   end
 
   def crawl!(page = 1)
     count = 0
-    queue = @input.dup
+    queue = [] of String
+
+    @counter.each do |snvid, count|
+      count -= (page - 1) * 20
+      queue << snvid if count >= 4
+    end
 
     until queue.empty?
       count += 1
@@ -62,7 +72,8 @@ class Seeds::YsReview
   delegate no_proxy?, to: @http
 end
 
-worker = Seeds::YsReview.new(regen_proxy: ARGV.includes?("proxy"))
+reload_proxy = ARGV.includes?("proxy")
+worker = CV::CrawlYscrit.new(reload_proxy)
 
 1.upto(5) do |page|
   worker.crawl!(page) unless worker.no_proxy?
