@@ -183,10 +183,10 @@ class CV::NvInfo
   end
 
   SEED_ORDERS = {
-    "zxcs_me", "hetushu", "bxwxorg",
-    "xbiquge", "rengshu", "biqubao",
-    "bqg_5200", "5200", "nofff",
-    "paoshu8", "zhwenpg", "duokan8", "shubaow",
+    "zxcs_me", "hetushu", "bxwxorg", "69shu",
+    "xbiquge", "rengshu", "biqubao", "bqg_5200",
+    "5200", "nofff", "paoshu8", "zhwenpg",
+    "duokan8", "shubaow", "jx_la",
   }
 
   def set_chseed(sname : String, snvid : String, mtime = 0_i64, count = 0) : Nil
