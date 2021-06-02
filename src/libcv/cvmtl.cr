@@ -74,24 +74,13 @@ class CV::Cvmtl
   TITLE_RE_4 = /^楔子(\s+)(.+)$/
 
   def cv_title(title : String)
-    pre, pad = nil, ""
-
-    if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
-      _, group, num, lbl, pad, title = match
-      pre = CvNode.new(group, "#{vi_label(lbl)} #{CvUtil.to_integer(num)}", 1)
-    elsif match = TITLE_RE_3.match(title)
-      _, num, pad, title = match
-      pre = CvNode.new(num, num, 1)
-    elsif match = TITLE_RE_4.match(title)
-      _, pad, title = match
-      pre = CvNode.new("楔子", "Phần đệm", 1)
-    end
+    pre_zh, pre_vi, pad, title = CvUtil.cv_title(title)
 
     res = title.empty? ? Deque(CvNode).new : cv_plain(title).data
 
-    if pre
+    unless pre_zh.empty?
       res.unshift(CvNode.new(pad, title.empty? ? "" : ": "))
-      res.unshift(pre)
+      res.unshift(CvNode.new(pre_zh, pre_vi, 1))
     end
 
     Cline.new(res)
