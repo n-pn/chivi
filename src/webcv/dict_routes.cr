@@ -27,7 +27,7 @@ module CV::Server
     limit = RouteUtils.get_limit(env, min: 50, max: 100)
     offset = RouteUtils.get_offset(env)
 
-    res = [] of Vterm
+    res = [] of VpTerm
 
     filter = Vtrie::Filter.init(env.params.query)
 
@@ -162,7 +162,7 @@ module CV::Server
     prio = env.params.json.fetch("prio", 1).as(Int64).to_i
     attr = env.params.json.fetch("attr", 0).as(Int64).to_i
 
-    new_term = Vterm.new(key, vals, prio, attr, uname: u_dname, power: power, dtype: dict.dtype)
+    new_term = VpTerm.new(key, vals, prio, attr, uname: u_dname, power: power, dtype: dict.dtype)
 
     halt env, status_code: 501, response: "Unchanged!" unless dict.set!(new_term)
 

@@ -1,10 +1,10 @@
-require "./vterm"
+require "./vp_term"
 
 class CV::Vtrie
   alias Trie = Hash(Char, Vtrie)
 
-  property term : Vterm? = nil
-  getter edits = [] of Vterm
+  property term : VpTerm? = nil
+  getter edits = [] of VpTerm
   getter _next = Trie.new
 
   def find!(key : String) : Vtrie
@@ -40,14 +40,14 @@ class CV::Vtrie
     end
   end
 
-  def to_a : Array(Vterm)
-    res = [] of Vterm
+  def to_a : Array(VpTerm)
+    res = [] of VpTerm
     each { |term| res << term }
     res
   end
 
   def prune!
-    map = {} of String => Vterm
+    map = {} of String => VpTerm
     @edits.sort_by(&.mtime).each { |term| map[term.uname] = term }
     @edits = map.values
   end
@@ -58,8 +58,8 @@ class CV::Vtrie
       key_re = query["key"]?.try { |re| Regex.new(re) }
       val_re = query["val"]?.try { |re| Regex.new(re) }
 
-      prio = query["prio"]?.try { |str| Vterm.parse_prio(str) }
-      attr = query["attr"]?.try { |str| Vterm.parse_attr(str) }
+      prio = query["prio"]?.try { |str| VpTerm.parse_prio(str) }
+      attr = query["attr"]?.try { |str| VpTerm.parse_attr(str) }
 
       uname = query["uname"]?
       power = query["power"]?.try { |str| str.to_i? || 0 }
@@ -72,7 +72,7 @@ class CV::Vtrie
                    @uname : String? = nil, @power : Int32? = nil)
     end
 
-    def match?(term : Vterm)
+    def match?(term : VpTerm)
       @key_re.try { |re| return false unless term.key.matches?(re) }
       @val_re.try { |re| return false unless term.vals.any?(&.matches?(re)) }
 

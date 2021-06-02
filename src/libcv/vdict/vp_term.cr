@@ -1,6 +1,6 @@
 require "json"
 
-class CV::Vterm
+class CV::VpTerm
   SEP = "ǀ"
 
   EPOCH = Time.utc(2020, 1, 1)
@@ -20,7 +20,7 @@ class CV::Vterm
   getter dtype : Int32 = 1
   getter point : Float64 { calc_point }
 
-  property _prev : Vterm? = nil
+  property _prev : VpTerm? = nil
 
   def self.parse_prio(attrs : String)
     case attrs[0]?
@@ -46,8 +46,8 @@ class CV::Vterm
     return if @dtype < 2 # skip for lookup dicts
 
     if attrs = cols[2]?
-      @prio = Vterm.parse_prio(attrs)
-      @attr = Vterm.parse_attr(attrs)
+      @prio = VpTerm.parse_prio(attrs)
+      @attr = VpTerm.parse_attr(attrs)
     end
 
     return unless mtime = cols[3]?.try(&.to_i?)
@@ -59,7 +59,7 @@ class CV::Vterm
 
   def initialize(@key,
                  @vals = [""], @prio = 1, @attr = 0,
-                 @mtime = Vterm.mtime, @uname = "_", @power = 1,
+                 @mtime = VpTerm.mtime, @uname = "_", @power = 1,
                  @dtype = 2)
   end
 

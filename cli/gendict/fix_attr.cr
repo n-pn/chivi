@@ -122,7 +122,7 @@ end
 
 puts "- nouns: #{NOUNS.size}, verbs: #{VERBS.size}, adjes: #{ADJES.size}"
 
-mtime = CV::Vterm.mtime(Time.utc(2021, 4, 24, 0, 0, 0))
+mtime = CV::VpTerm.mtime(Time.utc(2021, 4, 24, 0, 0, 0))
 
 CV::Vdict.regular.each do |term|
   next if term.mtime >= mtime # skip corrected entries

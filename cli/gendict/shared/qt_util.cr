@@ -84,7 +84,7 @@ module QtUtil
 
     while caret < chars.size
       char = chars[caret]
-      keep = CV::Vterm.new(char.to_s, [char.to_s])
+      keep = CV::VpTerm.new(char.to_s, [char.to_s])
 
       dict.scan(chars, caret) do |term|
         next if term.vals.empty? || term.vals.first.empty?

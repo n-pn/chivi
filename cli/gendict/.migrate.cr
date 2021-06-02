@@ -10,7 +10,7 @@ def parse_term(cols : Array(String), dlock = 1)
   uname = cols[3]? || "<init>"
   uname = "<init>" if uname == "Guest"
 
-  CV::Vterm.new(key, vals, plock: dlock).tap do |x|
+  CV::VpTerm.new(key, vals, plock: dlock).tap do |x|
     x.mtime = mtime
     x.uname = uname
   end
@@ -43,7 +43,7 @@ def migrate(file : String, uniq = false)
     key = cols[0]
     vals = cols.fetch(1, "").sub("", "").strip.split(/[\/¦\/]/).uniq
 
-    entry = CV::Vterm.new(key, vals)
+    entry = CV::VpTerm.new(key, vals)
 
     if mtime = cols[2]?.try(&.to_i?) || 0
       uname = cols[3]? || "Guest"

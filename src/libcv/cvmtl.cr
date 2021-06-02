@@ -109,7 +109,7 @@ class CV::Cvmtl
     end
 
     input.size.times do |idx|
-      terms = {} of Int32 => Vterm
+      terms = {} of Int32 => VpTerm
 
       @rdict.scan(input, idx) { |x| terms[x.key.size] = x unless x.empty? }
 

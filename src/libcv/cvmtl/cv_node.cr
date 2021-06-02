@@ -1,5 +1,5 @@
 require "../../cutil/text_utils"
-require "../vdict/vterm"
+require "../vdict/vp_term"
 
 class CV::CvNode
   property key : String
@@ -8,7 +8,7 @@ class CV::CvNode
   property dic : Int32
   property cat : Int32 = 0
 
-  def initialize(term : Vterm)
+  def initialize(term : VpTerm)
     @key = term.key
     @val = term.vals.first
     @cat = term.attr

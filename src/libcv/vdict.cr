@@ -56,7 +56,7 @@ class CV::Vdict
   getter ftab : String
 
   getter trie = Vtrie.new
-  getter logs = [] of Vterm
+  getter logs = [] of VpTerm
 
   getter size = 0
 
@@ -76,7 +76,7 @@ class CV::Vdict
         next if line.strip.blank?
 
         cols = line.split('\t')
-        set(Vterm.new(cols, @dtype, @p_min))
+        set(VpTerm.new(cols, @dtype, @p_min))
 
         count += 1
       rescue err
@@ -96,13 +96,13 @@ class CV::Vdict
   end
 
   def gen_term(key : String, vals = [""], prio = 1, attr = 0)
-    Vterm.new(
+    VpTerm.new(
       key, vals, prio: prio, attr: attr,
       mtime: 0, dtype: @dtype, power: @p_min)
   end
 
   # return true if new term prevails
-  def set(new_term : Vterm) : Bool
+  def set(new_term : VpTerm) : Bool
     @logs << new_term if new_term.mtime > 0
 
     # find existing node or force creating new one
@@ -125,7 +125,7 @@ class CV::Vdict
   end
 
   # save to disk, return old entry if exists
-  def set!(new_term : Vterm) : Bool
+  def set!(new_term : VpTerm) : Bool
     line = "\n#{new_term}"
 
     File.write(@file, line, mode: "a")
@@ -134,11 +134,11 @@ class CV::Vdict
     set(new_term)
   end
 
-  def find(key : String) : Vterm?
+  def find(key : String) : VpTerm?
     @trie.find(key).try(&.term)
   end
 
-  def find!(key : String) : Vterm
+  def find!(key : String) : VpTerm
     find(key) || gen_term(key, [""])
   end
 
