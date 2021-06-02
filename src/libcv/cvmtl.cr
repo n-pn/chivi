@@ -83,7 +83,7 @@ class CV::Cvmtl
       res.unshift(CvNode.new(pre_zh, pre_vi, 1))
     end
 
-    Cline.new(res)
+    CvList.new(res)
   end
 
   private def vi_label(lbl = "")
@@ -99,7 +99,7 @@ class CV::Cvmtl
     end
   end
 
-  def tokenize(input : Array(Char)) : Cline
+  def tokenize(input : Array(Char)) : CvList
     nodes = [CvNode.new("", "")]
     costs = [0.0]
 
@@ -178,6 +178,6 @@ class CV::Cvmtl
       ary.unshift(curr)
     end
 
-    Cline.new(ary)
+    CvList.new(ary)
   end
 end

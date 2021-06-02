@@ -1,6 +1,6 @@
 require "./cv_node"
 
-class CV::Cline
+class CV::CvList
   SEP = 'ǀ'
 
   alias Input = Deque(CvNode)
