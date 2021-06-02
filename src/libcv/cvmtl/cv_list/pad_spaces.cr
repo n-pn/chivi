@@ -6,18 +6,15 @@ module CV::PadSpaces
   def space?(left : CvNode, right : CvNode)
     return false if left.val.blank? || right.val.blank?
 
-    # handle .jpg case
-    return false if right.dic == 1 && right.key =~ /^\.\w/
-
-    prev_val = left.val[-1]?
+    left_char = left.val[-1]?
 
     case right.val[0]?
     when '”', '’', '⟩', ')', ']', '}',
          ',', '.', ';', '!',
          '%', '~', '?'
-      return prev_val == ':'
+      return left_char == ':'
     when '…'
-      return prev_val == ':' || prev_val == '.'
+      return left_char == ':' || left_char == '.'
     when ':'
       return false
     when '-', '—'
@@ -26,7 +23,7 @@ module CV::PadSpaces
       return true
     end
 
-    case prev_val
+    case left_char
     when '“', '‘', '⟨', '(', '[', '{'
       return false
     when '”', '’', '⟩', ')', ']', '}',
@@ -35,8 +32,8 @@ module CV::PadSpaces
       return true
     when '~', '-', '—'
       right.dic > 1
+    else
+      left.dic > 0 || right.dic > 0
     end
-
-    left.dic > 0 || right.dic > 0
   end
 end

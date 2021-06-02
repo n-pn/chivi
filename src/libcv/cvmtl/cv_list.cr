@@ -290,14 +290,14 @@ class CV::CvList
   def capitalize! : self
     cap_mode = 1
 
-    @data.each do |entry|
-      next if entry.val.empty?
+    @data.each do |node|
+      next unless char = node.val[-1]?
 
-      if cap_mode > 0 && entry.dic > 0
-        entry.capitalize!(cap_mode) if entry.dic > 1
-        cap_mode = 0 unless cap_mode > 1
+      if cap_mode > 0 && node.dic > 0
+        node.capitalize!(cap_mode) if node.dic > 1
+        cap_mode = cap_mode == 2 ? 2 : 0
       else
-        cap_mode = entry.cap_mode(cap_mode)
+        cap_mode = Capitalization.cap_mode(char, cap_mode)
       end
     end
 
@@ -313,7 +313,7 @@ class CV::CvList
     from.downto(1) do |idx|
       curr = @data.unsafe_fetch(idx - 1)
       @data.insert(idx, CvNode.new("", " ")) if PadSpaces.space?(curr, last)
-      last = curr
+      last = curr unless curr.val.empty?
     end
 
     self

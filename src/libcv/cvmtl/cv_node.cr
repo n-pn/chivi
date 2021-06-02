@@ -49,22 +49,6 @@ class CV::CvNode
     @val = cap_mode > 1 ? TextUtils.titleize(@val) : TextUtils.capitalize(@val)
   end
 
-  def cap_mode(prev_mode : Int32 = 0) : Int32
-    case @val[-1]?
-    when '“', '‘', '[', '{',
-         ':', '!', '?', '.'
-      prev_mode > 1 ? 2 : 1
-    when ',', '}', ']'
-      prev_mode == 2 ? 2 : 0
-    when '⟩'
-      0
-    when '⟨'
-      2
-    else
-      prev_mode
-    end
-  end
-
   def special_mid_char?
     case @key[0]?
     when ':', '/', '.', '-', '+', '?', '%', '#', '&'
