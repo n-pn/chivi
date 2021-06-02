@@ -125,7 +125,7 @@
     </form>
   </svelte:fragment>
 
-  <a slot="header-right" href="/cvmtl" class="header-item">
+  <a slot="header-right" href="/qtran" class="header-item">
     <SIcon name="zap" />
     <span class="header-text _show-md">Dịch nhanh</span>
   </a>
