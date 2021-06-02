@@ -85,7 +85,7 @@
     const dname = dicts[tab][0]
     const params = {
       key,
-      vals: value[tab],
+      vals: value[tab].replace('', '').trim(),
       prio: infos[tab].prio,
       attr: infos[tab].attr,
       power: p_now[tab],
