@@ -29,7 +29,7 @@ module CV::Server
 
     res = [] of VpTerm
 
-    filter = Vtrie::Filter.init(env.params.query)
+    filter = VpTrie::Filter.init(env.params.query)
 
     vdict.each do |node|
       next unless filter.match?(node)

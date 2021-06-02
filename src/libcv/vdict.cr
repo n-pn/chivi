@@ -55,7 +55,7 @@ class CV::Vdict
   getter file : String
   getter ftab : String
 
-  getter trie = Vtrie.new
+  getter trie = VpTrie.new
   getter logs = [] of VpTerm
 
   getter size = 0
