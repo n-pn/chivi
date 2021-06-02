@@ -2,7 +2,7 @@
 
 SSH=nipin@ssh.chivi.xyz:srv/chivi.xyz
 
-rsync -aiz --no-p "$SSH/_db/vp_dicts/active/" "_db/vp_dicts/remote/"
+rsync -aiz --no-p "$SSH/_db/vp_dicts/active/" "_db/vp_dicts/backup/"
 rsync -aiz --no-p "$SSH/_db/vp_dicts/active/" "_db/vp_dicts/active/"
 
 rsync -aiz --no-p "$SSH/_db/vi_users/" "_db/vi_users/"
