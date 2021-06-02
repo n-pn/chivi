@@ -1,9 +1,9 @@
-require "./cword"
+require "./cv_node"
 
 class CV::Cline
   SEP = 'ǀ'
 
-  alias Input = Deque(Cword)
+  alias Input = Deque(CvNode)
   getter data : Input
 
   def initialize(@data : Input)
@@ -316,7 +316,7 @@ class CV::Cline
 
     while curr = @data.shift?
       unless curr.val.empty?
-        res << Cword.new("", " ") if curr.space_before?(prev)
+        res << CvNode.new("", " ") if curr.space_before?(prev)
         prev = curr
       end
 

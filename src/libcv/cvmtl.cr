@@ -56,7 +56,7 @@ class CV::Cvmtl
     return title_res if label.empty?
 
     label_res = cv_title(label)
-    label_res.data << Cword.new("", " - ")
+    label_res.data << CvNode.new("", " - ")
     label_res.data.concat(title_res.data)
 
     label_res
@@ -78,19 +78,19 @@ class CV::Cvmtl
 
     if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
       _, group, num, lbl, pad, title = match
-      pre = Cword.new(group, "#{vi_label(lbl)} #{Cutil.to_integer(num)}", 1)
+      pre = CvNode.new(group, "#{vi_label(lbl)} #{Cutil.to_integer(num)}", 1)
     elsif match = TITLE_RE_3.match(title)
       _, num, pad, title = match
-      pre = Cword.new(num, num, 1)
+      pre = CvNode.new(num, num, 1)
     elsif match = TITLE_RE_4.match(title)
       _, pad, title = match
-      pre = Cword.new("楔子", "Phần đệm", 1)
+      pre = CvNode.new("楔子", "Phần đệm", 1)
     end
 
-    res = title.empty? ? Deque(Cword).new : cv_plain(title).data
+    res = title.empty? ? Deque(CvNode).new : cv_plain(title).data
 
     if pre
-      res.unshift(Cword.new(pad, title.empty? ? "" : ": "))
+      res.unshift(CvNode.new(pad, title.empty? ? "" : ": "))
       res.unshift(pre)
     end
 
@@ -111,12 +111,12 @@ class CV::Cvmtl
   end
 
   def tokenize(input : Array(Char)) : Cline
-    nodes = [Cword.new("", "")]
+    nodes = [CvNode.new("", "")]
     costs = [0.0]
 
     input.each_with_index(1) do |char, idx|
       norm = Cutil.normalize(char)
-      nodes << Cword.new(char.to_s, norm.to_s, alnum?(norm) ? 1 : 0)
+      nodes << CvNode.new(char.to_s, norm.to_s, alnum?(norm) ? 1 : 0)
       costs << idx.to_f
     end
 
@@ -135,7 +135,7 @@ class CV::Cvmtl
 
         if cost >= costs[jump]
           costs[jump] = cost
-          nodes[jump] = Cword.new(term)
+          nodes[jump] = CvNode.new(term)
         end
       end
     end
@@ -147,8 +147,8 @@ class CV::Cvmtl
     char == '_' || char.ascii_number? || char.letter?
   end
 
-  private def extract_best(nodes : Array(Cword))
-    ary = Deque(Cword).new
+  private def extract_best(nodes : Array(CvNode))
+    ary = Deque(CvNode).new
     idx = nodes.size - 1
 
     while idx > 0

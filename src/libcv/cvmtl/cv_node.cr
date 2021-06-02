@@ -1,7 +1,7 @@
 require "../../cutil/text_utils"
 require "../vdict/vterm"
 
-class CV::Cword
+class CV::CvNode
   property key : String
   property val : String
 
@@ -65,7 +65,7 @@ class CV::Cword
     end
   end
 
-  def space_before?(prev : Cword)
+  def space_before?(prev : CvNode)
     return false if @val.blank? || prev.val.blank?
 
     # handle .jpg case
@@ -132,7 +132,7 @@ class CV::Cword
     end
   end
 
-  def combine!(other : Cword) : Nil
+  def combine!(other : CvNode) : Nil
     @key = "#{other.key}#{@key}"
     @val = "#{other.val}#{@val}"
   end
