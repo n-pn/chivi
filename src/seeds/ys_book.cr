@@ -12,8 +12,8 @@ struct CV::YsSource
   property link : String
 end
 
-class CV::YsNvinfo
-  alias Data = NamedTuple(bookInfo: YsNvinfo, bookSource: Array(YsSource))
+class CV::YsBook
+  alias Data = NamedTuple(bookInfo: YsBook, bookSource: Array(YsSource))
 
   def self.load(file : String)
     text = File.read(file)
@@ -80,7 +80,7 @@ class CV::YsNvinfo
   end
 end
 
-# info = CV::YsNvinfo.load("_db/yousuu/.cache/infos/153426.json").not_nil!
+# info = CV::YsBook.load("_db/yousuu/.cache/infos/153426.json").not_nil!
 # puts info.intro
 # puts info.genre
 # # puts info.tags_fixed

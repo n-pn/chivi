@@ -5,14 +5,11 @@ authors:
   - Nipinium <nipinium@gmail.com>
 
 targets:
-  map_zhwenpg:
-    main: cli/mapinfo/map_zhwenpg.cr
+  init_zhwenpg:
+    main: cli/mapinfo/init_zhwenpg.cr
 
-  map_yousuu:
-    main: cli/mapinfo/map_yousuu.cr
-
-  map_remote:
-    main: cli/mapinfo/map_remote.cr
+  init_yousuu:
+    main: cli/mapinfo/init_yousuu.cr
 
   init_remote:
     main: cli/mapinfo/init_remote.cr

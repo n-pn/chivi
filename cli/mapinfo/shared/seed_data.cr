@@ -10,22 +10,32 @@ class CV::SeedData
   getter sname : String
   getter s_dir : String
 
-  getter _index : ValueMap { ValueMap.new("#{@s_dir}/_index.tsv") }
+  getter _index : ValueMap { load_map("_index") }
 
-  getter genres : ValueMap { ValueMap.new("#{@s_dir}/genres.tsv") }
-  getter bcover : ValueMap { ValueMap.new("#{@s_dir}/bcover.tsv") }
+  getter genres : ValueMap { load_map("genres") }
+  getter bcover : ValueMap { load_map("bcover") }
 
-  getter rating : ValueMap { ValueMap.new("#{@s_dir}/rating.tsv") }
-  getter hidden : ValueMap { ValueMap.new("#{@s_dir}/hidden.tsv") }
+  getter rating : ValueMap { load_map("rating") }
+  getter hidden : ValueMap { load_map("hidden") }
 
-  getter status : ValueMap { ValueMap.new("#{@s_dir}/status.tsv") }
-  getter update : ValueMap { ValueMap.new("#{@s_dir}/update.tsv") }
+  getter status : ValueMap { load_map("status") }
+  getter update : ValueMap { load_map("update") }
+
+  # for yousuu only
+  getter source_url : ValueMap { load_map("source_url") }
+  getter count_word : ValueMap { load_map("count_word") }
+  getter count_crit : ValueMap { load_map("count_crit") }
+  getter count_list : ValueMap { load_map("count_list") }
 
   INTRO_MAPS = {} of String => ValueMap
 
   def initialize(@sname)
     @s_dir = "_db/_seeds/#{@sname}"
     ::FileUtils.mkdir_p("#{@s_dir}/intros")
+  end
+
+  def load_map(name : String)
+    ValueMap.new("#{@s_dir}/#{name}.tsv")
   end
 
   def get_status(snvid : String) : Int32
@@ -91,8 +101,8 @@ class CV::SeedData
   end
 
   def save!(clean : Bool = false)
-    @@rating_fix.try(&.save!(clean: clean))
-    @@status_map.try(&.save!(clean: clean))
+    @@rating_fix.try(&.save!(clean: false))
+    @@status_map.try(&.save!(clean: false))
 
     @_index.try(&.save!(clean: clean))
 
@@ -104,6 +114,11 @@ class CV::SeedData
 
     @rating.try(&.save!(clean: clean))
     @update.try(&.save!(clean: clean))
+
+    @source_url.try(&.save!(clean: clean))
+    @count_word.try(&.save!(clean: clean))
+    @count_crit.try(&.save!(clean: clean))
+    @count_list.try(&.save!(clean: clean))
 
     INTRO_MAPS.each_value(&.save!(clean: clean))
   end

@@ -65,7 +65,7 @@ class Seeds::YsSerial
   private def expiry_time(file : String) : Time::Span
     span = 3.days
 
-    if data = CV::YsNvinfo.load(file)
+    if data = CV::YsBook.load(file)
       span *= data.status + 1
       data.voters == 0 ? span * 3 : span
     else
