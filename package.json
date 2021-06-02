@@ -14,7 +14,7 @@
     "map-zhwenpg": "./bin/map_zhwenpg",
     "map-yousuu": "./bin/map_yousuu",
     "map_remote": "./bin/map_remote",
-    "map-remotes": "bash cli/mapinfo/map_remote.sh",
+    "init-remotes": "bash cli/mapinfo/init_remote.sh",
     "update-all": "./bin/map_zhwenpg && ./bin/map_yousuu && yarn map-remotes",
     "fix-covers": "./bin/fetch_covers && ./bin/fix_covers",
     "fix-nvinfo": "./bin/fix_intros && ./bin/fix_genres",

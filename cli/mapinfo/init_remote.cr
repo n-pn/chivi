@@ -58,7 +58,7 @@ class CV::InitRemote
     channel = Channel(Nil).new(threads)
     encoding = HttpUtils.encoding_for(@sname)
 
-    queue.each_with_index do |snvid, index|
+    queue.each_with_index(1) do |snvid, index|
       spawn do
         entry = RmInfo.new(@sname, snvid)
         label = "#{index}/#{queue.size}"
@@ -105,20 +105,6 @@ class CV::InitRemote
     @seed.save!
   end
 end
-
-# def display_upper_snvids
-#   seeds = {
-#     "hetushu", "rengshu",
-#     "xbiquge", "biqubao",
-#     "5200", "duokan8",
-#     "nofff", "bqg_5200",
-#     "bxwxorg", "shubaow",
-#   }
-
-#   seeds.each do |sname|
-#     CV::InitRemote.new(sname).run!
-#   end
-# end
 
 def run!(argv = ARGV)
   sname, upper = "hetushu", 0

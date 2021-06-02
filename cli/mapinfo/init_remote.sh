@@ -10,4 +10,4 @@ time bin/init_remote -s bqg_5200
 time bin/init_remote -s paoshu8
 time bin/init_remote -s bxwxorg
 time bin/init_remote -s shubaow
-time bin/init_remote -s jx_la -m 2 -u 259742
+# time bin/init_remote -s jx_la -m 2 -u 259742
