@@ -1,4 +1,5 @@
 require "./cv_node"
+require "./cv_list/*"
 
 class CV::CvList
   alias Input = Deque(CvNode)
@@ -306,21 +307,15 @@ class CV::CvList
   def pad_spaces! : self
     return self if @data.empty?
 
-    res = Input.new
+    from = @data.size - 1
+    last = @data.unsafe_fetch(from)
 
-    prev = @data.shift
-    res << prev
-
-    while curr = @data.shift?
-      unless curr.val.empty?
-        res << CvNode.new("", " ") if curr.space_before?(prev)
-        prev = curr
-      end
-
-      res << curr
+    from.downto(1) do |idx|
+      curr = @data.unsafe_fetch(idx - 1)
+      @data.insert(idx, CvNode.new("", " ")) if PadSpaces.space?(curr, last)
+      last = curr
     end
 
-    @data = res
     self
   end
 

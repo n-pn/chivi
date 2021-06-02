@@ -108,7 +108,7 @@ module CV::CvUtil
     when "幕" then "Màn"
     when "回" then "Hồi"
     when "折" then "Chiết"
-    else          "Chương"
+    else          "#"
     end
   end
 end

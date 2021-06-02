@@ -37,14 +37,6 @@ class CV::Cvmtl
     group.pad_spaces!
   end
 
-  def tl_plain(input : String) : String
-    cv_plain(input).to_s
-  end
-
-  def tl_title(input : String) : String
-    cv_title(input).to_s
-  end
-
   def cv_plain(input : String)
     tokenize(input.chars).fix_grammar!.capitalize!.pad_spaces!
   end
@@ -56,46 +48,22 @@ class CV::Cvmtl
     return title_res if label.empty?
 
     label_res = cv_title(label)
-    label_res.data << CvNode.new("", " - ")
-    label_res.data.concat(title_res.data)
+    label_res << CvNode.new("", " - ")
+    label_res.concat(title_res.data)
 
     label_res
   end
-
-  NUMS = "零〇一二两三四五六七八九十百千"
-  SEPS = ".，,、：:"
-
-  LABEL_RE_1 = /^(第?([#{NUMS}]+|\d+)([集卷]))([#{SEPS}\s]*)(.*)$/
-
-  TITLE_RE_1 = /^(第.*?([#{NUMS}]+|\d+).*?([章节幕回折]))(.*?\d+\.\s)(.+)/
-  TITLE_RE_2 = /^(.*?([#{NUMS}]+|\d+).*?([章节幕回折]))([#{SEPS}\s]*)(.*)$/
-
-  TITLE_RE_3 = /^(\d+)([#{SEPS}\s]*)(.*)$/
-  TITLE_RE_4 = /^楔子(\s+)(.+)$/
 
   def cv_title(title : String)
     pre_zh, pre_vi, pad, title = CvUtil.cv_title(title)
     res = title.empty? ? CvList.new : cv_plain(title)
 
     unless pre_zh.empty?
-      res.unshift(CvNode.new(pad, title.empty? ? "" : ": "))
+      res.unshift(CvNode.new(pad, title.empty? ? "." : ": "))
       res.unshift(CvNode.new(pre_zh, pre_vi, 1))
     end
 
     res
-  end
-
-  private def vi_label(lbl = "")
-    case lbl
-    when "章" then "Chương"
-    when "卷" then "Quyển"
-    when "集" then "Tập"
-    when "节" then "Tiết"
-    when "幕" then "Màn"
-    when "回" then "Hồi"
-    when "折" then "Chiết"
-    else          "Chương"
-    end
   end
 
   def tokenize(input : Array(Char)) : CvList
@@ -128,55 +96,69 @@ class CV::Cvmtl
       end
     end
 
-    extract_best(nodes)
+    res = CvList.new
+    idx = nodes.size - 1
+
+    while idx > 0
+      node = nodes.unsafe_fetch(idx)
+      idx -= node.key.size
+
+      if (prev = res.first?) && node.similar?(prev)
+        prev.merge_left!(node)
+      else
+        res.unshift(node)
+      end
+    end
+
+    res
   end
 
   private def alnum?(char : Char)
     char == '_' || char.ascii_number? || char.letter?
   end
 
-  private def extract_best(nodes : Array(CvNode))
-    ary = CvList.new
-    idx = nodes.size - 1
+  # private def extract_best(nodes : Array(CvNode))
+  #   ary = CvList.new
+  #   idx = nodes.size - 1
 
-    while idx > 0
-      curr = nodes.unsafe_fetch(idx)
-      idx -= curr.key.size
+  #   while idx > 0
+  #     curr = nodes.unsafe_fetch(idx)
+  #     idx -= curr.key.size
 
-      if curr.dic == 0
-        while idx > 0
-          node = nodes.unsafe_fetch(idx)
-          break if node.dic > 0 || curr.key[0] != node.key[0]
+  #     if curr.dic == 0
+  #       while idx > 0
+  #         node = nodes.unsafe_fetch(idx)
+  #         break if node.dic > 0 || curr.key[0] != node.key[0]
 
-          curr.combine!(node)
-          idx -= node.key.size
-        end
-      elsif curr.dic == 1
-        while idx > 0
-          node = nodes.unsafe_fetch(idx)
-          break if node.dic > 1
-          break if node.dic == 0 && !node.special_mid_char?
+  #         curr.combine!(node)
+  #         idx -= node.key.size
+  #       end
+  #     elsif curr.dic == 1
+  #       while idx > 0
+  #         node = nodes.unsafe_fetch(idx)
+  #         break if node.dic > 1
+  #         break if node.dic == 0 && !node.special_mid_char?
 
-          curr.combine!(node)
-          idx -= node.key.size
-        end
+  #         curr.combine!(node)
+  #         idx -= node.key.size
+  #       end
 
-        if (last = ary.last?) && last.special_end_char?
-          last.combine!(curr)
-          last.dic = 1
-          next
-        end
+  #       if (last = ary.last?) && last.special_end_char?
+  #         last.combine!(curr)
+  #         last.dic = 1
+  #         next
+  #       end
 
-        # handling +1+1+1 or -1-1-1
-        case curr.key[0]?
-        when '+' then curr.val = curr.key.gsub("+", " +").strip
-        when '-' then curr.val = curr.key.gsub("-", " -").strip
-        end
-      end
+  #       # handling +1+1+1 or -1-1-1
+  #       case curr.key[0]?
+  #       when '+' then curr.val = curr.key.gsub("+", " +").strip
+  #       when '-' then curr.val = curr.key.gsub("-", " -").strip
+  #       end
+  #     end
 
-      ary.unshift(curr)
-    end
+  #     ary.unshift(curr)
+  #   end
 
-    ary
-  end
+  #   ary
+  # end
 end

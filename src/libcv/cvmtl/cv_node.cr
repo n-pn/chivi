@@ -65,43 +65,6 @@ class CV::CvNode
     end
   end
 
-  def space_before?(prev : CvNode)
-    return false if @val.blank? || prev.val.blank?
-
-    # handle .jpg case
-    return false if @dic == 1 && @key =~ /^\.\w/
-
-    prev_val = prev.val[-1]?
-
-    case @val[0]?
-    when '”', '’', '⟩', ')', ']', '}',
-         ',', '.', ';', '!',
-         '%', '~', '?'
-      return prev_val == ':'
-    when '…'
-      return prev_val == ':' || prev_val == '.'
-    when ':'
-      return false
-    when '-', '—'
-      return prev.dic > 1
-    when '·'
-      return true
-    end
-
-    case prev_val
-    when '“', '‘', '⟨', '(', '[', '{'
-      return false
-    when '”', '’', '⟩', ')', ']', '}',
-         ',', '.', ';', '!', '?', ':',
-         '…', '·'
-      return true
-    when '~', '-', '—'
-      @dic > 1
-    end
-
-    @dic > 0 || prev.dic > 0
-  end
-
   def special_mid_char?
     case @key[0]?
     when ':', '/', '.', '-', '+', '?', '%', '#', '&'
@@ -132,7 +95,13 @@ class CV::CvNode
     end
   end
 
-  def combine!(other : CvNode) : Nil
+  def similar?(other : self)
+    return false if @dic != other.dic || @dic > 1
+    return true if @dic == 1
+    @key[0] == other.key[0]
+  end
+
+  def merge_left!(other : CvNode) : Nil
     @key = "#{other.key}#{@key}"
     @val = "#{other.val}#{@val}"
   end

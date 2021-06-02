@@ -42,7 +42,7 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
 text.split(/\n+/).each_with_index do |line, idx|
-  puts translate(line, idx == 0 ? 1 : 0)
+  puts translate(line, idx == 0 ? 2 : 0)
 end
 
 puts translate("第一章", mode: 1)
