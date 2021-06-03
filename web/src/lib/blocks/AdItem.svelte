@@ -23,6 +23,7 @@
 <style lang="scss">
   ins {
     display: block;
+    margin: 1rem 0;
     max-width: 100%;
     text-align: center;
     text-decoration: none;
