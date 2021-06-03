@@ -1,9 +1,6 @@
-<script context="module">
+<script>
   import { u_power, u_dname } from '$src/stores'
   import { set_mark, get_mark } from '$api/marked_api'
-</script>
-
-<script>
   import { host_name, map_status } from '$utils/book_utils'
   import { mark_types, mark_names, mark_icons } from '$lib/constants'
   import { onMount } from 'svelte'
@@ -11,7 +8,7 @@
   import SIcon from '$lib/blocks/SIcon'
   import RTime from '$lib/blocks/RTime'
   import BCover from '$lib/blocks/BCover'
-
+  import AdItem from '$lib/blocks/AdItem'
   import Vessel from '$lib/layouts/Vessel'
 
   export let nvinfo = {}
@@ -169,6 +166,10 @@
       {/if}
     </section>
   </div>
+
+  {#if $u_power < 2}
+    <AdItem type="banner" />
+  {/if}
 
   <div class="section">
     <header class="section-header">
