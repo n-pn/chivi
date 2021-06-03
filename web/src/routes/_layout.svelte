@@ -44,15 +44,15 @@
     prevScrollTop = scrollTop <= 0 ? 0 : scrollTop
   }
 
-  function disable_router_unless_vip(e) {
-    // disabled until adsense is unblocked
-    if ($u_power < 2) e.stopPropagation()
-  }
+  // function disable_router_unless_vip(e) {
+  //   // disabled until adsense is unblocked
+  //   if ($u_power < 2) e.stopPropagation()
+  // }
 </script>
 
 <svelte:window on:scroll={track_scrolling} />
 
-<div class="app" class:--dark={$dark_mode} on:click={disable_router_unless_vip}>
+<div class="app" class:--dark={$dark_mode}>
   <slot />
 
   <div class="links">
