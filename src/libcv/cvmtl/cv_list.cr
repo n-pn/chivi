@@ -37,19 +37,14 @@ class CV::CvList
         else
           curr.fix("không đúng")
         end
-      when "吗"
-        if @data[i]?.try { |x| x.val[0] == '?' }
-          curr.fix("không")
-        end
-      when "呢"
-        if @data[i]?.try { |x| x.val[0] == '?' }
-          curr.fix("đâu")
-        end
       when "也"
         curr.fix(@data[i]?.try(&.word?) ? "cũng" : "vậy")
       when "地"
         # TODO: check noun, verb?
-        curr.fix(@data[i - 2]?.try(&.word?) ? "mà" : "địa")
+        if prev = @data[i - 2]?
+          val = prev.adje? || prev.key[-1]? == '”' ? "mà" : "địa"
+          curr.fix(val)
+        end
       when "原来"
         if @data[i]?.try(&.match_key?("的")) || @data[i - 2]?.try(&.word?)
           val = "ban đầu"
