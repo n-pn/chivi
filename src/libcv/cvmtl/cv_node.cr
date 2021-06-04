@@ -21,6 +21,14 @@ class CV::CvNode
   def initialize(@key, @val = @key, @dic = 0, @cat = 0)
   end
 
+  def prev!
+    prev.not_nil!
+  end
+
+  def succ!
+    succ.not_nil!
+  end
+
   def set_prev(node : self) : self # return node
     if _prev = @prev
       _prev.succ = node

@@ -4,16 +4,16 @@ require "./cv_list/*"
 class CV::CvList
   alias Input = Deque(CvNode)
 
-  getter head = CvNode.new("", "")
+  getter root = CvNode.new("", "")
 
   def first?
-    @head.succ
+    @root.succ
   end
 
-  def merge!(list : self, node = @head)
+  def merge!(list : self, node = @root)
     while node = node.succ
       unless node.succ
-        node.set_succ(list.head)
+        node.set_succ(list.root)
         return self
       end
     end
@@ -22,10 +22,10 @@ class CV::CvList
   end
 
   def prepend!(node : CvNode)
-    @head.set_succ(node)
+    @root.set_succ(node)
   end
 
-  def fix_grammar!(node = @head)
+  def fix_grammar!(node = @root)
     while node = node.succ
       case node.key
       when "的"
@@ -65,17 +65,17 @@ class CV::CvList
         end
         node.fix(val)
       when "行"
-        node.fix("được") unless node.succ.try(&.word?)
+        node.fix("được") unless node.succ.try(&.dic.> 0)
       when "高达"
         node.fix("cao đến") if node.succ.try(&.is_num)
       when "石"
-        node.fix("thạch") if node.prev.try(&.is_num)
+        node.fix("thạch") if node.prev!.is_num
       when "两"
-        node.fix("lượng") if node.prev.try(&.is_num)
+        node.fix("lượng") if node.prev!.is_num
       when "里"
-        node.fix("dặm") if node.prev.try(&.is_num)
+        node.fix("dặm") if node.prev!.is_num
       when "米"
-        node.fix("mét") if node.prev.try(&.is_num)
+        node.fix("mét") if node.prev!.is_num
       when "年"
         # TODO: handle special cases for year
         next unless prev = node.prev
@@ -113,7 +113,7 @@ class CV::CvList
     self
   end
 
-  private def fix_adjes!(node = @head)
+  private def fix_adjes!(node = @root)
     while node = node.succ
       if node.adje?
         prev = node.prev.not_nil!
@@ -146,7 +146,7 @@ class CV::CvList
     self
   end
 
-  private def fix_nouns!(node = @head)
+  private def fix_nouns!(node = @root)
     while node = node.succ
       prev = node.prev.not_nil!
       if node.cat == 1
@@ -278,7 +278,7 @@ class CV::CvList
     @data = res
   end
 
-  def capitalize!(node = @head, cap_mode = 1) : self
+  def capitalize!(node = @root, cap_mode = 1) : self
     while node = node.succ
       next unless char = node.val[-1]?
 
@@ -293,7 +293,7 @@ class CV::CvList
     self
   end
 
-  def pad_spaces!(node = @head) : self
+  def pad_spaces!(node = @root) : self
     return self unless node = node.succ
     prev = node
 
@@ -313,7 +313,7 @@ class CV::CvList
     each { |node| io << node.val }
   end
 
-  def each(node = @head)
+  def each(node = @root)
     while node = node.succ
       yield node
     end
@@ -324,7 +324,7 @@ class CV::CvList
   end
 
   def to_str(io : IO) : Nil
-    return unless node = @head.succ
+    return unless node = @root.succ
     node.to_str(io)
 
     while node = node.succ
@@ -334,7 +334,7 @@ class CV::CvList
   end
 
   def inspect(io : IO) : Nil
-    return unless node = @head.succ
+    return unless node = @root.succ
     node.inspect(io)
 
     while node = node.succ
