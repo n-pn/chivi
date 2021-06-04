@@ -4,96 +4,108 @@ require "./cv_list/*"
 class CV::CvList
   alias Input = Deque(CvNode)
 
-  getter data = Input.new
-  forward_missing_to @data
+  getter head = CvNode.new("", "")
 
-  def fix_grammar!
-    res = Input.new
-    i = 0
+  def first?
+    @head.succ
+  end
 
-    while i < @data.size
-      curr = @data.unsafe_fetch(i)
-      i += 1
+  def merge!(list : self, node = @head)
+    while node = node.succ
+      unless node.succ
+        node.set_succ(list.head)
+        return self
+      end
+    end
 
-      case curr.key
+    self
+  end
+
+  def prepend!(node : CvNode)
+    @head.set_succ(node)
+  end
+
+  def fix_grammar!(node = @head)
+    while node = node.succ
+      case node.key
       when "的"
-        curr.fix(val: "", cat: 0)
+        node.fix(val: "", cat: 0)
       when "了"
-        curr.fix(val: "rồi", cat: 0)
+        node.fix(val: "rồi", cat: 0)
 
-        if (prev = @data[i - 2]?) && (prev.verb? || prev.cat == 0)
-          next unless succ = @data[i]?
-          curr.fix("") if succ.word? && succ.key != prev.key
+        if (prev = node.prev) && (prev.verb? || prev.cat == 0)
+          next unless succ = node.succ
+          node.fix("") if succ.word? && succ.key != prev.key
         end
       when "对"
-        if @data[i]?.try { |x| x.cat > 0 || x.key[0] == '“' }
-          curr.fix("đối với")
+        if node.succ.try { |x| x.cat > 0 || x.key[0] == '“' }
+          node.fix("đối với")
         else
-          curr.fix("đúng")
+          node.fix("đúng")
         end
       when "不对"
-        if @data[i]?.try { |x| x.cat > 0 || x.key[0] == '“' }
-          curr.fix("không đối với")
+        if node.succ.try { |x| x.cat > 0 || x.key[0] == '“' }
+          node.fix("không đối với")
         else
-          curr.fix("không đúng")
+          node.fix("không đúng")
         end
       when "也"
-        curr.fix(@data[i]?.try(&.word?) ? "cũng" : "vậy")
+        node.fix(node.succ.try(&.word?) ? "cũng" : "vậy")
       when "地"
         # TODO: check noun, verb?
-        if prev = @data[i - 2]?
+        if prev = node.prev
           val = prev.adje? || prev.key[-1]? == '”' ? "mà" : "địa"
-          curr.fix(val)
+          node.fix(val)
         end
       when "原来"
-        if @data[i]?.try(&.match_key?("的")) || @data[i - 2]?.try(&.word?)
+        if node.succ.try(&.match_key?("的")) || node.prev.try(&.word?)
           val = "ban đầu"
         else
           val = "thì ra"
         end
-        curr.fix(val)
+        node.fix(val)
       when "行"
-        curr.fix("được") unless @data[i]?.try(&.word?)
+        node.fix("được") unless node.succ.try(&.word?)
       when "高达"
-        curr.fix("cao đến") if @data[i]?.try(&.is_num)
+        node.fix("cao đến") if node.succ.try(&.is_num)
       when "石"
-        curr.fix("thạch") if @data[i - 2]?.try(&.is_num)
+        node.fix("thạch") if node.prev.try(&.is_num)
       when "两"
-        curr.fix("lượng") if @data[i - 2]?.try(&.is_num)
+        node.fix("lượng") if node.prev.try(&.is_num)
       when "里"
-        curr.fix("dặm") if @data[i - 2]?.try(&.is_num)
+        node.fix("dặm") if node.prev.try(&.is_num)
       when "米"
-        curr.fix("mét") if @data[i - 2]?.try(&.is_num)
+        node.fix("mét") if node.prev.try(&.is_num)
       when "年"
         # TODO: handle special cases for year
-        next unless prev = @data[i - 2]?
+        next unless prev = node.prev
         next unless prev.to_i?.try(&.>= 100)
 
-        curr.key = "#{prev.key}#{curr.key}"
-        curr.fix("năm #{prev.key}")
+        node.key = "#{prev.key}#{node.key}"
+        node.fix("năm #{prev.key}")
 
         prev.clear!
       when "月"
-        next unless prev = @data[i - 2]?
+        next unless prev = node.prev
         next unless prev.to_i?.try(&.<= 15)
 
-        curr.key = "#{prev.key}#{curr.key}"
-        curr.fix("tháng #{prev.key}")
+        node.key = "#{prev.key}#{node.key}"
+        node.fix("tháng #{prev.key}")
 
         prev.clear!
       when "日"
-        next unless prev = @data[i - 2]?
+        next unless prev = node.prev
         next unless prev.to_i?.try(&.<= 40)
 
-        curr.key = "#{prev.key}#{curr.key}"
-        curr.fix("ngày #{prev.key}")
+        node.key = "#{prev.key}#{node.key}"
+        node.fix("ngày #{prev.key}")
 
         prev.clear!
       end
     end
 
-    handle_adjes!
-    handle_nouns!
+    fix_adjes!
+    fix_nouns!
     # combine_的!
 
     self
@@ -101,13 +113,10 @@ class CV::CvList
     self
   end
 
-  private def handle_adjes!
-    res = Input.new
-    idx = 0
-    prev = nil
-
-    @data.each do |curr|
-      if prev && curr.adje?
+  private def fix_adjes!(node = @head)
+    while node = node.succ
+      if node.adje?
+        prev = node.prev.not_nil!
         skip, left, right = false, "", ""
 
         case prev.key
@@ -123,29 +132,24 @@ class CV::CvList
         end
 
         if skip
-          prev.key = "#{prev.key}#{curr.key}"
-          prev.val = "#{left}#{curr.val}#{right}"
+          prev.key = "#{prev.key}#{node.key}"
+          prev.val = "#{left}#{node.val}#{right}"
 
           prev.cat |= 4
-          prev.dic = curr.dic if prev.dic < curr.dic
+          prev.dic = node.dic if prev.dic < node.dic
 
           next
         end
       end
-
-      prev = curr
-      res << curr
     end
 
-    @data = res
+    self
   end
 
-  private def handle_nouns!
-    res = Input.new
-    prev = nil
-
-    @data.each_with_index do |curr, idx|
-      if prev && curr.cat == 1
+  private def fix_nouns!(node = @head)
+    while node = node.succ
+      prev = node.prev.not_nil!
+      if node.cat == 1
         skip, left, right = false, "", ""
 
         case prev.key
@@ -158,13 +162,8 @@ class CV::CvList
              "那条"
           skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "那"
-          # skipping if 那 is in front
-          if @data[idx - 2]?.try(&.key.ends_with?("“")) &&
-             @data[idx + 1]?.try(&.word?)
-            prev.fix(val: "vậy")
-          else
-            skip, left, right = true, suffix(prev.key[1]?), " kia"
-          end
+          # TODO: skipping if 那 is in front
+          skip, left, right = true, suffix(prev.key[1]?), " kia"
         when "什么"
           skip, right = true, " cái gì"
         when "没什么"
@@ -191,7 +190,7 @@ class CV::CvList
           # when 4 # only adje
           #   skip, right = true, " #{prev.val}"
         when 1 # only nown
-          case curr.key
+          case node.key
           when "姐", "姐姐", "大姐", "小姐", "大小姐",
                "哥", "哥哥", "大哥", "先生", "小姐姐",
                "小队", "老师", "身上", "大人"
@@ -204,21 +203,18 @@ class CV::CvList
         end
 
         if skip
-          prev.key = "#{prev.key}#{curr.key}"
-          prev.val = "#{left}#{curr.val}#{right}"
+          prev.key = "#{prev.key}#{node.key}"
+          prev.val = "#{left}#{node.val}#{right}"
 
           prev.cat = 1
-          prev.dic = curr.dic if prev.dic < curr.dic
+          prev.dic = node.dic if prev.dic < node.dic
 
           next
         end
       end
-
-      prev = curr
-      res << curr
     end
 
-    @data = res
+    self
   end
 
   private def suffix(char : Char?)
@@ -282,10 +278,8 @@ class CV::CvList
     @data = res
   end
 
-  def capitalize! : self
-    cap_mode = 1
-
-    @data.each do |node|
+  def capitalize!(node = @head, cap_mode = 1) : self
+    while node = node.succ
       next unless char = node.val[-1]?
 
       if cap_mode > 0 && node.dic > 0
@@ -299,16 +293,13 @@ class CV::CvList
     self
   end
 
-  def pad_spaces! : self
-    return self if @data.empty?
+  def pad_spaces!(node = @head) : self
+    return self unless node = node.succ
+    prev = node
 
-    from = @data.size - 1
-    last = @data.unsafe_fetch(from)
-
-    from.downto(1) do |idx|
-      curr = @data.unsafe_fetch(idx - 1)
-      @data.insert(idx, CvNode.new("", " ")) if PadSpaces.space?(curr, last)
-      last = curr unless curr.val.empty?
+    while node = node.succ
+      node.set_prev(CvNode.new("", " ")) if PadSpaces.space?(prev, node)
+      prev = node unless node.val.empty?
     end
 
     self
@@ -319,7 +310,13 @@ class CV::CvList
   end
 
   def to_s(io : IO) : Nil
-    @data.each { |x| io << x.val }
+    each { |node| io << node.val }
+  end
+
+  def each(node = @head)
+    while node = node.succ
+      yield node
+    end
   end
 
   def to_str : String
@@ -327,12 +324,22 @@ class CV::CvList
   end
 
   def to_str(io : IO) : Nil
-    @data.map { |x| {x.key, x.val, x.dic}.join('ǀ') }.join(io, '\t')
+    return unless node = @head.succ
+    node.to_str(io)
+
+    while node = node.succ
+      io << '\t'
+      node.to_str(io)
+    end
   end
 
   def inspect(io : IO) : Nil
-    @data.map do |x|
-      x.key.empty? ? x.val : "[#{x.key}¦#{x.val}¦#{x.dic}]"
-    end.join(io, " ")
+    return unless node = @head.succ
+    node.inspect(io)
+
+    while node = node.succ
+      io << ' '
+      node.inspect(io)
+    end
   end
 end

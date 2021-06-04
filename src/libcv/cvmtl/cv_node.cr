@@ -8,6 +8,9 @@ class CV::CvNode
   property dic : Int32
   property cat : Int32 = 0
 
+  property prev : self | Nil = nil
+  property succ : self | Nil = nil
+
   def initialize(term : VpTerm)
     @key = term.key
     @val = term.vals.first
@@ -16,6 +19,30 @@ class CV::CvNode
   end
 
   def initialize(@key, @val = @key, @dic = 0, @cat = 0)
+  end
+
+  def set_prev(node : self) : self # return node
+    if _prev = @prev
+      _prev.succ = node
+      node.prev = _prev
+    end
+
+    node.succ = self
+    @prev = node
+  end
+
+  def set_succ(node : self) : self # return node
+    if _succ = @succ
+      _succ.prev = node
+      node.succ = _succ
+    end
+
+    node.prev = self
+    @succ = node
+  end
+
+  def set_succ(node : Nil)
+    @succ = nil
   end
 
   def fix(@val : String, @dic = 9, @cat = @cat) : Nil
@@ -85,9 +112,16 @@ class CV::CvNode
     @key[0] == other.key[0]
   end
 
-  def merge_left!(other : CvNode) : Nil
+  def absorb_similar!(other : CvNode) : Nil
     @key = "#{other.key}#{@key}"
     @val = "#{other.val}#{@val}"
+  end
+
+  def merge!(key : String, val : String, cat : Int32 = 0, dic = @dic)
+    @key = "#{@key}#{key}"
+    @val = "#{@val} #{val}"
+    @cat |= cat
+    @dic = dic
   end
 
   def to_i?
@@ -113,13 +147,6 @@ class CV::CvNode
 
   def person?
     @val[0]?.try(&.uppercase?) || pronoun?
-  end
-
-  def merge!(key : String, val : String, cat : Int32 = 0, dic = @dic)
-    @key = "#{@key}#{key}"
-    @val = "#{@val} #{val}"
-    @cat |= cat
-    @dic = dic
   end
 
   NUM = "零〇一二两三四五六七八九十百千万亿"
@@ -173,5 +200,13 @@ class CV::CvNode
     else
       false
     end
+  end
+
+  def to_str(io : IO)
+    io << @key << 'ǀ' << @val << 'ǀ' << @dic
+  end
+
+  def inspect(io : IO)
+    io << (@key.empty? ? @val : "[#{@key}¦#{@val}¦#{@dic}]")
   end
 end

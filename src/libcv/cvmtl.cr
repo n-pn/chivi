@@ -38,7 +38,10 @@ class CV::Cvmtl
   end
 
   def cv_plain(input : String)
-    tokenize(input.chars).fix_grammar!.capitalize!.pad_spaces!
+    tokenize(input.chars)
+      .fix_grammar!
+      .capitalize!
+      .pad_spaces!
   end
 
   def cv_title_full(title : String)
@@ -47,11 +50,9 @@ class CV::Cvmtl
     title_res = cv_title(title)
     return title_res if label.empty?
 
+    title_res.prepend!(CvNode.new("", " - "))
     label_res = cv_title(label)
-    label_res << CvNode.new("", " - ")
-    label_res.concat(title_res.data)
-
-    label_res
+    label_res.merge!(title_res)
   end
 
   def cv_title(title : String)
@@ -59,8 +60,8 @@ class CV::Cvmtl
     res = title.empty? ? CvList.new : cv_plain(title)
 
     unless pre_zh.empty?
-      res.unshift(CvNode.new(pad, title.empty? ? "." : ": "))
-      res.unshift(CvNode.new(pre_zh, pre_vi, 1))
+      res.prepend!(CvNode.new(pad, title.empty? ? "." : ": "))
+      res.prepend!(CvNode.new(pre_zh, pre_vi, 1))
     end
 
     res
@@ -104,9 +105,9 @@ class CV::Cvmtl
       idx -= node.key.size
 
       if (prev = res.first?) && node.similar?(prev)
-        prev.merge_left!(node)
+        prev.absorb_similar!(node)
       else
-        res.unshift(node)
+        res.prepend!(node)
       end
     end
 
@@ -156,7 +157,7 @@ class CV::Cvmtl
   #       end
   #     end
 
-  #     ary.unshift(curr)
+  #     ary.prepend!(curr)
   #   end
 
   #   ary

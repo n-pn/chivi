@@ -9,12 +9,18 @@ puts CV::Vdict.regular.find("历史")
 
 HANVIET = CV::Cvmtl.hanviet
 
-def translate(input : String, mode = 0)
+def test_convert(input : String, mode = 0)
+  puts "=" * 65
+  puts "#{input}"
+  puts "-" * 65
+
   case mode
-  when 2 then GENERIC.cv_title_full(input).to_s
-  when 1 then GENERIC.cv_title(input).to_s
-  else        GENERIC.cv_plain(input).to_s
+  when 2 then puts GENERIC.cv_title_full(input).to_s
+  when 1 then puts GENERIC.cv_title(input).to_s
+  else        puts GENERIC.cv_plain(input).to_s
   end
+
+  # puts "=" * 65
 end
 
 test1 = "坚定不移沿着中国特色社会主义道路前进  为全面建成小康社会而奋斗"
@@ -42,20 +48,20 @@ text = "第十三集 龙章凤仪 第一章 屠龙之术
 程宗扬打趣道：“没跟你商量，就抢了你的正使职位，抱歉抱歉。”"
 
 text.split(/\n+/).each_with_index do |line, idx|
-  puts translate(line, idx == 0 ? 2 : 0)
+  test_convert(line, idx == 0 ? 2 : 0)
 end
 
-puts translate("第一章", mode: 1)
-puts translate("第一章 屠龙之术", mode: 1)
-puts translate("一, 屠龙之术", mode: 1)
-puts translate("1, 屠龙之术", mode: 1)
-puts translate("第十三集 龙章凤仪 第一章屠龙之术", mode: 2)
-puts translate("第十三集 龙章凤仪", mode: 1)
-puts translate("1第一章")
-puts translate("一. 屠龙之术")
-puts translate("朥负已定")
-puts translate("第三千七百九十八章 历史的本质就是套娃", mode: 1)
-puts translate("12：12", mode: 1)
+test_convert("第一章", mode: 1)
+test_convert("第一章 屠龙之术", mode: 1)
+test_convert("一, 屠龙之术", mode: 1)
+test_convert("1, 屠龙之术", mode: 1)
+test_convert("第十三集 龙章凤仪 第一章屠龙之术", mode: 2)
+test_convert("第十三集 龙章凤仪", mode: 1)
+test_convert("1第一章")
+test_convert("一. 屠龙之术")
+test_convert("朥负已定")
+test_convert("第三千七百九十八章 历史的本质就是套娃", mode: 1)
+test_convert("12：12", mode: 1)
 
 pp GENERIC.cv_title("1, 屠龙之术")
 pp GENERIC.cv_plain("能让我坐在这里无病呻－吟")
