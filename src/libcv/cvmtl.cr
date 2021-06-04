@@ -52,7 +52,7 @@ class CV::Cvmtl
 
     title_res.prepend!(CvNode.new("", " - "))
     label_res = cv_title(label)
-    label_res.merge!(title_res)
+    label_res.concat!(title_res)
   end
 
   def cv_title(title : String)

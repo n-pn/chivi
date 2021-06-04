@@ -6,11 +6,11 @@ class CV::CvList
 
   getter root = CvNode.new("", "")
 
-  def first?
+  def first? : CvNode?
     @root.succ
   end
 
-  def merge!(list : self, node = @root)
+  def concat!(list : self, node = @root)
     while node = node.succ
       unless node.succ
         node.set_succ(list.root)
