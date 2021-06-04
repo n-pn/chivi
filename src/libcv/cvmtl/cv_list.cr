@@ -94,7 +94,7 @@ class CV::CvList
 
     handle_adjes!
     handle_nouns!
-    combine_的!
+    # combine_的!
 
     self
   rescue err
