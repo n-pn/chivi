@@ -104,8 +104,8 @@ class CV::CvList
       end
     end
 
-    fix_adjes!
-    fix_nouns!
+    # fix_adjes!
+    # fix_nouns!
     # combine_的!
 
     self
