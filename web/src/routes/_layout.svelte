@@ -6,6 +6,7 @@
   const links = [
     ['Vozforums', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],
     ['Facebook', 'https://www.facebook.com/chivi.xyz/'],
+    ['Telegram', 'https://t.me/chivi_xyz'],
     ['Discord', 'https://discord.gg/mdC3KQH'],
     ['Github', 'https://github.com/nipinium/chivi'],
   ]
