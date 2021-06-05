@@ -17,7 +17,7 @@
   div {
     position: relative;
     height: 0;
-    padding-top: (4 / 3) * 100%;
+    padding-top: math.div(4, 3) * 100%;
     overflow: hidden;
     @include radius();
     @include bgcolor(primary, 8);

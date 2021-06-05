@@ -26,4 +26,4 @@ rsync -azi --no-p "_db/_seeds/" "$ssh/_db/_seeds/"
 rsync -azi --no-p "_db/nv_infos/" "$ssh/_db/nv_infos/"
 rsync -azi --no-p "_db/ch_infos/" "$ssh/_db/ch_infos/"
 
-rsync -azi --no-p --delete "_db/nv_infos/covers" "$ssh/_db/nv_infos/"
+#rsync -azi --no-p --delete "_db/nv_infos/covers" "$ssh/_db/nv_infos/"

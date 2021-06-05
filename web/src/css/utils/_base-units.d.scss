@@ -1,7 +1,9 @@
+@use 'sass:math';
+
 $m-cell: 0.25rem !default;
 
 @function strip-unit($num) {
-  @return $num / ($num * 0 + 1);
+  @return math.div($num, $num * 0 + 1);
 }
 
 @function cell($size) {
@@ -21,7 +23,7 @@ $m-cell: 0.25rem !default;
   @if $num == 0 { @return 0; }
   @if unitless($num) { @return 1rem * $num; }
   @if unit($num) == x { @return cell($num); }
-  @if unit($num) == px { @return 1rem * ($num / 16px); }
+  @if unit($num) == px { @return 1rem * math.div($num, 16px); }
   @if unit($num) == rem { @return $num; }
   // @if unit($num) == em { @return $num; }
   @error "unsupported unit [#{$size}]";
@@ -35,6 +37,6 @@ $m-cell: 0.25rem !default;
 // prettier-ignore
 @function em($num, $base: 16px) {
   @if $num == 0 { @return 0; }
-  @if unit($num) == unit($base) { @return 1em * ($num / $base); }
+  @if unit($num) == unit($base) { @return 1em *  math.div($num, $base); }
   @error "type mismatch: [#{$num} & [#{$base}]";
 }

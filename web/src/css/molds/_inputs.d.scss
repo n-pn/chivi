@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @mixin input-common() {
   display: block;
   position: relative;
@@ -10,7 +12,7 @@
     position: absolute;
     top: -$pad;
     left: $pad;
-    padding: 0 $pad / 2;
+    padding: 0 math.div($pad, 2);
     line-height: 1rem;
     font-size: rem(14px);
     // font-weight: 500;

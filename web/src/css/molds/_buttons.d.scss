@@ -1,3 +1,5 @@
+@use "sass:math";
+
 $-button-styles: text, line, fill !default;
 $-button-colors: neutral, primary, success, warning, harmful !default;
 
@@ -61,7 +63,7 @@ $-button-text-sizes: (
   $icon-size: map-get($-button-icon-sizes, $size);
   $text-size: map-get($-button-text-sizes, $size);
 
-  $gutter: ($height - $icon-size - rem(2px)) / 2;
+  $gutter: math.div($height - $icon-size - rem(2px), 2);
 
   height: $height;
   padding: $gutter;

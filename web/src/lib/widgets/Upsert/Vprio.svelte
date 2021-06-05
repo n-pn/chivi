@@ -25,7 +25,7 @@
     display: flex;
     flex: 1;
     justify-content: center;
-    margin: ($outer-height - $inner-height) / 2 0;
+    margin: math.div($outer-height - $inner-height, 2) 0;
     padding-top: 1px;
     // padding-top: 0.25rem;
     @include props(font-size, rem(11px), rem(12px), rem(13px));

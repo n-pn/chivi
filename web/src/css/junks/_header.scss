@@ -1,6 +1,8 @@
+@use 'sass:math';
+
 $header-height: 3rem;
 $header-inner-height: 2.25rem;
-$header-gutter: ($header-height - $header-inner-height) / 2;
+$header-gutter: math.div($header-height - $header-inner-height, 2);
 
 .app-header {
   transition: transform 100ms ease-in-out;
@@ -137,8 +139,10 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
   padding: 0;
   // flex-grow: 1;
 
+  $radius: math.div($header-inner-height, 2);
+
   cursor: text;
-  border-radius: $header-inner-height / 2;
+  border-radius: $radius;
   height: $header-inner-height;
   line-height: $header-inner-height;
 
@@ -150,7 +154,7 @@ $header-gutter: ($header-height - $header-inner-height) / 2;
     width: 100%;
     border: none;
     outline: none;
-    border-radius: $header-inner-height / 2;
+    border-radius: $radius;
 
     @include bgcolor(darken(color(primary, 7), 5%));
 
