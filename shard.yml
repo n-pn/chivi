@@ -32,6 +32,9 @@ targets:
   fetch_zhtexts:
     main: cli/routine/fetch_zhtexts.cr
 
+  upload_zhtext:
+    main: cli/upload_zhtext.cr
+
   ys_serial:
     main: cli/workers/ys_serial.cr
 

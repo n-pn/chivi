@@ -3,48 +3,65 @@
 # require "json"
 require "colorize"
 
-SSH = "nipin@ssh.chivi.xyz"
-INP = "_db/ch_texts/origs"
-OUT = "/home/nipin/srv/chivi.xyz"
+module CV::UploadText
+  extend self
 
-def upload_texts(sname : String)
-  seed_dir = File.join(INP, sname)
-  remote_dir = "#{OUT}/#{seed_dir}"
-  puts `ssh #{SSH} mkdir -p "#{remote_dir}"`
+  INP = "_db/ch_texts/origs"
+  OUT = "/home/nipin/srv/chivi.xyz"
 
-  dirs = Dir.children(seed_dir).sort_by { |x| x.to_i? || 0 }
+  def upload_all!(snames : Array(String))
+    puts "-- INPUT: #{snames} --".colorize.yellow.bold
 
-  threads = dirs.size
-  threads = 8 if threads > 8
-  channel = Channel(Nil).new(threads + 1)
+    channel = Channel(Nil).new(snames.size)
 
-  dirs.each_with_index(1) do |snvid, idx|
-    channel.receive if idx > threads
-
-    spawn do
-      text_dir = File.join(seed_dir, snvid)
-      puts "- <#{idx}/#{dirs.size}> [#{text_dir}]".colorize.cyan
-      puts `rsync -aiWS --inplace --no-p -e "ssh -T -c aes128-ctr -o Compression=no -x" "#{text_dir}" "#{SSH}:#{remote_dir}"`.colorize.yellow
-      channel.send(nil)
+    if ARGV.includes?("-prod")
+      ssh = "nipin@ssh.chivi.xyz"
+    else
+      ssh = "nipin@dev.chivi.xyz"
     end
+
+    snames.each do |sname|
+      spawn do
+        upload!(sname, ssh)
+      ensure
+        channel.send(nil)
+      end
+    end
+
+    snames.size.times { channel.receive }
   end
 
-  threads.times { channel.receive }
-end
+  def upload!(sname : String, ssh = "nipin@ssh.chivi.xyz")
+    target_dir = File.join(INP, sname)
+    remote_dir = "#{OUT}/#{target_dir}"
 
-existed = Dir.children(INP)
-snames = ARGV.empty? ? existed : ARGV.select { |x| existed.includes?(x) }
+    puts `ssh #{ssh} mkdir -p "#{remote_dir}"`
 
-puts "-- INPUT: #{snames} --".colorize.yellow.bold
+    dirs = Dir.children(target_dir).sort_by { |x| x.to_i? || 0 }
 
-channel = Channel(Nil).new(snames.size)
+    threads = dirs.size
+    threads = 8 if threads > 8
+    channel = Channel(Nil).new(threads + 1)
 
-snames.each do |sname|
-  spawn do
-    upload_texts(sname)
-  ensure
-    channel.send(nil)
+    command = %{rsync -aiWS --inplace --no-p -e "ssh -T -c aes128-ctr -o Compression=no -x"}
+
+    dirs.each_with_index(1) do |snvid, idx|
+      channel.receive if idx > threads
+
+      spawn do
+        text_dir = File.join(target_dir, snvid)
+        puts "- <#{idx}/#{dirs.size}> [#{text_dir}]".colorize.cyan
+        puts `#{command} "#{text_dir}" "#{ssh}:#{remote_dir}"`.colorize.yellow
+        channel.send(nil)
+      end
+    end
+
+    threads.times { channel.receive }
   end
 end
 
-snames.size.times { channel.receive }
+existed = Dir.children(CV::UploadText::INP)
+uploads = ARGV.select { |x| existed.includes?(x) }
+uploads = existed if uploads.empty?
+
+CV::UploadText.upload_all!(uploads)
