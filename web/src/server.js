@@ -20,7 +20,7 @@ const assetOpts = { dev, maxAge, etag: true }
 
 const app = express() // You can also use Express
 
-if (dev) app.use('/api', proxy)
+app.use('/api', proxy)
 app.use('/covers', sirv('../_db/nv_infos/covers', assetOpts))
 
 app.use(
