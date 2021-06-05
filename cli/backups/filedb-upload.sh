@@ -12,7 +12,7 @@ fi
 echo $ssh
 
 ## upload dicts
-rsync -azi --no-p "_db/vp_dicts/_inits/" "$ssh/_db/vp_dicts/_inits/"
+# rsync -azi --no-p "_db/vp_dicts/_inits/" "$ssh/_db/vp_dicts/_inits/"
 rsync -azi --no-p "_db/vp_dicts/active/" "$ssh/_db/vp_dicts/backup/"
 rsync -azi --no-p "_db/vp_dicts/active/" "$ssh/_db/vp_dicts/active/"
 

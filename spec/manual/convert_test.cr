@@ -14,11 +14,13 @@ def test_convert(input : String, mode = 0)
   puts "#{input}"
   puts "-" * 65
 
-  case mode
-  when 2 then puts GENERIC.cv_title_full(input).to_s
-  when 1 then puts GENERIC.cv_title(input).to_s
-  else        puts GENERIC.cv_plain(input).to_s
-  end
+  output = case mode
+           when 2 then GENERIC.cv_title_full(input)
+           when 1 then GENERIC.cv_title(input)
+           else        GENERIC.cv_plain(input)
+           end
+
+  puts output.to_s # , output.inspect
 
   # puts "=" * 65
 end

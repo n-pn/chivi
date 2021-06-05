@@ -39,6 +39,10 @@ class CV::CvNode
     @prev = node
   end
 
+  def set_prev(node : Nil)
+    @prev = nil
+  end
+
   def set_succ(node : self) : self # return node
     if _succ = @succ
       _succ.prev = node
@@ -54,6 +58,14 @@ class CV::CvNode
   end
 
   def fix(@val : String, @dic = 9, @cat = @cat) : Nil
+  end
+
+  def merge_left!(val_left = @prev.try(&.val) || "", val_right = "")
+    return unless left = @prev
+    set_prev(left.prev)
+
+    @key = "#{left.key}#{@key}"
+    @val = "#{val_left}#{@val}#{val_right}"
   end
 
   def match_key?(key : String)
@@ -215,6 +227,6 @@ class CV::CvNode
   end
 
   def inspect(io : IO)
-    io << (@key.empty? ? @val : "[#{@key}¦#{@val}¦#{@dic}]")
+    io << "[#{@key}¦#{@val}¦#{@dic}]"
   end
 end

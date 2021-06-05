@@ -115,32 +115,24 @@ class CV::CvList
 
   private def fix_adjes!(node = @root)
     while node = node.succ
-      if node.adje?
-        prev = node.prev.not_nil!
-        skip, left, right = false, "", ""
+      next unless node.adje?
 
-        case prev.key
-        when "不", "很", "太", "多", "未", "更", "级", "超"
-          skip, left = true, "#{prev.val} "
-        when "最", "那么", "这么", "非常",
-             "很大", "如此", "极为"
-          skip, right = true, " #{prev.val}"
-        when "不太"
-          skip, left, right = true, "không ", " lắm"
-        else
-          skip, left = true, "#{prev.val} " if prev.cat == 4
-        end
+      prev = node.prev.not_nil!
+      skip, left, right = false, "", ""
 
-        if skip
-          prev.key = "#{prev.key}#{node.key}"
-          prev.val = "#{left}#{node.val}#{right}"
-
-          prev.cat |= 4
-          prev.dic = node.dic if prev.dic < node.dic
-
-          next
-        end
+      case prev.key
+      when "不", "很", "太", "多", "未", "更", "级", "超"
+        skip, left = true, "#{prev.val} "
+      when "最", "那么", "这么", "非常",
+           "很大", "如此", "极为"
+        skip, right = true, " #{prev.val}"
+      when "不太"
+        skip, left, right = true, "không ", " lắm"
+        # else
+        # skip, left = true, "#{prev.val} " if prev.cat == 4
       end
+
+      node.merge_left!(left, right) if skip
     end
 
     self
@@ -202,15 +194,7 @@ class CV::CvList
           end
         end
 
-        if skip
-          prev.key = "#{prev.key}#{node.key}"
-          prev.val = "#{left}#{node.val}#{right}"
-
-          prev.cat = 1
-          prev.dic = node.dic if prev.dic < node.dic
-
-          next
-        end
+        node.merge_left!(left, right) if skip
       end
     end
 
@@ -334,11 +318,8 @@ class CV::CvList
   end
 
   def inspect(io : IO) : Nil
-    return unless node = @root.succ
-    node.inspect(io)
-
+    node = @root
     while node = node.succ
-      io << ' '
       node.inspect(io)
     end
   end

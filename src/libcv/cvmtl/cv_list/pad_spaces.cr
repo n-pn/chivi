@@ -25,11 +25,11 @@ module CV::PadSpaces
 
     case left_char
     when '“', '‘', '⟨', '(', '[', '{'
-      return false
+      false
     when '”', '’', '⟩', ')', ']', '}',
          ',', '.', ';', '!', '?', ':',
          '…', '·'
-      return true
+      true
     when '~', '-', '—'
       right.dic > 1
     else
