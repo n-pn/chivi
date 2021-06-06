@@ -24,7 +24,7 @@ class CV::Seeds::ZxcsText
     end
   end
 
-  TTL = Time.utc - 3.days # invalid cached html in 3 days
+  TTL = Time.utc - 15.days # invalid cached html in 15 days
 
   def get_rar_urls(snvid : Int32, label = "1/1") : Array(String)
     out_file = File.join(DLPG_DIR, "#{snvid}.html.gz")

@@ -8,7 +8,7 @@
     ['Facebook', 'https://www.facebook.com/chivi.xyz/'],
     ['Telegram', 'https://t.me/chivi_xyz'],
     ['Discord', 'https://discord.gg/mdC3KQH'],
-    ['Github', 'https://github.com/nipinium/chivi'],
+    ['Github', 'https://github.com/np-nam/chivi'],
   ]
 
   import { onMount } from 'svelte'
