@@ -135,7 +135,7 @@
       margin-top: -0.125rem;
     }
 
-    :global(& .-text) {
+    :global(.-text) {
       flex-grow: 1;
       font-weight: 500;
       margin-left: 0.5rem;
@@ -143,7 +143,7 @@
       @include font-size(3);
     }
 
-    :global(& .-btn) {
+    :global(.-btn) {
       padding: 0 0.5rem;
       @include radius;
       @include fgcolor(neutral, 6);
