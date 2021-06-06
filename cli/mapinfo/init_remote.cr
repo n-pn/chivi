@@ -22,12 +22,11 @@ class CV::InitRemote
     {missing, updates}
   end
 
-  def read_stats(upper : Int32, lower : Int32 = 1)
+  def read_stats(upper : Int32)
     limit = 20
-    channel = Channel(Tuple(String, Int32)).new(limit)
+    channel = Channel(Tuple(String, Int32)).new(limit + 1)
 
-    lower = upper if lower > upper
-    lower.upto(upper) do |index|
+    1.upto(upper) do |index|
       spawn do
         snvid = index.to_s
         fpath = "_db/.cache/#{@sname}/infos/#{snvid}.html.gz"
@@ -102,7 +101,7 @@ class CV::InitRemote
       end
     end
 
-    @seed.save!
+    @seed.save!(clean: false)
   end
 end
 

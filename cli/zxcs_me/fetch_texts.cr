@@ -45,7 +45,7 @@ class CV::Seeds::ZxcsText
     HTTP::Client.get(rar_link) { |res| File.write(out_file, res.body_io) }
     puts "- Saving [#{File.basename(rar_link).colorize.green}] \
             to [#{File.basename(out_file).colorize.green}], \
-            filesize: #{File.size(out_file)} bytes"
+            file size: #{File.size(out_file)} bytes"
   end
 end
 
