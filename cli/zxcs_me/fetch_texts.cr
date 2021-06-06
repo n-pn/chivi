@@ -17,37 +17,24 @@ class CV::Seeds::ZxcsText
       rar_file = "#{RARS_DIR}/#{snvid}.rar"
       next if File.exists?(rar_file) && File.size(rar_file) > 1000
 
-      html = get_dlpg(snvid, label: "#{idx}/#{queue.size}")
-
-      doc = Myhtml::Parser.new(html)
-      urls = doc.css(".downfile > a").to_a.map do |node|
-        node.attributes["href"].not_nil!
-      end
-
-      next if urls.empty?
-
+      urls = get_rar_urls(snvid, label: "#{idx}/#{queue.size}")
       urls.reverse_each { |url| save_rar(url, rar_file) }
     rescue err
       puts err.colorize.red
     end
   end
 
-  def get_dlpg(snvid : Int32, label = "1/1")
+  TTL = Time.utc - 3.days # invalid cached html in 3 days
+
+  def get_rar_urls(snvid : Int32, label = "1/1") : Array(String)
     out_file = File.join(DLPG_DIR, "#{snvid}.html.gz")
+    dlpg_url = "http://www.zxcs.me/download.php?id=#{snvid}"
 
-    if File.exists?(out_file)
-      puts "- <#{label}> [dlpgs/#{snvid}.html.gz] existed, skipping!"
+    html = HttpUtils.load_html(dlpg_url, out_file, ttl: TTL, label: label)
 
-      File.open(out_file) do |io|
-        Compress::Gzip::Reader.open(io, &.gets_to_end)
-      end
-    else
-      dlpg_url = "http://www.zxcs.me/download.php?id=#{snvid}"
-      HttpUtils.get_html(dlpg_url, label: label).tap do |html|
-        File.open(out_file, "w") do |io|
-          Compress::Gzip::Writer.open(io, &.print(html))
-        end
-      end
+    doc = Myhtml::Parser.new(html)
+    doc.css(".downfile > a").to_a.map do |node|
+      node.attributes["href"].not_nil!
     end
   end
 
@@ -63,4 +50,4 @@ class CV::Seeds::ZxcsText
 end
 
 worker = CV::Seeds::ZxcsText.new
-worker.fetch!(from: 1, upto: 12526)
+worker.fetch!(from: 1, upto: 12800)
