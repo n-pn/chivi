@@ -75,8 +75,10 @@ class CV::ZxcsMeJson
 
   property btitle : String
   property author : String
-  property bintro : Array(String)
+
   property genres : Array(String)
+  property bintro : Array(String)
+  property bcover : String
 end
 
 class CV::InitZxcsMe
@@ -143,15 +145,17 @@ class CV::InitZxcsMe
   def inherit!
     atime = Time.utc(2019, 1, 1).to_unix.to_s
 
-    inputs = Hash(String, ZxcsMeJson).from_json File.read("_db/_seeds/zxcs_me/prevs.json")
+    inputs = Hash(String, ZxcsMeJson).from_json File.read("_db/_seeds/old-zxcs.json")
     inputs.each do |snvid, input|
       next if @seed._index.get(snvid)
 
       puts " - <#{snvid}> [#{input.btitle} #{input.author}]"
-      @seed._index.set!(snvid, [atime, input.btitle, input.author])
 
+      @seed._index.set!(snvid, [atime, input.btitle, input.author])
       @seed.set_intro(snvid, input.bintro)
+
       @seed.genres.set!(snvid, input.genres)
+      @seed.bcover.set!(snvid, input.bcover)
     end
 
     @seed.save!(clean: false)
@@ -161,4 +165,5 @@ end
 worker = CV::InitZxcsMe.new
 worker.crawl!
 worker.parse!
+
 worker.inherit!
