@@ -57,6 +57,10 @@ dependencies:
     github: kemalcr/kemal-session
     branch: master
 
+  clear:
+    github: anykeyh/clear
+    branch: master
+
   myhtml:
     github: kostya/myhtml
 

@@ -20,6 +20,7 @@
     "fix-nvinfo": "./bin/fix_intros && ./bin/fix_genres",
     "build": "shards build --release",
     "build-mt": "shards build --release -Dpreview_mt",
-    "gen-sentry": "crystal build --release cli/_sentry/sentry_cli.cr -o bin/sentry"
+    "gen-sentry": "crystal build --release cli/_sentry/sentry_cli.cr -o bin/sentry",
+    "db": "cd web && yarn knex"
   }
 }

@@ -1,0 +1,11 @@
+exports.up = async (knex) => {
+  return await knex.schema.createTable("table_name", (t) => {
+    t.increments()
+
+    t.timestamps(true, true)
+  });
+};
+
+exports.down = async (knex) => {
+  return await knex.schema.dropTable("table_name")
+};

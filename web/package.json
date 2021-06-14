@@ -9,6 +9,14 @@
     "preview": "svelte-kit preview",
     "start": "node build/index.js"
   },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.17.1",
+    "http-proxy-middleware": "^1.1.0",
+    "knex": "^0.95.6",
+    "pg": "^8.6.0",
+    "sirv": "^1.0.11"
+  },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^4.0.3",
     "@sveltejs/adapter-node": "next",
