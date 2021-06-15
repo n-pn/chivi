@@ -1,42 +1,54 @@
 <script context="module">
-  import Cvdata, { toggle_lookup, active_upsert } from '$lib/layouts/Cvdata'
-  import { active as upsert_active } from '$lib/widgets/Upsert'
+  import Cvdata, {
+    toggle_lookup,
+    active_upsert,
+  } from '$lib/layouts/Cvdata.svelte'
+  import { active as upsert_active } from '$lib/widgets/Upsert.svelte'
 
   import { get_nvinfo } from '$api/nvinfo_api'
   import { get_chinfo, get_chtext } from '$api/chtext_api'
 
-  import { u_power } from '$src/stores'
+  import { u_power } from '$lib/stores'
 
   import {
     dname as lookup_dname,
     enabled as lookup_enabled,
     actived as lookup_actived,
     sticked as lookup_sticked,
-  } from '$lib/widgets/Lookup'
+  } from '$lib/widgets/Lookup.svelte'
 
-  export async function preload({ params, query }) {
-    const [err1, nvinfo] = await get_nvinfo(this.fetch, params.book)
-    if (err1) return this.error(404, nvinfo)
+  export async function load({ fetch, page: pg }) {
+    const [err1, nvinfo] = await get_nvinfo(fetch, pg.params.book)
+    if (err1) return { status: err1, error: new Error(nvinfo) }
 
-    const [chidx, sname] = params.chap.split('-').reverse()
+    const [chidx, sname] = pg.params.chap.split('-').reverse()
     const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
 
-    if (!snvid) return this.error(404, 'Nguồn truyện không tồn tại!')
+    if (!snvid)
+      return { status: 404, error: new Error('Nguồn truyện không tồn tại!') }
     const chinfo = { sname, snvid, chidx }
 
     let mode = 0
-    if (query.mode) mode = +query.mode
+    if (pg.query.mode) mode = +pg.query.mode
 
-    const [err, data] = await get_chinfo(this.fetch, nvinfo.bhash, chinfo, mode)
+    const [err, data] = await get_chinfo(fetch, nvinfo.bhash, chinfo, mode)
 
-    if (err) this.error(err, data)
-    else return { ...data, nvinfo, changed: mode < 0 }
+    if (err) return { status: 404, error: new Error(data) }
+
+    return {
+      props: {
+        ...data,
+        nvinfo,
+        changed: mode < 0,
+      },
+    }
   }
 </script>
 
 <script>
-  import SIcon from '$lib/blocks/SIcon'
-  import Vessel from '$lib/layouts/Vessel'
+  import SIcon from '$lib/blocks/SIcon.svelte'
+  import Vessel from '$lib/layouts/Vessel.svelte'
+  import Error from '../__error.svelte'
 
   export let nvinfo = {}
   export let chinfo = {}

@@ -1,10 +1,10 @@
 <script>
-  import { u_dname, u_power, l_scroll } from '$src/stores'
-  import SIcon from '$lib/blocks/SIcon'
+  import { u_dname, u_power, l_scroll } from '$lib/stores'
+  import SIcon from '$lib/blocks/SIcon.svelte'
 
-  import Signin from '$lib/widgets/Signin'
-  import Appnav from '$lib/widgets/Appnav'
-  import Usercp from '$lib/widgets/Usercp'
+  import Signin from '$lib/widgets/Signin.svelte'
+  import Appnav from '$lib/widgets/Appnav.svelte'
+  import Usercp from '$lib/widgets/Usercp.svelte'
 
   export let shift = false
   let active_usercp = false
@@ -51,14 +51,12 @@
   </footer>
 </main>
 
-{#if process.browser}
-  <Appnav bind:actived={active_appnav} />
+<Appnav bind:actived={active_appnav} />
 
-  {#if $u_dname == 'Khách'}
-    <Signin bind:actived={active_usercp} />
-  {:else}
-    <Usercp bind:actived={active_usercp} />
-  {/if}
+{#if $u_dname == 'Khách'}
+  <Signin bind:actived={active_usercp} />
+{:else}
+  <Usercp bind:actived={active_usercp} />
 {/if}
 
 <style lang="scss">

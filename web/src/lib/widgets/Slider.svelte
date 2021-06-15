@@ -1,5 +1,5 @@
 <script>
-  import SIcon from '$lib/blocks/SIcon'
+  import SIcon from '$lib/blocks/SIcon.svelte'
   export let actived = false
   export let sticked = false
 

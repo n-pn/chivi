@@ -1,8 +1,8 @@
 <script>
   import { signin_user } from '$api/viuser_api'
-  import { u_dname, u_power } from '$src/stores'
-  import SIcon from '$lib/blocks/SIcon'
-  import Slider from './Slider'
+  import { u_dname, u_power } from '$lib/stores'
+  import SIcon from '$lib/blocks/SIcon.svelte'
+  import Slider from './Slider.svelte'
 
   export let actived = false
 

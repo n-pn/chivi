@@ -1,15 +1,19 @@
 <script context="module">
-  import { get_nvinfo } from '$api/nvinfo_api'
+  import { get_nvinfo } from '$api/nvinfo_api.js'
 
-  export async function preload({ params }) {
-    const [err, data] = await get_nvinfo(this.fetch, params.book)
-    if (err) this.error(err, data)
-    else return { nvinfo: data }
+  export async function load({ fetch, page }) {
+    const [err, data] = await get_nvinfo(fetch, page.params.book)
+
+    if (err) {
+      return { status: err, error: new Error(data) }
+    }
+
+    return { props: { nvinfo: data } }
   }
 </script>
 
 <script>
-  import Book from './_book'
+  import Book from './_book.svelte'
 
   export let nvinfo
   let short_intro = false

@@ -1,5 +1,5 @@
 <script>
-  import RTime from '$lib/blocks/RTime'
+  import RTime from '$lib/blocks/RTime.svelte'
 
   export let info
 </script>

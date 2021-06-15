@@ -1,19 +1,19 @@
 <script context="module">
   import { onMount } from 'svelte'
 
-  import Cvline from './Cvdata/Line'
+  import Cvline from './Cvdata/Line.svelte'
 
   import Lookup, {
     input as lookup_input,
     actived as lookup_actived,
     enabled as lookup_enabled,
-  } from '$lib/widgets/Lookup'
+  } from '$lib/widgets/Lookup.svelte'
 
   import Upsert, {
     phrase as upsert_phrase,
     on_tab as upsert_target,
     active as upsert_active,
-  } from '$lib/widgets/Upsert'
+  } from '$lib/widgets/Upsert.svelte'
 
   export function toggle_lookup() {
     lookup_enabled.update((x) => {

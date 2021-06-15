@@ -1,5 +1,5 @@
 <script context="module">
-  import { u_power } from '$src/stores'
+  import { u_power } from '$lib/stores'
   import { writable } from 'svelte/store'
 
   import { titleize } from '$utils/text_utils'
@@ -11,17 +11,17 @@
 </script>
 
 <script>
-  import SIcon from '$lib/blocks/SIcon'
+  import SIcon from '$lib/blocks/SIcon.svelte'
 
-  import Input from './Upsert/Input'
-  import Vhint from './Upsert/Vhint'
-  import Vutil from './Upsert/Vutil'
-  import Vattr from './Upsert/Vattr'
-  import Vprio from './Upsert/Vprio'
+  import Input from './Upsert/Input.svelte'
+  import Vhint from './Upsert/Vhint.svelte'
+  import Vutil from './Upsert/Vutil.svelte'
+  import Vattr from './Upsert/Vattr.svelte'
+  import Vprio from './Upsert/Vprio.svelte'
 
-  import Emend from './Upsert/Emend'
-  import Power from './Upsert/Power'
-  import Links from './Upsert/Links'
+  import Emend from './Upsert/Emend.svelte'
+  import Power from './Upsert/Power.svelte'
+  import Links from './Upsert/Links.svelte'
 
   export let dname = 'various'
   export let bname = 'Tổng hợp'

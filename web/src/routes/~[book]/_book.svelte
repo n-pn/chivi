@@ -1,15 +1,15 @@
 <script>
-  import { u_power, u_dname } from '$src/stores'
-  import { set_mark, get_mark } from '$api/marked_api'
-  import { host_name, map_status } from '$utils/book_utils'
-  import { mark_types, mark_names, mark_icons } from '$lib/constants'
+  import { u_power, u_dname } from '$lib/stores.js'
+  import { set_mark, get_mark } from '$api/marked_api.js'
+  import { host_name, map_status } from '$utils/book_utils.js'
+  import { mark_types, mark_names, mark_icons } from '$lib/constants.js'
   import { onMount } from 'svelte'
 
-  import SIcon from '$lib/blocks/SIcon'
-  import RTime from '$lib/blocks/RTime'
-  import BCover from '$lib/blocks/BCover'
-  import AdItem from '$lib/blocks/AdItem'
-  import Vessel from '$lib/layouts/Vessel'
+  import SIcon from '$lib/blocks/SIcon.svelte'
+  import RTime from '$lib/blocks/RTime.svelte'
+  import BCover from '$lib/blocks/BCover.svelte'
+  import AdItem from '$lib/blocks/AdItem.svelte'
+  import Vessel from '$lib/layouts/Vessel.svelte'
 
   export let nvinfo = {}
   export let nvtab = 'summary'

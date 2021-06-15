@@ -5,7 +5,7 @@
 </script>
 
 <script>
-  import Vessel from '$lib/layouts/Vessel'
+  import Vessel from '$lib/layouts/Vessel.svelte'
 
   export let status
   export let error

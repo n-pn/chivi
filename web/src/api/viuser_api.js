@@ -1,4 +1,4 @@
-import { api_call, set_item, remove_item, get_now } from './_api_call'
+import { api_call, set_item, remove_item, get_now } from './_api_call.js'
 
 export async function get_self(fetch, ttl = 10, fresh = false) {
   return await api_call(fetch, `_self`, { key: `_self_`, ttl, fresh })

@@ -20,10 +20,10 @@
 </script>
 
 <script>
-  import SIcon from '$lib/blocks/SIcon'
+  import SIcon from '$lib/blocks/SIcon.svelte'
   import BCover from '$lib/blocks/BCover'
 
-  import Vessel from '$lib/layouts/Vessel'
+  import Vessel from '$lib/layouts/Vessel.svelte'
 
   export let word = ''
   export let page = 1

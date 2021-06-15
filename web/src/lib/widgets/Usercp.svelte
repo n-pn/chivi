@@ -1,10 +1,10 @@
 <script>
   import { mark_names, mark_icons } from '$lib/constants'
   import { logout_user } from '$api/viuser_api'
-  import { u_dname, u_power, dark_mode } from '$src/stores'
+  import { u_dname, u_power, dark_mode } from '$lib/stores'
 
-  import SIcon from '$lib/blocks/SIcon'
-  import Slider from './Slider'
+  import SIcon from '$lib/blocks/SIcon.svelte'
+  import Slider from './Slider.svelte'
 
   export let actived = false
 

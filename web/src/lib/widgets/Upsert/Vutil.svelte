@@ -1,6 +1,6 @@
 <script>
   import { titleize } from '$utils/text_utils'
-  import SIcon from '$lib/blocks/SIcon'
+  import SIcon from '$lib/blocks/SIcon.svelte'
 
   export let value
   export let _orig

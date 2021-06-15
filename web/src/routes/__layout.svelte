@@ -1,6 +1,8 @@
 <script>
-  import { get_self } from '$api/viuser_api'
-  import { u_dname, u_power, l_scroll, dark_mode } from '$src/stores'
+  import { onMount } from 'svelte'
+  import { navigating, page } from '$app/stores'
+  import { get_self } from '$api/viuser_api.js'
+  import { u_dname, u_power, l_scroll, dark_mode } from '$lib/stores'
   import Loader from '$lib/layouts/Loader.svelte'
 
   import '../css/globals.scss'
@@ -12,11 +14,6 @@
     ['Discord', 'https://discord.gg/mdC3KQH'],
     ['Github', 'https://github.com/np-nam/chivi'],
   ]
-
-  import { onMount } from 'svelte'
-
-  import { stores } from '@sapper/app'
-  const { preloading, page } = stores()
 
   onMount(async () => {
     // TODO: load user from session
@@ -72,7 +69,7 @@
   </div>
 </div>
 
-<Loader active={$preloading} />
+<Loader active={$navigating} />
 
 <style lang="scss">
   :global(#sapper) {

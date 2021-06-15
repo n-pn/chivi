@@ -1,7 +1,3 @@
-const storage = process.browser
-  ? sessionStorage || localStorage
-  : global.localStorage
-
 export function get_now(date = new Date()) {
   return Math.round(date.getTime() / 1000)
 }
@@ -27,23 +23,11 @@ export function remove_item(key) {
   storage.removeItem(key)
 }
 
-export async function api_call(fetch, url, opts) {
-  const now = get_now()
-  const key = opts.key || url
-
-  if (!opts.fresh) {
-    const value = get_item(key, now)
-    if (value) return value
-  }
-
+export async function api_call(fetch, url) {
   const res = await fetch(`/api/${url}`)
 
   let state = res.ok ? 0 : res.status
   let value = res.ok ? await res.json() : await res.text()
-
-  if (opts.ttl > 0) {
-    set_item(key, state, value, now + opts.ttl * 60)
-  }
 
   return [state, value]
 }

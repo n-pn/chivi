@@ -1,5 +1,5 @@
 <script>
-  import SIcon from '$lib/blocks/SIcon'
+  import SIcon from '$lib/blocks/SIcon.svelte'
 
   export let phrase = ['', 0, 0]
   export let pinyin = ''

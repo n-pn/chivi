@@ -15,8 +15,8 @@
 <script>
   import { goto } from '@sapper/app'
 
-  import SIcon from '$lib/blocks/SIcon'
-  import Vessel from '$lib/layouts/Vessel'
+  import SIcon from '$lib/blocks/SIcon.svelte'
+  import Vessel from '$lib/layouts/Vessel.svelte'
 
   export let nvinfo
 

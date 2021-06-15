@@ -1,31 +1,33 @@
 <script context="module">
-  import { remote_snames } from '$lib/constants'
+  import { remote_snames } from '$lib/constants.js'
 
-  import { remove_item } from '$api/_api_call'
-  import { get_nvinfo } from '$api/nvinfo_api'
-  import { get_chseed, get_chlist } from '$api/chinfo_api'
+  import { remove_item } from '$api/_api_call.js'
+  import { get_nvinfo } from '$api/nvinfo_api.js'
+  import { get_chseed, get_chlist } from '$api/chinfo_api.js'
 
-  export async function preload(req) {
-    const [err1, nvinfo] = await get_nvinfo(this.fetch, req.params.book)
+  export async function load({ page: pg, fetch }) {
+    const [err1, nvinfo] = await get_nvinfo(fetch, pg.params.book)
     if (err1) this.error(err1, nvinfo)
 
     const bhash = nvinfo.bhash
-    const sname = req.query.sname || nvinfo.snames[0]
+    const sname = pg.query.sname || nvinfo.snames[0]
 
     const [snvid] = nvinfo.chseed[sname] || [bhash]
 
-    const page = +(req.query.page || 1)
+    const page = +(pg.query.page || 1)
     const params = { sname, snvid, page }
 
-    const mode = +req.query.mode
+    const mode = +pg.query.mode
 
-    const [err2, chseed] = await get_chseed(this.fetch, bhash, params, mode)
-    if (err2) this.error(err2, chseed)
+    const [err2, chseed] = await get_chseed(fetch, bhash, params, mode)
+    if (err2) return { status: err2, error: new Error(chseed) }
 
-    const [err3, chlist] = await get_chlist(this.fetch, bhash, params)
-    if (err3) this.error(err3, chlist)
+    const [err3, chlist] = await get_chlist(fetch, bhash, params)
+    if (err3) return { status: err3, error: new Error(chlist) }
 
-    return { nvinfo, chseed, chlist, params }
+    return {
+      props: { nvinfo, chseed, chlist, params },
+    }
   }
 
   function update_utime(nvinfo, utime) {
@@ -39,7 +41,7 @@
 </script>
 
 <script>
-  import { u_power } from '$src/stores'
+  import { u_power } from '$lib/stores'
 
   import SIcon from '$lib/blocks/SIcon.svelte'
   import RTime from '$lib/blocks/RTime.svelte'

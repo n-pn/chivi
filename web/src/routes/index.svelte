@@ -1,18 +1,28 @@
 <script context="module">
   const take = 24
 
-  export async function preload({ query }) {
-    const page = +(query.page || 1)
-    let skip = (page - 1) * take
+  export async function load({ page, fetch }) {
+    const pg = +(page.query.page || 1)
+    let skip = (pg - 1) * take
     if (skip < 1) skip = 0
 
     let url = `/api/books?skip=${skip}&take=24`
-    const opts = parse_params(query)
+    const opts = parse_params(page.query)
     if (opts != {}) url += `&${merge_params(opts)}`
 
-    const res = await this.fetch(url)
-    const { books, total } = await res.json()
-    return { books, total, page, opts }
+    const res = await fetch(url)
+
+    if (res.ok) {
+      const { books, total } = await res.json()
+      return {
+        props: { books, total, page, opts },
+      }
+    }
+
+    return {
+      status: res.status,
+      error: new Error(await res.text()),
+    }
   }
 
   function parse_params({ order, genre, sname }, params = {}) {
@@ -47,10 +57,10 @@
 </script>
 
 <script>
-  import SIcon from '$lib/blocks/SIcon'
-  import Nvlist from '$lib/widgets/Nvlist'
-  import Vessel from '$lib/layouts/Vessel'
-  import paginate_range from '$utils/paginate_range'
+  import SIcon from '$lib/blocks/SIcon.svelte'
+  import Nvlist from '$lib/widgets/Nvlist.svelte'
+  import Vessel from '$lib/layouts/Vessel.svelte'
+  import paginate_range from '$utils/paginate_range.js'
 
   export let books = []
   export let total = 0

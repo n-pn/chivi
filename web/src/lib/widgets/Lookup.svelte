@@ -32,8 +32,8 @@
 </script>
 
 <script>
-  import SIcon from '$lib/blocks/SIcon'
-  import Slider from './Slider'
+  import SIcon from '$lib/blocks/SIcon.svelte'
+  import Slider from './Slider.svelte'
 
   let hanviet = []
   let entries = []

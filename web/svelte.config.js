@@ -37,7 +37,10 @@ const config = {
     target: '#svelte',
     vite: {
       resolve: {
-        alias: {},
+        alias: {
+          $api: path.resolve(_cwd, 'src/api'),
+          $utils: path.resolve(_cwd, 'src/utils'),
+        },
       },
     },
   },

@@ -1,8 +1,8 @@
 <script>
   import { genres, snames, order_names } from '$lib/constants'
 
-  import SIcon from '$lib/blocks/SIcon'
-  import Slider from './Slider'
+  import SIcon from '$lib/blocks/SIcon.svelte'
+  import Slider from './Slider.svelte'
 
   export let actived = false
 </script>
