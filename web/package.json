@@ -17,7 +17,6 @@
     "cssnano": "^5.0.5",
     "mdsvex": "^0.9.7",
     "postcss": "^8.3.0",
-    "purgecss-from-svelte": "^2.0.2",
     "remark-breaks": "^2.0.2",
     "sass": "^1.34.1",
     "svelte": "^3.34.0",

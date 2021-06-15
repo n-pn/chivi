@@ -1,17 +1,14 @@
-const path = require('path')
-
 const purge = require('@fullhuman/postcss-purgecss')
-// const purgeSvelte = require('purgecss-from-svelte')
 const autoprefixer = require('autoprefixer')
 const cssnano = require('cssnano')
 
-const mode = process.env.NODE_ENV
-const prod = mode === 'production'
+const prod = process.env.NODE_ENV === 'production'
+const purging = process.env.PURGECSS === 'true'
 
 const purgeConfig = {
-  content: [path.join(__dirname, './src/**/*.{html,svelte}')],
+  content: ['./src/**/*.{svelte,html,svx}'],
   keyframes: true,
-  safelist: [/svelte-/],
+  safelist: [/svelte-/, /tm-dark/, /x-v/],
   extractors: [
     {
       extractor: (content) => content.match(/[A-Za-z0-9-_:/]+/g) || [],
@@ -24,6 +21,6 @@ module.exports = {
   plugins: [
     autoprefixer,
     prod && cssnano({ preset: 'default' }),
-    // prod && purge(purgeConfig),
+    purging && purge(purgeConfig),
   ].filter(Boolean),
 }
