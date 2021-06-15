@@ -91,6 +91,8 @@ class CV::ChText
   end
 
   def fetch_zh!(valid = 10.years) : Array(String)?
+    RmChtext.mkdir!(@sname, @snvid)
+
     puller = RmChtext.new(@sname, @snvid, @schid, valid: valid)
     lines = [puller.title].concat(puller.paras)
     lines.tap { |x| save_zh!(x) }

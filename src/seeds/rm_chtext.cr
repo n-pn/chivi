@@ -4,6 +4,15 @@ require "../cutil/text_utils"
 require "./rm_spider"
 
 class CV::RmChtext
+  # cache folder path
+  def self.c_dir(sname : String, snvid : String) : String
+    "_db/.cache/#{sname}/texts/#{snvid}"
+  end
+
+  def self.mkdir!(sname : String, snvid)
+    ::FileUtils.mkdir_p(c_dir(sname, snvid))
+  end
+
   getter sname : String
   getter snvid : String
   getter schid : String

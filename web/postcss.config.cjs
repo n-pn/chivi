@@ -9,7 +9,7 @@ const mode = process.env.NODE_ENV
 const prod = mode === 'production'
 
 const purgeConfig = {
-  content: [path.join(__dirname, './src/**/*.svelte')],
+  content: [path.join(__dirname, './src/**/*.{html,svelte}')],
   keyframes: true,
   safelist: [/svelte-/],
   extractors: [
@@ -24,6 +24,6 @@ module.exports = {
   plugins: [
     autoprefixer,
     prod && cssnano({ preset: 'default' }),
-    // prod && purge(purgeConfig),
+    prod && purge(purgeConfig),
   ].filter(Boolean),
 }

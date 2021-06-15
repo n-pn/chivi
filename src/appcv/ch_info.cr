@@ -41,6 +41,8 @@ class CV::ChInfo
     mtime = -1_i64
 
     if RmSpider.remote?(@sname, power: power)
+      RmInfo.mkdir!(@sname)
+
       parser = RmInfo.new(@sname, @snvid, ttl: ttl)
       latest = origs.data.last_value?.try(&.first?) || ""
 
