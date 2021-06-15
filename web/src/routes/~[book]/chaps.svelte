@@ -1,7 +1,5 @@
 <script context="module">
   import { remote_snames } from '$lib/constants.js'
-
-  import { remove_item } from '$api/_api_call.js'
   import { get_nvinfo } from '$api/nvinfo_api.js'
   import { get_chseed, get_chlist } from '$api/chinfo_api.js'
 
@@ -150,7 +148,6 @@
     add_seed = false
 
     await load_chseed(evt, new_sname, 1)
-    remove_item(`nvinfo:${nvinfo.bslug}`)
   }
 
   function split_chseed(nvinfo, { sname }) {

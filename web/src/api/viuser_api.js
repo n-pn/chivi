@@ -1,4 +1,4 @@
-import { api_call, set_item, remove_item, get_now } from './_api_call.js'
+import { api_call } from './_api_call.js'
 
 export async function get_self(fetch, ttl = 10, fresh = false) {
   return await api_call(fetch, `_self`, { key: `_self_`, ttl, fresh })
@@ -12,13 +12,9 @@ export async function signin_user(fetch, type, params, ttl = 10) {
   })
 
   if (!res.ok) return [res.status, await res.text()]
-
-  const value = await res.json()
-  set_item('_self_', 0, value, get_now() + 60 * ttl)
-  return [0, value]
+  return [0, await res.json()]
 }
 
 export async function logout_user(fetch) {
   await fetch('/api/logout')
-  remove_item('_self_')
 }
