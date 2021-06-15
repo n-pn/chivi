@@ -24,6 +24,6 @@ module.exports = {
   plugins: [
     autoprefixer,
     prod && cssnano({ preset: 'default' }),
-    prod && purge(purgeConfig),
+    // prod && purge(purgeConfig),
   ].filter(Boolean),
 }
