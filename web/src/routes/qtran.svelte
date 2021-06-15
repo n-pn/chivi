@@ -2,7 +2,10 @@
   import SIcon from '$lib/blocks/SIcon.svelte'
   import Vessel from '$lib/layouts/Vessel.svelte'
 
-  import Cvdata, { toggle_lookup, active_upsert } from '$lib/layouts/Cvdata'
+  import Cvdata, {
+    toggle_lookup,
+    active_upsert,
+  } from '$lib/layouts/Cvdata.svelte'
 
   import {
     dname,

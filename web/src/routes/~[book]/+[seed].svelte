@@ -13,7 +13,7 @@
 </script>
 
 <script>
-  import { goto } from '@sapper/app'
+  import { goto } from '$app/navigation'
 
   import SIcon from '$lib/blocks/SIcon.svelte'
   import Vessel from '$lib/layouts/Vessel.svelte'

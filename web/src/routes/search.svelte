@@ -1,8 +1,8 @@
 <script context="module">
-  export async function preload({ query }) {
-    const word = (query.q || '').replace(/\+|-/g, ' ')
-    const page = +(query.p || '1')
-    const type = query.t || 'btitle'
+  export async function load({ fetch, page: pg }) {
+    const word = (pg.query.q || '').replace(/\+|-/g, ' ')
+    const page = +(pg.query.p || '1')
+    const type = pg.query.t || 'btitle'
 
     if (word) {
       let skip = (page - 1) * 8
@@ -10,18 +10,22 @@
 
       const url = `/api/books?take=8&skip=${skip}&${type}=${word}`
 
-      const res = await this.fetch(url)
+      const res = await fetch(url)
       const { books, total } = await res.json()
-      return { word, page, type, books, total }
+      return {
+        props: { word, page, type, books, total },
+      }
     } else {
-      return { word, page: 1, type, total: 0, books: [] }
+      return {
+        props: { word, page: 1, type, total: 0, books: [] },
+      }
     }
   }
 </script>
 
 <script>
   import SIcon from '$lib/blocks/SIcon.svelte'
-  import BCover from '$lib/blocks/BCover'
+  import BCover from '$lib/blocks/BCover.svelte'
 
   import Vessel from '$lib/layouts/Vessel.svelte'
 
