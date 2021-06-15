@@ -104,8 +104,8 @@
     --active: #{color($color, 6)};
 
     :global(.tm-dark) & {
-      --border: #{color($color, 5)};
-      --active: #{color($color, 3)};
+      --border: #{color($color, 6)};
+      --active: #{color($color, 4)};
     }
   }
 
