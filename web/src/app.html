@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <title>Chivi</title>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width,user-scalable=no" />
+    <!-- prettier-ignore -->
+    <meta name="description" content="Công cụ dịch truyện từ Tiếng Trung sang Tiếng Việt" />
+    <meta name="theme-color" content="#2b6cb0" />
+
+    %svelte.head%
+
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="150x150" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+    <style>
+      @font-face {
+        font-family: 'Roboto';
+        font-weight: 100 900;
+        font-display: swap;
+        font-style: normal;
+        font-named-instance: 'Regular';
+        src: url('/fonts/Roboto.woff2?v=3.003') format('woff2');
+      }
+
+      @font-face {
+        font-family: 'Roboto';
+        font-weight: 100 900;
+        font-display: swap;
+        font-style: italic;
+        font-named-instance: 'Italic';
+        src: url('/fonts/Roboto-Italic.woff2?v=3.003') format('woff2');
+      }
+    </style>
+
+    <script
+      async
+      data-ad-client="ca-pub-5468438393284967"
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+    ></script>
+  </head>
+
+  <body>
+    <div id="svelte">%svelte.body%</div>
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-160000714-1"
+    ></script>
+
+    <script>
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+      gtag('config', 'UA-160000714-1')
+    </script>
+  </body>
+</html>

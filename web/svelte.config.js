@@ -1,33 +1,46 @@
-const path = require('path')
-const sass = require('sass')
+import preprocess from 'svelte-preprocess'
+import node from '@sveltejs/adapter-node'
+import { mdsvex } from 'mdsvex'
+import breaks from 'remark-breaks'
 
-module.exports = {
-  preprocess: {
-    style: async ({ content, attributes, filename }) => {
-      if (content.length === 0) return { code: content }
+import postcssConfig from './postcss.config.cjs'
 
-      const { lang } = attributes
-      if (lang !== 'scss') return
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-      const prepend_content = '@use "sass:math";\n@import "helpers";\n'
-      content = prepend_content + content
+const prod = process.env.NODE_ENV == 'production'
+const _cwd = prod ? './' : path.dirname(fileURLToPath(import.meta.url))
 
-      const options = {
-        data: content,
-        sourceMap: true,
-        includePaths: [path.resolve(__dirname, 'src/css')],
-        outFile: filename + '.css',
-      }
+const mdsvexConfig = {
+  extensions: ['.svx', '.md'],
+  smartypants: { dashes: 'oldschool' },
+  remarkPlugins: [breaks],
+  rehypePlugins: [],
+  // layout: path.resolve(_cwd, 'src/lib/parts/Layout.svelte'),
+}
 
-      return new Promise((resolve, reject) => {
-        sass.render(options, (err, result) => {
-          if (err) return reject(err)
-          resolve({
-            code: result.css.toString(),
-            map: result.map.toString(),
-          })
-        })
-      })
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
+  extensions: ['.svelte', '.svx', '.md'],
+  preprocess: [
+    preprocess({
+      scss: {
+        includePaths: [path.resolve(_cwd, 'src/css')],
+        prependData: `@use "sass:math";\n@import "helpers";`,
+      },
+      postcss: postcssConfig,
+    }),
+    mdsvex(mdsvexConfig),
+  ],
+  kit: {
+    adapter: node(),
+    target: '#svelte',
+    vite: {
+      resolve: {
+        alias: {},
+      },
     },
   },
 }
+
+export default config

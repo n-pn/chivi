@@ -3,6 +3,8 @@
   import { u_dname, u_power, l_scroll, dark_mode } from '$src/stores'
   import Loader from '$lib/layouts/Loader.svelte'
 
+  import '../css/globals.scss'
+
   const links = [
     ['Vozforums', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],
     ['Facebook', 'https://www.facebook.com/chivi.xyz/'],

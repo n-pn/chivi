@@ -1,10 +1,14 @@
+<script context="module">
+  export function load(props) {
+    return { props }
+  }
+</script>
+
 <script>
   import Vessel from '$lib/layouts/Vessel'
 
   export let status
   export let error
-
-  const dev = process.env.NODE_ENV === 'development'
 </script>
 
 <svelte:head>
@@ -16,10 +20,6 @@
     <article class="content">
       <h1>{status}</h1>
       <p>{error.message}</p>
-
-      {#if dev && error.stack}
-        <pre>{error.stack}</pre>
-      {/if}
     </article>
   </section>
 </Vessel>
