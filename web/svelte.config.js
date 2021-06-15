@@ -8,8 +8,7 @@ import postcssConfig from './postcss.config.cjs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-const prod = process.env.NODE_ENV == 'production'
-const _cwd = prod ? './' : path.dirname(fileURLToPath(import.meta.url))
+const _cwd = path.dirname(fileURLToPath(import.meta.url))
 
 const mdsvexConfig = {
   extensions: ['.svx', '.md'],
@@ -43,13 +42,7 @@ const config = {
         },
       },
       server: {
-        proxy: {
-          '/api': 'http://localhost:5010',
-          '/covers': 'http://localhost:5010',
-        },
-        fsServe: {
-          root: path.resolve(_cwd, '../public'),
-        },
+        proxy: { '/covers': 'http://localhost:5010' },
       },
     },
   },
