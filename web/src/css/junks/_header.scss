@@ -22,7 +22,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   @include bgcolor(primary, 7);
   @include shadow(2);
 
-  .--dark & {
+  .tm-dark & {
     @include bgcolor(primary, 8);
   }
 
@@ -67,7 +67,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   @include fgcolor(neutral, 2);
   @include bgcolor(primary, 6);
 
-  .--dark & {
+  .tm-dark & {
     @include fgcolor(neutral, 3);
     @include bgcolor(primary, 7);
 

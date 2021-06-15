@@ -89,53 +89,56 @@
 {/if}
 
 <style lang="scss">
-  @mixin mixed($color: blue) {
+  :global(.mtl) {
+    --fgcolor: #{color(neutral, 8)};
+    color: var(--fgcolor);
+
+    @include tm-dark {
+      --fgcolor: #{color(neutral, 3)};
+    }
+  }
+
+  @mixin change-color($color: blue) {
     cursor: pointer;
-    position: relative;
+    --border: #{color($color, 3)};
+    --active: #{color($color, 6)};
+
+    :global(.tm-dark) & {
+      --active: #{color($color, 5)};
+    }
+  }
+
+  :global(x-v) {
+    --border: transparent;
+    --active: inherit;
+
+    color: var(--fgcolor);
+    border-bottom: 1px solid transparent;
 
     &:hover,
-    &._focus {
-      @include fgcolor($color, 6);
+    &:global(._focus) {
+      font-weight: 600;
+      color: var(--active);
     }
 
-    :global(.mtl):hover & {
-      @include border($color: $color, $shade: 3, $sides: bottom);
+    .mtl:hover & {
+      border-color: var(--border);
     }
 
-    @include dark {
-      &:hover,
-      &._focus {
-        @include fgcolor($color, 5);
-      }
-
-      :global(.mtl):hover & {
-        @include bdcolor($color: $color, $shade: 3);
-      }
-    }
-  }
-
-  .mtl {
-    @include fgcolor(neutral, 8);
-    @include dark {
-      @include fgcolor(neutral, 3);
-    }
-  }
-
-  .mtl :global(x-v) {
     &[data-d='1'] {
-      @include mixed(teal);
+      @include change-color(teal);
     }
 
     &[data-d='2'] {
-      @include mixed(blue);
+      @include change-color(blue);
     }
 
     &[data-d='3'] {
-      @include mixed(green);
+      @include change-color(green);
     }
 
     &[data-d='9'] {
-      @include mixed(gray);
+      @include change-color(gray);
     }
   }
 </style>

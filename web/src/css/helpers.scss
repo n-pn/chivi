@@ -26,13 +26,13 @@
 @import 'molds/inputs.d';
 @import 'molds/resets.d';
 
-@mixin dark($kit: true) {
+@mixin tm-dark($kit: true) {
   @if $kit {
-    :global(.--dark) & {
+    :global(.tm-dark) & {
       @content;
     }
   } @else {
-    .--dark & {
+    .tm-dark & {
       @content;
     }
   }

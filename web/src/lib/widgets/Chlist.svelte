@@ -37,7 +37,7 @@
     @include border($sides: bottom);
     $bg-dark: color(neutral, 8, 0.5);
 
-    @include dark {
+    @include tm-dark {
       border-color: color(neutral, 6, 0.5) !important;
     }
 
@@ -47,7 +47,7 @@
 
     &:nth-child(odd) {
       @include bgcolor(neutral, 1);
-      @include dark {
+      @include tm-dark {
         background: $bg-dark;
       }
     }
@@ -60,7 +60,7 @@
       &:nth-child(4n),
       &:nth-child(4n + 1) {
         @include bgcolor(neutral, 1);
-        @include dark {
+        @include tm-dark {
           background: $bg-dark;
         }
       }
@@ -68,7 +68,7 @@
       &:nth-child(4n + 2),
       &:nth-child(4n + 3) {
         background-color: #fff;
-        @include dark {
+        @include tm-dark {
           @include bgcolor(neutral, 7, 0.5);
         }
       }
@@ -100,14 +100,14 @@
     @include truncate(null);
     @include fgcolor(neutral, 8);
 
-    @include dark {
+    @include tm-dark {
       @include fgcolor(neutral, 4);
     }
 
     .link:visited & {
       @include fgcolor(neutral, 6, 0.6);
 
-      @include dark {
+      @include tm-dark {
         @include fgcolor(neutral, 5, 0.6);
       }
     }

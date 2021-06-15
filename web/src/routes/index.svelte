@@ -204,7 +204,7 @@
         @include bdcolor($color: primary, $shade: 5);
       }
 
-      @include dark {
+      @include tm-dark {
         @include fgcolor(neutral, 4);
         @include bdcolor(neutral, 7);
 
@@ -251,7 +251,7 @@
       @include props(display, $lg: inline-block);
     }
 
-    @include dark {
+    @include tm-dark {
       @include fgcolor(neutral, 2);
       @include bgcolor(neutral, 7);
 

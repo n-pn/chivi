@@ -122,7 +122,7 @@
   }
 
   .m-input {
-    @include dark {
+    @include tm-dark {
       @include fgcolor(neutral, 3);
       @include bgcolor(neutral, 7, 0.3);
       @include bdcolor(neutral, 6);

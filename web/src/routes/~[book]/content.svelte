@@ -357,7 +357,7 @@
         @include bdcolor(primary, 5);
       }
 
-      @include dark {
+      @include tm-dark {
         @include bdcolor(neutral, 6);
         @include fgcolor(neutral, 3);
 
@@ -389,7 +389,7 @@
     .m-button {
       margin-left: 0.25rem;
 
-      @include dark {
+      @include tm-dark {
         @include bgcolor(neutral, 8, 0.4);
         @include fgcolor(neutral, 2);
         &:hover {
@@ -404,7 +404,7 @@
       @include fgcolor(neutral, 7);
       @include border($sides: left, $width: 3px, $color: primary, $shade: 5);
 
-      @include dark {
+      @include tm-dark {
         @include fgcolor(neutral, 4);
         @include bdcolor(primary, 4);
       }
@@ -469,7 +469,7 @@
       @include props(display, none, $lg: inline-block);
     }
 
-    @include dark {
+    @include tm-dark {
       @include fgcolor(neutral, 2);
       @include bgcolor(neutral, 8, 0.4);
 

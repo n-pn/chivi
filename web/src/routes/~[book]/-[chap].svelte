@@ -254,7 +254,7 @@
     @include font-size(2);
     @include border($sides: bottom);
 
-    @include dark {
+    @include tm-dark {
       @include bdcolor(neutral, 7);
     }
 
@@ -262,7 +262,7 @@
       display: inline;
       // float: left;
       @include fgcolor(neutral, 6);
-      @include dark {
+      @include tm-dark {
         @include fgcolor(neutral, 5);
       }
 
@@ -316,7 +316,7 @@
   }
 
   .m-button {
-    @include dark {
+    @include tm-dark {
       @include fgcolor(neutral, 2);
       @include bgcolor(neutral, 7);
 

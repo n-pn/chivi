@@ -26,7 +26,7 @@
 
 <style lang="scss">
   h2 {
-    :global(.--dark) & {
+    :global(.tm-dark) & {
       @include fgcolor(neutral, 5);
     }
   }
@@ -37,7 +37,7 @@
     // @include props(padding, $md: 0 0.75rem);
     @include props(font-size, rem(15px), rem(16px), rem(17px));
 
-    :global(.--dark) & {
+    :global(.tm-dark) & {
       @include fgcolor(neutral, 3);
     }
 

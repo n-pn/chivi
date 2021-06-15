@@ -223,15 +223,15 @@
       @include border($sides: bottom);
     }
 
-    :global(x-z),
-    :global(x-v) {
-      cursor: pointer;
+    // :global(x-z),
+    // :global(x-v) {
+    //   cursor: pointer;
 
-      &:hover,
-      &._active {
-        @include fgcolor(primary, 5);
-      }
-    }
+    //   &:hover,
+    //   &:global(._active) {
+    //     @include fgcolor(primary, 5);
+    //   }
+    // }
   }
 
   .word {

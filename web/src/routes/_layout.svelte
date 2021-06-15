@@ -49,11 +49,15 @@
   //   // disabled until adsense is unblocked
   //   if ($u_power < 2) e.stopPropagation()
   // }
+
+  let root
+  onMount(() => (root = document.documentElement))
+  $: root && root.classList.toggle('tm-dark', $dark_mode)
 </script>
 
 <svelte:window on:scroll={track_scrolling} />
 
-<div class="app" class:--dark={$dark_mode}>
+<div class="app">
   <slot />
 
   <div class="links">
@@ -78,7 +82,7 @@
   .app {
     height: 100%;
 
-    &.--dark {
+    @include tm-dark {
       background: color(neutral, 8);
     }
   }
@@ -93,7 +97,7 @@
     @include fgcolor(neutral, 6);
     @include bgcolor(neutral, 2);
 
-    .--dark & {
+    @include tm-dark {
       @include fgcolor(neutral, 4);
       @include bgcolor(neutral, 8);
       @include bdcolor(neutral, 7);

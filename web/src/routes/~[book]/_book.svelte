@@ -221,7 +221,7 @@
       @include fgcolor(neutral, 8);
       @include props(line-height, 1.5rem, 1.75rem, 2rem);
 
-      @include dark {
+      @include tm-dark {
         @include fgcolor(neutral, 2);
       }
     }
@@ -257,7 +257,7 @@
     @include flex($wrap: true);
     @include flex-gap($gap: 0, $child: ':global(*)');
 
-    @include dark {
+    @include tm-dark {
       @include fgcolor(neutral, 4);
     }
   }
@@ -279,7 +279,7 @@
     &:hover {
       @include fgcolor(primary, 6);
 
-      @include dark {
+      @include tm-dark {
         @include fgcolor(primary, 4);
       }
     }
@@ -305,7 +305,7 @@
 
     @include shadow(2);
 
-    @include dark {
+    @include tm-dark {
       @include bgcolor(neutral, 7, 0.5);
     }
 
@@ -323,7 +323,7 @@
     height: $section-height;
     @include border($sides: bottom, $color: neutral, $shade: 3);
 
-    @include dark {
+    @include tm-dark {
       @include bdcolor(neutral, 6);
     }
   }
@@ -347,7 +347,7 @@
       @include border($sides: bottom, $color: primary, $shade: 5, $width: 2px);
     }
 
-    @include dark {
+    @include tm-dark {
       @include fgcolor(neutral, 4);
 
       &._active {

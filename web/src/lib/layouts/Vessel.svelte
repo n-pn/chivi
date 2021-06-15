@@ -106,7 +106,7 @@
         color(neutral, 7, 0.7)
       );
 
-      @include dark {
+      @include tm-dark {
         background: linear-gradient(
           color(neutral, 7, 0.1),
           color(neutral, 8, 0.7)

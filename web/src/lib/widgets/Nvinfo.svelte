@@ -86,7 +86,7 @@
     font-weight: 500;
     @include fgcolor(neutral, 7);
 
-    :global(.--dark) & {
+    :global(.tm-dark) & {
       @include fgcolor(neutral, 3);
     }
 

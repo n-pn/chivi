@@ -130,7 +130,7 @@
       @include bdcolor($color: primary, $shade: 6);
     }
 
-    @include dark {
+    @include tm-dark {
       @include bdcolor(neutral, 7);
       @include fgcolor(neutral, 5);
 
