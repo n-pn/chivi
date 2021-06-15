@@ -20,7 +20,7 @@ module CV::Server
 
   get "/api/logout" do |env|
     env.session.destroy
-    env.redirect("/")
+    {msg: "ok"}.to_json
   end
 
   post "/api/login" do |env|
