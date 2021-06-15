@@ -89,7 +89,7 @@
 {/if}
 
 <style lang="scss">
-  :global(.mtl) {
+  .mtl {
     --fgcolor: #{color(neutral, 8)};
     color: var(--fgcolor);
 
