@@ -11,6 +11,5 @@ end
 
 module CV::Server
   Kemal.config.port = ENV["PORT"]?.try(&.to_i?) || 5010
-  serve_static false
   Kemal.run
 end

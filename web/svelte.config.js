@@ -42,6 +42,15 @@ const config = {
           $utils: path.resolve(_cwd, 'src/utils'),
         },
       },
+      server: {
+        proxy: {
+          '/api': 'http://localhost:5010',
+          '/covers': 'http://localhost:5010',
+        },
+        fsServe: {
+          root: path.resolve(_cwd, '../public'),
+        },
+      },
     },
   },
 }

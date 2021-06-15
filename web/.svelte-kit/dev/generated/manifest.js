@@ -1,15 +1,15 @@
 const c = [
-	() => import("../../../src/routes/__layout.svelte"),
-	() => import("../../../src/routes/__error.svelte"),
-	() => import("../../../src/routes/index.svelte"),
-	() => import("../../../src/routes/search.svelte"),
-	() => import("../../../src/routes/qtran.svelte"),
-	() => import("../../../src/routes/@[user].svelte"),
-	() => import("../../../src/routes/~[book]/index.svelte"),
-	() => import("../../../src/routes/~[book]/content.svelte"),
-	() => import("../../../src/routes/~[book]/discuss.svelte"),
-	() => import("../../../src/routes/~[book]/+[seed].svelte"),
-	() => import("../../../src/routes/~[book]/-[chap].svelte")
+	() => import("..\\..\\..\\src\\routes\\__layout.svelte"),
+	() => import("..\\..\\..\\src\\routes\\__error.svelte"),
+	() => import("..\\..\\..\\src\\routes\\index.svelte"),
+	() => import("..\\..\\..\\src\\routes\\search.svelte"),
+	() => import("..\\..\\..\\src\\routes\\qtran.svelte"),
+	() => import("..\\..\\..\\src\\routes\\@[user].svelte"),
+	() => import("..\\..\\..\\src\\routes\\~[book]\\index.svelte"),
+	() => import("..\\..\\..\\src\\routes\\~[book]\\content.svelte"),
+	() => import("..\\..\\..\\src\\routes\\~[book]\\discuss.svelte"),
+	() => import("..\\..\\..\\src\\routes\\~[book]\\+[seed].svelte"),
+	() => import("..\\..\\..\\src\\routes\\~[book]\\-[chap].svelte")
 ];
 
 const d = decodeURIComponent;
