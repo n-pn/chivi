@@ -1,7 +1,7 @@
 const path = require('path')
 
 const purge = require('@fullhuman/postcss-purgecss')
-const purgeSvelte = require('purgecss-from-svelte')
+// const purgeSvelte = require('purgecss-from-svelte')
 const autoprefixer = require('autoprefixer')
 const cssnano = require('cssnano')
 
@@ -14,7 +14,7 @@ const purgeConfig = {
   safelist: [/svelte-/],
   extractors: [
     {
-      extractor: (content) => purgeSvelte.extract(content),
+      extractor: (content) => content.match(/[A-Za-z0-9-_:/]+/g) || [],
       extensions: ['svelte'],
     },
   ],
