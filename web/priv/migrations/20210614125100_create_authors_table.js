@@ -4,15 +4,15 @@ exports.up = async (knex) => {
 
     t.string('zh_name').notNullable().unique()
     t.string('vi_name').notNullable()
-    t.string('slugify').notNullable() // generated in app code
+    t.string('vi_slug').notNullable() // generated in app code
     t.integer('max_pts').notNullable().defaultTo(0)
 
     t.timestamps(true, true)
   })
 
   await knex.schema.raw(
-    'CREATE INDEX ?? ON "authors" USING GIN("slugify" gin_trgm_opts);',
-    ['authors_slugify_index']
+    'CREATE INDEX ?? ON "authors" USING GIN(?? gin_trgm_ops);',
+    ['authors_vi_slug_index', 'vi_slug']
   )
 }
 
