@@ -34,6 +34,7 @@ const config = {
   kit: {
     adapter: node(),
     target: '#svelte',
+    hostHeader: 'X-Forwarded-Host',
     vite: {
       resolve: {
         alias: {
