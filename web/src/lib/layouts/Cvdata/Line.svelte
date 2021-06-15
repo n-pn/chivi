@@ -100,45 +100,45 @@
 
   @mixin change-color($color: blue) {
     cursor: pointer;
-    --border: #{color($color, 3)};
+    --border: #{color($color, 4)};
     --active: #{color($color, 6)};
 
     :global(.tm-dark) & {
-      --active: #{color($color, 5)};
+      --border: #{color($color, 5)};
+      --active: #{color($color, 3)};
     }
   }
 
   :global(x-v) {
     --border: transparent;
-    --active: inherit;
+    --active: #{color(primary, 9)};
 
     color: var(--fgcolor);
     border-bottom: 1px solid transparent;
 
-    &:hover,
-    &:global(._focus) {
-      font-weight: 600;
-      color: var(--active);
-    }
-
     .mtl:hover & {
       border-color: var(--border);
     }
+  }
 
-    &[data-d='1'] {
-      @include change-color(teal);
-    }
+  :global(x-v:hover),
+  :global(x-v.focus) {
+    color: var(--active);
+  }
 
-    &[data-d='2'] {
-      @include change-color(blue);
-    }
+  :global(x-v[data-d='1']) {
+    @include change-color(teal);
+  }
 
-    &[data-d='3'] {
-      @include change-color(green);
-    }
+  :global(x-v[data-d='2']) {
+    @include change-color(blue);
+  }
 
-    &[data-d='9'] {
-      @include change-color(gray);
-    }
+  :global(x-v[data-d='3']) {
+    @include change-color(green);
+  }
+
+  :global(x-v[data-d='9']) {
+    @include change-color(gray);
   }
 </style>
