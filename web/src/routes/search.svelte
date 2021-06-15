@@ -1,8 +1,8 @@
 <script context="module">
-  export async function load({ fetch, page: pg }) {
-    const word = (pg.query.q || '').replace(/\+|-/g, ' ')
-    const page = +(pg.query.p || '1')
-    const type = pg.query.t || 'btitle'
+  export async function load({ fetch, page: { query } }) {
+    const word = (query.get('q') || '').replace(/\+|-/g, ' ')
+    const page = +query.get('p') || 1
+    const type = query.get('t') || 'btitle'
 
     if (word) {
       let skip = (page - 1) * 8

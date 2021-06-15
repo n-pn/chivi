@@ -17,20 +17,19 @@
     sticked as lookup_sticked,
   } from '$lib/widgets/Lookup.svelte'
 
-  export async function load({ fetch, page: pg }) {
-    const [err1, nvinfo] = await get_nvinfo(fetch, pg.params.book)
+  export async function load({ fetch, page: { params, query } }) {
+    const [err1, nvinfo] = await get_nvinfo(fetch, params.book)
     if (err1) return { status: err1, error: new Error(nvinfo) }
 
-    const [chidx, sname] = pg.params.chap.split('-').reverse()
+    const [chidx, sname] = params.chap.split('-').reverse()
     const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
-
-    if (!snvid)
+    if (!snvid) {
       return { status: 404, error: new Error('Nguồn truyện không tồn tại!') }
+    }
+
     const chinfo = { sname, snvid, chidx }
 
-    let mode = 0
-    if (pg.query.mode) mode = +pg.query.mode
-
+    const mode = +query.get('mode') || 0
     const [err, data] = await get_chinfo(fetch, nvinfo.bhash, chinfo, mode)
 
     if (err) return { status: 404, error: new Error(data) }
@@ -129,7 +128,7 @@
   }
 
   function gen_book_path(bslug, sname, chidx) {
-    let url = `/~${bslug}/content?sname=${sname}`
+    let url = `/~${bslug}/chaps?sname=${sname}`
     const page = Math.floor((chidx - 1) / 30) + 1
     return page > 1 ? url + `&page=${page}` : url
   }

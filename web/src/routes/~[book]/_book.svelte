@@ -12,7 +12,7 @@
   import Vessel from '$lib/layouts/Vessel.svelte'
 
   export let nvinfo = {}
-  export let nvtab = 'summary'
+  export let nvtab = 'index'
 
   $: vi_status = map_status(nvinfo.status)
   $: book_intro = nvinfo.bintro.join('').substring(0, 300)
@@ -176,14 +176,14 @@
       <a
         href="/~{nvinfo.bslug}"
         class="header-tab"
-        class:_active={nvtab == 'summary'}>
+        class:_active={nvtab == 'index'}>
         Tổng quan
       </a>
 
       <a
-        href="/~{nvinfo.bslug}/content"
+        href="/~{nvinfo.bslug}/chaps"
         class="header-tab"
-        class:_active={nvtab == 'content'}>
+        class:_active={nvtab == 'chaps'}>
         Chương tiết
       </a>
 

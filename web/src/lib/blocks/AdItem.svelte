@@ -15,7 +15,11 @@
 
   <script>
     if (typeof window != undefined) {
-      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+      try {
+        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+      } catch (err) {
+        console.log(err)
+      }
     }
   </script>
 </section>

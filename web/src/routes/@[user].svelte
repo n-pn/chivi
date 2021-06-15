@@ -1,10 +1,10 @@
 <script context="module">
   import { mark_types, mark_names } from '$lib/constants'
 
-  export async function preload({ params, query }) {
+  export async function load({ page: { params, query }, fetch }) {
     const uname = params.user
-    const bmark = query.bmark || 'reading'
-    const page = +(query.page || '1')
+    const bmark = query.get('bmark') || 'reading'
+    const page = +query.get('page') || 1
 
     let skip = (page - 1) * 24
     if (skip < 0) skip = 0
@@ -12,15 +12,16 @@
     let url = `/api/@${uname}/books?skip=${skip}&take=24&order=update`
     if (bmark != 'reading') url += `&bmark=${bmark}`
 
-    const res = await this.fetch(url)
-
-    if (res.ok) {
-      const { books, total } = await res.json()
-      return { uname, bmark, books, total, page }
-    } else {
-      const msg = await res.text()
-      this.error(res.status, msg)
+    const res = await fetch(url)
+    if (!res.ok) {
+      return {
+        status: res.status,
+        error: new Error(await res.text()),
+      }
     }
+
+    const { books, total } = await res.json()
+    return { props: { uname, bmark, books, total, page } }
   }
 </script>
 
@@ -29,6 +30,7 @@
   import Nvlist from '$lib/widgets/Nvlist.svelte'
 
   import Vessel from '$lib/layouts/Vessel.svelte'
+  import Error from './__error.svelte'
 
   export let uname = ''
   export let bmark = 'reading'
@@ -65,7 +67,7 @@
   {#if books.length == 0}
     <div class="empty">Danh sách trống</div>
   {:else}
-    <Nvlist {books} nvtab="content" />
+    <Nvlist {books} nvtab="chaps" />
   {/if}
 
   <div class="pagi" slot="footer">

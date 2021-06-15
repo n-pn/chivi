@@ -5,28 +5,28 @@
   import { get_nvinfo } from '$api/nvinfo_api.js'
   import { get_chseed, get_chlist } from '$api/chinfo_api.js'
 
-  export async function load({ page: pg, fetch }) {
-    const [err1, nvinfo] = await get_nvinfo(fetch, pg.params.book)
+  export async function load({ page: { params, query }, fetch }) {
+    const [err1, nvinfo] = await get_nvinfo(fetch, params.book)
     if (err1) this.error(err1, nvinfo)
 
     const bhash = nvinfo.bhash
-    const sname = pg.query.sname || nvinfo.snames[0]
+    const sname = query.get('sname') || nvinfo.snames[0]
 
     const [snvid] = nvinfo.chseed[sname] || [bhash]
 
-    const page = +(pg.query.page || 1)
-    const params = { sname, snvid, page }
+    const page = +query.get('page') || 1
+    const opts = { sname, snvid, page }
 
-    const mode = +pg.query.mode
+    const mode = +query.get('mode')
 
-    const [err2, chseed] = await get_chseed(fetch, bhash, params, mode)
+    const [err2, chseed] = await get_chseed(fetch, bhash, opts, mode)
     if (err2) return { status: err2, error: new Error(chseed) }
 
-    const [err3, chlist] = await get_chlist(fetch, bhash, params)
+    const [err3, chlist] = await get_chlist(fetch, bhash, opts)
     if (err3) return { status: err3, error: new Error(chlist) }
 
     return {
-      props: { nvinfo, chseed, chlist, params },
+      props: { nvinfo, chseed, chlist, opts },
     }
   }
 
@@ -53,12 +53,12 @@
   export let nvinfo
   export let chseed = { chaps: [], total: 0, mtime: 0 }
   export let chlist = []
-  export let params = {}
+  export let opts = {}
 
-  $: pmax = get_pmax(chseed, params)
-  $: page_list = paginate_range(params.page, pmax, 9)
+  $: pmax = get_pmax(chseed, opts)
+  $: page_list = paginate_range(opts.page, pmax, 9)
 
-  $: [main_seeds, hide_seeds] = split_chseed(nvinfo, params)
+  $: [main_seeds, hide_seeds] = split_chseed(nvinfo, opts)
   let show_more = false
 
   let scroll_top
@@ -69,8 +69,8 @@
 
     const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
 
-    if (params.sname != sname) {
-      params = { ...params, sname, snvid }
+    if (opts.sname != sname) {
+      opts = { ...opts, sname, snvid }
       const url = new URL(window.location)
       url.searchParams.set('sname', sname)
       window.history.replaceState({}, '', url)
@@ -78,22 +78,22 @@
 
     _load = true
 
-    const [err, data] = await get_chseed(fetch, nvinfo.bhash, params, mode)
+    const [err, data] = await get_chseed(fetch, nvinfo.bhash, opts, mode)
     if (err) return console.log({ err })
 
     chseed = data
     nvinfo = update_utime(nvinfo, chseed.utime)
 
-    await load_chlist(params.page, false)
+    await load_chlist(opts.page, false)
     _load = false
   }
 
   async function load_chlist(page = 1, scroll = true) {
     if (page < 1) page = 1
     if (page > pmax) page = pmax
-    params = { ...params, page }
+    opts = { ...opts, page }
 
-    const [_err, data] = await get_chlist(fetch, nvinfo.bhash, params)
+    const [_err, data] = await get_chlist(fetch, nvinfo.bhash, opts)
     chlist = data
 
     const url = new URL(window.location)
@@ -117,12 +117,12 @@
 
       case 37:
       case 74:
-        if (!evt.altKey) load_chlist(params.page - 1)
+        if (!evt.altKey) load_chlist(opts.page - 1)
         break
 
       case 39:
       case 75:
-        if (!evt.altKey) load_chlist(params.page + 1)
+        if (!evt.altKey) load_chlist(opts.page + 1)
         break
 
       default:
@@ -131,9 +131,9 @@
   }
 
   function page_url(sname, page) {
-    let url = `/~${nvinfo.bslug}/content?sname=${sname}`
+    let url = `/~${nvinfo.bslug}/chaps?sname=${sname}`
     if (page > 1) url += `&page=${page}`
-    if (params.order == 'desc') url += '&order=desc'
+    if (opts.order == 'desc') url += '&order=desc'
 
     return url
   }
@@ -194,14 +194,14 @@
 
 <svelte:window on:keydown={handle_keypress} />
 
-<Book {nvinfo} nvtab="content">
+<Book {nvinfo} nvtab="chaps">
   {#if main_seeds.length > 0}
     <div class="source">
       {#each main_seeds as mname}
         <a
           class="-name"
-          class:_active={params.sname === mname}
-          href={page_url(mname, params.page)}
+          class:_active={opts.sname === mname}
+          href={page_url(mname, opts.page)}
           on:click={(e) => load_chseed(e, mname)}
           >{mname}
         </a>
@@ -212,7 +212,7 @@
           {#each hide_seeds as hname}
             <a
               class="-name"
-              href={page_url(hname, params.page)}
+              href={page_url(hname, opts.page)}
               on:click={(e) => load_chseed(e, hname)}
               >{hname}
             </a>
@@ -264,15 +264,15 @@
         </span>
       </div>
 
-      {#if is_remote_seed(params.sname)}
+      {#if is_remote_seed(opts.sname)}
         <button
           class="m-button"
-          on:click={(e) => load_chseed(e, params.sname, 2)}>
+          on:click={(e) => load_chseed(e, opts.sname, 2)}>
           <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
           <span class="-hide">Đổi mới</span>
         </button>
-      {:else if params.sname == 'chivi'}
-        <a class="m-button" href="/~{nvinfo.bslug}/+{params.sname}">
+      {:else if opts.sname == 'chivi'}
+        <a class="m-button" href="/~{nvinfo.bslug}/+{opts.sname}">
           <SIcon name="plus" />
           <span class="-hide">Thêm chương</span>
         </a>
@@ -280,7 +280,7 @@
     </div>
 
     <div class="chlist">
-      <Chlist bslug={nvinfo.bslug} sname={params.sname} chaps={chseed.lasts} />
+      <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chseed.lasts} />
     </div>
 
     <div class="chinfo" bind:this={scroll_top}>
@@ -291,24 +291,24 @@
     </div>
 
     <div class="chlist _page">
-      <Chlist bslug={nvinfo.bslug} sname={params.sname} chaps={chlist} />
+      <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chlist} />
 
       {#if pmax > 1}
         <nav class="pagi">
           <a
-            href={page_url(params.sname, 1)}
+            href={page_url(opts.sname, 1)}
             class="page m-button"
-            class:_disable={params.page == 1}
+            class:_disable={opts.page == 1}
             on:click|preventDefault={() => load_chlist(1)}>
             <SIcon name="chevrons-left" />
           </a>
 
           {#each page_list as [curr, level]}
             <a
-              href={page_url(params.sname, curr)}
+              href={page_url(opts.sname, curr)}
               class="page m-button"
-              class:_primary={params.page == curr}
-              class:_disable={params.page == curr}
+              class:_primary={opts.page == curr}
+              class:_disable={opts.page == curr}
               data-level={level}
               on:click|preventDefault={() => load_chlist(curr)}>
               <span>{curr}</span>
@@ -316,9 +316,9 @@
           {/each}
 
           <a
-            href={page_url(params.sname, pmax)}
+            href={page_url(opts.sname, pmax)}
             class="page m-button"
-            class:_disable={params.page == pmax}
+            class:_disable={opts.page == pmax}
             on:click|preventDefault={() => load_chlist(pmax)}>
             <SIcon name="chevrons-right" />
           </a>

@@ -1,14 +1,17 @@
 <script context="module">
   const take = 24
 
-  export async function load({ page, fetch }) {
-    const pg = +(page.query.page || 1)
-    let skip = (pg - 1) * take
+  export async function load({ page: { query }, fetch }) {
+    const page = +query.get('page') || 1
+    let skip = (page - 1) * take
     if (skip < 1) skip = 0
 
-    let url = `/api/books?skip=${skip}&take=24`
-    const opts = parse_params(page.query)
-    if (opts != {}) url += `&${merge_params(opts)}`
+    let url = `/api/books`
+    const opts = parse_params(query)
+
+    query.set('skip', skip)
+    query.set('take', 24)
+    url += `?${query.toString()}`
 
     const res = await fetch(url)
 
@@ -25,27 +28,24 @@
     }
   }
 
-  function parse_params({ order, genre, sname }, params = {}) {
-    params.order = order || 'access'
-
-    if (genre) params.genre = genre
-    if (sname) params.sname = sname
+  function parse_params(query, params = {}) {
+    params.order = query.get('order') || 'access'
+    if (query.has('genre')) params.genre = query.get('genre')
+    if (query.has('sname')) params.sname = query.get('sname')
 
     return params
   }
 
-  function merge_params(opts) {
-    return Object.entries(opts)
-      .map(([k, v]) => `${k}=${v}`)
-      .join('&')
-  }
-
   function gen_page_url(page = 1, opts = {}) {
-    if (page > 1) opts.page = page
-    if (opts.order == 'access') delete opts.order
+    const query = new URLSearchParams()
 
-    const query = merge_params(opts)
-    return query ? `/?${query}` : '/'
+    if (page > 1) query.set('page', page)
+    if (opts.order != 'access') query.set('order', opts.order)
+    if (opts.genre) query.set('genre', opts.genre)
+    if (opts.sname) query.set('sname', opts.sname)
+
+    const output = query.toString()
+    return output ? `/?${output}` : '/'
   }
 
   const order_names = {

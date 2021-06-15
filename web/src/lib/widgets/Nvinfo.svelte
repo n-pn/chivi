@@ -20,7 +20,7 @@
   }
 
   $: stars = rating_stars(nvinfo.rating, nvinfo.voters)
-  $: route = nvtab == 'summary' ? '' : nvtab
+  $: route = nvtab == 'index' ? '' : nvtab
 </script>
 
 <a class="book" href="/~{nvinfo.bslug}/{route}">
