@@ -6,8 +6,8 @@ exports.up = async (knex) => {
     t.string('sname').notNullable()
     t.string('snvid').notNullable()
 
-    t.string('last_schid').notNullable().defaultTo('')
     t.integer('chap_count').notNullable().defaultTo(0)
+    t.string('last_schid').notNullable().defaultTo('')
 
     t.timestamp('changed_at')
     t.timestamp('checked_at')
