@@ -6,40 +6,40 @@ authors:
 
 targets:
   init_zhwenpg:
-    main: cli/mapinfo/init_zhwenpg.cr
+    main: tasks/mapinfo/init_zhwenpg.cr
 
   init_yousuu:
-    main: cli/mapinfo/init_yousuu.cr
+    main: tasks/mapinfo/init_yousuu.cr
 
   init_remote:
-    main: cli/mapinfo/init_remote.cr
+    main: tasks/mapinfo/init_remote.cr
 
   map_zxcs_me:
-    main: cli/mapinfo/map_zxcs_me.cr
+    main: tasks/mapinfo/map_zxcs_me.cr
 
   fetch_covers:
-    main: cli/mapinfo/fetch_covers.cr
+    main: tasks/mapinfo/fetch_covers.cr
 
   fix_covers:
-    main: cli/mapinfo/fix_covers.cr
+    main: tasks/mapinfo/fix_covers.cr
 
   fix_genres:
-    main: cli/mapinfo/fix_genres.cr
+    main: tasks/mapinfo/fix_genres.cr
 
   fix_intros:
-    main: cli/mapinfo/fix_intros.cr
+    main: tasks/mapinfo/fix_intros.cr
 
   fetch_zhtexts:
-    main: cli/routine/fetch_zhtexts.cr
+    main: tasks/routine/fetch_zhtexts.cr
 
   upload_zhtext:
-    main: cli/upload_zhtext.cr
+    main: tasks/upload_zhtext.cr
 
   ys_serial:
-    main: cli/workers/ys_serial.cr
+    main: tasks/workers/ys_serial.cr
 
   ys_review:
-    main: cli/workers/ys_review.cr
+    main: tasks/workers/ys_review.cr
 
   chivi:
     main: src/chivi.cr
