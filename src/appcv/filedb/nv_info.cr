@@ -54,9 +54,10 @@ class CV::NvInfo
     NvFields._index.keys(bslug).first?
   end
 
-  def self.filter(opts, prev : Set(String)? = nil)
+  def self.filter(opts : Hash, prev : Set(String)? = nil)
     {"btitle", "author", "genre", "sname"}.each do |type|
       next unless str = opts[type]?
+
       prev = filter(str, type, prev)
       break if prev.empty?
     end

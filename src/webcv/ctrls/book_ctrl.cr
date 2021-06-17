@@ -2,7 +2,7 @@ require "./base_ctrl"
 
 class CV::BookCtrl < CV::BaseCtrl
   def index
-    matched = NvInfo.filter(params.to_h)
+    matched = NvInfo.filter(params.to_unsafe_h)
     response.headers.add("Cache-Control", "public, min-fresh=180")
     list_books(matched)
   end
