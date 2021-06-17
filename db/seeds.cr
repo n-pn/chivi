@@ -1,8 +1,8 @@
 require "../config/application"
 
-# This file is for setting up your seeds.
-#
-# To run seeds execute `amber db seed`
-
-# Example:
-# User.create(name: "example", email: "ex@mple.com")
+# CV::Viuser.create(
+#   email: "admin@chivi.xyz",
+#   uname: "Admin",
+#   cpass: Crypto::Bcrypt::Password.create("password", cost: 10).to_s,
+#   privi: 4
+# )

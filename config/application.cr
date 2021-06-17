@@ -13,12 +13,12 @@ require "./logger"
 require "./database"
 require "./initializers/**"
 
-# uncomment these 4 lines to enable plugins
-# require "../plugins/plugins"
-
 # Start Generator Dependencies: Don't modify.
+require "../src/appcv/models/**"
+require "../src/appcv/filedb/**"
 # End Generator Dependencies
 
-require "../src/webcv/actions/base_action"
-require "../src/webcv/actions/**"
+require "../src/webcv/pipes/**"
+require "../src/webcv/ctrls/**"
+
 require "./routes"

@@ -12,11 +12,6 @@ function makeConfig(env = 'dev') {
       min: 2,
       max: 10,
     },
-    migrations: {
-      tableName: 'knex_migrations',
-      directory: 'priv/migrations',
-      stub: 'priv/table.stub',
-    },
   }
 }
 

@@ -12,14 +12,10 @@ backend = Log::IOBackend.new(STDOUT)
 # Custom formatter
 # This is a good place to change the time from UTC
 
-# if you want the systems local time or hard code a timezone, uncomment
-# one of the following lines and update the formatter accordingly
-# time_zone = Time::Location.local
-# time_zone = Time::Location.load("America/Buenos_Aires")
+time_zone = Time::Location.load("Asia/Ho_Chi_Minh")
 
 backend.formatter = Log::Formatter.new do |entry, io|
-  io << entry.timestamp.to_s("%I:%M:%S")
-  # io << entry.timestamp.in(time_zone).to_s("%I:%M:%S")
+  io << entry.timestamp.in(time_zone).to_s("%I:%M:%S")
   io << " "
   io << entry.source
   io << " |"
