@@ -1,5 +1,5 @@
 require "json"
-require "../cutil/core_utils"
+require "../../cutil/core_utils"
 require "./nv_info/*"
 
 class CV::NvInfo

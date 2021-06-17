@@ -1,9 +1,10 @@
 require "json"
 require "file_utils"
 
-require "../libcv/cvmtl"
-require "../seeds/rm_info"
-require "../cutil/ram_cache"
+require "../../libcv/cvmtl"
+require "../../seeds/rm_info"
+require "../../tabkv/value_map"
+require "../../cutil/ram_cache"
 
 class CV::ChInfo
   DIR = "_db/ch_infos"

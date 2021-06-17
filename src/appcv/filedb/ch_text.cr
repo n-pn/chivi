@@ -1,9 +1,9 @@
 require "file_utils"
 require "compress/zip"
 
-require "../libcv/cvmtl"
-require "../seeds/rm_chtext"
-require "../cutil/ram_cache"
+require "../../libcv/cvmtl"
+require "../../seeds/rm_chtext"
+require "../../cutil/ram_cache"
 
 class CV::ChText
   DIR = "_db/ch_texts"

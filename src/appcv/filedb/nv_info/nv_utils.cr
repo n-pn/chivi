@@ -1,6 +1,6 @@
-require "../../tabkv/*"
-require "../../libcv/cvmtl"
-require "../../cutil/text_utils"
+require "../../../tabkv/*"
+require "../../../libcv/cvmtl"
+require "../../../cutil/text_utils"
 
 module CV::NvUtils
   extend self
@@ -16,7 +16,7 @@ module CV::NvUtils
     name.sub(/[（\(].+[\)）]$/, "").strip
   end
 
-  FIX_DIR = "src/appcv/nv_info/_fixes"
+  FIX_DIR = "db/nv_fixes"
 
   def fix_map(name : String)
     ValueMap.new("#{FIX_DIR}/#{name}.tsv", mode: 2)
