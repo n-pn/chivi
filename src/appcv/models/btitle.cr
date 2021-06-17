@@ -1,9 +1,11 @@
-require "./_setup"
+class CV::Btitle < Granite::Base
+  connection pg
+  table btitles
 
-class CV::Btitle
-  include Clear::Model
+  has_many :nvinfos
 
-  primary_key type: serial
+  column id : Int32, primary: true
+  timestamps
 
   column zh_name : String
   column hv_name : String # translate from zh_name
@@ -14,5 +16,6 @@ class CV::Btitle
   column hv_slug : String # auto generated from hv_name
   column vi_slug : String # auto generated from vi_name
 
-  column sorting : Int32, presence: false # weight of top rated book has this title
+  column sorting : Int32 = 0 # weight of top rated book has this title
+
 end
