@@ -138,7 +138,7 @@ class CV::NvInfo
     JSON.build(io) { |json| to_json(json, full) }
   end
 
-  def to_json(json : JSON::Builder, full : Bool = false)
+  def to_json(json : JSON::Builder, full : Bool = true)
     json.object do
       json.field "bhash", bhash
       json.field "bslug", bslug

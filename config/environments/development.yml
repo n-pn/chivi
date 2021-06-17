@@ -19,9 +19,9 @@ database_url: postgres://postgres:postgres@localhost:5432/chivi_dev
 auto_reload: true
 
 session:
-  key: amber.session
+  key: chivi_sc
   store: signed_cookie
-  expires: 0
+  expires: 2592000
 
 smtp:
   enabled: false
