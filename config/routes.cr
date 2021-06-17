@@ -24,6 +24,11 @@ Amber::Server.configure do
     get "/books", CV::BookCtrl, :index
     get "/books/:bslug", CV::BookCtrl, :show
     get "/@:uname/books", CV::BookCtrl, :user_books
+
+    get "/mark-books/:bname", CV::MarkCtrl, :show
+    put "/mark-books/:bname", CV::MarkCtrl, :update
+
+    get "/mark-chaps", CV::MarkCtrl, :history
   end
 
   routes :static do

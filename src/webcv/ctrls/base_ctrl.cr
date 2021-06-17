@@ -27,7 +27,7 @@ class CV::BaseCtrl < Amber::Controller::Base
 
   def render_json(data : String, status_code = 200)
     render_json(status_code) do |res|
-      res.body = data
+      res.puts(data)
     end
   end
 
@@ -54,7 +54,7 @@ class CV::BaseCtrl < Amber::Controller::Base
     yield response
   end
 
-  def clamp(val : Int32, min = Int32::MIN, max = Int32::MAX)
+  def clamp(val : Int32, min = 0, max = 100)
     val < min ? min : (val > max ? max : val)
   end
 end
