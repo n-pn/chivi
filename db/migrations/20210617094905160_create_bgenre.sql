@@ -5,7 +5,7 @@ CREATE TABLE bgenres (
   vi_name varchar NOT NULL UNIQUE,
   vi_slug varchar NOT NULL UNIQUE,
 
-  zh_names varchar[],
+  zh_names varchar[] default '{}' NOT NULL,
 
   created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL

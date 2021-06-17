@@ -1,10 +1,11 @@
 -- +micrate Up
 CREATE TABLE yscrits (
   id serial PRIMARY KEY,
-  origin_id varchar not null unique,
 
   ysuser_id int not null,
   yslist_id int,
+
+  origin_id varchar not null unique,
   ysbook_id int not null,
 
   starred int default 3 not null,
