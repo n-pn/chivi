@@ -25,6 +25,9 @@ Amber::Server.configure do
     get "/books/:bslug", CV::BookCtrl, :show
     get "/@:uname/books", CV::BookCtrl, :user_books
 
+    get "/chseeds/:bhash/:sname/:snvid", CV::ChapCtrl, :index
+    get "/chitems/:bhash/:sname/:snvid", CV::ChapCtrl, :paged
+
     get "/mark-books/:bname", CV::MarkCtrl, :show
     put "/mark-books/:bname", CV::MarkCtrl, :update
 
