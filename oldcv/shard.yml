@@ -1,20 +1,10 @@
 name: chivi
-version: 0.7.0
+version: 0.6.1
 
 authors:
-  - NP Nam <me@npn.am>
-
-crystal: 1.0.0
-
-license: MIT
+  - Nipinium <nipinium@gmail.com>
 
 targets:
-  chivi:
-    main: src/chivi.cr
-
-  amber:
-    main: lib/amber/src/amber/cli.cr
-
   init_zhwenpg:
     main: tasks/mapinfo/init_zhwenpg.cr
 
@@ -51,34 +41,28 @@ targets:
   ys_review:
     main: tasks/workers/ys_review.cr
 
+  chivi:
+    main: src/chivi.cr
+
+crystal: 1.0.0
+
+license: MIT
+
 dependencies:
-  amber:
-    github: amberframework/amber
-    #version: 1.0.0rc2
+  kemal:
+    github: kemalcr/kemal
     branch: master
 
-  granite:
-    github: amberframework/granite
-    version: ~> 0.23.0
+  kemal-session:
+    github: kemalcr/kemal-session
+    branch: master
 
-  quartz_mailer:
-    github: amberframework/quartz-mailer
-    version: ~> 0.8.0
-
-  pg:
-    github: will/crystal-pg
-    version: ~> 0.23.2
+  clear:
+    github: anykeyh/clear
+    branch: master
 
   myhtml:
     github: kostya/myhtml
 
   icu:
     github: olbat/icu.cr
-
-development_dependencies:
-  garnet_spec:
-    github: amberframework/garnet-spec
-    version: 0.4.1
-  ameba:
-    github: crystal-ameba/ameba
-    version: ~> 0.13.4

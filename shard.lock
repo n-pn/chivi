@@ -1,54 +1,130 @@
 version: 2.0
 shards:
-  admiral:
-    git: https://github.com/jwaldrip/admiral.cr.git
-    version: 1.11.4
+  amber:
+    git: https://github.com/amberframework/amber.git
+    version: 1.0.0rc2+git.commit.fb0cbcc346a102423c482452ad2a37f17e49228d
 
-  clear:
-    git: https://github.com/anykeyh/clear.git
-    version: 0.9+git.commit.775e877c4f961da01fa621ae7ca302cb735198df
+  amber_router:
+    git: https://github.com/amberframework/amber-router.git
+    version: 0.4.4
+
+  ameba:
+    git: https://github.com/crystal-ameba/ameba.git
+    version: 0.13.4
+
+  backtracer:
+    git: https://github.com/sija/backtracer.cr.git
+    version: 1.2.1
+
+  callback:
+    git: https://github.com/amberframework/callback.git
+    version: 0.9.1
+
+  cli:
+    git: https://github.com/amberframework/cli.git
+    version: 0.11.3
+
+  compiled_license:
+    git: https://github.com/elorest/compiled_license.git
+    version: 1.0.0
 
   db:
     git: https://github.com/crystal-lang/crystal-db.git
     version: 0.10.1
 
+  email:
+    git: https://github.com/arcage/crystal-email.git
+    version: 0.6.3
+
   exception_page:
     git: https://github.com/crystal-loot/exception_page.git
-    version: 0.1.4
+    version: 0.2.0
 
-  generate:
-    git: https://github.com/anykeyh/generate.cr.git
-    version: 0.1.0+git.commit.f5dafc934a70e0ee2f246dddf3df44686f844da2
+  future:
+    git: https://github.com/crystal-community/future.cr.git
+    version: 1.0.0
+
+  garnet_spec:
+    git: https://github.com/amberframework/garnet-spec.git
+    version: 0.4.1
+
+  granite:
+    git: https://github.com/amberframework/granite.git
+    version: 0.23.0
 
   icu:
     git: https://github.com/olbat/icu.cr.git
-    version: 0.1.0+git.commit.c4fe39a02a567c2914617bc3568e9ec192e238a4
+    version: 0.1.0+git.commit.7975bc59100c5fa77cd0fb6206f7969ee9c5a19d
 
   inflector:
-    git: https://github.com/anykeyh/inflector.cr.git
-    version: 0.1.8+git.commit.dc5c898b0a834617d8b3ff73ac5a2239bd9fc019
+    git: https://github.com/phoffer/inflector.cr.git
+    version: 1.0.0
 
-  kemal:
-    git: https://github.com/kemalcr/kemal.git
-    version: 1.0.0+git.commit.3fee0686362d7ab57048ae555bf875e278a278a3
-
-  kemal-session:
-    git: https://github.com/kemalcr/kemal-session.git
-    version: 1.0.0+git.commit.fca592fdd74578c3d5650cd3d9d89038416d7241
+  json_mapping:
+    git: https://github.com/crystal-lang/json_mapping.cr.git
+    version: 0.1.1
 
   kilt:
     git: https://github.com/jeromegn/kilt.git
-    version: 0.4.1
+    version: 0.6.1
+
+  liquid:
+    git: https://github.com/dare892/liquid.cr.git
+    version: 0.4.1+git.commit.e4ef5ca06bf5bafe74e0b270c7aae2941a91ddd3
+
+  micrate:
+    git: https://github.com/amberframework/micrate.git
+    version: 0.11.0
 
   myhtml:
     git: https://github.com/kostya/myhtml.git
-    version: 1.5.4
+    version: 1.5.5
+
+  mysql:
+    git: https://github.com/crystal-lang/crystal-mysql.git
+    version: 0.13.0
+
+  optarg:
+    git: https://github.com/amberframework/optarg.git
+    version: 0.9.2
 
   pg:
     git: https://github.com/will/crystal-pg.git
     version: 0.23.2
 
-  radix:
-    git: https://github.com/luislavena/radix.git
-    version: 0.4.1
+  pool:
+    git: https://github.com/ysbaddaden/pool.git
+    version: 0.2.4
+
+  quartz_mailer:
+    git: https://github.com/amberframework/quartz-mailer.git
+    version: 0.8.0
+
+  redis:
+    git: https://github.com/stefanwille/crystal-redis.git
+    version: 2.7.0
+
+  selenium:
+    git: https://github.com/amberframework/selenium-webdriver-crystal.git
+    version: 0.5.0
+
+  shell-table:
+    git: https://github.com/luckyframework/shell-table.cr.git
+    version: 0.9.3
+
+  slang:
+    git: https://github.com/jeromegn/slang.git
+    version: 1.7.3
+
+  sqlite3:
+    git: https://github.com/crystal-lang/crystal-sqlite3.git
+    version: 0.18.0
+
+  teeplate:
+    git: https://github.com/amberframework/teeplate.git
+    version: 0.11.2
+
+  yaml_mapping:
+    git: https://github.com/crystal-lang/yaml_mapping.cr.git
+    version: 0.1.1
 
