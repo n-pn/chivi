@@ -8,14 +8,14 @@ logging:
   filter:
     - password
     - confirm_password
-    
+
 host: 0.0.0.0
 port_reuse: false
 process_count: 1
 # ssl_key_file:
 # ssl_cert_file:
-redis_url: "redis://localhost:6379"
-database_url: postgres://postgres:password@localhost:5432/chivi_test
+redis_url: 'redis://localhost:6379'
+database_url: postgres://postgres:postgres@localhost:5432/chivi_test
 auto_reload: false
 
 session:

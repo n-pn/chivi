@@ -19,6 +19,6 @@ require "./initializers/**"
 # Start Generator Dependencies: Don't modify.
 # End Generator Dependencies
 
-require "../src/actions/base_action"
-require "../src/actions/**"
+require "../src/webcv/actions/base_action"
+require "../src/webcv/actions/**"
 require "./routes"

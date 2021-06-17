@@ -14,5 +14,5 @@ Quartz.config do |c|
   # c.use_tls = EMail::Client::TLSMode::SMTPS
 end
 
-require "../../src/mailers/base_mailer"
-require "../../src/mailers/**"
+require "../../src/webcv/mailers/base_mailer"
+require "../../src/webcv/mailers/**"
