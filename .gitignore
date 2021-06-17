@@ -2,6 +2,8 @@
 /.shards/
 /.vscode/
 /_db/
+/amber/
+/oldcv/
 /bin/
 /doc/
 /lib/
