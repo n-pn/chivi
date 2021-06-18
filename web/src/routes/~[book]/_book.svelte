@@ -65,9 +65,9 @@
   </a>
 
   <span slot="header-right" class="header-item _menu">
-    <SIcon name={bmark ? mark_icons[bmark] : 'bookmark'} />
+    <SIcon name={bmark != 'default' ? mark_icons[bmark] : 'bookmark'} />
     <span class="header-text _show-md"
-      >{bmark ? mark_names[bmark] : 'Đánh dấu'}</span>
+      >{bmark != 'default' ? mark_names[bmark] : 'Đánh dấu'}</span>
 
     {#if $u_power > 0}
       <div class="header-menu">
