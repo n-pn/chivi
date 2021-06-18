@@ -1,9 +1,9 @@
 Amber::Server.configure do
   pipeline :api do
     # plug Amber::Pipe::PoweredByAmber.new
-    # plug Amber::Pipe::ClientIp.new(["X-Forwarded-For"])
+    plug Amber::Pipe::ClientIp.new(["X-Forwarded-For"])
     plug Amber::Pipe::Error.new
-    plug Amber::Pipe::Logger.new(filter: ["upass"])
+    # plug Amber::Pipe::Logger.new(filter: ["upass"])
     # plug Amber::Pipe::Session.new # do it manually
     # plug Amber::Pipe::CORS.new
   end
@@ -23,15 +23,28 @@ Amber::Server.configure do
 
     get "/books", CV::BookCtrl, :index
     get "/books/:bslug", CV::BookCtrl, :show
-    get "/@:uname/books", CV::BookCtrl, :user_books
+    get "/users/:uname/books", CV::BookCtrl, :user_books
 
     get "/chseeds/:bhash/:sname/:snvid", CV::ChapCtrl, :index
     get "/chitems/:bhash/:sname/:snvid", CV::ChapCtrl, :paged
 
+    get "/texts/:bname/:sname/:snvid/:chidx", CV::TextCtrl, :show
+    get "/texts/:bname/:sname/:snvid/:chidx/:schid", CV::TextCtrl, :convert
+    put "/texts/:bname/:sname/:snvid", CV::TextCtrl, :upsert
+
     get "/mark-books/:bname", CV::MarkCtrl, :show
     put "/mark-books/:bname", CV::MarkCtrl, :update
-
     get "/mark-chaps", CV::MarkCtrl, :history
+
+    get "/dicts", CV::DictCtrl, :index
+    get "/dicts/:dname", CV::DictCtrl, :show
+    get "/dicts/:dname/lookup", CV::DictCtrl, :lookup
+    put "/dicts/:dname/lookup", CV::DictCtrl, :lookup
+    get "/dicts/:dname/search", CV::DictCtrl, :search
+    put "/dicts/:dname/search", CV::DictCtrl, :search
+    put "/dicts/:dname/upsert", CV::DictCtrl, :upsert
+
+    post "/tools/convert/:dname", CV::ToolCtrl, :convert
   end
 
   routes :static do

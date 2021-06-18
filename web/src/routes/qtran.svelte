@@ -61,7 +61,7 @@
   async function convert() {
     // if ($u_power < 1) return
 
-    const url = `/api/convert/various`
+    const url = `/api/tools/convert/various`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

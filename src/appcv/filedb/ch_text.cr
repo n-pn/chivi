@@ -33,9 +33,9 @@ class CV::ChText
     @cv_time = Time.unix(0)
   end
 
-  def get_cv!(power = 4, mode = 0) : String?
+  def get_cv!(power = 4, mode = 0) : String
     if @cv_data && mode == 0
-      return @cv_data if @cv_time >= Time.utc - cv_ttl(power)
+      return @cv_data.not_nil! if @cv_time >= Time.utc - cv_ttl(power)
     end
 
     zh_lines = get_zh!(power, reset: mode > 1) || [""]

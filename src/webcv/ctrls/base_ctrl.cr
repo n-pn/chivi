@@ -11,7 +11,7 @@ class CV::BaseCtrl < Amber::Controller::Base
 
   # current user priviedge
   protected def cu_privi : Int32
-    @cu_privi ||= ViUser.get_power(cu_uname)
+    @cu_privi ||= ViUser.get_power(cu_uname.downcase)
   end
 
   def add_etag(etag : String)
@@ -53,18 +53,15 @@ class CV::BaseCtrl < Amber::Controller::Base
     save_session!
     yield response
   end
-
-  def clamp(val : Int32, min = 0, max = 100)
-    val < min ? min : (val > max ? max : val)
-  end
 end
 
 class Amber::Validators::Params
-  def fetch(name : String | Symbol, df = "")
+  def fetch_str(name : String | Symbol, df = "") : String
     self[name]? || df
   end
 
-  def fetch_int(name : String | Symbol, df = 0)
-    self[name]?.try(&.to_i?) || df
+  def fetch_int(name : String | Symbol, min = 0, max = Int32::MAX) : Int32
+    val = self[name]?.try(&.to_i?) || 0
+    val < min ? min : (val > max ? max : val)
   end
 end

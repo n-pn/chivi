@@ -11,8 +11,8 @@ class CV::UserCtrl < CV::BaseCtrl
   end
 
   def login
-    email = params.fetch("email", "").strip
-    upass = params.fetch("upass", "").strip
+    email = params.fetch_str("email").strip
+    upass = params.fetch_str("upass").strip
 
     if uname = ViUser.validate(email, upass)
       dname = ViUser._index.fval(uname).not_nil!
@@ -24,9 +24,9 @@ class CV::UserCtrl < CV::BaseCtrl
   end
 
   def signup
-    email = params.fetch("email", "").strip
-    dname = params.fetch("dname", "").strip
-    upass = params.fetch("email", "").strip
+    email = params.fetch_str("email").strip
+    dname = params.fetch_str("dname").strip
+    upass = params.fetch_str("email").strip
 
     raise "Địa chỉ hòm thư quá ngắn" if email.size < 3
     raise "Địa chỉ hòm thư không hợp lệ" if email !~ /@/

@@ -9,7 +9,7 @@
     let skip = (page - 1) * 24
     if (skip < 0) skip = 0
 
-    let url = `/api/@${uname}/books?skip=${skip}&take=24&order=update`
+    let url = `/api/users/${uname}/books?skip=${skip}&take=24&order=update`
     if (bmark != 'reading') url += `&bmark=${bmark}`
 
     const res = await fetch(url)

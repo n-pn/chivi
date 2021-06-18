@@ -1,16 +1,6 @@
 require "./base_ctrl"
 
 class CV::ChapCtrl < CV::BaseCtrl
-  private def chap_json(json : JSON::Builder, chidx, infos)
-    json.object {
-      json.field "chidx", chidx
-      json.field "schid", infos[0]
-      json.field "title", infos[1]
-      json.field "label", infos[2]
-      json.field "uslug", infos[3]
-    }
-  end
-
   def index
     bhash = params["bhash"]
     sname = params["sname"]
@@ -72,5 +62,15 @@ class CV::ChapCtrl < CV::BaseCtrl
     end
   rescue err
     halt!(500, err.message)
+  end
+
+  private def chap_json(json : JSON::Builder, chidx, infos)
+    json.object {
+      json.field "chidx", chidx
+      json.field "schid", infos[0]
+      json.field "title", infos[1]
+      json.field "label", infos[2]
+      json.field "uslug", infos[3]
+    }
   end
 end

@@ -104,7 +104,10 @@
 
   function split_input(input) {
     if (!input) return []
-    return input.split('\n').map((x) => parse_input(x))
+    return input
+      .split('\n')
+      .filter((x) => x)
+      .map((x) => parse_input(x))
   }
 </script>
 

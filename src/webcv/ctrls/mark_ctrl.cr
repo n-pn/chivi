@@ -21,8 +21,8 @@ class CV::MarkCtrl < CV::BaseCtrl
   end
 
   def history
-    skip = clamp(params.fetch_int("skip"), min: 0)
-    take = clamp(params.fetch_int("take", 15), max: 15)
+    skip = params.fetch_int("skip", min: 0)
+    take = params.fetch_int("take", min: 15, max: 30)
 
     chap_mark = ViMark.chap_map(cu_uname.downcase)
     iter = chap_mark._idx.reverse_each

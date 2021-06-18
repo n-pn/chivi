@@ -9,7 +9,7 @@ class CV::BookCtrl < CV::BaseCtrl
 
   def user_books
     uname = params["uname"].downcase
-    blist = params.fetch("bmark", "reading")
+    blist = params.fetch_str("bmark", "reading")
     matched = ViMark.all_books(uname, blist)
     list_books(matched)
   end
@@ -33,10 +33,10 @@ class CV::BookCtrl < CV::BaseCtrl
   end
 
   private def list_books(matched : Set(String)?)
-    skip = clamp(params.fetch_int(:skip), min: 0)
-    take = clamp(params.fetch_int(:take), min: 1, max: 24)
+    skip = params.fetch_int("skip", min: 0)
+    take = params.fetch_int("take", min: 1, max: 24)
 
-    order = params.fetch(:order, "access")
+    order = params.fetch_str("order", "access")
     total = matched ? matched.size : NvOrders.get(order).size
 
     render_json do |res|
