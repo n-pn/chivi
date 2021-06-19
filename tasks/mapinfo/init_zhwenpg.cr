@@ -50,7 +50,7 @@ class CV::InitZhwenpg
   end
 
   def page_path(page : Int32, status = 0)
-    "_db/.cache/zhwenpg/pages/#{page}-#{status}.html"
+    "_db/.cache/zhwenpg/pages/#{page}-#{status}.html.gz"
   end
 
   def crawl!(page = 1, status = 0)
