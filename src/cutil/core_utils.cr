@@ -3,13 +3,6 @@ require "digest"
 module CV::CoreUtils
   extend self
 
-  BASE_32 = {
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k',
-    'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x',
-    'y', 'z',
-  }
-
   # return semi unique hash string
   def digest32(input : String, limit : Int32 = 8)
     digest = Digest::SHA1.hexdigest(input)
@@ -25,15 +18,22 @@ module CV::CoreUtils
     encode32(number).ljust(limit, '0')
   end
 
+  B32_CF = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k',
+    'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x',
+    'y', 'z',
+  }
+
   # convert integer to zbase32
   def encode32(number : Int32 | Int64)
     String.build do |io|
       while number >= 32
-        io << BASE_32.unsafe_fetch(number % 32)
+        io << B32_CF.unsafe_fetch(number % 32)
         number //= 32
       end
 
-      io << BASE_32.unsafe_fetch(number)
+      io << B32_CF.unsafe_fetch(number)
     end
   end
 
@@ -49,41 +49,56 @@ module CV::CoreUtils
   end
 
   private def map32(char : Char)
-    case char
-    when '0', 'o', 'O'           then 0
-    when '1', 'l', 'L', 'i', 'I' then 1
-    when '2'                     then 2
-    when '3'                     then 3
-    when '4'                     then 4
-    when '5'                     then 5
-    when '6'                     then 6
-    when '7'                     then 7
-    when '8'                     then 8
-    when '9'                     then 9
-    when 'a', 'A'                then 10
-    when 'b', 'B'                then 11
-    when 'c', 'C'                then 12
-    when 'd', 'D'                then 13
-    when 'e', 'E'                then 14
-    when 'f', 'F'                then 15
-    when 'g', 'G'                then 16
-    when 'h', 'H'                then 17
-    when 'j', 'J'                then 18
-    when 'k', 'K'                then 19
-    when 'm', 'M'                then 20
-    when 'n', 'N'                then 21
-    when 'p', 'P'                then 22
-    when 'q', 'Q'                then 23
-    when 'r', 'R'                then 24
-    when 's', 'S'                then 25
-    when 't', 'T'                then 26
-    when 'v', 'V', 'u', 'U'      then 27
-    when 'w', 'W'                then 28
-    when 'x', 'X'                then 29
-    when 'y', 'Y'                then 30
-    when 'z', 'Z'                then 31
-    else                              0
+    {% begin %}
+      case char
+      {% for val, idx in B32_CF %}
+      when {{val}} then {{idx}}
+      {% end %}
+      when 'o' then 0
+      when 'l', 'i' then 0
+      when 'u' then 27
+      else 0
+      end
+    {% end %}
+  end
+
+  B32_ZH = {
+    '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b',
+    'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm',
+    'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+    'y', 'z',
+  }
+
+  def encode32_zh(number : Int32 | Int64)
+    String.build do |io|
+      while number >= 32
+        io << B32_ZH.unsafe_fetch(number % 32)
+        number //= 32
+      end
+
+      io << B32_ZH.unsafe_fetch(number)
     end
+  end
+
+  # convert zbase32 to integer
+  def decode32_zh(input : String)
+    number = 0_i64
+
+    input.chars.reverse_each do |char|
+      number = number &* 32 &+ map32_zh(char)
+    end
+
+    number.to_i
+  end
+
+  private def map32_zh(char : Char)
+    {% begin %}
+      case char
+      {% for val, idx in B32_ZH %}
+      when {{val}} then {{idx}}
+      {% end %}
+      end
+    {% end %}
   end
 end
 

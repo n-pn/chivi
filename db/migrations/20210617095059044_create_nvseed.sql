@@ -4,8 +4,8 @@ CREATE TABLE nvseeds (
 
   nvinfo_id int,
 
-  sname varchar not null,
-  snvid varchar not null,
+  sname int not null,
+  snvid int not null,
 
   status int default 0 not null,
   shield int default 0 not null ,
@@ -14,7 +14,7 @@ CREATE TABLE nvseeds (
   mftime bigint default 0 not null,
 
   chap_count int default 0 not null,
-  last_schid varchar,
+  last_schid int default 0 not null,
 
   created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
