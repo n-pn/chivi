@@ -16,40 +16,40 @@ targets:
     main: lib/amber/src/amber/cli.cr
 
   init_zhwenpg:
-    main: tasks/mapinfo/init_zhwenpg.cr
+    main: tasks/nvinfo/init_zhwenpg.cr
 
   init_yousuu:
-    main: tasks/mapinfo/init_yousuu.cr
+    main: tasks/nvinfo/init_yousuu.cr
 
   init_remote:
-    main: tasks/mapinfo/init_remote.cr
+    main: tasks/nvinfo/init_remote.cr
 
   map_zxcs_me:
-    main: tasks/mapinfo/map_zxcs_me.cr
+    main: tasks/nvinfo/map_zxcs_me.cr
 
   fetch_covers:
-    main: tasks/mapinfo/fetch_covers.cr
+    main: tasks/nvinfo/fetch_covers.cr
 
   fix_covers:
-    main: tasks/mapinfo/fix_covers.cr
+    main: tasks/nvinfo/fix_covers.cr
 
   fix_genres:
-    main: tasks/mapinfo/fix_genres.cr
+    main: tasks/nvinfo/fix_genres.cr
 
   fix_intros:
-    main: tasks/mapinfo/fix_intros.cr
+    main: tasks/nvinfo/fix_intros.cr
 
   fetch_zhtexts:
-    main: tasks/routine/fetch_zhtexts.cr
+    main: tasks/zhtext/fetch_zhtexts.cr
 
   upload_zhtext:
-    main: tasks/upload_zhtext.cr
+    main: tasks/zhtext/upload_zhtext.cr
 
   ys_serial:
-    main: tasks/workers/ys_serial.cr
+    main: tasks/yousuu/ys_serial.cr
 
   ys_review:
-    main: tasks/workers/ys_review.cr
+    main: tasks/yousuu/ys_review.cr
 
 dependencies:
   amber:
