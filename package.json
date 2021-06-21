@@ -1,10 +1,10 @@
 {
   "private": true,
   "scripts": {
-    "db-up": "bash tasks/backups/filedb-upload.sh",
-    "db-bk": "bash tasks/backups/filedb-backup.sh",
-    "ys-up": "bash tasks/backups/yousuu-upload.sh",
-    "ys-bk": "bash tasks/backups/yousuu-backup.sh",
+    "db-up": "bash tasks/backup/filedb-upload.sh",
+    "db-bk": "bash tasks/backup/filedb-backup.sh",
+    "ys-up": "bash tasks/backup/yousuu-upload.sh",
+    "ys-bk": "bash tasks/backup/yousuu-backup.sh",
     "backup": "yarn db-bk && yarn ys-bk",
     "upload": "yarn db-up && yarn ys-up",
     "rs-web": "ssh nipin@ssh.chivi.xyz \"sudo service chivi-web restart\"",
@@ -20,7 +20,6 @@
     "fix-nvinfo": "./bin/fix_intros && ./bin/fix_genres",
     "build": "shards build --release",
     "build-mt": "shards build --release -Dpreview_mt",
-    "gen-sentry": "crystal build --release tasks/_sentry/sentry_cli.cr -o bin/sentry",
     "db": "cd web && yarn knex"
   }
 }
