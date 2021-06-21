@@ -7,11 +7,14 @@ CREATE TABLE nvseeds (
   sname int not null,
   snvid int not null,
 
+  author varchar not null,
+  btitle varchar not null,
+
   status int default 0 not null,
   shield int default 0 not null ,
 
-  bumped bigint default 0 not null,
   mftime bigint default 0 not null,
+  bumped bigint default 0 not null,
 
   chap_count int default 0 not null,
   last_schid int default 0 not null,

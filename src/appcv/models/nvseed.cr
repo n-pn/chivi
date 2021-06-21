@@ -10,6 +10,9 @@ class CV::Nvseed < Granite::Base
   column sname : Int32 # seed name
   column snvid : Int32 # seed book id
 
+  column author : String
+  column btitle : String
+
   column status : Int32 = 0 # same as Nvinfo#status
   column shield : Int32 = 0 # same as Nvinfo#shield
 

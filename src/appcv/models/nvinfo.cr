@@ -37,16 +37,4 @@ class CV::Nvinfo < Granite::Base
   column voters : Int32 = 0 # = ys_voters + vi_voters * 2 + random_seed (if < 25)
   column rating : Int32 = 0 # delivered from above values
 
-  column ys_voters : Int32 = 0 # yousuu voters count
-  column vi_voters : Int32 = 0 # chivi voters count
-
-  column ys_rating : Int32 = 0 # yousuu users avg rating, from 00 to 100
-  column vi_rating : Int32 = 0 # chivi users avg rating, from 00 to 100
-
-  column ysbook_id : Int32? # link to yousuu book id
-  column ys_mftime : Int64? # yousuu book update time
-
-  column orig_link : String? # original publisher novel page
-  column orig_name : String? # original publisher name, extract from link
-
 end

@@ -2,6 +2,8 @@
 CREATE TABLE nvinfos (
   id serial PRIMARY KEY,
 
+  ysbook_id int,
+
   author_id int,
   btitle_id int,
 
@@ -29,18 +31,6 @@ CREATE TABLE nvinfos (
   weight int default 0 not null,
   voters int default 0 not null,
   rating int default 0 not null,
-
-  vi_voters int default 0 not null,
-  vi_rating int default 0 not null,
-
-  ys_voters int default 0 not null,
-  ys_rating int default 0 not null,
-
-  ysbook_id int,
-  ys_mftime bigint,
-
-  orig_link varchar,
-  orig_name varchar,
 
   created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
