@@ -22,7 +22,7 @@
   }
 </script>
 
-<Slider bind:actived width={26}>
+<Slider bind:actived _rwidth={26}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="user" />
