@@ -6,7 +6,7 @@ export function split_cvdata(cvdata) {
 export function split_cvline(cvline) {
   return cvline.split('\t').map((x) => {
     const a = x.split('ǀ')
-    return [a[0], a[1] || a[0], +a[2], a[3]]
+    return [a[0], a[1] || '', +a[2], a[3]]
   })
 }
 
