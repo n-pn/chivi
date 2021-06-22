@@ -8,12 +8,8 @@ async function serverFetch({ path, query, method, headers, rawBody: body }) {
   const res = await fetch(url, { method, headers, body })
 
   const res_headers = {}
+  for (let [key, val] of res.headers.entries()) res_headers[key] = val
 
-  for (let [key, val] of res.headers.entries()) {
-    res_headers[key] = val
-  }
-
-  // console.log({ res_headers })
   return {
     status: res.status,
     headers: res_headers,
@@ -32,7 +28,7 @@ export async function getSession({ headers }) {
 }
 
 function getCookie(cookies, cookie_name = 'svkit_ud') {
-  for (const cookie of cookies.split(';')) {
+  for (const cookie of cookies.split('; ')) {
     const [name, value] = cookie.split('=')
     if (name == cookie_name) return value.substr(0, 20)
   }
