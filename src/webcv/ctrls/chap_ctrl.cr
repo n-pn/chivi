@@ -48,13 +48,17 @@ class CV::ChapCtrl < CV::BaseCtrl
     sname = params["sname"]
     snvid = params["snvid"]
 
-    skip = params.fetch_int("skip")
+    page = params.fetch_int("page", min: 1)
+
+    take = 32
+    skip = (page - 1) * take
+
     chinfo = ChInfo.load(bhash, sname, snvid)
 
     render_json do |res|
       JSON.build(res) do |json|
         json.array do
-          chinfo.each(from: skip, upto: skip + 30) do |chidx, infos|
+          chinfo.each(from: skip, upto: skip + take) do |chidx, infos|
             chap_json(json, chidx, infos)
           end
         end

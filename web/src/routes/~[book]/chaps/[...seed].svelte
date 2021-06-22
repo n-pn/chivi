@@ -7,14 +7,11 @@
     const [err1, nvinfo] = await get_nvinfo(fetch, params.book)
     if (err1) this.error(err1, nvinfo)
 
-    const bhash = nvinfo.bhash
-    const sname = query.get('sname') || nvinfo.snames[0]
-
+    const { bhash, snames } = nvinfo
+    const [sname, page] = extract_name_and_page(snames, params.seed)
     const [snvid] = nvinfo.chseed[sname] || [bhash]
 
-    const page = +query.get('page') || 1
     const opts = { sname, snvid, page }
-
     const mode = +query.get('mode')
 
     const [err2, chseed] = await get_chseed(fetch, bhash, opts, mode)
@@ -26,6 +23,18 @@
     return {
       props: { nvinfo, chseed, chlist, opts },
     }
+  }
+
+  function extract_name_and_page(snames, param) {
+    let [name, page] = (param || '').split('/')
+
+    if (!snames.includes(name)) name = snames[0] || 'chivi'
+
+    page = +(page || '')
+    if (page < 1) page = 1
+
+    console.log({ name, page })
+    return [name, page]
   }
 
   function update_utime(nvinfo, utime) {
@@ -44,14 +53,14 @@
   import SIcon from '$lib/blocks/SIcon.svelte'
   import RTime from '$lib/blocks/RTime.svelte'
   import Chlist from '$lib/widgets/Chlist.svelte'
-  import Book from './_book.svelte'
+  import Book from '../_book.svelte'
 
   import paginate_range from '$utils/paginate_range'
 
   export let nvinfo
   export let chseed = { chaps: [], total: 0, mtime: 0 }
   export let chlist = []
-  export let opts = {}
+  export let opts = { page: 0 }
 
   $: pmax = get_pmax(chseed, opts)
   $: page_list = paginate_range(opts.page, pmax, 9)
@@ -69,8 +78,7 @@
 
     if (opts.sname != sname) {
       opts = { ...opts, sname, snvid }
-      const url = new URL(window.location)
-      url.searchParams.set('sname', sname)
+      const url = page_url(sname, opts.page)
       window.history.replaceState({}, '', url)
     }
 
@@ -94,8 +102,7 @@
     const [_err, data] = await get_chlist(fetch, nvinfo.bhash, opts)
     chlist = data
 
-    const url = new URL(window.location)
-    url.searchParams.set('page', page)
+    const url = page_url(opts.sname, page)
     window.history.replaceState({}, '', url)
 
     if (scroll) scroll_top.scrollIntoView({ block: 'start' })
@@ -129,10 +136,8 @@
   }
 
   function page_url(sname, page) {
-    let url = `/~${nvinfo.bslug}/chaps?sname=${sname}`
-    if (page > 1) url += `&page=${page}`
-    if (opts.order == 'desc') url += '&order=desc'
-
+    let url = `/~${nvinfo.bslug}/chaps/${sname}`
+    if (page > 1) url += `/${page}`
     return url
   }
 
