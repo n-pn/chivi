@@ -37,8 +37,9 @@ class CV::BaseCtrl < Amber::Controller::Base
     end
   end
 
-  def save_session!(force = false)
-    return unless force || session.changed?
+  def save_session!
+    return unless session.changed?
+
     session.set_session
     cookies.write(response.headers)
   end
