@@ -2,9 +2,9 @@ Amber::Server.configure do
   pipeline :api do
     # plug Amber::Pipe::PoweredByAmber.new
     plug Amber::Pipe::ClientIp.new(["X-Forwarded-For"])
-    plug Amber::Pipe::Error.new
     plug Amber::Pipe::Logger.new(filter: ["upass"])
     plug Amber::Pipe::Session.new # do it manually
+    plug CV::ErrorPipe.new
     # plug Amber::Pipe::CORS.new
   end
 
