@@ -1,14 +1,6 @@
 <script context="module">
-  import { get_nvinfo } from '$api/nvinfo_api.js'
-
-  export async function load({ fetch, page }) {
-    const [err, data] = await get_nvinfo(fetch, page.params.book)
-
-    if (err) {
-      return { status: err, error: new Error(data) }
-    }
-
-    return { props: { nvinfo: data } }
+  export async function load({ context }) {
+    return { props: { nvinfo: context.nvinfo } }
   }
 </script>
 

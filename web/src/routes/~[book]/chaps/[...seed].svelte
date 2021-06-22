@@ -1,11 +1,9 @@
 <script context="module">
   import { remote_snames } from '$lib/constants.js'
-  import { get_nvinfo } from '$api/nvinfo_api.js'
   import { get_chseed, get_chlist } from '$api/chinfo_api.js'
 
-  export async function load({ page: { params, query }, fetch }) {
-    const [err1, nvinfo] = await get_nvinfo(fetch, params.book)
-    if (err1) this.error(err1, nvinfo)
+  export async function load({ page: { params, query }, fetch, context }) {
+    const { nvinfo } = context
 
     const { bhash, snames } = nvinfo
     const [sname, page] = extract_name_and_page(snames, params.seed)

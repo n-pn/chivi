@@ -37,21 +37,31 @@
     max-width: 100%;
   }
 
+  h1,
+  p {
+    color: var(--fg);
+  }
+
   h1 {
     font-size: 4rem;
     font-weight: 300;
     margin-bottom: 0.5rem;
-    @include fgcolor(neutral, 7);
-    // margin: 0 0 0.5em 0;
 
-    @include screen-min(sm) {
-      font-size: 4.5rem;
+    --fg: #{color(neutral, 7)};
+
+    @include tm-dark {
+      --fg: #{color(neutral, 4)};
     }
   }
 
   p {
     margin-top: 1.5rem;
-    font-style: italic;
-    @include fgcolor(neutral, 8);
+    // font-style: italic;
+
+    --fg: #{color(neutral, 8)};
+
+    @include tm-dark {
+      --fg: #{color(neutral, 5)};
+    }
   }
 </style>

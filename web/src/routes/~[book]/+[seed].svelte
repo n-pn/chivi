@@ -1,17 +1,8 @@
 <script context="module">
-  import { get_nvinfo } from '$api/nvinfo_api'
-
-  export async function load({ page: { params }, fetch }) {
-    const { book, seed: sname } = params
-
-    const [err, nvinfo] = await get_nvinfo(fetch, book)
-    if (err)
-      return {
-        status: 404,
-        error: new Error(nvinfo),
-      }
-
+  export async function load({ context }) {
+    const { nvinfo } = context
     const [snvid, _, total] = nvinfo.chseed[sname] || [bhash, '0', '0']
+
     return {
       props: { nvinfo, sname, snvid, chidx: +total + 1 },
     }

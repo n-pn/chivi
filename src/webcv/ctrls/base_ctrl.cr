@@ -50,6 +50,12 @@ class CV::BaseCtrl < Amber::Controller::Base
 
     yield response
   end
+
+  def halt!(status_code : Int32 = 200, content = "")
+    response.headers["Content-Type"] = "text/plain; charset=UTF-8"
+    response.status_code = status_code
+    response.puts(content)
+  end
 end
 
 class Amber::Validators::Params

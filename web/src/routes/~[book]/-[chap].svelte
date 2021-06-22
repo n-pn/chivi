@@ -5,7 +5,6 @@
   } from '$lib/layouts/Cvdata.svelte'
   import { active as upsert_active } from '$lib/widgets/Upsert.svelte'
 
-  import { get_nvinfo } from '$api/nvinfo_api'
   import { get_chinfo, get_chtext } from '$api/chtext_api'
 
   import {
@@ -15,9 +14,8 @@
     sticked as lookup_sticked,
   } from '$lib/widgets/Lookup.svelte'
 
-  export async function load({ fetch, page: { params, query } }) {
-    const [err1, nvinfo] = await get_nvinfo(fetch, params.book)
-    if (err1) return { status: err1, error: new Error(nvinfo) }
+  export async function load({ fetch, page: { params, query }, context }) {
+    const { nvinfo } = context
 
     const [chidx, sname] = params.chap.split('-').reverse()
     const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]

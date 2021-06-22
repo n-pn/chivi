@@ -2,13 +2,13 @@ export function get_now(date = new Date()) {
   return Math.round(date.getTime() / 1000)
 }
 
-export async function api_call(fetch, url) {
-  const res = await fetch(`/api/${url}`)
+export async function api_call(fetch, route) {
+  const res = await fetch(`/api/${route}`, {
+    headers: { 'Content-Type': 'application/json' },
+  })
 
-  let state = res.ok ? 0 : res.status
-  let value = res.ok ? await res.json() : await res.text()
-
-  return [state, value]
+  if (res.ok) return [0, await res.json()]
+  return [res.status, await res.text()]
 }
 
 export async function put_fetch(fetch, url, params) {

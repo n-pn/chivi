@@ -14,7 +14,7 @@ class CV::BookCtrl < CV::BaseCtrl
     list_books(matched)
   end
 
-  def show
+  def show : Nil
     bslug = params["bslug"]
 
     unless bhash = NvInfo.find_by_slug(bslug)
