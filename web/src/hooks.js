@@ -29,8 +29,8 @@ export async function getSession({ headers }) {
 
 function getChiviSc(cookies) {
   for (const cookie of cookies.split('; ')) {
-    const [name, value] = cookie.split('=')
-    if (name == 'chivi_sc') return value.substr(0, 10)
+    const [name, ...value] = cookie.split('=')
+    if (name == 'chivi_sc') return value.join('=')
   }
   return null
 }
