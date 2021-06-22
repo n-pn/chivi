@@ -73,7 +73,7 @@
       {#each books.slice(0, 8) as book}
         <a href="/~{book.bslug}" class="book">
           <div class="cover">
-            <BCover bhash={book.bhash} bcover={book.bcover} />
+            <BCover bcover={book.bcover} />
           </div>
 
           <div class="infos">

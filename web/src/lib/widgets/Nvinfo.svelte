@@ -25,7 +25,7 @@
 
 <a class="book" href="/~{nvinfo.bslug}/{route}">
   <div class="cover">
-    <BCover bhash={nvinfo.bhash} bcover={nvinfo.bcover} />
+    <BCover bcover={nvinfo.bcover} />
     {#if nvinfo.voters > 10}
       <div class="extra">
         <div class="score">

@@ -95,7 +95,7 @@
     </div>
 
     <div class="cover">
-      <BCover bhash={nvinfo.bhash} bcover={nvinfo.bcover} />
+      <BCover bcover={nvinfo.bcover} />
     </div>
 
     <section class="extra">
