@@ -65,9 +65,10 @@
   </a>
 
   <span slot="header-right" class="header-item _menu">
-    <SIcon name={bmark != 'default' ? mark_icons[bmark] : 'bookmark'} />
+    <SIcon
+      name={bmark && bmark != 'default' ? mark_icons[bmark] : 'bookmark'} />
     <span class="header-text _show-md"
-      >{bmark != 'default' ? mark_names[bmark] : 'Đánh dấu'}</span>
+      >{bmark && bmark != 'default' ? mark_names[bmark] : 'Đánh dấu'}</span>
 
     {#if $session.privi > 0}
       <div class="header-menu">
