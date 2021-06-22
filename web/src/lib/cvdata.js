@@ -40,17 +40,35 @@ export function render_text(nodes) {
 
 export function render_html(nodes) {
   let res = ''
+  let lvl = 0
   let idx = 0
   let pos = 0
 
   for (const [key, val, dic] of nodes) {
     const e_key = escape_html(key)
     const e_val = escape_html(val)
-    // .replace(/_/, '_\xAD') // force break words
+
+    if (val.charAt(0) == '“') {
+      lvl += 1
+      res += '<em>'
+    }
 
     res += render_node(e_key, e_val, dic, idx, pos)
+
+    const last = val.charAt(val.length - 1)
+    if (last == '”') {
+      lvl -= 1
+      res += '</em>'
+    }
+
     idx += 1
     pos += key.length
+  }
+
+  if (lvl < 0) {
+    res = '<em>' + res
+  } else if (lvl > 0) {
+    res += '</em>'
   }
 
   return res

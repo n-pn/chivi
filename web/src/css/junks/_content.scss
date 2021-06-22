@@ -37,40 +37,6 @@
 article {
   padding: 1rem 0;
   overflow-wrap: break-word;
-
-  > * + * {
-    @include props(margin-top, 1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
-    margin-bottom: 0;
-  }
-
-  h1 {
-    font-weight: 400;
-    // @include fgcolor(neutral, 8);
-
-    @include props(
-      font-size,
-      rem(22px),
-      rem(23px),
-      rem(24px),
-      rem(26px),
-      rem(28px)
-    );
-    @include props(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
-  }
-
-  p {
-    text-align: justify;
-    text-justify: auto;
-
-    @include props(
-      font-size,
-      rem(18px),
-      rem(19px),
-      rem(20px),
-      rem(21px),
-      rem(22px)
-    );
-  }
 }
 
 .m-input {

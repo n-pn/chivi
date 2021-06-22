@@ -51,8 +51,8 @@
 
 <script>
   import { onMount } from 'svelte'
-  import Cvline from './Cvdata/Line.svelte'
-  import { split_cvdata } from '$lib/cvdata'
+
+  import { split_cvdata, render_text, render_html } from '$lib/cvdata'
 
   export let cvdata = ''
   export let changed = false
@@ -62,8 +62,8 @@
 
   $: lines = split_cvdata(cvdata)
 
-  let hover_line = 0
-  let focus_line = 0
+  let hover_line = -1
+  let focus_line = -1
   let focus_word = null
 
   import read_selection from '$utils/read_selection'
@@ -97,18 +97,32 @@
       lookup_actived.set(true)
     }
   }
+
+  let texts = []
+  let htmls = []
+
+  // reset cached content if changed
+  $: if (cvdata) {
+    texts = []
+    htmls = []
+  }
+
+  function render_line(idx, hover, focus) {
+    const use_html = idx == hover || idx == focus
+
+    const nodes = lines[idx]
+    if (use_html) return (htmls[idx] ||= render_html(nodes))
+    return (texts[idx] ||= render_text(nodes))
+  }
 </script>
 
 <article class:changed>
-  {#each lines as nodes, index (index)}
+  {#each lines as _, index (index)}
     <div
-      class="chivi"
+      class="mtl {index > 0 ? '_p' : '_h'}"
       on:click={(e) => handle_click(e, index)}
       on:mouseenter={() => (hover_line = index)}>
-      <Cvline
-        {nodes}
-        frags={index == hover_line || index == focus_line}
-        title={index == 0} />
+      {@html render_line(index, hover_line, focus_line)}
     </div>
   {/each}
 </article>
@@ -124,5 +138,89 @@
 <style lang="scss">
   :global(.adsbygoogle) {
     margin-top: 1rem;
+  }
+
+  .mtl {
+    --fgcolor: #{color(neutral, 8)};
+    color: var(--fgcolor);
+
+    @include tm-dark {
+      --fgcolor: #{color(neutral, 3)};
+    }
+
+    &._h {
+      font-weight: 400;
+      // @include fgcolor(neutral, 8);
+
+      @include props(
+        font-size,
+        rem(22px),
+        rem(23px),
+        rem(24px),
+        rem(26px),
+        rem(28px)
+      );
+      @include props(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
+    }
+
+    &._p {
+      @include props(margin-top, 1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
+      margin-bottom: 0;
+      text-align: justify;
+      text-justify: auto;
+
+      @include props(
+        font-size,
+        rem(18px),
+        rem(19px),
+        rem(20px),
+        rem(21px),
+        rem(22px)
+      );
+    }
+  }
+
+  @mixin change-color($color: blue) {
+    cursor: pointer;
+    --border: #{color($color, 4)};
+    --active: #{color($color, 6)};
+
+    :global(.tm-dark) & {
+      --border: #{color($color, 6)};
+      --active: #{color($color, 4)};
+    }
+  }
+
+  :global(x-v) {
+    --border: transparent;
+    --active: #{color(primary, 9)};
+
+    color: var(--fgcolor);
+    border-bottom: 1px solid transparent;
+
+    .mtl:hover & {
+      border-color: var(--border);
+    }
+  }
+
+  :global(x-v:hover),
+  :global(x-v._focus) {
+    color: var(--active);
+  }
+
+  :global(x-v[data-d='1']) {
+    @include change-color(teal);
+  }
+
+  :global(x-v[data-d='2']) {
+    @include change-color(blue);
+  }
+
+  :global(x-v[data-d='3']) {
+    @include change-color(green);
+  }
+
+  :global(x-v[data-d='9']) {
+    @include change-color(gray);
   }
 </style>
