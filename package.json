@@ -1,10 +1,10 @@
 {
   "private": true,
   "scripts": {
-    "db-up": "bash tasks/backup/filedb-upload.sh",
-    "db-bk": "bash tasks/backup/filedb-backup.sh",
-    "ys-up": "bash tasks/backup/yousuu-upload.sh",
-    "ys-bk": "bash tasks/backup/yousuu-backup.sh",
+    "db-up": "bash priv/scripts/filedb-upload.sh",
+    "db-bk": "bash priv/scripts/filedb-backup.sh",
+    "ys-up": "bash priv/scripts/yousuu-upload.sh",
+    "ys-bk": "bash priv/scripts/yousuu-backup.sh",
     "backup": "yarn db-bk && yarn ys-bk",
     "upload": "yarn db-up && yarn ys-up",
     "rs-web": "ssh nipin@ssh.chivi.xyz \"sudo service chivi-web restart\"",
