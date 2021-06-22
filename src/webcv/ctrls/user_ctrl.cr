@@ -7,6 +7,7 @@ class CV::UserCtrl < CV::BaseCtrl
 
   def logout
     session.delete("cu_uname")
+    save_session!(force: true)
     render_json({msg: "ok"})
   end
 
@@ -16,7 +17,7 @@ class CV::UserCtrl < CV::BaseCtrl
 
     if uname = ViUser.validate(email, upass)
       dname = ViUser._index.fval(uname).not_nil!
-      session["cu_uname"] = dname
+      save_user!(dname)
       return_user
     else
       halt!(403, "Thông tin đăng nhập không chính xác!")
@@ -35,10 +36,15 @@ class CV::UserCtrl < CV::BaseCtrl
     raise "Mật khẩu quá ngắn (cần ít nhất 7 ký tự)" if upass.size < 7
 
     ViUser.insert!(dname, email, upass)
-    session["cu_uname"] = dname
+    save_user!(dname)
     return_user
   rescue err
     halt!(400, err.message)
+  end
+
+  private def save_user!(dname : String)
+    session["cu_uname"] = dname
+    save_session!(force: true)
   end
 
   private def return_user

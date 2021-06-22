@@ -13,6 +13,7 @@ async function serverFetch({ path, query, method, headers, rawBody: body }) {
     res_headers[key] = val
   }
 
+  // console.log({ res_headers })
   return {
     status: res.status,
     headers: res_headers,
@@ -20,26 +21,33 @@ async function serverFetch({ path, query, method, headers, rawBody: body }) {
   }
 }
 
-const sessions = {}
+const cached = {}
 
 export async function getSession({ headers }) {
   const cookie = getCookie(headers.cookie || '', 'chivi_sc')
   if (!cookie) return { uname: 'Khách', privi: '-1' }
 
-  sessions[cookie] ||= await currentUser(headers)
-  return sessions[cookie]
+  cached[cookie] ||= await currentUser(headers)
+  return cached[cookie]
 }
 
-function getCookie(cookies, name = 'chivi_sc') {
+function getCookie(cookies, cookie_name = 'svkit_ud') {
   for (const cookie of cookies.split(';')) {
-    const parts = cookie.split('=')
-    if (parts[0] == name) return parts[1]
+    const [name, value] = cookie.split('=')
+    if (name == cookie_name) return value.substr(0, 20)
   }
   return null
 }
 
 async function currentUser(headers) {
   const url = 'http://localhost:5010/api/_self'
-  const res = await fetch(url, { headers })
-  return await res.json()
+  const res = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      'cookie': headers.cookie,
+    },
+  })
+
+  const data = await res.json()
+  return data
 }

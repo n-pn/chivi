@@ -37,20 +37,16 @@ class CV::BaseCtrl < Amber::Controller::Base
     end
   end
 
-  def save_session!
-    if session.changed?
-      puts "Saving session!"
-
-      session.set_session
-      cookies.write(response.headers)
-    end
+  def save_session!(force = false)
+    return unless force || session.changed?
+    session.set_session
+    cookies.write(response.headers)
   end
 
   def render_json(status_code = 200)
     response.status_code = status_code
     response.content_type = "application/json"
 
-    save_session!
     yield response
   end
 end
