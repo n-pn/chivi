@@ -6,8 +6,6 @@ require "../../seeds/rm_chtext"
 require "../../cutil/ram_cache"
 
 class CV::ChText
-  DIR = "_db/ch_texts"
-
   CACHED = RamCache(self).new(512)
 
   def self.load(bname : String, sname : String, snvid : String,
@@ -23,8 +21,7 @@ class CV::ChText
 
   def initialize(@bname : String, @sname : String, @snvid : String,
                  @chidx : Int32, @schid : String)
-    @text_dir = "#{DIR}/origs/#{@sname}/#{@snvid}"
-    ::FileUtils.mkdir_p(@text_dir)
+    @text_dir = "_db/chseed/#{@sname}/#{@snvid}"
 
     zip_bname = (@chidx // 100).to_s.rjust(3, '0')
     @zip_file = File.join(@text_dir, zip_bname + ".zip")
@@ -108,6 +105,7 @@ class CV::ChText
   end
 
   def save_zh!(lines : Array(String)) : Nil
+    ::FileUtils.mkdir_p(@text_dir)
     out_file = File.join(@text_dir, "#{@schid}.txt")
     File.open(out_file, "w") { |io| lines.join(io, "\n") }
 

@@ -7,7 +7,8 @@ require "../../tabkv/value_map"
 require "../../cutil/ram_cache"
 
 class CV::ChInfo
-  DIR = "_db/ch_infos"
+  SEED_DIR = "_db/chseed"
+  TRAN_DIR = "_db/chtran"
 
   CACHED = RamCache(self).new(512)
 
@@ -15,8 +16,8 @@ class CV::ChInfo
     CACHED.get("#{sname}/#{snvid}") { new(bname, sname, snvid) }
   end
 
-  getter origs : ValueMap { ValueMap.new(map_file(@snvid, "origs")) }
-  getter trans : ValueMap { ValueMap.new(map_file(@snvid, "trans")) }
+  getter seeds : ValueMap { ValueMap.new("#{SEED_DIR}/#{@sname}/#{@snvid}/_id.tsv") }
+  getter trans : ValueMap { ValueMap.new("_db/ch_infos/trans/#{@sname}/#{@snvid}.tsv") }
 
   alias Chitem = Tuple(String, Array(String))
   getter infos : Array(Chitem) do
@@ -25,16 +26,12 @@ class CV::ChInfo
   end
 
   def initialize(@bname : String, @sname : String, @snvid : String)
-    ::FileUtils.mkdir_p("#{DIR}/origs/#{@sname}")
-    ::FileUtils.mkdir_p("#{DIR}/trans/#{@sname}")
-  end
-
-  private def map_file(name : String, type : String = "trans")
-    "#{DIR}/#{type}/#{@sname}/#{name}.tsv"
+    ::FileUtils.mkdir_p("#{SEED_DIR}/#{@sname}/#{@snvid}")
+    ::FileUtils.mkdir_p("#{TRAN_DIR}/#{@sname}/#{@snvid}")
   end
 
   def set!(chidx : String, schid : String, title : String, label : String)
-    origs.set!(chidx, [schid, title, label])
+    seeds.set!(chidx, [schid, title, label])
     trans!(reset: false)
   end
 
@@ -45,26 +42,26 @@ class CV::ChInfo
       RmInfo.mkdir!(@sname)
 
       parser = RmInfo.new(@sname, @snvid, ttl: ttl)
-      latest = origs.data.last_value?.try(&.first?) || ""
+      latest = seeds.data.last_value?.try(&.first?) || ""
 
       if mode > 1 || parser.last_schid != latest
         mtime = parser.mftime
 
         parser.chap_list.each_with_index(1) do |chap, index|
-          origs.set!(index.to_s, chap.to_a)
+          seeds.set!(index.to_s, chap.to_a)
         end
       end
     end
 
-    {mtime, origs.size}
+    {mtime, seeds.size}
   end
 
   def updated?
-    @origs.try(&.upds.size.> 0)
+    @seeds.try(&.upds.size.> 0)
   end
 
   def trans!(reset : Bool = false)
-    chaps = reset ? origs.data : origs.upds
+    chaps = reset ? seeds.data : seeds.upds
     return if chaps.empty?
 
     cvmtl = Cvmtl.generic(@bname)
@@ -79,7 +76,7 @@ class CV::ChInfo
       trans.set!(chidx, [infos[0], vi_title, vi_label, url_slug])
     end
 
-    origs.save!(clean: false)
+    seeds.save!(clean: false)
     trans.save!(clean: false)
     @infos = nil
   end
@@ -107,7 +104,7 @@ class CV::ChInfo
   end
 
   def save!
-    @origs.try(&.save!)
+    @seeds.try(&.save!)
     @trans.try(&.save!)
   end
 end

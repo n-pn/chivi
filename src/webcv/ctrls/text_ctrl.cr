@@ -77,14 +77,14 @@ class CV::TextCtrl < CV::BaseCtrl
 
     chinfo = ChInfo.load(bname, sname, snvid)
 
-    chmax = chinfo.origs.size + 1
+    chmax = chinfo.seeds.size + 1
     chidx = chmax if chidx < 1 || chidx > chmax
 
     # schid = chinfo.origs.fval(chidx.to_s) || chidx.to_s.rjust(4, '0')
 
     schid = chidx.to_s.rjust(4, '0')
     chinfo.set!(chidx.to_s, schid, lines[0], label)
-    NvInfo.load(bname).set_chseed("chivi", bname, Time.utc.to_unix, chinfo.origs.size)
+    NvInfo.load(bname).set_chseed("chivi", bname, Time.utc.to_unix, chinfo.seeds.size)
 
     chtext = ChText.load(bname, sname, snvid, chidx - 1, schid)
     chtext.set_zh!(lines)

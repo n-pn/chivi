@@ -17,8 +17,7 @@ class CV::Zxcs::SplitText
   INP_RAR = "_db/.cache/zxcs_me/.rars"
   INP_TXT = "_db/.cache/zxcs_me/texts"
 
-  OUT_TXT = "_db/ch_texts/origs/zxcs_me"
-  OUT_IDX = "_db/ch_infos/origs/zxcs_me"
+  OUT_DIR = "_db/zxcs_me"
 
   getter csdet = ICU::CharsetDetector.new
 
@@ -121,10 +120,12 @@ class CV::Zxcs::SplitText
   def split_chaps!(inp_file : String, label = "1/1")
     snvid = File.basename(inp_file, ".txt")
 
-    out_idx = "#{OUT_IDX}/#{snvid}.tsv"
-    out_dir = "#{OUT_TXT}/#{snvid}"
+    out_dir = "#{OUT_DIR}/#{snvid}"
+    out_idx = "#{out_dir}/_id.tsv"
 
     return if File.exists?(out_idx)
+
+    FileUtils.mkdir_p(out_dir)
     input = File.read(inp_file).split(/\r\n?|\n/)
 
     # TODO: remove these hacks

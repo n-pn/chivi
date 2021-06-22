@@ -14,7 +14,7 @@ echo $ssh
 ## upload dicts
 # rsync -azi --no-p "_db/vp_dicts/_inits/" "$ssh/_db/vp_dicts/_inits/"
 rsync -azi --no-p "_db/vp_dicts/active/" "$ssh/_db/vp_dicts/backup/"
-rsync -azi --no-p "_db/vp_dicts/active/" "$ssh/_db/vp_dicts/active/"
+# rsync -azi --no-p "_db/vp_dicts/active/" "$ssh/_db/vp_dicts/active/"
 
 ## upload user data
 rsync -azi --no-p "_db/vi_users/" "$ssh/_db/vi_users/"
@@ -24,6 +24,5 @@ rsync -azi --no-p "_db/_seeds/" "$ssh/_db/_seeds/"
 
 ## upload book data
 rsync -azi --no-p "_db/nv_infos/" "$ssh/_db/nv_infos/"
-rsync -azi --no-p "_db/ch_infos/" "$ssh/_db/ch_infos/"
 
 #rsync -azi --no-p --delete "_db/nv_infos/covers" "$ssh/_db/nv_infos/"

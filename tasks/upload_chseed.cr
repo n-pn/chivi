@@ -3,10 +3,10 @@
 # require "json"
 require "colorize"
 
-module CV::UploadText
+module CV::UploadSeed
   extend self
 
-  INP = "_db/ch_texts/origs"
+  INP = "_db/chseed"
   OUT = "/home/nipin/srv/chivi.xyz"
 
   def upload_all!(snames : Array(String))
@@ -60,8 +60,8 @@ module CV::UploadText
   end
 end
 
-existed = Dir.children(CV::UploadText::INP)
+existed = Dir.children(CV::UploadSeed::INP)
 uploads = ARGV.select { |x| existed.includes?(x) }
 uploads = existed if uploads.empty?
 
-CV::UploadText.upload_all!(uploads)
+CV::UploadSeed.upload_all!(uploads)
