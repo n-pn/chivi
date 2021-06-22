@@ -59,7 +59,7 @@
   }
 
   async function convert() {
-    // if ($u_power < 1) return
+    // if ($session.privi < 1) return
 
     const url = `/api/tools/convert/various`
     const res = await fetch(url, {

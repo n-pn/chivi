@@ -8,8 +8,6 @@
   import { get_nvinfo } from '$api/nvinfo_api'
   import { get_chinfo, get_chtext } from '$api/chtext_api'
 
-  import { u_power } from '$lib/stores'
-
   import {
     dname as lookup_dname,
     enabled as lookup_enabled,
@@ -45,6 +43,8 @@
 </script>
 
 <script>
+  import { session } from '$app/stores'
+
   import SIcon from '$lib/blocks/SIcon.svelte'
   import Vessel from '$lib/layouts/Vessel.svelte'
   import Error from '../__error.svelte'
@@ -54,7 +54,7 @@
   export let cvdata = ''
 
   export let changed = false
-  $: if ($u_power > 0 && changed) reload_chap()
+  $: if ($session.privi > 0 && changed) reload_chap()
 
   $: [book_path, list_path, prev_path, next_path] = gen_paths(nvinfo, chinfo)
   $: $lookup_dname = nvinfo.bhash
@@ -155,7 +155,7 @@
   <svelte:fragment slot="header-right">
     <button
       class="header-item"
-      disabled={$u_power < 1}
+      disabled={$session.privi < 1}
       on:click={reload_chap}
       data-kbd="r">
       <SIcon name="refresh-ccw" spin={_reload} />

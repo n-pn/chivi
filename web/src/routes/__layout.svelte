@@ -1,8 +1,7 @@
 <script>
   import { onMount } from 'svelte'
-  import { navigating, page } from '$app/stores'
-  import { get_self } from '$api/viuser_api.js'
-  import { u_dname, u_power, l_scroll, dark_mode } from '$lib/stores'
+  import { navigating, page, session } from '$app/stores'
+  import { l_scroll, dark_mode } from '$lib/stores'
   import Loader from '$lib/layouts/Loader.svelte'
 
   import '../css/globals.scss'
@@ -14,19 +13,6 @@
     ['Discord', 'https://discord.gg/mdC3KQH'],
     ['Github', 'https://github.com/np-nam/chivi'],
   ]
-
-  onMount(async () => {
-    // TODO: load user from session
-    const [err, user] = await get_self(fetch)
-
-    if (err) {
-      $u_dname = 'Khách'
-      $u_power = 0
-    } else {
-      $u_dname = user.dname
-      $u_power = user.power
-    }
-  })
 
   $: {
     if (typeof gtag === 'function') {
@@ -46,13 +32,22 @@
 
   // function disable_router_unless_vip(e) {
   //   // disabled until adsense is unblocked
-  //   if ($u_power < 2) e.stopPropagation()
+  //   if ($session.privi < 2) e.stopPropagation()
   // }
 
   let root
   onMount(() => (root = document.documentElement))
   $: root && root.classList.toggle('tm-dark', $dark_mode)
 </script>
+
+<svelte:head>
+  {#if $session.privi < 2}
+    <script
+      async
+      data-ad-client="ca-pub-5468438393284967"
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  {/if}
+</svelte:head>
 
 <svelte:window on:scroll={track_scrolling} />
 

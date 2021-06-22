@@ -1,5 +1,7 @@
 <script>
-  import { u_dname, u_power, l_scroll } from '$lib/stores'
+  import { session } from '$app/stores'
+  import { l_scroll } from '$lib/stores'
+
   import SIcon from '$lib/blocks/SIcon.svelte'
 
   import Signin from '$lib/widgets/Signin.svelte'
@@ -32,7 +34,7 @@
       <button class="header-item" on:click={() => (active_usercp = true)}>
         <SIcon name="user" />
         <span class="header-text _show-md">
-          {#if $u_power > 0}{$u_dname} [{$u_power}]{:else}Khách{/if}
+          {#if $session.privi > 0}{$session.uname} [{$session.privi}]{:else}Khách{/if}
         </span>
       </button>
     </div>
@@ -53,7 +55,7 @@
 
 <Appnav bind:actived={active_appnav} />
 
-{#if $u_dname == 'Khách'}
+{#if $session.uname == 'Khách'}
   <Signin bind:actived={active_usercp} />
 {:else}
   <Usercp bind:actived={active_usercp} />

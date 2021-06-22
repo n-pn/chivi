@@ -39,7 +39,7 @@
 </script>
 
 <script>
-  import { u_power } from '$lib/stores'
+  import { session } from '$app/stores'
 
   import SIcon from '$lib/blocks/SIcon.svelte'
   import RTime from '$lib/blocks/RTime.svelte'
@@ -102,7 +102,7 @@
   }
 
   function handle_keypress(evt) {
-    if ($u_power < 1) return
+    if ($session.privi < 1) return
 
     switch (evt.keyCode) {
       case 72:
@@ -222,7 +222,7 @@
         {/if}
       {/if}
 
-      {#if $u_power > 2}
+      {#if $session.privi > 2}
         <button class="-name" on:click={() => (add_seed = !add_seed)}>
           <SIcon name={add_seed ? 'minus' : 'plus'} />
         </button>

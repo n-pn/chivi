@@ -1,5 +1,4 @@
 <script context="module">
-  import { u_power } from '$lib/stores'
   import { writable } from 'svelte/store'
 
   import { titleize } from '$utils/text_utils'
@@ -11,6 +10,8 @@
 </script>
 
 <script>
+  import { session } from '$app/stores'
+
   import SIcon from '$lib/blocks/SIcon.svelte'
 
   import Input from './Upsert/Input.svelte'
@@ -65,10 +66,10 @@
     infos = props.infos
 
     p_old = infos.map((info) => info.power)
-    p_now = p_old.map((pmin, i) => {
-      let outp = i + 2
-      if (outp < pmin) outp = pmin
-      return outp < $u_power ? outp : $u_power
+    p_now = p_old.map((p_min, i) => {
+      let privi = i + 2
+      if (privi < p_min) privi = p_min
+      return privi < $session.privi ? privi : $session.privi
     })
 
     origs = infos.map((info) => info.vals[0] || '')
@@ -106,7 +107,7 @@
         return hide_modal(evt, false)
 
       case 38:
-        if (evt.altKey && p_now[$on_tab] < $u_power) p_now[$on_tab] += 1
+        if (evt.altKey && p_now[$on_tab] < $session.privi) p_now[$on_tab] += 1
         break
 
       case 40:
@@ -222,11 +223,11 @@
 
       <div class="vfoot">
         <Vprio bind:prio={infos[$on_tab].prio} />
-        <Power bind:power={p_now[$on_tab]} p_max={$u_power} />
+        <Power bind:power={p_now[$on_tab]} p_max={$session.privi} />
 
         <button
           class="m-button _large _{curr_power_class} _{curr_state_class}"
-          disabled={$u_power <= $on_tab}
+          disabled={$session.privi <= $on_tab}
           on:click={() => submit_val($on_tab)}>
           <span class="-text">{submit_state}</span>
         </button>

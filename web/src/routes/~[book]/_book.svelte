@@ -1,5 +1,5 @@
 <script>
-  import { u_power, u_dname } from '$lib/stores.js'
+  import { session } from '$app/stores.js'
   import { set_mark, get_mark } from '$api/marked_api.js'
   import { host_name, map_status } from '$utils/book_utils.js'
   import { mark_types, mark_names, mark_icons } from '$lib/constants.js'
@@ -20,13 +20,13 @@
 
   let bmark = ''
   onMount(async () => {
-    const [err, data] = await get_mark(fetch, $u_dname, nvinfo.bhash)
+    const [err, data] = await get_mark(fetch, $session.uname, nvinfo.bhash)
     if (!err) bmark = data.bmark
   })
 
   async function mark_book(new_mark) {
     bmark = bmark == new_mark ? '' : new_mark
-    await set_mark(fetch, $u_dname, nvinfo.bhash, bmark)
+    await set_mark(fetch, $session.uname, nvinfo.bhash, bmark)
   }
 
   function gen_keywords(nvinfo) {
@@ -69,7 +69,7 @@
     <span class="header-text _show-md"
       >{bmark != 'default' ? mark_names[bmark] : 'Đánh dấu'}</span>
 
-    {#if $u_power > 0}
+    {#if $session.privi > 0}
       <div class="header-menu">
         {#each mark_types as mtype}
           <div class="-item" on:click={() => mark_book(mtype)}>
@@ -167,7 +167,7 @@
     </section>
   </div>
 
-  {#if $u_power < 2}
+  {#if $session.privi < 2}
     <AdItem type="banner" />
   {/if}
 

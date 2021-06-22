@@ -9,7 +9,7 @@ Restart=always
 RestartSec=5
 User=nipin
 Environment=PORT=5010
-Environment=KEMAL_ENV=production
+Environment=AMBER_ENV=production
 WorkingDirectory=/home/nipin/srv/chivi.xyz
 ExecStart=/home/nipin/srv/chivi.xyz/bin/chivi
 

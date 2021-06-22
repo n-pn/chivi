@@ -1,6 +1,7 @@
 <script>
+  import { session } from '$app/stores'
   import { mark_names, mark_icons } from '$lib/constants'
-  import { u_dname, u_power, dark_mode } from '$lib/stores'
+  import { dark_mode } from '$lib/stores'
 
   import SIcon from '$lib/blocks/SIcon.svelte'
   import Slider from './Slider.svelte'
@@ -8,8 +9,7 @@
   export let actived = false
 
   async function logout() {
-    $u_dname = 'Khách'
-    $u_power = 0
+    $session = { uname: 'Khách', privi: -1 }
     await fetch('/api/logout')
   }
 
@@ -27,7 +27,7 @@
     <div class="-icon">
       <SIcon name="user" />
     </div>
-    <div class="-text">{$u_dname} [{$u_power}]</div>
+    <div class="-text">{$session.uname} [{$session.privi}]</div>
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
@@ -42,7 +42,7 @@
 
   <div class="chips">
     {#each ['reading', 'onhold', 'pending'] as mtype}
-      <a href="/@{$u_dname}?bmark={mtype}" class="-chip">
+      <a href="/@{$session.uname}?bmark={mtype}" class="-chip">
         <SIcon name={mark_icons[mtype]} />
         <span class="-text">
           {mark_names[mtype]}

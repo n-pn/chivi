@@ -42,6 +42,6 @@ class CV::UserCtrl < CV::BaseCtrl
   end
 
   private def return_user
-    render_json({dname: cu_uname, power: cu_privi})
+    render_json({uname: cu_uname, privi: cu_privi})
   end
 end

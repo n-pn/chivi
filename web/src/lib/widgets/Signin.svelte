@@ -1,6 +1,7 @@
 <script>
+  import { session } from '$app/stores'
+
   import { signin_user } from '$api/viuser_api'
-  import { u_dname, u_power } from '$lib/stores'
   import SIcon from '$lib/blocks/SIcon.svelte'
   import Slider from './Slider.svelte'
 
@@ -19,8 +20,7 @@
     if (_err) {
       errs = data
     } else {
-      $u_dname = data.dname
-      $u_power = data.power
+      $session = data
       actived = false
     }
   }
