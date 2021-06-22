@@ -1,8 +1,4 @@
 <script context="module">
-  import { onMount } from 'svelte'
-
-  import Cvline from './Cvdata/Line.svelte'
-
   import Lookup, {
     input as lookup_input,
     actived as lookup_actived,
@@ -51,20 +47,20 @@
 
     return [input, lower, upper > lower ? upper : lower + 1]
   }
-
-  function parse_input(line) {
-    return line.split('\t').map((x) => x.split('ǀ'))
-  }
 </script>
 
 <script>
+  import { onMount } from 'svelte'
+  import Cvline from './Cvdata/Line.svelte'
+  import { split_cvdata } from '$lib/cvdata'
+
   export let cvdata = ''
   export let changed = false
 
   export let dname = 'various'
   export let bname = 'Tổng hợp'
 
-  $: lines = split_input(cvdata)
+  $: lines = split_cvdata(cvdata)
 
   let hover_line = 0
   let focus_line = 0
@@ -100,14 +96,6 @@
       lookup_input.set(gen_context(nodes, idx, 10, 20))
       lookup_actived.set(true)
     }
-  }
-
-  function split_input(input) {
-    if (!input) return []
-    return input
-      .split('\n')
-      .filter((x) => x)
-      .map((x) => parse_input(x))
   }
 </script>
 

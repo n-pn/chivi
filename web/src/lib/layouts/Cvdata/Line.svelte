@@ -1,90 +1,29 @@
-<script context="module">
-  export function render(nodes) {
-    if (nodes.length == 0) return ['', '']
-
-    let res_0 = ''
-    let res_1 = ''
-
-    let idx = 0
-    let pos = 0
-
-    let nest = 0
-
-    for (const [key, val, dic] of nodes) {
-      const e_key = escape_html(key)
-      const e_val = escape_html(val).replace(/_/, '_\xAD') // force break words
-
-      if (val.charAt(0) == '“') {
-        nest += 1
-        res_0 += '<em>'
-        res_1 += '<em>'
-      }
-
-      res_0 += render_node(e_key, e_val, dic, idx, pos)
-      res_1 += e_val
-
-      const last = val.charAt(val.length - 1)
-      if (last == '”') {
-        nest -= 1
-        res_0 += '</em>'
-        res_1 += '</em>'
-      }
-
-      idx += 1
-      pos += key.length
-    }
-
-    if (nest < 0) {
-      res_0 = '<em>' + res_0
-      res_1 = '<em>' + res_1
-    } else if (nest > 0) {
-      res_0 += '</em>'
-      res_1 += '</em>'
-    }
-
-    return [res_0, res_1]
-  }
-
-  const escape_tags = {
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&apos;',
-  }
-
-  function replace_tag(tag) {
-    return escape_tags[tag] || tag
-  }
-
-  function escape_html(str) {
-    return str.replace(/[&<>]/g, replace_tag)
-  }
-
-  function render_node(key, val, dic, idx, pos) {
-    return `<x-v data-k="${key}" data-d=${dic} data-i=${idx} data-p=${pos}>${val}</x-v>`
-  }
-</script>
-
 <script>
+  import { render_text, render_html } from '$lib/cvdata'
+
   export let nodes = []
   export let title = false
   export let frags = false
 
-  $: [html_frag, html_nofrag] = render_html(nodes)
-  $: content = frags ? html_frag : html_nofrag
+  let text = render_text(nodes)
+  let html = null
+  let body = text
 
-  function render_html(nodes) {
-    return render(nodes)
+  $: if (frags) {
+    html ||= render_html(nodes)
+    body = html
+  } else {
+    body = text
   }
 </script>
 
 {#if title}
   <h1 class="mtl">
-    {@html content}
+    {@html body}
   </h1>
 {:else}
   <p class="mtl">
-    {@html content}
+    {@html body}
   </p>
 {/if}
 
