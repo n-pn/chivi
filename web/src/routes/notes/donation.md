@@ -18,13 +18,13 @@ Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn t�
 - Techcombank: **19034964108016**
 
 **Lưu ý**: Hãy lưu lại tên tài khoản của bạn hoặc email đã đăng ký trong chivi để được nâng cấp quyền hạn.
-Hoặc liên hệ qua các kênh liên lạc: [Facebook](https://www.facebook.com/chivi.xyz), Discord: `Nitro#9737`, [Vozforums](https://voz.vn/conversations/add?to=Nipin)
+Hoặc liên hệ qua các kênh liên lạc: [Facebook](https://www.facebook.com/chivi.xyz),  [Vozforums](https://voz.vn/conversations/add?to=Nipin) hoặc Discord: **Nitro#9737**.
 
 
 ## Tại sao phải ủng hộ Chivi?
 
-Server của Chivi cần CPU + RAM khoẻ để phục vụ tính năng dịch thời gian thực.
-Server của Chivi cần SSD dung lượng cao để chứa text từ nhiều nguồn (hiện tại khoảng 150 GB).
+Server của Chivi cần CPU + RAM khoẻ để phục vụ tính năng dịch truyện thời gian thực.
+Server của Chivi cần ổ SSD to để chứa text từ nhiều nguồn (hiện tại khoảng 150 GB).
 
 Chivi lấy text truyện từ nhiều nguồn, những nguồn này không ổn định và cần thiết thời gian để bảo dưỡng.
 Ví dụ: `5200.net` đổi tên thành `5200.tv`, `xbiquge.cc` đổi thành `xbiquge.so`, `69shu.com` đổi lại bố cục trang web, `jx.la` chết rồi phục sinh thành trang khác....
