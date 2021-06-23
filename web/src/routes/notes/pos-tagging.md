@@ -5,6 +5,7 @@ Nguồn: https://www.biaodianfu.com/pos-tagging-set.html
 ## PFR 人民日报标注语料库 (Nhân dân nhật báo)
 
 | Code | Từ loại | Nghĩa Việt |
+| ---- | ------- | ---------- |
 | a | 形容词 | Tính từ |
 | ad | 副形词 | Trạng từ |
 | Ag | 形语素 | Tính ngữ tố |
@@ -41,8 +42,8 @@ Nguồn: https://www.biaodianfu.com/pos-tagging-set.html
 | t | 时间词 | Thời gian |
 | Tg | 时语素 | Thì ngữ tố |
 | u | 助词 | Trợ từ |
-| ud | 结构助词 得| Trợ từ kết cấu |
 | Ug | 时态助词 | Trợ từ thì thái |
+| ud | 结构助词 得| Trợ từ `得` |
 | uj | 结构助词 的 | Trợ từ `的` |
 | ul | 时态助词 了 | Trợ từ `了` |
 | uv | 结构助词 地 | Trợ từ `地` |
@@ -120,3 +121,14 @@ https://github.com/fxsjy/jieba
 ## THULAC
 
 http://thulac.thunlp.org/
+
+## Baidu LAC
+
+| 标签 | 含义     | 标签 | 含义     | 标签 | 含义     | 标签 | 含义     |
+| ---- | -------- | ---- | -------- | ---- | -------- | ---- | -------- |
+| n    | 普通名词 | f    | 方位名词 | s    | 处所名词  | nw   | 作品名   |
+| nz   | 其他专名 | v    | 普通动词 | vd   | 动副词   | vn   | 名动词   |
+| a    | 形容词   | ad   | 副形词   | an   | 名形词   | d    | 副词     |
+| m    | 数量词   | q    | 量词     | r    | 代词     | p    | 介词     |
+| c    | 连词     | u    | 助词     | xc   | 其他虚词 | w    | 标点符号 |
+| PER  | 人名     | LOC  | 地名     | ORG  | 机构名   | TIME | 时间     |
