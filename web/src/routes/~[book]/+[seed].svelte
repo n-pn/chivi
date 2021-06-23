@@ -36,7 +36,7 @@
       const data = await res.json()
       goto(`/~${nvinfo.bslug}/-${data.uslug}-${sname}-${data.chidx}`)
     } else {
-      console.log(await res.text())
+      await res.text()
     }
   }
 </script>

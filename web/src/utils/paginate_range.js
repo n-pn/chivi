@@ -17,7 +17,6 @@ export default function paginate_range(caret = 1, total = 1, limit = 5) {
     level += 1
   }
 
-  // console.log({ output })
   return output
 }
 

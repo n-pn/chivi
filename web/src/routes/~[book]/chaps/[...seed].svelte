@@ -31,7 +31,6 @@
     page = +(page || '')
     if (page < 1) page = 1
 
-    console.log({ name, page })
     return [name, page]
   }
 
