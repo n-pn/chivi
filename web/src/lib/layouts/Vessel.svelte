@@ -45,7 +45,7 @@
 
 <main class="main" class:_shift={shift}>
   <div class="center _main">
-    {#if pledge && $session.privi < 4}
+    {#if pledge && $session.privi < 2}
       <div class="pledge">
         Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển.
         Đọc thêm <a href="/notes/donation">tại đây</a>.
