@@ -2,7 +2,7 @@
 title: Ủng hộ Chivi
 ---
 
-Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển. [Quảng cáo không ăn thua.](/revenue.png)
+Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển. <a href="/revenue.png" rel="external">Quảng cáo không ăn thua.</a>
 
 ## Phương thức ủng hộ
 

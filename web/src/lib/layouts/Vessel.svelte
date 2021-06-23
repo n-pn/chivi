@@ -9,6 +9,8 @@
   import Usercp from '$lib/widgets/Usercp.svelte'
 
   export let shift = false
+  export let pledge = true
+
   let active_usercp = false
   let active_appnav = false
 </script>
@@ -43,6 +45,13 @@
 
 <main class="main" class:_shift={shift}>
   <div class="center _main">
+    {#if pledge && $session.privi < 4}
+      <div class="pledge">
+        Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển.
+        Đọc thêm <a href="/notes/donation">tại đây</a>.
+      </div>
+    {/if}
+
     <slot />
   </div>
 
@@ -112,6 +121,23 @@
           color(neutral, 8, 0.7)
         );
       }
+    }
+  }
+
+  .pledge {
+    text-align: center;
+    margin-top: 0.75rem;
+    font-size: rem(15px);
+
+    color: var(--fg);
+    --fg: #{color(neutral, 6)};
+
+    @include tm-dark {
+      --fg: #{color(neutral, 4)};
+    }
+
+    > a {
+      color: color(primary, 5);
     }
   }
 
