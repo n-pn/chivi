@@ -5,23 +5,23 @@ require "./rm_spider"
 
 class CV::RmChtext
   # cache folder path
-  def self.c_dir(zseed : String, snvid : String) : String
-    "_db/.cache/#{zseed}/texts/#{snvid}"
+  def self.c_dir(sname : String, snvid : String) : String
+    "_db/.cache/#{sname}/texts/#{snvid}"
   end
 
-  def self.mkdir!(zseed : String, snvid)
-    ::FileUtils.mkdir_p(c_dir(zseed, snvid))
+  def self.mkdir!(sname : String, snvid)
+    ::FileUtils.mkdir_p(c_dir(sname, snvid))
   end
 
-  getter zseed : String
+  getter sname : String
   getter snvid : String
   getter schid : String
 
-  def initialize(@zseed, @snvid, @schid, valid = 10.years, label = "1/1")
-    file = RmSpider.chtext_file(@zseed, @snvid, @schid)
-    link = RmSpider.chtext_link(@zseed, @snvid, @schid)
+  def initialize(@sname, @snvid, @schid, valid = 10.years, label = "1/1")
+    file = RmSpider.chtext_file(@sname, @snvid, @schid)
+    link = RmSpider.chtext_link(@sname, @snvid, @schid)
 
-    html = RmSpider.fetch(file, link, zseed: @zseed, valid: valid, label: label)
+    html = RmSpider.fetch(file, link, sname: @sname, valid: valid, label: label)
     @rdoc = Myhtml::Parser.new(html)
   end
 
@@ -35,7 +35,7 @@ class CV::RmChtext
   end
 
   getter title : String do
-    case @zseed
+    case @sname
     when "duokan8"
       extract_title("#read-content > h2")
         .sub(/^章节目录\s*/, "")
@@ -52,7 +52,7 @@ class CV::RmChtext
   end
 
   getter paras : Array(String) do
-    case @zseed
+    case @sname
     when "hetushu" then extract_hetushu_paras
     when "69shu"   then extract_69shu_paras
     when "zhwenpg" then extract_paras("#tdcontent .content")
@@ -84,7 +84,7 @@ class CV::RmChtext
       tag.remove! if {"script", "div"}.includes?(tag.tag_name)
     end
 
-    if @zseed == "bxwxorg"
+    if @sname == "bxwxorg"
       node.children.each do |tag|
         tag.remove! if tag.attributes["style"]?
       end
@@ -93,7 +93,7 @@ class CV::RmChtext
     lines = TextUtils.split_html(node.inner_text("\n"))
     lines.shift if lines.first == title
 
-    case @zseed
+    case @sname
     when "zhwenpg"
       title.split(/\s+/).each { |x| lines[0] = lines[0].sub(/^#{x}\s*/, "") }
     when "jx_la"
@@ -130,7 +130,7 @@ class CV::RmChtext
 
     lines
   rescue err
-    puts "<remote_text> [#{@zseed}/#{@snvid}/#{@schid}] error: #{err}".colorize.red
+    puts "<remote_text> [#{@sname}/#{@snvid}/#{@schid}] error: #{err}".colorize.red
     [] of String
   end
 
@@ -161,11 +161,11 @@ class CV::RmChtext
       return node.attributes["content"]
     end
 
-    html_file = RmSpider.chtext_file(@zseed, @snvid, @schid)
+    html_file = RmSpider.chtext_file(@sname, @snvid, @schid)
     meta_file = html_file.sub(".html", ".meta")
     return File.read(meta_file) if File.exists?(meta_file)
 
-    html_link = RmSpider.chtext_link(@zseed, @snvid, @schid)
+    html_link = RmSpider.chtext_link(@sname, @snvid, @schid)
     json_link = html_link.sub("#{@schid}.html", "r#{@schid}.json")
 
     headers = HTTP::Headers{

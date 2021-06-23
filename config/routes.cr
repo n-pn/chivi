@@ -25,12 +25,12 @@ Amber::Server.configure do
     get "/books/:bslug", CV::BookCtrl, :show
     get "/users/:uname/books", CV::BookCtrl, :user_books
 
-    get "/chaps/:bhash/:zseed/:snvid", CV::ChapCtrl, :index
-    get "/chaps/:bhash/:zseed/:snvid/:page", CV::ChapCtrl, :paged
+    get "/chaps/:bhash/:sname/:snvid", CV::ChapCtrl, :index
+    get "/chaps/:bhash/:sname/:snvid/:page", CV::ChapCtrl, :paged
 
-    get "/texts/:bname/:zseed/:snvid/:chidx", CV::TextCtrl, :show
-    get "/texts/:bname/:zseed/:snvid/:chidx/:schid", CV::TextCtrl, :convert
-    put "/texts/:bname/:zseed/:snvid", CV::TextCtrl, :upsert
+    get "/texts/:bname/:sname/:snvid/:chidx", CV::TextCtrl, :show
+    get "/texts/:bname/:sname/:snvid/:chidx/:schid", CV::TextCtrl, :convert
+    put "/texts/:bname/:sname/:snvid", CV::TextCtrl, :upsert
 
     get "/mark-books/:bname", CV::MarkCtrl, :show
     put "/mark-books/:bname", CV::MarkCtrl, :update

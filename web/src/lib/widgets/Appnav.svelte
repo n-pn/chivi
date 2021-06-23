@@ -1,5 +1,5 @@
 <script>
-  import { genres, zseeds, order_names } from '$lib/constants'
+  import { genres, snames, order_names } from '$lib/constants'
 
   import SIcon from '$lib/blocks/SIcon.svelte'
   import Slider from './Slider.svelte'
@@ -54,9 +54,9 @@
     </header>
 
     <div class="chips">
-      {#each zseeds as zseed}
-        <a href="/?zseed={zseed}" class="_chip -indigo">
-          {zseed}
+      {#each snames as sname}
+        <a href="/?sname={sname}" class="_chip -indigo">
+          {sname}
         </a>
       {/each}
     </div>

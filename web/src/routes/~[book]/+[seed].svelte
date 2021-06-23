@@ -1,10 +1,10 @@
 <script context="module">
   export async function load({ context }) {
     const { nvinfo } = context
-    const [snvid, _, total] = nvinfo.chseed[zseed] || [bhash, '0', '0']
+    const [snvid, _, total] = nvinfo.chseed[sname] || [bhash, '0', '0']
 
     return {
-      props: { nvinfo, zseed, snvid, chidx: +total + 1 },
+      props: { nvinfo, sname, snvid, chidx: +total + 1 },
     }
   }
 </script>
@@ -17,7 +17,7 @@
 
   export let nvinfo
 
-  export let zseed
+  export let sname
   export let snvid
   export let chidx = 1
 
@@ -25,7 +25,7 @@
   let input = ''
 
   async function submit_text() {
-    const url = `/api/texts/${nvinfo.bhash}/${zseed}/${snvid}`
+    const url = `/api/texts/${nvinfo.bhash}/${sname}/${snvid}`
     const res = await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -34,7 +34,7 @@
 
     if (res.ok) {
       const data = await res.json()
-      goto(`/~${nvinfo.bslug}/-${data.uslug}-${zseed}-${data.chidx}`)
+      goto(`/~${nvinfo.bslug}/-${data.uslug}-${sname}-${data.chidx}`)
     } else {
       await res.text()
     }
@@ -53,7 +53,7 @@
     </a>
 
     <button class="header-item _active">
-      <span class="header-text _seed">[{zseed}]</span>
+      <span class="header-text _seed">[{sname}]</span>
     </button>
   </svelte:fragment>
 

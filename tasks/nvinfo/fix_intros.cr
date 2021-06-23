@@ -21,12 +21,12 @@ class CV::FixIntros
         end
       end
 
-      zseeds = NvChseed.get_list(bhash)
-      zseeds.sort_by! { |s| ORDERS.index(s) || 99 }
+      snames = NvChseed.get_list(bhash)
+      snames.sort_by! { |s| ORDERS.index(s) || 99 }
 
-      zseeds.each do |zseed|
-        next unless seed = NvChseed.get_seed(zseed, bhash)
-        bintro = get_intro(zseed, seed[0])
+      snames.each do |sname|
+        next unless seed = NvChseed.get_seed(sname, bhash)
+        bintro = get_intro(sname, seed[0])
         break if bintro.size > 1
         fintro ||= bintro unless bintro.empty?
       end
@@ -42,9 +42,9 @@ class CV::FixIntros
 
   SEEDS = {} of String => Bookgen::Seed
 
-  def get_intro(zseed : String, snvid : String)
-    SEEDS[zseed] ||= Bookgen::Seed.new(zseed)
-    SEEDS[zseed].get_intro(snvid)
+  def get_intro(sname : String, snvid : String)
+    SEEDS[sname] ||= Bookgen::Seed.new(sname)
+    SEEDS[sname].get_intro(snvid)
   end
 end
 

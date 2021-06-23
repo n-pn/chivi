@@ -10,11 +10,11 @@ require "../cutil/path_utils"
 module CV::RmSpider
   extend self
 
-  def fetch(file : String, link : String, zseed : String, valid = 1.week, label = "1/1")
-    expiry = zseed == "jx_la" ? Time.utc(2010, 1, 1) : Time.utc - valid
+  def fetch(file : String, link : String, sname : String, valid = 1.week, label = "1/1")
+    expiry = sname == "jx_la" ? Time.utc(2010, 1, 1) : Time.utc - valid
 
     unless html = FileUtils.read_gz(file, expiry)
-      encoding = HttpUtils.encoding_for(zseed)
+      encoding = HttpUtils.encoding_for(sname)
       html = HttpUtils.get_html(link, encoding: encoding, label: label)
 
       ::FileUtils.mkdir_p(File.dirname(file))
@@ -24,12 +24,12 @@ module CV::RmSpider
     html
   end
 
-  def fetch_all(input : Array(Tuple(String, String)), zseed : String, limit : Int32? = nil)
-    limit ||= ideal_workers_count_for(zseed)
+  def fetch_all(input : Array(Tuple(String, String)), sname : String, limit : Int32? = nil)
+    limit ||= ideal_workers_count_for(sname)
     limit = input.size if limit > input.size
 
     channel = Channel(Nil).new(limit + 1)
-    encoding = HttpUtils.encoding_for(zseed)
+    encoding = HttpUtils.encoding_for(sname)
     ::FileUtils.mkdir_p(File.dirname(input.first))
 
     input.each_with_index(1) do |(file, link), idx|
@@ -38,7 +38,7 @@ module CV::RmSpider
       spawn do
         html = HttpUtils.get_html(link, encoding, label: "#{idx}/#{input.size}")
         File.write(file, html)
-        sleep ideal_delayed_time_for(zseed)
+        sleep ideal_delayed_time_for(sname)
       rescue err
         puts err
       ensure
@@ -49,8 +49,8 @@ module CV::RmSpider
     limit.times { channel.receive }
   end
 
-  def ideal_workers_count_for(zseed : String) : Int32
-    case zseed
+  def ideal_workers_count_for(sname : String) : Int32
+    case sname
     when "zhwenpg", "shubaow"  then 1
     when "paoshu8", "bqg_5200" then 2
     when "duokan8", "69shu"    then 4
@@ -58,8 +58,8 @@ module CV::RmSpider
     end
   end
 
-  def ideal_delayed_time_for(zseed : String)
-    case zseed
+  def ideal_delayed_time_for(sname : String)
+    case sname
     when "shubaow"
       Random.rand(1000..2000).milliseconds
     when "zhwenpg"
@@ -71,8 +71,8 @@ module CV::RmSpider
     end
   end
 
-  def remote?(zseed : String, power : Int32 = 4)
-    case zseed
+  def remote?(sname : String, power : Int32 = 4)
+    case sname
     when "chivi", "local", "zxcs_me", "zadzs", "thuyvicu", "hotupub"
       false
     when "5200", "bqg_5200", "rengshu", "nofff"
@@ -86,23 +86,23 @@ module CV::RmSpider
     end
   end
 
-  def nvinfo_file(zseed : String, snvid : String, gzip = true)
+  def nvinfo_file(sname : String, snvid : String, gzip = true)
     ext = gzip ? "html.gz" : "html"
-    PathUtils.cache_file(zseed, "infos/#{snvid}.#{ext}")
+    PathUtils.cache_file(sname, "infos/#{snvid}.#{ext}")
   end
 
-  def chinfo_file(zseed : String, snvid : String, gzip = true)
+  def chinfo_file(sname : String, snvid : String, gzip = true)
     # TODO: update for 69shu
-    nvinfo_file(zseed, snvid, gzip: gzip)
+    nvinfo_file(sname, snvid, gzip: gzip)
   end
 
-  def chtext_file(zseed : String, snvid : String, schid : String, gzip = false)
+  def chtext_file(sname : String, snvid : String, schid : String, gzip = false)
     ext = gzip ? "html.gz" : "html"
-    PathUtils.cache_file(zseed, "texts/#{snvid}/#{schid}.#{ext}")
+    PathUtils.cache_file(sname, "texts/#{snvid}/#{schid}.#{ext}")
   end
 
-  def nvinfo_link(zseed : String, snvid : String) : String
-    case zseed
+  def nvinfo_link(sname : String, snvid : String) : String
+    case sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/"
     when "69shu"    then "https://www.69shu.com/#{snvid}/"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
@@ -118,17 +118,17 @@ module CV::RmSpider
     when "5200"     then "https://www.5200.tv/#{scoped(snvid)}/"
     when "shubaow"  then "https://www.shubaow.net/#{scoped(snvid)}/"
     when "bqg_5200" then "https://www.biquge5200.com/#{scoped(snvid)}/"
-    else                 raise "Unsupported remote source <#{zseed}>!"
+    else                 raise "Unsupported remote source <#{sname}>!"
     end
   end
 
-  def chinfo_link(zseed : String, snvid : String) : String
+  def chinfo_link(sname : String, snvid : String) : String
     # TODO: update for 69shu
-    nvinfo_link(zseed, snvid)
+    nvinfo_link(sname, snvid)
   end
 
-  def chtext_link(zseed : String, snvid : String, schid : String) : String
-    case zseed
+  def chtext_link(sname : String, snvid : String, schid : String) : String
+    case sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/#{schid}/"
     when "69shu"    then "https://www.69shu.com/txt/#{snvid}/#{schid}"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/#{schid}.html"
@@ -145,7 +145,7 @@ module CV::RmSpider
     when "shubaow"  then "https://www.shubaow.net/#{scoped(snvid)}/#{schid}.html"
     when "bqg_5200" then "https://www.biquge5200.com/#{scoped(snvid)}/#{schid}.html"
     else
-      raise "Unsupported remote source <#{zseed}>!"
+      raise "Unsupported remote source <#{sname}>!"
     end
   end
 
@@ -153,11 +153,11 @@ module CV::RmSpider
     "#{snvid.to_i // 1000}_#{snvid}"
   end
 
-  def fix_mftime(update_str : String, zseed : String)
-    return 0_i64 if zseed == "hetushu" || zseed == "zhwenpg"
+  def fix_mftime(update_str : String, sname : String)
+    return 0_i64 if sname == "hetushu" || sname == "zhwenpg"
 
     updated_at = TimeUtils.parse_time(update_str)
-    updated_at += 12.hours if zseed == "bqg_5200"
+    updated_at += 12.hours if sname == "bqg_5200"
 
     upper_time = Time.utc
     updated_at < upper_time ? updated_at.to_unix : upper_time.to_unix
@@ -165,8 +165,8 @@ module CV::RmSpider
     0_i64
   end
 
-  def index_url(zseed : String) : String
-    case zseed
+  def index_url(sname : String) : String
+    case sname
     when "hetushu"  then "https://www.hetushu.com/book/index.php"
     when "rengshu"  then "http://www.rengshu.com/"
     when "xbiquge"  then "https://www.xbiquge.so/"

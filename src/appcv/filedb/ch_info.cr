@@ -12,12 +12,12 @@ class CV::ChInfo
 
   CACHED = RamCache(self).new(512)
 
-  def self.load(bname : String, zseed : String, snvid : String)
-    CACHED.get("#{zseed}/#{snvid}") { new(bname, zseed, snvid) }
+  def self.load(bname : String, sname : String, snvid : String)
+    CACHED.get("#{sname}/#{snvid}") { new(bname, sname, snvid) }
   end
 
-  getter seeds : ValueMap { ValueMap.new("#{SEED_DIR}/#{@zseed}/#{@snvid}/_id.tsv") }
-  getter trans : ValueMap { ValueMap.new("_db/ch_infos/trans/#{@zseed}/#{@snvid}.tsv") }
+  getter seeds : ValueMap { ValueMap.new("#{SEED_DIR}/#{@sname}/#{@snvid}/_id.tsv") }
+  getter trans : ValueMap { ValueMap.new("_db/ch_infos/trans/#{@sname}/#{@snvid}.tsv") }
 
   alias Chitem = Tuple(String, Array(String))
   getter infos : Array(Chitem) do
@@ -25,9 +25,9 @@ class CV::ChInfo
     trans.data.to_a
   end
 
-  def initialize(@bname : String, @zseed : String, @snvid : String)
-    ::FileUtils.mkdir_p("#{SEED_DIR}/#{@zseed}/#{@snvid}")
-    ::FileUtils.mkdir_p("#{TRAN_DIR}/#{@zseed}/#{@snvid}")
+  def initialize(@bname : String, @sname : String, @snvid : String)
+    ::FileUtils.mkdir_p("#{SEED_DIR}/#{@sname}/#{@snvid}")
+    ::FileUtils.mkdir_p("#{TRAN_DIR}/#{@sname}/#{@snvid}")
   end
 
   def set!(chidx : String, schid : String, title : String, label : String)
@@ -38,10 +38,10 @@ class CV::ChInfo
   def fetch!(power = 4, mode = 2, ttl = 5.minutes) : Tuple(Int64, Int32)
     mtime = -1_i64
 
-    if RmSpider.remote?(@zseed, power: power)
-      RmInfo.mkdir!(@zseed)
+    if RmSpider.remote?(@sname, power: power)
+      RmInfo.mkdir!(@sname)
 
-      parser = RmInfo.new(@zseed, @snvid, ttl: ttl)
+      parser = RmInfo.new(@sname, @snvid, ttl: ttl)
       latest = seeds.data.last_value?.try(&.first?) || ""
 
       if mode > 1 || parser.last_schid != latest
@@ -83,7 +83,7 @@ class CV::ChInfo
 
   def url_for(index : Int32)
     return unless info = infos[index]?
-    "-#{info[1][3]}-#{@zseed}-#{index + 1}"
+    "-#{info[1][3]}-#{@sname}-#{index + 1}"
   end
 
   def each(from : Int32 = 0, upto : Int32 = 30)

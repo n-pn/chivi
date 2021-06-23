@@ -19,12 +19,12 @@ class CV::FixGenres
         end
       end
 
-      zseeds = NvChseed.get_list(bhash)
-      zseeds.sort_by! { |s| ORDERS.index(s) || 99 }
+      snames = NvChseed.get_list(bhash)
+      snames.sort_by! { |s| ORDERS.index(s) || 99 }
 
-      zseeds.each do |zseed|
-        snvid = NvChseed.get_nvid(zseed, bhash) || bhash
-        input = get_genres(zseed, snvid)
+      snames.each do |sname|
+        snvid = NvChseed.get_nvid(sname, bhash) || bhash
+        input = get_genres(sname, snvid)
         genres.concat(NvGenres.fix_zh_names(input))
       end
 
@@ -53,9 +53,9 @@ class CV::FixGenres
 
   getter cache = {} of String => ValueMap
 
-  def get_genres(zseed : String, snvid : String)
-    file = "_db/_seeds/#{zseed}/genres.tsv"
-    map = cache[zseed] ||= ValueMap.new(file, mode: 1)
+  def get_genres(sname : String, snvid : String)
+    file = "_db/_seeds/#{sname}/genres.tsv"
+    map = cache[sname] ||= ValueMap.new(file, mode: 1)
     map.get(snvid) || [] of String
   end
 end

@@ -8,10 +8,10 @@ require "../../cutil/ram_cache"
 class CV::ChText
   CACHED = RamCache(self).new(512)
 
-  def self.load(bname : String, zseed : String, snvid : String,
+  def self.load(bname : String, sname : String, snvid : String,
                 chidx : Int32, schid : String)
-    CACHED.get("#{zseed}/#{snvid}/#{schid}") do
-      new(bname, zseed, snvid, chidx, schid)
+    CACHED.get("#{sname}/#{snvid}/#{schid}") do
+      new(bname, sname, snvid, chidx, schid)
     end
   end
 
@@ -19,9 +19,9 @@ class CV::ChText
   @cv_data : String?
   @cv_time : Time
 
-  def initialize(@bname : String, @zseed : String, @snvid : String,
+  def initialize(@bname : String, @sname : String, @snvid : String,
                  @chidx : Int32, @schid : String)
-    @text_dir = "_db/chseed/#{@zseed}/#{@snvid}"
+    @text_dir = "_db/chseed/#{@sname}/#{@snvid}"
 
     zip_bname = (@chidx // 100).to_s.rjust(3, '0')
     @zip_file = File.join(@text_dir, zip_bname + ".zip")
@@ -62,14 +62,14 @@ class CV::ChText
         mtl.cv_plain(para).to_str(io)
       end
 
-      puts "- <ch_text> [#{@zseed}/#{@snvid}/#{@chidx}] converted.".colorize.cyan
+      puts "- <ch_text> [#{@sname}/#{@snvid}/#{@chidx}] converted.".colorize.cyan
     end
   end
 
   def get_zh!(power = 4, reset = false)
     @zh_text ||= load_zh!
 
-    if RmSpider.remote?(@zseed, power)
+    if RmSpider.remote?(@sname, power)
       @zh_text = nil if reset || @zh_text.try(&.empty?)
     end
 
@@ -88,9 +88,9 @@ class CV::ChText
   end
 
   def fetch_zh!(valid = 10.years) : Array(String)?
-    RmChtext.mkdir!(@zseed, @snvid)
+    RmChtext.mkdir!(@sname, @snvid)
 
-    puller = RmChtext.new(@zseed, @snvid, @schid, valid: valid)
+    puller = RmChtext.new(@sname, @snvid, @schid, valid: valid)
     lines = [puller.title].concat(puller.paras)
     lines.tap { |x| save_zh!(x) }
   rescue err

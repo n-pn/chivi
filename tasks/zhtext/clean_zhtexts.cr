@@ -3,15 +3,15 @@ require "../../src/tabkv/zip_store"
 
 DIR = "_db/chdata/zh_txts"
 
-def clean_dir(zseed : String)
-  root = File.join(DIR, zseed)
+def clean_dir(sname : String)
+  root = File.join(DIR, sname)
   books = Dir.children(root)
 
   puts "#{seed}: #{books.size} books".colorize.cyan.bold
 
   books.each_with_index(1) do |snvid, idx|
     if idx % 50 == 0
-      puts "- <#{idx}/#{folders.size}> [#{zseed}/#{snvid}]".colorize.blue
+      puts "- <#{idx}/#{folders.size}> [#{sname}/#{snvid}]".colorize.blue
     end
 
     txt_dir = File.join(root, snvid)
@@ -28,6 +28,6 @@ def clean_dir(zseed : String)
   end
 end
 
-Dir.children(DIR).each do |zseed|
-  clean_dir(zseed)
+Dir.children(DIR).each do |sname|
+  clean_dir(sname)
 end

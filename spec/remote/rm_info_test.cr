@@ -2,8 +2,8 @@ require "file_utils"
 
 require "../../src/seeds/rm_info.cr"
 
-def fetch_info(zseed, snvid, fresh = false) : Void
-  parser = CV::RmInfo.new(zseed, snvid, ttl: fresh ? 1.minute : 1.year)
+def fetch_info(sname, snvid, fresh = false) : Void
+  parser = CV::RmInfo.new(sname, snvid, ttl: fresh ? 1.minute : 1.year)
 
   puts "\n[#{parser.link}]".colorize.green.bold
   puts "------".colorize.green

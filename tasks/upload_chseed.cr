@@ -9,10 +9,10 @@ module CV::UploadSeed
   INP = "_db/chseed"
   OUT = "/home/nipin/srv/chivi.xyz"
 
-  def upload_all!(zseeds : Array(String))
-    puts "-- INPUT: #{zseeds} --".colorize.yellow.bold
+  def upload_all!(snames : Array(String))
+    puts "-- INPUT: #{snames} --".colorize.yellow.bold
 
-    channel = Channel(Nil).new(zseeds.size)
+    channel = Channel(Nil).new(snames.size)
 
     if ARGV.includes?("-prod")
       ssh = "nipin@ssh.chivi.xyz"
@@ -20,19 +20,19 @@ module CV::UploadSeed
       ssh = "nipin@dev.chivi.xyz"
     end
 
-    zseeds.each do |zseed|
+    snames.each do |sname|
       spawn do
-        upload!(zseed, ssh)
+        upload!(sname, ssh)
       ensure
         channel.send(nil)
       end
     end
 
-    zseeds.size.times { channel.receive }
+    snames.size.times { channel.receive }
   end
 
-  def upload!(zseed : String, ssh = "nipin@ssh.chivi.xyz")
-    target_dir = File.join(INP, zseed)
+  def upload!(sname : String, ssh = "nipin@ssh.chivi.xyz")
+    target_dir = File.join(INP, sname)
     remote_dir = "#{OUT}/#{target_dir}"
 
     puts `ssh #{ssh} mkdir -p "#{remote_dir}"`

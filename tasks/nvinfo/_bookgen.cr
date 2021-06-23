@@ -55,7 +55,7 @@ module CV::Bookgen
   end
 
   class Seed
-    getter zseed : String
+    getter sname : String
     getter s_dir : String
 
     getter _index : ValueMap { ValueMap.new("#{@s_dir}/_index.tsv") }
@@ -71,8 +71,8 @@ module CV::Bookgen
 
     INTROS = {} of String => ValueMap
 
-    def initialize(@zseed)
-      @s_dir = "_db/_seeds/#{@zseed}"
+    def initialize(@sname)
+      @s_dir = "_db/_seeds/#{@sname}"
       ::FileUtils.mkdir_p("#{@s_dir}/intros")
     end
 
@@ -111,21 +111,21 @@ module CV::Bookgen
     end
 
     def upsert_chinfo!(bhash : String, snvid : String, mode = 0) : Nil
-      chinfo = ChInfo.new(bhash, @zseed, snvid)
+      chinfo = ChInfo.new(bhash, @sname, snvid)
 
       mtime, total = chinfo.fetch!(power: 4, mode: mode, valid: 10.years)
       chinfo.trans!(reset: false) if chinfo.updated?
 
-      mtime = update.ival_64(snvid) if @zseed == "zhwenpg"
-      NvInfo.new(bhash).set_chseed(@zseed, snvid, mtime, total)
+      mtime = update.ival_64(snvid) if @sname == "zhwenpg"
+      NvInfo.new(bhash).set_chseed(@sname, snvid, mtime, total)
     end
 
     def get_status(snvid : String) : Int32
-      return 1 if @zseed == "zxcs_me"
+      return 1 if @sname == "zxcs_me"
 
       status_str = status.fval(snvid) || "N/A"
 
-      case @zseed
+      case @sname
       when "zhwenpg", "hetushu", "yousuu", "69shu"
         status_str.to_i
       else

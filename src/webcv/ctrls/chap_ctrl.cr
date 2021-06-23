@@ -3,11 +3,11 @@ require "./base_ctrl"
 class CV::ChapCtrl < CV::BaseCtrl
   def index
     bhash = params["bhash"]
-    zseed = params["zseed"]
+    sname = params["sname"]
     snvid = params["snvid"]
 
     nvinfo = NvInfo.load(bhash)
-    chinfo = ChInfo.load(bhash, zseed, snvid)
+    chinfo = ChInfo.load(bhash, sname, snvid)
 
     mode = params.fetch_int("mode")
     mode = cu_privi if mode > cu_privi
@@ -17,12 +17,12 @@ class CV::ChapCtrl < CV::BaseCtrl
       chinfo.trans!(reset: cu_privi > 2)
 
       if mtime >= 0
-        nvinfo.set_chseed(zseed, snvid, mtime, total)
+        nvinfo.set_chseed(sname, snvid, mtime, total)
         NvOrders.save!(clean: false)
         NvChseed.save!(clean: false)
       end
     else
-      _, mtime, total = nvinfo.get_chseed(zseed)
+      _, mtime, total = nvinfo.get_chseed(sname)
     end
 
     render_json do |res|
@@ -45,7 +45,7 @@ class CV::ChapCtrl < CV::BaseCtrl
 
   def paged
     bhash = params["bhash"]
-    zseed = params["zseed"]
+    sname = params["sname"]
     snvid = params["snvid"]
 
     page = params.fetch_int("page", min: 1)
@@ -53,7 +53,7 @@ class CV::ChapCtrl < CV::BaseCtrl
     take = 32
     skip = (page - 1) * take
 
-    chinfo = ChInfo.load(bhash, zseed, snvid)
+    chinfo = ChInfo.load(bhash, sname, snvid)
 
     render_json do |res|
       JSON.build(res) do |json|

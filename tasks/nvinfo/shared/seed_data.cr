@@ -7,7 +7,7 @@ class CV::SeedData
   class_getter rating_fix : ValueMap { ValueMap.new("_db/_seeds/rating_fix.tsv", 2) }
   class_getter status_map : ValueMap { ValueMap.new("_db/_seeds/status_map.tsv", 2) }
 
-  getter zseed : String
+  getter sname : String
   getter s_dir : String
 
   getter _index : ValueMap { load_map("_index") }
@@ -29,8 +29,8 @@ class CV::SeedData
 
   INTRO_MAPS = {} of String => ValueMap
 
-  def initialize(@zseed)
-    @s_dir = "_db/_seeds/#{@zseed}"
+  def initialize(@sname)
+    @s_dir = "_db/_seeds/#{@sname}"
     ::FileUtils.mkdir_p("#{@s_dir}/intros")
   end
 
@@ -39,7 +39,7 @@ class CV::SeedData
   end
 
   def get_status(snvid : String) : Int32
-    case @zseed
+    case @sname
     when "zxcs_me"                      then 1
     when "zhwenpg", "hetushu", "yousuu" then self.status.ival(snvid)
     else
@@ -81,7 +81,7 @@ class CV::SeedData
   end
 
   def get_scores(snvid : String) : Array(Int32)
-    case @zseed
+    case @sname
     when "yousuu"
       self.rating.get(snvid).not_nil!.map(&.to_i)
     else
@@ -92,7 +92,7 @@ class CV::SeedData
 
       if score = SeedData.rating_fix.get(bname)
         score.map(&.to_i)
-      elsif @zseed == "hetushu" || @zseed == "zxcs_me"
+      elsif @sname == "hetushu" || @sname == "zxcs_me"
         [Random.rand(30..100), Random.rand(50..65)]
       else
         [Random.rand(25..50), Random.rand(40..50)]
@@ -143,12 +143,12 @@ class CV::SeedData
   # end
 
   # def upsert_chinfo!(bhash : String, snvid : String, mode = 0) : Nil
-  #   chinfo = ChInfo.new(bhash, @zseed, snvid)
+  #   chinfo = ChInfo.new(bhash, @sname, snvid)
 
   #   mtime, total = chinfo.fetch!(power: 4, mode: mode, valid: 10.years)
   #   chinfo.trans!(reset: false) if chinfo.updated?
 
-  #   mtime = update.ival_64(snvid) if @zseed == "zhwenpg"
-  #   NvInfo.new(bhash).set_chseed(@zseed, snvid, mtime, total)
+  #   mtime = update.ival_64(snvid) if @sname == "zhwenpg"
+  #   NvInfo.new(bhash).set_chseed(@sname, snvid, mtime, total)
   # end
 end

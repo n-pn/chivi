@@ -1,6 +1,6 @@
 <script>
   export let bslug = ''
-  export let zseed = ''
+  export let sname = ''
 
   export let chaps = []
 </script>
@@ -8,7 +8,7 @@
 <ul class="list">
   {#each chaps as { chidx, title, label, uslug }}
     <li class="item">
-      <a href="/~{bslug}/-{uslug}-{zseed}-{chidx}" class="link" rel="nofollow">
+      <a href="/~{bslug}/-{uslug}-{sname}-{chidx}" class="link" rel="nofollow">
         <div class="text">
           <div class="title">{title}</div>
           <span class="chidx">{chidx}</span>

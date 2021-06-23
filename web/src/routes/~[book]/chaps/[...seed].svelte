@@ -1,15 +1,15 @@
 <script context="module">
-  import { remote_zseeds } from '$lib/constants.js'
+  import { remote_snames } from '$lib/constants.js'
   import { get_chseed, get_chlist } from '$api/chinfo_api.js'
 
   export async function load({ page: { params, query }, fetch, context }) {
     const { nvinfo } = context
 
-    const { bhash, zseeds } = nvinfo
-    const [zseed, page] = extract_name_and_page(zseeds, params.seed)
-    const [snvid] = nvinfo.chseed[zseed] || [bhash]
+    const { bhash, snames } = nvinfo
+    const [sname, page] = extract_name_and_page(snames, params.seed)
+    const [snvid] = nvinfo.chseed[sname] || [bhash]
 
-    const opts = { zseed, snvid, page }
+    const opts = { sname, snvid, page }
     const mode = +query.get('mode')
 
     const [err2, chseed] = await get_chseed(fetch, bhash, opts, mode)
@@ -23,10 +23,10 @@
     }
   }
 
-  function extract_name_and_page(zseeds, param) {
+  function extract_name_and_page(snames, param) {
     let [name, page] = (param || '').split('/')
 
-    if (!zseeds.includes(name)) name = zseeds[0] || 'chivi'
+    if (!snames.includes(name)) name = snames[0] || 'chivi'
 
     page = +(page || '')
     if (page < 1) page = 1
@@ -40,7 +40,7 @@
   }
 
   function seed_choices(chseed = {}) {
-    return remote_zseeds.filter((zseed) => !chseed[zseed])
+    return remote_snames.filter((sname) => !chseed[sname])
   }
 </script>
 
@@ -68,14 +68,14 @@
   let scroll_top
   let _load = false
 
-  async function load_chseed(evt, zseed, mode = 0) {
+  async function load_chseed(evt, sname, mode = 0) {
     evt.preventDefault()
 
-    const [snvid] = nvinfo.chseed[zseed] || [nvinfo.bhash]
+    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
 
-    if (opts.zseed != zseed) {
-      opts = { ...opts, zseed, snvid }
-      const url = page_url(zseed, opts.page)
+    if (opts.sname != sname) {
+      opts = { ...opts, sname, snvid }
+      const url = page_url(sname, opts.page)
       window.history.replaceState({}, '', url)
     }
 
@@ -99,7 +99,7 @@
     const [_err, data] = await get_chlist(fetch, nvinfo.bhash, opts)
     chlist = data
 
-    const url = page_url(opts.zseed, page)
+    const url = page_url(opts.sname, page)
     window.history.replaceState({}, '', url)
 
     if (scroll) scroll_top.scrollIntoView({ block: 'start' })
@@ -132,39 +132,39 @@
     }
   }
 
-  function page_url(zseed, page) {
-    let url = `/~${nvinfo.bslug}/chaps/${zseed}`
+  function page_url(sname, page) {
+    let url = `/~${nvinfo.bslug}/chaps/${sname}`
     if (page > 1) url += `/${page}`
     return url
   }
 
   let add_seed = false
 
-  let new_seeds = seed_choices(nvinfo.zseeds)
-  let new_zseed = new_seeds[0]
+  let new_seeds = seed_choices(nvinfo.snames)
+  let new_sname = new_seeds[0]
   let new_snvid = ''
 
   async function add_new_seed(evt) {
-    nvinfo.zseeds.push(new_zseed)
-    nvinfo.chseed[new_zseed] = [new_snvid, 0, 0]
+    nvinfo.snames.push(new_sname)
+    nvinfo.chseed[new_sname] = [new_snvid, 0, 0]
     add_seed = false
 
-    await load_chseed(evt, new_zseed, 1)
+    await load_chseed(evt, new_sname, 1)
   }
 
-  function split_chseed(nvinfo, { zseed }) {
-    const seeds = nvinfo.zseeds || ['chivi']
+  function split_chseed(nvinfo, { sname }) {
+    const seeds = nvinfo.snames || ['chivi']
     if (seeds.length < 6) return [seeds, []]
 
     let main_seeds = seeds.slice(0, 4)
     let hide_seeds
 
-    if (main_seeds.includes(zseed)) {
+    if (main_seeds.includes(sname)) {
       main_seeds.push(seeds[4])
       hide_seeds = seeds.slice(5)
-    } else if (zseed) {
-      main_seeds.push(zseed)
-      hide_seeds = seeds.slice(4).filter((x) => x != zseed)
+    } else if (sname) {
+      main_seeds.push(sname)
+      hide_seeds = seeds.slice(4).filter((x) => x != sname)
     }
 
     return [main_seeds, hide_seeds]
@@ -175,8 +175,8 @@
     return p_max > page ? p_max : page
   }
 
-  function is_remote_seed(zseed) {
-    switch (zseed) {
+  function is_remote_seed(sname) {
+    switch (sname) {
       case 'chivi':
       case 'jx_la':
       case 'shubaow':
@@ -199,7 +199,7 @@
       {#each main_seeds as mname}
         <a
           class="-name"
-          class:_active={opts.zseed === mname}
+          class:_active={opts.sname === mname}
           href={page_url(mname, opts.page)}
           on:click={(e) => load_chseed(e, mname)}
           >{mname}
@@ -233,7 +233,7 @@
 
     {#if add_seed}
       <div class="add-seed">
-        <select class="m-input" name="new_zseed" bind:value={new_zseed}>
+        <select class="m-input" name="new_sname" bind:value={new_sname}>
           {#each new_seeds as label}
             <option value={label}>{label}</option>
           {/each}
@@ -263,15 +263,15 @@
         </span>
       </div>
 
-      {#if is_remote_seed(opts.zseed)}
+      {#if is_remote_seed(opts.sname)}
         <button
           class="m-button"
-          on:click={(e) => load_chseed(e, opts.zseed, 2)}>
+          on:click={(e) => load_chseed(e, opts.sname, 2)}>
           <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
           <span class="-hide">Đổi mới</span>
         </button>
-      {:else if opts.zseed == 'chivi'}
-        <a class="m-button" href="/~{nvinfo.bslug}/+{opts.zseed}">
+      {:else if opts.sname == 'chivi'}
+        <a class="m-button" href="/~{nvinfo.bslug}/+{opts.sname}">
           <SIcon name="plus" />
           <span class="-hide">Thêm chương</span>
         </a>
@@ -279,7 +279,7 @@
     </div>
 
     <div class="chlist">
-      <Chlist bslug={nvinfo.bslug} zseed={opts.zseed} chaps={chseed.lasts} />
+      <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chseed.lasts} />
     </div>
 
     <div class="chinfo" bind:this={scroll_top}>
@@ -290,12 +290,12 @@
     </div>
 
     <div class="chlist _page">
-      <Chlist bslug={nvinfo.bslug} zseed={opts.zseed} chaps={chlist} />
+      <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chlist} />
 
       {#if pmax > 1}
         <nav class="pagi">
           <a
-            href={page_url(opts.zseed, 1)}
+            href={page_url(opts.sname, 1)}
             class="page m-button"
             class:_disable={opts.page == 1}
             on:click|preventDefault={() => load_chlist(1)}>
@@ -304,7 +304,7 @@
 
           {#each page_list as [curr, level]}
             <a
-              href={page_url(opts.zseed, curr)}
+              href={page_url(opts.sname, curr)}
               class="page m-button"
               class:_primary={opts.page == curr}
               class:_disable={opts.page == curr}
@@ -315,7 +315,7 @@
           {/each}
 
           <a
-            href={page_url(opts.zseed, pmax)}
+            href={page_url(opts.sname, pmax)}
             class="page m-button"
             class:_disable={opts.page == pmax}
             on:click|preventDefault={() => load_chlist(pmax)}>

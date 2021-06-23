@@ -4,26 +4,26 @@ require "./shared/html_parser"
 
 class CV::RmInfo
   # cache folder path
-  def self.c_dir(zseed : String) : String
-    "_db/.cache/#{zseed}/infos"
+  def self.c_dir(sname : String) : String
+    "_db/.cache/#{sname}/infos"
   end
 
-  def self.mkdir!(zseed : String)
-    ::FileUtils.mkdir_p(c_dir(zseed))
+  def self.mkdir!(sname : String)
+    ::FileUtils.mkdir_p(c_dir(sname))
   end
 
-  getter zseed : String
+  getter sname : String
   getter snvid : String
 
   alias TimeSpan = Time::Span | Time::MonthSpan
 
-  def initialize(@zseed, @snvid, @ttl : TimeSpan = 10.years, @label = "1/1")
+  def initialize(@sname, @snvid, @ttl : TimeSpan = 10.years, @label = "1/1")
   end
 
-  getter file : String { "#{RmInfo.c_dir(@zseed)}/#{@snvid}.html.gz" }
+  getter file : String { "#{RmInfo.c_dir(@sname)}/#{@snvid}.html.gz" }
 
   getter link : String do
-    case @zseed
+    case @sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
     when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
@@ -39,7 +39,7 @@ class CV::RmInfo
     when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/"
     when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/"
     when "bqg_5200" then "https://www.biquge5200.com/#{prefixed_snvid}/"
-    else                 raise "Unsupported remote source <#{zseed}>!"
+    else                 raise "Unsupported remote source <#{sname}>!"
     end
   end
 
@@ -48,13 +48,13 @@ class CV::RmInfo
   end
 
   getter page : HtmlParser do
-    encoding = HttpUtils.encoding_for(@zseed)
+    encoding = HttpUtils.encoding_for(@sname)
     html = HttpUtils.load_html(link, file, @ttl, @label, encoding)
     HtmlParser.new(html)
   end
 
   getter btitle : String do
-    case @zseed
+    case @sname
     when "zhwenpg" then page.text(".cbooksingle h2")
     when "hetushu" then page.text("h2")
     when "69shu"
@@ -65,7 +65,7 @@ class CV::RmInfo
   end
 
   getter author : String do
-    case @zseed
+    case @sname
     when "zhwenpg" then page.text(".fontwt")
     when "hetushu" then page.text(".book_info a:first-child")
     when "69shu"
@@ -76,7 +76,7 @@ class CV::RmInfo
   end
 
   getter genres : Array(String) do
-    case @zseed
+    case @sname
     when "zhwenpg" then [] of String
     when "hetushu"
       genre = page.text(".title > a:last-child")
@@ -91,7 +91,7 @@ class CV::RmInfo
   end
 
   getter bintro : Array(String) do
-    case @zseed
+    case @sname
     when "hetushu" then page.text_list(".intro > p")
     when "zhwenpg" then page.text_para("tr:nth-of-type(3)")
     when "bxwxorg" then page.text_para("#intro > p:first-child")
@@ -101,7 +101,7 @@ class CV::RmInfo
   end
 
   getter bcover : String do
-    case @zseed
+    case @sname
     when "hetushu"
       image_url = page.attr(".book_info img", "src")
       "https://www.hetushu.com#{image_url}"
@@ -118,7 +118,7 @@ class CV::RmInfo
   end
 
   getter status : String do
-    case @zseed
+    case @sname
     when "zhwenpg" then "0"
     when "69shu"
       page.text(".booknav2 > p:nth-child(4)").split("  |  ").last
@@ -130,7 +130,7 @@ class CV::RmInfo
   end
 
   getter update : String do
-    case @zseed
+    case @sname
     when "69shu"
       page.text(".booknav2 > p:nth-child(5)").sub("更新：", "")
     when "bqg_5200"
@@ -141,10 +141,10 @@ class CV::RmInfo
   end
 
   getter mftime : Int64 do
-    return 0_i64 if @zseed == "hetushu" || @zseed == "zhwenpg"
+    return 0_i64 if @sname == "hetushu" || @sname == "zhwenpg"
 
     updated_at = TimeUtils.parse_time(update)
-    updated_at += 12.hours if @zseed == "bqg_5200" || @zseed == "69shu"
+    updated_at += 12.hours if @sname == "bqg_5200" || @sname == "69shu"
 
     upper_time = Time.utc - 1.minutes
     updated_at < upper_time ? updated_at.to_unix : upper_time.to_unix
@@ -157,7 +157,7 @@ class CV::RmInfo
   end
 
   def last_schid_href
-    case @zseed
+    case @sname
     when "69shu"    then page.attr(".qustime a:first-child", "href")
     when "hetushu"  then page.attr("#dir :last-child a:last-of-type", "href")
     when "zhwenpg"  then page.attr(".fontwt0 + a", "href")
@@ -167,7 +167,7 @@ class CV::RmInfo
   end
 
   private def extract_schid(href : String)
-    case @zseed
+    case @sname
     when "zhwenpg" then href.sub("r.php?id=", "")
     when "69shu"   then File.basename(href)
     else                File.basename(href, ".html")
@@ -201,7 +201,7 @@ class CV::RmInfo
   end
 
   getter chap_list : Array(Chap) do
-    case @zseed
+    case @sname
     when "69shu"   then extract_69shu_chaps
     when "zhwenpg" then extract_zhwenpg_chaps
     when "duokan8" then extract_duokan8_chaps

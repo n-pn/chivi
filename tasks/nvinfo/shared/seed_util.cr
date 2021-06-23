@@ -7,14 +7,14 @@ module CV::SeedUtil
     File.info?(file).try(&.modification_time.to_unix) || 0_i64
   end
 
-  def last_snvid(zseed : String) : String
-    file = "_db/.cache/#{zseed}/index.html.gz"
-    encoding = HttpUtils.encoding_for(zseed)
-    html = HttpUtils.load_html(index_link(zseed), file, ttl: 12.hours, encoding: encoding)
+  def last_snvid(sname : String) : String
+    file = "_db/.cache/#{sname}/index.html.gz"
+    encoding = HttpUtils.encoding_for(sname)
+    html = HttpUtils.load_html(index_link(sname), file, ttl: 12.hours, encoding: encoding)
 
     page = HtmlParser.new(html)
 
-    case zseed
+    case sname
     when "69shu"
       href = page.attr(".ranking:nth-child(2) a:first-of-type", "href")
       File.basename(href, ".htm")
@@ -41,8 +41,8 @@ module CV::SeedUtil
     end
   end
 
-  def index_link(zseed : String) : String
-    case zseed
+  def index_link(sname : String) : String
+    case sname
     when "69shu"    then "https://www.69shu.com/"
     when "hetushu"  then "https://www.hetushu.com/book/index.php"
     when "rengshu"  then "http://www.rengshu.com/"
@@ -59,8 +59,8 @@ module CV::SeedUtil
     end
   end
 
-  def max_threads(zseed : String)
-    case zseed
+  def max_threads(sname : String)
+    case sname
     when "zhwenpg", "shubaow"           then 1
     when "paoshu8", "69shu", "bqg_5200" then 3
     when "hetushu", "duokan8"           then 6
@@ -68,8 +68,8 @@ module CV::SeedUtil
     end
   end
 
-  def sleep_time(zseed : String)
-    case zseed
+  def sleep_time(sname : String)
+    case sname
     when "shubaow"  then Random.rand(1000..2000).milliseconds
     when "zhwenpg"  then Random.rand(500..1000).milliseconds
     when "bqg_5200" then Random.rand(100..500).milliseconds
