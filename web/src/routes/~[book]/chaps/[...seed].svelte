@@ -172,7 +172,7 @@
   }
 
   function get_pmax({ total }, { page }) {
-    const p_max = Math.floor((total - 1) / 30) + 1
+    const p_max = Math.floor((total - 1) / 32) + 1
     return p_max > page ? p_max : page
   }
 
