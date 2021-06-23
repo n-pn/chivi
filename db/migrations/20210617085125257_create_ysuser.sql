@@ -1,7 +1,6 @@
 -- +micrate Up
 CREATE TABLE ysusers (
-  id serial PRIMARY KEY,
-  origin_id varchar not null UNIQUE,
+  id bigserial PRIMARY KEY,
 
   zh_name varchar not null,
   vi_name varchar not null,
@@ -13,6 +12,8 @@ CREATE TABLE ysusers (
   created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
 );
+
+CREATE INDEX ysuser_zh_name_idx ON ysbooks (zh_name);
 
 
 -- +micrate Down

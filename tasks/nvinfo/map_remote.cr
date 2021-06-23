@@ -6,23 +6,23 @@ require "../../src/cutil/file_utils"
 require "./_bookgen.cr"
 
 class CV::MapRemote
-  def initialize(@sname : String)
-    @meta = Bookgen::Seed.new(@sname)
-    @encoding = HttpUtils.encoding_for(@sname)
+  def initialize(@zseed : String)
+    @meta = Bookgen::Seed.new(@zseed)
+    @encoding = HttpUtils.encoding_for(@zseed)
   end
 
   def prep!(upto = 1)
     queue = [] of String
 
-    rdir = "_db/.cache/#{@sname}/infos"
+    rdir = "_db/.cache/#{@zseed}/infos"
     ::FileUtils.mkdir_p(rdir)
 
     exist = Dir.children(rdir).map(&.split(".")[0])
     queue = (1..upto).map(&.to_s) - exist
 
-    puts "[#{@sname}/#{upto}, prep size: #{queue.size}]".colorize.cyan.bold
+    puts "[#{@zseed}/#{upto}, prep size: #{queue.size}]".colorize.cyan.bold
 
-    threads = ideal_threads_for(@sname)
+    threads = ideal_threads_for(@zseed)
     threads = queue.size if threads > queue.size
     channel = Channel(Nil).new(threads)
 
@@ -31,7 +31,7 @@ class CV::MapRemote
         fetch!(snvid, label: "#{idx}/#{queue.size}")
 
         # throttling
-        case @sname
+        case @zseed
         when "shubaow"
           sleep Random.rand(1000..2000).milliseconds
         when "zhwenpg"
@@ -50,17 +50,17 @@ class CV::MapRemote
   end
 
   def fetch!(snvid : String, label = "1/1")
-    link = RmSpider.nvinfo_link(@sname, snvid)
+    link = RmSpider.nvinfo_link(@zseed, snvid)
     html = HttpUtils.get_html(link, @encoding, label: label)
 
-    file = RmSpider.nvinfo_file(@sname, snvid)
+    file = RmSpider.nvinfo_file(@zseed, snvid)
     FileUtils.save_gz(file, html)
   rescue err
     puts err
   end
 
-  def ideal_threads_for(sname : String)
-    case sname
+  def ideal_threads_for(zseed : String)
+    case zseed
     when "zhwenpg", "shubaow"           then 1
     when "paoshu8", "69shu", "bqg_5200" then 3
     when "hetushu", "duokan8"           then 6
@@ -69,8 +69,8 @@ class CV::MapRemote
   end
 
   def init!(upto = 1, mode = 1)
-    puts "#{@sname}/#{upto}, init mode: #{mode}]".colorize.cyan.bold
-    mode = 0 if @sname == "jx_la"
+    puts "#{@zseed}/#{upto}, init mode: #{mode}]".colorize.cyan.bold
+    mode = 0 if @zseed == "jx_la"
 
     1.upto(upto) do |idx|
       snvid = idx.to_s
@@ -89,7 +89,7 @@ class CV::MapRemote
         valid = 1.hours
       end
 
-      parser = RmInfo.new(@sname, snvid, valid: valid)
+      parser = RmInfo.new(@zseed, snvid, valid: valid)
       btitle, author = parser.btitle, parser.author
 
       if @meta._index.set!(snvid, [atime.to_s, btitle, author])
@@ -102,7 +102,7 @@ class CV::MapRemote
       @meta.update.set!(snvid, parser.update_int)
 
       if idx % 100 == 0
-        puts "- [#{@sname}]: <#{idx}/#{upto}>"
+        puts "- [#{@zseed}]: <#{idx}/#{upto}>"
         @meta.save!(clean: false)
       end
     rescue err
@@ -119,7 +119,7 @@ class CV::MapRemote
   end
 
   private def access_time(snvid : String) : Int64?
-    file = RmSpider.nvinfo_file(@sname, snvid)
+    file = RmSpider.nvinfo_file(@zseed, snvid)
     Bookgen.get_atime(file)
   end
 
@@ -151,7 +151,7 @@ class CV::MapRemote
       end
 
       if idx % 100 == 0
-        puts "- [#{@sname}] <#{idx}/#{input.size}>".colorize.blue
+        puts "- [#{@zseed}] <#{idx}/#{input.size}>".colorize.blue
         NvInfo.save!(clean: false)
       end
     rescue err
@@ -162,11 +162,11 @@ class CV::MapRemote
   end
 
   def qualified?(author : String, btitle : String)
-    return true if @sname == "hetushu"
+    return true if @zseed == "hetushu"
     return false unless NvAuthor.exists?(author)
     # 5200 has many duplicate entries, this is a temporary fix
     # TODO: also detect duplicate entries for other sources and remove them
-    @sname == "5200" ? NvBtitle.exists?(btitle) : true
+    @zseed == "5200" ? NvBtitle.exists?(btitle) : true
   end
 
   def self.run!(argv = ARGV)

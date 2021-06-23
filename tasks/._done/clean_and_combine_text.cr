@@ -7,24 +7,24 @@ INP_META = "_db/chdata/chorigs"
 OUT_ZDIR = "_db/chdata/zhtexts"
 OUT_META = "_db/chdata/zhinfos"
 
-snames = ARGV.empty? ? Dir.children(INP_TEXT).sort : ARGV
-snames.each { |sname| combine_texts(sname) }
+zseeds = ARGV.empty? ? Dir.children(INP_TEXT).sort : ARGV
+zseeds.each { |zseed| combine_texts(zseed) }
 
-def combine_texts(sname)
-  books = Dir.glob File.join(INP_TEXT, sname, "*/")
-  FileUtils.mkdir_p("_db/chdata/zhorigs/#{sname}")
+def combine_texts(zseed)
+  books = Dir.glob File.join(INP_TEXT, zseed, "*/")
+  FileUtils.mkdir_p("_db/chdata/zhorigs/#{zseed}")
 
   books.sort.each_with_index(1) do |inp_text, i|
-    puts "\n[#{sname}/#{i}/#{books.size}]\n".colorize.blue.bold
+    puts "\n[#{zseed}/#{i}/#{books.size}]\n".colorize.blue.bold
 
     snvid = File.basename(inp_text)
-    mfile = File.join(INP_META, sname, snvid + ".tsv")
+    mfile = File.join(INP_META, zseed, snvid + ".tsv")
 
     next unless File.exists?(mfile)
     chaps = File.read_lines(mfile).reject(&.empty?).map(&.split('\t'))
 
-    out_zdir = File.join(OUT_ZDIR, sname, snvid)
-    out_meta = File.join(OUT_META, sname, snvid)
+    out_zdir = File.join(OUT_ZDIR, zseed, snvid)
+    out_meta = File.join(OUT_META, zseed, snvid)
 
     FileUtils.mkdir_p(out_zdir)
     FileUtils.mkdir_p(out_meta)
@@ -41,7 +41,7 @@ def combine_texts(sname)
         info.unshift(idx.to_s)
         schid = info[1]
 
-        inp_txt = File.join(INP_TEXT, sname, snvid, schid + ".txt")
+        inp_txt = File.join(INP_TEXT, zseed, snvid, schid + ".txt")
         next unless File.exists?(inp_txt) && File.size(inp_txt) > 0
 
         cleanup_file(inp_txt)

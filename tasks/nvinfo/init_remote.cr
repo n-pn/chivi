@@ -6,12 +6,12 @@ require "./shared/seed_data"
 require "./shared/seed_util"
 
 class CV::InitRemote
-  def initialize(@sname : String)
-    @seed = SeedData.new(@sname)
+  def initialize(@zseed : String)
+    @seed = SeedData.new(@zseed)
   end
 
   def build!(upper : Int32)
-    upper = SeedUtil.last_snvid(@sname).to_i if upper < 1
+    upper = SeedUtil.last_snvid(@zseed).to_i if upper < 1
     missing, updates = [] of String, [] of String
 
     read_stats(upper) do |snvid, state|
@@ -29,7 +29,7 @@ class CV::InitRemote
     1.upto(upper) do |index|
       spawn do
         snvid = index.to_s
-        fpath = "_db/.cache/#{@sname}/infos/#{snvid}.html.gz"
+        fpath = "_db/.cache/#{@zseed}/infos/#{snvid}.html.gz"
 
         mtime = SeedUtil.get_mtime(fpath)   # html cached if mtime > 0
         atime = @seed._index.ival_64(snvid) # book parsed if atime > 0
@@ -48,25 +48,25 @@ class CV::InitRemote
   end
 
   def crawl!(queue : Array(String), threads = 0)
-    threads = SeedUtil.max_threads(@sname) if threads < 1
+    threads = SeedUtil.max_threads(@zseed) if threads < 1
     threads = queue.size if threads > queue.size
 
-    puts "[#{@sname}], missing: #{queue.size}, workers: #{threads}\n".colorize.cyan.bold
+    puts "[#{@zseed}], missing: #{queue.size}, workers: #{threads}\n".colorize.cyan.bold
 
-    RmInfo.mkdir!(@sname) # ensure the seed cache folde
+    RmInfo.mkdir!(@zseed) # ensure the seed cache folde
     channel = Channel(Nil).new(threads)
-    encoding = HttpUtils.encoding_for(@sname)
+    encoding = HttpUtils.encoding_for(@zseed)
 
     queue.each_with_index(1) do |snvid, index|
       spawn do
-        entry = RmInfo.new(@sname, snvid)
+        entry = RmInfo.new(@zseed, snvid)
         label = "#{index}/#{queue.size}"
 
         html = HttpUtils.get_html(entry.link, label: label, encoding: encoding)
         HttpUtils.save_html(entry.file, html)
 
         # throttling if success
-        sleep SeedUtil.sleep_time(@sname)
+        sleep SeedUtil.sleep_time(@zseed)
       rescue err
         puts err
       ensure
@@ -80,10 +80,10 @@ class CV::InitRemote
   end
 
   def parse!(queue : Array(String))
-    puts "[#{@sname}], parsing: #{queue.size}\n".colorize.cyan.bold
+    puts "[#{@zseed}], parsing: #{queue.size}\n".colorize.cyan.bold
 
     queue.each_with_index(1) do |snvid, idx|
-      entry = RmInfo.new(@sname, snvid)
+      entry = RmInfo.new(@zseed, snvid)
       atime = SeedUtil.get_mtime(entry.file)
 
       @seed._index.set!(snvid, [atime.to_s, entry.btitle, entry.author])
@@ -96,7 +96,7 @@ class CV::InitRemote
       @seed.update.set!(snvid, entry.update)
 
       if idx % 100 == 0
-        puts "- [#{@sname}]: <#{idx}/#{queue.size}>"
+        puts "- [#{@zseed}]: <#{idx}/#{queue.size}>"
         @seed.save!(clean: false)
       end
     end
@@ -106,12 +106,12 @@ class CV::InitRemote
 end
 
 def run!(argv = ARGV)
-  sname, upper = "hetushu", 0
+  zseed, upper = "hetushu", 0
   cr_mode, threads = 0, 0
 
   OptionParser.parse(argv) do |parser|
     parser.banner = "Usage: map_remote [arguments]"
-    parser.on("-s SNAME", "Remote name") { |x| sname = x }
+    parser.on("-s SNAME", "Remote name") { |x| zseed = x }
     parser.on("-u UPPER", "Upper snvid") { |x| upper = x.to_i }
     parser.on("-m CR_MODE", "Crawling mode") { |x| cr_mode = x.to_i }
     parser.on("-t THREADS", "Concurrent threads") { |x| threads = x.to_i }
@@ -123,7 +123,7 @@ def run!(argv = ARGV)
     end
   end
 
-  worker = CV::InitRemote.new(sname)
+  worker = CV::InitRemote.new(zseed)
 
   # cr_mode:
   # - 0: crawl missings, parse missing and updates/unparsed
@@ -137,7 +137,7 @@ def run!(argv = ARGV)
     worker.parse!(missing)
   end
 
-  updates -= missing if sname == "jx_la"
+  updates -= missing if zseed == "jx_la"
   worker.parse!(updates) if cr_mode != 1
 end
 

@@ -60,7 +60,7 @@
     {#each chaps as chap}
       <a
         class="chap"
-        href="/~{chap.bslug}/-{chap.uslug}-{chap.sname}-{chap.chidx}">
+        href="/~{chap.bslug}/-{chap.uslug}-{chap.zseed}-{chap.chidx}">
         <div class="-text">
           <div class="-title">{chap.title}</div>
           <span class="-chidx">{chap.chidx}</span>
@@ -68,7 +68,7 @@
 
         <div class="-meta">
           <span class="-bname">{chap.bname}</span>
-          <span class="-sname">{chap.sname}</span>
+          <span class="-zseed">{chap.zseed}</span>
         </div>
       </a>
     {/each}

@@ -17,13 +17,13 @@
   export async function load({ fetch, page: { params, query }, context }) {
     const { nvinfo } = context
 
-    const [chidx, sname] = params.chap.split('-').reverse()
-    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
+    const [chidx, zseed] = params.chap.split('-').reverse()
+    const [snvid] = nvinfo.chseed[zseed] || [nvinfo.bhash]
     if (!snvid) {
       return { status: 404, error: new Error('Nguồn truyện không tồn tại!') }
     }
 
-    const chinfo = { sname, snvid, chidx }
+    const chinfo = { zseed, snvid, chidx }
 
     const mode = +query.get('mode') || 0
     const [err, data] = await get_chinfo(fetch, nvinfo.bhash, chinfo, mode)
@@ -115,9 +115,9 @@
     cvdata = data
   }
 
-  function gen_paths({ bslug }, { sname, chidx, prev_url, next_url }) {
-    const book_path = gen_book_path(bslug, sname, 0)
-    const list_path = gen_book_path(bslug, sname, chidx)
+  function gen_paths({ bslug }, { zseed, chidx, prev_url, next_url }) {
+    const book_path = gen_book_path(bslug, zseed, 0)
+    const list_path = gen_book_path(bslug, zseed, chidx)
 
     const prev_path = prev_url ? `/~${bslug}/${prev_url}` : book_path
     const next_path = next_url ? `/~${bslug}/${next_url}` : list_path
@@ -125,8 +125,8 @@
     return [book_path, list_path, prev_path, next_path]
   }
 
-  function gen_book_path(bslug, sname, chidx) {
-    let url = `/~${bslug}/chaps?sname=${sname}`
+  function gen_book_path(bslug, zseed, chidx) {
+    let url = `/~${bslug}/chaps?zseed=${zseed}`
     const page = Math.floor((chidx - 1) / 30) + 1
     return page > 1 ? url + `&page=${page}` : url
   }
@@ -146,7 +146,7 @@
     </a>
 
     <button class="header-item _active">
-      <span class="header-text _seed">[{chinfo.sname}]</span>
+      <span class="header-text _seed">[{chinfo.zseed}]</span>
     </button>
   </svelte:fragment>
 

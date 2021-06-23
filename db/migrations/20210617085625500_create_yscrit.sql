@@ -1,12 +1,10 @@
 -- +micrate Up
 CREATE TABLE yscrits (
-  id serial PRIMARY KEY,
+  id bigserial PRIMARY KEY,
 
-  ysuser_id int not null,
-  yslist_id int,
-
-  origin_id varchar not null unique,
-  ysbook_id int not null,
+  ysuser_id bigint not null,
+  yslist_id bigint,
+  ysbook_id bigint not null,
 
   starred int default 3 not null,
 
@@ -25,7 +23,7 @@ CREATE TABLE yscrits (
 
 CREATE INDEX yscrit_ysuser_id_idx ON yscrits (ysuser_id);
 CREATE INDEX yscrit_yslist_id_idx ON yscrits (yslist_id);
-CREATE INDEX yscrit_ysbook_id_idx ON yscrits (ysbook_id, like_count);
+CREATE INDEX yscrit_ysbook_id_idx ON yscrits (ysbook_id, starred);
 
 -- +micrate Down
 DROP TABLE IF EXISTS yscrits;

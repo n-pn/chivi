@@ -1,19 +1,19 @@
 require "json"
 
-require "../cutil/*"
+require "../../cutil/*"
 
-struct CV::YsSource
-  include JSON::Serializable
+class CV::FsYsbook
+  struct Origin
+    include JSON::Serializable
 
-  @[JSON::Field(key: "siteName")]
-  property site : String
+    @[JSON::Field(key: "siteName")]
+    property site : String
 
-  @[JSON::Field(key: "bookPage")]
-  property link : String
-end
+    @[JSON::Field(key: "bookPage")]
+    property link : String
+  end
 
-class CV::YsBook
-  alias Data = NamedTuple(bookInfo: YsBook, bookSource: Array(YsSource))
+  alias Data = NamedTuple(bookInfo: FsYsbook, bookSource: Array(Origin))
 
   def self.load(file : String)
     text = File.read(file)
@@ -65,8 +65,8 @@ class CV::YsBook
   getter shielded = false
   # getter recom_ignore = false
 
-  property sources = [] of CV::YsSource
-  getter source : String { sources.first?.try(&.link) || "" }
+  property origins = [] of Origin
+  getter source : String { origins.first?.try(&.link) || "" }
 
   getter addListCount = 0_i32
   getter addListTotal = 0_i32

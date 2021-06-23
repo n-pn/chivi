@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE btitles (
-  id serial PRIMARY KEY,
+  id bigserial PRIMARY KEY,
 
   zh_name varchar not null,
   hv_name varchar not null,

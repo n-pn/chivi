@@ -3,13 +3,13 @@ require "./base_ctrl"
 class CV::TextCtrl < CV::BaseCtrl
   def show
     bname = params["bname"]
-    sname = params["sname"]
+    zseed = params["zseed"]
     snvid = params["snvid"]
 
     index = params.fetch_int("chidx", min: 1)
     index -= 1
 
-    chinfo = ChInfo.load(bname, sname, snvid)
+    chinfo = ChInfo.load(bname, zseed, snvid)
     unless curr_chap = chinfo.infos[index]?
       return halt!(404, "Chương tiết không tồn tại!")
     end
@@ -17,7 +17,7 @@ class CV::TextCtrl < CV::BaseCtrl
     chidx, infos = curr_chap
 
     if cu_privi >= 0
-      ViMark.mark_chap(cv_uname, bname, sname, chidx, infos[1], infos[3])
+      ViMark.mark_chap(cv_uname, bname, zseed, chidx, infos[1], infos[3])
     end
 
     render_json do |res|
@@ -40,13 +40,13 @@ class CV::TextCtrl < CV::BaseCtrl
 
   def convert
     bname = params["bname"]
-    sname = params["sname"]
+    zseed = params["zseed"]
     snvid = params["snvid"]
 
     chidx = params.fetch_int("chidx")
     schid = params["schid"]
 
-    chtext = ChText.load(bname, sname, snvid, chidx - 1, schid)
+    chtext = ChText.load(bname, zseed, snvid, chidx - 1, schid)
 
     mode = params.fetch_int("mode")
     mode = cu_privi if mode > cu_privi
@@ -64,7 +64,7 @@ class CV::TextCtrl < CV::BaseCtrl
     return halt!(500, "Quyền hạn không đủ!") if cu_privi < 2
 
     bname = params["bname"]
-    sname = params["sname"]
+    zseed = params["zseed"]
     snvid = params["snvid"]
 
     chidx = params.fetch_int("chidx", min: 1)
@@ -75,7 +75,7 @@ class CV::TextCtrl < CV::BaseCtrl
     input = params.fetch_str("input")
     lines = TextUtils.split_text(input, false)
 
-    chinfo = ChInfo.load(bname, sname, snvid)
+    chinfo = ChInfo.load(bname, zseed, snvid)
 
     chmax = chinfo.seeds.size + 1
     chidx = chmax if chidx < 1 || chidx > chmax
@@ -86,7 +86,7 @@ class CV::TextCtrl < CV::BaseCtrl
     chinfo.set!(chidx.to_s, schid, lines[0], label)
     NvInfo.load(bname).set_chseed("chivi", bname, Time.utc.to_unix, chinfo.seeds.size)
 
-    chtext = ChText.load(bname, sname, snvid, chidx - 1, schid)
+    chtext = ChText.load(bname, zseed, snvid, chidx - 1, schid)
     chtext.set_zh!(lines)
 
     index, infos = chinfo.infos[chidx - 1]

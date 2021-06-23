@@ -2,9 +2,9 @@ class CV::Btitle < Granite::Base
   connection pg
   table btitles
 
-  has_many :nvinfos
+  has_many :nvinfo
 
-  column id : Int32, primary: true
+  column id : Int64, primary: true
   timestamps
 
   column zh_name : String

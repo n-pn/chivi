@@ -35,12 +35,12 @@ def save_folders(path : String)
 end
 
 dirs = Dir.children(INP)
-dirs.each do |sname|
-  puts "[#{sname}]"
+dirs.each do |zseed|
+  puts "[#{zseed}]"
 
-  save_folder("#{INP}/#{sname}/infos")
-  save_folders("#{INP}/#{sname}/texts")
+  save_folder("#{INP}/#{zseed}/infos")
+  save_folders("#{INP}/#{zseed}/texts")
 
-  save_folder("#{INP}/#{sname}/pages") if sname == "zhwenpg"
-  save_folder("#{INP}/#{sname}/dlpgs") if sname == "zxcs_me"
+  save_folder("#{INP}/#{zseed}/pages") if zseed == "zhwenpg"
+  save_folder("#{INP}/#{zseed}/dlpgs") if zseed == "zxcs_me"
 end

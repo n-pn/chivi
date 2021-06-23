@@ -24,23 +24,23 @@ class CV::Seeds::FixCovers
 
       NvFields.yousuu.fval(bhash).try { |ynvid| covers["yousuu"] = ynvid }
 
-      snames = NvChseed.get_list(bhash)
-      snames.each do |sname|
-        covers[sname] = NvChseed.get_nvid(sname, bhash) || bhash
+      zseeds = NvChseed.get_list(bhash)
+      zseeds.each do |zseed|
+        covers[zseed] = NvChseed.get_nvid(zseed, bhash) || bhash
       end
 
       max_width = 0
       out_cover = nil
 
-      covers.each do |sname, snvid|
-        next unless cover_file = cover_path(sname, snvid)
+      covers.each do |zseed, snvid|
+        next unless cover_file = cover_path(zseed, snvid)
 
-        unless cover_width = width_map(sname).fval(cover_file).try(&.to_i)
+        unless cover_width = width_map(zseed).fval(cover_file).try(&.to_i)
           cover_width = image_width(cover_file)
 
           if mtime = File.info?(cover_file).try(&.modification_time)
             values = [cover_width.to_s, mtime.to_unix.to_s]
-            width_map(sname).set!(cover_file, values)
+            width_map(zseed).set!(cover_file, values)
           end
         end
 
@@ -52,8 +52,8 @@ class CV::Seeds::FixCovers
 
       next unless out_cover
 
-      sname = File.basename(File.dirname(out_cover))
-      out_file = "#{OUT_DIR}/#{sname}-#{File.basename(out_cover)}"
+      zseed = File.basename(File.dirname(out_cover))
+      out_file = "#{OUT_DIR}/#{zseed}-#{File.basename(out_cover)}"
 
       NvFields.bcover.set!(bhash, File.basename(out_file))
       FileUtils.cp(out_cover, out_file) unless File.exists?(out_file)
@@ -77,28 +77,28 @@ class CV::Seeds::FixCovers
 
   WIDTHS = {} of String => ValueMap
 
-  private def width_map(sname : String)
-    WIDTHS[sname] ||= ValueMap.new("#{INP_DIR}/_index/#{sname}.tsv")
+  private def width_map(zseed : String)
+    WIDTHS[zseed] ||= ValueMap.new("#{INP_DIR}/_index/#{zseed}.tsv")
   end
 
   # next unless cover_file = cover_path(snam
-  def cover_path(sname : String, snvid : String) : String?
+  def cover_path(zseed : String, snvid : String) : String?
     {"webp", "gif", "png", "tiff"}.each do |ext|
-      file = image_path(sname, snvid, ext)
+      file = image_path(zseed, snvid, ext)
       return file if File.exists?(file)
     end
 
     {"html", "pc", "apple", "ascii"}.each do |ext|
-      file = image_path(sname, snvid, ext)
+      file = image_path(zseed, snvid, ext)
       return if File.exists?(file)
     end
 
-    file = image_path(sname, snvid, "jpg")
+    file = image_path(zseed, snvid, "jpg")
     return file if File.exists?(file)
   end
 
-  private def image_path(sname, snvid, ext)
-    "#{INP_DIR}/#{sname}/#{snvid}.#{ext}"
+  private def image_path(zseed, snvid, ext)
+    "#{INP_DIR}/#{zseed}/#{snvid}.#{ext}"
   end
 
   def image_width(fname : String)

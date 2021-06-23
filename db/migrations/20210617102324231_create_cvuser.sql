@@ -1,6 +1,6 @@
 -- +micrate Up
-CREATE TABLE "viusers" (
-  id serial PRIMARY KEY,
+CREATE TABLE cvusers (
+  id bigserial PRIMARY KEY,
 
   uname citext NOT NULL UNIQUE,
   email citext NOT NULL UNIQUE,
@@ -17,4 +17,4 @@ CREATE TABLE "viusers" (
 
 
 -- +micrate Down
-DROP TABLE IF EXISTS "viusers";
+DROP TABLE IF EXISTS cvusers;

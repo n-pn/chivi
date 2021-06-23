@@ -1,11 +1,12 @@
-class CV::Nvinfo < Granite::Base
+class CV::Cvbook < Granite::Base
   connection pg
-  table nvinfos
+  table cvbooks
 
-  belongs_to :author, foreign_key: author_id : Int32
-  belongs_to :btitle, foreign_key: btitle_id : Int32
+  belongs_to :author
+  belongs_to :btitle
+  belongs_to :ysbook
 
-  column id : Int32, primary: true
+  column id : Int64, primary: true
   timestamps
 
   column bhash : String # unique string generate from zh_title & zh_author
@@ -14,11 +15,8 @@ class CV::Nvinfo < Granite::Base
   column author : Array(String) # [zh_author, vi_author?...]
   column btitle : Array(String) # [zh_title, hv_title, vi_title?...]
 
-  column bgenres : Array(String) = ["Loại khác"]
-  column nvseeds : Array(String) = ["local"]
-
-  column bgenre_ids : Array(Int32)? # link to bgenres table for faster lookup
-  column nvseed_ids : Array(Int32)? # link to nvseeds table for faster lookup
+  column bgenre_ids : Array(Int32)?
+  column zhseed_ids : Array(Int32)?
 
   column bcover : String = "nocover.png"
   column bintro : String = ""
@@ -37,4 +35,11 @@ class CV::Nvinfo < Granite::Base
   column voters : Int32 = 0 # = ys_voters + vi_voters * 2 + random_seed (if < 25)
   column rating : Int32 = 0 # delivered from above values
 
+  getter bgenres : Array(String) do
+    bgenre_ids.map { |id| Bgenre.vname(id) }
+  end
+
+  getter zhseeds : Array(String) do
+    zhseed_ids.map { |id| Zhseed.zseed(id) }
+  end
 end

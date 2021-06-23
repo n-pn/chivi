@@ -1,9 +1,8 @@
 -- +micrate Up
 CREATE TABLE yslists (
-  id serial PRIMARY KEY,
-  origin_id varchar not null unique,
+  id bigserial PRIMARY KEY,
 
-  ysuser_id int not null,
+  ysuser_id bigint not null,
 
   zh_name varchar not null,
   vi_name varchar not null,
@@ -11,10 +10,10 @@ CREATE TABLE yslists (
   zh_desc text,
   vi_desc text,
 
-  channel varchar default 'male' not null,
+  aim_at varchar default 'male' not null,
 
-  mftime bigint default 0 not null,
   bumped bigint default 0 not null,
+  mftime bigint default 0 not null,
 
   like_count int default 0 not null,
   book_count int default 0 not null,

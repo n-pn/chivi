@@ -57,11 +57,11 @@ module CV::ViMark
     end
   end
 
-  def mark_chap(uname : String, bname : String, sname : String,
+  def mark_chap(uname : String, bname : String, zseed : String,
                 chidx : String, title : String, uslug : String)
     atime = Time.utc.to_unix.//(60).to_s
     chap_mark = ViMark.chap_map(uname)
-    chap_mark.set!(bname, [atime, sname, chidx, title, uslug])
+    chap_mark.set!(bname, [atime, zseed, chidx, title, uslug])
     chap_mark.save!(clean: false)
   end
 end

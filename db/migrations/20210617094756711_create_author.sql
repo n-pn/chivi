@@ -1,6 +1,6 @@
 -- +micrate Up
 CREATE TABLE authors (
-  id serial PRIMARY KEY,
+  id bigserial PRIMARY KEY,
 
   zh_name varchar not null,
   vi_name varchar not null,

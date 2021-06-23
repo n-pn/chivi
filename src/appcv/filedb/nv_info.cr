@@ -55,7 +55,7 @@ class CV::NvInfo
   end
 
   def self.filter(opts : Hash, prev : Set(String)? = nil)
-    {"btitle", "author", "genre", "sname"}.each do |type|
+    {"btitle", "author", "genre", "zseed"}.each do |type|
       next unless str = opts[type]?
 
       prev = filter(str, type, prev)
@@ -70,7 +70,7 @@ class CV::NvInfo
     when "btitle" then NvBtitle.filter(str, prev)
     when "author" then NvAuthor.filter(str, prev)
     when "genre"  then NvGenres.filter(str, prev)
-    when "sname"  then NvChseed.filter(str, prev)
+    when "zseed"  then NvChseed.filter(str, prev)
     else               prev || Set(String).new
     end
   end
@@ -130,7 +130,7 @@ class CV::NvInfo
   getter rating : Float64 { NvOrders.rating.ival(@bhash) / 10 }
 
   getter update : Int64 { NvOrders.update.ival_64(@bhash) }
-  getter snames : Array(String) { NvChseed.get_list(@bhash) }
+  getter zseeds : Array(String) { NvChseed.get_list(@bhash) }
 
   def initialize(@bhash)
   end
@@ -166,11 +166,11 @@ class CV::NvInfo
         json.field "yousuu", yousuu
         json.field "origin", origin
 
-        json.field "snames", snames
+        json.field "zseeds", zseeds
         json.field "chseed" do
           json.object do
-            snames.each do |sname|
-              json.field sname, get_chseed(sname)
+            zseeds.each do |zseed|
+              json.field zseed, get_chseed(zseed)
             end
           end
         end
@@ -178,8 +178,8 @@ class CV::NvInfo
     end
   end
 
-  def get_chseed(sname : String) : Tuple(String, Int64, Int32)
-    seed = NvChseed.get_seed(sname, @bhash) || [@bhash, "0", "0"]
+  def get_chseed(zseed : String) : Tuple(String, Int64, Int32)
+    seed = NvChseed.get_seed(zseed, @bhash) || [@bhash, "0", "0"]
     {seed[0], seed[1].to_i64, seed[2].to_i}
   end
 
@@ -190,34 +190,34 @@ class CV::NvInfo
     "duokan8", "shubaow", "jx_la",
   }
 
-  def set_chseed(sname : String, snvid : String, mtime = 0_i64, count = 0) : Nil
+  def set_chseed(zseed : String, snvid : String, mtime = 0_i64, count = 0) : Nil
     # dirty hack to fix update_time for hetushu or zhwenpg...
-    mtime = fix_seed_mtime(sname, mtime, count)
+    mtime = fix_seed_mtime(zseed, mtime, count)
 
     @update = nil
     NvOrders.set_update!(@bhash, mtime)
 
-    @snames = begin
-      snames = self.snames.reject("chivi")
+    @zseeds = begin
+      zseeds = self.zseeds.reject("chivi")
 
-      if sname != "chivi"
-        snames.push(sname) unless snames.includes?(sname)
-        snames.sort_by! { |x| SEED_ORDERS.index(x) || 99 }
+      if zseed != "chivi"
+        zseeds.push(zseed) unless zseeds.includes?(zseed)
+        zseeds.sort_by! { |x| SEED_ORDERS.index(x) || 99 }
       end
 
-      snames.size > 4 ? snames.insert(4, "chivi") : snames.push("chivi")
+      zseeds.size > 4 ? zseeds.insert(4, "chivi") : zseeds.push("chivi")
     end
 
-    NvChseed.set_list!(@bhash, snames)
-    NvChseed.set_seed!(sname, @bhash, [snvid, mtime.to_s, count.to_s])
+    NvChseed.set_list!(@bhash, zseeds)
+    NvChseed.set_seed!(zseed, @bhash, [snvid, mtime.to_s, count.to_s])
   end
 
   WRONG_MTIMES = {"zhwenpg", "hetushu", "69shu", "bqg_5200"}
 
-  private def fix_seed_mtime(sname : String, mtime : Int64, count : Int32)
-    return mtime unless WRONG_MTIMES.includes?(sname)
+  private def fix_seed_mtime(zseed : String, mtime : Int64, count : Int32)
+    return mtime unless WRONG_MTIMES.includes?(zseed)
 
-    if old_value = get_chseed(sname)
+    if old_value = get_chseed(zseed)
       _svnid, old_mtime, old_count = old_value
 
       if count > old_count # if newer has more chapters

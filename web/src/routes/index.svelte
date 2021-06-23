@@ -31,7 +31,7 @@
   function parse_params(query, params = {}) {
     params.order = query.get('order') || 'access'
     if (query.has('genre')) params.genre = query.get('genre')
-    if (query.has('sname')) params.sname = query.get('sname')
+    if (query.has('zseed')) params.zseed = query.get('zseed')
 
     return params
   }
@@ -42,7 +42,7 @@
     if (page > 1) query.set('page', page)
     if (opts.order != 'access') query.set('order', opts.order)
     if (opts.genre) query.set('genre', opts.genre)
-    if (opts.sname) query.set('sname', opts.sname)
+    if (opts.zseed) query.set('zseed', opts.zseed)
 
     const output = query.toString()
     return output ? `/?${output}` : '/'

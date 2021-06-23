@@ -1,10 +1,10 @@
 require "crypto/bcrypt/password"
 
-class CV::Viuser < Granite::Base
+class CV::Cvuser < Granite::Base
   connection pg
-  table viusers
+  table cvusers
 
-  column id : Int32, primary: true
+  column id : Int64, primary: true
   timestamps
 
   column uname : String
@@ -29,34 +29,34 @@ class CV::Viuser < Granite::Base
   # miscellaneous preferences
   # column prefs : Prefs
 
-  validate :email, "is required", ->(viuser : Viuser) do
-    (email = viuser.email) ? !email.empty? : false
+  validate :email, "is required", ->(cvuser : Cvuser) do
+    (email = cvuser.email) ? !email.empty? : false
   end
 
-  # validate :email, "already in use", ->(viuser : Viuser) do
-  #   existing = Viuser.find_by(email: viuser.email)
-  #   !existing || existing.id == viuser.id
+  # validate :email, "already in use", ->(cvuser : Cvuser) do
+  #   existing = Cvuser.find_by(email: cvuser.email)
+  #   !existing || existing.id == cvuser.id
   # end
 
-  validate :uname, "is required", ->(viuser : Viuser) do
-    (uname = viuser.uname) ? !uname.empty? : false
+  validate :uname, "is required", ->(cvuser : Cvuser) do
+    (uname = cvuser.uname) ? !uname.empty? : false
   end
 
-  # validate :uname, "already in use", ->(viuser : Viuser) do
-  #   existing = Viuser.find_by(uname: viuser.uname)
-  #   !existing || existing.id == viuser.id
+  # validate :uname, "already in use", ->(cvuser : Cvuser) do
+  #   existing = Cvuser.find_by(uname: cvuser.uname)
+  #   !existing || existing.id == cvuser.id
   # end
 
-  validate :uname, "is too short", ->(viuser : Viuser) do
-    if uname = viuser.uname
+  validate :uname, "is too short", ->(cvuser : Cvuser) do
+    if uname = cvuser.uname
       uname.size >= 5
     else
       false
     end
   end
 
-  validate :cpass, "is too short", ->(viuser : Viuser) do
-    if _pass = viuser.upass
+  validate :cpass, "is too short", ->(cvuser : Cvuser) do
+    if _pass = cvuser.upass
       _pass.size >= 8
     else
       true

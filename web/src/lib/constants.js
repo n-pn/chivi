@@ -1,4 +1,4 @@
-export const remote_snames = [
+export const remote_zseeds = [
   'biqubao',
   'bxwxorg',
   '5200',
@@ -56,7 +56,7 @@ export const genres = [
   'Trạch văn',
 ]
 
-export const snames = [
+export const zseeds = [
   '5200',
   'bqg_5200',
   'biqubao',

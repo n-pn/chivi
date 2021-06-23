@@ -34,13 +34,13 @@ class CV::MarkCtrl < CV::BaseCtrl
 
             nvinfo = NvInfo.load(node.key)
             next unless vals = chap_mark.get(nvinfo.bhash)
-            atime, sname, chidx, title, uslug = vals
+            atime, zseed, chidx, title, uslug = vals
 
             json.object {
               json.field "bname", nvinfo.btitle[2]
               json.field "bslug", nvinfo.bslug
               json.field "atime", atime
-              json.field "sname", sname
+              json.field "zseed", zseed
               json.field "chidx", chidx
               json.field "title", title
               json.field "uslug", uslug

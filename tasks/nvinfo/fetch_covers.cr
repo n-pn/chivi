@@ -33,27 +33,27 @@ class CV::FetchCovers
     end
 
     NvFields.bhashes.each do |bhash|
-      snames = NvChseed.get_list(bhash)
+      zseeds = NvChseed.get_list(bhash)
 
-      snames.each do |sname|
-        next if sname == "jx_la" || sname == "chivi"
-        snvid = NvChseed.get_nvid(sname, bhash) || bhash
+      zseeds.each do |zseed|
+        next if zseed == "jx_la" || zseed == "chivi"
+        snvid = NvChseed.get_nvid(zseed, bhash) || bhash
 
-        out_file = "_db/bcover/#{sname}/#{snvid}.jpg"
+        out_file = "_db/bcover/#{zseed}/#{snvid}.jpg"
         next if File.exists?(out_file)
 
-        next unless image_url = cover_map(sname).fval(snvid)
-        queues[sname][image_url] = out_file unless image_url.empty?
+        next unless image_url = cover_map(zseed).fval(snvid)
+        queues[zseed][image_url] = out_file unless image_url.empty?
       end
     end
 
     channel = Channel(Nil).new(queues.size)
 
-    queues.each do |sname, queue|
-      ::FileUtils.mkdir_p("_db/bcover/#{sname}")
+    queues.each do |zseed, queue|
+      ::FileUtils.mkdir_p("_db/bcover/#{zseed}")
 
       limit, delayed =
-        case sname
+        case zseed
         when "shubaow" then {1, 2.seconds}
         when "duokan8" then {1, 1.seconds}
         when "zhwenpg" then {1, 500.milliseconds}
@@ -75,8 +75,8 @@ class CV::FetchCovers
 
   MAP_CACHE = {} of String => ValueMap
 
-  def cover_map(sname : String)
-    MAP_CACHE[sname] ||= ValueMap.new("_db/_seeds/#{sname}/bcover.tsv", mode: 2)
+  def cover_map(zseed : String)
+    MAP_CACHE[zseed] ||= ValueMap.new("_db/_seeds/#{zseed}/bcover.tsv", mode: 2)
   end
 
   def fetch!(queue : Hash(String, String), limit = 8, delayed = 10.milliseconds)

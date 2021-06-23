@@ -17,20 +17,20 @@ module CV::NvChseed
     _index.set!(bhash, chseed)
   end
 
-  def get_seed(sname : String, bhash : String)
-    seed_map(sname).get(bhash)
+  def get_seed(zseed : String, bhash : String)
+    seed_map(zseed).get(bhash)
   end
 
-  def get_nvid(sname : String, bhash : String)
-    seed_map(sname).fval(bhash)
+  def get_nvid(zseed : String, bhash : String)
+    seed_map(zseed).fval(bhash)
   end
 
-  def set_seed!(sname : String, bhash : String, values : Array(String))
-    seed_map(sname).set!(bhash, values)
+  def set_seed!(zseed : String, bhash : String, values : Array(String))
+    seed_map(zseed).set!(bhash, values)
   end
 
-  def seed_map(sname : String)
-    CACHE[sname] ||= ValueMap.new("#{DIR}/#{sname}.tsv")
+  def seed_map(zseed : String)
+    CACHE[zseed] ||= ValueMap.new("#{DIR}/#{zseed}.tsv")
   end
 
   def filter(inp : String, prevs : Set(String)? = nil)

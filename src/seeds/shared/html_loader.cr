@@ -13,8 +13,8 @@ module Cv::HtmlLoader
     html
   end
 
-  def encoding(sname : String) : String
-    case sname
+  def encoding(zseed : String) : String
+    case zseed
     when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg"
       "UTF-8"
     else
