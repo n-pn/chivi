@@ -15,7 +15,7 @@ const mdsvexConfig = {
   smartypants: { dashes: 'oldschool' },
   remarkPlugins: [breaks],
   rehypePlugins: [],
-  // layout: path.resolve(_cwd, 'src/lib/parts/Layout.svelte'),
+  layout: path.resolve(_cwd, 'src/lib/layouts/Article.svelte'),
 }
 
 /** @type {import('@sveltejs/kit').Config} */

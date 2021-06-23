@@ -36,7 +36,6 @@
 }
 
 .m-article {
-  @include article();
   @include line-gap(1rem);
 }
 

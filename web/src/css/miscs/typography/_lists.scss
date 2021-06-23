@@ -38,9 +38,10 @@ li {
 
   // prettier-ignore
   li + & { margin-top: rem(2x) }
+
   ul[class] &,
   li & {
-    margin-top: 0;
+    margin: .25rem 0;
   }
 }
 
