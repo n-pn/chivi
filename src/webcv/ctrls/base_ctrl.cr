@@ -1,18 +1,9 @@
 class CV::BaseCtrl < Amber::Controller::Base
   LAYOUT = false
 
-  @cu_uname : String?
-  @cu_privi : Int32?
-
-  # current user username
-  protected def cu_uname
-    @cu_uname ||= session["cu_uname"]? || "Khách"
-  end
-
-  # current user priviedge
-  protected def cu_privi : Int32
-    @cu_privi ||= ViUser.get_power(cu_uname.downcase)
-  end
+  protected getter cv_dname : String { session["cv_uname"]? || "Khách" }
+  protected getter cv_uname : String { cv_dname.downcase }
+  protected getter cu_privi : Int32 { ViUser.get_power(cv_uname) }
 
   def add_etag(etag : String)
     response.headers.add("ETag", etag)

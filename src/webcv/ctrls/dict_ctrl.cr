@@ -158,7 +158,7 @@ class CV::DictCtrl < CV::BaseCtrl
     prio = params.fetch_int("prio")
     attr = params.fetch_int("attr")
 
-    new_term = VpTerm.new(key, vals, prio, attr, uname: cu_uname, power: power, dtype: dict.dtype)
+    new_term = VpTerm.new(key, vals, prio, attr, uname: cv_dname, power: power, dtype: dict.dtype)
     return halt!(501, "Không thay đổi!") unless dict.set!(new_term)
 
     # TODO: save context

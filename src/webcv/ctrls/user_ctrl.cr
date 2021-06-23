@@ -6,7 +6,7 @@ class CV::UserCtrl < CV::BaseCtrl
   end
 
   def logout
-    session.delete("cu_uname")
+    session.delete("cv_uname")
     save_session!
     render_json({msg: "ok"})
   end
@@ -43,11 +43,11 @@ class CV::UserCtrl < CV::BaseCtrl
   end
 
   private def sigin_user!(dname : String)
-    session["cu_uname"] = dname
+    session["cv_uname"] = dname
     save_session!
   end
 
   private def return_user
-    render_json({uname: cu_uname, privi: cu_privi})
+    render_json({uname: cv_dname, privi: cu_privi})
   end
 end

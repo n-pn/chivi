@@ -17,7 +17,7 @@ class CV::TextCtrl < CV::BaseCtrl
     chidx, infos = curr_chap
 
     if cu_privi >= 0
-      ViMark.mark_chap(cu_uname.downcase, bname, sname, chidx, infos[1], infos[3])
+      ViMark.mark_chap(cv_uname, bname, sname, chidx, infos[1], infos[3])
     end
 
     render_json do |res|
