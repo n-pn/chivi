@@ -2,17 +2,17 @@ class CV::Yscrit < Granite::Base
   connection pg
   table yscrits
 
-  belongs_to :ysuser
-  belongs_to :yslist
-  belongs_to :ysbook
-
   column id : Int64, primary: true
   timestamps
 
+  belongs_to :ysuser
+  belongs_to :ysbook
+  belongs_to :yslist, foreign_key: id : Int64?
+
   column starred : Int32 = 3 # voting 1 2 3 4 5 stars
 
-  column zh_text : String = "" # orginal comment
-  column vi_html : String = "" # translated comment
+  column ztext : String = "" # orginal comment
+  column vhtml : String = "" # translated comment
 
   column bumped : Int64 = 0 # list checked at by minutes from epoch
   column mftime : Int64 = 0 # list changed at by seconds from epoch
@@ -20,7 +20,7 @@ class CV::Yscrit < Granite::Base
   column like_count : Int32 = 0
   column repl_count : Int32 = 0 # reply count, optional
 
-  def origin_id
-    created_at.to_unix.to_s(base: 16) + id.to_s(base: 16)
+  getter origin_id : String do
+    created_at.not_nil!.to_unix.to_s(base: 16) + id.to_s(base: 16)
   end
 end

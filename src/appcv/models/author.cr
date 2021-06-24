@@ -2,17 +2,17 @@ class CV::Author < Granite::Base
   connection pg
   table authors
 
-  has_many :nvinfo
-
   column id : Int64, primary: true
   timestamps
 
-  column zh_name : String
-  column vi_name : String
+  has_many :btitle
 
-  column zh_slug : String # for text search
-  column vi_slug : String # for text search
+  column zname : String
+  column vname : String
 
-  column sorting : Int32 = 0 # weight of author top rated book
+  column zname_tz : String # for text search
+  column vname_tz : String # for text search
+
+  column weight : Int32 = 0 # weight of author's top rated book
 
 end

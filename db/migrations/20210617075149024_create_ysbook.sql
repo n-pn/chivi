@@ -2,10 +2,10 @@
 CREATE TABLE ysbooks (
   id bigserial PRIMARY KEY,
 
-  cvbook_id bigint,
+  btitle_id bigint,
 
   author varchar not null,
-  btitle varchar not null,
+  ztitle varchar not null,
 
   genres varchar[] not null,
   bintro text,
@@ -31,9 +31,10 @@ CREATE TABLE ysbooks (
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
 );
 
--- no need to be unique since `id` is already unique for each ysbook
-CREATE INDEX ysbook_unique_idx ON ysbooks (author, btitle);
-CREATE INDEX ysbook_cvbook_idx ON ysbooks (cvbook_id);
+CREATE INDEX ysbook_unique_idx ON ysbooks (author, ztitle);
+CREATE INDEX ysbook_btitle_idx ON ysbooks (btitle_id);
+CREATE INDEX ysbook_bumped_idx ON ysbooks (bumped);
+
 
 -- +micrate Down
 DROP TABLE IF EXISTS ysbooks;

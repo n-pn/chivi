@@ -3,6 +3,10 @@ module CV::Bgenre
 
   VGENRES = {{ read_file("db/mapping/vgenres.txt").split("\n") }}
 
+  def all(ids : Array(Int32))
+    ids.map { |id| vname(id) }
+  end
+
   def vname(idx : Int32)
     VGENRES[idx]? || "Loại khác"
   end

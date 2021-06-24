@@ -6,14 +6,18 @@ CREATE TABLE cvusers (
   email citext NOT NULL UNIQUE,
   cpass varchar NOT NULL,
 
-  privi int default 0 NOT NULL,
   karma int default 0 NOT NULL,
+
+  privi int default 0 NOT NULL,
+  privi_until timestamptz,
 
   prefs jsonb default '{}'::jsonb NOT NULL,
 
   created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
 );
+
+CREATE INDEX cvuser_privi_idx ON cvusers (privi);
 
 
 -- +micrate Down

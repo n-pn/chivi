@@ -7,11 +7,19 @@ class CV::Cvuser < Granite::Base
   column id : Int64, primary: true
   timestamps
 
+  has_many :ubmark
+  has_many :ubview
+  has_many :btitle, through: :ubmark
+
   column uname : String
   column email : String
 
   column cpass : String  # encrypted password
-  getter upass : String? # virtual field
+  getter upass : String? # virtual password field
+
+  # reserve for future, can be treated as currency
+  # rewarded for being a donor or has great contribution
+  column karma : Int32 = 0
 
   # user group and privilege:
   # - admin: 4 // granted all access
@@ -20,48 +28,20 @@ class CV::Cvuser < Granite::Base
   # - vip_0: 1 // once a vip, still retain some privilege
   # - leech: 0  // leecher has restristed access
   # - banned: -1 // banned user is treated similar to unregisted user
-  column privi : Int32 = 1
+  column privi : Int32 = 0
 
-  # reserve for future, can be treated as currency
-  # rewarded for being a donor or has great contribution
-  column karma : Int32 = 0
+  column privi_until : Time? # when the prmium period terminated
 
-  # miscellaneous preferences
+  # TODO: mapping miscellaneous preferences
   # column prefs : Prefs
 
-  validate :email, "is required", ->(cvuser : Cvuser) do
-    (email = cvuser.email) ? !email.empty? : false
-  end
+  validate_not_blank :email
+  validate_not_blank :uname
+  validate_uniqueness :email
+  validate_uniqueness :uname
 
-  # validate :email, "already in use", ->(cvuser : Cvuser) do
-  #   existing = Cvuser.find_by(email: cvuser.email)
-  #   !existing || existing.id == cvuser.id
-  # end
-
-  validate :uname, "is required", ->(cvuser : Cvuser) do
-    (uname = cvuser.uname) ? !uname.empty? : false
-  end
-
-  # validate :uname, "already in use", ->(cvuser : Cvuser) do
-  #   existing = Cvuser.find_by(uname: cvuser.uname)
-  #   !existing || existing.id == cvuser.id
-  # end
-
-  validate :uname, "is too short", ->(cvuser : Cvuser) do
-    if uname = cvuser.uname
-      uname.size >= 5
-    else
-      false
-    end
-  end
-
-  validate :cpass, "is too short", ->(cvuser : Cvuser) do
-    if _pass = cvuser.upass
-      _pass.size >= 8
-    else
-      true
-    end
-  end
+  validate_min_length :uname, 5
+  validate_min_length :upass, 8
 
   def upass=(upass : String)
     self.cpass = Crypto::Bcrypt::Password.create(upass, cost: 10).to_s
