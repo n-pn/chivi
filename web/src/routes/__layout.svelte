@@ -1,7 +1,6 @@
 <script>
-  import { onMount } from 'svelte'
   import { navigating, page, session } from '$app/stores'
-  import { l_scroll, dark_mode } from '$lib/stores'
+  import { l_scroll } from '$lib/stores'
   import Loader from '$lib/layouts/Loader.svelte'
 
   import '../css/globals.scss'
@@ -34,10 +33,6 @@
   //   // disabled until adsense is unblocked
   //   if ($session.privi < 2) e.stopPropagation()
   // }
-
-  let root
-  onMount(() => (root = document.documentElement))
-  $: root && root.classList.toggle('tm-dark', $dark_mode)
 </script>
 
 <svelte:head>
@@ -51,7 +46,7 @@
 
 <svelte:window on:scroll={track_scrolling} />
 
-<div class="app">
+<div class="app" class:tm-dark={$session.site_theme == 'dark'}>
   <slot />
 
   <div class="links">
@@ -76,7 +71,7 @@
   .app {
     height: 100%;
 
-    @include tm-dark {
+    &.tm-dark {
       background: color(neutral, 8);
     }
   }

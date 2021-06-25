@@ -1,7 +1,6 @@
 <script>
   import { session } from '$app/stores'
   import { mark_names, mark_icons } from '$lib/constants'
-  import { dark_mode } from '$lib/stores'
 
   import SIcon from '$lib/blocks/SIcon.svelte'
   import Slider from './Slider.svelte'
@@ -20,6 +19,10 @@
     const res = await fetch(`/api/mark-chaps?skip=${skip}`)
     if (res.ok) chaps = await res.json()
   }
+
+  function change_theme() {
+    $session.site_theme = $session.site_theme == 'dark' ? 'light' : 'dark'
+  }
 </script>
 
 <Slider bind:actived _rwidth={26}>
@@ -31,8 +34,8 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <button class="-btn" on:click={() => dark_mode.update((x) => !x)}>
-      <SIcon name={$dark_mode ? 'sun' : 'moon'} />
+    <button class="-btn" on:click={change_theme}>
+      <SIcon name={$session.site_theme == 'dark' ? 'sun' : 'moon'} />
     </button>
 
     <button class="-btn" on:click={logout}>

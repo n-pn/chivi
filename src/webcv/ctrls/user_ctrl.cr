@@ -48,6 +48,15 @@ class CV::UserCtrl < CV::BaseCtrl
   end
 
   private def return_user
-    render_json({uname: cv_dname, privi: cu_privi})
+    site_theme = cu_privi < 1 ? "light" : "dark"
+    cvmtl_mode = cu_privi < 1 ? "greedy" : (cu_privi < 4 ? "dynamic" : "complex")
+
+    render_json({
+      uname: cv_dname,
+      privi: cu_privi,
+
+      site_theme: site_theme,
+      cvmlt_mode: cvmtl_mode,
+    })
   end
 end
