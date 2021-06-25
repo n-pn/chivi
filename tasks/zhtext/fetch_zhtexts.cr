@@ -20,7 +20,7 @@ class CV::FetchBook
   end
 
   def find_missing_schids!
-    index_map = ValueMap.new("#{@dir}/_id.tsv", mode: 2)
+    index_map = ValueMap.new("#{@dir}/_id.tsv", mode: 1)
 
     index_map.data.each do |chidx, value|
       @schids[value.first] = chidx.to_i - 1
@@ -41,7 +41,7 @@ class CV::FetchBook
 
     threads = @schids.size if threads > @schids.size
 
-    channel = Channel(Nil).new(threads)
+    channel = Channel(Nil).new(threads + 1)
     @schids.each_with_index(1) do |(schid, chidx), idx|
       channel.receive if idx > threads
 
@@ -107,7 +107,7 @@ class CV::FetchSeed
 
     @snvids.each_with_index(1) do |snvid, idx|
       puts "\n[#{idx}/#{@snvids.size}]".colorize.yellow
-      FetchBook.new(@sname, snvid).crawl!(threads)
+      FetchBook.new(@sname, snvid).crawl!(threads: threads)
     end
   end
 
@@ -156,7 +156,8 @@ threads = CV::RmUtil.ideal_workers_count_for(sname) if threads < 1
 
 case mode
 when :single
-  CV::FetchBook.new(sname, snvid).crawl!(threads)
+  puts "[#{sname} - #{snvid} - #{threads}]".colorize.cyan.bold
+  CV::FetchBook.new(sname, snvid).crawl!(threads: threads)
 when :multi
   fetch_all = true if sname == "hetushu"
   puts "[#{sname} - #{fetch_all} - #{threads}]".colorize.cyan.bold

@@ -1,4 +1,4 @@
-require "../../cutil/core_utils"
+require "../cutil/core_utils"
 
 class CV::Zhbook < Granite::Base
   connection pg

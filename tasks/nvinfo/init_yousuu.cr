@@ -1,6 +1,8 @@
 require "file_utils"
 
-require "../../src/seeds/ys_book"
+require "../shared/fs_ysbook.cr"
+require "../shared/bootstrap.cr"
+
 require "./shared/seed_data.cr"
 require "./shared/seed_util.cr"
 
@@ -15,35 +17,48 @@ class CV::InitYousuu
     puts "- Input: #{queue.size} entries".colorize.cyan
 
     queue.each_with_index(1) do |file, idx|
-      snvid = File.basename(file, ".json")
-      atime = SeedUtil.get_mtime(file)
-
-      next if @seed._index.ival_64(snvid) >= atime
-      next unless info = YsBook.load(file)
-
-      @seed._index.set!(snvid, [atime.to_s, info.title, info.author])
-      @seed.set_intro(snvid, info.intro)
-
-      @seed.genres.set!(snvid, [info.genre].concat(info.tags_fixed).uniq)
-      @seed.bcover.set!(snvid, info.cover_fixed)
-
-      @seed.status.set!(snvid, info.status.to_s)
-      @seed.update.set!(snvid, info.updateAt)
-
-      @seed.hidden.set!(snvid, info.shielded ? "1" : "0")
-      @seed.rating.set!(snvid, [info.voters.to_s, info.rating.to_s])
-
-      @seed.source_url.set!(snvid, info.source)
-      @seed.count_word.set!(snvid, info.word_count)
-      @seed.count_crit.set!(snvid, info.crit_count)
-      @seed.count_list.set!(snvid, info.addListTotal)
-
       if idx % 100 == 0
         puts "- [yousuu] <#{idx}/#{queue.size}>".colorize.cyan
         @seed.save!(clean: false)
       end
+
+      snvid = File.basename(file, ".json")
+      atime = SeedUtil.get_mtime(file)
+
+      next if @seed._index.ival_64(snvid) >= atime
+      next unless json = FsYsbook.load(file)
+
+
+      book = Ysbook.get!(snvid.to_i64)
+
+      book.author = json.author
+      book.ztitle = json.title
+
+      book.genres = json.genres
+      book.bintro = json.intro.join("\n")
+      book.bcover = json.cover_fixed
+
+      book.status = json.status
+      book.shield = json.shielded ? 1 : 0
+
+      book.bumped = atime
+      book.mftime = json.updated_at.to_unix
+
+      book.voters = json.voters
+      book.rating = json.rating
+
+      book.word_count = json.word_count
+      book.crit_count = json.commentCount
+      book.list_count = json.addListTotal
+
+      book.root_link = json.root_link
+      # TODO: parse root_name
+
+      book.save!
+      @seed._index.set!(snvid, [atime.to_s, json.title, json.author])
     rescue err
-      puts "- error loading [#{snvid}]: #{err}".colorize.red
+      puts "- error loading [#{snvid}]: ".colorize.red
+      puts err.inspect_with_backtrace.colorize.red
     end
 
     @seed.save!(clean: true)

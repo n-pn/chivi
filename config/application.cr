@@ -14,8 +14,7 @@ require "./database"
 require "./initializers/**"
 
 # Start Generator Dependencies: Don't modify.
-require "../src/appcv/models/**"
-require "../src/appcv/filedb/**"
+require "../src/appcv/**"
 # End Generator Dependencies
 
 require "../src/webcv/pipes/**"
