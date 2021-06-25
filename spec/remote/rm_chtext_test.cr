@@ -1,11 +1,11 @@
 require "colorize"
 
-require "../../src/seeds/rm_chtext.cr"
+require "../../src/seeds/rm_text.cr"
 
 def fetch_text(sname : String, snvid : String, schid : String, fresh = false)
-  puts "\n[#{CV::RmSpider.chtext_link(sname, snvid, schid)}]\n".colorize.blue.bold
+  puts "\n[#{CV::RmUtil.chtext_link(sname, snvid, schid)}]\n".colorize.blue.bold
 
-  chap = CV::RmChtext.new(sname, snvid, schid, valid: fresh ? 1.minute : 10.years)
+  chap = CV::RmText.new(sname, snvid, schid, valid: fresh ? 1.minute : 10.years)
 
   puts chap.title
   puts "---".colorize.blue

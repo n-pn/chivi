@@ -50,10 +50,10 @@ class CV::MapRemote
   end
 
   def fetch!(snvid : String, label = "1/1")
-    link = RmSpider.nvinfo_link(@sname, snvid)
+    link = RmUtil.nvinfo_link(@sname, snvid)
     html = HttpUtils.get_html(link, @encoding, label: label)
 
-    file = RmSpider.nvinfo_file(@sname, snvid)
+    file = RmUtil.nvinfo_file(@sname, snvid)
     FileUtils.save_gz(file, html)
   rescue err
     puts err
@@ -119,7 +119,7 @@ class CV::MapRemote
   end
 
   private def access_time(snvid : String) : Int64?
-    file = RmSpider.nvinfo_file(@sname, snvid)
+    file = RmUtil.nvinfo_file(@sname, snvid)
     Bookgen.get_atime(file)
   end
 

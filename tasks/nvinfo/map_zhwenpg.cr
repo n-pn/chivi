@@ -56,7 +56,7 @@ class CV::MapZhwenpg
     link = page_link(page, status)
 
     valid = 4.hours * page
-    html = RmSpider.fetch(file, link, "zhwenpg", valid: valid, label: page.to_s)
+    html = RmUtil.fetch(file, link, "zhwenpg", valid: valid, label: page.to_s)
     atime = Bookgen.get_atime(file) || Time.utc.to_unix
 
     doc = Myhtml::Parser.new(html)

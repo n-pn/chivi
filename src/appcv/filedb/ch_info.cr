@@ -38,7 +38,7 @@ class CV::ChInfo
   def fetch!(power = 4, mode = 2, ttl = 5.minutes) : Tuple(Int64, Int32)
     mtime = -1_i64
 
-    if RmSpider.remote?(@sname, power: power)
+    if RmUtil.remote?(@sname, power: power)
       RmInfo.mkdir!(@sname)
 
       parser = RmInfo.new(@sname, @snvid, ttl: ttl)

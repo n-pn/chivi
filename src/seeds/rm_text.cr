@@ -1,9 +1,9 @@
 require "../cutil/time_utils"
 require "../cutil/text_utils"
 
-require "./rm_spider"
+require "./rm_util"
 
-class CV::RmChtext
+class CV::RmText
   # cache folder path
   def self.c_dir(sname : String, snvid : String) : String
     "_db/.cache/#{sname}/texts/#{snvid}"
@@ -18,10 +18,10 @@ class CV::RmChtext
   getter schid : String
 
   def initialize(@sname, @snvid, @schid, valid = 10.years, label = "1/1")
-    file = RmSpider.chtext_file(@sname, @snvid, @schid)
-    link = RmSpider.chtext_link(@sname, @snvid, @schid)
+    file = RmUtil.chtext_file(@sname, @snvid, @schid)
+    link = RmUtil.chtext_link(@sname, @snvid, @schid)
 
-    html = RmSpider.fetch(file, link, sname: @sname, valid: valid, label: label)
+    html = RmUtil.fetch(file, link, sname: @sname, valid: valid, label: label)
     @rdoc = Myhtml::Parser.new(html)
   end
 
@@ -161,11 +161,11 @@ class CV::RmChtext
       return node.attributes["content"]
     end
 
-    html_file = RmSpider.chtext_file(@sname, @snvid, @schid)
+    html_file = RmUtil.chtext_file(@sname, @snvid, @schid)
     meta_file = html_file.sub(".html", ".meta")
     return File.read(meta_file) if File.exists?(meta_file)
 
-    html_link = RmSpider.chtext_link(@sname, @snvid, @schid)
+    html_link = RmUtil.chtext_link(@sname, @snvid, @schid)
     json_link = html_link.sub("#{@schid}.html", "r#{@schid}.json")
 
     headers = HTTP::Headers{

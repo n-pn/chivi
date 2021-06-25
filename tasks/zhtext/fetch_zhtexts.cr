@@ -1,119 +1,164 @@
 # require "json"
-# require "colorize"
-# require "file_utils"
-# require "option_parser"
+require "colorize"
+require "file_utils"
+require "option_parser"
+require "compress/zip"
 
-# require "../../src/appcv/nv_info"
+require "../../src/appcv/filedb/nv_info"
+require "../../src/appcv/filedb/ch_text"
+require "../../src/tabkv/value_map"
 
-# require "../../src/appcv/ch_info"
-# require "../../src/appcv/ch_text"
-# require "../../src/seeds/rm_chtext"
+class CV::FetchBook
+  getter schids = Hash(String, Int32).new
 
-# class CV::PreloadBook
-#   def self.crawl!(seed : String, snvid : String, threads = 4, label = "1/1")
-#     new(seed, snvid, label: label).crawl!(threads)
-#   end
+  def initialize(@sname : String, @snvid : String, label = "1/1")
+    @dir = "_db/chseed/#{@sname}/#{@snvid}"
 
-#   getter schids : Array(String)
+    find_missing_schids!
 
-#   def initialize(@sname : String, @snvid : String, label = "1/1")
-#     @chinfo = Chinfo.new("generic", @sname, @snvid)
-#     @schids = @chinfo.missing_schids
+    puts "- <#{label}> [#{@sname}/#{@snvid}] #{@schids.size} entries".colorize.light_cyan
+  end
 
-#     puts "- <#{label}> [#{@sname}/#{@snvid}] #{@schids.size} entries".colorize.light_cyan
-#   end
+  def find_missing_schids!
+    index_map = ValueMap.new("#{@dir}/_id.tsv", mode: 2)
 
-#   def crawl!(threads = 4)
-#     return if @schids.empty?
+    index_map.data.each do |chidx, value|
+      @schids[value.first] = chidx.to_i - 1
+    end
 
-#     ::FileUtils.mkdir_p(@chinfo.chaps.root_dir)
-#     threads = @schids.size if threads > @schids.size
+    Dir.glob("#{@dir}/*.zip").each do |zip_file|
+      Compress::Zip::File.open(zip_file) do |zip|
+        zip.entries.each do |entry|
+          schid = File.basename(entry.filename, ".txt")
+          schids.delete(schid)
+        end
+      end
+    end
+  end
 
-#     channel = Channel(Nil).new(threads)
-#     @schids.each_with_index(1) do |schid, idx|
-#       channel.receive if idx > threads
+  def crawl!(threads = 4)
+    return if @schids.empty?
 
-#       spawn do
-#         label = "#{idx}/#{@schids.size}"
-#         chtext = ChText.new("_", @sname, @snvid, )
-#         remote = RmChtext.new(@sname, @snvid, schid, label: label)
-#         remote.save!(File.join(@chinfo.chaps.root_dir, "#{schid}.txt"))
-#       rescue err
-#         puts "- <#{label}> [#{@sname}/#{@snvid}/#{schid}]: #{err.message}".colorize.red
-#       ensure
-#         channel.send(nil)
-#       end
-#     end
+    threads = @schids.size if threads > @schids.size
 
-#     threads.times { channel.receive }
-#     @chinfo.chaps.compress!(mode: :archive) # save texts to zip files
-#   end
-# end
+    channel = Channel(Nil).new(threads)
+    @schids.each_with_index(1) do |(schid, chidx), idx|
+      channel.receive if idx > threads
 
-# class CV::PreloadSeed
-#   getter snvids = [] of String
+      spawn do
+        chtext = ChText.new("_", @sname, @snvid, chidx, schid)
+        chtext.fetch_zh!(mkdir: false, label: "#{idx}/#{@schids.size}")
+        # throttling
+        case @sname
+        when "shubaow"
+          sleep Random.rand(1000..2000).milliseconds
+        when "zhwenpg"
+          sleep Random.rand(400..1000).milliseconds
+        when "bqg_5200"
+          sleep Random.rand(100..400).milliseconds
+        end
+      rescue err
+        puts "- <#{idx}> [#{@sname}/#{@snvid}/#{schid}]: #{err}".colorize.red
+      ensure
+        channel.send(nil)
+      end
+    end
 
-#   def initialize(@sname : String, fetch_all : Bool = false)
-#     input = [] of Tuple(String, Int32)
+    threads.times { channel.receive }
+  end
+end
 
-#     NvChseed.load(sname).data.each do |bhash, value|
-#       next unless fetch_all || should_crawl?(bhash)
-#       input << {value.first, -NvValues.weight.ival(bhash)}
-#     end
+class CV::FetchSeed
+  getter snvids = [] of String
 
-#     @snvids = input.sort_by(&.[1]).map(&.[0])
-#   end
+  def initialize(@sname : String, fetch_all : Bool = false)
+    input = [] of Tuple(String, Int32)
 
-#   SORT_ORDER = {
-#     "hetushu", "rengshu", "bxwxorg", "biqubao",
-#     "xbiquge", "paoshu8", "5200", "bqg_5200",
-#     "shubaow", "duokan8", "zhwenpg", "nofff",
-#   }
+    NvChseed.seed_map(sname).data.each do |bhash, value|
+      next unless fetch_all || should_crawl?(bhash)
+      input << {value.first, -NvOrders.weight.ival(bhash)}
+    end
 
-#   def should_crawl?(bhash : String)
-#     snames = NvChseed._index.get(bhash) || [] of String
-#     return false if snames.empty?
+    @snvids = input.sort_by(&.[1]).map(&.[0])
+  end
 
-#     case @sname
-#     when "zhwenpg", "shubaow", "paoshu8", "nofff", "bqg_5200", "5200"
-#       return false if snames.size > 1
-#     else
-#       snames = snames.sort_by { |sname| SORT_ORDER.index(sname) || 99 }
-#     end
+  SORT_ORDER = {
+    "hetushu", "rengshu", "bxwxorg", "biqubao",
+    "xbiquge", "paoshu8", "5200", "bqg_5200",
+    "shubaow", "duokan8", "zhwenpg", "nofff",
+  }
 
-#     snames.first == @sname
-#   end
+  def should_crawl?(bhash : String)
+    snames = NvChseed._index.get(bhash) || [] of String
+    return false if snames.empty?
 
-#   def crawl!(threads = 4)
-#     puts "[#{@sname}: #{@snvids.size} entries]".colorize.green.bold
+    case @sname
+    when "zhwenpg", "shubaow", "paoshu8", "nofff", "bqg_5200", "5200"
+      return false if snames.size > 3
+    else
+      snames = snames.sort_by { |sname| SORT_ORDER.index(sname) || 99 }
+    end
 
-#     @snvids.each_with_index(1) do |snvid, idx|
-#       PreloadBook.crawl!(@sname, snvid, threads, label: "#{idx}/#{@snvids.size}")
-#     end
-#   end
+    snames.first == @sname
+  end
 
-#   def self.crawl!(argv = ARGV)
-#     sname = "zhwenpg"
+  def crawl!(threads = 4)
+    puts "[#{@sname}: #{@snvids.size} entries]".colorize.green.bold
 
-#     threads = RmSpider.ideal_workers_count_for(sname)
-#     fetch_all = sname == "hetushu"
+    @snvids.each_with_index(1) do |snvid, idx|
+      puts "\n[#{idx}/#{@snvids.size}]".colorize.yellow
+      FetchBook.new(@sname, snvid).crawl!(threads)
+    end
+  end
 
-#     OptionParser.parse(argv) do |parser|
-#       parser.banner = "Usage: fetch_zhtexts [arguments]"
-#       parser.on("-s SNAME", "Seed name") { |x| sname = x }
-#       parser.on("-a", "Fetch all") { |x| fetch_all = !!x }
-#       parser.on("-t THREADS", "Parallel workers") { |x| threads = x.to_i }
+  def self.crawl!(argv = ARGV)
+    sname = "zhwenpg"
 
-#       parser.invalid_option do |flag|
-#         STDERR.puts "ERROR: `#{flag}` is not a valid option."
-#         STDERR.puts parser
-#         exit(1)
-#       end
-#     end
-
-#     puts "[#{sname} - #{fetch_all} - #{threads}]".colorize.cyan.bold
-#     PreloadSeed.new(sname, fetch_all).crawl!(threads: threads)
-#   end
-# end
+    fetch_all = sname == "hetushu"
+  end
+end
 
 # CV::PreloadSeed.crawl!(ARGV)
+
+mode = :multi
+
+threads = 0
+sname = "hetushu"
+
+snvid = "1"
+fetch_all = false
+
+OptionParser.parse(ARGV) do |opt|
+  opt.banner = "Usage: fetch_zhtexts [arguments]"
+  opt.on("-t THREADS", "Parallel workers") { |x| threads = x.to_i }
+  opt.on("-s SNAME", "Seed name") { |x| sname = x }
+
+  opt.on("single", "Fetch a single book") do
+    mode = :single
+    opt.banner = "Usage: fetch_zhtexts single [arguments]"
+    opt.on("-n SNVID", "Seed book id") { |x| snvid = x }
+  end
+
+  opt.on("multi", "Fetch multi books") do
+    mode = :multi
+    opt.banner = "Usage: fetch_zhtexts multi [arguments]"
+    opt.on("-a", "Fetch all") { fetch_all = true }
+  end
+
+  opt.invalid_option do |flag|
+    STDERR.puts "ERROR: `#{flag}` is not a valid option."
+    STDERR.puts opt
+    exit(1)
+  end
+end
+
+threads = CV::RmUtil.ideal_workers_count_for(sname) if threads < 1
+
+case mode
+when :single
+  CV::FetchBook.new(sname, snvid).crawl!(threads)
+when :multi
+  fetch_all = true if sname == "hetushu"
+  puts "[#{sname} - #{fetch_all} - #{threads}]".colorize.cyan.bold
+  CV::FetchSeed.new(sname, fetch_all).crawl!(threads: threads)
+end

@@ -2,7 +2,7 @@ require "file_utils"
 require "compress/zip"
 
 require "../../libcv/cvmtl"
-require "../../seeds/rm_chtext"
+require "../../seeds/rm_text"
 require "../../cutil/ram_cache"
 
 class CV::ChText
@@ -69,7 +69,7 @@ class CV::ChText
   def get_zh!(power = 4, reset = false)
     @zh_text ||= load_zh!
 
-    if RmSpider.remote?(@sname, power)
+    if RmUtil.remote?(@sname, power)
       @zh_text = nil if reset || @zh_text.try(&.empty?)
     end
 
@@ -87,10 +87,10 @@ class CV::ChText
     [] of String
   end
 
-  def fetch_zh!(valid = 10.years) : Array(String)?
-    RmChtext.mkdir!(@sname, @snvid)
+  def fetch_zh!(valid = 10.years, mkdir = true, label = "1/1") : Array(String)?
+    RmText.mkdir!(@sname, @snvid) if mkdir
 
-    puller = RmChtext.new(@sname, @snvid, @schid, valid: valid)
+    puller = RmText.new(@sname, @snvid, @schid, valid: valid, label: label)
     lines = [puller.title].concat(puller.paras)
     lines.tap { |x| save_zh!(x) }
   rescue err

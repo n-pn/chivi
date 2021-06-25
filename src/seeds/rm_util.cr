@@ -7,7 +7,7 @@ require "../cutil/file_utils"
 require "../cutil/time_utils"
 require "../cutil/path_utils"
 
-module CV::RmSpider
+module CV::RmUtil
   extend self
 
   def fetch(file : String, link : String, sname : String, valid = 1.week, label = "1/1")
