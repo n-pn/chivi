@@ -109,7 +109,7 @@ class CV::ChText
     out_file = File.join(@text_dir, "#{@schid}.txt")
     File.open(out_file, "w") { |io| lines.join(io, "\n") }
 
-    puts `zip -jqm "#{@zip_file}" "#{out_file}"`
+    `zip -jqm "#{@zip_file}" "#{out_file}"`
     puts "- <zh_text> [#{out_file}] saved.".colorize.yellow
   end
 end
