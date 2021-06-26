@@ -50,7 +50,9 @@ class CV::Btitle < Granite::Base
 
   def set_genres(genres : Array(String), force = false)
     return unless force || self.bgenre_ids == [0]
-    self.bgenre_ids = Bgenre.zh_map_ids(genres)
+    genres_ids = Bgenre.zh_map_ids(genres)
+
+    self.bgenre_ids = genres_ids.empty? ? [0] : genres_ids
   end
 
   def set_mftime(mftime : Int64, force = false) : Nil
