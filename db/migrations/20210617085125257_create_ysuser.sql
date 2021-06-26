@@ -13,6 +13,8 @@ CREATE TABLE ysusers (
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
 );
 
+CREATE INDEX ysuser_zname_idx ON ysusers (zname);
+
 
 -- +micrate Down
 DROP TABLE IF EXISTS ysusers;

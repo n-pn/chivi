@@ -6,8 +6,11 @@ class CV::Btitle < Granite::Base
   timestamps
 
   has_one :cvbook, foreign_key: :id
-  has_one :ysbook
+
+  has_many :ysbook
   has_many :zhbook
+  has_many :yscrit
+  has_many :yslist, through: :yscrit
 
   belongs_to :author
   column bgenre_ids : Array(Int32) = [0]
