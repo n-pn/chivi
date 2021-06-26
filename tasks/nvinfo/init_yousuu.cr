@@ -1,121 +1,142 @@
 require "file_utils"
+require "option_parser"
 
-require "../shared/fs_ysbook.cr"
 require "../shared/bootstrap.cr"
+require "../shared/ysbook_og.cr"
 
 require "./shared/seed_data.cr"
 require "./shared/seed_util.cr"
 
 class CV::InitYousuu
+  DIR = "_db/yousuu/.cache/infos"
+
   @seed = SeedData.new("yousuu")
 
-  def parse!
-    queue = Dir.glob("_db/yousuu/.cache/infos/*.json").sort_by do |file|
+  alias Result = Tuple(String, Array(String))
+
+  def seed!(redo = false, workers = 16)
+    queue = Dir.glob("#{DIR}/*.json").sort_by do |file|
       File.basename(file, ".json").to_i
     end
 
-    puts "- Input: #{queue.size} entries".colorize.cyan
+    puts "- Input: #{queue.size.colorize.cyan} entries, \
+          authors: #{Author.count.colorize.cyan}, \
+          btitles: #{Btitle.count.colorize.cyan}"
 
     queue.each_with_index(1) do |file, idx|
       if idx % 100 == 0
-        puts "- [yousuu] <#{idx}/#{queue.size}>".colorize.cyan
-        @seed.save!(clean: false)
+        puts "- [yousuu] <#{idx.colorize.cyan}/#{queue.size}>, \
+              authors: #{Author.count.colorize.cyan}, \
+              btitles: #{Btitle.count.colorize.cyan}"
+
+        @seed._index.save!(clean: false)
       end
 
-      snvid = File.basename(file, ".json")
       atime = SeedUtil.get_mtime(file)
+      snvid = File.basename(file, ".json")
+      next unless redo || @seed._index.ival_64(snvid) < atime
 
-      next if @seed._index.ival_64(snvid) >= atime
-      next unless json = FsYsbook.load(file)
+      next unless ysbook = save_ysbook(file, atime)
+      save_btitle(ysbook)
 
-      book = Ysbook.get!(snvid.to_i64)
-
-      book.author = json.author
-      book.ztitle = json.title
-
-      book.genres = json.genres
-      book.bintro = json.intro.join("\n")
-      book.bcover = json.cover_fixed
-
-      book.status = json.status
-      book.shield = json.shielded ? 1 : 0
-
-      book.bumped = atime
-      book.mftime = json.updated_at.to_unix
-
-      book.voters = json.voters
-      book.rating = json.rating
-
-      book.word_count = json.word_count
-      book.crit_count = json.commentCount
-      book.list_count = json.addListTotal
-
-      book.root_link = json.root_link
-      # TODO: parse root_name
-
-      book.save!
-      @seed._index.set!(snvid, [atime.to_s, json.title, json.author])
+      @seed._index.set!(snvid, [atime.to_s, ysbook.ztitle, ysbook.author])
     rescue err
-      puts "- error loading [#{snvid}]: ".colorize.red
       puts err.inspect_with_backtrace.colorize.red
     end
 
-    @seed.save!(clean: true)
+    @seed._index.save!(clean: true)
+    puts "- authors: #{Author.count.colorize.cyan}, \
+            btitles: #{Btitle.count.colorize.cyan}"
   end
 
-  def resolve_poor_format_author
-    map_author = Hash(String, Set(String)).new { |h, k| h[k] = Set(String).new }
-    map_btitle = Hash(String, Set(String)).new { |h, k| h[k] = Set(String).new }
+  def save_index(ysbook : Ysbook?)
+    return unless ysbook
+  end
 
-    fix_author = ValueMap.new("db/nv_fixes/author_zh.tsv")
+  def save_ysbook(id : Int32)
+    save_ysbook("#{DIR}/#{id}.json")
+  end
 
-    @seed._index.data.each do |snvid, value|
-      voters = @seed.rating.ival(snvid)
-      next if voters = 0
+  def save_ysbook(file : String, atime = SeedUtil.get_mtime(file)) : Ysbook?
+    input = YsbookOg.load(file)
+    output = Ysbook.get!(input._id.to_i64)
 
-      _, title, author = value
-      map_btitle[author] << title
-      map_author[sanitize_author(author)] << author
+    output.author = input.author
+    output.ztitle = input.title
+
+    output.genres = input.genres
+    output.bintro = input.intro.join("\n")
+    output.bcover = input.cover_fixed
+
+    output.status = input.status
+    output.shield = input.shielded ? 1 : 0
+
+    output.bumped = atime
+    output.mftime = input.updated_at.to_unix
+
+    output.voters = input.voters
+    output.rating = input.rating
+
+    output.word_count = input.word_count
+    output.crit_count = input.commentCount
+    output.list_count = input.addListTotal
+
+    output.root_link = input.root_link
+    # TODO: parse root_name
+
+    output.tap(&.save!)
+  rescue err
+    snvid = File.basename(file, ".json")
+    @seed._index.set!(snvid, [atime.to_s, "-", "-"])
+
+    unless err.is_a?(YsbookOg::InvalidFile)
+      puts "- error loading [#{snvid}]:"
+      puts err.inspect_with_backtrace.colorize.red
     end
+  end
 
-    map_author.each do |fixed, authors|
-      authors = authors.reject do |a|
-        a =~ /^ |(\.QD)|(\.CS)|\)|）|\s$/ || a.includes?("最新更新") || fix_author.has_key?(a)
-      end
+  getter authors_map : Hash(String, Author) do
+    Author.all.to_h { |x| {x.zname, x} }
+  end
 
-      next if authors.empty?
-
-      if authors.size > 1
-        # puts "- [#{fixed}] <== #{authors.to_a}".colorize.red
-        # print "(1: keep 1, 2: keep 2, other: skip): "
-
-        # case getch
-        # when '1' then fix_author.set!(authors[1], authors[0])
-        # when '2' then fix_author.set!(authors[0], authors[1])
-        # when 'c' then break
-        # end
-        # puts
-      elsif authors.first != fixed
-        puts "- [#{fixed}] <== [#{authors.first}]".colorize.light_red
-      end
+  def get_author(ysbook : Ysbook) : Author?
+    zname = BookUtils.fix_zh_author(ysbook.author, ysbook.ztitle)
+    authors_map[zname] ||= begin
+      return unless ysbook.decent?
+      Author.upsert!(zname)
     end
-
-    fix_author.save!
   end
 
-  def sanitize_author(author : String)
-    # author = author.gsub(/^[^\p{Han}\p{Hiragana}\p{Katakana}\p{L}\p{N}_]/, "")
-    # author = author.gsub(/[^\p{Han}\p{Hiragana}\p{Katakana}\p{L}\p{N}_.·]$/, "")
+  def save_btitle(ysbook : Ysbook) : Btitle?
+    return unless author = get_author(ysbook)
+    author.update_weight!(ysbook.voters * ysbook.rating)
 
-    author.strip
-  end
+    ztitle = BookUtils.fix_zh_btitle(ysbook.ztitle, author.zname)
+    nvinfo = Btitle.upsert!(author, ztitle)
 
-  def getch
-    STDIN.flush
-    STDIN.raw &.read_char
+    ysbook.update!(btitle_id: nvinfo.id)
+
+    nvinfo.set_genres(ysbook.genres)
+    nvinfo.set_bcover("yousuu-#{ysbook.id}.jpg")
+    nvinfo.set_zintro(ysbook.bintro)
+
+    nvinfo.set_mftime(ysbook.mftime)
+    nvinfo.set_shield(ysbook.shield)
+    nvinfo.set_status(ysbook.status)
+
+    nvinfo.set_scores(ysbook.voters, ysbook.rating)
+
+    nvinfo.tap(&.save!)
   end
 end
 
+redo = false
+workers = 10
+
+OptionParser.parse(ARGV) do |opt|
+  opt.on("-a", "Ignore indexes") { redo = true }
+  opt.on("-w WORKERS", "Ignore indexes") { |x| workers = x.to_i }
+end
+
 worker = CV::InitYousuu.new
-worker.resolve_poor_format_author
-# worker.parse!
+worker.seed!(redo: redo, workers: workers)

@@ -34,7 +34,8 @@ CREATE TABLE btitles (
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE INDEX btitle_author_idx ON btitles (author_id);
+CREATE UNIQUE INDEX btitle_unique_idx ON btitles (author_id, ztitle);
+
 CREATE INDEX btitle_bgenre_idx ON btitles using GIN (bgenre_ids);
 CREATE INDEX btitle_zhseed_idx ON btitles using GIN (zhseed_ids);
 

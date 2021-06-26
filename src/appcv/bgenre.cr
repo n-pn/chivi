@@ -3,10 +3,8 @@ require "../tsvfs/value_map"
 module CV::Bgenre
   extend self
 
-  DIR = "db/fixtures"
-
-  VI_NAMES = {{ read_file("#{DIR}/vi_genres.txt").strip.split("\n") }}
-  class_getter zh_names : ValueMap { ValueMap.new("#{DIR}/zh_genres.tsv") }
+  VI_NAMES = {{ read_file("db/fixtures/vi_genres.txt").strip.split("\n") }}
+  class_getter zh_names : ValueMap { ValueMap.new("db/fixtures/zh_genres.tsv") }
 
   def all(ids : Array(Int32))
     ids.map { |id| vname(id) }
@@ -16,12 +14,24 @@ module CV::Bgenre
     VI_NAMES[idx]? || "Loại khác"
   end
 
-  # mapping chinese genre to vietnamese one
-  def vnames(zname : String)
+  def map_id(vname : String)
+    VI_NAMES.index(vname) || 0
+  end
+
+  def map_ids(vnames : Array(String))
+    vnames.map { |x| map_id(x) }.uniq
+  end
+
+  def zh_vname(zname : String)
     zh_names.get(zname) || [] of String
   end
 
-  def index(vname : String)
-    VI_NAMES.index(vname) || 0
+  # mapping chinese genre to vietnamese one
+  def zh_map_id(zname : String)
+    zh_vname(zname).map { |vname| map_id(vname) }
+  end
+
+  def zh_map_ids(znames : Array(String))
+    znames.map { |zname| zh_map_id(zname) }.flatten.uniq
   end
 end

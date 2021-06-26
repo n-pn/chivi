@@ -36,30 +36,30 @@ module CV::TextUtils
   # - treat unicode alphanumeric chars as upcase-able
   def capitalize(input : String) : String
     # TODO: handle punctuation?
+    res = String::Builder.new(input.size)
+    uncap = true
 
-    String.build do |io|
-      uncap = true
-
-      input.each_char do |char|
-        if uncap && char.alphanumeric?
-          io << char.upcase
-          uncap = false
-        else
-          io << char
-        end
+    input.each_char do |char|
+      if uncap && char.alphanumeric?
+        res << char.upcase
+        uncap = false
+      else
+        res << char
       end
     end
+
+    res.to_s
   end
 
   # split input to words
-  def tokenize(input : String, keep_accent : Bool = false) : Array(String)
-    input = unaccent(input) unless keep_accent
+  def tokenize(input : String, tones = false) : Array(String)
+    input = unaccent(input) unless tones
     split_words(input.downcase)
   end
 
   # make url friendly string
-  def slugify(input : String, keep_accent : Bool = false) : String
-    tokenize(input, keep_accent).join("-")
+  def slugify(input : String, tones = false) : String
+    tokenize(input, tones).join("-")
   end
 
   # strip vietnamese accents

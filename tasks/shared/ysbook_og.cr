@@ -2,34 +2,11 @@ require "json"
 
 require "../../src/cutil/*"
 
-class CV::FsYsbook
-  struct Source
-    include JSON::Serializable
-
-    @[JSON::Field(key: "siteName")]
-    property site : String
-
-    @[JSON::Field(key: "bookPage")]
-    property link : String
-  end
-
-  alias Data = NamedTuple(bookInfo: FsYsbook, bookSource: Array(Source))
-
-  def self.load(file : String)
-    text = File.read(file)
-    return unless text.includes?("\"success\"")
-
-    json = NamedTuple(data: Data).from_json(text)
-    info = json[:data][:bookInfo]
-    info.source = json[:data][:bookSource]
-
-    info
-  end
-
+class CV::YsbookOg
   include JSON::Serializable
 
   getter _id : Int32
-  getter y_nvid : String { _id.to_s }
+  getter ynvid : String { _id.to_s }
 
   getter title = ""
   getter author = ""
@@ -91,7 +68,30 @@ class CV::FsYsbook
     @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")
   end
 
+  struct Source
+    include JSON::Serializable
 
+    @[JSON::Field(key: "siteName")]
+    property site : String
+
+    @[JSON::Field(key: "bookPage")]
+    property link : String
+  end
+
+  alias Data = NamedTuple(bookInfo: YsbookOg, bookSource: Array(Source))
+
+  class InvalidFile < Exception; end
+
+  def self.load(file : String) : self
+    text = File.read(file)
+    raise InvalidFile.new(file) unless text.includes?("\"success\"")
+
+    json = NamedTuple(data: Data).from_json(text)
+    info = json[:data][:bookInfo]
+    info.source = json[:data][:bookSource]
+
+    info
+  end
 end
 
 # info = CV::YsBook.load("_db/yousuu/.cache/infos/153426.json").not_nil!

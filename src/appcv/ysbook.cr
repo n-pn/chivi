@@ -32,6 +32,10 @@ class CV::Ysbook < Granite::Base
   column root_link : String? # original publisher novel page
   column root_name : String? # original publisher name, extract from link
 
+  def decent?
+    list_count > 0 || crit_count > 4
+  end
+
   def self.get!(id : Int64)
     find(id) || new(id: id)
   end

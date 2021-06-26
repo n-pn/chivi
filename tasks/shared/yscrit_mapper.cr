@@ -35,7 +35,7 @@ class CV::YscritMapper
   getter repl_count : Int32 = 0
 
   # getter createdAt : Time # ignoring
-  getter created_at : Time { Time.unix(_id[0..8].to_i(base: 16)) }
+  getter created_at : Time { Time.unix(_id[0..7].to_i64(base: 16)) }
 
   @[JSON::Field(key: "updateAt")]
   getter updated_at : Time

@@ -115,6 +115,10 @@ class CV::ValueMap
     get(key).try(&.first?)
   end
 
+  def fval_alt(key : String, alt : String)
+    fval(key) || fval(alt)
+  end
+
   def ival(key : String, df : Int32 = 0)
     fval(key).try(&.to_i?) || df
   end
