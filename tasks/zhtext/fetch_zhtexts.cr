@@ -6,7 +6,7 @@ require "compress/zip"
 
 require "../../src/appcv/filedb/nv_info"
 require "../../src/appcv/filedb/ch_text"
-require "../../src/tabkv/value_map"
+require "../../src/tsvfs/value_map"
 
 class CV::FetchBook
   getter schids = Hash(String, Int32).new
@@ -83,9 +83,10 @@ class CV::FetchSeed
   end
 
   SORT_ORDER = {
-    "hetushu", "rengshu", "bxwxorg", "biqubao",
-    "xbiquge", "paoshu8", "5200", "bqg_5200",
-    "shubaow", "duokan8", "zhwenpg", "nofff",
+    "zxcs_me", "hetushu", "rengshu", "bxwxorg",
+    "biqubao", "69shu", "xbiquge", "paoshu8",
+    "5200", "bqg_5200", "shubaow", "duokan8",
+    "zhwenpg", "nofff",
   }
 
   def should_crawl?(bhash : String)
@@ -99,15 +100,17 @@ class CV::FetchSeed
       snames = snames.sort_by { |sname| SORT_ORDER.index(sname) || 99 }
     end
 
-    snames.first == @sname
+    return false if snames[0] == "zxcs_me" # skip fetching if has proper source
+
+    @sname == snames[0] || @sname == snames[1]?
   end
 
   def crawl!(threads = 4)
     puts "[#{@sname}: #{@snvids.size} entries]".colorize.green.bold
 
     @snvids.each_with_index(1) do |snvid, idx|
-      puts "\n[#{idx}/#{@snvids.size}]".colorize.yellow
-      FetchBook.new(@sname, snvid).crawl!(threads: threads)
+      worker = FetchBook.new(@sname, snvid, label: "#{idx}/#{@snvids.size}")
+      worker.crawl!(threads: threads)
     end
   end
 

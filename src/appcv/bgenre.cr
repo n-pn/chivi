@@ -1,28 +1,27 @@
+require "../tsvfs/value_map"
+
 module CV::Bgenre
   extend self
 
-  VGENRES = {{ read_file("db/mapping/vgenres.txt").split("\n") }}
+  DIR = "db/fixtures"
+
+  VI_NAMES = {{ read_file("#{DIR}/vi_genres.txt").strip.split("\n") }}
+  class_getter zh_names : ValueMap { ValueMap.new("#{DIR}/zh_genres.tsv") }
 
   def all(ids : Array(Int32))
     ids.map { |id| vname(id) }
   end
 
   def vname(idx : Int32)
-    VGENRES[idx]? || "Loại khác"
-  end
-
-  def index(vname : String)
-    VGENRES.index(vname) || 0
+    VI_NAMES[idx]? || "Loại khác"
   end
 
   # mapping chinese genre to vietnamese one
-
-  alias Mapping = Hash(String, Array(String))
-  class_getter zgenres : Mapping do
-    Mapping.from_json("db/mapping/zgenres.json")
+  def vnames(zname : String)
+    zh_names.get(zname) || [] of String
   end
 
-  def mapping(zname : String)
-    zgenres[zname]? || [] of String
+  def index(vname : String)
+    VI_NAMES.index(vname) || 0
   end
 end

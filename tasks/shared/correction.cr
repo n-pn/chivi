@@ -1,4 +1,4 @@
-require "../../src/tabkv/value_map"
+require "../../src/tsvfs/value_map"
 
 module CV::DataRepair
   extend self

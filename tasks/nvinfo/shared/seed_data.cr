@@ -1,7 +1,7 @@
 require "colorize"
 require "file_utils"
 
-require "../../../src/tabkv/value_map"
+require "../../../src/tsvfs/value_map"
 
 class CV::SeedData
   class_getter rating_fix : ValueMap { ValueMap.new("_db/_seeds/rating_fix.tsv", 2) }

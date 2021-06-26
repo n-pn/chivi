@@ -1,7 +1,7 @@
 require "option_parser"
 
 require "../../src/seeds/rm_info"
-require "../../src/tabkv/value_map"
+require "../../src/tsvfs/value_map"
 require "./shared/seed_data"
 require "./shared/seed_util"
 
