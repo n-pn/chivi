@@ -1,7 +1,7 @@
 require "file_utils"
 require "crypto/bcrypt/password"
 
-require "../../tabkv/*"
+require "../../tsvfs/*"
 
 module CV::ViUser
   extend self

@@ -1,4 +1,4 @@
-require "../../tabkv/*"
+require "../../tsvfs/*"
 
 module CV::ViMark
   extend self

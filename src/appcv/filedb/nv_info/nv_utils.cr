@@ -1,4 +1,4 @@
-require "../../../tabkv/*"
+require "../../../tsvfs/*"
 require "../../../libcv/cvmtl"
 require "../../../cutil/text_utils"
 

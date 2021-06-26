@@ -3,7 +3,7 @@ require "file_utils"
 
 require "../../libcv/cvmtl"
 require "../../seeds/rm_info"
-require "../../tabkv/value_map"
+require "../../tsvfs/value_map"
 require "../../cutil/ram_cache"
 
 class CV::ChInfo
