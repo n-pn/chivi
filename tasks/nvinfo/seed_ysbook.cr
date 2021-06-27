@@ -58,6 +58,8 @@ class CV::SeedYsbook
     input = YsbookOg.load(file)
     output = Ysbook.get!(input._id.to_i64)
 
+    output.btitle_id ||= 0
+
     output.author = input.author
     output.ztitle = input.title
 
@@ -79,7 +81,7 @@ class CV::SeedYsbook
     output.list_count = input.addListTotal
 
     output.root_link = input.root_link
-    # TODO: parse root_name
+    output.root_name = input.root_name
 
     output.tap(&.save!)
   rescue err

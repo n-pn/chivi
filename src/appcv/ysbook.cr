@@ -36,7 +36,7 @@ class CV::Ysbook < Granite::Base
     list_count > 0 || crit_count > 4
   end
 
-  def self.get!(id : Int64)
+  def self.get!(id : Int64) : Ysbook
     find(id) || new(id: id)
   end
 end

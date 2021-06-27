@@ -1,3 +1,4 @@
+require "uri"
 require "json"
 
 require "../../src/cutil/*"
@@ -54,6 +55,22 @@ class CV::YsbookOg
 
   property source = [] of Source
   getter root_link : String { source[0]?.try(&.link) || "" }
+
+  getter root_name : String { extract_hostname(root_link) }
+
+  private def extract_hostname(link : String)
+    return "" if link.empty?
+    return "" unless host = URI.parse(link).host
+
+    host = host.split(".")
+
+    case host.first
+    when "yunqi", "chuangshi", "huayu", "yuedu", "shenqi"
+      return host.first.capitalize
+    else
+      host[-2]
+    end
+  end
 
   getter addListCount = 0_i32
   getter addListTotal = 0_i32
