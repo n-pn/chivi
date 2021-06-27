@@ -5,8 +5,8 @@ CREATE TABLE authors (
   zname varchar not null UNIQUE,
   vname varchar not null,
 
-  zname_ts varchar not null,
-  vname_ts varchar not null,
+  zname_ts varchar default '' not null,
+  vname_ts varchar default '' not null,
 
   weight int default 0 not null,
 

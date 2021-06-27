@@ -2,14 +2,14 @@
 CREATE TABLE ysbooks (
   id bigserial PRIMARY KEY,
 
-  btitle_id bigint,
+  btitle_id bigint default 0 not null,
 
   author varchar not null,
   ztitle varchar not null,
 
-  genres varchar[] not null,
-  bintro text,
-  bcover varchar(512),
+  genres varchar[] default '{}' not null,
+  bcover varchar(512) default '' not null,
+  bintro text default '' not null,
 
   status int default 0 not null,
   shield int default 0 not null ,
@@ -24,8 +24,8 @@ CREATE TABLE ysbooks (
   list_count int default 0 not null,
   crit_count int default 0 not null,
 
-  root_link varchar,
-  root_name varchar,
+  root_link varchar default '' not null,
+  root_name varchar default '' not null,
 
   created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL

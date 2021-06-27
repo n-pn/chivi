@@ -88,14 +88,15 @@ module CV::CoreUtils
       number = number &* 32 &+ map32_zh(char)
     end
 
-    number.to_i
+    number.to_i64
   end
 
-  private def map32_zh(char : Char)
+  private def map32_zh(char : Char) : Int32
     {% begin %}
       case char
       {% for val, idx in B32_ZH %}
       when {{val}} then {{idx}}
+      else 0
       {% end %}
       end
     {% end %}

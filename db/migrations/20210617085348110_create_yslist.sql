@@ -7,8 +7,8 @@ CREATE TABLE yslists (
   zname varchar not null,
   vname varchar not null,
 
-  zdesc text,
-  vdesc text,
+  zdesc text default '' not null,
+  vdesc text default '' not null,
 
   aim_at varchar default 'male' not null,
 

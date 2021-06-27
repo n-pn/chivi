@@ -2,11 +2,11 @@
 CREATE TABLE yscrits (
   id bigserial PRIMARY KEY,
 
-  btitle_id bigint,
-  ysbook_id bigint not null,
+  btitle_id bigint default 0 not null,
+  ysbook_id bigint default 0 not null,
 
-  ysuser_id bigint not null,
-  yslist_id bigint,
+  ysuser_id bigint default 0 not null,
+  yslist_id bigint default 0 not null,
 
   stars int default 3 not null,
 

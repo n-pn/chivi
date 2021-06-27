@@ -2,17 +2,17 @@
 CREATE TABLE zhbooks (
   id bigserial PRIMARY KEY,
 
-  btitle_id bigint,
+  btitle_id bigint default 0 not null,
 
-  zseed int not null,
-  znvid int not null,
+  zseed int default 0 not null,
+  znvid int default 0 not null,
 
-  author varchar not null,
-  ztitle varchar not null,
+  author varchar default '' not null,
+  ztitle varchar default '' not null,
 
   genres varchar[] default '{}' not null,
-  bcover varchar,
-  bintro text,
+  bcover varchar default '' not null,
+  bintro text default '' not null,
 
   status int default 0 not null,
   shield int default 0 not null ,

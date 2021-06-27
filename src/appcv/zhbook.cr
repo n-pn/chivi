@@ -12,12 +12,12 @@ class CV::Zhbook < Granite::Base
   column zseed : Int32 # seed name
   column znvid : Int32 # seed book id
 
-  column author : String
-  column ztitle : String
+  column author : String = ""
+  column ztitle : String = ""
 
-  column genres : Array(String) # combine className with tags
-  column bintro : String?
-  column bcover : String?
+  column genres : Array(String) = [] of String
+  column bintro : String = ""
+  column bcover : String = ""
 
   column status : Int32 = 0 # same as Cvinfo#status
   column shield : Int32 = 0 # same as Cvinfo#shield

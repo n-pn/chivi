@@ -1,4 +1,7 @@
-require "./_bookgen.cr"
+require "file_utils"
+require "../shared/bootstrap.cr"
+
+require "./shared/seed_util.cr"
 
 class CV::ZhwenpgParser
   def initialize(@node : Myhtml::Node)
@@ -28,28 +31,12 @@ class CV::ZhwenpgParser
   end
 end
 
-class CV::MapZhwenpg
+class CV::SeedZhwenpg
   ::FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
 
-  def initialize
-    @meta = Bookgen::Seed.new("zhwenpg")
-    @checked = Set(String).new
-  end
+  @mftime = {} of String => Int64
 
-  def expiry(page : Int32 = 1)
-    Time.utc - 4.hours * page
-  end
-
-  def page_link(page : Int32, status = 0)
-    filter = status > 0 ? "genre" : "order"
-    "https://novel.zhwenpg.com/index.php?page=#{page}&#{filter}=1"
-  end
-
-  def page_path(page : Int32, status = 0)
-    "_db/.cache/zhwenpg/pages/#{page}-#{status}.html"
-  end
-
-  def init!(page = 1, status = 0)
+  def seed!(page = 1, status = 0)
     puts "\n[-- Page: #{page} (status: #{status}) --]".colorize.light_cyan.bold
 
     file = page_path(page, status)
@@ -57,7 +44,7 @@ class CV::MapZhwenpg
 
     valid = 4.hours * page
     html = RmUtil.fetch(file, link, "zhwenpg", valid: valid, label: page.to_s)
-    atime = Bookgen.get_atime(file) || Time.utc.to_unix
+    atime = SeedUtil.get_mtime(file) || Time.utc.to_unix
 
     doc = Myhtml::Parser.new(html)
     nodes = doc.css(".cbooksingle").to_a[2..-2]
@@ -65,9 +52,10 @@ class CV::MapZhwenpg
       parser = ZhwenpgParser.new(node)
       snvid = parser.snvid
 
-      next if @checked.includes?(snvid)
-      @checked.add(snvid)
+      next if @mftime.has_key?(snvid)
+      @mftime[snvid] = parser.mftime
 
+      zhbook = save_zhbook(parser)
       btitle, author = parser.btitle, parser.author
       puts "\n<#{idx}/#{nodes.size}}> {#{snvid}} [#{btitle}  #{author}]"
 
@@ -84,36 +72,45 @@ class CV::MapZhwenpg
     end
   end
 
-  def save_meta!(clean = false)
-    @meta.save!(clean: clean)
+  def save_zhbook(parser : ZhwenpgParser)
+    zseed = Zhseed.index("zhwenpg")
+    znvid = CoreUtils.decode32_zh(parser.snvid).to_i
   end
 
-  def seed!
-    @checked.to_a.each_with_index(1) do |snvid, idx|
-      bhash, btitle, author = @meta.upsert!(snvid, fixed: false)
+  # def seed!
+  #   @checked.to_a.each_with_index(1) do |snvid, idx|
+  #     bhash, btitle, author = @meta.upsert!(snvid, fixed: false)
 
-      if NvOrders.get_voters(bhash) == 0
-        voters, rating = Bookgen.get_scores(btitle, author)
-        NvOrders.set_scores!(bhash, voters, rating)
-      end
+  #     if NvOrders.get_voters(bhash) == 0
+  #       voters, rating = Bookgen.get_scores(btitle, author)
+  #       NvOrders.set_scores!(bhash, voters, rating)
+  #     end
 
-      puts "- <#{idx}/#{@checked.size}> [#{bhash}] saved!".colorize.yellow
+  #     puts "- <#{idx}/#{@checked.size}> [#{bhash}] saved!".colorize.yellow
 
-      @meta.upsert_chinfo!(bhash, snvid, mode: 0)
-      NvInfo.save!(clean: false)
-    end
+  #     @meta.upsert_chinfo!(bhash, snvid, mode: 0)
+  #     NvInfo.save!(clean: false)
+  #   end
 
-    NvInfo.save!(clean: false)
+  #   NvInfo.save!(clean: false)
+  # end
+
+  def expiry(page : Int32 = 1)
+    Time.utc - 4.hours * page
+  end
+
+  def page_link(page : Int32, status = 0)
+    filter = status > 0 ? "genre" : "order"
+    "https://novel.zhwenpg.com/index.php?page=#{page}&#{filter}=1"
+  end
+
+  def page_path(page : Int32, status = 0)
+    "_db/.cache/zhwenpg/pages/#{page}-#{status}.html"
   end
 end
 
-worker = CV::MapZhwenpg.new
+worker = CV::SeedZhwenpg.new
 puts "\n[-- Load indexes --]".colorize.cyan.bold
 
-unless ARGV.includes?("-init")
-  1.upto(3) { |page| worker.init!(page, status: 1) }
-  1.upto(11) { |page| worker.init!(page, status: 0) }
-  worker.save_meta!(clean: true)
-end
-
-worker.seed! unless ARGV.includes?("-seed")
+1.upto(3) { |page| worker.seed!(page, status: 1) }
+1.upto(11) { |page| worker.seed!(page, status: 0) }

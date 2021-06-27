@@ -2,7 +2,7 @@
 CREATE TABLE btitles (
   id bigserial PRIMARY KEY,
 
-  author_id bigint,
+  author_id bigint default 0 not null,
   bgenre_ids int[] default '{0}' not null, -- not real database table ids
   zhseed_ids int[] default '{0}' not null, -- not real database table ids
 
@@ -10,12 +10,12 @@ CREATE TABLE btitles (
   bslug varchar NOT NULL UNIQUE,
 
   ztitle varchar not null,
-  htitle varchar not null,
-  vtitle varchar not null,
+  htitle varchar default '' not null,
+  vtitle varchar default '' not null,
 
-  ztitle_ts varchar not null,
-  htitle_ts varchar not null,
-  vtitle_ts varchar not null,
+  ztitle_ts varchar default '' not null,
+  htitle_ts varchar default '' not null,
+  vtitle_ts varchar default '' not null,
 
   bcover varchar default '' not null,
   bintro varchar default '' not null,

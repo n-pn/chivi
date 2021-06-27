@@ -18,8 +18,8 @@ targets:
   init_zhwenpg:
     main: tasks/nvinfo/init_zhwenpg.cr
 
-  init_yousuu:
-    main: tasks/nvinfo/init_yousuu.cr
+  seed_ysbook:
+    main: tasks/nvinfo/seed_ysbook.cr
 
   init_remote:
     main: tasks/nvinfo/init_remote.cr

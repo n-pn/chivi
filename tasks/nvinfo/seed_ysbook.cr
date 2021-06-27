@@ -4,15 +4,12 @@ require "option_parser"
 require "../shared/bootstrap.cr"
 require "../shared/ysbook_og.cr"
 
-require "./shared/seed_data.cr"
 require "./shared/seed_util.cr"
 
-class CV::InitYousuu
+class CV::SeedYsbook
   DIR = "_db/yousuu/.cache/infos"
 
-  @seed = SeedData.new("yousuu")
-
-  alias Result = Tuple(String, Array(String))
+  @index = ValueMap.new("_db/.cache/_index/yousuu.tsv")
 
   def seed!(redo = false, workers = 16)
     queue = Dir.glob("#{DIR}/*.json").sort_by do |file|
@@ -29,22 +26,22 @@ class CV::InitYousuu
               authors: #{Author.count.colorize.cyan}, \
               btitles: #{Btitle.count.colorize.cyan}"
 
-        @seed._index.save!(clean: false)
+        @index.save!(clean: false)
       end
 
       atime = SeedUtil.get_mtime(file)
       snvid = File.basename(file, ".json")
-      next unless redo || @seed._index.ival_64(snvid) < atime
+      next unless redo || @index.ival_64(snvid) < atime
 
       next unless ysbook = save_ysbook(file, atime)
       save_btitle(ysbook)
 
-      @seed._index.set!(snvid, [atime.to_s, ysbook.ztitle, ysbook.author])
+      @index.set!(snvid, [atime.to_s, ysbook.ztitle, ysbook.author])
     rescue err
       puts err.inspect_with_backtrace.colorize.red
     end
 
-    @seed._index.save!(clean: true)
+    @index.save!(clean: true)
     puts "- authors: #{Author.count.colorize.cyan}, \
             btitles: #{Btitle.count.colorize.cyan}"
   end
@@ -87,7 +84,7 @@ class CV::InitYousuu
     output.tap(&.save!)
   rescue err
     snvid = File.basename(file, ".json")
-    @seed._index.set!(snvid, [atime.to_s, "-", "-"])
+    @index.set!(snvid, [atime.to_s, "-", "-"])
 
     unless err.is_a?(YsbookOg::InvalidFile)
       puts "- error loading [#{snvid}]:"
@@ -117,7 +114,7 @@ class CV::InitYousuu
     ysbook.update!(btitle_id: nvinfo.id)
 
     nvinfo.set_genres(ysbook.genres)
-    nvinfo.set_bcover("yousuu-#{ysbook.id}.jpg")
+    nvinfo.set_bcover("yousuu-#{ysbook.id}.webp")
     nvinfo.set_zintro(ysbook.bintro)
 
     nvinfo.set_mftime(ysbook.mftime)
@@ -138,5 +135,5 @@ OptionParser.parse(ARGV) do |opt|
   opt.on("-w WORKERS", "Ignore indexes") { |x| workers = x.to_i }
 end
 
-worker = CV::InitYousuu.new
+worker = CV::SeedYsbook.new
 worker.seed!(redo: redo, workers: workers)
