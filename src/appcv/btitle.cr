@@ -78,6 +78,11 @@ class CV::Btitle < Granite::Base
     self.bintro = BookUtils.convert(zintro, self.bhash).join
   end
 
+  def add_zhseed(zseed : Int32) : Nil
+    return if self.zhseed_ids.includes?(zseed)
+    self.zhseed_ids.push(zseed)
+  end
+
   def set_scores(voters : Int32, rating : Int32) : Nil
     self.voters = voters
     self.rating = rating

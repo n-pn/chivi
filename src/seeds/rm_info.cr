@@ -174,33 +174,22 @@ class CV::RmInfo
     end
   end
 
-  struct Chap
-    getter schid : String, title : String, label : String
+  alias Chinfo = Array(String)
 
-    def initialize(@schid, title : String, label : String = "")
-      label = TextUtils.fix_spaces(label).strip
-      @title, @label = TextUtils.format_title(title, label)
-      @label = @label.sub(/\s{2,}/, " ")
-    end
+  def init_chap(schid : String, title : String, label : String = "")
+    label = TextUtils.fix_spaces(label).strip
+    title, label = TextUtils.format_title(title, label)
+    label = label.sub(/\s{2,}/, " ")
 
-    def invalid?
-      @title.empty?
-    end
-
-    def to_s(io : IO)
-      io << @schid << "  " << @title << "  " << @label
-    end
-
-    def to_s
-      String.build { |io| to_s(io) }
-    end
-
-    def to_a
-      [@schid, @title, @label]
-    end
+    [schid, title, label]
   end
 
-  getter chap_list : Array(Chap) do
+  def valid_chap?(info : Chinfo)
+    return false unless title = info[1]?
+    !title.empty?
+  end
+
+  getter chap_list : Array(Chinfo) do
     case @sname
     when "69shu"   then extract_69shu_chaps
     when "zhwenpg" then extract_zhwenpg_chaps
@@ -212,7 +201,7 @@ class CV::RmInfo
   end
 
   def extract_generic_chaps(query : String)
-    chaps = [] of Chap
+    chaps = [] of Chinfo
     return chaps unless node = page.find(query)
 
     label = ""
@@ -227,8 +216,8 @@ class CV::RmInfo
         next unless link = node.css("a").first?
         next unless href = link.attributes["href"]?
 
-        chap = Chap.new(extract_schid(href), link.inner_text, label)
-        chaps << chap unless chap.invalid?
+        chap = init_chap(extract_schid(href), link.inner_text, label)
+        chaps << chap if valid_chap?(chap)
       end
     rescue err
       puts err.colorize.red
@@ -245,39 +234,39 @@ class CV::RmInfo
       HtmlParser.new(html)
     end
 
-    chaps = [] of Chap
+    chaps = [] of Chinfo
 
     page.css("#catalog li > a").each do |link|
       next unless href = link.attributes["href"]?
-      chap = Chap.new(extract_schid(href), link.inner_text)
-      chaps << chap unless chap.invalid?
+      chap = init_chap(extract_schid(href), link.inner_text)
+      chaps << chap if valid_chap?(chap)
     end
 
     chaps
   end
 
   def extract_zhwenpg_chaps
-    chaps = [] of Chap
+    chaps = [] of Chinfo
 
     page.css(".clistitem > a").each do |link|
       href = link.attributes["href"]
-      chap = Chap.new(extract_schid(href), link.inner_text)
-      chaps << chap unless chap.invalid?
+      chap = init_chap(extract_schid(href), link.inner_text)
+      chaps << chap if valid_chap?(chap)
     end
 
     # check if the list is in correct orlder
-    chaps.reverse! if chaps.first.schid == last_schid
+    chaps.reverse! if chaps.first.first == last_schid
 
     chaps
   end
 
   private def extract_duokan8_chaps
-    chaps = [] of Chap
+    chaps = [] of Chinfo
 
     page.css(".chapter-list a").each do |link|
       next unless href = link.attributes["href"]?
-      chap = Chap.new(extract_schid(href), link.inner_text)
-      chaps << chap unless chap.invalid?
+      chap = init_chap(extract_schid(href), link.inner_text)
+      chaps << chap if valid_chap?(chap)
     end
 
     chaps

@@ -6,30 +6,30 @@ class CV::TextCtrl < CV::BaseCtrl
     sname = params["sname"]
     snvid = params["snvid"]
 
-    index = params.fetch_int("chidx", min: 1)
-    index -= 1
+    chidx = params.fetch_str("chidx")
+    index = chidx.to_i
 
     chinfo = ChInfo.load(bname, sname, snvid)
-    unless curr_chap = chinfo.infos[index]?
+    unless curr = chinfo.get_info(index - 1)
       return halt!(404, "Chương tiết không tồn tại!")
     end
 
-    chidx, infos = curr_chap
-
     if cu_privi >= 0
-      ViMark.mark_chap(cv_uname, bname, sname, chidx, infos[1], infos[3])
+      ViMark.mark_chap(cv_uname, bname, sname, chidx, curr[1], curr[3])
     end
+
+    puts curr
 
     render_json do |res|
       JSON.build(res) do |jb|
         jb.object do
-          jb.field "total", chinfo.infos.size
+          jb.field "total", chinfo.seeds.size
           jb.field "chidx", chidx
-          jb.field "schid", infos[0]
-          jb.field "title", infos[1]
-          jb.field "label", infos[2]
-          jb.field "prev_url", chinfo.url_for(index - 1)
-          jb.field "next_url", chinfo.url_for(index + 1)
+          jb.field "schid", curr[0]
+          jb.field "title", curr[1]
+          jb.field "label", curr[2]
+          jb.field "prev_url", chinfo.url_for(index - 2)
+          jb.field "next_url", chinfo.url_for(index)
         end
       end
     end
@@ -83,14 +83,13 @@ class CV::TextCtrl < CV::BaseCtrl
     # schid = chinfo.origs.fval(chidx.to_s) || chidx.to_s.rjust(4, '0')
 
     schid = chidx.to_s.rjust(4, '0')
-    chinfo.set!(chidx.to_s, schid, lines[0], label)
-    NvInfo.load(bname).set_chseed("chivi", bname, Time.utc.to_unix, chinfo.seeds.size)
+    infos = chinfo.put_chap!(chidx - 1, schid, lines[0], label).not_nil!
 
     chtext = ChText.load(bname, sname, snvid, chidx - 1, schid)
     chtext.set_zh!(lines)
 
-    index, infos = chinfo.infos[chidx - 1]
-    render_json({msg: "ok", chidx: index, uslug: infos[3]})
+    NvInfo.load(bname).set_chseed("chivi", bname, Time.utc.to_unix, chinfo.seeds.size)
+    render_json({msg: "ok", chidx: chidx.to_s, uslug: infos[3]})
   rescue err
     puts "- Error loading chap_text: #{err}"
     message = err.message || "Không rõ lỗi!"

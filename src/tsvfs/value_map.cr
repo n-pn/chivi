@@ -12,6 +12,7 @@ class CV::ValueMap
   delegate each, to: @data
   delegate reverse_each, to: @data
   delegate clear, to: @data
+  delegate empty?, to: @data
 
   def initialize(@file, mode : Int32 = 1)
     return if mode < 1
@@ -132,26 +133,29 @@ class CV::ValueMap
   end
 
   def save!(clean : Bool = false) : Nil
-    if clean
-      puts "- #{label} saved (entries: #{@data.size})".colorize.yellow
+    output = clean ? @data : @upds
 
-      File.open(@file, "w") do |io|
-        each do |key, vals|
-          io << key << '\t' << vals.join('\t') << "\n"
-        end
-      end
-    elsif @upds.size > 0
-      puts "- #{label} updated (entries: #{@upds.size})".colorize.light_yellow
-      File.open(@file, "a") do |io|
-        @upds.each do |key, vals|
-          io << key << '\t' << vals.join('\t') << "\n"
-        end
+    if output.empty?
+      return File.delete(@file) if File.exists?(@file)
+    end
+
+    File.open(@file, clean ? "w" : "a") do |file|
+      output.each do |key, vals|
+        file << key << '\t' << vals.join('\t') << "\n"
       end
     end
+
+    state, color = clean ? {"saved", :yellow} : {"updated", :light_yellow}
+    puts "- #{label} #{state} (entries: #{output.size})".colorize(color)
 
     @upds.clear
   rescue err
     puts "- #{@file} saves error: #{err}".colorize.red
+  end
+
+  def clear_all!
+    @data.clear
+    @upds.clear
   end
 end
 

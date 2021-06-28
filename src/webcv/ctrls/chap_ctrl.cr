@@ -13,8 +13,7 @@ class CV::ChapCtrl < CV::BaseCtrl
     mode = cu_privi if mode > cu_privi
 
     if mode > 0
-      mtime, total = chinfo.fetch!(cu_privi, mode)
-      chinfo.trans!(reset: cu_privi > 2)
+      mtime, total, _ = chinfo.update!(cu_privi, mode)
 
       if mtime >= 0
         nvinfo.set_chseed(sname, snvid, mtime, total)
@@ -33,7 +32,7 @@ class CV::ChapCtrl < CV::BaseCtrl
 
           json.field "lasts" do
             json.array do
-              chinfo.last(4) do |chidx, infos|
+              chinfo.last_chaps.each do |chidx, infos|
                 chap_json(json, chidx, infos)
               end
             end
@@ -50,15 +49,12 @@ class CV::ChapCtrl < CV::BaseCtrl
 
     page = params.fetch_int("page", min: 1)
 
-    take = 32
-    skip = (page - 1) * take
-
     chinfo = ChInfo.load(bhash, sname, snvid)
 
     render_json do |res|
       JSON.build(res) do |json|
         json.array do
-          chinfo.each(from: skip, upto: skip + take) do |chidx, infos|
+          chinfo.chaps_page(page).each do |chidx, infos|
             chap_json(json, chidx, infos)
           end
         end

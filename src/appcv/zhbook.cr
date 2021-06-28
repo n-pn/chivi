@@ -16,8 +16,8 @@ class CV::Zhbook < Granite::Base
   column ztitle : String = ""
 
   column genres : Array(String) = [] of String
-  column bintro : String = ""
   column bcover : String = ""
+  column bintro : String = ""
 
   column status : Int32 = 0 # same as Cvinfo#status
   column shield : Int32 = 0 # same as Cvinfo#shield
@@ -34,5 +34,14 @@ class CV::Zhbook < Granite::Base
 
   private def generate_snvid
     sname == "zhwenpg" ? CoreUtils.encode32_zh(znvid) : znvid.to_s
+  end
+
+  def last_zchid=(schid : String)
+    self.last_schid = schid
+    self.last_zchid = schid.to_i
+  end
+
+  def self.get!(zseed : String, znvid : String)
+    find_by(zseed: zseed, znvid: znvid) || new(zseed: zseed, znvid: znvid)
   end
 end
