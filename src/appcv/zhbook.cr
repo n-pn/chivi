@@ -42,7 +42,13 @@ class CV::Zhbook < Granite::Base
     self.last_zchid = schid.to_i
   end
 
-  def self.get!(zseed : Int32, znvid : Int32)
+  def self.upsert!(zseed : Int32, znvid : Int32)
     find_by(zseed: zseed, znvid: znvid) || new(zseed: zseed, znvid: znvid)
+  end
+
+  def self.upsert!(sname : String, snvid : String)
+    zseed = Zhseed.index(sname)
+    znvid = sname == "zhwenpg" ? CoreUtils.decode32_zh(snvid).to_i : snvid.to_i
+    upsert!(zseed, znvid)
   end
 end

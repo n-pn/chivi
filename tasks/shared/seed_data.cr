@@ -18,15 +18,11 @@ class CV::SeedData
   @intros = {} of String => ValueMap
 
   def initialize(@sname)
-    @s_dir = "_db/chseed/#{@sname}"
+    @s_dir = "_db/zhseed/#{@sname}"
     ::FileUtils.mkdir_p("#{@s_dir}/intros")
   end
 
-  def get_status(snvid : String) : Int32
-    self.status.ival(snvid)
-  end
-
-  def intro_map(snvid : String)
+  private def intro_map(snvid : String)
     group = snvid.rjust(6, '0')[0, 3]
     @intros[group] ||= ValueMap.new("#{@s_dir}/intros/#{group}.tsv")
   end

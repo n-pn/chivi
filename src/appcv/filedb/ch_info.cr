@@ -100,7 +100,7 @@ class CV::ChInfo
   getter last_schid : String { seeds[-1]?.try(&.first) || "" }
 
   def update!(power = 4, mode = 2, ttl = 5.minutes) : Tuple(Int64, Int32, String)
-    mftime = -1_i64
+    mftime = 0_i64
 
     if RmUtil.remote?(@sname, power: power)
       RmInfo.mkdir!(@sname)

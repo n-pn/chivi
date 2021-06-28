@@ -95,8 +95,14 @@ class CV::SeedZhbook
       @seed.genres.set!(snvid, entry.genres)
       @seed.bcover.set!(snvid, entry.bcover)
 
-      @seed.status.set!(snvid, [entry.status])
-      @seed.mftime.set!(snvid, [entry.mftime, entry.update])
+      if @sname == "hetushu"
+        @seed.status.set!(snvid, [entry.status])
+      else
+        status_int = SeedUtil.parse_status(entry.status)
+        @seed.status.set!(snvid, [status_int.to_i, entry.status])
+      end
+
+      @seed.mftime.set!(snvid, [entry.mftime.to_s, entry.update])
 
       if idx % 100 == 0
         puts "- [#{@sname}]: <#{idx}/#{queue.size}>"
@@ -170,6 +176,113 @@ class CV::SeedZhbook
     end
   end
 
+  def seed!
+    input = @seed._index.data.to_a
+
+    puts "- Input: #{input.size.colorize.cyan} entries, \
+            authors: #{Author.count.colorize.cyan}, \
+            cvbooks: #{Cvbook.count.colorize.cyan}"
+
+    input.sort_by(&.[0].to_i).each_with_index(1) do |(snvid, values), idx|
+      save_book(snvid, values)
+
+      if idx % 100 == 0
+        puts "- [ysbook] <#{idx.colorize.cyan}/#{input.size}>, \
+                authors: #{Author.count.colorize.cyan}, \
+                cvbooks: #{Cvbook.count.colorize.cyan}"
+      end
+    end
+
+    puts "- authors: #{Author.count.colorize.cyan}, \
+            cvbooks: #{Cvbook.count.colorize.cyan}"
+  end
+
+  def save_book(snvid : String, values : Array(String), dry = true)
+    bumped, p_ztitle, p_author = values
+    bumped = bumped.to_i64
+
+    return puts "Empty info: #{snvid}" if p_ztitle.empty? || p_author.empty?
+
+    author = SeedUtil.get_author(p_author, p_ztitle, @sname == "hetushu")
+    return unless author
+
+    ztitle = BookUtils.fix_zh_btitle(p_ztitle, author.zname)
+    return unless cvbook = load_cvbook(author, ztitle)
+
+    zhbook = Zhbook.upsert!(@sname, snvid)
+
+    if dry && zhbook.cvbook_id == cvbook.id # zhbook already created before
+      return unless bumped > zhbook.bumped  # return unless source updated
+    else
+      zhbook.cvbook = cvbook
+      cvbook.add_zhseed(zhbook.zseed)
+
+      zhbook.author = author.zname
+      zhbook.ztitle = ztitle
+
+      zhbook.genres = @seed.genres.get(snvid) || [] of String
+      cvbook.set_genres(zhbook.genres)
+
+      zhbook.bcover = @seed.bcover.fval(snvid) || ""
+      cvbook.set_bcover("#{@sname}-#{snvid}.webp")
+
+      zhbook.bintro = @seed.get_intro(snvid).join("\n")
+      cvbook.set_zintro(zhbook.bintro)
+
+      if cvbook.voters == 0
+        voters, rating = get_fake_scores
+        cvbook.set_scores(voters, rating)
+      end
+    end
+
+    zhbook.status = @seed.status.ival(snvid)
+    cvbook.set_status(zhbook.status)
+
+    zhbook.bumped = bumped
+    zhbook.mftime = @seed.mftime.ival_64(snvid)
+
+    if zhbook.mftime < 1
+      zhbook.mftime = cvbook.mftime
+    else
+      cvbook.set_mftime(zhbook.mftime)
+    end
+
+    if zhbook.chap_count == 0
+      # ttl = get_ttl(zhbook.mftime)
+      chinfo = ChInfo.new(cvbook.bhash, @sname, snvid)
+      _, chap_count, last_zchid = chinfo.update!(mode: 1, ttl: 10.years)
+
+      zhbook.chap_count = chap_count
+      zhbook.last_zchid = last_zchid
+    end
+
+    zhbook.save!
+    cvbook.save!
+  end
+
+  def get_ttl(mftime : Int64)
+    return 10.years if @sname == "hetushu" || @sname == "jx_la"
+    Time.utc - Time.unix(mftime) - 1.days
+  end
+
+  private def get_fake_scores
+    case @sname
+    when "hetushu"
+      [Random.rand(30..100), Random.rand(50..65)]
+    else
+      [Random.rand(25..50), Random.rand(40..50)]
+    end
+  end
+
+  def load_cvbook(author : Author, ztitle : String)
+    case @sname
+    when "hetushu", "rengshu", "xbiquge", "69shu" # reliable source
+      Cvbook.upsert!(author, ztitle)
+    else
+      Cvbook.get(author, ztitle)
+    end
+  end
+
   # cr_mode:
   # - 0: crawl missings, parse missing and updates/unparsed
   # - 1: crawl and parse missing
@@ -177,6 +290,7 @@ class CV::SeedZhbook
   def self.run!(argv = ARGV)
     sname, upper = "hetushu", 0
     cr_mode, threads = 0, 0
+    no_seed = false
 
     OptionParser.parse(argv) do |parser|
       parser.banner = "Usage: map_remote [arguments]"
@@ -184,6 +298,7 @@ class CV::SeedZhbook
       parser.on("-u UPPER", "Upper snvid") { |x| upper = x.to_i }
       parser.on("-m CR_MODE", "Crawling mode") { |x| cr_mode = x.to_i }
       parser.on("-t THREADS", "Concurrent threads") { |x| threads = x.to_i }
+      parser.on("-n", "--noseed", "Init only") { no_seed = true }
 
       parser.invalid_option do |flag|
         STDERR.puts "ERROR: `#{flag}` is not a valid option."
@@ -202,6 +317,8 @@ class CV::SeedZhbook
 
     updates -= missing if sname == "jx_la"
     seeder.parse!(updates) if cr_mode != 1
+
+    seeder.seed! unless no_seed
   end
 end
 

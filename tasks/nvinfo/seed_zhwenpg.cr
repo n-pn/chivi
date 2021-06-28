@@ -54,59 +54,43 @@ class CV::SeedZhwenpg
       puts "\n<#{idx}/#{nodes.size}}> [#{parser.ztitle}] (#{snvid})"
       @checked.add(snvid)
 
-      zhbook = save_zhbook(parser, status, atime)
-      save_btitle(zhbook)
+      save_book(parser, status, atime)
     rescue err
       puts "ERROR: #{err}".colorize.red
     end
   end
 
-  def save_zhbook(parser : ZhwenpgParser, status = 0, bumped = Time.utc) : Zhbook
-    output = begin
-      zseed = Zhseed.index("zhwenpg")
-      znvid = CoreUtils.decode32_zh(parser.snvid).to_i
+  def save_book(parser : ZhwenpgParser, status = 0, bumped = Time.utc) : Nil
+    author = SeedUtil.get_author(parser.author, parser.ztitle, force: true)
+    return unless author
 
-      Zhbook.get!(zseed, znvid)
-    end
+    ztitle = BookUtils.fix_zh_author(parser.ztitle, author.zname)
 
-    output.cvbook_id ||= 0
+    zhbook = Zhbook.upsert!("zhwenpg", parser.snvid)
+    cvbook = Cvbook.upsert!(author, ztitle)
 
-    output.author = parser.author
-    output.ztitle = parser.ztitle
-
-    output.genres = [parser.bgenre]
-    output.bcover = parser.bcover
-    output.bintro = parser.bintro.join("\n")
-
-    output.status = status
-    output.bumped = bumped
-    output.mftime = parser.mftime
-
-    output.tap(&.save!)
-  end
-
-  def save_btitle(zhbook : Zhbook)
-    author = begin
-      zname = BookUtils.fix_zh_author(zhbook.author, zhbook.ztitle)
-      Author.upsert!(zname)
-    end
-
-    cvbook = begin
-      ztitle = BookUtils.fix_zh_author(zhbook.ztitle, author.zname)
-      Cvbook.upsert!(author, ztitle)
-    end
-
-    zhbook.update!(cvbook_id: cvbook.id)
-
+    zhbook.cvbook_id = cvbook.id
     cvbook.add_zhseed(zhbook.zseed)
+
+    zhbook.author = author.zname
+    zhbook.ztitle = ztitle
+
+    zhbook.genres = [parser.bgenre]
     cvbook.set_genres(zhbook.genres)
 
-    cvbook.set_bcover("zhwenpg-#{zhbook.snvid}.webp")
+    zhbook.bcover = parser.bcover
+    cvbook.set_bcover("zhwenpg-#{parser.snvid}.webp")
+
+    zhbook.bintro = parser.bintro.join("\n")
     cvbook.set_zintro(zhbook.bintro)
 
-    cvbook.set_shield(1) if cvbook.bgenres.includes?("Phi sắc")
+    zhbook.status = status
     cvbook.set_status(zhbook.status)
 
+    cvbook.set_shield(1) if cvbook.bgenres.includes?("Phi sắc")
+
+    zhbook.bumped = bumped
+    zhbook.mftime = parser.mftime
     cvbook.set_mftime(zhbook.mftime)
 
     if cvbook.voters == 0
@@ -116,11 +100,11 @@ class CV::SeedZhwenpg
 
     if zhbook.chap_count == 0
       ttl = Time.utc - Time.unix(zhbook.mftime)
-      chinfo = ChInfo.new(cvbook.bhash, "zhwenpg", zhbook.snvid)
+      chinfo = ChInfo.new(cvbook.bhash, "zhwenpg", parser.snvid)
       _, zhbook.chap_count, zhbook.last_zchid = chinfo.update!(mode: 1, ttl: ttl)
-      zhbook.save!
     end
 
+    zhbook.save!
     cvbook.save!
   end
 

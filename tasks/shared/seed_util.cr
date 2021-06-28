@@ -14,7 +14,7 @@ module CV::SeedUtil
   end
 
   def save_maps!(clean = false)
-    @@status_fix.try(&.save(clean: clean))
+    @@status_map.try(&.save!(clean: clean))
   end
 
   def load_map(label : String, mode = 1)
@@ -29,8 +29,8 @@ module CV::SeedUtil
     end
   end
 
-  def parse_status(status : String)
-    return 0 unless status_str = self.status.fval(snvid)
+  def parse_status(status_str : String)
+    return 0 if status_str.empty?
 
     unless status_int = status_map.fval(status_str)
       print " - status int for <#{status_str}>: "

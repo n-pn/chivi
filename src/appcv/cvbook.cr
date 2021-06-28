@@ -113,8 +113,13 @@ class CV::Cvbook < Granite::Base
     accent ? query.where("vtitle LIKE %$%", qs).or("htitle LIKE %$%", qs) : query
   end
 
-  def self.upsert!(author : Author, ztitle : String, htitle : String? = nil, vtitle : String? = nil)
-    find_by(author_id: author.id, ztitle: ztitle) || begin
+  def self.get(author : Author, ztitle : String)
+    find_by(author_id: author.id, ztitle: ztitle)
+  end
+
+  def self.upsert!(author : Author, ztitle : String,
+                   htitle : String? = nil, vtitle : String? = nil)
+    get(author, ztitle) || begin
       htitle ||= BookUtils.hanviet(ztitle)
       vtitle ||= BookUtils.get_vi_btitle(ztitle)
 
@@ -125,13 +130,13 @@ class CV::Cvbook < Granite::Base
       bhash = CoreUtils.digest32("#{ztitle}--#{author.zname}")
       bslug = htslug.split("-").first(7).push(bhash[0..3]).join("-")
 
-      btitle = new(
+      cvbook = new(
         author_id: author.id, bhash: bhash, bslug: bslug,
         ztitle: ztitle, htitle: htitle, vtitle: vtitle,
         ztitle_ts: ztslug, htitle_ts: htslug, vtitle_ts: vtslug,
       )
 
-      btitle.tap(&.save!)
+      cvbook.tap(&.save!)
     end
   end
 end

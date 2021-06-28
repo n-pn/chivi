@@ -21,11 +21,11 @@ targets:
   seed_ysbook:
     main: tasks/nvinfo/seed_ysbook.cr
 
-  init_remote:
-    main: tasks/nvinfo/init_remote.cr
+  seed_zhbook:
+    main: tasks/nvinfo/seed_zhbook.cr
 
-  map_zxcs_me:
-    main: tasks/nvinfo/map_zxcs_me.cr
+  seed_zxcsme:
+    main: tasks/nvinfo/seed_zxcsme.cr
 
   fetch_covers:
     main: tasks/nvinfo/fetch_covers.cr

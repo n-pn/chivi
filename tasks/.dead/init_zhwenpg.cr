@@ -81,7 +81,9 @@ class CV::InitZhwenpg
       @seed.genres.set!(snvid, parser.bgenre)
       @seed.bcover.set!(snvid, parser.bcover)
 
-      @seed.update.set!(snvid, parser.update)
+      update = parser.update
+      mftime = TimeUtips.parse_time(update)
+      @seed.mftime.set!(snvid, [mftime.to_s, update])
       @seed.status.set!(snvid, status.to_s)
     rescue err
       puts "ERROR: #{err}".colorize.red

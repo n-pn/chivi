@@ -18,8 +18,6 @@ class CV::TextCtrl < CV::BaseCtrl
       ViMark.mark_chap(cv_uname, bname, sname, chidx, curr[1], curr[3])
     end
 
-    puts curr
-
     render_json do |res|
       JSON.build(res) do |jb|
         jb.object do

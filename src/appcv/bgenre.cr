@@ -32,6 +32,9 @@ module CV::Bgenre
   end
 
   def zh_map_ids(znames : Array(String))
-    znames.map { |zname| zh_map_id(zname) }.flatten.uniq
+    znames.map do |zname|
+      zname = zname.sub("小说", "") unless zname == "轻小说"
+      zh_map_id(zname)
+    end.flatten.uniq
   end
 end
