@@ -9,7 +9,7 @@ class CV::Cvuser < Granite::Base
 
   has_many :ubmark
   has_many :ubview
-  has_many :btitle, through: :ubmark
+  has_many :cvbook, through: :ubmark
 
   column uname : String
   column email : String

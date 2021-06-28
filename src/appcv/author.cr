@@ -7,7 +7,7 @@ class CV::Author < Granite::Base
   column id : Int64, primary: true
   timestamps
 
-  has_many :btitle
+  has_many :cvbook
 
   column zname : String
   column vname : String

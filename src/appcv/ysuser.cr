@@ -7,6 +7,7 @@ class CV::Ysuser < Granite::Base
 
   has_many :yslist
   has_many :yscrit
+  has_many :cvbook, through: :yscrit
   has_many :ysbook, through: :yscrit
 
   column zname : String

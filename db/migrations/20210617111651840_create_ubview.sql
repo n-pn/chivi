@@ -2,7 +2,7 @@
 CREATE TABLE ubviews (
   id bigserial PRIMARY KEY,
 
-  btitle_id bigint not null,
+  cvbook_id bigint not null,
   cvuser_id bigint not null,
 
   zseed int default 0 not null,
@@ -21,7 +21,7 @@ CREATE TABLE ubviews (
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE UNIQUE INDEX ubview_unique_idx ON ubviews (btitle_id, cvuser_id);
+CREATE UNIQUE INDEX ubview_unique_idx ON ubviews (cvbook_id, cvuser_id);
 CREATE INDEX ubview_cvuser_idx ON ubviews (cvuser_id, bumped);
 
 

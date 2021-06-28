@@ -8,6 +8,7 @@ class CV::Yslist < Granite::Base
   belongs_to :ysuser
   has_many :yscrit
   has_many :ysbook, through: :yscrit
+  has_many :cvbook, through: :yscrit
 
   column zname : String # original list name
   column vname : String # translated name

@@ -2,7 +2,7 @@
 CREATE TABLE ysbooks (
   id bigserial PRIMARY KEY,
 
-  btitle_id bigint default 0 not null,
+  cvbook_id bigint default 0 not null,
 
   author varchar not null,
   ztitle varchar not null,
@@ -32,7 +32,7 @@ CREATE TABLE ysbooks (
 );
 
 CREATE INDEX ysbook_unique_idx ON ysbooks (author, ztitle);
-CREATE INDEX ysbook_btitle_idx ON ysbooks (btitle_id);
+CREATE INDEX ysbook_cvbook_idx ON ysbooks (cvbook_id);
 CREATE INDEX ysbook_bumped_idx ON ysbooks (bumped);
 
 

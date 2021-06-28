@@ -2,7 +2,7 @@
 CREATE TABLE zhbooks (
   id bigserial PRIMARY KEY,
 
-  btitle_id bigint default 0 not null,
+  cvbook_id bigint default 0 not null,
 
   zseed int default 0 not null,
   znvid int default 0 not null,
@@ -27,7 +27,7 @@ CREATE TABLE zhbooks (
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE INDEX zhbook_btitle_idx ON zhbooks (btitle_id);
+CREATE INDEX zhbook_cvbook_idx ON zhbooks (cvbook_id);
 CREATE INDEX zhbook_unique_idx ON zhbooks (zseed, znvid);
 CREATE INDEX zhbook_nvname_idx ON zhbooks (author, ztitle);
 CREATE INDEX zhbook_bumped_idx ON zhbooks (bumped);

@@ -5,7 +5,7 @@ class CV::Ubmark < Granite::Base
   column id : Int64, primary: true
   timestamps
 
-  belongs_to :btitle
+  belongs_to :cvbook
   belongs_to :cvuser
 
   # bookmark types: reading, finished, onhold, dropped, pending

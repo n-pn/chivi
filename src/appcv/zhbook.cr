@@ -7,7 +7,7 @@ class CV::Zhbook < Granite::Base
   column id : Int64, primary: true
   timestamps
 
-  belongs_to :btitle
+  belongs_to :cvbook
 
   column zseed : Int32 # seed name
   column znvid : Int32 # seed book id
@@ -33,15 +33,16 @@ class CV::Zhbook < Granite::Base
   getter last_schid : String { last_zchid.to_s }
 
   private def generate_snvid
-    sname == "zhwenpg" ? CoreUtils.encode32_zh(znvid) : znvid.to_s
+    return znvid.to_s unless sname == "zhwenpg"
+    CoreUtils.encode32_zh(znvid).ljust(6, '2')
   end
 
   def last_zchid=(schid : String)
-    self.last_schid = schid
+    @last_schid = schid
     self.last_zchid = schid.to_i
   end
 
-  def self.get!(zseed : String, znvid : String)
+  def self.get!(zseed : Int32, znvid : Int32)
     find_by(zseed: zseed, znvid: znvid) || new(zseed: zseed, znvid: znvid)
   end
 end

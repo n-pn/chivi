@@ -1,5 +1,5 @@
 -- +micrate Up
-CREATE TABLE btitles (
+CREATE TABLE cvbooks (
   id bigserial PRIMARY KEY,
 
   author_id bigint default 0 not null,
@@ -30,26 +30,34 @@ CREATE TABLE btitles (
   voters int default 0 not null,
   rating int default 0 not null,
 
+  cv_voters int default 0 not null,
+  cv_rating int default 0 not null,
+  cv_clicks int default 0 not null,
+
+  chap_count int default 0 not null,
+  list_count int default 0 not null,
+  crit_count int default 0 not null,
+
   created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
   updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE UNIQUE INDEX btitle_unique_idx ON btitles (author_id, ztitle);
+CREATE UNIQUE INDEX cvbook_unique_idx ON cvbooks (author_id, ztitle);
 
-CREATE INDEX btitle_bgenre_idx ON btitles using GIN (bgenre_ids);
-CREATE INDEX btitle_zhseed_idx ON btitles using GIN (zhseed_ids);
+CREATE INDEX cvbook_bgenre_idx ON cvbooks using GIN (bgenre_ids);
+CREATE INDEX cvbook_zhseed_idx ON cvbooks using GIN (zhseed_ids);
 
-CREATE INDEX btitle_ztitle_idx ON btitles using GIN (ztitle_ts gin_trgm_ops);
-CREATE INDEX btitle_htitle_idx ON btitles using GIN (htitle_ts gin_trgm_ops);
-CREATE INDEX btitle_vtitle_idx ON btitles using GIN (vtitle_ts gin_trgm_ops);
+CREATE INDEX cvbook_ztitle_idx ON cvbooks using GIN (ztitle_ts gin_trgm_ops);
+CREATE INDEX cvbook_htitle_idx ON cvbooks using GIN (htitle_ts gin_trgm_ops);
+CREATE INDEX cvbook_vtitle_idx ON cvbooks using GIN (vtitle_ts gin_trgm_ops);
 
-CREATE INDEX btitle_bumped_idx ON btitles (bumped);
-CREATE INDEX btitle_mftime_idx ON btitles (mftime);
+CREATE INDEX cvbook_bumped_idx ON cvbooks (bumped);
+CREATE INDEX cvbook_mftime_idx ON cvbooks (mftime);
 
-CREATE INDEX btitle_weight_idx ON btitles (weight);
-CREATE INDEX btitle_rating_idx ON btitles (rating);
-CREATE INDEX btitle_voters_idx ON btitles (voters);
+CREATE INDEX cvbook_weight_idx ON cvbooks (weight);
+CREATE INDEX cvbook_rating_idx ON cvbooks (rating);
+CREATE INDEX cvbook_voters_idx ON cvbooks (voters);
 
 
 -- +micrate Down
-DROP TABLE IF EXISTS btitles;
+DROP TABLE IF EXISTS cvbooks;

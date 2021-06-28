@@ -2,7 +2,7 @@ class CV::Ubview < Granite::Base
   connection pg
   table ubviews
 
-  belongs_to :btitle
+  belongs_to :cv
   belongs_to :cvuser
 
   column id : Int64, primary: true

@@ -27,14 +27,15 @@ module CV::CoreUtils
 
   # convert integer to zbase32
   def encode32(number : Int32 | Int64)
-    String.build do |io|
-      while number >= 32
-        io << B32_CF.unsafe_fetch(number % 32)
-        number //= 32
-      end
+    buffer = String::Builder.new
 
-      io << B32_CF.unsafe_fetch(number)
+    while number >= 32
+      buffer << B32_CF.unsafe_fetch(number % 32)
+      number //= 32
     end
+
+    buffer << B32_CF.unsafe_fetch(number)
+    buffer.to_s
   end
 
   # convert zbase32 to integer
@@ -42,7 +43,8 @@ module CV::CoreUtils
     number = 0_i64
 
     input.chars.reverse_each do |char|
-      number = number &* 32 &+ map32(char)
+      number &*= 32
+      number &+= map32(char)
     end
 
     number
@@ -70,25 +72,27 @@ module CV::CoreUtils
   }
 
   def encode32_zh(number : Int32 | Int64)
-    String.build do |io|
-      while number >= 32
-        io << B32_ZH.unsafe_fetch(number % 32)
-        number //= 32
-      end
+    buffer = String::Builder.new
 
-      io << B32_ZH.unsafe_fetch(number)
+    while number >= 32
+      buffer << B32_ZH.unsafe_fetch(number % 32)
+      number //= 32
     end
+
+    buffer << B32_ZH.unsafe_fetch(number)
+    buffer.to_s
   end
 
   # convert zbase32 to integer
-  def decode32_zh(input : String)
+  def decode32_zh(input : String) : Int64
     number = 0_i64
 
     input.chars.reverse_each do |char|
-      number = number &* 32 &+ map32_zh(char)
+      number &*= 32
+      number &+= map32_zh(char)
     end
 
-    number.to_i64
+    number
   end
 
   private def map32_zh(char : Char) : Int32
@@ -96,8 +100,9 @@ module CV::CoreUtils
       case char
       {% for val, idx in B32_ZH %}
       when {{val}} then {{idx}}
-      else 0
       {% end %}
+      else
+        0
       end
     {% end %}
   end
@@ -107,3 +112,7 @@ end
 # puts CV::CoreUtils.encode32(95410).ljust(8, '0')
 # puts CV::CoreUtils.decode32("j5x20000")
 # puts CV::CoreUtils.decode32("j5x20")
+
+# str = "28unvs22456465"
+# int = CV::CoreUtils.decode32_zh(str)
+# puts str, int, CV::CoreUtils.encode32_zh(int)

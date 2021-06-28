@@ -42,11 +42,8 @@ module CV::BookUtils
   end
 
   def get_vi_btitle(ztitle : String) : String
-    if vtitle = vi_btitles.fval(ztitle)
-      TextUtils.titleize(vtitle)
-    else
-      hanviet(ztitle)
-    end
+    return "" unless vtitle = vi_btitles.fval(ztitle)
+    TextUtils.titleize(vtitle)
   end
 
   def hanviet(input : String, caps : Bool = true) : String

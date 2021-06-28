@@ -5,7 +5,7 @@ class CV::Ysbook < Granite::Base
   column id : Int64, primary: true
   timestamps
 
-  belongs_to :btitle
+  belongs_to :cvbook
   has_many :yscrit
   has_many :yslist, through: :yscrit
 

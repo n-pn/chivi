@@ -136,7 +136,8 @@ class CV::ValueMap
     output = clean ? @data : @upds
 
     if output.empty?
-      return File.delete(@file) if File.exists?(@file)
+      File.delete(@file) if File.exists?(@file)
+      return
     end
 
     File.open(@file, clean ? "w" : "a") do |file|

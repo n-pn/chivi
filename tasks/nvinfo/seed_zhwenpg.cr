@@ -1,7 +1,4 @@
-require "file_utils"
-require "../shared/bootstrap.cr"
-
-require "./shared/seed_util.cr"
+require "../shared/seed_util.cr"
 
 class CV::ZhwenpgParser
   def initialize(@node : Myhtml::Node)
@@ -13,7 +10,7 @@ class CV::ZhwenpgParser
   getter snvid : String { link.attributes["href"].sub("b.php?id=", "") }
 
   getter author : String { rows[1].css(".fontwt").first.inner_text.strip }
-  getter btitle : String { link.inner_text.strip }
+  getter ztitle : String { link.inner_text.strip }
 
   getter bcover : String { @node.css("img").first.attributes["data-src"] }
   getter bgenre : String { rows[2].css(".fontgt").first.inner_text }
@@ -34,7 +31,7 @@ end
 class CV::SeedZhwenpg
   ::FileUtils.mkdir_p("_db/.cache/zhwenpg/pages")
 
-  @mftime = {} of String => Int64
+  @checked = Set(String).new
 
   def seed!(page = 1, status = 0)
     puts "\n[-- Page: #{page} (status: #{status}) --]".colorize.light_cyan.bold
@@ -42,61 +39,97 @@ class CV::SeedZhwenpg
     file = page_path(page, status)
     link = page_link(page, status)
 
-    valid = 4.hours * page
-    html = RmUtil.fetch(file, link, "zhwenpg", valid: valid, label: page.to_s)
+    html = HttpUtils.load_html(link, file, ttl: 4.hours * page, label: page.to_s)
     atime = SeedUtil.get_mtime(file) || Time.utc.to_unix
 
-    doc = Myhtml::Parser.new(html)
-    nodes = doc.css(".cbooksingle").to_a[2..-2]
+    pdoc = Myhtml::Parser.new(html)
+    nodes = pdoc.css(".cbooksingle").to_a[2..-2]
+
     nodes.each_with_index(1) do |node, idx|
       parser = ZhwenpgParser.new(node)
+
       snvid = parser.snvid
+      next if @checked.includes?(snvid)
 
-      next if @mftime.has_key?(snvid)
-      @mftime[snvid] = parser.mftime
+      puts "\n<#{idx}/#{nodes.size}}> [#{parser.ztitle}] (#{snvid})"
+      @checked.add(snvid)
 
-      zhbook = save_zhbook(parser)
-      btitle, author = parser.btitle, parser.author
-      puts "\n<#{idx}/#{nodes.size}}> {#{snvid}} [#{btitle}  #{author}]"
-
-      @meta._index.set!(snvid, [atime.to_s, btitle, author])
-
-      @meta.set_intro(snvid, parser.bintro)
-      @meta.genres.set!(snvid, parser.bgenre)
-      @meta.bcover.set!(snvid, parser.bcover)
-
-      @meta.update.set!(snvid, parser.mftime.to_s)
-      @meta.status.set!(snvid, status.to_s)
+      zhbook = save_zhbook(parser, status, atime)
+      save_btitle(zhbook)
     rescue err
       puts "ERROR: #{err}".colorize.red
     end
   end
 
-  def save_zhbook(parser : ZhwenpgParser)
-    zseed = Zhseed.index("zhwenpg")
-    znvid = CoreUtils.decode32_zh(parser.snvid).to_i
+  def save_zhbook(parser : ZhwenpgParser, status = 0, bumped = Time.utc) : Zhbook
+    output = begin
+      zseed = Zhseed.index("zhwenpg")
+      znvid = CoreUtils.decode32_zh(parser.snvid).to_i
+
+      Zhbook.get!(zseed, znvid)
+    end
+
+    output.cvbook_id ||= 0
+
+    output.author = parser.author
+    output.ztitle = parser.ztitle
+
+    output.genres = [parser.bgenre]
+    output.bcover = parser.bcover
+    output.bintro = parser.bintro.join("\n")
+
+    output.status = status
+    output.bumped = bumped
+    output.mftime = parser.mftime
+
+    output.tap(&.save!)
   end
 
-  # def seed!
-  #   @checked.to_a.each_with_index(1) do |snvid, idx|
-  #     bhash, btitle, author = @meta.upsert!(snvid, fixed: false)
+  def save_btitle(zhbook : Zhbook)
+    author = begin
+      zname = BookUtils.fix_zh_author(zhbook.author, zhbook.ztitle)
+      Author.upsert!(zname)
+    end
 
-  #     if NvOrders.get_voters(bhash) == 0
-  #       voters, rating = Bookgen.get_scores(btitle, author)
-  #       NvOrders.set_scores!(bhash, voters, rating)
-  #     end
+    cvbook = begin
+      ztitle = BookUtils.fix_zh_author(zhbook.ztitle, author.zname)
+      Cvbook.upsert!(author, ztitle)
+    end
 
-  #     puts "- <#{idx}/#{@checked.size}> [#{bhash}] saved!".colorize.yellow
+    zhbook.update!(cvbook_id: cvbook.id)
 
-  #     @meta.upsert_chinfo!(bhash, snvid, mode: 0)
-  #     NvInfo.save!(clean: false)
-  #   end
+    cvbook.add_zhseed(zhbook.zseed)
+    cvbook.set_genres(zhbook.genres)
 
-  #   NvInfo.save!(clean: false)
-  # end
+    cvbook.set_bcover("zhwenpg-#{zhbook.snvid}.webp")
+    cvbook.set_zintro(zhbook.bintro)
 
-  def expiry(page : Int32 = 1)
-    Time.utc - 4.hours * page
+    cvbook.set_shield(1) if cvbook.bgenres.includes?("Phi sắc")
+    cvbook.set_status(zhbook.status)
+
+    cvbook.set_mftime(zhbook.mftime)
+
+    if cvbook.voters == 0
+      voters, rating = get_scores(cvbook.ztitle, author.zname)
+      cvbook.set_scores(voters, rating)
+    end
+
+    if zhbook.chap_count == 0
+      ttl = Time.utc - Time.unix(zhbook.mftime)
+      chinfo = ChInfo.new(cvbook.bhash, "zhwenpg", zhbook.snvid)
+      _, zhbook.chap_count, zhbook.last_zchid = chinfo.update!(mode: 1, ttl: ttl)
+      zhbook.save!
+    end
+
+    cvbook.save!
+  end
+
+  private def get_scores(ztitle : String, author : String)
+    if score = SeedUtil.rating_fix.get("#{ztitle}  #{author}")
+      score.map(&.to_i)
+    else
+      [Random.rand(25..50), Random.rand(40..50)]
+    end
   end
 
   def page_link(page : Int32, status = 0)
@@ -109,8 +142,6 @@ class CV::SeedZhwenpg
   end
 end
 
-worker = CV::SeedZhwenpg.new
-puts "\n[-- Load indexes --]".colorize.cyan.bold
-
-1.upto(3) { |page| worker.seed!(page, status: 1) }
-1.upto(11) { |page| worker.seed!(page, status: 0) }
+seeder = CV::SeedZhwenpg.new
+1.upto(3) { |page| seeder.seed!(page, status: 1) }
+1.upto(11) { |page| seeder.seed!(page, status: 0) }

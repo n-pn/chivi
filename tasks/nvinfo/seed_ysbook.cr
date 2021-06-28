@@ -1,64 +1,53 @@
 require "file_utils"
 require "option_parser"
 
-require "../shared/bootstrap.cr"
+require "../shared/seed_util.cr"
 require "../shared/ysbook_og.cr"
-
-require "./shared/seed_util.cr"
 
 class CV::SeedYsbook
   DIR = "_db/yousuu/.cache/infos"
 
-  @index = ValueMap.new("_db/.cache/_index/yousuu.tsv")
+  @index = SeedUtil.load_map("yousuu/_index")
 
-  def seed!(redo = false, workers = 16)
+  def seed!(redo = false)
     queue = Dir.glob("#{DIR}/*.json").sort_by do |file|
       File.basename(file, ".json").to_i
     end
 
     puts "- Input: #{queue.size.colorize.cyan} entries, \
           authors: #{Author.count.colorize.cyan}, \
-          btitles: #{Btitle.count.colorize.cyan}"
+          btitles: #{Cvbook.count.colorize.cyan}"
 
     queue.each_with_index(1) do |file, idx|
       if idx % 100 == 0
-        puts "- [yousuu] <#{idx.colorize.cyan}/#{queue.size}>, \
-              authors: #{Author.count.colorize.cyan}, \
-              btitles: #{Btitle.count.colorize.cyan}"
-
         @index.save!(clean: false)
+        puts "- [ysbook] <#{idx.colorize.cyan}/#{queue.size}>, \
+              authors: #{Author.count.colorize.cyan}, \
+              btitles: #{Cvbook.count.colorize.cyan}"
       end
 
-      atime = SeedUtil.get_mtime(file)
       snvid = File.basename(file, ".json")
-      next unless redo || @index.ival_64(snvid) < atime
+      bumped = SeedUtil.get_mtime(file)
+      next unless redo || @index.ival_64(snvid) < bumped
 
-      next unless ysbook = save_ysbook(file, atime)
+      next unless ysbook = save_ysbook(file, bumped)
       save_btitle(ysbook)
 
-      @index.set!(snvid, [atime.to_s, ysbook.ztitle, ysbook.author])
+      @index.set!(snvid, [bumped.to_s, ysbook.ztitle, ysbook.author])
     rescue err
       puts err.inspect_with_backtrace.colorize.red
     end
 
     @index.save!(clean: true)
     puts "- authors: #{Author.count.colorize.cyan}, \
-            btitles: #{Btitle.count.colorize.cyan}"
+            btitles: #{Cvbook.count.colorize.cyan}"
   end
 
-  def save_index(ysbook : Ysbook?)
-    return unless ysbook
-  end
-
-  def save_ysbook(id : Int32)
-    save_ysbook("#{DIR}/#{id}.json")
-  end
-
-  def save_ysbook(file : String, atime = SeedUtil.get_mtime(file)) : Ysbook?
+  def save_ysbook(file : String, bumped = SeedUtil.get_mtime(file)) : Ysbook?
     input = YsbookOg.load(file)
     output = Ysbook.get!(input._id.to_i64)
 
-    output.btitle_id ||= 0
+    output.cvbook_id ||= 0
 
     output.author = input.author
     output.ztitle = input.title
@@ -70,7 +59,7 @@ class CV::SeedYsbook
     output.status = input.status
     output.shield = input.shielded ? 1 : 0
 
-    output.bumped = atime
+    output.bumped = bumped
     output.mftime = input.updated_at.to_unix
 
     output.voters = input.voters
@@ -86,7 +75,7 @@ class CV::SeedYsbook
     output.tap(&.save!)
   rescue err
     snvid = File.basename(file, ".json")
-    @index.set!(snvid, [atime.to_s, "-", "-"])
+    @index.set!(snvid, [bumped.to_s, "-", "-"])
 
     unless err.is_a?(YsbookOg::InvalidFile)
       puts "- error loading [#{snvid}]:"
@@ -94,48 +83,40 @@ class CV::SeedYsbook
     end
   end
 
-  getter authors_map : Hash(String, Author) do
-    Author.all.to_h { |x| {x.zname, x} }
-  end
+  def save_btitle(ysbook : Ysbook) : Cvbook?
+    author = SeedUtil.get_author(ysbook.author, ysbook.ztitle, ysbook.decent?)
+    return unless author
 
-  def get_author(ysbook : Ysbook) : Author?
-    zname = BookUtils.fix_zh_author(ysbook.author, ysbook.ztitle)
-    authors_map[zname] ||= begin
-      return unless ysbook.decent?
-      Author.upsert!(zname)
-    end
-  end
-
-  def save_btitle(ysbook : Ysbook) : Btitle?
-    return unless author = get_author(ysbook)
     author.update_weight!(ysbook.voters * ysbook.rating)
 
     ztitle = BookUtils.fix_zh_btitle(ysbook.ztitle, author.zname)
-    nvinfo = Btitle.upsert!(author, ztitle)
+    cvbook = Cvbook.upsert!(author, ztitle)
 
-    ysbook.update!(btitle_id: nvinfo.id)
+    ysbook.update!(btitle_id: cvbook.id)
 
-    nvinfo.set_genres(ysbook.genres)
-    nvinfo.set_bcover("yousuu-#{ysbook.id}.webp")
-    nvinfo.set_zintro(ysbook.bintro)
+    cvbook.set_genres(ysbook.genres)
+    cvbook.set_bcover("yousuu-#{ysbook.id}.webp")
+    cvbook.set_zintro(ysbook.bintro)
 
-    nvinfo.set_mftime(ysbook.mftime)
-    nvinfo.set_shield(ysbook.shield)
-    nvinfo.set_status(ysbook.status)
+    cvbook.set_mftime(ysbook.mftime)
+    cvbook.set_shield(ysbook.shield)
+    cvbook.set_status(ysbook.status)
 
-    nvinfo.set_scores(ysbook.voters, ysbook.rating)
+    cvbook.set_scores(ysbook.voters, ysbook.rating)
 
-    nvinfo.tap(&.save!)
+    cvbook.tap(&.save!)
+  end
+
+  def self.run!(argv = ARGV)
+    redo = false
+
+    OptionParser.parse(ARGV) do |opt|
+      opt.on("-a", "Ignore indexes") { redo = true }
+    end
+
+    seeder = new
+    seeder.seed!(redo: redo)
   end
 end
 
-redo = false
-workers = 10
-
-OptionParser.parse(ARGV) do |opt|
-  opt.on("-a", "Ignore indexes") { redo = true }
-  opt.on("-w WORKERS", "Ignore indexes") { |x| workers = x.to_i }
-end
-
-worker = CV::SeedYsbook.new
-worker.seed!(redo: redo, workers: workers)
+CV::SeedYsbook.run!
