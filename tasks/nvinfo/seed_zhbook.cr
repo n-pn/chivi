@@ -187,7 +187,7 @@ class CV::SeedZhbook
       save_book(snvid, values)
 
       if idx % 100 == 0
-        puts "- [ysbook] <#{idx.colorize.cyan}/#{input.size}>, \
+        puts "- [#{@sname}] <#{idx.colorize.cyan}/#{input.size}>, \
                 authors: #{Author.count.colorize.cyan}, \
                 cvbooks: #{Cvbook.count.colorize.cyan}"
       end

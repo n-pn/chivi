@@ -15,7 +15,7 @@
     "seed-zhwenpg": "./bin/seed_zhwenpg",
     "seed_zhbook": "./bin/seed_zhbook",
     "seed-zhbooks": "bash tasks/nvinfo/seed_zhbook.sh",
-    "seed-infos": "./bin/seed_ysbook && ./bin/seed_zhweng && yarn seed-zhbooks",
+    "seed-infos": "./bin/seed_ysbook && ./bin/seed_zhwenpg && yarn seed-zhbooks",
     "fix-covers": "./bin/fetch_covers && ./bin/fix_covers",
     "fix-nvinfo": "./bin/fix_intros && ./bin/fix_genres",
     "build": "shards build --release",
