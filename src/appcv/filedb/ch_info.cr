@@ -88,7 +88,7 @@ class CV::ChInfo
   private def load_trans(fname : String, mode = 1)
     map = ValueMap.new(tran_fpath(fname), mode: mode)
 
-    if mode > 0 && map.empty?
+    if mode == -1 || mode > 0 && map.empty?
       yield map
       map.save!(clean: true)
     end
@@ -122,11 +122,11 @@ class CV::ChInfo
     rmin = 1 if rmin < 1
 
     rmin.upto(rmax) do |page|
-      load_trans(page_fname(page), mode: 0, &.clear_all!)
+      load_trans(page_fname(page), mode: -1, &.clear)
       @pages.delete(page)
     end
 
-    load_trans("last-#{LAST_SIZE}", mode: 0, &.clear_all!)
+    load_trans("last-#{LAST_SIZE}", mode: -1, &.clear)
     @last_chaps = nil
   end
 
