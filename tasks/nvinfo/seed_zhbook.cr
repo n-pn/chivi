@@ -99,7 +99,7 @@ class CV::SeedZhbook
         @seed.status.set!(snvid, [entry.status])
       else
         status_int = SeedUtil.parse_status(entry.status)
-        @seed.status.set!(snvid, [status_int.to_i, entry.status])
+        @seed.status.set!(snvid, [status_int.to_s, entry.status])
       end
 
       @seed.mftime.set!(snvid, [entry.mftime.to_s, entry.update])
