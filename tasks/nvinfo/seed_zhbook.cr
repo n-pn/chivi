@@ -199,9 +199,7 @@ class CV::SeedZhbook
 
   def save_book(snvid : String, values : Array(String), dry = true)
     bumped, p_ztitle, p_author = values
-    bumped = bumped.to_i64
-
-    return puts "Empty info: #{snvid}" if p_ztitle.empty? || p_author.empty?
+    return if p_ztitle.empty? || p_author.empty?
 
     author = SeedUtil.get_author(p_author, p_ztitle, @sname == "hetushu")
     return unless author
@@ -210,6 +208,7 @@ class CV::SeedZhbook
     return unless cvbook = load_cvbook(author, ztitle)
 
     zhbook = Zhbook.upsert!(@sname, snvid)
+    bumped = bumped.to_i64
 
     if dry && zhbook.cvbook_id == cvbook.id # zhbook already created before
       return unless bumped > zhbook.bumped  # return unless source updated
