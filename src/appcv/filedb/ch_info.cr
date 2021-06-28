@@ -57,11 +57,12 @@ class CV::ChInfo
   def chaps_page(page : Int32 = 1, preload = true)
     @pages[page] ||= begin
       load_trans(page_fname(page)) do |map|
-        skip = (page - 1) * PAGE_SIZE
+        offset = (page - 1) * PAGE_SIZE
 
-        skip.upto(skip + PAGE_SIZE - 1).each do |index|
+        offset.upto(offset + PAGE_SIZE - 1).each do |index|
           break unless infos = seeds[index]?
-          map.set!(index.to_s, qtran_chap(infos))
+          chidx = index + 1
+          map.set!(chidx.to_s, qtran_chap(infos))
         end
       end
     end
@@ -162,7 +163,8 @@ class CV::ChInfo
   end
 
   def get_info(index : Int32) : Array(String)?
-    chaps = chaps_page(index // PAGE_SIZE + 1)
+    page = index // PAGE_SIZE + 1
+    chaps = chaps_page(page)
     chidx = index + 1
     chaps.get(chidx.to_s)
   end

@@ -3,7 +3,7 @@ Amber::Server.configure do
     # plug Amber::Pipe::PoweredByAmber.new
     plug Amber::Pipe::ClientIp.new(["X-Forwarded-For"])
     plug Amber::Pipe::Error.new
-    plug Amber::Pipe::Logger.new(filter: ["upass"])
+    # plug Amber::Pipe::Logger.new(filter: ["upass"])
     # plug Amber::Pipe::Session.new # do it manually
     # plug Amber::Pipe::CORS.new
   end
