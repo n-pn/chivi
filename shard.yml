@@ -15,8 +15,8 @@ targets:
   amber:
     main: lib/amber/src/amber/cli.cr
 
-  init_zhwenpg:
-    main: tasks/nvinfo/init_zhwenpg.cr
+  seed_zhwenpg:
+    main: tasks/nvinfo/seed_zhwenpg.cr
 
   seed_ysbook:
     main: tasks/nvinfo/seed_ysbook.cr

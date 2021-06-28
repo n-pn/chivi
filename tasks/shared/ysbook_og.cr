@@ -80,6 +80,10 @@ class CV::YsbookOg
     [klass].concat(tags).uniq
   end
 
+  def decent?
+    addListTotal > 0 || commentCount > 4
+  end
+
   private def get_fixed_cover
     return "" unless @cover.starts_with?("http")
     @cover.sub("http://image.qidian.com/books", "http://qidian.qpic.cn/qdbimg")

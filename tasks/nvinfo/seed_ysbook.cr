@@ -30,10 +30,10 @@ class CV::SeedYsbook
       bumped = SeedUtil.get_mtime(file)
       next unless redo || @index.ival_64(snvid) < bumped
 
-      next unless ysbook = save_ysbook(file, bumped)
-      save_btitle(ysbook)
+      next unless puller = YsbookOg.load(file)
+      seed_item(puller, bumped)
 
-      @index.set!(snvid, [bumped.to_s, ysbook.ztitle, ysbook.author])
+      @index.set!(snvid, [bumped.to_s, puller.title, puller.author])
     rescue err
       puts err.inspect_with_backtrace.colorize.red
     end
@@ -43,68 +43,62 @@ class CV::SeedYsbook
             btitles: #{Cvbook.count.colorize.cyan}"
   end
 
-  def save_ysbook(file : String, bumped = SeedUtil.get_mtime(file)) : Ysbook?
-    input = YsbookOg.load(file)
-    output = Ysbook.get!(input._id.to_i64)
+  def seed_item(puller : YsbookOg, bumped : Int64) : Nil
+    btitle, force = puller.title, puller.decent?
+    author = SeedUtil.get_author(puller.author, btitle, force: force)
 
-    output.cvbook_id ||= 0
+    return unless author
+    author.update_weight!(puller.voters * puller.rating)
 
-    output.author = input.author
-    output.ztitle = input.title
+    ztitle = BookUtils.fix_zh_btitle(btitle, author.zname)
+    ysbook = Ysbook.get!(puller._id.to_i64)
 
-    output.genres = input.genres
-    output.bintro = input.intro.join("\n")
-    output.bcover = input.cover_fixed
+    ysbook.author = author.zname
+    ysbook.ztitle = ztitle
 
-    output.status = input.status
-    output.shield = input.shielded ? 1 : 0
+    cvbook = Cvbook.upsert!(author, ztitle)
+    ysbook.cvbook = cvbook
 
-    output.bumped = bumped
-    output.mftime = input.updated_at.to_unix
+    ysbook.genres = puller.genres
+    cvbook.set_genres(puller.genres)
 
-    output.voters = input.voters
-    output.rating = input.rating
+    ysbook.bcover = puller.cover_fixed
+    cvbook.set_bcover("yousuu-#{puller._id}.webp")
 
-    output.word_count = input.word_count
-    output.crit_count = input.commentCount
-    output.list_count = input.addListTotal
+    ysbook.bintro = puller.intro.join("\n")
+    cvbook.set_zintro(ysbook.bintro)
 
-    output.root_link = input.root_link
-    output.root_name = input.root_name
+    ysbook.status = puller.status
+    cvbook.set_status(puller.status)
 
-    output.tap(&.save!)
+    ysbook.shield = puller.shielded ? 1 : 0
+    cvbook.set_shield(ysbook.shield)
+
+    ysbook.bumped = bumped
+    ysbook.mftime = puller.updated_at.to_unix
+    cvbook.set_mftime(ysbook.mftime)
+
+    ysbook.voters = puller.voters
+    ysbook.rating = puller.rating
+    cvbook.set_scores(ysbook.voters, ysbook.rating)
+
+    ysbook.word_count = puller.word_count
+    ysbook.crit_count = puller.commentCount
+    ysbook.list_count = puller.addListTotal
+
+    ysbook.root_link = puller.root_link
+    ysbook.root_name = puller.root_name
+
+    ysbook.save!
+    cvbook.save!
   rescue err
-    snvid = File.basename(file, ".json")
+    snvid = puller._id.to_s
     @index.set!(snvid, [bumped.to_s, "-", "-"])
 
     unless err.is_a?(YsbookOg::InvalidFile)
       puts "- error loading [#{snvid}]:"
       puts err.inspect_with_backtrace.colorize.red
     end
-  end
-
-  def save_btitle(ysbook : Ysbook) : Cvbook?
-    author = SeedUtil.get_author(ysbook.author, ysbook.ztitle, ysbook.decent?)
-    return unless author
-
-    author.update_weight!(ysbook.voters * ysbook.rating)
-
-    ztitle = BookUtils.fix_zh_btitle(ysbook.ztitle, author.zname)
-    cvbook = Cvbook.upsert!(author, ztitle)
-
-    ysbook.update!(btitle_id: cvbook.id)
-
-    cvbook.set_genres(ysbook.genres)
-    cvbook.set_bcover("yousuu-#{ysbook.id}.webp")
-    cvbook.set_zintro(ysbook.bintro)
-
-    cvbook.set_mftime(ysbook.mftime)
-    cvbook.set_shield(ysbook.shield)
-    cvbook.set_status(ysbook.status)
-
-    cvbook.set_scores(ysbook.voters, ysbook.rating)
-
-    cvbook.tap(&.save!)
   end
 
   def self.run!(argv = ARGV)

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SSH=nipin@ssh.chivi.xyz:srv/chivi.xyz
+SSH=nipin@dev.chivi.xyz:srv/chivi.xyz
 
 # rsync -aiz --no-p "$SSH/_db/vp_dicts/active/" "_db/vp_dicts/backup/"
 # rsync -aiz --no-p "$SSH/_db/vp_dicts/active/" "_db/vp_dicts/active/"
@@ -13,3 +13,4 @@ SSH=nipin@ssh.chivi.xyz:srv/chivi.xyz
 # rsync -aiz --no-p "$SSH/_db/chtran/" "_db/chtran/"
 rsync -aiz --no-p "$SSH/_db/nv_infos/chseeds" "_db/nv_infos/"
 rsync -aiz --no-p "$SSH/_db/nv_infos/update.tsv" "_db/nv_infos/"
+rsync -aiz --no-p "$SSH/_db/nv_infos/access.tsv" "_db/nv_infos/"
