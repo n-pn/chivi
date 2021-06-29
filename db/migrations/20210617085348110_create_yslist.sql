@@ -1,26 +1,26 @@
 -- +micrate Up
 CREATE TABLE yslists (
-  id bigserial PRIMARY KEY,
+  id bigserial primary key,
 
   ysuser_id bigint not null,
 
-  zname varchar not null,
-  vname varchar not null,
+  zname text not null,
+  vname text not null,
 
-  zdesc text default '' not null,
-  vdesc text default '' not null,
+  zdesc text not null default '',
+  vdesc text not null default '',
 
-  aim_at varchar default 'male' not null,
+  aim_at text not null default 'male',
 
-  bumped bigint default 0 not null,
-  mftime bigint default 0 not null,
+  bumped bigint not null default 0,
+  mftime bigint not null default 0,
 
-  book_count int default 0 not null,
-  like_count int default 0 not null,
-  view_count int default 0 not null,
+  book_count int not null default 0,
+  like_count int not null default 0,
+  view_count int not null default 0,
 
-  created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
-  updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
+  created_at timestamptz not null default CURRENT_TIMESTAMP,
+  updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
 CREATE INDEX yslist_ysuser_idx ON yslists (ysuser_id);

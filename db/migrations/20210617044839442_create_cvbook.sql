@@ -1,45 +1,45 @@
 -- +micrate Up
 CREATE TABLE cvbooks (
-  id bigserial PRIMARY KEY,
+  id bigserial primary key,
 
-  author_id bigint default 0 not null,
-  bgenre_ids int[] default '{0}' not null, -- not real database table ids
-  zhseed_ids int[] default '{0}' not null, -- not real database table ids
+  author_id bigint not null default 0,
+  bgenre_ids int[] not null default '{0}', -- not real database table ids
+  zhseed_ids int[] not null default '{0}', -- not real database table ids
 
-  bhash varchar NOT NULL UNIQUE,
-  bslug varchar NOT NULL UNIQUE,
+  bhash text unique not null,
+  bslug text unique not null,
 
-  ztitle varchar not null,
-  htitle varchar default '' not null,
-  vtitle varchar default '' not null,
+  ztitle text not null,
+  htitle text not null default '',
+  vtitle text not null default '',
 
-  ztitle_ts varchar default '' not null,
-  htitle_ts varchar default '' not null,
-  vtitle_ts varchar default '' not null,
+  ztitle_ts text not null default '',
+  htitle_ts text not null default '',
+  vtitle_ts text not null default '',
 
-  bcover varchar default '' not null,
-  bintro varchar default '' not null,
+  bcover text not null default '',
+  bintro text not null default '',
 
-  status int default 0 not null,
-  shield int default 0 not null,
+  status int not null default 0,
+  shield int not null default 0,
 
-  bumped bigint default 0 not null,
-  mftime bigint default 0 not null,
+  bumped bigint not null default 0,
+  mftime bigint not null default 0,
 
-  weight int default 0 not null,
-  voters int default 0 not null,
-  rating int default 0 not null,
+  weight int not null default 0,
+  voters int not null default 0,
+  rating int not null default 0,
 
-  cv_voters int default 0 not null,
-  cv_rating int default 0 not null,
-  cv_clicks int default 0 not null,
+  cv_voters int not null default 0,
+  cv_rating int not null default 0,
+  cv_clicks int not null default 0,
 
-  chap_count int default 0 not null,
-  list_count int default 0 not null,
-  crit_count int default 0 not null,
+  chap_count int not null default 0,
+  list_count int not null default 0,
+  crit_count int not null default 0,
 
-  created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
-  updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
+  created_at timestamptz not null default CURRENT_TIMESTAMP,
+  updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
 CREATE UNIQUE INDEX cvbook_unique_idx ON cvbooks (author_id, ztitle);

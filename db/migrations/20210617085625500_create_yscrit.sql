@@ -1,26 +1,26 @@
 -- +micrate Up
 CREATE TABLE yscrits (
-  id bigserial PRIMARY KEY,
+  id bigserial primary key,
 
-  cvbook_id bigint default 0 not null,
-  ysbook_id bigint default 0 not null,
+  cvbook_id bigint not null default 0,
+  ysbook_id bigint not null default 0,
 
-  ysuser_id bigint default 0 not null,
-  yslist_id bigint default 0 not null,
+  ysuser_id bigint not null default 0,
+  yslist_id bigint not null default 0,
 
-  stars int default 3 not null,
+  stars int not null default 3,
 
-  ztext text default '' not null,
-  vhtml text default '' not null,
+  ztext text not null default '',
+  vhtml text not null default '',
 
-  bumped bigint default 0 not null,
-  mftime bigint default 0 not null,
+  bumped bigint not null default 0,
+  mftime bigint not null default 0,
 
-  like_count int default 0 not null,
-  repl_count int default 0 not null,
+  like_count int not null default 0,
+  repl_count int not null default 0,
 
-  created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
-  updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
+  created_at timestamptz not null default CURRENT_TIMESTAMP,
+  updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
 CREATE INDEX yscrit_cvbook_idx ON yscrits (cvbook_id, stars);

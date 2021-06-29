@@ -1,30 +1,30 @@
 -- +micrate Up
 CREATE TABLE zhbooks (
-  id bigserial PRIMARY KEY,
+  id bigserial primary key,
 
-  cvbook_id bigint default 0 not null,
+  cvbook_id bigint not null default 0,
 
-  zseed int default 0 not null,
-  znvid int default 0 not null,
+  zseed int not null default 0,
+  znvid int not null default 0,
 
-  author varchar default '' not null,
-  ztitle varchar default '' not null,
+  author text not null default '',
+  ztitle text not null default '',
 
-  genres varchar[] default '{}' not null,
-  bcover varchar default '' not null,
-  bintro text default '' not null,
+  genres text[] not null default '{}',
+  bcover text not null default '',
+  bintro text not null default '',
 
-  status int default 0 not null,
-  shield int default 0 not null ,
+  status int not null default 0,
+  shield int not null  default 0,
 
-  bumped bigint default 0 not null,
-  mftime bigint default 0 not null,
+  bumped bigint not null default 0,
+  mftime bigint not null default 0,
 
-  chap_count int default 0 not null,
-  last_zchid int default 0 not null,
+  chap_count int not null default 0,
+  last_zchid int not null default 0,
 
-  created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
-  updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
+  created_at timestamptz not null default CURRENT_TIMESTAMP,
+  updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
 CREATE INDEX zhbook_cvbook_idx ON zhbooks (cvbook_id);

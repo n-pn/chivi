@@ -1,17 +1,17 @@
 -- +micrate Up
 CREATE TABLE authors (
-  id bigserial PRIMARY KEY,
+  id bigserial primary key,
 
-  zname varchar not null UNIQUE,
-  vname varchar not null,
+  zname text unique not null,
+  vname text not null,
 
-  zname_ts varchar default '' not null,
-  vname_ts varchar default '' not null,
+  zname_ts text not null default '' ,
+  vname_ts text not null default '' ,
 
-  weight int default 0 not null,
+  weight int not null default 0 ,
 
-  created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
-  updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
+  created_at timestamptz not null default CURRENT_TIMESTAMP,
+  updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
 CREATE INDEX author_zname_idx ON authors using GIN (zname_ts gin_trgm_ops);

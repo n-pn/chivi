@@ -1,16 +1,16 @@
 -- +micrate Up
 CREATE TABLE ysusers (
-  id bigserial PRIMARY KEY,
+  id bigserial primary key,
 
-  zname varchar not null UNIQUE,
-  vname varchar not null,
+  zname text unique not null,
+  vname text not null,
 
-  like_count int default 0 not null,
-  list_count int default 0 not null,
-  crit_count int default 0 not null,
+  like_count int not null default 0,
+  list_count int not null default 0,
+  crit_count int not null default 0,
 
-  created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
-  updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
+  created_at timestamptz not null default CURRENT_TIMESTAMP,
+  updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
 CREATE UNIQUE INDEX ysuser_zname_idx ON ysusers (zname);

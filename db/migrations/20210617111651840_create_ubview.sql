@@ -1,24 +1,24 @@
 -- +micrate Up
 CREATE TABLE ubviews (
-  id bigserial PRIMARY KEY,
+  id bigserial primary key,
 
   cvbook_id bigint not null,
   cvuser_id bigint not null,
 
-  zseed int default 0 not null,
-  znvid int default 0 not null,
+  zseed int not null default 0,
+  znvid int not null default 0,
 
-  zchid int default 0 not null,
-  chidx int default 0 not null,
+  zchid int not null default 0,
+  chidx int not null default 0,
 
-  bumped bigint default 0 not null,
+  bumped bigint not null default 0,
 
-  ch_title varchar default '' not null,
-  ch_label varchar default '' not null,
-  ch_uslug varchar default '' not null,
+  ch_title text not null default '',
+  ch_label text not null default '',
+  ch_uslug text not null default '',
 
-  created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
-  updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
+  created_at timestamptz not null default CURRENT_TIMESTAMP,
+  updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
 CREATE UNIQUE INDEX ubview_unique_idx ON ubviews (cvbook_id, cvuser_id);

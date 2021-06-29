@@ -1,10 +1,10 @@
 -- +micrate Up
 CREATE TABLE cvusers (
-  id bigserial PRIMARY KEY,
+  id bigserial primary key,
 
-  uname citext NOT NULL UNIQUE,
-  email citext NOT NULL UNIQUE,
-  cpass varchar NOT NULL,
+  uname citext unique not null,
+  email citext unique not null,
+  cpass text NOT NULL,
 
   karma int default 0 NOT NULL,
 
@@ -13,8 +13,8 @@ CREATE TABLE cvusers (
 
   prefs jsonb default '{}'::jsonb NOT NULL,
 
-  created_at timestamptz default CURRENT_TIMESTAMP NOT NULL,
-  updated_at timestamptz default CURRENT_TIMESTAMP NOT NULL
+  created_at timestamptz not null default CURRENT_TIMESTAMP,
+  updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
 CREATE INDEX cvuser_privi_idx ON cvusers (privi);
