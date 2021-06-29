@@ -28,10 +28,14 @@ class CV::Zhbook
   column last_zchid : Int32 = 0 # seed's latest chap id
 
   getter sname : String { Zhseed.zseed(zseed) }
-  getter snvid : String { generate_snvid }
+  getter snvid : String { make_snvid }
   getter last_schid : String { last_zchid.to_s }
 
-  private def generate_snvid
+  def matched?(cvbook_id : Int64) : Bool
+    cvbook_id_column.value(0) == cvbook_id
+  end
+
+  private def make_snvid
     return znvid.to_s unless sname == "zhwenpg"
     CoreUtils.encode32_zh(znvid).ljust(6, '2')
   end

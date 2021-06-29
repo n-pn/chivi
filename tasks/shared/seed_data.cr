@@ -20,7 +20,7 @@ class CV::SeedData
   @intros = {} of String => ValueMap
 
   def initialize(@sname)
-    @s_dir = "_db/zhseed/#{@sname}"
+    @s_dir = "_db/zhbook/#{@sname}"
     ::FileUtils.mkdir_p("#{@s_dir}/intros")
   end
 

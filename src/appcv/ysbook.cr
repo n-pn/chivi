@@ -31,8 +31,8 @@ class CV::Ysbook
   column root_link : String? # original publisher novel page
   column root_name : String? # original publisher name, extract from link
 
-  def decent?
-    list_count > 0 || crit_count > 4
+  def matched?(cvbook_id : Int64) : Bool
+    cvbook_id_column.value(0) == cvbook_id
   end
 
   def self.get!(id : Int64) : Ysbook

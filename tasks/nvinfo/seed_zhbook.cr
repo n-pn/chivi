@@ -210,8 +210,8 @@ class CV::SeedZhbook
     zhbook = Zhbook.upsert!(@sname, snvid)
     bumped = bumped.to_i64
 
-    if dry && zhbook.cvbook_id == cvbook.id # zhbook already created before
-      return unless bumped > zhbook.bumped  # return unless source updated
+    if dry && zhbook.matched?(cvbook.id)   # zhbook already created before
+      return unless bumped > zhbook.bumped # return unless source updated
     else
       zhbook.cvbook = cvbook
       cvbook.add_zhseed(zhbook.zseed)

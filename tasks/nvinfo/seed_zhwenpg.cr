@@ -57,6 +57,8 @@ class CV::SeedZhwenpg
       save_book(parser, status, atime)
     rescue err
       puts "ERROR: #{err}".colorize.red
+      puts err.inspect_with_backtrace.colorize.red
+      exit
     end
   end
 
@@ -75,7 +77,7 @@ class CV::SeedZhwenpg
     zhbook.author = author.zname
     zhbook.ztitle = ztitle
 
-    zhbook.genres = [parser.bgenre]
+    zhbook.genres = [parser.bgenre.empty? ? "其他" : parser.bgenre]
     cvbook.set_genres(zhbook.genres)
 
     zhbook.bcover = parser.bcover

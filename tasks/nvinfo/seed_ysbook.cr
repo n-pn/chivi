@@ -62,10 +62,10 @@ class CV::SeedYsbook
 
     cvbook = Cvbook.upsert!(author, ztitle)
 
-    if dry && ysbook.cvbook_id == cvbook.id # ysbook already created before
-      return unless bumped > ysbook.bumped  # return unless source updated
+    if dry && ysbook.matched?(cvbook.id)   # ysbook already created before
+      return unless bumped > ysbook.bumped # return unless source updated
     else
-      ysbook.cvbook = cvbook
+      ysbook.cvbook_id = cvbook.id
       ysbook.author = author.zname
       ysbook.ztitle = ztitle
 
