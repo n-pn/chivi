@@ -247,12 +247,18 @@ class CV::SeedZhbook
     end
 
     if zhbook.chap_count == 0
-      # ttl = get_ttl(zhbook.mftime)
-      chinfo = ChInfo.new(cvbook.bhash, @sname, snvid)
-      _, chap_count, last_zchid = chinfo.update!(mode: 1, ttl: 10.years)
+      if vals = @seed.chsize.get(snvid)
+        chap_count = vals[0].to_i
+        last_schid = vals[1]
+      else
+        # ttl = get_ttl(zhbook.mftime)
+        chinfo = ChInfo.new(cvbook.bhash, @sname, snvid)
+        _, chap_count, last_schid = chinfo.update!(mode: 1, ttl: 10.years)
+        @seed.chsize.set!(snvid, [chap_count.to_s, last_schid])
+      end
 
       zhbook.chap_count = chap_count
-      zhbook.last_zchid = last_zchid
+      zhbook.last_zchid = last_schid
     end
 
     zhbook.save!

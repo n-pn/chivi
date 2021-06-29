@@ -9,8 +9,6 @@ else
   ssh=nipin@dev.chivi.xyz:srv/chivi.xyz
 fi
 
-echo $ssh
-
 ## upload dicts
 # rsync -azi --no-p "_db/vp_dicts/_inits/" "$ssh/_db/vp_dicts/_inits/"
 # rsync -azi --no-p "_db/vp_dicts/active/" "$ssh/_db/vp_dicts/backup/"
@@ -21,7 +19,7 @@ echo $ssh
 
 ## upload parsed seed data
 rsync -azi --no-p "_db/zhbook/" "$ssh/_db/zhbook/"
-rsync -azi --no-p --include='*.tsv' "_db/chseed/" "$ssh/_db/chseed/"
+rsync -azi --no-p --exclude='*.zip' "_db/chseed/" "$ssh/_db/chseed/"
 
 ## upload book data
 # rsync -azi --no-p "_db/nv_infos/chseeds" "$ssh/_db/nv_infos/"

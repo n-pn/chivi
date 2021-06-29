@@ -15,6 +15,8 @@ class CV::SeedData
   getter status : ValueMap { SeedUtil.load_map("#{@sname}/status") }
   getter mftime : ValueMap { SeedUtil.load_map("#{@sname}/mftime") }
 
+  getter chsize : ValueMap { SeedUtil.load_map("#{@sname}/chsize") }
+
   @intros = {} of String => ValueMap
 
   def initialize(@sname)
