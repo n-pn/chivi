@@ -54,6 +54,8 @@ class CV::Cvbook < Granite::Base
   column list_count : Int32 = 0
   column crit_count : Int32 = 0
 
+  getter vi_title : String { vtitle.empty? ? htitle : vtitle }
+
   def set_genres(genres : Array(String), force = false)
     return unless force || self.bgenre_ids == [0]
     genres_ids = Bgenre.zh_map_ids(genres)
@@ -103,15 +105,7 @@ class CV::Cvbook < Granite::Base
     update!(bumped: time.to_unix)
   end
 
-  def self.glob_zh(qs : String)
-    where("ztitle_ts LIKE %$%", BookUtils.scrub_zname(qs))
-  end
-
-  def self.glob_vi(qs : String, accent = false)
-    scrub = BookUtils.scrub_vname(qs)
-    query = where("vtitle_ts LIKE %$%", scrub).or("htitle_ts LIKE %$%", scrub)
-    accent ? query.where("vtitle LIKE %$%", qs).or("htitle LIKE %$%", qs) : query
-  end
+  class_getter total : Int32 { count }
 
   def self.get(author : Author, ztitle : String)
     find_by(author_id: author.id, ztitle: ztitle)
@@ -137,6 +131,51 @@ class CV::Cvbook < Granite::Base
       )
 
       cvbook.tap(&.save!)
+    end
+  end
+
+  def self.filter_btitle(query, frag : String?)
+    return query unless frag
+    frag =~ /\p{Han}/ ? filter_ztitle(query, frag) : filter_vtitle(query, frag)
+  end
+
+  def self.filter_ztitle(query, frag : String)
+    query.where("ztitle_ts LIKE %$%", BookUtils.scrub_zname(frag))
+  end
+
+  def self.filter_vtitle(query, frag : String, accent = false)
+    scrub = BookUtils.scrub_vname(frag)
+    query = query.where("vtitle_ts LIKE %$%", scrub).or("htitle_ts LIKE %$%", scrub)
+    accent ? query.where("vtitle LIKE %$%", frag).or("htitle LIKE %$%", frag) : query
+  end
+
+  def self.filter_author(query, author : String?, accent = false)
+    return query unless author
+    # author_query = author =~ /\p{Han}/ ? Author.glob_zh(author) : Author.glob_vi(author, accent: accent)
+
+    author_ids = Author.glob(author).map(&.id.not_nil!)
+    query.where(:author_id, :in, author_ids)
+  end
+
+  def self.filter_genre(query, genre : String?)
+    return query unless genre
+    genre_id = Bgenre.map_id(genre)
+    query.where("bgenre_ids @> $", [genre_id])
+  end
+
+  def self.filter_zseed(query, sname : String?)
+    return query unless sname
+    zseed = Zhseed.index(sname)
+    query.where("bgenre_ids @> $", [zseed])
+  end
+
+  def self.order_by(query, order : String? = "access")
+    case order
+    when "weight" then query.order(weight: :desc)
+    when "rating" then query.order(rating: :desc)
+    when "voters" then query.order(voters: :desc)
+    when "update" then query.order(mftime: :desc)
+    else               query.order(bumped: :desc)
     end
   end
 end

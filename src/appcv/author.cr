@@ -21,6 +21,10 @@ class CV::Author < Granite::Base
     update!(weight: weight) if weight > self.weight
   end
 
+  def self.glob(qs : String)
+    qs =~ /\p{Han}/ ? glob_zh(qs) : glob_vi(qs)
+  end
+
   def self.glob_zh(qs : String)
     where("zname_ts LIKE %$%", BookUtils.scrub_zname(qs))
   end

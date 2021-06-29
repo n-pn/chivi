@@ -139,45 +139,6 @@ class CV::NvInfo
     JSON.build(io) { |json| to_json(json, full) }
   end
 
-  def to_json(json : JSON::Builder, full : Bool = true)
-    json.object do
-      json.field "bhash", bhash
-      json.field "bslug", bslug
-
-      json.field "btitle_zh", btitle[0]
-      json.field "btitle_hv", btitle[1]
-      json.field "btitle_vi", btitle[2]
-
-      json.field "author_zh", author[0]
-      json.field "author_vi", author[1]
-
-      json.field "genres", genres
-      json.field "bcover", bcover
-
-      json.field "voters", voters
-      json.field "rating", rating
-
-      if full
-        json.field "bintro", bintro
-
-        json.field "update", update
-        json.field "status", status
-
-        json.field "yousuu", yousuu
-        json.field "origin", origin
-
-        json.field "snames", snames
-        json.field "chseed" do
-          json.object do
-            snames.each do |sname|
-              json.field sname, get_chseed(sname)
-            end
-          end
-        end
-      end
-    end
-  end
-
   def get_chseed(sname : String) : Tuple(String, Int64, Int32)
     seed = NvChseed.get_seed(sname, @bhash) || [@bhash, "0", "0"]
     {seed[0], seed[1].to_i64, seed[2].to_i}

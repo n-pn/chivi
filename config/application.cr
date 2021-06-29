@@ -18,6 +18,7 @@ require "../src/appcv/**"
 # End Generator Dependencies
 
 require "../src/webcv/pipes/**"
+require "../src/webcv/views/**"
 require "../src/webcv/ctrls/**"
 
 require "./routes"
