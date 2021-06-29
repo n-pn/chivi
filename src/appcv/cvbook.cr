@@ -20,11 +20,8 @@ class CV::Cvbook
   column ztitle : String # chinese title
   column htitle : String # hanviet title
   column vtitle : String # localization
-
-  # for text searching
-  column ztitle_ts : String # auto generated from zname
-  column htitle_ts : String # auto generated from hname
-  column vtitle_ts : String # auto generated from vname
+  column htslug : String # for text searching, auto generated from hname
+  column vtslug : String # for text searching, auto generated from vname
 
   getter bgenres : Array(String) { Bgenre.all(bgenre_ids) }
   getter zhseeds : Array(String) { Zhseed.all(zhseed_ids) }
@@ -117,7 +114,6 @@ class CV::Cvbook
       htitle ||= BookUtils.hanviet(ztitle)
       vtitle ||= BookUtils.get_vi_btitle(ztitle)
 
-      ztslug = BookUtils.scrub_zname(ztitle)
       htslug = BookUtils.scrub_vname(htitle, "-")
       vtslug = BookUtils.scrub_vname(vtitle, "-")
 
@@ -127,7 +123,7 @@ class CV::Cvbook
       cvbook = new({
         author_id: author.id, bhash: bhash, bslug: bslug,
         ztitle: ztitle, htitle: htitle, vtitle: vtitle,
-        ztitle_ts: ztslug, htitle_ts: htslug, vtitle_ts: vtslug,
+        htslug: htslug, vtslug: vtslug,
       })
 
       cvbook.tap(&.save!)
@@ -140,12 +136,12 @@ class CV::Cvbook
   end
 
   def self.filter_ztitle(query, frag : String)
-    query.where("ztitle_ts LIKE %$%", BookUtils.scrub_zname(frag))
+    query.where("ztitle LIKE %$%", BookUtils.scrub_zname(frag))
   end
 
   def self.filter_vtitle(query, frag : String, accent = false)
     scrub = BookUtils.scrub_vname(frag)
-    query = query.where("vtitle_ts LIKE %$% OR htitle_ts LIKE %$%", scrub, scrub)
+    query = query.where("vtslug LIKE %$% OR htslug LIKE %$%", scrub, scrub)
     accent ? query.where("vtitle LIKE %$% OR htitle LIKE %$%", frag, frag) : query
   end
 
@@ -166,7 +162,7 @@ class CV::Cvbook
   def self.filter_zseed(query, sname : String?)
     return query unless sname
     zseed = Zhseed.index(sname)
-    query.where("bgenre_ids @> ?", [zseed])
+    query.where("chseed_ids @> ?", [zseed])
   end
 
   def self.order_by(query, order : String? = "access")

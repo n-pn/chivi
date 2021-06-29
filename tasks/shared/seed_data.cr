@@ -29,6 +29,15 @@ class CV::SeedData
     @intros[group] ||= ValueMap.new("#{@s_dir}/intros/#{group}.tsv")
   end
 
+  def get_genres(snvid : String)
+    self.genres.get(snvid) || [] of String
+  end
+
+  def get_bcover(snvid : String)
+    # TODO: generate book cover without have to load cover file
+    @seed.bcover.fval(snvid) || ""
+  end
+
   def set_intro(snvid : String, intro : Array(String)) : Nil
     intro_map(snvid).set!(snvid, intro)
   end

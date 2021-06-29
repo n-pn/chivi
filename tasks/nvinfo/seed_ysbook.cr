@@ -66,39 +66,28 @@ class CV::SeedYsbook
       return unless bumped > ysbook.bumped # return unless source updated
     else
       ysbook.cvbook_id = cvbook.id
-      ysbook.author = author.zname
-      ysbook.ztitle = ztitle
-
-      ysbook.bcover = puller.cover_fixed # I doubt that cover_url change that much
       cvbook.set_bcover("yousuu-#{puller._id}.webp")
 
       ysbook.root_link = puller.root_link
       ysbook.root_name = puller.root_name
 
-      ysbook.genres = puller.genres
-      cvbook.set_genres(ysbook.genres)
-
-      ysbook.bintro = puller.intro.join("\n")
-      cvbook.set_zintro(ysbook.bintro)
+      cvbook.set_genres(puller.genres)
+      cvbook.set_zintro(puller.intro.join("\n"))
     end
 
-    ysbook.status = puller.status
-    cvbook.set_status(ysbook.status)
-
-    ysbook.shield = puller.shielded ? 1 : 0
-    cvbook.set_shield(ysbook.shield)
-
-    ysbook.bumped = bumped
-    ysbook.mftime = puller.updated_at.to_unix
-    cvbook.set_mftime(ysbook.mftime)
+    cvbook.set_status(puller.status)
+    cvbook.set_shield(puller.shielded ? 1 : 0)
 
     ysbook.voters = puller.voters
     ysbook.rating = puller.rating
     cvbook.set_scores(ysbook.voters, ysbook.rating)
 
-    ysbook.word_count = puller.word_count
-    ysbook.crit_count = puller.commentCount
+    ysbook.bumped = bumped
+    ysbook.mftime = puller.updated_at.to_unix
+    cvbook.set_mftime(ysbook.mftime)
+
     ysbook.list_count = puller.addListTotal
+    ysbook.crit_count = puller.commentCount
 
     ysbook.save!
     cvbook.save!

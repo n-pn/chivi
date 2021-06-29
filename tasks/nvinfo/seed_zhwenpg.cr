@@ -74,22 +74,11 @@ class CV::SeedZhwenpg
     zhbook.cvbook_id = cvbook.id
     cvbook.add_zhseed(zhbook.zseed)
 
-    zhbook.author = author.zname
-    zhbook.ztitle = ztitle
-
-    zhbook.genres = [parser.bgenre.empty? ? "其他" : parser.bgenre]
-    cvbook.set_genres(zhbook.genres)
-
-    zhbook.bcover = parser.bcover
+    cvbook.set_genres([parser.bgenre.empty? ? "其他" : parser.bgenre])
     cvbook.set_bcover("zhwenpg-#{parser.snvid}.webp")
+    cvbook.set_zintro(parser.bintro.join("\n"))
 
-    zhbook.bintro = parser.bintro.join("\n")
-    cvbook.set_zintro(zhbook.bintro)
-
-    zhbook.status = status
-    cvbook.set_status(zhbook.status)
-
-    cvbook.set_shield(1) if cvbook.bgenres.includes?("Phi sắc")
+    cvbook.set_status(status)
 
     zhbook.bumped = bumped
     zhbook.mftime = parser.mftime

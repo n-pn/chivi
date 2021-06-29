@@ -9,9 +9,7 @@ class CV::Author
 
   column zname : String
   column vname : String
-
-  column zname_ts : String # for text search
-  column vname_ts : String # for text search
+  column vslug : String # for text search
 
   column weight : Int32 = 0 # weight of author's top rated book
 
@@ -24,11 +22,11 @@ class CV::Author
   end
 
   def self.glob_zh(qs : String)
-    query.where("zname_ts LIKE %?%", BookUtils.scrub_zname(qs))
+    query.where("zname LIKE %?%", BookUtils.scrub_zname(qs))
   end
 
   def self.glob_vi(qs : String, accent = false)
-    res = query.where("vname_ts LIKE %?%", BookUtils.scrub_vname(qs))
+    res = query.where("vslug LIKE %?%", BookUtils.scrub_vname(qs))
     accent ? res.where("vname LIKE %?%", qs) : res
   end
 
@@ -38,15 +36,9 @@ class CV::Author
 
   def self.create!(zname : String, vname : String? = nil) : Author
     vname ||= BookUtils.get_vi_author(zname)
+    vslug = BookUtils.scrub_vname(vname, "-")
 
-    zname_ts = BookUtils.scrub_zname(zname)
-    vname_ts = BookUtils.scrub_vname(vname, "-")
-
-    author = new({
-      zname: zname, vname: vname,
-      zname_ts: zname_ts, vname_ts: vname_ts,
-    })
-
+    author = new({zname: zname, vname: vname, vslug: vslug})
     author.tap(&.save!)
   end
 end

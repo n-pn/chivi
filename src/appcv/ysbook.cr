@@ -8,28 +8,17 @@ class CV::Ysbook
   has_many yscrits : Yscrit
   has_many yslists : Yslist, through: "yscrits"
 
-  column author : String
-  column ztitle : String
-
-  column genres : Array(String) = [] of String
-  column bintro : String = ""
-  column bcover : String = ""
-
-  column status : Int32 = 0
-  column shield : Int32 = 0
-
   column voters : Int32 = 0
   column rating : Int32 = 0
 
   column bumped : Int64 = 0
   column mftime : Int64 = 0
 
-  column word_count : Int32 = 0
+  column root_link : String = "" # original publisher novel page
+  column root_name : String = "" # original publisher name, extract from link
+
   column list_count : Int32 = 0
   column crit_count : Int32 = 0
-
-  column root_link : String? # original publisher novel page
-  column root_name : String? # original publisher name, extract from link
 
   def matched?(cvbook_id : Int64) : Bool
     cvbook_id_column.value(0) == cvbook_id

@@ -216,17 +216,9 @@ class CV::SeedZhbook
       zhbook.cvbook = cvbook
       cvbook.add_zhseed(zhbook.zseed)
 
-      zhbook.author = author.zname
-      zhbook.ztitle = ztitle
-
-      zhbook.genres = @seed.genres.get(snvid) || [] of String
-      cvbook.set_genres(zhbook.genres)
-
-      zhbook.bcover = @seed.bcover.fval(snvid) || ""
+      cvbook.set_genres(@seed.get_genres(snvid))
       cvbook.set_bcover("#{@sname}-#{snvid}.webp")
-
-      zhbook.bintro = @seed.get_intro(snvid).join("\n")
-      cvbook.set_zintro(zhbook.bintro)
+      cvbook.set_zintro(@seed.get_intro(snvid).join("\n"))
 
       if cvbook.voters == 0
         voters, rating = get_fake_scores

@@ -7,13 +7,6 @@ CREATE TABLE zhbooks (
   zseed int not null default 0,
   znvid int not null default 0,
 
-  author text not null default '',
-  ztitle text not null default '',
-
-  genres text[] not null default '{}',
-  bcover text not null default '',
-  bintro text not null default '',
-
   status int not null default 0,
   shield int not null  default 0,
 

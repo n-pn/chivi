@@ -12,10 +12,8 @@ CREATE TABLE cvbooks (
   ztitle text not null,
   htitle text not null default '',
   vtitle text not null default '',
-
-  ztitle_ts text not null default '',
-  htitle_ts text not null default '',
-  vtitle_ts text not null default '',
+  htslug text not null default '',
+  vtslug text not null default '',
 
   bcover text not null default '',
   bintro text not null default '',
@@ -47,9 +45,9 @@ CREATE UNIQUE INDEX cvbook_unique_idx ON cvbooks (author_id, ztitle);
 CREATE INDEX cvbook_bgenre_idx ON cvbooks using GIN (bgenre_ids);
 CREATE INDEX cvbook_zhseed_idx ON cvbooks using GIN (zhseed_ids);
 
-CREATE INDEX cvbook_ztitle_idx ON cvbooks using GIN (ztitle_ts gin_trgm_ops);
-CREATE INDEX cvbook_htitle_idx ON cvbooks using GIN (htitle_ts gin_trgm_ops);
-CREATE INDEX cvbook_vtitle_idx ON cvbooks using GIN (vtitle_ts gin_trgm_ops);
+CREATE INDEX cvbook_ztitle_idx ON cvbooks using GIN (ztitle gin_trgm_ops);
+CREATE INDEX cvbook_htitle_idx ON cvbooks using GIN (htslug gin_trgm_ops);
+CREATE INDEX cvbook_vtitle_idx ON cvbooks using GIN (vtslug gin_trgm_ops);
 
 CREATE INDEX cvbook_bumped_idx ON cvbooks (bumped);
 CREATE INDEX cvbook_mftime_idx ON cvbooks (mftime);
