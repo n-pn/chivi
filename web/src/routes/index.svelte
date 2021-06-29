@@ -18,8 +18,6 @@
     if (res.ok) {
       const { books, total } = await res.json()
 
-      console.log({ books })
-
       return {
         props: { books, total, page, opts },
       }

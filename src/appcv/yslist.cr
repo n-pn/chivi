@@ -1,14 +1,13 @@
-class CV::Yslist < Granite::Base
-  connection pg
-  table yslists
+class CV::Yslist
+  include Clear::Model
 
-  column id : Int64, primary: true
-  timestamps
+  self.table = "yslists"
+  primary_key
 
-  belongs_to :ysuser
-  has_many :yscrit
-  has_many :ysbook, through: :yscrit
-  has_many :cvbook, through: :yscrit
+  belongs_to ysuser : Ysuser
+  has_many yscrits : Yscrit
+  has_many ysbooks : Ysbook, through: "yscrits"
+  has_many cvbooks : Cvbook, through: "yscrits"
 
   column zname : String # original list name
   column vname : String # translated name

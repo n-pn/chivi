@@ -1,13 +1,12 @@
-class CV::Ysbook < Granite::Base
-  connection pg
-  table ysbooks
+class CV::Ysbook
+  include Clear::Model
 
-  column id : Int64, primary: true
-  timestamps
+  self.table = "ysbooks"
+  primary_key
 
-  belongs_to :cvbook
-  has_many :yscrit
-  has_many :yslist, through: :yscrit
+  belongs_to cvbook : Cvbook
+  has_many yscrits : Yscrit
+  has_many yslists : Yslist, through: "yscrits"
 
   column author : String
   column ztitle : String
@@ -37,6 +36,6 @@ class CV::Ysbook < Granite::Base
   end
 
   def self.get!(id : Int64) : Ysbook
-    find(id) || new(id: id)
+    find({id: id}) || new({id: id})
   end
 end

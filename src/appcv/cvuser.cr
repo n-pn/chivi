@@ -1,15 +1,14 @@
 require "crypto/bcrypt/password"
 
-class CV::Cvuser < Granite::Base
-  connection pg
-  table cvusers
+class CV::Cvuser
+  include Clear::Model
 
-  column id : Int64, primary: true
-  timestamps
+  self.table = "cvusers"
+  primary_key
 
-  has_many :ubmark
-  has_many :ubview
-  has_many :cvbook, through: :ubmark
+  has_many ubmarks : Ubmark
+  has_many ubviews : Ubview
+  has_many cvbooks : Cvbook, through: "ubmarks"
 
   column uname : String
   column email : String
@@ -35,13 +34,13 @@ class CV::Cvuser < Granite::Base
   # TODO: mapping miscellaneous preferences
   # column prefs : Prefs
 
-  validate_not_blank :email
-  validate_not_blank :uname
-  validate_uniqueness :email
-  validate_uniqueness :uname
+  # validate_not_blank :email
+  # validate_not_blank :uname
+  # validate_uniqueness :email
+  # validate_uniqueness :uname
 
-  validate_min_length :uname, 5
-  validate_min_length :upass, 8
+  # validate_min_length :uname, 5
+  # validate_min_length :upass, 8
 
   def upass=(upass : String)
     self.cpass = Crypto::Bcrypt::Password.create(upass, cost: 10).to_s

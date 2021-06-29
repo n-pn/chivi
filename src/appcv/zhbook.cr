@@ -1,13 +1,12 @@
 require "../cutil/core_utils"
 
-class CV::Zhbook < Granite::Base
-  connection pg
-  table zhbooks
+class CV::Zhbook
+  include Clear::Model
 
-  column id : Int64, primary: true
-  timestamps
+  self.table = "zhbooks"
+  primary_key
 
-  belongs_to :cvbook
+  belongs_to cvbook : Cvbook
 
   column zseed : Int32 # seed name
   column znvid : Int32 # seed book id
@@ -43,7 +42,7 @@ class CV::Zhbook < Granite::Base
   end
 
   def self.upsert!(zseed : Int32, znvid : Int32)
-    find_by(zseed: zseed, znvid: znvid) || new(zseed: zseed, znvid: znvid)
+    find({zseed: zseed, znvid: znvid}) || new({zseed: zseed, znvid: znvid})
   end
 
   def self.upsert!(sname : String, snvid : String)

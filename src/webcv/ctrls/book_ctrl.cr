@@ -4,14 +4,14 @@ class CV::BookCtrl < CV::BaseCtrl
   def index
     take = params.fetch_int("take", min: 8, max: 25)
     skip = params.fetch_int("skip", min: 0)
-    query = Cvbook.limit(take).offset(skip)
+    query = Cvbook.query.limit(take).offset(skip)
 
-    query = Cvbook.filter_btitle(query, params["btitle"]?)
-    query = Cvbook.filter_author(query, params["author"]?)
-    query = Cvbook.filter_genre(query, params["genre"]?)
-    query = Cvbook.filter_zseed(query, params["sname"]?)
+    Cvbook.filter_btitle(query, params["btitle"]?)
+    Cvbook.filter_author(query, params["author"]?)
+    Cvbook.filter_genre(query, params["genre"]?)
+    Cvbook.filter_zseed(query, params["sname"]?)
 
-    query = Cvbook.order_by(query, params["order"]?)
+    Cvbook.order_by(query, params["order"]?)
 
     puts "Total books: #{Cvbook.total}"
 
@@ -22,7 +22,7 @@ class CV::BookCtrl < CV::BaseCtrl
         jb.object do
           jb.field "books" do
             jb.array do
-              query.join(:author).each do |book|
+              query.with_author.each do |book|
                 jb.object do
                   jb.field "bhash", book.bhash
                   jb.field "bslug", book.bslug

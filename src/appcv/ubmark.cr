@@ -1,12 +1,11 @@
-class CV::Ubmark < Granite::Base
-  connection pg
-  table ubmarks
+class CV::Ubmark
+  include Clear::Model
 
-  column id : Int64, primary: true
-  timestamps
+  self.table = "ubmarks"
+  primary_key
 
-  belongs_to :cvbook
-  belongs_to :cvuser
+  belongs_to cvbook : Cvbook
+  belongs_to cvuser : Cvuser
 
   # bookmark types: reading, finished, onhold, dropped, pending
   column bmark : Int32 = 0

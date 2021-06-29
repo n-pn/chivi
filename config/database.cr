@@ -1,3 +1,4 @@
-require "granite/adapter/pg"
+require "clear"
 
-Granite::Connections << Granite::Adapter::Pg.new(name: "pg", url: ENV["DATABASE_URL"]? || Amber.settings.database_url)
+database_url = ENV["DATABASE_URL"]? || Amber.settings.database_url
+Clear::SQL.init(database_url)

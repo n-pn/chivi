@@ -57,17 +57,13 @@ dependencies:
     #version: 1.0.0rc2
     branch: master
 
-  granite:
-    github: amberframework/granite
-    version: ~> 0.23.0
-
   quartz_mailer:
     github: amberframework/quartz-mailer
     version: ~> 0.8.0
 
-  pg:
-    github: will/crystal-pg
-    version: ~> 0.23.2
+  clear:
+    github: np-nam/clear
+    branch: master
 
   myhtml:
     github: kostya/myhtml
@@ -79,6 +75,7 @@ development_dependencies:
   garnet_spec:
     github: amberframework/garnet-spec
     version: 0.4.1
+
   ameba:
     github: crystal-ameba/ameba
     version: ~> 0.13.4

@@ -17,8 +17,8 @@ class CV::SeedYsbook
     end
 
     puts "- Input: #{input.size.colorize.cyan} entries, \
-          authors: #{Author.count.colorize.cyan}, \
-          cvbooks: #{Cvbook.count.colorize.cyan}"
+          authors: #{Author.query.count.colorize.cyan}, \
+          cvbooks: #{Cvbook.query.count.colorize.cyan}"
 
     input = input.sort_by(&.[1].to_i)
 
@@ -32,8 +32,8 @@ class CV::SeedYsbook
       if idx % 100 == 0
         @index.save!(clean: false)
         puts "- [ysbook] <#{idx.colorize.cyan}/#{input.size}>, \
-              authors: #{Author.count.colorize.cyan}, \
-              cvbooks: #{Cvbook.count.colorize.cyan}"
+              authors: #{Author.query.count.colorize.cyan}, \
+              cvbooks: #{Cvbook.query.count.colorize.cyan}"
       end
     rescue err
       @index.set!(snvid.not_nil!, [bumped.not_nil!.to_s, "-", "-"])
@@ -45,8 +45,8 @@ class CV::SeedYsbook
     end
 
     @index.save!(clean: true)
-    puts "- authors: #{Author.count.colorize.cyan}, \
-            cvbooks: #{Cvbook.count.colorize.cyan}"
+    puts "- authors: #{Author.query.count.colorize.cyan}, \
+            cvbooks: #{Cvbook.query.count.colorize.cyan}"
   end
 
   def save_book(puller : YsbookOg, bumped : Int64, dry = true) : Nil

@@ -1,12 +1,11 @@
-class CV::Ubview < Granite::Base
-  connection pg
-  table ubviews
+class CV::Ubview
+  include Clear::Model
 
-  belongs_to :cv
-  belongs_to :cvuser
+  self.table = "ubviews"
+  primary_key
 
-  column id : Int64, primary: true
-  timestamps
+  belongs_to cvbook : Cvbook
+  belongs_to cvuser : Cvuser
 
   column zseed : Int32 = 0
   column znvid : Int32 = 0

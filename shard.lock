@@ -1,5 +1,9 @@
 version: 2.0
 shards:
+  admiral:
+    git: https://github.com/jwaldrip/admiral.cr.git
+    version: 1.11.4
+
   amber:
     git: https://github.com/amberframework/amber.git
     version: 1.0.0rc2+git.commit.fb0cbcc346a102423c482452ad2a37f17e49228d
@@ -19,6 +23,10 @@ shards:
   callback:
     git: https://github.com/amberframework/callback.git
     version: 0.9.1
+
+  clear:
+    git: https://github.com/np-nam/clear.git
+    version: 0.9+git.commit.7346fe46b17e619a2b11b9a8ce1fe35da67949c3
 
   cli:
     git: https://github.com/amberframework/cli.git
@@ -48,9 +56,9 @@ shards:
     git: https://github.com/amberframework/garnet-spec.git
     version: 0.4.1
 
-  granite:
-    git: https://github.com/amberframework/granite.git
-    version: 0.23.0
+  generate:
+    git: https://github.com/anykeyh/generate.cr.git
+    version: 0.1.0+git.commit.f5dafc934a70e0ee2f246dddf3df44686f844da2
 
   icu:
     git: https://github.com/olbat/icu.cr.git

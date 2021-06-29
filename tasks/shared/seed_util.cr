@@ -10,7 +10,7 @@ module CV::SeedUtil
   class_getter status_map : ValueMap { load_map("status_map", 2) }
 
   class_getter authors_map : Hash(String, Author) do
-    Author.all.to_h { |x| {x.zname, x} }
+    Author.query.to_a.to_h { |x| {x.zname, x} }
   end
 
   def save_maps!(clean = false)

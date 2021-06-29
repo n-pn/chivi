@@ -180,21 +180,21 @@ class CV::SeedZhbook
     input = @seed._index.data.to_a
 
     puts "- Input: #{input.size.colorize.cyan} entries, \
-            authors: #{Author.count.colorize.cyan}, \
-            cvbooks: #{Cvbook.count.colorize.cyan}"
+            authors: #{Author.query.count.colorize.cyan}, \
+            cvbooks: #{Cvbook.query.count.colorize.cyan}"
 
     input.sort_by(&.[0].to_i).each_with_index(1) do |(snvid, values), idx|
       save_book(snvid, values)
 
       if idx % 100 == 0
         puts "- [#{@sname}] <#{idx.colorize.cyan}/#{input.size}>, \
-                authors: #{Author.count.colorize.cyan}, \
-                cvbooks: #{Cvbook.count.colorize.cyan}"
+                authors: #{Author.query.count.colorize.cyan}, \
+                cvbooks: #{Cvbook.query.count.colorize.cyan}"
       end
     end
 
-    puts "- authors: #{Author.count.colorize.cyan}, \
-            cvbooks: #{Cvbook.count.colorize.cyan}"
+    puts "- authors: #{Author.query.count.colorize.cyan}, \
+            cvbooks: #{Cvbook.query.count.colorize.cyan}"
   end
 
   def save_book(snvid : String, values : Array(String), dry = true)

@@ -1,16 +1,16 @@
-class CV::Cvbook < Granite::Base
-  connection pg
-  table cvbooks
+class CV::Cvbook
+  include Clear::Model
 
-  column id : Int64, primary: true
-  timestamps
+  self.table = "cvbooks"
+  primary_key
 
-  has_many :ysbook
-  has_many :zhbook
-  has_many :yscrit
-  has_many :yslist, through: :yscrit
+  has_many ysbooks : Ysbook
+  has_many zhbooks : Zhbook
+  has_many yscrits : Yscrit
+  has_many yslists : Yslist, through: "yscrits"
 
-  belongs_to :author
+  belongs_to author : Author
+
   column bgenre_ids : Array(Int32) = [0]
   column zhseed_ids : Array(Int32) = [0]
 
@@ -105,10 +105,10 @@ class CV::Cvbook < Granite::Base
     update!(bumped: time.to_unix)
   end
 
-  class_getter total : Int32 { count }
+  class_getter total : Int64 { query.count }
 
   def self.get(author : Author, ztitle : String)
-    find_by(author_id: author.id, ztitle: ztitle)
+    find({author_id: author.id, ztitle: ztitle})
   end
 
   def self.upsert!(author : Author, ztitle : String,
@@ -124,11 +124,11 @@ class CV::Cvbook < Granite::Base
       bhash = CoreUtils.digest32("#{ztitle}--#{author.zname}")
       bslug = htslug.split("-").first(7).push(bhash[0..3]).join("-")
 
-      cvbook = new(
+      cvbook = new({
         author_id: author.id, bhash: bhash, bslug: bslug,
         ztitle: ztitle, htitle: htitle, vtitle: vtitle,
         ztitle_ts: ztslug, htitle_ts: htslug, vtitle_ts: vtslug,
-      )
+      })
 
       cvbook.tap(&.save!)
     end
@@ -145,8 +145,8 @@ class CV::Cvbook < Granite::Base
 
   def self.filter_vtitle(query, frag : String, accent = false)
     scrub = BookUtils.scrub_vname(frag)
-    query = query.where("vtitle_ts LIKE %$%", scrub).or("htitle_ts LIKE %$%", scrub)
-    accent ? query.where("vtitle LIKE %$%", frag).or("htitle LIKE %$%", frag) : query
+    query = query.where("vtitle_ts LIKE %$% OR htitle_ts LIKE %$%", scrub, scrub)
+    accent ? query.where("vtitle LIKE %$% OR htitle LIKE %$%", frag, frag) : query
   end
 
   def self.filter_author(query, author : String?, accent = false)
@@ -154,28 +154,28 @@ class CV::Cvbook < Granite::Base
     # author_query = author =~ /\p{Han}/ ? Author.glob_zh(author) : Author.glob_vi(author, accent: accent)
 
     author_ids = Author.glob(author).map(&.id.not_nil!)
-    query.where(:author_id, :in, author_ids)
+    query.where { cvbooks.author_id.in?(author_ids) }
   end
 
   def self.filter_genre(query, genre : String?)
     return query unless genre
     genre_id = Bgenre.map_id(genre)
-    query.where("bgenre_ids @> $", [genre_id])
+    query.where("bgenre_ids @> ?", [genre_id])
   end
 
   def self.filter_zseed(query, sname : String?)
     return query unless sname
     zseed = Zhseed.index(sname)
-    query.where("bgenre_ids @> $", [zseed])
+    query.where("bgenre_ids @> ?", [zseed])
   end
 
   def self.order_by(query, order : String? = "access")
     case order
-    when "weight" then query.order(weight: :desc)
-    when "rating" then query.order(rating: :desc)
-    when "voters" then query.order(voters: :desc)
-    when "update" then query.order(mftime: :desc)
-    else               query.order(bumped: :desc)
+    when "weight" then query.order_by(weight: :desc)
+    when "rating" then query.order_by(rating: :desc)
+    when "voters" then query.order_by(voters: :desc)
+    when "update" then query.order_by(mftime: :desc)
+    else               query.order_by(bumped: :desc)
     end
   end
 end

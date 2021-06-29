@@ -1,15 +1,14 @@
-class CV::Yscrit < Granite::Base
-  connection pg
-  table yscrits
+class CV::Yscrit
+  include Clear::Model
 
-  column id : Int64, primary: true
-  timestamps
+  self.table = "yscrits"
+  primary_key
 
-  belongs_to :cvbook
-  belongs_to :ysbook
+  belongs_to cvbook : Cvbook
+  belongs_to ysbook : Ysbook
 
-  belongs_to :ysuser
-  belongs_to :yslist, foreign_key: id : Int64?
+  belongs_to ysuser : Ysuser
+  belongs_to yslist : Yslist
 
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
 
