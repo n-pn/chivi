@@ -129,5 +129,5 @@ class CV::SeedZhwenpg
 end
 
 seeder = CV::SeedZhwenpg.new
-1.upto(3) { |page| seeder.seed!(page, status: 1) }
-1.upto(11) { |page| seeder.seed!(page, status: 0) }
+3.downto(1) { |page| seeder.seed!(page, status: 1) }
+11.downto(1) { |page| seeder.seed!(page, status: 0) }
