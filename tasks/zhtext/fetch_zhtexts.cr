@@ -22,8 +22,8 @@ class CV::FetchBook
   def find_missing_schids!
     index_map = ValueMap.new("#{@dir}/_id.tsv", mode: 1)
 
-    index_map.data.each do |chidx, value|
-      @schids[value.first] = chidx.to_i - 1
+    index_map.data.keys.each_with_index do |snvid, index|
+      @schids[snvid] = index
     end
 
     Dir.glob("#{@dir}/*.zip").each do |zip_file|

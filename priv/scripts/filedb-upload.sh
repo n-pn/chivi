@@ -20,11 +20,13 @@ echo $ssh
 # rsync -azi --no-p "_db/vi_users/" "$ssh/_db/vi_users/"
 
 ## upload parsed seed data
-# rsync -azi --no-p "_db/_seeds/" "$ssh/_db/_seeds/"
+rsync -azi --no-p "_db/zhbook/" "$ssh/_db/zhbook/"
+rsync -azi --no-p --include='*.tsv' "_db/chseed/" "$ssh/_db/chseed/"
 
 ## upload book data
-rsync -azi --no-p "_db/nv_infos/chseeds" "$ssh/_db/nv_infos/"
-rsync -azi --no-p "_db/nv_infos/update.tsv" "$ssh/_db/nv_infos/"
-rsync -azi --no-p "_db/nv_infos/access.tsv" "$ssh/_db/nv_infos/"
+# rsync -azi --no-p "_db/nv_infos/chseeds" "$ssh/_db/nv_infos/"
+# rsync -azi --no-p "_db/nv_infos/update.tsv" "$ssh/_db/nv_infos/"
+# rsync -azi --no-p "_db/nv_infos/access.tsv" "$ssh/_db/nv_infos/"
+# rsync -azi --no-p "_db/nv_infos/access.tsv" "$ssh/_db/nv_infos/"
 
 #rsync -azi --no-p --delete "_db/nv_infos/covers" "$ssh/_db/nv_infos/"

@@ -3,6 +3,7 @@ require "file_utils"
 
 require "../../libcv/cvmtl"
 require "../../seeds/rm_info"
+require "../../seeds/rm_util"
 require "../../tsvfs/value_map"
 require "../../cutil/ram_cache"
 

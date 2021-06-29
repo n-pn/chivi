@@ -18,7 +18,7 @@ module CV::SeedUtil
   end
 
   def load_map(label : String, mode = 1)
-    ValueMap.new("_db/zhseed/#{label}.tsv", mode: mode)
+    ValueMap.new("_db/zhbook/#{label}.tsv", mode: mode)
   end
 
   def get_author(author : String, ztitle = "", force = false) : Author?
