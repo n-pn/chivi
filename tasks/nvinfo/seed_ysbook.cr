@@ -2,7 +2,7 @@ require "file_utils"
 require "option_parser"
 
 require "../shared/seed_util.cr"
-require "../shared/ysbook_og.cr"
+require "../shared/raw_ysbook.cr"
 
 class CV::SeedYsbook
   DIR = "_db/yousuu/.cache/infos"
@@ -24,7 +24,7 @@ class CV::SeedYsbook
 
     input.each_with_index(1) do |(yfile, snvid, bumped), idx|
       next unless redo || @index.ival_64(snvid) < bumped
-      puller = YsbookOg.load(yfile)
+      puller = RawYsbook.load(yfile)
 
       save_book(puller, bumped)
       @index.set!(snvid, [bumped.to_s, puller.title, puller.author])
@@ -38,7 +38,7 @@ class CV::SeedYsbook
     rescue err
       @index.set!(snvid.not_nil!, [bumped.not_nil!.to_s, "-", "-"])
 
-      unless err.is_a?(YsbookOg::InvalidFile)
+      unless err.is_a?(RawYsbook::InvalidFile)
         puts "- error loading [#{snvid}]:"
         puts err.inspect_with_backtrace.colorize.red
       end
@@ -49,7 +49,7 @@ class CV::SeedYsbook
             cvbooks: #{Cvbook.query.count.colorize.cyan}"
   end
 
-  def save_book(puller : YsbookOg, bumped : Int64, dry = true) : Nil
+  def save_book(puller : RawYsbook, bumped : Int64, dry = true) : Nil
     btitle, force = puller.title, puller.decent?
 
     author = SeedUtil.get_author(puller.author, btitle, force: force)

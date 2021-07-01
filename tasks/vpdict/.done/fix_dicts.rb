@@ -34,6 +34,4 @@ def fix_files(files)
   end
 end
 
-fix_files Dir.glob("_db/dictdb/_inits/**/*.txt")
-fix_files Dir.glob("_db/dictdb/legacy/**/*.dic")
-fix_files Dir.glob("_db/dictdb/legacy/**/*.log")
+fix_files Dir.glob("_db/vpinit/qtrans/outerqt/**/*.txt")
