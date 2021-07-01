@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::DictCtrl < CV::BaseCtrl
+class CV::VpDictCtrl < CV::BaseCtrl
   def index
     res = [] of Tuple(String, String, Int32) # dict name, dict type, entries count
 

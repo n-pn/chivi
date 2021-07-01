@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::MarkCtrl < CV::BaseCtrl
+class CV::FsMarkCtrl < CV::BaseCtrl
   def show
     bname = params["bname"]
     blist = ViMark.book_map(cv_uname).fval(bname) || "default"

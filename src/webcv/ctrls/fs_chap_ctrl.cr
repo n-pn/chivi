@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::ChapCtrl < CV::BaseCtrl
+class CV::FsChapCtrl < CV::BaseCtrl
   def index
     bhash = params["bhash"]
     sname = params["sname"]

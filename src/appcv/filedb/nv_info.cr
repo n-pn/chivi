@@ -151,6 +151,45 @@ class CV::NvInfo
     "duokan8", "shubaow", "jx_la",
   }
 
+  def to_json(json : JSON::Builder, full : Bool = true)
+    json.object do
+      json.field "bhash", bhash
+      json.field "bslug", bslug
+
+      json.field "btitle_zh", btitle[0]
+      json.field "btitle_hv", btitle[1]
+      json.field "btitle_vi", btitle[2]
+
+      json.field "author_zh", author[0]
+      json.field "author_vi", author[1]
+
+      json.field "genres", genres
+      json.field "bcover", bcover
+
+      json.field "voters", voters
+      json.field "rating", rating
+
+      if full
+        json.field "bintro", bintro
+
+        json.field "update", update
+        json.field "status", status
+
+        json.field "yousuu", yousuu
+        json.field "origin", origin
+
+        json.field "snames", snames
+        json.field "chseed" do
+          json.object do
+            snames.each do |sname|
+              json.field sname, get_chseed(sname)
+            end
+          end
+        end
+      end
+    end
+  end
+
   def set_chseed(sname : String, snvid : String, mtime = 0_i64, count = 0) : Nil
     # dirty hack to fix update_time for hetushu or zhwenpg...
     mtime = fix_seed_mtime(sname, mtime, count)

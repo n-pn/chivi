@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::ToolCtrl < CV::BaseCtrl
+class CV::VpToolCtrl < CV::BaseCtrl
   def convert
     dname = params["dname"]
     cvter = Cvmtl.generic(dname)

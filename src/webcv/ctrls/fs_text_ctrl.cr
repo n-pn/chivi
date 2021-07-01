@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::TextCtrl < CV::BaseCtrl
+class CV::FsTextCtrl < CV::BaseCtrl
   def show
     bname = params["bname"]
     sname = params["sname"]

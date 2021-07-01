@@ -16,35 +16,35 @@ Amber::Server.configure do
   end
 
   routes :api, "/api" do
-    get "/_self", CV::UserCtrl, :_self
-    post "/login", CV::UserCtrl, :login
-    get "/logout", CV::UserCtrl, :logout
-    post "/signup", CV::UserCtrl, :signup
+    get "/_self", CV::FsUserCtrl, :_self
+    post "/login", CV::FsUserCtrl, :login
+    get "/logout", CV::FsUserCtrl, :logout
+    post "/signup", CV::FsUserCtrl, :signup
 
-    get "/books", CV::BookCtrl, :index
-    get "/books/:bslug", CV::BookCtrl, :show
-    get "/users/:uname/books", CV::BookCtrl, :user_books
+    get "/books", CV::FsBookCtrl, :index
+    get "/books/:bslug", CV::FsBookCtrl, :show
+    get "/users/:uname/books", CV::FsBookCtrl, :user_books
 
-    get "/chaps/:bhash/:sname/:snvid", CV::ChapCtrl, :index
-    get "/chaps/:bhash/:sname/:snvid/:page", CV::ChapCtrl, :paged
+    get "/chaps/:bhash/:sname/:snvid", CV::FsChapCtrl, :index
+    get "/chaps/:bhash/:sname/:snvid/:page", CV::FsChapCtrl, :paged
 
-    get "/texts/:bname/:sname/:snvid/:chidx", CV::TextCtrl, :show
-    get "/texts/:bname/:sname/:snvid/:chidx/:schid", CV::TextCtrl, :convert
-    put "/texts/:bname/:sname/:snvid", CV::TextCtrl, :upsert
+    get "/texts/:bname/:sname/:snvid/:chidx", CV::FsTextCtrl, :show
+    get "/texts/:bname/:sname/:snvid/:chidx/:schid", CV::FsTextCtrl, :convert
+    put "/texts/:bname/:sname/:snvid", CV::FsTextCtrl, :upsert
 
-    get "/mark-books/:bname", CV::MarkCtrl, :show
-    put "/mark-books/:bname", CV::MarkCtrl, :update
-    get "/mark-chaps", CV::MarkCtrl, :history
+    get "/mark-books/:bname", CV::FsMarkCtrl, :show
+    put "/mark-books/:bname", CV::FsMarkCtrl, :update
+    get "/mark-chaps", CV::FsMarkCtrl, :history
 
-    get "/dicts", CV::DictCtrl, :index
-    get "/dicts/:dname", CV::DictCtrl, :show
-    get "/dicts/:dname/lookup", CV::DictCtrl, :lookup
-    put "/dicts/:dname/lookup", CV::DictCtrl, :lookup
-    get "/dicts/:dname/search", CV::DictCtrl, :search
-    put "/dicts/:dname/search", CV::DictCtrl, :search
-    put "/dicts/:dname/upsert", CV::DictCtrl, :upsert
+    get "/dicts", CV::VpDictCtrl, :index
+    get "/dicts/:dname", CV::VpDictCtrl, :show
+    get "/dicts/:dname/lookup", CV::VpDictCtrl, :lookup
+    put "/dicts/:dname/lookup", CV::VpDictCtrl, :lookup
+    get "/dicts/:dname/search", CV::VpDictCtrl, :search
+    put "/dicts/:dname/search", CV::VpDictCtrl, :search
+    put "/dicts/:dname/upsert", CV::VpDictCtrl, :upsert
 
-    post "/tools/convert/:dname", CV::ToolCtrl, :convert
+    post "/tools/convert/:dname", CV::VpToolCtrl, :convert
   end
 
   routes :static do

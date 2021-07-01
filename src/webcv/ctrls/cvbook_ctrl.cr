@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::BookCtrl < CV::BaseCtrl
+class CV::CvbookCtrl < CV::BaseCtrl
   def index
     take = params.fetch_int("take", min: 8, max: 25)
     skip = params.fetch_int("skip", min: 0)
