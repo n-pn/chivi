@@ -1,9 +1,21 @@
 export async function handle({ request, resolve }) {
-  if (request.path.startsWith('/api/')) return await serverFetch(request)
+  if (request.path.startsWith('/api/')) return await mutateFetch(request)
   return resolve(request)
 }
 
-async function serverFetch({ path, query, method, headers, rawBody: body }) {
+/** @type {import('@sveltejs/kit').ServerFetch} */
+export async function serverFetch(request) {
+  // if (request.path.startsWith('/api/')) {
+  //   const url = `http://localhost:5010${request.url}`
+  //   console.log({ url })
+  //   request = new Request(url, request)
+  // }
+
+  // return await fetch(request)
+  return fetch(request)
+}
+
+async function mutateFetch({ path, query, method, headers, rawBody: body }) {
   const url = `http://localhost:5010${path}?${query.toString()}`
   const res = await fetch(url, { method, headers, body })
 
