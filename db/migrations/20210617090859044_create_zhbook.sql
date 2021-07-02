@@ -22,7 +22,6 @@ CREATE TABLE zhbooks (
 
 CREATE INDEX zhbook_cvbook_idx ON zhbooks (cvbook_id);
 CREATE INDEX zhbook_unique_idx ON zhbooks (zseed, znvid);
-CREATE INDEX zhbook_nvname_idx ON zhbooks (author, ztitle);
 CREATE INDEX zhbook_bumped_idx ON zhbooks (bumped);
 
 
