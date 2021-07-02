@@ -1,15 +1,11 @@
 require "colorize"
 require "file_utils"
 
-require "./vdict/*"
+require "./vp_dict/*"
 
-class CV::Vdict
-  DIR = "_db/vp_dicts/active"
-
-  ::FileUtils.mkdir_p("#{DIR}/common")
-  ::FileUtils.mkdir_p("#{DIR}/lookup")
-  ::FileUtils.mkdir_p("#{DIR}/system")
-  ::FileUtils.mkdir_p("#{DIR}/unique")
+class CV::VpDict
+  DIR = "_db/vpdict/main"
+  ::FileUtils.mkdir_p("#{DIR}/books")
 
   class_getter trungviet : self { load("trungviet") }
   class_getter cc_cedict : self { load("cc_cedict") }
@@ -19,12 +15,13 @@ class CV::Vdict
   class_getter binh_am : self { load("binh_am") }
   class_getter hanviet : self { load("hanviet") }
 
+  class_getter fixture : self { load("fixture") }
   class_getter regular : self { load("regular") }
-  class_getter various : self { load("various") }
+  class_getter combine : self { load("combine") }
   class_getter suggest : self { load("suggest") }
 
   class_getter udicts : Array(String) do
-    files = ::Dir.glob("#{DIR}/unique/*.tsv")
+    files = ::Dir.glob("#{DIR}/books/*.tsv")
     files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
 
     files.map { |f| File.basename(f, ".tsv") }
@@ -36,13 +33,13 @@ class CV::Vdict
     CACHE[dname] ||=
       case dname
       when "trungviet", "cc_cedict", "trich_dan"
-        new(path("lookup/#{dname}"), dtype: 1, p_min: 4, reset: reset)
+        new(path(dname), dtype: 1, p_min: 4, reset: reset)
       when "tradsim", "binh_am", "hanviet"
-        new(path("system/#{dname}"), dtype: 2, p_min: 3, reset: reset)
-      when "regular", "suggest", "various"
-        new(path("common/#{dname}"), dtype: 2, p_min: 2, reset: reset)
+        new(path(dname), dtype: 2, p_min: 3, reset: reset)
+      when "fixture", "regular", "combine", "suggest"
+        new(path(dname), dtype: 2, p_min: 2, reset: reset)
       else
-        new(path("unique/#{dname}"), dtype: 3, p_min: 1, reset: reset)
+        new(path("books/#{dname}"), dtype: 3, p_min: 1, reset: reset)
       end
   end
 
@@ -55,8 +52,8 @@ class CV::Vdict
   getter file : String
   getter ftab : String
 
-  getter trie = Vtrie.new
-  getter logs = [] of Vterm
+  getter trie = VpTrie.new
+  getter logs = [] of VpTerm
 
   getter size = 0
 
@@ -76,7 +73,7 @@ class CV::Vdict
         next if line.strip.blank?
 
         cols = line.split('\t')
-        set(Vterm.new(cols, @dtype, @p_min))
+        set(VpTerm.new(cols, @dtype, @p_min))
 
         count += 1
       rescue err
@@ -96,13 +93,13 @@ class CV::Vdict
   end
 
   def gen_term(key : String, vals = [""], prio = 1, attr = 0)
-    Vterm.new(
+    VpTerm.new(
       key, vals, prio: prio, attr: attr,
       mtime: 0, dtype: @dtype, power: @p_min)
   end
 
   # return true if new term prevails
-  def set(new_term : Vterm) : Bool
+  def set(new_term : VpTerm) : Bool
     @logs << new_term if new_term.mtime > 0
 
     # find existing node or force creating new one
@@ -125,7 +122,7 @@ class CV::Vdict
   end
 
   # save to disk, return old entry if exists
-  def set!(new_term : Vterm) : Bool
+  def set!(new_term : VpTerm) : Bool
     line = "\n#{new_term}"
 
     File.write(@file, line, mode: "a")
@@ -134,11 +131,11 @@ class CV::Vdict
     set(new_term)
   end
 
-  def find(key : String) : Vterm?
+  def find(key : String) : VpTerm?
     @trie.find(key).try(&.term)
   end
 
-  def find!(key : String) : Vterm
+  def find!(key : String) : VpTerm
     find(key) || gen_term(key, [""])
   end
 

@@ -196,12 +196,11 @@ enum CV::PosTag
     # dg adverbial morpheme
     # dl adverbial formulaic expression
     when "dl", "dg" then Adverb
-
-    # PFR
+    # PRF 1998
+    when "ul" then Ule
     when "uj" then Ude1
     when "uv" then Ude2
     when "ud" then Ude3
-    when "ul" then Ule
     when "uz" then Uzhe
     else None
     end

@@ -1,4 +1,4 @@
-export function split_cvdata(cvdata) {
+export function split_input(cvdata) {
   const lines = cvdata.split('\n').map((x) => x.trim())
   return lines.filter((x) => x).map((line) => split_cvline(line))
 }
@@ -92,4 +92,18 @@ function escape_html(str) {
 
 function render_node(key, val, dic, idx, pos) {
   return `<x-v data-d=${dic} data-k="${key}" data-i=${idx} data-p=${pos}>${val}</x-v>`
+}
+
+export function ad_indexes(len, min = 20) {
+  let res = []
+
+  for (let idx = 0; idx < len; idx += random_int(min - 5, min + 5)) {
+    res.push(idx)
+  }
+
+  return res
+}
+
+function random_int(min, max) {
+  return Math.random() * (max - min) + min
 }

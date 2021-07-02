@@ -51,8 +51,10 @@
 
 <script>
   import { onMount } from 'svelte'
+  import { session } from '$app/stores'
 
-  import { split_cvdata, render_text, render_html } from '$lib/cvdata'
+  import * as cvlib from '$lib/cvdata'
+  import AdItem from '$lib/blocks/AdItem.svelte'
 
   export let cvdata = ''
   export let changed = false
@@ -60,7 +62,8 @@
   export let dname = 'various'
   export let bname = 'Tổng hợp'
 
-  $: lines = split_cvdata(cvdata)
+  $: lines = cvlib.split_input(cvdata)
+  $: adidx = cvlib.ad_indexes(lines.length)
 
   let hover_line = -1
   let focus_line = -1
@@ -111,8 +114,8 @@
     const use_html = idx == hover || idx == focus
 
     const nodes = lines[idx]
-    if (use_html) return (htmls[idx] ||= render_html(nodes))
-    return (texts[idx] ||= render_text(nodes))
+    if (use_html) return (htmls[idx] ||= cvlib.render_html(nodes))
+    return (texts[idx] ||= cvlib.render_text(nodes))
   }
 </script>
 
@@ -124,6 +127,10 @@
       on:mouseenter={() => (hover_line = index)}>
       {@html render_line(index, hover_line, focus_line)}
     </div>
+
+    {#if $session.privi < 1 && adidx.includes(index)}
+      <AdItem type="article" />
+    {/if}
   {/each}
 </article>
 

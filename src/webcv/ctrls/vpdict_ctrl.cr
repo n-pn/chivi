@@ -25,9 +25,9 @@ class CV::VpDictCtrl < CV::BaseCtrl
     limit = params.fetch_int("limit", min: 50, max: 100)
     offset = params.fetch_int("offset")
 
-    res = [] of VpTerm
+    res = [] of Vterm
 
-    filter = VpTrie::Filter.init(params.to_unsafe_h)
+    filter = Vtrie::Filter.init(params.to_unsafe_h)
 
     vdict.each do |node|
       next unless filter.match?(node)
@@ -158,7 +158,7 @@ class CV::VpDictCtrl < CV::BaseCtrl
     prio = params.fetch_int("prio")
     attr = params.fetch_int("attr")
 
-    new_term = VpTerm.new(key, vals, prio, attr, uname: cv_dname, power: power, dtype: dict.dtype)
+    new_term = Vterm.new(key, vals, prio, attr, uname: cv_dname, power: power, dtype: dict.dtype)
     return halt!(501, "Không thay đổi!") unless dict.set!(new_term)
 
     # TODO: save context
