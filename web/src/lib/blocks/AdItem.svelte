@@ -41,8 +41,8 @@
     @include radius(6px);
     @include fgcolor(neutral, 7);
     @include bgcolor(red, 1, 0.7);
-
   }
+
   a {
     @include fgcolor(primary, 6);
     font-weight: 600;

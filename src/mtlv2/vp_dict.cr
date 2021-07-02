@@ -7,6 +7,9 @@ class CV::VpDict
   DIR = "_db/vpdict/main"
   ::FileUtils.mkdir_p("#{DIR}/books")
 
+  # group: local, chivi, cvdev etc.
+  class_getter vp_group : String = ENV["VP_GROUP"]? || "local"
+
   class_getter trungviet : self { load("trungviet") }
   class_getter cc_cedict : self { load("cc_cedict") }
   class_getter trich_dan : self { load("trich_dan") }
@@ -36,7 +39,9 @@ class CV::VpDict
         new(path(dname), dtype: 1, p_min: 4, reset: reset)
       when "tradsim", "binh_am", "hanviet"
         new(path(dname), dtype: 2, p_min: 3, reset: reset)
-      when "fixture", "regular", "combine", "suggest"
+      when "fixture", "suggest"
+        new(path(dname), dtype: 1, p_min: 3, reset: reset)
+      when "regular", "combine"
         new(path(dname), dtype: 2, p_min: 2, reset: reset)
       else
         new(path("books/#{dname}"), dtype: 3, p_min: 1, reset: reset)
@@ -50,7 +55,7 @@ class CV::VpDict
   #########################
 
   getter file : String
-  getter ftab : String
+  getter flog : String
 
   getter trie = VpTrie.new
   getter logs = [] of VpTerm
@@ -61,7 +66,7 @@ class CV::VpDict
   getter p_min : Int32 # minimal user power required
 
   def initialize(@file : String, @dtype = 0, @p_min = 1, reset = false)
-    @ftab = @file.sub(".tsv", ".tab")
+    @flog = @file.sub("main", "logs").sub(".tsv", ".#{@@vp_group}.tsv")
     load!(@file) unless reset || !File.exists?(@file)
   end
 
@@ -73,29 +78,29 @@ class CV::VpDict
         next if line.strip.blank?
 
         cols = line.split('\t')
-        set(VpTerm.new(cols, @dtype, @p_min))
+        term = VpTerm.new(cols, dtype: @dtype, privi: @p_min)
+        set(term)
 
         count += 1
       rescue err
-        puts "<vdict> [#{file}] error on `#{line}`: #{err}]".colorize.red
+        puts "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red
       end
 
       # remove duplicate entries
       @trie.each { |node| node.prune! }
     end
 
-    puts "- <vdict> [#{file}] loaded: #{count} lines, \
+    puts "- <vp_dict> [#{file}] loaded: #{count} lines, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
   end
 
-  def set(key : String, vals : Array(String), prio = 1, attr = 0)
-    set(gen_term(key, vals, prio, attr))
+  def new_term(key : String, val = [""], ext = "", privi = @p_min)
+    VpTerm.new(key, val, ext, mtime: 0, privi: privi, dtype: @dtype)
   end
 
-  def gen_term(key : String, vals = [""], prio = 1, attr = 0)
-    VpTerm.new(
-      key, vals, prio: prio, attr: attr,
-      mtime: 0, dtype: @dtype, power: @p_min)
+  def set(key : String, val : Array(String), ext = "")
+    term = new_term(key, val, ext)
+    set(term)
   end
 
   # return true if new term prevails
@@ -108,7 +113,7 @@ class CV::VpDict
     if old_term = node.term
       newer = new_term.beats?(old_term)
     else
-      newer = new_term.power >= @p_min
+      newer = new_term.privi >= @p_min
       @size += 1
     end
 
@@ -126,7 +131,7 @@ class CV::VpDict
     line = "\n#{new_term}"
 
     File.write(@file, line, mode: "a")
-    File.write(@ftab, line, mode: "a") if new_term.mtime > 0
+    File.write(@flog, line, mode: "a") if new_term.mtime > 0
 
     set(new_term)
   end
@@ -172,9 +177,9 @@ class CV::VpDict
       @logs.uniq! { |x| {x.mtime, x.uname} } if prune
 
       if @logs.empty?
-        File.delete(@ftab) if File.exists?(@ftab)
+        File.delete(@flog) if File.exists?(@flog)
       else
-        File.open(@ftab, "w") do |io|
+        File.open(@flog, "w") do |io|
           @logs.sort_by!(&.mtime).each { |term| io.puts(term) }
         end
       end

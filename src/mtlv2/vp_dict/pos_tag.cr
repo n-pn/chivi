@@ -1,5 +1,5 @@
 module CV
-  # source: https://gist.github.com/hankcs/d7dbe79dde3f85b423e4
+  # source: https://gist.github.com/luw2007/6016931
   # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
@@ -52,9 +52,9 @@ module CV
     :Descript => "z", # 状态词 - descriptive word - trạng thái
 
     :Pronoun => "r",  # 代词 - pronoun - đại từ
-    :Pronper => "rr", # 人称代词 - personal pronoun - đại từ nhân xưng
-    :Prondei => "rz", # 指示代词 - deictic pronoun - đại từ chỉ thị
-    :Pronint => "ry", # 疑问代词 - interrogative pronoun - đại từ nghi vấn
+    :Propers => "rr", # 人称代词 - personal pronoun - đại từ nhân xưng
+    :Prodeic => "rz", # 指示代词 - deictic pronoun - đại từ chỉ thị
+    :Prointr => "ry", # 疑问代词 - interrogative pronoun - đại từ nghi vấn
     # :Pronmorp => "rg" # 代词性语素 - pronominal morpheme
 
     :Number => "m",  # 数词 - numeral - số từ
@@ -155,7 +155,7 @@ enum CV::PosTag
     advb? || prep? || conj? || ptcl? || stat? || func?
   end
 
-  def to_str : String
+  def to_str : ::String
     {% begin %}
     case self
     {% for tag, name in POS_TAGS %}
@@ -166,42 +166,67 @@ enum CV::PosTag
     {% end %}
   end
 
-  def self.from_str(tag : String)
-    {% begin %}
+  def self.from_pfr(tag : ::String)
     case tag
-    {% for tag, name in POS_TAGS %}
-    when {{ name }} then {{ tag.id }}
-    {% end %}
-    # nr1 汉语姓氏
-		# nr2 汉语名字
-		# nrj 日语人名
-		# nrf 音译人名
-    when "nr1", "nr2", "nrj", "nrf" then Nper
-    # nsf 音译地名
-    when "nsf" then Nloc
-    # 	rzt 时间指示代词
-    # 	rzs 处所指示代词
-    # 	rzv 谓词性指示代词
-    when "rzt", "rzs", "rzv" then Prondei
-    # 	ryt 时间疑问代词
-    # 	rys 处所疑问代词
-    # 	ryv 谓词性疑问代词
-    when "ryt", "rys", "ryv" then Pronint
-    # Paddle convention
-    when "PER" then Nper
-    when "LOC" then Nloc
-    when "ORG" then Norg
-    when "TIME" then Time
-
-    # dg adverbial morpheme
-    # dl adverbial formulaic expression
-    when "dl", "dg" then Adverb
-    # PRF 1998
+    when "nnt", "nis", "nnd", "ntc", "nf", "nhd", "nit", "nhm", "nmc", "nba",
+         "gb", "gc", "gg", "gi", "gm", "gp"
+      Noun
+    when "nto", "ntu", "ntcb", "nth", "ntcf", "ntch", "nts"
+      Norg
+    when "nh" then Nper
+    when "nx" then Nother
+    when "bg" then Modifier
+    when "rg" then Propers
     when "ul" then Ule
     when "uj" then Ude1
     when "uv" then Ude2
     when "ud" then Ude3
     when "uz" then Uzhe
+    else           from_pku(tag)
+    end
+  end
+
+  def self.from_paddle(tag : ::String)
+    case tag
+    # Paddle convention
+    when "PER"  then Nper
+    when "LOC"  then Nloc
+    when "ORG"  then Norg
+    when "TIME" then Time
+    else             from_pku(tag)
+    end
+  end
+
+  def self.from_pku(tag : ::String)
+    # nr1 汉语姓氏
+    # nr2 汉语名字
+    # nrj 日语人名
+    # nrf 音译人名
+    # nsf 音译地名
+    # rzt 时间指示代词
+    # rzs 处所指示代词
+    # rzv 谓词性指示代词
+    # ryt 时间疑问代词
+    # rys 处所疑问代词
+    # ryv 谓词性疑问代词
+    # dg adverbial morpheme
+    # dl adverbial formulaic expression
+    case tag
+    when "nr1", "nr2", "nrj", "nrf" then Nper
+    when "nsf"                      then Nloc
+    when "rzt", "rzs", "rzv"        then Prodeic
+    when "ryt", "rys", "ryv"        then Prointr
+    when "dl", "dg"                 then Adverb
+    else                                 from_str(tag)
+    end
+  end
+
+  def self.from_str(tag : ::String)
+    {% begin %}
+    case tag
+    {% for tag, name in POS_TAGS %}
+    when {{ name }} then {{ tag.id }}
+    {% end %}
     else None
     end
     {% end %}

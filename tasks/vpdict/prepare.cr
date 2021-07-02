@@ -9,14 +9,14 @@ def read_counter(file : String)
   Counter.from_json(File.read(QtUtil.path(file)))
 end
 
-COUNT_WORDS = read_counter("_counts/count-words.json")
-COUNT_BOOKS = read_counter("_counts/count-books.json")
+COUNT_WORDS = read_counter(".count/count-words.json")
+COUNT_BOOKS = read_counter(".count/count-books.json")
 
 puts "\n[Load history]".colorize.cyan.bold
 
-CHECKED = ValueSet.load(".result/checked.tsv", false)
-EXISTED = ValueSet.load(".result/existed.tsv", false)
-LEXICON = ValueSet.load(".result/lexicon.tsv", true)
+CHECKED = ValueSet.load(".temps/checked.tsv", false)
+EXISTED = ValueSet.load(".temps/existed.tsv", false)
+LEXICON = ValueSet.load(".temps/lexicon.tsv", true)
 
 Dir.glob(QtUtil.path("localqt/logs/*.log")) do |file|
   puts "- load file: [#{file.colorize(:blue)}]"
@@ -29,19 +29,19 @@ Dir.glob(QtUtil.path("localqt/logs/*.log")) do |file|
   end
 end
 
-inp_regular = QtDict.load(".result/regular.txt", false)
-inp_suggest = QtDict.load(".result/suggest.txt", false)
-inp_various = QtDict.load(".result/various.txt", false)
-inp_recycle = QtDict.load(".result/recycle.txt", false)
+inp_regular = QtDict.load(".temps/regular.txt", false)
+inp_suggest = QtDict.load(".temps/suggest.txt", false)
+inp_various = QtDict.load(".temps/various.txt", false)
+inp_recycle = QtDict.load(".temps/recycle.txt", false)
 
 puts "\n[Load localqt]".colorize.cyan
 
-INPUT = QtDict.load(".result/localqt.txt", false)
+INPUT = QtDict.load(".temps/localqt.txt", false)
 
 {
-  "localqt/names2.txt",
-  "localqt/names1.txt",
-  "localqt/vietphrase.txt",
+  "qtrans/localqt/names2.txt",
+  "qtrans/localqt/names1.txt",
+  "qtrans/localqt/vietphrase.txt",
 }.each do |file|
   QtDict.load(file).each do |key, vals|
     EXISTED << key
@@ -56,25 +56,6 @@ Dir.glob(QtUtil.path("localqt/fixes/*.txt")) do |file|
     EXISTED.add(key)
 
     INPUT.set(key, vals, :keep_new)
-  end
-end
-
-NOUNS = Set(String).new
-ADJES = Set(String).new
-
-def categorize(key : String, val : String)
-  arr = key.split("的")
-  return if arr.size < 2
-
-  left, right = arr
-  return if left.empty? || right.empty?
-
-  NOUNS << right
-
-  if val.includes?("của")
-    NOUNS << left
-  else
-    ADJES << left
   end
 end
 
@@ -126,7 +107,7 @@ end
 
 puts "\n[Load persist]".colorize.cyan
 
-Dir.glob(QtUtil.path("fixture/*.txt")).each do |file|
+Dir.glob(QtUtil.path("qtrans/fixture/*.txt")).each do |file|
   QtDict.new(file).tap(&.load!).each do |key, vals|
     CHECKED.add(key)
     EXISTED.add(key)
@@ -139,7 +120,7 @@ Dir.glob(QtUtil.path("fixture/*.txt")).each do |file|
   end
 end
 
-Dir.glob(QtUtil.path("fixture/pop-fictions/*.txt")).each do |file|
+Dir.glob(QtUtil.path("qtrans/fixture/pop-fictions/*.txt")).each do |file|
   QtDict.new(file).tap(&.load!).each do |key, vals|
     CHECKED.add(key)
     EXISTED.add(key)
@@ -154,7 +135,7 @@ end
 
 puts "\n[Load suggest]".colorize.cyan
 
-Dir.glob(QtUtil.path("manmade/other-names/*.txt")).each do |file|
+Dir.glob(QtUtil.path("qtrans/manmade/other-names/*.txt")).each do |file|
   QtDict.new(file).tap(&.load!).each do |key, vals|
     CHECKED.add(key)
     EXISTED.add(key)
@@ -167,7 +148,7 @@ end
 
 puts "\n[Load outerqt]".colorize.cyan.bold
 
-QtDict.load("outerqt/combined-lowercase.txt").each do |key, vals|
+QtDict.load("qtrans/outerqt/lowercase.txt").each do |key, vals|
   vals = vals.reject(&.includes?("*"))
   next if vals.empty?
   # categorize(key, vals.first)
@@ -188,7 +169,7 @@ QtDict.load("outerqt/combined-lowercase.txt").each do |key, vals|
   end
 end
 
-QtDict.load("outerqt/combined-uppercase.txt").each do |key, vals|
+QtDict.load("qtrans/outerqt/uppercase.txt").each do |key, vals|
   vals = vals.reject(&.includes?("*"))
   next if vals.empty?
   # categorize(key, vals.first)
@@ -218,8 +199,3 @@ inp_recycle.save!
 
 CHECKED.save!
 EXISTED.save!
-
-File.write(QtUtil.path(".result/qt-nouns.txt"), NOUNS.to_a.join("\n"))
-
-ADJES.reject { |x| NOUNS.includes?(x) }
-File.write(QtUtil.path(".result/qt-adjes.txt"), ADJES.to_a.join("\n"))

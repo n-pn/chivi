@@ -55,32 +55,32 @@ class CV::VpTrie
   class Filter
     def self.init(query)
       # TODO: add more filters
-      key_re = query["key"]?.try { |re| Regex.new(re) }
-      val_re = query["val"]?.try { |re| Regex.new(re) }
+      key = query["key"]?.try { |key| Regex.new(key) }
+      val = query["val"]?.try { |val| Regex.new(val) }
 
-      prio = query["prio"]?.try { |str| VpTerm.parse_prio(str) }
-      attr = query["attr"]?.try { |str| VpTerm.parse_attr(str) }
+      wgt = query["wgt"]?.try { |wgt| wgt.to_i? || 3 }
+      tag = query["tag"]?.try { |tag| PosTag.from_str(tag) }
 
       uname = query["uname"]?
-      power = query["power"]?.try { |str| str.to_i? || 0 }
+      privi = query["privi"]?.try { |str| str.to_i? || 0 }
 
-      new(key_re, val_re, prio, attr, uname, power)
+      new(key, val, wgt, tag, uname, privi)
     end
 
-    def initialize(@key_re : Regex? = nil, @val_re : Regex? = nil,
-                   @prio : Int32? = nil, @attr : Int32? = nil,
-                   @uname : String? = nil, @power : Int32? = nil)
+    def initialize(@key : Regex? = nil, @val : Regex? = nil,
+                   @wgt : Int32? = nil, @tag : PosTag? = nil,
+                   @uname : String? = nil, @privi : Int32? = nil)
     end
 
     def match?(term : VpTerm)
-      @key_re.try { |re| return false unless term.key.matches?(re) }
-      @val_re.try { |re| return false unless term.vals.any?(&.matches?(re)) }
+      @key.try { |re| return false unless term.key.matches?(re) }
+      @val.try { |re| return false unless term.val.any?(&.matches?(re)) }
 
-      @prio.try { |int| return false unless term.prio == int }
-      @attr.try { |int| return false unless term.attr & int == int }
+      @wgt.try { |wgt| return false unless term.wgt == wgt }
+      @tag.try { |tag| return false unless term.tag == tag }
 
-      @uname.try { |str| return false unless term.uname == str }
-      @power.try { |int| return false unless term.power == int }
+      @uname.try { |uname| return false unless term.uname == uname }
+      @privi.try { |privi| return false unless term.privi == privi }
 
       true
     end

@@ -58,8 +58,8 @@ end
 class CeInput
   CEDICT_URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 
-  TSV_FILE = QtUtil.path("_system/cc-cedict.tsv")
-  ZIP_FILE = QtUtil.path("_system/cc-cedict.zip")
+  TSV_FILE = QtUtil.path("system/cc-cedict.tsv")
+  ZIP_FILE = QtUtil.path("system/cc-cedict.zip")
 
   def self.load_data(tsv_file = TSV_FILE, expiry = 24.hours)
     entries = [] of CeEntry
@@ -128,7 +128,7 @@ class CeInput
     output.save!(prune: false)
   end
 
-  HANZIDB = QtDict.load("_system/hanzidb.txt")
+  HANZIDB = QtDict.load("system/hanzidb.txt")
 
   alias Counter = Hash(String, Int32)
 
@@ -140,7 +140,7 @@ class CeInput
     puts "\n[-- Export tradsim --]".colorize.cyan.bold
 
     counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
-    tswords = QtDict.new(".result/tradsimp-words.txt")
+    tswords = QtDict.new(".temps/tradsimp-words.txt")
 
     @entries.each do |entry|
       next if is_trad?(entry.defins)
@@ -188,7 +188,7 @@ class CeInput
     puts "\n[-- Export pinyins --]".colorize.cyan.bold
 
     counter = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
-    pywords = QtDict.new(".result/pinyins-words.txt")
+    pywords = QtDict.new(".temps/pinyins-words.txt")
 
     @entries.each do |entry|
       next if is_trad?(entry.defins)
@@ -219,7 +219,7 @@ class CeInput
       output.set(char, best.first(3))
     end
 
-    extras = QtDict.load("_system/extra-pinyins.txt")
+    extras = QtDict.load("system/extra-pinyins.txt")
     extras.each do |key, vals|
       output.set(key, vals)
     end
@@ -238,37 +238,6 @@ class CeInput
     output.save!(prune: true)
   end
 end
-
-# NOUN_FILE = QtUtil.path("_system/english-nouns.txt")
-# NOUNS     = Set(String).new File.read_lines(NOUN_FILE)
-
-# Dir.glob(QtUtil.path("_system/wordlists/names/**/*.txt")) do |file|
-#   NOUNS.concat File.read_lines(file)
-# end
-
-# Dir.glob(QtUtil.path("_system/wordlists/nouns/*.txt")) do |file|
-#   NOUNS.concat File.read_lines(file)
-# end
-
-# File.write(NOUN_FILE, NOUNS.to_a.join("\n"))
-
-# VERB_FILE = QtUtil.path("_system/english-verbs.txt")
-# VERBS     = Set(String).new File.read_lines(VERB_FILE)
-
-# Dir.glob(QtUtil.path("_system/wordlists/verbs/*.txt")) do |file|
-#   VERBS.concat File.read_lines(file)
-# end
-
-# File.write(VERB_FILE, VERBS.to_a.join("\n"))
-
-# ADJE_FILE = QtUtil.path("_system/english-adjectives.txt")
-# ADJES     = Set(String).new File.read_lines(ADJE_FILE)
-
-# Dir.glob(QtUtil.path("_system/wordlists/adjectives/*.txt")) do |file|
-#   ADJES.concat File.read_lines(file)
-# end
-
-# File.write(ADJE_FILE, ADJES.to_a.join("\n"))
 
 cedict = CeInput.load_data(expiry: 24.hours)
 

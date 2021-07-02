@@ -3,7 +3,7 @@ require "file_utils"
 
 require "../../../src/libcv/vdict"
 
-DIR = "_db/vp_dicts/_inits"
+DIR = "_db/vpinit"
 
 class ValueSet
   getter file : String
@@ -59,7 +59,7 @@ module QtUtil
     File.join(DIR, file)
   end
 
-  class_getter lexicon : ValueSet { ValueSet.load(".result/lexicon.tsv") }
+  class_getter lexicon : ValueSet { ValueSet.load(".temps/lexicon.tsv") }
 
   def has_hanzi?(input : String)
     input =~ /\p{Han}/
