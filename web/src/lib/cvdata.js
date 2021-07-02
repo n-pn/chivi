@@ -101,7 +101,6 @@ export function ad_indexes(len, min = 15) {
     res.push(idx)
   }
 
-  console.log({ res, len })
   return res
 }
 

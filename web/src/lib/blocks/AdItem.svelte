@@ -10,15 +10,15 @@
     data-ad-format={type == 'banner' ? 'auto' : 'fluid'}
     data-ad-layout={type == 'banner' ? '' : 'in-article'}
     data-full-width-responsive="true">
-    <div>Quảng cáo nuôi server. Xin đừng bật adblock.</div>
+    <div>Hãy ủng hộ cho chivi <a href="/notes/donation">tại đây</a> nếu không muốn xem quảng cáo.</div>
   </ins>
 
   <script>
     if (typeof window != undefined) {
       try {
         ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-      } catch (err) {
-        console.log(err)
+      } catch (aderr) {
+        console.log({aderr})
       }
     }
   </script>
@@ -34,12 +34,17 @@
   }
 
   div {
-    padding: 2rem;
+    padding: 3rem;
     text-transform: uppercase;
-    font-size: 400;
+    font-size: 500;
 
-    @include radius();
+    @include radius(6px);
     @include fgcolor(neutral, 7);
-    @include bgcolor(yellow, 1, 0.9);
+    @include bgcolor(red, 1, 0.7);
+
+  }
+  a {
+    @include fgcolor(primary, 6);
+    font-weight: 600;
   }
 </style>

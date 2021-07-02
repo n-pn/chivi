@@ -126,11 +126,18 @@
 
   .pledge {
     text-align: center;
-    margin-top: 0.75rem;
+    margin: 0.5rem auto;
+    // max-width: 50vw;
     font-size: rem(15px);
 
-    color: var(--fg);
     --fg: #{color(neutral, 6)};
+    --bg: #{color(neutral, 1)};
+
+    padding: .25rem;
+    @include radius();
+
+    color: var(--fg);
+    background: var(--bg);
 
     @include tm-dark {
       --fg: #{color(neutral, 4)};
