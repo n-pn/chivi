@@ -131,7 +131,7 @@
     font-size: rem(15px);
 
     --fg: #{color(neutral, 6)};
-    --bg: #{color(neutral, 1)};
+    --bg: #{color(neutral, 2)};
 
     padding: .25rem;
     @include radius();
@@ -141,6 +141,7 @@
 
     @include tm-dark {
       --fg: #{color(neutral, 4)};
+      --bg: #{color(neutral, 8)};
     }
 
     > a {
