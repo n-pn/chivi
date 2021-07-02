@@ -94,16 +94,17 @@ function render_node(key, val, dic, idx, pos) {
   return `<x-v data-d=${dic} data-k="${key}" data-i=${idx} data-p=${pos}>${val}</x-v>`
 }
 
-export function ad_indexes(len, min = 20) {
+export function ad_indexes(len, min = 15) {
   let res = []
 
   for (let idx = 0; idx < len; idx += random_int(min - 5, min + 5)) {
     res.push(idx)
   }
 
+  console.log({ res, len })
   return res
 }
 
 function random_int(min, max) {
-  return Math.random() * (max - min) + min
+  return Math.round(Math.random() * (max - min)) + min
 }
