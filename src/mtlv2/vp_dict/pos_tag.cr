@@ -123,8 +123,8 @@ module CV
     :Symbol  => "wh",  # full or half-length unit symbol ￥ ＄ ￡ ° ℃  $
     :Qteopen => "wyz", # full-length single or double opening quote: “ ‘ 『
     :Qtestop => "wyy", # full-length single or double closing quote: ” ’ 』
-    :Brkopen => "wkz", # opening brackets: （ 〔  ［  ｛  《 【  〖 〈 of full length; ( [ { < of half length
-    :Brkstop => "wky", # closing brackets: ） 〕  ］ ｝ 》  】 〗 〉of full length;  ) ] } > of half length
+    :Brkopen => "wkz", # opening brackets: （ 〔 ［ ｛ 《 【 〖 〈 of full length; ( [ { < of half length
+    :Brkstop => "wky", # closing brackets: ） 〕 ］ ｝ 》 】 〗 〉of full length;  ) ] } > of half length
   }
 end
 
@@ -186,17 +186,6 @@ enum CV::PosTag
     end
   end
 
-  def self.from_paddle(tag : ::String)
-    case tag
-    # Paddle convention
-    when "PER"  then Nper
-    when "LOC"  then Nloc
-    when "ORG"  then Norg
-    when "TIME" then Time
-    else             from_pku(tag)
-    end
-  end
-
   def self.from_pku(tag : ::String)
     # nr1 汉语姓氏
     # nr2 汉语名字
@@ -218,6 +207,17 @@ enum CV::PosTag
     when "ryt", "rys", "ryv"        then Prointr
     when "dl", "dg"                 then Adverb
     else                                 from_str(tag)
+    end
+  end
+
+  def self.from_paddle(tag : ::String)
+    case tag
+    # Paddle convention
+    when "PER"  then Nper
+    when "LOC"  then Nloc
+    when "ORG"  then Norg
+    when "TIME" then Time
+    else             from_str(tag)
     end
   end
 
