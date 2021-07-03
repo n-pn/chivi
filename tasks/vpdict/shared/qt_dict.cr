@@ -1,5 +1,5 @@
 class QtDict
-  DIR = "_db/vp_dicts/_inits"
+  DIR = "_db/vpinit"
 
   def self.load(fname : String, preload : Bool = true)
     new(File.join(DIR, fname), preload: preload)
@@ -9,6 +9,9 @@ class QtDict
   SEP_1 = "/"
 
   getter data = Hash(String, Array(String)).new
+  # delegate each, to: @data
+  # delegate each, to: @data
+  # delegate has_key?, to: @data
   forward_missing_to @data
 
   def initialize(@file : String, preload : Bool = false)
