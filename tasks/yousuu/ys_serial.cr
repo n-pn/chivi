@@ -1,5 +1,5 @@
 require "json"
-require "../../src/seeds/ys_book"
+require "../shared/raw_ysbook"
 require "./shared/http_client"
 
 class CV::CrawlYsbook
@@ -65,7 +65,7 @@ class CV::CrawlYsbook
   private def expiry_time(file : String) : Time::Span
     span = 3.days
 
-    if data = CV::YsBook.load(file)
+    if data = CV::RawYsbook.load(file)
       span *= data.status + 1
       data.voters == 0 ? span * 3 : span
     else
@@ -74,14 +74,14 @@ class CV::CrawlYsbook
   end
 end
 
-reload_proxy = ARGV.includes?("proxy")
-worker = CV::CrawlYsbook.new(reload_proxy)
-
-mode =
-  case ARGV
+def guess_mode(argv = ARGV)
+  case argv
   when .includes?("head") then :head
   when .includes?("rand") then :rand
   else                         :tail
   end
+end
 
-worker.crawl!(258000, mode: mode)
+reload_proxy = ARGV.includes?("proxy")
+worker = CV::CrawlYsbook.new(reload_proxy)
+worker.crawl!(259700, mode: guess_mode(ARGV))
