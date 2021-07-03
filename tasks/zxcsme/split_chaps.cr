@@ -17,7 +17,7 @@ class CV::Zxcs::SplitText
   INP_RAR = "_db/.cache/zxcs_me/.rars"
   INP_TXT = "_db/.cache/zxcs_me/texts"
 
-  OUT_DIR = "_db/zxcs_me"
+  OUT_DIR = "_db/chseed/zxcs_me"
 
   getter csdet = ICU::CharsetDetector.new
 
@@ -40,7 +40,7 @@ class CV::Zxcs::SplitText
     return out_txt if File.exists?(out_txt)
     puts "\n- <#{label}> extracting #{rar_file.colorize.blue}"
 
-    tmp_dir = ".tmp/#{snvid}"
+    tmp_dir = "tmp/#{snvid}"
     FileUtils.mkdir_p(tmp_dir)
 
     `unrar e -o+ "#{rar_file}" #{tmp_dir}`
