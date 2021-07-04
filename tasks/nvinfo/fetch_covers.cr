@@ -7,6 +7,14 @@ require "../../src/tsvfs/value_map"
 require "../shared/seed_data"
 
 class CV::FetchCovers
+  SKIP_ZERO = ARGV.includes?("skip_zero")
+
+  def valid_file?(file : String)
+    return false unless File.exists?(file)
+    return true unless SKIP_ZERO
+    File.size(file) > 0
+  end
+
   def fetch_yousuu!
     dir = "_db/bcover/yousuu"
     ::FileUtils.mkdir_p(dir)
@@ -18,7 +26,7 @@ class CV::FetchCovers
       ynvid = book.id.to_s
 
       out_file = "#{dir}/#{ynvid}.jpg"
-      next if File.exists?(out_file)
+      next unless valid_file?(out_file)
 
       next unless image_url = cover_map.fval(ynvid)
       out_queue[image_url] = out_file unless image_url.empty?
@@ -35,10 +43,11 @@ class CV::FetchCovers
     query = Cvbook.query.order_by(weight: :desc)
     query.each_with_cursor(20) do |book|
       book.zhbooks.to_a.sort_by(&.zseed).first(3).each do |seed|
-        next if seed.sname == "jx_la"
+        # TODO: fix seed_zhwenpg script!
+        next if seed.sname == "jx_la" || seed.sname == "zhwenpg"
 
         out_file = "_db/bcover/#{seed.sname}/#{seed.snvid}.jpg"
-        next if File.exists?(out_file)
+        next unless valid_file?(out_file)
 
         next unless image_url = cover_map(seed.sname).fval(seed.snvid)
         queues[seed.sname][image_url] = out_file unless image_url.empty?
@@ -49,20 +58,10 @@ class CV::FetchCovers
 
     queues.each do |sname, queue|
       ::FileUtils.mkdir_p("_db/bcover/#{sname}")
-
-      limit, delayed =
-        case sname
-        when "shubaow" then {1, 2.seconds}
-        when "duokan8" then {1, 1.seconds}
-        when "zhwenpg" then {1, 500.milliseconds}
-        when "paoshu8" then {2, 500.milliseconds}
-        when "69shu"   then {4, 200.milliseconds}
-        when "5200"    then {4, 100.milliseconds}
-        else                {8, 10.milliseconds}
-        end
+      limit, delay = throttle_spec(sname)
 
       spawn do
-        fetch!(queue, limit, delayed)
+        fetch!(queue, limit, delay)
       ensure
         channel.send(nil)
       end
@@ -71,27 +70,38 @@ class CV::FetchCovers
     queues.size.times { channel.receive }
   end
 
+  def throttle_spec(sname : String)
+    case sname
+    when "shubaow" then {1, 2.seconds}
+    when "duokan8" then {1, 1.seconds}
+    when "zhwenpg" then {1, 500.milliseconds}
+    when "paoshu8" then {2, 500.milliseconds}
+    when "69shu"   then {4, 200.milliseconds}
+    when "5200"    then {4, 100.milliseconds}
+    else                {8, 10.milliseconds}
+    end
+  end
+
   MAP_CACHE = {} of String => ValueMap
 
   def cover_map(sname : String)
     MAP_CACHE[sname] ||= ValueMap.new("_db/zhbook/#{sname}/bcover.tsv", mode: 2)
   end
 
-  def fetch!(queue : Hash(String, String), limit = 8, delayed = 10.milliseconds)
+  def fetch!(queue : Hash(String, String), limit = 8, delay = 10.milliseconds)
     # remove invalid image urls
     queue = queue.reject { |link, _| link.starts_with?("/") }
 
     limit = queue.size if limit > queue.size
     channel = Channel(Nil).new(limit)
 
-    queue.each_with_index do |(link, file), idx|
+    queue.each_with_index(1) do |(link, file), idx|
       channel.receive if idx > limit
 
       spawn do
-        HttpUtils.fetch_file(link, link)
+        HttpUtils.fetch_file(link, file, "#{idx}/#{queue.size}")
         fix_image_ext(file)
-
-        sleep delayed
+        sleep delay
       rescue err
         puts err.colorize.red
         ::FileUtils.touch(file)

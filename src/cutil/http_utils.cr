@@ -98,19 +98,19 @@ module CV::HttpUtils
     end
   end
 
-  def fetch_file(url : String, out_file : String) : Nil
-    cmd = "curl -L -k -s -m 100 '#{url}' -o '#{out_file}'"
+  def fetch_file(url : String, out_file : String, label = "1/1") : Nil
     try = 0
 
     loop do
-      puts "[FETCH_FILE: <#{url}> (try: #{try})]".colorize.magenta
-      puts `#{cmd}`
+      puts "- <#{label.colorize.magenta}> GET: #{url.colorize.magenta}, \
+              try: #{try.colorize.magenta}"
 
+      `curl -L -k -s -m 100 '#{url}' -o '#{out_file}'`
       return if File.exists?(out_file)
 
       try += 1
       sleep 250.milliseconds * try
-      raise "500 Server Error!" if try > 3
+      raise "500 Server Error!" if try > 2
     end
   end
 end
