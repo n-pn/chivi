@@ -1,84 +1,73 @@
 require "file_utils"
-require "../../src/appcv/nv_info"
+require "../shared/seed_util"
 
-class CV::Seeds::FixCovers
+class CV::FixCovers
   INP_DIR = "_db/bcover"
-  OUT_DIR = "_db/nv_infos/covers"
+  OUT_DIR = "_db/bcover/_webp"
 
   ::FileUtils.mkdir_p(OUT_DIR)
 
   def fix!(redo : Bool = false)
     checked = Set(String).new
 
-    bhashes = NvFields.bhashes
-    bhashes.each_with_index(1) do |bhash, idx|
-      if idx % 20 == 0
-        puts "- [fix_covers] <#{idx}/#{bhashes.size}>".colorize.blue
+    total, index = Cvbook.query.count, 0
+    query = Cvbook.query.with_ysbooks.with_zhbooks.order_by(weight: :desc)
+    query.each_with_cursor(10) do |cvbook|
+      index += 1
 
-        WIDTHS.each_value { |map| map.save!(clean: false) }
-        NvFields.bcover.save!(clean: false)
+      if index % 20 == 0
+        puts "- [fix_covers] <#{index}/#{total}>".colorize.blue
+        @widths.each_value { |map| map.save!(clean: false) }
       end
 
-      next unless redo || !NvFields.bcover.has_key?(bhash)
-      covers = {} of String => String
+      covers = [] of Tuple(String, String)
+      cvbook.ysbooks.each { |x| covers << {"yousuu", x.id.to_s} }
+      cvbook.zhbooks.each { |x| covers << {x.sname, x.snvid} }
 
-      NvFields.yousuu.fval(bhash).try { |ynvid| covers["yousuu"] = ynvid }
-
-      snames = NvChseed.get_list(bhash)
-      snames.each do |sname|
-        covers[sname] = NvChseed.get_nvid(sname, bhash) || bhash
-      end
-
-      max_width = 0
-      out_cover = nil
+      max_width, out_cover = 0, nil
+      out_sname, out_snvid = nil, nil
 
       covers.each do |sname, snvid|
         next unless cover_file = cover_path(sname, snvid)
 
-        unless cover_width = width_map(sname).fval(cover_file).try(&.to_i)
+        unless cover_width = width_map(sname).ival(cover_file)
           cover_width = image_width(cover_file)
 
           if mtime = File.info?(cover_file).try(&.modification_time)
-            values = [cover_width.to_s, mtime.to_unix.to_s]
-            width_map(sname).set!(cover_file, values)
+            values = [cover_width, mtime.to_unix]
+            width_map(sname).set!(cover_file, values.map(&.to_s))
           end
         end
 
         if cover_width > max_width
-          max_width = cover_width
-          out_cover = cover_file
+          max_width, out_cover = cover_width, cover_file
+          out_sname, out_snvid = sname, snvid
         end
       end
 
-      next unless out_cover
+      next unless out_cover && out_sname && out_snvid
+      puts "  cover chosen: #{out_cover}"
 
-      sname = File.basename(File.dirname(out_cover))
-      out_file = "#{OUT_DIR}/#{sname}-#{File.basename(out_cover)}"
+      out_webp = "#{out_sname}-#{out_snvid}.webp"
+      cvbook.tap(&.bcover = out_webp).save! unless cvbook.bcover == out_webp
 
-      NvFields.bcover.set!(bhash, File.basename(out_file))
-      FileUtils.cp(out_cover, out_file) unless File.exists?(out_file)
+      webp_path = "#{OUT_DIR}/#{out_webp}"
+      next if File.exists?(webp_path)
 
-      unless out_file.ends_with?(".webp")
-        out_webp = out_file + ".webp"
-        next if File.exists?(out_webp)
-        if out_file.ends_with?(".gif")
-          `gif2webp "#{out_file}" -o "#{out_webp}"`
-        else
-          `convert "#{out_file}" -resize "320x>" "#{out_webp}"`
-        end
+      if out_cover.ends_with?(".gif")
+        `gif2webp "#{out_cover}" -o "#{webp_path}"`
+      else
+        `convert "#{out_cover}" -resize "320x>" "#{webp_path}"`
       end
-    rescue err
-      puts err
     end
 
-    WIDTHS.each_value { |map| map.save!(clean: false) }
-    NvFields.bcover.save!(clean: false)
+    @widths.each_value { |map| map.save!(clean: false) }
   end
 
-  WIDTHS = {} of String => ValueMap
+  @widths = {} of String => ValueMap
 
   private def width_map(sname : String)
-    WIDTHS[sname] ||= ValueMap.new("#{INP_DIR}/_index/#{sname}.tsv")
+    @widths[sname] ||= ValueMap.new("#{INP_DIR}/_idx/#{sname}.tsv")
   end
 
   # next unless cover_file = cover_path(snam
@@ -118,5 +107,5 @@ class CV::Seeds::FixCovers
   end
 end
 
-worker = CV::Seeds::FixCovers.new
-worker.fix!(ARGV.includes?("redo"))
+worker = CV::FixCovers.new
+worker.fix!(redo: ARGV.includes?("redo"))

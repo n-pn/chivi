@@ -197,7 +197,7 @@ class CV::SeedZhbook
             cvbooks: #{Cvbook.query.count.colorize.cyan}"
   end
 
-  def save_book(snvid : String, values : Array(String), dry = true)
+  def save_book(snvid : String, values : Array(String), redo = false)
     bumped, p_ztitle, p_author = values
     return if p_ztitle.empty? || p_author.empty?
 
@@ -210,9 +210,7 @@ class CV::SeedZhbook
     zhbook = Zhbook.upsert!(@sname, snvid)
     bumped = bumped.to_i64
 
-    if dry && zhbook.matched?(cvbook.id)   # zhbook already created before
-      return unless bumped > zhbook.bumped # return unless source updated
-    else
+    if redo || zhbook.unmatch?(cvbook.id)
       zhbook.cvbook = cvbook
       cvbook.add_zhseed(zhbook.zseed)
 
@@ -224,6 +222,8 @@ class CV::SeedZhbook
         voters, rating = @seed.get_scores(snvid)
         cvbook.set_scores(voters, rating)
       end
+    else # zhbook already created before
+      return unless bumped > zhbook.bumped
     end
 
     zhbook.status = @seed.status.ival(snvid)
