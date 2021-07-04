@@ -96,7 +96,7 @@ class CV::SeedData
 
     @status.try(&.save!(clean: clean))
     @mftime.try(&.save!(clean: clean))
-    @mftime.try(&.save!(clean: clean))
+    @scores.try(&.save!(clean: clean))
 
     @chsize.try(&.save!(clean: clean))
     @counts.try(&.save!(clean: clean))

@@ -26,9 +26,10 @@ class CV::SeedYsbook
       @seed.mftime.set!(snvid, parser.updated_at.to_unix.to_s)
 
       @seed.scores.set!(snvid, [parser.voters.to_s, parser.rating.to_s])
+      @seed.origin.set!(snvid, [parser.root_link, parser.root_name])
+
       counted = [parser.addListTotal, parser.commentCount, parser.word_count]
       @seed.counts.set!(snvid, counted.map(&.to_s))
-      @seed.origin.set!(snvid, [parser.root_link, parser.root_name])
 
       if idx % 100 == 0
         @seed.save!(clean: false)
@@ -75,13 +76,18 @@ class CV::SeedYsbook
             cvbooks: #{Cvbook.query.count.colorize.cyan}"
   end
 
+  @checked = Set(String).new # skip checked if run twice
+
   def save_book(snvid : String, redo = false) : Nil
+    return if @checked.includes?(snvid)
+
     bumped, rtitle, author = @seed.get_index(snvid)
     list_count, crit_count, word_count = @seed.get_counts(snvid)
     force = list_count > 0 || crit_count > 3
 
     author = SeedUtil.get_author(author, rtitle, force: force)
     return unless author
+    @checked.add(snvid)
 
     ztitle = BookUtils.fix_zh_btitle(rtitle, author.zname)
     ysbook = Ysbook.get!(snvid.to_i64)
@@ -119,14 +125,17 @@ class CV::SeedYsbook
 
   def self.run!(argv = ARGV)
     redo = false
+    twice = false
 
     OptionParser.parse(ARGV) do |opt|
       opt.on("-a", "Ignore indexes") { redo = true }
+      opt.on("-", "Seeding twice") { twice = true }
     end
 
     seeder = new
     seeder.init!(redo: redo)
     seeder.seed!
+    seeder.seed! if twice
   end
 end
 

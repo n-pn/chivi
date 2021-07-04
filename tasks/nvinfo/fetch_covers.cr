@@ -4,7 +4,7 @@ require "file_utils"
 
 require "../../src/cutil/http_utils"
 require "../../src/tsvfs/value_map"
-require "../../src/appcv/nv_info"
+require "../shared/seed_data"
 
 class CV::FetchCovers
   def fetch_yousuu!
@@ -12,10 +12,10 @@ class CV::FetchCovers
     ::FileUtils.mkdir_p(dir)
 
     out_queue = {} of String => String
-    cover_map = ValueMap.new("_db/_seeds/yousuu/bcover.tsv", mode: 2)
+    cover_map = cover_map("yousuu")
 
-    NvFields.bhashes.each do |bhash|
-      next unless ynvid = NvFields.yousuu.fval("bhash")
+    Ysbook.query.order_by(voters: :desc).each_with_cursor do |book|
+      ynvid = book.id.to_s
 
       out_file = "#{dir}/#{ynvid}.jpg"
       next if File.exists?(out_file)
@@ -32,18 +32,16 @@ class CV::FetchCovers
       h[k] = {} of String => String
     end
 
-    NvFields.bhashes.each do |bhash|
-      snames = NvChseed.get_list(bhash)
+    query = Cvbook.query.order_by(weight: :desc)
+    query.each_with_cursor(20) do |book|
+      book.zhbooks.to_a.sort_by(&.zseed).first(3).each do |seed|
+        next if seed.sname == "jx_la"
 
-      snames.each do |sname|
-        next if sname == "jx_la" || sname == "chivi"
-        snvid = NvChseed.get_nvid(sname, bhash) || bhash
-
-        out_file = "_db/bcover/#{sname}/#{snvid}.jpg"
+        out_file = "_db/bcover/#{seed.sname}/#{seed.snvid}.jpg"
         next if File.exists?(out_file)
 
-        next unless image_url = cover_map(sname).fval(snvid)
-        queues[sname][image_url] = out_file unless image_url.empty?
+        next unless image_url = cover_map(seed.sname).fval(seed.snvid)
+        queues[seed.sname][image_url] = out_file unless image_url.empty?
       end
     end
 
@@ -76,7 +74,7 @@ class CV::FetchCovers
   MAP_CACHE = {} of String => ValueMap
 
   def cover_map(sname : String)
-    MAP_CACHE[sname] ||= ValueMap.new("_db/_seeds/#{sname}/bcover.tsv", mode: 2)
+    MAP_CACHE[sname] ||= ValueMap.new("_db/zhbook/#{sname}/bcover.tsv", mode: 2)
   end
 
   def fetch!(queue : Hash(String, String), limit = 8, delayed = 10.milliseconds)
@@ -90,13 +88,13 @@ class CV::FetchCovers
       channel.receive if idx > limit
 
       spawn do
-        HttpUtils.save_html(link, file)
+        HttpUtils.fetch_file(link, link)
         fix_image_ext(file)
 
         sleep delayed
       rescue err
         puts err.colorize.red
-        FileUtils.touch(file)
+        ::FileUtils.touch(file)
       ensure
         channel.send(nil)
       end

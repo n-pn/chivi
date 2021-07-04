@@ -5,8 +5,8 @@ module CV::FixIntros
 
   def fix!
     total, index = Cvbook.query.count, 0
-    query = Cvbook.query.with_ysbooks.with_zhbooks.order_by(weight: :desc)
-    query.each_with_cursor(10) do |cvbook|
+    query = Cvbook.query.with_ysbooks.order_by(weight: :desc)
+    query.each_with_cursor(20) do |cvbook|
       index += 1
       puts "- [fix_covers] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 

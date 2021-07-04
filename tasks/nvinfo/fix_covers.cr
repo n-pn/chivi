@@ -8,13 +8,13 @@ class CV::FixCovers
 
   def fix!(redo : Bool = false)
     total, index = Cvbook.query.count, 0
-    query = Cvbook.query.with_ysbooks.with_zhbooks.order_by(weight: :desc)
-    query.each_with_cursor(10) do |cvbook|
+    query = Cvbook.query.with_ysbooks.order_by(weight: :desc)
+    query.each_with_cursor(20) do |cvbook|
       index += 1
 
-      if index % 20 == 0
+      if index % 100 == 0
         puts "- [fix_covers] <#{index}/#{total}>".colorize.blue
-        @widths.each_value { |map| map.save!(clean: false) }
+        @@widths.each_value { |map| map.save!(clean: false) }
       end
 
       covers = [] of Tuple(String, String)
@@ -41,6 +41,7 @@ class CV::FixCovers
         if cover_width > max_width
           max_width, out_cover = cover_width, cover_file
           out_sname, out_snvid = sname, snvid
+          break if max_width >= 360
         end
       end
 
@@ -54,22 +55,29 @@ class CV::FixCovers
       next if File.exists?(webp_path)
 
       case out_cover
-      when .ends_with?(".webp")
-        File.copy(out_cover, webp_path)
       when .ends_with?(".gif")
-        `gif2webp "#{out_cover}" -o "#{webp_path}"`
+        gif_to_webp(out_cover, webp_path)
       else
-        `convert "#{out_cover}" -resize "320x>" "#{webp_path}"`
+        width = max_width > 360 ? 360 : max_width
+        to_webp(out_cover, webp_path, width: width)
       end
     end
 
-    @widths.each_value { |map| map.save!(clean: false) }
+    @@widths.each_value { |map| map.save!(clean: false) }
   end
 
-  @widths = {} of String => ValueMap
+  private def gif_to_webp(inp_file, out_file)
+    `gif2webp "#{inp_file}" -o "#{out_file}"`
+  end
+
+  private def to_webp(inp_file, out_file, width = 360)
+    `cwebp -q 100 -resize #{width} 0 -mt "#{inp_file}" -o "#{out_file}"`
+  end
+
+  @@widths = {} of String => ValueMap
 
   private def width_map(sname : String)
-    @widths[sname] ||= ValueMap.new("#{INP_DIR}/_index/#{sname}.tsv")
+    @@widths[sname] ||= ValueMap.new("#{INP_DIR}/_index/#{sname}.tsv")
   end
 
   # next unless cover_file = cover_path(snam
@@ -93,19 +101,20 @@ class CV::FixCovers
   end
 
   def image_width(fname : String)
-    if fname.ends_with?(".gif")
-      return case fname
-      when .includes?("chivi")  then 20000
-      when .includes?("yousuu") then 10000
-      when .includes?("jx_la")  then 0
-      else                           400
-      end
-    end
-
-    return 0 if File.size(fname) < 100
+    return gif_image_width(fname) if fname.ends_with?(".gif")
+    return 0 if File.size(fname) < 1000
     `identify -format '%w %h' "#{fname}"`.split(" ").first.to_i? || 0
   rescue
     0
+  end
+
+  def gif_image_width(fname : String)
+    case fname
+    when .includes?("chivi")  then 20000
+    when .includes?("yousuu") then 10000
+    when .includes?("jx_la")  then 0
+    else                           400
+    end
   end
 end
 

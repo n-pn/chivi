@@ -1,7 +1,7 @@
 require "file_utils"
 require "../../src/seeds/rm_info"
 require "../../src/tsvfs/value_map"
-require "./bootstrap.cr"
+require "./bootstrap"
 
 module CV::SeedUtil
   extend self
