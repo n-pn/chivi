@@ -6,7 +6,7 @@ require "../../src/cutil/http_utils"
 
 class CV::Seeds::ZxcsText
   DLPG_DIR = File.join("_db/.cache/zxcs_me/dlpgs")
-  RARS_DIR = File.join("_db/.cache/zxcs_me/.rars")
+  RARS_DIR = File.join("_db/.keeps/zxcs_me/rars")
 
   FileUtils.mkdir_p(DLPG_DIR)
   FileUtils.mkdir_p(RARS_DIR)
