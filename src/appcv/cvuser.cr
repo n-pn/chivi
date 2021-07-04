@@ -1,19 +1,17 @@
-require "crypto/bcrypt/password"
-
 class CV::Cvuser
   include Clear::Model
 
   self.table = "cvusers"
   primary_key
 
-  has_many ubmarks : Ubmark
-  has_many ubviews : Ubview
+  has_many ubmarks : Ubmark, foreign_key: "cvuser_id"
+  has_many ubviews : Ubview, foreign_key: "cvuser_id"
   has_many cvbooks : Cvbook, through: "ubmarks"
 
   column uname : String
   column email : String
 
-  column cpass : String  # encrypted password
+  column cpass : Crypto::Bcrypt::Password
   getter upass : String? # virtual password field
 
   # reserve for future, can be treated as currency
@@ -43,11 +41,11 @@ class CV::Cvuser
   # validate_min_length :upass, 8
 
   def upass=(upass : String)
-    self.cpass = Crypto::Bcrypt::Password.create(upass, cost: 10).to_s
+    self.cpass = Crypto::Bcrypt::Password.create(upass, cost: 10)
     @upass = upass
   end
 
   def authentic?(upass : String)
-    Bcrypt::Password.new(@cpass || "").verify(upass)
+    self.cpass.verify(upass)
   end
 end

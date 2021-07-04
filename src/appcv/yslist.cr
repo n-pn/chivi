@@ -5,7 +5,7 @@ class CV::Yslist
   primary_key
 
   belongs_to ysuser : Ysuser
-  has_many yscrits : Yscrit
+  has_many yscrits : Yscrit, foreign_key: "yslist_id"
   has_many ysbooks : Ysbook, through: "yscrits"
   has_many cvbooks : Cvbook, through: "yscrits"
 

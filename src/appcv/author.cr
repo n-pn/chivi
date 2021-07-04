@@ -5,7 +5,7 @@ class CV::Author
   self.table = "authors"
   primary_key
 
-  has_many cvbook : Cvbook
+  has_many cvbook : Cvbook, foreign_key: "cvbook_id"
 
   column zname : String
   column vname : String

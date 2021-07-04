@@ -4,8 +4,8 @@ class CV::Ysuser
   self.table = "ysusers"
   primary_key
 
-  has_many yslists : Yslist
-  has_many yscrits : Yscrit
+  has_many yslists : Yslist, foreign_key: "ysuser_id"
+  has_many yscrits : Yscrit, foreign_key: "ysuser_id"
   has_many ysbooks : Ysbook, through: "yscrits"
   has_many cvbooks : Cvbook, through: "yscrits"
 

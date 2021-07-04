@@ -4,9 +4,9 @@ class CV::Cvbook
   self.table = "cvbooks"
   primary_key
 
-  has_many ysbooks : Ysbook
-  has_many zhbooks : Zhbook
-  has_many yscrits : Yscrit
+  has_many ysbooks : Ysbook, foreign_key: "cvbook_id"
+  has_many zhbooks : Zhbook, foreign_key: "cvbook_id"
+  has_many yscrits : Yscrit, foreign_key: "cvbook_id"
   has_many yslists : Yslist, through: "yscrits"
 
   belongs_to author : Author

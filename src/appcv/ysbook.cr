@@ -4,8 +4,8 @@ class CV::Ysbook
   self.table = "ysbooks"
   primary_key
 
-  belongs_to cvbook : Cvbook
-  has_many yscrits : Yscrit
+  belongs_to cvbook : Cvbook, foreign_key: "cvbook_id"
+  has_many yscrits : Yscrit, foreign_key: "ysbook_id"
   has_many yslists : Yslist, through: "yscrits"
 
   column voters : Int32 = 0
