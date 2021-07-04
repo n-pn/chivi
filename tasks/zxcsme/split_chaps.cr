@@ -14,8 +14,8 @@ class CV::Zxcs::SplitText
     end
   end
 
-  INP_RAR = "_db/.keeps/zxcs_me/rars"
-  INP_TXT = "_db/.keeps/zxcs_me/txts"
+  INP_RAR = "_db/.keeps/zxcs_me/_rars"
+  INP_TXT = "_db/.keeps/zxcs_me/texts"
 
   OUT_DIR = "_db/chseed/zxcs_me"
 

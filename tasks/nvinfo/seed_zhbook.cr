@@ -221,7 +221,7 @@ class CV::SeedZhbook
       cvbook.set_zintro(@seed.get_intro(snvid).join("\n"))
 
       if cvbook.voters == 0
-        voters, rating = get_fake_scores
+        voters, rating = @seed.get_scores(snvid)
         cvbook.set_scores(voters, rating)
       end
     end

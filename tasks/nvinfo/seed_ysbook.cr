@@ -1,7 +1,6 @@
 require "file_utils"
 require "option_parser"
 
-require "../shared/seed_util.cr"
 require "../shared/seed_data.cr"
 require "../shared/raw_ysbook.cr"
 

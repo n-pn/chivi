@@ -14,11 +14,11 @@ class CV::Ysbook
   column bumped : Int64 = 0
   column mftime : Int64 = 0
 
-  column root_link : String = "" # original publisher novel page
-  column root_name : String = "" # original publisher name, extract from link
-
   column list_count : Int32 = 0
   column crit_count : Int32 = 0
+
+  column root_link : String = "" # original publisher novel page
+  column root_name : String = "" # original publisher name, extract from link
 
   def unmatch?(cvbook_id : Int64) : Bool
     cvbook_id_column.value(0) != cvbook_id

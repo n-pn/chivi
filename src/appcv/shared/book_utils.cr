@@ -19,12 +19,8 @@ module CV::BookUtils
 
   def fix_zh_author(author : String, ztitle : String = "") : String
     zh_authors.fval_alt("#{author}  #{ztitle}", author) || begin
-      output = author
-        # .sub(/(　ˇ第.+章ˇ )?\s*最新更新.+$/, "")
-        .sub(/[（\(\[].+?[\]\)）]$/, "")
-        .sub(/\.(QD|CS)$/, "")
-        .sub(/^·(.+)·$/) { |x| x }
-
+      output = author.sub(/(　ˇ第.+章ˇ )?\s*最新更新.+$/, "")
+      output = clean_name(output).sub(/\.(QD|CS)$/, "").sub(/^·(.+)·$/) { |x| x }
       output = output.sub(/^\.?(.+)\.$/) { |x| x } unless output.ends_with?("..")
       output.strip
     end
@@ -37,8 +33,12 @@ module CV::BookUtils
   def fix_zh_btitle(ztitle : String, author : String = "") : String
     zh_btitles.fval_alt("#{ztitle}  #{author}", ztitle) || begin
       output = CvUtil.normalize(ztitle).join
-      output.sub(/[\(\[].+?[\]\)]$/, "").strip
+      clean_name(output)
     end
+  end
+
+  private def clean_name(name : String)
+    name.sub(/[（【\(\[].+?[）】\)\]]$/, "").strip
   end
 
   def get_vi_btitle(ztitle : String) : String

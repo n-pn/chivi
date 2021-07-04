@@ -11,13 +11,6 @@ class CV::Zhbook
   column zseed : Int32 # seed name
   column znvid : Int32 # seed book id
 
-  column author : String = ""
-  column ztitle : String = ""
-
-  column genres : Array(String) = [] of String
-  column bcover : String = ""
-  column bintro : String = ""
-
   column status : Int32 = 0 # same as Cvinfo#status
   column shield : Int32 = 0 # same as Cvinfo#shield
 
@@ -31,10 +24,6 @@ class CV::Zhbook
   getter snvid : String { make_snvid }
   getter last_schid : String { last_zchid.to_s }
 
-  def matched?(cvbook_id : Int64) : Bool
-    cvbook_id_column.value(0) == cvbook_id
-  end
-
   private def make_snvid
     return znvid.to_s unless sname == "zhwenpg"
     CoreUtils.encode32_zh(znvid).ljust(6, '2')
@@ -42,7 +31,11 @@ class CV::Zhbook
 
   def last_zchid=(schid : String)
     @last_schid = schid
-    self.last_zchid = schid.to_i
+    self.last_zchid = schid.to_i? || 0
+  end
+
+  def unmatch?(cvbook_id : Int64) : Bool
+    cvbook_id_column.value(0) != cvbook_id
   end
 
   def self.upsert!(zseed : Int32, znvid : Int32)

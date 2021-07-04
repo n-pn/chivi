@@ -1,6 +1,4 @@
 require "colorize"
-require "file_utils"
-
 require "./seed_util"
 
 class CV::SeedData
@@ -37,7 +35,7 @@ class CV::SeedData
   end
 
   def get_status(snvid : String) : Array(Int32)
-    self.status.get(snvid).try(&.map { |x| x.to_i? || 0 }) || [0, 0, 0]
+    self.status.get(snvid).try(&.map { |x| x.to_i? || 0 }) || [0, 0]
   end
 
   def get_mftime(snvid : String) : Int64
