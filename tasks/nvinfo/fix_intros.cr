@@ -1,52 +1,48 @@
-require "../../src/appcv/nv_info"
-require "./_bookgen"
+require "./../shared/seed_data"
 
-class CV::FixIntros
-  ORDERS = {"hetushu", "shubaow", "paoshu8",
-            "zhwenpg", "5200", "nofff",
-            "zxcs_me", "duokan8", "rengshu",
-            "xbiquge", "bqg_5200"}
+module CV::FixIntros
+  extend self
 
   def fix!
-    bhashes = NvFields.bhashes
-    bhashes.each_with_index(1) do |bhash, idx|
-      yintro = bintro = fintro = nil
+    total, index = Cvbook.query.count, 0
+    query = Cvbook.query.with_ysbooks.with_zhbooks.order_by(weight: :desc)
+    query.each_with_cursor(10) do |cvbook|
+      index += 1
+      puts "- [fix_covers] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
-      if ynvid = NvFields.yousuu.fval(bhash)
-        yintro = get_intro("yousuu", ynvid)
+      yintro = bintro = fintro = nil.as(Array(String)?)
 
-        unless yintro.empty?
-          NvBintro.set!(bhash, yintro, force: true)
-          next
-        end
-      end
-
-      snames = NvChseed.get_list(bhash)
-      snames.sort_by! { |s| ORDERS.index(s) || 99 }
-
-      snames.each do |sname|
-        next unless seed = NvChseed.get_seed(sname, bhash)
-        bintro = get_intro(sname, seed[0])
-        break if bintro.size > 1
-        fintro ||= bintro unless bintro.empty?
+      cvbook.ysbooks.each { |x| yintro = get_intro("yousuu", x.id.to_s) }
+      cvbook.zhbooks.to_a.each do |x|
+        bintro = get_intro(x.sname, x.snvid)
+        break if decent_intro?(x.sname, bintro)
+        fintro ||= bintro
       end
 
       bintro ||= yintro || fintro
+      next if bintro.nil?
 
-      NvBintro.set!(bhash, bintro, force: true) if bintro
-      puts "- [fix_intros] <#{idx}/#{bhashes.size}>".colorize.blue if idx % 100 == 0
+      cvbook.set_zintro(bintro.not_nil!.join("\n"), force: true)
+      cvbook.save!
     end
-
-    NvBintro.save!(clean: false)
   end
 
-  SEEDS = {} of String => Bookgen::Seed
+  @@seeds = {} of String => SeedData
 
-  def get_intro(sname : String, snvid : String)
-    SEEDS[sname] ||= Bookgen::Seed.new(sname)
-    SEEDS[sname].get_intro(snvid)
+  def seed_data(sname) : SeedData
+    @@seeds[sname] ||= SeedData.new(sname)
+  end
+
+  def get_intro(sname : String, snvid : String) : Array(String)
+    seed_data(sname).get_intro(snvid)
+  end
+
+  private def decent_intro?(sname : String, bintro : Array(String))
+    case sname
+    when "hetushu", "zhwenpg" then bintro.size > 0
+    else                           bintro.size > 1
+    end
   end
 end
 
-worker = CV::FixIntros.new
-worker.fix!
+CV::FixIntros.fix!

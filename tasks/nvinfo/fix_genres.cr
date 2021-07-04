@@ -1,62 +1,40 @@
-require "../../src/appcv/filedb/nv_info"
+require "../shared/seed_util"
 
 class CV::FixGenres
-  ORDERS = {"hetushu", "shubaow", "paoshu8",
-            "zhwenpg", "5200", "nofff",
-            "zxcs_me", "duokan8", "rengshu",
-            "xbiquge", "bqg_5200"}
-
   def fix!
-    bhashes = NvFields.bhashes
-    bhashes.each_with_index(1) do |bhash, idx|
-      yousuu = [] of String
-      genres = [] of String
+    total, index = Cvbook.query.count, 0
+    query = Cvbook.query.with_ysbooks.with_zhbooks.order_by(weight: :desc)
+    query.each_with_cursor(10) do |cvbook|
+      index += 1
+      puts "- [fix_covers] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
-      if ynvid = NvFields.yousuu.fval(bhash)
-        get_genres("yousuu", ynvid).each do |genre|
-          yousuu.concat(NvGenres.fix_zh_name(genre))
-          genres.concat(NvGenres.fix_zh_name(genre))
-        end
-      end
+      input = [0]
+      cvbook.ysbooks.each { |x| input.concat get_genres("yousuu", x.id.to_s) }
+      cvbook.zhbooks.each { |x| input.concat get_genres(x.sname, x.snvid) }
 
-      snames = NvChseed.get_list(bhash)
-      snames.sort_by! { |s| ORDERS.index(s) || 99 }
+      tally = input.tally.to_a.sort_by(&.[1].-)
+      keeps = tally.reject(&.[1].< 2)
 
-      snames.each do |sname|
-        snvid = NvChseed.get_nvid(sname, bhash) || bhash
-        input = get_genres(sname, snvid)
-        genres.concat(NvGenres.fix_zh_names(input))
-      end
+      output = keeps.empty? ? tally.map(&.[0]).first(2) : keeps.map(&.[0]).first(3)
+      output.reject!(&.== 0) if output.size > 1
 
-      genres = genres.reject("其他").tally.to_a
-      top_genres = genres.select(&.[1].> 1)
-
-      if top_genres.size > 0
-        zh_genres = top_genres.sort_by(&.[1].-).first(3).map(&.[0])
-      elsif yousuu.size > 0
-        zh_genres = yousuu.first(2)
-      elsif genres.size > 0
-        zh_genres = genres.first(3).map(&.[0])
-      else
-        zh_genres = [] of String
-      end
-
-      vi_genres = zh_genres.map { |g| NvGenres.fix_vi_name(g) }
-      vi_genres = ["Loại khác"] if vi_genres.empty?
-
-      NvGenres.set!(bhash, vi_genres, force: true)
-      puts "- [fix_genres] <#{idx}/#{bhashes.size}>".colorize.blue if idx % 100 == 0
+      cvbook.bgenre_ids = output
+      cvbook.save!
     end
-
-    NvGenres.save!(clean: false)
   end
 
-  getter cache = {} of String => ValueMap
+  def get_genres(sname : String, snvid : String) : Array(Int32)
+    genres = genres_map(sname).get(snvid) || [] of String
+    Bgenre.zh_map_ids(genres)
+  end
 
-  def get_genres(sname : String, snvid : String)
-    file = "_db/_seeds/#{sname}/genres.tsv"
-    map = cache[sname] ||= ValueMap.new(file, mode: 1)
-    map.get(snvid) || [] of String
+  @cache = {} of String => ValueMap
+
+  def genres_map(sname : String)
+    @cache[sname] ||= begin
+      file = "_db/zhbook/#{sname}/genres.tsv"
+      ValueMap.new(file, mode: 1)
+    end
   end
 end
 

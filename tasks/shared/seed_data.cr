@@ -64,16 +64,6 @@ class CV::SeedData
     intro_map(snvid).get(snvid) || [] of String
   end
 
-  # def get_genres(snvid : String)
-  #   zh_names = genres.get(snvid) || [] of String
-
-  #   zh_names = zh_names.map { |x| NvGenres.fix_zh_name(x) }.flatten.uniq
-  #   vi_names = zh_names.map { |x| NvGenres.fix_vi_name(x) }.uniq
-
-  #   vi_names.reject!("Loại khác")
-  #   vi_names.empty? ? ["Loại khác"] : vi_names
-  # end
-
   def get_scores(snvid : String) : Array(Int32)
     if scores = self.scores.get(snvid)
       scores.map(&.to_i)
@@ -100,9 +90,9 @@ class CV::SeedData
 
     @_index.try(&.save!(clean: clean))
 
+    @intros.each_value(&.save!(clean: clean))
     @bcover.try(&.save!(clean: clean))
     @genres.try(&.save!(clean: clean))
-    @intros.each_value(&.save!(clean: clean))
 
     @status.try(&.save!(clean: clean))
     @mftime.try(&.save!(clean: clean))

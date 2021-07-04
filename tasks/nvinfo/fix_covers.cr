@@ -1,15 +1,12 @@
-require "file_utils"
 require "../shared/seed_util"
 
 class CV::FixCovers
   INP_DIR = "_db/bcover"
-  OUT_DIR = "_db/bcover/_webp"
+  OUT_DIR = "_db/bcover/_webps"
 
   ::FileUtils.mkdir_p(OUT_DIR)
 
   def fix!(redo : Bool = false)
-    checked = Set(String).new
-
     total, index = Cvbook.query.count, 0
     query = Cvbook.query.with_ysbooks.with_zhbooks.order_by(weight: :desc)
     query.each_with_cursor(10) do |cvbook|
@@ -21,6 +18,8 @@ class CV::FixCovers
       end
 
       covers = [] of Tuple(String, String)
+      covers << {"chivi", cvbook.bhash}
+
       cvbook.ysbooks.each { |x| covers << {"yousuu", x.id.to_s} }
       cvbook.zhbooks.each { |x| covers << {x.sname, x.snvid} }
 
@@ -46,7 +45,7 @@ class CV::FixCovers
       end
 
       next unless out_cover && out_sname && out_snvid
-      puts "  cover chosen: #{out_cover}"
+      # puts "  cover chosen: #{out_cover}"
 
       out_webp = "#{out_sname}-#{out_snvid}.webp"
       cvbook.tap(&.bcover = out_webp).save! unless cvbook.bcover == out_webp
@@ -54,7 +53,10 @@ class CV::FixCovers
       webp_path = "#{OUT_DIR}/#{out_webp}"
       next if File.exists?(webp_path)
 
-      if out_cover.ends_with?(".gif")
+      case out_cover
+      when .ends_with?(".webp")
+        File.copy(out_cover, webp_path)
+      when .ends_with?(".gif")
         `gif2webp "#{out_cover}" -o "#{webp_path}"`
       else
         `convert "#{out_cover}" -resize "320x>" "#{webp_path}"`
@@ -67,7 +69,7 @@ class CV::FixCovers
   @widths = {} of String => ValueMap
 
   private def width_map(sname : String)
-    @widths[sname] ||= ValueMap.new("#{INP_DIR}/_idx/#{sname}.tsv")
+    @widths[sname] ||= ValueMap.new("#{INP_DIR}/_index/#{sname}.tsv")
   end
 
   # next unless cover_file = cover_path(snam
