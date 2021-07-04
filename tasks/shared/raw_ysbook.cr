@@ -13,7 +13,7 @@ class CV::RawYsbook
   getter author = ""
 
   getter introduction = ""
-  getter intro : Array(String) { TextUtils.split_html(introduction) }
+  getter bintro : Array(String) { TextUtils.split_html(introduction) }
 
   getter classInfo : NamedTuple(classId: Int32, className: String)?
   getter klass : String { @classInfo.try(&.[:className]) || "" }
@@ -22,16 +22,15 @@ class CV::RawYsbook
   getter tags_fixed : Array(String) { @tags.map(&.split("-")).flatten.uniq }
 
   getter cover = ""
-  getter cover_fixed : String { get_fixed_cover }
+  getter bcover : String { get_fixed_cover }
 
   getter updateAt : String = "2020-01-01T07:00:00.000Z"
-
   getter updated_at : Time do
     tstr = updateAt.sub("0000", "2020")
     time = Time.parse_utc(tstr, "%FT%T.%3NZ")
     time < Time.utc ? time : Time.utc
   rescue err
-    puts err.colorize.red
+    puts "error parsing time: #{err.colorize.red}"
     Time.utc(2020, 1, 1, 7, 0, 0)
   end
 
@@ -42,20 +41,20 @@ class CV::RawYsbook
   getter rating : Int32 { score.*(10).round.to_i }
 
   getter countWord = 0_f64
-  getter word_count : Int32 {
+  getter word_count : Int32 do
     count = countWord < 100_000_000 ? countWord : (countWord / 10000)
     count.round.to_i
-  }
+  end
 
   getter commentCount = 0_i32
 
   getter status = 0
   getter shielded = false
+  getter shield : Int32 { shielded ? 1 : 0 }
   # getter recom_ignore = false
 
   property source = [] of Source
   getter root_link : String { source[0]?.try(&.link) || "" }
-
   getter root_name : String { extract_hostname(root_link) }
 
   private def extract_hostname(link : String)

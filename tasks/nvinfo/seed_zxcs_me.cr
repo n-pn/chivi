@@ -6,7 +6,7 @@ require "myhtml"
 require "../../src/cutil/http_utils"
 require "./shared/*"
 
-class CV::ZxcsMeInfoParser
+class CV::ZxcsmeParser
   def initialize(@snvid : String, gz_file : String)
     html = File.open(gz_file) do |io|
       Compress::Gzip::Reader.open(io, &.gets_to_end)
@@ -70,7 +70,7 @@ class CV::ZxcsMeInfoParser
   end
 end
 
-class CV::ZxcsMeJson
+class CV::ZxcsmeJson
   include JSON::Serializable
 
   property btitle : String
@@ -81,9 +81,9 @@ class CV::ZxcsMeJson
   property bcover : String
 end
 
-class CV::InitZxcsMe
+class CV::SeedZxcsme
   INP_DIR = "_db/.cache/zxcs_me/infos"
-  IDX_DIR = "_db/ch_infos/origs/zxcs_me"
+  IDX_DIR = "_db/chseed/zxcs_me"
 
   ::FileUtils.mkdir_p(INP_DIR)
 
@@ -91,15 +91,13 @@ class CV::InitZxcsMe
   @seed = SeedData.new("zxcs_me")
 
   def initialize
-    @snvids = Dir.glob("#{IDX_DIR}/*.tsv").map do |file|
-      File.basename(file, ".tsv")
-    end
-
+    @snvids = Dir.chilren(IDX_DIR)
     @snvids.sort_by!(&.to_i)
-    puts "[INPUT: #{snvids.size} entries]"
+
+    puts "[INPUT: #{@snvids.size} entries]"
   end
 
-  def crawl!
+  def prep!
     @snvids.each_with_index(1) do |snvid, idx|
       file = File.join(INP_DIR, "#{snvid}.html.gz")
       next if File.exists?(file)
@@ -114,14 +112,14 @@ class CV::InitZxcsMe
     end
   end
 
-  def parse!
+  def init!
     @snvids.each_with_index(1) do |snvid, idx|
       file = File.join(INP_DIR, "#{snvid}.html.gz")
 
       next unless atime = SeedUtil.get_mtime(file)
       next if @seed._index.ival_64(snvid) >= atime
 
-      parser = ZxcsMeInfoParser.new(snvid, file)
+      parser = ZxcsmeParser.new(snvid, file)
 
       puts "\n- <http://www.zxcs.me/post/#{snvid}>".colorize.cyan
       next unless result = parser.parse!
@@ -134,6 +132,13 @@ class CV::InitZxcsMe
 
       @seed.genres.set!(snvid, parser.genres)
       @seed.bcover.set!(snvid, parser.bcover)
+
+      @seed.chsize.set!(snvid, read_chsize(snvid))
+
+      if idx % 100 == 0
+        puts "- [zxcs.me]: <#{idx}/#{@snvids.size}>"
+        @seed.save!(clean: false)
+      end
     rescue err
       puts [snvid, err.message.colorize.red]
       gets
@@ -142,10 +147,17 @@ class CV::InitZxcsMe
     @seed.save!(clean: false)
   end
 
+  def read_chsize(snvid : String) : Array(String)
+    index_file = "#{IDX_DIR}/#{snvid}/_id.tsv"
+    lines = File.read_lines(index_file).reject(&.blank?)
+    [lines.size.to_s, lines.size.to_s.rjust(4, '0')]
+  end
+
+  # copy missing data (due to 404) from older data
   def inherit!
     atime = Time.utc(2019, 1, 1).to_unix.to_s
 
-    inputs = Hash(String, ZxcsMeJson).from_json File.read("_db/_seeds/old-zxcs.json")
+    inputs = Hash(String, ZxcsmeJson).from_json File.read("_db/zhbook/old-zxcs.json")
     inputs.each do |snvid, input|
       next if @seed._index.get(snvid)
 
@@ -162,8 +174,7 @@ class CV::InitZxcsMe
   end
 end
 
-worker = CV::InitZxcsMe.new
-worker.crawl!
-worker.parse!
-
+worker = CV::SeedZxcsme.new
+worker.prep!
+worker.init!
 worker.inherit!

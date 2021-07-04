@@ -20,8 +20,8 @@ class CV::Ysbook
   column list_count : Int32 = 0
   column crit_count : Int32 = 0
 
-  def matched?(cvbook_id : Int64) : Bool
-    cvbook_id_column.value(0) == cvbook_id
+  def unmatch?(cvbook_id : Int64) : Bool
+    cvbook_id_column.value(0) != cvbook_id
   end
 
   def self.get!(id : Int64) : Ysbook

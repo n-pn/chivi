@@ -43,7 +43,7 @@ class CV::SeedZhbook
     limit.times { yield channel.receive }
   end
 
-  def crawl!(queue : Array(String), threads = 0)
+  def prep!(queue : Array(String), threads = 0)
     threads = ideal_threads if threads < 1
     threads = queue.size if threads > queue.size
 
@@ -82,7 +82,7 @@ class CV::SeedZhbook
     threads.times { channel.receive }
   end
 
-  def parse!(queue : Array(String))
+  def init!(queue : Array(String))
     puts "[#{@sname}], parsing: #{queue.size}\n".colorize.cyan.bold
 
     queue.each_with_index(1) do |snvid, idx|
@@ -308,13 +308,12 @@ class CV::SeedZhbook
     missing, updates = seeder.build!(upper)
 
     if cr_mode < 2
-      seeder.crawl!(missing, threads)
-      seeder.parse!(missing)
+      seeder.prep!(missing, threads)
+      seeder.init!(missing)
     end
 
     updates -= missing if sname == "jx_la"
-    seeder.parse!(updates) if cr_mode != 1
-
+    seeder.init!(updates) if cr_mode != 1
     seeder.seed! unless no_seed
   end
 end

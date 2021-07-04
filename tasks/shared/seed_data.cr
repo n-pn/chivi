@@ -9,31 +9,51 @@ class CV::SeedData
 
   getter _index : ValueMap { SeedUtil.load_map("#{@sname}/_index") }
 
+  @intros = {} of String => ValueMap
   getter genres : ValueMap { SeedUtil.load_map("#{@sname}/genres") }
   getter bcover : ValueMap { SeedUtil.load_map("#{@sname}/bcover") }
 
   getter status : ValueMap { SeedUtil.load_map("#{@sname}/status") }
   getter mftime : ValueMap { SeedUtil.load_map("#{@sname}/mftime") }
 
-  getter chsize : ValueMap { SeedUtil.load_map("#{@sname}/chsize") }
+  getter scores : ValueMap { SeedUtil.load_map("#{@sname}/scores") }
+  getter counts : ValueMap { SeedUtil.load_map("#{@sname}/counts") }
 
-  @intros = {} of String => ValueMap
+  getter chsize : ValueMap { SeedUtil.load_map("#{@sname}/chsize") }
+  getter origin : ValueMap { SeedUtil.load_map("#{@sname}/origin") }
 
   def initialize(@sname)
     @s_dir = "_db/zhbook/#{@sname}"
     ::FileUtils.mkdir_p("#{@s_dir}/intros")
   end
 
-  private def intro_map(snvid : String)
+  def get_index(snvid : String) : Tuple(Int64, String, String)
+    return {0_i64, "", ""} unless value = self._index.get(snvid)
+    {value[0].to_i64, value[1], value[2]}
+  end
+
+  def get_counts(snvid : String) : Array(Int32)
+    self.counts.get(snvid).try(&.map(&.to_i)) || [0, 0, 0]
+  end
+
+  def get_status(snvid : String) : Array(Int32)
+    self.status.get(snvid).try(&.map { |x| x.to_i? || 0 }) || [0, 0, 0]
+  end
+
+  def get_mftime(snvid : String) : Int64
+    self.mftime.ival_64(snvid)
+  end
+
+  private def intro_map(snvid : String) : ValueMap
     group = snvid.rjust(6, '0')[0, 3]
     @intros[group] ||= ValueMap.new("#{@s_dir}/intros/#{group}.tsv")
   end
 
-  def get_genres(snvid : String)
+  def get_genres(snvid : String) : Array(String)
     self.genres.get(snvid) || [] of String
   end
 
-  def get_bcover(snvid : String)
+  def get_bcover(snvid : String) : String
     # TODO: generate book cover without have to load cover file
     @seed.bcover.fval(snvid) || ""
   end
@@ -57,18 +77,24 @@ class CV::SeedData
   # end
 
   def get_scores(snvid : String) : Array(Int32)
-    bname = begin
-      _, btitle, author = self._index.get(snvid).not_nil!
-      "#{btitle}  #{author}"
-    end
-
-    if score = SeedUtil.rating_fix.get(bname)
-      score.map(&.to_i)
+    if scores = self.scores.get(snvid)
+      scores.map(&.to_i)
+    elsif scores = SeedUtil.rating_fix.get(get_nlabel(snvid))
+      scores.map(&.to_i)
     elsif @sname == "hetushu" || @sname == "zxcs_me"
       [Random.rand(30..100), Random.rand(50..65)]
     else
       [Random.rand(25..50), Random.rand(40..50)]
     end
+  end
+
+  private def get_nlabel(snvid : String)
+    _, btitle, author = self._index.get(snvid).not_nil!
+    "#{btitle}  #{author}"
+  end
+
+  def get_origin(snvid : String)
+    self.origin.get(snvid) || ["", ""]
   end
 
   def save!(clean : Bool = false)
@@ -83,6 +109,10 @@ class CV::SeedData
     @status.try(&.save!(clean: clean))
     @mftime.try(&.save!(clean: clean))
     @mftime.try(&.save!(clean: clean))
+
+    @chsize.try(&.save!(clean: clean))
+    @counts.try(&.save!(clean: clean))
+    @origin.try(&.save!(clean: clean))
   end
 
   # def upsert!(snvid : String, fixed = false) : Tuple(String, String, String)
