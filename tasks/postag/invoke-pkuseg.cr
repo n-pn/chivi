@@ -17,7 +17,7 @@ class CV::Postag
 
   def run!(wrks = 3)
     extract_txt(tag_mode: 1)
-    Process.run("python3", [SCRIPT, @sname, @snvid], input: IOPIPE, output: IOPIPE)
+    Process.run("python3", [SCRIPT, @sname, @snvid], output: IOPIPE)
   end
 
   def extract_txt(tag_mode = 1) : Nil
@@ -57,7 +57,7 @@ class CV::Postag
   end
 end
 
-wrks, mode, redo = 5, 1, false
+wrks, mode, redo = 6, 1, false
 
 OptionParser.parse(ARGV) do |opt|
   opt.banner = "Usage: invoke-pkuseg [arguments]"
@@ -71,6 +71,8 @@ chan = Channel(Nil).new(wrks)
 
 lines = File.read_lines("priv/zhseed.tsv").reject(&.empty?)
 lines.each_with_index(1) do |line, idx|
+  chan.receive if idx > wrks
+
   spawn do
     sname, snvid, _, bslug = line.split('\t')
     puts "- <#{idx}/#{lines.size}> [#{sname}/#{snvid}] #{bslug}".colorize.yellow
@@ -81,8 +83,6 @@ lines.each_with_index(1) do |line, idx|
   ensure
     chan.send(nil)
   end
-
-  chan.receive if idx > wrks
 end
 
 wrks.times { chan.receive }
