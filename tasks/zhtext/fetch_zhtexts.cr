@@ -40,6 +40,8 @@ class CV::FetchBook
     wrks = queue.size if wrks > queue.size
     puts "- <#{label}> [#{@sname}/#{@snvid}] #{queue.size} entries".colorize.light_cyan
 
+    ::FileUtils.mkdir_p(RmText.c_dir(@sname, @snvid))
+
     channel = Channel(Nil).new(wrks + 1)
     queue.each_with_index(1) do |(schid, chidx), idx|
       spawn do
@@ -119,7 +121,7 @@ class CV::FetchSeed
       end
     end
 
-    wrks = RmUtil.ideal_workers_count_for(sname) if wrks < 1
+    wrks = ideal_workers_count_for(sname) if wrks < 1
 
     case mode
     when :single
@@ -128,6 +130,15 @@ class CV::FetchSeed
     when :multi
       puts "[#{sname} - #{wrks}]".colorize.cyan.bold
       FetchSeed.new(sname).crawl!(wrks: wrks)
+    end
+  end
+
+  def self.ideal_workers_count_for(sname : String) : Int32
+    case sname
+    when "zhwenpg", "shubaow"  then 1
+    when "paoshu8", "bqg_5200" then 2
+    when "duokan8", "69shu"    then 4
+    else                            6
     end
   end
 end

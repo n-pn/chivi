@@ -1,7 +1,7 @@
 require "../cutil/time_utils"
 require "../cutil/text_utils"
-
-require "./rm_util"
+require "../cutil/http_utils"
+require "./shared/html_parser"
 
 class CV::RmText
   # cache folder path
@@ -17,12 +17,42 @@ class CV::RmText
   getter snvid : String
   getter schid : String
 
-  def initialize(@sname, @snvid, @schid, valid = 10.years, label = "1/1")
-    file = RmUtil.chtext_file(@sname, @snvid, @schid)
-    link = RmUtil.chtext_link(@sname, @snvid, @schid)
+  getter file : String { "#{RmText.c_dir(@sname, @snvid)}/#{@schid}.html.gz" }
 
-    html = RmUtil.fetch(file, link, sname: @sname, valid: valid, label: label)
-    @rdoc = Myhtml::Parser.new(html)
+  getter link : String do
+    case @sname
+    when "nofff"    then "https://www.nofff.com/#{snvid}/#{schid}/"
+    when "69shu"    then "https://www.69shu.com/txt/#{snvid}/#{schid}"
+    when "jx_la"    then "https://www.jx.la/book/#{snvid}/#{schid}.html"
+    when "qu_la"    then "https://www.qu.la/book/#{snvid}/#{schid}.html"
+    when "rengshu"  then "http://www.rengshu.com/book/#{snvid}/#{schid}"
+    when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/#{schid}.html"
+    when "biqubao"  then "https://www.biqubao.com/book/#{snvid}/#{schid}.html"
+    when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/#{schid}.html"
+    when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
+    when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/#{schid}.html"
+    when "duokan8"  then "http://www.duokanba.info/#{prefixed_snvid}/#{schid}.html"
+    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed_snvid}/#{schid}.html"
+    when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/#{schid}.html"
+    when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/#{schid}.html"
+    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed_snvid}/#{schid}.html"
+    else                 raise "Unsupported remote source <#{sname}>!"
+    end
+  end
+
+  def prefixed_snvid
+    "#{@snvid.to_i // 1000}_#{@snvid}"
+  end
+
+  alias TimeSpan = Time::Span | Time::MonthSpan
+
+  def initialize(@sname, @snvid, @schid, @ttl : TimeSpan = 10.years, @label = "1/1")
+  end
+
+  getter page : HtmlParser do
+    encoding = HttpUtils.encoding_for(@sname)
+    html = HttpUtils.load_html(link, file, @ttl, @label, encoding)
+    HtmlParser.new(html)
   end
 
   def save!(file : String) : Nil
@@ -40,15 +70,16 @@ class CV::RmText
       extract_title("#read-content > h2")
         .sub(/^章节目录\s*/, "")
         .sub(/《.+》正文\s/, "")
-    when "hetushu" then @rdoc.css("#content .h2").first.inner_text
+    when "hetushu" then page.text("#content .h2")
     when "zhwenpg" then extract_title("h2")
     else                extract_title("h1")
     end
   end
 
+  # remove volume label from chap title
   private def extract_title(sel : String) : String
-    return "" unless node = @rdoc.css(sel).first?
-    TextUtils.format_title(node.inner_text)[0]
+    title = page.text(sel)
+    TextUtils.format_title(title)[0]
   end
 
   getter paras : Array(String) do
@@ -62,7 +93,7 @@ class CV::RmText
   end
 
   private def extract_69shu_paras
-    unless node = @rdoc.css(".txtnav").first?
+    unless node = page.find(".txtnav")
       return extract_paras(".yd_text2")
     end
 
@@ -78,7 +109,7 @@ class CV::RmText
   end
 
   private def extract_paras(sel : String)
-    return [] of String unless node = @rdoc.css(sel).first?
+    return [] of String unless node = page.find(sel)
 
     node.children.each do |tag|
       tag.remove! if {"script", "div"}.includes?(tag.tag_name)
@@ -130,19 +161,19 @@ class CV::RmText
 
     lines
   rescue err
-    puts "<remote_text> [#{@sname}/#{@snvid}/#{@schid}] error: #{err}".colorize.red
+    puts "<rm_text> [#{@sname}/#{@snvid}/#{@schid}] error: #{err}".colorize.red
     [] of String
   end
 
   private def extract_hetushu_paras
     client = hetushu_encrypt_string
-    orders = Base64.decode_string(client).split(/[A-Z]+%/)
+    orders = Base64.decode_string(client).split(/[A-Z]+%/).map(&.to_i)
 
     res = Array(String).new(orders.size, "")
     jmp = 0
 
-    inp = @rdoc.css("#content div:not([class])").map_with_index do |node, idx|
-      ord = orders[idx].to_i
+    page.css("#content > div:not([class])").each_with_index do |node, idx|
+      ord = orders[idx]? || 0
 
       if ord < 5
         jmp += 1
@@ -157,23 +188,19 @@ class CV::RmText
   end
 
   private def hetushu_encrypt_string
-    if node = @rdoc.css("meta[name=client]").first?
-      return node.attributes["content"]
-    end
+    page.attr("meta[name=client]", "content", nil).try { |attr| return attr }
 
-    html_file = RmUtil.chtext_file(@sname, @snvid, @schid)
-    meta_file = html_file.sub(".html", ".meta")
+    meta_file = file.sub(".html.gz", ".meta")
     return File.read(meta_file) if File.exists?(meta_file)
 
-    html_link = RmUtil.chtext_link(@sname, @snvid, @schid)
-    json_link = html_link.sub("#{@schid}.html", "r#{@schid}.json")
+    json_link = link.sub("#{@schid}.html", "r#{@schid}.json")
 
     headers = HTTP::Headers{
-      "Referer"          => html_link,
+      "Referer"          => link,
       "X-Requested-With" => "XMLHttpRequest",
     }
 
-    puts "-- HIT: <#{json_link}>".colorize.blue
+    puts "-- GET: <#{json_link}>".colorize.blue
     HTTP::Client.get(json_link, headers: headers) do |res|
       res.headers["token"].tap { |token| File.write(meta_file, token) }
     end

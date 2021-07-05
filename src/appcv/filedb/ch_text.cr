@@ -87,10 +87,10 @@ class CV::ChText
     [] of String
   end
 
-  def fetch_zh!(valid = 10.years, mkdir = true, label = "1/1") : Array(String)?
+  def fetch_zh!(ttl = 10.years, mkdir = true, label = "1/1") : Array(String)?
     RmText.mkdir!(@sname, @snvid) if mkdir
 
-    puller = RmText.new(@sname, @snvid, @schid, valid: valid, label: label)
+    puller = RmText.new(@sname, @snvid, @schid, ttl: ttl, label: label)
     lines = [puller.title].concat(puller.paras)
     lines.tap { |x| save_zh!(x) }
   rescue err

@@ -3,9 +3,8 @@ require "colorize"
 require "../../src/seeds/rm_text.cr"
 
 def fetch_text(sname : String, snvid : String, schid : String, fresh = false)
-  puts "\n[#{CV::RmUtil.chtext_link(sname, snvid, schid)}]\n".colorize.blue.bold
-
-  chap = CV::RmText.new(sname, snvid, schid, valid: fresh ? 1.minute : 10.years)
+  chap = CV::RmText.new(sname, snvid, schid, ttl: fresh ? 1.minute : 10.years)
+  puts "\n[#{chap.link}]\n".colorize.blue.bold
 
   puts chap.title
   puts "---".colorize.blue
@@ -13,7 +12,7 @@ def fetch_text(sname : String, snvid : String, schid : String, fresh = false)
   puts "---".colorize.blue
   puts chap.paras.last(4).join("\n")
 rescue err
-  puts err.colorize.red
+  puts err.inspect_with_backtrace.colorize.red
 end
 
 fetch_text("69shu", "30494", "22578503", fresh: false)
@@ -45,8 +44,6 @@ fetch_text("bqg_5200", "139731", "174666986", fresh: false)
 fetch_text("shubaow", "150092", "32706021", fresh: false)
 # fetch_text("shubaow", "149926", "32662664")
 
-fetch_text("hetushu", "5124", "3814265", fresh: false)
-
 # fetch_text("qu_la", "7", "3382573")
 # fetch_text("qu_la", "7", "3382447")
 
@@ -55,5 +52,8 @@ fetch_text("69shu", "35875", "25117266", fresh: false)
 fetch_text("biqubao", "33775", "18804401", fresh: false)
 
 fetch_text("bxwxorg", "119227", "1367374", fresh: false)
+# fetch_text("bxwxorg", "170826", "1399584", fresh: false)
 
-fetch_text("bxwxorg", "170826", "1399584", fresh: false)
+# fetch_text("hetushu", "5124", "3814265", fresh: false)
+# fetch_text("hetushu", "2421", "1655382", fresh: false)
+fetch_text("hetushu", "1640", "1099716", fresh: false)
