@@ -18,7 +18,6 @@ def tag_zip(zip_file, out_dir, pick_mode = 0, skip_existing = True):
             if not should_tag(idx, pick_mode):
                 continue
 
-
             txt_file = os.path.join(out_dir, file)
             out_file = os.path.join(out_dir, file.replace('.txt', '.dat'))
 
@@ -72,5 +71,3 @@ def tag_seed(sname):
 if __name__ == "__main__":
     sname = sys.argv[1] or "zxcs_me"
     tag_seed(sname)
-
-    # tag_file("tmp/inp.txt", "tmp/out.txt")

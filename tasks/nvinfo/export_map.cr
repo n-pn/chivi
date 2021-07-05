@@ -15,7 +15,7 @@ module CV
       lookup[slug] ||= book.id
     end
 
-    next unless seed = book.zhbooks.to_a.sort(&.zseed).first?
+    next unless seed = book.zhbooks.to_a.sort_by(&.zseed).first?
     zhseed << [seed.sname, seed.snvid, book.bhash, book.bslug, book.id.to_s]
   end
 

@@ -40,7 +40,7 @@ module CV::UploadSeed
     dirs = Dir.children(target_dir).sort_by { |x| x.to_i? || 0 }
 
     wkrs = dirs.size
-    wkrs = 8 if wkrs > 8
+    wkrs = 6 if wkrs > 6
     chan = Channel(Nil).new(wkrs + 1)
 
     cmd = %{rsync -aiWS --inplace --no-p -e "ssh -T -c aes128-ctr -o Compression=no -x"}
