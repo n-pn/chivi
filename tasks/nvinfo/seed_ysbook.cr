@@ -5,7 +5,7 @@ require "../shared/seed_data.cr"
 require "../shared/raw_ysbook.cr"
 
 class CV::SeedYsbook
-  DIR = "_db/yousuu/.cache/infos"
+  DIR = "_db/yousuu/infos"
 
   @seed = SeedData.new("yousuu")
 
@@ -48,7 +48,7 @@ class CV::SeedYsbook
   end
 
   private def read_dir(dir = DIR)
-    Dir.glob("#{DIR}/*.json").map do |file|
+    Dir.glob("#{DIR}/**/*.json").map do |file|
       snvid = File.basename(file, ".json")
       bumped = SeedUtil.get_mtime(file)
       {file, snvid, bumped}

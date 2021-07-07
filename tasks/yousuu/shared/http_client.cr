@@ -61,6 +61,7 @@ class CV::HttpClient
 
     case body
     when .starts_with?("{\"success"), .includes?("未找到该图书")
+      ::FileUtils.mkdir_p(File.dirname(file))
       File.write(file, body)
       puts "- #{label} saved".colorize.green
 

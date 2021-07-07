@@ -71,47 +71,59 @@ class CV::FetchBook
 end
 
 class CV::FetchSeed
-  getter snvids = [] of String
-
-  def initialize(@sname : String)
-    lines = File.read_lines("priv/zhseed.tsv")
-
-    lines.each do |line|
-      vals = line.split('\t', 3)
-      next if vals.size < 3
-
-      next unless @sname == vals[0]
-      @snvids << vals[1]
-    end
+  def initialize(@sname : String, @favi = false)
   end
 
   def crawl!(wrks = 4)
-    puts "[#{@sname}: #{@snvids.size} entries]".colorize.green.bold
+    queue = [] of String
 
-    @snvids.each_with_index(1) do |snvid, idx|
-      worker = FetchBook.new(@sname, snvid)
-      worker.crawl!(wrks: wrks, label: "#{idx}/#{@snvids.size}")
+    File.read_lines("priv/zhseed.tsv").each do |line|
+      parts = line.split('\t', 4)
+      next if parts.size < 3
+
+      sname, snvid, bhash = parts
+      queue << snvid if should_crawl?(bhash, sname)
     end
+
+    puts "[#{@sname}: #{queue.size} entries]".colorize.green.bold
+
+    queue.each_with_index(1) do |snvid, idx|
+      worker = FetchBook.new(@sname, snvid)
+      worker.crawl!(wrks: wrks, label: "#{idx}/#{queue.size}")
+    end
+  end
+
+  def should_crawl?(bhash : String, sname : String)
+    return false if sname != @sname
+    !@favi || library.includes?(bhash)
+  end
+
+  getter library : Set(String) do
+    inp_dir = "_db/vi_users/marks"
+    bhashes = Dir.children(inp_dir).map { |x| File.basename(x, ".tsv") }
+    Set(String).new(bhashes)
   end
 
   def self.run!(argv = ARGV)
     sname, snvid = "hetushu", "1"
-    mode, wrks = :multi, 0
+    mode, wrks, favi = :multi, 0, false
 
     OptionParser.parse(ARGV) do |opt|
       opt.banner = "Usage: fetch_zhtexts [arguments]"
       opt.on("-t WORKERS", "Parallel workers") { |x| wrks = x.to_i }
-      opt.on("-s SNAME", "Seed name") { |x| sname = x }
 
       opt.on("single", "Fetch a single book") do
         mode = :single
         opt.banner = "Usage: fetch_zhtexts single [arguments]"
+        opt.on("-s SNAME", "Seed name") { |x| sname = x }
         opt.on("-n SNVID", "Seed book id") { |x| snvid = x }
       end
 
       opt.on("multi", "Fetch multi books") do
         mode = :multi
         opt.banner = "Usage: fetch_zhtexts multi [arguments]"
+        opt.on("-s SNAMES", "Seed names") { |x| sname = x }
+        opt.on("-f", "Only favorited books") { favi = true }
       end
 
       opt.invalid_option do |flag|
@@ -128,8 +140,8 @@ class CV::FetchSeed
       puts "[#{sname} - #{snvid} - #{wrks}]".colorize.cyan.bold
       FetchBook.new(sname, snvid).crawl!(wrks: wrks)
     when :multi
-      puts "[#{sname} - #{wrks}]".colorize.cyan.bold
-      FetchSeed.new(sname).crawl!(wrks: wrks)
+      puts "[sname: #{sname}, workers: #{wrks}]".colorize.cyan.bold
+      FetchSeed.new(sname, favi: favi).crawl!(wrks: wrks)
     end
   end
 

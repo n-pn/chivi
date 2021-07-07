@@ -15,8 +15,8 @@ class CV::Postag
   SCRIPT = "tasks/postag/pkuseg-runner.py"
   IOPIPE = Process::Redirect::Inherit
 
-  def run!(wrks = 3)
-    extract_txt(tag_mode: 1)
+  def run!(mode = 1, wrks = 3)
+    extract_txt(tag_mode: mode)
     Process.run("python3", [SCRIPT, @sname, @snvid], output: IOPIPE)
   end
 
@@ -55,29 +55,48 @@ class CV::Postag
     return true if chap_index % 10 == 0
     tag_mode == 1 && chap_index < 50
   end
+
+  class_getter library : Set(String) do
+    inp_dir = "_db/vi_users/marks"
+    bhashes = Dir.children(inp_dir).map { |x| File.basename(x, ".tsv") }
+    Set(String).new(bhashes)
+  end
+
+  def self.should_tag?(bhash : String, favi = false)
+    return true unless favi
+    library.includes?(bhash)
+  end
 end
 
-wrks, mode, redo = 6, 1, false
+wrks, mode, redo, favi = 6, 1, false, false
 
 OptionParser.parse(ARGV) do |opt|
   opt.banner = "Usage: invoke-pkuseg [arguments]"
   opt.on("-t THREADS", "Parallel workers") { |x| wrks = x.to_i }
   opt.on("-m MODE", "Less or more chaps") { |x| mode = x.to_i }
   opt.on("-r", "Redo postagging") { redo = true }
+  opt.on("-f", "Only favorited books") { favi = true }
 end
 
 # wrks = files.size if wrks > files.size
+wrks = 1 if wrks < 1
 chan = Channel(Nil).new(wrks)
 
 lines = File.read_lines("priv/zhseed.tsv").reject(&.empty?)
+
 lines.each_with_index(1) do |line, idx|
   chan.receive if idx > wrks
 
   spawn do
-    sname, snvid, _, bslug = line.split('\t')
-    puts "- <#{idx}/#{lines.size}> [#{sname}/#{snvid}] #{bslug}".colorize.yellow
-    tagger = CV::Postag.new(sname, snvid, redo: redo)
-    tagger.run!
+    sname, snvid, bhash, bslug = line.split('\t')
+
+    if CV::Postag.should_tag?(bhash, favi)
+      puts "- <#{idx}/#{lines.size}> [#{sname}/#{snvid}] #{bslug}".colorize.yellow
+      tagger = CV::Postag.new(sname, snvid, redo: redo)
+      tagger.run!(mode: mode, wrks: wrks)
+    else
+      puts "- skipping: #{bslug}"
+    end
   rescue err
     puts err.message.colorize.red
   ensure

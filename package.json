@@ -9,17 +9,16 @@
     "upload": "yarn db-up && yarn ys-up",
     "rs-web": "ssh nipin@ssh.chivi.xyz \"sudo service chivi-web restart\"",
     "rs-srv": "ssh nipin@ssh.chivi.xyz \"sudo service chivi-srv restart\"",
-    "cr-ysinfos": "crystal tasks/yousuu/ys_serial.cr",
-    "cr-yscrits": "crystal tasks/yousuu/ys_review.cr",
+    "ys-infos": "crystal tasks/yousuu/ys_serial.cr",
+    "ys-crits": "crystal tasks/yousuu/ys_review.cr",
     "seed-ysbook": "./bin/seed_ysbook",
     "seed-zhwenpg": "./bin/seed_zhwenpg",
-    "seed_zhbook": "./bin/seed_zhbook",
+    "seed-zhbook": "./bin/seed_zhbook -s",
     "seed-zhbooks": "bash tasks/nvinfo/seed_zhbook.sh",
     "seed-infos": "./bin/seed_ysbook && ./bin/seed_zhwenpg && yarn seed-zhbooks",
     "fix-covers": "./bin/fetch_covers && ./bin/fix_covers",
     "fix-nvinfo": "./bin/fix_intros && ./bin/fix_genres",
     "build": "shards build --release",
-    "build-mt": "shards build --release -Dpreview_mt",
-    "db": "cd web && yarn knex"
+    "build-mt": "shards build --release -Dpreview_mt"
   }
 }

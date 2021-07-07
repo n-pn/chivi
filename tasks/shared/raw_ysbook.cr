@@ -104,7 +104,7 @@ class CV::RawYsbook
 
   def self.load(file : String) : self
     text = File.read(file)
-    raise InvalidFile.new(file) unless text.includes?("\"success\"")
+    raise InvalidFile.new(file) unless text.starts_with?("{\"success")
 
     json = NamedTuple(data: Data).from_json(text)
     info = json[:data][:bookInfo]

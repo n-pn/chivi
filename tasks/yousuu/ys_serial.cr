@@ -3,7 +3,7 @@ require "../shared/raw_ysbook"
 require "./shared/http_client"
 
 class CV::CrawlYsbook
-  DIR = "_db/yousuu/.cache/infos"
+  DIR = "_db/yousuu/infos"
 
   def initialize(regen_proxy = false)
     @http = HttpClient.new(regen_proxy)
@@ -50,7 +50,9 @@ class CV::CrawlYsbook
   end
 
   def crawl_info!(snvid : String, label = "1/1/1")
-    file = "#{DIR}/#{snvid}.json"
+    group = (snvid.to_i // 1000).to_s.rjust(3, '0')
+    file = "#{DIR}/#{group}/#{snvid}.json"
+
     return if still_good?(file)
 
     link = "https://api.yousuu.com/api/book/#{snvid}"

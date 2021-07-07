@@ -1,7 +1,7 @@
 require "./shared/http_client"
 
 class CV::CrawlYscrit
-  DIR = "_db/yousuu/.cache/crits"
+  DIR = "_db/yousuu/crits"
   IDX = "_db/zhbook/yousuu/counts.tsv"
 
   @counter = {} of String => Int32
@@ -56,8 +56,11 @@ class CV::CrawlYscrit
   end
 
   def crawl_crit!(snvid : String, page = 1, label = "1/1/1") : String?
-    file = "#{DIR}/#{snvid}-#{page}.json"
+    group = (snvid.to_i // 1000).to_s.rjust(3, '0')
+    file = "#{DIR}/#{group}/#{snvid}-#{page}.json"
+
     return if still_good?(file, page)
+
     link = "https://api.yousuu.com/api/book/#{snvid}/comment?page=#{page}"
     return snvid unless @http.save!(link, file, label)
   end
