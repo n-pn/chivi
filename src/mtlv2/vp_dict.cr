@@ -8,7 +8,7 @@ class CV::VpDict
   ::FileUtils.mkdir_p("#{DIR}/books")
 
   # group: local, chivi, cvdev etc.
-  class_getter vp_group : String = ENV["VP_GROUP"]? || "local"
+  class_getter suffix : String = ENV["SUFFIX"]? || "local"
 
   class_getter trungviet : self { load("trungviet") }
   class_getter cc_cedict : self { load("cc_cedict") }
@@ -36,11 +36,11 @@ class CV::VpDict
     CACHE[dname] ||=
       case dname
       when "trungviet", "cc_cedict", "trich_dan"
+        new(path(dname), dtype: 1, p_min: 5, reset: reset)
+      when "essence", "fixture", "suggest"
         new(path(dname), dtype: 1, p_min: 4, reset: reset)
       when "tradsim", "binh_am", "hanviet"
         new(path(dname), dtype: 2, p_min: 3, reset: reset)
-      when "fixture", "suggest"
-        new(path(dname), dtype: 1, p_min: 3, reset: reset)
       when "regular", "combine"
         new(path(dname), dtype: 2, p_min: 2, reset: reset)
       else
@@ -66,7 +66,7 @@ class CV::VpDict
   getter p_min : Int32 # minimal user power required
 
   def initialize(@file : String, @dtype = 0, @p_min = 1, reset = false)
-    @flog = @file.sub("main", "logs").sub(".tsv", ".#{@@vp_group}.tsv")
+    @flog = @file.sub("main", "logs").sub(".tsv", ".#{@@suffix}.tsv")
     load!(@file) unless reset || !File.exists?(@file)
   end
 
@@ -185,7 +185,7 @@ class CV::VpDict
       end
     end
 
-    puts "- <vdict> [#{File.basename(@file)}] saved: #{@size} entries, \
+    puts "- <vp_dict> [#{File.basename(@file)}] saved: #{@size} entries, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.yellow
   end
 end

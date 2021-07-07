@@ -1,17 +1,18 @@
 require "../../src/mtlv2/*"
 
-class CV::Tagger
+class CV::Tagsum
   alias Tagging = Hash(PosTag, Int32)
 
   getter file : String
   getter data = Hash(String, Tagging).new { |h, k| h[k] = Tagging.new(0) }
+  forward_missing_to @data
 
   def initialize(@file, @type = :pku, mode = 1)
     return if mode < 1
-    load_file!(@file) if mode > 1 || File.exists?(@file)
+    load_tagsum!(@file) if mode > 1 || File.exists?(@file)
   end
 
-  def load_file!(file : String = @file, skip_existing = false)
+  def load_tagsum!(file : String = @file, skip_existing = false)
     lines = File.read_lines(file)
     lines.each_with_index(1) do |line, idx|
       line = line.strip
@@ -36,11 +37,29 @@ class CV::Tagger
       puts "<#{file}:#{idx}> error: \n  #{err.message}"
     end
 
-    puts "- file #{file} loaded!"
+    puts "- <tagsum> file #{file} loaded, entries: #{lines.size}!"
   end
 
-  def add_word(word : String, tag : String)
+  def load_postag!(file : String)
+    File.each_line do |line|
+      add_postag_line(line)
+    end
+  end
+
+  def add_postag_line(line : String)
+    parts = line.split(" ")
+    parts.each do |part|
+      next if part.starts_with?('/')
+      word, tag = part.split('/', 2)
+      add_postag(word, tag)
+    rescue err
+      puts "error: #{err.message} for [#{part}]"
+    end
+  end
+
+  def add_postag(word : String, tag : String)
     postag = to_postag(tag)
+    raise "unknown tag #{tag}" if postag == PosTag::None
     @data[word][postag] += 1
   end
 
@@ -73,14 +92,19 @@ class CV::Merger
   alias Merging = Tuple(String, String)
 
   getter file : String
+  getter ftab : String
   getter data = Hash(String, Merging).new
+  forward_missing_to @data
 
   def initialize(@file, mode = 1)
+    @ftab = @file.sub(".tsv", ".fix.tsv")
+
     return if mode < 1
-    load_file!(@file) if mode > 1 || File.exists?(@file)
+    load_merger!(@ftab) if mode > 1 || File.exists?(@ftab)
+    load_merger!(@file) if mode > 1 || File.exists?(@file)
   end
 
-  def load_file!(file = @file, skip_existing = true)
+  def load_merger!(file = @file, skip_existing = true)
     lines = File.read_lines(file)
     lines.each_with_index(1) do |line, idx|
       line = line.strip
@@ -93,7 +117,83 @@ class CV::Merger
       puts "<#{file}:#{idx}> error: \n  #{err.message}"
     end
 
-    puts "- file #{file} loaded!"
+    puts "- <postag> file #{file} loaded, entries: #{lines.size}".colorize.blue
+  end
+
+  def add_tagsum!(file : String,
+                  label = File.basename(file, ".tsv"),
+                  skip_existing = true)
+    tagsum = Tagsum.new(file, mode: 2)
+    tagsum.each do |word, vals|
+      next if skip_existing && @data.has_key?(word)
+      next unless postag = extract_tag(word, vals, label)
+
+      @data[word] = {postag.to_str, label}
+      next unless vals.first_value >= 100
+
+      File.open(@ftab.sub("fix", "top"), "a") do |io|
+        {word, postag.to_str, label}.join(io, '\t')
+        io << '\n'
+      end
+    rescue err
+      puts err.colorize.red
+    end
+  end
+
+  def extract_tag(word : String, vals : Hash(PosTag, Int32), label : String) : PosTag?
+    first_tag = vals.first_key
+    max_count = vals.first_value
+
+    return nil if max_count < 5
+
+    min_count = max_count > 10 ? 5 : max_count - 5
+    min_count = 2 if min_count < 2
+
+    vals = vals.reject { |t, c| c < min_count }
+
+    return first_tag if vals.size < 2
+
+    prompt_tag(word, vals).tap do |postag|
+      File.open(@ftab, "a") do |io|
+        {word, postag.to_str, label}.join(io, '\t')
+        io << '\n'
+      end
+    end
+  end
+
+  def prompt_tag(word : String, vals : Hash(PosTag, Int32)) : PosTag
+    label = vals.map { |k, v| "#{k.to_str}:#{v}" }
+
+    puts "\nResolve: #{word} #{label}".colorize.yellow
+
+    if is_veno?(vals)
+      puts "- auto choose tag: <vn> ".colorize.green
+      return PosTag::Veno
+    end
+
+    print "- choice: "
+    case tag = gets.not_nil!
+    when .empty?
+      vals.first_key
+    else
+      postag = PosTag.from_str(tag)
+      raise "Unknown postag <#{tag}>" if postag == PosTag::None
+      postag
+    end
+  end
+
+  def is_veno?(vals) : Bool
+    return false unless vals.has_key?(PosTag::Veno)
+    vals.each_key do |postag|
+      case postag
+      when .veno?, .verb?, .vintr?, .vead?
+        next
+      else
+        return false
+      end
+    end
+
+    true
   end
 
   def save!(file = @file) : Nil

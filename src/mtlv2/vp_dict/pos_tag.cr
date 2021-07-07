@@ -25,7 +25,7 @@ module CV
     :Place => "s", # 处所词 - place word - nơi chốn
     :Space => "f", # 方位词 - space word - phương vị
 
-    :Verb => "v",  # 动词 -  - động từ
+    :Verb => "v",  # 动词 - verb - động từ
     :Vead => "vd", # 副动词 - adverbial use of verb - ?
     :Veno => "vn", # 名动词 - nominal use of verb - danh động từ
 
