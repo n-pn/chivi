@@ -203,6 +203,7 @@ enum CV::PosTag
     case tag
     when "nr1", "nr2", "nrj", "nrf" then Nper
     when "nsf"                      then Nloc
+    when "nx"                       then Nother
     when "rzt", "rzs", "rzv"        then Prodeic
     when "ryt", "rys", "ryv"        then Prointr
     when "dl", "dg"                 then Adverb

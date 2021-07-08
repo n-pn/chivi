@@ -41,7 +41,7 @@ class CV::Tagsum
   end
 
   def load_postag!(file : String)
-    File.each_line do |line|
+    File.each_line(file) do |line|
       add_postag_line(line)
     end
   end
@@ -49,8 +49,10 @@ class CV::Tagsum
   def add_postag_line(line : String)
     parts = line.split(" ")
     parts.each do |part|
-      next if part.starts_with?('/')
-      word, tag = part.split('/', 2)
+      vals = part.split('/')
+      next if vals.size != 2
+
+      word, tag = vals
       add_postag(word, tag)
     rescue err
       puts "error: #{err.message} for [#{part}]"
@@ -75,16 +77,20 @@ class CV::Tagsum
   def save!(file : String = @file) : Nil
     file_io = File.open(file, "w")
 
-    @data.each do |word, tags|
-      file_io << word << '\t'
+    output = @data.map do |word, tags|
+      {word, tags.to_a.sort_by(&.[1].-)}
+    end
 
-      tags = tags.to_a.sort_by(&.[1].-)
-      line = tags.map { |k, v| "#{k.to_str}:#{v}" }.join(file_io, "\t")
+    output.sort_by! { |_, tags| -tags[0][1] }
+
+    output.each do |word, tags|
+      file_io << word
+      tags.each { |k, v| file_io << '\t' << k.to_str << ':' << v }
       file_io << '\n'
     end
 
     file_io.close
-    puts "- file #{file} saved!"
+    puts "- <tagsum> file #{file} saved, entries: #{output.size}"
   end
 end
 
