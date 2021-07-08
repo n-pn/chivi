@@ -1,7 +1,7 @@
 require "json"
 require "file_utils"
 
-require "../../libcv/cvmtl"
+require "../../mtlv2/mt_core"
 require "../../seeds/rm_info"
 require "../../seeds/rm_util"
 require "../../tsvfs/value_map"
@@ -40,7 +40,7 @@ class CV::ChInfo
     end
   end
 
-  getter cvmtl : Cvmtl { Cvmtl.generic(@bname) }
+  getter cvmtl : MtCore { MtCore.generic_mtl(@bname) }
 
   def initialize(@bname : String, @sname : String, @snvid : String)
     @seed_dir = "#{SEED_DIR}/#{@sname}/#{@snvid}"

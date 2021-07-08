@@ -1,7 +1,7 @@
 require "file_utils"
 require "compress/zip"
 
-require "../../libcv/cvmtl"
+require "../../mtlv2/mt_core"
 require "../../seeds/rm_text"
 require "../../cutil/ram_cache"
 
@@ -53,7 +53,7 @@ class CV::ChText
     return "" if lines.empty?
 
     String.build do |io|
-      mtl = Cvmtl.generic(@bname)
+      mtl = MtCore.generic_mtl(@bname)
       mtl.cv_title_full(lines[0]).to_str(io)
 
       1.upto(lines.size - 1) do |i|

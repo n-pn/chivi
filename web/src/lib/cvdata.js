@@ -5,8 +5,8 @@ export function split_input(cvdata) {
 
 export function split_cvline(cvline) {
   return cvline.split('\t').map((x) => {
-    const a = x.split('ǀ')
-    return [a[0], a[1] || '', +a[2], a[3]]
+    const [key, val, tag, dic] = x.split('ǀ')
+    return [key, val || '', tag || '', +dic]
   })
 }
 
@@ -44,7 +44,7 @@ export function render_html(nodes) {
   let idx = 0
   let pos = 0
 
-  for (const [key, val, dic] of nodes) {
+  for (const [key, val, tag, dic] of nodes) {
     const e_key = escape_html(key)
     const e_val = escape_html(val)
 
@@ -53,7 +53,7 @@ export function render_html(nodes) {
       res += '<em>'
     }
 
-    res += render_node(e_key, e_val, dic, idx, pos)
+    res += render_node(e_key, e_val, tag, dic, idx, pos)
 
     const last = val.charAt(val.length - 1)
     if (last == '”') {
@@ -90,8 +90,8 @@ function escape_html(str) {
   return str.replace(/[&<>]/g, replace_tag)
 }
 
-function render_node(key, val, dic, idx, pos) {
-  return `<x-v data-d=${dic} data-k="${key}" data-i=${idx} data-p=${pos}>${val}</x-v>`
+function render_node(key, val, tag, dic, idx, pos) {
+  return `<x-v data-k="${key}" data-t="${tag}" data-d=${dic} data-i=${idx} data-p=${pos}>${val}</x-v>`
 }
 
 export function ad_indexes(len, min = 15) {
