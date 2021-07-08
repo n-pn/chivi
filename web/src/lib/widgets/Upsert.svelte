@@ -17,14 +17,15 @@
   import Input from './Upsert/Input.svelte'
   import Vhint from './Upsert/Vhint.svelte'
   import Vutil from './Upsert/Vutil.svelte'
+
   import Vattr from './Upsert/Vattr.svelte'
-  import Vprio from './Upsert/Vprio.svelte'
+  import Vrank from './Upsert/Vrank.svelte'
 
   import Emend from './Upsert/Emend.svelte'
-  import Power from './Upsert/Power.svelte'
+  import Privi from './Upsert/Privi.svelte'
   import Links from './Upsert/Links.svelte'
 
-  export let dname = 'various'
+  export let dname = 'combine'
   export let bname = 'Tổng hợp'
   export let changed = false
 
@@ -65,14 +66,14 @@
     props = data
     infos = props.infos
 
-    p_old = infos.map((info) => info.power)
+    p_old = infos.map((info) => info.privi)
     p_now = p_old.map((p_min, i) => {
       let privi = i + 2
       if (privi < p_min) privi = p_min
       return privi < $session.privi ? privi : $session.privi
     })
 
-    origs = infos.map((info) => info.vals[0] || '')
+    origs = infos.map((info) => info.val[0] || '')
 
     const hanviet = props.trans.hanviet
     value = [
@@ -84,15 +85,14 @@
 
   async function submit_val(tab = $on_tab) {
     const dname = dicts[tab][0]
-    const params = {
-      key,
-      vals: value[tab].replace('', '').trim(),
-      prio: infos[tab].prio,
-      attr: infos[tab].attr,
-      power: p_now[tab],
-    }
 
-    const [status, _payload] = await dict_upsert(fetch, dname, params)
+    const val = value[tab].replace('', '').trim()
+    const { tag, wgt } = infos[tab]
+
+    const ext = tag == 3 ? tag : `${tag} ${wgt}`
+    const opts = { key, val, ext, privi: p_now[tab] }
+
+    const [status, _payload] = await dict_upsert(fetch, dname, opts)
     hide_modal(null, status == 0)
   }
 
@@ -130,14 +130,14 @@
 
   $: submit_state = !value[$on_tab] ? 'Xoá' : origs[$on_tab] ? 'Sửa' : 'Thêm'
   $: curr_state_class = state_class(submit_state)
-  $: curr_power_class = power_class(p_now[$on_tab], p_old[$on_tab])
+  $: curr_privi_class = privi_class(p_now[$on_tab], p_old[$on_tab])
 
   $: binh_am = props.trans.binh_am || ''
   $: hanviet = props.trans.hanviet || ''
 
-  function power_class(power, p_old) {
-    if (power < p_old) return 'text'
-    return power == p_old ? 'line' : 'solid'
+  function privi_class(privi, p_old) {
+    if (privi < p_old) return 'text'
+    return privi == p_old ? 'line' : 'solid'
   }
 
   function state_class(state) {
@@ -193,16 +193,6 @@
             _orig={origs[$on_tab]}
             bind:value={value[$on_tab]} />
 
-          <!-- <div
-            id="value"
-            contenteditable="true"
-            spellcheck="false"
-            class="-input"
-            class:_fresh={!origs[$on_tab]}
-            bind:this={value_field}
-            bind:innerHTML={value[$on_tab]}
-            autocomplete="off"
-            autocapitalize={$on_tab < 1 ? 'words' : 'off'} /> -->
           <input
             id="value"
             type="text"
@@ -214,7 +204,7 @@
             autocapitalize={$on_tab < 1 ? 'words' : 'off'} />
 
           {#if $on_tab < 2}
-            <Vattr bind:attr={infos[$on_tab].attr} />
+            <Vattr bind:tag={infos[$on_tab].tag} />
           {/if}
 
           <Vutil bind:value={value[$on_tab]} _orig={origs[$on_tab]} />
@@ -222,11 +212,11 @@
       </div>
 
       <div class="vfoot">
-        <Vprio bind:prio={infos[$on_tab].prio} />
-        <Power bind:power={p_now[$on_tab]} p_max={$session.privi} />
+        <Vrank bind:wgt={infos[$on_tab].wgt} />
+        <Privi bind:privi={p_now[$on_tab]} p_max={$session.privi} />
 
         <button
-          class="m-button _large _{curr_power_class} _{curr_state_class}"
+          class="m-button _large _{curr_privi_class} _{curr_state_class}"
           disabled={$session.privi <= $on_tab}
           on:click={() => submit_val($on_tab)}>
           <span class="-text">{submit_state}</span>

@@ -9,7 +9,7 @@
     <span class="-text">{info.state} bởi: </span>
     <span class="-user">{info.uname}</span>
     <span class="-text">Q.hạn:</span>
-    <span class="-user">{info.power}</span>
+    <span class="-user">{info.privi}</span>
     <span class="-text">Thời gian:</span>
     <span class="-time"><RTime mtime={info.mtime} /></span>
   </div>

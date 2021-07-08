@@ -13,13 +13,16 @@ html {
   height: 100vh;
 }
 
-$-body-color: color(neutral, 8) !default;
+$-body-fgcolor: color(neutral, 8) !default;
 $-body-bgcolor: color(neutral, 1) !default;
 $-body-font-family: font-family(sans) !default;
 
 body {
   min-width: $m-screen-xs;
   height: 100%;
+
+  --fgmain: #{$-body-fgcolor};
+  --bgmain: #{$-body-bgcolor};
 
   font-size: 1rem;
   font-weight: 400;
@@ -30,8 +33,8 @@ body {
   vertical-align: baseline;
   overflow-y: scroll;
 
-  background-color: $-body-bgcolor;
-  color: $-body-color;
+  background: var(--bgmain);
+  color: var(--fgmain);
 
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(#000, 0);

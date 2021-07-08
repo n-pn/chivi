@@ -1,22 +1,22 @@
 <script>
   import SIcon from '$lib/blocks/SIcon.svelte'
 
-  export let power
+  export let privi
   export let p_max
 </script>
 
-<div class="power">
-  <div class="txt"><span class="lbl">Q.h:</span>{power}</div>
+<div class="privi">
+  <div class="txt"><span class="lbl">Q.h:</span>{privi}</div>
   <button
     class="btn -up"
-    disabled={power >= p_max}
-    on:click={() => (power += 1)}><SIcon name="chevron-up" /></button>
-  <button class="btn -dn" disabled={power < 2} on:click={() => (power -= 1)}
+    disabled={privi >= p_max}
+    on:click={() => (privi += 1)}><SIcon name="chevron-up" /></button>
+  <button class="btn -dn" disabled={privi < 2} on:click={() => (privi -= 1)}
     ><SIcon name="chevron-down" /></button>
 </div>
 
 <style lang="scss">
-  .power {
+  .privi {
     margin-left: 0.75rem;
     padding-left: 0.5rem;
     padding-right: 1.75rem;
@@ -31,6 +31,7 @@
   .txt {
     display: inline-block;
     line-height: 2.625rem;
+    @include fgcolor(neutral, 8);
   }
 
   .lbl {

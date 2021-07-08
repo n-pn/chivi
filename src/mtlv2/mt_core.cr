@@ -3,7 +3,7 @@ require "./mt_core/*"
 
 class CV::MtCore
   class_getter hanviet_mtl : self { new([VpDict.essence, VpDict.hanviet]) }
-  class_getter phanham_mtl : self { new([VpDict.essence, VpDict.binh_am]) }
+  class_getter binh_am_mtl : self { new([VpDict.essence, VpDict.binh_am]) }
   class_getter tradsim_mtl : self { new([VpDict.tradsim]) }
 
   def self.generic_mtl(bdict : String)

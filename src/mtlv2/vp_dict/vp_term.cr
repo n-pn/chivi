@@ -96,7 +96,9 @@ class CV::VpTerm
     jb.object do
       jb.field "key", @key
       jb.field "val", @val
-      jb.field "ext", @ext
+
+      jb.field "tag", tag.to_str
+      jb.field "wgt", wgt
 
       jb.field "mtime", rtime.to_unix_ms
       jb.field "uname", @uname

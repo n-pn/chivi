@@ -187,8 +187,9 @@
     }
   }
 
-  @mixin change-color($color: blue) {
+  @mixin cv-token($color: blue) {
     cursor: pointer;
+    position: relative;
     --border: #{color($color, 4)};
     --active: #{color($color, 6)};
 
@@ -196,6 +197,19 @@
       --border: #{color($color, 6)};
       --active: #{color($color, 4)};
     }
+
+    // &:hover:after {
+    //   position: absolute;
+
+    //   top: 1.75em;
+    //   left: 0;
+    //   // padding-right: 0.2em;
+
+    //   background: var(--bgmain);
+    //   white-space: nowrap;
+    //   content: attr(data-t);
+    //   font-size: 0.5em;
+    // }
   }
 
   :global(x-v) {
@@ -216,18 +230,18 @@
   }
 
   :global(x-v[data-d='1']) {
-    @include change-color(teal);
+    @include cv-token(teal);
   }
 
   :global(x-v[data-d='2']) {
-    @include change-color(blue);
+    @include cv-token(blue);
   }
 
   :global(x-v[data-d='3']) {
-    @include change-color(green);
+    @include cv-token(green);
   }
 
   :global(x-v[data-d='9']) {
-    @include change-color(gray);
+    @include cv-token(gray);
   }
 </style>

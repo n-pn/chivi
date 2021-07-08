@@ -62,7 +62,7 @@
 <Loader active={$navigating} />
 
 <style lang="scss">
-  :global(#sapper) {
+  :global(#svelte) {
     display: flex;
     flex-direction: column;
     min-height: 100%;
@@ -70,9 +70,12 @@
 
   .app {
     height: 100%;
+    background-color: var(--bgmain);
+    color: var(--fgmain);
 
     &.tm-dark {
-      background: color(neutral, 8);
+      --bgmain: #{color(neutral, 8)};
+      --fgmain: #{color(neutral, 1)};
     }
   }
 

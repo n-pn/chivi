@@ -16,7 +16,6 @@ module CV
     :Ntitle => "nw", # 作品名 - title name - tác phẩm
     :Nother => "nz", # 其它专名 - other proper noun - tên riêng khác
 
-    :Nform => "nl", # 名词性惯用语 - nominal formulaic expression - ???
     :Nmorp => "ng", # 名词性语素 - nominal morpheme
 
     :Time  => "t",  # 时间词 - time word - thời gian
@@ -61,8 +60,8 @@ module CV
     :Nquant => "mq", # 数量词 - numeral and quantifier - số + lượng
 
     :Quanti => "q",  # 量词 - quantifier - lượng từ
-    :Qtverb => "qv", # 动量词 - temporal classifier - lượng từ thời gian
-    :Qttime => "qt", # 时量词 - verbal classifier - lượng động từ
+    :Qtverb => "qv", # 动量词 - temporal classifier -  lượng động từ
+    :Qttime => "qt", # 时量词 - verbal classifier -  lượng từ thời gian
 
     :Idiom => "i", # 成语 - idiom - thành ngữ
     :Abbre => "j", # 简称 - abbreviation - viết tắt

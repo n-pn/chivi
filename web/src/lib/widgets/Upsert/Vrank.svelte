@@ -1,19 +1,20 @@
 <script context="module">
-  const priorities = { L: 'Thấp', M: 'Bình', H: 'Cao' }
+  const lbls = { 2: 'Thấp', 3: 'Bình', 4: 'Cao' }
+  const keys = { 2: 'l', 3: 'm', 4: 'h' }
 </script>
 
 <script>
-  export let prio = 1
+  export let wgt = 3
 </script>
 
 <div class="prio">
   <span class="-txt">Ưu tiên:</span>
-  {#each Object.entries(priorities) as [val, lbl], idx}
+  {#each Object.entries(lbls) as [val, lbl]}
     <button
       class="-btn"
-      class:active={prio == idx}
-      data-kbd={val}
-      on:click={() => (prio = idx)}>{lbl}</button>
+      class:active={wgt == val}
+      data-kbd={keys[val]}
+      on:click={() => (wgt = val)}>{lbl}</button>
   {/each}
 </div>
 

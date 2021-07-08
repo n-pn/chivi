@@ -1,70 +1,40 @@
 <script context="module">
-  const types = [
-    ['N', 'Danh', 'D..'],
-    ['V', 'Động', 'Đ..'],
-    ['A', 'Tính', 'T..'],
-  ]
+  import { labels } from '$lib/postag.js'
 </script>
 
 <script>
-  export let attr = 0
+  export let tag = ''
 </script>
 
-<div class="attr">
-  {#each types as [val, lbl_full, lbl_trim], idx}
-    <button
-      class="-val"
-      data-kbd={val}
-      class:active={attr & (1 << idx)}
-      on:click={() => (attr = attr ^ (1 << idx))}>
-      <span class="-full">{lbl_full}</span>
-      <span class="-trim">{lbl_trim}</span>
-    </button>
-  {/each}
-</div>
+<button class="attr">
+  {labels[tag] || tag || 'Không rõ từ loại'}
+</button>
 
 <style lang="scss">
   .attr {
-    display: flex;
     position: absolute;
-    right: 0.5rem;
     top: 2.5rem;
+    right: 0.5rem;
     line-height: 1.5rem;
-  }
-
-  .-val {
-    padding: 0 0.375rem;
     text-transform: uppercase;
-    font-weight: 500;
-
+    padding: 0 0.5rem;
     background: transparent;
-    opacity: 0.9;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: rem(12px);
+    @include fgcolor(neutral, 6);
+    @include border;
 
-    @include fgcolor(neutral, 5);
-
-    @include border();
-    @include radius(0.5rem);
-
-    @include props(font-size, rem(14px), $md: rem(12px));
-
-    &:hover,
-    &.active {
-      @include fgcolor(primary, 5);
+    &:hover {
+      background: #fff;
     }
-
-    &.active {
-      @include bdcolor(primary, 4);
-    }
-
-    // prettier-ignore
-    & + & { margin-left: 0.375rem; }
   }
 
-  .-full {
-    @include props(display, none, $md: inline-block);
-  }
+  // .-full {
+  //   @include props(display, none, $md: inline-block);
+  // }
 
-  .-trim {
-    @include props(display, inline-block, $md: none);
-  }
+  // .-trim {
+  //   @include props(display, inline-block, $md: none);
+  // }
 </style>

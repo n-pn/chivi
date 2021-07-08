@@ -4,15 +4,15 @@ class CV::VpDictCtrl < CV::BaseCtrl
   def index
     res = [] of Tuple(String, String, Int32) # dict name, dict type, entries count
 
-    res << {"regular", "system", Vdict.regular.size}
-    res << {"hanviet", "system", Vdict.hanviet.size}
+    res << {"regular", "system", VpDict.regular.size}
+    res << {"hanviet", "system", VpDict.hanviet.size}
 
     limit = params.fetch_int("limit", min: 50, max: 100)
     offset = params.fetch_int("offset")
 
     # TODO: display book names
-    Vdict.udicts[offset, limit].each do |dname|
-      res << {dname, "unique", Vdict.load(dname).size}
+    VpDict.udicts[offset, limit].each do |dname|
+      res << {dname, "unique", VpDict.load(dname).size}
     end
 
     render_json(res)
@@ -20,14 +20,14 @@ class CV::VpDictCtrl < CV::BaseCtrl
 
   def show
     dname = params["dname"]
-    vdict = Vdict.load(dname)
+    vdict = VpDict.load(dname)
 
     limit = params.fetch_int("limit", min: 50, max: 100)
     offset = params.fetch_int("offset")
 
-    res = [] of Vterm
+    res = [] of VpTerm
 
-    filter = Vtrie::Filter.init(params.to_unsafe_h)
+    filter = VpTrie::Filter.init(params.to_unsafe_h)
 
     vdict.each do |node|
       next unless filter.match?(node)
@@ -49,7 +49,7 @@ class CV::VpDictCtrl < CV::BaseCtrl
     dname = params["dname"]
     input = params["input"].strip
 
-    dicts = {Vdict.load(dname), Vdict.regular}
+    dicts = {VpDict.load(dname), VpDict.regular}
     chars = input.chars
     upper = chars.size - 1
 
@@ -60,22 +60,22 @@ class CV::VpDictCtrl < CV::BaseCtrl
 
       dicts.each do |dict|
         dict.scan(chars, idx) do |item|
-          entry[item.key.size]["vietphrase"].concat(item.vals).uniq!
+          entry[item.key.size]["vietphrase"].concat(item.val).uniq!
         end
       end
 
-      Vdict.trungviet.scan(chars, idx) do |item|
-        entry[item.key.size]["trungviet"] = item.vals
+      VpDict.trungviet.scan(chars, idx) do |item|
+        entry[item.key.size]["trungviet"] = item.val
       end
 
-      Vdict.cc_cedict.scan(chars, idx) do |item|
-        entry[item.key.size]["cc_cedict"] = item.vals
+      VpDict.cc_cedict.scan(chars, idx) do |item|
+        entry[item.key.size]["cc_cedict"] = item.val
       end
 
       entry.to_a.sort_by(&.[0].-)
     end
 
-    hanviet = Cvmtl.hanviet.translit(input).to_str
+    hanviet = MtCore.hanviet_mtl.translit(input).to_str
     render_json({hanviet: hanviet, entries: entries})
   end
 
@@ -84,46 +84,41 @@ class CV::VpDictCtrl < CV::BaseCtrl
     input = params["input"]
     hints = [] of String
 
-    special_dict = Vdict.load(dname)
-    regular_dict = Vdict.regular
-    hanviet_dict = Vdict.hanviet
+    special_dict = VpDict.load(dname)
+    regular_dict = VpDict.regular
+    hanviet_dict = VpDict.hanviet
 
     if special_node = special_dict.trie.find(input)
-      special_node.edits.each { |term| hints.concat(term.vals) }
+      special_node.edits.each { |term| hints.concat(term.val) }
     end
 
     if regular_node = regular_dict.trie.find(input)
-      regular_node.edits.each { |term| hints.concat(term.vals) }
+      regular_node.edits.each { |term| hints.concat(term.val) }
     end
 
     if hanviet_node = hanviet_dict.trie.find(input)
-      hanviet_node.edits.each { |term| hints.concat(term.vals) }
+      hanviet_node.edits.each { |term| hints.concat(term.val) }
     end
 
-    if suggest_node = Vdict.suggest.trie.find(input)
-      suggest_node.edits.each { |term| hints.concat(term.vals) }
+    if suggest_node = VpDict.suggest.trie.find(input)
+      suggest_node.edits.each { |term| hints.concat(term.val) }
     end
 
     unless special_term = special_node.try(&.term)
-      if term = regular_node.try(&.term)
-        prio, attr = term.prio, term.attr
-      else
-        prio = attr = 1
-      end
-
-      special_term = special_dict.gen_term(input, prio: prio, attr: attr)
+      ext = regular_node.try(&.term.try(&.ext)) || ""
+      special_term = special_dict.new_term(input, ext: ext)
     end
 
     unless regular_term = regular_node.try(&.term)
-      regular_term = regular_dict.gen_term(input)
+      regular_term = regular_dict.new_term(input)
     end
 
     unless hanviet_term = hanviet_node.try(&.term)
-      hanviet_term = hanviet_dict.gen_term(input)
+      hanviet_term = hanviet_dict.new_term(input)
     end
 
-    binh_am = Cvmtl.binh_am.translit(input).to_s
-    hanviet = Cvmtl.hanviet.translit(input).to_s
+    binh_am = MtCore.binh_am_mtl.translit(input).to_s
+    hanviet = MtCore.hanviet_mtl.translit(input).to_s
 
     render_json do |res|
       JSON.build(res) do |jb|
@@ -146,39 +141,39 @@ class CV::VpDictCtrl < CV::BaseCtrl
   def upsert
     return halt!(500, "Không đủ quyền hạn!") if cu_privi < 1
 
-    power = params.fetch_int("power")
-    power = cu_privi if power > cu_privi
+    privi = params.fetch_int("privi")
+    privi = cu_privi if privi > cu_privi
 
     dname = params["dname"]
-    dict = Vdict.load(dname)
+    vdict = VpDict.load(dname)
+    mtime = VpTerm.mtime
 
     key = params.fetch_str("key").strip
-    vals = [params.fetch_str("vals").strip]
+    val = params.fetch_str("val").strip.split(" / ")
+    ext = params.fetch_str("ext")
 
-    prio = params.fetch_int("prio")
-    attr = params.fetch_int("attr")
-
-    new_term = Vterm.new(key, vals, prio, attr, uname: cv_dname, power: power, dtype: dict.dtype)
-    return halt!(501, "Không thay đổi!") unless dict.set!(new_term)
+    new_term = vdict.new_term(key, val, ext, mtime: mtime, uname: cv_dname, privi: privi)
+    return halt!(501, "Không thay đổi!") unless vdict.set!(new_term)
 
     # TODO: save context
 
-    if dict.dtype == 3 # unique dict
+    if vdict.dtype == 3 # unique dict
       # add to quick translation dict if entry is a name
-      unless key.size < 3 || vals.empty? || vals[0].downcase == vals[0]
-        various_term = Vdict.various.gen_term(key, vals, 2, 1)
-        Vdict.various.set!(various_term)
+      if key.size > 2 && new_term.tag.nper?
+        combine_term = VpDict.combine.new_term(key, val, ext, mtime: mtime)
+        VpDict.combine.set!(combine_term)
       end
 
       # add to suggestion
-      suggest_term = Vdict.suggest.gen_term(key, vals)
-      if old_term = Vdict.suggest.find(key)
-        suggest_term.vals.concat(old_term.vals).uniq!
+      suggest_term = VpDict.suggest.new_term(key, val, ext, mtime: mtime)
+
+      if old_term = VpDict.suggest.find(key)
+        suggest_term.val.concat(old_term.val).uniq!
       end
 
-      Vdict.suggest.set!(suggest_term)
+      VpDict.suggest.set!(suggest_term)
     end
 
-    render_json(dict.find(key))
+    render_json(new_term)
   end
 end
