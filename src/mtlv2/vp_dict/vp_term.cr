@@ -10,7 +10,7 @@ class CV::VpTerm
   getter val : Array(String)
 
   getter ext : String = ""
-  getter wgt : String { @ext.split(" ").last.try(&.to_i?) || 3 }
+  getter wgt : Int32 { @ext.split(" ").last.try(&.to_i?) || 3 }
   getter tag : PosTag { PosTag.from_str(@ext.split(" ").first) }
 
   getter mtime : Int32 = 0
@@ -27,7 +27,7 @@ class CV::VpTerm
     @key = cols[0]
     @val = cols.fetch(1, "").split(SEP)
 
-    return if @dtype < 2 # skip reading ext if dict type is lookup
+    return if @dtype < 1 # skip reading ext if dict type is lookup
     @ext = cols[2]? || ""
 
     return unless mtime = cols[3]?.try(&.to_i?)
@@ -73,11 +73,23 @@ class CV::VpTerm
     io << key << '\t'
     @val.join(io, SEP)
 
-    return if @dtype < 2 # skip for lookup dicts
+    return if @dtype < 1 # skip printing if dict type is lookup
     io << '\t' << @ext
 
-    return if @mtime <= 0 # skip if no user activity
+    return if @mtime <= 0
     io << '\t' << @mtime << '\t' << @uname << '\t' << @privi
+  end
+
+  def inspect(io : IO) : Nil
+    io << '[' << key << '/'
+    @val.join(io, ',')
+    io << '/' << @ext
+
+    if @mtime > 0
+      io << '/' << @mtime << '/' << @uname << '/' << @privi
+    end
+
+    io << ']'
   end
 
   def to_json(jb : JSON::Builder)

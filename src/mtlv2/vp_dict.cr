@@ -18,9 +18,10 @@ class CV::VpDict
   class_getter binh_am : self { load("binh_am") }
   class_getter hanviet : self { load("hanviet") }
 
-  class_getter fixture : self { load("fixture") }
+  class_getter essence : self { load("essence") }
   class_getter regular : self { load("regular") }
   class_getter combine : self { load("combine") }
+  class_getter fixture : self { load("fixture") }
   class_getter suggest : self { load("suggest") }
 
   class_getter udicts : Array(String) do
@@ -36,7 +37,7 @@ class CV::VpDict
     CACHE[dname] ||=
       case dname
       when "trungviet", "cc_cedict", "trich_dan"
-        new(path(dname), dtype: 1, p_min: 5, reset: reset)
+        new(path(dname), dtype: 0, p_min: 5, reset: reset)
       when "essence", "fixture", "suggest"
         new(path(dname), dtype: 1, p_min: 4, reset: reset)
       when "tradsim", "binh_am", "hanviet"

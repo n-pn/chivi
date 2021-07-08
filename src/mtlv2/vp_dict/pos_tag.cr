@@ -112,19 +112,23 @@ module CV
     :Punct   => "w",   # 标点符号 - symbols and punctuations - dấu câu
     :Perct   => "wb",  # percentage and permillle signs: ％ and ‰ of full length; % of half length
     :Comma   => "wd",  # full or half-length comma: `，` `,`
-    :Flstop  => "wj",  # full stop of full length: `。`
-    :Flenum  => "wn",  # full-length enumeration mark: `、`
+    :Penum   => "wn",  # full-length enumeration mark: `、`
+    :Pstop   => "wj",  # full stop of full length: `。`
+    :Pdeci   => "wx",  # half stop, decimal
     :Colon   => "wm",  # full or half-length colon: `：`， `:`
     :Smcln   => "wf",  # full or half-length semi-colon: `；`， `;`
     :Ellip   => "ws",  # full-length ellipsis: ……  …
     :Pdash   => "wp",  # dash: ——  －－  —— －  of full length; ---  ---- of half length
+    :Middot  => "wi",  # interpunct
     :Exmark  => "wt",  # full or half-length exclamation mark: `！` `!`
     :Qsmark  => "ww",  # full or half-length question mark: `？` `?`
     :Symbol  => "wh",  # full or half-length unit symbol ￥ ＄ ￡ ° ℃  $
-    :Qteopen => "wyz", # full-length single or double opening quote: “ ‘ 『
-    :Qtestop => "wyy", # full-length single or double closing quote: ” ’ 』
-    :Brkopen => "wkz", # opening brackets: （ 〔 ［ ｛ 《 【 〖 〈 of full length; ( [ { < of half length
-    :Brkstop => "wky", # closing brackets: ） 〕 ］ ｝ 》 】 〗 〉of full length;  ) ] } > of half length
+    :Quoteop => "wyz", # full-length single or double opening quote: “ ‘ 『
+    :Quotecl => "wyy", # full-length single or double closing quote: ” ’ 』
+    :Brackop => "wkz", # opening brackets: （ 〔 ［ ｛ 《 【 〖 〈 of full length; ( [ { < of half length
+    :Brackcl => "wky", # closing brackets: ） 〕 ］ ｝ 》 】 〗 〉of full length;  ) ] } > of half length
+    :Titleop => "wwz", # open title《〈 ⟨
+    :Titlecl => "wwy", # close title 》〉⟩
   }
 end
 
@@ -135,16 +139,27 @@ enum CV::PosTag
   {{ tag.id }}
   {% end %}
 
+  @[AlwaysInline]
+  def real?
+    Noun <= self <= Locut
+  end
+
+  def ends?
+    puncts? || interjection?
+  end
+
   def nouns?
     Noun <= self <= Nmorp || veno? || ajno?
   end
 
+  @[AlwaysInline]
   def verbs?
     Verb <= self <= Vmorp
   end
 
+  @[AlwaysInline]
   def adjts?
-    adjt? || ajav? || ajno?
+    Adjt <= self <= Amorp
   end
 
   def content?
@@ -153,6 +168,26 @@ enum CV::PosTag
 
   def function?
     advb? || prep? || conj? || ptcl? || stat? || func?
+  end
+
+  @[AlwaysInline]
+  def strings?
+    String <= self <= Urlstr
+  end
+
+  @[AlwaysInline]
+  def puncts?
+    Punct <= self <= Titlecl
+  end
+
+  @[AlwaysInline]
+  def numbers?
+    Number << self << Nquant
+  end
+
+  @[AlwaysInline]
+  def quantis?
+    Quanti << self << Qttime
   end
 
   def to_str : ::String
@@ -225,10 +260,13 @@ enum CV::PosTag
   def self.from_str(tag : ::String)
     {% begin %}
     case tag
+    when "" then None
     {% for tag, name in POS_TAGS %}
     when {{ name }} then {{ tag.id }}
     {% end %}
-    else None
+    else
+      # puts "unknown tag <#{tag}>!"
+      None
     end
     {% end %}
   end
