@@ -7,7 +7,7 @@
 </script>
 
 <button class="attr">
-  {labels[tag] || tag || 'Không rõ từ loại'}
+  {labels[tag] || tag || 'Chưa phân loại'}
 </button>
 
 <style lang="scss">
