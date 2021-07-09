@@ -14,7 +14,7 @@ class CV::VpTerm
   getter tag : PosTag { PosTag.from_str(@ext.split(" ").first) }
 
   getter mtime : Int32 = 0
-  getter uname : String = "."
+  getter uname : String = "_"
   getter privi : Int32 = 1
 
   getter dtype : Int32 = 1
@@ -33,13 +33,13 @@ class CV::VpTerm
     return unless mtime = cols[3]?.try(&.to_i?)
     @mtime = mtime
 
-    @uname = cols[4]? || "."
+    @uname = cols[4]? || "_"
     @privi = cols[5]?.try(&.to_i?) || @privi
   end
 
   def initialize(@key,
                  @val = [""], @ext = "",
-                 @mtime = VpTerm.mtime, @uname = ".", @privi = 1,
+                 @mtime = VpTerm.mtime, @uname = "_", @privi = 1,
                  @dtype = 2)
   end
 

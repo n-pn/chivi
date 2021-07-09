@@ -41,12 +41,8 @@
   $height: 2.25rem;
 
   .vutil {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
     padding: 0 0.375rem;
-    font-size: rem(11px);
+    font-size: rem(13px);
 
     @include flex();
     @include border($sides: top);
@@ -57,7 +53,6 @@
     padding: 0 0.375rem;
     line-height: $height;
     font-weight: 500;
-    text-transform: uppercase;
     background: none;
     @include fgcolor(neutral, 5);
 

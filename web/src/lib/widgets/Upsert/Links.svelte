@@ -12,18 +12,19 @@
   ]
 </script>
 
-<div>
+<div class="upsert-links">
   {#each links as [name, href]}
-    <a {href} target="_blank" rel="noopener noreferer">{name}</a>
+    <a class="upsert-link" {href} target="_blank" rel="noopener noreferer"
+      >{name}</a>
   {/each}
 </div>
 
 <style lang="scss">
-  div {
+  .upsert-links {
     @include flex($center: content);
   }
 
-  a {
+  .upsert-link {
     cursor: pointer;
     padding: 0 0.75rem;
     line-height: 2.25rem;
@@ -32,7 +33,7 @@
     @include fgcolor(neutral, 7);
 
     &:hover {
-      @include bgcolor(neutral, 3);
+      @include fgcolor(primary, 5);
     }
   }
 </style>

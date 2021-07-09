@@ -25,10 +25,6 @@
 
 <style lang="scss">
   .hints {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
     padding: 0.25rem 0.5rem;
     font-style: italic;
     height: 1.75rem;

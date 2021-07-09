@@ -25,7 +25,7 @@ const config = {
     preprocess({
       scss: {
         prependData: `@use "sass:math";\n@import "helpers";`,
-        includePaths: ['src/css'],
+        includePaths: [path.resolve(_cwd, 'src/css')],
         renderSync: true,
       },
       postcss: postcssConfig,

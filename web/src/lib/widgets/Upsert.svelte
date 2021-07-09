@@ -1,6 +1,6 @@
 <script context="module">
   import { writable } from 'svelte/store'
-
+  import { labels } from '$lib/postag.js'
   import { titleize } from '$utils/text_utils'
   import { dict_upsert, dict_search } from '$api/dictdb_api'
 
@@ -15,13 +15,13 @@
   import SIcon from '$lib/blocks/SIcon.svelte'
 
   import Input from './Upsert/Input.svelte'
+  import Emend from './Upsert/Emend.svelte'
+
   import Vhint from './Upsert/Vhint.svelte'
   import Vutil from './Upsert/Vutil.svelte'
 
-  import Vattr from './Upsert/Vattr.svelte'
   import Vrank from './Upsert/Vrank.svelte'
 
-  import Emend from './Upsert/Emend.svelte'
   import Privi from './Upsert/Privi.svelte'
   import Links from './Upsert/Links.svelte'
 
@@ -150,6 +150,14 @@
         return 'harmful'
     }
   }
+
+  function postag_label(tag) {
+    return labels[tag] || tag || 'Chưa phân loại'
+  }
+
+  function show_postag() {
+    // TODO!
+  }
 </script>
 
 <div
@@ -185,30 +193,31 @@
     <section class="vform">
       <Emend info={infos[$on_tab]} />
 
-      <div class="forms">
-        <div class="value">
-          <Vhint
-            {hanviet}
-            hints={props.hints}
-            _orig={origs[$on_tab]}
-            bind:value={value[$on_tab]} />
+      <div class="field">
+        <Vhint
+          {hanviet}
+          hints={props.hints}
+          _orig={origs[$on_tab]}
+          bind:value={value[$on_tab]} />
 
+        <div class="value" class:_fresh={!origs[$on_tab]}>
           <input
             id="value"
             type="text"
             class="-input"
-            class:_fresh={!origs[$on_tab]}
             bind:this={value_field}
             bind:value={value[$on_tab]}
             autocomplete="off"
             autocapitalize={$on_tab < 1 ? 'words' : 'off'} />
 
           {#if $on_tab < 2}
-            <Vattr bind:tag={infos[$on_tab].tag} />
+            <button class="postag" on:click={show_postag}>
+              {postag_label(infos[$on_tab].tag)}
+            </button>
           {/if}
-
-          <Vutil bind:value={value[$on_tab]} _orig={origs[$on_tab]} />
         </div>
+
+        <Vutil bind:value={value[$on_tab]} _orig={origs[$on_tab]} />
       </div>
 
       <div class="vfoot">
@@ -281,7 +290,7 @@
   }
 
   .-dname {
-    text-transform: uppercase;
+    // text-transform: capitalize;
     font-weight: 500;
     padding: 0 0.75rem;
     background-color: transparent;
@@ -292,7 +301,7 @@
 
     margin-right: 0.5rem;
 
-    @include font-size(2);
+    @include font-size(3);
     @include fgcolor(neutral, 5);
     @include truncate(null);
     @include radius($sides: top);
@@ -328,39 +337,56 @@
     padding: 0 0.75rem 0.75rem;
   }
 
-  .forms {
+  .field {
     position: relative;
+    @include radius;
+    @include border;
+
+    --bdcolor: #{color(neutral, 3)};
+    --bgcolor: #{color(neutral, 1)};
+
+    background: var(--bgcolor);
+    // border: 1px solid var(--bdcolor);
+    box-shadow: 0 0 0 1px var(--bdcolor);
+
+    &:focus-within {
+      --bdcolor: #{color(primary, 3)};
+      --bgcolor: #fff;
+    }
   }
 
   .value {
-    position: relative;
+    display: flex;
+    height: 3rem;
+    padding: 0.75rem;
 
-    > .-input {
-      display: block;
-      width: 100%;
-      margin: 0;
-      outline: none;
-      line-height: 3rem;
-
-      padding-top: 1.75rem;
-      padding-left: 0.75rem;
-      padding-bottom: 2.25rem;
-      @include props(padding-right, 7rem, $md: 9.5rem);
-
-      @include radius;
-      @include border;
-      @include bgcolor(neutral, 1);
-      @include font-size(4);
-
-      &:focus,
-      &:active {
-        @include bdcolor(primary, 3);
-        @include bgcolor(white);
-      }
+    &._fresh > * {
+      font-style: italic;
     }
 
-    ._fresh {
-      font-style: italic;
+    > .-input {
+      flex: 1;
+      margin: 0;
+      outline: 0;
+      border: 0;
+      background: inherit;
+      @include font-size(4);
+    }
+  }
+
+  .postag {
+    text-transform: uppercase;
+    padding: 0 0.5rem;
+    margin-left: 0.5rem;
+    background: transparent;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: rem(12px);
+    @include fgcolor(neutral, 6);
+    @include border;
+
+    &:hover {
+      background: #fff;
     }
   }
 

@@ -10,9 +10,9 @@ else
 fi
 
 ## upload dicts
-# rsync -azi --no-p "_db/vp_dicts/_inits/" "$ssh/_db/vp_dicts/_inits/"
-# rsync -azi --no-p "_db/vp_dicts/active/" "$ssh/_db/vp_dicts/backup/"
-# rsync -azi --no-p "_db/vp_dicts/active/" "$ssh/_db/vp_dicts/active/"
+rsync -azi --no-p "_db/vpdict/main" "$ssh/_db/vpdict/"
+rsync -azi --no-p "_db/vpdict/logs" "$ssh/_db/vpdict/"
+rsync -azi --no-p "_db/vpdict/.bak" "$ssh/_db/vpdict/"
 
 ## upload user data
 # rsync -azi --no-p "_db/vi_users/" "$ssh/_db/vi_users/"
