@@ -223,7 +223,6 @@
   .-tag {
     padding: 0 0.5rem;
     background: transparent;
-    border-collapse: collapse;
     font-weight: 500;
 
     height: 1.75rem;

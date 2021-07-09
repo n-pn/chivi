@@ -1,46 +1,80 @@
 require "./base_ctrl"
 
 class CV::VpDictCtrl < CV::BaseCtrl
+  alias Dinfo = Tuple(String, String, Int32) # dict name, dict slug, entries count
+
+  getter system_dicts : Array(Dinfo) do
+    dicts = [] of Dinfo
+
+    dicts << {"hanviet", dict_label("hanviet"), VpDict.hanviet.size}
+    dicts << {"regular", dict_label("regular"), VpDict.regular.size}
+    dicts << {"essence", dict_label("essence"), VpDict.essence.size}
+    dicts << {"fixture", dict_label("fixture"), VpDict.fixture.size}
+
+    dicts
+  end
+
+  def dict_label(dname : String)
+    case dname
+    when "cc_cedict" then "CC-CEDICT"
+    when "trungviet" then "Trung Việt"
+    when "hanviet"   then "Hán Việt"
+    when "binh_am"   then "Bính âm"
+    when "tradsim"   then "Phồn giản"
+    when "regular"   then "Thông dụng"
+    when "essence"   then "Nền tảng"
+    when "fixture"   then "Cố định"
+    else
+      NvBtitle.get(dname).try(&.[1]) || dname
+    end
+  end
+
   def index
-    res = [] of Tuple(String, String, Int32) # dict name, dict type, entries count
+    page = params.fetch_int("page", min: 1)
 
-    res << {"regular", "system", VpDict.regular.size}
-    res << {"hanviet", "system", VpDict.hanviet.size}
+    take = 40
+    skip = (page - 1) * take
 
-    limit = params.fetch_int("limit", min: 50, max: 100)
-    offset = params.fetch_int("offset")
-
-    # TODO: display book names
-    VpDict.udicts[offset, limit].each do |dname|
-      res << {dname, "unique", VpDict.load(dname).size}
+    unique_dicts = [] of Dinfo
+    VpDict.udicts[skip, take].each do |dname|
+      unique_dicts << {dname, dict_label(dname), VpDict.load(dname).size}
     end
 
-    render_json(res)
+    render_json({
+      system: system_dicts,
+      unique: unique_dicts,
+    })
   end
 
   def show
     dname = params["dname"]
     vdict = VpDict.load(dname)
 
-    limit = params.fetch_int("limit", min: 50, max: 100)
-    offset = params.fetch_int("offset")
+    page = params.fetch_int("page", min: 1)
+    take = 30
+    skip = (page - 1) * take
 
-    res = [] of VpTerm
-
+    terms = [] of VpTerm
     filter = VpTrie::Filter.init(params.to_unsafe_h)
 
-    vdict.each do |node|
-      next unless filter.match?(node)
+    vdict.each do |term|
+      next unless filter.match?(term)
 
-      if offset > 0
-        offset -= 1
+      if skip > 0
+        skip -= 1
       else
-        res << node
-        break if res.size >= limit
+        terms << term
+        break if terms.size >= take
       end
     end
 
-    render_json(res)
+    render_json({
+      label: dict_label(dname),
+      dname: dname,
+      # dtype: vdict.dtype,
+      p_min: vdict.p_min,
+      terms: terms,
+    })
   end
 
   alias Lookup = Hash(String, Array(String))

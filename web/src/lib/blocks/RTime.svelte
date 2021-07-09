@@ -4,8 +4,8 @@
   const day_span = hour_span * 24 * 2
   const month_span = day_span * 30 * 3
 
-  export function reltime_text(mtime, rtime) {
-    const span = (new Date().getTime() - mtime) / 1000 // unit: seconds
+  export function get_rtime(mtime, rtime = new Date(mtime * 1000)) {
+    const span = new Date().getTime() / 1000 - mtime // unit: seconds
 
     if (span > month_span) return iso_date(rtime)
     if (span > day_span) return `${rounding(span, day_span)} ngày trước`
@@ -13,10 +13,10 @@
     return `${rounding(span, minute_span)} phút trước`
   }
 
-  function iso_date(input) {
-    const year = input.getFullYear()
-    const month = input.getMonth() + 1
-    const day = input.getDate() + 1
+  function iso_date(rtime) {
+    const year = rtime.getFullYear()
+    const month = rtime.getMonth() + 1
+    const day = rtime.getDate() + 1
     return `${year}-${pad_zero(month)}-${pad_zero(day)}`
   }
 
@@ -32,7 +32,7 @@
 
 <script>
   export let mtime = 0
-  $: rtime = new Date(mtime)
+  $: rtime = new Date(mtime * 1000)
 </script>
 
-<time datetime={rtime}>{reltime_text(mtime, rtime)}</time>
+<time datetime={rtime}>{get_rtime(mtime, rtime)}</time>

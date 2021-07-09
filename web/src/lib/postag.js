@@ -1,5 +1,5 @@
 export const labels = {
-  n: 'Danh từ chung',
+  n: 'Danh từ',
   nr: 'Tên người',
   ns: 'Địa danh',
   nt: 'Tổ chức',
@@ -13,12 +13,12 @@ export const labels = {
   s: 'Nơi chốn',
   f: 'Phương vị',
 
-  v: 'Động từ chung',
+  v: 'Động từ',
   vshi: 'Động từ 是',
   vyou: 'Động từ 有',
 
   vn: 'Danh động từ',
-  vd: 'Phó động từ',
+  vd: 'Trạng động từ',
 
   vf: 'Động từ xu hướng',
   vx: 'Động từ hình thái',
@@ -27,8 +27,8 @@ export const labels = {
   vl: 'Cụm động từ',
   vg: 'Ngữ tố động từ',
 
-  a: 'Tính từ chung',
-  ad: 'Phó tính từ',
+  a: 'Tính từ',
+  ad: 'Trạng tính từ',
   an: 'Danh tính từ',
   al: 'Cụm tính từ',
   ag: 'Ngữ tố tính từ',
@@ -107,7 +107,7 @@ export const labels = {
   wky: '）］｝',
   wwz: '《〈',
   wwy: '》〉',
-  w: 'Dấu câu khác',
+  w: 'Dấu câu',
 }
 
 export const gnames = ['Thường gặp', 'Hiếm gặp', 'Đặc biệt', 'Dấu câu']

@@ -4,7 +4,7 @@ require "./pos_tag"
 class CV::VpTerm
   SEP = "ǀ"
 
-  EPOCH = Time.utc(2020, 1, 1, 7, 0, 0)
+  EPOCH = Time.utc(2020, 1, 1, 0, 0, 0)
 
   getter key : String
   getter val : Array(String)
@@ -100,7 +100,7 @@ class CV::VpTerm
       jb.field "tag", tag.to_str
       jb.field "wgt", wgt
 
-      jb.field "mtime", rtime.to_unix_ms
+      jb.field "mtime", rtime.to_unix
       jb.field "uname", @uname
       jb.field "privi", @privi
 

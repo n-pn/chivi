@@ -1,5 +1,5 @@
 <script>
-  import RTime from '$lib/blocks/RTime.svelte'
+  import { get_rtime } from '$lib/blocks/RTime.svelte'
 
   export let info
 </script>
@@ -11,7 +11,7 @@
     <span class="-text">Q.hạn:</span>
     <span class="-user">{info.privi}</span>
     <span class="-text">Thời gian:</span>
-    <span class="-time"><RTime mtime={info.mtime} /></span>
+    <span class="-time">{get_rtime(info.mtime)}</span>
   </div>
 {:else}
   <div class="hint" />

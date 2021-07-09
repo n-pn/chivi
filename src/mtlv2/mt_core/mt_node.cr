@@ -29,12 +29,7 @@ class CV::MtNode
 
   def initialize(char : Char)
     @key = @val = char.to_s
-    @tag =
-      case char
-      when .letter? then PosTag::String
-      when .number? then PosTag::Number
-      else               PosTag::None
-      end
+    @tag = char.alphanumeric? ? PosTag::String : PosTag::None
   end
 
   def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0)
@@ -66,7 +61,7 @@ class CV::MtNode
   def set_succ(@succ : Nil)
   end
 
-  def update!(@val : String, @tag = @tag, @dic = 9) : Nil
+  def update!(@val = @val, @tag = @tag, @dic = 9) : Nil
   end
 
   def prepend!(other : self) : Nil

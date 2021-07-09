@@ -14,11 +14,18 @@ module CV::Improving
         node.update!(val: "")
       when .ule? # 了
         next unless (prev = node.prev) && (succ = node.succ)
-        node.update!(val: "") if prev.tag.verbs? && succ.tag.real? && succ.key != prev.key
+        node.update!(val: "") if prev.tag.verbs? && !succ.tag.ends? && succ.key != prev.key
       when .ude2? # 地
         next if !boundary?(node.succ) && node.prev.try(&.tag.adjts?)
         next if !boundary?(node.prev) && node.succ.try(&.tag.verbs?)
         node.update!(val: "địa", tag: PosTag::Noun)
+      when .string?
+        if node.key =~ /^\d+$/
+          node.update!(tag: PosTag::Number)
+          fix_number!(node)
+        else
+          fix_string!(node)
+        end
       when .number?
         fix_number!(node)
       else
@@ -33,6 +40,11 @@ module CV::Improving
     self
   rescue err
     self
+  end
+
+  def fix_string!(node : MtNode)
+    return unless node.val.starts_with?("http")
+    # TODO: handle links
   end
 
   QUANTI = {
@@ -58,18 +70,22 @@ module CV::Improving
     case node.key
     when "对"
       if node.succ.try { |x| x.real? || x.quoteop? }
-        node.update!("đối với")
+        node.update!("đối với", PosTag::Verb)
       else
-        node.update!("đúng")
+        node.update!("đúng", PosTag::Adjt)
       end
     when "不对"
       if node.succ.try { |x| x.real? || x.quoteop? }
-        node.update!("không đối với")
+        node.update!("không đối với", PosTag::Verb)
       else
-        node.update!("không đúng")
+        node.update!("không đúng", PosTag::Adjt)
       end
     when "也"
-      node.update!(node.succ.try(&.real?) ? "cũng" : "vậy")
+      if boundary?(node.succ)
+        node.update!("vậy", PosTag::Interjection)
+      else
+        node.update!("cũng", PosTag::Adverb)
+      end
     when "原来"
       if node.succ.try(&.ude1?) || node.prev.try(&.real?)
         val = "ban đầu"
