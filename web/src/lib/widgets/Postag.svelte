@@ -114,7 +114,7 @@
   }
 
   .head {
-    display: flex;
+    position: relative;
     padding: 0.25rem 0.75rem;
     @include radius($sides: top);
 
@@ -123,12 +123,15 @@
     }
 
     > .-tit {
-      flex: 1;
       font-weight: 500;
       line-height: 1.75rem;
+      text-align: center;
     }
 
     > .-btn {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
       background: inherit;
       width: 1.75rem;
       margin: 0;
@@ -158,7 +161,7 @@
   .-tab {
     // text-transform: capitalize;
     font-weight: 500;
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
     background-color: transparent;
 
     height: $tab-height;
@@ -166,7 +169,7 @@
     flex-shrink: 0;
     margin-right: 0.5rem;
 
-    @include font-size(3);
+    @include font-size(2);
     @include fgcolor(neutral, 5);
     @include truncate(null);
     @include radius($sides: top);

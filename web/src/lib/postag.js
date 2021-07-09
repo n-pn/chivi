@@ -1,5 +1,5 @@
 export const labels = {
-  n: 'Danh từ thường',
+  n: 'Danh từ chung',
   nr: 'Tên người',
   ns: 'Địa danh',
   nt: 'Tổ chức',
@@ -13,7 +13,7 @@ export const labels = {
   s: 'Nơi chốn',
   f: 'Phương vị',
 
-  v: 'Động từ thường',
+  v: 'Động từ chung',
   vshi: 'Động từ 是',
   vyou: 'Động từ 有',
 
@@ -27,7 +27,7 @@ export const labels = {
   vl: 'Cụm động từ',
   vg: 'Ngữ tố động từ',
 
-  a: 'Tính từ thường',
+  a: 'Tính từ chung',
   ad: 'Phó tính từ',
   an: 'Danh tính từ',
   al: 'Cụm tính từ',
