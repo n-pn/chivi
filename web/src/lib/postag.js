@@ -56,26 +56,26 @@ export const labels = {
 
   d: 'Trạng từ',
   p: 'Giới từ',
-  pba: 'Giới từ',
-  pbei: 'Giới từ',
+  pba: 'Giới từ 把',
+  pbei: 'Giới từ 被',
 
   c: 'Liên từ',
-  cc: 'Liên từ',
+  cc: 'Liên từ liệt kê',
 
   u: 'Trợ từ',
-  uzhe: 'Trợ từ',
-  ule: 'Trợ từ',
-  uguo: 'Trợ từ',
-  ude1: 'Trợ từ',
-  ude2: 'Trợ từ',
-  ude3: 'Trợ từ',
-  usuo: 'Trợ từ',
-  udeng: 'Trợ từ',
-  uyy: 'Trợ từ',
-  udh: 'Trợ từ',
-  uls: 'Trợ từ',
-  uzhi: 'Trợ từ',
-  ulian: 'Trợ từ',
+  uzhe: 'Trợ từ 着',
+  ule: 'Trợ từ 了',
+  uguo: 'Trợ từ 过',
+  ude1: 'Trợ từ 的',
+  ude2: 'Trợ từ 地',
+  ude3: 'Trợ từ 得',
+  usuo: 'Trợ từ 所',
+  uzhi: 'Trợ từ 之',
+  ulian: 'Trợ từ 连',
+  udh: 'Trợ từ 的话',
+  udeng: '等/等等/云云',
+  uyy: '一样/一般/...',
+  uls: '来讲/而言/...',
 
   e: 'Thán từ',
   y: 'Ngữ khí',
@@ -88,24 +88,68 @@ export const labels = {
   xx: 'Kaomoji',
   xu: 'Đường link',
 
-  w: 'Dấu câu',
-  wb: 'Dấu câu',
-  wd: 'Dấu câu',
-  wn: 'Dấu câu',
-  wj: 'Dấu câu',
-  wx: 'Dấu câu',
-  wm: 'Dấu câu',
-  wf: 'Dấu câu',
-  ws: 'Dấu câu',
-  wp: 'Dấu câu',
-  wi: 'Dấu câu',
-  wt: 'Dấu câu',
-  ww: 'Dấu câu',
-  wh: 'Dấu câu',
-  wyz: 'Dấu câu',
-  wyy: 'Dấu câu',
-  wkz: 'Dấu câu',
-  wky: 'Dấu câu',
-  wwz: 'Dấu câu',
-  wwy: 'Dấu câu',
+  wd: '，',
+  wn: ' 、',
+  wj: ' 。',
+  wx: '.',
+  wm: '：',
+  wf: '；',
+  ws: '…',
+  wp: '－',
+  wi: '·',
+  wt: '！',
+  ww: '？',
+  wb: '％ ‰',
+  wh: '￥＄￡℃°',
+  wyz: '“ ‘ 『',
+  wyy: '” ’ 』',
+  wkz: '（［｛',
+  wky: '）〕］｝',
+  wwz: '《〈',
+  wwy: '》〉',
+  w: 'Dấu câu khác',
+}
+
+export const gnames = ['Thường gặp', 'Hiếm gặp', 'Đặc biệt', 'Dấu câu']
+export const groups = [
+  // prettier-ignore
+  [
+    'n', 'nr', 'ns', 'nt', 'nw', 'nz', 't', 's', 'f',
+    'v', 'vd', 'vn', 'vf', 'vx', 'vi', 'vl',
+    'a', 'ad', 'an', 'al',
+    'r', 'rr', 'rz', 'ry',
+    'i', 'j', 'l'
+  ],
+  // prettier-ignore
+  [
+    'm', 'mq',
+    'q', 'qv', 'qt',
+    'b', 'bl', 'z',
+    'ng', 'tg', 'vg', 'ag',
+    'c', 'cc',
+    'd', 'p', 'u',
+    'e', 'y', 'o',
+    'h', 'k',
+    'x', 'xx', 'xu'
+  ],
+  // prettier-ignore
+  [
+    'vshi', 'vyou', 'pba', 'pbei',
+    'uzhe', 'ule', 'uguo', 'ude1', 'ude2', 'ude3',
+    'uzhi', 'ulian', 'udh', 'udeng', 'uyy',  'uls',
+  ],
+  // prettier-ignore
+  [
+    'wd', 'wn', 'wj', 'wx', 'wm', 'wf', 'wt', 'ww', 'ws',
+    'wp', 'wi', 'wyz', 'wyy', 'wkz', 'wky', 'wwz', 'wwy',
+    'wb', 'wh', 'w'
+  ],
+]
+
+export function find_group(tag) {
+  for (const [idx, group] of groups.entries()) {
+    if (group.includes(tag)) return idx
+  }
+
+  return 0
 }

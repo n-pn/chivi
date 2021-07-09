@@ -1,6 +1,4 @@
 <script context="module">
-  import { labels } from '$lib/postag'
-
   const data = [
     {
       name: 'Danh từ',
@@ -21,9 +19,19 @@
 
 <script>
   import SIcon from '$lib/blocks/SIcon.svelte'
+  import { labels, gnames, groups, find_group } from '$lib/postag'
+  import { onMount } from 'svelte'
 
   export let active = false
   export let postag = ''
+
+  let active_tab = 0
+  let origin_tab = 0
+
+  onMount(() => {
+    active_tab = find_group(postag)
+    origin_tab = find_group(postag)
+  })
 
   function hide_modal() {
     active = false
@@ -45,11 +53,21 @@
         </button>
       </header>
 
-      <section class="body">
-        {#each data as { name, tags }}
-          <div class="-lbl">{name}</div>
+      <section class="tabs">
+        {#each gnames as gname, idx}
+          <button
+            class="-tab"
+            class:_active={idx == active_tab}
+            class:_origin={idx == origin_tab}
+            on:click={() => (active_tab = idx)}>
+            {gname}
+          </button>
+        {/each}
+      </section>
 
-          <div class="tags">
+      <div class="body">
+        {#each groups as tags, idx}
+          <section class="tags" class:_active={idx == active_tab}>
             {#each tags as tag}
               <button
                 class="-tag"
@@ -61,9 +79,9 @@
                 {/if}
               </button>
             {/each}
-          </div>
+          </section>
         {/each}
-      </section>
+      </div>
     </div>
   </div>
 {/if}
@@ -86,17 +104,17 @@
 
   .main {
     --bg-sub: #{color(neutral, 1)};
+    background: var(--bg-sub);
 
     width: 28.5rem;
     max-width: 100vw;
-    background: #fff;
+
     @include radius();
     @include shadow();
   }
 
   .head {
     display: flex;
-    background: var(--bg-sub);
     padding: 0.25rem 0.75rem;
     @include radius($sides: top);
 
@@ -127,53 +145,100 @@
     }
   }
 
-  .body {
-    margin: 0.25rem 0 0.75rem;
+  $tab-height: 2rem;
+
+  .tabs {
+    display: flex;
+    height: $tab-height;
     padding: 0 0.75rem;
+    // margin-top: 0.75rem;
+    @include border($sides: bottom);
+  }
 
-    max-height: 50vh;
+  .-tab {
+    // text-transform: capitalize;
+    font-weight: 500;
+    padding: 0 0.75rem;
+    background-color: transparent;
 
-    overflow-y: scroll;
+    height: $tab-height;
+    line-height: $tab-height;
+    flex-shrink: 0;
+    margin-right: 0.5rem;
 
-    > .-lbl {
-      @include fgcolor(neutral, 5);
-      text-transform: uppercase;
-      font-size: rem(12px);
-      font-weight: 500;
-      line-height: 1.5rem;
-      margin-top: 0.25rem;
+    @include font-size(3);
+    @include fgcolor(neutral, 5);
+    @include truncate(null);
+    @include radius($sides: top);
+    @include border($color: neutral, $sides: top-left-right);
+
+    &:hover {
+      @include bgcolor(#fff);
+    }
+
+    &._origin {
+      @include fgcolor(neutral, 7);
+    }
+
+    &._active {
+      @include bgcolor(#fff);
+      @include fgcolor(primary, 6);
+      @include bdcolor($color: primary, $shade: 4);
     }
   }
 
+  .body {
+    margin-bottom: 0.25rem;
+    min-height: 21rem;
+    max-height: calc(100vh - 4rem);
+
+    overflow-y: scroll;
+    background: #fff;
+
+    // > .-lbl {
+    //   @include fgcolor(neutral, 5);
+    //   text-transform: uppercase;
+    //   font-size: rem(12px);
+    //   font-weight: 500;
+    //   line-height: 1.5rem;
+    //   margin-top: 0.25rem;
+    // }
+  }
+
   .tags {
-    display: grid;
-    width: 100%;
-    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
-    margin-top: 0.25rem;
-    grid-gap: 0.5rem;
+    display: none;
+    &._active {
+      display: grid;
+      width: 100%;
+      padding: 0.75rem;
+      grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+      margin-top: 0.25rem;
+      grid-gap: 0.5rem;
+    }
+  }
 
-    > .-tag {
-      float: left;
-      padding: 0 0.5rem;
-      background: transparent;
-      border-collapse: collapse;
-      font-weight: 500;
+  .-tag {
+    margin: 0;
+    padding: 0 0.5rem;
+    background: transparent;
+    border-collapse: collapse;
+    font-weight: 500;
 
-      line-height: 1.75rem;
-      --bdcolor: #{color(neutral, 2)};
-      box-shadow: 0 0 0 1px var(--bdcolor);
+    height: 1.75rem;
+    line-height: 1.75rem;
+    --bdcolor: #{color(neutral, 2)};
+    box-shadow: 0 0 0 1px var(--bdcolor);
 
-      @include fgcolor(neutral, 6);
-      @include radius(0.75rem);
-      @include truncate(null);
-      @include props(font-size, rem(12px), rem(13px), rem(14px));
+    @include fgcolor(neutral, 6);
+    @include radius(0.75rem);
+    @include truncate(null);
+    @include props(font-size, rem(12px), rem(13px), rem(14px));
 
-      &:hover,
-      &._active {
-        @include fgcolor(primary, 7);
-        @include bgcolor(primary, 1);
-        --bdcolor: #{color(primary, 2)};
-      }
+    &:hover,
+    &._active {
+      @include fgcolor(primary, 7);
+      @include bgcolor(primary, 1);
+      --bdcolor: #{color(primary, 2)};
     }
   }
 </style>

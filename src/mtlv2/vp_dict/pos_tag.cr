@@ -116,7 +116,7 @@ module CV
     :Pdeci   => "wx",  # half stop, decimal
     :Colon   => "wm",  # full or half-length colon: `：`， `:`
     :Smcln   => "wf",  # full or half-length semi-colon: `；`， `;`
-    :Ellip   => "ws",  # full-length ellipsis: ……  …
+    :Ellip   => "ws",  # full-length ellipsis: …… …
     :Pdash   => "wp",  # dash: ——  －－  —— －  of full length; ---  ---- of half length
     :Middot  => "wi",  # interpunct
     :Exmark  => "wt",  # full or half-length exclamation mark: `！` `!`
@@ -124,8 +124,8 @@ module CV
     :Symbol  => "wh",  # full or half-length unit symbol ￥ ＄ ￡ ° ℃  $
     :Quoteop => "wyz", # full-length single or double opening quote: “ ‘ 『
     :Quotecl => "wyy", # full-length single or double closing quote: ” ’ 』
-    :Brackop => "wkz", # opening brackets: （ 〔 ［ ｛ 《 【 〖 〈 of full length; ( [ { < of half length
-    :Brackcl => "wky", # closing brackets: ） 〕 ］ ｝ 》 】 〗 〉of full length;  ) ] } > of half length
+    :Brackop => "wkz", # opening brackets: （ 〔 ［ ｛ 【 〖 of full length; ( [ { of half length
+    :Brackcl => "wky", # closing brackets: ） 〕 ］ ｝ 】 〗 of full length;  ) ] } of half length
     :Titleop => "wwz", # open title《〈 ⟨
     :Titlecl => "wwy", # close title 》〉⟩
   }

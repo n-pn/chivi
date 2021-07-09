@@ -157,7 +157,7 @@
     return labels[tag] || tag || 'Chưa phân loại'
   }
 
-  let active_postag = true
+  let active_postag = false
   function show_postag() {
     active_postag = true
   }
