@@ -66,11 +66,11 @@
           <th>#</th>
           <th>Trung</th>
           <th>Nghĩa</th>
-          <th>Phân loại</th>
-          <th>Độ ưu tiên</th>
+          <th>Từ loại</th>
+          <th>Ưu tiên</th>
           <th>Cập nhật</th>
           <th>Người dùng</th>
-          <th>Quyền hạn</th>
+          <th>Q. hạn</th>
         </tr>
       </thead>
 
@@ -148,11 +148,8 @@
   }
 
   th {
-    text-transform: uppercase;
-    font-size: rem(12px);
-    font-weight: 500;
     text-align: center;
-    @include fgcolor(neutral, 6);
+    // @include fgcolor(neutral, 6);
   }
 
   td {
@@ -191,7 +188,10 @@
 
   .tag {
     display: inline-block;
-    padding: 0 0.75rem;
+    white-space: nowrap;
+    padding: 0 0.5rem;
+    // overflow: hidden;
+    // text-overflow: ellipsis;
 
     --bdcolor: #{color(neutral, 2)};
     box-shadow: 0 0 0 1px var(--bdcolor);

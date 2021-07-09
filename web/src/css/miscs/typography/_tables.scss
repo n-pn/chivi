@@ -6,7 +6,7 @@ $-table-padding: rem(2x) !default;
 $-table-bgcolor: color(neutral, 1) !default;
 $-table-bdcolor: color(neutral, 3) !default;
 $-table-capcolor: color(neutral, 5) !default;
-$-table-thcolor: color(primary, 8) !default;
+$-table-thcolor: color(neutral, 6) !default;
 
 table {
   border-collapse: collapse;
@@ -24,10 +24,16 @@ tr:nth-child(even) {
   background-color: $-table-bgcolor;
 }
 
+tbody > tr:nth-child(odd) {
+  background-color: #fff;
+}
+
 th {
   color: $-table-thcolor;
   text-align: inherit;
-  font-weight: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: rem(12px);
 }
 
 th,
