@@ -192,8 +192,8 @@
 
   .body {
     margin-bottom: 0.25rem;
-    min-height: 21rem;
-    max-height: calc(100vh - 4rem);
+    height: 21rem;
+    max-height: calc(100vh - 6.5rem);
 
     overflow-y: scroll;
     background: #fff;
@@ -213,7 +213,7 @@
     &._active {
       display: grid;
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.5rem 0.75rem;
       grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
       margin-top: 0.25rem;
       grid-gap: 0.5rem;
@@ -221,7 +221,6 @@
   }
 
   .-tag {
-    margin: 0;
     padding: 0 0.5rem;
     background: transparent;
     border-collapse: collapse;
