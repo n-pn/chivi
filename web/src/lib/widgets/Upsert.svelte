@@ -348,7 +348,7 @@
     box-shadow: 0 0 0 1px var(--bdcolor);
 
     &:focus-within {
-      --bdcolor: #{color(primary, 3)};
+      --bdcolor: #{color(primary, 4)};
       --bgcolor: #fff;
     }
   }
@@ -364,27 +364,27 @@
 
     > .-input {
       flex: 1;
-      margin: 0;
+      min-width: 1rem;
       outline: 0;
       border: 0;
-      background: inherit;
+      background: transparent;
       @include font-size(4);
     }
   }
 
   .postag {
-    text-transform: uppercase;
+    white-space: nowrap;
     padding: 0 0.5rem;
     margin-left: 0.5rem;
     background: transparent;
     border-radius: 0.75rem;
     font-weight: 500;
-    font-size: rem(12px);
+    font-size: rem(14px);
     @include fgcolor(neutral, 6);
     @include border;
 
     &:hover {
-      background: #fff;
+      @include fgcolor(primary, 6);
     }
   }
 
