@@ -1,10 +1,9 @@
 export const labels = {
-  n: 'Danh từ',
+  n: 'Danh từ thường',
   nr: 'Tên người',
   ns: 'Địa danh',
   nt: 'Tổ chức',
   nw: 'Tác phẩm',
-  no: 'Tên riêng khác',
   ng: 'Ngữ tố danh từ',
   nz: 'Tên riêng khác',
 
@@ -14,9 +13,9 @@ export const labels = {
   s: 'Nơi chốn',
   f: 'Phương vị',
 
-  v: 'Động từ',
-  vshi: 'Động từ',
-  vyou: 'Động từ',
+  v: 'Động từ thường',
+  vshi: 'Động từ 是',
+  vyou: 'Động từ 有',
 
   vn: 'Danh động từ',
   vd: 'Phó động từ',
@@ -28,7 +27,7 @@ export const labels = {
   vl: 'Cụm động từ',
   vg: 'Ngữ tố động từ',
 
-  a: 'Tính từ',
+  a: 'Tính từ thường',
   ad: 'Phó tính từ',
   an: 'Danh tính từ',
   al: 'Cụm tính từ',

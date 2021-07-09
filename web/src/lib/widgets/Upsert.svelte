@@ -12,6 +12,8 @@
 <script>
   import { session } from '$app/stores'
 
+  import Postag from './Postag.svelte'
+
   import SIcon from '$lib/blocks/SIcon.svelte'
 
   import Input from './Upsert/Input.svelte'
@@ -155,8 +157,9 @@
     return labels[tag] || tag || 'Chưa phân loại'
   }
 
+  let active_postag = true
   function show_postag() {
-    // TODO!
+    active_postag = true
   }
 </script>
 
@@ -238,6 +241,8 @@
     </footer>
   </div>
 </div>
+
+<Postag bind:postag={infos[$on_tab].tag} bind:active={active_postag} />
 
 <style lang="scss">
   $gutter: 0.75rem;
@@ -355,8 +360,16 @@
 
   .value {
     display: flex;
-    height: 3rem;
-    padding: 0.75rem;
+    $h-outer: 3rem;
+    $h-inner: 1.75rem;
+
+    height: $h-outer;
+    padding: math.div($h-outer - $h-inner, 2);
+
+    > * {
+      height: $h-inner;
+      // line-height: 1.75rem;
+    }
 
     &._fresh > * {
       font-style: italic;
@@ -380,11 +393,16 @@
     border-radius: 0.75rem;
     font-weight: 500;
     font-size: rem(14px);
+
     @include fgcolor(neutral, 6);
-    @include border;
+
+    --bdcolor: #{color(neutral, 2)};
+    box-shadow: 0 0 0 1px var(--bdcolor);
 
     &:hover {
-      @include fgcolor(primary, 6);
+      @include fgcolor(primary, 7);
+      @include bgcolor(primary, 1);
+      --bdcolor: #{color(primary, 3)};
     }
   }
 
