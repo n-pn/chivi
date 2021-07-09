@@ -66,11 +66,11 @@
           <th>#</th>
           <th>Trung</th>
           <th>Nghĩa</th>
-          <th>Từ loại</th>
+          <th>Phân loại</th>
           <th>Ưu tiên</th>
           <th>Cập nhật</th>
           <th>Người dùng</th>
-          <th>Q. hạn</th>
+          <th>Q.</th>
         </tr>
       </thead>
 
