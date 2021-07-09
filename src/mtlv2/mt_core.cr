@@ -63,7 +63,7 @@ class CV::MtCore
     costs = [0.0]
 
     input.each_with_index(1) do |char, idx|
-      nodes << MtNode.new(char.to_s, char.to_s)
+      nodes << MtNode.new(char)
       costs << idx - 0.5
     end
 
@@ -92,13 +92,23 @@ class CV::MtCore
       node = nodes.unsafe_fetch(idx)
       idx -= node.key.size
 
-      if (prev = res.first?) && node.similar?(prev)
-        prev.absorb_similar!(node)
+      if (prev = res.first?) && can_merge?(node, prev)
+        prev.prepend!(node)
       else
         res.prepend!(node)
       end
     end
 
     res
+  end
+
+  private def can_merge?(left : MtNode, right : MtNode)
+    return false unless left.tag == right.tag
+    case left.tag
+    when .puncts?, .strings?, .numbers?
+      true
+    else
+      false
+    end
   end
 end

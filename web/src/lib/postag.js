@@ -97,7 +97,6 @@ export const labels = {
   wx: 'Dấu câu',
   wm: 'Dấu câu',
   wf: 'Dấu câu',
-  wf: 'Dấu câu',
   ws: 'Dấu câu',
   wp: 'Dấu câu',
   wi: 'Dấu câu',

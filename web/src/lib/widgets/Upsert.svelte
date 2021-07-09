@@ -340,13 +340,11 @@
   .field {
     position: relative;
     @include radius;
-    @include border;
 
     --bdcolor: #{color(neutral, 3)};
     --bgcolor: #{color(neutral, 1)};
 
     background: var(--bgcolor);
-    // border: 1px solid var(--bdcolor);
     box-shadow: 0 0 0 1px var(--bdcolor);
 
     &:focus-within {

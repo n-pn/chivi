@@ -27,6 +27,16 @@ class CV::MtNode
     @dic = term.dtype
   end
 
+  def initialize(char : Char)
+    @key = @val = char.to_s
+    @tag =
+      case char
+      when .letter? then PosTag::String
+      when .number? then PosTag::Number
+      else               PosTag::None
+      end
+  end
+
   def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0)
   end
 
@@ -59,6 +69,12 @@ class CV::MtNode
   def update!(@val : String, @tag = @tag, @dic = 9) : Nil
   end
 
+  def prepend!(other : self) : Nil
+    @key = "#{other.key}#{@key}"
+    @val = "#{other.val}#{@val}"
+    @dic = other.dic if @dic < other.dic
+  end
+
   def merge_left!(val_left = @prev.try(&.val) || "", val_right = "")
     return unless left = @prev
     self.set_prev(left.prev)
@@ -69,23 +85,6 @@ class CV::MtNode
 
   def capitalize!(cap_mode : Int32 = 1) : Nil
     @val = cap_mode > 1 ? TextUtils.titleize(@val) : TextUtils.capitalize(@val)
-  end
-
-  def similar?(other : self)
-    return false if @tag == PosTag::None
-    @tag == other.tag && @tag.puncts? || @tag.strings?
-  end
-
-  def absorb_similar!(other : self) : Nil
-    @key = "#{other.key}#{@key}"
-    @val = "#{other.val}#{@val}"
-  end
-
-  def merge!(key : String, val : String, cat : Int32 = 0, dic = @dic)
-    @key = "#{@key}#{key}"
-    @val = "#{@val} #{val}"
-    @cat |= cat
-    @dic = dic
   end
 
   def clear!

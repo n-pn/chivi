@@ -214,7 +214,7 @@
 
   :global(x-v) {
     --border: transparent;
-    --active: #{color(primary, 9)};
+    --active: var(--fgcolor);
 
     color: var(--fgcolor);
     border-bottom: 1px solid transparent;
@@ -229,9 +229,9 @@
     color: var(--active);
   }
 
-  :global(x-v[data-d='1']) {
-    @include cv-token(teal);
-  }
+  // :global(x-v[data-d='1']) {
+  //   @include cv-token(gray);
+  // }
 
   :global(x-v[data-d='2']) {
     @include cv-token(blue);
@@ -239,6 +239,10 @@
 
   :global(x-v[data-d='3']) {
     @include cv-token(green);
+  }
+
+  :global(x-v[data-d='4']) {
+    @include cv-token(teal);
   }
 
   :global(x-v[data-d='9']) {

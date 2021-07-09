@@ -91,7 +91,7 @@ function escape_html(str) {
 }
 
 function render_node(key, val, tag, dic, idx, pos) {
-  return `<x-v data-k="${key}" data-t="${key}/${tag}" data-d=${dic} data-i=${idx} data-p=${pos}>${val}</x-v>`
+  return `<x-v data-k="${key}" data-t="${tag}" data-d=${dic} data-i=${idx} data-p=${pos}>${val}</x-v>`
 }
 
 export function ad_indexes(len, min = 15) {

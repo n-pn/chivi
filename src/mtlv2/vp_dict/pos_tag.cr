@@ -140,7 +140,7 @@ enum CV::PosTag
 
   @[AlwaysInline]
   def real?
-    Noun <= self <= Locut
+    None <= self <= Locut
   end
 
   def ends?
@@ -181,12 +181,12 @@ enum CV::PosTag
 
   @[AlwaysInline]
   def numbers?
-    Number << self << Nquant
+    Number <= self <= Nquant
   end
 
   @[AlwaysInline]
   def quantis?
-    Quanti << self << Qttime
+    Quanti <= self <= Qttime
   end
 
   def to_str : ::String
