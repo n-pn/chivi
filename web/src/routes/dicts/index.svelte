@@ -4,28 +4,44 @@
 
     const url = `/api/dicts?page=${page}`
     const res = await fetch(url)
-
-    const { system, unique } = await res.json()
-    return { props: { system, unique, page } }
+    return { props: await res.json() }
   }
 </script>
 
 <script>
+  import { page } from '$app/stores'
+
   import Vessel from '$lib/layouts/Vessel.svelte'
+  import CPagi from '$lib/blocks/CPagi.svelte'
   import SIcon from '$lib/blocks/SIcon.svelte'
-  export let system = []
-  export let unique = []
-  export let page = 1
+
+  export let cores = []
+  export let books = []
+
+  export let total = 1
+  export let pgidx = 1
+  export let pgmax = 1
 </script>
 
+<svelte:head>
+  <title>Từ điển - Chivi</title>
+</svelte:head>
+
 <Vessel>
+  <svelte:fragment slot="header-left">
+    <span class="header-item _active">
+      <SIcon name="box" />
+      <span class="header-text _show-md">Từ điển</span>
+    </span>
+  </svelte:fragment>
+
   <article class="m-article">
     <h1>Từ điển</h1>
 
     <h2>Hệ thống</h2>
 
     <div class="dicts">
-      {#each system as [dname, label, dsize]}
+      {#each cores as [dname, label, dsize]}
         <a class="-dict" href="/dicts/{dname}">
           <div class="-name">{label}</div>
           <div class="-meta">
@@ -36,10 +52,10 @@
       {/each}
     </div>
 
-    <h2>Các bộ sách</h2>
+    <h2>Theo bộ ({total})</h2>
 
     <div class="dicts">
-      {#each unique as [dname, label, dsize]}
+      {#each books as [dname, label, dsize]}
         <a class="-dict" href="/dicts/{dname}">
           <div class="-name">{label}</div>
           <div class="-meta">
@@ -50,30 +66,8 @@
       {/each}
     </div>
 
-    <footer class="pagi">
-      {#if page > 1}
-        <a class="m-button" href="/dicts?page={page - 1}"
-          ><SIcon name="chevron-left" />
-          <span class="-txt">Trước</span>
-        </a>
-      {:else}
-        <div class="m-button _disable">
-          <SIcon name="chevron-left" />
-          <span class="-txt">Trước</span>
-        </div>
-      {/if}
-
-      {#if unique.length > 39}
-        <a class="m-button _primary" href="/dicts?page={page + 1}">
-          <span class="-txt">Kế tiếp</span>
-          <SIcon name="chevron-right" />
-        </a>
-      {:else}
-        <div class="m-button _disable">
-          <span class="-txt">Kế tiếp</span>
-          <SIcon name="chevron-right" />
-        </div>
-      {/if}
+    <footer class="foot">
+      <CPagi path="/dicts" opts={$page.query} {pgidx} {pgmax} />
     </footer>
   </article>
 </Vessel>
@@ -133,16 +127,5 @@
 
   .-size {
     margin-left: auto;
-  }
-
-  .pagi {
-    display: flex;
-    justify-content: center;
-
-    .m-button + .m-button {
-      // width: 5rem;
-      // text-align: center;
-      margin-left: 0.5rem;
-    }
   }
 </style>

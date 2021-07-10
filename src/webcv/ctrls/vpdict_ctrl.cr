@@ -3,7 +3,7 @@ require "./base_ctrl"
 class CV::VpDictCtrl < CV::BaseCtrl
   alias Dinfo = Tuple(String, String, Int32) # dict name, dict slug, entries count
 
-  getter system_dicts : Array(Dinfo) do
+  getter core_dicts : Array(Dinfo) do
     dicts = [] of Dinfo
 
     dicts << {"hanviet", dict_label("hanviet"), VpDict.hanviet.size}
@@ -30,19 +30,27 @@ class CV::VpDictCtrl < CV::BaseCtrl
   end
 
   def index
-    page = params.fetch_int("page", min: 1)
+    pgidx = params.fetch_int("page", min: 1)
+    limit = 40
 
-    take = 40
-    skip = (page - 1) * take
+    offset = (pgidx - 1) * limit
 
-    unique_dicts = [] of Dinfo
-    VpDict.udicts[skip, take].each do |dname|
-      unique_dicts << {dname, dict_label(dname), VpDict.load(dname).size}
+    input = VpDict.udicts
+    book_dicts = [] of Dinfo
+
+    input[offset, limit].each do |dname|
+      book_dicts << {dname, dict_label(dname), VpDict.load(dname).size}
     end
 
+    total = input.size
+    pgmax = total.-(1).//(limit) + 1
+
     render_json({
-      system: system_dicts,
-      unique: unique_dicts,
+      cores: core_dicts,
+      books: book_dicts,
+      total: total,
+      pgidx: pgidx,
+      pgmax: pgmax,
     })
   end
 
@@ -50,30 +58,32 @@ class CV::VpDictCtrl < CV::BaseCtrl
     dname = params["dname"]
     vdict = VpDict.load(dname)
 
-    page = params.fetch_int("page", min: 1)
-    take = 30
-    skip = (page - 1) * take
+    pgidx = params.fetch_int("page", min: 1)
+    limit = 30
+
+    offset = (pgidx - 1) * limit
+    total = offset + 128
 
     terms = [] of VpTerm
     filter = VpTrie::Filter.init(params.to_unsafe_h)
 
     vdict.each do |term|
       next unless filter.match?(term)
-
-      if skip > 0
-        skip -= 1
-      else
-        terms << term
-        break if terms.size >= take
-      end
+      terms << term
+      break if terms.size >= total
     end
+
+    pgmax = terms.size.-(1).//(limit) + 1
 
     render_json({
       label: dict_label(dname),
       dname: dname,
       # dtype: vdict.dtype,
       p_min: vdict.p_min,
-      terms: terms,
+      terms: terms[offset, limit],
+      total: vdict.size,
+      pgidx: pgidx,
+      pgmax: pgmax,
     })
   end
 
@@ -191,7 +201,7 @@ class CV::VpDictCtrl < CV::BaseCtrl
 
     # TODO: save context
 
-    if vdict.dtype == 3 # unique dict
+    if vdict.dtype == 3 # book dict
       # add to quick translation dict if entry is a name
       if key.size > 2 && new_term.tag.nper?
         combine_term = VpDict.combine.new_term(key, val, ext, mtime: mtime)

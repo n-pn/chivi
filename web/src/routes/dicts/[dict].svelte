@@ -1,20 +1,18 @@
 <script context="module">
-  export async function load({ fetch, page: { params, query } }) {
-    const slug = params.dict
-    const page = +query.get('page') || 1
-
-    const url = `/api/dicts/${slug}?page=${page}`
+  export async function load({ fetch, page: { path, query } }) {
+    const url = `/api/${path}?${query.toString()}`
     const res = await fetch(url)
-
-    const data = await res.json()
-    return { props: { ...data, page } }
+    return { props: await res.json() }
   }
 
   import { labels } from '$lib/postag'
 </script>
 
 <script>
+  import { page } from '$app/stores'
+
   import Vessel from '$lib/layouts/Vessel.svelte'
+  import CPagi from '$lib/blocks/CPagi.svelte'
   import SIcon from '$lib/blocks/SIcon.svelte'
   import { get_rtime_short } from '$lib/blocks/RTime.svelte'
 
@@ -22,10 +20,11 @@
   export let dname = 'regular'
   export let p_min = 1
   export let terms = []
+  export let total = 1
+  export let pgidx = 1
+  export let pgmax = 1
 
-  export let page = 1
-  $: offset = (page - 1) * 50 + 1
-
+  $: offset = (pgidx - 1) * 30 + 1
   function render_time(mtime) {
     return mtime > 1577836800 ? get_rtime_short(mtime) : '~'
   }
@@ -56,9 +55,25 @@
   }
 </script>
 
+<svelte:head>
+  <title>Từ điển: {label} - Chivi</title>
+</svelte:head>
+
 <Vessel>
+  <svelte:fragment slot="header-left">
+    <a href="/dicts" class="header-item">
+      <SIcon name="box" />
+      <span class="header-text">Từ điển</span>
+    </a>
+
+    <span class="header-item _active _title">
+      <span class="header-text _show-md _title">{label}</span>
+    </span>
+  </svelte:fragment>
+
   <article class="m-article">
-    <h1>Từ điển: {label}</h1>
+    <h1>{label}</h1>
+    <p>Entries: {total}</p>
 
     <div class="table">
       <table>
@@ -93,30 +108,8 @@
       </table>
     </div>
 
-    <footer class="pagi">
-      {#if page > 1}
-        <a class="m-button" href="/dicts/{dname}?page={page - 1}"
-          ><SIcon name="chevron-left" />
-          <span class="-txt">Trước</span>
-        </a>
-      {:else}
-        <div class="m-button _disable">
-          <SIcon name="chevron-left" />
-          <span class="-txt">Trước</span>
-        </div>
-      {/if}
-
-      {#if terms.length >= 30}
-        <a class="m-button _primary" href="/dicts/{dname}?page={page + 1}">
-          <span class="-txt">Kế tiếp</span>
-          <SIcon name="chevron-right" />
-        </a>
-      {:else}
-        <div class="m-button _disable">
-          <span class="-txt">Kế tiếp</span>
-          <SIcon name="chevron-right" />
-        </div>
-      {/if}
+    <footer class="foot">
+      <CPagi path="/dicts/{dname}" opts={$page.query} {pgidx} {pgmax} />
     </footer>
   </article>
 </Vessel>

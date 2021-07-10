@@ -118,7 +118,7 @@
 </script>
 
 <svelte:head>
-  <title>Chivi - Công cụ dịch truyện từ Tiếng Trung sang Tiếng Việt</title>
+  <title>Chivi - Truyện tàu dịch máy</title>
 </svelte:head>
 
 <svelte:window on:keydown={handleKeypress} />
