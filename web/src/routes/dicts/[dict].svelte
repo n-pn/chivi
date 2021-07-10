@@ -27,11 +27,11 @@
   $: offset = (page - 1) * 50 + 1
 
   function render_time(mtime) {
-    return mtime > 1577836800 ? get_rtime_short(mtime) : '-'
+    return mtime > 1577836800 ? get_rtime_short(mtime) : '~'
   }
 
   function render_ptag(tag) {
-    return labels[tag] || tag || '-'
+    return labels[tag] || tag || '~'
   }
 
   function render_rank(wgt) {
@@ -45,15 +45,15 @@
       case 5:
         return '+2'
       default:
-        return '-'
+        return '~'
     }
   }
 
-  // function render_privi(privi) {
-  //   if (p_min == privi) return '-'
-  //   if (p_min > privi) return '-' + (p_min - privi)
-  //   return '+' + (privi - p_min)
-  // }
+  function render_privi(privi) {
+    if (p_min == privi) return '~'
+    if (p_min > privi) return 'v' + (p_min - privi)
+    return '^' + (privi - p_min)
+  }
 </script>
 
 <Vessel>
@@ -70,7 +70,7 @@
             <th>Phân loại</th>
             <th>Ư.t</th>
             <th>Người dùng</th>
-            <th>Q.h</th>
+            <th>Q.</th>
             <th>Cập nhật</th>
           </tr>
         </thead>
@@ -83,8 +83,9 @@
               <td class="-val">{val.join(' / ')}</td>
               <td class="-tag">{render_ptag(tag)}</td>
               <td class="-wgt">{render_rank(wgt)}</td>
-              <td class="-uname">{uname == '_' ? '-' : uname}</td>
-              <td class="-privi" class:_gt={privi > p_min}>{privi}</td>
+              <td class="-uname">{uname == '_' ? '~' : uname}</td>
+              <td class="-privi" class:_gt={privi > p_min}
+                >{render_privi(privi)}</td>
               <td class="-mtime">{render_time(mtime)}</td>
             </tr>
           {/each}
