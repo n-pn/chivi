@@ -16,7 +16,7 @@
 <script>
   import Vessel from '$lib/layouts/Vessel.svelte'
   import SIcon from '$lib/blocks/SIcon.svelte'
-  import { get_rtime } from '$lib/blocks/RTime.svelte'
+  import { get_rtime_short } from '$lib/blocks/RTime.svelte'
 
   export let label = 'Thông dụng'
   export let dname = 'regular'
@@ -27,7 +27,7 @@
   $: offset = (page - 1) * 50 + 1
 
   function render_time(mtime) {
-    return mtime > 1577836800 ? get_rtime(mtime) : '-'
+    return mtime > 1577836800 ? get_rtime_short(mtime) : '-'
   }
 
   function render_ptag(tag) {
@@ -37,13 +37,13 @@
   function render_rank(wgt) {
     switch (wgt) {
       case 1:
-        return 'Rất thấp'
+        return '-2'
       case 2:
-        return 'Hơi thấp'
+        return '-1'
       case 4:
-        return 'Hơi cao'
+        return '+1'
       case 5:
-        return 'Rất cao'
+        return '+2'
       default:
         return '-'
     }
@@ -60,38 +60,37 @@
   <article class="m-article">
     <h1>Từ điển: {label}</h1>
 
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Trung</th>
-          <th>Nghĩa</th>
-          <th>Phân loại</th>
-          <th>Ưu tiên</th>
-          <th>Cập nhật</th>
-          <th>Người dùng</th>
-          <th>Q.</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {#each terms as { key, val, tag, wgt, mtime, uname, privi }, idx}
+    <div class="table">
+      <table>
+        <thead>
           <tr>
-            <td class="-idx">{offset + idx}</td>
-            <td class="-key">{key}</td>
-            <td class="-val">{val.join(' / ')}</td>
-            <td><span class="tag">{render_ptag(tag)}</span></td>
-            <td class="-wgt">{render_rank(wgt)}</td>
-            <td class="-mtime">{render_time(mtime)}</td>
-            <td class="-uname">{uname == '_' ? '-' : uname}</td>
-            <td
-              class="-privi"
-              class:_gt={privi > p_min}
-              class:_lt={privi < p_min}>{privi}</td>
+            <th>#</th>
+            <th>Trung</th>
+            <th>Nghĩa Việt</th>
+            <th>Phân loại</th>
+            <th>Ư.t</th>
+            <th>Người dùng</th>
+            <th>Q.h</th>
+            <th>Cập nhật</th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          {#each terms as { key, val, tag, wgt, mtime, uname, privi }, idx}
+            <tr>
+              <td class="-idx">{offset + idx}</td>
+              <td class="-key">{key}</td>
+              <td class="-val">{val.join(' / ')}</td>
+              <td class="-tag">{render_ptag(tag)}</td>
+              <td class="-wgt">{render_rank(wgt)}</td>
+              <td class="-uname">{uname == '_' ? '-' : uname}</td>
+              <td class="-privi" class:_gt={privi > p_min}>{privi}</td>
+              <td class="-mtime">{render_time(mtime)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
 
     <footer class="pagi">
       {#if page > 1}
@@ -142,28 +141,33 @@
     }
   }
 
-  thead {
-    position: sticky;
-    top: 0;
+  .table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 
-  th {
-    text-align: center;
-    // @include fgcolor(neutral, 6);
+  table {
+    width: 100%;
+    max-width: 100%;
   }
 
+  th,
   td {
     text-align: center;
     line-height: 1.5rem;
     padding: 0.375rem 0.5rem;
   }
 
-  table {
-    width: 100%;
+  tbody > tr:hover {
+    cursor: pointer;
+    background-color: color(primary, 4, 0.1);
   }
 
   .-idx,
   .-wgt,
+  .-tag,
   .-mtime,
   .-privi,
   .-uname {
@@ -172,32 +176,12 @@
     @include fgcolor(neutral, 6);
   }
 
-  .-privi {
-    &._lt {
-      @include fgcolor(neutral, 7);
-    }
-    &._gt {
-      @include fgcolor(primary, 6);
-    }
+  .-privi._gt {
+    @include fgcolor(primary, 6);
   }
 
   .-val {
     font-size: rem(14px);
     @include truncate(null);
-  }
-
-  .tag {
-    display: inline-block;
-    white-space: nowrap;
-    padding: 0 0.5rem;
-    // overflow: hidden;
-    // text-overflow: ellipsis;
-
-    --bdcolor: #{color(neutral, 2)};
-    box-shadow: 0 0 0 1px var(--bdcolor);
-
-    @include fgcolor(neutral, 6);
-    @include radius(0.75rem);
-    @include props(font-size, rem(12px), rem(13px), rem(14px));
   }
 </style>

@@ -33,8 +33,8 @@ private module Utils
 
   def get_postag(word : String, book : String = "")
     case
-    when tag = postag_map("pfrtag.tsv")[word]?         then tag
     when tag = postag_map("pkuseg/#{book}.tsv")[word]? then tag
+    when tag = postag_map("pfrtag.tsv")[word]?         then tag
     when tag = postag_map("pkuseg-words.tsv")[word]?   then tag
     else                                                    ""
     end

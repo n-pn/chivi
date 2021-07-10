@@ -1,15 +1,15 @@
 <script context="module">
   const minute_span = 60 // 60 seconds
   const hour_span = minute_span * 60 // 3600 seconds
-  const day_span = hour_span * 24 * 2
-  const month_span = day_span * 30 * 3
+  const day_span = hour_span * 24
+  const month_span = day_span * 30
 
   export function get_rtime(mtime, rtime = new Date(mtime * 1000)) {
     const span = new Date().getTime() / 1000 - mtime // unit: seconds
 
-    if (span > month_span) return iso_date(rtime)
-    if (span > day_span) return `${rounding(span, day_span)} ngày trước`
-    if (span > hour_span) return `${rounding(span, hour_span)} giờ trước`
+    if (span > month_span * 2) return iso_date(rtime)
+    if (span > day_span * 2) return `${rounding(span, day_span)} ngày trước`
+    if (span > hour_span * 2) return `${rounding(span, hour_span)} giờ trước`
     return `${rounding(span, minute_span)} phút trước`
   }
 
@@ -27,6 +27,15 @@
   function rounding(input, unit) {
     if (input <= unit) return 1
     return Math.floor(input / unit)
+  }
+
+  export function get_rtime_short(mtime) {
+    const span = new Date().getTime() / 1000 - mtime // unit: seconds
+
+    if (span > month_span * 2) return `${rounding(span, month_span)} tháng trc`
+    if (span > day_span * 2) return `${rounding(span, day_span)} ngày trc`
+    if (span > hour_span * 2) return `${rounding(span, hour_span)} giờ trc`
+    return `${rounding(span, minute_span)} phút trc`
   }
 </script>
 

@@ -19,9 +19,10 @@ caption {
   caption-side: bottom;
 }
 
-thead,
+thead > tr,
 tr:nth-child(even) {
-  background-color: $-table-bgcolor;
+  // background-color: $-table-bgcolor;
+  background: rgba($-table-bgcolor, 0.6);
 }
 
 tbody > tr:nth-child(odd) {
@@ -39,5 +40,5 @@ th {
 th,
 td {
   padding: $-table-padding $gutter;
-  @include border($color: $-table-bdcolor, $width: 1px);
+  @include border($color: $-table-bdcolor);
 }
