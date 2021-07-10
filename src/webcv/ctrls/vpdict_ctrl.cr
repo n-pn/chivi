@@ -74,17 +74,21 @@ class CV::VpDictCtrl < CV::BaseCtrl
     end
 
     pgmax = terms.size.-(1).//(limit) + 1
+    paged = terms.size > offset ? terms[offset, limit] : [] of VpTerm
 
     render_json({
       label: dict_label(dname),
       dname: dname,
       # dtype: vdict.dtype,
       p_min: vdict.p_min,
-      terms: terms[offset, limit],
+      terms: paged,
       total: vdict.size,
       pgidx: pgidx,
       pgmax: pgmax,
     })
+  rescue err
+    puts err.inspect
+    raise err
   end
 
   alias Lookup = Hash(String, Array(String))

@@ -1,8 +1,6 @@
 <script context="module">
   export async function load({ fetch, page: { query } }) {
-    const page = +query.get('page') || 1
-
-    const url = `/api/dicts?page=${page}`
+    const url = `/api/dicts?${query.toString()}`
     const res = await fetch(url)
     return { props: await res.json() }
   }
@@ -12,7 +10,7 @@
   import { page } from '$app/stores'
 
   import Vessel from '$lib/layouts/Vessel.svelte'
-  import CPagi from '$lib/blocks/CPagi.svelte'
+  import CPagi, { Pager } from '$lib/blocks/CPagi.svelte'
   import SIcon from '$lib/blocks/SIcon.svelte'
 
   export let cores = []
@@ -67,7 +65,7 @@
     </div>
 
     <footer class="foot">
-      <CPagi path="/dicts" opts={$page.query} {pgidx} {pgmax} />
+      <CPagi pager={new Pager($page.path, $page.query)} {pgidx} {pgmax} />
     </footer>
   </article>
 </Vessel>

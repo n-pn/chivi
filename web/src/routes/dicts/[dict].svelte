@@ -1,18 +1,18 @@
 <script context="module">
+  import { labels } from '$lib/postag'
+
   export async function load({ fetch, page: { path, query } }) {
     const url = `/api/${path}?${query.toString()}`
     const res = await fetch(url)
     return { props: await res.json() }
   }
-
-  import { labels } from '$lib/postag'
 </script>
 
 <script>
   import { page } from '$app/stores'
 
   import Vessel from '$lib/layouts/Vessel.svelte'
-  import CPagi from '$lib/blocks/CPagi.svelte'
+  import CPagi, { Pager } from '$lib/blocks/CPagi.svelte'
   import SIcon from '$lib/blocks/SIcon.svelte'
   import { get_rtime_short } from '$lib/blocks/RTime.svelte'
 
@@ -28,6 +28,8 @@
   function render_time(mtime) {
     return mtime > 1577836800 ? get_rtime_short(mtime) : '~'
   }
+
+  $: pager = new Pager($page.path, $page.query)
 
   function render_ptag(tag) {
     return labels[tag] || tag || '~'
@@ -96,11 +98,19 @@
               <td class="-idx">{offset + idx}</td>
               <td class="-key">{key}</td>
               <td class="-val">{val.join(' / ')}</td>
-              <td class="-tag">{render_ptag(tag)}</td>
-              <td class="-wgt">{render_rank(wgt)}</td>
-              <td class="-uname">{uname == '_' ? '~' : uname}</td>
-              <td class="-privi" class:_gt={privi > p_min}
-                >{render_privi(privi)}</td>
+              <td class="-tag"
+                ><a href="{$page.path}?tag={tag || '!'}">{render_ptag(tag)}</a
+                ></td>
+              <td class="-wgt">
+                <a href="{$page.path}?wgt={wgt}">{render_rank(wgt)}</a>
+              </td>
+              <td class="-uname">
+                <a href="{$page.path}?uname={uname}"
+                  >{uname == '_' ? '~' : uname}</a>
+              </td>
+              <td class="-privi" class:_gt={privi > p_min}>
+                <a href="{$page.path}?privi={privi}">{render_privi(privi)}</a>
+              </td>
               <td class="-mtime">{render_time(mtime)}</td>
             </tr>
           {/each}
@@ -109,7 +119,7 @@
     </div>
 
     <footer class="foot">
-      <CPagi path="/dicts/{dname}" opts={$page.query} {pgidx} {pgmax} />
+      <CPagi {pager} {pgidx} {pgmax} />
     </footer>
   </article>
 </Vessel>
@@ -157,6 +167,13 @@
   tbody > tr:hover {
     cursor: pointer;
     background-color: color(primary, 4, 0.1);
+  }
+
+  td > a {
+    @include fgcolor(neutral, 6);
+    &:hover {
+      @include fgcolor(primary, 6);
+    }
   }
 
   .-idx,

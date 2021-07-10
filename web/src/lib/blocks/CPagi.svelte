@@ -1,6 +1,26 @@
+<script context="module">
+  export class Pager {
+    constructor(path, query = '') {
+      this.path = path
+      this.query = new URLSearchParams(query.toString())
+    }
+
+    url_for(opts) {
+      for (const key in opts) {
+        const val = opts[key]
+        if (val === null) this.query.delete(key)
+        else this.query.set(key, val)
+      }
+
+      if (this.query.get('page') == 1) this.query.delete('page')
+      const query = this.query.toString()
+      return query ? this.path + '?' + query : this.path
+    }
+  }
+</script>
+
 <script>
-  export let opts = new URLSearchParams()
-  export let path = '/'
+  export let pager = new Pager('/')
   export let pgidx = 1
   export let pgmax = 1
 
@@ -21,26 +41,13 @@
 
     return res
   }
-
-  function make_url(pnow) {
-    const query = gen_params(pnow)
-    return query ? `${path}?${query}` : path
-  }
-
-  function gen_params(pnow) {
-    if (pnow != 1) {
-      opts.set('page', pnow)
-    } else {
-      opts.delete('page')
-    }
-    return opts.toString()
-  }
 </script>
 
 <div class="pagi">
   {#each pagi as pnow}
     {#if pnow != pgidx}
-      <a class="m-button" href={make_url(pnow)}><span>{pnow}</span></a>
+      <a class="m-button" href={pager.url_for({ page: pnow })}
+        ><span>{pnow}</span></a>
     {:else}
       <div class="m-button _disable">
         <span>{pnow}</span>
@@ -49,7 +56,7 @@
   {/each}
 
   {#if pgidx < pgmax}
-    <a class="m-button _primary" href={make_url(pgidx + 1)}>
+    <a class="m-button _primary" href={pager.url_for({ page: pgidx + 1 })}>
       <span class="-txt">Kế tiếp</span>
     </a>
   {:else}
