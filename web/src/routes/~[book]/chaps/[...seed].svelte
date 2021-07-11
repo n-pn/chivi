@@ -192,113 +192,104 @@
 <svelte:window on:keydown={handle_keypress} />
 
 <Book {nvinfo} nvtab="chaps">
-  {#if main_seeds.length > 0}
-    <div class="source">
-      {#each main_seeds as mname}
-        <a
-          class="-name"
-          class:_active={opts.sname === mname}
-          href={page_url(mname, opts.page)}
-          on:click={(e) => load_chseed(e, mname)}
-          >{mname}
-        </a>
-      {/each}
+  <div class="source">
+    {#each main_seeds as mname}
+      <a
+        class="-name"
+        class:_active={opts.sname === mname}
+        href={page_url(mname, opts.page)}
+        on:click={(e) => load_chseed(e, mname)}
+        >{mname}
+      </a>
+    {/each}
 
-      {#if hide_seeds.length > 0}
-        {#if show_more}
-          {#each hide_seeds as hname}
-            <a
-              class="-name"
-              href={page_url(hname, opts.page)}
-              on:click={(e) => load_chseed(e, hname)}
-              >{hname}
-            </a>
-          {/each}
-        {:else}
-          <button class="-name" on:click={() => (show_more = true)}>
-            <SIcon name="more-horizontal" />
-            <span>({hide_seeds.length})</span>
-          </button>
-        {/if}
-      {/if}
-
-      {#if $session.privi > 2}
-        <button class="-name" on:click={() => (add_seed = !add_seed)}>
-          <SIcon name={add_seed ? 'minus' : 'plus'} />
+    {#if hide_seeds.length > 0}
+      {#if show_more}
+        {#each hide_seeds as hname}
+          <a
+            class="-name"
+            href={page_url(hname, opts.page)}
+            on:click={(e) => load_chseed(e, hname)}
+            >{hname}
+          </a>
+        {/each}
+      {:else}
+        <button class="-name" on:click={() => (show_more = true)}>
+          <SIcon name="more-horizontal" />
+          <span>({hide_seeds.length})</span>
         </button>
       {/if}
-    </div>
-
-    {#if add_seed}
-      <div class="add-seed">
-        <select class="m-input" name="new_sname" bind:value={new_sname}>
-          {#each new_seeds as label}
-            <option value={label}>{label}</option>
-          {/each}
-        </select>
-
-        <input
-          class="m-input"
-          type="text"
-          bind:value={new_snvid}
-          required
-          placeholder="Book ID" />
-
-        <button
-          class="m-button _primary"
-          disabled={!new_snvid}
-          on:click={add_new_seed}>
-          <span class="-text">Thêm</span>
-        </button>
-      </div>
     {/if}
 
-    <div class="chinfo">
-      <div class="-left">
-        <span class="-text">Chương mới nhất</span>
-        <span class="-span">
-          <RTime mtime={chseed.utime} />
-        </span>
-      </div>
+    {#if $session.privi > 2}
+      <button class="-name" on:click={() => (add_seed = !add_seed)}>
+        <SIcon name={add_seed ? 'minus' : 'plus'} />
+      </button>
+    {/if}
+  </div>
 
-      {#if is_remote_seed(opts.sname)}
-        <button
-          class="m-button"
-          on:click={(e) => load_chseed(e, opts.sname, 2)}>
-          <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
-          <span class="-hide">Đổi mới</span>
-        </button>
-      {:else if opts.sname == 'chivi'}
-        <a class="m-button" href="/~{nvinfo.bslug}/+{opts.sname}">
-          <SIcon name="plus" />
-          <span class="-hide">Thêm chương</span>
-        </a>
-      {/if}
+  {#if add_seed}
+    <div class="add-seed">
+      <select class="m-input" name="new_sname" bind:value={new_sname}>
+        {#each new_seeds as label}
+          <option value={label}>{label}</option>
+        {/each}
+      </select>
+
+      <input
+        class="m-input"
+        type="text"
+        bind:value={new_snvid}
+        required
+        placeholder="Book ID" />
+
+      <button
+        class="m-button _primary"
+        disabled={!new_snvid}
+        on:click={add_new_seed}>
+        <span class="-text">Thêm</span>
+      </button>
+    </div>
+  {/if}
+
+  <div class="chinfo">
+    <div class="-left">
+      <span class="-text">{opts.sname}</span>
+      <span class="-span">
+        <RTime mtime={chseed.utime} />
+      </span>
+
+      <span class="-span">{chseed.total} chương</span>
     </div>
 
-    <div class="chlist">
+    {#if is_remote_seed(opts.sname)}
+      <button class="m-button" on:click={(e) => load_chseed(e, opts.sname, 2)}>
+        <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
+        <span class="-hide">Đổi mới</span>
+      </button>
+    {:else if opts.sname == 'chivi'}
+      <a class="m-button" href="/~{nvinfo.bslug}/+{opts.sname}">
+        <SIcon name="plus" />
+        <span class="-hide">Thêm chương</span>
+      </a>
+    {/if}
+  </div>
+
+  <div class="chlist">
+    {#if chseed.lasts.length > 0}
       <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chseed.lasts} />
-    </div>
 
-    <div class="chinfo" bind:this={scroll_top}>
-      <div class="-left">
-        <span class="-text">Danh sách chương</span>
-        <span class="-span">{chseed.total} chương</span>
-      </div>
-    </div>
+      <div class="-sep" />
 
-    <div class="chlist _page">
       <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chlist} />
 
-      {#if pmax > 1}
-        <footer class="foot">
-          <Mpager {pager} pgidx={opts.page} pgmax={pmax} />
-        </footer>
-      {/if}
-    </div>
-  {:else}
-    <div class="empty">Không có nội dung.</div>
-  {/if}
+      <footer class="foot">
+        <Mpager {pager} pgidx={opts.page} pgmax={pmax} />
+      </footer>
+    {:else}
+      <p class="empty">Không có nội dung :(</p>
+    {/if}
+  </div>
 </Book>
 
 <style lang="scss">
@@ -397,13 +388,19 @@
   }
 
   .chlist {
-    padding-bottom: 0.5rem;
-    // position: relative;
-    // padding-bottom: 3rem;
+    > .-sep {
+      border-bottom: 1px solid color(neutral, 3);
+      margin: 1rem auto;
+      width: 50%;
+
+      @include tm-dark {
+        border-color: color(neutral, 7);
+      }
+    }
   }
 
   .empty {
-    min-height: 50vh;
+    min-height: 30vh;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -18,8 +18,6 @@
         </div>
       </a>
     </li>
-  {:else}
-    <p class="empty">Không có nội dung.</p>
   {/each}
 </ul>
 
@@ -138,12 +136,5 @@
     flex: 1;
     @include fgcolor(neutral, 5, 0.8);
     @include truncate(null);
-  }
-
-  .empty {
-    font-style: italic;
-    @include fgcolor(neutral, 6);
-
-    // grid-column: 1;
   }
 </style>
