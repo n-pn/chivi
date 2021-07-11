@@ -5,7 +5,6 @@
   import Cvdata from '$lib/layouts/Cvdata.svelte'
 
   import {
-    dname,
     enabled as lookup_enabled,
     actived as lookup_actived,
   } from '$lib/widgets/Lookup.svelte'
@@ -20,8 +19,6 @@
 
   let changed = false
   $: if (changed) convert()
-
-  $: $dname = 'dich-nhanh'
 
   async function convert() {
     // if ($session.privi < 1) return
