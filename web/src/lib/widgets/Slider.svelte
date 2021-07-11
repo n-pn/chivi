@@ -20,9 +20,11 @@
 
 <svelte:window on:keydown={handle_keydown} />
 
-{#if actived && !sticked}
-  <div class="holder" on:click={() => (actived = false)} />
-{/if}
+<div
+  class="holder"
+  class:_active={actived}
+  class:_sticky={sticked}
+  on:click={() => (actived = false)} />
 
 <aside
   class="slider"
@@ -67,6 +69,15 @@
     transition: background 0.5s ease-in-out;
     @media (prefers-reduced-motion) {
       transition: none;
+    }
+
+    visibility: hidden;
+    // prettier-ignore
+    &._active { visibility: visible; }
+
+    &._sticky {
+      pointer-events: none;
+      background: transparent;
     }
   }
 

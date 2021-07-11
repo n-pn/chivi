@@ -19,13 +19,9 @@
   <nav class="center -wrap">
     <div class="-left">
       <button class="header-item" on:click={() => (active_appnav = true)}>
-        <SIcon name="menu" />
-      </button>
-
-      <a href="/" class="header-item _brand">
         <img src="/chivi-logo.svg" alt="logo" />
         <span class="header-text _show-md">Chivi</span>
-      </a>
+      </button>
 
       <slot name="header-left" />
     </div>
@@ -133,7 +129,7 @@
     --fg: #{color(neutral, 6)};
     --bg: #{color(neutral, 2)};
 
-    padding: .25rem;
+    padding: 0.25rem;
     @include radius();
 
     color: var(--fg);

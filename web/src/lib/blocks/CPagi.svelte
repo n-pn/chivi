@@ -20,6 +20,8 @@
 </script>
 
 <script>
+  import SIcon from '$lib/blocks/SIcon.svelte'
+
   export let pager = new Pager('/')
   export let pgidx = 1
   export let pgmax = 1
@@ -60,6 +62,7 @@
   {:else}
     <div class="m-button _disable">
       <span class="-txt">Kế tiếp</span>
+      <SIcon name="chervon-right" />
     </div>
   {/if}
 </div>

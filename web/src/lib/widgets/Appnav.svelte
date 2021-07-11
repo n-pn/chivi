@@ -9,13 +9,30 @@
 
 <Slider bind:actived _rwidth={22} _slider="left">
   <svelte:fragment slot="header-left">
-    <img src="/chivi-logo.svg" alt="logo" class="-icon" />
-    <div class="-text">Chivi</div>
+    <a class="brand" href="/">
+      <img src="/chivi-logo.svg" alt="logo" class="-icon" />
+      <span>Chivi</span>
+    </a>
   </svelte:fragment>
 
-  <a href="/" slot="header-right" class="-btn">
-    <SIcon name="home" />
-  </a>
+  <svelte:fragment slot="header-right">
+    <a href="/dicts" class="-btn">
+      <SIcon name="box" />
+    </a>
+
+    <a href="/qtran" class="-btn">
+      <SIcon name="zap" />
+    </a>
+  </svelte:fragment>
+
+  <section class="content">
+    <form class="search" action="/search" method="get">
+      <input type="search" name="q" placeholder="Tìm truyện" />
+      <button type="submit">
+        <SIcon name="search" />
+      </button>
+    </form>
+  </section>
 
   <section class="content">
     <header class="label">
@@ -69,6 +86,27 @@
     text-transform: uppercase;
     @include fgcolor(neutral, 6);
   }
+
+  .brand {
+    display: flex;
+    flex: 1;
+    // padding: 0.25rem 0;
+    > img {
+      margin-top: 0.375rem;
+      margin-right: 0.5rem;
+      display: block;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    > span {
+      @include label();
+      font-size: rem(18px);
+      line-height: 2.375rem;
+      letter-spacing: 0.04rem;
+    }
+  }
+
   .-icon {
     margin: 0.25rem;
   }
@@ -103,31 +141,33 @@
   }
 
   .chips {
-    @include flow();
-    @include props(margin-top, -0.25rem, -0.375rem);
-    @include props(margin-left, -0.25rem, -0.375rem);
+    // @include flow();
+    display: flow-root;
+    flex-wrap: nowrap;
+    margin-right: -0.375rem;
+    margin-bottom: -0.375rem;
 
-    @include props(font-size, 11px, 12px);
-    @include props(line-height, 1.5rem, 1.75rem);
+    font-size: rem(13px);
+    line-height: 1.5rem;
   }
 
   ._chip {
     --color: #{color(primary, 6)};
-    --hover: #{color(primary, 5)};
-
+    --hover: #{color(primary, 4)};
     float: left;
-    border-radius: 8px;
+    border-radius: 2rem;
     padding: 0 0.75em;
 
     background-color: transparent;
-    border: 1px solid var(--hover);
+    box-shadow: 0 0 0 1px var(--hover);
 
-    @include label();
+    // @include label();
+    font-weight: 500;
     color: var(--color);
     // letter-spacing: 0.05em;
 
-    @include props(margin-top, 0.25rem, 0.375rem);
-    @include props(margin-left, 0.25rem, 0.375rem);
+    margin-right: 0.375rem;
+    margin-bottom: 0.375rem;
 
     &.-indigo {
       --color: #{color(indigo, 6)};
@@ -142,6 +182,50 @@
     &:hover {
       color: #fff;
       background: var(--hover);
+    }
+  }
+
+  .search {
+    display: block;
+    width: 100%;
+    position: relative;
+    margin-top: 1rem;
+
+    > input {
+      display: block;
+      width: 100%;
+      outline: none;
+      border: none;
+
+      padding: 0.375rem 0.75rem;
+      border-radius: 1rem;
+
+      @include bgcolor(neutral, 1);
+      box-shadow: 0 0 0 1px color(neutral, 3);
+
+      &:focus {
+        box-shadow: 0 0 2px 1px color(primary, 5);
+      }
+
+      &:hover,
+      &:focus {
+        background: #fff;
+      }
+    }
+
+    > button {
+      position: absolute;
+      right: 0.5rem;
+      top: 0;
+      padding: 0.375rem;
+      margin: 0;
+      @include fgcolor(neutral, 5);
+      background: none;
+    }
+
+    :global(svg) {
+      width: 1rem;
+      height: 1rem;
     }
   }
 </style>
