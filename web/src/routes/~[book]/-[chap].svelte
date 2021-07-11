@@ -1,14 +1,10 @@
 <script context="module">
-  import Cvdata, {
-    toggle_lookup,
-    active_upsert,
-  } from '$lib/layouts/Cvdata.svelte'
-  import { active as upsert_active } from '$lib/widgets/Upsert.svelte'
+  import Cvdata, { toggle_lookup } from '$lib/layouts/Cvdata.svelte'
+  import { state as upsert_state } from '$lib/widgets/Upsert.svelte'
 
   import { get_chinfo, get_chtext } from '$api/chtext_api'
 
   import {
-    dname as lookup_dname,
     enabled as lookup_enabled,
     actived as lookup_actived,
     sticked as lookup_sticked,
@@ -34,7 +30,7 @@
       props: {
         ...data,
         nvinfo,
-        changed: mode < 0,
+        dirty: mode < 0,
       },
     }
   }
@@ -45,44 +41,30 @@
 
   import SIcon from '$lib/blocks/SIcon.svelte'
   import Vessel from '$lib/layouts/Vessel.svelte'
-  import Error from '../__error.svelte'
+  import Empty from './chaps/_empty.svelte'
 
   export let nvinfo = {}
   export let chinfo = {}
+
   export let cvdata = ''
 
-  export let changed = false
-  $: if ($session.privi > 0 && changed) reload_chap()
+  export let dirty = false
+  $: if ($session.privi > 0 && dirty) reload_chap()
 
   $: [book_path, list_path, prev_path, next_path] = gen_paths(nvinfo, chinfo)
-  $: $lookup_dname = nvinfo.bhash
 
   // $: $lookup_enabled = false
   // $: $lookup_actived = false
 
   function handle_keypress(evt) {
     if (evt.ctrlKey) return
-    if ($upsert_active) return
+    if ($upsert_state > 0) return
 
     switch (evt.key) {
       case '\\':
-        evt.preventDefault()
-        toggle_lookup()
-        break
-
       case 'x':
-        evt.preventDefault()
-        active_upsert(0)
-        break
-
       case 'c':
-        evt.preventDefault()
-        active_upsert(1)
-        break
-
       case 'v':
-        evt.preventDefault()
-        active_upsert(3)
         break
 
       case 'h':
@@ -96,17 +78,12 @@
         }
 
         break
-      default:
-        if (evt.keyCode == 13) {
-          evt.preventDefault()
-          active_upsert()
-        }
     }
   }
 
   let _reload = false
   async function reload_chap() {
-    changed = false
+    dirty = false
 
     _reload = true
     const [_, data] = await get_chtext(window.fetch, nvinfo.bhash, chinfo, 1)
@@ -178,48 +155,12 @@
 
   {#if cvdata}
     <Cvdata
-      {cvdata}
-      bind:changed
+      input={cvdata}
+      bind:dirty
       dname={nvinfo.bhash}
-      bname={nvinfo.btitle_vi} />
+      label={nvinfo.btitle_vi} />
   {:else}
-    <div class="empty">
-      <h1>Chương tiết không có nội dung.</h1>
-      <p>Một số khả năng:</p>
-      <ul>
-        <li>
-          Javascript chưa được bật.
-          <p>Hoặc là bạn đang xem nội dung trang web qua bên thứ ba.</p>
-        </li>
-        <li>
-          Chưa có text tiếng trung trên server, phải tải từ các nguồn ngoài.
-          <p>Việc này hiện nay có một số hạn chế nhất định:</p>
-          <ul>
-            <li>
-              Các nguồn <strong>xbiquge</strong>, <strong>hetushu</strong> hay
-              <strong>duokan8</strong> cần thiết bạn phải đăng nhập.
-            </li>
-            <li>
-              Các nguồn <strong>zhwenpg</strong>, <strong>69shu</strong> hay
-              <strong>paoshu8</strong> chỉ dành cho power users.
-              <br />
-              (Nguồn <strong>69shu</strong> hiện tại đang gặp lỗi.)
-            </li>
-
-            <li>
-              Các nguồn <strong>shubaow</strong>, <strong>jx_la</strong> hiện nay
-              không hoạt động.
-            </li>
-          </ul>
-        </li>
-      </ul>
-      <p>
-        <em>
-          Lưu ý: Hiện nay thì mọi người đều xem được các chương tiết đã được lưu
-          trữ trên server, nhưng điều này có thể thay đổi trong tương lai!
-        </em>
-      </p>
-    </div>
+    <Empty />
   {/if}
 
   <div class="footer" slot="footer">
@@ -285,42 +226,6 @@
       &:hover {
         @include fgcolor(primary, 6);
       }
-    }
-  }
-
-  .empty {
-    // height: calc(100vh - 10rem);
-    margin: 3rem auto;
-    max-width: 40rem;
-
-    // font-style: italic;
-
-    // @include flex($center: both);
-    @include fgcolor(neutral, 7);
-
-    h1 {
-      font-weight: 500;
-      @include font-size(7);
-      @include fgcolor(neutral, 7);
-    }
-
-    li {
-      margin-top: 0.75rem;
-      li {
-        margin-top: 0rem;
-      }
-    }
-
-    :global(ul) {
-      margin-top: 0.5rem;
-    }
-
-    p {
-      margin-top: 0.5rem;
-    }
-
-    strong {
-      font-weight: 500;
     }
   }
 

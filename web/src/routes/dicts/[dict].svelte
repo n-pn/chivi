@@ -73,11 +73,11 @@
   <svelte:fragment slot="header-left">
     <a href="/dicts" class="header-item">
       <SIcon name="box" />
-      <span class="header-text">Từ điển</span>
+      <span class="header-text _show-md">Từ điển</span>
     </a>
 
     <span class="header-item _active _title">
-      <span class="header-text _show-md _title">{label}</span>
+      <span class="header-text _title">{label}</span>
     </span>
   </svelte:fragment>
 

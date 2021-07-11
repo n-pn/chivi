@@ -6,6 +6,7 @@
   } from '$lib/widgets/Lookup.svelte'
 
   import Upsert, {
+    state as upsert_state,
     activate as upsert_activate,
   } from '$lib/widgets/Upsert.svelte'
 
@@ -49,13 +50,13 @@
   import * as cvlib from '$lib/cvdata'
   import AdItem from '$lib/blocks/AdItem.svelte'
 
-  export let cvdata = ''
+  export let input = ''
   export let dirty = false
 
   export let dname = 'various'
-  export let bname = 'Tổng hợp'
+  export let label = 'Tổng hợp'
 
-  $: lines = cvlib.split_input(cvdata)
+  $: lines = cvlib.split_input(input)
   $: adidx = cvlib.ad_indexes(lines.length)
 
   let hover_line = -1
@@ -83,7 +84,7 @@
     upsert_input = gen_context(nodes, idx)
 
     if (target === focus_word) {
-      activate_upsert(upsert_input, 0)
+      upsert_activate(upsert_input, 0)
     } else {
       if (focus_word) focus_word.classList.remove('_focus')
       focus_word = target
@@ -98,7 +99,7 @@
   let htmls = []
 
   // reset cached content if changed
-  $: if (cvdata) {
+  $: if (input) {
     texts = []
     htmls = []
   }
@@ -110,7 +111,41 @@
     if (use_html) return (htmls[idx] ||= cvlib.render_html(nodes))
     return (texts[idx] ||= cvlib.render_text(nodes))
   }
+
+  function handle_keypress(evt) {
+    if (evt.ctrlKey) return
+    if ($upsert_state > 0) return
+
+    switch (evt.key) {
+      case '\\':
+        $lookup_enabled = true
+        break
+
+      case 'x':
+        evt.preventDefault()
+        upsert_activate(upsert_input, 0)
+        break
+
+      case 'c':
+        evt.preventDefault()
+        upsert_activate(upsert_input, 1)
+        break
+
+      case 'r':
+        evt.preventDefault()
+        changed = true
+        break
+
+      default:
+        if (evt.keyCode == 13) {
+          evt.preventDefault()
+          upsert_activate(upsert_input, 0)
+        }
+    }
+  }
 </script>
+
+<svelte:body on:keydown={handle_keypress} />
 
 <article class:dirty>
   {#each lines as _, index (index)}
@@ -131,7 +166,7 @@
   <Lookup {dname} />
 {/if}
 
-<Upsert {dname} label={bname} bind:dirty />
+<Upsert {dname} {label} bind:dirty />
 
 <style lang="scss">
   :global(.adsbygoogle) {

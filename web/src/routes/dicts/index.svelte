@@ -29,7 +29,7 @@
   <svelte:fragment slot="header-left">
     <span class="header-item _active">
       <SIcon name="box" />
-      <span class="header-text _show-md">Từ điển</span>
+      <span class="header-text">Từ điển</span>
     </span>
   </svelte:fragment>
 

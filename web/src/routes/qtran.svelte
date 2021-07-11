@@ -2,10 +2,7 @@
   import SIcon from '$lib/blocks/SIcon.svelte'
   import Vessel from '$lib/layouts/Vessel.svelte'
 
-  import Cvdata, {
-    toggle_lookup,
-    active_upsert,
-  } from '$lib/layouts/Cvdata.svelte'
+  import Cvdata from '$lib/layouts/Cvdata.svelte'
 
   import {
     dname,
@@ -26,38 +23,6 @@
 
   $: $dname = 'dich-nhanh'
 
-  function handle_keypress(evt) {
-    if (edit_mode) return
-    if (evt.ctrlKey) return
-
-    switch (evt.key) {
-      case '\\':
-        toggle_lookup()
-        break
-
-      case 'x':
-        evt.preventDefault()
-        active_upsert(0)
-        break
-
-      case 'c':
-        evt.preventDefault()
-        active_upsert(1)
-        break
-
-      case 'r':
-        evt.preventDefault()
-        changed = true
-        break
-
-      default:
-        if (evt.keyCode == 13) {
-          evt.preventDefault()
-          active_upsert()
-        }
-    }
-  }
-
   async function convert() {
     // if ($session.privi < 1) return
 
@@ -77,8 +42,6 @@
 <svelte:head>
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
-
-<svelte:body on:keydown={handle_keypress} />
 
 <Vessel shift={$lookup_enabled && $lookup_actived}>
   <span slot="header-left" class="header-item _active">

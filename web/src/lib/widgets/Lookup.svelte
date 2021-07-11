@@ -7,7 +7,6 @@
   export const sticked = writable(false)
 
   export const input = writable(['', 0, 0])
-  export const dname = writable('various')
 
   const tags = {
     '&': '&amp;',
@@ -36,7 +35,7 @@
   import Slider from './Slider.svelte'
 
   export let dname = 'various'
-  export let label = 'Tổng hợp'
+  // export let label = 'Tổng hợp'
 
   let hanviet = []
   let entries = []
@@ -75,7 +74,7 @@
   }
 
   async function lookup_entry(input) {
-    const [err, data] = await dict_lookup(fetch, input, $dname)
+    const [err, data] = await dict_lookup(fetch, input, dname)
     if (err) return
 
     entries = data.entries
@@ -197,6 +196,10 @@
   // $vi-height: 0;
   $zh-height: 0.75rem + (1.25 * 5rem);
   $hv-height: 0.75rem + (1.25 * 6rem);
+
+  .lookup {
+    @include fgcolor(neutral, 8);
+  }
 
   .source {
     overflow-y: auto;
