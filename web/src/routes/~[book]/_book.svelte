@@ -16,7 +16,7 @@
 
   $: vi_status = map_status(nvinfo.status)
   $: book_intro = nvinfo.bintro.join('').substring(0, 300)
-  $: updated_at = new Date(nvinfo.update * 1000)
+  $: updated_at = new Date(nvinfo.update)
 
   let bmark = ''
   onMount(async () => {
@@ -64,29 +64,36 @@
     <span class="header-text _title">{nvinfo.btitle_vi}</span>
   </a>
 
-  <span slot="header-right" class="header-item _menu">
-    <SIcon
-      name={bmark && bmark != 'default' ? mark_icons[bmark] : 'bookmark'} />
-    <span class="header-text _show-md"
-      >{bmark && bmark != 'default' ? mark_names[bmark] : 'Đánh dấu'}</span>
-
+  <svelte:fragment slot="header-right">
+    <a class="header-item" href="/dicts/{nvinfo.bhash}">
+      <SIcon name="box" />
+      <span class="header-text _show_md">Từ điển</span>
+    </a>
     {#if $session.privi > 0}
-      <div class="header-menu">
-        {#each mark_types as mtype}
-          <div class="-item" on:click={() => mark_book(mtype)}>
-            <SIcon name={mark_icons[mtype]} />
-            <span>{mark_names[mtype]}</span>
+      <div class="header-item _menu">
+        <SIcon
+          name={bmark && bmark != 'default' ? mark_icons[bmark] : 'bookmark'} />
 
-            {#if bmark == mtype}
-              <span class="_right">
-                <SIcon name="check" />
-              </span>
-            {/if}
-          </div>
-        {/each}
+        <span class="header-text _show-md"
+          >{bmark && bmark != 'default' ? mark_names[bmark] : 'Đánh dấu'}</span>
+
+        <div class="header-menu">
+          {#each mark_types as mtype}
+            <div class="-item" on:click={() => mark_book(mtype)}>
+              <SIcon name={mark_icons[mtype]} />
+              <span>{mark_names[mtype]}</span>
+
+              {#if bmark == mtype}
+                <span class="_right">
+                  <SIcon name="check" />
+                </span>
+              {/if}
+            </div>
+          {/each}
+        </div>
       </div>
     {/if}
-  </span>
+  </svelte:fragment>
 
   <div class="main-info">
     <div class="title">
@@ -125,7 +132,7 @@
 
         <span class="stat _mftime">
           <SIcon name="clock" />
-          <span><RTime mtime={nvinfo.update * 1000} /></span>
+          <span><RTime mtime={nvinfo.update} /></span>
         </span>
       </div>
 

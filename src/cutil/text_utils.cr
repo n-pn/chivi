@@ -12,11 +12,11 @@ module CV::TextUtils
     input = fix_spaces(input)
     input = input.gsub(BR_RE, "\n") if fix_br
 
-    split_text(input, spaces_is_new_line: true)
+    split_text(input, spaces_as_newline: true)
   end
 
-  def split_text(input : String, spaces_is_new_line = true) : Array(String)
-    input = input.gsub(/\s{2,}/, "\n") if spaces_is_new_line
+  def split_text(input : String, spaces_as_newline = true) : Array(String)
+    input = input.gsub(/\s{2,}/, "\n") if spaces_as_newline
     input.split(/\r\n?|\n/).map(&.strip).reject(&.empty?)
   end
 

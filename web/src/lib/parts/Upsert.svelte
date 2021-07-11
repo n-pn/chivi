@@ -81,11 +81,10 @@
 
     // set some default values if non present
 
-    const first_hint = data.hints
-
     terms[1].fix_tag(terms[0].tag)
     terms[0].fix_tag(terms[1].tag || terms[0].old_val ? '' : 'nr')
 
+    const first_hint = data.hints[0]
     terms[0].fix_val(terms[1].val || first_hint || titleize(trans.hanviet, 9))
     terms[1].fix_val(terms[0].val || first_hint || trans.hanviet)
   }
@@ -139,9 +138,9 @@
   on:keydown={handle_keyboard}>
   <div id="upsert" class="main" on:click|stopPropagation={focus_on_value}>
     <header class="head">
-      <button type="button" class="m-button _text">
-        <SIcon name="menu" />
-      </button>
+      <a href="/dicts/{dname}" class="m-button _text" target="_blank">
+        <SIcon name="box" />
+      </a>
 
       <Input phrase={$input} pinyin={trans.binh_am} bind:output={key} />
 
@@ -237,11 +236,11 @@
     padding: 0.5rem 0.25rem;
     overflow: hidden;
 
-    > button {
+    > .m-button {
       @include fgcolor(neutral, 6);
 
       &:hover {
-        background: transparent;
+        background: none;
         @include fgcolor(primary, 6);
       }
     }

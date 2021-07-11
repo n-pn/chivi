@@ -18,7 +18,9 @@
 <header class="app-header" class:_shift={shift} class:_clear={$l_scroll > 0}>
   <nav class="center -wrap">
     <div class="-left">
-      <button class="header-item" on:click={() => (active_appnav = true)}>
+      <button
+        class="header-item _brand"
+        on:click={() => (active_appnav = true)}>
         <img src="/chivi-logo.svg" alt="logo" />
         <span class="header-text _show-md">Chivi</span>
       </button>

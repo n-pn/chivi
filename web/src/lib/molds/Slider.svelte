@@ -21,13 +21,13 @@
 <svelte:window on:keydown={handle_keydown} />
 
 <div
-  class="holder"
+  class="wrap"
   class:_active={actived}
   class:_sticky={sticked}
   on:click={() => (actived = false)} />
 
 <aside
-  class="slider"
+  class="main"
   class:_left={_slider == 'left'}
   class:_right={_slider == 'right'}
   class:_active={actived}
@@ -57,7 +57,7 @@
 </aside>
 
 <style lang="scss">
-  .holder {
+  .wrap {
     position: fixed;
     top: 0;
     left: 0;
@@ -81,7 +81,7 @@
     }
   }
 
-  .slider {
+  .main {
     position: fixed;
 
     top: 0;
@@ -135,7 +135,7 @@
     background: #fff;
     height: $hd-height;
     line-height: $hd-line-height;
-    padding: 0.375rem 0.75rem;
+    padding: 0.375rem 0.5rem;
     border-bottom: 1px solid color(neutral, 3);
     @include fgcolor(neutral, 6);
     @include shadow(1);

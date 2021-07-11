@@ -78,4 +78,8 @@
       margin-left: 0.5rem;
     }
   }
+
+  .-txt {
+    @include props(display, none, $md: inline);
+  }
 </style>

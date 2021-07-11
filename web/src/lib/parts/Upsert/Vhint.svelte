@@ -4,8 +4,8 @@
 </script>
 
 <div class="hints">
-  {#each hints as hint}
-    {#if hint != term.val}
+  {#each hints as hint, idx}
+    {#if idx == 0 || hint != term.val}
       <span
         class="hint"
         class:_orig={hint == term.old_val}

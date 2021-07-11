@@ -3,10 +3,10 @@ require "./base_ctrl"
 class CV::VpToolCtrl < CV::BaseCtrl
   def convert
     dname = params["dname"]
-    cvter = Cvmtl.generic(dname)
+    cvter = MtCore.generic_mtl(dname)
 
-    input = params.fetch_str("input").gsub("\t", "    ")
-    lines = TextUtils.split_text(input, spaces_is_new_line: false)
+    input = params.fetch_str("input").gsub("\t", "  ")
+    lines = TextUtils.split_text(input, spaces_as_newline: false)
 
     response.content_type = "text/plain; charset=utf-8"
 

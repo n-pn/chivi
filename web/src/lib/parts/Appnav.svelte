@@ -46,7 +46,7 @@
 
     <div class="chips">
       {#each Object.entries(order_names) as [name, text]}
-        <a href="/?order={name}" class="_chip">
+        <a href="/?order={name}" class="-chip">
           {text}
         </a>
       {/each}
@@ -61,7 +61,7 @@
 
     <div class="chips">
       {#each genres as genre}
-        <a href="/?genre={genre}" class="_chip -teal">
+        <a href="/?genre={genre}" class="-chip _teal">
           {genre}
         </a>
       {/each}
@@ -76,7 +76,7 @@
 
     <div class="chips">
       {#each snames as sname}
-        <a href="/?sname={sname}" class="_chip -indigo">
+        <a href="/?sname={sname}" class="-chip _indigo _caps">
           {sname}
         </a>
       {/each}
@@ -117,7 +117,7 @@
 
   .content {
     margin-top: 0.5rem;
-    padding: 0 1rem;
+    padding: 0 0.75rem;
   }
 
   .label {
@@ -130,7 +130,7 @@
     padding: 0 0.5rem;
     // text-transform: uppercase;
 
-    font-size: rem(15px);
+    // font-size: rem(15px);
     @include fgcolor(neutral, 6);
 
     :global(svg) {
@@ -144,6 +144,7 @@
     }
   }
 
+  $-chip-height: 1.75rem;
   .chips {
     // @include flow();
     display: flow-root;
@@ -151,19 +152,19 @@
     margin-right: -0.375rem;
     margin-bottom: -0.375rem;
 
-    font-size: rem(13px);
-    line-height: 1.5rem;
+    @include props(font-size, rem(12px), rem(13px), rem(14px));
+    line-height: $-chip-height;
   }
 
-  ._chip {
+  .-chip {
     --color: #{color(primary, 6)};
-    --hover: #{color(primary, 4)};
+    --hover: #{color(primary, 5)};
     float: left;
-    border-radius: 2rem;
-    padding: 0 0.75em;
+    padding: 0 0.5rem;
+    border-radius: math.div($-chip-height, 2);
 
     background-color: transparent;
-    box-shadow: 0 0 0 1px var(--hover);
+    box-shadow: 0 0 0 1px var(--hover) inset;
 
     // @include label();
     font-weight: 500;
@@ -173,14 +174,19 @@
     margin-right: 0.375rem;
     margin-bottom: 0.375rem;
 
-    &.-indigo {
+    &._indigo {
       --color: #{color(indigo, 6)};
       --hover: #{color(indigo, 5)};
     }
 
-    &.-teal {
+    &._teal {
       --color: #{color(teal, 6)};
       --hover: #{color(teal, 5)};
+    }
+
+    &._caps {
+      font-size: 0.9em;
+      text-transform: uppercase;
     }
 
     &:hover {
@@ -205,15 +211,21 @@
       border-radius: 1rem;
 
       @include bgcolor(neutral, 1);
-      box-shadow: 0 0 0 1px color(neutral, 3);
+      box-shadow: 0 0 0 1px color(neutral, 2) inset;
 
       &:focus {
-        box-shadow: 0 0 2px 1px color(primary, 5);
+        box-shadow: 0 0 0 1px color(primary, 4) inset;
       }
 
       &:hover,
       &:focus {
         background: #fff;
+      }
+
+      &::placeholder {
+        font-style: italic;
+        font-size: rem(15px);
+        @include fgcolor(neutral, 6);
       }
     }
 

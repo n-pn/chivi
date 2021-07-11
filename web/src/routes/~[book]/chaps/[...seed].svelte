@@ -134,7 +134,7 @@
 
   function page_url(sname, page) {
     let url = `/~${nvinfo.bslug}/chaps/${sname}`
-    if (page > 1) url += `/${page}`
+    if (page > 1) url += `?page=${page}`
     return url
   }
 
@@ -259,7 +259,7 @@
       <div class="-left">
         <span class="-text">Chương mới nhất</span>
         <span class="-span">
-          <RTime mtime={chseed.utime * 1000} />
+          <RTime mtime={chseed.utime} />
         </span>
       </div>
 
