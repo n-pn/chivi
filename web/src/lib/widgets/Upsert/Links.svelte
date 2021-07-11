@@ -12,19 +12,19 @@
   ]
 </script>
 
-<div class="upsert-links">
+<footer class="foot">
   {#each links as [name, href]}
-    <a class="upsert-link" {href} target="_blank" rel="noopener noreferer"
-      >{name}</a>
+    <a class="link" {href} target="_blank" rel="noopener noreferer">{name}</a>
   {/each}
-</div>
+</footer>
 
 <style lang="scss">
-  .upsert-links {
+  .foot {
     @include flex($center: content);
+    border-top: 1px solid color(neutral, 3);
   }
 
-  .upsert-link {
+  .link {
     cursor: pointer;
     padding: 0 0.75rem;
     line-height: 2.25rem;

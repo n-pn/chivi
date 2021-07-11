@@ -8,76 +8,20 @@
   export const state = writable(0)
   export const input = writable(['', 0, 1])
 
-  export function activate(inp, on_tab = 0, active_state = 1) {
-    if (typeof inp == 'string') inp = [inp, 0, inp.length]
+  export function activate(inp, _tab = 0, _state = 1) {
+    tab.set(_tab)
 
-    tab.set(on_tab)
-    state.set(active_state)
+    if (typeof inp == 'string') inp = [inp, 0, inp.length]
     input.set(inp)
+
+    state.set(_state)
   }
 
   export function deactivate() {
     state.set(0)
   }
 
-  export class Term {
-    constructor(term = {}, p_min = 1, p_max = 1) {
-      this.key = term.key
-
-      const val = term.val || []
-      this.val = this.old_val = val[0] || ''
-
-      this.tag = this.old_tag = term.tag || ''
-      this.wgt = this.old_wgt = term.wgt || 3
-
-      this.old_privi = term.privi || p_min
-      this.old_state = term.state
-      this.old_uname = term.uname
-      this.old_mtime = term.mtime
-
-      this.privi = p_min > term.privi ? p_min : term.privi
-      if (this.privi > p_max) this.privi = p_max
-    }
-
-    get ext() {
-      return this.tag == 3 ? this.tag : `${this.tag} ${this.wgt}`
-    }
-
-    get state() {
-      return !this.val ? 'Xoá' : this.old_val ? 'Sửa' : 'Thêm'
-    }
-
-    get result() {
-      return {
-        key: this.key,
-        val: this.val.replace('', '').trim(),
-        ext: this.ext,
-        privi: this.privi,
-      }
-    }
-
-    reset() {
-      this.val = this.old_val
-      this.tag = this.old_tag
-
-      return this
-    }
-
-    clear() {
-      this.val = ''
-      this.tag = ''
-
-      return this
-    }
-
-    fix_val(new_val) {
-      if (!this.val) this.val = new_val
-    }
-
-    fix_tag(new_tag) {
-      if (!this.tag) this.tag = new_tag
-    }
-  }
+  const tab_kbds = ['x', 'c', 'v']
 </script>
 
 <script>
@@ -86,6 +30,8 @@
   import Postag from './Postag.svelte'
 
   import SIcon from '$lib/blocks/SIcon.svelte'
+
+  import Term from './Upsert/term'
 
   import Input from './Upsert/Input.svelte'
   import Emend from './Upsert/Emend.svelte'
@@ -102,17 +48,18 @@
   export let label = 'Tổng hợp'
   export let dirty = false
 
-  $: dicts = [
-    [dname, label],
-    ['regular', 'Thông dụng'],
-    ['hanviet', 'Hán Việt'],
-  ]
+  $: labels = [label, 'Thông dụng', 'Hán Việt']
+  $: dnames = [dname, 'regular', 'hanviet']
 
   let trans = []
   let hints = []
   let terms = []
 
-  $: term = terms[$tab] || new Term({ key }, $tab + 1, $session.privi)
+  $: term = get_term(terms, $tab)
+
+  function get_term(terms, tab) {
+    return terms[tab] || new Term({ key }, tab + 1, $session.privi)
+  }
 
   let key = ''
   $: if (key) init_search(key, dname)
@@ -129,20 +76,25 @@
     if (err) return
 
     trans = data.trans
+    hints = [trans.hanviet, ...data.hints]
     terms = data.infos.map((x, i) => new Term(x, i + 2, $session.privi))
+
+    // set some default values if non present
 
     const first_hint = data.hints
 
+    terms[1].fix_tag(terms[0].tag)
+    terms[0].fix_tag(terms[1].tag || terms[0].old_val ? '' : 'nr')
+
     terms[0].fix_val(terms[1].val || first_hint || titleize(trans.hanviet, 9))
     terms[1].fix_val(terms[0].val || first_hint || trans.hanviet)
-
-    terms[1].fix_tag(terms[0].tag)
-    terms[0].fix_tag(terms[1].tag || 'nr')
-    hints = [trans.hanviet, ...data.hints]
   }
 
   async function submit_val() {
-    dirty = await dict_upsert(fetch, dicts[$tab][0], term.result)
+    const [err, res] = await dict_upsert(fetch, dnames[$tab], term.result)
+
+    dirty = err == 0
+    term[$tab] = new Term(res, $tab + 1, $session.privi)
     deactivate()
   }
 
@@ -199,19 +151,19 @@
     </header>
 
     <section class="tabs">
-      {#each dicts as [_dname, label], idx}
+      {#each labels as label, idx}
         <button
           class="-tab"
           class:_active={idx == $tab}
           class:_edited={terms[idx]?.old_val}
-          data-kbd={idx == 0 ? 'x' : idx == 1 ? 'c' : 'v'}
+          data-kbd={tab_kbds[idx]}
           on:click={() => tab.set(idx)}>
           <span>{label}</span>
         </button>
       {/each}
     </section>
 
-    <section class="vform">
+    <section class="body">
       <Emend {term} />
 
       <div class="field">
@@ -219,7 +171,6 @@
 
         <div class="value" class:_fresh={!term.old_val}>
           <input
-            id="value"
             type="text"
             class="-input"
             bind:this={value_field}
@@ -231,8 +182,6 @@
             <button class="postag" on:click={() => state.set(2)}>
               {tag_label(term.tag) || 'Chưa phân loại'}
             </button>
-
-            <Postag bind:input={term.tag} bind:state={$state} />
           {/if}
         </div>
 
@@ -250,11 +199,11 @@
       </div>
     </section>
 
-    <footer>
-      <Links {key} />
-    </footer>
+    <Links {key} />
   </div>
 </div>
+
+<Postag bind:input={term.tag} bind:state={$state} />
 
 <style lang="scss">
   $gutter: 0.75rem;
@@ -353,7 +302,7 @@
     }
   }
 
-  .vform {
+  .body {
     @include bgcolor(#fff);
     padding: 0 0.75rem 0.75rem;
   }
@@ -426,9 +375,5 @@
     display: flex;
     margin-top: 0.75rem;
     justify-content: right;
-  }
-
-  footer {
-    border-top: 1px solid color(neutral, 3);
   }
 </style>

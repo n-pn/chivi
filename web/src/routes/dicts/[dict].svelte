@@ -109,7 +109,7 @@
                 class="-val"
                 class:_del={!val[0]}
                 on:click={() => upsert_activate(key)}>
-                {val.join('/') || 'Đã xoá'}
+                {val[0] || 'Đã xoá'}
               </td>
               <td class="-tag" on:click={() => upsert_activate(key, 0, 2)}
                 >{render_ptag(tag)}</td>
