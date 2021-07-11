@@ -181,7 +181,7 @@
   .body {
     margin-bottom: 0.25rem;
     height: 21rem;
-    max-height: calc(100vh - 4.5rem);
+    max-height: calc(100vh - 6.5rem);
 
     overflow-y: scroll;
     background: #fff;

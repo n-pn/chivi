@@ -31,7 +31,7 @@
 
   $: offset = (pgidx - 1) * 30 + 1
   function render_time(mtime) {
-    return mtime > 1577836800 ? get_rtime_short(mtime) : '~'
+    return mtime > 1577836800 ? get_rtime_short(mtime) + ' trước' : '~'
   }
 
   let dirty = false
@@ -123,7 +123,7 @@
               <td class="-privi" class:_gt={privi > p_min}>
                 <a href="{$page.path}?privi={privi}">{render_privi(privi)}</a>
               </td>
-              <td class="-mtime">{render_time(mtime)} trước</td>
+              <td class="-mtime">{render_time(mtime)} </td>
             </tr>
           {/each}
         </tbody>
