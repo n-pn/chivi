@@ -23,6 +23,10 @@
     <a href="/qtran" class="-btn">
       <SIcon name="zap" />
     </a>
+
+    <a href="/" class="-btn">
+      <SIcon name="home" />
+    </a>
   </svelte:fragment>
 
   <section class="content">
