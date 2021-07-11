@@ -6,7 +6,9 @@
     const { nvinfo } = context
 
     const { bhash, snames } = nvinfo
-    const [sname, page] = extract_name_and_page(snames, params.seed)
+    const sname = extract_sname(snames, params.seed)
+    const page = +query.get('page')
+
     const [snvid] = nvinfo.chseed[sname] || [bhash]
 
     const opts = { sname, snvid, page }
@@ -23,15 +25,8 @@
     }
   }
 
-  function extract_name_and_page(snames, param) {
-    let [name, page] = (param || '').split('/')
-
-    if (!snames.includes(name)) name = snames[0] || 'chivi'
-
-    page = +(page || '')
-    if (page < 1) page = 1
-
-    return [name, page]
+  function extract_sname(snames, param) {
+    return snames.includes(param) ? param : snames[0] || 'chivi'
   }
 
   function update_utime(nvinfo, utime) {
@@ -45,12 +40,15 @@
 </script>
 
 <script>
-  import { session } from '$app/stores'
+  import { page, session } from '$app/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
   import Chlist from '$parts/Chlist.svelte'
   import Book from '../_book.svelte'
+
+  import Mpager, { Pager } from '$molds/Mpager.svelte'
+  $: pager = new Pager($page.path, $page.query)
 
   import paginate_range from '$utils/paginate_range'
 
@@ -293,35 +291,9 @@
       <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chlist} />
 
       {#if pmax > 1}
-        <nav class="pagi">
-          <a
-            href={page_url(opts.sname, 1)}
-            class="page m-button"
-            class:_disable={opts.page == 1}
-            on:click|preventDefault={() => load_chlist(1)}>
-            <SIcon name="chevrons-left" />
-          </a>
-
-          {#each page_list as [curr, level]}
-            <a
-              href={page_url(opts.sname, curr)}
-              class="page m-button"
-              class:_primary={opts.page == curr}
-              class:_disable={opts.page == curr}
-              data-level={level}
-              on:click|preventDefault={() => load_chlist(curr)}>
-              <span>{curr}</span>
-            </a>
-          {/each}
-
-          <a
-            href={page_url(opts.sname, pmax)}
-            class="page m-button"
-            class:_disable={opts.page == pmax}
-            on:click|preventDefault={() => load_chlist(pmax)}>
-            <SIcon name="chevrons-right" />
-          </a>
-        </nav>
+        <footer class="foot">
+          <Mpager {pager} pgidx={opts.page} pgmax={pmax} />
+        </footer>
       {/if}
     </div>
   {:else}
@@ -441,47 +413,8 @@
     @include fgcolor(neutral, 5);
   }
 
-  .pagi {
+  .foot {
     margin-top: 1rem;
-    @include flex($center: content);
-    @include flex-gap(0.375rem, $child: '.page');
-  }
-
-  .page {
-    &._disable {
-      cursor: text;
-    }
-
-    &[data-level='0'],
-    &[data-level='1'] {
-      display: inline-block;
-    }
-
-    &[data-level='2'] {
-      @include props(display, none, $sm: inline-block);
-    }
-
-    &[data-level='3'] {
-      @include props(display, none, $md: inline-block);
-    }
-
-    &[data-level='4'],
-    &[data-level='5'] {
-      @include props(display, none, $lg: inline-block);
-    }
-
-    @include tm-dark {
-      @include fgcolor(neutral, 2);
-      @include bgcolor(neutral, 8, 0.4);
-
-      &:hover {
-        @include bgcolor(neutral, 8, 0.3);
-      }
-
-      &._primary {
-        @include bgcolor(primary, 7);
-      }
-    }
   }
 
   .add-seed {

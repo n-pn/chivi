@@ -43,29 +43,30 @@
   }
 </script>
 
-<div class="pagi">
-  {#each build_pagi(pgidx, pgmax) as pnow}
-    {#if pnow != pgidx}
-      <a class="m-button" href={pager.url_for({ page: pnow })}
-        ><span>{pnow}</span></a>
+<nav class="pagi">
+  {#each build_pagi(pgidx, pgmax) as pgnow}
+    {#if pgnow != pgidx}
+      <a class="m-button" href={pager.url_for({ page: pgnow })}
+        ><span>{pgnow}</span></a>
     {:else}
-      <div class="m-button _disable">
-        <span>{pnow}</span>
-      </div>
+      <button class="m-button" disabled>
+        <span>{pgnow}</span>
+      </button>
     {/if}
   {/each}
 
   {#if pgidx < pgmax}
     <a class="m-button _primary" href={pager.url_for({ page: pgidx + 1 })}>
       <span class="-txt">Kế tiếp</span>
+      <SIcon name="chevron-right" />
     </a>
   {:else}
-    <div class="m-button _disable">
+    <button class="m-button" disabled>
       <span class="-txt">Kế tiếp</span>
-      <SIcon name="chervon-right" />
-    </div>
+      <SIcon name="chevron-right" />
+    </button>
   {/if}
-</div>
+</nav>
 
 <style lang="scss">
   .pagi {

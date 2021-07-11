@@ -67,7 +67,7 @@
   <svelte:fragment slot="header-right">
     <a class="header-item" href="/dicts/{nvinfo.bhash}">
       <SIcon name="box" />
-      <span class="header-text _show_md">Từ điển</span>
+      <span class="header-text _show-md">Từ điển</span>
     </a>
     {#if $session.privi > 0}
       <div class="header-item _menu">
