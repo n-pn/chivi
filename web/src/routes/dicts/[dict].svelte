@@ -1,7 +1,5 @@
 <script context="module">
-  import Upsert, {
-    activate as upsert_activate,
-  } from '$lib/widgets/Upsert.svelte'
+  import Upsert, { activate as upsert_activate } from '$parts/Upsert.svelte'
   import { labels } from '$lib/postag'
 
   export async function load({ fetch, page: { path, query } }) {
@@ -14,10 +12,10 @@
 <script>
   import { page } from '$app/stores'
 
-  import Vessel from '$lib/layouts/Vessel.svelte'
-  import CPagi, { Pager } from '$lib/blocks/CPagi.svelte'
-  import SIcon from '$lib/blocks/SIcon.svelte'
-  import { get_rtime_short } from '$lib/blocks/RTime.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import { get_rtime_short } from '$atoms/RTime.svelte'
+  import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Vessel from '$sects/Vessel.svelte'
 
   export let label = ''
   export let dname = ''
@@ -131,7 +129,7 @@
     </div>
 
     <footer class="foot">
-      <CPagi {pager} {pgidx} {pgmax} />
+      <Mpager {pager} {pgidx} {pgmax} />
     </footer>
   </article>
 </Vessel>

@@ -26,11 +26,9 @@
 </script>
 
 <script>
-  import SIcon from '$lib/blocks/SIcon.svelte'
-  import Nvlist from '$lib/widgets/Nvlist.svelte'
-
-  import Vessel from '$lib/layouts/Vessel.svelte'
-  import Error from './__error.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import Nvlist from '$parts/Nvlist.svelte'
+  import Vessel from '$sects/Vessel.svelte'
 
   export let uname = ''
   export let bmark = 'reading'

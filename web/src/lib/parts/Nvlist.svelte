@@ -2,7 +2,7 @@
   export let books = []
   export let nvtab = 'index'
 
-  import Nvinfo from './Nvinfo.svelte'
+  import Nvinfo from '$molds/Nvinfo.svelte'
 </script>
 
 <div class="list">

@@ -1,5 +1,5 @@
 <script>
-  import SIcon from '$lib/blocks/SIcon.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
 
   export let term
   export let p_max

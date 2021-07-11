@@ -24,10 +24,9 @@
 </script>
 
 <script>
-  import SIcon from '$lib/blocks/SIcon.svelte'
-  import BCover from '$lib/blocks/BCover.svelte'
-
-  import Vessel from '$lib/layouts/Vessel.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import BCover from '$atoms/BCover.svelte'
+  import Vessel from '$sects/Vessel.svelte'
 
   export let word = ''
   export let page = 1

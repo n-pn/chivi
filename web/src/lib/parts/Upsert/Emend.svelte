@@ -1,5 +1,5 @@
 <script>
-  import { get_rtime } from '$lib/blocks/RTime.svelte'
+  import { get_rtime } from '$atoms/RTime.svelte'
   export let term
 </script>
 

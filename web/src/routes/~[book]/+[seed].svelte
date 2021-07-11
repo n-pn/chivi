@@ -12,8 +12,8 @@
 <script>
   import { goto } from '$app/navigation'
 
-  import SIcon from '$lib/blocks/SIcon.svelte'
-  import Vessel from '$lib/layouts/Vessel.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import Vessel from '$sects/Vessel.svelte'
 
   export let nvinfo
 

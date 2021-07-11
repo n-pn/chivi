@@ -9,9 +9,9 @@
 <script>
   import { page } from '$app/stores'
 
-  import Vessel from '$lib/layouts/Vessel.svelte'
-  import CPagi, { Pager } from '$lib/blocks/CPagi.svelte'
-  import SIcon from '$lib/blocks/SIcon.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Vessel from '$sects/Vessel.svelte'
 
   export let cores = []
   export let books = []
@@ -65,7 +65,7 @@
     </div>
 
     <footer class="foot">
-      <CPagi pager={new Pager($page.path, $page.query)} {pgidx} {pgmax} />
+      <Mpager pager={new Pager($page.path, $page.query)} {pgidx} {pgmax} />
     </footer>
   </article>
 </Vessel>

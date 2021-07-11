@@ -2,8 +2,8 @@
   import { session } from '$app/stores'
 
   import { signin_user } from '$api/viuser_api'
-  import SIcon from '$lib/blocks/SIcon.svelte'
-  import Slider from './Slider.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import Slider from '$molds/Slider.svelte'
 
   export let actived = false
 

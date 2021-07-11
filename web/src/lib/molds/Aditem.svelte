@@ -10,7 +10,10 @@
     data-ad-format={type == 'banner' ? 'auto' : 'fluid'}
     data-ad-layout={type == 'banner' ? '' : 'in-article'}
     data-full-width-responsive="true">
-    <div>Hãy ủng hộ cho chivi <a href="/notes/donation">tại đây</a> nếu không muốn xem quảng cáo.</div>
+    <div>
+      Hãy ủng hộ cho chivi <a href="/notes/donation">tại đây</a> nếu không muốn xem
+      quảng cáo.
+    </div>
   </ins>
 
   <script>
@@ -18,7 +21,7 @@
       try {
         ;(window.adsbygoogle = window.adsbygoogle || []).push({})
       } catch (aderr) {
-        console.log({aderr})
+        console.log({ aderr })
       }
     }
   </script>

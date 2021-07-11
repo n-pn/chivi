@@ -1,4 +1,8 @@
-<div class="empty">
+<script>
+  export let chinfo = {}
+</script>
+
+<div class="notext">
   <h1>Chương tiết không có nội dung.</h1>
   <p>Một số khả năng:</p>
   <ul>
@@ -37,7 +41,7 @@
 </div>
 
 <style lang="scss">
-  .empty {
+  .notext {
     // height: calc(100vh - 10rem);
     margin: 3rem auto;
     max-width: 40rem;

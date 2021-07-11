@@ -1,5 +1,5 @@
 <script>
-  import SIcon from '$lib/blocks/SIcon.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
   import { gnames, groups, find_group, tag_label } from '$lib/postag'
   import { onMount } from 'svelte'
 

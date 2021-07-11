@@ -15,7 +15,7 @@ const mdsvexConfig = {
   smartypants: { dashes: 'oldschool' },
   remarkPlugins: [breaks],
   rehypePlugins: [],
-  layout: path.resolve(_cwd, 'src/lib/layouts/Article.svelte'),
+  layout: path.resolve(_cwd, 'src/lib/sects/Article.svelte'),
 }
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -40,7 +40,11 @@ const config = {
       resolve: {
         alias: {
           $api: path.resolve(_cwd, 'src/api'),
-          $utils: path.resolve(_cwd, 'src/utils'),
+          $atoms: path.resolve(_cwd, 'src/lib/atoms'),
+          $molds: path.resolve(_cwd, 'src/lib/molds'),
+          $parts: path.resolve(_cwd, 'src/lib/parts'),
+          $sects: path.resolve(_cwd, 'src/lib/sects'),
+          $utils: path.resolve(_cwd, 'src/lib/utils'),
         },
       },
       server: {

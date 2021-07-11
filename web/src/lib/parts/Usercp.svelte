@@ -2,8 +2,8 @@
   import { session } from '$app/stores'
   import { mark_names, mark_icons } from '$lib/constants'
 
-  import SIcon from '$lib/blocks/SIcon.svelte'
-  import Slider from './Slider.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import Slider from '$molds/Slider.svelte'
 
   export let actived = false
 

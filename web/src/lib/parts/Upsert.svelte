@@ -1,8 +1,8 @@
 <script context="module">
   import { writable } from 'svelte/store'
   import { tag_label } from '$lib/postag.js'
-  import { titleize } from '$utils/text_utils'
-  import { dict_upsert, dict_search } from '$api/dictdb_api'
+  import { titleize } from '$utils/text_utils.js'
+  import { dict_upsert, dict_search } from '$api/dictdb_api.js'
 
   export const tab = writable(0)
   export const state = writable(0)
@@ -27,11 +27,11 @@
 <script>
   import { session } from '$app/stores'
 
-  import Postag from './Postag.svelte'
+  import Postag from '$parts/Postag.svelte'
 
-  import SIcon from '$lib/blocks/SIcon.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
 
-  import Term from './Upsert/term'
+  import Term from './Upsert/term.js'
 
   import Input from './Upsert/Input.svelte'
   import Emend from './Upsert/Emend.svelte'

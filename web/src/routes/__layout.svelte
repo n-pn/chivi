@@ -1,7 +1,7 @@
 <script>
   import { navigating, page, session } from '$app/stores'
   import { l_scroll } from '$lib/stores'
-  import Loader from '$lib/layouts/Loader.svelte'
+  import Loader from '$molds/Loader.svelte'
 
   import '../css/globals.scss'
 

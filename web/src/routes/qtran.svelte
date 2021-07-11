@@ -1,13 +1,13 @@
 <script>
-  import SIcon from '$lib/blocks/SIcon.svelte'
-  import Vessel from '$lib/layouts/Vessel.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import Vessel from '$sects/Vessel.svelte'
 
-  import Cvdata from '$lib/layouts/Cvdata.svelte'
+  import Cvdata from '$sects/Cvdata.svelte'
 
   import {
     enabled as lookup_enabled,
     actived as lookup_actived,
-  } from '$lib/widgets/Lookup.svelte'
+  } from '$parts/Lookup.svelte'
 
   let zhtext = ''
   let cvdata = ''

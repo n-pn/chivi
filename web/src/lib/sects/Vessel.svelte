@@ -2,11 +2,11 @@
   import { session } from '$app/stores'
   import { l_scroll } from '$lib/stores'
 
-  import SIcon from '$lib/blocks/SIcon.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
 
-  import Signin from '$lib/widgets/Signin.svelte'
-  import Appnav from '$lib/widgets/Appnav.svelte'
-  import Usercp from '$lib/widgets/Usercp.svelte'
+  import Signin from '$parts/Signin.svelte'
+  import Appnav from '$parts/Appnav.svelte'
+  import Usercp from '$parts/Usercp.svelte'
 
   export let shift = false
   export let pledge = true

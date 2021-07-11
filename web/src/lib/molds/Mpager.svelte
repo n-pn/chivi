@@ -20,7 +20,7 @@
 </script>
 
 <script>
-  import SIcon from '$lib/blocks/SIcon.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
 
   export let pager = new Pager('/')
   export let pgidx = 1

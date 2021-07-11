@@ -47,9 +47,9 @@
 <script>
   import { session } from '$app/stores'
 
-  import SIcon from '$lib/blocks/SIcon.svelte'
-  import RTime from '$lib/blocks/RTime.svelte'
-  import Chlist from '$lib/widgets/Chlist.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import RTime from '$atoms/RTime.svelte'
+  import Chlist from '$parts/Chlist.svelte'
   import Book from '../_book.svelte'
 
   import paginate_range from '$utils/paginate_range'

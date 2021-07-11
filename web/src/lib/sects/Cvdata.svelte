@@ -3,12 +3,12 @@
     input as lookup_input,
     actived as lookup_actived,
     enabled as lookup_enabled,
-  } from '$lib/widgets/Lookup.svelte'
+  } from '$parts/Lookup.svelte'
 
   import Upsert, {
     state as upsert_state,
     activate as upsert_activate,
-  } from '$lib/widgets/Upsert.svelte'
+  } from '$parts/Upsert.svelte'
 
   export function toggle_lookup() {
     lookup_enabled.update((x) => {
@@ -48,7 +48,7 @@
   import { session } from '$app/stores'
 
   import * as cvlib from '$lib/cvdata'
-  import AdItem from '$lib/blocks/AdItem.svelte'
+  import Aditem from '$molds/Aditem.svelte'
 
   export let input = ''
   export let dirty = false
@@ -157,7 +157,7 @@
     </div>
 
     {#if $session.privi < 1 && adidx.includes(index)}
-      <AdItem type="article" />
+      <Aditem type="article" />
     {/if}
   {/each}
 </article>

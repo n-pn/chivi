@@ -1,6 +1,6 @@
 <script context="module">
-  import Cvdata, { toggle_lookup } from '$lib/layouts/Cvdata.svelte'
-  import { state as upsert_state } from '$lib/widgets/Upsert.svelte'
+  import Cvdata, { toggle_lookup } from '$sects/Cvdata.svelte'
+  import { state as upsert_state } from '$parts/Upsert.svelte'
 
   import { get_chinfo, get_chtext } from '$api/chtext_api'
 
@@ -8,7 +8,7 @@
     enabled as lookup_enabled,
     actived as lookup_actived,
     sticked as lookup_sticked,
-  } from '$lib/widgets/Lookup.svelte'
+  } from '$parts/Lookup.svelte'
 
   export async function load({ fetch, page: { params, query }, context }) {
     const { nvinfo } = context
@@ -39,9 +39,9 @@
 <script>
   import { session } from '$app/stores'
 
-  import SIcon from '$lib/blocks/SIcon.svelte'
-  import Vessel from '$lib/layouts/Vessel.svelte'
-  import Empty from './chaps/_empty.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import Notext from '$parts/Notext.svelte'
+  import Vessel from '$sects/Vessel.svelte'
 
   export let nvinfo = {}
   export let chinfo = {}
@@ -156,11 +156,11 @@
   {#if cvdata}
     <Cvdata
       input={cvdata}
-      bind:dirty
       dname={nvinfo.bhash}
-      label={nvinfo.btitle_vi} />
+      label={nvinfo.btitle_vi}
+      bind:dirty />
   {:else}
-    <Empty />
+    <Notext {chinfo} />
   {/if}
 
   <div class="footer" slot="footer">

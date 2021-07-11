@@ -5,11 +5,11 @@
   import { mark_types, mark_names, mark_icons } from '$lib/constants.js'
   import { onMount } from 'svelte'
 
-  import SIcon from '$lib/blocks/SIcon.svelte'
-  import RTime from '$lib/blocks/RTime.svelte'
-  import BCover from '$lib/blocks/BCover.svelte'
-  import AdItem from '$lib/blocks/AdItem.svelte'
-  import Vessel from '$lib/layouts/Vessel.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+  import RTime from '$atoms/RTime.svelte'
+  import BCover from '$atoms/BCover.svelte'
+  import Aditem from '$molds/Aditem.svelte'
+  import Vessel from '$sects/Vessel.svelte'
 
   export let nvinfo = {}
   export let nvtab = 'index'
@@ -169,7 +169,7 @@
   </div>
 
   {#if $session.privi < 2}
-    <AdItem type="banner" />
+    <Aditem type="banner" />
   {/if}
 
   <div class="section">
