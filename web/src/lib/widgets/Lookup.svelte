@@ -35,6 +35,9 @@
   import SIcon from '$lib/blocks/SIcon.svelte'
   import Slider from './Slider.svelte'
 
+  export let dname = 'various'
+  export let label = 'Tổng hợp'
+
   let hanviet = []
   let entries = []
   let current = []

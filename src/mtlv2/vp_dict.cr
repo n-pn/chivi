@@ -27,7 +27,6 @@ class CV::VpDict
   class_getter udicts : Array(String) do
     files = ::Dir.glob("#{DIR}/books/*.tsv")
     files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
-
     files.map { |f| File.basename(f, ".tsv") }
   end
 
@@ -148,23 +147,21 @@ class CV::VpDict
   delegate scan, to: @trie
   delegate to_a, to: @trie
 
-  def each(full : Bool = true) : Nil
+  def each : Nil
     @trie.each do |node|
-      if full
-        node.edits.each { |term| yield term }
-      elsif term = node.term
+      if term = node.term
         yield term
       end
     end
   end
 
-  def each_with_edits : Nil
+  def full_each : Nil
     @trie.each do |node|
       node.edits.each { |term| yield term }
     end
   end
 
-  def save!(prune : Bool = true) : Nil
+  def save!(prune : Bool = false) : Nil
     ::FileUtils.mkdir_p(File.dirname(@file))
 
     tspan = Time.measure do

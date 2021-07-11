@@ -30,13 +30,11 @@ class CV::VpTrie
   end
 
   def each : Nil
-    queue = [self]
+    queue = Deque(VpTrie){self}
 
-    while last = queue.pop?
-      last._next.each_value do |node|
-        queue << node
-        yield node unless node.edits.empty?
-      end
+    while first = queue.shift?
+      yield first if first.term
+      first._next.each_value { |node| queue << node }
     end
   end
 

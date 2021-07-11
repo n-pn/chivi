@@ -24,8 +24,6 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pagi = build_pagi(pgidx, pgmax)
-
   function build_pagi(pgidx, pgmax) {
     const res = []
     const min = pgidx > 2 ? pgidx - 2 : 1
@@ -44,7 +42,7 @@
 </script>
 
 <div class="pagi">
-  {#each pagi as pnow}
+  {#each build_pagi(pgidx, pgmax) as pnow}
     {#if pnow != pgidx}
       <a class="m-button" href={pager.url_for({ page: pnow })}
         ><span>{pnow}</span></a>

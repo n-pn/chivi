@@ -5,7 +5,7 @@
   export let pinyin = ''
   export let output = ''
 
-  $: [input, lower, upper] = phrase
+  $: [input, lower = 0, upper = input.length] = phrase
   $: prefix = input.substring(lower - 2, lower)
   $: output = input.substring(lower, upper)
   $: suffix = input.substring(upper, upper + 2)

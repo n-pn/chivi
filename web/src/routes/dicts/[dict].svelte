@@ -1,4 +1,7 @@
 <script context="module">
+  import Upsert, {
+    activate as upsert_activate,
+  } from '$lib/widgets/Upsert.svelte'
   import { labels } from '$lib/postag'
 
   export async function load({ fetch, page: { path, query } }) {
@@ -16,10 +19,12 @@
   import SIcon from '$lib/blocks/SIcon.svelte'
   import { get_rtime_short } from '$lib/blocks/RTime.svelte'
 
-  export let label = 'Thông dụng'
-  export let dname = 'regular'
+  export let label = ''
+  export let dname = ''
+
   export let p_min = 1
   export let terms = []
+
   export let total = 1
   export let pgidx = 1
   export let pgmax = 1
@@ -28,6 +33,9 @@
   function render_time(mtime) {
     return mtime > 1577836800 ? get_rtime_short(mtime) : '~'
   }
+
+  let dirty = false
+  $: if (dirty) window.location.reload()
 
   $: pager = new Pager($page.path, $page.query)
 
@@ -97,10 +105,14 @@
             <tr>
               <td class="-idx">{offset + idx}</td>
               <td class="-key">{key}</td>
-              <td class="-val">{val.join(' / ')}</td>
-              <td class="-tag"
-                ><a href="{$page.path}?tag={tag || '!'}">{render_ptag(tag)}</a
-                ></td>
+              <td
+                class="-val"
+                class:_del={!val[0]}
+                on:click={() => upsert_activate(key)}>
+                {val.join('/') || 'Đã xoá'}
+              </td>
+              <td class="-tag" on:click={() => upsert_activate(key, 0, 2)}
+                >{render_ptag(tag)}</td>
               <td class="-wgt">
                 <a href="{$page.path}?wgt={wgt}">{render_rank(wgt)}</a>
               </td>
@@ -111,7 +123,7 @@
               <td class="-privi" class:_gt={privi > p_min}>
                 <a href="{$page.path}?privi={privi}">{render_privi(privi)}</a>
               </td>
-              <td class="-mtime">{render_time(mtime)}</td>
+              <td class="-mtime">{render_time(mtime)} trước</td>
             </tr>
           {/each}
         </tbody>
@@ -124,6 +136,11 @@
   </article>
 </Vessel>
 
+<Upsert
+  bind:dirty
+  dname={dname == 'regular' ? 'combine' : dname}
+  label={dname == 'regular' ? 'Tổng hợp' : label} />
+
 <style lang="scss">
   article {
     margin: 1rem 0;
@@ -132,17 +149,6 @@
     @include shadow();
     @include radius();
     @include fgcolor(neutral, 8);
-  }
-
-  .pagi {
-    display: flex;
-    justify-content: center;
-
-    .m-button + .m-button {
-      // width: 5rem;
-      // text-align: center;
-      margin-left: 0.5rem;
-    }
   }
 
   .table {
@@ -194,5 +200,9 @@
   .-val {
     font-size: rem(14px);
     @include truncate(null);
+    &._del {
+      font-style: italic;
+      @include fgcolor(neutral, 4);
+    }
   }
 </style>

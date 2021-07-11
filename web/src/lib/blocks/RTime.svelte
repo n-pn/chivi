@@ -7,9 +7,9 @@
   export function get_rtime(mtime, rtime = new Date(mtime * 1000)) {
     const span = new Date().getTime() / 1000 - mtime // unit: seconds
 
-    if (span > month_span * 2) return iso_date(rtime)
+    if (span > month_span * 3) return iso_date(rtime)
     if (span > day_span * 2) return `${rounding(span, day_span)} ngày trước`
-    if (span > hour_span * 2) return `${rounding(span, hour_span)} giờ trước`
+    if (span > hour_span) return `${rounding(span, hour_span)} giờ trước`
     return `${rounding(span, minute_span)} phút trước`
   }
 
@@ -32,10 +32,10 @@
   export function get_rtime_short(mtime) {
     const span = new Date().getTime() / 1000 - mtime // unit: seconds
 
-    if (span > month_span * 2) return `${rounding(span, month_span)} tháng trc`
-    if (span > day_span * 2) return `${rounding(span, day_span)} ngày trc`
-    if (span > hour_span * 2) return `${rounding(span, hour_span)} giờ trc`
-    return `${rounding(span, minute_span)} phút trc`
+    if (span > month_span * 3) return `${rounding(span, month_span)} tháng`
+    if (span > day_span * 2) return `${rounding(span, day_span)} ngày`
+    if (span > hour_span) return `${rounding(span, hour_span)} giờ`
+    return `${rounding(span, minute_span)} phút`
   }
 </script>
 

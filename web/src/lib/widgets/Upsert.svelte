@@ -1,12 +1,83 @@
 <script context="module">
   import { writable } from 'svelte/store'
-  import { labels } from '$lib/postag.js'
+  import { tag_label } from '$lib/postag.js'
   import { titleize } from '$utils/text_utils'
   import { dict_upsert, dict_search } from '$api/dictdb_api'
 
-  export const phrase = writable(['', 0, 1])
-  export const on_tab = writable(0)
-  export const active = writable(false)
+  export const tab = writable(0)
+  export const state = writable(0)
+  export const input = writable(['', 0, 1])
+
+  export function activate(inp, on_tab = 0, active_state = 1) {
+    if (typeof inp == 'string') inp = [inp, 0, inp.length]
+
+    tab.set(on_tab)
+    state.set(active_state)
+    input.set(inp)
+  }
+
+  export function deactivate() {
+    state.set(0)
+  }
+
+  export class Term {
+    constructor(term = {}, p_min = 1, p_max = 1) {
+      this.key = term.key
+
+      const val = term.val || []
+      this.val = this.old_val = val[0] || ''
+
+      this.tag = this.old_tag = term.tag || ''
+      this.wgt = this.old_wgt = term.wgt || 3
+
+      this.old_privi = term.privi || p_min
+      this.old_state = term.state
+      this.old_uname = term.uname
+      this.old_mtime = term.mtime
+
+      this.privi = p_min > term.privi ? p_min : term.privi
+      if (this.privi > p_max) this.privi = p_max
+    }
+
+    get ext() {
+      return this.tag == 3 ? this.tag : `${this.tag} ${this.wgt}`
+    }
+
+    get state() {
+      return !this.val ? 'Xoá' : this.old_val ? 'Sửa' : 'Thêm'
+    }
+
+    get result() {
+      return {
+        key: this.key,
+        val: this.val.replace('', '').trim(),
+        ext: this.ext,
+        privi: this.privi,
+      }
+    }
+
+    reset() {
+      this.val = this.old_val
+      this.tag = this.old_tag
+
+      return this
+    }
+
+    clear() {
+      this.val = ''
+      this.tag = ''
+
+      return this
+    }
+
+    fix_val(new_val) {
+      if (!this.val) this.val = new_val
+    }
+
+    fix_tag(new_tag) {
+      if (!this.tag) this.tag = new_tag
+    }
+  }
 </script>
 
 <script>
@@ -28,92 +99,69 @@
   import Links from './Upsert/Links.svelte'
 
   export let dname = 'combine'
-  export let bname = 'Tổng hợp'
-  export let changed = false
+  export let label = 'Tổng hợp'
+  export let dirty = false
 
   $: dicts = [
-    [dname, bname],
+    [dname, label],
     ['regular', 'Thông dụng'],
     ['hanviet', 'Hán Việt'],
   ]
 
-  let props = { trans: {}, hints: [] }
-  let infos = [{}, {}, {}]
+  let trans = []
+  let hints = []
+  let terms = []
+
+  $: term = terms[$tab] || new Term({ key }, $tab + 1, $session.privi)
 
   let key = ''
-  $: if ($active && key) init_search(key, dname)
-
-  let value = ['', '', '']
-  let origs = ['', '', '']
-
-  let p_old = [1, 2, 3]
-  let p_now = [1, 2, 3]
+  $: if (key) init_search(key, dname)
 
   let value_field
-  $: if (value[$on_tab]) focus_on_value()
+  $: if (term) focus_on_value()
 
   function focus_on_value() {
     value_field && value_field.focus()
-  }
-
-  function hide_modal(_evt, edited = false) {
-    changed = edited
-    $active = false
   }
 
   async function init_search(input, dname) {
     const [err, data] = await dict_search(fetch, input, dname)
     if (err) return
 
-    props = data
-    infos = props.infos
+    trans = data.trans
+    terms = data.infos.map((x, i) => new Term(x, i + 2, $session.privi))
 
-    p_old = infos.map((info) => info.privi)
-    p_now = p_old.map((p_min, i) => {
-      let privi = i + 2
-      if (privi < p_min) privi = p_min
-      return privi < $session.privi ? privi : $session.privi
-    })
+    const first_hint = data.hints
 
-    origs = infos.map((info) => info.val[0] || '')
+    terms[0].fix_val(terms[1].val || first_hint || titleize(trans.hanviet, 9))
+    terms[1].fix_val(terms[0].val || first_hint || trans.hanviet)
 
-    const hanviet = props.trans.hanviet
-    value = [
-      origs[0] || origs[1] || props.hints[0] || titleize(hanviet, 9),
-      origs[1] || origs[0] || props.hints[0] || hanviet,
-      origs[2] || hanviet,
-    ]
+    terms[1].fix_tag(terms[0].tag)
+    terms[0].fix_tag(terms[1].tag || 'nr')
+    hints = [trans.hanviet, ...data.hints]
   }
 
-  async function submit_val(tab = $on_tab) {
-    const dname = dicts[tab][0]
-
-    const val = value[tab].replace('', '').trim()
-    const { tag, wgt } = infos[tab]
-
-    const ext = tag == 3 ? tag : `${tag} ${wgt}`
-    const opts = { key, val, ext, privi: p_now[tab] }
-
-    const [status, _payload] = await dict_upsert(fetch, dname, opts)
-    hide_modal(null, status == 0)
+  async function submit_val() {
+    dirty = await dict_upsert(fetch, dicts[$tab][0], term.result)
+    deactivate()
   }
 
-  function handle_keydown(evt) {
-    if (!$active) return
+  function handle_keyboard(evt) {
+    if ($state < 1) return
 
     switch (evt.keyCode) {
       case 13:
-        return submit_val($on_tab)
+        return submit_val()
 
       case 27:
-        return hide_modal(evt, false)
+        return deactivate()
 
       case 38:
-        if (evt.altKey && p_now[$on_tab] < $session.privi) p_now[$on_tab] += 1
+        if (evt.altKey && term?.privi < $session.privi) term.privi += 1
         break
 
       case 40:
-        if (evt.altKey && p_now[$on_tab] > 1) p_now[$on_tab] -= 1
+        if (evt.altKey && term?.privi > 1) term.privi -= 1
         break
 
       default:
@@ -121,7 +169,7 @@
 
         // make `~` alias of `0`
         const key = evt.keyCode == 192 ? '0' : evt.key
-        let elem = document.querySelector(`.upsert [data-kbd="${key}"]`)
+        let elem = document.querySelector(`#upsert [data-kbd="${key}"]`)
 
         if (elem) {
           evt.preventDefault()
@@ -129,110 +177,76 @@
         }
     }
   }
-
-  $: submit_state = !value[$on_tab] ? 'Xoá' : origs[$on_tab] ? 'Sửa' : 'Thêm'
-  $: curr_state_class = state_class(submit_state)
-  $: curr_privi_class = privi_class(p_now[$on_tab], p_old[$on_tab])
-
-  $: binh_am = props.trans.binh_am || ''
-  $: hanviet = props.trans.hanviet || ''
-
-  function privi_class(privi, p_old) {
-    if (privi < p_old) return 'text'
-    return privi == p_old ? 'line' : 'solid'
-  }
-
-  function state_class(state) {
-    switch (state) {
-      case 'Thêm':
-        return 'success'
-      case 'Sửa':
-        return 'primary'
-      default:
-        return 'harmful'
-    }
-  }
-
-  function postag_label(tag) {
-    return labels[tag] || tag || 'Chưa phân loại'
-  }
-
-  let active_postag = false
-  function show_postag() {
-    active_postag = true
-  }
 </script>
 
 <div
-  class="window"
-  on:click={() => active.set(false)}
-  on:keydown={handle_keydown}>
-  <div class="upsert" on:click|stopPropagation={focus_on_value}>
-    <header class="header">
+  class="wrap"
+  class:_active={$state > 0}
+  tabindex="-1"
+  on:click={deactivate}
+  on:keydown={handle_keyboard}>
+  <div id="upsert" class="main" on:click|stopPropagation={focus_on_value}>
+    <header class="head">
       <button type="button" class="m-button _text">
         <SIcon name="menu" />
       </button>
 
-      <Input phrase={$phrase} pinyin={binh_am} bind:output={key} />
+      <Input phrase={$input} pinyin={trans.binh_am} bind:output={key} />
 
-      <button type="button" class="m-button _text" on:click={hide_modal}>
+      <button type="button" class="m-button _text" on:click={deactivate}>
         <SIcon name="x" />
       </button>
     </header>
 
-    <section class="dicts">
+    <section class="tabs">
       {#each dicts as [_dname, label], idx}
         <button
-          class="-dname"
-          class:_active={idx == $on_tab}
-          class:_edited={origs[idx]}
+          class="-tab"
+          class:_active={idx == $tab}
+          class:_edited={terms[idx]?.old_val}
           data-kbd={idx == 0 ? 'x' : idx == 1 ? 'c' : 'v'}
-          on:click={() => ($on_tab = idx)}>
+          on:click={() => tab.set(idx)}>
           <span>{label}</span>
         </button>
       {/each}
     </section>
 
     <section class="vform">
-      <Emend info={infos[$on_tab]} />
+      <Emend {term} />
 
       <div class="field">
-        <Vhint
-          {hanviet}
-          hints={props.hints}
-          _orig={origs[$on_tab]}
-          bind:value={value[$on_tab]} />
+        <Vhint {hints} bind:term />
 
-        <div class="value" class:_fresh={!origs[$on_tab]}>
+        <div class="value" class:_fresh={!term.old_val}>
           <input
             id="value"
             type="text"
             class="-input"
             bind:this={value_field}
-            bind:value={value[$on_tab]}
+            bind:value={term.val}
             autocomplete="off"
-            autocapitalize={$on_tab < 1 ? 'words' : 'off'} />
+            autocapitalize={$tab < 1 ? 'words' : 'off'} />
 
-          {#if $on_tab < 2}
-            <button class="postag" on:click={show_postag}>
-              {postag_label(infos[$on_tab].tag)}
+          {#if $tab < 2}
+            <button class="postag" on:click={() => state.set(2)}>
+              {tag_label(term.tag) || 'Chưa phân loại'}
             </button>
+
+            <Postag bind:input={term.tag} bind:state={$state} />
           {/if}
         </div>
 
-        <Vutil bind:value={value[$on_tab]} _orig={origs[$on_tab]} />
+        <Vutil bind:term />
       </div>
 
       <div class="vfoot">
-        <Vrank bind:wgt={infos[$on_tab].wgt} />
-        <Privi bind:privi={p_now[$on_tab]} p_max={$session.privi} />
+        <Vrank bind:wgt={term.wgt} />
 
-        <button
-          class="m-button _large _{curr_privi_class} _{curr_state_class}"
-          disabled={$session.privi <= $on_tab}
-          on:click={() => submit_val($on_tab)}>
-          <span class="-text">{submit_state}</span>
-        </button>
+        <Privi
+          {term}
+          p_min={$tab + 1}
+          p_max={$session.privi}
+          on:click={() => submit_val($tab)} />
       </div>
     </section>
 
@@ -242,23 +256,25 @@
   </div>
 </div>
 
-<Postag bind:postag={infos[$on_tab].tag} bind:active={active_postag} />
-
 <style lang="scss">
   $gutter: 0.75rem;
 
-  .window {
+  .wrap {
+    @include flex($center: both);
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
-    z-index: 99999;
+    z-index: 9999;
     background: rgba(#000, 0.75);
-    @include flex($center: both);
+    visibility: hidden;
+    &._active {
+      visibility: visible;
+    }
   }
 
-  .upsert {
+  .main {
     width: rem(30);
     min-width: 320px;
     max-width: 100%;
@@ -267,7 +283,7 @@
     @include shadow(3);
   }
 
-  header {
+  .head {
     display: flex;
     padding: 0.5rem 0.25rem;
     overflow: hidden;
@@ -284,7 +300,7 @@
 
   $tab-height: 2rem;
 
-  .dicts {
+  .tabs {
     height: $tab-height;
     padding: 0 0.75rem;
 
@@ -294,7 +310,7 @@
     // prettier-ignore
   }
 
-  .-dname {
+  .-tab {
     // text-transform: capitalize;
     font-weight: 500;
     padding: 0 0.75rem;
@@ -306,7 +322,7 @@
 
     margin-right: 0.5rem;
 
-    @include font-size(3);
+    @include font-size(2);
     @include fgcolor(neutral, 5);
     @include truncate(null);
     @include radius($sides: top);
@@ -410,12 +426,6 @@
     display: flex;
     margin-top: 0.75rem;
     justify-content: right;
-
-    > button {
-      margin-left: 0.75rem;
-      justify-content: center;
-      width: 4rem;
-    }
   }
 
   footer {

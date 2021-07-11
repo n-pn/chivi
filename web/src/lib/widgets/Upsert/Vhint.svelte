@@ -1,24 +1,15 @@
-<script context="module">
-</script>
-
 <script>
-  export let hanviet
+  export let term
   export let hints
-  export let value
-  export let _orig
-
-  $: _hint = hints.filter((x) => x != value)
 </script>
 
 <div class="hints">
-  <span class="hint" on:click={() => (value = hanviet)}>{hanviet}</span>
-
-  {#each _hint as hint}
-    {#if hint != value}
+  {#each hints as hint}
+    {#if hint != term.val}
       <span
         class="hint"
-        class:_orig={hint == _orig}
-        on:click={() => (value = hint)}>{hint}</span>
+        class:_orig={hint == term.old_val}
+        on:click={() => (term.val = hint)}>{hint}</span>
     {/if}
   {/each}
 </div>

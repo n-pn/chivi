@@ -6,9 +6,7 @@
   } from '$lib/widgets/Lookup.svelte'
 
   import Upsert, {
-    phrase as upsert_phrase,
-    on_tab as upsert_target,
-    active as upsert_active,
+    activate as upsert_activate,
   } from '$lib/widgets/Upsert.svelte'
 
   export function toggle_lookup() {
@@ -16,11 +14,6 @@
       lookup_actived.set(!x)
       return !x
     })
-  }
-
-  export function active_upsert(tab) {
-    upsert_target.set(tab)
-    upsert_active.set(true)
   }
 
   function gen_context(nodes = [], idx = 0, min = 4, max = 10) {
@@ -57,7 +50,7 @@
   import AdItem from '$lib/blocks/AdItem.svelte'
 
   export let cvdata = ''
-  export let changed = false
+  export let dirty = false
 
   export let dname = 'various'
   export let bname = 'Tổng hợp'
@@ -71,10 +64,11 @@
 
   import read_selection from '$utils/read_selection'
 
+  let upsert_input = []
   onMount(() => {
     const action = document.addEventListener('selectionchange', () => {
       const phrase = read_selection()
-      if (phrase) $upsert_phrase = phrase
+      if (phrase) upsert_input = phrase
     })
 
     return () => document.removeEventListener('selectionchange', action)
@@ -86,11 +80,10 @@
 
     const idx = +target.dataset.i
     const nodes = lines[index]
-    $upsert_phrase = gen_context(nodes, idx)
+    upsert_input = gen_context(nodes, idx)
 
     if (target === focus_word) {
-      $upsert_target = 0
-      $upsert_active = true
+      activate_upsert(upsert_input, 0)
     } else {
       if (focus_word) focus_word.classList.remove('_focus')
       focus_word = target
@@ -119,7 +112,7 @@
   }
 </script>
 
-<article class:changed>
+<article class:dirty>
   {#each lines as _, index (index)}
     <div
       class="mtl {index > 0 ? '_p' : '_h'}"
@@ -135,12 +128,10 @@
 </article>
 
 {#if $lookup_enabled}
-  <Lookup on_top={!$upsert_active} />
+  <Lookup {dname} />
 {/if}
 
-{#if $upsert_active}
-  <Upsert {dname} {bname} bind:changed />
-{/if}
+<Upsert {dname} label={bname} bind:dirty />
 
 <style lang="scss">
   :global(.adsbygoogle) {

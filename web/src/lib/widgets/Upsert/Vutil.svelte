@@ -2,15 +2,14 @@
   import { titleize } from '$utils/text_utils'
   import SIcon from '$lib/blocks/SIcon.svelte'
 
-  export let value
-  export let _orig
+  export let term
 
   function upcase_val(node, count) {
-    const handle_click = (_) => (value = titleize(value, count))
-    node.addEventListener('click', handle_click)
+    const action = (_) => (term.val = titleize(term.val, count))
+    node.addEventListener('click', action)
 
     return {
-      destroy: () => node.removeEventListener('click', handle_click),
+      destroy: () => node.removeEventListener('click', action),
     }
   }
 </script>
@@ -26,12 +25,12 @@
     <button
       class="-btn"
       data-kbd="r"
-      disabled={_orig == value || !_orig}
-      on:click={() => (value = _orig)}>
+      disabled={term.val == term.old_val && term.tag == term.old_tag}
+      on:click={() => (term = term.reset())}>
       <SIcon name="corner-up-left" />
     </button>
 
-    <button class="-btn" data-kbd="e" on:click={() => (value = '')}>
+    <button class="-btn" data-kbd="e" on:click={() => (term = term.clear())}>
       <SIcon name="erase" />
     </button>
   </div>

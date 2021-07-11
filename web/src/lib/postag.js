@@ -88,25 +88,25 @@ export const labels = {
   xx: 'Kaomoji',
   xu: 'Đường link',
 
-  wd: '，',
-  wn: ' 、',
-  wj: ' 。',
-  wx: '.',
-  wm: '：',
-  wf: '；',
-  ws: '…',
-  wp: '－',
-  wi: '·',
-  wt: '！',
-  ww: '？',
+  wj: 'Dấu chấm 。',
+  wx: 'Dấu chấm .',
+  wd: 'Dấu phẩy',
+  wn: 'Phẩy nối',
+  wm: 'Hai chấm',
+  wf: 'Chấm phẩy',
+  ws: 'Chấm lửng',
+  wp: 'Gạch ngang',
+  wi: 'Chấm giữa',
+  wt: 'Chấm than',
+  ww: 'Chấm hỏi',
   wb: '％ ‰',
   wh: '￥＄￡℃°',
-  wyz: '“ ‘ 『「',
-  wyy: '” ’ 』」',
-  wkz: '（［｛',
-  wky: '）］｝',
-  wwz: '《〈',
-  wwy: '》〉',
+  wyz: 'Mở trích',
+  wyy: 'Đóng trích',
+  wkz: 'Mở ngoặc',
+  wky: 'Đóng ngoặc',
+  wwz: 'Mở tựa',
+  wwy: 'Đóng tựa',
   w: 'Dấu câu',
 }
 
@@ -114,42 +114,58 @@ export const gnames = ['Thường gặp', 'Hiếm gặp', 'Đặc biệt', 'Dấ
 export const groups = [
   // prettier-ignore
   [
-    'n', 'nr', 'ns', 'nt', 'nw', 'nz', 't', 's', 'f',
-    'v', 'vd', 'vn', 'vf', 'vx', 'vi', 'vl',
+    'nr', 'ns', 'nt', 'nz',
+    'n', 't', 's', 'f',
+    '-',
+    'v', 'vd', 'vf', 'vx', 'vi', 'vl', 'vn',
+    '-',
     'a', 'ad', 'an', 'al',
+    '-',
     'r', 'rr', 'rz', 'ry',
+    '-',
     'i', 'j', 'l'
   ],
   // prettier-ignore
   [
-    'm', 'mq',
-    'q', 'qv', 'qt',
-    'b', 'bl', 'z',
+    'm', 'mq', 'q', 'qv', 'qt',
+    '-',
+    'b', 'bl', 'z', 'c', 'cc',
+    '-',
     'ng', 'tg', 'vg', 'ag',
-    'c', 'cc',
+    '-',
     'd', 'p', 'u',
     'e', 'y', 'o',
+    '-',
     'h', 'k',
     'x', 'xx', 'xu'
   ],
   // prettier-ignore
   [
     'vshi', 'vyou', 'pba', 'pbei',
-    'uzhe', 'ule', 'uguo', 'ude1', 'ude2', 'ude3',
-    'uzhi', 'ulian', 'udh', 'udeng', 'uyy',  'uls',
+    '-',
+    'uzhe', 'ule', 'uguo', 'ude1', 'ude2', 'ude3', 'uzhi', 'ulian',
+    '-',
+    'udh', 'udeng', 'uyy',  'uls',
   ],
   // prettier-ignore
   [
     'wd', 'wn', 'wj', 'wx', 'wm', 'wf', 'wt', 'ww', 'ws',
-    'wp', 'wi', 'wyz', 'wyy', 'wkz', 'wky', 'wwz', 'wwy',
+    'wp', 'wi',
+    '-',
+    'wyz', 'wyy', 'wkz', 'wky', 'wwz', 'wwy',
+    '-',
     'wb', 'wh', 'w'
   ],
 ]
+
+export function tag_label(tag) {
+  return labels[tag] || tag
+}
 
 export function find_group(tag) {
   for (const [idx, group] of groups.entries()) {
     if (group.includes(tag)) return idx
   }
 
-  return 0
+  return -1
 }

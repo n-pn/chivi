@@ -1,17 +1,16 @@
 <script>
   import { get_rtime } from '$lib/blocks/RTime.svelte'
-
-  export let info
+  export let term
 </script>
 
-{#if info.uname && info.uname != '_'}
+{#if term?.old_uname != '_'}
   <div class="edit">
-    <span class="-text">{info.state} bởi: </span>
-    <span class="-user">{info.uname}</span>
+    <span class="-text">{term.old_state} bởi: </span>
+    <span class="-user">{term.old_uname}</span>
     <span class="-text">Q.hạn:</span>
-    <span class="-user">{info.privi}</span>
+    <span class="-user">{term.old_privi}</span>
     <span class="-text">Thời gian:</span>
-    <span class="-time">{get_rtime(info.mtime)}</span>
+    <span class="-time">{get_rtime(term.old_mtime)}</span>
   </div>
 {:else}
   <div class="hint" />
