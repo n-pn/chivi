@@ -68,7 +68,7 @@
       margin-left: 0.25rem;
       padding: 0 0.25rem;
       font-weight: 500;
-      @include radius;
+      @include bdradi;
       @include fgcolor(#fff);
       @include bgcolor(primary, 6, 0.8);
     }

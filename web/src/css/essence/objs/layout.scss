@@ -1,0 +1,76 @@
+@use "../defs" as *;
+
+@mixin gap($gap: 0.5rem, $child: '*') {
+  > #{$child} + #{$child} {
+    @include fluid(margin-left, $gap);
+  }
+}
+
+// clearfix
+// prettier-ignore
+@mixin flow($modern: false, $gap: null, $child: '*') {
+  display: flow-root;
+
+  @if $gap { @include gap($gap, $child); }
+}
+
+// prettier-ignore
+@mixin flex($center: null, $wrap: false, $gap: null) {
+  display: flex;
+
+  @if ($gap) { gap: $gap; }
+  @if ($wrap) { flex-wrap: wrap; }
+
+  @if $mode == both or $mode == vert { align-items: center; }
+  @if $mode == both or $mode == horz { justify-content: center; }
+}
+
+// prettier-ignore
+@mixin grid($size, $gap: null) {
+  display: grid;
+
+  @if ($gap) { gap: $gap; }
+  @if ($size) { grid-template-columns: repeat(auto-fill, $size); }
+}
+
+// prettier-ignore
+@mixin center($width: auto) {
+  margin: 0 auto;
+  max-width: 100%;
+  @if $width { width: $width; }
+}
+
+@mixin inset($top: 0px, $left: $top, $bottom: $top, $right: $left) {
+  top: $top;
+  left: $left;
+  bottom: $bottom;
+  right: $right;
+}
+
+@mixin before($display: block, $abs: false, $content: '') {
+  // prettier-ignore
+  @if $abs { position: relative; }
+
+  &:before {
+    display: $display;
+    content: $content;
+
+    // prettier-ignore
+    @if $abs { position: absolute; }
+    @content;
+  }
+}
+
+@mixin after($display: block, $abs: false, $content: '') {
+  // prettier-ignore
+  @if $abs { position: relative; }
+
+  &:after {
+    display: $display;
+    content: $content;
+
+    // prettier-ignore
+    @if $abs { position: absolute; }
+    @content;
+  }
+}

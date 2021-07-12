@@ -227,7 +227,7 @@
     min-width: 320px;
     max-width: 100%;
     @include bgcolor(neutral, 1);
-    @include radius();
+    @include bdradi();
     @include shadow(3);
   }
 
@@ -273,7 +273,7 @@
     @include font-size(2);
     @include fgcolor(neutral, 5);
     @include truncate(null);
-    @include radius($sides: top);
+    @include bdradi($sides: top);
     @include border($color: neutral, $sides: top-left-right);
 
     &:first-child {
@@ -308,7 +308,7 @@
 
   .field {
     position: relative;
-    @include radius;
+    @include bdradi;
 
     --bdcolor: #{color(neutral, 3)};
     --bgcolor: #{color(neutral, 1)};

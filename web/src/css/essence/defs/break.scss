@@ -1,4 +1,16 @@
-@use "../vars/sizings" as *;
+// Breakpoint widths
+$bp-xs: 360px !default; // older phone, iphone se
+$bp-sm: 480px !default; // Small screen / phone
+$bp-md: 720px !default; // Medium screen / tablet
+$bp-lg: 960px !default; // Large screen / desktop
+$bp-xl: 1200px !default; // Extra large screen / wide desktop
+
+$breakpoints: (
+  sm: $bp-sm,
+  md: $bp-md,
+  lg: $bp-lg,
+  xl: $bp-xl,
+) !default;
 
 @function bp-size($key) {
   $val: map-get($breakpoints, $key);

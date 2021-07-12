@@ -41,7 +41,7 @@
     text-transform: uppercase;
     font-size: 500;
 
-    @include radius(6px);
+    @include bdradi(6px);
     @include fgcolor(neutral, 7);
     @include bgcolor(red, 1, 0.7);
   }

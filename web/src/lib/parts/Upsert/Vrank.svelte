@@ -55,7 +55,7 @@
 
     @include fgcolor(neutral, 5);
     @include border();
-    @include radius(0.5rem);
+    @include bdradi(0.5rem);
 
     &:hover,
     &.active {

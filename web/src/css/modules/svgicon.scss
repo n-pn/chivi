@@ -1,0 +1,30 @@
+%icon,
+.m-icon {
+  --icon-size: 1em;
+
+  display: inline-block;
+  width: var(--icon-size);
+  height: var(--icon-size);
+
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.icon-sm {
+  --icon-size: 1rem;
+}
+
+.icon-md {
+  --icon-size: 1.25rem;
+}
+
+.icon-lg {
+  --icon-size: 1.5rem;
+}
+
+.icon-lg {
+  --icon-size: 2rem;
+}

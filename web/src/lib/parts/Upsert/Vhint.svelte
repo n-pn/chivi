@@ -32,7 +32,7 @@
     cursor: pointer;
     padding: 0 0.25rem;
 
-    @include radius;
+    @include bdradi;
     @include truncate(null);
 
     &:hover {

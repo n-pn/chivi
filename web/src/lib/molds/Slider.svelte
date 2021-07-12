@@ -156,7 +156,7 @@
 
     :global(.-btn) {
       padding: 0 0.5rem;
-      @include radius;
+      @include bdradi;
       @include fgcolor(neutral, 6);
       @include bgcolor(transparent);
 

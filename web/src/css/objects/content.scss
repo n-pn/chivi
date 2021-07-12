@@ -1,0 +1,30 @@
+article {
+  padding: 1rem 0;
+  overflow-wrap: break-word;
+}
+
+.md-article {
+  margin-top: 1rem;
+  background-color: #fff;
+  padding: 1rem 1.5rem;
+  @include bdradi();
+
+  @include tm-dark {
+    background-color: color(neutral, 8);
+  }
+
+  > h1 {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+  }
+
+  > * + * {
+    margin-top: 1rem;
+  }
+
+  > h1,
+  > h2 {
+    border-bottom: 1px solid color(neutral, 3);
+  }
+}

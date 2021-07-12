@@ -1,0 +1,165 @@
+@use "sass:math";
+
+$-button-styles: text, line, fill !default;
+$-button-colors: neutral, primary, success, warning, harmful !default;
+
+$-button-style-df: fill !default;
+$-button-color-df: neutral !default;
+
+$-button-size-names: tiny, small, medium, large, huge !default;
+$-button-size-df: medium !default;
+
+$-button-heights: (
+  /* 24px */ tiny: rem(6x),
+  /* 32px */ small: rem(8x),
+  /* 36px */ medium: rem(9x),
+  /* 48px */ large: rem(11x),
+  /* 60px */ huge: rem(14x)
+);
+
+$-button-icon-sizes: (
+  tiny: rem(12px),
+  small: rem(16px),
+  medium: rem(20px),
+  large: rem(24px),
+  huge: rem(28px),
+);
+
+$-button-text-sizes: (
+  tiny: rem(11px),
+  small: rem(12px),
+  medium: rem(14px),
+  large: rem(16px),
+  huge: rem(18px),
+);
+
+@mixin button-common() {
+  display: inline-flex;
+  text-transform: uppercase;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+
+  @include bdradi;
+  @include border($color: none);
+
+  &:disabled,
+  &._disable {
+    @include hover {
+      cursor: text;
+    }
+  }
+
+  > span {
+    margin: 0 0.25rem;
+  }
+}
+
+@mixin button-sizing($size: $-button-size-df) {
+  $height: map-get($-button-heights, $size);
+
+  $icon-size: map-get($-button-icon-sizes, $size);
+  $text-size: map-get($-button-text-sizes, $size);
+
+  $gutter: math.div($height - $icon-size - rem(2px), 2);
+
+  height: $height;
+  padding: $gutter;
+  line-height: $icon-size;
+  font-size: $text-size;
+  // vertical-align: bottom;
+
+  > svg,
+  > img {
+    width: $icon-size !important;
+    height: $icon-size !important;
+  }
+
+  @at-root {
+    input#{&} {
+      padding-left: $gutter + rem(1x);
+      padding-right: $gutter + rem(1x);
+    }
+  }
+}
+
+@mixin button-varify($style: fill, $color: neutral) {
+  @if $style == line {
+    @if $color == neutral {
+      @include bdcolor($color: $color, $shade: 4);
+
+      &:disabled,
+      &._disable {
+        @include bdcolor($color: $color, $shade: 3);
+      }
+    } @else {
+      @include bdcolor($color: $color, $shade: 3);
+
+      &:disabled,
+      &._disable {
+        @include bdcolor($color: $color, $shade: 2);
+      }
+    }
+  } @else {
+    @include bdcolor($color: none);
+  }
+
+  @if $style == fill {
+    @if $color == neutral {
+      @include fgcolor(neutral, 7);
+      @include bgcolor(neutral, 1);
+
+      &:hover {
+        @include bgcolor(neutral, 2);
+      }
+
+      &:disabled,
+      &._disable {
+        @include fgcolor(neutral, 4);
+        @include bgcolor(neutral, 2);
+      }
+    } @else {
+      @include fgcolor(white);
+      @include bgcolor($color, 5);
+
+      &:hover {
+        @include bgcolor($color, 4);
+      }
+
+      &:disabled,
+      &._disable {
+        @include bgcolor($color, 3);
+      }
+    }
+  } @else {
+    @if $color == neutral {
+      @include fgcolor($color, 7);
+      @include bgcolor(neutral, 1);
+
+      &:hover {
+        @include bgcolor($color, 2);
+      }
+
+      &:disabled,
+      &._disable {
+        @include fgcolor($color, 4);
+        @include bgcolor(neutral, 1);
+      }
+    } @else {
+      @include fgcolor($color, 6);
+      @include bgcolor(neutral, 1);
+
+      &:hover {
+        @include bgcolor($color, 1);
+      }
+
+      &:disabled,
+      &._disable {
+        @include fgcolor($color, 3);
+        @include bgcolor(neutral, 1);
+      }
+    }
+  }
+}

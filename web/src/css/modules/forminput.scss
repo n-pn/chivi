@@ -1,0 +1,49 @@
+@use "../essence.scss";
+
+%input,
+.m-input {
+  --inp-height: var(--height-md);
+
+  display: block;
+  position: relative;
+  width: 100%;
+
+  height: var(--inp-height);
+  padding: var(--gutter-xs) var(--gutter-md);
+  line-height: 1.5rem;
+
+  > .-inp {
+    border: 0;
+    outline: 0;
+
+    @include bdradi();
+    @include linesd(var(--bd-main));
+
+    @include hover-focus {
+      --linesd: linesd(var(--color-primary-6));
+    }
+
+    &:focus {
+      --ringsd: ringsd(var(--color-primary-4));
+    }
+
+    &::placeholder {
+      font-style: italic;
+      color: var(--fg-tert);
+    }
+  }
+
+  > .-ico {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+  }
+}
+
+.inp-sm {
+  --inp-height: var(--height-sm);
+}
+
+.inp-lg {
+  --inp-height: var(--height-lg);
+}

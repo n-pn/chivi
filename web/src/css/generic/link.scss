@@ -1,0 +1,17 @@
+a {
+  touch-action: manipulation;
+}
+
+a[class] {
+  text-decoration: none;
+}
+
+a:not([class]),
+.m-link {
+  color: var(--color-link);
+  text-decoration: none;
+
+  @include hover {
+    text-decoration: underline;
+  }
+}

@@ -114,7 +114,7 @@
     padding: 0.75rem;
 
     @include border();
-    @include radius();
+    @include bdradi();
 
     &:hover,
     &:focus {

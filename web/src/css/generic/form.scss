@@ -1,0 +1,77 @@
+button,
+button::-moz-focus-inner {
+  border: 0 !important;
+  outline: none !important;
+}
+
+input,
+button,
+select,
+optgroup,
+textarea {
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+textarea {
+  overflow: auto;
+  resize: vertical;
+}
+
+button,
+input {
+  overflow: visible;
+}
+
+button,
+select {
+  text-transform: none;
+}
+
+select {
+  word-wrap: normal;
+}
+
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+  -webkit-appearance: button;
+
+  &:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+[type='date'],
+[type='time'],
+[type='datetime-local'],
+[type='month'],
+[type='search'],
+textarea {
+  -webkit-appearance: textfield;
+}
+
+[list]::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+::-webkit-file-upload-button {
+  font: inherit;
+  -webkit-appearance: button;
+}
+
+::-webkit-datetime-edit {
+  overflow: visible;
+  line-height: 0;
+}

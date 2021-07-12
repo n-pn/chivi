@@ -74,7 +74,7 @@
   article {
     margin: 1rem 0;
     @include shadow();
-    @include radius();
+    @include bdradi();
     padding: 1rem;
     background: #fff;
     @include fgcolor(neutral, 8);
@@ -91,7 +91,7 @@
     position: relative;
     // height: 5rem;
 
-    @include radius();
+    @include bdradi();
     @include shadow();
 
     &:hover {

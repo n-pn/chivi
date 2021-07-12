@@ -1,0 +1,119 @@
+@use 'sass:map';
+@use "../essence" as *;
+
+$colors: (gray, blue, green, yellow, orange, red, purple) !default;
+
+:root {
+  --color-black: #{color(black)};
+  --color-white: #{color(white)};
+
+  @each $name in $colors {
+    @for $tone from 0 to 10 {
+      --color-#{$name}-#{$tone}: #{color($name, $tone)};
+    }
+  }
+
+  --fg-main: var(--color-gray-9);
+  --fg-secd: var(--color-gray-7);
+  --fg-tert: var(--color-gray-6);
+  --fg-mute: var(--color-gray-4);
+
+  --bg-main: var(--color-gray-1);
+  --bg-secd: var(--color-gray-0);
+  --bg-tert: var(--color-gray-2);
+
+  --bd-main: var(--color-gray-3);
+  --bd-bold: var(--color-gray-4);
+}
+
+.tm-dark {
+  --color-black: #{color(dark-black)};
+  --color-white: #{color(dark-white)};
+
+  @each $name in $colors {
+    @for $tone from 0 to 10 {
+      --color-#{$name}-#{$tone}: #{color('dark-' + $name, $tone)};
+    }
+  }
+
+  --fg-main: var(--color-gray-1);
+  --fg-secd: var(--color-gray-3);
+  --fg-tert: var(--color-gray-4);
+  --fg-mute: var(--color-gray-6);
+
+  --fg-link: var(--color-blue-5);
+
+  --bg-main: var(--color-gray-9);
+  --bg-secd: var(--color-gray-8);
+  --bg-tert: var(--color-gray-7);
+
+  --bd-main: var(--color-gray-7);
+  --bd-bold: var(--color-gray-6);
+}
+
+:root {
+  --font-sans: #{$font-sans};
+  --font-mono: #{$font-mono};
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 16px;
+
+  --lh-normal: 1.5rem;
+  --lh-narrow: 1.25rem;
+  --lh-packed: 1rem;
+}
+
+// prettier-ignore
+:root {
+  $gutter: (xs, sm, md, lg);
+  $verpad: (xs: md, md: lg, xl: xl);
+  $gutter-small: (xs: ss, sm: xs, md: sm, lg: md);
+  $gutter-large: (xs: sm, sm: md, md: lg, lg: xl);
+
+  --gutter-ss: 0.25rem;
+  --gutter-xs: 0.5rem;
+  --gutter-sm: 0.75rem;
+  --gutter-md: 1rem;
+  --gutter-lg: 1.25rem;
+  --gutter-xl: 1.5rem;
+
+  // fluild gutter
+  @each $key in $gutter {
+    @include bp-min($key) {
+      --gutter: 'var(--gutter-#{$key})';
+      --gutter-small: 'var(--gutter-#{map.get($gutter-small, $key)})';
+      --gutter-large: 'var(--gutter-#{map.get($gutter-large, $key)})';
+    }
+  }
+
+  @each $key, $val in $verpad {
+    --verpad-#{key}: 'var(--gutter-#{val})';
+
+    @include bp-min($key) {
+      --verpad: 'var(--gutter-#{val})';
+    }
+  }
+}
+
+:root {
+  --height-xs: 1rem;
+  --height-sm: 1.5rem;
+  --height-md: 2rem;
+  --height-lg: 2.5rem;
+  --height-xl: 3rem;
+
+  --ftsize-ss: rem(10px);
+  --ftsize-xs: rem(12px);
+  --ftsize-sm: rem(14px);
+  --ftsize-md: rem(16px);
+  --ftsize-lg: rem(18px);
+  --ftsize-xl: rem(20px);
+  --ftsize-x2: rem(24px);
+  --ftsize-x3: rem(30px);
+  --ftsize-x4: rem(36px);
+  --ftsize-x5: rem(48px);
+
+  --ftsize-code: 0.875em;
+}

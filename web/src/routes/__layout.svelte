@@ -3,7 +3,7 @@
   import { l_scroll } from '$lib/stores'
   import Loader from '$molds/Loader.svelte'
 
-  import '../css/globals.scss'
+  import '../css/generic.scss'
 
   const links = [
     ['Vozforums', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],

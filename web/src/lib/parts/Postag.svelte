@@ -98,14 +98,14 @@
     width: 32rem;
     max-width: 100vw;
 
-    @include radius();
+    @include bdradi();
     @include shadow();
   }
 
   .head {
     position: relative;
     padding: 0.25rem 0.75rem;
-    @include radius($sides: top);
+    @include bdradi($sides: top);
 
     > * {
       @include fgcolor(neutral, 6);
@@ -160,7 +160,7 @@
     @include font-size(2);
     @include fgcolor(neutral, 5);
     @include truncate(null);
-    @include radius($sides: top);
+    @include bdradi($sides: top);
     @include border($color: neutral, $sides: top-left-right);
 
     &:hover {
@@ -210,7 +210,7 @@
     box-shadow: 0 0 0 1px var(--bdcolor);
 
     @include fgcolor(neutral, 6);
-    @include radius(0.75rem);
+    @include bdradi(0.75rem);
     @include truncate(null);
     @include props(font-size, rem(12px), rem(13px), rem(14px));
 

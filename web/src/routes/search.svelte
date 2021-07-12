@@ -152,7 +152,7 @@
     padding: 0.5rem;
 
     @include bgcolor(white);
-    @include radius();
+    @include bdradi();
     @include shadow(1);
 
     @include flow;
@@ -169,7 +169,7 @@
 
   .cover {
     float: left;
-    @include radius();
+    @include bdradi();
     @include props(width, 35%, 30%);
 
     position: relative;
@@ -193,7 +193,7 @@
     :global(img) {
       width: 100%;
       height: auto;
-      @include radius();
+      @include bdradi();
     }
   }
 

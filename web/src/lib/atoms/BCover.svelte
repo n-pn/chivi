@@ -19,7 +19,7 @@
     height: 0;
     padding-top: math.div(4, 3) * 100%;
     overflow: hidden;
-    @include radius();
+    @include bdradi();
     @include bgcolor(primary, 8);
 
     > :global(picture) {

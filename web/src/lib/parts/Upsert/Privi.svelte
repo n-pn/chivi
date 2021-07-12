@@ -51,7 +51,7 @@
     font-weight: 500;
 
     @include border;
-    @include radius;
+    @include bdradi;
   }
 
   .txt {

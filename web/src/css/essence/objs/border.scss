@@ -1,0 +1,46 @@
+// functions
+
+@function border-props($sides: all, $type: null) {
+  @if $sides == all or $sides == null {
+    @return join-props(border, $type);
+  }
+
+  $props: ();
+
+  @each $side in $m-sides {
+    @if match-edge($side, $sides) {
+      $props: append($props, join-props(border, $side, $type));
+    }
+  }
+
+  @return $props;
+}
+
+// colors
+
+@mixin bdcolor($color: var(--bd-main), $sides: all) {
+  $props: border-props($sides, color);
+  @include props($props, $color);
+}
+
+// styles
+
+@mixin bdstyle($style: solid, $sides: all) {
+  $props: border-props($sides, style);
+  @include props($props, $style);
+}
+
+// widths
+
+@mixin bdwidth($width: 1px, $sides: all) {
+  $props: border-props($sides, width);
+  @include props($props, $width);
+}
+
+// borders
+
+@mixin border($color: var(--bd-main), $width: 1px, $style: solid, $sides: all) {
+  $props: border-props($sides);
+  $value: $width $style color($color, $shade);
+  @include props($props, $value);
+}

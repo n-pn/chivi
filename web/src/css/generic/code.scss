@@ -1,0 +1,82 @@
+// credit: https://github.com/twbs/bootstrap/blob/main/scss/_reboot.scss
+
+@use "../essence" as *;
+
+// Code
+
+pre,
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 1em;
+  direction: ltr #{'/* rtl:ignore */'};
+  unicode-bidi: bidi-override;
+  border-radius: var(--radius, 4px);
+}
+
+pre {
+  --pre-fg: var(--fg-tert);
+  --pre-bg: var(--bg-tert);
+
+  display: block;
+
+  font-size: var(--ftsize-code);
+  color: var(--pre-fg);
+  background: var(--pre-bg);
+
+  line-height: inherit;
+
+  code {
+    display: block;
+    color: inherit;
+    font-size: inherit;
+    word-break: normal;
+    overflow: auto;
+    padding: var(--gutter);
+  }
+}
+
+code {
+  --code-fg: var(--color-blue-6);
+  --code-bg: var(--color-gray-0);
+
+  font-size: var(--ftsize-code);
+  color: var(--code-fg);
+  background-color: var(--code-bg);
+  padding: 0 0.25em;
+
+  word-wrap: break-word;
+
+  // Streamline the style when inside anchors to avoid broken underline and more
+  a > & {
+    color: inherit;
+  }
+
+  .tm-dark & {
+    --code-fg: var(--color-blue-3);
+    --code-bg: var(--color-gray-9);
+  }
+}
+
+kbd {
+  $kbd-font-size: 0.875em;
+  $kbd-padding-x: 0.125em;
+  $kbd-padding-y: 0.25em;
+
+  --kbd-fg: var(--color-gray-7);
+  --kbd-bg: var(--color-gray-1);
+
+  padding: $kbd-padding-y $kbd-padding-x;
+  font-size: $kbd-font-size;
+  color: var(--kbd-fg);
+  background-color: var(--kbd-bg);
+
+  border-radius: 2px;
+
+  kbd {
+    padding: 0;
+    font-size: 1em;
+    font-weight: 500;
+  }
+}

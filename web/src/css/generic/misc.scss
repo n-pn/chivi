@@ -1,0 +1,23 @@
+// ::selection {
+//   --selection-bg: var(--color-blue-8);
+//   --selection-fg: var(--color-gray-1);
+
+//   background-color: var(--selection-bg);
+//   color: var(--selection-fg);
+
+//   .tm-dark & {
+//     --selection-bg: var(--color-blue-6);
+//     --selection-fg: var(--color-gray-1);
+//   }
+// }
+
+hr {
+  --fg-ruler: var(--bd-main);
+  color: var(--fg-ruler);
+  background: none;
+  border: 0;
+
+  &:not([size]) {
+    height: 1px;
+  }
+}

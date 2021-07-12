@@ -83,7 +83,7 @@
     height: $height;
     position: relative;
 
-    @include radius();
+    @include bdradi();
     @include bgcolor(neutral, 1);
     @include border($color: neutral, $shade: 3);
   }
@@ -174,11 +174,11 @@
     }
 
     &:first-of-type {
-      @include radius($sides: left);
+      @include bdradi($sides: left);
     }
 
     &:last-of-type {
-      @include radius($sides: right);
+      @include bdradi($sides: right);
     }
 
     &._left {

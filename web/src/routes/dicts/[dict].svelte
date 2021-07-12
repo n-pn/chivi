@@ -145,7 +145,7 @@
     padding: 1rem;
     background: #fff;
     @include shadow();
-    @include radius();
+    @include bdradi();
     @include fgcolor(neutral, 8);
   }
 

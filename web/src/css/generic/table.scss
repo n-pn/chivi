@@ -1,0 +1,47 @@
+@use "../essence" as *;
+
+table {
+  --table-gutter: var(--gutter, 0.75rem);
+  --table-spacer: var(--gutter-small, 0.5rem);
+
+  --table-thcolor: var(--fg-tert);
+  --table-bgcolor: var(--bg-secd);
+  --table-bdcolor: var(--bd-main);
+
+  border-collapse: collapse;
+  border-radius: var(--radius);
+  min-width: 100%;
+}
+
+caption {
+  --tbcap-color: var(--fg-secd);
+
+  padding-top: var(--table-spacer);
+  padding-bottom: var(--table-spacer);
+
+  color: var(--tbcap-color);
+  text-align: left;
+  caption-side: bottom;
+}
+
+thead,
+tr:nth-child(even) {
+  background-color: var(--table-bgcolor);
+}
+
+th {
+  color: var(--table-thcolor);
+
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+
+  // prettier-ignore
+  &:not([align]) { text-align: left; }
+}
+
+th,
+td {
+  padding: var(--table-spacer) var(--table-gutter);
+  border: 1px solid var(--table-bdcolor);
+}

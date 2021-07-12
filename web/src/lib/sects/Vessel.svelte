@@ -132,7 +132,7 @@
     --bg: #{color(neutral, 2)};
 
     padding: 0.25rem;
-    @include radius();
+    @include bdradi();
 
     color: var(--fg);
     background: var(--bg);
