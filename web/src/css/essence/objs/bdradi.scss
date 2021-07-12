@@ -1,0 +1,49 @@
+@use "../defs" as *;
+@use "../vars" as *;
+
+$radius-sizes: (
+  0: 0,
+  1: 1px,
+  2: 2px,
+  3: 3px,
+  4: 4px,
+  5: 6px,
+  6: 8px,
+  7: 10px,
+  8: 12px,
+  9: 16px,
+  x: 100vmax,
+) !default;
+
+$radius-df: 4 !default;
+$radiuses: map-keys($radius-sizes);
+
+// functions
+
+@function radius-props($dir: all) {
+  @if $dir == all or $dir == null {
+    @return border-radius;
+  }
+
+  $props: ();
+  $corners: map-get($edges, $dir);
+
+  @each $corner in $corners {
+    $props: append($props, border-#{$corner}-radius);
+  }
+
+  @return $props;
+}
+
+@function bdradi($value) {
+  @return map-get($radius-sizes, $value) or $value;
+}
+
+// mixins
+
+@mixin bdradi($value: $radius-df, $dir: all) {
+  $props: radius-props($dir);
+  $value: bdradi($value);
+
+  @include props($props, $value);
+}

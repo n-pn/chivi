@@ -1,0 +1,42 @@
+@use "sass:math";
+
+$base: 0.25rem !default;
+
+@function strip-unit($num) {
+  @return math.div($num, $num * 0 + 1);
+}
+
+@function cell($size) {
+  @return strip-unit($size) * $base;
+}
+
+// ceil by multiples of cells, always larger than $size
+@function ceil($size, $cell: $base) {
+  @return $size + $cell - ($size % $cell);
+}
+
+/// convert px, bs to rem
+// prettier-ignore
+@function rem($num) {
+  @if type-of($num) != number { @error "[#{$num}] is not a number"; }
+
+  @if $num == 0 { @return 0; }
+  @if unitless($num) { @return 1rem * $num; }
+  @if unit($num) == x { @return cell($num); }
+  @if unit($num) == px { @return 1rem * math.div($num, 16px); }
+  @if unit($num) == rem { @return $num; }
+  // @if unit($num) == em { @return $num; }
+  @error "unsupported unit [#{$size}]";
+}
+
+// @debug rem(1);
+// @debug rem(1x);
+// @debug rem(16px);
+
+/// convert px to em
+// prettier-ignore
+@function em($num, $base: 16px) {
+  @if $num == 0 { @return 0; }
+  @if unit($num) == unit($base) { @return 1em * math.div($num, $base); }
+  @error "type mismatch: [#{$num} & [#{$base}]";
+}

@@ -1,0 +1,38 @@
+@use '../../essence' as *;
+
+@mixin heading($font-size, $line-height: 1.5) {
+  margin: 0;
+  color: var(--color-label);
+  font-size: $font-size;
+  line-height: $line-height;
+}
+
+h1 {
+  @include heading($h1-size, 1.25);
+  font-weight: 300;
+}
+
+h2 {
+  @include heading($h2-size, 1.25);
+  font-weight: 300;
+}
+
+h3 {
+  @include heading($h3-size, 1.5);
+  font-weight: 400;
+}
+
+h4 {
+  @include heading($h4-size, 1.5rem);
+  font-weight: 400;
+}
+
+h5 {
+  @include heading($h5-size, 1.5rem);
+  font-weight: 500;
+}
+
+h6 {
+  @include heading($h6-size);
+  font-weight: 500;
+}

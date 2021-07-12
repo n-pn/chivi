@@ -1,0 +1,239 @@
+// credit: https://github.com/primer/primitives/blob/main/data/colors_v2/themes/light.ts
+// credit: https://github.com/primer/primitives/blob/main/data/colors_v2/themes/dark.ts
+
+$color-black: #1b1f24 !default;
+
+$color-white: #ffffff !default;
+
+$color-gray: (
+  0: #f6f8fa,
+  1: #eaeef2,
+  2: #d0d7de,
+  3: #afb8c1,
+  4: #8c959f,
+  5: #6e7781,
+  6: #57606a,
+  7: #424a53,
+  8: #32383f,
+  9: #24292f,
+) !default;
+
+$color-blue: (
+  0: #ddf4ff,
+  1: #b6e3ff,
+  2: #80ccff,
+  3: #54aeff,
+  4: #218bff,
+  5: #0969da,
+  6: #0550ae,
+  7: #033d8b,
+  8: #0a3069,
+  9: #002155,
+) !default;
+
+$color-green: (
+  0: #dafbe1,
+  1: #aceebb,
+  2: #6fdd8b,
+  3: #4ac26b,
+  4: #2da44e,
+  5: #1a7f37,
+  6: #116329,
+  7: #044f1e,
+  8: #003d16,
+  9: #002d11,
+) !default;
+
+$color-yellow: (
+  0: #fff8c5,
+  1: #fae17d,
+  2: #eac54f,
+  3: #d4a72c,
+  4: #bf8700,
+  5: #9a6700,
+  6: #7d4e00,
+  7: #633c01,
+  8: #4d2d00,
+  9: #3b2300,
+) !default;
+
+$color-orange: (
+  0: #fff1e5,
+  1: #ffd8b5,
+  2: #ffb77c,
+  3: #fb8f44,
+  4: #e16f24,
+  5: #bc4c00,
+  6: #953800,
+  7: #762c00,
+  8: #5c2200,
+  9: #471700,
+) !default;
+
+$color-red: (
+  0: #ffe7e5,
+  1: #ffcecb,
+  2: #ffaba8,
+  3: #ff8182,
+  4: #fa4549,
+  5: #cf222e,
+  6: #a40e26,
+  7: #82071e,
+  8: #660018,
+  9: #4c0014,
+) !default;
+
+$color-purple: (
+  0: #fbefff,
+  1: #ecd8ff,
+  2: #d8b9ff,
+  3: #c297ff,
+  4: #a475f9,
+  5: #8250df,
+  6: #6639ba,
+  7: #512a97,
+  8: #3e1f79,
+  9: #2e1461,
+) !default;
+
+$color-pink: (
+  0: #ffeff7,
+  1: #ffd3eb,
+  2: #ffadda,
+  3: #ff80c8,
+  4: #e85aad,
+  5: #bf3989,
+  6: #99286e,
+  7: #772057,
+  8: #611347,
+  9: #4d0336,
+) !default;
+
+$color-dark-black: #010409 !default;
+
+$color-dark-white: #f0f6fc !default;
+
+$color-dark-gray: (
+  0: #f0f6fc,
+  1: #c9d1d9,
+  2: #b1bac4,
+  3: #8b949e,
+  4: #6e7681,
+  5: #484f58,
+  6: #30363d,
+  7: #21262d,
+  8: #161b22,
+  9: #0d1117,
+) !default;
+
+$color-dark-blue: (
+  0: #cae8ff,
+  1: #a5d6ff,
+  2: #79c0ff,
+  3: #58a6ff,
+  4: #388bfd,
+  5: #1f6feb,
+  6: #1158c7,
+  7: #0d419d,
+  8: #0c2d6b,
+  9: #051d4d,
+) !default;
+
+$color-dark-green: (
+  0: #aff5b4,
+  1: #7ee787,
+  2: #56d364,
+  3: #3fb950,
+  4: #2ea043,
+  5: #238636,
+  6: #196c2e,
+  7: #0f5323,
+  8: #033a16,
+  9: #04260f,
+) !default;
+
+$color-dark-yellow: (
+  0: #f8e3a1,
+  1: #f2cc60,
+  2: #e3b341,
+  3: #d29922,
+  4: #bb8009,
+  5: #9e6a03,
+  6: #845306,
+  7: #693e00,
+  8: #4b2900,
+  9: #341a00,
+) !default;
+
+$color-dark-orange: (
+  0: #ffdfb6,
+  1: #ffc680,
+  2: #ffa657,
+  3: #f0883e,
+  4: #db6d28,
+  5: #bd561d,
+  6: #9b4215,
+  7: #762d0a,
+  8: #5a1e02,
+  9: #3d1300,
+) !default;
+
+$color-dark-red: (
+  0: #ffdcd7,
+  1: #ffc1ba,
+  2: #ffa198,
+  3: #ff7b72,
+  4: #f85149,
+  5: #da3633,
+  6: #b62324,
+  7: #8e1519,
+  8: #67060c,
+  9: #490202,
+) !default;
+
+$color-dark-purple: (
+  0: #eddeff,
+  1: #e2c5ff,
+  2: #d2a8ff,
+  3: #bc8cff,
+  4: #a371f7,
+  5: #8957e5,
+  6: #6e40c9,
+  7: #553098,
+  8: #3c1e70,
+  9: #271052,
+) !default;
+
+$color-dark-pink: (
+  0: #ffdaec,
+  1: #ffbedd,
+  2: #ff9bce,
+  3: #f778ba,
+  4: #db61a2,
+  5: #bf4b8a,
+  6: #9e3670,
+  7: #7d2457,
+  8: #5e103e,
+  9: #42062a,
+) !default;
+
+$color-palette: (
+  black: $color-black,
+  white: $color-white,
+  gray: $color-gray,
+  green: $color-green,
+  blue: $color-blue,
+  yellow: $color-yellow,
+  orange: $color-orange,
+  red: $color-red,
+  purple: $color-purple,
+  dark-black: $color-dark-black,
+  dark-white: $color-dark-white,
+  dark-gray: $color-dark-gray,
+  dark-green: $color-dark-green,
+  dark-blue: $color-dark-blue,
+  dark-yellow: $color-dark-yellow,
+  dark-orange: $color-dark-orange,
+  dark-red: $color-dark-red,
+  dark-purple: $color-dark-purple,
+) !default;

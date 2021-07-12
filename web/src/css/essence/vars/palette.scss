@@ -1,0 +1,10 @@
+@forward "palette/primer";
+// @forward "palette/tailwind";
+
+$color-mapping: (
+  neutral: gray,
+  primary: blue,
+  success: green,
+  warning: yellow,
+  harmful: red,
+) !default;

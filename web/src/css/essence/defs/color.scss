@@ -1,0 +1,47 @@
+@use "sass:map";
+@use "sass:list";
+@use "../vars/palette" as *;
+
+@function color-raw($name, $tone: 5) {
+  $-alias: map.get($color-mapping, $name);
+  // prettier-ignore
+  @if $-alias { $name: $-alias; }
+
+  $-value: map.get($color-palette, $name);
+
+  @if type-of($value: $-value) == map {
+    $-color: map.get($-value, $tone);
+
+    @if type-of($-color) == color {
+      @return $-color;
+    }
+
+    @error "wrong color tone `#{$tone}`";
+  } @else if type-of($-value) == color {
+    @return $-value;
+  }
+
+  @error "unknown color `#{$name}`";
+}
+
+@function color-name($vals...) {
+  $ret: --color;
+
+  @each $val in $vals {
+    $ret: $ret + '-' + $val;
+  }
+
+  @return $ret;
+}
+
+@function color($name, $tone) {
+  @return 'var(#{color-name($name, $tone)})';
+}
+
+@mixin fgcolor($name, $tone: 5) {
+  color: 'var(#{color-name($name, $tone)})';
+}
+
+@mixin bgcolor($name, $tone: 5) {
+  background-color: 'var(#{color-name($name, $tone)})';
+}

@@ -1,0 +1,12 @@
+@mixin after-block($abs: false) {
+  // prettier-ignore
+  @if $abs { position: relative; }
+
+  &:after {
+    display: block;
+    content: '';
+    // prettier-ignore
+    @if $abs { position: absolute; }
+    @content;
+  }
+}

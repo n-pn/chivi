@@ -1,0 +1,25 @@
+// credit: https://github.com/primer/css/blob/main/src/support/variables/layout.scss
+
+// maps edges to respective corners for border-radius
+// prettier-ignore
+$edges: (
+  top: (top-left, top-right),
+  right: (top-right, bottom-right),
+  bottom: (bottom-right, bottom-left),
+  left: (bottom-left, top-left)
+) !default;
+
+// responive utility position values
+$positions: (static, relative, absolute, fixed, sticky) !default;
+
+// these are values for the display CSS property
+$displays: (
+  block,
+  flex,
+  inline,
+  inline-block,
+  inline-flex,
+  none,
+  table,
+  table-cell
+) !default;

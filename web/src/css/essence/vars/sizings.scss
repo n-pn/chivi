@@ -1,0 +1,103 @@
+// credit: https://github.com/primer/css/blob/main/src/support/variables/layout.scss
+
+// These are our margin and padding utility spacers.
+// prettier-ignore
+$spacer: (
+  0: 0rem,
+  1: 0.25rem, // 4px
+  2: 0.5rem, // 8px
+  3: 0.75rem, // 12px
+  4: 1rem, // 16px
+  5: 1.25rem, // 20px
+  6: 1.5rem, // 24px
+  7: 1.75rem, // 28px
+) !default;
+
+// prettier-ignore
+$spacer-lg: (
+  8: 2rem, // 32px
+  9: 2.5rem, // 40px
+  10: 3rem, // 48px
+  11: 4rem, // 64px
+  12: 5rem, // 80px
+  13: 6rem, // 96px
+  14: 7rem, // 112px
+  15: 8rem, // 128px
+) !default;
+
+$spacer-all: map-merge(
+  $map1: $spacer,
+  $map2: $spacer-lg,
+);
+
+// Em spacer variables
+// prettier-ignore
+$spacer-em: (
+  1: 0.0625em, // 1/16
+  2: 0.125em, // 1/8
+  3: 0.25em, // 1/4
+  4: 0.375em, // 3/8
+  5: 0.5em, // 1/2
+  6: 0.75em, // 3/4
+);
+
+// content padding
+$gutter: (
+  xs: 0.5rem,
+  sm: 0.75rem,
+  md: 1rem,
+  lg: 1.25rem,
+) !default;
+
+$gutter-dense: (
+  xs: 0.375rem,
+  sm: 0.5rem,
+  md: 0.75rem,
+  lg: 1rem,
+) !default;
+
+$gutter-roomy: (
+  xs: 0.75rem,
+  sm: 1rem,
+  md: 1.25rem,
+  lg: 1.5rem,
+) !default;
+
+// Size scale
+// prettier-ignore
+$sizings: (
+  0: 0rem,
+  1: 1rem, // 16px
+  2: 1.25rem, // 20px
+  3: 1.5rem, // 24px
+  4: 1.75rem, // 28px
+  5: 2rem, // 32px
+  6: 2.5rem, // 40px
+  7: 3rem, // 48px
+  8: 4rem, // 64px
+) !default;
+
+// Breakpoint widths
+$bp-xs: 360px !default; // older phone, iphone se
+$bp-sm: 480px !default; // Small screen / phone
+$bp-md: 720px !default; // Medium screen / tablet
+$bp-lg: 960px !default; // Large screen / desktop
+$bp-xl: 1200px !default; // Extra large screen / wide desktop
+
+$breakpoints: (
+  sm: $bp-sm,
+  md: $bp-md,
+  lg: $bp-lg,
+  xl: $bp-xl,
+) !default;
+
+$sidebar-widths: (
+  sm: 13.75rem,
+  md: 16rem,
+  lg: 18.5rem,
+  xl: 20rem,
+) !default;
+
+// sidebar-dense, sidebar-roomy: to be considered
+
+$container-width: 960px !default; // inner width
