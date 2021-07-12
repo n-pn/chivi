@@ -85,21 +85,21 @@ $-button-text-sizes: (
   }
 }
 
-@mixin button-varify($style: fill, $color: neutral) {
+@mixin button-varify($style: fill, $color: color-var(gray, 5)) {
   @if $style == line {
     @if $color == neutral {
-      @include bdcolor($color: $color, $shade: 4);
+      @include bdcolor(color-var($color, 4));
 
       &:disabled,
       &._disable {
-        @include bdcolor($color: $color, $shade: 3);
+        @include bdcolor(color-var($color, 3));
       }
     } @else {
-      @include bdcolor($color: $color, $shade: 3);
+      @include bdcolor(color-var($color, 3));
 
       &:disabled,
       &._disable {
-        @include bdcolor($color: $color, $shade: 2);
+        @include bdcolor(color-var($color, 2));
       }
     }
   } @else {
@@ -108,20 +108,20 @@ $-button-text-sizes: (
 
   @if $style == fill {
     @if $color == neutral {
-      @include fgcolor(neutral, 7);
-      @include bgcolor(neutral, 1);
+      @include fgcolor(gray, 7);
+      @include bgcolor(gray, 1);
 
       &:hover {
-        @include bgcolor(neutral, 2);
+        @include bgcolor(gray, 2);
       }
 
       &:disabled,
       &._disable {
-        @include fgcolor(neutral, 4);
-        @include bgcolor(neutral, 2);
+        @include fgcolor(gray, 4);
+        @include bgcolor(gray, 2);
       }
     } @else {
-      @include fgcolor(white);
+      color: var(--color-white);
       @include bgcolor($color, 5);
 
       &:hover {
@@ -136,7 +136,7 @@ $-button-text-sizes: (
   } @else {
     @if $color == neutral {
       @include fgcolor($color, 7);
-      @include bgcolor(neutral, 1);
+      @include bgcolor(gray, 1);
 
       &:hover {
         @include bgcolor($color, 2);
@@ -145,11 +145,11 @@ $-button-text-sizes: (
       &:disabled,
       &._disable {
         @include fgcolor($color, 4);
-        @include bgcolor(neutral, 1);
+        @include bgcolor(gray, 1);
       }
     } @else {
       @include fgcolor($color, 6);
-      @include bgcolor(neutral, 1);
+      @include bgcolor(gray, 1);
 
       &:hover {
         @include bgcolor($color, 1);
@@ -158,7 +158,7 @@ $-button-text-sizes: (
       &:disabled,
       &._disable {
         @include fgcolor($color, 3);
-        @include bgcolor(neutral, 1);
+        @include bgcolor(gray, 1);
       }
     }
   }

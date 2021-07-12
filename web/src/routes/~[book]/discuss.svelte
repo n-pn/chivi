@@ -21,7 +21,7 @@
     justify-content: center;
     text-align: center;
     font-style: italic;
-    @include font-size(4);
-    @include fgcolor(neutral, 5);
+    @include ftsize(lg);
+    color: var(--color-gray-5);
   }
 </style>

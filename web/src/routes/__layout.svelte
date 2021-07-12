@@ -74,8 +74,8 @@
     color: var(--fgmain);
 
     &.tm-dark {
-      --bgmain: #{color(neutral, 8)};
-      --fgmain: #{color(neutral, 1)};
+      --bgmain: #{color(gray, 8)};
+      --fgmain: #{color(gray, 1)};
     }
   }
 
@@ -84,15 +84,15 @@
     text-align: center;
     padding: 0.75rem;
 
-    @include font-size(2);
+    @include ftsize(sm);
     @include border($sides: top);
-    @include fgcolor(neutral, 6);
-    @include bgcolor(neutral, 2);
+    @include fgcolor(gray, 6);
+    @include bgcolor(gray, 2);
 
     @include tm-dark {
-      @include fgcolor(neutral, 4);
-      @include bgcolor(neutral, 8);
-      @include bdcolor(neutral, 7);
+      @include fgcolor(gray, 4);
+      @include bgcolor(gray, 8);
+      @include bdcolor(gray, 7);
     }
   }
 
@@ -100,10 +100,10 @@
     margin-left: 0.375rem;
     font-weight: 500;
 
-    @include fgcolor(primary, 6);
+    @include fgcolor(blue, 6);
 
     &:hover {
-      @include fgcolor(primary, 4);
+      @include fgcolor(blue, 4);
     }
   }
 </style>

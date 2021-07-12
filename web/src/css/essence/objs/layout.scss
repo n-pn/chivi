@@ -21,8 +21,8 @@
   @if ($gap) { gap: $gap; }
   @if ($wrap) { flex-wrap: wrap; }
 
-  @if $mode == both or $mode == vert { align-items: center; }
-  @if $mode == both or $mode == horz { justify-content: center; }
+  @if $center == both or $center == vert { align-items: center; }
+  @if $center == both or $center == horz { justify-content: center; }
 }
 
 // prettier-ignore

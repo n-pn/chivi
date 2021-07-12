@@ -198,7 +198,7 @@
   $hv-height: 0.75rem + (1.25 * 6rem);
 
   .lookup {
-    @include fgcolor(neutral, 8);
+    @include fgcolor(gray, 8);
   }
 
   .source {
@@ -206,15 +206,15 @@
     line-height: 1.25rem;
     padding: 0.375rem 0.75rem;
     // margin: 0.75rem;
-    // border: 1px solid color(neutral, 3);
+    // border: 1px solid color(gray, 3);
     // margin-bottom: 0.75rem;
 
-    @include bgcolor(neutral, 1);
+    @include bgcolor(gray, 1);
     // @include font-family(sans);
 
     // &._vi {
     //   max-height: $vi-height;
-    //   border-bottom: 1px solid color(neutral, 3);
+    //   border-bottom: 1px solid color(gray, 3);
     // }
 
     &._zh {
@@ -235,7 +235,7 @@
 
     //   &:hover,
     //   &:global(._active) {
-    //     @include fgcolor(primary, 5);
+    //     @include fgcolor(blue, 5);
     //   }
     // }
   }
@@ -243,16 +243,16 @@
   .word {
     // margin-top: 0.5rem;
     font-weight: 500;
-    @include font-size(md);
-    @include fgcolor(neutral, 7);
-    // @include border($sides: left, $width: 0.25rem, $color: color(primary, 5));
+    @include ftsize(md);
+    @include fgcolor(gray, 7);
+    // @include border($sides: left, $width: 0.25rem, $color: color(blue, 5));
   }
 
   h4 {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(neutral, 6);
-    @include font-size(2);
+    @include fgcolor(gray, 6);
+    @include ftsize(sm);
   }
 
   .entry {

@@ -9,7 +9,7 @@ $colors: (gray, blue, green, yellow, orange, red, purple) !default;
 
   @each $name in $colors {
     @for $tone from 0 to 10 {
-      --color-#{$name}-#{$tone}: #{color($name, $tone)};
+      --color-#{'' + $name}-#{'' + $tone}: #{color($name, $tone)};
     }
   }
 
@@ -32,7 +32,7 @@ $colors: (gray, blue, green, yellow, orange, red, purple) !default;
 
   @each $name in $colors {
     @for $tone from 0 to 10 {
-      --color-#{$name}-#{$tone}: #{color('dark-' + $name, $tone)};
+      --color-#{'' + $name}-#{'' + $tone}: #{color('dark-' + $name, $tone)};
     }
   }
 

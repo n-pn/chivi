@@ -53,17 +53,17 @@
     line-height: $height;
     font-weight: 500;
     background: none;
-    @include fgcolor(neutral, 5);
+    color: var(--color-gray-5);
 
     // max-width: 14vw;
-    @include truncate(null);
+    @include clamp($width: null);
 
     &:hover {
-      @include fgcolor(primary, 5);
+      @include fgcolor(blue, 5);
     }
 
     &._md {
-      @include props(display, none, $md: inline-block);
+      @include fluid(display, none, $md: inline-block);
     }
   }
 
@@ -80,14 +80,14 @@
     background: none;
 
     font-size: rem(18px);
-    @include fgcolor(neutral, 5);
+    color: var(--color-gray-5);
 
     &:hover {
-      @include fgcolor(primary, 5);
+      @include fgcolor(blue, 5);
     }
 
     &[disabled] {
-      @include fgcolor(neutral, 3);
+      @include fgcolor(gray, 3);
     }
   }
 </style>

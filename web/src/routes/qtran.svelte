@@ -89,8 +89,8 @@
     line-height: 2.5rem;
     text-transform: uppercase;
     font-weight: 500;
-    @include font-size(2);
-    @include fgcolor(neutral, 6);
+    @include ftsize(sm);
+    @include fgcolor(gray, 6);
     @include border($sides: bottom);
   }
 
@@ -100,7 +100,7 @@
     height: 2.5rem;
 
     &:hover {
-      @include fgcolor(primary, 5);
+      @include fgcolor(blue, 5);
     }
     &._active {
       @include border($sides: bottom, $width: 2px, $color: primary, $shade: 5);
@@ -119,16 +119,16 @@
     &:hover,
     &:focus {
       background-color: #fff;
-      @include bdcolor(primary, 3);
+      @include bdcolor(blue, 3);
     }
 
     &:focus {
-      box-shadow: 0 0 1px 1px color(primary, 2);
+      box-shadow: 0 0 1px 1px color(blue, 2);
     }
 
     &::placeholder {
       font-style: italic;
-      @include fgcolor(neutral, 4);
+      @include fgcolor(gray, 4);
     }
   }
 
@@ -136,7 +136,6 @@
     margin: 0.5rem 0;
     justify-content: right;
     @include flex();
-    // @include flex-gap($gap: 0.5, $child: '.button');
   }
 
   .m-button + .m-button {

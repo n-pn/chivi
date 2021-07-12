@@ -22,26 +22,26 @@
 
 <style lang="scss">
   h2 {
-    :global(.tm-dark) & {
-      @include fgcolor(neutral, 5);
+    @include tm-dark {
+      color: var(--color-gray-5);
     }
   }
 
   .intro {
     word-wrap: break-word;
-    @include fgcolor(neutral, 7);
-    // @include props(padding, $md: 0 0.75rem);
-    @include props(font-size, rem(15px), rem(16px), rem(17px));
+    @include fgcolor(gray, 7);
+    // @include fluid(padding, $md: 0 0.75rem);
+    @include fluid(font-size, rem(15px), rem(16px), rem(17px));
 
-    :global(.tm-dark) & {
-      @include fgcolor(neutral, 3);
+    @include tm-dark {
+      @include fgcolor(gray, 3);
     }
 
     &._short {
       height: 20rem;
       overflow-y: scroll;
       scrollbar-width: thin;
-      scrollbar-color: color(neutral, 8, 0.2);
+      scrollbar-color: color(gray, 8);
     }
   }
 

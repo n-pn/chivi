@@ -146,7 +146,7 @@
     background: #fff;
     @include shadow();
     @include bdradi();
-    @include fgcolor(neutral, 8);
+    @include fgcolor(gray, 8);
   }
 
   .table {
@@ -170,13 +170,13 @@
 
   tbody > tr:hover {
     cursor: pointer;
-    background-color: color(primary, 4, 0.1);
+    background-color: color(blue, 4, 0.1);
   }
 
   td > a {
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
     &:hover {
-      @include fgcolor(primary, 6);
+      @include fgcolor(blue, 6);
     }
   }
 
@@ -187,20 +187,20 @@
   .-privi,
   .-uname {
     font-size: rem(14px);
-    @include truncate(null);
-    @include fgcolor(neutral, 6);
+    @include clamp($width: null);
+    @include fgcolor(gray, 6);
   }
 
   .-privi._gt {
-    @include fgcolor(primary, 6);
+    @include fgcolor(blue, 6);
   }
 
   .-val {
     font-size: rem(14px);
-    @include truncate(null);
+    @include clamp($width: null);
     &._del {
       font-style: italic;
-      @include fgcolor(neutral, 4);
+      @include fgcolor(gray, 4);
     }
   }
 </style>

@@ -226,7 +226,7 @@
     width: rem(30);
     min-width: 320px;
     max-width: 100%;
-    @include bgcolor(neutral, 1);
+    @include bgcolor(gray, 1);
     @include bdradi();
     @include shadow(3);
   }
@@ -237,11 +237,11 @@
     overflow: hidden;
 
     > .m-button {
-      @include fgcolor(neutral, 6);
+      @include fgcolor(gray, 6);
 
       &:hover {
         background: none;
-        @include fgcolor(primary, 6);
+        @include fgcolor(blue, 6);
       }
     }
   }
@@ -270,11 +270,11 @@
 
     margin-right: 0.5rem;
 
-    @include font-size(2);
-    @include fgcolor(neutral, 5);
-    @include truncate(null);
+    @include ftsize(sm);
+    color: var(--color-gray-5);
+    @include clamp($width: null);
     @include bdradi($sides: top);
-    @include border($color: neutral, $sides: top-left-right);
+    @include border($color: color-var(gray, 5), $sides: top-left-right);
 
     &:first-child {
       max-width: 38%;
@@ -282,7 +282,7 @@
     }
 
     &._edited {
-      @include fgcolor(neutral, 7);
+      @include fgcolor(gray, 7);
     }
 
     &:hover {
@@ -291,7 +291,7 @@
 
     &._active {
       @include bgcolor(#fff);
-      @include fgcolor(primary, 6);
+      @include fgcolor(blue, 6);
       @include bdcolor($color: primary, $shade: 4);
     }
 
@@ -310,14 +310,14 @@
     position: relative;
     @include bdradi;
 
-    --bdcolor: #{color(neutral, 3)};
-    --bgcolor: #{color(neutral, 1)};
+    --bdcolor: #{color(gray, 3)};
+    --bgcolor: #{color(gray, 1)};
 
     background: var(--bgcolor);
     box-shadow: 0 0 0 1px var(--bdcolor);
 
     &:focus-within {
-      --bdcolor: #{color(primary, 4)};
+      --bdcolor: #{color(blue, 4)};
       --bgcolor: #fff;
     }
   }
@@ -345,7 +345,7 @@
       outline: 0;
       border: 0;
       background: transparent;
-      @include font-size(4);
+      @include ftsize(lg);
     }
   }
 
@@ -358,15 +358,15 @@
     font-weight: 500;
     font-size: rem(14px);
 
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
 
-    --bdcolor: #{color(neutral, 2)};
+    --bdcolor: #{color(gray, 2)};
     box-shadow: 0 0 0 1px var(--bdcolor);
 
     &:hover {
-      @include fgcolor(primary, 7);
-      @include bgcolor(primary, 1);
-      --bdcolor: #{color(primary, 3)};
+      @include fgcolor(blue, 7);
+      @include bgcolor(blue, 1);
+      --bdcolor: #{color(blue, 3)};
     }
   }
 

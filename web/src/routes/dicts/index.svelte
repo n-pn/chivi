@@ -77,7 +77,7 @@
     @include bdradi();
     padding: 1rem;
     background: #fff;
-    @include fgcolor(neutral, 8);
+    @include fgcolor(gray, 8);
   }
 
   .dicts {
@@ -95,9 +95,9 @@
     @include shadow();
 
     &:hover {
-      @include bgcolor(primary, 1);
+      @include bgcolor(blue, 1);
       & > .-name {
-        @include fgcolor(primary, 6);
+        @include fgcolor(blue, 6);
       }
     }
   }
@@ -107,8 +107,8 @@
     // text-transform: capitalize;
     font-size: rem(14px);
     line-height: 1.5rem;
-    @include truncate(null);
-    @include fgcolor(neutral, 7);
+    @include clamp($width: null);
+    @include fgcolor(gray, 7);
   }
 
   .-meta {
@@ -116,7 +116,7 @@
     display: flex;
     font-size: rem(14px);
     font-style: italic;
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
   }
 
   .-type {

@@ -140,11 +140,11 @@
   h1 {
     text-align: center;
 
-    @include props(margin-top, 1rem, 1.5rem, 2rem);
-    @include props(margin-bottom, 0rem, 0.5rem, 1rem);
-    @include props(font-size, font-size(5), font-size(6), font-size(7));
-    @include props(line-height, 1.5rem, 1.75rem, 2rem);
-    @include fgcolor(neutral, 6);
+    @include fluid(margin-top, 1rem, 1.5rem, 2rem);
+    @include fluid(margin-bottom, 0rem, 0.5rem, 1rem);
+    @include fluid(font-size, font-size(5), font-size(6), font-size(7));
+    @include fluid(line-height, 1.5rem, 1.75rem, 2rem);
+    @include fgcolor(gray, 6);
   }
 
   .book {
@@ -162,7 +162,7 @@
 
       .-zh,
       .-vi {
-        @include fgcolor(primary, 5);
+        @include fgcolor(blue, 5);
       }
     }
   }
@@ -170,7 +170,7 @@
   .cover {
     float: left;
     @include bdradi();
-    @include props(width, 35%, 30%);
+    @include fluid(width, 35%, 30%);
 
     position: relative;
     overflow: hidden;
@@ -186,7 +186,7 @@
       width: 100%;
       height: 0;
       padding-top: math.div(4, 3) * 100%;
-      @include bgcolor(primary, 7);
+      @include bgcolor(blue, 7);
       z-index: -1;
     }
 
@@ -202,7 +202,7 @@
 
     padding-left: 0.5rem;
     width: 65%;
-    @include props(width, 65%, 70%);
+    @include fluid(width, 65%, 70%);
   }
 
   .extra {
@@ -225,35 +225,34 @@
   .-vi {
     line-height: 1.5rem;
     // font-weight: 500;
-    @include font-size(5);
-    @include fgcolor(neutral, 8);
+    @include ftsize(xl);
+    @include fgcolor(gray, 8);
   }
 
   .-zh {
     line-height: 1.25rem;
     margin-bottom: 0.25rem;
-    @include font-size(4);
-    @include fgcolor(neutral, 7);
+    @include ftsize(lg);
+    @include fgcolor(gray, 7);
   }
 
   .label {
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
   }
 
   .value {
     font-weight: 500;
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
   }
 
   .-trim {
     display: inline-block;
     max-width: 100%;
-    @include truncate(null);
+    @include clamp($width: null);
   }
 
   .pagi {
     margin-bottom: 0.75rem;
-    @include flex($center: content);
-    @include flex-gap($gap: 0.75rem, $child: '.m-button');
+    @include flex($center: horz, $gap: 0.75rem);
   }
 </style>

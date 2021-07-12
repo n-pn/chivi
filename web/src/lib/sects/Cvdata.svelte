@@ -174,18 +174,18 @@
   }
 
   .mtl {
-    --fgcolor: #{color(neutral, 8)};
+    --fgcolor: #{color(gray, 8)};
     color: var(--fgcolor);
 
     @include tm-dark {
-      --fgcolor: #{color(neutral, 3)};
+      --fgcolor: #{color(gray, 3)};
     }
 
     &._h {
       font-weight: 400;
-      // @include fgcolor(neutral, 8);
+      // @include fgcolor(gray, 8);
 
-      @include props(
+      @include fluid(
         font-size,
         rem(22px),
         rem(23px),
@@ -193,16 +193,16 @@
         rem(26px),
         rem(28px)
       );
-      @include props(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
+      @include fluid(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
     }
 
     &._p {
-      @include props(margin-top, 1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
+      @include fluid(margin-top, 1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
       margin-bottom: 0;
       text-align: justify;
       text-justify: auto;
 
-      @include props(
+      @include fluid(
         font-size,
         rem(18px),
         rem(19px),

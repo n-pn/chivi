@@ -127,11 +127,11 @@
     margin-bottom: 1rem;
     padding-right: 1rem;
 
-    @include flex($center: content);
+    @include flex($center: horz);
 
     > .-text {
       margin-left: 0.5rem;
-      @include font-size(8);
+      @include ftsize(x3);
     }
   }
 
@@ -154,8 +154,8 @@
     font-weight: 500;
     line-height: 1.5rem;
     margin-bottom: 0.25rem;
-    @include font-size(1);
-    @include fgcolor(neutral, 6);
+    @include ftsize(xs);
+    @include fgcolor(gray, 6);
   }
 
   input {
@@ -168,20 +168,16 @@
 
     &:focus,
     &:hover {
-      @include bdcolor($color: primary, $shade: 3);
-    }
-
-    &:invalid {
-      box-shadow: none;
+      @include bdcolor(var(--color-blue-3));
     }
 
     &:focus {
-      box-shadow: 0 0 1px 1px color(primary, 2);
+      box-shadow: 0 0 1px 1px color(blue, 2);
     }
 
     &::placeholder {
       font-style: italic;
-      @include fgcolor(neutral, 5);
+      color: var(--color-gray-5);
     }
   }
 
@@ -189,16 +185,16 @@
     margin-bottom: 0.75rem;
     // text-align: center;
     @include fgcolor(harmful, 5);
-    @include font-size(2);
+    @include ftsize(sm);
   }
 
   footer {
     margin-top: 1.5rem;
 
-    @include flex($center: content);
+    @include flex($center: horz);
 
     button {
-      @include truncate(null);
+      @include clamp($width: null);
     }
 
     button + button {

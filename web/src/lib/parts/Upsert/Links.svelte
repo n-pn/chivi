@@ -20,8 +20,8 @@
 
 <style lang="scss">
   .foot {
-    @include flex($center: content);
-    border-top: 1px solid color(neutral, 3);
+    @include flex($center: horz);
+    border-top: 1px solid color(gray, 3);
   }
 
   .link {
@@ -29,11 +29,11 @@
     padding: 0 0.75rem;
     line-height: 2.25rem;
 
-    @include font-size(2);
-    @include fgcolor(neutral, 7);
+    @include ftsize(sm);
+    @include fgcolor(gray, 7);
 
     &:hover {
-      @include fgcolor(primary, 5);
+      @include fgcolor(blue, 5);
     }
   }
 </style>

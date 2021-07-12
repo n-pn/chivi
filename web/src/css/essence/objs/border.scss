@@ -1,15 +1,19 @@
 // functions
+@use "sass:list";
+@use "../defs" as *;
 
-@function border-props($sides: all, $type: null) {
+$dirs: (top, right, bottom, left);
+
+@function bdprops($sides: all, $type: null) {
   @if $sides == all or $sides == null {
     @return join-props(border, $type);
   }
 
   $props: ();
 
-  @each $side in $m-sides {
-    @if match-edge($side, $sides) {
-      $props: append($props, join-props(border, $side, $type));
+  @each $dir in $dirs {
+    @if match-side($dir, $dirs) {
+      $props: list.append($props, join-props(border, $dir, $type));
     }
   }
 
@@ -19,28 +23,27 @@
 // colors
 
 @mixin bdcolor($color: var(--bd-main), $sides: all) {
-  $props: border-props($sides, color);
-  @include props($props, $color);
+  $props: bdprops($sides, color);
+  @include fluid($props, $color);
 }
 
 // styles
 
 @mixin bdstyle($style: solid, $sides: all) {
-  $props: border-props($sides, style);
-  @include props($props, $style);
+  $props: bdprops($sides, style);
+  @include fluid($props, $style);
 }
 
 // widths
 
 @mixin bdwidth($width: 1px, $sides: all) {
-  $props: border-props($sides, width);
-  @include props($props, $width);
+  $props: bdprops($sides, width);
+  @include fluid($props, $width);
 }
 
 // borders
 
 @mixin border($color: var(--bd-main), $width: 1px, $style: solid, $sides: all) {
-  $props: border-props($sides);
-  $value: $width $style color($color, $shade);
-  @include props($props, $value);
+  $props: bdprops($sides);
+  @include fluid($props, $width $style $color);
 }

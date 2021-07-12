@@ -42,12 +42,12 @@
     font-size: 500;
 
     @include bdradi(6px);
-    @include fgcolor(neutral, 7);
-    @include bgcolor(red, 1, 0.7);
+    @include fgcolor(gray, 7);
+    @include bgcolor(red, 1);
   }
 
   a {
-    @include fgcolor(primary, 6);
+    @include fgcolor(blue, 6);
     font-weight: 600;
   }
 </style>

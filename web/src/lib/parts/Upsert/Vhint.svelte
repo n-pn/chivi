@@ -24,8 +24,8 @@
     @include flex();
     @include border($sides: bottom);
 
-    @include font-size(2);
-    @include fgcolor(neutral, 6);
+    @include ftsize(sm);
+    @include fgcolor(gray, 6);
   }
 
   .hint {
@@ -33,10 +33,10 @@
     padding: 0 0.25rem;
 
     @include bdradi;
-    @include truncate(null);
+    @include clamp($width: null);
 
     &:hover {
-      @include fgcolor(primary, 6);
+      @include fgcolor(blue, 6);
     }
 
     & + & {

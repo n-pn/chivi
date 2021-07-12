@@ -1,4 +1,4 @@
-@use "../essence.scss";
+@use "../essence" as *;
 
 %input,
 .m-input {
@@ -20,11 +20,11 @@
     @include linesd(var(--bd-main));
 
     @include hover-focus {
-      --linesd: linesd(var(--color-primary-6));
+      --linesd: linesd(var(--color-blue-6));
     }
 
     &:focus {
-      --ringsd: ringsd(var(--color-primary-4));
+      --ringsd: ringsd(var(--color-blue-4));
     }
 
     &::placeholder {

@@ -95,37 +95,37 @@
     padding: 0.5rem 0;
     line-height: 1.25rem;
 
-    @include font-size(2);
+    @include ftsize(sm);
 
     .-item {
       display: inline;
       // float: left;
-      @include fgcolor(neutral, 6);
+      @include fgcolor(gray, 6);
 
       &._sep:after {
         display: inline-block;
         padding-left: 0.325em;
         content: '>';
-        @include fgcolor(neutral, 4);
+        @include fgcolor(gray, 4);
       }
     }
 
     .-link {
       color: inherit;
       &:hover {
-        @include fgcolor(primary, 6);
+        @include fgcolor(blue, 6);
       }
     }
   }
 
   .m-input {
     @include tm-dark {
-      @include fgcolor(neutral, 3);
-      @include bgcolor(neutral, 7, 0.3);
-      @include bdcolor(neutral, 6);
+      @include fgcolor(gray, 3);
+      @include bgcolor(gray, 7, 0.3);
+      @include bdcolor(gray, 6);
 
       &:focus {
-        @include bdcolor(primary, 6);
+        @include bdcolor(blue, 6);
       }
     }
   }
@@ -163,6 +163,6 @@
     text-transform: uppercase;
     font-size: rem(12px);
     font-weight: 500;
-    @include fgcolor(neutral, 5);
+    color: var(--color-gray-5);
   }
 </style>

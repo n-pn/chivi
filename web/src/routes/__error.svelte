@@ -47,10 +47,10 @@
     font-weight: 300;
     margin-bottom: 0.5rem;
 
-    --fg: #{color(neutral, 7)};
+    --fg: #{color(gray, 7)};
 
     @include tm-dark {
-      --fg: #{color(neutral, 4)};
+      --fg: #{color(gray, 4)};
     }
   }
 
@@ -58,10 +58,10 @@
     margin-top: 1.5rem;
     // font-style: italic;
 
-    --fg: #{color(neutral, 8)};
+    --fg: #{color(gray, 8)};
 
     @include tm-dark {
-      --fg: #{color(neutral, 5)};
+      --fg: #{color(gray, 5)};
     }
   }
 </style>

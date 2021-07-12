@@ -1,4 +1,5 @@
 @use 'sass:math';
+@use "../essence" as *;
 
 $header-height: 3rem;
 $header-inner-height: 2.25rem;
@@ -18,12 +19,12 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   height: $header-height;
   padding: $header-gutter 0;
 
-  @include fgcolor(white);
-  @include bgcolor(primary, 7);
+  color: var(--color-white);
+  @include bgcolor(blue, 7);
   @include shadow(2);
 
   .tm-dark & {
-    @include bgcolor(primary, 8);
+    @include bgcolor(blue, 8);
   }
 
   &._clear {
@@ -37,8 +38,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   .-left,
   .-right {
-    @include flex;
-    @include flex-gap($header-gutter, $child: '*');
+    @include flex($gap: 0.5rem);
   }
 
   .-left {
@@ -64,31 +64,31 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   line-height: $header-inner-height;
 
   border-radius: 0.5rem;
-  @include fgcolor(neutral, 2);
-  @include bgcolor(primary, 6);
+  @include fgcolor(gray, 2);
+  @include bgcolor(blue, 6);
 
   .tm-dark & {
-    @include fgcolor(neutral, 3);
-    @include bgcolor(primary, 7);
+    @include fgcolor(gray, 3);
+    @include bgcolor(blue, 7);
 
     &:hover,
     &._active {
-      @include bgcolor(primary, 6);
+      @include bgcolor(blue, 6);
     }
   }
 
   @include hover {
-    @include bgcolor(primary, 5);
+    @include bgcolor(blue, 5);
   }
 
   &._active {
-    @include bgcolor(primary, 5);
+    @include bgcolor(blue, 5);
   }
 
   &:disabled {
     cursor: text;
-    @include fgcolor(neutral, 4);
-    @include bgcolor(primary, 6);
+    @include fgcolor(gray, 4);
+    @include bgcolor(blue, 6);
   }
 
   img,
@@ -111,11 +111,11 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   letter-spacing: 0.05rem;
 
   &._show-sm {
-    @include props(display, none, $sm: inline-block);
+    @include fluid(display, none, $sm: inline-block);
   }
 
   &._show-md {
-    @include props(display, none, $md: inline-block);
+    @include fluid(display, none, $md: inline-block);
   }
 
   ._brand & {
@@ -124,13 +124,13 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   }
 
   &._title {
-    @include truncate(null);
-    @include props(max-width, 30vw, $md: 20vw, $lg: 15vw);
+    @include clamp($width: null);
+    @include fluid(max-width, 30vw, $md: 20vw, $lg: 15vw);
   }
 
   &._seed {
     max-width: 25vw;
-    @include truncate(null);
+    @include clamp($width: null);
   }
 }
 
@@ -156,10 +156,10 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     outline: none;
     border-radius: $radius;
 
-    @include bgcolor(darken(color(primary, 7), 5%));
+    @include bgcolor(blue, 8);
 
     &::placeholder {
-      @include fgcolor(neutral, 5);
+      color: var(--color-gray-5);
     }
   }
 
@@ -172,7 +172,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     top: 0.625rem;
     width: 1.125rem;
     height: 1.125rem;
-    @include fgcolor(neutral, 5);
+    color: var(--color-gray-5);
   }
 }
 
@@ -207,12 +207,12 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
       @include border($sides: bottom);
     }
 
-    @include font-size(2);
-    @include fgcolor(neutral, 6);
+    @include ftsize(sm);
+    @include fgcolor(gray, 6);
 
     &:hover {
-      @include fgcolor(primary, 6);
-      @include bgcolor(neutral, 2);
+      @include fgcolor(blue, 6);
+      @include bgcolor(gray, 2);
     }
 
     svg {

@@ -136,8 +136,8 @@
     height: $hd-height;
     line-height: $hd-line-height;
     padding: 0.375rem 0.5rem;
-    border-bottom: 1px solid color(neutral, 3);
-    @include fgcolor(neutral, 6);
+    border-bottom: 1px solid color(gray, 3);
+    @include fgcolor(gray, 6);
     @include shadow(1);
 
     :global(svg) {
@@ -151,23 +151,23 @@
       font-weight: 500;
       margin-left: 0.5rem;
       text-transform: uppercase;
-      @include font-size(3);
+      @include ftsize(md);
     }
 
     :global(.-btn) {
       padding: 0 0.5rem;
       @include bdradi;
-      @include fgcolor(neutral, 6);
+      @include fgcolor(gray, 6);
       @include bgcolor(transparent);
 
       &:hover {
-        @include fgcolor(primary, 6);
-        @include bgcolor(neutral, 2);
+        @include fgcolor(blue, 6);
+        @include bgcolor(gray, 2);
       }
 
       &._active {
-        @include fgcolor(primary, 6);
-        @include bgcolor(neutral, 2);
+        @include fgcolor(blue, 6);
+        @include bgcolor(gray, 2);
       }
     }
   }

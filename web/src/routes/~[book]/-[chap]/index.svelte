@@ -193,27 +193,26 @@
   .footer {
     width: 100%;
     padding: 0.5rem 0;
-    @include flex($center: content);
-    @include flex-gap($gap: 0.5rem, $child: ':global(*)');
+    @include flex($center: horz, $gap: 0.5rem);
   }
 
   .bread {
     padding: 0.5rem 0;
     line-height: 1.25rem;
 
-    @include font-size(2);
+    @include ftsize(sm);
     @include border($sides: bottom);
 
     @include tm-dark {
-      @include bdcolor(neutral, 7);
+      @include bdcolor(gray, 7);
     }
 
     .-crumb {
       display: inline;
       // float: left;
-      @include fgcolor(neutral, 6);
+      @include fgcolor(gray, 6);
       @include tm-dark {
-        @include fgcolor(neutral, 5);
+        color: var(--color-gray-5);
       }
 
       &._sep:after {
@@ -224,25 +223,25 @@
     .-link {
       color: inherit;
       &:hover {
-        @include fgcolor(primary, 6);
+        @include fgcolor(blue, 6);
       }
     }
   }
 
   .m-button {
     @include tm-dark {
-      @include fgcolor(neutral, 2);
-      @include bgcolor(neutral, 7);
+      @include fgcolor(gray, 2);
+      @include bgcolor(gray, 7);
 
       &:hover {
-        @include bgcolor(neutral, 6);
+        @include bgcolor(gray, 6);
       }
 
       &._primary {
-        @include bgcolor(primary, 7);
+        @include bgcolor(blue, 7);
 
         &:hover {
-          @include bgcolor(primary, 6);
+          @include bgcolor(blue, 6);
         }
       }
     }

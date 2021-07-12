@@ -41,7 +41,7 @@
 
 <style lang="scss">
   .book:nth-child(25) {
-    @include props(display, none, $md: block, $lg: none);
+    @include fluid(display, none, $md: block, $lg: none);
   }
 
   .cover {
@@ -49,28 +49,31 @@
   }
 
   .extra {
+    --bg-start: #{rgba(color(gray, 1), 0.1)};
+    --bg-end: #{rgba(color(gray, 7), 0.7)};
+
     display: flex;
     position: absolute;
     bottom: 0;
     right: 0;
     width: 100%;
     padding: 0.25rem;
-    background: linear-gradient(color(neutral, 1, 0.1), color(neutral, 7, 0.7));
+    background: linear-gradient(var(--bg-start), var(--bg-end));
   }
 
   .score {
     margin-left: auto;
     display: inline-flex;
     line-height: 1.25rem;
-    @include props(font-size, 10px, 11px, 12px);
+    @include fluid(font-size, 10px, 11px, 12px);
 
     > .-text {
       margin-left: 0.25rem;
       padding: 0 0.25rem;
       font-weight: 500;
+      color: var(--color-white);
       @include bdradi;
-      @include fgcolor(#fff);
-      @include bgcolor(primary, 6, 0.8);
+      @include bgcolor(blue, 6);
     }
   }
 
@@ -84,14 +87,14 @@
     line-height: 1.125rem;
     font-size: rem(15px);
     font-weight: 500;
-    @include fgcolor(neutral, 7);
+    @include fgcolor(gray, 7);
 
-    :global(.tm-dark) & {
-      @include fgcolor(neutral, 3);
+    @include tm-dark {
+      @include fgcolor(gray, 3);
     }
 
     .book:hover & {
-      @include fgcolor(primary, 5);
+      @include fgcolor(blue, 5);
     }
   }
 
@@ -101,6 +104,6 @@
     text-transform: uppercase;
     line-height: 1rem;
     margin-top: 0.125rem;
-    @include fgcolor(neutral, 5);
+    color: var(--color-gray-5);
   }
 </style>

@@ -218,41 +218,41 @@
   .title {
     margin-bottom: 0.75rem;
 
-    @include props(float, left, left, right);
-    @include props(width, 100%, 100%, 70%, 75%);
-    @include props(padding-left, 0, 0, 0.75rem);
+    @include fluid(float, left, left, right);
+    @include fluid(width, 100%, 100%, 70%, 75%);
+    @include fluid(padding-left, 0, 0, 0.75rem);
 
     > .-main,
     > .-sub {
       font-weight: 400;
       display: inline-block;
-      @include fgcolor(neutral, 8);
-      @include props(line-height, 1.5rem, 1.75rem, 2rem);
+      @include fgcolor(gray, 8);
+      @include fluid(line-height, 1.5rem, 1.75rem, 2rem);
 
       @include tm-dark {
-        @include fgcolor(neutral, 2);
+        @include fgcolor(gray, 2);
       }
     }
 
     > .-main {
-      @include props(font-size, rem(20px), rem(22px), rem(22px), rem(24px));
+      @include fluid(font-size, rem(20px), rem(22px), rem(22px), rem(24px));
     }
 
     > .-sub {
-      @include props(font-size, rem(18px), rem(20px), rem(20px), rem(22px));
+      @include fluid(font-size, rem(18px), rem(20px), rem(20px), rem(22px));
     }
   }
 
   .cover {
     float: left;
-    @include props(width, 40%, 35%, 30%, 25%);
+    @include fluid(width, 40%, 35%, 30%, 25%);
   }
 
   .extra {
     float: right;
     padding-left: 0.75rem;
 
-    @include props(width, 60%, 65%, 70%, 75%);
+    @include fluid(width, 60%, 65%, 70%, 75%);
 
     :global(svg) {
       margin-top: -0.125rem;
@@ -261,12 +261,11 @@
 
   .line {
     margin-bottom: 0.5rem;
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
     @include flex($wrap: true);
-    @include flex-gap($gap: 0, $child: ':global(*)');
 
     @include tm-dark {
-      @include fgcolor(neutral, 4);
+      @include fgcolor(gray, 4);
     }
   }
 
@@ -277,7 +276,7 @@
   .link {
     // font-weight: 500;
     color: inherit;
-    // @include fgcolor(primary, 7);
+    // @include fgcolor(blue, 7);
 
     &._outer {
       text-transform: capitalize;
@@ -285,22 +284,22 @@
 
     &._outer,
     &:hover {
-      @include fgcolor(primary, 6);
+      @include fgcolor(blue, 6);
 
       @include tm-dark {
-        @include fgcolor(primary, 4);
+        @include fgcolor(blue, 4);
       }
     }
   }
 
   .-trim {
     max-width: 100%;
-    @include truncate(null);
+    @include clamp($width: null);
   }
 
   .label {
     font-weight: 500;
-    // @include fgcolor(neutral, 8);
+    // @include fgcolor(gray, 8);
   }
 
   .section {
@@ -314,10 +313,10 @@
     @include shadow(2);
 
     @include tm-dark {
-      @include bgcolor(neutral, 7, 0.5);
+      @include bgcolor(gray, 7);
     }
 
-    @include screen-min(md) {
+    @include bp-min(md) {
       margin: 0.75rem 0;
       padding-left: 1rem;
       padding-right: 1rem;
@@ -329,10 +328,10 @@
   .section-header {
     display: flex;
     height: $section-height;
-    @include border($sides: bottom, $color: neutral, $shade: 3);
+    @include border($sides: bottom, $color: color-var(gray, 3));
 
     @include tm-dark {
-      @include bdcolor(neutral, 6);
+      @include bdcolor(gray, 6);
     }
   }
 
@@ -344,23 +343,23 @@
     text-align: center;
     text-transform: uppercase;
 
-    @include font-size(2);
-    @include screen-min(md) {
-      @include font-size(3);
+    @include ftsize(sm);
+    @include bp-min(md) {
+      @include ftsize(md);
     }
 
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
     &._active {
-      @include fgcolor(primary, 6);
-      @include border($sides: bottom, $color: primary, $shade: 5, $width: 2px);
+      @include fgcolor(blue, 6);
+      @include border($sides: bottom, $color: var(--color-blue-5), $width: 2px);
     }
 
     @include tm-dark {
-      @include fgcolor(neutral, 4);
+      @include fgcolor(gray, 4);
 
       &._active {
-        @include fgcolor(primary, 3);
-        @include bdcolor(primary, 3);
+        @include fgcolor(blue, 3);
+        @include bdcolor(blue, 3);
       }
     }
   }

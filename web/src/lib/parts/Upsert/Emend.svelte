@@ -25,8 +25,8 @@
     text-align: center;
 
     // padding-top: 1px;
-    @include font-size(1);
-    @include fgcolor(neutral, 6);
+    @include ftsize(xs);
+    @include fgcolor(gray, 6);
   }
 
   .hint {
@@ -40,7 +40,7 @@
 
   .-time,
   .-user {
-    @include fgcolor(primary, 8, 0.7);
+    @include fgcolor(blue, 8, 0.7);
     font-weight: 500;
   }
 

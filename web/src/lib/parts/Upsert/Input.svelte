@@ -84,8 +84,8 @@
     position: relative;
 
     @include bdradi();
-    @include bgcolor(neutral, 1);
-    @include border($color: neutral, $shade: 3);
+    @include bgcolor(gray, 1);
+    @include border($color: color-var(gray, 5), $shade: 3);
   }
 
   .hanzi {
@@ -95,7 +95,7 @@
 
     overflow: hidden;
     flex-wrap: nowrap;
-    @include font-size(4);
+    @include ftsize(lg);
   }
 
   ._key {
@@ -106,7 +106,7 @@
 
     > ._txt {
       @include truncate(20vw);
-      @include fgcolor(neutral, 7);
+      @include fgcolor(gray, 7);
     }
 
     &:before,
@@ -117,7 +117,7 @@
       font-weight: 400;
       height: 100%;
       white-space: nowrap;
-      @include fgcolor(neutral, 4);
+      @include fgcolor(gray, 4);
     }
 
     &:before {
@@ -147,9 +147,9 @@
     ._text {
       padding: 0 0.25rem;
       display: inline-block;
-      @include truncate(null);
-      @include fgcolor(neutral, 5);
-      @include bgcolor(neutral, 1);
+      @include clamp($width: null);
+      color: var(--color-gray-5);
+      @include bgcolor(gray, 1);
     }
   }
 
@@ -159,17 +159,17 @@
     margin: 0;
     line-height: 1em;
     max-width: 65vw;
-    @include font-size(4);
-    @include fgcolor(neutral, 7);
+    @include ftsize(lg);
+    @include fgcolor(gray, 7);
 
     &:hover {
       background-color: #fff;
-      @include fgcolor(primary, 5);
+      @include fgcolor(blue, 5);
     }
 
     &:disabled {
       cursor: pointer;
-      @include fgcolor(neutral, 5);
+      color: var(--color-gray-5);
       background: transparent;
     }
 

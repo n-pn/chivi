@@ -1,3 +1,5 @@
+@use "../essence" as *;
+
 .m-article {
   > * + * {
     margin-top: var(--gutter-large);

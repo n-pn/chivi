@@ -18,15 +18,15 @@
 
     grid-template-columns: repeat(3, 1fr);
 
-    @include screen-min(480px) {
+    @include bp-min(sm) {
       grid-template-columns: repeat(4, 1fr);
     }
 
-    @include screen-min(md) {
+    @include bp-min(md) {
       grid-template-columns: repeat(5, 1fr);
     }
 
-    @include screen-min(lg) {
+    @include bp-min(lg) {
       grid-template-columns: repeat(6, 1fr);
     }
   }

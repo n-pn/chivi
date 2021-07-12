@@ -296,15 +296,15 @@
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
   }
 
   .source {
-    @include flex($center: content);
+    @include flex($center: horz);
     flex-wrap: wrap;
 
-    @include props(font-size, 12px, 13px, 14px);
-    @include props(line-height, 1.5rem, 1.75rem, 2rem);
+    @include fluid(font-size, 12px, 13px, 14px);
+    @include fluid(line-height, 1.5rem, 1.75rem, 2rem);
 
     .-name {
       border-radius: 0.5rem;
@@ -313,28 +313,28 @@
 
       @include label();
       @include border();
-      @include props(margin-top, 0.25rem, 0.375rem, 0.5rem);
-      @include props(margin-left, 0.25rem, 0.375rem, 0.5rem);
+      @include fluid(margin-top, 0.25rem, 0.375rem, 0.5rem);
+      @include fluid(margin-left, 0.25rem, 0.375rem, 0.5rem);
 
       &._active {
-        @include fgcolor(primary, 5);
-        @include bdcolor(primary, 5);
+        @include fgcolor(blue, 5);
+        @include bdcolor(blue, 5);
       }
 
       @include tm-dark {
-        @include bdcolor(neutral, 6);
-        @include fgcolor(neutral, 3);
+        @include bdcolor(gray, 6);
+        @include fgcolor(gray, 3);
 
         &._active {
-          @include fgcolor(primary, 4);
-          @include bdcolor(primary, 4);
+          @include fgcolor(blue, 4);
+          @include bdcolor(blue, 4);
         }
       }
     }
   }
 
   .-hide {
-    @include props(display, none, $md: inline-block);
+    @include fluid(display, none, $md: inline-block);
   }
 
   .chinfo {
@@ -347,17 +347,17 @@
       margin: 0.25rem 0;
       line-height: 1.75rem;
       transform: translateX(1px);
-      @include props(font-size, 12px, 13px, 14px);
+      @include fluid(font-size, 12px, 13px, 14px);
     }
 
     .m-button {
       margin-left: 0.25rem;
 
       @include tm-dark {
-        @include bgcolor(neutral, 8, 0.4);
-        @include fgcolor(neutral, 2);
+        @include bgcolor(gray, 8);
+        @include fgcolor(gray, 2);
         &:hover {
-          @include bgcolor(neutral, 8, 0.3);
+          @include bgcolor(gray, 8);
         }
       }
     }
@@ -365,36 +365,36 @@
     .-text {
       padding-left: 0.5rem;
       @include label();
-      @include fgcolor(neutral, 7);
-      @include border($sides: left, $width: 3px, $color: primary, $shade: 5);
+      @include fgcolor(gray, 7);
+      @include border($sides: left, $width: 3px, $color: var(--color-blue-5));
 
       @include tm-dark {
-        @include fgcolor(neutral, 4);
-        @include bdcolor(primary, 4);
+        @include fgcolor(gray, 4);
+        @include bdcolor(blue, 4);
       }
     }
 
     .-span {
       font-style: italic;
-      @include fgcolor(neutral, 6);
+      @include fgcolor(gray, 6);
 
       &:before {
         display: inline-block;
         content: '·';
         text-align: center;
-        @include props(width, 0.5rem, 0.75rem, 1rem);
+        @include fluid(width, 0.5rem, 0.75rem, 1rem);
       }
     }
   }
 
   .chlist {
     > .-sep {
-      border-bottom: 1px solid color(neutral, 3);
+      border-bottom: 1px solid color(gray, 3);
       margin: 1rem auto;
       width: 50%;
 
       @include tm-dark {
-        border-color: color(neutral, 7);
+        border-color: color(gray, 7);
       }
     }
   }
@@ -406,8 +406,8 @@
     justify-content: center;
     text-align: center;
     font-style: italic;
-    @include font-size(4);
-    @include fgcolor(neutral, 5);
+    @include ftsize(lg);
+    color: var(--color-gray-5);
   }
 
   .foot {
@@ -425,8 +425,8 @@
       max-width: 10rem;
       text-transform: uppercase;
       font-weight: 500;
-      @include font-size(2);
-      @include fgcolor(neutral, 6);
+      @include ftsize(sm);
+      @include fgcolor(gray, 6);
     }
   }
 </style>

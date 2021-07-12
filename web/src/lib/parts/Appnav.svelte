@@ -61,7 +61,7 @@
 
     <div class="chips">
       {#each genres as genre}
-        <a href="/?genre={genre}" class="-chip _teal">
+        <a href="/?genre={genre}" class="-chip _orange">
           {genre}
         </a>
       {/each}
@@ -76,7 +76,7 @@
 
     <div class="chips">
       {#each snames as sname}
-        <a href="/?sname={sname}" class="-chip _indigo _caps">
+        <a href="/?sname={sname}" class="-chip _purple _caps">
           {sname}
         </a>
       {/each}
@@ -88,7 +88,7 @@
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
   }
 
   .brand {
@@ -131,7 +131,7 @@
     // text-transform: uppercase;
 
     // font-size: rem(15px);
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
 
     :global(svg) {
       margin-top: 0.5rem;
@@ -152,13 +152,13 @@
     margin-right: -0.375rem;
     margin-bottom: -0.375rem;
 
-    @include props(font-size, rem(12px), rem(13px), rem(14px));
+    @include fluid(font-size, rem(12px), rem(13px), rem(14px));
     line-height: $-chip-height;
   }
 
   .-chip {
-    --color: #{color(primary, 6)};
-    --hover: #{color(primary, 5)};
+    --color: var(--color-blue-6);
+    --hover: var(--color-blue-5);
     float: left;
     padding: 0 0.5rem;
     border-radius: math.div($-chip-height, 2);
@@ -174,14 +174,14 @@
     margin-right: 0.375rem;
     margin-bottom: 0.375rem;
 
-    &._indigo {
-      --color: #{color(indigo, 6)};
-      --hover: #{color(indigo, 5)};
+    &._purple {
+      --color: var(--color-indigo-6);
+      --hover: var(--color-indigo-5);
     }
 
-    &._teal {
-      --color: #{color(teal, 6)};
-      --hover: #{color(teal, 5)};
+    &._orange {
+      --color: var(--color-teal-6);
+      --hover: var(--color-teal-5);
     }
 
     &._caps {
@@ -210,11 +210,11 @@
       padding: 0.375rem 0.75rem;
       border-radius: 1rem;
 
-      @include bgcolor(neutral, 1);
-      box-shadow: 0 0 0 1px color(neutral, 2) inset;
+      @include bgcolor(gray, 1);
+      box-shadow: 0 0 0 1px color(gray, 2) inset;
 
       &:focus {
-        box-shadow: 0 0 0 1px color(primary, 4) inset;
+        box-shadow: 0 0 0 1px color(blue, 4) inset;
       }
 
       &:hover,
@@ -225,7 +225,7 @@
       &::placeholder {
         font-style: italic;
         font-size: rem(15px);
-        @include fgcolor(neutral, 6);
+        @include fgcolor(gray, 6);
       }
     }
 
@@ -235,7 +235,7 @@
       top: 0;
       padding: 0.375rem;
       margin: 0;
-      @include fgcolor(neutral, 5);
+      color: var(--color-gray-5);
       background: none;
     }
 

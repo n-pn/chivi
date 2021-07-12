@@ -29,7 +29,7 @@
     margin: math.div($outer-height - $inner-height, 2) 0;
     padding-top: 1px;
     // padding-top: 0.25rem;
-    @include props(font-size, rem(11px), rem(12px), rem(13px));
+    @include fluid(font-size, rem(11px), rem(12px), rem(13px));
   }
 
   .-txt,
@@ -38,13 +38,13 @@
     line-height: $inner-height;
     text-transform: uppercase;
     font-weight: 500;
-    @include fgcolor(neutral, 4);
+    @include fgcolor(gray, 4);
   }
 
   .-txt {
     margin-top: 1px;
     margin-right: 0.375rem;
-    @include props(display, none, $md: inline-block);
+    @include fluid(display, none, $md: inline-block);
   }
 
   .-btn {
@@ -53,17 +53,17 @@
 
     background-color: #fff;
 
-    @include fgcolor(neutral, 5);
+    color: var(--color-gray-5);
     @include border();
     @include bdradi(0.5rem);
 
     &:hover,
     &.active {
-      @include fgcolor(primary, 5);
+      @include fgcolor(blue, 5);
     }
 
     &.active {
-      @include bdcolor(primary, 4);
+      @include bdcolor(blue, 4);
     }
 
     & + & {

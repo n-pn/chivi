@@ -92,7 +92,7 @@
   }
 
   .main {
-    --bg-sub: #{color(neutral, 1)};
+    --bg-sub: #{color(gray, 1)};
     background: var(--bg-sub);
 
     width: 32rem;
@@ -108,7 +108,7 @@
     @include bdradi($sides: top);
 
     > * {
-      @include fgcolor(neutral, 6);
+      @include fgcolor(gray, 6);
     }
 
     > .-tit {
@@ -132,7 +132,7 @@
       height: rem(20px);
 
       &:hover {
-        @include fgcolor(primary, 6);
+        @include fgcolor(blue, 6);
       }
     }
   }
@@ -157,24 +157,24 @@
     flex-shrink: 0;
     margin-right: 0.5rem;
 
-    @include font-size(2);
-    @include fgcolor(neutral, 5);
-    @include truncate(null);
+    @include ftsize(sm);
+    color: var(--color-gray-5);
+    @include clamp($width: null);
     @include bdradi($sides: top);
-    @include border($color: neutral, $sides: top-left-right);
+    @include border($color: color-var(gray, 5), $sides: top-left-right);
 
     &:hover {
       @include bgcolor(#fff);
     }
 
     &._origin {
-      @include fgcolor(neutral, 7);
+      @include fgcolor(gray, 7);
     }
 
     &._active {
       @include bgcolor(#fff);
-      @include fgcolor(primary, 6);
-      @include bdcolor($color: primary, $shade: 4);
+      @include fgcolor(blue, 6);
+      @include bdcolor(color-var(blue, 3));
     }
   }
 
@@ -206,19 +206,19 @@
 
     height: 1.75rem;
     line-height: 1.75rem;
-    --bdcolor: #{color(neutral, 2)};
+    --bdcolor: #{color(gray, 2)};
     box-shadow: 0 0 0 1px var(--bdcolor);
 
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
     @include bdradi(0.75rem);
-    @include truncate(null);
-    @include props(font-size, rem(12px), rem(13px), rem(14px));
+    @include clamp($width: null);
+    @include fluid(font-size, rem(12px), rem(13px), rem(14px));
 
     &:hover,
     &._active {
-      @include fgcolor(primary, 7);
-      @include bgcolor(primary, 1);
-      --bdcolor: #{color(primary, 2)};
+      @include fgcolor(blue, 7);
+      @include bgcolor(blue, 1);
+      --bdcolor: #{color(blue, 2)};
     }
   }
 
@@ -226,7 +226,7 @@
     width: 50%;
 
     grid-column: 1 / -1;
-    border-top: 1px solid color(neutral, 3);
+    border-top: 1px solid color(gray, 3);
     margin: 0.25rem auto;
   }
 </style>

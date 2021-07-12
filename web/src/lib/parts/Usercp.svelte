@@ -82,7 +82,7 @@
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
   }
 
   .label {
@@ -94,8 +94,8 @@
     font-weight: 500;
 
     // text-transform: uppercase;
-    // @include font-size(2);
-    @include fgcolor(neutral, 6);
+    // @include ftsize(sm);
+    @include fgcolor(gray, 6);
 
     :global(svg) {
       margin-top: 0.625rem;
@@ -113,7 +113,7 @@
     padding: 0.75rem;
     padding-bottom: 0;
 
-    @include props(font-size, 12px, 12px, 13px);
+    @include fluid(font-size, 12px, 12px, 13px);
   }
 
   .-chip {
@@ -127,12 +127,12 @@
     @include border();
 
     &:hover {
-      @include bdcolor(primary, 5);
-      @include fgcolor(primary, 6);
+      @include bdcolor(blue, 5);
+      @include fgcolor(blue, 6);
     }
 
     > .-text {
-      @include truncate(null);
+      @include clamp($width: null);
     }
 
     > :global(svg) {
@@ -144,7 +144,7 @@
     }
 
     & + & {
-      @include props(margin-left, 0.25rem, 0.375rem);
+      @include fluid(margin-left, 0.25rem, 0.375rem);
     }
   }
 
@@ -161,7 +161,7 @@
     }
 
     &:nth-child(odd) {
-      @include bgcolor(neutral, 1);
+      @include bgcolor(gray, 1);
     }
 
     .-text {
@@ -176,28 +176,28 @@
       margin-top: 0.25rem;
       text-transform: uppercase;
       font-size: rem(12px);
-      @include fgcolor(neutral, 5, 0.8);
-      @include truncate(null);
+      @include fgcolor(gray, 5);
+      @include clamp($width: null);
     }
 
     .-title {
       flex: 1;
-      @include fgcolor(neutral, 8);
-      @include truncate(null);
+      @include fgcolor(gray, 8);
+      @include clamp($width: null);
     }
 
     &:visited .-title {
-      @include fgcolor(neutral, 6, 0.6);
+      @include fgcolor(gray, 5);
     }
 
     &:hover .-title {
-      @include fgcolor(primary, 5);
+      @include fgcolor(blue, 5);
     }
 
     .-chidx {
       margin-left: 0.125rem;
-      @include fgcolor(neutral, 5, 0.6);
-      @include font-size(1);
+      @include fgcolor(gray, 4);
+      @include ftsize(xs);
 
       &:after {
         content: '.';
@@ -206,7 +206,7 @@
 
     .-bname {
       flex: 1;
-      @include truncate(null);
+      @include clamp($width: null);
     }
   }
 </style>

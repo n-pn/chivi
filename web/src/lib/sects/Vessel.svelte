@@ -92,7 +92,7 @@
   }
 
   ._shift {
-    @include props(padding-right, $lg: 30rem);
+    @include fluid(padding-right, $lg: 30rem);
   }
 
   .footer {
@@ -108,46 +108,43 @@
       position: fixed;
       transform: translateY(-$footer-height);
 
-      background: linear-gradient(
-        color(neutral, 1, 0.1),
-        color(neutral, 7, 0.7)
-      );
+      --bg-start: #{rgba(color(gray, 1), 0.1)};
+      --bg-stop: #{rgba(color(gray, 7), 0.7)};
+      background: linear-gradient(var(--bg-start), var(--bg-stop));
 
-      @include tm-dark {
-        background: linear-gradient(
-          color(neutral, 7, 0.1),
-          color(neutral, 8, 0.7)
-        );
+      .tm-dark & {
+        --bg-start: #{rgba(color(gray, 7), 0.1)};
+        --bg-stop: #{rgba(color(gray, 8), 0.7)};
       }
     }
   }
 
   .pledge {
+    --fgcolor: var(--color-gray-6);
+    --bgcolor: var(--color-gray-2);
+
     text-align: center;
     margin: 0.5rem auto;
     // max-width: 50vw;
     font-size: rem(15px);
 
-    --fg: #{color(neutral, 6)};
-    --bg: #{color(neutral, 2)};
-
     padding: 0.25rem;
+
+    color: var(--fgcolor);
+    background: var(--bgcolor);
     @include bdradi();
 
-    color: var(--fg);
-    background: var(--bg);
-
-    @include tm-dark {
-      --fg: #{color(neutral, 4)};
-      --bg: #{color(neutral, 8)};
+    .tm-dark & {
+      --fgcolor: var(--color-gray-4);
+      --bgcolor: var(--color-gray-8);
     }
 
     > a {
-      color: color(primary, 5);
+      color: var(--fg-link);
     }
   }
 
   // ._brand {
-  //   @include props(display, none, $md: inline-block);
+  //   @include fluid(display, none, $md: inline-block);
   // }
 </style>

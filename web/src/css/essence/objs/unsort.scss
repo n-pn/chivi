@@ -1,7 +1,7 @@
-@mixin tm-dark($sv: false) {
-  @if ($sv) {
+@mixin tm-dark($svelte: true) {
+  @if ($svelte) {
     :global(.tm-dark) &,
-    &:globa(.tm-dark) {
+    &:global(.tm-dark) {
       @content;
     }
   } @else {

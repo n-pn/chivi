@@ -190,38 +190,37 @@
 
 <style lang="scss">
   .order {
-    @include flex($center: content);
-    @include flex-gap($gap: 0.375rem, $child: ':global(*)');
+    @include flex($center: horz, $gap: 0.375rem);
 
     overflow: auto;
     margin: 1rem 0 0.5rem;
     font-weight: 500;
     text-transform: uppercase;
 
-    @include props(font-size, 12px, 13px, 14px);
-    @include props(line-height, 1.5rem, 1.75rem, 2rem);
+    @include fluid(font-size, 12px, 13px, 14px);
+    @include fluid(line-height, 1.5rem, 1.75rem, 2rem);
 
     .-type {
       padding: 0 0.75em;
-      @include truncate(null);
-      @include fgcolor(neutral, 6);
+      @include clamp($width: null);
+      @include fgcolor(gray, 6);
 
       @include border();
       border-radius: 0.5rem;
 
       &._active,
       &:hover {
-        @include fgcolor(primary, 6);
-        @include bdcolor($color: primary, $shade: 5);
+        @include fgcolor(blue, 6);
+        @include bdcolor(color-var(blue, 5));
       }
 
       @include tm-dark {
-        @include fgcolor(neutral, 4);
-        @include bdcolor(neutral, 7);
+        @include fgcolor(gray, 4);
+        @include bdcolor(gray, 7);
 
         &._active,
         &:hover {
-          @include fgcolor(primary, 4);
+          @include fgcolor(blue, 4);
         }
       }
     }
@@ -229,8 +228,7 @@
 
   .pagi {
     padding: 0.5rem 0;
-    @include flex($center: content);
-    @include flex-gap($gap: 0.375rem, $child: ':global(*)');
+    @include flex($center: horz, $gap: 0.375rem);
   }
 
   .page {
@@ -249,25 +247,25 @@
     }
 
     &[data-level='1'] {
-      @include props(display, $sm: inline-block);
+      @include fluid(display, $sm: inline-block);
     }
 
     &[data-level='2'] {
-      @include props(display, $md: inline-block);
+      @include fluid(display, $md: inline-block);
     }
 
     &[data-level='3'],
     &[data-level='4'],
     &[data-level='5'] {
-      @include props(display, $lg: inline-block);
+      @include fluid(display, $lg: inline-block);
     }
 
     @include tm-dark {
-      @include fgcolor(neutral, 2);
-      @include bgcolor(neutral, 7);
+      @include fgcolor(gray, 2);
+      @include bgcolor(gray, 7);
 
       &._primary {
-        @include bgcolor(primary, 7);
+        @include bgcolor(blue, 7);
       }
     }
   }
@@ -278,6 +276,6 @@
     align-items: center;
     justify-content: center;
     font-style: italic;
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
   }
 </style>

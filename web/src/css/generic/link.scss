@@ -11,7 +11,7 @@ a:not([class]),
   color: var(--color-link);
   text-decoration: none;
 
-  @include hover {
+  &:hover {
     text-decoration: underline;
   }
 }

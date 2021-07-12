@@ -81,6 +81,6 @@
   }
 
   .-txt {
-    @include props(display, none, $md: inline);
+    @include fluid(display, none, $md: inline);
   }
 </style>

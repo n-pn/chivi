@@ -99,7 +99,7 @@
   }
 
   .tab {
-    @include props(--pad, 0.25rem, 0.375rem, 0.5rem);
+    @include fluid(--pad, 0.25rem, 0.375rem, 0.5rem);
 
     font-weight: 500;
     text-transform: uppercase;
@@ -111,11 +111,11 @@
     padding: var(--pad, 0.5rem);
     margin-right: var(--pad, 0.5rem);
 
-    @include truncate(null);
+    @include clamp($width: null);
     @include border;
-    @include fgcolor(neutral, 6);
+    @include fgcolor(gray, 6);
 
-    @include props(font-size, rem(10px), rem(12px), rem(13px), rem(14px));
+    @include fluid(font-size, rem(10px), rem(12px), rem(13px), rem(14px));
 
     &:last-child {
       margin-right: 0;
@@ -123,32 +123,30 @@
 
     &:hover,
     &._active {
-      @include fgcolor(primary, 6);
+      @include fgcolor(blue, 6);
     }
 
     &._active {
-      @include bdcolor($color: primary, $shade: 6);
+      @include bdcolor(color-var(blue, 5));
     }
 
     @include tm-dark {
-      @include bdcolor(neutral, 7);
-      @include fgcolor(neutral, 5);
+      @include bdcolor(gray, 7);
+      color: var(--color-gray-5);
 
       &._active,
       &:hover {
-        @include fgcolor(primary, 4);
+        @include fgcolor(blue, 4);
       }
 
       &._active {
-        @include bdcolor(primary, 5);
+        @include bdcolor(blue, 5);
       }
     }
   }
 
   .pagi {
     padding: 0.5rem 0;
-
-    @include flex($center: content);
-    @include flex-gap($gap: 0.375rem, $child: ':global(*)');
+    @include flex($center: horz, $gap: 0.375rem);
   }
 </style>

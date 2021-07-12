@@ -19,8 +19,9 @@
     height: 0;
     padding-top: math.div(4, 3) * 100%;
     overflow: hidden;
+
     @include bdradi();
-    @include bgcolor(primary, 8);
+    @include bgcolor(blue, 8);
 
     > :global(picture) {
       position: absolute;
