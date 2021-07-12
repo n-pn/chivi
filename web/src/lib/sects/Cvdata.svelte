@@ -223,19 +223,6 @@
       --border: #{color($color, 6)};
       --active: #{color($color, 4)};
     }
-
-    // &:hover:after {
-    //   position: absolute;
-
-    //   top: 1.75em;
-    //   left: 0;
-    //   // padding-right: 0.2em;
-
-    //   background: var(--bgmain);
-    //   white-space: nowrap;
-    //   content: attr(data-t);
-    //   font-size: 0.5em;
-    // }
   }
 
   :global(x-v) {
@@ -243,10 +230,9 @@
     --active: var(--fgcolor);
 
     color: var(--fgcolor);
-    border-bottom: 1px solid transparent;
 
     .mtl:hover & {
-      border-color: var(--border);
+      border-bottom: 1px solid var(--border);
     }
   }
 

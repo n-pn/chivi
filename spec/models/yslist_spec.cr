@@ -1,5 +1,5 @@
 require "./spec_helper"
-require "../../src/appcv/models/yslist.cr"
+require "../../src/appcv/yslist.cr"
 
 describe CV::Yslist do
   Spec.before_each do
