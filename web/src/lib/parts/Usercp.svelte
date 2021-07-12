@@ -82,7 +82,7 @@
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(gray, 6);
+    @include fgcolor(tert);
   }
 
   .label {
@@ -93,9 +93,7 @@
     line-height: 2.25rem;
     font-weight: 500;
 
-    // text-transform: uppercase;
-    // @include ftsize(sm);
-    @include fgcolor(gray, 6);
+    color: var(--fg-tert);
 
     :global(svg) {
       margin-top: 0.625rem;
@@ -109,7 +107,7 @@
   }
 
   .chips {
-    display: flex;
+    @include flex($center: horz);
     padding: 0.75rem;
     padding-bottom: 0;
 
@@ -120,15 +118,22 @@
     display: inline-flex;
     border-radius: 0.75rem;
     padding: 0 0.75em;
-    background-color: #fff;
     line-height: 2.25em;
 
     @include label();
-    @include border();
+    @include bgcolor(tert);
+    @include linesd(var(--bd-main));
 
     &:hover {
-      @include bdcolor(blue, 5);
-      @include fgcolor(blue, 6);
+      @include linesd(color-var(blue, 4), $ndef: false);
+      @include fgcolor(blue, 5);
+    }
+
+    @include tm-dark {
+      &:hover {
+        @include linesd(color-var(blue, 5), $ndef: false);
+        @include fgcolor(blue, 4);
+      }
     }
 
     > .-text {
@@ -161,7 +166,7 @@
     }
 
     &:nth-child(odd) {
-      @include bgcolor(gray, 1);
+      background: var(--bg-main);
     }
 
     .-text {
@@ -175,14 +180,15 @@
       line-height: 1rem;
       margin-top: 0.25rem;
       text-transform: uppercase;
-      font-size: rem(12px);
+
+      @include ftsize(xs);
       @include fgcolor(gray, 5);
       @include clamp($width: null);
     }
 
     .-title {
       flex: 1;
-      @include fgcolor(gray, 8);
+      color: var(--fg-secd);
       @include clamp($width: null);
     }
 
@@ -196,7 +202,7 @@
 
     .-chidx {
       margin-left: 0.125rem;
-      @include fgcolor(gray, 4);
+      color: var(--fg-tert);
       @include ftsize(xs);
 
       &:after {

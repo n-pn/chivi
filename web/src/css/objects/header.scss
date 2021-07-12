@@ -19,13 +19,10 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   height: $header-height;
   padding: $header-gutter 0;
 
-  color: var(--color-white);
-  @include bgcolor(blue, 7);
-  @include shadow(2);
+  color: #fff;
+  background: var(--color-sky-8);
 
-  .tm-dark & {
-    @include bgcolor(blue, 8);
-  }
+  @include shadow(2);
 
   &._clear {
     // top: -$header-height;
@@ -64,31 +61,19 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   line-height: $header-inner-height;
 
   border-radius: 0.5rem;
-  @include fgcolor(gray, 2);
-  @include bgcolor(blue, 6);
+  @include fgcolor(secd);
+  @include bgcolor(sky, 7);
 
-  .tm-dark & {
-    @include fgcolor(gray, 3);
-    @include bgcolor(blue, 7);
-
-    &:hover,
-    &._active {
-      @include bgcolor(blue, 6);
-    }
-  }
-
-  @include hover {
-    @include bgcolor(blue, 5);
-  }
-
+  &:hover,
   &._active {
-    @include bgcolor(blue, 5);
+    @include bgcolor(sky, 5);
   }
 
   &:disabled {
     cursor: text;
-    @include fgcolor(gray, 4);
-    @include bgcolor(blue, 6);
+
+    @include fgcolor(mute);
+    @include bgcolor(sky, 6);
   }
 
   img,
@@ -104,10 +89,10 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 }
 
 .header-text {
-  text-transform: uppercase;
+  // text-transform: uppercase;
   font-weight: 500;
 
-  font-size: rem(13px);
+  @include ftsize(md);
   letter-spacing: 0.05rem;
 
   &._show-sm {
@@ -119,7 +104,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   }
 
   ._brand & {
-    font-size: rem(15px);
+    text-transform: uppercase;
     letter-spacing: 0.1em;
   }
 
@@ -156,10 +141,10 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     outline: none;
     border-radius: $radius;
 
-    @include bgcolor(blue, 8);
+    @include bgcolor(sky, 9);
 
     &::placeholder {
-      color: var(--color-gray-5);
+      color: var(--color-gray-1);
     }
   }
 
@@ -172,7 +157,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     top: 0.625rem;
     width: 1.125rem;
     height: 1.125rem;
-    color: var(--color-gray-5);
+    color: var(--color-gray-4);
   }
 }
 
@@ -183,11 +168,12 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   top: $header-inner-height;
   right: 0;
 
-  @include bgcolor(#fff);
+  @include bgcolor(main);
   @include shadow;
   @include bdradi;
 
   display: none;
+
   .header-item:hover & {
     display: block;
   }
@@ -208,11 +194,12 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     }
 
     @include ftsize(sm);
-    @include fgcolor(gray, 6);
+
+    @include fgcolor(tert);
 
     &:hover {
-      @include fgcolor(blue, 6);
-      @include bgcolor(gray, 2);
+      @include fgcolor(sky, 5);
+      @include bgcolor(tert);
     }
 
     svg {

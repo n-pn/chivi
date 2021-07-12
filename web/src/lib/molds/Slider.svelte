@@ -97,7 +97,7 @@
       transition: none;
     }
 
-    @include bgcolor(white);
+    background: var(--bg-secd);
     @include shadow(2);
 
     &._left {
@@ -132,12 +132,14 @@
     top: 0;
     z-index: 1002;
 
-    background: #fff;
+    background: var(--bg-secd);
+    color: var(--fg-tert);
+
     height: $hd-height;
     line-height: $hd-line-height;
     padding: 0.375rem 0.5rem;
-    border-bottom: 1px solid color(gray, 3);
-    @include fgcolor(gray, 6);
+
+    border-bottom: 1px solid var(--bd-main);
     @include shadow(1);
 
     :global(svg) {
@@ -156,18 +158,15 @@
 
     :global(.-btn) {
       padding: 0 0.5rem;
+
       @include bdradi;
-      @include fgcolor(gray, 6);
+      color: inherit;
       @include bgcolor(transparent);
 
-      &:hover {
-        @include fgcolor(blue, 6);
-        @include bgcolor(gray, 2);
-      }
-
+      &:hover,
       &._active {
-        @include fgcolor(blue, 6);
-        @include bgcolor(gray, 2);
+        @include fgcolor(blue, 5);
+        background: var(--bg-main);
       }
     }
   }

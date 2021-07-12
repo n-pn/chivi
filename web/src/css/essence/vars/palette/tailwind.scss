@@ -1,3 +1,6 @@
+$color-black: #0d1117 !default;
+$color-white: #ffffff !default;
+
 // source: tailwind coolGray
 $color-gray: (
   0: #f9fafb,
@@ -251,6 +254,8 @@ $color-rose: (
 ) !default;
 
 $color-palette: (
+  black: $color-black,
+  white: $color-white,
   gray: $color-gray,
   red: $color-red,
   orange: $color-orange,

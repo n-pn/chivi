@@ -24,6 +24,6 @@
   @if type-of($size) == 'number' {
     font-size: $size;
   } @else {
-    font-size: 'var(--ftsize-#{$size})';
+    font-size: #{var(--ftsize-#{$size})};
   }
 }

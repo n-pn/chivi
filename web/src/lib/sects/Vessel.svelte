@@ -112,7 +112,7 @@
       --bg-stop: #{rgba(color(gray, 7), 0.7)};
       background: linear-gradient(var(--bg-start), var(--bg-stop));
 
-      .tm-dark & {
+      @include tm-dark {
         --bg-start: #{rgba(color(gray, 7), 0.1)};
         --bg-stop: #{rgba(color(gray, 8), 0.7)};
       }
@@ -134,7 +134,7 @@
     background: var(--bgcolor);
     @include bdradi();
 
-    .tm-dark & {
+    @include tm-dark {
       --fgcolor: var(--color-gray-4);
       --bgcolor: var(--color-gray-8);
     }

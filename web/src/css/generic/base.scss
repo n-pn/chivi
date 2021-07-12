@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use "../essence" as *;
 
-$colors: (gray, blue, green, yellow, orange, red, purple) !default;
+$colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
 
 :root {
   --color-black: #{color(black)};
@@ -15,31 +15,31 @@ $colors: (gray, blue, green, yellow, orange, red, purple) !default;
 
   --fg-main: var(--color-gray-9);
   --fg-secd: var(--color-gray-7);
-  --fg-tert: var(--color-gray-6);
-  --fg-mute: var(--color-gray-4);
+  --fg-tert: var(--color-gray-5);
+  --fg-mute: var(--color-gray-3);
 
   --bg-main: var(--color-gray-1);
   --bg-secd: var(--color-gray-0);
-  --bg-tert: var(--color-gray-2);
+  --bg-tert: var(--color-white);
 
-  --bd-main: var(--color-gray-3);
-  --bd-bold: var(--color-gray-4);
+  --bd-main: var(--color-gray-2);
+  --bd-bold: var(--color-gray-3);
 }
 
 .tm-dark {
-  --color-black: #{color(dark-black)};
-  --color-white: #{color(dark-white)};
+  // --color-black: #{color(dark-black)};
+  // --color-white: #{color(dark-white)};
 
-  @each $name in $colors {
-    @for $tone from 0 to 10 {
-      --color-#{'' + $name}-#{'' + $tone}: #{color('dark-' + $name, $tone)};
-    }
-  }
+  // @each $name in $colors {
+  //   @for $tone from 0 to 10 {
+  //     --color-#{'' + $name}-#{'' + $tone}: #{color('dark-' + $name, $tone)};
+  //   }
+  // }
 
-  --fg-main: var(--color-gray-1);
-  --fg-secd: var(--color-gray-3);
-  --fg-tert: var(--color-gray-4);
-  --fg-mute: var(--color-gray-6);
+  --fg-main: var(--color-gray-0);
+  --fg-secd: var(--color-gray-2);
+  --fg-tert: var(--color-gray-3);
+  --fg-mute: var(--color-gray-4);
 
   --fg-link: var(--color-blue-5);
 
@@ -47,8 +47,8 @@ $colors: (gray, blue, green, yellow, orange, red, purple) !default;
   --bg-secd: var(--color-gray-8);
   --bg-tert: var(--color-gray-7);
 
-  --bd-main: var(--color-gray-7);
-  --bd-bold: var(--color-gray-6);
+  --bd-main: var(--color-gray-6);
+  --bd-bold: var(--color-gray-5);
 }
 
 :root {
@@ -104,16 +104,16 @@ $colors: (gray, blue, green, yellow, orange, red, purple) !default;
   --height-lg: 2.5rem;
   --height-xl: 3rem;
 
-  --ftsize-ss: rem(10px);
-  --ftsize-xs: rem(12px);
-  --ftsize-sm: rem(14px);
-  --ftsize-md: rem(16px);
-  --ftsize-lg: rem(18px);
-  --ftsize-xl: rem(20px);
-  --ftsize-x2: rem(24px);
-  --ftsize-x3: rem(30px);
-  --ftsize-x4: rem(36px);
-  --ftsize-x5: rem(48px);
+  --ftsize-ss: #{rem(10px)};
+  --ftsize-xs: #{rem(12px)};
+  --ftsize-sm: #{rem(14px)};
+  --ftsize-md: #{rem(16px)};
+  --ftsize-lg: #{rem(18px)};
+  --ftsize-xl: #{rem(20px)};
+  --ftsize-x2: #{rem(24px)};
+  --ftsize-x3: #{rem(30px)};
+  --ftsize-x4: #{rem(36px)};
+  --ftsize-x5: #{rem(48px)};
 
   --ftsize-code: 0.875em;
 }

@@ -76,7 +76,7 @@
 
     <div class="chips">
       {#each snames as sname}
-        <a href="/?sname={sname}" class="-chip _purple _caps">
+        <a href="/?sname={sname}" class="-chip _green _caps">
           {sname}
         </a>
       {/each}
@@ -88,7 +88,7 @@
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(gray, 6);
+    color: var(--fg-secd);
   }
 
   .brand {
@@ -131,7 +131,7 @@
     // text-transform: uppercase;
 
     // font-size: rem(15px);
-    @include fgcolor(gray, 6);
+    color: var(--fg-tert);
 
     :global(svg) {
       margin-top: 0.5rem;
@@ -158,7 +158,7 @@
 
   .-chip {
     --color: var(--color-blue-6);
-    --hover: var(--color-blue-5);
+    --hover: var(--color-blue-4);
     float: left;
     padding: 0 0.5rem;
     border-radius: math.div($-chip-height, 2);
@@ -174,14 +174,14 @@
     margin-right: 0.375rem;
     margin-bottom: 0.375rem;
 
-    &._purple {
-      --color: var(--color-indigo-6);
-      --hover: var(--color-indigo-5);
+    &._green {
+      --color: var(--color-green-6);
+      --hover: var(--color-green-4);
     }
 
     &._orange {
-      --color: var(--color-teal-6);
-      --hover: var(--color-teal-5);
+      --color: var(--color-orange-6);
+      --hover: var(--color-orange-4);
     }
 
     &._caps {
@@ -192,6 +192,21 @@
     &:hover {
       color: #fff;
       background: var(--hover);
+    }
+
+    @include tm-dark {
+      --color: var(--color-blue-4);
+      --hover: var(--color-blue-6);
+
+      &._green {
+        --color: var(--color-green-4);
+        --hover: var(--color-green-6);
+      }
+
+      &._orange {
+        --color: var(--color-orange-4);
+        --hover: var(--color-orange-6);
+      }
     }
   }
 
@@ -210,22 +225,26 @@
       padding: 0.375rem 0.75rem;
       border-radius: 1rem;
 
-      @include bgcolor(gray, 1);
-      box-shadow: 0 0 0 1px color(gray, 2) inset;
+      background: var(--bg-main);
+      color: var(--fg-main);
+
+      --bdcolor: var(--bd-main);
+
+      @include linesd(var(--bdcolor));
 
       &:focus {
-        box-shadow: 0 0 0 1px color(blue, 4) inset;
+        --bdcolor: var(--color-blue-5);
       }
 
       &:hover,
       &:focus {
-        background: #fff;
+        background: var(--bg-secd);
       }
 
       &::placeholder {
         font-style: italic;
         font-size: rem(15px);
-        @include fgcolor(gray, 6);
+        color: var(--fg-tert);
       }
     }
 
