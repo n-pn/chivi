@@ -15,7 +15,7 @@ $radius-sizes: (
   x: 100vmax,
 ) !default;
 
-$radius-df: 4 !default;
+$radius-df: 5 !default;
 $radiuses: map-keys($radius-sizes);
 
 // functions

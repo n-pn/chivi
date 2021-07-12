@@ -35,7 +35,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   .-left,
   .-right {
-    @include flex($gap: 0.5rem);
+    @include flex($gap: var(--gutter-xs));
   }
 
   .-left {
@@ -60,8 +60,9 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   height: $header-inner-height;
   line-height: $header-inner-height;
 
-  border-radius: 0.5rem;
-  @include fgcolor(secd);
+  @include fgcolor(gray, 2);
+
+  @include bdradi();
   @include bgcolor(sky, 7);
 
   &:hover,

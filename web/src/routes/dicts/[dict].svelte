@@ -144,7 +144,7 @@
     margin: 1rem 0;
     padding: 1rem;
     background: #fff;
-    @include shadow();
+    @include shadow(1);
     @include bdradi();
     @include fgcolor(gray, 8);
   }
@@ -170,7 +170,7 @@
 
   tbody > tr:hover {
     cursor: pointer;
-    background-color: color(blue, 4, 0.1);
+    background-color: color(blue, 4);
   }
 
   td > a {

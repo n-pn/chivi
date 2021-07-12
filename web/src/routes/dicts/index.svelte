@@ -71,19 +71,8 @@
 </Vessel>
 
 <style lang="scss">
-  article {
-    margin: 1rem 0;
-    @include shadow();
-    @include bdradi();
-    padding: 1rem;
-    background: #fff;
-    @include fgcolor(gray, 8);
-  }
-
   .dicts {
-    display: grid;
-    grid-gap: 0.5rem;
-    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    @include grid(minmax(10rem, 1fr), $gap: var(--gutter-sm));
   }
 
   .-dict {
@@ -92,12 +81,14 @@
     // height: 5rem;
 
     @include bdradi();
-    @include shadow();
+    @include shadow(1);
+
+    @include bgcolor(tert);
 
     &:hover {
-      @include bgcolor(blue, 1);
+      @include bgcolor(secd);
       & > .-name {
-        @include fgcolor(blue, 6);
+        @include fgcolor(blue, 5);
       }
     }
   }
@@ -108,7 +99,7 @@
     font-size: rem(14px);
     line-height: 1.5rem;
     @include clamp($width: null);
-    @include fgcolor(gray, 7);
+    @include fgcolor(secd);
   }
 
   .-meta {
@@ -116,7 +107,7 @@
     display: flex;
     font-size: rem(14px);
     font-style: italic;
-    @include fgcolor(gray, 6);
+    @include fgcolor(tert);
   }
 
   .-type {

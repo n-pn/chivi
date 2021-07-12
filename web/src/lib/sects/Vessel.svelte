@@ -75,7 +75,7 @@
     width: $page-width;
     max-width: 100%;
     margin: 0 auto;
-    padding: 0 0.5rem;
+    padding: 0 var(--gutter);
 
     &._main {
       min-height: calc(100vh - 3rem);

@@ -231,44 +231,44 @@
     @include flex($center: horz, $gap: 0.375rem);
   }
 
-  .page {
-    display: inline-flex;
+  // .page {
+  //   display: inline-flex;
 
-    > span {
-      margin-top: rem(1px);
-    }
+  //   > span {
+  //     margin-top: rem(1px);
+  //   }
 
-    &[data-level] {
-      display: none;
-    }
+  //   &[data-level] {
+  //     display: none;
+  //   }
 
-    &[data-level='0'] {
-      display: inline-block;
-    }
+  //   &[data-level='0'] {
+  //     display: inline-block;
+  //   }
 
-    &[data-level='1'] {
-      @include fluid(display, $sm: inline-block);
-    }
+  //   &[data-level='1'] {
+  //     @include fluid(display, $sm: inline-block);
+  //   }
 
-    &[data-level='2'] {
-      @include fluid(display, $md: inline-block);
-    }
+  //   &[data-level='2'] {
+  //     @include fluid(display, $md: inline-block);
+  //   }
 
-    &[data-level='3'],
-    &[data-level='4'],
-    &[data-level='5'] {
-      @include fluid(display, $lg: inline-block);
-    }
+  //   &[data-level='3'],
+  //   &[data-level='4'],
+  //   &[data-level='5'] {
+  //     @include fluid(display, $lg: inline-block);
+  //   }
 
-    @include tm-dark {
-      @include fgcolor(gray, 2);
-      @include bgcolor(gray, 7);
+  //   @include tm-dark {
+  //     @include fgcolor(gray, 2);
+  //     @include bgcolor(gray, 7);
 
-      &._primary {
-        @include bgcolor(blue, 7);
-      }
-    }
-  }
+  //     &._primary {
+  //       @include bgcolor(blue, 7);
+  //     }
+  //   }
+  // }
 
   .empty {
     display: flex;

@@ -21,6 +21,7 @@ $colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
   --bg-main: var(--color-gray-1);
   --bg-secd: var(--color-gray-0);
   --bg-tert: var(--color-white);
+  --bg-mute: var(--color-gray-2);
 
   --bd-main: var(--color-gray-2);
   --bd-bold: var(--color-gray-3);
@@ -46,9 +47,10 @@ $colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
   --bg-main: var(--color-gray-9);
   --bg-secd: var(--color-gray-8);
   --bg-tert: var(--color-gray-7);
+  --bg-mute: var(--color-gray-6);
 
-  --bd-main: var(--color-gray-6);
-  --bd-bold: var(--color-gray-5);
+  --bd-main: var(--color-gray-7);
+  --bd-bold: var(--color-gray-6);
 }
 
 :root {
@@ -82,17 +84,21 @@ $colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
   // fluild gutter
   @each $key in $gutter {
     @include bp-min($key) {
-      --gutter: 'var(--gutter-#{$key})';
-      --gutter-small: 'var(--gutter-#{map.get($gutter-small, $key)})';
-      --gutter-large: 'var(--gutter-#{map.get($gutter-large, $key)})';
+      --gutter: #{'var(--gutter-#{$key})'};
+
+      $small-val: map.get($gutter-small, $key) or $key;
+      --gutter-small: #{'var(--gutter-#{$small-val})'};
+
+      $large-val: map.get($gutter-large, $key) or $key;
+      --gutter-large: #{'var(--gutter-#{$large-val})'};
     }
   }
 
   @each $key, $val in $verpad {
-    --verpad-#{key}: 'var(--gutter-#{val})';
+    --verpad-#{key}: ${'var(--gutter-#{val})'};
 
     @include bp-min($key) {
-      --verpad: 'var(--gutter-#{val})';
+      --verpad: ${'var(--gutter-#{val})'};
     }
   }
 }

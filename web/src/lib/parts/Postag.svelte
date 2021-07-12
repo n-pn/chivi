@@ -99,7 +99,7 @@
     max-width: 100vw;
 
     @include bdradi();
-    @include shadow();
+    @include shadow(1);
   }
 
   .head {

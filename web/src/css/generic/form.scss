@@ -38,6 +38,7 @@ button,
 [type='button'],
 [type='reset'],
 [type='submit'] {
+  touch-action: manipulation;
   -webkit-appearance: button;
 
   &:not(:disabled) {
