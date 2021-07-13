@@ -72,14 +72,7 @@
 
 <style lang="scss">
   .pagi {
-    display: flex;
-    justify-content: center;
-
-    .m-button + .m-button {
-      // width: 5rem;
-      // text-align: center;
-      margin-left: 0.5rem;
-    }
+    @include flex($center: horz, $gap: 0.5rem);
   }
 
   .-txt {

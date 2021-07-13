@@ -51,6 +51,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   cursor: pointer;
   display: inline-flex;
   position: relative;
+  border: none;
   outline: none;
   min-width: $header-inner-height;
   text-decoration: none;

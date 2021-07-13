@@ -7,19 +7,15 @@
     if (skip < 1) skip = 0
 
     let url = `/api/books`
-    const opts = parse_params(query)
-
-    query.set('skip', skip)
-    query.set('take', 24)
-    url += `?${query.toString()}`
+    url += `?${query.toString()}&take=24&skip=${skip}`
 
     const res = await fetch(url)
 
     if (res.ok) {
-      const { books, total } = await res.json()
+      const data = await res.json()
 
       return {
-        props: { books, total, page, opts },
+        props: { ...data, opts: parse_params(query) },
       }
     }
 
@@ -33,20 +29,9 @@
     params.order = query.get('order') || 'access'
     if (query.has('genre')) params.genre = query.get('genre')
     if (query.has('sname')) params.sname = query.get('sname')
+    if (query.has('page')) params.page = +query.get('page')
 
     return params
-  }
-
-  function gen_page_url(page = 1, opts = {}) {
-    const query = new URLSearchParams()
-
-    if (page > 1) query.set('page', page)
-    if (opts.order != 'access') query.set('order', opts.order)
-    if (opts.genre) query.set('genre', opts.genre)
-    if (opts.sname) query.set('sname', opts.sname)
-
-    const output = query.toString()
-    return output ? `/?${output}` : '/'
   }
 
   const order_names = {
@@ -58,19 +43,17 @@
 </script>
 
 <script>
+  import { page } from '$app/stores'
   import SIcon from '$atoms/SIcon.svelte'
   import Nvlist from '$parts/Nvlist.svelte'
   import Vessel from '$sects/Vessel.svelte'
-  import paginate_range from '$utils/paginate_range.js'
+  import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let books = []
-  export let total = 0
+  export let pgmax = 1
 
-  export let page = 1
   export let opts = { order: 'access' }
-
-  $: page_max = Math.floor((total - 1) / 20) + 1
-  $: page_ary = paginate_range(page, page_max)
+  $: pager = new Pager($page.path, $page.query)
 
   let searching = false
 
@@ -86,7 +69,7 @@
 
       case 76:
         evt.preventDefault()
-        change_page(page_max)
+        change_page(pgmax)
         break
 
       case 37:
@@ -111,7 +94,7 @@
   }
 
   function change_page(new_page = 2) {
-    if (new_page >= 1 && new_page <= page_max) {
+    if (new_page >= 1 && new_page <= pgmax) {
       _goto_(gen_page_url(new_page, query))
     }
   }
@@ -144,7 +127,7 @@
   <div class="order">
     {#each Object.entries(order_names) as [type, label]}
       <a
-        href={gen_page_url(1, { ...opts, order: type })}
+        href={pager.url_for({ page: 1, order: type })}
         class="-type"
         class:_active={opts.order === type}>
         <span>{label}</span>
@@ -158,34 +141,11 @@
     <div class="empty">Danh sách trống</div>
   {/if}
 
-  <div class="pagi" slot="footer">
-    <a
-      href={gen_page_url(+page - 1, opts)}
-      class="page m-button"
-      class:_disable={page == 1}>
-      <SIcon name="chevron-left" />
-      <span>Trước</span>
-    </a>
-
-    {#each page_ary as [index, level]}
-      <a
-        href={gen_page_url(index, opts)}
-        class="page m-button"
-        class:_primary={page == index}
-        class:_disable={page == index}
-        data-level={level}>
-        <span>{index}</span>
-      </a>
-    {/each}
-
-    <a
-      href={gen_page_url(page + 1, opts)}
-      class="page m-button _fill _primary"
-      class:_disable={page == page_max}>
-      <span>Kế tiếp</span>
-      <SIcon name="chevron-right" />
-    </a>
-  </div>
+  <footer slot="footer">
+    <div class="foot">
+      <Mpager {pager} pgidx={opts.page} {pgmax} />
+    </div>
+  </footer>
 </Vessel>
 
 <style lang="scss">
@@ -226,9 +186,8 @@
     }
   }
 
-  .pagi {
+  .foot {
     padding: 0.5rem 0;
-    @include flex($center: horz, $gap: 0.375rem);
   }
 
   .empty {

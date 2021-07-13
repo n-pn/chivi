@@ -67,21 +67,21 @@ $-colors: (primary, success, warning, harmful);
   @include color(fgcolor, $color, 6);
   @include color(bgcolor, $color, 0);
   @include color(bghover, $color, 1);
-  @include linesd($color, 1, $ndef: false);
+  @include linesd($color, 2, $ndef: false);
 
   .tm-dark & {
     @include color(fgcolor, $color, 4);
-    @include color(bgcolor, neutral, 9);
-    @include color(bghover, $color, 8);
+    @include color(bgcolor, neutral, 8);
+    @include color(bghover, $color, 7);
     @include linesd($color, 7, $ndef: false);
   }
 
   &:disabled,
   &._disable {
     @include color(fgcolor, $color, 4);
-    @include color(bgcolor, neutral, 1);
-    @include color(bghover, neutral, 1);
-    @include linesd(neutral, 1);
+    @include color(bgcolor, neutral, 2);
+    @include color(bghover, neutral, 2);
+    @include linesd(neutral, 2);
 
     .tm-dark & {
       @include color(fgcolor, $color, 6);

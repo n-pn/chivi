@@ -43,6 +43,7 @@ class CV::FsBookCtrl < CV::BaseCtrl
       JSON.build(res) do |json|
         json.object do
           json.field "total", total
+          json.field "pgmax", (total - 1) // take + 1
 
           json.field "books" do
             json.array do

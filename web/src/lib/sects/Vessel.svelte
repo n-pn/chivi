@@ -127,15 +127,10 @@
 
     padding: 0.25rem;
 
-    @include fgcolor(neutral, 6);
-    @include fgcolor(neutral, 2);
+    @include fgcolor(tert);
+    @include bgcolor(main);
 
     @include bdradi();
-
-    @include tm-dark {
-      @include fgcolor(neutral, 4);
-      @include fgcolor(neutral, 8);
-    }
 
     > a {
       @include fgcolor(fg-link);
