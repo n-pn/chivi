@@ -100,32 +100,32 @@
     .-item {
       display: inline;
       // float: left;
-      @include fgcolor(gray, 6);
+      @include fgcolor(neutral, 6);
 
       &._sep:after {
         display: inline-block;
         padding-left: 0.325em;
-        content: '>';
-        @include fgcolor(gray, 4);
+        content: '/';
+        @include fgcolor(neutral, 4);
       }
     }
 
     .-link {
       color: inherit;
       &:hover {
-        @include fgcolor(blue, 6);
+        @include fgcolor(primary, 6);
       }
     }
   }
 
   .m-input {
     @include tm-dark {
-      @include fgcolor(gray, 3);
-      @include bgcolor(gray, 7, 0.3);
-      @include bdcolor(gray, 6);
+      @include fgcolor(neutral, 3);
+      @include bgcolor(neutral, 7);
+      @include bdcolor(neutral, 6);
 
       &:focus {
-        @include bdcolor(blue, 6);
+        @include bdcolor(primary, 6);
       }
     }
   }
@@ -161,8 +161,8 @@
     display: inline-block;
     line-height: 2.5rem;
     text-transform: uppercase;
-    font-size: rem(12px);
     font-weight: 500;
-    color: var(--color-gray-5);
+    @include ftsize(xs);
+    @include fgcolor(neutral, 5);
   }
 </style>

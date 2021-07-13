@@ -26,7 +26,7 @@
 
     // padding-top: 1px;
     @include ftsize(xs);
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
   }
 
   .hint {
@@ -40,11 +40,11 @@
 
   .-time,
   .-user {
-    @include fgcolor(blue, 8, 0.7);
+    @include fgcolor(primary, 8);
     font-weight: 500;
   }
 
   .-user {
-    @include truncate(5vw);
+    @include clamp(5vw);
   }
 </style>

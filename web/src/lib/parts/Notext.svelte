@@ -49,12 +49,12 @@
     // font-style: italic;
 
     // @include flex($center: both);
-    @include fgcolor(gray, 7);
+    @include fgcolor(neutral, 7);
 
     h1 {
       font-weight: 500;
       @include ftsize(7);
-      @include fgcolor(gray, 7);
+      @include fgcolor(neutral, 7);
     }
 
     li {

@@ -21,7 +21,7 @@
     overflow: hidden;
 
     @include bdradi();
-    @include bgcolor(blue, 8);
+    @include bgcolor(primary, 8);
 
     > :global(picture) {
       position: absolute;

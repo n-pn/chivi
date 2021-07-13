@@ -64,12 +64,12 @@
     bottom: 0;
     right: 0;
     z-index: 1000;
-    background: rgba(#000, 0.5);
 
-    transition: background 0.5s ease-in-out;
-    @media (prefers-reduced-motion) {
-      transition: none;
-    }
+    background-color: rgba(#000, 0.5);
+    transition: background-color 0.5s ease-in-out;
+
+    // prettier-ignore
+    @media (prefers-reduced-motion) { transition: none; }
 
     visibility: hidden;
     // prettier-ignore
@@ -85,7 +85,7 @@
     position: fixed;
 
     top: 0;
-    width: var(--width);
+    width: var(--width, 20rem);
     overflow-y: auto;
     max-width: 90vw;
     height: 100vh;
@@ -93,6 +93,7 @@
 
     will-change: transform;
     transition: transform 0.1s ease-in-out;
+
     @media (prefers-reduced-motion) {
       transition: none;
     }
@@ -132,8 +133,8 @@
     top: 0;
     z-index: 1002;
 
-    background: var(--bg-secd);
-    color: var(--fg-tert);
+    @include fgcolor(tert);
+    @include bgcolor(secd);
 
     height: $hd-height;
     line-height: $hd-line-height;
@@ -161,12 +162,12 @@
 
       @include bdradi;
       color: inherit;
-      @include bgcolor(transparent);
+      background: transparent;
 
       &:hover,
       &._active {
-        @include fgcolor(blue, 5);
-        background: var(--bg-main);
+        @include fgcolor(primary, 5);
+        @include bgcolor(main);
       }
     }
   }

@@ -296,7 +296,7 @@
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
   }
 
   .source {
@@ -317,17 +317,17 @@
       @include fluid(margin-left, 0.25rem, 0.375rem, 0.5rem);
 
       &._active {
-        @include fgcolor(blue, 5);
-        @include bdcolor(blue, 5);
+        @include fgcolor(primary, 5);
+        @include bdcolor(primary, 5);
       }
 
       @include tm-dark {
         @include bdcolor(gray, 6);
-        @include fgcolor(gray, 3);
+        @include fgcolor(neutral, 3);
 
         &._active {
-          @include fgcolor(blue, 4);
-          @include bdcolor(blue, 4);
+          @include fgcolor(primary, 4);
+          @include bdcolor(primary, 4);
         }
       }
     }
@@ -354,10 +354,10 @@
       margin-left: 0.25rem;
 
       @include tm-dark {
-        @include bgcolor(gray, 8);
-        @include fgcolor(gray, 2);
+        @include bgcolor(neutral, 8);
+        @include fgcolor(neutral, 2);
         &:hover {
-          @include bgcolor(gray, 8);
+          @include bgcolor(neutral, 8);
         }
       }
     }
@@ -365,18 +365,13 @@
     .-text {
       padding-left: 0.5rem;
       @include label();
-      @include fgcolor(gray, 7);
-      @include border($sides: left, $width: 3px, $color: var(--color-blue-5));
-
-      @include tm-dark {
-        @include fgcolor(gray, 4);
-        @include bdcolor(blue, 4);
-      }
+      @include fgcolor(tert);
+      @include border(primary, 5, $width: 3px, $sides: left);
     }
 
     .-span {
       font-style: italic;
-      @include fgcolor(gray, 6);
+      @include fgcolor(neutral, 4);
 
       &:before {
         display: inline-block;
@@ -389,13 +384,9 @@
 
   .chlist {
     > .-sep {
-      border-bottom: 1px solid color(gray, 3);
-      margin: 1rem auto;
       width: 50%;
-
-      @include tm-dark {
-        border-color: color(gray, 7);
-      }
+      margin: var(--gutter-small) auto;
+      @include border(bd-main, $sides: bottom);
     }
   }
 
@@ -407,7 +398,7 @@
     text-align: center;
     font-style: italic;
     @include ftsize(lg);
-    color: var(--color-gray-5);
+    @include fgcolor(neutral, 5);
   }
 
   .foot {
@@ -426,7 +417,7 @@
       text-transform: uppercase;
       font-weight: 500;
       @include ftsize(sm);
-      @include fgcolor(gray, 6);
+      @include fgcolor(neutral, 6);
     }
   }
 </style>

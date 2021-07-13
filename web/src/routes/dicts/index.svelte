@@ -88,7 +88,7 @@
     &:hover {
       @include bgcolor(secd);
       & > .-name {
-        @include fgcolor(blue, 5);
+        @include fgcolor(primary, 5);
       }
     }
   }

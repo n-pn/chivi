@@ -29,12 +29,12 @@
 
   .intro {
     word-wrap: break-word;
-    @include fgcolor(gray, 7);
+    @include fgcolor(neutral, 7);
     // @include fluid(padding, $md: 0 0.75rem);
     @include fluid(font-size, rem(15px), rem(16px), rem(17px));
 
     @include tm-dark {
-      @include fgcolor(gray, 3);
+      @include fgcolor(neutral, 3);
     }
 
     &._short {

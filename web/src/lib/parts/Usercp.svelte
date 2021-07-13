@@ -125,14 +125,14 @@
     @include linesd(var(--bd-main));
 
     &:hover {
-      @include linesd(color-var(blue, 4), $ndef: false);
-      @include fgcolor(blue, 5);
+      @include linesd(primary, 4, $ndef: false);
+      @include fgcolor(primary, 5);
     }
 
     @include tm-dark {
       &:hover {
-        @include linesd(color-var(blue, 5), $ndef: false);
-        @include fgcolor(blue, 4);
+        @include linesd(primary, 5, $ndef: false);
+        @include fgcolor(primary, 4);
       }
     }
 
@@ -182,7 +182,7 @@
       text-transform: uppercase;
 
       @include ftsize(xs);
-      @include fgcolor(gray, 5);
+      @include fgcolor(neutral, 5);
       @include clamp($width: null);
     }
 
@@ -193,11 +193,11 @@
     }
 
     &:visited .-title {
-      @include fgcolor(gray, 5);
+      @include fgcolor(neutral, 5);
     }
 
     &:hover .-title {
-      @include fgcolor(blue, 5);
+      @include fgcolor(primary, 5);
     }
 
     .-chidx {

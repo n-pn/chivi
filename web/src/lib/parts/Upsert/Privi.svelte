@@ -57,12 +57,12 @@
   .txt {
     display: inline-block;
     line-height: 2.625rem;
-    @include fgcolor(gray, 8);
+    @include fgcolor(neutral, 8);
   }
 
   .lbl {
     padding-right: 0.2em;
-    color: var(--color-gray-5);
+    @include fgcolor(neutral, 5);
   }
 
   .btn {

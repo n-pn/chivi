@@ -108,21 +108,18 @@
       position: fixed;
       transform: translateY(-$footer-height);
 
-      --bg-start: #{rgba(color(gray, 1), 0.1)};
-      --bg-stop: #{rgba(color(gray, 7), 0.7)};
+      --bg-start: #{color-raw(gray, 1, 0.1)};
+      --bg-stop: #{color-raw(gray, 7, 0.7)};
       background: linear-gradient(var(--bg-start), var(--bg-stop));
 
       @include tm-dark {
-        --bg-start: #{rgba(color(gray, 7), 0.1)};
-        --bg-stop: #{rgba(color(gray, 8), 0.7)};
+        --bg-start: #{color-raw(gray, 7, 0.1)};
+        --bg-stop: #{color-raw(gray, 8, 0.7)};
       }
     }
   }
 
   .pledge {
-    --fgcolor: var(--color-gray-6);
-    --bgcolor: var(--color-gray-2);
-
     text-align: center;
     margin: 0.5rem auto;
     // max-width: 50vw;
@@ -130,17 +127,18 @@
 
     padding: 0.25rem;
 
-    color: var(--fgcolor);
-    background: var(--bgcolor);
+    @include fgcolor(neutral, 6);
+    @include fgcolor(neutral, 2);
+
     @include bdradi();
 
     @include tm-dark {
-      --fgcolor: var(--color-gray-4);
-      --bgcolor: var(--color-gray-8);
+      @include fgcolor(neutral, 4);
+      @include fgcolor(neutral, 8);
     }
 
     > a {
-      color: var(--fg-link);
+      @include fgcolor(fg-link);
     }
   }
 

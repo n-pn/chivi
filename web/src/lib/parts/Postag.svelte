@@ -108,7 +108,7 @@
     @include bdradi($sides: top);
 
     > * {
-      @include fgcolor(gray, 6);
+      @include fgcolor(neutral, 6);
     }
 
     > .-tit {
@@ -132,7 +132,7 @@
       height: rem(20px);
 
       &:hover {
-        @include fgcolor(blue, 6);
+        @include fgcolor(primary, 6);
       }
     }
   }
@@ -161,20 +161,20 @@
     color: var(--color-gray-5);
     @include clamp($width: null);
     @include bdradi($sides: top);
-    @include border($color: color-var(gray, 5), $sides: top-left-right);
+    @include border($color: neutral, $tone: 5, $sides: top-left-right);
 
     &:hover {
-      @include bgcolor(#fff);
+      @include bgcolor(white);
     }
 
     &._origin {
-      @include fgcolor(gray, 7);
+      @include fgcolor(neutral, 7);
     }
 
     &._active {
-      @include bgcolor(#fff);
-      @include fgcolor(blue, 6);
-      @include bdcolor(color-var(blue, 3));
+      @include bgcolor(white);
+      @include fgcolor(primary, 6);
+      @include bdcolor(primary, 5);
     }
   }
 
@@ -209,15 +209,15 @@
     --bdcolor: #{color(gray, 2)};
     box-shadow: 0 0 0 1px var(--bdcolor);
 
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
     @include bdradi(0.75rem);
     @include clamp($width: null);
     @include fluid(font-size, rem(12px), rem(13px), rem(14px));
 
     &:hover,
     &._active {
-      @include fgcolor(blue, 7);
-      @include bgcolor(blue, 1);
+      @include fgcolor(primary, 7);
+      @include bgcolor(primary, 1);
       --bdcolor: #{color(blue, 2)};
     }
   }

@@ -17,14 +17,14 @@
     outline: 0;
 
     @include bdradi();
-    @include linesd(var(--bd-main));
+    @include linesd(bd-main);
 
     @include hover-focus {
-      --linesd: linesd(var(--color-blue-6));
+      @include linesd(primary, 6, $ndef: false);
     }
 
     &:focus {
-      --ringsd: ringsd(var(--color-blue-4));
+      @include ringsd(primary, 4);
     }
 
     &::placeholder {

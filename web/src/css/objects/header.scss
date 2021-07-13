@@ -60,7 +60,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   height: $header-inner-height;
   line-height: $header-inner-height;
 
-  @include fgcolor(gray, 2);
+  @include fgcolor(neutral, 1);
 
   @include bdradi();
   @include bgcolor(sky, 7);

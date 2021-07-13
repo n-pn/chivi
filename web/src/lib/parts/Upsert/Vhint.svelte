@@ -25,7 +25,7 @@
     @include border($sides: bottom);
 
     @include ftsize(sm);
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
   }
 
   .hint {
@@ -36,7 +36,7 @@
     @include clamp($width: null);
 
     &:hover {
-      @include fgcolor(blue, 6);
+      @include fgcolor(primary, 6);
     }
 
     & + & {

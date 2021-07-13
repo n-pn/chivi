@@ -113,7 +113,7 @@
 
     @include clamp($width: null);
     @include border;
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
 
     @include fluid(font-size, rem(10px), rem(12px), rem(13px), rem(14px));
 
@@ -123,24 +123,24 @@
 
     &:hover,
     &._active {
-      @include fgcolor(blue, 6);
+      @include fgcolor(primary, 6);
     }
 
     &._active {
-      @include bdcolor(color-var(blue, 5));
+      @include bdcolor(primary, 5);
     }
 
     @include tm-dark {
-      @include bdcolor(gray, 7);
-      color: var(--color-gray-5);
+      @include bdcolor(neutral, 7);
+      @include fgcolor(neutral, 5);
 
       &._active,
       &:hover {
-        @include fgcolor(blue, 4);
+        @include fgcolor(primary, 4);
       }
 
       &._active {
-        @include bdcolor(blue, 5);
+        @include bdcolor(primary, 5);
       }
     }
   }

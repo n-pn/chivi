@@ -33,10 +33,10 @@
   .item {
     display: block;
     @include border($sides: bottom);
-    $bg-dark: color(gray, 8);
+    $bg-dark: color(neutral, 8);
 
     @include tm-dark {
-      border-color: color(gray, 6) !important;
+      border-color: color(neutral, 6) !important;
     }
 
     &:first-child {
@@ -44,7 +44,7 @@
     }
 
     &:nth-child(odd) {
-      @include bgcolor(gray, 1);
+      @include bgcolor(neutral, 1);
       @include tm-dark {
         background: $bg-dark;
       }
@@ -57,7 +57,7 @@
 
       &:nth-child(4n),
       &:nth-child(4n + 1) {
-        @include bgcolor(gray, 1);
+        @include bgcolor(neutral, 1);
         @include tm-dark {
           background: $bg-dark;
         }
@@ -67,7 +67,7 @@
       &:nth-child(4n + 3) {
         background-color: #fff;
         @include tm-dark {
-          @include bgcolor(gray, 7);
+          @include bgcolor(neutral, 7);
         }
       }
     }
@@ -96,29 +96,29 @@
   .title {
     flex: 1;
     @include clamp($width: null);
-    @include fgcolor(gray, 8);
+    @include fgcolor(neutral, 8);
 
     @include tm-dark {
-      @include fgcolor(gray, 4);
+      @include fgcolor(neutral, 4);
     }
 
     .link:visited & {
-      @include fgcolor(gray, 6);
+      @include fgcolor(neutral, 6);
 
       @include tm-dark {
-        @include fgcolor(gray, 5);
+        @include fgcolor(neutral, 5);
       }
     }
 
     .link:hover & {
-      @include fgcolor(blue, 5);
+      @include fgcolor(primary, 5);
     }
   }
 
   .chidx {
     margin-left: 0.125rem;
     user-select: none;
-    @include fgcolor(gray, 5);
+    @include fgcolor(neutral, 5);
     @include ftsize(xs);
 
     // &:before {
@@ -134,7 +134,7 @@
 
   .label {
     flex: 1;
-    @include fgcolor(gray, 5);
+    @include fgcolor(neutral, 5);
     @include clamp($width: null);
   }
 </style>

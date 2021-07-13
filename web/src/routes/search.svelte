@@ -144,7 +144,7 @@
     @include fluid(margin-bottom, 0rem, 0.5rem, 1rem);
     @include fluid(font-size, font-size(5), font-size(6), font-size(7));
     @include fluid(line-height, 1.5rem, 1.75rem, 2rem);
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
   }
 
   .book {
@@ -162,7 +162,7 @@
 
       .-zh,
       .-vi {
-        @include fgcolor(blue, 5);
+        @include fgcolor(primary, 5);
       }
     }
   }
@@ -186,7 +186,7 @@
       width: 100%;
       height: 0;
       padding-top: math.div(4, 3) * 100%;
-      @include bgcolor(blue, 7);
+      @include bgcolor(primary, 7);
       z-index: -1;
     }
 
@@ -226,23 +226,23 @@
     line-height: 1.5rem;
     // font-weight: 500;
     @include ftsize(xl);
-    @include fgcolor(gray, 8);
+    @include fgcolor(neutral, 8);
   }
 
   .-zh {
     line-height: 1.25rem;
     margin-bottom: 0.25rem;
     @include ftsize(lg);
-    @include fgcolor(gray, 7);
+    @include fgcolor(neutral, 7);
   }
 
   .label {
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
   }
 
   .value {
     font-weight: 500;
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
   }
 
   .-trim {

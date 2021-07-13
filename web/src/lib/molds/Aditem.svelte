@@ -41,13 +41,13 @@
     text-transform: uppercase;
     font-size: 500;
 
-    @include bdradi(6px);
-    @include fgcolor(gray, 7);
-    @include bgcolor(red, 1);
+    @include bdradi();
+    @include fgcolor(neutral, 7);
+    @include bgcolor(harmful, 1);
   }
 
   a {
-    @include fgcolor(blue, 6);
+    @include fgcolor(primary, 6);
     font-weight: 600;
   }
 </style>

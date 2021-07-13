@@ -12,7 +12,7 @@ $dirs: (top, right, bottom, left);
   $props: ();
 
   @each $dir in $dirs {
-    @if match-side($dir, $dirs) {
+    @if match-side($dir, $sides) {
       $props: list.append($props, join-props(border, $dir, $type));
     }
   }
@@ -21,10 +21,18 @@ $dirs: (top, right, bottom, left);
 }
 
 // colors
+$-labels: (main, secd, tert, mute);
 
-@mixin bdcolor($color: var(--bd-main), $sides: all) {
+@mixin bdcolor($color: gray, $tone: 5, $sides: all) {
   $props: bdprops($sides, color);
-  @include fluid($props, $color);
+
+  @if known-colors($color) {
+    @include fluid($props, color($color, $tone));
+  } @else if list.index($-labels, $color) {
+    @include fluid($props, #{var(--bd-#{$color})});
+  } @else {
+    @include fluid($props, #{var(--#{$color})});
+  }
 }
 
 // styles
@@ -43,7 +51,8 @@ $dirs: (top, right, bottom, left);
 
 // borders
 
-@mixin border($color: var(--bd-main), $width: 1px, $style: solid, $sides: all) {
+@mixin border($color: gray, $tone: 3, $width: 1px, $style: solid, $sides: all) {
   $props: bdprops($sides);
+  $color: #{color($color, $tone)};
   @include fluid($props, $width $style $color);
 }

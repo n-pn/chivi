@@ -24,11 +24,13 @@
 }
 
 @function match-side($side, $list) {
-  @if type-of($list) == 'list' {
+  @if type-of($list) == list {
     @return list.index($list, $side);
-  } @else if type-of($list) == 'string' {
+  } @else if type-of($list) == string {
     @return string.index($list, $side);
   } @else {
+    // @debug $list;
+    // @debug type-of($list);
     @error "wrong argument";
   }
 }

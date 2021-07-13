@@ -2,50 +2,77 @@
 @use "sass:list";
 @use "../vars/palette" as *;
 
-@function color($name, $tone: 5) {
+@function color-raw($name, $tone: 5, $alpha: 1) {
   $-alias: map.get($color-mapping, $name);
   // prettier-ignore
   @if $-alias { $name: $-alias; }
 
   $-value: map.get($color-palette, $name);
 
-  @if type-of($value: $-value) == map {
+  @if type-of($-value) == map {
     $-color: map.get($-value, $tone);
 
     @if type-of($-color) == color {
-      @return $-color;
+      @return rgba($-color, $alpha);
     }
 
     @error "wrong color tone `#{$tone}`";
   } @else if type-of($-value) == color {
-    @return $-value;
+    @return rgba($-value, $alpha);
   }
 
   @error "unknown color `#{$name}`";
 }
 
-@function color-name($name, $tone) {
-  @return '--color-#{$name}-#{$tone}';
+@function known-colors($name) {
+  @return map.get($color-palette, $name) or map.get($color-mapping, $name);
 }
 
-@function color-var($name, $tone) {
-  @return 'var(#{color-name($name, $tone)})';
+@function color-name($name, $tone: 5) {
+  @if $name == white or $name == black {
+    @return '--color-#{$name}';
+  } @else if known-colors($name) {
+    $name: map.get($color-mapping, $name) or $name;
+    @return '--color-#{$name}-#{$tone}';
+  } @else {
+    @return '--#{$name}';
+  }
+}
+
+@function color($name, $tone) {
+  @return #{var(#{color-name($name, $tone)})};
+}
+
+@mixin color($prop, $name, $tone: 5) {
+  --#{'' + $prop}: #{color($name, $tone)};
+}
+
+@mixin fgvar($prop, $name, $tone: 5) {
+  --fg-#{'' + $prop}: #{color($name, $tone)};
+}
+
+@mixin bgvar($prop, $name, $tone: 5) {
+  --bg-#{'' + $prop}: #{color($name, $tone)};
 }
 
 $-labels: (main, secd, tert, mute);
 
 @mixin fgcolor($name, $tone: 5) {
-  @if list.index($-labels, $name) {
-    color: #{'var(--fg-#{$name})'};
+  @if known-colors($name) {
+    color: color($name, $tone);
+  } @else if list.index($-labels, $name) {
+    color: #{var(--fg-#{$name})};
   } @else {
-    color: #{color-var($name, $tone)};
+    color: #{var(--#{$name})};
   }
 }
 
 @mixin bgcolor($name, $tone: 5) {
-  @if list.index($-labels, $name) {
-    background-color: #{'var(--bg-#{$name})'};
+  @if known-colors($name) {
+    background-color: color($name, $tone);
+  } @else if list.index($-labels, $name) {
+    background-color: #{var(--bg-#{$name})};
   } @else {
-    background-color: #{color-var($name, $tone)};
+    background-color: #{var(--#{$name})};
   }
 }

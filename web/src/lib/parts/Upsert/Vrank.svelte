@@ -38,7 +38,7 @@
     line-height: $inner-height;
     text-transform: uppercase;
     font-weight: 500;
-    @include fgcolor(gray, 4);
+    @include fgcolor(neutral, 4);
   }
 
   .-txt {
@@ -59,11 +59,11 @@
 
     &:hover,
     &.active {
-      @include fgcolor(blue, 5);
+      @include fgcolor(primary, 5);
     }
 
     &.active {
-      @include bdcolor(blue, 4);
+      @include bdcolor(primary, 4);
     }
 
     & + & {

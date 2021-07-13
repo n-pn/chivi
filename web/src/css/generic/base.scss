@@ -4,23 +4,23 @@
 $colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
 
 :root {
-  --color-black: #{color(black)};
-  --color-white: #{color(white)};
+  --color-black: #{color-raw(black)};
+  --color-white: #{color-raw(white)};
 
   @each $name in $colors {
     @for $tone from 0 to 10 {
-      --color-#{'' + $name}-#{'' + $tone}: #{color($name, $tone)};
+      --color-#{'' + $name}-#{'' + $tone}: #{color-raw($name, $tone)};
     }
   }
 
   --fg-main: var(--color-gray-9);
   --fg-secd: var(--color-gray-7);
-  --fg-tert: var(--color-gray-5);
-  --fg-mute: var(--color-gray-3);
+  --fg-tert: var(--color-gray-6);
+  --fg-mute: var(--color-gray-4);
 
   --bg-main: var(--color-gray-1);
-  --bg-secd: var(--color-gray-0);
-  --bg-tert: var(--color-white);
+  --bg-secd: var(--color-white);
+  --bg-tert: var(--color-gray-0);
   --bg-mute: var(--color-gray-2);
 
   --bd-main: var(--color-gray-2);
@@ -37,6 +37,8 @@ $colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
   //   }
   // }
 
+  @include fgvar(main, neutral, 0);
+
   --fg-main: var(--color-gray-0);
   --fg-secd: var(--color-gray-2);
   --fg-tert: var(--color-gray-3);
@@ -45,8 +47,8 @@ $colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
   --fg-link: var(--color-blue-5);
 
   --bg-main: var(--color-gray-9);
-  --bg-secd: var(--color-gray-8);
-  --bg-tert: var(--color-gray-7);
+  --bg-secd: var(--color-black);
+  --bg-tert: var(--color-gray-8);
   --bg-mute: var(--color-gray-6);
 
   --bd-main: var(--color-gray-7);
@@ -95,10 +97,10 @@ $colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
   }
 
   @each $key, $val in $verpad {
-    --verpad-#{key}: ${'var(--gutter-#{val})'};
+    --verpad-#{$key}: #{'var(--gutter-#{$val})'};
 
     @include bp-min($key) {
-      --verpad: ${'var(--gutter-#{val})'};
+      --verpad: #{'var(--gutter-#{$val})'};
     }
   }
 }

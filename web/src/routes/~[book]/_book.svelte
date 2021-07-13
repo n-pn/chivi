@@ -211,35 +211,45 @@
 
 <style lang="scss">
   .main-info {
-    padding-top: 0.75rem;
+    padding-top: var(--gutter);
     @include flow();
   }
 
   .title {
     margin-bottom: 0.75rem;
 
-    @include fluid(float, left, left, right);
-    @include fluid(width, 100%, 100%, 70%, 75%);
-    @include fluid(padding-left, 0, 0, 0.75rem);
+    @include fgcolor(secd);
+    @include fluid(float, left, $md: right);
+    @include fluid(width, 100%, $md: 70%, $lg: 75%);
+    @include fluid(padding-left, 0, $md: 0.75rem);
+    @include fluid(line-height, 1.5rem, $md: 1.75rem, $lg: 2rem);
 
     > .-main,
     > .-sub {
       font-weight: 400;
       display: inline-block;
-      @include fgcolor(gray, 8);
-      @include fluid(line-height, 1.5rem, 1.75rem, 2rem);
-
-      @include tm-dark {
-        @include fgcolor(gray, 2);
-      }
     }
 
     > .-main {
-      @include fluid(font-size, rem(20px), rem(22px), rem(22px), rem(24px));
+      @include fluid(
+        font-size,
+        rem(20px),
+        rem(21px),
+        rem(22px),
+        rem(24px),
+        rem(26px)
+      );
     }
 
     > .-sub {
-      @include fluid(font-size, rem(18px), rem(20px), rem(20px), rem(22px));
+      @include fluid(
+        font-size,
+        rem(18px),
+        rem(19px),
+        rem(20px),
+        rem(22px),
+        rem(24px)
+      );
     }
   }
 
@@ -260,13 +270,9 @@
   }
 
   .line {
-    margin-bottom: 0.5rem;
-    @include fgcolor(gray, 6);
+    margin-bottom: var(--gutter-sm);
+    @include fgcolor(tert);
     @include flex($wrap: true);
-
-    @include tm-dark {
-      @include fgcolor(gray, 4);
-    }
   }
 
   .stat {
@@ -276,7 +282,7 @@
   .link {
     // font-weight: 500;
     color: inherit;
-    // @include fgcolor(blue, 7);
+    // @include fgcolor(primary, 7);
 
     &._outer {
       text-transform: capitalize;
@@ -284,10 +290,10 @@
 
     &._outer,
     &:hover {
-      @include fgcolor(blue, 6);
+      @include fgcolor(primary, 6);
 
       @include tm-dark {
-        @include fgcolor(blue, 4);
+        @include fgcolor(primary, 4);
       }
     }
   }
@@ -299,11 +305,11 @@
 
   .label {
     font-weight: 500;
-    // @include fgcolor(gray, 8);
+    // @include fgcolor(neutral, 8);
   }
 
   .section {
-    background-color: #fff;
+    @include bgcolor(tert);
 
     margin: 0 -0.5rem;
     padding: 0 0.5rem;
@@ -311,10 +317,6 @@
     border-radius: 0.5rem;
 
     @include shadow(2);
-
-    @include tm-dark {
-      @include bgcolor(gray, 7);
-    }
 
     @include bp-min(md) {
       margin: 0.75rem 0;
@@ -328,10 +330,10 @@
   .section-header {
     display: flex;
     height: $section-height;
-    @include border($sides: bottom, $color: color-var(gray, 3));
+    @include border($color: bd-main, $sides: bottom);
 
     @include tm-dark {
-      @include bdcolor(gray, 6);
+      @include bdcolor(neutral, 6);
     }
   }
 
@@ -348,18 +350,18 @@
       @include ftsize(md);
     }
 
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
+
     &._active {
-      @include fgcolor(blue, 6);
-      @include border($sides: bottom, $color: var(--color-blue-5), $width: 2px);
+      @include fgcolor(primary, 6);
+      @include border(primary, 5, $width: 2px, $sides: bottom);
     }
 
     @include tm-dark {
-      @include fgcolor(gray, 4);
+      @include fgcolor(neutral, 4);
 
       &._active {
-        @include fgcolor(blue, 3);
-        @include bdcolor(blue, 3);
+        @include fgcolor(primary, 4);
       }
     }
   }

@@ -70,13 +70,8 @@
 
   .app {
     height: 100%;
-    background-color: var(--bgmain);
-    color: var(--fgmain);
-
-    &.tm-dark {
-      --bgmain: #{color(gray, 8)};
-      --fgmain: #{color(gray, 1)};
-    }
+    @include bgcolor(main);
+    @include fgcolor(main);
   }
 
   .links {
@@ -86,13 +81,13 @@
 
     @include ftsize(sm);
     @include border($sides: top);
-    @include fgcolor(gray, 6);
-    @include bgcolor(gray, 2);
+    @include fgcolor(neutral, 6);
+    @include bgcolor(neutral, 2);
 
     @include tm-dark {
-      @include fgcolor(gray, 4);
-      @include bgcolor(gray, 8);
-      @include bdcolor(gray, 7);
+      @include fgcolor(neutral, 4);
+      @include bgcolor(neutral, 8);
+      @include bdcolor(neutral, 7);
     }
   }
 
@@ -100,10 +95,10 @@
     margin-left: 0.375rem;
     font-weight: 500;
 
-    @include fgcolor(blue, 6);
+    @include fgcolor(primary, 6);
 
     &:hover {
-      @include fgcolor(blue, 4);
+      @include fgcolor(primary, 4);
     }
   }
 </style>

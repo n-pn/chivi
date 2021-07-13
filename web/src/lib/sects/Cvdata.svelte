@@ -183,7 +183,7 @@
 
     &._h {
       font-weight: 400;
-      // @include fgcolor(gray, 8);
+      // @include fgcolor(neutral, 8);
 
       @include fluid(
         font-size,
@@ -210,6 +210,8 @@
         rem(21px),
         rem(22px)
       );
+
+      @include fluid(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem);
     }
   }
 

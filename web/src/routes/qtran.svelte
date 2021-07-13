@@ -90,7 +90,7 @@
     text-transform: uppercase;
     font-weight: 500;
     @include ftsize(sm);
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
     @include border($sides: bottom);
   }
 
@@ -100,10 +100,12 @@
     height: 2.5rem;
 
     &:hover {
-      @include fgcolor(blue, 5);
+      @include fgcolor(primary, 5);
     }
+
     &._active {
-      @include border($sides: bottom, $width: 2px, $color: primary, $shade: 5);
+      @include color(bdcolor, primary, 5);
+      @include border($color: primary, $tone: 5, $width: 2px, $sides: bottom);
     }
   }
 
@@ -113,22 +115,22 @@
 
     padding: 0.75rem;
 
-    @include border();
+    @include linesd(neutral, 1);
     @include bdradi();
 
     &:hover,
     &:focus {
       background-color: #fff;
-      @include bdcolor(blue, 3);
+      @include linesd(primary, 3);
     }
 
     &:focus {
-      box-shadow: 0 0 1px 1px color(blue, 2);
+      @include linesd(primary, 3, $width: 2);
     }
 
     &::placeholder {
       font-style: italic;
-      @include fgcolor(gray, 4);
+      @include fgcolor(neutral, 4);
     }
   }
 

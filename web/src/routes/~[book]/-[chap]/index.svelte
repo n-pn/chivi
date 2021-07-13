@@ -210,7 +210,7 @@
     .-crumb {
       display: inline;
       // float: left;
-      @include fgcolor(gray, 6);
+      @include fgcolor(neutral, 6);
       @include tm-dark {
         color: var(--color-gray-5);
       }
@@ -223,25 +223,25 @@
     .-link {
       color: inherit;
       &:hover {
-        @include fgcolor(blue, 6);
+        @include fgcolor(primary, 6);
       }
     }
   }
 
   .m-button {
     @include tm-dark {
-      @include fgcolor(gray, 2);
-      @include bgcolor(gray, 7);
+      @include fgcolor(neutral, 2);
+      @include bgcolor(neutral, 7);
 
       &:hover {
-        @include bgcolor(gray, 6);
+        @include bgcolor(neutral, 6);
       }
 
       &._primary {
-        @include bgcolor(blue, 7);
+        @include bgcolor(primary, 7);
 
         &:hover {
-          @include bgcolor(blue, 6);
+          @include bgcolor(primary, 6);
         }
       }
     }

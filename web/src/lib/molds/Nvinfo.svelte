@@ -49,8 +49,8 @@
   }
 
   .extra {
-    --bg-start: #{rgba(color(gray, 1), 0.1)};
-    --bg-end: #{rgba(color(gray, 7), 0.7)};
+    --bg-start: #{color-raw(neutral, 1, 0.1)};
+    --bg-end: #{color-raw(neutral, 7, 0.7)};
 
     display: flex;
     position: absolute;
@@ -73,7 +73,7 @@
       font-weight: 500;
       color: var(--color-white);
       @include bdradi;
-      @include bgcolor(blue, 6);
+      @include bgcolor(primary, 6);
     }
   }
 
@@ -87,14 +87,14 @@
     line-height: 1.125rem;
     font-size: rem(15px);
     font-weight: 500;
-    @include fgcolor(gray, 7);
+    @include fgcolor(neutral, 7);
 
     @include tm-dark {
-      @include fgcolor(gray, 3);
+      @include fgcolor(neutral, 3);
     }
 
     .book:hover & {
-      @include fgcolor(blue, 5);
+      @include fgcolor(primary, 5);
     }
   }
 
@@ -104,6 +104,6 @@
     text-transform: uppercase;
     line-height: 1rem;
     margin-top: 0.125rem;
-    color: var(--color-gray-5);
+    @include fgcolor(neutral, 5);
   }
 </style>

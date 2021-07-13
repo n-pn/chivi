@@ -113,92 +113,92 @@
 </Slider>
 
 <style lang="scss">
-  .inner {
-    width: 24rem;
-    max-width: 100%;
-    margin: 0 auto;
-    margin-top: 20vh;
-    padding: 1rem;
-  }
+  // .inner {
+  //   width: 24rem;
+  //   max-width: 100%;
+  //   margin: 0 auto;
+  //   margin-top: 20vh;
+  //   padding: 1rem;
+  // }
 
-  .brand {
-    // font-weight: 300;
-    line-height: 2.5rem;
-    margin-bottom: 1rem;
-    padding-right: 1rem;
+  // .brand {
+  //   // font-weight: 300;
+  //   line-height: 2.5rem;
+  //   margin-bottom: 1rem;
+  //   padding-right: 1rem;
 
-    @include flex($center: horz);
+  //   @include flex($center: horz);
 
-    > .-text {
-      margin-left: 0.5rem;
-      @include ftsize(x3);
-    }
-  }
+  //   > .-text {
+  //     margin-left: 0.5rem;
+  //     @include ftsize(x3);
+  //   }
+  // }
 
-  form {
-    display: block;
-    width: 24rem;
-    // margin: 0 auto;
-    // margin-top: 20vh;
-    max-width: 100%;
-    @include border($sides: top);
-  }
+  // form {
+  //   display: block;
+  //   width: 24rem;
+  //   // margin: 0 auto;
+  //   // margin-top: 20vh;
+  //   max-width: 100%;
+  //   @include border($sides: top);
+  // }
 
-  .input {
-    margin: 0.75rem 0;
-  }
+  // .input {
+  //   margin: 0.75rem 0;
+  // }
 
-  label {
-    display: block;
-    text-transform: uppercase;
-    font-weight: 500;
-    line-height: 1.5rem;
-    margin-bottom: 0.25rem;
-    @include ftsize(xs);
-    @include fgcolor(gray, 6);
-  }
+  // label {
+  //   display: block;
+  //   text-transform: uppercase;
+  //   font-weight: 500;
+  //   line-height: 1.5rem;
+  //   margin-bottom: 0.25rem;
+  //   @include ftsize(xs);
+  //   @include fgcolor(neutral, 6);
+  // }
 
-  input {
-    display: block;
-    width: 100%;
-    padding: 0.375rem 0.75rem;
+  // input {
+  //   display: block;
+  //   width: 100%;
+  //   padding: 0.375rem 0.75rem;
 
-    @include border();
-    @include bdradi();
+  //   @include border();
+  //   @include bdradi();
 
-    &:focus,
-    &:hover {
-      @include bdcolor(var(--color-blue-3));
-    }
+  //   &:focus,
+  //   &:hover {
+  //     @include bdcolor(var(--color-blue-3));
+  //   }
 
-    &:focus {
-      box-shadow: 0 0 1px 1px color(blue, 2);
-    }
+  //   &:focus {
+  //     box-shadow: 0 0 1px 1px color(blue, 2);
+  //   }
 
-    &::placeholder {
-      font-style: italic;
-      color: var(--color-gray-5);
-    }
-  }
+  //   &::placeholder {
+  //     font-style: italic;
+  //     color: var(--color-gray-5);
+  //   }
+  // }
 
-  .errs {
-    margin-bottom: 0.75rem;
-    // text-align: center;
-    @include fgcolor(harmful, 5);
-    @include ftsize(sm);
-  }
+  // .errs {
+  //   margin-bottom: 0.75rem;
+  //   // text-align: center;
+  //   @include fgcolor(harmful, 5);
+  //   @include ftsize(sm);
+  // }
 
-  footer {
-    margin-top: 1.5rem;
+  // footer {
+  //   margin-top: 1.5rem;
 
-    @include flex($center: horz);
+  //   @include flex($center: horz);
 
-    button {
-      @include clamp($width: null);
-    }
+  //   button {
+  //     @include clamp($width: null);
+  //   }
 
-    button + button {
-      margin-left: 1rem;
-    }
-  }
+  //   button + button {
+  //     margin-left: 1rem;
+  //   }
+  // }
 </style>

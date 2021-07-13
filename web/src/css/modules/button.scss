@@ -8,8 +8,8 @@ $-btn-height-xl: rem(60px);
 
 .m-button {
   --fgcolor: var(--fg-tert);
-  --bgcolor: var(--bg-secd);
-  --bghover: var(--bg-tert);
+  --bgcolor: var(--bg-tert);
+  --bghover: var(--bg-secd);
 
   --height: #{$-btn-height-md};
   --gutter: var(--gutter-xs);
@@ -72,17 +72,17 @@ $-btn-height-xl: rem(60px);
 
 .m-button {
   &._primary {
-    --fgcolor: #{color-var(blue, 6)};
-    --bgcolor: #{color-var(blue, 0)};
-    --bghover: #{color-var(blue, 1)};
+    @include color(fgcolor, primary, 6);
+    @include color(bgcolor, primary, 0);
+    @include color(bghover, primary, 1);
   }
 }
 
 .m-button._line {
-  @include linesd(var(--bd-main));
+  @include linesd(bd-main);
 
   &._primary {
-    @include linesd(color-var(blue, 2), $ndef: false);
+    @include linesd(primary, 2, $ndef: false);
   }
 }
 
@@ -93,13 +93,13 @@ $-btn-height-xl: rem(60px);
   }
 
   &._primary {
-    --bgcolor: #{color-var(blue, 6)};
-    --bghover: #{color-var(blue, 5)};
+    @include color(bgcolor, primary, 6);
+    @include color(bghover, primary, 5);
 
     .tm-dark & {
-      --fgcolor: #{color-var(blue, 1)};
-      --bgcolor: #{color-var(blue, 8)};
-      --bghover: #{color-var(blue, 7)};
+      @include color(fgcolor, primary, 1);
+      @include color(bgcolor, primary, 8);
+      @include color(bghover, primary, 7);
     }
   }
 }

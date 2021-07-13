@@ -88,7 +88,7 @@
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
-    color: var(--fg-secd);
+    @include fgcolor(secd);
   }
 
   .brand {
@@ -105,7 +105,7 @@
 
     > span {
       @include label();
-      font-size: rem(18px);
+      @include ftsize(lg);
       line-height: 2.375rem;
       letter-spacing: 0.04rem;
     }
@@ -131,7 +131,7 @@
     // text-transform: uppercase;
 
     // font-size: rem(15px);
-    color: var(--fg-tert);
+    @include fgcolor(tert);
 
     :global(svg) {
       margin-top: 0.5rem;
@@ -157,31 +157,29 @@
   }
 
   .-chip {
-    --color: var(--color-blue-6);
-    --hover: var(--color-blue-4);
     float: left;
     padding: 0 0.5rem;
     border-radius: math.div($-chip-height, 2);
+    // background-color: transparent;
 
-    background-color: transparent;
-    box-shadow: 0 0 0 1px var(--hover) inset;
+    @include color(fgcolor, blue, 6);
+    @include color(bdcolor, blue, 4);
 
-    // @include label();
+    @include fgcolor(fgcolor);
+    @include linesd(bdcolor);
+
     font-weight: 500;
-    color: var(--color);
-    // letter-spacing: 0.05em;
-
     margin-right: 0.375rem;
     margin-bottom: 0.375rem;
 
     &._green {
-      --color: var(--color-green-6);
-      --hover: var(--color-green-4);
+      @include color(fgcolor, green, 6);
+      @include color(bdcolor, green, 4);
     }
 
     &._orange {
-      --color: var(--color-orange-6);
-      --hover: var(--color-orange-4);
+      @include color(fgcolor, orange, 6);
+      @include color(bdcolor, orange, 4);
     }
 
     &._caps {
@@ -191,21 +189,21 @@
 
     &:hover {
       color: #fff;
-      background: var(--hover);
+      @include bgcolor(bdcolor);
     }
 
     @include tm-dark {
-      --color: var(--color-blue-4);
-      --hover: var(--color-blue-6);
+      @include color(fgcolor, blue, 4);
+      @include color(bdcolor, blue, 6);
 
       &._green {
-        --color: var(--color-green-4);
-        --hover: var(--color-green-6);
+        @include color(fgcolor, green, 4);
+        @include color(bdcolor, green, 6);
       }
 
       &._orange {
-        --color: var(--color-orange-4);
-        --hover: var(--color-orange-6);
+        @include color(fgcolor, orange, 4);
+        @include color(bdcolor, orange, 6);
       }
     }
   }
@@ -219,26 +217,23 @@
     > input {
       display: block;
       width: 100%;
-      outline: none;
-      border: none;
-
       padding: 0.375rem 0.75rem;
+
+      border: none;
+      outline: none;
       border-radius: 1rem;
 
-      background: var(--bg-main);
-      color: var(--fg-main);
-
-      --bdcolor: var(--bd-main);
-
-      @include linesd(var(--bdcolor));
+      @include fgcolor(main);
+      @include bgcolor(main);
+      @include linesd(bd-main);
 
       &:focus {
-        --bdcolor: var(--color-blue-5);
+        @include linesd(primary, 5, $ndef: false);
       }
 
       &:hover,
       &:focus {
-        background: var(--bg-secd);
+        @include bgcolor(bg-secd);
       }
 
       &::placeholder {
@@ -254,8 +249,8 @@
       top: 0;
       padding: 0.375rem;
       margin: 0;
-      color: var(--color-gray-5);
       background: none;
+      @include color(neutral, 5);
     }
 
     :global(svg) {

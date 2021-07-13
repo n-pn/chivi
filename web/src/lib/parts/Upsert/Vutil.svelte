@@ -52,14 +52,14 @@
     padding: 0 0.375rem;
     line-height: $height;
     font-weight: 500;
-    background: none;
-    color: var(--color-gray-5);
+    background: transparent;
+    @include fgcolor(neutral, 5);
 
     // max-width: 14vw;
     @include clamp($width: null);
 
     &:hover {
-      @include fgcolor(blue, 5);
+      @include fgcolor(primary, 5);
     }
 
     &._md {
@@ -77,17 +77,17 @@
     width: 1.75rem;
     padding-bottom: 0.25rem;
 
-    background: none;
+    @include ftsize(lg);
 
-    font-size: rem(18px);
-    color: var(--color-gray-5);
+    background: transparent;
+    @include fgcolor(neutral, 5);
 
     &:hover {
-      @include fgcolor(blue, 5);
+      @include fgcolor(primary, 5);
     }
 
     &[disabled] {
-      @include fgcolor(gray, 3);
+      @include fgcolor(neutral, 3);
     }
   }
 </style>

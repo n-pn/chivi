@@ -13,7 +13,7 @@
 }
 
 @mixin radius($size: md) {
-  @if type-of($size) == 'number' {
+  @if type-of($size) == number {
     border-radius: $size;
   } @else {
     border-radius: 'var(--radius-#{$size})';
@@ -21,7 +21,7 @@
 }
 
 @mixin ftsize($size: md) {
-  @if type-of($size) == 'number' {
+  @if type-of($size) == number {
     font-size: $size;
   } @else {
     font-size: #{var(--ftsize-#{$size})};

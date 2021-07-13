@@ -30,10 +30,10 @@
     line-height: 2.25rem;
 
     @include ftsize(sm);
-    @include fgcolor(gray, 7);
+    @include fgcolor(neutral, 7);
 
     &:hover {
-      @include fgcolor(blue, 5);
+      @include fgcolor(primary, 5);
     }
   }
 </style>

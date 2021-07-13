@@ -203,24 +203,24 @@
     .-type {
       padding: 0 0.75em;
       @include clamp($width: null);
-      @include fgcolor(gray, 6);
+      @include fgcolor(neutral, 6);
 
       @include border();
       border-radius: 0.5rem;
 
       &._active,
       &:hover {
-        @include fgcolor(blue, 6);
-        @include bdcolor(color-var(blue, 5));
+        @include fgcolor(primary, 6);
+        @include bdcolor(primary, 5);
       }
 
       @include tm-dark {
-        @include fgcolor(gray, 4);
-        @include bdcolor(gray, 7);
+        @include fgcolor(neutral, 4);
+        @include bdcolor(neutral, 7);
 
         &._active,
         &:hover {
-          @include fgcolor(blue, 4);
+          @include fgcolor(primary, 4);
         }
       }
     }
@@ -231,51 +231,12 @@
     @include flex($center: horz, $gap: 0.375rem);
   }
 
-  // .page {
-  //   display: inline-flex;
-
-  //   > span {
-  //     margin-top: rem(1px);
-  //   }
-
-  //   &[data-level] {
-  //     display: none;
-  //   }
-
-  //   &[data-level='0'] {
-  //     display: inline-block;
-  //   }
-
-  //   &[data-level='1'] {
-  //     @include fluid(display, $sm: inline-block);
-  //   }
-
-  //   &[data-level='2'] {
-  //     @include fluid(display, $md: inline-block);
-  //   }
-
-  //   &[data-level='3'],
-  //   &[data-level='4'],
-  //   &[data-level='5'] {
-  //     @include fluid(display, $lg: inline-block);
-  //   }
-
-  //   @include tm-dark {
-  //     @include fgcolor(gray, 2);
-  //     @include bgcolor(gray, 7);
-
-  //     &._primary {
-  //       @include bgcolor(blue, 7);
-  //     }
-  //   }
-  // }
-
   .empty {
     display: flex;
     min-height: 50vh;
     align-items: center;
     justify-content: center;
     font-style: italic;
-    @include fgcolor(gray, 6);
+    @include fgcolor(neutral, 6);
   }
 </style>

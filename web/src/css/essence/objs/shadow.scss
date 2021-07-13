@@ -1,4 +1,4 @@
-// configs
+@use "../defs" as *;
 
 $shadow-1: 0 1px 2px 0 rgba(#000, 0.1) !default;
 $shadow-2: 0 1px 3px 0 rgba(#000, 0.1), 0 1px 2px 0 rgba(#000, 0.06) !default;
@@ -20,28 +20,28 @@ $shadows: (
   @return map-get($shadows, $type) or $type;
 }
 
-@function linesd($color, $width: 1px) {
-  @return 0 0 0 $width $color inset;
+@function linesd($color, $tone: 5, $width: 1px) {
+  @return 0 0 0 $width color($color, $tone) inset;
 }
 
-@function ringsd($color, $width: 2px, $offset: 0px) {
-  @return 0 0 $offset ($width + $offset) $color;
+@function ringsd($color, $tone: 5, $width: 2px, $offset: 0px) {
+  @return 0 0 $offset ($width + $offset) color($color, $tone);
 }
 
 // prettier-ignore
 @mixin shadow($type: 1, $ndef: true) {
-  @if $type { --shadow: #{'var(--shadow-#{$type})'}; }
+  @if $type { --shadow: #{shadow($type)}; }
   @if $ndef { box-shadow: var(--linesd), var(--ringsd), var(--shadow); }
 }
 
 // prettier-ignore
-@mixin ringsd($color, $width: 2px, $offset: 0px, $ndef: true) {
-  @if $color { --ringsd: #{ringsd($color, $width, $offset)}; }
-  @if $ndef { box-shadow: var(--ringsd); }
+@mixin linesd($color, $tone: 5, $width: 1px, $ndef: true) {
+  @if $color { --linesd: #{linesd($color, $tone, $width)}; }
+  @if $ndef { box-shadow: var(--linesd); }
 }
 
 // prettier-ignore
-@mixin linesd($color, $width: 1px, $ndef: true) {
-  @if $color { --linesd: #{linesd($color, $width)}; }
-  @if $ndef { box-shadow: var(--linesd); }
+@mixin ringsd($color, $tone: 5, $width: 2px, $offset: 0px, $ndef: true) {
+  @if $color { --ringsd: #{ringsd($color, $tone, $width, $offset)}; }
+  @if $ndef { box-shadow: var(--ringsd), var(--linesd); }
 }
