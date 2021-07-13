@@ -162,7 +162,7 @@
     user-select: none;
 
     &:first-child {
-      @include border($sides: top);
+      @include border(bd-main, $sides: top);
     }
 
     &:nth-child(odd) {

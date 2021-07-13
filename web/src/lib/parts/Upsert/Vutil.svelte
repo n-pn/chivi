@@ -41,10 +41,8 @@
 
   .vutil {
     padding: 0 0.375rem;
-    font-size: rem(13px);
-
     @include flex();
-    @include border($sides: top);
+    @include ftsize(sm);
   }
 
   .-txt {
@@ -53,7 +51,7 @@
     line-height: $height;
     font-weight: 500;
     background: transparent;
-    @include fgcolor(neutral, 5);
+    @include fgcolor(tert);
 
     // max-width: 14vw;
     @include clamp($width: null);

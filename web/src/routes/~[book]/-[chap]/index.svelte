@@ -166,14 +166,14 @@
   <div class="footer" slot="footer">
     <a
       href={prev_path}
-      class="m-button _fill"
+      class="m-button"
       class:_disable={!chinfo.prev_url}
       data-kbd="j">
       <SIcon name="chevron-left" />
       <span>Trước</span>
     </a>
 
-    <a href={list_path} class="m-button _fill" data-kbd="h">
+    <a href={list_path} class="m-button" data-kbd="h">
       <SIcon name="list" />
       <span>{chinfo.chidx}/{chinfo.total}</span>
     </a>
@@ -197,33 +197,29 @@
   }
 
   .bread {
-    padding: 0.5rem 0;
-    line-height: 1.25rem;
+    padding: var(--gutter-sm) 0;
+    line-height: var(--lh-narrow);
 
+    @include flex($wrap: nowrap);
     @include ftsize(sm);
-    // @include border($sides: bottom);
-
-    @include tm-dark {
-      @include bdcolor(gray, 7);
-    }
+    @include fgcolor(secd);
 
     .-crumb {
       display: inline;
       // float: left;
-      @include fgcolor(neutral, 6);
-      @include tm-dark {
-        color: var(--color-gray-5);
-      }
 
       &._sep:after {
-        content: ' > ';
+        display: inline-block;
+        width: 1rem;
+        text-align: center;
+        content: '/';
       }
     }
 
     .-link {
       color: inherit;
       &:hover {
-        @include fgcolor(primary, 6);
+        @include fgcolor(primary, 5);
       }
     }
   }

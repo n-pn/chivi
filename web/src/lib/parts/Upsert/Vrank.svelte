@@ -38,12 +38,12 @@
     line-height: $inner-height;
     text-transform: uppercase;
     font-weight: 500;
-    @include fgcolor(neutral, 4);
   }
 
   .-txt {
     margin-top: 1px;
     margin-right: 0.375rem;
+    @include fgcolor(mute);
     @include fluid(display, none, $md: inline-block);
   }
 
@@ -51,10 +51,10 @@
     padding: 0 0.5rem;
     // margin: 0;
 
-    background-color: #fff;
+    @include bgcolor(tranparent);
+    @include fgcolor(secd);
 
-    color: var(--color-gray-5);
-    @include border();
+    @include linesd(bd-main);
     @include bdradi(0.5rem);
 
     &:hover,
@@ -63,7 +63,7 @@
     }
 
     &.active {
-      @include bdcolor(primary, 4);
+      @include linesd(primary, 4, $ndef: false);
     }
 
     & + & {

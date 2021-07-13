@@ -22,10 +22,8 @@
     line-height: 1.25rem;
 
     @include flex();
-    @include border($sides: bottom);
-
     @include ftsize(sm);
-    @include fgcolor(neutral, 6);
+    @include fgcolor(tert);
   }
 
   .hint {
@@ -36,7 +34,7 @@
     @include clamp($width: null);
 
     &:hover {
-      @include fgcolor(primary, 6);
+      @include fgcolor(primary, 5);
     }
 
     & + & {

@@ -31,7 +31,7 @@ $shadows: (
 // prettier-ignore
 @mixin shadow($type: 1, $ndef: true) {
   @if $type { --shadow: #{shadow($type)}; }
-  @if $ndef { box-shadow: var(--linesd), var(--ringsd), var(--shadow); }
+  @if $ndef { box-shadow: var(--linesd, 0 0 0 transparent), var(--ringsd, 0 0 0 transparent), var(--shadow); }
 }
 
 // prettier-ignore

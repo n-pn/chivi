@@ -1,6 +1,5 @@
-button,
-button::-moz-focus-inner {
-  border: 0 !important;
+::-moz-focus-inner {
+  border: 0;
   outline: none !important;
 }
 
@@ -40,6 +39,8 @@ button,
 [type='submit'] {
   touch-action: manipulation;
   -webkit-appearance: button;
+  border: 0;
+  outline: none;
 
   &:not(:disabled) {
     cursor: pointer;

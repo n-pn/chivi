@@ -226,7 +226,7 @@
     width: rem(30);
     min-width: 320px;
     max-width: 100%;
-    @include bgcolor(neutral, 1);
+    @include bgcolor(tert);
     @include bdradi();
     @include shadow(3);
   }
@@ -237,11 +237,12 @@
     overflow: hidden;
 
     > .m-button {
-      @include fgcolor(neutral, 6);
+      @include fgcolor(neutral, 5);
+      background: none;
+      --linesd: none;
 
       &:hover {
-        background: none;
-        @include fgcolor(primary, 6);
+        @include fgcolor(primary, 5);
       }
     }
   }
@@ -253,8 +254,8 @@
     padding: 0 0.75rem;
 
     @include flex();
-    @include border($sides: bottom);
-
+    @include border(bd-bold, $sides: bottom);
+    @include ftsize(md);
     // prettier-ignore
   }
 
@@ -270,11 +271,12 @@
 
     margin-right: 0.5rem;
 
-    @include ftsize(sm);
-    @include fgcolor(neutral, 5);
     @include clamp($width: null);
     @include bdradi($sides: top);
-    @include border($color: neutral, $tone: 4, $sides: top left right);
+    @include fgcolor(tert);
+    @include border($color: bd-bold);
+
+    border-bottom: none;
 
     &:first-child {
       max-width: 38%;
@@ -282,17 +284,17 @@
     }
 
     &._edited {
-      @include fgcolor(neutral, 7);
+      @include fgcolor(main);
     }
 
     &:hover {
-      @include bgcolor(white);
+      @include bgcolor(secd);
     }
 
     &._active {
-      @include bgcolor(white);
-      @include fgcolor(primary, 6);
-      @include bdcolor(primary, 4);
+      @include bgcolor(secd);
+      @include fgcolor(primary, 5);
+      @include bdcolor(primary, 6);
     }
 
     &:last-child {
@@ -302,23 +304,20 @@
   }
 
   .body {
-    @include bgcolor(white);
+    @include bgcolor(bg-secd);
     padding: 0 0.75rem 0.75rem;
   }
 
   .field {
-    --bdcolor: #{color(gray, 3)};
-    --bgcolor: #{color(gray, 1)};
-
     position: relative;
     @include bdradi;
 
-    @include linesd(bdcolor);
-    @include bgcolor(bgcolor);
+    @include linesd(bd-main);
+    @include bgcolor(main);
 
     &:focus-within {
-      @include color(bdcolor, primary, 4);
-      --bgcolor: #fff;
+      // @include linesd(primary, 4, $ndef: false);
+      @include bgcolor(secd);
     }
   }
 
@@ -329,6 +328,12 @@
 
     height: $h-outer;
     padding: math.div($h-outer - $h-inner, 2);
+
+    @include linesd(bd-main);
+
+    &:focus-within {
+      @include linesd(primary, 4, $ndef: false);
+    }
 
     > * {
       height: $h-inner;
@@ -345,6 +350,7 @@
       outline: 0;
       border: 0;
       background: transparent;
+      @include fgcolor(main);
       @include ftsize(lg);
     }
   }
@@ -356,17 +362,14 @@
     background: transparent;
     border-radius: 0.75rem;
     font-weight: 500;
-    font-size: rem(14px);
 
-    @include fgcolor(neutral, 6);
+    @include ftsize(sm);
 
-    --bdcolor: #{color(gray, 2)};
-    box-shadow: 0 0 0 1px var(--bdcolor);
+    @include fgcolor(tert);
+    @include linesd(bd-main);
 
     &:hover {
-      @include fgcolor(primary, 7);
-      @include bgcolor(primary, 1);
-      --bdcolor: #{color(blue, 3)};
+      @include fgcolor(primary, 5);
     }
   }
 

@@ -84,8 +84,8 @@
     position: relative;
 
     @include bdradi();
-    @include bgcolor(neutral, 1);
-    @include border($color: neutral, $tone: 3);
+    @include bgcolor(tert);
+    @include linesd(bd-main);
   }
 
   .hanzi {
@@ -106,7 +106,7 @@
 
     > ._txt {
       @include clamp($width: 20vw);
-      @include fgcolor(neutral, 7);
+      @include fgcolor(main);
     }
 
     &:before,
@@ -117,7 +117,7 @@
       font-weight: 400;
       height: 100%;
       white-space: nowrap;
-      @include fgcolor(neutral, 4);
+      @include fgcolor(mute);
     }
 
     &:before {
@@ -148,8 +148,8 @@
       padding: 0 0.25rem;
       display: inline-block;
       @include clamp($width: null);
-      @include fgcolor(neutral, 5);
-      @include bgcolor(neutral, 1);
+      @include fgcolor(tert);
+      @include bgcolor(tert);
     }
   }
 
@@ -160,10 +160,10 @@
     line-height: 1em;
     max-width: 65vw;
     @include ftsize(lg);
-    @include fgcolor(neutral, 7);
+    @include fgcolor(secd);
 
     &:hover {
-      @include bgcolor(white);
+      // @include bgcolor(tert);
       @include fgcolor(primary, 5);
     }
 
@@ -182,11 +182,11 @@
     }
 
     &._left {
-      @include border($sides: right);
+      @include border(bd-main, $sides: right);
     }
 
     &._right {
-      @include border($sides: left);
+      @include border(bd-main, $sides: left);
     }
   }
 </style>

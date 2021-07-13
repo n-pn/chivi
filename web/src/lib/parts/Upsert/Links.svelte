@@ -21,7 +21,7 @@
 <style lang="scss">
   .foot {
     @include flex($center: horz);
-    border-top: 1px solid color(gray, 3);
+    @include border(bd-main, $sides: top);
   }
 
   .link {
@@ -30,7 +30,7 @@
     line-height: 2.25rem;
 
     @include ftsize(sm);
-    @include fgcolor(neutral, 7);
+    @include fgcolor(secd);
 
     &:hover {
       @include fgcolor(primary, 5);

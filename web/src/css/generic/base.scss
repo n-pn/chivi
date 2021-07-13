@@ -13,9 +13,9 @@ $colors: (gray, blue, green, orange, red, violet) !default;
     }
   }
 
-  --fg-main: var(--color-gray-9);
-  --fg-secd: var(--color-gray-7);
-  --fg-tert: var(--color-gray-6);
+  --fg-main: var(--color-gray-8);
+  --fg-secd: var(--color-gray-6);
+  --fg-tert: var(--color-gray-5);
   --fg-mute: var(--color-gray-4);
 
   --bg-main: var(--color-gray-1);
@@ -40,16 +40,16 @@ $colors: (gray, blue, green, orange, red, violet) !default;
 
   @include fgvar(main, neutral, 0);
 
-  --fg-main: var(--color-gray-0);
-  --fg-secd: var(--color-gray-2);
-  --fg-tert: var(--color-gray-3);
-  --fg-mute: var(--color-gray-4);
+  --fg-main: var(--color-gray-1);
+  --fg-secd: var(--color-gray-3);
+  --fg-tert: var(--color-gray-4);
+  --fg-mute: var(--color-gray-5);
 
   --fg-link: var(--color-blue-5);
 
   --bg-main: var(--color-black);
-  --bg-secd: var(--color-gray-9);
-  --bg-tert: var(--color-gray-8);
+  --bg-secd: var(--color-gray-8);
+  --bg-tert: var(--color-gray-9);
   --bg-mute: var(--color-gray-6);
 
   --bd-soft: var(--color-gray-8);

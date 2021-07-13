@@ -3,7 +3,7 @@
   export let term
 </script>
 
-{#if term?.old_uname != '_'}
+{#if term.old_uname && term.old_uname != '_'}
   <div class="edit">
     <span class="-text">{term.old_state} bởi: </span>
     <span class="-user">{term.old_uname}</span>

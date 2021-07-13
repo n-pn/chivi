@@ -35,7 +35,7 @@
 </div>
 
 <button
-  class="submit m-button _large {btn_style(term)} {btn_color(term)}"
+  class="submit m-button btn-lg {btn_style(term)} {btn_color(term)}"
   disabled={p_max <= p_min}
   on:click>
   <span class="-text">{term.state}</span>
@@ -50,24 +50,26 @@
     position: relative;
     font-weight: 500;
 
-    @include border;
+    // @include bgcolor(bg-main);
+    @include linesd(bd-main);
     @include bdradi;
   }
 
   .txt {
     display: inline-block;
-    line-height: 2.625rem;
-    @include fgcolor(neutral, 8);
+    line-height: rem(44px);
+    @include fgcolor(secd);
   }
 
   .lbl {
     padding-right: 0.2em;
-    @include fgcolor(neutral, 5);
+    @include fgcolor(tert);
   }
 
   .btn {
     position: absolute;
     right: 0;
+    @include fgcolor(tert);
     background-color: transparent;
   }
 

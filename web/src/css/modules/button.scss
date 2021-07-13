@@ -3,7 +3,7 @@
 $-btn-height-xs: rem(24px);
 $-btn-height-sm: rem(32px);
 $-btn-height-md: rem(36px);
-$-btn-height-lg: rem(48px);
+$-btn-height-lg: rem(44px);
 $-btn-height-xl: rem(60px);
 
 .m-button {
@@ -70,7 +70,7 @@ $-colors: (primary, success, warning, harmful);
   @include linesd($color, 2, $ndef: false);
 
   .tm-dark & {
-    @include color(fgcolor, $color, 4);
+    @include color(fgcolor, $color, 3);
     @include color(bgcolor, neutral, 8);
     @include color(bghover, $color, 7);
     @include linesd($color, 7, $ndef: false);
@@ -120,7 +120,7 @@ $-colors: (primary, success, warning, harmful);
   @include color(fgcolor, white);
   @include color(bgcolor, $color, 5);
   @include color(bghover, $color, 4);
-  @include linesd($color, 5, $ndef: false);
+  @include linesd($color, 4, $ndef: false);
 
   .tm-dark & {
     @include color(fgcolor, $color, 1);

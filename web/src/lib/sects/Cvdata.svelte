@@ -178,10 +178,10 @@
 
     @include bdradi();
     @include fgcolor(secd);
-    @include bgcolor(secd);
+    @include bgcolor(tert);
 
     @include linesd(bd-main, $ndef: false);
-    @include shadow(3);
+    @include shadow(1);
   }
 
   .mtl {
