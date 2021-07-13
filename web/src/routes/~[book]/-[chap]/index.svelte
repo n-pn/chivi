@@ -49,7 +49,7 @@
   export let cvdata = ''
 
   export let dirty = false
-  $: if ($session.privi > 0 && dirty) reload_chap()
+  $: if (dirty) reload_chap()
 
   $: [book_path, list_path, prev_path, next_path] = gen_paths(nvinfo, chinfo)
 
@@ -82,8 +82,10 @@
   }
 
   let _reload = false
+
   async function reload_chap() {
     dirty = false
+    if ($session.privi < 1) return
 
     _reload = true
     const [_, data] = await get_chtext(window.fetch, nvinfo.bhash, chinfo, 1)
@@ -103,9 +105,9 @@
   }
 
   function gen_book_path(bslug, sname, chidx) {
-    let url = `/~${bslug}/chaps?sname=${sname}`
-    const page = Math.floor((chidx - 1) / 30) + 1
-    return page > 1 ? url + `&page=${page}` : url
+    let url = `/~${bslug}/chaps/${sname}`
+    const page = Math.floor((chidx - 1) / 32) + 1
+    return page > 1 ? url + `?page=${page}` : url
   }
 </script>
 
