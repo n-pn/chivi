@@ -198,7 +198,7 @@
   $hv-height: 0.75rem + (1.25 * 6rem);
 
   .lookup {
-    @include fgcolor(neutral, 8);
+    @include fgcolor(secd);
   }
 
   .source {
@@ -209,7 +209,7 @@
     // border: 1px solid color(gray, 3);
     // margin-bottom: 0.75rem;
 
-    @include bgcolor(neutral, 1);
+    @include bgcolor(tert);
     // @include font-family(sans);
 
     // &._vi {
@@ -220,13 +220,13 @@
     &._zh {
       max-height: $zh-height;
       // margin-top: 0.375rem;
-      @include border($sides: bottom);
+      @include border(bd-main, $sides: bottom);
     }
 
     &._hv {
       max-height: $hv-height;
       // margin-top: 0.5rem;
-      @include border($sides: bottom);
+      @include border(bd-main, $sides: bottom);
     }
 
     // :global(x-z),
@@ -242,16 +242,17 @@
 
   .word {
     // margin-top: 0.5rem;
-    font-weight: 500;
+    font-weight: 600;
+    line-height: 2rem;
     @include ftsize(md);
-    @include fgcolor(neutral, 7);
+    @include fgcolor(secd);
     // @include border($sides: left, $width: 0.25rem, $color: color(blue, 5));
   }
 
   h4 {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(neutral, 6);
+    @include fgcolor(tert);
     @include ftsize(sm);
   }
 
@@ -266,7 +267,7 @@
 
   .item {
     & + & {
-      margin-top: 0.25rem;
+      margin-top: var(--gutter-xs);
     }
   }
 
