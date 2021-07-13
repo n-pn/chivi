@@ -20,7 +20,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   padding: $header-gutter 0;
 
   color: #fff;
-  background: var(--color-sky-8);
+  @include bgcolor(primary, 8);
 
   @include shadow(2);
 
@@ -60,21 +60,21 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   height: $header-inner-height;
   line-height: $header-inner-height;
 
-  @include fgcolor(neutral, 1);
+  @include fgcolor(neutral, 0);
 
   @include bdradi();
-  @include bgcolor(sky, 7);
+  @include bgcolor(primary, 7);
 
   &:hover,
   &._active {
-    @include bgcolor(sky, 5);
+    @include bgcolor(primary, 6);
   }
 
   &:disabled {
     cursor: text;
 
     @include fgcolor(mute);
-    @include bgcolor(sky, 6);
+    @include bgcolor(primary, 6);
   }
 
   img,
@@ -94,7 +94,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   font-weight: 500;
 
   @include ftsize(md);
-  letter-spacing: 0.05rem;
+  // letter-spacing: 0.05rem;
 
   &._show-sm {
     @include fluid(display, none, $sm: inline-block);
@@ -106,6 +106,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   ._brand & {
     text-transform: uppercase;
+    font-weight: 500;
     letter-spacing: 0.1em;
   }
 
@@ -169,7 +170,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   top: $header-inner-height;
   right: 0;
 
-  @include bgcolor(main);
+  @include bgcolor(secd);
   @include shadow;
   @include bdradi;
 
@@ -189,9 +190,9 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
     @include flex(0);
 
-    @include border($sides: top);
+    @include border(bd-main, $sides: top);
     &:last-child {
-      @include border($sides: bottom);
+      @include border(bd-main, $sides: bottom);
     }
 
     @include ftsize(sm);
@@ -199,7 +200,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     @include fgcolor(tert);
 
     &:hover {
-      @include fgcolor(sky, 5);
+      @include fgcolor(primary, 5);
       @include bgcolor(tert);
     }
 

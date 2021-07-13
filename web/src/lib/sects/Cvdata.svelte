@@ -147,7 +147,7 @@
 
 <svelte:body on:keydown={handle_keypress} />
 
-<article class:dirty>
+<article class="article" class:dirty>
   {#each lines as _, index (index)}
     <div
       class="mtl {index > 0 ? '_p' : '_h'}"
@@ -171,6 +171,17 @@
 <style lang="scss">
   :global(.adsbygoogle) {
     margin-top: 1rem;
+  }
+
+  .article {
+    padding: var(--verpad) var(--gutter);
+
+    @include bdradi();
+    @include fgcolor(secd);
+    @include bgcolor(secd);
+
+    @include linesd(bd-main, $ndef: false);
+    @include shadow(3);
   }
 
   .mtl {

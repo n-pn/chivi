@@ -57,7 +57,7 @@
 
   {#if pgidx < pgmax}
     <a
-      class="m-button _primary _solid"
+      class="m-button _primary _fill"
       href={pager.url_for({ page: pgidx + 1 })}>
       <span class="-txt">Kế tiếp</span>
       <SIcon name="chevron-right" />

@@ -61,7 +61,7 @@
 
     <div class="chips">
       {#each genres as genre}
-        <a href="/?genre={genre}" class="-chip _orange">
+        <a href="/?genre={genre}" class="-chip _green">
           {genre}
         </a>
       {/each}
@@ -76,7 +76,7 @@
 
     <div class="chips">
       {#each snames as sname}
-        <a href="/?sname={sname}" class="-chip _green _caps">
+        <a href="/?sname={sname}" class="-chip _violet _caps">
           {sname}
         </a>
       {/each}
@@ -177,9 +177,9 @@
       @include color(bdcolor, green, 4);
     }
 
-    &._orange {
-      @include color(fgcolor, orange, 6);
-      @include color(bdcolor, orange, 4);
+    &._violet {
+      @include color(fgcolor, violet, 6);
+      @include color(bdcolor, violet, 4);
     }
 
     &._caps {
@@ -201,9 +201,9 @@
         @include color(bdcolor, green, 6);
       }
 
-      &._orange {
-        @include color(fgcolor, orange, 4);
-        @include color(bdcolor, orange, 6);
+      &._violet {
+        @include color(fgcolor, violet, 4);
+        @include color(bdcolor, violet, 6);
       }
     }
   }

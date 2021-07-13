@@ -113,7 +113,7 @@
 
       <a
         href={make_url(page + 1)}
-        class="m-button _solid _primary"
+        class="m-button _fill _primary"
         class:_disable={page == pmax}>
         <span>Kế tiếp</span>
         <SIcon name="chevron-right" />

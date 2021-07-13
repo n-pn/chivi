@@ -180,7 +180,7 @@
 
     <a
       href={gen_page_url(page + 1, opts)}
-      class="page m-button _solid _primary"
+      class="page m-button _fill _primary"
       class:_disable={page == page_max}>
       <span>Kế tiếp</span>
       <SIcon name="chevron-right" />

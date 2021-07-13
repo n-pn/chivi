@@ -156,7 +156,7 @@
   .chap {
     display: block;
     margin: 0 0.75rem;
-    @include border($sides: bottom);
+    @include border(bd-main, $sides: bottom);
 
     padding: 0.375rem 0.5rem;
     user-select: none;
@@ -188,7 +188,7 @@
 
     .-title {
       flex: 1;
-      color: var(--fg-secd);
+      @include fgcolor(secd);
       @include clamp($width: null);
     }
 
@@ -202,7 +202,7 @@
 
     .-chidx {
       margin-left: 0.125rem;
-      color: var(--fg-tert);
+      @include fgcolor(tert);
       @include ftsize(xs);
 
       &:after {

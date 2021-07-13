@@ -7,44 +7,23 @@ $-btn-height-lg: rem(48px);
 $-btn-height-xl: rem(60px);
 
 .m-button {
-  --fgcolor: var(--fg-tert);
-  --bgcolor: var(--bg-tert);
-  --bghover: var(--bg-secd);
-
   --height: #{$-btn-height-md};
   --gutter: var(--gutter-xs);
-  --ftsize: var(--ftsize-sm);
+  --ftsize: var(--ftsize-md);
   --innerh: calc(var(--height) - var(--gutter) - var(--gutter));
 
-  color: var(--fgcolor);
-  background: var(--bgcolor);
-
   display: inline-flex;
-  text-transform: uppercase;
+  text-transform: capitalize;
   cursor: pointer;
   font-weight: 500;
   user-select: none;
-
-  @include bdradi;
+  border: 0;
 
   padding: var(--gutter);
   height: var(--height);
   line-height: var(--innerh);
   font-size: var(--ftsize);
-
-  &:hover {
-    background: var(--bghover);
-  }
-
-  &:disabled,
-  &._disable {
-    @include fgcolor(mute);
-    @include bgcolor(mute);
-
-    @include hover {
-      cursor: text;
-    }
-  }
+  @include bdradi;
 
   > span {
     margin: 0 var(--gutter-ss);
@@ -58,48 +37,120 @@ $-btn-height-xl: rem(60px);
   }
 }
 
+.btn-xs {
+  --height: #{$-btn-height-xs};
+  --gutter: var(--gutter-xs);
+  --ftsize: var(--ftsize-xs);
+}
+
 .btn-sm {
   --height: #{$-btn-height-sm};
-  --gutter: var(--gutter-ss);
-  --ftsize: var(--ftsize-xs);
+  --gutter: var(--gutter-xs);
+  --ftsize: var(--ftsize-sm);
 }
 
 .btn-lg {
   --height: #{$-btn-height-lg};
   --gutter: var(--gutter-sm);
-  --ftsize: var(--ftsize-md);
+  --ftsize: var(--ftsize-lg);
+}
+
+.btn-xl {
+  --height: #{$-btn-height-xl};
+  --gutter: var(--gutter-md);
+  --ftsize: var(--ftsize-xl);
+}
+
+$-colors: (primary, success, warning, harmful);
+
+@mixin text-button($color: neutral) {
+  @include color(fgcolor, $color, 6);
+  @include color(bgcolor, $color, 0);
+  @include color(bghover, $color, 1);
+  @include linesd($color, 1, $ndef: false);
+
+  .tm-dark & {
+    @include color(fgcolor, $color, 4);
+    @include color(bgcolor, neutral, 9);
+    @include color(bghover, $color, 8);
+    @include linesd($color, 7, $ndef: false);
+  }
+
+  &:disabled,
+  &._disable {
+    @include color(fgcolor, $color, 4);
+    @include color(bgcolor, neutral, 1);
+    @include color(bghover, neutral, 1);
+    @include linesd(neutral, 1);
+
+    .tm-dark & {
+      @include color(fgcolor, $color, 6);
+      @include color(bgcolor, neutral, 8);
+      @include color(bghover, neutral, 8);
+      @include linesd(neutral, 8);
+    }
+  }
 }
 
 .m-button {
-  &._primary {
-    @include color(fgcolor, primary, 6);
-    @include color(bgcolor, primary, 0);
-    @include color(bghover, primary, 1);
+  color: var(--fgcolor);
+  background: var(--bgcolor);
+
+  @include linesd(bd-soft);
+  @include text-button(neutral);
+
+  &:hover {
+    background: var(--bghover);
+  }
+
+  &:disabled,
+  &._disable {
+    // prettier-ignore
+    @include hover { cursor: text; }
+  }
+
+  @each $color in $-colors {
+    &._#{$color} {
+      @include text-button($color);
+    }
   }
 }
 
-.m-button._line {
-  @include linesd(bd-main);
+@mixin fill-button($color: neutral) {
+  @include color(fgcolor, white);
+  @include color(bgcolor, $color, 5);
+  @include color(bghover, $color, 4);
+  @include linesd($color, 5, $ndef: false);
 
-  &._primary {
-    @include linesd(primary, 2, $ndef: false);
+  .tm-dark & {
+    @include color(fgcolor, $color, 1);
+    @include color(bgcolor, $color, 7);
+    @include color(bghover, $color, 6);
+    @include linesd($color, 6, $ndef: false);
   }
-}
 
-.m-button._solid {
-  --fgcolor: var(--bg-main);
-  @include tm-dark {
-    --fgcolor: var(--fg-main);
-  }
-
-  &._primary {
-    @include color(bgcolor, primary, 6);
-    @include color(bghover, primary, 5);
+  &._disable,
+  &:disabled {
+    @include color(fgcolor, $color, 2);
+    @include color(bgcolor, $color, 4);
+    @include color(bghover, $color, 4);
+    @include linesd($color, 4);
 
     .tm-dark & {
-      @include color(fgcolor, primary, 1);
-      @include color(bgcolor, primary, 8);
-      @include color(bghover, primary, 7);
+      @include color(fgcolor, $color, 6);
+      @include color(bgcolor, $color, 8);
+      @include color(bghover, $color, 8);
+      @include linesd($color, 8);
+    }
+  }
+}
+
+.m-button._fill {
+  @include fill-button(neutral);
+
+  @each $color in $-colors {
+    &._#{$color} {
+      @include fill-button($color);
     }
   }
 }

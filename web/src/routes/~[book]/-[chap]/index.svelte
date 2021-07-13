@@ -166,21 +166,21 @@
   <div class="footer" slot="footer">
     <a
       href={prev_path}
-      class="m-button _solid"
+      class="m-button _fill"
       class:_disable={!chinfo.prev_url}
       data-kbd="j">
       <SIcon name="chevron-left" />
       <span>Trước</span>
     </a>
 
-    <a href={list_path} class="m-button _solid" data-kbd="h">
+    <a href={list_path} class="m-button _fill" data-kbd="h">
       <SIcon name="list" />
       <span>{chinfo.chidx}/{chinfo.total}</span>
     </a>
 
     <a
       href={next_path}
-      class="m-button _solid _primary"
+      class="m-button _fill _primary"
       class:_disable={!chinfo.next_url}
       data-kbd="k">
       <span>Kế tiếp</span>
@@ -201,7 +201,7 @@
     line-height: 1.25rem;
 
     @include ftsize(sm);
-    @include border($sides: bottom);
+    // @include border($sides: bottom);
 
     @include tm-dark {
       @include bdcolor(gray, 7);

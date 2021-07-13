@@ -1,0 +1,112 @@
+$color-black: #0b131f !default;
+$color-white: #ffffff !default;
+
+// source: tailwind coolGray
+$color-gray: (
+  0: #f9fafb,
+  1: #f3f4f6,
+  2: #e5e7eb,
+  3: #d1d5db,
+  4: #9ca3af,
+  5: #6b7280,
+  6: #4b5563,
+  7: #374151,
+  8: #1f2937,
+  9: #111827,
+) !default;
+
+// source: tailwind red
+$color-red: (
+  0: #fef2f2,
+  1: #fee2e2,
+  2: #fecaca,
+  3: #fca5a5,
+  4: #f87171,
+  5: #ef4444,
+  6: #dc2626,
+  7: #b91c1c,
+  8: #991b1b,
+  9: #7f1d1d,
+) !default;
+
+// source: tailwind amber
+$color-orange: (
+  0: #fffbeb,
+  1: #fef3c7,
+  2: #fde68a,
+  3: #fcd34d,
+  4: #fbbf24,
+  5: #f59e0b,
+  6: #d97706,
+  7: #b45309,
+  8: #92400e,
+  9: #78350f,
+) !default;
+
+// source: tailwind emerald
+$color-green: (
+  0: #ecfdf5,
+  1: #d1fae5,
+  2: #a7f3d0,
+  3: #6ee7b7,
+  4: #34d399,
+  5: #10b981,
+  6: #059669,
+  7: #047857,
+  8: #065f46,
+  9: #064e3b,
+) !default;
+
+// source: tailwind sky
+$color-blue: (
+  0: #f5fbff,
+  1: #ebf7ff,
+  2: #c8e8fe,
+  3: #93d3fb,
+  4: #50b7f7,
+  5: #0e97ec,
+  6: #0d75b5,
+  7: #0b5b89,
+  8: #0b476b,
+  9: #0b4160,
+) !default;
+
+// source: tailwind violet
+$color-violet: (
+  0: #fbfaff,
+  1: #f3f0ff,
+  2: #e8e1fe,
+  3: #d2c4fd,
+  4: #b69dfb,
+  5: #9a77f8,
+  6: #7f52ef,
+  7: #6631e3,
+  8: #5222b9,
+  9: #4d259d,
+) !default;
+
+// source: tailwind pink
+$color-pink: (
+  0: #fdf2f8,
+  1: #fce7f3,
+  2: #fbcfe8,
+  3: #f9a8d4,
+  4: #f472b6,
+  5: #ec4899,
+  6: #db2777,
+  7: #be185d,
+  8: #9d174d,
+  9: #831843,
+) !default;
+
+$color-palette: (
+  black: $color-black,
+  white: $color-white,
+  gray: $color-gray,
+  red: $color-red,
+  orange: $color-orange,
+  green: $color-green,
+  blue: $color-blue,
+  violet: $color-violet,
+  pink: $color-pink,
+) !default;

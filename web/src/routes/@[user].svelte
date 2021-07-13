@@ -83,7 +83,7 @@
 
     <a
       href="/@{uname}?bmark={bmark}&page={+page + 1}"
-      class="page m-button _solid _primary"
+      class="page m-button _fill _primary"
       class:_disable={page == pmax}>
       <span>Kế tiếp</span>
       <SIcon name="chevron-right" />

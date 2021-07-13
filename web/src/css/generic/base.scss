@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use "../essence" as *;
 
-$colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
+$colors: (gray, blue, green, orange, red, violet) !default;
 
 :root {
   --color-black: #{color-raw(black)};
@@ -23,6 +23,7 @@ $colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
   --bg-tert: var(--color-gray-0);
   --bg-mute: var(--color-gray-2);
 
+  --bd-soft: var(--color-gray-1);
   --bd-main: var(--color-gray-2);
   --bd-bold: var(--color-gray-3);
 }
@@ -46,11 +47,12 @@ $colors: (gray, sky, blue, green, yellow, orange, red, purple) !default;
 
   --fg-link: var(--color-blue-5);
 
-  --bg-main: var(--color-gray-9);
-  --bg-secd: var(--color-black);
+  --bg-main: var(--color-black);
+  --bg-secd: var(--color-gray-9);
   --bg-tert: var(--color-gray-8);
   --bg-mute: var(--color-gray-6);
 
+  --bd-soft: var(--color-gray-8);
   --bd-main: var(--color-gray-7);
   --bd-bold: var(--color-gray-6);
 }

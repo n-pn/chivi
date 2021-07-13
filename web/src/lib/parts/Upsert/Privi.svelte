@@ -7,7 +7,7 @@
 
   function btn_style(term) {
     if (term.privi < term.old_privi) return '_text'
-    return term.privi == term.old_privi ? '_line' : '_solid'
+    return term.privi == term.old_privi ? '_line' : '_fill'
   }
 
   function btn_color(term) {
