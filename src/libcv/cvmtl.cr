@@ -19,15 +19,6 @@ class CV::Cvmtl
     end
   end
 
-  # def self.init(dname : String)
-  #   case dname
-  #   when "hanviet" then hanviet
-  #   when "binh_am" then binh_am
-  #   when "tradsim" then tradsim
-  #   else                generic(dname)
-  #   end
-  # end
-
   def initialize(@rdict : Vdict, @bdict : Vdict? = nil)
   end
 

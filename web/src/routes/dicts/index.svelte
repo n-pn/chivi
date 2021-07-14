@@ -72,7 +72,7 @@
 
 <style lang="scss">
   .dicts {
-    @include grid(minmax(10rem, 1fr), $gap: var(--gutter-sm));
+    @include grid(minmax(12.5rem, 1fr), $gap: var(--gutter-sm));
   }
 
   .-dict {

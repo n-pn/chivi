@@ -11,15 +11,14 @@ table {
   border-collapse: collapse;
   border-radius: var(--radius);
   min-width: 100%;
+  color: var(--fg-main);
 }
 
 caption {
-  --tbcap-color: var(--fg-secd);
-
   padding-top: var(--table-spacer);
   padding-bottom: var(--table-spacer);
 
-  color: var(--tbcap-color);
+  color: var(--fg-secd);
   text-align: left;
   caption-side: bottom;
 }

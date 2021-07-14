@@ -80,7 +80,7 @@
   </svelte:fragment>
 
   <article class="m-article">
-    <h1>{label}</h1>
+    <h1 class="h3">{label}</h1>
     <p>Entries: {total}</p>
 
     <div class="table">
@@ -141,12 +141,11 @@
 
 <style lang="scss">
   article {
-    margin: 1rem 0;
-    padding: 1rem;
-    background: #fff;
+    // padding: var;
+    @include bgcolor(main);
+    // @include fgcolor(main);
     @include shadow(1);
     @include bdradi();
-    @include fgcolor(neutral, 8);
   }
 
   .table {
@@ -159,6 +158,8 @@
   table {
     width: 100%;
     max-width: 100%;
+    color: var(--fg-secd);
+    @include ftsize(sm);
   }
 
   th,
@@ -166,33 +167,36 @@
     text-align: center;
     line-height: 1.5rem;
     padding: 0.375rem 0.5rem;
+    @include clamp($width: null);
   }
 
   tbody > tr:hover {
     cursor: pointer;
-    background-color: color(blue, 4);
+    background-color: color(primary, 5, 1);
   }
 
   td > a {
-    @include fgcolor(neutral, 6);
+    @include fgcolor(tert);
+
     &:hover {
-      @include fgcolor(primary, 6);
+      @include fgcolor(primary, 5);
     }
+  }
+
+  .-key {
+    @include ftsize(md);
   }
 
   .-idx,
   .-wgt,
-  .-tag,
   .-mtime,
   .-privi,
   .-uname {
-    font-size: rem(14px);
-    @include clamp($width: null);
-    @include fgcolor(neutral, 6);
+    @include fgcolor(tert);
   }
 
   .-privi._gt {
-    @include fgcolor(primary, 6);
+    @include fgcolor(primary, 5);
   }
 
   .-val {
@@ -200,7 +204,7 @@
     @include clamp($width: null);
     &._del {
       font-style: italic;
-      @include fgcolor(neutral, 4);
+      @include fgcolor(mute);
     }
   }
 </style>
