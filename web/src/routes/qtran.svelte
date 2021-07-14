@@ -81,6 +81,7 @@
   <div slot="footer" class="foot">
     {#if on_edit}
       <button class="m-button" on:click={cleanup}>
+        <SIcon name="trash" />
         <span>Xoá</span>
       </button>
 
@@ -89,6 +90,7 @@
       </button>
     {:else}
       <button class="m-button" on:click={() => (edit_mode = true)}>
+        <SIcon name="edit-2" />
         <span>Sửa</span>
       </button>
 

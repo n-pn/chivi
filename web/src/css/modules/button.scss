@@ -73,7 +73,7 @@ $-colors: (primary, success, warning, harmful);
   --innerh: calc(var(--height) - var(--gutter) - var(--gutter));
 
   display: inline-flex;
-  gap: calc(var(--gutter) * 0.5);
+
   justify-content: center;
   min-width: var(--height);
 
@@ -104,10 +104,15 @@ $-colors: (primary, success, warning, harmful);
   }
 
   > svg,
-  > img {
-    // margin: var(--gutter) 0;
+  > img,
+  > .-ico {
     width: var(--innerh);
     height: var(--innerh);
+  }
+
+  > span,
+  > .-txt {
+    margin: 0 calc(var(--gutter) * 0.5);
   }
 }
 

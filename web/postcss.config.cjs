@@ -19,7 +19,7 @@ const purgeConfig = {
 
 module.exports = {
   plugins: [
-    prod && autoprefixer,
+    autoprefixer,
     prod && cssnano({ preset: 'default' }),
     purging && purge(purgeConfig),
   ].filter(Boolean),
