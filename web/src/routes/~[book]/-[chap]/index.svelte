@@ -79,23 +79,13 @@
 
   let _reload = false
 
-  $: console.log({ _dirty })
-
   async function reload_chap() {
     _dirty = false
-    console.log('reload!')
-
     if ($session.privi < 1) return
 
     _reload = true
-
     const [err, data] = await get_chtext(window.fetch, nvinfo.bhash, chinfo, 1)
-    if (err) {
-      console.log({ data })
-    } else {
-      cvdata = data
-    }
-
+    if (!err) cvdata = data
     _reload = false
   }
 

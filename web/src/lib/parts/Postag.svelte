@@ -194,7 +194,7 @@
 
       @include tm-dark {
         @include fgcolor(primary, 3);
-        @include bgcolor(primary, 9);
+        @include bgcolor(primary, 9, 5);
         @include linesd(primary, 8, $ndef: false);
       }
     }
