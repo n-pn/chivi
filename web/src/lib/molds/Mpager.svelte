@@ -43,34 +43,32 @@
   }
 </script>
 
-{#if pgmax >= pgidx}
-  <nav class="pagi">
-    {#each build_pagi(pgidx, pgmax) as pgnow}
-      {#if pgnow != pgidx}
-        <a class="m-button _line" href={pager.url_for({ page: pgnow })}
-          ><span>{pgnow}</span></a>
-      {:else}
-        <button class="m-button" disabled>
-          <span>{pgnow}</span>
-        </button>
-      {/if}
-    {/each}
-
-    {#if pgidx < pgmax}
-      <a
-        class="m-button _primary _fill"
-        href={pager.url_for({ page: pgidx + 1 })}>
-        <span class="-txt">Kế tiếp</span>
-        <SIcon name="chevron-right" />
-      </a>
+<nav class="pagi">
+  {#each build_pagi(pgidx, pgmax) as pgnow}
+    {#if pgnow != pgidx}
+      <a class="m-button _line" href={pager.url_for({ page: pgnow })}
+        ><span>{pgnow}</span></a>
     {:else}
       <button class="m-button" disabled>
-        <span class="-txt">Kế tiếp</span>
-        <SIcon name="chevron-right" />
+        <span>{pgnow}</span>
       </button>
     {/if}
-  </nav>
-{/if}
+  {/each}
+
+  {#if pgidx < pgmax}
+    <a
+      class="m-button _primary _fill"
+      href={pager.url_for({ page: pgidx + 1 })}>
+      <span class="-txt">Kế tiếp</span>
+      <SIcon name="chevron-right" />
+    </a>
+  {:else}
+    <button class="m-button" disabled>
+      <span class="-txt">Kế tiếp</span>
+      <SIcon name="chevron-right" />
+    </button>
+  {/if}
+</nav>
 
 <style lang="scss">
   .pagi {
