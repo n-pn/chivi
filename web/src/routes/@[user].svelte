@@ -6,10 +6,7 @@
     const bmark = query.get('bmark') || 'reading'
     const page = +query.get('page') || 1
 
-    let skip = (page - 1) * 24
-    if (skip < 0) skip = 0
-
-    let url = `/api/users/${uname}/books?skip=${skip}&take=24&order=update`
+    let url = `/api/users/${uname}/books?page=${page}&take=24&order=update`
     if (bmark != 'reading') url += `&bmark=${bmark}`
 
     const res = await fetch(url)
@@ -20,26 +17,28 @@
       }
     }
 
-    const { books, total } = await res.json()
-    return { props: { uname, bmark, books, total, page } }
+    const data = await res.json()
+    return { props: { uname, bmark, ...data } }
   }
 </script>
 
 <script>
+  import { page } from '$app/stores'
+
   import SIcon from '$atoms/SIcon.svelte'
   import Nvlist from '$parts/Nvlist.svelte'
   import Vessel from '$sects/Vessel.svelte'
-
+  import Mpager, { Pager } from '$molds/Mpager.svelte'
   export let uname = ''
   export let bmark = 'reading'
 
   export let books = []
   export let total = 0
+  export let pgidx = 1
+  export let pgmax = 1
 
-  export let page = ''
-
-  $: pmax = Math.floor((total - 1) / 24) + 1
-  $: if (pmax < 1) pmax = 1
+  $: pager = new Pager($page.path, $page.query)
+  $: console.log({ total })
 </script>
 
 <svelte:head>
@@ -69,25 +68,7 @@
   {/if}
 
   <div class="pagi" slot="footer">
-    <a
-      href="/@{uname}?bmark={bmark}&page={+page - 1}"
-      class="page m-button _line"
-      class:_disable={page == 1}>
-      <SIcon name="chevron-left" />
-      <span>Trước</span>
-    </a>
-
-    <div class="page m-button _line _primary _disable">
-      <span>{page}</span>
-    </div>
-
-    <a
-      href="/@{uname}?bmark={bmark}&page={+page + 1}"
-      class="page m-button _fill _primary"
-      class:_disable={page == pmax}>
-      <span>Kế tiếp</span>
-      <SIcon name="chevron-right" />
-    </a>
+    <Mpager {pager} {pgidx} {pgmax} />
   </div>
 </Vessel>
 
@@ -146,7 +127,6 @@
   }
 
   .pagi {
-    padding: 0.5rem 0;
     @include flex($center: horz, $gap: 0.375rem);
   }
 </style>

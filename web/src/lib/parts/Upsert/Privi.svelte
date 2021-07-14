@@ -36,6 +36,7 @@
 
 <button
   class="submit m-button btn-lg {btn_style(term)} {btn_color(term)}"
+  data-kbd="ctrl+enter"
   disabled={p_max <= p_min}
   on:click>
   <span class="-text">{term.state}</span>

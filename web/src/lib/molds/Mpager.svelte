@@ -1,11 +1,13 @@
 <script context="module">
+  import { goto } from '$app/navigation'
+
   export class Pager {
     constructor(path, query = '') {
       this.path = path
       this.query = new URLSearchParams(query.toString())
     }
 
-    url_for(opts) {
+    url(opts = {}) {
       for (const key in opts) {
         const val = opts[key]
         if (val === null) this.query.delete(key)
@@ -17,6 +19,27 @@
       return query ? this.path + '?' + query : this.path
     }
   }
+
+  export function jumpto(node, [replaceState = false, scrollTo = null]) {
+    const action = async (event) => {
+      if (replaceState || scrollTo) {
+        event.preventDefault()
+        event.stopPropagation()
+
+        const href = event.target.getAttribute('href')
+
+        const noscroll = !!scrollTo
+        await goto(href, { replaceState, noscroll, keepfocus: false })
+
+        scrollTo?.scrollIntoView({ block: 'start' })
+
+        // console.log('jumped')
+      }
+    }
+
+    node.addEventListener('click', action)
+    return { destroy: () => node.removeEventListener('click', action) }
+  }
 </script>
 
 <script>
@@ -25,6 +48,9 @@
   export let pager = new Pager('/')
   export let pgidx = 1
   export let pgmax = 1
+
+  export let replaceState = false
+  export let scrollTo = null
 
   function build_pagi(pgidx, pgmax) {
     const res = []
@@ -44,10 +70,27 @@
 </script>
 
 <nav class="pagi">
+  {#if pgidx > 1}
+    <a
+      class="m-button _fill -md"
+      href={pager.url({ page: pgidx - 1 })}
+      data-kbd="j"
+      use:jumpto={[replaceState, scrollTo]}>
+      <SIcon name="chevron-left" />
+    </a>
+  {:else}
+    <button class="m-button -md" disabled data-kbd="j">
+      <SIcon name="chevron-left" />
+    </button>
+  {/if}
+
   {#each build_pagi(pgidx, pgmax) as pgnow}
     {#if pgnow != pgidx}
-      <a class="m-button _line" href={pager.url_for({ page: pgnow })}
-        ><span>{pgnow}</span></a>
+      <a
+        class="m-button _line"
+        data-kbd={pgnow == 1 ? 'h' : pgnow == pgmax ? 'l' : ''}
+        href={pager.url({ page: pgnow })}
+        use:jumpto={[replaceState, scrollTo]}><span>{pgnow}</span></a>
     {:else}
       <button class="m-button" disabled>
         <span>{pgnow}</span>
@@ -58,12 +101,14 @@
   {#if pgidx < pgmax}
     <a
       class="m-button _primary _fill"
-      href={pager.url_for({ page: pgidx + 1 })}>
+      href={pager.url({ page: pgidx + 1 })}
+      data-kbd="k"
+      use:jumpto={[replaceState, scrollTo]}>
       <span class="-txt">Kế tiếp</span>
       <SIcon name="chevron-right" />
     </a>
   {:else}
-    <button class="m-button" disabled>
+    <button class="m-button" disabled data-kbd="k">
       <span class="-txt">Kế tiếp</span>
       <SIcon name="chevron-right" />
     </button>
@@ -77,5 +122,9 @@
 
   .-txt {
     @include fluid(display, none, $md: inline);
+  }
+
+  .-md {
+    @include fluid(display, none, $md: inline-block);
   }
 </style>

@@ -111,43 +111,17 @@
     if (use_html) return (htmls[idx] ||= cvlib.render_html(nodes))
     return (texts[idx] ||= cvlib.render_text(nodes))
   }
-
-  function handle_keypress(evt) {
-    if (evt.ctrlKey) return
-    if ($upsert_state > 0) return
-
-    switch (evt.key) {
-      case '\\':
-        $lookup_enabled = true
-        break
-
-      case 'x':
-        evt.preventDefault()
-        upsert_activate(upsert_input, 0)
-        break
-
-      case 'c':
-        evt.preventDefault()
-        upsert_activate(upsert_input, 1)
-        break
-
-      case 'r':
-        evt.preventDefault()
-        changed = true
-        break
-
-      default:
-        if (evt.keyCode == 13) {
-          evt.preventDefault()
-          upsert_activate(upsert_input, 0)
-        }
-    }
-  }
-
-  $: console.log({ _dirty })
 </script>
 
-<svelte:body on:keydown={handle_keypress} />
+<div hidden>
+  <button data-kbd="r" on:click={() => (_dirty = true)}>R</button>
+  <button data-kbd="x" on:click={() => upsert_activate(upsert_input, 0)}
+    >X</button>
+  <button data-kbd="c" on:click={() => upsert_activate(upsert_input, 1)}
+    >C</button>
+  <button data-kbd="enter" on:click={() => upsert_activate(upsert_input, 0)}
+    >E</button>
+</div>
 
 <article class="article" class:_dirty>
   {#each lines as _, index (index)}

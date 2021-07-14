@@ -33,8 +33,9 @@ class CV::FsBookCtrl < CV::BaseCtrl
   end
 
   private def list_books(matched : Set(String)?)
-    skip = params.fetch_int("skip", min: 0)
+    page = params.fetch_int("page", min: 1)
     take = params.fetch_int("take", min: 1, max: 24)
+    skip = (page - 1) * take
 
     order = params.fetch_str("order", "access")
     total = matched ? matched.size : NvOrders.get(order).size
@@ -43,6 +44,7 @@ class CV::FsBookCtrl < CV::BaseCtrl
       JSON.build(res) do |json|
         json.object do
           json.field "total", total
+          json.field "pgidx", page
           json.field "pgmax", (total - 1) // take + 1
 
           json.field "books" do

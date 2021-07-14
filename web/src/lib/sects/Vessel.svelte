@@ -72,9 +72,11 @@
 
 <Appnav bind:actived={active_appnav} />
 
-{#if $session.uname == 'Khách'}
+{#if $session.privi < -1}
   <Signin bind:actived={active_usercp} />
-{:else}
+{/if}
+
+{#if $session.privi > -2}
   <Usercp bind:actived={active_usercp} />
 {/if}
 

@@ -1,6 +1,5 @@
 <script context="module">
   import Cvdata, { toggle_lookup } from '$sects/Cvdata.svelte'
-  import { state as upsert_state } from '$parts/Upsert.svelte'
 
   import { get_chinfo, get_chtext } from '$api/chtext_api'
 
@@ -49,34 +48,6 @@
 
   $: [book_path, list_path, prev_path, next_path] = gen_paths(nvinfo, chinfo)
 
-  // $: $lookup_enabled = false
-  // $: $lookup_actived = false
-
-  function handle_keypress(evt) {
-    if (evt.ctrlKey) return
-    if ($upsert_state > 0) return
-
-    switch (evt.key) {
-      case '\\':
-      case 'x':
-      case 'c':
-      case 'v':
-        break
-
-      case 'h':
-      case 'j':
-      case 'k':
-      case 'r':
-        let elm = document.querySelector(`[data-kbd="${evt.key}"]`)
-        if (elm) {
-          evt.preventDefault()
-          elm.click()
-        }
-
-        break
-    }
-  }
-
   let _reload = false
 
   async function reload_chap() {
@@ -109,8 +80,6 @@
 <svelte:head>
   <title>{chinfo.title} - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
-
-<svelte:body on:keydown={handle_keypress} />
 
 <Vessel shift={$lookup_enabled && $lookup_actived && $lookup_sticked}>
   <svelte:fragment slot="header-left">

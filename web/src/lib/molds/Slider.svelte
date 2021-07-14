@@ -7,18 +7,10 @@
   export let _slider = 'right'
   export let _rwidth = 25
 
-  function handle_keydown(evt) {
-    if (!actived) return
-    evt.stopPropagation()
-    if (evt.keyCode == 27) actived = false
-  }
-
   function hide_if_anchor_clicked(e) {
     if (e.target.tagName == 'A') actived = false
   }
 </script>
-
-<svelte:window on:keydown={handle_keydown} />
 
 <div
   class="wrap"
@@ -46,7 +38,7 @@
       </button>
     {/if}
 
-    <button class="-btn" on:click={() => (actived = false)}>
+    <button class="-btn" data-kbd="esc" on:click={() => (actived = false)}>
       <SIcon name="x" />
     </button>
   </header>

@@ -34,7 +34,7 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <button class="-btn" on:click={change_theme}>
+    <button class="-btn" data-kbd="t" on:click={change_theme}>
       <SIcon name={$session.site_theme == 'dark' ? 'sun' : 'moon'} />
     </button>
 

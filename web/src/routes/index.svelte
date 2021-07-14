@@ -3,11 +3,9 @@
 
   export async function load({ page: { query }, fetch }) {
     const page = +query.get('page') || 1
-    let skip = (page - 1) * take
-    if (skip < 1) skip = 0
 
     let url = `/api/books`
-    url += `?${query.toString()}&take=24&skip=${skip}`
+    url += `?${query.toString()}&take=24&page=${page}`
 
     const res = await fetch(url)
 
@@ -50,71 +48,21 @@
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let books = []
+  export let pgidx = 1
   export let pgmax = 1
 
   export let opts = { order: 'access' }
   $: pager = new Pager($page.path, $page.query)
-
-  let searching = false
-
-  function handleKeypress(evt) {
-    if (searching) return
-    if (!evt.alt) return
-
-    switch (evt.keyCode) {
-      case 72:
-        evt.preventDefault()
-        change_page(1)
-        break
-
-      case 76:
-        evt.preventDefault()
-        change_page(pgmax)
-        break
-
-      case 37:
-      case 74:
-        if (!evt.altKey) {
-          evt.preventDefault()
-          change_page(page - 1)
-        }
-        break
-
-      case 39:
-      case 75:
-        if (!evt.altKey) {
-          evt.preventDefault()
-          change_page(page + 1)
-        }
-        break
-
-      default:
-        break
-    }
-  }
-
-  function change_page(new_page = 2) {
-    if (new_page >= 1 && new_page <= pgmax) {
-      _goto_(gen_page_url(new_page, query))
-    }
-  }
 </script>
 
 <svelte:head>
   <title>Chivi - Truyện tàu dịch máy</title>
 </svelte:head>
 
-<svelte:window on:keydown={handleKeypress} />
-
 <Vessel>
   <svelte:fragment slot="header-left">
     <form class="header-field" action="/search" method="get">
-      <input
-        type="search"
-        name="q"
-        placeholder="Tìm kiếm"
-        on:focus={() => (searching = true)}
-        on:onfocusout={() => (searching = false)} />
+      <input type="search" name="q" placeholder="Tìm truyện" />
       <SIcon name="search" />
     </form>
   </svelte:fragment>
@@ -127,7 +75,7 @@
   <div class="order">
     {#each Object.entries(order_names) as [type, label]}
       <a
-        href={pager.url_for({ page: 1, order: type })}
+        href={pager.url({ page: 1, order: type })}
         class="-type"
         class:_active={opts.order === type}>
         <span>{label}</span>
@@ -142,7 +90,7 @@
   {/if}
 
   <svelte:fragment slot="footer">
-    <Mpager {pager} pgidx={opts.page} {pgmax} />
+    <Mpager {pager} {pgidx} {pgmax} />
   </svelte:fragment>
 </Vessel>
 

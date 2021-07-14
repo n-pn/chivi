@@ -23,7 +23,7 @@
 
   let prevScrollTop = 0
 
-  function track_scrolling() {
+  function handle_scroll() {
     if ($navigating == true) {
       prevScrollTop = 0
       $l_scroll = 0
@@ -39,6 +39,43 @@
   //   // disabled until adsense is unblocked
   //   if ($session.privi < 2) e.stopPropagation()
   // }
+
+  function handle_keydown(evt) {
+    switch (evt.key) {
+      case 'Enter':
+        if (evt.ctrlKey) {
+          trigger_click(evt, `[data-kbd="ctrl+enter"]`)
+          return
+        }
+      case 'Escape':
+        trigger_click(evt, `[data-kbd="esc"]`)
+        return
+
+      default:
+        if (evt.ctrlKey) return
+    }
+
+    let active = document?.activeElement
+    switch (active?.tagName) {
+      case 'TEXTAREA':
+      case 'INPUT':
+        if (!evt.altKey) return
+    }
+
+    if (evt.key == '"') {
+      trigger_click(evt, `[data-kbd='"']`)
+    } else {
+      trigger_click(evt, `[data-kbd="${evt.key}"]`)
+    }
+  }
+
+  function trigger_click(evt, sel) {
+    const elem = document.querySelector(sel)
+    if (!elem) return
+    evt.preventDefault()
+    evt.stopPropagation()
+    elem.click()
+  }
 </script>
 
 <svelte:head>
@@ -50,7 +87,7 @@
   {/if}
 </svelte:head>
 
-<svelte:window on:scroll={track_scrolling} />
+<svelte:window on:scroll={handle_scroll} on:keydown={handle_keydown} />
 
 <div class="app" class:tm-dark={$session.site_theme == 'dark'}>
   <slot />

@@ -33,7 +33,7 @@ const cached = {}
 
 export async function getSession({ headers }) {
   const cookie = getChiviSc(headers.cookie || '')
-  if (!cookie) return { uname: 'Khách', privi: '-1' }
+  if (!cookie) return { uname: 'Khách', privi: '-2' }
 
   cached[cookie] ||= await currentUser(headers)
   return cached[cookie]

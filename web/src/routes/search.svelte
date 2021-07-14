@@ -5,10 +5,7 @@
     const type = query.get('t') || 'btitle'
 
     if (word) {
-      let skip = (page - 1) * 8
-      if (skip < 0) skip = 0
-
-      const url = `/api/books?take=8&skip=${skip}&${type}=${word}`
+      const url = `/api/books?take=8&page=${page}&${type}=${word}`
 
       const res = await fetch(url)
       const { books, total } = await res.json()
@@ -34,9 +31,8 @@
 
   export let books = []
   export let total = 0
-
-  $: skip = (page - 1) * 8
-  $: pmax = Math.floor((+total - 1) / 8) + 1
+  export let pgidx = 0
+  export let pgmax = 0
 
   function make_url(page) {
     if (page < 1) page = 1
@@ -61,10 +57,10 @@
     </form>
   </svelte:fragment>
 
-  {#if pmax > 0}
+  {#if pgmax > 0}
     <h1>
       Hiển thị kết quả
-      {skip + 1}~{skip + books.length}/{total}
+      {(pgidx - 1) * 8 + 1}~{(pgidx - 1) * 8 + books.length}/{total}
       cho từ khoá "{word}":
     </h1>
 

@@ -7,12 +7,12 @@
 
     const { bhash, snames } = nvinfo
     const sname = extract_sname(snames, params.seed)
-    const page = +query.get('page')
+    const page = +query.get('page') || 1
 
     const [snvid] = nvinfo.chseed[sname] || [bhash]
 
     const opts = { sname, snvid, page }
-    const mode = +query.get('mode')
+    const mode = +query.get('mode') || 1
 
     const [err2, chseed] = await get_chseed(fetch, bhash, opts, mode)
     if (err2) return { status: err2, error: new Error(chseed) }
@@ -40,31 +40,37 @@
 </script>
 
 <script>
-  import { page, session } from '$app/stores'
+  import { session, navigating } from '$app/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
   import Chlist from '$parts/Chlist.svelte'
   import Book from '../_book.svelte'
 
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
-  $: pager = new Pager($page.path, $page.query)
+  import Mpager, { Pager, jumpto } from '$molds/Mpager.svelte'
 
-  import paginate_range from '$utils/paginate_range'
+  let pagers = {}
+  $: pager = get_pager(opts.sname)
+
+  function get_pager(sname) {
+    return (pagers[sname] ||= new Pager(
+      `/~${nvinfo.bslug}/chaps/${sname}`,
+      `page=${opts.page}`
+    ))
+  }
 
   export let nvinfo
   export let chseed = { chaps: [], total: 0, mtime: 0 }
   export let chlist = []
-  export let opts = { page: 0 }
+  export let opts = { page: 1 }
 
   $: pmax = get_pmax(chseed, opts)
-  $: page_list = paginate_range(opts.page, pmax, 9)
 
   $: [main_seeds, hide_seeds] = split_chseed(nvinfo, opts)
   let show_more = false
 
-  let scroll_top
-  let _load = false
+  let scrollTo
+  $: _load = $navigating && opts.mode > 1
 
   async function load_chseed(evt, sname, mode = 0) {
     evt.preventDefault()
@@ -73,11 +79,9 @@
 
     if (opts.sname != sname) {
       opts = { ...opts, sname, snvid }
-      const url = page_url(sname, opts.page)
+      const url = get_pager(sname).url({ page: opts.page })
       window.history.replaceState({}, '', url)
     }
-
-    _load = true
 
     const [err, data] = await get_chseed(fetch, nvinfo.bhash, opts, mode)
     if (err) return console.log({ err })
@@ -86,7 +90,6 @@
     nvinfo = update_utime(nvinfo, chseed.utime)
 
     await load_chlist(opts.page, false)
-    _load = false
   }
 
   async function load_chlist(page = 1, scroll = true) {
@@ -97,43 +100,9 @@
     const [_err, data] = await get_chlist(fetch, nvinfo.bhash, opts)
     chlist = data
 
-    const url = page_url(opts.sname, page)
+    const url = pager.url({ page: opts.page })
     window.history.replaceState({}, '', url)
-
-    if (scroll) scroll_top.scrollIntoView({ block: 'start' })
-  }
-
-  function handle_keypress(evt) {
-    if ($session.privi < 1) return
-
-    switch (evt.keyCode) {
-      case 72:
-        load_chlist(1)
-        break
-
-      case 76:
-        load_chlist(pmax)
-        break
-
-      case 37:
-      case 74:
-        if (!evt.altKey) load_chlist(opts.page - 1)
-        break
-
-      case 39:
-      case 75:
-        if (!evt.altKey) load_chlist(opts.page + 1)
-        break
-
-      default:
-        break
-    }
-  }
-
-  function page_url(sname, page) {
-    let url = `/~${nvinfo.bslug}/chaps/${sname}`
-    if (page > 1) url += `?page=${page}`
-    return url
+    if (scroll) scrollTo.scrollIntoView({ block: 'start' })
   }
 
   let add_seed = false
@@ -189,16 +158,14 @@
   }
 </script>
 
-<svelte:window on:keydown={handle_keypress} />
-
 <Book {nvinfo} nvtab="chaps">
   <div class="source">
     {#each main_seeds as mname}
       <a
         class="-name"
         class:_active={opts.sname === mname}
-        href={page_url(mname, opts.page)}
-        on:click={(e) => load_chseed(e, mname)}
+        href={get_pager(mname).url({ page: opts.page })}
+        use:jumpto={[true, scrollTo]}
         >{mname}
       </a>
     {/each}
@@ -208,8 +175,8 @@
         {#each hide_seeds as hname}
           <a
             class="-name"
-            href={page_url(hname, opts.page)}
-            on:click={(e) => load_chseed(e, hname)}
+            href={get_pager(hname).url({ page: opts.page })}
+            use:jumpto={[true, scrollTo]}
             >{hname}
           </a>
         {/each}
@@ -252,7 +219,7 @@
     </div>
   {/if}
 
-  <div class="chinfo">
+  <div class="chinfo" bind:this={scrollTo}>
     <div class="-left">
       <span class="-text">{opts.sname}</span>
       <span class="-span">
@@ -263,10 +230,13 @@
     </div>
 
     {#if is_remote_seed(opts.sname)}
-      <button class="m-button" on:click={(e) => load_chseed(e, opts.sname, 2)}>
+      <a
+        class="m-button"
+        href={pager.url({ page: opts.page, mode: 2 })}
+        use:jumpto={[true, scrollTo]}>
         <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
         <span class="-hide">Đổi mới</span>
-      </button>
+      </a>
     {:else if opts.sname == 'chivi'}
       <a class="m-button" href="/~{nvinfo.bslug}/+{opts.sname}">
         <SIcon name="plus" />
@@ -278,13 +248,15 @@
   <div class="chlist">
     {#if chseed.lasts.length > 0}
       <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chseed.lasts} />
-
       <div class="-sep" />
-
       <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chlist} />
-
       <footer class="foot">
-        <Mpager {pager} pgidx={opts.page} pgmax={pmax} />
+        <Mpager
+          {pager}
+          pgidx={opts.page}
+          pgmax={pmax}
+          {scrollTo}
+          replaceState={true} />
       </footer>
     {:else}
       <p class="empty">Không có nội dung :(</p>

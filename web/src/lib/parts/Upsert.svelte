@@ -82,7 +82,7 @@
     const first_hint = data.hints[0]
     terms[0].fix_val(terms[1].val || first_hint || titleize(trans.hanviet, 9))
     terms[1].fix_val(terms[0].old_val || first_hint || trans.hanviet)
-    terms[2].fix_val(first_hint.toLowerCase() || trans.hanviet)
+    terms[2].fix_val(first_hint?.toLowerCase() || trans.hanviet)
   }
 
   async function submit_val() {
@@ -91,45 +91,9 @@
     // term[$tab] = new Term(res, $tab + 1, $session.privi)
     deactivate()
   }
-
-  function handle_keyboard(evt) {
-    if ($state < 1) return
-
-    switch (evt.keyCode) {
-      case 13:
-        return submit_val()
-
-      case 27:
-        return deactivate()
-
-      case 38:
-        if (evt.altKey && term?.privi < $session.privi) term.privi += 1
-        break
-
-      case 40:
-        if (evt.altKey && term?.privi > 1) term.privi -= 1
-        break
-
-      default:
-        if (!evt.altKey) return
-
-        // make `~` alias of `0`
-        const key = evt.keyCode == 192 ? '0' : evt.key
-        let elem = document.querySelector(`#upsert [data-kbd="${key}"]`)
-
-        if (elem) {
-          evt.preventDefault()
-          elem.click()
-        }
-    }
-  }
 </script>
 
-<div
-  class="wrap"
-  tabindex="-1"
-  on:click={deactivate}
-  on:keydown={handle_keyboard}>
+<div class="wrap" on:click={deactivate}>
   <div id="upsert" class="main" on:click|stopPropagation={focus_on_value}>
     <header class="head">
       <a href="/dicts/{dname}" class="m-button _text" target="_blank">
@@ -138,7 +102,11 @@
 
       <Input phrase={$input} pinyin={trans.binh_am} bind:output={key} />
 
-      <button type="button" class="m-button _text" on:click={deactivate}>
+      <button
+        type="button"
+        class="m-button _text"
+        data-kbd="esc"
+        on:click={deactivate}>
         <SIcon name="x" />
       </button>
     </header>
