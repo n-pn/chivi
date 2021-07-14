@@ -141,7 +141,7 @@
     // margin: 0 auto;
     // margin-top: 20vh;
     max-width: 100%;
-    @include border(bd-main, $sides: top);
+    @include border(--bd-main, $sides: top);
   }
 
   .input {
@@ -167,7 +167,7 @@
     line-height: 1.75rem;
     @include ftsize(lg);
 
-    @include linesd(bd-main);
+    @include linesd(--bd-main);
     @include bdradi();
 
     &:hover {

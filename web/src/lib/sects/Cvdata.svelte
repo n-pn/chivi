@@ -176,11 +176,12 @@
   .article {
     padding: var(--verpad) var(--gutter);
 
+    @include fluid(margin-left, calc(-1 * var(--gutter)), $lg: 0);
+    @include fluid(margin-right, calc(-1 * var(--gutter)), $lg: 0);
+
     @include bdradi();
     @include fgcolor(secd);
     @include bgcolor(tert);
-
-    @include linesd(bd-main, $ndef: false);
     @include shadow(1);
   }
 

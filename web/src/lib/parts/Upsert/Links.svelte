@@ -21,7 +21,7 @@
 <style lang="scss">
   .foot {
     @include flex($center: horz);
-    @include border(bd-main, $sides: top);
+    @include border(--bd-main, $sides: top);
   }
 
   .link {

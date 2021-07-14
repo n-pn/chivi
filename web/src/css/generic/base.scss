@@ -4,57 +4,37 @@
 $colors: (gray, blue, green, orange, red, violet) !default;
 
 :root {
-  --color-black: #{color-raw(black)};
-  --color-white: #{color-raw(white)};
+  --fg-main: #{color(neutral, 8)};
+  --fg-secd: #{color(neutral, 6)};
+  --fg-tert: #{color(neutral, 5)};
+  --fg-mute: #{color(neutral, 4)};
 
-  @each $name in $colors {
-    @for $tone from 0 to 10 {
-      --color-#{'' + $name}-#{'' + $tone}: #{color-raw($name, $tone)};
-    }
-  }
+  --bg-main: #{color(neutral, 1)};
+  --bg-secd: #{color(white)};
+  --bg-tert: #{color(neutral, 0)};
+  --bg-mute: #{color(neutral, 2)};
 
-  --fg-main: var(--color-gray-8);
-  --fg-secd: var(--color-gray-6);
-  --fg-tert: var(--color-gray-5);
-  --fg-mute: var(--color-gray-4);
-
-  --bg-main: var(--color-gray-1);
-  --bg-secd: var(--color-white);
-  --bg-tert: var(--color-gray-0);
-  --bg-mute: var(--color-gray-2);
-
-  --bd-soft: var(--color-gray-1);
-  --bd-main: var(--color-gray-2);
-  --bd-bold: var(--color-gray-3);
+  --bd-soft: #{color(neutral, 1)};
+  --bd-main: #{color(neutral, 2)};
+  --bd-bold: #{color(neutral, 3)};
 }
 
 .tm-dark {
-  // --color-black: #{color(dark-black)};
-  // --color-white: #{color(dark-white)};
+  --fg-main: #{color(gray, 1)};
+  --fg-secd: #{color(gray, 3)};
+  --fg-tert: #{color(gray, 4)};
+  --fg-mute: #{color(gray, 5)};
 
-  // @each $name in $colors {
-  //   @for $tone from 0 to 10 {
-  //     --color-#{'' + $name}-#{'' + $tone}: #{color('dark-' + $name, $tone)};
-  //   }
-  // }
+  --fg-link: #{color(blue, 5)};
 
-  @include fgvar(main, neutral, 0);
+  --bg-main: #{color(black)};
+  --bg-secd: #{color(gray, 8)};
+  --bg-tert: #{color(gray, 9)};
+  --bg-mute: #{color(gray, 6)};
 
-  --fg-main: var(--color-gray-1);
-  --fg-secd: var(--color-gray-3);
-  --fg-tert: var(--color-gray-4);
-  --fg-mute: var(--color-gray-5);
-
-  --fg-link: var(--color-blue-5);
-
-  --bg-main: var(--color-black);
-  --bg-secd: var(--color-gray-8);
-  --bg-tert: var(--color-gray-9);
-  --bg-mute: var(--color-gray-6);
-
-  --bd-soft: var(--color-gray-8);
-  --bd-main: var(--color-gray-7);
-  --bd-bold: var(--color-gray-6);
+  --bd-soft: #{color(gray, 8)};
+  --bd-main: #{color(gray, 7)};
+  --bd-bold: #{color(gray, 6)};
 }
 
 :root {

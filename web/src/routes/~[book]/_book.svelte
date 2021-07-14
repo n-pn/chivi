@@ -330,7 +330,7 @@
   .section-header {
     display: flex;
     height: $section-height;
-    @include border($color: bd-main, $sides: bottom);
+    @include border(--bd-main, $sides: bottom);
 
     @include tm-dark {
       @include bdcolor(neutral, 6);

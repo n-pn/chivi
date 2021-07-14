@@ -2,45 +2,45 @@
 @use "sass:list";
 @use "../vars/palette" as *;
 
-@function color-raw($name, $tone: 5, $alpha: 1) {
-  $-alias: map.get($color-mapping, $name);
-  // prettier-ignore
-  @if $-alias { $name: $-alias; }
+$color-mapping: (
+  neutral: gray,
+  primary: blue,
+  success: green,
+  warning: orange,
+  harmful: red,
+  private: violet,
+) !default;
 
-  $-value: map.get($color-palette, $name);
+@function opaque($color, $fade: 10) {
+  @return if($fade == 10, $color, rgba($color, $fade * 10%));
+}
 
-  @if type-of($-value) == map {
-    $-color: map.get($-value, $tone);
+@function color($name, $tone: 5, $fade: 10) {
+  $color: map.get($color-mapping, $name) or $name;
+  $value: map.get($color-palette, $color) or $color;
 
-    @if type-of($-color) == color {
-      @return rgba($-color, $alpha);
-    }
-
+  @if type-of($value) == map {
+    $color: map.get($value, $tone);
+    // prettier-ignore
+    @if type-of($color) == color { @return opaque($color, $fade); }
     @error "wrong color tone `#{$tone}`";
-  } @else if type-of($-value) == color {
-    @return rgba($-value, $alpha);
+  } @else if type-of($value) == color {
+    @return opaque($value, $fade);
   }
 
-  @error "unknown color `#{$name}`";
+  @if type-of($value) != string {
+    @error "unknown color #{$value}, type: #{type-of($value)}";
+  } @else if str-index($value, '--') == 1 {
+    @return #{var($value)};
+  } @else if str-index($name, 'var(') == 1 {
+    @return $name;
+  } @else {
+    @error "unknown color `#{$name}`";
+  }
 }
 
 @function known-colors($name) {
   @return map.get($color-palette, $name) or map.get($color-mapping, $name);
-}
-
-@function color-name($name, $tone: 5) {
-  @if $name == white or $name == black {
-    @return '--color-#{$name}';
-  } @else if known-colors($name) {
-    $name: map.get($color-mapping, $name) or $name;
-    @return '--color-#{$name}-#{$tone}';
-  } @else {
-    @return '--#{$name}';
-  }
-}
-
-@function color($name, $tone) {
-  @return #{var(#{color-name($name, $tone)})};
 }
 
 @mixin color($prop, $name, $tone: 5) {
@@ -55,23 +55,29 @@
   --bg-#{'' + $prop}: #{color($name, $tone)};
 }
 
-$-labels: (main, secd, tert, mute);
+$fg-labels: (main, secd, tert, mute);
 
-@mixin fgcolor($name, $tone: 5) {
+@mixin fgcolor($name, $tone: 5, $fade: 10) {
   @if known-colors($name) {
-    color: color($name, $tone);
-  } @else if list.index($-labels, $name) {
+    color: color($name, $tone, $fade);
+  } @else if list.index($fg-labels, $name) {
     color: #{var(--fg-#{$name})};
+  } @else if type-of($name) == color {
+    color: $name;
   } @else {
     color: #{var(--#{$name})};
   }
 }
 
-@mixin bgcolor($name, $tone: 5) {
+$bg-labels: (main, secd, tert, mute);
+
+@mixin bgcolor($name, $tone: 5, $fade: 10) {
   @if known-colors($name) {
-    background-color: color($name, $tone);
-  } @else if list.index($-labels, $name) {
+    background-color: color($name, $tone, $fade);
+  } @else if list.index($bg-labels, $name) {
     background-color: #{var(--bg-#{$name})};
+  } @else if type-of($name) == color {
+    background-color: $name;
   } @else {
     background-color: #{var(--#{$name})};
   }

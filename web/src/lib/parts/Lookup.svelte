@@ -220,13 +220,13 @@
     &._zh {
       max-height: $zh-height;
       // margin-top: 0.375rem;
-      @include border(bd-main, $sides: bottom);
+      @include border(--bd-main, $sides: bottom);
     }
 
     &._hv {
       max-height: $hv-height;
       // margin-top: 0.5rem;
-      @include border(bd-main, $sides: bottom);
+      @include border(--bd-main, $sides: bottom);
     }
 
     // :global(x-z),

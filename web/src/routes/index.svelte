@@ -165,7 +165,7 @@
       @include clamp($width: null);
       @include fgcolor(neutral, 6);
 
-      @include border();
+      @include border(neutral, 3);
       border-radius: 0.5rem;
 
       &._active,

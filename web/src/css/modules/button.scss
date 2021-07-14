@@ -6,6 +6,66 @@ $-btn-height-md: rem(36px);
 $-btn-height-lg: rem(44px);
 $-btn-height-xl: rem(60px);
 
+$-colors: (primary, success, warning, harmful);
+
+@mixin text-button($color: neutral) {
+  @include fgcolor($color, 6);
+  @include bgcolor($color, 0);
+  @include bgvar(hover, $color, 1);
+  @include linesd($color, 2, $ndef: false);
+
+  .tm-dark & {
+    @include fgcolor($color, 3);
+    @include bgcolor(neutral, 8);
+    @include bgvar(hover, $color, 7);
+    @include linesd($color, 7, $ndef: false);
+  }
+
+  &:disabled,
+  &._disable {
+    @include fgcolor($color, 4);
+    @include bgcolor(neutral, 2);
+    @include bgvar(hover, neutral, 2);
+    @include linesd(neutral, 2);
+
+    .tm-dark & {
+      @include fgcolor($color, 6);
+      @include bgcolor(neutral, 8);
+      @include bgvar(hover, neutral, 8);
+      @include linesd(neutral, 8);
+    }
+  }
+}
+
+@mixin fill-button($color: neutral) {
+  @include fgcolor(white);
+  @include bgcolor($color, 5);
+  @include bgvar(hover, $color, 4);
+  @include linesd($color, 4, $ndef: false);
+
+  .tm-dark & {
+    @include fgcolor($color, 1);
+    @include bgcolor($color, 7);
+    @include bgvar(hover, $color, 6);
+    @include linesd($color, 6, $ndef: false);
+  }
+
+  &._disable,
+  &:disabled {
+    @include fgcolor($color, 2);
+    @include bgcolor($color, 4);
+    @include bgvar(hover, $color, 4);
+    @include linesd($color, 4);
+
+    .tm-dark & {
+      @include fgcolor($color, 6);
+      @include bgcolor($color, 8);
+      @include bgvar(hover, $color, 8);
+      @include linesd($color, 8);
+    }
+  }
+}
+
 .m-button {
   --height: #{$-btn-height-md};
   --gutter: var(--gutter-xs);
@@ -25,6 +85,17 @@ $-btn-height-xl: rem(60px);
   font-size: var(--ftsize);
   @include bdradi;
 
+  &:hover,
+  &._active {
+    background: var(--bg-hover);
+  }
+
+  &:disabled,
+  &._disable {
+    // prettier-ignore
+    @include hover { cursor: text; }
+  }
+
   > span {
     margin: 0 var(--gutter-ss);
   }
@@ -34,6 +105,27 @@ $-btn-height-xl: rem(60px);
     // margin: var(--gutter) 0;
     width: var(--innerh);
     height: var(--innerh);
+  }
+}
+
+.m-button {
+  @include linesd(--bd-main);
+  @include text-button(neutral);
+
+  @each $color in $-colors {
+    &._#{$color} {
+      @include text-button($color);
+    }
+  }
+}
+
+.m-button._fill {
+  @include fill-button(neutral);
+
+  @each $color in $-colors {
+    &._#{$color} {
+      @include fill-button($color);
+    }
   }
 }
 
@@ -59,98 +151,4 @@ $-btn-height-xl: rem(60px);
   --height: #{$-btn-height-xl};
   --gutter: var(--gutter-md);
   --ftsize: var(--ftsize-xl);
-}
-
-$-colors: (primary, success, warning, harmful);
-
-@mixin text-button($color: neutral) {
-  @include color(fgcolor, $color, 6);
-  @include color(bgcolor, $color, 0);
-  @include color(bghover, $color, 1);
-  @include linesd($color, 2, $ndef: false);
-
-  .tm-dark & {
-    @include color(fgcolor, $color, 3);
-    @include color(bgcolor, neutral, 8);
-    @include color(bghover, $color, 7);
-    @include linesd($color, 7, $ndef: false);
-  }
-
-  &:disabled,
-  &._disable {
-    @include color(fgcolor, $color, 4);
-    @include color(bgcolor, neutral, 2);
-    @include color(bghover, neutral, 2);
-    @include linesd(neutral, 2);
-
-    .tm-dark & {
-      @include color(fgcolor, $color, 6);
-      @include color(bgcolor, neutral, 8);
-      @include color(bghover, neutral, 8);
-      @include linesd(neutral, 8);
-    }
-  }
-}
-
-.m-button {
-  color: var(--fgcolor);
-  background: var(--bgcolor);
-
-  @include linesd(bd-soft);
-  @include text-button(neutral);
-
-  &:hover {
-    background: var(--bghover);
-  }
-
-  &:disabled,
-  &._disable {
-    // prettier-ignore
-    @include hover { cursor: text; }
-  }
-
-  @each $color in $-colors {
-    &._#{$color} {
-      @include text-button($color);
-    }
-  }
-}
-
-@mixin fill-button($color: neutral) {
-  @include color(fgcolor, white);
-  @include color(bgcolor, $color, 5);
-  @include color(bghover, $color, 4);
-  @include linesd($color, 4, $ndef: false);
-
-  .tm-dark & {
-    @include color(fgcolor, $color, 1);
-    @include color(bgcolor, $color, 7);
-    @include color(bghover, $color, 6);
-    @include linesd($color, 6, $ndef: false);
-  }
-
-  &._disable,
-  &:disabled {
-    @include color(fgcolor, $color, 2);
-    @include color(bgcolor, $color, 4);
-    @include color(bghover, $color, 4);
-    @include linesd($color, 4);
-
-    .tm-dark & {
-      @include color(fgcolor, $color, 6);
-      @include color(bgcolor, $color, 8);
-      @include color(bghover, $color, 8);
-      @include linesd($color, 8);
-    }
-  }
-}
-
-.m-button._fill {
-  @include fill-button(neutral);
-
-  @each $color in $-colors {
-    &._#{$color} {
-      @include fill-button($color);
-    }
-  }
 }

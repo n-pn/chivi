@@ -27,11 +27,12 @@
   </svelte:fragment>
 
   <nav>
+    <a href="/uikit/colors">Colors</a>
     <a href="/uikit/buttons">Buttons</a>
     <a href="/uikit/inputs">Inputs</a>
   </nav>
 
-  <article class="m-text">
+  <article class="m-text m-article">
     <slot />
   </article>
 </Vessel>

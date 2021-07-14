@@ -54,7 +54,7 @@
     @include bgcolor(tranparent);
     @include fgcolor(secd);
 
-    @include linesd(bd-main);
+    @include linesd(--bd-main);
     @include bdradi(0.5rem);
 
     &:hover,

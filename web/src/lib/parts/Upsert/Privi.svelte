@@ -51,7 +51,7 @@
     font-weight: 500;
 
     // @include bgcolor(bg-main);
-    @include linesd(bd-main);
+    @include linesd(--bd-main);
     @include bdradi;
   }
 

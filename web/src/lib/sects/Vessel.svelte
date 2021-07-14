@@ -108,13 +108,10 @@
       position: fixed;
       transform: translateY(-$footer-height);
 
-      --bg-start: #{color-raw(gray, 1, 0.1)};
-      --bg-stop: #{color-raw(gray, 7, 0.7)};
-      background: linear-gradient(var(--bg-start), var(--bg-stop));
+      background: linear-gradient(color(neutral, 1, 1), color(neutral, 7, 7));
 
       @include tm-dark {
-        --bg-start: #{color-raw(gray, 7, 0.1)};
-        --bg-stop: #{color-raw(gray, 8, 0.7)};
+        background: linear-gradient(color(neutral, 7, 1), color(neutral, 8, 7));
       }
     }
   }
@@ -133,7 +130,7 @@
     @include bdradi();
 
     > a {
-      @include fgcolor(fg-link);
+      @include fgcolor(--fg-link);
     }
   }
 

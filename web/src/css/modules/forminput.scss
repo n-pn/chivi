@@ -17,7 +17,7 @@
     outline: 0;
 
     @include bdradi();
-    @include linesd(bd-main);
+    @include linesd(--bd-main);
 
     @include hover-focus {
       @include linesd(primary, 6, $ndef: false);

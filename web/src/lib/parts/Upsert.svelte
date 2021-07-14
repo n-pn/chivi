@@ -254,7 +254,7 @@
     padding: 0 0.75rem;
 
     @include flex();
-    @include border(bd-bold, $sides: bottom);
+    @include border(--bd-bold, $sides: bottom);
     @include ftsize(md);
     // prettier-ignore
   }
@@ -274,7 +274,7 @@
     @include clamp($width: null);
     @include bdradi($sides: top);
     @include fgcolor(tert);
-    @include border($color: bd-bold);
+    @include border(--bd-bold);
 
     border-bottom: none;
 
@@ -312,7 +312,7 @@
     position: relative;
     @include bdradi;
 
-    @include linesd(bd-main);
+    @include linesd(--bd-main);
     @include bgcolor(main);
 
     &:focus-within {
@@ -329,7 +329,7 @@
     height: $h-outer;
     padding: math.div($h-outer - $h-inner, 2);
 
-    @include linesd(bd-main);
+    @include linesd(--bd-main);
 
     &:focus-within {
       @include linesd(primary, 4, $ndef: false);
@@ -366,7 +366,7 @@
     @include ftsize(sm);
 
     @include fgcolor(tert);
-    @include linesd(bd-main);
+    @include linesd(--bd-main);
 
     &:hover {
       @include fgcolor(primary, 5);

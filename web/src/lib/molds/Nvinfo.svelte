@@ -49,16 +49,13 @@
   }
 
   .extra {
-    --bg-start: #{color-raw(neutral, 1, 0.1)};
-    --bg-end: #{color-raw(neutral, 7, 0.7)};
-
     display: flex;
     position: absolute;
     bottom: 0;
     right: 0;
     width: 100%;
     padding: 0.25rem;
-    background: linear-gradient(var(--bg-start), var(--bg-end));
+    background: linear-gradient(color(neutral, 1, 1), color(neutral, 7, 7));
   }
 
   .score {

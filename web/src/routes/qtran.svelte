@@ -105,7 +105,7 @@
 
     &._active {
       @include color(bdcolor, primary, 5);
-      @include border($color: primary, $tone: 5, $width: 2px, $sides: bottom);
+      @include border(--primary, $tone: 5, $width: 2px, $sides: bottom);
     }
   }
 

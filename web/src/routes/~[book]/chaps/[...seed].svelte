@@ -386,7 +386,7 @@
     > .-sep {
       width: 50%;
       margin: var(--gutter-small) auto;
-      @include border(bd-main, $sides: bottom);
+      @include border(--bd-main, $sides: bottom);
     }
   }
 

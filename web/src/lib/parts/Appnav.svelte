@@ -162,23 +162,22 @@
     border-radius: math.div($-chip-height, 2);
     // background-color: transparent;
 
-    @include color(fgcolor, blue, 6);
-    @include color(bdcolor, blue, 4);
+    @include fgcolor(primary, 6);
 
-    @include fgcolor(fgcolor);
-    @include linesd(bdcolor);
+    @include color(bdcolor, primary, 4);
+    @include linesd(--bdcolor);
 
     font-weight: 500;
     margin-right: 0.375rem;
     margin-bottom: 0.375rem;
 
     &._green {
-      @include color(fgcolor, green, 6);
+      @include fgcolor(green, 6);
       @include color(bdcolor, green, 4);
     }
 
     &._violet {
-      @include color(fgcolor, violet, 6);
+      @include fgcolor(violet, 6);
       @include color(bdcolor, violet, 4);
     }
 
@@ -193,16 +192,16 @@
     }
 
     @include tm-dark {
-      @include color(fgcolor, blue, 4);
+      @include fgcolor(blue, 4);
       @include color(bdcolor, blue, 6);
 
       &._green {
-        @include color(fgcolor, green, 4);
+        @include fgcolor(green, 4);
         @include color(bdcolor, green, 6);
       }
 
       &._violet {
-        @include color(fgcolor, violet, 4);
+        @include fgcolor(violet, 4);
         @include color(bdcolor, violet, 6);
       }
     }
@@ -225,10 +224,10 @@
 
       @include fgcolor(main);
       @include bgcolor(main);
-      @include linesd(bd-main);
+      @include linesd(--bd-main);
 
       &:focus {
-        @include linesd(primary, 5, $ndef: false);
+        @include linesd(primary, 5, $width: 2px, $ndef: false);
       }
 
       &:hover,
@@ -250,7 +249,7 @@
       padding: 0.375rem;
       margin: 0;
       background: none;
-      @include color(neutral, 5);
+      @include fgcolor(neutral, 5);
     }
 
     :global(svg) {

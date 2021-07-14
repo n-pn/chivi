@@ -144,7 +144,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     outline: none;
     border-radius: $radius;
 
-    @include bgcolor(sky, 9);
+    @include bgcolor(primary, 7);
 
     &::placeholder {
       color: var(--color-gray-1);
@@ -191,9 +191,9 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
     @include flex(0);
 
-    @include border(bd-main, $sides: top);
+    @include border(--bd-main, $sides: top);
     &:last-child {
-      @include border(bd-main, $sides: bottom);
+      @include border(--bd-main, $sides: bottom);
     }
 
     @include ftsize(sm);

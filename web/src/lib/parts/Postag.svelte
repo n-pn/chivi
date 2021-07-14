@@ -161,7 +161,7 @@
     color: var(--color-gray-5);
     @include clamp($width: null);
     @include bdradi($sides: top);
-    @include border($color: neutral, $tone: 5, $sides: top-left-right);
+    @include border(--neutral, $tone: 5, $sides: top-left-right);
 
     &:hover {
       @include bgcolor(white);

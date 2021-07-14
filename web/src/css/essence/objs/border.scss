@@ -21,17 +21,19 @@ $dirs: (top, right, bottom, left);
 }
 
 // colors
-$-labels: (main, secd, tert, mute);
+$bd-labels: (main, soft, hard, mute);
 
 @mixin bdcolor($color: gray, $tone: 5, $sides: all) {
   $props: bdprops($sides, color);
 
   @if known-colors($color) {
-    @include fluid($props, color($color, $tone));
-  } @else if list.index($-labels, $color) {
-    @include fluid($props, #{var(--bd-#{$color})});
+    border-color: color($color, $tone);
+  } @else if list.index($bd-labels, $color) {
+    border-color: #{var(--bd-#{$color})};
+  } @else if type-of($color) == color {
+    border-color: $color;
   } @else {
-    @include fluid($props, #{var(--#{$color})});
+    border-color: #{var(--#{$color})};
   }
 }
 
@@ -51,7 +53,13 @@ $-labels: (main, secd, tert, mute);
 
 // borders
 
-@mixin border($color: gray, $tone: 3, $width: 1px, $style: solid, $sides: all) {
+@mixin border(
+  $color: neutral,
+  $tone: 3,
+  $width: 1px,
+  $style: solid,
+  $sides: all
+) {
   $props: bdprops($sides);
   $color: #{color($color, $tone)};
   @include fluid($props, $width $style $color);

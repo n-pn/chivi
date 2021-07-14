@@ -156,13 +156,13 @@
   .chap {
     display: block;
     margin: 0 0.75rem;
-    @include border(bd-main, $sides: bottom);
+    @include border(--bd-main, $sides: bottom);
 
     padding: 0.375rem 0.5rem;
     user-select: none;
 
     &:first-child {
-      @include border(bd-main, $sides: top);
+      @include border(--bd-main, $sides: top);
     }
 
     &:nth-child(odd) {
