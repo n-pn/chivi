@@ -55,6 +55,10 @@
         if (evt.ctrlKey) return
     }
 
+    if (evt.key == 'Shift') {
+      return (kbd_hint = !kbd_hint)
+    }
+
     let active = document?.activeElement
     switch (active?.tagName) {
       case 'TEXTAREA':
@@ -76,6 +80,8 @@
     evt.stopPropagation()
     elem.click()
   }
+
+  let kbd_hint = false
 </script>
 
 <svelte:head>
@@ -89,7 +95,10 @@
 
 <svelte:window on:scroll={handle_scroll} on:keydown={handle_keydown} />
 
-<div class="app" class:tm-dark={$session.site_theme == 'dark'}>
+<div
+  class="app"
+  class:tm-dark={$session.site_theme == 'dark'}
+  class:kbd-hint={kbd_hint}>
   <slot />
 
   <div class="links">

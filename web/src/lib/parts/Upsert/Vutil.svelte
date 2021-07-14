@@ -41,18 +41,25 @@
 
   .vutil {
     padding: 0 0.375rem;
+    @include flex($gap: 0);
+  }
+
+  .right {
     @include flex();
-    @include ftsize(sm);
+    margin-left: auto;
   }
 
   .-txt {
-    float: left;
     padding: 0 0.375rem;
     line-height: $height;
     font-weight: 500;
     background: transparent;
     @include fgcolor(tert);
 
+    @include fluid(font-size, rem(13px), rem(14px));
+    @include bp-max(sm) {
+      @include ftsize(xs);
+    }
     // max-width: 14vw;
     @include clamp($width: null);
 
@@ -65,12 +72,8 @@
     }
   }
 
-  .right {
-    margin-left: auto;
-    display: flex;
-  }
-
   .-btn {
+    margin-left: auto;
     padding: 0;
     width: 1.75rem;
     padding-bottom: 0.25rem;

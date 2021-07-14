@@ -36,7 +36,7 @@
 
   function make_url(page) {
     if (page < 1) page = 1
-    if (page > pmax) page = pmax
+    if (page > pgmax) page = pgmax
 
     let url = `/search?q=${word}&p=${page}`
     if (type != 'btitle') url += `&t=${type}`
@@ -110,7 +110,7 @@
       <a
         href={make_url(page + 1)}
         class="m-button _fill _primary"
-        class:_disable={page == pmax}>
+        class:_disable={page == pgmax}>
         <span>Kế tiếp</span>
         <SIcon name="chevron-right" />
       </a>
