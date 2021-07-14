@@ -68,9 +68,9 @@
       margin-left: 0.25rem;
       padding: 0 0.25rem;
       font-weight: 500;
-      color: var(--color-white);
+      color: $color-white;
       @include bdradi;
-      @include bgcolor(primary, 6);
+      @include bgcolor(primary, 6, 5);
     }
   }
 

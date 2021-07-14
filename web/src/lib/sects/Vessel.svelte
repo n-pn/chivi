@@ -69,7 +69,7 @@
 {/if}
 
 <style lang="scss">
-  $page-width: 54rem;
+  $page-width: 55.5rem;
 
   .center {
     width: $page-width;
