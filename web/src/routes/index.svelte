@@ -141,14 +141,16 @@
     <div class="empty">Danh sách trống</div>
   {/if}
 
-  <footer slot="footer">
-    <div class="foot">
-      <Mpager {pager} pgidx={opts.page} {pgmax} />
-    </div>
-  </footer>
+  <svelte:fragment slot="footer">
+    <Mpager {pager} pgidx={opts.page} {pgmax} />
+  </svelte:fragment>
 </Vessel>
 
 <style lang="scss">
+  :global(#svelte) {
+    height: 100%;
+  }
+
   .order {
     @include flex($center: horz, $gap: 0.375rem);
 
@@ -184,10 +186,6 @@
         }
       }
     }
-  }
-
-  .foot {
-    padding: 0.5rem 0;
   }
 
   .empty {

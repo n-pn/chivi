@@ -148,11 +148,9 @@
   </svelte:fragment>
 
   <nav class="bread">
-    <div class="-crumb _sep">
-      <a href="/~{nvinfo.bslug}" class="-link"> {nvinfo.btitle_vi}</a>
-    </div>
-
-    <div class="-crumb"><span class="-text">{chinfo.label}</span></div>
+    <a href="/~{nvinfo.bslug}" class="crumb _link">{nvinfo.btitle_vi}</a>
+    <span>/</span>
+    <span class="crumb _text">{chinfo.label}</span>
   </nav>
 
   {#if cvdata}
@@ -165,7 +163,7 @@
     <Notext {chinfo} />
   {/if}
 
-  <div class="footer" slot="footer">
+  <div class="navi" slot="footer">
     <a
       href={prev_path}
       class="m-button"
@@ -182,8 +180,8 @@
 
     <a
       href={next_path}
-      class="m-button _fill _primary"
-      class:_disable={!chinfo.next_url}
+      class="m-button _fill"
+      class:_primary={chinfo.next_url}
       data-kbd="k">
       <span>Kế tiếp</span>
       <SIcon name="chevron-right" />
@@ -192,9 +190,7 @@
 </Vessel>
 
 <style lang="scss">
-  .footer {
-    width: 100%;
-    padding: 0.5rem 0;
+  .navi {
     @include flex($center: horz, $gap: 0.5rem);
   }
 
@@ -202,23 +198,15 @@
     padding: var(--gutter-sm) 0;
     line-height: var(--lh-narrow);
 
-    @include flex($wrap: nowrap);
+    // @include flow();
     @include ftsize(sm);
     @include fgcolor(secd);
+  }
 
-    .-crumb {
-      display: inline;
-      // float: left;
+  .crumb {
+    // float: left;
 
-      &._sep:after {
-        display: inline-block;
-        width: 1rem;
-        text-align: center;
-        content: '/';
-      }
-    }
-
-    .-link {
+    &._link {
       color: inherit;
       &:hover {
         @include fgcolor(primary, 5);

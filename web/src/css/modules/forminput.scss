@@ -7,33 +7,36 @@
   display: block;
   position: relative;
   width: 100%;
-
-  height: var(--inp-height);
-  padding: var(--gutter-xs) var(--gutter-md);
   line-height: 1.5rem;
 
-  > .-inp {
+  > :where(.-inp, input, textarea) {
     border: 0;
     outline: 0;
+    padding: var(--gutter-xs) var(--gutter-md);
+
+    @include fgcolor(main);
+    @include bgcolor(main);
 
     @include bdradi();
     @include linesd(--bd-main);
 
-    @include hover-focus {
-      @include linesd(primary, 6, $ndef: false);
+    @include hover {
+      @include linesd(primary, 5, $ndef: false);
     }
 
     &:focus {
-      @include ringsd(primary, 4);
+      @include bgcolor(tert);
+      @include linesd(primary, 5, $width: 2px, $ndef: false);
     }
 
     &::placeholder {
       font-style: italic;
-      color: var(--fg-tert);
+      @include ftsize(sm);
+      @include fgcolor(tert);
     }
   }
 
-  > .-ico {
+  > :where(.-ico, svg, img) {
     position: absolute;
     top: 0;
     bottom: 0;

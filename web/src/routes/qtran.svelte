@@ -16,9 +16,10 @@
   let text_elem = null
 
   $: if (edit_mode) text_elem && text_elem.focus()
+  $: on_edit = edit_mode || !cvdata
 
-  let changed = false
-  $: if (changed) convert()
+  let dirty = false
+  $: if (dirty) convert()
 
   async function convert() {
     // if ($session.privi < 1) return
@@ -30,9 +31,14 @@
       body: JSON.stringify({ input: zhtext }),
     })
 
-    changed = false
+    dirty = false
     cvdata = await res.text()
     edit_mode = false
+  }
+
+  function cleanup() {
+    zhtext = cvdata = ''
+    edit_mode = true
   }
 </script>
 
@@ -46,101 +52,59 @@
     <span class="header-text">Dịch nhanh</span>
   </span>
 
-  <nav class="tabs">
-    <span
-      class="tab"
-      class:_active={edit_mode}
-      on:click={() => (edit_mode = true)}>Nguồn tiếng Trung</span>
-    {#if cvdata}
-      <span
-        class="tab"
-        class:_active={!edit_mode}
-        on:click={() => (edit_mode = false)}>Kết quả dịch</span>
+  <section class="main">
+    {#if on_edit}
+      <div class="m-input">
+        <textarea
+          lang="zh"
+          bind:value={zhtext}
+          bind:this={text_elem}
+          placeholder="Nhập dữ liệu vào đây" />
+      </div>
+    {:else}
+      <Cvdata input={cvdata} bind:dirty />
     {/if}
-  </nav>
+  </section>
 
-  {#if edit_mode}
-    <textarea
-      lang="zh"
-      bind:value={zhtext}
-      bind:this={text_elem}
-      placeholder="Nhập dữ liệu vào đây" />
-
-    <footer>
-      <button class="m-button _line" on:click={() => (zhtext = '')}>
+  <div slot="footer" class="foot">
+    {#if on_edit}
+      <button class="m-button" on:click={cleanup}>
         <span>Xoá</span>
       </button>
 
-      <button class="m-button _primary" on:click={convert}>
+      <button class="m-button _primary _fill" on:click={convert}>
         <span>Dịch nhanh</span>
       </button>
-    </footer>
-  {:else if cvdata}
-    <Cvdata {cvdata} bind:changed />
-  {:else}
-    <div class="empty">Mời nhập dữ liệu trong ô tiếng Trung</div>
-  {/if}
+    {:else}
+      <button class="m-button" on:click={() => (edit_mode = true)}>
+        <span>Sửa</span>
+      </button>
+
+      <button class="m-button _primary _fill" on:click={cleanup}>
+        <span>Dịch mới</span>
+      </button>
+    {/if}
+  </div>
 </Vessel>
 
 <style lang="scss">
-  .tabs {
-    margin: 0.5rem 0;
-    display: flex;
-    line-height: 2.5rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    @include ftsize(sm);
-    @include fgcolor(neutral, 6);
-    @include border($sides: bottom);
-  }
-
-  .tab {
-    cursor: pointer;
-    padding: 0 0.75rem;
-    height: 2.5rem;
-
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
-
-    &._active {
-      @include color(bdcolor, primary, 5);
-      @include border(--primary, $tone: 5, $width: 2px, $sides: bottom);
-    }
+  .main {
+    margin-top: 1rem;
   }
 
   textarea {
     width: 100%;
-    min-height: calc(100vh - 10rem);
+    min-height: calc(100vh - 7.5rem);
 
-    padding: 0.75rem;
-
-    @include linesd(neutral, 1);
-    @include bdradi();
-
-    &:hover,
-    &:focus {
-      background-color: #fff;
-      @include linesd(primary, 3);
-    }
-
-    &:focus {
-      @include linesd(primary, 3, $width: 2);
-    }
+    padding: var(--gutter-small) var(--gutter);
 
     &::placeholder {
-      font-style: italic;
-      @include fgcolor(neutral, 4);
+      font-style: normal;
+      text-align: center;
     }
   }
 
-  footer {
-    margin: 0.5rem 0;
-    justify-content: right;
-    @include flex();
-  }
-
-  .m-button + .m-button {
-    margin-left: 0.75rem;
+  .foot {
+    @include flex($center: horz, $gap: 0.5rem);
   }
 </style>

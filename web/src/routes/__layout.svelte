@@ -24,6 +24,12 @@
   let prevScrollTop = 0
 
   function track_scrolling() {
+    if ($navigating == true) {
+      prevScrollTop = 0
+      $l_scroll = 0
+      return
+    }
+
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
     $l_scroll = scrollTop - prevScrollTop
     prevScrollTop = scrollTop <= 0 ? 0 : scrollTop
@@ -62,20 +68,19 @@
 <Loader active={$navigating} />
 
 <style lang="scss">
-  :global(#svelte) {
+  .app {
     display: flex;
     flex-direction: column;
-    min-height: 100%;
-  }
+    min-height: 100vh;
+    position: relative;
 
-  .app {
-    height: 100%;
     @include bgcolor(main);
     @include fgcolor(main);
   }
 
   .links {
     width: 100%;
+    margin-top: auto;
     text-align: center;
     padding: 0.75rem;
 

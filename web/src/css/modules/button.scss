@@ -9,28 +9,28 @@ $-btn-height-xl: rem(60px);
 $-colors: (primary, success, warning, harmful);
 
 @mixin text-button($color: neutral) {
-  @include fgcolor($color, 6);
-  @include bgcolor($color, 0);
+  @include fgvar(btn, $color, 6);
+  @include bgvar(btn, $color, 0);
   @include bgvar(hover, $color, 1);
   @include linesd($color, 2, $ndef: false);
 
   .tm-dark & {
-    @include fgcolor($color, 3);
-    @include bgcolor(neutral, 8);
-    @include bgvar(hover, $color, 7);
+    @include fgvar(btn, $color, 3);
+    @include bgvar(btn, neutral, 8);
+    @include bgvar(hover, neutral, 7);
     @include linesd($color, 7, $ndef: false);
   }
 
   &:disabled,
   &._disable {
-    @include fgcolor($color, 4);
-    @include bgcolor(neutral, 2);
+    @include fgvar(btn, $color, 4);
+    @include bgvar(btn, neutral, 2);
     @include bgvar(hover, neutral, 2);
     @include linesd(neutral, 2);
 
     .tm-dark & {
-      @include fgcolor($color, 6);
-      @include bgcolor(neutral, 8);
+      @include fgvar(btn, $color, 6);
+      @include bgvar(btn, neutral, 8);
       @include bgvar(hover, neutral, 8);
       @include linesd(neutral, 8);
     }
@@ -38,28 +38,28 @@ $-colors: (primary, success, warning, harmful);
 }
 
 @mixin fill-button($color: neutral) {
-  @include fgcolor(white);
-  @include bgcolor($color, 5);
+  @include fgvar(btn, white);
+  @include bgvar(btn, $color, 5);
   @include bgvar(hover, $color, 4);
   @include linesd($color, 4, $ndef: false);
 
   .tm-dark & {
-    @include fgcolor($color, 1);
-    @include bgcolor($color, 7);
+    @include fgvar(btn, $color, 1);
+    @include bgvar(btn, $color, 7);
     @include bgvar(hover, $color, 6);
     @include linesd($color, 6, $ndef: false);
   }
 
   &._disable,
   &:disabled {
-    @include fgcolor($color, 2);
-    @include bgcolor($color, 4);
+    @include fgvar(btn, $color, 2);
+    @include bgvar(btn, $color, 4);
     @include bgvar(hover, $color, 4);
     @include linesd($color, 4);
 
     .tm-dark & {
-      @include fgcolor($color, 6);
-      @include bgcolor($color, 8);
+      @include fgvar(btn, $color, 6);
+      @include bgvar(btn, $color, 8);
       @include bgvar(hover, $color, 8);
       @include linesd($color, 8);
     }
@@ -73,7 +73,7 @@ $-colors: (primary, success, warning, harmful);
   --innerh: calc(var(--height) - var(--gutter) - var(--gutter));
 
   display: inline-flex;
-  text-transform: capitalize;
+  // text-transform: capitalize;
   cursor: pointer;
   font-weight: 500;
   user-select: none;
@@ -84,6 +84,9 @@ $-colors: (primary, success, warning, harmful);
   line-height: var(--innerh);
   font-size: var(--ftsize);
   @include bdradi;
+
+  color: var(--fg-btn);
+  background: var(--bg-btn);
 
   &:hover,
   &._active {

@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte'
   import { session } from '$app/stores'
   import { l_scroll } from '$lib/stores'
 
@@ -13,6 +14,17 @@
 
   let active_usercp = false
   let active_appnav = false
+
+  let footer
+
+  onMount(() => {
+    const observer = new IntersectionObserver(
+      ([e]) => e.target.classList.toggle('sticked', e.intersectionRatio < 1),
+      { threshold: [1] }
+    )
+
+    observer.observe(footer)
+  })
 </script>
 
 <header class="app-header" class:_shift={shift} class:_clear={$l_scroll > 0}>
@@ -53,10 +65,8 @@
     <slot />
   </div>
 
-  <footer class="footer" class:_shift={shift} class:_stick={$l_scroll < 0}>
-    <div class="center">
-      <slot name="footer" />
-    </div>
+  <footer class="footer" class:_sticky={$l_scroll < 0} bind:this={footer}>
+    <slot name="footer" />
   </footer>
 </main>
 
@@ -76,19 +86,18 @@
     max-width: 100%;
     margin: 0 auto;
     padding: 0 var(--gutter);
-
-    &._main {
-      min-height: calc(100vh - 3rem);
-    }
   }
 
-  $footer-height: 3.25rem;
+  $footer-height: 3.5rem;
 
   .main {
     flex: 1;
     flex-direction: column;
     position: relative;
-    margin-bottom: $footer-height;
+
+    // &._footer {
+    //   margin-bottom: $footer-height;
+    // }
   }
 
   ._shift {
@@ -99,15 +108,15 @@
     will-change: transform;
     transition: transform 100ms ease-in-out;
 
-    position: absolute;
-    // bottom: 0;
-    bottom: -$footer-height;
-    width: 100%;
+    position: relative;
+    padding: 0.5rem 0;
 
-    &._stick {
-      position: fixed;
-      transform: translateY(-$footer-height);
+    &._sticky {
+      position: sticky;
+      bottom: -1px;
+    }
 
+    &:global(.sticked) {
       background: linear-gradient(color(neutral, 1, 1), color(neutral, 7, 7));
 
       @include tm-dark {

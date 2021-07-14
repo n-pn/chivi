@@ -43,16 +43,16 @@ $color-mapping: (
   @return map.get($color-palette, $name) or map.get($color-mapping, $name);
 }
 
-@mixin color($prop, $name, $tone: 5) {
-  --#{'' + $prop}: #{color($name, $tone)};
+@mixin color($prop, $name, $tone: 5, $fade: 10) {
+  --#{'' + $prop}: #{color($name, $tone, $fade)};
 }
 
-@mixin fgvar($prop, $name, $tone: 5) {
-  --fg-#{'' + $prop}: #{color($name, $tone)};
+@mixin fgvar($prop, $name, $tone: 5, $fade: 10) {
+  --fg-#{'' + $prop}: #{color($name, $tone, $fade)};
 }
 
-@mixin bgvar($prop, $name, $tone: 5) {
-  --bg-#{'' + $prop}: #{color($name, $tone)};
+@mixin bgvar($prop, $name, $tone: 5, $fade: 10) {
+  --bg-#{'' + $prop}: #{color($name, $tone, $fade)};
 }
 
 $fg-labels: (main, secd, tert, mute);

@@ -54,7 +54,7 @@ $bd-labels: (main, soft, hard, mute);
 // borders
 
 @mixin border(
-  $color: neutral,
+  $color: --bd-main,
   $tone: 3,
   $width: 1px,
   $style: solid,
