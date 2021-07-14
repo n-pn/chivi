@@ -84,7 +84,7 @@ chan = Channel(Nil).new(wrks)
 
 lines = File.read_lines("priv/zhseed.tsv").reject(&.empty?)
 
-lines.each_with_index(1) do |line, idx|
+lines.first(5000).each_with_index(1) do |line, idx|
   chan.receive if idx > wrks
 
   spawn do

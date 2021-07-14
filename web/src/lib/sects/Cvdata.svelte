@@ -50,13 +50,13 @@
   import * as cvlib from '$lib/cvdata'
   import Aditem from '$molds/Aditem.svelte'
 
-  export let input = ''
-  export let dirty = false
+  export let cvdata = ''
+  export let _dirty = false
 
   export let dname = 'various'
   export let label = 'Tổng hợp'
 
-  $: lines = cvlib.split_input(input)
+  $: lines = cvlib.split_input(cvdata)
   $: adidx = cvlib.ad_indexes(lines.length)
 
   let hover_line = -1
@@ -99,7 +99,7 @@
   let htmls = []
 
   // reset cached content if changed
-  $: if (input) {
+  $: if (cvdata) {
     texts = []
     htmls = []
   }
@@ -143,11 +143,13 @@
         }
     }
   }
+
+  $: console.log({ _dirty })
 </script>
 
 <svelte:body on:keydown={handle_keypress} />
 
-<article class="article" class:dirty>
+<article class="article" class:_dirty>
   {#each lines as _, index (index)}
     <div
       class="mtl {index > 0 ? '_p' : '_h'}"
@@ -166,7 +168,9 @@
   <Lookup {dname} />
 {/if}
 
-<Upsert {dname} {label} bind:dirty />
+{#if $upsert_state > 0}
+  <Upsert {dname} {label} bind:_dirty />
+{/if}
 
 <style lang="scss">
   :global(.adsbygoogle) {

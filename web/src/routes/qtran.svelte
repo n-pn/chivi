@@ -19,8 +19,8 @@
   $: if (edit_mode) text_elem && text_elem.focus()
   $: on_edit = edit_mode || !cvdata
 
-  let dirty = false
-  $: if (dirty) convert()
+  let _dirty = false
+  $: if (_dirty) convert()
 
   async function convert() {
     // if ($session.privi < 1) return
@@ -32,7 +32,7 @@
       body: JSON.stringify({ input: zhtext }),
     })
 
-    dirty = false
+    _dirty = false
     cvdata = await res.text()
     edit_mode = false
   }
@@ -74,7 +74,7 @@
           placeholder="Nhập dữ liệu vào đây" />
       </div>
     {:else}
-      <Cvdata input={cvdata} bind:dirty />
+      <Cvdata {cvdata} bind:_dirty />
     {/if}
   </section>
 

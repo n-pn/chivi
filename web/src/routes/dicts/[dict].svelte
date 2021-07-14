@@ -1,5 +1,4 @@
 <script context="module">
-  import Upsert, { activate as upsert_activate } from '$parts/Upsert.svelte'
   import { labels } from '$lib/postag'
 
   export async function load({ fetch, page: { path, query } }) {
@@ -14,6 +13,10 @@
 
   import SIcon from '$atoms/SIcon.svelte'
   import { get_rtime_short } from '$atoms/RTime.svelte'
+  import Upsert, {
+    activate as upsert_activate,
+    state as upsert_state,
+  } from '$parts/Upsert.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
@@ -32,8 +35,8 @@
     return mtime > 1577836800 ? get_rtime_short(mtime) + ' trước' : '~'
   }
 
-  let dirty = false
-  $: if (dirty) window.location.reload()
+  let _dirty = false
+  $: if (_dirty) window.location.reload()
 
   $: pager = new Pager($page.path, $page.query)
 
@@ -60,6 +63,14 @@
     if (p_min == privi) return '~'
     if (p_min > privi) return 'v' + (p_min - privi)
     return '^' + (privi - p_min)
+  }
+
+  function upsert_dict(dname, label) {
+    if (dname == 'regular' || dname == 'hanviet') {
+      return { dname: 'combine', label: 'Tổng hợp' }
+    } else {
+      return { dname, label }
+    }
   }
 </script>
 
@@ -134,10 +145,9 @@
   </article>
 </Vessel>
 
-<Upsert
-  bind:dirty
-  dname={dname == 'regular' ? 'combine' : dname}
-  label={dname == 'regular' ? 'Tổng hợp' : label} />
+{#if $upsert_state > 0}
+  <Upsert bind:_dirty {...upsert_dict(dname, label)} />
+{/if}
 
 <style lang="scss">
   article {

@@ -27,11 +27,7 @@
     if (err) return { status: 404, error: new Error(data) }
 
     return {
-      props: {
-        ...data,
-        nvinfo,
-        dirty: mode < 0,
-      },
+      props: { ...data, nvinfo, _dirty: mode < 0 },
     }
   }
 </script>
@@ -48,8 +44,8 @@
 
   export let cvdata = ''
 
-  export let dirty = false
-  $: if (dirty) reload_chap()
+  export let _dirty = false
+  $: if (_dirty) reload_chap()
 
   $: [book_path, list_path, prev_path, next_path] = gen_paths(nvinfo, chinfo)
 
@@ -83,15 +79,24 @@
 
   let _reload = false
 
+  $: console.log({ _dirty })
+
   async function reload_chap() {
-    dirty = false
+    _dirty = false
+    console.log('reload!')
+
     if ($session.privi < 1) return
 
     _reload = true
-    const [_, data] = await get_chtext(window.fetch, nvinfo.bhash, chinfo, 1)
-    _reload = false
 
-    cvdata = data
+    const [err, data] = await get_chtext(window.fetch, nvinfo.bhash, chinfo, 1)
+    if (err) {
+      console.log({ data })
+    } else {
+      cvdata = data
+    }
+
+    _reload = false
   }
 
   function gen_paths({ bslug }, { sname, chidx, prev_url, next_url }) {
@@ -155,10 +160,10 @@
 
   {#if cvdata}
     <Cvdata
-      input={cvdata}
+      {cvdata}
       dname={nvinfo.bhash}
       label={nvinfo.btitle_vi}
-      bind:dirty />
+      bind:_dirty />
   {:else}
     <Notext {chinfo} />
   {/if}

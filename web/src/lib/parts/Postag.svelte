@@ -9,10 +9,10 @@
   let active_tab = 0
   let origin_tab = 0
 
-  onMount(() => {
+  $: if (input) {
     origin_tab = find_group(input)
     active_tab = origin_tab > 0 ? origin_tab : 0
-  })
+  }
 
   function hide_modal() {
     state = 1
@@ -24,16 +24,9 @@
   }
 </script>
 
-<div class="wrap" class:_active={state > 1} on:click={hide_modal}>
+<div class="wrap" on:click={hide_modal}>
   <div class="main" on:click={(e) => e.stopPropagation()}>
     <header class="head">
-      <div class="-tit">Phân loại từ</div>
-      <button type="button" class="-btn" on:click={hide_modal}>
-        <SIcon name="x" />
-      </button>
-    </header>
-
-    <section class="tabs">
       {#each gnames as gname, tab}
         <button
           class="-tab"
@@ -43,7 +36,11 @@
           {gname}
         </button>
       {/each}
-    </section>
+
+      <button type="button" class="-btn" on:click={hide_modal}>
+        <SIcon name="x" />
+      </button>
+    </header>
 
     <div class="body">
       {#each groups as tags, tab}
@@ -84,67 +81,47 @@
     z-index: 10000;
 
     background: rgba(#000, 0.2);
-    visibility: hidden;
-
-    &._active {
-      visibility: visible;
-    }
   }
 
   .main {
-    --bg-sub: #{color(gray, 1)};
-    background: var(--bg-sub);
-
     width: 32rem;
     max-width: 100vw;
 
     @include bdradi();
     @include shadow(1);
+    @include bgcolor(secd);
   }
+
+  $tab-height: 2rem;
 
   .head {
     position: relative;
-    padding: 0.25rem 0.75rem;
+    @include flex($center: horz, $gap: 0.5rem);
+
+    padding: 0.75rem 0.75rem 0;
+    height: $tab-height + 0.75rem;
+
+    @include border(--bd-main, $sides: bottom);
     @include bdradi($sides: top);
-
-    > * {
-      @include fgcolor(neutral, 6);
-    }
-
-    > .-tit {
-      font-weight: 500;
-      line-height: 1.75rem;
-      text-align: center;
-    }
 
     > .-btn {
       position: absolute;
-      top: 0.25rem;
+      top: 0rem;
       right: 0.25rem;
       background: inherit;
-      width: 1.75rem;
-      margin: 0;
-      padding: 0;
-    }
-
-    :global(svg) {
-      width: rem(20px);
-      height: rem(20px);
+      // width: 1.75rem;
+      padding: 0.5rem;
+      @include fgcolor(tert);
 
       &:hover {
         @include fgcolor(primary, 6);
       }
     }
-  }
 
-  $tab-height: 2rem;
-
-  .tabs {
-    display: flex;
-    height: $tab-height;
-    padding: 0 0.75rem;
-    // margin-top: 0.75rem;
-    @include border($sides: bottom);
+    :global(svg) {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
   }
 
   .-tab {
@@ -155,25 +132,24 @@
     height: $tab-height;
     line-height: $tab-height;
     flex-shrink: 0;
-    margin-right: 0.5rem;
 
     @include ftsize(sm);
-    color: var(--color-gray-5);
+    @include fgcolor(tert);
     @include clamp($width: null);
     @include bdradi($sides: top);
-    @include border(--neutral, $tone: 5, $sides: top-left-right);
+    @include border(--bd-main, $sides: top-left-right);
 
     &:hover {
-      @include bgcolor(white);
+      @include bgcolor(secd);
     }
 
     &._origin {
-      @include fgcolor(neutral, 7);
+      @include fgcolor(secd);
     }
 
     &._active {
-      @include bgcolor(white);
-      @include fgcolor(primary, 6);
+      @include bgcolor(secd);
+      @include fgcolor(primary, 5);
       @include bdcolor(primary, 5);
     }
   }
@@ -182,21 +158,17 @@
     margin-bottom: 0.25rem;
     height: 21rem;
     max-height: calc(100vh - 6.5rem);
-
     overflow-y: scroll;
-    background: #fff;
+    @include bgcolor(secd);
   }
 
   .tags {
+    @include grid(minmax(6.5rem, 1fr), $gap: 0.5rem);
+    padding: 0.5rem 0.75rem;
+
     display: none;
-    &._active {
-      display: grid;
-      width: 100%;
-      padding: 0.5rem 0.75rem;
-      grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
-      margin-top: 0.25rem;
-      grid-gap: 0.5rem;
-    }
+    // prettier-ignore
+    &._active { display: grid; }
   }
 
   .-tag {
@@ -206,10 +178,10 @@
 
     height: 1.75rem;
     line-height: 1.75rem;
-    --bdcolor: #{color(gray, 2)};
-    box-shadow: 0 0 0 1px var(--bdcolor);
 
-    @include fgcolor(neutral, 6);
+    @include linesd(--bd-main);
+
+    @include fgcolor(tert);
     @include bdradi(0.75rem);
     @include clamp($width: null);
     @include fluid(font-size, rem(12px), rem(13px), rem(14px));
@@ -218,15 +190,20 @@
     &._active {
       @include fgcolor(primary, 7);
       @include bgcolor(primary, 1);
-      --bdcolor: #{color(blue, 2)};
+      @include linesd(primary, 2, $ndef: false);
+
+      @include tm-dark {
+        @include fgcolor(primary, 3);
+        @include bgcolor(primary, 9);
+        @include linesd(primary, 8, $ndef: false);
+      }
     }
   }
 
   .-sep {
     width: 50%;
-
     grid-column: 1 / -1;
-    border-top: 1px solid color(gray, 3);
     margin: 0.25rem auto;
+    @include border(--bd-main, $sides: top);
   }
 </style>

@@ -28,25 +28,20 @@
   import { session } from '$app/stores'
 
   import Postag from '$parts/Postag.svelte'
-
   import SIcon from '$atoms/SIcon.svelte'
-
-  import Term from './Upsert/term.js'
-
   import Input from './Upsert/Input.svelte'
   import Emend from './Upsert/Emend.svelte'
-
   import Vhint from './Upsert/Vhint.svelte'
   import Vutil from './Upsert/Vutil.svelte'
-
   import Vrank from './Upsert/Vrank.svelte'
-
   import Privi from './Upsert/Privi.svelte'
   import Links from './Upsert/Links.svelte'
+  import Term from './Upsert/term.js'
 
   export let dname = 'combine'
   export let label = 'Tổng hợp'
-  export let dirty = false
+
+  export let _dirty = false
 
   $: labels = [label, 'Thông dụng', 'Hán Việt']
   $: dnames = [dname, 'regular', 'hanviet']
@@ -91,9 +86,8 @@
 
   async function submit_val() {
     const [err, res] = await dict_upsert(fetch, dnames[$tab], term.result)
-
-    dirty = err == 0
-    term[$tab] = new Term(res, $tab + 1, $session.privi)
+    _dirty = !err
+    // term[$tab] = new Term(res, $tab + 1, $session.privi)
     deactivate()
   }
 
@@ -132,7 +126,6 @@
 
 <div
   class="wrap"
-  class:_active={$state > 0}
   tabindex="-1"
   on:click={deactivate}
   on:keydown={handle_keyboard}>
@@ -202,7 +195,9 @@
   </div>
 </div>
 
-<Postag bind:input={term.tag} bind:state={$state} />
+{#if $state > 1}
+  <Postag bind:input={term.tag} bind:state={$state} />
+{/if}
 
 <style lang="scss">
   $gutter: 0.75rem;
@@ -216,10 +211,6 @@
     right: 0;
     z-index: 9999;
     background: rgba(#000, 0.75);
-    visibility: hidden;
-    &._active {
-      visibility: visible;
-    }
   }
 
   .main {

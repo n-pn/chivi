@@ -20,13 +20,15 @@
   $height: 1.75rem;
 
   .edit {
+    @include flex($center: horz, $gap: 0.25rem);
     height: $height;
     line-height: $height;
     text-align: center;
 
     // padding-top: 1px;
     @include ftsize(xs);
-    @include fgcolor(neutral, 6);
+    font-style: italic;
+    @include fgcolor(tert);
   }
 
   .hint {
@@ -34,13 +36,8 @@
     // height: 0.5rem;
   }
 
-  .-text {
-    font-style: italic;
-  }
-
   .-time,
   .-user {
-    @include fgcolor(primary, 8);
     font-weight: 500;
   }
 
