@@ -76,12 +76,12 @@
 
     // set some default values if non present
 
-    terms[1].fix_tag(terms[0].tag)
     terms[0].fix_tag(terms[1].tag || terms[0].old_val ? '' : 'nr')
+    terms[1].fix_tag(terms[0].old_tag)
 
     const first_hint = data.hints[0]
     terms[0].fix_val(terms[1].val || first_hint || titleize(trans.hanviet, 9))
-    terms[1].fix_val(terms[0].val || first_hint || trans.hanviet)
+    terms[1].fix_val(terms[0].old_val || first_hint || trans.hanviet)
   }
 
   async function submit_val() {
