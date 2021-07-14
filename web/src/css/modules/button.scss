@@ -73,6 +73,10 @@ $-colors: (primary, success, warning, harmful);
   --innerh: calc(var(--height) - var(--gutter) - var(--gutter));
 
   display: inline-flex;
+  gap: calc(var(--gutter) * 0.5);
+  justify-content: center;
+  min-width: var(--height);
+
   // text-transform: capitalize;
   cursor: pointer;
   font-weight: 500;
@@ -97,10 +101,6 @@ $-colors: (primary, success, warning, harmful);
   &._disable {
     // prettier-ignore
     @include hover { cursor: text; }
-  }
-
-  > span {
-    margin: 0 var(--gutter-ss);
   }
 
   > svg,

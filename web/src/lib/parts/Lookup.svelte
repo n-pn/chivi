@@ -31,6 +31,7 @@
 </script>
 
 <script>
+  import { onDestroy } from 'svelte'
   import SIcon from '$atoms/SIcon.svelte'
   import Slider from '$molds/Slider.svelte'
 
@@ -140,6 +141,11 @@
 
     return output
   }
+
+  onDestroy(() => {
+    $sticked = false
+    $enabled = false
+  })
 </script>
 
 <Slider

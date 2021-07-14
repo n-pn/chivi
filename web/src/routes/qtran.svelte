@@ -2,11 +2,12 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  import Cvdata from '$sects/Cvdata.svelte'
+  import Cvdata, { toggle_lookup } from '$sects/Cvdata.svelte'
 
   import {
     enabled as lookup_enabled,
     actived as lookup_actived,
+    sticked as lookup_sticked,
   } from '$parts/Lookup.svelte'
 
   let zhtext = ''
@@ -37,7 +38,7 @@
   }
 
   function cleanup() {
-    zhtext = cvdata = ''
+    zhtext = ''
     edit_mode = true
   }
 </script>
@@ -46,11 +47,22 @@
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<Vessel shift={$lookup_enabled && $lookup_actived}>
+<Vessel shift={$lookup_enabled && $lookup_actived && $lookup_sticked}>
   <span slot="header-left" class="header-item _active">
     <SIcon name="zap" />
     <span class="header-text">Dịch nhanh</span>
   </span>
+
+  <svelte:fragment slot="header-right">
+    <button
+      class="header-item"
+      class:_active={$lookup_enabled}
+      on:click={toggle_lookup}
+      data-kbd="\">
+      <SIcon name="compass" />
+      <span class="header-text _show-md">Giải nghĩa</span>
+    </button>
+  </svelte:fragment>
 
   <section class="main">
     {#if on_edit}
@@ -80,7 +92,7 @@
         <span>Sửa</span>
       </button>
 
-      <button class="m-button _primary _fill" on:click={cleanup}>
+      <button class="m-button _success _fill" on:click={cleanup}>
         <span>Dịch mới</span>
       </button>
     {/if}
@@ -94,7 +106,7 @@
 
   textarea {
     width: 100%;
-    min-height: calc(100vh - 7.5rem);
+    min-height: calc(100vh - 10.5rem);
 
     padding: var(--gutter-small) var(--gutter);
 
@@ -106,5 +118,6 @@
 
   .foot {
     @include flex($center: horz, $gap: 0.5rem);
+    // justify-content: right;
   }
 </style>

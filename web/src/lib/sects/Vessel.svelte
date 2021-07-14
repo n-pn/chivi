@@ -109,7 +109,7 @@
     transition: transform 100ms ease-in-out;
 
     position: relative;
-    padding: 0.5rem 0;
+    padding: 0.5rem var(--gutter);
 
     &._sticky {
       position: sticky;
