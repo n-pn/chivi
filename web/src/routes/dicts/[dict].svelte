@@ -1,10 +1,19 @@
 <script context="module">
+  import Upsert, {
+    activate as upsert_activate,
+    state as upsert_state,
+  } from '$parts/Upsert.svelte'
+
+  import Postag from '$parts/PosTag.svelte'
+
   import { labels } from '$lib/postag'
 
   export async function load({ fetch, page: { path, query } }) {
     const url = `/api/${path}?${query.toString()}`
     const res = await fetch(url)
-    return { props: await res.json() }
+    return {
+      props: { ...(await res.json()), query: Object.fromEntries(query) },
+    }
   }
 </script>
 
@@ -13,10 +22,7 @@
 
   import SIcon from '$atoms/SIcon.svelte'
   import { get_rtime_short } from '$atoms/RTime.svelte'
-  import Upsert, {
-    activate as upsert_activate,
-    state as upsert_state,
-  } from '$parts/Upsert.svelte'
+
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
@@ -30,10 +36,14 @@
   export let pgidx = 1
   export let pgmax = 1
 
+  export let query = { key: '', val: '', ptag: '', rank: '' }
+
   $: offset = (pgidx - 1) * 30 + 1
   function render_time(mtime) {
     return mtime > 1577836800 ? get_rtime_short(mtime) + ' trước' : '~'
   }
+
+  let postag_state = 1
 
   let _dirty = false
   $: if (_dirty) window.location.reload()
@@ -41,7 +51,7 @@
   $: pager = new Pager($page.path, $page.query)
 
   function render_ptag(ptag) {
-    return labels[ptag] || ptag || '~'
+    return labels[ptag] || ptag
   }
 
   function render_rank(rank) {
@@ -72,6 +82,11 @@
       return { dname, label }
     }
   }
+
+  function reset_query() {
+    for (let key in query) query[key] = ''
+    query = query
+  }
 </script>
 
 <svelte:head>
@@ -94,10 +109,10 @@
     <h1 class="h3">{label}</h1>
     <p>Entries: {total}</p>
 
-    <div class="table">
+    <div class="body">
       <table>
         <thead>
-          <tr>
+          <tr class="thead">
             <th>#</th>
             <th>Trung</th>
             <th>Nghĩa Việt</th>
@@ -107,21 +122,102 @@
             <th>Q.</th>
             <th>Cập nhật</th>
           </tr>
+
+          <tr class="tquery">
+            <td><SIcon name="search" /></td>
+            <td
+              ><input type="text" placeholder="-" bind:value={query.key} /></td>
+            <td
+              ><input type="text" placeholder="-" bind:value={query.val} /></td>
+            <td>
+              <button
+                class="m-button btn-sm"
+                on:click={() => (postag_state = 2)}
+                >{render_ptag(query.ptag) || '-'}</button>
+            </td>
+            <td
+              ><input
+                type="text"
+                placeholder="-"
+                bind:value={query.rank} /></td>
+            <td
+              ><input
+                type="text"
+                placeholder="-"
+                bind:value={query.uname} /></td>
+            <td
+              ><input
+                type="text"
+                placeholder="-"
+                bind:value={query.privi} /></td>
+            <td>
+              <button class="m-button btn-sm" on:click={reset_query}>
+                <SIcon name="erase" />
+              </button>
+              <a
+                class="m-button btn-sm"
+                data-kbd="ctrl+enter"
+                href={pager.url(query)}>
+                <SIcon name="search" />
+              </a>
+            </td>
+          </tr>
         </thead>
 
         <tbody>
           {#each terms as { key, val, ptag, rank, mtime, uname, privi }, idx}
             <tr>
               <td class="-idx">{offset + idx}</td>
-              <td class="-key">{key}</td>
+              <td class="-key">
+                <span>{key}</span>
+                <div class="hover">
+                  <span class="m-button btn-xs _active">
+                    <SIcon name="compass" />
+                  </span>
+
+                  <button
+                    class="m-button btn-xs"
+                    on:click={() => (query.key = key)}>
+                    <SIcon name="search" />
+                  </button>
+                </div>
+              </td>
               <td
                 class="-val"
                 class:_del={!val[0]}
                 on:click={() => upsert_activate(key)}>
-                {val[0] || 'Đã xoá'}
+                <span>
+                  {val[0] || 'Đã xoá'}
+                </span>
+
+                <div class="hover">
+                  <span class="m-button btn-xs _active">
+                    <SIcon name="edit-2" />
+                  </span>
+                  <button
+                    class="m-button btn-xs"
+                    on:click|stopPropagation={() => (query.val = val[0])}>
+                    <SIcon name="search" />
+                  </button>
+                </div>
               </td>
-              <td class="-ptag" on:click={() => upsert_activate(key, 0, 2)}
-                >{render_ptag(ptag)}</td>
+              <td class="-ptag">
+                <span on:click={() => upsert_activate(key, 0, 2)}>
+                  {render_ptag(ptag) || '~'}
+                </span>
+                <div class="hover">
+                  <button
+                    on:click={() => upsert_activate(key, 0, 2)}
+                    class="m-button btn-xs _active">
+                    <SIcon name="edit-2" />
+                  </button>
+                  <a
+                    class="m-button btn-xs"
+                    href={pager.url({ ptag: ptag || '~' })}>
+                    <SIcon name="search" />
+                  </a>
+                </div>
+              </td>
               <td class="-rank">
                 <a href="{$page.path}?rank={rank}">{render_rank(rank)}</a>
               </td>
@@ -149,6 +245,10 @@
   <Upsert bind:_dirty {...upsert_dict(dname, label)} />
 {/if}
 
+{#if postag_state > 1}
+  <Postag bind:state={postag_state} bind:ptag={query.ptag} />
+{/if}
+
 <style lang="scss">
   article {
     // padding: var;
@@ -158,7 +258,7 @@
     @include bdradi();
   }
 
-  .table {
+  .body {
     display: block;
     width: 100%;
     overflow-x: auto;
@@ -180,17 +280,35 @@
     @include clamp($width: null);
   }
 
-  tbody > tr:hover {
-    cursor: pointer;
-    background-color: color(primary, 5, 1);
+  tbody {
+    tr:hover {
+      cursor: pointer;
+      background-color: color(primary, 5, 1);
+    }
+
+    td {
+      position: relative;
+    }
+
+    td > a {
+      color: inherit;
+      display: block;
+      &:hover {
+        @include fgcolor(primary, 5);
+      }
+    }
   }
 
-  td > a {
-    @include fgcolor(tert);
+  .hover {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 0.325rem;
 
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
+    visibility: hidden;
+    z-index: 99;
+    // prettier-ignore
+    td:hover > & { visibility: visible; }
   }
 
   .-key {
@@ -211,10 +329,32 @@
 
   .-val {
     font-size: rem(14px);
-    @include clamp($width: null);
+    max-width: 12rem;
+
     &._del {
       font-style: italic;
       @include fgcolor(mute);
+    }
+  }
+
+  .tquery {
+    input {
+      margin: 0;
+      padding: 0 0.5rem;
+      border: 0;
+      width: 100%;
+      height: 2rem;
+      text-align: center;
+
+      @include bdradi();
+      @include fgcolor(secd);
+      @include bgcolor(tert);
+      @include linesd(--bd-main);
+
+      &:focus {
+        @include bgcolor(secd);
+        @include linesd(primary, 5, $ndef: false);
+      }
     }
   }
 </style>

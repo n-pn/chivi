@@ -66,13 +66,12 @@
 
   <section class="main">
     {#if on_edit}
-      <div class="m-input">
-        <textarea
-          lang="zh"
-          bind:value={zhtext}
-          bind:this={text_elem}
-          placeholder="Nhập dữ liệu vào đây" />
-      </div>
+      <textarea
+        class="m-input"
+        lang="zh"
+        bind:value={zhtext}
+        bind:this={text_elem}
+        placeholder="Nhập dữ liệu vào đây" />
     {:else}
       <Cvdata {cvdata} bind:_dirty />
     {/if}
@@ -106,7 +105,7 @@
     margin-top: 1rem;
   }
 
-  textarea {
+  .m-input {
     width: 100%;
     min-height: calc(100vh - 10.5rem);
 

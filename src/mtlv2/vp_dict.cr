@@ -58,7 +58,7 @@ class CV::VpDict
   getter flog : String
 
   getter trie = VpTrie.new
-  getter logs = [] of VpTerm
+  getter data = [] of VpTerm
 
   getter size = 0
 
@@ -105,7 +105,7 @@ class CV::VpDict
 
   # return true if new term prevails
   def set(new_term : VpTerm) : Bool
-    @logs << new_term if new_term.mtime > 0
+    @data << new_term
 
     # find existing node or force creating new one
     node = @trie.find!(new_term.key)
@@ -162,23 +162,25 @@ class CV::VpDict
   end
 
   def save!(prune : Bool = false) : Nil
+    # TODO: remove duplicate entries
+
     ::FileUtils.mkdir_p(File.dirname(@file))
+
+    @data.sort_by! { |x| {x.mtime, x.key.size, x.key} }
+    @data.uniq! { |x| {x.key, x.uname, x.val, x.attr, x.rank} }
 
     tspan = Time.measure do
       File.open(@file, "w") do |io|
-        @trie.each do |node|
-          node.prune! if prune
-          node.edits.each { |term| io.puts(term) }
-        end
+        @data.each { |term| io.puts(term) }
       end
 
-      @logs.uniq! { |x| {x.mtime, x.uname} } if prune
+      logs = @data.select(&.mtime.> 0)
 
-      if @logs.empty?
+      if logs.empty?
         File.delete(@flog) if File.exists?(@flog)
       else
         File.open(@flog, "w") do |io|
-          @logs.sort_by!(&.mtime).each { |term| io.puts(term) }
+          logs.each { |term| io.puts(term) }
         end
       end
     end

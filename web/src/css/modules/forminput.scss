@@ -1,40 +1,9 @@
 @use "../essence" as *;
 
-%input,
-.m-input {
-  --inp-height: var(--height-md);
-
+.m-field {
   display: block;
   position: relative;
   width: 100%;
-  line-height: 1.5rem;
-
-  > :where(.-inp, input, textarea) {
-    border: 0;
-    outline: 0;
-    padding: var(--gutter-xs) var(--gutter-md);
-
-    @include fgcolor(main);
-    @include bgcolor(main);
-
-    @include bdradi();
-    @include linesd(--bd-main);
-
-    @include hover {
-      @include linesd(primary, 5, $ndef: false);
-    }
-
-    &:focus {
-      @include bgcolor(tert);
-      @include linesd(primary, 5, $width: 2px, $ndef: false);
-    }
-
-    &::placeholder {
-      font-style: italic;
-      @include ftsize(sm);
-      @include fgcolor(tert);
-    }
-  }
 
   > :where(.-ico, svg, img) {
     position: absolute;
@@ -43,10 +12,36 @@
   }
 }
 
-.inp-sm {
-  --inp-height: var(--height-sm);
+.m-input {
+  line-height: 1.5rem;
+  border: 0;
+  outline: 0;
+  padding: var(--gutter-xs) var(--gutter-md);
+
+  @include fgcolor(main);
+  @include bgcolor(main);
+
+  @include bdradi();
+  @include linesd(--bd-main);
+
+  @include hover {
+    @include linesd(primary, 5, $ndef: false);
+  }
+
+  &:focus {
+    @include bgcolor(tert);
+    @include linesd(primary, 5, $width: 2px, $ndef: false);
+  }
+
+  &::placeholder {
+    font-style: italic;
+    @include ftsize(sm);
+    @include fgcolor(tert);
+  }
 }
 
-.inp-lg {
-  --inp-height: var(--height-lg);
+input.inp-sm {
+  padding: var(--gutter-ss) var(--gutter-md);
+  line-height: 1.25rem;
+  height: 2rem;
 }

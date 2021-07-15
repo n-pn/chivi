@@ -6,8 +6,8 @@ class CV::VpDictCtrl < CV::BaseCtrl
   getter core_dicts : Array(Dinfo) do
     dicts = [] of Dinfo
 
-    dicts << {"hanviet", dict_label("hanviet"), VpDict.hanviet.size}
     dicts << {"regular", dict_label("regular"), VpDict.regular.size}
+    dicts << {"hanviet", dict_label("hanviet"), VpDict.hanviet.size}
     dicts << {"essence", dict_label("essence"), VpDict.essence.size}
     dicts << {"fixture", dict_label("fixture"), VpDict.fixture.size}
 
@@ -67,7 +67,9 @@ class CV::VpDictCtrl < CV::BaseCtrl
     terms = [] of VpTerm
     filter = VMatch.init(params.to_unsafe_h)
 
-    vdict.each do |term|
+    # TODO: provide cursor to search faster
+
+    vdict.data.reverse_each do |term|
       next unless filter.match?(term)
       terms << term
       break if terms.size >= total
