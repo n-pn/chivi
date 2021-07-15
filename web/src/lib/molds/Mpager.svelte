@@ -43,22 +43,13 @@
       }
     }
 
-    if (!replace && !scrollto) return { destroy: () => {} }
+    if (!replace && !scrollto) return { destroy: () => {} } // return noop
 
     node.addEventListener('click', action)
     return { destroy: () => node.removeEventListener('click', action) }
   }
-</script>
 
-<script>
-  import SIcon from '$atoms/SIcon.svelte'
-
-  export let pager = new Pager('/', {}, { page: 1 })
-  export let pgidx = 1
-  export let pgmax = 1
-  export let _navi = { replace: false, scrollto: null }
-
-  function build_pagi(pgidx, pgmax) {
+  function make_pages(pgidx, pgmax) {
     const res = []
     const min = pgidx > 2 ? pgidx - 2 : 1
     const max = min + 5 <= pgmax ? min + 5 : pgmax
@@ -75,12 +66,22 @@
   }
 </script>
 
+<script>
+  import SIcon from '$atoms/SIcon.svelte'
+
+  export let pager = new Pager('/', {}, { page: 1 })
+  export let pgidx = 1
+  export let pgmax = 1
+  export let _navi = { replace: false, scrollto: null }
+</script>
+
 <nav class="pagi">
   {#if pgidx > 1}
     <a
       class="m-button _fill -md"
       href={pager.url({ page: pgidx - 1 })}
       data-kbd="j"
+      sveltekit:noscroll={_navi.scrollto}
       use:navigate={_navi}>
       <SIcon name="chevron-left" />
     </a>
@@ -90,12 +91,13 @@
     </button>
   {/if}
 
-  {#each build_pagi(pgidx, pgmax) as pgnow}
+  {#each make_pages(pgidx, pgmax) as pgnow}
     {#if pgnow != pgidx}
       <a
         class="m-button _line"
         href={pager.url({ page: pgnow })}
         data-kbd={pgnow == 1 ? 'h' : pgnow == pgmax ? 'l' : ''}
+        sveltekit:noscroll={_navi.scrollto}
         use:navigate={_navi}><span>{pgnow}</span></a>
     {:else}
       <button class="m-button" disabled>
@@ -109,6 +111,7 @@
       class="m-button _primary _fill"
       href={pager.url({ page: pgidx + 1 })}
       data-kbd="k"
+      sveltekit:noscroll={_navi.scrollto}
       use:navigate={_navi}>
       <span class="-txt">Kế tiếp</span>
       <SIcon name="chevron-right" />

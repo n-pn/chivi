@@ -41,7 +41,7 @@ $-colors: (primary, success, warning, harmful);
   @include fgvar(btn, white);
   @include bgvar(btn, $color, 5);
   @include bgvar(hover, $color, 4);
-  @include linesd($color, 4, $ndef: false);
+  @include linesd(color($color, 6, 3), $ndef: false);
 
   .tm-dark & {
     @include fgvar(btn, $color, 1);
