@@ -48,7 +48,7 @@
   import { session } from '$app/stores'
 
   import * as cvlib from '$lib/cvdata'
-  import Aditem from '$molds/Aditem.svelte'
+  import Aditem, { ad_indexes } from '$molds/Aditem.svelte'
 
   export let cvdata = ''
   export let _dirty = false
@@ -57,7 +57,7 @@
   export let label = 'Tổng hợp'
 
   $: lines = cvlib.split_input(cvdata)
-  $: adidx = cvlib.ad_indexes(lines.length)
+  $: adidx = ad_indexes(lines.length)
 
   let hover_line = -1
   let focus_line = -1
@@ -108,8 +108,8 @@
     const use_html = idx == hover || idx == focus
 
     const nodes = lines[idx]
-    if (use_html) return (htmls[idx] ||= cvlib.render_html(nodes))
-    return (texts[idx] ||= cvlib.render_text(nodes))
+    if (use_html) return (htmls[idx] ||= cvlib.render(nodes, 'html'))
+    return (texts[idx] ||= cvlib.render(nodes, 'text'))
   }
 </script>
 
