@@ -9,9 +9,9 @@ class CV::VpTerm
   getter key : String
   getter val : Array(String)
 
-  getter ext : String = ""
-  getter wgt : Int32 { @ext.split(" ").last.try(&.to_i?) || 3 }
-  getter tag : PosTag { PosTag.from_str(@ext.split(" ").first) }
+  getter attr : String = ""
+  getter ptag : PosTag { PosTag.from_str(@attr.split(" ").first) }
+  getter rank : Int32 = 3
 
   getter mtime : Int32 = 0
   getter uname : String = "_"
@@ -27,33 +27,33 @@ class CV::VpTerm
     @key = cols[0]
     @val = cols.fetch(1, "").split(SEP)
 
-    return if @dtype < 1 # skip reading ext if dict type is lookup
-    @ext = cols[2]? || ""
+    return if @dtype < 1 # skip reading attr if dict type is lookup
 
-    return unless mtime = cols[3]?.try(&.to_i?)
+    @attr = cols[2]? || ""
+    @rank = cols[3]?.try(&.to_i?) || 3
+
+    return unless mtime = cols[4]?.try(&.to_i?)
     @mtime = mtime
 
-    @uname = cols[4]? || "_"
-    @privi = cols[5]?.try(&.to_i?) || @privi
+    @uname = cols[5]? || "_"
+    @privi = cols[6]?.try(&.to_i?) || @privi
   end
 
   def initialize(@key,
-                 @val = [""], @ext = "",
+                 @val = [""], @attr = "", @rank = 3,
                  @mtime = VpTerm.mtime, @uname = "_", @privi = 1,
                  @dtype = 2)
   end
 
-  def set_ext(@ext : String, @tag = nil, @wgt = nil)
-    @point = nil # need to calculate weight again
+  def set_attr(@attr : String, @ptag = nil)
   end
 
-  def set_ext(tag : PosTag = self.tag, wgt : Int32 = self.wgt)
-    ext = wgt != 3 ? "#{tag.to_str} #{wgt}" : tag.to_str
-    set_ext(ext, tag, wgt)
+  def set_rank(@rank : Int32)
+    @point = nil
   end
 
   private def calc_point
-    base = 1.25 + wgt * 0.125 + @dtype * 0.125
+    base = 1.25 + rank * 0.125 + @dtype * 0.125
     base ** @key.size + @key.size ** base
   end
 
@@ -74,7 +74,7 @@ class CV::VpTerm
     @val.join(io, SEP)
 
     return if @dtype < 1 # skip printing if dict type is lookup
-    io << '\t' << @ext
+    io << '\t' << @attr << '\t' << (@rank == 3 ? "" : @rank)
 
     return if @mtime <= 0
     io << '\t' << @mtime << '\t' << @uname << '\t' << @privi
@@ -83,7 +83,7 @@ class CV::VpTerm
   def inspect(io : IO) : Nil
     io << '[' << key << '/'
     @val.join(io, ',')
-    io << '/' << @ext
+    io << '/' << @attr << ' ' << (@rank == 3 ? "" : @rank)
 
     if @mtime > 0
       io << '/' << @mtime << '/' << @uname << '/' << @privi
@@ -97,8 +97,8 @@ class CV::VpTerm
       jb.field "key", @key
       jb.field "val", @val
 
-      jb.field "tag", tag.to_str
-      jb.field "wgt", wgt
+      jb.field "ptag", ptag.to_str
+      jb.field "rank", rank
 
       jb.field "mtime", rtime.to_unix
       jb.field "uname", @uname

@@ -4,7 +4,7 @@
 </script>
 
 <script>
-  export let wgt = 3
+  export let rank = 3
 </script>
 
 <div class="prio">
@@ -12,9 +12,9 @@
   {#each Object.entries(lbls) as [val, lbl]}
     <button
       class="-btn"
-      class:active={wgt == val}
+      class:active={rank == val}
       data-kbd={keys[val]}
-      on:click={() => (wgt = val)}>{lbl}</button>
+      on:click={() => (rank = val)}>{lbl}</button>
   {/each}
 </div>
 

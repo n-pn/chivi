@@ -76,8 +76,8 @@
 
     // set some default values if non present
 
-    terms[0].fix_tag(terms[1].tag || terms[1].old_val ? '' : 'nr')
-    terms[1].fix_tag(terms[0].old_tag)
+    terms[0].fix_ptag(terms[1].ptag || terms[1].old_val ? '' : 'nr')
+    terms[1].fix_ptag(terms[0].old_ptag)
 
     const first_hint = data.hints[0]
     terms[0].fix_val(terms[1].val || first_hint || titleize(trans.hanviet, 9))
@@ -86,9 +86,8 @@
   }
 
   async function submit_val() {
-    const [err, res] = await dict_upsert(fetch, dnames[$tab], term.result)
+    const [err] = await dict_upsert(fetch, dnames[$tab], term.result)
     _dirty = !err
-    // term[$tab] = new Term(res, $tab + 1, $session.privi)
     deactivate()
   }
 </script>
@@ -141,7 +140,7 @@
 
           {#if $tab < 2}
             <button class="postag" on:click={() => state.set(2)}>
-              {tag_label(term.tag) || 'Chưa phân loại'}
+              {tag_label(term.ptag) || 'Chưa phân loại'}
             </button>
           {/if}
         </div>
@@ -150,7 +149,7 @@
       </div>
 
       <div class="vfoot">
-        <Vrank bind:wgt={term.wgt} />
+        <Vrank bind:rank={term.rank} />
 
         <Privi
           {term}
@@ -165,7 +164,7 @@
 </div>
 
 {#if $state > 1}
-  <Postag bind:input={term.tag} bind:state={$state} />
+  <Postag bind:ptag={term.ptag} bind:state={$state} />
 {/if}
 
 <style lang="scss">

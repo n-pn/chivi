@@ -1,16 +1,15 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
   import { gnames, groups, find_group, tag_label } from '$lib/postag'
-  import { onMount } from 'svelte'
 
-  export let input = ''
+  export let ptag = ''
   export let state = 1
 
   let active_tab = 0
   let origin_tab = 0
 
-  $: if (input) {
-    origin_tab = find_group(input)
+  $: if (ptag) {
+    origin_tab = find_group(ptag)
     active_tab = origin_tab > 0 ? origin_tab : 0
   }
 
@@ -18,8 +17,8 @@
     state = 1
   }
 
-  function update_tag(tag) {
-    input = input == tag ? '' : tag
+  function update_tag(ntag) {
+    ptag = ptag == ntag ? '' : ntag
     state = 1
   }
 </script>
@@ -45,14 +44,14 @@
     <div class="body">
       {#each groups as tags, tab}
         <section class="tags" class:_active={tab == active_tab}>
-          {#each tags as tag}
-            {#if tag != '-'}
+          {#each tags as ntag}
+            {#if ntag != '-'}
               <button
                 class="-tag"
-                class:_active={tag == input}
-                on:click={() => update_tag(tag)}>
-                {tag_label(tag)}
-                {#if tag == input}
+                class:_active={ntag == ptag}
+                on:click={() => update_tag(ntag)}>
+                <span>{tag_label(ntag)}</span>
+                {#if ntag == ptag}
                   <SIcon name="check" />
                 {/if}
               </button>

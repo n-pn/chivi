@@ -40,12 +40,12 @@
 
   $: pager = new Pager($page.path, $page.query)
 
-  function render_ptag(tag) {
-    return labels[tag] || tag || '~'
+  function render_ptag(ptag) {
+    return labels[ptag] || ptag || '~'
   }
 
-  function render_rank(wgt) {
-    switch (wgt) {
+  function render_rank(rank) {
+    switch (rank) {
       case 1:
         return '-2'
       case 2:
@@ -110,7 +110,7 @@
         </thead>
 
         <tbody>
-          {#each terms as { key, val, tag, wgt, mtime, uname, privi }, idx}
+          {#each terms as { key, val, ptag, rank, mtime, uname, privi }, idx}
             <tr>
               <td class="-idx">{offset + idx}</td>
               <td class="-key">{key}</td>
@@ -120,10 +120,10 @@
                 on:click={() => upsert_activate(key)}>
                 {val[0] || 'Đã xoá'}
               </td>
-              <td class="-tag" on:click={() => upsert_activate(key, 0, 2)}
-                >{render_ptag(tag)}</td>
-              <td class="-wgt">
-                <a href="{$page.path}?wgt={wgt}">{render_rank(wgt)}</a>
+              <td class="-ptag" on:click={() => upsert_activate(key, 0, 2)}
+                >{render_ptag(ptag)}</td>
+              <td class="-rank">
+                <a href="{$page.path}?rank={rank}">{render_rank(rank)}</a>
               </td>
               <td class="-uname">
                 <a href="{$page.path}?uname={uname}"
@@ -198,7 +198,7 @@
   }
 
   .-idx,
-  .-wgt,
+  .-rank,
   .-mtime,
   .-privi,
   .-uname {

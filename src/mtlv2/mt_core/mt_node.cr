@@ -23,7 +23,7 @@ class CV::MtNode
   def initialize(term : VpTerm)
     @key = term.key
     @val = term.val.first
-    @tag = term.tag
+    @tag = term.ptag
     @dic = term.dtype
   end
 

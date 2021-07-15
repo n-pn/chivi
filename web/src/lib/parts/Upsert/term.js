@@ -5,8 +5,8 @@ export default class Term {
     const val = term.val || []
     this.val = this.old_val = val[0] || ''
 
-    this.tag = this.old_tag = term.tag || ''
-    this.wgt = this.old_wgt = term.wgt || 3
+    this.ptag = this.old_ptag = term.ptag || ''
+    this.rank = this.old_rank = term.rank || 3
 
     this.old_privi = term.privi || p_min
     this.old_state = term.state
@@ -17,10 +17,6 @@ export default class Term {
     if (this.privi > p_max) this.privi = p_max
   }
 
-  get ext() {
-    return this.tag == 3 ? this.tag : `${this.tag} ${this.wgt}`
-  }
-
   get state() {
     return !this.val ? 'Xoá' : this.old_val ? 'Sửa' : 'Thêm'
   }
@@ -29,30 +25,29 @@ export default class Term {
     return {
       key: this.key,
       val: this.val.replace('', '').trim(),
-      ext: this.ext,
+      attr: this.ptag,
+      rank: this.rank,
       privi: this.privi,
     }
   }
 
   reset() {
     this.val = this.old_val
-    this.tag = this.old_tag
-
+    this.ptag = this.old_ptag
     return this
   }
 
   clear() {
     this.val = ''
-    this.tag = ''
-
+    this.ptag = ''
     return this
   }
 
-  fix_val(new_val) {
-    if (!this.val) this.val = new_val
+  fix_val(new_val, force = false) {
+    if (force || !this.val) this.val = new_val
   }
 
-  fix_tag(new_tag) {
-    if (!this.tag) this.tag = new_tag
+  fix_ptag(new_ptag, force = false) {
+    if (force || !this.ptag) this.ptag = new_ptag
   }
 }

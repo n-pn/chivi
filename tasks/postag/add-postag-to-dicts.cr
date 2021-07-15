@@ -55,12 +55,11 @@ def add_postag(old_name : String, new_name = old_name)
   new_dict = CV::VpDict.load(new_name, reset: true)
 
   old_dict.each(full: true) do |old_term|
-    tag = Utils.get_postag(old_term.key, new_name)
+    ptag = Utils.get_postag(old_term.key, new_name)
+    rank = Utils.get_weight(old_term.prio)
 
-    wgt = Utils.get_weight(old_term.prio)
-    ext = wgt == 3 ? tag : "#{tag} #{wgt}"
     new_term = new_dict.new_term(
-      old_term.key, old_term.vals, ext,
+      old_term.key, old_term.vals, ptag, rank,
       old_term.mtime, old_term.uname, old_term.power)
 
     new_dict.set(new_term)

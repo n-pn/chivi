@@ -65,7 +65,7 @@ class CV::VpDictCtrl < CV::BaseCtrl
     total = offset + 128
 
     terms = [] of VpTerm
-    filter = VpTrie::Filter.init(params.to_unsafe_h)
+    filter = VMatch.init(params.to_unsafe_h)
 
     vdict.each do |term|
       next unless filter.match?(term)
@@ -153,8 +153,8 @@ class CV::VpDictCtrl < CV::BaseCtrl
     end
 
     unless special_term = special_node.try(&.term)
-      ext = regular_node.try(&.term.try(&.ext)) || ""
-      special_term = special_dict.new_term(input, ext: ext)
+      attr = regular_node.try(&.term.try(&.attr)) || ""
+      special_term = special_dict.new_term(input, attr: attr)
     end
 
     unless regular_term = regular_node.try(&.term)
@@ -197,23 +197,25 @@ class CV::VpDictCtrl < CV::BaseCtrl
     mtime = VpTerm.mtime
 
     key = params.fetch_str("key").strip
-    val = params.fetch_str("val").strip.split(" / ")
-    ext = params.fetch_str("ext")
+    val = params.fetch_str("val").split(" / ").map(&.strip)
 
-    new_term = vdict.new_term(key, val, ext, mtime: mtime, uname: cv_dname, privi: privi)
+    attr = params.fetch_str("attr")
+    rank = params.fetch_int("rank")
+
+    new_term = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cv_dname, privi: privi)
     return halt!(501, "Không thay đổi!") unless vdict.set!(new_term)
 
     # TODO: save context
 
     if vdict.dtype == 3 # book dict
       # add to quick translation dict if entry is a name
-      if key.size > 2 && new_term.tag.nper?
-        combine_term = VpDict.combine.new_term(key, val, ext, mtime: mtime)
+      if key.size > 2 && new_term.ptag.nper?
+        combine_term = VpDict.combine.new_term(key, val, attr, rank, mtime: mtime)
         VpDict.combine.set!(combine_term)
       end
 
       # add to suggestion
-      suggest_term = VpDict.suggest.new_term(key, val, ext, mtime: mtime)
+      suggest_term = VpDict.suggest.new_term(key, val, attr, rank, mtime: mtime)
 
       if old_term = VpDict.suggest.find(key)
         suggest_term.val.concat(old_term.val).uniq!
