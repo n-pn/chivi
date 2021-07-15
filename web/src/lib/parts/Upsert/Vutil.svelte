@@ -7,10 +7,7 @@
   function upcase_val(node, count) {
     const action = (_) => (term.val = titleize(term.val, count))
     node.addEventListener('click', action)
-
-    return {
-      destroy: () => node.removeEventListener('click', action),
-    }
+    return { destroy: () => node.removeEventListener('click', action) }
   }
 </script>
 

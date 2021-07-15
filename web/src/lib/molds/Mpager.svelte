@@ -2,40 +2,48 @@
   import { goto } from '$app/navigation'
 
   export class Pager {
-    constructor(path, query = '') {
+    constructor(path, opts = {}, defs = { page: 1 }) {
+      if (typeof opts == 'string') opts = new URLSearchParams(opts)
+      if (opts instanceof URLSearchParams) opts = Object.fromEntries(opts)
+
       this.path = path
-      this.query = new URLSearchParams(query.toString())
+      this.opts = opts
+      this.defs = defs
     }
 
     url(opts = {}) {
+      const query = new URLSearchParams()
+      opts = { ...this.opts, ...opts }
       for (const key in opts) {
         const val = opts[key]
-        if (val === null) this.query.delete(key)
-        else this.query.set(key, val)
+        if (val && val != this.defs[key]) {
+          query.set(key, val)
+        }
       }
 
-      if (this.query.get('page') == 1) this.query.delete('page')
-      const query = this.query.toString()
-      return query ? this.path + '?' + query : this.path
+      const qs = query.toString()
+      return qs ? this.path + '?' + qs : this.path
     }
   }
 
-  export function jumpto(node, [replaceState = false, scrollTo = null]) {
+  export function navigate(node, { href, replace, scrollto }) {
+    const opts = { replaceState: replace, noscroll: !!scrollto }
+
     const action = async (event) => {
-      if (replaceState || scrollTo) {
-        event.preventDefault()
-        event.stopPropagation()
+      href = href || node.getAttribute('href')
+      await goto(href, opts)
+      // console.log({ href, replace, scrollto })
 
-        const href = event.target.getAttribute('href')
+      event.preventDefault()
+      event.stopPropagation()
 
-        const noscroll = !!scrollTo
-        await goto(href, { replaceState, noscroll, keepfocus: false })
-
-        scrollTo?.scrollIntoView({ block: 'start' })
-
-        // console.log('jumped')
+      if (scrollto) {
+        const elem = document.querySelector(scrollto)
+        elem?.scrollIntoView({ block: 'start' })
       }
     }
+
+    if (!replace && !scrollto) return { destroy: () => {} }
 
     node.addEventListener('click', action)
     return { destroy: () => node.removeEventListener('click', action) }
@@ -45,12 +53,10 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let pager = new Pager('/')
+  export let pager = new Pager('/', {}, { page: 1 })
   export let pgidx = 1
   export let pgmax = 1
-
-  export let replaceState = false
-  export let scrollTo = null
+  export let _navi = { replace: false, scrollto: null }
 
   function build_pagi(pgidx, pgmax) {
     const res = []
@@ -75,7 +81,7 @@
       class="m-button _fill -md"
       href={pager.url({ page: pgidx - 1 })}
       data-kbd="j"
-      use:jumpto={[replaceState, scrollTo]}>
+      use:navigate={_navi}>
       <SIcon name="chevron-left" />
     </a>
   {:else}
@@ -88,9 +94,9 @@
     {#if pgnow != pgidx}
       <a
         class="m-button _line"
-        data-kbd={pgnow == 1 ? 'h' : pgnow == pgmax ? 'l' : ''}
         href={pager.url({ page: pgnow })}
-        use:jumpto={[replaceState, scrollTo]}><span>{pgnow}</span></a>
+        data-kbd={pgnow == 1 ? 'h' : pgnow == pgmax ? 'l' : ''}
+        use:navigate={_navi}><span>{pgnow}</span></a>
     {:else}
       <button class="m-button" disabled>
         <span>{pgnow}</span>
@@ -103,7 +109,7 @@
       class="m-button _primary _fill"
       href={pager.url({ page: pgidx + 1 })}
       data-kbd="k"
-      use:jumpto={[replaceState, scrollTo]}>
+      use:navigate={_navi}>
       <span class="-txt">Kế tiếp</span>
       <SIcon name="chevron-right" />
     </a>

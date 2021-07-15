@@ -52,7 +52,7 @@
   export let pgmax = 1
 
   export let opts = { order: 'access' }
-  $: pager = new Pager($page.path, $page.query)
+  $: pager = new Pager($page.path, $page.query, { order: 'access' })
 </script>
 
 <svelte:head>

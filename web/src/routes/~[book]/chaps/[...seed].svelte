@@ -12,7 +12,7 @@
     const [snvid] = nvinfo.chseed[sname] || [bhash]
 
     const opts = { sname, snvid, page }
-    const mode = +query.get('mode') || 1
+    const mode = +query.get('mode')
 
     const [err2, chseed] = await get_chseed(fetch, bhash, opts, mode)
     if (err2) return { status: err2, error: new Error(chseed) }
@@ -40,23 +40,25 @@
 </script>
 
 <script>
-  import { session, navigating } from '$app/stores'
+  import { session, navigating, page } from '$app/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
   import Chlist from '$parts/Chlist.svelte'
   import Book from '../_book.svelte'
 
-  import Mpager, { Pager, jumpto } from '$molds/Mpager.svelte'
+  import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
+  import { writable } from 'svelte/store'
 
   let pagers = {}
   $: pager = get_pager(opts.sname)
 
+  let scroll_into = writable(null)
+
   function get_pager(sname) {
-    return (pagers[sname] ||= new Pager(
-      `/~${nvinfo.bslug}/chaps/${sname}`,
-      `page=${opts.page}`
-    ))
+    return (pagers[sname] ||= new Pager(`/~${nvinfo.bslug}/chaps/${sname}`, {
+      page: opts.page,
+    }))
   }
 
   export let nvinfo
@@ -68,9 +70,6 @@
 
   $: [main_seeds, hide_seeds] = split_chseed(nvinfo, opts)
   let show_more = false
-
-  let scrollTo
-  $: _load = $navigating && opts.mode > 1
 
   async function load_chseed(evt, sname, mode = 0) {
     evt.preventDefault()
@@ -102,8 +101,10 @@
 
     const url = pager.url({ page: opts.page })
     window.history.replaceState({}, '', url)
-    if (scroll) scrollTo.scrollIntoView({ block: 'start' })
+    if (scroll) $scroll_into?.scrollIntoView({ block: 'start' })
   }
+
+  const _navi = { replace: true, scrollto: '#chlist' }
 
   let add_seed = false
 
@@ -144,7 +145,6 @@
 
   function is_remote_seed(sname) {
     switch (sname) {
-      case 'chivi':
       case 'jx_la':
       case 'shubaow':
       case 'zxcs_me':
@@ -165,7 +165,7 @@
         class="-name"
         class:_active={opts.sname === mname}
         href={get_pager(mname).url({ page: opts.page })}
-        use:jumpto={[true, scrollTo]}
+        use:navigate={_navi}
         >{mname}
       </a>
     {/each}
@@ -176,7 +176,7 @@
           <a
             class="-name"
             href={get_pager(hname).url({ page: opts.page })}
-            use:jumpto={[true, scrollTo]}
+            use:navigate={_navi}
             >{hname}
           </a>
         {/each}
@@ -219,7 +219,7 @@
     </div>
   {/if}
 
-  <div class="chinfo" bind:this={scrollTo}>
+  <div id="chlist" class="chinfo">
     <div class="-left">
       <span class="-text">{opts.sname}</span>
       <span class="-span">
@@ -229,18 +229,22 @@
       <span class="-span">{chseed.total} chương</span>
     </div>
 
-    {#if is_remote_seed(opts.sname)}
-      <a
-        class="m-button"
-        href={pager.url({ page: opts.page, mode: 2 })}
-        use:jumpto={[true, scrollTo]}>
-        <SIcon name={_load ? 'loader' : 'rotate-ccw'} spin={_load} />
-        <span class="-hide">Đổi mới</span>
-      </a>
-    {:else if opts.sname == 'chivi'}
+    {#if opts.sname == 'chivi'}
       <a class="m-button" href="/~{nvinfo.bslug}/+{opts.sname}">
         <SIcon name="plus" />
         <span class="-hide">Thêm chương</span>
+      </a>
+    {:else}
+      <a
+        class="m-button"
+        href={pager.url({ page: opts.page, mode: is_remote_seed ? 2 : 1 })}
+        use:navigate={_navi}>
+        {#if $navigating}
+          <SIcon name="loader" spin={true} />
+        {:else}
+          <SIcon name="rotate-ccw" />
+        {/if}
+        <span class="-hide">Đổi mới</span>
       </a>
     {/if}
   </div>
@@ -250,13 +254,9 @@
       <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chseed.lasts} />
       <div class="-sep" />
       <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chlist} />
+
       <footer class="foot">
-        <Mpager
-          {pager}
-          pgidx={opts.page}
-          pgmax={pmax}
-          {scrollTo}
-          replaceState={true} />
+        <Mpager {pager} pgidx={opts.page} pgmax={pmax} {_navi} />
       </footer>
     {:else}
       <p class="empty">Không có nội dung :(</p>
