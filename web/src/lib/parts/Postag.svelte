@@ -1,6 +1,6 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import { gnames, groups, find_group, tag_label } from '$lib/postag'
+  import { gnames, groups, find_group, tag_label } from '$lib/pos_tag'
 
   export let ptag = ''
   export let state = 1

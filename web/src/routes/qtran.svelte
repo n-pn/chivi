@@ -2,13 +2,8 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  import Cvdata, { toggle_lookup } from '$sects/Cvdata.svelte'
-
-  import {
-    enabled as lookup_enabled,
-    actived as lookup_actived,
-    sticked as lookup_sticked,
-  } from '$parts/Lookup.svelte'
+  import Cvdata from '$sects/Cvdata.svelte'
+  import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
   let zhtext = ''
   let cvdata = ''
@@ -47,7 +42,7 @@
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<Vessel shift={$lookup_enabled && $lookup_actived && $lookup_sticked}>
+<Vessel>
   <span slot="header-left" class="header-item _active">
     <SIcon name="zap" />
     <span class="header-text">Dịch nhanh</span>
@@ -57,7 +52,7 @@
     <button
       class="header-item"
       class:_active={$lookup_enabled}
-      on:click={toggle_lookup}
+      on:click={() => lookup_enabled.update((x) => !x)}
       data-kbd="\">
       <SIcon name="compass" />
       <span class="header-text _show-md">Giải nghĩa</span>

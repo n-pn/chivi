@@ -1,6 +1,6 @@
 <script>
   import { navigating, page, session } from '$app/stores'
-  import { l_scroll } from '$lib/stores'
+  import { scroll } from '$lib/stores'
   import Loader from '$molds/Loader.svelte'
 
   import '../css/generic.scss'
@@ -26,12 +26,12 @@
   function handle_scroll() {
     if ($navigating == true) {
       prevScrollTop = 0
-      $l_scroll = 0
+      $scroll = 0
       return
     }
 
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-    $l_scroll = scrollTop - prevScrollTop
+    $scroll = scrollTop - prevScrollTop
     prevScrollTop = scrollTop <= 0 ? 0 : scrollTop
   }
 

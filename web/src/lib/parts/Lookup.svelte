@@ -2,11 +2,16 @@
   import { writable } from 'svelte/store'
   import { dict_lookup } from '$api/dictdb_api'
 
+  export const input = writable(['', 0, 0])
+
   export const enabled = writable(false)
   export const actived = writable(false)
-  export const sticked = writable(false)
 
-  export const input = writable(['', 0, 0])
+  export function activate(enable, inp) {
+    actived.set(true)
+    if (inp) input.set(inp)
+    if (enable) enabled.set(true)
+  }
 
   const tags = {
     '&': '&amp;',
@@ -31,7 +36,6 @@
 </script>
 
 <script>
-  import { onDestroy } from 'svelte'
   import SIcon from '$atoms/SIcon.svelte'
   import Slider from '$molds/Slider.svelte'
 
@@ -141,18 +145,9 @@
 
     return output
   }
-
-  onDestroy(() => {
-    $sticked = false
-    $enabled = false
-  })
 </script>
 
-<Slider
-  _rwidth={30}
-  _sticky={true}
-  bind:actived={$actived}
-  bind:sticked={$sticked}>
+<Slider _rwidth={30} _sticky={true} bind:actived={$actived}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="compass" />

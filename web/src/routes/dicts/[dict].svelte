@@ -5,8 +5,7 @@
   } from '$parts/Upsert.svelte'
 
   import Postag from '$parts/Postag.svelte'
-
-  import { labels } from '$lib/postag'
+  import { tag_label } from '$lib/pos_tag'
 
   export async function load({ fetch, page: { path, query } }) {
     const url = `/api/${path}?${query.toString()}`
@@ -49,10 +48,6 @@
   $: if (_dirty) window.location.reload()
 
   $: pager = new Pager($page.path, $page.query)
-
-  function render_ptag(ptag) {
-    return labels[ptag] || ptag
-  }
 
   function render_rank(rank) {
     switch (rank) {
@@ -133,7 +128,7 @@
               <button
                 class="m-button btn-sm"
                 on:click={() => (postag_state = 2)}
-                >{render_ptag(query.ptag) || '-'}</button>
+                >{tag_label(query.ptag) || '-'}</button>
             </td>
             <td
               ><input
@@ -203,7 +198,7 @@
               </td>
               <td class="-ptag">
                 <span on:click={() => upsert_activate(key, 0, 2)}>
-                  {render_ptag(ptag) || '~'}
+                  {tag_label(ptag) || '~'}
                 </span>
                 <div class="hover">
                   <button

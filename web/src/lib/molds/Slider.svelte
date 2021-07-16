@@ -1,15 +1,20 @@
 <script>
+  import { onDestroy } from 'svelte'
+  import { toleft } from '$lib/stores'
+  import { navigating } from '$app/stores'
+
   import SIcon from '$atoms/SIcon.svelte'
   export let actived = false
-  export let sticked = false
 
   export let _sticky = false
   export let _slider = 'right'
   export let _rwidth = 25
 
-  function hide_if_anchor_clicked(e) {
-    if (e.target.tagName == 'A') actived = false
-  }
+  let sticked = false
+
+  $: $toleft = sticked
+  onDestroy(() => ($toleft = false))
+  $: if ($navigating) actived = false
 </script>
 
 <div
@@ -23,7 +28,6 @@
   class:_left={_slider == 'left'}
   class:_right={_slider == 'right'}
   class:_active={actived}
-  on:click={hide_if_anchor_clicked}
   style="--width: {_rwidth}rem;">
   <header class="head">
     <slot name="header-left" />

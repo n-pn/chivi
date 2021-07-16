@@ -1,13 +1,9 @@
 <script context="module">
-  import Cvdata, { toggle_lookup } from '$sects/Cvdata.svelte'
+  import Cvdata from '$sects/Cvdata.svelte'
 
   import { get_chinfo, get_chtext } from '$api/chtext_api'
 
-  import {
-    enabled as lookup_enabled,
-    actived as lookup_actived,
-    sticked as lookup_sticked,
-  } from '$parts/Lookup.svelte'
+  import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
   export async function load({ fetch, page: { params, query }, context }) {
     const { nvinfo } = context
@@ -81,7 +77,7 @@
   <title>{chinfo.title} - {nvinfo.btitle_vi} - Chivi</title>
 </svelte:head>
 
-<Vessel shift={$lookup_enabled && $lookup_actived && $lookup_sticked}>
+<Vessel>
   <svelte:fragment slot="header-left">
     <a href={book_path} class="header-item _title">
       <SIcon name="book-open" />
@@ -105,7 +101,7 @@
     <button
       class="header-item"
       class:_active={$lookup_enabled}
-      on:click={toggle_lookup}
+      on:click={() => lookup_enabled.update((x) => !x)}
       data-kbd="\">
       <SIcon name="compass" />
     </button>

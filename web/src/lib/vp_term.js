@@ -1,29 +1,38 @@
-export default class Term {
+export default class VpTerm {
   constructor(term = {}, p_min = 1, p_max = 1) {
-    this.key = term.key
+    this._raw = term
 
-    const val = term.val || []
-    this.val = this.old_val = val[0] || ''
-
-    this.ptag = this.old_ptag = term.ptag || ''
-    this.rank = this.old_rank = term.rank || 3
-
-    this.old_privi = term.privi || p_min
-    this.old_state = term.state
-    this.old_uname = term.uname
-    this.old_mtime = term.mtime
+    this.val = this.old_val = (term.val || [''])[0]
+    this.ptag = term.ptag || ''
+    this.rank = term.rank || 3
 
     this.privi = p_min > term.privi ? p_min : term.privi
     if (this.privi > p_max) this.privi = p_max
   }
 
+  get old_uname() {
+    return this._raw.uname
+  }
+
+  get old_state() {
+    return this._raw.state
+  }
+
+  get old_privi() {
+    return this._raw.privi
+  }
+
+  get old_mtime() {
+    return this._raw.mtime
+  }
+
   get state() {
-    return !this.val ? 'Xoá' : this.old_val ? 'Sửa' : 'Thêm'
+    return !this.val ? 'Xoá' : this._raw.val ? 'Sửa' : 'Thêm'
   }
 
   get result() {
     return {
-      key: this.key,
+      key: this._raw.key,
       val: this.val.replace('', '').trim(),
       attr: this.ptag,
       rank: this.rank,
@@ -33,7 +42,7 @@ export default class Term {
 
   reset() {
     this.val = this.old_val
-    this.ptag = this.old_ptag
+    this.ptag = this._raw.ptag
     return this
   }
 

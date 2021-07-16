@@ -1,7 +1,6 @@
 <script context="module">
   import Lookup, {
-    input as lookup_input,
-    actived as lookup_actived,
+    activate as lookup_activate,
     enabled as lookup_enabled,
   } from '$parts/Lookup.svelte'
 
@@ -9,45 +8,14 @@
     state as upsert_state,
     activate as upsert_activate,
   } from '$parts/Upsert.svelte'
-
-  export function toggle_lookup() {
-    lookup_enabled.update((x) => {
-      lookup_actived.set(!x)
-      return !x
-    })
-  }
-
-  function gen_context(nodes = [], idx = 0, min = 4, max = 10) {
-    let input = ''
-
-    for (let j = idx - 1; j >= 0; j--) {
-      const [key] = nodes[j]
-      input = key + input
-      if (input.length >= min) break
-    }
-
-    const lower = input.length
-    input += nodes[idx][0]
-    const upper = input.length
-
-    let limit = upper + min
-    if (limit < max) limit = max
-
-    for (let j = idx + 1; j < nodes.length; j++) {
-      const [key] = nodes[j]
-      input = input + key
-      if (input.length > limit) break
-    }
-
-    return [input, lower, upper > lower ? upper : lower + 1]
-  }
 </script>
 
 <script>
   import { onMount } from 'svelte'
   import { session } from '$app/stores'
 
-  import * as cvlib from '$lib/cvdata'
+  import { split_mtdata } from '$lib/mt_data'
+
   import Aditem, { ad_indexes } from '$molds/Aditem.svelte'
 
   export let cvdata = ''
@@ -56,7 +24,7 @@
   export let dname = 'various'
   export let label = 'Tổng hợp'
 
-  $: lines = cvlib.split_input(cvdata)
+  $: lines = split_mtdata(cvdata)
   $: adidx = ad_indexes(lines.length)
 
   let hover_line = -1
@@ -80,8 +48,8 @@
     if (target.nodeName != 'X-V') return
 
     const idx = +target.dataset.i
-    const nodes = lines[index]
-    upsert_input = gen_context(nodes, idx)
+    const mt_data = lines[index]
+    upsert_input = mt_data.substr(idx)
 
     if (target === focus_word) {
       upsert_activate(upsert_input, 0)
@@ -89,27 +57,14 @@
       if (focus_word) focus_word.classList.remove('_focus')
       focus_word = target
       focus_word.classList.add('_focus')
-
-      lookup_input.set(gen_context(nodes, idx, 10, 20))
-      lookup_actived.set(true)
+      lookup_activate(null, mt_data.substr(idx, 10, 20))
     }
   }
 
-  let texts = []
-  let htmls = []
-
-  // reset cached content if changed
-  $: if (cvdata) {
-    texts = []
-    htmls = []
-  }
-
   function render_line(idx, hover, focus) {
+    const mt_data = lines[idx]
     const use_html = idx == hover || idx == focus
-
-    const nodes = lines[idx]
-    if (use_html) return (htmls[idx] ||= cvlib.render(nodes, 'html'))
-    return (texts[idx] ||= cvlib.render(nodes, 'text'))
+    return use_html ? mt_data.html : mt_data.text
   }
 </script>
 
@@ -142,7 +97,7 @@
   <Lookup {dname} />
 {/if}
 
-{#if $upsert_state > 0}
+{#if $upsert_state}
   <Upsert {dname} {label} bind:_dirty />
 {/if}
 

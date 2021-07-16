@@ -1,33 +1,32 @@
-<script>
+<script context="module">
   import { onMount } from 'svelte'
   import { session } from '$app/stores'
-  import { l_scroll } from '$lib/stores'
+  import { scroll, toleft } from '$lib/stores'
+</script>
 
+<script>
   import SIcon from '$atoms/SIcon.svelte'
 
   import Signin from '$parts/Signin.svelte'
   import Appnav from '$parts/Appnav.svelte'
   import Usercp from '$parts/Usercp.svelte'
 
-  export let shift = false
   export let pledge = true
 
   let active_usercp = false
   let active_appnav = false
 
   let footer
-
   onMount(() => {
     const observer = new IntersectionObserver(
       ([e]) => e.target.classList.toggle('sticked', e.intersectionRatio < 1),
       { threshold: [1] }
     )
-
     observer.observe(footer)
   })
 </script>
 
-<header class="app-header" class:_shift={shift} class:_clear={$l_scroll > 0}>
+<header class="app-header" class:_shift={$toleft} class:_clear={$scroll > 0}>
   <nav class="center -wrap">
     <div class="-left">
       <button
@@ -53,7 +52,7 @@
   </nav>
 </header>
 
-<main class="main" class:_shift={shift}>
+<main class="main" class:_shift={$toleft}>
   <div class="center _main">
     {#if pledge && $session.privi < 2}
       <div class="pledge">
@@ -65,7 +64,7 @@
     <slot />
   </div>
 
-  <footer class="footer" class:_sticky={$l_scroll < 0} bind:this={footer}>
+  <footer class="footer" class:_sticky={$scroll < 0} bind:this={footer}>
     <slot name="footer" />
   </footer>
 </main>

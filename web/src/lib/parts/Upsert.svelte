@@ -1,6 +1,6 @@
 <script context="module">
   import { writable } from 'svelte/store'
-  import { tag_label } from '$lib/postag.js'
+  import { tag_label } from '$lib/pos_tag.js'
   import { titleize } from '$utils/text_utils.js'
   import { dict_upsert, dict_search } from '$api/dictdb_api.js'
 
@@ -26,6 +26,7 @@
 
 <script>
   import { session } from '$app/stores'
+  import VpTerm from '$lib/vp_term.js'
 
   import Postag from '$parts/Postag.svelte'
   import SIcon from '$atoms/SIcon.svelte'
@@ -36,7 +37,6 @@
   import Vrank from './Upsert/Vrank.svelte'
   import Privi from './Upsert/Privi.svelte'
   import Links from './Upsert/Links.svelte'
-  import Term from './Upsert/term.js'
 
   export let dname = 'combine'
   export let label = 'Tổng hợp'
@@ -53,7 +53,7 @@
   $: term = get_term(terms, $tab)
 
   function get_term(terms, tab) {
-    return terms[tab] || new Term({ key }, tab + 1, $session.privi)
+    return terms[tab] || new VpTerm({ key }, tab + 1, $session.privi)
   }
 
   let key = ''
@@ -72,17 +72,17 @@
 
     trans = data.trans
     hints = [trans.hanviet, ...data.hints]
-    terms = data.infos.map((x, i) => new Term(x, i + 2, $session.privi))
+    terms = data.infos.map((x, i) => new VpTerm(x, i + 2, $session.privi))
 
     // set some default values if non present
 
-    terms[0].fix_ptag(terms[1].ptag || terms[1].old_val ? '' : 'nr')
-    terms[1].fix_ptag(terms[0].old_ptag)
+    terms[0].fix_ptag(terms[1].ptag || terms[1].val ? '' : 'nr')
+    terms[1].fix_ptag(terms[0]._raw.ptag)
 
-    const first_hint = data.hints[0]
+    const first_hint = data.hints[0] || ''
     terms[0].fix_val(terms[1].val || first_hint || titleize(trans.hanviet, 9))
     terms[1].fix_val(terms[0].old_val || first_hint || trans.hanviet)
-    terms[2].fix_val(first_hint?.toLowerCase() || trans.hanviet)
+    terms[2].fix_val(first_hint.toLowerCase() || trans.hanviet)
   }
 
   async function submit_val() {
