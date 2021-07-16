@@ -25,6 +25,7 @@
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Vessel from '$sects/Vessel.svelte'
+  import A from '../~[book]/chaps/[...seed].svelte'
 
   export let label = ''
   export let dname = ''
@@ -100,9 +101,9 @@
       <span class="header-text _show-md">Từ điển</span>
     </a>
 
-    <span class="header-item _active _title">
+    <a href={$page.path} class="header-item _active _title">
       <span class="header-text _title">{label}</span>
-    </span>
+    </a>
   </svelte:fragment>
 
   <article class="m-article">
