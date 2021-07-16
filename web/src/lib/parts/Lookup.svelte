@@ -3,8 +3,8 @@
   import { writable } from 'svelte/store'
   import { dict_lookup } from '$api/dictdb_api'
 
-  export const enabled = writable(true)
-  export const actived = writable(true)
+  export const enabled = writable(false)
+  export const actived = writable(false)
 
   const input = writable(null)
   const lower = writable(0)
@@ -143,8 +143,6 @@
       cursor: pointer;
       width: 8px;
     }
-
-    --active: #{color(primary, 5)};
 
     &._zh {
       line-height: 1.375rem;

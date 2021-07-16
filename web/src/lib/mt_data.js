@@ -21,6 +21,11 @@ export function split_mtdata(input = '') {
 
 export class MtData {
   constructor(input) {
+    if (Array.isArray(input)) {
+      this.data = input
+      return
+    }
+
     this.data = input.split('\t').map((x) => {
       const [key, val, tag, dic] = x.split('ǀ')
       return [key, val || '', tag || '', +dic]
@@ -144,6 +149,7 @@ export class MtData {
         continue
       }
 
+      res += `<c-v data-k=${escape_html(key)} data-i=${i} data-d=${dic}>`
       for (let j = 0; j < key_chars.length; j++) {
         const k = escape_html(key_chars[j])
         const v = escape_html(val_chars[j])
@@ -151,6 +157,7 @@ export class MtData {
         res += `<x-v data-k=${k} data-i=${i} data-p=${p} data-d=${dic}>${v}</x-v>`
         p += 1
       }
+      res += '</c-v>'
 
       i += 1
     }

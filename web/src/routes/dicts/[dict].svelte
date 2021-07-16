@@ -1,4 +1,9 @@
 <script context="module">
+  import Lookup, {
+    activate as lookup_activate,
+    enabled as lookup_enabled,
+  } from '$parts/Lookup.svelte'
+
   import Upsert, {
     activate as upsert_activate,
     state as upsert_state,
@@ -21,6 +26,8 @@
 
   import SIcon from '$atoms/SIcon.svelte'
   import { get_rtime_short } from '$atoms/RTime.svelte'
+
+  import { MtData } from '$lib/mt_data'
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Vessel from '$sects/Vessel.svelte'
@@ -100,6 +107,17 @@
     </a>
   </svelte:fragment>
 
+  <svelte:fragment slot="header-right">
+    <button
+      class="header-item"
+      class:_active={$lookup_enabled}
+      on:click={() => lookup_enabled.update((x) => !x)}
+      data-kbd="\">
+      <SIcon name="compass" />
+      <span class="header-text _show-md">Giải nghĩa</span>
+    </button>
+  </svelte:fragment>
+
   <article class="m-article">
     <h1 class="h3">{label}</h1>
     <p>Entries: {total}</p>
@@ -163,7 +181,10 @@
           {#each terms as { key, val, ptag, rank, mtime, uname, privi }, idx}
             <tr>
               <td class="-idx">{offset + idx}</td>
-              <td class="-key">
+              <td
+                class="-key"
+                on:click={() =>
+                  lookup_activate(true, new MtData([[key, val, ptag, 1]]))}>
                 <span>{key}</span>
                 <div class="hover">
                   <span class="m-button btn-xs _active">
@@ -172,7 +193,7 @@
 
                   <button
                     class="m-button btn-xs"
-                    on:click={() => (query.key = key)}>
+                    on:click|stopPropagation={() => (query.key = key)}>
                     <SIcon name="search" />
                   </button>
                 </div>
@@ -235,6 +256,10 @@
     </footer>
   </article>
 </Vessel>
+
+{#if $lookup_enabled}
+  <Lookup {dname} />
+{/if}
 
 {#if $upsert_state > 0}
   <Upsert bind:_dirty {...upsert_dict(dname, label)} />
