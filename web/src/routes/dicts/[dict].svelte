@@ -4,7 +4,7 @@
     state as upsert_state,
   } from '$parts/Upsert.svelte'
 
-  import Postag from '$parts/PosTag.svelte'
+  import Postag from '$parts/Postag.svelte'
 
   import { labels } from '$lib/postag'
 
