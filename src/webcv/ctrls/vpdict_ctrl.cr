@@ -125,7 +125,7 @@ class CV::VpDictCtrl < CV::BaseCtrl
       entry.to_a.sort_by(&.[0].-)
     end
 
-    hanviet = MtCore.hanviet_mtl.translit(input).to_str
+    hanviet = MtCore.hanviet_mtl.translit(input, apply_cap: true).to_str
     render_json({hanviet: hanviet, entries: entries})
   end
 

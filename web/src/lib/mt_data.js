@@ -33,16 +33,16 @@ export class MtData {
   }
 
   get text() {
-    this._text = this._text || this.render()
+    this._text = this._text || this.render('text')
     return this._text
   }
 
   get html() {
-    this._html = this._html || this.render(true)
+    this._html = this._html || this.render('html')
     return this._html
   }
 
-  render(html = false) {
+  render(mode = 'text') {
     let res = ''
     let lvl = 0
     let i = 0
@@ -54,10 +54,10 @@ export class MtData {
         res += '<em>'
       }
 
-      if (html) {
+      if (mode == 'html') {
         const k = escape_html(key)
         const v = escape_html(val)
-        res += `<x-v data-k="${k}" data-t="${tag}" data-d=${dic} data-i=${i} data-p=${p}>${v}</x-v>`
+        res += `<c-v data-k="${k}" data-t="${tag}" data-d=${dic} data-i=${i} data-p=${p}>${v}</c-v>`
       } else {
         res += escape_html(val)
       }
@@ -103,5 +103,58 @@ export class MtData {
     }
 
     return [input, lower, upper > lower ? upper : lower + 1]
+  }
+
+  render_zh() {
+    let res = ''
+    let i = 0
+    let p = 0
+
+    for (const [key, _, tag, dic] of this.data) {
+      const k = escape_html(key)
+      res += `<c-v data-k=${k} data-t="${tag}" data-i=${i} data-d=${dic}>`
+
+      for (const kk of Array.from(key)) {
+        const ke = escape_html(kk)
+        res += `<x-v data-k=${ke} data-p=${p}>${ke}</x-v>`
+        p += 1
+      }
+
+      res += '</c-v>'
+
+      i += 1
+    }
+
+    return res
+  }
+
+  render_hv() {
+    let res = ''
+    let i = 0
+    let p = 0
+
+    for (const [key, val, _tag, dic] of this.data) {
+      let key_chars = key.split('')
+      let val_chars = val.split(' ')
+
+      if (key_chars.length != val_chars.length) {
+        res += val
+        i += 1
+        p += key_chars.length
+        continue
+      }
+
+      for (let j = 0; j < key_chars.length; j++) {
+        const k = escape_html(key_chars[j])
+        const v = escape_html(val_chars[j])
+        if (j > 0) res += ' '
+        res += `<x-v data-k=${k} data-i=${i} data-p=${p} data-d=${dic}>${v}</x-v>`
+        p += 1
+      }
+
+      i += 1
+    }
+
+    return res
   }
 }

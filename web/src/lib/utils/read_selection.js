@@ -1,8 +1,9 @@
 export default function read_selection() {
-  const nodes = get_selected()
-    .filter((x) => x.nodeName == 'X-V')
-    .map((x) => [x.dataset.k, +x.dataset.d])
-    .filter(([k]) => k != '')
+  const selected = get_selected()
+
+  let nodes = selected.filter((x) => x.nodeName == 'X-V')
+  if (nodes.length == 0) nodes = selected.filter((x) => x.nodeName == 'C-V')
+  nodes = nodes.map((x) => x.dataset.k).filter((x) => x)
 
   if (nodes.length == 0) return
 
@@ -14,8 +15,7 @@ export default function read_selection() {
   let pos = 0
 
   for (; idx < nodes.length; idx++) {
-    const [key, dic] = nodes[idx]
-    if (dic > 0) break
+    const key = nodes[idx]
 
     input += key
     pos += key.length
@@ -24,10 +24,9 @@ export default function read_selection() {
   lower = pos
 
   for (; idx < nodes.length; idx++) {
-    const [key, dic] = nodes[idx]
+    const key = nodes[idx]
     input += key
     pos += key.length
-    if (dic > 0) upper = pos
   }
 
   return [input, lower, upper]

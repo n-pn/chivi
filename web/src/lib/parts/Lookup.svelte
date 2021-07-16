@@ -1,37 +1,24 @@
 <script context="module">
+  import { MtData } from '$lib/mt_data'
   import { writable } from 'svelte/store'
   import { dict_lookup } from '$api/dictdb_api'
 
-  export const input = writable(['', 0, 0])
+  export const enabled = writable(true)
+  export const actived = writable(true)
 
-  export const enabled = writable(false)
-  export const actived = writable(false)
+  const input = writable(null)
+  const lower = writable(0)
+  const upper = writable(0)
 
-  export function activate(enable, inp) {
+  export function activate(enable, mt_data, _lower, _upper) {
+    if (mt_data) {
+      input.set(mt_data)
+      lower.set(_lower || 0)
+      upper.set(_upper || mt_data.data[0][0].length)
+    }
+
     actived.set(true)
-    if (inp) input.set(inp)
     if (enable) enabled.set(true)
-  }
-
-  const tags = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&apos;',
-  }
-
-  function replace_tag(tag) {
-    return tags[tag] || tag
-  }
-
-  function escape_html(str) {
-    return str.replace(/[&<>'"]/g, replace_tag)
-  }
-
-  function is_active(from, upper, idx) {
-    if (idx < from) return false
-    return idx < upper
   }
 </script>
 
@@ -42,31 +29,53 @@
   export let dname = 'various'
   // export let label = 'Tổng hợp'
 
-  let hanviet = []
+  let hanviet = null
   let entries = []
   let current = []
 
-  $: [key, lower, upper] = $input
-  $: if (key) lookup_entry(key)
-  $: if (lower < entries.length) update_focus()
+  $: if ($input) update_lookup($input.orig)
+  $: if (current != []) highlight_focused($lower, $upper)
 
-  $: zh_html = render_zh(hanviet, lower, upper)
-  $: hv_html = render_hv(hanviet, lower, upper)
+  $: if ($lower < entries.length) $upper = update_focus($lower)
 
-  function update_focus() {
-    if (entries.length < lower) {
-      current = []
-      upper = lower + 1
-    } else {
-      current = entries[lower]
-      if (current.length == 0) upper = lower + 1
-      else upper = lower + +current[0][0]
+  function highlight_focused(lower, upper) {
+    if (upper == 0) return
+
+    document
+      .querySelectorAll(`.mtl x-v`)
+      .forEach((x) => x.classList.remove('_active'))
+
+    for (let idx = lower; idx < upper; idx++) {
+      const nodes = document.querySelectorAll(`.mtl x-v[data-p="${idx}"]`)
+      nodes.forEach((x) => {
+        x.classList.add('_active')
+        x.scrollIntoView({ block: 'start' })
+      })
     }
   }
 
-  function hanlde_click({ target }) {
-    if (target.nodeName !== 'X-V') return
-    lower = +target.dataset['p']
+  async function update_lookup(input) {
+    const [err, data] = await dict_lookup(fetch, input, dname)
+    if (err) return
+
+    entries = data.entries
+    hanviet = new MtData(data.hanviet)
+  }
+
+  function update_focus(lower) {
+    if (entries.length < lower) {
+      current = []
+      return lower + 1
+    } else {
+      current = entries[lower]
+      if (current.length == 0) return lower
+      return lower + +current[0][0]
+    }
+  }
+
+  function handle_click({ target }) {
+    const name = target.nodeName
+    if (name == 'X-V') $lower = +target.dataset.p
   }
 
   function fix_vietphrase(words) {
@@ -76,74 +85,6 @@
       else res.push(word)
     }
     return res.join('; ')
-  }
-
-  async function lookup_entry(input) {
-    const [err, data] = await dict_lookup(fetch, input, dname)
-    if (err) return
-
-    entries = data.entries
-    hanviet = data.hanviet.split('\t').map((x) => x.split('ǀ'))
-  }
-
-  function render_zh(tokens, from, upper) {
-    let output = ''
-    let i = 0
-    let p = 0
-
-    for (const [key] of tokens) {
-      if (key == '') continue
-      let keys = key.split('')
-
-      for (let j = 0; j < keys.length; j++) {
-        output += '<x-v '
-        if (is_active(from, upper, p)) output += 'class="_active" '
-
-        const k = escape_html(keys[j])
-        output += `data-k=${k} data-i=${i} data-p=${p} data-d=1>${k}</x-v>`
-        p += 1
-      }
-
-      i += 1
-    }
-
-    return output
-  }
-
-  function render_hv(tokens, from, upper) {
-    let output = ''
-    let i = 0
-    let p = 0
-
-    for (const [key, val, dic] of tokens) {
-      let key_chars = key.split('')
-      let val_chars = val.split(' ')
-
-      if (key_chars.length != val_chars.length) {
-        output += val
-        i += 1
-        p += key_chars.length
-        continue
-      }
-
-      for (let j = 0; j < key_chars.length; j++) {
-        const key_char = key_chars[j]
-        const val_char = val_chars[j]
-
-        if (j > 0) output += ' '
-        output += '<x-v '
-        if (is_active(from, upper, p)) output += 'class=_active '
-
-        output += `data-k=${escape_html(key_char)} `
-        output += `data-i=${i} data-p=${p} data-d=${dic}>`
-        output += `${escape_html(val_char)}</x-v>`
-        p += 1
-      }
-
-      i += 1
-    }
-
-    return output
   }
 </script>
 
@@ -160,17 +101,17 @@
   </button>
 
   <section class="lookup">
-    <div class="source _zh" on:click={hanlde_click} lang="zh">
-      {@html zh_html}
+    <div class="mtl _zh" on:click={handle_click} lang="zh">
+      {@html $input?.render_zh() || ''}
     </div>
 
-    <div class="source _hv" on:click={hanlde_click}>
-      {@html hv_html}
+    <div class="mtl _hv" on:click={handle_click}>
+      {@html hanviet?.render_hv() || ''}
     </div>
 
     {#each current as [size, entries]}
       <div class="entry">
-        <h3 class="word" lang="zh">{key.substr(lower, size)}</h3>
+        <h3 class="word" lang="zh">{$input.orig.substr($lower, size)}</h3>
         {#each Object.entries(entries) as [name, items]}
           {#if items.length > 0}
             <div class="item">
@@ -193,61 +134,35 @@
 </Slider>
 
 <style lang="scss">
-  // $vi-height: 0.75rem + (1.25 * 6rem);
-  // $vi-height: 0;
-  $zh-height: 0.75rem + (1.25 * 5rem);
-  $hv-height: 0.75rem + (1.25 * 6rem);
-
-  .lookup {
-    @include fgcolor(secd);
-  }
-
-  .source {
-    overflow-y: auto;
-    line-height: 1.25rem;
+  .mtl {
     padding: 0.375rem 0.75rem;
-    // margin: 0.75rem;
-    // border: 1px solid color(gray, 3);
-    // margin-bottom: 0.75rem;
-
     @include bgcolor(tert);
-    // @include font-family(sans);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    &::-webkit-scrollbar {
+      cursor: pointer;
+      width: 8px;
+    }
 
-    // &._vi {
-    //   max-height: $vi-height;
-    //   border-bottom: 1px solid color(gray, 3);
-    // }
+    --active: #{color(primary, 5)};
 
     &._zh {
-      max-height: $zh-height;
-      // margin-top: 0.375rem;
-      @include border(--bd-main, $sides: bottom);
+      line-height: 1.375rem;
+      max-height: #{1.375rem * 4 + 0.5rem};
     }
 
     &._hv {
-      max-height: $hv-height;
-      // margin-top: 0.5rem;
-      @include border(--bd-main, $sides: bottom);
+      margin-top: var(--gutter-sm);
+      line-height: 1.25rem;
+      max-height: 3.25rem;
+      // @include clamp($lines: 2);
     }
-
-    // :global(x-z),
-    // :global(x-v) {
-    //   cursor: pointer;
-
-    //   &:hover,
-    //   &:global(._active) {
-    //     @include fgcolor(primary, 5);
-    //   }
-    // }
   }
 
   .word {
-    // margin-top: 0.5rem;
     font-weight: 600;
     line-height: 2rem;
     @include ftsize(md);
-    @include fgcolor(secd);
-    // @include border($sides: left, $width: 0.25rem, $color: color(blue, 5));
   }
 
   h4 {
@@ -258,6 +173,7 @@
   }
 
   .entry {
+    @include fgcolor(secd);
     padding: 0.375rem 0.75rem;
     // padding-top: 0;
     @include border($sides: bottom);
@@ -274,6 +190,5 @@
 
   .term {
     line-height: 1.5rem;
-    // margin-top: 0.25rem;
   }
 </style>

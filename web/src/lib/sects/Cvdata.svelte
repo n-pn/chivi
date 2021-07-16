@@ -45,7 +45,7 @@
 
   function handle_click({ target }, index) {
     if (focus_line != index) focus_line = index
-    if (target.nodeName != 'X-V') return
+    if (target.nodeName != 'C-V') return
 
     const idx = +target.dataset.i
     const mt_data = lines[index]
@@ -57,7 +57,9 @@
       if (focus_word) focus_word.classList.remove('_focus')
       focus_word = target
       focus_word.classList.add('_focus')
-      lookup_activate(null, mt_data.substr(idx, 10, 20))
+
+      const length = focus_word.dataset.k.length
+      lookup_activate(null, mt_data, idx, idx + length)
     }
   }
 
@@ -116,95 +118,5 @@
     @include fgcolor(secd);
     @include bgcolor(tert);
     @include shadow(1);
-  }
-
-  .mtl {
-    --fgcolor: #{color(gray, 8)};
-    color: var(--fgcolor);
-
-    @include tm-dark {
-      --fgcolor: #{color(gray, 3)};
-    }
-
-    &._h {
-      font-weight: 400;
-      // @include fgcolor(neutral, 8);
-
-      @include fluid(
-        font-size,
-        rem(22px),
-        rem(23px),
-        rem(24px),
-        rem(26px),
-        rem(28px)
-      );
-      @include fluid(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
-    }
-
-    &._p {
-      @include fluid(margin-top, 1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
-      margin-bottom: 0;
-      text-align: justify;
-      text-justify: auto;
-
-      @include fluid(
-        font-size,
-        rem(18px),
-        rem(19px),
-        rem(20px),
-        rem(21px),
-        rem(22px)
-      );
-
-      @include fluid(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem);
-    }
-  }
-
-  @mixin cv-token($color: blue) {
-    cursor: pointer;
-    position: relative;
-    --border: #{color($color, 4)};
-    --active: #{color($color, 6)};
-
-    :global(.tm-dark) & {
-      --border: #{color($color, 6)};
-      --active: #{color($color, 4)};
-    }
-  }
-
-  :global(x-v) {
-    --border: transparent;
-    --active: var(--fgcolor);
-
-    color: var(--fgcolor);
-
-    .mtl:hover & {
-      border-bottom: 1px solid var(--border);
-    }
-  }
-
-  :global(x-v:hover),
-  :global(x-v._focus) {
-    color: var(--active);
-  }
-
-  // :global(x-v[data-d='1']) {
-  //   @include cv-token(gray);
-  // }
-
-  :global(x-v[data-d='2']) {
-    @include cv-token(blue);
-  }
-
-  :global(x-v[data-d='3']) {
-    @include cv-token(green);
-  }
-
-  :global(x-v[data-d='4']) {
-    @include cv-token(teal);
-  }
-
-  :global(x-v[data-d='9']) {
-    @include cv-token(gray);
   }
 </style>
