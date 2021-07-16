@@ -109,7 +109,9 @@
       <div class="line">
         <span class="stat -trim">
           <SIcon name="pen-tool" />
-          <a class="link" href="/search?q={nvinfo.author_vi}&t=author">
+          <a
+            class="link"
+            href="/search?q={encodeURIComponent(nvinfo.author_vi)}&t=author">
             <span class="label">{nvinfo.author_vi}</span>
           </a>
         </span>

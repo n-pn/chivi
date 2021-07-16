@@ -8,9 +8,9 @@
       const url = `/api/books?take=8&page=${page}&${type}=${word}`
 
       const res = await fetch(url)
-      const { books, total } = await res.json()
+      const data = await res.json()
       return {
-        props: { word, page, type, books, total },
+        props: { ...data, word, page, type },
       }
     } else {
       return {
@@ -135,12 +135,12 @@
 
   h1 {
     text-align: center;
+    @include fgcolor(secd, 6);
 
     @include fluid(margin-top, 1rem, 1.5rem, 2rem);
     @include fluid(margin-bottom, 0rem, 0.5rem, 1rem);
     @include fluid(font-size, font-size(5), font-size(6), font-size(7));
     @include fluid(line-height, 1.5rem, 1.75rem, 2rem);
-    @include fgcolor(neutral, 6);
   }
 
   .book {

@@ -43,10 +43,8 @@
   function handle_keydown(evt) {
     switch (evt.key) {
       case 'Enter':
-        if (evt.ctrlKey) {
-          trigger_click(evt, `[data-kbd="ctrl+enter"]`)
-          return
-        }
+        if (evt.ctrlKey) trigger_click(evt, `[data-kbd="ctrl+enter"]`)
+        return
       case 'Escape':
         trigger_click(evt, `[data-kbd="esc"]`)
         return

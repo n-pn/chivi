@@ -76,7 +76,7 @@
 
     <div class="chips">
       {#each snames as sname}
-        <a href="/?sname={sname}" class="-chip _violet _caps">
+        <a href="/?sname={sname}" class="-chip _orange _caps">
           {sname}
         </a>
       {/each}
@@ -162,23 +162,20 @@
     border-radius: math.div($-chip-height, 2);
     // background-color: transparent;
 
-    @include fgcolor(primary, 6);
-
-    @include color(bdcolor, primary, 4);
-    @include linesd(--bdcolor);
+    color: var(--fg-color);
+    @include fgvar(color, primary, 6);
+    @include linesd(--bd-main);
 
     font-weight: 500;
     margin-right: 0.375rem;
     margin-bottom: 0.375rem;
 
     &._green {
-      @include fgcolor(green, 6);
-      @include color(bdcolor, green, 4);
+      @include fgvar(color, green, 6);
     }
 
-    &._violet {
-      @include fgcolor(violet, 6);
-      @include color(bdcolor, violet, 4);
+    &._orange {
+      @include fgvar(color, orange, 6);
     }
 
     &._caps {
@@ -187,22 +184,18 @@
     }
 
     &:hover {
-      color: #fff;
-      @include bgcolor(bdcolor);
+      @include linesd(--fg-color, $ndef: false);
     }
 
     @include tm-dark {
-      @include fgcolor(blue, 4);
-      @include color(bdcolor, blue, 6);
+      @include fgvar(color, blue, 4);
 
       &._green {
-        @include fgcolor(green, 4);
-        @include color(bdcolor, green, 6);
+        @include fgvar(color, green, 4);
       }
 
-      &._violet {
-        @include fgcolor(violet, 4);
-        @include color(bdcolor, violet, 6);
+      &._orange {
+        @include fgvar(color, orange, 4);
       }
     }
   }

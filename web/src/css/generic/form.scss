@@ -38,7 +38,7 @@ button,
 [type='reset'],
 [type='submit'] {
   touch-action: manipulation;
-  -webkit-appearance: button;
+  // -webkit-appearance: button;
   border: 0;
   outline: none;
 
@@ -47,14 +47,14 @@ button,
   }
 }
 
-[type='date'],
-[type='time'],
-[type='datetime-local'],
-[type='month'],
-[type='search'],
-textarea {
-  -webkit-appearance: textfield;
-}
+// [type='date'],
+// [type='time'],
+// [type='datetime-local'],
+// [type='month'],
+// [type='search'],
+// textarea {
+//   -webkit-appearance: textfield;
+// }
 
 [list]::-webkit-calendar-picker-indicator {
   display: none;
