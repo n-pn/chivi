@@ -26,10 +26,14 @@
   <div class="txt"><span class="lbl">Q.h:</span>{term.privi}</div>
   <button
     class="btn -up"
+    data-kbd="↑"
+    data-key="38"
     disabled={term.privi >= p_max}
     on:click={() => (term.privi += 1)}><SIcon name="chevron-up" /></button>
   <button
     class="btn -dn"
+    data-kbd="↓"
+    data-key="40"
     disabled={term.privi < 2}
     on:click={() => (term.privi -= 1)}><SIcon name="chevron-down" /></button>
 </div>

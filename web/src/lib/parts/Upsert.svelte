@@ -139,7 +139,7 @@
             autocapitalize={$tab < 1 ? 'words' : 'off'} />
 
           {#if $tab < 2}
-            <button class="postag" on:click={() => state.set(2)}>
+            <button class="postag" data-kbd="p" on:click={() => state.set(2)}>
               {tag_label(term.ptag) || 'Chưa phân loại'}
             </button>
           {/if}
@@ -213,7 +213,7 @@
     padding: 0 0.75rem;
 
     @include flex();
-    @include border(--bd-bold, $sides: bottom);
+    @include border(--bd-main, $sides: bottom);
     @include ftsize(md);
     // prettier-ignore
   }
@@ -230,10 +230,9 @@
 
     margin-right: 0.5rem;
 
-    @include clamp($width: null);
     @include bdradi($sides: top);
     @include fgcolor(tert);
-    @include border(--bd-bold);
+    @include border(--bd-main);
 
     border-bottom: none;
 
@@ -259,6 +258,11 @@
     &:last-child {
       margin-left: auto;
       margin-right: 0;
+    }
+
+    > span {
+      display: block;
+      @include clamp($width: 100%);
     }
   }
 

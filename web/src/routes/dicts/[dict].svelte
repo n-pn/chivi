@@ -25,7 +25,6 @@
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Vessel from '$sects/Vessel.svelte'
-  import A from '../~[book]/chaps/[...seed].svelte'
 
   export let label = ''
   export let dname = ''

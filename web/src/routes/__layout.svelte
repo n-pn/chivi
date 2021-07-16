@@ -70,6 +70,7 @@
       trigger_click(evt, `[data-kbd='"']`)
     } else {
       trigger_click(evt, `[data-kbd="${evt.key}"]`)
+      trigger_click(evt, `[data-key="${evt.keyCode}"]`)
     }
   }
 

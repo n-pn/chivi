@@ -85,7 +85,7 @@
 
     @include bdradi();
     @include bgcolor(tert);
-    @include linesd(--bd-main);
+    @include linesd(--bd-soft);
   }
 
   .hanzi {
@@ -182,11 +182,11 @@
     }
 
     &._left {
-      @include border(--bd-main, $sides: right);
+      @include border(--bd-soft, $sides: right);
     }
 
     &._right {
-      @include border(--bd-main, $sides: left);
+      @include border(--bd-soft, $sides: left);
     }
   }
 </style>

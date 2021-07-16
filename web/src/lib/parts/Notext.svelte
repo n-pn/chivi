@@ -1,5 +1,5 @@
 <script>
-  export let chinfo = {}
+  export const chinfo = {}
 </script>
 
 <div class="notext">
