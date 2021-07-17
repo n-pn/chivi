@@ -13,9 +13,10 @@ module CV
     :Nloc => "ns", # 地名 - location name - địa danh
     :Norg => "nt", # 机构团体名 - organization name - tổ chức
 
-    :Ntitle => "nw", # 作品名 - title name - tác phẩm
+    :Ntitle => "nw", # chức danh, nghề nghiệp, địa vị
     :Nother => "nz", # 其它专名 - other proper noun - tên riêng khác
 
+    :Nform => "nl", # 名词性语素 - nominal formulaic expression
     :Nmorp => "ng", # 名词性语素 - nominal morpheme
 
     :Time  => "t",  # 时间词 - time word - thời gian
@@ -28,8 +29,11 @@ module CV
     :Vead => "vd", # 副动词 - adverbial use of verb - ?
     :Veno => "vn", # 名动词 - nominal use of verb - danh động từ
 
-    :Vshi => "vshi", # 动词 “是” - động từ `thị`
-    :Vyou => "vyou", # 动词 “有” - động từ `hữu`
+    :Vshi   => "vshi",   # 动词 “是” - động từ `thị`
+    :Vyou   => "vyou",   # 动词 “有” - động từ `hữu`
+    :Vhui   => "vhui",   # 动词 “会” - động từ `hội`
+    :Vneng  => "vneng",  # 动词 “能” - động từ `năng`
+    :Vxiang => "vxiang", # 动词 “想” - động từ `tưởng`
 
     :Vdir => "vf", # 趋向动词 - directional verb
     :Vpro => "vx", # 形式动词 - pro-verb - động từ hình thái
@@ -104,6 +108,8 @@ module CV
     :Prefix => "h", # 前缀 - prefix - tiền tố
     :Suffix => "k", # 后缀 - suffix - hậu tố
 
+    :Kmen => "kmen", # hậu tố 们
+
     :String => "x",  # 字符串 - non-word character string - hư từ khác
     :Artstr => "xx", # 非语素字 - for ascii art like emoji...
     :Urlstr => "xu", # 网址URL - url string
@@ -149,6 +155,10 @@ enum CV::PosTag
 
   def nouns?
     Noun <= self <= Nmorp || veno? || ajno?
+  end
+
+  def pronouns?
+    Pronoun <= self <= Prointr
   end
 
   @[AlwaysInline]

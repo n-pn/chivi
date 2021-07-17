@@ -6,6 +6,8 @@
   --border: #{color($color, 4)};
   --active: #{color($color, 6)};
 
+  background-color: color($color, 5, 3);
+
   .tm-dark & {
     --border: #{color($color, 6)};
     --active: #{color($color, 4)};
@@ -53,8 +55,11 @@
     @include fluid(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem);
   }
 
-  &:hover c-v {
-    border-bottom: 1px solid var(--border);
+  &:hover,
+  &._active {
+    c-v {
+      border-bottom: 1px solid var(--border);
+    }
   }
 
   c-v {
@@ -83,6 +88,10 @@
 
   c-v[data-d='4'] {
     @include cv-token(teal);
+  }
+
+  c-v[data-d='5'] {
+    @include cv-token(red);
   }
 
   c-v[data-d='9'] {

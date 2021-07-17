@@ -63,7 +63,8 @@ class CV::MtNode
     self
   end
 
-  def update!(@val = @val, @tag = @tag, @dic = 9) : Nil
+  def update!(@val = @val, @tag = @tag, @dic = 9) : self
+    self
   end
 
   def prepend!(other : self) : Nil
@@ -87,7 +88,6 @@ class CV::MtNode
     return unless succ = @succ
 
     @key = "#{@key}#{succ.key}"
-    @tag = succ.tag
     @dic = 5
 
     self.succ = succ.succ

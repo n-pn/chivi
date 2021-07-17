@@ -3,7 +3,7 @@ export const labels = {
   nr: 'Tên người',
   ns: 'Địa danh',
   nt: 'Tổ chức',
-  nw: 'Tác phẩm',
+  nw: 'Chức danh',
   ng: 'Ngữ tố danh từ',
   nz: 'Tên riêng khác',
 
@@ -108,13 +108,18 @@ export const labels = {
   wwz: 'Mở tựa',
   wwy: 'Đóng tựa',
   w: 'Dấu câu',
+
+  kmen: 'Hậu tố 们',
+  vneng: 'Động từ 能',
+  vhui: 'Động từ 会',
+  vxiang: 'Động từ 想',
 }
 
 export const gnames = ['Thường gặp', 'Hiếm gặp', 'Đặc biệt', 'Dấu câu']
 export const groups = [
   // prettier-ignore
   [
-    'nr', 'ns', 'nt', 'nz',
+    'nr', 'ns', 'nt', 'nz', 'nw',
     'n', 't', 's', 'f',
     '-',
     'v', 'vd', 'vf', 'vx', 'vi', 'vl', 'vn',
@@ -141,11 +146,14 @@ export const groups = [
   ],
   // prettier-ignore
   [
-    'vshi', 'vyou', 'pba', 'pbei',
+    'vshi', 'vyou', 'vneng', 'vhui', 'vxiang',
+    'pba', 'pbei',
     '-',
     'uzhe', 'ule', 'uguo', 'ude1', 'ude2', 'ude3', 'uzhi', 'ulian',
     '-',
     'udh', 'udeng', 'uyy',  'uls',
+    '-',
+    'kmen'
   ],
   // prettier-ignore
   [
