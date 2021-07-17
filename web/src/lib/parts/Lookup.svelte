@@ -33,14 +33,12 @@
   let entries = []
   let current = []
 
-  $: if ($input) update_lookup($input.orig)
-  $: if (current != []) highlight_focused($lower, $upper)
+  let hv_text = ''
 
-  $: if ($lower < entries.length) $upper = update_focus($lower)
+  $: if ($input) update_lookup($input)
+  $: zh_text = $input?.render_zh() || ''
 
   function highlight_focused(lower, upper) {
-    if (upper == 0) return
-
     document
       .querySelectorAll(`.mtl x-v`)
       .forEach((x) => x.classList.remove('_active'))
@@ -55,36 +53,32 @@
   }
 
   async function update_lookup(input) {
-    const [err, data] = await dict_lookup(fetch, input, dname)
+    const [err, data] = await dict_lookup(fetch, input.orig, dname)
     if (err) return
 
     entries = data.entries
     hanviet = new MtData(data.hanviet)
-  }
-
-  function update_focus(lower) {
-    if (entries.length < lower) {
-      current = []
-      return lower + 1
-    } else {
-      current = entries[lower]
-      if (current.length == 0) return lower
-      return lower + +current[0][0]
-    }
+    hv_text = hanviet.render_hv()
+    $upper = update_focus($lower)
+    setTimeout(() => highlight_focused($lower, $upper), 10)
   }
 
   function handle_click({ target }) {
     const name = target.nodeName
     if (name == 'X-V') $lower = +target.dataset.p
+    $upper = update_focus($lower)
+    highlight_focused($lower, $upper)
   }
 
-  function fix_vietphrase(words) {
-    let res = []
-    for (let word of words) {
-      if (word === '') res.push('<em>&lt;đã xoá&gt;</em>')
-      else res.push(word)
+  function update_focus(lower) {
+    if (entries.length < lower) {
+      current = []
+      return lower
+    } else {
+      current = entries[lower]
+      if (current.length == 0) return lower
+      return lower + +current[0][0]
     }
-    return res.join('; ')
   }
 </script>
 
@@ -102,11 +96,11 @@
 
   <section class="lookup">
     <div class="mtl _zh" on:click={handle_click} lang="zh">
-      {@html $input?.render_zh() || ''}
+      {@html zh_text}
     </div>
 
     <div class="mtl _hv" on:click={handle_click}>
-      {@html hanviet?.render_hv() || ''}
+      {@html hv_text}
     </div>
 
     {#each current as [size, entries]}
@@ -118,7 +112,7 @@
               <h4 class="name">{name}</h4>
               {#if name == 'vietphrase'}
                 <p class="viet">
-                  {@html fix_vietphrase(items)}
+                  {@html items.map((x) => x || '<em>(đã xoá)</em>').join('; ')}
                 </p>
               {:else}
                 {#each items as line}
