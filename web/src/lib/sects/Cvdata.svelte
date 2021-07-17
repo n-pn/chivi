@@ -47,9 +47,8 @@
     if (focus_line != index) focus_line = index
     if (target.nodeName != 'C-V') return
 
-    const idx = +target.dataset.i
     const mt_data = lines[index]
-    upsert_input = mt_data.substr(idx)
+    upsert_input = mt_data.substr(+target.dataset.i)
 
     if (target === focus_word) {
       upsert_activate(upsert_input, 0)
@@ -58,8 +57,9 @@
       focus_word = target
       focus_word.classList.add('_focus')
 
-      const length = focus_word.dataset.k.length
-      lookup_activate(null, mt_data, idx, idx + length)
+      const lower = +focus_word.dataset.p
+      const upper = lower + focus_word.dataset.k.length
+      lookup_activate(null, mt_data, lower, upper)
     }
   }
 
