@@ -132,7 +132,7 @@ class CV::CvList
         # skip, left = true, "#{prev.val} " if prev.cat == 4
       end
 
-      node.merge_left!(left, right) if skip
+      node.fuse_left!(left, right) if skip
     end
 
     self
@@ -194,7 +194,7 @@ class CV::CvList
           end
         end
 
-        node.merge_left!(left, right) if skip
+        node.fuse_left!(left, right) if skip
       end
     end
 

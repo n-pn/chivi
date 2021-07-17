@@ -26,20 +26,49 @@ module CV::Improving
         else
           fix_string!(node)
         end
-      when .number?
-        fix_number!(node)
-      else
-        fix_by_key!(node)
+      when .adjts?  then node = fix_adjts!(node)
+      when .number? then node = fix_number!(node)
+      else               fix_by_key!(node)
       end
     end
-
-    # fix_adjes!
-    # fix_nouns!
-    # combine_的!
 
     self
   rescue err
     self
+  end
+
+  def fix_adjts!(node = @root) : MtNode
+    if node.amorp?
+      if (succ = node.succ) && succ.adjts?
+        node.fuse_right!("#{node.val} #{succ.val}")
+        node.tag = PosTag::Adjt
+      end
+    end
+
+    if (prev = node.prev)
+      case prev
+      when .adverb?
+        case prev.key
+        when "最" then node.fuse_left!("", " nhất")
+        when "挺" then node.fuse_left!("rất ", "")
+        else          node.fuse_left!("#{prev.val} ", "")
+        end
+      end
+    end
+
+    return node unless succ = node.succ
+
+    case succ
+    when .nouns?
+      if node.key.size == 1
+        return succ.tap(&.fuse_left!("", " #{node.val}"))
+      end
+    when .adjts?
+      # merge adjectives
+      return succ.tap(&.fuse_left!("#{node.val} "))
+    end
+
+    node
   end
 
   def fix_string!(node : MtNode)
@@ -54,8 +83,13 @@ module CV::Improving
     "米" => "mét",
   }
 
-  def fix_number!(node : MtNode)
-    return unless succ = node.succ
+  def fix_number!(node : MtNode) : MtNode
+    while succ = node.succ
+      break unless succ.number?
+      node = succ.tap(&.fuse_left!("#{node.val} "))
+    end
+
+    return node unless succ
 
     {% begin %}
     case succ.key
@@ -64,6 +98,13 @@ module CV::Improving
       {% end %}
     end
     {% end %}
+
+    if succ.quanti? || succ.nquant?
+      node.fuse_right!("#{node.val} #{succ.val}")
+      node.tag = PosTag::Nquant
+    end
+
+    node
   end
 
   private def fix_by_key!(node : MtNode)
@@ -100,30 +141,30 @@ module CV::Improving
     end
   end
 
-  private def fix_adjts!(node = @root)
-    while node = node.succ
-      next unless node.adjts?
+  # private def fix_adjts!(node = @root)
+  #   while node = node.succ
+  #     next unless node.adjts?
 
-      prev = node.prev.not_nil!
-      skip, left, right = false, "", ""
+  #     prev = node.prev.not_nil!
+  #     skip, left, right = false, "", ""
 
-      case prev.key
-      when "不", "很", "太", "多", "未", "更", "级", "超"
-        skip, left = true, "#{prev.val} "
-      when "最", "那么", "这么", "非常",
-           "很大", "如此", "极为"
-        skip, right = true, " #{prev.val}"
-      when "不太"
-        skip, left, right = true, "không ", " lắm"
-        # else
-        # skip, left = true, "#{prev.val} " if prev.cat == 4
-      end
+  #     case prev.key
+  #     when "不", "很", "太", "多", "未", "更", "级", "超"
+  #       skip, left = true, "#{prev.val} "
+  #     when "最", "那么", "这么", "非常",
+  #          "很大", "如此", "极为"
+  #       skip, right = true, " #{prev.val}"
+  #     when "不太"
+  #       skip, left, right = true, "không ", " lắm"
+  #       # else
+  #       # skip, left = true, "#{prev.val} " if prev.cat == 4
+  #     end
 
-      node.merge_left!(left, right) if skip
-    end
+  #     node.fuse_left!(left, right) if skip
+  #   end
 
-    self
-  end
+  #   self
+  # end
 
   private def fix_nouns!(node = @root)
     while node = node.succ
@@ -181,7 +222,7 @@ module CV::Improving
           end
         end
 
-        node.merge_left!(left, right) if skip
+        node.fuse_left!(left, right) if skip
       end
     end
 

@@ -79,3 +79,7 @@ puts list, list.inspect
 
 puts GENERIC.cv_plain("……怎么也这么好看。")
 puts GENERIC.cv_plain("飞卢中文网A级签约作品").inspect
+puts GENERIC.cv_plain("许七安越说越兴奋").inspect
+puts GENERIC.cv_plain("越说越兴奋").inspect
+puts GENERIC.translit("许七安越说越兴奋").inspect
+puts GENERIC.cv_plain("第二个反应是：").inspect

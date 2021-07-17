@@ -45,7 +45,8 @@ class CV::MtNode
     @prev = node
   end
 
-  def set_prev(@prev : Nil)
+  def set_prev(@prev : Nil) : self
+    self
   end
 
   def set_succ(node : self) : self # return node
@@ -58,7 +59,8 @@ class CV::MtNode
     @succ = node
   end
 
-  def set_succ(@succ : Nil)
+  def set_succ(@succ : Nil) : self
+    self
   end
 
   def update!(@val = @val, @tag = @tag, @dic = 9) : Nil
@@ -70,12 +72,38 @@ class CV::MtNode
     @dic = other.dic if @dic < other.dic
   end
 
-  def merge_left!(val_left = @prev.try(&.val) || "", val_right = "")
-    return unless left = @prev
-    self.set_prev(left.prev)
+  def fuse_left!(left = @prev.try(&.val) || "", right = "") : Nil
+    return unless prev = @prev
 
-    @key = "#{left.key}#{@key}"
-    @val = "#{val_left}#{@val}#{val_right}"
+    @key = "#{prev.key}#{@key}"
+    @val = "#{left}#{@val}#{right}"
+    @dic = 5
+
+    self.prev = prev.prev
+    self.prev.try(&.succ = self)
+  end
+
+  def fuse_right!(@val : String) : Nil
+    return unless succ = @succ
+
+    @key = "#{@key}#{succ.key}"
+    @tag = succ.tag
+    @dic = 5
+
+    self.succ = succ.succ
+    self.succ.try(&.prev = self)
+  end
+
+  def fuse_的!(succ : self, succ_succ : self, join = " ")
+    @key = "#{@key}#{succ.key}#{succ_succ.key}"
+    @val = "#{succ_succ.val}#{join}#{val}"
+    @tag = succ_succ.tag
+    @dic = succ_succ.dic if @dic < succ_succ.dic
+    self.set_succ(succ_succ.succ)
+  end
+
+  def replace!(@key, @val, @tag, @dic, succ)
+    self.set_succ(succ)
   end
 
   def capitalize!(cap_mode : Int32 = 1) : Nil

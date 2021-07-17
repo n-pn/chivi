@@ -60,7 +60,7 @@ class CV::CvNode
   def fix(@val : String, @dic = 9, @cat = @cat) : Nil
   end
 
-  def merge_left!(val_left = @prev.try(&.val) || "", val_right = "")
+  def fuse_left!(val_left = @prev.try(&.val) || "", val_right = "")
     return unless left = @prev
     set_prev(left.prev)
 
