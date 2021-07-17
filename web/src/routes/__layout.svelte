@@ -40,6 +40,8 @@
   //   if ($session.privi < 2) e.stopPropagation()
   // }
 
+  let kbd_hint = false
+
   function handle_keydown(evt) {
     switch (evt.key) {
       case 'Enter':
@@ -53,9 +55,7 @@
         if (evt.ctrlKey) return
     }
 
-    if (evt.key == 'Shift') {
-      return (kbd_hint = !kbd_hint)
-    }
+    if (evt.key == 'Shift') kbd_hint = true
 
     let active = document?.activeElement
     switch (active?.tagName) {
@@ -79,8 +79,6 @@
     evt.stopPropagation()
     elem.click()
   }
-
-  let kbd_hint = false
 </script>
 
 <svelte:head>
@@ -92,7 +90,10 @@
   {/if}
 </svelte:head>
 
-<svelte:window on:scroll={handle_scroll} on:keydown={handle_keydown} />
+<svelte:window
+  on:scroll={handle_scroll}
+  on:keydown={handle_keydown}
+  on:keyup={() => (kbd_hint = false)} />
 
 <div
   class="app"
