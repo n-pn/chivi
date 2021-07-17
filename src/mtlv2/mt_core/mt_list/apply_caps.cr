@@ -19,7 +19,7 @@ module CV::ApplyCaps
 
     case node.tag
     when .quoteop?, .exmark?, .qsmark?,
-         .pstop?, .colon?, .penum?
+         .pstop?, .colon?, .middot?
       1
     when .titleop?           then 2
     when .brackop?           then node.val.starts_with?('(') ? cap_prev : 1
