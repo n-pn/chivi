@@ -45,6 +45,7 @@ Amber::Server.configure do
     put "/dicts/:dname/upsert", CV::VpDictCtrl, :upsert
 
     post "/tools/convert/:dname", CV::VpToolCtrl, :convert
+    get "/qtran/:name", CV::VpToolCtrl, :show
   end
 
   routes :static do
