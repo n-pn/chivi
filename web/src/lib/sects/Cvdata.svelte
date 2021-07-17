@@ -65,8 +65,9 @@
 
   function render_line(idx, hover, focus) {
     const mt_data = lines[idx]
-    const use_html = idx == hover || idx == focus
-    return use_html ? mt_data.html : mt_data.text
+    return mt_data.html
+    // const use_html = idx == hover || idx == focus
+    // return use_html ? mt_data.html : mt_data.text
   }
 </script>
 

@@ -27,7 +27,7 @@ export default class VpTerm {
   }
 
   get state() {
-    return !this.val ? 'Xoá' : this._raw.val ? 'Sửa' : 'Thêm'
+    return !this.val ? 'Xoá' : this.old_val ? 'Sửa' : 'Thêm'
   }
 
   get result() {
