@@ -110,6 +110,7 @@ export const labels = {
   w: 'Dấu câu',
 
   kmen: 'Hậu tố 们',
+  kshi: 'Hậu tố 时',
   vneng: 'Động từ 能',
   vhui: 'Động từ 会',
   vxiang: 'Động từ 想',
@@ -153,7 +154,7 @@ export const groups = [
     '-',
     'udh', 'udeng', 'uyy',  'uls',
     '-',
-    'kmen'
+    'kmen', 'kshi'
   ],
   // prettier-ignore
   [

@@ -15,9 +15,19 @@ module CV::Improving
         node.fuse_left!("#{prev.val} ")
       when .adverb?
         case prev.key
+        when "都"
+          prev_2 = prev.prev.not_nil!
+
+          if prev_2.key == "大家"
+            prev.fuse_left!
+            node.fuse_left!("mọi người đều ")
+            node.tag = PosTag::Aform
+          end
+
+          break
+        when "也" then break
         when "最" then node.fuse_left!("", " nhất")
         when "挺" then node.fuse_left!("rất ", "")
-        when "也" then break
         else          node.fuse_left!("#{prev.val} ", "")
         end
       else

@@ -39,9 +39,14 @@ module CV::Improving
         case succ.key
         when "一趟", "一下"
           node.fuse_right!("#{node.val} #{succ.val}")
+        when "一把"
+          node.fuse_right!("#{node.val} một phát")
         else
           break
         end
+      when .kshi?
+        node.fuse_right!("lúc #{node.val}")
+        node.tag = PosTag::Vintr
       else
         break
       end

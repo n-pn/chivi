@@ -15,7 +15,12 @@ module CV::Improving
     if succ = node.succ
       case succ
       when .space?
-        node.fuse_right!("#{succ.val} #{node.val}")
+        case succ.key
+        when "上"
+          node.fuse_right!("trên #{node.val}")
+        else
+          node.fuse_right!("#{succ.val} #{node.val}")
+        end
       end
     end
 
@@ -56,6 +61,7 @@ module CV::Improving
         when "各"  then node.fuse_left!("các ")
         when "这"  then node.fuse_left!("", " này")
         when "其他" then node.fuse_left!("các ", " khác")
+        when "任何" then node.fuse_left!("bất kỳ ")
         else           node.fuse_left!("", " #{prev.val}")
         end
       when .prointr?
@@ -72,7 +78,7 @@ module CV::Improving
         prev_2 = prev.prev.not_nil!
 
         case prev_2
-        when .adjts?, .nquant?, .quanti?, .veno?
+        when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?, .vintr?
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .nouns?, .propers?

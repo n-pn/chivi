@@ -109,6 +109,7 @@ module CV
     :Suffix => "k", # 后缀 - suffix - hậu tố
 
     :Kmen => "kmen", # hậu tố 们
+    :Kshi => "kshi", # hậu tố 时
 
     :String => "x",  # 字符串 - non-word character string - hư từ khác
     :Artstr => "xx", # 非语素字 - for ascii art like emoji...
