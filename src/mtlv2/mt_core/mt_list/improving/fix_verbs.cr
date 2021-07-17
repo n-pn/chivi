@@ -13,14 +13,21 @@ module CV::Improving
 
   def fix_vhui!(node = @root) : MtNode
     return node unless succ = node.succ
-    return node unless succ_succ = succ.succ
 
-    case succ_succ
-    when .ude1?
-      node.update!("nhất định")
+    if succ.verbs?
+      return node unless succ_succ = succ.succ
+
+      case succ_succ
+      when .ude1?
+        val = node.key == "不会" ? "nhất định không" : "nhất định"
+        node.update!(val)
+      else
+        # TODO!
+        node
+      end
     else
-      # TODO!
-      node
+      val = node.key == "不会" ? "sẽ không" : "sẽ"
+      node.update!(val)
     end
   end
 
@@ -47,6 +54,17 @@ module CV::Improving
       when .kshi?
         node.fuse_right!("lúc #{node.val}")
         node.tag = PosTag::Vintr
+      else
+        break
+      end
+    end
+
+    while prev = node.prev
+      case prev
+      when .adjts?
+        node.fuse_left!("", " #{prev.val}")
+      when .adverb?
+        node.fuse_left!("#{prev.val} ")
       else
         break
       end

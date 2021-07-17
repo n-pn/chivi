@@ -21,6 +21,10 @@ module CV::Improving
         else
           node.fuse_right!("#{succ.val} #{node.val}")
         end
+        node.tag = PosTag::Nform
+      when .place?
+        node.fuse_right!("#{succ.val} #{node.val}")
+        node.tag = PosTag::Nform
       end
     end
 
@@ -50,6 +54,7 @@ module CV::Improving
         else
           node.fuse_left!("", " của #{prev.val}")
         end
+        next
       when .prodeic?
         case prev.key
         when .ends_with?("个")
@@ -66,19 +71,24 @@ module CV::Improving
         end
       when .prointr?
         case prev.key
-        when "什么" then node.fuse_left!("", " gì")
+        when "什么" then node.fuse_left!("cái ", " gì")
         else           node.fuse_left!("", " #{prev.val}")
         end
+      when .amorp?
+        node.fuse_left!("#{prev.val} ")
+        next
       when .adjts?
         case prev.key
         when "一般" then node.fuse_left!("", " thông thường")
         else           node.fuse_left!("", " #{prev.val}")
         end
+
+        next
       when .ude1?
         prev_2 = prev.prev.not_nil!
 
         case prev_2
-        when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?, .vintr?
+        when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?, .vintr?, .nform?, .adverb?
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .nouns?, .propers?

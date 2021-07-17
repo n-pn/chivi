@@ -200,6 +200,10 @@ enum CV::PosTag
     Quanti <= self <= Qttime
   end
 
+  def nquants?
+    Number <= self <= Qttime
+  end
+
   def to_str : ::String
     {% begin %}
     case self

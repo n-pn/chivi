@@ -4,6 +4,8 @@ module CV::Improving
   def fix_grammar!(node = @root)
     while node = node.succ
       case node.tag
+      when .vshi?, .vyou?
+        next
       when .ude1?   then node.update!(val: "")  # 的
       when .ule?    then node = fix_ule!(node)  # 了
       when .ude2?   then ndoe = fix_ude2!(node) # 地
