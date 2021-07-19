@@ -6,8 +6,14 @@ class CV::MtCore
   class_getter binh_am_mtl : self { new([VpDict.essence, VpDict.binh_am]) }
   class_getter tradsim_mtl : self { new([VpDict.tradsim]) }
 
-  def self.generic_mtl(bdict : String)
-    new([VpDict.essence, VpDict.regular, VpDict.load(bdict), VpDict.fixture])
+  def self.generic_mtl(bdict : String, mode = 2)
+    dicts = [VpDict.essence, VpDict.regular]
+    dicts << VpDict.load("pleb_regular") if mode < 2
+    dicts << VpDict.load(bdict)
+    dicts << VpDict.load("pleb_#{bdict}") if mode < 2
+    dicts << VpDict.fixture
+
+    new(dicts)
   end
 
   def self.convert(input : String, dname = "various") : Cvmtl

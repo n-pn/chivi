@@ -70,6 +70,7 @@ module CV::Improving
           node.fuse_left!("#{left} ", " này")
         when "各"  then node.fuse_left!("các ")
         when "这"  then node.fuse_left!("", " này")
+        when "那些" then node.fuse_left!("chút ", " kia")
         when "其他" then node.fuse_left!("các ", " khác")
         when "任何" then node.fuse_left!("bất kỳ ")
         else           node.fuse_left!("", " #{prev.val}")

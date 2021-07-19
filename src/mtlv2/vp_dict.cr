@@ -7,6 +7,9 @@ class CV::VpDict
   DIR = "_db/vpdict/main"
   ::FileUtils.mkdir_p("#{DIR}/books")
 
+  PLEB = "_db/vpdict/pleb"
+  ::FileUtils.mkdir_p("#{PLEB}/books")
+
   # group: local, chivi, cvdev etc.
   class_getter suffix : String = ENV["SUFFIX"]? || "local"
 
@@ -43,6 +46,10 @@ class CV::VpDict
         new(path(dname), dtype: 2, p_min: 3, reset: reset)
       when "regular", "combine"
         new(path(dname), dtype: 2, p_min: 2, reset: reset)
+      when "pleb_regular"
+        new(pleb_path("regular"), dtype: 2, p_min: 2, reset: reset)
+      when .starts_with?("pleb_")
+        new(pleb_path(dname.sub("pleb_", "")), dtype: 3, p_min: 1, reset: reset)
       else
         new(path("books/#{dname}"), dtype: 3, p_min: 1, reset: reset)
       end
@@ -50,6 +57,10 @@ class CV::VpDict
 
   def self.path(label : String)
     File.join(DIR, "#{label}.tsv")
+  end
+
+  def self.pleb_path(label : String)
+    File.join(PLEB, "#{label}.tsv")
   end
 
   #########################

@@ -36,6 +36,8 @@ class CV::ChText
     end
 
     zh_lines = get_zh!(power, reset: mode > 1) || [""]
+
+    @cv_time = Time.utc
     @cv_data = trans!(zh_lines) || ""
   end
 
@@ -48,18 +50,17 @@ class CV::ChText
     end
   end
 
-  private def trans!(lines : Array(String))
-    @cv_time = Time.utc
+  def trans!(lines : Array(String), mode = 2)
     return "" if lines.empty?
 
     String.build do |io|
-      mtl = MtCore.generic_mtl(@bname)
-      mtl.cv_title_full(lines[0]).to_str(io)
+      mtl = MtCore.generic_mtl(@bname, mode: mode)
+      mtl.cv_title_full(lines[0], mode: mode).to_str(io)
 
       1.upto(lines.size - 1) do |i|
         io << "\n"
         para = lines.unsafe_fetch(i)
-        mtl.cv_plain(para).to_str(io)
+        mtl.cv_plain(para, mode: mode).to_str(io)
       end
 
       puts "- <ch_text> [#{@sname}/#{@snvid}/#{@chidx}] converted.".colorize.cyan

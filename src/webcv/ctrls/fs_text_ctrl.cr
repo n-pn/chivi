@@ -46,13 +46,13 @@ class CV::FsTextCtrl < CV::BaseCtrl
 
     chtext = ChText.load(bname, sname, snvid, chidx - 1, schid)
 
-    mode = params.fetch_int("mode")
-    mode = cu_privi if mode > cu_privi
-    text = chtext.get_cv!(cu_privi, mode: mode)
+    zh_mode = params.fetch_int("mode")
+    zh_mode = cu_privi if zh_mode > cu_privi
+    zh_text = chtext.get_zh!(cu_privi, reset: zh_mode > 1) || [""]
 
     response.headers.add("Cache-Control", "public, min-fresh=60")
     response.content_type = "text/plain; charset=utf-8"
-    context.content = text
+    context.content = chtext.trans!(zh_text, mode: 1)
   rescue err
     message = err.message || "Không rõ lỗi!"
     halt!(500, message)
