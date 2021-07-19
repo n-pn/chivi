@@ -1,8 +1,12 @@
 module CV::Improving
   def fix_ule!(node : MtNode) : MtNode
     return node unless (prev = node.prev) && (succ = node.succ)
+    return node.update!(val: "") if succ.quoteop? || prev.quotecl?
+    return node.update!(val: "") if prev.quotecl? && !succ.ends?
+
     return node if succ.ends? || prev.ends? || succ.key == prev.key
     return node if prev.adjts? && prev.prev.try(&.ends?)
+
     node.update!(val: "")
   end
 

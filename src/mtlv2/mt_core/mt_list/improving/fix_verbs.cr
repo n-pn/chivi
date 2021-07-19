@@ -61,8 +61,8 @@ module CV::Improving
 
     while prev = node.prev
       case prev
-      when .adjts?
-        node.fuse_left!("", " #{prev.val}")
+      # when .adjts?
+      # node.fuse_left!("#{prev.val} ", "")
       when .adverb?
         node.fuse_left!("#{prev.val} ")
       else

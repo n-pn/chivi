@@ -6,8 +6,6 @@
   --border: #{color($color, 4)};
   --active: #{color($color, 6)};
 
-  background-color: color($color, 5, 3);
-
   .tm-dark & {
     --border: #{color($color, 6)};
     --active: #{color($color, 4)};
@@ -65,7 +63,6 @@
   c-v {
     --border: transparent;
     --active: var(--fgcolor);
-
     color: var(--fgcolor);
   }
 
@@ -92,6 +89,7 @@
 
   c-v[data-d='5'] {
     @include cv-token(red);
+    background-color: color(red, 5, 3);
   }
 
   c-v[data-d='9'] {
