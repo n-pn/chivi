@@ -1,5 +1,5 @@
 module CV::Improving
-  def fix_nouns!(node = @root) : MtNode
+  def fix_nouns!(node = @root, mode = 2) : MtNode
     if succ = node.succ
       case succ
       when .kmen?
@@ -9,8 +9,8 @@ module CV::Improving
       end
     end
 
-    node = nouns_fuse_left!(node)
-    return node if node.prev.try(&.verbs?)
+    node = nouns_fuse_left!(node, mode: mode)
+    return node if node.prev.try(&.verbs?) || mode == 1
 
     if succ = node.succ
       case succ
@@ -31,7 +31,7 @@ module CV::Improving
     node
   end
 
-  def nouns_fuse_left!(node) : MtNode
+  def nouns_fuse_left!(node, mode = 2) : MtNode
     return node if node.veno? || node.nother?
 
     while prev = node.prev
@@ -40,15 +40,20 @@ module CV::Improving
         val = prev.prev.not_nil!.val
         prev.fuse_left!
         node.fuse_left!("#{val}, ")
+        next
       when .concoord?
         prev_2 = prev.prev.not_nil!
-        break unless prev_2.tag == node.tag || prev_2.pronouns?
+        break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeic?
 
         prev.fuse_left!("#{prev_2.val} ")
         node.fuse_left!("#{prev.val} ")
+        next
       when .number?, .nquant?, .quanti?
+        break if node.veno? || node.ajno?
         node.fuse_left!("#{prev.val} ")
       when .propers?
+        break if prev.prev.try(&.verb?)
+
         if node.nform?
           node.fuse_left!("#{prev.val} ")
         else
@@ -85,18 +90,26 @@ module CV::Improving
 
         next
       when .ude1?
+        break if node == 1
         prev_2 = prev.prev.not_nil!
 
         case prev_2
-        when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?, .vintr?, .nform?, .adverb?
+        when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?,
+             .vintr?, .nform?, .adverb?, .time?, .place?
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .nouns?, .propers?
-          if (prev_3 = prev_2.prev) && verb_subject?(prev_3)
-            # break
-            prev_2.fuse_left!("#{prev_3.val} ")
-            prev.fuse_left!(prev_2.val)
-            node.fuse_left!("#{node.val} #{prev.val}")
+          if (prev_3 = prev_2.prev)
+            if verb_subject?(prev_3)
+              # break
+              node.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
+              node.prev = prev_3
+            elsif prev_3.vintr?
+              prev.fuse_left!(prev_2.val)
+              node.fuse_left!("", " #{prev.val}")
+            else
+              break
+            end
           else
             prev.fuse_left!(prev_2.val)
             node.fuse_left!("", " của #{prev.val}")
@@ -117,7 +130,8 @@ module CV::Improving
   def verb_subject?(node : MtNode)
     return false unless node.verb?
     return true unless prev = node.prev
-    prev.ends? || prev.vshi?
+    return false if prev.comma? || prev.penum?
+    prev.ends? || prev.vshi? || prev.quantis?
   end
 
   # private def fix_nouns!(node = @root)

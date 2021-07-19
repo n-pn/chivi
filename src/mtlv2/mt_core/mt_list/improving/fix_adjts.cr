@@ -1,5 +1,5 @@
 module CV::Improving
-  def fix_adjts!(node = @root) : MtNode
+  def fix_adjts!(node = @root, mode = 2) : MtNode
     if node.amorp?
       if (succ = node.succ) && succ.adjts?
         node.fuse_right!("#{node.val} #{succ.val}")
@@ -16,6 +16,7 @@ module CV::Improving
       when .adverb?
         case prev.key
         when "都"
+          break if mode == 1
           prev_2 = prev.prev.not_nil!
 
           if prev_2.key == "大家"

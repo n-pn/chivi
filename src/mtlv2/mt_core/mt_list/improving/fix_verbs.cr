@@ -31,7 +31,7 @@ module CV::Improving
     end
   end
 
-  def fix_verbs!(node = @root) : MtNode
+  def fix_verbs!(node = @root, mode = 2) : MtNode
     while succ = node.succ
       case succ
       when .ule?
@@ -48,16 +48,19 @@ module CV::Improving
           node.fuse_right!("#{node.val} #{succ.val}")
         when "一把"
           node.fuse_right!("#{node.val} một phát")
-        else
-          break
         end
+
+        break
       when .kshi?
+        break if mode == 1
         node.fuse_right!("lúc #{node.val}")
         node.tag = PosTag::Vintr
       else
         break
       end
     end
+
+    return node if mode == 1
 
     while prev = node.prev
       case prev

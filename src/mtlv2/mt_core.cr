@@ -28,27 +28,27 @@ class CV::MtCore
     group.pad_spaces!
   end
 
-  def cv_plain(input : String)
+  def cv_plain(input : String, mode = 2)
     tokenize(input.chars)
-      .fix_grammar!
+      .fix_grammar!(mode: mode)
       .capitalize!
       .pad_spaces!
   end
 
-  def cv_title_full(title : String)
+  def cv_title_full(title : String, mode = 2)
     title, label = TextUtils.format_title(title)
 
     title_res = cv_title(title)
     return title_res if label.empty?
 
     title_res.prepend!(MtNode.new("", " - "))
-    label_res = cv_title(label)
+    label_res = cv_title(label, mode: mode)
     label_res.concat!(title_res)
   end
 
-  def cv_title(title : String)
+  def cv_title(title : String, mode = 2)
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
-    res = title.empty? ? MtList.new : cv_plain(title)
+    res = title.empty? ? MtList.new : cv_plain(title, mode: mode)
 
     unless pre_zh.empty?
       res.prepend!(MtNode.new(pad, title.empty? ? "." : ": "))
