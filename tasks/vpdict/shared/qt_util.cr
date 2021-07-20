@@ -2,6 +2,7 @@ require "colorize"
 require "file_utils"
 
 require "../../../src/libcv/vdict"
+require "../../../src/mtlv2/vp_dict"
 
 DIR = "_db/vpinit"
 
@@ -92,6 +93,27 @@ module QtUtil
       end
 
       output << keep.vals.first
+      caret += keep.key.size
+    end
+
+    output.join(join)
+  end
+
+  def convert(dict : CV::VpDict, text : String, join = "")
+    output = [] of String
+
+    chars = text.chars
+    caret = 0
+
+    while caret < chars.size
+      char = chars[caret]
+      keep = dict.new_term(char.to_s, [char.to_s])
+
+      dict.scan(chars, caret) do |term|
+        keep = term unless term.empty?
+      end
+
+      output << keep.val.first
       caret += keep.key.size
     end
 

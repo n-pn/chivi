@@ -113,7 +113,7 @@ class CeInput
     puts "\n[-- Export ce_dict --]".colorize.cyan.bold
 
     input = Hash(String, Array(String)).new { |h, k| h[k] = [] of String }
-    output = CV::Vdict.load("cc_cedict", reset: true)
+    output = CV::VpDict.load("cc_cedict", reset: true)
 
     @entries.each do |entry|
       input[entry.simp] << "[#{entry.pinyin}] #{entry.defins}"
@@ -157,7 +157,7 @@ class CeInput
       end
     end
 
-    output = CV::Vdict.load("tradsim", reset: true)
+    output = CV::VpDict.load("tradsim", reset: true)
 
     counter.each do |trad, counts|
       next if HANZIDB.has_key?(trad) || counts.has_key?(trad)
@@ -207,7 +207,7 @@ class CeInput
       end
     end
 
-    output = CV::Vdict.load("binh_am", reset: true)
+    output = CV::VpDict.load("binh_am", reset: true)
 
     HANZIDB.each do |key, vals|
       next if vals.empty? || vals.first.empty?

@@ -11,6 +11,7 @@ fi
 
 ## upload dicts
 rsync -azi --no-p "_db/vpdict/main" "$ssh/_db/vpdict/"
+rsync -azi --no-p "_db/vpdict/pleb" "$ssh/_db/vpdict/"
 rsync -azi --no-p "_db/vpdict/logs" "$ssh/_db/vpdict/"
 rsync -azi --no-p "_db/vpdict/.bak" "$ssh/_db/vpdict/"
 

@@ -4,6 +4,7 @@ class CV::BaseCtrl < Amber::Controller::Base
   protected getter cu_dname : String { session["cu_uname"]? || "Khách" }
   protected getter cu_uname : String { cu_dname.downcase }
   protected getter cu_privi : Int32 { ViUser.get_power(cu_uname) }
+  protected getter cu_tlmode : Int32 { ViUser.get_tlmode(cu_uname) }
 
   def add_etag(etag : String)
     response.headers.add("ETag", etag)

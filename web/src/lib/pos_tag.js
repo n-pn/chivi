@@ -1,6 +1,7 @@
 export const labels = {
   n: 'Danh từ',
   nr: 'Tên người',
+  nf: 'Dòng họ',
   ns: 'Địa danh',
   nt: 'Tổ chức',
   nw: 'Danh xưng',
@@ -120,8 +121,9 @@ export const gnames = ['Thường gặp', 'Hiếm gặp', 'Đặc biệt', 'Dấ
 export const groups = [
   // prettier-ignore
   [
-    'nr', 'ns', 'nt', 'nz', 'nw',
-    'n', 't', 's', 'f',
+    'nr', 'nf', 'ns', 'nt', 'nz',
+    '-',
+    'nw',  't', 's', 'f', 'n',
     '-',
     'v', 'vd', 'vf', 'vx', 'vi', 'vl', 'vn',
     '-',

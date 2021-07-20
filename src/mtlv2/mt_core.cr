@@ -34,6 +34,10 @@ class CV::MtCore
     group.pad_spaces!
   end
 
+  def translit(input : String, cap_mode : Int32)
+    tokenize(input.chars).capitalize!(cap_mode: cap_mode).pad_spaces!
+  end
+
   def cv_plain(input : String, mode = 2)
     tokenize(input.chars)
       .fix_grammar!(mode: mode)

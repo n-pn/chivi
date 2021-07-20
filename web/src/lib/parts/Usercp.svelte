@@ -26,7 +26,6 @@
 
   async function update_setting(wtheme, tlmode) {
     if (wtheme == $session.wtheme && tlmode == $session.tlmode) return
-    console.log('update!')
 
     const res = await fetch('/api/user/setting', {
       method: 'POST',
@@ -34,8 +33,13 @@
       body: JSON.stringify({ wtheme, tlmode }),
     })
 
-    if (res.ok) $session = await res.json()
-    else console.log('Error: ' + (await res.text()))
+    if (res.ok) {
+      $session = await res.json()
+      wtheme = $session.wtheme
+      tlmode = $session.tlmode
+    } else {
+      console.log('Error: ' + (await res.text()))
+    }
   }
 
   const tlmodes = ['Cơ bản', 'Tiêu chuẩn', 'Nâng cao']

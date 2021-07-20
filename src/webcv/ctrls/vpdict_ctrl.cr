@@ -129,6 +129,10 @@ class CV::VpDictCtrl < CV::BaseCtrl
     render_json({hanviet: hanviet, entries: entries})
   end
 
+  def find_node(dict, key)
+    dict.trie.find(key)
+  end
+
   def search
     dname = params["dname"]
     input = params["input"]
@@ -138,37 +142,42 @@ class CV::VpDictCtrl < CV::BaseCtrl
     regular_dict = VpDict.regular
     hanviet_dict = VpDict.hanviet
 
-    if special_node = special_dict.trie.find(input)
+    if special_node = find_node(special_dict, input)
       special_node.edits.each { |term| hints.concat(term.val) }
     end
 
-    if regular_node = regular_dict.trie.find(input)
+    if regular_node = find_node(regular_dict, input)
       regular_node.edits.each { |term| hints.concat(term.val) }
     end
 
-    if hanviet_node = hanviet_dict.trie.find(input)
+    if hanviet_node = find_node(hanviet_dict, input)
       hanviet_node.edits.each { |term| hints.concat(term.val) }
     end
 
-    if suggest_node = VpDict.suggest.trie.find(input)
-      suggest_node.edits.each { |term| hints.concat(term.val) }
+    if cu_tlmode < 2
+      special_pleb = VpDict.load("pleb_#{dname}")
+      find_node(special_pleb, input).try do |node|
+        special_node ||= node
+        node.edits.each { |term| hints.concat(term.val) }
+      end
+
+      regular_pleb = VpDict.load("pleb_regular")
+      find_node(regular_pleb, input).try do |node|
+        regular_node ||= node
+        node.edits.each { |term| hints.concat(term.val) }
+      end
     end
 
-    unless special_term = special_node.try(&.term)
-      attr = regular_node.try(&.term.try(&.attr)) || ""
-      special_term = special_dict.new_term(input, attr: attr)
-    end
-
-    unless regular_term = regular_node.try(&.term)
-      regular_term = regular_dict.new_term(input)
-    end
-
-    unless hanviet_term = hanviet_node.try(&.term)
-      hanviet_term = hanviet_dict.new_term(input)
-    end
+    special_term = special_node.try(&.term) || special_dict.new_term(input)
+    regular_term = regular_node.try(&.term) || regular_dict.new_term(input)
+    hanviet_term = hanviet_node.try(&.term) || hanviet_dict.new_term(input)
 
     binh_am = MtCore.binh_am_mtl.translit(input).to_s
     hanviet = MtCore.hanviet_mtl.translit(input).to_s
+
+    find_node(VpDict.suggest, input).try do |node|
+      node.edits.each { |term| hints.concat(term.val) }
+    end
 
     render_json do |res|
       JSON.build(res) do |jb|
@@ -195,7 +204,8 @@ class CV::VpDictCtrl < CV::BaseCtrl
     privi = cu_privi if privi > cu_privi
 
     dname = params["dname"]
-    vdict = VpDict.load(dname)
+    vdict = cu_tlmode < 2 ? VpDict.load("pleb_#{dname}") : VpDict.load(dname)
+
     mtime = VpTerm.mtime
 
     key = params.fetch_str("key").strip

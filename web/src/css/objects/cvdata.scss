@@ -89,7 +89,7 @@
 
   c-v[data-d='5'] {
     @include cv-token(red);
-    background-color: color(red, 5, 3);
+    // background-color: color(red, 5, 3);
   }
 
   c-v[data-d='9'] {

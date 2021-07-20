@@ -18,6 +18,10 @@ class QtDict
     load!(@file) if preload && File.exists?(@file)
   end
 
+  def fval(key : String)
+    @data[key]?.try(&.first?)
+  end
+
   def load!(file : String = @file, mode : Symbol = :keep_new)
     label = File.basename(file)
     lines = 0

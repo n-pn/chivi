@@ -11,7 +11,7 @@ class CV::VpDict
   ::FileUtils.mkdir_p("#{PLEB}/books")
 
   # group: local, chivi, cvdev etc.
-  class_getter suffix : String = ENV["SUFFIX"]? || "local"
+  class_property suffix : String = ENV["SUFFIX"]? || "local"
 
   class_getter trungviet : self { load("trungviet") }
   class_getter cc_cedict : self { load("cc_cedict") }
@@ -49,7 +49,7 @@ class CV::VpDict
       when "pleb_regular"
         new(pleb_path("regular"), dtype: 2, p_min: 2, reset: reset)
       when .starts_with?("pleb_")
-        new(pleb_path(dname.sub("pleb_", "")), dtype: 3, p_min: 1, reset: reset)
+        new(pleb_path(dname.sub("pleb_", "books/")), dtype: 3, p_min: 1, reset: reset)
       else
         new(path("books/#{dname}"), dtype: 3, p_min: 1, reset: reset)
       end

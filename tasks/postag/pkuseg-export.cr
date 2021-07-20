@@ -117,19 +117,37 @@ class CV::Export
     output.sort_by! { |_, c| -c[0][1] }
 
     file_io = File.open(file, "w")
+    best_io = File.open("#{DIR}/corpus/pkuseg-bests.tsv", "w")
 
     output.each do |word, counter|
-      file_io << word
-
-      counter.each do |tag, count|
-        file_io << '\t' << tag << ':' << count
-      end
-
-      file_io << '\n'
+      emit(file_io, word, counter)
+      emit(best_io, word, counter) if decent?(counter)
     end
 
     puts "- #{file} saved, entries: #{output.size}}"
     file_io.close
+    best_io.close
+  end
+
+  def emit(io : IO, word, counter)
+    io << word
+
+    counter.each do |tag, count|
+      io << '\t' << tag << ':' << count
+    end
+
+    io << '\n'
+  end
+
+  def decent?(counter)
+    best = counter[0][1]
+    return false unless best >= 50
+    return true if counter.size == 1
+
+    second_best = counter[1][1]
+    return true if second_best < 10
+
+    best - second_best >= 50
   end
 
   def self.run!(argv = ARGV)

@@ -8,16 +8,16 @@ module CV
     # 实词 - thực từ #
     ##################
 
-    :Noun => "n",  # 名词 - noun - danh từ
-    :Nper => "nr", # 人名 - person name - tên người
-    :Nloc => "ns", # 地名 - location name - địa danh
-    :Norg => "nt", # 机构团体名 - organization name - tổ chức
+    :Noun   => "n",  # 名词 - noun - danh từ
+    :Nform  => "nl", # 名词性语素 - nominal formulaic expression
+    :Nmorp  => "ng", # 名词性语素 - nominal morpheme
+    :Ntitle => "nw", # danh xưng: chức danh, nghề nghiệp, địa vị
 
-    :Ntitle => "nw", # chức danh, nghề nghiệp, địa vị
+    :Nper   => "nr", # 人名 - person name - tên người
+    :Nsur   => "nf", # họ người
+    :Nloc   => "ns", # 地名 - location name - địa danh
+    :Norg   => "nt", # 机构团体名 - organization name - tổ chức
     :Nother => "nz", # 其它专名 - other proper noun - tên riêng khác
-
-    :Nform => "nl", # 名词性语素 - nominal formulaic expression
-    :Nmorp => "ng", # 名词性语素 - nominal morpheme
 
     :Time  => "t",  # 时间词 - time word - thời gian
     :Tmorp => "tg", # 时间词性语素 - time word morpheme
@@ -155,7 +155,11 @@ enum CV::PosTag
   end
 
   def nouns?
-    Noun <= self <= Nmorp || veno? || ajno?
+    Noun <= self <= Nother || veno? || ajno?
+  end
+
+  def names?
+    Nper <= self <= Nother
   end
 
   def pronouns?
