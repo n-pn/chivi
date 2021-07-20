@@ -156,16 +156,10 @@ class CV::VpDictCtrl < CV::BaseCtrl
 
     if cu_tlmode < 2
       special_pleb = VpDict.load("pleb_#{dname}")
-      find_node(special_pleb, input).try do |node|
-        special_node ||= node
-        node.edits.each { |term| hints.concat(term.val) }
-      end
+      special_node ||= find_node(special_pleb, input)
 
       regular_pleb = VpDict.load("pleb_regular")
-      find_node(regular_pleb, input).try do |node|
-        regular_node ||= node
-        node.edits.each { |term| hints.concat(term.val) }
-      end
+      regular_node ||= find_node(regular_pleb, input)
     end
 
     special_term = special_node.try(&.term) || special_dict.new_term(input)
