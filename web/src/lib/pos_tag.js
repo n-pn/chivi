@@ -3,7 +3,7 @@ export const labels = {
   nr: 'Tên người',
   ns: 'Địa danh',
   nt: 'Tổ chức',
-  nw: 'Chức danh',
+  nw: 'Danh xưng',
   ng: 'Ngữ tố danh từ',
   nz: 'Tên riêng khác',
 
