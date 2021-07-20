@@ -1,22 +1,18 @@
 <script context="module">
-  import Cvdata from '$sects/Cvdata.svelte'
-
   import { get_chinfo, get_chtext } from '$api/chtext_api'
-
   import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
-  export async function load({ fetch, page: { params, query }, context }) {
+  export async function load({ fetch, page, context }) {
     const { nvinfo } = context
 
-    const [chidx, sname] = params.chap.split('-').reverse()
+    const [chidx, sname] = page.params.chap.split('-').reverse()
     const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
-    if (!snvid) {
+    if (!snvid)
       return { status: 404, error: new Error('Nguồn truyện không tồn tại!') }
-    }
 
     const chinfo = { sname, snvid, chidx }
 
-    const mode = +query.get('mode') || 0
+    const mode = +page.query.get('mode') || 0
     const [err, data] = await get_chinfo(fetch, nvinfo.bhash, chinfo, mode)
 
     if (err) return { status: 404, error: new Error(data) }
@@ -33,6 +29,7 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Notext from '$parts/Notext.svelte'
   import Vessel from '$sects/Vessel.svelte'
+  import Cvdata from '$sects/Cvdata.svelte'
 
   export let nvinfo = {}
   export let chinfo = {}

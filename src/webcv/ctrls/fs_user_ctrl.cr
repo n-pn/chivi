@@ -6,9 +6,9 @@ class CV::FsUserCtrl < CV::BaseCtrl
   end
 
   def logout
-    session.delete("cv_uname")
+    session.delete("cu_uname")
     save_session!
-    render_json({msg: "ok"})
+    return_user
   end
 
   def login
@@ -42,21 +42,31 @@ class CV::FsUserCtrl < CV::BaseCtrl
     halt!(400, err.message)
   end
 
+  def update
+    if cu_privi >= 0
+      wtheme = params.fetch_str("wtheme", "light")
+      tlmode = params.fetch_int("tlmode", min: 0, max: 2)
+
+      ViUser.wtheme.set!(cu_uname, wtheme)
+      ViUser.tlmode.set!(cu_uname, tlmode)
+      ViUser.save!
+    end
+
+    return_user
+  end
+
   private def sigin_user!(dname : String)
-    session["cv_uname"] = dname
+    session["cu_uname"] = dname
     save_session!
   end
 
   private def return_user
-    site_theme = cu_privi < 1 ? "light" : "dark"
-    cvmtl_mode = cu_privi < 1 ? "greedy" : (cu_privi < 4 ? "dynamic" : "complex")
-
     render_json({
-      uname: cv_dname,
+      uname: cu_dname,
       privi: cu_privi,
 
-      site_theme: site_theme,
-      cvmlt_mode: cvmtl_mode,
+      wtheme: ViUser.get_wtheme(cu_uname),
+      tlmode: ViUser.get_tlmode(cu_uname),
     })
   end
 end

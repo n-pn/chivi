@@ -1,6 +1,6 @@
 // import { api_call } from './_api_call'
 
-export async function get_chinfo(fetch, bhash, chinfo, mode = 0) {
+export async function get_chinfo(fetch, bhash, chinfo, mode = 0, tl_mode = 1) {
   const { sname, snvid, chidx } = chinfo
   const url = `/api/texts/${bhash}/${sname}/${snvid}/${chidx}?mode=${mode}`
 

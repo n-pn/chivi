@@ -97,7 +97,7 @@
 
 <div
   class="app"
-  class:tm-dark={$session.site_theme == 'dark'}
+  class:tm-dark={$session.wtheme == 'dark'}
   class:kbd-hint={kbd_hint}>
   <slot />
 

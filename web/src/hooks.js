@@ -6,12 +6,6 @@ export async function handle({ request, resolve }) {
 /** @type {import('@sveltejs/kit').ServerFetch} */
 export async function serverFetch(request) {
   // if (request.path.startsWith('/api/')) {
-  //   const url = `http://localhost:5010${request.url}`
-  //   console.log({ url })
-  //   request = new Request(url, request)
-  // }
-
-  // return await fetch(request)
   return fetch(request)
 }
 
@@ -21,34 +15,32 @@ async function mutateFetch({ path, query, method, headers, rawBody: body }) {
 
   const res_headers = {}
   for (let [key, val] of res.headers.entries()) res_headers[key] = val
+  const res_body = await res.text()
 
-  return {
-    status: res.status,
-    headers: res_headers,
-    body: await res.text(),
-  }
+  const locals = {}
+  if (res.ok && path.startsWith('/api/user')) locals.user = JSON.parse(res_body)
+
+  return { status: res.status, headers: res_headers, body: res_body, locals }
 }
 
-const cached = {}
+const users = {}
 
-export async function getSession({ headers }) {
-  const cookie = getChiviSc(headers.cookie || '')
-  if (!cookie) return { uname: 'Khách', privi: '-2' }
-
-  cached[cookie] ||= await currentUser(headers)
-  return cached[cookie]
+export async function getSession({ headers, locals }) {
+  const token = getUserToken(headers.cookie || '')
+  users[token] = locals.user || users[token] || (await currentUser(headers))
+  return users[token]
 }
 
-function getChiviSc(cookies) {
+function getUserToken(cookies) {
   for (const cookie of cookies.split('; ')) {
     const [name, ...value] = cookie.split('=')
     if (name == 'chivi_sc') return value.join('=')
   }
-  return null
+  return '__guest__'
 }
 
 async function currentUser(headers) {
-  const url = 'http://localhost:5010/api/_self'
+  const url = 'http://localhost:5010/api/user/_self'
   const res = await fetch(url, { headers })
 
   const data = await res.json()

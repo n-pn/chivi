@@ -16,10 +16,11 @@ Amber::Server.configure do
   end
 
   routes :api, "/api" do
-    get "/_self", CV::FsUserCtrl, :_self
-    post "/login", CV::FsUserCtrl, :login
-    get "/logout", CV::FsUserCtrl, :logout
-    post "/signup", CV::FsUserCtrl, :signup
+    get "/user/_self", CV::FsUserCtrl, :_self
+    get "/user/logout", CV::FsUserCtrl, :logout
+    post "/user/login", CV::FsUserCtrl, :login
+    post "/user/signup", CV::FsUserCtrl, :signup
+    post "/user/setting", CV::FsUserCtrl, :update
 
     get "/books", CV::FsBookCtrl, :index
     get "/books/:bslug", CV::FsBookCtrl, :show

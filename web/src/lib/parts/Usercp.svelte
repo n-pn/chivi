@@ -9,7 +9,7 @@
 
   async function logout() {
     $session = { uname: 'Khách', privi: -1 }
-    await fetch('/api/logout')
+    await fetch('/api/user/logout')
   }
 
   let chaps = []
@@ -20,9 +20,25 @@
     if (res.ok) chaps = await res.json()
   }
 
-  function change_theme() {
-    $session.site_theme = $session.site_theme == 'dark' ? 'light' : 'dark'
+  let wtheme = $session.wtheme
+  let tlmode = $session.tlmode
+  $: update_setting(wtheme, tlmode)
+
+  async function update_setting(wtheme, tlmode) {
+    if (wtheme == $session.wtheme && tlmode == $session.tlmode) return
+    console.log('update!')
+
+    const res = await fetch('/api/user/setting', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wtheme, tlmode }),
+    })
+
+    if (res.ok) $session = await res.json()
+    else console.log('Error: ' + (await res.text()))
   }
+
+  const tlmodes = ['Cơ bản', 'Tiêu chuẩn', 'Nâng cao']
 </script>
 
 <Slider bind:actived _rwidth={26}>
@@ -34,14 +50,42 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <button class="-btn" data-kbd="t" on:click={change_theme}>
-      <SIcon name={$session.site_theme == 'dark' ? 'sun' : 'moon'} />
+    <button
+      class="-btn"
+      data-kbd="t"
+      on:click={() => (wtheme = wtheme == 'dark' ? 'light' : 'dark')}>
+      <SIcon name={wtheme == 'dark' ? 'sun' : 'moon'} />
     </button>
 
     <button class="-btn" on:click={logout}>
       <SIcon name="log-out" />
     </button>
   </svelte:fragment>
+
+  <div class="tlmode">
+    <div class="-radio">
+      <span class="-label">Chế độ dịch:</span>
+      {#each tlmodes as label, value}
+        <label class="m-radio">
+          <input type="radio" name="tlmode" {value} bind:group={tlmode} />
+          <span>{label}</span>
+        </label>
+      {/each}
+    </div>
+
+    <div class="-explain">
+      {#if $session.tlmode == 0}
+        Không áp dụng các luật ngữ pháp. Các từ "đích", "trứ", "liễu" sẽ lờ đi
+        trong câu văn.
+      {:else if $session.tlmode == 1}
+        Áp dụng một số luật ngữ pháp cơ bản, phần lớn chính xác. <strong
+          >(Khuyến khích)</strong>
+      {:else}
+        Sử dụng đầy đủ các luật ngữ pháp đang được hỗ trợ, đảo vị trí của các từ
+        trong câu cho thuần việt. <em>(Đang thử nghiệm)</em>
+      {/if}
+    </div>
+  </div>
 
   <div class="chips">
     {#each ['reading', 'onhold', 'pending'] as mtype}
@@ -150,6 +194,27 @@
 
     & + & {
       @include fluid(margin-left, 0.25rem, 0.375rem);
+    }
+  }
+
+  .tlmode {
+    padding: 0.5rem 0.75rem;
+    @include border(--bd-main, $sides: bottom);
+    > .-radio {
+      line-height: 2rem;
+      @include flex($center: none, $gap: 0.5rem);
+      @include fluid(font-size, rem(14px), rem(15px), rem(16px));
+    }
+
+    .-label {
+      font-weight: 500;
+      @include fgcolor(secd);
+    }
+
+    > .-explain {
+      @include fgcolor(tert);
+      @include ftsize(sm);
+      line-height: 1.25rem;
     }
   }
 

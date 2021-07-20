@@ -17,6 +17,9 @@ module CV::ViUser
   class_getter ugroup : ValueMap { ValueMap.new "#{DIR}/ugroup.tsv" }
   class_getter upower : ValueMap { ValueMap.new "#{DIR}/upower.tsv" }
 
+  class_getter wtheme : ValueMap { ValueMap.new "#{DIR}/wtheme.tsv" }
+  class_getter tlmode : ValueMap { ValueMap.new "#{DIR}/tlmode.tsv" }
+
   class_getter _ctime : ValueMap { ValueMap.new "#{DIR}/_ctime.tsv" }
 
   def set_uname(dname : String) : String?
@@ -38,7 +41,15 @@ module CV::ViUser
   end
 
   def get_power(uname : String)
-    upower.ival(uname.downcase)
+    upower.ival(uname)
+  end
+
+  def get_wtheme(uname : String)
+    wtheme.fval(uname) || "light"
+  end
+
+  def get_tlmode(uname : String)
+    tlmode.ival(uname) || 1
   end
 
   def save!(clean : Bool = false)
@@ -49,6 +60,9 @@ module CV::ViUser
 
     @@ugroup.try(&.save!(clean: clean))
     @@upower.try(&.save!(clean: clean))
+
+    @@wtheme.try(&.save!(clean: clean))
+    @@tlmode.try(&.save!(clean: clean))
 
     @@_ctime.try(&.save!(clean: clean))
   end

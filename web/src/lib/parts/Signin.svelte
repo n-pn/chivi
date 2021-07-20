@@ -1,7 +1,19 @@
+<script context="module">
+  export async function signin_user(type, params) {
+    const res = await fetch(`/api/user/${type}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    })
+
+    if (!res.ok) return [res.status, await res.text()]
+    return [0, await res.json()]
+  }
+</script>
+
 <script>
   import { session } from '$app/stores'
 
-  import { signin_user } from '$api/viuser_api'
   import SIcon from '$atoms/SIcon.svelte'
   import Slider from '$molds/Slider.svelte'
 
@@ -16,7 +28,7 @@
     evt.preventDefault()
     errs = null
 
-    const [_err, data] = await signin_user(fetch, type, params)
+    const [_err, data] = await signin_user(type, params)
     if (_err) {
       errs = data
     } else {
@@ -41,7 +53,7 @@
       <span class="-text">Chivi</span>
     </div>
 
-    <form action="/api/{type}" method="POST" on:submit={submit}>
+    <form action="/api/user/{type}" method="POST" on:submit={submit}>
       {#if type == 'signup'}
         <div class="input">
           <label for="cname">Tên người dùng</label>

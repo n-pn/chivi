@@ -115,7 +115,7 @@
       bottom: -1px;
     }
 
-    &:global(.sticked) {
+    &:global(.sticked:not(:empty)) {
       background: linear-gradient(color(neutral, 1, 1), color(neutral, 7, 7));
 
       @include tm-dark {

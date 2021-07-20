@@ -204,7 +204,7 @@ class CV::VpDictCtrl < CV::BaseCtrl
     attr = params.fetch_str("attr")
     rank = params.fetch_int("rank")
 
-    new_term = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cv_dname, privi: privi)
+    new_term = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cu_dname, privi: privi)
     return halt!(501, "Không thay đổi!") unless vdict.set!(new_term)
 
     # TODO: save context
