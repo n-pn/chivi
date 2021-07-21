@@ -103,6 +103,7 @@ module CV::Improving
           if (prev_3 = prev_2.prev)
             if verb_subject?(prev_3)
               # break
+              node.key = "#{prev_3.key}#{prev_2.key}#{prev.key}#{node.key}"
               node.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
               node.prev = prev_3
             elsif prev_3.vintr?
