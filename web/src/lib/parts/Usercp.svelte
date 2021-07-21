@@ -83,7 +83,7 @@
         trong câu văn.
       {:else if $session.tlmode == 1}
         Áp dụng một số luật ngữ pháp cơ bản, phần lớn chính xác. <strong
-          >(Khuyến khích)</strong>
+          >(Khuyến khích dùng)</strong>
       {:else}
         Sử dụng đầy đủ các luật ngữ pháp đang được hỗ trợ, đảo vị trí của các từ
         trong câu cho thuần việt. <em>(Đang thử nghiệm)</em>
@@ -204,15 +204,16 @@
   .tlmode {
     padding: 0.5rem 0.75rem;
     @include border(--bd-main, $sides: bottom);
+
     > .-radio {
       line-height: 2rem;
+      @include fgcolor(tert);
       @include flex($center: none, $gap: 0.5rem);
       @include fluid(font-size, rem(14px), rem(15px), rem(16px));
     }
 
     .-label {
       font-weight: 500;
-      @include fgcolor(secd);
     }
 
     > .-explain {

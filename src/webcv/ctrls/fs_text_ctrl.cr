@@ -50,11 +50,9 @@ class CV::FsTextCtrl < CV::BaseCtrl
     zh_mode = cu_privi if zh_mode > cu_privi
     zh_text = chtext.get_zh!(cu_privi, reset: zh_mode > 1) || [""]
 
-    tl_mode = ViUser.get_tlmode(cu_uname)
-
     response.headers.add("Cache-Control", "public, min-fresh=60")
     response.content_type = "text/plain; charset=utf-8"
-    context.content = chtext.trans!(zh_text, mode: tl_mode)
+    context.content = chtext.trans!(zh_text, mode: cu_tlmode)
   rescue err
     message = err.message || "Không rõ lỗi!"
     halt!(500, message)
