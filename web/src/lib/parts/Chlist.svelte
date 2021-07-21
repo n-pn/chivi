@@ -22,7 +22,7 @@
 </ul>
 
 <style lang="scss">
-  $chap-size: 17rem;
+  $chap-size: 17.75rem;
   // $chap-break: $chap-size * 2 + 0.75 * 5;
 
   .list {
@@ -32,43 +32,30 @@
 
   .item {
     display: block;
-    @include border($sides: bottom);
+    @include border(--bd-main, $sides: bottom);
     $bg-dark: color(neutral, 8);
 
-    @include tm-dark {
-      border-color: color(neutral, 6) !important;
-    }
-
     &:first-child {
-      @include border($sides: top);
+      @include border(--bd-main, $sides: top);
     }
 
     &:nth-child(odd) {
-      @include bgcolor(neutral, 1);
-      @include tm-dark {
-        background: $bg-dark;
-      }
+      @include bgcolor(secd);
     }
 
-    @include bp-min(md) {
+    @include bp-min(600px) {
       &:nth-child(2) {
-        @include border($sides: top);
+        @include border(--bd-main, $sides: top);
       }
 
       &:nth-child(4n),
       &:nth-child(4n + 1) {
-        @include bgcolor(neutral, 1);
-        @include tm-dark {
-          background: $bg-dark;
-        }
+        @include bgcolor(secd);
       }
 
       &:nth-child(4n + 2),
       &:nth-child(4n + 3) {
-        background-color: #fff;
-        @include tm-dark {
-          @include bgcolor(neutral, 7);
-        }
+        @include bgcolor(tert);
       }
     }
   }
@@ -96,18 +83,10 @@
   .title {
     flex: 1;
     @include clamp($width: null);
-    @include fgcolor(neutral, 8);
-
-    @include tm-dark {
-      @include fgcolor(neutral, 4);
-    }
+    @include fgcolor(secd);
 
     .link:visited & {
-      @include fgcolor(neutral, 6);
-
-      @include tm-dark {
-        @include fgcolor(neutral, 5);
-      }
+      @include fgcolor(tert);
     }
 
     .link:hover & {

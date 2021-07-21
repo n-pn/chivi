@@ -13,6 +13,8 @@ $breakpoints: (
 ) !default;
 
 @function bp-size($key) {
+  // prettier-ignore
+  @if $key == xs { @return $bp-xs; }
   $val: map-get($breakpoints, $key);
 
   // prettier-ignore
