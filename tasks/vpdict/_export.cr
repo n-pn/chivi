@@ -11,6 +11,10 @@ class Counter
     @data[key] += value
   end
 
+  def should_reject?(key)
+    key =~ /^\d/
+  end
+
   def init!
     File.read_lines("#{CORPUS}/xinhua-all.txt").each { |key| add(key, 2) }
     CV::VpDict.load("trungviet").data.each { |term| add(term.key, 2.5) }
@@ -18,21 +22,23 @@ class Counter
 
     File.read_lines("#{CORPUS}/pfrtag.top.tsv").each do |line|
       key, _ = line.split('\t', 2)
-      add(key, 1) unless key =~ /^\d/
+      add(key, 1) unless should_reject?(key)
     end
 
     File.read_lines("#{CORPUS}/pkuseg-books.tsv").each do |line|
       key, count = line.split('\t')
-      add(key, map_count(count.to_i)) unless key =~ /^\d/
+      add(key, map_count(count.to_i)) unless should_reject?(key)
     end
   end
 
   private def map_count(count : Int32)
     case count
-    when .>(200) then 2
+    when .>(200) then 2.5
+    when .>(150) then 2
     when .>(100) then 1.5
     when .>(50)  then 1
-    else              0.5
+    when .>(10)  then 0.5
+    else              0
     end
   end
 
@@ -41,7 +47,11 @@ class Counter
     suggest = Set(String).new
 
     @data.each do |key, val|
-      (val >= 2.5 ? regular : suggest) << key
+      if val >= 2.5
+        regular << key
+      elsif val >= 0.5
+        suggest << key
+      end
     end
 
     {regular, suggest}
@@ -140,12 +150,12 @@ regular_inp.each do |key|
     term = regular_out.new_term(key, val, tag, rank, mtime, uname, privi)
     regular_out.set(term)
   elsif val = lexicon.fval(key)
-    term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "qt")
+    term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "[qt]")
     regular_out.set(term)
   elsif !tag.empty?
     cap_mode = {"nr", "ns", "nt", "nz"}.includes?(tag) ? 2 : 0
     val = HANVIET_MTL.translit(key, cap_mode: cap_mode).to_s
-    term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "[seed]")
+    term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "[hv]")
     regular_out.set(term)
   else
     val = HANVIET_MTL.translit(key, false).to_s
@@ -174,7 +184,12 @@ old_regular.each do |term|
   end
 end
 
+app_file = "_db/vpdict/logs/regular.appcv.tsv"
+regular_out.load!(app_file) if File.exists?(app_file)
 regular_out.save!
+
+pleb_file = "_db/vpdict/plebs/regular.appcv.tsv"
+regular_pleb.load!(pleb_file) if File.exists?(pleb_file)
 regular_pleb.save!
 
 suggest_inp.each do |key|
@@ -191,12 +206,12 @@ suggest_inp.each do |key|
     term = suggest_out.new_term(key, val, tag, rank, mtime, uname, privi)
     suggest_out.set(term)
   elsif val = lexicon.fval(key)
-    term = suggest_out.new_term(key, [val], tag, mtime: 1, uname: "[init]")
+    term = suggest_out.new_term(key, [val], tag, mtime: 1, uname: "[qt]")
     suggest_out.set(term)
   elsif !tag.empty?
     cap_mode = {"nr", "ns", "nt", "nz"}.includes?(tag) ? 2 : 0
     val = HANVIET_MTL.translit(key, cap_mode: cap_mode).to_s
-    term = suggest_out.new_term(key, [val], tag, mtime: 1, uname: "[seed]")
+    term = suggest_out.new_term(key, [val], tag, mtime: 1, uname: "[hv]")
     suggest_out.set(term)
   end
 end
@@ -213,6 +228,8 @@ old_suggest.each do |term|
   suggest_out.set(new_term)
 end
 
+app_file = "_db/vpdict/logs/suggest.appcv.tsv"
+suggest_out.load!(app_file) if File.exists?(app_file)
 suggest_out.save!
 
 def export_book(bhash, regular_set)
@@ -260,11 +277,16 @@ def export_book(bhash, regular_set)
     val = HANVIET_MTL.translit(key, cap_mode: cap_mode).to_s
     rank = key.size == 1 ? 2 : 3
 
-    new_term = book_out.new_term(key, [val], postag.to_str, rank, 1, "[seed]")
+    new_term = book_out.new_term(key, [val], postag.to_str, rank, 1, "[hv]")
     book_out.set(new_term)
   end
 
+  app_file = "_db/vpdict/logs/books/#{bhash}.appcv.tsv"
+  book_out.load!(app_file) if File.exists?(app_file)
   book_out.save!
+
+  pleb_file = "_db/vpdict/pleb/books/#{bhash}.appcv.tsv"
+  book_pleb.load!(pleb_file) if File.exists?(pleb_file)
   book_pleb.save!
 end
 

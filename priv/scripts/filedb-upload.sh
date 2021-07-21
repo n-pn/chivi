@@ -10,16 +10,16 @@ else
 fi
 
 ## upload dicts
-rsync -azi --no-p "_db/vpdict/main" "$ssh/_db/vpdict/"
-rsync -azi --no-p "_db/vpdict/pleb" "$ssh/_db/vpdict/"
-rsync -azi --no-p "_db/vpdict/logs" "$ssh/_db/vpdict/"
-rsync -azi --no-p "_db/vpdict/.bak" "$ssh/_db/vpdict/"
+rsync -azi --no-p "_db/vpdict/main" "$ssh/_db/vpdict/" &
+rsync -azi --no-p "_db/vpdict/pleb" "$ssh/_db/vpdict/" &
+rsync -azi --no-p "_db/vpdict/logs" "$ssh/_db/vpdict/" &
+# rsync -azi --no-p "_db/vpdict/.bak" "$ssh/_db/vpdict/" &
 
 ## upload user data
 # rsync -azi --no-p "_db/vi_users/" "$ssh/_db/vi_users/"
 
 ## upload parsed seed data
-rsync -azi --no-p "_db/zhbook/" "$ssh/_db/zhbook/"
+rsync -azi --no-p "_db/zhbook/" "$ssh/_db/zhbook/" &
 rsync -azi --no-p --exclude='*.zip' "_db/chseed/" "$ssh/_db/chseed/"
 
 ## upload book data
