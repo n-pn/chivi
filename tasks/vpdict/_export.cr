@@ -27,12 +27,20 @@ class Counter
 
     File.read_lines("#{CORPUS}/pkuseg-books.tsv").each do |line|
       key, count = line.split('\t')
-      add(key, map_count(count.to_i)) unless should_reject?(key)
+      value = map_count(count.to_i)
+
+      case key.size
+      when 2 then value -= 0.5
+      when 3 then value -= 0.25
+      end
+
+      add(key, value) unless should_reject?(key)
     end
   end
 
   private def map_count(count : Int32)
     case count
+    when .>(500) then 3
     when .>(200) then 2.5
     when .>(150) then 2
     when .>(100) then 1.5
@@ -60,7 +68,9 @@ end
 
 class Postag
   DIR = "_db/vpinit/corpus"
-  getter data = {} of String => String
+
+  alias Counter = Hash(String, Int32)
+  getter data = Hash(String, Counter).new { |h, k| h[k] = Counter.new(0) }
 
   def initialize(file : String, mode = 2)
     return if mode == 0
@@ -69,15 +79,22 @@ class Postag
     File.each_line(file) do |line|
       frags = line.split('\t')
       next if frags.size < 2
-      word, tag = frags
-      @data[word] ||= tag.split(":").first
+      word = frags[0]
+
+      frags[1..].each do |frag|
+        list = frag.split(":")
+        tag = list[0]
+        count = list[1]?.try(&.to_i) || 1
+
+        @data[word][tag] = count
+      end
     end
 
     puts " - <postag> #{file} loaded, entries: #{@data.size}"
   end
 
   def get(word : String)
-    @data[word]?
+    @data[word]?.try(&.first_key)
   end
 
   @@cache = {} of String => self
@@ -266,9 +283,13 @@ def export_book(bhash, regular_set)
     end
   end
 
-  book_inp.data.each do |key, tag|
+  book_inp.data.each do |key, tags|
+    next unless key =~ /\p{Han}/
     next if checked.includes?(key)
     next if regular_set.includes?(key)
+
+    tag, count = tags.first
+    next if count < 40
 
     postag = CV::PosTag.from_str(tag)
     next unless postag.nouns?
