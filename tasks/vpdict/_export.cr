@@ -12,25 +12,19 @@ class Counter
   end
 
   def init!
-    add_vpdict("trungviet", 2)
-    add_vpdict("cc_cedict", 1.5)
-    add_file("#{CORPUS}/xinhua-all.txt", 1.5)
-    add_file("#{CORPUS}/pfrtag.top.tsv")
+    CV::VpDict.load("trungviet").data.each { |term| add(term.key, 2) }
+    CV::VpDict.load("cc_cedict").data.each { |term| add(term.key, 1.5) }
 
-    File.read_lines("_db/vpinit/corpus/pkuseg-books.tsv").each do |line|
-      key, count = line.split('\t')
-      add(key, map_count(count.to_i))
+    File.read_lines("#{CORPUS}/xinhua-all.txt").each { |key| add(key, 1.5) }
+
+    File.read_lines("#{CORPUS}/pfrtag.top.tsv").each do |line|
+      key, _ = line.split('\t', 2)
+      add(key, 1) unless key =~ /^\d/
     end
-  end
 
-  def add_vpdict(dname : String, value = 1)
-    CV::VpDict.load(dname).data.each { |term| add(term.key, value) }
-  end
-
-  def add_file(file : String, value = 1)
-    File.read_lines(file).each do |line|
-      key = line.split('\t', 2).first
-      add(key, value)
+    File.read_lines("#{CORPUS}/pkuseg-books.tsv").each do |line|
+      key, count = line.split('\t')
+      add(key, map_count(count.to_i)) unless key =~ /^\d/
     end
   end
 
