@@ -2,8 +2,12 @@
 
 SSH=nipin@ssh.chivi.xyz:srv/chivi.xyz
 
-rsync -aiz --no-p "$SSH/_db/vp_dicts/active/" "_db/vp_dicts/backup/"
-rsync -aiz --no-p "$SSH/_db/vp_dicts/active/" "_db/vp_dicts/active/"
+rsync -aiz --no-p "$SSH/_db/vpdict/main" "_db/vpdict/.bak/"
+rsync -aiz --no-p "$SSH/_db/vpdict/logs" "_db/vpdict/.bak/"
+rsync -aiz --no-p "$SSH/_db/vpdict/pleb" "_db/vpdict/.bak/"
+rsync -aiz --no-p "$SSH/_db/vpdict/main/" "_db/vpdict/main/"
+rsync -aiz --no-p "$SSH/_db/vpdict/logs/" "_db/vpdict/logs/"
+rsync -aiz --no-p "$SSH/_db/vpdict/pleb/" "_db/vpdict/pleb/"
 
 rsync -aiz --no-p "$SSH/_db/vi_users/" "_db/vi_users/"
 rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"

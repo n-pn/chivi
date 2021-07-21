@@ -12,10 +12,9 @@ class Counter
   end
 
   def init!
-    CV::VpDict.load("trungviet").data.each { |term| add(term.key, 2) }
+    File.read_lines("#{CORPUS}/xinhua-all.txt").each { |key| add(key, 2) }
+    CV::VpDict.load("trungviet").data.each { |term| add(term.key, 2.5) }
     CV::VpDict.load("cc_cedict").data.each { |term| add(term.key, 1.5) }
-
-    File.read_lines("#{CORPUS}/xinhua-all.txt").each { |key| add(key, 1.5) }
 
     File.read_lines("#{CORPUS}/pfrtag.top.tsv").each do |line|
       key, _ = line.split('\t', 2)
@@ -30,7 +29,8 @@ class Counter
 
   private def map_count(count : Int32)
     case count
-    when .>(100) then 2
+    when .>(200) then 2
+    when .>(100) then 1.5
     when .>(50)  then 1
     else              0.5
     end
@@ -41,7 +41,7 @@ class Counter
     suggest = Set(String).new
 
     @data.each do |key, val|
-      (val >= 2.0 ? regular : suggest) << key
+      (val >= 2.5 ? regular : suggest) << key
     end
 
     {regular, suggest}
