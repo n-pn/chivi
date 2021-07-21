@@ -166,7 +166,7 @@ old_regular.each do |term|
 
   tag = Postag.get_tag(term.key)
 
-  val = term.vals.first(3)
+  val = term.vals.first(3).map(&.sub("", "").strip)
   rank = term.key.size.in?(2..3) ? term.prio + 2 : 3
   mtime, uname, privi = term.mtime, term.uname, term.power
 
@@ -189,7 +189,8 @@ suggest_inp.each do |key|
   tag = Postag.get_tag(key)
 
   if old_term = old_suggest.find(key)
-    val = old_term.vals.first(3)
+    val = old_term.vals.first(3).map(&.sub("", "").strip)
+
     rank = key.size.in?(2..3) ? old_term.prio + 2 : 3
     mtime, uname, privi = old_term.mtime, old_term.uname, old_term.power
 
@@ -232,7 +233,7 @@ def export_book(bhash, regular_set)
     checked << term.key
 
     tag = book_inp.get(term.key) || Postag.get_tag(term.key)
-    val = term.vals.first
+    val = term.vals.first.sub("", "").strip
     upcase = val.downcase != val
     if tag.empty? || upcase
       tag = "nr"
