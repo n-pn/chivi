@@ -79,8 +79,8 @@
 
     <div class="-explain">
       {#if $session.tlmode == 0}
-        Không áp dụng các luật ngữ pháp. Các từ "đích", "trứ", "liễu" sẽ lờ đi
-        trong câu văn.
+        Không áp dụng các luật ngữ pháp. Các từ "đích", "trứ", "liễu" trong câu
+        văn sẽ bị lược bỏ.
       {:else if $session.tlmode == 1}
         Áp dụng một số luật ngữ pháp cơ bản, phần lớn chính xác. <strong
           >(Khuyến khích dùng)</strong>
