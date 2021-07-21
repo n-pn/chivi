@@ -34,7 +34,7 @@
     class="btn -dn"
     data-kbd="↓"
     data-key="40"
-    disabled={term.privi < 2}
+    disabled={term.privi <= p_min}
     on:click={() => (term.privi -= 1)}><SIcon name="chevron-down" /></button>
 </div>
 
