@@ -60,6 +60,8 @@ class CV::FixCovers
         width = max_width > 360 ? 360 : max_width
         to_webp(out_cover, webp_path, width: width)
       end
+
+      File.delete(out_cover) unless File.exists?(webp_path)
     end
 
     @@widths.each_value { |map| map.save!(clean: false) }

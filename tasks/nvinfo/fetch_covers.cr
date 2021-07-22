@@ -7,14 +7,6 @@ require "../../src/tsvfs/value_map"
 require "../shared/seed_data"
 
 class CV::FetchCovers
-  SKIP_ZERO = ARGV.includes?("skip_zero")
-
-  def valid_file?(file : String)
-    return false unless File.exists?(file)
-    return true unless SKIP_ZERO
-    File.size(file) > 0
-  end
-
   def fetch_yousuu!
     dir = "_db/bcover/yousuu"
     ::FileUtils.mkdir_p(dir)
@@ -22,17 +14,29 @@ class CV::FetchCovers
     out_queue = {} of String => String
     cover_map = cover_map("yousuu")
 
-    Ysbook.query.order_by(voters: :desc).each_with_cursor do |book|
+    Ysbook.query.order_by(id: :asc).each_with_cursor(20) do |book|
       ynvid = book.id.to_s
 
-      out_file = "#{dir}/#{ynvid}.jpg"
-      next unless valid_file?(out_file)
-
       next unless image_url = cover_map.fval(ynvid)
+      next if image_url.starts_with?("/")
+
+      out_file = "#{dir}/#{ynvid}.jpg"
+      next if existed?(out_file)
+
       out_queue[image_url] = out_file unless image_url.empty?
     end
 
+    puts "missing: #{out_queue.size}/#{Ysbook.query.count}"
+    gets
+
     fetch!(out_queue, limit: 16)
+  end
+
+  REDO_ZERO = ARGV.includes?("redo_zero")
+
+  def existed?(file : String)
+    return false unless File.exists?(file)
+    REDO_ZERO ? File.size(file) > 0 : true
   end
 
   def fetch_remote!
@@ -47,7 +51,7 @@ class CV::FetchCovers
         next if seed.sname == "jx_la" || seed.sname == "zhwenpg"
 
         out_file = "_db/bcover/#{seed.sname}/#{seed.snvid}.jpg"
-        next unless valid_file?(out_file)
+        next if existed?(out_file)
 
         next unless image_url = cover_map(seed.sname).fval(seed.snvid)
         queues[seed.sname][image_url] = out_file unless image_url.empty?

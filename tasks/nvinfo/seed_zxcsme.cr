@@ -302,7 +302,7 @@ class CV::SeedZxcsme
     if zhbook.chap_count == 0
       vals = @seed.chsize.get(snvid) || ["0", "0"]
       zhbook.chap_count = vals[0].to_i
-      zhbook.last_zchid = vals[1]
+      zhbook.last_schid = vals[1]
     end
 
     zhbook.save!
