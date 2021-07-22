@@ -22,8 +22,15 @@ module CV::PadSpaces
          .smcln?, .exmark?, .qsmark?, .ellip?
       return left.tag.colon?
       # when .pdash?  then return !left.tag.puncts?
+    when .quoteop?, .brackop?, .titleop?
+      true
     when .puncts?
-      return left.tag.colon? || !left.tag.puncts?
+      case left.tag
+      when .colon?, .comma?, .pstop?
+        return true
+      else
+        return !left.tag.puncts?
+      end
     end
 
     case left.tag
