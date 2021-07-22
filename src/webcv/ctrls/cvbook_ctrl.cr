@@ -26,8 +26,8 @@ class CV::CvbookCtrl < CV::BaseCtrl
     end
 
     query.sort_by(params.fetch_str("order", "bumped"))
-
     response.headers.add("Cache-Control", "public, min-fresh=180")
+
     render_json do |res|
       JSON.build(res) do |jb|
         jb.object do
@@ -38,54 +38,26 @@ class CV::CvbookCtrl < CV::BaseCtrl
           jb.field "books" do
             jb.array do
               query.limit(limit).offset(offset).with_author.each do |book|
-                jb.object do
-                  jb.field "bhash", book.bhash
-                  jb.field "bslug", book.bslug
-
-                  jb.field "btitle_zh", book.ztitle
-                  jb.field "btitle_hv", book.htitle
-                  jb.field "btitle_vi", book.vi_title
-
-                  jb.field "author_zh", book.author.zname
-                  jb.field "author_vi", book.author.vname
-
-                  jb.field "genres", book.bgenres
-                  jb.field "bcover", book.bcover
-
-                  jb.field "voters", book.voters
-                  jb.field "rating", book.rating / 10.0
-                end
+                Views::CvbookView.render(jb, book, full: false)
               end
             end
           end
         end
       end
     end
-  rescue err
-    pp err
-
-    halt! 500, err.message
   end
 
   def show : Nil
-    bslug = params["bslug"]
-
-    unless bhash = NvInfo.find_by_slug(bslug)
+    unless cvbook = Cvbook.find({bslug: params["bslug"]})
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
-    if cu_privi > 0
-      access = Time.utc.to_unix // 60
-      NvOrders.set_access!(bhash, access, force: true)
-      spawn { NvOrders.access.save!(clean: false) }
-    end
+    cvbook.bump! if cu_privi > 0
 
-    response.headers.add("Cache-Control", "min-fresh=60")
-    nvinfo = NvInfo.load(bhash)
-
+    response.headers.add("Cache-Control", "public, min-fresh=60")
     render_json do |res|
       JSON.build(res) do |jb|
-        Views::CvbookView.render(jb, nvinfo, full: true)
+        Views::CvbookView.render(jb, cvbook, full: true)
       end
     end
   end

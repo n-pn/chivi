@@ -63,22 +63,25 @@ class CV::Cvbook
     # where("vtitle LIKE %$% OR htitle LIKE %$%", frag, frag) if accent
   end
 
-  scope :filter_btitle do |input|
-    return self unless input
-
-    if input =~ /\p{Han}/
-      scrub = BookUtils.scrub_zname(input)
+  scope :filter_btitle do |query|
+    if query.nil?
+      self
+    elsif query =~ /\p{Han}/
+      scrub = BookUtils.scrub_zname(query)
       where("ztitle LIKE '%#{scrub}%'")
     else
-      scrub = BookUtils.scrub_vname(input, "-")
+      scrub = BookUtils.scrub_vname(query, "-")
       where("vtslug LIKE '%#{scrub}%' OR htslug LIKE '%#{scrub}%'")
     end
   end
 
   scope :filter_author do |query|
-    return self unless query
-    author_ids = Author.glob(query).map(&.id.not_nil!)
-    where { cvbooks.author_id.in?(author_ids) }
+    if query.nil?
+      self
+    else
+      author_ids = Author.glob(query).map(&.id.not_nil!)
+      where { cvbooks.author_id.in?(author_ids) }
+    end
   end
 
   scope :filter_zseed do |query|

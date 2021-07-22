@@ -3,14 +3,11 @@
 </script>
 
 <div>
-  <picture>
-    {#if bcover}
-      <source srcset="/covers/{bcover}.webp" type="image/webp" />
-      <img alt="" src="/covers/{bcover}" loading="lazy" />
-    {:else}
-      <img alt="" src="/covers/_blank.png" />
-    {/if}
-  </picture>
+  {#if bcover}
+    <img alt="" src="/covers/{bcover}" loading="lazy" />
+  {:else}
+    <img alt="" src="/covers/_blank.png" />
+  {/if}
 </div>
 
 <style lang="scss">
@@ -23,16 +20,11 @@
     @include bdradi();
     @include bgcolor(primary, 8);
 
-    > :global(picture) {
+    > :global(img) {
       position: absolute;
       top: 0;
       left: 0;
     }
-  }
-
-  picture {
-    width: 100%;
-    height: 100%;
   }
 
   img {
