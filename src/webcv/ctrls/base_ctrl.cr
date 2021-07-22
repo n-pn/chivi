@@ -56,6 +56,10 @@ class Amber::Validators::Params
     self[name]? || df
   end
 
+  def fetch_str(name : String, &block : -> String) : String
+    self[name]? || yield
+  end
+
   def fetch_int(name : String | Symbol, min = 0, max = Int32::MAX) : Int32
     val = self[name]?.try(&.to_i?) || 0
     val < min ? min : (val > max ? max : val)

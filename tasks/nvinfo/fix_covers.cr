@@ -8,7 +8,7 @@ class CV::FixCovers
 
   def fix!(redo : Bool = false)
     total, index = Cvbook.query.count, 0
-    query = Cvbook.query.with_ysbooks.order_by(weight: :desc)
+    query = Cvbook.query.order_by(weight: :desc)
     query.each_with_cursor(20) do |cvbook|
       index += 1
 
@@ -29,7 +29,7 @@ class CV::FixCovers
       covers.each do |sname, snvid|
         next unless cover_file = cover_path(sname, snvid)
 
-        unless cover_width = width_map(sname).ival(cover_file)
+        unless cover_width = width_map(sname).get(cover_file).try(&.first.to_i)
           cover_width = image_width(cover_file)
 
           if mtime = File.info?(cover_file).try(&.modification_time)
@@ -46,8 +46,6 @@ class CV::FixCovers
       end
 
       next unless out_cover && out_sname && out_snvid
-      next if max_width == 0
-      # puts "  cover chosen: #{out_cover}"
 
       out_webp = "#{out_sname}-#{out_snvid}.webp"
       cvbook.tap(&.bcover = out_webp).save! unless cvbook.bcover == out_webp
@@ -72,6 +70,7 @@ class CV::FixCovers
   end
 
   private def to_webp(inp_file, out_file, width = 360)
+    puts [inp_file, out_file]
     `cwebp -q 100 -resize #{width} 0 -mt "#{inp_file}" -o "#{out_file}"`
   end
 

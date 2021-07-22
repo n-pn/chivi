@@ -101,6 +101,14 @@ class CV::Zhbook
 
   CACHE = {} of Int64 => self
 
+  def self.load!(cvbook_id : Int64, zseed : Int32)
+    CACHE[cvbook_id << 6 | zseed] ||=
+      case zseed
+      when 0 then dummy(Cvbook.load!(cvbook_id))
+      else        find!({cvbook_id: cvbook_id, zseed: zseed})
+      end
+  end
+
   def self.load!(cvbook : Cvbook, zseed : Int32)
     CACHE[cvbook.id << 6 | zseed] ||=
       case zseed

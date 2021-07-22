@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::VpToolCtrl < CV::BaseCtrl
+class CV::ToolCtrl < CV::BaseCtrl
   def convert
     dname = params["dname"]
     cvter = MtCore.generic_mtl(dname)

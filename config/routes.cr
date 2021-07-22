@@ -22,36 +22,27 @@ Amber::Server.configure do
     post "/user/signup", CV::FsUserCtrl, :signup
     post "/user/setting", CV::FsUserCtrl, :update
 
-    get "/books", CV::FsBookCtrl, :index
-    get "/books/:bslug", CV::FsBookCtrl, :show
-    get "/users/:uname/books", CV::FsBookCtrl, :user_books
+    get "/books", CV::BookCtrl, :index
+    get "/books/:bslug", CV::BookCtrl, :show
 
-    get "/cvbooks", CV::CvbookCtrl, :index
-    get "/cvbooks/:bslug", CV::CvbookCtrl, :show
-
-    get "/chaps/:bhash/:sname/:snvid", CV::FsChapCtrl, :index
-    get "/chaps/:bhash/:sname/:snvid/:page", CV::FsChapCtrl, :paged
-
-    get "/cvchaps/:bhash/:sname", CV::CvchapCtrl, :index
-
-    get "/texts/:bname/:sname/:snvid/:chidx", CV::FsTextCtrl, :show
-    get "/texts/:bname/:sname/:snvid/:chidx/:schid", CV::FsTextCtrl, :convert
-    put "/texts/:bname/:sname/:snvid", CV::FsTextCtrl, :upsert
+    get "/chaps/:book/:sname", CV::ChapCtrl, :index
+    get "/chaps/:book/:sname/:chidx", CV::ChapCtrl, :show
+    get "/chaps/:book/:sname/:chidx/:schid", CV::ChapCtrl, :text
 
     get "/mark-books/:bname", CV::FsMarkCtrl, :show
     put "/mark-books/:bname", CV::FsMarkCtrl, :update
     get "/mark-chaps", CV::FsMarkCtrl, :history
 
-    get "/dicts", CV::VpDictCtrl, :index
-    get "/dicts/:dname", CV::VpDictCtrl, :show
-    get "/dicts/:dname/lookup", CV::VpDictCtrl, :lookup
-    put "/dicts/:dname/lookup", CV::VpDictCtrl, :lookup
-    get "/dicts/:dname/search", CV::VpDictCtrl, :search
-    put "/dicts/:dname/search", CV::VpDictCtrl, :search
-    put "/dicts/:dname/upsert", CV::VpDictCtrl, :upsert
+    get "/dicts", CV::DictCtrl, :index
+    get "/dicts/:dname", CV::DictCtrl, :show
+    get "/dicts/:dname/lookup", CV::DictCtrl, :lookup
+    put "/dicts/:dname/lookup", CV::DictCtrl, :lookup
+    get "/dicts/:dname/search", CV::DictCtrl, :search
+    put "/dicts/:dname/search", CV::DictCtrl, :search
+    put "/dicts/:dname/upsert", CV::DictCtrl, :upsert
 
-    post "/tools/convert/:dname", CV::VpToolCtrl, :convert
-    get "/qtran/:name", CV::VpToolCtrl, :show
+    post "/tools/convert/:dname", CV::ToolCtrl, :convert
+    get "/qtran/:name", CV::ToolCtrl, :show
   end
 
   routes :static do

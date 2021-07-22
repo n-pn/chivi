@@ -20,6 +20,9 @@ class CV::Cvbook
   column ztitle : String # chinese title
   column htitle : String # hanviet title
   column vtitle : String # localization
+
+  getter bname : String { vtitle.empty? ? htitle : vtitle }
+
   column htslug : String # for text searching, auto generated from hname
   column vtslug : String # for text searching, auto generated from vname
 
@@ -156,6 +159,24 @@ class CV::Cvbook
 
   def self.get(author : Author, ztitle : String)
     find({author_id: author.id, ztitle: ztitle})
+  end
+
+  CACHE_INT = {} of Int64 => self
+  CACHE_STR = {} of String => self
+
+  def self.load!(id : Int64)
+    CACHE_INT[id] ||= yield
+  end
+
+  def self.load!(id : Int64)
+    load!(id) { find!({id: id}) }
+  end
+
+  def self.load!(bhash : String)
+    CACHE_STR[bhash] ||= begin
+      data = find!({bhash: bhash})
+      load!(data.id) { data }
+    end
   end
 
   def self.upsert!(author : Author, ztitle : String,

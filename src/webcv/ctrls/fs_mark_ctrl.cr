@@ -32,15 +32,17 @@ class CV::FsMarkCtrl < CV::BaseCtrl
           take.times do
             break unless node = iter.next
 
-            nvinfo = NvInfo.load(node.key)
+            nvinfo = Cvbook.load!(node.key)
             next unless vals = chap_mark.get(nvinfo.bhash)
             atime, sname, chidx, title, uslug = vals
 
             json.object {
-              json.field "bname", nvinfo.btitle[2]
+              json.field "bname", nvinfo.bname
               json.field "bslug", nvinfo.bslug
+
               json.field "atime", atime
               json.field "sname", sname
+
               json.field "chidx", chidx
               json.field "title", title
               json.field "uslug", uslug

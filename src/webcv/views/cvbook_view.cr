@@ -44,6 +44,7 @@ module CV::Views::CvbookView
 
   def render(jb : JSON::Builder, obj : Cvbook, full = true)
     jb.object do
+      jb.field "id", obj.id
       jb.field "bhash", obj.bhash
       jb.field "bslug", obj.bslug
 

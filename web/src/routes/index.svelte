@@ -2,9 +2,7 @@
   export async function load({ page: { query }, fetch }) {
     const page = +query.get('page') || 1
 
-    let url = `/api/cvbooks`
-    url += `?${query.toString()}&take=24&page=${page}`
-
+    const url = `/api/books?${query.toString()}&take=24&page=${page}`
     const res = await fetch(url)
 
     if (res.ok) {

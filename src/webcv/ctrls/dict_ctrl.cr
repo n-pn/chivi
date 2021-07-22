@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::VpDictCtrl < CV::BaseCtrl
+class CV::DictCtrl < CV::BaseCtrl
   alias Dinfo = Tuple(String, String, Int32) # dict name, dict slug, entries count
 
   getter core_dicts : Array(Dinfo) do

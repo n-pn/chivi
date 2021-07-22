@@ -1,25 +1,25 @@
 <script context="module">
-  import { get_chinfo, get_chtext } from '$api/chtext_api'
+  import { api_call } from '$api/_api_call'
   import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
   export async function load({ fetch, page, context }) {
     const { nvinfo } = context
 
     const [chidx, sname] = page.params.chap.split('-').reverse()
-    const snvid = nvinfo.chseed[sname]
-    if (!snvid) {
-      return { status: 404, error: new Error('Nguồn truyện không tồn tại!') }
-    }
 
-    const chinfo = { sname, snvid, chidx }
+    const url = `chaps/${nvinfo.id}/${sname}/${chidx}`
+    const [err, chinfo] = await api_call(fetch, url)
+
+    if (err) return { status: 404, error: new Error(chinfo) }
 
     const mode = +page.query.get('mode') || 0
-    const [err, data] = await get_chinfo(fetch, nvinfo.bhash, chinfo, mode)
+    const txturl = `/api/${url}/${chinfo.schid}`
 
-    if (err) return { status: 404, error: new Error(data) }
+    const res = await fetch(`${txturl}?mode=${mode}`)
+    const cvdata = await res.text()
 
     return {
-      props: { ...data, nvinfo, _dirty: mode < 0 },
+      props: { nvinfo, chinfo, txturl, cvdata, _dirty: mode < 0 },
     }
   }
 </script>
@@ -35,6 +35,7 @@
   export let nvinfo = {}
   export let chinfo = {}
 
+  export let txturl = ''
   export let cvdata = ''
 
   export let _dirty = false
@@ -49,8 +50,8 @@
     if ($session.privi < 1) return
 
     _reload = true
-    const [err, data] = await get_chtext(window.fetch, nvinfo.bhash, chinfo, 1)
-    if (!err) cvdata = data
+    const res = await fetch(txturl + '?mode=1')
+    if (res.ok) cvdata = await res.text()
     _reload = false
   }
 

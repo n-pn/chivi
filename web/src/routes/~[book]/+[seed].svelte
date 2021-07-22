@@ -1,14 +1,9 @@
 <script context="module">
   export async function load({ page, context }) {
     const { nvinfo } = context
-
     const sname = page.params.seed
-    const snvid = nvinfo.chseed[sname]
-    const chidx = page.params.chidx || 1
-
-    return {
-      props: { nvinfo, sname, snvid, chidx: +chidx },
-    }
+    const chidx = +page.params.chidx || 1
+    return { props: { nvinfo, sname, chidx: chidx } }
   }
 </script>
 
@@ -21,14 +16,13 @@
   export let nvinfo
 
   export let sname
-  export let snvid
   export let chidx = 1
 
   let label = '正文'
   let input = ''
 
   async function submit_text() {
-    const url = `/api/texts/${nvinfo.bhash}/${sname}/${snvid}`
+    const url = `/api/texts/${nvinfo.id}/${sname}`
     const res = await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

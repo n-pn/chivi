@@ -6,7 +6,7 @@
     const bmark = query.get('bmark') || 'reading'
     const page = +query.get('page') || 1
 
-    let url = `/api/cvbooks?page=${page}&take=24&order=update&uname=${uname}`
+    let url = `/api/books?page=${page}&take=24&order=update&uname=${uname}`
     if (bmark != 'reading') url += `&bmark=${bmark}`
 
     const res = await fetch(url)

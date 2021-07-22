@@ -6,20 +6,18 @@
   export async function load({ page: { params, query }, fetch, context }) {
     const { nvinfo } = context
 
-    const { bhash, snames } = nvinfo
+    const { snames } = nvinfo
     const sname = extract_sname(snames, params.seed)
 
     const page = +query.get('page') || 1
     const mode = +query.get('mode') || 0
 
-    const url = `cvchaps/${bhash}/${sname}?page=${page}&mode=${mode}`
+    const url = `chaps/${nvinfo.id}/${sname}?page=${page}&mode=${mode}`
 
-    const [err2, chinfo] = await api_call(fetch, url)
-    if (err2) return { status: err2, error: new Error(chinfo) }
+    const [status, chinfo] = await api_call(fetch, url)
+    if (status) return { status, error: new Error(chinfo) }
 
-    return {
-      props: { nvinfo, chinfo },
-    }
+    return { props: { nvinfo, chinfo } }
   }
 
   function extract_sname(snames, param) {
