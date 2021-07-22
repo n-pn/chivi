@@ -53,6 +53,52 @@ class CV::Cvbook
 
   getter vi_title : String { vtitle.empty? ? htitle : vtitle }
 
+  scope :filter_ztitle do |query|
+    where("ztitle LIKE %?%", BookUtils.scrub_zname(query))
+  end
+
+  scope :filter_vtitle do |query|
+    scrub = BookUtils.scrub_vname(query)
+    where("vtslug LIKE %?% OR htslug LIKE %?%", scrub, scrub)
+    # where("vtitle LIKE %$% OR htitle LIKE %$%", frag, frag) if accent
+  end
+
+  scope :filter_btitle do |input|
+    return self unless input
+
+    if input =~ /\p{Han}/
+      scrub = BookUtils.scrub_zname(input)
+      where("ztitle LIKE '%#{scrub}%'")
+    else
+      scrub = BookUtils.scrub_vname(input, "-")
+      where("vtslug LIKE '%#{scrub}%' OR htslug LIKE '%#{scrub}%'")
+    end
+  end
+
+  scope :filter_author do |query|
+    return self unless query
+    author_ids = Author.glob(query).map(&.id.not_nil!)
+    where { cvbooks.author_id.in?(author_ids) }
+  end
+
+  scope :filter_zseed do |query|
+    query ? where("zhseed_ids @> ?", [Zhseed.index(query)]) : self
+  end
+
+  scope :filter_genre do |query|
+    query ? where("bgenre_ids @> ?", [Bgenre.map_id(query)]) : self
+  end
+
+  scope :sort_by do |order|
+    case order
+    when "weight" then order_by(weight: :desc)
+    when "rating" then order_by(rating: :desc)
+    when "voters" then order_by(voters: :desc)
+    when "update" then order_by(mftime: :desc)
+    else               order_by(bumped: :desc)
+    end
+  end
+
   def set_genres(genres : Array(String), force = false)
     return unless force || self.bgenre_ids == [0]
     genres_ids = Bgenre.zh_map_ids(genres)
@@ -127,51 +173,6 @@ class CV::Cvbook
       })
 
       cvbook.tap(&.save!)
-    end
-  end
-
-  def self.filter_btitle(query, frag : String?)
-    return query unless frag
-    frag =~ /\p{Han}/ ? filter_ztitle(query, frag) : filter_vtitle(query, frag)
-  end
-
-  def self.filter_ztitle(query, frag : String)
-    query.where("ztitle LIKE %$%", BookUtils.scrub_zname(frag))
-  end
-
-  def self.filter_vtitle(query, frag : String, accent = false)
-    scrub = BookUtils.scrub_vname(frag)
-    query = query.where("vtslug LIKE %$% OR htslug LIKE %$%", scrub, scrub)
-    accent ? query.where("vtitle LIKE %$% OR htitle LIKE %$%", frag, frag) : query
-  end
-
-  def self.filter_author(query, author : String?, accent = false)
-    return query unless author
-    # author_query = author =~ /\p{Han}/ ? Author.glob_zh(author) : Author.glob_vi(author, accent: accent)
-
-    author_ids = Author.glob(author).map(&.id.not_nil!)
-    query.where { cvbooks.author_id.in?(author_ids) }
-  end
-
-  def self.filter_genre(query, genre : String?)
-    return query unless genre
-    genre_id = Bgenre.map_id(genre)
-    query.where("bgenre_ids @> ?", [genre_id])
-  end
-
-  def self.filter_zseed(query, sname : String?)
-    return query unless sname
-    zseed = Zhseed.index(sname)
-    query.where("chseed_ids @> ?", [zseed])
-  end
-
-  def self.order_by(query, order : String? = "access")
-    case order
-    when "weight" then query.order_by(weight: :desc)
-    when "rating" then query.order_by(rating: :desc)
-    when "voters" then query.order_by(voters: :desc)
-    when "update" then query.order_by(mftime: :desc)
-    else               query.order_by(bumped: :desc)
     end
   end
 end

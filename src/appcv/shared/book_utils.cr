@@ -80,7 +80,11 @@ module CV::BookUtils
       end
     end
 
-    res << delimit << acc.to_s unless acc.empty?
+    unless acc.empty?
+      res << delimit unless res.empty?
+      res << acc.to_s
+    end
+
     res.to_s
   end
 

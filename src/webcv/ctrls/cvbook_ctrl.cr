@@ -1,28 +1,43 @@
 require "./base_ctrl"
 
 class CV::CvbookCtrl < CV::BaseCtrl
+  private def extract_params
+    page = params.fetch_int("page", min: 1)
+    take = params.fetch_int("take", min: 1, max: 24)
+    {page, take, (page - 1) * take}
+  end
+
   def index
-    take = params.fetch_int("take", min: 8, max: 25)
-    skip = params.fetch_int("skip", min: 0)
-    query = Cvbook.query.limit(take).offset(skip)
+    pgidx, limit, offset = extract_params
 
-    Cvbook.filter_btitle(query, params["btitle"]?)
-    Cvbook.filter_author(query, params["author"]?)
-    Cvbook.filter_genre(query, params["genre"]?)
-    Cvbook.filter_zseed(query, params["sname"]?)
+    query =
+      Cvbook.query
+        .filter_btitle(params["btitle"]?)
+        .filter_author(params["author"]?)
+        .filter_zseed(params["sname"]?)
+        .filter_genre(params["genre"]?)
 
-    Cvbook.order_by(query, params["order"]?)
+    if uname = params["uname"]?
+      blist = ViMark.all_books(uname, params.fetch_str("bmark", "reading"))
+      total = blist.size
+      query = query.where("bhash = ANY(?)", blist)
+    else
+      total = query.dup.limit(offset + limit * 3).offset(0).count
+    end
 
-    puts "Total books: #{Cvbook.total}"
+    query.sort_by(params.fetch_str("order", "bumped"))
 
     response.headers.add("Cache-Control", "public, min-fresh=180")
-
     render_json do |res|
       JSON.build(res) do |jb|
         jb.object do
+          jb.field "total", total
+          jb.field "pgidx", pgidx
+          jb.field "pgmax", (total - 1) // limit + 1
+
           jb.field "books" do
             jb.array do
-              query.with_author.each do |book|
+              query.limit(limit).offset(offset).with_author.each do |book|
                 jb.object do
                   jb.field "bhash", book.bhash
                   jb.field "bslug", book.bslug
@@ -38,23 +53,18 @@ class CV::CvbookCtrl < CV::BaseCtrl
                   jb.field "bcover", book.bcover
 
                   jb.field "voters", book.voters
-                  jb.field "rating", book.rating
+                  jb.field "rating", book.rating / 10.0
                 end
               end
             end
           end
-
-          jb.field "total", Cvbook.total
         end
       end
     end
-  end
+  rescue err
+    pp err
 
-  def user_books
-    uname = params["uname"].downcase
-    blist = params.fetch_str("bmark", "reading")
-    matched = ViMark.all_books(uname, blist)
-    list_books(matched)
+    halt! 500, err.message
   end
 
   def show : Nil
@@ -76,30 +86,6 @@ class CV::CvbookCtrl < CV::BaseCtrl
     render_json do |res|
       JSON.build(res) do |jb|
         Views::CvbookView.render(jb, nvinfo, full: true)
-      end
-    end
-  end
-
-  private def list_books(matched : Set(String)?)
-    skip = params.fetch_int("skip", min: 0)
-    take = params.fetch_int("take", min: 1, max: 24)
-
-    order = params.fetch_str("order", "access")
-    total = matched ? matched.size : NvOrders.get(order).size
-
-    render_json do |res|
-      JSON.build(res) do |jb|
-        jb.object do
-          jb.field "total", total
-
-          jb.field "books" do
-            jb.array do
-              NvInfo.each(order, skip: skip, take: take + 1, matched: matched) do |bhash|
-                Views::CvbookView.render(jb, NvInfo.load(bhash), full: false)
-              end
-            end
-          end
-        end
       end
     end
   end

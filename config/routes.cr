@@ -26,6 +26,9 @@ Amber::Server.configure do
     get "/books/:bslug", CV::FsBookCtrl, :show
     get "/users/:uname/books", CV::FsBookCtrl, :user_books
 
+    get "/cvbooks", CV::CvbookCtrl, :index
+    get "/cvbooks/:bslug", CV::CvbookCtrl, :show
+
     get "/chaps/:bhash/:sname/:snvid", CV::FsChapCtrl, :index
     get "/chaps/:bhash/:sname/:snvid/:page", CV::FsChapCtrl, :paged
 
