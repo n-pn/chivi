@@ -78,6 +78,8 @@ module CV::Views::CvbookView
               jb.field zhbook.sname, zhbook.snvid
             end
           end
+
+          jb.field "chivi", obj.bhash
         end
       end
     end

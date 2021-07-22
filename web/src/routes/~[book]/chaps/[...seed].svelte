@@ -9,7 +9,7 @@
     const sname = extract_sname(snames, params.seed)
     const page = +query.get('page') || 1
 
-    const [snvid] = nvinfo.chseed[sname] || [bhash]
+    const snvid = nvinfo.chseed[sname] || bhash
 
     const opts = { sname, snvid, page }
     const mode = +query.get('mode')
@@ -40,7 +40,7 @@
 </script>
 
 <script>
-  import { session, navigating, page } from '$app/stores'
+  import { session, navigating } from '$app/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
@@ -74,7 +74,7 @@
   async function load_chseed(evt, sname, mode = 0) {
     evt.preventDefault()
 
-    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
+    const snvid = nvinfo.chseed[sname] || nvinfo.bhash
 
     if (opts.sname != sname) {
       opts = { ...opts, sname, snvid }
@@ -114,7 +114,7 @@
 
   async function add_new_seed(evt) {
     nvinfo.snames.push(new_sname)
-    nvinfo.chseed[new_sname] = [new_snvid, 0, 0]
+    nvinfo.chseed[new_sname] = new_snvid
     add_seed = false
 
     await load_chseed(evt, new_sname, 1)

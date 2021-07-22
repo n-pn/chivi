@@ -176,7 +176,7 @@ class CV::SeedZhbook
     end
   end
 
-  def seed!
+  def seed!(redo = false)
     input = @seed._index.data.to_a
 
     puts "- Input: #{input.size.colorize.cyan} entries, \
@@ -184,7 +184,7 @@ class CV::SeedZhbook
             cvbooks: #{Cvbook.query.count.colorize.cyan}"
 
     input.sort_by(&.[0].to_i).each_with_index(1) do |(snvid, values), idx|
-      save_book(snvid, values)
+      save_book(snvid, values, redo: redo)
 
       if idx % 100 == 0
         puts "- [#{@sname}] <#{idx.colorize.cyan}/#{input.size}>, \
@@ -288,6 +288,7 @@ class CV::SeedZhbook
     sname, upper = "hetushu", 0
     cr_mode, threads = 0, 0
     no_seed = false
+    redo = false
 
     OptionParser.parse(argv) do |parser|
       parser.banner = "Usage: map_remote [arguments]"
@@ -296,6 +297,7 @@ class CV::SeedZhbook
       parser.on("-m CR_MODE", "Crawling mode") { |x| cr_mode = x.to_i }
       parser.on("-t THREADS", "Concurrent threads") { |x| threads = x.to_i }
       parser.on("-n", "--noseed", "Init only") { no_seed = true }
+      parser.on("-r", "--redo", "Reseed") { redo = true }
 
       parser.invalid_option do |flag|
         STDERR.puts "ERROR: `#{flag}` is not a valid option."
@@ -314,7 +316,7 @@ class CV::SeedZhbook
 
     updates -= missing if sname == "jx_la"
     seeder.init!(updates) if cr_mode != 1
-    seeder.seed! unless no_seed
+    seeder.seed!(redo: redo) unless no_seed
   end
 end
 

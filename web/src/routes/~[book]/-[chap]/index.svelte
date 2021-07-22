@@ -6,9 +6,10 @@
     const { nvinfo } = context
 
     const [chidx, sname] = page.params.chap.split('-').reverse()
-    const [snvid] = nvinfo.chseed[sname] || [nvinfo.bhash]
-    if (!snvid)
+    const snvid = nvinfo.chseed[sname]
+    if (!snvid) {
       return { status: 404, error: new Error('Nguồn truyện không tồn tại!') }
+    }
 
     const chinfo = { sname, snvid, chidx }
 

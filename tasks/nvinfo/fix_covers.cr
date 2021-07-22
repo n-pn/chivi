@@ -46,6 +46,7 @@ class CV::FixCovers
       end
 
       next unless out_cover && out_sname && out_snvid
+      next if max_width == 0
       # puts "  cover chosen: #{out_cover}"
 
       out_webp = "#{out_sname}-#{out_snvid}.webp"
@@ -77,7 +78,7 @@ class CV::FixCovers
   @@widths = {} of String => ValueMap
 
   private def width_map(sname : String)
-    @@widths[sname] ||= ValueMap.new("#{INP_DIR}/_index/#{sname}.tsv")
+    @@widths[sname] ||= ValueMap.new("_db/zhbook/#{sname}/_cover.tsv")
   end
 
   # next unless cover_file = cover_path(snam

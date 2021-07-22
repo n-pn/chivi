@@ -51,8 +51,6 @@ class CV::Cvbook
   column list_count : Int32 = 0
   column crit_count : Int32 = 0
 
-  getter vi_title : String { vtitle.empty? ? htitle : vtitle }
-
   scope :filter_ztitle do |query|
     where("ztitle LIKE %?%", BookUtils.scrub_zname(query))
   end
@@ -102,11 +100,13 @@ class CV::Cvbook
     end
   end
 
-  def set_genres(genres : Array(String), force = false)
+  def set_genres(genres : Array(String), force = false) : Nil
     return unless force || self.bgenre_ids == [0]
-    genres_ids = Bgenre.zh_map_ids(genres)
 
+    genres_ids = Bgenre.zh_map_ids(genres)
     self.bgenre_ids = genres_ids.empty? ? [0] : genres_ids
+
+    self.bgenre_ids_column.dirty!
   end
 
   def set_mftime(mftime : Int64, force = false) : Nil
@@ -134,7 +134,8 @@ class CV::Cvbook
 
   def add_zhseed(zseed : Int32) : Nil
     return if self.zhseed_ids.includes?(zseed)
-    self.zhseed_ids.push(zseed)
+    self.zhseed_ids.push(zseed).sort!
+    self.zhseed_ids_column.dirty!
   end
 
   def set_scores(voters : Int32, rating : Int32) : Nil
