@@ -1,27 +1,24 @@
 <script context="module">
   import { remote_snames } from '$lib/constants.js'
-  import { get_chseed, get_chlist } from '$api/chinfo_api.js'
+
+  import { api_call } from '$api/_api_call'
 
   export async function load({ page: { params, query }, fetch, context }) {
     const { nvinfo } = context
 
     const { bhash, snames } = nvinfo
     const sname = extract_sname(snames, params.seed)
+
     const page = +query.get('page') || 1
+    const mode = +query.get('mode') || 0
 
-    const snvid = nvinfo.chseed[sname] || bhash
+    const url = `cvchaps/${bhash}/${sname}?page=${page}&mode=${mode}`
 
-    const opts = { sname, snvid, page }
-    const mode = +query.get('mode')
-
-    const [err2, chseed] = await get_chseed(fetch, bhash, opts, mode)
-    if (err2) return { status: err2, error: new Error(chseed) }
-
-    const [err3, chlist] = await get_chlist(fetch, bhash, opts)
-    if (err3) return { status: err3, error: new Error(chlist) }
+    const [err2, chinfo] = await api_call(fetch, url)
+    if (err2) return { status: err2, error: new Error(chinfo) }
 
     return {
-      props: { nvinfo, chseed, chlist, opts },
+      props: { nvinfo, chinfo },
     }
   }
 
@@ -29,13 +26,8 @@
     return snames.includes(param) ? param : snames[1] || 'chivi'
   }
 
-  function update_utime(nvinfo, utime) {
-    if (nvinfo.update < utime) nvinfo.update = utime
-    return nvinfo
-  }
-
-  function seed_choices(chseed = {}) {
-    return remote_snames.filter((sname) => !chseed[sname])
+  function seed_choices(chinfo = {}) {
+    return remote_snames.filter((sname) => !chinfo[sname])
   }
 </script>
 
@@ -48,81 +40,40 @@
   import Book from '../_book.svelte'
 
   import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
-  import { writable } from 'svelte/store'
 
   let pagers = {}
-  $: pager = get_pager(opts.sname)
-
-  let scroll_into = writable(null)
+  $: pager = get_pager(chinfo.sname)
 
   function get_pager(sname) {
     return (pagers[sname] ||= new Pager(`/~${nvinfo.bslug}/chaps/${sname}`, {
-      page: opts.page,
+      page: chinfo.pgidx,
     }))
   }
 
   export let nvinfo
-  export let chseed = { chaps: [], total: 0, mtime: 0 }
-  export let chlist = []
-  export let opts = { page: 1 }
+  export let chinfo = {}
 
-  $: pmax = get_pmax(chseed, opts)
-
-  $: [main_seeds, hide_seeds] = split_chseed(nvinfo, opts.sname)
+  $: [main_seeds, hide_seeds] = split_chinfo(nvinfo, chinfo.sname)
   let show_more = false
-
-  async function load_chseed(evt, sname, mode = 0) {
-    evt.preventDefault()
-
-    const snvid = nvinfo.chseed[sname] || nvinfo.bhash
-
-    if (opts.sname != sname) {
-      opts = { ...opts, sname, snvid }
-      const url = get_pager(sname).url({ page: opts.page })
-      window.history.replaceState({}, '', url)
-    }
-
-    const [err, data] = await get_chseed(fetch, nvinfo.bhash, opts, mode)
-    if (err) return console.log({ err })
-
-    chseed = data
-    nvinfo = update_utime(nvinfo, chseed.utime)
-
-    await load_chlist(opts.page, false)
-  }
-
-  async function load_chlist(page = 1, scroll = true) {
-    if (page < 1) page = 1
-    if (page > pmax) page = pmax
-    opts = { ...opts, page }
-
-    const [_err, data] = await get_chlist(fetch, nvinfo.bhash, opts)
-    chlist = data
-
-    const url = pager.url({ page: opts.page })
-    window.history.replaceState({}, '', url)
-    if (scroll) $scroll_into?.scrollIntoView({ block: 'start' })
-  }
 
   const _navi = { replace: true, scrollto: '#chlist' }
 
-  let add_seed = false
+  let add_zhbook = false
 
   let new_seeds = seed_choices(nvinfo.snames)
   let new_sname = new_seeds[0]
   let new_snvid = ''
 
-  async function add_new_seed(evt) {
+  async function make_zhbook() {
     nvinfo.snames.push(new_sname)
-    nvinfo.chseed[new_sname] = new_snvid
-    add_seed = false
+    nvinfo.chinfo[new_sname] = new_snvid
+    add_zhbook = false
 
-    await load_chseed(evt, new_sname, 1)
+    // TODO: create new zhbook on server
   }
 
-  function split_chseed(nvinfo, sname) {
+  function split_chinfo(nvinfo, sname) {
     const input = nvinfo.snames.filter((x) => x != 'chivi')
-    console.log({ input })
     const bound = 3
 
     let main_seeds = input.slice(0, bound)
@@ -140,25 +91,6 @@
     if (sname != 'chivi') main_seeds.push('chivi')
     return [main_seeds, hide_seeds]
   }
-
-  function get_pmax({ total }, { page }) {
-    const p_max = Math.floor((total - 1) / 32) + 1
-    return p_max > page ? p_max : page
-  }
-
-  function is_remote_seed(sname) {
-    switch (sname) {
-      case 'jx_la':
-      case 'shubaow':
-      case 'zxcs_me':
-      case 'hotupub':
-      case 'thuyvicu':
-        return false
-
-      default:
-        return true
-    }
-  }
 </script>
 
 <Book {nvinfo} nvtab="chaps">
@@ -166,8 +98,8 @@
     {#each main_seeds as mname}
       <a
         class="-name"
-        class:_active={opts.sname === mname}
-        href={get_pager(mname).url({ page: opts.page })}
+        class:_active={chinfo.sname === mname}
+        href={get_pager(mname).url({ page: chinfo.pgidx })}
         use:navigate={_navi}
         >{mname}
       </a>
@@ -178,7 +110,7 @@
         {#each hide_seeds as hname}
           <a
             class="-name"
-            href={get_pager(hname).url({ page: opts.page })}
+            href={get_pager(hname).url({ page: chinfo.pgidx })}
             use:navigate={_navi}
             >{hname}
           </a>
@@ -192,13 +124,13 @@
     {/if}
 
     {#if $session.privi > 2}
-      <button class="-name" on:click={() => (add_seed = !add_seed)}>
-        <SIcon name={add_seed ? 'minus' : 'plus'} />
+      <button class="-name" on:click={() => (add_zhbook = !add_zhbook)}>
+        <SIcon name={add_zhbook ? 'minus' : 'plus'} />
       </button>
     {/if}
   </div>
 
-  {#if add_seed}
+  {#if add_zhbook}
     <div class="add-seed">
       <select class="m-input" name="new_sname" bind:value={new_sname}>
         {#each new_seeds as label}
@@ -216,7 +148,7 @@
       <button
         class="m-button _primary"
         disabled={!new_snvid}
-        on:click={add_new_seed}>
+        on:click={make_zhbook}>
         <span class="-text">Thêm</span>
       </button>
     </div>
@@ -224,23 +156,31 @@
 
   <div id="chlist" class="chinfo">
     <div class="-left">
-      <span class="-text">{opts.sname}</span>
-      <span class="-span">
-        <RTime mtime={chseed.utime} />
-      </span>
-
-      <span class="-span">{chseed.total} chương</span>
+      <span class="-text">{chinfo.sname}</span>
+      <span class="-span">{chinfo.total} chương</span>
+      <span class="-span"><RTime mtime={chinfo.utime} /></span>
     </div>
 
-    {#if opts.sname == 'chivi'}
-      <a class="m-button" href="/~{nvinfo.bslug}/+{opts.sname}">
+    {#if chinfo.sname == 'chivi'}
+      <a
+        class="m-button"
+        href="/~{nvinfo.bslug}/+{chinfo.sname}?chidx={chinfo.total + 1}">
         <SIcon name="plus" />
         <span class="-hide">Thêm chương</span>
       </a>
     {:else}
       <a
         class="m-button"
-        href={pager.url({ page: opts.page, mode: is_remote_seed ? 2 : 1 })}
+        href={chinfo.wlink}
+        target="_blank"
+        rel="noopener noreferer">
+        <SIcon name="external-link" />
+        <span class="-hide">Nguồn</span>
+      </a>
+      <a
+        class="m-button"
+        class:_disable={!chinfo.crawl}
+        href={pager.url({ page: chinfo.pgidx, mode: chinfo.crawl ? 2 : 1 })}
         use:navigate={_navi}>
         {#if $navigating}
           <SIcon name="loader" spin={true} />
@@ -253,13 +193,13 @@
   </div>
 
   <div class="chlist">
-    {#if chseed.lasts.length > 0}
-      <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chseed.lasts} />
+    {#if chinfo.lasts.length > 0}
+      <Chlist bslug={nvinfo.bslug} sname={chinfo.sname} chaps={chinfo.lasts} />
       <div class="-sep" />
-      <Chlist bslug={nvinfo.bslug} sname={opts.sname} chaps={chlist} />
+      <Chlist bslug={nvinfo.bslug} sname={chinfo.sname} chaps={chinfo.chaps} />
 
       <footer class="foot">
-        <Mpager {pager} pgidx={opts.page} pgmax={pmax} {_navi} />
+        <Mpager {pager} pgidx={chinfo.pgidx} pgmax={chinfo.pgmax} {_navi} />
       </footer>
     {:else}
       <p class="empty">Không có nội dung :(</p>
@@ -312,7 +252,7 @@
   }
 
   .chinfo {
-    display: flex;
+    @include flex($gap: 0.5rem);
     margin: var(--verpad) 0;
 
     .-left {
@@ -322,10 +262,6 @@
       line-height: 1.75rem;
       transform: translateX(1px);
       @include fluid(font-size, 13px, 14px);
-    }
-
-    .m-button {
-      margin-left: 0.25rem;
     }
 
     .-text {

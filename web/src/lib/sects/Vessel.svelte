@@ -27,7 +27,7 @@
 </script>
 
 <header class="app-header" class:_shift={$toleft} class:_clear={$scroll > 0}>
-  <nav class="center -wrap">
+  <nav class="vessel -wrap">
     <div class="-left">
       <button
         class="header-item _brand"
@@ -53,7 +53,7 @@
 </header>
 
 <main class="main" class:_shift={$toleft}>
-  <div class="center _main">
+  <div class="vessel _main">
     {#if pledge && $session.privi < 2}
       <div class="pledge">
         Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển.
@@ -80,7 +80,7 @@
 <style lang="scss">
   $page-width: 55.5rem;
 
-  .center {
+  :global(.vessel) {
     width: $page-width;
     max-width: 100%;
     margin: 0 auto;
@@ -125,7 +125,7 @@
   }
 
   .pledge {
-    text-align: center;
+    text-align: vessel;
     margin: 0.5rem auto;
     // max-width: 50vw;
     font-size: rem(15px);

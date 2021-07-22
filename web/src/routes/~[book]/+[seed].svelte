@@ -1,10 +1,13 @@
 <script context="module">
-  export async function load({ context }) {
+  export async function load({ page, context }) {
     const { nvinfo } = context
-    const [snvid, _, total] = nvinfo.chseed[sname] || [bhash, '0', '0']
+
+    const sname = page.params.seed
+    const snvid = nvinfo.chseed[sname]
+    const chidx = page.params.chidx || 1
 
     return {
-      props: { nvinfo, sname, snvid, chidx: +total + 1 },
+      props: { nvinfo, sname, snvid, chidx: +chidx },
     }
   }
 </script>
@@ -29,7 +32,7 @@
     const res = await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chidx: +chidx, label, input }),
+      body: JSON.stringify({ chidx, label, input }),
     })
 
     if (res.ok) {
@@ -47,7 +50,7 @@
 
 <Vessel>
   <svelte:fragment slot="header-left">
-    <a href="/~{nvinfo.blsug}" class="header-item _title">
+    <a href="/~{nvinfo.bslug}" class="header-item _title">
       <SIcon name="book-open" />
       <span class="header-text _show-md _title">{nvinfo.btitle_vi}</span>
     </a>
@@ -76,18 +79,18 @@
       bind:value={input} />
   </section>
 
-  <footer class="foot">
+  <div slot="footer" class="vessel">
     <span class="label">Nhãn quyển</span>
     <input class="m-input" name="label" lang="zh" bind:value={label} />
 
     <span class="label">Chương số</span>
     <input class="m-input" name="chidx" bind:value={chidx} />
 
-    <button class="m-button _primary" on:click={submit_text}>
+    <button class="m-button _primary _fill" on:click={submit_text}>
       <SIcon name="plus-square" />
       <span class="-text">Thêm</span>
     </button>
-  </footer>
+  </div>
 </Vessel>
 
 <style lang="scss">
@@ -119,25 +122,20 @@
   }
 
   #input {
-    height: calc(100vh - 10rem);
+    width: 100%;
+    height: calc(100vh - 12rem);
     padding: 0.75rem;
     font-size: rem(18px);
   }
 
-  .foot {
-    display: flex;
-
-    padding: 1rem 0;
+  .vessel {
+    @include flex($gap: 0.5rem);
 
     // prettier-ignore
     > .m-input {
       display: inline-block;
       &[name='label'] { width: 16rem; }
       &[name='chidx'] { width: 4rem; }
-    }
-
-    > * + * {
-      margin-left: 0.5rem;
     }
 
     > .m-button {
@@ -147,10 +145,10 @@
 
   .label {
     display: inline-block;
-    line-height: 2.5rem;
+    line-height: 2.25rem;
     text-transform: uppercase;
     font-weight: 500;
     @include ftsize(xs);
-    @include fgcolor(neutral, 5);
+    @include fgcolor(tert);
   }
 </style>

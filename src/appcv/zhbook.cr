@@ -24,6 +24,32 @@ class CV::Zhbook
 
   getter chinfo : ChInfo { ChInfo.new(cvbook.bhash, sname, snvid) }
 
+  getter wlink : String do
+    case sname
+    when "chivi"    then "/"
+    when "nofff"    then "https://www.nofff.com/#{snvid}/"
+    when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
+    when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
+    when "69shu"    then "https://www.69shu.com/txt/#{snvid}.htm"
+    when "rengshu"  then "http://www.rengshu.com/book/#{snvid}"
+    when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/"
+    when "biqubao"  then "https://www.biqubao.com/book/#{snvid}/"
+    when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/"
+    when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
+    when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/index.html"
+    when "duokan8"  then "http://www.duokanba.info/#{prefixed_snvid}/"
+    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed_snvid}/"
+    when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/"
+    when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/"
+    when "bqg_5200" then "https://www.biquge5200.com/#{prefixed_snvid}/"
+    else                 raise "Unsupported remote source <#{sname}>!"
+    end
+  end
+
+  def prefixed_snvid
+    "#{snvid.to_i // 1000}_#{snvid}"
+  end
+
   def unmatch?(cvbook_id : Int64) : Bool
     cvbook_id_column.value(0) != cvbook_id
   end
@@ -78,7 +104,7 @@ class CV::Zhbook
   def self.load!(cvbook : Cvbook, zseed : Int32)
     CACHE[cvbook.id << 6 | zseed] ||=
       case zseed
-      when 1 then dummy(cvbook)
+      when 0 then dummy(cvbook)
       else        find!({cvbook_id: cvbook.id, zseed: zseed})
       end
   end
@@ -94,7 +120,7 @@ class CV::Zhbook
       # shield: cvbook.shield,
 
       mftime: cvbook.mftime,
-      bumped: cvbook.bumped,
+      # bumped: cvbook.bumped,
 
       chap_count: cvbook.chap_count,
       last_schid: cvbook.chap_count.to_s.rjust(4, '0'),

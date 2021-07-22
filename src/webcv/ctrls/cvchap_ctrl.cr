@@ -11,14 +11,21 @@ class CV::CvchapCtrl < CV::BaseCtrl
     zhbook = Zhbook.load!(nvinfo, zseed)
 
     mode = params.fetch_int("mode", max: cu_privi)
-    mtime, total = zhbook.refresh!(cu_privi, mode)
+    utime, total = zhbook.refresh!(cu_privi, mode)
 
     render_json do |res|
       JSON.build(res) do |jb|
         jb.object do
+          jb.field "sname", sname
+          jb.field "utime", utime
+
+          jb.field "wlink", zhbook.wlink
+          jb.field "crawl", zhbook.remote?(cu_privi)
+
           jb.field "total", total
-          jb.field "utime", mtime
+
           jb.field "pgidx", pgidx
+          jb.field "pgmax", (total - 1) / 32 + 1
 
           jb.field "lasts" do
             jb.array do
@@ -38,6 +45,9 @@ class CV::CvchapCtrl < CV::BaseCtrl
         end
       end
     end
+  rescue err
+    pp err.inspect_with_backtrace
+    halt! 500, err.message
   end
 
   private def chap_json(jb : JSON::Builder, chidx, infos)
