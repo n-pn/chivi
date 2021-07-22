@@ -206,10 +206,12 @@
     @include border(--bd-main, $sides: bottom);
 
     > .-radio {
-      line-height: 2rem;
+      line-height: 1.25;
+      padding: 0.5rem 0;
       @include fgcolor(tert);
       @include flex($center: none, $gap: 0.5rem);
-      @include fluid(font-size, rem(14px), rem(15px), rem(16px));
+      @include clamp(null);
+      @include fluid(font-size, rem(13px), rem(14px), rem(15px));
     }
 
     .-label {

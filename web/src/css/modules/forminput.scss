@@ -16,7 +16,7 @@
   line-height: 1.5rem;
   border: 0;
   outline: 0;
-  padding: var(--gutter-xs) var(--gutter-md);
+  padding: 0.25rem var(--gutter-md);
 
   @include fgcolor(main);
   @include bgcolor(main);

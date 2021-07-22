@@ -26,7 +26,7 @@
   }
 
   function extract_sname(snames, param) {
-    return snames.includes(param) ? param : snames[0] || 'chivi'
+    return snames.includes(param) ? param : snames[1] || 'chivi'
   }
 
   function update_utime(nvinfo, utime) {
@@ -68,7 +68,7 @@
 
   $: pmax = get_pmax(chseed, opts)
 
-  $: [main_seeds, hide_seeds] = split_chseed(nvinfo, opts)
+  $: [main_seeds, hide_seeds] = split_chseed(nvinfo, opts.sname)
   let show_more = false
 
   async function load_chseed(evt, sname, mode = 0) {
@@ -120,21 +120,24 @@
     await load_chseed(evt, new_sname, 1)
   }
 
-  function split_chseed(nvinfo, { sname }) {
-    const seeds = nvinfo.snames || ['chivi']
-    if (seeds.length < 6) return [seeds, []]
+  function split_chseed(nvinfo, sname) {
+    const input = nvinfo.snames.filter((x) => x != 'chivi')
+    console.log({ input })
+    const bound = 3
 
-    let main_seeds = seeds.slice(0, 4)
-    let hide_seeds
+    let main_seeds = input.slice(0, bound)
+    let hide_seeds = []
 
     if (main_seeds.includes(sname)) {
-      main_seeds.push(seeds[4])
-      hide_seeds = seeds.slice(5)
+      const leftover = input[bound + 1]
+      if (leftover) main_seeds.push(leftover)
+      hide_seeds = input.slice(bound + 1)
     } else if (sname) {
       main_seeds.push(sname)
-      hide_seeds = seeds.slice(4).filter((x) => x != sname)
+      hide_seeds = input.slice(bound).filter((x) => x != sname)
     }
 
+    if (sname != 'chivi') main_seeds.push('chivi')
     return [main_seeds, hide_seeds]
   }
 
@@ -268,39 +271,38 @@
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(neutral, 6);
+    @include fgcolor(tert);
   }
 
   .source {
-    @include flex($center: horz);
-    flex-wrap: wrap;
+    @include flex($center: horz, $wrap: wrap, $gap: 0.5rem);
 
-    @include fluid(font-size, 12px, 13px, 14px);
-    @include fluid(line-height, 1.5rem, 1.75rem, 2rem);
+    margin-top: var(--gutter-small);
+
+    line-height: 2rem;
+    @include ftsize(sm);
 
     .-name {
-      border-radius: 0.5rem;
       padding: 0 0.75em;
-      background-color: transparent;
 
       @include label();
-      @include border();
-      @include fluid(margin-top, 0.25rem, 0.375rem, 0.5rem);
-      @include fluid(margin-left, 0.25rem, 0.375rem, 0.5rem);
+      @include bdradi();
+      @include linesd(--bd-main);
 
       &._active {
         @include fgcolor(primary, 5);
-        @include bdcolor(primary, 5);
+        @include linesd(primary, 5, $ndef: true);
       }
+    }
 
-      @include tm-dark {
-        @include bdcolor(gray, 6);
-        @include fgcolor(neutral, 3);
+    button {
+      background-color: transparent;
+      padding: 0 0.5rem !important;
 
-        &._active {
-          @include fgcolor(primary, 4);
-          @include bdcolor(primary, 4);
-        }
+      > :global(svg) {
+        margin-top: -0.125rem;
+        width: 1rem;
+        height: 1rem;
       }
     }
   }
@@ -311,7 +313,7 @@
 
   .chinfo {
     display: flex;
-    padding: 0.75rem 0;
+    margin: var(--verpad) 0;
 
     .-left {
       display: flex;
@@ -319,19 +321,11 @@
       margin: 0.25rem 0;
       line-height: 1.75rem;
       transform: translateX(1px);
-      @include fluid(font-size, 12px, 13px, 14px);
+      @include fluid(font-size, 13px, 14px);
     }
 
     .m-button {
       margin-left: 0.25rem;
-
-      @include tm-dark {
-        @include bgcolor(neutral, 8);
-        @include fgcolor(neutral, 2);
-        &:hover {
-          @include bgcolor(neutral, 8);
-        }
-      }
     }
 
     .-text {
@@ -357,7 +351,7 @@
   .chlist {
     > .-sep {
       width: 50%;
-      margin: var(--gutter-small) auto;
+      margin: var(--gutter-sm) auto;
       @include border(--bd-main, $sides: bottom);
     }
   }
@@ -389,7 +383,6 @@
       text-transform: uppercase;
       font-weight: 500;
       @include ftsize(sm);
-      @include fgcolor(neutral, 6);
     }
   }
 </style>
