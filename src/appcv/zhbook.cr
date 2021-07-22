@@ -9,7 +9,9 @@ class CV::Zhbook
   belongs_to cvbook : Cvbook
 
   column zseed : Int32 # seed name
-  column znvid : Int32 # seed book id
+  getter sname : String { Zhseed.zseed(zseed) }
+
+  column snvid : String # seed book id
 
   column status : Int32 = 0 # same as Cvinfo#status
   column shield : Int32 = 0 # same as Cvinfo#shield
@@ -17,34 +19,85 @@ class CV::Zhbook
   column bumped : Int64 = 0 # last fetching time as total minutes since the epoch
   column mftime : Int64 = 0 # seed page update time as total seconds since the epoch
 
-  column chap_count : Int32 = 0 # total chapters
-  column last_zchid : Int32 = 0 # seed's latest chap id
+  column chap_count : Int32 = 0   # total chapters
+  column last_schid : String = "" # seed's latest chap id
 
-  getter sname : String { Zhseed.zseed(zseed) }
-  getter snvid : String { make_snvid }
-  getter last_schid : String { last_zchid.to_s }
-
-  private def make_snvid
-    return znvid.to_s unless sname == "zhwenpg"
-    CoreUtils.encode32_zh(znvid).ljust(6, '2')
-  end
-
-  def last_zchid=(schid : String)
-    @last_schid = schid
-    self.last_zchid = schid.to_i? || 0
-  end
+  getter chinfo : ChInfo { ChInfo.new(cvbook.bhash, sname, snvid) }
 
   def unmatch?(cvbook_id : Int64) : Bool
     cvbook_id_column.value(0) != cvbook_id
   end
 
-  def self.upsert!(zseed : Int32, znvid : Int32)
-    find({zseed: zseed, znvid: znvid}) || new({zseed: zseed, znvid: znvid})
+  def refresh!(privi = 4, mode = 0, ttl = 5.minutes) : Tuple(Int64, Int32)
+    return {mftime, chap_count} unless mode > 0 && remote?(privi)
+
+    RmInfo.mkdir!(sname)
+    parser = RmInfo.new(sname, snvid, ttl: ttl)
+
+    if mode > 1 || parser.last_schid != self.last_schid
+      self.mftime = parser.mftime > 0 ? parser.mftime : Time.utc.to_unix
+
+      self.chap_count = parser.chap_list.size
+      self.last_schid = parser.last_schid
+      self.bumped = Time.utc.to_unix
+
+      chinfo.save_seeds!(parser.chap_list)
+      chinfo.reset_trans!
+
+      self.save!
+    end
+
+    {mftime, chap_count}
+  end
+
+  def remote?(privi : Int32 = 4)
+    case sname
+    when "chivi", "zxcs_me"
+      false
+    when "5200", "bqg_5200", "rengshu", "nofff"
+      true
+    when "hetushu", "biqubao", "bxwxorg", "xbiquge"
+      privi > 0
+    when "zhwenpg", "69shu", "paoshu8", "duokan8"
+      privi > 1
+    else
+      privi > 3
+    end
+  end
+
+  def self.upsert!(zseed : Int32, snvid : String)
+    find({zseed: zseed, snvid: snvid}) || new({zseed: zseed, snvid: snvid})
   end
 
   def self.upsert!(sname : String, snvid : String)
-    zseed = Zhseed.index(sname)
-    znvid = sname == "zhwenpg" ? CoreUtils.decode32_zh(snvid).to_i : snvid.to_i
-    upsert!(zseed, znvid)
+    upsert!(Zhseed.index(sname), snvid)
+  end
+
+  CACHE = {} of Int64 => self
+
+  def self.load!(cvbook : Cvbook, zseed : Int32)
+    CACHE[cvbook.id << 6 | zseed] ||=
+      case zseed
+      when 1 then dummy(cvbook)
+      else        find!({cvbook_id: cvbook.id, zseed: zseed})
+      end
+  end
+
+  def self.dummy(cvbook : Cvbook)
+    new({
+      cvbook_id: cvbook.id,
+
+      zseed: 0,
+      snvid: cvbook.bhash,
+
+      # status: cvbook.status,
+      # shield: cvbook.shield,
+
+      mftime: cvbook.mftime,
+      bumped: cvbook.bumped,
+
+      chap_count: cvbook.chap_count,
+      last_schid: cvbook.chap_count.to_s.rjust(4, '0'),
+    })
   end
 end

@@ -129,7 +129,7 @@ class CV::SeedYsbook
 
     OptionParser.parse(ARGV) do |opt|
       opt.on("-a", "Ignore indexes") { redo = true }
-      opt.on("-", "Seeding twice") { twice = true }
+      opt.on("-t", "Seeding twice") { twice = true }
     end
 
     seeder = new

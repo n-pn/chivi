@@ -71,7 +71,7 @@ class CV::SeedZhwenpg
     zhbook = Zhbook.upsert!("zhwenpg", parser.snvid)
     cvbook = Cvbook.upsert!(author, ztitle)
 
-    zhbook.cvbook_id = cvbook.id
+    zhbook.cvbook = cvbook
     cvbook.add_zhseed(zhbook.zseed)
 
     cvbook.set_genres([parser.bgenre.empty? ? "其他" : parser.bgenre])
@@ -91,8 +91,9 @@ class CV::SeedZhwenpg
 
     if zhbook.chap_count == 0
       ttl = Time.utc - Time.unix(zhbook.mftime)
-      chinfo = ChInfo.new(cvbook.bhash, "zhwenpg", parser.snvid)
-      _, zhbook.chap_count, zhbook.last_zchid = chinfo.update!(mode: 1, ttl: ttl)
+      zhbook.refresh!(privi: 3, mode: 1, ttl: ttl)
+      # chinfo = ChInfo.new(cvbook.bhash, "zhwenpg", parser.snvid)
+      # _, zhbook.chap_count, zhbook.last_schid = chinfo.update!(mode: 1, ttl: ttl)
     end
 
     zhbook.save!

@@ -32,6 +32,8 @@ Amber::Server.configure do
     get "/chaps/:bhash/:sname/:snvid", CV::FsChapCtrl, :index
     get "/chaps/:bhash/:sname/:snvid/:page", CV::FsChapCtrl, :paged
 
+    get "/cvchaps/:bhash/:sname", CV::CvchapCtrl, :index
+
     get "/texts/:bname/:sname/:snvid/:chidx", CV::FsTextCtrl, :show
     get "/texts/:bname/:sname/:snvid/:chidx/:schid", CV::FsTextCtrl, :convert
     put "/texts/:bname/:sname/:snvid", CV::FsTextCtrl, :upsert

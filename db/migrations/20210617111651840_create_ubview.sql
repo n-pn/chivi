@@ -6,9 +6,6 @@ CREATE TABLE ubviews (
   cvuser_id bigint not null,
 
   zseed int not null default 0,
-  znvid int not null default 0,
-
-  zchid int not null default 0,
   chidx int not null default 0,
 
   bumped bigint not null default 0,

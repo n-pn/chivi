@@ -250,7 +250,7 @@ class CV::SeedZhbook
       end
 
       zhbook.chap_count = chap_count
-      zhbook.last_zchid = last_schid
+      zhbook.last_schid = last_schid
     end
 
     zhbook.save!
