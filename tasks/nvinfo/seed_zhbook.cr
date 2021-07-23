@@ -196,6 +196,8 @@ class CV::SeedZhbook
 
     puts "- authors: #{Author.query.count.colorize.cyan}, \
             cvbooks: #{Cvbook.query.count.colorize.cyan}"
+
+    @seed.save!
   end
 
   def save_book(snvid : String, values : Array(String), redo = false)
@@ -239,15 +241,17 @@ class CV::SeedZhbook
       cvbook.set_mftime(zhbook.mftime)
     end
 
-    if zhbook.chap_count == 0
-      if vals = @seed.chsize.get(snvid)
-        chap_count = vals[0].to_i
-        last_schid = vals[1]
-      else
+    if zhbook.chap_count == 0 || redo
+      vals = @seed.chsize.get(snvid)
+
+      if redo || !vals
         # ttl = get_ttl(zhbook.mftime)
         chinfo = ChInfo.new(cvbook.bhash, @sname, snvid)
         _, chap_count, last_schid = chinfo.update!(mode: 1, ttl: 10.years)
         @seed.chsize.set!(snvid, [chap_count.to_s, last_schid])
+      else
+        chap_count = vals[0].to_i
+        last_schid = vals[1]
       end
 
       zhbook.chap_count = chap_count

@@ -315,7 +315,7 @@ class CV::SeedZxcsme
 end
 
 worker = CV::SeedZxcsme.new
-worker.prep!
+worker.prep! if ARGV.includes?("prep")
 worker.init!
 worker.inherit!
 # worker.fix_authors!
