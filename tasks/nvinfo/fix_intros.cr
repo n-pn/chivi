@@ -5,10 +5,10 @@ module CV::FixIntros
 
   def fix!
     total, index = Cvbook.query.count, 0
-    query = Cvbook.query.with_ysbooks.order_by(weight: :desc)
+    query = Cvbook.query.order_by(weight: :desc)
     query.each_with_cursor(20) do |cvbook|
       index += 1
-      puts "- [fix_covers] <#{index}/#{total}>".colorize.blue if index % 100 == 0
+      puts "- [fix_intros] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
       yintro = bintro = fintro = nil.as(Array(String)?)
 
