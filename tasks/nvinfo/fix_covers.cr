@@ -6,6 +6,10 @@ class CV::FixCovers
 
   ::FileUtils.mkdir_p(OUT_DIR)
 
+  def out_path(path)
+    "#{OUT_DIR}/#{path}"
+  end
+
   def fix!(redo : Bool = false)
     total, index = Cvbook.query.count, 0
     query = Cvbook.query.order_by(weight: :desc)
@@ -17,7 +21,9 @@ class CV::FixCovers
         @@widths.each_value { |map| map.save!(clean: false) }
       end
 
-      next unless redo || cvbook.bcover.empty?
+      unless redo || cvbook.bcover.empty?
+        next if File.exists? out_path("#{cvbook.bcover}")
+      end
 
       covers = [] of Tuple(String, String)
       covers << {"chivi", cvbook.bhash}
@@ -31,7 +37,12 @@ class CV::FixCovers
       covers.each do |sname, snvid|
         next unless cover_file = cover_path(sname, snvid)
 
-        unless cover_width = width_map(sname).get(cover_file).try(&.first.to_i)
+        if File.exists? out_path("#{sname}-#{snvid}.webp")
+          out_cover, out_sname, out_snvid = cover_file, sname, snvid
+          break unless redo
+        end
+
+        unless cover_width = width_map(sname).fval(cover_file).try(&.to_i)
           cover_width = image_width(cover_file)
 
           if mtime = File.info?(cover_file).try(&.modification_time)
@@ -52,7 +63,7 @@ class CV::FixCovers
       out_webp = "#{out_sname}-#{out_snvid}.webp"
       cvbook.tap(&.bcover = out_webp).save! unless cvbook.bcover == out_webp
 
-      webp_path = "#{OUT_DIR}/#{out_webp}"
+      webp_path = out_path(out_webp)
       next if File.exists?(webp_path)
 
       case out_cover
@@ -104,8 +115,7 @@ class CV::FixCovers
       return if File.exists?(file)
     end
 
-    file = image_path(sname, snvid, "jpg")
-    return file if File.exists?(file)
+    image_path(sname, snvid, "jpg")
   end
 
   private def image_path(sname, snvid, ext)
