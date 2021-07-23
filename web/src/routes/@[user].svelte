@@ -56,7 +56,7 @@
         href="/@{uname}?bmark={mtype}"
         class="tab"
         class:_active={mtype == bmark}>
-        {mark_names[mtype]}
+        {mark_names[mtype]}{#if mtype == bmark}<span>({total})</span>{/if}
       </a>
     {/each}
   </div>
@@ -74,33 +74,23 @@
 
 <style lang="scss">
   .tabs {
-    display: flex;
-    margin: 0.25rem 0 0.75rem;
-    justify-content: center;
+    @include flex($center: horz, $gap: 0.5rem);
+    margin: 1rem 0;
   }
 
   .tab {
-    @include fluid(--pad, 0.25rem, 0.375rem, 0.5rem);
-
     font-weight: 500;
     text-transform: uppercase;
 
-    line-height: 1rem;
-    margin-top: 0.5rem;
-    border-radius: 0.5rem;
+    padding: 0.5rem;
+    line-height: 1.25rem;
 
-    padding: var(--pad, 0.5rem);
-    margin-right: var(--pad, 0.5rem);
-
+    @include bdradi();
     @include clamp($width: null);
-    @include border;
-    @include fgcolor(neutral, 6);
+    @include linesd(--bd-main);
+    @include fgcolor(tert);
 
-    @include fluid(font-size, rem(10px), rem(12px), rem(13px), rem(14px));
-
-    &:last-child {
-      margin-right: 0;
-    }
+    @include fluid(font-size, rem(11px), rem(12px), rem(13px));
 
     &:hover,
     &._active {
@@ -108,21 +98,19 @@
     }
 
     &._active {
-      @include bdcolor(primary, 5);
+      @include linesd(primary, 5, $ndef: false);
+      // overflow: auto;
     }
 
     @include tm-dark {
-      @include bdcolor(neutral, 7);
-      @include fgcolor(neutral, 5);
-
       &._active,
       &:hover {
         @include fgcolor(primary, 4);
       }
+    }
 
-      &._active {
-        @include bdcolor(primary, 5);
-      }
+    > span {
+      margin-left: 0.4em;
     }
   }
 

@@ -17,6 +17,8 @@ class CV::FixCovers
         @@widths.each_value { |map| map.save!(clean: false) }
       end
 
+      next unless redo || cvbook.bcover.empty?
+
       covers = [] of Tuple(String, String)
       covers << {"chivi", cvbook.bhash}
 
@@ -61,19 +63,27 @@ class CV::FixCovers
         to_webp(out_cover, webp_path, width: width)
       end
 
-      File.delete(out_cover) unless File.exists?(webp_path)
+      next if File.exists?(webp_path)
+      puts "Something wrong! #{webp_path} not generated from #{out_cover}/#{max_width}"
+      File.delete(out_cover)
     end
 
     @@widths.each_value { |map| map.save!(clean: false) }
   end
 
   private def gif_to_webp(inp_file, out_file)
-    `gif2webp "#{inp_file}" -o "#{out_file}"`
+    `gif2webp -quiet "#{inp_file}" -o "#{out_file}"`
   end
 
   private def to_webp(inp_file, out_file, width = 360)
-    puts [inp_file, out_file]
-    `cwebp -q 100 -resize #{width} 0 -mt "#{inp_file}" -o "#{out_file}"`
+    if width > 360
+      `cwebp -quiet -q 100 -resize #{width} 0 -mt "#{inp_file}" -o "#{out_file}"`
+    else
+      `cwebp -quiet -q 100 -mt "#{inp_file}" -o "#{out_file}"`
+    end
+
+    return if File.exists?(out_file)
+    `convert #{inp_file} -quality 50 -define webp:lossless=true -resize "#{width}x>" #{out_file}`
   end
 
   @@widths = {} of String => ValueMap
@@ -112,10 +122,10 @@ class CV::FixCovers
 
   def gif_image_width(fname : String)
     case fname
-    when .includes?("chivi")  then 20000
-    when .includes?("yousuu") then 10000
+    when .includes?("chivi")  then 360
+    when .includes?("yousuu") then 360
     when .includes?("jx_la")  then 0
-    else                           400
+    else                           360
     end
   end
 end

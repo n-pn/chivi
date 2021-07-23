@@ -31,6 +31,7 @@ class CV::Zhbook
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
     when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
     when "69shu"    then "https://www.69shu.com/txt/#{snvid}.htm"
+    when "zxcs_me"  then "http://www.zxcs.me/post/#{snvid}/"
     when "rengshu"  then "http://www.rengshu.com/book/#{snvid}"
     when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/"
     when "biqubao"  then "https://www.biqubao.com/book/#{snvid}/"
@@ -42,7 +43,7 @@ class CV::Zhbook
     when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/"
     when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/"
     when "bqg_5200" then "https://www.biquge5200.com/#{prefixed_snvid}/"
-    else                 raise "Unsupported remote source <#{sname}>!"
+    else                 "/"
     end
   end
 

@@ -14,7 +14,7 @@ class CV::FetchCovers
     out_queue = {} of String => String
     cover_map = cover_map("yousuu")
 
-    Ysbook.query.order_by(id: :asc).each_with_cursor(20) do |book|
+    Ysbook.query.order_by(voters: :desc).each_with_cursor(20) do |book|
       ynvid = book.id.to_s
 
       next unless image_url = cover_map.fval(ynvid)
@@ -45,7 +45,7 @@ class CV::FetchCovers
     query.each_with_cursor(20) do |book|
       book.zhbooks.to_a.sort_by(&.zseed).first(3).each do |seed|
         # TODO: fix seed_zhwenpg script!
-        next if seed.sname == "jx_la" || seed.sname == "zhwenpg"
+        next if seed.sname == "jx_la"
 
         out_file = "_db/bcover/#{seed.sname}/#{seed.snvid}.jpg"
         next if existed?(out_file)
@@ -73,13 +73,13 @@ class CV::FetchCovers
 
   def throttle_spec(sname : String)
     case sname
-    when "shubaow" then {1, 2.seconds}
-    when "duokan8" then {1, 1.seconds}
+    when "shubaow" then {1, 1.seconds}
+    when "duokan8" then {1, 750.milliseconds}
     when "zhwenpg" then {1, 500.milliseconds}
     when "paoshu8" then {2, 500.milliseconds}
     when "69shu"   then {4, 200.milliseconds}
     when "5200"    then {4, 100.milliseconds}
-    else                {8, 10.milliseconds}
+    else                {8, 50.milliseconds}
     end
   end
 

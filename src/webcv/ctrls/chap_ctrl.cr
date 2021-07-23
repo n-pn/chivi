@@ -11,7 +11,7 @@ class CV::ChapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     pgidx = params.fetch_int("page", min: 1)
 
-    mode = params.fetch_int("mode", max: cu_privi)
+    mode = params.fetch_int("mode", min: 0, max: cu_privi)
     utime, total = zhbook.refresh!(cu_privi, mode)
 
     render_json do |res|
