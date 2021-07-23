@@ -76,7 +76,7 @@ class CV::FixCovers
     end
 
     unless out_cover && out_sname && out_snvid
-      return puts "no cover available!"
+      return puts "no cover available for #{cvbook}!"
     end
 
     out_webp = "#{out_sname}-#{out_snvid}.webp"
