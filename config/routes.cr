@@ -23,6 +23,7 @@ Amber::Server.configure do
     post "/user/setting", CV::FsUserCtrl, :update
 
     get "/books", CV::BookCtrl, :index
+    get "/books/find/:bname", CV::BookCtrl, :find
     get "/books/:bslug", CV::BookCtrl, :show
 
     get "/chaps/:book/:sname", CV::ChapCtrl, :index

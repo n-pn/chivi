@@ -91,7 +91,6 @@
 
   .main {
     flex: 1;
-    flex-direction: column;
     position: relative;
 
     // &._footer {

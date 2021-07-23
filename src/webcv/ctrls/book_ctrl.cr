@@ -47,6 +47,15 @@ class CV::BookCtrl < CV::BaseCtrl
     end
   end
 
+  LOOKUP = ValueMap.new("priv/lookup.tsv")
+
+  def find
+    bname = params["bname"]
+    response.headers.add("Cache-Control", "public, min-fresh=60")
+    response.content_type = "text/plain; charset=utf-8"
+    context.content = LOOKUP.fval(bname) || bname
+  end
+
   def show : Nil
     unless cvbook = Cvbook.find({bslug: params["bslug"]})
       return halt!(404, "Quyển sách không tồn tại!")

@@ -111,7 +111,7 @@
     {#each chaps as chap}
       <a
         class="chap"
-        href="/~{chap.bslug}/-{chap.uslug}-{chap.sname}-{chap.chidx}">
+        href="/-{chap.bslug}/-{chap.uslug}-{chap.sname}-{chap.chidx}">
         <div class="-text">
           <div class="-title">{chap.title}</div>
           <span class="-chidx">{chap.chidx}</span>

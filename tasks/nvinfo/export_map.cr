@@ -4,15 +4,19 @@ module CV
   total, index = Cvbook.query.count, 0
   query = Cvbook.query.order_by(weight: :desc)
 
-  lookup = {} of String => Int64
+  lookup = {} of String => String
   zhseed = [] of Array(String)
 
   query.each_with_cursor(20) do |book|
     index += 1
     puts "- [export_map] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
-    {book.bhash, book.bslug, "#{book.htslug}-#{book.bhash}"}.each do |slug|
-      lookup[slug] ||= book.id
+    # {book.bhash, book.bslug, "#{book.htslug}-#{book.bhash}"}.each do |slug|
+    #   lookup[slug] ||= book.id
+    # end
+
+    {book.bhash, "#{book.htslug}-#{book.bhash}", book.htslug, book.vtslug}.each do |slug|
+      lookup[slug] ||= book.bslug unless slug.empty?
     end
 
     next unless seed = book.zhbooks.to_a.sort_by(&.zseed).first?

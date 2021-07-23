@@ -23,7 +23,7 @@
   $: route = nvtab == 'index' ? '' : nvtab
 </script>
 
-<a class="book" href="/~{nvinfo.bslug}/{route}">
+<a class="book" href="/-{nvinfo.bslug}/{route}">
   <div class="cover">
     <BCover bcover={nvinfo.bcover} />
     {#if nvinfo.voters > 10}
