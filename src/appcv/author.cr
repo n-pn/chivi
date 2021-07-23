@@ -22,12 +22,12 @@ class CV::Author
   end
 
   def self.glob_zh(qs : String)
-    query.where("zname LIKE %?%", BookUtils.scrub_zname(qs))
+    query.where("zname LIKE '%#{BookUtils.scrub_zname(qs)}%'")
   end
 
   def self.glob_vi(qs : String, accent = false)
-    res = query.where("vslug LIKE %?%", BookUtils.scrub_vname(qs))
-    accent ? res.where("vname LIKE %?%", qs) : res
+    res = query.where("vslug LIKE '%#{BookUtils.scrub_vname(qs)}%'")
+    accent ? res.where("vname LIKE '%#{qs}%'") : res
   end
 
   def self.upsert!(zname : String, vname : String? = nil) : Author

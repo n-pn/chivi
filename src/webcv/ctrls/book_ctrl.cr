@@ -47,6 +47,9 @@ class CV::BookCtrl < CV::BaseCtrl
         end
       end
     end
+  rescue err
+    puts err.inspect_with_backtrace
+    halt! 500, err.message
   end
 
   LOOKUP = ValueMap.new("priv/lookup.tsv")
