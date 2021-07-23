@@ -13,7 +13,7 @@ class CV::SeedZhbook
 
     read_stats(upper) do |snvid, state|
       missing << snvid if state > 1
-      updates << snvid if state ^ 1 != 0
+      updates << snvid if state == 0 || state == 2
     end
 
     {missing, updates}
@@ -87,7 +87,7 @@ class CV::SeedZhbook
     puts "[#{@sname}], parsing: #{queue.size}\n".colorize.cyan.bold
 
     queue.each_with_index(1) do |snvid, idx|
-      entry = RmInfo.new(@sname, snvid)
+      entry = RmInfo.new(@sname, snvid, label: "#{idx}/#{queue.size}")
       atime = SeedUtil.get_mtime(entry.file)
 
       @seed._index.set!(snvid, [atime.to_s, entry.btitle, entry.author])
@@ -244,14 +244,15 @@ class CV::SeedZhbook
     if zhbook.chap_count == 0 || redo
       vals = @seed.chsize.get(snvid)
 
-      if redo || !vals
+      if vals = @seed.chsize.get(snvid)
+        chap_count = vals[0].to_i
+        last_schid = vals[1]
+      else
+        puts "- parsing: #{cvbook.bhash}"
         # ttl = get_ttl(zhbook.mftime)
         chinfo = ChInfo.new(cvbook.bhash, @sname, snvid)
         _, chap_count, last_schid = chinfo.update!(mode: 1, ttl: 10.years)
         @seed.chsize.set!(snvid, [chap_count.to_s, last_schid])
-      else
-        chap_count = vals[0].to_i
-        last_schid = vals[1]
       end
 
       zhbook.chap_count = chap_count
