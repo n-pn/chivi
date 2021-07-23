@@ -72,6 +72,7 @@ class CV::Zhbook
       chinfo.reset_trans!
 
       self.save!
+      Cvbook.load!(self.cvbook_id).tap(&.set_mftime(self.mftime)).save!
     end
 
     {mftime, chap_count}

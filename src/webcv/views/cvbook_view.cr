@@ -64,7 +64,7 @@ module CV::Views::CvbookView
       if full
         jb.field "bintro", obj.bintro.split("\n")
 
-        jb.field "update", obj.update
+        jb.field "update", obj.mftime
         jb.field "status", obj.status
 
         if ysbook = obj.ysbooks[0]?
