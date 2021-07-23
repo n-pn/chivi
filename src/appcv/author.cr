@@ -26,7 +26,7 @@ class CV::Author
   end
 
   def self.glob_vi(qs : String, accent = false)
-    res = query.where("vslug LIKE '%#{BookUtils.scrub_vname(qs)}%'")
+    res = query.where("vslug LIKE '%#{BookUtils.scrub_vname(qs, "-")}%'")
     accent ? res.where("vname LIKE '%#{qs}%'") : res
   end
 
