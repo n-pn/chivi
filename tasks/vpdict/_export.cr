@@ -167,6 +167,7 @@ regular_inp.each do |key|
     term = regular_out.new_term(key, val, tag, rank, mtime, uname, privi)
     regular_out.set(term)
   elsif val = lexicon.fval(key)
+    next if key.starts_with?("第")
     if key.size > 2
       term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "[qt]")
       regular_out.set(term)
@@ -175,6 +176,7 @@ regular_inp.each do |key|
       suggest_out.set(term)
     end
   elsif !tag.empty?
+    next if key.starts_with?("第")
     cap_mode = {"nr", "ns", "nt", "nz"}.includes?(tag) ? 2 : 0
     val = HANVIET_MTL.translit(key, cap_mode: cap_mode).to_s
     if key.size > 3
