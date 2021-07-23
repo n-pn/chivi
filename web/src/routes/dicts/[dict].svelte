@@ -170,7 +170,7 @@
               <a
                 class="m-button btn-sm"
                 data-kbd="ctrl+enter"
-                href={pager.url(query)}>
+                href={pager.url({ ...query, page: 1 })}>
                 <SIcon name="search" />
               </a>
             </td>

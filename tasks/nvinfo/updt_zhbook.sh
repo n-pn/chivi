@@ -9,4 +9,4 @@ time bin/seed_zhbook -s nofff
 time bin/seed_zhbook -s bqg_5200
 time bin/seed_zhbook -s paoshu8
 time bin/seed_zhbook -s bxwxorg
-time bin/seed_zhbook -s shubaow
+# time bin/seed_zhbook -s shubaow
