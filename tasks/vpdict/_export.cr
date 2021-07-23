@@ -167,13 +167,23 @@ regular_inp.each do |key|
     term = regular_out.new_term(key, val, tag, rank, mtime, uname, privi)
     regular_out.set(term)
   elsif val = lexicon.fval(key)
-    term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "[qt]")
-    regular_out.set(term)
+    if key.size > 2
+      term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "[qt]")
+      regular_out.set(term)
+    else
+      term = suggest_out.new_term(key, [val], tag, mtime: 1, uname: "[qt]")
+      suggest_out.set(term)
+    end
   elsif !tag.empty?
     cap_mode = {"nr", "ns", "nt", "nz"}.includes?(tag) ? 2 : 0
     val = HANVIET_MTL.translit(key, cap_mode: cap_mode).to_s
-    term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "[hv]")
-    regular_out.set(term)
+    if key.size > 3
+      term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "[hv]")
+      regular_out.set(term)
+    else
+      term = suggest_out.new_term(key, [val], tag, mtime: 1, uname: "[hv]")
+      suggest_out.set(term)
+    end
   else
     val = HANVIET_MTL.translit(key, false).to_s
     term = suggest_out.new_term(key, [val])
@@ -289,7 +299,13 @@ def export_book(bhash, regular_set)
     next if regular_set.includes?(key)
 
     tag, count = tags.first
-    next if count < 40
+
+    case key.size
+    when 1 then next
+    when 2 then next if count < 50
+    when 3 then next if count < 40
+    else        next if count < 30
+    end
 
     postag = CV::PosTag.from_str(tag)
     next unless postag.nouns?

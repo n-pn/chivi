@@ -248,7 +248,7 @@ class CV::SeedZhbook
         chap_count = vals[0].to_i
         last_schid = vals[1]
       else
-        puts "- parsing: #{cvbook.bhash}"
+        puts "-- parsing: #{cvbook.bhash}".colorize.red
         # ttl = get_ttl(zhbook.mftime)
         chinfo = ChInfo.new(cvbook.bhash, @sname, snvid)
         _, chap_count, last_schid = chinfo.update!(mode: 1, ttl: 10.years)
