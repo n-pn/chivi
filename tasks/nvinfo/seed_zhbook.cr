@@ -3,6 +3,7 @@ require "../shared/seed_data"
 
 class CV::SeedZhbook
   def initialize(@sname : String)
+    ::FileUtils.mkdir_p("_db/.cache/#{@sname}")
     @seed = SeedData.new(@sname)
   end
 
