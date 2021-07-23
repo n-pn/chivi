@@ -47,6 +47,8 @@ class CV::FsMarkCtrl < CV::BaseCtrl
               json.field "title", title
               json.field "uslug", uslug
             }
+          rescue err
+            puts err
           end
         end
       end
