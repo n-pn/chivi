@@ -96,34 +96,30 @@
   }
 
   .order {
-    @include flex($center: horz, $gap: 0.375rem);
+    @include flex($center: horz, $gap: 0.5rem);
 
-    overflow: auto;
-    margin: 1rem 0 0.5rem;
-    font-weight: 500;
-    text-transform: uppercase;
+    margin: 1rem 0;
 
-    @include fluid(font-size, 12px, 13px, 14px);
-    @include fluid(line-height, 1.5rem, 1.75rem, 2rem);
+    @include fluid(font-size, rem(13px), rem(14px));
+    @include fluid(line-height, 1.75rem, 2rem);
 
     .-type {
       padding: 0 0.75em;
+      font-weight: 500;
+      text-transform: uppercase;
       @include clamp($width: null);
-      @include fgcolor(neutral, 6);
+      @include fgcolor(tert);
 
-      @include border(neutral, 3);
-      border-radius: 0.5rem;
+      @include linesd(--bd-main);
+      @include bdradi();
 
       &._active,
       &:hover {
         @include fgcolor(primary, 6);
-        @include bdcolor(primary, 5);
+        @include linesd(primary, 5, $ndef: false);
       }
 
       @include tm-dark {
-        @include fgcolor(neutral, 4);
-        @include bdcolor(neutral, 7);
-
         &._active,
         &:hover {
           @include fgcolor(primary, 4);
