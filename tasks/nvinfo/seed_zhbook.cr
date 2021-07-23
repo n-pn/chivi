@@ -12,8 +12,8 @@ class CV::SeedZhbook
     missing, updates = [] of String, [] of String
 
     read_stats(upper) do |snvid, state|
-      missing << snvid if state > 1
-      updates << snvid if state == 0 || state == 2
+      missing << snvid if state == 2
+      updates << snvid if state == 0
     end
 
     {missing, updates}
