@@ -21,66 +21,82 @@ class CV::FixCovers
         @@widths.each_value { |map| map.save!(clean: false) }
       end
 
-      unless redo || cvbook.bcover.empty?
-        next if File.exists? out_path("#{cvbook.bcover}")
-      end
-
-      covers = [] of Tuple(String, String)
-      covers << {"chivi", cvbook.bhash}
-
-      cvbook.ysbooks.each { |x| covers << {"yousuu", x.id.to_s} }
-      cvbook.zhbooks.each { |x| covers << {x.sname, x.snvid} }
-
-      max_width, out_cover = 0, nil
-      out_sname, out_snvid = nil, nil
-
-      covers.each do |sname, snvid|
-        next unless cover_file = cover_path(sname, snvid)
-
-        if File.exists? out_path("#{sname}-#{snvid}.webp")
-          out_cover, out_sname, out_snvid = cover_file, sname, snvid
-          break unless redo
-        end
-
-        unless cover_width = width_map(sname).fval(cover_file).try(&.to_i)
-          cover_width = image_width(cover_file)
-
-          if mtime = File.info?(cover_file).try(&.modification_time)
-            values = [cover_width, mtime.to_unix]
-            width_map(sname).set!(cover_file, values.map(&.to_s))
-          end
-        end
-
-        if cover_width > max_width
-          max_width, out_cover = cover_width, cover_file
-          out_sname, out_snvid = sname, snvid
-          break if max_width >= 360
-        end
-      end
-
-      next unless out_cover && out_sname && out_snvid
-
-      out_webp = "#{out_sname}-#{out_snvid}.webp"
-      cvbook.tap(&.bcover = out_webp).save! unless cvbook.bcover == out_webp
-
-      webp_path = out_path(out_webp)
-      next if File.exists?(webp_path)
-      next unless File.exists?(out_cover)
-
-      case out_cover
-      when .ends_with?(".gif")
-        gif_to_webp(out_cover, webp_path)
-      else
-        width = max_width > 360 ? 360 : max_width
-        to_webp(out_cover, webp_path, width: width)
-      end
-
-      next if File.exists?(webp_path)
-      puts "Something wrong! #{webp_path} not generated from #{out_cover}/#{max_width}"
-      File.delete(out_cover)
+      fix_cover!(cvbook)
     end
 
     @@widths.each_value { |map| map.save!(clean: false) }
+  end
+
+  def fix_cover!(cvbook, redo = false)
+    return if !redo && File.exists?(out_path(cvbook.bcover))
+
+    covers = [] of Tuple(String, String)
+    covers << {"chivi", cvbook.bhash}
+
+    cvbook.ysbooks.each { |x| covers << {"yousuu", x.id.to_s} }
+    cvbook.zhbooks.each { |x| covers << {x.sname, x.snvid} }
+
+    max_width, out_cover = 0, nil
+    out_sname, out_snvid = nil, nil
+
+    unless redo
+      covers.each do |sname, snvid|
+        out_webp = "#{sname}-#{snvid}.webp"
+        next unless File.exists? out_path(out_webp)
+
+        unless cvbook.bcover == out_webp
+          cvbook.tap(&.bcover = out_webp).save!
+        end
+
+        return puts "- reuse existing!"
+      end
+    end
+
+    covers.each do |sname, snvid|
+      next unless cover_file = cover_path(sname, snvid)
+
+      if File.exists? out_path("#{sname}-#{snvid}.webp")
+        out_cover, out_sname, out_snvid = cover_file, sname, snvid
+      end
+
+      unless cover_width = width_map(sname).fval(cover_file).try(&.to_i)
+        cover_width = image_width(cover_file)
+
+        if mtime = File.info?(cover_file).try(&.modification_time)
+          values = [cover_width, mtime.to_unix]
+          width_map(sname).set!(cover_file, values.map(&.to_s))
+        end
+      end
+
+      if cover_width > max_width
+        max_width, out_cover = cover_width, cover_file
+        out_sname, out_snvid = sname, snvid
+        break if max_width >= 360
+      end
+    end
+
+    unless out_cover && out_sname && out_snvid
+      return puts "no cover available!"
+    end
+
+    out_webp = "#{out_sname}-#{out_snvid}.webp"
+    cvbook.tap(&.bcover = out_webp).save! unless cvbook.bcover == out_webp
+
+    webp_path = out_path(out_webp)
+    return if File.exists?(webp_path) || !File.exists?(out_cover)
+
+    case out_cover
+    when .ends_with?(".gif")
+      gif_to_webp(out_cover, webp_path)
+    else
+      width = max_width > 360 ? 360 : max_width
+      to_webp(out_cover, webp_path, width: width)
+    end
+
+    return if File.exists?(webp_path)
+
+    puts "#{webp_path} not generated from #{out_cover}:#{max_width}"
+    File.delete(out_cover)
   end
 
   private def gif_to_webp(inp_file, out_file)
