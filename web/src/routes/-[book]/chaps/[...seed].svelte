@@ -78,7 +78,7 @@
     let hide_seeds = []
 
     if (main_seeds.includes(sname)) {
-      const leftover = input[bound + 1]
+      const leftover = input[bound]
       if (leftover) main_seeds.push(leftover)
       hide_seeds = input.slice(bound + 1)
     } else if (sname) {
