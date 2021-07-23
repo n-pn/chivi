@@ -2,7 +2,7 @@ require "../shared/seed_util"
 
 class CV::FixCovers
   INP_DIR = "_db/bcover"
-  OUT_DIR = "_db/bcover/_webps"
+  OUT_DIR = "priv/static/covers"
 
   ::FileUtils.mkdir_p(OUT_DIR)
 
@@ -65,6 +65,7 @@ class CV::FixCovers
 
       webp_path = out_path(out_webp)
       next if File.exists?(webp_path)
+      next unless File.exists?(out_cover)
 
       case out_cover
       when .ends_with?(".gif")
