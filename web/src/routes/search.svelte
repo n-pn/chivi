@@ -5,7 +5,7 @@
     const type = query.get('t') || 'btitle'
 
     if (word) {
-      const url = `/api/cvbooks?take=8&page=${page}&${type}=${word}`
+      const url = `/api/books?take=8&page=${page}&${type}=${word}`
 
       const res = await fetch(url)
       const data = await res.json()
