@@ -75,7 +75,7 @@ class CV::SeedZhwenpg
     cvbook.add_zhseed(zhbook.zseed)
 
     cvbook.set_genres([parser.bgenre.empty? ? "其他" : parser.bgenre])
-    cvbook.set_bcover("zhwenpg-#{parser.snvid}.webp")
+    # cvbook.set_bcover("zhwenpg-#{parser.snvid}.webp")
     cvbook.set_zintro(parser.bintro.join("\n"))
 
     cvbook.set_status(status)

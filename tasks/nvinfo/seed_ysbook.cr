@@ -96,7 +96,7 @@ class CV::SeedYsbook
 
     if redo || ysbook.unmatch?(cvbook.id)
       ysbook.cvbook_id = cvbook.id
-      cvbook.set_bcover("yousuu-#{snvid}.webp")
+      # cvbook.set_bcover("yousuu-#{snvid}.webp")
 
       cvbook.set_genres(@seed.get_genres(snvid))
       cvbook.set_zintro(@seed.get_intro(snvid).join("\n"))

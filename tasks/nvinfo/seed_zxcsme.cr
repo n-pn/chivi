@@ -276,7 +276,7 @@ class CV::SeedZxcsme
       cvbook.add_zhseed(zhbook.zseed)
 
       cvbook.set_genres(@seed.get_genres(snvid))
-      cvbook.set_bcover("zxcs_me-#{snvid}.webp")
+      # cvbook.set_bcover("zxcs_me-#{snvid}.webp")
       cvbook.set_zintro(@seed.get_intro(snvid).join("\n"))
 
       if cvbook.voters == 0
