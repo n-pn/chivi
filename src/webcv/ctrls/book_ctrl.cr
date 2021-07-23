@@ -17,7 +17,7 @@ class CV::BookCtrl < CV::BaseCtrl
         .filter_zseed(params["sname"]?)
         .filter_genre(params["genre"]?)
 
-    if uname = params["uname"]?
+    if uname = params["uname"]?.try(&.downcase)
       blist = ViMark.all_books(uname, params.fetch_str("bmark", "reading"))
       total = blist.size
       query = query.where("bhash = ANY(?)", blist)
