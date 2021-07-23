@@ -37,8 +37,10 @@ class CV::BookCtrl < CV::BaseCtrl
 
           jb.field "books" do
             jb.array do
-              query.limit(limit).offset(offset).with_author.each do |book|
-                Views::CvbookView.render(jb, book, full: false)
+              if total > 0
+                query.limit(limit).offset(offset).with_author.each do |book|
+                  Views::CvbookView.render(jb, book, full: false)
+                end
               end
             end
           end
