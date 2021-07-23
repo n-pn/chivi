@@ -26,9 +26,6 @@ class CV::FetchCovers
       out_queue[image_url] = out_file unless image_url.empty?
     end
 
-    puts "missing: #{out_queue.size}/#{Ysbook.query.count}"
-    gets
-
     fetch!(out_queue, limit: 16)
   end
 
