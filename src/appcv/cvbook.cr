@@ -132,7 +132,7 @@ class CV::Cvbook
 
   def set_zintro(zintro : String, force = false) : Nil
     return unless force || self.bintro.empty?
-    self.bintro = BookUtils.convert(zintro, self.bhash).join
+    self.bintro = BookUtils.convert(zintro, self.bhash).join("\n")
   end
 
   def add_zhseed(zseed : Int32) : Nil
