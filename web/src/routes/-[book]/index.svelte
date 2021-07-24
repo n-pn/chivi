@@ -2,7 +2,7 @@
   export async function load({ fetch, context, page: { query } }) {
     const { nvinfo } = context
     const page = +query.get('page') || 1
-    const sort = query.get('sort') || 'mtime'
+    const sort = query.get('sort') || 'stars'
 
     const qs = `page=${page}&sort=${sort}`
     const res = await fetch(`/api/crits?book=${nvinfo.id}&${qs}`)
@@ -16,7 +16,7 @@
     mtime: 'Gần nhất',
   }
 
-  const _navi = { replace: true, scrollto: '#sort' }
+  const _navi = { replace: true, scrollto: '#sorts' }
 </script>
 
 <script>
@@ -33,7 +33,7 @@
   export let pgmax = 1
   export let _sort
 
-  $: pager = new Pager($page.path, $page.query, { sort: 'mtime', page: 1 })
+  $: pager = new Pager($page.path, $page.query, { sort: 'stars', page: 1 })
   let short_intro = false
 </script>
 
