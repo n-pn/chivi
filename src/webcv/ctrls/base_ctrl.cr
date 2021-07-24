@@ -49,6 +49,10 @@ class CV::BaseCtrl < Amber::Controller::Base
     response.status_code = status_code
     response.puts(content)
   end
+
+  def pgmax(total : Int32 | Int64, limit : Int32)
+    (total - 1) // limit + 1
+  end
 end
 
 class Amber::Validators::Params

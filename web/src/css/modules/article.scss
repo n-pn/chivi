@@ -5,16 +5,4 @@
     margin-top: var(--gutter-large);
     margin-bottom: 0;
   }
-
-  > h1,
-  > h2 {
-    margin-bottom: var(--gutter-large);
-
-    @include after($abs: true) {
-      width: 100%;
-      bottom: 0;
-      height: 1px;
-      background: var(--bd-cert);
-    }
-  }
 }

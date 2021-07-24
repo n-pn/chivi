@@ -25,6 +25,18 @@ class CV::Yscrit
 
   column created_at : Time
 
+  scope :filter_cvbook do |cvbook_id|
+    cvbook_id ? where("cvbook_id = #{cvbook_id}") : self
+  end
+
+  scope :sort_by do |order|
+    case order
+    when :ctime then self.order_by(id: :desc)
+    when :stars then self.order_by(stars: :desc)
+    else             self.order_by(like_count: :desc)
+    end
+  end
+
   def self.get!(id : Int64, created_at : Time)
     find({id: id}) || new({id: id, created_at: created_at})
   end
