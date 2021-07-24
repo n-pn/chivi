@@ -216,9 +216,4 @@
     max-width: 100%;
     @include clamp($width: null);
   }
-
-  .pagi {
-    margin-bottom: 0.75rem;
-    @include flex($center: horz, $gap: 0.75rem);
-  }
 </style>
