@@ -15,7 +15,7 @@
     const url = `chaps/${nvinfo.id}/${sname}?page=${page}&mode=${mode}`
 
     const [status, chinfo] = await api_call(fetch, url)
-    if (status) return { status, error: new Error(chinfo) }
+    if (status) return { status, error: chinfo }
 
     if (chinfo.utime > nvinfo.update) nvinfo.update = chinfo.utime
     return { props: { nvinfo, chinfo } }

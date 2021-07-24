@@ -10,15 +10,8 @@
     if (bmark != 'reading') url += `&bmark=${bmark}`
 
     const res = await fetch(url)
-    if (!res.ok) {
-      return {
-        status: res.status,
-        error: new Error(await res.text()),
-      }
-    }
-
-    const data = await res.json()
-    return { props: { uname, bmark, ...data } }
+    if (res.ok) return { props: { uname, bmark, ...(await res.json()) } }
+    return { status: res.status, error: await res.text() }
   }
 </script>
 

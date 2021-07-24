@@ -46,9 +46,7 @@
 
     <div class="chips">
       {#each Object.entries(order_names) as [name, text]}
-        <a href="/?order={name}" class="-chip">
-          {text}
-        </a>
+        <a href="/?order={name}" class="-chip">{text}</a>
       {/each}
     </div>
   </section>

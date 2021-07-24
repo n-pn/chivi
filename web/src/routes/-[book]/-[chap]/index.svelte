@@ -3,14 +3,12 @@
   import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
   export async function load({ fetch, page, context }) {
+    const [chidx, sname] = page.params.chap.split('-').reverse()
     const { nvinfo } = context
 
-    const [chidx, sname] = page.params.chap.split('-').reverse()
-
     const url = `chaps/${nvinfo.id}/${sname}/${chidx}`
-    const [err, chinfo] = await api_call(fetch, url)
-
-    if (err) return { status: 404, error: new Error(chinfo) }
+    const [status, chinfo] = await api_call(fetch, url)
+    if (status) return { status, error: chinfo }
 
     const mode = +page.query.get('mode') || 0
     const txturl = `/api/${url}/${chinfo.schid}`

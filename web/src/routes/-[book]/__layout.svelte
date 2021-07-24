@@ -3,7 +3,7 @@
 
   export async function load({ page: { params }, fetch }) {
     const [status, nvinfo] = await api_call(fetch, `books/${params.book}`)
-    if (status) return { status, error: new Error(nvinfo) }
+    if (status) return { status, error: nvinfo }
     return { context: { nvinfo } }
   }
 </script>

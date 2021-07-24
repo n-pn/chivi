@@ -2,25 +2,16 @@
   export async function load({ page: { query }, fetch }) {
     const page = +query.get('page') || 1
 
-    const url = `/api/books?${query.toString()}&take=24&page=${page}`
-    const res = await fetch(url)
+    const qs = `?${query.toString()}&take=24&page=${page}`
+    const res = await fetch(`/api/books${qs}`)
 
-    if (res.ok) {
-      const data = await res.json()
-
-      return {
-        props: { ...data, opts: parse_params(query) },
-      }
-    }
-
-    return {
-      status: res.status,
-      error: new Error(await res.text()),
-    }
+    if (!res.ok) return { status: res.status, error: await res.text() }
+    return { props: { ...(await res.json()), opts: parse_params(query) } }
   }
 
   function parse_params(query, params = {}) {
-    params.order = query.get('order') || 'access'
+    params.order = query.get('order') || 'bumped'
+
     if (query.has('genre')) params.genre = query.get('genre')
     if (query.has('sname')) params.sname = query.get('sname')
     if (query.has('page')) params.page = +query.get('page')
@@ -29,9 +20,9 @@
   }
 
   const order_names = {
-    access: 'Vừa xem',
+    bumped: 'Vừa xem',
     update: 'Đổi mới',
-    voters: 'Đánh giá',
+    rating: 'Đánh giá',
     weight: 'Tổng hợp',
   }
 </script>
@@ -47,8 +38,8 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  export let opts = { order: 'access' }
-  $: pager = new Pager($page.path, $page.query, { order: 'access' })
+  export let opts = { order: 'bumped' }
+  $: pager = new Pager($page.path, $page.query, { order: 'bumped' })
 </script>
 
 <svelte:head>

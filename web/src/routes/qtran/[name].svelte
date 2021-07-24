@@ -1,12 +1,10 @@
 <script context="module">
   export async function load({ fetch, page: { params, query } }) {
-    const url = `/api/qtran/${params.name}?${query.toString()}`
-    const res = await fetch(url)
-
+    const res = await fetch(`/api/qtran/${params.name}?${query.toString()}`)
     const cvdata = await res.text()
 
     if (res.ok) return { props: { cvdata } }
-    return { status: 404, error: new Error(cvdata) }
+    return { status: 404, error: cvdata }
   }
 </script>
 

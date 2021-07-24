@@ -3,15 +3,10 @@ export async function handle({ request, resolve }) {
   return resolve(request)
 }
 
-/** @type {import('@sveltejs/kit').ServerFetch} */
-export async function serverFetch(request) {
-  // if (request.path.startsWith('/api/')) {
-  return fetch(request)
-}
-
 async function mutateFetch({ path, query, method, headers, rawBody: body }) {
   const url = `http://localhost:5010${path}?${query.toString()}`
-  const res = await fetch(url, { method, headers, body })
+  const opts = method == 'GET' ? { headers } : { method, headers, body }
+  const res = await fetch(url, opts)
 
   const res_headers = {}
   for (let [key, val] of res.headers.entries()) res_headers[key] = val
@@ -40,9 +35,6 @@ function getUserToken(cookies) {
 }
 
 async function currentUser(headers) {
-  const url = 'http://localhost:5010/api/user/_self'
-  const res = await fetch(url, { headers })
-
-  const data = await res.json()
-  return data
+  const res = await fetch('http://localhost:5010/api/user/_self', { headers })
+  return await res.json()
 }
