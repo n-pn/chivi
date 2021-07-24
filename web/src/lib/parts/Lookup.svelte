@@ -91,7 +91,7 @@
   </svelte:fragment>
 
   <button slot="header-right" class="-btn" on:click={() => ($enabled = false)}>
-    <SIcon name="slash" />
+    <SIcon name="circle-off" />
   </button>
 
   <section class="lookup">

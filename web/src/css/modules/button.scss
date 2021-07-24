@@ -73,8 +73,8 @@ $-colors: (primary, success, warning, harmful);
   --innerh: calc(var(--height) - var(--gutter) - var(--gutter));
 
   display: inline-flex;
-
   justify-content: center;
+
   min-width: var(--height);
 
   // text-transform: capitalize;
@@ -103,11 +103,9 @@ $-colors: (primary, success, warning, harmful);
     @include hover { cursor: text; }
   }
 
-  > svg,
-  > img,
-  > .-ico {
-    width: var(--innerh);
-    height: var(--innerh);
+  > .m-icon {
+    display: block;
+    --icon-size: var(--innerh, 1.25em);
   }
 
   > span,

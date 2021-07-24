@@ -44,7 +44,7 @@
 
 <Vessel>
   <span slot="header-left" class="header-item _active">
-    <SIcon name="zap" />
+    <SIcon name="bolt" />
     <span class="header-text">Dịch nhanh</span>
   </span>
 
@@ -75,7 +75,7 @@
   <div slot="footer" class="foot">
     {#if on_edit}
       <button class="m-button" on:click={cleanup}>
-        <SIcon name="trash" />
+        <SIcon name="eraser" />
         <span>Xoá</span>
       </button>
 
@@ -84,7 +84,7 @@
       </button>
     {:else}
       <button class="m-button" on:click={() => (edit_mode = true)}>
-        <SIcon name="edit-2" />
+        <SIcon name="pencil" />
         <span>Sửa</span>
       </button>
 

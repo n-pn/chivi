@@ -60,13 +60,13 @@
 
 <Vessel>
   <a slot="header-left" href="/-{nvinfo.bslug}" class="header-item _active">
-    <SIcon name="book-open" />
+    <SIcon name="book" />
     <span class="header-text _title">{nvinfo.btitle_vi}</span>
   </a>
 
   <svelte:fragment slot="header-right">
     <a class="header-item" href="/dicts/{nvinfo.bhash}">
-      <SIcon name="box" />
+      <SIcon name="package" />
       <span class="header-text _show-md">Từ điển</span>
     </a>
     {#if $session.privi > 0}
@@ -108,7 +108,7 @@
     <section class="extra">
       <div class="line">
         <span class="stat -trim">
-          <SIcon name="pen-tool" />
+          <SIcon name="writing" />
           <a
             class="link"
             href="/search?q={encodeURIComponent(nvinfo.author_vi)}&t=author">

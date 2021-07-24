@@ -62,7 +62,7 @@
     </button>
 
     <button class="-btn" on:click={logout}>
-      <SIcon name="log-out" />
+      <SIcon name="logout" />
     </button>
   </svelte:fragment>
 

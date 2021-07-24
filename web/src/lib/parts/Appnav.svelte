@@ -17,11 +17,11 @@
 
   <svelte:fragment slot="header-right">
     <a href="/dicts" class="-btn">
-      <SIcon name="box" />
+      <SIcon name="package" />
     </a>
 
     <a href="/qtran" class="-btn">
-      <SIcon name="zap" />
+      <SIcon name="bolt" />
     </a>
 
     <a href="/" class="-btn">

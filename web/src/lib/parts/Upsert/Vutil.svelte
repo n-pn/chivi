@@ -29,7 +29,7 @@
     </button>
 
     <button class="-btn" data-kbd="e" on:click={() => (term = term.clear())}>
-      <SIcon name="erase" />
+      <SIcon name="eraser" />
     </button>
   </div>
 </div>

@@ -1,16 +1,10 @@
 %icon,
 .m-icon {
   --icon-size: 1em;
-
   display: inline-block;
   width: var(--icon-size);
   height: var(--icon-size);
-
-  stroke: currentColor;
   stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
 }
 
 .icon-sm {

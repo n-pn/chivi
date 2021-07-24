@@ -45,7 +45,7 @@
 <Vessel>
   <svelte:fragment slot="header-left">
     <a href="/-{nvinfo.bslug}" class="header-item _title">
-      <SIcon name="book-open" />
+      <SIcon name="book" />
       <span class="header-text _show-md _title">{nvinfo.btitle_vi}</span>
     </a>
 
@@ -81,7 +81,7 @@
     <input class="m-input" name="chidx" bind:value={chidx} />
 
     <button class="m-button _primary _fill" on:click={submit_text}>
-      <SIcon name="plus-square" />
+      <SIcon name="square-plus" />
       <span class="-text">Thêm</span>
     </button>
   </div>

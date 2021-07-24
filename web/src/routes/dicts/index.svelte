@@ -28,7 +28,7 @@
 <Vessel>
   <svelte:fragment slot="header-left">
     <span class="header-item _active">
-      <SIcon name="box" />
+      <SIcon name="package" />
       <span class="header-text">Từ điển</span>
     </span>
   </svelte:fragment>

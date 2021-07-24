@@ -116,7 +116,7 @@
         {/each}
       {:else}
         <button class="-name" on:click={() => (show_more = true)}>
-          <SIcon name="more-horizontal" />
+          <SIcon name="dots" />
           <span>({hide_seeds.length})</span>
         </button>
       {/if}
@@ -184,7 +184,7 @@
         {#if $navigating}
           <SIcon name="loader" spin={true} />
         {:else}
-          <SIcon name="rotate-ccw" />
+          <SIcon name="refresh" />
         {/if}
         <span class="-hide">Đổi mới</span>
       </a>

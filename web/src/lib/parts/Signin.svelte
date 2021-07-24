@@ -103,7 +103,7 @@
           </button>
 
           <button type="submit" class="m-button _primary _fill">
-            <SIcon name="log-in" />
+            <SIcon name="login" />
             <span class="-text">Đăng nhập</span>
           </button>
         {:else}

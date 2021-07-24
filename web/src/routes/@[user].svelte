@@ -40,7 +40,7 @@
 
 <Vessel>
   <span slot="header-left" class="header-item _active">
-    <SIcon name="layers" />
+    <SIcon name="notebook" />
     <span class="header-text _title">Tủ truyện của [{uname}]</span>
   </span>
   <div class="tabs">

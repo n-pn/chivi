@@ -26,7 +26,7 @@
 
 <Vessel>
   <span slot="header-left" class="header-item _active">
-    <SIcon name="zap" />
+    <SIcon name="bolt" />
     <span class="header-text">Dịch nhanh</span>
   </span>
 
@@ -50,7 +50,7 @@
       class="m-button"
       data-kbd="r"
       on:click={() => window.location.reload()}>
-      <SIcon name="rotate-ccw" />
+      <SIcon name="rotate" />
       <span>Dịch lại</span>
     </button>
 

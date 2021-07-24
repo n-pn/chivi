@@ -32,8 +32,8 @@ export const mark_names = {
 
 export const mark_icons = {
   reading: 'eye',
-  onhold: 'pause',
-  completed: 'check-square',
+  onhold: 'player-pause',
+  completed: 'square-check',
   dropped: 'trash',
   pending: 'calendar',
 }

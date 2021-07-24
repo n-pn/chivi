@@ -96,7 +96,7 @@
   <div id="upsert" class="main" on:click|stopPropagation={focus_on_value}>
     <header class="head">
       <a href="/dicts/{dname}" class="m-button _text" target="_blank">
-        <SIcon name="box" />
+        <SIcon name="package" />
       </a>
 
       <Input phrase={$input} pinyin={trans.binh_am} bind:output={key} />

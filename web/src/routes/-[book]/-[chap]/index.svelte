@@ -77,7 +77,7 @@
 <Vessel>
   <svelte:fragment slot="header-left">
     <a href={book_path} class="header-item _title">
-      <SIcon name="book-open" />
+      <SIcon name="book" />
       <span class="header-text _show-md _title">{nvinfo.btitle_vi}</span>
     </a>
 
@@ -92,7 +92,7 @@
       disabled={$session.privi < 1}
       on:click={reload_chap}
       data-kbd="r">
-      <SIcon name="refresh-ccw" spin={_reload} />
+      <SIcon name="rotate" spin={_reload} />
     </button>
 
     <button

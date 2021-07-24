@@ -98,7 +98,7 @@
 <Vessel>
   <svelte:fragment slot="header-left">
     <a href="/dicts" class="header-item">
-      <SIcon name="box" />
+      <SIcon name="package" />
       <span class="header-text _show-md">Từ điển</span>
     </a>
 
@@ -165,7 +165,7 @@
                 bind:value={query.privi} /></td>
             <td>
               <button class="m-button btn-sm" on:click={reset_query}>
-                <SIcon name="erase" />
+                <SIcon name="eraser" />
               </button>
               <a
                 class="m-button btn-sm"
@@ -208,7 +208,7 @@
 
                 <div class="hover">
                   <span class="m-button btn-xs _active">
-                    <SIcon name="edit-2" />
+                    <SIcon name="pencil" />
                   </span>
                   <button
                     class="m-button btn-xs"
@@ -225,7 +225,7 @@
                   <button
                     on:click={() => upsert_activate(key, 0, 2)}
                     class="m-button btn-xs _active">
-                    <SIcon name="edit-2" />
+                    <SIcon name="pencil" />
                   </button>
                   <a
                     class="m-button btn-xs"

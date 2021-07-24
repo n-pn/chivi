@@ -55,7 +55,7 @@
   </svelte:fragment>
 
   <a slot="header-right" href="/qtran" class="header-item">
-    <SIcon name="zap" />
+    <SIcon name="bolt" />
     <span class="header-text _show-md">Dịch nhanh</span>
   </a>
 
