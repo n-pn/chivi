@@ -2,9 +2,6 @@ import preprocess from 'svelte-preprocess'
 import node from '@sveltejs/adapter-node'
 import { mdsvex } from 'mdsvex'
 import breaks from 'remark-breaks'
-
-import postcssConfig from './postcss.config.cjs'
-
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -19,7 +16,7 @@ const mdsvexConfig = {
 }
 
 /** @type {import('@sveltejs/kit').Config} */
-const config = {
+export default {
   extensions: ['.svelte', '.svx', '.md'],
   preprocess: [
     preprocess({
@@ -28,7 +25,6 @@ const config = {
         includePaths: [path.resolve(_cwd, 'src/css')],
         renderSync: true,
       },
-      postcss: postcssConfig,
     }),
     mdsvex(mdsvexConfig),
   ],
@@ -53,5 +49,3 @@ const config = {
     },
   },
 }
-
-export default config

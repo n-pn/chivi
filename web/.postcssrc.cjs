@@ -1,6 +1,5 @@
 const purge = require('@fullhuman/postcss-purgecss')
 const autoprefixer = require('autoprefixer')
-const cssnano = require('cssnano')
 
 const prod = process.env.NODE_ENV === 'production'
 const purging = process.env.PURGECSS === 'true'
@@ -18,9 +17,5 @@ const purgeConfig = {
 }
 
 module.exports = {
-  plugins: [
-    autoprefixer,
-    prod && cssnano({ preset: 'default' }),
-    purging && purge(purgeConfig),
-  ].filter(Boolean),
+  plugins: [autoprefixer, purging && purge(purgeConfig)].filter(Boolean),
 }
