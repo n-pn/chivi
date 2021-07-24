@@ -8,7 +8,9 @@ class CV::Yscrit
   belongs_to ysbook : Ysbook
 
   belongs_to ysuser : Ysuser
-  belongs_to yslist : Yslist
+  belongs_to yslist : Yslist?
+
+  column origin_id : String
 
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
 
@@ -21,7 +23,9 @@ class CV::Yscrit
   column like_count : Int32 = 0
   column repl_count : Int32 = 0 # reply count, optional
 
-  getter origin_id : String do
-    created_at.not_nil!.to_unix.to_s(base: 16) + id.to_s(base: 16)
+  column created_at : Time
+
+  def self.get!(id : Int64, created_at : Time)
+    find({id: id}) || new({id: id, created_at: created_at})
   end
 end

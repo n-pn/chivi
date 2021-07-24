@@ -9,6 +9,8 @@ class CV::Yslist
   has_many ysbooks : Ysbook, through: "yscrits"
   has_many cvbooks : Cvbook, through: "yscrits"
 
+  column origin_id : String
+
   column zname : String # original list name
   column vname : String # translated name
 
@@ -23,8 +25,4 @@ class CV::Yslist
   column book_count : Int32 = 0
   column like_count : Int32 = 0
   column view_count : Int32 = 0
-
-  getter origin_id : String do
-    created_at.not_nil!.to_unix.to_s(base: 16) + id.to_s(base: 16)
-  end
 end
