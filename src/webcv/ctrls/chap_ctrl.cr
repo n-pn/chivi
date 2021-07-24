@@ -26,7 +26,7 @@ class CV::ChapCtrl < CV::BaseCtrl
           jb.field "total", total
 
           jb.field "pgidx", pgidx
-          jb.field "pgmax", (total - 1) / 32 + 1
+          jb.field "pgmax", (total - 1) // 32 + 1
 
           jb.field "lasts" do
             jb.array do
