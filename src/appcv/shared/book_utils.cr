@@ -62,6 +62,10 @@ module CV::BookUtils
     end
   end
 
+  def scrub(name : String, delimit = "-")
+    query =~ /\p{Han}/ ? scrub_zname(name) : scrub_vname(name, delimit)
+  end
+
   def scrub_zname(zname : String) : String
     zname.gsub(/[^\p{L}\p{N}]/, "")
   end

@@ -54,35 +54,38 @@ class CV::Cvbook
   column list_count : Int32 = 0
   column crit_count : Int32 = 0
 
-  scope :filter_ztitle do |query|
-    where("ztitle LIKE %?%", BookUtils.scrub_zname(query))
+  scope :filter_ztitle do |input|
+    where("ztitle LIKE %?%", BookUtils.scrub_zname(input))
   end
 
-  scope :filter_vtitle do |query|
-    scrub = BookUtils.scrub_vname(query)
+  scope :filter_vtitle do |input|
+    scrub = BookUtils.scrub_vname(input)
     where("vtslug LIKE %?% OR htslug LIKE %?%", scrub, scrub)
     # where("vtitle LIKE %$% OR htitle LIKE %$%", frag, frag) if accent
   end
 
-  scope :filter_btitle do |query|
-    if query.nil?
+  scope :filter_btitle do |input|
+    if input.nil?
       self
-    elsif query =~ /\p{Han}/
-      scrub = BookUtils.scrub_zname(query)
+    elsif input =~ /\p{Han}/
+      scrub = BookUtils.scrub_zname(input)
       where("ztitle LIKE '%#{scrub}%'")
     else
-      scrub = BookUtils.scrub_vname(query, "-")
+      scrub = BookUtils.scrub_vname(input, "-")
       where("vtslug LIKE '%#{scrub}%' OR htslug LIKE '%#{scrub}%'")
     end
   end
 
-  scope :filter_author do |query|
-    if query.nil?
-      self
+  scope :filter_author do |input|
+    return self if input.nil?
+
+    if input =~ /\p{Han}/
+      query = "zname LIKE '%#{BookUtils.scrub_zname(input)}%'"
     else
-      author_ids = Author.glob(query).map(&.id.not_nil!)
-      where { cvbooks.author_id.in?(author_ids) }
+      query = "vslug LIKE '%#{BookUtils.scrub_vname(input, "-")}%'"
     end
+
+    where("author_id IN (SELECT ID from authors WHERE #{query})")
   end
 
   scope :filter_zseed do |query|

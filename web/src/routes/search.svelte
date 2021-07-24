@@ -1,123 +1,93 @@
 <script context="module">
   export async function load({ fetch, page: { query } }) {
-    const word = (query.get('q') || '').replace(/\+|-/g, ' ')
-    const page = +query.get('p') || 1
+    const page = +query.get('page') || 1
     const type = query.get('t') || 'btitle'
 
-    if (word) {
-      const url = `/api/books?take=8&page=${page}&${type}=${word}`
+    const input = query.get('q')
+    if (!input) return { props: { input, type } }
 
-      const res = await fetch(url)
-      const data = await res.json()
-      return {
-        props: { ...data, word, page, type },
-      }
-    } else {
-      return {
-        props: { word, page: 1, type, total: 0, books: [] },
-      }
-    }
+    const qs = input.replace(/\+|-/g, ' ')
+    const url = `/api/books?order=weight&take=8&page=${page}&${type}=${qs}`
+    const res = await fetch(url)
+    return { props: { input, type, ...(await res.json()) } }
   }
 </script>
 
 <script>
+  import { page } from '$app/stores'
   import SIcon from '$atoms/SIcon.svelte'
   import BCover from '$atoms/BCover.svelte'
   import Vessel from '$sects/Vessel.svelte'
+  import Mpager, { Pager } from '$molds/Mpager.svelte'
 
-  export let word = ''
-  export let page = 1
-  export let type = 'btitle'
-
+  export let input = ''
   export let books = []
-  export let total = 0
   export let pgidx = 0
   export let pgmax = 0
 
-  function make_url(page) {
-    if (page < 1) page = 1
-    if (page > pgmax) page = pgmax
-
-    let url = `/search?q=${word}&p=${page}`
-    if (type != 'btitle') url += `&t=${type}`
-
-    return url
-  }
+  $: from = (pgidx - 1) * 8 + 1
+  $: upto = from + books.length - 1
+  $: pager = new Pager($page.path, $page.query)
 </script>
 
 <svelte:head>
-  <title>Kết quả tìm kiếm cho "{word}" - Chivi</title>
+  <title>Kết quả tìm kiếm cho "{input}" - Chivi</title>
 </svelte:head>
 
 <Vessel>
   <svelte:fragment slot="header-left">
     <form class="header-field" action="/search" method="get">
-      <input type="search" name="q" placeholder="Tìm kiếm" value={word} />
+      <input type="search" name="q" placeholder="Tìm kiếm" value={input} />
       <SIcon name="search" />
     </form>
   </svelte:fragment>
 
   {#if pgmax > 0}
-    <h1>
-      Hiển thị kết quả
-      {(pgidx - 1) * 8 + 1}~{(pgidx - 1) * 8 + books.length}/{total}
-      cho từ khoá "{word}":
-    </h1>
-
-    <div class="list" data-page={page}>
-      {#each books.slice(0, 8) as book}
-        <a href="/-{book.bslug}" class="book">
-          <div class="cover">
-            <BCover bcover={book.bcover} />
-          </div>
-
-          <div class="infos">
-            <div class="extra _title">
-              <span class="-vi -trim">{book.btitle_vi}</span>
-            </div>
-
-            <div class="extra _subtitle">
-              <small class="-zh -trim">{book.btitle_zh}</small>
-            </div>
-
-            <div class="extra _author">
-              <span class="value -trim">{book.author_vi}</span>
-            </div>
-
-            <div class="extra">
-              <span class="label">Thể loại:</span>
-              <span class="value">{book.genres[0]}</span>
-            </div>
-
-            <div class="extra">
-              <span class="label">Đánh giá:</span>
-              <span class="value">{book.rating == 0 ? '--' : book.rating}</span
-              ><span class="label">/10</span>
-            </div>
-          </div>
-        </a>
-      {/each}
-    </div>
-
-    <div class="pagi">
-      <a href={make_url(page - 1)} class="m-button" class:_disable={page == 1}>
-        <SIcon name="chevron-left" />
-        <span>Trước</span>
-      </a>
-
-      <div class="m-button _primary _disable"><span>{page}</span></div>
-
-      <a
-        href={make_url(page + 1)}
-        class="m-button _fill _primary"
-        class:_disable={page == pgmax}>
-        <span>Kế tiếp</span>
-        <SIcon name="chevron-right" />
-      </a>
-    </div>
+    <h1>Hiển thị kết quả từ {from} tới {upto} cho từ khoá "{input}":</h1>
   {:else}
-    <h1>Không tìm được kết quả phù hợp cho từ khoá "{word}"</h1>
+    <h1>Không tìm được kết quả phù hợp cho từ khoá "{input}"</h1>
   {/if}
+
+  <div class="list">
+    {#each books.slice(0, 8) as book}
+      <a href="/-{book.bslug}" class="book">
+        <div class="cover">
+          <BCover bcover={book.bcover} />
+        </div>
+
+        <div class="infos">
+          <div class="extra _title">
+            <span class="-vi -trim">{book.btitle_vi}</span>
+          </div>
+
+          <div class="extra _subtitle">
+            <small class="-zh -trim">{book.btitle_zh}</small>
+          </div>
+
+          <div class="extra _author">
+            <span class="value -trim">{book.author_vi}</span>
+          </div>
+
+          <div class="extra">
+            <span class="label">Thể loại:</span>
+            <span class="value">{book.genres[0]}</span>
+          </div>
+
+          <div class="extra">
+            <span class="label">Đánh giá:</span>
+            <span class="value">{book.rating == 0 ? '--' : book.rating}</span
+            ><span class="label">/10</span>
+          </div>
+        </div>
+      </a>
+    {/each}
+  </div>
+
+  <svelte:fragment slot="footer">
+    {#if books.length > 0}
+      <Mpager {pager} {pgidx} {pgmax} />
+    {/if}
+  </svelte:fragment>
 </Vessel>
 
 <style lang="scss">
