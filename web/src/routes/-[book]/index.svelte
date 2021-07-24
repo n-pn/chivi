@@ -2,16 +2,27 @@
   export async function load({ fetch, context, page: { query } }) {
     const { nvinfo } = context
     const page = +query.get('page') || 1
+    const sort = query.get('sort') || 'mtime'
 
-    const res = await fetch(`/api/crits?book=${nvinfo.id}&page=${page}`)
-    return { props: { nvinfo, ...(await res.json()) } }
+    const qs = `page=${page}&sort=${sort}`
+    const res = await fetch(`/api/crits?book=${nvinfo.id}&${qs}`)
+
+    return { props: { nvinfo, _sort: sort, ...(await res.json()) } }
   }
+
+  const sorts = {
+    stars: 'Cho điểm',
+    likes: 'Ưa thích',
+    mtime: 'Gần nhất',
+  }
+
+  const _navi = { replace: true, scrollto: '#sort' }
 </script>
 
 <script>
   import { page } from '$app/stores'
 
-  import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
   import Book from './_book.svelte'
 
@@ -20,8 +31,9 @@
   export let crits = []
   export let pgidx = 1
   export let pgmax = 1
+  export let _sort
 
-  $: pager = new Pager($page.path, $page.query, { order: 'bumped' })
+  $: pager = new Pager($page.path, $page.query, { sort: 'mtime', page: 1 })
   let short_intro = false
 </script>
 
@@ -34,7 +46,17 @@
       {/each}
     </div>
 
-    <h2>Đánh giá:</h2>
+    <div class="sorts" id="sorts">
+      <span class="h3 -label"> Đánh giá </span>
+      {#each Object.entries(sorts) as [sort, name]}
+        <a
+          href={pager.url({ sort, page: 1 })}
+          class="-sort"
+          use:navigate={_navi}
+          class:_active={sort == _sort}>{name}</a>
+      {/each}
+    </div>
+
     <div class="crits">
       {#each crits as crit}
         <Yscrit {crit} show_book={false} view_all={crit.vhtml.length < 1000} />
@@ -42,7 +64,7 @@
 
       <footer class="pagi">
         {#if crits.length > 0}
-          <Mpager {pager} {pgidx} {pgmax} />
+          <Mpager {pager} {pgidx} {pgmax} {_navi} />
         {/if}
       </footer>
     </div>
@@ -75,5 +97,29 @@
 
   p {
     margin-top: 0.5rem;
+  }
+
+  .sorts {
+    line-height: 2rem;
+    height: 2rem;
+    @include flex($gap: 0.5rem);
+    @include border(--bd-main, $sides: bottom);
+
+    .-label {
+      flex: 1;
+      // font-weight: 500;
+      // @include ftsize(xl);
+    }
+
+    .-sort {
+      @include fgcolor(tert);
+      padding: 0 0.125rem;
+      height: 2rem;
+
+      &._active {
+        border-bottom: 2px solid color(primary, 5);
+        @include fgcolor(primary, 5);
+      }
+    }
   }
 </style>

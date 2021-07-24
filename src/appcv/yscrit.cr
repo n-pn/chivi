@@ -31,9 +31,10 @@ class CV::Yscrit
 
   scope :sort_by do |order|
     case order
-    when :ctime then self.order_by(id: :desc)
-    when :stars then self.order_by(stars: :desc)
-    else             self.order_by(like_count: :desc)
+    when "ctime" then self.order_by(id: :desc)
+    when "likes" then self.order_by(like_count: :desc)
+    when "stars" then self.order_by(stars: :desc, like_count: :desc)
+    else              self.order_by(created_at: :desc)
     end
   end
 
