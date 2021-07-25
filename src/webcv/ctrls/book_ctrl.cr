@@ -66,7 +66,7 @@ class CV::BookCtrl < CV::BaseCtrl
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
-    # cvbook.bump! if cu_privi > 0
+    cvbook.bump! if cu_privi >= 0
 
     response.headers.add("Cache-Control", "public, min-fresh=60")
     render_json do |res|
