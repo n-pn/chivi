@@ -1,24 +1,22 @@
 require "./shared/http_client"
+require "../shared/raw_yscrit"
 
 class CV::CrawlYscrit
-  DIR = "_db/yousuu/crits"
-  IDX = "_db/zhbook/yousuu/counts.tsv"
+  DIR = "_db/yousuu/crits-latest"
 
-  @counter = {} of String => Int32
+  @counter = {} of Int64 => Int32
 
   def initialize(regen_proxy = false)
     @http = HttpClient.new(regen_proxy)
 
-    File.read_lines(IDX).each do |line|
-      snvid, _, crit_count = line.split('\t')
-      crit_count = crit_count.to_i
-      @counter[snvid] = crit_count if crit_count > 3
+    Ysbook.query.order_by(id: :desc).each_with_cursor(20) do |ysbook|
+      @counter[ysbook.id] = ysbook.crit_count
     end
   end
 
   def crawl!(page = 1)
     count = 0
-    queue = [] of String
+    queue = [] of Int64
 
     @counter.each do |snvid, count|
       count -= (page - 1) * 20
@@ -29,11 +27,11 @@ class CV::CrawlYscrit
       count += 1
       puts "\n[page: #{page}, loop: #{count}, size: #{queue.size}]".colorize.cyan
 
-      fails = [] of String
+      fails = [] of Int64
 
       limit = queue.size
       limit = 15 if limit > 15
-      inbox = Channel(String?).new(limit)
+      inbox = Channel(Int64?).new(limit)
 
       queue.each_with_index(1) do |snvid, idx|
         return if @http.no_proxy?
@@ -55,14 +53,19 @@ class CV::CrawlYscrit
     end
   end
 
-  def crawl_crit!(snvid : String, page = 1, label = "1/1/1") : String?
-    group = (snvid.to_i // 1000).to_s.rjust(3, '0')
+  def crawl_crit!(snvid : Int64, page = 1, label = "1/1/1") : Int64?
+    group = snvid.//(1000).to_s.rjust(3, '0')
     file = "#{DIR}/#{group}/#{snvid}-#{page}.json"
 
     return if still_good?(file, page)
 
-    link = "https://api.yousuu.com/api/book/#{snvid}/comment?page=#{page}"
+    link = "https://api.yousuu.com/api/book/#{snvid}/comment?type=latest&page=#{page}"
     return snvid unless @http.save!(link, file, label)
+
+    crits = RawYscrit.parse_raw(File.read(file))
+    crits.each(&.seed!)
+  rescue err
+    puts err
   end
 
   FRESH = 3.days
