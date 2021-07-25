@@ -7,10 +7,13 @@ class CV::CritCtrl < CV::BaseCtrl
     skip = (page - 1) &* take
 
     query = Yscrit.sort_by(params["sort"]?)
-    query.filter_cvbook(params["book"]?.try(&.to_i?))
+
+    book = params["book"]?.try(&.to_i?)
+
+    query.filter_cvbook(book)
     query.filter_ysuser(params["user"]?.try(&.to_i?))
 
-    total = query.dup.limit((page + 2) * take).count
+    total = book ? query.dup.count : query.dup.limit((page + 2) * take).count
     query = query.limit(take).offset(skip).with_cvbook.with_ysuser
 
     render_json do |res|
