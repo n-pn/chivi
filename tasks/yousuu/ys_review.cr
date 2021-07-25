@@ -68,11 +68,12 @@ class CV::CrawlYscrit
     puts err
   end
 
-  FRESH = 3.days
+  FRESH = 2.days
 
   private def still_good?(file : String, page = 1)
     return false unless info = File.info?(file)
-    info.modification_time + FRESH * page > Time.utc
+    still_fresh = Time.utc - FRESH * page
+    info.modification_time >= still_fresh
   end
 
   delegate no_proxy?, to: @http
