@@ -13,7 +13,7 @@
 
 <div class="crit">
   <header class="-head">
-    <span class="-user">{crit.user_name}</span>
+    <a class="-user" href="/crits?user={crit.user_slug}">{crit.user_name}</a>
     <span class="-time">· {get_rtime(crit.mftime)}</span>
     <span class="-star">{get_stars(crit.stars)}</span>
     {#if crit.vhtml.length >= 1000}
@@ -69,7 +69,11 @@
     .-user {
       font-weight: 500;
       max-width: 36vw;
+      @include fgcolor(secd);
       @include clamp($width: null);
+      &:hover {
+        @include fgcolor(primary, 5);
+      }
     }
 
     .-time {
