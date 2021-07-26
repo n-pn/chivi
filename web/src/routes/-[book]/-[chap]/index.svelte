@@ -110,15 +110,17 @@
     <span class="crumb _text">{chinfo.label}</span>
   </nav>
 
-  {#if cvdata}
-    <Cvdata
-      {cvdata}
-      dname={nvinfo.bhash}
-      label={nvinfo.btitle_vi}
-      bind:_dirty />
-  {:else}
-    <Notext {chinfo} />
-  {/if}
+  <article class="cvdata">
+    {#if cvdata}
+      <Cvdata
+        {cvdata}
+        dname={nvinfo.bhash}
+        label={nvinfo.btitle_vi}
+        bind:_dirty />
+    {:else}
+      <Notext {chinfo} />
+    {/if}
+  </article>
 
   <div class="navi" slot="footer">
     <a

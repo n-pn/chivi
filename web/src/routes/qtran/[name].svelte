@@ -41,7 +41,7 @@
     </button>
   </svelte:fragment>
 
-  <section class="main">
+  <section class="cvdata">
     <Cvdata {cvdata} bind:_dirty />
   </section>
 
@@ -61,7 +61,7 @@
 </Vessel>
 
 <style lang="scss">
-  .main {
+  .cvdata {
     margin-top: 1rem;
   }
 

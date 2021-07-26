@@ -15,7 +15,7 @@
 
 <script>
   import { page } from '$app/stores'
-
+  import SIcon from '$atoms/SIcon.svelte'
   import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
   import Vessel from '$sects/Vessel.svelte'
@@ -28,8 +28,19 @@
   $: _sort = $page.query.get('sort') || 'mtime'
 </script>
 
+<svelte:head>
+  <title>Đánh giá - Chivi</title>
+</svelte:head>
+
 <Vessel>
-  <article>
+  <svelte:fragment slot="header-left">
+    <a href="/crits" class="header-item _active">
+      <SIcon name="messages" />
+      <span class="header-text">Đánh giá</span>
+    </a>
+  </svelte:fragment>
+
+  <section class="main">
     <div class="sorts" id="sorts">
       <span class="h3 -label">Đánh giá</span>
       {#each Object.entries(sorts) as [sort, name]}
@@ -52,14 +63,18 @@
         {/if}
       </footer>
     </div>
-  </article>
+  </section>
 </Vessel>
 
 <style lang="scss">
-  article {
-    @include fluid(margin-left, 0rem, 0.1rem, 1.5rem, 2rem);
-    @include fluid(margin-right, 0rem, 0.1rem, 1.5rem, 2rem);
-    padding: var(--gutter);
+  .main {
+    border-radius: 0.5rem;
+    @include bgcolor(tert);
+
+    margin-top: 1rem;
+    @include fluid(margin-left, calc(var(--gutter) * -1), 0);
+    @include fluid(margin-right, calc(var(--gutter) * -1), 0);
+    padding: var(--gutter) calc(var(--gutter) * 2);
   }
 
   .sorts {

@@ -12,15 +12,22 @@
   }
 }
 
-.mtl {
-  --fgcolor: #{color(gray, 8)};
-  color: var(--fgcolor);
+.cvdata {
+  padding: var(--verpad) var(--gutter);
 
-  .tm-dark & {
-    --fgcolor: #{color(gray, 3)};
+  @include fluid(margin-left, calc(-1 * var(--gutter)), $lg: 0);
+  @include fluid(margin-right, calc(-1 * var(--gutter)), $lg: 0);
+
+  @include bdradi();
+  @include fgcolor(secd);
+  @include bgcolor(tert);
+  @include shadow(1);
+
+  .adsbygoogle {
+    margin-top: 1rem;
   }
 
-  &._h {
+  .mtl._h {
     font-weight: 400;
     @include fgcolor(secd);
     @include fluid(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
@@ -29,7 +36,7 @@
     @include bp-max(xs) { font-size: rem(22px); }
   }
 
-  &._p {
+  .mtl._p {
     margin-bottom: 0;
     text-align: justify;
     text-justify: auto;
@@ -40,6 +47,22 @@
 
     // prettier-ignore
     @include bp-max(xs) { font-size: rem(18px); }
+  }
+}
+
+.mtl {
+  --fgcolor: #{color(gray, 8)};
+  color: var(--fgcolor);
+
+  @include fluid(font-size, rem(16px), rem(17px), rem(18px));
+  @include fluid(line-height, 1.5rem, 1.75rem);
+
+  & + & {
+    margin-top: 1rem;
+  }
+
+  .tm-dark & {
+    --fgcolor: #{color(gray, 3)};
   }
 
   &:hover,

@@ -14,7 +14,7 @@ class CV::CritCtrl < CV::BaseCtrl
     query.filter_ysuser(params["user"]?.try(&.to_i?))
 
     total = book ? query.dup.count : query.dup.limit((page + 2) * take).count
-    query = query.limit(take).offset(skip).with_cvbook.with_ysuser
+    query = query.limit(take).offset(skip).with_cvbook(&.with_author).with_ysuser
 
     render_json do |res|
       JSON.build(res) do |jb|
@@ -35,18 +35,36 @@ class CV::CritCtrl < CV::BaseCtrl
     halt! 500, err.message
   end
 
-  private def render_crit(jb : JSON::Builder, crit : Yscrit)
+  def show
+    crit_id = CoreUtils.decode32(params["crit"])
+    unless yscrit = Yscrit.find({id: crit_id})
+      return halt! 404, "Đánh giá không tồn tại"
+    end
+
+    render_json do |res|
+      JSON.build(res) do |jb|
+        render_crit(jb, yscrit, mtl: true)
+      end
+    end
+  end
+
+  private def render_crit(jb : JSON::Builder, crit : Yscrit, mtl = false)
     jb.object do
-      jb.field "id", crit.id
+      jb.field "id", CoreUtils.encode32(crit.id)
 
-      jb.field "book_name", crit.cvbook.bname
-      jb.field "book_slug", crit.cvbook.bslug
+      jb.field "bid", crit.cvbook.id
+      jb.field "bname", crit.cvbook.bname
+      jb.field "bslug", crit.cvbook.bslug
+      jb.field "bhash", crit.cvbook.bhash
 
-      jb.field "user_name", crit.ysuser.vname
-      jb.field "user_slug", crit.ysuser.id
+      jb.field "author", crit.cvbook.author.vname
+
+      jb.field "uname", crit.ysuser.vname
+      jb.field "uslug", crit.ysuser.id
 
       jb.field "stars", crit.stars
-      jb.field "vhtml", crit.vhtml
+
+      jb.field "vhtml", mtl ? crit.cvdata(mode: cu_tlmode) : crit.vhtml
 
       jb.field "like_count", crit.like_count
       jb.field "repl_count", crit.repl_count

@@ -31,6 +31,7 @@ Amber::Server.configure do
     get "/chaps/:book/:sname/:chidx/:schid", CV::ChapCtrl, :text
 
     get "/crits", CV::CritCtrl, :index
+    get "/crits/:crit", CV::CritCtrl, :show
 
     get "/mark-books/:bname", CV::FsMarkCtrl, :show
     put "/mark-books/:bname", CV::FsMarkCtrl, :update

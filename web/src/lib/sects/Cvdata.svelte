@@ -20,6 +20,7 @@
 
   export let cvdata = ''
   export let _dirty = false
+  export let wtitle = true
 
   export let dname = 'various'
   export let label = 'Tổng hợp'
@@ -80,20 +81,18 @@
     >E</button>
 </div>
 
-<article class="article" class:_dirty>
-  {#each lines as _, index (index)}
-    <div
-      class="mtl {index > 0 ? '_p' : '_h'}"
-      on:click={(e) => handle_click(e, index)}
-      on:mouseenter={() => (hover_line = index)}>
-      {@html render_line(index, hover_line, focus_line)}
-    </div>
+{#each lines as _, index (index)}
+  <div
+    class="mtl {wtitle && index == 0 ? '_h' : '_p'}"
+    on:click={(e) => handle_click(e, index)}
+    on:mouseenter={() => (hover_line = index)}>
+    {@html render_line(index, hover_line, focus_line)}
+  </div>
 
-    {#if $session.privi < 1 && adidx.includes(index)}
-      <Aditem type="article" />
-    {/if}
-  {/each}
-</article>
+  {#if $session.privi < 1 && adidx.includes(index)}
+    <Aditem type="article" />
+  {/if}
+{/each}
 
 {#if $lookup_enabled}
   <Lookup {dname} />
@@ -102,21 +101,3 @@
 {#if $upsert_state}
   <Upsert {dname} {label} bind:_dirty />
 {/if}
-
-<style lang="scss">
-  :global(.adsbygoogle) {
-    margin-top: 1rem;
-  }
-
-  .article {
-    padding: var(--verpad) var(--gutter);
-
-    @include fluid(margin-left, calc(-1 * var(--gutter)), $lg: 0);
-    @include fluid(margin-right, calc(-1 * var(--gutter)), $lg: 0);
-
-    @include bdradi();
-    @include fgcolor(secd);
-    @include bgcolor(tert);
-    @include shadow(1);
-  }
-</style>

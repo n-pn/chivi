@@ -108,7 +108,7 @@
     <section class="extra">
       <div class="line">
         <span class="stat -trim">
-          <SIcon name="writing" />
+          <SIcon name="edit" />
           <a
             class="link"
             href="/search?q={encodeURIComponent(nvinfo.author_vi)}&t=author">

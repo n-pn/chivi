@@ -68,7 +68,9 @@
         bind:this={text_elem}
         placeholder="Nhập dữ liệu vào đây" />
     {:else}
-      <Cvdata {cvdata} bind:_dirty />
+      <article class="cvdata">
+        <Cvdata {cvdata} bind:_dirty />
+      </article>
     {/if}
   </section>
 
