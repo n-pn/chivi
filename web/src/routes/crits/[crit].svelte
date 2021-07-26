@@ -89,7 +89,6 @@
   }
 
   .navi {
-    @include flex($gap: 0.25rem);
     a {
       @include fgcolor(secd);
       @include hover {
