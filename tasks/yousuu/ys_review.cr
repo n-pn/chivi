@@ -20,7 +20,7 @@ class CV::CrawlYscrit
 
     @counter.each do |snvid, count|
       count -= (page - 1) * 20
-      queue << snvid if count > 3
+      queue << snvid if count >= 0
     end
 
     until queue.empty?
