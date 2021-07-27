@@ -18,22 +18,19 @@
   export let type = 'banner'
 </script>
 
-<section>
-  <ins
-    class="adsbygoogle"
-    data-ad-client="ca-pub-5468438393284967"
-    data-ad-slot={type == 'banner' ? 2323076740 : 4952630589}
-    data-ad-format={type == 'banner' ? 'auto' : 'fluid'}
-    data-ad-layout={type == 'banner' ? '' : 'in-article'}
-    data-full-width-responsive="true">
-    <div>
-      Hãy ủng hộ cho chivi <a href="/notes/donation">tại đây</a> nếu không muốn xem
-      quảng cáo.
-    </div>
-  </ins>
-
+<ins
+  class="adsbygoogle"
+  data-ad-client="ca-pub-5468438393284967"
+  data-ad-slot={type == 'banner' ? 2323076740 : 4952630589}
+  data-ad-format={type == 'banner' ? 'auto' : 'fluid'}
+  data-ad-layout={type == 'banner' ? '' : 'in-article'}
+  data-full-width-responsive="true">
+  <div>
+    Hãy ủng hộ cho chivi <a href="/notes/donation">tại đây</a> nếu không muốn xem
+    quảng cáo.
+  </div>
   <script>
-    if (typeof window != undefined) {
+    if (browser) {
       try {
         ;(window.adsbygoogle = window.adsbygoogle || []).push({})
       } catch (aderr) {
@@ -41,7 +38,7 @@
       }
     }
   </script>
-</section>
+</ins>
 
 <style lang="scss">
   ins {
