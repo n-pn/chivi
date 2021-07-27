@@ -11,8 +11,10 @@ class CV::CritCtrl < CV::BaseCtrl
       .with_ysuser
 
     if book_id = params["book"]?.try(&.to_i64?)
+      query.filter_cvbook(book_id)
+
       total = query.dup.count
-      crits = query.filter_cvbook(book_id).limit(take).offset(skip).to_a
+      crits = query.limit(take).offset(skip).to_a
 
       if crits.size > 0
         cvbook = Cvbook.load!(book_id)
