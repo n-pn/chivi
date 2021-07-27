@@ -7,14 +7,18 @@ class CV::CritCtrl < CV::BaseCtrl
     skip = (page - 1) &* take
 
     query = Yscrit.sort_by(params["sort"]?)
-
-    book = params["book"]?.try(&.to_i?)
-
-    query.filter_cvbook(book)
     query.filter_ysuser(params["user"]?.try(&.to_i?))
 
+    book = params["book"]?.try(&.to_i?)
+    query.filter_cvbook(book)
+
     total = book ? query.dup.count : query.dup.limit((page + 2) * take).count
-    query = query.limit(take).offset(skip).with_cvbook(&.with_author).with_ysuser
+    query = query.limit(take).offset(skip).with_ysuser
+
+    crits = query.to_a
+
+    cvbooks = Cvbook.query.with_author.where("id = ANY(?)", crits.map(&.cvbook_id))
+    bookmap = cvbooks.map { |x| {x.id, x} }.to_h
 
     render_json do |res|
       JSON.build(res) do |jb|
@@ -24,7 +28,10 @@ class CV::CritCtrl < CV::BaseCtrl
 
           jb.field "crits" do
             jb.array do
-              query.each { |crit| render_crit(jb, crit) }
+              crits.each do |crit|
+                crit.cvbook = bookmap[crit.cvbook_id]
+                render_crit(jb, crit)
+              end
             end
           end
         end

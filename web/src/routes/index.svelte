@@ -54,10 +54,17 @@
     </form>
   </svelte:fragment>
 
-  <a slot="header-right" href="/qtran" class="header-item">
-    <SIcon name="bolt" />
-    <span class="header-text _show-md">Dịch nhanh</span>
-  </a>
+  <svelte:fragment slot="header-right">
+    <a href="/crits" class="header-item">
+      <SIcon name="messages" />
+      <span class="header-text _show-md">Đánh giá</span>
+    </a>
+
+    <a href="/qtran" class="header-item">
+      <SIcon name="bolt" />
+      <span class="header-text _show-md">Dịch nhanh</span>
+    </a>
+  </svelte:fragment>
 
   <div class="order">
     {#each Object.entries(order_names) as [type, label]}
