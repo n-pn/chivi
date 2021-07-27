@@ -61,9 +61,7 @@
       {/each}
 
       <footer class="pagi">
-        {#if crits.length > 0}
-          <Mpager {pager} {pgidx} {pgmax} {_navi} />
-        {/if}
+        <Mpager {pager} {pgidx} {pgmax} {_navi} />
       </footer>
     </div>
   </section>
