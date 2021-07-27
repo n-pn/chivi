@@ -7,18 +7,28 @@ class CV::CritCtrl < CV::BaseCtrl
     skip = (page - 1) &* take
 
     query = Yscrit.sort_by(params["sort"]?)
-    query.filter_ysuser(params["user"]?.try(&.to_i?))
+      .filter_ysuser(params["user"]?.try(&.to_i64?))
+      .with_ysuser
 
-    book = params["book"]?.try(&.to_i?)
-    query.filter_cvbook(book)
+    if book_id = params["book"]?.try(&.to_i64?)
+      total = query.dup.count
+      crits = query.filter_cvbook(book_id).limit(take).offset(skip).to_a
 
-    total = book ? query.dup.count : query.dup.limit((page + 2) * take).count
-    query = query.limit(take).offset(skip).with_ysuser
+      if crits.size > 0
+        cvbook = Cvbook.load!(book_id)
+        crits.each { |x| x.cvbook = cvbook }
+      end
+    else
+      total = query.dup.limit((page + 2) * take).count
+      crits = query.limit(take).offset(skip).to_a
 
-    crits = query.to_a
+      if crits.size > 0
+        cvbooks = Cvbook.query.with_author.where("id = ANY(?)", crits.map(&.cvbook_id))
+        bookmap = cvbooks.map { |x| {x.id, x} }.to_h
 
-    cvbooks = Cvbook.query.with_author.where("id = ANY(?)", crits.map(&.cvbook_id))
-    bookmap = cvbooks.map { |x| {x.id, x} }.to_h
+        crits.each { |x| x.cvbook = bookmap[x.cvbook_id] }
+      end
+    end
 
     render_json do |res|
       JSON.build(res) do |jb|
@@ -28,10 +38,7 @@ class CV::CritCtrl < CV::BaseCtrl
 
           jb.field "crits" do
             jb.array do
-              crits.each do |crit|
-                crit.cvbook = bookmap[crit.cvbook_id]
-                render_crit(jb, crit)
-              end
+              crits.each { |crit| render_crit(jb, crit) }
             end
           end
         end
