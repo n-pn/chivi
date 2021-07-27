@@ -19,6 +19,7 @@
   import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
   import Vessel from '$sects/Vessel.svelte'
+  import Crit from './[crit].svelte'
 
   export let crits = []
   export let pgidx = 1
@@ -54,7 +55,9 @@
 
     <div class="crits">
       {#each crits as crit}
-        <Yscrit {crit} view_all={crit.vhtml.length < 1000} />
+        <Yscrit {crit} view_all={crit.vhtml.length < 1000}>
+          {@html crit.vhtml}
+        </Yscrit>
       {/each}
 
       <footer class="pagi">
