@@ -25,9 +25,7 @@
   </header>
 
   <section class="-body" class:_all={view_all}>
-    <slot>
-      {@html crit.vhtml}
-    </slot>
+    <slot />
   </section>
 
   <footer class="-foot">

@@ -19,7 +19,6 @@
   import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
   import Vessel from '$sects/Vessel.svelte'
-  import Crit from './[crit].svelte'
 
   export let crits = []
   export let pgidx = 1
