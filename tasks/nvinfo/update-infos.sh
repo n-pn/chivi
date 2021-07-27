@@ -1,3 +1,5 @@
+time bin/seed_ysbook
+time bin/seed_zhwenpg
 time bin/seed_zhbook -s hetushu
 time bin/seed_zhbook -s rengshu
 time bin/seed_zhbook -s xbiquge
