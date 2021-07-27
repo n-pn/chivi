@@ -65,13 +65,13 @@ class CV::CrawlYsbook
   end
 
   private def expiry_time(file : String) : Time::Span
-    span = 3.days
+    span = 2.days
 
     if data = CV::RawYsbook.load(file)
-      span *= data.status + 1
-      data.voters == 0 ? span * 3 : span
+      span *= (data.status + 1)          # try again in 2 4 6 days
+      data.voters == 0 ? span * 3 : span # try again in 6 12 18 days
     else
-      span *= 3 # try again in 9 days
+      span *= 3 # try again in 6 days
     end
   end
 end
@@ -86,4 +86,4 @@ end
 
 reload_proxy = ARGV.includes?("proxy")
 worker = CV::CrawlYsbook.new(reload_proxy)
-worker.crawl!(259700, mode: guess_mode(ARGV))
+worker.crawl!(260500, mode: guess_mode(ARGV))
