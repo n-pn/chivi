@@ -55,9 +55,10 @@ class CV::CritCtrl < CV::BaseCtrl
       jb.field "bid", crit.cvbook.id
       jb.field "bname", crit.cvbook.bname
       jb.field "bslug", crit.cvbook.bslug
-      jb.field "bhash", crit.cvbook.bhash
+      jb.field "genre", crit.cvbook.bhash
 
       jb.field "author", crit.cvbook.author.vname
+      jb.field "bgenre", crit.cvbook.bgenres.first? || "Loại khác"
 
       jb.field "uname", crit.ysuser.vname
       jb.field "uslug", crit.ysuser.id

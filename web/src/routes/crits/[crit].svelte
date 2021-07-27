@@ -45,6 +45,7 @@
       on:click={() => lookup_enabled.update((x) => !x)}
       data-kbd="\">
       <SIcon name="compass" />
+      <span class="header-text _show-md">Giải nghĩa</span>
     </button>
   </svelte:fragment>
 

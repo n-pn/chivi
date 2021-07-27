@@ -93,6 +93,7 @@
       on:click={reload_chap}
       data-kbd="r">
       <SIcon name="rotate" spin={_reload} />
+      <span class="header-text _show-md">Dịch lại</span>
     </button>
 
     <button
@@ -101,6 +102,7 @@
       on:click={() => lookup_enabled.update((x) => !x)}
       data-kbd="\">
       <SIcon name="compass" />
+      <span class="header-text _show-md">Giải nghĩa</span>
     </button>
   </svelte:fragment>
 

@@ -33,14 +33,19 @@
   <footer class="-foot">
     {#if show_book}
       <span class="-meta">
-        <a class="-link" href="/-{crit.bslug}">
+        <a class="-link _title" href="/-{crit.bslug}">
           <SIcon name="book" />
           <span>{crit.bname}</span>
         </a>
 
-        <a class="-link" href="/search?q={crit.author}&t=author">
+        <a class="-link _author" href="/search?q={crit.author}&t=author">
           <SIcon name="edit" />
           <span>{crit.author}</span>
+        </a>
+
+        <a class="-link _genre" href="/?genre={crit.bgenre}">
+          <SIcon name="folder" />
+          <span>{crit.bgenre}</span>
         </a>
       </span>
     {/if}
@@ -138,16 +143,32 @@
 
   .-meta {
     flex: 1;
-    @include flex($gap: 0.5rem);
+    @include flex($gap: 0.375rem);
+
     .-link {
       font-weight: 500;
       @include clamp($width: null);
-      max-width: 30vw;
 
       @include fgcolor(tert);
       @include hover {
         @include fgcolor(primary, 5);
       }
+
+      &._title {
+        max-width: 35vw;
+      }
+
+      &._author {
+        max-width: 25vw;
+      }
+
+      &._genre {
+        @include fluid(display, none, $md: inline-block);
+      }
     }
+  }
+
+  .-like {
+    margin-left: auto;
   }
 </style>
