@@ -4,7 +4,7 @@
   import Vessel from '$sects/Vessel.svelte'
 
   function change_theme() {
-    $session.site_theme = $session.site_theme == 'dark' ? 'light' : 'dark'
+    $session.wtheme = $session.wtheme == 'dark' ? 'light' : 'dark'
   }
 </script>
 
@@ -15,7 +15,7 @@
 
   <svelte:fragment slot="header-right">
     <button class="header-item" data-kdb="t" on:click={change_theme}>
-      <SIcon name={$session.site_theme == 'dark' ? 'sun' : 'moon'} />
+      <SIcon name={$session.wtheme == 'dark' ? 'sun' : 'moon'} />
     </button>
   </svelte:fragment>
 
