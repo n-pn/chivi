@@ -82,7 +82,7 @@
     </div>
 
     <div class="-explain">
-      {#if $session.tlmode == 1}
+      {#if $session.tlmode < 2}
         Áp dụng một số luật ngữ pháp cơ bản, phần lớn chính xác. <strong
           >(Khuyến khích dùng)</strong>
       {:else}
@@ -210,7 +210,7 @@
       line-height: 1.25;
       padding: 0.5rem 0;
       @include fgcolor(tert);
-      @include flex($center: none, $gap: 0.5rem);
+      @include flex($center: none, $gap: 0.675rem);
     }
 
     .-label {
