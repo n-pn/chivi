@@ -32,6 +32,8 @@ module CV::Improving
   end
 
   def fix_verbs!(node = @root, mode = 2) : MtNode
+    return node if mode < 2
+
     while succ = node.succ
       case succ
       when .ule?
@@ -52,15 +54,12 @@ module CV::Improving
 
         break
       when .kshi?
-        break if mode == 1
         node.fuse_right!("lúc #{node.val}")
         node.tag = PosTag::Vintr
       else
         break
       end
     end
-
-    return node if mode == 1
 
     while prev = node.prev
       case prev

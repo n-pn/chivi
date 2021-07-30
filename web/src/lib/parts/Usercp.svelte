@@ -42,7 +42,7 @@
     }
   }
 
-  const tlmodes = ['Cơ bản', 'Tiêu chuẩn', 'Nâng cao']
+  const tlmodes = ['Cơ bản', 'Nâng cao']
 </script>
 
 <Slider bind:actived _rwidth={26}>
@@ -69,19 +69,20 @@
   <div class="tlmode">
     <div class="-radio">
       <span class="-label">Chế độ dịch:</span>
-      {#each tlmodes as label, value}
+      {#each tlmodes as label, idx}
         <label class="m-radio">
-          <input type="radio" name="tlmode" {value} bind:group={tlmode} />
+          <input
+            type="radio"
+            name="tlmode"
+            value={idx + 1}
+            bind:group={tlmode} />
           <span>{label}</span>
         </label>
       {/each}
     </div>
 
     <div class="-explain">
-      {#if $session.tlmode == 0}
-        Không áp dụng các luật ngữ pháp. Các từ "đích", "trứ", "liễu" trong câu
-        văn sẽ bị lược bỏ.
-      {:else if $session.tlmode == 1}
+      {#if $session.tlmode == 1}
         Áp dụng một số luật ngữ pháp cơ bản, phần lớn chính xác. <strong
           >(Khuyến khích dùng)</strong>
       {:else}
@@ -210,8 +211,6 @@
       padding: 0.5rem 0;
       @include fgcolor(tert);
       @include flex($center: none, $gap: 0.5rem);
-      @include clamp(null);
-      @include fluid(font-size, rem(13px), rem(14px), rem(15px));
     }
 
     .-label {

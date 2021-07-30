@@ -150,6 +150,11 @@ enum CV::PosTag
     None <= self <= Locut
   end
 
+  @[AlwaysInline]
+  def word?
+    None <= self < Punct
+  end
+
   def ends?
     puncts? || interjection?
   end

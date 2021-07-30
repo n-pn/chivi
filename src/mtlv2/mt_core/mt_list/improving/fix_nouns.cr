@@ -1,5 +1,7 @@
 module CV::Improving
   def fix_nouns!(node = @root, mode = 2) : MtNode
+    return node if mode < 2
+
     if succ = node.succ
       case succ
       when .kmen?
@@ -10,7 +12,7 @@ module CV::Improving
     end
 
     node = nouns_fuse_left!(node, mode: mode)
-    return node if node.prev.try(&.verbs?) || mode == 1
+    return node if node.prev.try(&.verbs?)
 
     if succ = node.succ
       case succ
@@ -106,6 +108,7 @@ module CV::Improving
               node.key = "#{prev_3.key}#{prev_2.key}#{prev.key}#{node.key}"
               node.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
               node.prev = prev_3
+              node.dic = 5
             elsif prev_3.vintr?
               prev.fuse_left!(prev_2.val)
               node.fuse_left!("", " #{prev.val}")

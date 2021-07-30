@@ -2,13 +2,13 @@ module CV::Improving
   private def fix_by_key!(node : MtNode)
     case node.key
     when "对"
-      if node.succ.try { |x| x.real? || x.quoteop? }
+      if node.succ.try { |x| x.word? || x.quoteop? }
         node.update!("đối với", PosTag::Verb)
       else
         node.update!("đúng", PosTag::Adjt)
       end
     when "不对"
-      if node.succ.try { |x| x.real? || x.quoteop? }
+      if node.succ.try { |x| x.word? || x.quoteop? }
         node.update!("không đối với", PosTag::Verb)
       else
         node.update!("không đúng", PosTag::Adjt)
@@ -20,7 +20,7 @@ module CV::Improving
         node.update!("cũng", PosTag::Adverb)
       end
     when "原来"
-      if node.succ.try(&.ude1?) || node.prev.try(&.real?)
+      if node.succ.try(&.ude1?) || node.prev.try(&.word?)
         val = "ban đầu"
       else
         val = "thì ra"
@@ -29,7 +29,7 @@ module CV::Improving
     when "行"
       node.update!("được") if boundary?(node.succ)
     when "高达"
-      node.update!("cao đến") if node.succ.try(&.number?)
+      node.update!("cao đến") if node.succ.try(&.nquants?)
     end
   end
 end
