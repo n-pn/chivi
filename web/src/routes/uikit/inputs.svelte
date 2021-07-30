@@ -4,12 +4,12 @@
 
 <div class="u-flow">
   <div class="u-flex">
-    <div class="m-field _small">
-      <input class="m-input" type="text" name="#t1" />
+    <div class="m-field">
+      <input class="m-input inp-sm" type="text" name="#t1" />
       <label for="t1">Text 1</label>
     </div>
 
-    <button class="m-button _small">Submit</button>
+    <button class="m-button btn-sm">Submit</button>
   </div>
 
   <div class="u-flex">
@@ -22,16 +22,16 @@
   </div>
 
   <div class="u-flex">
-    <div class="m-field _large">
-      <input class="m-input" type="text" name="#t3" />
+    <div class="m-field">
+      <input class="m-input inp-lg" type="text" name="#t3" />
       <label for="t3">Text 3</label>
     </div>
 
-    <button class="m-button _large _line _harmful">Submit</button>
+    <button class="m-button btn-lg _harmful">Submit</button>
   </div>
 
   <div class="m-field">
-    <textarea name="" id="input" cols="30" rows="10" />
+    <textarea class="m-input" name="" id="input" cols="30" rows="10" />
   </div>
 </div>
 
@@ -44,5 +44,9 @@
     > * + * {
       margin-top: 1rem;
     }
+  }
+
+  textarea {
+    width: 100%;
   }
 </style>

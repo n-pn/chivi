@@ -16,7 +16,7 @@
   line-height: 1.5rem;
   border: 0;
   outline: 0;
-  padding: 0.25rem var(--gutter-md);
+  padding: 0.375rem var(--gutter-md);
 
   @include fgcolor(main);
   @include bgcolor(main);
@@ -44,4 +44,10 @@ input.inp-sm {
   padding: var(--gutter-ss) var(--gutter-md);
   line-height: 1.25rem;
   height: 2rem;
+}
+
+input.inp-lg {
+  padding: var(--gutter-sm) var(--gutter-md);
+  line-height: 1.75rem;
+  height: 3rem;
 }
