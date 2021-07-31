@@ -33,11 +33,12 @@ export const labels = {
   an: 'Danh tính từ',
   al: 'Cụm tính từ',
   ag: 'Ngữ tố tính từ',
+  az: 'Từ trạng thái',
+
+  ahao: 'Tính từ 好',
 
   b: 'Từ khu biệt',
   bl: 'Cụm từ khu biệt',
-
-  z: 'Từ trạng thái',
 
   r: 'Đại từ',
   rr: 'Đại từ nhân xưng',
@@ -151,6 +152,7 @@ export const groups = [
   [
     'vshi', 'vyou', 'vneng', 'vhui', 'vxiang',
     'pba', 'pbei',
+    'ahao',
     '-',
     'uzhe', 'ule', 'uguo', 'ude1', 'ude2', 'ude3', 'uzhi', 'ulian',
     '-',
