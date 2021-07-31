@@ -39,12 +39,10 @@ class CV::VpDict
     CACHE[dname] ||=
       case dname
       when "trungviet", "cc_cedict", "trich_dan"
-        new(path(dname), dtype: 0, p_min: 5, reset: reset)
-      when "fixture"
-        new("db/vpdicts/fixture.tsv", dtype: 1, p_min: 4, reset: reset)
-      when "essence", "suggest"
-        new(path(dname), dtype: 1, p_min: 4, reset: reset)
-      when "tradsim", "binh_am", "hanviet"
+        new("db/vpdicts/#{dname}.tsv", dtype: 0, p_min: 5, reset: reset)
+      when "fixture", "essence", "tradsim", "binh_am"
+        new("db/vpdicts/#{dname}.tsv", dtype: 1, p_min: 4, reset: reset)
+      when "suggest", "hanviet"
         new(path(dname), dtype: 2, p_min: 3, reset: reset)
       when "regular", "combine"
         new(path(dname), dtype: 2, p_min: 2, reset: reset)
