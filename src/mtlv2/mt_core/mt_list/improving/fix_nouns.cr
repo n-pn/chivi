@@ -88,10 +88,14 @@ module CV::Improving
       when .amorp?
         node.fuse_left!("#{prev.val} ")
         next
+      when .adesc?
+        node.fuse_left!("", " #{prev.val}")
       when .adjts?
         case prev.key
         when "一般" then node.fuse_left!("", " thông thường")
-        else           node.fuse_left!("", " #{prev.val}")
+        else
+          break if prev.key.size > 1
+          node.fuse_left!("", " #{prev.val}")
         end
 
         next
@@ -100,6 +104,10 @@ module CV::Improving
         prev_2 = prev.prev.not_nil!
 
         case prev_2
+        when .ajav?
+          prev_2.update!("thông thường") if prev_2.key == "一般"
+          prev.fuse_left!(prev_2.val)
+          node.fuse_left!("", " #{prev.val}")
         when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?,
              .vintr?, .nform?, .adverb?, .time?, .place?, .adesc?
           prev.fuse_left!(prev_2.val)

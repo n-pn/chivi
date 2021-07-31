@@ -127,7 +127,7 @@ export const groups = [
     '-',
     'v', 'vd', 'vf', 'vx', 'vi', 'vl', 'vn',
     '-',
-    'a', 'ad', 'an', 'al',
+    'a', 'ad', 'an', 'al', 'az',
     '-',
     'r', 'rr', 'rz', 'ry',
     '-',
@@ -137,7 +137,7 @@ export const groups = [
   [
     'm', 'mq', 'q', 'qv', 'qt',
     '-',
-    'b', 'bl', 'z', 'c', 'cc',
+    'b', 'bl', 'c', 'cc',
     '-',
     'ng', 'tg', 'vg', 'ag',
     '-',
