@@ -186,6 +186,10 @@ enum CV::PosTag
     nouns? || pronoun? || verbs? || adjts? || number? || quanti?
   end
 
+  def conjuncts?
+    self == Conjunct || self == Concoord
+  end
+
   def function?
     advb? || prep? || conj? || ptcl? || stat? || func?
   end

@@ -11,8 +11,8 @@ module CV::Improving
   end
 
   def fix_ude2!(node : MtNode) : MtNode
-    return node if !boundary?(node.succ) && node.prev.try(&.tag.adjts?)
-    return node if !boundary?(node.prev) && node.succ.try(&.tag.verbs?)
+    return node if !boundary?(node.succ) && node.prev.try { |x| x.adjts? }
+    return node if !boundary?(node.prev) && node.succ.try { |x| x.verbs? || x.conjuncts? }
     node.update!(val: "địa", tag: PosTag::Noun)
   end
 
