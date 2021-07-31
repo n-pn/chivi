@@ -4,13 +4,13 @@ require "../shared/raw_yscrit"
 class CV::CrawlYscrit
   DIR = "_db/yousuu/crits-latest"
 
-  @counter = {} of Int64 => Int32
+  @pages = {} of Int64 => Int32
 
   def initialize(regen_proxy = false)
     @http = HttpClient.new(regen_proxy)
 
     Ysbook.query.order_by(id: :desc).each_with_cursor(20) do |ysbook|
-      @counter[ysbook.id] = ysbook.crit_count
+      @pages[ysbook.id] = (ysbook.crit_count - 1) // 20 + 1
     end
   end
 
@@ -18,9 +18,8 @@ class CV::CrawlYscrit
     count = 0
     queue = [] of Int64
 
-    @counter.each do |snvid, count|
-      count -= (page - 1) * 20
-      queue << snvid if count >= 0
+    @pages.each do |snvid, pgmax|
+      queue << snvid if page <= pgmax
     end
 
     until queue.empty?
@@ -82,6 +81,6 @@ end
 reload_proxy = ARGV.includes?("proxy")
 worker = CV::CrawlYscrit.new(reload_proxy)
 
-1.upto(10) do |page|
+1.upto(100) do |page|
   worker.crawl!(page) unless worker.no_proxy?
 end

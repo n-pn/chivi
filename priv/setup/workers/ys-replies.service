@@ -1,5 +1,5 @@
 [Unit]
-Description=yousuu review crawler
+Description=yousuu replies crawler
 After=network.target
 StartLimitIntervalSec=0
 
@@ -8,7 +8,7 @@ Type=oneshot
 User=nipin
 WorkingDirectory=/home/nipin/srv/chivi.xyz/
 Environment=AMBER_ENV=production
-ExecStart=/home/nipin/srv/chivi.xyz/bin/ys_review
+ExecStart=/home/nipin/srv/chivi.xyz/bin/ys_replies
 
 [Install]
 WantedBy=multi-user.target
