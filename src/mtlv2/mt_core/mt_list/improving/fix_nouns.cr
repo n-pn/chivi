@@ -56,23 +56,26 @@ module CV::Improving
       when .propers?
         break if prev.prev.try(&.verb?)
 
-        if node.nform?
-          node.fuse_left!("#{prev.val} ")
-        else
+        if node.ntitle?
           node.fuse_left!("", " của #{prev.val}")
+        else
+          node.fuse_left!("#{prev.val} ")
         end
         next
       when .prodeic?
         case prev.key
+        when "这" then node.fuse_left!("", " này")
+        when "那" then node.fuse_left!("", " kia")
+        when "各" then node.fuse_left!("các ")
         when .ends_with?("个")
           right = prev.val.sub("cái", "").strip
           node.fuse_left!("cái ", " #{right}")
         when .starts_with?("这")
           left = prev.val.sub("này", "").strip
           node.fuse_left!("#{left} ", " này")
-        when "各"  then node.fuse_left!("các ")
-        when "这"  then node.fuse_left!("", " này")
-        when "那些" then node.fuse_left!("chút ", " kia")
+        when .starts_with?("些")
+          left = prev.val.sub("kia", "").strip
+          node.fuse_left!("#{left} ", " kia")
         when "其他" then node.fuse_left!("các ", " khác")
         when "任何" then node.fuse_left!("bất kỳ ")
         else           node.fuse_left!("", " #{prev.val}")
@@ -98,7 +101,7 @@ module CV::Improving
 
         case prev_2
         when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?,
-             .vintr?, .nform?, .adverb?, .time?, .place?
+             .vintr?, .nform?, .adverb?, .time?, .place?, .descript?
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .nouns?, .propers?

@@ -43,7 +43,7 @@ module CV::Improving
     # merge number with quantifiers
     case succ
     when .quanti?, .nquant?, .qtverb?, .qttime?
-      if has_第
+      if has_第 && succ.succ.try(&.nouns?)
         succ_succ = succ.succ.not_nil!
         succ.fuse_right!("#{succ.val} #{succ_succ.val}")
 
