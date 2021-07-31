@@ -39,9 +39,10 @@ module CV::Improving
     while prev = node.prev
       case prev
       when .penum?
-        val = prev.prev.not_nil!.val
+        prev_2 = prev.prev.not_nil!
+        break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeic?
         prev.fuse_left!
-        node.fuse_left!("#{val}, ")
+        node.fuse_left!("#{prev_2.val}, ")
         next
       when .concoord?
         prev_2 = prev.prev.not_nil!
