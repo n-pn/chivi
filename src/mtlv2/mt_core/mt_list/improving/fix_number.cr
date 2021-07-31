@@ -13,11 +13,18 @@ module CV::Improving
     case succ.key
     when "多"
       node.fuse_right!("hơn #{node.val}")
-      return node unless succ = node.succ
     when "余"
       node.fuse_right!("trên #{node.val}")
-      return node unless succ = node.succ
+    when "来"
+      node.fuse_right!("chừng #{node.val}")
     end
+
+    case node.prev.try(&.key)
+    when "约"
+      node.fuse_left!("chừng ")
+    end
+
+    return node unless succ = node.succ
 
     # handle multi meaning quantifier
     case succ.key
@@ -46,17 +53,24 @@ module CV::Improving
       node.fuse_right!("dài #{node.val}")
     when "重"
       node.fuse_right!("nặng #{node.val}")
+    when "远"
+      node.fuse_right!("xa #{node.val}")
     else
       return node unless succ.tag.qttime?
     end
 
     case node.succ.try(&.key)
-    when "间"
+    when "间", "后间"
       node.fuse_right!("khoảng #{node.val}")
-    when "里"
+    when "里", "内", "中",
+         "后内", "后中"
       node.fuse_right!("trong #{node.val}")
-    when "后"
+    when "后", "之后"
       node.fuse_right!("sau #{node.val}")
+    when "时"
+      node.fuse_right!("lúc #{node.val}")
+    when "上"
+      node.fuse_right!("trên #{node.val}")
     when "前"
       node.fuse_right!("trước #{node.val}")
     end
