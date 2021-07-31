@@ -28,7 +28,9 @@ class CV::FixCovers
   end
 
   def fix_cover!(cvbook, redo = false)
-    return if !redo && File.exists?(out_path(cvbook.bcover))
+    unless redo || cvbook.cover.empty?
+      return File.exists?(out_path(cvbook.bcover))
+    end
 
     covers = [] of Tuple(String, String)
     covers << {"chivi", cvbook.bhash}

@@ -4,50 +4,48 @@ require "../shared/raw_ysrepl"
 class CV::CrawlYsrepl
   DIR = "_db/yousuu/repls"
 
-  alias Crit = Tuple(String, Int32)
-
-  @input = {} of Int64 => Crit
+  @max_pgs = {} of String => Int32
 
   def initialize(regen_proxy = false)
     @http = HttpClient.new(regen_proxy)
 
     Yscrit.query.order_by(id: :desc).each_with_cursor(20) do |yscrit|
-      pgmax = (ysbook.repl_count - 1) // 20 + 1
-      @input[yscrit.id] = {yscrit.origin_id, pgmax}
+      pgmax = (yscrit.repl_count - 1) // 20 + 1
+      @max_pgs[yscrit.origin_id] = pgmax
     end
   end
 
   def crawl!(page = 1)
     count = 0
-    queue = [] of Crit
+    queue = [] of String
 
-    @input.each do |crit, pgmax|
-      queue << crit if page <= pgmax
+    @max_pgs.each do |scrid, pgmax|
+      queue << scrid if page <= pgmax
     end
 
     until queue.empty?
       count += 1
       puts "\n[page: #{page}, loop: #{count}, size: #{queue.size}]".colorize.cyan
 
-      fails = [] of Crit
+      fails = [] of String
 
       limit = queue.size
       limit = 15 if limit > 15
-      inbox = Channel(Crit?).new(limit)
+      inbox = Channel(String?).new(limit)
 
-      queue.each_with_index(1) do |crit, idx|
+      queue.each_with_index(1) do |string, idx|
         return if @http.no_proxy?
 
         spawn do
-          label = "(#{page}) <#{idx}/#{queue.size}> [#{crit}]"
-          inbox.send(crawl_repl!(crit, page, label: label))
+          label = "(#{page}) <#{idx}/#{queue.size}> [#{string}]"
+          inbox.send(crawl_repl!(string, page, label: label))
         end
 
-        inbox.receive.try { |crit| fails << crit } if idx > limit
+        inbox.receive.try { |string| fails << string } if idx > limit
       end
 
       limit.times do
-        inbox.receive.try { |crit| fails << crit }
+        inbox.receive.try { |string| fails << string }
       end
 
       queue = fails
@@ -55,18 +53,17 @@ class CV::CrawlYsrepl
     end
   end
 
-  def crawl_repl!(crit : Crit, page = 1, label = "1/1/1") : Crit?
-    scrid, pgmax = crit
+  def crawl_repl!(scrid : String, page = 1, label = "1/1/1") : String?
     group = scrid[0..3]
     file = "#{DIR}/#{group}/#{scrid}-#{page}.json"
 
-    return if still_fresh?(file, page == pgmax)
+    return if still_fresh?(file, page == @max_pgs[scrid]?)
 
     link = "https://api.yousuu.com/api/comment/#{scrid}/reply?&page=#{page}"
-    return crit unless @http.save!(link, file, label)
+    return scrid unless @http.save!(link, file, label)
 
-    crits = RawYsrepl.parse_raw(File.read(file))
-    crits.each(&.seed!)
+    repls = RawYsrepl.parse_raw(File.read(file))
+    repls.each(&.seed!)
   rescue err
     puts err
   end

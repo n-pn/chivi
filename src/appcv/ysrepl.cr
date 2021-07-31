@@ -5,7 +5,7 @@ class CV::Ysrepl
   primary_key
 
   belongs_to ysuser : Ysuser
-  belongs_to yscrit : Yslist
+  belongs_to yscrit : Yscrit
 
   column origin_id : String
 
