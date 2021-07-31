@@ -14,7 +14,6 @@ module CV::Improving
       return fix_number!(node)
     end
 
-    # TODO: handle http
     node
   end
 
