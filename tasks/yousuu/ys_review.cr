@@ -2,7 +2,7 @@ require "./shared/http_client"
 require "../shared/raw_yscrit"
 
 class CV::CrawlYscrit
-  DIR = "_db/yousuu/crits-latest"
+  DIR = "_db/yousuu/crits"
 
   @pages = {} of Int64 => Int32
 

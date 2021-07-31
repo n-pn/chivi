@@ -19,7 +19,7 @@ class CV::SeedYscrit
     @checker.save!
   end
 
-  DIR = "_db/yousuu/crits-latest"
+  DIR = "_db/yousuu/crits"
 
   def self.run!
     worker = new
