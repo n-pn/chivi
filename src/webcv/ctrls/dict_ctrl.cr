@@ -99,7 +99,11 @@ class CV::DictCtrl < CV::BaseCtrl
     dname = params["dname"]
     input = params["input"].strip
 
-    dicts = {VpDict.load(dname), VpDict.regular}
+    dicts = [VpDict.load(dname)]
+    dicts << VpDict.load("pleb_" + dname) if cu_tlmode < 2
+    dicts << VpDict.regular
+    dicts << VpDict.load("pleb_regular") if cu_tlmode < 2
+
     chars = input.chars
     upper = chars.size - 1
 
@@ -156,10 +160,10 @@ class CV::DictCtrl < CV::BaseCtrl
 
     if cu_tlmode < 2
       special_pleb = VpDict.load("pleb_#{dname}")
-      special_node ||= find_node(special_pleb, input)
+      special_node = find_node(special_pleb, input) || special_node
 
       regular_pleb = VpDict.load("pleb_regular")
-      regular_node ||= find_node(regular_pleb, input)
+      regular_node = find_node(regular_pleb, input) || regular_mode
     end
 
     special_term = special_node.try(&.term) || special_dict.new_term(input)
