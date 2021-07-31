@@ -75,8 +75,7 @@
     terms = data.infos.map((x, i) => new VpTerm(x, i + 2, $session.privi))
 
     // set some default values if non present
-
-    terms[0].fix_ptag(terms[1].ptag || terms[1].val ? '' : 'nr')
+    terms[0].fix_ptag(terms[1].ptag || (terms[1].val ? '' : 'nr'))
     terms[1].fix_ptag(terms[0]._raw.ptag)
 
     const first_hint = data.hints[0] || ''

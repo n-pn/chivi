@@ -40,23 +40,23 @@ export default class VpTerm {
     }
   }
 
+  clear() {
+    this.val = ''
+    // this.ptag = ''
+    return this
+  }
+
   reset() {
     this.val = this.old_val
     this.ptag = this._raw.ptag
     return this
   }
 
-  clear() {
-    this.val = ''
-    this.ptag = ''
-    return this
-  }
-
   fix_val(new_val, force = false) {
-    if (force || !this.val) this.val = new_val
+    if (force || this.val == '') this.val = new_val
   }
 
   fix_ptag(new_ptag, force = false) {
-    if (force || !this.ptag) this.ptag = new_ptag
+    if (force || this.ptag == '') this.ptag = new_ptag
   }
 }

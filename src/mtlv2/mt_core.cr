@@ -38,10 +38,10 @@ class CV::MtCore
     tokenize(input.chars).capitalize!(cap_mode: cap_mode).pad_spaces!
   end
 
-  def cv_plain(input : String, mode = 2)
+  def cv_plain(input : String, mode = 2, cap_mode = 1)
     tokenize(input.chars)
       .fix_grammar!(mode: mode)
-      .capitalize!
+      .capitalize!(cap_mode: cap_mode)
       .pad_spaces!
   end
 

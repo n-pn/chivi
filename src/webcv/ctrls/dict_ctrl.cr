@@ -142,6 +142,9 @@ class CV::DictCtrl < CV::BaseCtrl
     input = params["input"]
     hints = [] of String
 
+    cvmtl = MtCore.generic_mtl(dname, mode: cu_tlmode)
+    hints << cvmtl.cv_plain(input, mode: cu_tlmode, cap_mode: 0).to_s
+
     special_dict = VpDict.load(dname)
     regular_dict = VpDict.regular
     hanviet_dict = VpDict.hanviet
@@ -163,7 +166,7 @@ class CV::DictCtrl < CV::BaseCtrl
       special_node = find_node(special_pleb, input) || special_node
 
       regular_pleb = VpDict.load("pleb_regular")
-      regular_node = find_node(regular_pleb, input) || regular_mode
+      regular_node = find_node(regular_pleb, input) || regular_node
     end
 
     special_term = special_node.try(&.term) || special_dict.new_term(input)

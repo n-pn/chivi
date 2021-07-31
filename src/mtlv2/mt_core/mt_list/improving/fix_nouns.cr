@@ -124,7 +124,7 @@ module CV::Improving
             elsif prev_3.vintr?
               prev.fuse_left!(prev_2.val)
               node.fuse_left!("", " #{prev.val}")
-            elsif prev_3.verb? || x.prepros?
+            elsif prev_3.verb? # || x.prepros?
               break
             end
           end
