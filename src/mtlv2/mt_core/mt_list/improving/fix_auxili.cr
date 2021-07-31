@@ -15,4 +15,22 @@ module CV::Improving
     return node if !boundary?(node.prev) && node.succ.try(&.tag.verbs?)
     node.update!(val: "địa", tag: PosTag::Noun)
   end
+
+  def fix_ude1!(node : MtNode, mode = 1) : MtNode
+    if node.prev.try(&.quoteop?) && node.succ.try(&.quotecl?)
+      return node.update!(val: "của")
+    end
+
+    unless mode > 1 && boundary?(node.succ)
+      return node.update!(val: "")
+    end
+
+    prev = node.prev.not_nil!
+
+    if prev.nouns? || prev.propers?
+      return node.update!(val: "của") unless prev.prev.try(&.verbs?)
+    end
+
+    node.update!(val: "")
+  end
 end
