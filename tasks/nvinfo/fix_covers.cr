@@ -28,7 +28,7 @@ class CV::FixCovers
   end
 
   def fix_cover!(cvbook, redo = false)
-    unless redo || cvbook.cover.empty?
+    unless redo || cvbook.bcover.empty?
       return File.exists?(out_path(cvbook.bcover))
     end
 
