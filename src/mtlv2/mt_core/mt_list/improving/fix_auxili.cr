@@ -27,8 +27,10 @@ module CV::Improving
 
     prev = node.prev.not_nil!
 
-    if prev.nouns? || prev.propers?
-      return node.update!(val: "của") unless prev.prev.try(&.verbs?)
+    if prev.names? || prev.propers?
+      unless prev.prev.try(&.verbs?) || prev.prev.try(&.prepos?)
+        return node.tap(&.fuse_left!("của "))
+      end
     end
 
     node.update!(val: "")
