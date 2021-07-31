@@ -17,6 +17,8 @@ module CV::Improving
       node.fuse_right!("trên #{node.val}")
     when "来"
       node.fuse_right!("chừng #{node.val}")
+    when "几"
+      node.fuse_right!("#{node.val} mấy")
     end
 
     case node.prev.try(&.key)
@@ -67,11 +69,13 @@ module CV::Improving
       node.fuse_right!("trong #{node.val}")
     when "后", "之后"
       node.fuse_right!("sau #{node.val}")
-    when "时"
+    when "时", "之时"
       node.fuse_right!("lúc #{node.val}")
-    when "上"
+    when "上", "之上"
       node.fuse_right!("trên #{node.val}")
-    when "前"
+    when "下", "之下"
+      node.fuse_right!("dưới #{node.val}")
+    when "前", "之前"
       node.fuse_right!("trước #{node.val}")
     end
 
