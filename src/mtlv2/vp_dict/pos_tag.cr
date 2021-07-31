@@ -49,7 +49,8 @@ module CV
     :Aform => "al", # 形容词性惯用语 - adjectival formulaic expression -
     :Amorp => "ag", # 形容词性语素 - adjectival morpheme -
 
-    :Adesc => "az", # 状态词 - descriptive word - trạng thái
+    :Ahao  => "ahao", # adjective "好"
+    :Adesc => "az",   # 状态词 - descriptive word - trạng thái
 
     :Modifier => "b",  # modifier (non-predicate noun modifier) - từ khu biệt
     :Modiform => "bl", # 区别词性惯用语 - noun modifier morpheme
@@ -178,7 +179,7 @@ enum CV::PosTag
 
   @[AlwaysInline]
   def adjts?
-    Adjt <= self <= Amorp
+    Adjt <= self <= Adesc
   end
 
   def content?

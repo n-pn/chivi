@@ -13,6 +13,8 @@ module CV::Improving
       case prev
       when .ajno?
         break
+      when .ahao?
+        node.fuse_left!("thật ")
       when .adjts?
         node.fuse_left!("#{prev.val} ")
       when .adverb?

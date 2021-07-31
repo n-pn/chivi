@@ -63,10 +63,13 @@ module CV::Improving
 
     while prev = node.prev
       case prev
-      # when .adjts?
-      # node.fuse_left!("#{prev.val} ", "")
-      when .adverb?
-        node.fuse_left!("#{prev.val} ")
+      when .ahao?
+        node.fuse_left!("dễ ")
+        node.tag = PosTag::Adesc
+        # when .adjts?
+        # node.fuse_left!("#{prev.val} ", "")
+        # when .adverb?
+        # node.fuse_left!("#{prev.val} ")
       else
         break
       end
