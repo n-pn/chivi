@@ -21,7 +21,11 @@ module CV::Improving
       node.fuse_right!("#{node.val} mấy")
     end
 
+    has_第 = false
     case node.prev.try(&.key)
+    when "第"
+      has_第 = true
+      node.fuse_left!("thứ ")
     when "约"
       node.fuse_left!("chừng ")
     end
@@ -39,8 +43,16 @@ module CV::Improving
     # merge number with quantifiers
     case succ
     when .quanti?, .nquant?, .qtverb?, .qttime?
-      node.fuse_right!("#{node.val} #{succ.val}")
-      node.tag = PosTag::Nquant
+      if has_第
+        succ_succ = succ.succ.not_nil!
+        succ.fuse_right!("#{succ.val} #{succ_succ.val}")
+
+        node.fuse_right!("#{succ.val} #{node.val}")
+        node.tag = succ_succ.tag
+      else
+        node.fuse_right!("#{node.val} #{succ.val}")
+        node.tag = PosTag::Nquant
+      end
     end
 
     # add extra suffixes
