@@ -101,7 +101,7 @@ module CV::Improving
 
         case prev_2
         when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?,
-             .vintr?, .nform?, .adverb?, .time?, .place?, .descript?
+             .vintr?, .nform?, .adverb?, .time?, .place?, .adesc?
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .nouns?, .propers?

@@ -49,10 +49,10 @@ module CV
     :Aform => "al", # 形容词性惯用语 - adjectival formulaic expression -
     :Amorp => "ag", # 形容词性语素 - adjectival morpheme -
 
+    :Adesc => "az", # 状态词 - descriptive word - trạng thái
+
     :Modifier => "b",  # modifier (non-predicate noun modifier) - từ khu biệt
     :Modiform => "bl", # 区别词性惯用语 - noun modifier morpheme
-
-    :Descript => "z", # 状态词 - descriptive word - trạng thái
 
     :Pronoun => "r",  # 代词 - pronoun - đại từ
     :Propers => "rr", # 人称代词 - personal pronoun - đại từ nhân xưng
@@ -287,6 +287,7 @@ enum CV::PosTag
     {% for tag, name in POS_TAGS %}
     when {{ name }} then {{ tag.id }}
     {% end %}
+    when "z" then Adesc
     else
       # puts "unknown tag <#{tag}>!"
       None
