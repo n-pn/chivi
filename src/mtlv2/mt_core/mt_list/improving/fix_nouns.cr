@@ -20,6 +20,8 @@ module CV::Improving
         case succ.key
         when "上"
           node.fuse_right!("trên #{node.val}")
+        when "下"
+          node.fuse_right!("dưới #{node.val}")
         else
           node.fuse_right!("#{succ.val} #{node.val}")
         end
