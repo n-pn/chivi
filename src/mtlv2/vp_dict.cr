@@ -40,7 +40,9 @@ class CV::VpDict
       case dname
       when "trungviet", "cc_cedict", "trich_dan"
         new(path(dname), dtype: 0, p_min: 5, reset: reset)
-      when "essence", "fixture", "suggest"
+      when "fixture"
+        new("db/vpdicts/fixture.tsv", dtype: 1, p_min: 4, reset: reset)
+      when "essence", "suggest"
         new(path(dname), dtype: 1, p_min: 4, reset: reset)
       when "tradsim", "binh_am", "hanviet"
         new(path(dname), dtype: 2, p_min: 3, reset: reset)

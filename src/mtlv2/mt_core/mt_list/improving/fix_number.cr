@@ -42,8 +42,23 @@ module CV::Improving
       node.fuse_right!("rộng #{node.val}")
     when "高"
       node.fuse_right!("cao #{node.val}")
+    when "长"
+      node.fuse_right!("dài #{node.val}")
     when "重"
       node.fuse_right!("nặng #{node.val}")
+    else
+      return node unless succ.tag.qttime?
+    end
+
+    case node.succ.try(&.key)
+    when "间"
+      node.fuse_right!("khoảng #{node.val}")
+    when "里"
+      node.fuse_right!("trong #{node.val}")
+    when "后"
+      node.fuse_right!("sau #{node.val}")
+    when "前"
+      node.fuse_right!("trước #{node.val}")
     end
 
     node
