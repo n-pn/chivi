@@ -51,6 +51,9 @@ targets:
   ys_review:
     main: tasks/yousuu/ys_review.cr
 
+  ys_replies:
+    main: tasks/yousuu/ys_replies.cr
+
 dependencies:
   amber:
     github: amberframework/amber
