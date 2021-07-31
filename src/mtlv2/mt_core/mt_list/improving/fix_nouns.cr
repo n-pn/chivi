@@ -124,13 +124,13 @@ module CV::Improving
             elsif prev_3.vintr?
               prev.fuse_left!(prev_2.val)
               node.fuse_left!("", " #{prev.val}")
-            else
+            elsif prev_3.verb?
               break
             end
-          else
-            prev.fuse_left!(prev_2.val)
-            node.fuse_left!("", " của #{prev.val}")
           end
+
+          prev.fuse_left!(prev_2.val)
+          node.fuse_left!("", " của #{prev.val}")
         else
           break
         end
