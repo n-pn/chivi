@@ -131,7 +131,7 @@
   }
 
   .-body {
-    margin: 0.5rem var(--gutter) 1rem;
+    margin: 0 var(--gutter) 0;
     @include fluid(font-size, rem(16px), rem(17px));
 
     max-height: 15rem;
@@ -141,8 +141,8 @@
       max-height: unset;
     }
 
-    :global(p + p) {
-      margin-top: 1rem;
+    :global(p) {
+      margin-bottom: 1rem !important;
     }
   }
 
