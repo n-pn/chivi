@@ -93,6 +93,8 @@
     padding: 0 var(--gutter);
     margin-top: 0.25rem;
     margin-bottom: 0.25rem;
+    overflow: auto;
+    max-height: calc(100vh - 5rem);
   }
 
   .repl {
