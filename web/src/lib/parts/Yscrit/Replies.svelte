@@ -35,7 +35,7 @@
             </footer>
           </div>
         {:else}
-          Không có nội dung!
+          <div class="empty">Không có nội dung!</div>
         {/each}
       </div>
     </section>
@@ -155,5 +155,13 @@
     span {
       @include ftsize(sm);
     }
+  }
+
+  .empty {
+    @include flex($center: both);
+    @include fgcolor(tert);
+    font-style: italic;
+    height: 3rem;
+    margin-bottom: 1.5rem;
   }
 </style>
