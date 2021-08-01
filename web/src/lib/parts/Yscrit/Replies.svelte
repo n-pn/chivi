@@ -90,6 +90,11 @@
     margin-bottom: 0.25rem;
     overflow: auto;
     max-height: calc(100vh - 6rem);
+    scrollbar-width: thin;
+    &::-webkit-scrollbar {
+      cursor: pointer;
+      width: 8px;
+    }
   }
 
   .repl {
