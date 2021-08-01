@@ -130,11 +130,11 @@
   }
 
   .repl-body {
-    margin: 0 var(--gutter-small) 0.75rem;
+    margin: 0 var(--gutter-small);
     @include fluid(font-size, rem(15px), rem(16px));
 
-    :global(p + p) {
-      margin-top: 0.75rem;
+    :global(p) {
+      margin-bottom: 0.75rem;
     }
   }
 
