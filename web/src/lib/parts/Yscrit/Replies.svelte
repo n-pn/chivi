@@ -32,11 +32,6 @@
                 <SIcon name="thumb-up" />
                 <span>{repl.like_count}</span>
               </div>
-
-              <div class="-repl">
-                <SIcon name="message" />
-                <span>{repl.repl_count}</span>
-              </div>
             </footer>
           </div>
         {:else}
@@ -90,11 +85,11 @@
 
   .body {
     // @include bgcolor(secd);
-    padding: 0 var(--gutter);
+    padding: 0 var(--gutter-small);
     margin-top: 0.25rem;
     margin-bottom: 0.25rem;
     overflow: auto;
-    max-height: calc(100vh - 5rem);
+    max-height: calc(100vh - 6rem);
   }
 
   .repl {
@@ -111,9 +106,9 @@
     @include bdradi($sides: top);
     // @include border(--bd-main, $sides: bottom);
 
-    padding: 0.5rem var(--gutter);
-    line-height: 2rem;
-    @include fluid(font-size, rem(14px), rem(15px), rem(16px));
+    padding: 0.375rem var(--gutter-small);
+    line-height: 1.75rem;
+    @include fluid(font-size, rem(13px), rem(14px), rem(15px));
 
     .-user,
     .-time {
@@ -126,7 +121,7 @@
 
     .-user {
       font-weight: 500;
-      max-width: 36vw;
+      max-width: 50vw;
     }
 
     .-time {
@@ -135,17 +130,17 @@
   }
 
   .repl-body {
-    margin: 0.5rem var(--gutter) 1rem;
+    margin: 0 var(--gutter-small) 0.75rem;
     @include fluid(font-size, rem(15px), rem(16px));
 
     :global(p + p) {
-      margin-top: 1rem;
+      margin-top: 0.75rem;
     }
   }
 
   .-foot {
-    margin: 0 var(--gutter);
-    padding: 0.5rem 0;
+    margin: 0 var(--gutter-small);
+    padding: 0.375rem 0;
 
     @include flex($gap: 1rem);
     justify-content: right;

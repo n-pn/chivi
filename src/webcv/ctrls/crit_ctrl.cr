@@ -83,7 +83,6 @@ class CV::CritCtrl < CV::BaseCtrl
 
               jb.field "mftime", repl.created_at.to_unix
               jb.field "like_count", repl.like_count
-              jb.field "repl_count", repl.repl_count
             }
           }
         }
