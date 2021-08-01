@@ -80,6 +80,6 @@ end
 reload_proxy = ARGV.includes?("proxy")
 worker = CV::CrawlYsrepl.new(reload_proxy)
 
-1.upto(5) do |page|
+1.upto(10) do |page|
   worker.crawl!(page) unless worker.no_proxy?
 end
