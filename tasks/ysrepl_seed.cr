@@ -1,17 +1,13 @@
 require "./shared/seed_util"
-require "./shared/raw_yscrit"
+require "./shared/raw_ysrepl"
 
-class CV::SeedYscrit
+class CV::SeedYsrepl
   def seed_file!(file : String)
-    crits = RawYscrit.parse_raw(File.read(file))
-    crits.each(&.seed!)
+    repls = RawYsrepl.parse_raw(File.read(file))
+    repls.each(&.seed!)
   end
 
-  def save_progress!
-    @checker.save!
-  end
-
-  DIR = "_db/yousuu/crits"
+  DIR = "_db/yousuu/repls"
 
   def self.run!
     worker = new
@@ -28,4 +24,4 @@ class CV::SeedYscrit
   end
 end
 
-CV::SeedYscrit.run!
+CV::SeedYsrepl.run!
