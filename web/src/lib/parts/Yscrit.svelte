@@ -1,13 +1,30 @@
+<script context="module">
+</script>
+
 <script>
   import { get_rtime } from '$atoms/RTime.svelte'
   import SIcon from '$atoms/SIcon.svelte'
+  import Replies from './Yscrit/Replies.svelte'
 
   export let crit
   export let show_book = true
   export let view_all = false
 
+  let active_repls = false
+  let replies = []
+
   function get_stars(count) {
     return Array(count).fill('⭐').join('')
+  }
+
+  async function show_replies() {
+    const res = await fetch(`/api/crits/${crit.id}/replies`, {
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!res.ok) return
+    replies = await res.json()
+    active_repls = true
   }
 </script>
 
@@ -53,12 +70,16 @@
       <span>{crit.like_count}</span>
     </div>
 
-    <div class="-repl">
+    <div class="-repl" on:click={show_replies}>
       <SIcon name="message" />
       <span>{crit.repl_count}</span>
     </div>
   </footer>
 </div>
+
+{#if active_repls}
+  <Replies {replies} bind:_active={active_repls} />
+{/if}
 
 <style lang="scss">
   .crit {
@@ -165,7 +186,11 @@
       }
     }
   }
-
+  .-repl {
+    @include hover {
+      cursor: pointer;
+    }
+  }
   .-like {
     margin-left: auto;
   }

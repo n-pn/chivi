@@ -116,3 +116,5 @@ end
 # str = "28unvs22456465"
 # int = CV::CoreUtils.decode32_zh(str)
 # puts str, int, CV::CoreUtils.encode32_zh(int)
+
+# puts CV::CoreUtils.encode32(125272284354752)

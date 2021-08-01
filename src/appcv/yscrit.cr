@@ -10,6 +10,8 @@ class CV::Yscrit
   belongs_to ysuser : Ysuser
   belongs_to yslist : Yslist?
 
+  has_many ysrepls : Ysrepl
+
   column origin_id : String
 
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars

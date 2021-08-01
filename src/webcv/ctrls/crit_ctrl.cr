@@ -64,6 +64,33 @@ class CV::CritCtrl < CV::BaseCtrl
     end
   end
 
+  def replies
+    crit_id = CoreUtils.decode32(params["crit"])
+    unless yscrit = Yscrit.find({id: crit_id})
+      return halt! 404, "Đánh giá không tồn tại"
+    end
+
+    render_json do |res|
+      JSON.build(res) do |jb|
+        jb.array {
+          query = Ysrepl.query.where("yscrit_id = ?", yscrit.id)
+
+          query.with_ysuser.each { |repl|
+            jb.object {
+              jb.field "uname", repl.ysuser.vname
+              jb.field "uslug", repl.ysuser.id
+              jb.field "vhtml", repl.vhtml
+
+              jb.field "mftime", repl.created_at.to_unix
+              jb.field "like_count", repl.like_count
+              jb.field "repl_count", repl.repl_count
+            }
+          }
+        }
+      end
+    end
+  end
+
   private def render_crit(jb : JSON::Builder, crit : Yscrit, mtl = false)
     jb.object do
       jb.field "id", CoreUtils.encode32(crit.id)
