@@ -160,7 +160,7 @@ class CV::SeedZhbook
     when "5200"     then "https://www.5200.tv/"
     when "duokan8"  then "http://www.duokan8.com/"
     when "nofff"    then "https://www.nofff.com/"
-    when "bqg_5200" then "https://www.biquge5200.com/"
+    when "bqg_5200" then "https://www.biquge5200.net/"
     when "bxwxorg"  then "https://www.bxwxorg.com/"
     when "shubaow"  then "https://www.shubaow.net/"
     when "paoshu8"  then "http://www.paoshu8.com/"
