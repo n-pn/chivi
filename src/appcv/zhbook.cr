@@ -123,19 +123,23 @@ class CV::Zhbook
     when "5200", "bqg_5200", "rengshu", "nofff"
       true
     when "hetushu", "biqubao", "bxwxorg", "xbiquge", "69shu"
-      privi >= 0 || chidx <= 40 || chidx >= self.chap_count - 5
+      privi >= 0 || public_chap?(chidx)
     when "zhwenpg", "paoshu8", "duokan8"
-      privi >= 1 || chidx <= 40 || chidx >= self.chap_count - 5
+      privi >= 1 || (privi >= 0 && public_chap?(chidx))
     when "shubaow", "jx_la"
       privi > 3 && ENV["AMBER_ENV"]? != "production"
     else
-      privi > 1 || chidx <= 40 || chidx >= self.chap_count - 5
+      privi > 1 || (privi >= 0 && public_chap?(chidx))
     end
   end
 
   def old_enough?
     return false if Time.unix(self.bumped) >= Time.utc - 30.minutes
     Time.unix(self.mftime) < Time.utc - (status < 1 ? 3.days : 3.weeks)
+  end
+
+  def public_chap?(chidx : Int32)
+    chidx <= 40 || chidx >= self.chap_count - 5
   end
 
   def self.upsert!(zseed : Int32, snvid : String)
