@@ -36,12 +36,12 @@ module CV::ViUser
     passwd.set!(uname, cpass)
   end
 
-  def set_power(uname : String, power : Int32)
+  def set_privi(uname : String, power : Int32)
     upower.set!(uname, power)
   end
 
-  def get_power(uname : String)
-    upower.ival(uname)
+  def get_privi(uname : String)
+    uname == "khách" ? -1 : upower.ival(uname)
   end
 
   def get_wtheme(uname : String)
@@ -74,7 +74,7 @@ module CV::ViUser
 
     set_email(uname, email)
     set_cpass(uname, upass)
-    set_power(uname, power) if power > 0
+    set_privi(uname, power) if power > 0
 
     _ctime.set!(uname, Time.utc.to_unix)
     save!(clean: false)

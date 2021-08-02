@@ -59,7 +59,7 @@ class CV::FsUserCtrl < CV::BaseCtrl
   end
 
   private def sigin_user!(dname : String, uname = dname.downcase,
-                          power = ViUser.get_power(uname))
+                          power = ViUser.get_privi(uname))
     session["cu_uname"] = dname
     session["cu_privi"] = power
     session["cu_wtheme"] = ViUser.get_wtheme(uname)

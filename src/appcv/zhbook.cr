@@ -84,12 +84,14 @@ class CV::Zhbook
       false
     when "5200", "bqg_5200", "rengshu", "nofff"
       true
-    when "hetushu", "biqubao", "bxwxorg", "xbiquge"
+    when "hetushu", "biqubao", "bxwxorg", "xbiquge", "69shu"
       privi >= 0 || old_enough?
-    when "zhwenpg", "69shu", "paoshu8", "duokan8"
+    when "zhwenpg", "paoshu8", "duokan8"
       privi >= 1 || old_enough?
+    when "shubaow"
+      ENV["AMBER_ENV"]? != "production"
     else
-      privi > 3
+      privi > 1
     end
   end
 
