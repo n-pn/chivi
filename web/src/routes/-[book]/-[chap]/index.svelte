@@ -78,7 +78,7 @@
   <svelte:fragment slot="header-left">
     <a href={book_path} class="header-item _title">
       <SIcon name="book" />
-      <span class="header-text _show-md _title">{nvinfo.btitle_vi}</span>
+      <span class="header-text _show-sm _title">{nvinfo.btitle_vi}</span>
     </a>
 
     <button class="header-item _active">
