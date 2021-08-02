@@ -85,12 +85,17 @@ class CV::Zhbook
     when "5200", "bqg_5200", "rengshu", "nofff"
       true
     when "hetushu", "biqubao", "bxwxorg", "xbiquge"
-      privi > 0
+      privi >= 0 || old_enough?
     when "zhwenpg", "69shu", "paoshu8", "duokan8"
-      privi > 1
+      privi >= 1 || old_enough?
     else
       privi > 3
     end
+  end
+
+  def old_enough?
+    return false if Time.utc(self.bumped) >= Time.utc - 30.minutes
+    Time.utc(self.mftime) < Time.utc - 3.days
   end
 
   def self.upsert!(zseed : Int32, snvid : String)
