@@ -83,3 +83,5 @@ puts GENERIC.cv_plain("许七安越说越兴奋").inspect
 puts GENERIC.cv_plain("越说越兴奋").inspect
 puts GENERIC.translit("许七安越说越兴奋").inspect
 puts GENERIC.cv_plain("第二个反应是：").inspect
+
+test_convert("【第006章】我的美女死党", mode: 2)
