@@ -128,11 +128,12 @@ class CV::ChapCtrl < CV::BaseCtrl
     schid = params.fetch_str("schid") { chidx.to_s.rjust(4, '0') }
     infos = zhbook.chinfo.put_chap!(chidx - 1, schid, lines[0], label).not_nil!
 
-    chtext = ChText.load("", sname, snvid, chidx - 1, schid)
+    chtext = ChText.load("", zhbook.sname, zhbook.snvid, chidx - 1, schid)
     chtext.set_zh!(lines)
 
-    if chidx > zhbook.chap_count
+    if chidx >= zhbook.chap_count
       if zhbook.zseed == 0
+        zhbook.chap_count = chidx
         zhbook.cvbook.update!({chap_count: chidx})
       else
         zhbook.update!({chap_count: chidx})

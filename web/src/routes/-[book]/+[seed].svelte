@@ -2,7 +2,7 @@
   export async function load({ page, context }) {
     const { nvinfo } = context
     const sname = page.params.seed
-    const chidx = +page.params.chidx || 1
+    const chidx = +page.query.get('chidx') || 1
     return { props: { nvinfo, sname, chidx: chidx } }
   }
 </script>
@@ -22,9 +22,9 @@
   let input = ''
 
   async function submit_text() {
-    const url = `/api/texts/${nvinfo.id}/${sname}`
+    const url = `/api/chaps/${nvinfo.id}/${sname}`
     const res = await fetch(url, {
-      method: 'PUT',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chidx, label, input }),
     })
