@@ -45,7 +45,7 @@
       <button class="header-item" on:click={() => (active_usercp = true)}>
         <SIcon name="user" />
         <span class="header-text _show-md">
-          {#if $session.privi > 0}{$session.uname} [{$session.privi}]{:else}Khách{/if}
+          {#if $session.privi >= 0}{$session.uname} [{$session.privi}]{:else}Khách{/if}
         </span>
       </button>
     </div>
@@ -54,11 +54,14 @@
 
 <main class="main" class:_shift={$toleft}>
   <div class="vessel _main">
-    {#if pledge && $session.privi < 2}
+    {#if $session.privi < 0}
       <div class="pledge">
-        Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển.
-        Đọc thêm <a href="/notes/donation">tại đây</a>.
+        Đăng nhập <strong>Chivi</strong> để mở khoá các tính năng!
       </div>
+    {:else if pledge && $session.privi < 2}
+      <a class="pledge" href="/notes/donation">
+        Ủng hộ <strong>Chivi</strong> để nâng cấp quyền hạn!
+      </a>
     {/if}
 
     <slot />
@@ -128,16 +131,21 @@
     margin: 0.5rem auto;
     // max-width: 50vw;
     font-size: rem(15px);
+    text-align: center;
 
-    padding: 0.25rem;
+    padding: 0.5rem var(--gutter-small);
 
     @include fgcolor(tert);
-    @include bgcolor(main);
+    @include bgcolor(tert);
 
     @include bdradi();
+  }
 
-    > a {
-      @include fgcolor(--fg-link);
+  a.pledge {
+    display: block;
+
+    &:hover {
+      @include fgcolor(primary, 5);
     }
   }
 

@@ -45,7 +45,7 @@ module CV::ViUser
   end
 
   def get_wtheme(uname : String)
-    wtheme.fval(uname) || "light"
+    uname == "khách" ? "light" : wtheme.fval(uname) || "light"
   end
 
   def get_tlmode(uname : String)

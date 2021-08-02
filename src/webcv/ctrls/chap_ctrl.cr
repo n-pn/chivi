@@ -77,6 +77,7 @@ class CV::ChapCtrl < CV::BaseCtrl
       JSON.build(res) do |jb|
         jb.object {
           jb.field "sname", zhbook.sname
+          jb.field "clink", zhbook.clink(curr[0])
 
           jb.field "total", zhbook.chap_count
           jb.field "chidx", chidx
@@ -103,11 +104,13 @@ class CV::ChapCtrl < CV::BaseCtrl
 
     zh_mode = params.fetch_int("mode")
     zh_mode = cu_privi if zh_mode > cu_privi
-    zh_text = chtext.get_zh!(cu_privi, reset: zh_mode > 1) || [""]
 
     response.headers.add("Cache-Control", "public, min-fresh=60")
     response.content_type = "text/plain; charset=utf-8"
-    context.content = chtext.trans!(zh_text, mode: cu_tlmode)
+
+    fetchable = zhbook.remote_text?(chidx, cu_privi)
+    zh_text = chtext.get_zh!(fetchable, reset: zh_mode > 1)
+    context.content = zh_text ? chtext.trans!(zh_text, mode: cu_tlmode) : ""
   end
 
   def upsert

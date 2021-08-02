@@ -67,14 +67,14 @@ class CV::ChText
     end
   end
 
-  def get_zh!(power = 4, reset = false)
+  def get_zh!(remote = false, reset = false)
     @zh_text ||= load_zh!
 
-    if RmUtil.remote?(@sname, power)
-      @zh_text = nil if reset || @zh_text.try(&.empty?)
+    if remote && (reset || @zh_text.try(&.empty?))
+      @zh_text = fetch_zh!(reset ? 3.minutes : 3.years) || @zh_text
+    else
+      @zh_text
     end
-
-    @zh_text ||= fetch_zh!(reset ? 3.minutes : 3.years) || @zh_text
   end
 
   def load_zh!
