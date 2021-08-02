@@ -75,7 +75,7 @@ class CV::ChapCtrl < CV::BaseCtrl
 
     render_json do |res|
       JSON.build(res) do |jb|
-        jb.object do
+        jb.object {
           jb.field "sname", zhbook.sname
 
           jb.field "total", zhbook.chap_count
@@ -87,7 +87,7 @@ class CV::ChapCtrl < CV::BaseCtrl
 
           jb.field "prev_url", zhbook.chinfo.url_for(index - 2)
           jb.field "next_url", zhbook.chinfo.url_for(index)
-        end
+        }
       end
     end
   end
