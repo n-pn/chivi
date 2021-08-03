@@ -47,8 +47,8 @@ class CV::CrawlYscrit
         inbox.receive.try { |snvid| fails << snvid }
       end
 
-      queue = fails
       break if @http.no_proxy?
+      queue = fails
     end
   end
 

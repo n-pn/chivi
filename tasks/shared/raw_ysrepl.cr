@@ -61,10 +61,10 @@ class CV::RawYsrepl
 
   def vhtml(book : String)
     lines = self.ztext.split("\n").map(&.strip).reject(&.empty?)
-    cvmtl = MtCore.generic_mtl(book)
+    libcv = MtCore.generic_mtl(book)
 
     lines.map do |line|
-      "<p>#{cvmtl.cv_plain(line, mode: 1).to_s}"
+      "<p>#{libcv.cv_plain(line, mode: 1).to_s}"
     end.join("\n")
   end
 

@@ -1,6 +1,5 @@
 require "../../cutil/text_utils"
 require "../../tsvfs/value_map"
-require "../../libcv/cvmtl"
 
 module CV::BookUtils
   extend self
@@ -49,16 +48,16 @@ module CV::BookUtils
   def hanviet(input : String, caps : Bool = true) : String
     return input unless input =~ /\p{Han}/ # return if no hanzi found
 
-    output = Cvmtl.hanviet.translit(input, false).to_s
+    output = MtCore.hanviet_mtl.translit(input, false).to_s
     caps ? TextUtils.titleize(output) : output
   end
 
   def convert(input : String, udict = "various") : Array(String)
-    cvmtl = Cvmtl.generic(udict)
+    libcv = MtCore.generic_mtl(udict)
 
     input.split(/\r|\n/).map do |line|
       line = line.strip
-      line.empty? ? line : cvmtl.cv_plain(line).to_s
+      line.empty? ? line : libcv.cv_plain(line).to_s
     end
   end
 

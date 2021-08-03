@@ -1,5 +1,5 @@
 require "../../../tsvfs/*"
-require "../../../libcv/cvmtl"
+require "../../../libcv/*"
 require "../../../cutil/text_utils"
 
 module CV::NvUtils
@@ -8,7 +8,7 @@ module CV::NvUtils
   def to_hanviet(input : String, caps : Bool = true)
     return input if input =~ /^[\w\s_.]+$/
 
-    output = Cvmtl.hanviet.translit(input, false).to_s
+    output = MtCore.hanviet_mtl.translit(input, false).to_s
     caps ? TextUtils.titleize(output) : output
   end
 

@@ -25,7 +25,7 @@ class CV::DictCtrl < CV::BaseCtrl
     when "essence"   then "Nền tảng"
     when "fixture"   then "Cố định"
     else
-      NvBtitle.get(dname).try(&.[1]) || dname
+      Cvbook.find({bhash: dname}).try(&.bname) || dname
     end
   end
 
@@ -142,8 +142,8 @@ class CV::DictCtrl < CV::BaseCtrl
     input = params["input"]
     hints = [] of String
 
-    cvmtl = MtCore.generic_mtl(dname, mode: cu_tlmode)
-    hints << cvmtl.cv_plain(input, mode: cu_tlmode, cap_mode: 0).to_s
+    libcv = MtCore.generic_mtl(dname, mode: cu_tlmode)
+    hints << libcv.cv_plain(input, mode: cu_tlmode, cap_mode: 0).to_s
 
     special_dict = VpDict.load(dname)
     regular_dict = VpDict.regular

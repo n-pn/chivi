@@ -9,7 +9,7 @@ class CV::CrawlYsbook
     @http = HttpClient.new(regen_proxy)
   end
 
-  def crawl!(upto = 252500, mode = :tail)
+  def crawl!(upto = 260000, mode = :tail)
     queue = (1..upto).to_a.map(&.to_s)
 
     case mode
@@ -69,7 +69,7 @@ class CV::CrawlYsbook
 
     if data = CV::RawYsbook.load(file)
       span *= (data.status + 1)          # try again in 2 4 6 days
-      data.voters == 0 ? span * 3 : span # try again in 6 12 18 days
+      data.voters == 0 ? span * 2 : span # try again in 4 8 12 days
     else
       span *= 3 # try again in 6 days
     end

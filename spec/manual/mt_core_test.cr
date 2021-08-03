@@ -1,4 +1,4 @@
-require "../../src/mtlv2/mt_core"
+require "../../src/libcv/mt_core"
 
 GENERIC = CV::MtCore.generic_mtl("combine")
 CV::VpDict.combine.set(CV::VpTerm.new("贾文和", ["Giả Văn Hoà"], "nr 4"))

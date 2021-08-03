@@ -23,8 +23,8 @@ module CV::NvBintro
 
     zh_map.set!(bhash, lines)
 
-    cvmtl = Cvmtl.generic(bhash)
-    intro = lines.map { |line| cvmtl.cv_plain(line).to_s }
+    libcv = Cvmtl.generic(bhash)
+    intro = lines.map { |line| libcv.cv_plain(line).to_s }
 
     intro_map(bhash, "vi").set!(bhash, intro)
   end

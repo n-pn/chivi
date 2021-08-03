@@ -1,7 +1,7 @@
 require "json"
 require "file_utils"
 
-require "../../mtlv2/mt_core"
+require "../../libcv/mt_core"
 require "../../seeds/rm_info"
 require "../../seeds/rm_util"
 require "../../tsvfs/value_map"
@@ -40,7 +40,7 @@ class CV::ChInfo
     end
   end
 
-  getter cvmtl : MtCore { MtCore.generic_mtl(@bname) }
+  getter libcv : MtCore { MtCore.generic_mtl(@bname) }
 
   def initialize(@bname : String, @sname : String, @snvid : String)
     @seed_dir = "#{SEED_DIR}/#{@sname}/#{@snvid}"
@@ -146,11 +146,11 @@ class CV::ChInfo
   def qtran_chap(infos : Array(String))
     schid = infos[0]
 
-    vi_title = cvmtl.cv_title(infos[1]).to_s
+    vi_title = libcv.cv_title(infos[1]).to_s
     url_slug = TextUtils.tokenize(vi_title).first(10).join("-")
 
     zh_label = infos[2]? || ""
-    vi_label = zh_label.empty? ? "Chính văn" : cvmtl.cv_title(zh_label).to_s
+    vi_label = zh_label.empty? ? "Chính văn" : libcv.cv_title(zh_label).to_s
 
     [schid, vi_title, vi_label, url_slug]
   end

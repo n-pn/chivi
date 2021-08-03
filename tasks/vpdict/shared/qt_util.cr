@@ -2,7 +2,7 @@ require "colorize"
 require "file_utils"
 
 require "../../../src/libcv/vdict"
-require "../../../src/mtlv2/vp_dict"
+require "../../../src/libcv/vp_dict"
 
 DIR = "_db/vpinit"
 

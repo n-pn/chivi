@@ -1,5 +1,5 @@
 require "./shared/*"
-require "../../src/libcv/cvmtl"
+require "../../src/libcv/libcv"
 
 puts "\n[Load deps]".colorize.cyan.bold
 

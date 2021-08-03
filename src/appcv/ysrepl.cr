@@ -37,8 +37,8 @@ class CV::Ysrepl
 
   def cvdata(bname = self.yscrit.cvbook.bhash, mode = 1)
     lines = self.ztext.split("\n").map(&.strip).reject(&.empty?)
-    cvmtl = MtCore.generic_mtl(bname)
-    lines.map { |line| cvmtl.cv_plain(line, mode: mode).to_str }.join("\n")
+    libcv = MtCore.generic_mtl(bname)
+    lines.map { |line| libcv.cv_plain(line, mode: mode).to_str }.join("\n")
   end
 
   def self.get!(id : Int64, created_at : Time)

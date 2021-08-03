@@ -1,4 +1,4 @@
-require "../../src/mtlv2/*"
+require "../../src/libcv/*"
 
 class CV::Tagsum
   alias Tagging = Hash(PosTag, Int32)

@@ -1,7 +1,7 @@
 require "file_utils"
 require "compress/zip"
 
-require "../../mtlv2/mt_core"
+require "../../libcv/mt_core"
 require "../../seeds/rm_text"
 require "../../cutil/ram_cache"
 

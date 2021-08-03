@@ -1,5 +1,5 @@
 require "./vdict"
-require "./cvmtl/*"
+require "./libcv/*"
 
 class CV::Cvmtl
   class_getter hanviet : self { new(Vdict.hanviet) }
