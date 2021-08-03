@@ -163,6 +163,7 @@
     {#if chinfo.sname == 'chivi'}
       <a
         class="m-button"
+        class:_disable={$session.privi < 2}
         href="/-{nvinfo.bslug}/+{chinfo.sname}?chidx={chinfo.total + 1}">
         <SIcon name="plus" />
         <span class="-hide">Thêm chương</span>

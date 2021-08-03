@@ -9,9 +9,9 @@ class CV::ChText
   CACHED = RamCache(self).new(512)
 
   def self.load(bname : String, sname : String, snvid : String,
-                chidx : Int32, schid : String)
+                index : Int32, schid : String)
     CACHED.get("#{sname}/#{snvid}/#{schid}") do
-      new(bname, sname, snvid, chidx, schid)
+      new(bname, sname, snvid, index, schid)
     end
   end
 
@@ -20,10 +20,10 @@ class CV::ChText
   @cv_time : Time
 
   def initialize(@bname : String, @sname : String, @snvid : String,
-                 @chidx : Int32, @schid : String)
+                 @index : Int32, @schid : String)
     @text_dir = "_db/chseed/#{@sname}/#{@snvid}"
 
-    zip_bname = (@chidx // 100).to_s.rjust(3, '0')
+    zip_bname = (@index // 100).to_s.rjust(3, '0')
     @zip_file = File.join(@text_dir, zip_bname + ".zip")
 
     @cv_data = nil
@@ -63,7 +63,7 @@ class CV::ChText
         mtl.cv_plain(para, mode: mode).to_str(io)
       end
 
-      puts "- <ch_text> [#{@sname}/#{@snvid}/#{@chidx}] converted.".colorize.cyan
+      puts "- <ch_text> [#{@sname}/#{@snvid}/#{@index}] converted.".colorize.cyan
     end
   end
 

@@ -152,20 +152,30 @@ class CV::Zhbook
 
   CACHE = {} of Int64 => self
 
-  def self.load!(cvbook_id : Int64, zseed : Int32)
-    CACHE[cvbook_id << 6 | zseed] ||=
-      case zseed
-      when 0 then dummy(Cvbook.load!(cvbook_id))
-      else        find!({cvbook_id: cvbook_id, zseed: zseed})
-      end
+  def self.find(cvbook_id : Int64, zseed : Int32)
+    find({cvbook_id: cvbook_id, zseed: zseed})
   end
 
-  def self.load!(cvbook : Cvbook, zseed : Int32)
-    CACHE[cvbook.id << 6 | zseed] ||=
-      case zseed
-      when 0 then dummy(cvbook)
-      else        find!({cvbook_id: cvbook.id, zseed: zseed})
-      end
+  def self.load!(cvbook_id : Int64, zseed : Int32) : self
+    load!(Cvbook.load!(cvbook_id), zseed)
+  end
+
+  def self.load!(cvbook : Cvbook, zseed : Int32) : self
+    CACHE[cvbook.id << 6 | zseed] ||= find(cvbook.id, zseed) || begin
+      zseed == 0 ? dummy(cvbook) : raise "Zhbook not found!"
+    end
+  end
+
+  def get_schid(index : Int32)
+    chinfo.get_info(index).try(&.first?) || (index + 1).to_s.rjust(4, '0')
+  end
+
+  def set_chap!(index : Int32, schid : String, title : String, label : String)
+    chinfo.put_chap!(index, schid, title, label)
+  end
+
+  def chtext(index : Int32, schid : String? = get_schid(index))
+    ChText.load(cvbook.bhash, sname, snvid, index, schid)
   end
 
   def self.dummy(cvbook : Cvbook)

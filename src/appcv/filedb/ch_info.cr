@@ -165,9 +165,8 @@ class CV::ChInfo
 
   def get_info(index : Int32) : Array(String)?
     page = index // PAGE_SIZE + 1
-    chaps = chaps_page(page)
     chidx = index + 1
-    chaps.get(chidx.to_s)
+    chaps_page(page).get(chidx.to_s)
   end
 
   def url_for(index : Int32)

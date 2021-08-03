@@ -125,28 +125,57 @@ class CV::ChapCtrl < CV::BaseCtrl
     input = params.fetch_str("input")
     lines = TextUtils.split_text(input, false)
 
+    chaps = split_chaps(lines, label)
+
     chmax = zhbook.chap_count + 1
     chidx = chmax if chidx < 1 || chidx > chmax
 
-    schid = params.fetch_str("schid") { chidx.to_s.rjust(4, '0') }
-    infos = zhbook.chinfo.put_chap!(chidx - 1, schid, lines[0], label).not_nil!
-
-    chtext = ChText.load("", zhbook.sname, zhbook.snvid, chidx - 1, schid)
-    chtext.set_zh!(lines)
+    infos = chaps.map_with_index(chidx - 1) do |chap, index|
+      schid = zhbook.get_schid(index)
+      zhbook.chtext(index, schid).set_zh!(chap.lines)
+      zhbook.set_chap!(index, schid, chap.title, chap.label).not_nil!
+    end
 
     if chidx >= zhbook.chap_count
-      if zhbook.zseed == 0
-        zhbook.chap_count = chidx
-        zhbook.cvbook.update!({chap_count: chidx})
+      zhbook.bumped = Time.utc.to_unix
+      zhbook.mftime = zhbook.bumped if zhbook.zseed == 0
+      zhbook.last_schid = infos.last[0]
+      zhbook.chap_count = chidx + chaps.size - 1
+      zhbook.save!
+    end
+
+    render_json({msg: "ok", chidx: chidx.to_s, uslug: infos.first[3]})
+  rescue err
+    puts "- Error loading chtext: #{err}"
+    halt!(500, err.message)
+  end
+
+  struct Chap
+    getter label : String
+    getter lines = [] of String
+    getter title : String { lines.first? || "" }
+
+    def initialize(@label)
+    end
+  end
+
+  LINE_RE = /^\/{4,}(.*)^/
+
+  private def split_chaps(input : Array(String), label = "")
+    chaps = [Chap.new(label)]
+
+    input.each do |line|
+      if line =~ /^\s*\/{4,}/
+        extra = line.gsub("/", "")
+        label = extra unless extra.empty? || extra == "正文"
+        chaps << Chap.new(label)
       else
-        zhbook.update!({chap_count: chidx})
+        line = line.strip
+        chaps.last.lines << line unless line.empty?
       end
     end
 
-    render_json({msg: "ok", chidx: chidx.to_s, uslug: infos[3]})
-  rescue err
-    puts "- Error loading chap_text: #{err}"
-    message = err.message || "Không rõ lỗi!"
-    halt!(500, message)
+    chaps.shift if chaps.first.lines.empty?
+    chaps
   end
 end
