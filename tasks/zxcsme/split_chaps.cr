@@ -372,7 +372,7 @@ class CV::Zxcs::SplitText
 
   private def good_enough?(index : Array(Tuple(String, String, String, String)))
     idx, _, title, _ = index.last
-    title.includes?("第#{idx}章")
+    return true if title.includes?("第#{idx}章")
 
     bads = [] of String
 
