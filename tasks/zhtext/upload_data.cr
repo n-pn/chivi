@@ -3,7 +3,7 @@
 # require "json"
 require "colorize"
 
-module CV::UploadSeed
+module CV::UploadChseed
   extend self
 
   INP = "_db/chseed"
@@ -60,4 +60,4 @@ module CV::UploadSeed
   end
 end
 
-CV::UploadSeed.run!
+CV::UploadChseed.run!
