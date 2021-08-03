@@ -120,6 +120,10 @@ class CV::ChInfo
     {mftime, seeds.size, self.last_schid}
   end
 
+  def get_page(index : Int32)
+    index // PAGE_SIZE + 1
+  end
+
   def reset_trans!(rmax = seeds.size // PAGE_SIZE + 1, rmin = rmax - 1)
     rmin = 1 if rmin < 1
 

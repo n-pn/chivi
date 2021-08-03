@@ -144,6 +144,8 @@ class CV::ChapCtrl < CV::BaseCtrl
       zhbook.save!
     end
 
+    zhbook.reset_trans!(chidx + chaps.size - 1, chidx)
+
     render_json({msg: "ok", chidx: chidx.to_s, uslug: infos.first[3]})
   rescue err
     puts "- Error loading chtext: #{err}"

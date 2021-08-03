@@ -142,6 +142,12 @@ class CV::Zhbook
     chidx <= 40 || chidx >= self.chap_count - 5
   end
 
+  def reset_trans!(chmin : Int32, chmax = self.chap_count)
+    pgmax = chinfo.get_page(chmax - 1)
+    pgmin = chinfo.get_page(chmin - 1)
+    chinfo.reset_trans!(pgmax, pgmin)
+  end
+
   def self.upsert!(zseed : Int32, snvid : String)
     find({zseed: zseed, snvid: snvid}) || new({zseed: zseed, snvid: snvid})
   end
