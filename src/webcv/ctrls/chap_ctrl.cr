@@ -136,15 +136,17 @@ class CV::ChapCtrl < CV::BaseCtrl
       zhbook.set_chap!(index, schid, chap.title, chap.label).not_nil!
     end
 
-    if chidx >= zhbook.chap_count
+    chmax = chidx + chaps.size - 1
+
+    if chmax > zhbook.chap_count
       zhbook.bumped = Time.utc.to_unix
       zhbook.mftime = zhbook.bumped if zhbook.zseed == 0
       zhbook.last_schid = infos.last[0]
-      zhbook.chap_count = chidx + chaps.size - 1
+      zhbook.chap_count = chmax
       zhbook.save!
     end
 
-    zhbook.reset_trans!(chidx + chaps.size - 1, chidx)
+    zhbook.reset_trans!(chmax, chidx)
 
     render_json({msg: "ok", chidx: chidx.to_s, uslug: infos.first[3]})
   rescue err

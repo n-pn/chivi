@@ -197,8 +197,8 @@ class CV::Zhbook
       mftime: cvbook.mftime,
       # bumped: cvbook.bumped,
 
-      chap_count: cvbook.chap_count,
-      last_schid: cvbook.chap_count.to_s.rjust(4, '0'),
+      chap_count: 0,
+      last_schid: "",
     })
   end
 end
