@@ -55,14 +55,14 @@
         if (evt.ctrlKey) return
     }
 
-    if (evt.key == 'Shift') kbd_hint = true
-
     let active = document?.activeElement
     switch (active?.tagName) {
       case 'TEXTAREA':
       case 'INPUT':
         if (!evt.altKey) return
     }
+
+    if (evt.key == 'Shift') kbd_hint = true
 
     if (evt.key == '"') {
       trigger_click(evt, `[data-kbd='"']`)
