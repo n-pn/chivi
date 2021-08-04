@@ -1,8 +1,26 @@
 require "html"
 require "colorize"
 
+require "./text_utils/*"
+
 module CV::TextUtils
   extend self
+
+  # Convert chinese punctuations to english punctuations
+  # and full width characters to ascii characters
+  def normalize(input : String) : Array(Char)
+    normalize(input.chars)
+  end
+
+  # :ditto:
+  def normalize(input : Array(Char)) : Array(Char)
+    input.map { |char| normalize(char) }
+  end
+
+  # :ditto:
+  def normalize(char : Char) : Char
+    NORMALIZE.fetch(char, char)
+  end
 
   BR_RE = /\<br\s*\/?\>|\s{4,+}/i
 

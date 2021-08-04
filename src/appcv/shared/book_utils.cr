@@ -31,7 +31,7 @@ module CV::BookUtils
 
   def fix_zh_btitle(ztitle : String, author : String = "") : String
     zh_btitles.fval_alt("#{ztitle}  #{author}", ztitle) || begin
-      output = CvUtil.normalize(ztitle).join
+      output = TextUtils.normalize(ztitle).join
       clean_name(output)
     end
   end
