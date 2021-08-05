@@ -48,8 +48,10 @@ module CV::Improving
         case succ.key
         when "一趟", "一下"
           node.fuse_right!("#{node.val} #{succ.val}")
+          node.tag = PosTag::Vform
         when "一把"
           node.fuse_right!("#{node.val} một phát")
+          node.tag = PosTag::Vform
         end
 
         break

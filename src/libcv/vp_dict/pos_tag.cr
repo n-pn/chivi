@@ -142,22 +142,24 @@ end
 # @[Flags]
 enum CV::PosTag
   None
+  Unkn
+
   {% for tag in POS_TAGS.keys %}
   {{ tag.id }}
   {% end %}
 
   @[AlwaysInline]
   def real?
-    None <= self <= Locut
+    Unkn <= self <= Locut
   end
 
   @[AlwaysInline]
   def word?
-    None <= self < Punct
+    Unkn <= self < Punct
   end
 
   def ends?
-    puncts? || interjection?
+    none? || puncts? || interjection?
   end
 
   def nouns?
@@ -288,14 +290,15 @@ enum CV::PosTag
   def self.from_str(tag : ::String)
     {% begin %}
     case tag
-    when "" then None
-    {% for tag, name in POS_TAGS %}
+    when "-" then None
+    when "" then Unkn
+      {% for tag, name in POS_TAGS %}
     when {{ name }} then {{ tag.id }}
     {% end %}
     when "z" then Adesc
     else
       # puts "unknown tag <#{tag}>!"
-      None
+      Unkn
     end
     {% end %}
   end
