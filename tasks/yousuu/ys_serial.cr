@@ -30,7 +30,7 @@ class CV::CrawlYsbook
       inbox = Channel(String?).new(limit)
 
       queue.each_with_index(1) do |snvid, idx|
-        return if @http.no_proxy?
+        exit(0) if @http.no_proxy?
 
         spawn do
           label = "<#{idx}/#{queue.size}> [#{snvid}]"
@@ -44,7 +44,7 @@ class CV::CrawlYsbook
         inbox.receive.try { |snvid| fails << snvid }
       end
 
-      break if @http.no_proxy?
+      exit(0) if @http.no_proxy?
       queue = fails
     end
   end
