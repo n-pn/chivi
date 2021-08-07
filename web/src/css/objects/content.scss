@@ -7,13 +7,9 @@ article {
 
 .md-article {
   margin-top: 1rem;
-  background-color: #fff;
+  @include bgcolor(secd);
   padding: 1rem 1.5rem;
   @include bdradi();
-
-  .tm-dark & {
-    background-color: color(gray, 8);
-  }
 
   > h1 {
     margin-top: 1rem;
@@ -25,8 +21,21 @@ article {
     margin-top: 1rem;
   }
 
+  li + li {
+    margin-top: 0.75rem;
+  }
+
+  li li,
+  li p {
+    margin-top: 0.5rem;
+  }
+
+  a {
+    @include fgcolor(primary, 5);
+  }
+
   > h1,
   > h2 {
-    border-bottom: 1px solid color(gray, 3);
+    @include border(--bd-main, $sides: bottom);
   }
 }
