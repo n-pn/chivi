@@ -67,12 +67,12 @@ class CV::CrawlYsbook
   private def expiry_time(file : String) : Time::Span
     span = 2.days
 
-    if data = CV::RawYsbook.load(file)
-      span *= (data.status + 1)          # try again in 2 4 6 days
-      data.voters == 0 ? span * 2 : span # try again in 4 8 12 days
-    else
-      span *= 3 # try again in 6 days
-    end
+    return 6.days unless data = CV::RawYsbook.load(file)
+    span *= (data.status + 1)          # try again in 2 4 6 days
+    data.voters == 0 ? span * 2 : span # try again in 4 8 12 days
+
+  rescue
+    6.days
   end
 end
 
