@@ -152,8 +152,8 @@ module CV::Improving
   end
 
   def verb_subject?(node : MtNode)
-    return false if node.vform?
-    return false unless node.verbs?
+    # return false if node.vform?
+    return false unless node.verb?
     return true unless prev = node.prev
     return false if prev.comma? || prev.penum?
     prev.ends? || prev.vshi? || prev.quantis?
