@@ -27,6 +27,9 @@ targets:
   seed_zxcsme:
     main: tasks/nvinfo/seed_zxcsme.cr
 
+  seed_locals:
+    main: tasks/nvinfo/seed_locals.cr
+
   fetch_covers:
     main: tasks/nvinfo/fetch_covers.cr
 

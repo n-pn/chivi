@@ -444,5 +444,5 @@ class CV::Zxcs::SplitText
 end
 
 worker = CV::Zxcs::SplitText.new
-# worker.extract!
-worker.clean_indexes!
+worker.extract!
+# worker.clean_indexes!
