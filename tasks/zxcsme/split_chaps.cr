@@ -9,6 +9,7 @@ class CV::Zxcs::SplitText
   struct Chap
     property label : String
     property lines : Array(String)
+    getter title : String { lines[0]? || "" }
 
     def initialize(@label, @lines)
     end
@@ -134,9 +135,7 @@ class CV::Zxcs::SplitText
     puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
 
     return unless chaps = split_chapters(snvid, input)
-    index = save_texts!(chaps, out_dir)
-    idx_str = index.map(&.map(&.strip).join('\t')).join('\n')
-    File.write(out_idx, idx_str)
+    index = save_texts!(chaps, out_dir, out_idx)
 
     return if good_enough?(index)
 
@@ -182,10 +181,10 @@ class CV::Zxcs::SplitText
     exit(0)
   end
 
-  def save_texts!(input : Array(Array(String)), out_dir : String)
+  def save_texts!(input : Array(Array(String)), out_dir : String, out_idx : String)
     chaps = format_chaps(input)
 
-    index = [] of Tuple(String, String, String, String)
+    index = [] of Array(String)
     FileUtils.mkdir_p(out_dir)
 
     chaps.each_slice(100).with_index do |slice, idx|
@@ -198,11 +197,14 @@ class CV::Zxcs::SplitText
             schid = chidx.to_s.rjust(4, '0')
 
             zip.add("#{schid}.txt", chap.lines.join('\n'))
-            index << ({chidx.to_s, schid, chap.lines[0], chap.label})
+            index << [chidx.to_s, schid, chap.title, chap.label]
           end
         end
       end
     end
+
+    idxstr = index.map { |x| x.last(3).join('\t') }
+    File.write(out_idx, idxstr.join('\n'))
 
     index
   end
@@ -370,7 +372,7 @@ class CV::Zxcs::SplitText
     end
   end
 
-  private def good_enough?(index : Array(Tuple(String, String, String, String)))
+  private def good_enough?(index : Array(Array(String)))
     idx, _, title, _ = index.last
     return true if title.includes?("第#{idx}章")
 
@@ -426,12 +428,12 @@ class CV::Zxcs::SplitText
   end
 
   def clean_indexes!
-    Dir.glob(OUT_IDX + "/*.tsv").each_with_index do |file, idx|
+    Dir.glob(OUT_DIR + "/**/*.tsv").each_with_index do |file, idx|
       puts "- <#{idx}> #{file}"
 
       lines = File.read_lines(file)
       lines.map! do |line|
-        line.split('\t').map(&.tr("　", " ").strip).join('\t')
+        line.split('\t').map(&.tr("　", " ").strip).last(3).join('\t')
       end
 
       utime = File.info(file).modification_time
@@ -442,5 +444,5 @@ class CV::Zxcs::SplitText
 end
 
 worker = CV::Zxcs::SplitText.new
-worker.extract!
-# worker.clean_indexes!
+# worker.extract!
+worker.clean_indexes!
