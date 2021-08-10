@@ -35,7 +35,7 @@ class CV::RmText
     when "paoshu8"  then "http://www.paoshu8.com/#{prefixed_snvid}/#{schid}.html"
     when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/#{schid}.html"
     when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/#{schid}.html"
-    when "bqg_5200" then "https://www.biquge5200.net/#{prefixed_snvid}/#{schid}.html"
+    when "bqg_5200" then "http://www.biquge5200.net/#{prefixed_snvid}/#{schid}.html"
     else                 raise "Unsupported remote source <#{sname}>!"
     end
   end
@@ -166,8 +166,7 @@ class CV::RmText
   end
 
   private def extract_hetushu_paras
-    client = hetushu_encrypt_string
-    orders = Base64.decode_string(client).split(/[A-Z]+%/).map(&.to_i)
+    orders = get_hetushu_line_order(file.sub(".html.gz", ".meta"))
 
     res = Array(String).new(orders.size, "")
     jmp = 0
@@ -187,17 +186,26 @@ class CV::RmText
     res
   end
 
-  private def hetushu_encrypt_string
+  private def get_hetushu_line_order(meta_file)
+    base64 = hetushu_encrypt_string(meta_file)
+    orders = Base64.decode_string(base64).split(/[A-Z]+%/).map(&.to_i)
+  rescue # redo for wrong token
+    File.delete(meta_file)
+    base64 = hetushu_encrypt_string(meta_file)
+    orders = Base64.decode_string(base64).split(/[A-Z]+%/).map(&.to_i)
+  end
+
+  private def hetushu_encrypt_string(meta_file)
     page.attr("meta[name=client]", "content", nil).try { |attr| return attr }
 
-    meta_file = file.sub(".html.gz", ".meta")
     return File.read(meta_file) if File.exists?(meta_file)
-
     json_link = link.sub("#{@schid}.html", "r#{@schid}.json")
 
     headers = HTTP::Headers{
       "Referer"          => link,
+      "Content-Type"     => "application/x-www-form-urlencoded",
       "X-Requested-With" => "XMLHttpRequest",
+      "Cookie"           => "PHPSESSID=48grk8h3bi58q13rhbjp1kaa73",
     }
 
     puts "-- GET: <#{json_link}>".colorize.blue

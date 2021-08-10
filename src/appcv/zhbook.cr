@@ -42,7 +42,7 @@ class CV::Zhbook
     when "paoshu8"  then "http://www.paoshu8.com/#{prefixed_snvid}/"
     when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/"
     when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/"
-    when "bqg_5200" then "https://www.biquge5200.net/#{prefixed_snvid}/"
+    when "bqg_5200" then "http://www.biquge5200.net/#{prefixed_snvid}/"
     else                 "/"
     end
   end
@@ -63,7 +63,7 @@ class CV::Zhbook
     when "paoshu8"  then "http://www.paoshu8.com/#{prefixed_snvid}/#{schid}.html"
     when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/#{schid}.html"
     when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/#{schid}.html"
-    when "bqg_5200" then "https://www.biquge5200.net/#{prefixed_snvid}/#{schid}.html"
+    when "bqg_5200" then "http://www.biquge5200.net/#{prefixed_snvid}/#{schid}.html"
     else                 "/"
     end
   end
