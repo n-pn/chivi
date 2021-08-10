@@ -22,7 +22,7 @@ class CV::SplitText
     @input = File.read_lines("#{DIR}/#{@inp_file}.txt")
   end
 
-  def split_by_title_regex(regex = /^\s*【第[\d一]+章】/, label = "")
+  def split_by_title_regex(regex : Regex, label = "")
     @chaps = [Chap.new(label)]
 
     @input.each do |line|
@@ -72,7 +72,10 @@ class CV::SplitText
 end
 
 # splitter = CV::SplitText.new("van-de-muoi-muoi-1850", "baac9fvq")
-# splitter.tap(&.split_by_title_regex).save!
+# splitter.tap(&.split_by_title_regex(/^\s*【第[\d一]+章】/)).save!
 
-x = CV::SplitText.new("h0q4vtmp")
-x.tap(&.split_by_title_regex(/^第/)).save!
+# x = CV::SplitText.new("h0q4vtmp")
+# x.tap(&.split_by_title_regex(/^第/)).save!
+
+# x = CV::SplitText.new("tet6s0me")
+# x.tap(&.split_by_title_regex(/^\s*第[\d零〇一二两三四五六七八九十百千]+章/)).save!
