@@ -2,6 +2,8 @@ require "file_utils"
 require "compress/zip"
 
 class CV::SplitText
+  DIR = "_db/.keeps/manual"
+
   class Chap
     property label
     property lines = [] of String
@@ -16,8 +18,8 @@ class CV::SplitText
 
   getter chaps = [] of Chap
 
-  def initialize(@inp_file : String, @bhash : String)
-    @input = File.read_lines(inp_file)
+  def initialize(@inp_file : String, @bhash = inp_file)
+    @input = File.read_lines("#{DIR}/#{@inp_file}.txt")
   end
 
   def split_by_title_regex(regex = /^\s*【第[\d一]+章】/, label = "")
@@ -30,7 +32,7 @@ class CV::SplitText
 
     @chaps.shift if @chaps.first.lines.empty?
 
-    puts "\nsplit #{@inp_file} by regex #{regex}:"
+    puts "\nsplit #{@inp_file} by regex #{regex.to_s}:"
     puts "- total chaps: #{@chaps.size}"
     puts "-" * 8
     @chaps.first(4).each do |chap|
@@ -69,5 +71,8 @@ class CV::SplitText
   end
 end
 
-splitter = CV::SplitText.new("_db/.keeps/van-de-muoi-muoi-1850.txt", "baac9fvq")
-splitter.tap(&.split_by_title_regex).save!
+# splitter = CV::SplitText.new("van-de-muoi-muoi-1850", "baac9fvq")
+# splitter.tap(&.split_by_title_regex).save!
+
+x = CV::SplitText.new("h0q4vtmp")
+x.tap(&.split_by_title_regex(/^第/)).save!

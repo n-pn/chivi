@@ -38,10 +38,10 @@ fi
 if [[ $2 == "fixes"  ]]
 then
   echo quickfix fixes!
-  rsync -azi --no-p "_db/.cache/bxwxorg/infos" "$ssh/_db/.cache/bxwxorg"
-  rsync -azi --no-p "_db/.cache/paoshu8/infos" "$ssh/_db/.cache/paoshu8"
+  # rsync -azi --no-p "_db/.cache/bxwxorg/infos" "$ssh/_db/.cache/bxwxorg"
+  # rsync -azi --no-p "_db/.cache/paoshu8/infos" "$ssh/_db/.cache/paoshu8"
+  rsync -azi --no-p "_db/zhbook/zxcs_me" "$ssh/_db/zhbook/"
 fi
-
 
 ## upload old data
 # rsync -azi --no-p "_db/nv_infos/chseeds" "$ssh/_db/nv_infos/"

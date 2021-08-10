@@ -51,7 +51,8 @@ module CV::UploadChseed
       spawn do
         text_dir = File.join(target_dir, snvid)
         puts "- <#{idx}/#{dirs.size}> [#{text_dir}]".colorize.cyan
-        puts `#{cmd} "#{text_dir}" "#{host}:#{remote_dir}"`.colorize.yellow
+        output = `#{cmd} "#{text_dir}" "#{host}:#{remote_dir}"`
+        puts output.empty? ? "Nothing to upload" : output.colorize.yellow
         chan.send(nil)
       end
     end
