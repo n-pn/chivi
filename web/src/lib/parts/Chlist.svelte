@@ -5,9 +5,9 @@
   export let chaps = []
 </script>
 
-<ul class="list">
+<div class="list">
   {#each chaps as { chidx, title, label, uslug }}
-    <li class="item">
+    <div class="item">
       <a href="/-{bslug}/-{uslug}-{sname}-{chidx}" class="link" rel="nofollow">
         <div class="text">
           <div class="title">{title}</div>
@@ -17,17 +17,19 @@
           <span class="label">{label}</span>
         </div>
       </a>
-    </li>
+    </div>
   {/each}
-</ul>
+</div>
 
 <style lang="scss">
-  $chap-size: 17.75rem;
+  $chap-size: 17.5rem;
   // $chap-break: $chap-size * 2 + 0.75 * 5;
 
   .list {
-    @include grid($size: minmax($chap-size, 1fr));
-    @include bps(grid-gap, $sm: 0 0.5rem, $md: 0 0.75rem);
+    @include grid($size: minmax(var(--size, 17.5rem), 1fr));
+    @include bps(--size, 17.75rem, $md: 16.25rem, $lg: 17.75rem);
+
+    grid-gap: 0 var(--gutter-sm);
   }
 
   .item {
