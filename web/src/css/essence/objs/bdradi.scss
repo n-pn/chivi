@@ -20,13 +20,13 @@ $radiuses: map-keys($radius-sizes);
 
 // functions
 
-@function radius-props($sides: all) {
-  @if $sides == all or $sides == null {
+@function radius-props($loc: all) {
+  @if $loc == all or $loc == null {
     @return border-radius;
   }
 
   $props: ();
-  $corners: map-get($edges, $sides);
+  $corners: map-get($edges, $loc);
 
   @each $corner in $corners {
     $props: append($props, border-#{$corner}-radius);
@@ -41,8 +41,8 @@ $radiuses: map-keys($radius-sizes);
 
 // mixins
 
-@mixin bdradi($value: $radius-df, $sides: all) {
-  $props: radius-props($sides);
+@mixin bdradi($value: $radius-df, $loc: all) {
+  $props: radius-props($loc);
   $value: bdradi($value);
 
   @include bps($props, $value);

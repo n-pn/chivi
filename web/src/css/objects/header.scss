@@ -105,6 +105,10 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     @include bps(display, none, $md: inline-block);
   }
 
+  &._show-lg {
+    @include bps(display, none, $lg: inline-block);
+  }
+
   ._brand & {
     text-transform: uppercase;
     font-weight: 500;
@@ -113,7 +117,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   &._title {
     @include clamp($width: null);
-    @include bps(max-width, 32vw, $md: 18vw);
+    @include bps(max-width, 32vw, $md: 24vw, $lg: 16vw);
   }
 
   &._seed {
@@ -193,9 +197,9 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
     @include flex(0);
 
-    @include border(--bd-main, $sides: top);
+    @include border(--bd-main, $loc: top);
     &:last-child {
-      @include border(--bd-main, $sides: bottom);
+      @include border(--bd-main, $loc: bottom);
     }
 
     @include ftsize(sm);

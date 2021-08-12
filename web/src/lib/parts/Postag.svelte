@@ -100,8 +100,8 @@
     padding: 0.75rem 0.75rem 0;
     height: $tab-height + 0.75rem;
 
-    @include border(--bd-main, $sides: bottom);
-    @include bdradi($sides: top);
+    @include border(--bd-main, $loc: bottom);
+    @include bdradi($loc: top);
 
     > .-btn {
       position: absolute;
@@ -135,8 +135,8 @@
     @include ftsize(sm);
     @include fgcolor(tert);
     @include clamp($width: null);
-    @include bdradi($sides: top);
-    @include border(--bd-main, $sides: top-left-right);
+    @include bdradi($loc: top);
+    @include border(--bd-main, $loc: top-left-right);
 
     &:hover {
       @include bgcolor(secd);
@@ -203,6 +203,6 @@
     width: 50%;
     grid-column: 1 / -1;
     margin: 0.25rem auto;
-    @include border(--bd-main, $sides: top);
+    @include border(--bd-main, $loc: top);
   }
 </style>

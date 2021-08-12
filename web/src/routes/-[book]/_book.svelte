@@ -332,7 +332,7 @@
   .section-header {
     display: flex;
     height: $section-height;
-    @include border(--bd-main, $sides: bottom);
+    @include border(--bd-main, $loc: bottom);
 
     @include tm-dark {
       @include bdcolor(neutral, 6);
@@ -356,7 +356,7 @@
 
     &._active {
       @include fgcolor(primary, 6);
-      @include border(primary, 5, $width: 2px, $sides: bottom);
+      @include border(primary, 5, $width: 2px, $loc: bottom);
     }
 
     @include tm-dark {

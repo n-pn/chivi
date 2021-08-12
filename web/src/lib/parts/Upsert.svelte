@@ -212,7 +212,7 @@
     padding: 0 0.75rem;
 
     @include flex();
-    @include border(--bd-main, $sides: bottom);
+    @include border(--bd-main, $loc: bottom);
     @include ftsize(md);
     // prettier-ignore
   }
@@ -229,7 +229,7 @@
 
     margin-right: 0.5rem;
 
-    @include bdradi($sides: top);
+    @include bdradi($loc: top);
     @include fgcolor(tert);
     @include border(--bd-main);
 

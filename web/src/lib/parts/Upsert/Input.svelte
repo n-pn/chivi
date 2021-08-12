@@ -174,19 +174,19 @@
     }
 
     &:first-of-type {
-      @include bdradi($sides: left);
+      @include bdradi($loc: left);
     }
 
     &:last-of-type {
-      @include bdradi($sides: right);
+      @include bdradi($loc: right);
     }
 
     &._left {
-      @include border(--bd-soft, $sides: right);
+      @include border(--bd-soft, $loc: right);
     }
 
     &._right {
-      @include border(--bd-soft, $sides: left);
+      @include border(--bd-soft, $loc: left);
     }
   }
 </style>

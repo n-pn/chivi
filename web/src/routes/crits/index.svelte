@@ -81,7 +81,7 @@
     line-height: 2rem;
     height: 2rem;
     @include flex($gap: 0.5rem);
-    @include border(--bd-main, $sides: bottom);
+    @include border(--bd-main, $loc: bottom);
 
     .-label {
       flex: 1;

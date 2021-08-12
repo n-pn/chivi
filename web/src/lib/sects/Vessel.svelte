@@ -33,7 +33,7 @@
         class="header-item _brand"
         on:click={() => (active_appnav = true)}>
         <img src="/chivi-logo.svg" alt="logo" />
-        <span class="header-text _show-md">Chivi</span>
+        <span class="header-text _show-lg">Chivi</span>
       </button>
 
       <slot name="header-left" />

@@ -1,15 +1,23 @@
 // Breakpoint widths
 $bp-xs: 360px !default; // older phone, iphone se
 $bp-sm: 480px !default; // Small screen / phone
-$bp-md: 720px !default; // Medium screen / tablet
-$bp-lg: 960px !default; // Large screen / desktop
-$bp-xl: 1200px !default; // Extra large screen / wide desktop
+$bp-md: 600px !default; // Small screen / phone
+$bp-lg: 720px !default; // Medium screen / tablet
+$bp-xl: 960px !default; // Large screen / desktop
+$bp-x2: 1200px !default; // Extra large screen / wide desktop
+$bp-x3: 1440px !default; // Extra large screen / wide desktop
+$bp-x4: 1680px !default; // Extra large screen / wide desktop
+$bp-x5: 1920px !default; // Extra large screen / wide desktop
 
 $breakpoints: (
   sm: $bp-sm,
   md: $bp-md,
   lg: $bp-lg,
   xl: $bp-xl,
+  x2: $bp-x2,
+  x3: $bp-x3,
+  x4: $bp-x4,
+  x5: $bp-x5,
 ) !default;
 
 @function bp-size($key) {
@@ -54,7 +62,18 @@ $breakpoints: (
   }
 }
 
-@mixin bps($props, $xs: null, $sm: null, $md: null, $lg: null, $xl: null) {
+@mixin bps(
+  $props,
+  $xs: null,
+  $sm: null,
+  $md: null,
+  $lg: null,
+  $xl: null,
+  $x2: null,
+  $x3: null,
+  $x4: null,
+  $x5: null
+) {
   $map: $xs;
 
   @if type-of($map) != map {
@@ -64,6 +83,10 @@ $breakpoints: (
       md: $md or null,
       lg: $lg or null,
       xl: $xl or null,
+      x2: $x2 or null,
+      x3: $x3 or null,
+      x4: $x4 or null,
+      x5: $x5 or null,
     );
   }
 

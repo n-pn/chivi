@@ -108,8 +108,8 @@
     @include flex($gap: 0.3rem);
 
     @include bgcolor(secd);
-    @include bdradi($sides: top);
-    // @include border(--bd-main, $sides: bottom);
+    @include bdradi($loc: top);
+    // @include border(--bd-main, $loc: bottom);
 
     padding: 0.375rem var(--gutter-small);
     line-height: 1.75rem;
@@ -149,7 +149,7 @@
 
     @include flex($gap: 1rem);
     justify-content: right;
-    @include border(--bd-main, $sides: top);
+    @include border(--bd-main, $loc: top);
 
     @include fgcolor(tert);
     span {

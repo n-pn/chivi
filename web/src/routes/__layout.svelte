@@ -131,7 +131,7 @@
     padding: 0.75rem;
 
     @include ftsize(sm);
-    @include border($sides: top);
+    @include border($loc: top);
     @include fgcolor(neutral, 6);
     @include bgcolor(neutral, 2);
 

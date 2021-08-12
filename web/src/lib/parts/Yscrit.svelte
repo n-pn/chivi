@@ -95,8 +95,8 @@
     top: 0;
     z-index: 9;
     @include bgcolor(secd);
-    @include bdradi($sides: top);
-    // @include border(--bd-main, $sides: bottom);
+    @include bdradi($loc: top);
+    // @include border(--bd-main, $loc: bottom);
 
     padding: 0.5rem var(--gutter);
     line-height: 2rem;
@@ -152,7 +152,7 @@
 
     @include flex($gap: 1rem);
     justify-content: right;
-    @include border(--bd-main, $sides: top);
+    @include border(--bd-main, $loc: top);
 
     @include fgcolor(tert);
     span {

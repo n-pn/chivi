@@ -168,7 +168,7 @@
     @include fgcolor(secd);
     padding: 0.375rem 0.75rem;
     // padding-top: 0;
-    @include border($sides: bottom);
+    @include border($loc: bottom);
     &:last-child {
       border: none;
     }

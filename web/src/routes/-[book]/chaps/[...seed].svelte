@@ -268,7 +268,7 @@
       padding-left: 0.5rem;
       @include label();
       @include fgcolor(tert);
-      @include border(primary, 5, $width: 3px, $sides: left);
+      @include border(primary, 5, $width: 3px, $loc: left);
     }
 
     .-span {
@@ -288,7 +288,7 @@
     > .-sep {
       width: 50%;
       margin: var(--gutter-sm) auto;
-      @include border(--bd-main, $sides: bottom);
+      @include border(--bd-main, $loc: bottom);
     }
   }
 

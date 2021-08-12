@@ -4,15 +4,15 @@
 
 $dirs: (top, right, bottom, left);
 
-@function bdprops($sides: all, $type: null) {
-  @if $sides == all or $sides == null {
+@function bdprops($loc: all, $type: null) {
+  @if $loc == all or $loc == null {
     @return join-props(border, $type);
   }
 
   $props: ();
 
   @each $dir in $dirs {
-    @if match-side($dir, $sides) {
+    @if match-side($dir, $loc) {
       $props: list.append($props, join-props(border, $dir, $type));
     }
   }
@@ -23,8 +23,8 @@ $dirs: (top, right, bottom, left);
 // colors
 $bd-labels: (main, soft, hard, mute);
 
-@mixin bdcolor($color: gray, $tone: 5, $sides: all) {
-  $props: bdprops($sides, color);
+@mixin bdcolor($color: gray, $tone: 5, $loc: all) {
+  $props: bdprops($loc, color);
 
   @if known-colors($color) {
     border-color: color($color, $tone);
@@ -39,15 +39,15 @@ $bd-labels: (main, soft, hard, mute);
 
 // styles
 
-@mixin bdstyle($style: solid, $sides: all) {
-  $props: bdprops($sides, style);
+@mixin bdstyle($style: solid, $loc: all) {
+  $props: bdprops($loc, style);
   @include bps($props, $style);
 }
 
 // widths
 
-@mixin bdwidth($width: 1px, $sides: all) {
-  $props: bdprops($sides, width);
+@mixin bdwidth($width: 1px, $loc: all) {
+  $props: bdprops($loc, width);
   @include bps($props, $width);
 }
 
@@ -58,9 +58,9 @@ $bd-labels: (main, soft, hard, mute);
   $tone: 3,
   $width: 1px,
   $style: solid,
-  $sides: all
+  $loc: all
 ) {
-  $props: bdprops($sides);
+  $props: bdprops($loc);
   $color: #{color($color, $tone)};
   @include bps($props, $width $style $color);
 }

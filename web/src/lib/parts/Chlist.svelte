@@ -32,20 +32,20 @@
 
   .item {
     display: block;
-    @include border(--bd-main, $sides: bottom);
+    @include border(--bd-main, $loc: bottom);
     $bg-dark: color(neutral, 8);
 
     &:first-child {
-      @include border(--bd-main, $sides: top);
+      @include border(--bd-main, $loc: top);
     }
 
     &:nth-child(odd) {
       @include bgcolor(secd);
     }
 
-    @include bp-min(600px) {
+    @include bp-min(md) {
       &:nth-child(2) {
-        @include border(--bd-main, $sides: top);
+        @include border(--bd-main, $loc: top);
       }
 
       &:nth-child(4n),
