@@ -36,7 +36,7 @@ class CV::FixCovers
     covers << {"chivi", cvbook.bhash}
 
     cvbook.ysbooks.each { |x| covers << {"yousuu", x.id.to_s} }
-    cvbook.zhbooks.each { |x| covers << {x.sname, x.snvid} }
+    cvbook.zhbooks.to_a.sort_by(&.zseed).each { |x| covers << {x.sname, x.snvid} }
 
     max_width, out_cover = 0, nil
     out_sname, out_snvid = nil, nil
@@ -59,6 +59,7 @@ class CV::FixCovers
 
       if File.exists? out_path("#{sname}-#{snvid}.webp")
         out_cover, out_sname, out_snvid = cover_file, sname, snvid
+        break
       end
 
       unless cover_width = width_map(sname).fval(cover_file).try(&.to_i)
@@ -78,7 +79,7 @@ class CV::FixCovers
     end
 
     unless out_cover && out_sname && out_snvid
-      return puts "no cover available for #{cvbook}!"
+      return puts "no cover available for #{cvbook.bname}!"
     end
 
     out_webp = "#{out_sname}-#{out_snvid}.webp"
