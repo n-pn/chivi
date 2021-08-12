@@ -75,15 +75,15 @@
 
 <style lang="scss">
   article {
-    @include fluid(margin-left, 0rem, 0.1rem, 1.5rem, 2rem);
-    @include fluid(margin-right, 0rem, 0.1rem, 1.5rem, 2rem);
+    @include bps(margin-left, 0rem, 0.1rem, 1.5rem, 2rem);
+    @include bps(margin-right, 0rem, 0.1rem, 1.5rem, 2rem);
   }
 
   .intro {
     word-wrap: break-word;
     @include fgcolor(neutral, 7);
-    // @include fluid(padding, $md: 0 0.75rem);
-    @include fluid(font-size, rem(15px), rem(16px), rem(17px));
+    // @include bps(padding, $md: 0 0.75rem);
+    @include bps(font-size, rem(15px), rem(16px), rem(17px));
 
     @include tm-dark {
       @include fgcolor(neutral, 3);

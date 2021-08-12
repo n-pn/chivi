@@ -72,8 +72,8 @@
     @include bgcolor(tert);
 
     margin-top: 1rem;
-    @include fluid(margin-left, calc(var(--gutter) * -1), 0);
-    @include fluid(margin-right, calc(var(--gutter) * -1), 0);
+    @include bps(margin-left, calc(var(--gutter) * -1), 0);
+    @include bps(margin-right, calc(var(--gutter) * -1), 0);
     padding: var(--gutter) calc(var(--gutter) * 2);
   }
 

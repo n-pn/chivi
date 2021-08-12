@@ -2,7 +2,7 @@
 
 @mixin gap($gap: 0.5rem, $child: '*') {
   > #{$child} + #{$child} {
-    @include fluid(margin-left, $gap);
+    @include bps(margin-left, $gap);
   }
 }
 

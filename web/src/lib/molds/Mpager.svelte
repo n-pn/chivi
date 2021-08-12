@@ -130,10 +130,10 @@
   }
 
   .-txt {
-    @include fluid(display, none, $md: inline);
+    @include bps(display, none, $md: inline);
   }
 
   .-md {
-    @include fluid(display, none, $md: inline-block);
+    @include bps(display, none, $md: inline-block);
   }
 </style>

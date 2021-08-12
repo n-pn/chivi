@@ -29,7 +29,7 @@
     margin: math.div($outer-height - $inner-height, 2) 0;
     padding-top: 1px;
     // padding-top: 0.25rem;
-    @include fluid(font-size, rem(11px), rem(12px), rem(13px));
+    @include bps(font-size, rem(11px), rem(12px), rem(13px));
   }
 
   .-txt,
@@ -44,7 +44,7 @@
     margin-top: 1px;
     margin-right: 0.375rem;
     @include fgcolor(mute);
-    @include fluid(display, none, $md: inline-block);
+    @include bps(display, none, $md: inline-block);
   }
 
   .-btn {

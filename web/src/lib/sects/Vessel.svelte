@@ -102,7 +102,7 @@
   }
 
   ._shift {
-    @include fluid(padding-right, $lg: 30rem);
+    @include bps(padding-right, $lg: 30rem);
   }
 
   .footer {
@@ -150,6 +150,6 @@
   }
 
   // ._brand {
-  //   @include fluid(display, none, $md: inline-block);
+  //   @include bps(display, none, $md: inline-block);
   // }
 </style>

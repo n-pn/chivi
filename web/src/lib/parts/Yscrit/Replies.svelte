@@ -113,7 +113,7 @@
 
     padding: 0.375rem var(--gutter-small);
     line-height: 1.75rem;
-    @include fluid(font-size, rem(13px), rem(14px), rem(15px));
+    @include bps(font-size, rem(13px), rem(14px), rem(15px));
 
     .-user,
     .-time {
@@ -136,7 +136,7 @@
 
   .repl-body {
     margin: 0 var(--gutter-small);
-    @include fluid(font-size, rem(15px), rem(16px));
+    @include bps(font-size, rem(15px), rem(16px));
 
     :global(p) {
       margin-bottom: 0.75rem;

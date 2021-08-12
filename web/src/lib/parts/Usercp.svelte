@@ -160,7 +160,7 @@
     padding: 0.75rem;
     padding-bottom: 0;
 
-    @include fluid(font-size, 12px, 12px, 13px);
+    @include bps(font-size, 12px, 12px, 13px);
   }
 
   .-chip {
@@ -198,7 +198,7 @@
     }
 
     & + & {
-      @include fluid(margin-left, 0.25rem, 0.375rem);
+      @include bps(margin-left, 0.25rem, 0.375rem);
     }
   }
 

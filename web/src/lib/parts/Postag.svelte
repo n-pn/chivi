@@ -183,7 +183,7 @@
     @include fgcolor(tert);
     @include bdradi(0.75rem);
     @include clamp($width: null);
-    @include fluid(font-size, rem(12px), rem(13px), rem(14px));
+    @include bps(font-size, rem(12px), rem(13px), rem(14px));
 
     &:hover,
     &._active {

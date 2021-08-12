@@ -98,11 +98,11 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   // letter-spacing: 0.05rem;
 
   &._show-sm {
-    @include fluid(display, none, $sm: inline-block);
+    @include bps(display, none, $sm: inline-block);
   }
 
   &._show-md {
-    @include fluid(display, none, $md: inline-block);
+    @include bps(display, none, $md: inline-block);
   }
 
   ._brand & {
@@ -113,7 +113,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   &._title {
     @include clamp($width: null);
-    @include fluid(max-width, 32vw, $md: 18vw);
+    @include bps(max-width, 32vw, $md: 18vw);
   }
 
   &._seed {

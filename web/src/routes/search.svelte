@@ -107,10 +107,10 @@
     text-align: center;
     @include fgcolor(secd, 6);
 
-    @include fluid(margin-top, 1rem, 1.5rem, 2rem);
-    @include fluid(margin-bottom, 0rem, 0.5rem, 1rem);
-    @include fluid(font-size, font-size(5), font-size(6), font-size(7));
-    @include fluid(line-height, 1.5rem, 1.75rem, 2rem);
+    @include bps(margin-top, 1rem, 1.5rem, 2rem);
+    @include bps(margin-bottom, 0rem, 0.5rem, 1rem);
+    @include bps(font-size, font-size(5), font-size(6), font-size(7));
+    @include bps(line-height, 1.5rem, 1.75rem, 2rem);
   }
 
   .book {
@@ -136,7 +136,7 @@
   .cover {
     float: left;
     @include bdradi();
-    @include fluid(width, 35%, 30%);
+    @include bps(width, 35%, 30%);
 
     position: relative;
     overflow: hidden;
@@ -168,7 +168,7 @@
 
     padding-left: 0.5rem;
     width: 65%;
-    @include fluid(width, 65%, 70%);
+    @include bps(width, 65%, 70%);
   }
 
   .extra {

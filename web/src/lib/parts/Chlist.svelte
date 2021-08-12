@@ -27,7 +27,7 @@
 
   .list {
     @include grid($size: minmax($chap-size, 1fr));
-    @include fluid(grid-gap, $sm: 0 0.5rem, $md: 0 0.75rem);
+    @include bps(grid-gap, $sm: 0 0.5rem, $md: 0 0.75rem);
   }
 
   .item {

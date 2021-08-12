@@ -221,10 +221,10 @@
     margin-bottom: 0.75rem;
 
     @include fgcolor(secd);
-    @include fluid(float, left, $md: right);
-    @include fluid(width, 100%, $md: 70%, $lg: 75%);
-    @include fluid(padding-left, 0, $md: 0.75rem);
-    @include fluid(line-height, 1.5rem, $md: 1.75rem, $lg: 2rem);
+    @include bps(float, left, $md: right);
+    @include bps(width, 100%, $md: 70%, $lg: 75%);
+    @include bps(padding-left, 0, $md: 0.75rem);
+    @include bps(line-height, 1.5rem, $md: 1.75rem, $lg: 2rem);
 
     > .-main,
     > .-sub {
@@ -233,7 +233,7 @@
     }
 
     > .-main {
-      @include fluid(
+      @include bps(
         font-size,
         rem(20px),
         rem(21px),
@@ -244,7 +244,7 @@
     }
 
     > .-sub {
-      @include fluid(
+      @include bps(
         font-size,
         rem(18px),
         rem(19px),
@@ -257,14 +257,14 @@
 
   .cover {
     float: left;
-    @include fluid(width, 40%, 35%, 30%, 25%);
+    @include bps(width, 40%, 35%, 30%, 25%);
   }
 
   .extra {
     float: right;
     padding-left: 0.75rem;
 
-    @include fluid(width, 60%, 65%, 70%, 75%);
+    @include bps(width, 60%, 65%, 70%, 75%);
 
     :global(svg) {
       margin-top: -0.125rem;

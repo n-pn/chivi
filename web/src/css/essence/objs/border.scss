@@ -41,14 +41,14 @@ $bd-labels: (main, soft, hard, mute);
 
 @mixin bdstyle($style: solid, $sides: all) {
   $props: bdprops($sides, style);
-  @include fluid($props, $style);
+  @include bps($props, $style);
 }
 
 // widths
 
 @mixin bdwidth($width: 1px, $sides: all) {
   $props: bdprops($sides, width);
-  @include fluid($props, $width);
+  @include bps($props, $width);
 }
 
 // borders
@@ -62,5 +62,5 @@ $bd-labels: (main, soft, hard, mute);
 ) {
   $props: bdprops($sides);
   $color: #{color($color, $tone)};
-  @include fluid($props, $width $style $color);
+  @include bps($props, $width $style $color);
 }

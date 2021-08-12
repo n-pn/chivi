@@ -98,8 +98,8 @@
 
     margin: 1rem 0;
 
-    @include fluid(font-size, rem(13px), rem(14px));
-    @include fluid(line-height, 1.75rem, 2rem);
+    @include bps(font-size, rem(13px), rem(14px));
+    @include bps(line-height, 1.75rem, 2rem);
 
     .-type {
       padding: 0 0.75em;

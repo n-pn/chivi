@@ -248,7 +248,7 @@
   }
 
   .-hide {
-    @include fluid(display, none, $md: inline-block);
+    @include bps(display, none, $md: inline-block);
   }
 
   .chinfo {
@@ -261,7 +261,7 @@
       margin: 0.25rem 0;
       line-height: 1.75rem;
       transform: translateX(1px);
-      @include fluid(font-size, 13px, 14px);
+      @include bps(font-size, 13px, 14px);
     }
 
     .-text {
@@ -279,7 +279,7 @@
         display: inline-block;
         content: '·';
         text-align: center;
-        @include fluid(width, 0.5rem, 0.75rem, 1rem);
+        @include bps(width, 0.5rem, 0.75rem, 1rem);
       }
     }
   }

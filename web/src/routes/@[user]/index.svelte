@@ -83,7 +83,7 @@
     @include linesd(--bd-main);
     @include fgcolor(tert);
 
-    @include fluid(font-size, rem(11px), rem(12px), rem(13px));
+    @include bps(font-size, rem(11px), rem(12px), rem(13px));
 
     &:hover,
     &._active {

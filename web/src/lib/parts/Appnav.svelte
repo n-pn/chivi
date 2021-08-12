@@ -150,7 +150,7 @@
     margin-right: -0.375rem;
     margin-bottom: -0.375rem;
 
-    @include fluid(font-size, rem(12px), rem(13px), rem(14px));
+    @include bps(font-size, rem(12px), rem(13px), rem(14px));
     line-height: $-chip-height;
   }
 

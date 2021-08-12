@@ -100,7 +100,7 @@
 
     padding: 0.5rem var(--gutter);
     line-height: 2rem;
-    @include fluid(font-size, rem(14px), rem(15px), rem(16px));
+    @include bps(font-size, rem(14px), rem(15px), rem(16px));
 
     .-user,
     .-time {
@@ -132,7 +132,7 @@
 
   .-body {
     margin: 0 var(--gutter) 0;
-    @include fluid(font-size, rem(16px), rem(17px));
+    @include bps(font-size, rem(16px), rem(17px));
 
     max-height: 15rem;
     overflow: hidden;
@@ -182,7 +182,7 @@
       }
 
       &._genre {
-        @include fluid(display, none, $md: inline-block);
+        @include bps(display, none, $md: inline-block);
       }
     }
   }

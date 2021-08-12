@@ -45,5 +45,5 @@ $radiuses: map-keys($radius-sizes);
   $props: radius-props($sides);
   $value: bdradi($value);
 
-  @include fluid($props, $value);
+  @include bps($props, $value);
 }

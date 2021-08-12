@@ -41,7 +41,7 @@
 
 <style lang="scss">
   .book:nth-child(25) {
-    @include fluid(display, none, $md: block, $lg: none);
+    @include bps(display, none, $md: block, $lg: none);
   }
 
   .cover {
@@ -62,7 +62,7 @@
     margin-left: auto;
     display: inline-flex;
     line-height: 1.25rem;
-    @include fluid(font-size, 10px, 11px, 12px);
+    @include bps(font-size, 10px, 11px, 12px);
 
     > .-text {
       margin-left: 0.25rem;

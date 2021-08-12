@@ -54,7 +54,7 @@
     background: transparent;
     @include fgcolor(tert);
 
-    @include fluid(font-size, rem(13px), rem(14px));
+    @include bps(font-size, rem(13px), rem(14px));
     @include bp-max(sm) {
       @include ftsize(xs);
     }
@@ -66,7 +66,7 @@
     }
 
     &._md {
-      @include fluid(display, none, $md: inline-block);
+      @include bps(display, none, $md: inline-block);
     }
   }
 

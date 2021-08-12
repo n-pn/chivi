@@ -54,7 +54,7 @@ $breakpoints: (
   }
 }
 
-@mixin fluid($props, $xs: null, $sm: null, $md: null, $lg: null, $xl: null) {
+@mixin bps($props, $xs: null, $sm: null, $md: null, $lg: null, $xl: null) {
   $map: $xs;
 
   @if type-of($map) != map {
