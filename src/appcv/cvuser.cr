@@ -35,14 +35,6 @@ class CV::Cvuser
   column wtheme : String = "light"
   column tlmode : Int32 = 0
 
-  # validate_not_blank :email
-  # validate_not_blank :uname
-  # validate_uniqueness :email
-  # validate_uniqueness :uname
-
-  # validate_min_length :uname, 5
-  # validate_min_length :upass, 8
-
   def upass=(upass : String)
     self.cpass = Crypto::Bcrypt::Password.create(upass, cost: 10)
     @upass = upass
@@ -73,7 +65,7 @@ class CV::Cvuser
 
   def self.load!(dname : String)
     find({uname: dname}) || begin
-      raise "User not found!" unless ViUser.dname_exists?(dname)
+      raise "User not found!" unless dname == "Khách" || ViUser.dname_exists?(dname)
       self.migrate!(dname)
     end
   end

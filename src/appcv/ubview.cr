@@ -23,18 +23,20 @@ class CV::Ubview
       next unless cvbook = Cvbook.find({bhash: bhash})
       bumped, sname, chidx, title, uslug = vals
 
-      Ubview.new({
-        cvbook: cvbook, cvuser: cvuser,
-        zseed: Zhseed.index(sname),
-        chidx: chidx, ch_title: title, ch_uslug: uslug,
-      }).save
+      self.upsert!(cvuser, cvbook) do |view|
+        view.zseed = Zhseed.index(sname)
+        view.chidx = chidx.to_i
+        view.ch_title = title
+        view.ch_uslug = uslug
+      end
+    rescue
+      next
     end
   end
 
   def self.upsert!(cvuser : Cvuser, cvbook : Cvbook)
     model = find({cvuser_id: cvuser.id, cvbook_id: cvbook.id})
     model ||= new({cvuser: cvuser, cvbook: cvbook})
-
     yield model
     model.save!
   end

@@ -3,12 +3,26 @@ require "./base_ctrl"
 class CV::UserCtrl < CV::BaseCtrl
   def _self
     return_user
+  rescue err
+    puts err
+    render_json({
+      uname:  "Khách",
+      privi:  -1,
+      wtheme: "light",
+      tlmode: "0",
+    })
   end
 
   def logout
-    session.delete("cu_uname")
     @_cv_user = nil
-    return_user
+
+    session.delete("cu_dname")
+    session.delete("cu_privi")
+    session.delete("cu_tlmode")
+    session.delete("cu_wtheme")
+
+    save_session!
+    render_json([1])
   end
 
   def login
@@ -58,7 +72,7 @@ class CV::UserCtrl < CV::BaseCtrl
 
   private def sigin_user!(user : Cvuser)
     @_cv_user = user
-    session["cu_uname"] = user.uname
+    session["cu_dname"] = user.uname
     session["cu_privi"] = user.privi
     session["cu_wtheme"] = user.wtheme
     session["cu_tlmode"] = user.tlmode
@@ -66,6 +80,7 @@ class CV::UserCtrl < CV::BaseCtrl
 
   private def return_user(user = _cv_user)
     save_session!
+
     render_json({
       uname:  user.uname,
       privi:  user.privi,

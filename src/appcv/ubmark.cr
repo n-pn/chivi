@@ -31,7 +31,9 @@ class CV::Ubmark
     ViMark.book_map(cvuser.uname.downcase).each do |bhash, vals|
       next unless cvbook = Cvbook.find({bhash: bhash})
       bmark = BMARKS.index(vals.first) || 1
-      Ubmark.new({cvbook: cvbook, cvuser: cvuser, bmark: bmark}).save
+      self.upsert!(cvuser, cvbook, bmark)
+    rescue
+      next
     end
   end
 end
