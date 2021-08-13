@@ -17,7 +17,7 @@ export const remote_snames = [
 export const mark_types = [
   'reading',
   'onhold',
-  'completed',
+  'finished',
   'dropped',
   'pending',
 ]
@@ -25,7 +25,7 @@ export const mark_types = [
 export const mark_names = {
   reading: 'Đang đọc',
   onhold: 'Tạm dừng',
-  completed: 'Hoàn thành',
+  finished: 'Hoàn thành',
   dropped: 'Vứt bỏ',
   pending: 'Đọc sau',
 }
@@ -33,7 +33,7 @@ export const mark_names = {
 export const mark_icons = {
   reading: 'eye',
   onhold: 'player-pause',
-  completed: 'square-check',
+  finished: 'square-check',
   dropped: 'trash',
   pending: 'calendar',
 }
