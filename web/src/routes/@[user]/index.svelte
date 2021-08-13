@@ -26,7 +26,6 @@
   export let bmark = 'reading'
 
   export let books = []
-  export let total = 0
   export let pgidx = 1
   export let pgmax = 1
 
@@ -74,15 +73,14 @@
     font-weight: 500;
     text-transform: uppercase;
 
-    padding: 0.5rem;
-    line-height: 1.25rem;
+    padding: 0 0.75rem;
+    @include bps(font-size, rem(13px), $md: rem(14px));
+    @include bps(line-height, 1.75rem, $md: 2rem);
 
     @include bdradi();
     @include clamp($width: null);
     @include linesd(--bd-main);
     @include fgcolor(tert);
-
-    @include bps(font-size, rem(11px), rem(12px), rem(13px));
 
     &:hover,
     &._active {
@@ -99,10 +97,6 @@
       &:hover {
         @include fgcolor(primary, 4);
       }
-    }
-
-    > span {
-      margin-left: 0.4em;
     }
   }
 

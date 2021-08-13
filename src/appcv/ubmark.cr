@@ -30,7 +30,7 @@ class CV::Ubmark
   def self.migrate!(cvuser : Cvuser)
     ViMark.book_map(cvuser.uname.downcase).each do |bhash, vals|
       next unless cvbook = Cvbook.find({bhash: bhash})
-      bmark = BMARKS.index(vals.first) || 1
+      bmark = BMARKS.index(vals.first) || BMARKS.index("finished") || 1
       self.upsert!(cvuser, cvbook, bmark)
     rescue
       next
