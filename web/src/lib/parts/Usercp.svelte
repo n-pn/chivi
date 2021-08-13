@@ -46,7 +46,7 @@
 
   const tlmodes = ['Cơ bản', 'Nâng cao']
 
-  let tab = 'setting'
+  let tab = 'main'
 </script>
 
 <Slider bind:actived _rwidth={26}>
