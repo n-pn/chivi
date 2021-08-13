@@ -17,19 +17,19 @@ module CV::Zhseed
   }
 
   def all(ids : Array(Int32))
-    ids.map { |id| zseed(id) }
+    ids.map { |id| sname(id) }
   end
 
-  def zseed(index : Int32)
+  def sname(index : Int32)
     SNAMES[index]? || "chivi"
   end
 
-  def index(zseed : String)
-    SNAMES.index(zseed) || 0
+  def index(sname : String)
+    SNAMES.index(sname) || 0
   end
 
-  def remote?(zseed : String, privi : Int32 = 4)
-    case zseed
+  def remote?(sname : String, privi : Int32 = 4)
+    case sname
     when "chivi", "zxcs_me"
       false
     when "5200", "bqg_5200", "rengshu", "nofff"

@@ -63,10 +63,10 @@ class CV::Cvuser
 
       wtheme: ViUser.get_wtheme(uname),
       tlmode: ViUser.get_tlmode(uname),
-    })
+    }).tap(&.save!)
 
-    cvuser.save!
     Ubmark.migrate!(cvuser)
+    Ubview.migrate!(cvuser)
 
     cvuser
   end

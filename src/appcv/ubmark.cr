@@ -1,5 +1,5 @@
 class CV::Ubmark
-  BMARKS = {"reading", "finished", "onhold", "dropped", "pending"}
+  BMARKS = {"default", "reading", "finished", "onhold", "dropped", "pending"}
 
   include Clear::Model
 
@@ -17,6 +17,14 @@ class CV::Ubmark
 
   def self.bmark(label : String)
     BMARKS.index(label) || 0
+  end
+
+  def self.upsert!(cvuser : Cvuser, cvbook : Cvbook, bmark : Int32) : self
+    if ubmark = Ubmark.find({cvuser_id: cvuser.id, cvbook_id: cvbook.id})
+      ubmark.tap(&.update!({bmark: bmark}))
+    else
+      Ubmark.create!({cvuser_id: cvuser.id, cvbook_id: cvbook.id, bmark: bmark})
+    end
   end
 
   def self.migrate!(cvuser : Cvuser)

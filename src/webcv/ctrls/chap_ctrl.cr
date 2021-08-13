@@ -68,9 +68,15 @@ class CV::ChapCtrl < CV::BaseCtrl
       return halt!(404, "Chương tiết không tồn tại!")
     end
 
-    if cu_privi >= 0
-      bhash = zhbook.cvbook.bhash
-      ViMark.mark_chap(cu_dname.downcase, bhash, zhbook.sname, chidx, curr[1], curr[3])
+    if _cv_user.privi >= 0
+      Ubview.upsert!(_cv_user, zhbook.cvbook) do |view|
+        view.bumped = Time.utc.to_unix
+        view.zseed = zhbook.zseed
+        view.chidx = index
+        view.ch_title = curr[1]
+        view.ch_label = curr[2]
+        view.ch_uslug = curr[3]
+      end
     end
 
     render_json do |res|
@@ -80,7 +86,7 @@ class CV::ChapCtrl < CV::BaseCtrl
           jb.field "clink", zhbook.clink(curr[0])
 
           jb.field "total", zhbook.chap_count
-          jb.field "chidx", chidx
+          jb.field "chidx", index
           jb.field "schid", curr[0]
 
           jb.field "title", curr[1]

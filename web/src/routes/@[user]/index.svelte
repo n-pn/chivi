@@ -31,7 +31,6 @@
   export let pgmax = 1
 
   $: pager = new Pager($page.path, $page.query)
-  $: console.log({ total })
 </script>
 
 <svelte:head>

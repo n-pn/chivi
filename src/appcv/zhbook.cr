@@ -9,7 +9,7 @@ class CV::Zhbook
   belongs_to cvbook : Cvbook
 
   column zseed : Int32 # seed name
-  getter sname : String { Zhseed.zseed(zseed) }
+  getter sname : String { Zhseed.sname(zseed) }
 
   column snvid : String # seed book id
 
