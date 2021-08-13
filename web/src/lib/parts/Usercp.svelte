@@ -5,6 +5,8 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Slider from '$molds/Slider.svelte'
 
+  import Passwd from './Usercp/Passwd.svelte'
+
   export let actived = false
 
   async function logout() {
@@ -28,7 +30,7 @@
     if (wtheme == $session.wtheme && tlmode == $session.tlmode) return
 
     const res = await fetch('/api/user/setting', {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ wtheme, tlmode }),
     })
@@ -43,6 +45,8 @@
   }
 
   const tlmodes = ['Cơ bản', 'Nâng cao']
+
+  let tab = 'setting'
 </script>
 
 <Slider bind:actived _rwidth={26}>
@@ -61,70 +65,86 @@
       <SIcon name={wtheme == 'dark' ? 'sun' : 'moon'} />
     </button>
 
-    <button class="-btn" on:click={logout}>
-      <SIcon name="logout" />
+    <button class="-btn" on:click={() => (tab = 'setting')}>
+      <SIcon name="settings" />
     </button>
   </svelte:fragment>
 
-  <div class="tlmode">
-    <div class="-radio">
-      <span class="-label">Chế độ dịch:</span>
-      {#each tlmodes as label, idx}
-        <label class="m-radio">
-          <input
-            type="radio"
-            name="tlmode"
-            value={idx + 1}
-            bind:group={tlmode} />
-          <span>{label}</span>
-        </label>
+  {#if tab == 'main'}
+    <div class="tlmode">
+      <div class="-radio">
+        <span class="-label">Chế độ dịch:</span>
+        {#each tlmodes as label, idx}
+          <label class="m-radio">
+            <input
+              type="radio"
+              name="tlmode"
+              value={idx + 1}
+              bind:group={tlmode} />
+            <span>{label}</span>
+          </label>
+        {/each}
+      </div>
+
+      <div class="-explain">
+        {#if $session.tlmode < 2}
+          Áp dụng một số luật ngữ pháp cơ bản, phần lớn chính xác. <strong
+            >(Khuyến khích dùng)</strong>
+        {:else}
+          Sử dụng đầy đủ các luật ngữ pháp đang được hỗ trợ, đảo vị trí của các
+          từ trong câu cho thuần việt. <em>(Đang thử nghiệm)</em>
+        {/if}
+      </div>
+    </div>
+
+    <div class="chips">
+      {#each ['reading', 'onhold', 'pending'] as mtype}
+        <a href="/@{$session.uname}?bmark={mtype}" class="-chip">
+          <SIcon name={mark_icons[mtype]} />
+          <span class="-text">
+            {mark_names[mtype]}
+          </span>
+        </a>
       {/each}
     </div>
 
-    <div class="-explain">
-      {#if $session.tlmode < 2}
-        Áp dụng một số luật ngữ pháp cơ bản, phần lớn chính xác. <strong
-          >(Khuyến khích dùng)</strong>
-      {:else}
-        Sử dụng đầy đủ các luật ngữ pháp đang được hỗ trợ, đảo vị trí của các từ
-        trong câu cho thuần việt. <em>(Đang thử nghiệm)</em>
-      {/if}
+    <div class="label">
+      <SIcon name="clock" />
+      <span>Lịch sử đọc</span>
     </div>
-  </div>
 
-  <div class="chips">
-    {#each ['reading', 'onhold', 'pending'] as mtype}
-      <a href="/@{$session.uname}?bmark={mtype}" class="-chip">
-        <SIcon name={mark_icons[mtype]} />
-        <span class="-text">
-          {mark_names[mtype]}
-        </span>
-      </a>
-    {/each}
-  </div>
+    <div class="chaps">
+      {#each chaps as chap}
+        <a
+          class="chap"
+          href="/-{chap.bslug}/-{chap.uslug}-{chap.sname}-{chap.chidx}">
+          <div class="-text">
+            <div class="-title">{chap.title}</div>
+            <span class="-chidx">{chap.chidx}</span>
+          </div>
 
-  <div class="label">
-    <SIcon name="clock" />
-    <span>Lịch sử đọc</span>
-  </div>
+          <div class="-meta">
+            <span class="-bname">{chap.bname}</span>
+            <span class="-sname">{chap.sname}</span>
+          </div>
+        </a>
+      {/each}
+    </div>
+  {:else}
+    <div class="tabnav">
+      <button class="m-button btn-back" on:click={() => (tab = 'main')}>
+        <SIcon name="arrow-left" />
+        <span>Trở về</span>
+      </button>
 
-  <div class="chaps">
-    {#each chaps as chap}
-      <a
-        class="chap"
-        href="/-{chap.bslug}/-{chap.uslug}-{chap.sname}-{chap.chidx}">
-        <div class="-text">
-          <div class="-title">{chap.title}</div>
-          <span class="-chidx">{chap.chidx}</span>
-        </div>
+      <button class="m-button btn-back" on:click={logout}>
+        <SIcon name="logout" />
+        <span>Đăng xuất</span>
+      </button>
+    </div>
 
-        <div class="-meta">
-          <span class="-bname">{chap.bname}</span>
-          <span class="-sname">{chap.sname}</span>
-        </div>
-      </a>
-    {/each}
-  </div>
+    <Passwd bind:tab />
+  {/if}
 </Slider>
 
 <style lang="scss">
@@ -285,5 +305,13 @@
       flex: 1;
       @include clamp($width: null);
     }
+  }
+
+  .tabnav {
+    display: flex;
+    padding: 0.75rem;
+
+    justify-content: space-between;
+    @include border($loc: bottom);
   }
 </style>

@@ -40,15 +40,9 @@ class CV::UserCtrl < CV::BaseCtrl
   def signup
     email = params.fetch_str("email").strip
     dname = params.fetch_str("dname").strip
-    upass = params.fetch_str("email").strip
+    upass = params.fetch_str("upass").strip
 
-    raise "Địa chỉ hòm thư quá ngắn" if email.size < 3
-    raise "Địa chỉ hòm thư không hợp lệ" if email !~ /@/
-    raise "Tên người dùng quá ngắn (cần ít nhất 5 ký tự)" if dname.size < 5
-    raise "Tên người dùng không hợp lệ" unless dname =~ /^[\p{L}\p{N}\s_]+$/
-    raise "Mật khẩu quá ngắn (cần ít nhất 7 ký tự)" if upass.size < 7
-
-    cvuser = Cvuser.new({email: email, uname: dname, upass: upass}).tap(&.save!)
+    cvuser = Cvuser.create!(email, dname, upass)
     ViUser.insert!(dname, email, upass)
     sigin_user!(cvuser)
     return_user(cvuser)
@@ -68,6 +62,29 @@ class CV::UserCtrl < CV::BaseCtrl
     end
 
     return_user
+  end
+
+  def passwd
+    raise "Quyền hạn không đủ" if _cv_user.privi < 0
+
+    wtheme = params.fetch_str("wtheme", "light")
+    tlmode = params.fetch_int("tlmode", min: 0, max: 2)
+
+    old_upass = params.fetch_str("old_pass").strip
+    puts ["old pass: ", old_upass]
+
+    raise "Mật khẩu cũ không đúng" unless _cv_user.authentic?(old_upass)
+
+    new_upass = params.fetch_str("new_pass").strip
+    confirmation = params.fetch_str("confirm_pass").strip
+    raise "Mật khẩu mới quá ngắn" unless new_upass.size >= 7
+    raise "Mật khẩu không trùng khớp" unless new_upass == confirmation
+
+    _cv_user.upass = new_upass
+    _cv_user.save!
+    render_json([1])
+  rescue err
+    halt!(400, err.message)
   end
 
   private def sigin_user!(user : Cvuser)

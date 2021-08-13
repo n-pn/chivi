@@ -20,7 +20,8 @@ Amber::Server.configure do
     get "/user/logout", CV::UserCtrl, :logout
     post "/user/login", CV::UserCtrl, :login
     post "/user/signup", CV::UserCtrl, :signup
-    post "/user/setting", CV::UserCtrl, :update
+    put "/user/setting", CV::UserCtrl, :update
+    put "/user/passwd", CV::UserCtrl, :passwd
 
     get "/books", CV::BookCtrl, :index
     get "/books/find/:bname", CV::BookCtrl, :find

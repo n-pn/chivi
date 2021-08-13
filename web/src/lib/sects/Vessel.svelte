@@ -55,8 +55,28 @@
 <main class="main" class:_shift={$toleft}>
   <div class="vessel _main">
     {#if $session.privi < 0}
+      <div class="alert">
+        <h4 class="h4">Thông báo ngày 13/08/2021:</h4>
+
+        <p>
+          Do code gà, cho nên các tài khoản đăng ký từ ngày 23/06/2021 đã dùng
+          nhầm thông tin hòm thư làm mật khẩu đăng nhập.
+        </p>
+        <p>
+          Bạn nào gặp khó khăn trong việc đăng nhập hãy thử lại với mật khẩu là
+          địa chỉ hòm thư của mình!
+        </p>
+        <p>
+          Nếu đăng nhập thành công, hãy lập tức đổi mật khẩu bằng cách bấm vào
+          tên của bạn ở phía trên góc phải, rồi bấm tiếp vào biểu tượng <SIcon
+            name="settings" />
+          để thay đổi mật khẩu.
+        </p>
+      </div>
+
       <div class="pledge">
-        Đăng nhập <strong>Chivi</strong> để mở khoá các tính năng!
+        Protip: Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá
+        các tính năng!
       </div>
     {:else if pledge && $session.privi < 2}
       <a class="pledge" href="/notes/donation">
@@ -149,6 +169,24 @@
     }
   }
 
+  .alert {
+    // font-weight: 500;
+    margin-top: 0.5rem;
+    padding: 0.5rem var(--gutter-small);
+
+    @include fgcolor(main);
+    @include bgcolor(tert);
+    @include bdradi();
+    @include ftsize(sm);
+
+    .h4 {
+      font-weight: 500;
+    }
+    p {
+      line-height: 1.25em;
+      margin-top: 0.5rem;
+    }
+  }
   // ._brand {
   //   @include bps(display, none, $md: inline-block);
   // }

@@ -44,6 +44,27 @@ class CV::Cvuser
     self.cpass.verify(upass)
   end
 
+  def self.create!(email : String, uname : String, upass : String) : self
+    raise "Địa chỉ hòm thư quá ngắn" if email.size < 3
+    raise "Địa chỉ hòm thư không hợp lệ" if email !~ /@/
+    raise "Tên người dùng quá ngắn (cần ít nhất 5 ký tự)" if uname.size < 5
+    raise "Tên người dùng không hợp lệ" unless uname =~ /^[\p{L}\p{N}\s_]+$/
+    raise "Mật khẩu quá ngắn (cần ít nhất 7 ký tự)" if upass.size < 7
+
+    begin
+      Cvuser.new({email: email, uname: uname, upass: upass}).tap(&.save!)
+    rescue err
+      case err.message || ""
+      when .includes?("cvusers_uname_key")
+        raise "Tên người dùng đã được sử dụng"
+      when .includes?("cvusers_email_key")
+        raise "Địa chỉ hòm thư đã được sử dụng"
+      else
+        raise "Không rõ lỗi, mời thử lại!"
+      end
+    end
+  end
+
   def self.migrate!(dname : String)
     uname = dname.downcase
 
