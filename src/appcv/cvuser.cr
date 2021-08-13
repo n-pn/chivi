@@ -81,18 +81,19 @@ class CV::Cvuser
   def self.load_by_mail(email : String)
     find({email: email}) || begin
       return unless uname = ViUser.get_uname_by_email(email)
-      load!(ViUser._index.fval(uname).not_nil!)
+      dname = ViUser._index.fval(uname).not_nil!
+      self.migrate!(dname)
     end
   end
 
   DUMMY_PASS = Crypto::Bcrypt::Password.create("", cost: 10)
 
   def self.validate(email : String, upass : String)
-    unless user = load_by_mail(email)
+    if user = load_by_mail(email)
+      user.authentic?(upass) ? user : nil
+    else
       DUMMY_PASS.verify(upass) # prevent timing attack
-      return
+      nil
     end
-
-    user.authentic?(upass) ? user : nil
   end
 end

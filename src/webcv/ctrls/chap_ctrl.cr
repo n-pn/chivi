@@ -109,18 +109,18 @@ class CV::ChapCtrl < CV::BaseCtrl
     chtext = ChText.load(bhash, zhbook.sname, zhbook.snvid, chidx - 1, schid)
 
     zh_mode = params.fetch_int("mode")
-    zh_mode = cu_privi if zh_mode > cu_privi
+    zh_mode = _cv_user.privi if zh_mode > _cv_user.privi
 
     response.headers.add("Cache-Control", "public, min-fresh=60")
     response.content_type = "text/plain; charset=utf-8"
 
-    fetchable = zhbook.remote_text?(chidx, cu_privi)
+    fetchable = zhbook.remote_text?(chidx, _cv_user.privi)
     zh_text = chtext.get_zh!(fetchable, reset: zh_mode > 1)
-    context.content = zh_text ? chtext.trans!(zh_text, mode: cu_tlmode) : ""
+    context.content = zh_text ? chtext.trans!(zh_text, mode: _cv_user.tlmode) : ""
   end
 
   def upsert
-    return halt!(500, "Quyền hạn không đủ!") if cu_privi < 2
+    return halt!(500, "Quyền hạn không đủ!") if _cv_user.privi < 2
 
     zhbook = load_zhbook
     chidx = params.fetch_int("chidx") { 1 }

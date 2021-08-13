@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::FsUserCtrl < CV::BaseCtrl
+class CV::UserCtrl < CV::BaseCtrl
   def _self
     return_user
   end

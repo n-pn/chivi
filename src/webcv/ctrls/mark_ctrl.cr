@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::FsMarkCtrl < CV::BaseCtrl
+class CV::MarkCtrl < CV::BaseCtrl
   def show : Nil
     if _cv_user.privi < 0
       return render_json({bmark: "default"})
@@ -18,6 +18,8 @@ class CV::FsMarkCtrl < CV::BaseCtrl
     cvbook = Cvbook.load!(params["bname"])
 
     bmark = Ubmark.bmark(params.fetch_str("bmark"))
+
+    puts [bmark, cvbook.bhash]
     Ubmark.upsert!(_cv_user, cvbook, bmark)
     render_json({bmark: bmark})
   end

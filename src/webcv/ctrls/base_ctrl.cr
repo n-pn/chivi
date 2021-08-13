@@ -3,10 +3,7 @@ class CV::BaseCtrl < Amber::Controller::Base
 
   protected getter cu_dname : String { session["cu_uname"]? || "Khách" }
   protected getter _cv_user : Cvuser { Cvuser.load!(cu_dname) }
-
   protected getter cu_privi : Int32 { _cv_user.privi }
-  protected getter cu_wtheme : String { _cv_user.wtheme }
-  protected getter cu_tlmode : Int32 { _cv_user.tlmode }
 
   def add_etag(etag : String)
     response.headers.add("ETag", etag)

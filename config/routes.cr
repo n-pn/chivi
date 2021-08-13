@@ -16,11 +16,11 @@ Amber::Server.configure do
   end
 
   routes :api, "/api" do
-    get "/user/_self", CV::FsUserCtrl, :_self
-    get "/user/logout", CV::FsUserCtrl, :logout
-    post "/user/login", CV::FsUserCtrl, :login
-    post "/user/signup", CV::FsUserCtrl, :signup
-    post "/user/setting", CV::FsUserCtrl, :update
+    get "/user/_self", CV::UserCtrl, :_self
+    get "/user/logout", CV::UserCtrl, :logout
+    post "/user/login", CV::UserCtrl, :login
+    post "/user/signup", CV::UserCtrl, :signup
+    post "/user/setting", CV::UserCtrl, :update
 
     get "/books", CV::BookCtrl, :index
     get "/books/find/:bname", CV::BookCtrl, :find
@@ -35,9 +35,10 @@ Amber::Server.configure do
     get "/crits/:crit", CV::CritCtrl, :show
     get "/crits/:crit/replies", CV::CritCtrl, :replies
 
-    get "/mark-books/:bname", CV::FsMarkCtrl, :show
-    put "/mark-books/:bname", CV::FsMarkCtrl, :update
-    get "/mark-chaps", CV::FsMarkCtrl, :history
+    get "/ubmarks/:bname", CV::MarkCtrl, :show
+    put "/ubmarks/:bname", CV::MarkCtrl, :update
+
+    get "/ubviews", CV::ViewCtrl, :index
 
     get "/dicts", CV::DictCtrl, :index
     get "/dicts/:dname", CV::DictCtrl, :show

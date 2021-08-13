@@ -100,9 +100,9 @@ class CV::DictCtrl < CV::BaseCtrl
     input = params["input"].strip
 
     dicts = [VpDict.load(dname)]
-    dicts << VpDict.load("pleb_" + dname) if cu_tlmode < 2
+    dicts << VpDict.load("pleb_" + dname) if _cv_user.tlmode < 2
     dicts << VpDict.regular
-    dicts << VpDict.load("pleb_regular") if cu_tlmode < 2
+    dicts << VpDict.load("pleb_regular") if _cv_user.tlmode < 2
 
     chars = input.chars
     upper = chars.size - 1
@@ -142,8 +142,8 @@ class CV::DictCtrl < CV::BaseCtrl
     input = params["input"]
     hints = [] of String
 
-    libcv = MtCore.generic_mtl(dname, mode: cu_tlmode)
-    hints << libcv.cv_plain(input, mode: cu_tlmode, cap_mode: 0).to_s
+    libcv = MtCore.generic_mtl(dname, mode: _cv_user.tlmode)
+    hints << libcv.cv_plain(input, mode: _cv_user.tlmode, cap_mode: 0).to_s
 
     special_dict = VpDict.load(dname)
     regular_dict = VpDict.regular
@@ -161,7 +161,7 @@ class CV::DictCtrl < CV::BaseCtrl
       hanviet_node.edits.each { |term| hints.concat(term.val) }
     end
 
-    if cu_tlmode < 2
+    if _cv_user.tlmode < 2
       special_pleb = VpDict.load("pleb_#{dname}")
       special_node = find_node(special_pleb, input) || special_node
 
@@ -205,7 +205,7 @@ class CV::DictCtrl < CV::BaseCtrl
     privi = cu_privi if privi > cu_privi
 
     dname = params["dname"]
-    vdict = cu_tlmode < 2 ? VpDict.load("pleb_#{dname}") : VpDict.load(dname)
+    vdict = _cv_user.tlmode < 2 ? VpDict.load("pleb_#{dname}") : VpDict.load(dname)
 
     mtime = VpTerm.mtime
 

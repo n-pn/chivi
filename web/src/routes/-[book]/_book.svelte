@@ -1,10 +1,12 @@
-<script>
+<script context="module">
+  import { api_call, put_fetch } from '$api/_api_call'
   import { session } from '$app/stores.js'
-  import { set_mark, get_mark } from '$api/marked_api.js'
   import { host_name, map_status } from '$utils/book_utils.js'
   import { mark_types, mark_names, mark_icons } from '$lib/constants.js'
   import { onMount } from 'svelte'
+</script>
 
+<script>
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
   import BCover from '$atoms/BCover.svelte'
@@ -20,13 +22,14 @@
 
   let bmark = ''
   onMount(async () => {
-    const [err, data] = await get_mark(fetch, $session.uname, nvinfo.bhash)
+    const [err, data] = await api_call(fetch, `ubmarks/${nvinfo.bhash}`)
     if (!err) bmark = data.bmark
   })
 
   async function mark_book(new_mark) {
-    bmark = bmark == new_mark ? '' : new_mark
-    await set_mark(fetch, $session.uname, nvinfo.bhash, bmark)
+    if ($session.privi < 0) return
+    bmark = bmark == new_mark ? 'default' : new_mark
+    await put_fetch(fetch, `/api/ubmarks/${nvinfo.bhash}`, { bmark })
   }
 
   function gen_keywords(nvinfo) {
@@ -70,7 +73,7 @@
       <span class="header-text _show-md">Từ điển</span>
     </a>
     {#if $session.privi > 0}
-      <div class="header-item _menu">
+      <div class="header-item _menu" class:_disable={$session.privi < 0}>
         <SIcon
           name={bmark && bmark != 'default' ? mark_icons[bmark] : 'bookmark'} />
 
