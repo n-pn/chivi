@@ -18,12 +18,12 @@ class CV::BookCtrl < CV::BaseCtrl
         .filter_genre(params["genre"]?)
 
     if uname = params["uname"]?.try(&.downcase)
-      blist = ViMark.all_books(uname, params.fetch_str("bmark", "reading"))
-      total = blist.size
-      query = query.where("bhash = ANY(?)", blist)
-    else
-      total = query.dup.limit(offset + limit * 3).offset(0).count
+      cvuser = Cvuser.load!(uname)
+      bmark = Ubmark.bmark(params.fetch_str("bmark", "reading"))
+      query = query.where("id IN (SELECT cvbook_id from ubmarks where cvuser_id=#{cvuser.id} and bmark=#{bmark})")
     end
+
+    total = query.dup.limit(offset + limit * 3).offset(0).count
 
     query.sort_by(params.fetch_str("order", "bumped"))
     response.headers.add("Cache-Control", "public, min-fresh=180")

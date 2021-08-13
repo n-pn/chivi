@@ -7,6 +7,7 @@ class CV::FsUserCtrl < CV::BaseCtrl
 
   def logout
     session.delete("cu_uname")
+    @_cv_user = nil
     return_user
   end
 
@@ -14,10 +15,9 @@ class CV::FsUserCtrl < CV::BaseCtrl
     email = params.fetch_str("email").strip
     upass = params.fetch_str("upass").strip
 
-    if uname = ViUser.validate(email, upass)
-      dname = ViUser._index.fval(uname).not_nil!
-      sigin_user!(dname)
-      return_user
+    if user = Cvuser.validate(email, upass)
+      sigin_user!(user)
+      return_user(user)
     else
       halt!(403, "Thông tin đăng nhập không chính xác!")
     end
@@ -34,43 +34,43 @@ class CV::FsUserCtrl < CV::BaseCtrl
     raise "Tên người dùng không hợp lệ" unless dname =~ /^[\p{L}\p{N}\s_]+$/
     raise "Mật khẩu quá ngắn (cần ít nhất 7 ký tự)" if upass.size < 7
 
+    cvuser = Cvuser.new({email: email, uname: dname, upass: upass}).tap(&.save!)
     ViUser.insert!(dname, email, upass)
-    sigin_user!(dname)
-    return_user
+    sigin_user!(cvuser)
+    return_user(cvuser)
   rescue err
     halt!(400, err.message)
   end
 
   def update
-    if cu_privi >= 0
+    if _cv_user.privi >= 0
       wtheme = params.fetch_str("wtheme", "light")
       tlmode = params.fetch_int("tlmode", min: 0, max: 2)
-
-      ViUser.wtheme.set!(cu_uname, wtheme)
-      ViUser.tlmode.set!(cu_uname, tlmode)
 
       session["cu_wtheme"] = wtheme
       session["cu_tlmode"] = tlmode
 
-      ViUser.save!
+      _cv_user.update!({wtheme: wtheme, tlmode: tlmode})
     end
 
     return_user
   end
 
-  private def sigin_user!(dname : String, uname = dname.downcase,
-                          power = ViUser.get_privi(uname))
-    session["cu_uname"] = dname
-    session["cu_privi"] = power
-    session["cu_wtheme"] = ViUser.get_wtheme(uname)
-    session["cu_tlmode"] = ViUser.get_tlmode(uname)
+  private def sigin_user!(user : Cvuser)
+    @_cv_user = user
+    session["cu_uname"] = user.uname
+    session["cu_privi"] = user.privi
+    session["cu_wtheme"] = user.wtheme
+    session["cu_tlmode"] = user.tlmode
   end
 
-  private def return_user(uname = cu_dname,
-                          privi = cu_privi,
-                          wtheme = cu_wtheme,
-                          tlmode = cu_tlmode)
+  private def return_user(user = _cv_user)
     save_session!
-    render_json({uname: uname, privi: privi, wtheme: wtheme, tlmode: tlmode})
+    render_json({
+      uname:  user.uname,
+      privi:  user.privi,
+      wtheme: user.wtheme,
+      tlmode: user.tlmode,
+    })
   end
 end

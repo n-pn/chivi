@@ -1,3 +1,5 @@
+require "./filedb/vi_user"
+
 class CV::Cvuser
   include Clear::Model
 
@@ -30,7 +32,8 @@ class CV::Cvuser
   column privi_until : Time? # when the prmium period terminated
 
   # TODO: mapping miscellaneous preferences
-  # column prefs : Prefs
+  column wtheme : String = "light"
+  column tlmode : Int32 = 0
 
   # validate_not_blank :email
   # validate_not_blank :uname
@@ -47,5 +50,49 @@ class CV::Cvuser
 
   def authentic?(upass : String)
     self.cpass.verify(upass)
+  end
+
+  def self.migrate!(dname : String)
+    uname = dname.downcase
+
+    cvuser = new({
+      uname: dname,
+      email: ViUser.emails.fval(uname) || "",
+      cpass: ViUser.passwd.fval(uname) || "",
+      privi: ViUser.upower.fval(uname) || "",
+
+      wtheme: ViUser.get_wtheme(uname),
+      tlmode: ViUser.get_tlmode(uname),
+    })
+
+    cvuser.save!
+    Ubmark.migrate!(cvuser)
+
+    cvuser
+  end
+
+  def self.load!(dname : String)
+    find({uname: dname}) || begin
+      raise "User not found!" unless ViUser.dname_exists?(dname)
+      self.migrate!(dname)
+    end
+  end
+
+  def self.load_by_mail(email : String)
+    find({email: email}) || begin
+      return unless uname = ViUser.get_uname_by_email(email)
+      load!(ViUser._index.fval(uname).not_nil!)
+    end
+  end
+
+  DUMMY_PASS = Crypto::Bcrypt::Password.create("", cost: 10)
+
+  def self.validate(email : String, upass : String)
+    unless user = load_by_mail(email)
+      DUMMY_PASS.verify(upass) # prevent timing attack
+      return
+    end
+
+    user.authentic?(upass) ? user : nil
   end
 end

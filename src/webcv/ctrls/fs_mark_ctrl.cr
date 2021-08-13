@@ -3,18 +3,18 @@ require "./base_ctrl"
 class CV::FsMarkCtrl < CV::BaseCtrl
   def show
     bname = params["bname"]
-    blist = ViMark.book_map(cu_uname).fval(bname) || "default"
+    blist = ViMark.book_map(cu_dname.downcase).fval(bname) || "default"
 
     render_json({bmark: blist})
   end
 
   def update
-    return halt!(404, "Người dùng chưa đăng nhập!") if cu_uname == "khách"
+    return halt!(404, "Người dùng chưa đăng nhập!") if cu_dname == "Khách"
 
     bname = params["bname"]
     blist = params["bmark"]? || ""
 
-    ViMark.mark_book(cu_uname, bname, blist)
+    ViMark.mark_book(cu_dname.downcase, bname, blist)
     render_json({bmark: blist})
   end
 
@@ -22,7 +22,7 @@ class CV::FsMarkCtrl < CV::BaseCtrl
     skip = params.fetch_int("skip", min: 0)
     take = params.fetch_int("take", min: 15, max: 30)
 
-    chap_mark = ViMark.chap_map(cu_uname)
+    chap_mark = ViMark.chap_map(cu_dname.downcase)
     iter = chap_mark._idx.reverse_each
     skip.times { break unless iter.next }
 

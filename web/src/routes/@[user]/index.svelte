@@ -49,7 +49,7 @@
         href="/@{uname}?bmark={mtype}"
         class="tab"
         class:_active={mtype == bmark}>
-        {mark_names[mtype]}{#if mtype == bmark}<span>({total})</span>{/if}
+        {mark_names[mtype]}
       </a>
     {/each}
   </div>

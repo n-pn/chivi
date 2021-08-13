@@ -2,10 +2,11 @@ class CV::BaseCtrl < Amber::Controller::Base
   LAYOUT = false
 
   protected getter cu_dname : String { session["cu_uname"]? || "Khách" }
-  protected getter cu_uname : String { cu_dname.downcase }
-  protected getter cu_privi : Int32 { ViUser.get_privi(cu_uname) }
-  protected getter cu_wtheme : String { session["cu_wtheme"]? || ViUser.get_wtheme(cu_uname) }
-  protected getter cu_tlmode : Int32 { session["cu_tlmode"]?.try(&.to_i?) || ViUser.get_tlmode(cu_uname) }
+  protected getter _cv_user : Cvuser { Cvuser.load!(cu_dname) }
+
+  protected getter cu_privi : Int32 { _cv_user.privi }
+  protected getter cu_wtheme : String { _cv_user.wtheme }
+  protected getter cu_tlmode : Int32 { _cv_user.tlmode }
 
   def add_etag(etag : String)
     response.headers.add("ETag", etag)

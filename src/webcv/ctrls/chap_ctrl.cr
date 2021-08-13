@@ -70,7 +70,7 @@ class CV::ChapCtrl < CV::BaseCtrl
 
     if cu_privi >= 0
       bhash = zhbook.cvbook.bhash
-      ViMark.mark_chap(cu_uname, bhash, zhbook.sname, chidx, curr[1], curr[3])
+      ViMark.mark_chap(cu_dname.downcase, bhash, zhbook.sname, chidx, curr[1], curr[3])
     end
 
     render_json do |res|
