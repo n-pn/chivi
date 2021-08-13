@@ -18,7 +18,7 @@
   $: if (actived) load_chaps(0)
 
   async function load_chaps(skip = 0) {
-    const res = await fetch(`/api/ubviews?skip=${skip}`)
+    const res = await fetch(`/api/ubviews?skip=${skip}&take=15`)
     if (res.ok) chaps = await res.json()
   }
 
