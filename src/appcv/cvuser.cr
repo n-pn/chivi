@@ -65,21 +65,25 @@ class CV::Cvuser
     end
   end
 
+  DUMMY_PASS = Crypto::Bcrypt::Password.create("chivi123", cost: 10)
+
   def self.migrate!(dname : String)
     uname = dname.downcase
 
     cvuser = new({
       uname: dname,
       email: ViUser.emails.fval(uname) || "",
-      cpass: ViUser.passwd.fval(uname) || "",
-      privi: ViUser.upower.fval(uname) || "",
+      cpass: ViUser.passwd.fval(uname) || DUMMY_PASS,
+      privi: ViUser.get_privi(uname),
 
       wtheme: ViUser.get_wtheme(uname),
       tlmode: ViUser.get_tlmode(uname),
     }).tap(&.save!)
 
-    Ubmark.migrate!(cvuser)
-    Ubview.migrate!(cvuser)
+    unless cvuser.privi < 0
+      Ubmark.migrate!(cvuser)
+      Ubview.migrate!(cvuser)
+    end
 
     cvuser
   end
@@ -98,8 +102,6 @@ class CV::Cvuser
       self.migrate!(dname)
     end
   end
-
-  DUMMY_PASS = Crypto::Bcrypt::Password.create("", cost: 10)
 
   def self.validate(email : String, upass : String)
     if user = load_by_mail(email)
