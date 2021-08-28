@@ -9,22 +9,19 @@
     "preview": "svelte-kit preview",
     "start": "node build/index.js"
   },
-  "dependencies": {
-    "knex": "^0.95.7"
-  },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^4.0.3",
-    "@sveltejs/adapter-node": "^1.0.0-next.35",
-    "@sveltejs/kit": "^1.0.0-next.137",
-    "autoprefixer": "^10.3.1",
+    "@sveltejs/adapter-node": "^1.0.0-next.43",
+    "@sveltejs/kit": "^1.0.0-next.158",
+    "autoprefixer": "^10.3.3",
     "cssnano": "5.0.7",
     "mdsvex": "^0.9.8",
     "postcss": "^8.3.6",
     "postcss-load-config": "^3.1.0",
     "remark-breaks": "^2.0.2",
-    "sass": "^1.36.0",
-    "svelte": "^3.40.2",
-    "svelte-preprocess": "^4.7.4"
+    "sass": "^1.38.1",
+    "svelte": "^3.42.4",
+    "svelte-preprocess": "^4.8.0"
   },
   "browserslist": [
     "> 1%",
