@@ -88,8 +88,10 @@ class CV::Cvuser
     cvuser
   end
 
+  CACHED = {} of String => self
+
   def self.load!(dname : String)
-    find({uname: dname}) || begin
+    CACHED[dname] ||= find({uname: dname}) || begin
       raise "User not found!" unless dname == "Khách" || ViUser.dname_exists?(dname)
       self.migrate!(dname)
     end
