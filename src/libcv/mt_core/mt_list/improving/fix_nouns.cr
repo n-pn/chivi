@@ -102,6 +102,8 @@ module CV::Improving
         end
 
         next
+      when .modifier?, .modiform?
+        node.fuse_left!("", " #{prev.val}")
       when .ude1?
         break if node == 1
         prev_2 = prev.prev.not_nil!
@@ -112,7 +114,8 @@ module CV::Improving
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?,
-             .vintr?, .nform?, .adverb?, .time?, .place?, .adesc?
+             .vintr?, .nform?, .adverb?, .time?, .place?, .adesc?,
+             .modifier?, .modiform?
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .nouns?, .propers?
