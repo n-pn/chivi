@@ -86,4 +86,4 @@ end
 
 reload_proxy = ARGV.includes?("proxy")
 worker = CV::CrawlYsbook.new(reload_proxy)
-worker.crawl!(261200, mode: guess_mode(ARGV))
+worker.crawl!(262500, mode: guess_mode(ARGV))
