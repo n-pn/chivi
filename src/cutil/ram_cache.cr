@@ -1,9 +1,9 @@
 class CV::RamCache(T)
   struct Entry(T)
     getter value : T
-    getter expiry : Time
+    getter stale : Time
 
-    def initialize(@value, @expiry)
+    def initialize(@value, @stale)
     end
   end
 
@@ -14,12 +14,12 @@ class CV::RamCache(T)
     @cache = new_cache
   end
 
-  def get(key : String, expiry = Time.utc) : T
+  def get(key : String, stale = Time.utc) : T
     if entry = @cache[key]?
-      return entry.value if entry.expiry >= expiry
+      return entry.value if entry.stale >= stale
     end
 
-    clear! if @cache.size >= @limit
+    @cache.clear if @cache.size >= @limit
 
     value = yield
     set(key, value)
@@ -29,10 +29,6 @@ class CV::RamCache(T)
 
   def set(key : String, value : T) : Entry(T)
     @cache[key] = Entry(T).new(value, Time.utc + @ttl)
-  end
-
-  def clear!
-    @cache.clear
   end
 
   private def new_cache
