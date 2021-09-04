@@ -3,7 +3,7 @@ module CV::Improving
     return node if mode < 2
 
     if succ = node.succ
-      case succ
+      case succ.tag
       when .kmen?
         node.fuse_right!("các #{node.val}")
       when .ntitle?
@@ -105,7 +105,8 @@ module CV::Improving
       when .modifier?, .modiform?
         node.fuse_left!("", " #{prev.val}")
       when .ude1?
-        break if node == 1
+        node.succ.try { |succ| break if succ.penum? || succ.concoord? }
+
         prev_2 = prev.prev.not_nil!
 
         case prev_2
@@ -121,7 +122,7 @@ module CV::Improving
           node.dic = 6
         when .nouns?, .propers?
           if (prev_3 = prev_2.prev)
-            if verb_subject?(prev_3)
+            if verb_subject?(prev_3, node)
               # break
               node.key = "#{prev_3.key}#{prev_2.key}#{prev.key}#{node.key}"
               node.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
@@ -150,16 +151,21 @@ module CV::Improving
         break
       end
 
-      node.tag = PosTag::Nform
+      # node.tag = PosTag::Nform
     end
 
     node
   end
 
-  def verb_subject?(node : MtNode)
-    # return false if node.vform?
-    return false unless node.verb?
-    return true unless prev = node.prev
+  def verb_subject?(head : MtNode, curr : MtNode)
+    # return false if head.vform?
+    curr.succ.try do |succ|
+      return true if succ.tag.verbs?
+      return false if succ.tag.comma?
+    end
+
+    return false unless head.verb?
+    return true unless prev = head.prev
     return false if prev.comma? || prev.penum?
     prev.ends? || prev.vshi? || prev.quantis?
   end
