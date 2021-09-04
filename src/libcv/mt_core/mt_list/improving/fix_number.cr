@@ -40,6 +40,7 @@ module CV::Improving
     when "米" then succ.update!("mét", PosTag::Quanti)
     when "帮" then succ.update!("bang", PosTag::Quanti)
     when "道" then succ.update!("đạo", PosTag::Quanti)
+    when "股" then succ.update!("cỗ", PosTag::Quanti)
     when "分" then succ.update!("phút", PosTag::Qttime)
     end
 
