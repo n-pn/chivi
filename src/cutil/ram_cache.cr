@@ -1,36 +1,41 @@
 class CV::RamCache(T)
-  @main : Hash(String, T)
-  @cold : Hash(String, T)
+  struct Entry(T)
+    getter value : T
+    getter expiry : Time
 
-  def initialize(@limit : Int32 = 512)
-    @main = new_cache
-    @cold = new_cache
+    def initialize(@value, @expiry)
+    end
   end
 
-  def get(key : String)
-    unless item = @main[key]?
-      @main[key] = item = @cold[key]? || yield
+  @cache : Hash(String, Entry(T))
+  forward_missing_to @cache
 
-      if @main.size >= @limit
-        @cold = @main
-        @main = new_cache
-      end
+  def initialize(@limit : Int32 = 512, @ttl : Time::Span = 3.minutes)
+    @cache = new_cache
+  end
+
+  def get(key : String, expiry = Time.utc) : T
+    if entry = @cache[key]?
+      return entry.value if entry.expiry >= expiry
     end
 
-    item
+    clear! if @cache.size >= @limit
+
+    value = yield
+    set(key, value)
+
+    value
   end
 
-  def set(key : String, value : T) : T
-    @cold.delete(key) # just in case
-    @main[key] = value
+  def set(key : String, value : T) : Entry(T)
+    @cache[key] = Entry(T).new(value, Time.utc + @ttl)
   end
 
-  def delete(key : String)
-    @main.delete(key)
-    @cold.delete(key)
+  def clear!
+    @cache.clear
   end
 
   private def new_cache
-    Hash(String, T).new(initial_capacity: @limit)
+    Hash(String, Entry(T)).new(initial_capacity: @limit)
   end
 end
