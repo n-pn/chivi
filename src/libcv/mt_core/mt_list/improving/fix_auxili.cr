@@ -30,7 +30,8 @@ module CV::Improving
     if prev.names? || prev.propers?
       unless prev.prev.try(&.verbs?) || prev.prev.try(&.prepos?)
         node.val = "của"
-        return node.tap(&.fuse_left!("#{prev.val} "))
+        node.dic = 4
+        return node.tap(&.fuse_left!("", " #{prev.val}"))
       end
     end
 

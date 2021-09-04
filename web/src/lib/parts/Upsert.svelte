@@ -1,3 +1,4 @@
+<!-- @hmr:keep-all -->
 <script context="module">
   import { writable } from 'svelte/store'
   import { tag_label } from '$lib/pos_tag.js'
