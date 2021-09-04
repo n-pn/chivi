@@ -29,7 +29,7 @@ fi
 if [[ $2 == "all" || $* == *seed* ]]
 then
   echo upload seed data!
-  # rsync -azi --no-p "_db/zhbook/" "$ssh/_db/zhbook/"
+  rsync -azi --no-p "_db/zhbook/" "$ssh/_db/zhbook/"
   rsync -azi --no-p "priv/static/covers/" "$ssh/priv/static/covers/"
   # rsync -azi --no-p --exclude='*.zip' "_db/chseed/" "$ssh/_db/chseed/"
 fi

@@ -18,9 +18,9 @@ class CV::Seeds::ZxcsText
       next if File.exists?(rar_file) && File.size(rar_file) > 1000
 
       urls = get_rar_urls(snvid, label: "#{idx}/#{queue.size}")
-      urls.reverse_each { |url| save_rar(url, rar_file) }
+      urls.each { |url| download_rar!(url, rar_file) }
     rescue err
-      puts err.colorize.red
+      puts "- [#{snvid}]: #{err}".colorize.red
     end
   end
 
@@ -38,14 +38,16 @@ class CV::Seeds::ZxcsText
     end
   end
 
-  def save_rar(rar_link : String, out_file : String) : Nil
+  def download_rar!(rar_link : String, out_file : String) : Nil
     # skipping downloaded files, unless they are 404 pages
-    return if File.exists?(out_file) && File.size(out_file) > 1000
+    return if File.exists?(out_file) && File.size(out_file) >= 50000
 
     HTTP::Client.get(rar_link) { |res| File.write(out_file, res.body_io) }
     puts "- Saving [#{File.basename(rar_link).colorize.green}] \
             to [#{File.basename(out_file).colorize.green}], \
             file size: #{File.size(out_file)} bytes"
+  rescue err
+    puts "- [#{File.basename(out_file)}] <#{rar_link}>: #{err}".colorize.red
   end
 end
 
