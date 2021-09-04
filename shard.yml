@@ -43,10 +43,10 @@ targets:
     main: tasks/nvinfo/fix_intros.cr
 
   fetch_zhtexts:
-    main: tasks/zhtext/fetch_zhtexts.cr
+    main: tasks/zhtext/fetch_texts.cr
 
   upload_zhtext:
-    main: tasks/zhtext/upload_zhtext.cr
+    main: tasks/zhtext/upload_data.cr
 
   ys_serial:
     main: tasks/yousuu/ys_serial.cr
