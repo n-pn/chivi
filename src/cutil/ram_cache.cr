@@ -1,20 +1,19 @@
-class CV::RamCache(T)
-  struct Entry(T)
-    getter value : T
+class CV::RamCache(K, V)
+  struct Entry(V)
+    getter value : V
     getter stale : Time
 
     def initialize(@value, @stale)
     end
   end
 
-  @cache : Hash(String, Entry(T))
-  forward_missing_to @cache
+  @cache : Hash(K, Entry(V))
 
-  def initialize(@limit : Int32 = 512, @ttl : Time::Span = 3.minutes)
+  def initialize(@limit : Int32 = 512, @ttl : Time::Span = 5.minutes)
     @cache = new_cache
   end
 
-  def get(key : String, stale = Time.utc) : T
+  def get(key : K, stale = Time.utc) : V
     if entry = @cache[key]?
       return entry.value if entry.stale >= stale
     end
@@ -27,11 +26,11 @@ class CV::RamCache(T)
     value
   end
 
-  def set(key : String, value : T) : Entry(T)
-    @cache[key] = Entry(T).new(value, Time.utc + @ttl)
+  def set(key : K, value : V) : Entry(V)
+    @cache[key] = Entry(V).new(value, Time.utc + @ttl)
   end
 
   private def new_cache
-    Hash(String, Entry(T)).new(initial_capacity: @limit)
+    Hash(K, Entry(V)).new(initial_capacity: @limit)
   end
 end

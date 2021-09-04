@@ -164,11 +164,11 @@ class CV::Cvbook
     find({author_id: author.id, ztitle: ztitle})
   end
 
-  CACHE_INT = {} of Int64 => self
-  CACHE_STR = {} of String => self
+  CACHE_INT = RamCache(Int64, self).new
+  CACHE_STR = RamCache(String, self).new
 
   def self.load!(id : Int64)
-    CACHE_INT[id] ||= yield
+    CACHE_INT.get(id) { yield }
   end
 
   def self.load!(id : Int64)
@@ -176,9 +176,8 @@ class CV::Cvbook
   end
 
   def self.load!(bhash : String)
-    CACHE_STR[bhash] ||= begin
-      data = find!({bhash: bhash})
-      load!(data.id) { data }
+    CACHE_STR.get(bhash) do
+      find!({bhash: bhash}).tap { |x| CACHE_INT.set(x.id, x) }
     end
   end
 

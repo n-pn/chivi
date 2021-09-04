@@ -6,7 +6,7 @@ require "../../seeds/rm_text"
 require "../../cutil/ram_cache"
 
 class CV::ChText
-  CACHED = RamCache(self).new(512, 3.hours)
+  CACHED = RamCache(String, self).new(512, 3.hours)
 
   def self.load(bname : String, sname : String, snvid : String,
                 index : Int32, schid : String)

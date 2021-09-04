@@ -88,12 +88,14 @@ class CV::Cvuser
     cvuser
   end
 
-  CACHED = {} of String => self
+  CACHED = RamCache(String, self).new
 
-  def self.load!(dname : String)
-    CACHED[dname] ||= find({uname: dname}) || begin
-      raise "User not found!" unless dname == "Khách" || ViUser.dname_exists?(dname)
-      self.migrate!(dname)
+  def self.load!(dname : String) : self
+    CACHED.get(dname) do
+      find({uname: dname}) || begin
+        raise "User not found!" unless dname == "Khách" || ViUser.dname_exists?(dname)
+        self.migrate!(dname)
+      end
     end
   end
 
