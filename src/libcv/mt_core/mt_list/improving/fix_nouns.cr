@@ -126,8 +126,10 @@ module CV::Improving
               # break
               node.key = "#{prev_3.key}#{prev_2.key}#{prev.key}#{node.key}"
               node.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
-              node.set_prev(prev_3.prev)
-              # prev_3.prev.try(&.succ.== node)
+
+              node.prev = prev_3.prev
+              node.prev.try(&.succ.== node)
+
               node.dic = 8
               break
             elsif prev_3.vintr?
@@ -142,7 +144,7 @@ module CV::Improving
 
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " của #{prev.val}")
-          node.dic = 7
+          node.dic = 6
           break
         else
           break
@@ -158,13 +160,14 @@ module CV::Improving
   end
 
   def verb_subject?(head : MtNode, curr : MtNode)
+    return false unless head.verb?
+
     # return false if head.vform?
     curr.succ.try do |succ|
       return true if succ.tag.verbs?
       return false if succ.tag.comma?
     end
 
-    return false unless head.verb?
     return true unless prev = head.prev
     return false if prev.comma? || prev.penum?
     prev.ends? || prev.vshi? || prev.quantis?
