@@ -9,10 +9,12 @@ module CV::Improving
       end
     end
 
-    if node.key =~ /^\d+\.[\d+]$/
+    if node.key =~ /^\d+$/ || node.key =~ /^\d+\.\d+$/
       node.update!(tag: PosTag::Number)
       return fix_number!(node)
     end
+
+    # TODO: handle `.jpg`
 
     node
   end
