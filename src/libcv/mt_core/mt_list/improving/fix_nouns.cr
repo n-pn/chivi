@@ -123,7 +123,7 @@ module CV::Improving
         when .nouns?, .propers?
           if (prev_3 = prev_2.prev)
             if verb_subject?(prev_3, node)
-              # break
+              break
               node.key = "#{prev_3.key}#{prev_2.key}#{prev.key}#{node.key}"
               node.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
 
