@@ -83,11 +83,10 @@ class CV::MtNode
     self.prev.try(&.succ = self)
   end
 
-  def fuse_right!(@val : String) : Nil
+  def fuse_right!(@val : String, @dic = 5) : Nil
     return unless succ = @succ
 
     @key = "#{@key}#{succ.key}"
-    @dic = 5
 
     self.succ = succ.succ
     self.succ.try(&.prev = self)

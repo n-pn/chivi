@@ -10,8 +10,8 @@ module CV::Improving
         node.fuse_right!("#{node.val} #{succ.val}")
       when .adjts?
         if succ.succ.try(&.ude1?)
-          node.tag = succ.tag
-          node.fuse_right!("#{node.val} #{succ.val}")
+          node.fuse_right!("#{node.val} #{succ.val}", dic: 8)
+          node.tag = PosTag::Adjt
           return node
         end
       end
