@@ -47,6 +47,7 @@ module CV::Improving
     when "分" then succ.update!("phân", PosTag::Quanti)
     when "只" then succ.update!("con", PosTag::Quanti)
     when "本" then succ.update!("quyển", PosTag::Quanti)
+    when "种" then succ.update!("loại", PosTag::Quanti)
     end
 
     # merge number with quantifiers
