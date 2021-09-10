@@ -43,7 +43,10 @@ module CV::Improving
     when "道" then succ.update!("đạo", PosTag::Quanti)
     when "股" then succ.update!("cỗ", PosTag::Quanti)
     when "更" then succ.update!("canh", PosTag::Quanti)
-    when "分" then succ.update!("phút", PosTag::Qttime)
+    when "重" then succ.update!("tầng", PosTag::Quanti)
+    when "分" then succ.update!("phân", PosTag::Quanti)
+    when "只" then succ.update!("con", PosTag::Quanti)
+    when "本" then succ.update!("quyển", PosTag::Quanti)
     end
 
     # merge number with quantifiers
