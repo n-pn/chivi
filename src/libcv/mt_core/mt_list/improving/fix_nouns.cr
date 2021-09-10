@@ -8,6 +8,12 @@ module CV::Improving
         node.fuse_right!("các #{node.val}")
       when .ntitle?
         node.fuse_right!("#{node.val} #{succ.val}")
+      when .adjts?
+        if succ.succ.try(&.ude1?)
+          node.tag = succ.tag
+          node.fuse_right!("#{node.val} #{succ.val}")
+          return node
+        end
       end
     end
 
