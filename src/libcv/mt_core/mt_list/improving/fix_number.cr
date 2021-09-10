@@ -48,6 +48,13 @@ module CV::Improving
     when "只" then succ.update!("con", PosTag::Quanti)
     when "本" then succ.update!("quyển", PosTag::Quanti)
     when "种" then succ.update!("loại", PosTag::Quanti)
+    when "对"
+      succ_2 = succ.succ.not_nil!
+      if succ_2.numbers? || succ_2.string?
+        succ.update!("đối")
+      else
+        succ.update!("đôi", PosTag::Quanti)
+      end
     end
 
     # merge number with quantifiers
