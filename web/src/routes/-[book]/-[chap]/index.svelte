@@ -92,7 +92,7 @@
       disabled={$session.privi < 1}
       on:click={reload_chap}
       data-kbd="r">
-      <SIcon name="rotate" spin={_reload} />
+      <SIcon name="rotate-clockwise" spin={_reload} />
       <span class="header-text _show-lg">Dịch lại</span>
     </button>
 

@@ -95,11 +95,11 @@
 <div class="wrap" on:click={deactivate}>
   <div id="upsert" class="main" on:click|stopPropagation={focus_on_value}>
     <header class="head">
+      <Input phrase={$input} pinyin={trans.binh_am} bind:output={key} />
+
       <a href="/dicts/{dname}" class="m-button _text" target="_blank">
         <SIcon name="package" />
       </a>
-
-      <Input phrase={$input} pinyin={trans.binh_am} bind:output={key} />
 
       <button
         type="button"
@@ -192,7 +192,7 @@
 
   .head {
     display: flex;
-    padding: 0.5rem 0.25rem;
+    padding: 0.5rem 0.5rem;
     overflow: hidden;
 
     > .m-button {
@@ -252,7 +252,7 @@
     &._active {
       @include bgcolor(secd);
       @include fgcolor(primary, 5);
-      @include bdcolor(primary, 6);
+      @include bdcolor(primary, 5);
     }
 
     &:last-child {
