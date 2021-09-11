@@ -14,6 +14,7 @@
         <SIcon name="x" />
       </button>
     </header>
+
     <section class="body">
       <div class="repls">
         {#each replies as repl}
@@ -22,17 +23,16 @@
               <a class="-user" href="/crits?user={repl.uslug}">{repl.uname}</a>
               <span class="-sep">·</span>
               <time class="-time">{get_rtime(repl.mftime)}</time>
-            </header>
-            <section class="repl-body">
-              {@html repl.vhtml}
-            </section>
 
-            <footer class="-foot">
               <div class="-like">
                 <SIcon name="thumb-up" />
                 <span>{repl.like_count}</span>
               </div>
-            </footer>
+            </header>
+
+            <section class="repl-body">
+              {@html repl.vhtml}
+            </section>
           </div>
         {:else}
           <div class="empty">Không có nội dung!</div>
@@ -132,28 +132,22 @@
     .-time {
       @include fgcolor(tert);
     }
+
+    .-like {
+      margin-left: auto;
+      @include fgcolor(tert);
+      > span {
+        @include ftsize(sm);
+      }
+    }
   }
 
   .repl-body {
     margin: 0 var(--gutter-small);
     @include bps(font-size, rem(15px), rem(16px));
-
-    :global(p) {
-      margin-bottom: 0.75rem;
-    }
-  }
-
-  .-foot {
-    margin: 0 var(--gutter-small);
-    padding: 0.375rem 0;
-
-    @include flex($gap: 1rem);
-    justify-content: right;
-    @include border(--bd-main, $loc: top);
-
-    @include fgcolor(tert);
-    span {
-      @include ftsize(sm);
+    padding-bottom: 0.75rem;
+    > :global(*) + :global(*) {
+      margin-top: 0.75rem;
     }
   }
 
