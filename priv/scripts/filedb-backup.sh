@@ -15,8 +15,3 @@ rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
 rsync -aiz --no-p "$SSH/_db/chseed/" "_db/chseed/"
 rsync -aiz --no-p "$SSH/_db/zhbook/" "_db/zhbook/"
 # rsync -aiz --no-p "$SSH/_db/chtran/" "_db/chtran/"
-
-rsync -aiz --no-p "$SSH/_db/nv_infos/chseeds" "_db/nv_infos/"
-rsync -aiz --no-p "$SSH/_db/nv_infos/update.tsv" "_db/nv_infos/"
-rsync -aiz --no-p "$SSH/_db/nv_infos/access.tsv" "_db/nv_infos/"
-# rsync -aiz --no-p "$SSH/_db/nv_infos/rating.tsv" "_db/nv_infos/"

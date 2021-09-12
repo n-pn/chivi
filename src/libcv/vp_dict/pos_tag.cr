@@ -188,8 +188,14 @@ enum CV::PosTag
     nouns? || pronoun? || verbs? || adjts? || number? || quanti?
   end
 
+  @[AlwaysInline]
   def conjuncts?
     self == Conjunct || self == Concoord
+  end
+
+  @[AlwaysInline]
+  def preposes?
+    Prepos <= self <= Prebei
   end
 
   def function?
