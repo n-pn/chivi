@@ -124,7 +124,7 @@ class CV::ChInfo
     index // PAGE_SIZE + 1
   end
 
-  def reset_trans!(rmax = seeds.size // PAGE_SIZE + 1, rmin = rmax - 1)
+  def reset_trans!(rmax = get_page(seeds.size), rmin = rmax - 1)
     rmin = 1 if rmin < 1
 
     rmin.upto(rmax) do |page|

@@ -77,6 +77,7 @@ class CV::Zhbook
   end
 
   def refresh!(privi = 4, mode = 0, ttl = 5.minutes) : Tuple(Int64, Int32)
+    chinfo.reset_trans!(rmin: 1) if privi > 2
     return {mftime, chap_count} unless mode > 0 && remote?(privi)
 
     RmInfo.mkdir!(sname)
@@ -90,7 +91,7 @@ class CV::Zhbook
       self.bumped = Time.utc.to_unix
 
       chinfo.save_seeds!(parser.chap_list)
-      chinfo.reset_trans!
+      chinfo.reset_trans!(rmin: 1)
 
       self.save!
       Cvbook.load!(self.cvbook_id).tap(&.set_mftime(self.mftime)).save!
