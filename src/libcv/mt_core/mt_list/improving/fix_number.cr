@@ -55,6 +55,9 @@ module CV::Improving
       else
         succ.update!("đôi", PosTag::Quanti)
       end
+    when "劫"
+      succ.update!("kiếp", PosTag::Noun)
+      return node
     end
 
     # merge number with quantifiers
