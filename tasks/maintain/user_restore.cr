@@ -8,17 +8,27 @@ module CV::UserRestore
 
   TIME_FIELDS = %w(created_at updated_at privi_until)
 
+  def delete_existing(uname : String)
+    return unless old_user = Cvuser.find({uname: uname})
+    puts "  delete old record!"
+    old_user.delete
+  end
+
   def restore_user(file : String, overwrite : Bool)
     store = TsvStore.new(file)
+    uname = File.basename(file, ".tsv")
     user_id = store.ival("id")
+
     if user = Cvuser.find({id: user_id})
       return unless overwrite
+      delete_existing(uname) if uname != user.uname
     else
+      delete_existing(uname) if Cvuser.find({uname: uname})
       user = Cvuser.new({id: user_id})
     end
 
     {% for field in STR_FIELDS %}
-      user.{{field.id}} = store.fval({{field}}) || ""
+      user.{{field.id}} = store.fval({{field}}).not_nil!
     {% end %}
 
     {% for field in INT_FIELDS %}

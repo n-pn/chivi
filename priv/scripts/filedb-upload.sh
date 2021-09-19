@@ -10,9 +10,10 @@ else
 fi
 
 ## upload user data
-if [[ "$*" == *user* ]]
+if [[ $2 == "user"  ]]
 then
-  rsync -azi --no-p "_db/vi_users/" "$ssh/_db/vi_users/"
+  echo upload user seeds!
+  rsync -azi --no-p --delete "db/seeds/users" "$ssh/db/seeds"
 fi
 
 ## upload dicts

@@ -38,12 +38,12 @@ class CV::Cvuser
   timestamps
 
   def upass=(upass : String)
-    self.cpass = Bcrypt::Password.create(upass, cost: 10).to_s
+    self.cpass = Crypto::Bcrypt::Password.create(upass, cost: 10).to_s
     @upass = upass
   end
 
   def authentic?(upass : String)
-    Bcrypt::Password.new(cpass).verify(upass)
+    Crypto::Bcrypt::Password.new(cpass).verify(upass)
   end
 
   def self.create!(email : String, uname : String, upass : String) : self
