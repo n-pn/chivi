@@ -1,5 +1,5 @@
 require "../../cutil/text_utils"
-require "../../cutil/value_map"
+require "../../cutil/tsv_store"
 
 module CV::BookUtils
   extend self

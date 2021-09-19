@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../../src/cutil/http_util"
-require "../../src/cutil/value_map"
+require "../../src/cutil/tsv_store"
 require "../shared/seed_data"
 
 class CV::FetchCovers

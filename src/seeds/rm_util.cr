@@ -4,7 +4,7 @@ require "file_utils"
 
 require "../cutil/http_util"
 require "../cutil/site_link"
-require "../cutil/file_utils"
+require "../cutil/file_util"
 require "../cutil/time_utils"
 require "../cutil/path_utils"
 
@@ -14,12 +14,12 @@ module CV::RmUtil
   def fetch(file : String, link : String, sname : String, valid = 1.week, label = "1/1")
     expiry = sname == "jx_la" ? Time.utc(2010, 1, 1) : Time.utc - valid
 
-    unless html = FileUtils.read_gz(file, expiry)
+    unless html = FileUtil.read_gz(file, expiry)
       encoding = HttpUtil.encoding_for(sname)
       html = HttpUtil.get_html(link, encoding: encoding, label: label)
 
-      ::FileUtils.mkdir_p(File.dirname(file))
-      FileUtils.save_gz(file, html)
+      FileUtils.mkdir_p(File.dirname(file))
+      FileUtil.save_gz(file, html)
     end
 
     html
@@ -31,7 +31,7 @@ module CV::RmUtil
 
     channel = Channel(Nil).new(limit + 1)
     encoding = HttpUtil.encoding_for(sname)
-    ::FileUtils.mkdir_p(File.dirname(input.first))
+    FileUtils.mkdir_p(File.dirname(input.first))
 
     input.each_with_index(1) do |(file, link), idx|
       channel.receive if idx > limit

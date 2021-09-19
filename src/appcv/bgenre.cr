@@ -1,4 +1,4 @@
-require "../cutil/value_map"
+require "../cutil/tsv_store"
 
 module CV::Bgenre
   extend self

@@ -25,4 +25,6 @@ class CV::Yslist
   column book_count : Int32 = 0
   column like_count : Int32 = 0
   column view_count : Int32 = 0
+
+  timestamps
 end

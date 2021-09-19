@@ -4,7 +4,7 @@ require "colorize"
 require "file_utils"
 
 require "../../src/cutil/text_utils"
-require "../../src/cutil/file_utils"
+require "../../src/cutil/file_util"
 
 require "../../src/appcv/nv_info"
 require "../../src/appcv/ch_info"

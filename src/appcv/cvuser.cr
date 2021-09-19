@@ -1,3 +1,5 @@
+require "crypto/bcrypt/password"
+
 class CV::Cvuser
   include Clear::Model
 
@@ -11,7 +13,7 @@ class CV::Cvuser
   column uname : String
   column email : String
 
-  column cpass : Crypto::Bcrypt::Password
+  column cpass : String
   getter upass : String? # virtual password field
 
   # reserve for future, can be treated as currency
@@ -33,13 +35,15 @@ class CV::Cvuser
   column wtheme : String = "light"
   column tlmode : Int32 = 0
 
+  timestamps
+
   def upass=(upass : String)
-    self.cpass = Crypto::Bcrypt::Password.create(upass, cost: 10)
+    self.cpass = Bcrypt::Password.create(upass, cost: 10).to_s
     @upass = upass
   end
 
   def authentic?(upass : String)
-    self.cpass.verify(upass)
+    Bcrypt::Password.new(cpass).verify(upass)
   end
 
   def self.create!(email : String, uname : String, upass : String) : self

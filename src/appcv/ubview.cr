@@ -18,6 +18,8 @@ class CV::Ubview
   column ch_label : String = ""
   column ch_uslug : String = ""
 
+  timestamps
+
   def self.upsert!(cvuser : Cvuser, cvbook : Cvbook)
     model = find({cvuser_id: cvuser.id, cvbook_id: cvbook.id})
     model ||= new({cvuser: cvuser, cvbook: cvbook})

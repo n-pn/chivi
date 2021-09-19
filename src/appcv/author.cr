@@ -13,6 +13,8 @@ class CV::Author
 
   column weight : Int32 = 0 # weight of author's top rated book
 
+  timestamps
+
   def update_weight!(weight : Int32)
     update!(weight: weight) if weight > self.weight
   end

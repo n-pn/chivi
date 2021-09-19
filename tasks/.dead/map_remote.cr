@@ -2,7 +2,8 @@ require "file_utils"
 require "option_parser"
 
 require "../../src/seeds/rm_info"
-require "../../src/cutil/file_utils"
+require "../../src/cutil/file_util"
+require "../../src/cutil/link_util"
 require "./_bookgen.cr"
 
 class CV::MapRemote
@@ -15,7 +16,7 @@ class CV::MapRemote
     queue = [] of String
 
     rdir = "_db/.cache/#{@sname}/infos"
-    ::FileUtils.mkdir_p(rdir)
+    FileUtils.mkdir_p(rdir)
 
     exist = Dir.children(rdir).map(&.split(".")[0])
     queue = (1..upto).map(&.to_s) - exist
@@ -50,11 +51,11 @@ class CV::MapRemote
   end
 
   def fetch!(snvid : String, label = "1/1")
-    link = RmUtil.nvinfo_link(@sname, snvid)
+    link = LinkUtil.book_link(@sname, snvid)
     html = HttpUtil.get_html(link, @encoding, label: label)
 
     file = RmUtil.nvinfo_file(@sname, snvid)
-    FileUtils.save_gz(file, html)
+    FileUtil.save_gz(file, html)
   rescue err
     puts err
   end

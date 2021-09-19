@@ -54,6 +54,8 @@ class CV::Cvbook
   column list_count : Int32 = 0
   column crit_count : Int32 = 0
 
+  timestamps
+
   scope :filter_ztitle do |input|
     where("ztitle LIKE %?%", BookUtils.scrub_zname(input))
   end

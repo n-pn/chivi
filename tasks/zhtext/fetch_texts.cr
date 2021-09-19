@@ -5,7 +5,7 @@ require "option_parser"
 require "compress/zip"
 
 require "../../src/appcv/filedb/ch_text"
-require "../../src/cutil/value_map"
+require "../../src/cutil/tsv_store"
 
 class CV::FetchBook
   def initialize(@sname : String, @snvid : String)

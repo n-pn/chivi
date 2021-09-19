@@ -4,7 +4,7 @@ require "file_utils"
 require "../../libcv/mt_core"
 require "../../seeds/rm_info"
 require "../../seeds/rm_util"
-require "../../cutil/value_map"
+require "../../cutil/tsv_store"
 require "../../cutil/ram_cache"
 
 class CV::ChInfo

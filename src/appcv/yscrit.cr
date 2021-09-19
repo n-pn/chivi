@@ -25,7 +25,7 @@ class CV::Yscrit
   column like_count : Int32 = 0
   column repl_count : Int32 = 0 # reply count, optional
 
-  column created_at : Time
+  timestamps
 
   scope :filter_cvbook do |cvbook_id|
     cvbook_id ? where("cvbook_id = #{cvbook_id}") : self

@@ -3,7 +3,7 @@ require "file_utils"
 require "compress/zip"
 
 require "icu"
-require "../../src/cutil/value_map"
+require "../../src/cutil/tsv_store"
 
 class CV::Zxcs::SplitText
   struct Chap

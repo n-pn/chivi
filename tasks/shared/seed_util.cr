@@ -1,6 +1,6 @@
 require "file_utils"
 require "../../src/seeds/rm_info"
-require "../../src/cutil/value_map"
+require "../../src/cutil/tsv_store"
 require "./bootstrap"
 
 module CV::SeedUtil

@@ -16,6 +16,8 @@ class CV::Ysuser
   column list_count : Int32 = 0 # book list count
   column crit_count : Int32 = 0 # review count
 
+  timestamps
+
   def self.get!(id : Int32 | Int64, zname : String)
     find({id: id}) || begin
       vname = BookUtils.hanviet(zname)

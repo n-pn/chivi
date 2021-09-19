@@ -13,6 +13,8 @@ class CV::Ubmark
   column bmark : Int32 = 0
   column zseed : Int32 = 0
 
+  timestamps
+
   getter label : String { BMARKS[bmark] }
 
   def self.bmark(label : String)

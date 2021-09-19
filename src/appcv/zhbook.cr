@@ -23,6 +23,8 @@ class CV::Zhbook
   column chap_count : Int32 = 0   # total chapters
   column last_schid : String = "" # seed's latest chap id
 
+  timestamps
+
   getter chinfo : ChInfo { ChInfo.new(cvbook.bhash, sname, snvid) }
 
   getter wlink : String { SiteLink.book_link(sname, snvid) }

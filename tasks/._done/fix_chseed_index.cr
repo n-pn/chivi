@@ -1,5 +1,5 @@
 require "file_utils"
-require "../src/cutil/value_map"
+require "../src/cutil/tsv_store"
 require "../src/appcv/filedb/ch_info"
 
 class CV::Fixer

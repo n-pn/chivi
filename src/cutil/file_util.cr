@@ -1,6 +1,6 @@
 require "compress/gzip"
 
-module CV::FileUtils
+module CV::FileUtil
   extend self
 
   EXPIRY = Time.utc(2000, 1, 1)
