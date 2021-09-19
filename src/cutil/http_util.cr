@@ -4,7 +4,7 @@ require "compress/gzip"
 
 # require "crest"
 
-module CV::HttpUtils
+module CV::HttpUtil
   extend self
 
   TTL = Time.utc(2000, 1, 1)

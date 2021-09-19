@@ -2,7 +2,7 @@ require "mime"
 require "colorize"
 require "file_utils"
 
-require "../../src/cutil/http_utils"
+require "../../src/cutil/http_util"
 require "../../src/cutil/value_map"
 require "../shared/seed_data"
 
@@ -100,7 +100,7 @@ class CV::FetchCovers
       channel.receive if idx > limit
 
       spawn do
-        HttpUtils.fetch_file(link, file, "#{idx}/#{queue.size}")
+        HttpUtil.fetch_file(link, file, "#{idx}/#{queue.size}")
         fix_image_ext(file)
         sleep delay
       rescue err

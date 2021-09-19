@@ -1,4 +1,5 @@
-require "../cutil/http_utils"
+require "../cutil/http_util"
+require "../cutil/site_link"
 require "../cutil/time_utils"
 require "./shared/html_parser"
 
@@ -21,35 +22,11 @@ class CV::RmInfo
   end
 
   getter file : String { "#{RmInfo.c_dir(@sname)}/#{@snvid}.html.gz" }
-
-  getter link : String do
-    case @sname
-    when "nofff"    then "https://www.nofff.com/#{snvid}/"
-    when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
-    when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
-    when "69shu"    then "https://www.69shu.com/txt/#{@snvid}.htm"
-    when "rengshu"  then "http://www.rengshu.com/book/#{snvid}"
-    when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/"
-    when "biqubao"  then "https://www.biqubao.com/book/#{snvid}/"
-    when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/"
-    when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
-    when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/index.html"
-    when "duokan8"  then "http://www.duokanba.info/#{prefixed_snvid}/"
-    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed_snvid}/"
-    when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/"
-    when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/"
-    when "bqg_5200" then "http://www.biquge5200.net/#{prefixed_snvid}/"
-    else                 raise "Unsupported remote source <#{sname}>!"
-    end
-  end
-
-  def prefixed_snvid
-    "#{@snvid.to_i // 1000}_#{@snvid}"
-  end
+  getter link : String { SiteLink.book_link(@sname, @snvid) }
 
   getter page : HtmlParser do
-    encoding = HttpUtils.encoding_for(@sname)
-    html = HttpUtils.load_html(link, file, @ttl, @label, encoding)
+    encoding = HttpUtil.encoding_for(@sname)
+    html = HttpUtil.load_html(link, file, @ttl, @label, encoding)
     HtmlParser.new(html)
   end
 
@@ -230,7 +207,7 @@ class CV::RmInfo
     page = begin
       link = "https://www.69shu.com/#{@snvid}/"
       file = "_db/.cache/69shu/infos/#{@snvid}-mulu.html.gz"
-      html = HttpUtils.load_html(link, file, @ttl, @label, "GBK")
+      html = HttpUtil.load_html(link, file, @ttl, @label, "GBK")
       HtmlParser.new(html)
     end
 

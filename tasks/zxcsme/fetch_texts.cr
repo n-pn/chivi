@@ -2,7 +2,7 @@ require "file_utils"
 require "compress/gzip"
 require "myhtml"
 
-require "../../src/cutil/http_utils"
+require "../../src/cutil/http_util"
 
 class CV::Seeds::ZxcsText
   DLPG_DIR = File.join("_db/.cache/zxcs_me/dlpgs")
@@ -30,7 +30,7 @@ class CV::Seeds::ZxcsText
     out_file = File.join(DLPG_DIR, "#{snvid}.html.gz")
     dlpg_url = "http://www.zxcs.me/download.php?id=#{snvid}"
 
-    html = HttpUtils.load_html(dlpg_url, out_file, ttl: TTL, label: label)
+    html = HttpUtil.load_html(dlpg_url, out_file, ttl: TTL, label: label)
 
     doc = Myhtml::Parser.new(html)
     doc.css(".downfile > a").to_a.map do |node|

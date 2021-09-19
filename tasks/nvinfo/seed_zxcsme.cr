@@ -2,7 +2,7 @@ require "compress/gzip"
 require "json"
 require "myhtml"
 
-require "../../src/cutil/http_utils"
+require "../../src/cutil/http_util"
 require "../shared/seed_data"
 
 class CV::ZxcsmeParser
@@ -100,9 +100,9 @@ class CV::SeedZxcsme
       next if File.exists?(file)
 
       link = "http://www.zxcs.me/post/#{snvid}"
-      html = HttpUtils.get_html(link, label: "#{idx}/#{@snvids.size}")
+      html = HttpUtil.get_html(link, label: "#{idx}/#{@snvids.size}")
 
-      HttpUtils.save_html(file, html)
+      HttpUtil.save_html(file, html)
       sleep Random.rand(500).milliseconds
     rescue err
       puts err.colorize.red

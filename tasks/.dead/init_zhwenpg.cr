@@ -2,7 +2,7 @@ require "myhtml"
 require "file_utils"
 
 require "../../src/cutil/text_utils"
-require "../../src/cutil/http_utils"
+require "../../src/cutil/http_util"
 
 require "./shared/seed_data.cr"
 require "./shared/seed_util.cr"
@@ -59,7 +59,7 @@ class CV::InitZhwenpg
     file = page_path(page, status)
     link = page_link(page, status)
 
-    html = HttpUtils.load_html(link, file, ttl: 4.hours * page, label: page.to_s)
+    html = HttpUtil.load_html(link, file, ttl: 4.hours * page, label: page.to_s)
     atime = SeedUtil.get_mtime(file)
 
     parser = Myhtml::Parser.new(html)

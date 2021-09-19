@@ -1,4 +1,5 @@
 require "../cutil/core_utils"
+require "../cutil/site_link"
 
 class CV::Zhbook
   include Clear::Model
@@ -24,52 +25,10 @@ class CV::Zhbook
 
   getter chinfo : ChInfo { ChInfo.new(cvbook.bhash, sname, snvid) }
 
-  getter wlink : String do
-    case sname
-    when "chivi"    then "/"
-    when "nofff"    then "https://www.nofff.com/#{snvid}/"
-    when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
-    when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
-    when "69shu"    then "https://www.69shu.com/txt/#{snvid}.htm"
-    when "zxcs_me"  then "http://www.zxcs.me/post/#{snvid}/"
-    when "rengshu"  then "http://www.rengshu.com/book/#{snvid}"
-    when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/"
-    when "biqubao"  then "https://www.biqubao.com/book/#{snvid}/"
-    when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/"
-    when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
-    when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/index.html"
-    when "duokan8"  then "http://www.duokanba.info/#{prefixed_snvid}/"
-    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed_snvid}/"
-    when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/"
-    when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/"
-    when "bqg_5200" then "http://www.biquge5200.net/#{prefixed_snvid}/"
-    else                 "/"
-    end
-  end
+  getter wlink : String { SiteLink.book_link(sname, snvid) }
 
-  def clink(schid : String)
-    case sname
-    when "nofff"    then "https://www.nofff.com/#{snvid}/#{schid}/"
-    when "69shu"    then "https://www.69shu.com/txt/#{snvid}/#{schid}"
-    when "jx_la"    then "https://www.jx.la/book/#{snvid}/#{schid}.html"
-    when "qu_la"    then "https://www.qu.la/book/#{snvid}/#{schid}.html"
-    when "rengshu"  then "http://www.rengshu.com/book/#{snvid}/#{schid}"
-    when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/#{schid}.html"
-    when "biqubao"  then "https://www.biqubao.com/book/#{snvid}/#{schid}.html"
-    when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/#{schid}.html"
-    when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
-    when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/#{schid}.html"
-    when "duokan8"  then "http://www.duokanba.info/#{prefixed_snvid}/#{schid}.html"
-    when "paoshu8"  then "http://www.paoshu8.com/#{prefixed_snvid}/#{schid}.html"
-    when "5200"     then "https://www.5200.tv/#{prefixed_snvid}/#{schid}.html"
-    when "shubaow"  then "https://www.shubaow.net/#{prefixed_snvid}/#{schid}.html"
-    when "bqg_5200" then "http://www.biquge5200.net/#{prefixed_snvid}/#{schid}.html"
-    else                 "/"
-    end
-  end
-
-  def prefixed_snvid
-    "#{snvid.to_i // 1000}_#{snvid}"
+  def clink(schid : String) : String
+    SiteLink.chap_link(sname, snvid, schid)
   end
 
   def unmatch?(cvbook_id : Int64) : Bool

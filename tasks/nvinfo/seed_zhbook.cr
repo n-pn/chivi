@@ -52,15 +52,15 @@ class CV::SeedZhbook
 
     RmInfo.mkdir!(@sname) # ensure the seed cache folde
     channel = Channel(Nil).new(threads)
-    encoding = HttpUtils.encoding_for(@sname)
+    encoding = HttpUtil.encoding_for(@sname)
 
     queue.each_with_index(1) do |snvid, index|
       spawn do
         entry = RmInfo.new(@sname, snvid)
         label = "#{index}/#{queue.size}"
 
-        html = HttpUtils.get_html(entry.link, label: label, encoding: encoding)
-        HttpUtils.save_html(entry.file, html)
+        html = HttpUtil.get_html(entry.link, label: label, encoding: encoding)
+        HttpUtil.save_html(entry.file, html)
 
         # throttling if success
         case @sname
@@ -118,8 +118,8 @@ class CV::SeedZhbook
     page = begin
       file = "_db/.cache/#{@sname}/index.html.gz"
       link = site_index_link(@sname)
-      encoding = HttpUtils.encoding_for(@sname)
-      html = HttpUtils.load_html(link, file, ttl: 12.hours, encoding: encoding)
+      encoding = HttpUtil.encoding_for(@sname)
+      html = HttpUtil.load_html(link, file, ttl: 12.hours, encoding: encoding)
       HtmlParser.new(html)
     end
 

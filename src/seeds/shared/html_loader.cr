@@ -6,7 +6,7 @@ module Cv::HtmlLoader
 
   def load!(file : String, link : String, ttl = 1.week, label = "1/1", encoding = "UTF-8")
     unless html = read(file, ttl: ttl)
-      html = HttpUtils.get_html(link, encoding: encoding, label: lbl)
+      html = HttpUtil.get_html(link, encoding: encoding, label: lbl)
       save!(file, html)
     end
 

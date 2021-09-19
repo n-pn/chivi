@@ -8,7 +8,7 @@ require "./_bookgen.cr"
 class CV::MapRemote
   def initialize(@sname : String)
     @meta = Bookgen::Seed.new(@sname)
-    @encoding = HttpUtils.encoding_for(@sname)
+    @encoding = HttpUtil.encoding_for(@sname)
   end
 
   def prep!(upto = 1)
@@ -51,7 +51,7 @@ class CV::MapRemote
 
   def fetch!(snvid : String, label = "1/1")
     link = RmUtil.nvinfo_link(@sname, snvid)
-    html = HttpUtils.get_html(link, @encoding, label: label)
+    html = HttpUtil.get_html(link, @encoding, label: label)
 
     file = RmUtil.nvinfo_file(@sname, snvid)
     FileUtils.save_gz(file, html)
