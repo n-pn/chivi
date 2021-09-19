@@ -5,20 +5,20 @@ class CV::SeedData
   getter sname : String
   getter s_dir : String
 
-  getter _index : ValueMap { SeedUtil.load_map("#{@sname}/_index") }
+  getter _index : TsvStore { SeedUtil.load_map("#{@sname}/_index") }
 
-  @intros = {} of String => ValueMap
-  getter genres : ValueMap { SeedUtil.load_map("#{@sname}/genres") }
-  getter bcover : ValueMap { SeedUtil.load_map("#{@sname}/bcover") }
+  @intros = {} of String => TsvStore
+  getter genres : TsvStore { SeedUtil.load_map("#{@sname}/genres") }
+  getter bcover : TsvStore { SeedUtil.load_map("#{@sname}/bcover") }
 
-  getter status : ValueMap { SeedUtil.load_map("#{@sname}/status") }
-  getter mftime : ValueMap { SeedUtil.load_map("#{@sname}/mftime") }
+  getter status : TsvStore { SeedUtil.load_map("#{@sname}/status") }
+  getter mftime : TsvStore { SeedUtil.load_map("#{@sname}/mftime") }
 
-  getter scores : ValueMap { SeedUtil.load_map("#{@sname}/scores") }
-  getter counts : ValueMap { SeedUtil.load_map("#{@sname}/counts") }
+  getter scores : TsvStore { SeedUtil.load_map("#{@sname}/scores") }
+  getter counts : TsvStore { SeedUtil.load_map("#{@sname}/counts") }
 
-  getter chsize : ValueMap { SeedUtil.load_map("#{@sname}/chsize") }
-  getter origin : ValueMap { SeedUtil.load_map("#{@sname}/origin") }
+  getter chsize : TsvStore { SeedUtil.load_map("#{@sname}/chsize") }
+  getter origin : TsvStore { SeedUtil.load_map("#{@sname}/origin") }
 
   def initialize(@sname)
     @s_dir = "_db/zhbook/#{@sname}"
@@ -42,9 +42,9 @@ class CV::SeedData
     self.mftime.ival_64(snvid)
   end
 
-  private def intro_map(snvid : String) : ValueMap
+  private def intro_map(snvid : String) : TsvStore
     group = snvid.rjust(6, '0')[0, 3]
-    @intros[group] ||= ValueMap.new("#{@s_dir}/intros/#{group}.tsv")
+    @intros[group] ||= TsvStore.new("#{@s_dir}/intros/#{group}.tsv")
   end
 
   def get_genres(snvid : String) : Array(String)

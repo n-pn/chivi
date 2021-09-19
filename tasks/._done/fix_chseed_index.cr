@@ -1,12 +1,12 @@
 require "file_utils"
-require "../src/tsvfs/value_map"
+require "../src/cutil/value_map"
 require "../src/appcv/filedb/ch_info"
 
 class CV::Fixer
   DIR = "_db/chseed"
 
   def initialize(@sname : String)
-    @map = ValueMap.new("_db/zhbook/#{@sname}/chsize.tsv")
+    @map = TsvStore.new("_db/zhbook/#{@sname}/chsize.tsv")
     @rdir = File.join(DIR, @sname)
   end
 

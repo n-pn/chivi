@@ -4,10 +4,10 @@ require "../../src/seeds/ys_nvinfo"
 require "./_bookgen.cr"
 
 class CV::MapYousuu
-  getter source_url : ValueMap { ValueMap.new("#{@meta.s_dir}/source_url.tsv") }
-  getter count_word : ValueMap { ValueMap.new("#{@meta.s_dir}/count_word.tsv") }
-  getter count_crit : ValueMap { ValueMap.new("#{@meta.s_dir}/count_crit.tsv") }
-  getter count_list : ValueMap { ValueMap.new("#{@meta.s_dir}/count_list.tsv") }
+  getter source_url : TsvStore { TsvStore.new("#{@meta.s_dir}/source_url.tsv") }
+  getter count_word : TsvStore { TsvStore.new("#{@meta.s_dir}/count_word.tsv") }
+  getter count_crit : TsvStore { TsvStore.new("#{@meta.s_dir}/count_crit.tsv") }
+  getter count_list : TsvStore { TsvStore.new("#{@meta.s_dir}/count_list.tsv") }
 
   def initialize
     @meta = Bookgen::Seed.new("yousuu")

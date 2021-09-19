@@ -117,10 +117,10 @@ class CV::FixCovers
     `convert #{inp_file} -quality 50 -define webp:lossless=true -resize "#{width}x>" #{out_file}`
   end
 
-  @@widths = {} of String => ValueMap
+  @@widths = {} of String => TsvStore
 
   private def width_map(sname : String)
-    @@widths[sname] ||= ValueMap.new("_db/zhbook/#{sname}/_cover.tsv")
+    @@widths[sname] ||= TsvStore.new("_db/zhbook/#{sname}/_cover.tsv")
   end
 
   # next unless cover_file = cover_path(snam

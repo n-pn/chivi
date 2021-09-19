@@ -3,7 +3,7 @@ require "colorize"
 require "file_utils"
 
 require "../../src/cutil/http_utils"
-require "../../src/tsvfs/value_map"
+require "../../src/cutil/value_map"
 require "../shared/seed_data"
 
 class CV::FetchCovers
@@ -83,10 +83,10 @@ class CV::FetchCovers
     end
   end
 
-  MAP_CACHE = {} of String => ValueMap
+  MAP_CACHE = {} of String => TsvStore
 
   def cover_map(sname : String)
-    MAP_CACHE[sname] ||= ValueMap.new("_db/zhbook/#{sname}/bcover.tsv", mode: 2)
+    MAP_CACHE[sname] ||= TsvStore.new("_db/zhbook/#{sname}/bcover.tsv", mode: 2)
   end
 
   def fetch!(queue : Hash(String, String), limit = 8, delay = 10.milliseconds)

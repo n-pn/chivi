@@ -52,7 +52,7 @@ class CV::BookCtrl < CV::BaseCtrl
     halt! 500, err.message
   end
 
-  LOOKUP = ValueMap.new("priv/lookup.tsv")
+  LOOKUP = TsvStore.new("priv/lookup.tsv")
 
   def find
     bname = params["bname"]

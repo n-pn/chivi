@@ -1,8 +1,6 @@
 require "colorize"
 
-class CV::ValueMap
-  @@klass = "value_map"
-
+class CV::TsvStore
   getter file : String
   getter data = {} of String => Array(String)
   getter upds = {} of String => Array(String)
@@ -20,7 +18,7 @@ class CV::ValueMap
   end
 
   private def label(file : String = @file)
-    "<#{@@klass}> [#{file}]"
+    "<tsv_store> [#{file}]"
   end
 
   def load!(file : String = @file) : Nil
@@ -160,7 +158,7 @@ class CV::ValueMap
   end
 end
 
-# test = CV::ValueMap.new(".tmp/value_map.tsv", mode: 2)
+# test = CV::TsvStore.new(".tmp/tsv_store.tsv", mode: 2)
 # test.set("a", "a")
 # test.set("b", "b")
 # test.save!

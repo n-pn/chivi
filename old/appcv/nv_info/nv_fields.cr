@@ -7,13 +7,13 @@ module CV::NvFields
 
   class_getter _index : TokenMap { TokenMap.new "#{DIR}/_index.tsv" }
 
-  class_getter bcover : ValueMap { ValueMap.new "#{DIR}/bcover.tsv" }
+  class_getter bcover : TsvStore { TsvStore.new "#{DIR}/bcover.tsv" }
 
-  class_getter status : ValueMap { ValueMap.new "#{DIR}/status.tsv" }
-  class_getter hidden : ValueMap { ValueMap.new "#{DIR}/hidden.tsv" }
+  class_getter status : TsvStore { TsvStore.new "#{DIR}/status.tsv" }
+  class_getter hidden : TsvStore { TsvStore.new "#{DIR}/hidden.tsv" }
 
-  class_getter yousuu : ValueMap { ValueMap.new "#{DIR}/yousuu.tsv" }
-  class_getter origin : ValueMap { ValueMap.new "#{DIR}/origin.tsv" }
+  class_getter yousuu : TsvStore { TsvStore.new "#{DIR}/yousuu.tsv" }
+  class_getter origin : TsvStore { TsvStore.new "#{DIR}/origin.tsv" }
 
   delegate get, to: _index
   delegate each, to: _index

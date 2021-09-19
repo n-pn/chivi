@@ -5,7 +5,7 @@ require "option_parser"
 require "compress/zip"
 
 require "../../src/appcv/filedb/ch_text"
-require "../../src/tsvfs/value_map"
+require "../../src/cutil/value_map"
 
 class CV::FetchBook
   def initialize(@sname : String, @snvid : String)
@@ -15,7 +15,7 @@ class CV::FetchBook
   private def scan_for_missing(min_size : Int32)
     output = {} of String => Int32
 
-    index_map = ValueMap.new("#{@dir}/_id.tsv", mode: 1)
+    index_map = TsvStore.new("#{@dir}/_id.tsv", mode: 1)
     index_map.data.keys.each_with_index do |snvid, index|
       output[snvid] = index
     end

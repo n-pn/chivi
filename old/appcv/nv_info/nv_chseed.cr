@@ -7,7 +7,7 @@ module CV::NvChseed
   ::FileUtils.mkdir_p(DIR)
 
   class_getter _index : TokenMap { TokenMap.new "#{DIR}/_index.tsv" }
-  CACHE = {} of String => ValueMap
+  CACHE = {} of String => TsvStore
 
   def get_list(bhash : String)
     _index.get(bhash) || ["chivi"]
@@ -30,7 +30,7 @@ module CV::NvChseed
   end
 
   def seed_map(sname : String)
-    CACHE[sname] ||= ValueMap.new("#{DIR}/#{sname}.tsv")
+    CACHE[sname] ||= TsvStore.new("#{DIR}/#{sname}.tsv")
   end
 
   def filter(inp : String, prevs : Set(String)? = nil)

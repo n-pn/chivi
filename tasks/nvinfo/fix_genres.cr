@@ -28,12 +28,12 @@ class CV::FixGenres
     Bgenre.zh_map_ids(genres)
   end
 
-  @cache = {} of String => ValueMap
+  @cache = {} of String => TsvStore
 
   def genres_map(sname : String)
     @cache[sname] ||= begin
       file = "_db/zhbook/#{sname}/genres.tsv"
-      ValueMap.new(file, mode: 1)
+      TsvStore.new(file, mode: 1)
     end
   end
 end

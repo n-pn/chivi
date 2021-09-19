@@ -4,7 +4,7 @@ require "file_utils"
 require "../../libcv/mt_core"
 require "../../seeds/rm_info"
 require "../../seeds/rm_util"
-require "../../tsvfs/value_map"
+require "../../cutil/value_map"
 require "../../cutil/ram_cache"
 
 class CV::ChInfo
@@ -53,7 +53,7 @@ class CV::ChInfo
   end
 
   # alias Chtran = Array(Tuple(String, Array(String)))
-  @pages = {} of Int32 => ValueMap
+  @pages = {} of Int32 => TsvStore
 
   def chaps_page(page : Int32 = 1, preload = true)
     @pages[page] ||= begin
@@ -77,7 +77,7 @@ class CV::ChInfo
     "#{@tran_dir}/#{fname}.tsv"
   end
 
-  getter last_chaps : ValueMap do
+  getter last_chaps : TsvStore do
     load_trans("last-#{LAST_SIZE}") do |map|
       seeds.reverse_each.with_index do |infos, index|
         break if index > 3
@@ -88,7 +88,7 @@ class CV::ChInfo
   end
 
   private def load_trans(fname : String, mode = 1)
-    map = ValueMap.new(tran_fpath(fname), mode: mode)
+    map = TsvStore.new(tran_fpath(fname), mode: mode)
 
     if mode == -1 || mode > 0 && map.empty?
       yield map

@@ -8,7 +8,7 @@ class CV::FixAuthors
     map_author = Hash(String, Set(String)).new { |h, k| h[k] = Set(String).new }
     map_btitle = Hash(String, Set(String)).new { |h, k| h[k] = Set(String).new }
 
-    fix_author = ValueMap.new("db/nv_fixes/author_zh.tsv")
+    fix_author = TsvStore.new("db/nv_fixes/author_zh.tsv")
 
     @seed._index.data.each do |snvid, value|
       voters = @seed.rating.ival(snvid)

@@ -1,18 +1,18 @@
 require "../../cutil/text_utils"
-require "../../tsvfs/value_map"
+require "../../cutil/value_map"
 
 module CV::BookUtils
   extend self
 
   DIR = "db/fixtures"
 
-  class_getter zh_authors : ValueMap { ValueMap.new("#{DIR}/zh_authors.tsv") }
-  class_getter vi_authors : ValueMap { ValueMap.new("#{DIR}/vi_authors.tsv") }
+  class_getter zh_authors : TsvStore { TsvStore.new("#{DIR}/zh_authors.tsv") }
+  class_getter vi_authors : TsvStore { TsvStore.new("#{DIR}/vi_authors.tsv") }
 
-  class_getter zh_btitles : ValueMap { ValueMap.new("#{DIR}/zh_btitles.tsv") }
-  class_getter vi_btitles : ValueMap { ValueMap.new("#{DIR}/vi_btitles.tsv") }
+  class_getter zh_btitles : TsvStore { TsvStore.new("#{DIR}/zh_btitles.tsv") }
+  class_getter vi_btitles : TsvStore { TsvStore.new("#{DIR}/vi_btitles.tsv") }
 
-  def find_alt(map : ValueMap, key1 : String, key2 : String)
+  def find_alt(map : TsvStore, key1 : String, key2 : String)
     map.fval(key1) || map.fval(key2)
   end
 

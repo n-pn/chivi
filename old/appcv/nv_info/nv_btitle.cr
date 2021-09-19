@@ -6,14 +6,14 @@ module CV::NvBtitle
   DIR = "_db/nv_infos/btitles"
   ::FileUtils.mkdir_p(DIR)
 
-  class_getter _index : ValueMap { ValueMap.new "#{DIR}/_index.tsv" }
+  class_getter _index : TsvStore { TsvStore.new "#{DIR}/_index.tsv" }
 
   class_getter map_zh : TokenMap { TokenMap.new "#{DIR}/map_zh.tsv" }
   class_getter map_hv : TokenMap { TokenMap.new "#{DIR}/map_hv.tsv" }
   class_getter map_vi : TokenMap { TokenMap.new "#{DIR}/map_vi.tsv" }
 
-  class_getter fix_zh : ValueMap { NvUtils.fix_map("btitles_zh") }
-  class_getter fix_vi : ValueMap { NvUtils.fix_map("btitles_vi") }
+  class_getter fix_zh : TsvStore { NvUtils.fix_map("btitles_zh") }
+  class_getter fix_vi : TsvStore { NvUtils.fix_map("btitles_vi") }
 
   delegate get, to: _index
   delegate each, to: _index

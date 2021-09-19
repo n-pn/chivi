@@ -1,5 +1,5 @@
 require "../../src/kernel/models/book_info"
-require "../../src/kernel/tsvfs/old_value_set"
+require "../../src/kernel/cutil/old_value_set"
 
 def split_chars(input)
   input.split("").each do |char|

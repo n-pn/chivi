@@ -20,8 +20,8 @@ module CV::Bookgen
     File.info?(file).try(&.modification_time.to_unix)
   end
 
-  class_getter rating_fix : ValueMap { ValueMap.new("_db/_seeds/rating_fix.tsv", 2) }
-  class_getter status_map : ValueMap { ValueMap.new("_db/_seeds/status_map.tsv", 2) }
+  class_getter rating_fix : TsvStore { TsvStore.new("_db/_seeds/rating_fix.tsv", 2) }
+  class_getter status_map : TsvStore { TsvStore.new("_db/_seeds/status_map.tsv", 2) }
 
   def get_scores(btitle : String, author : String, min = 40, max = 60)
     label = "#{btitle}  #{author}"
@@ -58,18 +58,18 @@ module CV::Bookgen
     getter sname : String
     getter s_dir : String
 
-    getter _index : ValueMap { ValueMap.new("#{@s_dir}/_index.tsv") }
+    getter _index : TsvStore { TsvStore.new("#{@s_dir}/_index.tsv") }
 
-    getter genres : ValueMap { ValueMap.new("#{@s_dir}/genres.tsv") }
-    getter bcover : ValueMap { ValueMap.new("#{@s_dir}/bcover.tsv") }
+    getter genres : TsvStore { TsvStore.new("#{@s_dir}/genres.tsv") }
+    getter bcover : TsvStore { TsvStore.new("#{@s_dir}/bcover.tsv") }
 
-    getter rating : ValueMap { ValueMap.new("#{@s_dir}/rating.tsv") }
-    getter hidden : ValueMap { ValueMap.new("#{@s_dir}/hidden.tsv") }
+    getter rating : TsvStore { TsvStore.new("#{@s_dir}/rating.tsv") }
+    getter hidden : TsvStore { TsvStore.new("#{@s_dir}/hidden.tsv") }
 
-    getter status : ValueMap { ValueMap.new("#{@s_dir}/status.tsv") }
-    getter update : ValueMap { ValueMap.new("#{@s_dir}/update.tsv") }
+    getter status : TsvStore { TsvStore.new("#{@s_dir}/status.tsv") }
+    getter update : TsvStore { TsvStore.new("#{@s_dir}/update.tsv") }
 
-    INTROS = {} of String => ValueMap
+    INTROS = {} of String => TsvStore
 
     def initialize(@sname)
       @s_dir = "_db/_seeds/#{@sname}"
@@ -135,7 +135,7 @@ module CV::Bookgen
 
     def intro_map(snvid : String)
       group = snvid.rjust(6, '0')[0, 3]
-      INTROS[group] ||= ValueMap.new("#{@s_dir}/intros/#{group}.tsv")
+      INTROS[group] ||= TsvStore.new("#{@s_dir}/intros/#{group}.tsv")
     end
 
     def set_intro(snvid : String, intro : Array(String)) : Nil

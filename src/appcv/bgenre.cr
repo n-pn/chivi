@@ -1,10 +1,10 @@
-require "../tsvfs/value_map"
+require "../cutil/value_map"
 
 module CV::Bgenre
   extend self
 
   VI_NAMES = {{ read_file("db/fixtures/vi_genres.txt").strip.split("\n") }}
-  class_getter zh_names : ValueMap { ValueMap.new("db/fixtures/zh_genres.tsv") }
+  class_getter zh_names : TsvStore { TsvStore.new("db/fixtures/zh_genres.tsv") }
 
   def all(ids : Array(Int32))
     ids.map { |id| vname(id) }

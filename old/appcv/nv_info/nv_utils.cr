@@ -1,4 +1,4 @@
-require "../../../tsvfs/*"
+require "../../../cutil/*"
 require "../../../libcv/*"
 require "../../../cutil/text_utils"
 
@@ -19,6 +19,6 @@ module CV::NvUtils
   FIX_DIR = "db/nv_fixes"
 
   def fix_map(name : String)
-    ValueMap.new("#{FIX_DIR}/#{name}.tsv", mode: 2)
+    TsvStore.new("#{FIX_DIR}/#{name}.tsv", mode: 2)
   end
 end
