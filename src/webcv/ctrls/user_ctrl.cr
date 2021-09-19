@@ -43,7 +43,6 @@ class CV::UserCtrl < CV::BaseCtrl
     upass = params.fetch_str("upass").strip
 
     cvuser = Cvuser.create!(email, dname, upass)
-    ViUser.insert!(dname, email, upass)
     sigin_user!(cvuser)
     return_user(cvuser)
   rescue err

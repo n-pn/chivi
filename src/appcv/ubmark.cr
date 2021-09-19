@@ -26,14 +26,4 @@ class CV::Ubmark
       Ubmark.create!({cvuser_id: cvuser.id, cvbook_id: cvbook.id, bmark: bmark})
     end
   end
-
-  def self.migrate!(cvuser : Cvuser)
-    ViMark.book_map(cvuser.uname.downcase).each do |bhash, vals|
-      next unless cvbook = Cvbook.find({bhash: bhash})
-      bmark = BMARKS.index(vals.first) || BMARKS.index("finished") || 2
-      self.upsert!(cvuser, cvbook, bmark)
-    rescue
-      next
-    end
-  end
 end

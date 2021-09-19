@@ -1,5 +1,3 @@
-require "./filedb/vi_user"
-
 class CV::Cvuser
   include Clear::Model
 
@@ -67,48 +65,27 @@ class CV::Cvuser
 
   DUMMY_PASS = Crypto::Bcrypt::Password.create("chivi123", cost: 10)
 
-  def self.migrate!(dname : String)
-    uname = dname.downcase
-
-    cvuser = new({
-      uname: dname,
-      email: ViUser.emails.fval(uname) || "",
-      cpass: ViUser.passwd.fval(uname) || DUMMY_PASS,
-      privi: ViUser.get_privi(uname),
-
-      wtheme: ViUser.get_wtheme(uname),
-      tlmode: ViUser.get_tlmode(uname),
-    }).tap(&.save!)
-
-    unless cvuser.privi < 0
-      Ubmark.migrate!(cvuser)
-      Ubview.migrate!(cvuser)
-    end
-
-    cvuser
-  end
-
   CACHED = RamCache(String, self).new
 
   def self.load!(dname : String) : self
     CACHED.get(dname) do
       find({uname: dname}) || begin
-        raise "User not found!" unless dname == "Khách" || ViUser.dname_exists?(dname)
-        self.migrate!(dname)
+        raise "User not found!" unless dname == "Khách"
+        new({
+          uname: dname,
+          email: "guest@gmail.com",
+          cpass: "xxxxxxxxx",
+          privi: -1,
+
+          wtheme: "light",
+          tlmode: 0,
+        })
       end
     end
   end
 
-  def self.load_by_mail(email : String)
-    find({email: email}) || begin
-      return unless uname = ViUser.get_uname_by_email(email)
-      dname = ViUser._index.fval(uname).not_nil!
-      self.migrate!(dname)
-    end
-  end
-
   def self.validate(email : String, upass : String)
-    if user = load_by_mail(email)
+    if user = find({email: email})
       user.authentic?(upass) ? user : nil
     else
       DUMMY_PASS.verify(upass) # prevent timing attack
