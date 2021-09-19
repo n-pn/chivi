@@ -10,7 +10,8 @@ class CV::CrawlYscrit
     @http = HttpClient.new(regen_proxy)
 
     Ysbook.query.order_by(id: :desc).each_with_cursor(20) do |ysbook|
-      @pages[ysbook.id] = (ysbook.crit_count - 1) // 20 + 1
+      page_count = (ysbook.crit_count - 1) // 20 + 1
+      @pages[ysbook.id] = page_count > 1 ? page_count : 1
     end
   end
 
@@ -68,8 +69,10 @@ class CV::CrawlYscrit
   end
 
   FRESH = 2.days
+  REDO  = ARGV.includes?("+redo")
 
   private def still_good?(file : String, page = 1)
+    return false if REDO
     return false unless info = File.info?(file)
     still_fresh = Time.utc - FRESH * page
     info.modification_time >= still_fresh

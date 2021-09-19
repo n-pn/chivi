@@ -70,8 +70,8 @@ class CV::RawYsrepl
 
   alias Data = NamedTuple(total: Int32, commentReply: Array(RawYsrepl))
 
-  def self.parse_raw(data : String)
+  def self.parse_raw(data : String) : Tuple(Int32, Array(RawYsrepl))
     json = NamedTuple(data: Data).from_json(data)
-    json[:data][:commentReply]
+    {json[:data][:total], json[:data][:commentReply]}
   end
 end

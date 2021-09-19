@@ -10,8 +10,8 @@ class CV::CrawlYsrepl
     @http = HttpClient.new(regen_proxy)
 
     Yscrit.query.order_by(id: :desc).each_with_cursor(20) do |yscrit|
-      pgmax = (yscrit.repl_count - 1) // 20 + 1
-      @max_pgs[yscrit.origin_id] = pgmax
+      page_count = (yscrit.repl_count - 1) // 20 + 1
+      @max_pgs[yscrit.origin_id] = page_count > 1 ? page_count : 1
     end
   end
 
@@ -62,13 +62,19 @@ class CV::CrawlYsrepl
     link = "https://api.yousuu.com/api/comment/#{scrid}/reply?&page=#{page}"
     return scrid unless @http.save!(link, file, label)
 
-    repls = RawYsrepl.parse_raw(File.read(file))
+    total, repls = RawYsrepl.parse_raw(File.read(file))
+    Yscrit.find!({origin_id: scrid}).update!(repl_count: total) if page == 1
+
     repls.each(&.seed!)
   rescue err
     puts err
   end
 
+  REDO = ARGV.includes?("+redo")
+
   private def still_fresh?(file : String, last_page = false)
+    return false if REDO
+
     return false unless info = File.info?(file)
     still_fresh = Time.utc - (last_page ? 5.day : 30.days)
     info.modification_time >= still_fresh
