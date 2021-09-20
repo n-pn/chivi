@@ -27,12 +27,37 @@ module CV::UserBackup
     store.save!
   end
 
+  def save_user_library(user : Cvuser)
+    store = TsvStore.new(user_file("library/" + user.uname))
+
+    Ubmark.query.where({cvuser_id: user.id}).with_cvbook.each do |entry|
+      value = [entry.label, entry.created_at.to_unix, entry.updated_at.to_unix]
+      store.set!(entry.cvbook.bhash, value.map(&.to_s))
+    end
+
+    store.save!
+  end
+
+  def save_user_history(user : Cvuser)
+    store = TsvStore.new(user_file("history/" + user.uname))
+
+    Ubview.query.where({cvuser_id: user.id}).with_cvbook.each do |entry|
+      value = [entry.sname, entry.chidx, entry.bumped, entry.ch_title, entry.ch_label, entry.ch_uslug]
+      store.set!(entry.cvbook.bhash, value.map(&.to_s))
+    end
+
+    store.save!
+  end
+
   def run!(fresh = false)
     FileUtils.rm_rf(USER_DIR) if fresh
-    FileUtils.mkdir_p(USER_DIR)
+    FileUtils.mkdir_p(USER_DIR + "/library")
+    FileUtils.mkdir_p(USER_DIR + "/history")
 
     Cvuser.query.order_by(id: :asc).each do |user|
       save_user(user)
+      save_user_library(user)
+      save_user_history(user)
     end
   end
 end
