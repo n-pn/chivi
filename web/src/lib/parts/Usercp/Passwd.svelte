@@ -1,5 +1,5 @@
 <script>
-  export let tab
+  export let section
 
   let old_pass = ''
   let new_pass = ''
@@ -15,7 +15,7 @@
       body: JSON.stringify({ old_pass, new_pass, confirm_pass }),
     })
 
-    if (res.ok) tab = 'main'
+    if (res.ok) section = 'main'
     else error = await res.text()
   }
 </script>
@@ -62,21 +62,19 @@
 
   <footer class="pfoot">
     <button class="m-button _primary  _fill" on:click={save_pass}
-      >Cập nhật</button>
+      >Cập nhật mật khẩu</button>
   </footer>
 </div>
 
 <style lang="scss">
   .form {
-    @include bgcolor(tert);
-    @include shadow();
-    @include bdradi();
-    padding: 0.75rem;
-    margin: 0.75rem;
+    margin: 0.75rem 0;
   }
 
   .h3 {
     padding: 0 0.75rem;
+    @include ftsize(lg);
+    @include fgcolor(secd);
   }
 
   .input {

@@ -5,9 +5,11 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Slider from '$molds/Slider.svelte'
 
+  import Config from './Usercp/Config.svelte'
   import Passwd from './Usercp/Passwd.svelte'
 
   export let actived = false
+  export let section = 'main'
 
   async function logout() {
     $session = { uname: 'Khách', privi: -1 }
@@ -15,38 +17,12 @@
   }
 
   let chaps = []
-  $: if (actived) load_chaps(0)
+  $: if (actived) load_history(0)
 
-  async function load_chaps(skip = 0) {
+  async function load_history(skip = 0) {
     const res = await fetch(`/api/ubviews?skip=${skip}&take=15`)
     if (res.ok) chaps = await res.json()
   }
-
-  let wtheme = $session.wtheme
-  let tlmode = $session.tlmode
-  $: update_setting(wtheme, tlmode)
-
-  async function update_setting(wtheme, tlmode) {
-    if (wtheme == $session.wtheme && tlmode == $session.tlmode) return
-
-    const res = await fetch('/api/user/setting', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ wtheme, tlmode }),
-    })
-
-    if (res.ok) {
-      $session = await res.json()
-      wtheme = $session.wtheme
-      tlmode = $session.tlmode
-    } else {
-      console.log('Error: ' + (await res.text()))
-    }
-  }
-
-  const tlmodes = ['Cơ bản', 'Nâng cao']
-
-  let tab = 'main'
 </script>
 
 <Slider bind:actived _rwidth={26}>
@@ -58,45 +34,16 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <button
-      class="-btn"
-      data-kbd="t"
-      on:click={() => (wtheme = wtheme == 'dark' ? 'light' : 'dark')}>
-      <SIcon name={wtheme == 'dark' ? 'sun' : 'moon'} />
-    </button>
-
-    <button class="-btn" on:click={() => (tab = 'setting')}>
+    <button class="-btn" on:click={() => (section = 'config')}>
       <SIcon name="settings" />
     </button>
   </svelte:fragment>
 
-  {#if tab == 'main'}
-    <div class="tlmode">
-      <div class="-radio">
-        <span class="-label">Chế độ dịch:</span>
-        {#each tlmodes as label, idx}
-          <label class="m-radio">
-            <input
-              type="radio"
-              name="tlmode"
-              value={idx + 1}
-              bind:group={tlmode} />
-            <span>{label}</span>
-          </label>
-        {/each}
-      </div>
-
-      <div class="-explain">
-        {#if $session.tlmode < 2}
-          Áp dụng một số luật ngữ pháp cơ bản, phần lớn chính xác. <strong
-            >(Khuyến khích dùng)</strong>
-        {:else}
-          Sử dụng đầy đủ các luật ngữ pháp đang được hỗ trợ, đảo vị trí của các
-          từ trong câu cho thuần việt. <em>(Đang thử nghiệm)</em>
-        {/if}
-      </div>
+  {#if section == 'main'}
+    <div class="hint">
+      <strong>Gợi ý:</strong> Bấm <SIcon name="settings" /> để thay đổi giao diện,
+      chế độ dịch hoặc đổi mật khẩu.
     </div>
-
     <div class="chips">
       {#each ['reading', 'onhold', 'pending'] as mtype}
         <a href="/@{$session.uname}?bmark={mtype}" class="-chip">
@@ -132,7 +79,7 @@
     </div>
   {:else}
     <div class="tabnav">
-      <button class="m-button btn-back" on:click={() => (tab = 'main')}>
+      <button class="m-button btn-back" on:click={() => (section = 'main')}>
         <SIcon name="arrow-left" />
         <span>Trở về</span>
       </button>
@@ -143,7 +90,8 @@
       </button>
     </div>
 
-    <Passwd bind:tab />
+    <Config bind:actived />
+    <Passwd bind:section />
   {/if}
 </Slider>
 
@@ -151,6 +99,13 @@
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
+    @include fgcolor(tert);
+  }
+
+  .hint {
+    margin: 0.75rem;
+    margin-bottom: 0;
+    @include ftsize(sm);
     @include fgcolor(tert);
   }
 
@@ -219,28 +174,6 @@
 
     & + & {
       @include bps(margin-left, 0.25rem, 0.375rem);
-    }
-  }
-
-  .tlmode {
-    padding: 0.5rem 0.75rem;
-    @include border(--bd-main, $loc: bottom);
-
-    > .-radio {
-      line-height: 1.25;
-      padding: 0.5rem 0;
-      @include fgcolor(tert);
-      @include flex($center: none, $gap: 0.675rem);
-    }
-
-    .-label {
-      font-weight: 500;
-    }
-
-    > .-explain {
-      @include fgcolor(tert);
-      @include ftsize(sm);
-      line-height: 1.25rem;
     }
   }
 

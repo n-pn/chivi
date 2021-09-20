@@ -95,10 +95,7 @@
   on:keydown={handle_keydown}
   on:keyup={() => (kbd_hint = false)} />
 
-<div
-  class="app"
-  class:tm-dark={$session.wtheme == 'dark'}
-  class:kbd-hint={kbd_hint}>
+<div class="app tm-{$session.wtheme}" class:kbd-hint={kbd_hint}>
   <slot />
 
   <div class="links">

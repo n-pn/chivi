@@ -4,37 +4,56 @@
 $colors: (gray, blue, green, orange, red, violet) !default;
 
 :root {
-  --fg-main: #{color(neutral, 8)};
-  --fg-secd: #{color(neutral, 6)};
-  --fg-tert: #{color(neutral, 5)};
-  --fg-mute: #{color(neutral, 4)};
-
   --bg-main: #{color(neutral, 1)};
   --bg-secd: #{color(white)};
   --bg-tert: #{color(neutral, 0)};
   --bg-mute: #{color(neutral, 2)};
+
+  --fg-main: #{color(neutral, 9)};
+  --fg-secd: #{color(neutral, 7)};
+  --fg-tert: #{color(neutral, 5)};
+  --fg-mute: #{color(neutral, 4)};
 
   --bd-soft: #{color(neutral, 1)};
   --bd-main: #{color(neutral, 2)};
   --bd-bold: #{color(neutral, 3)};
 }
 
-.tm-dark {
-  --fg-main: #{color(gray, 1)};
-  --fg-secd: #{color(gray, 3)};
-  --fg-tert: #{color(gray, 4)};
-  --fg-mute: #{color(gray, 5)};
-
+.tm-dark,
+.tm-oled {
   --fg-link: #{color(blue, 5)};
+}
 
+.tm-dark {
   --bg-main: #{color(black)};
   --bg-secd: #{color(gray, 8)};
   --bg-tert: #{color(gray, 9)};
   --bg-mute: #{color(gray, 6)};
 
+  --fg-main: #{color(gray, 0)};
+  --fg-secd: #{color(gray, 2)};
+  --fg-tert: #{color(gray, 4)};
+  --fg-mute: #{color(gray, 5)};
+
   --bd-soft: #{color(gray, 8)};
   --bd-main: #{color(gray, 7)};
   --bd-bold: #{color(gray, 6)};
+}
+
+.tm-oled {
+  --bg-main: #000;
+  --bg-secd: #000;
+  --bg-tert: #000;
+  --bg-mute: #{color(gray, 5)};
+
+  --fg-main: #{color(gray, 1)};
+  --fg-secd: #{color(gray, 3)};
+  --fg-tert: #{color(gray, 5)};
+  --fg-mute: #{color(gray, 6)};
+
+  --bd-soft: #{color(gray, 9)};
+  --bd-main: #{color(gray, 8)};
+  --bd-bold: #{color(gray, 7)};
 }
 
 :root {

@@ -14,7 +14,8 @@ $-colors: (primary, success, warning, harmful);
   @include bgvar(hover, $color, 1);
   @include linesd($color, 2, $ndef: false);
 
-  .tm-dark & {
+  .tm-dark &,
+  .tm-oled & {
     @include fgvar(btn, $color, 3);
     @include bgvar(btn, neutral, 8);
     @include bgvar(hover, neutral, 7);
@@ -28,7 +29,8 @@ $-colors: (primary, success, warning, harmful);
     @include bgvar(hover, neutral, 2);
     @include linesd(neutral, 2);
 
-    .tm-dark & {
+    .tm-dark &,
+    .tm-oled & {
       @include fgvar(btn, $color, 6);
       @include bgvar(btn, neutral, 8);
       @include bgvar(hover, neutral, 8);
@@ -43,7 +45,8 @@ $-colors: (primary, success, warning, harmful);
   @include bgvar(hover, $color, 4);
   @include linesd(color($color, 6, 3), $ndef: false);
 
-  .tm-dark & {
+  .tm-dark &,
+  .tm-oled & {
     @include fgvar(btn, $color, 1);
     @include bgvar(btn, $color, 7);
     @include bgvar(hover, $color, 6);
@@ -57,7 +60,8 @@ $-colors: (primary, success, warning, harmful);
     @include bgvar(hover, $color, 4);
     @include linesd($color, 4);
 
-    .tm-dark & {
+    .tm-dark &,
+    .tm-oled & {
       @include fgvar(btn, $color, 6);
       @include bgvar(btn, $color, 8);
       @include bgvar(hover, $color, 8);

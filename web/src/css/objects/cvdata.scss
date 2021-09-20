@@ -6,7 +6,8 @@
   --border: #{color($color, 4)};
   --active: #{color($color, 6)};
 
-  .tm-dark & {
+  .tm-dark &,
+  .tm-oled & {
     --border: #{color($color, 6)};
     --active: #{color($color, 4)};
   }
@@ -61,7 +62,8 @@
     margin-top: 1rem;
   }
 
-  .tm-dark & {
+  .tm-dark &,
+  .tm-oled & {
     --fgcolor: #{color(gray, 3)};
   }
 
