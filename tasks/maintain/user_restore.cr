@@ -24,7 +24,7 @@ module CV::UserRestore
     user_id = store.ival("id")
 
     if user = Cvuser.find({id: user_id})
-      return unless overwrite
+      return user unless overwrite
       delete_existing(uname) if uname != user.uname
     else
       delete_existing(uname) if Cvuser.find({uname: uname})
@@ -43,10 +43,8 @@ module CV::UserRestore
       user.{{field.id}} = Time.unix(store.ival_64({{field}}))
     {% end %}
 
-    user.save!
-    restore_user_library(user)
-    restore_user_history(user)
     puts "  user <#{user.uname}> restored!".colorize.green
+    user.tap(&.save!)
   end
 
   def restore_user_library(user : Cvuser)
@@ -87,7 +85,9 @@ module CV::UserRestore
 
   def run!(overwrite = false)
     Dir.glob("#{USER_DIR}/*.tsv").each do |file|
-      restore_user(file, overwrite: overwrite)
+      user = restore_user(file, overwrite: overwrite)
+      restore_user_library(user)
+      restore_user_history(user)
     end
   end
 end
