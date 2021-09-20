@@ -165,7 +165,7 @@
             </a>
           {/if}
 
-          {#if nvinfo.yousuu !== ''}
+          {#if nvinfo.yousuu != ''}
             <a
               class="stat link _outer"
               href="https://www.yousuu.com/book/{nvinfo.yousuu}"
