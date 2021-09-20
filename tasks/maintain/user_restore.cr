@@ -3,6 +3,10 @@ require "./_shared"
 module CV::UserRestore
   extend self
 
+  def user_file(uname : String)
+    File.join(USER_DIR, uname.downcase + ".tsv")
+  end
+
   STR_FIELDS = %w(uname email cpass wtheme)
   INT_FIELDS = %w(karma privi tlmode)
 
@@ -40,7 +44,45 @@ module CV::UserRestore
     {% end %}
 
     user.save!
+    restore_user_library(user)
+    restore_user_history(user)
     puts "  user <#{user.uname}> restored!".colorize.green
+  end
+
+  def restore_user_library(user : Cvuser)
+    store = TsvStore.new(user_file("library/" + user.uname))
+    store.data.each do |bhash, values|
+      next unless book = Cvbook.load!(bhash)
+
+      bmark = Ubmark.bmark(values[0])
+      entry = Ubmark.upsert!(user, book, bmark)
+
+      entry.created_at = Time.unix(values[1].to_i64)
+      entry.updated_at = Time.unix(values[1].to_i64)
+      entry.save!
+    rescue err
+      puts err
+    end
+  end
+
+  def restore_user_history(user : Cvuser)
+    store = TsvStore.new(user_file("history/" + user.uname))
+    store.data.each do |bhash, values|
+      next unless book = Cvbook.load!(bhash)
+
+      Ubview.upsert!(user, book) do |entry|
+        entry.zseed = Zhseed.index(values[0])
+        entry.chidx = values[1].to_i
+
+        entry.bumped = values[2].to_i64
+
+        entry.ch_title = values[3]
+        entry.ch_label = values[4]
+        entry.ch_uslug = values[5]
+      end
+    rescue err
+      puts err
+    end
   end
 
   def run!(overwrite = false)
