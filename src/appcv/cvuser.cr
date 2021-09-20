@@ -6,9 +6,8 @@ class CV::Cvuser
   self.table = "cvusers"
   primary_key
 
-  has_many ubmarks : Ubmark, foreign_key: "cvuser_id"
-  has_many ubviews : Ubview, foreign_key: "cvuser_id"
-  has_many cvbooks : Cvbook, through: "ubmarks"
+  has_many ubmemos : Ubmemo, foreign_key: "cvuser_id"
+  has_many cvbooks : Cvbook, through: "ubmemos"
 
   column uname : String
   column email : String

@@ -19,8 +19,9 @@ class CV::BookCtrl < CV::BaseCtrl
 
     if uname = params["uname"]?.try(&.downcase)
       cvuser = Cvuser.load!(uname)
-      bmark = Ubmark.bmark(params.fetch_str("bmark", "reading"))
-      query = query.where("id IN (SELECT cvbook_id from ubmarks where cvuser_id=#{cvuser.id} and bmark=#{bmark})")
+      status = Ubmemo.status(params.fetch_str("bmark", "reading"))
+
+      query = query.where("id IN (SELECT cvbook_id from ubmemos where cvuser_id=#{cvuser.id} and status=#{status})")
     end
 
     total = query.dup.limit(offset + limit * 3).offset(0).count

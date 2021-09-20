@@ -60,22 +60,23 @@ class CV::ChapCtrl < CV::BaseCtrl
 
   def show
     zhbook = load_zhbook
+    chidx = params.fetch_int("chidx")
 
-    chidx = params.fetch_str("chidx")
-    index = chidx.to_i
-
-    unless curr = zhbook.chinfo.get_info(index - 1)
+    unless curr = zhbook.chinfo.get_info(chidx - 1)
       return halt!(404, "Chương tiết không tồn tại!")
     end
 
     if _cv_user.privi >= 0
-      Ubview.upsert!(_cv_user, zhbook.cvbook) do |view|
-        view.bumped = Time.utc.to_unix
-        view.zseed = zhbook.zseed
-        view.chidx = index
-        view.ch_title = curr[1]
-        view.ch_label = curr[2]
-        view.ch_uslug = curr[3]
+      Ubmemo.upsert!(_cv_user, zhbook.cvbook) do |memo|
+        unless memo.locked
+          memo.bumped = Time.utc.to_unix
+
+          memo.lr_zseed = zhbook.zseed
+          memo.lr_chidx = chidx
+
+          memo.lc_title = curr[1]
+          memo.lc_uslug = curr[3]
+        end
       end
     end
 
@@ -86,14 +87,14 @@ class CV::ChapCtrl < CV::BaseCtrl
           jb.field "clink", zhbook.clink(curr[0])
 
           jb.field "total", zhbook.chap_count
-          jb.field "chidx", index
+          jb.field "chidx", chidx
           jb.field "schid", curr[0]
 
           jb.field "title", curr[1]
           jb.field "label", curr[2]
 
-          jb.field "prev_url", zhbook.chinfo.url_for(index - 2)
-          jb.field "next_url", zhbook.chinfo.url_for(index)
+          jb.field "prev_url", zhbook.chinfo.url_for(chidx - 2)
+          jb.field "next_url", zhbook.chinfo.url_for(chidx)
         }
       end
     end

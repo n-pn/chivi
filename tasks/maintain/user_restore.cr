@@ -52,12 +52,11 @@ module CV::UserRestore
     store.data.each do |bhash, values|
       next unless book = Cvbook.load!(bhash)
 
-      bmark = Ubmark.bmark(values[0])
-      entry = Ubmark.upsert!(user, book, bmark)
-
-      entry.created_at = Time.unix(values[1].to_i64)
-      entry.updated_at = Time.unix(values[1].to_i64)
-      entry.save!
+      Ubmemo.upsert!(user, book) do |entry|
+        entry.status = Ubmemo.status(values[0])
+        entry.created_at = Time.unix(values[1].to_i64)
+        entry.updated_at = Time.unix(values[1].to_i64)
+      end
     rescue err
       puts err
     end
@@ -68,15 +67,14 @@ module CV::UserRestore
     store.data.each do |bhash, values|
       next unless book = Cvbook.load!(bhash)
 
-      Ubview.upsert!(user, book) do |entry|
-        entry.zseed = Zhseed.index(values[0])
-        entry.chidx = values[1].to_i
-
+      Ubmemo.upsert!(user, book) do |entry|
         entry.bumped = values[2].to_i64
 
-        entry.ch_title = values[3]
-        entry.ch_label = values[4]
-        entry.ch_uslug = values[5]
+        entry.lr_zseed = Zhseed.index(values[0])
+        entry.lr_chidx = values[1].to_i
+
+        entry.lc_title = values[3]
+        entry.lc_uslug = values[5]
       end
     rescue err
       puts err
