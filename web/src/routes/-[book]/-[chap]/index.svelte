@@ -191,7 +191,7 @@
               class="menu-item"
               disabled={$session.privi < 0}
               on:click={() => update_history(chinfo, false)}
-              data-kbd="d">
+              data-kbd="p">
               <SIcon name="pin" />
               <span>Bỏ đánh dấu</span>
             </button>
@@ -200,7 +200,7 @@
               class="menu-item"
               disabled={$session.privi < 0}
               on:click={() => update_history(chinfo, true)}
-              data-kbd="d">
+              data-kbd="p">
               <SIcon name="pinned" />
               <span>Đánh dấu</span>
             </button>
