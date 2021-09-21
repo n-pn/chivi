@@ -26,10 +26,13 @@
     if (!err) bmark = data.bmark
   })
 
-  async function mark_book(new_mark) {
+  async function change_status(new_mark) {
     if ($session.privi < 0) return
     bmark = bmark == new_mark ? 'default' : new_mark
-    await put_fetch(fetch, `/api/ubmarks/${nvinfo.bhash}`, { bmark })
+
+    const url = `/api/_self/library/${nvinfo.id}`
+    const [stt, msg] = await put_fetch(fetch, url, { status: bmark })
+    if (stt) console.log(`error update book status: ${msg}`)
   }
 
   function gen_keywords(nvinfo) {
@@ -82,7 +85,7 @@
 
         <div class="header-menu">
           {#each mark_types as mtype}
-            <div class="-item" on:click={() => mark_book(mtype)}>
+            <div class="-item" on:click={() => change_status(mtype)}>
               <SIcon name={mark_icons[mtype]} />
               <span>{mark_names[mtype]}</span>
 

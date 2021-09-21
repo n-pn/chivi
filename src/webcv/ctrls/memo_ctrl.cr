@@ -1,28 +1,6 @@
 require "./base_ctrl"
 
 class CV::MemoCtrl < CV::BaseCtrl
-  def show : Nil
-    if _cv_user.privi < 0
-      return render_json({bmark: "default"})
-    end
-
-    cvbook = Cvbook.load!(params["bname"])
-    ubmemo = Ubmemo.find!({cvuser_id: _cv_user.id, cvbook_id: cvbook.id})
-    render_json({bmark: ubmemo.status_s})
-  rescue
-    render_json({bmark: "default"})
-  end
-
-  def update
-    return halt!(404, "Người dùng chưa đăng nhập!") if _cv_user.privi < 0
-
-    cvbook = Cvbook.load!(params["bname"])
-    status = Ubmemo.status(params.fetch_str("bmark", "default"))
-
-    Ubmemo.upsert!(_cv_user, cvbook, &.status = status)
-    render_json({bmark: status})
-  end
-
   def history
     skip = params.fetch_int("skip", min: 0)
     take = params.fetch_int("take", min: 15, max: 30)
@@ -54,5 +32,33 @@ class CV::MemoCtrl < CV::BaseCtrl
     end
   rescue err
     puts err
+  end
+
+  def library
+  end
+
+  def update_history
+  end
+
+  def update_library
+    raise "Người dùng chưa đăng nhập!" if _cv_user.privi < 0
+
+    cvbook_id = params["book_id"].to_i64
+    status = Ubmemo.status(params.fetch_str("status", "default"))
+
+    Ubmemo.upsert!(_cv_user.id, cvbook_id, &.status = status)
+    render_json({status: status})
+  rescue err
+    halt!(500, err.message)
+  end
+
+  def show : Nil
+    return render_json({status: "default"}) if _cv_user.privi < 0
+
+    cvbook = Cvbook.load!(params["bname"])
+    ubmemo = Ubmemo.find!({cvuser_id: _cv_user.id, cvbook_id: cvbook.id})
+    render_json({bmark: ubmemo.status_s})
+  rescue
+    render_json({bmark: "default"})
   end
 end

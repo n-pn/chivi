@@ -31,10 +31,18 @@ class CV::Ubmemo
   end
 
   def self.upsert!(cvuser : Cvuser, cvbook : Cvbook) : self
-    model = find({cvuser_id: cvuser.id, cvbook_id: cvbook.id})
-    model ||= new({cvuser: cvuser, cvbook: cvbook})
+    ubmemo = find({cvuser_id: cvuser.id, cvbook_id: cvbook.id})
+    ubmemo ||= new({cvuser: cvuser, cvbook: cvbook})
 
-    yield model
-    model.save!
+    yield ubmemo
+    ubmemo.save!
+  end
+
+  def self.upsert!(cvuser_id : Int64, cvbook_id : Int64) : self
+    params = {cvuser_id: cvuser_id, cvbook_id: cvbook_id}
+    ubmemo = find(params) || new(params)
+
+    yield ubmemo
+    ubmemo.save!
   end
 end
