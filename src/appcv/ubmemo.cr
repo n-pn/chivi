@@ -30,20 +30,23 @@ class CV::Ubmemo
     STATUS.index(status_s) || 0
   end
 
-  def self.dummy_find(cvuser : Cvuser, cvbook : Cvbook) : self
+  def self.find_or_new(cvuser : Cvuser, cvbook : Cvbook) : self
     find({cvuser_id: cvuser.id, cvbook_id: cvbook.id}) || new({cvuser: cvuser, cvbook: cvbook})
   end
 
+  def self.find_or_new(cvuser_id : Int64, cvbook_id : Int64) : self
+    params = {cvuser_id: cvuser_id, cvbook_id: cvbook_id}
+    find(params) || new(params)
+  end
+
   def self.upsert!(cvuser : Cvuser, cvbook : Cvbook) : self
-    ubmemo = dummy_find(cvuser, cvbook)
+    ubmemo = find_or_new(cvuser, cvbook)
     yield ubmemo
     ubmemo.save!
   end
 
   def self.upsert!(cvuser_id : Int64, cvbook_id : Int64) : self
-    params = {cvuser_id: cvuser_id, cvbook_id: cvbook_id}
-    ubmemo = find(params) || new(params)
-
+    ubmemo = find_or_new(cvuser_id, cvbook_id)
     yield ubmemo
     ubmemo.save!
   end

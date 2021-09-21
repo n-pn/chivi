@@ -66,19 +66,19 @@ class CV::ChapCtrl < CV::BaseCtrl
       return halt!(404, "Chương tiết không tồn tại!")
     end
 
-    if _cv_user.privi >= 0
-      Ubmemo.upsert!(_cv_user, zhbook.cvbook) do |memo|
-        unless memo.locked
-          memo.bumped = Time.utc.to_unix
+    # if _cv_user.privi >= 0
+    #   Ubmemo.upsert!(_cv_user, zhbook.cvbook) do |memo|
+    #     unless memo.locked
+    #       memo.bumped = Time.utc.to_unix
 
-          memo.lr_zseed = zhbook.zseed
-          memo.lr_chidx = chidx
+    #       memo.lr_zseed = zhbook.zseed
+    #       memo.lr_chidx = chidx
 
-          memo.lc_title = curr[1]
-          memo.lc_uslug = curr[3]
-        end
-      end
-    end
+    #       memo.lc_title = curr[1]
+    #       memo.lc_uslug = curr[3]
+    #     end
+    #   end
+    # end
 
     render_json do |res|
       JSON.build(res) do |jb|
@@ -92,6 +92,7 @@ class CV::ChapCtrl < CV::BaseCtrl
 
           jb.field "title", curr[1]
           jb.field "label", curr[2]
+          jb.field "uslug", curr[3]
 
           jb.field "prev_url", zhbook.chinfo.url_for(chidx - 2)
           jb.field "next_url", zhbook.chinfo.url_for(chidx)

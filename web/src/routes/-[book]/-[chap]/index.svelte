@@ -1,8 +1,20 @@
 <script context="module">
-  import { api_call } from '$api/_api_call'
+  import { api_call, put_fetch } from '$api/_api_call'
   import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
-  export async function load({ fetch, page, context: { cvbook } }) {
+  const ubmemos = {} // cache
+
+  function memo_key(session, cvbook) {
+    return `${session.uname}:${cvbook.id}`
+  }
+
+  export async function load({ fetch, page, context, session }) {
+    const { cvbook } = context
+
+    const ubmemo_key = memo_key(session, cvbook)
+    let ubmemo = ubmemos[ubmemo_key]
+    if (!ubmemo) ubmemo = ubmemos[ubmemo_key] = context.ubmemo
+
     const [chidx, sname] = page.params.chap.split('-').reverse()
 
     const url = `chaps/${cvbook.id}/${sname}/${chidx}`
@@ -16,12 +28,13 @@
     const cvdata = await res.text()
 
     return {
-      props: { cvbook, chinfo, txturl, cvdata, _dirty: mode < 0 },
+      props: { cvbook, ubmemo, chinfo, txturl, cvdata, _dirty: mode < 0 },
     }
   }
 </script>
 
 <script>
+  import { browser } from '$app/env'
   import { session } from '$app/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
@@ -29,25 +42,26 @@
   import Vessel from '$sects/Vessel.svelte'
   import Cvdata from '$sects/Cvdata.svelte'
 
-  export let cvbook = {}
-  export let chinfo = {}
+  export let cvbook
+  export let ubmemo
+  export let chinfo
 
   export let txturl = ''
   export let cvdata = ''
 
   export let _dirty = false
-  $: if (_dirty) reload_chap()
+  $: if (_dirty) reload_chap(1)
 
   $: [book_path, list_path, prev_path, next_path] = gen_paths(cvbook, chinfo)
 
   let _reload = false
 
-  async function reload_chap() {
+  async function reload_chap(mode = 1) {
     _dirty = false
     if ($session.privi < 1) return
 
     _reload = true
-    const res = await fetch(txturl + '?mode=1')
+    const res = await fetch(txturl + '?mode=' + mode)
     if (res.ok) cvdata = await res.text()
     _reload = false
   }
@@ -66,6 +80,32 @@
     let url = `/-${bslug}/chaps/${sname}`
     const page = Math.floor((chidx - 1) / 32) + 1
     return page > 1 ? url + `?page=${page}` : url
+  }
+
+  $: on_memory = ubmemo.chidx == chinfo.chidx
+  $: memo_icon = !ubmemo.locked ? 'menu-2' : on_memory ? 'pinned' : 'pin'
+  $: if (browser && !on_memory) update_history(chinfo, false)
+
+  async function update_history({ sname, chidx, title, uslug }, locking) {
+    // guard checking
+
+    if ($session.privi < 0) {
+      // do not save history unless logged in
+      return
+    } else if (ubmemo.chidx == chidx) {
+      // do not save history if there is no change
+      if (ubmemo.locked == locking) return
+    } else {
+      // do not save history if history is locked unless changing lock cursor
+      if (ubmemo.locked && !locking) return
+    }
+
+    const url = `/api/_self/books/${cvbook.id}/access`
+    const params = { sname, chidx, title, uslug, locked: locking }
+
+    const [stt, msg] = await put_fetch(fetch, url, params)
+    if (stt) return console.log(`Error update history: ${msg}`)
+    ubmemo = ubmemos[memo_key($session, cvbook)] = msg
   }
 </script>
 
@@ -86,15 +126,6 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <button
-      class="header-item"
-      disabled={$session.privi < 1}
-      on:click={reload_chap}
-      data-kbd="r">
-      <SIcon name="rotate-clockwise" spin={_reload} />
-      <span class="header-text _show-lg">Dịch lại</span>
-    </button>
-
     <button
       class="header-item"
       class:_active={$lookup_enabled}
@@ -126,21 +157,71 @@
   <div class="navi" slot="footer">
     <a
       href={prev_path}
-      class="m-button"
+      class="m-button navi-item"
       class:_disable={!chinfo.prev_url}
       data-kbd="j">
       <SIcon name="chevron-left" />
       <span>Trước</span>
     </a>
 
-    <a href={list_path} class="m-button" data-kbd="h">
-      <SIcon name="list" />
-      <span>{chinfo.chidx}/{chinfo.total}</span>
-    </a>
+    <div class="navi-item menu">
+      <a href={list_path} class="m-button menu-trigger" data-kbd="h">
+        <SIcon name={memo_icon} />
+        <span>{chinfo.chidx}/{chinfo.total}</span>
+      </a>
+
+      <div class="menu-wrapper">
+        <div class="menu-content">
+          <button
+            class="menu-item"
+            disabled={$session.privi < 1}
+            on:click={reload_chap}
+            data-kbd="r">
+            <SIcon name="rotate-clockwise" spin={_reload} />
+            <span>Dịch lại</span>
+          </button>
+
+          {#if chinfo.clink != '/'}
+            <button
+              class="menu-item"
+              disabled={$session.privi < 1}
+              on:click={() => reload_chap(2)}>
+              <SIcon name="rotate-rectangle" />
+              <span>Tải lại nguồn</span>
+            </button>
+          {/if}
+
+          {#if on_memory && ubmemo.locked}
+            <button
+              class="menu-item"
+              disabled={$session.privi < 0}
+              on:click={() => update_history(chinfo, false)}
+              data-kbd="d">
+              <SIcon name="pin" />
+              <span>Bỏ đánh dấu</span>
+            </button>
+          {:else}
+            <button
+              class="menu-item"
+              disabled={$session.privi < 0}
+              on:click={() => update_history(chinfo, true)}
+              data-kbd="d">
+              <SIcon name="pinned" />
+              <span>Đánh dấu</span>
+            </button>
+          {/if}
+
+          <a href={list_path} class="menu-item" data-kbd="h">
+            <SIcon name="list" />
+            <span>Mục lục</span>
+          </a>
+        </div>
+      </div>
+    </div>
 
     <a
       href={next_path}
-      class="m-button _fill"
+      class="m-button _fill navi-item"
       class:_primary={chinfo.next_url}
       data-kbd="k">
       <span>Kế tiếp</span>
@@ -171,6 +252,67 @@
       &:hover {
         @include fgcolor(primary, 5);
       }
+    }
+  }
+
+  .menu {
+    position: relative;
+    display: flex;
+    &:hover {
+      .menu-wrapper {
+        display: block;
+      }
+    }
+  }
+
+  .menu-wrapper {
+    display: none;
+    position: absolute;
+    width: 10rem;
+
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .menu-content {
+    margin-bottom: 0.5rem;
+    height: 10rem;
+    padding: 0.5rem 0;
+    @include shadow(3);
+    @include bdradi();
+    @include bgcolor(secd);
+  }
+
+  .menu-item {
+    display: block;
+    width: 100%;
+    padding: 0 0.75rem;
+    line-height: 2.25rem;
+    // text-transform: uppercase;
+    font-weight: 500;
+
+    @include flex(0);
+
+    @include border(--bd-main, $loc: top);
+    &:last-child {
+      @include border(--bd-main, $loc: bottom);
+    }
+
+    // @include ftsize(sm);
+
+    @include fgcolor(tert);
+    background: inherit;
+
+    &:hover {
+      @include fgcolor(primary, 5);
+      @include bgcolor(tert);
+    }
+
+    :global(svg) {
+      margin: 0.5rem;
+      width: 1.25rem;
+      height: 1.25rem;
     }
   }
 </style>

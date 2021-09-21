@@ -1,7 +1,3 @@
-export function get_now(date = new Date()) {
-  return Math.round(date.getTime() / 1000)
-}
-
 export async function api_call(fetch, route) {
   const res = await fetch(`/api/${route}`, {
     headers: { 'Content-Type': 'application/json' },

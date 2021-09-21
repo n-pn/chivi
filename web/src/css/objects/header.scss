@@ -192,8 +192,6 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   }
 
   .-item {
-    display: flex;
-
     padding: 0 0.25rem;
     // line-height: 2.25rem;
     text-transform: uppercase;

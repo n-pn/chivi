@@ -22,13 +22,11 @@
 
   $: memo_status = ubmemo.status || 'default'
 
-  $: console.log({ ubmemo })
-
   async function change_status(status) {
     if ($session.privi < 0) return
     if (status == ubmemo.status) status = 'default'
 
-    const url = `/api/_self/library/${cvbook.id}`
+    const url = `/api/_self/books/${cvbook.id}/status`
     const [stt, msg] = await put_fetch(fetch, url, { status })
     if (stt) console.log(`error update book status: ${msg}`)
   }

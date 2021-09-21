@@ -68,7 +68,7 @@ class CV::BookCtrl < CV::BaseCtrl
     end
 
     cvbook.bump! if cu_privi >= 0
-    ubmemo = Ubmemo.dummy_find(_cv_user, cvbook)
+    ubmemo = Ubmemo.find_or_new(_cv_user, cvbook)
 
     if ubmemo.lr_chidx == 0
       ubmemo.lr_zseed = cvbook.zhseed_ids.find(0, &.> 0)
@@ -81,29 +81,13 @@ class CV::BookCtrl < CV::BaseCtrl
       end
     end
 
-    render_json do |res|
-      res.headers.add("Cache-Control", "max-age=120,min-fresh=30")
+    response.headers.add("Cache-Control", "min-fresh=10")
 
-      JSON.build(res) do |jb|
-        jb.object {
-          jb.field "cvbook" {
-            CvbookView.render(jb, cvbook, full: true)
-          }
-
-          jb.field "ubmemo" {
-            jb.object {
-              jb.field "status", ubmemo.status_s
-              jb.field "locked", ubmemo.locked
-
-              jb.field "sname", ubmemo.lr_sname
-              jb.field "chidx", ubmemo.lr_chidx
-
-              jb.field "title", ubmemo.lc_title
-              jb.field "uslug", ubmemo.lc_uslug
-            }
-          }
-        }
-      end
+    show_json do |jb|
+      jb.object {
+        jb.field "cvbook" { CvbookView.render(jb, cvbook, full: true) }
+        jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
+      }
     end
   end
 end
