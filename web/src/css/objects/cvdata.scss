@@ -1,4 +1,4 @@
-@use "../essence" as *;
+@use '../essence' as *;
 
 @mixin cv-token($color: blue) {
   cursor: pointer;
@@ -14,6 +14,7 @@
 }
 
 .cvdata {
+  min-height: 50vh;
   padding: var(--verpad) var(--gutter);
 
   @include bps(margin-left, calc(-1 * var(--gutter)), $lg: 0);
