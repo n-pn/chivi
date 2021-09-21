@@ -22,6 +22,8 @@
 
   $: memo_status = ubmemo.status || 'default'
 
+  $: console.log({ ubmemo })
+
   async function change_status(status) {
     if ($session.privi < 0) return
     if (status == ubmemo.status) status = 'default'
@@ -67,10 +69,6 @@
   </a>
 
   <svelte:fragment slot="header-right">
-    <a class="header-item" href="/dicts/{cvbook.bhash}">
-      <SIcon name="package" />
-      <span class="header-text _show-md">Từ điển</span>
-    </a>
     {#if $session.privi > 0}
       <div class="header-item _menu" class:_disable={$session.privi < 0}>
         <SIcon name={status_icons[memo_status]} />
@@ -91,6 +89,21 @@
             </div>
           {/each}
         </div>
+      </div>
+    {/if}
+
+    {#if ubmemo.chidx > 0}
+      <a
+        class="header-item"
+        href="/-{cvbook.bslug}/-{ubmemo.uslug}-{ubmemo.sname}-{ubmemo.chidx}">
+        <SIcon name="player-play" />
+        <span class="header-text _show-md"
+          >{ubmemo.chidx == 1 ? 'Đọc thử' : 'Đọc tiếp'}</span>
+      </a>
+    {:else}
+      <div class="header-item _disable" title="Chưa có chương tiết">
+        <SIcon name="player-play" />
+        <span class="header-text _show-md">Đọc thử</span>
       </div>
     {/if}
   </svelte:fragment>

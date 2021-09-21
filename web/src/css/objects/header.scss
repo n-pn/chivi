@@ -74,11 +74,12 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     @include bgcolor(primary, 6);
   }
 
-  &:disabled {
+  &:disabled,
+  &._disable {
     cursor: text;
 
     @include fgcolor(mute);
-    @include bgcolor(primary, 6);
+    @include bgcolor(primary, 7);
   }
 
   img,

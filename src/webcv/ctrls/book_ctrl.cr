@@ -70,6 +70,17 @@ class CV::BookCtrl < CV::BaseCtrl
     cvbook.bump! if cu_privi >= 0
     ubmemo = Ubmemo.dummy_find(_cv_user, cvbook)
 
+    if ubmemo.lr_chidx == 0
+      ubmemo.lr_zseed = cvbook.zhseed_ids.find(0, &.> 0)
+      zhbook = Zhbook.load!(cvbook.id, ubmemo.lr_zseed)
+
+      if chinfo = zhbook.chinfo.get_info(0)
+        ubmemo.lr_chidx = 1
+        ubmemo.lc_title = chinfo[1]
+        ubmemo.lc_uslug = chinfo[3]
+      end
+    end
+
     render_json do |res|
       res.headers.add("Cache-Control", "max-age=120,min-fresh=30")
 
