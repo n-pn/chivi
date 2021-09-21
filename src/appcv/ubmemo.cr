@@ -30,10 +30,12 @@ class CV::Ubmemo
     STATUS.index(status_s) || 0
   end
 
-  def self.upsert!(cvuser : Cvuser, cvbook : Cvbook) : self
-    ubmemo = find({cvuser_id: cvuser.id, cvbook_id: cvbook.id})
-    ubmemo ||= new({cvuser: cvuser, cvbook: cvbook})
+  def self.dummy_find(cvuser : Cvuser, cvbook : Cvbook) : self
+    find({cvuser_id: cvuser.id, cvbook_id: cvbook.id}) || new({cvuser: cvuser, cvbook: cvbook})
+  end
 
+  def self.upsert!(cvuser : Cvuser, cvbook : Cvbook) : self
+    ubmemo = dummy_find(cvuser, cvbook)
     yield ubmemo
     ubmemo.save!
   end

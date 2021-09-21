@@ -16,6 +16,13 @@ class CV::BaseCtrl < Amber::Controller::Base
     end
   end
 
+  def save_session!
+    return unless session.changed?
+
+    session.set_session
+    cookies.write(response.headers)
+  end
+
   def render_json(data : String, status_code = 200)
     render_json(status_code) do |res|
       res.puts(data)
@@ -26,13 +33,6 @@ class CV::BaseCtrl < Amber::Controller::Base
     render_json(status_code) do |res|
       data.to_json(response)
     end
-  end
-
-  def save_session!
-    return unless session.changed?
-
-    session.set_session
-    cookies.write(response.headers)
   end
 
   def render_json(status_code = 200)

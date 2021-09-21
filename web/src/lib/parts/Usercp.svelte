@@ -1,6 +1,6 @@
 <script>
   import { session } from '$app/stores'
-  import { mark_names, mark_icons } from '$lib/constants'
+  import { status_names, status_icons } from '$lib/constants'
 
   import SIcon from '$atoms/SIcon.svelte'
   import Slider from '$molds/Slider.svelte'
@@ -45,11 +45,11 @@
       chế độ dịch hoặc đổi mật khẩu.
     </div>
     <div class="chips">
-      {#each ['reading', 'onhold', 'pending'] as mtype}
-        <a href="/@{$session.uname}?bmark={mtype}" class="-chip">
-          <SIcon name={mark_icons[mtype]} />
+      {#each ['reading', 'onhold', 'pending'] as status}
+        <a href="/@{$session.uname}?bmark={status}" class="-chip">
+          <SIcon name={status_icons[status]} />
           <span class="-text">
-            {mark_names[mtype]}
+            {status_names[status]}
           </span>
         </a>
       {/each}

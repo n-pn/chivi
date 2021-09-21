@@ -1,9 +1,8 @@
 <script context="module">
-  import { api_call, put_fetch } from '$api/_api_call'
+  import { put_fetch } from '$api/_api_call'
   import { session } from '$app/stores.js'
   import { host_name, map_status } from '$utils/book_utils.js'
-  import { mark_types, mark_names, mark_icons } from '$lib/constants.js'
-  import { onMount } from 'svelte'
+  import { status_types, status_names, status_icons } from '$lib/constants.js'
 </script>
 
 <script>
@@ -14,24 +13,21 @@
   import Vessel from '$sects/Vessel.svelte'
 
   export let cvbook = {}
+  export let ubmemo = {}
   export let nvtab = 'index'
 
   $: vi_status = map_status(cvbook.status)
   $: book_intro = cvbook.bintro.join('').substring(0, 300)
   $: updated_at = new Date(cvbook.update)
 
-  let bmark = ''
-  onMount(async () => {
-    const [err, data] = await api_call(fetch, `ubmarks/${cvbook.bhash}`)
-    if (!err) bmark = data.bmark
-  })
+  $: memo_status = ubmemo.status || 'default'
 
-  async function change_status(new_mark) {
+  async function change_status(status) {
     if ($session.privi < 0) return
-    bmark = bmark == new_mark ? 'default' : new_mark
+    if (status == ubmemo.status) status = 'default'
 
     const url = `/api/_self/library/${cvbook.id}`
-    const [stt, msg] = await put_fetch(fetch, url, { status: bmark })
+    const [stt, msg] = await put_fetch(fetch, url, { status })
     if (stt) console.log(`error update book status: ${msg}`)
   }
 
@@ -77,19 +73,17 @@
     </a>
     {#if $session.privi > 0}
       <div class="header-item _menu" class:_disable={$session.privi < 0}>
-        <SIcon
-          name={bmark && bmark != 'default' ? mark_icons[bmark] : 'bookmark'} />
+        <SIcon name={status_icons[memo_status]} />
 
-        <span class="header-text _show-md"
-          >{bmark && bmark != 'default' ? mark_names[bmark] : 'Đánh dấu'}</span>
+        <span class="header-text _show-md">{status_names[memo_status]}</span>
 
         <div class="header-menu">
-          {#each mark_types as mtype}
-            <div class="-item" on:click={() => change_status(mtype)}>
-              <SIcon name={mark_icons[mtype]} />
-              <span>{mark_names[mtype]}</span>
+          {#each status_types as status}
+            <div class="-item" on:click={() => change_status(status)}>
+              <SIcon name={status_icons[status]} />
+              <span>{status_names[status]}</span>
 
-              {#if bmark == mtype}
+              {#if memo_status == status}
                 <span class="_right">
                   <SIcon name="check" />
                 </span>

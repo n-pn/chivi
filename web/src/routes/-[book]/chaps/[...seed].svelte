@@ -4,21 +4,21 @@
   import { api_call } from '$api/_api_call'
 
   export async function load({ page: { params, query }, fetch, context }) {
-    const { nvinfo } = context
+    const { cvbook, ubmemo } = context
 
-    const { snames } = nvinfo
+    const { snames } = cvbook
     const sname = extract_sname(snames, params.seed)
 
     const page = +query.get('page') || 1
     const mode = +query.get('mode') || 0
 
-    const url = `chaps/${nvinfo.id}/${sname}?page=${page}&mode=${mode}`
+    const url = `chaps/${cvbook.id}/${sname}?page=${page}&mode=${mode}`
 
     const [status, chinfo] = await api_call(fetch, url)
     if (status) return { status, error: chinfo }
 
-    if (chinfo.utime > nvinfo.update) nvinfo.update = chinfo.utime
-    return { props: { nvinfo, chinfo } }
+    if (chinfo.utime > cvbook.update) cvbook.update = chinfo.utime
+    return { props: { cvbook, ubmemo, chinfo } }
   }
 
   function extract_sname(snames, param) {
@@ -44,35 +44,37 @@
   $: pager = get_pager(chinfo.sname)
 
   function get_pager(sname) {
-    return (pagers[sname] ||= new Pager(`/-${nvinfo.bslug}/chaps/${sname}`, {
+    return (pagers[sname] ||= new Pager(`/-${cvbook.bslug}/chaps/${sname}`, {
       page: chinfo.pgidx,
     }))
   }
 
-  export let nvinfo
+  export let cvbook
+  export let ubmemo
+
   export let chinfo = {}
 
-  $: [main_seeds, hide_seeds] = split_chinfo(nvinfo, chinfo.sname)
+  $: [main_seeds, hide_seeds] = split_chinfo(cvbook, chinfo.sname)
   let show_more = false
 
   const _navi = { replace: true, scrollto: '#chlist' }
 
   let add_zhbook = false
 
-  let new_seeds = seed_choices(nvinfo.snames)
+  let new_seeds = seed_choices(cvbook.snames)
   let new_sname = new_seeds[0]
   let new_snvid = ''
 
   async function make_zhbook() {
-    nvinfo.snames.push(new_sname)
-    nvinfo.chinfo[new_sname] = new_snvid
+    cvbook.snames.push(new_sname)
+    cvbook.chinfo[new_sname] = new_snvid
     add_zhbook = false
 
     // TODO: create new zhbook on server
   }
 
-  function split_chinfo(nvinfo, sname) {
-    const input = nvinfo.snames.filter((x) => x != 'chivi')
+  function split_chinfo(cvbook, sname) {
+    const input = cvbook.snames.filter((x) => x != 'chivi')
     const bound = 3
 
     let main_seeds = input.slice(0, bound)
@@ -92,7 +94,7 @@
   }
 </script>
 
-<Book {nvinfo} nvtab="chaps">
+<Book {cvbook} {ubmemo} nvtab="chaps">
   <div class="source">
     {#each main_seeds as mname}
       <a
@@ -164,7 +166,7 @@
       <a
         class="m-button"
         class:_disable={$session.privi < 2}
-        href="/-{nvinfo.bslug}/+{chinfo.sname}?chidx={chinfo.total + 1}">
+        href="/-{cvbook.bslug}/+{chinfo.sname}?chidx={chinfo.total + 1}">
         <SIcon name="plus" />
         <span class="-hide">Thêm chương</span>
       </a>
@@ -194,9 +196,9 @@
 
   <div class="chlist">
     {#if chinfo.lasts.length > 0}
-      <Chlist bslug={nvinfo.bslug} sname={chinfo.sname} chaps={chinfo.lasts} />
+      <Chlist bslug={cvbook.bslug} sname={chinfo.sname} chaps={chinfo.lasts} />
       <div class="-sep" />
-      <Chlist bslug={nvinfo.bslug} sname={chinfo.sname} chaps={chinfo.chaps} />
+      <Chlist bslug={cvbook.bslug} sname={chinfo.sname} chaps={chinfo.chaps} />
 
       <footer class="foot">
         <Mpager {pager} pgidx={chinfo.pgidx} pgmax={chinfo.pgmax} {_navi} />

@@ -1,5 +1,5 @@
 <script context="module">
-  import { mark_types, mark_names } from '$lib/constants'
+  import { status_types, status_names } from '$lib/constants'
 
   export async function load({ page: { params, query }, fetch }) {
     const uname = params.user
@@ -42,12 +42,12 @@
     <span class="header-text _title">Tủ truyện của [{uname}]</span>
   </span>
   <div class="tabs">
-    {#each mark_types as mtype}
+    {#each status_types as status}
       <a
-        href="/@{uname}?bmark={mtype}"
+        href="/@{uname}?bmark={status}"
         class="tab"
-        class:_active={mtype == bmark}>
-        {mark_names[mtype]}
+        class:_active={status == bmark}>
+        {status_names[status]}
       </a>
     {/each}
   </div>

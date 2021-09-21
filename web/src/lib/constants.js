@@ -14,7 +14,7 @@ export const remote_snames = [
   'shubaow',
 ]
 
-export const mark_types = [
+export const status_types = [
   'reading',
   'onhold',
   'finished',
@@ -22,7 +22,8 @@ export const mark_types = [
   'pending',
 ]
 
-export const mark_names = {
+export const status_names = {
+  default: 'Đánh dấu',
   reading: 'Đang đọc',
   onhold: 'Tạm dừng',
   finished: 'Hoàn thành',
@@ -30,7 +31,8 @@ export const mark_names = {
   pending: 'Đọc sau',
 }
 
-export const mark_icons = {
+export const status_icons = {
+  default: 'bookmark',
   reading: 'eye',
   onhold: 'player-pause',
   finished: 'square-check',

@@ -9,21 +9,22 @@ class CV::MemoCtrl < CV::BaseCtrl
     query = query.limit(take).offset(skip).order_by(bumped: :desc)
 
     render_json do |res|
-      JSON.build(res) do |json|
-        json.array do
+      JSON.build(res) do |jb|
+        jb.array do
           take.times do
             query.with_cvbook.each do |ubmemo|
-              json.object {
-                json.field "bname", ubmemo.cvbook.bname
-                json.field "bslug", ubmemo.cvbook.bslug
+              jb.object {
+                jb.field "bname", ubmemo.cvbook.bname
+                jb.field "bslug", ubmemo.cvbook.bslug
 
-                json.field "sname", ubmemo.lr_sname
-                json.field "chidx", ubmemo.lr_chidx
+                jb.field "status", ubmemo.status_s
+                jb.field "locked", ubmemo.locked
 
-                json.field "title", ubmemo.lc_title
-                json.field "uslug", ubmemo.lc_uslug
+                jb.field "sname", ubmemo.lr_sname
+                jb.field "chidx", ubmemo.lr_chidx
 
-                json.field "locked", ubmemo.locked
+                jb.field "title", ubmemo.lc_title
+                jb.field "uslug", ubmemo.lc_uslug
               }
             end
           end
