@@ -97,7 +97,7 @@
       <a
         class="header-item"
         href="/-{cvbook.bslug}/-{ubmemo.uslug}-{ubmemo.sname}-{ubmemo.chidx}">
-        <SIcon name="player-play" />
+        <SIcon name={ubmemo.locked ? 'pinned' : 'player-play'} />
         <span class="header-text _show-md"
           >{ubmemo.chidx == 1 ? 'Đọc thử' : 'Đọc tiếp'}</span>
       </a>
