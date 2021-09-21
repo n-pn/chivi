@@ -1,6 +1,6 @@
 require "json"
 
-module CV::Views::CvbookView
+module CV::CvbookView
   extend self
 
   def render(jb : JSON::Builder, obj : NvInfo, full = true)

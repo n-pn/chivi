@@ -2,11 +2,10 @@
   import { api_call } from '$api/_api_call'
   import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
-  export async function load({ fetch, page, context }) {
+  export async function load({ fetch, page, context: { cvbook } }) {
     const [chidx, sname] = page.params.chap.split('-').reverse()
-    const { nvinfo } = context
 
-    const url = `chaps/${nvinfo.id}/${sname}/${chidx}`
+    const url = `chaps/${cvbook.id}/${sname}/${chidx}`
     const [status, chinfo] = await api_call(fetch, url)
     if (status) return { status, error: chinfo }
 
@@ -17,7 +16,7 @@
     const cvdata = await res.text()
 
     return {
-      props: { nvinfo, chinfo, txturl, cvdata, _dirty: mode < 0 },
+      props: { cvbook, chinfo, txturl, cvdata, _dirty: mode < 0 },
     }
   }
 </script>
@@ -30,7 +29,7 @@
   import Vessel from '$sects/Vessel.svelte'
   import Cvdata from '$sects/Cvdata.svelte'
 
-  export let nvinfo = {}
+  export let cvbook = {}
   export let chinfo = {}
 
   export let txturl = ''
@@ -39,7 +38,7 @@
   export let _dirty = false
   $: if (_dirty) reload_chap()
 
-  $: [book_path, list_path, prev_path, next_path] = gen_paths(nvinfo, chinfo)
+  $: [book_path, list_path, prev_path, next_path] = gen_paths(cvbook, chinfo)
 
   let _reload = false
 
@@ -71,14 +70,14 @@
 </script>
 
 <svelte:head>
-  <title>{chinfo.title} - {nvinfo.btitle_vi} - Chivi</title>
+  <title>{chinfo.title} - {cvbook.btitle_vi} - Chivi</title>
 </svelte:head>
 
 <Vessel>
   <svelte:fragment slot="header-left">
     <a href={book_path} class="header-item _title">
       <SIcon name="book" />
-      <span class="header-text _show-sm _title">{nvinfo.btitle_vi}</span>
+      <span class="header-text _show-sm _title">{cvbook.btitle_vi}</span>
     </a>
 
     <button class="header-item _active">
@@ -107,7 +106,7 @@
   </svelte:fragment>
 
   <nav class="bread">
-    <a href="/-{nvinfo.bslug}" class="crumb _link">{nvinfo.btitle_vi}</a>
+    <a href="/-{cvbook.bslug}" class="crumb _link">{cvbook.btitle_vi}</a>
     <span>/</span>
     <span class="crumb _text">{chinfo.label}</span>
   </nav>
@@ -116,8 +115,8 @@
     {#if cvdata}
       <Cvdata
         {cvdata}
-        dname={nvinfo.bhash}
-        label={nvinfo.btitle_vi}
+        dname={cvbook.bhash}
+        label={cvbook.btitle_vi}
         bind:_dirty />
     {:else}
       <Notext {chinfo} />

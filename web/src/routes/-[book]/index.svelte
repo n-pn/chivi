@@ -1,13 +1,13 @@
 <script context="module">
   export async function load({ fetch, context, page: { query } }) {
-    const { nvinfo } = context
+    const { cvbook } = context
     const page = +query.get('page') || 1
     const sort = query.get('sort') || 'stars'
 
     const qs = `page=${page}&sort=${sort}`
-    const res = await fetch(`/api/crits?book=${nvinfo.id}&${qs}`)
+    const res = await fetch(`/api/crits?book=${cvbook.id}&${qs}`)
 
-    return { props: { nvinfo, _sort: sort, ...(await res.json()) } }
+    return { props: { cvbook, _sort: sort, ...(await res.json()) } }
   }
 
   const sorts = {
@@ -26,7 +26,7 @@
   import Yscrit from '$parts/Yscrit.svelte'
   import Book from './_book.svelte'
 
-  export let nvinfo
+  export let cvbook
 
   export let crits = []
   export let pgidx = 1
@@ -37,11 +37,11 @@
   let short_intro = false
 </script>
 
-<Book {nvinfo} nvtab="index">
+<Book {cvbook} nvtab="index">
   <article class="m-article">
     <h2>Giới thiệu:</h2>
     <div class="intro" class:_short={short_intro}>
-      {#each nvinfo.bintro as para}
+      {#each cvbook.bintro as para}
         <p>{para}</p>
       {/each}
     </div>

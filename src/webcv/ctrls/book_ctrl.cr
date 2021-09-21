@@ -40,7 +40,7 @@ class CV::BookCtrl < CV::BaseCtrl
             jb.array do
               if total > 0
                 query.limit(limit).offset(offset).with_author.each do |book|
-                  Views::CvbookView.render(jb, book, full: false)
+                  CvbookView.render(jb, book, full: false)
                 end
               end
             end
@@ -69,10 +69,15 @@ class CV::BookCtrl < CV::BaseCtrl
 
     cvbook.bump! if cu_privi >= 0
 
-    response.headers.add("Cache-Control", "public, min-fresh=60")
+    response.headers.add("Cache-Control", "max-age=120,min-fresh=30")
+
     render_json do |res|
       JSON.build(res) do |jb|
-        Views::CvbookView.render(jb, cvbook, full: true)
+        jb.object {
+          jb.field "cvbook" {
+            CvbookView.render(jb, cvbook, full: true)
+          }
+        }
       end
     end
   end

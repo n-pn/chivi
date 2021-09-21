@@ -13,16 +13,16 @@
   import Aditem from '$molds/Aditem.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  export let nvinfo = {}
+  export let cvbook = {}
   export let nvtab = 'index'
 
-  $: vi_status = map_status(nvinfo.status)
-  $: book_intro = nvinfo.bintro.join('').substring(0, 300)
-  $: updated_at = new Date(nvinfo.update)
+  $: vi_status = map_status(cvbook.status)
+  $: book_intro = cvbook.bintro.join('').substring(0, 300)
+  $: updated_at = new Date(cvbook.update)
 
   let bmark = ''
   onMount(async () => {
-    const [err, data] = await api_call(fetch, `ubmarks/${nvinfo.bhash}`)
+    const [err, data] = await api_call(fetch, `ubmarks/${cvbook.bhash}`)
     if (!err) bmark = data.bmark
   })
 
@@ -30,16 +30,16 @@
     if ($session.privi < 0) return
     bmark = bmark == new_mark ? 'default' : new_mark
 
-    const url = `/api/_self/library/${nvinfo.id}`
+    const url = `/api/_self/library/${cvbook.id}`
     const [stt, msg] = await put_fetch(fetch, url, { status: bmark })
     if (stt) console.log(`error update book status: ${msg}`)
   }
 
-  function gen_keywords(nvinfo) {
+  function gen_keywords(cvbook) {
     // prettier-ignore
     let res = [
-      nvinfo.btitle_zh, nvinfo.btitle_vi, nvinfo.btitle_hv,
-      nvinfo.author_zh, nvinfo.author_vi, ...nvinfo.genres,
+      cvbook.btitle_zh, cvbook.btitle_vi, cvbook.btitle_hv,
+      cvbook.author_zh, cvbook.author_vi, ...cvbook.genres,
       'Truyện tàu', 'Truyện convert', 'Truyện mạng' ]
     return res.join(',')
   }
@@ -47,31 +47,31 @@
 
 <!-- prettier-ignore -->
 <svelte:head>
-  <title>{nvinfo.btitle_vi} - Chivi</title>
-  <meta name="keywords" content={gen_keywords(nvinfo)} />
+  <title>{cvbook.btitle_vi} - Chivi</title>
+  <meta name="keywords" content={gen_keywords(cvbook)} />
   <meta name="description" content={book_intro} />
 
-  <meta property="og:title" content={nvinfo.btitle_vi} />
+  <meta property="og:title" content={cvbook.btitle_vi} />
   <meta property="og:type" content="novel" />
   <meta property="og:description" content={book_intro} />
-  <meta property="og:url" content="https://chivi.xyz/-{nvinfo.bslug}" />
-  <meta property="og:image" content="https://chivi.xyz/covers/{nvinfo.bcover}" />
+  <meta property="og:url" content="https://chivi.xyz/-{cvbook.bslug}" />
+  <meta property="og:image" content="https://chivi.xyz/covers/{cvbook.bcover}" />
 
-  <meta property="og:novel:category" content={nvinfo.genres[0]} />
-  <meta property="og:novel:author" content={nvinfo.author_vi} />
-  <meta property="og:novel:book_name" content={nvinfo.btitle_vi} />
+  <meta property="og:novel:category" content={cvbook.genres[0]} />
+  <meta property="og:novel:author" content={cvbook.author_vi} />
+  <meta property="og:novel:book_name" content={cvbook.btitle_vi} />
   <meta property="og:novel:status" content={vi_status} />
   <meta property="og:novel:update_time" content={updated_at.toISOString()} />
 </svelte:head>
 
 <Vessel>
-  <a slot="header-left" href="/-{nvinfo.bslug}" class="header-item _active">
+  <a slot="header-left" href="/-{cvbook.bslug}" class="header-item _active">
     <SIcon name="book" />
-    <span class="header-text _title">{nvinfo.btitle_vi}</span>
+    <span class="header-text _title">{cvbook.btitle_vi}</span>
   </a>
 
   <svelte:fragment slot="header-right">
-    <a class="header-item" href="/dicts/{nvinfo.bhash}">
+    <a class="header-item" href="/dicts/{cvbook.bhash}">
       <SIcon name="package" />
       <span class="header-text _show-md">Từ điển</span>
     </a>
@@ -103,12 +103,12 @@
 
   <div class="main-info">
     <div class="title">
-      <h1 class="-main">{nvinfo.btitle_vi}</h1>
-      <h2 class="-sub">({nvinfo.btitle_zh})</h2>
+      <h1 class="-main">{cvbook.btitle_vi}</h1>
+      <h2 class="-sub">({cvbook.btitle_zh})</h2>
     </div>
 
     <div class="cover">
-      <BCover bcover={nvinfo.bcover} />
+      <BCover bcover={cvbook.bcover} />
     </div>
 
     <section class="extra">
@@ -117,12 +117,12 @@
           <SIcon name="edit" />
           <a
             class="link"
-            href="/search?q={encodeURIComponent(nvinfo.author_vi)}&t=author">
-            <span class="label">{nvinfo.author_vi}</span>
+            href="/search?q={encodeURIComponent(cvbook.author_vi)}&t=author">
+            <span class="label">{cvbook.author_vi}</span>
           </a>
         </span>
 
-        {#each nvinfo.genres as genre}
+        {#each cvbook.genres as genre}
           <span class="stat _genre">
             <SIcon name="folder" />
             <a class="link" href="/?genre={genre}">
@@ -140,38 +140,38 @@
 
         <span class="stat _mftime">
           <SIcon name="clock" />
-          <span><RTime mtime={nvinfo.update} /></span>
+          <span><RTime mtime={cvbook.update} /></span>
         </span>
       </div>
 
       <div class="line">
         <span class="stat">
           Đánh giá:
-          <span class="label">{nvinfo.voters <= 10 ? '--' : nvinfo.rating}</span
+          <span class="label">{cvbook.voters <= 10 ? '--' : cvbook.rating}</span
           >/10
         </span>
-        <span class="stat">({nvinfo.voters} lượt đánh giá)</span>
+        <span class="stat">({cvbook.voters} lượt đánh giá)</span>
       </div>
 
-      {#if nvinfo.yousuu || nvinfo.origin}
+      {#if cvbook.yousuu || cvbook.origin}
         <div class="line">
           <span class="stat">Liên kết:</span>
 
-          {#if nvinfo.origin != ''}
+          {#if cvbook.origin != ''}
             <a
               class="stat link _outer"
-              href={nvinfo.origin}
+              href={cvbook.origin}
               rel="noopener noreferer"
               target="_blank"
               title="Trang nguồn">
-              {host_name(nvinfo.origin)}
+              {host_name(cvbook.origin)}
             </a>
           {/if}
 
-          {#if nvinfo.yousuu != ''}
+          {#if cvbook.yousuu != ''}
             <a
               class="stat link _outer"
-              href="https://www.yousuu.com/book/{nvinfo.yousuu}"
+              href="https://www.yousuu.com/book/{cvbook.yousuu}"
               rel="noopener noreferer"
               target="_blank"
               title="Đánh giá">
@@ -190,21 +190,21 @@
   <div class="section">
     <header class="section-header">
       <a
-        href="/-{nvinfo.bslug}"
+        href="/-{cvbook.bslug}"
         class="header-tab"
         class:_active={nvtab == 'index'}>
         Tổng quan
       </a>
 
       <a
-        href="/-{nvinfo.bslug}/chaps"
+        href="/-{cvbook.bslug}/chaps"
         class="header-tab"
         class:_active={nvtab == 'chaps'}>
         Chương tiết
       </a>
 
       <a
-        href="/-{nvinfo.bslug}/discuss"
+        href="/-{cvbook.bslug}/discuss"
         class="header-tab"
         class:_active={nvtab == 'discuss'}>
         Thảo luận

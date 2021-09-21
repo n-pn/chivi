@@ -1,15 +1,15 @@
 <script context="module">
   export async function load({ context }) {
-    return { props: { nvinfo: context.nvinfo } }
+    return { props: { cvbook: context.cvbook } }
   }
 </script>
 
 <script>
   import Book from './_book.svelte'
-  export let nvinfo
+  export let cvbook
 </script>
 
-<Book {nvinfo} nvtab="discuss">
+<Book {cvbook} nvtab="discuss">
   <div class="empty">Chưa hoàn thiện :(</div>
 </Book>
 
