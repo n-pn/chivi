@@ -36,7 +36,7 @@ Amber::Server.configure do
     get "/crits/:crit", CV::CritCtrl, :show
     get "/crits/:crit/replies", CV::CritCtrl, :replies
 
-    get "/_self/library", CV::MemoCtrl, :library
+    get "/_self/books", CV::MemoCtrl, :cvbook
     get "/_self/books/access", CV::MemoCtrl, :access
 
     get "/_self/books/:book_id", CV::MemoCtrl, :show

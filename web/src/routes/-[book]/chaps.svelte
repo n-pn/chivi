@@ -7,7 +7,6 @@
     const sname = ubmemo.sname || 'chivi'
 
     const page = chidx_to_page(+ubmemo.chidx)
-    console.log([ubmemo.chidx, page])
 
     const url = `chaps/${cvbook.id}/${sname}?page=${page}`
 

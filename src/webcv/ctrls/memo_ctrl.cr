@@ -1,6 +1,9 @@
 require "./base_ctrl"
 
 class CV::MemoCtrl < CV::BaseCtrl
+  def cvbook
+  end
+
   def access
     skip = params.fetch_int("skip", min: 0)
     take = params.fetch_int("take", min: 15, max: 30)
@@ -10,31 +13,26 @@ class CV::MemoCtrl < CV::BaseCtrl
 
     show_json do |jb|
       jb.array do
-        take.times do
-          query.with_cvbook.each do |ubmemo|
-            jb.object {
-              jb.field "bname", ubmemo.cvbook.bname
-              jb.field "bslug", ubmemo.cvbook.bslug
+        query.with_cvbook.each do |ubmemo|
+          jb.object {
+            jb.field "bname", ubmemo.cvbook.bname
+            jb.field "bslug", ubmemo.cvbook.bslug
 
-              jb.field "status", ubmemo.status_s
-              jb.field "locked", ubmemo.locked
+            jb.field "status", ubmemo.status_s
+            jb.field "locked", ubmemo.locked
 
-              jb.field "sname", ubmemo.lr_sname
-              jb.field "chidx", ubmemo.lr_chidx
+            jb.field "sname", ubmemo.lr_sname
+            jb.field "chidx", ubmemo.lr_chidx
 
-              jb.field "title", ubmemo.lc_title
-              jb.field "uslug", ubmemo.lc_uslug
-            }
-          end
+            jb.field "title", ubmemo.lc_title
+            jb.field "uslug", ubmemo.lc_uslug
+          }
         end
       end
     end
   rescue err
     puts err
     halt! 500, err.message
-  end
-
-  def library
   end
 
   def show : Nil

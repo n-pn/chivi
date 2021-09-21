@@ -17,11 +17,13 @@
   }
 
   let chaps = []
-  $: if (actived && section == 'main') load_history(0)
+  $: if (actived) load_history(0)
 
   async function load_history(skip = 0) {
+    if (section != 'main') return
     const res = await fetch(`/api/_self/books/access?skip=${skip}&take=15`)
     if (res.ok) chaps = await res.json()
+    console.log(chaps.length)
   }
 </script>
 
