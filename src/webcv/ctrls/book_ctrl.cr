@@ -81,7 +81,7 @@ class CV::BookCtrl < CV::BaseCtrl
       end
     end
 
-    response.headers.add("Cache-Control", "min-fresh=10")
+    response.headers.add("Cache-Control", "min-fresh=30")
 
     show_json do |jb|
       jb.object {

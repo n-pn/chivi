@@ -2,18 +2,8 @@
   import { api_call, put_fetch } from '$api/_api_call'
   import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
-  const ubmemos = {} // cache
-
-  function memo_key(session, cvbook) {
-    return `${session.uname}:${cvbook.id}`
-  }
-
-  export async function load({ fetch, page, context, session }) {
-    const { cvbook } = context
-
-    const ubmemo_key = memo_key(session, cvbook)
-    let ubmemo = ubmemos[ubmemo_key]
-    if (!ubmemo) ubmemo = ubmemos[ubmemo_key] = context.ubmemo
+  export async function load({ fetch, page, context }) {
+    const { cvbook, ubmemo } = context
 
     const [chidx, sname] = page.params.chap.split('-').reverse()
 
@@ -34,6 +24,7 @@
 </script>
 
 <script>
+  import { invalidate } from '$app/navigation'
   import { browser } from '$app/env'
   import { session } from '$app/stores'
 
@@ -87,8 +78,9 @@
   $: if (browser && !on_memory) update_history(chinfo, false)
 
   async function update_history({ sname, chidx, title, uslug }, locking) {
-    // guard checking
+    console.log(ubmemo)
 
+    // guard checking
     if ($session.privi < 0) {
       // do not save history unless logged in
       return
@@ -105,7 +97,10 @@
 
     const [stt, msg] = await put_fetch(fetch, url, params)
     if (stt) return console.log(`Error update history: ${msg}`)
-    ubmemo = ubmemos[memo_key($session, cvbook)] = msg
+    invalidate(`/api/books/${cvbook.bslug}`)
+
+    ubmemo = msg
+    console.log(ubmemo)
   }
 </script>
 

@@ -1,6 +1,8 @@
 <script context="module">
-  import { put_fetch } from '$api/_api_call'
   import { session } from '$app/stores.js'
+  import { invalidate } from '$app/navigation'
+
+  import { put_fetch } from '$api/_api_call'
   import { host_name, map_status } from '$utils/book_utils.js'
   import { status_types, status_names, status_icons } from '$lib/constants.js'
 </script>
@@ -12,8 +14,8 @@
   import Aditem from '$molds/Aditem.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  export let cvbook = {}
-  export let ubmemo = {}
+  export let cvbook
+  export let ubmemo
   export let nvtab = 'index'
 
   $: vi_status = map_status(cvbook.status)
@@ -28,7 +30,8 @@
 
     const url = `/api/_self/books/${cvbook.id}/status`
     const [stt, msg] = await put_fetch(fetch, url, { status })
-    if (stt) console.log(`error update book status: ${msg}`)
+    if (stt) return console.log(`error update book status: ${msg}`)
+    invalidate(`/api/books/${cvbook.bslug}`)
   }
 
   function gen_keywords(cvbook) {
