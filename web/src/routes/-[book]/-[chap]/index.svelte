@@ -24,9 +24,9 @@
 </script>
 
 <script>
-  import { invalidate } from '$app/navigation'
   import { browser } from '$app/env'
   import { session } from '$app/stores'
+  import { invalidate } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
   import Notext from '$parts/Notext.svelte'
@@ -160,10 +160,10 @@
     </a>
 
     <div class="navi-item menu">
-      <a href={list_path} class="m-button menu-trigger" data-kbd="h">
+      <div class="m-button menu-trigger">
         <SIcon name={memo_icon} />
         <span>{chinfo.chidx}/{chinfo.total}</span>
-      </a>
+      </div>
 
       <div class="menu-wrapper">
         <div class="menu-content">
@@ -258,6 +258,10 @@
         display: block;
       }
     }
+  }
+
+  .menu-trigger {
+    cursor: pointer;
   }
 
   .menu-wrapper {
