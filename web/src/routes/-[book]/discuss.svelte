@@ -5,14 +5,14 @@
 </script>
 
 <script>
-  import Book from './_book.svelte'
+  import BookPage from './_layout/BookPage.svelte'
   export let cvbook
   export let ubmemo
 </script>
 
-<Book {cvbook} {ubmemo} nvtab="discuss">
+<BookPage {cvbook} {ubmemo} nvtab="discuss">
   <div class="empty">Chưa hoàn thiện :(</div>
-</Book>
+</BookPage>
 
 <style lang="scss">
   .empty {

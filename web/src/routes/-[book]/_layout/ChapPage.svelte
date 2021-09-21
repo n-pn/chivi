@@ -1,30 +1,6 @@
 <script context="module">
   import { remote_snames } from '$lib/constants.js'
 
-  import { api_call } from '$api/_api_call'
-
-  export async function load({ page: { params, query }, fetch, context }) {
-    const { cvbook, ubmemo } = context
-
-    const { snames } = cvbook
-    const sname = extract_sname(snames, params.seed)
-
-    const page = +query.get('page') || 1
-    const mode = +query.get('mode') || 0
-
-    const url = `chaps/${cvbook.id}/${sname}?page=${page}&mode=${mode}`
-
-    const [status, chinfo] = await api_call(fetch, url)
-    if (status) return { status, error: chinfo }
-
-    if (chinfo.utime > cvbook.update) cvbook.update = chinfo.utime
-    return { props: { cvbook, ubmemo, chinfo } }
-  }
-
-  function extract_sname(snames, param) {
-    return snames.includes(param) ? param : snames[1] || 'chivi'
-  }
-
   function seed_choices(chinfo = {}) {
     return remote_snames.filter((sname) => !chinfo[sname])
   }
@@ -36,9 +12,13 @@
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
   import Chlist from '$parts/Chlist.svelte'
-  import Book from '../_book.svelte'
+  import BookPage from '../_layout/BookPage.svelte'
 
   import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
+
+  export let cvbook
+  export let ubmemo
+  export let chinfo
 
   let pagers = {}
   $: pager = get_pager(chinfo.sname)
@@ -48,11 +28,6 @@
       page: chinfo.pgidx,
     }))
   }
-
-  export let cvbook
-  export let ubmemo
-
-  export let chinfo = {}
 
   $: [main_seeds, hide_seeds] = split_chinfo(cvbook, chinfo.sname)
   let show_more = false
@@ -94,7 +69,7 @@
   }
 </script>
 
-<Book {cvbook} {ubmemo} nvtab="chaps">
+<BookPage {cvbook} {ubmemo} nvtab="chaps">
   <div class="source">
     {#each main_seeds as mname}
       <a
@@ -207,7 +182,7 @@
       <p class="empty">Không có nội dung :(</p>
     {/if}
   </div>
-</Book>
+</BookPage>
 
 <style lang="scss">
   @mixin label {

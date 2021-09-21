@@ -24,7 +24,7 @@
 
   import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
-  import Book from './_book.svelte'
+  import BookPage from './_layout/BookPage.svelte'
 
   export let cvbook
   export let ubmemo
@@ -38,7 +38,7 @@
   let short_intro = false
 </script>
 
-<Book {cvbook} {ubmemo} nvtab="index">
+<BookPage {cvbook} {ubmemo} nvtab="index">
   <article class="m-article">
     <h2>Giới thiệu:</h2>
     <div class="intro" class:_short={short_intro}>
@@ -72,7 +72,7 @@
       </footer>
     </div>
   </article>
-</Book>
+</BookPage>
 
 <style lang="scss">
   article {
