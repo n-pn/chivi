@@ -276,7 +276,6 @@
 
   .menu-content {
     margin-bottom: 0.5rem;
-    height: 10rem;
     padding: 0.5rem 0;
     @include shadow(3);
     @include bdradi();
