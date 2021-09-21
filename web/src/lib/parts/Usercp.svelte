@@ -17,10 +17,10 @@
   }
 
   let chaps = []
-  $: if (actived) load_history(0)
+  $: if (actived && section == 'main') load_history(0)
 
   async function load_history(skip = 0) {
-    const res = await fetch(`/api/ubviews?skip=${skip}&take=15`)
+    const res = await fetch(`/api/_self/history?skip=${skip}&take=15`)
     if (res.ok) chaps = await res.json()
   }
 </script>

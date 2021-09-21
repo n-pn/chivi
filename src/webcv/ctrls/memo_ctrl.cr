@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::MarkCtrl < CV::BaseCtrl
+class CV::MemoCtrl < CV::BaseCtrl
   def show : Nil
     if _cv_user.privi < 0
       return render_json({bmark: "default"})
@@ -27,8 +27,8 @@ class CV::MarkCtrl < CV::BaseCtrl
     skip = params.fetch_int("skip", min: 0)
     take = params.fetch_int("take", min: 15, max: 30)
 
-    query = Ubmemo.query.limit(take).offset(skip).order_by(bumped: :desc)
-    query.where("cvuser_id = #{_cv_user.id}")
+    query = Ubmemo.query.where("cvuser_id = #{_cv_user.id}")
+    query = query.limit(take).offset(skip).order_by(bumped: :desc)
 
     render_json do |res|
       JSON.build(res) do |json|
@@ -39,13 +39,13 @@ class CV::MarkCtrl < CV::BaseCtrl
                 json.field "bname", ubmemo.cvbook.bname
                 json.field "bslug", ubmemo.cvbook.bslug
 
-                # json.field "atime", ubmemo.bumped
+                json.field "sname", ubmemo.lr_sname
+                json.field "chidx", ubmemo.lr_chidx
 
-                json.field "sname", ubmemo.sname
-                json.field "chidx", ubmemo.chidx
+                json.field "title", ubmemo.lc_title
+                json.field "uslug", ubmemo.lc_uslug
 
-                json.field "title", ubmemo.ch_title
-                json.field "uslug", ubmemo.ch_uslug
+                json.field "locked", ubmemo.locked
               }
             end
           end

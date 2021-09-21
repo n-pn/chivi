@@ -36,10 +36,9 @@ Amber::Server.configure do
     get "/crits/:crit", CV::CritCtrl, :show
     get "/crits/:crit/replies", CV::CritCtrl, :replies
 
-    get "/ubmarks/:bname", CV::MarkCtrl, :show
-    put "/ubmarks/:bname", CV::MarkCtrl, :update
-
-    get "/ubviews", CV::ViewCtrl, :index
+    get "/ubmarks/:bname", CV::MemoCtrl, :show
+    put "/ubmarks/:bname", CV::MemoCtrl, :update
+    get "/_self/history", CV::MemoCtrl, :history
 
     get "/dicts", CV::DictCtrl, :index
     get "/dicts/:dname", CV::DictCtrl, :show
