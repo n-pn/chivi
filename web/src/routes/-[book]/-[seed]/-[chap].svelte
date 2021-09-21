@@ -2,23 +2,23 @@
   import { api_call, put_fetch } from '$api/_api_call'
   import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
-  export async function load({ fetch, page, context }) {
+  export async function load({ fetch, page: { params }, context }) {
     const { cvbook, ubmemo } = context
 
-    const [chidx, sname] = page.params.chap.split('-').reverse()
+    const { seed: sname, chap } = params
+    const chidx = chap.split('-').pop()
 
     const url = `chaps/${cvbook.id}/${sname}/${chidx}`
     const [status, chinfo] = await api_call(fetch, url)
     if (status) return { status, error: chinfo }
 
-    const mode = +page.query.get('mode') || 0
     const txturl = `/api/${url}/${chinfo.schid}`
 
-    const res = await fetch(`${txturl}?mode=${mode}`)
+    const res = await fetch(txturl)
     const cvdata = await res.text()
 
     return {
-      props: { cvbook, ubmemo, chinfo, txturl, cvdata, _dirty: mode < 0 },
+      props: { cvbook, ubmemo, chinfo, txturl, cvdata },
     }
   }
 </script>
@@ -40,7 +40,7 @@
   export let txturl = ''
   export let cvdata = ''
 
-  export let _dirty = false
+  let _dirty = false
   $: if (_dirty) reload_chap(1)
 
   $: [book_path, list_path, prev_path, next_path] = gen_paths(cvbook, chinfo)
@@ -68,7 +68,7 @@
   }
 
   function gen_book_path(bslug, sname, chidx) {
-    let url = `/-${bslug}/chaps/${sname}`
+    let url = `/-${bslug}/-${sname}`
     const page = Math.floor((chidx - 1) / 32) + 1
     return page > 1 ? url + `?page=${page}` : url
   }
@@ -78,7 +78,7 @@
   $: if (browser && !on_memory) update_history(chinfo, false)
 
   async function update_history({ sname, chidx, title, uslug }, locking) {
-    console.log(ubmemo)
+    // console.log(ubmemo)
 
     // guard checking
     if ($session.privi < 0) {
@@ -100,7 +100,7 @@
     invalidate(`/api/books/${cvbook.bslug}`)
 
     ubmemo = msg
-    console.log(ubmemo)
+    // console.log(ubmemo)
   }
 </script>
 

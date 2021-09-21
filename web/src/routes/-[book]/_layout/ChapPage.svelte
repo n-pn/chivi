@@ -24,7 +24,7 @@
   $: pager = get_pager(chinfo.sname)
 
   function get_pager(sname) {
-    return (pagers[sname] ||= new Pager(`/-${cvbook.bslug}/chaps/${sname}`, {
+    return (pagers[sname] ||= new Pager(`/-${cvbook.bslug}/-${sname}`, {
       page: chinfo.pgidx,
     }))
   }
@@ -141,7 +141,7 @@
       <a
         class="m-button"
         class:_disable={$session.privi < 2}
-        href="/-{cvbook.bslug}/+{chinfo.sname}?chidx={chinfo.total + 1}">
+        href="/-{cvbook.bslug}/-{chinfo.sname}/+new?chidx={chinfo.total + 1}">
         <SIcon name="plus" />
         <span class="-hide">Thêm chương</span>
       </a>

@@ -212,9 +212,9 @@
       </a>
 
       <a
-        href="/-{cvbook.bslug}/discuss"
+        href="/-{cvbook.bslug}/board"
         class="header-tab"
-        class:_active={nvtab == 'discuss'}>
+        class:_active={nvtab == 'board'}>
         Thảo luận
       </a>
     </header>

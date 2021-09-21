@@ -175,6 +175,6 @@ class CV::ChInfo
 
   def url_for(index : Int32)
     return unless info = get_info(index)
-    "-#{info[3]}-#{@sname}-#{index + 1}"
+    "-#{@sname}/-#{info[3]}-#{index + 1}"
   end
 end
