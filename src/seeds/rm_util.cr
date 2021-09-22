@@ -4,25 +4,20 @@ require "file_utils"
 
 require "../cutil/http_util"
 require "../cutil/site_link"
-require "../cutil/file_util"
+require "../cutil/gzip_file"
 require "../cutil/time_utils"
 require "../cutil/path_utils"
 
 module CV::RmUtil
   extend self
 
-  def fetch(file : String, link : String, sname : String, valid = 1.week, label = "1/1")
-    expiry = sname == "jx_la" ? Time.utc(2010, 1, 1) : Time.utc - valid
+  def fetch(file : String, link : String, sname : String, ttl = 1.week, lbl = "1/1")
+    expiry = sname == "jx_la" ? Time.utc(2010, 1, 1) : Time.utc - ttl
 
-    unless html = FileUtil.read_gz(file, expiry)
+    GzipFile.new(file).read(expiry) do
       encoding = HttpUtil.encoding_for(sname)
-      html = HttpUtil.get_html(link, encoding: encoding, label: label)
-
-      FileUtils.mkdir_p(File.dirname(file))
-      FileUtil.save_gz(file, html)
+      HttpUtil.get_html(link, encoding: encoding, lbl: lbl)
     end
-
-    html
   end
 
   def fetch_all(input : Array(Tuple(String, String)), sname : String, limit : Int32? = nil)
@@ -37,7 +32,7 @@ module CV::RmUtil
       channel.receive if idx > limit
 
       spawn do
-        html = HttpUtil.get_html(link, encoding, label: "#{idx}/#{input.size}")
+        html = HttpUtil.get_html(link, encoding, lbl: "#{idx}/#{input.size}")
         File.write(file, html)
         sleep ideal_delayed_time_for(sname)
       rescue err

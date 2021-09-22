@@ -9,9 +9,9 @@ module CV::HttpUtil
 
   TTL = Time.utc(2000, 1, 1)
 
-  def load_html(link : String, file : String, ttl = TTL, label = "1/1", encoding = "UTF-8")
+  def load_html(link : String, file : String, ttl = TTL, lbl = "1/1", encoding = "UTF-8")
     unless html = read_html(file, ttl: ttl)
-      html = get_html(link, encoding: encoding, label: label)
+      html = get_html(link, encoding: encoding, lbl: lbl)
       save_html(file, html)
     end
 
@@ -44,12 +44,12 @@ module CV::HttpUtil
     stats.modification_time < expiry
   end
 
-  def get_html(url : String, label = "1/1", encoding : String = "UTF-8") : String
+  def get_html(url : String, lbl = "1/1", encoding : String = "UTF-8") : String
     try = 0
     internal = use_crystal?(url)
 
     loop do
-      puts "-- <#{label}> [GET: <#{url}> (try: #{try})]".colorize.magenta
+      puts "-- <#{lbl}> [GET: <#{url}> (try: #{try})]".colorize.magenta
       html = internal ? get_by_crystal(url, encoding) : get_by_curl(url, encoding)
       return fix_charset(html, encoding) if html[0]? == '<'
     rescue err
