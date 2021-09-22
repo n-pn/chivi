@@ -16,8 +16,6 @@
 
   import { split_mtdata } from '$lib/mt_data'
 
-  import Aditem, { ad_indexes } from '$molds/Aditem.svelte'
-
   export let cvdata = ''
   export let _dirty = false
   export let wtitle = true
@@ -26,7 +24,6 @@
   export let label = 'Tổng hợp'
 
   $: lines = split_mtdata(cvdata)
-  $: adidx = ad_indexes(lines.length)
 
   let hover_line = -1
   let focus_line = -1
@@ -88,10 +85,6 @@
     on:mouseenter={() => (hover_line = index)}>
     {@html render_line(index, hover_line, focus_line)}
   </div>
-
-  {#if $session.privi < 1 && adidx.includes(index)}
-    <Aditem type="article" />
-  {/if}
 {/each}
 
 {#if $lookup_enabled}

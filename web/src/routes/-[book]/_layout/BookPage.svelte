@@ -11,7 +11,6 @@
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
   import BCover from '$atoms/BCover.svelte'
-  import Aditem from '$molds/Aditem.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let cvbook
@@ -190,10 +189,6 @@
       {/if}
     </section>
   </div>
-
-  {#if $session.privi < 2}
-    <Aditem type="banner" />
-  {/if}
 
   <div class="section">
     <header class="section-header">
