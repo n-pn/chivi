@@ -51,7 +51,7 @@ class CV::MapRemote
   end
 
   def fetch!(snvid : String, label = "1/1")
-    link = LinkUtil.book_link(@sname, snvid)
+    link = LinkUtil.binfo_url(@sname, snvid)
     html = HttpUtil.get_html(link, @encoding, label: label)
 
     file = RmUtil.nvinfo_file(@sname, snvid)

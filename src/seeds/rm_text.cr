@@ -19,7 +19,7 @@ class CV::RmText
   getter schid : String
 
   getter file : String { "#{RmText.c_dir(@sname, @snvid)}/#{@schid}.html.gz" }
-  getter link : String { SiteLink.chap_link(sname, snvid, schid) }
+  getter link : String { SiteLink.chtxt_url(sname, snvid, schid) }
 
   def prefixed_snvid
     "#{@snvid.to_i // 1000}_#{@snvid}"

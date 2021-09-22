@@ -1,54 +1,67 @@
 require "../cutil/http_util"
 require "../cutil/site_link"
+require "../cutil/path_util"
 require "../cutil/time_utils"
 require "./shared/html_parser"
 
 class CV::RmInfo
-  # cache folder path
-  def self.c_dir(sname : String) : String
-    "_db/.cache/#{sname}/infos"
+  def self.mkdir!(sname : String)
+    FileUtils.mkdir_p(PathUtil.cache_dir(sname, "infos"))
   end
 
-  def self.mkdir!(sname : String)
-    ::FileUtils.mkdir_p(c_dir(sname))
+  TTL = 1.years
+
+  def self.binfo_html(sname : String, snvid : String, ttl = TTL, lbl = "1/1")
+    file = PathUtil.binfo_cpath(sname, snvid)
+    GzipFile.new(file).read(ttl) do
+      url = SiteLink.binfo_url(sname, snvid)
+      encoding = HttpUtil.encoding_for(sname)
+      HttpUtil.get_html(url, encoding: encoding, lbl: lbl)
+    end
+  end
+
+  def self.chidx_html(sname : String, snvid : String, ttl = TTL, lbl = "1/1")
+    file = PathUtil.chdix_cpath(sname, snvid)
+    GzipFile.new(file).read(ttl) do
+      url = SiteLink.chidx_url(sname, snvid)
+      encoding = HttpUtil.encoding_for(sname)
+      HttpUtil.get_html(url, encoding: encoding, lbl: lbl)
+    end
+  end
+
+  def self.init(sname : String, snvid : String, ttl = TTL, lbl = "1/1", full = true)
+    ihtml = binfo_html(sname, snvid, ttl, lbl)
+    chtml = chidx_html(sname, snvid, ttl, lbl) if full && sname == "69shu"
+    new(sname, snvid, ihtml, chtml)
+  end
+
+  def initialize(@sname, @snvid, binfo_html : String, chidx_html : String? = nil)
+    @ipage = HtmlParser.new(binfo_html)
+    @cpage = chidx_html ? HtmlParser.new(chidx_html) : @ipage
   end
 
   getter sname : String
   getter snvid : String
 
-  alias TimeSpan = Time::Span | Time::MonthSpan
-
-  def initialize(@sname, @snvid, @ttl : TimeSpan = 10.years, @label = "1/1")
-  end
-
-  getter file : String { "#{RmInfo.c_dir(@sname)}/#{@snvid}.html.gz" }
-  getter link : String { SiteLink.book_link(@sname, @snvid) }
-
-  getter page : HtmlParser do
-    encoding = HttpUtil.encoding_for(@sname)
-    html = HttpUtil.load_html(link, file, @ttl, @label, encoding)
-    HtmlParser.new(html)
-  end
-
   getter btitle : String do
     case @sname
-    when "zhwenpg" then page.text(".cbooksingle h2")
-    when "hetushu" then page.text("h2")
+    when "zhwenpg" then @ipage.text(".cbooksingle h2")
+    when "hetushu" then @ipage.text("h2")
     when "69shu"
-      page.text("h1 > a", nil) || page.text(".weizhi > a:last-child")
+      @ipage.text("h1 > a", nil) || @ipage.text(".weizhi > a:last-child")
     else
-      page.meta("og:novel:book_name").sub(/作\s+者[：:].+$/, "")
+      @ipage.meta("og:novel:book_name").sub(/作\s+者[：:].+$/, "")
     end
   end
 
   getter author : String do
     case @sname
-    when "zhwenpg" then page.text(".fontwt")
-    when "hetushu" then page.text(".book_info a:first-child")
+    when "zhwenpg" then @ipage.text(".fontwt")
+    when "hetushu" then @ipage.text(".book_info a:first-child")
     when "69shu"
-      page.text(".booknav2 > p:nth-child(2) > a", nil) || page.text(".mu_beizhu > a[target]")
+      @ipage.text(".booknav2 > p:nth-child(2) > a", nil) || @ipage.text(".mu_beizhu > a[target]")
     else
-      page.meta("og:novel:author")
+      @ipage.meta("og:novel:author")
     end
   end
 
@@ -56,41 +69,40 @@ class CV::RmInfo
     case @sname
     when "zhwenpg" then [] of String
     when "hetushu"
-      genre = page.text(".title > a:last-child")
-      tags = page.text_list(".tag a")
+      genre = @ipage.text(".title > a:last-child")
+      tags = @ipage.text_list(".tag a")
       [genre].concat(tags).uniq
     when "69shu"
-      genre = page.text(".booknav2 > p:nth-child(3) > a", nil)
-      [genre || page.text(".weizhi > a:nth-child(2)")]
+      genre = @ipage.text(".booknav2 > p:nth-child(3) > a", nil)
+      [genre || @ipage.text(".weizhi > a:nth-child(2)")]
     else
-      [page.meta("og:novel:category")]
+      [@ipage.meta("og:novel:category")]
     end
   end
 
   getter bintro : Array(String) do
     case @sname
-    when "hetushu" then page.text_list(".intro > p")
-    when "zhwenpg" then page.text_para("tr:nth-of-type(3)")
-    when "bxwxorg" then page.text_para("#intro > p:first-child")
-    when "69shu"   then page.text_para(".navtxt > p:first-child")
-    else                page.meta_para("og:description")
+    when "hetushu" then @ipage.text_list(".intro > p")
+    when "zhwenpg" then @ipage.text_para("tr:nth-of-type(3)")
+    when "bxwxorg" then @ipage.text_para("#intro > p:first-child")
+    when "69shu"   then @ipage.text_para(".navtxt > p:first-child")
+    else                @ipage.meta_para("og:description")
     end
   end
 
   getter bcover : String do
     case @sname
     when "hetushu"
-      image_url = page.attr(".book_info img", "src")
-      "https://www.hetushu.com#{image_url}"
+      "https://www.hetushu.com#{@ipage.attr(".book_info img", "src")}"
     when "69shu"
       image_url = "/#{@snvid.to_i // 1000}/#{@snvid}/#{@snvid}s.jpg"
       "https://www.69shu.com/files/article/image/#{image_url}"
     when "zhwenpg"
-      page.attr(".cover_wrapper_m img", "data-src")
+      @ipage.attr(".cover_wrapper_m img", "data-src")
     when "jx_la"
-      page.meta("og:image").sub("qu.la", "jx.la")
+      @ipage.meta("og:image").sub("qu.la", "jx.la")
     else
-      page.meta("og:image")
+      @ipage.meta("og:image")
     end
   end
 
@@ -98,22 +110,22 @@ class CV::RmInfo
     case @sname
     when "zhwenpg" then "0"
     when "69shu"
-      page.text(".booknav2 > p:nth-child(4)").split("  |  ").last
+      @ipage.text(".booknav2 > p:nth-child(4)").split("  |  ").last
     when "hetushu"
-      page.attr(".book_info", "class").includes?("finish") ? "1" : "0"
+      @ipage.attr(".book_info", "class").includes?("finish") ? "1" : "0"
     else
-      page.meta("og:novel:status")
+      @ipage.meta("og:novel:status")
     end
   end
 
   getter update : String do
     case @sname
     when "69shu"
-      page.text(".booknav2 > p:nth-child(5)").sub("更新：", "")
+      @ipage.text(".booknav2 > p:nth-child(5)").sub("更新：", "")
     when "bqg_5200"
-      page.text("#info > p:last-child").sub("最后更新：", "")
+      @ipage.text("#info > p:last-child").sub("最后更新：", "")
     else
-      page.meta("og:novel:update_time")
+      @ipage.meta("og:novel:update_time")
     end
   end
 
@@ -129,17 +141,15 @@ class CV::RmInfo
     0_i64
   end
 
-  getter last_schid : String do
-    extract_schid(last_schid_href)
-  end
+  getter last_schid : String { extract_schid(last_schid_href) }
 
   def last_schid_href
     case @sname
-    when "69shu"    then page.attr(".qustime a:first-child", "href")
-    when "hetushu"  then page.attr("#dir :last-child a:last-of-type", "href")
-    when "zhwenpg"  then page.attr(".fontwt0 + a", "href")
-    when "bqg_5200" then page.attr("#list a:first-of-type", "href")
-    else                 page.meta("og:novel:latest_chapter_url")
+    when "69shu"    then @ipage.attr(".qustime a:first-child", "href")
+    when "hetushu"  then @ipage.attr("#dir :last-child a:last-of-type", "href")
+    when "zhwenpg"  then @ipage.attr(".fontwt0 + a", "href")
+    when "bqg_5200" then @ipage.attr("#list a:first-of-type", "href")
+    else                 @ipage.meta("og:novel:latest_chapter_url")
     end
   end
 
@@ -179,7 +189,7 @@ class CV::RmInfo
 
   def extract_generic_chaps(query : String)
     chaps = [] of Chinfo
-    return chaps unless node = page.find(query)
+    return chaps unless node = @cpage.find(query)
 
     label = ""
 
@@ -204,16 +214,9 @@ class CV::RmInfo
   end
 
   def extract_69shu_chaps
-    page = begin
-      link = "https://www.69shu.com/#{@snvid}/"
-      file = "_db/.cache/69shu/infos/#{@snvid}-mulu.html.gz"
-      html = HttpUtil.load_html(link, file, @ttl, @label, "GBK")
-      HtmlParser.new(html)
-    end
-
     chaps = [] of Chinfo
 
-    page.css("#catalog li > a").each do |link|
+    @cpage.css("#catalog li > a").each do |link|
       next unless href = link.attributes["href"]?
       chap = init_chap(extract_schid(href), link.inner_text)
       chaps << chap if valid_chap?(chap)
@@ -225,7 +228,7 @@ class CV::RmInfo
   def extract_zhwenpg_chaps
     chaps = [] of Chinfo
 
-    page.css(".clistitem > a").each do |link|
+    @cpage.css(".clistitem > a").each do |link|
       href = link.attributes["href"]
       chap = init_chap(extract_schid(href), link.inner_text)
       chaps << chap if valid_chap?(chap)
@@ -240,7 +243,7 @@ class CV::RmInfo
   private def extract_duokan8_chaps
     chaps = [] of Chinfo
 
-    page.css(".chapter-list a").each do |link|
+    @cpage.css(".chapter-list a").each do |link|
       next unless href = link.attributes["href"]?
       chap = init_chap(extract_schid(href), link.inner_text)
       chaps << chap if valid_chap?(chap)

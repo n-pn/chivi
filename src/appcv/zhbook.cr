@@ -27,10 +27,10 @@ class CV::Zhbook
 
   getter chinfo : ChInfo { ChInfo.new(cvbook.bhash, sname, snvid) }
 
-  getter wlink : String { SiteLink.book_link(sname, snvid) }
+  getter wlink : String { SiteLink.binfo_url(sname, snvid) }
 
   def clink(schid : String) : String
-    SiteLink.chap_link(sname, snvid, schid)
+    SiteLink.chtxt_url(sname, snvid, schid)
   end
 
   def unmatch?(cvbook_id : Int64) : Bool
@@ -42,7 +42,7 @@ class CV::Zhbook
     return {mftime, chap_count} unless mode > 0 && remote?(privi)
 
     RmInfo.mkdir!(sname)
-    parser = RmInfo.new(sname, snvid, ttl: ttl)
+    parser = RmInfo.init(sname, snvid, ttl: ttl)
 
     if mode > 1 || parser.last_schid != self.last_schid
       self.mftime = parser.mftime > 0 ? parser.mftime : Time.utc.to_unix

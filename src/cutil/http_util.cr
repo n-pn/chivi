@@ -1,57 +1,26 @@
 require "colorize"
 require "http/client"
-require "compress/gzip"
-
-# require "crest"
+require "./gzip_file"
 
 module CV::HttpUtil
   extend self
 
-  TTL = Time.utc(2000, 1, 1)
+  TTL = Time.utc(2021, 1, 1)
 
-  def load_html(link : String, file : String, ttl = TTL, lbl = "1/1", encoding = "UTF-8")
-    unless html = read_html(file, ttl: ttl)
-      html = get_html(link, encoding: encoding, lbl: lbl)
-      save_html(file, html)
-    end
-
-    html
+  def load_html(url : String, file : String, ttl = TTL, lbl = "1/1", encoding = "UTF-8")
+    GzipFile.new(file).read(ttl) { get_html(url, encoding: encoding, lbl: lbl) }
   end
 
-  def read_html(file : String, ttl = TTL) : String?
-    expiry = ttl.is_a?(Time) ? ttl : Time.utc - ttl
-    return if staled?(file, expiry)
-
-    return File.read(file) unless file.ends_with?(".gz")
-
-    File.open(file) do |io|
-      Compress::Gzip::Reader.open(io, &.gets_to_end)
-    end
-  end
-
-  def save_html(file : String, html : String)
-    File.open(file, "w") do |io|
-      if file.ends_with?(".gz")
-        Compress::Gzip::Writer.open(io, &.print(html))
-      else
-        io.print(html)
-      end
-    end
-  end
-
-  def staled?(file : String, expiry : Time) : Bool
-    return true unless stats = File.info?(file)
-    stats.modification_time < expiry
-  end
-
-  def get_html(url : String, lbl = "1/1", encoding : String = "UTF-8") : String
+  def get_html(url : String, lbl = "1/1", encoding = "UTF-8") : String
     try = 0
-    internal = use_crystal?(url)
 
     loop do
-      puts "-- <#{lbl}> [GET: <#{url}> (try: #{try})]".colorize.magenta
-      html = internal ? get_by_crystal(url, encoding) : get_by_curl(url, encoding)
-      return fix_charset(html, encoding) if html[0]? == '<'
+      puts "-- <#{lbl.colorize.magenta}> \
+               [GET: #{url.colorize.magenta} \
+               (try: #{try.colorize.magenta})]"
+
+      html = get_by_curl(url, encoding)
+      return replace_charset(html, encoding) unless html.empty?
     rescue err
       puts "<http_utils> #{url} err: #{err}".colorize.red
     ensure
@@ -61,32 +30,21 @@ module CV::HttpUtil
     end
   end
 
-  private def use_crystal?(url : String)
-    case url
-    when .includes?("bqg_5200"), .includes?("paoshu8")
-      true
-    else
-      false
-    end
+  def get_by_curl(url : String, encoding : String) : String
+    cmd = "curl -L -k -s -f -m 30 '#{url}'"
+    cmd += " | iconv -c -f #{encoding} -t UTF-8" if encoding != "UTF-8"
+    `#{cmd}`.lstrip
   end
 
-  def get_by_crystal(url : String, encoding : String)
+  def crystal_get(url : String, encoding : String)
     HTTP::Client.get(url) do |res|
       res.body_io.set_encoding(encoding, invalid: :skip)
       res.body_io.gets_to_end.lstrip
     end
   end
 
-  def get_by_curl(url : String, encoding : String) : String
-    cmd = "curl -L -k -s -m 30 '#{url}'"
-    cmd += " | iconv -c -f #{encoding} -t UTF-8" if encoding != "UTF-8"
-
-    `#{cmd}`.lstrip
-  end
-
-  private def fix_charset(html : String, encoding : String)
-    return html if encoding == "UTF-8"
-    html.sub(/charset=#{encoding}/i, "charset=utf-8")
+  private def replace_charset(html : String, encoding : String)
+    encoding == "UTF-8" ? html : html.sub(/charset=#{encoding}/i, "charset=utf-8")
   end
 
   def encoding_for(sname : String) : String
@@ -98,19 +56,20 @@ module CV::HttpUtil
     end
   end
 
-  def fetch_file(url : String, out_file : String, label = "1/1") : Nil
+  def fetch_file(url : String, file : String, lbl = "1/1") : Nil
     try = 0
 
     loop do
-      puts "- <#{label.colorize.magenta}> GET: #{url.colorize.magenta}, \
-              try: #{try.colorize.magenta}"
+      puts "- <#{lbl.colorize.magenta}> \
+              [GET: #{url.colorize.magenta}, \
+              (try: #{try.colorize.magenta})]"
 
-      `curl -L -k -s -m 100 '#{url}' -o '#{out_file}'`
-      return if File.exists?(out_file)
-
+      `curl -L -k -s -f -m 100 '#{url}' -o '#{file}'`
+      return if File.exists?(file)
+    ensure
       try += 1
       sleep 250.milliseconds * try
-      raise "500 Server Error!" if try > 2
+      raise "[DL: #{url} failed after 3 attempts.]" if try > 2
     end
   end
 end

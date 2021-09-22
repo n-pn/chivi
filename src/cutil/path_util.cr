@@ -1,6 +1,6 @@
 require "file_utils"
 
-module CV::PathUtils
+module CV::PathUtil
   extend self
 
   CACHE_DIR = "_db/.cache"
@@ -34,5 +34,13 @@ module CV::PathUtils
   # fname: `_index`, `status`, `genres`, etc.
   def seeds_map(sname : String, fname : String)
     "#{SEEDS_DIR}/#{sname}/#{fname}.tsv"
+  end
+
+  def binfo_cpath(sname : String, snvid : String)
+    cache_file(sname, "infos/#{snvid}.html.gz")
+  end
+
+  def chdix_cpath(sname : String, snvid : String)
+    cache_file(sname, "infos/#{snvid}-mulu.html.gz")
   end
 end

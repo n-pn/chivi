@@ -18,7 +18,7 @@ module CV::SiteLink
     end
   end
 
-  def book_link(sname : String, snvid : String)
+  def binfo_url(sname : String, snvid : String)
     case sname
     when "chivi"    then "/"
     when "nofff"    then "https://www.nofff.com/#{snvid}/"
@@ -41,7 +41,11 @@ module CV::SiteLink
     end
   end
 
-  def chap_link(sname : String, snvid : String, schid : String)
+  def chidx_url(sname : String, snvid : String)
+    sname == "60shu" ? "https://www.69shu.com/#{snvid}/" : binfo_url(sname, snvid)
+  end
+
+  def chtxt_url(sname : String, snvid : String, schid : String)
     case sname
     when "nofff"    then "https://www.nofff.com/#{snvid}/#{schid}/"
     when "69shu"    then "https://www.69shu.com/txt/#{snvid}/#{schid}"

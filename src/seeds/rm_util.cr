@@ -5,8 +5,8 @@ require "file_utils"
 require "../cutil/http_util"
 require "../cutil/site_link"
 require "../cutil/gzip_file"
+require "../cutil/path_util"
 require "../cutil/time_utils"
-require "../cutil/path_utils"
 
 module CV::RmUtil
   extend self
@@ -80,26 +80,6 @@ module CV::RmUtil
     else
       power > 3
     end
-  end
-
-  def nvinfo_file(sname : String, snvid : String, gzip = true)
-    ext = gzip ? "html.gz" : "html"
-    PathUtils.cache_file(sname, "infos/#{snvid}.#{ext}")
-  end
-
-  def chinfo_file(sname : String, snvid : String, gzip = true)
-    # TODO: update for 69shu
-    nvinfo_file(sname, snvid, gzip: gzip)
-  end
-
-  def chtext_file(sname : String, snvid : String, schid : String, gzip = false)
-    ext = gzip ? "html.gz" : "html"
-    PathUtils.cache_file(sname, "texts/#{snvid}/#{schid}.#{ext}")
-  end
-
-  def chinfo_link(sname : String, snvid : String) : String
-    # TODO: update for 69shu
-    SiteLink.book_link(sname, snvid)
   end
 
   def fix_mftime(update_str : String, sname : String)
