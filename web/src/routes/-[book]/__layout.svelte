@@ -12,15 +12,14 @@
 
   function gen_keywords(cvbook) {
     // prettier-ignore
-    let res = [
+    const list = [
       cvbook.ztitle, cvbook.vtitle, cvbook.htitle,
       cvbook.zauthor, cvbook.vauthor, ...cvbook.genres,
       'Truyện tàu', 'Truyện convert', 'Truyện mạng' ]
-    return res.join(',')
+    return list.join(',')
   }
 
   $: book_intro = cvbook.bintro.join('').substring(0, 300)
-  $: updated_at = new Date(cvbook.mftime)
 </script>
 
 <!-- prettier-ignore -->
@@ -39,7 +38,7 @@
   <meta property="og:novel:author" content={cvbook.vauthor} />
   <meta property="og:novel:book_name" content={cvbook.vtitle} />
   <meta property="og:novel:status" content={cvbook.status} />
-  <meta property="og:novel:update_time" content={updated_at.toISOString()} />
+  <meta property="og:novel:update_time" content={new Date(cvbook.mftime).toISOString()} />
 </svelte:head>
 
 <slot />
