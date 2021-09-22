@@ -112,6 +112,7 @@
   .hint {
     margin: 0.75rem;
     margin-bottom: 0;
+    line-height: 1.25rem;
     @include ftsize(sm);
     @include fgcolor(tert);
   }
