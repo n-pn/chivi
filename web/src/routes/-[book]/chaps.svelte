@@ -13,7 +13,7 @@
     const [status, chinfo] = await api_call(fetch, url)
     if (status) return { status, error: chinfo }
 
-    if (chinfo.utime > cvbook.update) cvbook.update = chinfo.utime
+    if (chinfo.utime > cvbook.mftime) cvbook.mftime = chinfo.utime
     return { props: { cvbook, ubmemo, chinfo } }
   }
 

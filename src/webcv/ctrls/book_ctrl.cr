@@ -75,7 +75,7 @@ class CV::BookCtrl < CV::BaseCtrl
       zhbook = Zhbook.load!(cvbook.id, ubmemo.lr_zseed)
 
       if chinfo = zhbook.chinfo.get_info(0)
-        ubmemo.lr_chidx = 1
+        ubmemo.lr_chidx = -1
         ubmemo.lc_title = chinfo[1]
         ubmemo.lc_uslug = chinfo[3]
       end

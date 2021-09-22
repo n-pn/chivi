@@ -40,8 +40,8 @@ class CV::NvInfo
       NvAuthor.set!(bhash, author)
       NvBtitle.set!(bhash, btitle)
 
-      btitle_hv = NvBtitle.get(bhash).not_nil![1]
-      half_slug = TextUtils.slugify(btitle_hv)
+      htitle = NvBtitle.get(bhash).not_nil![1]
+      half_slug = TextUtils.slugify(htitle)
       full_slug = "#{half_slug}-#{bhash}"
 
       NvFields._index.set!(bhash, [full_slug, half_slug])
@@ -156,12 +156,12 @@ class CV::NvInfo
       json.field "bhash", bhash
       json.field "bslug", bslug
 
-      json.field "btitle_zh", btitle[0]
-      json.field "btitle_hv", btitle[1]
-      json.field "btitle_vi", btitle[2]
+      json.field "ztitle", btitle[0]
+      json.field "htitle", btitle[1]
+      json.field "vtitle", btitle[2]
 
-      json.field "author_zh", author[0]
-      json.field "author_vi", author[1]
+      json.field "zauthor", author[0]
+      json.field "vauthor", author[1]
 
       json.field "genres", genres
       json.field "bcover", bcover

@@ -105,14 +105,14 @@
 </script>
 
 <svelte:head>
-  <title>{chinfo.title} - {cvbook.btitle_vi} - Chivi</title>
+  <title>{chinfo.title} - {cvbook.vtitle} - Chivi</title>
 </svelte:head>
 
 <Vessel>
   <svelte:fragment slot="header-left">
     <a href={book_path} class="header-item _title">
       <SIcon name="book" />
-      <span class="header-text _show-sm _title">{cvbook.btitle_vi}</span>
+      <span class="header-text _show-sm _title">{cvbook.vtitle}</span>
     </a>
 
     <button class="header-item _active">
@@ -132,18 +132,14 @@
   </svelte:fragment>
 
   <nav class="bread">
-    <a href="/-{cvbook.bslug}" class="crumb _link">{cvbook.btitle_vi}</a>
+    <a href="/-{cvbook.bslug}" class="crumb _link">{cvbook.vtitle}</a>
     <span>/</span>
     <span class="crumb _text">{chinfo.label}</span>
   </nav>
 
   <article class="cvdata">
     {#if cvdata}
-      <Cvdata
-        {cvdata}
-        dname={cvbook.bhash}
-        label={cvbook.btitle_vi}
-        bind:_dirty />
+      <Cvdata {cvdata} dname={cvbook.bhash} label={cvbook.vtitle} bind:_dirty />
     {:else}
       <Notext {chinfo} />
     {/if}

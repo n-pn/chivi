@@ -39,14 +39,14 @@
 </script>
 
 <svelte:head>
-  <title>Thêm chương - {cvbook.btitle_vi} - Chivi</title>
+  <title>Thêm chương - {cvbook.vtitle} - Chivi</title>
 </svelte:head>
 
 <Vessel>
   <svelte:fragment slot="header-left">
     <a href="/-{cvbook.bslug}" class="header-item _title">
       <SIcon name="book" />
-      <span class="header-text _show-md _title">{cvbook.btitle_vi}</span>
+      <span class="header-text _show-md _title">{cvbook.vtitle}</span>
     </a>
 
     <button class="header-item _active">
@@ -56,7 +56,7 @@
 
   <nav class="navi">
     <div class="-item _sep">
-      <a href="/-{cvbook.bslug}" class="-link">{cvbook.btitle_vi}</a>
+      <a href="/-{cvbook.bslug}" class="-link">{cvbook.vtitle}</a>
     </div>
 
     <div class="-item">

@@ -3,7 +3,7 @@
   import { invalidate } from '$app/navigation'
 
   import { put_fetch } from '$api/_api_call'
-  import { host_name, map_status } from '$utils/book_utils.js'
+  import { kit_chap_url } from '$utils/route_utils'
   import { status_types, status_names, status_icons } from '$lib/constants.js'
 </script>
 
@@ -17,10 +17,6 @@
   export let ubmemo
   export let nvtab = 'index'
 
-  $: vi_status = map_status(cvbook.status)
-  $: book_intro = cvbook.bintro.join('').substring(0, 300)
-  $: updated_at = new Date(cvbook.update)
-
   $: memo_status = ubmemo.status || 'default'
 
   async function change_status(status) {
@@ -32,40 +28,12 @@
     if (stt) return console.log(`error update book status: ${msg}`)
     invalidate(`/api/books/${cvbook.bslug}`)
   }
-
-  function gen_keywords(cvbook) {
-    // prettier-ignore
-    let res = [
-      cvbook.btitle_zh, cvbook.btitle_vi, cvbook.btitle_hv,
-      cvbook.author_zh, cvbook.author_vi, ...cvbook.genres,
-      'Truyện tàu', 'Truyện convert', 'Truyện mạng' ]
-    return res.join(',')
-  }
 </script>
-
-<!-- prettier-ignore -->
-<svelte:head>
-  <title>{cvbook.btitle_vi} - Chivi</title>
-  <meta name="keywords" content={gen_keywords(cvbook)} />
-  <meta name="description" content={book_intro} />
-
-  <meta property="og:title" content={cvbook.btitle_vi} />
-  <meta property="og:type" content="novel" />
-  <meta property="og:description" content={book_intro} />
-  <meta property="og:url" content="https://chivi.xyz/-{cvbook.bslug}" />
-  <meta property="og:image" content="https://chivi.xyz/covers/{cvbook.bcover}" />
-
-  <meta property="og:novel:category" content={cvbook.genres[0]} />
-  <meta property="og:novel:author" content={cvbook.author_vi} />
-  <meta property="og:novel:book_name" content={cvbook.btitle_vi} />
-  <meta property="og:novel:status" content={vi_status} />
-  <meta property="og:novel:update_time" content={updated_at.toISOString()} />
-</svelte:head>
 
 <Vessel>
   <a slot="header-left" href="/-{cvbook.bslug}" class="header-item _active">
     <SIcon name="book" />
-    <span class="header-text _title">{cvbook.btitle_vi}</span>
+    <span class="header-text _title">{cvbook.vtitle}</span>
   </a>
 
   <svelte:fragment slot="header-right">
@@ -92,26 +60,30 @@
       </div>
     {/if}
 
-    {#if ubmemo.chidx > 0}
-      <a
-        class="header-item"
-        href="/-{cvbook.bslug}/-{ubmemo.sname}/-{ubmemo.uslug}-{ubmemo.chidx}">
-        <SIcon name={ubmemo.locked ? 'pinned' : 'player-play'} />
-        <span class="header-text _show-md"
-          >{ubmemo.chidx == 1 ? 'Đọc thử' : 'Đọc tiếp'}</span>
-      </a>
-    {:else}
+    {#if ubmemo.chidx == 0}
       <div class="header-item _disable" title="Chưa có chương tiết">
         <SIcon name="player-play" />
         <span class="header-text _show-md">Đọc thử</span>
       </div>
+    {:else if ubmemo.chidx > 0}
+      <a class="header-item" href={kit_chap_url(cvbook.bslug, ubmemo)}>
+        <SIcon name={ubmemo.locked ? 'pinned' : 'player-play'} />
+        <span class="header-text _show-md">Đọc tiếp</span>
+      </a>
+    {:else}
+      <a
+        class="header-item"
+        href={kit_chap_url(cvbook.bslug, { ...ubmemo, chidx: 1 })}>
+        <SIcon name="player-play" />
+        <span class="header-text _show-md">Đọc thử</span>
+      </a>
     {/if}
   </svelte:fragment>
 
   <div class="main-info">
     <div class="title">
-      <h1 class="-main">{cvbook.btitle_vi}</h1>
-      <h2 class="-sub">({cvbook.btitle_zh})</h2>
+      <h1 class="-main">{cvbook.vtitle}</h1>
+      <h2 class="-sub">({cvbook.ztitle})</h2>
     </div>
 
     <div class="cover">
@@ -124,8 +96,8 @@
           <SIcon name="edit" />
           <a
             class="link"
-            href="/search?q={encodeURIComponent(cvbook.author_vi)}&t=author">
-            <span class="label">{cvbook.author_vi}</span>
+            href="/search?q={encodeURIComponent(cvbook.vauthor)}&t=author">
+            <span class="label">{cvbook.vauthor}</span>
           </a>
         </span>
 
@@ -142,12 +114,12 @@
       <div class="line">
         <span class="stat _status">
           <SIcon name="activity" />
-          <span>{vi_status}</span>
+          <span>{cvbook.status}</span>
         </span>
 
         <span class="stat _mftime">
           <SIcon name="clock" />
-          <span><RTime mtime={cvbook.update} /></span>
+          <span><RTime mtime={cvbook.mftime} /></span>
         </span>
       </div>
 
@@ -160,25 +132,25 @@
         <span class="stat">({cvbook.voters} lượt đánh giá)</span>
       </div>
 
-      {#if cvbook.yousuu || cvbook.origin}
+      {#if cvbook.yousuu_id || cvbook.root_link}
         <div class="line">
           <span class="stat">Liên kết:</span>
 
-          {#if cvbook.origin != ''}
+          {#if cvbook.root_link != ''}
             <a
               class="stat link _outer"
               href={cvbook.origin}
               rel="noopener noreferer"
               target="_blank"
               title="Trang nguồn">
-              {host_name(cvbook.origin)}
+              {cvbook.root_name}
             </a>
           {/if}
 
-          {#if cvbook.yousuu != ''}
+          {#if cvbook.yousuu_id != ''}
             <a
               class="stat link _outer"
-              href="https://www.yousuu.com/book/{cvbook.yousuu}"
+              href="https://www.yousuu.com/book/{cvbook.yousuu_id}"
               rel="noopener noreferer"
               target="_blank"
               title="Đánh giá">
