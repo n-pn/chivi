@@ -13,6 +13,7 @@ class CV::RmInfo
 
   def self.binfo_html(sname : String, snvid : String, ttl = TTL, lbl = "1/1")
     file = PathUtil.binfo_cpath(sname, snvid)
+
     GzipFile.new(file).read(ttl) do
       url = SiteLink.binfo_url(sname, snvid)
       encoding = HttpUtil.encoding_for(sname)
@@ -22,6 +23,7 @@ class CV::RmInfo
 
   def self.chidx_html(sname : String, snvid : String, ttl = TTL, lbl = "1/1")
     file = PathUtil.chdix_cpath(sname, snvid)
+
     GzipFile.new(file).read(ttl) do
       url = SiteLink.chidx_url(sname, snvid)
       encoding = HttpUtil.encoding_for(sname)
@@ -30,8 +32,12 @@ class CV::RmInfo
   end
 
   def self.init(sname : String, snvid : String, ttl = TTL, lbl = "1/1", full = true)
+    # fix for dead sites
+    ttl = 10.years if sname == "jx_la" || sname == "zhwenpg"
+
     ihtml = binfo_html(sname, snvid, ttl, lbl)
     chtml = chidx_html(sname, snvid, ttl, lbl) if full && sname == "69shu"
+
     new(sname, snvid, ihtml, chtml)
   end
 

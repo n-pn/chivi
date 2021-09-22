@@ -42,7 +42,7 @@ module CV::SiteLink
   end
 
   def chidx_url(sname : String, snvid : String)
-    sname == "60shu" ? "https://www.69shu.com/#{snvid}/" : binfo_url(sname, snvid)
+    sname == "69shu" ? "https://www.69shu.com/#{snvid}/" : binfo_url(sname, snvid)
   end
 
   def chtxt_url(sname : String, snvid : String, schid : String)

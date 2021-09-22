@@ -18,7 +18,8 @@ class CV::GzipFile
 
     self.save!(yield)
     @data.not_nil!
-  rescue
+  rescue err
+    puts err
     state == State::Staled ? self.read : raise "File not found!"
   end
 

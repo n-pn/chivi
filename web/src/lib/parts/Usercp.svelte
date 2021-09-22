@@ -48,9 +48,11 @@
     </div>
     <div class="chips">
       {#each ['reading', 'onhold', 'pending'] as status}
-        <a href="/@{$session.uname}?bmark={status}" class="-chip">
-          <SIcon name={status_icons[status]} />
-          <span class="-text">
+        <a href="/@{$session.uname}?bmark={status}" class="chip">
+          <span class="chip-icon">
+            <SIcon name={status_icons[status]} />
+          </span>
+          <span class="chip-text">
             {status_names[status]}
           </span>
         </a>
@@ -67,14 +69,17 @@
         <a
           class="chap"
           href="/-{chap.bslug}/-{chap.sname}/-{chap.uslug}-{chap.chidx}">
-          <div class="-text">
-            <div class="-title">{chap.title}</div>
-            <span class="-chidx">{chap.chidx}</span>
+          <div class="chap-text">
+            <div class="chap-title">{chap.title}</div>
+            <div class="chap-chidx">{chap.chidx}.</div>
           </div>
 
-          <div class="-meta">
-            <span class="-bname">{chap.bname}</span>
-            <span class="-sname">{chap.sname}</span>
+          <div class="chap-meta">
+            <div class="chap-bname">{chap.bname}</div>
+
+            {#if chap.locked}
+              <div class="chap-icon"><SIcon name="pin" /></div>
+            {/if}
           </div>
         </a>
       {/each}
@@ -140,7 +145,7 @@
     @include bps(font-size, 12px, 12px, 13px);
   }
 
-  .-chip {
+  .chip {
     display: inline-flex;
     border-radius: 0.75rem;
     padding: 0 0.75em;
@@ -162,21 +167,24 @@
       }
     }
 
-    > .-text {
-      @include clamp($width: null);
-    }
-
-    > :global(svg) {
-      display: inline-block;
-      width: 1.25em;
-      height: 1.25em;
-      margin-top: 0.5em;
-      margin-right: 0.375em;
-    }
-
     & + & {
       @include bps(margin-left, 0.25rem, 0.375rem);
     }
+  }
+
+  .chip-icon {
+    margin-top: 0.5em;
+    margin-right: 0.375em;
+
+    > :global(svg) {
+      display: block;
+      width: 1.25em;
+      height: 1.25em;
+    }
+  }
+
+  .chip-text {
+    @include clamp($width: null);
   }
 
   .chap {
@@ -194,52 +202,51 @@
     &:nth-child(odd) {
       background: var(--bg-main);
     }
+  }
 
-    .-text {
-      display: flex;
-      line-height: 1.5rem;
-    }
+  // prettier-ignore
+  .chap-title {
+    flex: 1;
+    margin-right: 0.125rem;
+    @include fgcolor(secd);
+    @include clamp($width: null);
 
-    .-meta {
-      display: flex;
-      padding: 0;
-      line-height: 1rem;
-      margin-top: 0.25rem;
-      text-transform: uppercase;
+    .chap:visited & { @include fgcolor(neutral, 5); }
+    .chap:hover & { @include fgcolor(primary, 5); }
+  }
 
-      @include ftsize(xs);
-      @include fgcolor(neutral, 5);
-      @include clamp($width: null);
-    }
+  .chap-text {
+    display: flex;
+    line-height: 1.5rem;
+  }
 
-    .-title {
-      flex: 1;
-      @include fgcolor(secd);
-      @include clamp($width: null);
-    }
+  .chap-meta {
+    @include flex($gap: 0.25rem);
+    padding: 0;
+    line-height: 1rem;
+    margin-top: 0.25rem;
+    text-transform: uppercase;
 
-    &:visited .-title {
-      @include fgcolor(neutral, 5);
-    }
+    @include ftsize(xs);
+    @include fgcolor(neutral, 5);
+    @include clamp($width: null);
+  }
 
-    &:hover .-title {
-      @include fgcolor(primary, 5);
-    }
+  .chap-chidx {
+    @include fgcolor(tert);
+    @include ftsize(xs);
+  }
 
-    .-chidx {
-      margin-left: 0.125rem;
-      @include fgcolor(tert);
-      @include ftsize(xs);
+  .chap-icon {
+    @include fgcolor(tert);
+    // height: 0.8rem;
+    margin-left: auto;
+    font-size: 1rem;
+    margin-top: -0.125rem;
+  }
 
-      &:after {
-        content: '.';
-      }
-    }
-
-    .-bname {
-      flex: 1;
-      @include clamp($width: null);
-    }
+  .chap-bname {
+    @include clamp($width: null);
   }
 
   .tabnav {

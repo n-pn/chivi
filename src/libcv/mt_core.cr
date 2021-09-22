@@ -61,7 +61,7 @@ class CV::MtCore
     res = title.empty? ? MtList.new : cv_plain(title, mode: mode)
 
     unless pre_zh.empty?
-      res.prepend!(MtNode.new(pad, title.empty? ? "." : ": "))
+      res.prepend!(MtNode.new(pad, title.empty? ? "" : ": "))
       res.prepend!(MtNode.new(pre_zh, pre_vi, dic: 1))
     end
 

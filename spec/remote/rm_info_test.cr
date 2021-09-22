@@ -3,9 +3,9 @@ require "file_utils"
 require "../../src/seeds/rm_info.cr"
 
 def fetch_info(sname, snvid, fresh = false) : Void
+  puts "\n[#{CV::SiteLink.binfo_url(sname, snvid)}]".colorize.green.bold
   parser = CV::RmInfo.init(sname, snvid, ttl: fresh ? 1.minute : 1.year)
 
-  puts "\n[#{CV::SiteLink.binfo_url(sname, snvid)}]".colorize.green.bold
   puts "------".colorize.green
 
   output = {
@@ -37,47 +37,58 @@ rescue err
   puts err.colorize.red
 end
 
-# fetch_info("qu_la", "7", fresh: false)
-# fetch_info("qu_la", "9923", fresh: false)
+tests = [
+  # {"ql_la", "7", false},
+  # {"ql_la", "9923", false},
 
-fetch_info("jx_la", "7", fresh: false)
-# fetch_info("jx_la", "179402", fresh: false)
-# fetch_info("jx_la", "250502", fresh: false)
-# fetch_info("jx_la", "80240", fresh: false)
+  {"jx_la", "7", false},
+  # {"jx_la", "7", true},
 
-fetch_info("69shu", "22729", fresh: false)
-# fetch_info("69shu", "30062", fresh: true)
+  # {"69shu", "22729", true},
+  {"69shu", "35875", false},
+  # {"69shu", "30062", false},
 
-fetch_info("nofff", "18288", fresh: false)
+  {"nofff", "18288", false},
+  # {"nofff", "18288", true},
 
-fetch_info("rengshu", "181", fresh: false)
+  {"rengshu", "181", false},
+  # {"rengshu", "181", true},
 
-fetch_info("hetushu", "5", fresh: false)
-fetch_info("hetushu", "4420", fresh: false)
-# fetch_info("hetushu", "162", fresh: true)
-# fetch_info("hetushu", "350", fresh: true)
+  {"hetushu", "5", false},
+  # {"hetushu", "5", true},
 
-fetch_info("duokan8", "6293", fresh: false)
+  {"hetushu", "4420", false},
+  # {"hetushu", "4420", true},
 
-fetch_info("xbiquge", "48680", fresh: false)
-# fetch_info("xbiquge", "41881", fresh: true)
+  {"duokan8", "6293", false},
+  # {"duokan8", "6293", true},
 
-fetch_info("paoshu8", "817", fresh: false)
+  {"xbiquge", "48680", false},
+  # {"xbiquge", "48680", true},
 
-fetch_info("zhwenpg", "aun4tm", fresh: false)
-# fetch_info("zhwenpg", "punj76", fresh: true)
+  {"paoshu8", "817", false},
+  # {"paoshu8", "817", true},
 
-fetch_info("5200", "28208", fresh: false)
+  {"paoshu8", "151780", false},
+  # {"paoshu8", "151780", true},
 
-fetch_info("bqg_5200", "139570", fresh: false)
-# fetch_info("bqg_5200", "131878", fresh: true)
+  {"zhwenpg", "aun4tm", false},
+  # {"zhwenpg", "aun4tm", true},
 
-fetch_info("shubaow", "150092", fresh: false)
+  {"5200", "28208", false},
+  # {"5200", "28208", true},
 
-fetch_info("paoshu8", "151780", fresh: false)
+  {"bqg_5200", "131878", false},
+  {"bqg_5200", "131878", true},
 
-fetch_info("69shu", "35875", fresh: false)
+  # {"shubaow", "150092", false},
+  # {"shubaow", "150092", true},
 
-fetch_info("biqubao", "33775", fresh: false)
+  # {"biqubao", "33775", false},
+  # {"biqubao", "33775", true},
 
-fetch_info("bxwxorg", "32154", fresh: false)
+  # {"bxwxorg", "32154", false},
+  # {"bxwxorg", "32154", true},
+]
+
+tests.each { |sname, snvid, fresh| fetch_info(sname, snvid, fresh: fresh) }
