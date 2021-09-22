@@ -171,9 +171,19 @@
 
   <div class="chlist">
     {#if chinfo.lasts.length > 0}
-      <Chlist bslug={cvbook.bslug} sname={chinfo.sname} chaps={chinfo.lasts} />
-      <div class="-sep" />
-      <Chlist bslug={cvbook.bslug} sname={chinfo.sname} chaps={chinfo.chaps} />
+      <Chlist
+        bslug={cvbook.bslug}
+        sname={chinfo.sname}
+        chaps={chinfo.lasts}
+        track={ubmemo} />
+
+      <div class="chlist-sep" />
+
+      <Chlist
+        bslug={cvbook.bslug}
+        sname={chinfo.sname}
+        chaps={chinfo.chaps}
+        track={ubmemo} />
 
       <footer class="foot">
         <Mpager {pager} pgidx={chinfo.pgidx} pgmax={chinfo.pgmax} {_navi} />
@@ -261,12 +271,10 @@
     }
   }
 
-  .chlist {
-    > .-sep {
-      width: 50%;
-      margin: var(--gutter-sm) auto;
-      @include border(--bd-main, $loc: bottom);
-    }
+  .chlist-sep {
+    width: 70%;
+    margin: var(--gutter-md) auto;
+    @include border(--bd-main, $loc: bottom);
   }
 
   .empty {

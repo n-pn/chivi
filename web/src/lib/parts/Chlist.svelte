@@ -1,20 +1,31 @@
 <script>
+  import SIcon from '$atoms/SIcon.svelte'
+
   export let bslug = ''
   export let sname = ''
 
   export let chaps = []
+  export let track = {}
 </script>
 
 <div class="list">
   {#each chaps as { chidx, title, label, uslug }}
-    <div class="item">
-      <a href="/-{bslug}/-{sname}/-{uslug}-{chidx}" class="link" rel="nofollow">
-        <div class="text">
-          <div class="title">{title}</div>
-          <span class="chidx">{chidx}</span>
+    <div class="list-item">
+      <a
+        href="/-{bslug}/-{sname}/-{uslug}-{chidx}"
+        class="chap"
+        class:_active={chidx == track.chidx}>
+        <div class="chap-text">
+          <div class="chap-title">{title}</div>
+          <div class="chap-chidx">{chidx}.</div>
         </div>
-        <div class="meta">
-          <span class="label">{label}</span>
+        <div class="chap-meta">
+          <div class="chap-label">{label}</div>
+          {#if chidx == track.chidx}
+            <div class="chap-track">
+              <SIcon name={track.locked ? 'pin' : 'eye'} />
+            </div>
+          {/if}
         </div>
       </a>
     </div>
@@ -32,7 +43,7 @@
     grid-gap: 0 var(--gutter-sm);
   }
 
-  .item {
+  .list-item {
     display: block;
     @include border(--bd-main, $loc: bottom);
     $bg-dark: color(neutral, 8);
@@ -62,17 +73,23 @@
     }
   }
 
-  .link {
+  .chap {
     display: block;
     padding: 0.375rem 0.5rem;
+
+    // prettier-ignore
+    &._active {
+      @include bgcolor(primary, 2, 3);
+      @include tm-dark { @include bgcolor(primary, 8, 3); }
+    }
   }
 
-  .text {
+  .chap-text {
     display: flex;
     line-height: 1.5rem;
   }
 
-  .meta {
+  .chap-meta {
     display: flex;
     padding: 0;
     height: 1rem;
@@ -82,40 +99,31 @@
     @include ftsize(xs);
   }
 
-  .title {
+  // prettier-ignore
+  .chap-title {
     flex: 1;
     @include clamp($width: null);
     @include fgcolor(secd);
 
-    .link:visited & {
-      @include fgcolor(tert);
-    }
-
-    .link:hover & {
-      @include fgcolor(primary, 5);
-    }
+    .chap:visited & { @include fgcolor(tert); }
+    .chap:hover & { @include fgcolor(primary, 5); }
   }
 
-  .chidx {
+  .chap-chidx {
     margin-left: 0.125rem;
     user-select: none;
     @include fgcolor(neutral, 5);
     @include ftsize(xs);
-
-    // &:before {
-    //   content: '#';
-    //   padding-right: rem(1px);
-    //   font-size: rem(10px);
-    // }
-
-    &:after {
-      content: '.';
-    }
   }
 
-  .label {
+  .chap-label {
     flex: 1;
     @include fgcolor(neutral, 5);
     @include clamp($width: null);
+  }
+
+  .chap-track {
+    @include fgcolor(neutral, 5);
+    font-size: 1rem;
   }
 </style>
