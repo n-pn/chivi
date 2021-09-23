@@ -29,8 +29,10 @@
   import { session } from '$app/stores'
   import VpTerm from '$lib/vp_term.js'
 
-  import Postag from '$parts/Postag.svelte'
   import SIcon from '$atoms/SIcon.svelte'
+  import CMenu from '$molds/CMenu.svelte'
+
+  import Postag from '$parts/Postag.svelte'
   import Input from './Upsert/Input.svelte'
   import Emend from './Upsert/Emend.svelte'
   import Vhint from './Upsert/Vhint.svelte'
@@ -95,9 +97,17 @@
 <div class="wrap" on:click={deactivate}>
   <div id="upsert" class="main" on:click|stopPropagation={focus_on_value}>
     <header class="head">
-      <a href="/dicts/{dname}" class="m-button _text" target="_blank">
-        <SIcon name="package" />
-      </a>
+      <CMenu dir="left" loc="top">
+        <button class="m-button _text" slot="trigger">
+          <SIcon name="menu-2" />
+        </button>
+        <svelte:fragment slot="content">
+          <a class="-item" href="/dicts/{dname}" target="_blank">
+            <SIcon name="package" />
+            <span>Từ điển</span>
+          </a>
+        </svelte:fragment>
+      </CMenu>
 
       <Input phrase={$input} pinyin={trans.binh_am} bind:output={key} />
 
@@ -197,7 +207,7 @@
     @include bdradi($loc: top);
     @include linesd(--bd-soft);
 
-    > .m-button {
+    .m-button {
       @include fgcolor(neutral, 5);
       background: none;
       --linesd: none;

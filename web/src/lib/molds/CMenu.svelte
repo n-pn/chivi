@@ -3,7 +3,7 @@
   export let dir = 'center'
 </script>
 
-<div class="menu {$$props.class}">
+<div class="menu {$$props.class || ''}">
   <slot name="trigger" />
 
   <div class="popup _{loc} _{dir}">
@@ -24,8 +24,16 @@
     position: absolute;
     width: var(--menu-width, 10rem);
 
-    &._top { bottom: 100%; }
-    &._bottom { top: 100%; }
+    &._top {
+      bottom: 100%;
+      .content { margin-bottom: 0.5rem; }
+    }
+
+    &._bottom {
+      top: 100%;
+      .content { margin-top: 0.5rem; }
+    }
+
     &._left { left: 0; }
     &._right { right: 0; }
     &._center { left: 50%; transform: translateX(-50%);}
@@ -35,9 +43,8 @@
   }
 
   .content {
-    margin-bottom: 0.5rem;
     padding: 0.5rem 0;
-    @include shadow(3);
+    @include shadow(2);
     @include bdradi();
     @include bgcolor(secd);
   }
@@ -45,7 +52,7 @@
   .content > :global(.-item) {
     display: block;
     width: 100%;
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
     line-height: 2.25rem;
     // text-transform: uppercase;
     font-weight: 500;
