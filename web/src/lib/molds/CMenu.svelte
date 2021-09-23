@@ -60,9 +60,9 @@
 
     @include flex(0);
 
-    @include border(--bd-soft, $loc: top);
+    @include border(--bd-main, $loc: top);
     &:last-child {
-      @include border(--bd-soft, $loc: bottom);
+      @include border(--bd-main, $loc: bottom);
     }
 
     // @include ftsize(sm);
