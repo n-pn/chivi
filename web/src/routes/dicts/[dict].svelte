@@ -166,8 +166,8 @@
         </thead>
 
         <tbody>
-          {#each terms as { key, val, ptag, rank, mtime, uname, privi }, idx}
-            <tr>
+          {#each terms as { key, val, ptag, rank, mtime, uname, _flag }, idx}
+            <tr class="term _{_flag}">
               <td class="-idx">{offset + idx}</td>
               <td
                 class="-key"
@@ -322,13 +322,8 @@
   .-idx,
   .-rank,
   .-mtime,
-  .-privi,
   .-uname {
     @include fgcolor(tert);
-  }
-
-  .-privi._gt {
-    @include fgcolor(primary, 5);
   }
 
   .-val {
@@ -360,5 +355,12 @@
         @include linesd(primary, 5, $ndef: false);
       }
     }
+  }
+
+  .term._1,
+  .term._2 {
+    @include bgcolor(mute);
+    text-decoration: line-through;
+    font-style: italic;
   }
 </style>

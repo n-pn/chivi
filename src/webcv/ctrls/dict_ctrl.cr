@@ -180,37 +180,38 @@ class CV::DictCtrl < CV::BaseCtrl
       node.edits.each { |term| hints.concat(term.val) }
     end
 
-    render_json do |res|
-      JSON.build(res) do |jb|
-        jb.object {
-          jb.field "trans", {binh_am: binh_am, hanviet: hanviet}
-          jb.field "hints", hints.uniq.reject { |x| x.empty? || x == hanviet }
+    show_json do |jb|
+      jb.object {
+        jb.field "trans", {binh_am: binh_am, hanviet: hanviet}
+        jb.field "hints", hints.uniq.reject { |x| x.empty? || x == hanviet }
 
-          jb.field "infos" {
-            jb.array {
-              special_term.to_json(jb)
-              regular_term.to_json(jb)
-              hanviet_term.to_json(jb)
-            }
+        jb.field "infos" {
+          jb.array {
+            special_term.to_json(jb)
+            regular_term.to_json(jb)
+            hanviet_term.to_json(jb)
           }
         }
-      end
+      }
     end
   end
 
   def upsert
     dname = params["dname"]
+    stype = params.fetch_str("stype", "_main")
+    stype = cu_dname if stype == "_priv"
 
-    vdict = _cv_user.tlmode < 2 ? VpDict.load("pleb_#{dname}") : VpDict.load(dname)
+    # TODO: change to load using stype
+    vdict = VpDict.load(_cv_user.tlmode < 2 ? "pleb_#{dname}" : dname)
     return halt!(500, "Không đủ quyền hạn!") if cu_privi < vdict.p_min
 
-    mtime = VpTerm.mtime
+    mtime = VpTerm.mtime(Time.utc)
 
     key = params.fetch_str("key").strip
     val = params.fetch_str("val").split(" / ").map(&.strip)
 
     attr = params.fetch_str("attr")
-    rank = params.fetch_int("rank")
+    rank = params["rank"]?.try(&.to_u8) || 3_u8
 
     new_term = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cu_dname)
     return halt!(501, "Không thay đổi!") unless vdict.set!(new_term)
@@ -234,6 +235,6 @@ class CV::DictCtrl < CV::BaseCtrl
       VpDict.suggest.set!(suggest_term)
     end
 
-    render_json(new_term)
+    show_json(new_term)
   end
 end

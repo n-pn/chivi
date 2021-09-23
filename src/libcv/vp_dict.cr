@@ -105,7 +105,8 @@ class CV::VpDict
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
   end
 
-  def new_term(key : String, val = [""], attr = "", rank = 3, mtime = 0, uname = "~")
+  def new_term(key : String, val = [""], attr = "",
+               rank = 3_u8, mtime = 0_u32, uname = "~")
     VpTerm.new(key, val, attr, rank, mtime, uname, dtype: @dtype)
   end
 
@@ -115,36 +116,37 @@ class CV::VpDict
   end
 
   # return true if new term prevails
-  def set(new_term : VpTerm) : Bool
-    @data << new_term
-
+  def set(term : VpTerm) : Bool
     # find existing node or force creating new one
-    node = @trie.find!(new_term.key)
+    node = @trie.find!(term.key)
 
-    if old_term = node.term
-      newer = new_term.mtime >= old_term.mtime
+    if prev = node.term
+      # do not record if term is outdated
+      return false if term.mtime < prev.mtime
+
+      prev._flag = term.amend?(prev) ? 2_u8 : 1_u8
+      term._prev = prev
     else
-      newer = true
       @size += 1
     end
 
-    if newer
-      node.term = new_term
-      new_term._prev = old_term
-    end
+    @data << term
+    node.term = term
+    node.edits << term
 
-    node.edits << new_term
-    newer
+    true
   end
 
-  # save to disk, return old entry if exists
   def set!(new_term : VpTerm) : Bool
+    return false unless set(new_term)
+
+    FileUtils.mkdir_p(File.dirname(@flog))
     line = "\n#{new_term}"
 
     File.write(@file, line, mode: "a")
     File.write(@flog, line, mode: "a") if new_term.mtime > 0
 
-    set(new_term)
+    true
   end
 
   def find(key : String) : VpTerm?
@@ -182,7 +184,7 @@ class CV::VpDict
 
     tspan = Time.measure do
       File.open(@file, "w") do |io|
-        @data.each { |term| io.puts(term) }
+        @data.each { |term| io.puts(term) unless term._flag == 2_u8 }
       end
 
       logs = @data.select(&.mtime.> 0)

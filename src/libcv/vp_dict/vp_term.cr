@@ -4,16 +4,16 @@ require "./pos_tag"
 class CV::VpTerm
   SEP = "ǀ"
 
-  EPOCH = Time.utc(2020, 1, 1, 0, 0, 0)
+  EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
 
   getter key : String
   getter val : Array(String)
 
   getter attr : String = ""
   getter ptag : PosTag { PosTag.from_str(@attr.split(" ").first) }
-  getter rank : Int32 = 3
+  getter rank : UInt8 = 3_u8
 
-  getter mtime : Int32 = 0
+  getter mtime : UInt32 = 0_u32
   getter uname : String = "~"
 
   getter dtype : Int32 = 1
@@ -22,9 +22,8 @@ class CV::VpTerm
     base ** @key.size + @key.size ** base
   end
 
-  getter rtime : Time { EPOCH + @mtime.minutes }
-
   property _prev : VpTerm? = nil
+  property _flag : UInt8 = 0_u8 # 0 => keep, 1 => overwritten, 2 => to be removed
 
   def initialize(cols : Array(String), @dtype = 2)
     @key = cols[0]
@@ -33,17 +32,16 @@ class CV::VpTerm
     return if @dtype < 1 # skip reading attr if dict type is lookup
 
     @attr = cols[2]? || ""
-    @rank = cols[3]?.try(&.to_i?) || 3
+    @rank = cols[3]?.try(&.to_u8?) || 3_u8
 
-    if mtime = cols[4]?.try(&.to_i?)
+    if mtime = cols[4]?.try(&.to_u32?)
       @mtime = mtime
       @uname = cols[5]? || "~"
     end
   end
 
-  def initialize(@key,
-                 @val = [""], @attr = "", @rank = 3,
-                 @mtime = VpTerm.mtime, @uname = "~",
+  def initialize(@key, @val = [""], @attr = "",
+                 @rank = 3_u8, @mtime = self.mtime, @uname = "~",
                  @dtype = 2)
   end
 
@@ -58,12 +56,17 @@ class CV::VpTerm
     @val.empty? || @val.first.empty?
   end
 
+  def amend?(prev : self)
+    return false unless @uname == prev.uname
+    @mtime - prev.mtime <= 5
+  end
+
   def to_s(io : IO) : Nil
     io << key << '\t'
     @val.join(io, SEP)
 
     return if @dtype < 1 # skip printing if dict type is lookup
-    io << '\t' << @attr << '\t' << (@rank == 3 ? "" : @rank)
+    io << '\t' << @attr << '\t' << (@rank == 3_u8 ? "" : @rank)
 
     return if @mtime <= 0
     io << '\t' << @mtime << '\t' << @uname
@@ -91,14 +94,15 @@ class CV::VpTerm
       jb.field "ptag", ptag.to_str
       jb.field "rank", rank
 
-      jb.field "mtime", rtime.to_unix
+      jb.field "mtime", @mtime * 60 + EPOCH
       jb.field "uname", @uname
 
-      jb.field "state", empty? ? "Xoá" : (@_prev ? "Sửa" : "Thêm")
+      jb.field "state", self.empty? ? "Xoá" : (@_prev ? "Sửa" : "Thêm")
+      jb.field "_flag", @_flag
     end
   end
 
-  def self.mtime(rtime : Time = Time.utc)
-    (rtime - EPOCH).total_minutes.round.to_i
+  def self.mtime(rtime : Time = Time.utc) : UInt32
+    (rtime.to_unix - EPOCH).//(60).to_u32
   end
 end
