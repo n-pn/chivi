@@ -46,7 +46,6 @@
 
   export let _dirty = false
 
-  $: labels = [label, 'Thông dụng', 'Hán Việt']
   $: dnames = [dname, 'regular', 'hanviet']
 
   let trans = []
@@ -121,16 +120,37 @@
     </header>
 
     <section class="tabs">
-      {#each labels as label, idx}
-        <button
-          class="-tab"
-          class:_active={idx == $tab}
-          class:_edited={terms[idx]?.old_val}
-          data-kbd={tab_kbds[idx]}
-          on:click={() => tab.set(idx)}>
-          <span>{label}</span>
-        </button>
-      {/each}
+      <button
+        class="tab-item _book"
+        class:_active={$tab == 0}
+        class:_edited={terms[0]?.old_val}
+        data-kbd="x"
+        on:click={() => tab.set(0)}>
+        <span>{label}</span>
+      </button>
+
+      <button
+        class="tab-item"
+        class:_active={$tab == 1}
+        class:_edited={terms[1]?.old_val}
+        data-kbd="c"
+        on:click={() => tab.set(1)}>
+        <span>Thông dụng</span>
+      </button>
+
+      <div class="tab-right">
+        <CMenu dir="right">
+          <button slot="trigger" class="tab-item" class:_active={$tab > 1}>
+            <SIcon name="caret-down" />
+          </button>
+
+          <svelte:fragment slot="content">
+            <button class="-item" data-kbd={'c'} on:click={() => tab.set(2)}>
+              <span>Hán Việt</span>
+            </button>
+          </svelte:fragment>
+        </CMenu>
+      </div>
     </section>
 
     <section class="body">
@@ -201,7 +221,7 @@
   }
 
   .head {
-    display: flex;
+    @include flex();
     margin-bottom: 0.5rem;
 
     @include bdradi($loc: top);
@@ -224,13 +244,18 @@
     height: $tab-height;
     padding: 0 0.75rem;
 
-    @include flex();
+    @include flex($gap: 0.5rem);
     @include border(--bd-main, $loc: bottom);
     @include ftsize(md);
+
     // prettier-ignore
   }
 
-  .-tab {
+  .tab-right {
+    margin-left: auto;
+  }
+
+  .tab-item {
     // text-transform: capitalize;
     font-weight: 500;
     padding: 0 0.75rem;
@@ -240,17 +265,13 @@
     line-height: $tab-height;
     flex-shrink: 0;
 
-    margin-right: 0.5rem;
-
     @include bdradi($loc: top);
     @include fgcolor(tert);
-    @include border(--bd-main);
+    @include border(--bd-main, $loc: top-left-right);
 
-    border-bottom: none;
-
-    &:first-child {
+    &._book {
       min-width: 6rem;
-      max-width: 38%;
+      max-width: 50%;
       flex-shrink: 1;
     }
 
@@ -266,11 +287,6 @@
       @include bgcolor(secd);
       @include fgcolor(primary, 5);
       @include bdcolor(primary, 5);
-    }
-
-    &:last-child {
-      margin-left: auto;
-      margin-right: 0;
     }
 
     > span {

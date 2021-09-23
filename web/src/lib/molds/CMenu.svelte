@@ -22,6 +22,7 @@
   .popup {
     display: none;
     position: absolute;
+    z-index: 999;
     width: var(--menu-width, 10rem);
 
     &._top {
