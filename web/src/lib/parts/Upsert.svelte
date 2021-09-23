@@ -21,8 +21,6 @@
   export function deactivate() {
     state.set(0)
   }
-
-  const tab_kbds = ['x', 'c', 'v']
 </script>
 
 <script>
@@ -38,7 +36,6 @@
   import Vhint from './Upsert/Vhint.svelte'
   import Vutil from './Upsert/Vutil.svelte'
   import Vrank from './Upsert/Vrank.svelte'
-  import Privi from './Upsert/Privi.svelte'
   import Links from './Upsert/Links.svelte'
 
   export let dname = 'combine'
@@ -91,6 +88,8 @@
     _dirty = !err
     deactivate()
   }
+
+  $: disabled = $session.privi < $tab + 1
 </script>
 
 <div class="wrap" on:click={deactivate}>
@@ -154,7 +153,7 @@
     </section>
 
     <section class="body">
-      <Emend {term} />
+      <Emend {term} p_min={$tab + 1} p_max={$session.privi} />
 
       <div class="field">
         <Vhint {hints} bind:term />
@@ -181,11 +180,16 @@
       <div class="vfoot">
         <Vrank bind:rank={term.rank} />
 
-        <Privi
-          {term}
-          p_min={$tab + 1}
-          p_max={$session.privi}
-          on:click={() => submit_val($tab)} />
+        <button
+          class="submit m-button btn-lg {disabled ? '_line' : '_fill'}"
+          class:_success={term.state == 'Thêm'}
+          class:_primary={term.state == 'Sửa'}
+          class:_harmful={term.state == 'Xoá'}
+          data-kbd="ctrl+enter"
+          {disabled}
+          on:click>
+          <span class="submit-text">{term.state}</span>
+        </button>
       </div>
     </section>
 
@@ -369,5 +373,11 @@
     display: flex;
     margin-top: 0.75rem;
     justify-content: right;
+  }
+
+  .submit {
+    margin-left: 0.75rem;
+    justify-content: center;
+    width: 4.5rem;
   }
 </style>

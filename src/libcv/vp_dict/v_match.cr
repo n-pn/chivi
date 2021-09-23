@@ -10,14 +10,13 @@ class CV::VMatch
     ptag = query["ptag"]?.try { |ptag| PosTag.from_str(ptag) }
 
     uname = query["uname"]?
-    privi = query["privi"]?.try { |str| str.to_i? || 0 }
 
-    new(key, val, rank, ptag, uname, privi)
+    new(key, val, rank, ptag, uname)
   end
 
   def initialize(@key : Regex? = nil, @val : Regex? = nil,
                  @rank : Int32? = nil, @ptag : PosTag? = nil,
-                 @uname : String? = nil, @privi : Int32? = nil)
+                 @uname : String? = nil)
   end
 
   def match?(term : VpTerm)
@@ -28,7 +27,6 @@ class CV::VMatch
     @ptag.try { |ptag| return false unless term.ptag == ptag }
 
     @uname.try { |uname| return false unless term.uname == uname }
-    @privi.try { |privi| return false unless term.privi == privi }
 
     true
   end

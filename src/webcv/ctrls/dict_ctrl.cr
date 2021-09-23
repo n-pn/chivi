@@ -199,13 +199,10 @@ class CV::DictCtrl < CV::BaseCtrl
   end
 
   def upsert
-    return halt!(500, "Không đủ quyền hạn!") if cu_privi < 1
-
-    privi = params.fetch_int("privi")
-    privi = cu_privi if privi > cu_privi
-
     dname = params["dname"]
+
     vdict = _cv_user.tlmode < 2 ? VpDict.load("pleb_#{dname}") : VpDict.load(dname)
+    return halt!(500, "Không đủ quyền hạn!") if cu_privi < vdict.p_min
 
     mtime = VpTerm.mtime
 
@@ -215,7 +212,7 @@ class CV::DictCtrl < CV::BaseCtrl
     attr = params.fetch_str("attr")
     rank = params.fetch_int("rank")
 
-    new_term = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cu_dname, privi: privi)
+    new_term = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cu_dname)
     return halt!(501, "Không thay đổi!") unless vdict.set!(new_term)
 
     # TODO: save context

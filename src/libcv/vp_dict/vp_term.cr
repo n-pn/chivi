@@ -15,7 +15,6 @@ class CV::VpTerm
 
   getter mtime : Int32 = 0
   getter uname : String = "_"
-  getter privi : Int32 = 1
 
   getter dtype : Int32 = 1
   getter point : Float64 { calc_point }
@@ -23,7 +22,7 @@ class CV::VpTerm
 
   property _prev : VpTerm? = nil
 
-  def initialize(cols : Array(String), @dtype = 2, @privi = 2)
+  def initialize(cols : Array(String), @dtype = 2)
     @key = cols[0]
     @val = cols.fetch(1, "").split(SEP)
 
@@ -32,16 +31,15 @@ class CV::VpTerm
     @attr = cols[2]? || ""
     @rank = cols[3]?.try(&.to_i?) || 3
 
-    return unless mtime = cols[4]?.try(&.to_i?)
-    @mtime = mtime
-
-    @uname = cols[5]? || "_"
-    @privi = cols[6]?.try(&.to_i?) || @privi
+    if mtime = cols[4]?.try(&.to_i?)
+      @mtime = mtime
+      @uname = cols[5]? || "_"
+    end
   end
 
   def initialize(@key,
                  @val = [""], @attr = "", @rank = 3,
-                 @mtime = VpTerm.mtime, @uname = "_", @privi = 1,
+                 @mtime = VpTerm.mtime, @uname = "_",
                  @dtype = 2)
   end
 
@@ -61,14 +59,6 @@ class CV::VpTerm
     @val.empty? || @val.first.empty?
   end
 
-  def beats?(other : self)
-    if @uname == other.uname || @privi == other.privi
-      @mtime >= other.mtime
-    else
-      @privi > other.privi
-    end
-  end
-
   def to_s(io : IO) : Nil
     io << key << '\t'
     @val.join(io, SEP)
@@ -77,16 +67,18 @@ class CV::VpTerm
     io << '\t' << @attr << '\t' << (@rank == 3 ? "" : @rank)
 
     return if @mtime <= 0
-    io << '\t' << @mtime << '\t' << @uname << '\t' << @privi
+    io << '\t' << @mtime << '\t' << @uname
   end
 
   def inspect(io : IO) : Nil
     io << '[' << key << '/'
     @val.join(io, ',')
-    io << '/' << @attr << ' ' << (@rank == 3 ? "" : @rank)
+
+    io << '/' << @attr << ' '
+    io << @rank == 3 ? "" : @rank
 
     if @mtime > 0
-      io << '/' << @mtime << '/' << @uname << '/' << @privi
+      io << '/' << @mtime << '/' << @uname
     end
 
     io << ']'
@@ -102,7 +94,6 @@ class CV::VpTerm
 
       jb.field "mtime", rtime.to_unix
       jb.field "uname", @uname
-      jb.field "privi", @privi
 
       jb.field "state", empty? ? "Xoá" : (@_prev ? "Sửa" : "Thêm")
     end

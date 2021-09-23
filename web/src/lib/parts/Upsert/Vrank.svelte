@@ -1,6 +1,12 @@
 <script context="module">
-  const lbls = { 2: 'Thấp', 3: 'Bình', 4: 'Cao' }
-  const keys = { 2: 'l', 3: 'm', 4: 'h' }
+  const lbls = [
+    ['Cao', 4],
+    ['Bình', 3],
+    ['Thấp', 2],
+    ['Đáy', 1],
+  ]
+
+  const keys = { 1: 'b', 2: 'l', 3: 'm', 4: 'h' }
 </script>
 
 <script>
@@ -8,10 +14,13 @@
 </script>
 
 <div class="prio">
-  <span class="-txt">Ưu tiên:</span>
-  {#each Object.entries(lbls) as [val, lbl]}
+  <div class="lbl" title="Độ ưu tiên của cụm từ khi phân tách câu văn">
+    Độ ưu tiên:
+  </div>
+
+  {#each lbls as [lbl, val]}
     <button
-      class="-btn"
+      class="btn"
       class:active={rank == val}
       data-kbd={keys[val]}
       on:click={() => (rank = val)}>{lbl}</button>
@@ -19,41 +28,27 @@
 </div>
 
 <style lang="scss">
-  $outer-height: 2.5rem;
-  $inner-height: 1.75rem;
-
   .prio {
-    display: flex;
     flex: 1;
-    justify-content: center;
-    margin: math.div($outer-height - $inner-height, 2) 0;
-    padding-top: 1px;
-    // padding-top: 0.25rem;
-    @include bps(font-size, rem(11px), rem(12px), rem(13px));
+    @include flex($gap: 0.375rem, $center: both);
   }
 
-  .-txt,
-  .-btn {
-    // height: $inner-height;
-    line-height: $inner-height;
-    text-transform: uppercase;
+  .lbl,
+  .btn {
+    @include ftsize(sm);
+    @include fgcolor(tert);
+    line-height: 1.75rem;
+  }
+
+  .lbl {
+    @include bps(display, none, $sm: inline-block);
+  }
+
+  .btn {
+    padding: 0 0.75rem;
     font-weight: 500;
-  }
-
-  .-txt {
-    margin-top: 1px;
-    margin-right: 0.375rem;
-    @include fgcolor(mute);
-    @include bps(display, none, $md: inline-block);
-  }
-
-  .-btn {
-    padding: 0 0.5rem;
-    // margin: 0;
 
     @include bgcolor(tranparent);
-    @include fgcolor(secd);
-
     @include linesd(--bd-main);
     @include bdradi(0.5rem);
 
@@ -64,10 +59,6 @@
 
     &.active {
       @include linesd(primary, 4, $ndef: false);
-    }
-
-    & + & {
-      margin-left: 0.375rem;
     }
   }
 </style>

@@ -89,7 +89,7 @@ class CV::VpDict
         next if line.strip.blank?
 
         cols = line.split('\t')
-        term = VpTerm.new(cols, dtype: @dtype, privi: @p_min)
+        term = VpTerm.new(cols, dtype: @dtype)
         set(term)
 
         count += 1
@@ -105,8 +105,8 @@ class CV::VpDict
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
   end
 
-  def new_term(key : String, val = [""], attr = "", rank = 3, mtime = 0, uname = "_", privi = @p_min)
-    VpTerm.new(key, val, attr, rank, mtime, uname, privi, dtype: @dtype)
+  def new_term(key : String, val = [""], attr = "", rank = 3, mtime = 0, uname = "_")
+    VpTerm.new(key, val, attr, rank, mtime, uname, dtype: @dtype)
   end
 
   def set(key : String, val : Array(String), ext = "")
@@ -122,9 +122,9 @@ class CV::VpDict
     node = @trie.find!(new_term.key)
 
     if old_term = node.term
-      newer = new_term.beats?(old_term)
+      newer = new_term.mtime >= old_term.mtime
     else
-      newer = new_term.privi >= @p_min
+      newer = true
       @size += 1
     end
 
