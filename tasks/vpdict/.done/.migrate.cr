@@ -47,7 +47,7 @@ def migrate(file : String, uniq = false)
 
     if mtime = cols[2]?.try(&.to_i?) || 0
       uname = cols[3]? || "Guest"
-      uname = "_" if uname == "Guest"
+      uname = "~" if uname == "Guest"
 
       next if dname == "hanviet" && uname != "Nipin"
 

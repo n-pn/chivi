@@ -11,7 +11,7 @@
   <span class="val">{p_min}</span>
   <span class="sep">|</span>
 
-  {#if term.old_uname && term.old_uname != '_'}
+  {#if term.old_uname && term.old_uname != '~'}
     <span class="lbl">{term.old_state} bởi: </span>
     <span class="val user">{term.old_uname}</span>
     <span class="lbl">Thời gian:</span>

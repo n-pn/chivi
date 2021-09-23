@@ -105,7 +105,7 @@ class CV::VpDict
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
   end
 
-  def new_term(key : String, val = [""], attr = "", rank = 3, mtime = 0, uname = "_")
+  def new_term(key : String, val = [""], attr = "", rank = 3, mtime = 0, uname = "~")
     VpTerm.new(key, val, attr, rank, mtime, uname, dtype: @dtype)
   end
 

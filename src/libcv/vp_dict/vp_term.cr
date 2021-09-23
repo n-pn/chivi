@@ -14,7 +14,7 @@ class CV::VpTerm
   getter rank : Int32 = 3
 
   getter mtime : Int32 = 0
-  getter uname : String = "_"
+  getter uname : String = "~"
 
   getter dtype : Int32 = 1
   getter point : Float64 do
@@ -37,13 +37,13 @@ class CV::VpTerm
 
     if mtime = cols[4]?.try(&.to_i?)
       @mtime = mtime
-      @uname = cols[5]? || "_"
+      @uname = cols[5]? || "~"
     end
   end
 
   def initialize(@key,
                  @val = [""], @attr = "", @rank = 3,
-                 @mtime = VpTerm.mtime, @uname = "_",
+                 @mtime = VpTerm.mtime, @uname = "~",
                  @dtype = 2)
   end
 

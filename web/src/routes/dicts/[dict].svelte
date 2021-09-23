@@ -226,8 +226,7 @@
                 <a href="{$page.path}?rank={rank}">{render_rank(rank)}</a>
               </td>
               <td class="-uname">
-                <a href="{$page.path}?uname={uname}"
-                  >{uname == '_' ? '~' : uname}</a>
+                <a href="{$page.path}?uname={uname}">{uname}</a>
               </td>
               <td class="-mtime">{render_time(mtime)} </td>
             </tr>
