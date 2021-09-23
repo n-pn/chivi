@@ -29,6 +29,7 @@
   import { invalidate } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
+  import CMenu from '$molds/CMenu.svelte'
   import Notext from '$parts/Notext.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Cvdata from '$sects/Cvdata.svelte'
@@ -155,60 +156,58 @@
       <span>Trước</span>
     </a>
 
-    <div class="navi-item menu">
-      <div class="m-button menu-trigger">
+    <CMenu class="navi-item" loc="top">
+      <div class="m-button" slot="trigger">
         <SIcon name={memo_icon} />
         <span>{chinfo.chidx}/{chinfo.total}</span>
       </div>
 
-      <div class="menu-wrapper">
-        <div class="menu-content">
+      <svelte:fragment slot="content">
+        <button
+          class="-item"
+          disabled={$session.privi < 1}
+          on:click={reload_chap}
+          data-kbd="r">
+          <SIcon name="rotate-clockwise" spin={_reload} />
+          <span>Dịch lại</span>
+        </button>
+
+        {#if chinfo.clink != '/'}
           <button
-            class="menu-item"
+            class="-item"
             disabled={$session.privi < 1}
-            on:click={reload_chap}
-            data-kbd="r">
-            <SIcon name="rotate-clockwise" spin={_reload} />
-            <span>Dịch lại</span>
+            on:click={() => reload_chap(2)}>
+            <SIcon name="rotate-rectangle" />
+            <span>Tải lại nguồn</span>
           </button>
+        {/if}
 
-          {#if chinfo.clink != '/'}
-            <button
-              class="menu-item"
-              disabled={$session.privi < 1}
-              on:click={() => reload_chap(2)}>
-              <SIcon name="rotate-rectangle" />
-              <span>Tải lại nguồn</span>
-            </button>
-          {/if}
+        {#if on_memory && ubmemo.locked}
+          <button
+            class="-item"
+            disabled={$session.privi < 0}
+            on:click={() => update_history(chinfo, false)}
+            data-kbd="p">
+            <SIcon name="pin" />
+            <span>Bỏ đánh dấu</span>
+          </button>
+        {:else}
+          <button
+            class="-item"
+            disabled={$session.privi < 0}
+            on:click={() => update_history(chinfo, true)}
+            data-kbd="p">
+            <SIcon name="pinned" />
+            <span>Đánh dấu</span>
+          </button>
+        {/if}
 
-          {#if on_memory && ubmemo.locked}
-            <button
-              class="menu-item"
-              disabled={$session.privi < 0}
-              on:click={() => update_history(chinfo, false)}
-              data-kbd="p">
-              <SIcon name="pin" />
-              <span>Bỏ đánh dấu</span>
-            </button>
-          {:else}
-            <button
-              class="menu-item"
-              disabled={$session.privi < 0}
-              on:click={() => update_history(chinfo, true)}
-              data-kbd="p">
-              <SIcon name="pinned" />
-              <span>Đánh dấu</span>
-            </button>
-          {/if}
-
-          <a href={list_path} class="menu-item" data-kbd="h">
-            <SIcon name="list" />
-            <span>Mục lục</span>
-          </a>
-        </div>
-      </div>
-    </div>
+        <a href={list_path} class="-item" data-kbd="h">
+          <SIcon name="list" />
+          <span>Mục lục</span>
+        </a>
+      </svelte:fragment>
+    </CMenu>
 
     <a
       href={next_path}
@@ -243,70 +242,6 @@
       &:hover {
         @include fgcolor(primary, 5);
       }
-    }
-  }
-
-  .menu {
-    position: relative;
-    display: flex;
-    &:hover {
-      .menu-wrapper {
-        display: block;
-      }
-    }
-  }
-
-  .menu-trigger {
-    cursor: pointer;
-  }
-
-  .menu-wrapper {
-    display: none;
-    position: absolute;
-    width: 10rem;
-
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .menu-content {
-    margin-bottom: 0.5rem;
-    padding: 0.5rem 0;
-    @include shadow(3);
-    @include bdradi();
-    @include bgcolor(secd);
-  }
-
-  .menu-item {
-    display: block;
-    width: 100%;
-    padding: 0 0.75rem;
-    line-height: 2.25rem;
-    // text-transform: uppercase;
-    font-weight: 500;
-
-    @include flex(0);
-
-    @include border(--bd-main, $loc: top);
-    &:last-child {
-      @include border(--bd-main, $loc: bottom);
-    }
-
-    // @include ftsize(sm);
-
-    @include fgcolor(tert);
-    background: inherit;
-
-    &:hover {
-      @include fgcolor(primary, 5);
-      @include bgcolor(tert);
-    }
-
-    :global(svg) {
-      margin: 0.5rem;
-      width: 1.25rem;
-      height: 1.25rem;
     }
   }
 </style>

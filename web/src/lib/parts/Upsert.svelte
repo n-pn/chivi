@@ -239,6 +239,7 @@
     border-bottom: none;
 
     &:first-child {
+      min-width: 6rem;
       max-width: 38%;
       flex-shrink: 1;
     }
