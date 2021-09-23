@@ -71,12 +71,6 @@
     }
   }
 
-  function render_privi(privi) {
-    if (p_min == privi) return '~'
-    if (p_min > privi) return 'v' + (p_min - privi)
-    return '^' + (privi - p_min)
-  }
-
   function upsert_dict(dname, label) {
     if (dname == 'regular' || dname == 'hanviet') {
       return { dname: 'combine', label: 'Tổng hợp' }
@@ -132,7 +126,6 @@
             <th>Phân loại</th>
             <th>Ư.t</th>
             <th>Người dùng</th>
-            <th>Q.</th>
             <th>Cập nhật</th>
           </tr>
 
@@ -158,11 +151,6 @@
                 type="text"
                 placeholder="-"
                 bind:value={query.uname} /></td>
-            <td
-              ><input
-                type="text"
-                placeholder="-"
-                bind:value={query.privi} /></td>
             <td>
               <button class="m-button btn-sm" on:click={reset_query}>
                 <SIcon name="eraser" />
@@ -240,9 +228,6 @@
               <td class="-uname">
                 <a href="{$page.path}?uname={uname}"
                   >{uname == '_' ? '~' : uname}</a>
-              </td>
-              <td class="-privi" class:_gt={privi > p_min}>
-                <a href="{$page.path}?privi={privi}">{render_privi(privi)}</a>
               </td>
               <td class="-mtime">{render_time(mtime)} </td>
             </tr>

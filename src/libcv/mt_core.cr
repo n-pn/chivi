@@ -85,6 +85,8 @@ class CV::MtCore
       end
 
       terms.each do |key, term|
+        next if term.val[0]? == "[[pass]]"
+
         cost = costs[idx] + term.point
         jump = idx &+ key
 

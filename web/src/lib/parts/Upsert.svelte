@@ -187,9 +187,13 @@
           class:_harmful={term.state == 'Xoá'}
           data-kbd="ctrl+enter"
           {disabled}
-          on:click>
+          on:click={submit_val}>
           <span class="submit-text">{term.state}</span>
         </button>
+      </div>
+
+      <div class="fhint">
+        Gợi ý: Nhập nghĩa là <code>[[pass]]</code> nếu bạn muốn xoá đè.
       </div>
     </section>
 
@@ -301,7 +305,7 @@
 
   .body {
     @include bgcolor(bg-secd);
-    padding: 0 0.75rem 0.75rem;
+    padding: 0 0.75rem;
   }
 
   .field {
@@ -371,7 +375,7 @@
 
   .vfoot {
     display: flex;
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
     justify-content: right;
   }
 
@@ -379,5 +383,15 @@
     margin-left: 0.75rem;
     justify-content: center;
     width: 4.5rem;
+  }
+
+  .fhint {
+    font-size: rem(13px);
+    padding: 0.25rem 0;
+    @include fgcolor(tert);
+    text-align: center;
+    line-height: 1rem;
+    @include clamp();
+    // font-style: italic;
   }
 </style>
