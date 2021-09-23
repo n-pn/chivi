@@ -6,9 +6,9 @@
   export let output = ''
 
   $: [input, lower = 0, upper = input.length] = phrase
-  $: prefix = input.substring(lower - 2, lower)
   $: output = input.substring(lower, upper)
-  $: suffix = input.substring(upper, upper + 2)
+  $: prefix = Array.from(input.substring(lower - 3, lower))
+  $: suffix = Array.from(input.substring(upper, upper + 3))
 
   function move_lower_left() {
     lower -= 1
@@ -33,39 +33,50 @@
   <button
     class="_left"
     data-kbd="h"
-    disabled={lower == 0}
-    on:click={move_lower_left}>
-    <SIcon name="chevron-left" />
-  </button>
-
-  <button
-    class="_left"
-    data-kbd="j"
     disabled={lower >= input.length - 1}
     on:click={move_lower_right}>
     <SIcon name="chevron-right" />
   </button>
 
-  <div class="hanzi">
-    <div class="_key" data-left={prefix} data-right={suffix}>
-      <span class="_txt">{output}</span>
+  <button
+    class="_left"
+    data-kbd="j"
+    disabled={lower == 0}
+    on:click={move_lower_left}>
+    <SIcon name="chevron-left" />
+  </button>
+
+  <div class="key">
+    <div class="key-txt" data-right={suffix}>
+      <span class="key-out">{output}</span>
+      <span class="key-pre">
+        {#each prefix as chr, idx}
+          <span class="key-btn" on:click={() => (lower -= prefix.length - idx)}
+            >{chr}</span>
+        {/each}
+      </span>
+      <span class="key-suf">
+        {#each suffix as chr, idx}
+          <span class="key-btn" on:click={() => (upper += idx + 1)}>{chr}</span>
+        {/each}
+      </span>
     </div>
   </div>
 
   <button
     class="_right"
     data-kbd="k"
-    disabled={upper == 1}
-    on:click={move_upper_left}>
-    <SIcon name="chevron-left" />
+    disabled={upper == input.length}
+    on:click={move_upper_right}>
+    <SIcon name="chevron-right" />
   </button>
 
   <button
     class="_right"
     data-kbd="l"
-    disabled={upper == input.length}
-    on:click={move_upper_right}>
-    <SIcon name="chevron-right" />
+    disabled={upper == 1}
+    on:click={move_upper_left}>
+    <SIcon name="chevron-left" />
   </button>
 
   <div class="_pinyin">
@@ -88,46 +99,51 @@
     @include linesd(--bd-soft);
   }
 
-  .hanzi {
+  .key {
     flex-grow: 1;
     display: flex;
     justify-content: center;
 
     overflow: hidden;
     flex-wrap: nowrap;
-    @include ftsize(lg);
+    @include ftsize(xl);
   }
 
-  ._key {
+  .key-txt {
     font-weight: 500;
     position: relative;
     max-width: 100%;
-    line-height: $height - 0.125rem;
+    line-height: $height;
+  }
 
-    > ._txt {
-      @include clamp($width: 20vw);
-      @include fgcolor(main);
-    }
+  .key-out {
+    @include clamp($width: 20vw);
+    @include fgcolor(main);
+  }
 
-    &:before,
-    &:after {
-      display: block;
-      position: absolute;
-      top: 0;
-      font-weight: 400;
-      height: 100%;
-      white-space: nowrap;
-      @include fgcolor(mute);
-    }
+  .key-pre,
+  .key-suf {
+    display: block;
+    position: absolute;
+    top: 0;
+    font-weight: 400;
+    height: 100%;
+    white-space: nowrap;
+    @include fgcolor(mute);
+  }
 
-    &:before {
-      content: attr(data-left);
-      right: 100%;
-    }
+  .key-pre {
+    right: 100%;
+  }
 
-    &:after {
-      content: attr(data-right);
-      left: 100%;
+  .key-suf {
+    left: 100%;
+  }
+
+  .key-btn {
+    cursor: pointer;
+    @include hover {
+      @include fgcolor(tert);
     }
   }
 
@@ -138,7 +154,7 @@
     position: absolute;
     left: 4.5rem;
     right: 4.5rem;
-    bottom: -0.4125rem;
+    top: -0.5rem;
     height: 1rem;
 
     line-height: 1rem;
