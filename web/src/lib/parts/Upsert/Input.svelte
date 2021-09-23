@@ -150,7 +150,7 @@
     position: absolute;
     left: 4.25rem;
     right: 4.25rem;
-    bottom: -0.5rem;
+    bottom: -0.375rem;
     height: 1rem;
 
     line-height: 1rem;
