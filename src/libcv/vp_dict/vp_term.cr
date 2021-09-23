@@ -17,7 +17,11 @@ class CV::VpTerm
   getter uname : String = "_"
 
   getter dtype : Int32 = 1
-  getter point : Float64 { calc_point }
+  getter point : Float64 do
+    base = 1.5 + rank * 0.125
+    base ** @key.size + @key.size ** base
+  end
+
   getter rtime : Time { EPOCH + @mtime.minutes }
 
   property _prev : VpTerm? = nil
@@ -48,11 +52,6 @@ class CV::VpTerm
 
   def set_rank(@rank : Int32)
     @point = nil
-  end
-
-  private def calc_point
-    base = 1.25 + rank * 0.125 + @dtype * 0.125
-    base ** @key.size + @key.size ** base
   end
 
   def empty?
