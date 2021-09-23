@@ -192,8 +192,10 @@
 
   .head {
     display: flex;
-    padding: 0.5rem 0.5rem;
-    overflow: hidden;
+    margin-bottom: 0.5rem;
+
+    @include bdradi($loc: top);
+    @include linesd(--bd-soft);
 
     > .m-button {
       @include fgcolor(neutral, 5);

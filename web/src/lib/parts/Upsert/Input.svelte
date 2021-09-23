@@ -79,8 +79,8 @@
     <SIcon name="chevron-left" />
   </button>
 
-  <div class="_pinyin">
-    <span class="_text">{pinyin}</span>
+  <div class="pinyin">
+    <span class="pinyin-txt">{pinyin}</span>
   </div>
 </div>
 
@@ -89,14 +89,10 @@
 
   .input {
     display: flex;
-    margin: 0 0.25rem;
-    width: calc(100% - 5rem);
+    width: calc(100% - 4.5rem);
     height: $height;
     position: relative;
-
-    @include bdradi();
-    @include bgcolor(tert);
-    @include linesd(--bd-soft);
+    background-color: inherit;
   }
 
   .key {
@@ -106,7 +102,7 @@
 
     overflow: hidden;
     flex-wrap: nowrap;
-    @include ftsize(xl);
+    @include ftsize(lg);
   }
 
   .key-txt {
@@ -147,26 +143,26 @@
     }
   }
 
-  ._pinyin {
+  .pinyin {
     display: flex;
     justify-content: center;
 
     position: absolute;
-    left: 4.5rem;
-    right: 4.5rem;
-    top: -0.5rem;
+    left: 4.25rem;
+    right: 4.25rem;
+    bottom: -0.5rem;
     height: 1rem;
 
     line-height: 1rem;
     font-size: rem(10px);
+  }
 
-    ._text {
-      padding: 0 0.25rem;
-      display: inline-block;
-      @include clamp($width: null);
-      @include fgcolor(tert);
-      @include bgcolor(tert);
-    }
+  .pinyin-txt {
+    padding: 0 0.25rem;
+    display: inline-block;
+    @include clamp($width: null);
+    @include fgcolor(tert);
+    @include bgcolor(tert);
   }
 
   button {
@@ -175,8 +171,10 @@
     margin: 0;
     line-height: 1em;
     max-width: 65vw;
+
     @include ftsize(lg);
     @include fgcolor(secd);
+    @include border(--bd-soft, $loc: left-right);
 
     &:hover {
       // @include bgcolor(tert);
@@ -187,22 +185,6 @@
       cursor: pointer;
       @include fgcolor(neutral, 5);
       background: transparent;
-    }
-
-    &:first-of-type {
-      @include bdradi($loc: left);
-    }
-
-    &:last-of-type {
-      @include bdradi($loc: right);
-    }
-
-    &._left {
-      @include border(--bd-soft, $loc: right);
-    }
-
-    &._right {
-      @include border(--bd-soft, $loc: left);
     }
   }
 </style>
