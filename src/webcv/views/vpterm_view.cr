@@ -57,9 +57,9 @@ class CV::VpTermView
     end
   end
 
-  def vp_to_json(jb : JSON::Builder, priv_dict : VpDict, publ_dict : VpDict, uniq = false)
+  def vp_to_json(jb : JSON::Builder, priv_dict : VpDict, base_dict : VpDict, uniq = false)
     priv = priv_dict.find(@key)
-    publ = publ_dict.find(@key)
+    base = base_dict.find(@key)
 
     jb.object do
       if priv
@@ -72,21 +72,21 @@ class CV::VpTermView
         jb.field "u_mtime", priv.mtime
         jb.field "u_state", priv.state
 
-        if publ
-          jb.field "p_mtime", publ.mtime
-          jb.field "p_uname", publ.uname
-          jb.field "p_state", publ.state
+        if base
+          jb.field "p_mtime", base.mtime
+          jb.field "p_uname", base.uname
+          jb.field "p_state", base.state
         end
-      elsif publ
-        add_hints(publ)
+      elsif base
+        add_hints(base)
 
-        jb.field "val", publ.val.first
-        jb.field "ptag", publ.ptag.to_str
-        jb.field "rank", publ.rank
+        jb.field "val", base.val.first
+        jb.field "ptag", base.ptag.to_str
+        jb.field "rank", base.rank
 
-        jb.field "p_mtime", publ.mtime
-        jb.field "p_uname", publ.uname
-        jb.field "p_state", publ.state
+        jb.field "p_mtime", base.mtime
+        jb.field "p_uname", base.uname
+        jb.field "p_state", base.state
       elsif uniq && @mt_tag.empty?
         jb.field "val", TextUtils.titleize(hanviet)
         jb.field "ptag", "nr"

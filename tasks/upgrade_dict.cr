@@ -3,8 +3,8 @@ require "../src/libcv/vp_dict"
 MAIN_DIR = "_db/vpdict/main"
 PLEB_DIR = "_db/vpdict/pleb"
 
-def upgrade_main(dname : String, book = false)
-  input = CV::VpDict.load(dname, "_main", reset: true)
+def upgrade_base(dname : String, book = false)
+  input = CV::VpDict.load(dname, "_base", reset: true)
 
   dpath = book ? "books/#{dname}.tsv" : "#{dname}.tsv"
   input.load!("#{MAIN_DIR}/#{dpath}")
@@ -12,7 +12,7 @@ def upgrade_main(dname : String, book = false)
   input.save! unless input.data.size == 0
 end
 
-def upgrade_priv(dname : String, book = false)
+def upgrade_uniq(dname : String, book = false)
   dpath = book ? "books/#{dname}.tsv" : "#{dname}.tsv"
   input = CV::VpDict.new("#{PLEB_DIR}/#{dpath}", dtype: 2)
   return if input.data.size == 0
@@ -29,22 +29,22 @@ end
 
 puts "- upgrade main:"
 
-upgrade_main("regular")
-upgrade_main("hanviet")
-upgrade_main("suggest")
-upgrade_main("combine")
+upgrade_base("regular")
+upgrade_base("hanviet")
+upgrade_base("suggest")
+upgrade_base("combine")
 
 Dir.glob("#{MAIN_DIR}/books/*.tsv").each do |file|
   dname = File.basename(file, ".tsv")
-  upgrade_main(dname, book: true) unless dname == "various"
+  upgrade_base(dname, book: true) unless dname == "various"
 end
 
-puts "- upgrade priv:"
+puts "- upgrade uniq:"
 
-upgrade_priv("regular")
+upgrade_uniq("regular")
 
 Dir.glob("#{PLEB_DIR}/books/*.tsv").each do |file|
   dname = File.basename(file, ".tsv")
   next if dname.includes?(".")
-  upgrade_priv(dname, book: true) unless dname == "various"
+  upgrade_uniq(dname, book: true) unless dname == "various"
 end

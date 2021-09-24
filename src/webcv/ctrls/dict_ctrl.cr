@@ -152,7 +152,7 @@ class CV::DictCtrl < CV::BaseCtrl
 
   def upsert
     dname = params["dname"]
-    stype = params["stype"]? == "_priv" ? cu_dname : "_main"
+    stype = params["stype"]? == "_priv" ? cu_dname : "_base"
 
     vdict = VpDict.load(dname, stype)
     puts [dname, stype, vdict.file].to_s

@@ -80,7 +80,7 @@
     ]
   }
 
-  async function submit_val(stype = '_main') {
+  async function submit_val(stype = '_base') {
     const params = {
       key,
       val: term.val.replace('', '').trim(),
@@ -205,7 +205,7 @@
             data-kbd="enter"
             {disabled}
             on:mouseenter|stopPropagation={() => (vhint = 1)}
-            on:click={() => submit_val('_main')}>
+            on:click={() => submit_val('_base')}>
             <SIcon name="users" />
             <span class="submit-text">{term.state}</span>
           </button>

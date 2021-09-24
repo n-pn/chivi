@@ -33,8 +33,8 @@ class CV::VpDict
 
   CACHE = {} of String => self
 
-  def self.load(dname : String, stype : String = "_main", reset : Bool = false)
-    bonus = stype == "_main" ? 0 : 1
+  def self.load(dname : String, stype : String = "_base", reset : Bool = false)
+    bonus = stype == "_base" ? 0 : 1
 
     CACHE[dname + "/" + stype] ||=
       case dname
@@ -184,7 +184,7 @@ class CV::VpDict
     end
 
     tspan = Time.monotonic - start
-    puts "- <vp_dict> [#{File.basename(file)}] saved: #{@size} entries, \
+    puts "- <vp_dict> [#{file}] saved: #{@size} entries, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.yellow
   end
 end
