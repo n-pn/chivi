@@ -1,52 +1,54 @@
-<script context="module">
-  const types = [
-    ['_prev', 'Cơ bản'],
-    ['_main', 'Nâng cao'],
-    ['_priv', 'Cá nhân'],
-  ]
-</script>
-
 <script>
   import { get_rtime } from '$atoms/RTime.svelte'
+  import SIcon from '$atoms/SIcon.svelte'
+
   export let term
   export let p_min
-  export let p_max
 </script>
 
 <div class="edit">
-  <span>Q. hạn tối thiểu:</span>
+  <SIcon name="lock" />
+  <span class="lbl">Q. hạn:</span>
   <span class="val">{p_min}</span>
-  <span class="sep">|</span>
 
-  {#if term.old_uname && term.old_uname != '~'}
-    <span class="lbl">{term.old_state} bởi: </span>
-    <span class="val user">{term.old_uname}</span>
-    <span class="lbl">Thời gian:</span>
-    <span class="val">{get_rtime(term.old_mtime)}</span>
-  {:else if p_max >= p_min}
-    <span class="lbl">Bạn đủ quyền hạn để thêm/sửa từ</span>
+  <span class="sep">|</span>
+  <SIcon name="users" />
+
+  {#if term._main.uname != '!'}
+    <span class="lbl">{term._main.state}</span>
+    <span class="val">{get_rtime(term._main.mtime)}</span>
+    <span class>bởi</span>
+    <span class="val user">{term._main.uname}</span>
   {:else}
-    <span class="lbl _disable">Bạn chưa đủ quyền hạn để thêm/sửa từ</span>
+    <span>Chưa có lịch sử</span>
+  {/if}
+
+  <span class="sep">|</span>
+  <SIcon name="user" />
+
+  {#if term._priv.uname != '!'}
+    <span>{term._priv.state}:</span>
+    <span class="val">{get_rtime(term._priv.mtime)}</span>
+  {:else}
+    <span>Chưa có lịch sử</span>
   {/if}
 </div>
 
 <style lang="scss">
   .edit {
-    $height: 1rem;
-    @include flex($center: horz, $gap: 0.25rem);
-    line-height: $height;
+    @include flex($center: both, $gap: 0.2rem);
     margin: 0.5rem 0;
-    text-align: center;
-
-    // padding-top: 1px;
+    line-height: 1rem;
     @include ftsize(xs);
     @include fgcolor(tert);
+
+    :global(svg) {
+      margin-right: -0.125rem;
+    }
   }
 
   .lbl {
-    font-style: italic;
-    // prettier-ignore
-    &._disable { @include fgcolor(mute); }
+    @include bps(display, none, $sm: inline);
   }
 
   .val {

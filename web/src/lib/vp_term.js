@@ -1,35 +1,19 @@
 export default class VpTerm {
-  constructor(term = {}) {
-    this._raw = term
+  constructor(priv = { uname: '' }, main = { uname: '' }) {
+    this._priv = priv
+    this._main = main
 
-    this.val = this.old_val = (term.val || [''])[0]
-    this.ptag = term.ptag || ''
-    this.rank = term.rank || 3
-  }
-
-  get old_uname() {
-    return this._raw.uname
-  }
-
-  get old_state() {
-    return this._raw.state
-  }
-
-  get old_mtime() {
-    return this._raw.mtime
+    this.val = this.old = priv.val || main.val
+    this.ptag = priv.ptag || main.ptag || ''
+    this.rank = priv.rank || main.rank || 3
   }
 
   get state() {
-    return !this.val ? 'Xoá' : this.old_val ? 'Sửa' : 'Thêm'
+    return !this.val ? 'Xoá' : this.old ? 'Sửa' : 'Thêm'
   }
 
-  get result() {
-    return {
-      key: this._raw.key,
-      val: this.val.replace('', '').trim(),
-      attr: this.ptag,
-      rank: this.rank,
-    }
+  get fresh() {
+    return !(this._priv.uname || this._main.uname)
   }
 
   clear() {
@@ -39,8 +23,8 @@ export default class VpTerm {
   }
 
   reset() {
-    this.val = this.old_val
-    this.ptag = this._raw.ptag
+    this.val = this.old
+    this.ptag = this._priv.ptag || this._main.ptag || ''
     return this
   }
 

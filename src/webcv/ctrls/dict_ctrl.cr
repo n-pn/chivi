@@ -138,68 +138,25 @@ class CV::DictCtrl < CV::BaseCtrl
   def search
     dname = params["dname"]
     input = params["input"]
-    hints = [] of String
 
-    cvmtl = MtCore.generic_mtl(dname, _cv_user.privi > 0 ? _cv_user.uname : nil)
+    cvmtl = MtCore.generic_mtl(dname, _cv_user.uname)
+    dicts = {
+      VpDict.load(dname, _cv_user.uname),
+      VpDict.load(dname),
+      VpDict.load("regular", _cv_user.uname),
+      VpDict.regular,
+    }
 
-    hints << cvmtl.cv_plain(input, mode: _cv_user.tlmode, cap_mode: 0).to_s
-
-    special_dict = VpDict.load(dname)
-    regular_dict = VpDict.regular
-    hanviet_dict = VpDict.hanviet
-
-    if special_node = find_node(special_dict, input)
-      special_node.edits.each { |term| hints.concat(term.val) }
-    end
-
-    if regular_node = find_node(regular_dict, input)
-      regular_node.edits.each { |term| hints.concat(term.val) }
-    end
-
-    if hanviet_node = find_node(hanviet_dict, input)
-      hanviet_node.edits.each { |term| hints.concat(term.val) }
-    end
-
-    if _cv_user.tlmode < 2
-      special_pleb = VpDict.load("pleb_#{dname}")
-      special_node = find_node(special_pleb, input) || special_node
-
-      regular_pleb = VpDict.load("pleb_regular")
-      regular_node = find_node(regular_pleb, input) || regular_node
-    end
-
-    special_term = special_node.try(&.term) || special_dict.new_term(input)
-    regular_term = regular_node.try(&.term) || regular_dict.new_term(input)
-    hanviet_term = hanviet_node.try(&.term) || hanviet_dict.new_term(input)
-
-    binh_am = MtCore.binh_am_mtl.translit(input).to_s
-    hanviet = MtCore.hanviet_mtl.translit(input).to_s
-
-    find_node(VpDict.suggest, input).try do |node|
-      node.edits.each { |term| hints.concat(term.val) }
-    end
-
-    json_view do |jb|
-      jb.object {
-        jb.field "trans", {binh_am: binh_am, hanviet: hanviet}
-        jb.field "hints", hints.uniq.reject { |x| x.empty? || x == hanviet }
-
-        jb.field "infos" {
-          jb.array {
-            special_term.to_json(jb)
-            regular_term.to_json(jb)
-            hanviet_term.to_json(jb)
-          }
-        }
-      }
-    end
+    json_view(VpTermView.new(input, cvmtl, dicts))
   end
 
   def upsert
     dname = params["dname"]
-    stype = params.fetch_str("stype") == "_priv" ? cu_dname : "_main"
+    stype = params["stype"]? == "_priv" ? cu_dname : "_main"
 
     vdict = VpDict.load(dname, stype)
+    puts [dname, stype, vdict.file].to_s
+
     return halt!(500, "Không đủ quyền hạn!") if cu_privi < vdict.p_min
 
     mtime = VpTerm.mtime(Time.utc)

@@ -128,8 +128,13 @@ class CV::VpDict
       # do not record if term is outdated
       return nil if term.mtime < prev.mtime
 
-      prev._flag = term.amend?(prev) ? 2_u8 : 1_u8
-      term._prev = prev
+      if term.amend?(prev) # skipping previous entry if edit under 5 minutes
+        term._flag = 2_u8
+        term._prev = prev._prev
+      else
+        prev._flag = 1_u8
+        term._prev = prev
+      end
     else
       @size += 1
     end

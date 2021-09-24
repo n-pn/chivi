@@ -27,6 +27,10 @@ class CV::MtList
     @root.set_succ(node)
   end
 
+  def single? : Bool
+    @root.succ.try(&.succ.!) || false
+  end
+
   def to_s : String
     String.build { |io| to_s(io) }
   end

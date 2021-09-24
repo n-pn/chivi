@@ -10,7 +10,7 @@ export async function dict_search(fetch, input, dname = 'combine') {
   return await put_fetch(fetch, url, { input })
 }
 
-export async function dict_upsert(fetch, dname, stype, params) {
-  const url = `/api/dicts/${dname}/upsert?stype=${stype}`
+export async function dict_upsert(fetch, dname, params) {
+  const url = `/api/dicts/${dname}/upsert`
   return await put_fetch(fetch, url, params)
 }

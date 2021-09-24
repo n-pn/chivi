@@ -45,7 +45,9 @@
 
   $: dnames = [dname, 'regular', 'hanviet']
 
-  let trans = []
+  let binh_am = ''
+  let hanviet = ''
+
   let hints = []
   let terms = []
 
@@ -68,23 +70,39 @@
   async function init_search(input, dname) {
     const [err, data] = await dict_search(fetch, input, dname)
     if (err) return
+    console.log({ data })
 
-    trans = data.trans
-    hints = [trans.hanviet, ...data.hints]
-    terms = data.infos.map((x, i) => new VpTerm(x, i + 2, $session.privi))
+    binh_am = data.binh_am
+    hanviet = data.hanviet.val
+
+    hints = [hanviet, ...data.vals.map((x) => x[0])]
+
+    terms = [
+      new VpTerm(data['0_5'], data['0_4']),
+      new VpTerm(data['1_3'], data['1_2']),
+      new VpTerm(data.hanviet),
+    ]
 
     // set some default values if non present
     terms[0].fix_ptag(terms[1].ptag || (terms[1].val ? '' : 'nr'))
-    terms[1].fix_ptag(terms[0]._raw.ptag)
 
-    const first_hint = data.hints[0] || ''
-    terms[0].fix_val(terms[1].val || first_hint || titleize(trans.hanviet, 9))
-    terms[1].fix_val(terms[0].old_val || first_hint || trans.hanviet)
-    terms[2].fix_val(first_hint.toLowerCase() || trans.hanviet)
+    terms[1].fix_ptag(data.tags.map((x) => x[0])[0] || '')
+
+    const first_hint = (data.vals[0] || [''])[0]
+    terms[0].fix_val(terms[1].val || first_hint || titleize(hanviet, 9))
+    terms[1].fix_val(terms[0].old || first_hint || hanviet)
   }
 
   async function submit_val(stype = '_main') {
-    const [status] = await dict_upsert(fetch, stype, dnames[$tab], term.result)
+    const params = {
+      key,
+      val: term.val.replace('', '').trim(),
+      attr: term.ptag,
+      rank: term.rank,
+      stype,
+    }
+
+    const [status] = await dict_upsert(fetch, dnames[$tab], params)
     _dirty = !status
     deactivate()
   }
@@ -98,7 +116,6 @@
       : '_harmful'
 
   let vhint = -1
-  $: console.log({ vhint })
 </script>
 
 <div class="wrap" on:click={deactivate}>
@@ -120,11 +137,7 @@
         </svelte:fragment>
       </CMenu>
 
-      <Input
-        phrase={$input}
-        pinyin={trans.binh_am}
-        bind:output={key}
-        bind:vhint />
+      <Input phrase={$input} pinyin={binh_am} bind:output={key} bind:vhint />
 
       <button
         type="button"
@@ -136,25 +149,27 @@
     </header>
 
     <section class="tabs">
-      <button
+      <div
         class="tab-item _book"
         class:_active={$tab == 0}
-        class:_edited={terms[0]?.old_val}
+        class:_edited={!term[0]?.fresh}
         data-kbd="x"
         on:click={() => tab.set(0)}
         on:mouseenter|stopPropagation={() => (vhint = 3)}>
+        <SIcon name="book" />
         <span>{label}</span>
-      </button>
+      </div>
 
-      <button
+      <div
         class="tab-item"
         class:_active={$tab == 1}
-        class:_edited={terms[1]?.old_val}
+        class:_edited={!terms[1]?.fresh}
         data-kbd="c"
         on:click={() => tab.set(1)}
         on:mouseenter|stopPropagation={() => (vhint = 4)}>
+        <SIcon name="world" />
         <span>Thông dụng</span>
-      </button>
+      </div>
 
       <div class="tab-right">
         <CMenu dir="right">
@@ -181,7 +196,7 @@
       <div class="field">
         <Vhint {hints} bind:term bind:vhint />
 
-        <div class="value" class:_fresh={!term.old_val}>
+        <div class="value" class:_fresh={term.fresh}>
           <input
             type="text"
             class="-input"
@@ -192,7 +207,7 @@
 
           {#if $tab < 2}
             <button class="postag" data-kbd="p" on:click={() => state.set(2)}>
-              {tag_label(term.ptag) || 'Chưa phân'}
+              {tag_label(term.ptag) || 'Phân loại'}
             </button>
           {/if}
         </div>
@@ -210,6 +225,7 @@
             {disabled}
             on:mouseenter|stopPropagation={() => (vhint = 1)}
             on:click={() => submit_val('_main')}>
+            <SIcon name="users" />
             <span class="submit-text">{term.state}</span>
           </button>
 
@@ -292,9 +308,11 @@
   }
 
   .tab-item {
+    cursor: pointer;
+    @include flex($center: vert);
     // text-transform: capitalize;
     font-weight: 500;
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
     background-color: transparent;
 
     height: $tab-height;
@@ -328,6 +346,11 @@
     > span {
       display: block;
       @include clamp($width: 100%);
+    }
+
+    > :global(svg) {
+      width: 1.25rem;
+      margin-right: 0.125rem;
     }
   }
 
@@ -413,12 +436,17 @@
   }
 
   .bgroup-left {
-    width: 4rem;
+    padding-left: 0.5rem;
+    padding-right: 0.25rem;
     @include bdradi(0, $loc: right);
+    @include bps(padding-right, 0.5rem, $sm: 0.25rem);
+
+    > :global(svg) {
+      @include bps(display, none, $sm: inline-block);
+    }
   }
 
   .bgroup-right {
-    // width: 4rem;
     margin-left: -1px;
     @include bdradi(0, $loc: left);
   }
