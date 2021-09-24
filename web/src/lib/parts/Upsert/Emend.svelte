@@ -1,7 +1,14 @@
+<script context="module">
+  const types = [
+    ['_prev', 'Cơ bản'],
+    ['_main', 'Nâng cao'],
+    ['_priv', 'Cá nhân'],
+  ]
+</script>
+
 <script>
   import { get_rtime } from '$atoms/RTime.svelte'
   export let term
-
   export let p_min
   export let p_max
 </script>
@@ -17,19 +24,18 @@
     <span class="lbl">Thời gian:</span>
     <span class="val">{get_rtime(term.old_mtime)}</span>
   {:else if p_max >= p_min}
-    <span class="lbl">Bạn đủ quyền hạn để thêm/sửa từ :)</span>
+    <span class="lbl">Bạn đủ quyền hạn để thêm/sửa từ</span>
   {:else}
-    <span class="lbl _disable">Bạn chưa đủ quyền hạn để thêm/sửa từ :(</span>
+    <span class="lbl _disable">Bạn chưa đủ quyền hạn để thêm/sửa từ</span>
   {/if}
 </div>
 
 <style lang="scss">
-  $height: 1.75rem;
-
   .edit {
+    $height: 1rem;
     @include flex($center: horz, $gap: 0.25rem);
-    height: $height;
     line-height: $height;
+    margin: 0.5rem 0;
     text-align: center;
 
     // padding-top: 1px;

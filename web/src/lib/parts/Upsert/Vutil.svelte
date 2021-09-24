@@ -3,6 +3,7 @@
   import SIcon from '$atoms/SIcon.svelte'
 
   export let term
+  export let vhint
 
   function upcase_val(node, count) {
     const action = (_) => (term.val = titleize(term.val, count))
@@ -28,7 +29,11 @@
       <SIcon name="corner-up-left" />
     </button>
 
-    <button class="-btn" data-kbd="e" on:click={() => (term = term.clear())}>
+    <button
+      class="-btn"
+      data-kbd="e"
+      on:click={() => (term = term.clear())}
+      on:mouseenter|stopPropagation={() => (vhint = 0)}>
       <SIcon name="eraser" />
     </button>
   </div>

@@ -11,6 +11,7 @@
 
 <script>
   export let rank = 3
+  export let vhint
 </script>
 
 <div class="prio">
@@ -18,12 +19,13 @@
     Độ ưu tiên:
   </div>
 
-  {#each lbls as [lbl, val]}
+  {#each lbls as [lbl, val], idx}
     <button
       class="btn"
       class:active={rank == val}
       data-kbd={keys[val]}
-      on:click={() => (rank = val)}>{lbl}</button>
+      on:click={() => (rank = val)}
+      on:mouseenter|stopPropagation={() => (vhint = idx + 6)}>{lbl}</button>
   {/each}
 </div>
 

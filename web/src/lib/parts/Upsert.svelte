@@ -83,17 +83,31 @@
     terms[2].fix_val(first_hint.toLowerCase() || trans.hanviet)
   }
 
-  async function submit_val() {
+  async function submit_val(sname = '_main') {
     const [err] = await dict_upsert(fetch, dnames[$tab], term.result)
     _dirty = !err
     deactivate()
   }
 
   $: disabled = $session.privi < $tab + 1
+  $: btn_style = disabled ? '_line' : '_fill'
+  $: btn_state =
+    term.state == 'Thêm'
+      ? '_success'
+      : term.state == 'Sửa'
+      ? '_primary'
+      : '_harmful'
+
+  let vhint = -1
+  $: console.log({ vhint })
 </script>
 
 <div class="wrap" on:click={deactivate}>
-  <div id="upsert" class="main" on:click|stopPropagation={focus_on_value}>
+  <div
+    id="upsert"
+    class="main"
+    on:click|stopPropagation={focus_on_value}
+    on:mouseenter={() => (vhint = -1)}>
     <header class="head">
       <CMenu dir="left" loc="top">
         <button class="m-button _text" slot="trigger">
@@ -107,7 +121,11 @@
         </svelte:fragment>
       </CMenu>
 
-      <Input phrase={$input} pinyin={trans.binh_am} bind:output={key} />
+      <Input
+        phrase={$input}
+        pinyin={trans.binh_am}
+        bind:output={key}
+        bind:vhint />
 
       <button
         type="button"
@@ -124,7 +142,8 @@
         class:_active={$tab == 0}
         class:_edited={terms[0]?.old_val}
         data-kbd="x"
-        on:click={() => tab.set(0)}>
+        on:click={() => tab.set(0)}
+        on:mouseenter|stopPropagation={() => (vhint = 3)}>
         <span>{label}</span>
       </button>
 
@@ -133,7 +152,8 @@
         class:_active={$tab == 1}
         class:_edited={terms[1]?.old_val}
         data-kbd="c"
-        on:click={() => tab.set(1)}>
+        on:click={() => tab.set(1)}
+        on:mouseenter|stopPropagation={() => (vhint = 4)}>
         <span>Thông dụng</span>
       </button>
 
@@ -144,7 +164,11 @@
           </button>
 
           <svelte:fragment slot="content">
-            <button class="-item" data-kbd={'c'} on:click={() => tab.set(2)}>
+            <button
+              class="-item"
+              data-kbd={'c'}
+              on:click={() => tab.set(2)}
+              on:mouseenter|stopPropagation={() => (vhint = 5)}>
               <span>Hán Việt</span>
             </button>
           </svelte:fragment>
@@ -156,7 +180,7 @@
       <Emend {term} p_min={$tab + 1} p_max={$session.privi} />
 
       <div class="field">
-        <Vhint {hints} bind:term />
+        <Vhint {hints} bind:term bind:vhint />
 
         <div class="value" class:_fresh={!term.old_val}>
           <input
@@ -174,30 +198,35 @@
           {/if}
         </div>
 
-        <Vutil bind:term />
+        <Vutil bind:term bind:vhint />
       </div>
 
       <div class="vfoot">
-        <Vrank bind:rank={term.rank} />
+        <Vrank bind:rank={term.rank} bind:vhint />
 
-        <button
-          class="submit m-button btn-lg {disabled ? '_line' : '_fill'}"
-          class:_success={term.state == 'Thêm'}
-          class:_primary={term.state == 'Sửa'}
-          class:_harmful={term.state == 'Xoá'}
-          data-kbd="ctrl+enter"
-          {disabled}
-          on:click={submit_val}>
-          <span class="submit-text">{term.state}</span>
-        </button>
-      </div>
+        <div class="bgroup">
+          <button
+            class="bgroup-left m-button btn-lg {btn_state} {btn_style} "
+            data-kbd="enter"
+            {disabled}
+            on:mouseenter|stopPropagation={() => (vhint = 1)}
+            on:click={() => submit_val('_main')}>
+            <span class="submit-text">{term.state}</span>
+          </button>
 
-      <div class="fhint">
-        Gợi ý: Nhập nghĩa là <code>[[pass]]</code> nếu bạn muốn xoá đè.
+          <button
+            class="bgroup-right m-button btn-lg {btn_state} {btn_style}"
+            data-kbd="shift+enter"
+            {disabled}
+            on:mouseenter|stopPropagation={() => (vhint = 2)}
+            on:click={() => submit_val('_priv')}>
+            <SIcon name="user" />
+          </button>
+        </div>
       </div>
     </section>
 
-    <Links {key} />
+    <Links {key} dlabel={label} bind:vhint />
   </div>
 </div>
 
@@ -323,7 +352,7 @@
 
   .value {
     display: flex;
-    $h-outer: 3rem;
+    $h-outer: 3.25rem;
     $h-inner: 1.75rem;
 
     height: $h-outer;
@@ -375,23 +404,23 @@
 
   .vfoot {
     display: flex;
-    margin-top: 0.5rem;
+    margin: 0.75rem 0;
     justify-content: right;
   }
 
-  .submit {
+  .bgroup {
     margin-left: 0.75rem;
-    justify-content: center;
-    width: 4.5rem;
+    @include flex();
   }
 
-  .fhint {
-    font-size: rem(13px);
-    padding: 0.25rem 0;
-    @include fgcolor(tert);
-    text-align: center;
-    line-height: 1rem;
-    @include clamp();
-    // font-style: italic;
+  .bgroup-left {
+    width: 4rem;
+    @include bdradi(0, $loc: right);
+  }
+
+  .bgroup-right {
+    // width: 4rem;
+    margin-left: -1px;
+    @include bdradi(0, $loc: left);
   }
 </style>

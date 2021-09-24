@@ -16,9 +16,9 @@
 
 <style lang="scss">
   .hints {
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem 0.5rem;
     font-style: italic;
-    height: 1.75rem;
+    height: 2rem;
     line-height: 1.25rem;
 
     @include flex();
