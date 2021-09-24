@@ -4,11 +4,9 @@ require "file_utils"
 require "./vp_dict/*"
 
 class CV::VpDict
-  DIR = "_db/vpdict/main"
-  ::FileUtils.mkdir_p("#{DIR}/books")
-
-  PLEB = "_db/vpdict/pleb"
-  ::FileUtils.mkdir_p("#{PLEB}/books")
+  DIR = "db/vpdicts"
+  ::FileUtils.mkdir_p("#{DIR}/core")
+  ::FileUtils.mkdir_p("#{DIR}/priv")
 
   # group: local, chivi, cvdev etc.
   class_property suffix : String = ENV["SUFFIX"]? || "local"
@@ -28,30 +26,30 @@ class CV::VpDict
   class_getter suggest : self { load("suggest") }
 
   class_getter udicts : Array(String) do
-    files = ::Dir.glob("#{DIR}/books/*.tsv")
-    files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
-    files.map { |f| File.basename(f, ".tsv") }
+    dirs = Dir.glob("#{DIR}/priv/*/")
+    dirs.sort_by! { |dir| File.info(dir).modification_time.to_unix.- }
+    dirs.map { |dir| File.basename(dir) }
   end
 
   CACHE = {} of String => self
 
-  def self.load(dname : String, reset : Bool = false)
-    CACHE[dname] ||=
+  def self.load(dname : String, stype : String = "_main", reset : Bool = false)
+    bonus = stype == "_main" ? 0 : 1
+
+    CACHE[dname + "/" + stype] ||=
       case dname
-      when "trungviet", "cc_cedict", "trich_dan"
-        new("db/vpdicts/#{dname}.tsv", dtype: 0, p_min: 5, reset: reset)
-      when "fixture", "essence", "tradsim", "binh_am"
-        new("db/vpdicts/#{dname}.tsv", dtype: 1, p_min: 4, reset: reset)
+      when "trungviet", "cc_cedict", "trich_dan", "tradsim", "binh_am"
+        new(path(dname), dtype: 0, p_min: 4, reset: reset)
+      when "fixture", "essence"
+        new(path(dname), dtype: 1, p_min: 4, reset: reset)
       when "suggest", "hanviet"
-        new(path(dname), dtype: 2, p_min: 3, reset: reset)
-      when "regular", "combine"
-        new(path(dname), dtype: 2, p_min: 2, reset: reset)
-      when "pleb_regular"
-        new(pleb_path("regular"), dtype: 2, p_min: 2, reset: reset)
-      when .starts_with?("pleb_")
-        new(pleb_path(dname.sub("pleb_", "books/")), dtype: 3, p_min: 1, reset: reset)
+        new(path("core/#{dname}"), dtype: 1, p_min: 3, reset: reset)
+      when "regular"
+        new(path("core/regular/#{stype}"), dtype: 2 + bonus, p_min: 2, reset: reset)
+      when "combine"
+        new(path("core/combine/#{stype}"), dtype: 4 + bonus, p_min: 1, reset: reset)
       else
-        new(path("books/#{dname}"), dtype: 3, p_min: 1, reset: reset)
+        new(path("priv/#{dname}/#{stype}"), dtype: 4 + bonus, p_min: 1, reset: reset)
       end
   end
 
@@ -59,14 +57,9 @@ class CV::VpDict
     File.join(DIR, "#{label}.tsv")
   end
 
-  def self.pleb_path(label : String)
-    File.join(PLEB, "#{label}.tsv")
-  end
-
   #########################
 
   getter file : String
-  getter flog : String
 
   getter trie = VpTrie.new
   getter data = [] of VpTerm
@@ -76,32 +69,22 @@ class CV::VpDict
   getter dtype : Int32 # dict type
   getter p_min : Int32 # minimal user power required
 
-  def initialize(@file : String, @dtype = 0, @p_min = 1, reset = false)
-    @flog = @file.sub("main", "logs").sub(".tsv", ".#{@@suffix}.tsv")
-    load!(@file) unless reset || !File.exists?(@file)
+  def initialize(@file : String, @dtype = 1, @p_min = 1, reset = false)
+    load!(@file) if !reset && File.exists?(@file)
   end
 
-  def load!(file : String) : Nil
-    count = 0
+  def load!(file : String = @file) : Nil
+    start = Time.monotonic
+    lines = File.read_lines(file)
 
-    tspan = Time.measure do
-      File.each_line(file) do |line|
-        next if line.strip.blank?
-
-        cols = line.split('\t')
-        term = VpTerm.new(cols, dtype: @dtype)
-        set(term)
-
-        count += 1
-      rescue err
-        puts "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red
-      end
-
-      # remove duplicate entries
-      @trie.each { |node| node.prune! }
+    lines.each do |line|
+      set(VpTerm.new(line.split('\t'), dtype: @dtype))
+    rescue err
+      puts "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red
     end
 
-    puts "- <vp_dict> [#{file}] loaded: #{count} lines, \
+    tspan = Time.monotonic - start
+    puts "- <vp_dict> [#{file}] loaded: #{lines.size} lines, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
   end
 
@@ -110,19 +93,23 @@ class CV::VpDict
     VpTerm.new(key, val, attr, rank, mtime, uname, dtype: @dtype)
   end
 
-  def set(key : String, val : Array(String), ext = "")
-    term = new_term(key, val, ext)
-    set(term)
+  def new_term(term : VpTerm)
+    VpTerm.new(term.key, term.val, term.attr,
+      term.rank, term.mtime, term.uname,
+      dtype: @dtype)
   end
 
-  # return true if new term prevails
-  def set(term : VpTerm) : Bool
+  def set(key : String, val : Array(String), attr = "")
+    set(new_term(key, val, attr))
+  end
+
+  def set(term : VpTerm) : VpTerm?
     # find existing node or force creating new one
     node = @trie.find!(term.key)
 
     if prev = node.term
       # do not record if term is outdated
-      return false if term.mtime < prev.mtime
+      return nil if term.mtime < prev.mtime
 
       prev._flag = term.amend?(prev) ? 2_u8 : 1_u8
       term._prev = prev
@@ -131,22 +118,15 @@ class CV::VpDict
     end
 
     @data << term
-    node.term = term
-    node.edits << term
-
-    true
+    node.push(term)
   end
 
-  def set!(new_term : VpTerm) : Bool
-    return false unless set(new_term)
-
-    FileUtils.mkdir_p(File.dirname(@flog))
-    line = "\n#{new_term}"
-
-    File.write(@file, line, mode: "a")
-    File.write(@flog, line, mode: "a") if new_term.mtime > 0
-
-    true
+  def set!(new_term : VpTerm) : VpTerm?
+    set(new_term).try do
+      FileUtils.mkdir_p(File.dirname(@file))
+      File.write(@file, "\n#{new_term}", mode: "a")
+      new_term
+    end
   end
 
   def find(key : String) : VpTerm?
@@ -158,47 +138,31 @@ class CV::VpDict
   end
 
   delegate scan, to: @trie
-  delegate to_a, to: @trie
 
   def each : Nil
     @trie.each do |node|
-      if term = node.term
-        yield term
-      end
+      node.term.try { |x| yield x }
     end
   end
 
   def full_each : Nil
     @trie.each do |node|
-      node.edits.each { |term| yield term }
+      node.edits.each { |x| yield x }
     end
   end
 
-  def save!(prune : Bool = false) : Nil
-    # TODO: remove duplicate entries
+  def save!(file = @file, prune = 2_u8) : Nil
+    start = Time.monotonic
 
-    ::FileUtils.mkdir_p(File.dirname(@file))
-
+    ::FileUtils.mkdir_p(File.dirname(file))
     @data.sort_by! { |x| {x.mtime, x.key.size, x.key} }
-    @data.uniq! { |x| {x.key, x.uname, x.val, x.attr, x.rank} }
 
-    tspan = Time.measure do
-      File.open(@file, "w") do |io|
-        @data.each { |term| io.puts(term) unless term._flag == 2_u8 }
-      end
-
-      logs = @data.select(&.mtime.> 0)
-
-      if logs.empty?
-        File.delete(@flog) if File.exists?(@flog)
-      else
-        File.open(@flog, "w") do |io|
-          logs.each { |term| io.puts(term) }
-        end
-      end
+    File.open(@file, "w") do |io|
+      @data.each { |x| io.puts(x) if x._flag < prune }
     end
 
-    puts "- <vp_dict> [#{File.basename(@file)}] saved: #{@size} entries, \
+    tspan = Time.monotonic - start
+    puts "- <vp_dict> [#{File.basename(file)}] saved: #{@size} entries, \
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.yellow
   end
 end

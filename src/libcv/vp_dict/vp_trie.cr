@@ -49,4 +49,9 @@ class CV::VpTrie
     @edits.sort_by(&.mtime).each { |term| map[term.uname] = term }
     @edits = map.values
   end
+
+  def push(term : VpTerm) : VpTerm
+    @edits << term
+    @term = term
+  end
 end

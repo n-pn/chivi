@@ -198,11 +198,9 @@ class CV::DictCtrl < CV::BaseCtrl
 
   def upsert
     dname = params["dname"]
-    stype = params.fetch_str("stype", "_main")
-    stype = cu_dname if stype == "_priv"
+    stype = params.fetch_str("stype") == "_priv" ? cu_dname : "_main"
 
-    # TODO: change to load using stype
-    vdict = VpDict.load(_cv_user.tlmode < 2 ? "pleb_#{dname}" : dname)
+    vdict = VpDict.load(dname, stype)
     return halt!(500, "Không đủ quyền hạn!") if cu_privi < vdict.p_min
 
     mtime = VpTerm.mtime(Time.utc)
@@ -213,28 +211,31 @@ class CV::DictCtrl < CV::BaseCtrl
     attr = params.fetch_str("attr")
     rank = params["rank"]?.try(&.to_u8) || 3_u8
 
-    new_term = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cu_dname)
-    return halt!(501, "Không thay đổi!") unless vdict.set!(new_term)
+    vpterm = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cu_dname)
+    return halt!(501, "Không thay đổi!") unless vdict.set!(vpterm)
 
     # TODO: save context
 
-    if vdict.dtype == 3 # book dict
-      # add to quick translation dict if entry is a name
-      if key.size > 2 && new_term.ptag.nper?
-        combine_term = VpDict.combine.new_term(key, val, attr, rank, mtime: mtime)
-        VpDict.combine.set!(combine_term)
-      end
-
-      # add to suggestion
+    # add to suggestion
+    if vdict.dtype > 2
       suggest_term = VpDict.suggest.new_term(key, val, attr, rank, mtime: mtime)
 
-      if old_term = VpDict.suggest.find(key)
-        suggest_term.val.concat(old_term.val).uniq!
+      VpDict.suggest.find(key).try do |prev|
+        suggest_term.val.concat(prev.val).uniq!
       end
 
       VpDict.suggest.set!(suggest_term)
     end
 
-    show_json(new_term)
+    # add to qtran dict if entry is a person name
+    if vdict.dtype > 3 && dname != "combine"
+      if key.size > 1 && vpterm.ptag.nper?
+        combine_dict = VpDict.load("combine", stype)
+        combine_term = combine_dict.new_term(key, val, attr, rank, mtime: mtime)
+        combine_dict.set!(combine_term)
+      end
+    end
+
+    show_json(vpterm)
   end
 end
