@@ -18,7 +18,7 @@
     state.set(_state)
   }
 
-  export function deactivate() {
+  export function deactivate(_evt) {
     state.set(0)
   }
 </script>
@@ -83,14 +83,13 @@
     terms[2].fix_val(first_hint.toLowerCase() || trans.hanviet)
   }
 
-  async function submit_val(sname = '_main') {
-    const [err] = await dict_upsert(fetch, dnames[$tab], term.result)
-    _dirty = !err
+  async function submit_val(stype = '_main') {
+    const [status] = await dict_upsert(fetch, stype, dnames[$tab], term.result)
+    _dirty = !status
     deactivate()
   }
 
   $: disabled = $session.privi < $tab + 1
-  $: btn_style = disabled ? '_line' : '_fill'
   $: btn_state =
     term.state == 'Thêm'
       ? '_success'
@@ -193,7 +192,7 @@
 
           {#if $tab < 2}
             <button class="postag" data-kbd="p" on:click={() => state.set(2)}>
-              {tag_label(term.ptag) || 'Chưa phân loại'}
+              {tag_label(term.ptag) || 'Chưa phân'}
             </button>
           {/if}
         </div>
@@ -206,7 +205,7 @@
 
         <div class="bgroup">
           <button
-            class="bgroup-left m-button btn-lg {btn_state} {btn_style} "
+            class="bgroup-left m-button btn-lg _fill {btn_state}  "
             data-kbd="enter"
             {disabled}
             on:mouseenter|stopPropagation={() => (vhint = 1)}
@@ -215,7 +214,7 @@
           </button>
 
           <button
-            class="bgroup-right m-button btn-lg {btn_state} {btn_style}"
+            class="bgroup-right m-button btn-lg _fill {btn_state} "
             data-kbd="shift+enter"
             {disabled}
             on:mouseenter|stopPropagation={() => (vhint = 2)}
