@@ -93,16 +93,13 @@ class CV::DictCtrl < CV::BaseCtrl
     raise err
   end
 
-  alias Lookup = Hash(String, Array(String))
+  alias Lookup = Hash(Symbol, Array(String))
 
   def lookup
     dname = params["dname"]
     input = params["input"].strip
 
-    dicts = [VpDict.load(dname)]
-    dicts << VpDict.load("pleb_" + dname) if _cv_user.tlmode < 2
-    dicts << VpDict.regular
-    dicts << VpDict.load("pleb_regular") if _cv_user.tlmode < 2
+    vietphrase = VpDict.for_lookup(dname, _cv_user.uname)
 
     chars = input.chars
     upper = chars.size - 1
@@ -112,18 +109,19 @@ class CV::DictCtrl < CV::BaseCtrl
         hash[key] = Lookup.new { |h, k| h[k] = [] of String }
       end
 
-      dicts.each do |dict|
-        dict.scan(chars, idx) do |item|
-          entry[item.key.size]["vietphrase"].concat(item.val).uniq!
+      vietphrase.each do |dict, type|
+        dict.scan(chars, idx) do |term|
+          value = "#{type}: #{term.val.join("/")}"
+          entry[term.key.size][:vietphrase] << value
         end
       end
 
       VpDict.trungviet.scan(chars, idx) do |item|
-        entry[item.key.size]["trungviet"] = item.val
+        entry[item.key.size][:trungviet] = item.val
       end
 
       VpDict.cc_cedict.scan(chars, idx) do |item|
-        entry[item.key.size]["cc_cedict"] = item.val
+        entry[item.key.size][:cc_cedict] = item.val
       end
 
       entry.to_a.sort_by(&.[0].-)
@@ -142,8 +140,9 @@ class CV::DictCtrl < CV::BaseCtrl
     input = params["input"]
     hints = [] of String
 
-    libcv = MtCore.generic_mtl(dname, mode: _cv_user.tlmode)
-    hints << libcv.cv_plain(input, mode: _cv_user.tlmode, cap_mode: 0).to_s
+    cvmtl = MtCore.generic_mtl(dname, _cv_user.privi > 0 ? _cv_user.uname : nil)
+
+    hints << cvmtl.cv_plain(input, mode: _cv_user.tlmode, cap_mode: 0).to_s
 
     special_dict = VpDict.load(dname)
     regular_dict = VpDict.regular
@@ -180,7 +179,7 @@ class CV::DictCtrl < CV::BaseCtrl
       node.edits.each { |term| hints.concat(term.val) }
     end
 
-    show_json do |jb|
+    json_view do |jb|
       jb.object {
         jb.field "trans", {binh_am: binh_am, hanviet: hanviet}
         jb.field "hints", hints.uniq.reject { |x| x.empty? || x == hanviet }
@@ -236,6 +235,6 @@ class CV::DictCtrl < CV::BaseCtrl
       end
     end
 
-    show_json(vpterm)
+    json_view(vpterm)
   end
 end

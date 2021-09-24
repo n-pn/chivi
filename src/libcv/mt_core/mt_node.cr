@@ -63,7 +63,7 @@ class CV::MtNode
     self
   end
 
-  def update!(@val = @val, @tag = @tag, @dic = 9) : self
+  def update!(@val = @val, @tag = @tag, @dic = 1) : self
     self
   end
 
@@ -73,7 +73,7 @@ class CV::MtNode
     @dic = other.dic if @dic < other.dic
   end
 
-  def fuse_left!(left = @prev.try(&.val) || "", right = "", @dic = 5) : Nil
+  def fuse_left!(left = @prev.try(&.val) || "", right = "", @dic = 6) : Nil
     return unless prev = @prev
 
     @key = "#{prev.key}#{@key}"
@@ -83,7 +83,7 @@ class CV::MtNode
     self.prev.try(&.succ = self)
   end
 
-  def fuse_right!(@val : String, @dic = 5) : Nil
+  def fuse_right!(@val : String, @dic = 6) : Nil
     return unless succ = @succ
 
     @key = "#{@key}#{succ.key}"

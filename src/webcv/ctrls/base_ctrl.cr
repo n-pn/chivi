@@ -42,7 +42,7 @@ class CV::BaseCtrl < Amber::Controller::Base
     yield response
   end
 
-  def show_json(status_code = 200)
+  def json_view(status_code = 200)
     response.status_code = status_code
     response.content_type = "application/json"
 
@@ -54,8 +54,8 @@ class CV::BaseCtrl < Amber::Controller::Base
     JSON.build(response) { |jb| yield jb }
   end
 
-  def show_json(data : Object, status_code = 200)
-    show_json(status_code) { |jb| data.to_json(jb) }
+  def json_view(data : Object, status_code = 200)
+    json_view(status_code) { |jb| data.to_json(jb) }
   end
 
   def halt!(status_code : Int32 = 200, content = "")

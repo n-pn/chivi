@@ -83,7 +83,7 @@ class CV::BookCtrl < CV::BaseCtrl
 
     response.headers.add("Cache-Control", "min-fresh=30")
 
-    show_json do |jb|
+    json_view do |jb|
       jb.object {
         jb.field "cvbook" { CvbookView.render(jb, cvbook, full: true) }
         jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }

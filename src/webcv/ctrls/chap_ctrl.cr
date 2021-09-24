@@ -66,38 +66,22 @@ class CV::ChapCtrl < CV::BaseCtrl
       return halt!(404, "Chương tiết không tồn tại!")
     end
 
-    # if _cv_user.privi >= 0
-    #   Ubmemo.upsert!(_cv_user, zhbook.cvbook) do |memo|
-    #     unless memo.locked
-    #       memo.bumped = Time.utc.to_unix
+    json_view do |jb|
+      jb.object {
+        jb.field "sname", zhbook.sname
+        jb.field "clink", zhbook.clink(curr[0])
 
-    #       memo.lr_zseed = zhbook.zseed
-    #       memo.lr_chidx = chidx
+        jb.field "total", zhbook.chap_count
+        jb.field "chidx", chidx
+        jb.field "schid", curr[0]
 
-    #       memo.lc_title = curr[1]
-    #       memo.lc_uslug = curr[3]
-    #     end
-    #   end
-    # end
+        jb.field "title", curr[1]
+        jb.field "label", curr[2]
+        jb.field "uslug", curr[3]
 
-    render_json do |res|
-      JSON.build(res) do |jb|
-        jb.object {
-          jb.field "sname", zhbook.sname
-          jb.field "clink", zhbook.clink(curr[0])
-
-          jb.field "total", zhbook.chap_count
-          jb.field "chidx", chidx
-          jb.field "schid", curr[0]
-
-          jb.field "title", curr[1]
-          jb.field "label", curr[2]
-          jb.field "uslug", curr[3]
-
-          jb.field "prev_url", zhbook.chinfo.url_for(chidx - 2)
-          jb.field "next_url", zhbook.chinfo.url_for(chidx)
-        }
-      end
+        jb.field "prev_url", zhbook.chinfo.url_for(chidx - 2)
+        jb.field "next_url", zhbook.chinfo.url_for(chidx)
+      }
     end
   end
 
@@ -113,12 +97,28 @@ class CV::ChapCtrl < CV::BaseCtrl
     zh_mode = params.fetch_int("mode")
     zh_mode = _cv_user.privi if zh_mode > _cv_user.privi
 
-    response.headers.add("Cache-Control", "public, min-fresh=60")
-    response.content_type = "text/plain; charset=utf-8"
-
     fetchable = zhbook.remote_text?(chidx, _cv_user.privi)
     zh_text = chtext.get_zh!(fetchable, reset: zh_mode > 1)
-    context.content = zh_text ? chtext.trans!(zh_text, mode: _cv_user.tlmode) : ""
+    tl_mode = _cv_user.tlmode
+
+    response.headers.add("Cache-Control", "private, min-fresh=60")
+    response.content_type = "text/plain; charset=utf-8"
+    context.content = zh_text ? convert(bhash, zh_text, mode: tl_mode) : ""
+  end
+
+  private def convert(dname, lines : Array(String), mode = 2)
+    stype = _cv_user.privi > 0 ? _cv_user.uname : nil
+    cvmtl = MtCore.generic_mtl(dname, stype)
+
+    String.build do |io|
+      cvmtl.cv_title_full(lines[0], mode: mode).to_str(io)
+
+      1.upto(lines.size - 1) do |i|
+        io << "\n"
+        para = lines.unsafe_fetch(i)
+        cvmtl.cv_plain(para, mode: mode).to_str(io)
+      end
+    end
   end
 
   def upsert

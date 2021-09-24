@@ -11,7 +11,7 @@ class CV::MemoCtrl < CV::BaseCtrl
     query = Ubmemo.query.where("cvuser_id = #{_cv_user.id}")
     query = query.limit(take).offset(skip).order_by(bumped: :desc)
 
-    show_json do |jb|
+    json_view do |jb|
       jb.array do
         query.with_cvbook.each do |ubmemo|
           jb.object {
@@ -40,7 +40,7 @@ class CV::MemoCtrl < CV::BaseCtrl
 
     cvbook_id = params["book_id"].to_i64
     ubmemo = Ubmemo.find_or_new(_cv_user.id, cvbook_id)
-    show_json { |jb| UbmemoView.render(jb, ubmemo) }
+    json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
     halt!(500, err.message)
   end
@@ -61,7 +61,7 @@ class CV::MemoCtrl < CV::BaseCtrl
       memo.lc_uslug = params.fetch_str("uslug")
     end
 
-    show_json { |jb| UbmemoView.render(jb, ubmemo) }
+    json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
     puts err
     halt! 500, err.message
@@ -74,7 +74,7 @@ class CV::MemoCtrl < CV::BaseCtrl
     status = Ubmemo.status(params.fetch_str("status", "default"))
 
     ubmemo = Ubmemo.upsert!(_cv_user.id, cvbook_id, &.status = status)
-    show_json { |jb| UbmemoView.render(jb, ubmemo) }
+    json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
     halt!(500, err.message)
   end

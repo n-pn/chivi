@@ -125,7 +125,6 @@ module CV::Improving
              .modifier?, .modiform?
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
-          node.dic = 6
         when .nouns?, .propers?
           if (prev_3 = prev_2.prev)
             if verb_subject?(prev_3, node)
@@ -150,7 +149,6 @@ module CV::Improving
 
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " của #{prev.val}")
-          node.dic = 6
           break
         else
           break

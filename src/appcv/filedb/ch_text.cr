@@ -16,8 +16,9 @@ class CV::ChText
   end
 
   @zh_text : Array(String)? = nil
-  @cv_data : String?
-  @cv_time : Time
+
+  # @cv_data : String?
+  # @cv_time : Time
 
   def initialize(@bname : String, @sname : String, @snvid : String,
                  @index : Int32, @schid : String)
@@ -26,46 +27,45 @@ class CV::ChText
     zip_bname = (@index // 100).to_s.rjust(3, '0')
     @zip_file = File.join(@text_dir, zip_bname + ".zip")
 
-    @cv_data = nil
-    @cv_time = Time.unix(0)
+    # @cv_data = nil
+    # @cv_time = Time.unix(0)
   end
 
-  def get_cv!(power = 4, mode = 0) : String
-    if @cv_data && mode == 0
-      return @cv_data.not_nil! if @cv_time >= Time.utc - cv_ttl(power)
-    end
+  # def get_cv!(power = 4, mode = 0) : String
+  #   if @cv_data && mode == 0
+  #     return @cv_data.not_nil! if @cv_time >= Time.utc - cv_ttl(power)
+  #   end
 
-    zh_lines = get_zh!(power, reset: mode > 1) || [""]
+  #   zh_lines = get_zh!(power, reset: mode > 1) || [""]
 
-    @cv_time = Time.utc
-    @cv_data = trans!(zh_lines) || ""
-  end
+  #   @cv_time = Time.utc
+  #   @cv_data = trans!(zh_lines) || ""
+  # end
 
-  private def cv_ttl(power = 4)
-    case power
-    when 0 then 1.week
-    when 1 then 1.days
-    when 2 then 3.hours
-    else        10.minutes
-    end
-  end
+  # private def cv_ttl(power = 4)
+  #   case power
+  #   when 0 then 1.week
+  #   when 1 then 1.days
+  #   when 2 then 3.hours
+  #   else        10.minutes
+  #   end
+  # end
 
-  def trans!(lines : Array(String), mode = 2)
-    return "" if lines.empty?
+  # def trans!(lines : Array(String), cvmlt : MtCore, mode = 2)
+  #   return "" if lines.empty?
 
-    String.build do |io|
-      mtl = MtCore.generic_mtl(@bname, mode: mode)
-      mtl.cv_title_full(lines[0], mode: mode).to_str(io)
+  #   String.build do |io|
+  #     cvmtl.cv_title_full(lines[0], mode: mode).to_str(io)
 
-      1.upto(lines.size - 1) do |i|
-        io << "\n"
-        para = lines.unsafe_fetch(i)
-        mtl.cv_plain(para, mode: mode).to_str(io)
-      end
+  #     1.upto(lines.size - 1) do |i|
+  #       io << "\n"
+  #       para = lines.unsafe_fetch(i)
+  #       cvmtl.cv_plain(para, mode: mode).to_str(io)
+  #     end
 
-      puts "- <ch_text> [#{@sname}/#{@snvid}/#{@index}] converted.".colorize.cyan
-    end
-  end
+  #     puts "- <ch_text> [#{@sname}/#{@snvid}/#{@index}] converted.".colorize.cyan
+  #   end
+  # end
 
   def get_zh!(remote = false, reset = false)
     @zh_text ||= load_zh!
@@ -98,11 +98,8 @@ class CV::ChText
     puts "- Fetch zh_text error: #{err}".colorize.red
   end
 
-  def set_zh!(lines : Array(String))
-    @zh_text = lines
-    @cv_data = nil
-
-    save_zh!(lines)
+  def set_zh!(@zh_text : Array(String))
+    save_zh!(zh_text)
   end
 
   def save_zh!(lines : Array(String)) : Nil

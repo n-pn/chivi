@@ -40,7 +40,7 @@ class CV::VpDict
       case dname
       when "trungviet", "cc_cedict", "trich_dan", "tradsim", "binh_am"
         new(path(dname), dtype: 0, p_min: 4, reset: reset)
-      when "fixture", "essence"
+      when "fixture"
         new(path(dname), dtype: 1, p_min: 4, reset: reset)
       when "suggest", "hanviet"
         new(path("core/#{dname}"), dtype: 1, p_min: 3, reset: reset)
@@ -55,6 +55,23 @@ class CV::VpDict
 
   def self.path(label : String)
     File.join(DIR, "#{label}.tsv")
+  end
+
+  def self.for_lookup(dname : String, stype : String)
+    {
+      {VpDict.load(dname, stype), "Riêng"},
+      {VpDict.load(dname), "Chung"},
+      {VpDict.load("regular", stype), "Riêng"},
+      {VpDict.regular, "Chung"},
+    }
+  end
+
+  def self.for_convert(dname : String, stype : String? = nil)
+    dicts = [regular, fixture]               # public generic
+    dicts << load("regular", stype) if stype # private generic
+    dicts << load(dname)                     # public unique
+    dicts << load(dname, stype) if stype     # private unique
+    dicts
   end
 
   #########################
