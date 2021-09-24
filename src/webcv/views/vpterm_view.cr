@@ -16,76 +16,103 @@ class CV::VpTermView
     @mt_tag = mt_list.first?.try { |x| x.succ ? "" : x.tag.to_str } || ""
   end
 
-  def binh_am
-    MtCore.binh_am_mtl.translit(@key).to_s
-  end
-
-  def hanviet
+  getter hanviet : String do
     MtCore.hanviet_mtl.translit(@key).to_s
   end
 
   def to_json(jb : JSON::Builder)
     jb.object do
-      jb.field "0_5" { to_json(jb, get_term(@dicts[0])) }
-      jb.field "0_4" { to_json(jb, get_term(@dicts[1])) }
-      jb.field "1_3" { to_json(jb, get_term(@dicts[2])) }
-      jb.field "1_2" { to_json(jb, get_term(@dicts[3])) }
+      jb.field "uniq" { vp_to_json(jb, @dicts[0], @dicts[1], uniq: true) }
+      jb.field "core" { vp_to_json(jb, @dicts[2], @dicts[3]) }
+      VpDict.suggest.find(@key).try { |term| add_hints(term, deep_loop: false) }
 
-      VpDict.suggest.find(@key).try do |term|
-        term.val.each { |val| @vals << ({val, 1}) }
-        @tags << ({term.ptag.to_str, 1})
+      unless @mt_tag.empty?
+        @vals.push({@mt_val, 0})
+        @tags.push({@mt_tag, 0})
       end
 
       jb.field "vals", @vals.uniq(&.[0])
       jb.field "tags", @tags.uniq(&.[0])
 
-      jb.field "binh_am", binh_am
-      jb.field "hanviet" do
-        to_json(jb, get_term(VpDict.hanviet) { hanviet })
-      end
+      jb.field "binh_am", MtCore.binh_am_mtl.translit(@key).to_s
+      jb.field "hanviet" { hv_to_json(jb) }
     end
   end
 
-  private def find_node(dict : VpDict)
-    dict.trie.find(@key)
-  end
+  def hv_to_json(jb : JSON::Builder)
+    term = VpDict.hanviet.find(@key)
 
-  def get_term(dict : VpDict)
-    dict.find(@key) || begin
-      dict.new_term(@key, [yield], uname: "", mtime: 0_u32)
-    end
-  end
-
-  def get_term(dict : VpDict)
-    if term = dict.find(@key)
-      dic = dict.dtype
-
-      term.val.each { |val| @vals << ({val, dic}) }
-      @tags << {term.ptag.to_str, dic}
-
-      while prev = term._prev
-        prev.val.each { |val| @vals << ({val, dic}) }
-        @tags << {term.ptag.to_str, dic}
-        term = prev
-      end
-    else
-      term = dict.new_term(@key, [@mt_val], @mt_tag, uname: "", mtime: 0_u32)
-    end
-
-    term
-  end
-
-  def to_json(jb : JSON::Builder, term : VpTerm)
     jb.object do
-      jb.field "val", term.val.first
+      if term
+        jb.field "val", term.val.first
+        jb.field "rank", term.rank
 
-      jb.field "ptag", term.ptag.to_str
-      jb.field "rank", term.rank
+        jb.field "p_mtime", term.mtime
+        jb.field "p_uname", term.uname
+        jb.field "p_state", term.state
+      else
+        jb.field "val", hanviet
+        jb.field "rank", 3
+      end
+    end
+  end
 
-      jb.field "mtime", term.mtime * 60 + VpTerm::EPOCH
-      jb.field "uname", term.uname
+  def vp_to_json(jb : JSON::Builder, priv_dict : VpDict, publ_dict : VpDict, uniq = false)
+    priv = priv_dict.find(@key)
+    publ = publ_dict.find(@key)
 
-      jb.field "state", term.empty? ? "Xoá" : (term._prev ? "Sửa" : "Thêm")
+    jb.object do
+      if priv
+        add_hints(priv)
+
+        jb.field "val", priv.val.first
+        jb.field "ptag", priv.ptag.to_str
+        jb.field "rank", priv.rank
+
+        jb.field "u_mtime", priv.mtime
+        jb.field "u_state", priv.state
+
+        if publ
+          jb.field "p_mtime", publ.mtime
+          jb.field "p_uname", publ.uname
+          jb.field "p_state", publ.state
+        end
+      elsif publ
+        add_hints(publ)
+
+        jb.field "val", publ.val.first
+        jb.field "ptag", publ.ptag.to_str
+        jb.field "rank", publ.rank
+
+        jb.field "p_mtime", publ.mtime
+        jb.field "p_uname", publ.uname
+        jb.field "p_state", publ.state
+      elsif uniq && @mt_tag.empty?
+        jb.field "val", TextUtils.titleize(hanviet)
+        jb.field "ptag", "nr"
+        jb.field "rank", 3
+        jb.field "fresh", true
+      else
+        jb.field "val", @mt_val
+        jb.field "ptag", @mt_tag
+        jb.field "rank", 3
+        jb.field "fresh", true
+      end
+    end
+  end
+
+  def add_hints(term : VpTerm, deep_loop = true)
+    dic = term.dtype
+
+    term.val.each { |val| @vals << ({val, dic}) }
+    @tags << {term.ptag.to_str, dic}
+
+    return unless deep_loop
+
+    while prev = term._prev
+      prev.val.each { |val| @vals << ({val, dic}) }
+      @tags << {term.ptag.to_str, dic}
+      term = prev
     end
   end
 end

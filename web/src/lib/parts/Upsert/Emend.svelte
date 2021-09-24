@@ -4,6 +4,12 @@
 
   export let term
   export let p_min
+
+  function render_time(mtime) {
+    return get_rtime(mtime * 60 + 1577836800)
+  }
+
+  $: console.log(term)
 </script>
 
 <div class="edit">
@@ -14,11 +20,11 @@
   <span class="sep">|</span>
   <SIcon name="users" />
 
-  {#if term._main.uname != '!'}
-    <span class="lbl">{term._main.state}</span>
-    <span class="val">{get_rtime(term._main.mtime)}</span>
+  {#if term._raw.p_mtime > 0}
+    <span class="lbl">{term._raw.p_state}:</span>
+    <span class="val">{render_time(term._raw.p_mtime)}</span>
     <span class>bởi</span>
-    <span class="val user">{term._main.uname}</span>
+    <span class="val user">{term._raw.p_uname}</span>
   {:else}
     <span>Chưa có lịch sử</span>
   {/if}
@@ -26,9 +32,9 @@
   <span class="sep">|</span>
   <SIcon name="user" />
 
-  {#if term._priv.uname != '!'}
-    <span>{term._priv.state}:</span>
-    <span class="val">{get_rtime(term._priv.mtime)}</span>
+  {#if term._raw.u_mtime > 0}
+    <span>{term._raw.u_state}:</span>
+    <span class="val">{render_time(term._raw.u_mtime)}</span>
   {:else}
     <span>Chưa có lịch sử</span>
   {/if}
@@ -37,7 +43,7 @@
 <style lang="scss">
   .edit {
     @include flex($center: both, $gap: 0.2rem);
-    margin: 0.5rem 0;
+    padding: 0.5rem 0;
     line-height: 1rem;
     @include ftsize(xs);
     @include fgcolor(tert);

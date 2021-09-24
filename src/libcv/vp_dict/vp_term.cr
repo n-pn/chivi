@@ -61,6 +61,10 @@ class CV::VpTerm
     @mtime - prev.mtime <= 5
   end
 
+  def state
+    self.empty? ? "Xoá" : (self._prev ? "Sửa" : "Thêm")
+  end
+
   def to_s(io : IO) : Nil
     io << key << '\t'
     @val.join(io, SEP)

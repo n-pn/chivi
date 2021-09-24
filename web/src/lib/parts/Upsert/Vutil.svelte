@@ -24,7 +24,7 @@
     <button
       class="-btn"
       data-kbd="r"
-      disabled={term.val == term.old_val && term.tag == term.old_tag}
+      disabled={term.val == term._raw.val && term.ptag == term._raw.ptag}
       on:click={() => (term = term.reset())}>
       <SIcon name="corner-up-left" />
     </button>

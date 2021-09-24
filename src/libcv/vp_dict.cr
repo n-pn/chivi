@@ -6,7 +6,7 @@ require "./vp_dict/*"
 class CV::VpDict
   DIR = "db/vpdicts"
   ::FileUtils.mkdir_p("#{DIR}/core")
-  ::FileUtils.mkdir_p("#{DIR}/priv")
+  ::FileUtils.mkdir_p("#{DIR}/uniq")
 
   # group: local, chivi, cvdev etc.
   class_property suffix : String = ENV["SUFFIX"]? || "local"
@@ -26,7 +26,7 @@ class CV::VpDict
   class_getter suggest : self { load("suggest") }
 
   class_getter udicts : Array(String) do
-    dirs = Dir.glob("#{DIR}/priv/*/")
+    dirs = Dir.glob("#{DIR}/uniq/*/")
     dirs.sort_by! { |dir| File.info(dir).modification_time.to_unix.- }
     dirs.map { |dir| File.basename(dir) }
   end
@@ -40,7 +40,7 @@ class CV::VpDict
       case dname
       when "trungviet", "cc_cedict", "trich_dan", "tradsim", "binh_am"
         new(path(dname), dtype: 0, p_min: 4, reset: reset)
-      when "fixture"
+      when "essence", "fixture"
         new(path(dname), dtype: 1, p_min: 4, reset: reset)
       when "suggest", "hanviet"
         new(path("core/#{dname}"), dtype: 1, p_min: 3, reset: reset)
@@ -49,7 +49,7 @@ class CV::VpDict
       when "combine"
         new(path("core/combine/#{stype}"), dtype: 4 + bonus, p_min: 1, reset: reset)
       else
-        new(path("priv/#{dname}/#{stype}"), dtype: 4 + bonus, p_min: 1, reset: reset)
+        new(path("uniq/#{dname}/#{stype}"), dtype: 4 + bonus, p_min: 1, reset: reset)
       end
   end
 
@@ -67,7 +67,7 @@ class CV::VpDict
   end
 
   def self.for_convert(dname : String, stype : String? = nil)
-    dicts = [regular, fixture]               # public generic
+    dicts = [essence, regular, fixture]      # public generic
     dicts << load("regular", stype) if stype # private generic
     dicts << load(dname)                     # public unique
     dicts << load(dname, stype) if stype     # private unique

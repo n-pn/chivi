@@ -2,7 +2,6 @@
 <script context="module">
   import { writable } from 'svelte/store'
   import { tag_label } from '$lib/pos_tag.js'
-  import { titleize } from '$utils/text_utils.js'
   import { dict_upsert, dict_search } from '$api/dictdb_api.js'
 
   export const tab = writable(0)
@@ -25,7 +24,8 @@
 
 <script>
   import { session } from '$app/stores'
-  import VpTerm from '$lib/vp_term.js'
+
+  import { VpTerm } from './Upsert/_shared.js'
 
   import SIcon from '$atoms/SIcon.svelte'
   import CMenu from '$molds/CMenu.svelte'
@@ -48,14 +48,10 @@
   let binh_am = ''
   let hanviet = ''
 
-  let hints = []
+  let hints = ['']
   let terms = []
 
-  $: term = get_term(terms, $tab)
-
-  function get_term(terms, tab) {
-    return terms[tab] || new VpTerm({ key }, tab + 1, $session.privi)
-  }
+  $: term = terms[$tab] || new VpTerm({ val: '', ptag: '', rank: 3 })
 
   let key = ''
   $: if (key) init_search(key, dname)
@@ -78,19 +74,10 @@
     hints = [hanviet, ...data.vals.map((x) => x[0])]
 
     terms = [
-      new VpTerm(data['0_5'], data['0_4']),
-      new VpTerm(data['1_3'], data['1_2']),
+      new VpTerm(data.uniq),
+      new VpTerm(data.core),
       new VpTerm(data.hanviet),
     ]
-
-    // set some default values if non present
-    terms[0].fix_ptag(terms[1].ptag || (terms[1].val ? '' : 'nr'))
-
-    terms[1].fix_ptag(data.tags.map((x) => x[0])[0] || '')
-
-    const first_hint = (data.vals[0] || [''])[0]
-    terms[0].fix_val(terms[1].val || first_hint || titleize(hanviet, 9))
-    terms[1].fix_val(terms[0].old || first_hint || hanviet)
   }
 
   async function submit_val(stype = '_main') {
@@ -107,13 +94,7 @@
     deactivate()
   }
 
-  $: disabled = $session.privi < $tab + 1
-  $: btn_state =
-    term.state == 'Thêm'
-      ? '_success'
-      : term.state == 'Sửa'
-      ? '_primary'
-      : '_harmful'
+  $: disabled = $session.privi < $tab + 1 || !term.changed
 
   let vhint = -1
 </script>
@@ -152,7 +133,7 @@
       <div
         class="tab-item _book"
         class:_active={$tab == 0}
-        class:_edited={!term[0]?.fresh}
+        class:_edited={!term[0]?._raw.fresh}
         data-kbd="x"
         on:click={() => tab.set(0)}
         on:mouseenter|stopPropagation={() => (vhint = 3)}>
@@ -163,7 +144,7 @@
       <div
         class="tab-item"
         class:_active={$tab == 1}
-        class:_edited={!terms[1]?.fresh}
+        class:_edited={!terms[1]?._raw.fresh}
         data-kbd="c"
         on:click={() => tab.set(1)}
         on:mouseenter|stopPropagation={() => (vhint = 4)}>
@@ -191,12 +172,12 @@
     </section>
 
     <section class="body">
-      <Emend {term} p_min={$tab + 1} p_max={$session.privi} />
+      <Emend {term} p_min={$tab + 1} />
 
       <div class="field">
         <Vhint {hints} bind:term bind:vhint />
 
-        <div class="value" class:_fresh={term.fresh}>
+        <div class="value" class:_fresh={term._raw.fresh}>
           <input
             type="text"
             class="-input"
@@ -220,7 +201,7 @@
 
         <div class="bgroup">
           <button
-            class="bgroup-left m-button btn-lg _fill {btn_state}  "
+            class="bgroup-left m-button btn-lg _fill {term.btn_state}  "
             data-kbd="enter"
             {disabled}
             on:mouseenter|stopPropagation={() => (vhint = 1)}
@@ -230,7 +211,7 @@
           </button>
 
           <button
-            class="bgroup-right m-button btn-lg _fill {btn_state} "
+            class="bgroup-right m-button btn-lg _fill {term.btn_state} "
             data-kbd="shift+enter"
             {disabled}
             on:mouseenter|stopPropagation={() => (vhint = 2)}
@@ -426,20 +407,22 @@
 
   .vfoot {
     display: flex;
-    margin: 0.75rem 0;
+    padding: 0.75rem 0;
     justify-content: right;
   }
 
   .bgroup {
-    margin-left: 0.75rem;
     @include flex();
   }
 
   .bgroup-left {
-    padding-left: 0.5rem;
     padding-right: 0.25rem;
+    @include bps(padding-left, 0.25rem, $sm: 0.5rem);
     @include bdradi(0, $loc: right);
-    @include bps(padding-right, 0.5rem, $sm: 0.25rem);
+
+    > span {
+      width: 2rem;
+    }
 
     > :global(svg) {
       @include bps(display, none, $sm: inline-block);

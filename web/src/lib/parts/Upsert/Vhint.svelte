@@ -8,7 +8,7 @@
     {#if idx == 0 || hint != term.val}
       <span
         class="hint"
-        class:_orig={hint == term.old}
+        class:_orig={hint == term._raw.val}
         on:click={() => (term.val = hint)}>{hint}</span>
     {/if}
   {/each}
@@ -16,10 +16,10 @@
 
 <style lang="scss">
   .hints {
-    padding: 0.5rem 0.5rem;
+    padding: 0.25rem 0.5rem;
     font-style: italic;
     height: 2rem;
-    line-height: 1.25rem;
+    line-height: 1.5rem;
 
     @include flex();
     @include ftsize(sm);

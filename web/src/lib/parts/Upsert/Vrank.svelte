@@ -33,6 +33,7 @@
   .prio {
     flex: 1;
     @include flex($gap: 0.375rem, $center: both);
+    margin-right: 0.375rem;
   }
 
   .lbl,
