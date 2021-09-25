@@ -15,12 +15,11 @@ if [[ $1 == "all" || $* == *dict* ]]
 then
   echo backup dicts data!
 
-  rsync -aiz --no-p "$SSH/_db/vpdict/main" "_db/vpdict/.bak/" &
-  rsync -aiz --no-p "$SSH/_db/vpdict/pleb" "_db/vpdict/.bak/" &
-  rsync -aiz --no-p "$SSH/_db/vpdict/logs" "_db/vpdict/.bak/" &
-  rsync -aiz --no-p "$SSH/_db/vpdict/logs/" "_db/vpdict/logs/"
-  rsync -aiz --no-p "$SSH/_db/vpdict/main/" "_db/vpdict/main/"
-  rsync -aiz --no-p "$SSH/_db/vpdict/pleb/" "_db/vpdict/pleb/"
+  rsync -aiz --no-p "$SSH/db/vpdicts/core" "_db/vpdict/.bak"
+  rsync -aiz --no-p "$SSH/db/vpdicts/uniq" "_db/vpdict/.bak"
+
+  rsync -aiz --no-p "$SSH/db/vpdicts/core" "db/vpdicts"
+  rsync -aiz --no-p "$SSH/db/vpdicts/uniq" "db/vpdicts"
 fi
 
 ## backup user data

@@ -25,10 +25,8 @@ class CV::VpTermView
 
       VpDict.suggest.find(@key).try { |term| add_hints(term, deep_loop: false) }
 
-      unless @mt_tag.empty?
-        @vals.push({@mt_val, 0})
-        @tags.push({@mt_tag, 0})
-      end
+      @vals.push({@mt_val, 0})
+      @tags.push({@mt_tag, 0}) unless @mt_tag.empty?
 
       jb.field "vals", @vals.uniq(&.[0])
       jb.field "tags", @tags.uniq(&.[0])
@@ -55,7 +53,6 @@ class CV::VpTermView
       jb.object do
         if type == 2
           jb.field "val", hanviet
-          jb.field "ptag", ""
         elsif type == 1 && @mt_tag.empty?
           jb.field "val", TextUtils.titleize(hanviet)
           jb.field "ptag", "nr"
@@ -64,7 +61,6 @@ class CV::VpTermView
           jb.field "ptag", @mt_tag
         end
 
-        jb.field "rank", 3
         jb.field "mtime", -1
       end
     end
