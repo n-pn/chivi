@@ -7,6 +7,7 @@
 <script>
   import { hint } from './_shared'
 
+  export let term
   export let rank = 3
 </script>
 
@@ -18,7 +19,9 @@
   {#each lbls as lbl, idx}
     <button
       class="btn"
-      class:active={rank == 4 - idx}
+      class:_base={term._base.rank == 4 - idx}
+      class:_priv={term._priv.rank == 4 - idx}
+      class:_curr={rank == 4 - idx}
       data-kbd={keys[idx]}
       on:click={() => (rank = 4 - idx)}
       use:hint={'Độ ưu tiên của từ trong câu văn: ' + labels[idx]}
@@ -52,13 +55,22 @@
     @include linesd(--bd-main);
     @include bdradi(0.5rem);
 
-    &:hover,
-    &.active {
-      @include fgcolor(primary, 5);
+    &._base {
+      font-style: italic;
+      // @include fgcolor(green, 5);
     }
 
-    &.active {
+    &._priv {
+      @include fgcolor(secd);
+    }
+
+    &._curr {
+      @include fgcolor(primary, 5);
       @include linesd(primary, 4, $ndef: false);
+    }
+
+    &:hover {
+      @include bgcolor(tert);
     }
   }
 </style>

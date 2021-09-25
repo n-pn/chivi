@@ -192,7 +192,7 @@
       </div>
 
       <div class="vfoot">
-        <Vrank bind:rank={term.rank} />
+        <Vrank {term} bind:rank={term.rank} />
 
         <div class="bgroup">
           <button
@@ -237,7 +237,7 @@
     left: 0;
     bottom: 0;
     right: 0;
-    z-index: 9999;
+    z-index: 999;
     background: rgba(#000, 0.75);
   }
 

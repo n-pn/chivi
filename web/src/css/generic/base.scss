@@ -126,3 +126,10 @@ $colors: (gray, blue, green, orange, red, violet) !default;
 
   --ftsize-code: 0.875em;
 }
+
+:root {
+  --d2-color: #{color(blue, 5)};
+  --d3-color: #{color(teal, 5)};
+  --d4-color: #{color(orange, 5)};
+  --d5-color: #{color(red, 5)};
+}
