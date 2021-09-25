@@ -121,7 +121,7 @@
     </header>
 
     <section class="tabs">
-      <div
+      <button
         class="tab-item _book"
         class:_active={$tab == 0}
         class:_edited={!terms[0]?.fresh}
@@ -130,9 +130,9 @@
         use:hint={`Từ điển riêng cho [${label}]`}>
         <SIcon name="book" />
         <span>{label}</span>
-      </div>
+      </button>
 
-      <div
+      <button
         class="tab-item"
         class:_active={$tab == 1}
         class:_edited={!terms[1]?.fresh}
@@ -141,7 +141,7 @@
         use:hint={'Từ điển chung cho tất cả các bộ truyện'}>
         <SIcon name="world" />
         <span>Thông dụng</span>
-      </div>
+      </button>
 
       <div class="tab-right">
         <CMenu dir="right">
@@ -247,15 +247,16 @@
     max-width: 100%;
     @include bgcolor(tert);
     @include bdradi();
+    @include border(--bd-soft);
     @include shadow(3);
   }
 
   .head {
     @include flex();
-    margin-bottom: 0.5rem;
 
-    @include bdradi($loc: top);
-    @include linesd(--bd-soft);
+    // @include bdradi($loc: top);
+    @include border(--bd-soft, $loc: bottom);
+    // @include linesd(--bd-soft);
 
     .m-button {
       @include fgcolor(neutral, 5);
@@ -268,9 +269,10 @@
     }
   }
 
-  $tab-height: 2rem;
+  $tab-height: 2.25rem;
 
   .tabs {
+    margin-top: 0.5rem;
     height: $tab-height;
     padding: 0 0.75rem;
 
@@ -308,7 +310,7 @@
     }
 
     &._edited {
-      @include fgcolor(main);
+      @include fgcolor(secd);
     }
 
     &:hover {

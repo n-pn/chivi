@@ -28,7 +28,7 @@
 <style lang="scss">
   .foot {
     @include flex($center: horz);
-    @include border(--bd-main, $loc: top);
+    @include border(--bd-soft, $loc: top);
   }
 
   $height: 2.25rem;

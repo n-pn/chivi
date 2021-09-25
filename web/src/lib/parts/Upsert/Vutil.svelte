@@ -78,12 +78,16 @@
     margin-left: auto;
   }
 
+  .btn,
+  .cap {
+    background: transparent;
+    @include fgcolor(tert);
+  }
+
   // prettier-ignore
   .cap {
     line-height: $height;
     font-weight: 500;
-    background: transparent;
-    @include fgcolor(tert);
 
     @include bps(font-size, rem(13px), rem(14px));
     @include bps(padding, 0 0.25rem, 0 0.375rem);
@@ -96,21 +100,18 @@
 
   .btn {
     margin-left: auto;
-    padding: 0;
     width: 1.75rem;
-    padding-bottom: 0.25rem;
-
+    height: $height;
+    // padding: 0;
+    // padding-bottom: 0.125rem;
     @include ftsize(lg);
-
-    background: transparent;
-    @include fgcolor(neutral, 5);
 
     &:hover {
       @include fgcolor(primary, 5);
     }
 
     &[disabled] {
-      @include fgcolor(neutral, 3);
+      @include fgcolor(mute);
     }
   }
 </style>

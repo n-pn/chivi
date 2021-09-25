@@ -102,6 +102,7 @@
 
     overflow: hidden;
     flex-wrap: nowrap;
+    @include border(--bd-soft, $loc: left-right);
     @include ftsize(lg);
   }
 
@@ -174,7 +175,14 @@
 
     @include ftsize(lg);
     @include fgcolor(secd);
-    @include border(--bd-soft, $loc: left-right);
+
+    &._left {
+      @include border(--bd-soft, $loc: left);
+    }
+
+    &._right {
+      @include border(--bd-soft, $loc: right);
+    }
 
     &:hover {
       // @include bgcolor(tert);

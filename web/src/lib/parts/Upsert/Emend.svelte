@@ -47,8 +47,8 @@
 <style lang="scss">
   .emend {
     @include flex($center: horz, $gap: 0.2rem);
-    padding: 0.5rem 0;
-    line-height: 1rem;
+    padding: 0.25rem 0;
+    line-height: 1.25rem;
     @include ftsize(xs);
     @include fgcolor(tert);
 
