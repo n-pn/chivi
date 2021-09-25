@@ -86,20 +86,20 @@
     color: var(--active);
   }
 
-  // c-v[data-d='1']) {
-  //   @include cv-token(gray);
-  // }
+  c-v[data-d='1'] {
+    @include cv-token(gray);
+  }
 
   c-v[data-d='2'] {
     @include cv-token(blue);
   }
 
   c-v[data-d='3'] {
-    @include cv-token(green);
+    @include cv-token(teal);
   }
 
   c-v[data-d='4'] {
-    @include cv-token(teal);
+    @include cv-token(orange);
   }
 
   c-v[data-d='5'] {
@@ -107,15 +107,15 @@
   }
 
   c-v[data-d='6'] {
-    @include cv-token(orange);
+    @include cv-token(green);
   }
 
   c-v[data-d='7'] {
-    @include cv-token(violet);
+    @include cv-token(pink);
   }
 
   c-v[data-d='8'] {
-    @include cv-token(pink);
+    @include cv-token(violet);
   }
 
   c-v[data-d='9'] {
