@@ -35,7 +35,7 @@
   export let label = ''
   export let dname = ''
 
-  export let p_min = 1
+  // export let p_min = 1
   export let terms = []
 
   export let total = 1
