@@ -197,7 +197,7 @@
         <div class="bgroup">
           <button
             class="bgroup-left m-button btn-lg _fill {term.btn_state}  "
-            data-kbd="enter"
+            data-kbd="↵"
             disabled={$session.privi < $tab + 1 || !term.dirty('_base')}
             use:hint={'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}
             on:click={() => submit_val('_base')}>
@@ -207,7 +207,7 @@
 
           <button
             class="bgroup-right m-button btn-lg _fill {term.btn_state} "
-            data-kbd="shift+enter"
+            data-kbd="⇧↵"
             disabled={$session.privi < $tab + 1 ||
               $tab > 1 ||
               !term.dirty('_priv')}

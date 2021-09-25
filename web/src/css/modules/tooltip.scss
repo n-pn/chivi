@@ -1,4 +1,4 @@
-@use "../essence" as *;
+@use '../essence' as *;
 
 [data-tip] {
   @include after($display: none, $abs: true, $content: attr(data-tip)) {
@@ -23,8 +23,8 @@
   // overflow: auto !important;
 
   @include after($display: block, $abs: true, $content: attr(data-kbd)) {
-    top: 0rem;
-    right: 0rem;
+    top: -0.25rem;
+    right: -0.25rem;
     min-width: 1.25rem;
     text-align: center;
     padding: 0 0.25rem;
@@ -35,7 +35,7 @@
     @include fgcolor(neutral, 6);
     @include bgcolor(warning, 2);
 
-    @include uppercase();
+    // @include uppercase();
     @include bdradi(2);
     z-index: 99;
   }

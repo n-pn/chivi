@@ -14,36 +14,41 @@
 
 <div class="vutil">
   <button
-    class="-txt"
+    class="cap"
     data-kbd="1"
     use:upcase_val={1}
-    use:hint={'Viết hoa một chữ đầu'}>Hoa 1 chữ</button>
+    use:hint={'Viết hoa một chữ đầu'}>
+    <span>Hoa 1 chữ</span></button>
   <button
-    class="-txt"
+    class="cap"
     data-kbd="2"
     use:upcase_val={2}
-    use:hint={'Viết hoa hai chữ đầu'}>H. 2 chữ</button>
+    use:hint={'Viết hoa hai chữ đầu'}>
+    <span>H. 2 chữ</span></button>
   <button
-    class="-txt _md"
+    class="cap _sm"
     data-kbd="3"
     use:upcase_val={3}
-    use:hint={'Viết hoa ba chữ đầu'}>H. 3 chữ</button>
+    use:hint={'Viết hoa ba chữ đầu'}>
+    <span>H. 3 chữ</span></button>
   <button
-    class="-txt"
+    class="cap"
     data-kbd="4"
     use:upcase_val={20}
-    use:hint={'Viết hoa tất cả các chữ'}>H. tất cả</button>
+    use:hint={'Viết hoa tất cả các chữ'}>
+    <span>H. tất cả</span></button>
   <button
-    class="-txt"
+    class="cap"
     data-kbd="0"
     data-key="192"
     use:upcase_val={0}
-    use:hint={'Viết thường tất cả các chữ'}>Không hoa</button>
+    use:hint={'Viết thường tất cả các chữ'}>
+    <span>Không hoa</span></button>
 
   <div class="right">
     <button
-      class="-btn"
-      data-kbd="r"
+      class="btn"
+      data-kbd="w"
       disabled={term.val == term.old_val && term.ptag == term.old_ptag}
       on:click={() => (term = term.reset())}
       use:hint={'Phục hồi lại nghĩa + phân loại ban đầu'}>
@@ -51,7 +56,7 @@
     </button>
 
     <button
-      class="-btn"
+      class="btn"
       data-kbd="e"
       on:click={() => (term = term.clear())}
       use:hint={'Nhập nghĩa là <code>[[pass]]</code> nếu bạn muốn xoá đè.'}>
@@ -73,30 +78,23 @@
     margin-left: auto;
   }
 
-  .-txt {
-    padding: 0 0.375rem;
+  // prettier-ignore
+  .cap {
     line-height: $height;
     font-weight: 500;
     background: transparent;
     @include fgcolor(tert);
 
     @include bps(font-size, rem(13px), rem(14px));
-    @include bp-max(sm) {
-      @include ftsize(xs);
-    }
-    // max-width: 14vw;
-    @include clamp($width: null);
+    @include bps(padding, 0 0.25rem, 0 0.375rem);
 
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
-
-    &._md {
-      @include bps(display, none, $md: inline-block);
-    }
+    @include bp-max(sm) { @include ftsize(xs); }
+    &:hover { @include fgcolor(primary, 5); }
+    &._sm { @include bps(display, none, $sm: inline-block); }
+    > span { @include clamp($width: null); }
   }
 
-  .-btn {
+  .btn {
     margin-left: auto;
     padding: 0;
     width: 1.75rem;

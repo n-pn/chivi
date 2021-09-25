@@ -11,6 +11,7 @@ export const labels = {
   t: 'Thời gian',
   tg: 'Ngữ tố thời gian',
 
+  nl: 'Cụm danh từ',
   s: 'Nơi chốn',
   f: 'Phương vị',
 

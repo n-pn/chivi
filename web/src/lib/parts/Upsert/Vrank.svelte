@@ -1,19 +1,7 @@
 <script context="module">
-  const lbls = [
-    ['Cao', 4],
-    ['Bình', 3],
-    ['Thấp', 2],
-    ['Đáy', 1],
-  ]
-
-  const keys = { 1: 'b', 2: 'l', 3: 'm', 4: 'h' }
-
-  const hints = [
-    'Độ ưu tiên của từ trong câu văn: Hơi cao',
-    'Độ ưu tiên của từ trong câu văn: Trung bình',
-    'Độ ưu tiên của từ trong câu văn: Hơi thấp',
-    'Độ ưu tiên của từ trong câu văn: Rất thấp',
-  ]
+  const keys = ['a', 's', 'd', 'f']
+  const lbls = ['Cao', 'Bình', 'Thấp', 'Đáy']
+  const labels = ['Hơi cao', 'Trung bình', ' Hơi thấp', 'Rất thấp']
 </script>
 
 <script>
@@ -27,13 +15,14 @@
     Độ ưu tiên:
   </div>
 
-  {#each lbls as [lbl, val], idx}
+  {#each lbls as lbl, idx}
     <button
       class="btn"
-      class:active={rank == val}
-      data-kbd={keys[val]}
-      on:click={() => (rank = val)}
-      use:hint={hints[idx]}>{lbl}</button>
+      class:active={rank == 4 - idx}
+      data-kbd={keys[idx]}
+      on:click={() => (rank = 4 - idx)}
+      use:hint={'Độ ưu tiên của từ trong câu văn: ' + labels[idx]}
+      >{lbl}</button>
   {/each}
 </div>
 
