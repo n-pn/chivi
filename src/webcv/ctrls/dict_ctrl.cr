@@ -155,8 +155,6 @@ class CV::DictCtrl < CV::BaseCtrl
     stype = params["stype"]? == "_priv" ? cu_dname : "_base"
 
     vdict = VpDict.load(dname, stype)
-    puts [dname, stype, vdict.file].to_s
-
     return halt!(500, "Không đủ quyền hạn!") if cu_privi < vdict.p_min
 
     mtime = VpTerm.mtime(Time.utc)

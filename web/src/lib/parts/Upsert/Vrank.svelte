@@ -7,11 +7,19 @@
   ]
 
   const keys = { 1: 'b', 2: 'l', 3: 'm', 4: 'h' }
+
+  const hints = [
+    'Độ ưu tiên của từ trong câu văn: Hơi cao',
+    'Độ ưu tiên của từ trong câu văn: Trung bình',
+    'Độ ưu tiên của từ trong câu văn: Hơi thấp',
+    'Độ ưu tiên của từ trong câu văn: Rất thấp',
+  ]
 </script>
 
 <script>
+  import { hint } from './_shared'
+
   export let rank = 3
-  export let vhint
 </script>
 
 <div class="prio">
@@ -25,7 +33,7 @@
       class:active={rank == val}
       data-kbd={keys[val]}
       on:click={() => (rank = val)}
-      on:mouseenter|stopPropagation={() => (vhint = idx + 6)}>{lbl}</button>
+      use:hint={hints[idx]}>{lbl}</button>
   {/each}
 </div>
 

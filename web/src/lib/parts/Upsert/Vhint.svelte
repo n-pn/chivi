@@ -8,7 +8,7 @@
     {#if idx == 0 || hint != term.val}
       <span
         class="hint"
-        class:_orig={hint == term._raw.val}
+        class:_orig={hint == term._priv.val || hint == term._base.val}
         on:click={() => (term.val = hint)}>{hint}</span>
     {/if}
   {/each}

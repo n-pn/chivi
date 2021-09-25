@@ -4,10 +4,10 @@ class CV::VpTermView
   @vals = [] of Tuple(String, Int32)
   @tags = [] of Tuple(String, Int32)
 
-  alias Dicts = Tuple(VpDict, VpDict, VpDict, VpDict)
-
   @mt_val : String
   @mt_tag : String
+
+  alias Dicts = Tuple(VpDict, VpDict, VpDict, VpDict)
 
   def initialize(@key : String, @cvmtl : MtCore, @dicts : Dicts)
     mt_list = cvmtl.cv_plain(key, mode: 2, cap_mode: 0)
@@ -16,14 +16,13 @@ class CV::VpTermView
     @mt_tag = mt_list.first?.try { |x| x.succ ? "" : x.tag.to_str } || ""
   end
 
-  getter hanviet : String do
-    MtCore.hanviet_mtl.translit(@key).to_s
-  end
-
   def to_json(jb : JSON::Builder)
     jb.object do
-      jb.field "uniq" { vp_to_json(jb, @dicts[0], @dicts[1], uniq: true) }
-      jb.field "core" { vp_to_json(jb, @dicts[2], @dicts[3]) }
+      jb.field "upriv" { to_json(jb, @dicts[0], type: 1) }
+      jb.field "ubase" { to_json(jb, @dicts[1], type: 1) }
+      jb.field "cpriv" { to_json(jb, @dicts[2], type: 0) }
+      jb.field "cbase" { to_json(jb, @dicts[3], type: 0) }
+
       VpDict.suggest.find(@key).try { |term| add_hints(term, deep_loop: false) }
 
       unless @mt_tag.empty?
@@ -35,70 +34,44 @@ class CV::VpTermView
       jb.field "tags", @tags.uniq(&.[0])
 
       jb.field "binh_am", MtCore.binh_am_mtl.translit(@key).to_s
-      jb.field "hanviet" { hv_to_json(jb) }
+      jb.field "hanviet" { to_json(jb, VpDict.hanviet, 2) }
     end
   end
 
-  def hv_to_json(jb : JSON::Builder)
-    term = VpDict.hanviet.find(@key)
+  def to_json(jb : JSON::Builder, dict : VpDict, type = 0)
+    if term = dict.find(@key)
+      add_hints(term) if type < 2
 
-    jb.object do
-      if term
+      jb.object do
         jb.field "val", term.val.first
+        jb.field "ptag", term.ptag.to_str
         jb.field "rank", term.rank
 
-        jb.field "p_mtime", term.mtime
-        jb.field "p_uname", term.uname
-        jb.field "p_state", term.state
-      else
-        jb.field "val", hanviet
+        jb.field "mtime", term.mtime
+        jb.field "uname", term.uname
+        jb.field "state", term.state
+      end
+    else
+      jb.object do
+        if type == 2
+          jb.field "val", hanviet
+          jb.field "ptag", ""
+        elsif type == 1 && @mt_tag.empty?
+          jb.field "val", TextUtils.titleize(hanviet)
+          jb.field "ptag", "nr"
+        else
+          jb.field "val", @mt_val
+          jb.field "ptag", @mt_tag
+        end
+
         jb.field "rank", 3
+        jb.field "mtime", -1
       end
     end
   end
 
-  def vp_to_json(jb : JSON::Builder, priv_dict : VpDict, base_dict : VpDict, uniq = false)
-    priv = priv_dict.find(@key)
-    base = base_dict.find(@key)
-
-    jb.object do
-      if priv
-        add_hints(priv)
-
-        jb.field "val", priv.val.first
-        jb.field "ptag", priv.ptag.to_str
-        jb.field "rank", priv.rank
-
-        jb.field "u_mtime", priv.mtime
-        jb.field "u_state", priv.state
-
-        if base
-          jb.field "p_mtime", base.mtime
-          jb.field "p_uname", base.uname
-          jb.field "p_state", base.state
-        end
-      elsif base
-        add_hints(base)
-
-        jb.field "val", base.val.first
-        jb.field "ptag", base.ptag.to_str
-        jb.field "rank", base.rank
-
-        jb.field "p_mtime", base.mtime
-        jb.field "p_uname", base.uname
-        jb.field "p_state", base.state
-      elsif uniq && @mt_tag.empty?
-        jb.field "val", TextUtils.titleize(hanviet)
-        jb.field "ptag", "nr"
-        jb.field "rank", 3
-        jb.field "fresh", true
-      else
-        jb.field "val", @mt_val
-        jb.field "ptag", @mt_tag
-        jb.field "rank", 3
-        jb.field "fresh", true
-      end
-    end
+  getter hanviet : String do
+    MtCore.hanviet_mtl.translit(@key).to_s
   end
 
   def add_hints(term : VpTerm, deep_loop = true)

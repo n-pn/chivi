@@ -167,12 +167,6 @@ class CV::VpDict
     end
   end
 
-  def full_each : Nil
-    @trie.each do |node|
-      node.edits.each { |x| yield x }
-    end
-  end
-
   def save!(file = @file, prune = 2_u8) : Nil
     start = Time.monotonic
 

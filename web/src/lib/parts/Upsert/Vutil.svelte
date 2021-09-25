@@ -1,9 +1,9 @@
 <script>
-  import { titleize } from '$utils/text_utils'
+  import { hint, titleize } from './_shared'
+
   import SIcon from '$atoms/SIcon.svelte'
 
   export let term
-  export let vhint
 
   function upcase_val(node, count) {
     const action = (_) => (term.val = titleize(term.val, count))
@@ -13,19 +13,40 @@
 </script>
 
 <div class="vutil">
-  <button class="-txt" data-kbd="1" use:upcase_val={1}>Hoa 1 chữ</button>
-  <button class="-txt" data-kbd="2" use:upcase_val={2}>H. 2 chữ</button>
-  <button class="-txt _md" data-kbd="3" use:upcase_val={3}>H. 3 chữ</button>
-  <button class="-txt" data-kbd="4" use:upcase_val={9}>H. tất cả</button>
-  <button class="-txt" data-kbd="0" data-key="192" use:upcase_val={0}
-    >Không hoa</button>
+  <button
+    class="-txt"
+    data-kbd="1"
+    use:upcase_val={1}
+    use:hint={'Viết hoa một chữ đầu'}>Hoa 1 chữ</button>
+  <button
+    class="-txt"
+    data-kbd="2"
+    use:upcase_val={2}
+    use:hint={'Viết hoa hai chữ đầu'}>H. 2 chữ</button>
+  <button
+    class="-txt _md"
+    data-kbd="3"
+    use:upcase_val={3}
+    use:hint={'Viết hoa ba chữ đầu'}>H. 3 chữ</button>
+  <button
+    class="-txt"
+    data-kbd="4"
+    use:upcase_val={20}
+    use:hint={'Viết hoa tất cả các chữ'}>H. tất cả</button>
+  <button
+    class="-txt"
+    data-kbd="0"
+    data-key="192"
+    use:upcase_val={0}
+    use:hint={'Viết thường tất cả các chữ'}>Không hoa</button>
 
   <div class="right">
     <button
       class="-btn"
       data-kbd="r"
-      disabled={term.val == term._raw.val && term.ptag == term._raw.ptag}
-      on:click={() => (term = term.reset())}>
+      disabled={term.val == term.old_val && term.ptag == term.old_ptag}
+      on:click={() => (term = term.reset())}
+      use:hint={'Phục hồi lại nghĩa + phân loại ban đầu'}>
       <SIcon name="corner-up-left" />
     </button>
 
@@ -33,7 +54,7 @@
       class="-btn"
       data-kbd="e"
       on:click={() => (term = term.clear())}
-      on:mouseenter|stopPropagation={() => (vhint = 0)}>
+      use:hint={'Nhập nghĩa là <code>[[pass]]</code> nếu bạn muốn xoá đè.'}>
       <SIcon name="eraser" />
     </button>
   </div>

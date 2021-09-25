@@ -1,5 +1,7 @@
 <script>
   import { get_rtime } from '$atoms/RTime.svelte'
+  import { hint } from './_shared'
+
   import SIcon from '$atoms/SIcon.svelte'
 
   export let term
@@ -8,41 +10,43 @@
   function render_time(mtime) {
     return get_rtime(mtime * 60 + 1577836800)
   }
-
-  $: console.log(term)
 </script>
 
-<div class="edit">
-  <SIcon name="lock" />
-  <span class="lbl">Q. hạn:</span>
-  <span class="val">{p_min}</span>
+<div class="emend">
+  <div class="group" use:hint={'Quyền hạn tối thiểu để thêm/sửa nghĩa của từ'}>
+    <SIcon name="lock" />
+    <span class="lbl">Q. hạn:</span>
+    <span class="val">{p_min}</span>
+  </div>
 
-  <span class="sep">|</span>
-  <SIcon name="users" />
+  <div class="group" use:hint={'Lịch sử thêm/sửa dữ liệu từ điển cộng đồng'}>
+    <SIcon name="users" />
 
-  {#if term._raw.p_mtime > 0}
-    <span class="lbl">{term._raw.p_state}:</span>
-    <span class="val">{render_time(term._raw.p_mtime)}</span>
-    <span class>bởi</span>
-    <span class="val user">{term._raw.p_uname}</span>
-  {:else}
-    <span>Chưa có lịch sử</span>
-  {/if}
+    {#if term._priv.mtime > 0}
+      <span class="lbl">{term._priv.state}:</span>
+      <span class="val">{render_time(term._priv.mtime)}</span>
+      <span class>bởi</span>
+      <span class="val user">{term._priv.uname}</span>
+    {:else}
+      <span>Chưa có lịch sử</span>
+    {/if}
+  </div>
 
-  <span class="sep">|</span>
-  <SIcon name="user" />
+  <div class="group" use:hint={'Lịch sử thêm/sửa của từ điển cá nhân bạn'}>
+    <SIcon name="user" />
 
-  {#if term._raw.u_mtime > 0}
-    <span>{term._raw.u_state}:</span>
-    <span class="val">{render_time(term._raw.u_mtime)}</span>
-  {:else}
-    <span>Chưa có lịch sử</span>
-  {/if}
+    {#if term._base.mtime > 0}
+      <span>{term._base.state}:</span>
+      <span class="val">{render_time(term._base.mtime)}</span>
+    {:else}
+      <span>Chưa có lịch sử</span>
+    {/if}
+  </div>
 </div>
 
 <style lang="scss">
-  .edit {
-    @include flex($center: both, $gap: 0.2rem);
+  .emend {
+    @include flex($center: horz, $gap: 0.2rem);
     padding: 0.5rem 0;
     line-height: 1rem;
     @include ftsize(xs);
@@ -51,6 +55,12 @@
     :global(svg) {
       margin-right: -0.125rem;
     }
+  }
+
+  .group {
+    @include flex($center: vert, $gap: 0.2rem);
+    // prettier-ignore
+    & + &:before { content: '|'; }
   }
 
   .lbl {

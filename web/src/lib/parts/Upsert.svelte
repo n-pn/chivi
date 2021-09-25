@@ -25,7 +25,7 @@
 <script>
   import { session } from '$app/stores'
 
-  import { VpTerm } from './Upsert/_shared.js'
+  import { VpTerm, hint } from './Upsert/_shared.js'
 
   import SIcon from '$atoms/SIcon.svelte'
   import CMenu from '$molds/CMenu.svelte'
@@ -65,8 +65,7 @@
 
   async function init_search(input, dname) {
     const [err, data] = await dict_search(fetch, input, dname)
-    if (err) return
-    console.log({ data })
+    if (err) return console.log({ err, data })
 
     binh_am = data.binh_am
     hanviet = data.hanviet.val
@@ -74,9 +73,9 @@
     hints = [hanviet, ...data.vals.map((x) => x[0])]
 
     terms = [
-      new VpTerm(data.uniq),
-      new VpTerm(data.core),
-      new VpTerm(data.hanviet),
+      new VpTerm(data.upriv, data.ubase),
+      new VpTerm(data.cpriv, data.cbase),
+      new VpTerm(data.hanviet, data.hanviet),
     ]
   }
 
@@ -93,18 +92,10 @@
     _dirty = !status
     deactivate()
   }
-
-  $: disabled = $session.privi < $tab + 1 || !term.changed
-
-  let vhint = -1
 </script>
 
 <div class="wrap" on:click={deactivate}>
-  <div
-    id="upsert"
-    class="main"
-    on:click|stopPropagation={focus_on_value}
-    on:mouseenter={() => (vhint = -1)}>
+  <div id="upsert" class="main" on:click|stopPropagation={focus_on_value}>
     <header class="head">
       <CMenu dir="left" loc="top">
         <button class="m-button _text" slot="trigger">
@@ -118,7 +109,7 @@
         </svelte:fragment>
       </CMenu>
 
-      <Input phrase={$input} pinyin={binh_am} bind:output={key} bind:vhint />
+      <Input phrase={$input} pinyin={binh_am} bind:output={key} />
 
       <button
         type="button"
@@ -133,10 +124,10 @@
       <div
         class="tab-item _book"
         class:_active={$tab == 0}
-        class:_edited={!term[0]?._raw.fresh}
+        class:_edited={!terms[0]?.fresh}
         data-kbd="x"
         on:click={() => tab.set(0)}
-        on:mouseenter|stopPropagation={() => (vhint = 3)}>
+        use:hint={`Từ điển riêng cho [${label}]`}>
         <SIcon name="book" />
         <span>{label}</span>
       </div>
@@ -144,10 +135,10 @@
       <div
         class="tab-item"
         class:_active={$tab == 1}
-        class:_edited={!terms[1]?._raw.fresh}
+        class:_edited={!terms[1]?.fresh}
         data-kbd="c"
         on:click={() => tab.set(1)}
-        on:mouseenter|stopPropagation={() => (vhint = 4)}>
+        use:hint={'Từ điển chung cho tất cả các bộ truyện'}>
         <SIcon name="world" />
         <span>Thông dụng</span>
       </div>
@@ -163,7 +154,7 @@
               class="-item"
               data-kbd={'c'}
               on:click={() => tab.set(2)}
-              on:mouseenter|stopPropagation={() => (vhint = 5)}>
+              use:hint={'Phiên âm Hán Việt cho tên người, sự vật...'}>
               <span>Hán Việt</span>
             </button>
           </svelte:fragment>
@@ -175,9 +166,9 @@
       <Emend {term} p_min={$tab + 1} />
 
       <div class="field">
-        <Vhint {hints} bind:term bind:vhint />
+        <Vhint {hints} bind:term />
 
-        <div class="value" class:_fresh={term._raw.fresh}>
+        <div class="value" class:_fresh={term.fresh}>
           <input
             type="text"
             class="-input"
@@ -187,24 +178,28 @@
             autocapitalize={$tab < 1 ? 'words' : 'off'} />
 
           {#if $tab < 2}
-            <button class="postag" data-kbd="p" on:click={() => state.set(2)}>
+            <button
+              class="postag"
+              data-kbd="p"
+              on:click={() => state.set(2)}
+              use:hint={'Phân loại cụm từ: Danh, động, tính, trạng...'}>
               {tag_label(term.ptag) || 'Phân loại'}
             </button>
           {/if}
         </div>
 
-        <Vutil bind:term bind:vhint />
+        <Vutil bind:term />
       </div>
 
       <div class="vfoot">
-        <Vrank bind:rank={term.rank} bind:vhint />
+        <Vrank bind:rank={term.rank} />
 
         <div class="bgroup">
           <button
             class="bgroup-left m-button btn-lg _fill {term.btn_state}  "
             data-kbd="enter"
-            {disabled}
-            on:mouseenter|stopPropagation={() => (vhint = 1)}
+            disabled={$session.privi < $tab + 1 || !term.dirty('_base')}
+            use:hint={'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}
             on:click={() => submit_val('_base')}>
             <SIcon name="users" />
             <span class="submit-text">{term.state}</span>
@@ -213,8 +208,10 @@
           <button
             class="bgroup-right m-button btn-lg _fill {term.btn_state} "
             data-kbd="shift+enter"
-            {disabled}
-            on:mouseenter|stopPropagation={() => (vhint = 2)}
+            disabled={$session.privi < $tab + 1 ||
+              $tab > 1 ||
+              !term.dirty('_priv')}
+            use:hint={'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'}
             on:click={() => submit_val('_priv')}>
             <SIcon name="user" />
           </button>
@@ -222,7 +219,7 @@
       </div>
     </section>
 
-    <Links {key} dlabel={label} bind:vhint />
+    <Links {key} dlabel={label} />
   </div>
 </div>
 

@@ -4,7 +4,6 @@ class CV::VpTrie
   alias Trie = Hash(Char, VpTrie)
 
   property term : VpTerm? = nil
-  getter edits = [] of VpTerm
   getter _next = Trie.new
 
   def find!(key : String) : VpTrie
@@ -44,14 +43,7 @@ class CV::VpTrie
     res
   end
 
-  def prune!
-    map = {} of String => VpTerm
-    @edits.sort_by(&.mtime).each { |term| map[term.uname] = term }
-    @edits = map.values
-  end
-
   def push(term : VpTerm) : VpTerm
-    @edits << term
     @term = term
   end
 end
