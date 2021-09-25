@@ -7,8 +7,8 @@
 
   $: [input, lower = 0, upper = input.length] = phrase
   $: output = input.substring(lower, upper)
-  $: prefix = Array.from(input.substring(lower - 3, lower))
-  $: suffix = Array.from(input.substring(upper, upper + 3))
+  $: prefix = Array.from(input.substring(lower - 4, lower))
+  $: suffix = Array.from(input.substring(upper, upper + 4))
 
   function move_lower_left() {
     lower -= 1
@@ -47,19 +47,27 @@
   </button>
 
   <div class="key">
-    <div class="key-txt" data-right={suffix}>
-      <span class="key-out">{output}</span>
-      <span class="key-pre">
+    <div class="key-txt">
+      <div class="key-pre">
         {#each prefix as chr, idx}
           <span class="key-btn" on:click={() => (lower -= prefix.length - idx)}
             >{chr}</span>
         {/each}
-      </span>
-      <span class="key-suf">
+      </div>
+
+      <div class="key-out">
+        {#each output as chr, idx}
+          <span
+            class="key-btn"
+            on:click={() => ((lower += idx), (upper = lower + 1))}>{chr}</span>
+        {/each}
+      </div>
+
+      <div class="key-suf">
         {#each suffix as chr, idx}
           <span class="key-btn" on:click={() => (upper += idx + 1)}>{chr}</span>
         {/each}
-      </span>
+      </div>
     </div>
   </div>
 
@@ -111,6 +119,9 @@
     position: relative;
     max-width: 100%;
     line-height: $height;
+    > * {
+      display: inline;
+    }
   }
 
   .key-out {
