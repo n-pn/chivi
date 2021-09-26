@@ -168,8 +168,8 @@ class CV::DictCtrl < CV::BaseCtrl
     key = params.fetch_str("key").strip
     val = params.fetch_str("val").split(" / ").map(&.strip)
 
-    attr = params.json("attr").as_s
-    rank = params.json("rank").try(&.as_i.to_u8) || 3_u8
+    attr = params.fetch_str("attr", "")
+    rank = params.fetch_str("rank", "").to_u8? || 3_u8
 
     vpterm = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cu_dname)
     return halt!(501, "Không thay đổi!") unless vdict.set!(vpterm)
@@ -197,5 +197,8 @@ class CV::DictCtrl < CV::BaseCtrl
     end
 
     json_view(vpterm)
+  rescue err
+    puts err
+    halt! 500, err.message
   end
 end
