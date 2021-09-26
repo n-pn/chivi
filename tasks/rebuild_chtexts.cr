@@ -25,10 +25,13 @@ class RebuildBook
       Chap.new(parts[0], parts[1], parts[2])
     end
 
+    paged = Dir.glob("#{@out_dir}/*.tsv").map { |x| File.basename(x, ".tsv").to_i }
+    lasts = paged.sort.last(2)
+
     infos.each_slice(128).with_index do |slice, page_idx|
       out_file = "#{@out_dir}/#{page_idx}.tsv"
 
-      next if File.exists?(out_file) && !redo
+      next unless redo || lasts.includes?(page_idx) || !File.exists?(out_file)
 
       index = slice.map_with_index do |input, slice_idx|
         chidx = page_idx * 128 + slice_idx
@@ -103,7 +106,7 @@ class RebuildBook
   end
 
   def self.run!(sname : String, snvid : String)
-    new(sname, snvid).run!(redo: sname == "chivi")
+    new(sname, snvid).run!
   end
 
   def self.run_all!(sname : String)
