@@ -4,13 +4,18 @@ require "compress/zip"
 INP = "_db/chseed"
 OUT = "db/chtexts"
 
-record OldChap, schid : String, title : String, chvol : String do
+class OldChap
+  property schid
+
+  def initialize(@schid : String, @title : String, @chvol : String)
+  end
+
   def to_s(x : Nil)
-    {schid, title, chvol}.join("\t")
+    {@schid, @title, @chvol}.join("\t")
   end
 
   def to_s(x : Tuple(Int64, Int32, Int32))
-    {schid, title, chvol, x[0], x[1], x[2]}.join("\t")
+    {@schid, @title, @chvol, x[0], x[1], x[2]}.join("\t")
   end
 end
 
@@ -41,7 +46,7 @@ class RebuildBook
       index = slice.map_with_index do |chinfo, slice_idx|
         chidx = page_idx * 128 + slice_idx
         stats = rebuild_chap(chidx, chinfo.schid)
-        chinfo.schid = fix_schid(schid).to_s
+        chinfo.schid = fix_schid(chinfo.schid).to_s
         chinfo.to_s(stats)
       end
 
