@@ -16,10 +16,11 @@
 
 <div class="hints">
   {#each hints as hint, idx}
-    {#if idx == 0 || hint != term.old_val}
+    {#if (idx == 0 || hint != term.val) && hint}
       <button
         class="hint"
-        class:_orig={hint == term.old_val}
+        class:_base={term._base.mtime >= 0 && hint == term._base.val}
+        class:_priv={term._priv.mtime >= 0 && hint == term._priv.val}
         on:click={() => (term.val = hint)}>{hint}</button>
     {/if}
   {/each}
@@ -38,7 +39,7 @@
     padding: 0.25rem 0.5rem;
     height: 2rem;
 
-    @include flex($gap: 0.25rem);
+    @include flex($gap: 0);
     @include ftsize(sm);
   }
 
@@ -52,19 +53,9 @@
     @include bdradi;
     @include clamp($width: null);
 
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
-
     &._ptag {
       margin-left: auto;
       @include ftsize(xs);
-    }
-
-    &._orig {
-      font-style: italic;
-      // font-style: normal;
-      // font-weight: 500;
     }
 
     &._priv {
@@ -74,6 +65,10 @@
 
     &._base {
       font-style: italic;
+    }
+
+    @include hover {
+      @include fgcolor(primary, 5);
     }
   }
 </style>

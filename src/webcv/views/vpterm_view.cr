@@ -1,44 +1,50 @@
 require "json"
 
 class CV::VpTermView
-  @vals = [] of Tuple(String, Int32)
-  @tags = [] of Tuple(String, Int32)
+  @val_hint = [] of String
+  @tag_hint = [] of String
 
-  @mt_val : String
-  @mt_tag : String
+  @val_tran : String
+  @tag_tran : String
 
   alias Dicts = Tuple(VpDict, VpDict, VpDict, VpDict)
 
   def initialize(@key : String, @cvmtl : MtCore, @dicts : Dicts)
     mt_list = cvmtl.cv_plain(key, mode: 2, cap_mode: 0)
 
-    @mt_val = mt_list.to_s
-    @mt_tag = mt_list.first?.try { |x| x.succ ? "" : x.tag.to_str } || ""
+    @val_tran = mt_list.to_s
+    @tag_tran = guess_tag(mt_list)
   end
+
+  def guess_tag(mt_list : MtList)
+    return "" unless first = mt_list.first? # return "" if list is empty
+    return "" if first.succ                 # return "" if list is not singleton
+    first.tag.to_str
+  end
+
+  getter hanviet : String { MtCore.hanviet_mtl.translit(@key).to_s }
 
   def to_json(jb : JSON::Builder)
     jb.object do
-      jb.field "upriv" { to_json(jb, @dicts[0], type: 1) }
-      jb.field "ubase" { to_json(jb, @dicts[1], type: 1) }
-      jb.field "cpriv" { to_json(jb, @dicts[2], type: 0) }
-      jb.field "cbase" { to_json(jb, @dicts[3], type: 0) }
-
-      VpDict.suggest.find(@key).try { |term| add_hints(term, deep_loop: false) }
-
-      @vals.push({@mt_val, 0})
-      @tags.push({@mt_tag, 0}) unless @mt_tag.empty?
-
-      jb.field "vals", @vals.uniq(&.[0])
-      jb.field "tags", @tags.uniq(&.[0])
+      @val_hint << hanviet # add hanviet as val hint
 
       jb.field "binh_am", MtCore.binh_am_mtl.translit(@key).to_s
       jb.field "hanviet" { to_json(jb, VpDict.hanviet, 2) }
+
+      jb.field "u_priv" { to_json(jb, @dicts[0], type: 1) }
+      jb.field "u_base" { to_json(jb, @dicts[1], type: 1) }
+      jb.field "c_priv" { to_json(jb, @dicts[2], type: 0) }
+      jb.field "c_base" { to_json(jb, @dicts[3], type: 0) }
+
+      VpDict.suggest.find(@key).try { |x| add_hints(x, deep_loop: false) }
+      jb.field "val_hint", @val_hint.push(@val_tran).uniq.reject(&.empty?)
+      jb.field "tag_hint", @tag_hint.push(@tag_tran).uniq.reject(&.empty?)
     end
   end
 
   def to_json(jb : JSON::Builder, dict : VpDict, type = 0)
     if term = dict.find(@key)
-      add_hints(term) if type < 2
+      add_hints(term)
 
       jb.object do
         jb.field "val", term.val.first
@@ -53,12 +59,12 @@ class CV::VpTermView
       jb.object do
         if type == 2
           jb.field "val", hanviet
-        elsif type == 1 && @mt_tag.empty?
+        elsif type == 1 && @tag_tran.empty?
           jb.field "val", TextUtils.titleize(hanviet)
           jb.field "ptag", "nr"
         else
-          jb.field "val", @mt_val
-          jb.field "ptag", @mt_tag
+          jb.field "val", @val_tran
+          jb.field "ptag", @tag_tran
         end
 
         jb.field "mtime", -1
@@ -66,21 +72,14 @@ class CV::VpTermView
     end
   end
 
-  getter hanviet : String do
-    MtCore.hanviet_mtl.translit(@key).to_s
-  end
-
   def add_hints(term : VpTerm, deep_loop = true)
-    dic = term.dtype
-
-    term.val.each { |val| @vals << ({val, dic}) }
-    @tags << {term.ptag.to_str, dic}
-
+    @val_hint.concat(term.val)
+    @tag_hint << term.ptag.to_str
     return unless deep_loop
 
     while prev = term._prev
-      prev.val.each { |val| @vals << ({val, dic}) }
-      @tags << {term.ptag.to_str, dic}
+      @val_hint.concat(prev.val)
+      @tag_hint << term.ptag.to_str
       term = prev
     end
   end

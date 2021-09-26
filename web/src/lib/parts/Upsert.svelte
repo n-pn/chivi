@@ -69,12 +69,11 @@
 
     binh_am = data.binh_am
     hanviet = data.hanviet.val
-
-    hints = [hanviet, ...data.vals.map((x) => x[0])]
+    hints = data.val_hint
 
     terms = [
-      new VpTerm(data.upriv, data.ubase),
-      new VpTerm(data.cpriv, data.cbase),
+      new VpTerm(data.u_priv, data.u_base),
+      new VpTerm(data.c_priv, data.c_base),
       new VpTerm(data.hanviet, data.hanviet),
     ]
   }
