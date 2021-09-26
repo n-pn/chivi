@@ -15,7 +15,7 @@ class CV::ZipStore
   getter zip_file : String
   getter root_dir : String
 
-  def initialize(@zip_file, @root_dir = zip_file.sub(/.zip$/, ""))
+  def initialize(@zip_file, @root_dir = File.basename(@zip_file, ".zip"))
   end
 
   def entries(min_size : Int32 = 1)
@@ -29,32 +29,24 @@ class CV::ZipStore
     end || [] of String
   end
 
-  def dir_entries(min_size : Int32 = 1)
-    return [] of String unless File.directory?(@root_dir)
-
-    Dir.children(@root_dir).reject do |fname|
-      fpath = root_path(fname)
-      # skip files if file size smaller than min_size
-      File.directory?(fpath) || File.size(fpath) < min_size
-    end
+  def zip_entry(fname : String)
+    open_zip { |zip| yield zip[fname]? }
   end
 
-  def contains?(fname : String) : Bool
-    File.exists?(root_path(fname)) || archives?(fname)
+  private def open_zip
+    return unless File.exists?(@zip_file)
+    Compress::Zip::File.open(@zip_file) { |zip| yield zip }
   end
 
-  def archives?(fname : String) : Bool
-    open_zip { |zip| return true if zip[fname]? } || false
+  def archived?(fname : String) : Bool
+    zip_entry(fname, &.nil?.!)
   end
 
   def read(fname : String)
-    fpath = root_path(fname)
-    return File.read(fpath) if File.exists?(fpath)
-    open_zip(&.[fname]?.try(&.open(&.gets_to_end)))
+    zip_entry(&.open(&.gets_to_end))
   end
 
   def mtime(fname : String)
-    File.info?(root_path(fname)).try { |x| return x.modification_time }
     zip_entry(fname, &.try(&.time))
   end
 
@@ -92,18 +84,5 @@ class CV::ZipStore
     else
       "-jqu" # update if newer
     end
-  end
-
-  def root_path(fname : String)
-    File.join(@root_dir, fname)
-  end
-
-  private def open_zip
-    return unless File.exists?(@zip_file)
-    Compress::Zip::File.open(@zip_file) { |zip| yield zip }
-  end
-
-  private def zip_entry(fname : String)
-    open_zip { |zip| yield zip[fname]? }
   end
 end
