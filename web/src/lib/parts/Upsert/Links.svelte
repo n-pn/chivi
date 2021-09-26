@@ -49,7 +49,8 @@
   .hint {
     $line-height: 1.5rem;
     @include ftsize(sm);
-    margin: math.div($height - $line-height, 2) 0;
+    margin: math.div($height - $line-height, 2) 0.75rem;
+
     line-height: $line-height;
     @include clamp();
     @include fgcolor(tert);

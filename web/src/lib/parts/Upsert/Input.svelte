@@ -9,8 +9,8 @@
   export let output = ''
 
   $: output = input.substring(lower, upper)
-  $: prefix = Array.from(input.substring(lower - 4, lower))
-  $: suffix = Array.from(input.substring(upper, upper + 4))
+  $: prefix = Array.from(input.substring(lower - 5, lower))
+  $: suffix = Array.from(input.substring(upper, upper + 5))
 
   function move_lower_left() {
     lower -= 1
@@ -112,8 +112,8 @@
 
     overflow: hidden;
     flex-wrap: nowrap;
+    font-size: rem(19px);
     @include border(--bd-soft, $loc: left-right);
-    @include ftsize(lg);
   }
 
   .key-txt {
@@ -164,7 +164,7 @@
     position: absolute;
     left: 4.25rem;
     right: 4.25rem;
-    bottom: -0.375rem;
+    bottom: -0.45rem;
     height: 1rem;
 
     line-height: 1rem;
