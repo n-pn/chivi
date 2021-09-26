@@ -4,22 +4,9 @@ require "compress/zip"
 INP = "_db/chseed"
 OUT = "db/chtexts"
 
-class OldChap
-  property schid
-
-  def initialize(@schid : String, @title : String, @chvol : String)
-  end
-
-  def to_s(x : Nil)
-    {@schid, @title, @chvol}.join("\t")
-  end
-
-  def to_s(x : Tuple(Int64, Int32, Int32))
-    {@schid, @title, @chvol, x[0], x[1], x[2]}.join("\t")
-  end
-end
-
 class RebuildBook
+  record Chap, schid : String, title : String, chvol : String
+
   PART_LIMIT = 3000
 
   def initialize(@sname : String, @snvid : String)
@@ -31,23 +18,24 @@ class RebuildBook
     idx_file = "#{@inp_dir}/_id.tsv"
     return unless File.exists?(idx_file)
 
-    return if File.exists?(@out_dir) && !redo
     FileUtils.mkdir_p(@out_dir)
 
     infos = File.read_lines(idx_file).map do |line|
       parts = line.split('\t')
-
-      OldChap.new(parts[0], parts[1], parts[2])
+      Chap.new(parts[0], parts[1], parts[2])
     end
 
     infos.each_slice(128).with_index do |slice, page_idx|
       out_file = "#{@out_dir}/#{page_idx}.tsv"
 
-      index = slice.map_with_index do |chinfo, slice_idx|
+      next if File.exists?(out_file) && !redo
+
+      index = slice.map_with_index do |input, slice_idx|
         chidx = page_idx * 128 + slice_idx
-        stats = rebuild_chap(chidx, chinfo.schid)
-        chinfo.schid = fix_schid(chinfo.schid).to_s
-        chinfo.to_s(stats)
+        stats = [chidx.+(1).to_s, fix_schid(input.schid).to_s,
+                 input.title, input.chvol]
+        rebuild_chap(chidx, input.schid).try { |x| stats.concat(x.map(&.to_s)) }
+        stats.map(&.to_s).join('\t')
       end
 
       File.write(out_file, index.join("\n"))
