@@ -137,7 +137,7 @@ class CV::DictCtrl < CV::BaseCtrl
 
   def search
     dname = params["dname"]
-    input = params["input"]
+    words = params.json("words").as_a
 
     cvmtl = MtCore.generic_mtl(dname, _cv_user.uname)
     dicts = {
@@ -147,7 +147,13 @@ class CV::DictCtrl < CV::BaseCtrl
       VpDict.regular,
     }
 
-    json_view(VpTermView.new(input, cvmtl, dicts))
+    json_view do |jb|
+      jb.object do
+        words.each do |word|
+          jb.field (word.as_s) { VpTermView.new(word.as_s, cvmtl, dicts).to_json(jb) }
+        end
+      end
+    end
   end
 
   def upsert
@@ -162,8 +168,8 @@ class CV::DictCtrl < CV::BaseCtrl
     key = params.fetch_str("key").strip
     val = params.fetch_str("val").split(" / ").map(&.strip)
 
-    attr = params.fetch_str("attr")
-    rank = params["rank"]?.try(&.to_u8) || 3_u8
+    attr = params.json("attr").as_s
+    rank = params.json("rank").try(&.as_i.to_u8) || 3_u8
 
     vpterm = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cu_dname)
     return halt!(501, "Không thay đổi!") unless vdict.set!(vpterm)

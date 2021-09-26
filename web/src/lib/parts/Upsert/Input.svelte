@@ -1,11 +1,13 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let phrase = ['', 0, 0]
+  export let input = ''
+  export let lower = 0
+  export let upper = 1
+
   export let pinyin = ''
   export let output = ''
 
-  $: [input, lower = 0, upper = input.length] = phrase
   $: output = input.substring(lower, upper)
   $: prefix = Array.from(input.substring(lower - 4, lower))
   $: suffix = Array.from(input.substring(upper, upper + 4))

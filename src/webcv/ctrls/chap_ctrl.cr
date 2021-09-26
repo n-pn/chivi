@@ -107,8 +107,7 @@ class CV::ChapCtrl < CV::BaseCtrl
   end
 
   private def convert(dname, lines : Array(String), mode = 2)
-    stype = _cv_user.privi > 0 ? _cv_user.uname : nil
-    cvmtl = MtCore.generic_mtl(dname, stype)
+    cvmtl = MtCore.generic_mtl(dname, _cv_user.uname)
 
     String.build do |io|
       cvmtl.cv_title_full(lines[0], mode: mode).to_str(io)

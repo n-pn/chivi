@@ -5,7 +5,7 @@ export const fhint = writable('')
 export function hint(node, msg) {
   // prettier-ignore
   const show = (e) => { e.stopPropagation(); fhint.set(msg) }
-  const hide = (e) => fhint.set('')
+  const hide = (_) => fhint.set('')
 
   node.addEventListener('mouseenter', show, true)
   node.addEventListener('mouseleave', hide, true)

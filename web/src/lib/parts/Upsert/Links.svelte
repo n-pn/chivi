@@ -1,5 +1,5 @@
 <script>
-  import { fhint } from './_shared'
+  import { fhint, hint } from './_shared'
 
   export let key = ''
 
@@ -15,7 +15,7 @@
   ]
 </script>
 
-<footer class="foot">
+<footer class="foot" use:hint={''}>
   {#if $fhint}
     <div class="hint">{@html $fhint}</div>
   {:else}
@@ -28,7 +28,7 @@
 <style lang="scss">
   .foot {
     @include flex($center: horz);
-    @include border(--bd-soft, $loc: top);
+    @include border(--bd-main, $loc: top);
   }
 
   $height: 2.25rem;

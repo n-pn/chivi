@@ -66,11 +66,11 @@ class CV::VpDict
     }
   end
 
-  def self.for_convert(dname : String, stype : String? = nil)
-    dicts = [essence, regular, fixture]      # public generic
-    dicts << load("regular", stype) if stype # private generic
-    dicts << load(dname)                     # public unique
-    dicts << load(dname, stype) if stype     # private unique
+  def self.for_convert(dname : String, stype : String = "chivi")
+    dicts = [essence, regular, fixture] # public generic
+    dicts << load("regular", stype)     # private generic
+    dicts << load(dname)                # public unique
+    dicts << load(dname, stype)         # private unique
     dicts
   end
 

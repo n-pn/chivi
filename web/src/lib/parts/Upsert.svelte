@@ -6,15 +6,23 @@
 
   export const tab = writable(0)
   export const state = writable(0)
-  export const input = writable(['', 0, 1])
+  export const input = writable([])
+  export const lower = writable(0)
+  export const upper = writable(1)
 
-  export function activate(inp, _tab = 0, _state = 1) {
-    tab.set(_tab)
+  export function activate(data, active_tab = 0, active_state = 1) {
+    if (typeof data == 'string') {
+      input.set(data)
+      lower.set(0)
+      upper.set(data.length)
+    } else {
+      input.set(data[0])
+      lower.set(data[1])
+      upper.set(data[2])
+    }
 
-    if (typeof inp == 'string') inp = [inp, 0, inp.length]
-    input.set(inp)
-
-    state.set(_state)
+    tab.set(active_tab)
+    state.set(active_state)
   }
 
   export function deactivate(_evt) {
@@ -24,7 +32,6 @@
 
 <script>
   import { session } from '$app/stores'
-
   import { VpTerm, hint } from './Upsert/_shared.js'
 
   import SIcon from '$atoms/SIcon.svelte'
@@ -40,21 +47,18 @@
 
   export let dname = 'combine'
   export let label = 'Tổng hợp'
-
   export let _dirty = false
 
-  $: dnames = [dname, 'regular', 'hanviet']
+  const cached = {}
 
   let binh_am = ''
-  let hanviet = ''
-
-  let hints = ['']
+  let hints = []
   let terms = []
 
-  $: term = terms[$tab] || new VpTerm({ val: '', ptag: '', rank: 3 })
+  let term = new VpTerm({ val: '', ptag: '', rank: 3 })
 
   let key = ''
-  $: if (key) init_search(key, dname)
+  $: if (key) init_search(key, $input, $lower, $upper)
 
   let value_field
   $: if (term) focus_on_value()
@@ -63,12 +67,37 @@
     value_field && value_field.focus()
   }
 
-  async function init_search(input, dname) {
-    const [err, data] = await dict_search(fetch, input, dname)
-    if (err) return console.log({ err, data })
+  async function init_search(key, input, lower, upper) {
+    if (cached[key]) update_term(cached[key])
 
+    const words = gen_words(input, lower, upper)
+    if (words.length == 0) return // skip fetching if all words fetched
+
+    const [err, res] = await dict_search(fetch, words, dname)
+    if (err) return console.log({ err, res })
+
+    if (res[key]) update_term(res[key])
+    for (const k in res) cached[k] = res[k]
+  }
+
+  function gen_words(hanzi, lower, upper) {
+    const res = [hanzi.substring(lower, upper)]
+
+    if (lower > 0) res.push(hanzi.substring(lower - 1, upper))
+    if (lower + 1 < upper) res.push(hanzi.substring(lower + 1, upper))
+
+    if (upper - 1 > lower) res.push(hanzi.substring(lower, upper - 1))
+    if (upper + 1 < hanzi.length) res.push(hanzi.substring(lower, upper + 1))
+    if (upper + 2 < hanzi.length) res.push(hanzi.substring(lower, upper + 2))
+    if (upper + 3 < hanzi.length) res.push(hanzi.substring(lower, upper + 3))
+
+    if (lower > 1) res.push(hanzi.substring(lower - 2, upper))
+
+    return res.filter((x) => x && !cached[x])
+  }
+
+  function update_term(data) {
     binh_am = data.binh_am
-    hanviet = data.hanviet.val
     hints = data.val_hint
 
     terms = [
@@ -76,6 +105,8 @@
       new VpTerm(data.c_priv, data.c_base),
       new VpTerm(data.hanviet, data.hanviet),
     ]
+
+    term = terms[$tab]
   }
 
   async function submit_val(stype = '_base') {
@@ -87,6 +118,7 @@
       stype,
     }
 
+    const dnames = [dname, 'regular', 'hanviet']
     const [status] = await dict_upsert(fetch, dnames[$tab], params)
     _dirty = !status
     deactivate()
@@ -94,7 +126,7 @@
 </script>
 
 <div class="wrap" on:click={deactivate}>
-  <div id="upsert" class="main" on:click|stopPropagation={focus_on_value}>
+  <div class="main" on:click|stopPropagation={focus_on_value}>
     <header class="head">
       <CMenu dir="left" loc="top">
         <button class="m-button _text" slot="trigger">
@@ -108,7 +140,12 @@
         </svelte:fragment>
       </CMenu>
 
-      <Input phrase={$input} pinyin={binh_am} bind:output={key} />
+      <Input
+        input={$input}
+        bind:lower={$lower}
+        bind:upper={$upper}
+        pinyin={binh_am}
+        bind:output={key} />
 
       <button
         type="button"
@@ -218,7 +255,7 @@
       </div>
     </section>
 
-    <Links {key} dlabel={label} />
+    <Links {key} />
   </div>
 </div>
 
