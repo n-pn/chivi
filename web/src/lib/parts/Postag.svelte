@@ -21,6 +21,13 @@
     ptag = ptag == ntag ? '' : ntag
     state = 1
   }
+
+  function scroll_to(tab) {
+    sections[tab]?.scrollIntoView({ behavior: 'smooth' })
+    active_tab = tab
+  }
+
+  let sections = []
 </script>
 
 <div class="wrap" on:click={hide_modal}>
@@ -31,7 +38,7 @@
           class="-tab"
           class:_active={tab == active_tab}
           class:_origin={tab == origin_tab}
-          on:click={() => (active_tab = tab)}>
+          on:click={() => scroll_to(tab)}>
           {gname}
         </button>
       {/each}
@@ -43,7 +50,7 @@
 
     <div class="body">
       {#each groups as tags, tab}
-        <section class="tags" class:_active={tab == active_tab}>
+        <section class="tags" bind:this={sections[tab]}>
           {#each tags as ntag}
             {#if ntag != '-'}
               <button
@@ -83,7 +90,7 @@
   }
 
   .main {
-    width: 32rem;
+    width: 28rem;
     max-width: 100vw;
 
     @include bdradi();
@@ -162,21 +169,16 @@
   }
 
   .tags {
-    @include grid(minmax(6.5rem, 1fr), $gap: 0.5rem);
+    @include grid(minmax(6.5rem, 1fr), $gap: 0.375rem);
     padding: 0.5rem 0.75rem;
-
-    display: none;
-    // prettier-ignore
-    &._active { display: grid; }
   }
 
   .-tag {
-    padding: 0 0.5rem;
+    padding: 0.25rem 0.5rem;
     background: transparent;
     font-weight: 500;
 
-    height: 1.75rem;
-    line-height: 1.75rem;
+    line-height: 1.5rem;
 
     @include linesd(--bd-main);
 
@@ -202,7 +204,7 @@
   .-sep {
     width: 50%;
     grid-column: 1 / -1;
-    margin: 0.25rem auto;
+    margin: 0 auto;
     @include border(--bd-main, $loc: top);
   }
 </style>

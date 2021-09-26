@@ -29,9 +29,9 @@ export const labels = {
   vl: 'Cụm động từ',
   vg: 'Ngữ tố động từ',
 
-  a: 'Tính từ',
-  ad: 'Trạng tính từ',
-  an: 'Danh tính từ',
+  a: 'Hình dung từ',
+  ad: 'Trạng hình từ',
+  an: 'Danh hình từ',
   al: 'Cụm tính từ',
   ag: 'Ngữ tố tính từ',
   az: 'Từ trạng thái',
@@ -119,17 +119,17 @@ export const labels = {
   vxiang: 'Động từ 想',
 }
 
-export const gnames = ['Thường gặp', 'Hiếm gặp', 'Đặc biệt', 'Dấu câu']
+export const gnames = ['Thường gặp', 'Hiếm gặp', 'Đặc biệt']
 export const groups = [
   // prettier-ignore
   [
     'nr', 'nf', 'ns', 'nt', 'nz',
     '-',
-    'nw',  't', 's', 'f', 'n',
+    'n', 'nl', 'nw', 't', 's', 'f', 'ng',  'tg',
     '-',
-    'v', 'vd', 'vf', 'vx', 'vi', 'vl', 'vn',
+    'v', 'vd', 'vf', 'vx', 'vi', 'vl', 'vn',  'vg',
     '-',
-    'a', 'ad', 'an', 'al', 'az',
+    'a', 'ad', 'an', 'az', 'al',  'b', 'bl', 'ag',
     '-',
     'r', 'rr', 'rz', 'ry',
     '-',
@@ -139,10 +139,7 @@ export const groups = [
   [
     'm', 'mq', 'q', 'qv', 'qt',
     '-',
-    'b', 'bl', 'c', 'cc',
-    '-',
-    'ng', 'tg', 'vg', 'ag',
-    '-',
+     'c', 'cc',
     'd', 'p', 'u',
     'e', 'y', 'o',
     '-',
@@ -159,10 +156,7 @@ export const groups = [
     '-',
     'udh', 'udeng', 'uyy',  'uls',
     '-',
-    'kmen', 'kshi'
-  ],
-  // prettier-ignore
-  [
+    'kmen', 'kshi',
     'wd', 'wn', 'wj', 'wx', 'wm', 'wf', 'wt', 'ww', 'ws',
     'wp', 'wi',
     '-',
