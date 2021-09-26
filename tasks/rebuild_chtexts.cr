@@ -121,13 +121,13 @@ class RebuildBook
   def self.run_all!(sname : String)
     books = Dir.children("#{INP}/#{sname}")
     books.each_with_index(1) do |snvid, idx|
-      puts "- <#{idx}/#{books.size}> #{sname}/#{snvid}"
+      puts "\n[#{sname}] <#{idx}/#{books.size}> #{snvid}"
       run!(sname, snvid)
     end
   end
 end
 
-snames = Dir.children(INP)
+snames = ARGV.empty? ? Dir.children(INP) : ARGV
 snames.each { |sname| RebuildBook.run_all!(sname) }
 
 # RebuildBook.new("hetushu", "1").run!
