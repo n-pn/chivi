@@ -40,7 +40,9 @@ class RebuildBook
 
       index = slice.map_with_index do |chinfo, slice_idx|
         chidx = page_idx * 128 + slice_idx
-        chinfo.to_s(rebuild_chap(chidx, chinfo.schid))
+        stats = rebuild_chap(chidx, chinfo.schid)
+        chinfo.schid = fix_schid(schid).to_s
+        chinfo.to_s(stats)
       end
 
       File.write(out_file, index.join("\n"))
@@ -114,7 +116,7 @@ class RebuildBook
   def self.run_all!(sname : String)
     books = Dir.children("#{INP}/#{sname}")
     books.each_with_index(1) do |snvid, idx|
-      puts "- <#{idx}/#{books.size}> #{snvid}"
+      puts "- <#{idx}/#{books.size}> #{sname}/#{snvid}"
       run!(sname, snvid)
     end
   end
