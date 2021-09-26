@@ -96,7 +96,7 @@
           <SIcon name="edit" />
           <a
             class="link"
-            href="/search?q={encodeURIComponent(cvbook.vauthor)}&t=author">
+            href="/search?t=author&q={encodeURIComponent(cvbook.vauthor)}">
             <span class="label">{cvbook.vauthor}</span>
           </a>
         </span>
@@ -139,7 +139,7 @@
           {#if cvbook.root_link != ''}
             <a
               class="stat link _outer"
-              href={cvbook.origin}
+              href={cvbook.root_link}
               rel="noopener noreferer"
               target="_blank"
               title="Trang nguồn">
