@@ -23,7 +23,7 @@
     <SIcon name="users" />
 
     {#if term._base.mtime > 0}
-      <span class="lbl">{term._base.state}:</span>
+      <span>{term._base.state}:</span>
       <span class="val">{render_time(term._base.mtime)}</span>
       <span class>bởi</span>
       <span class="val user">{term._base.uname}</span>
@@ -59,6 +59,7 @@
 
   .group {
     @include flex($center: vert, $gap: 0.2rem);
+    @include clamp();
     // prettier-ignore
     & + &:before { content: '|'; }
   }
