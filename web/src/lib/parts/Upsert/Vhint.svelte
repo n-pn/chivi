@@ -6,7 +6,7 @@
 
   $: ptag_priv = get_ptag(term, '_priv')
   $: ptag_base = get_ptag(term, '_base')
-  $: ptag_hint = ptag_priv || ptag_base || ''
+  $: ptag_hint = ptag_priv || ptag_base || term._priv.ptag
 
   function get_ptag(term, type) {
     const orig = term[type]
@@ -25,7 +25,7 @@
     {/if}
   {/each}
 
-  {#if ptag_hint}
+  {#if ptag_hint != term.ptag}
     <button
       class="hint _ptag"
       class:_base={ptag_hint == ptag_base}
@@ -43,6 +43,7 @@
     @include ftsize(sm);
   }
 
+  // prettier-ignore
   .hint {
     cursor: pointer;
     padding: 0 0.25rem;
@@ -55,17 +56,12 @@
 
     &._ptag {
       margin-left: auto;
-      @include ftsize(xs);
+      font-size: rem(13px);
     }
 
-    &._priv {
-      font-weight: 500;
-      @include fgcolor(secd);
-    }
-
-    &._base {
-      font-style: italic;
-    }
+    &._priv, &._base { @include fgcolor(secd); }
+    &._priv { font-weight: 500; }
+    &._base { font-style: italic; }
 
     @include hover {
       @include fgcolor(primary, 5);

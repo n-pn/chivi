@@ -55,7 +55,7 @@
   let hints = []
   let terms = []
 
-  let term = new VpTerm({ val: '', ptag: '', rank: 3 })
+  $: term = terms[$tab] || new VpTerm({ val: '', ptag: '', rank: 3 })
 
   let key = ''
   $: if (key) init_search(key, $input, $lower, $upper)
