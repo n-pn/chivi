@@ -94,22 +94,23 @@ class CV::MtCore
     res = MtList.new
     idx = nodes.size - 1
 
-    while idx > 0
-      node = nodes.unsafe_fetch(idx)
-      idx -= node.key.size
+    lst = nodes.unsafe_fetch(idx)
+    res.prepend!(lst)
+    idx -= lst.key.size
 
-      if can_merge?(node, res.first)
-        res.first.not_nil!.prepend!(node)
+    while idx > 0
+      cur = nodes.unsafe_fetch(idx)
+      idx -= cur.key.size
+
+      if can_merge?(cur, lst)
+        lst.prepend!(cur)
       else
-        res.prepend!(node)
+        res.prepend!(cur)
+        lst = cur
       end
     end
 
     res
-  end
-
-  private def can_merge?(left : MtNode, right : Nil)
-    false
   end
 
   private def can_merge?(left : MtNode, right : MtNode)

@@ -86,9 +86,9 @@
     color: var(--active);
   }
 
-  c-v[data-d='1'] {
-    @include cv-token(gray);
-  }
+  // c-v[data-d='1'] {
+  //   @include cv-token(gray);
+  // }
 
   c-v[data-d='2'] {
     @include cv-token(blue);

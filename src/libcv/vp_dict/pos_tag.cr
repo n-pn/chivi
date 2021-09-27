@@ -117,19 +117,20 @@ module CV
     :Urlstr => "xu", # 网址URL - url string
 
     :Punct   => "w",   # 标点符号 - symbols and punctuations - dấu câu
-    :Perct   => "wb",  # percentage and permillle signs: ％ and ‰ of full length; % of half length
     :Comma   => "wd",  # full or half-length comma: `，` `,`
     :Penum   => "wn",  # full-length enumeration mark: `、`
     :Pstop   => "wj",  # full stop of full length: `。`
     :Pdeci   => "wx",  # half stop, decimal
     :Colon   => "wm",  # full or half-length colon: `：`， `:`
-    :Smcln   => "wf",  # full or half-length semi-colon: `；`， `;`
     :Ellip   => "ws",  # full-length ellipsis: …… …
     :Pdash   => "wp",  # dash: ——  －－  —— －  of full length; ---  ---- of half length
-    :Middot  => "wi",  # interpunct
-    :Exmark  => "wt",  # full or half-length exclamation mark: `！` `!`
-    :Qsmark  => "ww",  # full or half-length question mark: `？` `?`
-    :Symbol  => "wh",  # full or half-length unit symbol ￥ ＄ ￡ ° ℃  $
+    :Tilde   => "wti", # tidle ~
+    :Smcln   => "wsc", # full or half-length semi-colon: `；`， `;`
+    :Perct   => "wpc", # percentage and permillle signs: ％ and ‰ of full length; % of half length
+    :Middot  => "wmd", # interpunct
+    :Exmark  => "wex", # full or half-length exclamation mark: `！` `!`
+    :Qsmark  => "wqs", # full or half-length question mark: `？` `?`
+    :Squanti => "wqt", # full or half-length unit symbol ￥ ＄ ￡ ° ℃  $
     :Quoteop => "wyz", # full-length single or double opening quote: “ ‘ 『
     :Quotecl => "wyy", # full-length single or double closing quote: ” ’ 』
     :Brackop => "wkz", # opening brackets: （ 〔 ［ ｛ 【 〖 of full length; ( [ { of half length

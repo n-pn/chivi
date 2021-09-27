@@ -19,7 +19,8 @@ module CV::MTL::PadSpace
     when .middot? then return true
     when .quotecl?, .brackcl?, .titlecl?,
          .comma?, .penum?, .pstop?, .pdeci?,
-         .smcln?, .exmark?, .qsmark?, .ellip?
+         .smcln?, .exmark?, .qsmark?, .ellip?,
+         .tilde?, .squanti?, .perct?
       return left.tag.colon?
       # when .pdash?  then return !left.tag.puncts?
     when .quoteop?, .brackop?, .titleop?
