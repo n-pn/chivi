@@ -207,29 +207,29 @@
       <Emend {term} p_min={$tab + 1} />
 
       <div class="field">
-        <Vhint {hints} bind:term />
-
-        <div class="value" class:_fresh={term.fresh}>
-          <input
-            type="text"
-            class="-input"
-            bind:this={value_field}
-            bind:value={term.val}
-            autocomplete="off"
-            autocapitalize={$tab < 1 ? 'words' : 'off'} />
-
-          {#if $tab < 2}
-            <button
-              class="postag"
-              data-kbd="p"
-              on:click={() => state.set(2)}
-              use:hint={'Phân loại cụm từ: Danh, động, tính, trạng...'}>
-              {tag_label(term.ptag) || 'Phân loại'}
-            </button>
-          {/if}
-        </div>
-
         {#key key}
+          <Vhint {hints} bind:term />
+
+          <div class="value" class:_fresh={term.fresh}>
+            <input
+              type="text"
+              class="-input"
+              bind:this={value_field}
+              bind:value={term.val}
+              autocomplete="off"
+              autocapitalize={$tab < 1 ? 'words' : 'off'} />
+
+            {#if $tab < 2}
+              <button
+                class="postag"
+                data-kbd="p"
+                on:click={() => state.set(2)}
+                use:hint={'Phân loại cụm từ: Danh, động, tính, trạng...'}>
+                {tag_label(term.ptag) || 'Phân loại'}
+              </button>
+            {/if}
+          </div>
+
           <Vutil bind:term />
         {/key}
       </div>
