@@ -1,6 +1,6 @@
-require "./improving/*"
+require "./grammars/*"
 
-module CV::Improving
+module CV::MTL::Grammars
   def fix_grammar!(node = @head, mode = 2)
     while node = node.succ
       case node.tag

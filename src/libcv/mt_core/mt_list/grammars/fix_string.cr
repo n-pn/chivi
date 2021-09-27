@@ -1,4 +1,4 @@
-module CV::Improving
+module CV::MTL::Grammars
   def fix_string!(node : MtNode) : MtNode
     while succ = node.succ
       case succ.tag

@@ -1,4 +1,4 @@
-module CV::Improving
+module CV::MTL::Grammars
   def fix_vxiang!(node = @root) : MtNode
     return node unless succ = node.succ
 

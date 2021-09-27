@@ -2,9 +2,9 @@ require "./mt_node"
 require "./mt_list/*"
 
 class CV::MtList
-  include Improving
-  include ApplyCaps
-  include PadSpaces
+  include MTL::Grammars
+  include MTL::ApplyCap
+  include MTL::PadSpace
 
   getter head = MtNode.new("", "")
 

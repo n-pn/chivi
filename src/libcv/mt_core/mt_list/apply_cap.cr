@@ -1,4 +1,4 @@
-module CV::ApplyCaps
+module CV::MTL::ApplyCap
   def capitalize!(node = @head, cap_mode = 1) : self
     while node = node.succ
       next if node.val.blank?

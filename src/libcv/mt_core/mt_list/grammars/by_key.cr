@@ -1,4 +1,4 @@
-module CV::Improving
+module CV::MTL::Grammars
   private def fix_by_key!(node : MtNode)
     case node.key
     when "对"

@@ -1,4 +1,4 @@
-module CV::PadSpaces
+module CV::MTL::PadSpace
   def pad_spaces!(node = @head) : self
     return self unless node = node.succ
     prev = node

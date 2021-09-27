@@ -1,4 +1,4 @@
-module CV::Improving
+module CV::MTL::Grammars
   def fix_ule!(node : MtNode) : MtNode
     return node unless (prev = node.prev) && (succ = node.succ)
     return node.update!(val: "") if succ.quoteop? || prev.quotecl?

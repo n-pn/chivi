@@ -1,4 +1,4 @@
-module CV::Improving
+module CV::MTL::Grammars
   def fix_number!(node : MtNode) : MtNode
     while succ = node.succ
       break unless succ.number?

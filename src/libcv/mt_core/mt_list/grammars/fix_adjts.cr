@@ -1,4 +1,4 @@
-module CV::Improving
+module CV::MTL::Grammars
   def fix_adjts!(node = @head, mode = 2) : MtNode
     return node if mode < 2
 
