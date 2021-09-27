@@ -1,10 +1,11 @@
 {
-	"background_color": "#f7fafc",
-	"theme_color": "#0b476b",
 	"name": "Chivi",
 	"short_name": "Chivi",
-	"display": "standalone",
 	"start_url": "/",
+	"display": "standalone",
+	"description": "Chinese to Vietnamese machine translation",
+	"theme_color": "#0b476b",
+	"background_color": "#f7fafc",
 	"icons": [
 		{
 			"src": "/favi/android-chrome-192x192.png",
