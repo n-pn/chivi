@@ -3,9 +3,8 @@ import { writable } from 'svelte/store'
 export const fhint = writable('')
 
 export function hint(node, msg) {
-  // prettier-ignore
-  const show = (e) => { e.stopPropagation(); fhint.set(msg) }
-  const hide = (_) => fhint.set('')
+  const show = () => fhint.set(msg)
+  const hide = () => fhint.set('')
 
   node.addEventListener('mouseenter', show, true)
   node.addEventListener('mouseleave', hide, true)

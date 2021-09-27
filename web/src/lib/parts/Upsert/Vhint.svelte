@@ -16,7 +16,7 @@
 
 <div class="hints">
   {#each hints as hint, idx}
-    {#if (idx == 0 || hint != term.val) && hint}
+    {#if (idx == 0 || hint != term.val.trim()) && hint}
       <button
         class="hint"
         class:_base={term._base.mtime >= 0 && hint == term._base.val}
@@ -63,8 +63,6 @@
     &._priv { font-weight: 500; }
     &._base { font-style: italic; }
 
-    @include hover {
-      @include fgcolor(primary, 5);
-    }
+    @include hover { @include fgcolor(primary, 5); }
   }
 </style>
