@@ -32,6 +32,8 @@
 
 <script>
   import { session } from '$app/stores'
+  import { scale, fade } from 'svelte/transition'
+  import { easeOutBack } from '$lib/easing'
   import { VpTerm, hint } from './Upsert/_shared.js'
 
   import SIcon from '$atoms/SIcon.svelte'
@@ -130,8 +132,11 @@
   }
 </script>
 
-<div class="wrap" on:click={deactivate}>
-  <div class="main" on:click|stopPropagation={focus_on_value}>
+<div class="wrap" on:click={deactivate} transition:fade={{ duration: 100 }}>
+  <div
+    class="main"
+    on:click|stopPropagation={focus_on_value}
+    transition:scale={{ duration: 200, easing: easeOutBack }}>
     <header class="head">
       <CMenu dir="left" loc="top">
         <button class="m-button _text" slot="trigger">

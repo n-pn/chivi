@@ -1,4 +1,6 @@
 <script>
+  import { scale, fade } from 'svelte/transition'
+  import { easeOutBack } from '$lib/easing'
   import SIcon from '$atoms/SIcon.svelte'
   import { gnames, groups, find_group, tag_label } from '$lib/pos_tag'
 
@@ -30,8 +32,11 @@
   let sections = []
 </script>
 
-<div class="wrap" on:click={hide_modal}>
-  <div class="main" on:click={(e) => e.stopPropagation()}>
+<div class="wrap" transition:fade={{ duration: 100 }} on:click={hide_modal}>
+  <div
+    class="main"
+    on:click={(e) => e.stopPropagation()}
+    transition:scale={{ duration: 200, easing: easeOutBack }}>
     <header class="head">
       {#each gnames as gname, tab}
         <button
@@ -84,9 +89,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10000;
+    z-index: 1000;
 
-    background: rgba(#000, 0.2);
+    background: rgba(#000, 0.4);
   }
 
   .main {
