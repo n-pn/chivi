@@ -115,6 +115,8 @@ class RebuildBook
     books.each_with_index(1) do |snvid, idx|
       puts "\n[#{sname}] <#{idx}/#{books.size}> #{snvid}"
       run!(sname, snvid)
+    rescue err
+      puts err
     end
   end
 end
