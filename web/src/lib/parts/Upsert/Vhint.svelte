@@ -36,7 +36,7 @@
 
 <style lang="scss">
   .hints {
-    padding: 0.25rem 0.5rem;
+    padding: 0 0.5rem;
     height: 2rem;
 
     @include flex($gap: 0);
@@ -46,7 +46,7 @@
   // prettier-ignore
   .hint {
     cursor: pointer;
-    padding: 0 0.25rem;
+    padding: 0.25rem;
     line-height: 1.5rem;
     background-color: inherit;
     @include fgcolor(tert);
