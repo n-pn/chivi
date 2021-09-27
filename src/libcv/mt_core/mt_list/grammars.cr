@@ -9,6 +9,7 @@ module CV::MTL::Grammars
       when .ude2?         then node = fix_ude2!(node)             # 地
       when .urlstr?       then node = fix_urlstr!(node)
       when .string?       then node = fix_string!(node)
+      when .quoteop?      then node = fix_quoteop!(node)
       when .number?       then node = fix_number!(node)
       when .vxiang?       then node = fix_vxiang!(node)
       when .vshi?, .vyou? then next # TODO handle vshi, vyou

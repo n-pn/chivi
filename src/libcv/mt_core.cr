@@ -114,13 +114,19 @@ class CV::MtCore
   end
 
   private def can_merge?(left : MtNode, right : MtNode)
-    return false unless left.tag == right.tag
-
-    case left.tag
-    when .puncts?, .strings?
-      true
-    else
-      false
+    case right.tag
+    when .numlat?
+      case left.tag
+      when .strings?
+        right.tag = left.tag
+        true
+      when .pdeci?  then true
+      when .numlat? then true
+      else               false
+      end
+    when .strings? then left.strings?
+    when .puncts?  then left.tag == right.tag
+    else                false
     end
   end
 end

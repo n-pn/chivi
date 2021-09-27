@@ -4,7 +4,12 @@ module CV::MTL::PadSpace
     prev = node
 
     while node = node.succ
-      node.set_prev(MtNode.new("", " ")) if should_space?(prev, node)
+      if node.tag.numlat? && (prev.tag.plsgn? || prev.tag.mnsgn?)
+        node.tag = PosTag::String unless prev.prev.try(&.numlat?)
+      elsif should_space?(prev, node)
+        node.set_prev(MtNode.new("", " "))
+      end
+
       prev = node unless node.val.empty?
     end
 
@@ -17,21 +22,25 @@ module CV::MTL::PadSpace
     case right.tag
     when .colon?  then return false
     when .middot? then return true
+    when .plsgn?, .mnsgn?
+      return false if left.tag.numlat?
+    when .numlat?
+      return false if left.tag.plsgn? || left.tag.mnsgn?
     when .quotecl?, .brackcl?, .titlecl?,
          .comma?, .penum?, .pstop?, .pdeci?,
          .smcln?, .exmark?, .qsmark?, .ellip?,
          .tilde?, .squanti?, .perct?
       return left.tag.colon?
       # when .pdash?  then return !left.tag.puncts?
-    when .quoteop?, .brackop?, .titleop?
-      true
+      # when .quoteop?, .brackop?, .titleop?
+      #   return true
     when .puncts?
       case left.tag
-      when .colon?, .comma?, .pstop?
-        return true
-      else
-        return !left.tag.puncts?
+      when .colon?, .comma?, .pstop? then return true
+      else                                return !left.tag.puncts?
       end
+    when .string?
+      return false if left.tag.pdeci?
     end
 
     case left.tag

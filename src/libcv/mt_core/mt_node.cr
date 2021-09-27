@@ -73,23 +73,27 @@ class CV::MtNode
     @dic = other.dic if @dic < other.dic
   end
 
-  def fuse_left!(left = @prev.try(&.val) || "", right = "", @dic = 6) : Nil
-    return unless prev = @prev
+  def fuse_left!(left = "#{@prev.try(&.val)}", right = "", @dic = 6) : self
+    return self unless prev = @prev
 
     @key = "#{prev.key}#{@key}"
     @val = "#{left}#{@val}#{right}"
 
     self.prev = prev.prev
     self.prev.try(&.succ = self)
+
+    self
   end
 
-  def fuse_right!(@val : String, @dic = 6) : Nil
-    return unless succ = @succ
+  def fuse_right!(@val : String = "#{@val}#{@succ.try(&.val)}", @dic = 6) : self
+    return self unless succ = @succ
 
     @key = "#{@key}#{succ.key}"
 
     self.succ = succ.succ
     self.succ.try(&.prev = self)
+
+    self
   end
 
   def fuse_的!(succ : self, succ_succ : self, join = " ")

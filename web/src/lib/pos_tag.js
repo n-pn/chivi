@@ -87,7 +87,8 @@ export const labels = {
   h: 'Tiền tố',
   k: 'Hậu tố',
 
-  x: 'Hư từ',
+  x: 'Chữ latin',
+  xd: 'Số latin',
   xx: 'Kaomoji',
   xu: 'Đường link',
 
@@ -145,7 +146,7 @@ export const groups = [
     'e', 'y', 'o',
     '-',
     'h', 'k',
-    'x', 'xx', 'xu'
+    'x', 'xd', 'xx', 'xu'
   ],
   // prettier-ignore
   [

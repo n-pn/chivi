@@ -62,6 +62,7 @@ module CV
     # :Pronmorp => "rg" # 代词性语素 - pronominal morpheme
 
     :Number => "m",  # 数词 - numeral - số từ
+    :Numlat => "mx", # latin number 0 1 2 .. 9
     :Nquant => "mq", # 数量词 - numeral and quantifier - số + lượng
 
     :Quanti => "q",  # 量词 - quantifier - lượng từ
@@ -112,19 +113,23 @@ module CV
     :Kmen => "kmen", # hậu tố 们
     :Kshi => "kshi", # hậu tố 时
 
-    :String => "x",  # 字符串 - non-word character string - hư từ khác
-    :Artstr => "xx", # 非语素字 - for ascii art like emoji...
+    :String => "x", # 字符串 - non-word character string - hư từ khác
+
     :Urlstr => "xu", # 网址URL - url string
+    :Artstr => "xx", # 非语素字 - for ascii art like emoji...
 
     :Punct   => "w",   # 标点符号 - symbols and punctuations - dấu câu
     :Comma   => "wd",  # full or half-length comma: `，` `,`
     :Penum   => "wn",  # full-length enumeration mark: `、`
     :Pstop   => "wj",  # full stop of full length: `。`
-    :Pdeci   => "wx",  # half stop, decimal
+    :Pdeci   => "wx",  # half stop, decimal `.`
     :Colon   => "wm",  # full or half-length colon: `：`， `:`
     :Ellip   => "ws",  # full-length ellipsis: …… …
     :Pdash   => "wp",  # dash: ——  －－  —— －  of full length; ---  ---- of half length
     :Tilde   => "wti", # tidle ~
+    :Atsgn   => "wat", # at sign @
+    :Plsgn   => "wps", # plus sign +
+    :Mnsgn   => "wms", # minus sign -
     :Smcln   => "wsc", # full or half-length semi-colon: `；`， `;`
     :Perct   => "wpc", # percentage and permillle signs: ％ and ‰ of full length; % of half length
     :Middot  => "wmd", # interpunct
@@ -309,17 +314,6 @@ enum CV::PosTag
     end
     {% end %}
   end
-
-  # def self.per_pron?(hanzi : String)
-  #   case hanzi
-  #   when "我", "你", "您", "他", "她", "它",
-  #        "我们", "咱们", "你们", "您们", "他们", "她们", "它们",
-  #        "朕", "人家", "老子"
-  #     true
-  #   else
-  #     false
-  #   end
-  # end
 end
 
 # puts CV::VpTags.map_tag("n").to_i
