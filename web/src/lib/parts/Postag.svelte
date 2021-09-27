@@ -1,6 +1,6 @@
 <script>
   import { scale, fade } from 'svelte/transition'
-  import { easeOutBack } from '$lib/easing'
+  import { backInOut } from 'svelte/easing'
   import SIcon from '$atoms/SIcon.svelte'
   import { gnames, groups, find_group, tag_label } from '$lib/pos_tag'
 
@@ -36,7 +36,7 @@
   <div
     class="main"
     on:click={(e) => e.stopPropagation()}
-    transition:scale={{ duration: 200, easing: easeOutBack }}>
+    transition:scale={{ duration: 100, easing: backInOut }}>
     <header class="head">
       {#each gnames as gname, tab}
         <button

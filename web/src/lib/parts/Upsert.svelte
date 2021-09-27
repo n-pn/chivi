@@ -33,7 +33,7 @@
 <script>
   import { session } from '$app/stores'
   import { scale, fade } from 'svelte/transition'
-  import { easeOutBack } from '$lib/easing'
+  import { backInOut } from 'svelte/easing'
   import { VpTerm, hint } from './Upsert/_shared.js'
 
   import SIcon from '$atoms/SIcon.svelte'
@@ -136,7 +136,7 @@
   <div
     class="main"
     on:click|stopPropagation={focus_on_value}
-    transition:scale={{ duration: 200, easing: easeOutBack }}>
+    transition:scale={{ duration: 100, easing: backInOut }}>
     <header class="head">
       <CMenu dir="left" loc="top">
         <button class="m-button _text" slot="trigger">
