@@ -15,7 +15,7 @@
 </script>
 
 <div class="hints">
-  {#each hints as hint, idx}
+  {#each hints as hint, idx (hint)}
     {#if (idx == 0 || hint != term.val.trim()) && hint}
       <button
         class="hint"

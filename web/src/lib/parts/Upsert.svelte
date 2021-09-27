@@ -49,13 +49,13 @@
   export let label = 'Tổng hợp'
   export let _dirty = false
 
-  const cached = {}
+  let cached = {}
 
   let binh_am = ''
   let hints = []
   let terms = []
 
-  $: term = terms[$tab] || new VpTerm({ val: '', ptag: '', rank: 3 })
+  let term = new VpTerm({ val: '', ptag: '', rank: 3 })
 
   let key = ''
   $: if (key) init_search(key, $input, $lower, $upper)
@@ -106,6 +106,11 @@
       new VpTerm(data.hanviet, data.hanviet),
     ]
 
+    term = terms[$tab]
+  }
+
+  function change_tab(new_tab) {
+    $tab = new_tab
     term = terms[$tab]
   }
 
@@ -162,7 +167,7 @@
         class:_active={$tab == 0}
         class:_edited={!terms[0]?.fresh}
         data-kbd="x"
-        on:click={() => tab.set(0)}
+        on:click={() => change_tab(0)}
         use:hint={`Từ điển riêng cho [${label}]`}>
         <SIcon name="book" />
         <span>{label}</span>
@@ -173,7 +178,7 @@
         class:_active={$tab == 1}
         class:_edited={!terms[1]?.fresh}
         data-kbd="c"
-        on:click={() => tab.set(1)}
+        on:click={() => change_tab(1)}
         use:hint={'Từ điển chung cho tất cả các bộ truyện'}>
         <SIcon name="world" />
         <span>Thông dụng</span>
@@ -189,7 +194,7 @@
             <button
               class="-item"
               data-kbd={'c'}
-              on:click={() => tab.set(2)}
+              on:click={() => change_tab(2)}
               use:hint={'Phiên âm Hán Việt cho tên người, sự vật...'}>
               <span>Hán Việt</span>
             </button>
@@ -224,7 +229,9 @@
           {/if}
         </div>
 
-        <Vutil bind:term />
+        {#key key}
+          <Vutil bind:term />
+        {/key}
       </div>
 
       <div class="vfoot">
