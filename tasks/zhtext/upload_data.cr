@@ -6,7 +6,7 @@ require "colorize"
 module CV::UploadChseed
   extend self
 
-  INP = "_db/chseed"
+  INP = "db/chtexts"
   OUT = "/home/nipin/srv/chivi.xyz"
 
   def run!(argv = ARGV)
@@ -61,4 +61,4 @@ module CV::UploadChseed
   end
 end
 
-CV::UploadChseed.run!
+CV::UploadChseed.run!(ARGV)
