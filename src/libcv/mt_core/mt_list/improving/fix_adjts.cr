@@ -1,5 +1,5 @@
 module CV::Improving
-  def fix_adjts!(node = @root, mode = 2) : MtNode
+  def fix_adjts!(node = @head, mode = 2) : MtNode
     return node if mode < 2
 
     if node.amorp?
@@ -44,7 +44,7 @@ module CV::Improving
     node
   end
 
-  # private def fix_adjts!(node = @root)
+  # private def fix_adjts!(node = @head)
   #   while node = node.succ
   #     next unless node.adjts?
 

@@ -2,33 +2,31 @@ require "./mt_node"
 require "./mt_list/*"
 
 class CV::MtList
-  getter root = MtNode.new("", "")
-
   include Improving
   include ApplyCaps
   include PadSpaces
 
-  def first? : MtNode?
-    @root.succ
+  getter head = MtNode.new("", "")
+
+  def first
+    @head.succ
   end
 
-  def concat!(list : self, node = @root)
-    while node = node.succ
-      unless node.succ
-        node.set_succ(list.root)
-        return self
-      end
-    end
-
+  def concat!(list : self)
+    self.tail.set_succ(list.first)
     self
   end
 
-  def prepend!(node : MtNode)
-    @root.set_succ(node)
+  def tail(node = @head)
+    while node = node.succ
+      return node unless node.succ
+    end
+
+    @head
   end
 
-  def single? : Bool
-    @root.succ.try(&.succ.!) || false
+  def prepend!(node : MtNode)
+    @head.set_succ(node)
   end
 
   def to_s : String
@@ -39,7 +37,7 @@ class CV::MtList
     each { |node| io << node.val }
   end
 
-  def each(node = @root)
+  def each(node = @head)
     while node = node.succ
       yield node
     end
@@ -50,7 +48,7 @@ class CV::MtList
   end
 
   def to_str(io : IO) : Nil
-    return unless node = @root.succ
+    return unless node = @head.succ
     node.to_str(io)
 
     while node = node.succ
@@ -60,7 +58,7 @@ class CV::MtList
   end
 
   def inspect(io : IO) : Nil
-    node = @root
+    node = @head
     while node = node.succ
       node.inspect(io)
     end

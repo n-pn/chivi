@@ -98,8 +98,8 @@ class CV::MtCore
       node = nodes.unsafe_fetch(idx)
       idx -= node.key.size
 
-      if (prev = res.first?) && can_merge?(node, prev)
-        prev.prepend!(node)
+      if can_merge?(node, res.first)
+        res.first.not_nil!.prepend!(node)
       else
         res.prepend!(node)
       end
@@ -108,8 +108,13 @@ class CV::MtCore
     res
   end
 
+  private def can_merge?(left : MtNode, right : Nil)
+    false
+  end
+
   private def can_merge?(left : MtNode, right : MtNode)
     return false unless left.tag == right.tag
+
     case left.tag
     when .puncts?, .strings?
       true

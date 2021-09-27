@@ -17,9 +17,10 @@ class CV::VpTermView
   end
 
   def guess_tag(mt_list : MtList)
-    return "" unless first = mt_list.first? # return "" if list is empty
-    return "" if first.succ                 # return "" if list is not singleton
-    first.tag.to_str
+    # return "" if list is not singleton
+    return "" unless first = mt_list.first
+    first.succ ? "" : first.tag.to_str
+    # TODO guess tag by suffix
   end
 
   getter hanviet : String { MtCore.hanviet_mtl.translit(@key).to_s }

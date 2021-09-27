@@ -1,5 +1,5 @@
 module CV::Improving
-  def fix_nouns!(node = @root, mode = 2) : MtNode
+  def fix_nouns!(node = @head, mode = 2) : MtNode
     return node if mode < 2
 
     if succ = node.succ
@@ -177,7 +177,7 @@ module CV::Improving
     prev.ends? || prev.vshi? || prev.quantis?
   end
 
-  # private def fix_nouns!(node = @root)
+  # private def fix_nouns!(node = @head)
   #   while node = node.succ
   #     prev = node.prev.not_nil!
   #     if node.cat == 1
