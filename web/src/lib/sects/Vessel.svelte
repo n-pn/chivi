@@ -68,7 +68,7 @@
     <slot />
   </div>
 
-  <footer class="footer" class:_sticky={$scroll < 0} bind:this={footer}>
+  <footer class="footer" class:_show={$scroll < 0} bind:this={footer}>
     <slot name="footer" />
   </footer>
 </main>
@@ -113,9 +113,18 @@
     position: relative;
     padding: 0.5rem var(--gutter);
 
-    &._sticky {
-      position: sticky;
-      bottom: -1px;
+    position: sticky;
+    bottom: -0.1px;
+    // transform: translateY(-1px);
+
+    &:global(.sticked) {
+      transform: translateY(100%);
+    }
+
+    &:global(.sticked)._show {
+      // top: -$header-height;
+      transform: none;
+      // transform: translateY(100%);
     }
 
     &:global(.sticked:not(:empty)) {
