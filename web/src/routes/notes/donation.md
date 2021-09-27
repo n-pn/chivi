@@ -2,7 +2,7 @@
 title: Ủng hộ Chivi
 ---
 
-Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển. <a href="/revenue.png" rel="external">Quảng cáo không ăn thua.</a>
+Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn tại và phát triển. <a href="/imgs/revenue.png" rel="external">Quảng cáo không ăn thua.</a>
 
 ## Phương thức ủng hộ
 
@@ -18,8 +18,7 @@ Chivi cần thiết sự ủng hộ của các bạn để tiếp tục tồn t�
 - Techcombank: **19034964108016**
 
 **Lưu ý**: Hãy lưu lại tên tài khoản của bạn hoặc email đã đăng ký trong chivi để được nâng cấp quyền hạn.
-Hoặc liên hệ qua các kênh liên lạc: [Facebook](https://www.facebook.com/chivi.xyz),  [Vozforums](https://voz.vn/conversations/add?to=Nipin) hoặc Discord: **Nitro#9737**.
-
+Hoặc liên hệ qua các kênh liên lạc: [Facebook](https://www.facebook.com/chivi.xyz), [Vozforums](https://voz.vn/conversations/add?to=Nipin) hoặc Discord: **Nitro#9737**.
 
 ## Tại sao phải ủng hộ Chivi?
 
@@ -28,7 +27,6 @@ Server của Chivi cần ổ SSD to để chứa text từ nhiều nguồn (hi�
 
 Chivi lấy text truyện từ nhiều nguồn, những nguồn này không ổn định và cần thiết thời gian để bảo dưỡng.
 Ví dụ: `5200.net` đổi tên thành `5200.tv`, `xbiquge.cc` đổi thành `xbiquge.so`, `69shu.com` đổi lại bố cục trang web, `jx.la` chết rồi phục sinh thành trang khác....
-
 
 Tiếp đến thì như nhiều bạn đã biết, Chivi đang nỗ lực phát triển cỗ máy dịch thuật thông minh hơn, hiện đại hơn so với các công cụ dịch thuần tuý text replacement (e.g QT).
 Để hoàn thiện máy dịch và để nó đem lại kết quả tốt cần rất nhiều thời gian công sức và nỗ lực.
@@ -55,6 +53,7 @@ Ngoài ra, quyền hạn của các bạn sẽ được tăng lên theo số ti�
   Tuy quảng cáo chả được mấy đồng nhưng muỗi cũng là thịt.
 
 - Quyền hạn khi thêm sửa từ:
+
   - **lvl 0**: không thêm sửa được từ
   - **lvl 1**: thêm sửa từ điển riêng của mỗi bộ truyện
   - **lvl 2**: thêm sửa từ điển chung của các bộ + khoá từ theo quyền hạn 2
@@ -64,6 +63,7 @@ Ngoài ra, quyền hạn của các bạn sẽ được tăng lên theo số ti�
 
 - Cập nhật chương truyện + download text nếu chưa có trên ổ cứng
   Để tránh các nguồn truyện chết hàng loạt thì việc kết nối với các nguồn đã bị hạn chế:
+
   - các nguồn `zhwenpg`, `69shu`, `duokan8` và `paoshu8` cần quyền hạn **lvl 2**
   - các nguồn `hetushu`, `biqubao`, `bxwxorg` và `xbiquge` cần quyền hạn **lvl 1**
   - các nguồn `5200`, `bqg_5200`, `nofff` và `rengshu` được để mở cho tất cả mọi người

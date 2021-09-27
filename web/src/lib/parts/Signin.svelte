@@ -49,7 +49,7 @@
 
   <section class="inner">
     <div class="brand">
-      <img src="/chivi-logo.svg" alt="logo" />
+      <img src="/icons/chivi.svg" alt="logo" />
       <span class="-text">Chivi</span>
     </div>
 

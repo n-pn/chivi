@@ -10,7 +10,7 @@
 <Slider bind:actived _rwidth={22} _slider="left">
   <svelte:fragment slot="header-left">
     <a class="brand" href="/">
-      <img src="/chivi-logo.svg" alt="logo" class="-icon" />
+      <img src="/icons/chivi.svg" alt="logo" class="-icon" />
       <span>Chivi</span>
     </a>
   </svelte:fragment>

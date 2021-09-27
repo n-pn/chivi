@@ -6,7 +6,7 @@
   {#if bcover}
     <img alt="" src="/covers/{bcover}" loading="lazy" />
   {:else}
-    <img alt="" src="/covers/_blank.png" />
+    <img alt="" src="/imgs/blank.png" />
   {/if}
 </div>
 

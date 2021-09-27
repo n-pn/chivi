@@ -4,5 +4,5 @@
 </script>
 
 <svg class="m-icon" class:a-spin={spin}>
-  <use xlink:href="/tabler.svg#{name}" />
+  <use xlink:href="/icons/tabler.svg#{name}" />
 </svg>
