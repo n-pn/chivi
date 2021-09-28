@@ -38,19 +38,19 @@ class CV::CvList
           node.fix("") if succ.word? && succ.key != prev.key
         end
       when "对"
-        if node.succ.try { |x| x.cat > 0 || x.key[0] == '“' }
+        if node.succ?.try { |x| x.cat > 0 || x.key[0] == '“' }
           node.fix("đối với")
         else
           node.fix("đúng")
         end
       when "不对"
-        if node.succ.try { |x| x.cat > 0 || x.key[0] == '“' }
+        if node.succ?.try { |x| x.cat > 0 || x.key[0] == '“' }
           node.fix("không đối với")
         else
           node.fix("không đúng")
         end
       when "也"
-        node.fix(node.succ.try(&.word?) ? "cũng" : "vậy")
+        node.fix(node.succ?.try(&.word?) ? "cũng" : "vậy")
       when "地"
         # TODO: check noun, verb?
         if prev = node.prev
@@ -58,16 +58,16 @@ class CV::CvList
           node.fix(val)
         end
       when "原来"
-        if node.succ.try(&.match_key?("的")) || node.prev.try(&.word?)
+        if node.succ?.try(&.match_key?("的")) || node.prev?.try(&.word?)
           val = "ban đầu"
         else
           val = "thì ra"
         end
         node.fix(val)
       when "行"
-        node.fix("được") unless node.succ.try(&.dic.> 0)
+        node.fix("được") unless node.succ?.try(&.dic.> 0)
       when "高达"
-        node.fix("cao đến") if node.succ.try(&.is_num)
+        node.fix("cao đến") if node.succ?.try(&.is_num)
       when "石"
         node.fix("thạch") if node.prev!.is_num
       when "两"

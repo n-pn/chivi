@@ -1,6 +1,6 @@
 module CV::MTL::Grammars
   def fix_number!(node : MtNode) : MtNode
-    while succ = node.succ
+    while succ = node.succ?
       break unless succ.number?
       node = succ.tap(&.fuse_left!("#{node.val} "))
     end
@@ -23,7 +23,7 @@ module CV::MTL::Grammars
 
     has_第 = node.key.starts_with?("第")
 
-    case node.prev.try(&.key)
+    case node.prev?(&.key)
     when "第"
       has_第 = true
       node.fuse_left!("thứ ")
@@ -31,7 +31,7 @@ module CV::MTL::Grammars
       node.fuse_left!("chừng ")
     end
 
-    return node unless succ = node.succ
+    return node unless succ = node.succ?
 
     # handle multi meaning quantifier
     case succ.key
@@ -50,7 +50,7 @@ module CV::MTL::Grammars
     when "种" then succ.update!("loại", PosTag::Quanti)
     when "顿" then succ.update!("đốn", PosTag::Quanti)
     when "对"
-      succ_2 = succ.succ.not_nil!
+      succ_2 = succ.succ
       if succ_2.numbers? || succ_2.string?
         succ.update!("đối")
       else
@@ -67,12 +67,12 @@ module CV::MTL::Grammars
       if !has_第
         node.fuse_right!("#{node.val} #{succ.val}")
         node.tag = PosTag::Nquant
-      elsif succ.succ.try(&.nouns?)
-        succ_succ = succ.succ.not_nil!
-        succ.fuse_right!("#{succ.val} #{succ_succ.val}")
+      elsif succ.succ(&.nouns?)
+        succ_2 = succ.succ
+        succ.fuse_right!("#{succ.val} #{succ_2.val}")
 
         node.fuse_right!("#{succ.val} #{node.val}")
-        node.tag = succ_succ.tag
+        node.tag = succ_2.tag
       else
         node.fuse_right!("#{succ.val} #{node.val}")
         node.tag = PosTag::Nquant
@@ -80,7 +80,7 @@ module CV::MTL::Grammars
     end
 
     # add extra suffixes
-    case node.succ.try(&.key)
+    case node.succ?(&.key)
     when "左右"
       node.fuse_right!("khoảng #{node.val}")
     when "宽"
@@ -97,7 +97,7 @@ module CV::MTL::Grammars
       return node unless succ.tag.qttime?
     end
 
-    case node.succ.try(&.key)
+    case node.succ?(&.key)
     when "间", "后间"
       node.fuse_right!("khoảng #{node.val}")
     when "里", "内", "中",

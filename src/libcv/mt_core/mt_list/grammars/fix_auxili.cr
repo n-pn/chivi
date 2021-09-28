@@ -1,6 +1,6 @@
 module CV::MTL::Grammars
   def fix_ule!(node : MtNode) : MtNode
-    return node unless (prev = node.prev) && (succ = node.succ)
+    return node unless (prev = node.prev?) && (succ = node.succ?)
     return node.update!(val: "") if succ.quoteop? || prev.quotecl?
     return node.update!(val: "") if prev.quotecl? && !succ.ends?
 
@@ -11,13 +11,13 @@ module CV::MTL::Grammars
   end
 
   def fix_ude2!(node : MtNode) : MtNode
-    return node if node.prev.try { |x| x.adjts? || x.adverb? }
-    return node if node.succ.try { |x| x.verbs? || x.preposes? || x.conjuncts? }
+    return node if node.prev? { |x| x.adjts? || x.adverb? }
+    return node if node.succ? { |x| x.verbs? || x.preposes? || x.conjuncts? }
     node.update!(val: "địa", tag: PosTag::Noun)
   end
 
   def fix_ude1!(node : MtNode, mode = 1) : MtNode
-    if node.prev.try(&.quoteop?) && node.succ.try(&.quotecl?)
+    if node.prev?(&.quoteop?) && node.succ?(&.quotecl?)
       return node.update!(val: "của")
     end
 
@@ -28,7 +28,7 @@ module CV::MTL::Grammars
     prev = node.prev.not_nil!
 
     if prev.names? || prev.propers?
-      unless prev.prev.try(&.verbs?) || prev.prev.try(&.prepos?)
+      unless prev.prev?(&.verbs?) || prev.prev?(&.prepos?)
         node.val = "của"
         node.dic = 9
         return node.tap(&.fuse_left!("", " #{prev.val}"))

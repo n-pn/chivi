@@ -1,6 +1,6 @@
 module CV::MTL::Grammars
   def fix_urlstr(node : MtNode) : MtNode
-    while succ = node.succ
+    while succ = node.succ?
       case succ.tag
       when .string?, .pdeci?, .numlat?
         node = succ.tap(&.fuse_left!(node.val))

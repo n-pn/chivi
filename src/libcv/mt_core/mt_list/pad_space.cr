@@ -1,9 +1,9 @@
 module CV::MTL::PadSpace
   def pad_spaces!(node = @head) : self
-    return self unless node = node.succ
+    return self unless node = node.succ?
     prev = node
 
-    while node = node.succ
+    while node = node.succ?
       if node.tag.numlat? && (prev.tag.plsgn? || prev.tag.mnsgn?)
         node.tag = PosTag::String unless prev.prev.try(&.numlat?)
       elsif should_space?(prev, node)

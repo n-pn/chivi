@@ -17,8 +17,8 @@ class CV::MtList
   end
 
   def tail(node = @head)
-    while node = node.succ
-      return node unless node.succ
+    while node = node.succ?
+      return node unless node.succ?
     end
 
     @head
@@ -37,7 +37,7 @@ class CV::MtList
   end
 
   def each(node = @head)
-    while node = node.succ
+    while node = node.succ?
       yield node
     end
   end

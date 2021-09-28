@@ -2,13 +2,13 @@ module CV::MTL::Grammars
   private def fix_by_key!(node : MtNode)
     case node.key
     when "对"
-      if node.succ.try { |x| x.word? || x.quoteop? }
+      if node.succ? { |x| x.word? || x.quoteop? }
         node.update!("đối với", PosTag::Verb)
       else
         node.update!("đúng", PosTag::Adjt)
       end
     when "不对"
-      if node.succ.try { |x| x.word? || x.quoteop? }
+      if node.succ? { |x| x.word? || x.quoteop? }
         node.update!("không đối với", PosTag::Verb)
       else
         node.update!("không đúng", PosTag::Adjt)
@@ -20,16 +20,16 @@ module CV::MTL::Grammars
         node.update!("cũng", PosTag::Adverb)
       end
     when "原来"
-      if node.succ.try(&.ude1?) || node.prev.try(&.word?)
+      if node.succ?(&.ude1?) || node.prev?(&.word?)
         val = "ban đầu"
       else
         val = "thì ra"
       end
       node.update!(val)
     when "行"
-      node.update!("được") if boundary?(node.succ)
+      node.update!("được") if boundary?(node.succ?)
     when "高达"
-      node.update!("cao đến") if node.succ.try(&.nquants?)
+      node.update!("cao đến") if node.succ?(&.nquants?)
     end
   end
 end

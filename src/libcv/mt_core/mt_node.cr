@@ -2,24 +2,17 @@ require "../vp_dict/vp_term"
 require "./mt_node/*"
 
 class CV::MtNode
-  property idx : Int32
-  property key : String
+  property idx : Int32 = -1
+  property key : String = ""
   property val : String = ""
   property tag : PosTag = PosTag::None
   property dic : Int32 = 0
 
-  property prev : self | Nil = nil
-  property succ : self | Nil = nil
+  property! prev : MtNode
+  property! succ : MtNode
+  property! body : MtNode
 
   forward_missing_to @tag
-
-  def prev!
-    prev.not_nil!
-  end
-
-  def succ!
-    succ.not_nil!
-  end
 
   def initialize(term : VpTerm, @idx = -1)
     @key = term.key
@@ -34,6 +27,14 @@ class CV::MtNode
   end
 
   def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = -1)
+  end
+
+  def prev?
+    @prev.try { |x| yield x }
+  end
+
+  def succ?
+    @succ.try { |x| yield x }
   end
 
   def set_prev(node : self) : self # return node
@@ -64,58 +65,7 @@ class CV::MtNode
     self
   end
 
-  def update!(@val = @val, @tag = @tag, @dic = 1) : self
-    self
-  end
-
-  def prepend!(other : self) : Nil
-    @key = "#{other.key}#{@key}"
-    @val = "#{other.val}#{@val}"
-    @dic = other.dic if @dic < other.dic
-  end
-
-  def fuse_left!(left = "#{@prev.try(&.val)}", right = "", @dic = 6) : self
-    return self unless prev = @prev
-
-    @key = "#{prev.key}#{@key}"
-    @val = "#{left}#{@val}#{right}"
-
-    self.prev = prev.prev
-    self.prev.try(&.succ = self)
-
-    self
-  end
-
-  def fuse_right!(@val : String = "#{@val}#{@succ.try(&.val)}", @dic = 6) : self
-    return self unless succ = @succ
-
-    @key = "#{@key}#{succ.key}"
-
-    self.succ = succ.succ
-    self.succ.try(&.prev = self)
-
-    self
-  end
-
-  def fuse_的!(succ : self, succ_succ : self, join = " ")
-    @key = "#{@key}#{succ.key}#{succ_succ.key}"
-    @val = "#{succ_succ.val}#{join}#{val}"
-    @tag = succ_succ.tag
-    @dic = succ_succ.dic if @dic < succ_succ.dic
-    self.set_succ(succ_succ.succ)
-  end
-
-  def replace!(@key, @val, @tag, @dic, succ)
-    self.set_succ(succ)
-  end
-
   include MTL::ApplyCap
   include MTL::Serialize
-
-  def clear!
-    @key = ""
-    @val = ""
-    @tag = PosTag::None
-    @dic = 0
-  end
+  include MTL::Transform
 end

@@ -2,14 +2,14 @@ module CV::MTL::Grammars
   def fix_nouns!(node = @head, mode = 2) : MtNode
     return node if mode < 2
 
-    if succ = node.succ
+    if succ = node.succ?
       case succ.tag
       when .kmen?
         node.fuse_right!("các #{node.val}")
       when .ntitle?
         node.fuse_right!("#{node.val} #{succ.val}")
       when .adjts?
-        if succ.succ.try(&.ude1?)
+        if succ.succ?(&.ude1?)
           node.fuse_right!("#{node.val} #{succ.val}", dic: 8)
           node.tag = PosTag::Adjt
           return node
@@ -18,9 +18,9 @@ module CV::MTL::Grammars
     end
 
     node = nouns_fuse_left!(node, mode: mode)
-    return node if node.prev.try(&.verbs?)
+    return node if node.prev?(&.verbs?)
 
-    if succ = node.succ
+    if succ = node.succ?
       case succ
       when .space?
         case succ.key
@@ -44,16 +44,16 @@ module CV::MTL::Grammars
   def nouns_fuse_left!(node, mode = 2) : MtNode
     return node if node.veno? || node.nother?
 
-    while prev = node.prev
+    while prev = node.prev?
       case prev
       when .penum?
-        prev_2 = prev.prev.not_nil!
+        prev_2 = prev.prev
         break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeic?
         prev.fuse_left!
         node.fuse_left!("#{prev_2.val}, ")
         next
       when .concoord?
-        prev_2 = prev.prev.not_nil!
+        prev_2 = prev.prev
         break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeic?
 
         prev.fuse_left!("#{prev_2.val} ")
@@ -63,7 +63,7 @@ module CV::MTL::Grammars
         break if node.veno? || node.ajno?
         node.fuse_left!("#{prev.val} ")
       when .propers?
-        break if prev.prev.try(&.verb?)
+        break if prev.prev?(&.verb?)
 
         if node.ntitle?
           node.fuse_left!("", " của #{prev.val}")
@@ -111,9 +111,9 @@ module CV::MTL::Grammars
       when .modifier?, .modiform?
         node.fuse_left!("", " #{prev.val}")
       when .ude1?
-        node.succ.try { |succ| break if succ.penum? || succ.concoord? }
+        node.succ? { |succ| break if succ.penum? || succ.concoord? }
 
-        prev_2 = prev.prev.not_nil!
+        prev_2 = prev.prev
 
         case prev_2
         when .ajav?
@@ -126,14 +126,14 @@ module CV::MTL::Grammars
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .nouns?, .propers?
-          if (prev_3 = prev_2.prev)
+          if (prev_3 = prev_2.prev?)
             if verb_subject?(prev_3, node)
               break
               node.key = "#{prev_3.key}#{prev_2.key}#{prev.key}#{node.key}"
               node.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
 
               node.prev = prev_3.prev
-              node.prev.try(&.succ.== node)
+              node.prev?(&.succ.== node)
 
               node.dic = 8
               break
@@ -167,12 +167,12 @@ module CV::MTL::Grammars
     return false unless head.verb?
 
     # return false if head.vform?
-    curr.succ.try do |succ|
+    curr.succ? do |succ|
       return true if succ.tag.verbs?
       return false if succ.tag.comma?
     end
 
-    return true unless prev = head.prev
+    return true unless prev = head.prev?
     return false if prev.comma? || prev.penum?
     prev.ends? || prev.vshi? || prev.quantis?
   end

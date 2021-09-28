@@ -5,7 +5,7 @@ module MTL::ApplyCap
     node = self
     node.capitalize! if cap
 
-    while node = node.succ
+    while node = node.succ?
       next if node.val.blank?
 
       if cap && !node.tag.puncts?

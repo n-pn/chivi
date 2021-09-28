@@ -3,7 +3,7 @@ module CV::MTL::Grammars
     return node if mode < 2
 
     if node.amorp?
-      if (succ = node.succ) && succ.adjts?
+      if (succ = node.succ?) && succ.adjts?
         node.fuse_right!("#{node.val} #{succ.val}")
         node.tag = PosTag::Adjt
       end
@@ -20,7 +20,7 @@ module CV::MTL::Grammars
       when .adverb?
         case prev.key
         when "都"
-          prev_2 = prev.prev.not_nil!
+          prev_2 = prev.prev
 
           if prev_2.key == "大家"
             prev.fuse_left!

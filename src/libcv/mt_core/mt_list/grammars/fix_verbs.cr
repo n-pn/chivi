@@ -1,6 +1,6 @@
 module CV::MTL::Grammars
   def fix_vxiang!(node = @root) : MtNode
-    return node unless succ = node.succ
+    return node unless succ = node.succ?
 
     case succ
     when .verbs?
@@ -12,12 +12,12 @@ module CV::MTL::Grammars
   end
 
   def fix_vhui!(node = @root) : MtNode
-    return node unless succ = node.succ
+    return node unless succ = node.succ?
 
     if succ.verbs?
-      return node unless succ_succ = succ.succ
+      return node unless succ_2 = succ.succ?
 
-      case succ_succ
+      case succ_2
       when .ude1?
         val = node.key == "不会" ? "nhất định không" : "nhất định"
         node.update!(val)
@@ -34,7 +34,7 @@ module CV::MTL::Grammars
   def fix_verbs!(node = @root, mode = 2) : MtNode
     return node if mode < 2
 
-    while succ = node.succ
+    while succ = node.succ?
       case succ
       when .ule?
         succ = fix_ule!(succ)
@@ -63,7 +63,7 @@ module CV::MTL::Grammars
       end
     end
 
-    while prev = node.prev
+    while prev = node.prev?
       case prev
       when .ahao?
         node.fuse_left!("thật ")
