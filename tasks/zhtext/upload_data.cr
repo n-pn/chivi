@@ -21,10 +21,10 @@ module CV::UploadChseed
 
   private def upload_host(argv = ARGV)
     case argv
-    when .includes?("-p"), .includes?("--prod")
-      "nipin@ssh.chivi.xyz"
-    else
+    when .includes?("-d"), .includes?("--dev")
       "nipin@dev.chivi.xyz"
+    else
+      "nipin@ssh.chivi.xyz"
     end
   end
 
