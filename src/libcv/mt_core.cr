@@ -23,19 +23,15 @@ class CV::MtCore
   end
 
   def translit(input : String, apply_cap : Bool = false)
-    group = tokenize(input.chars)
-    group.capitalize! if apply_cap
-    group.pad_spaces!
+    list = tokenize(input.chars)
+    list.capitalize!(cap: true) if apply_cap
+    list.pad_spaces!
   end
 
-  def translit(input : String, cap_mode : Int32)
-    tokenize(input.chars).capitalize!(cap_mode: cap_mode).pad_spaces!
-  end
-
-  def cv_plain(input : String, mode = 2, cap_mode = 1)
+  def cv_plain(input : String, mode = 2, cap_first = true)
     tokenize(input.chars)
       .fix_grammar!(mode: mode)
-      .capitalize!(cap_mode: cap_mode)
+      .capitalize!(cap: cap_first)
       .pad_spaces!
   end
 

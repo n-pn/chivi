@@ -3,7 +3,6 @@ module CV::MTL::Grammars
     return node unless succ = node.succ
     return node unless succ_2 = succ.succ
     return node unless succ_2.tag.quotecl?
-    succ.capitalize!
     succ.fuse_left!.fuse_right!
   end
 end

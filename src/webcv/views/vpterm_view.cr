@@ -10,7 +10,7 @@ class CV::VpTermView
   alias Dicts = Tuple(VpDict, VpDict, VpDict, VpDict)
 
   def initialize(@key : String, @cvmtl : MtCore, @dicts : Dicts)
-    mt_list = cvmtl.cv_plain(key, mode: 2, cap_mode: 0)
+    mt_list = cvmtl.cv_plain(key, mode: 2, cap_first: false)
 
     @val_tran = mt_list.to_s
     @tag_tran = guess_tag(mt_list)

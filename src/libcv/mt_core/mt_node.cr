@@ -1,5 +1,5 @@
-require "../../cutil/text_utils"
 require "../vp_dict/vp_term"
+require "./mt_node/*"
 
 class CV::MtNode
   property idx : Int32
@@ -109,35 +109,13 @@ class CV::MtNode
     self.set_succ(succ)
   end
 
-  def capitalize!(cap_mode : Int32 = 1) : Nil
-    @val = cap_mode > 1 ? TextUtils.titleize(@val) : TextUtils.capitalize(@val)
-  end
+  include MTL::ApplyCap
+  include MTL::Serialize
 
   def clear!
     @key = ""
     @val = ""
     @tag = PosTag::None
     @dic = 0
-  end
-
-  def to_str : String
-    String.build { |io| to_str(io) }
-  end
-
-  def to_str(io : IO) : Nil
-    io << @val
-
-    unless @val == " "
-      io << 'ǀ' << @dic << 'ǀ' << @idx << 'ǀ' << @key.size
-    end
-
-    return unless succ = @succ
-    io << '\t'
-    succ.to_str(io)
-  end
-
-  def inspect(io : IO)
-    io << (val == " " ? val : "[#{@key}/#{@val}/#{@tag.to_str}/#{@dic}]")
-    @succ.try(&.inspect(io))
   end
 end

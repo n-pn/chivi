@@ -3,7 +3,6 @@ require "./mt_list/*"
 
 class CV::MtList
   include MTL::Grammars
-  include MTL::ApplyCap
   include MTL::PadSpace
 
   getter head = MtNode.new("", "")
@@ -53,5 +52,10 @@ class CV::MtList
 
   def inspect(io : IO) : Nil
     @head.succ.try(&.inspect(io))
+  end
+
+  def capitalize!(cap = true)
+    @head.succ.try(&.apply_cap!(cap))
+    self
   end
 end
