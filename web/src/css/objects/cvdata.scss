@@ -79,8 +79,8 @@ c-v {
     color: var(--active);
   }
 
-  .mtl &:hover,
-  .mtl &._active {
+  .mtl:hover &,
+  .mtl._active & {
     border-bottom: 1px solid var(--border);
   }
 
