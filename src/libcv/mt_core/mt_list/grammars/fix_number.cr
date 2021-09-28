@@ -48,6 +48,7 @@ module CV::MTL::Grammars
     when "只" then succ.update!("con", PosTag::Quanti)
     when "本" then succ.update!("quyển", PosTag::Quanti)
     when "种" then succ.update!("loại", PosTag::Quanti)
+    when "顿" then succ.update!("đốn", PosTag::Quanti)
     when "对"
       succ_2 = succ.succ.not_nil!
       if succ_2.numbers? || succ_2.string?
