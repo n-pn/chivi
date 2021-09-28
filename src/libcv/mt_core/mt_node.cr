@@ -2,6 +2,7 @@ require "../../cutil/text_utils"
 require "../vp_dict/vp_term"
 
 class CV::MtNode
+  property idx : Int32
   property key : String
   property val : String = ""
   property tag : PosTag = PosTag::None
@@ -20,19 +21,19 @@ class CV::MtNode
     succ.not_nil!
   end
 
-  def initialize(term : VpTerm)
+  def initialize(term : VpTerm, @idx = -1)
     @key = term.key
     @val = term.val.first
     @tag = term.ptag
     @dic = term.dtype
   end
 
-  def initialize(char : Char)
+  def initialize(char : Char, @idx = -1)
     @key = @val = char.to_s
     @tag = char.alphanumeric? ? PosTag::String : PosTag::None
   end
 
-  def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0)
+  def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = -1)
   end
 
   def set_prev(node : self) : self # return node
@@ -119,8 +120,10 @@ class CV::MtNode
     @dic = 0
   end
 
-  def to_str(io : IO)
-    io << @key << 'ǀ' << @val << 'ǀ' << @tag.to_str << 'ǀ' << @dic
+  def to_str(io : IO) : Nil
+    io << @val
+    return if @val == " "
+    io << 'ǀ' << @dic << 'ǀ' << @idx << 'ǀ' << @key.size
   end
 
   def inspect(io : IO)

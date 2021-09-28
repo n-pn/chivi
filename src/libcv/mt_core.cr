@@ -67,7 +67,7 @@ class CV::MtCore
     costs = [0.0]
 
     input.each_with_index(1) do |char, idx|
-      nodes << MtNode.new(char)
+      nodes << MtNode.new(char, idx - 1)
       costs << idx - 0.5
     end
 
@@ -86,7 +86,7 @@ class CV::MtCore
 
         if cost >= costs[jump]
           costs[jump] = cost
-          nodes[jump] = MtNode.new(term)
+          nodes[jump] = MtNode.new(term, idx)
         end
       end
     end

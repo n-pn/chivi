@@ -45,10 +45,7 @@ export function split_mtdata(input = '', skip = 2) {
 
 export class MtData {
   constructor(data, orig = '') {
-    this.data = data.split('\t').map((x) => {
-      const [key, val, tag, dic] = x.split('ǀ')
-      return [key, val || '', tag || '', +dic]
-    })
+    this.data = data.split('\t').map((x) => x.split('ǀ'))
 
     this.orig = orig
   }
@@ -66,56 +63,53 @@ export class MtData {
   render(plain = true) {
     let res = ''
     let lvl = 0
-    let idx = 0
 
-    for (const [key, val, tag, dic] of this.data) {
-      if (tag == 'wyz') {
+    for (const [val, dic, idx, len] of this.data) {
+      if (val == ' ') {
+        res += ' '
+        continue
+      }
+
+      const fval = val[0]
+      if (fval == '“' || fval == '‘') {
         lvl += 1
         res += '<em>'
       }
 
       const esc = escape_html(val)
-      const len = key.length
 
-      if (plain || val == ' ') res += esc
+      if (plain) res += esc
       else res += `<c-v data-d=${dic} data-i=${idx} data-l=${len}>${esc}</c-v>`
-      idx += len
 
-      if (tag == 'wyy') {
+      const lval = val[val.length - 1]
+
+      if (lval == '”' || lval == '’') {
         lvl -= 1
         res += '</em>'
       }
     }
 
-    if (lvl < 0) {
-      res = '<em>' + res
-    } else if (lvl > 0) {
-      res += '</em>'
-    }
-
+    if (lvl < 0) return '<em>' + res
+    if (lvl > 0) return res + '</em>'
     return res
   }
 
   render_hv() {
     let res = ''
-    let idx = 0
 
-    for (const [key, val, _tag, dic] of this.data) {
-      let key_chars = key.split('')
-      let val_chars = val.split(' ')
-
-      if (key_chars.length != val_chars.length) {
-        res += val
-        idx += key_chars.length
+    for (const [val, dic, idx] of this.data) {
+      if (val == ' ') {
+        res += ' '
         continue
       }
 
+      let chars = val.split(' ')
+
       res += `<c-z data-d=${dic}>`
-      for (let j = 0; j < key_chars.length; j++) {
+      for (let j = 0; j < chars.length; j++) {
         if (j > 0) res += ' '
-        const val = escape_html(val_chars[j])
-        res += `<c-v data-d=2 data-i=${idx} data-l="1">${val}</c-v>`
-        idx += 1
+        const val = escape_html(chars[j])
+        res += `<c-v data-d=2 data-i=${+idx + j} data-l="1">${val}</c-v>`
       }
       res += '</c-z>'
     }
