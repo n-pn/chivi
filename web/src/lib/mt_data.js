@@ -79,7 +79,7 @@ export class MtData {
       const esc = escape_html(val)
       const len = key.length
 
-      if (plain) res += esc
+      if (plain || val == ' ') res += esc
       else res += `<c-v data-d=${dic} data-i=${idx} data-l=${len}>${esc}</c-v>`
       idx += len
 
