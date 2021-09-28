@@ -48,19 +48,10 @@ class CV::MtList
   end
 
   def to_str(io : IO) : Nil
-    return unless node = @head.succ
-    node.to_str(io)
-
-    while node = node.succ
-      io << '\t'
-      node.to_str(io)
-    end
+    @head.succ.try(&.to_str(io))
   end
 
   def inspect(io : IO) : Nil
-    node = @head
-    while node = node.succ
-      node.inspect(io)
-    end
+    @head.succ.try(&.inspect(io))
   end
 end
