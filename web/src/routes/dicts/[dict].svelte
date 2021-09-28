@@ -27,8 +27,6 @@
   import SIcon from '$atoms/SIcon.svelte'
   import { get_rtime_short } from '$atoms/RTime.svelte'
 
-  import { MtData } from '$lib/mt_data'
-
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
@@ -169,10 +167,7 @@
           {#each terms as { key, val, ptag, rank, mtime, uname, _flag }, idx}
             <tr class="term _{_flag}">
               <td class="-idx">{offset + idx}</td>
-              <td
-                class="-key"
-                on:click={() =>
-                  lookup_activate(true, new MtData([[key, val, ptag, 1]]))}>
+              <td class="-key" on:click={() => lookup_activate(key, true)}>
                 <span>{key}</span>
                 <div class="hover">
                   <span class="m-button btn-xs _active">

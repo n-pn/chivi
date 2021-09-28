@@ -1,35 +1,9 @@
 export default function read_selection() {
-  const selected = get_selected()
+  const nodes = get_selected().filter((x) => x.nodeName == 'C-V')
+  if (nodes.length == 0) return [0, 0]
+  const last = nodes[nodes.length - 1]
 
-  let nodes = selected.filter((x) => x.nodeName == 'X-V')
-  if (nodes.length == 0) nodes = selected.filter((x) => x.nodeName == 'C-V')
-  nodes = nodes.map((x) => x.dataset.k).filter((x) => x)
-
-  if (nodes.length == 0) return
-
-  let input = ''
-  let lower = 0
-  let upper = 0
-
-  let idx = 0
-  let pos = 0
-
-  for (; idx < nodes.length; idx++) {
-    const key = nodes[idx]
-
-    input += key
-    pos += key.length
-  }
-
-  lower = pos
-
-  for (; idx < nodes.length; idx++) {
-    const key = nodes[idx]
-    input += key
-    pos += key.length
-  }
-
-  return [input, lower, upper]
+  return [+nodes[0].dataset.i, +last.dataset.i + +last.dataset.l]
 }
 
 function get_selected() {

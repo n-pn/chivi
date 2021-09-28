@@ -12,9 +12,9 @@
 
 <script>
   import { onMount } from 'svelte'
-  import { session } from '$app/stores'
-
+  // import { session } from '$app/stores'
   import { split_mtdata } from '$lib/mt_data'
+  import read_selection from '$utils/read_selection'
 
   export let cvdata = ''
   export let _dirty = false
@@ -29,13 +29,12 @@
   let focus_line = -1
   let focus_word = null
 
-  import read_selection from '$utils/read_selection'
-
-  let upsert_input = []
+  let selected = []
   onMount(() => {
     const action = document.addEventListener('selectionchange', () => {
-      const phrase = read_selection()
-      if (phrase) upsert_input = phrase
+      if (hover_line < 0) return
+      const [lower, upper] = read_selection()
+      if (upper > 0) selected = [lines[hover_line].orig, lower, upper]
     })
 
     return () => document.removeEventListener('selectionchange', action)
@@ -45,19 +44,18 @@
     if (focus_line != index) focus_line = index
     if (target.nodeName != 'C-V') return
 
+    const lower = +target.dataset.i
+    const upper = lower + +target.dataset.l
     const mt_data = lines[index]
-    upsert_input = mt_data.substr(+target.dataset.i)
+    selected = [mt_data.orig, lower, upper]
 
     if (target === focus_word) {
-      upsert_activate(upsert_input, 0)
+      upsert_activate(selected, 0)
     } else {
       if (focus_word) focus_word.classList.remove('_focus')
       focus_word = target
       focus_word.classList.add('_focus')
-
-      const lower = +focus_word.dataset.p
-      const upper = lower + focus_word.dataset.k.length
-      lookup_activate(null, mt_data, lower, upper)
+      lookup_activate(selected)
     }
   }
 
@@ -70,11 +68,9 @@
 
 <div hidden>
   <button data-kbd="r" on:click={() => (_dirty = true)}>R</button>
-  <button data-kbd="x" on:click={() => upsert_activate(upsert_input, 0)}
-    >X</button>
-  <button data-kbd="c" on:click={() => upsert_activate(upsert_input, 1)}
-    >C</button>
-  <button data-kbd="enter" on:click={() => upsert_activate(upsert_input, 0)}
+  <button data-kbd="x" on:click={() => upsert_activate(selected, 0)}>X</button>
+  <button data-kbd="c" on:click={() => upsert_activate(selected, 1)}>C</button>
+  <button data-kbd="enter" on:click={() => upsert_activate(selected, 0)}
     >E</button>
 </div>
 
