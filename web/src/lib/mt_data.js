@@ -32,27 +32,25 @@ export function render_zh(data) {
   return res
 }
 
-export function split_mtdata(input = '') {
-  const lines = input.split('\n').map((x) => x.trim())
-  return lines.filter((x) => x).map((line) => new MtData(line))
+export function split_mtdata(input = '', skip = 2) {
+  const lines = input.split('\n')
+  const output = []
+
+  for (let i = 0; i < lines.length; i += skip) {
+    output.push(new MtData(lines[i], lines[i + 1]))
+  }
+
+  return output
 }
 
 export class MtData {
-  constructor(input) {
-    if (Array.isArray(input)) {
-      this.data = input
-      return
-    }
-
-    this.data = input.split('\t').map((x) => {
+  constructor(data, orig = '') {
+    this.data = data.split('\t').map((x) => {
       const [key, val, tag, dic] = x.split('ǀ')
       return [key, val || '', tag || '', +dic]
     })
-  }
 
-  get orig() {
-    this._orig = this._orig || this.data.map((x) => x[0]).join('')
-    return this._orig
+    this.orig = orig
   }
 
   get text() {

@@ -85,7 +85,7 @@ class CV::ChapCtrl < CV::BaseCtrl
     end
   end
 
-  def text
+  def text : Nil
     zhbook = load_zhbook
     bhash = zhbook.cvbook.bhash
 
@@ -94,8 +94,7 @@ class CV::ChapCtrl < CV::BaseCtrl
 
     chtext = ChText.load(bhash, zhbook.sname, zhbook.snvid, chidx - 1, schid)
 
-    zh_mode = params.fetch_int("mode")
-    zh_mode = _cv_user.privi if zh_mode > _cv_user.privi
+    zh_mode = params.fetch_int("mode", min: 0, max: _cv_user.privi > 0 ? 2 : 1)
 
     fetchable = zhbook.remote_text?(chidx, _cv_user.privi)
     zh_text = chtext.get_zh!(fetchable, reset: zh_mode > 1)
@@ -103,7 +102,22 @@ class CV::ChapCtrl < CV::BaseCtrl
 
     response.headers.add("Cache-Control", "private, min-fresh=60")
     response.content_type = "text/plain; charset=utf-8"
-    context.content = zh_text ? convert(bhash, zh_text, mode: tl_mode) : ""
+
+    return unless zh_text
+
+    cvmtl = MtCore.generic_mtl(bhash, _cv_user.uname)
+
+    # TODO: do not return zh_text if existed in browser
+
+    cvmtl.cv_title_full(zh_text[0], mode: tl_mode).to_str(response)
+    response << "\n" << zh_text[0]
+
+    1.upto(zh_text.size - 1) do |i|
+      para = zh_text.unsafe_fetch(i)
+      response << "\n"
+      cvmtl.cv_plain(para, mode: tl_mode).to_str(response)
+      response << "\n" << para
+    end
   end
 
   private def convert(dname, lines : Array(String), mode = 2)
