@@ -129,7 +129,7 @@ class CV::VpDict
       return nil if term.mtime < prev.mtime
 
       if term.amend?(prev) # skipping previous entry if edit under 5 minutes
-        term._flag = 2_u8
+        prev._flag = 2_u8
         term._prev = prev._prev
       else
         prev._flag = 1_u8
