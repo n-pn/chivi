@@ -23,7 +23,7 @@
           <div class="chap-label">{label}</div>
           {#if chidx == track.chidx}
             <div class="chap-track">
-              <SIcon name={track.locked ? 'pin' : 'eye'} />
+              <SIcon name={track.locked ? 'bookmark' : 'eye'} />
             </div>
           {/if}
         </div>

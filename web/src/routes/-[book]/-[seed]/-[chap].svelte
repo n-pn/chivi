@@ -75,7 +75,8 @@
   }
 
   $: on_memory = ubmemo.chidx == chinfo.chidx
-  $: memo_icon = !ubmemo.locked ? 'menu-2' : on_memory ? 'pinned' : 'pin'
+  $: memo_icon = ubmemo.locked ? `bookmark${on_memory ? '' : '-off'}` : 'menu-2'
+
   $: if (browser && !on_memory) update_history(chinfo, false)
 
   async function update_history({ sname, chidx, title, uslug }, locking) {
@@ -188,7 +189,7 @@
             disabled={$session.privi < 0}
             on:click={() => update_history(chinfo, false)}
             data-kbd="p">
-            <SIcon name="pin" />
+            <SIcon name="bookmark-off" />
             <span>Bỏ đánh dấu</span>
           </button>
         {:else}
@@ -197,7 +198,7 @@
             disabled={$session.privi < 0}
             on:click={() => update_history(chinfo, true)}
             data-kbd="p">
-            <SIcon name="pinned" />
+            <SIcon name="bookmark" />
             <span>Đánh dấu</span>
           </button>
         {/if}

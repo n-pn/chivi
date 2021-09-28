@@ -78,7 +78,7 @@
             <div class="chap-bname">{chap.bname}</div>
 
             {#if chap.locked}
-              <div class="chap-icon"><SIcon name="pin" /></div>
+              <div class="chap-icon"><SIcon name="bookmark" /></div>
             {/if}
           </div>
         </a>
