@@ -9,105 +9,89 @@ class CV::ChText
   CACHED = RamCache(String, self).new(512, 3.hours)
 
   def self.load(bname : String, sname : String, snvid : String,
-                index : Int32, schid : String)
+                chidx : Int32, schid : String)
     CACHED.get("#{sname}/#{snvid}/#{schid}") do
-      new(bname, sname, snvid, index, schid)
+      new(bname, sname, snvid, chidx, schid)
     end
   end
 
-  @zh_text : Array(String)? = nil
+  PART_LIMIT = 3000
+
+  @parts = {} of Int32 => Array(String)
 
   # @cv_data : String?
   # @cv_time : Time
 
+  DIR = "db/chtexts"
+
   def initialize(@bname : String, @sname : String, @snvid : String,
-                 @index : Int32, @schid : String)
-    @text_dir = "_db/chseed/#{@sname}/#{@snvid}"
-
-    zip_bname = (@index // 100).to_s.rjust(3, '0')
-    @zip_file = File.join(@text_dir, zip_bname + ".zip")
-
-    # @cv_data = nil
-    # @cv_time = Time.unix(0)
+                 @chidx : Int32, @schid : String)
+    @text_dir = "#{DIR}/#{@sname}/#{@snvid}"
+    @zip_file = File.join(@text_dir, "#{@chidx // 128}.zip")
   end
 
-  # def get_cv!(power = 4, mode = 0) : String
-  #   if @cv_data && mode == 0
-  #     return @cv_data.not_nil! if @cv_time >= Time.utc - cv_ttl(power)
-  #   end
+  def get_zh!(part : Int32 = 0, remote = false, reset = false)
+    lines = load_zh!(part)
 
-  #   zh_lines = get_zh!(power, reset: mode > 1) || [""]
-
-  #   @cv_time = Time.utc
-  #   @cv_data = trans!(zh_lines) || ""
-  # end
-
-  # private def cv_ttl(power = 4)
-  #   case power
-  #   when 0 then 1.week
-  #   when 1 then 1.days
-  #   when 2 then 3.hours
-  #   else        10.minutes
-  #   end
-  # end
-
-  # def trans!(lines : Array(String), cvmlt : MtCore, mode = 2)
-  #   return "" if lines.empty?
-
-  #   String.build do |io|
-  #     cvmtl.cv_title_full(lines[0], mode: mode).to_str(io)
-
-  #     1.upto(lines.size - 1) do |i|
-  #       io << "\n"
-  #       para = lines.unsafe_fetch(i)
-  #       cvmtl.cv_plain(para, mode: mode).to_str(io)
-  #     end
-
-  #     puts "- <ch_text> [#{@sname}/#{@snvid}/#{@index}] converted.".colorize.cyan
-  #   end
-  # end
-
-  def get_zh!(remote = false, reset = false)
-    @zh_text ||= load_zh!
-
-    if remote && (reset || @zh_text.try(&.empty?))
-      @zh_text = fetch_zh!(reset ? 3.minutes : 3.years) || @zh_text
+    if remote && (reset || lines.empty?)
+      fetch_zh!(reset ? 3.minutes : 30.years)
+      @parts[part]
     else
-      @zh_text
+      lines
     end
   end
 
-  def load_zh!
-    if File.exists?(@zip_file)
-      Compress::Zip::File.open(@zip_file) do |zip|
-        next unless entry = zip["#{@schid}.txt"]?
-        return entry.open(&.gets_to_end).split('\n')
-      end
+  def load_zh!(part = 0)
+    Compress::Zip::File.open(@zip_file) do |zip|
+      entry = zip["#{@schid}-#{part}.txt"]
+      @parts[part] = entry.open(&.gets_to_end).split('\n')
     end
-
+  ensure
     [] of String
   end
 
-  def fetch_zh!(ttl = 10.years, mkdir = true, label = "1/1") : Array(String)?
+  def fetch_zh!(ttl = 10.years, mkdir = true, lbl = "1/1") : Array(String)?
     RmText.mkdir!(@sname, @snvid) if mkdir
 
-    puller = RmText.new(@sname, @snvid, @schid, ttl: ttl, label: label)
-    lines = [puller.title].concat(puller.paras)
-    lines.tap { |x| save_zh!(x) }
+    puller = RmText.new(@sname, @snvid, @schid, ttl: ttl, lbl: lbl)
+    save_zh!([puller.title].concat(puller.paras))
   rescue err
     puts "- Fetch zh_text error: #{err}".colorize.red
   end
 
-  def set_zh!(@zh_text : Array(String))
-    save_zh!(zh_text)
+  def save_zh!(lines : Array(String)) : Nil
+    FileUtils.mkdir_p(@text_dir)
+
+    ccount = lines.map(&.size).sum
+    pcount = (ccount / PART_LIMIT).round.to_i
+    wlimit = ccount // (pcount < 2 ? 1 : pcount)
+
+    split_parts(lines, wlimit).each_with_index do |part, idx|
+      @parts[idx] = part
+
+      out_file = "#{@text_dir}/#{@schid}-#{idx}.txt"
+      File.open(out_file, "w") { |io| part.join(io, "\n") }
+      `zip -jqm #{@zip_file} #{out_file}`
+    end
+
+    puts "- <zh_text> [#{@sname}/#{@snvid}/#{@schid}] saved.".colorize.yellow
   end
 
-  def save_zh!(lines : Array(String)) : Nil
-    ::FileUtils.mkdir_p(@text_dir)
-    out_file = File.join(@text_dir, "#{@schid}.txt")
-    File.open(out_file, "w") { |io| lines.join(io, "\n") }
+  private def split_parts(lines : Array(String), limit = PART_LIMIT)
+    parts = [[] of String]
 
-    `zip -jqm "#{@zip_file}" "#{out_file}"`
-    puts "- <zh_text> [#{out_file}] saved.".colorize.yellow
+    count = 0
+    lines.each do |line|
+      count += line.size
+
+      if count > limit
+        parts << [] of String
+        count = 0
+      end
+
+      parts.last << line
+    end
+
+    parts
   end
 end

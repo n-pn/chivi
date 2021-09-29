@@ -90,14 +90,15 @@ class CV::ChapCtrl < CV::BaseCtrl
     bhash = zhbook.cvbook.bhash
 
     chidx = params.fetch_int("chidx") { 1 }
+    cpart = params.fetch_int("cpart") { 0 }
+
     schid = params["schid"]
 
     chtext = ChText.load(bhash, zhbook.sname, zhbook.snvid, chidx - 1, schid)
+    zh_mode = params.fetch_int("mode", min: 0, max: _cv_user.privi)
 
-    zh_mode = params.fetch_int("mode", min: 0, max: _cv_user.privi > 0 ? 2 : 1)
-
-    fetchable = zhbook.remote_text?(chidx, _cv_user.privi)
-    zh_text = chtext.get_zh!(fetchable, reset: zh_mode > 1)
+    rm_seed = zhbook.remote_text?(chidx, _cv_user.privi)
+    zh_text = chtext.get_zh!(cpart, rm_seed, reset: zh_mode > 1)
     tl_mode = _cv_user.tlmode
 
     response.headers.add("Cache-Control", "private, min-fresh=60")

@@ -27,12 +27,12 @@ class CV::RmText
 
   alias TimeSpan = Time::Span | Time::MonthSpan
 
-  def initialize(@sname, @snvid, @schid, @ttl : TimeSpan = 10.years, @label = "1/1")
+  def initialize(@sname, @snvid, @schid, @ttl : TimeSpan = 10.years, @lbl = "1/1")
   end
 
   getter page : HtmlParser do
     encoding = HttpUtil.encoding_for(@sname)
-    html = HttpUtil.load_html(link, file, @ttl, @label, encoding)
+    html = HttpUtil.load_html(link, file, @ttl, @lbl, encoding)
     HtmlParser.new(html)
   end
 
