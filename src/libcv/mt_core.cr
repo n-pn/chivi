@@ -28,42 +28,44 @@ class CV::MtCore
     list.pad_spaces!
   end
 
-  def cv_plain(input : String, mode = 2, cap_first = true)
-    tokenize(input.chars)
-      .fix_grammar!(mode: mode)
-      .capitalize!(cap: cap_first)
-      .pad_spaces!
-  end
-
   def cv_title_full(title : String, mode = 2)
     title, label = TextUtils.format_title(title)
 
-    title_res = cv_title(title)
+    title_res = cv_title(title, offset: label.size)
     return title_res if label.empty?
 
-    title_res.prepend!(MtNode.new("", " - "))
+    title_res.prepend!(MtNode.new("", " - ", idx: label.size))
     label_res = cv_title(label, mode: mode)
     label_res.concat!(title_res)
   end
 
-  def cv_title(title : String, mode = 2)
+  def cv_title(title : String, mode = 2, offset = 0)
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
-    res = title.empty? ? MtList.new : cv_plain(title, mode: mode)
+    offset_2 = offset + pre_zh.size + pad.size
+
+    res = title.empty? ? MtList.new : cv_plain(title, mode: mode, offset: offset_2)
 
     unless pre_zh.empty?
-      res.prepend!(MtNode.new(pad, title.empty? ? "" : ": "))
-      res.prepend!(MtNode.new(pre_zh, pre_vi, dic: 1))
+      res.prepend!(MtNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
+      res.prepend!(MtNode.new(pre_zh, pre_vi, dic: 1, idx: offset))
     end
 
     res
   end
 
-  def tokenize(input : Array(Char)) : MtList
+  def cv_plain(input : String, mode = 2, cap_first = true, offset = 0)
+    tokenize(input.chars, offset: offset)
+      .fix_grammar!(mode: mode)
+      .capitalize!(cap: cap_first)
+      .pad_spaces!
+  end
+
+  def tokenize(input : Array(Char), offset = 0) : MtList
     nodes = [MtNode.new("", "")]
     costs = [0.0]
 
     input.each_with_index(1) do |char, idx|
-      nodes << MtNode.new(char, idx - 1)
+      nodes << MtNode.new(char, idx: idx - 1 + offset)
       costs << idx - 0.5
     end
 
@@ -82,7 +84,7 @@ class CV::MtCore
 
         if cost >= costs[jump]
           costs[jump] = cost
-          nodes[jump] = MtNode.new(term, idx)
+          nodes[jump] = MtNode.new(term, idx: idx + offset)
         end
       end
     end
