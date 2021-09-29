@@ -30,8 +30,9 @@ module MTL::ApplyCap
     when .quoteop?, .exmark?, .qsmark?,
          .pstop?, .colon?, .middot?, .titleop?
       true
-    when .puncts? then prev
-    else               false
+    when .brackop? then @val[0] == '(' ? prev : true
+    when .puncts?  then prev
+    else                false
     end
   end
 end

@@ -74,6 +74,8 @@ export class MtData {
       if (fval == '“' || fval == '‘') {
         lvl += 1
         res += '<em>'
+      } else if (fval == '⟨') {
+        res += '<cite>'
       }
 
       const esc = escape_html(val)
@@ -86,6 +88,8 @@ export class MtData {
       if (lval == '”' || lval == '’') {
         lvl -= 1
         res += '</em>'
+      } else if (fval == '⟩') {
+        res += '</cite>'
       }
     }
 

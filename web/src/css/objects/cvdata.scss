@@ -50,6 +50,11 @@
     // prettier-ignore
     @include bp-max(xs) { font-size: rem(18px); }
   }
+
+  cite {
+    font-style: normal;
+    font-variant: small-caps;
+  }
 }
 
 .mtl {
