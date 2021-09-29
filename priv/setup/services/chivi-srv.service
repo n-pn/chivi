@@ -10,8 +10,8 @@ RestartSec=5
 User=nipin
 Environment=PORT=5010
 Environment=AMBER_ENV=production
-WorkingDirectory=/home/nipin/srv/chivi.xyz
-ExecStart=/home/nipin/srv/chivi.xyz/bin/chivi
+WorkingDirectory=/home/nipin/srv/chivi.app
+ExecStart=/home/nipin/srv/chivi.app/bin/chivi
 
 [Install]
 WantedBy=multi-user.target

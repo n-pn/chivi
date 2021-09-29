@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-echo "Backup from chivi.xyz!"
-SSH=nipin@ssh.chivi.xyz:srv/chivi.xyz
+echo "Backup from chivi.app!"
+SSH=nipin@ssh.chivi.app:srv/chivi.app
 
 ## backup user data
 if [[ $1 == "all" || $* == *user* ]]

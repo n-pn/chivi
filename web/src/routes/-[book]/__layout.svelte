@@ -31,8 +31,8 @@
   <meta property="og:title" content={cvbook.vtitle} />
   <meta property="og:type" content="novel" />
   <meta property="og:description" content={book_intro} />
-  <meta property="og:url" content="https://chivi.xyz/-{cvbook.bslug}" />
-  <meta property="og:image" content="https://chivi.xyz/covers/{cvbook.bcover}" />
+  <meta property="og:url" content="https://chivi.app/-{cvbook.bslug}" />
+  <meta property="og:image" content="https://chivi.app/covers/{cvbook.bcover}" />
 
   <meta property="og:novel:category" content={cvbook.genres[0]} />
   <meta property="og:novel:author" content={cvbook.vauthor} />

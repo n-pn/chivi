@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # The production directory
-TARGET="/home/nipin/srv/chivi.xyz"
+TARGET="/home/nipin/srv/chivi.app"
 # The Git repo
 SOURCE="/home/nipin/git/chivi.git"
 

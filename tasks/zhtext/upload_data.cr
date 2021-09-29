@@ -7,7 +7,7 @@ module CV::UploadChseed
   extend self
 
   INP = "db/chtexts"
-  OUT = "/home/nipin/srv/chivi.xyz"
+  OUT = "/home/nipin/srv/chivi.app"
 
   def run!(argv = ARGV)
     exists = Dir.children(INP)
@@ -22,13 +22,13 @@ module CV::UploadChseed
   private def upload_host(argv = ARGV)
     case argv
     when .includes?("-d"), .includes?("--dev")
-      "nipin@dev.chivi.xyz"
+      "nipin@dev.chivi.app"
     else
-      "nipin@ssh.chivi.xyz"
+      "nipin@ssh.chivi.app"
     end
   end
 
-  def upload!(sname : String, host = "nipin@ssh.chivi.xyz")
+  def upload!(sname : String, host = "nipin@ssh.chivi.app")
     puts "upload to: #{host.colorize.blue}, sname: #{sname.colorize.blue}"
 
     target_dir = File.join(INP, sname)

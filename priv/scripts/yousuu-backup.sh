@@ -1,7 +1,7 @@
 #! /bin/bash
 
 DIR=_db/yousuu
-SSH=nipin@ssh.chivi.xyz:srv/chivi.xyz
+SSH=nipin@ssh.chivi.app:srv/chivi.app
 
 rsync -azui --no-p "$SSH/$DIR/_proxy/.works" "$DIR/_proxy"
 rsync -azui --no-p "$SSH/$DIR/infos" "$DIR"

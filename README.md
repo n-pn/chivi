@@ -1,6 +1,6 @@
 # Chivi
 
-source code for https://chivi.xyz
+source code for https://chivi.app
 
 ## LICENSE
 

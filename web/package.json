@@ -1,6 +1,6 @@
 {
   "name": "chivi",
-  "description": "frontend for chivi.xyz",
+  "description": "frontend for chivi.app",
   "version": "0.1.0",
   "private": true,
   "scripts": {

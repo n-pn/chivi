@@ -9,7 +9,7 @@ Restart=always
 RestartSec=5
 User=nipin
 Environment=PORT=5000
-WorkingDirectory=/home/nipin/srv/chivi.xyz/web
+WorkingDirectory=/home/nipin/srv/chivi.app/web
 ExecStart=/usr/bin/node build/index.js
 
 [Install]

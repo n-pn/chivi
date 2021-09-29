@@ -1,5 +1,5 @@
 #! /bin/sh
-DIR=/home/nipin/srv/chivi.xyz/etc/workers
+DIR=/home/nipin/srv/chivi.app/etc/workers
 
 sudo rm /etc/systemd/system/ys-serial.service
 sudo cp "$DIR/ys-serial.service" /etc/systemd/system/ys-serial.service

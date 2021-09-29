@@ -2,11 +2,11 @@
 
 if [[ "$1" == "prod" ]]
 then
-  echo "Upload to chivi.xyz!"
-  ssh=nipin@ssh.chivi.xyz:srv/chivi.xyz
+  echo "Upload to chivi.app!"
+  ssh=nipin@ssh.chivi.app:srv/chivi.app
 else
-  echo "Upload to dev.chivi.xyz!"
-  ssh=nipin@dev.chivi.xyz:srv/chivi.xyz
+  echo "Upload to dev.chivi.app!"
+  ssh=nipin@dev.chivi.app:srv/chivi.app
 fi
 
 ## upload user data
