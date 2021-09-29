@@ -120,7 +120,7 @@ class CV::MtCore
       when .numlat? then true
       else               false
       end
-    when .strings? then left.strings?
+    when .strings? then left.tag.strings?
     when .puncts?  then left.tag == right.tag
     else                false
     end

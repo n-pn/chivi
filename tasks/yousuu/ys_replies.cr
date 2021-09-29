@@ -57,7 +57,7 @@ class CV::CrawlYsrepl
     group = scrid[0..3]
     file = "#{DIR}/#{group}/#{scrid}-#{page}.json"
 
-    return if still_fresh?(file, page == @max_pgs[scrid]?)
+    return if still_fresh?(file, @max_pgs[scrid] - page)
 
     link = "https://api.yousuu.com/api/comment/#{scrid}/reply?&page=#{page}"
     return scrid unless @http.save!(link, file, label)
@@ -72,11 +72,11 @@ class CV::CrawlYsrepl
 
   REDO = ARGV.includes?("+redo")
 
-  private def still_fresh?(file : String, last_page = false)
+  private def still_fresh?(file : String, page_desc = 1)
     return false if REDO
 
     return false unless info = File.info?(file)
-    still_fresh = Time.utc - (last_page ? 5.day : 30.days)
+    still_fresh = Time.utc - page_desc * 10.day
     info.modification_time >= still_fresh
   end
 

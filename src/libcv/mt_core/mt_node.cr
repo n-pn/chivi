@@ -65,7 +65,26 @@ class CV::MtNode
     self
   end
 
+  def fix_prev(@prev : self) : self
+    prev.succ = self
+    self
+  end
+
+  def fix_prev(@prev : Nil)
+    self
+  end
+
+  def fix_succ(@succ : self) : self
+    succ.prev = self
+    self
+  end
+
+  def fix_succ(@succ : Nil)
+    self
+  end
+
   include MTL::ApplyCap
   include MTL::Serialize
   include MTL::Transform
+  include MTL::Grammars
 end

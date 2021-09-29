@@ -67,7 +67,7 @@ module CV::MTL::Grammars
       if !has_第
         node.fuse_right!("#{node.val} #{succ.val}")
         node.tag = PosTag::Nquant
-      elsif succ.succ(&.nouns?)
+      elsif succ.succ?(&.nouns?)
         succ_2 = succ.succ
         succ.fuse_right!("#{succ.val} #{succ_2.val}")
 

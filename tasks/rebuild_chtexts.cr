@@ -26,16 +26,15 @@ class RebuildBook
     end
 
     paged = Dir.glob("#{@out_dir}/*.tsv").map { |x| File.basename(x, ".tsv").to_i }
-    # lasts = paged.sort.last(2)
+    plast = paged.sort.last
 
-    infos.each_slice(128).with_index do |slice, page_idx|
-      out_file = "#{@out_dir}/#{page_idx}.tsv"
+    infos.each_slice(128).with_index do |slice, pgidx|
+      out_file = "#{@out_dir}/#{pgidx}.tsv"
 
-      next unless redo || !File.exists?(out_file)
-      # next unless redo || lasts.includes?(page_idx) || !File.exists?(out_file)
+      next unless redo || plast == pgidx || !File.exists?(out_file)
 
       index = slice.map_with_index do |input, slice_idx|
-        chidx = page_idx * 128 + slice_idx
+        chidx = pgidx * 128 + slice_idx
         stats = [chidx.+(1).to_s, fix_schid(input.schid).to_s,
                  input.title, input.chvol]
         rebuild_chap(chidx, input.schid).try { |x| stats.concat(x.map(&.to_s)) }
@@ -43,7 +42,7 @@ class RebuildBook
       end
 
       File.write(out_file, index.join("\n"))
-      puts "- <#{@sname}/#{@snvid}/#{page_idx}> saved, entries: #{index.size}"
+      puts "- <#{@sname}/#{@snvid}/#{pgidx}> saved, entries: #{index.size}"
     end
   end
 
