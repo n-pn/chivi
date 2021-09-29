@@ -4,6 +4,7 @@ module MTL::Transform
   end
 
   def prepend!(other : self) : Nil
+    @idx = other.idx
     @key = "#{other.key}#{@key}"
     @val = "#{other.val}#{@val}"
     @dic = other.dic if @dic < other.dic
@@ -12,6 +13,7 @@ module MTL::Transform
   def fuse_left!(left = "#{@prev.try(&.val)}", right = "", @dic = 6) : self
     return self unless prev = @prev
 
+    @idx = prev.idx
     @key = "#{prev.key}#{@key}"
     @val = "#{left}#{@val}#{right}"
 

@@ -76,7 +76,7 @@ class CV::CrawlYsrepl
     return false if REDO
 
     return false unless info = File.info?(file)
-    still_fresh = Time.utc - page_desc * 10.day
+    still_fresh = Time.utc - 10.day * page_desc
     info.modification_time >= still_fresh
   end
 
