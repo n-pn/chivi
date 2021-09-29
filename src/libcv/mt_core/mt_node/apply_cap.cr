@@ -6,13 +6,14 @@ module MTL::ApplyCap
     node.capitalize! if cap
 
     while node = node.succ?
-      next if node.val.blank?
-
-      if cap && !node.tag.puncts?
-        node.capitalize!
-        cap = false
-      else
+      case node.tag
+      when .none?
+        next
+      when .puncts?
         cap = node.should_cap?(cap)
+      else
+        node.capitalize! if cap
+        cap = false
       end
     end
 
@@ -29,11 +30,8 @@ module MTL::ApplyCap
     when .quoteop?, .exmark?, .qsmark?,
          .pstop?, .colon?, .middot?, .titleop?
       true
-      # when .brackop?           then @val.starts_with?('(') ? prev : true
-    when .brackop? then true
-    when .strings? then prev
-    when .puncts?  then prev
-    else                false
+    when .puncts? then prev
+    else               false
     end
   end
 end

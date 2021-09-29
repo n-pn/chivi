@@ -47,15 +47,15 @@ class CV::MtList
   end
 
   def to_str(io : IO) : Nil
-    @head.succ.try(&.to_str(io))
+    @head.succ.try(&.to_str(io, deep: true))
   end
 
   def inspect(io : IO) : Nil
-    @head.succ.try(&.inspect(io))
+    @head.succ.try(&.inspect(io, deep: true))
   end
 
   def capitalize!(cap = true)
-    @head.succ.try(&.apply_cap!(cap))
+    @head.apply_cap!(cap)
     self
   end
 end

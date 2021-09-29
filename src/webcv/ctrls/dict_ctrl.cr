@@ -150,10 +150,15 @@ class CV::DictCtrl < CV::BaseCtrl
     json_view do |jb|
       jb.object do
         words.each do |word|
-          jb.field (word.as_s) { VpTermView.new(word.as_s, cvmtl, dicts).to_json(jb) }
+          jb.field (word.as_s) do
+            VpTermView.new(word.as_s, cvmtl, dicts).to_json(jb)
+          end
         end
       end
     end
+  rescue err
+    puts err
+    halt! 500, err.message
   end
 
   def upsert

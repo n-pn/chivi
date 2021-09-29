@@ -19,7 +19,7 @@ class CV::VpTermView
   def guess_tag(mt_list : MtList)
     # return "" if list is not singleton
     return "" unless first = mt_list.first
-    first.succ ? "" : first.tag.to_str
+    first.succ? ? "" : first.tag.to_str
     # TODO guess tag by suffix
   end
 

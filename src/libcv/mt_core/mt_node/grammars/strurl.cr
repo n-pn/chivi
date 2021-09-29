@@ -17,6 +17,8 @@ module MTL::Grammars
     @key = key_io.to_s
     @val = val_io.to_s
 
+    puts [@key, @val]
+
     fix_succ(node)
   end
 
@@ -24,8 +26,8 @@ module MTL::Grammars
     case @tag
     when .string?, .pdeci?, .numlat? then true
     when .puncts?
-      case @key
-      when "%", "?", "-", "=", "~", "#", "@", "/" then true
+      case @key[0]
+      when '%', '?', '-', '=', '~', '#', '@', '/' then true
       else                                             false
       end
     else
