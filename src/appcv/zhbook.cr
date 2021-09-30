@@ -127,7 +127,6 @@ class CV::Zhbook
     lines, utime = chtext.load!(part)
 
     if remote_text?(index, privi) && (reset || lines.empty?)
-      puts "load texts!"
       lines, _ = chtext.fetch!(part, reset ? 3.minutes : 30.years)
       update_stats!(chtext.infos)
     elsif chinfo.utime < utime || chinfo.parts == 0

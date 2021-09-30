@@ -56,7 +56,10 @@ class CV::Chtext
     RmText.mkdir!(@sname, @snvid)
 
     remote = RmText.new(@sname, @snvid, @infos.schid, ttl: stale)
-    lines = remote.paras.tap(&.unshift(remote.title))
+    lines = remote.paras
+    # special fix for 69shu, will investigate later
+    lines.unshift(remote.title) unless remote.title.empty?
+
     save!(lines)
     @parts[part]
   end
