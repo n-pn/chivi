@@ -111,7 +111,7 @@ class CV::ChapCtrl < CV::BaseCtrl
     mode = _cv_user.tlmode
 
     cvmtl.cv_title_full(lines[0], mode: mode).to_str(output)
-    output << "\t" << "  (#{cpart + 1}/#{chinfo.parts})"
+    output << "\t" << "  (#{cpart + 1}/#{chinfo.parts})" if chinfo.parts > 1
 
     1.upto(lines.size - 1) do |i|
       line = lines.unsafe_fetch(i)
