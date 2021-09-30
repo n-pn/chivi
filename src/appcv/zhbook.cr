@@ -53,6 +53,7 @@ class CV::Zhbook
       self.bumped = Time.utc.to_unix
 
       Chlist.save!(sname, snvid, parser.chap_list, redo: privi > 0)
+      Chpage.forget!(sname, snvid, -1)
       Chpage.forget!(sname, snvid, Chpage.pgidx(chap_count - 1))
 
       self.save!
