@@ -6,10 +6,12 @@
 
   export let chaps = []
   export let track = {}
+
+  console.log({ chaps })
 </script>
 
 <div class="list">
-  {#each chaps as { chidx, title, chvol, uslug }}
+  {#each chaps as { chidx, title, chvol, uslug, parts }}
     <div class="list-item">
       <a
         href="/-{bslug}/-{sname}/-{uslug}-{chidx}"
@@ -24,6 +26,10 @@
           {#if chidx == track.chidx && sname == track.sname}
             <div class="chap-track">
               <SIcon name={track.locked ? 'bookmark' : 'eye'} />
+            </div>
+          {:else if parts > 0}
+            <div class="chap-track">
+              <SIcon name="device-floppy" />
             </div>
           {/if}
         </div>

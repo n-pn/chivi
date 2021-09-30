@@ -21,15 +21,16 @@ class CV::Chpage
 
     @title = parts[1]? || ""
     @chvol = parts[2]? || ""
-    @uslug = parts[3]? || ""
 
-    @utime = parts[4]?.try(&.to_i64?) || 0_i64
-    @chars = parts[5]?.try(&.to_i?) || 0
-    @parts = parts[6]?.try(&.to_i?) || 0
+    @utime = parts[3]?.try(&.to_i64?) || 0_i64
+    @chars = parts[4]?.try(&.to_i?) || 0
+    @parts = parts[5]?.try(&.to_i?) || 0
+
+    @uslug = parts[6]? || ""
   end
 
   def to_s(io : IO)
-    {@schid, @title, @chvol, @uslug, @utime, @chars, @parts}.join(io, "\t")
+    {@schid, @title, @chvol, @utime, @chars, @parts, @uslug}.join(io, "\t")
   end
 
   def trans!(cvmtl : MtCore)
