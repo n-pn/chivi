@@ -36,6 +36,13 @@
     zhtext = ''
     edit_mode = true
   }
+
+  function split_input(input) {
+    return input
+      .split('\n')
+      .map((x) => x.trim())
+      .filter((x) => x)
+  }
 </script>
 
 <svelte:head>
@@ -69,7 +76,7 @@
         placeholder="Nhập dữ liệu vào đây" />
     {:else}
       <article class="cvdata">
-        <Cvdata {cvdata} bind:_dirty />
+        <Cvdata zhtext={split_input(zhtext)} {cvdata} bind:_dirty />
       </article>
     {/if}
   </section>
