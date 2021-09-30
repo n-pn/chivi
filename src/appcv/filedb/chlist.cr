@@ -23,7 +23,13 @@ module CV::Chlist
       chidx = group * LSIZE
       (chidx + 1).upto(chidx + LSIZE) do |index|
         break unless infos = data[index]?
-        chlist.set!((index + 1).to_s, infos)
+
+        key = (index + 1).to_s
+        if prevs = chlist.get(key)
+          infos << prevs[3] << prevs[4] << prevs[5] if prevs.size >= 6
+        end
+
+        chlist.set!(key, infos)
       end
 
       break unless redo || chlist.unsaved > 0
