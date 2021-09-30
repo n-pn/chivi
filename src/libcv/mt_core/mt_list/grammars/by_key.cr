@@ -14,7 +14,7 @@ module CV::MTL::Grammars
         node.update!("không đúng", PosTag::Adjt)
       end
     when "也"
-      if boundary?(node.succ)
+      if boundary?(node.succ?)
         node.update!("vậy", PosTag::Interjection)
       else
         node.update!("cũng", PosTag::Adverb)

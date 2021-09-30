@@ -106,7 +106,7 @@ class CV::ChapCtrl < CV::BaseCtrl
   private def convert(zhbook, chinfo, lines, cpart, output : IO)
     return if lines.empty?
 
-    cvmtl = MtCore.generic_mtl(zhbook.binfo.bhash, _cv_user.uname)
+    cvmtl = MtCore.generic_mtl(zhbook.cvbook.bhash, _cv_user.uname)
     mode = _cv_user.tlmode
 
     cvmtl.cv_title_full(lines[0], mode: mode).to_str(output)

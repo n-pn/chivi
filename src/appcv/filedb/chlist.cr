@@ -26,8 +26,8 @@ module CV::Chlist
         chlist.set!((index + 1).to_s, infos)
       end
 
-      break if chlist.unsaved == 0 && !redo
-      chlist.save!
+      break unless redo || chlist.unsaved > 0
+      chlist.save!(clean: redo)
     end
   end
 

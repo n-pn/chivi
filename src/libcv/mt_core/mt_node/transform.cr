@@ -18,7 +18,7 @@ module MTL::Transform
     @val = "#{left}#{@val}#{right}"
 
     self.prev = prev.prev
-    self.prev.try(&.succ = self)
+    self.prev?(&.succ = self)
 
     self
   end
@@ -29,7 +29,7 @@ module MTL::Transform
     @key = "#{@key}#{succ.key}"
 
     self.succ = succ.succ
-    self.succ.try(&.prev = self)
+    self.succ?(&.prev = self)
 
     self
   end

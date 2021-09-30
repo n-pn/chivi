@@ -10,7 +10,6 @@
 
     const url = `chaps/${cvbook.id}/${sname}/${chidx}/${+cpart}`
     const [status, chinfo] = await api_call(fetch, url)
-
     if (status) return { status, error: chinfo }
     return { props: { cvbook, ubmemo, chinfo } }
   }
@@ -47,7 +46,7 @@
     if ($session.privi < 1) return
 
     if (full) {
-      const res = await fetch(api_url)
+      const res = await fetch(api_url + '?mode=2')
       if (res.ok) chinfo = await res.json()
     } else {
       const res = await fetch(api_url + '/text')
@@ -98,6 +97,8 @@
 
     const [stt, msg] = await put_fetch(fetch, url, params)
     if (stt) return console.log(`Error update history: ${msg}`)
+
+    // TODO: figure out how to update ubmemo instead of reloading book info everytime
     invalidate(`/api/books/${cvbook.bslug}`)
 
     ubmemo = msg

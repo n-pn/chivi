@@ -57,10 +57,7 @@ class CV::Chtext
 
     remote = RmText.new(@sname, @snvid, @infos.schid, ttl: stale)
     lines = remote.paras.tap(&.unshift(remote.title))
-
     save!(lines)
-    @parts[part]
-  rescue
     @parts[part]
   end
 
@@ -85,8 +82,8 @@ class CV::Chtext
     @infos.chars = input.map(&.size).sum
     @infos.utime = Time.utc.to_unix
 
-    if @infos.chars <= CHARS
-      @infos.parts = 0
+    if @infos.chars < CHARS * 1.5
+      @infos.parts = 1
       return save_part!(input, 0)
     end
 

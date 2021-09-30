@@ -27,13 +27,13 @@ class CV::Zhbook
   timestamps
 
   getter wlink : String { SiteLink.binfo_url(sname, snvid) }
-  getter cvmtl : MtCore { MtCore.generic_mtl(binfo.bhash) }
+  getter cvmtl : MtCore { MtCore.generic_mtl(cvbook.bhash) }
 
   def clink(schid : String) : String
     SiteLink.chtxt_url(sname, snvid, schid)
   end
 
-  getter binfo : Cvbook { Cvbook.load!(self.cvbook_id) }
+  getter cvbook : Cvbook { Cvbook.load!(self.cvbook_id) }
 
   def unmatch?(cvbook_id : Int64) : Bool
     cvbook_id_column.value(0) != cvbook_id
@@ -52,11 +52,11 @@ class CV::Zhbook
       self.last_schid = parser.last_schid
       self.bumped = Time.utc.to_unix
 
-      Chlist.save!(sname, snvid, parser.chap_list, redo: privi > 3)
+      Chlist.save!(sname, snvid, parser.chap_list, redo: privi > 2)
       Chpage.forget!(sname, snvid, Chpage.pgidx(chap_count - 1))
 
       self.save!
-      binfo.tap(&.set_mftime(self.mftime)).save! # unless sname == "hetushu"
+      cvbook.tap(&.set_mftime(self.mftime)).save! # unless sname == "hetushu"
     end
 
     {mftime, chap_count}
@@ -120,17 +120,6 @@ class CV::Zhbook
     chpage(Chpage.pgidx(index))[index % Chpage::PSIZE]?
   end
 
-  def chap_url(chidx : Int32, part = 0)
-    return unless chinfo = self.chinfo(chidx - 1)
-    chap_url = "#{chinfo.uslug}-#{chidx}"
-
-    case part
-    when  0 then chap_url
-    when -1 then "#{chap_url}.#{chinfo.parts - 1}"
-    else         "#{chap_url}.#{part}"
-    end
-  end
-
   def chtext(index : Int32, part = 0, privi = 4, reset = false)
     return [] of String unless chinfo = self.chinfo(index)
 
@@ -138,6 +127,7 @@ class CV::Zhbook
     lines, utime = chtext.load!(part)
 
     if remote_text?(index, privi) && (reset || lines.empty?)
+      puts "load texts!"
       lines, _ = chtext.fetch!(part, reset ? 3.minutes : 30.years)
       update_stats!(chtext.infos)
     elsif chinfo.utime < utime || chinfo.parts == 0
@@ -146,6 +136,8 @@ class CV::Zhbook
     end
 
     lines
+  rescue
+    [] of String
   end
 
   def remote_text?(chidx : Int32, privi : Int32 = 4)
@@ -161,10 +153,7 @@ class CV::Zhbook
 
     index = chinfo.chidx.to_s
     stats = chlist.get(index).try(&.first(3)) || [chinfo.schid, chtitle, ""]
-    puts stats
-
     stats << chinfo.utime.to_s << chinfo.chars.to_s << chinfo.parts.to_s
-    puts stats
 
     chlist.set!(index, stats)
     return unless chlist.unsaved > 0
@@ -174,6 +163,17 @@ class CV::Zhbook
     pgidx = Chpage.pgidx(chinfo.chidx - 1)
     vfile = Chpage.path(sname, snvid, pgidx)
     Chpage.save!(vfile, chpage(pgidx))
+  end
+
+  def chap_url(chidx : Int32, part = 0)
+    return unless chinfo = self.chinfo(chidx - 1)
+    chap_url = "#{chinfo.uslug}-#{chidx}"
+
+    case part
+    when  0 then chap_url
+    when -1 then chinfo.parts > 1 ? "#{chap_url}.#{chinfo.parts - 1}" : chap_url
+    else         "#{chap_url}.#{part}"
+    end
   end
 
   ###########################

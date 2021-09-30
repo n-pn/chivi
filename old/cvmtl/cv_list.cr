@@ -7,15 +7,14 @@ class CV::CvList
   getter root = CvNode.new("", "")
 
   def first? : CvNode?
-    @root.succ
+    @root.succ?
   end
 
   def concat!(list : self, node = @root)
-    while node = node.succ
-      unless node.succ
-        node.set_succ(list.root)
-        return self
-      end
+    while node = node.succ?
+      next if node.succ?
+      node.set_succ(list.root)
+      return self
     end
 
     self
@@ -26,7 +25,7 @@ class CV::CvList
   end
 
   def fix_grammar!(node = @root)
-    while node = node.succ
+    while node = node.succ?
       case node.key
       when "的"
         node.fix(val: "", cat: 0)

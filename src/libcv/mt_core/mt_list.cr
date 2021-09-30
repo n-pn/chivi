@@ -8,7 +8,7 @@ class CV::MtList
   getter head = MtNode.new("", "")
 
   def first
-    @head.succ
+    @head.succ?
   end
 
   def concat!(list : self)
@@ -47,11 +47,11 @@ class CV::MtList
   end
 
   def to_str(io : IO) : Nil
-    @head.succ.try(&.to_str(io, deep: true))
+    @head.succ?(&.to_str(io, deep: true))
   end
 
   def inspect(io : IO) : Nil
-    @head.succ.try(&.inspect(io, deep: true))
+    @head.succ?(&.inspect(io, deep: true))
   end
 
   def capitalize!(cap = true)
