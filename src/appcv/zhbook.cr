@@ -100,7 +100,7 @@ class CV::Zhbook
   def lastpg
     Chpage.load!(sname, snvid, -1) do
       chpage = [] of Chpage
-      chidx = chap_count - 1
+      chidx = chap_count
 
       4.times do
         break if chidx < 0
@@ -109,7 +109,7 @@ class CV::Zhbook
         break unless chinfo = chlist.get(chidx.to_s)
         chpage << Chpage.new(chinfo, chidx).trans!(cvmtl)
 
-        chidx += 1
+        chidx -= 1
       end
 
       chpage
