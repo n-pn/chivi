@@ -14,7 +14,7 @@ module CV::Chlist
     CACHE.get(fpath) { TsvStore.new(fpath) }
   end
 
-  def save!(sname : String, snvid : String, data : Array(Array(String)), redo = false)
+  def save!(sname : String, snvid : String, data : Array(Array(String)), redo = true)
     pages = (data.size - 1) // LSIZE + 1
 
     (pages - 1).downto(0) do |group|

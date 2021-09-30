@@ -52,7 +52,7 @@ class CV::Zhbook
       self.last_schid = parser.last_schid
       self.bumped = Time.utc.to_unix
 
-      Chlist.save!(sname, snvid, parser.chap_list, redo: privi > 2)
+      Chlist.save!(sname, snvid, parser.chap_list, redo: privi > 0)
       Chpage.forget!(sname, snvid, Chpage.pgidx(chap_count - 1))
 
       self.save!
