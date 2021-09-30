@@ -12,7 +12,7 @@ class CV::ChapCtrl < CV::BaseCtrl
     pgidx = params.fetch_int("page", min: 1)
 
     crmode = params.fetch_int("mode", min: 0, max: cu_privi)
-    zhbook.reset_pages!(chmin: 1) if cu_privi > 1
+    zhbook.reset_pages!(chmin: 1) if cu_privi > 2
 
     utime, total = zhbook.refresh!(cu_privi, crmode)
 

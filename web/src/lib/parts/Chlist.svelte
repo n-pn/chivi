@@ -6,8 +6,6 @@
 
   export let chaps = []
   export let track = {}
-
-  console.log({ chaps })
 </script>
 
 <div class="list">
