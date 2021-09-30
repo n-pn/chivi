@@ -19,7 +19,7 @@ class CV::Chtext
   getter infos : Chpage
   getter title : String do
     lines, _ = load!(0)
-    lines[0]? || ""
+    lines[0]
   end
 
   def initialize(@sname : String, @snvid : String, @infos)
@@ -79,6 +79,9 @@ class CV::Chtext
   end
 
   def save!(input : Array(String)) : Nil
+    return if input.empty?
+    @title = input[0]
+
     @infos.chars = input.map(&.size).sum
     @infos.utime = Time.utc.to_unix
 

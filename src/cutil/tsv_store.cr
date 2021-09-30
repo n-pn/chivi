@@ -139,6 +139,8 @@ class CV::TsvStore
     end
 
     File.open(@file, clean ? "w" : "a") do |file|
+      file << "\n" unless clean
+
       output.each do |key, vals|
         file << key << '\t' << vals.join('\t') << "\n"
       end

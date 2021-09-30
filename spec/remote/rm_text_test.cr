@@ -57,3 +57,5 @@ fetch_text("bxwxorg", "119227", "1367374", fresh: false)
 # fetch_text("hetushu", "5124", "3814265", fresh: false)
 # fetch_text("hetushu", "2421", "1655382", fresh: false)
 fetch_text("hetushu", "1640", "1099716", fresh: false)
+
+fetch_text("69shu", "35094", "24717592", fresh: false)
