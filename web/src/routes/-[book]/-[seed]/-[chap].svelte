@@ -72,7 +72,7 @@
     return page > 1 ? url + `?page=${page}` : url
   }
 
-  $: on_memory = ubmemo.chidx == chinfo.chidx
+  $: on_memory = ubmemo.chidx == chinfo.chidx && ubmemo.sname == chinfo.sname
   $: memo_icon = ubmemo.locked ? `bookmark${on_memory ? '' : '-off'}` : 'menu-2'
 
   $: if (browser && !on_memory) update_history(chinfo, false)
@@ -84,7 +84,7 @@
     if ($session.privi < 0) {
       // do not save history unless logged in
       return
-    } else if (ubmemo.chidx == chidx) {
+    } else if (ubmemo.chidx == chidx && ubmemo.sname == sname) {
       // do not save history if there is no change
       if (ubmemo.locked == locking) return
     } else {
