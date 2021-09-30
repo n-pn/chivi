@@ -21,7 +21,7 @@
         </div>
         <div class="chap-meta">
           <div class="chap-chvol">{chvol}</div>
-          {#if chidx == track.chidx}
+          {#if chidx == track.chidx && sname == track.sname}
             <div class="chap-track">
               <SIcon name={track.locked ? 'bookmark' : 'eye'} />
             </div>
