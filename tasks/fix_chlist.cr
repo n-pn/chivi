@@ -17,31 +17,38 @@ class CV::RebuildBook
     idx_file = "#{@inp_dir}/_id.tsv"
     return unless File.exists?(idx_file)
 
-    FileUtils.mkdir_p(@out_dir)
+    Dir.glob("#{@out_dir}/*.tsv").each do |file|
+      zip_file = file.sub("tsv", "zip")
+      next unless File.exists?(zip_file)
 
-    infos = File.read_lines(idx_file).map do |line|
-      parts = line.split('\t')
-      Chap.new(parts[0], parts[1], parts[2])
-    end
-
-    infos.each_slice(128).with_index do |slice, pgidx|
-      output = TsvStore.new("#{@out_dir}/#{pgidx}.tsv")
-
-      slice.map_with_index do |input, slice_idx|
-        chidx = pgidx * 128 + slice_idx
-
-        index = (chidx + 1).to_s
-        return if stats = output.get(index)
-
-        schid = fix_schid(input.schid).to_s
-        stats = [schid, input.title, input.chvol]
-
-        output.set!(index, stats)
+      input = TsvStore.new(file)
+      input.data.each do |chidx, infos|
+        next if infos.size > 3
+        input.set!(chidx, remap!(zip_file, infos))
       end
 
-      output.save!(clean: true) if output.unsaved > 0
-      puts "- <#{@sname}/#{@snvid}/#{pgidx}> saved, entries: #{slice.size}"
+      input.save!(clean: true) if input.unsaved > 0
     end
+  end
+
+  def remap!(zip_file : String, infos : Array(String)) : Array(String)
+    parts = chars = 0
+    utime = 0_i64
+
+    Compress::Zip::File.open(zip_file) do |zip|
+      while true
+        fpath = "#{infos[0]}-#{parts}.txt"
+        break unless entry = zip[fpath]?
+        lines = entry.open(&.gets_to_end).split('\n')
+
+        etime = entry.time.to_unix
+        utime = etime if utime < etime
+        chars += lines.map(&.size).sum
+        parts += 1
+      end
+    end
+
+    infos << utime.to_s << chars.to_s << parts.to_s
   end
 
   def fix_schid(schid : String)
@@ -57,7 +64,7 @@ class CV::RebuildBook
   end
 
   def self.run_all!(sname : String)
-    books = Dir.children("#{INP}/#{sname}")
+    books = Dir.children("_db/chtran/#{sname}")
     books.each_with_index(1) do |snvid, idx|
       puts "\n[#{sname}] <#{idx}/#{books.size}> #{snvid}"
       run!(sname, snvid)
