@@ -170,7 +170,7 @@
   </div>
 
   <div class="chlist">
-    {#if chinfo.lasts.length > 0}
+    {#if chinfo.pgmax > 0}
       <Chlist
         bslug={cvbook.bslug}
         sname={chinfo.sname}

@@ -60,16 +60,26 @@ class CV::Chpage
         lines = File.read_lines(file)
         lines.map_with_index(pgidx * PSIZE + 1) { |x, i| new(x.split("\t"), i) }
       else
-        data = yield
-        save!(file, data)
+        yield.tap { |x| save!(file, x) }
       end
     end
   end
 
-  def self.save!(file : String, data : Array(self)) : Array(self)
+  def self.init!(chlist, cvmtl, pgidx)
+    chpage = [] of Chpage
+
+    start = pgidx * PSIZE
+    (start + 1).upto(start + PSIZE) do |chidx|
+      break unless chinfo = chlist.get(chidx.to_s)
+      chpage << Chpage.new(chinfo, chidx).trans!(cvmtl)
+    end
+
+    chpage
+  end
+
+  def self.save!(file : String, data : Array(self)) : Nil
     FileUtils.mkdir_p(File.dirname(file))
     File.write(file, data.map(&.to_s).join("\n"))
-    data
   end
 
   private def self.fresh?(file : String, stale = STALE)

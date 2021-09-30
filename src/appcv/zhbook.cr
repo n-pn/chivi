@@ -84,16 +84,7 @@ class CV::Zhbook
   def chpage(pgidx : Int32)
     Chpage.load!(sname, snvid, pgidx) do
       chlist = self.chlist(pgidx // 4)
-      chpage = [] of Chpage
-
-      start = pgidx * Chpage::PSIZE
-      (start + 1).upto(start + Chpage::PSIZE) do |chidx|
-        break unless chinfo = chlist.get(chidx.to_s)
-
-        chpage << Chpage.new(chinfo, chidx).trans!(cvmtl)
-      end
-
-      chpage
+      Chpage.init!(chlist, cvmtl, pgidx)
     end
   end
 
