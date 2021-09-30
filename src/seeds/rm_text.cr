@@ -32,6 +32,7 @@ class CV::RmText
 
   getter page : HtmlParser do
     encoding = HttpUtil.encoding_for(@sname)
+
     html = HttpUtil.load_html(link, file, @ttl, @lbl, encoding)
     HtmlParser.new(html)
   end

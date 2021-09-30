@@ -9,7 +9,7 @@
 </script>
 
 <div class="list">
-  {#each chaps as { chidx, title, label, uslug }}
+  {#each chaps as { chidx, title, chvol, uslug }}
     <div class="list-item">
       <a
         href="/-{bslug}/-{sname}/-{uslug}-{chidx}"
@@ -20,7 +20,7 @@
           <div class="chap-chidx">{chidx}.</div>
         </div>
         <div class="chap-meta">
-          <div class="chap-label">{label}</div>
+          <div class="chap-chvol">{chvol}</div>
           {#if chidx == track.chidx}
             <div class="chap-track">
               <SIcon name={track.locked ? 'bookmark' : 'eye'} />
@@ -116,7 +116,7 @@
     @include ftsize(xs);
   }
 
-  .chap-label {
+  .chap-chvol {
     flex: 1;
     @include fgcolor(neutral, 5);
     @include clamp($width: null);

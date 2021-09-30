@@ -1,7 +1,7 @@
 require "./base_ctrl"
 
 class CV::ChapCtrl < CV::BaseCtrl
-  def load_zhbook
+  private def load_zhbook
     cvbook_id = params["book"].to_i64
     zname = Zhseed.index(params["sname"])
     Zhbook.load!(cvbook_id, zname)
@@ -11,8 +11,9 @@ class CV::ChapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     pgidx = params.fetch_int("page", min: 1)
 
-    mode = params.fetch_int("mode", min: 0, max: cu_privi)
-    utime, total = zhbook.refresh!(cu_privi, mode)
+    crmode = params.fetch_int("mode", min: 0, max: cu_privi)
+    zhbook.reset_pages!(chmin: 1) if cu_privi > 2
+    utime, total = zhbook.refresh!(cu_privi, crmode)
 
     render_json do |res|
       JSON.build(res) do |jb|
@@ -30,17 +31,13 @@ class CV::ChapCtrl < CV::BaseCtrl
 
           jb.field "lasts" do
             jb.array do
-              zhbook.chinfo.last_chaps.each do |chidx, infos|
-                chap_json(jb, chidx, infos)
-              end
+              zhbook.lastpg.each(&.to_json(jb))
             end
           end
 
           jb.field "chaps" do
             jb.array do
-              zhbook.chinfo.chaps_page(pgidx).each do |chidx, infos|
-                chap_json(jb, chidx, infos)
-              end
+              zhbook.chpage(pgidx - 1).each(&.to_json(jb))
             end
           end
         end
@@ -48,129 +45,116 @@ class CV::ChapCtrl < CV::BaseCtrl
     end
   end
 
-  private def chap_json(jb : JSON::Builder, chidx, infos)
-    jb.object do
-      jb.field "chidx", chidx
-      jb.field "schid", infos[0]
-      jb.field "title", infos[1]
-      jb.field "label", infos[2]
-      jb.field "uslug", infos[3]
-    end
-  end
-
   def show
-    zhbook = load_zhbook
     chidx = params.fetch_int("chidx")
+    cpart = params.fetch_int("cpart") { 0 }
 
-    unless curr = zhbook.chinfo.get_info(chidx - 1)
-      return halt!(404, "Chương tiết không tồn tại!")
-    end
+    zhbook = load_zhbook
+    return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
+
+    privi = _cv_user.privi
+    imode = params.fetch_int("mode", min: 0, max: privi)
+    lines = zhbook.chtext(chidx - 1, cpart, privi: privi, reset: imode > 1)
 
     json_view do |jb|
       jb.object {
         jb.field "sname", zhbook.sname
-        jb.field "clink", zhbook.clink(curr[0])
-
         jb.field "total", zhbook.chap_count
+
+        jb.field "_prev", cpart == 0 ? zhbook.chap_url(chidx - 1, -1) : zhbook.chap_url(chidx, cpart - 1)
+        jb.field "_next", cpart + 1 < chinfo.parts ? zhbook.chap_url(chidx, cpart + 1) : zhbook.chap_url(chidx + 1)
+
         jb.field "chidx", chidx
-        jb.field "schid", curr[0]
+        jb.field "cpart", cpart
+        jb.field "clink", zhbook.clink(chinfo.schid)
 
-        jb.field "title", curr[1]
-        jb.field "label", curr[2]
-        jb.field "uslug", curr[3]
+        jb.field "utime", chinfo.utime
+        jb.field "parts", chinfo.parts
 
-        jb.field "prev_url", zhbook.chinfo.url_for(chidx - 2)
-        jb.field "next_url", zhbook.chinfo.url_for(chidx)
+        jb.field "title", chinfo.title
+        jb.field "chvol", chinfo.chvol
+        jb.field "uslug", chinfo.uslug
+
+        jb.field "zhtext", lines
+        jb.field "cvdata" {
+          cvdata = String.build { |io| convert(zhbook, chinfo, lines, cpart, io) }
+          jb.string(cvdata)
+        }
       }
     end
   end
 
   def text : Nil
-    zhbook = load_zhbook
-    bhash = zhbook.cvbook.bhash
-
     chidx = params.fetch_int("chidx") { 1 }
     cpart = params.fetch_int("cpart") { 0 }
 
-    schid = params["schid"]
+    zhbook = load_zhbook
+    return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    chtext = ChText.load(bhash, zhbook.sname, zhbook.snvid, chidx - 1, schid)
-    zh_mode = params.fetch_int("mode", min: 0, max: _cv_user.privi)
-
-    rm_seed = zhbook.remote_text?(chidx, _cv_user.privi)
-    zh_text = chtext.get_zh!(cpart, rm_seed, reset: zh_mode > 1)
-    tl_mode = _cv_user.tlmode
-
-    response.headers.add("Cache-Control", "private, min-fresh=60")
+    min_fresh = _cv_user.privi < 2 ? 60 : 20
+    response.headers.add("Cache-Control", "private, min-fresh=#{min_fresh}")
     response.content_type = "text/plain; charset=utf-8"
 
-    return unless zh_text
-
-    cvmtl = MtCore.generic_mtl(bhash, _cv_user.uname)
-
-    # TODO: do not return zh_text if existed in browser
-
-    cvmtl.cv_title_full(zh_text[0], mode: tl_mode).to_str(response)
-    response << "\n" << zh_text[0]
-
-    1.upto(zh_text.size - 1) do |i|
-      para = zh_text.unsafe_fetch(i)
-      response << "\n"
-      cvmtl.cv_plain(para, mode: tl_mode).to_str(response)
-      response << "\n" << para
-    end
+    lines = zhbook.chtext(chidx - 1, cpart, privi: 0)
+    convert(zhbook, chinfo, lines, cpart, response)
   end
 
-  private def convert(dname, lines : Array(String), mode = 2)
-    cvmtl = MtCore.generic_mtl(dname, _cv_user.uname)
+  private def text_not_found!(status = 404)
+    halt! 404, "Chương tiết không tồn tại!"
+  end
 
-    String.build do |io|
-      cvmtl.cv_title_full(lines[0], mode: mode).to_str(io)
+  private def convert(zhbook, chinfo, lines, cpart, output : IO)
+    return if lines.empty?
 
-      1.upto(lines.size - 1) do |i|
-        io << "\n"
-        para = lines.unsafe_fetch(i)
-        cvmtl.cv_plain(para, mode: mode).to_str(io)
-      end
+    cvmtl = MtCore.generic_mtl(zhbook.binfo.bhash, _cv_user.uname)
+    mode = _cv_user.tlmode
+
+    cvmtl.cv_title_full(lines[0], mode: mode).to_str(output)
+    output << "\t" << "  (#{cpart + 1}/#{chinfo.parts})"
+
+    1.upto(lines.size - 1) do |i|
+      line = lines.unsafe_fetch(i)
+      output << "\n"
+      cvmtl.cv_plain(line, mode: mode).to_str(output)
     end
   end
 
   def upsert
-    return halt!(500, "Quyền hạn không đủ!") if _cv_user.privi < 2
+    return 403, "Unsupported"
+    # return halt!(500, "Quyền hạn không đủ!") if _cv_user.privi < 2
+    # zhbook = load_zhbook
+    # chidx = params.fetch_int("chidx") { 1 }
 
-    zhbook = load_zhbook
-    chidx = params.fetch_int("chidx") { 1 }
+    # label = params.fetch_str("label")
+    # label = "" if label == "正文"
 
-    label = params.fetch_str("label")
-    label = "" if label == "正文"
+    # input = params.fetch_str("input")
+    # lines = TextUtils.split_text(input, false)
 
-    input = params.fetch_str("input")
-    lines = TextUtils.split_text(input, false)
+    # chaps = split_chaps(lines, label)
 
-    chaps = split_chaps(lines, label)
+    # chmax = zhbook.chap_count + 1
+    # chidx = chmax if chidx < 1 || chidx > chmax
 
-    chmax = zhbook.chap_count + 1
-    chidx = chmax if chidx < 1 || chidx > chmax
+    # infos = chaps.map_with_index(chidx - 1) do |chap, index|
+    #   schid = zhbook.get_schid(index)
+    #   zhbook.chtext(index, schid).set_zh!(chap.lines)
+    #   zhbook.set_chap!(index, schid, chap.title, chap.label).not_nil!
+    # end
 
-    infos = chaps.map_with_index(chidx - 1) do |chap, index|
-      schid = zhbook.get_schid(index)
-      zhbook.chtext(index, schid).set_zh!(chap.lines)
-      zhbook.set_chap!(index, schid, chap.title, chap.label).not_nil!
-    end
+    # chmax = chidx + chaps.size - 1
 
-    chmax = chidx + chaps.size - 1
+    # if chmax > zhbook.chap_count
+    #   zhbook.bumped = Time.utc.to_unix
+    #   zhbook.mftime = zhbook.bumped if zhbook.zseed == 0
+    #   zhbook.last_schid = infos.last[0]
+    #   zhbook.chap_count = chmax
+    #   zhbook.save!
+    # end
 
-    if chmax > zhbook.chap_count
-      zhbook.bumped = Time.utc.to_unix
-      zhbook.mftime = zhbook.bumped if zhbook.zseed == 0
-      zhbook.last_schid = infos.last[0]
-      zhbook.chap_count = chmax
-      zhbook.save!
-    end
+    # zhbook.reset_trans!(chmax, chidx)
 
-    zhbook.reset_trans!(chmax, chidx)
-
-    render_json({msg: "ok", chidx: chidx.to_s, uslug: infos.first[3]})
+    # render_json({msg: "ok", chidx: chidx.to_s, uslug: infos.first[3]})
   rescue err
     puts "- Error loading chtext: #{err}"
     halt!(500, err.message)

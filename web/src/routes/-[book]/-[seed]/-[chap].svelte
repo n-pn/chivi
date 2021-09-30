@@ -6,20 +6,13 @@
     const { cvbook, ubmemo } = context
 
     const { seed: sname, chap } = params
-    const chidx = chap.split('-').pop()
+    const [chidx, cpart = 0] = chap.split('-').pop().split('.')
 
-    const url = `chaps/${cvbook.id}/${sname}/${chidx}`
+    const url = `chaps/${cvbook.id}/${sname}/${chidx}/${+cpart}`
     const [status, chinfo] = await api_call(fetch, url)
+
     if (status) return { status, error: chinfo }
-
-    const txturl = `/api/${url}/${chinfo.schid}`
-
-    const res = await fetch(txturl)
-    const cvdata = await res.text()
-
-    return {
-      props: { cvbook, ubmemo, chinfo, txturl, cvdata },
-    }
+    return { props: { cvbook, ubmemo, chinfo } }
   }
 </script>
 
@@ -38,32 +31,38 @@
   export let ubmemo
   export let chinfo
 
-  export let txturl = ''
-  export let cvdata = ''
-
   let _dirty = false
-  $: if (_dirty) reload_chap(1)
+  $: if (_dirty) reload_chap(false)
 
   $: [book_path, list_path, prev_path, next_path] = gen_paths(cvbook, chinfo)
 
-  let _reload = false
+  $: api_url = gen_api_url(cvbook, chinfo)
 
-  async function reload_chap(mode = 1) {
+  function gen_api_url({ id: book_id }, { sname, chidx, cpart }) {
+    return `/api/chaps/${book_id}/${sname}/${chidx}/${cpart}`
+  }
+
+  async function reload_chap(full = false) {
     _dirty = false
     if ($session.privi < 1) return
 
-    _reload = true
-    const res = await fetch(txturl + '?mode=' + mode)
-    if (res.ok) cvdata = await res.text()
-    _reload = false
+    if (full) {
+      const res = await fetch(api_url)
+      if (res.ok) chinfo = await res.json()
+    } else {
+      const res = await fetch(api_url + '/text')
+      if (res.ok) chinfo.cvdata = await res.text()
+      else console.log(res.status)
+    }
   }
 
-  function gen_paths({ bslug }, { sname, chidx, prev_url, next_url }) {
+  function gen_paths({ bslug }, { sname, chidx, _prev, _next }) {
     const book_path = gen_book_path(bslug, sname, 0)
     const list_path = gen_book_path(bslug, sname, chidx)
 
-    const prev_path = prev_url ? `/-${bslug}/${prev_url}` : book_path
-    const next_path = next_url ? `/-${bslug}/${next_url}` : list_path
+    const base_path = `/-${bslug}/-${sname}/`
+    const prev_path = _prev ? `${base_path}-${_prev}` : book_path
+    const next_path = _next ? `${base_path}-${_next}` : list_path
 
     return [book_path, list_path, prev_path, next_path]
   }
@@ -136,12 +135,17 @@
   <nav class="bread">
     <a href="/-{cvbook.bslug}" class="crumb _link">{cvbook.vtitle}</a>
     <span>/</span>
-    <span class="crumb _text">{chinfo.label}</span>
+    <span class="crumb _text">{chinfo.chvol}</span>
   </nav>
 
   <article class="cvdata">
-    {#if cvdata}
-      <Cvdata {cvdata} dname={cvbook.bhash} label={cvbook.vtitle} bind:_dirty />
+    {#if chinfo.cvdata}
+      <Cvdata
+        cvdata={chinfo.cvdata}
+        zhtext={chinfo.zhtext}
+        dname={cvbook.bhash}
+        label={cvbook.vtitle}
+        bind:_dirty />
     {:else}
       <Notext {chinfo} />
     {/if}
@@ -151,7 +155,7 @@
     <a
       href={prev_path}
       class="m-button navi-item"
-      class:_disable={!chinfo.prev_url}
+      class:_disable={!chinfo._prev}
       data-kbd="j">
       <SIcon name="chevron-left" />
       <span>Trước</span>
@@ -169,7 +173,7 @@
           disabled={$session.privi < 1}
           on:click={reload_chap}
           data-kbd="r">
-          <SIcon name="rotate-clockwise" spin={_reload} />
+          <SIcon name="rotate-clockwise" />
           <span>Dịch lại</span>
         </button>
 
@@ -177,7 +181,7 @@
           <button
             class="-item"
             disabled={$session.privi < 1}
-            on:click={() => reload_chap(2)}>
+            on:click={() => reload_chap(true)}>
             <SIcon name="rotate-rectangle" />
             <span>Tải lại nguồn</span>
           </button>
@@ -213,7 +217,7 @@
     <a
       href={next_path}
       class="m-button _fill navi-item"
-      class:_primary={chinfo.next_url}
+      class:_primary={chinfo.next}
       data-kbd="k">
       <span>Kế tiếp</span>
       <SIcon name="chevron-right" />

@@ -28,8 +28,8 @@ Amber::Server.configure do
     get "/books/:bslug", CV::BookCtrl, :show
 
     get "/chaps/:book/:sname", CV::ChapCtrl, :index
-    get "/chaps/:book/:sname/:chidx", CV::ChapCtrl, :show
-    get "/chaps/:book/:sname/:chidx/:schid", CV::ChapCtrl, :text
+    get "/chaps/:book/:sname/:chidx/:cpart", CV::ChapCtrl, :show
+    get "/chaps/:book/:sname/:chidx/:cpart/text", CV::ChapCtrl, :text
     post "/chaps/:book/:sname", CV::ChapCtrl, :upsert
 
     get "/crits", CV::CritCtrl, :index

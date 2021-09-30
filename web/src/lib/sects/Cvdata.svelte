@@ -17,6 +17,8 @@
   import read_selection from '$utils/read_selection'
 
   export let cvdata = ''
+  export let zhtext = []
+
   export let _dirty = false
   export let wtitle = true
 
@@ -25,8 +27,8 @@
 
   $: lines = split_mtdata(cvdata)
 
-  let hover_line = -1
-  let focus_line = -1
+  let hover_line = 0
+  let focus_line = 0
   let focus_word = null
 
   let selected = []
@@ -34,7 +36,7 @@
     const action = document.addEventListener('selectionchange', () => {
       if (hover_line < 0) return
       const [lower, upper] = read_selection()
-      if (upper > 0) selected = [lines[hover_line].orig, lower, upper]
+      if (upper > 0) selected = [zhtext[hover_line], lower, upper]
     })
 
     return () => document.removeEventListener('selectionchange', action)
@@ -46,8 +48,7 @@
 
     const lower = +target.dataset.i
     const upper = lower + +target.dataset.l
-    const mt_data = lines[index]
-    selected = [mt_data.orig, lower, upper]
+    selected = [zhtext[index], lower, upper]
 
     if (target === focus_word) {
       upsert_activate(selected, 0)

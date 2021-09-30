@@ -30,6 +30,10 @@ class CV::RamCache(K, V)
     @cache[key] = Entry(V).new(value, Time.utc + @ttl)
   end
 
+  def delete(key : K)
+    @cache.delete(key)
+  end
+
   private def new_cache
     Hash(K, Entry(V)).new(initial_capacity: @limit)
   end

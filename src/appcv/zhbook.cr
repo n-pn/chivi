@@ -1,5 +1,6 @@
 require "../cutil/core_utils"
 require "../cutil/site_link"
+require "../libcv/mt_core"
 
 class CV::Zhbook
   include Clear::Model
@@ -25,90 +26,157 @@ class CV::Zhbook
 
   timestamps
 
-  getter chinfo : ChInfo { ChInfo.new(cvbook.bhash, sname, snvid) }
-
   getter wlink : String { SiteLink.binfo_url(sname, snvid) }
+  getter cvmtl : MtCore { MtCore.generic_mtl(binfo.bhash) }
 
   def clink(schid : String) : String
     SiteLink.chtxt_url(sname, snvid, schid)
   end
+
+  getter binfo : Cvbook { Cvbook.load!(self.cvbook_id) }
 
   def unmatch?(cvbook_id : Int64) : Bool
     cvbook_id_column.value(0) != cvbook_id
   end
 
   def refresh!(privi = 4, mode = 0, ttl = 5.minutes) : Tuple(Int64, Int32)
-    chinfo.reset_trans!(rmin: 1) if privi > 2
     return {mftime, chap_count} unless mode > 0 && remote?(privi)
 
     RmInfo.mkdir!(sname)
     parser = RmInfo.init(sname, snvid, ttl: ttl)
 
     if mode > 1 || parser.last_schid != self.last_schid
-      self.mftime = parser.mftime > 0 ? parser.mftime : Time.utc.to_unix
+      self.mftime = parser.mftime if parser.mftime > 0
 
       self.chap_count = parser.chap_list.size
       self.last_schid = parser.last_schid
       self.bumped = Time.utc.to_unix
 
-      chinfo.save_seeds!(parser.chap_list)
-      chinfo.reset_trans!(rmin: 1)
+      Chlist.save!(sname, snvid, parser.chap_list, redo: privi > 3)
+      Chpage.forget!(sname, snvid, Chpage.pgidx(chap_count - 1))
 
       self.save!
-      Cvbook.load!(self.cvbook_id).tap(&.set_mftime(self.mftime)).save!
+      binfo.tap(&.set_mftime(self.mftime)).save! # unless sname == "hetushu"
     end
 
     {mftime, chap_count}
   end
 
-  def remote?(privi : Int32 = 4)
-    case sname
-    when "chivi", "zxcs_me"
-      false
-    when "5200", "bqg_5200", "rengshu", "nofff"
-      true
-    when "hetushu", "biqubao", "bxwxorg", "xbiquge", "69shu"
-      privi >= 0 || old_enough?
-    when "zhwenpg", "paoshu8", "duokan8"
-      privi >= 1 || old_enough?
-    when "shubaow", "jx_la"
-      privi > 3 && ENV["AMBER_ENV"]? != "production"
-    else
-      privi > 1
-    end
-  end
-
-  def remote_text?(chidx : Int32, privi : Int32 = 4)
-    case sname
-    when "chivi", "zxcs_me"
-      false
-    when "5200", "bqg_5200", "rengshu", "nofff"
-      true
-    when "hetushu", "biqubao", "bxwxorg", "xbiquge", "69shu"
-      privi >= 0 || public_chap?(chidx)
-    when "zhwenpg", "paoshu8", "duokan8"
-      privi >= 1 || (privi >= 0 && public_chap?(chidx))
-    when "shubaow", "jx_la"
-      privi > 3 && ENV["AMBER_ENV"]? != "production"
-    else
-      privi > 1 || (privi >= 0 && public_chap?(chidx))
-    end
+  def remote?(privi = 4)
+    Zhseed.remote?(sname, privi, old_enough?)
   end
 
   def old_enough?
     return false if Time.unix(self.bumped) >= Time.utc - 30.minutes
-    Time.unix(self.mftime) < Time.utc - (status < 1 ? 3.days : 3.weeks)
+    Time.unix(self.mftime) < Time.utc - (status < 1 ? 2.days : 4.weeks)
+  end
+
+  def reset_pages!(chmax = self.chap_count, chmin = chmax - 1)
+    pgmin = Chpage.pgidx(chmin - 1)
+    pgmax = Chpage.pgidx(chmax - 1)
+    (pgmin..pgmax).each { |pgidx| Chpage.forget!(sname, snvid, pgidx) }
+  end
+
+  def chlist(group : Int32)
+    Chlist.load!(sname, snvid, group)
+  end
+
+  def chpage(pgidx : Int32)
+    Chpage.load!(sname, snvid, pgidx) do
+      chlist = self.chlist(pgidx // 4)
+      chpage = [] of Chpage
+
+      start = pgidx * Chpage::PSIZE
+      (start + 1).upto(start + Chpage::PSIZE) do |chidx|
+        break unless chinfo = chlist.get(chidx.to_s)
+
+        chpage << Chpage.new(chinfo, chidx).trans!(cvmtl)
+      end
+
+      chpage
+    end
+  end
+
+  def lastpg
+    Chpage.load!(sname, snvid, -1) do
+      chpage = [] of Chpage
+      chidx = chap_count - 1
+
+      4.times do
+        break if chidx < 0
+        chlist = self.chlist(Chlist.pgidx(chidx - 1))
+
+        break unless chinfo = chlist.get(chidx.to_s)
+        chpage << Chpage.new(chinfo, chidx).trans!(cvmtl)
+
+        chidx += 1
+      end
+
+      chpage
+    end
+  end
+
+  def chinfo(index : Int32) # provide real chap index
+    chpage(Chpage.pgidx(index))[index % Chpage::PSIZE]?
+  end
+
+  def chap_url(chidx : Int32, part = 0)
+    return unless chinfo = self.chinfo(chidx - 1)
+    chap_url = "#{chinfo.uslug}-#{chidx}"
+
+    case part
+    when  0 then chap_url
+    when -1 then "#{chap_url}.#{chinfo.parts - 1}"
+    else         "#{chap_url}.#{part}"
+    end
+  end
+
+  def chtext(index : Int32, part = 0, privi = 4, reset = false)
+    return [] of String unless chinfo = self.chinfo(index)
+
+    chtext = Chtext.load(sname, snvid, chinfo)
+    lines, utime = chtext.load!(part)
+
+    if remote_text?(index, privi) && (reset || lines.empty?)
+      lines, _ = chtext.fetch!(part, reset ? 3.minutes : 30.years)
+      update_stats!(chtext.infos)
+    elsif chinfo.utime < utime || chinfo.parts == 0
+      # check if text existed in zip file but not stored in index
+      update_stats!(chtext.infos, chtext.remap!)
+    end
+
+    lines
+  end
+
+  def remote_text?(chidx : Int32, privi : Int32 = 4)
+    Zhseed.remote?(sname, privi, public_chap?(chidx))
   end
 
   def public_chap?(chidx : Int32)
-    chidx <= 40 || chidx >= self.chap_count - 5
+    chidx < 40 || chidx >= self.chap_count - 5
   end
 
-  def reset_trans!(chmin : Int32, chmax = self.chap_count)
-    pgmax = chinfo.get_page(chmax - 1)
-    pgmin = chinfo.get_page(chmin - 1)
-    chinfo.reset_trans!(pgmax, pgmin)
+  def update_stats!(chinfo : Chpage, chtitle : String? = nil) : Nil
+    chlist = self.chlist(Chlist.pgidx(chinfo.chidx - 1))
+
+    index = chinfo.chidx.to_s
+    stats = chlist.get(index).try(&.first(3)) || [chinfo.schid, chtitle, ""]
+    puts stats
+
+    stats << chinfo.utime.to_s << chinfo.chars.to_s << chinfo.parts.to_s
+    puts stats
+
+    chlist.set!(index, stats)
+    return unless chlist.unsaved > 0
+
+    chlist.save!
+
+    pgidx = Chpage.pgidx(chinfo.chidx - 1)
+    vfile = Chpage.path(sname, snvid, pgidx)
+    Chpage.save!(vfile, chpage(pgidx))
   end
+
+  ###########################
 
   def self.upsert!(zseed : Int32, snvid : String)
     find({zseed: zseed, snvid: snvid}) || new({zseed: zseed, snvid: snvid})
@@ -130,7 +198,7 @@ class CV::Zhbook
 
   def self.load!(cvbook : Cvbook, zseed : Int32) : self
     CACHE[cvbook.id << 6 | zseed] ||= find(cvbook.id, zseed) || begin
-      zseed == 0 ? dummy(cvbook) : raise "Zhbook not found!"
+      zseed == 0 ? dummy_local(cvbook) : raise "Zhbook not found!"
     end
   end
 
@@ -146,7 +214,7 @@ class CV::Zhbook
     ChText.load(cvbook.bhash, sname, snvid, index, schid)
   end
 
-  def self.dummy(cvbook : Cvbook)
+  def self.dummy_local(cvbook : Cvbook)
     new({
       cvbook_id: cvbook.id,
 

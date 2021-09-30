@@ -28,18 +28,21 @@ module CV::Zhseed
     SNAMES.index(sname) || 0
   end
 
-  def remote?(sname : String, privi : Int32 = 4)
+  def remote?(sname : String, privi : Int32 = 4, special_case = false)
     case sname
-    when "chivi", "zxcs_me"
-      false
+    when "chivi", "zxcs_me" then false
     when "5200", "bqg_5200", "rengshu", "nofff"
-      true
+      privi >= 0 || special_case
     when "hetushu", "biqubao", "bxwxorg", "xbiquge"
-      privi > 0
+      privi >= 1 || special_case
     when "zhwenpg", "69shu", "paoshu8", "duokan8"
-      privi > 1
+      privi >= 2 || special_case
+    when "shubaow"
+      privi >= 3 && ENV["AMBER_ENV"]? != "production"
+    when "jx_la"
+      privi >= 4
     else
-      privi > 3
+      privi >= 1
     end
   end
 end
