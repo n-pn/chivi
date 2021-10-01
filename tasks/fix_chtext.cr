@@ -127,7 +127,7 @@ class CV::FixData
         end
 
         if chidx = need_remap[snvid]?
-          stats = chlist.get(chidx).not_nil!
+          stats = chlist.get(chidx).not_nil!.first(3)
           stats << utimes[snvid].to_s << tchars[snvid].to_s << parts.to_s
           chlist.set!(chidx, stats)
         end
