@@ -39,16 +39,23 @@ class CV::Chtext
 
   NOTFOUND = {[] of String, 0_i64}
 
+  SAFEMARK = Time.utc(2021, 10, 1, 11, 40, 0).to_unix
+
   def read!(part = 0) : Tuple(Array(String), Int64)
     return NOTFOUND unless File.exists?(@store)
 
     Compress::Zip::File.open(@store) do |zip|
       return NOTFOUND unless entry = zip[part_path(part)]?
 
+      mtime = entry.time.to_unix
       lines = entry.open(&.gets_to_end).split('\n')
-      lines.unshift(title) if part > 0
 
-      {lines, entry.time.to_unix}
+      unless part == 0 || mtime >= SAFEMARK || lines[0]? == title
+        lines.unshift(title)
+        save_part!(lines, part)
+      end
+
+      {lines, mtime}
     end
   end
 
@@ -104,6 +111,7 @@ class CV::Chtext
       count += line.size
       next if count < limit
 
+      lines.unshift(title) if parts > 0
       save_part!(lines, parts)
       parts += 1
 
@@ -112,6 +120,7 @@ class CV::Chtext
     end
 
     unless lines.empty?
+      lines.unshift(title) if parts > 0
       save_part!(lines, parts)
       parts += 1
     end
