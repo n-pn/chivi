@@ -1,6 +1,7 @@
 require "../cutil/core_utils"
 require "../cutil/site_link"
 require "../libcv/mt_core"
+require "../seeds/rm_info"
 
 class CV::Zhbook
   include Clear::Model

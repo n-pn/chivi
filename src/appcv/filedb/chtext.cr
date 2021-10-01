@@ -39,8 +39,6 @@ class CV::Chtext
 
   NOTFOUND = {[] of String, 0_i64}
 
-  SAFEMARK = Time.utc(2021, 10, 1, 11, 40, 0).to_unix
-
   def read!(part = 0) : Tuple(Array(String), Int64)
     return NOTFOUND unless File.exists?(@store)
 
@@ -49,11 +47,6 @@ class CV::Chtext
 
       mtime = entry.time.to_unix
       lines = entry.open(&.gets_to_end).split('\n')
-
-      unless part == 0 || mtime >= SAFEMARK || lines[0]? == title
-        lines.unshift(title)
-        save_part!(lines, part)
-      end
 
       {lines, mtime}
     end
