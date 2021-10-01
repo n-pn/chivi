@@ -8,13 +8,11 @@ class CV::ChapCtrl < CV::BaseCtrl
   end
 
   def index
-    zhbook = load_zhbook
     pgidx = params.fetch_int("page", min: 1)
+    imode = params.fetch_int("mode", min: 0, max: cu_privi)
 
-    crmode = params.fetch_int("mode", min: 0, max: cu_privi)
-    zhbook.reset_pages!(chmin: 1) if cu_privi > 2
-
-    utime, total = zhbook.refresh!(cu_privi, crmode)
+    zhbook = load_zhbook
+    utime, total = zhbook.refresh!(cu_privi, imode)
 
     render_json do |res|
       JSON.build(res) do |jb|

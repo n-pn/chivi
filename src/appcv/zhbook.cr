@@ -40,7 +40,10 @@ class CV::Zhbook
   end
 
   def refresh!(privi = 4, mode = 0, ttl = 5.minutes) : Tuple(Int64, Int32)
-    return {mftime, chap_count} unless mode > 0 && remote?(privi)
+    unless mode > 0 && remote?(privi)
+      reset_pages!(chmin: 1) if privi > 1
+      return {mftime, chap_count}
+    end
 
     RmInfo.mkdir!(sname)
     parser = RmInfo.init(sname, snvid, ttl: ttl)
@@ -48,16 +51,20 @@ class CV::Zhbook
     if mode > 1 || parser.last_schid != self.last_schid
       self.mftime = parser.mftime if parser.mftime > 0
 
+      old_chap_count = chap_count
       self.chap_count = parser.chap_list.size
+
       self.last_schid = parser.last_schid
       self.bumped = Time.utc.to_unix
 
       Chlist.save!(sname, snvid, parser.chap_list, redo: privi > 0)
       Chpage.forget!(sname, snvid, -1)
-      Chpage.forget!(sname, snvid, Chpage.pgidx(chap_count - 1))
+      reset_pages!(chmin: old_chap_count)
 
       self.save!
       cvbook.tap(&.set_mftime(self.mftime)).save! # unless sname == "hetushu"
+    else
+      reset_pages!(chmin: 1) if privi > 1
     end
 
     {mftime, chap_count}
@@ -151,9 +158,8 @@ class CV::Zhbook
 
     chlist.save!
 
-    pgidx = Chpage.pgidx(chinfo.chidx - 1)
-    vfile = Chpage.path(sname, snvid, pgidx)
-    Chpage.save!(vfile, chpage(pgidx))
+    Chpage.forget!(sname, snvid, Chpage.pgidx(chinfo.chidx - 1))
+    Chpage.forget!(sname, snvid, -1) if chinfo.chidx > chap_count - 4
   end
 
   def chap_url(chidx : Int32, part = 0)
