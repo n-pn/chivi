@@ -3,22 +3,21 @@
   import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
   export async function load({ fetch, page: { params }, context }) {
-    const { cvbook, ubmemo } = context
+    const { cvbook } = context
 
     const { seed: sname, chap } = params
     const [chidx, cpart = 0] = chap.split('-').pop().split('.')
 
     const url = `chaps/${cvbook.id}/${sname}/${chidx}/${+cpart}`
-    const [status, chinfo] = await api_call(fetch, url)
-    if (status) return { status, error: chinfo }
-    return { props: { cvbook, ubmemo, chinfo } }
+    const [status, data] = await api_call(fetch, url)
+
+    if (status) return { status, error: data }
+    return { props: { cvbook, ...data } }
   }
 </script>
 
 <script>
-  import { browser } from '$app/env'
   import { session } from '$app/stores'
-  import { invalidate } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
   import CMenu from '$molds/CMenu.svelte'
@@ -28,13 +27,17 @@
 
   export let cvbook
   export let ubmemo
+
+  export let chmeta
   export let chinfo
+
+  export let zhtext
+  export let cvdata
 
   let _dirty = false
   $: if (_dirty) reload_chap(false)
 
-  $: [book_path, list_path, prev_path, next_path] = gen_paths(cvbook, chinfo)
-
+  $: paths = gen_paths(cvbook, chmeta, chinfo)
   $: api_url = gen_api_url(cvbook, chinfo)
 
   function gen_api_url({ id: book_id }, { sname, chidx, cpart }) {
@@ -55,15 +58,15 @@
     }
   }
 
-  function gen_paths({ bslug }, { sname, chidx, _prev, _next }) {
-    const book_path = gen_book_path(bslug, sname, 0)
-    const list_path = gen_book_path(bslug, sname, chidx)
+  function gen_paths({ bslug }, { sname, _prev, _next }, { chidx }) {
+    const home = gen_book_path(bslug, sname, 0)
+    const list = gen_book_path(bslug, sname, chidx)
 
-    const base_path = `/-${bslug}/-${sname}/`
-    const prev_path = _prev ? `${base_path}-${_prev}` : book_path
-    const next_path = _next ? `${base_path}-${_next}` : list_path
+    const base = `/-${bslug}/-${sname}/`
+    const prev = _prev ? `${base}-${_prev}` : home
+    const next = _next ? `${base}-${_next}` : list
 
-    return [book_path, list_path, prev_path, next_path]
+    return { home, list, prev, next }
   }
 
   function gen_book_path(bslug, sname, chidx) {
@@ -72,37 +75,25 @@
     return page > 1 ? url + `?page=${page}` : url
   }
 
-  $: on_memory = ubmemo.chidx == chinfo.chidx && ubmemo.sname == chinfo.sname
-  $: memo_icon = ubmemo.locked ? `bookmark${on_memory ? '' : '-off'}` : 'menu-2'
-
-  $: if (browser && !on_memory) update_history(chinfo, false)
-
-  async function update_history({ sname, chidx, title, uslug }, locking) {
-    // console.log(ubmemo)
-
-    // guard checking
-    if ($session.privi < 0) {
-      // do not save history unless logged in
-      return
-    } else if (ubmemo.chidx == chidx && ubmemo.sname == sname) {
-      // do not save history if there is no change
-      if (ubmemo.locked == locking) return
-    } else {
-      // do not save history if history is locked unless changing lock cursor
-      if (ubmemo.locked && !locking) return
-    }
+  async function update_history(lock, chmeta, chinfo) {
+    const { sname } = chmeta
+    const { chidx, title, uslug } = chinfo
 
     const url = `/api/_self/books/${cvbook.id}/access`
-    const params = { sname, chidx, title, uslug, locked: locking }
+    const params = { sname, chidx, title, uslug, locked: lock }
 
     const [stt, msg] = await put_fetch(fetch, url, params)
-    if (stt) return console.log(`Error update history: ${msg}`)
+    if (stt) console.log(`Error update history: ${msg}`)
+    else ubmemo = msg
+  }
 
-    // TODO: figure out how to update ubmemo instead of reloading book info everytime
-    invalidate(`/api/books/${cvbook.bslug}`)
+  $: on_memory = check_memo(ubmemo)
+  // prettier-ignore
+  $: memo_icon = !ubmemo.locked ? 'menu-2' : on_memory ? 'bookmark' : 'bookmark-off'
 
-    ubmemo = msg
-    // console.log(ubmemo)
+  function check_memo(ubmemo) {
+    if (ubmemo.sname != chmeta.sname) return false
+    return ubmemo.chidx == chinfo.chidx && ubmemo.cpart == chmeta.cpart
   }
 </script>
 
@@ -112,13 +103,13 @@
 
 <Vessel>
   <svelte:fragment slot="header-left">
-    <a href={book_path} class="header-item _title">
+    <a href={paths.home} class="header-item _title">
       <SIcon name="book" />
       <span class="header-text _show-sm _title">{cvbook.vtitle}</span>
     </a>
 
     <button class="header-item _active">
-      <span class="header-text _seed">[{chinfo.sname}]</span>
+      <span class="header-text _seed">[{chmeta.sname}]</span>
     </button>
   </svelte:fragment>
 
@@ -140,10 +131,10 @@
   </nav>
 
   <article class="cvdata">
-    {#if chinfo.cvdata}
+    {#if cvdata}
       <Cvdata
-        cvdata={chinfo.cvdata}
-        zhtext={chinfo.zhtext}
+        {cvdata}
+        {zhtext}
         dname={cvbook.bhash}
         label={cvbook.vtitle}
         bind:_dirty />
@@ -154,9 +145,9 @@
 
   <div class="navi" slot="footer">
     <a
-      href={prev_path}
+      href={paths.prev}
       class="m-button navi-item"
-      class:_disable={!chinfo._prev}
+      class:_disable={!chmeta._prev}
       data-kbd="j">
       <SIcon name="chevron-left" />
       <span>Trước</span>
@@ -165,7 +156,7 @@
     <CMenu class="navi-item" loc="top">
       <div class="m-button" slot="trigger">
         <SIcon name={memo_icon} />
-        <span>{chinfo.chidx}/{chinfo.total}</span>
+        <span>{chinfo.chidx}/{chmeta.total}</span>
       </div>
 
       <svelte:fragment slot="content">
@@ -192,7 +183,7 @@
           <button
             class="-item"
             disabled={$session.privi < 0}
-            on:click={() => update_history(chinfo, false)}
+            on:click={() => update_history(false, chmeta, chinfo)}
             data-kbd="p">
             <SIcon name="bookmark-off" />
             <span>Bỏ đánh dấu</span>
@@ -201,14 +192,14 @@
           <button
             class="-item"
             disabled={$session.privi < 0}
-            on:click={() => update_history(chinfo, true)}
+            on:click={() => update_history(true, chmeta, chinfo)}
             data-kbd="p">
             <SIcon name="bookmark" />
             <span>Đánh dấu</span>
           </button>
         {/if}
 
-        <a href={list_path} class="-item" data-kbd="h">
+        <a href={paths.list} class="-item" data-kbd="h">
           <SIcon name="list" />
           <span>Mục lục</span>
         </a>
@@ -216,9 +207,9 @@
     </CMenu>
 
     <a
-      href={next_path}
+      href={paths.next}
       class="m-button _fill navi-item"
-      class:_primary={chinfo.next}
+      class:_primary={chmeta._next}
       data-kbd="k">
       <span>Kế tiếp</span>
       <SIcon name="chevron-right" />

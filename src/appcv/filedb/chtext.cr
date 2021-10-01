@@ -107,7 +107,7 @@ class CV::Chtext
       save_part!(lines, parts)
       parts += 1
 
-      lines.clear
+      lines = [] of String
       count = 0
     end
 

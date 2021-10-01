@@ -55,24 +55,28 @@ class CV::ChapCtrl < CV::BaseCtrl
     imode = params.fetch_int("mode", min: 0, max: privi)
     lines = zhbook.chtext(chidx - 1, cpart, privi: privi, reset: imode > 1)
 
+    ubmemo = Ubmemo.find_or_new(_cv_user.id, zhbook.cvbook_id)
+    if privi >= 0 && !ubmemo.locked
+      ubmemo.mark!(zhbook.zseed, chinfo.chidx, chinfo.title, chinfo.uslug, cpart)
+    end
+
     json_view do |jb|
       jb.object {
-        jb.field "sname", zhbook.sname
-        jb.field "total", zhbook.chap_count
+        jb.field "chmeta" {
+          jb.object {
+            jb.field "sname", zhbook.sname
+            jb.field "total", zhbook.chap_count
 
-        jb.field "_prev", cpart == 0 ? zhbook.chap_url(chidx - 1, -1) : zhbook.chap_url(chidx, cpart - 1)
-        jb.field "_next", cpart + 1 < chinfo.parts ? zhbook.chap_url(chidx, cpart + 1) : zhbook.chap_url(chidx + 1)
+            jb.field "clink", zhbook.clink(chinfo.schid)
+            jb.field "cpart", cpart
 
-        jb.field "chidx", chidx
-        jb.field "cpart", cpart
-        jb.field "clink", zhbook.clink(chinfo.schid)
+            jb.field "_prev", cpart == 0 ? zhbook.chap_url(chidx - 1, -1) : zhbook.chap_url(chidx, cpart - 1)
+            jb.field "_next", cpart + 1 < chinfo.parts ? zhbook.chap_url(chidx, cpart + 1) : zhbook.chap_url(chidx + 1)
+          }
+        }
 
-        jb.field "utime", chinfo.utime
-        jb.field "parts", chinfo.parts
-
-        jb.field "title", chinfo.title
-        jb.field "chvol", chinfo.chvol
-        jb.field "uslug", chinfo.uslug
+        jb.field "chinfo" { chinfo.to_json(jb) }
+        jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
 
         jb.field "zhtext", lines
         jb.field "cvdata" {

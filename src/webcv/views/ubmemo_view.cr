@@ -8,6 +8,7 @@ module CV::UbmemoView
 
       jb.field "sname", obj.lr_sname
       jb.field "chidx", obj.lr_chidx
+      jb.field "cpart", obj.lr_cpart
 
       jb.field "title", obj.lc_title
       jb.field "uslug", obj.lc_uslug

@@ -49,17 +49,16 @@ class CV::MemoCtrl < CV::BaseCtrl
     raise "Người dùng chưa đăng nhập!" if _cv_user.privi < 0
 
     cvbook_id = params["book_id"].to_i64
+    ubmemo = Ubmemo.find_or_new(_cv_user.id, cvbook_id)
 
-    ubmemo = Ubmemo.upsert!(_cv_user.id, cvbook_id) do |memo|
-      memo.bumped = Time.utc.to_unix
-      memo.locked = params["locked"]? == "true"
-
-      memo.lr_zseed = Zhseed.index(params.fetch_str("sname", "chivi"))
-      memo.lr_chidx = params.fetch_int("chidx")
-
-      memo.lc_title = params.fetch_str("title")
-      memo.lc_uslug = params.fetch_str("uslug")
-    end
+    ubmemo.mark!(
+      Zhseed.index(params["sname"]? || ""),
+      params.fetch_int("chidx"),
+      params.fetch_str("title"),
+      params.fetch_str("uslug"),
+      params.fetch_int("cpart"),
+      params["locked"]? == "true"
+    )
 
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
