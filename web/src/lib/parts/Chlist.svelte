@@ -23,7 +23,7 @@
   {#each chaps as chap}
     <div class="list-item">
       <a
-        href={kit_chap_url(bslug, { ...chap, cpart: track_cpart(chap) })}
+        href={kit_chap_url(bslug, { ...chap, sname, cpart: track_cpart(chap) })}
         class="chap"
         class:_active={is_marked(chap)}>
         <div class="chap-text">
