@@ -15,7 +15,10 @@ class CV::FixData
 
   def run!(redo = false)
     inp_file = "#{@inp_dir}/_id.tsv"
-    return unless File.exists?(inp_file)
+    unless File.exists?(inp_file)
+      FileUtils.rmdir(@inp_dir) if Dir.empty?(@inp_dir)
+      return
+    end
 
     import_old_info!(inp_file)
     fix_splited_texts!
