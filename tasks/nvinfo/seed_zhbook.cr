@@ -156,7 +156,7 @@ class CV::SeedZhbook
     when "hetushu"  then "https://www.hetushu.com/book/index.php"
     when "rengshu"  then "http://www.rengshu.com/"
     when "xbiquge"  then "https://www.xbiquge.so/"
-    when "biqubao"  then "https://www.biqubao.com/"
+    when "biqubao"  then "https://www.biqugee.com/"
     when "5200"     then "https://www.5200.tv/"
     when "duokan8"  then "http://www.duokan8.com/"
     when "nofff"    then "https://www.nofff.com/"
