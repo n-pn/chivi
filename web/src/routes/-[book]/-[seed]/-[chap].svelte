@@ -9,10 +9,10 @@
     const [chidx, cpart = 0] = chap.split('-').pop().split('.')
 
     const url = `chaps/${cvbook.id}/${sname}/${chidx}/${+cpart}`
-    const [status, data] = await api_call(fetch, url)
+    const [status, cvchap] = await api_call(fetch, url)
 
-    if (status) return { status, error: data }
-    return { props: { cvbook, ...data } }
+    if (status) return { status, error: cvchap }
+    return { props: { cvbook, ...cvchap } }
   }
 </script>
 
@@ -51,10 +51,16 @@
 
     if (full) {
       const res = await fetch(api_url + '?mode=2')
-      if (res.ok) chinfo = await res.json()
+      if (!res.ok) return console.log('Error: ' + (await res.text()))
+      const data = await res.json()
+      ubmemo = data.ubmemo
+      chmeta = data.chmeta
+      chinfo = data.chinfo
+      zhtext = data.zhtext
+      cvdata = data.cvdata
     } else {
       const res = await fetch(api_url + '/text')
-      if (res.ok) chinfo.cvdata = await res.text()
+      if (res.ok) cvdata = await res.text()
       else console.log(res.status)
     }
   }
