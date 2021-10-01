@@ -67,7 +67,7 @@
       </div>
     {:else if ubmemo.chidx > 0}
       <a class="header-item" href={kit_chap_url(cvbook.bslug, ubmemo)}>
-        <SIcon name={ubmemo.locked ? 'pinned' : 'player-play'} />
+        <SIcon name={ubmemo.locked ? 'bookmark' : 'player-play'} />
         <span class="header-text _show-md">Đọc tiếp</span>
       </a>
     {:else}

@@ -52,14 +52,13 @@ class CV::MemoCtrl < CV::BaseCtrl
     ubmemo = Ubmemo.find_or_new(_cv_user.id, cvbook_id)
 
     ubmemo.mark!(
-      Zhseed.index(params["sname"]? || ""),
+      Zhseed.index(params.fetch_str("sname")),
       params.fetch_int("chidx"),
       params.fetch_str("title"),
       params.fetch_str("uslug"),
       params.fetch_int("cpart"),
-      params["locked"]? == "true"
+      params["locked"] == "true"
     )
-
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
     puts err

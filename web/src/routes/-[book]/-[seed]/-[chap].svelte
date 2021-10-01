@@ -18,6 +18,7 @@
 
 <script>
   import { session } from '$app/stores'
+  import { invalidate } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
   import CMenu from '$molds/CMenu.svelte'
@@ -75,16 +76,17 @@
     return page > 1 ? url + `?page=${page}` : url
   }
 
-  async function update_history(lock, chmeta, chinfo) {
-    const { sname } = chmeta
+  async function update_history(lock) {
+    const { sname, cpart } = chmeta
     const { chidx, title, uslug } = chinfo
 
     const url = `/api/_self/books/${cvbook.id}/access`
-    const params = { sname, chidx, title, uslug, locked: lock }
+    const params = { sname, cpart, chidx, title, uslug, locked: lock }
 
     const [stt, msg] = await put_fetch(fetch, url, params)
-    if (stt) console.log(`Error update history: ${msg}`)
+    if (stt) return console.log(`Error update history: ${msg}`)
     else ubmemo = msg
+    invalidate(`/api/books/${cvbook.bslug}`)
   }
 
   $: on_memory = check_memo(ubmemo)
@@ -183,7 +185,7 @@
           <button
             class="-item"
             disabled={$session.privi < 0}
-            on:click={() => update_history(false, chmeta, chinfo)}
+            on:click={() => update_history(false)}
             data-kbd="p">
             <SIcon name="bookmark-off" />
             <span>Bỏ đánh dấu</span>
@@ -192,7 +194,7 @@
           <button
             class="-item"
             disabled={$session.privi < 0}
-            on:click={() => update_history(true, chmeta, chinfo)}
+            on:click={() => update_history(true)}
             data-kbd="p">
             <SIcon name="bookmark" />
             <span>Đánh dấu</span>
