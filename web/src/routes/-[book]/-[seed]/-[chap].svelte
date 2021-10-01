@@ -39,9 +39,9 @@
   $: if (_dirty) reload_chap(false)
 
   $: paths = gen_paths(cvbook, chmeta, chinfo)
-  $: api_url = gen_api_url(cvbook, chinfo)
+  $: api_url = gen_api_url(cvbook, chmeta, chinfo)
 
-  function gen_api_url({ id: book_id }, { sname, chidx, cpart }) {
+  function gen_api_url({ id: book_id }, { sname, cpart }, { chidx }) {
     return `/api/chaps/${book_id}/${sname}/${chidx}/${cpart}`
   }
 
