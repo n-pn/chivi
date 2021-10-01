@@ -2,6 +2,8 @@
   import { session } from '$app/stores'
   import { status_names, status_icons } from '$lib/constants'
 
+  import { kit_chap_url } from '$lib/utils/route_utils'
+
   import SIcon from '$atoms/SIcon.svelte'
   import Slider from '$molds/Slider.svelte'
 
@@ -66,9 +68,7 @@
 
     <div class="chaps">
       {#each chaps as chap}
-        <a
-          class="chap"
-          href="/-{chap.bslug}/-{chap.sname}/-{chap.uslug}-{chap.chidx}">
+        <a class="chap" href={kit_chap_url(chap.bslug, chap)}>
           <div class="chap-text">
             <div class="chap-title">{chap.title}</div>
             <div class="chap-chidx">{chap.chidx}.</div>

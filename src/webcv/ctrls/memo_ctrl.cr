@@ -23,6 +23,7 @@ class CV::MemoCtrl < CV::BaseCtrl
 
             jb.field "sname", ubmemo.lr_sname
             jb.field "chidx", ubmemo.lr_chidx
+            jb.field "cpart", ubmemo.lr_cpart
 
             jb.field "title", ubmemo.lc_title
             jb.field "uslug", ubmemo.lc_uslug

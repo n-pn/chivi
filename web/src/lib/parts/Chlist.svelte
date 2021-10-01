@@ -1,31 +1,42 @@
 <script>
+  import { kit_chap_url } from '$lib/utils/route_utils'
   import SIcon from '$atoms/SIcon.svelte'
 
   export let bslug = ''
   export let sname = ''
 
   export let chaps = []
-  export let track = {}
+  export let track
+
+  $: same_sname = sname == track.sname
+
+  function is_marked(chap) {
+    return chap.chidx == track.chidx
+  }
+
+  function track_cpart(chap) {
+    return same_sname && is_marked(chap) ? track.cpart : 0
+  }
 </script>
 
 <div class="list">
-  {#each chaps as { chidx, title, chvol, uslug, parts }}
+  {#each chaps as chap}
     <div class="list-item">
       <a
-        href="/-{bslug}/-{sname}/-{uslug}-{chidx}"
+        href={kit_chap_url(bslug, { ...chap, cpart: track_cpart(chap) })}
         class="chap"
-        class:_active={chidx == track.chidx}>
+        class:_active={is_marked(chap)}>
         <div class="chap-text">
-          <div class="chap-title">{title}</div>
-          <div class="chap-chidx">{chidx}.</div>
+          <div class="chap-title">{chap.title}</div>
+          <div class="chap-chidx">{chap.chidx}.</div>
         </div>
         <div class="chap-meta">
-          <div class="chap-chvol">{chvol}</div>
-          {#if chidx == track.chidx && sname == track.sname}
+          <div class="chap-chvol">{chap.chvol}</div>
+          {#if same_sname && is_marked(chap)}
             <div class="chap-track">
               <SIcon name={track.locked ? 'bookmark' : 'eye'} />
             </div>
-          {:else if parts > 0}
+          {:else if chap.parts > 0}
             <div class="chap-track">
               <SIcon name="device-floppy" />
             </div>
