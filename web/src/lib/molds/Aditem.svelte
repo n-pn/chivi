@@ -26,7 +26,7 @@
   data-ad-layout={type == 'banner' ? '' : 'in-article'}
   data-full-width-responsive="true">
   <div>
-    Hãy ủng hộ cho chivi <a href="/notes/donation">tại đây</a> nếu không muốn xem
+    Hãy ủng hộ cho chivi <a href="/guide/donation">tại đây</a> nếu không muốn xem
     quảng cáo.
   </div>
   <script>

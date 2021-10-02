@@ -63,7 +63,7 @@
     </p>
     <p>
       Hãy thử nâng cấp quyền hạn của mình bằng việc ủng hộ cho trang web <a
-        href="/notes/donation">tại đây</a>
+        href="/guide/donation">tại đây</a>
     </p>
 
     <p>

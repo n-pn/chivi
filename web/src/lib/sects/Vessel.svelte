@@ -60,7 +60,7 @@
         các tính năng!
       </div>
     {:else if pledge && $session.privi < 2}
-      <a class="pledge" href="/notes/donation">
+      <a class="pledge" href="/guide/donation">
         Ủng hộ <strong>Chivi</strong> để nâng cấp quyền hạn!
       </a>
     {/if}

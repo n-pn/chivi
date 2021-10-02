@@ -3,6 +3,8 @@
     const { slug } = params
 
     if (slug.startsWith('~')) return await old_book(fetch, slug.substr(1))
+    else if (slug == 'notes/donation')
+      return { status: 301, redirect: '/guide/donation' }
     else if (slug == 'translate') return { status: 301, redirect: '/qtran' }
     else return { status: 404, error: `${slug} not found!` }
   }
