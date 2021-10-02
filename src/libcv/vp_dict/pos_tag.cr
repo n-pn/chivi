@@ -5,20 +5,6 @@ struct CV::PosTag
   # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
-  @[Flags]
-  enum Pos
-    # content words - functional words - punctuations
-    Contws; Funcws; Puncts
-
-    Nouns; Verbs; Adjts; Pronouns
-
-    Numbers; Quantis; Strings
-
-    Auxils; Preposes
-
-    Uniqs
-  end
-
   enum Tag
     None; Unkn
 
@@ -192,5 +178,9 @@ struct CV::PosTag
     {% end %}
   end
 end
+
+# puts CV::PosTag.from_str("n")
+# puts CV::PosTag.from_str("v")
+# puts CV::PosTag.from_str("vn")
 
 # puts CV::VpTags.map_tag("n").to_i
