@@ -83,6 +83,9 @@ class CV::Zhbook
     end
 
     {mftime, chap_count}
+  rescue err
+    Log.error { err }
+    {mftime, chap_count}
   end
 
   def remote?(privi = 4)
