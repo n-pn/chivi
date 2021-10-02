@@ -14,7 +14,7 @@ class CV::DictCtrl < CV::BaseCtrl
     dicts
   end
 
-  def dict_label(dname : String)
+  private def dict_label(dname : String)
     case dname
     when "cc_cedict" then "CC-CEDICT"
     when "trungviet" then "Trung Việt"

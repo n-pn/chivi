@@ -1,5 +1,5 @@
 module MTL::Grammars
-  def fix_urlstr : self
+  def fuse_urlstr : self
     return self unless node = @succ
 
     key_io = String::Builder.new(@key)

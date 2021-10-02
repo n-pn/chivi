@@ -6,7 +6,7 @@ class CV::MtCore
   class_getter binh_am_mtl : self { new([VpDict.essence, VpDict.binh_am]) }
   class_getter tradsim_mtl : self { new([VpDict.tradsim]) }
 
-  def self.generic_mtl(pdict : String = "combine", stype : String = "chivi")
+  def self.generic_mtl(pdict : String = "combine", stype : String = "guest")
     new(VpDict.for_convert(pdict, stype))
   end
 

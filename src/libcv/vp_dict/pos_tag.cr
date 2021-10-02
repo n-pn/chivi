@@ -1,193 +1,264 @@
-module CV
+# @[Flags]
+struct CV::PosTag
   # source: https://gist.github.com/luw2007/6016931
   # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
-  POS_TAGS = {
-    ##################
+  @[Flags]
+  enum Pos
+    X
+
+    Reals; Puncts
+
+    Nouns; Verbs; Adjts; Pronouns
+
+    Numbers; Quantis; Strings
+
+    Uniqs
+  end
+
+  DATA = {
     # 实词 - thực từ #
-    ##################
 
-    :Noun   => "n",  # 名词 - noun - danh từ
-    :Nform  => "nl", # 名词性语素 - nominal formulaic expression
-    :Nmorp  => "ng", # 名词性语素 - nominal morpheme
-    :Ntitle => "nw", # danh xưng: chức danh, nghề nghiệp, địa vị
+    # 名词 - noun - danh từ
+    {"n", "Noun", Pos::Nouns},
+    # 名词性语素 - nominal formulaic expression
+    {"nl", "Nform", Pos::Nouns},
+    # 名词性语素 - nominal morpheme
+    {"ng", "Nmorp", Pos::Nouns},
+    # danh xưng: chức danh, nghề nghiệp, địa vị
+    {"nw", "Ntitle", Pos::Nouns},
 
-    :Nper   => "nr", # 人名 - person name - tên người
-    :Nsur   => "nf", # họ người
-    :Nloc   => "ns", # 地名 - location name - địa danh
-    :Norg   => "nt", # 机构团体名 - organization name - tổ chức
-    :Nother => "nz", # 其它专名 - other proper noun - tên riêng khác
+    # 人名 - person name - tên người
+    {"nr", "Nper", Pos::Nouns},
+    # họ người
+    {"nf", "Nsur", Pos::Nouns},
+    # 地名 - location name - địa danh
+    {"ns", "Nloc", Pos::Nouns},
+    # 机构团体名 - organization name - tổ chức
+    {"nt", "Norg", Pos::Nouns},
+    # 其它专名 - other proper noun - tên riêng khác
+    {"nz", "Nother", Pos::Nouns},
 
-    :Time  => "t",  # 时间词 - time word - thời gian
-    :Tmorp => "tg", # 时间词性语素 - time word morpheme
+    # 时间词 - time word - thời gian
+    {"t", "Time", Pos::Nouns},
+    # 时间词性语素 - time word morpheme
+    {"tg", "Tmorp", Pos::Nouns},
 
-    :Place => "s", # 处所词 - place word - nơi chốn
-    :Space => "f", # 方位词 - space word - phương vị
+    # 处所词 - place word - nơi chốn
+    {"s", "Place", Pos::Nouns},
+    # 方位词 - space word - phương vị
+    {"f", "Space", Pos::Nouns},
 
-    :Verb => "v",  # 动词 - verb - động từ
-    :Vead => "vd", # 副动词 - adverbial use of verb - ?
-    :Veno => "vn", # 名动词 - nominal use of verb - danh động từ
+    # 动词 - verb - động từ
+    {"v", "Verb", Pos::Verbs},
+    # 副动词 - adverbial use of verb - ?
+    {"vd", "Vead", Pos::Verbs},
+    # 名动词 - nominal use of verb - danh động từ
+    {"vn", "Veno", Pos::Verbs | Pos::Nouns},
 
-    :Vshi   => "vshi",   # 动词 “是” - động từ `thị`
-    :Vyou   => "vyou",   # 动词 “有” - động từ `hữu`
-    :Vhui   => "vhui",   # 动词 “会” - động từ `hội`
-    :Vneng  => "vneng",  # 动词 “能” - động từ `năng`
-    :Vxiang => "vxiang", # 动词 “想” - động từ `tưởng`
+    {"vf", "Vdir", Pos::Verbs}, # 趋向动词 - directional verb
+    {"vx", "Vpro", Pos::Verbs}, # 形式动词 - pro-verb - động từ hình thái
 
-    :Vdir => "vf", # 趋向动词 - directional verb
-    :Vpro => "vx", # 形式动词 - pro-verb - động từ hình thái
+    {"vi", "Vintr", Pos::Verbs}, # 不及物动词（内动词）- intransitive verb - nội động từ
+    {"vl", "Vform", Pos::Verbs}, # 动词性惯用语 - verbal formulaic expression
+    {"vg", "Vmorp", Pos::Verbs}, # 动词性语素 - verbal morpheme
 
-    :Vintr => "vi", # 不及物动词（内动词）- intransitive verb - nội động từ
-    :Vform => "vl", # 动词性惯用语 - verbal formulaic expression
-    :Vmorp => "vg", # 动词性语素 - verbal morpheme
+    # 动词 “是” - động từ `thị`
+    {"vshi", "Vshi", Pos::Verbs | Pos::Uniqs},
+    # 动词 “有” - động từ `hữu`
+    {"vyou", "Vyou", Pos::Verbs | Pos::Uniqs},
+    # 动词 “会” - động từ `hội`
+    {"vhui", "Vhui", Pos::Verbs | Pos::Uniqs},
+    # 动词 “能” - động từ `năng`
+    {"vneng", "Vneng", Pos::Verbs | Pos::Uniqs},
+    # 动词 “想” - động từ `tưởng`
+    {"vxiang", "Vxiang", Pos::Verbs | Pos::Uniqs},
 
-    :Adjt => "a",  # 形容词 - adjective - hình dung từ (tính từ)
-    :Ajav => "ad", # 副形词 - adverbial use of adjective - phó hình từ (phó + tính từ)
-    :Ajno => "an", # 名形词 nominal use of adjective - danh hình từ (danh + tính từ)
+    # 形容词 - adjective - hình dung từ (tính từ)
+    {"a", "Adjt", Pos::Adjts},
+    # 副形词 - adverbial use of adjective - phó hình từ (phó + tính từ)
+    {"ad", "Ajav", Pos::Adjts},
+    # 名形词 nominal use of adjective - danh hình từ (danh + tính từ)
+    {"an", "Ajno", Pos::Adjts | Pos::Nouns},
 
-    :Aform => "al", # 形容词性惯用语 - adjectival formulaic expression -
-    :Amorp => "ag", # 形容词性语素 - adjectival morpheme -
+    # 形容词性惯用语 - adjectival formulaic expression -
+    {"al", "Aform", Pos::Adjts},
+    # 形容词性语素 - adjectival morpheme -
+    {"ag", "Amorp", Pos::Adjts},
 
-    :Ahao  => "ahao", # adjective "好"
-    :Adesc => "az",   # 状态词 - descriptive word - trạng thái
+    # adjective "好"
+    {"ahao", "Ahao", Pos::Adjts | Pos::Uniqs},
+    # 状态词 - descriptive word - trạng thái
+    {"az", "Adesc", Pos::Adjts},
 
-    :Modifier => "b",  # modifier (non-predicate noun modifier) - từ khu biệt
-    :Modiform => "bl", # 区别词性惯用语 - noun modifier morpheme
+    # modifier (non-predicate noun modifier) - từ khu biệt
+    {"b", "Modifier", Pos::X},
+    # 区别词性惯用语 - noun modifier morpheme
+    {"bl", "Modiform", Pos::X},
 
-    :Pronoun => "r",  # 代词 - pronoun - đại từ
-    :Propers => "rr", # 人称代词 - personal pronoun - đại từ nhân xưng
-    :Prodeic => "rz", # 指示代词 - deictic pronoun - đại từ chỉ thị
-    :Prointr => "ry", # 疑问代词 - interrogative pronoun - đại từ nghi vấn
-    # :Pronmorp => "rg" # 代词性语素 - pronominal morpheme
+    # 代词 - pronoun - đại từ
+    {"r", "Pronoun", Pos::Pronouns},
+    # 人称代词 - personal pronoun - đại từ nhân xưng
+    {"rr", "Propers", Pos::Pronouns},
+    # 指示代词 - deictic pronoun - đại từ chỉ thị
+    {"rz", "Prodeic", Pos::Pronouns},
+    # 疑问代词 - interrogative pronoun - đại từ nghi vấn
+    {"ry", "Prointr", Pos::Pronouns},
+    # :Pronmorp => "rg"
 
-    :Number => "m",  # 数词 - numeral - số từ
-    :Numlat => "mx", # latin number 0 1 2 .. 9
-    :Nquant => "mq", # 数量词 - numeral and quantifier - số + lượng
+    # 代词性语素 - pronominal morpheme
 
-    :Quanti => "q",  # 量词 - quantifier - lượng từ
-    :Qtverb => "qv", # 动量词 - temporal classifier -  lượng động từ
-    :Qttime => "qt", # 时量词 - verbal classifier -  lượng từ thời gian
+    # 数词 - numeral - số từ
+    {"m", "Number", Pos::Numbers},
+    # latin number 0 1 2 .. 9
+    {"mx", "Numlat", Pos::Numbers},
+    # 数量词 - numeral and quantifier - số + lượng
+    {"mq", "Nquant", Pos::Numbers || Pos::Quantis},
 
-    :Idiom => "i", # 成语 - idiom - thành ngữ
-    :Abbre => "j", # 简称 - abbreviation - viết tắt
-    :Locut => "l", # 习惯用语 - Locution - quán ngữ
+    # 量词 - quantifier - lượng từ
+    {"q", "Quanti", Pos::Quantis},
+    # 动量词 - temporal classifier -  lượng động từ
+    {"qv", "Qtverb", Pos::Quantis},
+    # 时量词 - verbal classifier -  lượng từ thời gian
+    {"qt", "Qttime", Pos::Quantis},
+
+    # 成语 - idiom - thành ngữ
+    {"i", "Idiom", Pos::X},
+    # 简称 - abbreviation - viết tắt
+    {"j", "Abbre", Pos::X},
+    # 习惯用语 - Locution - quán ngữ
+    {"l", "Locut", Pos::X},
 
     ################
     # 虚词 - hư từ #
     ###############
 
-    :Adverb => "d", # 副词 - adverb - phó từ (trạng từ)
+    {"d", "Adverb", Pos::X}, # 副词 - adverb - phó từ (trạng từ)
     # dg adverbial morpheme
     # dl adverbial formulaic expression
 
-    :Prepos => "p",    # 介词 - preposition - giới từ
-    :Prepba => "pba",  # 介词 “把” - giới từ `bả`
-    :Prebei => "pbei", # 介词 “被” - giới từ `bị`
+    {"p", "Prepos", Pos::X},    # 介词 - preposition - giới từ
+    {"pba", "Prepba", Pos::X},  # 介词 “把” - giới từ `bả`
+    {"pbei", "Prebei", Pos::X}, # 介词 “被” - giới từ `bị`
 
-    :Conjunct => "c",  # 连词 - conjunction - liên từ
-    :Concoord => "cc", # 并列连词 - coordinating conjunction - liên từ kết hợp
+    {"c", "Conjunct", Pos::X},  # 连词 - conjunction - liên từ
+    {"cc", "Concoord", Pos::X}, # 并列连词 - coordinating conjunction - liên từ kết hợp
 
-    :Auxi  => "u",     # 助词 - particle/auxiliary - trợ từ
-    :Uzhe  => "uzhe",  # 着
-    :Ule   => "ule",   # 了 喽
-    :Uguo  => "uguo",  # 过
-    :Ude1  => "ude1",  # 的 底
-    :Ude2  => "ude2",  # 地
-    :Ude3  => "ude3",  # 得
-    :Usuo  => "usuo",  # 所
-    :Udeng => "udeng", # 等 等等 云云
-    :Uyy   => "uyy",   # 一样 一般 似的 般
-    :Udh   => "udh",   # 的话
-    :Uls   => "uls",   # 来讲 来说 而言 说来
-    :Uzhi  => "uzhi",  # 之
-    :Ulian => "ulian", # 连 （“连小学生都会”）
+    {"u", "Auxi", Pos::X},      # 助词 - particle/auxiliary - trợ từ
+    {"uzhe", "Uzhe", Pos::X},   # 着
+    {"ule", "Ule", Pos::X},     # 了 喽
+    {"uguo", "Uguo", Pos::X},   # 过
+    {"ude1", "Ude1", Pos::X},   # 的 底
+    {"ude2", "Ude2", Pos::X},   # 地
+    {"ude3", "Ude3", Pos::X},   # 得
+    {"usuo", "Usuo", Pos::X},   # 所
+    {"udeng", "Udeng", Pos::X}, # 等 等等 云云
+    {"uyy", "Uyy", Pos::X},     # 一样 一般 似的 般
+    {"udh", "Udh", Pos::X},     # 的话
+    {"uls", "Uls", Pos::X},     # 来讲 来说 而言 说来
+    {"uzhi", "Uzhi", Pos::X},   # 之
+    {"ulian", "Ulian", Pos::X}, # 连 （“连小学生都会”）
 
-    :Interjection  => "e", # 叹词 - interjection/exclamation - thán từ
-    :Modalparticle => "y", # 语气词 - modal particle - ngữ khí
-    :Onomatopoeia  => "o", # 拟声词 - onomatopoeia - tượng thanh
+    {"e", "Interjection", Pos::X},  # 叹词 - interjection/exclamation - thán từ
+    {"y", "Modalparticle", Pos::X}, # 语气词 - modal particle - ngữ khí
+    {"o", "Onomatopoeia", Pos::X},  # 拟声词 - onomatopoeia - tượng thanh
 
-    :Prefix => "h", # 前缀 - prefix - tiền tố
-    :Suffix => "k", # 后缀 - suffix - hậu tố
+    {"h", "Prefix", Pos::X}, # 前缀 - prefix - tiền tố
+    {"k", "Suffix", Pos::X}, # 后缀 - suffix - hậu tố
 
-    :Kmen => "kmen", # hậu tố 们
-    :Kshi => "kshi", # hậu tố 时
+    {"kmen", "Kmen", Pos::X}, # hậu tố 们
+    {"kshi", "Kshi", Pos::X}, # hậu tố 时
 
-    :String => "x", # 字符串 - non-word character string - hư từ khác
+    {"x", "String", Pos::Strings}, # 字符串 - non-word character string - hư từ khác
 
-    :Urlstr => "xu", # 网址URL - url string
-    :Artstr => "xx", # 非语素字 - for ascii art like emoji...
+    {"xu", "Urlstr", Pos::Strings}, # 网址URL - url string
+    {"xx", "Artstr", Pos::Strings}, # 非语素字 - for ascii art like emoji...
 
-    :Punct   => "w",   # 标点符号 - symbols and punctuations - dấu câu
-    :Comma   => "wd",  # full or half-length comma: `，` `,`
-    :Penum   => "wn",  # full-length enumeration mark: `、`
-    :Pstop   => "wj",  # full stop of full length: `。`
-    :Pdeci   => "wx",  # half stop, decimal `.`
-    :Colon   => "wm",  # full or half-length colon: `：`， `:`
-    :Ellip   => "ws",  # full-length ellipsis: …… …
-    :Pdash   => "wp",  # dash: ——  －－  —— －  of full length; ---  ---- of half length
-    :Tilde   => "wti", # tidle ~
-    :Atsgn   => "wat", # at sign @
-    :Plsgn   => "wps", # plus sign +
-    :Mnsgn   => "wms", # minus sign -
-    :Smcln   => "wsc", # full or half-length semi-colon: `；`， `;`
-    :Perct   => "wpc", # percentage and permillle signs: ％ and ‰ of full length; % of half length
-    :Middot  => "wmd", # interpunct
-    :Exmark  => "wex", # full or half-length exclamation mark: `！` `!`
-    :Qsmark  => "wqs", # full or half-length question mark: `？` `?`
-    :Squanti => "wqt", # full or half-length unit symbol ￥ ＄ ￡ ° ℃  $
-    :Quoteop => "wyz", # full-length single or double opening quote: “ ‘ 『
-    :Quotecl => "wyy", # full-length single or double closing quote: ” ’ 』
-    :Brackop => "wkz", # opening brackets: （ 〔 ［ ｛ 【 〖 of full length; ( [ { of half length
-    :Brackcl => "wky", # closing brackets: ） 〕 ］ ｝ 】 〗 of full length;  ) ] } of half length
-    :Titleop => "wwz", # open title《〈 ⟨
-    :Titlecl => "wwy", # close title 》〉⟩
+    {"w", "Punct", Pos::Puncts},     # 标点符号 - symbols and punctuations - dấu câu
+    {"wd", "Comma", Pos::Puncts},    # full or half-length comma: `，` `,`
+    {"wn", "Penum", Pos::Puncts},    # full-length enumeration mark: `、`
+    {"wj", "Pstop", Pos::Puncts},    # full stop of full length: `。`
+    {"wx", "Pdeci", Pos::Puncts},    # half stop, decimal `.`
+    {"wm", "Colon", Pos::Puncts},    # full or half-length colon: `：`， `:`
+    {"ws", "Ellip", Pos::Puncts},    # full-length ellipsis: …… …
+    {"wp", "Pdash", Pos::Puncts},    # dash: ——  －－  —— －  of full length; ---  ---- of half length
+    {"wti", "Tilde", Pos::Puncts},   # tidle ~
+    {"wat", "Atsgn", Pos::Puncts},   # at sign @
+    {"wps", "Plsgn", Pos::Puncts},   # plus sign +
+    {"wms", "Mnsgn", Pos::Puncts},   # minus sign -
+    {"wsc", "Smcln", Pos::Puncts},   # full or half-length semi-colon: `；`， `;`
+    {"wpc", "Perct", Pos::Puncts},   # percentage and permillle signs: ％ and ‰ of full length; % of half length
+    {"wmd", "Middot", Pos::Puncts},  # interpunct
+    {"wex", "Exmark", Pos::Puncts},  # full or half-length exclamation mark: `！` `!`
+    {"wqs", "Qsmark", Pos::Puncts},  # full or half-length question mark: `？` `?`
+    {"wqt", "Squanti", Pos::Puncts}, # full or half-length unit symbol ￥ ＄ ￡ ° ℃  $
+    {"wyz", "Quoteop", Pos::Puncts}, # full-length single or double opening quote: “ ‘ 『
+    {"wyy", "Quotecl", Pos::Puncts}, # full-length single or double closing quote: ” ’ 』
+    {"wkz", "Brackop", Pos::Puncts}, # opening brackets: （ 〔 ［ ｛ 【 〖 of full length; ( [ { of half length
+    {"wky", "Brackcl", Pos::Puncts}, # closing brackets: ） 〕 ］ ｝ 】 〗 of full length;  ) ] } of half length
+    {"wwz", "Titleop", Pos::Puncts}, # open title《〈 ⟨
+    {"wwy", "Titlecl", Pos::Puncts}, # close title 》〉⟩
   }
-end
 
-# @[Flags]
-enum CV::PosTag
-  None
-  Unkn
+  enum Tag
+    None; Unkn
 
-  {% for tag in POS_TAGS.keys %}
-  {{ tag.id }}
+    {% for data in DATA %}
+    {{ data[1].id }}
+    {% end %}
+  end
+
+  None = new(Tag::None, Pos::X)
+  Unkn = new(Tag::Unkn, Pos::Reals)
+
+  {% for data in DATA %}
+    {{ data[1].id }} = new(Tag::{{data[1].id}}, {{data[2]}})
   {% end %}
 
+  getter pos : Pos
+  getter tag : Tag
+  forward_missing_to tag
+
+  def initialize(@tag = Tag::Unkn, @pos = Pos::Reals)
+  end
+
   @[AlwaysInline]
-  def real?
-    Unkn <= self <= Locut
+  def reals?
+    @pos.reals?
   end
 
   @[AlwaysInline]
   def word?
-    Unkn <= self < Punct
+    Tag::Unkn <= @tag < Tag::Punct
   end
 
   def ends?
     none? || puncts? || interjection?
   end
 
+  @[AlwaysInline]
   def nouns?
-    Noun <= self <= Nother || veno? || ajno?
+    @pos.nouns?
   end
 
   def names?
-    Nper <= self <= Nother
+    Tag::Nper <= @tag <= Tag::Nother
   end
 
+  @[AlwaysInline]
   def pronouns?
-    Pronoun <= self <= Prointr
+    @pos.pronouns?
   end
 
   @[AlwaysInline]
   def verbs?
-    Verb <= self <= Vmorp
+    @pos.verbs?
   end
 
   @[AlwaysInline]
   def adjts?
-    Adjt <= self <= Adesc
+    @pos.adjts?
   end
 
   def content?
@@ -196,12 +267,12 @@ enum CV::PosTag
 
   @[AlwaysInline]
   def conjuncts?
-    self == Conjunct || self == Concoord
+    @tag == Tag::Conjunct || @tag == Tag::Concoord
   end
 
   @[AlwaysInline]
   def preposes?
-    Prepos <= self <= Prebei
+    Tag::Prepos <= @tag <= Tag::Prebei
   end
 
   def function?
@@ -210,107 +281,48 @@ enum CV::PosTag
 
   @[AlwaysInline]
   def strings?
-    String <= self <= Urlstr
+    @pos.strings?
   end
 
   @[AlwaysInline]
   def puncts?
-    Punct <= self <= Titlecl
+    @pos.puncts?
   end
 
   @[AlwaysInline]
   def numbers?
-    Number <= self <= Nquant
+    @pos.numbers?
   end
 
   @[AlwaysInline]
   def quantis?
-    Quanti <= self <= Qttime
+    @pos.quantis?
   end
 
   def nquants?
-    Number <= self <= Qttime
+    Tag::Number <= @tag <= Tag::Qttime
   end
 
   def to_str : ::String
     {% begin %}
-    case self
-    {% for tag, name in POS_TAGS %}
-    when {{ tag.id }} then {{ name }}
+    case @tag
+    {% for data in DATA %}
+    when {{ data[1].id }} then {{ data[0] }}
     {% end %}
     else ""
     end
     {% end %}
   end
 
-  def self.from_pfr(tag : ::String)
-    case tag
-    when "nnt", "nis", "nnd", "ntc", "nf", "nhd", "nit", "nhm", "nmc", "nba",
-         "gb", "gc", "gg", "gi", "gm", "gp"
-      Noun
-    when "nto", "ntu", "ntcb", "nth", "ntcf", "ntch", "nts"
-      Norg
-    when "nh" then Nper
-    when "nx" then Nother
-    when "bg" then Modifier
-    when "rg" then Propers
-    when "ul" then Ule
-    when "uj" then Ude1
-    when "uv" then Ude2
-    when "ud" then Ude3
-    when "uz" then Uzhe
-    else           from_pku(tag)
-    end
-  end
-
-  def self.from_pku(tag : ::String)
-    # nr1 汉语姓氏
-    # nr2 汉语名字
-    # nrj 日语人名
-    # nrf 音译人名
-    # nsf 音译地名
-    # rzt 时间指示代词
-    # rzs 处所指示代词
-    # rzv 谓词性指示代词
-    # ryt 时间疑问代词
-    # rys 处所疑问代词
-    # ryv 谓词性疑问代词
-    # dg adverbial morpheme
-    # dl adverbial formulaic expression
-    case tag
-    when "nr1", "nr2", "nrj", "nrf" then Nper
-    when "nsf"                      then Nloc
-    when "nx"                       then Nother
-    when "rzt", "rzs", "rzv"        then Prodeic
-    when "ryt", "rys", "ryv"        then Prointr
-    when "dl", "dg"                 then Adverb
-    else                                 from_str(tag)
-    end
-  end
-
-  def self.from_paddle(tag : ::String)
-    case tag
-    # Paddle convention
-    when "PER"  then Nper
-    when "LOC"  then Nloc
-    when "ORG"  then Norg
-    when "TIME" then Time
-    else             from_str(tag)
-    end
-  end
-
-  def self.from_str(tag : ::String)
+  def self.from_str(tag : ::String) : self
     {% begin %}
     case tag
-    when "-" then None
-    when "" then Unkn
-      {% for tag, name in POS_TAGS %}
-    when {{ name }} then {{ tag.id }}
+    {% for data in DATA %}
+    when {{ data[0] }} then {{ data[1].id }}
     {% end %}
     when "z" then Adesc
-    else
-      # puts "unknown tag <#{tag}>!"
-      Unkn
+    when "-" then None
+    else  Unkn
     end
     {% end %}
   end

@@ -97,6 +97,11 @@
         <span>Sửa</span>
       </button>
 
+      <button class="m-button _fill" on:click={convert}>
+        <SIcon name="rotate-clockwise" />
+        <span>Dịch lại</span>
+      </button>
+
       <button class="m-button _success _fill" on:click={cleanup}>
         <span>Dịch mới</span>
       </button>

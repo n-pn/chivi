@@ -1,5 +1,63 @@
 require "../../src/libcv/*"
 
+struct CV::PosTag
+  def self.from_pfr(tag : ::String) : self
+    case tag
+    when "nnt", "nis", "nnd", "ntc", "nf", "nhd", "nit", "nhm", "nmc", "nba",
+         "gb", "gc", "gg", "gi", "gm", "gp"
+      new(Tag::Noun)
+    when "nto", "ntu", "ntcb", "nth", "ntcf", "ntch", "nts"
+      new(Tag::Norg)
+    when "nh" then new(Tag::Nper)
+    when "nx" then new(Tag::Nother)
+    when "bg" then new(Tag::Modifier)
+    when "rg" then new(Tag::Propers)
+    when "ul" then new(Tag::Ule)
+    when "uj" then new(Tag::Ude1)
+    when "uv" then new(Tag::Ude2)
+    when "ud" then new(Tag::Ude3)
+    when "uz" then new(Tag::Uzhe)
+    else           from_pku(tag)
+    end
+  end
+
+  def self.from_pku(tag : ::String) : self
+    # nr1 汉语姓氏
+    # nr2 汉语名字
+    # nrj 日语人名
+    # nrf 音译人名
+    # nsf 音译地名
+    # rzt 时间指示代词
+    # rzs 处所指示代词
+    # rzv 谓词性指示代词
+    # ryt 时间疑问代词
+    # rys 处所疑问代词
+    # ryv 谓词性疑问代词
+    # dg adverbial morpheme
+    # dl adverbial formulaic expression
+    case tag
+    when "nr1", "nr2", "nrj", "nrf" then new(Tag::Nper)
+    when "nsf"                      then new(Tag::Nloc)
+    when "nx"                       then new(Tag::Nother)
+    when "rzt", "rzs", "rzv"        then new(Tag::Prodeic)
+    when "ryt", "rys", "ryv"        then new(Tag::Prointr)
+    when "dl", "dg"                 then new(Tag::Adverb)
+    else                                 from_str(tag)
+    end
+  end
+
+  def self.from_paddle(tag : ::String) : self
+    case tag
+    # Paddle convention
+    when "PER"  then new(Tag::Nper)
+    when "LOC"  then new(Tag::Nloc)
+    when "ORG"  then new(Tag::Norg)
+    when "TIME" then new(Tag::Time)
+    else             from_str(tag)
+    end
+  end
+end
+
 class CV::Tagsum
   alias Tagging = Hash(PosTag, Int32)
 

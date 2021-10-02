@@ -1,10 +1,10 @@
 <script context="module">
   export async function load({ fetch, page: { params, query } }) {
     const res = await fetch(`/api/qtran/${params.name}?${query.toString()}`)
-    const cvdata = await res.text()
+    const props = await res.json()
 
-    if (res.ok) return { props: { cvdata } }
-    return { status: 404, error: cvdata }
+    if (res.ok) return { props }
+    return { status: 404, error }
   }
 </script>
 
@@ -15,7 +15,9 @@
   import Cvdata from '$sects/Cvdata.svelte'
   import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
+  export let zhtext = []
   export let cvdata = ''
+
   let _dirty = false
   $: if (_dirty) window.location.reload()
 </script>
@@ -42,7 +44,7 @@
   </svelte:fragment>
 
   <section class="cvdata">
-    <Cvdata {cvdata} bind:_dirty />
+    <Cvdata {zhtext} {cvdata} bind:_dirty />
   </section>
 
   <div slot="footer" class="foot">
