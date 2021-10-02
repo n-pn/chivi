@@ -31,6 +31,39 @@ struct CV::PosTag
     {% for punct in PUNCTS %}
     {{ punct[1].id }}
     {% end %}
+
+    def to_str
+      {% begin %}
+      case self
+      {% for noun in NOUNS %}
+      when {{ noun[1].id }} then {{ noun[0] }}
+      {% end %}
+
+      {% for verb in VERBS %}
+      when {{ verb[1].id }} then {{ verb[0] }}
+      {% end %}
+
+      {% for adjt in ADJTS %}
+      when {{ adjt[1].id }} then {{ adjt[0] }}
+      {% end %}
+
+      {% for misc in MISCS %}
+      when {{ misc[1].id }} then {{ misc[0] }}
+      {% end %}
+
+      {% for auxil in AUXILS %}
+      when {{ auxil[1].id }} then {{ auxil[0] }}
+      {% end %}
+
+      {% for puncts in PUNCTS %}
+      when {{ puncts[1].id }} then {{ puncts[0] }}
+      {% end %}
+
+      when None then "-"
+      else           ""
+      end
+      {% end %}
+    end
   end
 
   None = new(Tag::None, Pos::Puncts)
@@ -111,36 +144,7 @@ struct CV::PosTag
   end
 
   def to_str : ::String
-    {% begin %}
-    case @tag
-    {% for noun in NOUNS %}
-    when {{ noun[1].id }} then {{ noun[0] }}
-    {% end %}
-
-    {% for verb in VERBS %}
-    when {{ verb[1].id }} then {{ verb[0] }}
-    {% end %}
-
-    {% for adjt in ADJTS %}
-    when {{ adjt[1].id }} then {{ adjt[0] }}
-    {% end %}
-
-    {% for misc in MISCS %}
-    when {{ misc[1].id }} then {{ misc[0] }}
-    {% end %}
-
-    {% for auxil in AUXILS %}
-    when {{ auxil[1].id }} then {{ auxil[0] }}
-    {% end %}
-
-    {% for puncts in PUNCTS %}
-    when {{ puncts[1].id }} then {{ puncts[0] }}
-    {% end %}
-
-    when Tag::None then "-"
-    else           ""
-    end
-    {% end %}
+    @tag.to_str
   end
 
   def self.from_str(tag : ::String) : self
@@ -179,8 +183,8 @@ struct CV::PosTag
   end
 end
 
-# puts CV::PosTag.from_str("n")
-# puts CV::PosTag.from_str("v")
-# puts CV::PosTag.from_str("vn")
+puts CV::PosTag.from_str("n").to_str
+puts CV::PosTag.from_str("v").to_str
+puts CV::PosTag.from_str("vn").to_str
 
 # puts CV::VpTags.map_tag("n").to_i
