@@ -59,7 +59,11 @@ class CV::Zhbook
     parser = RmInfo.init(sname, snvid, ttl: ttl)
 
     if mode > 1 || parser.last_schid != self.last_schid
-      self.mftime = parser.mftime if parser.mftime > 0
+      if parser.mftime > 0
+        self.mftime = parser.mftime
+      else
+        self.mftime = Time.utc.to_unix if parser.last_schid != self.last_schid
+      end
 
       old_chap_count = chap_count
       self.chap_count = parser.chap_list.size
