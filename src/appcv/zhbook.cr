@@ -120,14 +120,14 @@ class CV::Zhbook
     chpage(Chpage.pgidx(index))[index % Chpage::PSIZE]?
   end
 
-  def chtext(index : Int32, part = 0, privi = 4, reset = false)
+  def chtext(index : Int32, cpart : Int32 = 0, privi : Int32 = 4, reset : Bool = false)
     return [] of String unless chinfo = self.chinfo(index)
 
     chtext = Chtext.load(sname, snvid, chinfo)
-    lines, utime = chtext.load!(part)
+    lines, utime = chtext.load!(cpart)
 
     if remote_text?(index, privi) && (reset || lines.empty?)
-      lines, _ = chtext.fetch!(part, reset ? 3.minutes : 30.years)
+      lines, _ = chtext.fetch!(cpart, stale: reset ? 3.minutes : 30.years)
       update_stats!(chtext.infos)
     elsif chinfo.utime < utime || chinfo.parts == 0
       # check if text existed in zip file but not stored in index
