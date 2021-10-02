@@ -2,8 +2,8 @@
   import { api_call } from '$api/_api_call'
 
   export async function load({ page: { params }, fetch }) {
-    const [status, context] = await api_call(fetch, `books/${params.book}`)
-    return status ? { status, error: context } : { context, props: context }
+    const [status, props] = await api_call(fetch, `books/${params.book}`)
+    return status ? { status, error: props } : { stuff: props, props }
   }
 </script>
 

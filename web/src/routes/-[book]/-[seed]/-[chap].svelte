@@ -2,8 +2,8 @@
   import { api_call, put_fetch } from '$api/_api_call'
   import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
-  export async function load({ fetch, page: { params }, context }) {
-    const { cvbook } = context
+  export async function load({ fetch, page: { params }, stuff }) {
+    const { cvbook } = stuff
 
     const { seed: sname, chap } = params
     const [chidx, cpart = 0] = chap.split('-').pop().split('.')

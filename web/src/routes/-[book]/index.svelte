@@ -1,6 +1,6 @@
 <script context="module">
-  export async function load({ fetch, context, page: { query } }) {
-    const { cvbook, ubmemo } = context
+  export async function load({ fetch, stuff, page: { query } }) {
+    const { cvbook, ubmemo } = stuff
     const page = +query.get('page') || 1
     const sort = query.get('sort') || 'stars'
 

@@ -1,8 +1,8 @@
 <script context="module">
   import { api_call } from '$api/_api_call'
 
-  export async function load({ fetch, context }) {
-    const { cvbook, ubmemo } = context
+  export async function load({ fetch, stuff }) {
+    const { cvbook, ubmemo } = stuff
 
     const sname = ubmemo.sname || 'chivi'
 

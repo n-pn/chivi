@@ -1,6 +1,6 @@
 <script context="module">
-  export async function load({ page, context }) {
-    const { cvbook } = context
+  export async function load({ page, stuff }) {
+    const { cvbook } = stuff
     const sname = page.params.seed
     const chidx = +page.query.get('chidx') || 1
     return { props: { cvbook, sname, chidx: chidx } }

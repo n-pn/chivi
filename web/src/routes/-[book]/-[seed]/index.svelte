@@ -1,8 +1,8 @@
 <script context="module">
   import { api_call } from '$api/_api_call'
 
-  export async function load({ page: { params, query }, fetch, context }) {
-    const { cvbook, ubmemo } = context
+  export async function load({ page: { params, query }, fetch, stuff }) {
+    const { cvbook, ubmemo } = stuff
 
     const { snames } = cvbook
     const sname = extract_sname(snames, params.seed)
