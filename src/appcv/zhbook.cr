@@ -41,10 +41,11 @@ class CV::Zhbook
   end
 
   def outdated?(privi = 0)
-    duration = Time.utc - Time.unix(zhbook.bumped)
+    utime = Time.unix(bumped)
+
     case status
-    when 0 then duration > 2.hours ** (4 - privi)
-    when 1 then duration > 2.month * (4 - privi)
+    when 0 then Time.utc - 2.**(4 - privi).hours > utime
+    when 1 then Time.utc - 2.*(4 - privi).months > utime
     else        false
     end
   end

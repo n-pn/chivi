@@ -14,7 +14,8 @@ class CV::ChapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     imode = 1 if imode == 0 && zhbook.outdated?(cu_privi)
 
-    utime, total = zhbook.refresh!(cu_privi, imode)
+    stale = 3.**(4 - cu_privi).minutes
+    utime, total = zhbook.refresh!(cu_privi, imode, ttl: stale)
 
     render_json do |res|
       JSON.build(res) do |jb|
