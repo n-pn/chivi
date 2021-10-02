@@ -183,8 +183,6 @@ struct CV::PosTag
   end
 end
 
-puts CV::PosTag.from_str("n").to_str
-puts CV::PosTag.from_str("v").to_str
-puts CV::PosTag.from_str("vn").to_str
-
-# puts CV::VpTags.map_tag("n").to_i
+# puts CV::PosTag.from_str("n").to_str
+# puts CV::PosTag.from_str("v").to_str
+# puts CV::PosTag.from_str("vn").to_str
