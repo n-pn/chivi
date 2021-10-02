@@ -104,7 +104,7 @@ class CV::Zhbook
 
       4.times do
         break if chidx < 0
-        chlist = self.chlist(Chlist.pgidx(chidx - 1))
+        chlist = self.chlist((chidx - 1) // 128)
 
         break unless chinfo = chlist.get(chidx.to_s)
         chpage << Chpage.new(chinfo, chidx).trans!(cvmtl)

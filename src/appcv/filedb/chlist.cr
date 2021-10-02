@@ -20,16 +20,16 @@ module CV::Chlist
     (pages - 1).downto(0) do |group|
       chlist = load!(sname, snvid, group)
 
-      chidx = group * LSIZE
-      (chidx + 1).upto(chidx + LSIZE) do |index|
+      start = group * LSIZE
+      start.upto(start + LSIZE - 1) do |index|
         break unless infos = data[index]?
-        key = (index + 1).to_s
+        chidx = (index + 1).to_s
 
-        if prevs = chlist.get(key)
+        if prevs = chlist.get(chidx)
           infos << prevs[3] << prevs[4] << prevs[5] if prevs.size >= 6
         end
 
-        chlist.set!(key, infos)
+        chlist.set!(chidx, infos)
       end
 
       break unless redo || chlist.unsaved > 0

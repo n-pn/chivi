@@ -3,7 +3,7 @@ require "./shared/raw_ysrepl"
 
 class CV::SeedYsrepl
   def seed_file!(file : String)
-    repls = RawYsrepl.parse_raw(File.read(file))
+    _total, repls = RawYsrepl.parse_raw(File.read(file))
     repls.each(&.seed!)
   end
 
