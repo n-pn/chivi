@@ -157,9 +157,11 @@
 
     @include fgcolor(tert);
 
-    > * {
-      @include ftsize(sm);
-    }
+    // prettier-ignore
+    span { @include ftsize(sm); }
+
+    // prettier-ignore
+    :global(svg) { margin-bottom: .125rem; }
   }
 
   crit-meta {
