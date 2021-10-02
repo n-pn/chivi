@@ -12,7 +12,7 @@ module CV::MTL::Grammars
 
   def fix_ude2!(node : MtNode) : MtNode
     return node if node.prev? { |x| x.tag.adjts? || x.tag.adverb? }
-    return node if node.succ? { |x| x.verbs? || x.preposes? || x.conjuncts? }
+    return node if node.succ? { |x| x.verbs? || x.preposes? || x.concoord? }
     node.update!(val: "địa", tag: PosTag::Noun)
   end
 
