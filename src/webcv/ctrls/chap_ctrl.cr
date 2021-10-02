@@ -12,9 +12,7 @@ class CV::ChapCtrl < CV::BaseCtrl
     imode = params.fetch_int("mode", min: 0, max: cu_privi)
 
     zhbook = load_zhbook
-    if imode == 0 && zhbook.status == 0 && Time.utc - Time.unix(zhbook.bumped) > 1.days
-      imode = 1
-    end
+    imode = 1 if imode == 0 && zhbook.outdated?(privi)
 
     utime, total = zhbook.refresh!(cu_privi, imode)
 

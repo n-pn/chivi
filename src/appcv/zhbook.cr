@@ -40,11 +40,11 @@ class CV::Zhbook
     cvbook_id_column.value(0) != cvbook_id
   end
 
-  def outdated?
+  def outdated?(privi = 0)
     duration = Time.utc - Time.unix(zhbook.bumped)
     case status
-    when 0 then duration > 1.day
-    when 1 then duration > 1.month
+    when 0 then duration > 2.hours ** (4 - privi)
+    when 1 then duration > 2.month * (4 - privi)
     else        false
     end
   end
