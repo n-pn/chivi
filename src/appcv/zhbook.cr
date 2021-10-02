@@ -40,6 +40,15 @@ class CV::Zhbook
     cvbook_id_column.value(0) != cvbook_id
   end
 
+  def outdated?
+    duration = Time.utc - Time.unix(zhbook.bumped)
+    case status
+    when 0 then duration > 1.day
+    when 1 then duration > 1.month
+    else        false
+    end
+  end
+
   def refresh!(privi = 4, mode = 0, ttl = 5.minutes) : Tuple(Int64, Int32)
     unless mode > 0 && remote?(privi)
       reset_pages!(chmin: 1) if privi > 1
