@@ -30,19 +30,15 @@ module CV::Zhseed
 
   def remote?(sname : String, privi : Int32 = 4, special_case = false)
     case sname
-    when "chivi", "zxcs_me" then false
     when "5200", "bqg_5200", "rengshu", "nofff"
       privi >= 0 || special_case
     when "hetushu", "biqubao", "bxwxorg", "xbiquge"
       privi >= 1 || special_case
-    when "zhwenpg", "69shu", "paoshu8", "duokan8"
+    when "69shu", "paoshu8", "duokan8"
       privi >= 2 || special_case
-    when "shubaow"
+    when "shubaow" # only works in real pc environment
       privi >= 3 && ENV["AMBER_ENV"]? != "production"
-    when "jx_la"
-      privi >= 4
-    else
-      privi >= 1
+    else false
     end
   end
 end
