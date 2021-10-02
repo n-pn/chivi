@@ -34,7 +34,7 @@ class CV::CvList
 
         if (prev = node.prev) && (prev.verb? || prev.cat == 0)
           next unless succ = node.succ
-          node.fix("") if succ.word? && succ.key != prev.key
+          node.fix("") if succ.contws? && succ.key != prev.key
         end
       when "对"
         if node.succ?.try { |x| x.cat > 0 || x.key[0] == '“' }
@@ -49,7 +49,7 @@ class CV::CvList
           node.fix("không đúng")
         end
       when "也"
-        node.fix(node.succ?.try(&.word?) ? "cũng" : "vậy")
+        node.fix(node.succ?(&.contws?) ? "cũng" : "vậy")
       when "地"
         # TODO: check noun, verb?
         if prev = node.prev
@@ -57,7 +57,7 @@ class CV::CvList
           node.fix(val)
         end
       when "原来"
-        if node.succ?.try(&.match_key?("的")) || node.prev?.try(&.word?)
+        if node.succ?.try(&.match_key?("的")) || node.prev?(&.contws?)
           val = "ban đầu"
         else
           val = "thì ra"
