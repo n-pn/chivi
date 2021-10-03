@@ -31,7 +31,7 @@
   })
 </script>
 
-<progress-bar out:fade={{ delay: 100 }}>
+<progress-bar out:fade={{ delay: 50 }}>
   <progress-value style="--width: {$progress}%" />
 </progress-bar>
 
