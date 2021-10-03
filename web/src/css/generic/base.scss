@@ -19,6 +19,10 @@ $colors: (gray, blue, green, orange, red, violet) !default;
   --bd-bold: #{color(neutral, 3)};
 }
 
+.tm-warm {
+  --bg-main: #{color(orange, 1)};
+}
+
 .tm-dark,
 .tm-oled {
   --fg-link: #{color(blue, 5)};

@@ -25,6 +25,10 @@
   @include bgcolor(tert);
   @include shadow(1);
 
+  .tm-warm & {
+    background: #fffbeb;
+  }
+
   .tm-dark &,
   .tm-oled & {
     @include linesd(--bd-soft, $ndef: false, $inset: false);

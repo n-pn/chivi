@@ -1,7 +1,7 @@
 <script context="module">
   import { session } from '$app/stores'
 
-  const wthemes = ['Light', 'Dark', 'Oled']
+  const wthemes = ['light', 'warm', 'dark', 'oled']
   const tlmodes = ['Cơ bản', 'Nâng cao']
 </script>
 
@@ -30,15 +30,15 @@
 <div class="config">
   <div class="radio">
     <span class="label">Giao diện:</span>
-    {#each wthemes as label}
-      <label class="m-radio">
+    {#each wthemes as wtheme}
+      <label class="wtheme _{wtheme}" class:_active={wtheme == $session.wtheme}>
         <input
           type="radio"
           name="wtheme"
-          value={label.toLowerCase()}
-          on:click={() => update_setting({ wtheme: label.toLowerCase() })}
+          value={wtheme}
+          on:click={() => update_setting({ wtheme: wtheme })}
           bind:group={$session.wtheme} />
-        <span>{label}</span>
+        <span>{wtheme}</span>
       </label>
     {/each}
   </div>
@@ -72,6 +72,65 @@
 </div>
 
 <style lang="scss">
+  .wtheme {
+    text-transform: capitalize;
+    cursor: pointer;
+    display: inline-flex;
+
+    input {
+      display: none;
+    }
+
+    &:hover {
+      @include fgcolor(primary, 5);
+    }
+
+    &._active {
+      font-weight: 500;
+      @include fgcolor(primary, 5);
+    }
+
+    &:before {
+      content: '';
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      margin-top: 0.1rem;
+      margin-right: 0.2rem;
+      @include bdradi;
+    }
+
+    &._light:before {
+      @include bgcolor(neutral, 0);
+      @include linesd(--bd-main, $inset: false);
+    }
+
+    &._warm:before {
+      @include bgcolor(orange, 1);
+      @include linesd(--bd-main, $inset: false);
+    }
+
+    &._dark:before {
+      @include bgcolor(primary, 9);
+    }
+
+    &._oled:before {
+      background: #000;
+    }
+
+    @include tm-dark {
+      &._light:before,
+      &._warm:before {
+        --linesd: 0;
+      }
+
+      &._dark:before,
+      &._oled:before {
+        @include linesd(--bd-main, $inset: false);
+      }
+    }
+  }
+
   .radio {
     line-height: 1.25;
     padding: 0.5rem 0;
