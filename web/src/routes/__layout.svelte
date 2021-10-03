@@ -101,7 +101,9 @@
   </div>
 </div>
 
-<Loader active={$navigating} />
+{#if $navigating}
+  <Loader />
+{/if}
 
 <style lang="scss">
   .app {
