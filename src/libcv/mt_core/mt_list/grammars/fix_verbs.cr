@@ -45,9 +45,11 @@ module CV::MTL::Grammars
           node.fold!(succ, val)
         end
       when .uguo?
-        node.fuse_right!("#{node.val} qua")
+        node.fold!(succ, "#{node.val} qua")
       when .uzhe?
-        node.fuse_right!("#{node.val} lấy")
+        node.fold!(succ, "#{node.val} lấy")
+      when .ahao?
+        node.fold!(succ, "#{node.val} tốt")
       when .nquant?
         case succ.key
         when "一趟", "一下"
