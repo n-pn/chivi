@@ -25,8 +25,9 @@
   @include bgcolor(tert);
   @include shadow(1);
 
-  @include tm-dark {
-    @include linesd(--bd-soft);
+  .tm-dark &,
+  .tm-oled & {
+    @include linesd(--bd-soft, $ndef: false, $inset: false);
   }
 
   .adsbygoogle {

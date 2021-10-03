@@ -81,10 +81,13 @@
   </svelte:fragment>
 
   <div class="main-info">
-    <div class="title">
-      <h1 class="-main">{cvbook.vtitle}</h1>
-      <h2 class="-sub">({cvbook.ztitle})</h2>
-    </div>
+    <h1 class="title">
+      <span class="-main">{cvbook.vtitle}</span>
+      {#if cvbook.vtitle != cvbook.htitle}
+        <span class="-main">- {cvbook.htitle}</span>
+      {/if}
+      <span class="-sub">- {cvbook.ztitle}</span>
+    </h1>
 
     <div class="cover">
       <BCover bcover={cvbook.bcover} />
@@ -162,7 +165,7 @@
     </section>
   </div>
 
-  <div class="section">
+  <book-section>
     <header class="section-header">
       <a
         href="/-{cvbook.bslug}"
@@ -189,7 +192,7 @@
     <div class="section-content">
       <slot />
     </div>
-  </div>
+  </book-section>
 </Vessel>
 
 <style lang="scss">
@@ -205,12 +208,11 @@
     @include bps(float, left, $md: right);
     @include bps(width, 100%, $md: 70%, $lg: 75%);
     @include bps(padding-left, 0, $md: 0.75rem);
-    @include bps(line-height, 1.5rem, $md: 1.75rem, $lg: 2rem);
+    @include bps(line-height, 1.25rem, $md: 1.5rem, $lg: 1.75rem);
 
     > .-main,
     > .-sub {
       font-weight: 400;
-      display: inline-block;
     }
 
     > .-main {
@@ -291,18 +293,18 @@
     // @include fgcolor(neutral, 8);
   }
 
-  .section {
+  book-section {
     @include bgcolor(tert);
 
-    margin: 0 -0.5rem;
+    display: block;
+    margin: 0.75rem -0.75rem;
     padding: 0 0.5rem;
-
     border-radius: 0.5rem;
 
     @include shadow(2);
 
     @include tm-dark {
-      @include linesd(--bd-soft, $inset: false);
+      @include linesd(--bd-soft, $ndef: false, $inset: false);
     }
 
     @include bp-min(md) {
