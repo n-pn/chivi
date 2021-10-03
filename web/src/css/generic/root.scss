@@ -3,8 +3,8 @@
   font-style: normal;
   font-weight: 400;
   src: local(''),
-    url('../fonts/roboto-v29-vietnamese_latin-regular.woff2') format('woff2'),
-    url('../fonts/roboto-v29-vietnamese_latin-regular.woff') format('woff');
+    url('/fonts/roboto-v29-vietnamese_latin-regular.woff2') format('woff2'),
+    url('/fonts/roboto-v29-vietnamese_latin-regular.woff') format('woff');
 }
 
 @font-face {
@@ -12,8 +12,8 @@
   font-style: italic;
   font-weight: 400;
   src: local(''),
-    url('../fonts/roboto-v29-vietnamese_latin-italic.woff2') format('woff2'),
-    url('../fonts/roboto-v29-vietnamese_latin-italic.woff') format('woff');
+    url('/fonts/roboto-v29-vietnamese_latin-italic.woff2') format('woff2'),
+    url('/fonts/roboto-v29-vietnamese_latin-italic.woff') format('woff');
 }
 
 @font-face {
@@ -21,8 +21,8 @@
   font-style: normal;
   font-weight: 500;
   src: local(''),
-    url('../fonts/roboto-v29-vietnamese_latin-500.woff2') format('woff2'),
-    url('../fonts/roboto-v29-vietnamese_latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+    url('/fonts/roboto-v29-vietnamese_latin-500.woff2') format('woff2'),
+    url('/fonts/roboto-v29-vietnamese_latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
 @font-face {
@@ -30,8 +30,8 @@
   font-style: italic;
   font-weight: 500;
   src: local(''),
-    url('../fonts/roboto-v29-vietnamese_latin-500italic.woff2') format('woff2'),
-    url('../fonts/roboto-v29-vietnamese_latin-500italic.woff');
+    url('/fonts/roboto-v29-vietnamese_latin-500italic.woff2') format('woff2'),
+    url('/fonts/roboto-v29-vietnamese_latin-500italic.woff');
 }
 
 *,
