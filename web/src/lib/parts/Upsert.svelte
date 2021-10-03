@@ -46,6 +46,7 @@
   import Vutil from './Upsert/Vutil.svelte'
   import Vrank from './Upsert/Vrank.svelte'
   import Links from './Upsert/Links.svelte'
+  import { detach_before_dev } from 'svelte/internal'
 
   export let dname = 'combine'
   export let label = 'Tổng hợp'
@@ -132,12 +133,11 @@
   }
 </script>
 
-<div class="wrap" on:click={deactivate} transition:fade={{ duration: 100 }}>
-  <div
-    class="main"
+<modal-wrap on:click={deactivate} transition:fade={{ duration: 100 }}>
+  <modal-main
     on:click|stopPropagation={focus_on_value}
     transition:scale={{ duration: 100, easing: backInOut }}>
-    <header class="head">
+    <modal-head class="head">
       <CMenu dir="left" loc="top">
         <button class="m-button _text" slot="trigger">
           <SIcon name="menu-2" />
@@ -164,9 +164,9 @@
         on:click={deactivate}>
         <SIcon name="x" />
       </button>
-    </header>
+    </modal-head>
 
-    <section class="tabs">
+    <modal-tabs>
       <button
         class="tab-item _book"
         class:_active={$tab == 0}
@@ -206,9 +206,9 @@
           </svelte:fragment>
         </CMenu>
       </div>
-    </section>
+    </modal-tabs>
 
-    <section class="body">
+    <modal-body>
       <Emend {term} p_min={$tab + 1} />
 
       <div class="field">
@@ -265,11 +265,11 @@
           </button>
         </div>
       </div>
-    </section>
+    </modal-body>
 
     <Links {key} />
-  </div>
-</div>
+  </modal-main>
+</modal-wrap>
 
 {#if $state > 1}
   <Postag bind:ptag={term.ptag} bind:state={$state} />
@@ -278,7 +278,7 @@
 <style lang="scss">
   $gutter: 0.75rem;
 
-  .wrap {
+  modal-wrap {
     @include flex($center: both);
     position: fixed;
     top: 0;
@@ -289,7 +289,8 @@
     background: rgba(#000, 0.75);
   }
 
-  .main {
+  modal-main {
+    display: block;
     width: rem(30);
     min-width: 320px;
     max-width: 100%;
@@ -302,7 +303,7 @@
     }
   }
 
-  .head {
+  modal-head {
     @include flex();
 
     // @include bdradi($loc: top);
@@ -322,7 +323,7 @@
 
   $tab-height: 2.25rem;
 
-  .tabs {
+  modal-tabs {
     margin-top: 0.5rem;
     height: $tab-height;
     padding: 0 0.75rem;
@@ -385,9 +386,10 @@
     }
   }
 
-  .body {
-    @include bgcolor(bg-secd);
+  modal-body {
+    display: block;
     padding: 0 0.75rem;
+    @include bgcolor(bg-secd);
   }
 
   .field {

@@ -21,8 +21,8 @@ $colors: (gray, blue, green, orange, red, violet) !default;
 
 .tm-warm {
   --bg-main: #{color(orange, 1)};
+  --bg-secd: #fcfaf6;
   --bg-tert: #fffbeb;
-  --bg-secd: #fff7ed;
 
   --bd-soft: #{color(orange, 1, 5)};
   --bd-main: #{color(orange, 2, 5)};
