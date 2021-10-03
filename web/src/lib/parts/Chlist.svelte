@@ -94,8 +94,8 @@
 
     // prettier-ignore
     &._active {
-      @include bgcolor(primary, 2, 3);
-      @include tm-dark { @include bgcolor(primary, 8, 3); }
+      @include bgcolor(primary, 2, 4);
+      @include tm-dark { @include bgcolor(primary, 8, 4); }
     }
   }
 

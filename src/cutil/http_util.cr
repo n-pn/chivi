@@ -26,7 +26,7 @@ module CV::HttpUtil
     ensure
       try += 1
       sleep 200.milliseconds * try
-      raise "[GET: #{url} failed after 3 attempts.]" if try > 2
+      raise "[GET: #{url} failed after 2 attempts.]" if try > 2
     end
   end
 
