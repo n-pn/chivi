@@ -88,6 +88,10 @@
   on:keydown={handle_keydown}
   on:keyup={() => (kbd_hint = false)} />
 
+<svelte:head>
+  <meta name="theme-color" content="#0b476b" />
+</svelte:head>
+
 <div class="app tm-{$session.wtheme}" class:kbd-hint={kbd_hint}>
   <slot />
 
