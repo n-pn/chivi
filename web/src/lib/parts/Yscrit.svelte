@@ -87,7 +87,7 @@
     @include bgcolor(secd);
 
     @include tm-dark {
-      @include linesd(--bd-soft);
+      @include linesd(--bd-soft, $inset: false);
     }
   }
 

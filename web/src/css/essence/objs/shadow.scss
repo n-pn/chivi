@@ -21,8 +21,8 @@ $shadows: (
   @return map-get($shadows, $type) or $type;
 }
 
-@function linesd($color, $tone: 5, $width: 1px) {
-  @return 0 0 0 $width color($color, $tone);
+@function linesd($color, $tone: 5, $width: 1px, $inset: true) {
+  @return 0 0 0 $width color($color, $tone) if($inset, inset, '');
 }
 
 @function ringsd($color, $tone: 5, $width: 2px, $offset: 0px) {
@@ -36,7 +36,7 @@ $shadows: (
 }
 
 // prettier-ignore
-@mixin linesd($color: neutral, $tone: 3, $width: 1px, $ndef: true) {
+@mixin linesd($color: neutral, $tone: 3, $width: 1px, $ndef: true, $inset: true) {
   @if $color { --linesd: #{linesd($color, $tone, $width)}; }
   @if $ndef { box-shadow: var(--linesd); }
 }

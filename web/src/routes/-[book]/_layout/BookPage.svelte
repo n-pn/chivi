@@ -302,7 +302,7 @@
     @include shadow(2);
 
     @include tm-dark {
-      @include linesd(--bd-soft);
+      @include linesd(--bd-soft, $inset: false);
     }
 
     @include bp-min(md) {
