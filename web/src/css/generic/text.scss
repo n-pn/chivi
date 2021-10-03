@@ -16,13 +16,13 @@ figcaption, blockquote, figure {
 h1,
 .h1 {
   @include heading($h1-size, 1.25);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 h2,
 .h2 {
   @include heading($h2-size, 1.25);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 h3,
@@ -51,7 +51,7 @@ h6,
 
 b,
 strong {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 small {

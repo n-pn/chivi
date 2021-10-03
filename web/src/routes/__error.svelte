@@ -44,7 +44,7 @@
 
   h1 {
     font-size: 4rem;
-    font-weight: 300;
+    font-weight: 400;
     margin-bottom: 0.5rem;
 
     --fg: #{color(gray, 7)};

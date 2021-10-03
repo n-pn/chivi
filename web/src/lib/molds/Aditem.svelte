@@ -61,6 +61,6 @@
 
   a {
     @include fgcolor(primary, 6);
-    font-weight: 600;
+    font-weight: 500;
   }
 </style>

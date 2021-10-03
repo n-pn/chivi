@@ -17,35 +17,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favi/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favi/favicon-16x16.png" />
 
-    <style>
-      @font-face {
-        font-family: 'Roboto';
-        font-weight: 100 900;
-        font-display: swap;
-        font-style: normal;
-        font-named-instance: 'Regular';
-        src: url('/fonts/Roboto.woff2?v=3.003') format('woff2');
-      }
-
-      @font-face {
-        font-family: 'Roboto';
-        font-weight: 100 900;
-        font-display: swap;
-        font-style: italic;
-        font-named-instance: 'Italic';
-        src: url('/fonts/Roboto-Italic.woff2?v=3.003') format('woff2');
-      }
-    </style>
-  </head>
-
-  <body>
-    <div id="svelte">%svelte.body%</div>
-
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=UA-160000714-1"
     ></script>
-
     <script>
       window.dataLayer = window.dataLayer || []
       function gtag() {
@@ -54,5 +29,9 @@
       gtag('js', new Date())
       gtag('config', 'UA-160000714-1')
     </script>
+  </head>
+
+  <body>
+    <div id="svelte">%svelte.body%</div>
   </body>
 </html>
