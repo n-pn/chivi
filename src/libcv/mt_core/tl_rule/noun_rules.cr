@@ -12,17 +12,33 @@ module CV::TlRule
         node.tag = succ.tag
         node.fold!(succ)
       when .noun?
-        break unless node.names?
-        node.tag = PosTag::Noun
-        node.fold!(succ, "#{succ.val} #{node.val}")
+        case node
+        when .names?
+          node.tag = PosTag::Noun
+          node.fold!(succ, "#{succ.val} #{node.val}")
+        when .noun?
+          node.dic = 9
+          node.fold!(succ, "#{succ.val} #{node.val}")
+        when .veno?
+          # TODO: check more noun verb case
+          break unless node.prev?(&.ude1?)
+
+          node.dic = 9
+          node.fold!(succ, "#{succ.val} #{node.val}")
+        else break
+        end
       when .concoord?
         node = fold_near_concoord!(node, succ, succ.succ)
         break if node.succ == succ
-
-        node.dic = 8
       when .penum?
         node = fold_near_penum!(node, succ, succ.succ)
         break node.succ == succ
+      when .suf_verb?
+        node = heal_suf_verb!(node, succ)
+        break
+      when .suffix们?
+        node = heal_suffix_们!(node, succ)
+        break
       else break
       end
     end

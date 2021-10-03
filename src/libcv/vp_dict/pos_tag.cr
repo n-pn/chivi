@@ -5,60 +5,23 @@ struct CV::PosTag
   # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
+  macro inline_tag(group)
+
+  end
+
   enum Tag
     None; Unkn
 
-    {% for noun in NOUNS %}
-    {{ noun[1].id }}
-    {% end %}
-
-    {% for verb in VERBS %}
-    {{ verb[1].id }}
-    {% end %}
-
-    {% for adjt in ADJTS %}
-    {{ adjt[1].id }}
-    {% end %}
-
-    {% for misc in MISCS %}
-    {{ misc[1].id }}
-    {% end %}
-
-    {% for auxil in AUXILS %}
-    {{ auxil[1].id }}
-    {% end %}
-
-    {% for punct in PUNCTS %}
-    {{ punct[1].id }}
+    {% for type in NOUNS + VERBS + ADJTS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+      {{ type[1].id }}
     {% end %}
 
     def to_str
       {% begin %}
       case self
-      {% for noun in NOUNS %}
-      when {{ noun[1].id }} then {{ noun[0] }}
+      {% for type in NOUNS + VERBS + ADJTS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+        when {{ type[1].id }} then {{ type[0] }}
       {% end %}
-
-      {% for verb in VERBS %}
-      when {{ verb[1].id }} then {{ verb[0] }}
-      {% end %}
-
-      {% for adjt in ADJTS %}
-      when {{ adjt[1].id }} then {{ adjt[0] }}
-      {% end %}
-
-      {% for misc in MISCS %}
-      when {{ misc[1].id }} then {{ misc[0] }}
-      {% end %}
-
-      {% for auxil in AUXILS %}
-      when {{ auxil[1].id }} then {{ auxil[0] }}
-      {% end %}
-
-      {% for puncts in PUNCTS %}
-      when {{ puncts[1].id }} then {{ puncts[0] }}
-      {% end %}
-
       when None then "-"
       else           ""
       end
@@ -69,28 +32,8 @@ struct CV::PosTag
   None = new(Tag::None, Pos::Puncts)
   Unkn = new(Tag::Unkn, Pos::Contws)
 
-  {% for noun in NOUNS %}
-    {{ noun[1].id }} = new(Tag::{{noun[1].id}}, {{noun[2]}})
-  {% end %}
-
-  {% for verb in VERBS %}
-    {{ verb[1].id }} = new(Tag::{{verb[1].id}}, {{verb[2]}})
-  {% end %}
-
-  {% for adjt in ADJTS %}
-    {{ adjt[1].id }} = new(Tag::{{adjt[1].id}}, {{adjt[2]}})
-  {% end %}
-
-  {% for misc in MISCS %}
-    {{ misc[1].id }} = new(Tag::{{misc[1].id}}, {{misc[2]}})
-  {% end %}
-
-  {% for auxil in AUXILS %}
-    {{ auxil[1].id }} = new(Tag::{{auxil[1].id}}, {{auxil[2]}})
-  {% end %}
-
-  {% for puncts in PUNCTS %}
-    {{ puncts[1].id }} = new(Tag::{{puncts[1].id}}, {{puncts[2]}})
+  {% for type in NOUNS + VERBS + ADJTS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+    {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
   {% end %}
 
   getter pos : Pos
@@ -150,31 +93,9 @@ struct CV::PosTag
   def self.from_str(tag : ::String) : self
     {% begin %}
     case tag
-
-    {% for noun in NOUNS %}
-    when {{ noun[0] }} then {{ noun[1].id }}
+    {% for type in NOUNS + VERBS + ADJTS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+    when {{ type[0] }} then {{ type[1].id }}
     {% end %}
-
-    {% for verb in VERBS %}
-    when {{ verb[0] }} then {{ verb[1].id }}
-    {% end %}
-
-    {% for adjt in ADJTS %}
-    when {{ adjt[0] }} then {{ adjt[1].id }}
-    {% end %}
-
-    {% for misc in MISCS %}
-    when {{ misc[0] }} then {{ misc[1].id }}
-    {% end %}
-
-    {% for auxil in AUXILS %}
-    when {{ auxil[0] }} then {{ auxil[1].id }}
-    {% end %}
-
-    {% for punct in PUNCTS %}
-    when {{ punct[0] }} then {{ punct[1].id }}
-    {% end %}
-
     when "z" then Adesc
     when "-" then None
     else          Unkn

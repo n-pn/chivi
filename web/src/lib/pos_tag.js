@@ -95,7 +95,7 @@ export const labels = {
   wj: 'Dấu chấm 。',
   wx: 'Dấu chấm .',
   wd: 'Dấu phẩy ,',
-  wn: 'Phẩy nối 、',
+  wn: 'Dấu ngắt 、',
   wm: 'Hai chấm :',
   ws: 'Ba chấm …',
   wp: 'Gạch ngang —',

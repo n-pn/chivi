@@ -11,6 +11,8 @@ struct CV::PosTag
 
     Auxils; Preposes
 
+    Prefixes; Suffixes
+
     Uniqs
   end
 end

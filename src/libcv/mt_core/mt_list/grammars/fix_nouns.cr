@@ -4,10 +4,6 @@ module CV::MTL::Grammars
 
     if succ = node.succ?
       case succ.tag
-      when .kmen?
-        node.fold!("các #{node.val}")
-      when .ptitle?
-        node.fold!
       when .adjts?
         if succ.succ?(&.ude1?)
           node.tag = PosTag::Adjt

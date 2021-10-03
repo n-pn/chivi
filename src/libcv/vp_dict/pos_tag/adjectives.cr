@@ -1,6 +1,5 @@
 struct CV::PosTag
   ADJTS = {
-
     # 形容词 - adjective - hình dung từ (tính từ)
     {"a", "Adjt", Pos::Adjts | Pos::Contws},
     # 副形词 - adverbial use of adjective - phó hình từ (phó + tính từ)

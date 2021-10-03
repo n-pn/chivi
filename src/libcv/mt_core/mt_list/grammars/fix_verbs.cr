@@ -55,9 +55,8 @@ module CV::MTL::Grammars
         end
 
         break
-      when .kshi?
-        node.fuse_right!("lúc #{node.val}")
-        node.tag = PosTag::Vintr
+      when .suffix时?
+        node = TlRule.heal_suffix_时!(node, succ)
       else
         break
       end

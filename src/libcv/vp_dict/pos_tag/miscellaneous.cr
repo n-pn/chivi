@@ -1,6 +1,5 @@
 struct CV::PosTag
   MISCS = {
-
     # modifier (non-predicate noun modifier) - từ khu biệt
     {"b", "Modifier", Pos::Contws},
     # 区别词性惯用语 - noun modifier morpheme
@@ -49,12 +48,6 @@ struct CV::PosTag
     ################
     # 虚词 - hư từ #
     ###############
-
-    {"h", "Prefix", Pos::Funcws}, # 前缀 - prefix - tiền tố
-    {"k", "Suffix", Pos::Funcws}, # 后缀 - suffix - hậu tố
-
-    {"kmen", "Kmen", Pos::Funcws}, # hậu tố 们
-    {"kshi", "Kshi", Pos::Funcws}, # hậu tố 时
 
     {"d", "Adverb", Pos::Funcws}, # 副词 - adverb - phó từ (trạng từ)
     # dg adverbial morpheme
