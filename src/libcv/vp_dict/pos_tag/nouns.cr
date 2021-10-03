@@ -7,18 +7,22 @@ struct CV::PosTag
     # 名词性语素 - nominal morpheme
     {"ng", "Nmorp", Pos::Nouns | Pos::Contws},
 
-    # danh xưng: chức danh, nghề nghiệp, địa vị
-    {"nw", "Ntitle", Pos::Nouns | Pos::Contws},
     # 人名 - person name - tên người
-    {"nr", "Nper", Pos::Nouns | Pos::Contws},
-    # họ người
-    {"nf", "Nsur", Pos::Nouns | Pos::Contws},
+    {"nr", "Person", Pos::Nouns | Pos::Contws},
+    # 姓氏 - family name - dòng họ
+    {"nf", "Linage", Pos::Nouns | Pos::Contws},
+
+    # danh xưng: chức danh, nghề nghiệp, địa vị
+    {"nw", "Ptitle", Pos::Nouns | Pos::Contws},
+
+    # dòng họ + danh xưng
+    {"nfw", "Snwtit", Pos::Nouns | Pos::Contws},
 
     # 地名 - location name - địa danh
-    {"ns", "Nloc", Pos::Nouns | Pos::Contws},
+    {"ns", "Locname", Pos::Nouns | Pos::Contws},
 
     # 机构团体名 - organization name - tổ chức
-    {"nt", "Norg", Pos::Nouns | Pos::Contws},
+    {"nt", "Orgname", Pos::Nouns | Pos::Contws},
 
     # 其它专名 - other proper noun - tên riêng khác
     {"nz", "Nother", Pos::Nouns | Pos::Contws},
@@ -38,9 +42,5 @@ struct CV::PosTag
   @[AlwaysInline]
   def nouns?
     @pos.nouns?
-  end
-
-  def names?
-    Tag::Nper <= @tag <= Tag::Nother
   end
 end

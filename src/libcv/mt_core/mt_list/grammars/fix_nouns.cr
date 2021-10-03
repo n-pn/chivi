@@ -6,7 +6,7 @@ module CV::MTL::Grammars
       case succ.tag
       when .kmen?
         node.fuse_right!("các #{node.val}")
-      when .ntitle?
+      when .ptitle?
         node.fuse_right!("#{node.val} #{succ.val}")
       when .adjts?
         if succ.succ?(&.ude1?)
@@ -65,7 +65,7 @@ module CV::MTL::Grammars
       when .propers?
         break if prev.prev?(&.verb?)
 
-        if node.ntitle?
+        if node.ptitle?
           node.fuse_left!("", " của #{prev.val}")
         else
           node.fuse_left!("#{prev.val} ")

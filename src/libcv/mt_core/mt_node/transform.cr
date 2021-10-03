@@ -23,15 +23,18 @@ module MTL::Transform
     self
   end
 
-  def fuse_right!(@val : String = "#{@val}#{@succ.try(&.val)}", @dic = 6) : self
-    return self unless succ = @succ
-
+  def fuse_right!(succ : self, @val = "#{@val} #{succ.val}", @dic = 6)
     @key = "#{@key}#{succ.key}"
 
     self.succ = succ.succ
     self.succ?(&.prev = self)
 
     self
+  end
+
+  def fuse_right!(val : String = "#{@val} #{succ?(&.val)}", dic = 6) : self
+    return self unless succ = @succ
+    fuse_right!(succ, val, dic)
   end
 
   def fuse_的!(succ : self, succ_succ : self, join = " ")

@@ -193,17 +193,23 @@ class CV::DictCtrl < CV::BaseCtrl
     end
 
     # add to qtran dict if entry is a person name
-    if vdict.dtype > 3 && dname != "combine"
-      if key.size > 1 && vpterm.ptag.nper?
-        combine_dict = VpDict.load("combine", stype)
-        combine_term = combine_dict.new_term(key, val, attr, rank, mtime: mtime)
-        combine_dict.set!(combine_term)
-      end
-    end
+    add_to_combine_dict(vpterm, stype) if vdict.dtype > 3 && dname != "combine"
 
     json_view(vpterm)
   rescue err
     puts err
     halt! 500, err.message
+  end
+
+  private def add_to_combine_dict(vpterm, stype)
+    return if vpterm.key.size < 2
+    return unless vpterm.ptag.person? || vpterm.ptag.snwtit?
+
+    # TODO: check permission
+    VpDict.load("combine", "_priv").tap { |x| x.set!(x.new_term(vpterm)) }
+
+    if stype == "_base"
+      VpDict.load("combine", "_base").tap { |x| x.set!(x.new_term(vpterm)) }
+    end
   end
 end

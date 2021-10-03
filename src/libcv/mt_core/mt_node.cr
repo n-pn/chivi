@@ -65,21 +65,20 @@ class CV::MtNode
     self
   end
 
-  def fix_prev(@prev : self) : self
+  def fix_prev!(@prev : self) : self
     prev.succ = self
     self
   end
 
-  def fix_prev(@prev : Nil)
+  def fix_prev!(@prev : Nil)
     self
   end
 
-  def fix_succ(@succ : self) : self
+  def fix_succ!(@succ : self) : self
     succ.prev = self
-    self
   end
 
-  def fix_succ(@succ : Nil)
+  def fix_succ!(@succ : Nil)
     self
   end
 

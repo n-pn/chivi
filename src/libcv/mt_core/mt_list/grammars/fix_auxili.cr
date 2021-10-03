@@ -27,7 +27,7 @@ module CV::MTL::Grammars
 
     prev = node.prev.not_nil!
 
-    if prev.tag.names? || prev.tag.propers?
+    if prev.tag.nouns? || prev.tag.propers?
       unless prev.prev?(&.tag.verbs?) || prev.prev?(&.tag.prepos?)
         node.val = "của"
         node.dic = 9
