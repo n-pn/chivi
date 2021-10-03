@@ -25,6 +25,10 @@
   @include bgcolor(tert);
   @include shadow(1);
 
+  @include tm-dark {
+    @include linesd(--bd-soft);
+  }
+
   .adsbygoogle {
     margin-top: 1rem;
   }

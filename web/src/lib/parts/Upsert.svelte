@@ -295,8 +295,11 @@
     max-width: 100%;
     @include bgcolor(tert);
     @include bdradi();
-    @include border(--bd-soft);
     @include shadow(3);
+
+    @include tm-dark {
+      @include linesd(--bd-soft);
+    }
   }
 
   .head {

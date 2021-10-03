@@ -1,4 +1,4 @@
-@use "../defs" as *;
+@use '../defs' as *;
 
 $shadow-0: 0 0 0 #000;
 $shadow-1: 0 1px 2px 0 rgba(#000, 0.1) !default;
@@ -22,7 +22,7 @@ $shadows: (
 }
 
 @function linesd($color, $tone: 5, $width: 1px) {
-  @return 0 0 0 $width color($color, $tone) inset;
+  @return 0 0 0 $width color($color, $tone);
 }
 
 @function ringsd($color, $tone: 5, $width: 2px, $offset: 0px) {

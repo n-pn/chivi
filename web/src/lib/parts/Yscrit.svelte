@@ -85,6 +85,10 @@
     @include shadow();
     @include bdradi();
     @include bgcolor(secd);
+
+    @include tm-dark {
+      @include linesd(--bd-soft);
+    }
   }
 
   crit-head {

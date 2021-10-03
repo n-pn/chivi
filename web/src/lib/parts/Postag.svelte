@@ -101,6 +101,10 @@
     @include bdradi();
     @include shadow(1);
     @include bgcolor(secd);
+
+    @include tm-dark {
+      @include linesd(--bd-soft);
+    }
   }
 
   $tab-height: 2rem;

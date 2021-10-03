@@ -301,6 +301,10 @@
 
     @include shadow(2);
 
+    @include tm-dark {
+      @include linesd(--bd-soft);
+    }
+
     @include bp-min(md) {
       margin: 0.75rem 0;
       padding-left: 1rem;
