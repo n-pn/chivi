@@ -30,7 +30,7 @@ module CV::MTL::Grammars
     if prev.tag.nouns? || prev.tag.propers?
       unless prev.prev?(&.tag.verbs?) || prev.prev?(&.tag.prepos?)
         node.val = "của"
-        node.dic = 9
+        node.dic = 7
         return node.tap(&.fuse_left!("", " #{prev.val}"))
       end
     end

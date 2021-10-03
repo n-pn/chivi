@@ -28,18 +28,18 @@ class CV::MtList
     @head.set_succ(node)
   end
 
+  def each(node = @head)
+    while node = node.succ?
+      yield node
+    end
+  end
+
   def to_s : String
     String.build { |io| to_s(io) }
   end
 
   def to_s(io : IO) : Nil
     each { |node| io << node.val }
-  end
-
-  def each(node = @head)
-    while node = node.succ?
-      yield node
-    end
   end
 
   def to_str : String

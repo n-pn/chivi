@@ -12,13 +12,13 @@ module CV::MTL::Grammars
     # add suffix
     case succ.key
     when "多"
-      node.fuse_right!("hơn #{node.val}")
+      node.fold!("hơn #{node.val}")
     when "余"
-      node.fuse_right!("trên #{node.val}")
+      node.fold!("trên #{node.val}")
     when "来"
-      node.fuse_right!("chừng #{node.val}")
+      node.fold!("chừng #{node.val}")
     when "几"
-      node.fuse_right!("#{node.val} mấy")
+      node.fold!("#{node.val} mấy")
     end
 
     has_第 = node.key.starts_with?("第")
@@ -35,46 +35,34 @@ module CV::MTL::Grammars
 
     # handle multi meaning quantifier
     case succ.key
-    when "石" then succ.update!("thạch", PosTag::Quanti)
-    when "两" then succ.update!("lượng", PosTag::Quanti)
-    when "里" then succ.update!("dặm", PosTag::Quanti)
-    when "米" then succ.update!("mét", PosTag::Quanti)
-    when "帮" then succ.update!("bang", PosTag::Quanti)
-    when "道" then succ.update!("đạo", PosTag::Quanti)
-    when "股" then succ.update!("cỗ", PosTag::Quanti)
-    when "更" then succ.update!("canh", PosTag::Quanti)
-    when "重" then succ.update!("tầng", PosTag::Quanti)
-    when "分" then succ.update!("phân", PosTag::Quanti)
-    when "只" then succ.update!("con", PosTag::Quanti)
-    when "本" then succ.update!("quyển", PosTag::Quanti)
-    when "种" then succ.update!("loại", PosTag::Quanti)
-    when "顿" then succ.update!("đốn", PosTag::Quanti)
     when "对"
       succ_2 = succ.succ
       if succ_2.numbers? || succ_2.string?
-        succ.update!("đối")
+        succ.heal!("đối", PosTag::Verb)
       else
-        succ.update!("đôi", PosTag::Quanti)
+        succ.heal!("đôi", PosTag::Quanti)
       end
     when "劫"
-      succ.update!("kiếp", PosTag::Noun)
+      succ.heal!("kiếp", PosTag::Noun)
       return node
+    else
+      succ = TlRule.heal_quanti!(succ)
     end
 
     # merge number with quantifiers
     case succ
     when .quanti?, .nquant?, .qtverb?, .qttime?
       if !has_第
-        node.fuse_right!("#{node.val} #{succ.val}")
+        node.fold!("#{node.val} #{succ.val}")
         node.tag = PosTag::Nquant
       elsif succ.succ?(&.nouns?)
         succ_2 = succ.succ
-        succ.fuse_right!("#{succ.val} #{succ_2.val}")
+        succ.fold!("#{succ.val} #{succ_2.val}")
 
-        node.fuse_right!("#{succ.val} #{node.val}")
+        node.fold!("#{succ.val} #{node.val}")
         node.tag = succ_2.tag
       else
-        node.fuse_right!("#{succ.val} #{node.val}")
+        node.fold!("#{succ.val} #{node.val}")
         node.tag = PosTag::Nquant
       end
     end

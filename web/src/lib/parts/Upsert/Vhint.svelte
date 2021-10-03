@@ -39,7 +39,7 @@
     padding: 0 0.5rem;
     height: 2rem;
 
-    @include flex($gap: 0);
+    @include flex($gap: 0.125rem);
     @include ftsize(sm);
   }
 

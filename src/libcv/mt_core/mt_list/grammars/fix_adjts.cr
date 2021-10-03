@@ -4,8 +4,8 @@ module CV::MTL::Grammars
 
     if node.amorp?
       if (succ = node.succ?) && succ.adjts?
-        node.fuse_right!("#{node.val} #{succ.val}")
         node.tag = PosTag::Adjt
+        node.fold!(succ)
       end
     end
 

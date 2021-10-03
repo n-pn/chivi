@@ -25,6 +25,8 @@
   export let dname = 'various'
   export let label = 'Tổng hợp'
 
+  let debug = true
+
   $: lines = split_mtdata(cvdata)
 
   let hover_line = 0
@@ -63,7 +65,7 @@
   function render_line(idx, hover, focus) {
     const mt_data = lines[idx]
     const use_html = idx == hover || idx == focus
-    return use_html ? mt_data.html : mt_data.text
+    return use_html || debug ? mt_data.html : mt_data.text
   }
 </script>
 

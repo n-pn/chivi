@@ -39,7 +39,7 @@ module CV::MTL::Grammars
       when .ule?
         succ = fix_ule!(succ)
         val = succ.val.empty? ? node.val : "#{node.val} rồi"
-        node.fuse_right!(val)
+        node.fold!(succ, val)
       when .uguo?
         node.fuse_right!("#{node.val} qua")
       when .uzhe?

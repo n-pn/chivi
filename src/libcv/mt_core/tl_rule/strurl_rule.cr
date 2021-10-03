@@ -1,7 +1,7 @@
 module CV::TlRule
   extend self
 
-  def fuse_urlstr!(root : MtNode) : MtNode
+  def fold_urlstr!(root : MtNode) : MtNode
     return root unless node = root.succ?
 
     key_io = String::Builder.new(root.key)

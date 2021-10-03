@@ -78,12 +78,24 @@ class CV::MtNode
     succ.prev = self
   end
 
-  def fix_succ!(@succ : Nil)
+  def fix_succ!(@succ : Nil) : self
+    self
+  end
+
+  def fold!(succ : self, @val = "#{@val} #{succ.val}", @dic = 6) : self
+    @key = "#{@key}#{succ.key}"
+    fix_succ!(succ.succ?)
+  end
+
+  def fold!(val : String = "#{@val} #{succ.val}", dic = 6) : self
+    fold!(succ, val, dic)
+  end
+
+  def heal!(@val : String, @tag : PosTag)
     self
   end
 
   include MTL::ApplyCap
   include MTL::Serialize
   include MTL::Transform
-  include MTL::Grammars
 end

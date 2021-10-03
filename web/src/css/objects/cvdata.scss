@@ -131,7 +131,8 @@ c-v {
   }
 
   &[data-d='9'] {
-    @include cv-token(gray);
+    @include cv-token(violet);
+    color: var(--active);
   }
 
   c-z & {

@@ -5,14 +5,13 @@ module CV::MTL::Grammars
     if succ = node.succ?
       case succ.tag
       when .kmen?
-        node.fuse_right!("các #{node.val}")
+        node.fold!("các #{node.val}")
       when .ptitle?
-        node.fuse_right!("#{node.val} #{succ.val}")
+        node.fold!
       when .adjts?
         if succ.succ?(&.ude1?)
-          node.fuse_right!("#{node.val} #{succ.val}", dic: 8)
           node.tag = PosTag::Adjt
-          return node
+          return node.fold!(dic: 8)
         end
       end
     end
@@ -25,11 +24,11 @@ module CV::MTL::Grammars
       when .space?
         case succ.key
         when "上"
-          node.fuse_right!("trên #{node.val}")
+          node.fold!("trên #{node.val}")
         when "下"
-          node.fuse_right!("dưới #{node.val}")
+          node.fold!("dưới #{node.val}")
         else
-          node.fuse_right!("#{succ.val} #{node.val}")
+          node.fold!("#{succ.val} #{node.val}")
         end
         node.tag = PosTag::Nform
       when .place?

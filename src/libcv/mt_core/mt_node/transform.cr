@@ -10,29 +10,22 @@ module MTL::Transform
     @dic = other.dic if @dic < other.dic
   end
 
-  def fuse_left!(left = "#{@prev.try(&.val)}", right = "", @dic = 6) : self
+  def fuse_left!(left = "#{prev?(&.val)}", right = "", @dic = 6) : self
     return self unless prev = @prev
 
     @idx = prev.idx
     @key = "#{prev.key}#{@key}"
     @val = "#{left}#{@val}#{right}"
 
-    self.prev = prev.prev
-    self.prev?(&.succ = self)
-
-    self
+    fix_prev!(prev.prev?)
   end
 
   def fuse_right!(succ : self, @val = "#{@val} #{succ.val}", @dic = 6)
     @key = "#{@key}#{succ.key}"
-
-    self.succ = succ.succ
-    self.succ?(&.prev = self)
-
-    self
+    fix_succ!(succ.succ?)
   end
 
-  def fuse_right!(val : String = "#{@val} #{succ?(&.val)}", dic = 6) : self
+  def fuse_right!(val : String = "#{@val}#{succ?(&.val)}", dic = 6) : self
     return self unless succ = @succ
     fuse_right!(succ, val, dic)
   end
@@ -42,7 +35,7 @@ module MTL::Transform
     @val = "#{succ_succ.val}#{join}#{val}"
     @tag = succ_succ.tag
     @dic = succ_succ.dic if @dic < succ_succ.dic
-    self.set_succ(succ_succ.succ)
+    self.set_succ(succ_succ.succ?)
   end
 
   def replace!(@key, @val, @tag, @dic, succ)
