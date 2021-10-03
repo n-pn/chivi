@@ -37,9 +37,13 @@ module CV::MTL::Grammars
     while succ = node.succ?
       case succ
       when .ule?
-        succ = fix_ule!(succ)
-        val = succ.val.empty? ? node.val : "#{node.val} rồi"
-        node.fold!(succ, val)
+        if succ.succ?(&.key.== node.key)
+          node.fold!(succ, "#{node.val} #{node.val}").fold!(node.val)
+        else
+          succ = fix_ule!(succ)
+          val = succ.val.empty? ? node.val : "#{node.val} rồi"
+          node.fold!(succ, val)
+        end
       when .uguo?
         node.fuse_right!("#{node.val} qua")
       when .uzhe?
