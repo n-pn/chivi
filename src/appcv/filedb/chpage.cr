@@ -53,7 +53,19 @@ class CV::Chpage
     index // PSIZE
   end
 
-  def self.load!(sname : String, snvid : String, pgidx : Int32)
+  def self.init_page!(chlist, cvmtl, pgidx)
+    chpage = [] of Chpage
+
+    start = pgidx * PSIZE
+    (start + 1).upto(start + PSIZE) do |chidx|
+      break unless chinfo = chlist.get(chidx.to_s)
+      chpage << Chpage.new(chinfo, chidx).trans!(cvmtl)
+    end
+
+    chpage
+  end
+
+  def self.load_page!(sname : String, snvid : String, pgidx : Int32)
     file = path(sname, snvid, pgidx)
 
     CACHE.get(file) do
@@ -77,18 +89,6 @@ class CV::Chpage
         yield.tap { |x| save!(file, x) }
       end
     end
-  end
-
-  def self.init!(chlist, cvmtl, pgidx)
-    chpage = [] of Chpage
-
-    start = pgidx * PSIZE
-    (start + 1).upto(start + PSIZE) do |chidx|
-      break unless chinfo = chlist.get(chidx.to_s)
-      chpage << Chpage.new(chinfo, chidx).trans!(cvmtl)
-    end
-
-    chpage
   end
 
   def self.save!(file : String, data : Array(self)) : Nil

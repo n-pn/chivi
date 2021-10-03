@@ -113,9 +113,9 @@ class CV::Zhbook
   end
 
   def chpage(pgidx : Int32)
-    Chpage.load!(sname, snvid, pgidx) do
+    Chpage.load_page!(sname, snvid, pgidx) do
       chlist = self.chlist(pgidx // 4)
-      Chpage.init!(chlist, cvmtl, pgidx)
+      Chpage.init_page!(chlist, cvmtl, pgidx)
     end
   end
 
