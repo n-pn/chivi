@@ -120,7 +120,7 @@ class CV::Zhbook
   end
 
   def lastpg
-    Chpage.load!(sname, snvid, -1) do
+    Chpage.load_last!(sname, snvid, chap_count) do
       chpage = [] of Chpage
       chidx = chap_count
 

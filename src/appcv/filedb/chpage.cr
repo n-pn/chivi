@@ -66,6 +66,19 @@ class CV::Chpage
     end
   end
 
+  def self.load_last!(sname : String, snvid : String, total : Int32)
+    file = path(sname, snvid, -1)
+
+    CACHE.get(file) do
+      if fresh?(file)
+        lines = File.read_lines(file)
+        lines.map_with_index(0) { |x, i| new(x.split("\t"), total - i) }
+      else
+        yield.tap { |x| save!(file, x) }
+      end
+    end
+  end
+
   def self.init!(chlist, cvmtl, pgidx)
     chpage = [] of Chpage
 
