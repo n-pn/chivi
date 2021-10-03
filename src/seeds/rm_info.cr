@@ -124,6 +124,17 @@ class CV::RmInfo
     end
   end
 
+  getter istate : Int32 do
+    case status
+    when "暂停", "暂 停", "暂　停" then 2
+    when "1", "完成", "完本", "已经完结", "已经完本",
+         "完结", "已完结", "此书已完成", "已完本", "全本",
+         "完结申请", "已完成"
+      1
+    else 0
+    end
+  end
+
   getter update : String do
     case @sname
     when "69shu"

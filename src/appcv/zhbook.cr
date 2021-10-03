@@ -76,6 +76,11 @@ class CV::Zhbook
       Chpage.forget!(sname, snvid, -1)
       reset_pages!(chmin: old_chap_count)
 
+      if self.status < parser.istate
+        self.status = parser.istate
+        cvbook.set_status(parser.istate)
+      end
+
       self.save!
       cvbook.tap(&.set_mftime(self.mftime)).save! # unless sname == "hetushu"
     else
