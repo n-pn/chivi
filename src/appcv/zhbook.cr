@@ -76,9 +76,9 @@ class CV::Zhbook
       Chpage.forget!(sname, snvid, -1)
       reset_pages!(chmin: old_chap_count)
 
-      if self.status < parser.istate
+      if self.status < parser.istate || self.status == 3
         self.status = parser.istate
-        cvbook.set_status(parser.istate)
+        cvbook.set_status(parser.istate, force: self.status == 3)
       end
 
       self.save!
