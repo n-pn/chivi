@@ -45,6 +45,9 @@ class CV::VpTermView
 
   def to_json(jb : JSON::Builder, dict : VpDict, type = 0)
     if term = dict.find(@key)
+      # overwrite value if dict is regular and there exist fixed definition
+      term = VpDict.fixture.find(@key) || term if dict.dtype == 2
+
       add_hints(term)
 
       jb.object do

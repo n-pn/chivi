@@ -165,19 +165,23 @@ class CV::DictCtrl < CV::BaseCtrl
     dname = params["dname"]
     stype = params["stype"]? == "_priv" ? cu_dname : "_base"
 
-    vdict = VpDict.load(dname, stype)
-    return halt!(500, "Không đủ quyền hạn!") if cu_privi < vdict.p_min
-
-    mtime = VpTerm.mtime(Time.utc)
-
     key = params.fetch_str("key").strip
     val = params.fetch_str("val").split(" / ").map(&.strip)
+
+    if dname == "regular" && stype == "_base" && VpDict.fixture.find(key)
+      return halt!(403, "Không thể sửa được từ khoá cứng!")
+    end
+
+    vdict = VpDict.load(dname, stype)
+    return halt!(500, "Không đủ quyền hạn để sửa từ!") if cu_privi < vdict.p_min
+
+    mtime = VpTerm.mtime(Time.utc)
 
     attr = params.fetch_str("attr", "")
     rank = params.fetch_str("rank", "").to_u8? || 3_u8
 
     vpterm = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cu_dname)
-    return halt!(501, "Không thay đổi!") unless vdict.set!(vpterm)
+    return halt!(501, "Nội dung không thay đổi!") unless vdict.set!(vpterm)
 
     # TODO: save context
 

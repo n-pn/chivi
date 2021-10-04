@@ -38,11 +38,11 @@ class CV::VpDict
 
     CACHE[dname + "/" + stype] ||=
       case dname
-      when "trungviet", "cc_cedict", "trich_dan", "tradsim", "binh_am"
+      when "trungviet", "cc_cedict", "trich_dan"
         new(path(dname), dtype: 0, p_min: 4, reset: reset)
-      when "essence", "fixture"
+      when "tradsim", "essence", "fixture"
         new(path(dname), dtype: 1, p_min: 4, reset: reset)
-      when "suggest", "hanviet"
+      when "suggest", "hanviet", "binh_am"
         new(path("core/#{dname}"), dtype: 1, p_min: 3, reset: reset)
       when "regular"
         new(path("core/regular/#{stype}"), dtype: 2 + bonus, p_min: 2, reset: reset)
@@ -68,9 +68,9 @@ class CV::VpDict
 
   def self.for_convert(dname : String, stype : String = "chivi")
     [
-      essence,                # basic words
+      essence,                # punctuations, normalize..
       regular,                # public common
-      fixture,                # fixed meaning
+      fixture,                # frozen entries, can not deleted
       load(dname),            # public unique
       load("regular", stype), # private common
       load(dname, stype),     # private unique
