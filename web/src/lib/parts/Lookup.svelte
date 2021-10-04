@@ -240,16 +240,17 @@
 
   .term {
     @include flex($gap: 0.25rem);
-    word-wrap: none;
+    flex-wrap: wrap;
     line-height: 1.5rem;
   }
 
   term-tag {
     display: inline-block;
-    @include bdradi(1rem);
+    @include bdradi(0.75rem);
     @include ftsize(sm);
     @include linesd(--bd-main);
     @include fgcolor(tert);
+    font-weight: 500;
     padding: 0 0.5rem;
   }
 
