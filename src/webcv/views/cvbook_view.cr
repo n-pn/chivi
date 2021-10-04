@@ -38,7 +38,14 @@ module CV::CvbookView
         jb.field "chseed" do
           jb.object do
             obj.zhbooks.each do |zhbook|
-              jb.field zhbook.sname, zhbook.snvid
+              jb.field(zhbook.sname) {
+                jb.object {
+                  jb.field "snvid", zhbook.snvid
+                  jb.field "wlink", zhbook.wlink
+                  jb.field "utime", zhbook.mftime
+                  jb.field "chaps", zhbook.chap_count
+                }
+              }
             end
           end
 

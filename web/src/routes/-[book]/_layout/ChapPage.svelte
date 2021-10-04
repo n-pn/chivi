@@ -38,21 +38,11 @@
 
   const _navi = { replace: true, scrollto: '#chlist' }
 
-  let add_zhbook = false
-
   let new_seeds = seed_choices(cvbook.snames)
   let new_sname = new_seeds[0]
   let new_snvid = ''
 
   $: is_remote = is_remote_seed(chinfo.sname)
-
-  async function make_zhbook() {
-    cvbook.snames.push(new_sname)
-    cvbook.chinfo[new_sname] = new_snvid
-    add_zhbook = false
-
-    // TODO: create new zhbook on server
-  }
 
   function split_chinfo(cvbook, sname) {
     const input = cvbook.snames.filter((x) => x != 'chivi')
@@ -77,68 +67,44 @@
 
 <BookPage {cvbook} {ubmemo} nvtab="chaps">
   <div class="source">
-    {#each main_seeds as mname}
+    {#each main_seeds as sname}
       <a
         class="seed-name"
-        class:_active={chinfo.sname === mname}
-        href={get_pager(mname).url({ page: chinfo.pgidx })}
+        class:_active={chinfo.sname === sname}
+        href={get_pager(sname).url({ page: chinfo.pgidx })}
         use:navigate={_navi}>
-        <SIcon name={is_remote_seed(mname) ? 'cloud' : 'archive'} />
-        <span>{mname}</span>
+        <seed-label>
+          <SIcon name={is_remote_seed(sname) ? 'cloud' : 'archive'} />
+          <span>{sname}</span>
+        </seed-label>
+        <seed-stats
+          ><strong>{cvbook.chseed[sname]?.chaps || 0}</strong> chương</seed-stats>
       </a>
     {/each}
 
     {#if hide_seeds.length > 0}
       {#if show_more}
-        {#each hide_seeds as hname}
+        {#each hide_seeds as sname}
           <a
             class="seed-name"
-            href={get_pager(hname).url({ page: chinfo.pgidx })}
-            use:navigate={_navi}
-            ><SIcon name={is_remote_seed(hname) ? 'cloud' : 'archive'} />
-            <span>{hname}</span>
+            href={get_pager(sname).url({ page: chinfo.pgidx })}
+            use:navigate={_navi}>
+            <seed-label>
+              <SIcon name={is_remote_seed(sname) ? 'cloud' : 'archive'} />
+              <span>{sname}</span>
+            </seed-label>
+            <seed-stats
+              ><strong>{cvbook.chseed[sname]?.chaps || 0}</strong> chương</seed-stats>
           </a>
         {/each}
       {:else}
         <button class="seed-name _btn" on:click={() => (show_more = true)}>
-          <SIcon name="dots" />
-          <span>({hide_seeds.length})</span>
+          <seed-label><SIcon name="dots" /></seed-label>
+          <seed-stats>({hide_seeds.length})</seed-stats>
         </button>
       {/if}
     {/if}
-
-    {#if $session.privi > 2}
-      <button
-        class="seed-name _btn"
-        on:click={() => (add_zhbook = !add_zhbook)}>
-        <SIcon name={add_zhbook ? 'minus' : 'plus'} />
-      </button>
-    {/if}
   </div>
-
-  {#if add_zhbook}
-    <div class="add-seed">
-      <select class="m-input" name="new_sname" bind:value={new_sname}>
-        {#each new_seeds as label}
-          <option value={label}>{label}</option>
-        {/each}
-      </select>
-
-      <input
-        class="m-input"
-        type="text"
-        bind:value={new_snvid}
-        required
-        placeholder="Book ID" />
-
-      <button
-        class="m-button _primary"
-        disabled={!new_snvid}
-        on:click={make_zhbook}>
-        <span class="-text">Thêm</span>
-      </button>
-    </div>
-  {/if}
 
   <div id="chlist" class="chinfo">
     <div class="-left">
@@ -223,27 +189,55 @@
   }
 
   .seed-name {
-    padding: 0 0.75em;
+    display: block;
+    // display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 0.375em 0;
 
-    @include label();
     @include bdradi();
     @include linesd(--bd-main);
-
-    &._active {
-      @include fgcolor(primary, 5);
-      @include linesd(primary, 5, $ndef: true);
-    }
 
     &._btn {
       background-color: transparent;
       padding: 0 0.5rem !important;
     }
 
-    > :global(svg) {
-      margin-top: -0.125rem;
+    &._active {
+      @include linesd(primary, 5, $ndef: true);
+    }
+  }
+
+  seed-label {
+    @include flex($center: both);
+    @include label();
+
+    padding: 0 0.5em;
+    line-height: 1.25em;
+
+    .seed-name._active & {
+      @include fgcolor(primary, 5);
+    }
+
+    :global(svg) {
       width: 1rem;
       height: 1rem;
+      margin-top: -0.125em;
     }
+
+    span {
+      margin-left: 0.125em;
+      display: inline-block;
+    }
+  }
+
+  seed-stats {
+    display: block;
+    text-align: center;
+    @include fgcolor(tert);
+    font-size: 0.85em;
+    line-height: 100%;
+    @include clamp();
   }
 
   .-hide {
@@ -302,20 +296,5 @@
 
   .foot {
     margin-top: 1rem;
-  }
-
-  .add-seed {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-
-    > select,
-    > input {
-      margin-right: 0.5rem;
-      max-width: 10rem;
-      text-transform: uppercase;
-      font-weight: 500;
-      @include ftsize(sm);
-    }
   }
 </style>
