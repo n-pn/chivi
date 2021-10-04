@@ -70,6 +70,7 @@ class CV::VpDict
     [
       essence,                # punctuations, normalize..
       regular,                # public common
+      fixture,                # fixed terms
       load(dname),            # public unique
       load("regular", stype), # private common
       load(dname, stype),     # private unique
