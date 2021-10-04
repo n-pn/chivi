@@ -4,6 +4,10 @@
   function seed_choices(chinfo = {}) {
     return remote_snames.filter((sname) => !chinfo[sname])
   }
+
+  function is_remote_seed(sname) {
+    return remote_snames.includes(sname)
+  }
 </script>
 
 <script>
@@ -40,6 +44,8 @@
   let new_sname = new_seeds[0]
   let new_snvid = ''
 
+  $: is_remote = is_remote_seed(chinfo.sname)
+
   async function make_zhbook() {
     cvbook.snames.push(new_sname)
     cvbook.chinfo[new_sname] = new_snvid
@@ -73,11 +79,12 @@
   <div class="source">
     {#each main_seeds as mname}
       <a
-        class="-name"
+        class="seed-name"
         class:_active={chinfo.sname === mname}
         href={get_pager(mname).url({ page: chinfo.pgidx })}
-        use:navigate={_navi}
-        >{mname}
+        use:navigate={_navi}>
+        <SIcon name={is_remote_seed(mname) ? 'cloud' : 'archive'} />
+        <span>{mname}</span>
       </a>
     {/each}
 
@@ -85,14 +92,15 @@
       {#if show_more}
         {#each hide_seeds as hname}
           <a
-            class="-name"
+            class="seed-name"
             href={get_pager(hname).url({ page: chinfo.pgidx })}
             use:navigate={_navi}
-            >{hname}
+            ><SIcon name={is_remote_seed(hname) ? 'cloud' : 'archive'} />
+            <span>{hname}</span>
           </a>
         {/each}
       {:else}
-        <button class="-name" on:click={() => (show_more = true)}>
+        <button class="seed-name _btn" on:click={() => (show_more = true)}>
           <SIcon name="dots" />
           <span>({hide_seeds.length})</span>
         </button>
@@ -100,7 +108,9 @@
     {/if}
 
     {#if $session.privi > 2}
-      <button class="-name" on:click={() => (add_zhbook = !add_zhbook)}>
+      <button
+        class="seed-name _btn"
+        on:click={() => (add_zhbook = !add_zhbook)}>
         <SIcon name={add_zhbook ? 'minus' : 'plus'} />
       </button>
     {/if}
@@ -175,7 +185,8 @@
         bslug={cvbook.bslug}
         sname={chinfo.sname}
         chaps={chinfo.lasts}
-        track={ubmemo} />
+        track={ubmemo}
+        {is_remote} />
 
       <div class="chlist-sep" />
 
@@ -183,7 +194,8 @@
         bslug={cvbook.bslug}
         sname={chinfo.sname}
         chaps={chinfo.chaps}
-        track={ubmemo} />
+        track={ubmemo}
+        {is_remote} />
 
       <footer class="foot">
         <Mpager {pager} pgidx={chinfo.pgidx} pgmax={chinfo.pgmax} {_navi} />
@@ -208,29 +220,29 @@
 
     line-height: 2rem;
     @include ftsize(sm);
+  }
 
-    .-name {
-      padding: 0 0.75em;
+  .seed-name {
+    padding: 0 0.75em;
 
-      @include label();
-      @include bdradi();
-      @include linesd(--bd-main);
+    @include label();
+    @include bdradi();
+    @include linesd(--bd-main);
 
-      &._active {
-        @include fgcolor(primary, 5);
-        @include linesd(primary, 5, $ndef: true);
-      }
+    &._active {
+      @include fgcolor(primary, 5);
+      @include linesd(primary, 5, $ndef: true);
     }
 
-    button {
+    &._btn {
       background-color: transparent;
       padding: 0 0.5rem !important;
+    }
 
-      > :global(svg) {
-        margin-top: -0.125rem;
-        width: 1rem;
-        height: 1rem;
-      }
+    > :global(svg) {
+      margin-top: -0.125rem;
+      width: 1rem;
+      height: 1rem;
     }
   }
 

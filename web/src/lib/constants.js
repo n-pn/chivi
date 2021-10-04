@@ -1,17 +1,14 @@
 export const remote_snames = [
-  'biqubao',
-  'bxwxorg',
+  '69shu',
   '5200',
+  'bxwxorg',
   'bqg_5200',
   'nofff',
   'rengshu',
   'hetushu',
   'xbiquge',
   'duokan8',
-  'zhwenpg',
   'paoshu8',
-  '69shu',
-  'shubaow',
 ]
 
 export const status_types = [

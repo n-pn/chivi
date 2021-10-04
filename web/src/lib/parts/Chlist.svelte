@@ -4,6 +4,7 @@
 
   export let bslug = ''
   export let sname = ''
+  export let is_remote = false
 
   export let chaps = []
   export let track
@@ -19,46 +20,49 @@
   }
 </script>
 
-<div class="list">
+<list-grid>
   {#each chaps as chap}
-    <div class="list-item">
+    <list-item>
       <a
         href={kit_chap_url(bslug, { ...chap, sname, cpart: track_cpart(chap) })}
         class="chap"
         class:_active={is_marked(chap)}>
         <div class="chap-text">
-          <div class="chap-title">{chap.title}</div>
-          <div class="chap-chidx">{chap.chidx}.</div>
+          <chap-title>{chap.title}</chap-title>
+          <chap-chidx>{chap.chidx}.</chap-chidx>
         </div>
         <div class="chap-meta">
           <div class="chap-chvol">{chap.chvol}</div>
+
+          {#if chap.chars > 0}
+            <div class="chap-track">
+              <SIcon name={is_remote ? 'cloud-download' : 'device-floppy'} />
+            </div>
+          {/if}
+
           {#if same_sname && is_marked(chap)}
-            <div class="chap-track">
+            <chap-mark>
               <SIcon name={track.locked ? 'bookmark' : 'eye'} />
-            </div>
-          {:else if chap.parts > 0}
-            <div class="chap-track">
-              <SIcon name="device-floppy" />
-            </div>
+            </chap-mark>
           {/if}
         </div>
       </a>
-    </div>
+    </list-item>
   {/each}
-</div>
+</list-grid>
 
 <style lang="scss">
   $chap-size: 17.5rem;
   // $chap-break: $chap-size * 2 + 0.75 * 5;
 
-  .list {
+  list-grid {
     @include grid($size: minmax(var(--size, 17.5rem), 1fr));
     @include bps(--size, 17.75rem, $md: 16.25rem, $lg: 17.75rem);
 
     grid-gap: 0 var(--gutter-sm);
   }
 
-  .list-item {
+  list-item {
     display: block;
     @include border(--bd-main, $loc: bottom);
     $bg-dark: color(neutral, 8);
@@ -115,7 +119,7 @@
   }
 
   // prettier-ignore
-  .chap-title {
+  chap-title {
     flex: 1;
     @include clamp($width: null);
     @include fgcolor(secd);
@@ -124,7 +128,7 @@
     .chap:hover & { @include fgcolor(primary, 5); }
   }
 
-  .chap-chidx {
+  chap-chidx {
     margin-left: 0.125rem;
     user-select: none;
     @include fgcolor(neutral, 5);
@@ -140,5 +144,10 @@
   .chap-track {
     @include fgcolor(neutral, 5);
     font-size: 1rem;
+  }
+
+  chap-mark {
+    font-size: 1rem;
+    @include fgcolor(neutral, 5);
   }
 </style>
