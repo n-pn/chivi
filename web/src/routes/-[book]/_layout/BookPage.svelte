@@ -297,7 +297,7 @@
     @include bgcolor(tert);
 
     display: block;
-    margin: 0.75rem -0.75rem;
+    margin: 0.75rem -0.5rem;
     padding: 0 0.5rem;
     border-radius: 0.5rem;
 
@@ -307,7 +307,7 @@
       @include linesd(--bd-soft, $ndef: false, $inset: false);
     }
 
-    @include bp-min(md) {
+    @include bp-min(sm) {
       margin: 0.75rem 0;
       padding-left: 1rem;
       padding-right: 1rem;
