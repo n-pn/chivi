@@ -1,5 +1,5 @@
 @use 'sass:math';
-@use "../essence" as *;
+@use '../essence' as *;
 
 $header-height: 3rem;
 $header-inner-height: 2.25rem;
@@ -10,7 +10,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   will-change: transform;
 
   position: sticky;
-  z-index: 100;
+  z-index: 50;
 
   top: 0;
   left: 0;
