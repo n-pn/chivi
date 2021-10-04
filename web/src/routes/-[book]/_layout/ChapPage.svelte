@@ -1,10 +1,6 @@
 <script context="module">
   import { remote_snames } from '$lib/constants.js'
 
-  function seed_choices(chinfo = {}) {
-    return remote_snames.filter((sname) => !chinfo[sname])
-  }
-
   function is_remote_seed(sname) {
     return remote_snames.includes(sname)
   }
@@ -38,30 +34,21 @@
 
   const _navi = { replace: true, scrollto: '#chlist' }
 
-  let new_seeds = seed_choices(cvbook.snames)
-  let new_sname = new_seeds[0]
-  let new_snvid = ''
-
   $: is_remote = is_remote_seed(chinfo.sname)
 
   function split_chinfo(cvbook, sname) {
     const input = cvbook.snames.filter((x) => x != 'chivi')
-    const bound = 3
 
-    let main_seeds = input.slice(0, bound)
-    let hide_seeds = []
+    const main = input.slice(0, 3)
+    let secd = input.slice(3)
 
-    if (main_seeds.includes(sname)) {
-      const leftover = input[bound]
-      if (leftover) main_seeds.push(leftover)
-      hide_seeds = input.slice(bound + 1)
-    } else if (sname) {
-      main_seeds.push(sname)
-      hide_seeds = input.slice(bound).filter((x) => x != sname)
-    }
+    if (sname == 'chivi') return [main, secd]
+    if (main.includes(sname) || !sname || secd.length == 0) return [main, secd]
 
-    if (sname != 'chivi') main_seeds.push('chivi')
-    return [main_seeds, hide_seeds]
+    secd = [main[2], ...secd.filter((x) => x != sname)]
+    main[2] = sname
+
+    return [main, secd]
   }
 </script>
 
@@ -104,6 +91,19 @@
         </button>
       {/if}
     {/if}
+
+    <a
+      class="seed-name"
+      class:_active={chinfo.sname === 'chivi'}
+      href={get_pager('chivi').url({ page: chinfo.pgidx })}
+      use:navigate={_navi}>
+      <seed-label>
+        <span>chivi</span>
+        <SIcon name="archive" />
+      </seed-label>
+      <seed-stats
+        ><strong>{cvbook.chseed.chivi?.chaps || 0}</strong> chương</seed-stats>
+    </a>
   </div>
 
   <div id="chlist" class="chinfo">
