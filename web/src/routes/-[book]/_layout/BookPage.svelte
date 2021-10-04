@@ -303,15 +303,15 @@
 
     @include shadow(2);
 
-    @include tm-dark {
-      @include linesd(--bd-soft, $ndef: false, $inset: false);
-    }
-
     @include bp-min(sm) {
       margin: 0.75rem 0;
       padding-left: 1rem;
       padding-right: 1rem;
       border-radius: 1rem;
+
+      @include tm-dark {
+        @include linesd(--bd-soft, $ndef: false, $inset: false);
+      }
     }
   }
 

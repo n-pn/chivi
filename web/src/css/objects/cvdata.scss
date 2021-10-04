@@ -17,8 +17,18 @@
   min-height: 50vh;
   padding: var(--verpad) var(--gutter);
 
-  @include bps(margin-left, calc(-1 * var(--gutter)), $lg: 0);
-  @include bps(margin-right, calc(-1 * var(--gutter)), $lg: 0);
+  margin-left: calc(-1 * var(--gutter));
+  margin-right: calc(-1 * var(--gutter));
+
+  @include bp-min(rem(840px)) {
+    margin-left: 0;
+    margin-right: 0;
+
+    .tm-dark &,
+    .tm-oled & {
+      @include linesd(--bd-soft, $ndef: false, $inset: false);
+    }
+  }
 
   @include bdradi();
   @include fgcolor(secd);
@@ -27,11 +37,6 @@
 
   .tm-warm & {
     background: #fffbeb;
-  }
-
-  .tm-dark &,
-  .tm-oled & {
-    @include linesd(--bd-soft, $ndef: false, $inset: false);
   }
 
   .adsbygoogle {
