@@ -10,9 +10,13 @@
   let active_tab = 0
   let origin_tab = 0
 
+  let modal
   $: if (ptag) {
     origin_tab = find_group(ptag)
     active_tab = origin_tab > 0 ? origin_tab : 0
+    modal
+      ?.querySelector('.pos-tag._active')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
   function hide_modal() {
@@ -32,12 +36,12 @@
   let sections = []
 </script>
 
-<div class="wrap" transition:fade={{ duration: 100 }} on:click={hide_modal}>
-  <div
-    class="main"
+<modal-wrap transition:fade={{ duration: 100 }} on:click={hide_modal}>
+  <modal-main
     on:click={(e) => e.stopPropagation()}
-    transition:scale={{ duration: 100, easing: backInOut }}>
-    <header class="head">
+    transition:scale={{ duration: 100, easing: backInOut }}
+    bind:this={modal}>
+    <modal-head>
       {#each gnames as gname, tab}
         <button
           class="-tab"
@@ -51,16 +55,17 @@
       <button type="button" class="-btn" on:click={hide_modal}>
         <SIcon name="x" />
       </button>
-    </header>
+    </modal-head>
 
-    <div class="body">
+    <modal-body>
       {#each groups as tags, tab}
         <section class="tags" bind:this={sections[tab]}>
           {#each tags as ntag}
             {#if ntag != '-'}
               <button
-                class="-tag"
+                class="pos-tag"
                 class:_active={ntag == ptag}
+                data-tag={ntag}
                 on:click={() => update_tag(ntag)}>
                 <span>{tag_label(ntag)}</span>
                 {#if ntag == ptag}
@@ -73,12 +78,12 @@
           {/each}
         </section>
       {/each}
-    </div>
-  </div>
-</div>
+    </modal-body>
+  </modal-main>
+</modal-wrap>
 
 <style lang="scss">
-  .wrap {
+  modal-wrap {
     position: fixed;
 
     top: 0;
@@ -94,7 +99,8 @@
     background: rgba(#000, 0.4);
   }
 
-  .main {
+  modal-main {
+    display: block;
     width: 28rem;
     max-width: 100vw;
 
@@ -109,7 +115,7 @@
 
   $tab-height: 2rem;
 
-  .head {
+  modal-head {
     position: relative;
     @include flex($center: horz, $gap: 0.5rem);
 
@@ -169,7 +175,8 @@
     }
   }
 
-  .body {
+  modal-body {
+    display: block;
     margin-bottom: 0.25rem;
     height: 21rem;
     max-height: calc(100vh - 6.5rem);
@@ -182,7 +189,7 @@
     padding: 0.5rem 0.75rem;
   }
 
-  .-tag {
+  .pos-tag {
     padding: 0.25rem 0.5rem;
     background: transparent;
     font-weight: 500;
