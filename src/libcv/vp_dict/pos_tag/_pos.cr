@@ -4,7 +4,9 @@ struct CV::PosTag
     # content words - functional words - punctuations
     Contws; Funcws; Puncts
 
-    Nouns; Names; Pronouns
+    Nouns; Pronouns
+    Names; Human
+
     Verbs; Adjts
 
     Numbers; Quantis; Strings

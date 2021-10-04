@@ -8,12 +8,12 @@ struct CV::PosTag
     {"ng", "Nmorp", Pos::Nouns | Pos::Contws},
 
     # 人名 - person name - tên người
-    {"nr", "Person", Pos::Nouns | Pos::Names | Pos::Contws},
+    {"nr", "Person", Pos::Nouns | Pos::Human | Pos::Names | Pos::Contws},
     # 姓氏 - family name - dòng họ
-    {"nf", "Linage", Pos::Nouns | Pos::Names | Pos::Contws},
+    {"nf", "Linage", Pos::Nouns | Pos::Human | Pos::Names | Pos::Contws},
 
     # dòng họ + danh xưng
-    {"nfw", "Snwtit", Pos::Nouns | Pos::Names | Pos::Contws},
+    {"nfw", "Snwtit", Pos::Nouns | Pos::Human | Pos::Names | Pos::Contws},
 
     # 地名 - location name - địa danh
     {"ns", "Locname", Pos::Nouns | Pos::Names | Pos::Contws},
@@ -47,5 +47,10 @@ struct CV::PosTag
   @[AlwaysInline]
   def names?
     @pos.names?
+  end
+
+  @[AlwaysInline]
+  def human?
+    @pos.human?
   end
 end

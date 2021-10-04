@@ -4,6 +4,12 @@ module CV::TlRule
       break unless succ = node.succ?
 
       case succ.tag
+      when .middot?
+        break unless succ_2 = succ.succ?
+        break unless succ_2.human?
+
+        node.tag = PosTag::Person
+        node.fold!(succ, node.val).fold!(succ_2)
       when .ptitle?
         node.tag = node.tag.linage? ? PosTag::Snwtit : PosTag::Person
         node.fold!(succ)
