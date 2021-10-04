@@ -140,7 +140,7 @@
                 </term-dic>
 
                 <term-val>{val || '<đã xoá>'}</term-val>
-                <term-tag>{tag_label(tag)}</term-tag>
+                <term-tag>{tag_label(tag) || 'Chưa phân loại'}</term-tag>
               </p>
             {/each}
           </div>
