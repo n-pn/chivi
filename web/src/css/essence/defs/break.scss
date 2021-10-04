@@ -1,14 +1,16 @@
+@use './util' as *;
+
 // Breakpoint widths
-$bp-ss: 320px !default; // minimum size
-$bp-xs: 360px !default; // older phone, iphone se
-$bp-sm: 480px !default; // Small screen / phone
-$bp-md: 600px !default; // Small screen / phone
-$bp-lg: 720px !default; // Medium screen / tablet
-$bp-xl: 960px !default; // Large screen / desktop
-$bp-x2: 1200px !default; // Extra large screen / wide desktop
-$bp-x3: 1440px !default; // Extra large screen / wide desktop
-$bp-x4: 1680px !default; // Extra large screen / wide desktop
-$bp-x5: 1920px !default; // Extra large screen / wide desktop
+$bp-ss: rem(320px) !default; // minimum size
+$bp-xs: rem(360px) !default; // older phone, iphone se
+$bp-sm: rem(480px) !default; // Small screen / phone
+$bp-md: rem(600px) !default; // Small screen / phone
+$bp-lg: rem(720px) !default; // Medium screen / tablet
+$bp-xl: rem(960px) !default; // Large screen / desktop
+$bp-x2: rem(1200px) !default; // Extra large screen / wide desktop
+$bp-x3: rem(1440px) !default; // Extra large screen / wide desktop
+$bp-x4: rem(1680px) !default; // Extra large screen / wide desktop
+$bp-x5: rem(1920px) !default; // Extra large screen / wide desktop
 
 $breakpoints: (
   xs: $bp-xs,
@@ -46,7 +48,7 @@ $breakpoints: (
   @if $max == null {
     @content;
   } @else {
-    $size: bp-size($max) - 1px;
+    $size: bp-size($max) - rem(1px);
     @media screen and (max-width: $size) {
       @content;
     }
@@ -55,7 +57,7 @@ $breakpoints: (
 
 @mixin bp-minmax($min: sm, $max: xl) {
   $size-min: bp-size($min);
-  $size-max: bp-size($max) - 1px;
+  $size-max: bp-size($max) - rem(1px);
   @media screen and (min-width: $size-min) and (max-width: $size-max) {
     @content;
   }
