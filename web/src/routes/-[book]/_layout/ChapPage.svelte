@@ -74,8 +74,8 @@
         href={get_pager(sname).url({ page: chinfo.pgidx })}
         use:navigate={_navi}>
         <seed-label>
-          <SIcon name={is_remote_seed(sname) ? 'cloud' : 'archive'} />
           <span>{sname}</span>
+          <SIcon name={is_remote_seed(sname) ? 'cloud' : 'archive'} />
         </seed-label>
         <seed-stats
           ><strong>{cvbook.chseed[sname]?.chaps || 0}</strong> chương</seed-stats>
@@ -90,8 +90,8 @@
             href={get_pager(sname).url({ page: chinfo.pgidx })}
             use:navigate={_navi}>
             <seed-label>
-              <SIcon name={is_remote_seed(sname) ? 'cloud' : 'archive'} />
               <span>{sname}</span>
+              <SIcon name={is_remote_seed(sname) ? 'cloud' : 'archive'} />
             </seed-label>
             <seed-stats
               ><strong>{cvbook.chseed[sname]?.chaps || 0}</strong> chương</seed-stats>
@@ -181,11 +181,7 @@
 
   .source {
     @include flex($center: horz, $wrap: wrap, $gap: 0.5rem);
-
-    margin-top: var(--gutter-small);
-
-    line-height: 2rem;
-    @include ftsize(sm);
+    margin-top: var(--gutter-xs);
   }
 
   .seed-name {
@@ -193,18 +189,23 @@
     // display: flex;
     align-items: center;
     flex-direction: column;
-    padding: 0.375em 0;
-
+    padding: 0.375em;
     @include bdradi();
     @include linesd(--bd-main);
 
     &._btn {
       background-color: transparent;
-      padding: 0 0.5rem !important;
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
     }
 
     &._active {
       @include linesd(primary, 5, $ndef: true);
+    }
+
+    // prettier-ignore
+    &._active, &:hover, &:active {
+      > seed-label { @include fgcolor(primary, 5); }
     }
   }
 
@@ -212,22 +213,16 @@
     @include flex($center: both);
     @include label();
 
-    padding: 0 0.5em;
-    line-height: 1.25em;
-
-    .seed-name._active & {
-      @include fgcolor(primary, 5);
-    }
+    line-height: 1rem;
+    font-size: rem(13px);
 
     :global(svg) {
       width: 1rem;
       height: 1rem;
-      margin-top: -0.125em;
     }
 
     span {
-      margin-left: 0.125em;
-      display: inline-block;
+      margin-right: 0.125em;
     }
   }
 
@@ -235,9 +230,8 @@
     display: block;
     text-align: center;
     @include fgcolor(tert);
-    font-size: 0.85em;
+    font-size: rem(12px);
     line-height: 100%;
-    @include clamp();
   }
 
   .-hide {
@@ -246,7 +240,7 @@
 
   .chinfo {
     @include flex($gap: 0.5rem);
-    margin: var(--verpad) 0;
+    margin: var(--verpad-xs) 0;
 
     .-left {
       display: flex;
