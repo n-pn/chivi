@@ -14,8 +14,13 @@ struct CV::PosTag
 
     # adjective "好"
     {"ahao", "Ahao", Pos::Adjts | Pos::Uniqs | Pos::Contws},
-    # 状态词 - descriptive word - trạng thái
+
+    # 状态词 - stative verb - trạng thái
     {"az", "Adesc", Pos::Adjts | Pos::Contws},
+    # modifier (non-predicate noun modifier) - từ khu biệt
+    {"b", "Modifier", Pos::Contws},
+    # 区别词性惯用语 - noun modifier morpheme
+    {"bl", "Modiform", Pos::Contws},
   }
 
   @[AlwaysInline]

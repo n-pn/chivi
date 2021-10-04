@@ -98,7 +98,7 @@ struct CV::PosTag
     {% end %}
     when "l" then Idiom
     when "j" then Noun
-    when "z" then Adesc
+    # when "z" then Adesc
     when "-" then None
     else          Unkn
     end

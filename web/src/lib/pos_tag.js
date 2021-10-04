@@ -119,7 +119,7 @@ export const labels = {
   w: 'Dấu câu khác',
 }
 
-export const gnames = ['Thường gặp', 'Hiếm gặp', 'Đặc biệt']
+export const gnames = ['Cơ bản', 'Đặc biệt', 'Dấu câu']
 export const groups = [
   // prettier-ignore
   [
@@ -163,11 +163,11 @@ export const groups = [
     'ude1', 'ude2', 'ude3',
     'uzhi', 'ulian', 'udh',
     'udeng', 'uyy', 'uls',
+    '-',
+    'x', 'xx', 'xu',
   ],
   // prettier-ignore
   [
-    'x', 'xx', 'xu',
-    '-',
     'wj','wx', 'wd',
     'wn', 'wm', 'ws',
     'wp', 'wmd', 'wex',

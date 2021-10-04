@@ -1,9 +1,5 @@
 struct CV::PosTag
   MISCS = {
-    # modifier (non-predicate noun modifier) - từ khu biệt
-    {"b", "Modifier", Pos::Contws},
-    # 区别词性惯用语 - noun modifier morpheme
-    {"bl", "Modiform", Pos::Contws},
 
     # 代词 - pronoun - đại từ
     {"r", "Pronoun", Pos::Pronouns | Pos::Contws},

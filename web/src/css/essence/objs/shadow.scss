@@ -37,7 +37,7 @@ $shadows: (
 
 // prettier-ignore
 @mixin linesd($color: neutral, $tone: 3, $width: 1px, $ndef: true, $inset: true) {
-  @if $color { --linesd: #{linesd($color, $tone, $width)}; }
+  @if $color { --linesd: #{linesd($color, $tone, $width, $inset)}; }
   @if $ndef { box-shadow: var(--linesd); }
 }
 

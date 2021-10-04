@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte'
   import { scale, fade } from 'svelte/transition'
   import { backInOut } from 'svelte/easing'
   import SIcon from '$atoms/SIcon.svelte'
@@ -11,13 +12,15 @@
   let origin_tab = 0
 
   let modal
-  $: if (ptag) {
+
+  onMount(() => {
+    if (!ptag) return
+
     origin_tab = find_group(ptag)
     active_tab = origin_tab > 0 ? origin_tab : 0
-    modal
-      ?.querySelector('.pos-tag._active')
-      ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }
+    // scroll_to_tab(active_tab)
+    scroll_to_tag(ptag)
+  })
 
   function hide_modal() {
     state = 1
@@ -28,9 +31,15 @@
     state = 1
   }
 
-  function scroll_to(tab) {
+  function scroll_to_tab(tab) {
     sections[tab]?.scrollIntoView({ behavior: 'smooth' })
     active_tab = tab
+  }
+
+  function scroll_to_tag(tag) {
+    modal
+      ?.querySelector(`.pos-tag[data-tag="${tag}"]`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
   let sections = []
@@ -47,7 +56,7 @@
           class="-tab"
           class:_active={tab == active_tab}
           class:_origin={tab == origin_tab}
-          on:click={() => scroll_to(tab)}>
+          on:click={() => scroll_to_tab(tab)}>
           {gname}
         </button>
       {/each}
@@ -109,7 +118,7 @@
     @include bgcolor(secd);
 
     @include tm-dark {
-      @include linesd(--bd-soft);
+      @include linesd(--bd-soft, $ndef: false, $inset: false);
     }
   }
 

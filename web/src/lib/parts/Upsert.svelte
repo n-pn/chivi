@@ -413,7 +413,7 @@
     height: $h-outer;
     padding: math.div($h-outer - $h-inner, 2);
 
-    @include linesd(--bd-main);
+    @include linesd(--bd-main, $inset: false);
 
     &:focus-within {
       @include linesd(primary, 4, $ndef: false);
