@@ -173,7 +173,7 @@
     margin-bottom: 0.25rem;
     height: 21rem;
     max-height: calc(100vh - 6.5rem);
-    overflow-y: scroll;
+    @include scroll();
     @include bgcolor(secd);
   }
 
@@ -213,7 +213,7 @@
   .-sep {
     width: 50%;
     grid-column: 1 / -1;
-    margin: 0 auto;
+    margin: 0.125rem auto;
     @include border(--bd-main, $loc: top);
   }
 </style>

@@ -12,12 +12,8 @@ struct CV::PosTag
     # 姓氏 - family name - dòng họ
     {"nf", "Linage", Pos::Nouns | Pos::Human | Pos::Names | Pos::Contws},
 
-    # dòng họ + danh xưng
-    {"nfw", "Snwtit", Pos::Nouns | Pos::Human | Pos::Names | Pos::Contws},
-
     # 地名 - location name - địa danh
     {"ns", "Locname", Pos::Nouns | Pos::Names | Pos::Contws},
-
     # 机构团体名 - organization name - tổ chức
     {"nt", "Orgname", Pos::Nouns | Pos::Names | Pos::Contws},
 

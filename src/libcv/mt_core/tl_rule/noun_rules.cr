@@ -11,7 +11,7 @@ module CV::TlRule
         node.tag = PosTag::Person
         node.fold!(succ, node.val).fold!(succ_2)
       when .ptitle?
-        node.tag = node.tag.linage? ? PosTag::Snwtit : PosTag::Person
+        node.tag = PosTag::Person
         node.fold!(succ)
       when .names?
         break unless node.names?

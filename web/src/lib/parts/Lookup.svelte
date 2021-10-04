@@ -162,15 +162,6 @@
 </Slider>
 
 <style lang="scss">
-  @mixin scroll {
-    overflow-y: auto;
-    scrollbar-width: thin;
-    &::-webkit-scrollbar {
-      cursor: pointer;
-      width: 8px;
-    }
-  }
-
   .input-nav {
     padding: 0.375rem 0.75rem;
     margin-top: 0.5rem;

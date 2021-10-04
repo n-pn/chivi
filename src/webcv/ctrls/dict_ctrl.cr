@@ -207,7 +207,7 @@ class CV::DictCtrl < CV::BaseCtrl
 
   private def add_to_combine_dict(vpterm, stype)
     return if vpterm.key.size < 2
-    return unless vpterm.ptag.person? || vpterm.ptag.snwtit?
+    return unless vpterm.ptag.person?
 
     # TODO: check permission
     VpDict.load("combine", "_priv").tap { |x| x.set!(x.new_term(vpterm)) }

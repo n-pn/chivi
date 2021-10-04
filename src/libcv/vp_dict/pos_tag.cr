@@ -96,6 +96,8 @@ struct CV::PosTag
     {% for type in NOUNS + VERBS + ADJTS + MISCS + AFFIXES + AUXILS + PUNCTS %}
     when {{ type[0] }} then {{ type[1].id }}
     {% end %}
+    when "l" then Idiom
+    when "j" then Noun
     when "z" then Adesc
     when "-" then None
     else          Unkn

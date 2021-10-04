@@ -34,9 +34,9 @@ struct CV::PosTag
     # 成语 - idiom - thành ngữ
     {"i", "Idiom", Pos::Contws},
     # 简称 - abbreviation - viết tắt
-    {"j", "Abbre", Pos::Contws},
+    # {"j", "Abbre", Pos::Contws},
     # 习惯用语 - Locution - quán ngữ
-    {"l", "Locut", Pos::Contws},
+    # {"l", "Locut", Pos::Contws},
 
     # 字符串 - non-word character string - hư từ khác
     {"x", "String", Pos::Strings | Pos::Contws},

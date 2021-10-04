@@ -13,7 +13,7 @@ struct CV::PosTag
 
     Auxils; Preposes
 
-    Prefixes; Suffixes
+    Suffixes
 
     Uniqs
   end
