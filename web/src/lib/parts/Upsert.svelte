@@ -396,7 +396,7 @@
     position: relative;
     @include bdradi;
 
-    @include linesd(--bd-main);
+    @include linesd(--bd-main, $inset: false);
     @include bgcolor(main);
 
     &:focus-within {

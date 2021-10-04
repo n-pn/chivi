@@ -2,7 +2,9 @@
   import { MtData, render_zh } from '$lib/mt_data'
   import { writable } from 'svelte/store'
   import { dict_lookup } from '$api/dictdb_api'
+  import { tag_label } from '$lib/pos_tag'
 
+  import { activate as upsert_activate } from '$parts/Upsert.svelte'
   export const enabled = writable(false)
   export const actived = writable(false)
 
@@ -64,6 +66,14 @@
     if (err) return
 
     entries = data.entries
+
+    for (const entry of entries) {
+      for (const term of entry) {
+        const viet = term[1].vietphrase
+        if (viet) term[1].vietphrase = viet.map((x) => x.split('\t'))
+      }
+    }
+
     hv_text = new MtData(data.hanviet).render_hv()
     update_focus($lower)
   }
@@ -108,20 +118,41 @@
   <section class="terms">
     {#each current as [size, terms]}
       <div class="entry">
-        <h3 class="word" lang="zh">{$input.substr($lower, size)}</h3>
-        {#each Object.entries(terms) as [name, items]}
-          {#if items.length > 0}
+        <h3 class="word" lang="zh">
+          <entry-key>{$input.substr($lower, size)}</entry-key>
+          <entry-btn
+            class="m-button btn-sm"
+            role="button"
+            on:click={() => upsert_activate([$input, $lower, $lower + size])}>
+            <SIcon name="edit" />
+            <span>{terms.vietphrase ? 'Sửa' : 'Thêm'}</span>
+          </entry-btn>
+        </h3>
+
+        {#if terms.vietphrase}
+          <div class="item">
+            <h4 class="name">vietphrase</h4>
+            {#each terms.vietphrase as [val, tag, dic]}
+              <p class="term">
+                <term-dic>
+                  <SIcon name={dic < 4 ? 'world' : 'book'} />
+                  <SIcon name={dic % 2 ? 'user' : 'users'} />
+                </term-dic>
+
+                <term-val>{val || '<đã xoá>'}</term-val>
+                <term-tag>{tag_label(tag)}</term-tag>
+              </p>
+            {/each}
+          </div>
+        {/if}
+
+        {#each ['trungviet', 'cc_cedict'] as dname}
+          {#if terms[dname]}
             <div class="item">
-              <h4 class="name">{name}</h4>
-              {#if name == 'vietphrase'}
-                <p class="viet">
-                  {@html items.map((x) => x || '<em>(đã xoá)</em>').join('; ')}
-                </p>
-              {:else}
-                {#each items as line}
-                  <p class="term">{line}</p>
-                {/each}
-              {/if}
+              <h4 class="name">{dname}</h4>
+              {#each terms[dname] as line}
+                <p class="term">{line}</p>
+              {/each}
             </div>
           {/if}
         {/each}
@@ -142,6 +173,8 @@
 
   .input-nav {
     padding: 0.375rem 0.75rem;
+    margin-top: 0.5rem;
+    @include border($loc: top);
     @include bgcolor(tert);
     @include scroll;
 
@@ -149,11 +182,11 @@
       $line: 1.375rem;
       line-height: $line;
       max-height: $line * 2 + 0.75rem;
+      @include border($loc: bottom);
     }
 
     &._hv {
       $line: 1.25rem;
-      margin-top: var(--gutter-sm);
       line-height: $line;
       max-height: $line * 3 + 0.75rem;
     }
@@ -170,6 +203,15 @@
     @include ftsize(md);
   }
 
+  h3 {
+    display: flex;
+  }
+
+  entry-btn {
+    margin-left: auto;
+    background: transparent;
+  }
+
   h4 {
     font-weight: 500;
     text-transform: uppercase;
@@ -179,21 +221,42 @@
 
   .entry {
     @include fgcolor(secd);
-    padding: 0.375rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     // padding-top: 0;
-    @include border($loc: bottom);
-    &:last-child {
-      border: none;
-    }
+    @include border($loc: top);
   }
 
   .item {
+    margin-top: 0.25rem;
+
     & + & {
-      margin-top: var(--gutter-xs);
+      margin-top: 0.5rem;
+    }
+
+    p + p {
+      margin-top: 0.25rem;
     }
   }
 
   .term {
+    @include flex($gap: 0.25rem);
+    word-wrap: none;
     line-height: 1.5rem;
+  }
+
+  term-tag {
+    display: inline-block;
+    @include bdradi(1rem);
+    @include ftsize(sm);
+    @include linesd(--bd-main);
+    @include fgcolor(tert);
+    padding: 0 0.5rem;
+  }
+
+  term-dic {
+    display: inline-flex;
+    @include ftsize(sm);
+    @include fgcolor(tert);
+    padding: 0.25rem 0;
   }
 </style>

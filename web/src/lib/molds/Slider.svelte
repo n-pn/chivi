@@ -59,7 +59,7 @@
     left: 0;
     bottom: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 97;
 
     background-color: rgba(#000, 0.5);
     transition: background-color 0.5s ease-in-out;
@@ -85,7 +85,7 @@
     overflow-y: auto;
     max-width: 90vw;
     height: 100vh;
-    z-index: 1001;
+    z-index: 98;
 
     will-change: transform;
     transition: transform 0.1s ease-in-out;

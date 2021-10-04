@@ -111,7 +111,7 @@ class CV::DictCtrl < CV::BaseCtrl
 
       vietphrase.each do |dict, type|
         dict.scan(chars, idx) do |term|
-          value = "#{type}: #{term.val.join("/")}"
+          value = "#{term.val.join("/")}\t#{term.attr}\t#{term.dtype}"
           entry[term.key.size][:vietphrase] << value
         end
       end
