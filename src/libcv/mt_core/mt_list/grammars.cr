@@ -16,6 +16,7 @@ module CV::MTL::Grammars
       when .vxiang?  then node = fix_vxiang!(node)
       when .vshi?    then next # TODO handle vshi
       when .vyou?    then next # TODO handle vyou
+      when .vhui?    then node = TlRule.heal_vhui!(node)
       when .verbs?   then node = fix_verbs!(node, mode: mode)
       when .adjts?   then node = fix_adjts!(node, mode: mode)
       when .nouns?

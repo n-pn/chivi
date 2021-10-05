@@ -124,18 +124,12 @@
     width: 100%;
     margin-top: auto;
     text-align: center;
-    padding: 0.75rem;
+    padding: var(--gutter-sm);
 
     @include ftsize(sm);
     @include border($loc: top);
-    @include fgcolor(neutral, 6);
-    @include bgcolor(neutral, 2);
-
-    @include tm-dark {
-      @include fgcolor(neutral, 4);
-      @include bgcolor(neutral, 8);
-      @include bdcolor(neutral, 7);
-    }
+    @include fgcolor(tert);
+    @include bgcolor(tert);
   }
 
   .-link {
