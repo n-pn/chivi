@@ -1,36 +1,4 @@
 module CV::MTL::Grammars
-  def fix_vxiang!(node = @root) : MtNode
-    return node unless succ = node.succ?
-
-    case succ
-    when .verbs?
-      node.update!("muốn")
-    else
-      # TODO!
-      node
-    end
-  end
-
-  def fix_vhui!(node = @root) : MtNode
-    return node unless succ = node.succ?
-
-    if succ.verbs?
-      return node unless succ_2 = succ.succ?
-
-      case succ_2
-      when .ude1?
-        val = node.key == "不会" ? "nhất định không" : "nhất định"
-        node.update!(val)
-      else
-        # TODO!
-        node
-      end
-    else
-      val = node.key == "不会" ? "sẽ không" : "sẽ"
-      node.update!(val)
-    end
-  end
-
   def fix_verbs!(node = @root, mode = 2) : MtNode
     return node if mode < 2
 
@@ -51,15 +19,9 @@ module CV::MTL::Grammars
       when .ahao?
         node.fold!(succ, "#{node.val} tốt")
       when .nquant?
-        case succ.key
-        when "一趟", "一下"
-          node.fuse_right!("#{node.val} #{succ.val}")
-          node.tag = PosTag::Vform
-        when "一把"
-          node.fuse_right!("#{node.val} một phát")
-          node.tag = PosTag::Vform
-        end
-
+        succ.val = "một phát" if succ.key == "一把"
+        node.tag = PosTag::Vform
+        node.fold!(dic: 7)
         break
       when .suffix时?
         node = TlRule.heal_suffix_时!(node, succ)
@@ -75,8 +37,6 @@ module CV::MTL::Grammars
         node.tag = PosTag::Adesc
         # when .adjts?
         # node.fuse_left!("#{prev.val} ", "")
-        # when .adverb?
-        # node.fuse_left!("#{prev.val} ")
       else
         break
       end

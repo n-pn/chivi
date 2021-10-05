@@ -28,6 +28,7 @@ module CV::TlRule
     when .adjts?
       node.val = "không"
       fold_adjts!(succ, nega: node)
+    else
       node
     end
   end

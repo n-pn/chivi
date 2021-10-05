@@ -148,46 +148,4 @@ module CV::MTL::Grammars
     return false if prev.comma? || prev.penum?
     prev.ends? || prev.vshi? || prev.quantis?
   end
-
-  # private def fix_nouns!(node = @head)
-  #   while node = node.succ
-  #     prev = node.prev.not_nil!
-  #     if node.cat == 1
-  #       skip, left, right = false, "", ""
-
-  #       case prev.key
-  #       when "这", "这位", "这具", "这个", "这种",
-  #            "这些", "这样", "这段", "这份", "这帮",
-  #            "这条"
-  #         skip, left, right = true, suffix(prev.key[1]?), " này"
-  #       when "那位", "那具", "那个", "那种",
-  #            "那些", "那样", "那段", "那份", "那帮",
-  #            "那条"
-  #         skip, left, right = true, suffix(prev.key[1]?), " kia"
-  #       when "那"
-  #         # TODO: skipping if 那 is in front
-  #         skip, left, right = true, suffix(prev.key[1]?), " kia"
-  #       when "什么"
-  #         skip, right = true, " cái gì"
-  #       when "没什么"
-  #         skip, left, right = true, "không có ", " gì"
-  #       when "这样的"
-  #         skip, right = true, " như vậy"
-  #       when "其他", "其她", "其它"
-  #         skip, left, right = true, "cái ", " khác"
-  #       when "别的"
-  #         skip, right = true, " khác"
-  #       when "某个"
-  #         skip, right = true, " nào đó"
-  #       when "一串", "一个", "一只", "几个"
-  #         skip, left = true, "#{prev.val} "
-  #       when "另一个"
-  #         skip, left, right = true, "một cái ", " khác"
-  #       end
-  #       node.fuse_left!(left, right) if skip
-  #     end
-  #   end
-
-  #   self
-  # end
 end
