@@ -15,10 +15,11 @@ module CV::MTL::Grammars
       when .numlat?  then node = fix_number!(node)
       when .vshi?    then next # TODO handle vshi
       when .vyou?    then next # TODO handle vyou
-      when .vhui?    then node = TlRule.heal_vhui!(node)
-      when .vxiang?  then node = TlRule.heal_vxiang!(node)
+      when .vmodals? then node = TlRule.heal_vmodal!(node)
       when .verbs?   then node = fix_verbs!(node, mode: mode)
       when .adjts?   then node = fix_adjts!(node, mode: mode)
+      when .adverbs?
+        node = TlRule.fold_adverbs!(node)
       when .nouns?
         node = TlRule.fold_noun!(node)
         node = fix_nouns!(node, mode: mode) if node.nouns?

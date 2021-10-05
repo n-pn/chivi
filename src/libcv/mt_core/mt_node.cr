@@ -82,6 +82,15 @@ class CV::MtNode
     self
   end
 
+  def fold_left!(left : self, tag = @tag)
+    left.tag = tag
+    left.fold!(self)
+  end
+
+  def fold_left!(left : Nil)
+    self
+  end
+
   def fold!(succ : self, @val = "#{@val} #{succ.val}", @dic = 6) : self
     @key = "#{@key}#{succ.key}"
     fix_succ!(succ.succ?)

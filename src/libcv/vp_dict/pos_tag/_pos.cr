@@ -7,7 +7,9 @@ struct CV::PosTag
     Nouns; Pronouns
     Names; Human
 
-    Verbs; Adjts
+    Verbs; Vmodals
+
+    Adjts; Adverbs
 
     Numbers; Quantis; Strings
 

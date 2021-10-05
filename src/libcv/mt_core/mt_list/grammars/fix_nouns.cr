@@ -12,28 +12,7 @@ module CV::MTL::Grammars
       end
     end
 
-    node = nouns_fuse_left!(node, mode: mode)
-    return node if node.prev?(&.verbs?)
-
-    if succ = node.succ?
-      case succ
-      when .space?
-        case succ.key
-        when "上"
-          node.fold!("trên #{node.val}")
-        when "下"
-          node.fold!("dưới #{node.val}")
-        else
-          node.fold!("#{succ.val} #{node.val}")
-        end
-        node.tag = PosTag::Nform
-      when .place?
-        node.fuse_right!("#{succ.val} #{node.val}")
-        node.tag = PosTag::Nform
-      end
-    end
-
-    node
+    nouns_fuse_left!(node, mode: mode)
   end
 
   def nouns_fuse_left!(node, mode = 2) : MtNode

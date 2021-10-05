@@ -17,6 +17,11 @@ module CV::TlRule
         break unless node.names?
         node.tag = succ.tag
         node.fold!(succ)
+      when .space?
+        node = fold_noun_space?(node, succ)
+      when .place?
+        node.tag = PosTag::Noun
+        node.fold!(succ, "#{succ.val} #{node.val}")
       when .noun?
         case node
         when .names?
@@ -50,5 +55,18 @@ module CV::TlRule
     end
 
     node
+  end
+
+  def fold_noun_space?(node : MtNode, succ = node.succ)
+    node.tag = PosTag::Place
+
+    case succ.key
+    when "上"
+      node.fold!("trên #{node.val}")
+    when "下"
+      node.fold!("dưới #{node.val}")
+    else
+      node.fold!("#{succ.val} #{node.val}")
+    end
   end
 end

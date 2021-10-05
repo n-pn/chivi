@@ -12,14 +12,14 @@ struct CV::PosTag
   enum Tag
     None; Unkn
 
-    {% for type in NOUNS + VERBS + ADJTS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+    {% for type in NOUNS + VERBS + ADJTS + ADVERBS + MISCS + AFFIXES + AUXILS + PUNCTS %}
       {{ type[1].id }}
     {% end %}
 
     def to_str
       {% begin %}
       case self
-      {% for type in NOUNS + VERBS + ADJTS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+      {% for type in NOUNS + VERBS + ADJTS + ADVERBS + MISCS + AFFIXES + AUXILS + PUNCTS %}
         when {{ type[1].id }} then {{ type[0] }}
       {% end %}
       when None then "-"
@@ -32,7 +32,7 @@ struct CV::PosTag
   None = new(Tag::None, Pos::Puncts)
   Unkn = new(Tag::Unkn, Pos::Contws)
 
-  {% for type in NOUNS + VERBS + ADJTS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+  {% for type in NOUNS + VERBS + ADJTS + ADVERBS + MISCS + AFFIXES + AUXILS + PUNCTS %}
     {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
   {% end %}
 
@@ -93,7 +93,7 @@ struct CV::PosTag
   def self.from_str(tag : ::String) : self
     {% begin %}
     case tag
-    {% for type in NOUNS + VERBS + ADJTS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+    {% for type in NOUNS + VERBS + ADJTS + ADVERBS + MISCS + AFFIXES + AUXILS + PUNCTS %}
     when {{ type[0] }} then {{ type[1].id }}
     {% end %}
     when "l" then Idiom

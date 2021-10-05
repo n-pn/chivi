@@ -23,16 +23,24 @@ struct CV::PosTag
     {"vshi", "Vshi", Pos::Verbs | Pos::Uniqs | Pos::Contws},
     # 动词 “有” - động từ `hữu`
     {"vyou", "Vyou", Pos::Verbs | Pos::Uniqs | Pos::Contws},
+
+    # 能愿动词 - modal verb - động từ năng nguyện
+    {"vm", "Vmodal", Pos::Vmodals | Pos::Contws},
     # 动词 “会” - động từ `hội`
-    {"vhui", "Vhui", Pos::Verbs | Pos::Uniqs | Pos::Contws},
+    {"vhui", "Vhui", Pos::Vmodals | Pos::Uniqs | Pos::Contws},
     # 动词 “能” - động từ `năng`
-    {"vneng", "Vneng", Pos::Verbs | Pos::Uniqs | Pos::Contws},
+    {"vneng", "Vneng", Pos::Vmodals | Pos::Uniqs | Pos::Contws},
     # 动词 “想” - động từ `tưởng`
-    {"vxiang", "Vxiang", Pos::Verbs | Pos::Uniqs | Pos::Contws},
+    {"vxiang", "Vxiang", Pos::Vmodals | Pos::Uniqs | Pos::Contws},
   }
 
   @[AlwaysInline]
   def verbs?
     @pos.verbs?
+  end
+
+  @[AlwaysInline]
+  def vmodals?
+    @pos.vmodals?
   end
 end

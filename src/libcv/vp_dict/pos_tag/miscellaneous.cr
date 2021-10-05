@@ -45,10 +45,6 @@ struct CV::PosTag
     # 虚词 - hư từ #
     ###############
 
-    {"d", "Adverb", Pos::Funcws}, # 副词 - adverb - phó từ (trạng từ)
-    # dg adverbial morpheme
-    # dl adverbial formulaic expression
-
     {"p", "Prepos", Pos::Preposes | Pos::Funcws},    # 介词 - preposition - giới từ
     {"pba", "Prepba", Pos::Preposes | Pos::Funcws},  # 介词 “把” - giới từ `bả`
     {"pbei", "Prebei", Pos::Preposes | Pos::Funcws}, # 介词 “被” - giới từ `bị`
@@ -59,6 +55,5 @@ struct CV::PosTag
     {"e", "Interjection", Pos::Funcws},  # 叹词 - interjection/exclamation - thán từ
     {"y", "Modalparticle", Pos::Funcws}, # 语气词 - modal particle - ngữ khí
     {"o", "Onomatopoeia", Pos::Funcws},  # 拟声词 - onomatopoeia - tượng thanh
-
   }
 end
