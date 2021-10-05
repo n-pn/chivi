@@ -117,7 +117,7 @@ module CV::MTL::Grammars
     case succ.tag
     when .comma?, .pdash?
       return false
-    when .verbs?, .proverbs?
+    when .verbs?, .adverbs?
       return true
     end
 
