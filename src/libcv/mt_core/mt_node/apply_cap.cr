@@ -13,6 +13,8 @@ module MTL::ApplyCap
   end
 
   def capitalize!(cap : Bool = false) : Bool
+    return cap if @val == " "
+
     case @tag
     when .none?   then cap
     when .puncts? then cap_after_punct?(cap) # TODO: merge this with should_cap?

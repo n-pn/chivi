@@ -96,6 +96,7 @@ c-v {
   &:hover,
   &._focus {
     color: var(--active);
+    background: var(--bg-active, inherit);
   }
 
   // .debugger &,

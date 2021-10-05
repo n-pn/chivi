@@ -33,6 +33,10 @@ module CV::MTL::Grammars
         when "各" then node.fuse_left!("các ")
         when "那样"
           node = prev.fold!(node, "#{node.val} như thế")
+        when "这个"
+          node = prev.fold!(node, "#{node.val} này")
+        when "那个"
+          node = prev.fold!(node, "#{node.val} kia")
         when .ends_with?("个")
           prev.val = prev.val.sub("cái", "").strip
           node = prev.fold!(node)
@@ -114,17 +118,12 @@ module CV::MTL::Grammars
 
     return false unless succ = curr.succ?
 
-    case succ.tag
-    when .comma?, .pdash?
-      return false
-    when .verbs?, .adverbs?
-      return true
-    end
+    return false unless succ.verbs? || succ.adverbs? || succ.endsts?
 
     return false unless prev = head.prev?
 
     case prev.tag
-    when .nouns?
+    when .nouns?, .vmodal?
       false
     when .ends?, .vshi?, .quantis?
       true
