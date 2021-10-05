@@ -89,7 +89,7 @@ module CV::MTL::Grammars
 
           prev_2.val = "#{node.val} của #{prev_2.val}"
           prev_2.tag = PosTag::Nform
-          prev_2.dic = 7
+          prev_2.dic = prev_2.prev?(&.verbs?) ? 8 : 7
           node = prev_2.fold_many!(prev, node)
 
           break
@@ -106,7 +106,7 @@ module CV::MTL::Grammars
     node
   end
 
-  def verb_subject?(head : MtNode?, curr : MtNode)
+  def verb_subject?(head : MtNode, curr : MtNode)
     return false unless head.verb? || head.vyou?
 
     # return false if head.vform?
@@ -116,6 +116,6 @@ module CV::MTL::Grammars
     return succ.comma? unless prev = head.prev?
 
     # return false if prev.comma? || prev.penum?
-    prev.ends? || prev.vshi? || prev.quantis?
+    prev.ends? || prev.vshi? || prev.quantis? || prev.key == "在"
   end
 end
