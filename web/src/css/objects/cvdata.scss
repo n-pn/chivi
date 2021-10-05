@@ -104,8 +104,8 @@ c-v {
     border-bottom: 1px solid var(--border);
   }
 
-  .kbd-hint &,
-  .debugger & {
+  .debugger &,
+  .kbd-hint & {
     color: var(--active);
     background: var(--bg-active, inherit);
   }

@@ -110,14 +110,26 @@ module CV::MTL::Grammars
 
   def verb_subject?(head : MtNode, curr : MtNode)
     return false unless head.verb? || head.vyou?
-
     # return false if head.vform?
+
     return false unless succ = curr.succ?
-    return true if succ.tag.verbs?
 
-    return succ.comma? unless prev = head.prev?
+    case succ.tag
+    when .comma?, .pdash?
+      return false
+    when .verbs?, .proverbs?
+      return true
+    end
 
-    # return false if prev.comma? || prev.penum?
-    prev.ends? || prev.vshi? || prev.quantis? || prev.key == "在"
+    return false unless prev = head.prev?
+
+    case prev.tag
+    when .nouns?
+      false
+    when .ends?, .vshi?, .quantis?
+      true
+    else
+      prev.key == "在"
+    end
   end
 end

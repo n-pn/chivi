@@ -1,7 +1,9 @@
 module CV::MTL::Grammars
   def fix_ule!(node : MtNode) : MtNode
     return node unless (prev = node.prev?) && (succ = node.succ?)
+    return node.update!(val: "") if succ.tag.brackop? || prev.tag.brackcl?
     return node.update!(val: "") if succ.tag.quoteop? || prev.tag.quotecl?
+
     return node.update!(val: "") if prev.tag.quotecl? && !succ.tag.ends?
 
     return node if succ.tag.ends? || prev.tag.ends? || succ.key == prev.key

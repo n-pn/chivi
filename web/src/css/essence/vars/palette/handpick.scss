@@ -57,6 +57,20 @@ $color-green: (
   9: #064c39,
 ) !default;
 
+// source: tailwind teal
+$color-teal: (
+  0: #f0fdfa,
+  1: #ccfbf1,
+  2: #99f6e4,
+  3: #5eead4,
+  4: #2dd4bf,
+  5: #14b8a6,
+  6: #0d9488,
+  7: #0f766e,
+  8: #115e59,
+  9: #134e4a,
+) !default;
+
 // source: tailwind sky
 $color-blue: (
   0: #f5fbff,
@@ -106,6 +120,7 @@ $color-palette: (
   red: $color-red,
   orange: $color-orange,
   green: $color-green,
+  teal: $color-teal,
   blue: $color-blue,
   violet: $color-violet,
   pink: $color-pink,
