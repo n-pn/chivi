@@ -74,6 +74,8 @@ module CV::TlRule
       node.fold!("trên #{node.val}")
     when "下"
       node.fold!("dưới #{node.val}")
+    when "之前"
+      node.fold!("trước #{node.val}")
     else
       node.fold!("#{succ.val} #{node.val}")
     end

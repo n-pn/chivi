@@ -1,9 +1,8 @@
 module CV::MTL::Grammars
   def fix_ule!(node : MtNode) : MtNode
     return node unless (prev = node.prev?) && (succ = node.succ?)
-    return node.update!(val: "") if succ.tag.brackop? || prev.tag.brackcl?
-    return node.update!(val: "") if succ.tag.quoteop? || prev.tag.quotecl?
 
+    return node.update!(val: "") if succ.tag.quoteop? || prev.tag.quotecl?
     return node.update!(val: "") if prev.tag.quotecl? && !succ.tag.ends?
 
     return node if succ.tag.ends? || prev.tag.ends? || succ.key == prev.key
@@ -19,24 +18,18 @@ module CV::MTL::Grammars
   end
 
   def fix_ude1!(node : MtNode, mode = 1) : MtNode
-    if node.prev?(&.tag.quoteop?) && node.succ?(&.tag.quotecl?)
-      return node.update!(val: "của")
+    return node unless prev = node.prev?
+    return node if prev.puncts?
+
+    node.val = ""
+
+    return node unless node.succ?(&.endsts?)
+    return node unless prev.tag.nouns? || prev.tag.propers?
+
+    unless prev.prev?(&.tag.verbs?) || prev.prev?(&.tag.preposes?)
+      return prev.fold!(node, "của #{prev.val}", dic: 7)
     end
 
-    unless mode > 1 && boundary?(node.succ?)
-      return node.update!(val: "")
-    end
-
-    prev = node.prev.not_nil!
-
-    if prev.tag.nouns? || prev.tag.propers?
-      unless prev.prev?(&.tag.verbs?) || prev.prev?(&.tag.prepos?)
-        node.val = "của"
-        node.dic = 7
-        return node.tap(&.fuse_left!("", " #{prev.val}"))
-      end
-    end
-
-    node.update!(val: "")
+    node
   end
 end
