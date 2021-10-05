@@ -19,9 +19,12 @@ module CV::MTL::Grammars
       when .ahao?
         node.fold!(succ, "#{node.val} tốt")
       when .nquant?
-        succ.val = "một phát" if succ.key == "一把"
-        node.tag = PosTag::Vform
-        node.fold!(dic: 7)
+        if node.verb?
+          succ.val = "một phát" if succ.key == "一把"
+          node.tag = PosTag::Vform
+          node.fold!(dic: 7)
+        end
+
         break
       when .suffix时?
         node = TlRule.heal_suffix_时!(node, succ)

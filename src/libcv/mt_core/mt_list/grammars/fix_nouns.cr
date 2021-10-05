@@ -64,7 +64,7 @@ module CV::MTL::Grammars
         else           node.fuse_left!("", " #{prev.val}")
         end
       when .prointr?
-        val = prev.key == "什么" ? "nào" : prev.val
+        val = prev.key == "什么" ? "gì" : prev.val
         node.fuse_left!("", " #{val}")
       when .amorp?
         node.fuse_left!("#{prev.val} ")
@@ -98,29 +98,19 @@ module CV::MTL::Grammars
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .nouns?, .propers?
-          if (prev_3 = prev_2.prev?)
-            if verb_subject?(prev_3, node)
-              break
-              node.key = "#{prev_3.key}#{prev_2.key}#{prev.key}#{node.key}"
-              node.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
-
-              node.prev = prev_3.prev
-              node.prev?(&.succ.== node)
-
-              node.dic = 8
-              break
-            elsif prev_3.vintr?
-              prev.fuse_left!("", " #{prev_2.val}")
-              node.fuse_left!("", " của #{prev.val}")
-              node.dic = 7
-              break
-            elsif prev_3.verb? # || x.prepros?
-              break
-            end
+          if (prev_3 = prev_2.prev?) && verb_subject?(prev_3, node)
+            prev_3.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
+            prev_3.tag = PosTag::Nform
+            prev_3.dic = 9
+            node = prev_3.fold_many!(prev_2, prev, node)
+            break
           end
 
-          prev.fuse_left!(prev_2.val)
-          node.fuse_left!("", " của #{prev.val}")
+          prev_2.val = "#{node.val} của #{prev_2.val}"
+          prev_2.tag = PosTag::Nform
+          prev_2.dic = 7
+          node = prev_2.fold_many!(prev, node)
+
           break
         else
           break
@@ -135,17 +125,16 @@ module CV::MTL::Grammars
     node
   end
 
-  def verb_subject?(head : MtNode, curr : MtNode)
+  def verb_subject?(head : MtNode?, curr : MtNode)
     return false unless head.verb? || head.vyou?
 
     # return false if head.vform?
-    curr.succ? do |succ|
-      return true if succ.tag.verbs?
-      return false if succ.tag.comma?
-    end
+    return false unless succ = curr.succ?
+    return true if succ.tag.verbs?
 
-    return true unless prev = head.prev?
-    return false if prev.comma? || prev.penum?
+    return succ.comma? unless prev = head.prev?
+
+    # return false if prev.comma? || prev.penum?
     prev.ends? || prev.vshi? || prev.quantis?
   end
 end

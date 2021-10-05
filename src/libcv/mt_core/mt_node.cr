@@ -96,6 +96,13 @@ class CV::MtNode
     fix_succ!(succ.succ?)
   end
 
+  def fold_many!(*succ : self)
+    key_io = String::Builder.new(@key)
+    succ.each { |x| key_io << x.key }
+    @key = key_io.to_s
+    fix_succ!(succ[-1].succ?)
+  end
+
   def fold!(val : String = "#{@val} #{succ.val}", dic = 6) : self
     fold!(succ, val, dic)
   end

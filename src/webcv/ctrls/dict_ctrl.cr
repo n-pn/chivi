@@ -97,8 +97,9 @@ class CV::DictCtrl < CV::BaseCtrl
 
   def lookup
     dname = params["dname"]
-    input = params["input"].strip
+    dname = "combine" if dname == "generic"
 
+    input = params["input"].strip
     vietphrase = VpDict.for_lookup(dname, _cv_user.uname)
 
     chars = input.chars

@@ -81,6 +81,8 @@ module CV::MTL::Grammars
       node.fuse_right!("nặng #{node.val}")
     when "远"
       node.fuse_right!("xa #{node.val}")
+    when "多"
+      node.fuse_right!("hơn #{node.val}")
     else
       return node unless succ.tag.qttime?
     end
