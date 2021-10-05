@@ -31,15 +31,17 @@ module CV::MTL::Grammars
         when "这" then node.fuse_left!("", " này")
         when "那" then node.fuse_left!("", " kia")
         when "各" then node.fuse_left!("các ")
+        when "那样"
+          node = prev.fold!(node, "#{node.val} như thế")
         when .ends_with?("个")
-          right = prev.val.sub("cái", "").strip
-          node.fuse_left!("", " #{right}")
+          prev.val = prev.val.sub("cái", "").strip
+          node = prev.fold!(node)
         when .starts_with?("这")
-          left = prev.val.sub("này", "").strip
-          node.fuse_left!("#{left} ", " này")
+          val = prev.val.sub("này", "").strip
+          node = prev.fold!(node, "#{val} #{node.val} này")
         when .starts_with?("那")
-          left = prev.val.sub("kia", "").strip
-          node.fuse_left!("#{left} ", " kia")
+          val = prev.val.sub("kia", "").strip
+          node = prev.fold!(node, "#{val} #{node.val} kia")
         when "其他" then node.fuse_left!("các ", " khác")
         when "任何" then node.fuse_left!("bất kỳ ")
         else           node.fuse_left!("", " #{prev.val}")
