@@ -22,8 +22,13 @@ module CV::MTL::Grammars
         node = TlRule.fold_adverbs!(node)
       when .nouns?
         node = TlRule.fold_noun!(node)
-        node = fix_nouns!(node, mode: mode) if node.nouns?
-      else fix_by_key!(node)
+        next unless node.nouns?
+        node = fix_nouns!(node, mode: mode)
+
+        next unless node.nouns?
+        if (succ = node.succ?) && (succ.space?)
+          node = TlRule.fold_noun_space!(node, succ)
+        end
       end
     end
 

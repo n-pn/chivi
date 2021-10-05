@@ -1,39 +1,20 @@
 module CV::MTL::Grammars
   def fix_nouns!(node = @head, mode = 2) : MtNode
-    return node if mode < 2
-
-    if succ = node.succ?
-      case succ.tag
-      when .adjts?
-        if succ.succ?(&.ude1?)
-          node.tag = PosTag::Adjt
-          return node.fold!(dic: 8)
-        end
-      end
-    end
-
-    nouns_fuse_left!(node, mode: mode)
-  end
-
-  def nouns_fuse_left!(node, mode = 2) : MtNode
-    return node if node.veno? || node.nother?
+    return node if mode < 2 || node.veno?
 
     while prev = node.prev?
       case prev
       when .penum?
         prev_2 = prev.prev
         break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeic?
-        prev.fuse_left!
-        node.fuse_left!("#{prev_2.val}, ")
+        node = TlRule.fold_penum!(prev_2, prev, node, force: true)
         next
       when .concoord?
         prev_2 = prev.prev
         break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeic?
-
-        prev.fuse_left!("#{prev_2.val} ")
-        node.fuse_left!("#{prev.val} ")
+        node = TlRule.fold_concoord!(prev_2, prev, node, force: true)
         next
-      when .number?, .nquant?, .quanti?
+      when .nquants?
         break if node.veno? || node.ajno?
         node.fuse_left!("#{prev.val} ")
       when .propers?

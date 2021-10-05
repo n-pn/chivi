@@ -4,6 +4,10 @@ module CV::TlRule
       break unless succ = node.succ?
 
       case succ.tag
+      when .adjt?
+        break unless succ.succ?(&.ude1?)
+        node.tag = PosTag::Adjt
+        return node.fold!(succ, dic: 8)
       when .middot?
         break unless succ_2 = succ.succ?
         break unless succ_2.human?
@@ -17,8 +21,6 @@ module CV::TlRule
         break unless node.names?
         node.tag = succ.tag
         node.fold!(succ)
-      when .space?
-        node = fold_noun_space?(node, succ)
       when .place?
         node.tag = PosTag::Noun
         node.fold!(succ, "#{succ.val} #{node.val}")
@@ -39,10 +41,10 @@ module CV::TlRule
         else break
         end
       when .concoord?
-        node = fold_near_concoord!(node, succ, succ.succ)
+        node = fold_concoord!(node, succ, succ.succ)
         break if node.succ == succ
       when .penum?
-        node = fold_near_penum!(node, succ, succ.succ)
+        node = fold_penum!(node, succ, succ.succ)
         break node.succ == succ
       when .suf_verb?
         node = heal_suf_verb!(node, succ)
@@ -57,8 +59,15 @@ module CV::TlRule
     node
   end
 
-  def fold_noun_space?(node : MtNode, succ = node.succ)
+  def fold_noun_space!(node : MtNode, succ = node.succ?) : MtNode
+    return node unless succ
     node.tag = PosTag::Place
+
+    # if (prev = node.prev?) && prev.nquant?
+    #   prev.val = "#{succ.val} #{prev.val} #{node.val}"
+    #   prev.dic = 7
+    #   node = prev.fold_many!(node, succ)
+    # else
 
     case succ.key
     when "上"
