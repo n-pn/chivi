@@ -22,12 +22,12 @@ module CV::TlRule
     return node unless succ
 
     case succ.tag
-    when .verbs? then fold_verbs!(succ, nega: node)
+    when .verbs?
+      node.val = "chưa"
+      fold_verbs!(succ, nega: node)
     when .adjts?
       node.val = "không"
       fold_adjts!(succ, nega: node)
-    else
-      node.val = "không có"
       node
     end
   end
