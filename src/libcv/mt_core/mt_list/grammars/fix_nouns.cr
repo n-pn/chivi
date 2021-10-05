@@ -13,7 +13,7 @@ module CV::MTL::Grammars
         prev_2 = prev.prev
         break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeic?
         node = TlRule.fold_concoord!(prev_2, prev, node, force: true)
-        next
+        break
       when .nquants?
         break if node.veno? || node.ajno?
         node.fuse_left!("#{prev.val} ")

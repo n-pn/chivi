@@ -9,6 +9,6 @@ module CV::TlRule
     prev.val = "#{prev.val} #{val} #{succ.val}"
     prev.dic = 6
 
-    prev.fix_succ!(succ.succ)
+    prev.fix_succ!(succ.succ?)
   end
 end
