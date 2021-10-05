@@ -27,6 +27,7 @@ module CV::TlRule
       node.val = "không"
       fold_adjts!(succ, nega: node)
     else
+      node.val = "không có"
       node
     end
   end
