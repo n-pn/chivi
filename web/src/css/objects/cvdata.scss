@@ -114,7 +114,7 @@ c-v {
 
   &[data-d='1'] {
     @include cv-token(gray);
-    --border: 0;
+    border: 0;
   }
 
   &[data-d='2'] {

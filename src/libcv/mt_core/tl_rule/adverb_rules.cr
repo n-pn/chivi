@@ -14,7 +14,9 @@ module CV::TlRule
     case succ.tag
     when .vmodals? then heal_vmodal!(succ, nega: node)
     when .verbs?   then fold_verbs!(succ, nega: node)
-    else                fold_adverb!(succ, nega: node)
+    when .adjts?   then fold_adjts!(succ, nega: node)
+    when .adverb?  then fold_adverb!(succ, nega: node)
+    else                node
     end
   end
 
@@ -40,9 +42,16 @@ module CV::TlRule
   end
 
   def fold_adverb!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    node.val = "vậy" if node.key == "也" && succ.try(&.ends?)
+    return node unless succ
+    node.val = "vậy" if !nega && succ.ends? && node.key == "也"
 
-    # TODO: merge adverb with adjectives or verbs
+    case succ.tag
+    when .verbs?
+      node = fold_verbs!(succ, nega: node)
+    when .adjts?
+      node = fold_adjts!(succ, nega: node)
+    end
+
     node.fold_left!(nega)
   end
 end
