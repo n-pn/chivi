@@ -7,13 +7,15 @@ module CV::MTL::Grammars
       when .penum?
         prev_2 = prev.prev
         break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeic?
+
+        prev_2.tag = node.tag
         node = TlRule.fold_penum!(prev_2, prev, node, force: true)
-        next
       when .concoord?
         prev_2 = prev.prev
         break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeic?
+
+        prev_2.tag = node.tag
         node = TlRule.fold_concoord!(prev_2, prev, node, force: true)
-        break
       when .nquants?
         break if node.veno? || node.ajno?
         node.fuse_left!("#{prev.val} ")
