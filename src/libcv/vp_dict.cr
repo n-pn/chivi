@@ -38,9 +38,9 @@ class CV::VpDict
 
     CACHE[dname + "/" + stype] ||=
       case dname
-      when "trungviet", "cc_cedict", "trich_dan"
+      when "trungviet", "cc_cedict", "trich_dan", "tradsim"
         new(path(dname), dtype: 0, p_min: 4, reset: reset)
-      when "tradsim", "essence", "fixture"
+      when "essence", "fixture"
         new(path(dname), dtype: 1, p_min: 4, reset: reset)
       when "suggest", "hanviet", "binh_am"
         new(path("core/#{dname}"), dtype: 1, p_min: 3, reset: reset)

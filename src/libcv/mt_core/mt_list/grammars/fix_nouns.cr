@@ -53,7 +53,7 @@ module CV::MTL::Grammars
         else           node.fuse_left!("", " #{prev.val}")
         end
       when .prointr?
-        val = prev.key == "什么" ? "gì" : prev.val
+        val = prev.key == "什么" ? "gì đó" : prev.val
         node.fuse_left!("", " #{val}")
       when .amorp?
         node.fuse_left!("#{prev.val} ")
@@ -82,8 +82,7 @@ module CV::MTL::Grammars
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?,
-             .vintr?, .nform?, .adverb?, .time?, .place?, .adesc?,
-             .modifier?, .modiform?
+             .vintr?, .nform?, .time?, .place?, .space?, .adesc?
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .nouns?, .propers?

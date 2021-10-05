@@ -27,7 +27,6 @@ module CV::MTL::Grammars
 
         next unless node.nouns?
         if (succ = node.succ?) && (succ.space?)
-          pp node, succ
           node = TlRule.fold_noun_space!(node, succ)
         end
       end

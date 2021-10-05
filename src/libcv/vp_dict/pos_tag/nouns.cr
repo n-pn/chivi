@@ -23,16 +23,17 @@ struct CV::PosTag
     # danh xưng: chức danh, nghề nghiệp, địa vị
     {"nw", "Ptitle", Pos::Nouns | Pos::Contws},
 
-    # 时间词 - time word - thời gian
-    {"t", "Time", Pos::Nouns | Pos::Contws},
-
     # 时间词性语素 - time word morpheme
     {"tg", "Tmorp", Pos::Nouns | Pos::Contws},
 
     # 处所词 - place word - nơi chốn
     {"s", "Place", Pos::Nouns | Pos::Contws},
     # 方位词 - space word - phương vị
-    {"f", "Space", Pos::Nouns | Pos::Contws},
+    {"f", "Space", Pos::Contws},
+
+    # 时间词 - time word - thời gian
+    {"t", "Time", Pos::Nouns | Pos::Contws},
+
   }
 
   @[AlwaysInline]
