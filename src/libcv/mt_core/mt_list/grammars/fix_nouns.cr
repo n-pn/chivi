@@ -52,11 +52,11 @@ module CV::MTL::Grammars
         when "各" then node.fuse_left!("các ")
         when .ends_with?("个")
           right = prev.val.sub("cái", "").strip
-          node.fuse_left!("cái ", " #{right}")
+          node.fuse_left!("", " #{right}")
         when .starts_with?("这")
           left = prev.val.sub("này", "").strip
           node.fuse_left!("#{left} ", " này")
-        when .starts_with?("些")
+        when .starts_with?("那")
           left = prev.val.sub("kia", "").strip
           node.fuse_left!("#{left} ", " kia")
         when "其他" then node.fuse_left!("các ", " khác")
@@ -64,10 +64,8 @@ module CV::MTL::Grammars
         else           node.fuse_left!("", " #{prev.val}")
         end
       when .prointr?
-        case prev.key
-        when "什么" then node.fuse_left!("cái ", " gì")
-        else           node.fuse_left!("", " #{prev.val}")
-        end
+        val = prev.key == "什么" ? "nào" : prev.val
+        node.fuse_left!("", " #{val}")
       when .amorp?
         node.fuse_left!("#{prev.val} ")
         next
@@ -138,7 +136,7 @@ module CV::MTL::Grammars
   end
 
   def verb_subject?(head : MtNode, curr : MtNode)
-    return false unless head.verb?
+    return false unless head.verb? || head.vyou?
 
     # return false if head.vform?
     curr.succ? do |succ|
