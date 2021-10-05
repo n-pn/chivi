@@ -99,6 +99,20 @@ $color-violet: (
   9: #4d259d,
 ) !default;
 
+// source: tailwind purple
+$color-purple: (
+  0: #faf5ff,
+  1: #f3e8ff,
+  2: #e9d5ff,
+  3: #d8b4fe,
+  4: #c084fc,
+  5: #a855f7,
+  6: #9333ea,
+  7: #7e22ce,
+  8: #6b21a8,
+  9: #581c87,
+) !default;
+
 // source: tailwind pink
 $color-pink: (
   0: #fdf2f8,
@@ -113,6 +127,20 @@ $color-pink: (
   9: #831843,
 ) !default;
 
+// source: tailwind fuchsia
+$color-fuchsia: (
+  0: #fdf4ff,
+  1: #fae8ff,
+  2: #f5d0fe,
+  3: #f0abfc,
+  4: #e879f9,
+  5: #d946ef,
+  6: #c026d3,
+  7: #a21caf,
+  8: #86198f,
+  9: #701a75,
+) !default;
+
 $color-palette: (
   black: $color-black,
   white: $color-white,
@@ -123,5 +151,7 @@ $color-palette: (
   teal: $color-teal,
   blue: $color-blue,
   violet: $color-violet,
+  purple: $color-purple,
+  fuchsia: $color-fuchsia,
   pink: $color-pink,
 ) !default;

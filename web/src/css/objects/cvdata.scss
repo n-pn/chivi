@@ -98,21 +98,23 @@ c-v {
     color: var(--active);
   }
 
-  .debugger &,
+  // .debugger &,
   .mtl:hover &,
   .mtl._active & {
     border-bottom: 1px solid var(--border);
   }
 
-  .debugger &,
+  // .debugger &,
   .kbd-hint & {
     color: var(--active);
     background: var(--bg-active, inherit);
+    border-bottom: 1px solid var(--border);
   }
 
-  // &[data-d='1'] {
-  //   @include cv-token(gray);
-  // }
+  &[data-d='1'] {
+    @include cv-token(gray);
+    --border: 0;
+  }
 
   &[data-d='2'] {
     @include cv-token(blue);
@@ -123,11 +125,11 @@ c-v {
   }
 
   &[data-d='4'] {
-    @include cv-token(pink);
+    @include cv-token(orange);
   }
 
   &[data-d='5'] {
-    @include cv-token(violet);
+    @include cv-token(red);
   }
 
   &[data-d='6'] {
@@ -135,18 +137,18 @@ c-v {
   }
 
   &[data-d='7'] {
-    @include cv-token(orange);
+    @include cv-token(fuchsia);
   }
 
   &[data-d='8'] {
-    @include cv-token(red);
+    @include cv-token(purple);
   }
 
   &[data-d='9'] {
     cursor: pointer;
     position: relative;
     --active: #fff;
-    --bg-active: #{color(red, 5)};
+    --bg-active: #{color(purple, 5)};
   }
 
   c-z & {

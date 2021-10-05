@@ -40,6 +40,8 @@ module CV::TlRule
   end
 
   def fold_adverb!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
+    node.val = "vậy" if node.key == "也" && succ.try(&.ends?)
+
     # TODO: merge adverb with adjectives or verbs
     node.fold_left!(nega)
   end
