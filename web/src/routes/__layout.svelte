@@ -92,7 +92,10 @@
   <meta name="theme-color" content="#0b476b" />
 </svelte:head>
 
-<div class="app tm-{$session.wtheme}" class:kbd-hint={kbd_hint}>
+<div
+  class="app tm-{$session.wtheme}"
+  class:kbd-hint={kbd_hint}
+  class:debugger={$session.uname == 'Nipin'}>
   <slot />
 
   <div class="links">

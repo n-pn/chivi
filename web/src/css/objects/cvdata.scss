@@ -98,10 +98,15 @@ c-v {
     color: var(--active);
   }
 
-  .kbd-hint &,
   .mtl:hover &,
   .mtl._active & {
     border-bottom: 1px solid var(--border);
+  }
+
+  .kbd-hint &,
+  .debugger & {
+    color: var(--active);
+    background: var(--bg-active, inherit);
   }
 
   // &[data-d='1'] {
@@ -117,11 +122,11 @@ c-v {
   }
 
   &[data-d='4'] {
-    @include cv-token(orange);
+    @include cv-token(pink);
   }
 
   &[data-d='5'] {
-    @include cv-token(red);
+    @include cv-token(violet);
   }
 
   &[data-d='6'] {
@@ -129,16 +134,18 @@ c-v {
   }
 
   &[data-d='7'] {
-    @include cv-token(pink);
+    @include cv-token(orange);
   }
 
   &[data-d='8'] {
-    @include cv-token(violet);
+    @include cv-token(red);
   }
 
   &[data-d='9'] {
-    @include cv-token(violet);
-    color: var(--active);
+    cursor: pointer;
+    position: relative;
+    --active: #fff;
+    --bg-active: #{color(red, 5)};
   }
 
   c-z & {
