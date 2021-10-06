@@ -1,47 +1,14 @@
 module CV::MTL::Grammars
   def fix_adjts!(node = @head, mode = 2) : MtNode
-    return node if mode < 2
-
-    if node.amorp?
-      if (succ = node.succ?) && succ.adjts?
-        node.tag = PosTag::Adjt
-        node.fold!(succ)
-      end
+    node = TlRule.fold_adjts!(node, prev: nil)
+    case node
+    when .nouns?
+      fix_nouns!(node, mode = 2)
+    when .verbs?
+      fix_verbs!(node, mode = 2)
+    else
+      node
     end
-
-    while prev = node.prev
-      case prev
-      when .ajno?
-        break
-      when .ahao?
-        node.fuse_left!("thật ")
-      when .adjts?
-        node.fuse_left!("#{prev.val} ")
-      when .adverb?
-        case prev.key
-        when "都"
-          prev_2 = prev.prev
-
-          if prev_2.key == "大家"
-            prev.fuse_left!
-            node.fuse_left!("mọi người đều ")
-            node.tag = PosTag::Aform
-          end
-
-          break
-        when "也" then break
-        when "最" then node.fuse_left!("", " nhất")
-        when "挺" then node.fuse_left!("rất ", "")
-        else          node.fuse_left!("#{prev.val} ", "")
-        end
-      else
-        break
-      end
-
-      node.tag = PosTag::Aform
-    end
-
-    node
   end
 
   # private def fix_adjts!(node = @head)
@@ -62,8 +29,6 @@ module CV::MTL::Grammars
   #       # else
   #       # skip, left = true, "#{prev.val} " if prev.cat == 4
   #     end
-
-  #     node.fuse_left!(left, right) if skip
   #   end
 
   #   self

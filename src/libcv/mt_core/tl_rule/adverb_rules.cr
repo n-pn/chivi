@@ -14,7 +14,7 @@ module CV::TlRule
     case succ.tag
     when .vmodals? then heal_vmodal!(succ, nega: node)
     when .verbs?   then fold_verbs!(succ, nega: node)
-    when .adjts?   then fold_adjts!(succ, nega: node)
+    when .adjts?   then fold_adjts!(succ, prev: node)
     when .adverb?  then fold_adverb!(succ, nega: node)
     else                node
     end
@@ -27,9 +27,12 @@ module CV::TlRule
     when .verbs?
       node.val = "chưa"
       fold_verbs!(succ, nega: node)
-    when .adjts?
+    when .adjt?, .ajav?, .ajno?
       node.val = "không"
-      fold_adjts!(succ, nega: node)
+      node.tag = PosTag::Adjt
+
+      succ = fold_adjts!(succ)
+      node.fold!(succ)
     else
       node
     end
@@ -49,7 +52,7 @@ module CV::TlRule
     when .verbs?
       node = fold_verbs!(succ, nega: node)
     when .adjts?
-      node = fold_adjts!(succ, nega: node)
+      node = fold_adjts!(succ, prev: node)
     end
 
     node.fold_left!(nega)

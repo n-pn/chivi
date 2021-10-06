@@ -1,22 +1,25 @@
 module CV::TlRule
-  def heal_suf_verb!(node : MtNode, succ : MtNode) : MtNode
+  def fold_suf_noun!(node : MtNode, succ : MtNode) : MtNode
+    # TODO: handle special cases
+    node.tag = PosTag::Noun
+    return node.fold!(succ, val: "#{succ.val} #{node.val}", dic: 6)
+  end
+
+  def fold_suf_verb!(node : MtNode, succ : MtNode) : MtNode
     # TODO: handle special cases
     node.tag = PosTag::Verb
-    node.fold!
+    return node.fold!(succ, val: "#{succ.val} #{node.val}", dic: 6)
   end
 
-  def heal_suf_noun!(node : MtNode, succ : MtNode) : MtNode
+  # 们
+  def heal_suffix_men!(node : MtNode, succ : MtNode) : MtNode
+    node.tag = PosTag::Noun unless node.tag.nouns?
+    node.fold!(succ, "các #{node.val}")
+  end
+
+  # 时
+  def heal_suffix_shi!(node : MtNode, succ : MtNode) : MtNode
     node.tag = PosTag::Noun
-    node.fold!
-  end
-
-  def heal_suffix_们!(node : MtNode, succ : MtNode) : MtNode
-    # TODO: update postag?
-    node.fold!("các #{node.val}")
-  end
-
-  def heal_suffix_时!(node : MtNode, succ : MtNode) : MtNode
-    node.tag = PosTag::Vintr
-    node.fold!("lúc #{node.val}")
+    node.fold!(succ, "lúc #{node.val}")
   end
 end

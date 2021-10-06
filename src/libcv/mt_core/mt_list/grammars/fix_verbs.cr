@@ -30,8 +30,8 @@ module CV::MTL::Grammars
         node.tag = PosTag::Vform
         node.fold!(dic: 7)
         break
-      when .suffix时?
-        node = TlRule.heal_suffix_时!(node, succ)
+      when .suffix_shi?
+        node = TlRule.heal_suffix_shi!(node, succ)
       else
         break
       end

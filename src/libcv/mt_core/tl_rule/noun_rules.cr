@@ -41,16 +41,16 @@ module CV::TlRule
         else break
         end
       when .concoord?
-        node = fold_concoord!(node, succ, succ.succ)
+        node = fold_concoord!(node, succ, succ.succ?)
         break if node.succ == succ
       when .penum?
-        node = fold_penum!(node, succ, succ.succ)
-        break node.succ == succ
+        node = fold_penum!(node, succ, succ.succ?)
+        break if node.succ == succ
       when .suf_verb?
         node = heal_suf_verb!(node, succ)
         break
-      when .suffix们?
-        node = heal_suffix_们!(node, succ)
+      when .suffix_men?
+        node = heal_suffix_men!(node, succ)
         break
       else break
       end

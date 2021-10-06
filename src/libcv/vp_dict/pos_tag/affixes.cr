@@ -1,16 +1,36 @@
 struct CV::PosTag
   AFFIXES = {
-    {"ka", "SufAdjt", Pos::Suffixes, Pos::Funcws},
-    {"kn", "SufNoun", Pos::Suffixes, Pos::Funcws},
-    {"kv", "SufVerb", Pos::Suffixes, Pos::Funcws},
+    {"ka", "SufAdjt", Pos::SufAdjts | Pos::Funcws},
+    {"kn", "SufNoun", Pos::SufNouns | Pos::Funcws},
+    {"kv", "SufVerb", Pos::SufVerbs | Pos::Funcws},
 
-    {"kmen", "Suffix们", Pos::Funcws}, # hậu tố 们
-    {"kshi", "Suffix时", Pos::Funcws}, # hậu tố 时
-    {"k", "Suffix", Pos::Funcws},     # 后缀 - suffix - hậu tố chưa phân loại
+    # hậu tố "感"
+    {"kgan", "SuffixGan", Pos::SufNouns | Pos::Verbs | Pos::Contws},
+    # hậu tố 们
+    {"kmen", "SuffixMen", Pos::SufNouns | Pos::Funcws},
+    # hậu tố 时
+    {"kshi", "SuffixShi", Pos::SufNouns | Pos::Nouns | Pos::Funcws},
+    # 后缀 - suffix - hậu tố chưa phân loại
+    {"k", "Suffix", Pos::Funcws},
   }
 
   @[AlwaysInline]
   def suffixes?
-    @pos.suffixes?
+    @pos.suf_nouns? || @pos.suf_verbs? || @pos.suf_adjts?
+  end
+
+  @[AlwaysInline]
+  def suf_nouns?
+    @pos.suf_nouns?
+  end
+
+  @[AlwaysInline]
+  def suf_verbs?
+    @pos.suf_verbs?
+  end
+
+  @[AlwaysInline]
+  def suf_adjts?
+    @pos.suf_adjts?
   end
 end
