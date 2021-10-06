@@ -45,13 +45,21 @@
     margin-top: 1rem;
   }
 
+  .mtl {
+    line-height: 1.5em;
+  }
+
   .mtl._h {
     font-weight: 400;
     @include fgcolor(secd);
-    @include bps(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem, 2.5rem);
-    @include bps(font-size, rem(23px), rem(24px), rem(26px), rem(28px));
-    // prettier-ignore
-    @include bp-max(xs) { font-size: rem(22px); }
+    @include bps(
+      font-size,
+      rem(22px),
+      rem(23px),
+      rem(24px),
+      rem(26px),
+      rem(28px)
+    );
   }
 
   .mtl._p {
@@ -68,7 +76,8 @@
       rem(21px),
       rem(22px)
     );
-    @include bps(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem);
+
+    // @include bps(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem);
 
     // prettier-ignore
     @include bp-max(xs) { font-size: rem(18px); }
