@@ -43,7 +43,7 @@
     </button>
   </svelte:fragment>
 
-  <section class="cvdata">
+  <section class="body">
     <Cvdata {zhtext} {cvdata} bind:_dirty />
   </section>
 
@@ -63,7 +63,7 @@
 </Vessel>
 
 <style lang="scss">
-  .cvdata {
+  .body {
     margin-top: 1rem;
   }
 

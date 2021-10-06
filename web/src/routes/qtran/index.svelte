@@ -75,9 +75,7 @@
         bind:this={text_elem}
         placeholder="Nhập dữ liệu vào đây" />
     {:else}
-      <article class="cvdata">
-        <Cvdata zhtext={split_input(zhtext)} {cvdata} bind:_dirty />
-      </article>
+      <Cvdata zhtext={split_input(zhtext)} {cvdata} bind:_dirty />
     {/if}
   </section>
 

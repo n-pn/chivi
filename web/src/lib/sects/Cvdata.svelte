@@ -77,14 +77,16 @@
     >E</button>
 </div>
 
-{#each lines as _, index (index)}
-  <div
-    class="mtl {wtitle && index == 0 ? '_h' : '_p'}"
-    on:click={(e) => handle_click(e, index)}
-    on:mouseenter={() => (hover_line = index)}>
-    {@html render_line(index, hover_line, focus_line)}
-  </div>
-{/each}
+<article class="cvdata">
+  {#each lines as _, index (index)}
+    <div
+      class="mtl {wtitle && index == 0 ? '_h' : '_p'}"
+      on:click={(e) => handle_click(e, index)}
+      on:mouseenter={() => (hover_line = index)}>
+      {@html render_line(index, hover_line, focus_line)}
+    </div>
+  {/each}
+</article>
 
 {#if $lookup_enabled}
   <Lookup {dname} />
