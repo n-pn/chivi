@@ -10,7 +10,7 @@
   }
 </script>
 
-<article class="notext m-article">
+<article class="notext cvdata m-article">
   <h1>Chương tiết không có nội dung.</h1>
 
   {#if chinfo.sname == 'chivi'}
