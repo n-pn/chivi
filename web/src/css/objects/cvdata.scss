@@ -73,7 +73,7 @@
   text-justify: auto;
   line-height: 1.65em;
 
-  @include bps(margin-top, 1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
+  @include bps(margin-top, 1em, 1.125em, 1.25em, 1.375em, 1.5em);
 
   .cvdata._xs & {
     @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(19px));
@@ -94,11 +94,6 @@
   .cvdata._xl & {
     @include bps(font-size, rem(22px), rem(23px), rem(24px), rem(25px));
   }
-
-  // @include bps(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem);
-
-  // prettier-ignore
-  @include bp-max(xs) { font-size: rem(18px); }
 }
 
 .mtl {

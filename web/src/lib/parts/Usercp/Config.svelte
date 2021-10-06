@@ -172,7 +172,6 @@
     font-weight: 500;
     display: block;
     // text-align: center;
-    width: 6rem;
   }
 
   .ftsize {

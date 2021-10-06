@@ -83,7 +83,7 @@
     top: 0;
     width: var(--width, 20rem);
     overflow-y: auto;
-    max-width: 90vw;
+    max-width: calc(100vw - 1.5rem);
     height: 100vh;
     z-index: 98;
 
