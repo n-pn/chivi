@@ -119,7 +119,7 @@ module CV::MTL::Grammars
     # return false if head.vform?
 
     unless prev = head.prev?
-      return succ.verbs? || succ.adverbs?
+      return node.succ? { |x| x.verbs? || x.adverbs? }
     end
 
     case prev.tag
