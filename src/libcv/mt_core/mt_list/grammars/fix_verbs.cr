@@ -2,6 +2,8 @@ module CV::MTL::Grammars
   def fix_verbs!(node = @root, mode = 2) : MtNode
     return node if mode < 2
 
+    node.val = "thật có lỗi" if node.succ?(&.ends?) && node.key == "对不起"
+
     while succ = node.succ?
       case succ
       when .ule?
@@ -31,7 +33,7 @@ module CV::MTL::Grammars
         node.fold!(dic: 7)
         break
       when .suffix_shi?
-        node = TlRule.heal_suffix_shi!(node, succ)
+        node = TlRule.fold_suf_shi!(node, succ)
       else
         break
       end

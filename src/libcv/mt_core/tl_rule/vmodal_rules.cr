@@ -26,7 +26,7 @@ module CV::TlRule
 
   def is_learnable_skill?(succ : MtNode?) : Bool
     return false unless succ
-    return true if succ.nouns?
+    return true if succ.nouns? || succ.exmark? || succ.qsmark?
 
     case succ.key[0]?
     when '打', '说', '做' then true

@@ -12,13 +12,13 @@ module CV::TlRule
   end
 
   # 们
-  def heal_suffix_men!(node : MtNode, succ : MtNode) : MtNode
+  def fold_suf_men!(node : MtNode, succ : MtNode) : MtNode
     node.tag = PosTag::Noun unless node.tag.nouns?
     node.fold!(succ, "các #{node.val}")
   end
 
   # 时
-  def heal_suffix_shi!(node : MtNode, succ : MtNode) : MtNode
+  def fold_suf_shi!(node : MtNode, succ : MtNode) : MtNode
     node.tag = PosTag::Noun
     node.fold!(succ, "lúc #{node.val}")
   end

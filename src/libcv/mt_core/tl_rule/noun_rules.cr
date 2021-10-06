@@ -1,5 +1,10 @@
 module CV::TlRule
   def fold_noun!(node : MtNode) : MtNode
+    if node.veno?
+      node = heal_veno!(node)
+      return node if node.verbs?
+    end
+
     while node.nouns?
       break unless succ = node.succ?
 
@@ -24,20 +29,18 @@ module CV::TlRule
       when .place?
         node.tag = PosTag::Noun
         node.fold!(succ, "#{succ.val} #{node.val}")
+      when .veno?
+        succ = heal_veno!(succ)
+        break if succ.verbs?
+        node.tag = PosTag::Noun
+        node.fold!(succ, "#{succ.val} #{node.val}")
       when .noun?
         case node
         when .names?
           node.tag = PosTag::Noun
           node.fold!(succ, "#{succ.val} #{node.val}")
         when .noun?
-          node.dic = 9
-          node.fold!(succ, "#{succ.val} #{node.val}")
-        when .veno?
-          # TODO: check more noun verb case
-          break unless node.prev?(&.ude1?)
-
-          node.dic = 9
-          node.fold!(succ, "#{succ.val} #{node.val}")
+          node.fold!(succ, "#{succ.val} #{node.val}", dic: 7)
         else break
         end
       when .concoord?
@@ -47,10 +50,10 @@ module CV::TlRule
         node = fold_penum!(node, succ, succ.succ?)
         break if node.succ == succ
       when .suf_verb?
-        node = heal_suf_verb!(node, succ)
+        node = fold_suf_verb!(node, succ)
         break
       when .suffix_men?
-        node = heal_suffix_men!(node, succ)
+        node = fold_suf_men!(node, succ)
         break
       else break
       end
@@ -78,6 +81,28 @@ module CV::TlRule
       node.fold!("trước #{node.val}")
     else
       node.fold!("#{succ.val} #{node.val}")
+    end
+  end
+
+  def heal_veno!(node : MtNode)
+    return node.heal!(tag: PosTag::Noun) unless succ = node.succ?
+
+    case succ
+    when .puncts?, .suf_nouns?
+      return node.heal!(tag: PosTag::Noun)
+    when .auxils?
+      return node.heal!(tag: PosTag::Verb)
+    end
+
+    return node unless prev = node.prev?
+
+    case prev
+    when .adverbs?, .preposes?, .vmodals?, .vdir?, .vpro?
+      node.heal!(tag: PosTag::Verb)
+    when .auxils?
+      return node.heal!(tag: PosTag::Noun)
+    else
+      node
     end
   end
 end

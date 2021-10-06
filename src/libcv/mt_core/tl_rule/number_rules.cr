@@ -31,6 +31,7 @@ module CV::TlRule
     "架" => "khung",
     "期" => "kỳ",
     "层" => "tầng",
+    "门" => "môn",
 
     "架次" => "lượt chiếc",
     "场次" => "lượt diễn",

@@ -107,7 +107,7 @@ class CV::MtNode
     fold!(succ, val, dic)
   end
 
-  def heal!(@val : String, @tag : PosTag)
+  def heal!(@val : String = self.val, @tag : PosTag = self.tag)
     self
   end
 

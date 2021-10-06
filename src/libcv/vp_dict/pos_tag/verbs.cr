@@ -5,7 +5,7 @@ struct CV::PosTag
     # 名动词 - nominal use of verb - danh động từ
     {"vn", "Veno", Pos::Verbs | Pos::Nouns | Pos::Contws},
     # 副动词 - verb | adverb
-    {"vd", "Vead", Pos::Verbs | Pos::Contws},
+    {"vd", "Vead", Pos::Verbs | Pos::Adverbs | Pos::Contws},
 
     # 趋向动词 - directional verb
     {"vf", "Vdir", Pos::Verbs | Pos::Contws},

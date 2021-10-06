@@ -42,6 +42,8 @@ module CV::MTL::Grammars
         when .ends_with?("个")
           prev.val = prev.val.sub("cái", "").strip
           node = prev.fold!(node)
+        when .starts_with?("各")
+          node = prev.fold!(node)
         when .starts_with?("这")
           val = prev.val.sub("này", "").strip
           node = prev.fold!(node, "#{val} #{node.val} này")
@@ -58,6 +60,8 @@ module CV::MTL::Grammars
       when .amorp?
         node.fuse_left!("#{prev.val} ")
         next
+      when .place?
+        node.fuse_left!("", " #{prev.val}")
       when .adesc?
         node.fuse_left!("", " #{prev.val}")
       when .adjts?
@@ -123,8 +127,8 @@ module CV::MTL::Grammars
     end
 
     case prev.tag
-    when .nouns?, .vmodal? then return false
-    when .vshi?, .quantis? then return true
+    when .nouns?, .vmodal?         then return false
+    when .vshi?, .verb?, .quantis? then return true
     else
       return true if prev.key == "在"
     end
