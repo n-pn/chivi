@@ -21,7 +21,8 @@ module CV::TlRule
         node.fold!(succ, node.val).fold!(succ_2)
       when .ptitle?
         node.tag = PosTag::Person
-        node.fold!(succ)
+        pad = succ.val[0]? == "-" ? "" : " "
+        node.fold!(succ, "#{node.val}#{pad}#{succ.val}")
       when .names?
         break unless node.names?
         node.tag = succ.tag
