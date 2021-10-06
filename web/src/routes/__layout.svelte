@@ -7,11 +7,10 @@
   import '../css/generic.scss'
 
   const links = [
-    ['Vozforums', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],
-    ['Facebook', 'https://www.facebook.com/chivi.fb/'],
-    ['Telegram', 'https://t.me/chivi_support'],
-    ['Discord', 'https://discord.gg/mdC3KQH'],
-    ['Github', 'https://github.com/np-nam/chivi'],
+    ['Vozforums (chính)', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],
+    ['Discord (chat)', 'https://discord.gg/mdC3KQH'],
+    ['Github (nguồn)', 'https://github.com/np-nam/chivi'],
+    ['Facebook (page)', 'https://www.facebook.com/chivi.fb/'],
   ]
 
   $: {
@@ -108,8 +107,7 @@
   <slot />
 
   <div class="links">
-    <span> Liên kết: </span>
-
+    <span> Liên kết hỗ trợ:</span>
     {#each links as [text, href]}
       <a {href} class="-link" target="_blank" rel="noreferer noopener"
         >{text}</a>
@@ -133,10 +131,14 @@
   }
 
   .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
     width: 100%;
     margin-top: auto;
-    text-align: center;
     padding: var(--gutter-sm);
+    line-height: 1.25rem;
 
     @include ftsize(sm);
     @include border($loc: top);
@@ -145,7 +147,7 @@
   }
 
   .-link {
-    margin-left: 0.375rem;
+    margin-left: 0.5rem;
     font-weight: 500;
 
     @include fgcolor(primary, 6);
