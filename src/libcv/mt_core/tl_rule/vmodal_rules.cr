@@ -12,19 +12,12 @@ module CV::TlRule
 
   def heal_vhui!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     if is_learnable_skill?(succ)
-      val = nega ? "#{nega.val} biết" : "biết"
+      val = nega ? "không biết" : "biết"
     else
-      val = nega ? "sẽ #{nega.val}" : "sẽ"
+      val = nega ? "sẽ không" : "sẽ"
     end
 
-    if nega
-      nega.val = val
-      nega.key += node.key
-      nega
-    else
-      node.val = val
-      node
-    end
+    nega ? nega.fold!(succ, val) : node.heal!(val)
   end
 
   def is_learnable_skill?(succ : MtNode?) : Bool
