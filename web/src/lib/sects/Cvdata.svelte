@@ -13,6 +13,8 @@
 <script>
   import { onMount } from 'svelte'
   // import { session } from '$app/stores'
+
+  import { ftsize } from '$lib/stores'
   import { split_mtdata } from '$lib/mt_data'
   import read_selection from '$utils/read_selection'
 
@@ -77,7 +79,7 @@
     >E</button>
 </div>
 
-<article class="cvdata">
+<article class="cvdata _{$ftsize}">
   {#each lines as _, index (index)}
     <div
       class="mtl {wtitle && index == 0 ? '_h' : '_p'}"

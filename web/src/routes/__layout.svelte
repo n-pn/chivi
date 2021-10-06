@@ -1,6 +1,7 @@
 <script>
+  import { onMount } from 'svelte'
   import { navigating, page, session } from '$app/stores'
-  import { scroll } from '$lib/stores'
+  import { scroll, wtheme, ftsize } from '$lib/stores'
   import Loader from '$molds/Loader.svelte'
 
   import '../css/generic.scss'
@@ -81,6 +82,14 @@
     evt.stopPropagation()
     elem.click()
   }
+
+  onMount(() => {
+    $wtheme = localStorage.getItem('wtheme') || $session.wtheme
+    localStorage.setItem('wtheme', $wtheme)
+
+    $ftsize = localStorage.getItem('ftsize') || 'md'
+    localStorage.setItem('ftsize', $ftsize)
+  })
 </script>
 
 <svelte:window
@@ -93,7 +102,7 @@
 </svelte:head>
 
 <div
-  class="app tm-{$session.wtheme}"
+  class="app tm-{$wtheme}"
   class:kbd-hint={kbd_hint}
   class:debugger={$session.uname == 'Nipin'}>
   <slot />

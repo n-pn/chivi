@@ -1,6 +1,8 @@
 <script context="module">
   import { session } from '$app/stores'
+  import { ftsize, wtheme } from '$lib/stores'
 
+  const ftsizes = ['xs', 'sm', 'md', 'lg', 'xl']
   const wthemes = ['light', 'warm', 'dark', 'oled']
   const tlmodes = ['Cơ bản', 'Nâng cao']
 </script>
@@ -8,14 +10,24 @@
 <script>
   export let actived
 
-  async function update_setting({
-    tlmode = $session.tlmode,
-    wtheme = $session.wtheme,
-  }) {
+  function update_ftsize(value) {
+    localStorage.setItem('ftsize', value)
+  }
+
+  async function update_tlmode(tlmode) {
+    await call_update({ tlmode, wtheme: $wtheme })
+  }
+
+  async function update_wtheme(wtheme) {
+    localStorage.setItem('wtheme', wtheme)
+    await call_update({ wtheme, tlmode: $session.tlmode })
+  }
+
+  async function call_update(params) {
     const res = await fetch('/api/user/setting', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tlmode, wtheme }),
+      body: JSON.stringify(params),
     })
 
     if (res.ok) {
@@ -30,15 +42,32 @@
 <div class="config">
   <div class="radio">
     <span class="label">Giao diện:</span>
-    {#each wthemes as wtheme}
-      <label class="wtheme _{wtheme}" class:_active={wtheme == $session.wtheme}>
+    {#each wthemes as value}
+      <label class="wtheme _{value}" class:_active={value == $wtheme}>
         <input
           type="radio"
           name="wtheme"
-          value={wtheme}
-          on:click={() => update_setting({ wtheme: wtheme })}
-          bind:group={$session.wtheme} />
-        <span>{wtheme}</span>
+          {value}
+          bind:group={$wtheme}
+          on:click={() => update_wtheme(value)} />
+        <span>{value}</span>
+      </label>
+    {/each}
+  </div>
+</div>
+
+<div class="config">
+  <div class="radio">
+    <span class="label">Cỡ chữ:</span>
+    {#each ftsizes as value}
+      <label class="ftsize _{value}" class:_active={value == $wtheme}>
+        <input
+          type="radio"
+          name="ftsize"
+          {value}
+          bind:group={$ftsize}
+          on:click={() => update_ftsize(value)} />
+        <span>{value}</span>
       </label>
     {/each}
   </div>
@@ -53,8 +82,8 @@
           type="radio"
           name="tlmode"
           value={idx + 1}
-          on:click={() => update_setting({ tlmode: idx + 1 })}
-          bind:group={$session.tlmode} />
+          bind:group={$session.tlmode}
+          on:click={() => update_tlmode(idx)} />
         <span>{label}</span>
       </label>
     {/each}
@@ -97,6 +126,7 @@
       height: 1rem;
       margin-top: 0.1rem;
       margin-right: 0.2rem;
+      margin-left: -0.25rem;
       @include bdradi;
     }
 
@@ -140,6 +170,13 @@
 
   .label {
     font-weight: 500;
+    display: block;
+    // text-align: center;
+    width: 6rem;
+  }
+
+  .ftsize {
+    font-variant: small-caps;
   }
 
   .config {
