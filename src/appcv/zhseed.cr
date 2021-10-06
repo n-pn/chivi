@@ -32,7 +32,7 @@ module CV::Zhseed
     case sname
     when "5200", "bqg_5200", "rengshu", "nofff"
       privi >= 0 || special_case
-    when "hetushu", "bxwxorg", "xbiquge"
+    when "hetushu", "bxwxorg", "xbiquge", "buqubao"
       privi >= 1 || special_case
     when "69shu", "paoshu8", "duokan8"
       privi >= 2 || special_case
