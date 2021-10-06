@@ -52,8 +52,8 @@ module CV::TlRule
       when .suf_verb?
         node = fold_suf_verb!(node, succ)
         break
-      when .suffix_men?
-        node = fold_suf_men!(node, succ)
+      when .suf_nouns?
+        node = fold_suf_noun!(node, succ)
         break
       else break
       end
