@@ -1,5 +1,8 @@
 module CV::TlRule
   def heal_vmodal!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
+    return node.fold_left!(nega) unless succ
+    succ.tag = PosTag::Verb if succ.tag.veno?
+
     case node
     when .vhui?   then heal_vhui!(node, succ, nega)
     when .vxiang? then heal_vxiang!(node, succ, nega)

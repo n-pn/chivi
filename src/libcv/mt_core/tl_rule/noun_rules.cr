@@ -100,7 +100,7 @@ module CV::TlRule
     when .adverbs?, .preposes?, .vmodals?, .vdir?, .vpro?
       node.heal!(tag: PosTag::Verb)
     when .auxils?
-      return node.heal!(tag: PosTag::Noun)
+      node.heal!(tag: PosTag::Noun)
     else
       node
     end
