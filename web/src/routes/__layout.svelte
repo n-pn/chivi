@@ -7,7 +7,7 @@
   import '../css/generic.scss'
 
   const links = [
-    ['Vozforums (chính)', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],
+    ['Voz.vn (chính)', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],
     ['Discord (chat)', 'https://discord.gg/mdC3KQH'],
     ['Github (nguồn)', 'https://github.com/np-nam/chivi'],
     ['Facebook (page)', 'https://www.facebook.com/chivi.fb/'],
