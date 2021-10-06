@@ -20,6 +20,8 @@
   margin-left: calc(-1 * var(--gutter));
   margin-right: calc(-1 * var(--gutter));
 
+  font-family: var(--font-serif, serif);
+
   @include bp-min(rem(840px)) {
     margin-left: 0;
     margin-right: 0;
@@ -58,7 +60,14 @@
     text-justify: auto;
 
     @include bps(margin-top, 1rem, 1.125rem, 1.25rem, 1.375rem, 1.5rem);
-    @include bps(font-size, rem(19px), rem(20px), rem(21px), rem(22px));
+    @include bps(
+      font-size,
+      rem(18px),
+      rem(19px),
+      rem(20px),
+      rem(21px),
+      rem(22px)
+    );
     @include bps(line-height, 1.75rem, 1.875rem, 2rem, 2.25rem);
 
     // prettier-ignore

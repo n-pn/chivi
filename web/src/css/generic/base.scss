@@ -67,6 +67,7 @@ $colors: (gray, blue, green, orange, red, violet) !default;
 }
 
 :root {
+  --font-serif: #{$font-serif};
   --font-sans: #{$font-sans};
   --font-mono: #{$font-mono};
 
