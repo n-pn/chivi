@@ -33,6 +33,8 @@ module CV::MTL::Grammars
         when "这" then node.fuse_left!("", " này")
         when "那" then node.fuse_left!("", " kia")
         when "各" then node.fuse_left!("các ")
+        when "这样"
+          node = prev.fold!(node, "#{node.val} như vậy")
         when "那样"
           node = prev.fold!(node, "#{node.val} như thế")
         when "这个"
