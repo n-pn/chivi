@@ -34,6 +34,11 @@ class CV::Ubmemo
     update!(access: time.to_unix)
   end
 
+  def status=(status : String)
+    self.status = STATUS.index(status) || 0
+    @status_s = nil
+  end
+
   def mark!(zseed : Int32, chidx : Int32, title = "", uslug = "", cpart = 0, locked = false)
     self.locked = locked
     self.bumped = Time.utc.to_unix

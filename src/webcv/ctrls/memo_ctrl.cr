@@ -70,9 +70,10 @@ class CV::MemoCtrl < CV::BaseCtrl
     raise "Người dùng chưa đăng nhập!" if _cv_user.privi < 0
 
     cvbook_id = params["book_id"].to_i64
-    status = Ubmemo.status(params.fetch_str("status", "default"))
+    status = params.fetch_str("status", "default")
 
-    ubmemo = Ubmemo.upsert!(_cv_user.id, cvbook_id, &.status = status)
+    ubmemo = Ubmemo.find_or_new(_cv_user.id, cvbook_id)
+    ubmemo.update!({status: status})
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
     halt!(500, err.message)
