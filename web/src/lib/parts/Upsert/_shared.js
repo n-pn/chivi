@@ -17,23 +17,6 @@ export function hint(node, msg) {
   }
 }
 
-export function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
-}
-
-export function titleize(str, count = 9) {
-  if (!str) return ''
-  if (typeof count == 'boolean') count = count ? 9 : 0
-
-  const res = str.split(' ')
-  if (count > res.length) count = res.length
-
-  for (let i = 0; i < count; i++) res[i] = capitalize(res[i])
-  for (let i = count; i < res.length; i++) res[i] = res[i].toLowerCase()
-
-  return res.join(' ')
-}
-
 export class VpTerm {
   constructor(priv = {}, base = { mtime: -1 }) {
     this._priv = priv

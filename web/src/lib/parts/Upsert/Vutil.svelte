@@ -1,14 +1,67 @@
-<script>
-  import { hint, titleize } from './_shared'
+<script context="module">
+  export function titleize(str, count = 9) {
+    if (!str) return ''
+    if (typeof count == 'boolean') count = count ? 9 : 0
 
+    const res = str.split(' ')
+    if (count > res.length) count = res.length
+
+    for (let i = 0; i < count; i++) res[i] = capitalize(res[i])
+    for (let i = count; i < res.length; i++) res[i] = res[i].toLowerCase()
+
+    return res.join(' ')
+  }
+
+  export function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
+  }
+
+  function detitle(str, count = 9) {
+    const res = str.split(' ')
+    if (count > res.length) count = res.length
+    for (let i = 0; i < count; i++) res[i] = res[i].toLowerCase()
+    for (let i = count; i < res.length; i++) res[i] = capitalize(res[i])
+
+    return res.join(' ')
+  }
+</script>
+
+<script>
+  import { hint } from './_shared'
   import SIcon from '$atoms/SIcon.svelte'
 
   export let term
 
+  let capped = 0
+  let length = 0
+
+  $: [capped, length] = check_capped(term.val)
+
   function upcase_val(node, count) {
-    const action = (_) => (term.val = titleize(term.val, count))
+    const action = (_) => {
+      if (count != capped) {
+        term.val = titleize(term.val, count)
+        capped = count
+      } else {
+        term.val = detitle(term.val, count)
+        capped = 0
+      }
+    }
+
     node.addEventListener('click', action)
     return { destroy: () => node.removeEventListener('click', action) }
+  }
+
+  function check_capped(val) {
+    const words = val.split(' ')
+
+    let capped
+    for (capped = 0; capped < words.length; capped++) {
+      const word = words[capped]
+      if (word != capitalize(word)) break
+    }
+
+    return [capped, words.length]
   }
 </script>
 
@@ -31,19 +84,23 @@
     use:upcase_val={3}
     use:hint={'Viết hoa ba chữ đầu'}>
     <span>H. 3 chữ</span></button>
-  <button
-    class="cap"
-    data-kbd="4"
-    use:upcase_val={20}
-    use:hint={'Viết hoa tất cả các chữ'}>
-    <span>H. tất cả</span></button>
-  <button
-    class="cap"
-    data-kbd="0"
-    data-key="192"
-    use:upcase_val={0}
-    use:hint={'Viết thường tất cả các chữ'}>
-    <span>Không hoa</span></button>
+  {#if capped < length}
+    <button
+      class="cap"
+      data-kbd="4"
+      use:upcase_val={20}
+      use:hint={'Viết hoa tất cả các chữ'}>
+      <span>H. tất cả</span></button>
+  {/if}
+  {#if term.val != term.val.toLowerCase()}
+    <button
+      class="cap"
+      data-kbd="0"
+      data-key="192"
+      use:upcase_val={0}
+      use:hint={'Viết thường tất cả các chữ'}>
+      <span>Không hoa</span></button>
+  {/if}
 
   <div class="right">
     <button
