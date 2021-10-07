@@ -77,11 +77,19 @@ module CV::TlRule
       return prev.fold_many!(node, succ)
     end
 
-    if prev.prev?.try { |x| x.adv_mei? || x.key == "在" }
-      prev.fold!(node, prev.val)
-    else
-      prev.dic = 8
-      prev.fold!(node, "đang #{prev.val}")
+    prev.dic = 7
+    uzhe_val = guess_uzhe_val(prev, node)
+    prev.fold!(node, uzhe_val.empty? ? prev.val : "#{uzhe_val} #{prev.val}")
+  end
+
+  def guess_uzhe_val(prev : MtNode, node : MtNode)
+    return "" if !(prev_2 = prev.prev?) || prev_2.adv_mei? || prev_2.verb?
+    return "có" if prev_2.tag.place?
+
+    # handle duplicate word
+    case prev_2.key
+    when "正", "正在", "在" then ""
+    else                     "đang"
     end
   end
 end

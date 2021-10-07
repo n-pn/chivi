@@ -7,3 +7,5 @@
 体检通知上写着李芳的名字 。=> Thông báo kiểm tra sức khỏe có viết tên của Lý Phương.
 弟弟躺着看书  => Em trai nằm đọc sách
 她坐着玩手机  => cô ấy ngồi chơi điện thoai
+小明不爱运动，喜欢坐着。=> Tiểu Minh không thích vận động, thích ngồi.
+这个房间还空着 => Căn phòng này vẫn còn trống

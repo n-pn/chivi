@@ -25,7 +25,7 @@ module CV::TlRule
 
     case succ.tag
     when .verbs?
-      node.val = succ.succ?(&.uzhe?) ? "không" ? "chưa"
+      node.val = succ.succ?(&.uzhe?) ? "không" : "chưa"
       fold_verbs!(succ, node)
     when .adjt?, .ajav?, .ajno?
       node.val = "không"
