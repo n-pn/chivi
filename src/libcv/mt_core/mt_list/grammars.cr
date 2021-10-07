@@ -11,7 +11,7 @@ module CV::MTL::Grammars
       when .urlstr?  then node = TlRule.fold_urlstr!(node)
       when .string?  then node = TlRule.fold_string!(node)
       when .quoteop? then node = fix_quoteop(node)
-      when .number?  then node = fix_number!(node)
+      when .numbers? then node = fix_number!(node)
       when .numlat?  then node = fix_number!(node)
       when .vshi?    then next # TODO handle vshi
       when .vyou?    then next # TODO handle vyou

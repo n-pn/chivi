@@ -1,8 +1,10 @@
 module CV::MTL::Grammars
   def fix_number!(node : MtNode) : MtNode
-    while succ = node.succ?
-      break unless succ.number?
-      node = succ.tap(&.fuse_left!("#{node.val} "))
+    if node.numhan? || node.numlat?
+      while succ = node.succ?
+        break unless succ.numhan? || succ.numlat?
+        node = node.fold!(succ)
+      end
     end
 
     # TODO: add prefix
