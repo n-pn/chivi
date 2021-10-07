@@ -7,7 +7,7 @@ module CV::TlRule
     key_io = String::Builder.new(root.key)
     val_io = String::Builder.new(root.val)
 
-    while string_component?(node.tag)
+    while string_component?(node)
       key_io << node.key
       val_io << node.val
       break unless node = node.succ?
@@ -21,10 +21,11 @@ module CV::TlRule
     root.fix_succ!(node)
   end
 
-  def string_component?(ptag : PosTag) : Bool
-    case ptag
-    when .pdeci?, .atsgn?, .string? then true
-    else                                 false
+  def string_component?(node : MtNode) : Bool
+    case node.tag
+    when .pdeci?, .atsgn? then node.succ?(&.string?) || false
+    when .string?         then true
+    else                       false
     end
   end
 end

@@ -31,7 +31,7 @@ module MTL::ApplyCap
     when .quoteop?, .exmark?, .qsmark?,
          .pstop?, .colon?, .middot?, .titleop?
       true
-    when .pdeci?   then @prev.try(&.numlat?) || prev
+    when .pdeci?   then @prev.try { |x| x.numlat? || x.string? } || prev
     when .brackop? then @val[0] == '(' ? prev : true
     else                prev
     end
