@@ -49,8 +49,14 @@ export class VpTerm {
   }
 
   clear() {
-    this.val = ''
-    // this.ptag = ''
+    if (this.val != '') {
+      this.val = ''
+      this.ptag = ''
+    } else {
+      this.val = '[[pass]]'
+      this.ptag = '_'
+    }
+
     return this
   }
 

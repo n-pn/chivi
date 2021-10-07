@@ -1,4 +1,5 @@
 export const labels = {
+  _: 'Không rõ',
   ns: 'Địa danh',
   nt: 'Tổ chức',
   nz: 'Tên riêng khác',
