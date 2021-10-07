@@ -42,11 +42,11 @@ export const labels = {
   bl: 'Cụm khu biệt từ',
 
   m: 'Số từ',
-  mx: 'Số latin',
+  mx: 'Chữ ả rập',
+  mz: 'Chữ số hán',
   q: 'Lượng từ',
-  qv: 'Lượng động từ',
   qt: 'Lượng từ thời gian',
-  mq: 'Số + lượng từ',
+  mq: 'Số lượng từ',
 
   d: 'Phó từ',
   dbu: 'Phó từ 不',
@@ -150,8 +150,8 @@ export const groups = [
   ],
   // prettier-ignore
   [
-    'm', 'mx', 'q',
-    'qv', 'qt', 'mq',
+    'm', 'mx', 'mz',
+    'q', 'qt', 'mq',
     '-',
     'd', 'p', 'u',
     'c', 'cc', 'e',

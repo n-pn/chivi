@@ -42,4 +42,13 @@ module CV::TlRule
     return node unless val = QUANTI_MAP[node.key]?
     node.heal!(val, PosTag::Quanti)
   end
+
+  def nquant_is_complement?(node : MtNode) : Bool
+    case node.key[-1]?
+    when '次', '遍', '趟', '回', '声', '下', '把'
+      true
+    else
+      false
+    end
+  end
 end

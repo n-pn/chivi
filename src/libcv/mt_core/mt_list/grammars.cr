@@ -16,7 +16,7 @@ module CV::MTL::Grammars
       when .vshi?    then next # TODO handle vshi
       when .vyou?    then next # TODO handle vyou
       when .vmodals? then node = TlRule.heal_vmodal!(node)
-      when .verbs?   then node = fix_verbs!(node, mode: mode)
+      when .verbs?   then node = TlRule.fold_verbs!(node)
       when .adjts?   then node = fix_adjts!(node, mode: mode)
       when .adverbs?
         node = TlRule.fold_adverbs!(node)

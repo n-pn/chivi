@@ -17,15 +17,15 @@ struct CV::PosTag
     {"m", "Number", Pos::Numbers | Pos::Contws},
     # latin number 0 1 2 .. 9
     {"mx", "Numlat", Pos::Numbers | Pos::Contws},
-    # 数量词 - numeral and quantifier - số + lượng
-    {"mq", "Nquant", Pos::Numbers | Pos::Quantis | Pos::Contws},
+    # hanzi number 零 〇 二
+    {"mz", "Numhan", Pos::Numbers | Pos::Contws},
 
     # 量词 - quantifier - lượng từ
     {"q", "Quanti", Pos::Quantis | Pos::Contws},
-    # 动量词 - temporal classifier -  lượng động từ
-    {"qv", "Qtverb", Pos::Quantis | Pos::Contws},
     # 时量词 - verbal classifier -  lượng từ thời gian
     {"qt", "Qttime", Pos::Quantis | Pos::Contws},
+    # 数量词 - numeral and quantifier - số lượng từ
+    {"mq", "Nquant", Pos::Numbers | Pos::Quantis | Pos::Contws},
 
     # 成语 - idiom - thành ngữ
     {"i", "Idiom", Pos::Contws},

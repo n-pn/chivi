@@ -12,10 +12,10 @@ module CV::TlRule
     return node unless succ
 
     case succ.tag
-    when .vmodals? then heal_vmodal!(succ, nega: node)
-    when .verbs?   then fold_verbs!(succ, nega: node)
-    when .adjts?   then fold_adjts!(succ, prev: node)
-    when .adverb?  then fold_adverb!(succ, nega: node)
+    when .vmodals? then heal_vmodal!(succ, node)
+    when .adverb?  then fold_adverb!(succ, node)
+    when .verbs?   then fold_verbs!(succ, node)
+    when .adjts?   then fold_adjts!(succ, node)
     else                node
     end
   end
@@ -25,8 +25,8 @@ module CV::TlRule
 
     case succ.tag
     when .verbs?
-      node.val = "chưa"
-      fold_verbs!(succ, nega: node)
+      node.val = succ.succ?(&.uzhe?) ? "không" ? "chưa"
+      fold_verbs!(succ, node)
     when .adjt?, .ajav?, .ajno?
       node.val = "không"
       node.tag = PosTag::Adjt
@@ -41,7 +41,7 @@ module CV::TlRule
   def fold_adv_fei!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
     # TODO: check for key when 没 mean "không"
-    fold_verbs!(succ, nega: node)
+    fold_verbs!(succ, node)
   end
 
   def fold_adverb!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
@@ -50,9 +50,9 @@ module CV::TlRule
 
     case succ.tag
     when .verbs?
-      node = fold_verbs!(succ, nega: node)
+      node = fold_verbs!(succ, node)
     when .adjts?
-      node = fold_adjts!(succ, prev: node)
+      node = fold_adjts!(succ, node)
     end
 
     node.fold_left!(nega)

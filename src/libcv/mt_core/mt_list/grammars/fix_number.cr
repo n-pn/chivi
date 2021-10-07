@@ -51,7 +51,7 @@ module CV::MTL::Grammars
 
     # merge number with quantifiers
     case succ
-    when .quanti?, .nquant?, .qtverb?, .qttime?
+    when .quanti?, .nquant?, .qttime?
       if !has_第
         node.fold!("#{node.val} #{succ.val}")
         node.tag = PosTag::Nquant

@@ -8,6 +8,23 @@ module CV::TlRule
         node.val = "thật" if node.tag.ahao?
         node.tag = PosTag::Adjt
         node.fold!(succ)
+      when .verb?
+        break unless node.key.size == 1
+        node.val = "thật" if node.tag.ahao?
+        node = fold_adj_adv!(node, prev) if prev
+
+        return fold_verbs!(succ, node)
+      when .ude2?
+        break unless succ_2 = succ.succ?
+        break unless succ_2.verb? || succ_2.veno?
+
+        succ_2 = fold_verbs!(succ_2)
+        node = fold_adj_adv!(node, prev) if prev
+
+        node.val = "#{succ_2.val} #{node.val}"
+        node.dic = 8
+        node.tag = PosTag::Vform
+        return node.fold_many!(succ, succ_2)
       when .noun?
         return node unless node.key.size == 1 # or special case
         succ = fold_noun!(succ)

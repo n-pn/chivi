@@ -21,16 +21,14 @@ module CV::MTL::Grammars
       when .ahao?
         node.fold!(succ, "#{node.val} tốt")
       when .nquant?
-        case succ.key
-        when "一趟", "一下"
-          # do nothing
-        when "一把"
-          succ.val = "một phát"
-        else break
+        break unless TlRule.nquant_is_complement?(node)
+
+        if node.key.ends_with?("把")
+          node.val = node.val.sub("bả", "phát")
         end
 
         node.tag = PosTag::Vform
-        node.fold!(dic: 7)
+        node.fold!(dic: 6)
         break
       when .suffix_shi?
         node = TlRule.fold_suf_shi!(node, succ)
