@@ -78,12 +78,14 @@
     use:upcase_val={2}
     use:hint={'Viết hoa hai chữ đầu'}>
     <span>H. 2 chữ</span></button>
-  <button
-    class="cap _sm"
-    data-kbd="3"
-    use:upcase_val={3}
-    use:hint={'Viết hoa ba chữ đầu'}>
-    <span>H. 3 chữ</span></button>
+  {#if length > 3}
+    <button
+      class="cap"
+      data-kbd="3"
+      use:upcase_val={3}
+      use:hint={'Viết hoa ba chữ đầu'}>
+      <span>H. 3 chữ</span></button>
+  {/if}
   {#if capped < length}
     <button
       class="cap"
