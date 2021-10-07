@@ -108,15 +108,12 @@ class CV::VpDict
           time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
   end
 
-  def new_term(key : String, val = [""], attr = "",
-               rank = 3_u8, mtime = 0_u32, uname = "~")
-    VpTerm.new(key, val, attr, rank, mtime, uname, dtype: @dtype)
+  def new_term(key : String, val = [""], attr = "", rank = 3_u8, mtime = 0_u32, uname = "~")
+    VpTerm.new(key, val, attr, rank, mtime, uname)
   end
 
-  def new_term(term : VpTerm)
-    VpTerm.new(term.key, term.val, term.attr,
-      term.rank, term.mtime, term.uname,
-      dtype: @dtype)
+  def new_term(term : VpTerm, mtime = term.mtime, uname = term.uname)
+    VpTerm.new(term.key, term.val, term.attr, term.rank, mtime, uname)
   end
 
   def set(key : String, val : Array(String), attr = "")
@@ -149,7 +146,7 @@ class CV::VpDict
   def set!(new_term : VpTerm) : VpTerm?
     set(new_term).try do
       FileUtils.mkdir_p(File.dirname(@file))
-      File.write(@file, "\n#{new_term}", mode: "a")
+      File.open(@file, "a") { |io| io << '\n'; new_term.to_s(io, dtype: @dtype) }
       new_term
     end
   end
@@ -177,7 +174,11 @@ class CV::VpDict
     @data.sort_by! { |x| {x.mtime, x.key.size, x.key} }
 
     File.open(@file, "w") do |io|
-      @data.each { |x| io.puts(x) if x._flag < prune }
+      @data.each do |term|
+        next unless term._flag < prune
+        term.to_s(io, dtype: dtype)
+        io << '\n'
+      end
     end
 
     tspan = Time.monotonic - start

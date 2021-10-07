@@ -14,11 +14,10 @@ class CV::MtNode
 
   forward_missing_to @tag
 
-  def initialize(term : VpTerm, @idx = -1)
+  def initialize(term : VpTerm, @dic : Int32 = 0, @idx = -1)
     @key = term.key
     @val = term.val.first
     @tag = term.ptag
-    @dic = term.dtype
   end
 
   def initialize(char : Char, @idx = -1)

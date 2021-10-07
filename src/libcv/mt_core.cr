@@ -70,13 +70,15 @@ class CV::MtCore
     end
 
     input.size.times do |idx|
-      terms = {} of Int32 => VpTerm
+      terms = {} of Int32 => Tuple(Int32, VpTerm)
 
       @dicts.each do |dict|
-        dict.scan(input, idx) { |x| terms[x.key.size] = x unless x.empty? }
+        dict.scan(input, idx) do |term|
+          terms[term.key.size] = {dict.dtype, term} unless term.empty?
+        end
       end
 
-      terms.each do |key, term|
+      terms.each do |key, (dic, term)|
         next if term.val[0]? == "[[pass]]"
 
         cost = costs[idx] + term.point
@@ -84,7 +86,7 @@ class CV::MtCore
 
         if cost >= costs[jump]
           costs[jump] = cost
-          nodes[jump] = MtNode.new(term, idx: idx + offset)
+          nodes[jump] = MtNode.new(term, dic, idx + offset)
         end
       end
     end

@@ -16,7 +16,6 @@ class CV::VpTerm
   getter mtime : UInt32 = 0_u32
   getter uname : String = "~"
 
-  getter dtype : Int32 = 1
   getter point : Float64 do
     base = 1.5 + rank * 0.125
     base ** @key.size + @key.size ** base
@@ -25,11 +24,11 @@ class CV::VpTerm
   property _prev : VpTerm? = nil
   property _flag : UInt8 = 0_u8 # 0 => keep, 1 => overwritten, 2 => to be removed
 
-  def initialize(cols : Array(String), @dtype = 2)
+  def initialize(cols : Array(String), dtype = 1)
     @key = cols[0]
     @val = cols.fetch(1, "").split(SEP)
 
-    return if @dtype < 1 # skip reading attr if dict type is lookup
+    return if dtype < 1 # skip reading attr if dict type is lookup
 
     @attr = cols[2]? || ""
     @rank = cols[3]?.try(&.to_u8?) || 3_u8
@@ -41,8 +40,7 @@ class CV::VpTerm
   end
 
   def initialize(@key, @val = [""], @attr = "",
-                 @rank = 3_u8, @mtime = self.mtime, @uname = "~",
-                 @dtype = 2)
+                 @rank = 3_u8, @mtime = self.mtime, @uname = "~")
   end
 
   def set_attr(@attr : String, @ptag = nil)
@@ -65,11 +63,11 @@ class CV::VpTerm
     self.empty? ? "Xoá" : (self._prev ? "Sửa" : "Thêm")
   end
 
-  def to_s(io : IO) : Nil
+  def to_s(io : IO, dtype = 1) : Nil
     io << key << '\t'
     @val.join(io, SEP)
 
-    return if @dtype < 1 # skip printing if dict type is lookup
+    return if dtype < 1 # skip printing if dict type is lookup
     io << '\t' << @attr << '\t' << (@rank == 3_u8 ? "" : @rank)
 
     return if @mtime <= 0
