@@ -2,13 +2,12 @@ module CV::TlRule
   def fold_verbs!(node : MtNode, succ = node.succ?, prev : MtNode? = nil)
     if end_sentence?(succ)
       node.val = "thật có lỗi" if node.key == "对不起"
-
+      node.tag = PosTag::Vform
       return node
     end
 
     while node.verbs?
       break unless succ = node.succ?
-
       case succ
       when .ahao?
         node.fold!(succ, "#{node.val} tốt")

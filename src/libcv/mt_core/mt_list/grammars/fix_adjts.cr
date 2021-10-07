@@ -1,14 +1,8 @@
 module CV::MTL::Grammars
   def fix_adjts!(node = @head, mode = 2) : MtNode
     node = TlRule.fold_adjts!(node, prev: nil)
-    case node
-    when .nouns?
-      fix_nouns!(node, mode = 2)
-    when .verbs?
-      fix_verbs!(node, mode = 2)
-    else
-      node
-    end
+    return node unless node.nouns?
+    fix_nouns!(node, mode = 2)
   end
 
   # private def fix_adjts!(node = @head)

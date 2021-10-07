@@ -12,10 +12,10 @@ module CV::TlRule
     return node unless succ
 
     case succ.tag
-    when .vmodals? then heal_vmodal!(succ, node)
-    when .adverb?  then fold_adverb!(succ, node)
-    when .verbs?   then fold_verbs!(succ, node)
-    when .adjts?   then fold_adjts!(succ, node)
+    when .vmodals? then heal_vmodal!(succ, nega: node)
+    when .adverb?  then fold_adverb!(succ, nega: node)
+    when .verbs?   then fold_verbs!(succ, prev: node)
+    when .adjts?   then fold_adjts!(succ, prev: node)
     else                node
     end
   end
@@ -50,9 +50,9 @@ module CV::TlRule
 
     case succ.tag
     when .verbs?
-      node = fold_verbs!(succ, node)
+      node = fold_verbs!(succ, prev: node)
     when .adjts?
-      node = fold_adjts!(succ, node)
+      node = fold_adjts!(succ, prev: node)
     end
 
     node.fold_left!(nega)

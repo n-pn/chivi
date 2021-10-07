@@ -11,9 +11,11 @@ module CV::TlRule
       when .verb?
         break unless node.key.size == 1
         node.val = "thật" if node.tag.ahao?
-        node = fold_adj_adv!(node, prev) if prev
 
-        return fold_verbs!(succ, node)
+        node = fold_adj_adv!(node, prev) if prev
+        succ = fold_verbs!(succ)
+        node.tag = PosTag::Vform
+        return node.fold!(succ, "#{succ.val} #{node.val}")
       when .ude2?
         break unless succ_2 = succ.succ?
         break unless succ_2.verb? || succ_2.veno?
