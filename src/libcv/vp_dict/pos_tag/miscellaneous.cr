@@ -9,23 +9,6 @@ struct CV::PosTag
     {"rz", "Prodeic", Pos::Pronouns | Pos::Contws},
     # 疑问代词 - interrogative pronoun - đại từ nghi vấn
     {"ry", "Prointr", Pos::Pronouns | Pos::Contws},
-    # :Pronmorp => "rg"
-
-    # 代词性语素 - pronominal morpheme
-
-    # 数词 - numeral - số từ
-    {"m", "Number", Pos::Numbers | Pos::Contws},
-    # latin number 0 1 2 .. 9
-    {"mx", "Numlat", Pos::Numbers | Pos::Contws},
-    # hanzi number 零 〇 二
-    {"mz", "Numhan", Pos::Numbers | Pos::Contws},
-
-    # 量词 - quantifier - lượng từ
-    {"q", "Quanti", Pos::Quantis | Pos::Contws},
-    # 时量词 - verbal classifier -  lượng từ thời gian
-    {"qt", "Qttime", Pos::Quantis | Pos::Contws},
-    # 数量词 - numeral and quantifier - số lượng từ
-    {"mq", "Nquant", Pos::Numbers | Pos::Quantis | Pos::Contws},
 
     # 成语 - idiom - thành ngữ
     {"i", "Idiom", Pos::Contws},
@@ -56,4 +39,19 @@ struct CV::PosTag
     {"y", "Modalparticle", Pos::Funcws}, # 语气词 - modal particle - ngữ khí
     {"o", "Onomatopoeia", Pos::Funcws},  # 拟声词 - onomatopoeia - tượng thanh
   }
+
+  @[AlwaysInline]
+  def pronouns?
+    @pos.pronouns?
+  end
+
+  @[AlwaysInline]
+  def preposes?
+    @pos.preposes?
+  end
+
+  @[AlwaysInline]
+  def strings?
+    @pos.strings?
+  end
 end

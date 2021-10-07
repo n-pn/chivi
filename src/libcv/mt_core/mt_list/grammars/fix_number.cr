@@ -9,6 +9,7 @@ module CV::MTL::Grammars
 
     # TODO: add prefix
 
+    node.tag == PosTag::Number
     return node unless succ
 
     # add suffix
