@@ -153,7 +153,6 @@
 
     @include bp-max(sm) { @include ftsize(xs); }
     &:hover { @include fgcolor(primary, 5); }
-    &._sm { @include bps(display, none, $sm: inline-block); }
     > span { @include clamp($width: null); }
   }
 
