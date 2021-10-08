@@ -9,6 +9,8 @@ class CV::DboardCtrl < CV::BaseCtrl
     query = Dboard.query.order_by(_sort: :desc)
     total = query.dup.limit(limit * 3 + skips).offset(0).count
 
+    cache_rule :public, 30, 120
+
     json_view do |jb|
       jb.object {
         jb.field "total", total
@@ -27,6 +29,8 @@ class CV::DboardCtrl < CV::BaseCtrl
   def show
     board = Dboard.load!(params["bslug"])
     board.bump!
+
+    cache_rule :public, 120, 300, board.utime.to_s
 
     # TODO: load user trace
     json_view do |jb|

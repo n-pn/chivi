@@ -37,9 +37,9 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
         jb.field "books" {
           jb.array {
-            query.limit(limit).offset(offset).with_author.each { |book|
+            query.limit(limit).offset(offset).with_author.each do |book|
               CvbookView.render(jb, book, full: false)
-            }
+            end
           }
         }
       }

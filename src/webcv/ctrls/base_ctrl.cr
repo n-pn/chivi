@@ -5,6 +5,15 @@ class CV::BaseCtrl < Amber::Controller::Base
   protected getter _cv_user : Cvuser { Cvuser.load!(cu_dname) }
   protected getter cu_privi : Int32 { _cv_user.privi }
 
+  enum CacheType
+    Private; Public
+  end
+
+  def cache_rule(type : CacheType, max_age = 30, max_stale = 120, etag = "")
+    response.headers.add("ETag", etag) unless etag.empty?
+    response.headers.add("Cache-Control", "#{type}, max-age=#{max_age}, stale-while-revalidate=#{max_stale}")
+  end
+
   def add_etag(etag : String)
     response.headers.add("ETag", etag)
   end
