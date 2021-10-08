@@ -79,12 +79,6 @@ module CV::TlRule
       return prev.fold_many!(node, succ)
     end
 
-    prev.dic = 7
-    uzhe_val = guess_uzhe_val(prev, node)
-    prev.fold!(node, uzhe_val.empty? ? prev.val : "#{uzhe_val} #{prev.val}")
-  end
-
-  def guess_uzhe_val(prev : MtNode, node : MtNode)
-    (prev_2 = prev.prev?) && prev_2.tag.place? ? "có" : ""
+    prev.fold!(node, prev.val, dic: 9)
   end
 end
