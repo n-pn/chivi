@@ -8,7 +8,7 @@ CREATE TABLE dtposts (
 
   tagged_ids bigint[] not null default '{}', -- tagged cvuser ids
   
-  index int not null default '0'; 
+  dt_id int not null default '0'; -- post index of a single topic
 
   input text not null default '', -- text input
   itype text not null default 'md', -- input type, default is markdown
@@ -18,6 +18,7 @@ CREATE TABLE dtposts (
    
   likes int not null default '0', -- like count
   edits int not null default '0', -- edit count
+  award int not null default '0', -- karma given by users to this post
 
   utime bigint not null default '0', -- update time, change after edits
 
@@ -26,7 +27,7 @@ CREATE TABLE dtposts (
 );
 
 CREATE INDEX dtpost_cvuser_idx ON tdposts (cvuser_id);
-CREATE INDEX dtpost_dtopic_idx ON tdposts (dtopic_id, index);
+CREATE INDEX dtpost_dtopic_idx ON tdposts (dtopic_id, dt_id);
 CREATE INDEX dtpost_tagged_idx ON tdposts using GIN (tagged_ids);
 
 -- +micrate Down
