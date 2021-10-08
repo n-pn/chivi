@@ -28,9 +28,7 @@ class CV::DboardCtrl < CV::BaseCtrl
 
   def show
     board = Dboard.load!(params["bslug"])
-    board.bump!
-
-    cache_rule :public, 120, 300, board.utime.to_s
+    cache_rule :public, 120, 300, board.updated_at.to_s
 
     # TODO: load user trace
     json_view do |jb|

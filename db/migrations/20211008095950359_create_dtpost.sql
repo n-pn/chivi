@@ -14,13 +14,14 @@ CREATE TABLE dtposts (
   itype text not null default 'md', -- input type, default is markdown
 
   ohtml text not null default '', -- html output
+  odesc text not null default '', -- short description
+
   state int not null default '0'; -- states: public, deleted...
+  utime bigint not null default '0', -- update time, change after edits
    
   likes int not null default '0', -- like count
   edits int not null default '0', -- edit count
   award int not null default '0', -- karma given by users to this post
-
-  utime bigint not null default '0', -- update time, change after edits
 
   created_at timestamptz not null default CURRENT_TIMESTAMP,
   updated_at timestamptz not null default CURRENT_TIMESTAMP

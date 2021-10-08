@@ -80,3 +80,5 @@ _Ví dụ:_
 ## Tham khảo
 
 https://tiengtrungthuonghai.vn/tuhoctiengtrung/phan-biet-khu-biet-tu-va-tinh-tu/
+
+<a href=".?user=test">test</a>

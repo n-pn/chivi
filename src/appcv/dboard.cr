@@ -10,18 +10,11 @@ class CV::Dboard
   column bslug : String
 
   column topics : Int32 = 0
-  column tposts : Int32 = 0
-
-  column stars : Int32 = 0
-  column views : Int32 = 0
-
-  column utime : Int64 = 0
-  column atime : Int64 = 0
 
   timestamps
 
   def bump!(time = Time.utc)
-    update!(atime: time.to_unix)
+    update!({updated_at: time})
   end
 
   #################
@@ -59,7 +52,6 @@ class CV::Dboard
         {cvbook.vtitle, cvbook.bslug}
       end
 
-    atime = utime = Time.utc.to_unix
-    new({id: id, bname: bname, bslug: bslug, atime: atime, utime: utime})
+    new({id: id, bname: bname, bslug: bslug})
   end
 end

@@ -7,13 +7,6 @@ CREATE TABLE dboards (
   bslug text unique not null, -- board unique slug
 
   topics int not null default '0', -- topic count
-  tposts int not null default '0', -- tpost count
-
-  stars int not null default '0',
-  views int not null default '0',
-
-  utime bigint not null default '0',
-  atime bigint not null default '0',
 
   created_at timestamptz not null default CURRENT_TIMESTAMP,
   updated_at timestamptz not null default CURRENT_TIMESTAMP

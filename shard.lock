@@ -32,6 +32,10 @@ shards:
     git: https://github.com/amberframework/cli.git
     version: 0.11.3
 
+  cmark:
+    git: https://github.com/amauryt/cr-cmark-gfm.git
+    version: 0.1.0+git.commit.09fe300cd040be2d2a72f0f7e0489663ea92440b
+
   compiled_license:
     git: https://github.com/elorest/compiled_license.git
     version: 1.0.0
