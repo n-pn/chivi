@@ -11,13 +11,13 @@ module CV::TlRule
   end
 
   def heal_vhui!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    if is_learnable_skill?(succ)
+    if is_learnable_skill?(succ) || node.prev?(&.key.== "也")
       val = nega ? "không biết" : "biết"
     else
       val = nega ? "sẽ không" : "sẽ"
     end
 
-    nega ? nega.fold!(succ, val) : node.heal!(val)
+    nega ? nega.fold!(node, val) : node.heal!(val)
   end
 
   def is_learnable_skill?(succ : MtNode?) : Bool
@@ -34,7 +34,8 @@ module CV::TlRule
   def heal_vxiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     if succ
       if succ_is_verb?(succ)
-        node.val = "muốn"
+        node.fold!(succ, "muốn #{succ.val}")
+        return fold_verbs!(node, prev: nega)
       elsif succ.nouns? || succ.pronouns?
         node.val = "nhớ" unless succ_is_verb?(succ.succ?)
       end
