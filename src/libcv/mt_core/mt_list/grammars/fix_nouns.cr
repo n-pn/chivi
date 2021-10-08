@@ -18,6 +18,7 @@ module CV::MTL::Grammars
         node = TlRule.fold_concoord!(prev_2, prev, node, force: true)
       when .nquants?
         break if node.veno? || node.ajno?
+        node.tag = PosTag::Nform
         node.fuse_left!("#{prev.val} ")
       when .propers?
         break if prev.prev?(&.verb?)
@@ -56,6 +57,8 @@ module CV::MTL::Grammars
         when "任何" then node.fuse_left!("bất kỳ ")
         else           node.fuse_left!("", " #{prev.val}")
         end
+        node.tag = PosTag::Nform
+        break
       when .prointr?
         val = prev.key == "什么" ? "gì đó" : prev.val
         node.fuse_left!("", " #{val}")
@@ -87,8 +90,8 @@ module CV::MTL::Grammars
           prev_2.update!("thông thường") if prev_2.key == "一般"
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
-        when .adjts?, .nquant?, .quanti?, .veno?, .nmorp?,
-             .vintr?, .nform?, .time?, .place?, .space?, .adesc?
+        when .adjts?, .nquant?, .quanti?, .veno?,
+             .vintr?, .time?, .place?, .space?, .adesc?
           prev.fuse_left!(prev_2.val)
           node.fuse_left!("", " #{prev.val}")
         when .nouns?, .propers?
@@ -113,7 +116,7 @@ module CV::MTL::Grammars
         break
       end
 
-      # node.tag = PosTag::Nform
+      node.tag = PosTag::Nform
     end
 
     node

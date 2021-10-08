@@ -1,11 +1,11 @@
-@use "../essence" as *;
+@use '../essence' as *;
 
 table {
-  --table-gutter: var(--gutter, 0.75rem);
-  --table-spacer: var(--gutter-small, 0.5rem);
+  --table-gutter: var(--gutter-sm, 0.5rem);
+  --table-spacer: var(--gutter-xs, 0.25rem);
 
   --table-thcolor: var(--fg-tert);
-  --table-bgcolor: var(--bg-secd);
+  --table-bgcolor: var(--bg-tert);
   --table-bdcolor: var(--bd-main);
 
   border-collapse: collapse;

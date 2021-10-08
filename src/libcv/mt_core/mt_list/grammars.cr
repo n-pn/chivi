@@ -13,7 +13,7 @@ module CV::MTL::Grammars
       when .quoteop? then node = fix_quoteop(node)
       when .numbers? # , .quantis?
         node = fix_number!(node)
-        node = fix_nouns!(node) if node.nquant? && !node.succ?(&.nouns?)
+        node = fix_nouns!(node) if node.nquants? && !node.succ?(&.nouns?)
       when .numlat?  then node = fix_number!(node)
       when .vshi?    then next # TODO handle vshi
       when .vyou?    then next # TODO handle vyou
@@ -26,10 +26,11 @@ module CV::MTL::Grammars
         node = TlRule.fold_noun!(node)
         next unless node.nouns?
         node = fix_nouns!(node, mode: mode)
-
-        next unless node.nouns?
-        if (succ = node.succ?) && (succ.space?)
-          node = TlRule.fold_noun_space!(node, succ)
+      when .space?
+        if node.prev.noun?
+          node = TlRule.fold_noun_space!(node.prev, node)
+        else
+          node = fix_nouns!(node, mode: mode)
         end
       end
     end

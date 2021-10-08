@@ -60,17 +60,18 @@ module CV::TlRule
     node.fold_left!(nega)
   end
 
-  def fold_adj_adv!(adj : MtNode, adv = adj.prev?)
-    return adj unless adv
-    adv.tag = PosTag::Aform
+  def fold_adj_adv!(node : MtNode, prev = node.prev?)
+    return node unless prev
+    prev.tag = PosTag::Aform
 
-    case adv.key
-    when "最"
-      return adv.fold!(adj, "#{adj.val} nhất")
-    when "挺"
-      adv.val = "rất"
+    case prev.key
+    when "最", "那么", "这么", "非常"
+      prev.fold!(node, "#{node.val} #{prev.val}")
+    when "不太"
+      prev.fold!(node, "không #{node.val} lắm")
+    else
+      prev.val = "rất" if prev.key == "挺"
+      prev.fold!(node)
     end
-
-    adv.fold!(adj)
   end
 end
