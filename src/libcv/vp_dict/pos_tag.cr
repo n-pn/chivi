@@ -5,17 +5,22 @@ struct CV::PosTag
   # eng: https://www.lancaster.ac.uk/fass/projects/corpus/ZCTC/annotation.htm
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
+  {% begin %}
+    TYPES = {{ NOUNS + VERBS + ADJTS + NUMBERS + ADVERBS +
+                 MISCS + AFFIXES + AUXILS + PUNCTS }}
+  {% end %}
+
   enum Tag
     None; Unkn
 
-    {% for type in NOUNS + VERBS + ADJTS + NUMBERS + ADVERBS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+    {% for type in TYPES %}
       {{ type[1].id }}
     {% end %}
 
     def to_str
       {% begin %}
       case self
-      {% for type in NOUNS + VERBS + ADJTS + NUMBERS + ADVERBS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+      {% for type in TYPES %}
         when {{ type[1].id }} then {{ type[0] }}
       {% end %}
       when None then "-"
@@ -28,7 +33,7 @@ struct CV::PosTag
   None = new(Tag::None, Pos::Puncts)
   Unkn = new(Tag::Unkn, Pos::Contws)
 
-  {% for type in NOUNS + VERBS + ADJTS + NUMBERS + ADVERBS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+  {% for type in TYPES %}
     {{ type[1].id }} = new(Tag::{{type[1].id}}, {{type[2]}})
   {% end %}
 
@@ -60,7 +65,7 @@ struct CV::PosTag
   def self.from_str(tag : ::String) : self
     {% begin %}
     case tag
-    {% for type in NOUNS + VERBS + ADJTS + NUMBERS + ADVERBS + MISCS + AFFIXES + AUXILS + PUNCTS %}
+    {% for type in TYPES %}
     when {{ type[0] }} then {{ type[1].id }}
     {% end %}
     when "l" then Idiom
