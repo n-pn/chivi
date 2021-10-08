@@ -53,11 +53,10 @@ module CV::MTL::Grammars
     end
 
     # merge number with quantifiers
-    case succ
-    when .quanti?, .nquant?, .qttime?
+    if succ.quantis?
       if !has_第
-        node.fold!("#{node.val} #{succ.val}")
         node.tag = PosTag::Nquant
+        node.fold!("#{node.val} #{succ.val}")
       elsif succ.succ?(&.nouns?)
         succ_2 = succ.succ
         succ.fold!("#{succ.val} #{succ_2.val}")
@@ -65,8 +64,8 @@ module CV::MTL::Grammars
         node.fold!("#{succ.val} #{node.val}")
         node.tag = succ_2.tag
       else
-        node.fold!("#{succ.val} #{node.val}")
         node.tag = PosTag::Nquant
+        node.fold!("#{succ.val} #{node.val}")
       end
     end
 
