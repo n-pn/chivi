@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::UserCtrl < CV::BaseCtrl
+class CV::CvuserCtrl < CV::BaseCtrl
   def _self
     return_user
   rescue err

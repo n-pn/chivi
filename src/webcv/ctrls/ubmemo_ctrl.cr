@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::MemoCtrl < CV::BaseCtrl
+class CV::UbmemoCtrl < CV::BaseCtrl
   def cvbook
   end
 

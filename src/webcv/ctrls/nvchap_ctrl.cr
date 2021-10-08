@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::ChapCtrl < CV::BaseCtrl
+class CV::NvchapCtrl < CV::BaseCtrl
   private def load_zhbook
     cvbook_id = params["book"].to_i64
     zname = Zhseed.index(params["sname"])

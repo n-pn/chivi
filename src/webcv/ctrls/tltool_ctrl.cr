@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::ToolCtrl < CV::BaseCtrl
+class CV::TlTool < CV::BaseCtrl
   def convert
     input = params.fetch_str("input").gsub("\t", "  ")
     lines = TextUtils.split_text(input, spaces_as_newline: false)
