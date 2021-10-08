@@ -13,7 +13,6 @@ module CV::MTL::Grammars
       when .quoteop? then node = fix_quoteop(node)
       when .numbers? # , .quantis?
         node = fix_number!(node)
-        node.inspect(STDOUT, deep: false)
         node = fix_nouns!(node) if node.nquants? && !node.succ?(&.nouns?)
       when .numlat?  then node = fix_number!(node)
       when .vshi?    then next # TODO handle vshi
