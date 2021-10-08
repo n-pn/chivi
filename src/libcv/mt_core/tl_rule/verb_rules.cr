@@ -1,8 +1,11 @@
 module CV::TlRule
   def fold_verbs!(node : MtNode, succ = node.succ?, prev : MtNode? = nil)
     if end_sentence?(succ)
-      node.val = "thật có lỗi" if node.key == "对不起"
-      node.tag = PosTag::Vform
+      if node.key == "对不起"
+        node.val = "thật có lỗi"
+        node.tag = PosTag::Vform
+      end
+
       return node
     end
 
