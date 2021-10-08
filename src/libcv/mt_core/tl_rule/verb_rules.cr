@@ -63,8 +63,10 @@ module CV::TlRule
     prev.tag = node.tag
 
     case prev.key
-    when "最"
+    when "最", "那么", "这么", "非常"
       prev.fold!(node, "#{node.val} #{prev.val}")
+    when "不太"
+      prev.fold!(node, "không #{node.val} lắm")
     else
       prev.fold!(node)
     end
@@ -74,11 +76,13 @@ module CV::TlRule
     if succ && succ.verbs?
       succ = fold_verbs!(succ)
       prev.val = "#{prev.val} #{succ.val}"
+
       prev.tag = PosTag::Vform
       prev.dic = 6
-      return prev.fold_many!(node, succ)
-    end
 
-    prev.fold!(node, prev.val, dic: 9)
+      prev.fold_many!(node, succ)
+    else
+      prev.fold!(node, prev.val, dic: 6)
+    end
   end
 end
