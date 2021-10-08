@@ -85,13 +85,6 @@ module CV::TlRule
   end
 
   def guess_uzhe_val(prev : MtNode, node : MtNode)
-    return "" if !(prev_2 = prev.prev?) || prev_2.adv_mei? || prev_2.verb?
-    return "có" if prev_2.tag.place?
-
-    # handle duplicate word
-    case prev_2.key
-    when "正", "正在", "在" then ""
-    else                     "đang"
-    end
+    (prev_2 = prev.prev?) && prev_2.tag.place? ? "có" : ""
   end
 end
