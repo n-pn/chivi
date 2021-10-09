@@ -54,8 +54,14 @@ Amber::Server.configure do
     post "/tools/convert/:dname", CV::TlToolCtrl, :convert
     get "/qtran/:name", CV::TlToolCtrl, :show
 
-    get "/forum/", CV::DboardCtrl, :index
-    get "/forum/:bslug", CV::DboardCtrl, :show
+    get "/boards/", CV::DboardCtrl, :index
+    get "/boards/:bslug", CV::DboardCtrl, :show
+
+    get "/topics", CV::DtopicCtrl, :index
+    get "/topics/:dtopic", CV::DtopicCtrl, :show
+
+    post "/boards/:dboard/new", CV::DtopicCtrl, :create
+    put "/boards/:dboard/:dtopic", CV::DtopicCtrl, :update
   end
 
   routes :static do

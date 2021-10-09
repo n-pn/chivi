@@ -20,7 +20,7 @@ class CV::Dtpost
   column odesc : String = ""
 
   column state : Int32 = 0 # 0: normal, 1: highlight, -1: deleted, -2: removed
-  column utime : Int64 = 0 # update when new post created
+  column utime : Int64 = 0 # update when new post created/updated
 
   column edits : Int32 = 0 # edit count
   column likes : Int32 = 0 # like count

@@ -9,8 +9,8 @@ class CV::Dtopic
   column label_ids : Array(String) = [] of String
 
   column title : String
-  column tslug : String
-  column descs : String
+  column uslug : String
+  column pdesc : String
 
   column state : Int32 = 0 # 0: normal, 1: sticky, -1: locked, -2: deleted, -3: removed
   column utime : Int64 = 0 # update when new post created
@@ -22,8 +22,17 @@ class CV::Dtopic
 
   timestamps
 
+  def set_title(title : String)
+    self.title = title
+    self.uslug = TextUtils.slugify(title)
+  end
+
+  def update_sort(utime : Int64)
+    self._sort = utime // 60 + posts + views // 100 + marks * 5
+  end
+
   def bump!(time = Time.utc)
-    update!(atime: time.to_unix)
+    update!({views: views + 1})
   end
 
   #################

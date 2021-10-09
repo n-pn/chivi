@@ -100,7 +100,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
     dname = "combine" if dname == "generic"
 
     input = params["input"].strip
-    vietphrase = VpDict.for_lookup(dname, _cv_user.uname)
+    vietphrase = VpDict.for_lookup(dname, _cvuser.uname)
 
     chars = input.chars
     upper = chars.size - 1
@@ -140,11 +140,11 @@ class CV::VpdictCtrl < CV::BaseCtrl
     dname = params["dname"]
     words = params.json("words").as_a
 
-    cvmtl = MtCore.generic_mtl(dname, _cv_user.uname)
+    cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
     dicts = {
-      VpDict.load(dname, _cv_user.uname),
+      VpDict.load(dname, _cvuser.uname),
       VpDict.load(dname),
-      VpDict.load("regular", _cv_user.uname),
+      VpDict.load("regular", _cvuser.uname),
       VpDict.regular,
     }
 

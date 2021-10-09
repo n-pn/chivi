@@ -64,7 +64,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     end
 
     cvbook.bump! if cu_privi >= 0
-    ubmemo = Ubmemo.find_or_new(_cv_user.id, cvbook.id)
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook.id)
 
     if ubmemo.lr_chidx == 0
       ubmemo.lr_zseed = cvbook.zhseed_ids.find(0, &.> 0)

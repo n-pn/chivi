@@ -28,7 +28,7 @@ class CV::TlToolCtrl < CV::BaseCtrl
 
   private def convert(lines : Array(String), output : IO)
     dname = params.fetch_str("dname", "combine")
-    cvmtl = MtCore.generic_mtl(dname, _cv_user.uname)
+    cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
 
     lines.each_with_index do |line, idx|
       output << "\n" if idx > 0

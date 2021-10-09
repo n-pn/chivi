@@ -2,8 +2,8 @@ class CV::BaseCtrl < Amber::Controller::Base
   LAYOUT = false
 
   protected getter cu_dname : String { session["cu_dname"]? || "Khách" }
-  protected getter _cv_user : Cvuser { Cvuser.load!(cu_dname) }
-  protected getter cu_privi : Int32 { _cv_user.privi }
+  protected getter _cvuser : Cvuser { Cvuser.load!(cu_dname) }
+  protected getter cu_privi : Int32 { _cvuser.privi }
 
   enum CacheType
     Private; Public

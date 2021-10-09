@@ -8,8 +8,8 @@ CREATE TABLE dtopics (
   label_ids int[] not null default '{}',
 
   title text not null default '',
-  tslug text not null default '',
-  descs text not null default '', -- short description, generated from first tpost
+  uslug text not null default '',
+  pdesc text not null default '', -- short description, generated from first tpost
 
   state int not null default '0', -- states: public, sticky, deleted....
   utime bigint not null default '0', -- update when new post created
@@ -27,6 +27,7 @@ CREATE TABLE dtopics (
 CREATE INDEX dtopic_cvuser_idx ON dtopics (cvuser_id);
 CREATE INDEX dtopic_dboard_idx ON dtopics (dboard_id, _sort);
 CREATE INDEX dtopic_labels_idx ON dtopics using GIN (label_ids);
+CREATE INDEX dtopic_uslug_idx ON dboards using GIN (uslug gin_trgm_ops);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

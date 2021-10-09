@@ -54,11 +54,11 @@ class CV::NvchapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    privi = _cv_user.privi
+    privi = _cvuser.privi
     imode = params.fetch_int("mode", min: 0, max: privi)
     lines = zhbook.chtext(chidx - 1, cpart, privi: privi, reset: imode > 1)
 
-    ubmemo = Ubmemo.find_or_new(_cv_user.id, zhbook.cvbook_id)
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, zhbook.cvbook_id)
     if privi >= 0 && !ubmemo.locked
       ubmemo.mark!(zhbook.zseed, chinfo.chidx, chinfo.title, chinfo.uslug, cpart)
     end
@@ -97,7 +97,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    min_fresh = _cv_user.privi < 2 ? 60 : 20
+    min_fresh = _cvuser.privi < 2 ? 60 : 20
     response.headers.add("Cache-Control", "private, min-fresh=#{min_fresh}")
     response.content_type = "text/plain; charset=utf-8"
 
@@ -112,8 +112,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
   private def convert(zhbook, chinfo, lines, cpart, output : IO)
     return if lines.empty?
 
-    cvmtl = MtCore.generic_mtl(zhbook.cvbook.bhash, _cv_user.uname)
-    mode = _cv_user.tlmode
+    cvmtl = MtCore.generic_mtl(zhbook.cvbook.bhash, _cvuser.uname)
+    mode = _cvuser.tlmode
 
     cvmtl.cv_title_full(lines[0], mode: mode).to_str(output)
     output << "\t" << "  (#{cpart + 1}/#{chinfo.parts})" if chinfo.parts > 1
@@ -127,7 +127,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
   def upsert
     return 403, "Unsupported"
-    # return halt!(500, "Quyền hạn không đủ!") if _cv_user.privi < 2
+    # return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 2
     # zhbook = load_zhbook
     # chidx = params.fetch_int("chidx") { 1 }
 

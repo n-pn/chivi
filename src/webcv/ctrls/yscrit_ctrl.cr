@@ -108,7 +108,7 @@ class CV::YscritCtrl < CV::BaseCtrl
       jb.field "stars", crit.stars
 
       jb.field "ztext", mtl ? crit.ztext : ""
-      jb.field "vhtml", mtl ? crit.cvdata(mode: _cv_user.tlmode) : crit.vhtml
+      jb.field "vhtml", mtl ? crit.cvdata(mode: _cvuser.tlmode) : crit.vhtml
 
       jb.field "like_count", crit.like_count
       jb.field "repl_count", crit.repl_count

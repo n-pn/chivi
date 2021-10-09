@@ -14,7 +14,7 @@ class CV::CvuserCtrl < CV::BaseCtrl
   end
 
   def logout
-    @_cv_user = nil
+    @_cvuser = nil
 
     session.delete("cu_dname")
     session.delete("cu_privi")
@@ -50,21 +50,21 @@ class CV::CvuserCtrl < CV::BaseCtrl
   end
 
   def update
-    if _cv_user.privi >= 0
+    if _cvuser.privi >= 0
       wtheme = params.fetch_str("wtheme", "light")
       tlmode = params.fetch_int("tlmode", min: 0, max: 2)
 
       session["cu_wtheme"] = wtheme
       session["cu_tlmode"] = tlmode
 
-      _cv_user.update!({wtheme: wtheme, tlmode: tlmode})
+      _cvuser.update!({wtheme: wtheme, tlmode: tlmode})
     end
 
     return_user
   end
 
   def passwd
-    raise "Quyền hạn không đủ" if _cv_user.privi < 0
+    raise "Quyền hạn không đủ" if _cvuser.privi < 0
 
     wtheme = params.fetch_str("wtheme", "light")
     tlmode = params.fetch_int("tlmode", min: 0, max: 2)
@@ -72,29 +72,29 @@ class CV::CvuserCtrl < CV::BaseCtrl
     old_upass = params.fetch_str("old_pass").strip
     puts ["old pass: ", old_upass]
 
-    raise "Mật khẩu cũ không đúng" unless _cv_user.authentic?(old_upass)
+    raise "Mật khẩu cũ không đúng" unless _cvuser.authentic?(old_upass)
 
     new_upass = params.fetch_str("new_pass").strip
     confirmation = params.fetch_str("confirm_pass").strip
     raise "Mật khẩu mới quá ngắn" unless new_upass.size >= 7
     raise "Mật khẩu không trùng khớp" unless new_upass == confirmation
 
-    _cv_user.upass = new_upass
-    _cv_user.save!
+    _cvuser.upass = new_upass
+    _cvuser.save!
     render_json([1])
   rescue err
     halt!(400, err.message)
   end
 
   private def sigin_user!(user : Cvuser)
-    @_cv_user = user
+    @_cvuser = user
     session["cu_dname"] = user.uname
     session["cu_privi"] = user.privi
     session["cu_wtheme"] = user.wtheme
     session["cu_tlmode"] = user.tlmode
   end
 
-  private def return_user(user = _cv_user)
+  private def return_user(user = _cvuser)
     save_session!
 
     render_json({
