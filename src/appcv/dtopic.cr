@@ -21,6 +21,18 @@ class CV::Dtopic
 
   timestamps
 
+  scope :filter_label do |label|
+    label ? where("label_ids @> ?", [label.to_i]) : self
+  end
+
+  scope :filter_board do |board|
+    board ? where({dboard_id: board.id}) : with_dboard
+  end
+
+  scope :filter_owner do |owner|
+    owner ? where({cvuser_id: owner.id}) : with_cvuser
+  end
+
   def set_title(title : String)
     self.title = title
     self.uslug = TextUtils.slugify(title)

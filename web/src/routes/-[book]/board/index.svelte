@@ -5,8 +5,7 @@
 
     if (status) return { status, error: dboard }
 
-    const page = +query.get('page') || 1
-    const [status_2, dtopic] = await load_topics(fetch, cvbook.id, page)
+    const [status_2, dtopic] = await load_topics(fetch, cvbook.id, query)
     if (status_2) return { status: status_2, error: dtopic }
 
     return { props: { ...stuff, dboard, dtopic } }
@@ -19,9 +18,12 @@
     return [res.status, await res.text()]
   }
 
-  async function load_topics(fetch, board_id, page = 1, take = 15) {
-    const url = `/api/boards/${board_id}/topics?page=${page}&take=${take}`
-    const res = await fetch(url)
+  async function load_topics(fetch, board_id, query) {
+    const page = +query.get('page') || 1
+    const tlbl = query.get('tl')
+
+    const url = `/api/boards/${board_id}/topics?page=${page}&take=${15}`
+    const res = await fetch(tlbl ? `${url}&dlabel=${tlbl}` : url)
 
     if (res.ok) return [0, await res.json()]
     return [res.status, await res.text()]
@@ -37,19 +39,24 @@
 </script>
 
 <script>
+  import { page } from '$app/stores'
   import { invalidate } from '$app/navigation'
   import { get_rtime } from '$atoms/RTime.svelte'
   import SIcon from '$atoms/SIcon.svelte'
-  import BookPage from './_layout/BookPage.svelte'
+  import BookPage from '../_layout/BookPage.svelte'
+
+  import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let cvbook
   export let ubmemo
   // export let dboard
-  export let dtopic = { items: [] }
+  export let dtopic = { items: [], pgidx: 1, pgmax: 1 }
 
   let form_title = ''
-  let form_label = 1
+  let form_label = [1]
   let form_error = ''
+
+  $: pager = new Pager($page.path, $page.query, { page: 1, tl: '' })
 
   async function create_topic() {
     if (form_title.length > 500) {
@@ -57,11 +64,12 @@
     }
 
     const url = `/api/boards/${cvbook.id}/new`
+    const labels = form_label.map((x) => +x)
 
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: form_title, labels: [+form_label] }),
+      body: JSON.stringify({ title: form_title, labels }),
     })
 
     if (res.ok) console.log(await res.json())
@@ -70,10 +78,12 @@
     create_new = false
     invalidate(`/api/boards/${cvbook.id}/topics`)
   }
+
+  const _navi = { replace: true, scrollto: '#board' }
 </script>
 
 <BookPage {cvbook} {ubmemo} nvtab="board">
-  <board-content>
+  <board-content id="board">
     {#each dtopic.items as topic}
       <topic-card>
         <topic-body>
@@ -84,7 +94,7 @@
           </a>
 
           {#each topic.labels as label}
-            <a class="topic-label _{label}" href=".?tl={label}"
+            <a class="topic-label _{label}" href="./board?tl={label}"
               >{topic_labels[label]}</a>
           {/each}
         </topic-body>
@@ -107,48 +117,54 @@
       <div class="empty">Chưa có chủ đề thảo luận :(</div>
     {/each}
 
-    <form
-      action="/api/boards/{cvbook.id}/new"
-      on:submit|preventDefault={create_topic}
-      method="POST">
-      <form-field>
-        <label class="form-label" for="title">Chủ đề mới</label>
-        <textarea
-          class="m-input"
-          name="title"
-          lang="vi"
-          bind:value={form_title} />
-      </form-field>
+    <board-pagi>
+      <Mpager {pager} pgidx={dtopic.pgidx} pgmax={dtopic.pgmax} {_navi} />
+    </board-pagi>
 
-      {#if form_error}
-        <form-error>{form_error}</form-error>
-      {/if}
+    <board-form>
+      <form
+        action="/api/boards/{cvbook.id}/new"
+        on:submit|preventDefault={create_topic}
+        method="POST">
+        <form-field>
+          <label class="form-label" for="title">Chủ đề mới</label>
+          <textarea
+            class="m-input"
+            name="title"
+            lang="vi"
+            bind:value={form_title} />
+        </form-field>
 
-      <form-foot>
-        <form-labels>
-          <label-caption>Nhãn:</label-caption>
+        {#if form_error}
+          <form-error>{form_error}</form-error>
+        {/if}
 
-          {#each Object.entries(topic_labels) as [value, label]}
-            <label
-              class="topic-label _{value}"
-              class:_active={value == form_label}
-              ><input type="radio" {value} bind:group={form_label} />
-              <label-name>{label}</label-name>
-              {#if value == form_label}
-                <SIcon name="check" />
-              {/if}
-            </label>
-          {/each}
-        </form-labels>
+        <form-foot>
+          <form-labels>
+            <label-caption>Nhãn:</label-caption>
 
-        <button
-          type="submit"
-          class="m-button _primary _fill"
-          disabled={form_title.length < 5 || form_title.length > 200}
-          on:click|preventDefault={create_topic}>
-          Tạo chủ đề</button>
-      </form-foot>
-    </form>
+            {#each Object.entries(topic_labels) as [value, label]}
+              <label
+                class="topic-label _{value}"
+                class:_active={form_label.includes(value)}
+                ><input type="checkbox" {value} bind:group={form_label} />
+                <label-name>{label}</label-name>
+                {#if form_label.includes(value)}
+                  <SIcon name="check" />
+                {/if}
+              </label>
+            {/each}
+          </form-labels>
+
+          <button
+            type="submit"
+            class="m-button _primary _fill"
+            disabled={form_title.length < 5 || form_title.length > 200}
+            on:click|preventDefault={create_topic}>
+            Tạo chủ đề</button>
+        </form-foot>
+      </form>
+    </board-form>
   </board-content>
 </BookPage>
 
@@ -157,6 +173,11 @@
     display: block;
     @include bps(margin-left, 0rem, 0.1rem, 1.5rem, 2rem);
     @include bps(margin-right, 0rem, 0.1rem, 1.5rem, 2rem);
+  }
+
+  board-pagi {
+    display: block;
+    margin-top: 0.75rem;
   }
 
   .empty {
@@ -255,9 +276,14 @@
       --color: #{color(warning, 5)};
       --bgcolor: #{color(warning, 1)};
     }
+
     &._5 {
       --color: #{color(purple, 5)};
       --bgcolor: #{color(purple, 1)};
+    }
+
+    topic-body & + & {
+      margin-left: 0.25rem;
     }
   }
 
@@ -298,8 +324,9 @@
     @include fgcolor(secd);
   }
 
-  form {
-    margin-top: 1rem;
+  board-form {
+    display: block;
+    margin-top: 0.25rem;
   }
 
   form-labels {

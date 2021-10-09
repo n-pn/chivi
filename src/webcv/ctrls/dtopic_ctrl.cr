@@ -7,17 +7,13 @@ class CV::DtopicCtrl < CV::BaseCtrl
     skips = (pgidx - 1) * limit
 
     query = Dtopic.query.order_by(_sort: :desc)
+    query.filter_label(params["dlabel"]?)
 
-    if dboard_id = params["dboard"]?
-      dboard = Dboard.load!(dboard_id.to_i64)
-    end
+    dboard = params["dboard"]?.try { |x| Dboard.load!(x.to_i64) }
+    cvuser = params["cvuser"]?.try { |x| Cvuser.load!(x) }
 
-    if user_name = params["cvuser"]?
-      cvuser = Cvuser.load!(user_name)
-    end
-
-    query = dboard ? query.where({dboard_id: dboard.not_nil!.id}) : query.with_dboard
-    query = cvuser ? query.where({cvuser_id: cvuser.not_nil!.id}) : query.with_cvuser
+    query.filter_board(dboard)
+    query.filter_owner(cvuser)
 
     total = query.dup.limit(limit * 3 + skips).offset(0).count
 
