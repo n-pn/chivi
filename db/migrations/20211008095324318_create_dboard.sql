@@ -12,8 +12,7 @@ CREATE TABLE dboards (
   updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX dboard_bslug_idx ON dboards using GIN (bslug gin_trgm_ops);
-CREATE INDEX dboard_sorts_idx ON dboards (utime);
+CREATE UNIQUE INDEX dboard_bslug_idx ON dboards (bslug);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

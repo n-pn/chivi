@@ -73,7 +73,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     dtopic = Dtopic.new({cvuser: _cu_user, cvboard: cvboard, dt_id: 0, utime: utime})
 
     dtopic.set_title(params["title"])
-    dtpost.set_input(params["ibody"], params["itype"]? || "md")
+    dtpost.set_input(params["tbody"], params["itype"]? || "md")
 
     dtopic.pdesc = dtpost.odesc
     dtopic.posts = 1
@@ -110,7 +110,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     dtopic.update_sort(utime)
 
     dtopic.set_title(params["title"])
-    dtpost.set_input(params["ibody"], params["itype"]? || "md")
+    dtpost.set_input(params["tbody"], params["itype"]? || "md")
     dtopic.pdesc = dtpost.odesc
 
     dtpost.edits += 1

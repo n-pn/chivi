@@ -60,7 +60,7 @@ Amber::Server.configure do
     get "/topics", CV::DtopicCtrl, :index
     get "/topics/:dtopic", CV::DtopicCtrl, :show
 
-    post "/boards/:dboard/new", CV::DtopicCtrl, :create
+    post "/boards/:dboard", CV::DtopicCtrl, :create
     put "/boards/:dboard/:dtopic", CV::DtopicCtrl, :update
   end
 
