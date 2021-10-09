@@ -70,6 +70,8 @@ class CV::DtopicCtrl < CV::BaseCtrl
     dtopic = Dtopic.new({cvuser: _cvuser, dboard: dboard})
 
     dtopic.set_title(params["title"])
+    dtopic.label_ids = params.json("labels").as_a.map(&.as_i)
+
     dtopic.posts = 0
     dtopic.set_utime(Time.utc.to_unix)
 

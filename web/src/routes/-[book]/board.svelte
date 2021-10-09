@@ -26,6 +26,14 @@
     if (res.ok) return [0, await res.json()]
     return [res.status, await res.text()]
   }
+
+  const topic_labels = {
+    1: 'Thảo luận',
+    2: 'Chia sẻ',
+    3: 'Thắc mắc',
+    4: 'Yêu cầu',
+    5: 'Dịch thuật',
+  }
 </script>
 
 <script>
@@ -36,19 +44,24 @@
 
   export let cvbook
   export let ubmemo
-  export let dboard
+  // export let dboard
   export let dtopic = { items: [] }
 
-  let create_new = false
-  let form_title = 'ha ha ha xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-  let form_error
+  let form_title = ''
+  let form_label = 1
+  let form_error = ''
 
   async function create_topic() {
+    if (form_title.length > 500) {
+      return (form_error = 'Tiêu đề quá dài!')
+    }
+
     const url = `/api/boards/${cvbook.id}/new`
+
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: form_title }),
+      body: JSON.stringify({ title: form_title, labels: [+form_label] }),
     })
 
     if (res.ok) console.log(await res.json())
@@ -61,79 +74,81 @@
 
 <BookPage {cvbook} {ubmemo} nvtab="board">
   <board-content>
-    <board-title>
-      <board-stats>{dboard.posts} posts</board-stats>
+    {#each dtopic.items as topic}
+      <topic-card>
+        <topic-body>
+          <a
+            class="topic-title"
+            href="/-{cvbook.bslug}/board/-{topic.uslug}-{topic.id}">
+            {topic.title}
+          </a>
 
-      <board-action>
-        <button
-          class="m-button _primary _fill"
-          on:click={() => (create_new = true)}>Chủ đề mới</button>
-      </board-action>
-    </board-title>
+          {#each topic.labels as label}
+            <a class="topic-label _{label}" href=".?tl={label}"
+              >{topic_labels[label]}</a>
+          {/each}
+        </topic-body>
 
-    {#if create_new}
-      <form
-        action="/api/boards/{cvbook.id}/new"
-        on:submit|preventDefault={create_topic}
-        method="POST">
-        <form-field>
-          <label class="form-label" for="title">Tựa đề</label>
-          <textarea
-            class="m-input"
-            name="title"
-            rows="2"
-            lang="vi"
-            bind:value={form_title} />
-        </form-field>
-
-        {#if form_error}
-          <form-error>{form_error}</form-error>
-        {/if}
-
-        <form-foot>
-          <button
-            type="cancel"
-            class="m-button"
-            on:click={() => (create_new = false)}>Huỷ bỏ</button>
-          <button
-            type="submit"
-            class="m-button _primary _fill"
-            on:click|preventDefault={create_topic}>
-            Tạo chủ đề</button>
-        </form-foot>
-      </form>
+        <topic-foot>
+          <topic-user>{topic.u_dname}</topic-user>
+          <topic-sep>·</topic-sep>
+          <topic-time>{get_rtime(topic.ctime || 1212121200)}</topic-time>
+          <topic-sep>·</topic-sep>
+          <topic-repl>
+            {#if topic.posts > 0}
+              <span>{topic.posts} lượt trả lời</span>
+            {:else}
+              <span>Trả lời</span>
+            {/if}
+          </topic-repl>
+        </topic-foot>
+      </topic-card>
     {:else}
-      {#each dtopic.items as topic}
-        <topic-card>
-          <topic-body>
-            <a
-              class="topic-title"
-              href="/-{cvbook.bslug}/board/-{topic.uslug}-{topic.id}">
-              {topic.title}
-            </a>
+      <div class="empty">Chưa có chủ đề thảo luận :(</div>
+    {/each}
 
-            <a class="topic-label" href=".?tl=1">Thảo luận</a>
-            <a class="topic-label" href=".?tl=2">Dịch thuật</a>
-          </topic-body>
+    <form
+      action="/api/boards/{cvbook.id}/new"
+      on:submit|preventDefault={create_topic}
+      method="POST">
+      <form-field>
+        <label class="form-label" for="title">Chủ đề mới</label>
+        <textarea
+          class="m-input"
+          name="title"
+          lang="vi"
+          bind:value={form_title} />
+      </form-field>
 
-          <topic-foot>
-            <topic-user>{topic.u_dname}</topic-user>
-            <topic-sep>·</topic-sep>
-            <topic-time>{get_rtime(topic.ctime || 1212121200)}</topic-time>
-            <topic-sep>·</topic-sep>
-            <topic-repl>
-              {#if topic.posts > 0}
-                <span>{topic.posts} lượt trả lời</span>
-              {:else}
-                <span>Trả lời</span>
+      {#if form_error}
+        <form-error>{form_error}</form-error>
+      {/if}
+
+      <form-foot>
+        <form-labels>
+          <label-caption>Nhãn:</label-caption>
+
+          {#each Object.entries(topic_labels) as [value, label]}
+            <label
+              class="topic-label _{value}"
+              class:_active={value == form_label}
+              ><input type="radio" {value} bind:group={form_label} />
+              <label-name>{label}</label-name>
+              {#if value == form_label}
+                <SIcon name="check" />
               {/if}
-            </topic-repl>
-          </topic-foot>
-        </topic-card>
-      {:else}
-        <div class="empty">Chưa có chủ đề thảo luận :(</div>
-      {/each}
-    {/if}
+            </label>
+          {/each}
+        </form-labels>
+
+        <button
+          type="submit"
+          class="m-button _primary _fill"
+          disabled={form_title.length < 5 || form_title.length > 200}
+          on:click|preventDefault={create_topic}>
+          Tạo chủ đề</button>
+      </form-foot>
+    </form>
   </board-content>
 </BookPage>
 
@@ -153,35 +168,6 @@
     font-style: italic;
     @include ftsize(lg);
     color: var(--color-gray-5);
-  }
-
-  form-field {
-    display: block;
-  }
-
-  .form-label {
-    display: block;
-    line-height: 1.75rem;
-    font-weight: 500;
-    margin-top: 0.25rem;
-    @include fgcolor(secd);
-  }
-
-  form-foot {
-    @include flex($gap: 0.5rem);
-    margin-top: 0.75rem;
-    justify-content: right;
-  }
-
-  textarea {
-    display: block;
-    width: 100%;
-    min-height: 4rem;
-    max-height: 10rem;
-    font-weight: 500;
-
-    @include ftsize(lg);
-    @include fgcolor(secd);
   }
 
   topic-card {
@@ -210,7 +196,7 @@
   }
 
   topic-user {
-    font-weight: 500;
+    font-weight: 200;
     // @include ftsize(md);
   }
 
@@ -229,6 +215,8 @@
   .topic-title {
     @include ftsize(lg);
     @include fgcolor(secd);
+    word-wrap: break-word;
+
     font-weight: 500;
     line-height: 1.5rem;
   }
@@ -237,18 +225,39 @@
     display: inline-block;
     line-height: 1.5rem;
     padding: 0 0.375rem;
-    font-weight: 500;
 
-    @include bdradi();
+    font-weight: 500;
+    cursor: pointer;
+
+    @include bdradi(0.375rem);
     @include ftsize(sm);
 
-    @include fgcolor(primary, 5);
-    @include linesd(primary, 5);
+    color: var(--color, #{color(primary, 5)});
+    box-shadow: 0 0 0 1px var(--color, #{color(primary, 5)}) inset;
 
     &:hover,
-    &:active {
-      @include bgcolor(primary, 5);
-      @include fgcolor(white);
+    &:active,
+    &._active {
+      background: var(--bgcolor, #{color(primary, 2)});
+    }
+
+    &._2 {
+      --color: #{color(success, 5)};
+      --bgcolor: #{color(success, 2)};
+    }
+
+    &._3 {
+      --color: #{color(harmful, 5)};
+      --bgcolor: #{color(harmful, 1)};
+    }
+
+    &._4 {
+      --color: #{color(warning, 5)};
+      --bgcolor: #{color(warning, 1)};
+    }
+    &._5 {
+      --color: #{color(purple, 5)};
+      --bgcolor: #{color(purple, 1)};
     }
   }
 
@@ -259,5 +268,62 @@
       @include fgcolor(primary, 5);
       text-decoration: underline;
     }
+  }
+
+  form-field {
+    display: block;
+  }
+
+  .form-label {
+    display: block;
+    line-height: 1.75rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    @include fgcolor(secd);
+  }
+
+  form-foot {
+    @include flex($center: vert, $gap: 0.5rem);
+    margin-top: 0.75rem;
+  }
+
+  textarea {
+    display: block;
+    width: 100%;
+    min-height: 5.5rem;
+    max-height: 10rem;
+    font-weight: 500;
+
+    @include ftsize(lg);
+    @include fgcolor(secd);
+  }
+
+  form {
+    margin-top: 1rem;
+  }
+
+  form-labels {
+    @include flex($gap: 0.25rem);
+    flex: 1;
+    flex-wrap: wrap;
+    @include ftsize(sm);
+  }
+
+  label-caption {
+    font-weight: 500;
+  }
+
+  form-error {
+    display: block;
+    line-height: 1.5rem;
+    margin-top: 0.25rem;
+    margin-bottom: -0.5rem;
+    font-style: italic;
+    @include ftsize(sm);
+    @include fgcolor(harmful, 5);
+  }
+
+  .topic-label > input {
+    display: none;
   }
 </style>

@@ -10,6 +10,8 @@ module CV::DtopicView
       jb.field "u_dname", cvuser.uname
       jb.field "u_privi", cvuser.uname
 
+      jb.field "labels", dtopic.label_ids
+
       jb.field "id", dtopic.id
 
       jb.field "title", dtopic.title
