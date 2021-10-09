@@ -1,6 +1,6 @@
 module CV::MTL::Grammars
-  def fix_nouns!(node = @head, mode = 2) : MtNode
-    return node if mode < 2 || node.veno?
+  def fix_nouns!(node = @head, mode = 1) : MtNode
+    return node if mode < 1 || node.veno?
 
     while prev = node.prev?
       case prev

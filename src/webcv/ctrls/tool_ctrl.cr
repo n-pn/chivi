@@ -32,7 +32,7 @@ class CV::ToolCtrl < CV::BaseCtrl
 
     lines.each_with_index do |line, idx|
       output << "\n" if idx > 0
-      cvmtl.cv_plain(line, mode: 2).to_str(output)
+      cvmtl.cv_plain(line, mode: 1).to_str(output)
     end
   end
 end

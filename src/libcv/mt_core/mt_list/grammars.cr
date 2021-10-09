@@ -2,7 +2,7 @@ require "./grammars/*"
 require "../tl_rule/*"
 
 module CV::MTL::Grammars
-  def fix_grammar!(node = @head, mode = 2)
+  def fix_grammar!(node = @head, mode = 1)
     while node = node.succ?
       case node.tag
       when .ude1?    then node = fix_ude1!(node, mode: mode) # 的

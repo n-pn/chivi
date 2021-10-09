@@ -1,6 +1,6 @@
 module CV::MTL::Grammars
-  def fix_verbs!(node = @root, mode = 2) : MtNode
-    return node if mode < 2
+  def fix_verbs!(node = @root, mode = 1) : MtNode
+    return node if mode < 1
 
     node.val = "thật có lỗi" if node.succ?(&.ends?) && node.key == "对不起"
 
