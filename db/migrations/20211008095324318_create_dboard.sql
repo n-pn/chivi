@@ -6,7 +6,8 @@ CREATE TABLE dboards (
   bname text not null, -- board name
   bslug text unique not null, -- board unique slug
 
-  topics int not null default '0', -- topic count
+  posts int not null default '0', -- topic count
+  views int not null default '0', -- click count
 
   created_at timestamptz not null default CURRENT_TIMESTAMP,
   updated_at timestamptz not null default CURRENT_TIMESTAMP

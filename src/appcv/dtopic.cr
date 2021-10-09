@@ -6,11 +6,10 @@ class CV::Dtopic
 
   belongs_to cvuser : Cvuser
   belongs_to dboard : Dboard
-  column label_ids : Array(String) = [] of String
+  column label_ids : Array(Int32) = [] of Int32
 
   column title : String
   column uslug : String
-  column pdesc : String
 
   column state : Int32 = 0 # 0: normal, 1: sticky, -1: locked, -2: deleted, -3: removed
   column utime : Int64 = 0 # update when new post created
@@ -27,11 +26,16 @@ class CV::Dtopic
     self.uslug = TextUtils.slugify(title)
   end
 
-  def update_sort(utime : Int64)
-    self._sort = utime // 60 + posts + views // 100 + marks * 5
+  def set_utime(utime : Int64)
+    self.utime = utime
+    update_sort(utime)
   end
 
-  def bump!(time = Time.utc)
+  def update_sort(utime : Int64)
+    self._sort = (utime // 60 + posts + views // 100 + marks * 5).to_i
+  end
+
+  def bump_views!
     update!({views: views + 1})
   end
 
@@ -40,6 +44,6 @@ class CV::Dtopic
   CACHE = RamCache(Int64, self).new(1024, ttl: 10.minutes)
 
   def self.load!(id : Int64)
-    CACHE.get(id) { find!({id: id}) || autogen(id).tap(&.save!) }
+    CACHE.get(id) { find!({id: id}) }
   end
 end

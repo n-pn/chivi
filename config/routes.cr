@@ -55,12 +55,14 @@ Amber::Server.configure do
     get "/qtran/:name", CV::TlToolCtrl, :show
 
     get "/boards/", CV::DboardCtrl, :index
-    get "/boards/:bslug", CV::DboardCtrl, :show
+    get "/boards/:dboard", CV::DboardCtrl, :show
 
     get "/topics", CV::DtopicCtrl, :index
+    get "/boards/:dboard/topics", CV::DtopicCtrl, :index
+
     get "/topics/:dtopic", CV::DtopicCtrl, :show
 
-    post "/boards/:dboard", CV::DtopicCtrl, :create
+    post "/boards/:dboard/new", CV::DtopicCtrl, :create
     put "/boards/:dboard/:dtopic", CV::DtopicCtrl, :update
   end
 

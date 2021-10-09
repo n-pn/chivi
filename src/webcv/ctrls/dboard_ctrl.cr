@@ -27,13 +27,17 @@ class CV::DboardCtrl < CV::BaseCtrl
   end
 
   def show
-    board = Dboard.load!(params["bslug"])
-    cache_rule :public, 120, 300, board.updated_at.to_s
+    dboard = Dboard.load!(params["dboard"].to_i64)
+    dboard.update({views: dboard.views + 1})
+    
+    cache_rule :public, 120, 300, dboard.updated_at.to_s
 
     # TODO: load user trace
     json_view do |jb|
       jb.object {
-        jb.field "board", board
+        jb.field "bname", dboard.bname
+        jb.field "bslug", dboard.bslug
+        jb.field "posts", dboard.posts
       }
     end
   rescue err

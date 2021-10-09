@@ -10,21 +10,18 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
     if dboard_id = params["dboard"]?
       dboard = Dboard.load!(dboard_id.to_i64)
-      query.where({dboard_id: dboard.id})
-    else
-      query.with_dboard
     end
 
     if user_name = params["cvuser"]?
       cvuser = Cvuser.load!(user_name)
-      query.where({cvuser_id: cvuser.id})
-    else
-      query.with_cvuser
     end
+
+    query = dboard ? query.where({dboard_id: dboard.not_nil!.id}) : query.with_dboard
+    query = cvuser ? query.where({cvuser_id: cvuser.not_nil!.id}) : query.with_cvuser
 
     total = query.dup.limit(limit * 3 + skips).offset(0).count
 
-    cache_rule :public, 30, 120
+    cache_rule :public, 10, 60
 
     json_view do |jb|
       jb.object {
@@ -39,17 +36,19 @@ class CV::DtopicCtrl < CV::BaseCtrl
               dboard = dboard || dtopic.dboard
               cvuser = cvuser || dtopic.cvuser
 
-              DtopicView.render(jb, dtopic, dboard, cvuser)
+              DtopicView.render(jb, dtopic, dboard.not_nil!, cvuser.not_nil!)
             end
           }
         }
       }
     end
+  rescue err
+    halt!(500, "Có lỗi!")
   end
 
   def show
     dtopic = Dtopic.load!(params["dtopic"].to_i64)
-    dtopic.update!({views: dtopic.view + 1})
+    dtopic.update!({views: dtopic.views + 1})
     cache_rule :public, 120, 300, dtopic.updated_at.to_s
     # TODO: load user trace
 
@@ -68,25 +67,18 @@ class CV::DtopicCtrl < CV::BaseCtrl
       return halt! 403, "Quyền hạn không đủ"
     end
 
-    utime = Time.utc.to_unix
-    dtpost = Dtpost.new({cvuser: _cvuser, dt_id: 0, utime: utime})
-    dtopic = Dtopic.new({cvuser: _cu_user, cvboard: cvboard, dt_id: 0, utime: utime})
+    dtopic = Dtopic.new({cvuser: _cvuser, dboard: dboard})
 
     dtopic.set_title(params["title"])
-    dtpost.set_input(params["tbody"], params["itype"]? || "md")
-
-    dtopic.pdesc = dtpost.odesc
-    dtopic.posts = 1
-    dtopic._sort = utime // 60
+    dtopic.posts = 0
+    dtopic.set_utime(Time.utc.to_unix)
 
     dtopic.save!
-    dtpost.dtopic = dtopic
-    dtpost.save!
+    dboard.update!({posts: dboard.posts + 1})
 
     json_view do |jb|
       jb.object {
         jb.field "dtopic" { DtopicView.render(jb, dtopic, dboard) }
-        jb.field "dtpost" { DtpostView.render(jb, dtpost, _cvuser) }
       }
     end
   end
@@ -102,25 +94,13 @@ class CV::DtopicCtrl < CV::BaseCtrl
       return halt! 403, "Quyền hạn không đủ"
     end
 
-    dtpost = Dtpost.find!({dtopic_id: dtopic.id, dt_id: 0})
+    dtopic.set_utime(Time.utc.to_unix)
 
-    utime = Time.utc.to_unix
-    dtopic.utime = utime
-    dtpost.utime = utime
-    dtopic.update_sort(utime)
-
-    dtopic.set_title(params["title"])
-    dtpost.set_input(params["tbody"], params["itype"]? || "md")
-    dtopic.pdesc = dtpost.odesc
-
-    dtpost.edits += 1
     dtopic.save!
-    dtpost.save!
 
     json_view do |jb|
       jb.object {
         jb.field "dtopic" { DtopicView.render(jb, dtopic, dboard) }
-        jb.field "dtpost" { DtpostView.render(jb, dtpost, _cvuser) }
       }
     end
   end

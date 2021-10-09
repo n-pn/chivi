@@ -9,7 +9,8 @@ class CV::Dboard
   column bname : String
   column bslug : String
 
-  column topics : Int32 = 0
+  column posts : Int32 = 0
+  column views : Int32 = 0
 
   timestamps
 
@@ -22,12 +23,26 @@ class CV::Dboard
   CACHE_INT = RamCache(Int64, self).new(2048, ttl: 2.hours)
   CACHE_STR = RamCache(String, self).new(2048, ttl: 2.hours)
 
-  def self.load!(id : Int64)
-    CACHE_INT.get(id) { find!({id: id}) || autogen(id).tap(&.save!) }
+  def self.load!(id : Int64) : self
+    CACHE_INT.get(id) { find({id: id}) || init!(id) }
   end
 
-  def self.load!(bslug : String)
+  def self.load!(bslug : String) : self
     CACHE_STR.get(bslug) { load!(guess_id(bslug)) }
+  end
+
+  def self.init!(id : Int64) : self
+    bname, bslug =
+      case id
+      when  0_i64 then {"Đại sảnh", "dai-sanh"}   # general place
+      when -1_i64 then {"Thông cáo", "thong-cao"} # show in top of board list
+      when -2_i64 then {"Quảng bá", "quang-ba"}   # show in every page
+      else
+        raise "Unknown book!" unless cvbook = Cvbook.load!(id)
+        {cvbook.bname, cvbook.bslug}
+      end
+
+    new({id: id, bname: bname, bslug: bslug}).tap(&.save!)
   end
 
   def self.guess_id(bslug : String) : Int64
@@ -39,19 +54,5 @@ class CV::Dboard
       raise "Unknown book!" unless cvbook = Cvbook.load!(bslug)
       cvbook.id
     end
-  end
-
-  def self.autogen(id : Int64)
-    bname, bslug =
-      case id
-      when  0_i64 then {"Đại sảnh", "dai-sanh"}   # general place
-      when -1_i64 then {"Thông cáo", "thong-cao"} # show in top of board list
-      when -2_i64 then {"Quảng bá", "quang-ba"}   # show in every page
-      else
-        raise "Unknown book!" unless cvbook = Cvbook.load!(id)
-        {cvbook.vtitle, cvbook.bslug}
-      end
-
-    new({id: id, bname: bname, bslug: bslug})
   end
 end

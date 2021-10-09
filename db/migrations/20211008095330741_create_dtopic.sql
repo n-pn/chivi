@@ -9,7 +9,6 @@ CREATE TABLE dtopics (
 
   title text not null default '',
   uslug text not null default '',
-  pdesc text not null default '', -- short description, generated from first tpost
 
   state int not null default '0', -- states: public, sticky, deleted....
   utime bigint not null default '0', -- update when new post created
