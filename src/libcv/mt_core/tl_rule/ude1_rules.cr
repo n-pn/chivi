@@ -21,7 +21,7 @@ module CV::TlRule
         prev_3.dic = 9
         prev_3.tag = PosTag::Nform
         prev_3.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
-        return node = prev_3.fold_many!(prev_2, prev, node)
+        return prev_3.fold_many!(prev_2, prev, node)
       end
 
       prev_2.val = "#{node.val} của #{prev_2.val}"
@@ -29,6 +29,20 @@ module CV::TlRule
       prev_2.dic = prev_2.prev?(&.verbs?) ? 8 : 7
       prev_2.fold_many!(prev, node)
     when .verb?
+      return node unless prev_3 = prev_2.prev?
+
+      if prev_3.nouns?
+        prev_3.dic = 9
+        prev_3.tag = PosTag::Nform
+        prev_3.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
+        return prev_3.fold_many!(prev_2, prev, node)
+      elsif prev_3.nquant?
+        prev_3.dic = 8
+        prev_3.tag = PosTag::Nform
+        prev_3.val = "#{prev_3.val} #{node.val} #{prev_2.val}"
+        return prev_3.fold_many!(prev_2, prev, node)
+      end
+
       # TODO
       node
     else
