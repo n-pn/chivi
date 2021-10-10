@@ -153,7 +153,7 @@ export const groups = [
     'al', 'bl',
     '-',
     'rr', 'rz', 'ry',
-    'zhe', 'rna1', 'rna2',
+    'rzhe', 'rna1', 'rna2',
     'rji', 'r',
   ],
   // prettier-ignore
@@ -163,7 +163,7 @@ export const groups = [
     '-',
     'd', 'p', 'u',
     'c', 'cc', 'e',
-    'y', 'o', 'z',
+    'y', 'o', 'sp',
     '-',
     'kn', 'ka', 'kv',
     'kmen', 'kshi', 'k',

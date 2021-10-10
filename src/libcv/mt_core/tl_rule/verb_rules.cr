@@ -30,6 +30,7 @@ module CV::TlRule
       when .uguo?
         node.fold!(succ, "#{node.val} qua")
       when .uzhi?
+        pp [node, prev]
         node = fold_left_verb!(node, prev) if prev
         return fold_uzhi!(succ, node)
       when .uzhe?

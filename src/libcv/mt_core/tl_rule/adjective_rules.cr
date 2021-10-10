@@ -23,7 +23,7 @@ module CV::TlRule
         succ_2 = fold_verbs!(succ_2)
         node = fold_adj_adv!(node, prev) if prev
 
-        node.val = "#{node.val} mà #{succ_2.val} "
+        node.val = "#{node.val} mà #{succ_2.val}"
         node.dic = 7
         node.tag = PosTag::Vform
         return node.fold_many!(succ, succ_2)

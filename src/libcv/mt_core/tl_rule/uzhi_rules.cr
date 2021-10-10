@@ -72,12 +72,8 @@ module CV::TlRule
       prev.tag = PosTag::Locname
       succ.val = "kinh đô"
     else
-      # TODO: change postag if prev.key == "百分"
       prev.tag = PosTag::Nform
-
-      if val = FIX_UZHI[succ.key]?
-        succ.val = val
-      end
+      succ.val = FIX_UZHI[succ.key]? || succ.val
     end
 
     prev.dic = 6
