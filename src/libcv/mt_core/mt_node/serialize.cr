@@ -5,11 +5,11 @@ module CV::MTL::Serialize
 
   def to_str(io : IO) : Nil
     io << @val
-    return unless @val == " "
+    return if @val == " "
     io << 'ǀ' << @dic << 'ǀ' << @idx << 'ǀ' << @key.size
   end
 
-  def serialize(io : IO = STDOUT)
+  def serialize(io : IO = STDOUT) : Nil
     self.to_str(io)
     node = self
 

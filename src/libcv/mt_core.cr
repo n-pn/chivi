@@ -130,11 +130,6 @@ class CV::MtCore
       else false
       end
     else
-      if left.numhan? && left.key == "两"
-        left.val = "lưỡng"
-        left.tag = PosTag::Quanti
-      end
-
       false
     end
   end

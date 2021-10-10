@@ -6,20 +6,21 @@ module CV::TlRule
     case prev_2
     when .ajav?
       prev_2.val = "thông thường" if prev_2.key == "一般"
-
+      prev_2.dic = 6
       prev_2.tag = PosTag::Nform
       prev_2.val = "#{node.val} #{prev_2.val}"
       prev_2.fold_many!(prev, node)
     when .adjts?, .nquant?, .quanti?, .veno?,
          .vintr?, .time?, .place?, .space?, .adesc?
+      prev_2.dic = 6
       prev_2.tag = PosTag::Nform
       prev_2.val = "#{node.val} #{prev_2.val}"
       prev_2.fold_many!(prev, node)
     when .nouns?, .propers?
       if (prev_3 = prev_2.prev?) && verb_subject?(prev_3, node)
-        prev_3.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
-        prev_3.tag = PosTag::Nform
         prev_3.dic = 9
+        prev_3.tag = PosTag::Nform
+        prev_3.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
         return node = prev_3.fold_many!(prev_2, prev, node)
       end
 
@@ -53,5 +54,22 @@ module CV::TlRule
 
     return false unless succ = curr.succ?
     succ.verbs? || succ.adverbs?
+  end
+
+  def heal_ude1!(node : MtNode, mode = 1) : MtNode
+    return node unless prev = node.prev?
+    return node if prev.puncts?
+
+    node.val = ""
+    return node if mode < 0
+
+    return node unless node.succ?(&.endsts?) && (prev.nouns? || prev.propers?)
+
+    prev.prev? do |prev_2|
+      return node if prev_2.verb? || prev_2.preposes?
+      return node if prev_2.nouns? || prev_2.pronouns?
+    end
+
+    prev.fold!(node, "của #{prev.val}", dic: 7)
   end
 end

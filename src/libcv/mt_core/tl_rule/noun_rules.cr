@@ -102,6 +102,7 @@ module CV::TlRule
       when .nquants?
         break if node.veno? || node.ajno?
         prev.tag = PosTag::Nform
+        prev.val = prev.val.sub(" cái", "") if prev.key.ends_with?('个')
         node = prev.fold!(node)
       when .prodeics?
         node.tag = PosTag::Nform

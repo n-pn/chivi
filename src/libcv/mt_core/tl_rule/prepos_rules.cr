@@ -10,8 +10,9 @@ module CV::TlRule
   end
 
   def fold_pre_dui!(node : MtNode, succ = node.succ?) : MtNode
-    return node.heal!("đúng", PosTag::Adjt) unless succ
+    return node.heal!("đúng", PosTag::Adjt) unless succ && !succ.ends?
 
+    node.inspect
     # TODO: combine
 
     case succ.tag

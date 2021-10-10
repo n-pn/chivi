@@ -4,9 +4,9 @@ module CV::TlRule
   def fix_grammar!(node : MtNode, mode = 1)
     while node = node.succ?
       case node.tag
-      when .ude1?     then node = fix_ude1!(node, mode: mode) # 的
-      when .ule?      then node = fix_ule!(node)              # 了
-      when .ude2?     then node = fix_ude2!(node)             # 地
+      when .ude1?     then node = heal_ude1!(node, mode: mode) # 的
+      when .ule?      then node = fix_ule!(node)               # 了
+      when .ude2?     then node = fix_ude2!(node)              # 地
       when .urlstr?   then node = fold_urlstr!(node)
       when .string?   then node = fold_string!(node)
       when .preposes? then node = fold_preposes!(node)
@@ -20,7 +20,7 @@ module CV::TlRule
       when .verbs?   then node = fold_verbs!(node)
       when .adjts?
         node = fold_adjts!(node, prev: nil)
-        return node unless node.nouns?
+        next unless node.nouns?
         node = fold_noun_left!(node, mode: mode)
       when .adverbs?
         node = fold_adverbs!(node)
@@ -42,14 +42,6 @@ module CV::TlRule
     self
   rescue err
     self
-  end
-
-  private def boundary?(node : Nil)
-    true
-  end
-
-  private def boundary?(node : MtNode)
-    node == node.tag.none? || node.tag.puncts? || node.tag.interjection?
   end
 
   private def fix_by_key!(node : MtNode, succ = node.succ?) : MtNode
@@ -102,21 +94,5 @@ module CV::TlRule
     return node if node.prev? { |x| x.tag.adjts? || x.tag.adverb? }
     return node if node.succ? { |x| x.verbs? || x.preposes? || x.concoord? }
     node.heal!(val: "địa", tag: PosTag::Noun)
-  end
-
-  def fix_ude1!(node : MtNode, mode = 1) : MtNode
-    return node unless prev = node.prev?
-    return node if prev.puncts?
-
-    node.val = ""
-
-    return node unless node.succ?(&.endsts?)
-    return node unless prev.tag.nouns? || prev.tag.propers?
-
-    prev.prev? do |prev_2|
-      return node if prev_2.verb? || prev_2.preposes? || prev_2.nouns? || prev_2.pronouns?
-    end
-
-    prev.fold!(node, "của #{prev.val}", dic: 7)
   end
 end
