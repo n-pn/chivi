@@ -3,21 +3,32 @@ module CV::MTL::Serialize
     String.build { |io| to_str(io) }
   end
 
-  def to_str(io : IO, deep = true) : Nil
+  def to_str(io : IO) : Nil
     io << @val
+    return unless @val == " "
+    io << 'ǀ' << @dic << 'ǀ' << @idx << 'ǀ' << @key.size
+  end
 
-    unless @val == " "
-      io << 'ǀ' << @dic << 'ǀ' << @idx << 'ǀ' << @key.size
-    end
+  def serialize(io : IO = STDOUT)
+    self.to_str(io)
+    node = self
 
-    deep && @succ.try do |x|
+    while node = node.succ?
       io << '\t'
-      x.to_str(io)
+      node.to_str(io)
     end
   end
 
-  def inspect(io : IO, deep = false) : Nil
-    io << (val == " " ? val : "[#{@key}/#{@val}/#{@tag.to_str}/#{@dic}]")
-    @succ.try(&.inspect(io)) if deep
+  def inspect(io : IO = STDOUT) : Nil
+    return io << " " if val == " "
+    io << "[#{@key}/#{@val}/#{@tag.to_str}/#{@dic}]"
+  end
+
+  def deep_inspect(io : IO = STDOUT) : Nil
+    node = self
+
+    while node = node.succ?
+      node.inspect(io)
+    end
   end
 end

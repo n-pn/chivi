@@ -307,19 +307,12 @@ class CV::CvList
   end
 
   def to_str(io : IO) : Nil
-    return unless node = @root.succ
-    node.to_str(io)
-
-    while node = node.succ
-      io << '\t'
-      node.to_str(io)
-    end
+    return unless node = @root.succ?
+    node.encode(io)
   end
 
   def inspect(io : IO) : Nil
-    node = @root
-    while node = node.succ
-      node.inspect(io)
-    end
+    return unless node = @root.succ?
+    node.deep_inspect(io)
   end
 end

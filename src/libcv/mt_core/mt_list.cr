@@ -1,8 +1,8 @@
 require "./mt_node"
+require "./tl_rule"
 require "./mt_list/*"
 
 class CV::MtList
-  include MTL::Grammars
   include MTL::PadSpace
 
   getter head = MtNode.new("", "")
@@ -47,15 +47,19 @@ class CV::MtList
   end
 
   def to_str(io : IO) : Nil
-    @head.succ?(&.to_str(io, deep: true))
+    @head.succ?(&.serialize(io))
   end
 
   def inspect(io : IO) : Nil
-    @head.succ?(&.inspect(io, deep: true))
+    @head.succ?(&.deep_inspect(io))
   end
 
   def capitalize!(cap = true) : self
     @head.apply_cap!(cap)
     self
+  end
+
+  def fix_grammar!(mode = 1)
+    TlRule.fix_grammar!(@head, mode: mode)
   end
 end
