@@ -58,8 +58,8 @@ module CV::MTL::Grammars
         val = prev.key == "什么" ? "gì đó" : prev.val
         node = node.fold_left!(prev, "#{node.val} #{val}")
       when .amorp? then node = node.fold_left!(prev)
-      when .place?, .adesc?, .ahao?, .ajno?, .modifier?, .modiform?,
-           node = node.fold_left!(prev, "#{node.val} #{prev.val}")
+      when .place?, .adesc?, .ahao?, .ajno?, .modifier?, .modiform?
+        node = node.fold_left!(prev, "#{node.val} #{prev.val}")
       when .ajav?, .adjt?
         break if prev.key.size > 1
         node = node.fold_left!(prev, "#{node.val} #{prev.val}")
