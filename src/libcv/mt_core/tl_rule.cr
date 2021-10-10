@@ -48,6 +48,10 @@ module CV::TlRule
     case node.key
     when "对不起"
       boundary?(succ) ? node : fold_verbs!(node.heal!("có lỗi với", PosTag::Verb))
+    when "百分之"
+      return node unless succ && succ.numbers?
+      succ = fold_number!(succ)
+      node.fold!(succ, "#{succ.val} #{node.val}")
     when "原来"
       if succ.try(&.ude1?) || node.prev?(&.contws?)
         node.heal!("ban đầu", tag: PosTag::Modifier)

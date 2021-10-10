@@ -29,6 +29,9 @@ module CV::TlRule
         return node.fold_many!(succ, succ_2)
       when .uguo?
         node.fold!(succ, "#{node.val} qua")
+      when .uzhi?
+        node = fold_left_verb!(node, prev) if prev
+        return fold_uzhi!(succ, node)
       when .uzhe?
         node = fold_verb_uzhe!(node, succ)
         break if node.vform?

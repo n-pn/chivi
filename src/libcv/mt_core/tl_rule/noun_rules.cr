@@ -30,6 +30,8 @@ module CV::TlRule
       when .place?
         node.tag = PosTag::Noun
         node.fold!(succ, "#{succ.val} #{node.val}")
+      when .uzhi?
+        node = fold_uzhi!(succ, node)
       when .veno?
         succ = heal_veno!(succ)
         break if succ.verbs?

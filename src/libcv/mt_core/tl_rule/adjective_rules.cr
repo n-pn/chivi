@@ -34,6 +34,9 @@ module CV::TlRule
         return node.fold!(succ, val: "#{succ.val} #{node.val}", dic: 7)
       when .suf_nouns?
         return fold_suf_noun!(node, succ)
+      when .uzhi?
+        node = fold_adj_adv!(node, prev) if prev
+        return node = fold_uzhi!(succ, node)
       when .suf_verbs?
         return fold_suf_verb!(node, succ)
       when .concoord?
