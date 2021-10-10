@@ -55,8 +55,8 @@ module CV::TlRule
   end
 
   def keep_ule?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool
-    return true if !succ || end_sentence?(succ)
-    prev.key == succ.key && node.key == succ.succ?(&.key)
+    return true unless succ
+    succ.ends? || succ.succ?(&.ule?)
   end
 
   def fold_left_verb!(node : MtNode, prev = node.prev?)
