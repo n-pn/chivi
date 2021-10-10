@@ -57,6 +57,10 @@ module CV::TlRule
       node = fold_verbs!(succ, prev: node)
     when .adjts?
       node = fold_adjts!(succ, prev: node)
+    when .preposes?
+      succ = fold_preposes!(succ)
+      node.tag = succ.tag
+      node = node.fold!(succ)
     end
 
     node.fold_left!(nega)
