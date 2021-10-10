@@ -1,6 +1,18 @@
 module CV::TlRule
-  def heal_predui!(node : MtNode, succ = node.succ?) : MtNode
+  def fold_preposes!(node : MtNode, succ = node.succ?) : MtNode
+    return node unless succ
+
+    # TODO!
+    case node.tag
+    when .pre_dui? then fold_pre_dui!(node, succ)
+    else                node
+    end
+  end
+
+  def fold_pre_dui!(node : MtNode, succ = node.succ?) : MtNode
     return node.heal!("đúng", PosTag::Adjt) unless succ
+
+    # TODO: combine
 
     case succ.tag
     when .ude1?

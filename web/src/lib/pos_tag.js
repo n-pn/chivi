@@ -33,6 +33,10 @@ export const labels = {
   rr: 'Đại từ nhân xưng',
   rz: 'Đại từ chỉ thị',
   ry: 'Đại từ nghi vấn',
+  rzhe: 'Đại từ chỉ thị 这',
+  rna1: 'Đại từ chỉ thị 那',
+  rna2: 'Đại từ nghi vấn 哪',
+  rji: 'Đại từ nghi vấn 几',
   r: 'Đại từ chưa phân loại',
 
   i: 'Thành/quán ngữ',
@@ -124,6 +128,8 @@ export const labels = {
   wwz: 'Mở tựa',
   wwy: 'Đóng tựa',
   w: 'Dấu câu khác',
+
+  z: 'Từ đặc biệt',
 }
 
 export const gnames = ['Cơ bản', 'Đặc biệt', 'Dấu câu']
@@ -147,7 +153,8 @@ export const groups = [
     'al', 'bl',
     '-',
     'rr', 'rz', 'ry',
-    'r',
+    'zhe', 'rna1', 'rna2',
+    'rji', 'r',
   ],
   // prettier-ignore
   [
@@ -156,7 +163,7 @@ export const groups = [
     '-',
     'd', 'p', 'u',
     'c', 'cc', 'e',
-    'y', 'o',
+    'y', 'o', 'z',
     '-',
     'kn', 'ka', 'kv',
     'kmen', 'kshi', 'k',

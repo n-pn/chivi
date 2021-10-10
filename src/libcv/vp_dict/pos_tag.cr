@@ -6,7 +6,7 @@ struct CV::PosTag
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
   {% begin %}
-    TYPES = {{ NOUNS + VERBS + ADJTS + NUMBERS + ADVERBS +
+    TYPES = {{ NOUNS + PRONOUNS + NUMBERS + VERBS + ADJTS + ADVERBS +
                  MISCS + AFFIXES + AUXILS + PUNCTS }}
   {% end %}
 
@@ -70,8 +70,7 @@ struct CV::PosTag
     {% end %}
     when "l" then Idiom
     when "j" then Noun
-    when "qv" then Verb # quanti verb is handled by
-    # when "z" then Adesc
+    when "qv" then Verb # quanti verb is handled by code
     when "-" then None
     else          Unkn
     end

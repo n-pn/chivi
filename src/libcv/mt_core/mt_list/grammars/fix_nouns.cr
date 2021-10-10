@@ -20,13 +20,6 @@ module CV::MTL::Grammars
         break if node.veno? || node.ajno?
         prev.tag = PosTag::Nform
         node = prev.fold!(node)
-      when .propers?
-        break if prev.prev?(&.verb?)
-
-        val = node.ptitle? ? "#{node.val} của #{prev.val}" : "#{prev.val} #{node.val}"
-        node = prev.fold!(node, val)
-
-        next
       when .prodeic?
         node.tag = PosTag::Nform
 
@@ -53,7 +46,7 @@ module CV::MTL::Grammars
         else           node = node.fold_left!(prev, "#{node.val} #{prev.val}")
         end
 
-        break
+        next
       when .prointr?
         val = prev.key == "什么" ? "gì đó" : prev.val
         node = node.fold_left!(prev, "#{node.val} #{val}")
@@ -65,7 +58,6 @@ module CV::MTL::Grammars
         node = node.fold_left!(prev, "#{node.val} #{prev.val}")
       when .ude1?
         node.succ? { |succ| break if succ.penum? || succ.concoord? }
-
         prev_2 = prev.prev
 
         case prev_2

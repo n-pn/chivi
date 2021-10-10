@@ -1,22 +1,21 @@
 module CV::TlRule
   def fold_verbs!(node : MtNode, succ = node.succ?, prev : MtNode? = nil)
-    if end_sentence?(succ)
-      if node.key == "对不起"
-        node.val = "thật có lỗi"
-        node.tag = PosTag::Vform
-      end
-
-      return node
-    end
-
     while node.verbs?
       break unless succ = node.succ?
+
       case succ
       when .ahao?
         node.fold!(succ, "#{node.val} tốt")
       when .ule?
         val = keep_ule?(node, succ) ? "#{node.val} rồi" : node.val
         node.fold!(succ, val)
+
+        # TODO: fold nunbers
+        if (succ_2 = succ.succ?) && succ_2.nquant?
+          node.tag = PosTag::Vform
+          node.fold!(succ, dic: 6)
+          break
+        end
       when .ude2?
         break unless succ_2 = succ.succ?
         break unless succ_2.verb? || succ_2.veno?
@@ -34,10 +33,12 @@ module CV::TlRule
         node = fold_verb_uzhe!(node, succ)
         break if node.vform?
       when .nquant?
-        break unless nquant_is_complement?(node)
-        node.val = node.val.sub("bả", "phát") if node.key.ends_with?("把")
-        node.tag = PosTag::Vform
-        node.fold!(dic: 6)
+        # TODO: fold nunbers
+        unless succ.succ?(&.nouns?)
+          node.tag = PosTag::Vform
+          node.fold!(succ, dic: 6)
+        end
+
         break
       when .suf_nouns?
         node = fold_suf_noun!(node, succ)

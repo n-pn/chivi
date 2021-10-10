@@ -105,7 +105,7 @@ class CV::MtCore
       if can_merge?(cur, lst)
         lst.idx = cur.idx
         lst.key = "#{cur.key}#{lst.key}"
-        lst.val = "#{cur.val}#{lst.val}"
+        lst.val = cur.numhan? ? "#{cur.val} #{lst.val}" : "#{cur.val}#{lst.val}"
       else
         res.prepend!(cur)
         lst = cur
@@ -117,18 +117,25 @@ class CV::MtCore
 
   private def can_merge?(left : MtNode, right : MtNode)
     case right.tag
+    when .strings? then left.tag.strings?
+    when .puncts?  then left.tag == right.tag
+    when .numhan?  then left.numhan?
     when .numlat?
       case left.tag
+      when .pdeci?  then true
+      when .numlat? then true
       when .strings?
         right.tag = left.tag
         true
-      when .pdeci?  then true
-      when .numlat? then true
-      else               false
+      else false
       end
-    when .strings? then left.tag.strings?
-    when .puncts?  then left.tag == right.tag
-    else                false
+    else
+      if left.numhan? && left.key == "两"
+        left.val = "lưỡng"
+        left.tag = PosTag::Quanti
+      end
+
+      false
     end
   end
 end

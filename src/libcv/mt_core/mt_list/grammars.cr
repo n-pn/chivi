@@ -5,16 +5,16 @@ module CV::MTL::Grammars
   def fix_grammar!(node : MtNode = @head, mode = 1)
     while node = node.succ?
       case node.tag
-      when .ude1?   then node = fix_ude1!(node, mode: mode) # 的
-      when .ule?    then node = fix_ule!(node)              # 了
-      when .ude2?   then node = fix_ude2!(node)             # 地
-      when .urlstr? then node = TlRule.fold_urlstr!(node)
-      when .string? then node = TlRule.fold_string!(node)
-      when .predui? then node = TlRule.heal_predui!(node)
+      when .ude1?     then node = fix_ude1!(node, mode: mode) # 的
+      when .ule?      then node = fix_ule!(node)              # 了
+      when .ude2?     then node = fix_ude2!(node)             # 地
+      when .urlstr?   then node = TlRule.fold_urlstr!(node)
+      when .string?   then node = TlRule.fold_string!(node)
+      when .preposes? then node = TlRule.fold_preposes!(node)
+      when .pronouns? then node = TlRule.fold_pronouns!(node)
       when .numbers? # , .quantis?
-        node = fix_number!(node)
+        node = TlRule.fold_number!(node)
         node = fix_nouns!(node) if node.nquants? && !node.succ?(&.nouns?)
-      when .numlat?  then node = fix_number!(node)
       when .vshi?    then next # TODO handle vshi
       when .vyou?    then next # TODO handle vyou
       when .vmodals? then node = TlRule.heal_vmodal!(node)
@@ -35,7 +35,7 @@ module CV::MTL::Grammars
         else
           node = fix_nouns!(node, mode: mode)
         end
-      else
+      when .special?
         node = fix_by_key!(node)
       end
     end
@@ -53,22 +53,27 @@ module CV::MTL::Grammars
     node == @head || node.tag.puncts? || node.tag.interjection?
   end
 
-  private def fix_by_key!(node : MtNode) : MtNode
+  private def fix_by_key!(node : MtNode, succ = node.succ?) : MtNode
     case node.key
+    when "对不起"
+      boundary?(succ) ? node : TlRule.fold_verbs!(node.heal!("có lỗi với", PosTag::Verb))
     when "原来"
-      if node.succ?(&.ude1?) || node.prev?(&.contws?)
-        val = "ban đầu"
+      if succ.try(&.ude1?) || node.prev?(&.contws?)
+        node.heal!("ban đầu", tag: PosTag::Modifier)
       else
-        val = "thì ra"
+        node.heal!("thì ra")
       end
-      node.heal!(val)
     when "行"
-      node.heal!("được") if boundary?(node.succ?)
+      boundary?(succ) ? node.heal!("được") : node
     when "高达"
-      node.heal!("cao đến") if node.succ?(&.nquants?)
+      if succ.try(&.nquants?)
+        node.heal!("cao đến")
+      else
+        node.heal!(tag: PosTag::Noun)
+      end
+    else
+      node
     end
-
-    node
   end
 
   private def fix_quoteop!(node : MtNode)
