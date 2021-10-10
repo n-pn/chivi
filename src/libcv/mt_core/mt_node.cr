@@ -81,36 +81,7 @@ class CV::MtNode
     self
   end
 
-  def fold_left!(left : Nil)
-    self
-  end
-
-  def fold_left!(left : self, tag = @tag)
-    left.tag = tag
-    left.fold!(self)
-  end
-
-  def fold!(succ : self, @val = "#{@val} #{succ.val}", @dic = 6) : self
-    @key = "#{@key}#{succ.key}"
-    fix_succ!(succ.succ?)
-  end
-
-  def fold_many!(*succ : self)
-    key_io = String::Builder.new(@key)
-    succ.each { |x| key_io << x.key }
-    @key = key_io.to_s
-    fix_succ!(succ[-1].succ?)
-  end
-
-  def fold!(val : String = "#{@val} #{succ.val}", dic = 6) : self
-    fold!(succ, val, dic)
-  end
-
-  def heal!(@val : String = self.val, @tag : PosTag = self.tag)
-    self
-  end
-
-  include MTL::ApplyCap
-  include MTL::Serialize
   include MTL::Transform
+  include MTL::Serialize
+  include MTL::ApplyCap
 end

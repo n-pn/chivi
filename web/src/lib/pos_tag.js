@@ -80,6 +80,7 @@ export const labels = {
 
   pba: 'Giới từ 把',
   pbei: 'Giới từ 被',
+  pdui: 'Giới từ 对',
 
   uzhe: 'Trợ từ 着',
   ule: 'Trợ từ 了',
@@ -164,7 +165,7 @@ export const groups = [
     'dbu' ,'dmei', 'dfei',
     'ahao', 'vshi', 'vyou',
     'vneng','vhui', 'vxiang',
-    'pba', 'pbei',
+    'pba', 'pbei', 'pdui',
     '-',
     'uzhe', 'ule', 'uguo',
     'ude1', 'ude2', 'ude3',

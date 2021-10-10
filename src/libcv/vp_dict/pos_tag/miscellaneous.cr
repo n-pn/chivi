@@ -31,6 +31,7 @@ struct CV::PosTag
     {"p", "Prepos", Pos::Preposes | Pos::Funcws},    # 介词 - preposition - giới từ
     {"pba", "Prepba", Pos::Preposes | Pos::Funcws},  # 介词 “把” - giới từ `bả`
     {"pbei", "Prebei", Pos::Preposes | Pos::Funcws}, # 介词 “被” - giới từ `bị`
+    {"pdui", "Predui", Pos::Preposes | Pos::Funcws}, # 介词 “对” - giới từ `đối`
 
     {"c", "Conjunct", Pos::Funcws},  # 连词 - conjunction - liên từ
     {"cc", "Concoord", Pos::Funcws}, # 并列连词 - coordinating conjunction - liên từ kết hợp

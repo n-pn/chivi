@@ -1,4 +1,4 @@
-module MTL::Serialize
+module CV::MTL::Serialize
   def to_str : String
     String.build { |io| to_str(io) }
   end

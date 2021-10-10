@@ -18,68 +18,51 @@ module CV::MTL::Grammars
         node = TlRule.fold_concoord!(prev_2, prev, node, force: true)
       when .nquants?
         break if node.veno? || node.ajno?
-        node.tag = PosTag::Nform
-        node.fuse_left!("#{prev.val} ")
+        prev.tag = PosTag::Nform
+        node = prev.fold!(node)
       when .propers?
         break if prev.prev?(&.verb?)
 
-        if node.ptitle?
-          node.fuse_left!("", " của #{prev.val}")
-        else
-          node.fuse_left!("#{prev.val} ")
-        end
+        val = node.ptitle? ? "#{node.val} của #{prev.val}" : "#{prev.val} #{node.val}"
+        node = prev.fold!(node, val)
+
         next
       when .prodeic?
+        node.tag = PosTag::Nform
+
         case prev.key
-        when "这" then node.fuse_left!("", " này")
-        when "那" then node.fuse_left!("", " kia")
-        when "各" then node.fuse_left!("các ")
-        when "这样"
-          node = prev.fold!(node, "#{node.val} như vậy")
-        when "那样"
-          node = prev.fold!(node, "#{node.val} như thế")
-        when "这个"
-          node = prev.fold!(node, "#{node.val} này")
-        when "那个"
-          node = prev.fold!(node, "#{node.val} kia")
+        when "这"  then node = node.fold_left!(prev, "#{node.val} này")
+        when "那"  then node = node.fold_left!(prev, "#{node.val} kia")
+        when "各"  then node = node.fold_left!(prev, "các #{node.val}")
+        when "这样" then node = node.fold_left!(prev, "#{node.val} như vậy")
+        when "那样" then node = node.fold_left!(prev, "#{node.val} như thế")
+        when "这个" then node = node.fold_left!(prev, "#{node.val} này")
+        when "那个" then node = node.fold_left!(prev, "#{node.val} kia")
         when .ends_with?("个")
           prev.val = prev.val.sub("cái", "").strip
           node = prev.fold!(node)
-        when .starts_with?("各")
-          node = prev.fold!(node)
+        when .starts_with?("各") then node = prev.fold!(node)
         when .starts_with?("这")
           val = prev.val.sub("này", "").strip
           node = prev.fold!(node, "#{val} #{node.val} này")
         when .starts_with?("那")
           val = prev.val.sub("kia", "").strip
           node = prev.fold!(node, "#{val} #{node.val} kia")
-        when "其他" then node.fuse_left!("các ", " khác")
-        when "任何" then node.fuse_left!("bất kỳ ")
-        else           node.fuse_left!("", " #{prev.val}")
+        when "其他" then node = node.fold_left!(prev, "các #{node.val} khác")
+        when "任何" then node = node.fold_left!(prev, "bất kỳ #{node.val}")
+        else           node = node.fold_left!(prev, "#{node.val} #{prev.val}")
         end
-        node.tag = PosTag::Nform
+
         break
       when .prointr?
         val = prev.key == "什么" ? "gì đó" : prev.val
-        node.fuse_left!("", " #{val}")
-      when .amorp?
-        node.fuse_left!("#{prev.val} ")
-        next
-      when .place?
-        node.fuse_left!("", " #{prev.val}")
-      when .adesc?
-        node.fuse_left!("", " #{prev.val}")
-      when .adjts?
-        case prev.key
-        when "一般" then node.fuse_left!("", " thông thường")
-        else
-          break if prev.key.size > 1
-          node.fuse_left!("", " #{prev.val}")
-        end
-
-        next
-      when .modifier?, .modiform?
-        node.fuse_left!("", " #{prev.val}")
+        node = node.fold_left!(prev, "#{node.val} #{val}")
+      when .amorp? then node = node.fold_left!(prev)
+      when .place?, .adesc?, .ahao?, .ajno?, .modifier?, .modiform?,
+           node = node.fold_left!(prev, "#{node.val} #{prev.val}")
+      when .ajav?, .adjt?
+        break if prev.key.size > 1
+        node = node.fold_left!(prev, "#{node.val} #{prev.val}")
       when .ude1?
         node.succ? { |succ| break if succ.penum? || succ.concoord? }
 
@@ -87,13 +70,16 @@ module CV::MTL::Grammars
 
         case prev_2
         when .ajav?
-          prev_2.update!("thông thường") if prev_2.key == "一般"
-          prev.fuse_left!(prev_2.val)
-          node.fuse_left!("", " #{prev.val}")
+          prev_2.val = "thông thường" if prev_2.key == "一般"
+
+          prev_2.tag = PosTag::Nform
+          prev_2.val = "#{node.val} #{prev_2.val}"
+          node = prev_2.fold_many!(prev, node)
         when .adjts?, .nquant?, .quanti?, .veno?,
              .vintr?, .time?, .place?, .space?, .adesc?
-          prev.fuse_left!(prev_2.val)
-          node.fuse_left!("", " #{prev.val}")
+          prev_2.tag = PosTag::Nform
+          prev_2.val = "#{node.val} #{prev_2.val}"
+          node = prev_2.fold_many!(prev, node)
         when .nouns?, .propers?
           if (prev_3 = prev_2.prev?) && verb_subject?(prev_3, node)
             prev_3.val = "#{node.val} #{prev_3.val} #{prev_2.val}"

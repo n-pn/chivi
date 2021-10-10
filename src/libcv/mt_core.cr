@@ -54,10 +54,10 @@ class CV::MtCore
   end
 
   def cv_plain(input : String, mode = 1, cap_first = true, offset = 0)
-    tokenize(input.chars, offset: offset)
-      .fix_grammar!(mode: mode)
-      .capitalize!(cap: cap_first)
-      .pad_spaces!
+    list = tokenize(input.chars, offset: offset)
+    list.fix_grammar!(mode: mode)
+    list.capitalize!(cap: cap_first)
+    list.pad_spaces!
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtList
@@ -103,7 +103,9 @@ class CV::MtCore
       idx -= cur.key.size
 
       if can_merge?(cur, lst)
-        lst.prepend!(cur)
+        lst.idx = cur.idx
+        lst.key = "#{cur.key}#{lst.key}"
+        lst.val = "#{cur.val}#{lst.val}"
       else
         res.prepend!(cur)
         lst = cur

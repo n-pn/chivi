@@ -26,12 +26,14 @@ module CV::MTL::Grammars
 
     has_第 = node.key.starts_with?("第")
 
-    case node.prev?(&.key)
-    when "第"
-      has_第 = true
-      node.fuse_left!("thứ ")
-    when "约"
-      node.fuse_left!("chừng ")
+    if prev = node.prev?
+      case prev.key
+      when "第"
+        has_第 = true
+        node = node.fold_left!(prev, "thứ #{node.val}")
+      when "约"
+        node = node.fold_left!(prev, "chừng #{node.val}")
+      end
     end
 
     return node unless succ = node.succ?
@@ -70,41 +72,45 @@ module CV::MTL::Grammars
     end
 
     # add extra suffixes
-    case node.succ?(&.key)
+    return node unless succ = node.succ?
+
+    case succ.key
     when "左右"
-      node.fuse_right!("khoảng #{node.val}")
+      node.fold!(succ, "khoảng #{node.val}")
     when "宽"
-      node.fuse_right!("rộng #{node.val}")
+      node.fold!(succ, "rộng #{node.val}")
     when "高"
-      node.fuse_right!("cao #{node.val}")
+      node.fold!(succ, "cao #{node.val}")
     when "长"
-      node.fuse_right!("dài #{node.val}")
+      node.fold!(succ, "dài #{node.val}")
     when "重"
-      node.fuse_right!("nặng #{node.val}")
+      node.fold!(succ, "nặng #{node.val}")
     when "远"
-      node.fuse_right!("xa #{node.val}")
+      node.fold!(succ, "xa #{node.val}")
     when "多"
-      node.fuse_right!("hơn #{node.val}")
+      node.fold!(succ, "hơn #{node.val}")
     else
       return node unless succ.tag.qttime?
     end
 
-    case node.succ?(&.key)
+    return node unless succ = node.succ?
+
+    case succ.key
     when "间", "后间"
-      node.fuse_right!("khoảng #{node.val}")
+      node.fold!(succ, "khoảng #{node.val}")
     when "里", "内", "中",
          "后内", "后中"
-      node.fuse_right!("trong #{node.val}")
+      node.fold!(succ, "trong #{node.val}")
     when "后", "之后"
-      node.fuse_right!("sau #{node.val}")
+      node.fold!(succ, "sau #{node.val}")
     when "时", "之时"
-      node.fuse_right!("lúc #{node.val}")
+      node.fold!(succ, "lúc #{node.val}")
     when "上", "之上"
-      node.fuse_right!("trên #{node.val}")
+      node.fold!(succ, "trên #{node.val}")
     when "下", "之下"
-      node.fuse_right!("dưới #{node.val}")
+      node.fold!(succ, "dưới #{node.val}")
     when "前", "之前"
-      node.fuse_right!("trước #{node.val}")
+      node.fold!(succ, "trước #{node.val}")
     end
 
     node

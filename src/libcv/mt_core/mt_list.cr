@@ -54,7 +54,7 @@ class CV::MtList
     @head.succ?(&.inspect(io, deep: true))
   end
 
-  def capitalize!(cap = true)
+  def capitalize!(cap = true) : self
     @head.apply_cap!(cap)
     self
   end

@@ -1,6 +1,6 @@
 require "../../../cutil/text_utils"
 
-module MTL::ApplyCap
+module CV::MTL::ApplyCap
   def apply_cap!(cap : Bool = true) : self
     node = self
 
@@ -21,7 +21,7 @@ module MTL::ApplyCap
     when .urlstr? then false
     when .artstr? then false
     else
-      @val = CV::TextUtils.capitalize(@val) if cap
+      @val = TextUtils.capitalize(@val) if cap
       false
     end
   end
