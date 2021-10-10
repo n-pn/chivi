@@ -118,6 +118,7 @@ module CV::TlRule
       when .ude1?
         break if mode < 1
         node = fold_ude1!(node, prev)
+        break if node.prev? == prev
       else
         break
       end

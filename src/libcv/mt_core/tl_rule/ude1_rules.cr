@@ -27,6 +27,9 @@ module CV::TlRule
       prev_2.tag = PosTag::Nform
       prev_2.dic = prev_2.prev?(&.verbs?) ? 8 : 7
       prev_2.fold_many!(prev, node)
+    when .verb?
+      # TODO
+      node
     else
       node
     end
