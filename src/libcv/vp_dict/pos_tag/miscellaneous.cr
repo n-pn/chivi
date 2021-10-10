@@ -31,7 +31,7 @@ struct CV::PosTag
     {"y", "Modalparticle", Pos::Funcws}, # 语气词 - modal particle - ngữ khí
     {"o", "Onomatopoeia", Pos::Funcws},  # 拟声词 - onomatopoeia - tượng thanh
 
-    {"z", "Special", Pos::Uniqs},
+    {"sp", "Special", Pos::Uniqs},
   }
 
   @[AlwaysInline]

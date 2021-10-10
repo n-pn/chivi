@@ -72,6 +72,7 @@ struct CV::PosTag
     when "j" then Noun
     when "qv" then Verb # quanti verb is handled by code
     when "-" then None
+    when "z" then Adesc
     else          Unkn
     end
     {% end %}

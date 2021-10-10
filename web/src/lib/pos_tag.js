@@ -129,7 +129,7 @@ export const labels = {
   wwy: 'Đóng tựa',
   w: 'Dấu câu khác',
 
-  z: 'Từ đặc biệt',
+  sp: 'Từ đặc biệt',
 }
 
 export const gnames = ['Cơ bản', 'Đặc biệt', 'Dấu câu']
