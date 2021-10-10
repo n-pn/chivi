@@ -3,12 +3,6 @@ module CV::TlRule
     return node unless succ
     node.tag = PosTag::Place
 
-    # if (prev = node.prev?) && prev.nquant?
-    #   prev.val = "#{succ.val} #{prev.val} #{node.val}"
-    #   prev.dic = 7
-    #   node = prev.fold_many!(node, succ)
-    # else
-
     case succ.key
     when "上"
       node.fold!("trên #{node.val}")

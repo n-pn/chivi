@@ -29,7 +29,7 @@ module CV::TlRule
         next unless node.nouns?
         node = fold_noun_left!(node, mode: mode)
       when .space?
-        if node.prev.noun?
+        if node.prev.nouns?
           node = fold_noun_space!(node.prev, node)
         else
           node = fold_noun_left!(node, mode: mode)
