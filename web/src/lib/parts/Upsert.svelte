@@ -246,7 +246,7 @@
           <button
             class="m-btn _lg _fill _left {term.btn_state('_base')}"
             data-kbd="↵"
-            disabled={!term.can_change('_base', $session.privi, $tab + 1)}
+            disabled={term.disabled('_base', $session.privi, $tab + 1)}
             use:hint={'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}
             on:click={() => submit_val('_base')}>
             <SIcon name="users" />
@@ -256,7 +256,7 @@
           <button
             class="m-btn _lg _fill _right {term.btn_state('_priv')}"
             data-kbd="⇧↵"
-            disabled={!term.can_change('_priv', $session.privi, $tab + 1)}
+            disabled={term.disabled('_priv', $session.privi, $tab + 1)}
             use:hint={'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'}
             on:click={() => submit_val('_priv')}>
             <SIcon name="user" />

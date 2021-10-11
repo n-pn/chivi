@@ -27,16 +27,26 @@ export class VpTerm {
   }
 
   get fresh() {
-    return this._priv.mtime < 0 && this._base.mtime < 0
+    return this.old_val == '' || (this._priv.mtime < 0 && this._base.mtime < 0)
   }
 
   get state() {
-    return !this.val ? 'Xoá' : this.fresh ? 'Lưu' : 'Sửa'
+    if (!this.val) return 'Xoá'
+    return this._base.mtime < 0 || this._base.val == '' ? 'Lưu' : 'Sửa'
   }
 
   btn_state(type = '_base') {
     if (!this.val) return '_harmful'
-    return this[type].mtime < 0 ? '_success' : '_primary'
+
+    const blank = this.blank(type)
+    if (type == '_base') return blank ? '_success' : '_primary'
+
+    if (!blank) return '_primary'
+    return this.blank('_base') ? '_success' : '_primary'
+  }
+
+  blank(type) {
+    return this[type].mtime < 0 || this[type].val == ''
   }
 
   dirty(type) {
@@ -48,10 +58,11 @@ export class VpTerm {
     )
   }
 
-  can_change(type, privi, p_min) {
-    if (privi < p_min) return false
-    if (!this.dirty(type)) return false
-    return p_min > 2 && type == '_base'
+  disabled(type, privi, p_min) {
+    if (privi < p_min) return true
+    if (!this.dirty(type)) return true
+    if (p_min < 3) return false
+    return type != '_base'
   }
 
   clear() {
@@ -61,6 +72,7 @@ export class VpTerm {
       this.val = '[[pass]]'
       this.ptag = '_'
     }
+
     return this
   }
 
