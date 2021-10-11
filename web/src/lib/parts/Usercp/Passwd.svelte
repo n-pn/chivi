@@ -61,7 +61,7 @@
   {/if}
 
   <footer class="pfoot">
-    <button class="m-button _primary  _fill" on:click={save_pass}
+    <button class="m-btn _primary  _fill" on:click={save_pass}
       >Cập nhật mật khẩu</button>
   </footer>
 </div>

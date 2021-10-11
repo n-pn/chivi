@@ -86,12 +86,12 @@
     </div>
   {:else}
     <div class="tabnav">
-      <button class="m-button btn-back" on:click={() => (section = 'main')}>
+      <button class="m-btn btn-back" on:click={() => (section = 'main')}>
         <SIcon name="arrow-left" />
         <span>Trở về</span>
       </button>
 
-      <button class="m-button btn-back" on:click={logout}>
+      <button class="m-btn btn-back" on:click={logout}>
         <SIcon name="logout" />
         <span>Đăng xuất</span>
       </button>

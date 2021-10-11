@@ -139,7 +139,7 @@
     transition:scale={{ duration: 100, easing: backInOut }}>
     <modal-head class="head">
       <CMenu dir="left" loc="top">
-        <button class="m-button _text" slot="trigger">
+        <button class="m-btn _text" slot="trigger">
           <SIcon name="menu-2" />
         </button>
         <svelte:fragment slot="content">
@@ -159,7 +159,7 @@
 
       <button
         type="button"
-        class="m-button _text"
+        class="m-btn _text"
         data-kbd="esc"
         on:click={deactivate}>
         <SIcon name="x" />
@@ -244,9 +244,9 @@
 
         <div class="bgroup">
           <button
-            class="bgroup-left m-button btn-lg _fill {term.btn_state}  "
+            class="m-btn _lg _fill _left {term.btn_state('_base')}"
             data-kbd="↵"
-            disabled={$session.privi < $tab + 1 || !term.dirty('_base')}
+            disabled={!term.can_change('_base', $session.privi, $tab + 1)}
             use:hint={'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}
             on:click={() => submit_val('_base')}>
             <SIcon name="users" />
@@ -254,11 +254,9 @@
           </button>
 
           <button
-            class="bgroup-right m-button btn-lg _fill {term.btn_state} "
+            class="m-btn _lg _fill _right {term.btn_state('_priv')}"
             data-kbd="⇧↵"
-            disabled={$session.privi < $tab + 1 ||
-              $tab > 1 ||
-              !term.dirty('_priv')}
+            disabled={!term.can_change('_priv', $session.privi, $tab + 1)}
             use:hint={'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'}
             on:click={() => submit_val('_priv')}>
             <SIcon name="user" />
@@ -310,7 +308,7 @@
     @include border(--bd-soft, $loc: bottom);
     // @include linesd(--bd-soft);
 
-    .m-button {
+    .m-btn {
       @include fgcolor(neutral, 5);
       background: none;
       --linesd: none;
@@ -467,7 +465,7 @@
     @include flex();
   }
 
-  .bgroup-left {
+  .m-btn._left {
     padding-right: 0.25rem;
     @include bps(padding-left, 0.25rem, $sm: 0.5rem);
     @include bdradi(0, $loc: right);
@@ -481,7 +479,7 @@
     }
   }
 
-  .bgroup-right {
+  .m-btn._right {
     margin-left: -1px;
     @include bdradi(0, $loc: left);
   }

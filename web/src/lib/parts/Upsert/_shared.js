@@ -1,7 +1,6 @@
 import { writable } from 'svelte/store'
 
 export const fhint = writable('')
-
 export function hint(node, msg) {
   const show = () => fhint.set(msg)
   const hide = () => fhint.set('')
@@ -35,17 +34,24 @@ export class VpTerm {
     return !this.val ? 'Xoá' : this.fresh ? 'Lưu' : 'Sửa'
   }
 
-  get btn_state() {
-    return !this.val ? '_harmful' : this.fresh ? '_success' : '_primary'
+  btn_state(type = '_base') {
+    if (!this.val) return '_harmful'
+    return this[type].mtime < 0 ? '_success' : '_primary'
   }
 
-  dirty(name) {
+  dirty(type) {
     return (
-      this[name].mtime < 0 ||
-      this.val != this[name].val ||
-      this.ptag != this[name].ptag ||
-      this.rank != this[name].rank
+      this[type].mtime < 0 ||
+      this.val != this[type].val ||
+      this.ptag != this[type].ptag ||
+      this.rank != this[type].rank
     )
+  }
+
+  can_change(type, privi, p_min) {
+    if (privi < p_min) return false
+    if (!this.dirty(type)) return false
+    return p_min > 2 && type == '_base'
   }
 
   clear() {

@@ -121,7 +121,7 @@
         <h3 class="word" lang="zh">
           <entry-key>{$input.substr($lower, size)}</entry-key>
           <entry-btn
-            class="m-button btn-sm"
+            class="m-btn _sm"
             role="button"
             on:click={() => upsert_activate([$input, $lower, $lower + size])}>
             <SIcon name="edit" />

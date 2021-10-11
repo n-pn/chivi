@@ -49,14 +49,14 @@
 
   <div slot="footer" class="foot">
     <button
-      class="m-button"
+      class="m-btn"
       data-kbd="r"
       on:click={() => window.location.reload()}>
       <SIcon name="rotate" />
       <span>Dịch lại</span>
     </button>
 
-    <a class="m-button _success _fill" data-kbd="n" href="/qtran">
+    <a class="m-btn _success _fill" data-kbd="n" href="/qtran">
       <span>Dịch mới</span>
     </a>
   </div>

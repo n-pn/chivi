@@ -152,7 +152,7 @@
   <div class="navi" slot="footer">
     <a
       href={paths.prev}
-      class="m-button navi-item"
+      class="m-btn navi-item"
       class:_disable={!chmeta._prev}
       data-kbd="j">
       <SIcon name="chevron-left" />
@@ -160,7 +160,7 @@
     </a>
 
     <CMenu class="navi-item" loc="top">
-      <div class="m-button" slot="trigger">
+      <div class="m-btn" slot="trigger">
         <SIcon name={memo_icon} />
         <span>{chinfo.chidx}/{chmeta.total}</span>
       </div>
@@ -214,7 +214,7 @@
 
     <a
       href={paths.next}
-      class="m-button _fill navi-item"
+      class="m-btn _fill navi-item"
       class:_primary={chmeta._next}
       data-kbd="k">
       <span>Kế tiếp</span>

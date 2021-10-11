@@ -78,7 +78,7 @@
 <nav class="pagi">
   {#if pgidx > 1}
     <a
-      class="m-button _fill -md"
+      class="m-btn _fill -md"
       href={pager.url({ page: pgidx - 1 })}
       data-kbd="j"
       sveltekit:noscroll={_navi.scrollto}
@@ -86,7 +86,7 @@
       <SIcon name="chevron-left" />
     </a>
   {:else}
-    <button class="m-button -md" disabled data-kbd="j">
+    <button class="m-btn -md" disabled data-kbd="j">
       <SIcon name="chevron-left" />
     </button>
   {/if}
@@ -94,13 +94,13 @@
   {#each make_pages(pgidx, pgmax) as pgnow}
     {#if pgnow != pgidx}
       <a
-        class="m-button _line"
+        class="m-btn _line"
         href={pager.url({ page: pgnow })}
         data-kbd={pgnow == 1 ? 'h' : pgnow == pgmax ? 'l' : ''}
         sveltekit:noscroll={_navi.scrollto}
         use:navigate={_navi}><span>{pgnow}</span></a>
     {:else}
-      <button class="m-button" disabled>
+      <button class="m-btn" disabled>
         <span>{pgnow}</span>
       </button>
     {/if}
@@ -108,7 +108,7 @@
 
   {#if pgidx < pgmax}
     <a
-      class="m-button _primary _fill"
+      class="m-btn _primary _fill"
       href={pager.url({ page: pgidx + 1 })}
       data-kbd="k"
       sveltekit:noscroll={_navi.scrollto}
@@ -117,7 +117,7 @@
       <SIcon name="chevron-right" />
     </a>
   {:else}
-    <button class="m-button" disabled data-kbd="k">
+    <button class="m-btn" disabled data-kbd="k">
       <span class="-txt">Kế tiếp</span>
       <SIcon name="chevron-right" />
     </button>

@@ -115,7 +115,7 @@
 
     {#if chinfo.sname == 'chivi'}
       <a
-        class="m-button"
+        class="m-btn"
         class:_disable={$session.privi < 2}
         href="/-{cvbook.bslug}/-{chinfo.sname}/+new?chidx={chinfo.total + 1}">
         <SIcon name="plus" />
@@ -123,7 +123,7 @@
       </a>
     {:else}
       <a
-        class="m-button"
+        class="m-btn"
         href={chinfo.wlink}
         target="_blank"
         rel="noopener noreferer">
@@ -131,7 +131,7 @@
         <span class="-hide">Nguồn</span>
       </a>
       <a
-        class="m-button"
+        class="m-btn"
         class:_disable={!chinfo.crawl}
         href={pager.url({ page: chinfo.pgidx, mode: chinfo.crawl ? 2 : 1 })}
         use:navigate={_navi}>
