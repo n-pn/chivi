@@ -27,10 +27,11 @@ module CV::TlRule
         node.dic = 7
         node.tag = PosTag::Vform
         return node.fold_many!(succ, succ_2)
+      when .ude3?
+        return fold_verb_ude3!(node, succ)
       when .uguo?
         node.fold!(succ, "#{node.val} qua")
       when .uzhi?
-        pp [node, prev]
         node = fold_left_verb!(node, prev) if prev
         return fold_uzhi!(succ, node)
       when .uzhe?

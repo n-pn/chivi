@@ -44,6 +44,22 @@ module CV::TlRule
         # TODO: change tag accordingly
         node = fold_concoord!(node, succ, succ_2, force: succ_2.adjts?)
         break if node.succ == succ
+      when .adv_bu?
+        break unless (succ_2 = succ.succ?)
+
+        if prev && prev.adv_bu?
+          prev.tag = PosTag::Aform
+          prev.dic = 6
+          prev.val = "không #{node.val} không #{node.val}"
+          return prev.fold_many!(node, succ, succ_2)
+        elsif succ_2.key == node.key
+          node.tag = PosTag::Aform
+          node.dic = 6
+          node.val = "#{node.val} hay không"
+          node.fold_many!(node, succ, succ_2)
+        end
+
+        break
       when .penum?
         break unless succ_2 = succ.succ?
         # TODO: change tag accordingly
