@@ -132,7 +132,7 @@ export const labels = {
   sp: 'Từ đặc biệt',
 }
 
-export const gnames = ['Cơ bản', 'Đặc biệt', 'Dấu câu']
+export const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt', 'Dấu câu']
 export const groups = [
   // prettier-ignore
   [
@@ -169,6 +169,9 @@ export const groups = [
     'kmen', 'kshi', 'k',
     'ng', 'ag', 'vg', 'tg',
     '-',
+  ],
+  // prettier-ignore
+  [
     'dbu' ,'dmei', 'dfei',
     'ahao', 'vshi', 'vyou',
     'vneng','vhui', 'vxiang',

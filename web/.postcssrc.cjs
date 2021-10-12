@@ -1,6 +1,5 @@
 const purge = require('@fullhuman/postcss-purgecss')
 const autoprefixer = require('autoprefixer')
-
 const prod = process.env.NODE_ENV === 'production'
 const purging = process.env.PURGECSS === 'true'
 

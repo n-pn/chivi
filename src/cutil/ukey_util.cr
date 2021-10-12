@@ -6,8 +6,8 @@ module CV::UkeyUtil
   @@seed = 0
 
   def gen_ukey(seed = Time.utc)
-    number = seed.to_unix_ms // 10 + @@seed
-    @@seed += 1
+    number = seed.to_unix_ms // 8 + @@seed
+    @@seed = (@@seed + 1) % 128
     encode32(number).reverse
   end
 
@@ -126,6 +126,6 @@ end
 # puts str, int, CV::UkeyUtil.encode32_zh(int)
 
 # puts CV::UkeyUtil.encode32(125272284354752)
-puts CV::UkeyUtil.gen_ukey
-puts CV::UkeyUtil.gen_ukey
-puts CV::UkeyUtil.gen_ukey
+# puts CV::UkeyUtil.gen_ukey
+# puts CV::UkeyUtil.gen_ukey
+# puts CV::UkeyUtil.gen_ukey

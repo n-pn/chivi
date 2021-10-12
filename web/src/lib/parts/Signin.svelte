@@ -15,7 +15,7 @@
   import { session } from '$app/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import Slider from '$molds/Slider.svelte'
+  import Gslide from '$molds/Gslide.svelte'
 
   export let actived = false
 
@@ -38,7 +38,7 @@
   }
 </script>
 
-<Slider bind:actived _rwidth={26}>
+<Gslide bind:actived _rwidth={26}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="user" />
@@ -122,7 +122,7 @@
       </footer>
     </form>
   </section>
-</Slider>
+</Gslide>
 
 <style lang="scss">
   .inner {

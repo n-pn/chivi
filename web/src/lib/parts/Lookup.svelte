@@ -30,7 +30,7 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import Slider from '$molds/Slider.svelte'
+  import Gslide from '$molds/Gslide.svelte'
 
   export let dname = 'various'
   // export let label = 'Tổng hợp'
@@ -93,7 +93,7 @@
   }
 </script>
 
-<Slider _rwidth={30} _sticky={true} bind:actived={$actived}>
+<Gslide _rwidth={30} _sticky={true} bind:actived={$actived}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="compass" />
@@ -159,7 +159,7 @@
       </div>
     {/each}
   </section>
-</Slider>
+</Gslide>
 
 <style lang="scss">
   .input-nav {

@@ -24,15 +24,15 @@ class CV::TlSpec
   getter file : String
   getter ukey : String
 
-  property zhtxt : String = ""
+  property ztxt : String = ""
+  property spec : String = "" # expected result/translation note
+
+  property uname : String? = nil      # original poster uname
   property dname : String = "combine" # unique dict used
   property slink : String = "."       # source link
 
-  property ctime : Int64? = nil
+  property ctime : Int64 = 0_i64
   property utime : Int64? = nil
-
-  property uname : String? = nil # original poster uname
-  property tspec : String = ""   # expected result/translation note
 
   property status : Int32 = 0 # 0: pending, 1: checking, 2: resolved, 3: duplicate, 4: wontfix
   property labels : Array(String) = [] of String
@@ -51,30 +51,35 @@ class CV::TlSpec
 
   # format: [mtime uname field value...]
   def log(rows : Array(String)) : Bool
-    return false unless mtime = rows[0]?.try(&.to_i64?)
-
     @logs << rows
-    @utime = mtime
-    @ctime ||= mtime
 
-    case rows[1]?
-    when "zhtxt"
-      @dname = rows[2]? || "combine"
-    when "zhctx"
-      @zhtxt = rows[3]? || "???"
-      @slink = rows[4]? || "."
-    when "tspec"
-      @uname ||= rows[2]? || "_"
-      @tspec = rows[3]? || ""
-    when "state"
+    case rows[0]?
+    when "ztxt"
+      @zhtxt = rows[1]? || "???"
+    when "orig"
+      @uname = rows[1]? || "_"
+      @ctime = @utime = parse_time(rows[2]?)
+      @dname = rows[1]? || "combine"
+      @slink = rows[2]? || "."
+    else
+      @utime = parse_time(rows[0]?)
       # uname = rows[2]? || "_"
-      @status = rows[3]?.to_i? || 0
-    when "label"
-      # uname = rows[2]? || "_"
-      @labels = rows[3..]
+
+      case rows[1]?
+      when "tspec"
+        @tspec = rows[3]? || ""
+      when "state"
+        @status = rows[3]?.to_i? || 0
+      when "label"
+        @labels = rows[3..]
+      end
     end
 
     true
+  end
+
+  def parse_time(input : String?)
+    input?.try(&.to_i64?) || 0_i64
   end
 
   def log!(rows : Array(String))

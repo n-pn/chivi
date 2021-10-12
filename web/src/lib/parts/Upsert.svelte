@@ -32,12 +32,11 @@
 
 <script>
   import { session } from '$app/stores'
-  import { scale, fade } from 'svelte/transition'
-  import { backInOut } from 'svelte/easing'
   import { VpTerm, hint } from './Upsert/_shared.js'
 
   import SIcon from '$atoms/SIcon.svelte'
   import CMenu from '$molds/CMenu.svelte'
+  import Gmodal from '$molds/Gmodal.svelte'
 
   import Postag from '$parts/Postag.svelte'
   import Input from './Upsert/Input.svelte'
@@ -46,7 +45,6 @@
   import Vutil from './Upsert/Vutil.svelte'
   import Vrank from './Upsert/Vrank.svelte'
   import Links from './Upsert/Links.svelte'
-  import { detach_before_dev } from 'svelte/internal'
 
   export let dname = 'combine'
   export let label = 'Tổng hợp'
@@ -133,11 +131,9 @@
   }
 </script>
 
-<modal-wrap on:click={deactivate} transition:fade={{ duration: 100 }}>
-  <modal-main
-    on:click|stopPropagation={focus_on_value}
-    transition:scale={{ duration: 100, easing: backInOut }}>
-    <modal-head class="head">
+<Gmodal active={$state > 0} on_close={deactivate}>
+  <upsert-wrap>
+    <upsert-head class="head">
       <CMenu dir="left" loc="top">
         <button class="m-btn _text" slot="trigger">
           <SIcon name="menu-2" />
@@ -164,9 +160,9 @@
         on:click={deactivate}>
         <SIcon name="x" />
       </button>
-    </modal-head>
+    </upsert-head>
 
-    <modal-tabs>
+    <upsert-tabs>
       <button
         class="tab-item _book"
         class:_active={$tab == 0}
@@ -206,9 +202,9 @@
           </svelte:fragment>
         </CMenu>
       </div>
-    </modal-tabs>
+    </upsert-tabs>
 
-    <modal-body>
+    <upsert-body>
       <Emend {term} p_min={$tab + 1} />
 
       <div class="field">
@@ -263,35 +259,23 @@
           </button>
         </div>
       </div>
-    </modal-body>
+    </upsert-body>
 
     <Links {key} />
-  </modal-main>
-</modal-wrap>
+  </upsert-wrap>
+</Gmodal>
 
-{#if $state > 1}
-  <Postag bind:ptag={term.ptag} bind:state={$state} />
-{/if}
+<Postag bind:ptag={term.ptag} bind:state={$state} />
 
 <style lang="scss">
   $gutter: 0.75rem;
 
-  modal-wrap {
-    @include flex($center: both);
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 999;
-    background: rgba(#000, 0.75);
-  }
-
-  modal-main {
+  upsert-wrap {
     display: block;
     width: rem(30);
     min-width: 320px;
     max-width: 100%;
+
     @include bgcolor(tert);
     @include bdradi();
     @include shadow(3);
@@ -301,7 +285,7 @@
     }
   }
 
-  modal-head {
+  upsert-head {
     @include flex();
 
     // @include bdradi($loc: top);
@@ -321,7 +305,7 @@
 
   $tab-height: 2.25rem;
 
-  modal-tabs {
+  upsert-tabs {
     margin-top: 0.5rem;
     height: $tab-height;
     padding: 0 0.75rem;
@@ -384,7 +368,7 @@
     }
   }
 
-  modal-body {
+  upsert-body {
     display: block;
     padding: 0 0.75rem;
     @include bgcolor(bg-secd);
