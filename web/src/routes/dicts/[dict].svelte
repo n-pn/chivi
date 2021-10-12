@@ -30,8 +30,8 @@
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  export let label = ''
-  export let dname = ''
+  export let dname = 'combine'
+  export let d_dub = 'Tổng hợp'
 
   // export let p_min = 1
   export let terms = []
@@ -69,11 +69,11 @@
     }
   }
 
-  function upsert_dict(dname, label) {
+  function upsert_dict(dname, d_dub) {
     if (dname == 'regular' || dname == 'hanviet') {
-      return { dname: 'combine', label: 'Tổng hợp' }
+      return { dname: 'combine', d_dub: 'Tổng hợp' }
     } else {
-      return { dname, label }
+      return { dname, d_dub }
     }
   }
 
@@ -84,7 +84,7 @@
 </script>
 
 <svelte:head>
-  <title>Từ điển: {label} - Chivi</title>
+  <title>Từ điển: {d_dub} - Chivi</title>
 </svelte:head>
 
 <Vessel>
@@ -95,7 +95,7 @@
     </a>
 
     <a href={$page.path} class="header-item _active _title">
-      <span class="header-text _title">{label}</span>
+      <span class="header-text _title">{d_dub}</span>
     </a>
   </svelte:fragment>
 
@@ -111,7 +111,7 @@
   </svelte:fragment>
 
   <article class="m-article">
-    <h1 class="h3">{label}</h1>
+    <h1 class="h3">{d_dub}</h1>
     <p>Entries: {total}</p>
 
     <div class="body">
@@ -237,7 +237,7 @@
 {/if}
 
 {#if $upsert_state > 0}
-  <Upsert bind:_dirty {...upsert_dict(dname, label)} />
+  <Upsert bind:_dirty {...upsert_dict(dname, d_dub)} />
 {/if}
 
 {#if postag_state > 1}

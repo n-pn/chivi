@@ -1,4 +1,4 @@
-@use "../essence" as *;
+@use '../essence' as *;
 
 .m-field {
   display: block;
@@ -37,6 +37,12 @@
     font-style: italic;
     @include ftsize(sm);
     @include fgcolor(tert);
+  }
+
+  &:disabled {
+    @include fgcolor(mute);
+    @include bgcolor(mute);
+    @include linesd(--bd-mute, $ndef: false);
   }
 }
 

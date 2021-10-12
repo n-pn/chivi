@@ -3,18 +3,24 @@
 [data-tip] {
   @include after($display: none, $abs: true, $content: attr(data-tip)) {
     white-space: nowrap;
-    pointer-events: none;
+
     left: 0;
-    bottom: 100%;
-    padding: 0.25rem 0.375rem;
+    bottom: 90%;
+    padding: 0.375rem;
+    font-family: --font-mono;
+
+    @include ftsize(sm);
+    @include fgcolor(white);
+    @include bgcolor(black);
+    @include bdradi(0.25rem);
   }
 
   @include hover {
     &:after {
-      display: flex;
-      flex-wrap: nowrap;
-      color: var(--color-gray-0);
-      background: var(--color-gray-8);
+      display: inline-block;
+      max-width: 20rem;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 }

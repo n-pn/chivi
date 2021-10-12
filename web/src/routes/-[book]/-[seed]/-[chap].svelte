@@ -143,7 +143,7 @@
       {cvdata}
       {zhtext}
       dname={cvbook.bhash}
-      label={cvbook.vtitle}
+      d_dub={cvbook.vtitle}
       bind:_dirty />
   {:else}
     <Notext {chinfo} />

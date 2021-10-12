@@ -1,16 +1,16 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let input = ''
+  export let zhtxt = ''
   export let lower = 0
   export let upper = 1
 
   export let pinyin = ''
   export let output = ''
 
-  $: output = input.substring(lower, upper)
-  $: prefix = Array.from(input.substring(lower - 5, lower))
-  $: suffix = Array.from(input.substring(upper, upper + 5))
+  $: output = zhtxt.substring(lower, upper)
+  $: prefix = Array.from(zhtxt.substring(lower - 5, lower))
+  $: suffix = Array.from(zhtxt.substring(upper, upper + 5))
 
   function move_lower_left() {
     lower -= 1
@@ -31,11 +31,11 @@
   }
 </script>
 
-<div class="input">
+<div class="zhtxt">
   <button
     class="_left"
     data-kbd="h"
-    disabled={lower >= input.length - 1}
+    disabled={lower >= zhtxt.length - 1}
     on:click={move_lower_right}>
     <SIcon name="chevron-right" />
   </button>
@@ -76,7 +76,7 @@
   <button
     class="_right"
     data-kbd="k"
-    disabled={upper == input.length}
+    disabled={upper == zhtxt.length}
     on:click={move_upper_right}>
     <SIcon name="chevron-right" />
   </button>
@@ -97,7 +97,7 @@
 <style lang="scss">
   $height: 2.25rem;
 
-  .input {
+  .zhtxt {
     display: flex;
     width: calc(100% - 4.5rem);
     height: $height;

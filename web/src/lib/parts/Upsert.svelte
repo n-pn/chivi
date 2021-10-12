@@ -6,17 +6,17 @@
 
   export const tab = writable(0)
   export const state = writable(0)
-  export const input = writable([])
+  export const zhtxt = writable('')
   export const lower = writable(0)
   export const upper = writable(1)
 
   export function activate(data, active_tab = 0, active_state = 1) {
     if (typeof data == 'string') {
-      input.set(data)
+      zhtxt.set(data)
       lower.set(0)
       upper.set(data.length)
     } else {
-      input.set(data[0])
+      zhtxt.set(data[0])
       lower.set(data[1])
       upper.set(data[2])
     }
@@ -38,7 +38,6 @@
   import CMenu from '$molds/CMenu.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
-  import Postag from '$parts/Postag.svelte'
   import Input from './Upsert/Input.svelte'
   import Emend from './Upsert/Emend.svelte'
   import Vhint from './Upsert/Vhint.svelte'
@@ -46,8 +45,12 @@
   import Vrank from './Upsert/Vrank.svelte'
   import Links from './Upsert/Links.svelte'
 
+  import Postag from '$parts/Postag.svelte'
+  import { state as tlspec_state } from '$parts/Tlspec.svelte'
+
   export let dname = 'combine'
-  export let label = 'Tổng hợp'
+  export let d_dub = 'Tổng hợp'
+
   export let _dirty = false
 
   let cached = {}
@@ -59,7 +62,7 @@
   let term = new VpTerm({ val: '', ptag: '', rank: 3 })
 
   let key = ''
-  $: if (key) init_search(key, $input, $lower, $upper)
+  $: if (key) init_search(key, $zhtxt, $lower, $upper)
 
   let value_field
   $: if (term) focus_on_value()
@@ -68,10 +71,10 @@
     value_field && value_field.focus()
   }
 
-  async function init_search(key, input, lower, upper) {
+  async function init_search(key, zhtxt, lower, upper) {
     if (cached[key]) update_term(cached[key])
 
-    const words = gen_words(input, lower, upper)
+    const words = gen_words(zhtxt, lower, upper)
     if (words.length == 0) return // skip fetching if all words fetched
 
     const [err, res] = await dict_search(fetch, words, dname)
@@ -134,7 +137,7 @@
 <Gmodal active={$state > 0} on_close={deactivate}>
   <upsert-wrap>
     <upsert-head class="head">
-      <CMenu dir="left" loc="top">
+      <CMenu dir="left" loc="bottom">
         <button class="m-btn _text" slot="trigger">
           <SIcon name="menu-2" />
         </button>
@@ -143,11 +146,16 @@
             <SIcon name="package" />
             <span>Từ điển</span>
           </a>
+
+          <button class="-item" on:click={() => ($tlspec_state = 1)}>
+            <SIcon name="flag" />
+            <span>Báo lỗi</span>
+          </button>
         </svelte:fragment>
       </CMenu>
 
       <Input
-        input={$input}
+        zhtxt={$zhtxt}
         bind:lower={$lower}
         bind:upper={$upper}
         pinyin={binh_am}
@@ -169,9 +177,9 @@
         class:_edited={!terms[0]?.fresh}
         data-kbd="x"
         on:click={() => change_tab(0)}
-        use:hint={`Từ điển riêng cho [${label}]`}>
+        use:hint={`Từ điển riêng cho [${d_dub}]`}>
         <SIcon name="book" />
-        <span>{label}</span>
+        <span>{d_dub}</span>
       </button>
 
       <button
