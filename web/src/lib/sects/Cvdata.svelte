@@ -112,11 +112,13 @@
   <Upsert {dname} {d_dub} bind:_dirty />
 {/if}
 
-<Tlspec
-  {dname}
-  {d_dub}
-  zhtxt={zhtext[hover_line]}
-  slink="{$page.path}#L{hover_line}" />
+{#if $tlspec_state}
+  <Tlspec
+    {dname}
+    {d_dub}
+    zhtxt={zhtext[hover_line]}
+    slink="{$page.path}#L{hover_line}" />
+{/if}
 
 <style lang="scss">
   .report-line {
