@@ -3,7 +3,7 @@
 
   export async function submit_tlspec(params) {
     const url = '/api/tlspecs'
-    const res = fetch(url, {
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params),
@@ -25,19 +25,24 @@
   export let d_dub = 'Tổng hợp'
   export let slink = '.'
 
-  let tspec = ''
-  let label = ''
   let error
+  let unote = ''
+  let label = ''
 
   function hide_tlspec() {
     $state = 0
   }
 
   async function handle_submit() {
-    const params = { zhtxt, dname, slink, tspec, label }
+    const params = { zhtxt, dname, slink, unote, label }
     const [status, payload] = await submit_tlspec(params)
     if (status) error = payload
     else hide_tlspec()
+  }
+
+  function invalid_input(zhtxt, unote) {
+    if (!zhtxt || zhtxt.length > 200) return true
+    return !unote || unote.length > 500
   }
 </script>
 
@@ -58,7 +63,7 @@
         on:submit|preventDefault={handle_submit}>
         <form-group>
           <form-field>
-            <label for="d_dub">Từ điển (truyện)</label>
+            <label for="d_dub">Từ điển riêng (bộ truyện)</label>
             <input
               type="text"
               name="d_dub"
@@ -69,7 +74,7 @@
           </form-field>
 
           <form-field>
-            <label for="slink">Đường dẫn</label>
+            <label for="slink">Liên kết gốc tới đoạn văn</label>
 
             <input
               type="text"
@@ -93,13 +98,13 @@
 
         <form-group>
           <form-field>
-            <label for="tspec">Chú thích lỗi / gợi ý hướng giải quyết</label>
+            <label for="unote">Chú thích lỗi / gợi ý hướng giải quyết</label>
 
             <textarea
               class="m-input _vi"
-              name="tspec"
+              name="unote"
               autofocus
-              bind:value={tspec} />
+              bind:value={unote} />
           </form-field>
         </form-group>
 
@@ -120,7 +125,10 @@
         </form-group> -->
 
         <form-action>
-          <button type="submit" class="m-btn _primary _lg _fill">
+          <button
+            type="submit"
+            class="m-btn _primary _lg _fill"
+            disabled={invalid_input(zhtxt, unote)}>
             <SIcon name="send" />
             <span>Báo lỗi</span>
           </button>
@@ -201,6 +209,8 @@
   form-error {
     display: block;
     line-height: 1.25rem;
+    margin-top: -0.25rem;
+    margin-bottom: -0.75rem;
     @include ftsize(sm);
     @include fgcolor(harmful, 5);
   }

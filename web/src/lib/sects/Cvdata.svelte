@@ -13,7 +13,7 @@
 <script>
   import { onMount } from 'svelte'
   import { page } from '$app/stores'
-  // import { session } from '$app/stores'
+  import { session } from '$app/stores'
 
   import { ftsize } from '$lib/stores'
   import { split_mtdata } from '$lib/mt_data'
@@ -86,17 +86,20 @@
 <article class="cvdata _{$ftsize}">
   {#each lines as _, index (index)}
     <div
+      id="L{index}"
       class="mtl {wtitle && index == 0 ? '_h' : '_p'}"
       on:click={(e) => handle_click(e, index)}
       on:mouseenter={() => (hover_line = index)}>
       {@html render_line(index, hover_line, focus_line)}
 
-      <button
-        class="report-line"
-        data-tip="Báo lỗi dịch thuật"
-        on:click={() => ($tlspec_state = 1)}>
-        <SIcon name="flag" />
-      </button>
+      {#if $session.privi > 0}
+        <button
+          class="report-line"
+          data-tip="Báo lỗi dịch thuật"
+          on:click={() => ($tlspec_state = 1)}>
+          <SIcon name="flag" />
+        </button>
+      {/if}
     </div>
   {/each}
 </article>
@@ -109,11 +112,16 @@
   <Upsert {dname} {d_dub} bind:_dirty />
 {/if}
 
-<Tlspec {dname} {d_dub} zhtxt={zhtext[hover_line]} slink={$page.path} />
+<Tlspec
+  {dname}
+  {d_dub}
+  zhtxt={zhtext[hover_line]}
+  slink="{$page.path}#L{hover_line}" />
 
 <style lang="scss">
   .report-line {
-    display: none;
+    display: inline-block;
+    visibility: hidden;
 
     background: inherit;
     padding: 0.25rem;
@@ -124,7 +132,7 @@
     @include fgcolor(secd);
 
     .mtl:hover & {
-      display: inline-block;
+      visibility: visible;
     }
 
     &:hover {

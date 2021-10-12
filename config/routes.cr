@@ -53,6 +53,12 @@ Amber::Server.configure do
 
     post "/tools/convert/:dname", CV::ToolCtrl, :convert
     get "/qtran/:name", CV::ToolCtrl, :show
+
+    get "/tlspecs/", CV::TlspecCtrl, :index
+    get "/tlspecs/:ukey", CV::TlspecCtrl, :show
+    post "/tlspecs", CV::TlspecCtrl, :create
+    put "/tlspecs/:ukey", CV::TlspecCtrl, :update
+    delete "/tlspecs/:ukey", CV::TlspecCtrl, :delete
   end
 
   routes :static do

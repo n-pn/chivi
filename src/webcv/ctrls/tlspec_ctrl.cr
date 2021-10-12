@@ -1,11 +1,11 @@
 require "./base_ctrl"
 
-class CV::TlSpecCtrl < CV::BaseCtrl
+class CV::TlspecCtrl < CV::BaseCtrl
   def index
     pgidx = params.fetch_int("page", min: 1)
     limit = 24
-    start = (pgidx - 1) * limix
-    total = Tspec.items.size
+    start = (pgidx - 1) * limit
+    total = Tlspec.items.size
 
     json_view do |jb|
       jb.object {
@@ -24,7 +24,7 @@ class CV::TlSpecCtrl < CV::BaseCtrl
                 jb.field "utime", entry.utime
 
                 jb.field "uname", entry.uname
-                jb.field "tspec", entry.tspec
+                jb.field "unote", entry.unote
 
                 jb.field "status", entry.status
                 jb.field "labels", entry.labels
@@ -36,9 +36,55 @@ class CV::TlSpecCtrl < CV::BaseCtrl
     end
   end
 
+  private def extract_zhtxt
+    zhtxt = params["zhtxt"]?
+    return halt! 400, "Câu văn gốc không được để trắng!" unless zhtxt
+    return halt! 403, "Câu văn gốc quá dài, mời nhập lại" if zhtxt.size > 200
+    zhtxt
+  end
+
+  private def extract_unote
+    unote = params["unote"]?
+    return "" unless unote
+    return halt! 403, "Câu văn gốc quá dài, mời nhập lại" if unote.size > 500
+    unote.gsub("\n", "   ")
+  end
+
+  def create
+    return halt! 403, "Quyền hạn của bạn không đủ, mời thử lại sau." if cu_privi < 1
+    return unless zhtxt = extract_zhtxt
+    return unless unote = extract_unote
+
+    entry = Tlspec.init!
+    entry.push ["zhtxt", zhtxt]
+
+    ctime = Time.utc.to_unix.to_s
+    dname = params["dname"]? || "combine"
+    slink = params["slink"]? || "."
+    entry.push ["_orig", ctime, dname, slink]
+
+    entry.push ["_note", _cv_user.uname, unote]
+    entry.save!
+
+    json_view(["ok"])
+  rescue err
+    Log.error { err.message.colorize.red }
+    halt! 500, "Có lỗi từ hệ thống, mời check lại!"
+  end
+
+  @entry : Tlspec? = nil
+
+  before_action do
+    only [:show, :update, :delete] do
+      entry = Tlspec.load!(params["ukey"])
+      next halt!(404, "Không có dữ liệu") unless entry.utime
+      @entry = entry
+    end
+  end
+
   def show
-    entry = Tlspec.load!(ukey)
-    return halt!(404, "Không có dữ liệu") unless entry.utime
+    return unless entry = @entry
+
     json_view do |jb|
       jb.object {
         jb.field "zhtxt", entry.zhtxt
@@ -49,23 +95,19 @@ class CV::TlSpecCtrl < CV::BaseCtrl
         jb.field "utime", entry.utime
 
         jb.field "uname", entry.uname
-        jb.field "tspec", entry.tspec
+        jb.field "unote", entry.unote
 
         jb.field "status", entry.status
         jb.field "labels", entry.labels
 
-        jb.field "logs", entry.logs
+        jb.field "_logs", entry._logs
       }
     end
   end
 
-  private def convert(lines : Array(String), output : IO)
-    dname = params.fetch_str("dname", "combine")
-    cvmtl = MtCore.generic_mtl(dname, _cv_user.uname)
+  def update
+  end
 
-    lines.each_with_index do |line, idx|
-      output << "\n" if idx > 0
-      cvmtl.cv_plain(line, mode: 1).to_str(output)
-    end
+  def delete
   end
 end
