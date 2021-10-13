@@ -66,44 +66,39 @@
   $: vpterm, focus && focus.focus()
 
   async function change_key(ztext, lower, upper) {
-    const words = gen_words(ztext, lower, upper)
-
-    if (words.length > 0) {
-      const [err, res] = await dict_search(fetch, words, dname)
-      if (err) return console.log({ err, res })
-
-      for (const inp in res) {
-        const data = res[inp]
-        pinyins[inp] = data.binh_am
-        valhint[inp] = data.val_hint
-        vpterms[inp] = [
-          new VpTerm(data.u_priv, data.u_base),
-          new VpTerm(data.c_priv, data.c_base),
-          new VpTerm(data.hanviet, data.hanviet),
-        ]
-      }
-    }
-
+    await fetch_data(ztext, lower, upper)
     vpterms = vpterms
   }
 
-  function gen_words(hanzi, lower, upper) {
-    const res = [hanzi.substring(lower, upper)]
+  async function fetch_data(ztext, lower, upper) {
+    const words = [ztext.substring(lower, upper)]
 
-    if (lower > 0) res.push(hanzi.substring(lower - 1, upper))
-    if (lower + 1 < upper) res.push(hanzi.substring(lower + 1, upper))
+    if (lower > 0) words.push(ztext.substring(lower - 1, upper))
+    if (lower + 1 < upper) words.push(ztext.substring(lower + 1, upper))
 
-    if (upper - 1 > lower) res.push(hanzi.substring(lower, upper - 1))
-    if (upper + 1 < hanzi.length) res.push(hanzi.substring(lower, upper + 1))
-    if (upper + 2 < hanzi.length) res.push(hanzi.substring(lower, upper + 2))
-    if (upper + 3 < hanzi.length) res.push(hanzi.substring(lower, upper + 3))
+    if (upper - 1 > lower) words.push(ztext.substring(lower, upper - 1))
+    if (upper + 1 < ztext.length) words.push(ztext.substring(lower, upper + 1))
+    if (upper + 2 < ztext.length) words.push(ztext.substring(lower, upper + 2))
+    if (upper + 3 < ztext.length) words.push(ztext.substring(lower, upper + 3))
 
-    if (lower > 1) res.push(hanzi.substring(lower - 2, upper))
-    return res.filter((x) => x && !vpterms[x])
-  }
+    if (lower > 1) words.push(ztext.substring(lower - 2, upper))
 
-  function change_tab(new_tab) {
-    $tab = new_tab
+    const to_fetch = words.filter((x) => x && !vpterms[x])
+    if (to_fetch.length == 0) return
+
+    const [err, res] = await dict_search(fetch, to_fetch, dname)
+    if (err) return console.log({ err, res })
+
+    for (const inp in res) {
+      const data = res[inp]
+      pinyins[inp] = data.binh_am
+      valhint[inp] = data.val_hint
+      vpterms[inp] = [
+        new VpTerm(data.u_priv, data.u_base),
+        new VpTerm(data.c_priv, data.c_base),
+        new VpTerm(data.hanviet, data.hanviet),
+      ]
+    }
   }
 
   async function submit_val(stype = '_base') {
