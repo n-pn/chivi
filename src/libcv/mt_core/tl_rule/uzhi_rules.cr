@@ -55,7 +55,7 @@ module CV::TlRule
     "兆" => "điềm",
     "癖" => "ham thích",
     "计" => "kế sách",
-    "物" => "của",
+    "物" => "vật",
     "位" => "ngôi",
     "徒" => "kẻ",
     "祖" => "ông tổ",
@@ -64,8 +64,9 @@ module CV::TlRule
     "功" => "công lao",
   }
 
-  def fold_uzhi!(node : MtNode, prev = node.prev, succ = node.succ?) : MtNode
-    return node unless succ
+  def fold_uzhi!(uzhi : MtNode, prev = uzhi.prev?, succ = uzhi.succ?) : MtNode
+    return uzhi unless prev && succ
+    return uzhi if succ.ends?
 
     case succ.key
     when "都"
@@ -78,6 +79,6 @@ module CV::TlRule
 
     prev.dic = 6
     prev.val = "#{succ.val} #{prev.val}"
-    prev.fold_many!(node, succ)
+    prev.fold_many!(uzhi, succ)
   end
 end
