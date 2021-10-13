@@ -1,23 +1,31 @@
 module CV::TlRule
   def heal_vmodal!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    return node.fold_left!(nega) unless succ
-    succ.tag = PosTag::Verb if succ.tag.veno?
+    succ.tag = PosTag::Verb if succ && (succ.veno? || succ.vead?)
 
     case node
-    when .vhui?   then heal_vhui!(node, succ, nega)
-    when .vxiang? then heal_vxiang!(node, succ, nega)
-    else               node.fold_left!(nega)
+    when .vhui?   then node = heal_vhui!(node, succ, nega)
+    when .vxiang? then node = heal_vxiang!(node, succ, nega)
+    else               node = node.fold_left!(nega)
+    end
+
+    if succ && succ.verb?
+      node.tag = succ.tag
+      node.fold!(succ)
+    else
+      node
     end
   end
 
-  def heal_vhui!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    if is_learnable_skill?(succ) || node.prev?(&.key.== "也")
+  def heal_vhui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
+    nega = prev.try(&.adv_bu?)
+
+    if is_learnable_skill?(succ) || prev.try(&.prev?(&.key.== "也"))
       val = nega ? "không biết" : "biết"
     else
       val = nega ? "sẽ không" : "sẽ"
     end
 
-    nega ? nega.fold!(node, val) : node.heal!(val)
+    prev ? prev.fold!(node, val) : node.heal!(val)
   end
 
   def is_learnable_skill?(succ : MtNode?) : Bool
@@ -34,22 +42,22 @@ module CV::TlRule
   def heal_vxiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     if succ
       if succ_is_verb?(succ)
-        node.fold!(succ, "muốn #{succ.val}")
-        return fold_verbs!(node, prev: nega)
+        node.val = "muốn"
       elsif succ.nouns? || succ.pronouns?
-        node.val = "nhớ" unless succ_is_verb?(succ.succ?)
+        unless succ_is_verb?(succ.succ?)
+          node.val = "nhớ"
+          node.tag = PosTag::Verb
+        end
       end
     end
 
     node.fold_left!(nega)
   end
 
-  def succ_is_verb?(node : MtNode) : Bool
+  private def succ_is_verb?(node : MtNode?) : Bool
+    return false unless node
+
     node = fold_adverbs!(node) if node.adverbs?
     node.verbs?
-  end
-
-  def succ_is_verb?(node : Nil) : Nil
-    false
   end
 end
