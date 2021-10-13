@@ -14,8 +14,11 @@ module CV::TlRule
       when .numbers? # , .quantis?
         node = fold_number!(node)
         node = fold_noun_left!(node) if node.nquants? && !node.succ?(&.nouns?)
-      when .vshi?    then next # TODO handle vshi
-      when .vyou?    then next # TODO handle vyou
+      when .vshi? then next # TODO handle vshi
+      when .vyou? then next # TODO handle vyou
+      when .veno?
+        node = heal_veno!(node)
+        node = node.noun? ? fold_noun!(node) : fold_verbs!(node)
       when .vmodals? then node = heal_vmodal!(node)
       when .verbs?   then node = fold_verbs!(node)
       when .adjts?

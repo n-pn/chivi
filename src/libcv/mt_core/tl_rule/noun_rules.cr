@@ -1,10 +1,5 @@
 module CV::TlRule
   def fold_noun!(node : MtNode) : MtNode
-    if node.veno?
-      node = heal_veno!(node)
-      return node if node.verbs?
-    end
-
     while node.nouns?
       break unless succ = node.succ?
 
@@ -64,31 +59,6 @@ module CV::TlRule
     node
   end
 
-  def heal_veno!(node : MtNode)
-    return node unless succ = node.succ?
-
-    case succ
-    when .puncts?
-      tag = node.prev?(&.preposes?) ? PosTag::Verb : PosTag::Noun
-      return node.heal!(tag: tag)
-    when .suf_nouns?
-      return node.heal!(tag: PosTag::Noun)
-    when .auxils?
-      return node.heal!(tag: PosTag::Verb)
-    end
-
-    return node unless prev = node.prev?
-
-    case prev
-    when .adverbs?, .preposes?, .vmodals?, .vdir?, .vpro?
-      node.heal!(tag: PosTag::Verb)
-    when .auxils?
-      node.heal!(tag: PosTag::Noun)
-    else
-      node
-    end
-  end
-
   def fold_noun_left!(node : MtNode, mode = 1)
     return node if node.veno?
 
@@ -113,8 +83,8 @@ module CV::TlRule
         node.tag = PosTag::Nform
         return fold_prodeic_noun!(prev, node)
       when .prointrs?
-        val = prev.key == "什么" ? "gì đó" : prev.val
-        return node.fold_left!(prev, "#{node.val} #{val}")
+        val = prev.key == "什么" ? "cái #{node.val} gì" : "#{node.val} #{prev.val}"
+        return node.fold_left!(prev, val)
       when .amorp? then node = node.fold_left!(prev)
       when .place?, .adesc?, .ahao?, .ajno?, .modifier?, .modiform?
         node = node.fold_left!(prev, "#{node.val} #{prev.val}")

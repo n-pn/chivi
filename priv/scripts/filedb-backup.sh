@@ -23,17 +23,17 @@ then
 fi
 
 ## backup user data
+if [[ $1 == "all" || $* == *spec* ]]
+then
+  echo backup tlspecs
+  rsync -aiz --no-p --delete "$SSH/db/tlspecs" "db"
+fi
+
+## backup user data
 if [[ $1 == "all" || $* == *book* ]]
 then
   echo backup books data!
   rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
   rsync -aiz --no-p "$SSH/_db/zhbook/" "_db/zhbook/"
   rsync -aiz --no-p "$SSH/db/chtexts/" "db/chtexts/"
-fi
-
-## backup user data
-if [[ $1 == "all" || $* == *spec* ]]
-then
-  echo backup tlspecs
-  rsync -aiz --no-p --delete "$SSH/db/tlspecs" "db"
 fi

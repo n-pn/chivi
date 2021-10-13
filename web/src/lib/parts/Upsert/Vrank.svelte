@@ -7,7 +7,7 @@
 <script>
   import { hint } from './_shared'
 
-  export let term
+  export let vpterm
   export let rank = 3
 </script>
 
@@ -19,8 +19,8 @@
   {#each lbls as lbl, idx}
     <button
       class="btn"
-      class:_base={term._base.rank == 4 - idx}
-      class:_priv={term._priv.rank == 4 - idx}
+      class:_base={vpterm._base.rank == 4 - idx}
+      class:_priv={vpterm._priv.rank == 4 - idx}
       class:_curr={rank == 4 - idx}
       data-kbd={keys[idx]}
       on:click={() => (rank = 4 - idx)}

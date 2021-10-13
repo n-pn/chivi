@@ -53,35 +53,38 @@
 
   export let _dirty = false
 
-  let cached = {}
-
-  let binh_am = ''
-  let hints = []
-  let terms = []
-
-  let term = new VpTerm({ val: '', ptag: '', rank: 3 })
-
   let key = ''
-  $: if (key) init_search(key, $ztext, $lower, $upper)
+  $: if (key) change_key($ztext, $lower, $upper)
 
-  let value_field
-  $: if (term) focus_on_value()
+  let pinyins = {}
+  let valhint = {}
+  let vpterms = {}
 
-  function focus_on_value() {
-    value_field && value_field.focus()
-  }
+  $: vpterm = (vpterms[key] || [])[$tab] || new VpTerm()
 
-  async function init_search(key, ztext, lower, upper) {
-    if (cached[key]) update_term(cached[key])
+  let focus
+  $: vpterm, focus && focus.focus()
 
+  async function change_key(ztext, lower, upper) {
     const words = gen_words(ztext, lower, upper)
-    if (words.length == 0) return // skip fetching if all words fetched
 
-    const [err, res] = await dict_search(fetch, words, dname)
-    if (err) return console.log({ err, res })
+    if (words.length > 0) {
+      const [err, res] = await dict_search(fetch, words, dname)
+      if (err) return console.log({ err, res })
 
-    if (res[key]) update_term(res[key])
-    for (const k in res) cached[k] = res[k]
+      for (const inp in res) {
+        const data = res[inp]
+        pinyins[inp] = data.binh_am
+        valhint[inp] = data.val_hint
+        vpterms[inp] = [
+          new VpTerm(data.u_priv, data.u_base),
+          new VpTerm(data.c_priv, data.c_base),
+          new VpTerm(data.hanviet, data.hanviet),
+        ]
+      }
+    }
+
+    vpterms = vpterms
   }
 
   function gen_words(hanzi, lower, upper) {
@@ -96,34 +99,19 @@
     if (upper + 3 < hanzi.length) res.push(hanzi.substring(lower, upper + 3))
 
     if (lower > 1) res.push(hanzi.substring(lower - 2, upper))
-
-    return res.filter((x) => x && !cached[x])
-  }
-
-  function update_term(data) {
-    binh_am = data.binh_am
-    hints = data.val_hint
-
-    terms = [
-      new VpTerm(data.u_priv, data.u_base),
-      new VpTerm(data.c_priv, data.c_base),
-      new VpTerm(data.hanviet, data.hanviet),
-    ]
-
-    term = terms[$tab]
+    return res.filter((x) => x && !vpterms[x])
   }
 
   function change_tab(new_tab) {
     $tab = new_tab
-    term = terms[$tab]
   }
 
   async function submit_val(stype = '_base') {
     const params = {
       key,
-      val: term.val.replace('', '').trim(),
-      attr: term.ptag,
-      rank: term.rank,
+      val: vpterm.val.replace('', '').trim(),
+      attr: vpterm.ptag,
+      rank: vpterm.rank,
       stype,
     }
 
@@ -131,6 +119,12 @@
     const [status] = await dict_upsert(fetch, dnames[$tab], params)
     _dirty = !status
     deactivate()
+  }
+
+  function is_edited(key, tab) {
+    const terms = vpterms[key]
+    if (!terms) return false
+    return !terms[tab].fresh
   }
 </script>
 
@@ -158,7 +152,7 @@
         ztext={$ztext}
         bind:lower={$lower}
         bind:upper={$upper}
-        pinyin={binh_am}
+        pinyin={pinyins[key] || ''}
         bind:output={key} />
 
       <button
@@ -174,9 +168,9 @@
       <button
         class="tab-item _book"
         class:_active={$tab == 0}
-        class:_edited={!terms[0]?.fresh}
+        class:_edited={is_edited(key, 0)}
         data-kbd="x"
-        on:click={() => change_tab(0)}
+        on:click={() => tab.set(0)}
         use:hint={`Từ điển riêng cho [${d_dub}]`}>
         <SIcon name="book" />
         <span>{d_dub}</span>
@@ -185,9 +179,9 @@
       <button
         class="tab-item"
         class:_active={$tab == 1}
-        class:_edited={!terms[1]?.fresh}
+        class:_edited={is_edited(key, 1)}
         data-kbd="c"
-        on:click={() => change_tab(1)}
+        on:click={() => tab.set(1)}
         use:hint={'Từ điển chung cho tất cả các bộ truyện'}>
         <SIcon name="world" />
         <span>Thông dụng</span>
@@ -203,7 +197,7 @@
             <button
               class="-item"
               data-kbd={'c'}
-              on:click={() => change_tab(2)}
+              on:click={() => tab.set(2)}
               use:hint={'Phiên âm Hán Việt cho tên người, sự vật...'}>
               <span>Hán Việt</span>
             </button>
@@ -213,54 +207,52 @@
     </upsert-tabs>
 
     <upsert-body>
-      <Emend {term} p_min={$tab + 1} />
+      <Emend {vpterm} p_min={$tab + 1} />
 
       <div class="field">
-        {#key key}
-          <Vhint {hints} bind:term />
+        <Vhint hints={valhint[key] || []} bind:vpterm />
 
-          <div class="value" class:_fresh={term.fresh}>
-            <input
-              type="text"
-              class="-input"
-              bind:this={value_field}
-              bind:value={term.val}
-              autocomplete="off"
-              autocapitalize={$tab < 1 ? 'words' : 'off'} />
+        <div class="value" class:_fresh={vpterm.fresh}>
+          <input
+            type="text"
+            class="-input"
+            bind:this={focus}
+            bind:value={vpterm.val}
+            autocomplete="off"
+            autocapitalize={$tab < 1 ? 'words' : 'off'} />
 
-            {#if $tab < 2}
-              <button
-                class="postag"
-                data-kbd="p"
-                on:click={() => state.set(2)}
-                use:hint={'Phân loại cụm từ: Danh, động, tính, trạng...'}>
-                {tag_label(term.ptag) || 'Phân loại'}
-              </button>
-            {/if}
-          </div>
+          {#if $tab < 2}
+            <button
+              class="postag"
+              data-kbd="p"
+              on:click={() => state.set(2)}
+              use:hint={'Phân loại cụm từ: Danh, động, tính, trạng...'}>
+              {tag_label(vpterm.ptag) || 'Phân loại'}
+            </button>
+          {/if}
+        </div>
 
-          <Vutil bind:term />
-        {/key}
+        <Vutil bind:vpterm />
       </div>
 
       <div class="vfoot">
-        <Vrank {term} bind:rank={term.rank} />
+        <Vrank {vpterm} bind:rank={vpterm.rank} />
 
         <div class="bgroup">
           <button
-            class="m-btn _lg _fill _left {term.btn_state('_base')}"
+            class="m-btn _lg _fill _left {vpterm.btn_state('_base')}"
             data-kbd="↵"
-            disabled={term.disabled('_base', $session.privi, $tab + 1)}
+            disabled={vpterm.disabled('_base', $session.privi, $tab + 1)}
             use:hint={'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}
             on:click={() => submit_val('_base')}>
             <SIcon name="users" />
-            <span class="submit-text">{term.state}</span>
+            <span class="submit-text">{vpterm.state}</span>
           </button>
 
           <button
-            class="m-btn _lg _fill _right {term.btn_state('_priv')}"
+            class="m-btn _lg _fill _right {vpterm.btn_state('_priv')}"
             data-kbd="⇧↵"
-            disabled={term.disabled('_priv', $session.privi, $tab + 1)}
+            disabled={vpterm.disabled('_priv', $session.privi, $tab + 1)}
             use:hint={'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'}
             on:click={() => submit_val('_priv')}>
             <SIcon name="user" />
@@ -273,7 +265,7 @@
   </upsert-wrap>
 </Gmodal>
 
-<Postag bind:ptag={term.ptag} bind:state={$state} />
+<Postag bind:ptag={vpterm.ptag} bind:state={$state} />
 
 <style lang="scss">
   $gutter: 0.75rem;

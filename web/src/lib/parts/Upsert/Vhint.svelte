@@ -1,36 +1,36 @@
 <script>
   import { tag_label } from '$lib/pos_tag.js'
 
-  export let term
+  export let vpterm
   export let hints
 
-  $: ptag_priv = get_ptag(term, '_priv')
-  $: ptag_base = get_ptag(term, '_base')
-  $: ptag_hint = ptag_priv || ptag_base || term._priv.ptag
+  $: ptag_priv = get_ptag(vpterm, '_priv')
+  $: ptag_base = get_ptag(vpterm, '_base')
+  $: ptag_hint = ptag_priv || ptag_base || vpterm._priv.ptag || ''
 
-  function get_ptag(term, type) {
-    const orig = term[type]
-    return orig.mtime < 0 || orig.ptag == term.ptag ? null : orig.ptag
+  function get_ptag(vpterm, type) {
+    const orig = vpterm[type]
+    return orig.mtime < 0 || orig.ptag == vpterm.ptag ? null : orig.ptag
   }
 </script>
 
 <div class="hints">
   {#each hints as hint, idx (hint)}
-    {#if (idx == 0 || hint != term.val.trim()) && hint}
+    {#if (idx == 0 || hint != vpterm.val.trim()) && hint}
       <button
         class="hint"
-        class:_base={term._base.mtime >= 0 && hint == term._base.val}
-        class:_priv={term._priv.mtime >= 0 && hint == term._priv.val}
-        on:click={() => (term.val = hint)}>{hint}</button>
+        class:_base={vpterm._base.mtime >= 0 && hint == vpterm._base.val}
+        class:_priv={vpterm._priv.mtime >= 0 && hint == vpterm._priv.val}
+        on:click={() => (vpterm.val = hint)}>{hint}</button>
     {/if}
   {/each}
 
-  {#if ptag_hint != term.ptag}
+  {#if ptag_hint != vpterm.ptag}
     <button
       class="hint _ptag"
       class:_base={ptag_hint == ptag_base}
       class:_priv={ptag_hint == ptag_priv}
-      on:click={() => (term.ptag = ptag_hint)}>{tag_label(ptag_hint)}</button>
+      on:click={() => (vpterm.ptag = ptag_hint)}>{tag_label(ptag_hint)}</button>
   {/if}
 </div>
 
