@@ -20,7 +20,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
               next unless entry.utime
 
               jb.object {
-                jb.field "zhtxt", entry.zhtxt
+                jb.field "ztext", entry.ztext
                 jb.field "utime", entry.utime
 
                 jb.field "uname", entry.uname
@@ -36,11 +36,11 @@ class CV::TlspecCtrl < CV::BaseCtrl
     end
   end
 
-  private def extract_zhtxt
-    zhtxt = params["zhtxt"]?
-    return halt! 400, "Câu văn gốc không được để trắng!" unless zhtxt
-    return halt! 403, "Câu văn gốc quá dài, mời nhập lại" if zhtxt.size > 200
-    zhtxt
+  private def extract_ztext
+    ztext = params["ztext"]?
+    return halt! 400, "Câu văn gốc không được để trắng!" unless ztext
+    return halt! 403, "Câu văn gốc quá dài, mời nhập lại" if ztext.size > 200
+    ztext
   end
 
   private def extract_unote
@@ -52,11 +52,11 @@ class CV::TlspecCtrl < CV::BaseCtrl
 
   def create
     return halt! 403, "Quyền hạn của bạn không đủ, mời thử lại sau." if cu_privi < 1
-    return unless zhtxt = extract_zhtxt
+    return unless ztext = extract_ztext
     return unless unote = extract_unote
 
     entry = Tlspec.init!
-    entry.push ["zhtxt", zhtxt]
+    entry.push ["ztext", ztext]
 
     ctime = Time.utc.to_unix.to_s
     dname = params["dname"]? || "combine"
@@ -87,7 +87,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
 
     json_view do |jb|
       jb.object {
-        jb.field "zhtxt", entry.zhtxt
+        jb.field "ztext", entry.ztext
         jb.field "dname", entry.dname
         jb.field "slink", entry.slink
 

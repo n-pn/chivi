@@ -116,7 +116,7 @@
   <Tlspec
     {dname}
     {d_dub}
-    zhtxt={zhtext[hover_line]}
+    ztext={zhtext[hover_line]}
     slink="{$page.path}#L{hover_line}" />
 {/if}
 

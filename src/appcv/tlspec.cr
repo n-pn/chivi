@@ -24,7 +24,7 @@ class CV::Tlspec
   getter file : String
   getter ukey : String
 
-  property zhtxt : String = ""
+  property ztext : String = ""
 
   property unote : String = ""   # expected result/translation note
   property uname : String? = nil # original poster uname
@@ -51,8 +51,8 @@ class CV::Tlspec
     @_logs << rows
 
     case rows[0]?
-    when "zhtxt"
-      @zhtxt = rows[1]? || "???"
+    when "ztext", "zhtxt"
+      @ztext = rows[1]? || "???"
     when "_orig"
       @ctime = @utime = parse_time(rows[2]?)
       @dname = rows[1]? || "combine"

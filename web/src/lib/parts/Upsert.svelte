@@ -6,17 +6,17 @@
 
   export const tab = writable(0)
   export const state = writable(0)
-  export const zhtxt = writable('')
+  export const ztext = writable('')
   export const lower = writable(0)
   export const upper = writable(1)
 
   export function activate(data, active_tab = 0, active_state = 1) {
     if (typeof data == 'string') {
-      zhtxt.set(data)
+      ztext.set(data)
       lower.set(0)
       upper.set(data.length)
     } else {
-      zhtxt.set(data[0])
+      ztext.set(data[0])
       lower.set(data[1])
       upper.set(data[2])
     }
@@ -62,7 +62,7 @@
   let term = new VpTerm({ val: '', ptag: '', rank: 3 })
 
   let key = ''
-  $: if (key) init_search(key, $zhtxt, $lower, $upper)
+  $: if (key) init_search(key, $ztext, $lower, $upper)
 
   let value_field
   $: if (term) focus_on_value()
@@ -71,10 +71,10 @@
     value_field && value_field.focus()
   }
 
-  async function init_search(key, zhtxt, lower, upper) {
+  async function init_search(key, ztext, lower, upper) {
     if (cached[key]) update_term(cached[key])
 
-    const words = gen_words(zhtxt, lower, upper)
+    const words = gen_words(ztext, lower, upper)
     if (words.length == 0) return // skip fetching if all words fetched
 
     const [err, res] = await dict_search(fetch, words, dname)
@@ -155,7 +155,7 @@
       </CMenu>
 
       <Input
-        zhtxt={$zhtxt}
+        ztext={$ztext}
         bind:lower={$lower}
         bind:upper={$upper}
         pinyin={binh_am}

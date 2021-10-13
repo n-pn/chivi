@@ -20,7 +20,7 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
-  export let zhtxt = ''
+  export let ztext = ''
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
   export let slink = '.'
@@ -34,14 +34,14 @@
   }
 
   async function handle_submit() {
-    const params = { zhtxt, dname, slink, unote, label }
+    const params = { ztext, dname, slink, unote, label }
     const [status, payload] = await submit_tlspec(params)
     if (status) error = payload
     else hide_tlspec()
   }
 
-  function invalid_input(zhtxt, unote) {
-    if (!zhtxt || zhtxt.length > 200) return true
+  function invalid_input(ztext, unote) {
+    if (!ztext || ztext.length > 200) return true
     return !unote || unote.length > 500
   }
 </script>
@@ -87,12 +87,12 @@
 
         <form-group>
           <form-field>
-            <label for="zhtxt">Câu văn gốc (cắt ngắn cho phù hợp)</label>
+            <label for="ztext">Câu văn gốc (cắt ngắn cho phù hợp)</label>
             <textarea
               class="m-input _zh"
-              name="zhtxt"
+              name="ztext"
               placeholder="Text tiếng trung"
-              bind:value={zhtxt} />
+              bind:value={ztext} />
           </form-field>
         </form-group>
 
@@ -128,7 +128,7 @@
           <button
             type="submit"
             class="m-btn _primary _lg _fill"
-            disabled={invalid_input(zhtxt, unote)}>
+            disabled={invalid_input(ztext, unote)}>
             <SIcon name="send" />
             <span>Báo lỗi</span>
           </button>
