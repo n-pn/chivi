@@ -1,15 +1,11 @@
 require "../../../cutil/text_utils"
 
 module CV::MTL::ApplyCap
-  def apply_cap!(cap : Bool = true) : self
-    node = self
-
-    while node
-      cap = node.capitalize!(cap)
-      node = node.succ?
-    end
-
-    self
+  def apply_cap!(cap : Bool = true) : Bool
+    cap = self.capitalize!(cap)
+    @body.try { |x| cap = x.apply_cap!(cap) }
+    @succ.try { |x| cap = x.apply_cap!(cap) }
+    cap
   end
 
   def capitalize!(cap : Bool = false) : Bool

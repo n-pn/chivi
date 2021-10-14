@@ -11,6 +11,7 @@ class CV::MtNode
   property! prev : MtNode
   property! succ : MtNode
   property! body : MtNode
+  property fold = 0_i8
 
   forward_missing_to @tag
 
@@ -84,4 +85,5 @@ class CV::MtNode
   include MTL::Transform
   include MTL::Serialize
   include MTL::ApplyCap
+  include MTL::PadSpace
 end

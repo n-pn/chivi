@@ -1,9 +1,16 @@
 require "./tl_rule/*"
 
 module CV::TlRule
-  def fix_grammar!(node : MtNode, mode = 1)
+  def fix_grammar!(node : MtNode, mode = 1) : Nil
     while node = node.succ?
       case node.tag
+      when .puncts?
+        case node.tag
+        when .quoteop? then node = fold_quotes!(node, mode: mode)
+        else
+          # TODO
+          node
+        end
       when .auxils?   then node = heal_auxils!(node, mode: mode)
       when .strings?  then node = fold_strings!(node)
       when .preposes? then node = fold_preposes!(node)
@@ -46,10 +53,6 @@ module CV::TlRule
         node = fix_by_key!(node)
       end
     end
-
-    self
-  rescue err
-    self
   end
 
   private def fix_by_key!(node : MtNode, succ = node.succ?) : MtNode

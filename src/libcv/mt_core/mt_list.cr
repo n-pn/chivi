@@ -1,6 +1,5 @@
 require "./mt_node"
 require "./tl_rule"
-require "./mt_list/*"
 
 class CV::MtList
   include MTL::PadSpace
@@ -39,7 +38,7 @@ class CV::MtList
   end
 
   def to_s(io : IO) : Nil
-    each { |node| io << node.val }
+    @head.succ?(&.print_val(io))
   end
 
   def to_str : String
@@ -56,6 +55,11 @@ class CV::MtList
 
   def capitalize!(cap = true) : self
     @head.apply_cap!(cap)
+    self
+  end
+
+  def pad_spaces! : self
+    @head.succ?.try(&.pad_spaces!(@head))
     self
   end
 

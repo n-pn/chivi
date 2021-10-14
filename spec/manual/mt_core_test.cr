@@ -77,11 +77,14 @@ list = GENERIC.cv_plain(text)
 puts list, list.inspect
 
 puts GENERIC.cv_plain("……怎么也这么好看。")
-puts GENERIC.cv_plain("飞卢中文网A级签约作品").inspect
-puts GENERIC.cv_plain("许七安越说越兴奋").inspect
-puts GENERIC.cv_plain("越说越兴奋").inspect
-puts GENERIC.translit("许七安越说越兴奋").inspect
-puts GENERIC.cv_plain("第二个反应是：").inspect
+pp GENERIC.cv_plain("飞卢中文网A级签约作品")
+pp GENERIC.cv_plain("许七安越说越兴奋")
+pp GENERIC.cv_plain("越说越兴奋")
+pp GENERIC.translit("许七安越说越兴奋")
+pp GENERIC.cv_plain("第二个反应是：")
 
 test_convert("【第006章】我的美女死党", mode: 2)
 test_convert("百分之九十九点九九")
+
+puts GENERIC.cv_plain("‘成功了！’").to_str
+puts GENERIC.cv_plain("奥西克丽丝浑身颤抖的指向了大门说道：“快出去！”").to_str

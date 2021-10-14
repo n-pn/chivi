@@ -14,55 +14,116 @@ function escape_html(str) {
   return str.replace(/[&<>]/g, replace_tag)
 }
 
-export function render_zh(data) {
-  let res = ''
-  let idx = 0
+export class MtData {
+  static render_zh(input) {
+    let res = ''
+    let idx = 0
 
-  for (const key of Array.from(data)) {
-    res += `<c-z data-d=1>`
+    for (const key of Array.from(input)) {
+      res += `<c-z data-d=1>`
 
-    for (const k of Array.from(key)) {
-      res += `<c-v data-d=2 data-i=${idx} data-l=1>${escape_html(k)}</c-v>`
-      idx += 1
+      for (const k of Array.from(key)) {
+        res += `<c-v data-d=2 data-i=${idx} data-l=1>${escape_html(k)}</c-v>`
+        idx += 1
+      }
+
+      res += '</c-z>'
     }
 
-    res += '</c-z>'
+    return res
   }
 
-  return res
-}
+  static parse_lines(input = '') {
+    const lines = input.split('\n')
+    const output = []
 
-export function split_mtdata(input = '') {
-  const lines = input.split('\n')
-  const output = []
+    for (let i = 0; i < lines.length; i++) {
+      output.push(new MtData(lines[i]))
+    }
 
-  for (let i = 0; i < lines.length; i++) {
-    output.push(new MtData(lines[i]))
+    return output
   }
 
-  return output
-}
+  constructor(input) {
+    const chars = Array.from(input)
+    this.data = this.parse(chars, 0)[0]
+  }
 
-export class MtData {
-  constructor(data) {
-    this.data = data.split('\t').map((x) => x.split('ǀ'))
+  parse(chars, i = 0) {
+    const data = []
+    let term = []
+    let word = ''
+
+    while (i < chars.length) {
+      const char = chars[i]
+      i += 1
+
+      switch (char) {
+        case '〉':
+          if (word) term.push(word)
+          if (term.length > 0) data.push(term)
+          return [data, i]
+
+        case '〈':
+          if (word) term.push(word)
+          if (term.length > 0) data.push(term)
+          const fold = chars[i]
+          const [child, j] = this.parse(chars, i + 1)
+          data.push([child, fold])
+          i = j
+
+          word = ''
+          term = []
+
+          break
+
+        case '\t':
+          if (word) term.push(word)
+          if (term.length > 0) data.push(term)
+
+          word = ''
+          term = []
+
+          break
+
+        case 'ǀ':
+          term.push(word)
+          word = ''
+          break
+
+        default:
+          word += char
+      }
+    }
+
+    if (word) term.push(word)
+    if (term.length > 0) data.push(term)
+
+    return [data, i]
   }
 
   get text() {
-    this._text = this._text || this.render(true)
+    this._text = this._text || this.render(this.data, true)
     return this._text
   }
 
   get html() {
-    this._html = this._html || this.render(false)
+    this._html = this._html || this.render(this.data, false)
     return this._html
   }
 
-  render(plain = true) {
+  render(data, plain = true) {
     let res = ''
     let lvl = 0
 
-    for (const [val, dic, idx, len] of this.data) {
+    for (const [val, dic, idx, len] of data) {
+      if (Array.isArray(val)) {
+        res += `<c-g data-d=${dic}>`
+        res += this.render(val, plain)
+        res += '</c-g>'
+        continue
+      }
+
       if (val == ' ') {
         res += ' '
         continue

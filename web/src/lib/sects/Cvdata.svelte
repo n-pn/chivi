@@ -16,7 +16,7 @@
   import { session } from '$app/stores'
 
   import { ftsize } from '$lib/stores'
-  import { split_mtdata } from '$lib/mt_data'
+  import { MtData } from '$lib/mt_data'
   import read_selection from '$utils/read_selection'
 
   import SIcon from '$atoms/SIcon.svelte'
@@ -33,7 +33,7 @@
 
   let debug = true
 
-  $: lines = split_mtdata(cvdata)
+  $: lines = MtData.parse_lines(cvdata)
 
   let hover_line = 0
   let focus_line = 0
