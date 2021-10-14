@@ -3,15 +3,14 @@ module CV::TlRule
     return node unless succ
     node.tag = PosTag::Place
 
-    case succ.key
-    when "上"
+    case succ.tag
+    when .vshang?
       node.fold!("trên #{node.val}")
-    when "下"
+    when .vxia?
       node.fold!("dưới #{node.val}")
-    when "之前"
-      node.fold!("trước #{node.val}")
     else
-      node.fold!("#{succ.val} #{node.val}")
+      val = succ.key == "之前" ? "trước" : succ.val
+      node.fold!("#{val} #{node.val}")
     end
   end
 end

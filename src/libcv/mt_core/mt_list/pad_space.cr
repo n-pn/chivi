@@ -27,12 +27,12 @@ module CV::MTL::PadSpace
     when .numlat?
       return false if left.tag.plsgn? || left.tag.mnsgn?
       # when .pdash?  then return !left.tag.puncts?
-    when .quotecl?, .brackcl?, .titlecl?,
+    when .quotecl?, .parencl?, .brackcl?, .titlecl?,
          .comma?, .penum?, .pstop?, .pdeci?,
          .smcln?, .exmark?, .qsmark?, .ellip?,
          .tilde?, .squanti?, .perct?
       return left.tag.colon?
-    when .quoteop?, .brackop?, .titleop?
+    when .quoteop?, .parenop?, .brackop?, .titleop?
       return should_space_left?(left)
     when .puncts?
       case left.tag
@@ -48,7 +48,7 @@ module CV::MTL::PadSpace
 
   def should_space_left?(left : MtNode)
     case left.tag
-    when .quoteop?, .brackop?, .titleop?
+    when .quoteop?, .parenop?, .brackop?, .titleop?
       false
     else
       true

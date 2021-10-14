@@ -7,7 +7,7 @@ struct CV::PosTag
 
   {% begin %}
     TYPES = {{ NOUNS + PRONOUNS + NUMBERS + VERBS + ADJTS + ADVERBS +
-                 MISCS + AFFIXES + AUXILS + PUNCTS }}
+                 AFFIXES + AUXILS + PUNCTS + MISCS + UNIQS }}
   {% end %}
 
   enum Tag

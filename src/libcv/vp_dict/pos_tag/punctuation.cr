@@ -19,8 +19,10 @@ struct CV::PosTag
     {"wqt", "Squanti", Pos::Puncts},               # full or half-length unit symbol ￥ ＄ ￡ ° ℃  $
     {"wyz", "Quoteop", Pos::Puncts},               # full-length single or double opening quote: “ ‘ 『
     {"wyy", "Quotecl", Pos::Endsts | Pos::Puncts}, # full-length single or double closing quote: ” ’ 』
+    {"wpz", "Parenop", Pos::Puncts},               # opening parentheses: （ 〔 of full length; ( of half length
+    {"wpy", "Parencl", Pos::Endsts | Pos::Puncts}, # closing parentheses: ） 〕 of full length; ) of half length
     {"wkz", "Brackop", Pos::Puncts},               # opening brackets: （ 〔 ［ ｛ 【 〖 of full length; ( [ { of half length
-    {"wky", "Brackcl", Pos::Endsts | Pos::Puncts}, # closing brackets: ） 〕 ］ ｝ 】 〗 of full length;  ) ] } of half length
+    {"wky", "Brackcl", Pos::Endsts | Pos::Puncts}, # closing brackets: ］ ｝ 】 〗 of full length; ] } of half length
     {"wwz", "Titleop", Pos::Puncts},               # open title《〈 ⟨
     {"wwy", "Titlecl", Pos::Endsts | Pos::Puncts}, # close title 》〉⟩
     {"w", "Punct", Pos::Puncts},                   # 标点符号 - symbols and punctuations - dấu câu

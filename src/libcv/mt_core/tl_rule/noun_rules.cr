@@ -43,9 +43,11 @@ module CV::TlRule
         else return node
         end
       when .concoord?
+        node.tag = PosTag::Nphrase
         node = fold_concoord!(node, succ, succ.succ?)
         return node if node.succ == succ
       when .penum?
+        node.tag = PosTag::Nphrase
         node = fold_penum!(node, succ, succ.succ?)
         return node if node.succ == succ
       when .suf_verb?

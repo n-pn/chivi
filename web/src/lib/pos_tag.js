@@ -8,6 +8,7 @@ export const labels = {
   nw: 'Danh xưng',
 
   n: 'Danh từ',
+  nc: 'Danh từ trừu tượng',
   s: 'Nơi chốn',
   f: 'Phương vị',
   t: 'Thời gian',
@@ -123,8 +124,10 @@ export const labels = {
   wqt: '￥＄￡℃°',
   wyz: 'Mở trích',
   wyy: 'Đóng trích',
-  wkz: 'Mở ngoặc',
-  wky: 'Đóng ngoặc',
+  wpz: 'Mở ngoặc (',
+  wky: 'Đóng ngoặc )',
+  wkz: 'Mở ngoặc [ {',
+  wky: 'Đóng ngoặc ] }',
   wwz: 'Mở tựa',
   wwy: 'Đóng tựa',
   w: 'Dấu câu khác',
@@ -144,8 +147,8 @@ export const groups = [
     'ns','nt', 'nz',
     'nr', 'nf',
     '-',
-    'n', 'nw', 't',
-    's', 'f',
+    'n', 'nw', // 'nc',
+    't', 's', 'f',
     '-',
     'a', 'an', 'ad',
     'b', 'az',
@@ -197,8 +200,9 @@ export const groups = [
     'wqs', 'wsc', 'wti',
     'wat', 'wps', 'wms',
     'wpc', 'wqt', 'wyz',
-    'wyy', 'wkz', 'wky',
-    'wwz', 'wwy', 'w'
+    'wyy', 'wpz', 'wpy',
+    'wkz', 'wky', 'wwz',
+    'wwy', 'w'
   ],
 ]
 

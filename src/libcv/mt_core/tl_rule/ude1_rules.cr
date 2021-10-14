@@ -72,7 +72,10 @@ module CV::TlRule
 
   def heal_ude1!(node : MtNode, mode = 1) : MtNode
     return node unless prev = node.prev?
-    return node if prev.puncts?
+    if prev.puncts?
+      node.val = "" if prev.brackop? || prev.parenop? || prev.titleop?
+      return node
+    end
 
     node.val = ""
     return node if mode < 0

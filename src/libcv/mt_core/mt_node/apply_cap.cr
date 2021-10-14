@@ -32,8 +32,9 @@ module CV::MTL::ApplyCap
          .pstop?, .colon?, .middot?, .titleop?
       true
     when .pdeci?   then @prev.try { |x| x.numlat? || x.string? } || prev
-    when .brackop? then @val[0] == '(' ? prev : true
-    else                prev
+    when .brackop? then true
+      # when .parenop? then  prev
+    else prev
     end
   end
 end

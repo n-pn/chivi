@@ -5,9 +5,11 @@ struct CV::PosTag
     Contws; Funcws; Puncts; Endsts; Starts
 
     Nouns; Names; Human; Pronouns
-    Verbs; Vmodals; Adjts; Adverbs
+    Verbs; Vmodals; Vcompls
 
-    Numbers; Quantis; Strings
+    Adjts; Adverbs
+
+    Numbers; Quantis; Nquants; Strings
 
     Auxils; Preposes
 

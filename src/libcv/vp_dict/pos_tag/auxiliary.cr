@@ -1,6 +1,7 @@
 struct CV::PosTag
   AUXILS = {
     {"u", "Auxi", Pos::Auxils | Pos::Funcws},      # 助词 - particle/auxiliary - trợ từ
+    {"uzhi", "Uzhi", Pos::Auxils | Pos::Funcws},   # 之
     {"uzhe", "Uzhe", Pos::Auxils | Pos::Funcws},   # 着
     {"ule", "Ule", Pos::Auxils | Pos::Funcws},     # 了 喽
     {"uguo", "Uguo", Pos::Auxils | Pos::Funcws},   # 过
@@ -12,7 +13,6 @@ struct CV::PosTag
     {"uyy", "Uyy", Pos::Auxils | Pos::Funcws},     # 一样 一般 似的 般
     {"udh", "Udh", Pos::Auxils | Pos::Funcws},     # 的话
     {"uls", "Uls", Pos::Auxils | Pos::Funcws},     # 来讲 来说 而言 说来
-    {"uzhi", "Uzhi", Pos::Auxils | Pos::Funcws},   # 之
     {"ulian", "Ulian", Pos::Auxils | Pos::Funcws}, # 连 （“连小学生都会”）
   }
 

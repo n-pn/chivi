@@ -8,6 +8,11 @@ module CV::TlRule
         node.val = "thật" if node.tag.ahao?
         node.tag = PosTag::Adjt
         node.fold!(succ)
+      when .noun?
+        return node unless node.key.size == 1 # or special case
+        succ = fold_noun!(succ)
+        node.tag = PosTag::Nphrase
+        return node.fold!(succ, val: "#{succ.val} #{node.val}", dic: 7)
       when .verb?
         break unless node.key.size == 1
         succ = fold_verbs!(succ)
@@ -18,7 +23,7 @@ module CV::TlRule
         end
 
         node = fold_adj_adv!(node, prev) if prev
-        node.tag = PosTag::Vform
+        node.tag = PosTag::Vphrase
         return node.fold!(succ, "#{succ.val} #{node.val}")
       when .ude2?
         break unless succ_2 = succ.succ?
@@ -29,13 +34,8 @@ module CV::TlRule
 
         node.val = "#{node.val} mà #{succ_2.val}"
         node.dic = 7
-        node.tag = PosTag::Vform
+        node.tag = PosTag::Vphrase
         return node.fold_many!(succ, succ_2)
-      when .noun?
-        return node unless node.key.size == 1 # or special case
-        succ = fold_noun!(succ)
-        node.tag = PosTag::Nphrase
-        return node.fold!(succ, val: "#{succ.val} #{node.val}", dic: 7)
       when .suf_nouns?
         return fold_suf_noun!(node, succ)
       when .uzhi?
@@ -43,9 +43,14 @@ module CV::TlRule
         return node = fold_uzhi!(succ, node)
       when .suf_verbs?
         return fold_suf_verb!(node, succ)
+      when .penum?
+        break unless succ_2 = succ.succ?
+        node.tag = PosTag::Vphrase
+        node = fold_penum!(node, succ, succ_2, force: succ_2.adjts?)
+        break if node.succ == succ
       when .concoord?
         break unless succ_2 = succ.succ?
-        # TODO: change tag accordingly
+        node.tag = PosTag::Vphrase
         node = fold_concoord!(node, succ, succ_2, force: succ_2.adjts?)
         break if node.succ == succ
       when .adv_bu?
@@ -64,11 +69,6 @@ module CV::TlRule
         end
 
         break
-      when .penum?
-        break unless succ_2 = succ.succ?
-        # TODO: change tag accordingly
-        node = fold_penum!(node, succ, succ_2, force: succ_2.adjts?)
-        break if node.succ == succ
       else
         break
       end

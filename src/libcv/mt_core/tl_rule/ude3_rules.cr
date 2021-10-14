@@ -39,6 +39,7 @@ module CV::TlRule
 
     end
 
+    node.tag = PosTag::Vphrase
     node
   end
 

@@ -2,6 +2,9 @@ struct CV::PosTag
   NOUNS = {
     # 名词 - noun - danh từ chung
     {"n", "Noun", Pos::Nouns | Pos::Contws},
+    # 抽象概念 - abstract concept - danh từ trừu tượng
+    {"nc", "Ncon", Pos::Nouns | Pos::Contws},
+
     # 名词性语素 - nominal formulaic expression
     {"nl", "Nform", Pos::Nouns | Pos::Contws},
     # 名词性语素 - nominal morpheme
