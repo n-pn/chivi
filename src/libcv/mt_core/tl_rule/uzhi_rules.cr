@@ -6,6 +6,7 @@ module CV::TlRule
     "别" => "khác biệt",
     "机" => "cơ hội",
     "子" => "con trai",
+    "女" => "con gái",
     "意" => "ý",
     "主" => "chủ nhân",
     "路" => "con đường",
