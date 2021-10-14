@@ -10,10 +10,14 @@ module CV::TlRule
         node.fold!(succ)
       when .verb?
         break unless node.key.size == 1
-        node.val = "thật" if node.tag.ahao?
+        succ = fold_verbs!(succ)
+
+        if succ.verbs? && node.tag.ahao?
+          node.tag = PosTag::Verb
+          return node.fold!(succ, "thật #{succ.val}")
+        end
 
         node = fold_adj_adv!(node, prev) if prev
-        succ = fold_verbs!(succ)
         node.tag = PosTag::Vform
         return node.fold!(succ, "#{succ.val} #{node.val}")
       when .ude2?
@@ -30,7 +34,7 @@ module CV::TlRule
       when .noun?
         return node unless node.key.size == 1 # or special case
         succ = fold_noun!(succ)
-        node.tag = PosTag::Nform
+        node.tag = PosTag::Nphrase
         return node.fold!(succ, val: "#{succ.val} #{node.val}", dic: 7)
       when .suf_nouns?
         return fold_suf_noun!(node, succ)
@@ -48,12 +52,12 @@ module CV::TlRule
         break unless (succ_2 = succ.succ?)
 
         if prev && prev.adv_bu?
-          prev.tag = PosTag::Aform
+          prev.tag = PosTag::Aphrase
           prev.dic = 6
           prev.val = "không #{node.val} không #{node.val}"
           return prev.fold_many!(node, succ, succ_2)
         elsif succ_2.key == node.key
-          node.tag = PosTag::Aform
+          node.tag = PosTag::Aphrase
           node.dic = 6
           node.val = "#{node.val} hay không"
           node.fold_many!(node, succ, succ_2)
@@ -81,7 +85,7 @@ module CV::TlRule
 
   def fold_adj_adv!(node : MtNode, prev = node.prev?)
     return node unless prev
-    prev.tag = PosTag::Aform
+    prev.tag = PosTag::Aphrase
 
     case prev.key
     when "最", "那么", "这么", "非常"

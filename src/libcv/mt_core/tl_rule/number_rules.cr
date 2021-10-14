@@ -22,7 +22,7 @@ module CV::TlRule
       if (succ_2 = succ.succ?) && succ_2.numbers?
         node.val = "#{node.val} đối #{succ_2.val}"
         node.dic = 6
-        node.tag = PosTag::Aform
+        node.tag = PosTag::Aphrase
         return node.fold_many!(succ, succ_2)
       end
 

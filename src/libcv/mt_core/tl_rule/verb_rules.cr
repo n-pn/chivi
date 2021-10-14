@@ -10,12 +10,15 @@ module CV::TlRule
         val = keep_ule?(node, succ) ? "#{node.val} rồi" : node.val
         node.fold!(succ, val)
 
-        # TODO: fold nunbers
-        if (succ_2 = succ.succ?) && succ_2.nquant?
+        break unless (succ = succ.succ?) && succ.nquants?
+        succ = fold_number!(succ)
+
+        if succ.nquant?
           node.tag = PosTag::Vform
           node.fold!(succ, dic: 6)
-          break
         end
+
+        break
       when .ude2?
         break unless succ_2 = succ.succ?
         break unless succ_2.verb? || succ_2.veno?
@@ -25,7 +28,7 @@ module CV::TlRule
 
         node.val = "#{succ_2.val} một cách #{node.val}"
         node.dic = 7
-        node.tag = PosTag::Vform
+        node.tag = PosTag::Verb
         return node.fold_many!(succ, succ_2)
       when .ude3?
         return fold_verb_ude3!(node, succ)
@@ -37,10 +40,20 @@ module CV::TlRule
       when .uzhe?
         node = fold_verb_uzhe!(node, succ)
         break if node.vform?
-      when .nquant?
-        # TODO: fold nunbers
-        unless succ.succ?(&.nouns?)
-          node.tag = PosTag::Vform
+      when .pre_dui?
+        node = node.fold!(succ, "#{node.val} đúng")
+      when .adv_bu?
+        break unless (succ_2 = succ.succ?) && succ_2.key == node.key
+
+        # TODO: combine with object
+        node.dic = 7
+        node.val = "#{node.val} hay không"
+        node = node.fold_many!(succ, succ_2)
+      when .nquants?
+        succ = fold_number!(succ)
+
+        if succ.nquant? && !succ.succ?(&.nouns?)
+          node.tag = PosTag::Vphrase
           node.fold!(succ, dic: 6)
         end
 
@@ -83,7 +96,7 @@ module CV::TlRule
       succ = fold_verbs!(succ)
       prev.val = "#{prev.val} #{succ.val}"
 
-      prev.tag = PosTag::Vform
+      prev.tag = PosTag::Verb
       prev.dic = 6
 
       prev.fold_many!(node, succ)

@@ -43,7 +43,7 @@ module CV::TlRule
   end
 
   def fold_verb_ude2_succ!(node : MtNode, succ : MtNode, succ_2 : MtNode) : MtNode
-    node.tag = PosTag::Vform
+    node.tag = PosTag::Vphrase
     node.dic = 6
     node.val = "#{node.val} #{succ_2.val}"
     node.fold_many!(succ, succ_2)

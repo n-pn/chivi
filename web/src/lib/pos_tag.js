@@ -40,10 +40,10 @@ export const labels = {
   r: 'Đại từ chưa phân loại',
 
   i: 'Thành/quán ngữ',
-  nl: 'Cụm danh từ',
-  vl: 'Cụm động từ',
-  al: 'Cụm hình dung từ',
-  bl: 'Cụm khu biệt từ',
+  nl: 'Danh quán ngữ',
+  vl: 'Động quán ngữ',
+  al: 'Hình quán ngữ',
+  bl: 'Khu biệt quán ngữ',
 
   m: 'Số từ',
   mx: 'Chữ ả rập',
@@ -130,6 +130,11 @@ export const labels = {
   w: 'Dấu câu khác',
 
   sp: 'Từ đặc biệt',
+  vp: 'Cụm động từ',
+  np: 'Cụm danh từ',
+  ap: 'Cụm tính từ',
+  sv: 'Cụm chủ + vị (động)',
+  sa: 'Cụm chủ + vị (tính)',
 }
 
 export const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt', 'Dấu câu']

@@ -50,7 +50,8 @@ module CV::TlRule
   private def fix_by_key!(node : MtNode, succ = node.succ?) : MtNode
     case node.key
     when "完"
-      node.tag == PosTag::Verb
+      node.val = "nộp"
+      node.tag = PosTag::Verb
       return fold_verbs!(node)
     when "对不起"
       boundary?(succ) ? node : fold_verbs!(node.heal!("có lỗi với", PosTag::Verb))

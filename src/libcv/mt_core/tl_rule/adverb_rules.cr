@@ -28,6 +28,12 @@ module CV::TlRule
     return node unless succ
 
     case succ.tag
+    when .veno?
+      succ = heal_veno!(succ)
+      return node.heal!("không có") if succ.noun?
+
+      node.val = "chưa"
+      fold_verbs!(succ, node)
     when .verbs?
       node.val = succ.succ?(&.uzhe?) ? "không" : "chưa"
       fold_verbs!(succ, node)

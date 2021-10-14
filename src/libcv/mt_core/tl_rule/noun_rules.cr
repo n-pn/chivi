@@ -76,11 +76,11 @@ module CV::TlRule
         node = fold_concoord!(prev_2, prev, node, force: true)
       when .nquants?
         break if node.veno? || node.ajno?
-        prev.tag = PosTag::Nform
+        prev.tag = PosTag::Nphrase
         prev.val = prev.val.sub(" cái", "") if prev.key.ends_with?('个')
         node = prev.fold!(node)
       when .prodeics?
-        node.tag = PosTag::Nform
+        node.tag = PosTag::Nphrase
         return fold_prodeic_noun!(prev, node)
       when .prointrs?
         val = prev.key == "什么" ? "cái #{node.val} gì" : "#{node.val} #{prev.val}"
@@ -99,7 +99,7 @@ module CV::TlRule
         break
       end
 
-      node.tag = PosTag::Nform
+      node.tag = PosTag::Nphrase
     end
 
     node

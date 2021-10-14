@@ -15,7 +15,7 @@ module CV::TlRule
     # TODO: combine grammar
 
     case succ.tag
-    when .ude1?
+    when .ude1?, .ule?
       node.tag = PosTag::Adjt
       node.fold!(succ, "đúng")
     when .contws?, .quoteop?
