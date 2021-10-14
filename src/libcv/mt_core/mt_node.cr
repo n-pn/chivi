@@ -10,9 +10,8 @@ class CV::MtNode
 
   property! prev : MtNode
   property! succ : MtNode
-  property! body : MtNode
-  property fold = 0_i8
 
+  property! body : MtNode
   forward_missing_to @tag
 
   def initialize(term : VpTerm, @dic : Int32 = 0, @idx = -1)
@@ -86,4 +85,17 @@ class CV::MtNode
   include MTL::Serialize
   include MTL::ApplyCap
   include MTL::PadSpace
+
+  def self.fold!(head : self, tail : self, tag = PosTag::None, dic = 2)
+    root = new("", "", tag, dic, head.idx)
+    root.body = head
+
+    root.fix_prev!(head.prev?)
+    head.fix_prev!(nil)
+
+    root.fix_succ!(tail.succ?)
+    tail.fix_succ!(nil)
+
+    root
+  end
 end

@@ -87,4 +87,7 @@ test_convert("【第006章】我的美女死党", mode: 2)
 test_convert("百分之九十九点九九")
 
 puts GENERIC.cv_plain("‘成功了！’").to_str
-puts GENERIC.cv_plain("奥西克丽丝浑身颤抖的指向了大门说道：“快出去！”").to_str
+
+test = "路易翻阅起了漂浮在面前的故事书，发现‘路易’竟然有单独的一页，其中还有一段很特别的描述，他眯着眼睛看了一眼，发现是系统对自己的个人情况评估。"
+res = GENERIC.cv_plain(test)
+puts res.to_str, res

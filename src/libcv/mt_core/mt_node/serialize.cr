@@ -1,7 +1,11 @@
 module CV::MTL::Serialize
   def print_val(io : IO) : Nil
-    io << @val
-    @body.try(&.print_val(io))
+    if body = @body
+      body.print_val(io)
+    else
+      io << @val
+    end
+
     @succ.try(&.print_val(io))
   end
 
@@ -17,9 +21,7 @@ module CV::MTL::Serialize
 
   def serialize(io : IO = STDOUT) : Nil
     if body = @body
-      io << '〈' << @fold
-
-      to_str(io)
+      io << '〈' << @dic
       body.serialize(io)
       io << '〉'
     else
@@ -39,7 +41,6 @@ module CV::MTL::Serialize
 
     if body = @body
       io << "{"
-      self.inspect(io)
       body.deep_inspect(io)
       io << "}"
     else

@@ -1,16 +1,19 @@
 module CV::MTL::PadSpace
   def pad_spaces!(prev : MtNode = self.prev) : MtNode
-    prev = self.append_space!(prev)
-    @body.try { |x| prev = x.pad_spaces!(prev) }
-    @succ.try { |x| prev = x.pad_spaces!(prev) }
-    prev
+    if body = @body
+      prev = body.pad_spaces!(prev)
+    else
+      prev = self.append_space!(prev)
+    end
+
+    (succ = @succ) ? succ.pad_spaces!(prev) : prev
   end
 
   def append_space!(prev : MtNode) : MtNode
     if @tag.numlat? && (prev.tag.plsgn? || prev.tag.mnsgn?)
       @tag = PosTag::String unless prev.prev?(&.numlat?)
     elsif should_space_before?(prev)
-      self.set_prev(MtNode.new("", " "))
+      prev.set_succ(MtNode.new("", " "))
     end
 
     @val.empty? ? prev : self

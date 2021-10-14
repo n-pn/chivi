@@ -10,7 +10,8 @@ module CV::TlRule
     end
 
     return node unless tail && node != last
-    fold_phrase!(node, tail, last, mode: mode)
+
+    fold_phrase!(node, tail, mode: mode)
   end
 
   private def matching_quote(char : Char)
@@ -21,17 +22,13 @@ module CV::TlRule
     end
   end
 
-  def fold_phrase!(head : MtNode, tail : MtNode, last = tail.prev, mode = 1)
-    head.body = body = head.succ
+  def fold_phrase!(head : MtNode, tail : MtNode, mode = 1)
+    root = MtNode.fold!(head, tail, dic: 1)
+    succ = head.succ
 
-    head.fix_succ!(tail.succ?)
-    tail.fix_succ!(nil)
+    fix_grammar!(succ, mode)
+    # root.tag = succ.tag if tail == succ.succ?
 
-    fix_grammar!(body, mode)
-
-    head.tag = body.tag if tail == body.succ?
-    head.fold = 1_i8
-
-    head
+    root
   end
 end
