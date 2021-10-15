@@ -49,7 +49,10 @@ module CV::TlRule
       node = fold!(node, succ, dic: 2)
 
       return node unless (succ = succ.succ?) && succ.nquants?
+      puts succ
       succ = fold_number!(succ) if succ.numbers?
+      puts succ
+
       return node unless succ.nquant?
 
       fold!(node, succ, PosTag::Vphrase, 6)
@@ -85,7 +88,7 @@ module CV::TlRule
       when "进"  then succ.val = "vào"
       when "来"  then succ.val = "tới"
       when "过去" then succ.val = "qua"
-      when "下去" then succ.val = "tiếp"
+      when "下去" then succ.val = "xuống"
       when "下来" then succ.val = "lại"
       when "起来" then succ.val = "lên"
       end
