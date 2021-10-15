@@ -58,7 +58,7 @@
   margin-bottom: 0;
   text-align: justify;
   text-justify: auto;
-  line-height: 1.65em;
+  line-height: 1.7em;
 
   @include bps(margin-top, 1em, 1.125em, 1.25em, 1.375em, 1.5em);
 
@@ -202,6 +202,12 @@ c-v {
 
 @mixin cg-color($color) {
   --color: #{color($color, 5)};
+  margin: 0 0.1em;
+  padding: 0.2em -0.1em;
+
+  .debug & {
+    background: none !important;
+  }
 
   .debug & c-v {
     // --active: var(--color);
@@ -214,6 +220,41 @@ c-v {
 
 c-g {
   --color: var(--fgmain);
+
+  .mtl:hover &,
+  .mtl._active & {
+    background: linear-gradient(180deg, var(--color) 1px, transparent 0%);
+  }
+
+  .mtl:hover & &,
+  .mtl._active & & {
+    background: linear-gradient(
+      180deg,
+      transparent 2px,
+      var(--color) 4px,
+      transparent 0%
+    );
+  }
+
+  .mtl:hover & & &,
+  .mtl._active & & & {
+    background: linear-gradient(
+      180deg,
+      transparent 4px,
+      var(--color) 6px,
+      transparent 0%
+    );
+  }
+
+  .mtl:hover & & & &,
+  .mtl._active & & & & {
+    background: linear-gradient(
+      180deg,
+      transparent 6px,
+      var(--color) 8px,
+      transparent 0%
+    );
+  }
 
   .debug & {
     // c-v,
