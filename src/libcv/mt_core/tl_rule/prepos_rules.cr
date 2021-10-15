@@ -15,10 +15,16 @@ module CV::TlRule
     # TODO: combine grammar
 
     case succ.tag
-    when .ude1?, .ule?
-      node.tag = PosTag::Adjt
-      node.fold!(succ, "đúng")
-    when .contws?, .quoteop?
+    when .ude1?
+      node.val = "đúng"
+      succ.val = ""
+      fold!(node, succ, PosTag::Adjt, 3)
+    when .ule?
+      node.val = "đúng"
+      succ.val = "" unless keep_ule?(node, succ)
+
+      fold!(node, succ, PosTag::Adjt, 3)
+    when .contws?, .quoteop?, .parenop?, .brackop?, .titleop?
       node.heal!("đối với")
     else
       node

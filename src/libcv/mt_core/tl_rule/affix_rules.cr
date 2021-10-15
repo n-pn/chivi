@@ -1,27 +1,25 @@
 module CV::TlRule
   def fold_suf_noun!(node : MtNode, succ : MtNode) : MtNode
-    node.tag = PosTag::Noun # unless node.tag.nouns?
+    # TODO: handle special cases
     succ.val = "các" if succ.suffix_men?
 
-    # TODO: handle special cases
-    return node.fold!(succ, val: "#{succ.val} #{node.val}", dic: 6)
+    head, tail = swap!(node, succ)
+    fold!(head, tail, PosTag::Noun, dic: 7)
   end
 
   def fold_suf_verb!(node : MtNode, succ : MtNode) : MtNode
     # TODO: handle special cases
-    node.tag = PosTag::Verb
-    return node.fold!(succ, val: "#{succ.val} #{node.val}", dic: 6)
+
+    head, tail = swap!(node, succ)
+    fold!(head, tail, PosTag::Verb, dic: 7)
   end
 
-  # 们
   def fold_suf_men!(node : MtNode, succ : MtNode) : MtNode
-    node.tag = PosTag::Noun
-    node.fold!(succ, "các #{node.val}")
+    fold_suf_noun!(node, succ)
   end
 
   # 时
   def fold_suf_shi!(node : MtNode, succ : MtNode) : MtNode
-    node.tag = PosTag::Noun
-    node.fold!(succ, "lúc #{node.val}")
+    fold_suf_noun!(node, succ)
   end
 end

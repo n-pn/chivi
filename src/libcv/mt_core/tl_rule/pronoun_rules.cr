@@ -10,12 +10,21 @@ module CV::TlRule
 
   def fold_propers!(node : MtNode, succ : MtNode) : MtNode
     case succ.tag
+    when .space?
+      head, tail = swap!(node, succ)
+      fold!(head, tail, succ.tag, 7)
     when .ptitle?
       return node unless should_not_combine_propers?(node.prev?, succ.succ?)
-      node.fold!(succ, "#{succ.val} #{node.val}")
+      head, tail = swap!(node, succ)
+      fold!(head, tail, succ.tag, 7)
     when .names?
       succ = fold_noun!(succ)
-      succ.names? ? node.fold!(succ, "#{succ.val} của #{node.val}") : node
+      return node unless succ.names?
+
+      # TODO: add pseudo node
+      node.val = "của #{node.val}"
+      head, tail = swap!(node, succ)
+      fold!(head, tail, succ.val, 8)
     else
       # TODO: handle special cases
       node
@@ -37,34 +46,55 @@ module CV::TlRule
     if node.pro_zhe? || node.pro_na1?
       succ = heal_quanti!(succ)
       return node unless succ.quanti?
-      node.fold!(succ, "#{succ.val} #{node.val}")
+      node = swap_fold!(node, succ)
     end
 
     node
   end
 
+  # FIX_PRONOUNS = {
+  #   "这" => "này",
+  #   "那" => "kia",
+  #   "这个" => "kia",
+  #   "那个" => "kia",
+  #   "这样" => "như vậy",
+  #   "那样" => "như thế",
+  # }
+
   def fold_prodeic_noun!(prev : MtNode, node : MtNode)
     case prev.key
-    when "这"  then node.fold_left!(prev, "#{node.val} này")
-    when "那"  then node.fold_left!(prev, "#{node.val} kia")
-    when "各"  then node.fold_left!(prev, "các #{node.val}")
-    when "这样" then node.fold_left!(prev, "#{node.val} như vậy")
-    when "那样" then node.fold_left!(prev, "#{node.val} như thế")
-    when "这个" then node.fold_left!(prev, "#{node.val} này")
-    when "那个" then node.fold_left!(prev, "#{node.val} kia")
+    when "各"
+      prev.val = "các"
+      fold!(prev, node, node.tag, 4)
+    when "这", "这个"
+      prev.val = "này"
+      swap_fold!(prev, node, node.tag, 4)
+    when "那", "那个"
+      prev.val = "kia"
+      swap_fold!(prev, node, node.tag, 4)
+    when "这样"
+      prev.val = "như vậy"
+      swap_fold!(prev, node, node.tag, 4)
+    when "那样"
+      prev.val = "như thế"
+      swap_fold!(prev, node, node.tag, 4)
+    when "任何"
+      prev.val = "bất kỳ"
+      fold!(prev, node)
+    when "其他" then node.fold_left!(prev, "các #{node.val} khác")
     when .ends_with?("个")
       prev.val = prev.val.sub("cái", "").strip
-      prev.fold!(node)
-    when .starts_with?("各") then node = prev.fold!(node)
+      fold!(prev, node, node.tag, 4)
+    when .starts_with?("各")
+      fold!(prev, node, node.tag, 4)
     when .starts_with?("这")
       val = prev.val.sub("này", "").strip
       prev.fold!(node, "#{val} #{node.val} này")
     when .starts_with?("那")
       val = prev.val.sub("kia", "").strip
       prev.fold!(node, "#{val} #{node.val} kia")
-    when "其他" then node.fold_left!(prev, "các #{node.val} khác")
-    when "任何" then node.fold_left!(prev, "bất kỳ #{node.val}")
-    else           node.fold_left!(prev, "#{node.val} #{prev.val}")
+    else
+      swap_fold!(prev, node)
     end
   end
 end

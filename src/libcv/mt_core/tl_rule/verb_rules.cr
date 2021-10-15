@@ -46,7 +46,7 @@ module CV::TlRule
     case succ.tag
     when .ule?
       succ.val = "" unless keep_ule?(node, succ)
-      node = fold!(node, succ, dic: 1)
+      node = fold!(node, succ, dic: 2)
 
       return node unless (succ = succ.succ?) && succ.nquants?
       succ = fold_number!(succ) if succ.numbers?
@@ -95,11 +95,6 @@ module CV::TlRule
     else
       node = fold!(node, succ, dic: 3)
     end
-  end
-
-  def keep_ule?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool
-    return true unless succ
-    succ.ends? || succ.succ?(&.ule?) || false
   end
 
   def fold_left_verb!(node : MtNode, prev = node.prev?)

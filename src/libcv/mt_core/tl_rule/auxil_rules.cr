@@ -25,4 +25,9 @@ module CV::TlRule
     return node if node.succ? { |x| x.verbs? || x.preposes? || x.concoord? }
     node.heal!(val: "địa", tag: PosTag::Noun)
   end
+
+  def keep_ule?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool
+    return true unless succ
+    succ.ends? || succ.succ?(&.ule?) || false
+  end
 end

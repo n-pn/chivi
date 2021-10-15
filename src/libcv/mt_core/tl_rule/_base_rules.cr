@@ -45,4 +45,9 @@ module CV::TlRule
     middle.fix_succ!(right)
     {left, right}
   end
+
+  def swap_fold!(left : MtNode, right : MtNode, tag = right.tag, dic = 3)
+    head, tail = swap!(left, right)
+    fold!(left, right, tag, dic)
+  end
 end

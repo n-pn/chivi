@@ -10,7 +10,8 @@ module CV::TlRule
       case prev.key
       when "第"
         has_第 = true
-        node = node.fold_left!(prev, "thứ #{node.val}")
+        prev.val = "thứ"
+        node = fold!(prev, node, node.tag, 2)
       when "约"
         prev.val = "chừng"
         node = fold!(prev, node, node.tag, 2)

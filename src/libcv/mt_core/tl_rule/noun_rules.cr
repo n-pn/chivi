@@ -67,17 +67,21 @@ module CV::TlRule
         fold!(prev_2, node, tag: node.tag, dic: 3)
       when .nquants?
         break if node.veno? || node.ajno?
+
         if prev.key.ends_with?('个')
           prev.val = prev.val.sub(" cái", "")
         end
+
         fold!(prev, node, PosTag::Nphrase, 3)
       when .prodeics?
         node.tag = PosTag::Nphrase
         return fold_prodeic_noun!(prev, node)
       when .prointrs?
-        val = prev.key == "什么" ? "cái #{node.val} gì" : "#{node.val} #{prev.val}"
-        return node.fold_left!(prev, val)
-      when .amorp? then node = fold!(prev, node, PosTag::Nphrase, 3)
+        return fold_什么_noun!(prev, node) if prev.key == "什么"
+
+        head, tail = swap!(prev, node)
+        return fold!(head, tail, PosTag::Nphrase, 3)
+      when .amorp? then node = fold!(prev, node)
       when .place?, .adesc?, .ahao?, .ajno?, .modifier?, .modiform?
         head, tail = swap!(prev, node)
         node = fold!(head, tail, PosTag::Nphrase, 2)
@@ -96,5 +100,17 @@ module CV::TlRule
     end
 
     node
+  end
+
+  def fold_什么_noun!(prev : MtNode, node : MtNode)
+    succ = MtNode.new("么", "gì", prev.tag, 1, prev.idx + 1)
+
+    prev.key = "什"
+    prev.val = "cái"
+
+    succ.fix_succ!(node.succ?)
+    node.fix_succ!(succ)
+
+    fold!(prev, succ, PosTag::Nphrase, 3)
   end
 end

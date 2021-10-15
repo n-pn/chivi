@@ -4,14 +4,11 @@ module CV::TlRule
 
     case succ.tag
     when .ude1?
-      if (succ_2 = succ.succ?) && succ_2.verbs?
-        succ_2 = fold_verbs(succ_2)
-        node.val = "#{node.val} #{succ_2.val}"
-        node.dic = 6
-        node.tag = succ_2.tag
-      else
-        succ.heal!("mà")
-      end
+      succ.heal!("mà")
+      break unless (succ_2 = succ.succ?) && succ_2.verbs?
+
+      succ_2 = fold_verbs(succ_2)
+      node = fold!(node, succ_2, succ_2.tag, 8)
     end
 
     node

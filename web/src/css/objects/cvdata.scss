@@ -221,40 +221,40 @@ c-v {
 c-g {
   --color: var(--fgmain);
 
-  .mtl:hover &,
-  .mtl._active & {
-    background: linear-gradient(180deg, var(--color) 1px, transparent 0%);
-  }
+  // .mtl:hover &,
+  // .mtl._active & {
+  //   background: linear-gradient(180deg, var(--color) 1px, transparent 0%);
+  // }
 
-  .mtl:hover & &,
-  .mtl._active & & {
-    background: linear-gradient(
-      180deg,
-      transparent 2px,
-      var(--color) 4px,
-      transparent 0%
-    );
-  }
+  // .mtl:hover & &,
+  // .mtl._active & & {
+  //   background: linear-gradient(
+  //     180deg,
+  //     transparent 2px,
+  //     var(--color) 4px,
+  //     transparent 0%
+  //   );
+  // }
 
-  .mtl:hover & & &,
-  .mtl._active & & & {
-    background: linear-gradient(
-      180deg,
-      transparent 4px,
-      var(--color) 6px,
-      transparent 0%
-    );
-  }
+  // .mtl:hover & & &,
+  // .mtl._active & & & {
+  //   background: linear-gradient(
+  //     180deg,
+  //     transparent 4px,
+  //     var(--color) 6px,
+  //     transparent 0%
+  //   );
+  // }
 
-  .mtl:hover & & & &,
-  .mtl._active & & & & {
-    background: linear-gradient(
-      180deg,
-      transparent 6px,
-      var(--color) 8px,
-      transparent 0%
-    );
-  }
+  // .mtl:hover & & & &,
+  // .mtl._active & & & & {
+  //   background: linear-gradient(
+  //     180deg,
+  //     transparent 6px,
+  //     var(--color) 8px,
+  //     transparent 0%
+  //   );
+  // }
 
   .debug & {
     // c-v,
