@@ -14,13 +14,14 @@ module CV::MTL::PadSpace
       @tag = PosTag::String unless prev.prev?(&.numlat?)
     elsif should_space_before?(prev)
       space = MtNode.new("", " ")
+      prev.set_succ(space)
 
-      if prev.succ?
-        prev.set_succ(space)
-      else
-        space.fix_prev!(@prev)
-        self.fix_prev!(space)
-      end
+      # if prev.succ?
+      #   prev.set_succ(space)
+      # else
+      #   space.fix_prev!(@prev)
+      #   self.fix_prev!(space)
+      # end
     end
 
     @val.blank? ? prev : self
