@@ -1,18 +1,5 @@
 @use '../essence' as *;
 
-@mixin cv-token($color: blue) {
-  cursor: pointer;
-  position: relative;
-  --border: #{color($color, 4)};
-  --active: #{color($color, 6)};
-
-  .tm-dark &,
-  .tm-oled & {
-    --border: #{color($color, 6)};
-    --active: #{color($color, 4)};
-  }
-}
-
 .cvdata {
   min-height: 50vh;
   padding: var(--verpad) var(--gutter);
@@ -113,6 +100,25 @@
   }
 }
 
+@mixin cv-token($color: blue) {
+  cursor: pointer;
+  position: relative;
+  --border: #{color($color, 4)};
+  --active: #{color($color, 6)};
+
+  .tm-dark &,
+  .tm-oled & {
+    --border: #{color($color, 6)};
+    --active: #{color($color, 4)};
+  }
+
+  &:hover,
+  &._focus {
+    color: var(--active);
+    // background: var(--bg-active, inherit);
+  }
+}
+
 c-v {
   --border: transparent;
   --active: var(--fgcolor);
@@ -121,10 +127,10 @@ c-v {
   background: linear-gradient(to top, var(--border) 1px, transparent 0%);
   background-position: bottom bottom;
 
-  &:hover,
-  &._focus {
-    color: var(--active);
-    // background: var(--bg-active, inherit);
+  .mtl:hover &,
+  .mtl._active & {
+    // border-bottom: 1px solid var(--border);
+    background: linear-gradient(to top, var(--border) 1px, transparent 0%);
   }
 
   .debug & {
@@ -139,6 +145,10 @@ c-v {
 
   &[data-d='2'] {
     @include cv-token(blue);
+    color: var(--fgmain);
+    &:hover {
+      color: var(--active);
+    }
   }
 
   &[data-d='3'] {
@@ -181,91 +191,89 @@ c-v {
   }
 }
 
+@mixin cg-decor($left: '{', $right: '}') {
+  &:before {
+    content: $left;
+  }
+
+  &:after {
+    content: $right;
+  }
+}
+
+@mixin cg-color($color) {
+  --color: #{color($color, 5)};
+
+  .debug & c-v {
+    // --active: var(--color);
+    color: var(--color);
+    &:hover {
+      color: var(--active);
+    }
+  }
+}
+
 c-g {
   --color: var(--fgmain);
-  // padding-top: 0.125rem;
 
-  // prettier-ignore
   .debug & {
-    c-v,
+    // c-v,
     &:before,
     &:after {
       color: var(--color);
     }
 
-    &:before {
-      content: '{';
+    @include cg-decor('{', '}');
+    & {
+      @include cg-decor('[', ']');
     }
-    &:after {
-      content: '}';
+    & & {
+      @include cg-decor('(', ')');
     }
-  }
-
-  // prettier-ignore
-  .debug & & {
-    &:before {
-      content: '[';
-    }
-    &:after {
-      content: ']';
-    }
-  }
-
-  // prettier-ignore
-  .debug & & & {
-    &:before {
-      content: '(';
-    }
-    &:after {
-      content: ')';
+    & & & {
+      @include cg-decor('<', '>');
     }
   }
 
   &[data-d='0'] {
-    &:before,
-    &:after {
-      display: none;
-    }
+    @include cg-decor('', '');
   }
 
   &[data-d='1'] {
-    --color: #{color(gray, 5)};
-    &:before,
-    &:after {
-      display: none;
-    }
+    @include cg-color(gray);
+    @include cg-decor('', '');
   }
 
   &[data-d='2'] {
-    --color: #{color(green, 5)};
+    @include cg-color(green);
   }
 
   &[data-d='3'] {
-    --color: #{color(blue, 5)};
+    @include cg-color(blue);
   }
 
   &[data-d='4'] {
-    --color: #{color(orange, 5)};
+    @include cg-color(teal);
   }
 
   &[data-d='5'] {
-    --color: #{color(red, 5)};
+    @include cg-color(orange);
   }
 
   &[data-d='6'] {
-    --color: #{color(teal, 5)};
+    @include cg-color(red);
   }
 
   &[data-d='7'] {
-    --color: #{color(fuchsia, 5)};
+    @include cg-color(fuchsia);
   }
 
   &[data-d='8'] {
-    --color: #{color(purple, 5)};
+    @include cg-color(purple);
   }
 
   &[data-d='9'] {
-    --color: #{color(pink, 5)};
+    @include cg-color(pink);
   }
 }
 

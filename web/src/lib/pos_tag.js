@@ -125,7 +125,7 @@ export const labels = {
   wyz: 'Mở trích',
   wyy: 'Đóng trích',
   wpz: 'Mở ngoặc (',
-  wky: 'Đóng ngoặc )',
+  wpy: 'Đóng ngoặc )',
   wkz: 'Mở ngoặc [ {',
   wky: 'Đóng ngoặc ] }',
   wwz: 'Mở tựa',
