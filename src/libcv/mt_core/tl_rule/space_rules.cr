@@ -5,12 +5,16 @@ module CV::TlRule
 
     case succ.tag
     when .vshang?
-      node.fold!("trên #{node.val}")
+      succ.val = "trên"
     when .vxia?
+      succ.val = "dưới"
+
       node.fold!("dưới #{node.val}")
     else
-      val = succ.key == "之前" ? "trước" : succ.val
-      node.fold!("#{val} #{node.val}")
+      succ.val = "trước" if succ.key == "之前"
     end
+
+    left, right = swap!(node, succ)
+    fold!(left, right, PosTag::Place, 3)
   end
 end

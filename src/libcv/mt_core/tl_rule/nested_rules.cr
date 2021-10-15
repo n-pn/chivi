@@ -23,11 +23,15 @@ module CV::TlRule
   end
 
   def fold_phrase!(head : MtNode, tail : MtNode, mode = 1)
-    root = MtNode.fold!(head, tail, dic: 1)
+    root = fold!(head, tail, dic: 1)
     succ = head.succ
 
     fix_grammar!(succ, mode)
-    # root.tag = succ.tag if tail == succ.succ?
+    if tail == succ.succ?
+      # root.tag = succ.tag
+    else
+      root.dic = 0
+    end
 
     root
   end

@@ -12,7 +12,8 @@ module CV::TlRule
         has_第 = true
         node = node.fold_left!(prev, "thứ #{node.val}")
       when "约"
-        node = node.fold_left!(prev, "chừng #{node.val}")
+        prev.val = "chừng"
+        node = fold!(prev, node, node.tag, 2)
       end
     end
 
@@ -20,10 +21,8 @@ module CV::TlRule
 
     if succ.pre_dui?
       if (succ_2 = succ.succ?) && succ_2.numbers?
-        node.val = "#{node.val} đối #{succ_2.val}"
-        node.dic = 6
-        node.tag = PosTag::Aphrase
-        return node.fold_many!(succ, succ_2)
+        succ.val = "đối"
+        return fold!(node, succ_2, PosTag::Aphrase, 3)
       end
 
       node.heal!("đôi", PosTag::Quanti)
@@ -34,17 +33,14 @@ module CV::TlRule
 
     # merge number with quantifiers
     if !has_第
-      node.tag = PosTag::Nquant
-      node.fold!("#{node.val} #{succ.val}")
-    elsif succ.succ?(&.nouns?)
-      succ_2 = succ.succ
-      node.dic = 7
-      node.tag = PosTag::Nform
-      node.val = "#{succ.val} #{succ_2.val} #{node.val}"
-      return node.fold_many!(succ, succ_2)
+      node = fold!(node, succ, PosTag::Nquant, dic: 2)
+    elsif (succ_2 = succ.succ?) && succ_2.noun?
+      left, middle = swap!(node, succ)
+      middle, right = swap!(middle, succ_2)
+      return fold!(left, right, PosTag::Nform, 4)
     else
-      node.tag = PosTag::Nquant
-      node.fold!("#{succ.val} #{node.val}")
+      head, tail = swap!(node, succ)
+      node = fold!(head, tail, PosTag::Nquant, 5)
     end
 
     fold_suf_quanti_appro!(node)

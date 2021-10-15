@@ -38,6 +38,10 @@ puts HANVIET.translit(test3)
 puts HANVIET.translit(test4)
 puts HANVIET.translit("左丰")
 
+# puts GENERIC.cv_plain("神明之女")
+
+puts GENERIC.cv_plain "圣橡树学院学生们研究很久的魔咒"
+
 text = "第十三集 龙章凤仪 第一章 屠龙之术
 红龙 http://test.com/test?q=1
 贾文和一个玩阴谋的，突然间客串了一把热血刺客，效果立竿见影。一万个道理都未必能说服的廖群玉，被一把错刀给说得心服口服，当即赶到宋国馆邸，通过官方渠道传讯临安，以自己的身家性命作保，顺利说服贾师宪，由其举荐宝钞局主事，工部员外郎程宗扬为唐国正使，通问昭南事宜。
@@ -86,8 +90,6 @@ pp GENERIC.cv_plain("第二个反应是：")
 test_convert("【第006章】我的美女死党", mode: 2)
 test_convert("百分之九十九点九九")
 
-puts GENERIC.cv_plain("‘成功了！’").to_str
-
-test = "路易翻阅起了漂浮在面前的故事书，发现‘路易’竟然有单独的一页，其中还有一段很特别的描述，他眯着眼睛看了一眼，发现是系统对自己的个人情况评估。"
+test = "还没等台下的学弟学妹们再度沸腾起来宁大师便率先做了个嘘声的动作，指了指教室后排的老黄道：“行了行了，咱们低调小声一点，别让老黄知道咱们不聊正事啦…你们有什么问题可以举手一个个来，别的班还要上自习呢。”"
 res = GENERIC.cv_plain(test)
-puts res.to_str, res
+puts res.inspect, res

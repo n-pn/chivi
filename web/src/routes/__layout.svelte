@@ -100,10 +100,7 @@
   <meta name="theme-color" content="#0b476b" />
 </svelte:head>
 
-<div
-  class="app tm-{$wtheme}"
-  class:kbd-hint={kbd_hint}
-  class:debugger={$session.uname == 'Nipin'}>
+<div class="app tm-{$wtheme}" class:kbd-hint={kbd_hint}>
   <slot />
 
   <div class="links">

@@ -85,17 +85,4 @@ class CV::MtNode
   include MTL::Serialize
   include MTL::ApplyCap
   include MTL::PadSpace
-
-  def self.fold!(head : self, tail : self, tag = PosTag::None, dic = 2)
-    root = new("", "", tag, dic, head.idx)
-    root.body = head
-
-    root.fix_prev!(head.prev?)
-    head.fix_prev!(nil)
-
-    root.fix_succ!(tail.succ?)
-    tail.fix_succ!(nil)
-
-    root
-  end
 end

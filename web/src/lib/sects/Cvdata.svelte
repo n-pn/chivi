@@ -31,7 +31,7 @@
   export let dname = 'various'
   export let d_dub = 'Tổng hợp'
 
-  let debug = true
+  let debug = false
 
   $: lines = MtData.parse_lines(cvdata)
 
@@ -76,6 +76,7 @@
 </script>
 
 <div hidden>
+  <button data-kbd="g" on:click={() => (debug = !debug)}>R</button>
   <button data-kbd="r" on:click={() => (_dirty = true)}>R</button>
   <button data-kbd="x" on:click={() => upsert_activate(selected, 0)}>X</button>
   <button data-kbd="c" on:click={() => upsert_activate(selected, 1)}>C</button>
@@ -83,7 +84,7 @@
     >E</button>
 </div>
 
-<article class="cvdata _{$ftsize}">
+<article class="cvdata _{$ftsize}" class:debug>
   {#each lines as _, index (index)}
     <div
       id="L{index}"

@@ -6,56 +6,51 @@ module CV::TlRule
       case succ.tag
       when .adjt?
         break unless succ.succ?(&.ude1?)
-        node.tag = PosTag::Adjt
-        return node.fold!(succ, dic: 8)
+        return fold!(node, succ, PosTag::Adjt, dic: 2)
       when .middot?
         break unless succ_2 = succ.succ?
         break unless succ_2.human?
 
-        node.tag = PosTag::Person
-        node.fold!(succ, node.val).fold!(succ_2)
+        return fold!(node, succ_2, PosTag::Person, dic: 2)
       when .ptitle?
         node.tag = PosTag::Person
-        pad = succ.val[0]? == '-' ? "" : " "
-        node.fold!(succ, "#{node.val}#{pad}#{succ.val}")
+        node = fold!(node, succ, PosTag::Person, dic: 2)
       when .names?
         break unless node.names?
-        node.tag = succ.tag
-        node.fold!(succ)
+        node = fold!(node, succ, succ.tag, dic: 3)
       when .place?
-        node.tag = PosTag::Noun
-        node.fold!(succ, "#{succ.val} #{node.val}")
+        head, tail = swap!(node, succ)
+        return fold!(head, tail, PosTag::Noun, dic: 3)
       when .uzhi?
-        node = fold_uzhi!(succ, node)
+        return fold_uzhi!(succ, node)
       when .veno?
         succ = heal_veno!(succ)
         break if succ.verbs?
 
-        node.tag = PosTag::Noun
-        node.fold!(succ, "#{succ.val} #{node.val}")
+        head, tail = swap!(node, succ)
+        node = fold!(head, tail, PosTag::Noun, dic: 4)
       when .noun?
         case node
         when .names?
-          node.tag = PosTag::Noun
-          node.fold!(succ, "#{succ.val} #{node.val}")
+          head, tail = swap!(node, succ)
+          node = fold!(head, tail, PosTag::Noun, dic: 3)
         when .noun?
-          node.fold!(succ, "#{succ.val} #{node.val}", dic: 7)
+          head, tail = swap!(node, succ)
+          node = fold!(head, tail, PosTag::Noun, dic: 4)
         else return node
         end
-      when .concoord?
-        node.tag = PosTag::Nphrase
-        node = fold_concoord!(node, succ, succ.succ?)
-        return node if node.succ == succ
-      when .penum?
-        node.tag = PosTag::Nphrase
-        node = fold_penum!(node, succ, succ.succ?)
-        return node if node.succ == succ
+      when .penum?, .concoord?
+        break unless (succ_2 = succ.succ?) && can_combine_noun?(node, succ_2)
+        succ = heal_concoord!(succ) if succ.concoord?
+        fold!(node, succ_2, tag: node.tag, dic: 3)
       when .suf_verb?
         return fold_suf_verb!(node, succ)
       when .suf_nouns?
         return fold_suf_noun!(node, succ)
       else break
       end
+
+      break if succ == node.succ?
     end
 
     node
@@ -66,16 +61,10 @@ module CV::TlRule
 
     while prev = node.prev?
       case prev
-      when .penum?
-        prev_2 = prev.prev
-        break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeics?
-        prev_2.tag = node.tag
-        node = fold_penum!(prev_2, prev, node, force: true)
-      when .concoord?
-        prev_2 = prev.prev
-        break unless prev_2.tag == node.tag || prev_2.propers? || prev_2.prodeics?
-        prev_2.tag = node.tag
-        node = fold_concoord!(prev_2, prev, node, force: true)
+      when .penum?, .concoord?
+        break unless (prev_2 = prev.prev?) && can_combine_noun?(node, prev_2)
+        prev = heal_concoord!(prev) if prev.concoord?
+        fold!(prev_2, node, tag: node.tag, dic: 3)
       when .nquants?
         break if node.veno? || node.ajno?
         prev.tag = PosTag::Nphrase
@@ -87,12 +76,14 @@ module CV::TlRule
       when .prointrs?
         val = prev.key == "什么" ? "cái #{node.val} gì" : "#{node.val} #{prev.val}"
         return node.fold_left!(prev, val)
-      when .amorp? then node = node.fold_left!(prev)
+      when .amorp? then node = fold!(prev, node, PosTag::Nphrase, 3)
       when .place?, .adesc?, .ahao?, .ajno?, .modifier?, .modiform?
-        node = node.fold_left!(prev, "#{node.val} #{prev.val}")
+        head, tail = swap!(prev, node)
+        node = fold!(head, tail, PosTag::Nphrase, 2)
       when .ajav?, .adjt?
         break if prev.key.size > 1
-        node = node.fold_left!(prev, "#{node.val} #{prev.val}")
+        head, tail = swap!(prev, node)
+        node = fold!(head, tail, PosTag::Nphrase, 2)
       when .ude1?
         break if mode < 1
         node = fold_ude1!(node, prev)
@@ -101,6 +92,7 @@ module CV::TlRule
         break
       end
 
+      break if prev == node.prev?
       node.tag = PosTag::Nphrase
     end
 

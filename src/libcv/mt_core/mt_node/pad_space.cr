@@ -13,10 +13,17 @@ module CV::MTL::PadSpace
     if @tag.numlat? && (prev.tag.plsgn? || prev.tag.mnsgn?)
       @tag = PosTag::String unless prev.prev?(&.numlat?)
     elsif should_space_before?(prev)
-      prev.set_succ(MtNode.new("", " "))
+      space = MtNode.new("", " ")
+
+      if prev.succ?
+        prev.set_succ(space)
+      else
+        space.fix_prev!(@prev)
+        self.fix_prev!(space)
+      end
     end
 
-    @val.empty? ? prev : self
+    @val.blank? ? prev : self
   end
 
   def should_space_before?(prev : MtNode) : Bool
@@ -25,6 +32,9 @@ module CV::MTL::PadSpace
     case @tag
     when .colon?  then return false
     when .middot? then return true
+    when .ptitle?
+      return false unless prev.should_space_after?
+      return @key[0] == '-' ? false : true
     when .plsgn?, .mnsgn?
       return false if prev.tag.numlat?
     when .numlat?

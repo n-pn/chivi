@@ -95,6 +95,7 @@ module CV::TlRule
 
   def fold_suf_quanti_appro!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ && (val = APPROS[succ.key]?)
-    node.fold!(succ, "#{val} #{node.val}")
+    head, tail = swap!(node, succ)
+    fold!(head, tail, dic: 6)
   end
 end

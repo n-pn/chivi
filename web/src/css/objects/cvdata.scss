@@ -118,23 +118,18 @@ c-v {
   --active: var(--fgcolor);
   color: var(--fgcolor);
 
+  background: linear-gradient(to top, var(--border) 1px, transparent 0%);
+  background-position: bottom bottom;
+
   &:hover,
   &._focus {
     color: var(--active);
-    background: var(--bg-active, inherit);
+    // background: var(--bg-active, inherit);
   }
 
-  // .debugger &,
-  .mtl:hover &,
-  .mtl._active & {
-    border-bottom: 1px solid var(--border);
-  }
-
-  // .debugger &,
-  .kbd-hint & {
+  .debug & {
     color: var(--active);
     background: var(--bg-active, inherit);
-    border-bottom: 1px solid var(--border);
   }
 
   &[data-d='1'] {
@@ -187,57 +182,90 @@ c-v {
 }
 
 c-g {
-  --border: transparent;
+  --color: var(--fgmain);
+  // padding-top: 0.125rem;
 
-  // .debugger &,
-  .mtl:hover &,
-  .mtl._active & {
-    border-top: 1px solid var(--border);
+  // prettier-ignore
+  .debug & {
+    c-v,
+    &:before,
+    &:after {
+      color: var(--color);
+    }
+
+    &:before {
+      content: '{';
+    }
+    &:after {
+      content: '}';
+    }
   }
 
-  // .debugger &,
-  .kbd-hint & {
-    border-top: 1px solid var(--border);
+  // prettier-ignore
+  .debug & & {
+    &:before {
+      content: '[';
+    }
+    &:after {
+      content: ']';
+    }
+  }
+
+  // prettier-ignore
+  .debug & & & {
+    &:before {
+      content: '(';
+    }
+    &:after {
+      content: ')';
+    }
+  }
+
+  &[data-d='0'] {
+    &:before,
+    &:after {
+      display: none;
+    }
   }
 
   &[data-d='1'] {
-    @include cv-token(gray);
-    border: 0;
+    --color: #{color(gray, 5)};
+    &:before,
+    &:after {
+      display: none;
+    }
   }
 
   &[data-d='2'] {
-    @include cv-token(blue);
+    --color: #{color(green, 5)};
   }
 
   &[data-d='3'] {
-    @include cv-token(teal);
+    --color: #{color(blue, 5)};
   }
 
   &[data-d='4'] {
-    @include cv-token(orange);
+    --color: #{color(orange, 5)};
   }
 
   &[data-d='5'] {
-    @include cv-token(red);
+    --color: #{color(red, 5)};
   }
 
   &[data-d='6'] {
-    @include cv-token(green);
+    --color: #{color(teal, 5)};
   }
 
   &[data-d='7'] {
-    @include cv-token(fuchsia);
+    --color: #{color(fuchsia, 5)};
   }
 
   &[data-d='8'] {
-    @include cv-token(purple);
+    --color: #{color(purple, 5)};
   }
 
   &[data-d='9'] {
-    cursor: pointer;
-    position: relative;
-    --active: #fff;
-    --bg-active: #{color(purple, 5)};
+    --color: #{color(pink, 5)};
   }
 }
 

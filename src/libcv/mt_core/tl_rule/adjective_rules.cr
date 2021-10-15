@@ -6,13 +6,12 @@ module CV::TlRule
       case succ.tag
       when .adjt?, .amorp?
         node.val = "thật" if node.tag.ahao?
-        node.tag = PosTag::Adjt
-        node.fold!(succ)
+        node = fold!(node, succ, node.tag)
       when .noun?
         return node unless node.key.size == 1 # or special case
         succ = fold_noun!(succ)
-        node.tag = PosTag::Nphrase
-        return node.fold!(succ, val: "#{succ.val} #{node.val}", dic: 7)
+        node.set_prev(succ)
+        return fold!(succ, node, PosTag::Nphrase, dic: 3)
       when .verb?
         break unless node.key.size == 1
         succ = fold_verbs!(succ)
@@ -43,16 +42,10 @@ module CV::TlRule
         return node = fold_uzhi!(succ, node)
       when .suf_verbs?
         return fold_suf_verb!(node, succ)
-      when .penum?
-        break unless succ_2 = succ.succ?
-        node.tag = PosTag::Vphrase
-        node = fold_penum!(node, succ, succ_2, force: succ_2.adjts?)
-        break if node.succ == succ
-      when .concoord?
-        break unless succ_2 = succ.succ?
-        node.tag = PosTag::Vphrase
-        node = fold_concoord!(node, succ, succ_2, force: succ_2.adjts?)
-        break if node.succ == succ
+      when .penum?, .concoord?
+        break unless (succ_2 = succ.succ?) && can_combine_adjt?(node, succ_2)
+        heal_concoord!(succ) if succ.concoord?
+        node = fold!(node, succ, PosTag::Aphrase, 3)
       when .adv_bu?
         break unless (succ_2 = succ.succ?)
 
@@ -72,6 +65,8 @@ module CV::TlRule
       else
         break
       end
+
+      break if succ == node.succ?
     end
 
     # TODO: combine with nouns
@@ -85,16 +80,16 @@ module CV::TlRule
 
   def fold_adj_adv!(node : MtNode, prev = node.prev?)
     return node unless prev
-    prev.tag = PosTag::Aphrase
 
     case prev.key
     when "最", "那么", "这么", "非常"
-      prev.fold!(node, "#{node.val} #{prev.val}")
+      head, tail = swap!(prev, node)
+      fold!(head, tail, PosTag::Adjt, dic: 2)
     when "不太"
       prev.fold!(node, "không #{node.val} lắm")
     else
       prev.val = "rất" if prev.key == "挺"
-      prev.fold!(node)
+      fold!(prev, node, PosTag::Aphrase, dic: 2)
     end
   end
 end
