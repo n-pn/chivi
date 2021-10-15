@@ -66,10 +66,8 @@ module CV::TlRule
     "都" => "kinh đô",
   }
 
-  def fold_uzhi!(uzhi : MtNode, prev = uzhi.prev?, succ = uzhi.succ?) : MtNode
-    return prev unless prev && succ
-    return prev if succ.ends?
-
+  def fold_uzhi!(uzhi : MtNode, prev = uzhi.prev, succ = uzhi.succ?) : MtNode
+    return prev if !succ || succ.ends?
     tag = succ.key == "都" ? PosTag::Locname : PosTag::Nform
     succ.val = FIX_UZHI[succ.key]? || succ.val
     fold_swap!(prev, succ, tag, dic: 5)

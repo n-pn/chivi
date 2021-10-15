@@ -38,7 +38,7 @@ module CV::TlRule
       when .penum?, .concoord?
         break unless (succ_2 = succ.succ?) && can_combine_noun?(node, succ_2)
         succ = heal_concoord!(succ) if succ.concoord?
-        fold!(node, succ_2, tag: node.tag, dic: 3)
+        fold!(node, succ_2, tag: node.tag, dic: 8)
       when .suf_verb?
         return fold_suf_verb!(node, succ)
       when .suf_nouns?

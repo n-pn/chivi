@@ -20,12 +20,12 @@ module CV::TlRule
     nega = prev.try(&.adv_bu?)
 
     if is_learnable_skill?(succ) || prev.try(&.prev?(&.key.== "也"))
-      val = nega ? "không biết" : "biết"
+      node.val = "biết"
+      prev ? fold!(prev, node, node.tag, dic: 3) : node
     else
-      val = nega ? "sẽ không" : "sẽ"
+      node.val = "sẽ"
+      prev ? fold_swap!(prev, node, node.tag, dic: 3) : node
     end
-
-    prev ? prev.fold!(node, val) : node.heal!(val)
   end
 
   def is_learnable_skill?(succ : MtNode?) : Bool
@@ -51,7 +51,7 @@ module CV::TlRule
       end
     end
 
-    node.fold_left!(nega)
+    nega ? fold!(nega, node, node.tag, 1) : node
   end
 
   private def succ_is_verb?(node : MtNode?) : Bool

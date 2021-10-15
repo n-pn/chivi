@@ -4,7 +4,8 @@ module CV::TlRule
 
     case succ.tag
     when .verb?
-      node = node.fold!(succ, "phải #{succ.val}")
+      node.val = "phải"
+      node = fold!(node, succ, succ.tag, 3)
     else
       node.val = "được"
     end
@@ -22,7 +23,7 @@ module CV::TlRule
         succ_2.val = "xong"
         return fold_verb_ude2_succ!(node, succ, succ_2)
       else
-        return node
+        # return node
       end
     when .adverbs?
       succ_2 = fold_adverbs!(succ_2)
@@ -44,9 +45,7 @@ module CV::TlRule
   end
 
   def fold_verb_ude2_succ!(node : MtNode, succ : MtNode, succ_2 : MtNode) : MtNode
-    node.tag = PosTag::Vphrase
-    node.dic = 6
-    node.val = "#{node.val} #{succ_2.val}"
-    node.fold_many!(succ, succ_2)
+    succ.val = ""
+    fold!(node, succ, PosTag::Vphrase, 6)
   end
 end
