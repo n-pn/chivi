@@ -134,8 +134,7 @@ c-v {
   }
 
   .debug & {
-    color: var(--active);
-    background: var(--bg-active, inherit);
+    background: linear-gradient(to top, var(--border) 1px, transparent 0%);
   }
 
   &[data-d='1'] {
