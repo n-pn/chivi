@@ -30,8 +30,7 @@
 
   export let dname = 'various'
   export let d_dub = 'Tổng hợp'
-
-  let debug = false
+  export let debug = false
 
   $: lines = MtData.parse_lines(cvdata)
 
@@ -69,6 +68,7 @@
   }
 
   function render_line(idx, hover, focus) {
+    // return lines[idx].html
     const mt_data = lines[idx]
     const use_html = idx == hover || idx == focus
     return use_html || debug ? mt_data.html : mt_data.text
@@ -76,7 +76,7 @@
 </script>
 
 <div hidden>
-  <button data-kbd="g" on:click={() => (debug = !debug)}>R</button>
+  <button data-kbd="g" on:click={() => (debug = !debug)}>G</button>
   <button data-kbd="r" on:click={() => (_dirty = true)}>R</button>
   <button data-kbd="x" on:click={() => upsert_activate(selected, 0)}>X</button>
   <button data-kbd="c" on:click={() => upsert_activate(selected, 1)}>C</button>

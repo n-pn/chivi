@@ -36,6 +36,8 @@
   export let cvdata
 
   let _dirty = false
+  let debug = false
+
   $: if (_dirty) reload_chap(false)
 
   $: paths = gen_paths(cvbook, chmeta, chinfo)
@@ -144,6 +146,7 @@
       {zhtext}
       dname={cvbook.bhash}
       d_dub={cvbook.vtitle}
+      bind:debug
       bind:_dirty />
   {:else}
     <Notext {chinfo} />
@@ -204,6 +207,11 @@
             <span>Đánh dấu</span>
           </button>
         {/if}
+
+        <button class="-item" on:click={() => (debug = !debug)}>
+          <SIcon name={debug ? 'check' : 'terminal-2'} />
+          <span>Dev mode</span>
+        </button>
 
         <a href={paths.list} class="-item" data-kbd="h">
           <SIcon name="list" />

@@ -2,10 +2,14 @@ module CV::TlRule
   def heal_veno!(node : MtNode)
     if prev = node.prev?
       case prev
-      when .adverbs?, .preposes?, .vmodals?, .vdir?, .vpro?
-        node.heal!(tag: PosTag::Verb)
+      when .adverbs?, .preposes?, .vmodals?, .vpro?
+        return node.heal!(tag: PosTag::Verb)
       when .auxils?, .ude1?
-        node.heal!(tag: PosTag::Noun)
+        return node.heal!(tag: PosTag::Noun)
+      when .nquants?
+        if (succ = node.succ?) && !(succ.nouns? || succ.pronouns?)
+          return node.heal!(tag: PosTag::Noun)
+        end
       end
     end
 
@@ -13,13 +17,13 @@ module CV::TlRule
 
     case succ
     when .puncts?
-      return node.heal!
-      tag = node.prev?(&.preposes?) ? PosTag::Verb : PosTag::Noun
-      return node.heal!(tag: tag)
+      # tag = node.prev?(&.preposes?) ? PosTag::Verb : PosTag::Noun
+      # node.heal!(tag: tag)
+      node
     when .suf_nouns?
-      return node.heal!(tag: PosTag::Noun)
-    when .auxils?
-      return node.heal!(tag: PosTag::Verb)
+      node.heal!(tag: PosTag::Noun)
+    when .auxils?, .vdir?, .vshang?, .vxia?, .vcom?
+      node.heal!(tag: PosTag::Verb)
     else
       node
     end

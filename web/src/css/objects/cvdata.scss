@@ -124,17 +124,17 @@ c-v {
   --active: var(--fgcolor);
   color: var(--fgcolor);
 
-  background: linear-gradient(to top, var(--border) 1px, transparent 0%);
+  background: linear-gradient(to top, var(--border) 1px, transparent 0);
   background-position: bottom bottom;
 
   .mtl:hover &,
   .mtl._active & {
     // border-bottom: 1px solid var(--border);
-    background: linear-gradient(to top, var(--border) 1px, transparent 0%);
+    background: linear-gradient(to top, var(--border) 1px, transparent 0);
   }
 
   .debug & {
-    background: linear-gradient(to top, var(--border) 1px, transparent 0%);
+    background: linear-gradient(to top, var(--border) 1px, transparent 0);
   }
 
   &[data-d='1'] {
