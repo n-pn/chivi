@@ -67,9 +67,10 @@ module CV::TlRule
         fold!(prev_2, node, tag: node.tag, dic: 3)
       when .nquants?
         break if node.veno? || node.ajno?
-        prev.tag = PosTag::Nphrase
-        prev.val = prev.val.sub(" cái", "") if prev.key.ends_with?('个')
-        node = prev.fold!(node)
+        if prev.key.ends_with?('个')
+          prev.val = prev.val.sub(" cái", "")
+        end
+        fold!(prev, node, PosTag::Nphrase, 3)
       when .prodeics?
         node.tag = PosTag::Nphrase
         return fold_prodeic_noun!(prev, node)
@@ -87,13 +88,11 @@ module CV::TlRule
       when .ude1?
         break if mode < 1
         node = fold_ude1!(node, prev)
-        break if node.prev? == prev
       else
         break
       end
 
       break if prev == node.prev?
-      node.tag = PosTag::Nphrase
     end
 
     node

@@ -1,33 +1,32 @@
 module CV::TlRule
   def fold_ude1!(node : MtNode, prev = node.prev) : MtNode
     node.succ? { |succ| return node if succ.penum? || succ.concoord? }
+
+    prev.val = ""
     prev_2 = prev.prev
 
     case prev_2
     when .ajav?
       prev_2.val = "thông thường" if prev_2.key == "一般"
-      prev_2.dic = 6
-      prev_2.tag = PosTag::Nphrase
-      prev_2.val = "#{node.val} #{prev_2.val}"
-      prev_2.fold_many!(prev, node)
+      head, tail = swap!(prev_2, prev, node)
+      return fold!(head, tail, PosTag::Nphrase, 6)
     when .adjts?, .nquant?, .quanti?, .veno?,
          .vintr?, .time?, .place?, .space?, .adesc?
-      prev_2.dic = 6
-      prev_2.tag = PosTag::Nphrase
-      prev_2.val = "#{node.val} #{prev_2.val}"
-      prev_2.fold_many!(prev, node)
+      head, tail = swap!(prev_2, prev, node)
+      return fold!(head, tail, PosTag::Nphrase, 6)
     when .nouns?, .propers?
       if (prev_3 = prev_2.prev?) && verb_subject?(prev_3, node)
-        prev_3.dic = 9
-        prev_3.tag = PosTag::Nphrase
-        prev_3.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
-        return prev_3.fold_many!(prev_2, prev, node)
+        succ = node.succ?
+        left, tail = swap!(prev_2, prev, node)
+        head, right = swap!(prev_3, left, prev)
+
+        return fold!(head, tail, PosTag::Nphrase, 9)
       end
 
-      prev_2.val = "#{node.val} của #{prev_2.val}"
-      prev_2.tag = PosTag::Nphrase
-      prev_2.dic = prev_2.prev?(&.verbs?) ? 8 : 7
-      prev_2.fold_many!(prev, node)
+      prev.val = "của"
+      head, tail = swap!(prev_2, prev, node)
+      dic = prev_2.prev?(&.verbs?) ? 8 : 7
+      return fold!(head, tail, PosTag::Nphrase, dic)
     when .verb?
       return node unless prev_3 = prev_2.prev?
 

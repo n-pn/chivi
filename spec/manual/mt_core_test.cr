@@ -93,3 +93,8 @@ test_convert("百分之九十九点九九")
 test = "还没等台下的学弟学妹们再度沸腾起来宁大师便率先做了个嘘声的动作，指了指教室后排的老黄道：“行了行了，咱们低调小声一点，别让老黄知道咱们不聊正事啦…你们有什么问题可以举手一个个来，别的班还要上自习呢。”"
 res = GENERIC.cv_plain(test)
 puts res.inspect, res
+
+test = "今天的风儿，好喧嚣啊"
+
+res = GENERIC.cv_plain(test)
+puts res.inspect, res

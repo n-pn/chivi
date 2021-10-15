@@ -19,6 +19,7 @@ module CV::MTL::PadSpace
       # if prev.succ?
       #   prev.set_succ(space)
       # else
+
       #   space.fix_prev!(@prev)
       #   self.fix_prev!(space)
       # end
