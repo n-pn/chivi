@@ -41,6 +41,7 @@ module CV::MTL::Serialize
 
     if body = @body
       io << "{"
+      io << @tag.to_str << "|" << @dic
       body.deep_inspect(io)
       io << "}"
     else

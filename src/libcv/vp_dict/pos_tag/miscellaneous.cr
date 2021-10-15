@@ -37,7 +37,7 @@ struct CV::PosTag
 
     {"sv", "ClauseV", Pos::Contws}, # subject + verb clause
     {"sa", "ClauseA", Pos::Contws}, # subject + adjt clause
-
+    {"dp", "Dphrase", Pos::Contws}, # định ngữ/definition
   }
 
   @[AlwaysInline]

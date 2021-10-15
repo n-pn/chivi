@@ -72,8 +72,6 @@ module CV::TlRule
 
     tag = succ.key == "都" ? PosTag::Locname : PosTag::Nform
     succ.val = FIX_UZHI[succ.key]? || succ.val
-
-    head, tail = swap!(prev, uzhi, succ)
-    fold!(head, tail, tag, dic: 5)
+    fold_swap!(prev, succ, tag, dic: 5)
   end
 end

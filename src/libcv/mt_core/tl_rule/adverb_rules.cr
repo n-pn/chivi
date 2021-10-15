@@ -14,8 +14,7 @@ module CV::TlRule
     case succ.tag
     when .pre_dui?
       succ = fold_pre_dui!(succ)
-      head, tail = swap!(node, succ)
-      fold!(head, tail, succ.tag, 6)
+      fold_swap!(node, succ, succ.tag, 6)
     when .vmodals? then heal_vmodal!(succ, nega: node)
     when .adverb?  then fold_adverb!(succ, nega: node)
     when .verbs?   then fold_verbs!(succ, prev: node)

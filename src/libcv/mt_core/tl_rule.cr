@@ -3,6 +3,9 @@ require "./tl_rule/*"
 module CV::TlRule
   def fix_grammar!(node : MtNode, mode = 1) : Nil
     while node = node.succ?
+      # puts [node, node.succ?, node.body?]
+      # gets
+
       case node.tag
       when .puncts?
         case node.tag

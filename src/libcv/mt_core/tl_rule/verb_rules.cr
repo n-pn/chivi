@@ -57,7 +57,6 @@ module CV::TlRule
       return node unless (succ_2 = succ.succ?) && (succ_2.verb? || succ_2.veno?)
       succ_2 = fold_verbs!(succ_2)
       succ.val = "mà"
-      # left, right = swap!(node, succ, succ_2)
       fold!(succ, succ_2, PosTag::Verb, 6)
     when .ude3?
       fold_verb_ude3!(node, succ)
@@ -102,10 +101,10 @@ module CV::TlRule
 
     case prev.key
     when "最", "那么", "这么", "非常"
-      head, tail = swap!(prev, node)
-      fold!(head, tail, node.tag, dic: 9)
+      fold_swap!(prev, node, node.tag, dic: 9)
     when "不太"
-      prev.fold!(node, "không #{node.val} lắm")
+      prev.val = "không quá"
+      fold!(prev, node, node.tag, dic: 9)
     else
       fold!(prev, node, node.tag, dic: 9)
     end

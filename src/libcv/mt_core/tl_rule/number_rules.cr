@@ -36,12 +36,11 @@ module CV::TlRule
     if !has_第
       node = fold!(node, succ, PosTag::Nquant, dic: 2)
     elsif (succ_2 = succ.succ?) && succ_2.noun?
-      left, middle = swap!(node, succ)
-      middle, right = swap!(middle, succ_2)
-      return fold!(left, right, PosTag::Nform, 4)
+      # val = "#{succ.val} #{succ_2.val} #{node.val}"
+      succ = fold!(succ, succ_2, succ_2.tag, 4)
+      return fold_swap!(node, succ, PosTag::Nphrase, 4)
     else
-      head, tail = swap!(node, succ)
-      node = fold!(head, tail, PosTag::Nquant, 5)
+      node = fold_swap!(node, succ, PosTag::Nquant, 4)
     end
 
     fold_suf_quanti_appro!(node)

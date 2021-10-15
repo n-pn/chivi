@@ -21,33 +21,73 @@ module CV::TlRule
     root = MtNode.new("", "", tag, dic, head.idx)
     root.body = head
 
-    root.fix_prev!(head.prev?)
-    head.fix_prev!(nil)
+    root.fix_root!(head.root?)
+    head.root = root
 
-    root.fix_succ!(tail.succ?)
+    if prev = head.prev?
+      prev.succ = root
+      root.prev = prev
+    else
+      root.fix_prev!(nil)
+    end
+
+    if succ = tail.succ?
+      succ.prev = root
+      root.succ = succ
+    else
+      root.fix_succ!(nil)
+    end
+
+    head.fix_prev!(nil)
     tail.fix_succ!(nil)
 
     root
   end
 
-  def swap!(left : MtNode, right : MtNode)
-    succ = right.succ?
-    right.fix_prev!(left.prev?)
-    right.fix_succ!(left)
-    left.fix_succ!(succ)
+  def fold_swap!(tail : MtNode, head : MtNode, tag = PosTag::None, dic = 4)
+    # return fold!(tail, head, tag, dic)
 
-    {right, left}
-  end
+    root = MtNode.new("", "", tag, dic, head.idx)
+    root.body = head
 
-  def swap!(left : MtNode, middle : MtNode, right : MtNode)
-    left, right = swap!(left, right)
-    middle.fix_prev!(left)
-    middle.fix_succ!(right)
-    {left, right}
-  end
+    root.fix_root!(tail.root?)
+    tail.fix_root!(nil)
+    head.root = root
 
-  def swap_fold!(left : MtNode, right : MtNode, tag = right.tag, dic = 3)
-    head, tail = swap!(left, right)
-    fold!(left, right, tag, dic)
+    if prev = tail.prev?
+      prev.succ = root
+      root.prev = prev
+    else
+      root.fix_prev!(nil)
+    end
+
+    if succ = head.succ?
+      succ.prev = root
+      root.succ = succ
+    else
+      root.fix_succ!(nil)
+    end
+
+    # check if there is some node in between
+    # if there is then swap their prev and succ node to current head and tail
+    if head != tail.succ?
+      if succ = tail.succ?
+        head.succ = succ
+        succ.prev = head
+      end
+
+      if prev = head.prev?
+        tail.prev = prev
+        prev.succ = tail
+      end
+    else
+      head.succ = tail
+      tail.prev = head
+    end
+
+    head.fix_prev!(nil)
+    tail.fix_succ!(nil)
+
+    root
   end
 end

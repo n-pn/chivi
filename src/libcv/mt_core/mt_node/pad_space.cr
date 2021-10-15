@@ -1,5 +1,5 @@
 module CV::MTL::PadSpace
-  def pad_spaces!(prev : MtNode = self.prev) : MtNode
+  def pad_spaces!(prev : MtNode = self.prev, head = prev) : MtNode
     if body = @body
       prev = body.pad_spaces!(prev)
     else
@@ -12,20 +12,22 @@ module CV::MTL::PadSpace
   def append_space!(prev : MtNode) : MtNode
     if @tag.numlat? && (prev.tag.plsgn? || prev.tag.mnsgn?)
       @tag = PosTag::String unless prev.prev?(&.numlat?)
+      self
     elsif should_space_before?(prev)
-      space = MtNode.new("", " ")
-      prev.set_succ(space)
-
-      # if prev.succ?
-      #   prev.set_succ(space)
-      # else
-
-      #   space.fix_prev!(@prev)
-      #   self.fix_prev!(space)
-      # end
+      self.prepend_space!
+      self
+    else
+      @key.blank? || @val.blank? ? prev : self
     end
+  end
 
-    @val.blank? ? prev : self
+  def prepend_space!
+    if root = @root
+      root.prepend_space!
+    else
+      space = MtNode.new("", val: " ", idx: @idx)
+      self.set_prev(space)
+    end
   end
 
   def should_space_before?(prev : MtNode) : Bool

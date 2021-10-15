@@ -12,6 +12,8 @@ class CV::MtNode
   property! succ : MtNode
 
   property! body : MtNode
+  property! root : MtNode
+
   forward_missing_to @tag
 
   def initialize(term : VpTerm, @dic : Int32 = 0, @idx = -1)
@@ -79,6 +81,12 @@ class CV::MtNode
 
   def fix_succ!(@succ : Nil) : self
     self
+  end
+
+  def fix_root!(@root : Nil) : Nil
+  end
+
+  def fix_root!(@root : self) : Nil
   end
 
   include MTL::Transform

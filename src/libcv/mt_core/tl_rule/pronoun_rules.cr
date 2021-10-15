@@ -3,28 +3,26 @@ module CV::TlRule
     return node unless succ
 
     case node.tag
-    when .propers? then fold_propers!(node, succ)
-    else                node
+    when .propers?  then fold_propers!(node, succ)
+    when .prodeics? then fold_prodeics!(node, succ)
+    else                 node
     end
   end
 
   def fold_propers!(node : MtNode, succ : MtNode) : MtNode
     case succ.tag
     when .space?
-      head, tail = swap!(node, succ)
-      fold!(head, tail, succ.tag, 7)
+      fold_swap!(node, succ, succ.tag, 7)
     when .ptitle?
       return node unless should_not_combine_propers?(node.prev?, succ.succ?)
-      head, tail = swap!(node, succ)
-      fold!(head, tail, succ.tag, 7)
+      fold_swap!(node, succ, succ.tag, 7)
     when .names?
       succ = fold_noun!(succ)
       return node unless succ.names?
 
       # TODO: add pseudo node
       node.val = "của #{node.val}"
-      head, tail = swap!(node, succ)
-      fold!(head, tail, succ.val, 8)
+      fold_swap!(node, succ, succ.tag, 8)
     else
       # TODO: handle special cases
       node
@@ -42,11 +40,11 @@ module CV::TlRule
     succ.verbs? || succ.adverbs? && succ.succ?(&.verbs?)
   end
 
-  def fold_prodeics?(node : MtNode, succ : MtNode) : MtNode
+  def fold_prodeics!(node : MtNode, succ : MtNode) : MtNode
     if node.pro_zhe? || node.pro_na1?
       succ = heal_quanti!(succ)
       return node unless succ.quanti?
-      node = swap_fold!(node, succ)
+      node = fold_swap!(node, succ)
     end
 
     node
@@ -62,26 +60,28 @@ module CV::TlRule
   # }
 
   def fold_prodeic_noun!(prev : MtNode, node : MtNode)
+    node.tag = PosTag::Nphrase
+
     case prev.key
     when "各"
       prev.val = "các"
       fold!(prev, node, node.tag, 4)
     when "这", "这个"
-      prev.val = "này"
-      swap_fold!(prev, node, node.tag, 4)
+      fold_swap!(prev, node, node.tag, 4)
     when "那", "那个"
       prev.val = "kia"
-      swap_fold!(prev, node, node.tag, 4)
+      fold_swap!(prev, node, node.tag, 9)
     when "这样"
       prev.val = "như vậy"
-      swap_fold!(prev, node, node.tag, 4)
+      fold_swap!(prev, node, node.tag, 4)
     when "那样"
       prev.val = "như thế"
-      swap_fold!(prev, node, node.tag, 4)
+      fold_swap!(prev, node, node.tag, 4)
     when "任何"
       prev.val = "bất kỳ"
       fold!(prev, node)
-    when "其他" then node.fold_left!(prev, "các #{node.val} khác")
+    when "其他"
+      node.fold_left!(prev, "các #{node.val} khác")
     when .ends_with?("个")
       prev.val = prev.val.sub("cái", "").strip
       fold!(prev, node, node.tag, 4)
@@ -94,7 +94,7 @@ module CV::TlRule
       val = prev.val.sub("kia", "").strip
       prev.fold!(node, "#{val} #{node.val} kia")
     else
-      swap_fold!(prev, node)
+      fold_swap!(prev, node)
     end
   end
 end

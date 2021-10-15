@@ -14,7 +14,6 @@ module CV::TlRule
       succ.val = "trước" if succ.key == "之前"
     end
 
-    left, right = swap!(node, succ)
-    fold!(left, right, PosTag::Place, 3)
+    fold_swap!(node, succ, PosTag::Place, 3)
   end
 end

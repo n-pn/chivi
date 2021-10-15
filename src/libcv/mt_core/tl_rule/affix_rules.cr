@@ -2,16 +2,12 @@ module CV::TlRule
   def fold_suf_noun!(node : MtNode, succ : MtNode) : MtNode
     # TODO: handle special cases
     succ.val = "các" if succ.suffix_men?
-
-    head, tail = swap!(node, succ)
-    fold!(head, tail, PosTag::Noun, dic: 7)
+    fold_swap!(node, succ, PosTag::Noun, dic: 7)
   end
 
   def fold_suf_verb!(node : MtNode, succ : MtNode) : MtNode
     # TODO: handle special cases
-
-    head, tail = swap!(node, succ)
-    fold!(head, tail, PosTag::Verb, dic: 7)
+    fold_swap!(node, succ, PosTag::Verb, dic: 7)
   end
 
   def fold_suf_men!(node : MtNode, succ : MtNode) : MtNode

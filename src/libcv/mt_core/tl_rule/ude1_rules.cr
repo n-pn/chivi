@@ -8,39 +8,35 @@ module CV::TlRule
     case prev_2
     when .ajav?
       prev_2.val = "thông thường" if prev_2.key == "一般"
-      head, tail = swap!(prev_2, prev, node)
-      return fold!(head, tail, PosTag::Nphrase, 2)
+      return fold_swap!(prev_2, node, PosTag::Nphrase, 2)
     when .adjts?, .nquant?, .quanti?, .veno?,
          .vintr?, .time?, .place?, .space?, .adesc?
-      head, tail = swap!(prev_2, prev, node)
-      return fold!(head, tail, PosTag::Nphrase, 2)
+      return fold_swap!(prev_2, node, PosTag::Nphrase, 2)
     when .nouns?, .propers?
       if (prev_3 = prev_2.prev?) && verb_subject?(prev_3, node)
-        succ = node.succ?
-        left, tail = swap!(prev_2, prev, node)
-        head, right = swap!(prev_3, left, prev)
-
-        return fold!(head, tail, PosTag::Nphrase, 6)
+        prev = fold!(prev_3, prev, PosTag::Dphrase, 6)
+        return fold_swap!(prev, node, PosTag::Nphrase, 6)
       end
 
       prev.val = "của"
-      head, tail = swap!(prev_2, prev, node)
       dic = prev_2.prev?(&.verbs?) ? 5 : 4
-      return fold!(head, tail, PosTag::Nphrase, dic)
+      return fold_swap!(prev_2, node, PosTag::Nphrase, dic)
     when .verb?
-      return node unless prev_3 = prev_2.prev?
+      return node
 
-      if prev_3.nouns?
-        prev_3.dic = 9
-        prev_3.tag = PosTag::Nphrase
-        prev_3.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
-        return prev_3.fold_many!(prev_2, prev, node)
-      elsif prev_3.nquant?
-        prev_3.dic = 8
-        prev_3.tag = PosTag::Nphrase
-        prev_3.val = "#{prev_3.val} #{node.val} #{prev_2.val}"
-        return prev_3.fold_many!(prev_2, prev, node)
-      end
+      # return node unless prev_3 = prev_2.prev?
+
+      # if prev_3.nouns?
+      #   prev_3.dic = 9
+      #   prev_3.tag = PosTag::Nphrase
+      #   prev_3.val = "#{node.val} #{prev_3.val} #{prev_2.val}"
+      #   return prev_3.fold_many!(prev_2, prev, node)
+      # elsif prev_3.nquant?
+      #   prev_3.dic = 8
+      #   prev_3.tag = PosTag::Nphrase
+      #   prev_3.val = "#{prev_3.val} #{node.val} #{prev_2.val}"
+      #   return prev_3.fold_many!(prev_2, prev, node)
+      # end
 
       # TODO
       node
