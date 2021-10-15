@@ -202,8 +202,8 @@ c-v {
 
 @mixin cg-color($color) {
   --color: #{color($color, 5)};
-  margin: 0 0.1em;
-  padding: 0.2em -0.1em;
+  // margin: 0 0.1em;
+  // padding: 0.2em -0.1em;
 
   .debug & {
     background: none !important;
