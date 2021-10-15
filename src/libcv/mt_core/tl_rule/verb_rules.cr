@@ -46,27 +46,25 @@ module CV::TlRule
     case succ.tag
     when .ule?
       succ.val = "" unless keep_ule?(node, succ)
-
-      node = fold!(node, succ, dic: 9)
+      node = fold!(node, succ, dic: 1)
 
       return node unless (succ = succ.succ?) && succ.nquants?
       succ = fold_number!(succ) if succ.numbers?
       return node unless succ.nquant?
 
-      fold!(node, succ, PosTag::Vphrase, 9)
+      fold!(node, succ, PosTag::Vphrase, 6)
     when .ude2?
       return node unless (succ_2 = succ.succ?) && (succ_2.verb? || succ_2.veno?)
       succ_2 = fold_verbs!(succ_2)
-      succ.val = "một cách"
-
-      left, right = swap!(node, succ, succ_2)
-      fold!(left, right, PosTag::Verb, 9)
+      succ.val = "mà"
+      # left, right = swap!(node, succ, succ_2)
+      fold!(succ, succ_2, PosTag::Verb, 6)
     when .ude3?
       fold_verb_ude3!(node, succ)
     when .uzhe?
       fold_verb_uzhe!(node, succ)
     when .uguo?
-      fold!(node, succ, dic: 9)
+      fold!(node, succ, dic: 1)
     else
       node
     end

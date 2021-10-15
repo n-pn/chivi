@@ -9,23 +9,23 @@ module CV::TlRule
     when .ajav?
       prev_2.val = "thông thường" if prev_2.key == "一般"
       head, tail = swap!(prev_2, prev, node)
-      return fold!(head, tail, PosTag::Nphrase, 6)
+      return fold!(head, tail, PosTag::Nphrase, 2)
     when .adjts?, .nquant?, .quanti?, .veno?,
          .vintr?, .time?, .place?, .space?, .adesc?
       head, tail = swap!(prev_2, prev, node)
-      return fold!(head, tail, PosTag::Nphrase, 6)
+      return fold!(head, tail, PosTag::Nphrase, 2)
     when .nouns?, .propers?
       if (prev_3 = prev_2.prev?) && verb_subject?(prev_3, node)
         succ = node.succ?
         left, tail = swap!(prev_2, prev, node)
         head, right = swap!(prev_3, left, prev)
 
-        return fold!(head, tail, PosTag::Nphrase, 9)
+        return fold!(head, tail, PosTag::Nphrase, 6)
       end
 
       prev.val = "của"
       head, tail = swap!(prev_2, prev, node)
-      dic = prev_2.prev?(&.verbs?) ? 8 : 7
+      dic = prev_2.prev?(&.verbs?) ? 5 : 4
       return fold!(head, tail, PosTag::Nphrase, dic)
     when .verb?
       return node unless prev_3 = prev_2.prev?
