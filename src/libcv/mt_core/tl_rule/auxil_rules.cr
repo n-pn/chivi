@@ -21,7 +21,6 @@ module CV::TlRule
   end
 
   def heal_ude1!(node : MtNode) : MtNode
-    puts node
     node.val = ""
     return node unless prev = node.prev?
 

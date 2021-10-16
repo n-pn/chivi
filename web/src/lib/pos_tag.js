@@ -141,7 +141,6 @@ export const groups = [
   ],
   // prettier-ignore
   [
-    'dbu' ,'dmei', 'dfei',
     'ahao', 'vshi', 'vyou',
     'vneng','vhui', 'vxiang',
     'pba', 'pbei', 'pdui',

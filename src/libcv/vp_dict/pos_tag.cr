@@ -6,8 +6,7 @@ struct CV::PosTag
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
   {% begin %}
-    TYPES = {{ NOUNS + PRONOUNS + NUMBERS + VERBS + ADJTS + ADVERBS +
-                 AFFIXES + MISCS + UNIQS }}
+    TYPES = {{ NOUNS + PRONOUNS + NUMBERS + VERBS + ADJTS + AFFIXES + MISCS + UNIQS }}
 
     TYPES_2 = {{ PUNCTS + AUXILS }}
   {% end %}
@@ -19,6 +18,7 @@ struct CV::PosTag
       {{ type[1].id }}
     {% end %}
 
+    Adverb
     Punct; Auxil
 
     {% for type in TYPES_2 %}
@@ -53,8 +53,9 @@ struct CV::PosTag
 
   def to_str
     case @pos
-    when .puncts? then return "w"
-    when .auxils? then return "u"
+    when .puncts?  then return "w"
+    when .auxils?  then return "u"
+    when .adverbs? then return "d"
     end
 
     case self
@@ -84,6 +85,7 @@ struct CV::PosTag
     when "qv" then Verb # quanti verb is handled by code
     when "w" then map_puncts(key)
     when "u" then map_auxils(key)
+    when "d" then map_adverbs(key)
     {% for type in TYPES %}
     when {{ type[0] }} then {{ type[1].id }}
     {% end %}
