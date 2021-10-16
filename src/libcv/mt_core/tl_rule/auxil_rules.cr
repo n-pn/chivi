@@ -28,6 +28,7 @@ module CV::TlRule
 
   def keep_ule?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool
     return true unless succ
+    return false if succ.popens?
     succ.ends? || succ.succ?(&.ule?) || false
   end
 end

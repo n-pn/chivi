@@ -6,7 +6,7 @@ module CV::TlRule
   end
 
   def end_sentence?(node : MtNode)
-    node.endsts?
+    node.pstops?
   end
 
   def boundary?(node : Nil)

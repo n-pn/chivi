@@ -77,7 +77,7 @@ module CV::TlRule
     node.val = ""
     return node if mode < 0
 
-    return node unless node.succ?(&.endsts?) && (prev.nouns? || prev.propers?)
+    return node unless node.succ?(&.pstops?) && (prev.nouns? || prev.propers?)
 
     prev.prev? do |prev_2|
       return node if prev_2.verb? || prev_2.preposes?

@@ -1,38 +1,60 @@
 module CV::TlRule
-  def fold_quotes!(node : MtNode, mode = 1) : MtNode
-    end_char = matching_quote(node.val[0])
-
-    last = tail = node
+  def fold_nested!(head : MtNode, mode = 1) : MtNode
+    end_tag, end_val = match_end(head.val[0])
+    tail = head
 
     while tail = tail.succ?
-      break if tail.quotecl? && tail.val[0] == end_char
-      last = tail
+      break if tail.tag == end_tag && tail.val[0] == end_val
     end
 
-    return node unless tail && node != last
+    return head unless tail && tail != head.succ?
 
-    fold_phrase!(node, tail, mode: mode)
-  end
-
-  private def matching_quote(char : Char)
-    case char
-    when '“' then '”'
-    when '‘' then '’'
-    else          char
-    end
-  end
-
-  def fold_phrase!(head : MtNode, tail : MtNode, mode = 1)
     root = fold!(head, tail, dic: 1)
-    succ = head.succ
 
+    succ = head.succ
     fix_grammar!(succ, mode)
+
     if tail == succ.succ?
-      # root.tag = succ.tag
+      root.tag = succ.tag
     else
       root.dic = 0
     end
 
     root
+  end
+
+  private def match_end(char : Char)
+    case char
+    when '“' then {PosTag::Quotecl, '”'}
+    when '‘' then {PosTag::Quotecl, '’'}
+    when '(' then {PosTag::Parencl, ')'}
+    when '[' then {PosTag::Brackcl, ']'}
+    when '{' then {PosTag::Brackcl, '}'}
+    else          {PosTag::Punct, char}
+    end
+  end
+
+  def fold_ptitle!(head : MtNode, mode = 1) : MtNode
+    end_key = match_title_end(head.key[0])
+    tail = head
+
+    while tail = tail.succ?
+      break if tail.titlecl? && tail.key[0] == end_key
+    end
+
+    return head unless tail && tail != head.succ?
+
+    fix_grammar!(head.succ, mode)
+    fold!(head, tail, PosTag::Nother, dic: 0)
+  end
+
+  private def match_title_end(char : Char)
+    case char
+    when '《' then '》'
+    when '〈' then '〉'
+    when '⟨' then '⟩'
+    when '<' then '>'
+    else          char
+    end
   end
 end
