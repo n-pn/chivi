@@ -1,6 +1,7 @@
 module CV::TlRule
   QUANTI_MAP = {
     "笔" => "bút",
+    "家" => "nhà",
     "石" => "thạch",
     "两" => "lượng",
     "里" => "dặm",
@@ -63,8 +64,7 @@ module CV::TlRule
 
   def fold_pre_quanti_appro!(node : MtNode, succ : MtNode) : MtNode
     return node unless val = PRE_APPRO[succ.key]?
-    succ.val = val
-    fold_swap!(node, succ, node.tag, 5)
+    fold_swap!(node, succ.heal!(val), node.tag, 5)
   end
 
   APPROS = {

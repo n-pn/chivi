@@ -21,6 +21,8 @@ module CV::TlRule
         succ_2.val = "không"
         node = fold!(node, succ_2, dic: 2)
       when .nquants?
+        break if node.key == "小于"
+
         succ = fold_number!(succ) if succ.numbers?
         break unless succ.nquant? && !succ.succ?(&.nouns?)
         fold!(node, succ, PosTag::Vphrase, 4)

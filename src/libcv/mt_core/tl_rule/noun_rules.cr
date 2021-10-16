@@ -54,10 +54,7 @@ module CV::TlRule
   end
 
   def fold_noun_left!(node : MtNode, mode = 1)
-    return node if node.veno?
-
-    while node.nouns?
-      break unless prev = node.prev?
+    while prev = node.prev?
       case prev
       when .penum?, .concoord?
         break unless (prev_2 = prev.prev?) && can_combine_noun?(node, prev_2)
@@ -71,11 +68,7 @@ module CV::TlRule
         end
 
         node = fold!(prev, node, PosTag::Nphrase, 3)
-        # puts node.body.deep_inspect
-        # gets
       when .pro_dems?
-        # puts [node, prev]
-        # gets
         return fold_pro_dem_noun!(prev, node)
       when .pro_ints?
         return fold_什么_noun!(prev, node) if prev.key == "什么"

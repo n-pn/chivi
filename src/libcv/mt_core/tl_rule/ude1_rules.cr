@@ -9,8 +9,10 @@ module CV::TlRule
     when .ajav?
       prev_2.val = "thông thường" if prev_2.key == "一般"
       return fold_swap!(prev_2, node, PosTag::Nphrase, 2)
-    when .adjts?, .nquant?, .quanti?, .veno?,
-         .vintr?, .time?, .place?, .space?, .adesc?
+    when .adjts?, .veno?, .vintr?, .time?, .place?, .space?, .adesc?
+      return fold_swap!(prev_2, node, PosTag::Nphrase, 2)
+    when .nquants?
+      # puts ["!", prev_2, prev, node]
       return fold_swap!(prev_2, node, PosTag::Nphrase, 2)
     when .nouns?, .pro_per?
       # puts ["!", prev_2, prev, node]

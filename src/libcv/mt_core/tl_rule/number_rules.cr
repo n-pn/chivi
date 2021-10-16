@@ -4,19 +4,6 @@ module CV::TlRule
     return node unless succ = node.succ?
 
     node = fold_pre_quanti_appro!(node, succ)
-    has_第 = node.key.starts_with?("第")
-
-    if prev = node.prev?
-      case prev.key
-      when "第"
-        has_第 = true
-        prev.val = "thứ"
-        node = fold!(prev, node, node.tag, 2)
-      when "约"
-        prev.val = "chừng"
-        node = fold!(prev, node, node.tag, 2)
-      end
-    end
 
     return node unless succ = node.succ?
 
@@ -32,15 +19,34 @@ module CV::TlRule
       return node unless succ.quantis?
     end
 
+    has_第 = node.key.starts_with?("第")
+
+    if (prev = node.prev?) && prev.key == "第"
+      has_第 = true
+      prev.val = "thứ"
+      node = fold!(prev, node, node.tag, 2)
+    end
+
     # merge number with quantifiers
     if !has_第
-      node = fold!(node, succ, PosTag::Nquant, dic: 2)
+      node = fold!(node, succ, PosTag::Nquant, dic: 4)
     elsif (succ_2 = succ.succ?) && succ_2.noun?
       # val = "#{succ.val} #{succ_2.val} #{node.val}"
       succ = fold!(succ, succ_2, succ_2.tag, 4)
       return fold_swap!(node, succ, PosTag::Nphrase, 4)
     else
       node = fold_swap!(node, succ, PosTag::Nquant, 4)
+    end
+
+    if prev = node.prev?
+      case prev.key
+      when "约"
+        prev.val = "chừng"
+        node = fold!(prev, node, node.tag, 5)
+      when "小于"
+        prev.val = "ít hơn"
+        node = fold!(prev, node, node.tag, 5)
+      end
     end
 
     fold_suf_quanti_appro!(node)

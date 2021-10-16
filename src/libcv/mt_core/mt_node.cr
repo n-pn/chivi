@@ -48,20 +48,6 @@ class CV::MtNode
     @succ.try { |x| yield x }
   end
 
-  def set_prev(node : self) : self # return node
-    if prev = @prev
-      prev.succ = node
-      node.prev = prev
-    end
-
-    node.succ = self
-    @prev = node
-  end
-
-  def set_prev(@prev : Nil) : self
-    self
-  end
-
   def set_succ(node : self) : self # return node
     if succ = @succ
       succ.prev = node
@@ -93,13 +79,26 @@ class CV::MtNode
     self
   end
 
-  def fix_root!(@root : Nil) : Nil
+  def fix_root!(@root : Nil) : self
+    self
   end
 
-  def fix_root!(@root : self) : Nil
+  def fix_root!(@root : self) : self
+    self
   end
 
-  include MTL::Transform
+  def heal!(@val : String) : self
+    self
+  end
+
+  def heal!(@tag : PosTag) : self
+    self
+  end
+
+  def heal!(@val : String, @tag : PosTag) : self
+    self
+  end
+
   include MTL::Serialize
   include MTL::ApplyCap
   include MTL::PadSpace
