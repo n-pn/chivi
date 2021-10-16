@@ -34,41 +34,31 @@ module CV::MTL::PadSpace
     return false if prev.val.blank? || @val.blank?
 
     case @tag
+    when .string? then return false if prev.tag.pdeci?
+    when .numlat? then return false if prev.tag.plsgn? || prev.tag.mnsgn?
+    when .plsgn?  then return false if prev.tag.numlat?
+    when .mnsgn?  then return false if prev.tag.numlat?
     when .colon?  then return false
     when .middot? then return true
     when .ptitle?
-      return false unless prev.should_space_after?
+      return false if prev.popens?
       return @key[0] == '-' ? false : true
-    when .plsgn?, .mnsgn?
-      return false if prev.tag.numlat?
-    when .numlat?
-      return false if prev.tag.plsgn? || prev.tag.mnsgn?
-      # when .pdash?  then return !prev.tag.puncts?
-    when .quotecl?, .parencl?, .brackcl?, .titlecl?,
-         .comma?, .penum?, .pstop?, .pdeci?,
-         .smcln?, .exmark?, .qsmark?, .ellip?,
-         .tilde?, .squanti?, .perct?
-      return prev.tag.colon?
-    when .quoteop?, .parenop?, .brackop?, .titleop?
-      return prev.should_space_after?
+    when .popens? then return !prev.popens?
     when .puncts?
-      case prev.tag
-      when .colon?, .comma?, .pstop? then return true
-      else                                return !prev.tag.puncts?
+      case @tag
+      # when .pdash?  then return !prev.tag.puncts?
+      when .pstops?, .comma?, .penum?,
+           .pdeci?, .ellip?, .tilde?,
+           .perct?, .squanti?
+        return prev.tag.colon?
+      else
+        case prev.tag
+        when .colon?, .comma?, .pstop? then return true
+        else                                return !prev.puncts?
+        end
       end
-    when .string?
-      return false if prev.tag.pdeci?
     end
 
-    prev.should_space_after?
-  end
-
-  def should_space_after? : Bool
-    case @tag
-    when .quoteop?, .parenop?, .brackop?, .titleop?
-      false
-    else
-      true
-    end
+    !prev.popens?
   end
 end
