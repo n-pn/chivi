@@ -1,27 +1,27 @@
 module CV::TlRule
-  def fold_onoma!(node : String, succ = node.succ?) : MtNode
+  def fold_onoma!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
 
     case succ.tag
     when .ude1?
       succ.heal!("mà")
-      break unless (succ_2 = succ.succ?) && succ_2.verbs?
+      return node unless (succ_2 = succ.succ?) && succ_2.verbs?
 
-      succ_2 = fold_verbs(succ_2)
-      node = fold!(node, succ_2, succ_2.tag, 8)
+      succ_2 = fold_verbs!(succ_2)
+      fold!(node, succ_2, succ_2.tag, 8)
+    else
+      node
     end
-
-    node
   end
 
   private def heal_uniques!(node : MtNode, succ = node.succ?) : MtNode
     case node.tag
     when .v_shi?
       # TODO handle vshi
-      return fold_verbs!(node)
+      return node
     when .v_you?
       # TODO handle vyou
-      return fold_verbs!(node)
+      return node
     when .v_shang?, .v_xia?
       if succ
         case succ.tag
