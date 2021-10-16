@@ -13,24 +13,26 @@ module CV::TlRule
 
   def fold_nested!(head : MtNode, mode = 1) : MtNode
     end_tag, end_val = match_end(head.val[0])
-    tail = head
 
+    tail = head
     while tail = tail.succ?
       break if tail.tag.tag == end_tag && tail.val[0] == end_val
     end
 
     return head unless tail && tail != head.succ?
 
-    root = fold!(head, tail, dic: 1)
-
     succ = head.succ
     fix_grammar!(succ, mode)
 
-    if tail == succ.succ?
-      root.tag = succ.tag
+    if succ.succ? == tail
+      tag = succ.tag
+      dic = 2
     else
-      root.dic = 0
+      tag = PosTag::Unkn
+      dic = 1
     end
+
+    root = fold!(head, tail, tag: tag, dic: dic)
 
     root
   end
