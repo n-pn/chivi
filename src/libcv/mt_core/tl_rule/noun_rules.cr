@@ -68,11 +68,12 @@ module CV::TlRule
         end
 
         node = fold!(prev, node, PosTag::Nphrase, 3)
+      when .pro_ji?
+        return fold!(prev, node, PosTag::Nphrase, 3)
       when .pro_dems?
         return fold_pro_dem_noun!(prev, node)
       when .pro_ints?
         return fold_什么_noun!(prev, node) if prev.key == "什么"
-
         return fold_swap!(prev, node, PosTag::Nphrase, 3)
       when .amorp? then node = fold!(prev, node)
       when .place?, .adesc?, .ajno?, .modifier?, .modiform?

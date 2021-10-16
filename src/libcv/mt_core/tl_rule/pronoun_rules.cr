@@ -41,9 +41,10 @@ module CV::TlRule
   end
 
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
-    if node.pro_zhe?
+    case node
+    when node.pro_zhe?, .pro_ji?
       succ = heal_quanti!(succ)
-    elsif node.pro_na1?
+    when .pro_na1?
       if succ.pro_per?
         return node.heal!("vậy", PosTag::Conjunct)
       end

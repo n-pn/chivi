@@ -12,12 +12,12 @@ struct CV::PosTag
   ProDem = new(Tag::ProDem, DEMPOS)
   ProZhe = new(Tag::ProZhe, DEMPOS)
   ProNa1 = new(Tag::ProNa1, DEMPOS)
+  ProJi  = new(Tag::ProJi, DEMPOS)
 
   # 疑问代词 - interrogative pronoun - đại từ nghi vấn
   INTPOS = Pos::ProInts | Pos::Pronouns | Pos::Contws
   ProInt = new(Tag::ProInt, INTPOS)
   ProNa2 = new(Tag::ProNa2, INTPOS)
-  ProJi  = new(Tag::ProJi, INTPOS)
 
   @[AlwaysInline]
   def pronouns?
@@ -38,6 +38,7 @@ struct CV::PosTag
     case key
     when "这" then ProZhe
     when "那" then ProNa1
+    when "几" then ProJi
     else          ProDem
     end
   end
@@ -45,7 +46,6 @@ struct CV::PosTag
   def self.map_pro_ints(key : ::String)
     case key
     when "哪" then ProNa2
-    when "几" then ProJi
     else          ProInt
     end
   end
