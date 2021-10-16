@@ -8,7 +8,7 @@ struct CV::PosTag
 
     Pronouns; ProDems; ProInts
 
-    Verbs; Vmodals; Vcompls
+    Verbs; Vdirs; Vmodals
 
     Adjts; Adverbs
 
@@ -18,6 +18,6 @@ struct CV::PosTag
 
     SufNouns; SufVerbs; SufAdjts
 
-    Uniqs
+    Uniques
   end
 end

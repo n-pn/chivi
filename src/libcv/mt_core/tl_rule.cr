@@ -7,17 +7,8 @@ module CV::TlRule
       # gets
 
       case node.tag
-      when .puncts?
-        case node.tag
-        when .quoteop?, .parenop?, .brackop?
-          node = fold_nested!(node, mode: mode)
-        when .titleop?
-          node = fold_ptitle!(node, mode: mode)
-          node = fold_noun_left!(node, mode: mode)
-        else
-          node # TODO
-        end
-      when .special?  then node = heal_specials!(node)
+      when .puncts?   then ndoe = fold_puncts!(node, mode: mode)
+      when .unique?   then node = heal_uniques!(node)
       when .auxils?   then node = heal_auxils!(node, mode: mode)
       when .strings?  then node = fold_strings!(node)
       when .preposes? then node = fold_preposes!(node)
@@ -25,8 +16,6 @@ module CV::TlRule
       when .numbers? # , .quantis?
         node = fold_number!(node)
         node = fold_noun_left!(node) if node.nquants? && !node.succ?(&.nouns?)
-        # when .vshi? then next # TODO handle vshi
-        # when .vyou? then next # TODO handle vyou
       when .veno?
         node = heal_veno!(node)
         node = node.noun? ? fold_noun!(node) : fold_verbs!(node)
@@ -41,12 +30,6 @@ module CV::TlRule
           node = fold_noun_space!(node.prev, node)
         else
           node = fold_noun_left!(node, mode: mode)
-        end
-      when .vshang?, .vxia?
-        if node.prev.nouns?
-          node = fold_noun_space!(node.prev, node)
-        else
-          node = fold_verbs!(node)
         end
       when .vmodals? then node = heal_vmodal!(node)
       when .verbs?   then node = fold_verbs!(node)

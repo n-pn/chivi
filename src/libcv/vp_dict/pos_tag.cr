@@ -6,7 +6,7 @@ struct CV::PosTag
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
   {% begin %}
-    TYPES = {{ NOUNS + NUMBERS + VERBS + ADJTS + AFFIXES + MISCS + UNIQS }}
+    TYPES = {{ NOUNS + NUMBERS + VERBS + ADJTS + AFFIXES + MISCS }}
   {% end %}
 
   enum Tag
@@ -27,6 +27,8 @@ struct CV::PosTag
 
     Auxil; Punct
 
+    Unique; AdjHao; VShang; VXia; VShi; VYou
+
     {% for group in {PUNCTS, AUXILS} %}
       {% for type in group %}
       {{ type[0].id }}
@@ -39,6 +41,7 @@ struct CV::PosTag
       when None then "-"
       when Pronoun then "r"
       when ProPer then "rr"
+      when Unique then "!"
       {% for type in TYPES %}
         when {{ type[1].id }} then {{ type[0] }}
       {% end %}
@@ -71,6 +74,7 @@ struct CV::PosTag
     when .preposes? then "p"
     when .pro_dems? then "rz"
     when .pro_ints? then "ry"
+    when .uniques?  then "!"
     else                 @tag.to_str
     end
   end
@@ -98,10 +102,11 @@ struct CV::PosTag
     when "d" then map_adverbs(key)
     when "p" then map_preposes(key)
     when "vm" then map_vmodals(key)
-    when "r" then Pronoun
-    when "rr" then ProPer
     when "rz" then map_pro_dems(key)
     when "ry" then map_pro_ints(key)
+    when "!" then map_uniques(key)
+    when "r" then Pronoun
+    when "rr" then ProPer
     when "l" then Idiom
     when "j" then Noun
     when "-" then None

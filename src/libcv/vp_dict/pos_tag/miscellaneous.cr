@@ -26,7 +26,6 @@ struct CV::PosTag
     {"y", "Modalparticle", Pos::Funcws}, # 语气词 - modal particle - ngữ khí
     {"o", "Onomatopoeia", Pos::Funcws},  # 拟声词 - onomatopoeia - tượng thanh
 
-    {"sp", "Special", Pos::Uniqs},               # special cases
     {"vp", "Vphrase", Pos::Verbs | Pos::Contws}, # verb phrase
     {"np", "Nphrase", Pos::Nouns | Pos::Contws}, # noun phrase
     {"ap", "Aphrase", Pos::Adjts | Pos::Contws}, # adjective phrase

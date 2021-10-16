@@ -8,11 +8,9 @@ struct CV::PosTag
     {"vd", "Vead", Pos::Verbs | Pos::Adverbs | Pos::Contws},
 
     # 趋向动词 - directional verb
-    {"vf", "Vdir", Pos::Verbs | Pos::Vcompls | Pos::Contws},
+    {"vf", "Vdir", Pos::Verbs | Pos::Vdirs | Pos::Contws},
     # 形式动词 - pro-verb - động từ hình thái
     {"vx", "Vpro", Pos::Verbs | Pos::Contws},
-    # Động từ / bổ ngữ động từ
-    {"vc", "Vcom", Pos::Verbs | Pos::Contws},
 
     # 不及物动词（内动词）- intransitive verb - nội động từ
     {"vi", "Vintr", Pos::Verbs | Pos::Contws},
@@ -20,16 +18,15 @@ struct CV::PosTag
     {"vl", "Vform", Pos::Verbs | Pos::Contws},
     # 动词性语素 - verbal morpheme
     {"vg", "Vmorp", Pos::Verbs | Pos::Contws},
-
-    # 动词 “是” - động từ `thị`
-    {"vshi", "Vshi", Pos::Verbs | Pos::Uniqs | Pos::Contws},
-    # 动词 “有” - động từ `hữu`
-    {"vyou", "Vyou", Pos::Verbs | Pos::Uniqs | Pos::Contws},
-
   }
 
   @[AlwaysInline]
   def verbs?
     @pos.verbs?
+  end
+
+  @[AlwaysInline]
+  def vdirs?
+    @pos.vdirs?
   end
 end

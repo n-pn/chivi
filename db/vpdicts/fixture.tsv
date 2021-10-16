@@ -33,8 +33,6 @@
 会	sẽ	vm
 能	có thể	vm
 想	nghĩ	vm
-是	là	vshi
-有	có	vyou
 姐	tỷ	nw
 姐姐	tỷ tỷ	nw
 大姐	đại tỷ	nw
@@ -72,7 +70,6 @@
 兆	triệu	mz
 https://	https://	xu
 http://	http://	xu
-好	tốt	ahao
 化	hoá	kv
 时	thời điểm	kn
 们	nhóm	kn
@@ -108,20 +105,21 @@ http://	http://	xu
 度	đoán	v
 层	tầng	n
 也	cũng	d
-
 一趟	một chuyến	mq
 一遍	một lần	mp
 一下	một phát	mq
 一把	một bả	mq
+劫	kiếp	n
 对不起	thật có lỗi	sp
 原来	nguyên lai	sp
 高达	Gundam	sp
-劫	kiếp	sp
 百分之	phần trăm	sp
 回	trở về	v
-完	xong	sp
-上	lên	vshang
-下	xuống	vxia
+好	tốt	!
+上	lên	!
+下	xuống	!
+是	là	!
+有	có	!
 起	dậy	vf
 过去	quá khứ	vf
 下去	đi xuống	vf
@@ -130,3 +128,6 @@ http://	http://	xu
 进	tiến	vf
 来	đến	vf
 出	ra	vf
+完	nộp	v
+不住	không trú	v
+开	mở	v

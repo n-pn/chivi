@@ -1,4 +1,16 @@
 module CV::TlRule
+  def fold_puncts!(node : MtNode, mode = 1) : MtNode
+    case node.tag
+    when .quoteop?, .parenop?, .brackop?
+      node = fold_nested!(node, mode: mode)
+    when .titleop?
+      node = fold_ptitle!(node, mode: mode)
+      node = fold_noun_left!(node, mode: mode)
+    else
+      node # TODO
+    end
+  end
+
   def fold_nested!(head : MtNode, mode = 1) : MtNode
     end_tag, end_val = match_end(head.val[0])
     tail = head

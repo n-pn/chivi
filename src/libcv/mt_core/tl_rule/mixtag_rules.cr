@@ -22,7 +22,7 @@ module CV::TlRule
       node
     when .suf_nouns?
       node.heal!(tag: PosTag::Noun)
-    when .auxils?, .vdir?, .vshang?, .vxia?, .vcom?
+    when .auxils?, .vdir?
       node.heal!(tag: PosTag::Verb)
     else
       node

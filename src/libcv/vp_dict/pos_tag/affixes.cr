@@ -1,14 +1,9 @@
 struct CV::PosTag
+  # 后缀 - suffix - hậu tố
   AFFIXES = {
     {"ka", "SufAdjt", Pos::SufAdjts | Pos::Funcws},
     {"kn", "SufNoun", Pos::SufNouns | Pos::Funcws},
     {"kv", "SufVerb", Pos::SufVerbs | Pos::Funcws},
-
-    # hậu tố "感"
-    {"kgan", "SuffixGan", Pos::SufNouns | Pos::Verbs | Pos::Contws},
-    # hậu tố 们
-    {"kmen", "SuffixMen", Pos::SufNouns | Pos::Funcws},
-    # 后缀 - suffix - hậu tố chưa phân loại
     {"k", "Suffix", Pos::Funcws},
   }
 

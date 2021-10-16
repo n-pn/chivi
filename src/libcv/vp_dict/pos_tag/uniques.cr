@@ -1,21 +1,25 @@
 struct CV::PosTag
-  UNIQS = {
-    # adjective "好"
-    {"ahao", "Ahao", Pos::Adjts | Pos::Vcompls | Pos::Uniqs | Pos::Contws},
+  Unique = new(Tag::Unique, Pos::Uniques | Pos::Contws)
 
-    # động từ đặc biệt 上
-    {"vshang", "Vshang", Pos::Verbs | Pos::Vcompls | Pos::Uniqs | Pos::Contws},
-    # động từ đặc biệt 下
-    {"vxia", "Vxia", Pos::Verbs | Pos::Vcompls | Pos::Uniqs | Pos::Contws},
-  }
+  AdjHao = new(Tag::AdjHao, Pos::Adjts | Pos::Uniques | Pos::Contws)
+  VShang = new(Tag::VShang, Pos::Verbs | Pos::Vdirs | Pos::Uniques | Pos::Contws)
+  VXia   = new(Tag::VXia, Pos::Verbs | Pos::Vdirs | Pos::Uniques | Pos::Contws)
+  VShi   = new(Tag::VShi, Pos::Verbs | Pos::Uniques | Pos::Contws)
+  VYou   = new(Tag::VYou, Pos::Verbs | Pos::Uniques | Pos::Contws)
 
   @[AlwaysInline]
-  def uniqs?
-    @pos.uniqs?
+  def uniques?
+    @pos.uniques?
   end
 
-  @[AlwaysInline]
-  def vcompls?
-    @pos.vcompls?
+  def self.map_uniques(key : ::String)
+    case key
+    when "好" then AdjHao # "hảo"
+    when "上" then VShang # "thượng"
+    when "下" then VXia   # "hạ"
+    when "是" then VShi   # "thị"
+    when "有" then VYou   # "hữu"
+    else          Unique
+    end
   end
 end

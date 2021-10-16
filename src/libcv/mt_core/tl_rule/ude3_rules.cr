@@ -15,16 +15,9 @@ module CV::TlRule
 
   def fold_verb_ude3!(node : MtNode, succ : MtNode) : MtNode
     return node unless succ_2 = succ.succ?
+    succ.val = ""
 
     case succ_2
-    when .special?
-      case succ_2.key
-      when "完"
-        succ_2.val = "xong"
-        return fold_verb_ude2_succ!(node, succ, succ_2)
-      else
-        # return node
-      end
     when .adverbs?
       succ_2 = fold_adverbs!(succ_2)
       if succ_2.adjts?
@@ -32,20 +25,21 @@ module CV::TlRule
       elsif succ_2.key == "很"
         succ_2.val = "cực kỳ"
         return fold_verb_ude2_succ!(node, succ, succ_2)
+      else
+        node
       end
     when .adjts?
-      return fold_verb_ude2_succ!(node, succ, succ_2) if succ_2.adjts?
+      return fold_verb_ude2_succ!(node, succ, succ_2)
+    when .verbs?
+      node = fold!(node, succ, PosTag::Verb, 6)
+      return fold_verb_compl!(node, succ_2) || node
+    else
       # TODO: handle verb form
-      # when .verbs?
-
+      node
     end
-
-    node.tag = PosTag::Vphrase
-    node
   end
 
   def fold_verb_ude2_succ!(node : MtNode, succ : MtNode, succ_2 : MtNode) : MtNode
-    succ.val = ""
     fold!(node, succ, PosTag::Vphrase, 6)
   end
 end

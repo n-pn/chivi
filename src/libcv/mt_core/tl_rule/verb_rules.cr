@@ -11,8 +11,14 @@ module CV::TlRule
       when .auxils?
         node = fold_verb_auxils!(node, succ)
         break if node.vphrase? || succ == node.succ?
-      when .vcompls?
-        node = fold_verb_vcompls!(node, succ)
+      when .vdirs?
+        node = fold_verb_vdirs!(node, succ)
+      when .adjts?, .verbs?, .preposes?
+        if fold = fold_verb_compl!(node, succ)
+          node = fold
+        else
+          return node
+        end
       when .adv_bu?
         break unless (succ_2 = succ.succ?) && succ_2.key == node.key
         succ.val = "hay"
@@ -60,31 +66,49 @@ module CV::TlRule
     end
   end
 
-  def fold_verb_vcompls!(node : MtNode, succ : MtNode)
-    case succ.tag
-    when .ahao?
-      # succ.val = "tốt"
-      fold!(node, succ, dic: 3)
-    when .vshang?, .vxia?
-      fold!(node, succ, dic: 2)
-    when .pre_dui?
-      succ.val = "đúng"
-      fold!(node, succ, dic: 2)
-    when .vdir?
-      case succ.key
-      when "起"  then succ.val = "lên"
-      when "进"  then succ.val = "vào"
-      when "来"  then succ.val = "tới"
-      when "过去" then succ.val = "qua"
-      when "下去" then succ.val = "xuống"
-      when "下来" then succ.val = "lại"
-      when "起来" then succ.val = "lên"
-      end
-
-      node = fold!(node, succ, dic: 3)
-    else
-      node = fold!(node, succ, dic: 3)
+  def fold_verb_vdirs!(verb : MtNode, vdir : MtNode) : MtNode
+    case vdir.key
+    when "起"  then vdir.val = "lên"
+    when "进"  then vdir.val = "vào"
+    when "来"  then vdir.val = "tới"
+    when "过去" then vdir.val = "qua"
+    when "下去" then vdir.val = "xuống"
+    when "下来" then vdir.val = "lại"
+    when "起来" then vdir.val = "lên"
     end
+
+    fold!(verb, vdir, dic: 3)
+  end
+
+  VERB_VALS = {
+    "到"  => "đến",
+    "在"  => "ở",
+    "见"  => "thấy",
+    "着"  => "được",
+    "住"  => "lấy",
+    "不住" => "không nổi",
+    "上"  => "lên",
+    "开"  => "ra",
+    "完"  => "xong",
+    "好"  => "xong",
+    "错"  => "sai",
+    "对"  => "đúng",
+    "成"  => "thành",
+    "懂"  => "hiểu",
+    "掉"  => "mất",
+    "走"  => "đi",
+    "够"  => "đủ",
+    "满"  => "đầy",
+    "倒"  => "đổ",
+    "下"  => "xuống",
+    "起"  => "lên",
+    "给"  => "cho",
+  }
+
+  def fold_verb_compl!(node : MtNode, succ : MtNode) : MtNode?
+    return unless val = VERB_VALS[succ.key]?
+    succ.val = val
+    fold!(node, succ, PosTag::Vphrase, dic: 7)
   end
 
   def fold_left_verb!(node : MtNode, prev = node.prev?)

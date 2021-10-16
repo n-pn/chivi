@@ -121,8 +121,6 @@ export const groups = [
     'k',
     'ng', 'tg', 'ag', 'vg',
     '-',
-    'ahao', 'vshi', 'vyou',
-    '-',
     'x', 'xx', 'xu',
     'w'
   ],

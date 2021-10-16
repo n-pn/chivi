@@ -14,7 +14,32 @@ module CV::TlRule
     node
   end
 
-  private def heal_specials!(node : MtNode, succ = node.succ?) : MtNode
+  private def heal_uniques!(node : MtNode, succ = node.succ?) : MtNode
+    case node.tag
+    when .v_shi?
+      # TODO handle vshi
+      return fold_verbs!(node)
+    when .v_you?
+      # TODO handle vyou
+      return fold_verbs!(node)
+    when .v_shang?, .v_xia?
+      if succ
+        case succ.tag
+        when .ule? then return fold_verbs!(node)
+        end
+      end
+
+      if node.prev.nouns? && !node.succ?
+        return fold_noun_space!(node.prev, node)
+      else
+        return fold_verbs!(node)
+      end
+    else
+      heal_uniques_by_key!(node, succ)
+    end
+  end
+
+  def heal_uniques_by_key!(node : MtNode, succ = node.succ?)
     case node.key
     when "完"
       node.val = "nộp"

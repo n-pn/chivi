@@ -48,7 +48,7 @@ module CV::TlRule
   end
 
   def verb_subject?(head : MtNode, curr : MtNode)
-    return false unless head.verb? || head.vyou?
+    return false unless head.verb? || head.v_you?
 
     # return false if head.vform?
 
@@ -57,8 +57,8 @@ module CV::TlRule
     end
 
     case prev.tag
-    when .nouns?, .vmodal?         then return false
-    when .vshi?, .verb?, .quantis? then return true
+    when .nouns?, .vmodal?          then return false
+    when .v_shi?, .verb?, .quantis? then return true
     else
       return true if prev.key == "在"
     end
