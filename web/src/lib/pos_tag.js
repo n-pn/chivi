@@ -71,9 +71,6 @@ export const labels = {
   ahao: 'Tính từ 好',
   vshi: 'Động từ 是',
   vyou: 'Động từ 有',
-  vneng: 'Động từ 能',
-  vhui: 'Động từ 会',
-  vxiang: 'Động từ 想',
 
   x: 'Chữ latin',
   xx: 'Kaomoji',
@@ -104,31 +101,30 @@ export const groups = [
     'v', 'vn', 'vd',
     'vi', 'vf', 'vx',
     'vm',
-    '-',
+
+  ],
+  // prettier-ignore
+  [
     'i', 'nl', 'vl',
     'al', 'bl',
     '-',
     'rr', 'rz', 'ry',
     'r',
-  ],
-  // prettier-ignore
-  [
+    '-',
     'm', 'mx', 'mz',
     'q', 'qt', 'mq',
     '-',
     'd', 'p', 'u',
     'c', 'cc', 'e',
     'y', 'o', 'sp',
-    '-',
+  ],
+  // prettier-ignore
+  [
     'kn', 'ka', 'kv',
     'kmen', 'kshi', 'k',
     'ng', 'ag', 'vg', 'tg',
     '-',
-  ],
-  // prettier-ignore
-  [
     'ahao', 'vshi', 'vyou',
-    'vneng','vhui', 'vxiang',
     '-',
     'x', 'xx', 'xu',
     'w'

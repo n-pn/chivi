@@ -20,10 +20,14 @@ struct CV::PosTag
     ProDem; ProZhe; ProNa1
     ProInt; ProNa2; ProJi
 
-    Punct
-    Auxil
+    Vmodal; VmHui; VmNeng; VmXiang
 
-    {% for group in {ADVERBS, PUNCTS, AUXILS, PREPOSES} %}
+    Adverb; AdvBu; AdvMei; AdvFei
+    Prepos; PreBei; PreDui; PreBa
+
+    Auxil; Punct
+
+    {% for group in {PUNCTS, AUXILS} %}
       {% for type in group %}
       {{ type[0].id }}
       {% end %}
@@ -63,6 +67,7 @@ struct CV::PosTag
     when .puncts?   then "w"
     when .auxils?   then "u"
     when .adverbs?  then "d"
+    when .vmodals?  then "vm"
     when .preposes? then "p"
     when .pro_dems? then "rz"
     when .pro_ints? then "ry"
@@ -92,6 +97,7 @@ struct CV::PosTag
     when "u" then map_auxils(key)
     when "d" then map_adverbs(key)
     when "p" then map_preposes(key)
+    when "vm" then map_vmodals(key)
     when "r" then Pronoun
     when "rr" then ProPer
     when "rz" then map_pro_dems(key)

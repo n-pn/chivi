@@ -3,9 +3,9 @@ module CV::TlRule
     succ.tag = PosTag::Verb if succ && (succ.veno? || succ.vead?)
 
     case node
-    when .vhui?   then node = heal_vhui!(node, succ, nega)
-    when .vxiang? then node = heal_vxiang!(node, succ, nega)
-    else               node = node.fold_left!(nega)
+    when .vm_hui?   then node = heal_vm_hui!(node, succ, nega)
+    when .vm_xiang? then node = heal_vm_xiang!(node, succ, nega)
+    else                 node = node.fold_left!(nega)
     end
 
     if succ && succ.verb?
@@ -16,7 +16,7 @@ module CV::TlRule
     end
   end
 
-  def heal_vhui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
+  def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
     nega = prev.try(&.adv_bu?)
 
     if is_learnable_skill?(succ) || prev.try(&.prev?(&.key.== "也"))
@@ -39,7 +39,7 @@ module CV::TlRule
     end
   end
 
-  def heal_vxiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
+  def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     if succ
       if succ_is_verb?(succ)
         node.val = "muốn"

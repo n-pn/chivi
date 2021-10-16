@@ -1,17 +1,11 @@
 struct CV::PosTag
   # 介词 - preposition - giới từ
-  PREPOSES = {
-    {"PrepBa"},
-    {"PreBei"},
-    {"PreDui"},
-    {"Prepos"},
-  }
+  POSPRE = Pos::Preposes | Pos::Funcws
 
-  PREPOS = Pos::Preposes | Pos::Funcws
-
-  {% for type in PREPOSES %}
-    {{ type[0].id }} = new(Tag::{{type[0].id}}, PREPOS)
-  {% end %}
+  PrepBa = new(Tag::PreBa, POSPRE)
+  PreBei = new(Tag::PreBei, POSPRE)
+  PreDui = new(Tag::PreDui, POSPRE)
+  Prepos = new(Tag::Prepos, POSPRE)
 
   def self.map_preposes(key : ::String)
     case key
