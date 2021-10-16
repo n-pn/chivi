@@ -57,6 +57,9 @@ module CV::TlRule
     node.val = "vậy" if !nega && succ.ends? && node.key == "也"
 
     case succ.tag
+    when .veno?
+      succ.tag = PosTag::Verb
+      fold_verbs!(succ, prev: node)
     when .verbs?
       fold_verbs!(succ, prev: node)
     when .adjts?
