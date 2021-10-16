@@ -12,7 +12,7 @@ module CV::TlRule
     when .adjts?, .nquant?, .quanti?, .veno?,
          .vintr?, .time?, .place?, .space?, .adesc?
       return fold_swap!(prev_2, node, PosTag::Nphrase, 2)
-    when .nouns?, .propers?
+    when .nouns?, .pro_per?
       # puts ["!", prev_2, prev, node]
 
       if (prev_3 = prev_2.prev?) && verb_subject?(prev_3, node)

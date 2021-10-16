@@ -34,10 +34,6 @@ export const labels = {
   rr: 'Đại từ nhân xưng',
   rz: 'Đại từ chỉ thị',
   ry: 'Đại từ nghi vấn',
-  rzhe: 'Đại từ chỉ thị 这',
-  rna1: 'Đại từ chỉ thị 那',
-  rna2: 'Đại từ nghi vấn 哪',
-  rji: 'Đại từ nghi vấn 几',
   r: 'Đại từ chưa phân loại',
 
   i: 'Thành/quán ngữ',
@@ -54,10 +50,6 @@ export const labels = {
   mq: 'Số lượng từ',
 
   d: 'Phó từ',
-  dbu: 'Phó từ 不',
-  dmei: 'Phó từ 没',
-  dfei: 'Phó từ 非',
-
   c: 'Liên từ',
   cc: 'Liên từ liệt kê',
   p: 'Giới từ',
@@ -83,14 +75,9 @@ export const labels = {
   vhui: 'Động từ 会',
   vxiang: 'Động từ 想',
 
-  pba: 'Giới từ 把',
-  pbei: 'Giới từ 被',
-  pdui: 'Giới từ 对',
-
   x: 'Chữ latin',
   xx: 'Kaomoji',
   xu: 'Đường link',
-
   w: 'Dấu câu',
 
   sp: 'Từ đặc biệt',
@@ -122,8 +109,7 @@ export const groups = [
     'al', 'bl',
     '-',
     'rr', 'rz', 'ry',
-    'rzhe', 'rna1', 'rna2',
-    'rji', 'r',
+    'r',
   ],
   // prettier-ignore
   [
@@ -143,7 +129,6 @@ export const groups = [
   [
     'ahao', 'vshi', 'vyou',
     'vneng','vhui', 'vxiang',
-    'pba', 'pbei', 'pdui',
     '-',
     'x', 'xx', 'xu',
     'w'

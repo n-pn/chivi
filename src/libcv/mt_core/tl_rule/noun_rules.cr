@@ -72,11 +72,11 @@ module CV::TlRule
         node = fold!(prev, node, PosTag::Nphrase, 3)
         # puts node.body.deep_inspect
         # gets
-      when .prodeics?
+      when .pro_dems?
         # puts [node, prev]
         # gets
-        return fold_prodeic_noun!(prev, node)
-      when .prointrs?
+        return fold_pro_dem_noun!(prev, node)
+      when .pro_ints?
         return fold_什么_noun!(prev, node) if prev.key == "什么"
 
         return fold_swap!(prev, node, PosTag::Nphrase, 3)

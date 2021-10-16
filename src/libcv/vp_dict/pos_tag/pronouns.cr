@@ -1,39 +1,52 @@
 struct CV::PosTag
-  PRONOUNS = {
+  PROPOS = Pos::Pronouns | Pos::Contws
 
-    # 代词 - pronoun - đại từ
-    {"r", "Pronoun", Pos::Pronouns | Pos::Contws},
-    # 人称代词 - personal pronoun - đại từ nhân xưng
-    {"rr", "Propers", Pos::Pronouns | Pos::Contws},
-    # 指示代词 - deictic pronoun - đại từ chỉ thị
-    {"rz", "Prodeic", Pos::Pronouns | Pos::Contws},
-    # 疑问代词 - interrogative pronoun - đại từ nghi vấn
-    {"ry", "Prointr", Pos::Pronouns | Pos::Contws},
+  # 代词 - pronoun - đại từ chưa phân loại
+  Pronoun = new(Tag::Pronoun, PROPOS)
 
-    # đại từ chỉ thị 这
-    {"rzhe", "ProZhe", Pos::Pronouns | Pos::Contws},
-    # đại từ chỉ thị 那
-    {"rna1", "ProNa1", Pos::Pronouns | Pos::Contws},
-    # đại từ nghi vấn 哪
-    {"rna2", "ProNa2", Pos::Pronouns | Pos::Contws},
-    # đại từ nghi vấn 几
-    {"rji", "ProJi", Pos::Pronouns | Pos::Contws},
-  }
+  # 人称代词 - personal pronoun - đại từ nhân xưng
+  ProPer = new(Tag::ProPer, PROPOS)
 
-  def self.map_pronouns(key : ::String)
-    pos = Pos::Pronouns | Pos::Contws
-  end
+  # 指示代词 - demonstrative pronoun - đại từ chỉ thị
+  DEMPOS = Pos::ProDems | Pos::Pronouns | Pos::Contws
+  ProDem = new(Tag::ProDem, DEMPOS)
+  ProZhe = new(Tag::ProDem, DEMPOS)
+  ProNa1 = new(Tag::ProDem, DEMPOS)
+
+  # 疑问代词 - interrogative pronoun - đại từ nghi vấn
+  INTPOS = Pos::ProInts | Pos::Pronouns | Pos::Contws
+  ProInt = new(Tag::ProInt, INTPOS)
+  ProNa2 = new(Tag::ProInt, INTPOS)
+  ProJi  = new(Tag::ProInt, INTPOS)
 
   @[AlwaysInline]
   def pronouns?
     @pos.pronouns?
   end
 
-  def prodeics?
-    @tag.prodeic? || @tag.pro_zhe? || @tag.pro_na1?
+  @[AlwaysInline]
+  def pro_dems?
+    @pos.pro_dems?
   end
 
-  def prointrs?
-    @tag.prointr? || @tag.pro_na2? || @tag.pro_ji?
+  @[AlwaysInline]
+  def pro_ints?
+    @pos.pro_ints?
+  end
+
+  def self.map_pro_dems(key : ::String)
+    case key
+    when "这" then ProZhe
+    when "那" then ProNa1
+    else          ProDem
+    end
+  end
+
+  def self.map_pro_ints(key : ::String)
+    case key
+    when "哪" then ProNa2
+    when "几" then ProJi
+    else          ProInt
+    end
   end
 end

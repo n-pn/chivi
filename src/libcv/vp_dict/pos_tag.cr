@@ -6,7 +6,7 @@ struct CV::PosTag
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
   {% begin %}
-    TYPES = {{ NOUNS + PRONOUNS + NUMBERS + VERBS + ADJTS + AFFIXES + MISCS + UNIQS }}
+    TYPES = {{ NOUNS + NUMBERS + VERBS + ADJTS + AFFIXES + MISCS + UNIQS }}
   {% end %}
 
   enum Tag
@@ -15,6 +15,10 @@ struct CV::PosTag
     {% for type in TYPES %}
       {{ type[1].id }}
     {% end %}
+
+    Pronoun; ProPer
+    ProDem; ProZhe; ProNa1
+    ProInt; ProNa2; ProJi
 
     Punct
     Auxil
@@ -28,6 +32,9 @@ struct CV::PosTag
     def to_str
       {% begin %}
       case self
+      when None then "-"
+      when Pronoun then "r"
+      when ProPer then "rr"
       {% for type in TYPES %}
         when {{ type[1].id }} then {{ type[0] }}
       {% end %}
@@ -53,16 +60,13 @@ struct CV::PosTag
 
   def to_str
     case @pos
-    when .puncts?   then return "w"
-    when .auxils?   then return "u"
-    when .adverbs?  then return "d"
-    when .preposes? then return "p"
-    end
-
-    case self
-    when .noun? then "-"
-    when .unkn? then ""
-    else             @tag.to_str
+    when .puncts?   then "w"
+    when .auxils?   then "u"
+    when .adverbs?  then "d"
+    when .preposes? then "p"
+    when .pro_dems? then "rz"
+    when .pro_ints? then "ry"
+    else                 @tag.to_str
     end
   end
 
@@ -88,13 +92,17 @@ struct CV::PosTag
     when "u" then map_auxils(key)
     when "d" then map_adverbs(key)
     when "p" then map_preposes(key)
-    {% for type in TYPES %}
-    when {{ type[0] }} then {{ type[1].id }}
-    {% end %}
+    when "r" then Pronoun
+    when "rr" then ProPer
+    when "rz" then map_pro_dems(key)
+    when "ry" then map_pro_ints(key)
     when "l" then Idiom
     when "j" then Noun
     when "-" then None
     when "z" then Adesc
+    {% for type in TYPES %}
+    when {{ type[0] }} then {{ type[1].id }}
+    {% end %}
     else          Unkn
     end
     {% end %}

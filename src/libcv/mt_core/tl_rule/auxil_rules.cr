@@ -27,7 +27,7 @@ module CV::TlRule
     case prev
     when .popens?     then return node
     when prev.puncts? then return node.heal!("đích")
-    when .names?, .propers?
+    when .names?, .pro_per?
       return node if (succ = node.succ?) && !succ.pstops?
     else
       # TODO: handle more case with prev

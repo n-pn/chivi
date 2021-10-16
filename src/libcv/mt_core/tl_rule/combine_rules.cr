@@ -2,9 +2,9 @@ module CV::TlRule
   def can_combine_noun?(left : MtNode, right : MtNode)
     case left.tag
     when .human?
-      right.human? || right.ptitle? || right.propers?
+      right.human? || right.ptitle? || right.pro_per?
     when .noun?
-      right.noun? || right.prodeic?
+      right.noun? || right.pro_dem?
     else
       right.tag == left.tag
     end

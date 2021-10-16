@@ -3,18 +3,18 @@ module CV::TlRule
     return node unless succ
 
     case node.tag
-    when .propers?  then fold_propers!(node, succ)
-    when .prodeics? then fold_prodeics!(node, succ)
+    when .pro_per?  then fold_pro_per!(node, succ)
+    when .pro_dems? then fold_pro_dems!(node, succ)
     else                 node
     end
   end
 
-  def fold_propers!(node : MtNode, succ : MtNode) : MtNode
+  def fold_pro_per!(node : MtNode, succ : MtNode) : MtNode
     case succ.tag
     when .space?
       fold_swap!(node, succ, succ.tag, 7)
     when .ptitle?
-      return node unless should_not_combine_propers?(node.prev?, succ.succ?)
+      return node unless should_not_combine_pro_per?(node.prev?, succ.succ?)
       fold_swap!(node, succ, succ.tag, 7)
     when .names?
       succ = fold_noun!(succ)
@@ -29,18 +29,18 @@ module CV::TlRule
     end
   end
 
-  def fold_propers!(node : MtNode, succ = node.succ?) : MtNode
-    succ ? fold_propers!(node, succ) : node
+  def fold_pro_per!(node : MtNode, succ = node.succ?) : MtNode
+    succ ? fold_pro_per!(node, succ) : node
   end
 
-  private def should_not_combine_propers?(prev : MtNode?, succ : MtNode?)
+  private def should_not_combine_pro_per?(prev : MtNode?, succ : MtNode?)
     return false unless prev && succ
     return false unless prev.verbs?
 
     succ.verbs? || succ.adverbs? && succ.succ?(&.verbs?)
   end
 
-  def fold_prodeics!(node : MtNode, succ : MtNode) : MtNode
+  def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
     if node.pro_zhe? || node.pro_na1?
       succ = heal_quanti!(succ)
       # return node unless succ.quanti?
@@ -59,7 +59,7 @@ module CV::TlRule
   #   "那样" => "như thế",
   # }
 
-  def fold_prodeic_noun!(prev : MtNode, node : MtNode)
+  def fold_pro_dem_noun!(prev : MtNode, node : MtNode)
     node.tag = PosTag::Nphrase
 
     case prev.key
