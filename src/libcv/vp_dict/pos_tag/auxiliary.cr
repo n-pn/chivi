@@ -15,26 +15,30 @@ struct CV::PosTag
     {"Udh", ["的话"]},
     {"Uls", ["来讲", "来说", "而言", "说来"]},
     {"Ulian", ["连"]},
-
   }
 
-  def self.map_auxils(key : ::String)
-    pos = Pos::Auxils | Pos::Funcws
+  AUPOS = Pos::Auxils | Pos::Funcws
+  Auxil = new(Tag::Auxil, AUPOS)
 
-    {% begin %}
-    case key
-    {% for item in AUXILS %}
-    {% for key in item[1] %}
-    when {{key}} then new(Tag::{{item[0].id}}, pos)
-    {% end %}
-    {% end %}
-    else new(Tag::Auxil, pos)
-    end
-    {% end %}
-  end
+  {% for type in AUXILS %}
+    {{ type[0].id }} = new(Tag::{{type[0].id}}, AUPOS)
+  {% end %}
 
   @[AlwaysInline]
   def auxils?
     @pos.auxils?
+  end
+
+  def self.map_auxils(key : ::String)
+    {% begin %}
+    case key
+    {% for item in AUXILS %}
+    {% for key in item[1] %}
+    when {{key}} then {{item[0].id}}
+    {% end %}
+    {% end %}
+    else Auxil
+    end
+    {% end %}
   end
 end

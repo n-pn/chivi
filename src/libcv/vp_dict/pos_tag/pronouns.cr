@@ -20,6 +20,10 @@ struct CV::PosTag
     {"rji", "ProJi", Pos::Pronouns | Pos::Contws},
   }
 
+  def self.map_pronouns(key : ::String)
+    pos = Pos::Pronouns | Pos::Contws
+  end
+
   @[AlwaysInline]
   def pronouns?
     @pos.pronouns?

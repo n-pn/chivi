@@ -19,10 +19,6 @@ struct CV::PosTag
     # 虚词 - hư từ #
     ###############
 
-    {"p", "Prepos", Pos::Preposes | Pos::Funcws},    # 介词 - preposition - giới từ
-    {"pba", "PrepBa", Pos::Preposes | Pos::Funcws},  # 介词 “把” - giới từ `bả`
-    {"pbei", "PreBei", Pos::Preposes | Pos::Funcws}, # 介词 “被” - giới từ `bị`
-
     {"c", "Conjunct", Pos::Funcws},  # 连词 - conjunction - liên từ
     {"cc", "Concoord", Pos::Funcws}, # 并列连词 - coordinating conjunction - liên từ kết hợp
 
@@ -39,11 +35,6 @@ struct CV::PosTag
     {"sa", "ClauseA", Pos::Contws}, # subject + adjt clause
     {"dp", "Dphrase", Pos::Contws}, # định ngữ/definition
   }
-
-  @[AlwaysInline]
-  def preposes?
-    @pos.preposes?
-  end
 
   @[AlwaysInline]
   def strings?

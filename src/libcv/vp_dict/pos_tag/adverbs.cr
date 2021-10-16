@@ -3,22 +3,25 @@ struct CV::PosTag
   ADVERBS = {
     # dg adverbial morpheme
     # dl adverbial formulaic expression
-    {"AdvBu", "不"},
-    {"AdvMei", "没"},
-    {"AdvFei", "非"},
+    {"AdvBu"},
+    {"AdvMei"},
+    {"AdvFei"},
+    {"Adverb"},
   }
 
-  def self.map_adverbs(key : ::String)
-    pos = Pos::Adverbs | Pos::Funcws
+  ADVPOS = Pos::Adverbs | Pos::Funcws
 
-    {% begin %}
+  {% for type in ADVERBS %}
+    {{ type[0].id }} = new(Tag::{{type[0].id}}, ADVPOS)
+  {% end %}
+
+  def self.map_adverbs(key : ::String)
     case key
-    {% for item in AUXILS %}
-    when {{item[1]}} then new(Tag::{{item[0].id}}, pos)
-    {% end %}
-    else new(Tag::Adverb, pos)
+    when "不" then AdvBu
+    when "没" then AdvMei
+    when "非" then AdvFei
+    else          Adverb
     end
-    {% end %}
   end
 
   @[AlwaysInline]
