@@ -128,18 +128,20 @@
 
     background: inherit;
     padding: 0.25rem;
-    line-height: 1em;
+    line-height: 1.25em;
     transform: translateY(-0.25rem);
 
     @include ftsize(sm);
     @include fgcolor(secd);
 
-    .mtl:hover & {
-      visibility: visible;
+    :global(svg) {
+      width: 1.25em;
+      height: 1.25em;
     }
 
-    &:hover {
-      @include fgcolor(warning, 5);
+    .mtl:hover & {
+      visibility: visible;
+      @include fgcolor(harmful, 5);
     }
   }
 </style>
