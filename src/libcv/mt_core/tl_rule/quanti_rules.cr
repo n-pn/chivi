@@ -1,5 +1,6 @@
 module CV::TlRule
   QUANTI_MAP = {
+    "笔" => "bút",
     "石" => "thạch",
     "两" => "lượng",
     "里" => "dặm",

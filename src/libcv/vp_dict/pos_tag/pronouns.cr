@@ -10,14 +10,14 @@ struct CV::PosTag
   # 指示代词 - demonstrative pronoun - đại từ chỉ thị
   DEMPOS = Pos::ProDems | Pos::Pronouns | Pos::Contws
   ProDem = new(Tag::ProDem, DEMPOS)
-  ProZhe = new(Tag::ProDem, DEMPOS)
-  ProNa1 = new(Tag::ProDem, DEMPOS)
+  ProZhe = new(Tag::ProZhe, DEMPOS)
+  ProNa1 = new(Tag::ProNa1, DEMPOS)
 
   # 疑问代词 - interrogative pronoun - đại từ nghi vấn
   INTPOS = Pos::ProInts | Pos::Pronouns | Pos::Contws
   ProInt = new(Tag::ProInt, INTPOS)
-  ProNa2 = new(Tag::ProInt, INTPOS)
-  ProJi  = new(Tag::ProInt, INTPOS)
+  ProNa2 = new(Tag::ProNa2, INTPOS)
+  ProJi  = new(Tag::ProJi, INTPOS)
 
   @[AlwaysInline]
   def pronouns?
