@@ -19,19 +19,11 @@ module CV::TlRule
         succ_2.val = "không"
         node = fold!(node, succ_2, dic: 2)
       when .nquants?
-        succ = fold_number!(succ)
-
-        if succ.nquant? && !succ.succ?(&.nouns?)
-          node = fold!(node, succ, PosTag::Vphrase, 4)
-        end
-
-        break
+        succ = fold_number!(succ) if succ.numbers?
+        return node unless succ.nquant? && !succ.succ?(&.nouns?)
+        return fold!(node, succ, PosTag::Vphrase, 4)
       when .suf_nouns?
-        node = fold_suf_noun!(node, succ)
-        break
-      when .suffix_shi?
-        node = fold_suf_shi!(node, succ)
-        break
+        return fold_suf_noun!(node, succ)
       else
         break
       end
@@ -48,13 +40,9 @@ module CV::TlRule
       succ.val = "" unless keep_ule?(node, succ)
       node = fold!(node, succ, dic: 2)
 
-      return node unless (succ = succ.succ?) && succ.nquants?
-      puts succ
+      return node unless (succ = node.succ?) && succ.nquants?
       succ = fold_number!(succ) if succ.numbers?
-      puts succ
-
       return node unless succ.nquant?
-
       fold!(node, succ, PosTag::Vphrase, 6)
     when .ude2?
       return node unless (succ_2 = succ.succ?) && (succ_2.verb? || succ_2.veno?)

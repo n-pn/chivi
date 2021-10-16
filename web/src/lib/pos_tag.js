@@ -62,9 +62,6 @@ export const labels = {
   kn: 'Hậu tố danh từ',
   ka: 'Hậu tố tính từ',
   kv: 'Hậu tố động từ',
-
-  kmen: 'Hậu tố 们',
-  kshi: 'Hậu tố 时',
   k: 'Hậu tố chưa phân loại',
 
   // specials
@@ -121,8 +118,8 @@ export const groups = [
   // prettier-ignore
   [
     'kn', 'ka', 'kv',
-    'kmen', 'kshi', 'k',
-    'ng', 'ag', 'vg', 'tg',
+    'k',
+    'ng', 'tg', 'ag', 'vg',
     '-',
     'ahao', 'vshi', 'vyou',
     '-',

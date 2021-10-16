@@ -8,8 +8,6 @@ struct CV::PosTag
     {"kgan", "SuffixGan", Pos::SufNouns | Pos::Verbs | Pos::Contws},
     # hậu tố 们
     {"kmen", "SuffixMen", Pos::SufNouns | Pos::Funcws},
-    # hậu tố 时
-    {"kshi", "SuffixShi", Pos::SufNouns | Pos::Nouns | Pos::Funcws},
     # 后缀 - suffix - hậu tố chưa phân loại
     {"k", "Suffix", Pos::Funcws},
   }
