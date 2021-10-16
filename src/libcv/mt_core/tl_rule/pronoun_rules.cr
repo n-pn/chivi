@@ -43,8 +43,8 @@ module CV::TlRule
   def fold_prodeics!(node : MtNode, succ : MtNode) : MtNode
     if node.pro_zhe? || node.pro_na1?
       succ = heal_quanti!(succ)
-      return node unless succ.quanti?
-      node = fold_swap!(node, succ)
+      # return node unless succ.quanti?
+      # node = fold_swap!(node, succ)
     end
 
     node
@@ -88,11 +88,27 @@ module CV::TlRule
     when .starts_with?("各")
       fold!(prev, node, node.tag, 4)
     when .starts_with?("这")
-      val = prev.val.sub("này", "").strip
-      prev.fold!(node, "#{val} #{node.val} này")
+      tail = MtNode.new("这", "này", PosTag::ProZhe, 1, prev.idx)
+      tail.fix_succ!(node.succ?)
+      node.fix_succ!(tail)
+
+      prev.key = prev.key.sub("这", "")
+      prev.val = prev.val.sub(" này", "")
+      prev.tag = PosTag::Quanti
+      prev.idx += 1
+
+      fold!(prev, tail, node.tag, 4)
     when .starts_with?("那")
-      val = prev.val.sub("kia", "").strip
-      prev.fold!(node, "#{val} #{node.val} kia")
+      tail = MtNode.new("那", "kia", PosTag::ProZhe, 1, prev.idx)
+      tail.fix_succ!(node.succ?)
+      node.fix_succ!(tail)
+
+      prev.key = prev.key.sub("那", "")
+      prev.val = prev.val.sub(" kia", "")
+      prev.tag = PosTag::Quanti
+      prev.idx += 1
+
+      fold!(prev, tail, node.tag, 4)
     else
       fold_swap!(prev, node)
     end
