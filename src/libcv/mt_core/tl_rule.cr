@@ -26,7 +26,10 @@ module CV::TlRule
         next unless node.nouns?
         node = fold_noun_left!(node, mode: mode)
       when .space?
-        node = fold_noun_space!(node.prev, node) if node.prev.nouns?
+        if prev = node.prev?
+          node = fold_noun_space!(prev, node) if prev.nouns?
+        end
+
         node = fold_noun_left!(node, mode: mode)
       when .vmodals? then node = heal_vmodal!(node)
       when .verbs?   then node = fold_verbs!(node)

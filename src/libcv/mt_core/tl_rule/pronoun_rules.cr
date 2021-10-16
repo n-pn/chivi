@@ -93,12 +93,12 @@ module CV::TlRule
       prev.key = "其"
       prev.val = "các"
 
-      fold!(prev, tail, PosTag::Nphrase, 4)
+      fold!(prev, tail, PosTag::Nphrase, 3)
     when .ends_with?("个")
       prev.val = prev.val.sub("cái", "").strip
-      fold!(prev, node, node.tag, 4)
+      fold!(prev, node, node.tag, 3)
     when .starts_with?("各")
-      fold!(prev, node, node.tag, 4)
+      fold!(prev, node, node.tag, 3)
     when .starts_with?("这")
       tail = MtNode.new("这", "này", PosTag::ProZhe, 1, prev.idx)
       tail.fix_succ!(node.succ?)
@@ -109,7 +109,7 @@ module CV::TlRule
       prev.tag = PosTag::Quanti
       prev.idx += 1
 
-      fold!(prev, tail, node.tag, 4)
+      fold!(prev, tail, node.tag, 3)
     when .starts_with?("那")
       tail = MtNode.new("那", "kia", PosTag::ProZhe, 1, prev.idx)
       tail.fix_succ!(node.succ?)
@@ -120,9 +120,9 @@ module CV::TlRule
       prev.tag = PosTag::Quanti
       prev.idx += 1
 
-      fold!(prev, tail, node.tag, 4)
+      fold!(prev, tail, node.tag, 3)
     else
-      fold_swap!(prev, node)
+      fold_swap!(prev, node, node.tag, 3)
     end
   end
 end

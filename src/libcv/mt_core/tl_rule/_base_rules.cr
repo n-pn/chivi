@@ -44,7 +44,7 @@ module CV::TlRule
     root
   end
 
-  def fold_swap!(tail : MtNode, head : MtNode, tag = PosTag::None, dic = 4)
+  def fold_swap!(tail : MtNode, head : MtNode, tag = PosTag::Unkn, dic = 9)
     # return fold!(tail, head, tag, dic)
 
     root = MtNode.new("", "", tag, dic, head.idx)
