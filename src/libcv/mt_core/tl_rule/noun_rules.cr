@@ -83,7 +83,7 @@ module CV::TlRule
       when .amorp? then node = fold!(prev, node)
       when .place?, .adesc?, .ajno?, .modifier?, .modiform?
         node = fold_swap!(prev, node, PosTag::Nphrase, 2)
-      when .ajav?, .adjt?
+      when .ajav?, .adjts?
         break if prev.key.size > 1
         node = fold_swap!(prev, node, PosTag::Nphrase, 2)
       when .ude1?

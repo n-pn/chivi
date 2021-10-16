@@ -51,7 +51,7 @@ module CV::TlRule
     val_io = String::Builder.new(node.val)
 
     succ = node
-    while succ = succ.succ?
+    while succ = succ.try(&.succ?)
       if succ.numhan? || succ.numlat?
         node.tag = PosTag::Number if node.tag != succ.tag
         key_io << succ.key
@@ -82,6 +82,7 @@ module CV::TlRule
         val_io << "-" << succ_2.val
         succ = succ_2.succ?
       when .colon? # for 5:6 format
+
         node.tag = PosTag::Time
         key_io << succ.key << succ_2.key
         val_io << ":" << succ_2.val
@@ -100,11 +101,11 @@ module CV::TlRule
     end
 
     # TODO: correct translate unit system
-
     return node if succ == node.succ?
 
     node.key = key_io.to_s
     node.val = val_io.to_s
+
     node.fix_succ!(succ)
     node
   end

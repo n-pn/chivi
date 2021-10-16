@@ -36,6 +36,10 @@ class CV::MtNode
   def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = -1)
   end
 
+  def blank?
+    @key.empty? || @val == " "
+  end
+
   def prev?
     @prev.try { |x| yield x }
   end

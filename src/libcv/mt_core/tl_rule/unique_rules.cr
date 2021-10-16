@@ -45,6 +45,17 @@ module CV::TlRule
       node.val = "nộp"
       node.tag = PosTag::Verb
       return fold_verbs!(node)
+    when "好"
+      return node unless succ
+
+      case succ
+      when .verbs?, .adjts?
+        node.val = "thật"
+        node.tag == PosTag::Adverb
+        fold_adverbs!(node, succ)
+      else
+        node
+      end
     when "对不起"
       return node if boundary?(succ)
       fold_verbs!(node.heal!("có lỗi với", PosTag::Verb))

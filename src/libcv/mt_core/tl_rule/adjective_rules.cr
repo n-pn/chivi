@@ -5,7 +5,6 @@ module CV::TlRule
 
       case succ.tag
       when .adjt?, .amorp?
-        node.val = "thật" if node.tag.adj_hao?
         node = fold!(node, succ, PosTag::Adjt)
       when .noun?
         break unless node.key.size == 1 && !prev # or special case
@@ -15,7 +14,6 @@ module CV::TlRule
         succ = fold_verbs!(succ)
 
         if succ.verbs? && node.tag.adj_hao?
-          node.val = "thật"
           return fold!(node, succ, PosTag::Verb, dic: 4)
         end
 

@@ -31,7 +31,7 @@ module CV::MTL::PadSpace
   end
 
   def should_space_before?(prev : MtNode) : Bool
-    return false if prev.val.blank? || @val.blank?
+    return false if prev.blank? || @val.blank?
 
     case @tag
     when .string? then return false if prev.tag.pdeci?
