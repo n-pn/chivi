@@ -4,7 +4,7 @@ module CV::TlRule
     tail = head
 
     while tail = tail.succ?
-      break if tail.tag == end_tag && tail.val[0] == end_val
+      break if tail.tag.tag == end_tag && tail.val[0] == end_val
     end
 
     return head unless tail && tail != head.succ?
@@ -25,12 +25,12 @@ module CV::TlRule
 
   private def match_end(char : Char)
     case char
-    when '“' then {PosTag::Quotecl, '”'}
-    when '‘' then {PosTag::Quotecl, '’'}
-    when '(' then {PosTag::Parencl, ')'}
-    when '[' then {PosTag::Brackcl, ']'}
-    when '{' then {PosTag::Brackcl, '}'}
-    else          {PosTag::Punct, char}
+    when '“' then {PosTag::Tag::Quotecl, '”'}
+    when '‘' then {PosTag::Tag::Quotecl, '’'}
+    when '(' then {PosTag::Tag::Parencl, ')'}
+    when '[' then {PosTag::Tag::Brackcl, ']'}
+    when '{' then {PosTag::Tag::Brackcl, '}'}
+    else          {PosTag::Tag::Punct, char}
     end
   end
 

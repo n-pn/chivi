@@ -7,7 +7,7 @@ class CV::VMatch
     val = query["val"]?.try { |val| Regex.new(val) }
 
     rank = query["rank"]?.try { |rank| rank.to_i? || 3 }
-    ptag = query["ptag"]?.try { |ptag| PosTag.from_str(ptag) }
+    ptag = query["ptag"]?.try { |ptag| PosTag.from_str(ptag, key.is_a?(String) ? key : "") }
 
     uname = query["uname"]?
 
@@ -24,7 +24,7 @@ class CV::VMatch
     @val.try { |re| return false unless term.val.any?(&.matches?(re)) }
 
     @rank.try { |rank| return false unless term.rank == rank }
-    @ptag.try { |ptag| return false unless term.ptag == ptag }
+    @ptag.try { |ptag| return false unless term.ptag.pos.includes?(ptag.pos) }
 
     @uname.try { |uname| return false unless term.uname == uname }
 

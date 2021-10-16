@@ -13,7 +13,7 @@ module CV::TlRule
          .vintr?, .time?, .place?, .space?, .adesc?
       return fold_swap!(prev_2, node, PosTag::Nphrase, 2)
     when .nouns?, .propers?
-      puts ["!", prev_2, prev, node]
+      # puts ["!", prev_2, prev, node]
 
       if (prev_3 = prev_2.prev?) && verb_subject?(prev_3, node)
         prev = fold!(prev_3, prev, PosTag::Dphrase, 6)

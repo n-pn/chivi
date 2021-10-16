@@ -105,32 +105,7 @@ export const labels = {
   xx: 'Kaomoji',
   xu: 'Đường link',
 
-  wj: 'Dấu chấm 。',
-  wx: 'Dấu chấm .',
-  wd: 'Dấu phẩy ,',
-  wn: 'Dấu ngắt 、',
-  wm: 'Hai chấm :',
-  ws: 'Ba chấm …',
-  wp: 'Gạch ngang —',
-  wmd: 'Chấm giữa ·',
-  wex: 'Chấm than !',
-  wqs: 'Chấm hỏi ?',
-  wsc: 'Chấm phẩy ;',
-  wti: 'Dấu ngã ~',
-  wat: 'A còng @',
-  wps: 'Dấu cộng +',
-  wms: 'Dấu trừ -',
-  wpc: '％ ‰',
-  wqt: '￥＄￡℃°',
-  wyz: 'Mở trích',
-  wyy: 'Đóng trích',
-  wpz: 'Mở ngoặc (',
-  wpy: 'Đóng ngoặc )',
-  wkz: 'Mở ngoặc [ {',
-  wky: 'Đóng ngoặc ] }',
-  wwz: 'Mở tựa',
-  wwy: 'Đóng tựa',
-  w: 'Dấu câu khác',
+  w: 'Dấu câu',
 
   sp: 'Từ đặc biệt',
   vp: 'Cụm động từ',
@@ -140,7 +115,7 @@ export const labels = {
   sa: 'Cụm chủ + vị (tính)',
 }
 
-export const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt', 'Dấu câu']
+export const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt']
 export const groups = [
   // prettier-ignore
   [
@@ -191,18 +166,7 @@ export const groups = [
     'udeng', 'uyy', 'uls',
     '-',
     'x', 'xx', 'xu',
-  ],
-  // prettier-ignore
-  [
-    'wj','wx', 'wd',
-    'wn', 'wm', 'ws',
-    'wp', 'wmd', 'wex',
-    'wqs', 'wsc', 'wti',
-    'wat', 'wps', 'wms',
-    'wpc', 'wqt', 'wyz',
-    'wyy', 'wpz', 'wpy',
-    'wkz', 'wky', 'wwz',
-    'wwy', 'w'
+    'w'
   ],
 ]
 

@@ -7,7 +7,9 @@ struct CV::PosTag
 
   {% begin %}
     TYPES = {{ NOUNS + PRONOUNS + NUMBERS + VERBS + ADJTS + ADVERBS +
-                 AFFIXES + AUXILS + PUNCTS + MISCS + UNIQS }}
+                 AFFIXES + AUXILS + MISCS + UNIQS }}
+
+    TYPES_2 = {{ PUNCTS }}
   {% end %}
 
   enum Tag
@@ -17,14 +19,18 @@ struct CV::PosTag
       {{ type[1].id }}
     {% end %}
 
+    Punct
+    {% for type in TYPES_2 %}
+      {{ type[0].id }}
+    {% end %}
+
     def to_str
       {% begin %}
       case self
       {% for type in TYPES %}
         when {{ type[1].id }} then {{ type[0] }}
       {% end %}
-      when None then "-"
-      else           ""
+      else ""
       end
       {% end %}
     end
@@ -44,6 +50,18 @@ struct CV::PosTag
   def initialize(@tag = Tag::Unkn, @pos = Pos::Contws)
   end
 
+  def to_str
+    case @pos
+    when .puncts? then return "w"
+    end
+
+    case self
+    when .noun? then "-"
+    when .unkn? then ""
+    else             @tag.to_str
+    end
+  end
+
   @[AlwaysInline]
   def contws?
     @pos.contws?
@@ -58,19 +76,16 @@ struct CV::PosTag
     none? || puncts? || interjection?
   end
 
-  def to_str : ::String
-    @tag.to_str
-  end
-
-  def self.from_str(tag : ::String) : self
+  def self.from_str(tag : ::String, key : ::String = "") : self
     {% begin %}
     case tag
+    when "qv" then Verb # quanti verb is handled by code
+    when "w" then map_puncts(key)
     {% for type in TYPES %}
     when {{ type[0] }} then {{ type[1].id }}
     {% end %}
     when "l" then Idiom
     when "j" then Noun
-    when "qv" then Verb # quanti verb is handled by code
     when "-" then None
     when "z" then Adesc
     else          Unkn
