@@ -93,7 +93,7 @@
       on:mouseenter={() => (hover_line = index)}>
       {@html render_line(index, hover_line, focus_line)}
 
-      {#if $session.privi > 0}
+      {#if $session.privi >= 0}
         <button
           class="report-line"
           data-tip="Báo lỗi dịch thuật"
