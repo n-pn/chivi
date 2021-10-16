@@ -65,23 +65,30 @@ module CV::TlRule
     case prev.key
     when "各"
       prev.val = "các"
-      fold!(prev, node, node.tag, 4)
+      fold!(prev, node, node.tag, 2)
     when "这", "这个"
-      fold_swap!(prev, node, node.tag, 4)
+      fold_swap!(prev, node, node.tag, 2)
     when "那", "那个"
       prev.val = "kia"
-      fold_swap!(prev, node, node.tag, 9)
+      fold_swap!(prev, node, node.tag, 2)
     when "这样"
       prev.val = "như vậy"
-      fold_swap!(prev, node, node.tag, 4)
+      fold_swap!(prev, node, node.tag, 2)
     when "那样"
       prev.val = "như thế"
-      fold_swap!(prev, node, node.tag, 4)
+      fold_swap!(prev, node, node.tag, 2)
     when "任何"
       prev.val = "bất kỳ"
       fold!(prev, node)
     when "其他"
-      node.fold_left!(prev, "các #{node.val} khác")
+      tail = MtNode.new("他", "khác", PosTag::ProPer, 1, prev.idx + 1)
+      tail.fix_succ!(node.succ?)
+      node.fix_succ!(tail)
+
+      prev.key = "其"
+      prev.val = "các"
+
+      fold!(prev, tail, PosTag::Nphrase, 4)
     when .ends_with?("个")
       prev.val = prev.val.sub("cái", "").strip
       fold!(prev, node, node.tag, 4)

@@ -5,15 +5,10 @@ module CV::TlRule
     case node
     when .vm_hui?   then node = heal_vm_hui!(node, succ, nega)
     when .vm_xiang? then node = heal_vm_xiang!(node, succ, nega)
-    else                 node = node.fold_left!(nega)
+    else                 node = fold!(nega, node, node.tag, 2) if nega
     end
 
-    if succ && succ.verb?
-      node.tag = succ.tag
-      node.fold!(succ)
-    else
-      node
-    end
+    succ && succ.verb? ? fold!(node, succ, succ.tag, 6) : node
   end
 
   def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode

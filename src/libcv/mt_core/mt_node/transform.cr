@@ -3,24 +3,6 @@ module CV::MTL::Transform
     self
   end
 
-  def fold_left!(left : Nil)
-    self
-  end
-
-  def fold_left!(left : self, val : String = "#{left.val} #{@val}", tag : PosTag = @tag, dic : Int32 = 6) : self
-    left.tag = tag
-    left.fold!(self, val, dic)
-  end
-
-  def fold!(succ : self = self.succ, @val = "#{@val} #{succ.val}", @dic = 6) : self
-    @key = "#{@key}#{succ.key}"
-    fix_succ!(succ.succ?)
-  end
-
-  def fold!(val : String = "#{@val} #{succ.val}", dic = 6) : self
-    fold!(succ, val, dic)
-  end
-
   def fold_many!(*nodes : self)
     key_io = String::Builder.new(@key)
     nodes.each { |x| key_io << x.key }

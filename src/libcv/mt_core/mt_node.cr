@@ -24,7 +24,13 @@ class CV::MtNode
 
   def initialize(char : Char, @idx = -1)
     @key = @val = char.to_s
-    @tag = char.alphanumeric? ? PosTag::String : PosTag::None
+    @tag =
+      case char
+      when ' ' then PosTag::Punct
+      when '_' then PosTag::String
+      else
+        char.alphanumeric? ? PosTag::String : PosTag::None
+      end
   end
 
   def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = -1)

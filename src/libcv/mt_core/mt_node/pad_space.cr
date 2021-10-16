@@ -17,7 +17,7 @@ module CV::MTL::PadSpace
       self.prepend_space!
       self
     else
-      @key.blank? || @val.blank? ? prev : self
+      @key.empty? ? prev : self
     end
   end
 

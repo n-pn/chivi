@@ -39,6 +39,8 @@ struct CV::PosTag
     {"Titlecl", Pos::Pstops | Pos::Puncts, ["》", "〉", "⟩"]}, # wwy
   }
 
+  Punct = new(Tag::Punct, Pos::Puncts)
+
   def self.map_puncts(key : ::String)
     {% begin %}
     case key

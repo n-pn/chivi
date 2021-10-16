@@ -53,14 +53,17 @@ module CV::TlRule
     end
   end
 
+  PRE_APPRO = {
+    "多" => "hơn",
+    "余" => "trên",
+    "来" => "chừng",
+    "几" => "mấy",
+  }
+
   def fold_pre_quanti_appro!(node : MtNode, succ : MtNode) : MtNode
-    case succ.key
-    when "多" then node.fold!("hơn #{node.val}")
-    when "余" then node.fold!("trên #{node.val}")
-    when "来" then node.fold!("chừng #{node.val}")
-    when "几" then node.fold!("#{node.val} mấy")
-    else          node
-    end
+    return node unless val = PRE_APPRO[succ.key]?
+    succ.val = val
+    fold_swap!(node, succ, node.tag, 5)
   end
 
   APPROS = {

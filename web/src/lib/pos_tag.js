@@ -64,11 +64,6 @@ export const labels = {
   'kv': 'Hậu tố động từ',
   'k': 'Hậu tố chưa phân loại',
 
-  // specials
-  'ahao': 'Tính từ 好',
-  'vshi': 'Động từ 是',
-  'vyou': 'Động từ 有',
-
   'x': 'Chữ latin',
   'xx': 'Kaomoji',
   'xu': 'Đường link',
