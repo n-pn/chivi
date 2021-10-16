@@ -66,25 +66,4 @@ module CV::TlRule
     return false unless succ = curr.succ?
     succ.verbs? || succ.adverbs?
   end
-
-  def heal_ude1!(node : MtNode, mode = 1) : MtNode
-    return node unless prev = node.prev?
-    if prev.puncts?
-      node.val = "" if prev.brackop? || prev.parenop? || prev.titleop?
-      return node
-    end
-
-    node.val = ""
-    return node if mode < 0
-
-    return node unless node.succ?(&.pstops?) && (prev.nouns? || prev.propers?)
-
-    prev.prev? do |prev_2|
-      return node if prev_2.verb? || prev_2.preposes?
-      return node if prev_2.nouns? || prev_2.pronouns?
-    end
-
-    node.val = "của"
-    fold_swap!(prev, node, PosTag::Dphrase, 9)
-  end
 end

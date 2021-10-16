@@ -66,7 +66,7 @@ module CV::TlRule
     when .uzhe?
       fold_verb_uzhe!(node, succ)
     when .uguo?
-      fold!(node, succ, dic: 1)
+      fold!(node, succ, dic: 2)
     else
       node
     end

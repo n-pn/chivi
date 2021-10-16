@@ -7,9 +7,9 @@ struct CV::PosTag
 
   {% begin %}
     TYPES = {{ NOUNS + PRONOUNS + NUMBERS + VERBS + ADJTS + ADVERBS +
-                 AFFIXES + AUXILS + MISCS + UNIQS }}
+                 AFFIXES + MISCS + UNIQS }}
 
-    TYPES_2 = {{ PUNCTS }}
+    TYPES_2 = {{ PUNCTS + AUXILS }}
   {% end %}
 
   enum Tag
@@ -19,7 +19,8 @@ struct CV::PosTag
       {{ type[1].id }}
     {% end %}
 
-    Punct
+    Punct; Auxil
+
     {% for type in TYPES_2 %}
       {{ type[0].id }}
     {% end %}
@@ -53,6 +54,7 @@ struct CV::PosTag
   def to_str
     case @pos
     when .puncts? then return "w"
+    when .auxils? then return "u"
     end
 
     case self
@@ -81,6 +83,7 @@ struct CV::PosTag
     case tag
     when "qv" then Verb # quanti verb is handled by code
     when "w" then map_puncts(key)
+    when "u" then map_auxils(key)
     {% for type in TYPES %}
     when {{ type[0] }} then {{ type[1].id }}
     {% end %}
