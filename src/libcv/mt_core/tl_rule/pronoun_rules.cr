@@ -66,15 +66,13 @@ module CV::TlRule
 
   def fold_pro_dem_noun!(prev : MtNode, node : MtNode)
     node.tag = PosTag::Nphrase
+    prev.val = prev.val.sub("cái", "").strip if prev.key.ends_with?("个")
 
     case prev.key
     when "各"
       prev.val = "các"
       fold!(prev, node, node.tag, dic: 2)
-    when "这", "这个"
-      fold_swap!(prev, node, node.tag, dic: 2)
-    when "那", "那个"
-      prev.val = "kia"
+    when "这", "那", "这个", "那个"
       fold_swap!(prev, node, node.tag, dic: 2)
     when "这样"
       prev.val = "như vậy"
@@ -95,7 +93,6 @@ module CV::TlRule
 
       fold!(prev, tail, PosTag::Nphrase, dic: 3)
     when .ends_with?("个")
-      prev.val = prev.val.sub("cái", "").strip
       fold!(prev, node, node.tag, dic: 3)
     when .starts_with?("各")
       fold!(prev, node, node.tag, dic: 3)

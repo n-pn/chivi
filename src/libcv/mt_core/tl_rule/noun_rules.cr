@@ -63,7 +63,11 @@ module CV::TlRule
         break if node.veno? || node.ajno?
 
         if prev.key.ends_with?('个')
-          prev.val = prev.val.sub(" cái", "")
+          if prev.key.size > 1
+            prev.val = prev.val.sub("cái", "").strip
+          elsif prev.prev?(&.pro_dems?)
+            prev.val = ""
+          end
         end
 
         node = fold!(prev, node, PosTag::Nphrase, dic: 3)
