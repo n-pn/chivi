@@ -16,7 +16,7 @@ test = "暗啐一声。"
 
 test = "很有风情按住被风吹起的头发。"
 
-test = "源清素弹了弹手里的旅游手册"
+test = "吃着冰淇淋，满目清凉，悠哉悠哉的在院内停留了将近一个小时。"
 
 res = GENERIC.cv_plain(test)
 puts res.inspect, res.to_s
