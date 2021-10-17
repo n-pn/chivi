@@ -1,7 +1,6 @@
 import { writable } from 'svelte/store'
 
 export const fhint = writable('')
-
 export function hint(node, msg) {
   const show = () => fhint.set(msg)
   const hide = () => fhint.set('')
@@ -28,31 +27,48 @@ export class VpTerm {
   }
 
   get fresh() {
-    return this._priv.mtime < 0 && this._base.mtime < 0
+    return this.old_val == '' || (this._priv.mtime < 0 && this._base.mtime < 0)
   }
 
   get state() {
-    return !this.val ? 'Xoá' : this.fresh ? 'Lưu' : 'Sửa'
+    if (!this.val) return 'Xoá'
+    return this._base.mtime < 0 || this._base.val == '' ? 'Lưu' : 'Sửa'
   }
 
-  get btn_state() {
-    return !this.val ? '_harmful' : this.fresh ? '_success' : '_primary'
+  btn_state(type = '_base') {
+    if (!this.val) return '_harmful'
+
+    const blank = this.blank(type)
+    if (type == '_base') return blank ? '_success' : '_primary'
+
+    if (!blank) return '_primary'
+    return this.blank('_base') ? '_success' : '_primary'
   }
 
-  dirty(name) {
+  blank(type) {
+    return this[type].mtime < 0 || this[type].val == ''
+  }
+
+  dirty(type) {
     return (
-      this[name].mtime < 0 ||
-      this.val != this[name].val ||
-      this.ptag != this[name].ptag ||
-      this.rank != this[name].rank
+      this[type].mtime < 0 ||
+      this.val != this[type].val ||
+      this.ptag != this[type].ptag ||
+      this.rank != this[type].rank
     )
   }
 
+  disabled(type, privi, p_min) {
+    if (privi < p_min) return true
+    if (!this.dirty(type)) return true
+    if (p_min < 3) return false
+    return type != '_base'
+  }
+
   clear() {
-    if (this.val != '') {
-      this.val = ''
-      this.ptag = ''
-    } else {
+    if (this.val) this.val = ''
+    else if (this.ptag) this.ptag = ''
+    else {
       this.val = '[[pass]]'
       this.ptag = '_'
     }

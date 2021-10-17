@@ -36,6 +36,8 @@
   export let cvdata
 
   let _dirty = false
+  let debug = false
+
   $: if (_dirty) reload_chap(false)
 
   $: paths = gen_paths(cvbook, chmeta, chinfo)
@@ -92,6 +94,7 @@
     const [stt, msg] = await put_fetch(fetch, url, params)
     if (stt) return console.log(`Error update history: ${msg}`)
     else ubmemo = msg
+    console.log({ ubmemo })
     invalidate(`/api/books/${cvbook.bslug}`)
   }
 
@@ -143,7 +146,8 @@
       {cvdata}
       {zhtext}
       dname={cvbook.bhash}
-      label={cvbook.vtitle}
+      d_dub={cvbook.vtitle}
+      bind:debug
       bind:_dirty />
   {:else}
     <Notext {chinfo} />
@@ -152,7 +156,7 @@
   <div class="navi" slot="footer">
     <a
       href={paths.prev}
-      class="m-button navi-item"
+      class="m-btn navi-item"
       class:_disable={!chmeta._prev}
       data-kbd="j">
       <SIcon name="chevron-left" />
@@ -160,7 +164,7 @@
     </a>
 
     <CMenu class="navi-item" loc="top">
-      <div class="m-button" slot="trigger">
+      <div class="m-btn" slot="trigger">
         <SIcon name={memo_icon} />
         <span>{chinfo.chidx}/{chmeta.total}</span>
       </div>
@@ -205,6 +209,11 @@
           </button>
         {/if}
 
+        <button class="-item" on:click={() => (debug = !debug)}>
+          <SIcon name={debug ? 'check' : 'terminal-2'} />
+          <span>Dev mode</span>
+        </button>
+
         <a href={paths.list} class="-item" data-kbd="h">
           <SIcon name="list" />
           <span>Mục lục</span>
@@ -214,7 +223,7 @@
 
     <a
       href={paths.next}
-      class="m-button _fill navi-item"
+      class="m-btn _fill navi-item"
       class:_primary={chmeta._next}
       data-kbd="k">
       <span>Kế tiếp</span>

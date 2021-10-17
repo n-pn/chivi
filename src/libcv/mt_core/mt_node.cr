@@ -10,7 +10,9 @@ class CV::MtNode
 
   property! prev : MtNode
   property! succ : MtNode
+
   property! body : MtNode
+  property! root : MtNode
 
   forward_missing_to @tag
 
@@ -22,10 +24,20 @@ class CV::MtNode
 
   def initialize(char : Char, @idx = -1)
     @key = @val = char.to_s
-    @tag = char.alphanumeric? ? PosTag::String : PosTag::None
+    @tag =
+      case char
+      when ' ' then PosTag::Punct
+      when '_' then PosTag::String
+      else
+        char.alphanumeric? ? PosTag::String : PosTag::None
+      end
   end
 
   def initialize(@key, @val = @key, @tag = PosTag::None, @dic = 0, @idx = -1)
+  end
+
+  def blank?
+    @key.empty? || @val == " "
   end
 
   def prev?
@@ -34,20 +46,6 @@ class CV::MtNode
 
   def succ?
     @succ.try { |x| yield x }
-  end
-
-  def set_prev(node : self) : self # return node
-    if prev = @prev
-      prev.succ = node
-      node.prev = prev
-    end
-
-    node.succ = self
-    @prev = node
-  end
-
-  def set_prev(@prev : Nil) : self
-    self
   end
 
   def set_succ(node : self) : self # return node
@@ -81,36 +79,27 @@ class CV::MtNode
     self
   end
 
-  def fold_left!(left : Nil)
+  def fix_root!(@root : Nil) : self
     self
   end
 
-  def fold_left!(left : self, tag = @tag)
-    left.tag = tag
-    left.fold!(self)
-  end
-
-  def fold!(succ : self, @val = "#{@val} #{succ.val}", @dic = 6) : self
-    @key = "#{@key}#{succ.key}"
-    fix_succ!(succ.succ?)
-  end
-
-  def fold_many!(*succ : self)
-    key_io = String::Builder.new(@key)
-    succ.each { |x| key_io << x.key }
-    @key = key_io.to_s
-    fix_succ!(succ[-1].succ?)
-  end
-
-  def fold!(val : String = "#{@val} #{succ.val}", dic = 6) : self
-    fold!(succ, val, dic)
-  end
-
-  def heal!(@val : String = self.val, @tag : PosTag = self.tag)
+  def fix_root!(@root : self) : self
     self
   end
 
-  include MTL::ApplyCap
+  def heal!(@val : String) : self
+    self
+  end
+
+  def heal!(@tag : PosTag) : self
+    self
+  end
+
+  def heal!(@val : String, @tag : PosTag) : self
+    self
+  end
+
   include MTL::Serialize
-  include MTL::Transform
+  include MTL::ApplyCap
+  include MTL::PadSpace
 end

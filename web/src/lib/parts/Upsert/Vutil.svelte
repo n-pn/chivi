@@ -30,20 +30,20 @@
   import { hint } from './_shared'
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let term
+  export let vpterm
 
   let capped = 0
   let length = 0
 
-  $: [capped, length] = check_capped(term.val)
+  $: [capped, length] = check_capped(vpterm.val)
 
   function upcase_val(node, count) {
     const action = (_) => {
       if (count != capped) {
-        term.val = titleize(term.val, count)
+        vpterm.val = titleize(vpterm.val, count)
         capped = count
       } else {
-        term.val = detitle(term.val, count)
+        vpterm.val = detitle(vpterm.val, count)
         capped = 0
       }
     }
@@ -94,7 +94,7 @@
       use:hint={'Viết hoa tất cả các chữ'}>
       <span>H. tất cả</span></button>
   {/if}
-  {#if term.val != term.val.toLowerCase()}
+  {#if vpterm.val != vpterm.val.toLowerCase()}
     <button
       class="cap"
       data-kbd="0"
@@ -108,8 +108,8 @@
     <button
       class="btn"
       data-kbd="w"
-      disabled={term.val == term.old_val && term.ptag == term.old_ptag}
-      on:click={() => (term = term.reset())}
+      disabled={vpterm.val == vpterm.old_val && vpterm.ptag == vpterm.old_ptag}
+      on:click={() => (vpterm = vpterm.reset())}
       use:hint={'Phục hồi lại nghĩa + phân loại ban đầu'}>
       <SIcon name="corner-up-left" />
     </button>
@@ -117,7 +117,7 @@
     <button
       class="btn"
       data-kbd="e"
-      on:click={() => (term = term.clear())}
+      on:click={() => (vpterm = vpterm.clear())}
       use:hint={'Nhập nghĩa là <code>[[pass]]</code> nếu bạn muốn xoá đè.'}>
       <SIcon name="eraser" />
     </button>

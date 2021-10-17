@@ -1,27 +1,44 @@
 module CV::TlRule
   def heal_vmodal!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    return node.fold_left!(nega) unless succ
-    succ.tag = PosTag::Verb if succ.tag.veno?
+    succ.tag = PosTag::Verb if succ && (succ.veno? || succ.vead?)
 
     case node
-    when .vhui?   then heal_vhui!(node, succ, nega)
-    when .vxiang? then heal_vxiang!(node, succ, nega)
-    else               node.fold_left!(nega)
-    end
-  end
-
-  def heal_vhui!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    if is_learnable_skill?(succ) || node.prev?(&.key.== "也")
-      val = nega ? "không biết" : "biết"
+    when .vm_hui?   then node = heal_vm_hui!(node, succ, nega)
+    when .vm_xiang? then node = heal_vm_xiang!(node, succ, nega)
     else
-      val = nega ? "sẽ không" : "sẽ"
+      if vmodal_is_noun?(node, "可能")
+        node.tag = PosTag::Noun
+        return fold_noun_left!(node)
+      end
+
+      node = fold!(nega, node, node.tag, dic: 6) if nega
     end
 
-    nega ? nega.fold!(node, val) : node.heal!(val)
+    succ && succ.verb? ? fold!(node, succ, succ.tag, dic: 6) : node
   end
 
-  def is_learnable_skill?(succ : MtNode?) : Bool
-    return false unless succ
+  def vmodal_is_noun?(node : MtNode, key : String)
+    return false unless node.key == "可能"
+    return true if !(succ = node.succ?) || succ.ends?
+
+    # TODO: add more cases
+    node.prev?(&.ude1?)
+  end
+
+  def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
+    nega = prev.try(&.adv_bu?)
+
+    if is_skill_succ?(succ) || is_skill_prev?(prev.try(&.prev?))
+      node.val = "biết"
+      prev ? fold!(prev, node, node.tag, dic: 6) : node
+    else
+      node.val = "sẽ"
+      prev ? fold_swap!(prev, node, node.tag, dic: 6) : node
+    end
+  end
+
+  private def is_skill_succ?(succ : MtNode?) : Bool
+    return true unless succ
     return true if succ.nouns? || succ.exmark? || succ.qsmark?
 
     case succ.key[0]?
@@ -31,25 +48,34 @@ module CV::TlRule
     end
   end
 
-  def heal_vxiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
+  private def is_skill_prev?(prev : MtNode?) : Bool
+    return true unless prev
+
+    case prev.key
+    when "都", "也" then true
+    else               false
+    end
+  end
+
+  def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     if succ
       if succ_is_verb?(succ)
-        node.fold!(succ, "muốn #{succ.val}")
-        return fold_verbs!(node, prev: nega)
+        node.val = "muốn"
       elsif succ.nouns? || succ.pronouns?
-        node.val = "nhớ" unless succ_is_verb?(succ.succ?)
+        unless succ_is_verb?(succ.succ?)
+          node.val = "nhớ"
+          node.tag = PosTag::Verb
+        end
       end
     end
 
-    node.fold_left!(nega)
+    nega ? fold!(nega, node, node.tag, dic: 2) : node
   end
 
-  def succ_is_verb?(node : MtNode) : Bool
+  private def succ_is_verb?(node : MtNode?) : Bool
+    return false unless node
+
     node = fold_adverbs!(node) if node.adverbs?
     node.verbs?
-  end
-
-  def succ_is_verb?(node : Nil) : Nil
-    false
   end
 end

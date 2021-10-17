@@ -1,15 +1,14 @@
 require "../../../cutil/text_utils"
 
-module MTL::ApplyCap
-  def apply_cap!(cap : Bool = true) : self
-    node = self
-
-    while node
-      cap = node.capitalize!(cap)
-      node = node.succ?
+module CV::MTL::ApplyCap
+  def apply_cap!(cap : Bool = true) : Bool
+    if body = @body
+      cap = body.apply_cap!(cap)
+    else
+      cap = self.capitalize!(cap)
     end
 
-    self
+    (succ = @succ) ? succ.apply_cap!(cap) : cap
   end
 
   def capitalize!(cap : Bool = false) : Bool
@@ -21,7 +20,7 @@ module MTL::ApplyCap
     when .urlstr? then false
     when .artstr? then false
     else
-      @val = CV::TextUtils.capitalize(@val) if cap
+      @val = TextUtils.capitalize(@val) if cap
       false
     end
   end
@@ -32,8 +31,9 @@ module MTL::ApplyCap
          .pstop?, .colon?, .middot?, .titleop?
       true
     when .pdeci?   then @prev.try { |x| x.numlat? || x.string? } || prev
-    when .brackop? then @val[0] == '(' ? prev : true
-    else                prev
+    when .brackop? then true
+      # when .parenop? then  prev
+    else prev
     end
   end
 end

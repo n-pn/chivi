@@ -52,7 +52,7 @@ class CV::YscritCtrl < CV::BaseCtrl
   end
 
   def show
-    crit_id = CoreUtils.decode32(params["crit"])
+    crit_id = UkeyUtil.decode32(params["crit"])
     unless yscrit = Yscrit.find({id: crit_id})
       return halt! 404, "Đánh giá không tồn tại"
     end
@@ -65,7 +65,7 @@ class CV::YscritCtrl < CV::BaseCtrl
   end
 
   def replies
-    crit_id = CoreUtils.decode32(params["crit"])
+    crit_id = UkeyUtil.decode32(params["crit"])
     unless yscrit = Yscrit.find({id: crit_id})
       return halt! 404, "Đánh giá không tồn tại"
     end
@@ -92,7 +92,7 @@ class CV::YscritCtrl < CV::BaseCtrl
 
   private def render_crit(jb : JSON::Builder, crit : Yscrit, mtl = false)
     jb.object do
-      jb.field "id", CoreUtils.encode32(crit.id)
+      jb.field "id", UkeyUtil.encode32(crit.id)
 
       jb.field "bid", crit.cvbook.id
       jb.field "bname", crit.cvbook.bname

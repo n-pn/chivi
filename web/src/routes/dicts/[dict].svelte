@@ -30,8 +30,8 @@
   import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  export let label = ''
-  export let dname = ''
+  export let dname = 'combine'
+  export let d_dub = 'Tổng hợp'
 
   // export let p_min = 1
   export let terms = []
@@ -69,11 +69,11 @@
     }
   }
 
-  function upsert_dict(dname, label) {
+  function upsert_dict(dname, d_dub) {
     if (dname == 'regular' || dname == 'hanviet') {
-      return { dname: 'combine', label: 'Tổng hợp' }
+      return { dname: 'combine', d_dub: 'Tổng hợp' }
     } else {
-      return { dname, label }
+      return { dname, d_dub }
     }
   }
 
@@ -84,7 +84,7 @@
 </script>
 
 <svelte:head>
-  <title>Từ điển: {label} - Chivi</title>
+  <title>Từ điển: {d_dub} - Chivi</title>
 </svelte:head>
 
 <Vessel>
@@ -95,7 +95,7 @@
     </a>
 
     <a href={$page.path} class="header-item _active _title">
-      <span class="header-text _title">{label}</span>
+      <span class="header-text _title">{d_dub}</span>
     </a>
   </svelte:fragment>
 
@@ -111,7 +111,7 @@
   </svelte:fragment>
 
   <article class="m-article">
-    <h1 class="h3">{label}</h1>
+    <h1 class="h3">{d_dub}</h1>
     <p>Entries: {total}</p>
 
     <div class="body">
@@ -134,9 +134,7 @@
             <td
               ><input type="text" placeholder="-" bind:value={query.val} /></td>
             <td>
-              <button
-                class="m-button btn-sm"
-                on:click={() => (postag_state = 2)}
+              <button class="m-btn _sm" on:click={() => (postag_state = 2)}
                 >{tag_label(query.ptag) || '-'}</button>
             </td>
             <td
@@ -150,11 +148,11 @@
                 placeholder="-"
                 bind:value={query.uname} /></td>
             <td>
-              <button class="m-button btn-sm" on:click={reset_query}>
+              <button class="m-btn _sm" on:click={reset_query}>
                 <SIcon name="eraser" />
               </button>
               <a
-                class="m-button btn-sm"
+                class="m-btn _sm"
                 data-kbd="ctrl+enter"
                 href={pager.url({ ...query, page: 1 })}>
                 <SIcon name="search" />
@@ -170,12 +168,12 @@
               <td class="-key" on:click={() => lookup_activate(key, true)}>
                 <span>{key}</span>
                 <div class="hover">
-                  <span class="m-button btn-xs _active">
+                  <span class="m-btn _xs _active">
                     <SIcon name="compass" />
                   </span>
 
                   <button
-                    class="m-button btn-xs"
+                    class="m-btn _xs"
                     on:click|stopPropagation={() => (query.key = key)}>
                     <SIcon name="search" />
                   </button>
@@ -190,11 +188,11 @@
                 </span>
 
                 <div class="hover">
-                  <span class="m-button btn-xs _active">
+                  <span class="m-btn _xs _active">
                     <SIcon name="pencil" />
                   </span>
                   <button
-                    class="m-button btn-xs"
+                    class="m-btn _xs"
                     on:click|stopPropagation={() => (query.val = val[0])}>
                     <SIcon name="search" />
                   </button>
@@ -207,12 +205,10 @@
                 <div class="hover">
                   <button
                     on:click={() => upsert_activate(key, 0, 2)}
-                    class="m-button btn-xs _active">
+                    class="m-btn _xs _active">
                     <SIcon name="pencil" />
                   </button>
-                  <a
-                    class="m-button btn-xs"
-                    href={pager.url({ ptag: ptag || '~' })}>
+                  <a class="m-btn _xs" href={pager.url({ ptag: ptag || '~' })}>
                     <SIcon name="search" />
                   </a>
                 </div>
@@ -241,7 +237,7 @@
 {/if}
 
 {#if $upsert_state > 0}
-  <Upsert bind:_dirty {...upsert_dict(dname, label)} />
+  <Upsert bind:_dirty {...upsert_dict(dname, d_dub)} />
 {/if}
 
 {#if postag_state > 1}

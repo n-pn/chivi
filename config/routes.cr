@@ -64,6 +64,12 @@ Amber::Server.configure do
 
     post "/boards/:dboard/new", CV::DtopicCtrl, :create
     put "/boards/:dboard/:dtopic", CV::DtopicCtrl, :update
+
+    get "/tlspecs/", CV::TlspecCtrl, :index
+    get "/tlspecs/:ukey", CV::TlspecCtrl, :show
+    post "/tlspecs", CV::TlspecCtrl, :create
+    put "/tlspecs/:ukey", CV::TlspecCtrl, :update
+    delete "/tlspecs/:ukey", CV::TlspecCtrl, :delete
   end
 
   routes :static do

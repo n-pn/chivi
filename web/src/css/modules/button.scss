@@ -1,4 +1,4 @@
-@use "../essence" as *;
+@use '../essence' as *;
 
 $-btn-height-xs: rem(24px);
 $-btn-height-sm: rem(32px);
@@ -70,7 +70,7 @@ $-colors: (primary, success, warning, harmful);
   }
 }
 
-.m-button {
+.m-btn {
   --height: #{$-btn-height-md};
   --gutter: var(--gutter-xs);
   --ftsize: var(--ftsize-md);
@@ -118,7 +118,7 @@ $-colors: (primary, success, warning, harmful);
   }
 }
 
-.m-button {
+.m-btn {
   @include linesd(--bd-main);
   @include text-button(neutral);
 
@@ -129,7 +129,7 @@ $-colors: (primary, success, warning, harmful);
   }
 }
 
-.m-button._fill {
+.m-btn._fill {
   @include fill-button(neutral);
 
   @each $color in $-colors {
@@ -139,25 +139,25 @@ $-colors: (primary, success, warning, harmful);
   }
 }
 
-.btn-xs {
+.m-btn._xs {
   --height: #{$-btn-height-xs};
   --gutter: var(--gutter-xs);
   --ftsize: var(--ftsize-xs);
 }
 
-.btn-sm {
+.m-btn._sm {
   --height: #{$-btn-height-sm};
   --gutter: var(--gutter-xs);
   --ftsize: var(--ftsize-sm);
 }
 
-.btn-lg {
+.m-btn._lg {
   --height: #{$-btn-height-lg};
   --gutter: var(--gutter-sm);
   --ftsize: var(--ftsize-lg);
 }
 
-.btn-xl {
+.m-btn._xl {
   --height: #{$-btn-height-xl};
   --gutter: var(--gutter-md);
   --ftsize: var(--ftsize-xl);

@@ -15,7 +15,7 @@
   import { session } from '$app/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import Slider from '$molds/Slider.svelte'
+  import Gslide from '$molds/Gslide.svelte'
 
   export let actived = false
 
@@ -38,7 +38,7 @@
   }
 </script>
 
-<Slider bind:actived _rwidth={26}>
+<Gslide bind:actived _rwidth={26}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="user" />
@@ -97,24 +97,24 @@
         {#if type == 'login'}
           <button
             type="button"
-            class="m-button _text"
+            class="m-btn _text"
             on:click={() => (type = 'signup')}>
             <span class="-text">Tài khoản mới</span>
           </button>
 
-          <button type="submit" class="m-button _primary _fill">
+          <button type="submit" class="m-btn _primary _fill">
             <SIcon name="login" />
             <span class="-text">Đăng nhập</span>
           </button>
         {:else}
           <button
             type="button"
-            class="m-button _text"
+            class="m-btn _text"
             on:click={() => (type = 'login')}>
             <span class="-text">Đăng nhập</span>
           </button>
 
-          <button type="submit" class="m-button _success _fill">
+          <button type="submit" class="m-btn _success _fill">
             <SIcon name="user-plus" />
             <span class="-text">Tạo tài khoản</span>
           </button>
@@ -122,7 +122,7 @@
       </footer>
     </form>
   </section>
-</Slider>
+</Gslide>
 
 <style lang="scss">
   .inner {

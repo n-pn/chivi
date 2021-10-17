@@ -1,109 +1,111 @@
 module CV::TlRule
   def fold_noun!(node : MtNode) : MtNode
-    if node.veno?
-      node = heal_veno!(node)
-      return node if node.verbs?
-    end
-
     while node.nouns?
       break unless succ = node.succ?
 
       case succ.tag
       when .adjt?
         break unless succ.succ?(&.ude1?)
-        node.tag = PosTag::Adjt
-        return node.fold!(succ, dic: 8)
+        return fold!(node, succ, PosTag::Adjt, dic: 3)
       when .middot?
         break unless succ_2 = succ.succ?
         break unless succ_2.human?
 
-        node.tag = PosTag::Person
-        node.fold!(succ, node.val).fold!(succ_2)
+        return fold!(node, succ_2, PosTag::Person, dic: 3)
       when .ptitle?
         node.tag = PosTag::Person
-        pad = succ.val[0]? == '-' ? "" : " "
-        node.fold!(succ, "#{node.val}#{pad}#{succ.val}")
+        node = fold!(node, succ, PosTag::Person, dic: 3)
       when .names?
         break unless node.names?
-        node.tag = succ.tag
-        node.fold!(succ)
+        node = fold!(node, succ, succ.tag, dic: 3)
       when .place?
-        node.tag = PosTag::Noun
-        node.fold!(succ, "#{succ.val} #{node.val}")
+        return fold_swap!(node, succ, PosTag::Noun, dic: 3)
+      when .uzhi?
+        return fold_uzhi!(succ, node)
       when .veno?
         succ = heal_veno!(succ)
         break if succ.verbs?
-        node.tag = PosTag::Noun
-        node.fold!(succ, "#{succ.val} #{node.val}")
+        node = fold_swap!(node, succ, PosTag::Noun, dic: 4)
       when .noun?
         case node
         when .names?
-          node.tag = PosTag::Noun
-          node.fold!(succ, "#{succ.val} #{node.val}")
-        when .noun?
-          node.fold!(succ, "#{succ.val} #{node.val}", dic: 7)
-        else break
+          node = fold_swap!(node, succ, PosTag::Noun, dic: 3)
+        when .noun?, .ajno?
+          node = fold_swap!(node, succ, PosTag::Noun, dic: 4)
+        else return node
         end
-      when .concoord?
-        node = fold_concoord!(node, succ, succ.succ?)
-        break if node.succ == succ
-      when .penum?
-        node = fold_penum!(node, succ, succ.succ?)
-        break if node.succ == succ
+      when .penum?, .concoord?
+        break
+        break unless (succ_2 = succ.succ?) && can_combine_noun?(node, succ_2)
+        succ = heal_concoord!(succ) if succ.concoord?
+        fold!(node, succ_2, tag: node.tag, dic: 4)
       when .suf_verb?
-        node = fold_suf_verb!(node, succ)
-        break
+        return fold_suf_verb!(node, succ)
       when .suf_nouns?
-        node = fold_suf_noun!(node, succ)
-        break
+        return fold_suf_noun!(node, succ)
       else break
       end
+
+      break if succ == node.succ?
     end
 
     node
   end
 
-  def fold_noun_space!(node : MtNode, succ = node.succ?) : MtNode
-    return node unless succ
-    node.tag = PosTag::Place
+  def fold_noun_left!(node : MtNode, mode = 1)
+    while prev = node.prev?
+      case prev
+      when .penum?, .concoord?
+        break unless (prev_2 = prev.prev?) && can_combine_noun?(node, prev_2)
+        prev = heal_concoord!(prev) if prev.concoord?
+        node = fold!(prev_2, node, tag: node.tag, dic: 3)
+      when .nquants?
+        break if node.veno? || node.ajno?
 
-    # if (prev = node.prev?) && prev.nquant?
-    #   prev.val = "#{succ.val} #{prev.val} #{node.val}"
-    #   prev.dic = 7
-    #   node = prev.fold_many!(node, succ)
-    # else
+        if prev.key.ends_with?('个')
+          if prev.key.size > 1
+            prev.val = prev.val.sub("cái", "").strip
+          elsif prev.prev?(&.pro_dems?)
+            prev.val = ""
+          end
+        end
 
-    case succ.key
-    when "上"
-      node.fold!("trên #{node.val}")
-    when "下"
-      node.fold!("dưới #{node.val}")
-    when "之前"
-      node.fold!("trước #{node.val}")
-    else
-      node.fold!("#{succ.val} #{node.val}")
+        node = fold!(prev, node, PosTag::Nphrase, dic: 3)
+      when .pro_ji?
+        return fold!(prev, node, PosTag::Nphrase, dic: 3)
+      when .pro_dems?
+        return fold_pro_dem_noun!(prev, node)
+      when .pro_ints?
+        return fold_什么_noun!(prev, node) if prev.key == "什么"
+        return fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
+      when .amorp? then node = fold!(prev, node, PosTag::Nphrase, dic: 4)
+      when .place?, .adesc?, .ajno?, .modifier?, .modiform?
+        node = fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
+      when .ajav?, .adjts?
+        break if prev.key.size > 1
+        node = fold_swap!(prev, node, PosTag::Nphrase, dic: 4)
+      when .ude1?
+        break if mode < 1
+        node = fold_ude1!(node, prev)
+      else
+        break
+      end
+
+      break if prev == node.prev?
     end
+
+    node
   end
 
-  def heal_veno!(node : MtNode)
-    return node.heal!(tag: PosTag::Noun) unless succ = node.succ?
+  def fold_什么_noun!(prev : MtNode, node : MtNode)
+    succ = MtNode.new("么", "gì", prev.tag, 1, prev.idx + 1)
 
-    case succ
-    when .puncts?, .suf_nouns?
-      return node.heal!(tag: PosTag::Noun)
-    when .auxils?
-      return node.heal!(tag: PosTag::Verb)
-    end
+    prev.key = "什"
+    prev.val = "cái"
 
-    return node unless prev = node.prev?
+    succ.fix_succ!(node.succ?)
+    node.fix_succ!(succ)
 
-    case prev
-    when .adverbs?, .preposes?, .vmodals?, .vdir?, .vpro?
-      node.heal!(tag: PosTag::Verb)
-    when .auxils?
-      node.heal!(tag: PosTag::Noun)
-    else
-      node
-    end
+    fold!(prev, succ, PosTag::Nphrase, dic: 3)
   end
 end

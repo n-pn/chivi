@@ -1,18 +1,5 @@
 @use '../essence' as *;
 
-@mixin cv-token($color: blue) {
-  cursor: pointer;
-  position: relative;
-  --border: #{color($color, 4)};
-  --active: #{color($color, 6)};
-
-  .tm-dark &,
-  .tm-oled & {
-    --border: #{color($color, 6)};
-    --active: #{color($color, 4)};
-  }
-}
-
 .cvdata {
   min-height: 50vh;
   padding: var(--verpad) var(--gutter);
@@ -71,7 +58,7 @@
   margin-bottom: 0;
   text-align: justify;
   text-justify: auto;
-  line-height: 1.65em;
+  line-height: 1.7em;
 
   @include bps(margin-top, 1em, 1.125em, 1.25em, 1.375em, 1.5em);
 
@@ -113,28 +100,41 @@
   }
 }
 
+@mixin cv-token($color: blue) {
+  cursor: pointer;
+  position: relative;
+  --border: #{color($color, 4)};
+  --active: #{color($color, 6)};
+
+  .tm-dark &,
+  .tm-oled & {
+    --border: #{color($color, 6)};
+    --active: #{color($color, 4)};
+  }
+
+  &:hover,
+  &._focus {
+    color: var(--active);
+    // background: var(--bg-active, inherit);
+  }
+}
+
 c-v {
   --border: transparent;
   --active: var(--fgcolor);
   color: var(--fgcolor);
 
-  &:hover,
-  &._focus {
-    color: var(--active);
-    background: var(--bg-active, inherit);
-  }
+  background: linear-gradient(to top, var(--border) 1px, transparent 0);
+  background-position: bottom bottom;
 
-  // .debugger &,
   .mtl:hover &,
   .mtl._active & {
-    border-bottom: 1px solid var(--border);
+    // border-bottom: 1px solid var(--border);
+    background: linear-gradient(to top, var(--border) 1px, transparent 0);
   }
 
-  // .debugger &,
-  .kbd-hint & {
-    color: var(--active);
-    background: var(--bg-active, inherit);
-    border-bottom: 1px solid var(--border);
+  .debug & {
+    background: linear-gradient(to top, var(--border) 1px, transparent 0);
   }
 
   &[data-d='1'] {
@@ -144,6 +144,10 @@ c-v {
 
   &[data-d='2'] {
     @include cv-token(blue);
+    color: var(--fgmain);
+    &:hover {
+      color: var(--active);
+    }
   }
 
   &[data-d='3'] {
@@ -158,31 +162,141 @@ c-v {
     @include cv-token(red);
   }
 
-  &[data-d='6'] {
-    @include cv-token(green);
-  }
-
-  &[data-d='7'] {
-    @include cv-token(fuchsia);
-  }
-
-  &[data-d='8'] {
-    @include cv-token(purple);
-  }
-
-  &[data-d='9'] {
-    cursor: pointer;
-    position: relative;
-    --active: #fff;
-    --bg-active: #{color(purple, 5)};
-  }
-
   c-z & {
     cursor: pointer;
     &:hover,
     &._active {
       color: var(--active);
     }
+  }
+}
+
+// prettier-ignore
+@mixin cg-decor($left: '{', $right: '}') {
+  &:before, &:after {
+    // font-family: var(--font-sans);
+    font-style: normal;
+  }
+
+  &:before { content: $left; }
+  &:after { content: $right; }
+}
+
+@mixin cg-color($color) {
+  --color: #{color($color, 5)};
+  // margin: 0 0.1em;
+  // padding: 0.2em -0.1em;
+
+  .debug & {
+    background: none !important;
+  }
+
+  .debug & c-v {
+    // --active: var(--color);
+    color: var(--color);
+    &:hover {
+      color: var(--active);
+    }
+  }
+}
+
+c-g {
+  --color: var(--fgmain);
+
+  // .mtl:hover &,
+  // .mtl._active & {
+  //   background: linear-gradient(180deg, var(--color) 1px, transparent 0%);
+  // }
+
+  // .mtl:hover & &,
+  // .mtl._active & & {
+  //   background: linear-gradient(
+  //     180deg,
+  //     transparent 2px,
+  //     var(--color) 4px,
+  //     transparent 0%
+  //   );
+  // }
+
+  // .mtl:hover & & &,
+  // .mtl._active & & & {
+  //   background: linear-gradient(
+  //     180deg,
+  //     transparent 4px,
+  //     var(--color) 6px,
+  //     transparent 0%
+  //   );
+  // }
+
+  // .mtl:hover & & & &,
+  // .mtl._active & & & & {
+  //   background: linear-gradient(
+  //     180deg,
+  //     transparent 6px,
+  //     var(--color) 8px,
+  //     transparent 0%
+  //   );
+  // }
+
+  .debug & {
+    // c-v,
+    &:before,
+    &:after {
+      color: var(--color);
+    }
+
+    // @include cg-decor('⟨', '⟩');
+    @include cg-decor('[', ']');
+    // > c-g {
+    //   @include cg-decor('[', ']');
+    // }
+    // > c-g > c-g {
+    //   @include cg-decor('(', ')');
+    // }
+    // > c-g > c-g > c-g {
+    //   @include cg-decor('<', '>');
+    // }
+  }
+
+  &[data-d='0'] {
+    @include cg-decor('', '');
+  }
+
+  &[data-d='1'] {
+    @include cg-color(gray);
+    @include cg-decor('', '');
+  }
+
+  &[data-d='2'] {
+    @include cg-color(green);
+  }
+
+  &[data-d='3'] {
+    @include cg-color(blue);
+  }
+
+  &[data-d='4'] {
+    @include cg-color(teal);
+  }
+
+  &[data-d='5'] {
+    @include cg-color(purple);
+  }
+
+  &[data-d='6'] {
+    @include cg-color(pink);
+  }
+
+  &[data-d='7'] {
+    @include cg-color(orange);
+  }
+
+  &[data-d='8'] {
+    @include cg-color(red);
+  }
+
+  &[data-d='9'] {
+    @include cg-color(pink);
   }
 }
 

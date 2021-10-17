@@ -2,21 +2,22 @@ struct CV::PosTag
   @[Flags]
   enum Pos
     # content words - functional words - punctuations
-    Contws; Funcws; Puncts; Endsts
+    Contws; Funcws; Puncts; Pstops; Popens; Starts
 
-    Nouns; Pronouns
-    Names; Human
+    Nouns; Names; Human
 
-    Verbs; Vmodals
+    Pronouns; ProDems; ProInts
+
+    Verbs; Vdirs; Vmodals
 
     Adjts; Adverbs
 
-    Numbers; Quantis; Strings
+    Numbers; Quantis; Nquants; Strings
 
     Auxils; Preposes
 
     SufNouns; SufVerbs; SufAdjts
 
-    Uniqs
+    Uniques
   end
 end

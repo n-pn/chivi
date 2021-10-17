@@ -12,12 +12,9 @@ struct CV::PosTag
     # 形容词性语素 - adjectival morpheme -
     {"ag", "Amorp", Pos::Adjts | Pos::Contws},
 
-    # adjective "好"
-    {"ahao", "Ahao", Pos::Adjts | Pos::Uniqs | Pos::Contws},
-
     # 状态词 - stative verb - trạng thái
     {"az", "Adesc", Pos::Adjts | Pos::Contws},
-    # modifier (non-predicate noun modifier) - từ khu biệt
+    # modifier (non-predicate noun modifier) - 区别词 - từ khu biệt
     {"b", "Modifier", Pos::Contws},
     # 区别词性惯用语 - noun modifier morpheme
     {"bl", "Modiform", Pos::Contws},

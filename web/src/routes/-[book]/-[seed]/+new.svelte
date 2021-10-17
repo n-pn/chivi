@@ -80,7 +80,7 @@
     <span class="label">Chương số</span>
     <input class="m-input" name="chidx" bind:value={chidx} />
 
-    <button class="m-button _primary _fill" on:click={submit_text}>
+    <button class="m-btn _primary _fill" on:click={submit_text}>
       <SIcon name="square-plus" />
       <span class="-text">Thêm</span>
     </button>
@@ -132,7 +132,7 @@
       &[name='chidx'] { width: 4rem; }
     }
 
-    > .m-button {
+    > .m-btn {
       margin-left: auto;
     }
   }

@@ -6,17 +6,17 @@
 
   export const tab = writable(0)
   export const state = writable(0)
-  export const input = writable([])
+  export const ztext = writable('')
   export const lower = writable(0)
   export const upper = writable(1)
 
   export function activate(data, active_tab = 0, active_state = 1) {
     if (typeof data == 'string') {
-      input.set(data)
+      ztext.set(data)
       lower.set(0)
       upper.set(data.length)
     } else {
-      input.set(data[0])
+      ztext.set(data[0])
       lower.set(data[1])
       upper.set(data[2])
     }
@@ -32,97 +32,81 @@
 
 <script>
   import { session } from '$app/stores'
-  import { scale, fade } from 'svelte/transition'
-  import { backInOut } from 'svelte/easing'
   import { VpTerm, hint } from './Upsert/_shared.js'
 
   import SIcon from '$atoms/SIcon.svelte'
   import CMenu from '$molds/CMenu.svelte'
+  import Gmodal from '$molds/Gmodal.svelte'
 
-  import Postag from '$parts/Postag.svelte'
   import Input from './Upsert/Input.svelte'
   import Emend from './Upsert/Emend.svelte'
   import Vhint from './Upsert/Vhint.svelte'
   import Vutil from './Upsert/Vutil.svelte'
   import Vrank from './Upsert/Vrank.svelte'
   import Links from './Upsert/Links.svelte'
-  import { detach_before_dev } from 'svelte/internal'
+
+  import Postag from '$parts/Postag.svelte'
+  import { state as tlspec_state } from '$parts/Tlspec.svelte'
 
   export let dname = 'combine'
-  export let label = 'Tổng hợp'
+  export let d_dub = 'Tổng hợp'
+
   export let _dirty = false
 
-  let cached = {}
-
-  let binh_am = ''
-  let hints = []
-  let terms = []
-
-  let term = new VpTerm({ val: '', ptag: '', rank: 3 })
-
   let key = ''
-  $: if (key) init_search(key, $input, $lower, $upper)
+  $: if (key) change_key($ztext, $lower, $upper)
 
-  let value_field
-  $: if (term) focus_on_value()
+  let pinyins = {}
+  let valhint = {}
+  let vpterms = {}
 
-  function focus_on_value() {
-    value_field && value_field.focus()
+  $: vpterm = (vpterms[key] || [])[$tab] || new VpTerm()
+
+  let focus
+  $: vpterm, focus && focus.focus()
+
+  async function change_key(ztext, lower, upper) {
+    await fetch_data(ztext, lower, upper)
+    vpterms = vpterms
   }
 
-  async function init_search(key, input, lower, upper) {
-    if (cached[key]) update_term(cached[key])
+  async function fetch_data(ztext, lower, upper) {
+    const words = [ztext.substring(lower, upper)]
 
-    const words = gen_words(input, lower, upper)
-    if (words.length == 0) return // skip fetching if all words fetched
+    if (lower > 0) words.push(ztext.substring(lower - 1, upper))
+    if (lower + 1 < upper) words.push(ztext.substring(lower + 1, upper))
 
-    const [err, res] = await dict_search(fetch, words, dname)
+    if (upper - 1 > lower) words.push(ztext.substring(lower, upper - 1))
+    if (upper + 1 < ztext.length) words.push(ztext.substring(lower, upper + 1))
+    if (upper + 2 < ztext.length) words.push(ztext.substring(lower, upper + 2))
+    if (upper + 3 < ztext.length) words.push(ztext.substring(lower, upper + 3))
+
+    if (lower > 1) words.push(ztext.substring(lower - 2, upper))
+
+    const to_fetch = words.filter((x) => x && !vpterms[x])
+    if (to_fetch.length == 0) return
+
+    const [err, res] = await dict_search(fetch, to_fetch, dname)
     if (err) return console.log({ err, res })
 
-    if (res[key]) update_term(res[key])
-    for (const k in res) cached[k] = res[k]
-  }
-
-  function gen_words(hanzi, lower, upper) {
-    const res = [hanzi.substring(lower, upper)]
-
-    if (lower > 0) res.push(hanzi.substring(lower - 1, upper))
-    if (lower + 1 < upper) res.push(hanzi.substring(lower + 1, upper))
-
-    if (upper - 1 > lower) res.push(hanzi.substring(lower, upper - 1))
-    if (upper + 1 < hanzi.length) res.push(hanzi.substring(lower, upper + 1))
-    if (upper + 2 < hanzi.length) res.push(hanzi.substring(lower, upper + 2))
-    if (upper + 3 < hanzi.length) res.push(hanzi.substring(lower, upper + 3))
-
-    if (lower > 1) res.push(hanzi.substring(lower - 2, upper))
-
-    return res.filter((x) => x && !cached[x])
-  }
-
-  function update_term(data) {
-    binh_am = data.binh_am
-    hints = data.val_hint
-
-    terms = [
-      new VpTerm(data.u_priv, data.u_base),
-      new VpTerm(data.c_priv, data.c_base),
-      new VpTerm(data.hanviet, data.hanviet),
-    ]
-
-    term = terms[$tab]
-  }
-
-  function change_tab(new_tab) {
-    $tab = new_tab
-    term = terms[$tab]
+    for (const inp in res) {
+      const data = res[inp]
+      pinyins[inp] = data.binh_am
+      valhint[inp] = data.val_hint
+      vpterms[inp] = [
+        new VpTerm(data.u_priv, data.u_base),
+        new VpTerm(data.c_priv, data.c_base),
+        new VpTerm(data.hanviet, data.hanviet),
+      ]
+    }
   }
 
   async function submit_val(stype = '_base') {
     const params = {
       key,
-      val: term.val.replace('', '').trim(),
-      attr: term.ptag,
-      rank: term.rank,
+      val: vpterm.val.replace('', '').trim(),
+      attr: vpterm.ptag,
+      rank: vpterm.rank,
       stype,
     }
 
@@ -131,15 +115,19 @@
     _dirty = !status
     deactivate()
   }
+
+  function is_edited(key, tab) {
+    const terms = vpterms[key]
+    if (!terms) return false
+    return !terms[tab].fresh
+  }
 </script>
 
-<modal-wrap on:click={deactivate} transition:fade={{ duration: 100 }}>
-  <modal-main
-    on:click|stopPropagation={focus_on_value}
-    transition:scale={{ duration: 100, easing: backInOut }}>
-    <modal-head class="head">
-      <CMenu dir="left" loc="top">
-        <button class="m-button _text" slot="trigger">
+<Gmodal active={$state > 0} on_close={deactivate}>
+  <upsert-wrap>
+    <upsert-head class="head">
+      <CMenu dir="left" loc="bottom">
+        <button class="m-btn _text" slot="trigger">
           <SIcon name="menu-2" />
         </button>
         <svelte:fragment slot="content">
@@ -147,43 +135,48 @@
             <SIcon name="package" />
             <span>Từ điển</span>
           </a>
+
+          <button class="-item" on:click={() => ($tlspec_state = 1)}>
+            <SIcon name="flag" />
+            <span>Báo lỗi</span>
+          </button>
         </svelte:fragment>
       </CMenu>
 
       <Input
-        input={$input}
+        ztext={$ztext}
         bind:lower={$lower}
         bind:upper={$upper}
-        pinyin={binh_am}
+        pinyin={pinyins[key] || ''}
         bind:output={key} />
 
       <button
         type="button"
-        class="m-button _text"
+        class="m-btn _text"
         data-kbd="esc"
         on:click={deactivate}>
         <SIcon name="x" />
       </button>
-    </modal-head>
+    </upsert-head>
 
-    <modal-tabs>
+    <upsert-tabs>
       <button
         class="tab-item _book"
         class:_active={$tab == 0}
-        class:_edited={!terms[0]?.fresh}
+        class:_edited={is_edited(key, 0)}
         data-kbd="x"
-        on:click={() => change_tab(0)}
-        use:hint={`Từ điển riêng cho [${label}]`}>
+        on:click={() => tab.set(0)}
+        use:hint={`Từ điển riêng cho [${d_dub}]`}>
         <SIcon name="book" />
-        <span>{label}</span>
+        <span>{d_dub}</span>
       </button>
 
       <button
         class="tab-item"
         class:_active={$tab == 1}
-        class:_edited={!terms[1]?.fresh}
+        class:_edited={is_edited(key, 1)}
         data-kbd="c"
-        on:click={() => change_tab(1)}
+        on:click={() => tab.set(1)}
         use:hint={'Từ điển chung cho tất cả các bộ truyện'}>
         <SIcon name="world" />
         <span>Thông dụng</span>
@@ -199,101 +192,85 @@
             <button
               class="-item"
               data-kbd={'c'}
-              on:click={() => change_tab(2)}
+              on:click={() => tab.set(2)}
               use:hint={'Phiên âm Hán Việt cho tên người, sự vật...'}>
               <span>Hán Việt</span>
             </button>
           </svelte:fragment>
         </CMenu>
       </div>
-    </modal-tabs>
+    </upsert-tabs>
 
-    <modal-body>
-      <Emend {term} p_min={$tab + 1} />
+    <upsert-body>
+      <Emend {vpterm} p_min={$tab + 1} />
 
       <div class="field">
-        {#key key}
-          <Vhint {hints} bind:term />
+        <Vhint hints={valhint[key] || []} bind:vpterm />
 
-          <div class="value" class:_fresh={term.fresh}>
-            <input
-              type="text"
-              class="-input"
-              bind:this={value_field}
-              bind:value={term.val}
-              autocomplete="off"
-              autocapitalize={$tab < 1 ? 'words' : 'off'} />
+        <div class="value" class:_fresh={vpterm.fresh}>
+          <input
+            type="text"
+            class="-input"
+            bind:this={focus}
+            bind:value={vpterm.val}
+            autocomplete="off"
+            autocapitalize={$tab < 1 ? 'words' : 'off'} />
 
-            {#if $tab < 2}
-              <button
-                class="postag"
-                data-kbd="p"
-                on:click={() => state.set(2)}
-                use:hint={'Phân loại cụm từ: Danh, động, tính, trạng...'}>
-                {tag_label(term.ptag) || 'Phân loại'}
-              </button>
-            {/if}
-          </div>
+          {#if $tab < 2}
+            <button
+              class="postag"
+              data-kbd="p"
+              on:click={() => state.set(2)}
+              use:hint={'Phân loại cụm từ: Danh, động, tính, trạng...'}>
+              {tag_label(vpterm.ptag) || 'Phân loại'}
+            </button>
+          {/if}
+        </div>
 
-          <Vutil bind:term />
-        {/key}
+        <Vutil bind:vpterm />
       </div>
 
       <div class="vfoot">
-        <Vrank {term} bind:rank={term.rank} />
+        <Vrank {vpterm} bind:rank={vpterm.rank} />
 
         <div class="bgroup">
           <button
-            class="bgroup-left m-button btn-lg _fill {term.btn_state}  "
+            class="m-btn _lg _fill _left {vpterm.btn_state('_base')}"
             data-kbd="↵"
-            disabled={$session.privi < $tab + 1 || !term.dirty('_base')}
+            disabled={vpterm.disabled('_base', $session.privi, $tab + 1)}
             use:hint={'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}
             on:click={() => submit_val('_base')}>
             <SIcon name="users" />
-            <span class="submit-text">{term.state}</span>
+            <span class="submit-text">{vpterm.state}</span>
           </button>
 
           <button
-            class="bgroup-right m-button btn-lg _fill {term.btn_state} "
+            class="m-btn _lg _fill _right {vpterm.btn_state('_priv')}"
             data-kbd="⇧↵"
-            disabled={$session.privi < $tab + 1 ||
-              $tab > 1 ||
-              !term.dirty('_priv')}
+            disabled={vpterm.disabled('_priv', $session.privi, $tab + 1)}
             use:hint={'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'}
             on:click={() => submit_val('_priv')}>
             <SIcon name="user" />
           </button>
         </div>
       </div>
-    </modal-body>
+    </upsert-body>
 
     <Links {key} />
-  </modal-main>
-</modal-wrap>
+  </upsert-wrap>
+</Gmodal>
 
-{#if $state > 1}
-  <Postag bind:ptag={term.ptag} bind:state={$state} />
-{/if}
+<Postag bind:ptag={vpterm.ptag} bind:state={$state} />
 
 <style lang="scss">
   $gutter: 0.75rem;
 
-  modal-wrap {
-    @include flex($center: both);
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 999;
-    background: rgba(#000, 0.75);
-  }
-
-  modal-main {
+  upsert-wrap {
     display: block;
     width: rem(30);
     min-width: 320px;
     max-width: 100%;
+
     @include bgcolor(tert);
     @include bdradi();
     @include shadow(3);
@@ -303,14 +280,14 @@
     }
   }
 
-  modal-head {
+  upsert-head {
     @include flex();
 
     // @include bdradi($loc: top);
     @include border(--bd-soft, $loc: bottom);
     // @include linesd(--bd-soft);
 
-    .m-button {
+    .m-btn {
       @include fgcolor(neutral, 5);
       background: none;
       --linesd: none;
@@ -323,7 +300,7 @@
 
   $tab-height: 2.25rem;
 
-  modal-tabs {
+  upsert-tabs {
     margin-top: 0.5rem;
     height: $tab-height;
     padding: 0 0.75rem;
@@ -386,7 +363,7 @@
     }
   }
 
-  modal-body {
+  upsert-body {
     display: block;
     padding: 0 0.75rem;
     @include bgcolor(bg-secd);
@@ -467,7 +444,7 @@
     @include flex();
   }
 
-  .bgroup-left {
+  .m-btn._left {
     padding-right: 0.25rem;
     @include bps(padding-left, 0.25rem, $sm: 0.5rem);
     @include bdradi(0, $loc: right);
@@ -481,7 +458,7 @@
     }
   }
 
-  .bgroup-right {
+  .m-btn._right {
     margin-left: -1px;
     @include bdradi(0, $loc: left);
   }

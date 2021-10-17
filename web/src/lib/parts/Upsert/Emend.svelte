@@ -4,7 +4,7 @@
 
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let term
+  export let vpterm
   export let p_min
 
   function render_time(mtime) {
@@ -22,11 +22,11 @@
   <div class="group" use:hint={'Lịch sử thêm/sửa dữ liệu từ điển cộng đồng'}>
     <SIcon name="users" />
 
-    {#if term._base.mtime > 0}
-      <span>{term._base.state}:</span>
-      <span class="val">{render_time(term._base.mtime)}</span>
+    {#if vpterm._base.mtime > 0}
+      <span>{vpterm._base.state}:</span>
+      <span class="val">{render_time(vpterm._base.mtime)}</span>
       <span class>bởi</span>
-      <span class="val user">{term._base.uname}</span>
+      <span class="val user">{vpterm._base.uname}</span>
     {:else}
       <span>Chưa có lịch sử</span>
     {/if}
@@ -35,9 +35,9 @@
   <div class="group" use:hint={'Lịch sử thêm/sửa của từ điển cá nhân bạn'}>
     <SIcon name="user" />
 
-    {#if term._priv.mtime > 0}
-      <span>{term._priv.state}:</span>
-      <span class="val">{render_time(term._priv.mtime)}</span>
+    {#if vpterm._priv.mtime > 0}
+      <span>{vpterm._priv.state}:</span>
+      <span class="val">{render_time(vpterm._priv.mtime)}</span>
     {:else}
       <span>Chưa có lịch sử</span>
     {/if}

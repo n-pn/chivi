@@ -1,5 +1,5 @@
 <script context="module">
-  import { MtData, render_zh } from '$lib/mt_data'
+  import { MtData } from '$lib/mt_data'
   import { writable } from 'svelte/store'
   import { dict_lookup } from '$api/dictdb_api'
   import { tag_label } from '$lib/pos_tag'
@@ -30,7 +30,7 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import Slider from '$molds/Slider.svelte'
+  import Gslide from '$molds/Gslide.svelte'
 
   export let dname = 'various'
   // export let label = 'Tổng hợp'
@@ -41,7 +41,7 @@
   let lookup = null
 
   $: if ($input) update_lookup($input)
-  $: zh_text = render_zh($input)
+  $: zh_text = MtData.render_zh($input)
   let hv_text = ''
   $: if ($lower >= 0 && $upper > 0) update_focus($lower)
 
@@ -93,7 +93,7 @@
   }
 </script>
 
-<Slider _rwidth={30} _sticky={true} bind:actived={$actived}>
+<Gslide _rwidth={30} _sticky={true} bind:actived={$actived}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="compass" />
@@ -121,7 +121,7 @@
         <h3 class="word" lang="zh">
           <entry-key>{$input.substr($lower, size)}</entry-key>
           <entry-btn
-            class="m-button btn-sm"
+            class="m-btn _sm"
             role="button"
             on:click={() => upsert_activate([$input, $lower, $lower + size])}>
             <SIcon name="edit" />
@@ -159,7 +159,7 @@
       </div>
     {/each}
   </section>
-</Slider>
+</Gslide>
 
 <style lang="scss">
   .input-nav {

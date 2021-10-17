@@ -8,7 +8,7 @@ struct CV::PosTag
     {"vd", "Vead", Pos::Verbs | Pos::Adverbs | Pos::Contws},
 
     # 趋向动词 - directional verb
-    {"vf", "Vdir", Pos::Verbs | Pos::Contws},
+    {"vf", "Vdir", Pos::Verbs | Pos::Vdirs | Pos::Contws},
     # 形式动词 - pro-verb - động từ hình thái
     {"vx", "Vpro", Pos::Verbs | Pos::Contws},
 
@@ -18,20 +18,6 @@ struct CV::PosTag
     {"vl", "Vform", Pos::Verbs | Pos::Contws},
     # 动词性语素 - verbal morpheme
     {"vg", "Vmorp", Pos::Verbs | Pos::Contws},
-
-    # 动词 “是” - động từ `thị`
-    {"vshi", "Vshi", Pos::Verbs | Pos::Uniqs | Pos::Contws},
-    # 动词 “有” - động từ `hữu`
-    {"vyou", "Vyou", Pos::Verbs | Pos::Uniqs | Pos::Contws},
-
-    # 能愿动词 - modal verb - động từ năng nguyện
-    {"vm", "Vmodal", Pos::Vmodals | Pos::Contws},
-    # 动词 “会” - động từ `hội`
-    {"vhui", "Vhui", Pos::Vmodals | Pos::Uniqs | Pos::Contws},
-    # 动词 “能” - động từ `năng`
-    {"vneng", "Vneng", Pos::Vmodals | Pos::Uniqs | Pos::Contws},
-    # 动词 “想” - động từ `tưởng`
-    {"vxiang", "Vxiang", Pos::Vmodals | Pos::Uniqs | Pos::Contws},
   }
 
   @[AlwaysInline]
@@ -40,7 +26,7 @@ struct CV::PosTag
   end
 
   @[AlwaysInline]
-  def vmodals?
-    @pos.vmodals?
+  def vdirs?
+    @pos.vdirs?
   end
 end

@@ -17,13 +17,13 @@
 {#each styles as style}
   <div class="button-list">
     {#each variants as variant}
-      <MButton class="m-button _{style} _{variant}" text={variant} />
+      <MButton class="m-btn _{style} _{variant}" text={variant} />
     {/each}
   </div>
 
   <div class="button-list">
     {#each variants as variant}
-      <MButton class="m-button _{style} _{variant}" disabled text={variant} />
+      <MButton class="m-btn _{style} _{variant}" disabled text={variant} />
     {/each}
   </div>
   <hr />
@@ -33,11 +33,11 @@
 
 <div class="button-list">
   {#each styles as style}
-    <a href="/" class="m-button _primary _{style}"> <span>Link</span> </a>
+    <a href="/" class="m-btn _primary _{style}"> <span>Link</span> </a>
   {/each}
 
   {#each styles as style}
-    <label class="m-button _harmful _{style}">
+    <label class="m-btn _harmful _{style}">
       <span>Input</span>
       <input type="button" />
     </label>
@@ -48,20 +48,20 @@
 
 <div class="button-list">
   {#each sizes as size}
-    <MButton class="m-button btn-{size}" text="{size} button" icon="maximize" />
+    <MButton class="m-btn btn-{size}" text="{size} button" icon="maximize" />
   {/each}
 </div>
 
 <h2>Icons</h2>
 
 <div class="button-list">
-  <MButton class="m-button" icon="feather" />
-  <MButton class="m-button _success" icon="circle" />
-  <MButton class="m-button _line _harmful" icon="x" text="Close" />
-  <MButton class="m-button _primary" icon-right="arrow-right" text="Next" />
+  <MButton class="m-btn" icon="feather" />
+  <MButton class="m-btn _success" icon="circle" />
+  <MButton class="m-btn _line _harmful" icon="x" text="Close" />
+  <MButton class="m-btn _primary" icon-right="arrow-right" text="Next" />
   <MButton
     disabled
-    class="m-button"
+    class="m-btn"
     icon="chevron-left"
     icon-right="chevron-right"
     text="Left and right" />
@@ -72,14 +72,14 @@
 
 <div class="button-list">
   {#each variants as variant}
-    <MButton class="m-button _{variant} u-rd-x" text={variant} />
+    <MButton class="m-btn _{variant} u-rd-x" text={variant} />
   {/each}
 </div>
 
 <h3>With shadows:</h3>
 <div class="button-list">
   {#each variants as variant}
-    <MButton class="m-button _{variant} u-sd-2" text={variant} />
+    <MButton class="m-btn _{variant} u-sd-2" text={variant} />
   {/each}
 </div>
 
@@ -89,7 +89,7 @@
     margin-top: 1rem;
   }
 
-  .m-button > input {
+  .m-btn > input {
     display: none !important;
   }
 </style>

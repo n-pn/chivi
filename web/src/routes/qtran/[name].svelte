@@ -1,9 +1,11 @@
 <script context="module">
   export async function load({ fetch, page: { params, query } }) {
-    const res = await fetch(`/api/qtran/${params.name}?${query.toString()}`)
+    const qname = params.name
+
+    const res = await fetch(`/api/qtran/${qname}?${query.toString()}`)
     const props = await res.json()
 
-    if (res.ok) return { props }
+    if (res.ok) return { props: { ...props, qname } }
     return { status: 404, error }
   }
 </script>
@@ -17,6 +19,7 @@
 
   export let zhtext = []
   export let cvdata = ''
+  export let qname
 
   let _dirty = false
   $: if (_dirty) window.location.reload()
@@ -27,10 +30,16 @@
 </svelte:head>
 
 <Vessel>
-  <span slot="header-left" class="header-item _active">
-    <SIcon name="bolt" />
-    <span class="header-text">Dịch nhanh</span>
-  </span>
+  <svelte:fragment slot="header-left">
+    <a href="/qtran" class="header-item">
+      <SIcon name="bolt" />
+      <span class="header-text">Dịch nhanh</span>
+    </a>
+
+    <span class="header-item _active _title">
+      <span class="header-text">{qname}</span>
+    </span>
+  </svelte:fragment>
 
   <svelte:fragment slot="header-right">
     <button
@@ -49,14 +58,14 @@
 
   <div slot="footer" class="foot">
     <button
-      class="m-button"
+      class="m-btn"
       data-kbd="r"
       on:click={() => window.location.reload()}>
       <SIcon name="rotate" />
       <span>Dịch lại</span>
     </button>
 
-    <a class="m-button _success _fill" data-kbd="n" href="/qtran">
+    <a class="m-btn _success _fill" data-kbd="n" href="/qtran">
       <span>Dịch mới</span>
     </a>
   </div>

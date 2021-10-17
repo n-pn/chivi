@@ -9,7 +9,7 @@
       <label for="t1">Text 1</label>
     </div>
 
-    <button class="m-button btn-sm">Submit</button>
+    <button class="m-btn _sm">Submit</button>
   </div>
 
   <div class="u-flex">
@@ -18,7 +18,7 @@
       <label for="t2">Text 2</label>
     </div>
 
-    <button class="m-button _fill _primary">Submit</button>
+    <button class="m-btn _fill _primary">Submit</button>
   </div>
 
   <div class="u-flex">
@@ -27,7 +27,7 @@
       <label for="t3">Text 3</label>
     </div>
 
-    <button class="m-button btn-lg _harmful">Submit</button>
+    <button class="m-btn _lg _harmful">Submit</button>
   </div>
 
   <div class="m-field">

@@ -188,7 +188,7 @@ class CV::Cvbook
       htslug = BookUtils.scrub_vname(htitle, "-")
       vtslug = BookUtils.scrub_vname(vtitle, "-")
 
-      bhash = CoreUtils.digest32("#{ztitle}--#{author.zname}")
+      bhash = UkeyUtil.digest32("#{ztitle}--#{author.zname}")
       bslug = htslug.split("-").first(7).push(bhash[0..3]).join("-")
 
       cvbook = new({

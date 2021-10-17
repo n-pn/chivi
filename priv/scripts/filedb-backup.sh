@@ -23,6 +23,13 @@ then
 fi
 
 ## backup user data
+if [[ $1 == "all" || $* == *spec* ]]
+then
+  echo backup tlspecs
+  rsync -aiz --no-p --delete "$SSH/db/tlspecs" "db"
+fi
+
+## backup user data
 if [[ $1 == "all" || $* == *book* ]]
 then
   echo backup books data!

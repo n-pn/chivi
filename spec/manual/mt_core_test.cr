@@ -38,6 +38,10 @@ puts HANVIET.translit(test3)
 puts HANVIET.translit(test4)
 puts HANVIET.translit("左丰")
 
+# puts GENERIC.cv_plain("神明之女")
+
+puts GENERIC.cv_plain "圣橡树学院学生们研究很久的魔咒"
+
 text = "第十三集 龙章凤仪 第一章 屠龙之术
 红龙 http://test.com/test?q=1
 贾文和一个玩阴谋的，突然间客串了一把热血刺客，效果立竿见影。一万个道理都未必能说服的廖群玉，被一把错刀给说得心服口服，当即赶到宋国馆邸，通过官方渠道传讯临安，以自己的身家性命作保，顺利说服贾师宪，由其举荐宝钞局主事，工部员外郎程宗扬为唐国正使，通问昭南事宜。
@@ -64,9 +68,9 @@ test_convert("朥负已定")
 test_convert("第三千七百九十八章 历史的本质就是套娃", mode: 1)
 test_convert("12：12", mode: 1)
 
-pp GENERIC.cv_title("1, 屠龙之术")
 pp GENERIC.cv_plain("能让我坐在这里无病呻－吟")
-pp GENERIC.cv_plain("无病呻－吟")
+pp GENERIC.cv_title("1, 屠龙之术")
+pp GENERIC.cv_plain("无病呻－吟").to_s
 
 text = "【飞卢中文网A级签约作品：荒野食神之吃光食物链】当叶晓晨第一次得到【荒野食神系统】的时候，其实他是，是拒绝的，他跟系统讲，他拒绝，因为，其实他，根本没有厨艺……系统跟他讲，抓完荒野食材给厨艺，刀工很叼很快很炫目……  奇奇怪怪的荒野食材，丛林、沙漠、冰川、抓了这些食材，加了一段时间的厨艺技能之后呢！  菠萝烤鳄鱼，DUANG~~~很柔，很软。  蜜汁熊掌，DUANG~~~很香，很滑口。  亚马逊电鳗鱼面，DUANG~~DUANG~~DUANG~~很弹牙！  ……  女明星们问为什么这么好吃。  因为叶晓晨，他加特技…(本故事及人物纯属虚构，如有雷同，纯属巧合，切勿模仿。)"
 list = GENERIC.cv_plain(text)
@@ -77,10 +81,20 @@ list = GENERIC.cv_plain(text)
 puts list, list.inspect
 
 puts GENERIC.cv_plain("……怎么也这么好看。")
-puts GENERIC.cv_plain("飞卢中文网A级签约作品").inspect
-puts GENERIC.cv_plain("许七安越说越兴奋").inspect
-puts GENERIC.cv_plain("越说越兴奋").inspect
-puts GENERIC.translit("许七安越说越兴奋").inspect
-puts GENERIC.cv_plain("第二个反应是：").inspect
+pp GENERIC.cv_plain("飞卢中文网A级签约作品")
+pp GENERIC.cv_plain("许七安越说越兴奋")
+pp GENERIC.cv_plain("越说越兴奋")
+pp GENERIC.translit("许七安越说越兴奋")
+pp GENERIC.cv_plain("第二个反应是：")
 
 test_convert("【第006章】我的美女死党", mode: 2)
+test_convert("百分之九十九点九九")
+
+test = "还没等台下的学弟学妹们再度沸腾起来宁大师便率先做了个嘘声的动作，指了指教室后排的老黄道：“行了行了，咱们低调小声一点，别让老黄知道咱们不聊正事啦…你们有什么问题可以举手一个个来，别的班还要上自习呢。”"
+res = GENERIC.cv_plain(test)
+puts res.inspect, res
+
+test = "现在她屁股上的黑色Tback，别说包住臀肉了，苏荆还要用手指挑开柔软白嫩的臀瓣才能看见那一条细细的布料。没有别的可能，穿这样的内裤只为了献给那一个能够脱下它的男人看。"
+
+res = GENERIC.cv_plain(test)
+puts res.inspect, res

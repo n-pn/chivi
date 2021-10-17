@@ -73,7 +73,7 @@
         cvdata={crit.vhtml}
         wtitle={false}
         dname={crit.bhash}
-        label={crit.bname}
+        d_dub={crit.bname}
         bind:_dirty />
     </Yscrit>
   </section>

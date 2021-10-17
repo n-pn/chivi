@@ -1,54 +1,118 @@
 module CV::TlRule
-  QUANTI_MAP = {
-    "石" => "thạch",
-    "两" => "lượng",
-    "里" => "dặm",
-    "米" => "mét",
-    "帮" => "đám", # bọn/đàn/lũ/nhóm/tốp/bang
-    "道" => "đạo", # đường/nét/vạch
-    "股" => "cỗ",
-    "更" => "canh",
-    "重" => "tầng",
-    "分" => "phân",
-    "只" => "con",
-    "本" => "quyển",
-    "种" => "loại",
-    "间" => "gian",
-    "声" => "tiếng",
-    "代" => "đời", # thời/nhà/lớp
-    "圈" => "vòng",
-    "顿" => "bữa",  # hồi/trận
-    "场" => "trận", # bữa
-    "轮" => "vòng", # vầng/vành/lượt
-    "次" => "lượt", # lần/chuyến
-    "步" => "bước",
-    "盘" => "khay",
-    "茬" => "vụ", # lứa/đợt
-    "遍" => "lần",
-    "餐" => "bữa",
-    "趟" => "chuyến", # lần/hàng/dãy
-    "番" => "phen",   # loại/dạng/hồi/lần
-    "架" => "khung",
-    "期" => "kỳ",
-    "层" => "tầng",
-    "门" => "môn",
+  def fold_number!(node : MtNode) : MtNode
+    node = meld_number!(node) if node.numbers?
+    return node unless succ = node.succ?
 
-    "架次" => "lượt chiếc",
-    "场次" => "lượt diễn",
-    "人次" => "lượt người",
-  }
+    node = fold_pre_quanti_appro!(node, succ)
 
-  def heal_quanti!(node : MtNode) : MtNode
-    return node unless val = QUANTI_MAP[node.key]?
-    node.heal!(val, PosTag::Quanti)
+    return node unless succ = node.succ?
+
+    if succ.pre_dui?
+      if (succ_2 = succ.succ?) && succ_2.numbers?
+        succ.val = "đối"
+        return fold!(node, succ_2, PosTag::Aphrase, dic: 2)
+      end
+
+      node.heal!("đôi", PosTag::Quanti)
+    else
+      succ = heal_quanti!(succ)
+      return node unless succ.quantis?
+    end
+
+    has_第 = node.key.starts_with?("第")
+
+    if (prev = node.prev?) && prev.key == "第"
+      has_第 = true
+      prev.val = "thứ"
+      node = fold!(prev, node, node.tag, dic: 1)
+    end
+
+    # merge number with quantifiers
+    if !has_第
+      node = fold!(node, succ, PosTag::Nquant, dic: 2)
+    elsif (succ_2 = succ.succ?) && succ_2.noun?
+      # val = "#{succ.val} #{succ_2.val} #{node.val}"
+      succ = fold!(succ, succ_2, succ_2.tag, dic: 4)
+      return fold_swap!(node, succ, PosTag::Nphrase, dic: 4)
+    else
+      node = fold_swap!(node, succ, PosTag::Nquant, dic: 4)
+    end
+
+    if prev = node.prev?
+      case prev.key
+      when "约"
+        prev.val = "chừng"
+        node = fold!(prev, node, node.tag, dic: 1)
+      when "小于"
+        prev.val = "ít hơn"
+        node = fold!(prev, node, node.tag, dic: 1)
+      end
+    end
+
+    fold_suf_quanti_appro!(node)
   end
 
-  def nquant_is_complement?(node : MtNode) : Bool
-    case node.key[-1]?
-    when '次', '遍', '趟', '回', '声', '下', '把'
-      true
-    else
-      false
+  def meld_number!(node : MtNode)
+    key_io = String::Builder.new(node.key)
+    val_io = String::Builder.new(node.val)
+
+    succ = node
+    while succ = succ.try(&.succ?)
+      if succ.numhan? || succ.numlat?
+        node.tag = PosTag::Number if node.tag != succ.tag
+        key_io << succ.key
+        val_io << " " << succ.val
+        next
+      end
+
+      if node.numhan?
+        break unless (succ_2 = succ.succ?) && succ_2.numhan?
+        break unless succ.key == "点"
+
+        key_io << succ.key << succ_2.key
+        val_io << " chấm " << succ_2.val
+        succ = succ_2
+        next
+      end
+
+      break unless node.numlat? && (succ_2 = succ.succ?) && succ_2.numlat?
+
+      case succ.tag
+      when .pdeci? # case 1.2
+        key_io << succ.key << succ_2.key
+        val_io << "." << succ_2.val
+        succ = succ_2.succ?
+      when .pdash? # case 3-4
+        node.tag = PosTag::Number
+        key_io << succ.key << succ_2.key
+        val_io << "-" << succ_2.val
+        succ = succ_2.succ?
+      when .colon? # for 5:6 format
+
+        node.tag = PosTag::Time
+        key_io << succ.key << succ_2.key
+        val_io << ":" << succ_2.val
+        succ = succ_2.succ?
+
+        # for 5:6:7 format
+        break unless (succ_3 = succ_2.succ?) && succ_3.colon?
+        break unless (succ_4 = succ_3.succ?) && succ_4.numlat?
+
+        key_io << succ_3.key << succ_4.key
+        val_io << ":" << succ_4.val
+        succ = succ_4.succ?
+      end
+
+      break
     end
+
+    # TODO: correct translate unit system
+    return node if succ == node.succ?
+
+    node.key = key_io.to_s
+    node.val = val_io.to_s
+
+    node.fix_succ!(succ)
+    node
   end
 end

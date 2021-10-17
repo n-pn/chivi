@@ -81,26 +81,26 @@
 
   <div slot="footer" class="foot">
     {#if on_edit}
-      <button class="m-button" on:click={cleanup}>
+      <button class="m-btn" on:click={cleanup}>
         <SIcon name="eraser" />
         <span>Xoá</span>
       </button>
 
-      <button class="m-button _primary _fill" on:click={convert}>
+      <button class="m-btn _primary _fill" on:click={convert}>
         <span>Dịch nhanh</span>
       </button>
     {:else}
-      <button class="m-button" on:click={() => (edit_mode = true)}>
+      <button class="m-btn" on:click={() => (edit_mode = true)}>
         <SIcon name="pencil" />
         <span>Sửa</span>
       </button>
 
-      <button class="m-button _fill" on:click={convert}>
+      <button class="m-btn _fill" on:click={convert}>
         <SIcon name="rotate-clockwise" />
         <span>Dịch lại</span>
       </button>
 
-      <button class="m-button _success _fill" on:click={cleanup}>
+      <button class="m-btn _success _fill" on:click={cleanup}>
         <span>Dịch mới</span>
       </button>
     {/if}

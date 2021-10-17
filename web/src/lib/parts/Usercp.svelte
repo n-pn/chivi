@@ -5,7 +5,7 @@
   import { kit_chap_url } from '$lib/utils/route_utils'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import Slider from '$molds/Slider.svelte'
+  import Gslide from '$molds/Gslide.svelte'
 
   import Config from './Usercp/Config.svelte'
   import Passwd from './Usercp/Passwd.svelte'
@@ -29,7 +29,7 @@
   }
 </script>
 
-<Slider bind:actived _rwidth={26}>
+<Gslide bind:actived _rwidth={26}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="user" />
@@ -86,12 +86,12 @@
     </div>
   {:else}
     <div class="tabnav">
-      <button class="m-button btn-back" on:click={() => (section = 'main')}>
+      <button class="m-btn btn-back" on:click={() => (section = 'main')}>
         <SIcon name="arrow-left" />
         <span>Trở về</span>
       </button>
 
-      <button class="m-button btn-back" on:click={logout}>
+      <button class="m-btn btn-back" on:click={logout}>
         <SIcon name="logout" />
         <span>Đăng xuất</span>
       </button>
@@ -100,7 +100,7 @@
     <Config bind:actived />
     <Passwd bind:section />
   {/if}
-</Slider>
+</Gslide>
 
 <style lang="scss">
   @mixin label {

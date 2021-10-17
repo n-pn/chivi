@@ -1,4 +1,4 @@
-@use "../defs" as *;
+@use '../defs' as *;
 
 @mixin gap($gap: 0.5rem, $child: '*') {
   > #{$child} + #{$child} {
@@ -23,6 +23,23 @@
 
   @if $center == both or $center == vert { align-items: center; }
   @if $center == both or $center == horz { justify-content: center; }
+}
+
+@mixin flex-cx($gap: null) {
+  @include flex($center: horz, $gap: $gap);
+}
+
+@mixin flex-cy($gap: null) {
+  @include flex($center: vert, $gap: $gap);
+}
+
+@mixin flex-ca($gap: null) {
+  @include flex($center: both, $gap: $gap);
+}
+
+@mixin flex-v($gap: null) {
+  @include flex($gap: $gap);
+  flex-direction: column;
 }
 
 // prettier-ignore

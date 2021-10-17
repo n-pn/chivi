@@ -6,15 +6,15 @@ class CV::VpdictCtrl < CV::BaseCtrl
   getter core_dicts : Array(Dinfo) do
     dicts = [] of Dinfo
 
-    dicts << {"regular", dict_label("regular"), VpDict.regular.size}
-    dicts << {"hanviet", dict_label("hanviet"), VpDict.hanviet.size}
-    dicts << {"essence", dict_label("essence"), VpDict.essence.size}
-    dicts << {"fixture", dict_label("fixture"), VpDict.fixture.size}
+    dicts << {"regular", dict_dubname("regular"), VpDict.regular.size}
+    dicts << {"hanviet", dict_dubname("hanviet"), VpDict.hanviet.size}
+    dicts << {"essence", dict_dubname("essence"), VpDict.essence.size}
+    dicts << {"fixture", dict_dubname("fixture"), VpDict.fixture.size}
 
     dicts
   end
 
-  private def dict_label(dname : String)
+  private def dict_dubname(dname : String)
     case dname
     when "cc_cedict" then "CC-CEDICT"
     when "trungviet" then "Trung Việt"
@@ -39,7 +39,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
     book_dicts = [] of Dinfo
 
     input[offset, limit].each do |dname|
-      book_dicts << {dname, dict_label(dname), VpDict.load(dname).size}
+      book_dicts << {dname, dict_dubname(dname), VpDict.load(dname).size}
     end
 
     total = input.size
@@ -79,7 +79,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
     paged = terms.size > offset ? terms[offset, limit] : [] of VpTerm
 
     render_json({
-      label: dict_label(dname),
+      d_dub: dict_dubname(dname),
       dname: dname,
       # dtype: vdict.dtype,
       p_min: vdict.p_min,

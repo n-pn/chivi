@@ -32,7 +32,7 @@
     <a class="crit-time" href="/crits/{crit.id}">{get_rtime(crit.mftime)}</a>
     <crit-star>{get_stars(crit.stars)}</crit-star>
     {#if crit.vhtml.length >= 1000}
-      <button class="m-button btn-sm" on:click={() => (view_all = !view_all)}>
+      <button class="m-btn _sm" on:click={() => (view_all = !view_all)}>
         <SIcon name={view_all ? 'minus' : 'plus'} />
       </button>
     {/if}

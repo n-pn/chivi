@@ -81,7 +81,7 @@
         <input
           type="radio"
           name="tlmode"
-          value={idx + 1}
+          value={idx}
           bind:group={$session.tlmode}
           on:click={() => update_tlmode(idx)} />
         <span>{label}</span>

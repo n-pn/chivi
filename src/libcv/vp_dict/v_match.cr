@@ -6,16 +6,16 @@ class CV::VMatch
     key = query["key"]?.try { |key| Regex.new(key) }
     val = query["val"]?.try { |val| Regex.new(val) }
 
-    rank = query["rank"]?.try { |rank| rank.to_i? || 3 }
-    ptag = query["ptag"]?.try { |ptag| PosTag.from_str(ptag) }
+    attr = query["attr"]?
+    rank = query["rank"]?.try(&.to_i?) || 3
 
     uname = query["uname"]?
 
-    new(key, val, rank, ptag, uname)
+    new(key, val, rank, attr, uname)
   end
 
   def initialize(@key : Regex? = nil, @val : Regex? = nil,
-                 @rank : Int32? = nil, @ptag : PosTag? = nil,
+                 @rank : Int32? = nil, @attr : String? = nil,
                  @uname : String? = nil)
   end
 
@@ -23,8 +23,8 @@ class CV::VMatch
     @key.try { |re| return false unless term.key.matches?(re) }
     @val.try { |re| return false unless term.val.any?(&.matches?(re)) }
 
+    @attr.try { |attr| return false unless term.attr == attr }
     @rank.try { |rank| return false unless term.rank == rank }
-    @ptag.try { |ptag| return false unless term.ptag == ptag }
 
     @uname.try { |uname| return false unless term.uname == uname }
 

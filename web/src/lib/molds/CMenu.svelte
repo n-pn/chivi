@@ -23,7 +23,7 @@
     display: none;
     position: absolute;
     z-index: 999;
-    width: var(--menu-width, 10rem);
+    width: var(--menu-width, 11rem);
 
     &._top {
       bottom: 100%;
