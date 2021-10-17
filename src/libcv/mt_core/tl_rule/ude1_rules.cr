@@ -15,9 +15,9 @@ module CV::TlRule
       # puts ["!", prev_2, prev, node]
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .nouns?, .pro_per?
-      # puts ["!", prev_2, prev, node]
+      if (prev_3 = prev_2.prev?) && is_verb_clause?(prev_3, node)
+        # puts ["!", prev_2, prev, node]
 
-      if (prev_3 = prev_2.prev?) && verb_subject?(prev_3, node)
         prev = fold!(prev_3, prev, PosTag::Dphrase, dic: 6)
         return fold_swap!(prev, node, PosTag::Nphrase, dic: 6)
       end
@@ -43,24 +43,29 @@ module CV::TlRule
     end
   end
 
-  def verb_subject?(head : MtNode, curr : MtNode)
-    return false unless head.verb? || head.v_you?
+  def is_verb_clause?(head : MtNode, tail : MtNode)
+    return false unless head.v_you? || head.verb? || head.vphrase?
 
-    # return false if head.vform?
-
-    unless prev = head.prev?
-      return curr.succ? { |x| x.verbs? || x.adverbs? }
-    end
+    by_succ = check_vclause_by_succ?(tail.succ?)
+    return by_succ == 2 unless prev = head.prev?
 
     case prev.tag
-    when .nouns?, .vmodal? then return false
-    when .v_shi?, .verb?, .quantis?, .pro_dems?
+    when .v_shi?, .verb?, .nquants?, .pro_dems?
       return true
+    when .nouns? then return false
     else
-      return true if prev.key == "在"
+      prev.key == "在" ? true : by_succ > 0
     end
+  end
 
-    return false unless succ = curr.succ?
-    succ.verbs? || succ.adverbs?
+  # 0 : not a clause, 1: decide by prev values, 2: is a clause!
+  def check_vclause_by_succ?(succ : MtNode?)
+    return 1 unless succ
+    return 2 if succ.v_shi? || succ.v_you? || succ.vmodals?
+    return 1 if succ.verbs? || succ.adverbs? || succ.preposes?
+
+    # TODO: check more here
+    return 0 if succ.comma?
+    succ.ends? ? 1 : 0
   end
 end

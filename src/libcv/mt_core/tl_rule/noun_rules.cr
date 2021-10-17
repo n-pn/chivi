@@ -7,6 +7,13 @@ module CV::TlRule
       when .adjt?, .adesc?
         break unless succ.succ?(&.ude1?)
         return fold!(node, succ, succ.tag, dic: 7)
+      when .uyy?
+        case succ.key
+        when "般"
+          return fold_swap!(node, succ.set!("như"), PosTag::Adesc, dic: 8)
+        else
+          # TODO
+        end
       when .middot?
         break unless succ_2 = succ.succ?
         break unless succ_2.human?

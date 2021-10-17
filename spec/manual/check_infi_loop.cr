@@ -14,5 +14,7 @@ test = "“哈哈哈哈……没了万喻楼，还会有第二个万喻楼……
 
 test = "暗啐一声。"
 
+test = "那是一种充满了神奇魔力的笑容，就好比去看一部电影"
+
 res = GENERIC.cv_plain(test)
 puts res.inspect, res.to_s
