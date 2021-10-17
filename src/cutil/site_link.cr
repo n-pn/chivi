@@ -53,7 +53,7 @@ module CV::SiteLink
     when "qu_la"    then "https://www.qu.la/book/#{snvid}/#{schid}.html"
     when "rengshu"  then "http://www.rengshu.com/book/#{snvid}/#{schid}"
     when "xbiquge"  then "https://www.xbiquge.so/book/#{snvid}/#{schid}.html"
-    when "biqubao"  then "https://www.biquee.com/book/#{snvid}/#{schid}.html"
+    when "biqubao"  then "https://www.biqugee.com/book/#{snvid}/#{schid}.html"
     when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/#{schid}.html"
     when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/#{schid}.html"
