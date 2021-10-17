@@ -24,6 +24,11 @@ module CV::TlRule
         succ_2.val = "không"
         node = fold!(node, succ_2, PosTag::Verb, dic: 5)
       when .nquants?
+        if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == node.key
+          node = fold!(node, succ_2.set!("phát"), node.tag, dic: 6)
+          break # TODO: still keep folding?
+        end
+
         break if node.key == "小于"
 
         succ = fold_number!(succ) if succ.numbers?

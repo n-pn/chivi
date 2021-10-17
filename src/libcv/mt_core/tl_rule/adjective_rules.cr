@@ -5,19 +5,19 @@ module CV::TlRule
 
       case succ.tag
       when .adjt?, .amorp?
-        node = fold!(node, succ, PosTag::Adjt, dic: 5)
+        node = fold!(node, succ, PosTag::Adjt, dic: 4)
       when .noun?
         break unless node.key.size == 1 && !prev # or special case
-        return fold_swap!(node, succ, PosTag::Nphrase, dic: 5)
+        return fold_swap!(node, succ, PosTag::Nphrase, dic: 4)
       when .vpro?, .verb?
         break unless node.key.size == 1 && !prev
         succ = fold_verbs!(succ)
 
         if succ.verbs? && node.tag.adj_hao?
-          return fold!(node, succ, PosTag::Verb, dic: 5)
+          return fold!(node, succ, PosTag::Verb, dic: 4)
         end
 
-        return fold_swap!(node, succ, PosTag::Vphrase, dic: 5)
+        return fold_swap!(node, succ, PosTag::Vphrase, dic: 4)
       when .ude2?
         break unless succ_2 = succ.succ?
         break unless succ_2.verb? || succ_2.veno?
@@ -25,8 +25,8 @@ module CV::TlRule
         succ_2 = fold_verbs!(succ_2)
         node = fold_adj_adv!(node, prev)
 
-        succ.val = "mà"
-        return fold!(node, succ_2, PosTag::Vphrase, dic: 6)
+        succ.set!("mà")
+        return fold!(node, succ_2, PosTag::Vphrase, dic: 5)
       when .uzhi?
         node = fold_adj_adv!(node, prev)
         return fold_uzhi!(succ, node)
@@ -39,17 +39,17 @@ module CV::TlRule
       when .penum?, .concoord?
         break unless (succ_2 = succ.succ?) && can_combine_adjt?(node, succ_2)
         heal_concoord!(succ) if succ.concoord?
-        node = fold!(node, succ, PosTag::Aphrase, dic: 5)
+        node = fold!(node, succ, PosTag::Aphrase, dic: 4)
       when .adv_bu?
         break unless (succ_2 = succ.succ?)
 
         if prev && prev.adv_bu?
-          return fold!(prev, succ_2, PosTag::Aphrase, dic: 5)
+          return fold!(prev, succ_2, PosTag::Aphrase, dic: 4)
         elsif succ_2.key == node.key
           node = fold_adj_adv!(node, prev)
           succ.val = "hay"
           succ_2.val = "không"
-          return fold!(node, succ_2, PosTag::Aphrase, dic: 5)
+          return fold!(node, succ_2, PosTag::Aphrase, dic: 4)
         end
 
         break
@@ -65,7 +65,7 @@ module CV::TlRule
   end
 
   def fold_modifier!(node : MtNode, succ = node.succ?, nega : MtNode? = nil)
-    node = fold!(nega, node, node.tag, dic: 6) if nega
+    node = fold!(nega, node, node.tag, dic: 4) if nega
 
     # TODO: combine with nouns
     node
@@ -76,7 +76,7 @@ module CV::TlRule
 
     case prev.key
     when "最", "那么", "这么", "非常"
-      fold_swap!(prev, node, PosTag::Adjt, dic: 5)
+      fold_swap!(prev, node, PosTag::Adjt, dic: 4)
     when "不太"
       head = MtNode.new("不", "không", PosTag::AdvBu, 1, prev.idx)
       tail = MtNode.new("太", "lắm", PosTag::Adverb, 1, prev.idx + 1)
@@ -86,10 +86,10 @@ module CV::TlRule
       node.fix_prev!(head)
       node.fix_succ!(tail)
 
-      fold!(head, tail, PosTag::Aphrase, dic: 5)
+      fold!(head, tail, PosTag::Aphrase, dic: 4)
     else
       prev.val = "rất" if prev.key == "挺"
-      fold!(prev, node, PosTag::Aphrase, dic: 5)
+      fold!(prev, node, PosTag::Aphrase, dic: 4)
     end
   end
 end

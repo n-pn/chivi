@@ -6,7 +6,7 @@ module CV::TlRule
       case succ.tag
       when .adjt?, .adesc?
         break unless succ.succ?(&.ude1?)
-        return fold!(node, succ, succ.tag, dic: 8)
+        return fold!(node, succ, succ.tag, dic: 7)
       when .middot?
         break unless succ_2 = succ.succ?
         break unless succ_2.human?
@@ -25,20 +25,20 @@ module CV::TlRule
       when .veno?
         succ = heal_veno!(succ)
         break if succ.verbs?
-        node = fold_swap!(node, succ, PosTag::Noun, dic: 4)
+        node = fold_swap!(node, succ, PosTag::Noun, dic: 7)
       when .noun?
         case node
         when .names?
           node = fold_swap!(node, succ, PosTag::Noun, dic: 3)
         when .noun?, .ajno?
-          node = fold_swap!(node, succ, PosTag::Noun, dic: 4)
+          node = fold_swap!(node, succ, PosTag::Noun, dic: 7)
         else return node
         end
       when .penum?, .concoord?
         break
         break unless (succ_2 = succ.succ?) && can_combine_noun?(node, succ_2)
         succ = heal_concoord!(succ) if succ.concoord?
-        fold!(node, succ_2, tag: node.tag, dic: 4)
+        fold!(node, succ_2, tag: node.tag, dic: 3)
       when .suf_verb?
         return fold_suf_verb!(node, succ)
       when .suf_nouns?
@@ -78,12 +78,12 @@ module CV::TlRule
       when .pro_ints?
         return fold_什么_noun!(prev, node) if prev.key == "什么"
         return fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
-      when .amorp? then node = fold!(prev, node, PosTag::Nphrase, dic: 4)
+      when .amorp? then node = fold!(prev, node, PosTag::Nphrase, dic: 7)
       when .place?, .adesc?, .ajno?, .modifier?, .modiform?
         node = fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
       when .ajav?, .adjts?
         break if prev.key.size > 1
-        node = fold_swap!(prev, node, PosTag::Nphrase, dic: 4)
+        node = fold_swap!(prev, node, PosTag::Nphrase, dic: 8)
       when .ude1?
         break if mode < 1
         node = fold_ude1!(node, prev)
