@@ -16,9 +16,7 @@ module CV::TlRule
     return node unless succ = node.succ?
 
     case succ
-    when .puncts?
-      # tag = node.prev?(&.preposes?) ? PosTag::Verb : PosTag::Noun
-      # node.set!(tag: tag)
+    when .puncts?, .ude1?
       node
     when .suf_nouns?
       node.set!(PosTag::Noun)

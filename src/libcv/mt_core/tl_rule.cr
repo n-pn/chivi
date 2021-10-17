@@ -13,10 +13,7 @@ module CV::TlRule
       when .strings?  then node = fold_strings!(node)
       when .preposes? then node = fold_preposes!(node)
       when .pronouns? then node = fold_pronouns!(node)
-        # when .quanti?
-        #   next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)
-        #   node = fold_noun_left!(node)
-      when .numbers? # , .quantis?
+      when .nquants? # , .quantis?
         node = fold_number!(node)
         if node.nquant?
           next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)
