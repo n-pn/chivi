@@ -29,7 +29,7 @@ module CV::TlRule
         end
       end
 
-      if node.prev.nouns? && !node.succ?
+      if node.prev.nouns?
         return fold_noun_space!(node.prev, node)
       else
         return fold_verbs!(node)
