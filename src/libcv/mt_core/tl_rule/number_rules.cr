@@ -27,6 +27,9 @@ module CV::TlRule
       node = fold!(prev, node, node.tag, dic: 1)
     end
 
+    # has_个 = node if node.key.ends_with?('个')
+    has_个 = succ if succ.key.ends_with?('个')
+
     appro = 1 if prev = check_pre_appro!(node.prev?)
 
     # merge number with quantifiers
@@ -36,7 +39,9 @@ module CV::TlRule
       when "月" then node = fold_month!(node, succ, appro)
       when "点" then node = fold_hour!(node, succ, appro)
       when "分" then node = fold_minute!(node, succ, appro)
-      else          node = fold!(node, succ, PosTag::Nquant, dic: 2)
+      else
+        node = fold!(node, succ, PosTag::Nquant, dic: 2)
+        node = fold_suf_quanti_appro!(node) if has_个
       end
     elsif (succ_2 = succ.succ?) && succ_2.noun?
       # val = "#{succ.val} #{succ_2.val} #{node.val}"
@@ -46,9 +51,21 @@ module CV::TlRule
       node = fold_swap!(node, succ, PosTag::Nquant, dic: 4)
     end
 
-    node = fold!(prev, node, node.tag, dic: 1) if prev
+    if has_个 && (succ = node.succ?) && succ.quantis?
+      heal_has_个!(has_个)
+      node = fold!(node, succ, PosTag::Nquant, dic: 2)
+    end
 
+    node = fold!(prev, node, node.tag, dic: 1) if prev
     fold_suf_quanti_appro!(node)
+  end
+
+  def heal_has_个!(node : MtNode)
+    if node.key.size == 1
+      node.val = ""
+    else
+      node.val = node.val.sub(" cái", "")
+    end
   end
 
   def fold_yi_verb!(node : MtNode, succ : MtNode)
