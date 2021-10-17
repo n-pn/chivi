@@ -12,6 +12,7 @@ module CV::TlRule
         when "般"
           return fold_swap!(node, succ.set!("như"), PosTag::Adesc, dic: 8)
         else
+          return node
           # TODO
         end
       when .middot?
@@ -40,7 +41,7 @@ module CV::TlRule
         when .ajno?
           node = fold_swap!(node, succ, PosTag::Noun, dic: 7)
         when .names?, .noun?
-          return node if succ.succ? { |x| x.verbs? || x.adverbs? }
+          return node unless noun_can_combine?(node.prev?, succ.succ?)
           node = fold_swap!(node, succ, PosTag::Noun, dic: 3)
         else return node
         end
@@ -60,6 +61,13 @@ module CV::TlRule
     end
 
     node
+  end
+
+  def noun_can_combine?(prev : MtNode?, succ : MtNode?) : Bool
+    return true unless prev && succ
+    return true unless prev.ends?
+
+    !(succ.verbs? || succ.adverbs?)
   end
 
   def fold_noun_left!(node : MtNode, mode = 1)
