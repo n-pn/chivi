@@ -16,7 +16,7 @@ module CV::TlRule
       node.set!("đôi", PosTag::Quanti)
     else
       succ = heal_quanti!(succ)
-      return node unless succ.quantis?
+      return fold_yi_verb!(node, succ) unless succ.quantis?
     end
 
     has_第 = node.key.starts_with?("第")
@@ -49,6 +49,11 @@ module CV::TlRule
     node = fold!(prev, node, node.tag, dic: 1) if prev
 
     fold_suf_quanti_appro!(node)
+  end
+
+  def fold_yi_verb!(node : MtNode, succ : MtNode)
+    return node unless node.key == "一" && succ.verb?
+    fold_swap!(node.set!("một phát"), succ, succ.tag, dic: 5)
   end
 
   def check_pre_appro!(prev : MtNode?)

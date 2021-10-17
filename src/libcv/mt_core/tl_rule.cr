@@ -23,6 +23,8 @@ module CV::TlRule
           node = fold_noun_left!(node, mode: mode)
         elsif node.nphrase?
           node = fold_noun_left!(node, mode: mode)
+        elsif node.verbs?
+          node = fold_verbs!(node)
         end
       when .veno?
         node = heal_veno!(node)
