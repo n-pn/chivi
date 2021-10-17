@@ -20,7 +20,9 @@ module CV::TlRule
         node = fold_number!(node)
         if node.nquant?
           next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)
-          node = fold_noun_left!(node)
+          node = fold_noun_left!(node, mode: mode)
+        elsif node.nphrase?
+          node = fold_noun_left!(node, mode: mode)
         end
       when .veno?
         node = heal_veno!(node)
