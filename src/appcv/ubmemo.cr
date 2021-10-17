@@ -44,6 +44,8 @@ class CV::Ubmemo
     self.bumped = Time.utc.to_unix
 
     self.lr_zseed = zseed
+    @lr_sname = nil
+
     self.lr_chidx = chidx
     self.lr_cpart = cpart
 
