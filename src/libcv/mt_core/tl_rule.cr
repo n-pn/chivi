@@ -13,7 +13,13 @@ module CV::TlRule
       when .strings?  then node = fold_strings!(node)
       when .preposes? then node = fold_preposes!(node)
       when .pronouns? then node = fold_pronouns!(node)
+        # when .quanti?
+        #   next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)
+        #   node = fold_noun_left!(node)
       when .numbers? # , .quantis?
+        # puts ["loop:", node, node.succ?, node.body?]
+        # gets
+
         node = fold_number!(node)
         if node.nquant?
           next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)
@@ -35,7 +41,8 @@ module CV::TlRule
 
         node = fold_noun_left!(node, mode: mode)
       when .vmodals? then node = heal_vmodal!(node)
-      when .verbs?   then node = fold_verbs!(node)
+      when .verbs?
+        node = fold_verbs!(node)
       when .nform?, .nphrase?
         node = fold_noun_left!(node, mode: mode)
       when .nouns?

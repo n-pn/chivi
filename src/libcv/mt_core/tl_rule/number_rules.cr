@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_number!(node : MtNode) : MtNode
-    node = meld_number!(node)
+    node = meld_number!(node) if node.numbers?
     return node unless succ = node.succ?
 
     node = fold_pre_quanti_appro!(node, succ)
