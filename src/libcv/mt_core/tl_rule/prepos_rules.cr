@@ -20,7 +20,7 @@ module CV::TlRule
     when .ule?
       succ.val = "" unless keep_ule?(node, succ)
       fold!(node.set!("đúng"), succ, PosTag::Adjt, dic: 2)
-    when .ends?
+    when .ends?, .conjunct?, .concoord?
       node.set!("đúng", PosTag::Adjt)
     when .contws?, .popens?
       node.set!("đối với")

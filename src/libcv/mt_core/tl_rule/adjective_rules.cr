@@ -6,6 +6,8 @@ module CV::TlRule
       case succ.tag
       when .adjt?, .amorp?
         node = fold!(node, succ, PosTag::Adjt, dic: 4)
+      when .ajno?
+        return fold_swap!(node, succ, succ.tag, dic: 7)
       when .noun?
         break unless node.key.size == 1 && !prev # or special case
         return fold_swap!(node, succ, PosTag::Nphrase, dic: 4)
