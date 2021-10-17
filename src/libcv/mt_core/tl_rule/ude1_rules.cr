@@ -16,7 +16,7 @@ module CV::TlRule
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .nouns?, .pro_per?
       if (prev_3 = prev_2.prev?) && is_verb_clause?(prev_3, node)
-        prev = fold!(prev_3, prev, PosTag::Dphrase, dic: 6)
+        prev = fold!(prev_3, prev, PosTag::Dphrase, dic: 9)
         return fold_swap!(prev, node, PosTag::Nphrase, dic: 6)
       end
 
@@ -53,8 +53,9 @@ module CV::TlRule
 
     case prev.tag
     when .v_shi?, .verb?, .nquants?, .pro_dems?
-      return true
-    when .nouns? then return false
+      true
+    when .nouns?, .comma?
+      false
     else
       prev.key == "在" ? true : by_succ > 0
     end

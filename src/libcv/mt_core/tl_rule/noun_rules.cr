@@ -35,11 +35,11 @@ module CV::TlRule
         node = fold_swap!(node, succ, PosTag::Noun, dic: 7)
       when .noun?
         case node
+        when .ajno?
+          node = fold_swap!(node, succ, PosTag::Noun, dic: 7)
         when .names?, .noun?
           return node if succ.succ? { |x| x.verbs? || x.adverbs? }
           node = fold_swap!(node, succ, PosTag::Noun, dic: 3)
-        when .ajno?
-          node = fold_swap!(node, succ, PosTag::Noun, dic: 7)
         else return node
         end
       when .penum?, .concoord?

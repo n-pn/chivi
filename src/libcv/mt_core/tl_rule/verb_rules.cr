@@ -1,79 +1,80 @@
 module CV::TlRule
-  def fold_verbs!(node : MtNode, prev : MtNode? = nil) : MtNode
-    if node.vpro?
-      return node unless (succ = node.succ?) && succ.verbs?
-      node = fold!(node, succ, succ.tag, dic: 5)
+  def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
+    if verb.vpro?
+      return verb unless (succ = verb.succ?) && succ.verbs?
+      verb = fold!(verb, succ, succ.tag, dic: 5)
     end
 
-    while succ = node.succ?
+    while succ = verb.succ?
       case succ
       when .uzhi?
-        fold_left_verb!(node, prev)
-        return fold_uzhi!(succ, node)
+        fold_left_verb!(verb, prev)
+        return fold_uzhi!(succ, verb)
       when .auxils?
-        node = fold_verb_auxils!(node, succ)
-        break if node.succ? == succ
+        verb = fold_verb_auxils!(verb, succ)
+        break if verb.succ? == succ
       when .vdirs?
-        node = fold_verb_vdirs!(node, succ)
+        verb = fold_verb_vdirs!(verb, succ)
       when .adjts?, .verbs?, .preposes?
-        break unless fold = fold_verb_compl!(node, succ)
-        node = fold
+        break unless fold = fold_verb_compl!(verb, succ)
+        verb = fold
       when .adv_bu?
-        break unless (succ_2 = succ.succ?) && succ_2.key == node.key
+        break unless (succ_2 = succ.succ?) && succ_2.key == verb.key
         succ.val = "hay"
         succ_2.val = "không"
-        node = fold!(node, succ_2, PosTag::Verb, dic: 5)
+        verb = fold!(verb, succ_2, PosTag::Verb, dic: 5)
       when .nquants?
-        if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == node.key
-          node = fold!(node, succ_2.set!("phát"), node.tag, dic: 6)
+        if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
+          verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
           break # TODO: still keep folding?
         end
 
-        break if node.key == "小于"
+        break if verb.key == "小于"
 
         succ = fold_number!(succ) if succ.numbers?
         break unless succ.nquant? && !succ.succ?(&.nouns?)
         succ.val.sub("bả", "phát") if succ.key.ends_with?("把")
 
-        node = fold_left_verb!(node, prev)
-        return fold!(node, succ, PosTag::Vphrase, dic: 6)
+        verb = fold_left_verb!(verb, prev)
+        return fold!(verb, succ, PosTag::Vphrase, dic: 6)
       when .suf_nouns?
-        # node = fold_left_verb!(node, prev) if prev
-        return fold_suf_noun!(node, succ)
+        # verb = fold_left_verb!(verb, prev) if prev
+        return fold_suf_noun!(verb, succ)
       else
         break
       end
 
-      break if node.succ? == succ
+      break if verb.succ? == succ
     end
 
-    fold_left_verb!(node, prev)
+    fold_left_verb!(verb, prev)
   end
 
-  def fold_verb_auxils!(node : MtNode, succ : MtNode) : MtNode
-    case succ.tag
+  def fold_verb_auxils!(verb : MtNode, auxil : MtNode) : MtNode
+    case auxil.tag
     when .ule?
-      succ.val = "" unless keep_ule?(node, succ)
-      node = fold!(node, succ, PosTag::Verb, dic: 5)
+      auxil.val = "" unless keep_ule?(verb, auxil)
+      verb = fold!(verb, auxil, PosTag::Verb, dic: 5)
 
-      return node unless (succ = node.succ?) && succ.nquants?
+      return verb unless (succ = verb.succ?) && succ.nquants?
       succ = fold_number!(succ) if succ.numbers?
-      return node unless succ.nquant?
+      return verb unless succ.nquant?
 
       succ.val.sub("bả", "phát") if succ.key.ends_with?("把")
-      fold!(node, succ, PosTag::Vphrase, dic: 6)
+      fold!(verb, succ, PosTag::Vphrase, dic: 6)
     when .ude2?
-      return node unless (succ_2 = succ.succ?) && (succ_2.verb? || succ_2.veno?)
+      return verb unless (succ_2 = auxil.succ?) && (succ_2.verb? || succ_2.veno?)
       succ_2 = fold_verbs!(succ_2)
-      fold!(succ.set!("mà"), succ_2, PosTag::Verb, dic: 5)
+      auxil.set!("mà")
+      fold!(verb, succ_2, PosTag::Verb, dic: 5)
     when .ude3?
-      fold_verb_ude3!(node, succ)
+      fold_verb_ude3!(verb, auxil)
     when .uzhe?
-      fold_verb_uzhe!(node, succ)
+      fold_verb_uzhe!(verb, auxil)
     when .uguo?
-      fold!(node, succ, PosTag::Verb, dic: 6)
+      fold!(verb, auxil, PosTag::Verb, dic: 6)
     else
-      node
+      verb
     end
   end
 
@@ -91,7 +92,7 @@ module CV::TlRule
     fold!(verb, vdir, PosTag::Verb, dic: 5)
   end
 
-  VERB_VALS = {
+  VERB_COMPLS = {
     "到" => "đến",
     # "在"  => "ở",
     "见"  => "thấy",
@@ -116,14 +117,13 @@ module CV::TlRule
     "给"  => "cho",
   }
 
-  def fold_verb_compl!(node : MtNode, succ : MtNode) : MtNode?
-    return unless val = VERB_VALS[succ.key]?
-    succ.val = val
-    fold!(node, succ, PosTag::Vphrase, dic: 6)
+  def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
+    return unless val = VERB_COMPLS[compl.key]?
+    fold!(verb, compl.set!(val), PosTag::Vphrase, dic: 6)
   end
 
-  def fold_left_verb!(node : MtNode, prev : Nil)
-    node
+  def fold_left_verb!(verb : MtNode, left : Nil)
+    verb
   end
 
   def fold_left_verb!(node : MtNode, prev = node.prev)
