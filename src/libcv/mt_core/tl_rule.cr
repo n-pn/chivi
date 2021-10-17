@@ -32,6 +32,7 @@ module CV::TlRule
       when .adjts?
         node = fold_adjts!(node, prev: nil)
         next unless node.nouns?
+        node = fold_noun!(node)
         node = fold_noun_left!(node, mode: mode)
       when .space?
         if prev = node.prev?

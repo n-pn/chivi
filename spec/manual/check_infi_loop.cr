@@ -16,7 +16,7 @@ test = "暗啐一声。"
 
 test = "很有风情按住被风吹起的头发。"
 
-test = "“歌！石川小百合1977年1月1日发行的第15张单曲！”"
+test = "三层高的白色渡轮"
 
 res = GENERIC.cv_plain(test)
 puts res.inspect, res.to_s
