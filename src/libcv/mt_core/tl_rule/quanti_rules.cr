@@ -56,9 +56,9 @@ module CV::TlRule
     "几" => "mấy",
   }
 
-  def fold_pre_quanti_appro!(node : MtNode, succ : MtNode) : MtNode
-    return node unless val = PRE_APPRO[succ.key]?
-    fold_swap!(node, succ.set!(val), node.tag, dic: 5)
+  def fold_pre_quanti_appro!(node : MtNode, succ : MtNode) : Tuple(MtNode, Int32)
+    return {node, 0} unless val = PRE_APPRO[succ.key]?
+    {fold_swap!(node, succ.set!(val), node.tag, dic: 5), 1}
   end
 
   APPROS = {

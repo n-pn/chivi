@@ -1,3 +1,5 @@
+require "../mt_util"
+
 module CV::TlRule
   def nquant_is_complement?(node : MtNode) : Bool
     return false unless node.nquant?
@@ -8,5 +10,63 @@ module CV::TlRule
     else
       false
     end
+  end
+
+  def fold_year!(prev : MtNode, node : MtNode, appro : Int32 = 0)
+    node.set!("năm")
+
+    if (number = node.succ?) && (quanti = number.succ?)
+      if number.numbers? && quanti.key == "月"
+        month = fold_month!(number, quanti, -1)
+      end
+    end
+
+    if month || appro < 1
+      prev = fold_swap!(prev, node, PosTag::Time, dic: 2)
+      return month ? fold_swap!(prev, month, prev.tag, dic: 2) : prev
+    end
+
+    fold!(prev, node, PosTag::Time, dic: 2)
+  end
+
+  def fold_month!(prev : MtNode, node : MtNode, appro : Int32 = 0)
+    node.set!("tháng")
+    date = fold_day?(node.succ?)
+
+    if date || appro == -1
+      prev = fold_swap!(prev, node, PosTag::Time, dic: 2)
+      return date ? fold_swap!(prev, date, prev.tag, dic: 2) : prev
+    end
+
+    if appro == 0 && MtUtil.to_integer(node.val) < 13
+      # TODO: check more cases
+      return fold_swap!(prev, node, PosTag::Time, dic: 2)
+    end
+
+    fold!(prev, node, PosTag::Time, dic: 2)
+  end
+
+  def fold_day?(num : MtNode?) : MtNode?
+    return unless num && (day = num.succ?)
+    return unless num.numbers? && day.key == "日" || day.key == "号"
+
+    case day.key
+    when "日" then day.set!("ngày")
+    when "号"
+      real_date = MtUtil.to_integer(day.key)
+      day.set!(real_date > 10 ? "ngày" : "mồng")
+    else
+      return
+    end
+
+    fold_swap!(num, day, PosTag::Time, dic: 3)
+  end
+
+  def fold_hour!(node : MtNode, succ : MtNode, appro : Int32 = 0)
+    fold!(node, succ, PosTag::Nquant, dic: 2)
+  end
+
+  def fold_minute!(node : MtNode, succ : MtNode, appro : Int32 = 0)
+    fold!(node, succ, PosTag::Nquant, dic: 2)
   end
 end

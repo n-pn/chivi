@@ -3,7 +3,7 @@ module CV::TlRule
     node = meld_number!(node) if node.numbers?
     return node unless succ = node.succ?
 
-    node = fold_pre_quanti_appro!(node, succ)
+    node, appro = fold_pre_quanti_appro!(node, succ)
 
     return node unless succ = node.succ?
 
@@ -27,9 +27,17 @@ module CV::TlRule
       node = fold!(prev, node, node.tag, dic: 1)
     end
 
+    appro = 1 if prev = check_pre_appro!(node.prev?)
+
     # merge number with quantifiers
     if !has_第
-      node = fold!(node, succ, PosTag::Nquant, dic: 2)
+      case succ.key
+      when "年" then node = fold_year!(node, succ, appro)
+      when "月" then node = fold_month!(node, succ, appro)
+      when "点" then node = fold_hour!(node, succ, appro)
+      when "分" then node = fold_minute!(node, succ, appro)
+      else          node = fold!(node, succ, PosTag::Nquant, dic: 2)
+      end
     elsif (succ_2 = succ.succ?) && succ_2.noun?
       # val = "#{succ.val} #{succ_2.val} #{node.val}"
       succ = fold!(succ, succ_2, succ_2.tag, dic: 4)
@@ -38,18 +46,18 @@ module CV::TlRule
       node = fold_swap!(node, succ, PosTag::Nquant, dic: 4)
     end
 
-    if prev = node.prev?
-      case prev.key
-      when "约"
-        prev.val = "chừng"
-        node = fold!(prev, node, node.tag, dic: 1)
-      when "小于"
-        prev.val = "ít hơn"
-        node = fold!(prev, node, node.tag, dic: 1)
-      end
-    end
+    node = fold!(prev, node, node.tag, dic: 1) if prev
 
     fold_suf_quanti_appro!(node)
+  end
+
+  def check_pre_appro!(prev : MtNode?)
+    return unless prev
+    case prev.key
+    when "约"  then prev.set!("chừng")
+    when "小于" then prev.set!("ít hơn")
+    else           nil
+    end
   end
 
   def meld_number!(node : MtNode)
@@ -68,6 +76,7 @@ module CV::TlRule
       if node.numhan?
         break unless (succ_2 = succ.succ?) && succ_2.numhan?
         break unless succ.key == "点"
+        break if succ_2.succ?(&.key.== "分")
 
         key_io << succ.key << succ_2.key
         val_io << " chấm " << succ_2.val
