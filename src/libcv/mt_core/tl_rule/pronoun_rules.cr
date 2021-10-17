@@ -1,18 +1,20 @@
 module CV::TlRule
-  def fold_pronouns!(node : MtNode, succ = node.succ?) : MtNode
-    return node unless succ
+  def fold_pronouns!(pronoun : MtNode, succ = pronoun.succ?) : MtNode
+    return pronoun unless succ
 
-    case node.tag
-    when .pro_per?  then fold_pro_per!(node, succ)
-    when .pro_dems? then fold_pro_dems!(node, succ)
-    else                 node
+    case pronoun.tag
+    when .pro_per?  then fold_pro_per!(pronoun, succ)
+    when .pro_dems? then fold_pro_dems!(pronoun, succ)
+    else                 pronoun
     end
   end
 
   def fold_pro_per!(node : MtNode, succ : MtNode) : MtNode
     case succ.tag
     when .space?
-      fold_swap!(node, succ, succ.tag, dic: 4)
+      fold_swap!(node, succ, PosTag::Place, dic: 4)
+    when .place?
+      fold_swap!(node, succ, PosTag::Dphrase, dic: 4)
     when .ptitle?
       return node unless should_not_combine_pro_per?(node.prev?, succ.succ?)
       fold_swap!(node, succ, succ.tag, dic: 4)

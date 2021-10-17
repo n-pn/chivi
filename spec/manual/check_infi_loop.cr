@@ -16,7 +16,7 @@ test = "暗啐一声。"
 
 test = "很有风情按住被风吹起的头发。"
 
-test = "白子和小蝴蝶脸贴车窗，出神地观看陌生地方的风景。"
+test = "在她们眼里，一切都那么新鲜。"
 
 res = GENERIC.cv_plain(test)
 puts res.inspect, res.to_s
