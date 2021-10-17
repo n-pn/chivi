@@ -16,7 +16,7 @@ test = "暗啐一声。"
 
 test = "很有风情按住被风吹起的头发。"
 
-test = "来看什么‘一排鸟居’？”"
+test = "需要3个多小时"
 
 res = GENERIC.cv_plain(test)
 puts res.inspect, res.to_s
