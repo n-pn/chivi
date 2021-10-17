@@ -26,10 +26,10 @@ module CV::TlRule
 
     if succ.succ? == tail
       tag = succ.tag
-      dic = 2
+      dic = 1
     else
       tag = PosTag::Unkn
-      dic = 1
+      dic = 0
     end
 
     root = fold!(head, tail, tag: tag, dic: dic)

@@ -11,10 +11,10 @@ module CV::TlRule
         return fold_noun_left!(node)
       end
 
-      node = fold!(nega, node, node.tag, 6) if nega
+      node = fold!(nega, node, node.tag, dic: 6) if nega
     end
 
-    succ && succ.verb? ? fold!(node, succ, succ.tag, 6) : node
+    succ && succ.verb? ? fold!(node, succ, succ.tag, dic: 6) : node
   end
 
   def vmodal_is_noun?(node : MtNode, key : String)
@@ -69,7 +69,7 @@ module CV::TlRule
       end
     end
 
-    nega ? fold!(nega, node, node.tag, 2) : node
+    nega ? fold!(nega, node, node.tag, dic: 2) : node
   end
 
   private def succ_is_verb?(node : MtNode?) : Bool

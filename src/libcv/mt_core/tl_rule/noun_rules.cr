@@ -66,20 +66,20 @@ module CV::TlRule
           prev.val = prev.val.sub(" cái", "")
         end
 
-        node = fold!(prev, node, PosTag::Nphrase, 3)
+        node = fold!(prev, node, PosTag::Nphrase, dic: 3)
       when .pro_ji?
-        return fold!(prev, node, PosTag::Nphrase, 3)
+        return fold!(prev, node, PosTag::Nphrase, dic: 3)
       when .pro_dems?
         return fold_pro_dem_noun!(prev, node)
       when .pro_ints?
         return fold_什么_noun!(prev, node) if prev.key == "什么"
-        return fold_swap!(prev, node, PosTag::Nphrase, 3)
-      when .amorp? then node = fold!(prev, node)
+        return fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
+      when .amorp? then node = fold!(prev, node, PosTag::Nphrase, dic: 4)
       when .place?, .adesc?, .ajno?, .modifier?, .modiform?
-        node = fold_swap!(prev, node, PosTag::Nphrase, 3)
+        node = fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
       when .ajav?, .adjts?
         break if prev.key.size > 1
-        node = fold_swap!(prev, node, PosTag::Nphrase, 4)
+        node = fold_swap!(prev, node, PosTag::Nphrase, dic: 4)
       when .ude1?
         break if mode < 1
         node = fold_ude1!(node, prev)
@@ -102,6 +102,6 @@ module CV::TlRule
     succ.fix_succ!(node.succ?)
     node.fix_succ!(succ)
 
-    fold!(prev, succ, PosTag::Nphrase, 3)
+    fold!(prev, succ, PosTag::Nphrase, dic: 3)
   end
 end

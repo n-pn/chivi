@@ -55,7 +55,7 @@ module CV::TlRule
 
   def fold_pre_quanti_appro!(node : MtNode, succ : MtNode) : MtNode
     return node unless val = PRE_APPRO[succ.key]?
-    fold_swap!(node, succ.heal!(val), node.tag, 5)
+    fold_swap!(node, succ.heal!(val), node.tag, dic: 5)
   end
 
   APPROS = {
@@ -90,6 +90,6 @@ module CV::TlRule
 
   def fold_suf_quanti_appro!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ && (val = APPROS[succ.key]?)
-    fold_swap!(node, succ, dic: 6)
+    fold_swap!(node, succ, node.tag, dic: 6)
   end
 end

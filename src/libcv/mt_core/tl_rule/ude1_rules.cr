@@ -8,23 +8,23 @@ module CV::TlRule
     case prev_2
     when .ajav?
       prev_2.val = "thông thường" if prev_2.key == "一般"
-      return fold_swap!(prev_2, node, PosTag::Nphrase, 2)
+      return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .adjts?, .veno?, .vintr?, .time?, .place?, .space?, .adesc?
-      return fold_swap!(prev_2, node, PosTag::Nphrase, 2)
+      return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .nquants?
       # puts ["!", prev_2, prev, node]
-      return fold_swap!(prev_2, node, PosTag::Nphrase, 2)
+      return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .nouns?, .pro_per?
       # puts ["!", prev_2, prev, node]
 
       if (prev_3 = prev_2.prev?) && verb_subject?(prev_3, node)
-        prev = fold!(prev_3, prev, PosTag::Dphrase, 6)
-        return fold_swap!(prev, node, PosTag::Nphrase, 6)
+        prev = fold!(prev_3, prev, PosTag::Dphrase, dic: 6)
+        return fold_swap!(prev, node, PosTag::Nphrase, dic: 6)
       end
 
       prev.val = "của"
-      dic = prev_2.prev?(&.verbs?) ? 5 : 4
-      return fold_swap!(prev_2, node, PosTag::Nphrase, dic)
+      dic = prev_2.prev?(&.verbs?) ? 6 : 4
+      return fold_swap!(prev_2, node, PosTag::Nphrase, dic: dic)
     when .verb?
       return node
 

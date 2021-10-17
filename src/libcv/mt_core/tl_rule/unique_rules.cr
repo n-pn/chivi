@@ -8,7 +8,7 @@ module CV::TlRule
       return node unless (succ_2 = succ.succ?) && succ_2.verbs?
 
       succ_2 = fold_verbs!(succ_2)
-      fold!(node, succ_2, succ_2.tag, 8)
+      fold!(node, succ_2, succ_2.tag, dic: 8)
     else
       node
     end
@@ -62,7 +62,7 @@ module CV::TlRule
     when "百分之"
       return node unless succ && succ.numbers?
       succ = fold_number!(succ)
-      fold_swap!(node, succ, PosTag::Number, 4)
+      fold_swap!(node, succ, PosTag::Number, dic: 4)
     when "原来"
       if succ.try(&.ude1?) || node.prev?(&.contws?)
         node.heal!("ban đầu", tag: PosTag::Modifier)

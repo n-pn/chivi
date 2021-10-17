@@ -21,7 +21,7 @@ module CV::TlRule
         break unless (succ_2 = succ.succ?) && succ_2.key == node.key
         succ.val = "hay"
         succ_2.val = "không"
-        node = fold!(node, succ_2, dic: 5)
+        node = fold!(node, succ_2, PosTag::Verb, dic: 5)
       when .nquants?
         break if node.key == "小于"
 
@@ -48,25 +48,25 @@ module CV::TlRule
     case succ.tag
     when .ule?
       succ.val = "" unless keep_ule?(node, succ)
-      node = fold!(node, succ, dic: 5)
+      node = fold!(node, succ, PosTag::Verb, dic: 5)
 
       return node unless (succ = node.succ?) && succ.nquants?
       succ = fold_number!(succ) if succ.numbers?
       return node unless succ.nquant?
 
       succ.val.sub("bả", "phát") if succ.key.ends_with?("把")
-      fold!(node, succ, PosTag::Vphrase, 6)
+      fold!(node, succ, PosTag::Vphrase, dic: 6)
     when .ude2?
       return node unless (succ_2 = succ.succ?) && (succ_2.verb? || succ_2.veno?)
       succ_2 = fold_verbs!(succ_2)
       succ.val = "mà"
-      fold!(succ, succ_2, PosTag::Verb, 5)
+      fold!(succ, succ_2, PosTag::Verb, dic: 5)
     when .ude3?
       fold_verb_ude3!(node, succ)
     when .uzhe?
       fold_verb_uzhe!(node, succ)
     when .uguo?
-      fold!(node, succ, dic: 6)
+      fold!(node, succ, PosTag::Verb, dic: 6)
     else
       node
     end
@@ -83,7 +83,7 @@ module CV::TlRule
     when "起来" then vdir.val = "lên"
     end
 
-    fold!(verb, vdir, dic: 5)
+    fold!(verb, vdir, PosTag::Verb, dic: 5)
   end
 
   VERB_VALS = {

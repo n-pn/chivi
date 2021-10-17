@@ -10,7 +10,7 @@ module CV::TlRule
     if succ.pre_dui?
       if (succ_2 = succ.succ?) && succ_2.numbers?
         succ.val = "đối"
-        return fold!(node, succ_2, PosTag::Aphrase, 3)
+        return fold!(node, succ_2, PosTag::Aphrase, dic: 2)
       end
 
       node.heal!("đôi", PosTag::Quanti)
@@ -24,28 +24,28 @@ module CV::TlRule
     if (prev = node.prev?) && prev.key == "第"
       has_第 = true
       prev.val = "thứ"
-      node = fold!(prev, node, node.tag, 2)
+      node = fold!(prev, node, node.tag, dic: 1)
     end
 
     # merge number with quantifiers
     if !has_第
-      node = fold!(node, succ, PosTag::Nquant, dic: 4)
+      node = fold!(node, succ, PosTag::Nquant, dic: 2)
     elsif (succ_2 = succ.succ?) && succ_2.noun?
       # val = "#{succ.val} #{succ_2.val} #{node.val}"
-      succ = fold!(succ, succ_2, succ_2.tag, 4)
-      return fold_swap!(node, succ, PosTag::Nphrase, 4)
+      succ = fold!(succ, succ_2, succ_2.tag, dic: 4)
+      return fold_swap!(node, succ, PosTag::Nphrase, dic: 4)
     else
-      node = fold_swap!(node, succ, PosTag::Nquant, 4)
+      node = fold_swap!(node, succ, PosTag::Nquant, dic: 4)
     end
 
     if prev = node.prev?
       case prev.key
       when "约"
         prev.val = "chừng"
-        node = fold!(prev, node, node.tag, 5)
+        node = fold!(prev, node, node.tag, dic: 1)
       when "小于"
         prev.val = "ít hơn"
-        node = fold!(prev, node, node.tag, 5)
+        node = fold!(prev, node, node.tag, dic: 1)
       end
     end
 

@@ -12,17 +12,17 @@ module CV::TlRule
   def fold_pro_per!(node : MtNode, succ : MtNode) : MtNode
     case succ.tag
     when .space?
-      fold_swap!(node, succ, succ.tag, 7)
+      fold_swap!(node, succ, succ.tag, dic: 4)
     when .ptitle?
       return node unless should_not_combine_pro_per?(node.prev?, succ.succ?)
-      fold_swap!(node, succ, succ.tag, 7)
+      fold_swap!(node, succ, succ.tag, dic: 4)
     when .names?
       succ = fold_noun!(succ)
       return node unless succ.names?
 
       # TODO: add pseudo node
       node.val = "của #{node.val}"
-      fold_swap!(node, succ, succ.tag, 8)
+      fold_swap!(node, succ, succ.tag, dic: 4)
     else
       # TODO: handle special cases
       node
@@ -70,18 +70,18 @@ module CV::TlRule
     case prev.key
     when "各"
       prev.val = "các"
-      fold!(prev, node, node.tag, 2)
+      fold!(prev, node, node.tag, dic: 2)
     when "这", "这个"
-      fold_swap!(prev, node, node.tag, 2)
+      fold_swap!(prev, node, node.tag, dic: 2)
     when "那", "那个"
       prev.val = "kia"
-      fold_swap!(prev, node, node.tag, 2)
+      fold_swap!(prev, node, node.tag, dic: 2)
     when "这样"
       prev.val = "như vậy"
-      fold_swap!(prev, node, node.tag, 2)
+      fold_swap!(prev, node, node.tag, dic: 2)
     when "那样"
       prev.val = "như thế"
-      fold_swap!(prev, node, node.tag, 2)
+      fold_swap!(prev, node, node.tag, dic: 2)
     when "任何"
       prev.val = "bất kỳ"
       fold!(prev, node)
@@ -93,12 +93,12 @@ module CV::TlRule
       prev.key = "其"
       prev.val = "các"
 
-      fold!(prev, tail, PosTag::Nphrase, 3)
+      fold!(prev, tail, PosTag::Nphrase, dic: 3)
     when .ends_with?("个")
       prev.val = prev.val.sub("cái", "").strip
-      fold!(prev, node, node.tag, 3)
+      fold!(prev, node, node.tag, dic: 3)
     when .starts_with?("各")
-      fold!(prev, node, node.tag, 3)
+      fold!(prev, node, node.tag, dic: 3)
     when .starts_with?("这")
       tail = MtNode.new("这", "này", PosTag::ProZhe, 1, prev.idx)
       tail.fix_succ!(node.succ?)
@@ -109,7 +109,7 @@ module CV::TlRule
       prev.tag = PosTag::Quanti
       prev.idx += 1
 
-      fold!(prev, tail, node.tag, 3)
+      fold!(prev, tail, node.tag, dic: 3)
     when .starts_with?("那")
       tail = MtNode.new("那", "kia", PosTag::ProZhe, 1, prev.idx)
       tail.fix_succ!(node.succ?)
@@ -120,9 +120,9 @@ module CV::TlRule
       prev.tag = PosTag::Quanti
       prev.idx += 1
 
-      fold!(prev, tail, node.tag, 3)
+      fold!(prev, tail, node.tag, dic: 3)
     else
-      fold_swap!(prev, node, node.tag, 3)
+      fold_swap!(prev, node, node.tag, dic: 3)
     end
   end
 end

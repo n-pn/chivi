@@ -18,12 +18,12 @@ module CV::TlRule
     when .ude1?
       node.val = "đúng"
       succ.val = ""
-      fold!(node, succ, PosTag::Adjt, 3)
+      fold!(node, succ, PosTag::Adjt, dic: 3)
     when .ule?
       node.val = "đúng"
       succ.val = "" unless keep_ule?(node, succ)
 
-      fold!(node, succ, PosTag::Adjt, 3)
+      fold!(node, succ, PosTag::Adjt, dic: 3)
     when .contws?, .quoteop?, .parenop?, .brackop?, .titleop?
       node.heal!("đối với")
     else

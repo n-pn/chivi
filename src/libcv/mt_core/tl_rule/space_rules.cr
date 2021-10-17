@@ -9,6 +9,6 @@ module CV::TlRule
     return node unless succ
 
     succ.val = FIX_SPACES[succ.key]? || succ.val
-    fold_swap!(node, succ, PosTag::Place, 3)
+    fold_swap!(node, succ, PosTag::Place, dic: 4)
   end
 end
