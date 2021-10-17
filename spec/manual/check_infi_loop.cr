@@ -14,7 +14,7 @@ test = "“哈哈哈哈……没了万喻楼，还会有第二个万喻楼……
 
 test = "暗啐一声。"
 
-test = "衣的第二个扣子"
+test = "很有风情按住被风吹起的头发。"
 
 res = GENERIC.cv_plain(test)
 puts res.inspect, res.to_s

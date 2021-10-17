@@ -5,6 +5,7 @@ module CV::TlRule
     # TODO!
     case node.tag
     when .pre_dui? then fold_pre_dui!(node, succ)
+    when .pre_bei? then fold_pre_bei!(node, succ)
     else                node
     end
   end
@@ -27,5 +28,12 @@ module CV::TlRule
     else
       node
     end
+  end
+
+  def fold_pre_bei!(node : MtNode, succ = node.succ?) : MtNode
+    return node unless succ && succ.verb?
+    # todo: change "bị" to "được" if suitable
+    node = fold!(node, succ, succ.tag, dic: 5)
+    fold_verbs!(node)
   end
 end

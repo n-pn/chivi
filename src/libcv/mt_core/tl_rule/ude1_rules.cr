@@ -16,8 +16,6 @@ module CV::TlRule
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .nouns?, .pro_per?
       if (prev_3 = prev_2.prev?) && is_verb_clause?(prev_3, node)
-        # puts ["!", prev_2, prev, node]
-
         prev = fold!(prev_3, prev, PosTag::Dphrase, dic: 6)
         return fold_swap!(prev, node, PosTag::Nphrase, dic: 6)
       end
@@ -29,8 +27,12 @@ module CV::TlRule
       return node unless prev_3 = prev_2.prev?
 
       if prev_3.nouns?
-        prev_3 = fold_swap!(prev_3, prev_2, PosTag::Dphrase, dic: 8)
-        return fold_swap!(prev_3, node, PosTag::Nphrase, dic: 9)
+        if (prev_4 = prev_3.prev?) && prev_4.pre_bei?
+          head = fold!(prev_4, prev_2, PosTag::Dphrase, dic: 8)
+        else
+          head = fold_swap!(prev_3, prev_2, PosTag::Dphrase, dic: 8)
+        end
+        return fold_swap!(head, node, PosTag::Nphrase, dic: 9)
       elsif prev_3.nquant?
         node = fold_swap!(prev_2, node, PosTag::Nphrase, dic: 8)
         return fold!(prev_3, node, PosTag::Nphrase, 3)
