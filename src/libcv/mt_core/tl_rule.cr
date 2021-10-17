@@ -7,7 +7,7 @@ module CV::TlRule
       # gets
 
       case node.tag
-      when .puncts?   then ndoe = fold_puncts!(node, mode: mode)
+      when .puncts?   then node = fold_puncts!(node, mode: mode)
       when .auxils?   then node = heal_auxils!(node, mode: mode)
       when .uniques?  then node = heal_uniques!(node)
       when .strings?  then node = fold_strings!(node)
