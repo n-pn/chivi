@@ -14,7 +14,7 @@ module CV::TlRule
     case succ.tag
     when .pre_dui?
       succ = fold_pre_dui!(succ)
-      fold_swap!(node, succ, succ.tag, 6)
+      fold_swap!(node, succ, succ.tag, 2)
     when .vmodals? then heal_vmodal!(succ, nega: node)
     when .adverb?  then fold_adverb!(succ, nega: node)
     when .verbs?   then fold_verbs!(succ, prev: node)
@@ -38,7 +38,7 @@ module CV::TlRule
       fold_verbs!(succ, node)
     when .adjt?, .ajav?, .ajno?
       node.val = "không"
-      fold!(node, succ, PosTag::Adjt, 6)
+      fold!(node, succ, PosTag::Adjt, 2)
     else
       node
     end
@@ -51,7 +51,7 @@ module CV::TlRule
   end
 
   def fold_adverb!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    node = fold!(nega, node, node.tag, 6) if nega
+    node = fold!(nega, node, node.tag, 2) if nega
 
     return node unless succ
     node.val = "vậy" if !nega && succ.ends? && node.key == "也"
@@ -66,7 +66,7 @@ module CV::TlRule
       fold_adjts!(succ, prev: node)
     when .preposes?
       succ = fold_preposes!(succ)
-      fold!(node, succ, succ.tag, 6)
+      fold!(node, succ, succ.tag, 2)
     else node
     end
   end

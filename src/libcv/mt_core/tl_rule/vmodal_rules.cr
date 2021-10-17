@@ -5,10 +5,24 @@ module CV::TlRule
     case node
     when .vm_hui?   then node = heal_vm_hui!(node, succ, nega)
     when .vm_xiang? then node = heal_vm_xiang!(node, succ, nega)
-    else                 node = fold!(nega, node, node.tag, 2) if nega
+    else
+      if vmodal_is_noun?(node, "可能")
+        node.tag = PosTag::Noun
+        return fold_noun_left!(node)
+      end
+
+      node = fold!(nega, node, node.tag, 6) if nega
     end
 
     succ && succ.verb? ? fold!(node, succ, succ.tag, 6) : node
+  end
+
+  def vmodal_is_noun?(node : MtNode, key : String)
+    return false unless node.key == "可能"
+    return true if !(succ = node.succ?) || succ.ends?
+
+    # TODO: add more cases
+    node.prev?(&.ude1?)
   end
 
   def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
@@ -16,10 +30,10 @@ module CV::TlRule
 
     if is_skill_succ?(succ) || is_skill_prev?(prev.try(&.prev?))
       node.val = "biết"
-      prev ? fold!(prev, node, node.tag, dic: 3) : node
+      prev ? fold!(prev, node, node.tag, dic: 6) : node
     else
       node.val = "sẽ"
-      prev ? fold_swap!(prev, node, node.tag, dic: 3) : node
+      prev ? fold_swap!(prev, node, node.tag, dic: 6) : node
     end
   end
 
@@ -55,7 +69,7 @@ module CV::TlRule
       end
     end
 
-    nega ? fold!(nega, node, node.tag, 1) : node
+    nega ? fold!(nega, node, node.tag, 2) : node
   end
 
   private def succ_is_verb?(node : MtNode?) : Bool

@@ -15,7 +15,10 @@ module CV::TlRule
       when .pronouns? then node = fold_pronouns!(node)
       when .numbers? # , .quantis?
         node = fold_number!(node)
-        node = fold_noun_left!(node) if node.nquants? && !node.succ?(&.nouns?)
+        if node.nquant?
+          next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)
+          node = fold_noun_left!(node)
+        end
       when .veno?
         node = heal_veno!(node)
         node = node.noun? ? fold_noun!(node) : fold_verbs!(node)

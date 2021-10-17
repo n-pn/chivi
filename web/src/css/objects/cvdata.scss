@@ -162,25 +162,6 @@ c-v {
     @include cv-token(red);
   }
 
-  &[data-d='6'] {
-    @include cv-token(green);
-  }
-
-  &[data-d='7'] {
-    @include cv-token(fuchsia);
-  }
-
-  &[data-d='8'] {
-    @include cv-token(purple);
-  }
-
-  &[data-d='9'] {
-    cursor: pointer;
-    position: relative;
-    --active: #fff;
-    --bg-active: #{color(purple, 5)};
-  }
-
   c-z & {
     cursor: pointer;
     &:hover,
@@ -297,19 +278,19 @@ c-g {
   }
 
   &[data-d='5'] {
-    @include cg-color(orange);
+    @include cg-color(purple);
   }
 
   &[data-d='6'] {
-    @include cg-color(red);
+    @include cg-color(pink);
   }
 
   &[data-d='7'] {
-    @include cg-color(fuchsia);
+    @include cg-color(orange);
   }
 
   &[data-d='8'] {
-    @include cg-color(purple);
+    @include cg-color(red);
   }
 
   &[data-d='9'] {

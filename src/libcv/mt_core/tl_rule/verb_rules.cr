@@ -21,13 +21,15 @@ module CV::TlRule
         break unless (succ_2 = succ.succ?) && succ_2.key == node.key
         succ.val = "hay"
         succ_2.val = "không"
-        node = fold!(node, succ_2, dic: 2)
+        node = fold!(node, succ_2, dic: 5)
       when .nquants?
         break if node.key == "小于"
 
         succ = fold_number!(succ) if succ.numbers?
         break unless succ.nquant? && !succ.succ?(&.nouns?)
-        fold!(node, succ, PosTag::Vphrase, 4)
+        succ.val.sub("bả", "phát") if succ.key.ends_with?("把")
+
+        fold!(node, succ, PosTag::Vphrase, 6)
         break
       when .suf_nouns?
         # node = fold_left_verb!(node, prev) if prev
@@ -46,23 +48,25 @@ module CV::TlRule
     case succ.tag
     when .ule?
       succ.val = "" unless keep_ule?(node, succ)
-      node = fold!(node, succ, dic: 2)
+      node = fold!(node, succ, dic: 5)
 
       return node unless (succ = node.succ?) && succ.nquants?
       succ = fold_number!(succ) if succ.numbers?
       return node unless succ.nquant?
+
+      succ.val.sub("bả", "phát") if succ.key.ends_with?("把")
       fold!(node, succ, PosTag::Vphrase, 6)
     when .ude2?
       return node unless (succ_2 = succ.succ?) && (succ_2.verb? || succ_2.veno?)
       succ_2 = fold_verbs!(succ_2)
       succ.val = "mà"
-      fold!(succ, succ_2, PosTag::Verb, 6)
+      fold!(succ, succ_2, PosTag::Verb, 5)
     when .ude3?
       fold_verb_ude3!(node, succ)
     when .uzhe?
       fold_verb_uzhe!(node, succ)
     when .uguo?
-      fold!(node, succ, dic: 2)
+      fold!(node, succ, dic: 6)
     else
       node
     end
@@ -79,7 +83,7 @@ module CV::TlRule
     when "起来" then vdir.val = "lên"
     end
 
-    fold!(verb, vdir, dic: 3)
+    fold!(verb, vdir, dic: 5)
   end
 
   VERB_VALS = {
@@ -110,7 +114,7 @@ module CV::TlRule
   def fold_verb_compl!(node : MtNode, succ : MtNode) : MtNode?
     return unless val = VERB_VALS[succ.key]?
     succ.val = val
-    fold!(node, succ, PosTag::Vphrase, dic: 7)
+    fold!(node, succ, PosTag::Vphrase, dic: 6)
   end
 
   def fold_left_verb!(node : MtNode, prev = node.prev?)
@@ -118,12 +122,12 @@ module CV::TlRule
 
     case prev.key
     when "最", "那么", "这么", "非常"
-      fold_swap!(prev, node, node.tag, dic: 8)
+      fold_swap!(prev, node, node.tag, dic: 5)
     when "不太"
       prev.val = "không quá"
-      fold!(prev, node, node.tag, dic: 8)
+      fold!(prev, node, node.tag, dic: 5)
     else
-      fold!(prev, node, node.tag, dic: 8)
+      fold!(prev, node, node.tag, dic: 5)
     end
   end
 
@@ -132,9 +136,9 @@ module CV::TlRule
 
     if succ && succ.verbs?
       # succ = fold_verbs!(succ)
-      fold!(prev, succ, PosTag::Verb, dic: 3)
+      fold!(prev, succ, PosTag::Verb, dic: 5)
     else
-      fold!(prev, node, PosTag::Verb, dic: 5)
+      fold!(prev, node, PosTag::Verb, dic: 6)
     end
   end
 end

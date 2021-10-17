@@ -6,15 +6,15 @@ module CV::TlRule
       case succ.tag
       when .adjt?
         break unless succ.succ?(&.ude1?)
-        return fold!(node, succ, PosTag::Adjt, dic: 2)
+        return fold!(node, succ, PosTag::Adjt, dic: 3)
       when .middot?
         break unless succ_2 = succ.succ?
         break unless succ_2.human?
 
-        return fold!(node, succ_2, PosTag::Person, dic: 2)
+        return fold!(node, succ_2, PosTag::Person, dic: 3)
       when .ptitle?
         node.tag = PosTag::Person
-        node = fold!(node, succ, PosTag::Person, dic: 2)
+        node = fold!(node, succ, PosTag::Person, dic: 3)
       when .names?
         break unless node.names?
         node = fold!(node, succ, succ.tag, dic: 3)
@@ -25,13 +25,12 @@ module CV::TlRule
       when .veno?
         succ = heal_veno!(succ)
         break if succ.verbs?
-
         node = fold_swap!(node, succ, PosTag::Noun, dic: 4)
       when .noun?
         case node
         when .names?
           node = fold_swap!(node, succ, PosTag::Noun, dic: 3)
-        when .noun?
+        when .noun?, .ajno?
           node = fold_swap!(node, succ, PosTag::Noun, dic: 4)
         else return node
         end
@@ -39,7 +38,7 @@ module CV::TlRule
         break
         break unless (succ_2 = succ.succ?) && can_combine_noun?(node, succ_2)
         succ = heal_concoord!(succ) if succ.concoord?
-        fold!(node, succ_2, tag: node.tag, dic: 8)
+        fold!(node, succ_2, tag: node.tag, dic: 4)
       when .suf_verb?
         return fold_suf_verb!(node, succ)
       when .suf_nouns?
@@ -77,10 +76,10 @@ module CV::TlRule
         return fold_swap!(prev, node, PosTag::Nphrase, 3)
       when .amorp? then node = fold!(prev, node)
       when .place?, .adesc?, .ajno?, .modifier?, .modiform?
-        node = fold_swap!(prev, node, PosTag::Nphrase, 2)
+        node = fold_swap!(prev, node, PosTag::Nphrase, 3)
       when .ajav?, .adjts?
         break if prev.key.size > 1
-        node = fold_swap!(prev, node, PosTag::Nphrase, 2)
+        node = fold_swap!(prev, node, PosTag::Nphrase, 4)
       when .ude1?
         break if mode < 1
         node = fold_ude1!(node, prev)
