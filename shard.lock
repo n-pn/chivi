@@ -2,7 +2,7 @@ version: 2.0
 shards:
   admiral:
     git: https://github.com/jwaldrip/admiral.cr.git
-    version: 1.11.4
+    version: 1.12.1
 
   amber:
     git: https://github.com/amberframework/amber.git
@@ -26,7 +26,7 @@ shards:
 
   clear:
     git: https://github.com/np-nam/clear.git
-    version: 0.9+git.commit.7346fe46b17e619a2b11b9a8ce1fe35da67949c3
+    version: 0.9+git.commit.bc1d06c6e92d1d7ab819b9fec5e67061f12ee394
 
   cli:
     git: https://github.com/amberframework/cli.git
