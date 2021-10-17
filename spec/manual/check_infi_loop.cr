@@ -16,7 +16,7 @@ test = "暗啐一声。"
 
 test = "很有风情按住被风吹起的头发。"
 
-test = "上山的路两侧，摇曳着蔓草，头顶的树枝交错，几乎形成隧道。"
+test = "来看什么‘一排鸟居’？”"
 
 res = GENERIC.cv_plain(test)
 puts res.inspect, res.to_s

@@ -3,6 +3,7 @@ module CV::TlRule
     case node.tag
     when .quoteop?, .parenop?, .brackop?
       node = fold_nested!(node, mode: mode)
+      node.nouns? ? fold_noun_left!(node, mode: mode) : node
     when .titleop?
       node = fold_ptitle!(node, mode: mode)
       node = fold_noun_left!(node, mode: mode)
@@ -20,19 +21,15 @@ module CV::TlRule
     end
 
     return head unless tail && tail != head.succ?
+    root = fold!(head, tail, tag: PosTag::Unkn, dic: 0)
 
+    fix_grammar!(head, mode)
     succ = head.succ
-    fix_grammar!(succ, mode)
 
     if succ.succ? == tail
-      tag = succ.tag
-      dic = 1
-    else
-      tag = PosTag::Unkn
-      dic = 0
+      root.dic = 1
+      root.tag = succ.tag
     end
-
-    root = fold!(head, tail, tag: tag, dic: dic)
 
     root
   end
@@ -58,7 +55,7 @@ module CV::TlRule
 
     return head unless tail && tail != head.succ?
 
-    fix_grammar!(head.succ, mode)
+    fix_grammar!(head, mode)
     fold!(head, tail, PosTag::Nother, dic: 0)
   end
 
