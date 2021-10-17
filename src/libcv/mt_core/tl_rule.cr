@@ -28,7 +28,12 @@ module CV::TlRule
         end
       when .veno?
         node = heal_veno!(node)
-        node = node.noun? ? fold_noun!(node) : fold_verbs!(node)
+        if node.noun?
+          node = fold_noun!(node)
+          node = fold_noun_left!(node)
+        else
+          node = fold_verbs!(node)
+        end
       when .adverbs?
         node = fold_adverbs!(node)
       when .adjts?

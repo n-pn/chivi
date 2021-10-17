@@ -1,15 +1,17 @@
 module CV::TlRule
   def fold_ude1!(node : MtNode, prev = node.prev) : MtNode
     node.succ? { |succ| return node if succ.penum? || succ.concoord? }
+    return node unless prev_2 = prev.prev?
 
     prev.val = ""
-    prev_2 = prev.prev
 
     case prev_2
     when .ajav?
       prev_2.val = "thông thường" if prev_2.key == "一般"
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
-    when .adjts?, .veno?, .vintr?, .time?, .place?, .space?, .adesc?, .pro_dem?
+    when .adjts?, .veno?, .vintr?,
+         .time?, .place?, .space?,
+         .adesc?, .pro_dem?
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .nquants?
       # puts ["!", prev_2, prev, node]
