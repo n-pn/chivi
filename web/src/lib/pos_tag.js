@@ -73,6 +73,7 @@ export const labels = {
   'vp': 'Cụm động từ',
   'np': 'Cụm danh từ',
   'ap': 'Cụm tính từ',
+  'dp': 'Cụm định ngữ',
   'sv': 'Cụm chủ + vị (động)',
   'sa': 'Cụm chủ + vị (tính)',
 }

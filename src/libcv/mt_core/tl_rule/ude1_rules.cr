@@ -11,10 +11,9 @@ module CV::TlRule
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .adjts?, .veno?, .vintr?,
          .time?, .place?, .space?,
-         .adesc?, .pro_dem?
+         .adesc?, .pro_dem?, .dphrase?
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .nquants?
-      # puts ["!", prev_2, prev, node]
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .nouns?, .pro_per?
       if (prev_3 = prev_2.prev?) && is_verb_clause?(prev_3, node)
