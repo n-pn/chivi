@@ -29,16 +29,12 @@ module CV::TlRule
     case succ.tag
     when .veno?
       succ = heal_veno!(succ)
-      return node.heal!("không có") if succ.noun?
-
-      node.val = "chưa"
-      fold_verbs!(succ, node)
+      succ.noun? ? node.heal!("không có") : fold_verbs!(succ, prev: node.heal!("chưa"))
     when .verbs?
       node.val = succ.succ?(&.uzhe?) ? "không" : "chưa"
-      fold_verbs!(succ, node)
+      fold_verbs!(succ, prev: node)
     when .adjt?, .ajav?, .ajno?
-      node.val = "không"
-      fold!(node, succ, PosTag::Adjt, dic: 2)
+      fold!(node.heal!("không"), succ, PosTag::Adjt, dic: 2)
     else
       node
     end
@@ -47,7 +43,7 @@ module CV::TlRule
   def fold_adv_fei!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ
     # TODO: check for key when 没 mean "không"
-    fold_verbs!(succ, node)
+    fold_verbs!(succ, prev: node)
   end
 
   def fold_adverb!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode

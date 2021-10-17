@@ -91,9 +91,10 @@
     const url = `/api/_self/books/${cvbook.id}/access`
     const params = { sname, cpart, chidx, title, uslug, locked: lock }
 
-    const [stt, msg] = await put_fetch(fetch, url, params)
-    if (stt) return console.log(`Error update history: ${msg}`)
-    else ubmemo = msg
+    const [status, payload] = await put_fetch(fetch, url, params)
+    if (status) return console.log(`Error update history: ${payload}`)
+
+    ubmemo = payload
     invalidate(`/api/books/${cvbook.bslug}`)
   }
 

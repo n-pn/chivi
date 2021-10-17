@@ -9,7 +9,7 @@ module CV::TlRule
       when .noun?
         break unless node.key.size == 1 && !prev # or special case
         return fold_swap!(node, succ, PosTag::Nphrase, dic: 5)
-      when .verb?
+      when .vpro?, .verb?
         break unless node.key.size == 1 && !prev
         succ = fold_verbs!(succ)
 
