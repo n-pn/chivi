@@ -280,23 +280,23 @@ c-g {
   }
 
   &[data-d='5'] {
-    @include cg-color(purple);
-  }
-
-  &[data-d='6'] {
-    @include cg-color(pink);
-  }
-
-  &[data-d='7'] {
     @include cg-color(orange);
   }
 
+  &[data-d='6'] {
+    @include cg-color(fuchsia);
+  }
+
+  &[data-d='7'] {
+    @include cg-color(purple);
+  }
+
   &[data-d='8'] {
-    @include cg-color(red);
+    @include cg-color(pink);
   }
 
   &[data-d='9'] {
-    @include cg-color(pink);
+    @include cg-color(red);
   }
 }
 

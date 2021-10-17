@@ -4,9 +4,9 @@ module CV::TlRule
       break unless succ = node.succ?
 
       case succ.tag
-      when .adjt?
+      when .adjt?, .adesc?
         break unless succ.succ?(&.ude1?)
-        return fold!(node, succ, PosTag::Adjt, dic: 3)
+        return fold!(node, succ, succ.tag, dic: 8)
       when .middot?
         break unless succ_2 = succ.succ?
         break unless succ_2.human?

@@ -31,7 +31,7 @@ module CV::TlRule
         succ.val.sub("bả", "phát") if succ.key.ends_with?("把")
 
         node = fold_left_verb!(node, prev)
-        return fold!(node, succ, PosTag::Vphrase, 6)
+        return fold!(node, succ, PosTag::Vphrase, dic: 6)
       when .suf_nouns?
         # node = fold_left_verb!(node, prev) if prev
         return fold_suf_noun!(node, succ)
