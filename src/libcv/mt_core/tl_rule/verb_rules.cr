@@ -10,6 +10,9 @@ module CV::TlRule
       when .uzhi?
         fold_left_verb!(verb, prev)
         return fold_uzhi!(succ, verb)
+      when .uzhe?
+        node = fold_verb_uzhe!(verb, succ)
+        break
       when .auxils?
         verb = fold_verb_auxils!(verb, succ)
         break if verb.succ? == succ
@@ -69,8 +72,6 @@ module CV::TlRule
       fold!(verb, succ_2, PosTag::Verb, dic: 5)
     when .ude3?
       fold_verb_ude3!(verb, auxil)
-    when .uzhe?
-      fold_verb_uzhe!(verb, auxil)
     when .uguo?
       fold!(verb, auxil, PosTag::Verb, dic: 6)
     else
