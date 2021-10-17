@@ -97,7 +97,10 @@ module CV::TlRule
         return fold_什么_noun!(prev, node) if prev.key == "什么"
         return fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
       when .amorp? then node = fold!(prev, node, PosTag::Nphrase, dic: 7)
-      when .place?, .adesc?, .ajno?, .modifier?, .modiform?
+      when .adesc?, .ajno?, .modifier?, .modiform?
+        node = fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
+      when .place?
+        return node unless noun_can_combine?(prev.prev?, node.succ?)
         node = fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
       when .ajav?, .adjts?
         break if prev.key.size > 1
