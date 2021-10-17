@@ -7,10 +7,9 @@ module CV::TlRule
 
       case succ
       when .uzhi?
-        # node = fold_left_verb!(node, prev) if prev
         return fold_uzhi!(succ, node)
       when .auxils?
-        # node = fold_verb_auxils!(node, succ)
+        node = fold_verb_auxils!(node, succ)
         break if node.vphrase? || succ == node.succ?
       when .vdirs?
         node = fold_verb_vdirs!(node, succ)
@@ -131,14 +130,14 @@ module CV::TlRule
     end
   end
 
-  def fold_verb_uzhe!(prev : MtNode, node : MtNode, succ = node.succ?) : MtNode
-    node.val = ""
+  def fold_verb_uzhe!(prev : MtNode, uzhe : MtNode, succ = uzhe.succ?) : MtNode
+    uzhe.val = ""
 
     if succ && succ.verbs?
       # succ = fold_verbs!(succ)
       fold!(prev, succ, PosTag::Verb, dic: 5)
     else
-      fold!(prev, node, PosTag::Verb, dic: 6)
+      fold!(prev, uzhe, PosTag::Verb, dic: 6)
     end
   end
 end
