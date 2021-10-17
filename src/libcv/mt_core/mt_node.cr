@@ -87,15 +87,15 @@ class CV::MtNode
     self
   end
 
-  def heal!(@val : String) : self
+  def set!(@val : String) : self
     self
   end
 
-  def heal!(@tag : PosTag) : self
+  def set!(@tag : PosTag) : self
     self
   end
 
-  def heal!(@val : String, @tag : PosTag) : self
+  def set!(@val : String, @tag : PosTag) : self
     self
   end
 

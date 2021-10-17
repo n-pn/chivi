@@ -90,7 +90,7 @@ struct CV::PosTag
   end
 
   def ends?
-    none? || puncts? || interjection?
+    none? || puncts? || interjection? || modalparticle?
   end
 
   def self.from_str(tag : ::String, key : ::String = "") : self

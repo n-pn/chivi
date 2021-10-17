@@ -11,13 +11,13 @@ module CV::TlRule
   def heal_ule!(node : MtNode) : MtNode
     return node unless (prev = node.prev?) && (succ = node.succ?)
 
-    return node.heal!(val: "") if succ.tag.quoteop? || prev.tag.quotecl?
-    return node.heal!(val: "") if prev.tag.quotecl? && !succ.tag.ends?
+    return node.set!(val: "") if succ.tag.quoteop? || prev.tag.quotecl?
+    return node.set!(val: "") if prev.tag.quotecl? && !succ.tag.ends?
 
     return node if succ.tag.ends? || prev.tag.ends? || succ.key == prev.key
     return node if prev.tag.adjts? && prev.prev?(&.tag.ends?)
 
-    node.heal!(val: "")
+    node.set!(val: "")
   end
 
   def heal_ude1!(node : MtNode) : MtNode
@@ -26,7 +26,7 @@ module CV::TlRule
 
     case prev
     when .popens?     then return node
-    when prev.puncts? then return node.heal!("đích")
+    when prev.puncts? then return node.set!("đích")
     when .names?, .pro_per?
       return node if (succ = node.succ?) && !succ.pstops?
     else
@@ -45,7 +45,7 @@ module CV::TlRule
   def heal_ude2!(node : MtNode) : MtNode
     return node if node.prev? { |x| x.tag.adjts? || x.tag.adverb? }
     return node if node.succ? { |x| x.verbs? || x.preposes? || x.concoord? }
-    node.heal!(val: "địa", tag: PosTag::Noun)
+    node.set!(val: "địa", tag: PosTag::Noun)
   end
 
   def keep_ule?(prev : MtNode, node : MtNode, succ = node.succ?) : Bool

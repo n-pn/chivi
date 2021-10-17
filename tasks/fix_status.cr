@@ -3,7 +3,7 @@ require "./shared/seed_util"
 class CV::FixStatus
   MFTIME = (Time.utc - 3.years).to_unix
 
-  def fix!
+  def set!
     total, index = Cvbook.query.count, 0
     query = Cvbook.query.order_by(weight: :desc)
     query.each_with_cursor(20) do |cvbook|
@@ -26,4 +26,4 @@ class CV::FixStatus
 end
 
 worker = CV::FixStatus.new
-worker.fix!
+worker.set!

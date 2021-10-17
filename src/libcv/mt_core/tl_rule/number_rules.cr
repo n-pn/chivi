@@ -13,7 +13,7 @@ module CV::TlRule
         return fold!(node, succ_2, PosTag::Aphrase, dic: 2)
       end
 
-      node.heal!("đôi", PosTag::Quanti)
+      node.set!("đôi", PosTag::Quanti)
     else
       succ = heal_quanti!(succ)
       return node unless succ.quantis?

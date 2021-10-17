@@ -46,7 +46,7 @@ module CV::TlRule
       succ = heal_quanti!(succ)
     when .pro_na1?
       if succ.pro_per?
-        return node.heal!("vậy", PosTag::Conjunct)
+        return node.set!("vậy", PosTag::Conjunct)
       end
 
       succ = heal_quanti!(succ)

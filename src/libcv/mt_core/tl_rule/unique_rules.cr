@@ -4,7 +4,7 @@ module CV::TlRule
 
     case succ.tag
     when .ude1?
-      succ.heal!("mà")
+      succ.set!("mà")
       return node unless (succ_2 = succ.succ?) && succ_2.verbs?
 
       succ_2 = fold_verbs!(succ_2)
@@ -58,24 +58,24 @@ module CV::TlRule
       end
     when "对不起"
       return node if boundary?(succ)
-      fold_verbs!(node.heal!("có lỗi với", PosTag::Verb))
+      fold_verbs!(node.set!("có lỗi với", PosTag::Verb))
     when "百分之"
       return node unless succ && succ.numbers?
       succ = fold_number!(succ)
       fold_swap!(node, succ, PosTag::Number, dic: 4)
     when "原来"
       if succ.try(&.ude1?) || node.prev?(&.contws?)
-        node.heal!("ban đầu", tag: PosTag::Modifier)
+        node.set!("ban đầu", tag: PosTag::Modifier)
       else
-        node.heal!("thì ra")
+        node.set!("thì ra")
       end
     when "行"
-      boundary?(succ) ? node.heal!("được") : node
+      boundary?(succ) ? node.set!("được") : node
     when "高达"
       if succ.try(&.nquants?)
-        node.heal!("cao đến")
+        node.set!("cao đến")
       else
-        node.heal!("Gundam", tag: PosTag::Noun)
+        node.set!("Gundam", tag: PosTag::Noun)
       end
     else
       node

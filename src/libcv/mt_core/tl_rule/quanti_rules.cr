@@ -46,7 +46,7 @@ module CV::TlRule
 
   def heal_quanti!(node : MtNode) : MtNode
     return node unless val = QUANTI_MAP[node.key]?
-    node.heal!(val, PosTag::Quanti)
+    node.set!(val, PosTag::Quanti)
   end
 
   PRE_APPRO = {
@@ -58,7 +58,7 @@ module CV::TlRule
 
   def fold_pre_quanti_appro!(node : MtNode, succ : MtNode) : MtNode
     return node unless val = PRE_APPRO[succ.key]?
-    fold_swap!(node, succ.heal!(val), node.tag, dic: 5)
+    fold_swap!(node, succ.set!(val), node.tag, dic: 5)
   end
 
   APPROS = {

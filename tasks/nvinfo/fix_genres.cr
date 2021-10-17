@@ -1,7 +1,7 @@
 require "../shared/seed_util"
 
 class CV::FixGenres
-  def fix!
+  def set!
     total, index = Cvbook.query.count, 0
     query = Cvbook.query.order_by(weight: :desc)
     query.each_with_cursor(20) do |cvbook|
@@ -39,4 +39,4 @@ class CV::FixGenres
 end
 
 worker = CV::FixGenres.new
-worker.fix!
+worker.set!

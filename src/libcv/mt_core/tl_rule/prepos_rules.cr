@@ -10,22 +10,20 @@ module CV::TlRule
   end
 
   def fold_pre_dui!(node : MtNode, succ = node.succ?) : MtNode
-    return node.heal!("đúng", PosTag::Adjt) unless succ && !succ.ends?
+    return node.set!("đúng", PosTag::Adjt) unless succ && !succ.ends?
 
     # TODO: combine grammar
 
     case succ.tag
     when .ude1?
-      node.val = "đúng"
-      succ.val = ""
-      fold!(node, succ, PosTag::Adjt, dic: 3)
+      fold!(node.set!("đúng"), succ.set!(""), PosTag::Adjt, dic: 2)
     when .ule?
-      node.val = "đúng"
       succ.val = "" unless keep_ule?(node, succ)
-
-      fold!(node, succ, PosTag::Adjt, dic: 3)
-    when .contws?, .quoteop?, .parenop?, .brackop?, .titleop?
-      node.heal!("đối với")
+      fold!(node.set!("đúng"), succ, PosTag::Adjt, dic: 2)
+    when .ends?
+      node.set!("đúng", PosTag::Adjt)
+    when .contws?, .popens?
+      node.set!("đối với")
     else
       node
     end

@@ -3,12 +3,12 @@ module CV::TlRule
     if prev = node.prev?
       case prev
       when .auxils?
-        return node.heal!(PosTag::Noun)
+        return node.set!(PosTag::Noun)
       when .adverbs?, .preposes?, .vmodals?, .vpro?
-        return node.heal!(PosTag::Verb)
+        return node.set!(PosTag::Verb)
       when .nquants?
         if (succ = node.succ?) && !(succ.nouns? || succ.pronouns?)
-          return node.heal!(PosTag::Noun)
+          return node.set!(PosTag::Noun)
         end
       end
     end
@@ -18,12 +18,12 @@ module CV::TlRule
     case succ
     when .puncts?
       # tag = node.prev?(&.preposes?) ? PosTag::Verb : PosTag::Noun
-      # node.heal!(tag: tag)
+      # node.set!(tag: tag)
       node
     when .suf_nouns?
-      node.heal!(PosTag::Noun)
+      node.set!(PosTag::Noun)
     when .auxils?, .vdir?
-      node.heal!(PosTag::Verb)
+      node.set!(PosTag::Verb)
     else
       node
     end

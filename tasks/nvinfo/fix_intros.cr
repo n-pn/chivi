@@ -3,7 +3,7 @@ require "./../shared/seed_data"
 module CV::FixIntros
   extend self
 
-  def fix!
+  def set!
     total, index = Cvbook.query.count, 0
     query = Cvbook.query.order_by(weight: :desc)
     query.each_with_cursor(20) do |cvbook|
@@ -45,4 +45,4 @@ module CV::FixIntros
   end
 end
 
-CV::FixIntros.fix!
+CV::FixIntros.set!

@@ -10,7 +10,7 @@ class CV::FixCovers
     "#{OUT_DIR}/#{path}"
   end
 
-  def fix!(redo : Bool = false)
+  def set!(redo : Bool = false)
     total, index = Cvbook.query.count, 0
     query = Cvbook.query.order_by(weight: :desc)
     query.each_with_cursor(20) do |cvbook|
@@ -161,4 +161,4 @@ class CV::FixCovers
 end
 
 worker = CV::FixCovers.new
-worker.fix!(redo: ARGV.includes?("redo"))
+worker.set!(redo: ARGV.includes?("redo"))

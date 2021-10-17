@@ -60,7 +60,7 @@ module CV::TlRule
     when .ude2?
       return node unless (succ_2 = succ.succ?) && (succ_2.verb? || succ_2.veno?)
       succ_2 = fold_verbs!(succ_2)
-      fold!(succ.heal!("mà"), succ_2, PosTag::Verb, dic: 5)
+      fold!(succ.set!("mà"), succ_2, PosTag::Verb, dic: 5)
     when .ude3?
       fold_verb_ude3!(node, succ)
     when .uzhe?

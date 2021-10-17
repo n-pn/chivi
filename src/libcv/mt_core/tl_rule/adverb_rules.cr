@@ -29,12 +29,12 @@ module CV::TlRule
     case succ.tag
     when .veno?
       succ = heal_veno!(succ)
-      succ.noun? ? node.heal!("không có") : fold_verbs!(succ, prev: node.heal!("chưa"))
+      succ.noun? ? node.set!("không có") : fold_verbs!(succ, prev: node.set!("chưa"))
     when .verbs?
       node.val = succ.succ?(&.uzhe?) ? "không" : "chưa"
       fold_verbs!(succ, prev: node)
     when .adjt?, .ajav?, .ajno?
-      fold!(node.heal!("không"), succ, PosTag::Adjt, dic: 2)
+      fold!(node.set!("không"), succ, PosTag::Adjt, dic: 2)
     else
       node
     end
