@@ -17,9 +17,6 @@ module CV::TlRule
         #   next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)
         #   node = fold_noun_left!(node)
       when .numbers? # , .quantis?
-        # puts ["loop:", node, node.succ?, node.body?]
-        # gets
-
         node = fold_number!(node)
         if node.nquant?
           next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)

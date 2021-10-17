@@ -171,14 +171,15 @@ c-v {
   }
 }
 
+// prettier-ignore
 @mixin cg-decor($left: '{', $right: '}') {
-  &:before {
-    content: $left;
+  &:before, &:after {
+    // font-family: var(--font-sans);
+    font-style: normal;
   }
 
-  &:after {
-    content: $right;
-  }
+  &:before { content: $left; }
+  &:after { content: $right; }
 }
 
 @mixin cg-color($color) {
@@ -244,16 +245,17 @@ c-g {
       color: var(--color);
     }
 
-    @include cg-decor('{', '}');
-    & {
-      @include cg-decor('[', ']');
-    }
-    & & {
-      @include cg-decor('(', ')');
-    }
-    & & & {
-      @include cg-decor('<', '>');
-    }
+    // @include cg-decor('⟨', '⟩');
+    @include cg-decor('[', ']');
+    // > c-g {
+    //   @include cg-decor('[', ']');
+    // }
+    // > c-g > c-g {
+    //   @include cg-decor('(', ')');
+    // }
+    // > c-g > c-g > c-g {
+    //   @include cg-decor('<', '>');
+    // }
   }
 
   &[data-d='0'] {
