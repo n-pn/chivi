@@ -29,6 +29,8 @@ module CV::TlRule
         return fold_swap!(node, succ, PosTag::Noun, dic: 3)
       when .uzhi?
         return fold_uzhi!(succ, node)
+      when .nmorp?
+        node = fold!(node, succ, node.tag, dic: 3)
       when .veno?
         succ = heal_veno!(succ)
         break if succ.verbs?
