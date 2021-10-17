@@ -59,6 +59,7 @@ module CV::TlRule
   def check_pre_appro!(prev : MtNode?)
     return unless prev
     case prev.key
+    when "近"  then prev.set!("gần")
     when "约"  then prev.set!("chừng")
     when "小于" then prev.set!("ít hơn")
     else           nil
