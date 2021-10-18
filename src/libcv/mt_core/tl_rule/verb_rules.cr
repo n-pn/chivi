@@ -26,17 +26,19 @@ module CV::TlRule
         succ.val = "hay"
         succ_2.val = "không"
         verb = fold!(verb, succ_2, PosTag::Verb, dic: 5)
-      when .nhanzi?
+      when .numeric?
         if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
           verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
           break # TODO: still keep folding?
         end
 
-        verb = fold_left_verb!(verb, prev)
-        return fold_verb_nquant!(verb, succ)
-        break
-      when .numeric?
-        break if verb.key == "小于"
+        if val = PRE_NUM_APPROS[verb.key]?
+          succ = fold_number!(succ) if succ.numbers?
+          verb = fold_left_verb!(verb.set!(val), prev)
+          return verb unless succ.nquants?
+          return fold!(verb, succ, succ.tag, dic: 8)
+        end
+
         verb = fold_left_verb!(verb, prev)
         return fold_verb_nquant!(verb, succ, prev)
       when .suf_nouns?
@@ -57,10 +59,14 @@ module CV::TlRule
     when .ule?
       auxil.val = "" unless keep_ule?(verb, auxil)
       verb = fold!(verb, auxil, PosTag::Verb, dic: 5)
-
       return verb unless (succ = verb.succ?) && succ.numeric?
 
-      fold_verb_nquant!(verb, succ, has_ule: true)
+      if is_pre_appro_num?(verb)
+        succ = fold_number!(succ) if succ.numbers?
+        return fold!(verb, succ, succ.tag, dic: 4)
+      end
+
+      return fold_verb_nquant!(verb, succ, has_ule: true)
     when .ude2?
       return verb unless (succ_2 = auxil.succ?) && (succ_2.verb? || succ_2.veno?)
       succ_2 = fold_verbs!(succ_2)

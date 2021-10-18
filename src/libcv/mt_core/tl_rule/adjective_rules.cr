@@ -1,5 +1,33 @@
 module CV::TlRule
-  def fold_adjts!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
+  MEASURES = {
+    "宽" => "rộng",
+    "高" => "cao",
+    "长" => "dài",
+    "远" => "xa",
+    "重" => "nặng",
+  }
+
+  def fold_measurement!(adjt : MtNode, succ = adjt.succ?)
+    return unless succ
+    return unless adjt_val = MEASURES[adjt.key]?
+    return unless succ_val = PRE_NUM_APPROS[succ.key]?
+
+    adjt.val = adjt_val
+    succ.val = succ_val
+
+    if (succ_2 = succ.succ?) && succ_2.numeric?
+      succ_2 = fold_number!(succ_2)
+      return fold!(adjt, succ_2, PosTag::Aphrase, dic: 7)
+    end
+
+    return fold!(adjt, succ, PosTag::Vphrase, dic: 7)
+  end
+
+  def fold_adjts!(node : MtNode, prev = node.prev?) : MtNode
+    if fold = fold_measurement!(node)
+      return fold
+    end
+
     while node.adjts?
       break unless succ = node.succ?
 

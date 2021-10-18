@@ -118,8 +118,8 @@ struct CV::PosTag
   }
 
   def self.map_quantis(key : ::String) : self
-    return Qttime if QTTIMES.includes?(key)
-    return Qtverb if QTVERBS.includes?(key)
+    return Qttime if QTTIMES.has_key?(key)
+    return Qtverb if QTVERBS.has_key?(key)
     Qtnoun
   end
 
@@ -128,10 +128,10 @@ struct CV::PosTag
   def self.map_nquants(key : ::String) : self
     key = key.sub(NUMCHR_RE, "")
     case
-    when QTTIMES.includes?(key) then Nqtime
-    when QTNOUNS.includes?(key) then Nqnoun
-    when QTVERBS.includes?(key) then Nqverb
-    else                             Nqiffy
+    when QTTIMES.has_key?(key) then Nqtime
+    when QTNOUNS.has_key?(key) then Nqnoun
+    when QTVERBS.has_key?(key) then Nqverb
+    else                            Nqiffy
     end
   end
 end

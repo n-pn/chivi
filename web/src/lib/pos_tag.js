@@ -7,7 +7,7 @@ export const labels = {
   'nw': 'Danh xưng',
 
   'n': 'Danh từ',
-  'nc': 'Danh từ trừu tượng',
+  // 'nc': 'Danh từ trừu tượng',
   's': 'Nơi chốn',
   'f': 'Phương vị',
   't': 'Thời gian',

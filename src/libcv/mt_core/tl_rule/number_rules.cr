@@ -30,7 +30,7 @@ module CV::TlRule
     # has_个 = node if node.key.ends_with?('个')
     has_个 = succ if succ.key.ends_with?('个')
 
-    appro = 1 if prev = check_pre_appro!(node.prev?)
+    appro = 1 if is_pre_appro_num?(node.prev?)
 
     # merge number with quantifiers
     if !has_第
@@ -56,7 +56,7 @@ module CV::TlRule
       node = fold!(node, succ, map_nqtype(succ), dic: 2)
     end
 
-    node = fold!(prev, node, node.tag, dic: 1) if prev
+    # node = fold!(prev, node, node.tag, dic: 1) if prev
     fold_suf_quanti_appro!(node)
   end
 
@@ -82,14 +82,15 @@ module CV::TlRule
     fold_swap!(node.set!("một phát"), succ, succ.tag, dic: 5)
   end
 
-  def check_pre_appro!(prev : MtNode?)
-    return unless prev
-    case prev.key
-    when "近"  then prev.set!("gần")
-    when "约"  then prev.set!("chừng")
-    when "小于" then prev.set!("ít hơn")
-    else           nil
-    end
+  PRE_NUM_APPROS = {
+    "近"  => "gần",
+    "约"  => "chừng",
+    "小于" => "ít hơn",
+  }
+
+  def is_pre_appro_num?(prev : MtNode?)
+    return false unless prev
+    PRE_NUM_APPROS.has_key?(prev.key)
   end
 
   def meld_number!(node : MtNode)
