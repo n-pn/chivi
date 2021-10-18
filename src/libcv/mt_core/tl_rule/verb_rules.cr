@@ -117,21 +117,26 @@ module CV::TlRule
     "完"  => "xong",
     "好"  => "xong",
     "错"  => "sai",
-    "对"  => "đúng",
-    "成"  => "thành",
-    "懂"  => "hiểu",
-    "掉"  => "mất",
-    "走"  => "đi",
-    "够"  => "đủ",
-    "满"  => "đầy",
-    "倒"  => "đổ",
-    "下"  => "xuống",
-    "起"  => "lên",
-    "给"  => "cho",
+    # "对"  => "đúng",
+    "成" => "thành",
+    "懂" => "hiểu",
+    "掉" => "mất",
+    "走" => "đi",
+    "够" => "đủ",
+    "满" => "đầy",
+    "倒" => "đổ",
+    "下" => "xuống",
+    "起" => "lên",
+    "给" => "cho",
   }
 
   def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
-    return unless val = VERB_COMPLS[compl.key]?
+    unless val = VERB_COMPLS[compl.key]?
+      return unless compl.pre_dui?
+      return if compl.succ? { |x| (x.nouns? || x.pro_per?) && x.succ?(&.verb?) }
+      val = "đúng"
+    end
+
     fold!(verb, compl.set!(val), PosTag::Vphrase, dic: 6)
   end
 
