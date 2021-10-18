@@ -1,7 +1,5 @@
 module CV::TlRule
   def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
-    puts ["before", verb, prev]
-
     if verb.vpro?
       return verb unless (succ = verb.succ?) && succ.verbs?
       verb = fold!(verb, succ, succ.tag, dic: 5)
@@ -62,7 +60,6 @@ module CV::TlRule
       break if verb.succ? == succ
     end
 
-    puts [verb, prev]
     fold_left_verb!(verb, left: prev)
   end
 
@@ -109,6 +106,7 @@ module CV::TlRule
 
   VERB_COMPLS = {
     "到" => "đến",
+    "向" => "hướng",
     # "在"  => "ở",
     "见"  => "thấy",
     "着"  => "được",
