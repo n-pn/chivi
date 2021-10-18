@@ -107,7 +107,7 @@ class CV::MtNode
     else               nil
     end
   rescue err
-    Log.error { err }
+    puts err.inspect_with_backtrace
     nil
   end
 

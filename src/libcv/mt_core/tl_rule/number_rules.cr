@@ -13,7 +13,7 @@ module CV::TlRule
         return fold!(node, succ_2, PosTag::Aphrase, dic: 2)
       end
 
-      node.set!("đôi", PosTag::Quanti)
+      node.set!("đôi", PosTag::Qtnoun)
     else
       succ = heal_quanti!(succ)
       return fold_yi_verb!(node, succ) unless succ.quantis?
@@ -40,7 +40,7 @@ module CV::TlRule
       when "点" then node = fold_hour!(node, succ, appro)
       when "分" then node = fold_minute!(node, succ, appro)
       else
-        node = fold!(node, succ, PosTag::Nquant, dic: 2)
+        node = fold!(node, succ, map_nqtype(succ), dic: 2)
         node = fold_suf_quanti_appro!(node) if has_个
       end
     elsif (succ_2 = succ.succ?) && succ_2.noun?
@@ -48,16 +48,25 @@ module CV::TlRule
       succ = fold!(succ, succ_2, succ_2.tag, dic: 4)
       return fold_swap!(node, succ, PosTag::Nphrase, dic: 4)
     else
-      node = fold_swap!(node, succ, PosTag::Nquant, dic: 4)
+      node = fold_swap!(node, succ, map_nqtype(succ), dic: 4)
     end
 
     if has_个 && (succ = node.succ?) && succ.quantis?
       # heal_has_个!(has_个)
-      node = fold!(node, succ, PosTag::Nquant, dic: 2)
+      node = fold!(node, succ, map_nqtype(succ), dic: 2)
     end
 
     node = fold!(prev, node, node.tag, dic: 1) if prev
     fold_suf_quanti_appro!(node)
+  end
+
+  def map_nqtype(node : MtNode)
+    case node.tag
+    when .qtnoun? then PosTag::Nqnoun
+    when .qttime? then PosTag::Nqtime
+    when .qtverb? then PosTag::Nqverb
+    else               PosTag::Nqiffy
+    end
   end
 
   def heal_has_个!(node : MtNode)

@@ -1,17 +1,6 @@
 require "../mt_util"
 
 module CV::TlRule
-  def nquant_is_complement?(node : MtNode) : Bool
-    return false unless node.nquant?
-
-    case node.key[-1]?
-    when '次', '遍', '趟', '回', '声', '下', '把'
-      true
-    else
-      false
-    end
-  end
-
   def fold_year!(prev : MtNode, node : MtNode, appro : Int32 = 0)
     node.set!("năm")
 
@@ -26,7 +15,7 @@ module CV::TlRule
       return month ? fold_swap!(prev, month, prev.tag, dic: 2) : prev
     end
 
-    fold!(prev, node, PosTag::Time, dic: 2)
+    fold!(prev, node, PosTag::Qttime, dic: 2)
   end
 
   def fold_month!(prev : MtNode, node : MtNode, appro : Int32 = 0)
@@ -43,7 +32,7 @@ module CV::TlRule
       return fold_swap!(prev, node, PosTag::Time, dic: 2)
     end
 
-    fold!(prev, node, PosTag::Time, dic: 2)
+    fold!(prev, node, PosTag::Qttime, dic: 2)
   end
 
   def fold_day?(num : MtNode?) : MtNode?
@@ -60,10 +49,10 @@ module CV::TlRule
   end
 
   def fold_hour!(node : MtNode, succ : MtNode, appro : Int32 = 0)
-    fold!(node, succ, PosTag::Nquant, dic: 2)
+    fold!(node, succ, PosTag::Qttime, dic: 2)
   end
 
   def fold_minute!(node : MtNode, succ : MtNode, appro : Int32 = 0)
-    fold!(node, succ, PosTag::Nquant, dic: 2)
+    fold!(node, succ, PosTag::Qttime, dic: 2)
   end
 end

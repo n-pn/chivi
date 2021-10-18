@@ -4,7 +4,6 @@ export const labels = {
   'nt': 'Tổ chức',
   'nz': 'Tên riêng khác',
   'nr': 'Tên người',
-  'nf': 'Dòng họ',
   'nw': 'Danh xưng',
 
   'n': 'Danh từ',
@@ -44,7 +43,6 @@ export const labels = {
 
   'm': 'Số từ',
   'q': 'Lượng từ',
-  'qt': 'Lượng từ thời gian',
   'mq': 'Số lượng từ',
 
   'd': 'Phó từ',
@@ -81,7 +79,7 @@ export const groups = [
   // prettier-ignore
   [
     'ns','nt', 'nz',
-    'nr', 'nf',
+    'nr',
     '-',
     'n', 'nw', // 'nc',
     't', 's', 'f',
@@ -90,24 +88,23 @@ export const groups = [
     'b', 'az',
     '-',
     'v', 'vn', 'vd',
-    'vi', 'vf', 'vx',
-    'vm',
-
+    'vi', 'vf',
+    '-',
+    'vx', 'vm',
   ],
   // prettier-ignore
   [
-    'i', 'nl', 'vl',
-    'al', 'bl',
-    '-',
     'rr', 'rz', 'ry',
     'r',
     '-',
-    'm',
-    'q', 'qt', 'mq',
+    'm', 'q', 'mq',
     '-',
     'd', 'p', 'u',
     'c', 'cc', 'e',
-    'y', 'o', '!',
+    'y', 'o',
+    '-',
+    'nl', 'vl', 'al',
+    'bl', 'i',
   ],
   // prettier-ignore
   [
@@ -116,7 +113,7 @@ export const groups = [
     'ng', 'tg', 'ag', 'vg',
     '-',
     'x', 'xx', 'xu',
-    'w'
+    'w', '!'
   ],
 ]
 

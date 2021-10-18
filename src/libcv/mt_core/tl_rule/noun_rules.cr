@@ -77,7 +77,7 @@ module CV::TlRule
         break unless (prev_2 = prev.prev?) && can_combine_noun?(node, prev_2)
         prev = heal_concoord!(prev) if prev.concoord?
         node = fold!(prev_2, node, tag: node.tag, dic: 3)
-      when .nquants?
+      when .numeric?
         break if node.veno? || node.ajno?
 
         if prev.key.ends_with?('个')

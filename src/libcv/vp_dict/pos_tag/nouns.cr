@@ -13,7 +13,7 @@ struct CV::PosTag
     # 人名 - person name - tên người
     {"nr", "Person", Pos::Nouns | Pos::Human | Pos::Names | Pos::Contws},
     # 姓氏 - family name - dòng họ
-    {"nf", "Linage", Pos::Nouns | Pos::Human | Pos::Names | Pos::Contws},
+    # {"nf", "Linage", Pos::Nouns | Pos::Human | Pos::Names | Pos::Contws},
 
     # 地名 - location name - địa danh
     {"ns", "Locname", Pos::Nouns | Pos::Names | Pos::Contws},

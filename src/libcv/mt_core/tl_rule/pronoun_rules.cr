@@ -105,7 +105,7 @@ module CV::TlRule
 
       prev.key = prev.key.sub("这", "")
       prev.val = prev.val.sub(" này", "")
-      prev.tag = PosTag::Quanti
+      prev.tag = PosTag::Qtnoun
       prev.idx += 1
 
       fold!(prev, tail, node.tag, dic: 3)
@@ -116,7 +116,7 @@ module CV::TlRule
 
       prev.key = prev.key.sub("那", "")
       prev.val = prev.val.sub(" kia", "")
-      prev.tag = PosTag::Quanti
+      prev.tag = PosTag::Qtnoun
       prev.idx += 1
 
       fold!(prev, tail, node.tag, dic: 3)

@@ -6,7 +6,7 @@ module CV::TlRule
         return node.set!(PosTag::Noun)
       when .adverbs?, .preposes?, .vmodals?, .vpro?
         return node.set!(PosTag::Verb)
-      when .nquants?
+      when .numeric?
         if (succ = node.succ?) && !(succ.nouns? || succ.pronouns?)
           return node.set!(PosTag::Noun)
         end

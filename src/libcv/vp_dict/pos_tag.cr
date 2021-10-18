@@ -6,7 +6,7 @@ struct CV::PosTag
   # extra: https://www.cnblogs.com/bushe/p/4635513.html
 
   {% begin %}
-    TYPES = {{ NOUNS + NUMBERS + VERBS + ADJTS + AFFIXES + MISCS }}
+    TYPES = {{ NOUNS + VERBS + ADJTS + AFFIXES + MISCS }}
   {% end %}
 
   enum Tag
@@ -26,8 +26,8 @@ struct CV::PosTag
     Prepos; PreBei; PreDui; PreBa
 
     Number; Ndigit; Nhanzi
-    # Qtnoun; Qttime; Qtverb
-    # Nqnoun; Nqtime; Nqverb
+    Qtnoun; Qttime; Qtverb
+    Nqnoun; Nqtime; Nqverb; Nqiffy
 
     Auxil; Punct
 
@@ -80,6 +80,8 @@ struct CV::PosTag
     when .pro_ints? then "ry"
     when .uniques?  then "!"
     when .numbers?  then "m"
+    when .quantis?  then "q"
+    when .nquants?  then "mq"
     else                 @tag.to_str
     end
   end
@@ -101,7 +103,6 @@ struct CV::PosTag
   def self.from_str(tag : ::String, key : ::String = "") : self
     {% begin %}
     case tag
-    when "qv" then Verb # quanti verb is handled by code
     when "w" then map_puncts(key)
     when "u" then map_auxils(key)
     when "d" then map_adverbs(key)
@@ -110,7 +111,10 @@ struct CV::PosTag
     when "rz" then map_pro_dems(key)
     when "ry" then map_pro_ints(key)
     when "!" then map_uniques(key)
-    when "m" then map_numbers(key)
+    when "m", "mx", "mz" then map_numbers(key)
+    when "q", "qt", "qv" then map_quantis(key)
+    when "mq" then map_nquants(key)
+    when "nf" then Person
     when "r" then Pronoun
     when "rr" then ProPer
     when "l" then Idiom

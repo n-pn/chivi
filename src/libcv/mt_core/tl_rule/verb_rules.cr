@@ -26,20 +26,19 @@ module CV::TlRule
         succ.val = "hay"
         succ_2.val = "không"
         verb = fold!(verb, succ_2, PosTag::Verb, dic: 5)
-      when .nquants?
+      when .nhanzi?
         if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
           verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
           break # TODO: still keep folding?
         end
 
-        break if verb.key == "小于"
-
-        succ = fold_number!(succ) if succ.numbers?
-        break unless succ.nquant? && !succ.succ?(&.nouns?)
-        succ.val.sub("bả", "phát") if succ.key.ends_with?("把")
-
         verb = fold_left_verb!(verb, prev)
-        return fold!(verb, succ, PosTag::Vphrase, dic: 6)
+        return fold_verb_nquant!(verb, succ)
+        break
+      when .numeric?
+        break if verb.key == "小于"
+        verb = fold_left_verb!(verb, prev)
+        return fold_verb_nquant!(verb, succ, prev)
       when .suf_nouns?
         verb = fold_left_verb!(verb, prev)
         return fold_suf_noun!(verb, succ)
@@ -59,12 +58,9 @@ module CV::TlRule
       auxil.val = "" unless keep_ule?(verb, auxil)
       verb = fold!(verb, auxil, PosTag::Verb, dic: 5)
 
-      return verb unless (succ = verb.succ?) && succ.nquants?
-      succ = fold_number!(succ) if succ.numbers?
-      return verb unless succ.nquant?
+      return verb unless (succ = verb.succ?) && succ.numeric?
 
-      succ.val.sub("bả", "phát") if succ.key.ends_with?("把")
-      fold!(verb, succ, PosTag::Vphrase, dic: 6)
+      fold_verb_nquant!(verb, succ, has_ule: true)
     when .ude2?
       return verb unless (succ_2 = auxil.succ?) && (succ_2.verb? || succ_2.veno?)
       succ_2 = fold_verbs!(succ_2)

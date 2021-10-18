@@ -12,12 +12,12 @@ struct CV::PosTag
 
     Adjts; Adverbs
 
-    Numbers; Quantis; Nquants; Strings
+    Numbers; Quantis; Nquants; Numeric
 
     Auxils; Preposes
 
     SufNouns; SufVerbs; SufAdjts
 
-    Uniques
+    Strings; Uniques
   end
 end

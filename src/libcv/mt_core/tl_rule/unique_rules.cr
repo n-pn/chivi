@@ -72,7 +72,7 @@ module CV::TlRule
     when "行"
       boundary?(succ) ? node.set!("được") : node
     when "高达"
-      if succ.try(&.nquants?)
+      if succ.try(&.numeric?)
         node.set!("cao đến")
       else
         node.set!("Gundam", tag: PosTag::Noun)

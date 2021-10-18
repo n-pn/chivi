@@ -13,7 +13,7 @@ module CV::TlRule
          .time?, .place?, .space?,
          .adesc?, .pro_dem?, .dphrase?
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
-    when .nquants?
+    when .numeric?
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .nouns?, .pro_per?
       if (prev_3 = prev_2.prev?) && is_verb_clause?(prev_3, node)
@@ -34,7 +34,7 @@ module CV::TlRule
           head = fold_swap!(prev_3, prev_2, PosTag::Dphrase, dic: 8)
         end
         return fold_swap!(head, node, PosTag::Nphrase, dic: 9)
-      elsif prev_3.nquant?
+      elsif prev_3.nquants?
         node = fold_swap!(prev_2, node, PosTag::Nphrase, dic: 8)
         return fold!(prev_3, node, PosTag::Nphrase, 3)
       end
@@ -53,7 +53,7 @@ module CV::TlRule
     return by_succ == 2 unless prev = head.prev?
 
     case prev.tag
-    when .v_shi?, .verb?, .nquants?, .pro_dems?
+    when .v_shi?, .verb?, .numeric?, .pro_dems?
       true
     when .nouns?, .comma?
       false
