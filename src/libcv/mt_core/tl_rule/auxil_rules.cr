@@ -44,7 +44,9 @@ module CV::TlRule
 
   def heal_ude2!(node : MtNode) : MtNode
     return node if node.prev? { |x| x.tag.adjts? || x.tag.adverb? }
-    return node if node.succ? { |x| x.verbs? || x.preposes? || x.concoord? }
+    return node unless succ = node.succ?
+    return node.set!("đất", PosTag::Noun) if succ.v_shi? || succ.v_you?
+    return node if succ.verbs? || succ.preposes? || succ.concoord?
     node.set!(val: "địa", tag: PosTag::Noun)
   end
 
