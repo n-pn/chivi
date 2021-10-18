@@ -69,7 +69,7 @@ module CV::TlRule
       when .penum?, .concoord?
         break unless (succ_2 = succ.succ?) && can_combine_adjt?(node, succ_2)
         heal_concoord!(succ) if succ.concoord?
-        node = fold!(node, succ, PosTag::Aphrase, dic: 4)
+        node = fold!(node, succ_2, PosTag::Aphrase, dic: 4)
       when .adv_bu?
         break unless (succ_2 = succ.succ?)
 
