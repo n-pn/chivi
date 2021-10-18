@@ -4,7 +4,9 @@ module CV::TlRule
       case prev
       when .auxils?
         return node.set!(PosTag::Noun)
-      when .adverbs?, .preposes?, .vmodals?, .vpro?
+      when .preposes?
+        return node.set!(PosTag::Verb) unless prev.key == "给"
+      when .adverbs?, .vmodals?, .vpro?
         return node.set!(PosTag::Verb)
       when .numeric?
         if (succ = node.succ?) && !(succ.nouns? || succ.pronouns?)
