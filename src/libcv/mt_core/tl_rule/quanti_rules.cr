@@ -39,6 +39,7 @@ module CV::TlRule
     "层" => "tầng",
     "门" => "môn",
     "回" => "hồi",
+    "转" => "vòng",
 
     "架次" => "lượt chiếc",
     "场次" => "lượt diễn",
