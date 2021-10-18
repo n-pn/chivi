@@ -25,7 +25,16 @@ module CV::TlRule
         break unless (succ_2 = succ.succ?) && succ_2.key == verb.key
         succ.val = "hay"
         succ_2.val = "không"
-        verb = fold!(verb, succ_2, PosTag::Verb, dic: 5)
+
+        if (succ_3 = succ_2.succ?) && (succ_3.noun? || succ_3.pro_per?)
+          succ_2.fix_succ!(succ_3.succ?)
+          succ_3.fix_succ!(succ)
+          succ_3.fix_prev!(verb)
+          tag = PosTag::Vintr
+        else
+          tag = PosTag::Verb
+        end
+        verb = fold!(verb, succ_2, tag: tag, dic: 5)
       when .numeric?
         if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
           verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
