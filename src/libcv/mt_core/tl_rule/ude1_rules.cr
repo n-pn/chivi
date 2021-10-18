@@ -6,7 +6,7 @@ module CV::TlRule
     prev.val = ""
 
     case prev_2
-    when .ajav?
+    when .ajad?
       prev_2.val = "thông thường" if prev_2.key == "一般"
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .adjts?, .veno?, .vintr?,

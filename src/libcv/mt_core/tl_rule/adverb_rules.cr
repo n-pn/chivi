@@ -33,7 +33,7 @@ module CV::TlRule
     when .verbs?
       node.val = succ.succ?(&.uzhe?) ? "không" : "chưa"
       fold_verbs!(succ, prev: node)
-    when .adjt?, .ajav?, .ajno?
+    when .adjt?, .ajad?, .ajno?
       fold!(node.set!("không"), succ, PosTag::Adjt, dic: 2)
     else
       node

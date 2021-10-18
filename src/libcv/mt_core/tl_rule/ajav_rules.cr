@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_ajav!(node : MtNode, succ = node.succ?)
+  def fold_ajad!(node : MtNode, succ = node.succ?)
     return node unless succ
     case succ
     when .adjts?, .verbs?

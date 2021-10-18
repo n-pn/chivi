@@ -33,8 +33,8 @@ module CV::TlRule
         end
       when .adverbs?
         node = fold_adverbs!(node)
-      when .ajav?
-        node = fold_ajav!(node)
+      when .ajad?
+        node = fold_ajad!(node)
       when .adjts?
         node = fold_adjts!(node, prev: nil)
         next unless node.nouns?

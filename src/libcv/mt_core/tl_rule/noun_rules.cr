@@ -102,7 +102,7 @@ module CV::TlRule
       when .place?
         return node unless noun_can_combine?(prev.prev?, node.succ?)
         node = fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
-      when .ajav?, .adjts?
+      when .ajad?, .adjts?
         break if prev.key.size > 1
         node = fold_swap!(prev, node, PosTag::Nphrase, dic: 8)
       when .ude1?
