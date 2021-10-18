@@ -52,7 +52,7 @@ module CV::TlRule
     end
 
     if has_个 && (succ = node.succ?) && succ.quantis?
-      heal_has_个!(has_个)
+      # heal_has_个!(has_个)
       node = fold!(node, succ, PosTag::Nquant, dic: 2)
     end
 
