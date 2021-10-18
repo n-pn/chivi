@@ -1,5 +1,6 @@
 require "../vp_dict/vp_term"
 require "./mt_node/*"
+require "./mt_util"
 
 class CV::MtNode
   property idx : Int32 = -1
@@ -97,6 +98,17 @@ class CV::MtNode
 
   def set!(@val : String, @tag : PosTag) : self
     self
+  end
+
+  def to_int?
+    case @tag
+    when .ndigit? then @val.to_i64?
+    when .nhanzi? then MtUtil.to_integer(@val)
+    else               nil
+    end
+  rescue err
+    Log.error { err }
+    nil
   end
 
   include MTL::Serialize

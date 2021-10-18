@@ -43,8 +43,6 @@ export const labels = {
   'bl': 'Khu biệt quán ngữ',
 
   'm': 'Số từ',
-  'mx': 'Chữ ả rập',
-  'mz': 'Chữ số hán',
   'q': 'Lượng từ',
   'qt': 'Lượng từ thời gian',
   'mq': 'Số lượng từ',
@@ -104,7 +102,7 @@ export const groups = [
     'rr', 'rz', 'ry',
     'r',
     '-',
-    'm', 'mx', 'mz',
+    'm',
     'q', 'qt', 'mq',
     '-',
     'd', 'p', 'u',

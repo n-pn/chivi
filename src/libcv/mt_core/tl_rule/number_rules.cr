@@ -89,15 +89,15 @@ module CV::TlRule
 
     succ = node
     while succ = succ.try(&.succ?)
-      if succ.numhan? || succ.numlat?
+      if succ.nhanzi? || succ.ndigit?
         node.tag = PosTag::Number if node.tag != succ.tag
         key_io << succ.key
         val_io << " " << succ.val
         next
       end
 
-      if node.numhan?
-        break unless (succ_2 = succ.succ?) && succ_2.numhan?
+      if node.nhanzi?
+        break unless (succ_2 = succ.succ?) && succ_2.nhanzi?
         break unless succ.key == "点"
         break if succ_2.succ?(&.key.== "分")
 
@@ -107,7 +107,7 @@ module CV::TlRule
         next
       end
 
-      break unless node.numlat? && (succ_2 = succ.succ?) && succ_2.numlat?
+      break unless node.ndigit? && (succ_2 = succ.succ?) && succ_2.ndigit?
 
       case succ.tag
       when .pdeci? # case 1.2
@@ -128,7 +128,7 @@ module CV::TlRule
 
         # for 5:6:7 format
         break unless (succ_3 = succ_2.succ?) && succ_3.colon?
-        break unless (succ_4 = succ_3.succ?) && succ_4.numlat?
+        break unless (succ_4 = succ_3.succ?) && succ_4.ndigit?
 
         key_io << succ_3.key << succ_4.key
         val_io << ":" << succ_4.val

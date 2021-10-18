@@ -57,7 +57,7 @@ module CV::TlRule
 
   private def uri_component?(node : MtNode) : Bool
     case node.tag
-    when .string?, .pdeci?, .numlat? then true
+    when .string?, .pdeci?, .ndigit? then true
     when .puncts?
       case node.key[0]?
       when '%', '?', '-', '=', '~', '#', '@', '/' then true

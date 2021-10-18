@@ -82,10 +82,15 @@ class CV::ChapCtrl < CV::BaseCtrl
         jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
 
         jb.field "zhtext", lines
-        jb.field "cvdata" {
-          cvdata = String.build { |io| convert(zhbook, chinfo, lines, cpart, io) }
-          jb.string(cvdata)
-        }
+
+        strio = String::Builder.new
+        start = Time.monotonic
+
+        convert(zhbook, chinfo, lines, cpart, strio)
+        tspan = (Time.monotonic - start).total_milliseconds.round.to_i
+
+        jb.field "cvdata" { jb.string(strio.to_s) }
+        jb.field "tlspan", tspan
       }
     end
   end
@@ -109,26 +114,24 @@ class CV::ChapCtrl < CV::BaseCtrl
     halt! 404, "Chương tiết không tồn tại!"
   end
 
-  private def convert(zhbook, chinfo, lines, cpart, output : IO)
+  private def convert(zhbook, chinfo, lines : Array(String), cpart : Int32, strio : IO)
     return if lines.empty?
-
-    start = Time.monotonic
 
     cvmtl = MtCore.generic_mtl(zhbook.cvbook.bhash, _cv_user.uname)
     mode = _cv_user.tlmode
 
-    cvmtl.cv_title_full(lines[0], mode: mode).to_str(output)
-    output << "\t" << "  (#{cpart + 1}/#{chinfo.parts})" if chinfo.parts > 1
+    cvmtl.cv_title_full(lines[0], mode: mode).to_str(strio)
+    strio << "\t" << "(#{cpart + 1}/#{chinfo.parts})" if chinfo.parts > 1
 
     1.upto(lines.size - 1) do |i|
       line = lines.unsafe_fetch(i)
       # puts [line, i]
-      output << "\n"
-      cvmtl.cv_plain(line, mode: mode).to_str(output)
+      strio << "\n"
+      cvmtl.cv_plain(line, mode: mode).to_str(strio)
+    rescue err
+      Log.error { err.message }
+      strio << "\tMáy dịch gặp lỗi, mời liên hệ ban quản trị"
     end
-
-    tspan = Time.monotonic - start
-    puts "total: #{lines.size} converted!, time: #{tspan.total_milliseconds.round}"
   rescue err
     puts err
     puts err.inspect_with_backtrace

@@ -10,8 +10,8 @@ module CV::MTL::PadSpace
   end
 
   def append_space!(prev : MtNode) : MtNode
-    if @tag.numlat? && (prev.tag.plsgn? || prev.tag.mnsgn?)
-      @tag = PosTag::String unless prev.prev?(&.numlat?)
+    if @tag.ndigit? && (prev.tag.plsgn? || prev.tag.mnsgn?)
+      @tag = PosTag::String unless prev.prev?(&.ndigit?)
       self
     elsif should_space_before?(prev)
       self.prepend_space!
@@ -36,9 +36,9 @@ module CV::MTL::PadSpace
 
     case @tag
     when .string? then return false if prev.tag.pdeci?
-    when .numlat? then return false if prev.tag.plsgn? || prev.tag.mnsgn?
-    when .plsgn?  then return false if prev.tag.numlat?
-    when .mnsgn?  then return false if prev.tag.numlat?
+    when .ndigit? then return false if prev.tag.plsgn? || prev.tag.mnsgn?
+    when .plsgn?  then return false if prev.tag.ndigit?
+    when .mnsgn?  then return false if prev.tag.ndigit?
     when .colon?  then return false
     when .middot? then return true
     when .ptitle?

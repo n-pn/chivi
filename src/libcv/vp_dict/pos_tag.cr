@@ -25,6 +25,10 @@ struct CV::PosTag
     Adverb; AdvBu; AdvMei; AdvFei
     Prepos; PreBei; PreDui; PreBa
 
+    Number; Ndigit; Nhanzi
+    # Qtnoun; Qttime; Qtverb
+    # Nqnoun; Nqtime; Nqverb
+
     Auxil; Punct
 
     Unique; AdjHao; VShang; VXia; VShi; VYou
@@ -75,6 +79,7 @@ struct CV::PosTag
     when .pro_dems? then "rz"
     when .pro_ints? then "ry"
     when .uniques?  then "!"
+    when .numbers?  then "m"
     else                 @tag.to_str
     end
   end
@@ -105,6 +110,7 @@ struct CV::PosTag
     when "rz" then map_pro_dems(key)
     when "ry" then map_pro_ints(key)
     when "!" then map_uniques(key)
+    when "m" then map_numbers(key)
     when "r" then Pronoun
     when "rr" then ProPer
     when "l" then Idiom

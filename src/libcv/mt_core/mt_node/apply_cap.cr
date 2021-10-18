@@ -30,7 +30,7 @@ module CV::MTL::ApplyCap
     when .quoteop?, .exmark?, .qsmark?,
          .pstop?, .colon?, .middot?, .titleop?
       true
-    when .pdeci?   then @prev.try { |x| x.numlat? || x.string? } || prev
+    when .pdeci?   then @prev.try { |x| x.ndigit? || x.string? } || prev
     when .brackop? then true
       # when .parenop? then  prev
     else prev

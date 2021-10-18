@@ -10,7 +10,7 @@ class CV::VpTerm
   getter val : Array(String)
 
   getter attr : String = ""
-  getter ptag : PosTag { PosTag.from_str(@attr, key) }
+  getter ptag : PosTag { PosTag.from_str(@attr, @key) }
   getter rank : UInt8 = 3_u8
 
   getter mtime : UInt32 = 0_u32

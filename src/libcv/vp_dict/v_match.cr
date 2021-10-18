@@ -6,7 +6,7 @@ class CV::VMatch
     key = query["key"]?.try { |key| Regex.new(key) }
     val = query["val"]?.try { |val| Regex.new(val) }
 
-    attr = query["attr"]?
+    attr = query["ptag"]?
     rank = query["rank"]?.try(&.to_i?) || 3
 
     uname = query["uname"]?
