@@ -26,6 +26,9 @@ module CV::MtUtil
     end
 
     res + acc
+  rescue err
+    puts str
+    0_i64
   end
 
   # :ditto:

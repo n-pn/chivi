@@ -38,7 +38,7 @@ module CV::TlRule
       return date ? fold_swap!(prev, date, prev.tag, dic: 2) : prev
     end
 
-    if appro == 0 && MtUtil.to_integer(node.val) < 13
+    if appro == 0 && MtUtil.to_integer(prev.val) < 13
       # TODO: check more cases
       return fold_swap!(prev, node, PosTag::Time, dic: 2)
     end
@@ -53,7 +53,7 @@ module CV::TlRule
     case day.key
     when "日" then day.set!("ngày")
     when "号"
-      real_date = MtUtil.to_integer(day.key)
+      real_date = MtUtil.to_integer(num.key)
       day.set!(real_date > 10 ? "ngày" : "mồng")
     else
       return

@@ -112,6 +112,8 @@ class CV::ChapCtrl < CV::BaseCtrl
   private def convert(zhbook, chinfo, lines, cpart, output : IO)
     return if lines.empty?
 
+    start = Time.monotonic
+
     cvmtl = MtCore.generic_mtl(zhbook.cvbook.bhash, _cv_user.uname)
     mode = _cv_user.tlmode
 
@@ -120,9 +122,16 @@ class CV::ChapCtrl < CV::BaseCtrl
 
     1.upto(lines.size - 1) do |i|
       line = lines.unsafe_fetch(i)
+      # puts [line, i]
       output << "\n"
       cvmtl.cv_plain(line, mode: mode).to_str(output)
     end
+
+    tspan = Time.monotonic - start
+    puts "total: #{lines.size} converted!, time: #{tspan.total_milliseconds.round}"
+  rescue err
+    puts err
+    puts err.inspect_with_backtrace
   end
 
   def upsert
