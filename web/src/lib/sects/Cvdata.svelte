@@ -67,7 +67,7 @@
     }
   }
 
-  function render_line(idx, hover, focus) {
+  function render_line(idx = 0, hover = -1, focus = -1, debug = false) {
     // return lines[idx].html
     const mt_data = lines[idx]
     const use_html = idx == hover || idx == focus
@@ -91,7 +91,7 @@
       class="mtl {wtitle && index == 0 ? '_h' : '_p'}"
       on:click={(e) => handle_click(e, index)}
       on:mouseenter={() => (hover_line = index)}>
-      {@html render_line(index, hover_line, focus_line)}
+      {@html render_line(index, hover_line, focus_line, debug)}
 
       {#if $session.privi >= 0}
         <button
