@@ -102,7 +102,7 @@ module CV::TlRule
   end
 
   def fold_adj_adv!(node : MtNode, prev = node.prev?)
-    return node unless prev
+    return node unless prev && prev.adverbs?
 
     case prev.key
     when "最", "那么", "这么", "非常"
@@ -119,7 +119,7 @@ module CV::TlRule
       fold!(head, tail, PosTag::Aphrase, dic: 4)
     else
       prev.val = "rất" if prev.key == "挺"
-      fold!(prev, node, PosTag::Aphrase, dic: 4)
+      fold!(prev, node, PosTag::Aphrase, dic: 5)
     end
   end
 end
