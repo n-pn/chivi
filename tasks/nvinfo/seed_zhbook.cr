@@ -56,11 +56,7 @@ class CV::SeedZhbook
 
     queue.each_with_index(1) do |snvid, index|
       spawn do
-        entry = RmInfo.new(@sname, snvid)
-        label = "#{index}/#{queue.size}"
-
-        html = HttpUtil.get_html(entry.link, label: label, encoding: encoding)
-        HttpUtil.save_html(entry.file, html)
+        RmInfo.binfo_html(@sname, snvid, lbl: "#{index}/#{queue.size}")
 
         # throttling if success
         case @sname
@@ -87,8 +83,10 @@ class CV::SeedZhbook
     puts "[#{@sname}], parsing: #{queue.size}\n".colorize.cyan.bold
 
     queue.each_with_index(1) do |snvid, idx|
-      entry = RmInfo.new(@sname, snvid, label: "#{idx}/#{queue.size}")
-      atime = SeedUtil.get_mtime(entry.file)
+      bfile = PathUtil.binfo_cpath(@sname, snvid)
+      atime = SeedUtil.get_mtime(bfile)
+
+      entry = RmInfo.init(@sname, snvid, lbl: "#{idx}/#{queue.size}")
 
       @seed._index.set!(snvid, [atime.to_s, entry.btitle, entry.author])
       @seed.set_intro(snvid, entry.bintro)
@@ -245,18 +243,15 @@ class CV::SeedZhbook
       vals = @seed.chsize.get(snvid)
 
       if vals = @seed.chsize.get(snvid)
-        chap_count = vals[0].to_i
-        last_schid = vals[1]
+        zhbook.chap_count = vals[0].to_i
+        zhbook.last_schid = vals[1]
       else
         puts "-- extract chap index: #{cvbook.bhash}".colorize.yellow
         # ttl = get_ttl(zhbook.mftime)
-        chinfo = ChInfo.new(cvbook.bhash, @sname, snvid)
-        _, chap_count, last_schid = chinfo.update!(mode: 1, ttl: 10.years)
-        @seed.chsize.set!(snvid, [chap_count.to_s, last_schid])
+        FileUtils.mkdir_p("db/chtexts/#{@sname}/#{snvid}")
+        _, chap_count = zhbook.refresh!(mode: 1, ttl: 10.years)
+        @seed.chsize.set!(snvid, [chap_count.to_s, zhbook.last_schid])
       end
-
-      zhbook.chap_count = chap_count
-      zhbook.last_schid = last_schid
     end
 
     zhbook.save!

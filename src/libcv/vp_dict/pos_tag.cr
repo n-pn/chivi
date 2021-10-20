@@ -137,4 +137,5 @@ end
 # puts CV::PosTag.from_str("w", ":").tag
 # puts CV::PosTag.from_str("w", "：").tag
 # puts CV::PosTag.from_str("vm", "会").tag
-# puts CV::PosTag.from_str("u", "着").tag
+# puts CV::PosTag.from_str("w", "《").tag
+# puts CV::PosTag.from_str("w", "“").tag

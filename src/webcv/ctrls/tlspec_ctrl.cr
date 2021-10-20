@@ -63,7 +63,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     slink = params["slink"]? || "."
     entry.push ["_orig", ctime, dname, slink]
 
-    entry.push ["_note", _cv_user.uname, unote]
+    entry.push ["_note", _cvuser.uname, unote]
     entry.save!
 
     json_view(["ok"])

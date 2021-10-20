@@ -39,7 +39,7 @@
 </script>
 
 <script>
-  import { page } from '$app/stores'
+  import { page, session } from '$app/stores'
   import { invalidate } from '$app/navigation'
   import { get_rtime } from '$atoms/RTime.svelte'
   import SIcon from '$atoms/SIcon.svelte'
@@ -83,89 +83,93 @@
 </script>
 
 <BookPage {cvbook} {ubmemo} nvtab="board">
-  <board-content id="board">
-    {#each dtopic.items as topic}
-      <topic-card>
-        <topic-body>
-          <a
-            class="topic-title"
-            href="/-{cvbook.bslug}/board/-{topic.uslug}-{topic.id}">
-            {topic.title}
-          </a>
+  {#if $session.privi > 3}
+    <board-content id="board">
+      {#each dtopic.items as topic}
+        <topic-card>
+          <topic-body>
+            <a
+              class="topic-title"
+              href="/-{cvbook.bslug}/board/-{topic.uslug}-{topic.id}">
+              {topic.title}
+            </a>
 
-          {#each topic.labels as label}
-            <a class="topic-label _{label}" href="./board?tl={label}"
-              >{topic_labels[label]}</a>
-          {/each}
-        </topic-body>
-
-        <topic-foot>
-          <topic-user>{topic.u_dname}</topic-user>
-          <topic-sep>·</topic-sep>
-          <topic-time>{get_rtime(topic.ctime || 1212121200)}</topic-time>
-          <topic-sep>·</topic-sep>
-          <topic-repl>
-            {#if topic.posts > 0}
-              <span>{topic.posts} lượt trả lời</span>
-            {:else}
-              <span>Trả lời</span>
-            {/if}
-          </topic-repl>
-        </topic-foot>
-      </topic-card>
-    {:else}
-      <div class="empty">Chưa có chủ đề thảo luận :(</div>
-    {/each}
-
-    <board-pagi>
-      <Mpager {pager} pgidx={dtopic.pgidx} pgmax={dtopic.pgmax} {_navi} />
-    </board-pagi>
-
-    <board-form>
-      <form
-        action="/api/boards/{cvbook.id}/new"
-        on:submit|preventDefault={create_topic}
-        method="POST">
-        <form-field>
-          <label class="form-label" for="title">Chủ đề mới</label>
-          <textarea
-            class="m-input"
-            name="title"
-            lang="vi"
-            bind:value={form_title} />
-        </form-field>
-
-        {#if form_error}
-          <form-error>{form_error}</form-error>
-        {/if}
-
-        <form-foot>
-          <form-labels>
-            <label-caption>Nhãn:</label-caption>
-
-            {#each Object.entries(topic_labels) as [value, label]}
-              <label
-                class="topic-label _{value}"
-                class:_active={form_label.includes(value)}
-                ><input type="checkbox" {value} bind:group={form_label} />
-                <label-name>{label}</label-name>
-                {#if form_label.includes(value)}
-                  <SIcon name="check" />
-                {/if}
-              </label>
+            {#each topic.labels as label}
+              <a class="topic-label _{label}" href="./board?tl={label}"
+                >{topic_labels[label]}</a>
             {/each}
-          </form-labels>
+          </topic-body>
 
-          <button
-            type="submit"
-            class="m-button _primary _fill"
-            disabled={form_title.length < 5 || form_title.length > 200}
-            on:click|preventDefault={create_topic}>
-            Tạo chủ đề</button>
-        </form-foot>
-      </form>
-    </board-form>
-  </board-content>
+          <topic-foot>
+            <topic-user>{topic.u_dname}</topic-user>
+            <topic-sep>·</topic-sep>
+            <topic-time>{get_rtime(topic.ctime || 1212121200)}</topic-time>
+            <topic-sep>·</topic-sep>
+            <topic-repl>
+              {#if topic.posts > 0}
+                <span>{topic.posts} lượt trả lời</span>
+              {:else}
+                <span>Trả lời</span>
+              {/if}
+            </topic-repl>
+          </topic-foot>
+        </topic-card>
+      {:else}
+        <div class="empty">Chưa có chủ đề thảo luận :(</div>
+      {/each}
+
+      <board-pagi>
+        <Mpager {pager} pgidx={dtopic.pgidx} pgmax={dtopic.pgmax} {_navi} />
+      </board-pagi>
+
+      <board-form>
+        <form
+          action="/api/boards/{cvbook.id}/new"
+          on:submit|preventDefault={create_topic}
+          method="POST">
+          <form-field>
+            <label class="form-label" for="title">Chủ đề mới</label>
+            <textarea
+              class="m-input"
+              name="title"
+              lang="vi"
+              bind:value={form_title} />
+          </form-field>
+
+          {#if form_error}
+            <form-error>{form_error}</form-error>
+          {/if}
+
+          <form-foot>
+            <form-labels>
+              <label-caption>Nhãn:</label-caption>
+
+              {#each Object.entries(topic_labels) as [value, label]}
+                <label
+                  class="topic-label _{value}"
+                  class:_active={form_label.includes(value)}
+                  ><input type="checkbox" {value} bind:group={form_label} />
+                  <label-name>{label}</label-name>
+                  {#if form_label.includes(value)}
+                    <SIcon name="check" />
+                  {/if}
+                </label>
+              {/each}
+            </form-labels>
+
+            <button
+              type="submit"
+              class="m-button _primary _fill"
+              disabled={form_title.length < 5 || form_title.length > 200}
+              on:click|preventDefault={create_topic}>
+              Tạo chủ đề</button>
+          </form-foot>
+        </form>
+      </board-form>
+    </board-content>
+  {:else}
+    <div class="empty">Chức năng đang hoàn thiện :(</div>
+  {/if}
 </BookPage>
 
 <style lang="scss">
@@ -188,7 +192,7 @@
     text-align: center;
     font-style: italic;
     @include ftsize(lg);
-    color: var(--color-gray-5);
+    @include fgcolor(mute);
   }
 
   topic-card {

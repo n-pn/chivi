@@ -6,13 +6,16 @@ module CV::TlRule
       node.nouns? ? fold_noun_left!(node, mode: mode) : node
     when .titleop?
       node = fold_ptitle!(node, mode: mode)
-      node = fold_noun_left!(node, mode: mode)
+
+      node.body? ? fold_noun_left!(node, mode: mode) : node
     else
       node # TODO
     end
   end
 
   def fold_nested!(head : MtNode, mode = 1) : MtNode
+    # puts [head, head.key, head.val, head.idx, head.tag.tag]
+
     end_tag, end_val = match_end(head.val[0])
 
     tail = head
@@ -54,9 +57,10 @@ module CV::TlRule
     end
 
     return head unless tail && tail != head.succ?
+    root = fold!(head, tail, PosTag::Nother, dic: 0)
 
     fix_grammar!(head, mode)
-    fold!(head, tail, PosTag::Nother, dic: 0)
+    root
   end
 
   private def match_title_end(char : Char)

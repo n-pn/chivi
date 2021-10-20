@@ -33,7 +33,7 @@ module CV::MTL::Serialize
 
   def inspect(io : IO = STDOUT) : Nil
     return io << " " if val == " "
-    io << "[#{@key}/#{@val}/#{@tag.to_str}/#{@dic}]"
+    io << "[#{@key}/#{@val}/#{@tag.tag}/#{@dic}/#{@idx}]"
   end
 
   def deep_inspect(io : IO = STDOUT) : Nil

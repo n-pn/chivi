@@ -19,7 +19,18 @@ class CV::VpTrie
     node
   end
 
-  def scan(chars : Array(Char), uname : String = "~", idx : Int32 = 0) : Nil
+  def scan(chars : Array(Char), idx : Int32 = 0) : Nil
+    node = self
+
+    idx.upto(chars.size - 1) do |i|
+      char = chars.unsafe_fetch(i)
+      break unless node = node._next[char]?
+      break unless term = node.base
+      yield term
+    end
+  end
+
+  def scan(chars : Array(Char), uname : String = "", idx : Int32 = 0) : Nil
     node = self
 
     idx.upto(chars.size - 1) do |i|

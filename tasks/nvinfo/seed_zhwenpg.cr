@@ -37,10 +37,9 @@ class CV::SeedZhwenpg
     puts "\n[-- Page: #{page} (status: #{status}) --]".colorize.light_cyan.bold
 
     file = page_path(page, status)
-    link = page_link(page, status)
 
-    html = HttpUtil.load_html(link, file, ttl: 4.hours * page, label: page.to_s)
-    atime = SeedUtil.get_mtime(file) || Time.utc.to_unix
+    html = File.read(file)
+    atime = SeedUtil.get_mtime(file)
 
     pdoc = Myhtml::Parser.new(html)
     nodes = pdoc.css(".cbooksingle").to_a[2..-2]
@@ -90,8 +89,7 @@ class CV::SeedZhwenpg
     end
 
     if zhbook.chap_count == 0
-      ttl = Time.utc - Time.unix(zhbook.mftime)
-      zhbook.refresh!(privi: 3, mode: 1, ttl: ttl)
+      zhbook.refresh!(privi: 3, mode: 1, ttl: 10.years)
       # chinfo = ChInfo.new(cvbook.bhash, "zhwenpg", parser.snvid)
       # _, zhbook.chap_count, zhbook.last_schid = chinfo.update!(mode: 1, ttl: ttl)
     end

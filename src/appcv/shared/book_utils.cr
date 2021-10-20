@@ -55,9 +55,10 @@ module CV::BookUtils
   def convert(input : String, udict = "various") : Array(String)
     libcv = MtCore.generic_mtl(udict)
 
-    input.split(/\r|\n/).map do |line|
+    input.split(/[\r\n]/).map do |line|
       line = line.strip
       line.empty? ? line : libcv.cv_plain(line).to_s
+      line
     end
   end
 

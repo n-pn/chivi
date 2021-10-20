@@ -11,7 +11,7 @@ class CV::CvuserCtrl < CV::BaseCtrl
     session.delete("u_privi")
 
     save_session!
-    view_json([1])
+    json_view([1])
   end
 
   def login

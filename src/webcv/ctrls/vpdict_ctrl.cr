@@ -109,7 +109,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
       end
 
       vdict.each do |dict|
-        dict.scan(chars, _cv_user.uname, idx) do |term|
+        dict.scan(chars, _cvuser.uname, idx) do |term|
           value = "#{term.val.join("/")}\t#{term.ptag.to_str}\t#{dict.dtype}"
           entry[term.key.size][:vietphrase] << value
         end
