@@ -6,8 +6,9 @@ class CV::MtCore
   class_getter binh_am_mtl : self { new([VpDict.essence, VpDict.binh_am]) }
   class_getter tradsim_mtl : self { new([VpDict.tradsim]) }
 
-  def self.generic_mtl(pdict : String = "combine", stype : String = "guest")
-    new(VpDict.for_convert(pdict, stype))
+  def self.generic_mtl(bname : String = "combine", uname : String = "~")
+    dicts = [VpDict.essence, VpDict.regular, VpDict.fixture, VpDict.load(bname)]
+    new(dicts, uname)
   end
 
   def self.convert(input : String, dname = "various") : Cvmtl
@@ -19,7 +20,7 @@ class CV::MtCore
     end
   end
 
-  def initialize(@dicts : Array(VpDict))
+  def initialize(@dicts : Array(VpDict), @uname = "~")
   end
 
   def translit(input : String, apply_cap : Bool = false)
@@ -73,7 +74,7 @@ class CV::MtCore
       terms = {} of Int32 => Tuple(Int32, VpTerm)
 
       @dicts.each do |dict|
-        dict.scan(input, idx) do |term|
+        dict.scan(input, @uname, idx) do |term|
           terms[term.key.size] = {dict.dtype, term} unless term.empty?
         end
       end
@@ -86,6 +87,7 @@ class CV::MtCore
 
         if cost >= costs[jump]
           costs[jump] = cost
+          dic += 1 if term.is_priv
           nodes[jump] = MtNode.new(term, dic, idx + offset)
         end
       end

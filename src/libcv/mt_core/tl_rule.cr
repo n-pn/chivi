@@ -1,4 +1,4 @@
-require "./tl_rule/*"
+require "./tl_rule/**"
 
 module CV::TlRule
   def fix_grammar!(node : MtNode, mode = 1) : Nil

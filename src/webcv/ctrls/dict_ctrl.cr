@@ -76,14 +76,12 @@ class CV::DictCtrl < CV::BaseCtrl
     end
 
     pgmax = terms.size.-(1).//(limit) + 1
-    paged = terms.size > offset ? terms[offset, limit] : [] of VpTerm
+    terms = terms.size > offset ? terms[offset, limit] : [] of VpTerm
 
     render_json({
       d_dub: dict_dubname(dname),
       dname: dname,
-      # dtype: vdict.dtype,
-      p_min: vdict.p_min,
-      terms: paged,
+      terms: terms,
       total: vdict.size,
       pgidx: pgidx,
       pgmax: pgmax,
@@ -100,7 +98,7 @@ class CV::DictCtrl < CV::BaseCtrl
     dname = "combine" if dname == "generic"
 
     input = params["input"].strip
-    vietphrase = VpDict.for_lookup(dname, _cv_user.uname)
+    vdict = {VpDict.load(dname), VpDict.regular}
 
     chars = input.chars
     upper = chars.size - 1
@@ -110,18 +108,18 @@ class CV::DictCtrl < CV::BaseCtrl
         hash[key] = Lookup.new { |h, k| h[k] = [] of String }
       end
 
-      vietphrase.each do |dict, type|
-        dict.scan(chars, idx) do |term|
+      vdict.each do |dict|
+        dict.scan(chars, _cv_user.uname, idx) do |term|
           value = "#{term.val.join("/")}\t#{term.ptag.to_str}\t#{dict.dtype}"
           entry[term.key.size][:vietphrase] << value
         end
       end
 
-      VpDict.trungviet.scan(chars, idx) do |item|
+      VpDict.trungviet.scan(chars, idx: idx) do |item|
         entry[item.key.size][:trungviet] = item.val
       end
 
-      VpDict.cc_cedict.scan(chars, idx) do |item|
+      VpDict.cc_cedict.scan(chars, idx: idx) do |item|
         entry[item.key.size][:cc_cedict] = item.val
       end
 
@@ -140,19 +138,15 @@ class CV::DictCtrl < CV::BaseCtrl
     dname = params["dname"]
     words = params.json("words").as_a
 
+    bdict = VpDict.load(dname)
     cvmtl = MtCore.generic_mtl(dname, _cv_user.uname)
-    dicts = {
-      VpDict.load(dname, _cv_user.uname),
-      VpDict.load(dname),
-      VpDict.load("regular", _cv_user.uname),
-      VpDict.regular,
-    }
 
     json_view do |jb|
       jb.object do
         words.each do |word|
           jb.field (word.as_s) do
-            VpTermView.new(word.as_s, cvmtl, dicts).to_json(jb)
+            view = VpTermView.new(word.as_s, bdict, cvmtl, _cv_user.uname)
+            view.to_json(jb)
           end
         end
       end
@@ -164,41 +158,28 @@ class CV::DictCtrl < CV::BaseCtrl
 
   def upsert
     dname = params["dname"]
-    stype = params["stype"]? == "_priv" ? cu_dname : "_base"
+    vdict = VpDict.load(dname)
+    return halt!(500, "Không đủ quyền hạn để sửa từ!") unless vdict.allow?(cu_privi)
 
     key = params.fetch_str("key").strip
     val = params.fetch_str("val").split(" / ").map(&.strip)
 
-    if dname == "regular" && stype == "_base" && VpDict.fixture.find(key)
+    if vdict.dtype == 2 && VpDict.fixture.find(key)
       return halt!(403, "Không thể sửa được từ khoá cứng!")
     end
-
-    vdict = VpDict.load(dname, stype)
-    return halt!(500, "Không đủ quyền hạn để sửa từ!") if cu_privi < vdict.p_min
-
-    mtime = VpTerm.mtime(Time.utc)
 
     attr = params.fetch_str("attr", "")
     rank = params.fetch_str("rank", "").to_u8? || 3_u8
 
-    vpterm = vdict.new_term(key, val, attr, rank, mtime: mtime, uname: cu_dname)
+    vpterm = VpTerm.new(key, val, attr, rank, uname: cu_dname)
+    vpterm.to_priv! if params["stype"]? == "_priv"
+
     return halt!(501, "Nội dung không thay đổi!") unless vdict.set!(vpterm)
 
-    # TODO: save context
-
     # add to suggestion
-    if vdict.dtype > 2
-      suggest_term = VpDict.suggest.new_term(key, val, attr, rank, mtime: mtime)
-
-      VpDict.suggest.find(key).try do |prev|
-        suggest_term.val.concat(prev.val).uniq!
-      end
-
-      VpDict.suggest.set!(suggest_term)
-    end
-
+    add_to_suggest(vpterm.dup) if vdict.dtype > 1
     # add to qtran dict if entry is a person name
-    add_to_combine_dict(vpterm, stype) if vdict.dtype > 3 && dname != "combine"
+    add_to_combine(vpterm.dup) if vdict.dtype > 3 && dname != "combine"
 
     json_view(vpterm)
   rescue err
@@ -206,15 +187,16 @@ class CV::DictCtrl < CV::BaseCtrl
     halt! 500, err.message
   end
 
-  private def add_to_combine_dict(vpterm, stype)
-    return if vpterm.key.size < 2
-    return unless vpterm.ptag.person?
-
-    # TODO: check permission
-    VpDict.load("combine", "_priv").tap { |x| x.set!(x.new_term(vpterm)) }
-
-    if stype == "_base"
-      VpDict.load("combine", "_base").tap { |x| x.set!(x.new_term(vpterm)) }
+  private def add_to_suggest(term : VpTerm)
+    VpDict.suggest.find(term.key).try do |prev|
+      term.val.concat(prev.val).uniq!
     end
+
+    VpDict.suggest.set!(term)
+  end
+
+  private def add_to_combine(term : VpTerm)
+    return unless term.key.size > 1 && term.ptag.person?
+    VpDict.combine.set!(term)
   end
 end

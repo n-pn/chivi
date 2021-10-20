@@ -21,8 +21,9 @@ class CV::VpDict
 
   class_getter essence : self { load("essence") }
   class_getter regular : self { load("regular") }
-  class_getter combine : self { load("combine") }
   class_getter fixture : self { load("fixture") }
+
+  class_getter combine : self { load("combine") }
   class_getter suggest : self { load("suggest") }
 
   class_getter udicts : Array(String) do
@@ -33,23 +34,21 @@ class CV::VpDict
 
   CACHE = {} of String => self
 
-  def self.load(dname : String, stype : String = "_base", reset : Bool = false)
-    bonus = stype == "_base" ? 0 : 1
-
-    CACHE[dname + "/" + stype] ||=
+  def self.load(dname : String, reset : Bool = false)
+    CACHE[dname] ||=
       case dname
       when "trungviet", "cc_cedict", "trich_dan", "tradsim"
-        new(path(dname), dtype: 0, p_min: 4, reset: reset)
+        new(path(dname), dtype: 0, reset: reset)
       when "essence", "fixture"
-        new(path(dname), dtype: 1, p_min: 4, reset: reset)
+        new(path(dname), dtype: 1, reset: reset)
       when "suggest", "hanviet", "binh_am"
-        new(path("core/#{dname}"), dtype: 1, p_min: 3, reset: reset)
+        new(path("core/#{dname}"), dtype: 1, reset: reset)
       when "regular"
-        new(path("core/regular/#{stype}"), dtype: 2 + bonus, p_min: 2, reset: reset)
+        new(path("core/regular"), dtype: 2, reset: reset)
       when "combine"
-        new(path("core/combine/#{stype}"), dtype: 4 + bonus, p_min: 1, reset: reset)
+        new(path("core/combine"), dtype: 4, reset: reset)
       else
-        new(path("uniq/#{dname}/#{stype}"), dtype: 4 + bonus, p_min: 1, reset: reset)
+        new(path("uniq/#{dname}"), dtype: 4, reset: reset)
       end
   end
 
@@ -57,40 +56,25 @@ class CV::VpDict
     File.join(DIR, "#{label}.tsv")
   end
 
-  def self.for_lookup(dname : String, stype : String)
-    {
-      {VpDict.load(dname, stype), "Riêng"},
-      {VpDict.load(dname), "Chung"},
-      {VpDict.load("regular", stype), "Riêng"},
-      {VpDict.regular, "Chung"},
-    }
-  end
-
-  def self.for_convert(dname : String, stype : String = "chivi")
-    [
-      essence,                # punctuations, normalize..
-      regular,                # public common
-      fixture,                # fixed terms
-      load(dname),            # public unique
-      load("regular", stype), # private common
-      load(dname, stype),     # private unique
-    ]
-  end
-
   #########################
 
   getter file : String
+  getter size = 0
 
   getter trie = VpTrie.new
   getter data = [] of VpTerm
 
-  getter size = 0
-
   getter dtype : Int32 # dict type
-  getter p_min : Int32 # minimal user power required
 
-  def initialize(@file : String, @dtype = 1, @p_min = 1, reset = false)
-    load!(@file) if !reset && File.exists?(@file)
+  # forward_missing_to @data
+  delegate scan, to: @trie
+
+  def initialize(@file : String, @dtype = 1, reset = false)
+    if File.exists?(@file)
+      load!(@file) unless reset
+    else
+      FileUtils.mkdir_p(File.dirname(@file))
+    end
   end
 
   def load!(file : String = @file) : Nil
@@ -103,86 +87,65 @@ class CV::VpDict
       puts "<vp_dict> [#{file}] error on `#{line}`: #{err}]".colorize.red
     end
 
-    tspan = Time.monotonic - start
-    puts "- <vp_dict> [#{file}] loaded: #{lines.size} lines, \
-          time: #{tspan.total_milliseconds.round.to_i}ms".colorize.green
-  end
-
-  def new_term(key : String, val = [""], attr = "", rank = 3_u8, mtime = 0_u32, uname = "~")
-    VpTerm.new(key, val, attr, rank, mtime, uname)
-  end
-
-  def new_term(term : VpTerm, mtime = term.mtime, uname = term.uname)
-    VpTerm.new(term.key, term.val, term.attr, term.rank, mtime, uname)
-  end
-
-  def set(key : String, val : Array(String), attr = "")
-    set(new_term(key, val, attr))
+    tspan = (Time.monotonic - start).total_milliseconds.round
+    puts "- <vp_dict> [#{file}] loaded: #{lines.size} lines, time: #{tspan}ms".colorize.green
   end
 
   def set(term : VpTerm) : VpTerm?
-    # find existing node or force creating new one
-    node = @trie.find!(term.key)
-
-    if prev = node.term
-      # do not record if term is outdated
-      return nil if term.mtime < prev.mtime
-
-      if term.amend?(prev) # skipping previous entry if edit under 5 minutes
-        prev._flag = 2_u8
-        term._prev = prev._prev
-      else
-        prev._flag = 1_u8
-        term._prev = prev
-      end
-    else
-      @size += 1
-    end
-
     @data << term
-    node.push(term)
+    return unless @trie.find!(term.key).push!(term)
+    @size += 1 if term.state == "Thêm"
+    term
   end
 
-  def set!(new_term : VpTerm) : VpTerm?
-    set(new_term).try do
-      FileUtils.mkdir_p(File.dirname(@file))
-      File.open(@file, "a") { |io| io << '\n'; new_term.to_s(io, dtype: @dtype) }
-      new_term
-    end
+  def set!(term : VpTerm) : VpTerm?
+    return unless set(term)
+    File.open(@file, "a") { |io| io << '\n'; term.to_s(io, dtype: @dtype) }
+    term
   end
 
   def find(key : String) : VpTerm?
-    @trie.find(key).try(&.term)
+    @trie.find(key).try(&.base)
   end
 
-  def find!(key : String) : VpTerm
-    find(key) || gen_term(key, [""])
+  def find(key : String, uname : String) : Tuple(VpTerm?, VpTerm?)
+    return {nil, nil} unless node = @trie.find(key)
+    {node.base, node.privs[uname]?}
   end
 
-  delegate scan, to: @trie
-
-  def each : Nil
-    @trie.each do |node|
-      node.term.try { |x| yield x }
-    end
-  end
+  # set prune level
+  # 1: delete overwritten entries
+  # 2: delete shadowed entries (update in under 5 minutes)
+  # 3: do not delete anything
 
   def save!(file = @file, prune = 2_u8) : Nil
-    start = Time.monotonic
+    return if prune < 1
 
-    ::FileUtils.mkdir_p(File.dirname(file))
-    @data.sort_by! { |x| {x.mtime, x.key.size, x.key} }
+    start = Time.monotonic
+    count = 0
+
+    @data.sort_by! { |x| {x.mtime, x.key.size, x.key} } if prune < 3
 
     File.open(@file, "w") do |io|
       @data.each do |term|
-        next unless term._flag < prune
+        next if term._flag >= prune
+
+        count += 1
         term.to_s(io, dtype: dtype)
         io << '\n'
       end
     end
 
-    tspan = Time.monotonic - start
-    puts "- <vp_dict> [#{file}] saved: #{@size} entries, \
-          time: #{tspan.total_milliseconds.round.to_i}ms".colorize.yellow
+    tspan = (Time.monotonic - start).total_milliseconds.round
+    puts "- <vp_dict> [#{file}] saved, #{count} entries, time: #{tspan}ms".colorize.yellow
+  end
+
+  # check if user has privilege to add new term for this dict
+  def allow?(privi : Int32)
+    case @dtype
+    when 2 then privi > 1
+    when 4 then privi > 0
+    else        privi > 2
+    end
   end
 end
