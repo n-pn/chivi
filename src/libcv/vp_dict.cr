@@ -4,7 +4,7 @@ require "file_utils"
 require "./vp_dict/*"
 
 class CV::VpDict
-  DIR = "db/vpdicts"
+  DIR = "var/vpdicts"
   ::FileUtils.mkdir_p("#{DIR}/core")
   ::FileUtils.mkdir_p("#{DIR}/uniq")
 
@@ -41,10 +41,10 @@ class CV::VpDict
         new(path(dname), dtype: 0, reset: reset)
       when "essence", "fixture"
         new(path(dname), dtype: 1, reset: reset)
-      when "suggest", "hanviet", "binh_am"
+      when "hanviet", "binh_am"
         new(path("core/#{dname}"), dtype: 1, reset: reset)
-      when "regular"
-        new(path("core/regular"), dtype: 2, reset: reset)
+      when "regular", "suggest"
+        new(path("core/#{dname}"), dtype: 2, reset: reset)
       when "combine"
         new(path("core/combine"), dtype: 4, reset: reset)
       else
@@ -59,6 +59,7 @@ class CV::VpDict
   #########################
 
   getter file : String
+  getter ftab : String
   getter size = 0
 
   getter trie = VpTrie.new
@@ -70,11 +71,11 @@ class CV::VpDict
   delegate scan, to: @trie
 
   def initialize(@file : String, @dtype = 1, reset = false)
-    if File.exists?(@file)
-      load!(@file) unless reset
-    else
-      FileUtils.mkdir_p(File.dirname(@file))
-    end
+    @ftab = @file.sub(".tsv", ".tab")
+    return if reset
+
+    load!(@file) if File.exists?(@file)
+    load!(@ftab) if File.exists?(@ftab)
   end
 
   def load!(file : String = @file) : Nil
@@ -100,7 +101,7 @@ class CV::VpDict
 
   def set!(term : VpTerm) : VpTerm?
     return unless set(term)
-    File.open(@file, "a") { |io| io << '\n'; term.to_s(io, dtype: @dtype) }
+    File.open(@ftab, "a") { |io| io << '\n'; term.to_s(io, dtype: @dtype) }
     term
   end
 
@@ -121,23 +122,18 @@ class CV::VpDict
   def save!(file = @file, prune = 2_u8) : Nil
     return if prune < 1
 
-    start = Time.monotonic
-    count = 0
+    data = @data.reject { |x| x.key.empty? || x._flag >= prune }
+    base_arr, user_arr = data.partition(&.mtime.== 0)
+    save_list!(@file, base_arr)
+    save_list!(@ftab, user_arr)
+  end
 
-    @data.sort_by! { |x| {x.mtime, x.key.size, x.key} } if prune < 3
-
-    File.open(@file, "w") do |io|
-      @data.each do |term|
-        next if term._flag >= prune
-
-        count += 1
-        term.to_s(io, dtype: dtype)
-        io << '\n'
-      end
-    end
-
-    tspan = (Time.monotonic - start).total_milliseconds.round
-    puts "- <vp_dict> [#{file}] saved, #{count} entries, time: #{tspan}ms".colorize.yellow
+  private def save_list!(file : String, list : Array(VpTerm))
+    return if list.empty?
+    list.sort_by! { |x| {x.mtime, x.key.size, x.key} }
+    data = list.map { |x| String.build { |io| x.to_s(io, dtype: @dtype) } }
+    File.open(file, "w") { |io| data.join(io, "\n") }
+    puts "- <vp_dict> [#{file}] saved, entries: #{list.size} ".colorize.yellow
   end
 
   # check if user has privilege to add new term for this dict
