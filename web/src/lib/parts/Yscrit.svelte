@@ -92,7 +92,7 @@
   }
 
   crit-head {
-    @include flex($gap: 0.3rem);
+    @include flex($gap: 0.25rem);
     position: sticky;
     top: 0;
     z-index: 9;

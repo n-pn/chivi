@@ -1,28 +1,17 @@
 require "./base_ctrl"
 
-class CV::UserCtrl < CV::BaseCtrl
+class CV::CvuserCtrl < CV::BaseCtrl
   def _self
     return_user
-  rescue err
-    puts err
-    render_json({
-      uname:  "Khách",
-      privi:  -1,
-      wtheme: "light",
-      tlmode: "0",
-    })
   end
 
   def logout
-    @_cv_user = nil
-
-    session.delete("cu_dname")
-    session.delete("cu_privi")
-    session.delete("cu_tlmode")
-    session.delete("cu_wtheme")
+    @_cvuser = nil
+    session.delete("u_dname")
+    session.delete("u_privi")
 
     save_session!
-    render_json([1])
+    view_json([1])
   end
 
   def login
@@ -50,51 +39,47 @@ class CV::UserCtrl < CV::BaseCtrl
   end
 
   def update
-    if _cv_user.privi >= 0
+    if u_privi >= 0
       wtheme = params.fetch_str("wtheme", "light")
       tlmode = params.fetch_int("tlmode", min: 0, max: 2)
 
-      session["cu_wtheme"] = wtheme
-      session["cu_tlmode"] = tlmode
+      session["_wtheme"] = wtheme
+      session["_tlmode"] = tlmode
 
-      _cv_user.update!({wtheme: wtheme, tlmode: tlmode})
+      _cvuser.update!({wtheme: wtheme, tlmode: tlmode})
     end
 
     return_user
   end
 
   def passwd
-    raise "Quyền hạn không đủ" if _cv_user.privi < 0
-
-    wtheme = params.fetch_str("wtheme", "light")
-    tlmode = params.fetch_int("tlmode", min: 0, max: 2)
+    raise "Quyền hạn không đủ" if u_privi < 0
 
     old_upass = params.fetch_str("old_pass").strip
-    puts ["old pass: ", old_upass]
-
-    raise "Mật khẩu cũ không đúng" unless _cv_user.authentic?(old_upass)
+    raise "Mật khẩu cũ không đúng" unless _cvuser.authentic?(old_upass)
 
     new_upass = params.fetch_str("new_pass").strip
     confirmation = params.fetch_str("confirm_pass").strip
     raise "Mật khẩu mới quá ngắn" unless new_upass.size >= 7
     raise "Mật khẩu không trùng khớp" unless new_upass == confirmation
 
-    _cv_user.upass = new_upass
-    _cv_user.save!
+    _cvuser.upass = new_upass
+    _cvuser.save!
+
     render_json([1])
   rescue err
     halt!(400, err.message)
   end
 
   private def sigin_user!(user : Cvuser)
-    @_cv_user = user
-    session["cu_dname"] = user.uname
-    session["cu_privi"] = user.privi
-    session["cu_wtheme"] = user.wtheme
-    session["cu_tlmode"] = user.tlmode
+    @_cvuser = user
+    session["u_dname"] = user.uname
+    session["u_privi"] = user.privi
+    session["_wtheme"] = user.wtheme
+    session["_tlmode"] = user.tlmode
   end
 
-  private def return_user(user = _cv_user)
+  private def return_user(user = _cvuser)
     save_session!
 
     render_json({

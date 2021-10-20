@@ -170,11 +170,7 @@ class CV::Cvbook
   CACHE_STR = RamCache(String, self).new
 
   def self.load!(id : Int64)
-    CACHE_INT.get(id) { yield }
-  end
-
-  def self.load!(id : Int64)
-    load!(id) { find!({id: id}) }
+    CACHE_INT.get(id) { find!({id: id}) }
   end
 
   def self.load!(bhash : String)

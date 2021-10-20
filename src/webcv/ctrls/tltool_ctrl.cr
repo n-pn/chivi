@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::ToolCtrl < CV::BaseCtrl
+class CV::TlToolCtrl < CV::BaseCtrl
   def convert
     input = params.fetch_str("input").gsub("\t", "  ")
     lines = TextUtils.split_text(input, spaces_as_newline: false)
@@ -28,7 +28,7 @@ class CV::ToolCtrl < CV::BaseCtrl
 
   private def convert(lines : Array(String), output : IO)
     dname = params.fetch_str("dname", "combine")
-    cvmtl = MtCore.generic_mtl(dname, _cv_user.uname)
+    cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
 
     lines.each_with_index do |line, idx|
       output << "\n" if idx > 0

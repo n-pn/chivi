@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::DictCtrl < CV::BaseCtrl
+class CV::VpdictCtrl < CV::BaseCtrl
   alias Dinfo = Tuple(String, String, Int32) # dict name, dict slug, entries count
 
   getter core_dicts : Array(Dinfo) do
@@ -139,13 +139,13 @@ class CV::DictCtrl < CV::BaseCtrl
     words = params.json("words").as_a
 
     bdict = VpDict.load(dname)
-    cvmtl = MtCore.generic_mtl(dname, _cv_user.uname)
+    cvmtl = MtCore.generic_mtl(dname, u_dname)
 
     json_view do |jb|
       jb.object do
         words.each do |word|
           jb.field (word.as_s) do
-            view = VpTermView.new(word.as_s, bdict, cvmtl, _cv_user.uname)
+            view = VpTermView.new(word.as_s, bdict, cvmtl, u_dname)
             view.to_json(jb)
           end
         end
@@ -159,7 +159,7 @@ class CV::DictCtrl < CV::BaseCtrl
   def upsert
     dname = params["dname"]
     vdict = VpDict.load(dname)
-    return halt!(500, "Không đủ quyền hạn để sửa từ!") unless vdict.allow?(cu_privi)
+    return halt!(500, "Không đủ quyền hạn để sửa từ!") unless vdict.allow?(u_privi)
 
     key = params.fetch_str("key").strip
     val = params.fetch_str("val").split(" / ").map(&.strip)
@@ -171,7 +171,7 @@ class CV::DictCtrl < CV::BaseCtrl
     attr = params.fetch_str("attr", "")
     rank = params.fetch_str("rank", "").to_u8? || 3_u8
 
-    vpterm = VpTerm.new(key, val, attr, rank, uname: cu_dname)
+    vpterm = VpTerm.new(key, val, attr, rank, uname: u_dname)
     vpterm.to_priv! if params["stype"]? == "_priv"
 
     return halt!(501, "Nội dung không thay đổi!") unless vdict.set!(vpterm)

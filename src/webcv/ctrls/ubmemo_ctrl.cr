@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::MemoCtrl < CV::BaseCtrl
+class CV::UbmemoCtrl < CV::BaseCtrl
   def cvbook
   end
 
@@ -8,7 +8,7 @@ class CV::MemoCtrl < CV::BaseCtrl
     skip = params.fetch_int("skip", min: 0)
     take = params.fetch_int("take", min: 15, max: 30)
 
-    query = Ubmemo.query.where("cvuser_id = #{_cv_user.id}")
+    query = Ubmemo.query.where("cvuser_id = #{_cvuser.id}")
     query = query.limit(take).offset(skip).order_by(bumped: :desc)
 
     json_view do |jb|
@@ -37,20 +37,20 @@ class CV::MemoCtrl < CV::BaseCtrl
   end
 
   def show : Nil
-    raise "Người dùng chưa đăng nhập!" if _cv_user.privi < 0
+    raise "Người dùng chưa đăng nhập!" if _cvuser.privi < 0
 
     cvbook_id = params["book_id"].to_i64
-    ubmemo = Ubmemo.find_or_new(_cv_user.id, cvbook_id)
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook_id)
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
     halt!(500, err.message)
   end
 
   def update_access
-    raise "Người dùng chưa đăng nhập!" if _cv_user.privi < 0
+    raise "Người dùng chưa đăng nhập!" if _cvuser.privi < 0
 
     cvbook_id = params["book_id"].to_i64
-    ubmemo = Ubmemo.find_or_new(_cv_user.id, cvbook_id)
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook_id)
 
     ubmemo.mark!(
       Zhseed.index(params.fetch_str("sname")),
@@ -67,12 +67,12 @@ class CV::MemoCtrl < CV::BaseCtrl
   end
 
   def update_status
-    raise "Người dùng chưa đăng nhập!" if _cv_user.privi < 0
+    raise "Người dùng chưa đăng nhập!" if _cvuser.privi < 0
 
     cvbook_id = params["book_id"].to_i64
     status = params.fetch_str("status", "default")
 
-    ubmemo = Ubmemo.find_or_new(_cv_user.id, cvbook_id)
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook_id)
     ubmemo.update!({status: status})
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err

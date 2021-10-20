@@ -77,6 +77,10 @@ dependencies:
   icu:
     github: olbat/icu.cr
 
+  cmark:
+    github: amauryt/cr-cmark-gfm
+    branch: master
+
 development_dependencies:
   garnet_spec:
     github: amberframework/garnet-spec

@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::CritCtrl < CV::BaseCtrl
+class CV::YscritCtrl < CV::BaseCtrl
   def index
     page = params.fetch_int("page", min: 1)
     take = params.fetch_int("take", min: 10, max: 20)
@@ -108,7 +108,7 @@ class CV::CritCtrl < CV::BaseCtrl
       jb.field "stars", crit.stars
 
       jb.field "ztext", mtl ? crit.ztext : ""
-      jb.field "vhtml", mtl ? crit.cvdata(mode: _cv_user.tlmode) : crit.vhtml
+      jb.field "vhtml", mtl ? crit.cvdata(mode: _cvuser.tlmode) : crit.vhtml
 
       jb.field "like_count", crit.like_count
       jb.field "repl_count", crit.repl_count

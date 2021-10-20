@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::ChapCtrl < CV::BaseCtrl
+class CV::NvchapCtrl < CV::BaseCtrl
   private def load_zhbook
     cvbook_id = params["book"].to_i64
     zname = Zhseed.index(params["sname"])
@@ -9,13 +9,13 @@ class CV::ChapCtrl < CV::BaseCtrl
 
   def index
     pgidx = params.fetch_int("page", min: 1)
-    imode = params.fetch_int("mode", min: 0, max: cu_privi)
+    imode = params.fetch_int("mode", min: 0, max: u_privi)
 
     zhbook = load_zhbook
-    imode = 1 if imode == 0 && zhbook.outdated?(cu_privi)
+    imode = 1 if imode == 0 && zhbook.outdated?(u_privi)
 
-    stale = 3.**(4 - cu_privi).minutes
-    utime, total = zhbook.refresh!(cu_privi, imode, ttl: stale)
+    stale = 3.**(4 - u_privi).minutes
+    utime, total = zhbook.refresh!(u_privi, imode, ttl: stale)
 
     render_json do |res|
       JSON.build(res) do |jb|
@@ -24,7 +24,7 @@ class CV::ChapCtrl < CV::BaseCtrl
           jb.field "utime", utime
 
           jb.field "wlink", zhbook.wlink
-          jb.field "crawl", zhbook.remote?(cu_privi)
+          jb.field "crawl", zhbook.remote?(u_privi)
 
           jb.field "total", total
 
@@ -54,11 +54,11 @@ class CV::ChapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    privi = _cv_user.privi
+    privi = _cvuser.privi
     imode = params.fetch_int("mode", min: 0, max: privi)
     lines = zhbook.chtext(chidx - 1, cpart, privi: privi, reset: imode > 1)
 
-    ubmemo = Ubmemo.find_or_new(_cv_user.id, zhbook.cvbook_id)
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, zhbook.cvbook_id)
     if privi >= 0 && !ubmemo.locked
       ubmemo.mark!(zhbook.zseed, chinfo.chidx, chinfo.title, chinfo.uslug, cpart)
     end
@@ -102,7 +102,7 @@ class CV::ChapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    min_fresh = _cv_user.privi < 2 ? 60 : 20
+    min_fresh = _cvuser.privi < 2 ? 60 : 20
     response.headers.add("Cache-Control", "private, min-fresh=#{min_fresh}")
     response.content_type = "text/plain; charset=utf-8"
 
@@ -117,8 +117,8 @@ class CV::ChapCtrl < CV::BaseCtrl
   private def convert(zhbook, chinfo, lines : Array(String), cpart : Int32, strio : IO)
     return if lines.empty?
 
-    cvmtl = MtCore.generic_mtl(zhbook.cvbook.bhash, _cv_user.uname)
-    mode = _cv_user.tlmode
+    cvmtl = MtCore.generic_mtl(zhbook.cvbook.bhash, _cvuser.uname)
+    mode = _cvuser.tlmode
 
     cvmtl.cv_title_full(lines[0], mode: mode).to_str(strio)
     strio << "\t" << "(#{cpart + 1}/#{chinfo.parts})" if chinfo.parts > 1
@@ -139,7 +139,7 @@ class CV::ChapCtrl < CV::BaseCtrl
 
   def upsert
     return 403, "Unsupported"
-    # return halt!(500, "Quyền hạn không đủ!") if _cv_user.privi < 2
+    # return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 2
     # zhbook = load_zhbook
     # chidx = params.fetch_int("chidx") { 1 }
 

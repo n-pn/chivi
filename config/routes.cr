@@ -16,43 +16,54 @@ Amber::Server.configure do
   end
 
   routes :api, "/api" do
-    get "/user/_self", CV::UserCtrl, :_self
-    get "/user/logout", CV::UserCtrl, :logout
-    post "/user/login", CV::UserCtrl, :login
-    post "/user/signup", CV::UserCtrl, :signup
-    put "/user/setting", CV::UserCtrl, :update
-    put "/user/passwd", CV::UserCtrl, :passwd
+    get "/user/_self", CV::CvuserCtrl, :_self
+    get "/user/logout", CV::CvuserCtrl, :logout
+    post "/user/login", CV::CvuserCtrl, :login
+    post "/user/signup", CV::CvuserCtrl, :signup
+    put "/user/setting", CV::CvuserCtrl, :update
+    put "/user/passwd", CV::CvuserCtrl, :passwd
 
-    get "/books", CV::BookCtrl, :index
-    get "/books/find/:bname", CV::BookCtrl, :find
-    get "/books/:bslug", CV::BookCtrl, :show
+    get "/books", CV::NvinfoCtrl, :index
+    get "/books/find/:bname", CV::NvinfoCtrl, :find
+    get "/books/:bslug", CV::NvinfoCtrl, :show
 
-    get "/chaps/:book/:sname", CV::ChapCtrl, :index
-    get "/chaps/:book/:sname/:chidx/:cpart", CV::ChapCtrl, :show
-    get "/chaps/:book/:sname/:chidx/:cpart/text", CV::ChapCtrl, :text
-    post "/chaps/:book/:sname", CV::ChapCtrl, :upsert
+    get "/chaps/:book/:sname", CV::NvchapCtrl, :index
+    get "/chaps/:book/:sname/:chidx/:cpart", CV::NvchapCtrl, :show
+    get "/chaps/:book/:sname/:chidx/:cpart/text", CV::NvchapCtrl, :text
+    post "/chaps/:book/:sname", CV::NvchapCtrl, :upsert
 
-    get "/crits", CV::CritCtrl, :index
-    get "/crits/:crit", CV::CritCtrl, :show
-    get "/crits/:crit/replies", CV::CritCtrl, :replies
+    get "/crits", CV::YscritCtrl, :index
+    get "/crits/:crit", CV::YscritCtrl, :show
+    get "/crits/:crit/replies", CV::YscritCtrl, :replies
 
-    get "/_self/books", CV::MemoCtrl, :cvbook
-    get "/_self/books/access", CV::MemoCtrl, :access
+    get "/_self/books", CV::UbmemoCtrl, :cvbook
+    get "/_self/books/access", CV::UbmemoCtrl, :access
 
-    get "/_self/books/:book_id", CV::MemoCtrl, :show
-    put "/_self/books/:book_id/status", CV::MemoCtrl, :update_status
-    put "/_self/books/:book_id/access", CV::MemoCtrl, :update_access
+    get "/_self/books/:book_id", CV::UbmemoCtrl, :show
+    put "/_self/books/:book_id/status", CV::UbmemoCtrl, :update_status
+    put "/_self/books/:book_id/access", CV::UbmemoCtrl, :update_access
 
-    get "/dicts", CV::DictCtrl, :index
-    get "/dicts/:dname", CV::DictCtrl, :show
-    get "/dicts/:dname/lookup", CV::DictCtrl, :lookup
-    put "/dicts/:dname/lookup", CV::DictCtrl, :lookup
-    get "/dicts/:dname/search", CV::DictCtrl, :search
-    put "/dicts/:dname/search", CV::DictCtrl, :search
-    put "/dicts/:dname/upsert", CV::DictCtrl, :upsert
+    get "/dicts", CV::VpdictCtrl, :index
+    get "/dicts/:dname", CV::VpdictCtrl, :show
+    get "/dicts/:dname/lookup", CV::VpdictCtrl, :lookup
+    put "/dicts/:dname/lookup", CV::VpdictCtrl, :lookup
+    get "/dicts/:dname/search", CV::VpdictCtrl, :search
+    put "/dicts/:dname/search", CV::VpdictCtrl, :search
+    put "/dicts/:dname/upsert", CV::VpdictCtrl, :upsert
 
-    post "/tools/convert/:dname", CV::ToolCtrl, :convert
-    get "/qtran/:name", CV::ToolCtrl, :show
+    post "/tools/convert/:dname", CV::TlToolCtrl, :convert
+    get "/qtran/:name", CV::TlToolCtrl, :show
+
+    get "/boards/", CV::DboardCtrl, :index
+    get "/boards/:dboard", CV::DboardCtrl, :show
+
+    get "/topics", CV::DtopicCtrl, :index
+    get "/boards/:dboard/topics", CV::DtopicCtrl, :index
+
+    get "/topics/:dtopic", CV::DtopicCtrl, :show
+
+    post "/boards/:dboard/new", CV::DtopicCtrl, :create
+    put "/boards/:dboard/:dtopic", CV::DtopicCtrl, :update
 
     get "/tlspecs/", CV::TlspecCtrl, :index
     get "/tlspecs/:ukey", CV::TlspecCtrl, :show

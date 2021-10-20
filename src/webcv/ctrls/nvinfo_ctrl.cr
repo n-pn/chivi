@@ -1,6 +1,6 @@
 require "./base_ctrl"
 
-class CV::BookCtrl < CV::BaseCtrl
+class CV::NvinfoCtrl < CV::BaseCtrl
   private def extract_params
     page = params.fetch_int("page", min: 1)
     take = params.fetch_int("take", min: 1, max: 24)
@@ -29,24 +29,20 @@ class CV::BookCtrl < CV::BaseCtrl
     query.sort_by(params.fetch_str("order", "bumped"))
     response.headers.add("Cache-Control", "public, min-fresh=180")
 
-    render_json do |res|
-      JSON.build(res) do |jb|
-        jb.object do
-          jb.field "total", total
-          jb.field "pgidx", pgidx
-          jb.field "pgmax", (total - 1) // limit + 1
+    json_view do |jb|
+      jb.object {
+        jb.field "total", total
+        jb.field "pgidx", pgidx
+        jb.field "pgmax", (total - 1) // limit + 1
 
-          jb.field "books" do
-            jb.array do
-              if total > 0
-                query.limit(limit).offset(offset).with_author.each do |book|
-                  CvbookView.render(jb, book, full: false)
-                end
-              end
+        jb.field "books" {
+          jb.array {
+            query.limit(limit).offset(offset).with_author.each do |book|
+              CvbookView.render(jb, book, full: false)
             end
-          end
-        end
-      end
+          }
+        }
+      }
     end
   rescue err
     puts err.inspect_with_backtrace
@@ -67,8 +63,8 @@ class CV::BookCtrl < CV::BaseCtrl
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
-    cvbook.bump! if cu_privi >= 0
-    ubmemo = Ubmemo.find_or_new(_cv_user.id, cvbook.id)
+    cvbook.bump! if u_privi >= 0
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook.id)
 
     if ubmemo.lr_chidx == 0
       ubmemo.lr_zseed = cvbook.zhseed_ids.find(0, &.> 0)

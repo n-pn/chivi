@@ -51,7 +51,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
   end
 
   def create
-    return halt! 403, "Quyền hạn của bạn không đủ, mời thử lại sau." if cu_privi < 0
+    return halt! 403, "Quyền hạn của bạn không đủ, mời thử lại sau." if u_privi < 0
     return unless ztext = extract_ztext
     return unless unote = extract_unote
 
