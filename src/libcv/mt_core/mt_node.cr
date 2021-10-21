@@ -103,7 +103,7 @@ class CV::MtNode
   def to_int?
     case @tag
     when .ndigit? then @val.to_i64?
-    when .nhanzi? then MtUtil.to_integer(@val)
+    when .nhanzi? then MtUtil.to_integer(@key)
     else               nil
     end
   rescue err

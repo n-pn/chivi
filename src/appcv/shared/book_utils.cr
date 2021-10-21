@@ -58,7 +58,6 @@ module CV::BookUtils
     input.split(/[\r\n]/).map do |line|
       line = line.strip
       line.empty? ? line : libcv.cv_plain(line).to_s
-      line
     end
   end
 

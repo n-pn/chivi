@@ -2,7 +2,7 @@ require "../mt_util"
 
 module CV::TlRule
   def fold_year!(prev : MtNode, node : MtNode, appro : Int32 = 0)
-    node.set!("năm")
+    node.val = "năm"
 
     if (number = node.succ?) && (quanti = number.succ?)
       if number.numbers? && quanti.key == "月"
@@ -19,7 +19,7 @@ module CV::TlRule
   end
 
   def fold_month!(prev : MtNode, node : MtNode, appro : Int32 = 0)
-    node.set!("tháng")
+    node.val = "tháng"
     date = fold_day?(node.succ?)
 
     if date || appro == -1
@@ -40,8 +40,8 @@ module CV::TlRule
     return unless num.numbers? && day.key == "日" || day.key == "号"
 
     case day.key
-    when "日" then day.set!("ngày")
-    when "号" then day.set!(num.to_int?.try(&.< 11) ? "mồng" : "ngày")
+    when "日" then day.val = "ngày"
+    when "号" then day.val = num.to_int?.try(&.< 11) ? "mồng" : "ngày"
     else          return
     end
 

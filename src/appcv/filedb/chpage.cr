@@ -1,3 +1,4 @@
+require "json"
 require "file_utils"
 require "../../cutil/ram_cache"
 
