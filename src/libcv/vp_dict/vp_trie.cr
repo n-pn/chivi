@@ -26,7 +26,7 @@ class CV::VpTrie
       char = chars.unsafe_fetch(i)
       break unless node = node._next[char]?
       next unless term = node.base
-      yield term
+      yield term unless term.empty?
     end
   end
 
@@ -36,8 +36,12 @@ class CV::VpTrie
     idx.upto(chars.size - 1) do |i|
       char = chars.unsafe_fetch(i)
       break unless node = node._next[char]?
-      next unless term = node.privs[uname]? || node.base
-      yield term
+
+      if (term = node.privs[uname]?) && !term.empty?
+        yield term
+      elsif (term = node.base) && !term.empty?
+        yield term
+      end
     end
   end
 

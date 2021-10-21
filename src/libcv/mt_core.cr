@@ -75,7 +75,7 @@ class CV::MtCore
 
       @dicts.each do |dict|
         dict.scan(input, @uname, idx) do |term|
-          terms[term.key.size] = {dict.dtype, term} unless term.empty?
+          terms[term.key.size] = {dict.dtype, term}
         end
       end
 
