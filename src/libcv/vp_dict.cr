@@ -27,9 +27,9 @@ class CV::VpDict
   class_getter suggest : self { load("suggest") }
 
   class_getter udicts : Array(String) do
-    dirs = Dir.glob("#{DIR}/uniq/*/")
-    dirs.sort_by! { |dir| File.info(dir).modification_time.to_unix.- }
-    dirs.map { |dir| File.basename(dir) }
+    files = Dir.glob("#{DIR}/uniq/*.tab")
+    files.sort_by! { |f| File.info(f).modification_time.to_unix.- }
+    files.map { |f| File.basename(f, ".tab") }
   end
 
   CACHE = {} of String => self

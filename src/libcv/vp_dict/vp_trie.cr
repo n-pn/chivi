@@ -42,15 +42,14 @@ class CV::VpTrie
   end
 
   def push!(term : VpTerm) : VpTerm?
-    uname = term.uname
-
     # term is a user private entry if uname is prefixed with a "!"
-    if uname[0]? != '!'
-      return unless newer?(term, @base)
-      @base = term
-    else
+    if term.is_priv
+      uname = term.uname
       return unless newer?(term, @privs[uname]?)
       @privs[uname] = term
+    else
+      return unless newer?(term, @base)
+      @base = term
     end
   end
 

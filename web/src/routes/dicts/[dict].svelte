@@ -22,7 +22,7 @@
 </script>
 
 <script>
-  import { page } from '$app/stores'
+  import { page, session } from '$app/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
   import { get_rtime_short } from '$atoms/RTime.svelte'
@@ -80,6 +80,12 @@
   function reset_query() {
     for (let key in query) query[key] = ''
     query = query
+  }
+
+  function special_type(uname) {
+    if (!uname) return 'a'
+    if (uname.charAt(0) != '!') return uname == $session.uname ? 'b' : 'c'
+    return uname == '!' + $session.uname ? 'd' : 'e'
   }
 </script>
 
@@ -216,7 +222,7 @@
               <td class="-rank">
                 <a href="{$page.path}?rank={rank}">{render_rank(rank)}</a>
               </td>
-              <td class="-uname">
+              <td class="-uname  _{special_type(uname)}">
                 <a href="{$page.path}?uname={uname}">{uname}</a>
               </td>
               <td class="-mtime">{render_time(mtime)} </td>
@@ -348,10 +354,28 @@
     }
   }
 
-  .term._1,
-  .term._2 {
-    @include bgcolor(mute);
-    text-decoration: line-through;
-    font-style: italic;
+  .term {
+    &._1,
+    &._2 {
+      @include bgcolor(neutral, 5, 3);
+      text-decoration: line-through;
+      font-style: italic;
+    }
+  }
+
+  ._b {
+    @include fgcolor(success);
+  }
+
+  ._c {
+    @include fgcolor(primary);
+  }
+
+  ._d {
+    @include fgcolor(warning);
+  }
+
+  ._e {
+    @include fgcolor(harmful);
   }
 </style>
