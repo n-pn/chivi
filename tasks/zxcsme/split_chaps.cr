@@ -142,11 +142,16 @@ class CV::Zxcs::SplitText
     puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
 
     return unless chaps = split_chapters(snvid, input)
+    chaps = cleanup_chaps(chaps)
 
-    utime = File.info(inp_file).modification_time.to_s
-    index = save_texts!(chaps, out_dir, utime)
+    index = chaps.map_with_index(1) do |chap, idx|
+      [(idx + 1).to_s, chap.title, chap.label]
+    end
 
-    return if good_enough?(index)
+    if good_enough?(index)
+      save_texts!(chaps, out_dir, inp_file)
+      return
+    end
 
     puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
     print "\nChoice (r: redo, d: delete, s: delete + exit, else: keep): "
@@ -154,7 +159,7 @@ class CV::Zxcs::SplitText
     STDIN.flush
     case char = STDIN.raw(&.read_char)
     when 'd', 's', 'r'
-      FileUtil.rm_rf(out_dir)
+      FileUtils.rm_rf(out_dir)
       puts "\n\n- [#{out_dir}] deleted! (choice: #{char})".colorize.red
 
       if char == 'r'
@@ -163,6 +168,7 @@ class CV::Zxcs::SplitText
         exit(0)
       end
     else
+      save_texts!(chaps, out_dir, inp_file)
       puts "\n\n- Entries [#{snvid}] saved!".colorize.yellow
     end
   end
@@ -191,15 +197,14 @@ class CV::Zxcs::SplitText
     exit(0)
   end
 
-  def save_texts!(input : Array(Array(String)), out_dir : String, utime : String)
+  def save_texts!(chaps, out_dir : String, inp_file : String)
+    utime = File.info(inp_file).modification_time.to_s
+
     snvid = File.basename(out_dir)
-    chaps = format_chaps(input)
     FileUtils.mkdir_p(out_dir)
 
-    index = [] of Array(String)
-
     chaps.each_slice(128).with_index do |slice, idx|
-      paged = [] of String
+      chlist = [] of String
 
       out_zip = File.join(out_dir, "#{idx}.zip")
       out_idx = "#{out_dir}/#{idx}.tsv"
@@ -208,19 +213,17 @@ class CV::Zxcs::SplitText
         chidx = (chidx + 128 * idx)
         schid = chidx.to_s
 
-        index << [schid, schid, chap.title, chap.label]
-
         chinfo = Chpage.new([schid, chap.title, chap.label, utime], chidx)
         chtext = Chtext.new("zxcs_me", snvid, chinfo)
 
-        chtext.save!(chap.lines)
-        paged << chinfo.to_s
+        chtext.save!(chap.lines, zipping: false)
+        chlist << "#{schid}\t#{chinfo}"
       end
 
-      File.write(out_idx, paged.join('\n'))
+      `zip -jqm #{out_zip} #{out_dir}/*.txt`
+      File.write(out_idx, chlist.join('\n'))
+      puts "#{out_idx} saved!"
     end
-
-    index
   end
 
   private def split_chapters(snvid : String, lines : Array(String))
@@ -345,7 +348,7 @@ class CV::Zxcs::SplitText
     chaps
   end
 
-  def format_chaps(input : Array(Array(String)))
+  def cleanup_chaps(input : Array(Array(String)))
     while is_intro?(input.first)
       input.shift
     end
@@ -387,13 +390,13 @@ class CV::Zxcs::SplitText
   end
 
   private def good_enough?(index : Array(Array(String)))
-    idx, _, title, _ = index.last
+    idx, title, _ = index.last
     return true if title.includes?("第#{idx}章")
 
     bads = [] of String
 
     index.each do |info|
-      _, _, title, label = info
+      _, title, label = info
 
       case label
       when "序", "外传", "番外", "外篇", "番外篇",

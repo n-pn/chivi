@@ -81,7 +81,7 @@ class CV::Chtext
     @title
   end
 
-  def save!(input : Array(String)) : Nil
+  def save!(input : Array(String), zipping = true) : Nil
     return if input.empty?
     @title = input[0]
 
@@ -90,7 +90,7 @@ class CV::Chtext
 
     if @infos.chars < CHARS * 1.5
       @infos.parts = 1
-      return save_part!(input, 0)
+      return save_part!(input, 0, zipping: zipping)
     end
 
     parts = (@infos.chars / CHARS).round.to_i
@@ -105,7 +105,7 @@ class CV::Chtext
       next if count < limit
 
       lines.unshift(title) if parts > 0
-      save_part!(lines, parts)
+      save_part!(lines, parts, zipping: zipping)
       parts += 1
 
       lines = [] of String
@@ -114,17 +114,17 @@ class CV::Chtext
 
     unless lines.empty?
       lines.unshift(title) if parts > 0
-      save_part!(lines, parts)
+      save_part!(lines, parts, zipping: zipping)
       parts += 1
     end
 
     @infos.parts = parts
   end
 
-  def save_part!(lines : Array(String), part = 0) : Nil
+  def save_part!(lines : Array(String), part = 0, zipping = true) : Nil
     file = "#{@chdir}/#{part_path(part)}"
     File.open(file, "w") { |io| lines.join(io, "\n") }
-    `zip -jqm #{@store} #{file}`
+    `zip -jqm #{@store} #{file}` if zipping
 
     # puts "- <zh_text> [#{file}] saved.".colorize.yellow
     @parts[part] = {lines, @infos.utime}
