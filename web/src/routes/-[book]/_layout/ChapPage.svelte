@@ -235,7 +235,7 @@
   }
 
   .-hide {
-    @include bps(display, none, $md: inline-block);
+    @include bps(display, none, $tm: inline-block);
   }
 
   .chinfo {

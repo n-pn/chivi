@@ -103,7 +103,7 @@
   }
 
   ._shift {
-    @include bps(padding-right, $lg: 30rem);
+    @include bps(padding-right, $ls: 30rem);
   }
 
   .footer {

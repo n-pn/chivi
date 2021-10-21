@@ -1,27 +1,32 @@
 @use './util' as *;
 
 // Breakpoint widths
-$bp-ss: rem(320px) !default; // minimum size
-$bp-xs: rem(360px) !default; // older phone, iphone se
-$bp-sm: rem(480px) !default; // Small screen / phone
-$bp-md: rem(600px) !default; // Small screen / phone
-$bp-lg: rem(720px) !default; // Medium screen / tablet
-$bp-xl: rem(960px) !default; // Large screen / desktop
-$bp-x2: rem(1200px) !default; // Extra large screen / wide desktop
-$bp-x3: rem(1440px) !default; // Extra large screen / wide desktop
-$bp-x4: rem(1680px) !default; // Extra large screen / wide desktop
-$bp-x5: rem(1920px) !default; // Extra large screen / wide desktop
+$bp-phone-sm: rem(320px) !default; // minimum size
+$bp-phone-md: rem(360px) !default; // older phone, iphone se
+$bp-phone-lg: rem(480px) !default; // Small screen / phone
+$bp-tablet-sm: rem(600px) !default; // Small screen / phone
+$bp-tablet-md: rem(720px) !default; // Medium screen / tablet
+$bp-tablet-lg: rem(840px) !default; // Medium screen / tablet
+$bp-laptop-sm: rem(960px) !default; // Large screen / desktop
+$bp-laptop-md: rem(1200px) !default; // Extra large screen / wide desktop
+$bp-laptop-lg: rem(1440px) !default; // Extra large screen / wide desktop
+$bp-desktop-sm: rem(1680px) !default; // Extra large screen / wide desktop
+$bp-desktop-md: rem(1920px) !default; // Extra large screen / wide desktop
+$bp-desktop-lg: rem(2160px) !default; // Extra large screen / wide desktop
 
 $breakpoints: (
-  xs: $bp-xs,
-  sm: $bp-sm,
-  md: $bp-md,
-  lg: $bp-lg,
-  xl: $bp-xl,
-  x2: $bp-x2,
-  x3: $bp-x3,
-  x4: $bp-x4,
-  x5: $bp-x5,
+  ps: $bp-phone-sm,
+  pm: $bp-phone-md,
+  pl: $bp-phone-lg,
+  ts: $bp-tablet-sm,
+  tm: $bp-tablet-md,
+  tl: $bp-tablet-lg,
+  ls: $bp-laptop-sm,
+  lm: $bp-laptop-md,
+  ll: $bp-laptop-lg,
+  ds: $bp-desktop-sm,
+  dm: $bp-desktop-md,
+  dl: $bp-desktop-lg,
 ) !default;
 
 @function bp-size($key) {
@@ -33,8 +38,8 @@ $breakpoints: (
   @return $key;
 }
 
-@mixin bp-min($min: sm) {
-  @if $min == null or $min == xs {
+@mixin bp-min($min: pm) {
+  @if $min == null or $min == ps {
     @content;
   } @else {
     $size: bp-size($min);
@@ -44,7 +49,7 @@ $breakpoints: (
   }
 }
 
-@mixin bp-max($max: xl) {
+@mixin bp-max($max: dm) {
   @if $max == null {
     @content;
   } @else {
@@ -55,7 +60,7 @@ $breakpoints: (
   }
 }
 
-@mixin bp-minmax($min: sm, $max: xl) {
+@mixin bp-minmax($min: sm, $max: dm) {
   $size-min: bp-size($min);
   $size-max: bp-size($max) - rem(1px);
   @media screen and (min-width: $size-min) and (max-width: $size-max) {
@@ -63,31 +68,21 @@ $breakpoints: (
   }
 }
 
-@mixin bps(
-  $props,
-  $xs: null,
-  $sm: null,
-  $md: null,
-  $lg: null,
-  $xl: null,
-  $x2: null,
-  $x3: null,
-  $x4: null,
-  $x5: null
+// prettier-ignore
+@mixin bps($props,
+  $ps: null, $pm: null, $pl: null,
+  $ts: null, $tm: null, $tl: null,
+  $ls: null, $lm: null, $ll: null,
+  $ds: null, $dm: null, $dl: null,
 ) {
-  $map: $xs;
+  $map: $ps;
 
   @if type-of($map) != map {
     $map: (
-      xs: $xs or null,
-      sm: $sm or null,
-      md: $md or null,
-      lg: $lg or null,
-      xl: $xl or null,
-      x2: $x2 or null,
-      x3: $x3 or null,
-      x4: $x4 or null,
-      x5: $x5 or null,
+      ps: $ps or null, pm: $pm or null, pl: $pl or null,
+      ts: $ts or null, tm: $tm or null, tl: $tl or null,
+      ls: $ls or null, lm: $lm or null, ll: $ll or null,
+      ds: $ds or null, dm: $dm or null, dl: $dl or null,
     );
   }
 

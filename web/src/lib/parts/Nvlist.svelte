@@ -18,15 +18,15 @@
 
     grid-template-columns: repeat(3, 1fr);
 
-    @include bp-min(sm) {
+    @include bp-min(pl) {
       grid-template-columns: repeat(4, 1fr);
     }
 
-    @include bp-min(md) {
+    @include bp-min(tm) {
       grid-template-columns: repeat(5, 1fr);
     }
 
-    @include bp-min(lg) {
+    @include bp-min(ls) {
       grid-template-columns: repeat(6, 1fr);
     }
   }

@@ -65,7 +65,7 @@
   }
 
   .lbl {
-    @include bps(display, none, $sm: inline);
+    @include bps(display, none, $pl: inline);
   }
 
   .val {

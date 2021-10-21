@@ -57,7 +57,7 @@
 
   list-grid {
     @include grid($size: minmax(var(--size, 17.5rem), 1fr));
-    @include bps(--size, 17.75rem, $md: 16.25rem, $lg: 17.75rem);
+    @include bps(--size, 17.75rem, $tm: 16.25rem, $lm: 17.75rem);
 
     grid-gap: 0 var(--gutter-sm);
   }

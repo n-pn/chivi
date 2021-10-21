@@ -130,10 +130,10 @@
   }
 
   .-txt {
-    @include bps(display, none, $md: inline);
+    @include bps(display, none, $tm: inline);
   }
 
   .-md {
-    @include bps(display, none, $md: inline-block);
+    @include bps(display, none, $tm: inline-block);
   }
 </style>

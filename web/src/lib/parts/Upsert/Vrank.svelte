@@ -44,7 +44,7 @@
   }
 
   .lbl {
-    @include bps(display, none, $sm: inline-block);
+    @include bps(display, none, $pl: inline-block);
   }
 
   .btn {

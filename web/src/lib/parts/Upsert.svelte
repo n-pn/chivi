@@ -446,7 +446,7 @@
 
   .m-btn._left {
     padding-right: 0.25rem;
-    @include bps(padding-left, 0.25rem, $sm: 0.5rem);
+    @include bps(padding-left, 0.25rem, $pl: 0.5rem);
     @include bdradi(0, $loc: right);
 
     > span {
@@ -454,7 +454,7 @@
     }
 
     > :global(svg) {
-      @include bps(display, none, $sm: inline-block);
+      @include bps(display, none, $pl: inline-block);
     }
   }
 

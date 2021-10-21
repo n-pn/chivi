@@ -98,8 +98,8 @@
 
     margin: 1rem 0;
 
-    @include bps(font-size, rem(13px), $md: rem(14px));
-    @include bps(line-height, 1.75rem, $md: 2rem);
+    @include bps(font-size, rem(13px), $pl: rem(14px));
+    @include bps(line-height, 1.75rem, $pl: 2rem);
 
     .-type {
       padding: 0 0.75em;

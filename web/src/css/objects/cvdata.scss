@@ -9,7 +9,7 @@
 
   font-family: var(--font-serif, serif);
 
-  @include bp-min(rem(840px)) {
+  @include bp-min(tl) {
     margin-left: 0;
     margin-right: 0;
 

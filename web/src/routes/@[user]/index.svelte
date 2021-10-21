@@ -74,8 +74,8 @@
     text-transform: uppercase;
 
     padding: 0 0.75rem;
-    @include bps(font-size, rem(13px), $md: rem(14px));
-    @include bps(line-height, 1.75rem, $md: 2rem);
+    @include bps(font-size, rem(13px), $tm: rem(14px));
+    @include bps(line-height, 1.75rem, $tm: 2rem);
 
     @include bdradi();
     @include clamp($width: null);

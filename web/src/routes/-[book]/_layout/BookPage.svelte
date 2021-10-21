@@ -205,10 +205,10 @@
     margin-bottom: 0.75rem;
 
     @include fgcolor(secd);
-    @include bps(float, left, $md: right);
-    @include bps(width, 100%, $md: 70%, $lg: 75%);
-    @include bps(padding-left, 0, $md: 0.75rem);
-    @include bps(line-height, 1.25rem, $md: 1.5rem, $lg: 1.75rem);
+    @include bps(float, left, $tm: right);
+    @include bps(width, 100%, $tm: 70%, $lm: 75%);
+    @include bps(padding-left, 0, $tm: 0.75rem);
+    @include bps(line-height, 1.25rem, $tm: 1.5rem, $lm: 1.75rem);
 
     > .-main,
     > .-sub {
@@ -216,25 +216,13 @@
     }
 
     > .-main {
-      @include bps(
-        font-size,
-        rem(20px),
-        rem(21px),
-        rem(22px),
-        rem(24px),
-        rem(26px)
-      );
+      // prettier-ignore
+      @include bps(font-size, rem(20px), rem(21px), rem(22px), rem(24px), rem(26px));
     }
 
     > .-sub {
-      @include bps(
-        font-size,
-        rem(18px),
-        rem(19px),
-        rem(20px),
-        rem(22px),
-        rem(24px)
-      );
+      // prettier-ignore
+      @include bps(font-size, rem(18px), rem(19px), rem(20px), rem(22px), rem(24px));
     }
   }
 

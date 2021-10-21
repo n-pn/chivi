@@ -102,15 +102,15 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   // letter-spacing: 0.05rem;
 
   &._show-sm {
-    @include bps(display, none, $sm: inline-block);
+    @include bps(display, none, $pm: inline-block);
   }
 
   &._show-md {
-    @include bps(display, none, $md: inline-block);
+    @include bps(display, none, $tm: inline-block);
   }
 
   &._show-lg {
-    @include bps(display, none, $lg: inline-block);
+    @include bps(display, none, $lm: inline-block);
   }
 
   ._brand & {
@@ -121,7 +121,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   &._title {
     @include clamp($width: null);
-    @include bps(max-width, 32vw, $md: 24vw, $lg: 16vw);
+    @include bps(max-width, 32vw, $tm: 24vw, $lm: 16vw);
   }
 
   &._seed {
