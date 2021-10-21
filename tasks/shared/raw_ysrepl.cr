@@ -36,6 +36,8 @@ class CV::RawYsrepl
   getter created_at : Time
 
   def seed!(bumped : Int64 = Time.utc.to_unix)
+    return if self.ztext == "请登录查看评论内容"
+
     return unless yscrit = Yscrit.find({origin_id: self.yscrit_id})
     ysuser = Ysuser.get!(self.user._id, self.user.name)
 
