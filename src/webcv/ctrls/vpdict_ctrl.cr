@@ -145,7 +145,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
       jb.object do
         words.each do |word|
           jb.field (word.as_s) do
-            view = VpTermView.new(word.as_s, bdict, cvmtl, u_dname)
+            view = VpTermView.new(word.as_s, bdict, cvmtl, "!#{u_dname}")
             view.to_json(jb)
           end
         end

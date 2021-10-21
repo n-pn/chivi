@@ -6,9 +6,9 @@ class CV::MtCore
   class_getter binh_am_mtl : self { new([VpDict.essence, VpDict.binh_am]) }
   class_getter tradsim_mtl : self { new([VpDict.tradsim]) }
 
-  def self.generic_mtl(bname : String = "combine", uname : String = "~")
+  def self.generic_mtl(bname : String = "combine", uname : String = "")
     dicts = [VpDict.essence, VpDict.regular, VpDict.fixture, VpDict.load(bname)]
-    new(dicts, uname)
+    new(dicts, "!#{uname}")
   end
 
   def self.convert(input : String, dname = "various") : Cvmtl
@@ -20,7 +20,7 @@ class CV::MtCore
     end
   end
 
-  def initialize(@dicts : Array(VpDict), @uname = "~")
+  def initialize(@dicts : Array(VpDict), @uname : String = "")
   end
 
   def translit(input : String, apply_cap : Bool = false)

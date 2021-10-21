@@ -3,7 +3,7 @@ require "../src/libcv/vp_dict"
 DIR = "db/vpdicts"
 
 def import(name : String, type = "core")
-  output = CV::VpDict.load(name, reset: true)
+  output = CV::VpDict.load(name, reset: false)
 
   files = Dir.glob("#{DIR}/#{type}/#{name}/*.tsv")
   files.each do |file|
