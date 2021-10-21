@@ -30,8 +30,8 @@ module CV::UserBackup
   def save_user_library(user : Cvuser)
     store = TsvStore.new(user_file("library/" + user.uname))
 
-    Ubmark.query.where({cvuser_id: user.id}).with_cvbook.each do |entry|
-      value = [entry.label, entry.created_at.to_unix, entry.updated_at.to_unix]
+    Ubmemo.query.where({cvuser_id: user.id}).with_cvbook.each do |entry|
+      value = [entry.status_s, entry.created_at.to_unix, entry.updated_at.to_unix]
       store.set!(entry.cvbook.bhash, value.map(&.to_s))
     end
 
@@ -41,8 +41,8 @@ module CV::UserBackup
   def save_user_history(user : Cvuser)
     store = TsvStore.new(user_file("history/" + user.uname))
 
-    Ubview.query.where({cvuser_id: user.id}).with_cvbook.each do |entry|
-      value = [entry.sname, entry.chidx, entry.bumped, entry.ch_title, entry.ch_label, entry.ch_uslug]
+    Ubemmo.query.where({cvuser_id: user.id}).with_cvbook.each do |entry|
+      value = [entry.lr_sname, entry.lr_chidx, entry.bumped, entry.ch_title, entry.ch_label, entry.ch_uslug]
       store.set!(entry.cvbook.bhash, value.map(&.to_s))
     end
 

@@ -14,7 +14,6 @@ async function mutateFetch({ path, query, method, headers, rawBody: body }) {
 
   const locals = {}
   if (res.ok && path.startsWith('/api/user')) locals.user = JSON.parse(res_body)
-
   return { status: res.status, headers: res_headers, body: res_body, locals }
 }
 
@@ -36,5 +35,6 @@ function getUserToken(cookies) {
 
 async function currentUser(headers) {
   const res = await fetch('http://localhost:5010/api/user/_self', { headers })
-  return await res.json()
+  if (res.ok) return await res.json()
+  return { uname: 'Khách', privi: -1, wtheme: 'light', tlmode: 0 }
 }
