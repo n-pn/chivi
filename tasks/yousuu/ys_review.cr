@@ -68,7 +68,7 @@ class CV::CrawlYscrit
     puts err
   end
 
-  FRESH = 5.days
+  FRESH = 10.days
   REDO  = ARGV.includes?("+redo")
 
   private def still_good?(file : String, page = 1)
