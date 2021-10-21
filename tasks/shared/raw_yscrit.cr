@@ -49,13 +49,15 @@ class CV::RawYscrit
   getter user : User
 
   def seed!(bumped : Int64 = Time.utc.to_unix)
-    return if self.ztext == "请登录查看评论内容"
+    if self.ztext == "请登录查看评论内容"
+      return unless crit = Yscrit.find({id: self.id})
+    else
+      crit = Yscrit.get!(self.id, self.created_at)
+    end
 
     return unless ysbook = Ysbook.find({id: self.book._id})
     ysuser = Ysuser.get!(self.user._id, self.user.name)
     cvbook = ysbook.cvbook
-
-    crit = Yscrit.get!(self.id, self.created_at)
 
     crit.ysuser = ysuser
     crit.ysbook = ysbook
