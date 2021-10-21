@@ -126,7 +126,7 @@ class CV::Chtext
     File.open(file, "w") { |io| lines.join(io, "\n") }
     `zip -jqm #{@store} #{file}`
 
-    puts "- <zh_text> [#{file}] saved.".colorize.yellow
+    # puts "- <zh_text> [#{file}] saved.".colorize.yellow
     @parts[part] = {lines, @infos.utime}
   end
 end

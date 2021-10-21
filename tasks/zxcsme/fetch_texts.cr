@@ -17,7 +17,7 @@ class CV::Seeds::ZxcsText
       rar_file = "#{RARS_DIR}/#{snvid}.rar"
       next if File.exists?(rar_file) && File.size(rar_file) > 1000
 
-      urls = get_rar_urls(snvid, label: "#{idx}/#{queue.size}")
+      urls = get_rar_urls(snvid, lbl: "#{idx}/#{queue.size}")
       urls.each { |url| download_rar!(url, rar_file) }
     rescue err
       puts "- [#{snvid}]: #{err}".colorize.red
@@ -26,11 +26,11 @@ class CV::Seeds::ZxcsText
 
   TTL = Time.utc - 7.days # invalid cached html in 7 days
 
-  def get_rar_urls(snvid : Int32, label = "1/1") : Array(String)
+  def get_rar_urls(snvid : Int32, lbl = "1/1") : Array(String)
     out_file = File.join(DLPG_DIR, "#{snvid}.html.gz")
     dlpg_url = "http://www.zxcs.me/download.php?id=#{snvid}"
 
-    html = HttpUtil.load_html(dlpg_url, out_file, ttl: TTL, lbl: label)
+    html = HttpUtil.load_html(dlpg_url, out_file, ttl: TTL, lbl: lbl)
 
     doc = Myhtml::Parser.new(html)
     doc.css(".downfile > a").to_a.map do |node|

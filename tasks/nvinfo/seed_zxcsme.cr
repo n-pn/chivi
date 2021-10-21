@@ -82,13 +82,13 @@ end
 
 class CV::SeedZxcsme
   INP_DIR = "_db/.cache/zxcs_me/infos"
-  IDX_DIR = "_db/chseed/zxcs_me"
+  TXT_DIR = "db/chtexts/zxcs_me"
 
   getter snvids : Array(String)
   @seed = SeedData.new("zxcs_me")
 
   def initialize
-    @snvids = Dir.children(IDX_DIR)
+    @snvids = Dir.children(TXT_DIR)
     @snvids.sort_by!(&.to_i)
 
     puts "[INPUT: #{@snvids.size} entries]"
@@ -96,13 +96,11 @@ class CV::SeedZxcsme
 
   def prep!
     @snvids.each_with_index(1) do |snvid, idx|
-      file = File.join(INP_DIR, "#{snvid}.html.gz")
-      next if File.exists?(file)
-
       link = "http://www.zxcs.me/post/#{snvid}"
-      html = HttpUtil.get_html(link, label: "#{idx}/#{@snvids.size}")
+      file = File.join(INP_DIR, "#{snvid}.html.gz")
 
-      HttpUtil.save_html(file, html)
+      next if File.exists?(file)
+      HttpUtil.load_html(link, file, lbl: "#{idx}/#{@snvids.size}")
       sleep Random.rand(500).milliseconds
     rescue err
       puts err.colorize.red
@@ -152,18 +150,22 @@ class CV::SeedZxcsme
   end
 
   def read_chsize(snvid : String) : Array(String)
-    index_file = "#{IDX_DIR}/#{snvid}/_id.tsv"
-    return ["0", ""] unless File.exists?(index_file)
+    files = Dir.glob("#{TXT_DIR}/#{snvid}/*.tsv")
+    flast = files.sort_by { |x| File.basename(x, ".tsv").to_i }.last
 
-    lines = File.read_lines(index_file).reject(&.blank?)
-    [lines.size.to_s, lines.size.to_s.rjust(4, '0')]
+    lines = File.read_lines(flast).reject(&.blank?)
+    last_chap = lines[-1].split('\t', 2)[0]
+
+    [last_chap, last_chap]
   end
+
+  PREV_FILE = "_db/zhbook/zxcs_me/prevs.json"
 
   # copy missing data (due to 404) from older data
   def inherit!(redo = false)
     atime = Time.utc(2019, 1, 1).to_unix.to_s
 
-    inputs = Hash(String, ZxcsmeJson).from_json File.read("_db/zhbook/old-zxcs.json")
+    inputs = Hash(String, ZxcsmeJson).from_json File.read(PREV_FILE)
     inputs.each do |snvid, input|
       next if !redo && @seed._index.get(snvid)
 

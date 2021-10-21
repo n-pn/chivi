@@ -4,6 +4,7 @@ require "compress/zip"
 
 require "icu"
 require "../../src/cutil/tsv_store"
+require "../../src/appcv/filedb/*"
 
 class CV::Zxcs::SplitText
   struct Chap
@@ -18,17 +19,23 @@ class CV::Zxcs::SplitText
   INP_RAR = "_db/.keeps/zxcs_me/_rars"
   INP_TXT = "_db/.keeps/zxcs_me/texts"
 
-  OUT_DIR = "_db/chseed/zxcs_me"
+  OUT_DIR = "db/chtexts/zxcs_me"
 
   getter csdet = ICU::CharsetDetector.new
 
-  def extract!
+  def extract_all!
     input = Dir.glob("#{INP_RAR}/*.rar").shuffle
-    input.each_with_index(1) do |rar_file, idx|
-      label = "#{idx}/#{input.size}"
+    output = [] of String
 
-      next unless txt_file = extract_rar!(rar_file, label: label)
-      split_chaps!(txt_file, label: label)
+    input.each_with_index(1) do |rar_file, idx|
+      next unless file = extract_rar!(rar_file, label: "#{idx}/#{input.size}")
+      output << file
+    end
+
+    `python3 tasks/zxcsme/fix_mtime.py`
+
+    output.each_with_index do |file, idx|
+      split_chaps!(file, "#{idx}/#{output.size}")
     end
   end
 
@@ -122,7 +129,7 @@ class CV::Zxcs::SplitText
     snvid = File.basename(inp_file, ".txt")
 
     out_dir = "#{OUT_DIR}/#{snvid}"
-    out_idx = "#{out_dir}/_id.tsv"
+    out_idx = "#{out_dir}/0.tsv"
 
     return if File.exists?(out_idx)
 
@@ -135,17 +142,20 @@ class CV::Zxcs::SplitText
     puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
 
     return unless chaps = split_chapters(snvid, input)
-    index = save_texts!(chaps, out_dir, out_idx)
+
+    utime = File.info(inp_file).modification_time.to_s
+    index = save_texts!(chaps, out_dir, utime)
 
     return if good_enough?(index)
 
-    print "\nChoice (r: redo, d: delete, s: delete + exit,  else: keep): "
+    puts "\n- <#{label}> [#{INP_TXT}/#{snvid}.txt] #{input.size} lines".colorize.yellow
+    print "\nChoice (r: redo, d: delete, s: delete + exit, else: keep): "
 
     STDIN.flush
     case char = STDIN.raw(&.read_char)
     when 'd', 's', 'r'
-      File.delete(out_idx) if File.exists?(out_idx)
-      puts "\n\n- [#{out_idx}] deleted! (choice: #{char})".colorize.red
+      FileUtil.rm_rf(out_dir)
+      puts "\n\n- [#{out_dir}] deleted! (choice: #{char})".colorize.red
 
       if char == 'r'
         split_chaps!(inp_file, label)
@@ -181,30 +191,34 @@ class CV::Zxcs::SplitText
     exit(0)
   end
 
-  def save_texts!(input : Array(Array(String)), out_dir : String, out_idx : String)
+  def save_texts!(input : Array(Array(String)), out_dir : String, utime : String)
+    snvid = File.basename(out_dir)
     chaps = format_chaps(input)
-
-    index = [] of Array(String)
     FileUtils.mkdir_p(out_dir)
 
-    chaps.each_slice(100).with_index do |slice, idx|
-      out_zip = File.join(out_dir, idx.to_s.rjust(3, '0') + ".zip")
+    index = [] of Array(String)
 
-      File.open(out_zip, "w") do |file|
-        Compress::Zip::Writer.open(file) do |zip|
-          slice.each_with_index(1) do |chap, chidx|
-            chidx = chidx + 100 * idx
-            schid = chidx.to_s.rjust(4, '0')
+    chaps.each_slice(128).with_index do |slice, idx|
+      paged = [] of String
 
-            zip.add("#{schid}.txt", chap.lines.join('\n'))
-            index << [chidx.to_s, schid, chap.title, chap.label]
-          end
-        end
+      out_zip = File.join(out_dir, "#{idx}.zip")
+      out_idx = "#{out_dir}/#{idx}.tsv"
+
+      slice.each_with_index(1) do |chap, chidx|
+        chidx = (chidx + 128 * idx)
+        schid = chidx.to_s
+
+        index << [schid, schid, chap.title, chap.label]
+
+        chinfo = Chpage.new([schid, chap.title, chap.label, utime], chidx)
+        chtext = Chtext.new("zxcs_me", snvid, chinfo)
+
+        chtext.save!(chap.lines)
+        paged << chinfo.to_s
       end
-    end
 
-    idxstr = index.map { |x| x.last(3).join('\t') }
-    File.write(out_idx, idxstr.join('\n'))
+      File.write(out_idx, paged.join('\n'))
+    end
 
     index
   end
@@ -426,23 +440,7 @@ class CV::Zxcs::SplitText
       false
     end
   end
-
-  def clean_indexes!
-    Dir.glob(OUT_DIR + "/**/*.tsv").each_with_index do |file, idx|
-      puts "- <#{idx}> #{file}"
-
-      lines = File.read_lines(file)
-      lines.map! do |line|
-        line.split('\t').map(&.tr("　", " ").strip).last(3).join('\t')
-      end
-
-      utime = File.info(file).modification_time
-      File.write(file, lines.join('\n'))
-      File.utime(utime, utime, file)
-    end
-  end
 end
 
 worker = CV::Zxcs::SplitText.new
-worker.extract!
-# worker.clean_indexes!
+worker.extract_all!
