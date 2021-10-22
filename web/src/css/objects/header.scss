@@ -35,7 +35,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   .-left,
   .-right {
-    @include flex($gap: var(--gutter-xs));
+    @include flex($gap: var(--gutter-pm));
   }
 
   .-left {

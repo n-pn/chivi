@@ -181,7 +181,7 @@
 
   .source {
     @include flex($center: horz, $wrap: wrap, $gap: 0.5rem);
-    margin-top: var(--gutter-xs);
+    margin-top: var(--gutter-pm);
   }
 
   .seed-name {
@@ -240,7 +240,7 @@
 
   .chinfo {
     @include flex($gap: 0.5rem);
-    margin: var(--verpad-xs) 0;
+    margin: var(--verpad-pm) 0;
 
     .-left {
       display: flex;
@@ -273,7 +273,7 @@
 
   .chlist-sep {
     width: 70%;
-    margin: var(--gutter-md) auto;
+    margin: var(--gutter-ts) auto;
     @include border(--bd-main, $loc: bottom);
   }
 

@@ -243,7 +243,7 @@
   }
 
   .line {
-    margin-bottom: var(--gutter-sm);
+    margin-bottom: var(--gutter-pl);
     @include fgcolor(tert);
     @include flex($wrap: true);
   }
@@ -291,7 +291,7 @@
 
     @include shadow(2);
 
-    @include bp-min(sm) {
+    @include bp-min(pm) {
       margin: 0.75rem 0;
       padding-left: 1rem;
       padding-right: 1rem;
@@ -323,7 +323,7 @@
     text-transform: uppercase;
 
     @include ftsize(sm);
-    @include bp-min(md) {
+    @include bp-min(tm) {
       @include ftsize(md);
     }
 

@@ -134,7 +134,7 @@
 
     width: 100%;
     margin-top: auto;
-    padding: var(--gutter-sm);
+    padding: var(--gutter-pl);
     line-height: 1.25rem;
 
     @include ftsize(sm);

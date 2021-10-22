@@ -1,8 +1,8 @@
 @use '../essence' as *;
 
 table {
-  --table-gutter: var(--gutter-sm, 0.5rem);
-  --table-spacer: var(--gutter-xs, 0.25rem);
+  --table-gutter: var(--gutter-pl, 0.5rem);
+  --table-spacer: var(--gutter-pm, 0.25rem);
 
   --table-thcolor: var(--fg-tert);
   --table-bgcolor: var(--bg-tert);

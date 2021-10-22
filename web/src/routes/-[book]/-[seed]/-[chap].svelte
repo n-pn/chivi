@@ -238,7 +238,7 @@
   }
 
   .bread {
-    padding: var(--gutter-sm) 0;
+    padding: var(--gutter-pl) 0;
     line-height: var(--lh-narrow);
 
     // @include flow();

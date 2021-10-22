@@ -83,17 +83,17 @@ $colors: (gray, blue, green, orange, red, violet) !default;
 
 // prettier-ignore
 :root {
-  $gutter: (xs, sm, md, lg);
-  $verpad: (xs: md, md: lg, xl: xl);
-  $gutter-small: (xs: ss, sm: xs, md: sm, lg: md);
-  $gutter-large: (xs: sm, sm: md, md: lg, lg: xl);
+  $gutter: (pm, pl, ts, lm);
+  $verpad: (pm: ts, tm: tm, lm: tl);
+  $gutter-small: (pm: ps, pl: pm, ts: pl, lm: ts);
+  $gutter-large: (pm: pl, pl: ts, ts: tm, lm: tl);
 
-  --gutter-ss: 0.25rem;
-  --gutter-xs: 0.5rem;
-  --gutter-sm: 0.75rem;
-  --gutter-md: 1rem;
-  --gutter-lg: 1.25rem;
-  --gutter-xl: 1.5rem;
+  --gutter-ps: 0.25rem;
+  --gutter-pm: 0.5rem;
+  --gutter-pl: 0.75rem;
+  --gutter-ts: 1rem;
+  --gutter-tm: 1.25rem;
+  --gutter-tl: 1.5rem;
 
   // fluild gutter
   @each $key in $gutter {

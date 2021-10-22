@@ -151,7 +151,7 @@
     @include bps(font-size, rem(13px), rem(14px));
     @include bps(padding, 0 0.25rem, 0 0.375rem);
 
-    @include bp-max(sm) { @include ftsize(xs); }
+    @include bp-max(pl) { @include ftsize(xs); }
     &:hover { @include fgcolor(primary, 5); }
     > span { @include clamp($width: null); }
   }
