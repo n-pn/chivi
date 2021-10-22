@@ -20,6 +20,12 @@ module CV::TlRule
 
   def fold_pre_quanti_appro!(node : MtNode, succ : MtNode) : Tuple(MtNode, Int32)
     return {node, 0} unless val = QUANTI_PRE_APPRO[succ.key]?
+
+    case succ.key
+    when "来", "多"
+      return {node, 1} unless succ.to_int?.try { |x| x > 10 && x % 10 == 0 }
+    end
+
     {fold_swap!(node, succ.set!(val), node.tag, dic: 5), 1}
   end
 
@@ -55,6 +61,12 @@ module CV::TlRule
 
   def fold_suf_quanti_appro!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ && (val = QUANTI_SUF_APPRO[succ.key]?)
+
+    case succ.key
+    when "来", "多"
+      return node unless succ.to_int?.try { |x| x == 10 || x % 10 != 0 }
+    end
+
     fold_swap!(node, succ.set!(val), node.tag, dic: 6)
   end
 end

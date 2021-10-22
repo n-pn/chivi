@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_verb_nquant!(verb : MtNode, node : MtNode, has_ule = false)
-    node = fold_number!(node) if node.numbers?
+    node = fold_numbers!(node) if node.numbers?
     return verb unless node.nquants?
 
     if node.nqiffy? || node.nqnoun?

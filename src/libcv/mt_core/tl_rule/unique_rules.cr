@@ -34,6 +34,17 @@ module CV::TlRule
       else
         return fold_verbs!(node)
       end
+    when .adj_hao?
+      return node unless succ
+
+      case succ
+      when .verbs?, .adjts?
+        node.val = "thật"
+        node.tag == PosTag::Adverb
+        fold_adverbs!(node, succ)
+      else
+        node
+      end
     else
       heal_uniques_by_key!(node, succ)
     end
@@ -45,23 +56,12 @@ module CV::TlRule
       node.val = "nộp"
       node.tag = PosTag::Verb
       return fold_verbs!(node)
-    when "好"
-      return node unless succ
-
-      case succ
-      when .verbs?, .adjts?
-        node.val = "thật"
-        node.tag == PosTag::Adverb
-        fold_adverbs!(node, succ)
-      else
-        node
-      end
     when "对不起"
       return node if boundary?(succ)
       fold_verbs!(node.set!("có lỗi với", PosTag::Verb))
     when "百分之"
       return node unless succ && succ.numbers?
-      succ = fold_number!(succ)
+      succ = fold_numbers!(succ)
       fold_swap!(node, succ, PosTag::Number, dic: 4)
     when "原来"
       if succ.try(&.ude1?) || node.prev?(&.contws?)
@@ -76,6 +76,18 @@ module CV::TlRule
         node.set!("cao đến")
       else
         node.set!("Gundam", tag: PosTag::Noun)
+      end
+    when "早上", "下午"
+      return node unless succ
+      case succ.tag
+      when .nhanzi?, .ndigit?
+        succ = fold_numbers!(succ, prev: node)
+        succ.time? ? fold_time_prev!(succ, prev: node) : node
+      when .adj_hao?
+        fold_swap!(node, succ.set!("chào"), PosTag::Vphrase, dic: 8)
+      else
+        # TODO: add rules for nouns
+        node.set!(PosTag::Time)
       end
     else
       node

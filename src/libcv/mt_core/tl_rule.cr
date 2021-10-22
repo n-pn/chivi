@@ -14,7 +14,7 @@ module CV::TlRule
       when .preposes? then node = fold_preposes!(node)
       when .pronouns? then node = fold_pronouns!(node)
       when .numeric?
-        node = fold_number!(node)
+        node = fold_numbers!(node)
         if node.nquants?
           next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)
           node = fold_noun_left!(node, mode: mode)

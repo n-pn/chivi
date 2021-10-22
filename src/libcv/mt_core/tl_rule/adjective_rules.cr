@@ -16,7 +16,7 @@ module CV::TlRule
     succ.val = succ_val
 
     if (succ_2 = succ.succ?) && succ_2.numeric?
-      succ_2 = fold_number!(succ_2)
+      succ_2 = fold_numbers!(succ_2)
       return fold!(adjt, succ_2, PosTag::Aphrase, dic: 7)
     end
 

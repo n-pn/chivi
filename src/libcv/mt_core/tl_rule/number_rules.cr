@@ -1,24 +1,36 @@
 module CV::TlRule
-  def fold_number!(node : MtNode) : MtNode
-    node = meld_number!(node) if node.nhanzi? || node.ndigit?
+  def fold_numbers!(node : MtNode, prev : MtNode? = nil) : MtNode
+    case node.tag
+    when .ndigit?
+      node = fold_ndigit!(node, prev: prev)
+      return fold_time_appro!(node) if node.time?
+    when .nhanzi?
+      node = fold_nhanzi!(node, prev: prev)
+      return fold_time_appro!(node) if node.time?
+    when .quantis?, .nquants?
+      # TODO: combine number with nquant?
+      return node
+    end
+
     return node unless node.numbers?
-    return node unless succ = node.succ?
-    return node if succ.puncts?
+    return node unless tail = node.succ?
+    return node if tail.puncts?
 
-    node, appro = fold_pre_quanti_appro!(node, succ)
+    node, appro = fold_pre_quanti_appro!(node, tail)
+    if appro > 0
+      return node unless tail = node.succ?
+    end
 
-    return node unless succ = node.succ?
-
-    if succ.pre_dui?
-      if (succ_2 = succ.succ?) && succ_2.numbers?
-        succ.val = "đối"
+    if tail.pre_dui?
+      if (succ_2 = tail.succ?) && succ_2.numbers?
+        tail.val = "đối"
         return fold!(node, succ_2, PosTag::Aphrase, dic: 2)
       end
 
       node.set!("đôi", PosTag::Qtnoun)
     else
-      succ = heal_quanti!(succ)
-      return fold_yi_verb!(node, succ) unless succ.quantis?
+      tail = heal_quanti!(tail)
+      return fold_yi_verb!(node, tail) unless tail.quantis?
     end
 
     has_第 = node.key.starts_with?("第")
@@ -29,36 +41,33 @@ module CV::TlRule
       node = fold!(prev, node, node.tag, dic: 1)
     end
 
-    # has_个 = node if node.key.ends_with?('个')
-    has_个 = succ if succ.key.ends_with?('个')
-
+    has_个 = tail if tail.key.ends_with?('个')
     appro = 1 if is_pre_appro_num?(node.prev?)
 
     # merge number with quantifiers
     if !has_第
-      case succ.key
-      when "年" then node = fold_year!(node, succ, appro)
-      when "月" then node = fold_month!(node, succ, appro)
-      when "点" then node = fold_hour!(node, succ, appro)
-      when "分" then node = fold_minute!(node, succ, appro)
+      case tail.key
+      when "年" then node = fold_year!(node, tail, appro)
+      when "月" then node = fold_month!(node, tail, appro)
+      when "点" then node = fold_hour!(node, tail, appro)
+      when "分" then node = fold_minute!(node, tail, appro)
       else
-        node = fold!(node, succ, map_nqtype(succ), dic: 2)
+        node = fold!(node, tail, map_nqtype(tail), dic: 2)
         node = fold_suf_quanti_appro!(node) if has_个
       end
-    elsif (succ_2 = succ.succ?) && succ_2.noun?
-      # val = "#{succ.val} #{succ_2.val} #{node.val}"
-      succ = fold!(succ, succ_2, succ_2.tag, dic: 4)
-      return fold_swap!(node, succ, PosTag::Nphrase, dic: 4)
+    elsif (tail_2 = tail.succ?) && tail_2.noun?
+      # val = "#{tail.val} #{tail_2.val} #{node.val}"
+      tail = fold!(tail, tail_2, tail_2.tag, dic: 4)
+      return fold_swap!(node, tail, PosTag::Nphrase, dic: 4)
     else
-      node = fold_swap!(node, succ, map_nqtype(succ), dic: 4)
+      node = fold_swap!(node, tail, map_nqtype(tail), dic: 4)
     end
 
-    if has_个 && (succ = node.succ?) && succ.quantis?
+    if has_个 && (tail = node.succ?) && tail.quantis?
       # heal_has_个!(has_个)
-      node = fold!(node, succ, map_nqtype(succ), dic: 2)
+      node = fold!(node, tail, map_nqtype(tail), dic: 2)
     end
 
-    # node = fold!(prev, node, node.tag, dic: 1) if prev
     fold_suf_quanti_appro!(node)
   end
 

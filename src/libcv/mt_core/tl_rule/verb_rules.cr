@@ -42,7 +42,7 @@ module CV::TlRule
         end
 
         if val = PRE_NUM_APPROS[verb.key]?
-          succ = fold_number!(succ) if succ.numbers?
+          succ = fold_numbers!(succ) if succ.numbers?
           verb = fold_left_verb!(verb.set!(val), prev)
           return verb unless succ.nquants?
           return fold!(verb, succ, succ.tag, dic: 8)
@@ -71,7 +71,7 @@ module CV::TlRule
       return verb unless (succ = verb.succ?) && succ.numeric?
 
       if is_pre_appro_num?(verb)
-        succ = fold_number!(succ) if succ.numbers?
+        succ = fold_numbers!(succ) if succ.numbers?
         return fold!(verb, succ, succ.tag, dic: 4)
       end
 
