@@ -1,9 +1,9 @@
 require "./tl_rule/**"
 
 module CV::TlRule
-  def fix_grammar!(node : MtNode, mode = 1) : Nil
+  def fix_grammar!(node : MtNode, mode = 1, level = 0) : Nil
     while node = node.succ?
-      # puts ["loop:", node, node.succ?, node.body?]
+      # puts ["level: #{level}", node, node.succ?, node.body?]
       # gets
 
       case node.tag

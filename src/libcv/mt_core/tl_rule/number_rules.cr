@@ -1,7 +1,9 @@
 module CV::TlRule
   def fold_number!(node : MtNode) : MtNode
     node = meld_number!(node) if node.nhanzi? || node.ndigit?
+    return node unless node.numbers?
     return node unless succ = node.succ?
+    return node if succ.puncts?
 
     node, appro = fold_pre_quanti_appro!(node, succ)
 
@@ -99,7 +101,7 @@ module CV::TlRule
 
     succ = node
     while succ = succ.try(&.succ?)
-      unless succ.number? # only combine if succ is hanzi or latin numbers
+      if succ.ndigit? || succ.ndigit? # only combine if succ is hanzi or latin numbers
         node.tag = PosTag::Number
         key_io << succ.key
         val_io << " " << succ.val

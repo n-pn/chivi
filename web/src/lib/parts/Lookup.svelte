@@ -5,7 +5,7 @@
   import { tag_label } from '$lib/pos_tag'
 
   import { activate as upsert_activate } from '$parts/Upsert.svelte'
-  export const enabled = writable(false)
+  export const enabled = writable(true)
   export const actived = writable(false)
 
   const input = writable('')

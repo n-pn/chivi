@@ -14,8 +14,6 @@ module CV::TlRule
   end
 
   def fold_nested!(head : MtNode, mode = 1) : MtNode
-    # puts [head, head.key, head.val, head.idx, head.tag.tag]
-
     end_tag, end_val = match_end(head.val[0])
 
     tail = head
@@ -26,9 +24,9 @@ module CV::TlRule
     return head unless tail && tail != head.succ?
     root = fold!(head, tail, tag: PosTag::Unkn, dic: 0)
 
-    fix_grammar!(head, mode)
-    succ = head.succ
+    fix_grammar!(root.body, mode, level: 1)
 
+    succ = head.succ
     if succ.succ? == tail
       root.dic = 1
       root.tag = succ.tag

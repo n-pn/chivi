@@ -1,5 +1,5 @@
 module CV::TlRule
-  def meld_number!(node : MtNode)
+  def fold_ndigit!(node : MtNode)
     key_io = String::Builder.new(node.key)
     val_io = String::Builder.new(node.val)
 
