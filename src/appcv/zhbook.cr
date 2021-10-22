@@ -166,7 +166,7 @@ class CV::Zhbook
   end
 
   def public_chap?(chidx : Int32)
-    chidx < 40 || chidx >= self.chap_count - 5
+    chidx <= 40 || chidx >= self.chap_count - 5
   end
 
   def update_stats!(chinfo : Chpage, chtitle : String? = nil) : Nil
