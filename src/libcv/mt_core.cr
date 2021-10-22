@@ -130,7 +130,16 @@ class CV::MtCore
     case right.tag
     when .strings? then left.tag.strings?
     when .puncts?  then left.tag == right.tag
-    when .nhanzi?  then left.nhanzi?
+    when .nhanzi?
+      return false unless left.nhanzi?
+      return true unless right.key == "两"
+
+      case left.key[-1]?
+      when '一', '三' then return true
+      else
+        right.set!("lượng", PosTag::Qtnoun)
+        false
+      end
     when .ndigit?
       case left.tag
       when .pdeci?  then true
