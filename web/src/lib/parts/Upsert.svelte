@@ -205,7 +205,7 @@
       <Emend {vpterm} p_min={$tab + 1} />
 
       <div class="field">
-        <Vhint hints={valhint[key] || []} bind:vpterm />
+        <Vhint {key} hints={valhint[key] || []} bind:vpterm />
 
         <div class="value" class:_fresh={vpterm.fresh}>
           <input

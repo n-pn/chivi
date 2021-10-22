@@ -27,7 +27,7 @@ module CV::TlRule
         break unless node.names?
         node = fold!(node, succ, succ.tag, dic: 3)
       when .place?
-        return fold_swap!(node, succ, PosTag::Noun, dic: 3)
+        return fold_swap!(node, succ, PosTag::Dphrase, dic: 3)
       when .uzhi?
         return fold_uzhi!(succ, node)
       when .nmorp?

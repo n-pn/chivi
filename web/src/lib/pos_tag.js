@@ -1,12 +1,12 @@
 export const labels = {
   '_': 'Không rõ',
+  'nr': 'Tên người',
   'ns': 'Địa danh',
   'nt': 'Tổ chức',
   'nz': 'Tên riêng khác',
-  'nr': 'Tên người',
-  'nw': 'Danh xưng',
 
   'n': 'Danh từ',
+  'nw': 'Nhân xưng',
   // 'nc': 'Danh từ trừu tượng',
   's': 'Nơi chốn',
   'f': 'Phương vị',
@@ -35,11 +35,11 @@ export const labels = {
   'ry': 'Đại từ nghi vấn',
   'r': 'Đại từ chưa phân loại',
 
+  'nl': 'Cụm danh từ',
+  'al': 'Cụm hình dung',
+  'bl': 'Cụm khu biệt',
+  'vl': 'Cụm động tân',
   'i': 'Thành/quán ngữ',
-  'nl': 'Danh quán ngữ',
-  'vl': 'Động quán ngữ',
-  'al': 'Hình quán ngữ',
-  'bl': 'Khu biệt quán ngữ',
 
   'm': 'Số từ',
   'q': 'Lượng từ',
@@ -78,8 +78,9 @@ export const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt']
 export const groups = [
   // prettier-ignore
   [
-    'ns','nt', 'nz',
-    'nr',
+
+    'nr','ns','nt',
+    'nz',
     '-',
     'n', 'nw', // 'nc',
     't', 's', 'f',
@@ -103,8 +104,8 @@ export const groups = [
     'c', 'cc', 'e',
     'y', 'o',
     '-',
-    'nl', 'vl', 'al',
-    'bl', 'i',
+    'nl', 'al', 'bl',
+    'vl','i',
   ],
   // prettier-ignore
   [

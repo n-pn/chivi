@@ -13,15 +13,19 @@ class CV::VpTermView
     mt_list = cvmtl.cv_plain(key, mode: 1, cap_first: false)
     @mtl_val = mt_list.to_s
     @mtl_tag = guess_tag(mt_list)
-
     @hanviet = MtCore.hanviet_mtl.translit(@key).to_s
   end
 
   def guess_tag(mt_list : MtList)
     # return "" if list is not singleton
-    return "" unless first = mt_list.first
-    first.succ? ? "" : first.tag.to_str
-    # TODO guess tag by suffix
+    return "" unless (first = mt_list.first) && first.body?
+
+    case tag = first.tag.to_str
+    when "np" then "n"
+    when "ap" then "a"
+    when "vp" then "vf"
+    else           tag
+    end
   end
 
   def to_json(jb : JSON::Builder)
