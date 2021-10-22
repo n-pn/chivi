@@ -49,7 +49,7 @@ module CV::HttpUtil
 
   def encoding_for(sname : String) : String
     case sname
-    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "noff"
+    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "nofff"
       "UTF-8"
     else
       "GBK"

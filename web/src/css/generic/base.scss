@@ -83,10 +83,10 @@ $colors: (gray, blue, green, orange, red, violet) !default;
 
 // prettier-ignore
 :root {
-  $gutter: (pm, pl, ts, lm);
-  $verpad: (pm: ts, tm: tm, lm: tl);
-  $gutter-small: (pm: ps, pl: pm, ts: pl, lm: ts);
-  $gutter-large: (pm: pl, pl: ts, ts: tm, lm: tl);
+  $gutter: (pm, pl, ts, tm);
+  $verpad: (pm: ts, tm: tm, tl: tl);
+  $gutter-small: (pm: ps, pl: pm, ts: pl, tm: ts);
+  $gutter-large: (pm: pl, pl: ts, ts: tm, tm: tl);
 
   --gutter-ps: 0.25rem;
   --gutter-pm: 0.5rem;

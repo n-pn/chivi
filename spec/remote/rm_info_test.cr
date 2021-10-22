@@ -4,7 +4,7 @@ require "../../src/seeds/rm_info.cr"
 
 def fetch_info(sname, snvid, fresh = false) : Void
   puts "\n[#{CV::SiteLink.binfo_url(sname, snvid)}]".colorize.green.bold
-  parser = CV::RmInfo.init(sname, snvid, ttl: fresh ? 1.minute : 1.year)
+  parser = CV::RmInfo.init(sname, snvid, ttl: fresh ? 10.seconds : 1.year)
 
   puts "------".colorize.green
 
@@ -89,6 +89,8 @@ tests = [
 
   # {"bxwxorg", "32154", false},
   # {"bxwxorg", "32154", true},
+
+  {"nofff", "125228", true},
 ]
 
 tests.each { |sname, snvid, fresh| fetch_info(sname, snvid, fresh: fresh) }

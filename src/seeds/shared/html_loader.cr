@@ -15,7 +15,7 @@ module Cv::HtmlLoader
 
   def encoding(sname : String) : String
     case sname
-    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg"
+    when "jx_la", "hetushu", "paoshu8", "zhwenpg", "zxcs_me", "bxwxorg", "nofff"
       "UTF-8"
     else
       "GBK"
