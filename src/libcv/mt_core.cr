@@ -106,8 +106,8 @@ class CV::MtCore
 
       if can_merge?(cur, lst)
         lst.idx = cur.idx
+        lst.val = cur.nhanzi? ? "#{cur.val} #{fix_val!(lst)}" : "#{cur.val}#{lst.val}"
         lst.key = "#{cur.key}#{lst.key}"
-        lst.val = cur.nhanzi? ? "#{cur.val} #{lst.val}" : "#{cur.val}#{lst.val}"
       else
         res.prepend!(cur)
         lst = cur
@@ -115,6 +115,15 @@ class CV::MtCore
     end
 
     res
+  end
+
+  private def fix_val!(node : MtNode)
+    case node.key[0]?
+    when '零' then node.val.sub("linh", "lẻ")
+    when '五' then node.val.sub("năm", "lăm")
+    when '十' then node.val.sub("mười", "mươi")
+    else          node.val
+    end
   end
 
   private def can_merge?(left : MtNode, right : MtNode)
