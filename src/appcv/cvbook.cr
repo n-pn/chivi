@@ -84,7 +84,7 @@ class CV::Cvbook
     if input =~ /\p{Han}/
       query = "zname LIKE '%#{BookUtils.scrub_zname(input)}%'"
     else
-      query = "vslug LIKE '%#{BookUtils.scrub_vname(input, "-")}%'"
+      query = "vslug LIKE '%-#{BookUtils.scrub_vname(input, "-")}-%'"
     end
 
     where("author_id IN (SELECT ID from authors WHERE #{query})")
