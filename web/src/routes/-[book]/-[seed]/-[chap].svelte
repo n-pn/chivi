@@ -150,7 +150,7 @@
       bind:debug
       bind:_dirty />
   {:else}
-    <Notext {chinfo} />
+    <Notext {chmeta} />
   {/if}
 
   <div class="navi" slot="footer">
