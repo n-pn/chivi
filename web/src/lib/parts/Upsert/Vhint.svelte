@@ -33,9 +33,11 @@
   export let hints = []
   export let vpterm = {}
 
-  $: [ptag_priv, ptag_base, tag_hints] = gen_hint(key)
+  $: [ptag_priv, ptag_base, tag_hints] = gen_hint(key, vpterm)
 
-  function gen_hint(key) {
+  $: console.log(tag_hints)
+
+  function gen_hint(key, vpterm) {
     const priv = get_ptag(vpterm, '_priv') || ''
     const base = get_ptag(vpterm, '_base') || ''
     const list = [priv, base, vpterm._priv.ptag || '']
@@ -46,7 +48,8 @@
     if (surnames.includes(key.charAt(0))) list.push('nr')
     if (vpterm.ptag == 'nr') list.push('ns', 'nt')
 
-    const hints = list.filter((x, i, s) => s.indexOf(x) == i)
+    const filter = (x, i, s) => x && x != vpterm.ptag && s.indexOf(x) == i
+    const hints = list.filter(filter)
     return [priv, base, hints.slice(0, 2)]
   }
 
@@ -67,15 +70,15 @@
     {/if}
   {/each}
 
-  {#each tag_hints as hint}
-    {#if hint != vpterm.ptag}
+  <div class="right">
+    {#each tag_hints as hint}
       <button
         class="hint _ptag"
         class:_base={hint == ptag_base}
         class:_priv={hint == ptag_priv}
         on:click={() => (vpterm.ptag = hint)}>{tag_label(hint)}</button>
-    {/if}
-  {/each}
+    {/each}
+  </div>
 </div>
 
 <style lang="scss">
@@ -85,6 +88,12 @@
 
     @include flex($gap: 0.125rem);
     @include ftsize(sm);
+  }
+
+  .right {
+    margin-left: auto;
+    @include flex();
+    max-width: 30%;
   }
 
   // prettier-ignore
@@ -99,7 +108,7 @@
     @include clamp($width: null);
 
     &._ptag {
-      margin-left: auto;
+
       font-size: rem(13px);
     }
 
