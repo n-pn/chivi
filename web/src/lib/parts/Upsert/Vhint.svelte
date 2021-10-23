@@ -43,7 +43,7 @@
     const last_char = key.charAt(key.length - 1)
     if (locations.includes(last_char)) list.push('ns')
     if (organizations.includes(last_char)) list.push('nt')
-    if (surnames.includes(key.charAt(0))) hints.push('nr')
+    if (surnames.includes(key.charAt(0))) list.push('nr')
     if (vpterm.ptag == 'nr') list.push('ns', 'nt')
 
     const hints = list.filter((x, i, s) => s.indexOf(x) == i)

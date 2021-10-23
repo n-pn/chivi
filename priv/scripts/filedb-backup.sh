@@ -18,8 +18,8 @@ then
   rsync -aiz --no-p "$SSH/db/vpdicts/core" "_db/vpdict"
   rsync -aiz --no-p "$SSH/db/vpdicts/uniq" "_db/vpdict"
 
-  rsync -aiz --no-p "$SSH/db/vpdicts/core" "db/vpdicts"
-  rsync -aiz --no-p "$SSH/db/vpdicts/uniq" "db/vpdicts"
+  rsync -aiz --no-p "$SSH/var/vpdicts/core" "var/vpdicts"
+  rsync -aiz --no-p "$SSH/var/vpdicts/uniq" "var/vpdicts"
 fi
 
 ## backup user data
