@@ -3,8 +3,8 @@ require "../cutil/tsv_store"
 module CV::Bgenre
   extend self
 
-  VI_NAMES = {{ read_file("db/fixtures/vi_genres.txt").strip.split("\n") }}
-  class_getter zh_names : TsvStore { TsvStore.new("db/fixtures/zh_genres.tsv") }
+  VI_NAMES = {{ read_file("var/fixtures/vi_genres.txt").strip.split("\n") }}
+  class_getter zh_names : TsvStore { TsvStore.new("var/fixtures/zh_genres.tsv") }
 
   def all(ids : Array(Int32))
     ids.map { |id| vname(id) }

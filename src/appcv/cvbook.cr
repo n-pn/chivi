@@ -186,11 +186,12 @@ class CV::Cvbook
       vtitle ||= BookUtils.get_vi_btitle(ztitle)
 
       htslug = BookUtils.scrub_vname(htitle, "-")
-      vtslug = BookUtils.scrub_vname(vtitle, "-")
+      vtslug = "-#{BookUtils.scrub_vname(vtitle, "-")}-"
 
       bhash = UkeyUtil.digest32("#{ztitle}--#{author.zname}")
       bslug = htslug.split("-").first(7).push(bhash[0..3]).join("-")
 
+      htslug = "-#{htslug}-"
       cvbook = new({
         author_id: author.id, bhash: bhash, bslug: bslug,
         ztitle: ztitle, htitle: htitle, vtitle: vtitle,

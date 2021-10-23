@@ -25,6 +25,10 @@ module CV::TlRule
       # TODO: add pseudo node
       node.val = "của #{node.val}"
       fold_swap!(node, succ, succ.tag, dic: 4)
+    when .penum?, .concoord?
+      return node unless (succ_2 = succ.succ?) && nouns_can_group?(node, succ_2)
+      succ = heal_concoord!(succ) if succ.concoord?
+      fold!(node, succ_2, tag: succ_2.tag, dic: 3)
     else
       # TODO: handle special cases
       node

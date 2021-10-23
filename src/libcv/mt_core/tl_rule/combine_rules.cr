@@ -1,12 +1,9 @@
 module CV::TlRule
-  def can_combine_noun?(left : MtNode, right : MtNode)
+  def nouns_can_group?(left : MtNode, right : MtNode)
     case left.tag
-    when .human?
-      right.human? || right.ptitle? || right.pro_per?
-    when .noun?
-      right.noun? || right.pro_dem?
-    else
-      right.tag == left.tag
+    when .human? then right.human?
+    when .noun?  then right.noun? || right.pro_dem?
+    else              right.tag == left.tag
     end
   end
 

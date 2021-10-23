@@ -24,7 +24,7 @@ struct CV::PosTag
     {"nz", "Nother", Pos::Nouns | Pos::Names | Pos::Contws},
 
     # danh xưng: chức danh, nghề nghiệp, địa vị
-    {"nw", "Ptitle", Pos::Nouns | Pos::Contws},
+    {"nw", "Ptitle", Pos::Nouns | Pos::Human | Pos::Contws},
 
     # 时间词性语素 - time word morpheme
     {"tg", "Tmorp", Pos::Nouns | Pos::Contws},

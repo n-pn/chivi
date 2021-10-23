@@ -46,8 +46,7 @@ module CV::TlRule
         else return node
         end
       when .penum?, .concoord?
-        break
-        break unless (succ_2 = succ.succ?) && can_combine_noun?(node, succ_2)
+        break unless (succ_2 = succ.succ?) && nouns_can_group?(node, succ_2)
         succ = heal_concoord!(succ) if succ.concoord?
         fold!(node, succ_2, tag: node.tag, dic: 3)
       when .suf_verb?
@@ -74,7 +73,7 @@ module CV::TlRule
     while prev = node.prev?
       case prev
       when .penum?, .concoord?
-        break unless (prev_2 = prev.prev?) && can_combine_noun?(node, prev_2)
+        break unless (prev_2 = prev.prev?) && nouns_can_group?(node, prev_2)
         prev = heal_concoord!(prev) if prev.concoord?
         node = fold!(prev_2, node, tag: node.tag, dic: 3)
       when .numeric?

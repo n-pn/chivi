@@ -4,7 +4,7 @@ require "../../cutil/tsv_store"
 module CV::BookUtils
   extend self
 
-  DIR = "db/fixtures"
+  DIR = "var/fixtures"
 
   class_getter zh_authors : TsvStore { TsvStore.new("#{DIR}/zh_authors.tsv") }
   class_getter vi_authors : TsvStore { TsvStore.new("#{DIR}/vi_authors.tsv") }
@@ -40,8 +40,12 @@ module CV::BookUtils
     name.sub(/[（【\(\[].+?[）】\)\]]$/, "").strip
   end
 
-  def get_vi_btitle(ztitle : String) : String
-    return "" unless vtitle = vi_btitles.fval(ztitle)
+  def get_vi_btitle(ztitle : String, bhash : String) : String
+    unless vtitle = vi_btitles.fval(ztitle)
+      mtl = MtCore.generic_mtl(bhash)
+      vtitle = mtl.cv_plain(ztitle).to_s
+    end
+
     TextUtils.titleize(vtitle)
   end
 

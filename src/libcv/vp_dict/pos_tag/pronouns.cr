@@ -5,7 +5,7 @@ struct CV::PosTag
   Pronoun = new(Tag::Pronoun, PROPOS)
 
   # 人称代词 - personal pronoun - đại từ nhân xưng
-  ProPer = new(Tag::ProPer, PROPOS)
+  ProPer = new(Tag::ProPer, Pos::Human | PROPOS)
 
   # 指示代词 - demonstrative pronoun - đại từ chỉ thị
   DEMPOS = Pos::ProDems | Pos::Pronouns | Pos::Contws
