@@ -5,8 +5,7 @@ export async function handle({ request, resolve }) {
 
 async function mutateFetch({ path, query, method, headers, rawBody: body }) {
   const url = `http://localhost:5010${path}?${query.toString()}`
-  const opts = method == 'GET' ? { headers } : { method, headers, body }
-  const res = await fetch(url, opts)
+  const res = await fetch(url, { method, headers, body })
 
   const res_headers = {}
   for (let [key, val] of res.headers.entries()) res_headers[key] = val

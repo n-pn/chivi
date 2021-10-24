@@ -11,16 +11,16 @@
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^4.0.3",
-    "@sveltejs/adapter-node": "^1.0.0-next.53",
-    "@sveltejs/kit": "^1.0.0-next.179",
-    "autoprefixer": "^10.3.6",
+    "@sveltejs/adapter-node": "^1.0.0-next.55",
+    "@sveltejs/kit": "^1.0.0-next.189",
+    "autoprefixer": "^10.3.7",
     "cssnano": "5.0.7",
     "mdsvex": "^0.9.8",
-    "postcss": "^8.3.8",
+    "postcss": "^8.3.11",
     "postcss-load-config": "^3.1.0",
     "remark-breaks": "^2.0.2",
-    "sass": "^1.42.1",
-    "svelte": "^3.43.1",
+    "sass": "^1.43.3",
+    "svelte": "^3.44.0",
     "svelte-preprocess": "^4.9.8"
   },
   "browserslist": [
