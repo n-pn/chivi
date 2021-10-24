@@ -197,7 +197,7 @@
 
 <style lang="scss">
   .main-info {
-    padding-top: var(--gutter);
+    padding-top: var(--gutter-small);
     @include flow();
   }
 
@@ -205,10 +205,10 @@
     margin-bottom: 0.75rem;
 
     @include fgcolor(secd);
-    @include bps(float, left, $tm: right);
-    @include bps(width, 100%, $tm: 70%, $lm: 75%);
-    @include bps(padding-left, 0, $tm: 0.75rem);
-    @include bps(line-height, 1.25rem, $tm: 1.5rem, $lm: 1.75rem);
+    @include bps(float, left, $ts: right);
+    @include bps(width, 100%, $ts: 70%, $tm: 75%);
+    @include bps(padding-left, 0, $ts: 0.75rem);
+    @include bps(line-height, 1.25rem, $ts: 1.5rem, $tm: 1.75rem);
 
     > .-main,
     > .-sub {
@@ -228,14 +228,14 @@
 
   .cover {
     float: left;
-    @include bps(width, 40%, 35%, 30%, 25%);
+    @include bps(width, 40%, $pl: 35%, $ts: 30%, $tm: 25%);
   }
 
   .extra {
     float: right;
     padding-left: 0.75rem;
 
-    @include bps(width, 60%, 65%, 70%, 75%);
+    @include bps(width, 60%, $pl: 65%, $ts: 70%, $tm: 75%);
 
     :global(svg) {
       margin-top: -0.125rem;
@@ -291,7 +291,7 @@
 
     @include shadow(2);
 
-    @include bp-min(pm) {
+    @include bp-min(pl) {
       margin: 0.75rem 0;
       padding-left: 1rem;
       padding-right: 1rem;

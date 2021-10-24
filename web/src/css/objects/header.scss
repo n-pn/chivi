@@ -102,15 +102,15 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   // letter-spacing: 0.05rem;
 
   &._show-sm {
-    @include bps(display, none, $pm: inline-block);
+    @include bps(display, none, $pl: inline-block);
   }
 
   &._show-md {
-    @include bps(display, none, $tm: inline-block);
+    @include bps(display, none, $ts: inline-block);
   }
 
   &._show-lg {
-    @include bps(display, none, $lm: inline-block);
+    @include bps(display, none, $tm: inline-block);
   }
 
   ._brand & {
