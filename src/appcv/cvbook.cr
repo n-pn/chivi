@@ -74,7 +74,7 @@ class CV::Cvbook
       where("ztitle LIKE '%#{scrub}%'")
     else
       scrub = BookUtils.scrub_vname(input, "-")
-      where("vtslug LIKE '%#{scrub}%' OR htslug LIKE '%#{scrub}%'")
+      where("vtslug LIKE '%-#{scrub}-%' OR htslug LIKE '%-#{scrub}-%'")
     end
   end
 

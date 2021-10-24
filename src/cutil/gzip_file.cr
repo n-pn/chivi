@@ -42,7 +42,3 @@ class CV::GzipFile
     end
   end
 end
-
-# file = ".tmp/test.txt.gz"
-# CV::FileUtils.save_gz(file, "test test test!")
-# puts CV::FileUtils.read_gz(file)
