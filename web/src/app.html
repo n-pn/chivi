@@ -12,15 +12,17 @@
     %svelte.head%
 
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
+    <!-- prettier-ignore -->
     <link rel="apple-touch-icon" sizes="180x180" href="/favi/apple-touch-icon.png" />
+    <!-- prettier-ignore -->
     <link rel="icon" type="image/png" sizes="150x150" href="/favi/favicon.png" />
+    <!-- prettier-ignore -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favi/favicon-32x32.png" />
+    <!-- prettier-ignore -->
     <link rel="icon" type="image/png" sizes="16x16" href="/favi/favicon-16x16.png" />
 
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=UA-160000714-1"
-    ></script>
+    <!-- prettier-ignore -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-160000714-1" ></script>
     <script>
       window.dataLayer = window.dataLayer || []
       function gtag() {
@@ -29,6 +31,96 @@
       gtag('js', new Date())
       gtag('config', 'UA-160000714-1')
     </script>
+
+    <style>
+      @font-face {
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Roboto'),
+          url('/fonts/roboto-v29-vietnamese_latin-ext_latin-regular.woff2')
+            format('woff2'),
+          url('/fonts/roboto-v29-vietnamese_latin-ext_latin-regular.woff')
+            format('woff');
+      }
+
+      @font-face {
+        font-family: 'Roboto';
+        font-style: italic;
+        font-weight: 400;
+        src: local('Roboto Italic'),
+          url('/fonts/roboto-v29-vietnamese_latin-ext_latin-italic.woff2')
+            format('woff2'),
+          url('/fonts/roboto-v29-vietnamese_latin-ext_latin-italic.woff')
+            format('woff');
+      }
+
+      @font-face {
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 500;
+        src: local('Roboto Medium'),
+          url('/fonts/roboto-v29-vietnamese_latin-ext_latin-500.woff2')
+            format('woff2'),
+          url('/fonts/roboto-v29-vietnamese_latin-ext_latin-500.woff')
+            format('woff');
+      }
+
+      @font-face {
+        font-family: 'Roboto';
+        font-style: italic;
+        font-weight: 500;
+        src: local('Roboto Medium Italic'),
+          url('/fonts/roboto-v29-vietnamese_latin-ext_latin-500italic.woff2')
+            format('woff2'),
+          url('/fonts/roboto-v29-vietnamese_latin-ext_latin-500italic.woff')
+            format('woff');
+      }
+
+      @font-face {
+        font-family: 'Merriweather';
+        font-style: normal;
+        font-weight: 400;
+        src: local(''),
+          url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-regular.woff2')
+            format('woff2'),
+          url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-regular.woff')
+            format('woff');
+      }
+
+      @font-face {
+        font-family: 'Merriweather';
+        font-style: italic;
+        font-weight: 400;
+        src: local(''),
+          url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-italic.woff2')
+            format('woff2'),
+          url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-italic.woff')
+            format('woff');
+      }
+
+      @font-face {
+        font-family: 'Merriweather';
+        font-style: normal;
+        font-weight: 700;
+        src: local(''),
+          url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700.woff2')
+            format('woff2'),
+          url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700.woff')
+            format('woff');
+      }
+
+      @font-face {
+        font-family: 'Merriweather';
+        font-style: italic;
+        font-weight: 700;
+        src: local(''),
+          url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700italic.woff2')
+            format('woff2'),
+          url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700italic.woff')
+            format('woff');
+      }
+    </style>
   </head>
 
   <body>
