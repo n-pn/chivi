@@ -74,7 +74,7 @@ module CV::UserRestore
         entry.lr_chidx = values[1].to_i
 
         entry.lc_title = values[3]
-        entry.lc_uslug = values[5]
+        entry.lc_uslug = values[4]
       end
     rescue err
       puts err

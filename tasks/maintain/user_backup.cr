@@ -41,8 +41,8 @@ module CV::UserBackup
   def save_user_history(user : Cvuser)
     store = TsvStore.new(user_file("history/" + user.uname))
 
-    Ubemmo.query.where({cvuser_id: user.id}).with_cvbook.each do |entry|
-      value = [entry.lr_sname, entry.lr_chidx, entry.bumped, entry.ch_title, entry.ch_label, entry.ch_uslug]
+    Ubmemo.query.where({cvuser_id: user.id}).with_cvbook.each do |entry|
+      value = [entry.lr_sname, entry.lr_chidx, entry.bumped, entry.lc_title, entry.lc_uslug]
       store.set!(entry.cvbook.bhash, value.map(&.to_s))
     end
 

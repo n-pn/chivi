@@ -77,7 +77,7 @@ class CV::ZxcsmeJson
 
   property genres : Array(String)
   property bintro : Array(String)
-  property bcover : String
+  property bcover : String?
 end
 
 class CV::SeedZxcsme
