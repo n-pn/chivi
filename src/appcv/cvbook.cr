@@ -182,14 +182,14 @@ class CV::Cvbook
   def self.upsert!(author : Author, ztitle : String,
                    htitle : String? = nil, vtitle : String? = nil)
     get(author, ztitle) || begin
-      htitle ||= BookUtils.hanviet(ztitle)
-      vtitle ||= BookUtils.get_vi_btitle(ztitle)
-
-      htslug = BookUtils.scrub_vname(htitle, "-")
+      bhash = UkeyUtil.digest32("#{ztitle}--#{author.zname}")
+      vtitle ||= BookUtils.get_vi_btitle(ztitle, bhash)
       vtslug = "-#{BookUtils.scrub_vname(vtitle, "-")}-"
 
-      bhash = UkeyUtil.digest32("#{ztitle}--#{author.zname}")
-      bslug = htslug.split("-").first(7).push(bhash[0..3]).join("-")
+      htitle ||= BookUtils.hanviet(ztitle)
+      htslug = BookUtils.scrub_vname(htitle, "-")
+
+      bslug = htslug.split("-").first(8).push(bhash[0..3]).join("-")
 
       htslug = "-#{htslug}-"
       cvbook = new({

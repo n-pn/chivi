@@ -38,8 +38,7 @@ class CV::Author
 
   def self.create!(zname : String, vname : String? = nil) : Author
     vname ||= BookUtils.get_vi_author(zname)
-    vslug = BookUtils.scrub_vname(vname, "-")
-
+    vslug = "-#{BookUtils.scrub_vname(vname, "-")}-"
     author = new({zname: zname, vname: vname, vslug: vslug})
     author.tap(&.save!)
   end
