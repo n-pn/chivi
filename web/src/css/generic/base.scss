@@ -88,6 +88,9 @@ $colors: (gray, blue, green, orange, red, violet) !default;
   $gutter-small: (pm: ps, pl: pm, ts: pl, tm: ts);
   $gutter-large: (pm: pl, pl: ts, ts: tm, tm: tl);
 
+  --gutter: .5rem;
+  --verpad: 1rem;
+
   --gutter-ps: 0.25rem;
   --gutter-pm: 0.5rem;
   --gutter-pl: 0.75rem;
