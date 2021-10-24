@@ -93,76 +93,74 @@
       <BCover bcover={cvbook.bcover} />
     </div>
 
-    <section class="extra">
-      <div class="line">
-        <span class="stat -trim">
-          <SIcon name="edit" />
-          <a
-            class="link"
-            href="/search?t=author&q={encodeURIComponent(cvbook.vauthor)}">
-            <span class="label">{cvbook.vauthor}</span>
+    <div class="line">
+      <span class="stat -trim">
+        <SIcon name="edit" />
+        <a
+          class="link"
+          href="/search?t=author&q={encodeURIComponent(cvbook.vauthor)}">
+          <span class="label">{cvbook.vauthor}</span>
+        </a>
+      </span>
+
+      {#each cvbook.genres as genre}
+        <span class="stat _genre">
+          <SIcon name="folder" />
+          <a class="link" href="/?genre={genre}">
+            <span class="label">{genre}</span>
           </a>
         </span>
+      {/each}
+    </div>
 
-        {#each cvbook.genres as genre}
-          <span class="stat _genre">
-            <SIcon name="folder" />
-            <a class="link" href="/?genre={genre}">
-              <span class="label">{genre}</span>
-            </a>
-          </span>
-        {/each}
-      </div>
+    <div class="line">
+      <span class="stat _status">
+        <SIcon name="activity" />
+        <span>{cvbook.status}</span>
+      </span>
 
+      <span class="stat _mftime">
+        <SIcon name="clock" />
+        <span><RTime mtime={cvbook.mftime} /></span>
+      </span>
+    </div>
+
+    <div class="line">
+      <span class="stat">
+        Đánh giá:
+        <span class="label">{cvbook.voters <= 10 ? '--' : cvbook.rating}</span
+        >/10
+      </span>
+      <span class="stat">({cvbook.voters} lượt đánh giá)</span>
+    </div>
+
+    {#if cvbook.yousuu_id || cvbook.root_link}
       <div class="line">
-        <span class="stat _status">
-          <SIcon name="activity" />
-          <span>{cvbook.status}</span>
-        </span>
+        <span class="stat">Liên kết:</span>
 
-        <span class="stat _mftime">
-          <SIcon name="clock" />
-          <span><RTime mtime={cvbook.mftime} /></span>
-        </span>
+        {#if cvbook.root_link != ''}
+          <a
+            class="stat link _outer"
+            href={cvbook.root_link}
+            rel="noopener noreferer"
+            target="_blank"
+            title="Trang nguồn">
+            {cvbook.root_name}
+          </a>
+        {/if}
+
+        {#if cvbook.yousuu_id != ''}
+          <a
+            class="stat link _outer"
+            href="https://www.yousuu.com/book/{cvbook.yousuu_id}"
+            rel="noopener noreferer"
+            target="_blank"
+            title="Đánh giá">
+            yousuu
+          </a>
+        {/if}
       </div>
-
-      <div class="line">
-        <span class="stat">
-          Đánh giá:
-          <span class="label">{cvbook.voters <= 10 ? '--' : cvbook.rating}</span
-          >/10
-        </span>
-        <span class="stat">({cvbook.voters} lượt đánh giá)</span>
-      </div>
-
-      {#if cvbook.yousuu_id || cvbook.root_link}
-        <div class="line">
-          <span class="stat">Liên kết:</span>
-
-          {#if cvbook.root_link != ''}
-            <a
-              class="stat link _outer"
-              href={cvbook.root_link}
-              rel="noopener noreferer"
-              target="_blank"
-              title="Trang nguồn">
-              {cvbook.root_name}
-            </a>
-          {/if}
-
-          {#if cvbook.yousuu_id != ''}
-            <a
-              class="stat link _outer"
-              href="https://www.yousuu.com/book/{cvbook.yousuu_id}"
-              rel="noopener noreferer"
-              target="_blank"
-              title="Đánh giá">
-              yousuu
-            </a>
-          {/if}
-        </div>
-      {/if}
-    </section>
+    {/if}
   </div>
 
   <book-section>
@@ -197,7 +195,7 @@
 
 <style lang="scss">
   .main-info {
-    padding-top: var(--gutter-small);
+    padding-top: var(--gutter);
     @include flow();
   }
 
@@ -205,45 +203,40 @@
     margin-bottom: 0.75rem;
 
     @include fgcolor(secd);
-    @include bps(float, left, $ts: right);
-    @include bps(width, 100%, $ts: 70%, $tm: 75%);
-    @include bps(padding-left, 0, $ts: 0.75rem);
-    @include bps(line-height, 1.25rem, $ts: 1.5rem, $tm: 1.75rem);
+    @include bps(float, left, $pl: right);
+    @include bps(width, 100%, $pl: 70%, $ts: 75%);
+    @include bps(padding-left, 0, $pl: 0.75rem);
+    @include bps(line-height, 1.25rem, $pl: 1.5rem, $ts: 1.75rem);
+
+    // prettier-ignore
+    @include bps(font-size, rem(21px), rem(22px), rem(23px), rem(24px), rem(25px));
 
     > .-main,
     > .-sub {
       font-weight: 400;
     }
-
-    > .-main {
-      // prettier-ignore
-      @include bps(font-size, rem(20px), rem(21px), rem(22px), rem(24px), rem(26px));
-    }
-
     > .-sub {
-      // prettier-ignore
-      @include bps(font-size, rem(18px), rem(19px), rem(20px), rem(22px), rem(24px));
+      font-size: 0.8em;
+      vertical-align: top;
     }
   }
 
   .cover {
     float: left;
-    @include bps(width, 40%, $pl: 35%, $ts: 30%, $tm: 25%);
+    @include bps(width, 40%, $pm: 35%, $pl: 30%, $ts: 25%);
   }
 
-  .extra {
-    float: right;
+  .line {
+    // float: right;
     padding-left: 0.75rem;
 
-    @include bps(width, 60%, $pl: 65%, $ts: 70%, $tm: 75%);
+    @include bps(width, 60%, $pm: 65%, $pl: 70%, $ts: 75%);
 
     :global(svg) {
       margin-top: -0.125rem;
     }
-  }
 
-  .line {
-    margin-bottom: var(--gutter-pl);
+    margin-bottom: var(--gutter-pm);
     @include fgcolor(tert);
     @include flex($wrap: true);
   }
