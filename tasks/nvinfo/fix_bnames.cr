@@ -44,7 +44,7 @@ module CV::FixBnames
     case ztitle
     when .starts_with?("重生之")
       ztitle = ztitle.sub(/^重生之/, "")
-      "Sống lại: " + mtl.cv_plain(ztitle).to_s
+      "Trùng sinh: " + mtl.cv_plain(ztitle).to_s
     else
       mtl.cv_plain(ztitle).to_s
     end
