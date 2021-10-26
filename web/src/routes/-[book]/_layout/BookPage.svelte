@@ -46,7 +46,7 @@
         {#each cvbook.genres as genre, idx}
           <span class="stat _genre" class:_trim={idx > 1}>
             <a class="link" href="/?genre={genre}">
-              <SIcon name="book" />
+              <SIcon name="folder" />
               <span class="label">{genre}</span>
             </a>
           </span>

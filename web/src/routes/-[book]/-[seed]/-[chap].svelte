@@ -48,7 +48,6 @@
   }
 
   async function reload_chap(full = false) {
-    _dirty = false
     if ($session.privi < 1) return
 
     if (full) {
