@@ -31,7 +31,7 @@
     <crit-sep>·</crit-sep>
     <a class="crit-time" href="/crits/{crit.id}">{get_rtime(crit.mftime)}</a>
     <crit-star>{get_stars(crit.stars)}</crit-star>
-    {#if crit.vhtml.length >= 1000}
+    {#if crit.vhtml.length >= 640}
       <button class="m-btn _sm" on:click={() => (view_all = !view_all)}>
         <SIcon name={view_all ? 'minus' : 'plus'} />
       </button>
@@ -135,15 +135,24 @@
 
   crit-body {
     display: block;
-    padding: 0 var(--gutter);
+    margin: 0 var(--gutter);
     @include bps(font-size, rem(16px), rem(17px));
 
-    max-height: 15rem;
+    max-height: 12rem;
     overflow: hidden;
+
+    --hide: #{color(neutral, 7, 2)};
+    // prettier-ignore
+    background: linear-gradient( to top, color(--hide) 0.25rem, transparent 1rem);
+
+    @include tm-dark {
+      --hide: #{color(neutral, 5, 2)};
+    }
 
     &._all {
       overflow: none;
       max-height: initial;
+      background: none;
     }
 
     :global(p) {

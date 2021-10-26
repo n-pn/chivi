@@ -49,7 +49,7 @@
 
     <div class="crits">
       {#each crits as crit}
-        <Yscrit {crit} show_book={false} view_all={crit.vhtml.length < 1000}>
+        <Yscrit {crit} show_book={false} view_all={crit.vhtml.length < 640}>
           {@html crit.vhtml}
         </Yscrit>
       {/each}

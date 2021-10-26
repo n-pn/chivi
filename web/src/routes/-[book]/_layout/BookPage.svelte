@@ -17,12 +17,14 @@
 <Vessel>
   <div class="main-info">
     <div class="title">
-      <h1 class="bname">
-        <span class="-main">{cvbook.vtitle}</span>
+      <h1 class="bname _main">
+        <bname-vi>{cvbook.vtitle}</bname-vi>
+        <bname-sep>/</bname-sep>
+        <bname-zh>{cvbook.ztitle}</bname-zh>
         {#if cvbook.vtitle != cvbook.htitle}
-          <span class="-main">- {cvbook.htitle}</span>
+          <bname-sep>/</bname-sep>
+          <bname-vi>{cvbook.htitle}</bname-vi>
         {/if}
-        <span class="-sub">- {cvbook.ztitle}</span>
       </h1>
     </div>
 
@@ -102,7 +104,7 @@
     {/if}
 
     <div class="line _chap">
-      <div class="label _chap">Chương tiết:</div>
+      <div class="label _chap">Chương tiết</div>
       <SeedList {cvbook} />
     </div>
   </div>
@@ -152,22 +154,24 @@
   }
 
   .bname {
-    // prettier-ignore
-    @include bps(font-size, rem(21px), rem(22px), rem(24px), rem(26px), rem(30px));
-    @include bps(line-height, 1.5rem, $pl: 1.75rem, $ts: 2rem);
     @include fgcolor(secd);
-
+    font-weight: 400;
     @include clamp($lines: 2);
+    // prettier-ignore
+    @include bps( font-size, rem(21px), rem(22px), rem(23px), rem(25px), rem(27px) );
+    @include bps(line-height, 1.5rem, $pl: 1.75rem, $ts: 2rem, $tm: 2.25rem);
+  }
 
-    > .-main,
-    > .-sub {
-      font-weight: 400;
-    }
+  bname-sep {
+    @include fgcolor(mute);
+    font-size: 0.85em;
+    vertical-align: top;
+  }
 
-    > .-sub {
-      font-size: 0.8em;
-      vertical-align: top;
-    }
+  bname-zh {
+    font-size: 0.85em;
+    vertical-align: top;
+    // @include bps(line-height, 1.25rem, $pl: 1.5rem, $ts: 1.75rem);
   }
 
   // .genre {
