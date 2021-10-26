@@ -1,6 +1,6 @@
 <script context="module">
   export async function load({ fetch, page: { query } }) {
-    const res = await fetch(`/api/crits?${query.toString()}`)
+    const res = await fetch(`/api/crits?${query.toString()}&take=10`)
     return { props: { ...(await res.json()) } }
   }
 
