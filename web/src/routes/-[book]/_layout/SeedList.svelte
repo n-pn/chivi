@@ -1,6 +1,5 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import { snames } from '$lib/constants'
 
   export let cvbook
   export let _sname = ''

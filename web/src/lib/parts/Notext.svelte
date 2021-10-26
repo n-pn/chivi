@@ -11,6 +11,7 @@
 </script>
 
 <article class="notext cvdata m-article">
+  <slot name="header" />
   <h1>Chương tiết không có nội dung.</h1>
 
   {#if chmeta.sname == 'chivi'}

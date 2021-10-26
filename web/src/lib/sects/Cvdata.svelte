@@ -87,6 +87,8 @@
 </div>
 
 <article class="cvdata _{$ftsize}" class:debug>
+  <slot name="header" />
+
   {#each lines as _, index (index)}
     <div
       id="L{index}"

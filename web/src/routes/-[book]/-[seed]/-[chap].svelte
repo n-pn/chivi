@@ -26,6 +26,7 @@
   import Header from '$sects/Header.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Cvdata from '$sects/Cvdata.svelte'
+  import ChapSeed from '../_layout/ChapSeed.svelte'
 
   export let cvbook
   export let ubmemo
@@ -151,9 +152,25 @@
       dname={cvbook.bhash}
       d_dub={cvbook.vtitle}
       bind:debug
-      bind:_dirty />
+      bind:_dirty>
+      <svelte:fragment slot="header">
+        <ChapSeed
+          {cvbook}
+          sname={chmeta.sname}
+          uslug={chinfo.uslug}
+          chidx={chinfo.chidx} />
+      </svelte:fragment>
+    </Cvdata>
   {:else}
-    <Notext {chmeta} />
+    <Notext {chmeta}>
+      <svelte:fragment slot="header">
+        <ChapSeed
+          {cvbook}
+          sname={chmeta.sname}
+          uslug={chinfo.uslug}
+          chidx={chinfo.chidx} />
+      </svelte:fragment>
+    </Notext>
   {/if}
 
   <div class="navi" slot="footer">
