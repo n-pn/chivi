@@ -117,7 +117,7 @@
   <svelte:fragment slot="left">
     <a href={paths.home} class="header-item _title">
       <SIcon name="book" />
-      <span class="header-text _show-sm _title">{cvbook.vtitle}</span>
+      <span class="header-text _show-sm _title">{cvbook.htitle}</span>
     </a>
 
     <button class="header-item _active">

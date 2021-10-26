@@ -31,7 +31,7 @@
 <Header>
   <a slot="left" href="/-{cvbook.bslug}" class="header-item _active">
     <SIcon name="book" />
-    <span class="header-text _title">{cvbook.vtitle}</span>
+    <span class="header-text _title">{cvbook.htitle}</span>
   </a>
 
   <svelte:fragment slot="right">
