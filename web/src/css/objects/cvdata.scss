@@ -2,7 +2,7 @@
 
 .cvdata {
   min-height: 50vh;
-  padding: var(--verpad) var(--gutter);
+  padding: 0 var(--gutter) var(--verpad);
 
   margin-left: calc(-1 * var(--gutter));
   margin-right: calc(-1 * var(--gutter));
@@ -60,7 +60,7 @@
   text-justify: auto;
   line-height: 1.7em;
 
-  @include bps(margin-top, 1em, 1.125em, 1.25em, 1.375em, 1.5em);
+  @include bps(margin-top, 1.125em, 1.25em, 1.375em, 1.5em);
 
   .cvdata._xs & {
     @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(19px));

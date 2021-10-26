@@ -86,7 +86,7 @@
             rel="noopener noreferer"
             target="_blank"
             title="Trang nguồn">
-            {cvbook.root_name}
+            <span>{cvbook.root_name}</span>
           </a>
         {/if}
 
@@ -97,14 +97,14 @@
             rel="noopener noreferer"
             target="_blank"
             title="Đánh giá">
-            yousuu
+            <span>yousuu</span>
           </a>
         {/if}
       </div>
     {/if}
 
     <div class="line _chap">
-      <div class="label _chap">Chương tiết</div>
+      <div class="label _chap">Chương tiết:</div>
       <SeedList {cvbook} />
     </div>
   </div>
@@ -141,7 +141,7 @@
 
 <style lang="scss">
   .main-info {
-    padding-top: var(--gutter);
+    margin: var(--gutter) 0;
     @include flow();
   }
 
@@ -159,7 +159,7 @@
     @include clamp($lines: 2);
     // prettier-ignore
     @include bps( font-size, rem(21px), rem(22px), rem(23px), rem(25px), rem(27px) );
-    @include bps(line-height, 1.5rem, $pl: 1.75rem, $ts: 2rem, $tm: 2.25rem);
+    @include bps(line-height, 1.5rem, $pl: 1.75rem, $ts: 2rem);
   }
 
   bname-sep {
@@ -204,7 +204,7 @@
       margin-top: -0.125rem;
     }
 
-    margin-bottom: var(--gutter-pm);
+    margin-top: var(--gutter-pm);
     @include fgcolor(tert);
     @include flex($wrap: true);
 

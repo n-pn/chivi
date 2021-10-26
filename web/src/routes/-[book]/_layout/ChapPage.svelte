@@ -35,9 +35,9 @@
   </nav>
 
   <chap-page>
-    <seed-list>
+    <page-header>
       <SeedList {cvbook} _sname={chinfo.sname} />
-    </seed-list>
+    </page-header>
 
     <seed-info>
       <info-left>
@@ -162,12 +162,15 @@
     }
   }
 
-  seed-list {
-    @include flex-cx();
-    flex-wrap: wrap;
-    padding-top: 0.75rem;
-    padding-bottom: 0.25rem;
+  page-header {
+    display: block;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
     @include border(--bd-main, $loc: bottom);
+
+    :global(seed-list) {
+      justify-content: center;
+    }
   }
 
   seed-info {

@@ -37,10 +37,8 @@
   export let zhtext
   export let cvdata
 
-  let _dirty = false
+  const on_change = () => reload_chap(false)
   let debug = false
-
-  $: if (_dirty) reload_chap(false)
 
   $: paths = gen_paths(cvbook, chmeta, chinfo)
   $: api_url = gen_api_url(cvbook, chmeta, chinfo)
@@ -151,24 +149,16 @@
       {zhtext}
       dname={cvbook.bhash}
       d_dub={cvbook.vtitle}
-      bind:debug
-      bind:_dirty>
+      {on_change}
+      bind:debug>
       <svelte:fragment slot="header">
-        <ChapSeed
-          {cvbook}
-          sname={chmeta.sname}
-          uslug={chinfo.uslug}
-          chidx={chinfo.chidx} />
+        <ChapSeed {cvbook} {chmeta} {chinfo} />
       </svelte:fragment>
     </Cvdata>
   {:else}
     <Notext {chmeta}>
       <svelte:fragment slot="header">
-        <ChapSeed
-          {cvbook}
-          sname={chmeta.sname}
-          uslug={chinfo.uslug}
-          chidx={chinfo.chidx} />
+        <ChapSeed {cvbook} {chmeta} {chinfo} />
       </svelte:fragment>
     </Notext>
   {/if}

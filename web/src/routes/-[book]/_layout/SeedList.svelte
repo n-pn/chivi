@@ -20,41 +20,48 @@
   }
 </script>
 
-{#each cvbook.chseed as zhbook, idx}
-  <a
-    class="seed-name"
-    class:_hidden={zhbook.sname != 'chivi' && idx > 3 && show_less}
-    class:_active={zhbook.sname == _sname}
-    href={chap_url(zhbook.sname, pgidx)}>
-    <seed-label>
-      <span>{zhbook.sname}</span>
-      <SIcon name={zhbook._seed ? 'cloud' : 'archive'} />
-    </seed-label>
-    <seed-stats><strong>{zhbook.chaps}</strong> chương</seed-stats>
-  </a>
-{/each}
+<seed-list>
+  {#each cvbook.chseed as zhbook, idx}
+    <a
+      class="seed-name"
+      class:_hidden={zhbook.sname != 'chivi' && idx > 3 && show_less}
+      class:_active={zhbook.sname == _sname}
+      href={chap_url(zhbook.sname, pgidx)}>
+      <seed-label>
+        <span>{zhbook.sname}</span>
+        <SIcon name={zhbook._seed ? 'cloud' : 'archive'} />
+      </seed-label>
+      <seed-stats><strong>{zhbook.chaps}</strong> chương</seed-stats>
+    </a>
+  {/each}
 
-{#if show_less && hidden_seeds > 0}
-  <button class="seed-name _btn" on:click={() => (show_less = false)}>
-    <seed-label><SIcon name="dots" /></seed-label>
-    <seed-stats>({hidden_seeds})</seed-stats>
-  </button>
-{/if}
+  {#if show_less && hidden_seeds > 0}
+    <button class="seed-name _btn" on:click={() => (show_less = false)}>
+      <seed-label><SIcon name="dots" /></seed-label>
+      <seed-stats>({hidden_seeds})</seed-stats>
+    </button>
+  {/if}
 
-{#if !cvbook.snames.includes('chivi')}
-  <a
-    class="seed-name"
-    class:_active={_sname === 'chivi'}
-    href={chap_url('chivi', 0)}>
-    <seed-label>
-      <span>chivi</span>
-      <SIcon name="archive" />
-    </seed-label>
-    <seed-stats><strong>0</strong> chương</seed-stats>
-  </a>
-{/if}
+  {#if !cvbook.snames.includes('chivi')}
+    <a
+      class="seed-name"
+      class:_active={_sname === 'chivi'}
+      href={chap_url('chivi', 0)}>
+      <seed-label>
+        <span>chivi</span>
+        <SIcon name="archive" />
+      </seed-label>
+      <seed-stats><strong>0</strong> chương</seed-stats>
+    </a>
+  {/if}
+</seed-list>
 
 <style lang="scss">
+  seed-list {
+    @include flex($gap: 0.375rem);
+    flex-wrap: wrap;
+  }
+
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
@@ -68,9 +75,6 @@
     padding: 0.375em;
     @include bdradi();
     @include linesd(--bd-main);
-
-    margin-right: 0.375rem;
-    margin-bottom: 0.375rem;
 
     &._btn {
       background-color: transparent;
