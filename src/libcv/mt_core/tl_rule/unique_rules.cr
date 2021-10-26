@@ -70,6 +70,7 @@ module CV::TlRule
         node.set!("thì ra")
       end
     when "行"
+      return node if succ.nil? || succ.titlecl?
       boundary?(succ) ? node.set!("được") : node
     when "高达"
       if succ.try(&.numeric?)

@@ -194,7 +194,7 @@
               <td
                 class="-val"
                 class:_del={!val[0]}
-                on:click={() => upsert_activate(key)}>
+                on:click={() => upsert_activate(key, d_tab, 1)}>
                 <span>
                   {val[0] || 'Đã xoá'}
                 </span>

@@ -10,12 +10,26 @@ module CV::TlRule
       end
     end
 
-    if month || appro < 1
+    if month || exact_year?(node, appro)
       prev = fold_swap!(prev, node, PosTag::Time, dic: 2)
       return month ? fold_swap!(prev, month, prev.tag, dic: 2) : prev
     end
 
     fold!(prev, node, PosTag::Qttime, dic: 2)
+  end
+
+  def exact_year?(node : MtNode, appro : Int32 = 0) : Bool
+    return appro < 0 if appro != 0
+
+    case node.tag
+    when .number? then false
+    when .ndigit? then node.to_int?.try(&.> 9) || false
+    when .nhanzi?
+      return false if node.key.size == 1
+      node.key !~ /[百千万亿兆]/
+    else
+      false
+    end
   end
 
   def fold_month!(prev : MtNode, node : MtNode, appro : Int32 = 0)

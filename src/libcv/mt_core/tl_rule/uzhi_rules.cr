@@ -65,6 +65,9 @@ module CV::TlRule
     "功" => "công lao",
     "都" => "kinh đô",
     "道" => "đạo",
+    "旅" => "hành trình",
+    "翼" => "chiếc cánh",
+    "剑" => "thanh kiếm",
   }
 
   def fold_uzhi!(uzhi : MtNode, prev = uzhi.prev, succ = uzhi.succ?) : MtNode
