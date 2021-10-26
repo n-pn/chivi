@@ -4,7 +4,7 @@ module CV::FixBnames
   extend self
 
   DIR = "var/fixtures"
-  class_getter vtitles : TsvStore { TsvStore.new("#{DIR}/vi_bitles.tsv") }
+  class_getter vtitles : TsvStore { TsvStore.new("#{DIR}/vi_btitles.tsv") }
 
   def fix_all!
     total, index = Cvbook.query.count, 1
@@ -41,7 +41,13 @@ module CV::FixBnames
 
   def convert(ztitle : String, bhash : String)
     mtl = MtCore.generic_mtl(bhash)
-    mtl.cv_plain(ztitle).to_s
+    case ztitle
+    when .starts_with?("重生之")
+      ztitle = ztitle.sub(/^重生之/, "")
+      "Sống lại: " + mtl.cv_plain(ztitle).to_s
+    else
+      mtl.cv_plain(ztitle).to_s
+    end
   end
 end
 
