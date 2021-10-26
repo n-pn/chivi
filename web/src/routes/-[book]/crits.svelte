@@ -15,8 +15,6 @@
     likes: 'Ưa thích',
     mtime: 'Gần nhất',
   }
-
-  const _navi = { replace: true, scrollto: '#sorts' }
 </script>
 
 <script>
@@ -45,7 +43,6 @@
         <a
           href={pager.url({ sort, page: 1 })}
           class="-sort"
-          use:navigate={_navi}
           class:_active={sort == _sort}>{name}</a>
       {/each}
     </div>
@@ -59,7 +56,7 @@
 
       <footer class="pagi">
         {#if crits.length > 0}
-          <Mpager {pager} {pgidx} {pgmax} {_navi} />
+          <Mpager {pager} {pgidx} {pgmax} />
         {/if}
       </footer>
     </div>
@@ -70,28 +67,6 @@
   article {
     @include bps(margin-left, 0rem, 0.1rem, 1.5rem, 2rem);
     @include bps(margin-right, 0rem, 0.1rem, 1.5rem, 2rem);
-  }
-
-  .intro {
-    word-wrap: break-word;
-    @include fgcolor(neutral, 7);
-    // @include bps(padding, $md: 0 0.75rem);
-    @include bps(font-size, rem(15px), rem(16px), rem(17px));
-
-    @include tm-dark {
-      @include fgcolor(neutral, 3);
-    }
-
-    &._short {
-      height: 20rem;
-      overflow-y: scroll;
-      scrollbar-width: thin;
-      scrollbar-color: color(gray, 8);
-    }
-  }
-
-  p {
-    margin-top: 0.5rem;
   }
 
   .sorts {
