@@ -61,19 +61,19 @@
     {#if ubmemo.chidx == 0}
       <div class="header-item _disable" title="Chưa có chương tiết">
         <SIcon name="player-play" />
-        <span class="header-text _show-md">Đọc thử</span>
+        <span class="header-text _show-lg">Đọc thử</span>
       </div>
     {:else if ubmemo.chidx > 0}
       <a class="header-item" href={kit_chap_url(cvbook.bslug, ubmemo)}>
         <SIcon name={ubmemo.locked ? 'player-skip-forward' : 'player-play'} />
-        <span class="header-text _show-md">Đọc tiếp</span>
+        <span class="header-text _show-lg">Đọc tiếp</span>
       </a>
     {:else}
       <a
         class="header-item"
         href={kit_chap_url(cvbook.bslug, { ...ubmemo, chidx: 1 })}>
         <SIcon name="player-play" />
-        <span class="header-text _show-md">Đọc thử</span>
+        <span class="header-text _show-lg">Đọc thử</span>
       </a>
     {/if}
   </svelte:fragment>

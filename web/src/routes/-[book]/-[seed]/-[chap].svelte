@@ -242,7 +242,7 @@
 
   .bread {
     padding: var(--gutter-pl) 0;
-    line-height: var(--lh-narrow);
+    line-height: 1.25rem;
 
     // @include flow();
     @include ftsize(sm);

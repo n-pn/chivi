@@ -1,5 +1,6 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
+  import { snames } from '$lib/constants'
 
   export let cvbook
   export let _sname = ''
@@ -20,28 +21,28 @@
   }
 </script>
 
-<div class="list">
-  {#each Object.values(cvbook.chseed) as zhbook, idx}
-    <a
-      class="seed-name"
-      class:_hidden={idx > 3 && show_less}
-      class:_active={zhbook.sname == _sname}
-      href={chap_url(zhbook.sname, pgidx)}>
-      <seed-label>
-        <span>{zhbook.sname}</span>
-        <SIcon name={zhbook._seed ? 'cloud' : 'archive'} />
-      </seed-label>
-      <seed-stats><strong>{zhbook.chaps}</strong> chương</seed-stats>
-    </a>
-  {/each}
+{#each cvbook.chseed as zhbook, idx}
+  <a
+    class="seed-name"
+    class:_hidden={zhbook.sname != 'chivi' && idx > 3 && show_less}
+    class:_active={zhbook.sname == _sname}
+    href={chap_url(zhbook.sname, pgidx)}>
+    <seed-label>
+      <span>{zhbook.sname}</span>
+      <SIcon name={zhbook._seed ? 'cloud' : 'archive'} />
+    </seed-label>
+    <seed-stats><strong>{zhbook.chaps}</strong> chương</seed-stats>
+  </a>
+{/each}
 
-  {#if show_less && hidden_seeds > 0}
-    <button class="seed-name _btn" on:click={() => (show_less = false)}>
-      <seed-label><SIcon name="dots" /></seed-label>
-      <seed-stats>({hidden_seeds})</seed-stats>
-    </button>
-  {/if}
+{#if show_less && hidden_seeds > 0}
+  <button class="seed-name _btn" on:click={() => (show_less = false)}>
+    <seed-label><SIcon name="dots" /></seed-label>
+    <seed-stats>({hidden_seeds})</seed-stats>
+  </button>
+{/if}
 
+{#if !cvbook.snames.includes('chivi')}
   <a
     class="seed-name"
     class:_active={_sname === 'chivi'}
@@ -50,19 +51,11 @@
       <span>chivi</span>
       <SIcon name="archive" />
     </seed-label>
-    <seed-stats
-      ><strong>{cvbook.chseed.chivi?.chaps || 0}</strong> chương</seed-stats>
+    <seed-stats><strong>0</strong> chương</seed-stats>
   </a>
-</div>
+{/if}
 
 <style lang="scss">
-  .list {
-    width: 100%;
-    // display: flex;
-    // flex-wrap: nowrap;
-    overflow-x: auto;
-  }
-
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
@@ -91,7 +84,7 @@
     }
 
     &._active {
-      display: block;
+      display: inline-block;
       @include linesd(primary, 5, $ndef: true);
     }
 

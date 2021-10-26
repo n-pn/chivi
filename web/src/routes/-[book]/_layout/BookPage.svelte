@@ -154,7 +154,7 @@
   .bname {
     // prettier-ignore
     @include bps(font-size, rem(21px), rem(22px), rem(24px), rem(26px), rem(30px));
-    @include bps(line-height, 1.5rem, $pl: 1.75rem, $ts: 2rem, $tm: 2.25rem);
+    @include bps(line-height, 1.5rem, $pl: 1.75rem, $ts: 2rem);
     @include fgcolor(secd);
 
     @include clamp($lines: 2);

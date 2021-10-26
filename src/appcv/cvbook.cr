@@ -12,7 +12,7 @@ class CV::Cvbook
   belongs_to author : Author
 
   column bgenre_ids : Array(Int32) = [0]
-  column zhseed_ids : Array(Int32) = [0]
+  column zhseed_ids : Array(Int32) = [] of Int32
 
   column bhash : String # unique string generate from zh_title & zh_author
   column bslug : String # unique string generate from hv_title & bhash
