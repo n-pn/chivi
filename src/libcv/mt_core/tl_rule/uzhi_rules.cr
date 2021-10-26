@@ -68,6 +68,12 @@ module CV::TlRule
     "旅" => "hành trình",
     "翼" => "chiếc cánh",
     "剑" => "thanh kiếm",
+    "际" => "thời khắc",
+    "数" => "số lượng",
+    "类" => "các loại",
+    "时" => "lúc",
+    "余" => "ngoài",
+    "体" => "thân thể",
   }
 
   def fold_uzhi!(uzhi : MtNode, prev = uzhi.prev, succ = uzhi.succ?) : MtNode
