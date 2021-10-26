@@ -18,13 +18,13 @@ module CV::TlRule
     when .ptitle?
       return node unless should_not_combine_pro_per?(node.prev?, succ.succ?)
       fold_swap!(node, succ, succ.tag, dic: 4)
-    when .names?
-      succ = fold_noun!(succ)
-      return node unless succ.names?
+      # when .names?
+      #   succ = fold_noun!(succ)
+      #   return node unless succ.names?
 
-      # TODO: add pseudo node
-      node.val = "của #{node.val}"
-      fold_swap!(node, succ, succ.tag, dic: 4)
+      #   # TODO: add pseudo node
+      #   node.val = "của #{node.val}"
+      #   fold_swap!(node, succ, succ.tag, dic: 4)
     when .penum?, .concoord?
       return node unless (succ_2 = succ.succ?) && nouns_can_group?(node, succ_2)
       succ = heal_concoord!(succ) if succ.concoord?

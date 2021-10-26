@@ -22,6 +22,12 @@ module CV::FixIntros
       bintro ||= yintro || fintro
       next if bintro.nil?
 
+      # File.open("tmp/fix_intro.log", "a") do |io|
+      #   io << cvbook.bhash
+      #   bintro.join(io, "\t")
+      #   io << "\n"
+      # end
+
       cvbook.set_zintro(bintro.not_nil!.join("\n"), force: true)
       cvbook.save!
     end
