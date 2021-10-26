@@ -113,21 +113,21 @@
         href="/-{cvbook.bslug}"
         class="header-tab"
         class:_active={nvtab == 'index'}>
-        Tổng quan
+        <span>Tổng quan</span>
       </a>
 
       <a
-        href="/-{cvbook.bslug}/chaps"
+        href="/-{cvbook.bslug}/crits"
         class="header-tab"
-        class:_active={nvtab == 'chaps'}>
-        Chương tiết
+        class:_active={nvtab == 'crits'}>
+        <span>Đánh giá</span>
       </a>
 
       <a
         href="/-{cvbook.bslug}/board"
         class="header-tab"
         class:_active={nvtab == 'board'}>
-        Thảo luận
+        <span>Thảo luận</span>
       </a>
     </header>
 

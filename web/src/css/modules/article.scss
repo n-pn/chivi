@@ -2,7 +2,7 @@
 
 .m-article {
   > * + * {
-    margin-top: var(--gutter-large);
+    margin-top: 1rem;
     margin-bottom: 0;
   }
 }

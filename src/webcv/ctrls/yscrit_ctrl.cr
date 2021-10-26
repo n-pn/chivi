@@ -3,7 +3,7 @@ require "./base_ctrl"
 class CV::YscritCtrl < CV::BaseCtrl
   def index
     page = params.fetch_int("page", min: 1)
-    take = params.fetch_int("take", min: 10, max: 20)
+    take = params.fetch_int("take", min: 1, max: 20)
     skip = (page - 1) &* take
 
     query = Yscrit.sort_by(params["sort"]?)
