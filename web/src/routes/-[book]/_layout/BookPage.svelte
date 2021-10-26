@@ -1,93 +1,30 @@
-<script context="module">
-  import { session } from '$app/stores.js'
-  import { invalidate } from '$app/navigation'
-
-  import { put_fetch } from '$api/_api_call'
-  import { kit_chap_url } from '$utils/route_utils'
-  import { status_types, status_names, status_icons } from '$lib/constants.js'
-</script>
-
 <script>
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
   import BCover from '$atoms/BCover.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
+  import SeedList from './SeedList.svelte'
+  import BookHeader from './BookHeader.svelte'
+
   export let cvbook
   export let ubmemo
   export let nvtab = 'index'
-
-  $: memo_status = ubmemo.status || 'default'
-
-  async function change_status(status) {
-    if ($session.privi < 0) return
-    if (status == ubmemo.status) status = 'default'
-
-    const url = `/api/_self/books/${cvbook.id}/status`
-    const [stt, msg] = await put_fetch(fetch, url, { status })
-    if (stt) return console.log(`error update book status: ${msg}`)
-    invalidate(`/api/books/${cvbook.bslug}`)
-  }
 </script>
 
+<BookHeader {cvbook} {ubmemo} />
+
 <Vessel>
-  <a slot="header-left" href="/-{cvbook.bslug}" class="header-item _active">
-    <SIcon name="book" />
-    <span class="header-text _title">{cvbook.vtitle}</span>
-  </a>
-
-  <svelte:fragment slot="header-right">
-    {#if $session.privi > 0}
-      <div class="header-item _menu" class:_disable={$session.privi < 0}>
-        <SIcon name={status_icons[memo_status]} />
-
-        <span class="header-text _show-md">{status_names[memo_status]}</span>
-
-        <div class="header-menu">
-          {#each status_types as status}
-            <div class="-item" on:click={() => change_status(status)}>
-              <SIcon name={status_icons[status]} />
-              <span>{status_names[status]}</span>
-
-              {#if memo_status == status}
-                <span class="_right">
-                  <SIcon name="check" />
-                </span>
-              {/if}
-            </div>
-          {/each}
-        </div>
-      </div>
-    {/if}
-
-    {#if ubmemo.chidx == 0}
-      <div class="header-item _disable" title="Chưa có chương tiết">
-        <SIcon name="player-play" />
-        <span class="header-text _show-md">Đọc thử</span>
-      </div>
-    {:else if ubmemo.chidx > 0}
-      <a class="header-item" href={kit_chap_url(cvbook.bslug, ubmemo)}>
-        <SIcon name={ubmemo.locked ? 'player-skip-forward' : 'player-play'} />
-        <span class="header-text _show-md">Đọc tiếp</span>
-      </a>
-    {:else}
-      <a
-        class="header-item"
-        href={kit_chap_url(cvbook.bslug, { ...ubmemo, chidx: 1 })}>
-        <SIcon name="player-play" />
-        <span class="header-text _show-md">Đọc thử</span>
-      </a>
-    {/if}
-  </svelte:fragment>
-
   <div class="main-info">
-    <h1 class="title">
-      <span class="-main">{cvbook.vtitle}</span>
-      {#if cvbook.vtitle != cvbook.htitle}
-        <span class="-main">- {cvbook.htitle}</span>
-      {/if}
-      <span class="-sub">- {cvbook.ztitle}</span>
-    </h1>
+    <div class="title">
+      <h1 class="bname">
+        <span class="-main">{cvbook.vtitle}</span>
+        {#if cvbook.vtitle != cvbook.htitle}
+          <span class="-main">- {cvbook.htitle}</span>
+        {/if}
+        <span class="-sub">- {cvbook.ztitle}</span>
+      </h1>
+    </div>
 
     <div class="cover">
       <BCover bcover={cvbook.bcover} />
@@ -103,14 +40,16 @@
         </a>
       </span>
 
-      {#each cvbook.genres as genre}
-        <span class="stat _genre">
-          <SIcon name="folder" />
-          <a class="link" href="/?genre={genre}">
-            <span class="label">{genre}</span>
-          </a>
-        </span>
-      {/each}
+      <div class="bgenres">
+        {#each cvbook.genres as genre, idx}
+          <span class="stat _genre" class:_trim={idx > 1}>
+            <a class="link" href="/?genre={genre}">
+              <SIcon name="book" />
+              <span class="label">{genre}</span>
+            </a>
+          </span>
+        {/each}
+      </div>
     </div>
 
     <div class="line">
@@ -127,11 +66,11 @@
 
     <div class="line">
       <span class="stat">
-        Đánh giá:
-        <span class="label">{cvbook.voters <= 10 ? '--' : cvbook.rating}</span
-        >/10
-      </span>
-      <span class="stat">({cvbook.voters} lượt đánh giá)</span>
+        <span>Đánh giá: </span><span class="label"
+          >{cvbook.voters <= 10 ? '--' : cvbook.rating}</span
+        >/10</span>
+      <span class="stat"
+        >({cvbook.voters} lượt<span class="trim">&nbsp;đánh giá</span>)</span>
     </div>
 
     {#if cvbook.yousuu_id || cvbook.root_link}
@@ -161,6 +100,11 @@
         {/if}
       </div>
     {/if}
+
+    <div class="line _chap">
+      <div class="label _chap">Chương tiết:</div>
+      <SeedList {cvbook} />
+    </div>
   </div>
 
   <book-section>
@@ -200,26 +144,46 @@
   }
 
   .title {
-    margin-bottom: 0.75rem;
+    margin-bottom: var(--gutter);
 
-    @include fgcolor(secd);
     @include bps(float, left, $pl: right);
     @include bps(width, 100%, $pl: 70%, $ts: 75%);
-    @include bps(padding-left, 0, $pl: 0.75rem);
-    @include bps(line-height, 1.25rem, $pl: 1.5rem, $ts: 1.75rem);
+    @include bps(padding-left, 0, $pl: var(--gutter));
+  }
 
+  .bname {
     // prettier-ignore
-    @include bps(font-size, rem(21px), rem(22px), rem(23px), rem(24px), rem(25px));
+    @include bps(font-size, rem(21px), rem(22px), rem(24px), rem(26px), rem(30px));
+    @include bps(line-height, 1.5rem, $pl: 1.75rem, $ts: 2rem, $tm: 2.25rem);
+    @include fgcolor(secd);
+
+    @include clamp($lines: 2);
 
     > .-main,
     > .-sub {
       font-weight: 400;
     }
+
     > .-sub {
       font-size: 0.8em;
       vertical-align: top;
     }
   }
+
+  // .genre {
+  //   display: inline-block;
+  //   @include bdradi();
+  //   @include bgcolor(primary, 5);
+  //   color: #fff;
+  //   text-transform: uppercase;
+  //   @include bps(font-size, rem(12px), $pl: rem(13px), $tm: rem(14px));
+  //   line-height: 1.75em;
+  //   padding: 0 0.5em;
+  //   &:hover {
+  //     @include bgcolor(primary, 5);
+  //     color: #fff;
+  //   }
+  // }
 
   .cover {
     float: left;
@@ -228,7 +192,7 @@
 
   .line {
     // float: right;
-    padding-left: 0.75rem;
+    padding-left: var(--gutter);
 
     @include bps(width, 60%, $pm: 65%, $pl: 70%, $ts: 75%);
 
@@ -239,10 +203,19 @@
     margin-bottom: var(--gutter-pm);
     @include fgcolor(tert);
     @include flex($wrap: true);
+
+    &._chap {
+      @include bps(width, 100%, $tm: 75%);
+      @include bps(padding-left, 0, $tm: var(--gutter));
+    }
   }
 
   .stat {
     margin-right: 0.5rem;
+  }
+
+  .trim {
+    @include bps(display, none, $tm: inline);
   }
 
   .link {
@@ -274,18 +247,27 @@
     // @include fgcolor(neutral, 8);
   }
 
+  .label._chap {
+    display: block;
+    width: 100%;
+    // margin-top: var(--gutter-small);
+    margin-bottom: 0.25rem;
+  }
+
   book-section {
     @include bgcolor(tert);
 
     display: block;
-    margin: 0.75rem -0.5rem;
+    margin: 0 -0.5rem var(--gutter);
     padding: 0 0.5rem;
     border-radius: 0.5rem;
 
     @include shadow(2);
 
     @include bp-min(pl) {
-      margin: 0.75rem 0;
+      margin-left: 0;
+      margin-right: 0;
+
       padding-left: 1rem;
       padding-right: 1rem;
       border-radius: 1rem;

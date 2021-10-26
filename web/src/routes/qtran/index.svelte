@@ -1,5 +1,6 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
+  import Header from '$sects/Header.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import Cvdata from '$sects/Cvdata.svelte'
@@ -49,13 +50,13 @@
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <span slot="header-left" class="header-item _active">
+<Header>
+  <span slot="left" class="header-item _active">
     <SIcon name="bolt" />
     <span class="header-text">Dịch nhanh</span>
   </span>
 
-  <svelte:fragment slot="header-right">
+  <svelte:fragment slot="right">
     <button
       class="header-item"
       class:_active={$lookup_enabled}
@@ -65,7 +66,9 @@
       <span class="header-text _show-md">Giải nghĩa</span>
     </button>
   </svelte:fragment>
+</Header>
 
+<Vessel>
   <section class="main">
     {#if on_edit}
       <textarea

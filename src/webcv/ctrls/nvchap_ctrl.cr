@@ -20,6 +20,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     render_json do |res|
       JSON.build(res) do |jb|
         jb.object do
+          jb.field "_seed", Zhseed::REMOTES.includes?(zhbook.sname)
           jb.field "sname", zhbook.sname
           jb.field "utime", utime
 

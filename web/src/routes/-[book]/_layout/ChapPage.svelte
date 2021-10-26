@@ -1,11 +1,3 @@
-<script context="module">
-  import { remote_snames } from '$lib/constants.js'
-
-  function is_remote_seed(sname) {
-    return remote_snames.includes(sname)
-  }
-</script>
-
 <script>
   import { session, navigating } from '$app/stores'
 
@@ -14,7 +6,7 @@
   import Chlist from '$parts/Chlist.svelte'
   import BookPage from '../_layout/BookPage.svelte'
 
-  import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
+  import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let cvbook
   export let ubmemo
@@ -24,88 +16,13 @@
   $: pager = get_pager(chinfo.sname)
 
   function get_pager(sname) {
-    return (pagers[sname] ||= new Pager(`/-${cvbook.bslug}/-${sname}`, {
-      page: chinfo.pgidx,
-    }))
-  }
-
-  $: [main_seeds, hide_seeds] = split_chinfo(cvbook, chinfo.sname)
-  let show_more = false
-
-  const _navi = { replace: true, scrollto: '#chlist' }
-
-  $: is_remote = is_remote_seed(chinfo.sname)
-
-  function split_chinfo(cvbook, sname) {
-    const input = cvbook.snames.filter((x) => x != 'chivi')
-
-    const main = input.slice(0, 3)
-    let secd = input.slice(3)
-
-    if (sname == 'chivi') return [main, secd]
-    if (main.includes(sname) || !sname || secd.length == 0) return [main, secd]
-
-    secd = [main[2], ...secd.filter((x) => x != sname)]
-    main[2] = sname
-
-    return [main, secd]
+    const page = chinfo.pgidx
+    const url = `/-${cvbook.bslug}/-${sname}`
+    return (pagers[sname] = pagers[sname] || new Pager(url, { page }))
   }
 </script>
 
 <BookPage {cvbook} {ubmemo} nvtab="chaps">
-  <div class="source">
-    {#each main_seeds as sname}
-      <a
-        class="seed-name"
-        class:_active={chinfo.sname === sname}
-        href={get_pager(sname).url({ page: chinfo.pgidx })}
-        use:navigate={_navi}>
-        <seed-label>
-          <span>{sname}</span>
-          <SIcon name={is_remote_seed(sname) ? 'cloud' : 'archive'} />
-        </seed-label>
-        <seed-stats
-          ><strong>{cvbook.chseed[sname]?.chaps || 0}</strong> chương</seed-stats>
-      </a>
-    {/each}
-
-    {#if hide_seeds.length > 0}
-      {#if show_more}
-        {#each hide_seeds as sname}
-          <a
-            class="seed-name"
-            href={get_pager(sname).url({ page: chinfo.pgidx })}
-            use:navigate={_navi}>
-            <seed-label>
-              <span>{sname}</span>
-              <SIcon name={is_remote_seed(sname) ? 'cloud' : 'archive'} />
-            </seed-label>
-            <seed-stats
-              ><strong>{cvbook.chseed[sname]?.chaps || 0}</strong> chương</seed-stats>
-          </a>
-        {/each}
-      {:else}
-        <button class="seed-name _btn" on:click={() => (show_more = true)}>
-          <seed-label><SIcon name="dots" /></seed-label>
-          <seed-stats>({hide_seeds.length})</seed-stats>
-        </button>
-      {/if}
-    {/if}
-
-    <a
-      class="seed-name"
-      class:_active={chinfo.sname === 'chivi'}
-      href={get_pager('chivi').url({ page: chinfo.pgidx })}
-      use:navigate={_navi}>
-      <seed-label>
-        <span>chivi</span>
-        <SIcon name="archive" />
-      </seed-label>
-      <seed-stats
-        ><strong>{cvbook.chseed.chivi?.chaps || 0}</strong> chương</seed-stats>
-    </a>
-  </div>
-
   <div id="chlist" class="chinfo">
     <div class="-left">
       <span class="-text">{chinfo.sname}</span>
@@ -133,8 +50,7 @@
       <a
         class="m-btn"
         class:_disable={!chinfo.crawl}
-        href={pager.url({ page: chinfo.pgidx, mode: chinfo.crawl ? 2 : 1 })}
-        use:navigate={_navi}>
+        href={pager.url({ page: chinfo.pgidx, mode: chinfo.crawl ? 2 : 1 })}>
         {#if $navigating}
           <SIcon name="loader" spin={true} />
         {:else}
@@ -152,7 +68,7 @@
         sname={chinfo.sname}
         chaps={chinfo.lasts}
         track={ubmemo}
-        {is_remote} />
+        is_remote={chinfo._seed} />
 
       <div class="chlist-sep" />
 
@@ -161,10 +77,10 @@
         sname={chinfo.sname}
         chaps={chinfo.chaps}
         track={ubmemo}
-        {is_remote} />
+        is_remote={chinfo._seed} />
 
       <footer class="foot">
-        <Mpager {pager} pgidx={chinfo.pgidx} pgmax={chinfo.pgmax} {_navi} />
+        <Mpager {pager} pgidx={chinfo.pgidx} pgmax={chinfo.pgmax} />
       </footer>
     {:else}
       <p class="empty">Không có nội dung :(</p>
@@ -179,68 +95,13 @@
     @include fgcolor(tert);
   }
 
-  .source {
-    @include flex($center: horz, $wrap: wrap, $gap: 0.5rem);
-    margin-top: var(--gutter-pm);
-  }
-
-  .seed-name {
-    display: block;
-    // display: flex;
-    align-items: center;
-    flex-direction: column;
-    padding: 0.375em;
-    @include bdradi();
-    @include linesd(--bd-main);
-
-    &._btn {
-      background-color: transparent;
-      padding-left: 0.75rem !important;
-      padding-right: 0.75rem !important;
-    }
-
-    &._active {
-      @include linesd(primary, 5, $ndef: true);
-    }
-
-    // prettier-ignore
-    &._active, &:hover, &:active {
-      > seed-label { @include fgcolor(primary, 5); }
-    }
-  }
-
-  seed-label {
-    @include flex($center: both);
-    @include label();
-
-    line-height: 1rem;
-    font-size: rem(13px);
-
-    :global(svg) {
-      width: 1rem;
-      height: 1rem;
-    }
-
-    span {
-      margin-right: 0.125em;
-    }
-  }
-
-  seed-stats {
-    display: block;
-    text-align: center;
-    @include fgcolor(tert);
-    font-size: rem(12px);
-    line-height: 100%;
-  }
-
   .-hide {
     @include bps(display, none, $tm: inline-block);
   }
 
   .chinfo {
     @include flex($gap: 0.5rem);
-    margin: var(--verpad-pm) 0;
+    margin-bottom: var(--gutter-pl);
 
     .-left {
       display: flex;

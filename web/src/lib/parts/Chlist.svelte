@@ -56,14 +56,18 @@
   // $chap-break: $chap-size * 2 + 0.75 * 5;
 
   list-grid {
-    @include grid($size: minmax(var(--size, 17.5rem), 1fr));
-    @include bps(--size, 17.75rem, $tm: 16.25rem, $lm: 17.75rem);
+    display: grid;
+    width: 100%;
+    @include bps(
+      grid-template-columns,
+      100%,
+      $tm: repeat(auto-fill, minmax(20rem, 1fr))
+    );
 
     grid-gap: 0 var(--gutter-pl);
   }
 
   list-item {
-    display: block;
     @include border(--bd-main, $loc: bottom);
     $bg-dark: color(neutral, 8);
 

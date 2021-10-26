@@ -23,6 +23,7 @@
   import SIcon from '$atoms/SIcon.svelte'
   import CMenu from '$molds/CMenu.svelte'
   import Notext from '$parts/Notext.svelte'
+  import Header from '$sects/Header.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Cvdata from '$sects/Cvdata.svelte'
 
@@ -112,8 +113,8 @@
   <title>{chinfo.title} - {cvbook.vtitle} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <svelte:fragment slot="header-left">
+<Header>
+  <svelte:fragment slot="left">
     <a href={paths.home} class="header-item _title">
       <SIcon name="book" />
       <span class="header-text _show-sm _title">{cvbook.vtitle}</span>
@@ -124,7 +125,7 @@
     </button>
   </svelte:fragment>
 
-  <svelte:fragment slot="header-right">
+  <svelte:fragment slot="right">
     <button
       class="header-item"
       class:_active={$lookup_enabled}
@@ -134,7 +135,9 @@
       <span class="header-text _show-lg">Giải nghĩa</span>
     </button>
   </svelte:fragment>
+</Header>
 
+<Vessel>
   <nav class="bread">
     <a href="/-{cvbook.bslug}" class="crumb _link">{cvbook.vtitle}</a>
     <span>/</span>

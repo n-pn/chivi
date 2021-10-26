@@ -11,7 +11,10 @@
 
 <script>
   import { session } from '$app/stores'
+  import { invalidate } from '$app/navigation'
+
   import SIcon from '$atoms/SIcon.svelte'
+  import Header from '$sects/Header.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
   import Cvdata from '$sects/Cvdata.svelte'
@@ -19,15 +22,17 @@
   export let crit
   let _dirty = false
 
-  $: if (_dirty && $session.privi > 0) window.location.reload()
+  const on_change = () => {
+    if ($session.privi > 0) invalidate(`api/crits/${crit.id}`)
+  }
 </script>
 
 <svelte:head>
   <title>Đánh giá - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <svelte:fragment slot="header-left">
+<Header>
+  <svelte:fragment slot="left">
     <a href="/crits" class="header-item">
       <SIcon name="messages" />
       <span class="header-text">Đánh giá</span>
@@ -38,7 +43,7 @@
     </button>
   </svelte:fragment>
 
-  <svelte:fragment slot="header-right">
+  <svelte:fragment slot="right">
     <button
       class="header-item"
       class:_active={$lookup_enabled}
@@ -48,7 +53,9 @@
       <span class="header-text _show-md">Giải nghĩa</span>
     </button>
   </svelte:fragment>
+</Header>
 
+<Vessel>
   <section class="main">
     <nav class="h3 navi">
       <a class="-link" href="/crits">
@@ -74,7 +81,7 @@
         wtitle={false}
         dname={crit.bhash}
         d_dub={crit.bname}
-        bind:_dirty />
+        {on_change} />
     </Yscrit>
   </section>
 </Vessel>

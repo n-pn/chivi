@@ -17,6 +17,7 @@
   import { page } from '$app/stores'
   import SIcon from '$atoms/SIcon.svelte'
   import BCover from '$atoms/BCover.svelte'
+  import Header from '$sects/Header.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
@@ -34,14 +35,16 @@
   <title>Kết quả tìm kiếm cho "{input}" - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <svelte:fragment slot="header-left">
+<Header>
+  <svelte:fragment slot="left">
     <form class="header-field" action="/search" method="get">
       <input type="search" name="q" placeholder="Tìm kiếm" value={input} />
       <SIcon name="search" />
     </form>
   </svelte:fragment>
+</Header>
 
+<Vessel>
   {#if pgmax > 0}
     <h1>Hiển thị kết quả từ {from} tới {upto} cho từ khoá "{input}":</h1>
   {:else}

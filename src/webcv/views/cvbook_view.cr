@@ -37,13 +37,19 @@ module CV::CvbookView
         jb.field "snames", obj.zhseeds
         jb.field "chseed" do
           jb.object do
-            obj.zhbooks.each do |zhbook|
+            zhbooks = obj.zhbooks.to_a.sort_by do |x|
+              x.zseed == 0 ? 99 : x.zseed
+            end
+
+            zhbooks.each do |zhbook|
               jb.field(zhbook.sname) {
                 jb.object {
+                  jb.field "sname", zhbook.sname
                   jb.field "snvid", zhbook.snvid
-                  jb.field "wlink", zhbook.wlink
-                  jb.field "utime", zhbook.mftime
+                  # jb.field "wlink", zhbook.wlink
+                  # jb.field "utime", zhbook.mftime
                   jb.field "chaps", zhbook.chap_count
+                  jb.field "_seed", Zhseed::REMOTES.includes?(zhbook.sname)
                 }
               }
             end

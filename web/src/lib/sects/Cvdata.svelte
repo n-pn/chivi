@@ -32,6 +32,8 @@
   export let d_dub = 'Tổng hợp'
   export let debug = false
 
+  export let on_change = () => {}
+
   $: lines = MtData.parse_lines(cvdata)
 
   let hover_line = 0
@@ -110,7 +112,7 @@
 {/if}
 
 {#if $upsert_state}
-  <Upsert {dname} {d_dub} bind:_dirty />
+  <Upsert {dname} {d_dub} bind:_dirty {on_change} />
 {/if}
 
 {#if $tlspec_state}

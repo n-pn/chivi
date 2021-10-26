@@ -12,6 +12,7 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
+  import Header from '$sects/Header.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import Cvdata from '$sects/Cvdata.svelte'
@@ -29,8 +30,8 @@
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <svelte:fragment slot="header-left">
+<Header>
+  <svelte:fragment slot="left">
     <a href="/qtran" class="header-item">
       <SIcon name="bolt" />
       <span class="header-text">Dịch nhanh</span>
@@ -41,7 +42,7 @@
     </span>
   </svelte:fragment>
 
-  <svelte:fragment slot="header-right">
+  <svelte:fragment slot="right">
     <button
       class="header-item"
       class:_active={$lookup_enabled}
@@ -51,7 +52,9 @@
       <span class="header-text _show-md">Giải nghĩa</span>
     </button>
   </svelte:fragment>
+</Header>
 
+<Vessel>
   <section class="body">
     <Cvdata {zhtext} {cvdata} bind:_dirty />
   </section>

@@ -50,6 +50,7 @@
 
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
+  export let on_change = () => {}
 
   export let _dirty = false
 
@@ -112,7 +113,12 @@
 
     const dnames = [dname, 'regular', 'hanviet']
     const [status] = await dict_upsert(fetch, dnames[$tab], params)
-    _dirty = !status
+
+    if (!status) {
+      _dirty = !status
+      on_change()
+    }
+
     deactivate()
   }
 

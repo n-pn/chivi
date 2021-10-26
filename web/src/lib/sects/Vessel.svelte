@@ -5,16 +5,7 @@
 </script>
 
 <script>
-  import SIcon from '$atoms/SIcon.svelte'
-
-  import Signin from '$parts/Signin.svelte'
-  import Appnav from '$parts/Appnav.svelte'
-  import Usercp from '$parts/Usercp.svelte'
-
   export let pledge = true
-
-  let active_usercp = false
-  let active_appnav = false
 
   let footer
   onMount(() => {
@@ -25,32 +16,6 @@
     observer.observe(footer)
   })
 </script>
-
-<header class="app-header" class:_shift={$toleft} class:_clear={$scroll > 0}>
-  <nav class="vessel -wrap">
-    <div class="-left">
-      <button
-        class="header-item _brand"
-        on:click={() => (active_appnav = true)}>
-        <img src="/icons/chivi.svg" alt="logo" />
-        <span class="header-text _show-lg">Chivi</span>
-      </button>
-
-      <slot name="header-left" />
-    </div>
-
-    <div class="-right">
-      <slot name="header-right" />
-
-      <button class="header-item" on:click={() => (active_usercp = true)}>
-        <SIcon name="user" />
-        <span class="header-text _show-md">
-          {#if $session.privi >= 0}{$session.uname} [{$session.privi}]{:else}Khách{/if}
-        </span>
-      </button>
-    </div>
-  </nav>
-</header>
 
 <main class="main" class:_shift={$toleft}>
   <div class="vessel _main">
@@ -72,14 +37,6 @@
     <slot name="footer" />
   </footer>
 </main>
-
-<Appnav bind:actived={active_appnav} />
-
-{#if $session.uname == 'Khách'}
-  <Signin bind:actived={active_usercp} />
-{:else}
-  <Usercp bind:actived={active_usercp} />
-{/if}
 
 <style lang="scss">
   $page-width: 55.5rem;

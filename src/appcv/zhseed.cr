@@ -16,6 +16,11 @@ module CV::Zhseed
     "jx_la",
   }
 
+  REMOTES = {
+    "69shu", "5200", "bxwxorg", "bqg_5200", "nofff",
+    "rengshu", "hetushu", "xbiquge", "duokan8", "paoshu8",
+  }
+
   def all(ids : Array(Int32))
     ids.map { |id| sname(id) }
   end

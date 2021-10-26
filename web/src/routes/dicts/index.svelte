@@ -11,6 +11,7 @@
 
   import SIcon from '$atoms/SIcon.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Header from '$sects/Header.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let cores = []
@@ -25,14 +26,16 @@
   <title>Từ điển - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <svelte:fragment slot="header-left">
+<Header>
+  <svelte:fragment slot="left">
     <span class="header-item _active">
       <SIcon name="package" />
       <span class="header-text">Từ điển</span>
     </span>
   </svelte:fragment>
+</Header>
 
+<Vessel>
   <article class="m-article">
     <h1>Từ điển</h1>
 

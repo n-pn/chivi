@@ -23,15 +23,19 @@
 
 <script>
   import { page, session } from '$app/stores'
+  import { invalidate } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
   import { get_rtime_short } from '$atoms/RTime.svelte'
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Header from '$sects/Header.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
+
+  $: d_tab = dname == 'regular' ? 1 : dname == 'hanviet' ? 2 : 0
 
   // export let p_min = 1
   export let terms = []
@@ -49,8 +53,8 @@
 
   let postag_state = 1
 
-  let _dirty = false
-  $: if (_dirty) window.location.reload()
+  const on_change = () =>
+    invalidate(`/api/${$page.path}?${$page.query.toString()}`)
 
   $: pager = new Pager($page.path, $page.query)
 
@@ -93,8 +97,8 @@
   <title>Từ điển: {d_dub} - Chivi</title>
 </svelte:head>
 
-<Vessel>
-  <svelte:fragment slot="header-left">
+<Header>
+  <svelte:fragment slot="left">
     <a href="/dicts" class="header-item">
       <SIcon name="package" />
       <span class="header-text _show-md">Từ điển</span>
@@ -105,7 +109,7 @@
     </a>
   </svelte:fragment>
 
-  <svelte:fragment slot="header-right">
+  <svelte:fragment slot="right">
     <button
       class="header-item"
       class:_active={$lookup_enabled}
@@ -115,7 +119,9 @@
       <span class="header-text _show-md">Giải nghĩa</span>
     </button>
   </svelte:fragment>
+</Header>
 
+<Vessel>
   <article class="m-article">
     <h1 class="h3">{d_dub}</h1>
     <p>Entries: {total}</p>
@@ -205,12 +211,12 @@
                 </div>
               </td>
               <td class="-ptag">
-                <span on:click={() => upsert_activate(key, 0, 2)}>
+                <span on:click={() => upsert_activate(key, d_tab, 2)}>
                   {tag_label(ptag) || '~'}
                 </span>
                 <div class="hover">
                   <button
-                    on:click={() => upsert_activate(key, 0, 2)}
+                    on:click={() => upsert_activate(key, d_tab, 2)}
                     class="m-btn _xs _active">
                     <SIcon name="pencil" />
                   </button>
@@ -243,7 +249,7 @@
 {/if}
 
 {#if $upsert_state > 0}
-  <Upsert bind:_dirty {...upsert_dict(dname, d_dub)} />
+  <Upsert {...upsert_dict(dname, d_dub)} {on_change} />
 {/if}
 
 {#if postag_state > 1}
