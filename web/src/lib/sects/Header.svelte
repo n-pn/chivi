@@ -14,12 +14,14 @@
 <header class="app-header" class:_shift={$toleft} class:_clear={$scroll > 0}>
   <nav class="vessel -wrap">
     <div class="-left">
-      <button
-        class="header-item _brand"
-        on:click={() => (active_appnav = true)}>
+      <button class="header-item" on:click={() => (active_appnav = true)}>
+        <SIcon name="menu-2" />
+      </button>
+
+      <a href="/" class="header-item _brand _show-sm">
         <img src="/icons/chivi.svg" alt="logo" />
         <span class="header-text _show-lg">Chivi</span>
-      </button>
+      </a>
 
       <slot name="left" />
     </div>

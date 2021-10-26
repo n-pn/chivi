@@ -56,14 +56,14 @@
   </svelte:fragment>
 
   <svelte:fragment slot="right">
-    <a href="/crits" class="header-item">
-      <SIcon name="messages" />
-      <span class="header-text _show-md">Đánh giá</span>
-    </a>
-
     <a href="/qtran" class="header-item">
       <SIcon name="bolt" />
-      <span class="header-text _show-md">Dịch nhanh</span>
+      <span class="header-text _show-lg">Dịch nhanh</span>
+    </a>
+
+    <a href="/crits" class="header-item">
+      <SIcon name="messages" />
+      <span class="header-text _show-lg">Đánh giá</span>
     </a>
   </svelte:fragment>
 </Header>

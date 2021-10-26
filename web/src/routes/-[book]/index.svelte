@@ -9,10 +9,10 @@
     const book_url = `/api/books?author=${cvbook.zauthor}&take=7`
     const book_res = await fetch(book_url)
 
-    const { books: book_raw, total: author_books } = await book_res.json()
+    const { books: book_raw } = await book_res.json()
     const books = book_raw.filter((x) => x.id != cvbook.id).slice(0, 6)
 
-    return { props: { cvbook, ubmemo, crits, books, author_books } }
+    return { props: { cvbook, ubmemo, crits, books } }
   }
 </script>
 
@@ -27,7 +27,6 @@
 
   export let crits = []
   export let books = []
-  export let author_books = 0
 
   let short_intro = false
 </script>
@@ -51,11 +50,13 @@
         <Yscrit {crit} show_book={false} view_all={crit.vhtml.length < 640}>
           {@html crit.vhtml}
         </Yscrit>
+      {:else}
+        <div class="empty">Chưa có đánh giá</div>
       {/each}
     </div>
 
     <h3 class="sub">
-      <sub-label>Truyện đồng tác giả ({author_books}+)</sub-label>
+      <sub-label>Truyện đồng tác giả</sub-label>
       <a
         class="sub-link"
         href="/search?t=author&q={encodeURIComponent(cvbook.vauthor)}"
@@ -112,5 +113,12 @@
     &:hover {
       @include fgcolor(primary, 5);
     }
+  }
+
+  .empty {
+    font-style: italic;
+    text-align: center;
+    @include fgcolor(mute);
+    @include ftsize(sm);
   }
 </style>

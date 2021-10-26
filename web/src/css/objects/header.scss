@@ -50,6 +50,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 .header-item {
   cursor: pointer;
   display: inline-flex;
+  align-items: center;
   position: relative;
   border: none;
   outline: none;
@@ -59,7 +60,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   padding: 0 0.5rem;
   height: $header-inner-height;
-  line-height: $header-inner-height;
+  // line-height: $header-inner-height;
 
   @include fgcolor(neutral, 0);
 
@@ -84,13 +85,17 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   img,
   svg {
-    margin: 0.5rem 0;
+    // margin: 0.5rem 0;
     width: 1.25rem !important;
     height: 1.25rem !important;
 
     & + .header-text {
       margin-left: 0.25rem;
     }
+  }
+
+  &._show-sm {
+    @include bps(display, none, $pl: inline-flex);
   }
 }
 
@@ -110,18 +115,19 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   }
 
   &._show-lg {
-    @include bps(display, none, $tm: inline-block);
+    @include bps(display, none, $tl: inline-block);
   }
 
   ._brand & {
     text-transform: uppercase;
     font-weight: 500;
+    font-size: rem(17px);
     letter-spacing: 0.1em;
   }
 
   &._title {
     @include clamp($width: null);
-    @include bps(max-width, 32vw, $tm: 24vw, $lm: 16vw);
+    @include bps(max-width, 30vw, $tm: 26vw, $lm: 20vw);
   }
 
   &._seed {
@@ -135,7 +141,8 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 .header-field {
   position: relative;
   padding: 0;
-  // flex-grow: 1;
+  flex: 1;
+  max-width: 14rem;
 
   $radius: math.div($header-inner-height, 2);
 
