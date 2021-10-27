@@ -83,7 +83,7 @@
 </script>
 
 <BookPage {cvbook} {ubmemo} nvtab="board">
-  {#if $session.privi > 3}
+  {#if $session.privi > 2}
     <board-content id="board">
       {#each dtopic.items as topic}
         <topic-card>
@@ -118,9 +118,11 @@
         <div class="empty">Chưa có chủ đề thảo luận :(</div>
       {/each}
 
-      <board-pagi>
-        <Mpager {pager} pgidx={dtopic.pgidx} pgmax={dtopic.pgmax} {_navi} />
-      </board-pagi>
+      {#if dtopic.total > 10}
+        <board-pagi>
+          <Mpager {pager} pgidx={dtopic.pgidx} pgmax={dtopic.pgmax} {_navi} />
+        </board-pagi>
+      {/if}
 
       <board-form>
         <form
@@ -159,7 +161,7 @@
 
             <button
               type="submit"
-              class="m-button _primary _fill"
+              class="m-btn _primary _fill"
               disabled={form_title.length < 5 || form_title.length > 200}
               on:click|preventDefault={create_topic}>
               Tạo chủ đề</button>
@@ -185,7 +187,7 @@
   }
 
   .empty {
-    min-height: 50vh;
+    min-height: 20vh;
     display: flex;
     align-items: center;
     justify-content: center;
