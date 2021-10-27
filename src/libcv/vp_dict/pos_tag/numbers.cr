@@ -70,7 +70,7 @@ struct CV::PosTag
     "趟"  => "chuyến", # lần/hàng/dãy
     "下"  => "phát",
     "下儿" => "phát",
-    "顿"  => "bữa",  # hồi/trận
+    "顿"  => "chầu", # hồi/trận
     "番"  => "phen", # loại/dạng/hồi/lần
     "阵"  => "trận",
     "会"  => "lúc",

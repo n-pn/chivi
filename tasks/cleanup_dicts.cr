@@ -2,7 +2,7 @@ require "../src/libcv/*"
 
 DIR = "var/vpdicts"
 
-def remove_nhanzi(dname : String)
+def remove_time(dname : String)
   vdict = CV::VpDict.load(dname)
   count = 0
 
@@ -17,18 +17,14 @@ def remove_nhanzi(dname : String)
 end
 
 def should_remove?(term)
-  return true if term.ptag.nhanzi?
-  return true if term.ptag.ndigit?
-  return true if term.key.starts_with?("百分之")
-
-  return false unless term.ptag.number? || term.ptag.nqiffy?
-  term.key =~ /[零〇一二两三四五六七八九十百千万亿兆多几余来]/
+  return false unless term.ptag.time?
+  term.key =~ /^[零〇一二两三四五六七八九十百千万亿兆]+(点|点钟|分|分钟|秒|秒钟|半|点半)$/
 end
 
-remove_nhanzi("regular")
-remove_nhanzi("suggest")
+remove_time("regular")
+remove_time("suggest")
 CV::VpDict.udicts.each do |udict|
-  remove_nhanzi(udict)
+  remove_time(udict)
 end
 
 CV::VpDict.regular.set!(CV::VpTerm.new("几十", ["mấy mươi"], "m", mtime: 0_u32))
