@@ -30,12 +30,15 @@
   import { tag_label } from '$lib/pos_tag.js'
 
   export let key = ''
+  export let tab = 0
   export let hints = []
   export let vpterm = {}
 
-  $: [ptag_priv, ptag_base, tag_hints] = gen_hint(key, vpterm)
+  $: [ptag_priv, ptag_base, tag_hints] = gen_hint(key, tab, vpterm)
 
-  function gen_hint(key, vpterm) {
+  function gen_hint(key, tab, vpterm) {
+    if (tab > 1) return ['', '', []]
+
     const priv = get_ptag(vpterm, '_priv') || ''
     const base = get_ptag(vpterm, '_base') || ''
     const list = [priv, base, vpterm._priv.ptag || '']
@@ -44,7 +47,9 @@
     if (locations.includes(last_char)) list.push('ns')
     if (organizations.includes(last_char)) list.push('nt')
     if (surnames.includes(key.charAt(0))) list.push('nr')
-    if (vpterm.ptag == 'nr') list.push('ns', 'nt')
+
+    if (tab == 0) list.push('nr', 'ns', 'nt')
+    else list.push('n', 'nr')
 
     const filter = (x, i, s) => x && x != vpterm.ptag && s.indexOf(x) == i
     const hints = list.filter(filter)

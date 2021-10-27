@@ -25,7 +25,6 @@
   export let cvdata = ''
   export let zhtext = []
 
-  export let _dirty = false
   export let wtitle = true
 
   export let dname = 'various'
@@ -114,7 +113,7 @@
 {/if}
 
 {#if $upsert_state}
-  <Upsert {dname} {d_dub} bind:_dirty {on_change} />
+  <Upsert {dname} {d_dub} {on_change} />
 {/if}
 
 {#if $tlspec_state}

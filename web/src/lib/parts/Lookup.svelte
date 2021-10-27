@@ -135,8 +135,8 @@
             {#each terms.vietphrase as [val, tag, dic]}
               <p class="term">
                 <term-dic>
-                  <SIcon name={dic < 4 ? 'world' : 'book'} />
-                  <SIcon name={dic % 2 ? 'user' : 'users'} />
+                  <SIcon name={dic % 2 ? 'book' : 'world'} />
+                  <SIcon name={dic > 3 ? 'user' : 'users'} />
                 </term-dic>
 
                 <term-val>{val || '<đã xoá>'}</term-val>

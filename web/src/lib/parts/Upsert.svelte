@@ -52,8 +52,6 @@
   export let d_dub = 'Tổng hợp'
   export let on_change = () => {}
 
-  export let _dirty = false
-
   let key = ''
   $: if (key) change_key($ztext, $lower, $upper)
 
@@ -102,23 +100,16 @@
     }
   }
 
-  async function submit_val(stype = '_base') {
-    const params = {
-      key,
-      val: vpterm.val.replace('', '').trim(),
-      attr: vpterm.ptag,
-      rank: vpterm.rank,
-      stype,
-    }
+  async function submit_val(_priv = false) {
+    const val = vpterm.val.replace('', '').trim()
+    const attr = vpterm.ptag
+    const rank = vpterm.rank
+    const params = { key, val, attr, rank, _priv }
 
     const dnames = [dname, 'regular', 'hanviet']
     const [status] = await dict_upsert(fetch, dnames[$tab], params)
 
-    if (!status) {
-      _dirty = !status
-      on_change()
-    }
-
+    if (!status) on_change()
     deactivate()
   }
 
@@ -211,7 +202,7 @@
       <Emend {vpterm} p_min={$tab + 1} />
 
       <div class="field">
-        <Vhint {key} hints={valhint[key] || []} bind:vpterm />
+        <Vhint {key} tab={$tab} hints={valhint[key] || []} bind:vpterm />
 
         <div class="value" class:_fresh={vpterm.fresh}>
           <input
@@ -245,7 +236,7 @@
             data-kbd="↵"
             disabled={vpterm.disabled('_base', $session.privi, $tab + 1)}
             use:hint={'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}
-            on:click={() => submit_val('_base')}>
+            on:click={() => submit_val(false)}>
             <SIcon name="users" />
             <span class="submit-text">{vpterm.state}</span>
           </button>
@@ -255,7 +246,7 @@
             data-kbd="⇧↵"
             disabled={vpterm.disabled('_priv', $session.privi, $tab + 1)}
             use:hint={'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'}
-            on:click={() => submit_val('_priv')}>
+            on:click={() => submit_val(true)}>
             <SIcon name="user" />
           </button>
         </div>

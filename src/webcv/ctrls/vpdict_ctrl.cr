@@ -110,7 +110,9 @@ class CV::VpdictCtrl < CV::BaseCtrl
 
       vdict.each do |dict|
         dict.scan(chars, "!#{_cvuser.uname}", idx) do |term|
-          value = "#{term.val.join("/")}\t#{term.ptag.to_str}\t#{dict.dtype}"
+          dic = term.is_priv ? dict.dtype &+ 2 : dict.dtype
+
+          value = "#{term.val.join("/")}\t#{term.ptag.to_str}\t#{dic}"
           entry[term.key.size][:vietphrase] << value
         end
       end
@@ -172,7 +174,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
     rank = params.fetch_str("rank", "").to_u8? || 3_u8
 
     vpterm = VpTerm.new(key, val, attr, rank, uname: u_dname)
-    vpterm.to_priv! if params["stype"]? == "_priv"
+    vpterm.to_priv! if params["_priv"]? == "true"
 
     return halt!(501, "Nội dung không thay đổi!") unless vdict.set!(vpterm)
 
