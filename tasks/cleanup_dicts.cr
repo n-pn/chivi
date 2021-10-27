@@ -1,37 +1,21 @@
 require "../src/libcv/*"
 
-DIR = "_db/vpdict/logs"
-
-def import_old(dname : String, uniq = false)
+def remove_dead_entries(dname : String, uniq = false)
   vdict = CV::VpDict.load(dname)
-
-  ofile = "#{dname}.appcv.tsv"
-  odict = CV::VpDict.new(uniq ? "#{DIR}/books/#{ofile}" : "#{DIR}/#{ofile}")
   count = 0
-
-  odict.data.each do |oterm|
-    next unless nterm = vdict.find(oterm.key)
-    next if nterm.mtime >= oterm.mtime
-    next if similar?(oterm, nterm)
-    vdict.set(oterm)
-    nterm._flag = 2
+  vdict.data.each do |term|
+    next unless term.empty? || term._flag == 1
+    term._flag = 2
     count += 1
   end
 
-  puts "- replaced: #{count}"
+  puts "- count: #{count}"
   vdict.save!
 end
 
-def similar?(oterm, nterm)
-  return false if oterm.rank != nterm.rank
-  return false if oterm.ptag != nterm.ptag
-  oterm.val == nterm.val
-end
-
-import_old("regular")
-import_old("suggest")
+remove_dead_entries("regular")
+remove_dead_entries("suggest")
+remove_dead_entries("combine")
 CV::VpDict.udicts.each do |udict|
-  import_old(udict)
+  remove_dead_entries(udict)
 end
-
-CV::VpDict.regular.set!(CV::VpTerm.new("几十", ["mấy mươi"], "m", mtime: 0_u32))
