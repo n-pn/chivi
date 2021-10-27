@@ -74,6 +74,7 @@ module CV::TlRule
     "时" => "lúc",
     "余" => "ngoài",
     "体" => "thân thể",
+    "境" => "cảnh giới",
   }
 
   def fold_uzhi!(uzhi : MtNode, prev = uzhi.prev, succ = uzhi.succ?) : MtNode

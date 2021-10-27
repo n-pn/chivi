@@ -87,7 +87,7 @@ class CV::MtCore
 
         if cost >= costs[jump]
           costs[jump] = cost
-          dic &+= 1 if term.is_priv
+          dic &+= 2 if term.is_priv
           nodes[jump] = MtNode.new(term, dic, idx + offset)
         end
       end

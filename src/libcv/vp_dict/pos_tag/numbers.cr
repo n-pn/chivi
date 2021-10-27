@@ -116,6 +116,7 @@ struct CV::PosTag
     "架次" => "lượt chiếc",
     "场次" => "lượt diễn",
     "人次" => "lượt người",
+
   }
 
   def self.map_quantis(key : ::String) : self

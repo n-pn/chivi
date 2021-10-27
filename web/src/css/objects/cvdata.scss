@@ -137,11 +137,13 @@ c-v {
     background: linear-gradient(to top, var(--border) 1px, transparent 0);
   }
 
+  // essence
   &[data-d='1'] {
     @include cv-token(gray);
     border: 0;
   }
 
+  // regular + public
   &[data-d='2'] {
     @include cv-token(blue);
     color: var(--fgmain);
@@ -150,14 +152,17 @@ c-v {
     }
   }
 
+  // unique + public
   &[data-d='3'] {
-    @include cv-token(teal);
-  }
-
-  &[data-d='4'] {
     @include cv-token(orange);
   }
 
+  // regular + private
+  &[data-d='4'] {
+    @include cv-token(teal);
+  }
+
+  // unique + private
   &[data-d='5'] {
     @include cv-token(red);
   }

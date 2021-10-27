@@ -37,10 +37,12 @@ class CV::VpTrie
       char = chars.unsafe_fetch(i)
       break unless node = node._next[char]?
 
-      if (term = node.privs[uname]?) && !term.empty?
-        yield term
-      elsif (term = node.base) && !term.empty?
-        yield term
+      if term = node.base
+        yield term unless term.empty?
+      end
+
+      if term = node.privs[uname]?
+        yield term unless term.empty?
       end
     end
   end

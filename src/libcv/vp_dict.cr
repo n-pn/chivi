@@ -46,9 +46,9 @@ class CV::VpDict
       when "regular", "suggest"
         new(path("core/#{dname}"), dtype: 2, reset: reset)
       when "combine"
-        new(path("core/#{dname}"), dtype: 4, reset: reset)
+        new(path("core/#{dname}"), dtype: 3, reset: reset)
       else
-        new(path("uniq/#{dname}"), dtype: 4, reset: reset)
+        new(path("uniq/#{dname}"), dtype: 3, reset: reset)
       end
   end
 
