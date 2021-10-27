@@ -42,7 +42,7 @@ module CV::TlRule
 
     while succ.tag == match_tag
       key_io << succ.key
-      key_io << " " << succ.val
+      val_io << " " << succ.val
       break unless succ = succ.succ?
       match_tag = PosTag::Ndigit
     end
