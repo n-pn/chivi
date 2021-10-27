@@ -2,30 +2,28 @@ require "../src/libcv/*"
 
 DIR = "var/vpdicts"
 
-def remove_duplicates(dname : String)
-  dict = CV::VpDict.load(dname)
-  dups = 0
+def remove_nhanzi(dname : String)
+  vdict = CV::VpDict.load(dname)
+  count = 0
 
-  dict.trie.each do |node|
-    next unless base = node.base
-    next unless priv = node.privs["!#{base.uname}"]?
-    next unless similar?(base, priv)
-    priv._flag = 2
-    dups += 1
+  vdict.data.each do |term|
+    next unless should_remove?(term)
+    term._flag = 2
+    count += 1
   end
 
-  puts "- duplicate: #{dups}"
-  dict.save!
+  puts "- removed: #{count}"
+  vdict.save!
 end
 
-def similar?(base, priv)
-  return false if base.rank != priv.rank
-  return false if base.ptag != priv.ptag
-  base.val == priv.val
+def should_remove?(term)
+  return true if term.ptag.nhanzi?
+  return true if term.key.starts_with?("百分之")
+  false
 end
 
-remove_duplicates("regular")
-remove_duplicates("suggest")
+remove_nhanzi("regular")
+remove_nhanzi("suggest")
 CV::VpDict.udicts.each do |udict|
-  remove_duplicates(udict)
+  remove_nhanzi(udict)
 end
