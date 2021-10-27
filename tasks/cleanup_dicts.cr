@@ -1,30 +1,37 @@
 require "../src/libcv/*"
 
-DIR = "var/vpdicts"
+DIR = "_db/vpdict/logs"
 
-def remove_time(dname : String)
+def import_old(dname : String, uniq = false)
   vdict = CV::VpDict.load(dname)
+
+  ofile = "#{dname}.appcv.tsv"
+  odict = CV::VpDict.new(uniq ? "#{DIR}/books/#{ofile}" : "#{DIR}/#{ofile}")
   count = 0
 
-  vdict.data.each do |term|
-    next unless should_remove?(term)
-    term._flag = 2
+  odict.data.each do |oterm|
+    next unless nterm = vdict.find(oterm.key)
+    next if nterm.mtime >= oterm.mtime
+    next if similar?(oterm, nterm)
+    vdict.set(oterm)
+    nterm._flag = 2
     count += 1
   end
 
-  puts "- removed: #{count}"
+  puts "- replaced: #{count}"
   vdict.save!
 end
 
-def should_remove?(term)
-  return false unless term.ptag.time?
-  term.key =~ /^[零〇一二两三四五六七八九十百千万亿兆]+(点|点钟|分|分钟|秒|秒钟|半|点半)$/
+def similar?(oterm, nterm)
+  return false if oterm.rank != nterm.rank
+  return false if oterm.ptag != nterm.ptag
+  oterm.val == nterm.val
 end
 
-remove_time("regular")
-remove_time("suggest")
+import_old("regular")
+import_old("suggest")
 CV::VpDict.udicts.each do |udict|
-  remove_time(udict)
+  import_old(udict)
 end
 
 CV::VpDict.regular.set!(CV::VpTerm.new("几十", ["mấy mươi"], "m", mtime: 0_u32))
