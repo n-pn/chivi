@@ -49,6 +49,7 @@
 
   async function reload_chap(full = false) {
     if ($session.privi < 1) return
+    // console.log({ api_url })
 
     if (full) {
       const res = await fetch(api_url + '?mode=2')

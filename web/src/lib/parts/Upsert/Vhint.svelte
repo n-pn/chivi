@@ -35,8 +35,6 @@
 
   $: [ptag_priv, ptag_base, tag_hints] = gen_hint(key, vpterm)
 
-  $: console.log(tag_hints)
-
   function gen_hint(key, vpterm) {
     const priv = get_ptag(vpterm, '_priv') || ''
     const base = get_ptag(vpterm, '_base') || ''
