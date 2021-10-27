@@ -37,6 +37,8 @@ module CV::TlRule
     end
   end
 
+  SKILLS = {"跳舞", "做饭", "开车", "游泳", "唱歌"}
+
   private def is_skill_succ?(succ : MtNode?) : Bool
     return true unless succ
     return true if succ.nouns? || succ.exmark? || succ.qsmark?
@@ -44,7 +46,7 @@ module CV::TlRule
     case succ.key[0]?
     when '打', '说', '做' then true
     else
-      {"跳舞", "做饭", "开车", "游泳"}.includes?(succ.key)
+      SKILLS.includes?(succ.key)
     end
   end
 

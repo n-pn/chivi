@@ -12,14 +12,24 @@ module CV::TlRule
     return node unless succ
 
     case succ.tag
+    when .vmodals?
+      heal_vmodal!(succ, nega: node)
     when .pre_dui?
       succ = fold_pre_dui!(succ)
       fold!(node, succ, succ.tag, dic: 9)
-    when .vmodals? then heal_vmodal!(succ, nega: node)
-    when .adverb?  then fold_adverb!(succ, nega: node)
-    when .verbs?   then fold_verbs!(succ, prev: node)
-    when .adjts?   then fold_adjts!(succ, prev: node)
-    else                node
+    when .adverb?
+      node = fold!(node, succ, succ.tag, dic: 4)
+      fold_adverb!(node)
+    when .verbs?
+      succ.set!(PosTag::Verb) if succ.veno?
+      node = fold!(node, succ, succ.tag, dic: 4)
+      fold_verbs!(node)
+    when .adjts?
+      succ.set!(PosTag::Adjt) if succ.ajno?
+      node = fold!(node, succ, succ.tag, dic: 5)
+      fold_adjts!(node)
+    else
+      node
     end
   end
 
