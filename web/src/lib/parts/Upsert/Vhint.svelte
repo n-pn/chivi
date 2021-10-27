@@ -111,9 +111,6 @@
       case 'rz':
         return ['rr', 'rz', 'ry']
 
-      case 'nl':
-        return ['n']
-
       case 'al':
         return ['a', 'bl']
 
