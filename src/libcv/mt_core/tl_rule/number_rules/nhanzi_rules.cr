@@ -26,7 +26,8 @@ module CV::TlRule
   def keep_pure_numeric?(node : MtNode?) : Bool | MtNode
     return false unless node
     return true if node.key == "半" || node.key == "前后"
-    return false unless node.numbers? && (succ = node.succ?)
+    return false unless node.numbers?
+    return node unless succ = node.succ?
     succ.key == "分" || succ.key == "分钟" ? true : node
   end
 end

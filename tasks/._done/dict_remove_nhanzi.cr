@@ -18,11 +18,8 @@ end
 
 def should_remove?(term)
   return true if term.ptag.nhanzi?
-  return true if term.ptag.ndigit?
   return true if term.key.starts_with?("百分之")
-
-  return false unless term.ptag.number? || term.ptag.nqiffy?
-  term.key =~ /[零〇一二两三四五六七八九十百千万亿兆多几余来]/
+  false
 end
 
 remove_nhanzi("regular")
@@ -30,5 +27,3 @@ remove_nhanzi("suggest")
 CV::VpDict.udicts.each do |udict|
   remove_nhanzi(udict)
 end
-
-CV::VpDict.regular.set!(CV::VpTerm.new("几十", ["mấy mươi"], "m", mtime: 0_u32))

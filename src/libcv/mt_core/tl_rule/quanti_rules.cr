@@ -13,20 +13,36 @@ module CV::TlRule
 
   QUANTI_PRE_APPRO = {
     "多" => "hơn",
-    "余" => "trên",
     "来" => "chừng",
+    "余" => "trên",
     "几" => "mấy",
   }
 
   def fold_pre_quanti_appro!(node : MtNode, succ : MtNode) : Tuple(MtNode, Int32)
-    return {node, 0} unless val = QUANTI_PRE_APPRO[succ.key]?
-
     case succ.key
-    when "来", "多"
-      return {node, 1} unless succ.to_int?.try { |x| x > 10 && x % 10 == 0 }
+    when "多"
+      return {node, 0} unless is_pre_quanti_appro?(node)
+      node = fold_swap!(node, succ.set!("hơn"), node.tag, dic: 5)
+    when "来"
+      return {node, 0} unless is_pre_quanti_appro?(node)
+      node = fold_swap!(node, succ.set!("chừng"), node.tag, dic: 5)
+    when "余"
+      node = fold_swap!(node, succ.set!("trên"), node.tag, dic: 5)
+    when "几"
+      node = fold!(node, succ.set!("mấy"), node.tag, dic: 5)
+    else
+      return {node, 0}
     end
 
-    {fold_swap!(node, succ.set!(val), node.tag, dic: 5), 1}
+    if succ = node.succ?
+      node = fold!(node, succ)
+    end
+
+    {node, 1}
+  end
+
+  def is_pre_quanti_appro?(node : MtNode)
+    node.to_int?.try { |x| x > 10 && x % 10 == 0 } || false
   end
 
   QUANTI_SUF_APPRO = {

@@ -51,4 +51,30 @@ describe CV::TlRule do
       assert_eq "百分之九十九点九九", "chín mươi chín chấm chín chín phần trăm"
     end
   end
+
+  describe "handling approximate" do
+    it "folds 多" do
+      assert_eq "三百多", "hơn ba trăm"
+      assert_eq "三百多万", "hơn ba trăm vạn"
+    end
+
+    it "folds 来" do
+      assert_eq "二十来", "chừng hai mươi"
+      assert_eq "三百来万", "chừng ba trăm vạn"
+      assert_eq "十来", "mười đến"
+    end
+
+    it "folds 余" do
+      assert_eq "二百余", "trên hai trăm"
+      assert_eq "二十余万", "trên hai mươi vạn"
+      assert_eq "十余", "trên mười"
+    end
+
+    it "folds 几" do
+      assert_eq "三百几", "ba trăm mấy"
+      assert_eq "三百几万", "ba trăm mấy vạn"
+      assert_eq "十几", "mười mấy"
+      assert_eq "几十", "mấy mươi"
+    end
+  end
 end
