@@ -7,6 +7,15 @@ class CV::VpTrie
   getter privs = {} of String => VpTerm
   getter _next = Trie.new
 
+  def each
+    queue = [self]
+
+    while node = queue.shift?
+      yield node if node.base || !node.privs.empty?
+      node._next.each_value { |x| queue << x }
+    end
+  end
+
   def find!(key : String) : VpTrie
     node = self
     key.each_char { |c| node = node._next[c] ||= VpTrie.new }
