@@ -10,6 +10,7 @@ module CV::TlRule
       when .strings?  then node = fold_strings!(node)
       when .preposes? then node = fold_preposes!(node)
       when .pronouns? then node = fold_pronouns!(node)
+      when .time?     then node = fold_time!(node)
       when .numeric?
         node = fold_numbers!(node)
         if node.nquants?

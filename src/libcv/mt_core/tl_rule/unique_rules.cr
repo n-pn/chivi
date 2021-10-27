@@ -78,18 +78,7 @@ module CV::TlRule
       else
         node.set!("Gundam", tag: PosTag::Noun)
       end
-    when "早上", "下午"
-      return node unless succ
-      case succ.tag
-      when .nhanzi?, .ndigit?
-        succ = fold_numbers!(succ, prev: node)
-        succ.time? ? fold_time_prev!(succ, prev: node) : node
-      when .adj_hao?
-        fold_swap!(node, succ.set!("chào"), PosTag::Vphrase, dic: 8)
-      else
-        # TODO: add rules for nouns
-        node.set!(PosTag::Time)
-      end
+
     else
       node
     end

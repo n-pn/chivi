@@ -1,4 +1,23 @@
 module CV::TlRule
+  def fold_time!(node : MtNode, succ = node.succ?) : MtNode
+    return node unless succ
+
+    case node.key
+    when "早上", "下午", "凌晨", "早晨", "中午", "晚上"
+      case succ.tag
+      when .nhanzi?, .ndigit?
+        succ = fold_numbers!(succ, prev: node)
+        succ.time? ? fold_time_prev!(succ, prev: node) : node
+      when .adj_hao?
+        fold_swap!(node, succ.set!("chào"), PosTag::Vphrase, dic: 8)
+      else
+        node
+      end
+    else
+      node
+    end
+  end
+
   def fold_time_prev!(node : MtNode, prev : MtNode) : MtNode
     return node unless prev
 
