@@ -78,7 +78,7 @@
 
 <div hidden>
   <button data-kbd="g" on:click={() => (debug = !debug)}>G</button>
-  <button data-kbd="r" on:click={() => (_dirty = true)}>R</button>
+  <button data-kbd="r" on:click={on_change}>R</button>
   <button data-kbd="x" on:click={() => upsert_activate(selected, 0)}>X</button>
   <button data-kbd="c" on:click={() => upsert_activate(selected, 1)}>C</button>
   <button data-kbd="enter" on:click={() => upsert_activate(selected, 0)}

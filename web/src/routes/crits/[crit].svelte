@@ -20,7 +20,6 @@
   import Cvdata from '$sects/Cvdata.svelte'
 
   export let crit
-  let _dirty = false
 
   const on_change = () => {
     if ($session.privi > 0) invalidate(`api/crits/${crit.id}`)

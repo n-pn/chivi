@@ -2,15 +2,18 @@
   export async function load({ fetch, page: { params, query } }) {
     const qname = params.name
 
-    const res = await fetch(`/api/qtran/${qname}?${query.toString()}`)
+    const url = `/api/qtran/${qname}?${query.toString()}`
+    const res = await fetch(url)
     const props = await res.json()
 
-    if (res.ok) return { props: { ...props, qname } }
+    if (res.ok) return { props: { ...props, qname, url } }
     return { status: 404, error }
   }
 </script>
 
 <script>
+  import { invalidate } from '$app/navigation'
+
   import SIcon from '$atoms/SIcon.svelte'
   import Header from '$sects/Header.svelte'
   import Vessel from '$sects/Vessel.svelte'
@@ -21,9 +24,9 @@
   export let zhtext = []
   export let cvdata = ''
   export let qname
+  export let url
 
-  let _dirty = false
-  $: if (_dirty) window.location.reload()
+  const on_change = () => invalidate(url)
 </script>
 
 <svelte:head>
@@ -56,7 +59,7 @@
 
 <Vessel>
   <section class="body">
-    <Cvdata {zhtext} {cvdata} bind:_dirty />
+    <Cvdata {zhtext} {cvdata} {on_change} />
   </section>
 
   <div slot="footer" class="foot">
