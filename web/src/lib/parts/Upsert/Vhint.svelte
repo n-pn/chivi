@@ -41,7 +41,7 @@
 
     const priv = get_ptag(vpterm, '_priv') || ''
     const base = get_ptag(vpterm, '_base') || ''
-    const list = [priv, base, vpterm._priv.ptag || '']
+    const list = [priv, base, ...similar_tag(vpterm.ptag)]
 
     const last_char = key.charAt(key.length - 1)
     if (locations.includes(last_char)) list.push('ns')
@@ -54,6 +54,102 @@
     const filter = (x, i, s) => x && x != vpterm.ptag && s.indexOf(x) == i
     const hints = list.filter(filter)
     return [priv, base, hints.slice(0, 2)]
+  }
+
+  function similar_tag(ptag) {
+    switch (ptag) {
+      case '_':
+        return ['n', 'a', 'v']
+
+      case 'ng':
+      case 'nl':
+      case 'np':
+        return ['n']
+
+      case 'nz':
+        return ['nr', 'n']
+
+      case 'n':
+        return ['s', 't']
+
+      case 'a':
+        return ['b', 'an']
+
+      case 'b':
+        return ['a', 'n']
+
+      case 'az':
+        return ['a', 'al']
+
+      case 'an':
+        return ['a', 'n']
+
+      case 'ad':
+        return ['a', 'd']
+
+      case 'ag':
+        return ['a', 'k']
+
+      case 'v':
+        return ['vi', 'vn']
+
+      case 'vd':
+        return ['v', 'd']
+
+      case 'vn':
+        return ['v', 'n']
+
+      case 'vi':
+        return ['v', 'vl']
+
+      case 'vg':
+        return ['v', 'kv']
+
+      case 'r':
+      case 'rr':
+      case 'ry':
+      case 'rz':
+        return ['rr', 'rz', 'ry']
+
+      case 'nl':
+        return ['n']
+
+      case 'al':
+        return ['a', 'bl']
+
+      case 'bl':
+        return ['b', 'al']
+
+      case 'vl':
+        return ['al', 'nl']
+
+      case 'i':
+        return ['nl', 'vl']
+
+      case 'm':
+      case 'q':
+      case 'mp':
+        return ['m', 'q', 'mq']
+
+      case 'c':
+      case 'cc':
+      case 'd':
+        return ['d', 'c', 'cc']
+
+      case 'e':
+      case 'y':
+      case 'o':
+        return ['e', 'y', 'o']
+
+      case 'k':
+      case 'ka':
+      case 'kn':
+      case 'kv':
+        return ['ka', 'kn', 'kv']
+
+      default:
+        return ['n']
+    }
   }
 
   function get_ptag(vpterm, type) {
