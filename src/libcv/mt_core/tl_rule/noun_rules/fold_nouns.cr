@@ -19,9 +19,11 @@ module CV::TlRule
 
       case succ.tag
       when .adjts?
+        return node unless node.prev?(&.nouns?)
         succ = fold_adjts!(succ)
         return fold!(node, succ, PosTag::Aphrase, dic: 6)
       when .adverbs?
+        return node unless node.prev?(&.nouns?)
         succ = fold_adverbs!(succ)
         return node unless succ.adjts?
         return fold!(node, succ, PosTag::Aphrase, dic: 6)
