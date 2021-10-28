@@ -140,7 +140,7 @@ class CV::VpDict
   def allow?(privi : Int32)
     case @dtype
     when 2 then privi > 1
-    when 4 then privi > 0
+    when 3 then privi > 0
     else        privi > 2
     end
   end
