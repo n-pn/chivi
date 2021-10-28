@@ -127,7 +127,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   &._title {
     @include clamp($width: null);
-    @include bps(max-width, 30vw, $tm: 26vw, $lm: 20vw);
+    @include bps(max-width, 30vw, $tm: 24vw, $lm: 16vw);
   }
 
   &._seed {
