@@ -18,6 +18,13 @@ module CV::TlRule
       break unless succ = node.succ?
 
       case succ.tag
+      when .adjts?
+        succ = fold_adjts!(succ)
+        return fold!(node, succ, PosTag::Aphrase, dic: 6)
+      when .adverbs?
+        succ = fold_adverbs!(succ)
+        return node unless succ.adjts?
+        return fold!(node, succ, PosTag::Aphrase, dic: 6)
       when .middot?
         break unless succ_2 = succ.succ?
         break unless succ_2.human?
@@ -73,7 +80,12 @@ module CV::TlRule
     return true unless prev && succ
     return true unless prev.ends?
 
-    !(succ.verbs? || succ.adverbs?)
+    case succ
+    when .verbs?, .adverbs?, .adts?
+      false
+    else
+      true
+    end
   end
 
   def fold_nquant_noun!(prev : MtNode, node : MtNode)
