@@ -6,6 +6,7 @@ module CV::TlRule
     case node.tag
     when .pre_dui? then fold_pre_dui!(node, succ)
     when .pre_bei? then fold_pre_bei!(node, succ)
+    when .pre_zai? then fold_pre_zai!(node, succ)
     else                node
     end
   end
@@ -35,5 +36,25 @@ module CV::TlRule
     # todo: change "bị" to "được" if suitable
     node = fold!(node, succ, succ.tag, dic: 5)
     fold_verbs!(node)
+  end
+
+  def fold_pre_zai!(node : MtNode, succ = node.succ?) : MtNode
+    return node unless succ && succ.nouns?
+
+    succ = fold_noun!(succ)
+    if (succ_2 = succ.succ?) && succ_2.space?
+      succ = fold_noun_space!(succ, succ_2)
+    end
+
+    # puts [node, succ, succ.succ?]
+    return node unless succ.succ?(&.ude1?)
+
+    node.val = "ở"
+
+    if (prev = node.prev?) && prev.verbs?
+      node = prev
+    end
+
+    fold!(node, succ, PosTag::Dphrase, dic: 9)
   end
 end

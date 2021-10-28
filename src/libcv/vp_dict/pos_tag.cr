@@ -23,7 +23,7 @@ struct CV::PosTag
     Vmodal; VmHui; VmNeng; VmXiang
 
     Adverb; AdvBu; AdvMei; AdvFei
-    Prepos; PreBei; PreDui; PreBa
+    Prepos; PreBei; PreDui; PreBa; PreZai
 
     Number; Ndigit; Nhanzi
     Qtnoun; Qttime; Qtverb
