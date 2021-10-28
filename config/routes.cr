@@ -23,6 +23,8 @@ Amber::Server.configure do
     put "/user/setting", CV::CvuserCtrl, :update
     put "/user/passwd", CV::CvuserCtrl, :passwd
 
+    get "/authors/:author_id/books", CV::AuthorCtrl, :books
+
     get "/books", CV::NvinfoCtrl, :index
     get "/books/find/:bname", CV::NvinfoCtrl, :find
     get "/books/:bslug", CV::NvinfoCtrl, :show

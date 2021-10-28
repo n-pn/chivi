@@ -13,7 +13,6 @@ module CV::CvbookView
       jb.field "htitle", obj.htitle
       jb.field "vtitle", obj.vtitle.empty? ? obj.htitle : obj.vtitle
 
-      jb.field "zauthor", obj.author.zname
       jb.field "vauthor", obj.author.vname
 
       jb.field "genres", obj.bgenres
@@ -23,6 +22,8 @@ module CV::CvbookView
       jb.field "rating", obj.rating / 10.0
 
       if full
+        jb.field "author_id", obj.author_id
+
         jb.field "bintro", obj.bintro.split("\n")
 
         jb.field "mftime", obj.mftime

@@ -5,7 +5,7 @@ class CV::Author
   self.table = "authors"
   primary_key
 
-  has_many cvbook : Cvbook, foreign_key: "cvbook_id"
+  has_many cvbook : Cvbook, foreign_key: "author_id"
 
   column zname : String
   column vname : String
@@ -14,6 +14,12 @@ class CV::Author
   column weight : Int32 = 0 # weight of author's top rated book
 
   timestamps
+
+  getter books : Array(Cvbook) do
+    books = Cvbook.query.where({author_id: self.id}).sort_by("weight")
+    books.each { |x| x.author = self }
+    books.to_a
+  end
 
   def update_weight!(weight : Int32)
     update!(weight: weight) if weight > self.weight
@@ -41,5 +47,11 @@ class CV::Author
     vslug = "-#{BookUtils.scrub_vname(vname, "-")}-"
     author = new({zname: zname, vname: vname, vslug: vslug})
     author.tap(&.save!)
+  end
+
+  CACHE_INT = RamCache(Int64, self).new(2048)
+
+  def self.load!(id : Int64)
+    CACHE_INT.get(id) { find!({id: id}) }
   end
 end

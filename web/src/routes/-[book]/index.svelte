@@ -6,7 +6,7 @@
     const crit_res = await fetch(crit_url)
     const { crits } = await crit_res.json()
 
-    const book_url = `/api/books?author=${cvbook.zauthor}&take=7`
+    const book_url = `/api/authors/${cvbook.author_id}/books?take=7`
     const book_res = await fetch(book_url)
 
     const { books: book_raw } = await book_res.json()
