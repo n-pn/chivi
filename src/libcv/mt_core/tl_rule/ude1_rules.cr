@@ -8,13 +8,19 @@ module CV::TlRule
     case prev_2
     when .ajad?
       prev_2.val = "thông thường" if prev_2.key == "一般"
-      return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
-    when .adjts?, .veno?, .vintr?,
+      fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
+    when .adjts?
+      if (prev_3 = prev_2.prev?) && prev_3.noun?
+        prev_2 = fold!(prev_3, prev, PosTag::Dphrase, dic: 8)
+      end
+
+      fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
+    when .veno?, .vintr?,
          .time?, .place?, .space?,
          .adesc?, .pro_dem?, .dphrase?
-      return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
+      fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .numeric?
-      return fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
+      fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
     when .nouns?, .pro_per?
       if (prev_3 = prev_2.prev?) && is_verb_clause?(prev_3, node)
         prev = fold!(prev_3, prev, PosTag::Dphrase, dic: 9)
@@ -27,20 +33,20 @@ module CV::TlRule
     when .verb?
       return node unless prev_3 = prev_2.prev?
 
-      if prev_3.nouns?
+      case prev_3.tag
+      when .nouns?
         if (prev_4 = prev_3.prev?) && prev_4.pre_bei?
           head = fold!(prev_4, prev_2, PosTag::Dphrase, dic: 8)
         else
           head = fold_swap!(prev_3, prev_2, PosTag::Dphrase, dic: 8)
         end
-        return fold_swap!(head, node, PosTag::Nphrase, dic: 9)
-      elsif prev_3.nquants?
+        fold_swap!(head, node, PosTag::Nphrase, dic: 9)
+      when .nquants?
         node = fold_swap!(prev_2, node, PosTag::Nphrase, dic: 8)
-        return fold!(prev_3, node, PosTag::Nphrase, 3)
+        fold!(prev_3, node, PosTag::Nphrase, 3)
+      else
+        node
       end
-
-      # TODO
-      node
     else
       node
     end

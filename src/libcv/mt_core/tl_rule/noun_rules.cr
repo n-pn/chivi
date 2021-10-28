@@ -4,9 +4,6 @@ module CV::TlRule
       break unless succ = node.succ?
 
       case succ.tag
-      when .adjt?, .adesc?
-        break unless succ.succ?(&.ude1?)
-        return fold!(node, succ, succ.tag, dic: 7)
       when .uyy?
         case succ.key
         when "般"
