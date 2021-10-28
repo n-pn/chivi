@@ -22,19 +22,15 @@ module CV::TlRule
         break unless fold = fold_verb_compl!(verb, succ)
         verb = fold
       when .adv_bu?
-        break unless (succ_2 = succ.succ?) && succ_2.key == verb.key
-        succ.val = "hay"
-        succ_2.val = "không"
+        break unless succ_2 = succ.succ?
 
-        if (succ_3 = succ_2.succ?) && (succ_3.noun? || succ_3.pro_per?)
-          succ_2.fix_succ!(succ_3.succ?)
-          succ_3.fix_succ!(succ)
-          succ_3.fix_prev!(verb)
-          tag = PosTag::Vintr
+        if succ_2.key == verb.key
+          verb = fold_verb_bu_verb!(verb, succ, succ_2)
+        elsif succ_2.vdir?
+          verb = fold_verb_vdirs!(verb, succ_2)
         else
-          tag = PosTag::Verb
+          break
         end
-        verb = fold!(verb, succ_2, tag: tag, dic: 5)
       when .numeric?
         if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
           verb = fold!(verb, succ_2.set!("phát"), verb.tag, dic: 6)
@@ -61,6 +57,22 @@ module CV::TlRule
     end
 
     fold_left_verb!(verb, left: prev)
+  end
+
+  def fold_verb_bu_verb!(verb : MtNode, succ : MtNode, succ_2 : MtNode)
+    succ.val = "hay"
+    succ_2.val = "không"
+
+    if (succ_3 = succ_2.succ?) && (succ_3.noun? || succ_3.pro_per?)
+      succ_2.fix_succ!(succ_3.succ?)
+      succ_3.fix_succ!(succ)
+      succ_3.fix_prev!(verb)
+      tag = PosTag::Vintr
+    else
+      tag = PosTag::Verb
+    end
+
+    fold!(verb, succ_2, tag: tag, dic: 5)
   end
 
   def fold_verb_auxils!(verb : MtNode, auxil : MtNode) : MtNode

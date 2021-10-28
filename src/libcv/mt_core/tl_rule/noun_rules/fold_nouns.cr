@@ -81,7 +81,7 @@ module CV::TlRule
     return true unless prev.ends?
 
     case succ
-    when .verbs?, .adverbs?, .adts?
+    when .verbs?, .adverbs?, .adjts?
       false
     else
       true
