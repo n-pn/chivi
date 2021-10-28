@@ -69,4 +69,23 @@ module CV::TlRule
   def fold_minute!(node : MtNode, succ : MtNode, appro : Int32 = 0)
     fold!(node, succ, PosTag::Qttime, dic: 2)
   end
+
+  def clean_个!(node : MtNode) : MtNode
+    if body = node.body?
+      deep_clean_个!(body)
+    elsif node.key.ends_with?('个')
+      if node.key.size > 1 || node.prev?(&.pro_dems?)
+        node.val = node.val.sub("cái", "").strip
+      end
+    end
+
+    node
+  end
+
+  def deep_clean_个!(node : MtNode) : Nil
+    while true
+      return node.set!("") if node.key == "个"
+      break unless node = node.succ?
+    end
+  end
 end

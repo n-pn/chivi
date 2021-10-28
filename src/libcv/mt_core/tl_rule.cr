@@ -3,6 +3,8 @@ require "./tl_rule/**"
 module CV::TlRule
   def fix_grammar!(node : MtNode, mode = 1, level = 0) : Nil
     while node = node.succ?
+      # puts [node, node.succ?]
+
       case node.tag
       when .puncts?   then node = fold_puncts!(node, mode: mode)
       when .auxils?   then node = heal_auxils!(node, mode: mode)
@@ -21,18 +23,9 @@ module CV::TlRule
         elsif node.verbs?
           node = fold_verbs!(node)
         end
-      when .veno?
-        node = heal_veno!(node)
-        if node.noun?
-          node = fold_noun!(node)
-          node = fold_noun_left!(node)
-        else
-          node = fold_verbs!(node)
-        end
-      when .adverbs?
-        node = fold_adverbs!(node)
-      when .ajad?
-        node = fold_ajad!(node)
+      when .veno?    then node = fold_veno!(node)
+      when .adverbs? then node = fold_adverbs!(node)
+      when .ajad?    then node = fold_ajad!(node)
       when .adjts?
         node = fold_adjts!(node, prev: nil)
         next unless node.nouns?

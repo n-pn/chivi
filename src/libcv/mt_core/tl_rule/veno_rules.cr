@@ -1,4 +1,17 @@
 module CV::TlRule
+  def fold_veno!(node : MtNode)
+    node = heal_veno!(node)
+    if node.noun?
+      node = fold_noun!(node)
+      puts [node, node.prev?, node.succ?]
+      node = fold_noun_left!(node)
+      puts [node, node.prev?, node.succ?]
+      node
+    else
+      fold_verbs!(node)
+    end
+  end
+
   def heal_veno!(node : MtNode)
     if prev = node.prev?
       case prev
