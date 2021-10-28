@@ -3,7 +3,7 @@ require "./base_ctrl"
 class CV::NvinfoCtrl < CV::BaseCtrl
   private def extract_params
     page = params.fetch_int("page", min: 1)
-    take = params.fetch_int("take", min: 1, max: 24)
+    take = params.fetch_int("take", min: 1, max: 25)
     {page, take, (page - 1) * take}
   end
 

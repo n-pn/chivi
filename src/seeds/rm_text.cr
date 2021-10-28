@@ -37,15 +37,6 @@ class CV::RmText
     HtmlParser.new(html)
   end
 
-  def save!(file : String) : Nil
-    File.open(file, "w") do |io|
-      io << title
-      paras.each { |line| io << "\n" << line }
-    end
-
-    puts "- <chtext> `#{file}` saved!".colorize.green
-  end
-
   getter title : String do
     case @sname
     when "duokan8"

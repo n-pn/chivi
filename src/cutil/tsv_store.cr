@@ -1,4 +1,5 @@
 require "colorize"
+require "file_utils"
 
 class CV::TsvStore
   getter file : String
@@ -137,6 +138,8 @@ class CV::TsvStore
       File.delete(@file) if @data.empty? && File.exists?(@file)
       return
     end
+
+    FileUtils.mkdir_p(File.dirname(@file))
 
     File.open(@file, clean ? "w" : "a") do |file|
       output.each_with_index do |(key, vals), idx|

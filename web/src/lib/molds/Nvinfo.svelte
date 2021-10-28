@@ -41,7 +41,7 @@
 
 <style lang="scss">
   .book:nth-child(25) {
-    @include bps(display, none, $tm: block, $lm: none);
+    @include bps(display, none, $tm: block, $ls: none);
   }
 
   .cover {

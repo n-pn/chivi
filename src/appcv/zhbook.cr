@@ -56,7 +56,8 @@ class CV::Zhbook
       return {mftime, chap_count}
     end
 
-    RmInfo.mkdir!(sname)
+    FileUtils.mkdir_p(PathUtil.cache_dir(sname, "infos"))
+
     parser = RmInfo.init(sname, snvid, ttl: ttl)
 
     if mode > 1 || parser.last_schid != self.last_schid
