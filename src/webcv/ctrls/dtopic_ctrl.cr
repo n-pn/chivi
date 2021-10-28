@@ -59,9 +59,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
   def create
     dboard = Dboard.load!(params["dboard"].to_i64)
-    if u_privi < 0 || (u_privi < 3 && dboard.id < 0)
-      return halt! 403, "Quyền hạn không đủ"
-    end
+    return halt!(403) unless DboardACL.dtopic_create?(dboard, _cvuser)
 
     dtopic = Dtopic.new({cvuser: _cvuser, dboard: dboard})
 
@@ -83,15 +81,11 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
   def update
     dboard = Dboard.load!(params["dboard"].to_i64)
-    if u_privi < 0 || (u_privi < 3 && dboard.id < 0)
-      return halt! 403, "Quyền hạn không đủ"
-    end
-
     dtopic = Dtopic.load!(params["dtopic"].to_i64)
-    if u_privi < 0 || _cvuser.id != dtopic.cvuser_id
-      return halt! 403, "Quyền hạn không đủ"
-    end
+    return halt!(403) unless DboardACL.dtopic_update?(dboard, _cvuser, dtopic)
 
+    dtopic.set_title(params["title"])
+    dtopic.label_ids = params.json("labels").as_a.map(&.as_i)
     dtopic.set_utime(Time.utc.to_unix)
 
     dtopic.save!
