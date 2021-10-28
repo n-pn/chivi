@@ -78,25 +78,24 @@ export const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt']
 export const groups = [
   // prettier-ignore
   [
-
     'nr','ns','nt',
     'nz',
     '-',
-    'n', 'nw', // 'nc',
+    'n', 'nw', 'ng',
     't', 's', 'f',
     '-',
     'a', 'an', 'ad',
-    'b', 'az',
+    'b', 'az', 'ag',
     '-',
     'v', 'vn', 'vd',
-    'vi', 'vf',
+    'vi', 'vg',
     '-',
-    'vx', 'vm',
+    'rr', 'rz', 'ry',
+    'r',
   ],
   // prettier-ignore
   [
-    'rr', 'rz', 'ry',
-    'r',
+    'vx', 'vm', 'vf',
     '-',
     'm', 'q', 'mq',
     '-',
@@ -110,8 +109,7 @@ export const groups = [
   // prettier-ignore
   [
     'kn', 'ka', 'kv',
-    'k',
-    'ng', 'tg', 'ag', 'vg',
+    'k', 'tg',
     '-',
     'x', 'xx', 'xu',
     'w', '!'
