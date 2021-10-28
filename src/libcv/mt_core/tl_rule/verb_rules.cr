@@ -66,8 +66,7 @@ module CV::TlRule
   def fold_verb_auxils!(verb : MtNode, auxil : MtNode) : MtNode
     case auxil.tag
     when .ule?
-      auxil.val = "" unless keep_ule?(verb, auxil)
-      verb = fold!(verb, auxil, PosTag::Verb, dic: 5)
+      verb = fold_verb_ule!(verb, auxil)
       return verb unless (succ = verb.succ?) && succ.numeric?
 
       if is_pre_appro_num?(verb)
