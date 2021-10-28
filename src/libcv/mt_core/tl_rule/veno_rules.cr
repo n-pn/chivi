@@ -3,10 +3,7 @@ module CV::TlRule
     node = heal_veno!(node)
     if node.noun?
       node = fold_noun!(node)
-      puts [node, node.prev?, node.succ?]
-      node = fold_noun_left!(node)
-      puts [node, node.prev?, node.succ?]
-      node
+      fold_noun_left!(node)
     else
       fold_verbs!(node)
     end

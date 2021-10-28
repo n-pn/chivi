@@ -2,7 +2,7 @@ require "../../src/libcv/mt_core"
 
 GENERIC = CV::MtCore.generic_mtl("combine")
 
-inp = "挪了挪"
-
+inp = "我成了女反派的跟班"
 res = GENERIC.cv_plain(inp)
-puts inp, res.inspect, res.to_s
+
+puts inp, res.inspect, res

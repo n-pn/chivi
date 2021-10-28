@@ -61,7 +61,7 @@ module CV::TlRule
     case prev.tag
     when .v_shi?, .verb?, .numeric?, .pro_dems?
       true
-    when .nouns?, .comma?
+    when .nouns?, .comma?, .pro_per?
       false
     else
       prev.key == "在" ? true : by_succ > 0
