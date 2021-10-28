@@ -38,7 +38,7 @@ module CV::TlRule
         if (prev_4 = prev_3.prev?) && prev_4.pre_bei?
           head = fold!(prev_4, prev_2, PosTag::Dphrase, dic: 8)
         else
-          head = fold_swap!(prev_3, prev_2, PosTag::Dphrase, dic: 8)
+          head = fold!(prev_3, prev_2, PosTag::Dphrase, dic: 9)
         end
         fold_swap!(head, node, PosTag::Nphrase, dic: 9)
       when .nquants?
