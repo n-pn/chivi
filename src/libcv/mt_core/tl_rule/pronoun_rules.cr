@@ -119,7 +119,7 @@ module CV::TlRule
       node.fix_succ!(tail)
 
       prev.key = prev.key.sub("那", "")
-      prev.val = prev.val.sub(" kia", "")
+      prev.val = prev.val.sub(/ (kia|đó)$/, "")
       prev.tag = PosTag::Qtnoun
       prev.idx += 1
 

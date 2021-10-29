@@ -1,9 +1,9 @@
 module CV::TlRule
-  def heal_ude3!(node : MtNode, succ = node.succ?)
-    return unless succ
+  def heal_ude3!(node : MtNode, succ = node.succ?) : MtNode
+    return node unless succ
 
     case succ.tag
-    when .verb?
+    when .verbs?
       node.val = "phải"
       node = fold!(node, succ, succ.tag, dic: 6)
     else

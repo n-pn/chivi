@@ -32,6 +32,7 @@ module CV::TlRule
       return fold_swap!(prev_2, node, PosTag::Nphrase, dic: dic)
     when .verb?
       return node unless prev_3 = prev_2.prev?
+      # puts [prev_3, prev_2]
 
       case prev_3.tag
       when .nouns?
@@ -53,7 +54,12 @@ module CV::TlRule
   end
 
   def is_verb_clause?(head : MtNode, tail : MtNode)
-    return false unless head.v_you? || head.verb? || head.vphrase?
+    if head.v_you?
+      # TODO: check more conditions
+      return false
+    end
+
+    return false unless head.verb? || head.vphrase?
 
     by_succ = check_vclause_by_succ?(tail.succ?)
     return by_succ == 2 unless prev = head.prev?

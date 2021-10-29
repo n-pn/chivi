@@ -1,10 +1,10 @@
 module CV::TlRule
   def heal_auxils!(node : MtNode, mode = 1) : MtNode
     case node.tag
-    when .ule?  then node = heal_ule!(node)  # 了
-    when .ude1? then node = heal_ude1!(node) # 的
-    when .ude2? then node = heal_ude2!(node) # 地
-    when .ude3? then node = heal_ude3!(node) # 得
+    when .ule?  then heal_ule!(node)  # 了
+    when .ude1? then heal_ude1!(node) # 的
+    when .ude2? then heal_ude2!(node) # 地
+    when .ude3? then heal_ude3!(node) # 得
     else             node
     end
   end
@@ -49,11 +49,6 @@ module CV::TlRule
     return node.set!("đất", PosTag::Noun) if succ.v_shi? || succ.v_you?
     return node if succ.verbs? || succ.preposes? || succ.concoord?
     node.set!(val: "địa", tag: PosTag::Noun)
-  end
-
-  def heal_ude3!(node : MtNode) : MtNode
-    return node unless node.succ?(&.verbs?)
-    node.set!(val: "phải", tag: PosTag::Noun)
   end
 
   def fold_verb_ule!(verb : MtNode, node : MtNode, succ = node.succ?)
