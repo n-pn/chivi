@@ -78,6 +78,9 @@ struct CV::PosTag
   }
 
   QTNOUNS = {
+    "钧" => "quân",
+    "袭" => "bộ",
+    "丈" => "trượng",
     "招" => "chiêu",
     "笔" => "bút",
     "家" => "nhà",

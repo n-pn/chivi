@@ -120,6 +120,7 @@ class CV::MtCore
   private def fix_val!(node : MtNode)
     case node.key[0]?
     when '零' then node.val.sub("linh", "lẻ")
+    when '一' then node.val.sub("một", "mốt")
     when '五' then node.val.sub("năm", "lăm")
     when '十' then node.val.sub("mười", "mươi")
     else          node.val

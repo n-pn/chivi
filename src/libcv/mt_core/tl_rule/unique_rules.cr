@@ -78,7 +78,6 @@ module CV::TlRule
       else
         node.set!("Gundam", tag: PosTag::Noun)
       end
-
     else
       node
     end

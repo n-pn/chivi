@@ -78,6 +78,8 @@ module CV::TlRule
     "喜" => "niềm vui",
     "争" => "tranh chấp",
     "死" => "cái chết",
+    "态" => "tư thái",
+    "言" => "lời nói",
   }
 
   def fold_uzhi!(uzhi : MtNode, prev = uzhi.prev, succ = uzhi.succ?) : MtNode

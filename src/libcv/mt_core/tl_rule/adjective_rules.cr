@@ -35,18 +35,13 @@ module CV::TlRule
       when .adjt?, .amorp?
         node = fold!(node, succ, PosTag::Adjt, dic: 4)
       when .ajno?
-        return fold_swap!(node, succ, succ.tag, dic: 7)
+        return fold_swap!(node, succ, PosTag::Noun, dic: 7)
       when .noun?
         break unless node.key.size == 1 && !prev # or special case
         return fold_swap!(node, succ, PosTag::Nphrase, dic: 4)
       when .vpro?, .verb?
         break unless node.key.size == 1 && !prev
         succ = fold_verbs!(succ)
-
-        if succ.verbs? && node.tag.adj_hao?
-          return fold!(node, succ, PosTag::Verb, dic: 4)
-        end
-
         return fold_swap!(node, succ, PosTag::Vphrase, dic: 4)
       when .ude2?
         break unless succ_2 = succ.succ?
