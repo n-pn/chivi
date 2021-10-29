@@ -96,14 +96,14 @@
       on:mouseenter={() => (hover_line = index)}>
       {@html render_line(index, hover_line, focus_line, debug)}
 
-      {#if $session.privi >= 0}
+      <!-- {#if $session.privi >= 0}
         <button
           class="report-line"
           data-tip="Báo lỗi dịch thuật"
           on:click={() => ($tlspec_state = 1)}>
           <SIcon name="flag" />
         </button>
-      {/if}
+      {/if} -->
     </div>
   {/each}
 </article>
@@ -125,26 +125,26 @@
 {/if}
 
 <style lang="scss">
-  .report-line {
-    display: inline-block;
-    visibility: hidden;
+  // .report-line {
+  //   display: inline-block;
+  //   visibility: hidden;
 
-    background: inherit;
-    padding: 0.25rem;
-    line-height: 1.25em;
-    transform: translateY(-0.25rem);
+  //   background: inherit;
+  //   padding: 0.25rem;
+  //   line-height: 1.25em;
+  //   transform: translateY(-0.25rem);
 
-    @include ftsize(sm);
-    @include fgcolor(secd);
+  //   @include ftsize(sm);
+  //   @include fgcolor(secd);
 
-    :global(svg) {
-      width: 1.25em;
-      height: 1.25em;
-    }
+  //   :global(svg) {
+  //     width: 1.25em;
+  //     height: 1.25em;
+  //   }
 
-    .mtl:hover & {
-      visibility: visible;
-      @include fgcolor(harmful, 5);
-    }
-  }
+  //   .mtl:hover & {
+  //     visibility: visible;
+  //     @include fgcolor(harmful, 5);
+  //   }
+  // }
 </style>

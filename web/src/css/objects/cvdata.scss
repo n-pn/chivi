@@ -91,7 +91,7 @@
   @include bps(line-height, 1.5rem, 1.75rem);
 
   & + & {
-    margin-top: 1rem;
+    margin-top: 1em;
   }
 
   .tm-dark &,
