@@ -49,7 +49,13 @@
 <Gmodal active={$state > 0} index={80} on_close={hide_tlspec}>
   <tlspec-wrap>
     <tlspec-head>
-      <tlspec-title>Báo lỗi dịch thuật</tlspec-title>
+      <tlspec-title>
+        <title-lbl>Báo lỗi:</title-lbl>
+        <title-dub>[<span>{d_dub}</span>]</title-dub>
+        <a class="title-alt" href={slink}>
+          <SIcon name="link" />
+        </a>
+      </tlspec-title>
       <button type="button" class="close-btn" on:click={hide_tlspec}>
         <SIcon name="x" />
       </button>
@@ -61,30 +67,6 @@
         method="POSTS"
         class="tlspec-form"
         on:submit|preventDefault={handle_submit}>
-        <form-group>
-          <form-field>
-            <label for="d_dub">Từ điển riêng (bộ truyện)</label>
-            <input
-              type="text"
-              name="d_dub"
-              class="m-input"
-              disabled
-              value={d_dub} />
-            <input type="hidden" name="dname" value={dname} />
-          </form-field>
-
-          <form-field>
-            <label for="slink">Liên kết gốc tới đoạn văn</label>
-
-            <input
-              type="text"
-              name="slink"
-              class="m-input"
-              disabled
-              bind:value={slink} />
-          </form-field>
-        </form-group>
-
         <form-group>
           <form-field>
             <label for="ztext">Câu văn gốc (cắt ngắn cho phù hợp)</label>
@@ -100,11 +82,7 @@
           <form-field>
             <label for="unote">Chú thích lỗi / gợi ý hướng giải quyết</label>
 
-            <textarea
-              class="m-input _vi"
-              name="unote"
-              autofocus
-              bind:value={unote} />
+            <textarea class="m-input _vi" name="unote" bind:value={unote} />
           </form-field>
         </form-group>
 
@@ -157,23 +135,54 @@
   $head-height: 2.25rem;
 
   tlspec-head {
-    @include flex($gap: 0.25rem);
+    @include flex($gap: 0.25rem, $center: vert);
     padding-left: 0.75rem;
     padding-right: 0.25rem;
 
     height: $head-height;
-    margin-bottom: 0.25rem;
+    // margin-bottom: 0.25rem;
 
     @include border(--bd-main, $loc: bottom);
     @include bdradi($loc: top);
     @include bgcolor(tert);
+
+    :global(svg) {
+      width: 1rem;
+      height: 1rem;
+      margin-top: -0.25rem;
+    }
   }
 
   tlspec-title {
     flex: 1;
-    text-align: center;
+    display: flex;
+    overflow: hidden;
     line-height: $head-height;
+  }
+
+  title-lbl {
     font-weight: 500;
+    padding-right: 0.25rem;
+  }
+
+  title-dub {
+    width: 70%;
+    display: inline-flex;
+    @include fgcolor(tert);
+
+    > span {
+      // display: inline-block;
+      text-align: center;
+      // width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .title-alt {
+    margin-left: auto;
+    @include fgcolor(tert);
   }
 
   .close-btn {
@@ -193,9 +202,7 @@
 
   tlspec-body {
     display: block;
-
     padding: 0.5rem 0.75rem;
-
     // @include scroll();
     @include bgcolor(secd);
   }
@@ -221,8 +228,7 @@
   }
 
   textarea,
-  label,
-  input {
+  label {
     display: block;
     width: 100%;
   }
