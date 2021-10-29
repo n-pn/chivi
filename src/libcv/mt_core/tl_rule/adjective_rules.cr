@@ -23,7 +23,7 @@ module CV::TlRule
     return fold!(adjt, succ, PosTag::Vphrase, dic: 7)
   end
 
-  def fold_adjts!(node : MtNode, prev = node.prev?) : MtNode
+  def fold_adjts!(node : MtNode, prev : MtNode? = nil) : MtNode
     if fold = fold_measurement!(node)
       return fold
     end
