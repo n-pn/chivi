@@ -27,7 +27,7 @@ module CV::TlRule
         return fold!(node, succ_2, PosTag::Aphrase, dic: 2)
       end
 
-      node.set!("đôi", PosTag::Qtnoun)
+      tail.set!("đôi", PosTag::Qtnoun)
     else
       tail = heal_quanti!(tail)
       return fold_yi_verb!(node, tail) unless tail.quantis?
