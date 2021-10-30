@@ -118,9 +118,10 @@ export class MtData {
 
     for (const [val, dic, idx, len] of data) {
       if (Array.isArray(val)) {
-        res += `<c-g data-d=${dic}>`
-        res += this.render(val, plain)
-        res += '</c-g>'
+        const inner = this.render(val, plain)
+
+        if (plain) res += inner
+        else res += `<c-g data-d=${dic}>${inner}</c-g>`
         continue
       }
 
@@ -152,8 +153,16 @@ export class MtData {
       }
     }
 
-    if (lvl < 0) return '<em>' + res
-    if (lvl > 0) return res + '</em>'
+    while (lvl < 0) {
+      res = '<em>' + res
+      lvl++
+    }
+
+    while (lvl > 0) {
+      res = res + '</em>'
+      lvl--
+    }
+
     return res
   }
 
