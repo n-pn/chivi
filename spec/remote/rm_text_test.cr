@@ -62,3 +62,5 @@ fetch_text("69shu", "35094", "24508034", fresh: false)
 
 CV::RmText.mkdir!("ptwxz", "1806")
 fetch_text("ptwxz", "1806", "803058", fresh: false)
+
+fetch_text("biqubao", "51452", "649594", fresh: false)

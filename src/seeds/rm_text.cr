@@ -60,7 +60,8 @@ class CV::RmText
     when "69shu"   then extract_69shu_paras
     when "zhwenpg" then extract_paras("#tdcontent .content")
     when "duokan8" then extract_paras("#htmlContent > p")
-    else                extract_paras("body")
+    when "ptwxz"   then extract_paras("body")
+    else                extract_paras("#content")
     end
   end
 
@@ -70,7 +71,7 @@ class CV::RmText
     end
 
     node.children.each do |tag|
-      tag.remove! if {"script", "div", "h1"}.includes?(tag.tag_name)
+      tag.remove! if {"script", "div", "h1", "table"}.includes?(tag.tag_name)
     end
 
     lines = TextUtils.split_html(node.inner_text("\n"))
