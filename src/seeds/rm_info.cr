@@ -36,7 +36,10 @@ class CV::RmInfo
     ttl = 10.years if sname == "jx_la" || sname == "zhwenpg"
 
     ihtml = binfo_html(sname, snvid, ttl, lbl)
-    chtml = chidx_html(sname, snvid, ttl, lbl) if full && sname == "69shu"
+
+    if full && sname == "69shu" || sname == "ptwxz"
+      chtml = chidx_html(sname, snvid, ttl, lbl)
+    end
 
     new(sname, snvid, ihtml, chtml)
   end
@@ -53,6 +56,7 @@ class CV::RmInfo
     case @sname
     when "zhwenpg" then @ipage.text(".cbooksingle h2")
     when "hetushu" then @ipage.text("h2")
+    when "ptwxz"   then @ipage.text("h1")
     when "69shu"
       @ipage.text("h1 > a", nil) || @ipage.text(".weizhi > a:last-child")
     else
@@ -64,6 +68,8 @@ class CV::RmInfo
     case @sname
     when "zhwenpg" then @ipage.text(".fontwt")
     when "hetushu" then @ipage.text(".book_info a:first-child")
+    when "ptwxz"
+      @ipage.text("td[width=\"25%\"]:nth-child(2)").sub("作    者：", "").strip
     when "69shu"
       @ipage.text(".booknav2 > p:nth-child(2) > a", nil) || @ipage.text(".mu_beizhu > a[target]")
     else
@@ -78,6 +84,8 @@ class CV::RmInfo
       genre = @ipage.text(".title > a:last-child")
       tags = @ipage.text_list(".tag a")
       [genre].concat(tags).uniq
+    when "ptwxz"
+      [@ipage.text("td[width=\"25%\"]:nth-child(1)").sub("类    别：", "").strip]
     when "69shu"
       genre = @ipage.text(".booknav2 > p:nth-child(3) > a", nil)
       [genre || @ipage.text(".weizhi > a:nth-child(2)")]
@@ -92,7 +100,13 @@ class CV::RmInfo
     when "zhwenpg" then @ipage.text_para("tr:nth-of-type(3)")
     when "bxwxorg" then @ipage.text_para("#intro > p:first-child")
     when "69shu"   then @ipage.text_para(".navtxt > p:first-child")
-    else                @ipage.meta_para("og:description")
+    when "ptwxz"
+      return [""] unless node = @ipage.find("div[style=\"float:left;width:390px;\"]")
+      node.children.each do |tag|
+        tag.remove! if {"span", "a"}.includes?(tag.tag_name)
+      end
+      TextUtils.split_html(node.inner_text)
+    else @ipage.meta_para("og:description")
     end
   end
 
@@ -105,6 +119,8 @@ class CV::RmInfo
       "https://www.69shu.com/files/article/image/#{image_url}"
     when "zhwenpg"
       @ipage.attr(".cover_wrapper_m img", "data-src")
+    when "ptwxz"
+      @ipage.attr("img[width=\"100\"]", "src")
     when "jx_la"
       @ipage.meta("og:image").sub("qu.la", "jx.la")
     else
@@ -196,6 +212,7 @@ class CV::RmInfo
   getter chap_list : Array(Chinfo) do
     case @sname
     when "69shu"   then extract_69shu_chaps
+    when "ptwxz"   then extract_ptwxz_chaps
     when "zhwenpg" then extract_zhwenpg_chaps
     when "duokan8" then extract_duokan8_chaps
     when "hetushu" then extract_generic_chaps("#dir")
@@ -234,6 +251,18 @@ class CV::RmInfo
     chaps = [] of Chinfo
 
     @cpage.css("#catalog li > a").each do |link|
+      next unless href = link.attributes["href"]?
+      chap = init_chap(extract_schid(href), link.inner_text)
+      chaps << chap if valid_chap?(chap)
+    end
+
+    chaps
+  end
+
+  def extract_ptwxz_chaps
+    chaps = [] of Chinfo
+
+    @cpage.css(".centent li > a").each do |link|
       next unless href = link.attributes["href"]?
       chap = init_chap(extract_schid(href), link.inner_text)
       chaps << chap if valid_chap?(chap)

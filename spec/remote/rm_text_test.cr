@@ -59,3 +59,6 @@ fetch_text("bxwxorg", "119227", "1367374", fresh: false)
 fetch_text("hetushu", "1640", "1099716", fresh: false)
 
 fetch_text("69shu", "35094", "24508034", fresh: false)
+
+CV::RmText.mkdir!("ptwxz", "1806")
+fetch_text("ptwxz", "1806", "803058", fresh: false)

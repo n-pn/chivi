@@ -79,7 +79,7 @@ tests = [
   # {"5200", "28208", true},
 
   {"bqg_5200", "131878", false},
-  {"bqg_5200", "131878", true},
+  # {"bqg_5200", "131878", true},
 
   # {"shubaow", "150092", false},
   # {"shubaow", "150092", true},
@@ -90,7 +90,11 @@ tests = [
   # {"bxwxorg", "32154", false},
   # {"bxwxorg", "32154", true},
 
-  {"nofff", "125228", true},
+  {"nofff", "125228", false},
+  {"ptwxz", "1806", false},
+
 ]
+
+CV::RmInfo.mkdir!("ptwxz")
 
 tests.each { |sname, snvid, fresh| fetch_info(sname, snvid, fresh: fresh) }

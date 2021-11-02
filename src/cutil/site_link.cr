@@ -32,17 +32,22 @@ module CV::SiteLink
     when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/"
     when "zhwenpg"  then "https://novel.zhwenpg.com/b.php?id=#{snvid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/index.html"
-    when "duokan8"  then "http://www.duokanb.info/#{scooped(snvid)}/"
-    when "paoshu8"  then "http://www.paoshu8.com/#{scooped(snvid)}/"
-    when "5200"     then "https://www.5200.tv/#{scooped(snvid)}/"
-    when "shubaow"  then "https://www.shubaow.net/#{scooped(snvid)}/"
-    when "bqg_5200" then "http://www.biquge5200.net/#{scooped(snvid)}/"
+    when "duokan8"  then "http://www.duokanb.info/#{group(snvid)}/"
+    when "paoshu8"  then "http://www.paoshu8.com/#{group(snvid)}/"
+    when "5200"     then "https://www.5200.tv/#{group(snvid)}/"
+    when "shubaow"  then "https://www.shubaow.net/#{group(snvid)}/"
+    when "bqg_5200" then "http://www.biquge5200.net/#{group(snvid)}/"
+    when "ptwxz"    then "https://www.ptwxz.com/bookinfo/#{group(snvid, "/")}.html"
     else                 raise "Unsupported link generation for <#{sname}>!"
     end
   end
 
   def chidx_url(sname : String, snvid : String)
-    sname == "69shu" ? "https://www.69shu.com/#{snvid}/" : binfo_url(sname, snvid)
+    case sname
+    when "69shu" then "https://www.69shu.com/#{snvid}/"
+    when "ptwxz" then "https://www.ptwxz.com/html/#{group(snvid, "/")}/index.html"
+    else              binfo_url(sname, snvid)
+    end
   end
 
   def chtxt_url(sname : String, snvid : String, schid : String)
@@ -57,16 +62,17 @@ module CV::SiteLink
     when "bxwxorg"  then "https://www.bxwxorg.com/read/#{snvid}/#{schid}.html"
     when "zhwenpg"  then "https://novel.zhwenpg.com/r.php?id=#{schid}"
     when "hetushu"  then "https://www.hetushu.com/book/#{snvid}/#{schid}.html"
-    when "duokan8"  then "http://www.duokanb.info/#{scooped(snvid)}/#{schid}.html"
-    when "paoshu8"  then "http://www.paoshu8.com/#{scooped(snvid)}/#{schid}.html"
-    when "5200"     then "https://www.5200.tv/#{scooped(snvid)}/#{schid}.html"
-    when "shubaow"  then "https://www.shubaow.net/#{scooped(snvid)}/#{schid}.html"
-    when "bqg_5200" then "http://www.biquge5200.net/#{scooped(snvid)}/#{schid}.html"
+    when "duokan8"  then "http://www.duokanb.info/#{group(snvid)}/#{schid}.html"
+    when "paoshu8"  then "http://www.paoshu8.com/#{group(snvid)}/#{schid}.html"
+    when "5200"     then "https://www.5200.tv/#{group(snvid)}/#{schid}.html"
+    when "shubaow"  then "https://www.shubaow.net/#{group(snvid)}/#{schid}.html"
+    when "bqg_5200" then "http://www.biquge5200.net/#{group(snvid)}/#{schid}.html"
+    when "ptwxz"    then "https://www.ptwxz.com/html/#{group(snvid, "/")}/#{schid}.html"
     else                 "/"
     end
   end
 
-  private def scooped(snvid : String)
-    "#{snvid.to_i // 1000}_#{snvid}"
+  private def group(snvid : String, sep = "_")
+    "#{snvid.to_i // 1000}#{sep}#{snvid}"
   end
 end
