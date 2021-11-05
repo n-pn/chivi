@@ -1,5 +1,5 @@
 require "./shared/http_client"
-require "../shared/raw_yscrit"
+require "../shared/yscrit_raw"
 
 class CV::CrawlYscrit
   DIR = "_db/yousuu/crits"
@@ -62,17 +62,15 @@ class CV::CrawlYscrit
     link = "https://api.yousuu.com/api/book/#{snvid}/comment?type=latest&page=#{page}"
     return snvid unless @http.save!(link, file, label)
 
-    crits = RawYscrit.parse_raw(File.read(file))
-    crits.each(&.seed!)
+    crits = YscritRaw::Json.parse_list(File.read(file))
+    crits.each { |json| YscritRaw.seed!(json) }
   rescue err
     puts err
   end
 
   FRESH = 10.days
-  REDO  = ARGV.includes?("+redo")
 
   private def still_good?(file : String, page = 1)
-    return false if REDO
     return false unless info = File.info?(file)
     still_fresh = Time.utc - FRESH * page
     info.modification_time >= still_fresh

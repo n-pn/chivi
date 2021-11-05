@@ -46,6 +46,16 @@ module CV::SeedUtil
   def get_mtime(file : String) : Int64
     File.info?(file).try(&.modification_time.to_unix) || 0_i64
   end
+
+  def cv_ztext(ztext : String, bname : String)
+    lines = ztext.split("\n").map(&.strip).reject(&.empty?)
+    cv_ztext(lines, bname)
+  end
+
+  def cv_ztext(lines : Array(String), bname : String)
+    cvmtl = MtCore.generic_mtl(bname)
+    lines.map { |x| "<p>#{cvmtl.cv_plain(x).to_s}</p>" }.join("\n")
+  end
 end
 
 # puts CV::SeedUtil.last_snvid("69shu")
