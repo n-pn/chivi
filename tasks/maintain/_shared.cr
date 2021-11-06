@@ -1,5 +1,10 @@
+require "file_utils"
 require "../shared/bootstrap"
 
-require "file_utils"
+module CV
+  USER_DIR = "db/seeds/users"
 
-USER_DIR = "db/seeds/users"
+  YSCRIT_DIR = "var/yousuu/yscrits"
+
+  FileUtils.mkdir_p(YSCRIT_DIR)
+end
