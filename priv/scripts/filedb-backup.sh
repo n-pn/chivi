@@ -37,3 +37,10 @@ then
   rsync -aiz --no-p "$SSH/_db/zhbook/" "_db/zhbook/"
   rsync -aiz --no-p "$SSH/db/chtexts/" "db/chtexts/"
 fi
+
+## backup crit data
+if [[ $1 == "all" || $* == *crit* ]]
+then
+  echo backup reviews data!
+  rsync -aiz --no-p "$SSH/var/yousuu/yscrits" "var/yousuu"
+fi
