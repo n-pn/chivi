@@ -14,7 +14,7 @@ def remove_dead_entries(dname : String, uniq = false)
   vdict.save!
 end
 
-TIME = Time.utc(2021, 7, 1, 0, 0, 0).to_unix - CV::VpTerm::EPOCH
+TIME = (Time.utc(2021, 7, 1, 0, 0, 0).to_unix - CV::VpTerm::EPOCH) // 60
 
 def should_delete?(term)
   return true if term.empty? || term._flag == 1
