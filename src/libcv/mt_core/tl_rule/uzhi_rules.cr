@@ -81,6 +81,15 @@ module CV::TlRule
     "态" => "tư thái",
     "言" => "lời nói",
     "策" => "sách lược",
+    "选" => "tuyển chọn",
+    "法" => "phương pháp",
+    "风" => "phong thái",
+    "情" => "tình cảm",
+    "父" => "phụ thân",
+    "疾" => "bệnh tật",
+    "约" => "ước hẹn",
+    "兆" => "dấu hiệu",
+    "恩" => "ân đức",
   }
 
   def fold_uzhi!(uzhi : MtNode, prev = uzhi.prev, succ = uzhi.succ?) : MtNode

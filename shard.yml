@@ -58,8 +58,8 @@ targets:
     main: tasks/yousuu/ys_replies.cr
 
 dependencies:
-  tabkv:
-    github: chi-vi/tabkv
+  # tabkv:
+  #   github: chi-vi/tabkv
 
   amber:
     github: amberframework/amber

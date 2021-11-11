@@ -63,6 +63,7 @@ struct CV::PosTag
     "席"  => "bữa",
     "晚"  => "đêm",
     "刻"  => "khắc",
+    "载"  => "năm",
   }
 
   QTVERBS = {
@@ -100,7 +101,7 @@ struct CV::PosTag
     "股"  => "cỗ",
     "更"  => "canh",
     "重"  => "tầng",
-    "分"  => "phân",
+    "分"  => "phần",
     "只"  => "con",
     "本"  => "quyển",
     "种"  => "loại",
@@ -119,11 +120,11 @@ struct CV::PosTag
     "层"  => "tầng",
     "门"  => "môn",
     "转"  => "vòng",
-    "种"  => "loài",
     "架次" => "lượt chiếc",
     "场次" => "lượt diễn",
     "人次" => "lượt người",
-
+    "站"  => "trạm",
+    "拨"  => "tốp",
   }
 
   def self.map_quantis(key : ::String) : self
