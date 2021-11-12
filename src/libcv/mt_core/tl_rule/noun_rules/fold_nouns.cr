@@ -97,6 +97,8 @@ module CV::TlRule
   end
 
   def fold_noun_left!(node : MtNode, mode = 1)
+    flag = 0
+
     while prev = node.prev?
       case prev
       when .penum?, .concoord?
@@ -106,6 +108,7 @@ module CV::TlRule
       when .numeric?
         break if node.veno? || node.ajno?
         node = fold_nquant_noun!(prev, node)
+        flag = 1
       when .pro_ji?
         return fold!(prev, node, PosTag::Nphrase, dic: 3)
       when .pro_dems?
@@ -113,13 +116,18 @@ module CV::TlRule
       when .pro_ints?
         return fold_什么_noun!(prev, node) if prev.key == "什么"
         return fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
-      when .amorp? then node = fold!(prev, node, PosTag::Nphrase, dic: 7)
+      when .amorp?
+        break if flag > 0
+        node = fold!(prev, node, PosTag::Nphrase, dic: 7)
       when .adesc?, .ajno?, .modifier?, .modiform?
+        break if flag > 0
         node = fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
       when .place?
-        return node unless noun_can_combine?(prev.prev?, node.succ?)
+        break if flag > 0
+        break unless noun_can_combine?(prev.prev?, node.succ?)
         node = fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
       when .ajad?, .adjts?
+        break if flag > 0
         break if prev.key.size > 1
         node = fold_swap!(prev, node, PosTag::Nphrase, dic: 8)
       when .ude1?

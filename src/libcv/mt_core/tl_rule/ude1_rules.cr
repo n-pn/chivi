@@ -15,7 +15,7 @@ module CV::TlRule
       end
 
       fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
-    when .veno?, .vintr?,
+    when .veno?, .vintr?, .vform?,
          .time?, .place?, .space?,
          .adesc?, .pro_dem?, .dphrase?,
          .modifier?, .modiform?
