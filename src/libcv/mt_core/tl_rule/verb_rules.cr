@@ -18,7 +18,7 @@ module CV::TlRule
         break if verb.succ? == succ
       when .vdirs?
         verb = fold_verb_vdirs!(verb, succ)
-      when .adjts?, .verbs?, .preposes?
+      when .adjts?, .verbs?, .preposes?, .unique?
         break unless fold = fold_verb_compl!(verb, succ)
         verb = fold
       when .adv_bu?
@@ -144,7 +144,11 @@ module CV::TlRule
   def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
     unless val = VERB_COMPLS[compl.key]?
       return unless compl.pre_dui?
-      return if compl.succ? { |x| (x.nouns? || x.pro_per?) && x.succ?(&.verb?) }
+
+      if succ = compl.succ?
+        return if succ.nouns? || succ.pro_per?
+      end
+
       val = "đúng"
     end
 
