@@ -2,7 +2,7 @@
   export async function load({ page: { query }, fetch }) {
     const page = +query.get('page') || 1
 
-    const qs = `?${query.toString()}&take=25&page=${page}`
+    const qs = `?${query.toString()}&take=24&page=${page}`
     const res = await fetch(`/api/books${qs}`)
 
     if (!res.ok) return { status: res.status, error: await res.text() }
