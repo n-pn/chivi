@@ -17,9 +17,12 @@ struct CV::PosTag
     when "好" then AdjHao # "hảo"
     when "上" then VShang # "thượng"
     when "下" then VXia   # "hạ"
-    when "是" then VShi   # "thị"
-    when "有" then VYou   # "hữu"
-    else          Unique
+    when .ends_with?("是")
+      VShi # "thị"
+    when .ends_with?("有")
+      VYou # "hữu"
+    else
+      Unique
     end
   end
 end

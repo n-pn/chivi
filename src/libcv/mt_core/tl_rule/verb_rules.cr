@@ -142,6 +142,8 @@ module CV::TlRule
   }
 
   def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
+    return if verb.v_you? || verb.v_shi?
+
     unless val = VERB_COMPLS[compl.key]?
       return unless compl.pre_dui?
 
