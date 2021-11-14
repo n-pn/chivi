@@ -73,7 +73,6 @@ struct CV::PosTag
     case @pos
     when .puncts?   then "w"
     when .auxils?   then "u"
-    when .adverbs?  then "d"
     when .vmodals?  then "vm"
     when .preposes? then "p"
     when .pro_dems? then "rz"
@@ -82,7 +81,10 @@ struct CV::PosTag
     when .numbers?  then "m"
     when .quantis?  then "q"
     when .nquants?  then "mq"
-    else                 @tag.to_str
+    when .adverbs?
+      (@tag.ajad? || @tag.vead?) ? @tag.to_str : "d"
+    else
+      @tag.to_str
     end
   end
 
@@ -132,7 +134,7 @@ end
 
 # puts CV::PosTag.from_str("n").to_str
 # puts CV::PosTag.from_str("v").to_str
-# puts CV::PosTag.from_str("vn").to_str
+# puts CV::PosTag.from_str("vd").to_str
 # puts CV::PosTag.from_str("w", "﹑").tag
 # puts CV::PosTag.from_str("w", ":").tag
 # puts CV::PosTag.from_str("w", "：").tag
