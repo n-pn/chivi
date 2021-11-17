@@ -32,13 +32,8 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-
   $: [top, left] = $place
 </script>
-
-<button data-kbd="x" on:click={() => upsert_activate($input, 0)}>X</button>
-<button data-kbd="c" on:click={() => upsert_activate($input, 1)}>C</button>
-<button data-kbd="enter" on:click={() => upsert_activate($input, 0)}>E</button>
 
 <cvmenu-wrap class:active={$state > 0} style="--top: {top}px; --left: {left}px">
   <cvmenu-item

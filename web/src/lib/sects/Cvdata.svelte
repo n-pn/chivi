@@ -1,6 +1,9 @@
 <script context="module">
   import Tlspec, { state as tlspec_state } from '$parts/Tlspec.svelte'
-  import Upsert, { state as upsert_state } from '$parts/Upsert.svelte'
+  import Upsert, {
+    state as upsert_state,
+    activate as upsert_activate,
+  } from '$parts/Upsert.svelte'
   import Lookup, {
     enabled as lookup_enabled,
     activate as lookup_activate,
@@ -74,12 +77,14 @@
     const upper = lower + +target.dataset.l
     $input = [zhtext[index], lower, upper]
 
-    target.classList.add('_focus')
-
-    if (focus_word) focus_word.classList.remove('_focus')
-    focus_word = target
-
-    if ($lookup_enabled) lookup_activate($input)
+    if (target == focus_word) {
+      upsert_activate($input, 0)
+    } else {
+      if (focus_word) focus_word.classList.remove('_focus')
+      target.classList.add('_focus')
+      focus_word = target
+      if ($lookup_enabled) lookup_activate($input)
+    }
   }
 
   function render_line(idx = 0, hover = -1, focus = -1, debug = false) {
@@ -93,6 +98,9 @@
 <div hidden>
   <button data-kbd="g" on:click={() => (debug = !debug)}>G</button>
   <button data-kbd="r" on:click={on_change}>R</button>
+  <button data-kbd="x" on:click={() => upsert_activate($input, 0)}>X</button>
+  <button data-kbd="c" on:click={() => upsert_activate($input, 1)}>C</button>
+  <button data-kbd="↵" on:click={() => upsert_activate($input, 0)}>E</button>
 </div>
 
 <cvdata-wrap bind:this={article}>
