@@ -8,6 +8,26 @@
   import { activate as upsert_activate } from '$parts/Upsert.svelte'
 
   import { state as tlspec_state } from '$parts/Tlspec.svelte'
+
+  const width = 96
+
+  export function activate(target, parent) {
+    const rect = get_rect(target)
+
+    let left = Math.floor((rect.left + rect.right) / 2) - width / 2
+    if (left < 0) left = 0
+    else if (left + width > window.innerWidth) left = window.innerWidth - width
+
+    const parent_rect = get_rect(parent)
+
+    place.set([rect.bottom + 6 - parent_rect.top, left - parent_rect.left])
+    state.set(1)
+  }
+
+  function get_rect(node) {
+    const rects = node.getClientRects()
+    return rects[rects.length - 1]
+  }
 </script>
 
 <script>
@@ -50,7 +70,7 @@
     height: $size;
     z-index: 9;
     display: flex;
-    position: fixed;
+    position: absolute;
     height: $size;
     width: 6rem;
     padding: 0 0.25rem;

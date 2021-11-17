@@ -1,4 +1,16 @@
 <script context="module">
+  import Tlspec, { state as tlspec_state } from '$parts/Tlspec.svelte'
+  import Upsert, { state as upsert_state } from '$parts/Upsert.svelte'
+  import Lookup, {
+    enabled as lookup_enabled,
+    activate as lookup_activate,
+  } from '$parts/Lookup.svelte'
+
+  import Cvmenu, {
+    state as cvmenu_state,
+    activate as cvmenu_activate,
+    input,
+  } from '$parts/Cvmenu.svelte'
 </script>
 
 <script>
@@ -9,16 +21,6 @@
   import { ftsize } from '$lib/stores'
   import { MtData } from '$lib/mt_data'
   import read_selection from '$utils/read_selection'
-
-  import Cvmenu, {
-    state as cvmenu_state,
-    place as cvmenu_place,
-    input,
-  } from '$parts/Cvmenu.svelte'
-
-  import Tlspec, { state as tlspec_state } from '$parts/Tlspec.svelte'
-  import Lookup, { enabled as lookup_enabled } from '$parts/Lookup.svelte'
-  import Upsert, { state as upsert_state } from '$parts/Upsert.svelte'
 
   export let cvdata = ''
   export let zhtext = []
@@ -37,11 +39,26 @@
   let focus_line = 0
   let focus_word = null
 
+  let article = null
+
+  function on_selection() {
+    if (hover_line < 0) return
+    const [lower, upper] = read_selection()
+    if (upper > 0) $input = [zhtext[hover_line], lower, upper]
+
+    const selection = document.getSelection()
+    if (selection.isCollapsed) return
+
+    const range = selection.getRangeAt(0)
+    cvmenu_activate(range, article)
+  }
+
   onMount(() => {
+    let timeout = null
+
     const action = document.addEventListener('selectionchange', () => {
-      if (hover_line < 0) return
-      const [lower, upper] = read_selection()
-      if (upper > 0) $input = [zhtext[hover_line], lower, upper]
+      if (timeout) clearTimeout(timeout)
+      timeout = setTimeout(on_selection, 200)
     })
 
     return () => document.removeEventListener('selectionchange', action)
@@ -49,28 +66,20 @@
 
   function handle_click({ target }, index) {
     if (focus_line != index) focus_line = index
-    if (target.nodeName != 'C-V') {
-      $cvmenu_state = 0
-      return
-    } else {
-      const rects = target.getClientRects()
-      const rect = rects[rects.length - 1]
 
-      let left = Math.floor((rect.left + rect.right) / 2) - 48
-      if (left < 0) left = 0
-      else if (left + 96 > window.innerWidth) left = window.innerWidth - 96
-
-      $cvmenu_place = [rect.bottom + 6, left]
-      $cvmenu_state = 1
-    }
+    if (target.nodeName == 'C-V') cvmenu_activate(target, article)
+    else return cvmenu_state.set(0)
 
     const lower = +target.dataset.i
     const upper = lower + +target.dataset.l
     $input = [zhtext[index], lower, upper]
 
+    target.classList.add('_focus')
+
     if (focus_word) focus_word.classList.remove('_focus')
     focus_word = target
-    focus_word.classList.add('_focus')
+
+    if ($lookup_enabled) lookup_activate($input)
   }
 
   function render_line(idx = 0, hover = -1, focus = -1, debug = false) {
@@ -86,7 +95,7 @@
   <button data-kbd="r" on:click={on_change}>R</button>
 </div>
 
-<article class="cvdata _{$ftsize}" class:debug>
+<article class="cvdata _{$ftsize}" class:debug bind:this={article}>
   <slot name="header" />
 
   {#each lines as _, index (index)}
@@ -98,25 +107,25 @@
       {@html render_line(index, hover_line, focus_line, debug)}
     </div>
   {/each}
+
+  {#if browser}
+    {#if $upsert_state}
+      <Upsert {dname} {d_dub} {on_change} />
+    {/if}
+
+    <Lookup {dname} />
+
+    {#if $tlspec_state}
+      <Tlspec
+        {dname}
+        {d_dub}
+        ztext={zhtext[hover_line]}
+        slink="{$page.path}#L{hover_line}" />
+    {/if}
+
+    <Cvmenu />
+  {/if}
 </article>
-
-{#if browser}
-  {#if $upsert_state}
-    <Upsert {dname} {d_dub} {on_change} />
-  {/if}
-
-  <Lookup {dname} />
-
-  {#if $tlspec_state}
-    <Tlspec
-      {dname}
-      {d_dub}
-      ztext={zhtext[hover_line]}
-      slink="{$page.path}#L{hover_line}" />
-  {/if}
-
-  <Cvmenu />
-{/if}
 
 <style lang="scss">
   // .report-line {
