@@ -96,11 +96,10 @@
 </script>
 
 <div hidden>
-  <button data-kbd="g" on:click={() => (debug = !debug)}>G</button>
   <button data-kbd="r" on:click={on_change}>R</button>
+  <button data-kbd="g" on:click={() => (debug = !debug)}>G</button>
   <button data-kbd="x" on:click={() => upsert_activate($input, 0)}>X</button>
   <button data-kbd="c" on:click={() => upsert_activate($input, 1)}>C</button>
-  <button data-kbd="↵" on:click={() => upsert_activate($input, 0)}>E</button>
 </div>
 
 <cvdata-wrap bind:this={article}>

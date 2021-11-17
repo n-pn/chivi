@@ -37,6 +37,7 @@
 
 <cvmenu-wrap class:active={$state > 0} style="--top: {top}px; --left: {left}px">
   <cvmenu-item
+    data-kbd="↵"
     data-tip="Sửa từ"
     tip-loc="bottom"
     on:click={() => upsert_activate($input, 0)}>
@@ -44,6 +45,7 @@
   </cvmenu-item>
 
   <cvmenu-item
+    data-kbd="q"
     data-tip="Tra từ"
     tip-loc="bottom"
     on:click={() => lookup_activate($input)}>
@@ -51,6 +53,7 @@
   </cvmenu-item>
 
   <cvmenu-item
+    data-kbd="p"
     data-tip="Báo lỗi"
     tip-loc="bottom"
     on:click={() => ($tlspec_state = 1)}>
