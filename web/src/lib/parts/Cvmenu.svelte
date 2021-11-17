@@ -42,7 +42,7 @@
 
 <cvmenu-wrap class:active={$state > 0} style="--top: {top}px; --left: {left}px">
   <cvmenu-item
-    data-tip="Từ điển"
+    data-tip="Sửa từ"
     tip-loc="bottom"
     on:click={() => upsert_activate($input, 0)}>
     <SIcon name="pencil" />

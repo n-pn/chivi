@@ -95,18 +95,19 @@
   <button data-kbd="r" on:click={on_change}>R</button>
 </div>
 
-<article class="cvdata _{$ftsize}" class:debug bind:this={article}>
-  <slot name="header" />
-
-  {#each lines as _, index (index)}
-    <div
-      id="L{index}"
-      class="mtl {wtitle && index == 0 ? '_h' : '_p'}"
-      on:click={(e) => handle_click(e, index)}
-      on:mouseenter={() => (hover_line = index)}>
-      {@html render_line(index, hover_line, focus_line, debug)}
-    </div>
-  {/each}
+<cvdata-wrap bind:this={article}>
+  <article class="cvdata _{$ftsize}" class:debug>
+    <slot name="header" />
+    {#each lines as _, index (index)}
+      <div
+        id="L{index}"
+        class="mtl {wtitle && index == 0 ? '_h' : '_p'}"
+        on:click={(e) => handle_click(e, index)}
+        on:mouseenter={() => (hover_line = index)}>
+        {@html render_line(index, hover_line, focus_line, debug)}
+      </div>
+    {/each}
+  </article>
 
   {#if browser}
     {#if $upsert_state}
@@ -125,9 +126,13 @@
 
     <Cvmenu />
   {/if}
-</article>
+</cvdata-wrap>
 
 <style lang="scss">
+  cvdata-wrap {
+    display: block;
+    position: relative;
+  }
   // .report-line {
   //   display: inline-block;
   //   visibility: hidden;
