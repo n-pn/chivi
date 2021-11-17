@@ -6,12 +6,12 @@
 
     left: 0;
     bottom: 90%;
-    padding: 0.375rem;
+    padding: 0 0.375rem;
     font-family: var(--font-sans);
 
     @include ftsize(sm);
     @include fgcolor(white);
-    @include bgcolor(black);
+    @include bgcolor(primary, 5);
     @include bdradi(0.25rem);
   }
 
@@ -23,6 +23,11 @@
       transform: translateX(-50%);
     }
   }
+}
+
+[data-tip][tip-loc='bottom']:after {
+  bottom: unset;
+  top: 90%;
 }
 
 .kbd-hint [data-kbd] {
