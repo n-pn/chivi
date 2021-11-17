@@ -18,7 +18,7 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
-  import Header from '$sects/Header.svelte'
+  import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let crits = []
@@ -33,14 +33,14 @@
   <title>Đánh giá - Chivi</title>
 </svelte:head>
 
-<Header>
+<Appbar>
   <svelte:fragment slot="left">
     <a href="/crits" class="header-item _active">
       <SIcon name="messages" />
       <span class="header-text">Đánh giá</span>
     </a>
   </svelte:fragment>
-</Header>
+</Appbar>
 
 <Vessel>
   <section class="main">

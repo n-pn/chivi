@@ -29,7 +29,7 @@
   import { get_rtime_short } from '$atoms/RTime.svelte'
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
-  import Header from '$sects/Header.svelte'
+  import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let dname = 'combine'
@@ -97,7 +97,7 @@
   <title>Từ điển: {d_dub} - Chivi</title>
 </svelte:head>
 
-<Header>
+<Appbar>
   <svelte:fragment slot="left">
     <a href="/dicts" class="header-item">
       <SIcon name="package" />
@@ -119,7 +119,7 @@
       <span class="header-text _show-md">Giải nghĩa</span>
     </button>
   </svelte:fragment>
-</Header>
+</Appbar>
 
 <Vessel>
   <article class="m-article">

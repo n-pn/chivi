@@ -11,7 +11,7 @@
   import { goto } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import Header from '$sects/Header.svelte'
+  import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let cvbook
@@ -43,7 +43,7 @@
   <title>Thêm chương - {cvbook.vtitle} - Chivi</title>
 </svelte:head>
 
-<Header>
+<Appbar>
   <svelte:fragment slot="left">
     <a href="/-{cvbook.bslug}" class="header-item _title">
       <SIcon name="book" />
@@ -54,7 +54,7 @@
       <span class="header-text _seed">[{sname}]</span>
     </button>
   </svelte:fragment>
-</Header>
+</Appbar>
 
 <Vessel>
   <nav class="navi">

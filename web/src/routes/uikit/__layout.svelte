@@ -1,7 +1,7 @@
 <script>
   import { session } from '$app/stores'
   import SIcon from '$atoms/SIcon.svelte'
-  import Header from '$sects/Header.svelte'
+  import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   function change_theme() {
@@ -9,7 +9,7 @@
   }
 </script>
 
-<Header>
+<Appbar>
   <svelte:fragment slot="left">
     <span class="header-item">UIKIT</span>
   </svelte:fragment>
@@ -19,7 +19,7 @@
       <SIcon name={$session.wtheme == 'dark' ? 'sun' : 'moon'} />
     </button>
   </svelte:fragment>
-</Header>
+</Appbar>
 
 <Vessel>
   <nav>

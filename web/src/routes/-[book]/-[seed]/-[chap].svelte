@@ -23,7 +23,7 @@
   import SIcon from '$atoms/SIcon.svelte'
   import CMenu from '$molds/CMenu.svelte'
   import Notext from '$parts/Notext.svelte'
-  import Header from '$sects/Header.svelte'
+  import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Cvdata from '$sects/Cvdata.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
@@ -112,7 +112,7 @@
   <title>{chinfo.title} - {cvbook.vtitle} - Chivi</title>
 </svelte:head>
 
-<Header>
+<Appbar>
   <svelte:fragment slot="left">
     <a href={paths.home} class="header-item _title">
       <SIcon name="book" />
@@ -134,7 +134,7 @@
       <span class="header-text _show-lg">Giải nghĩa</span>
     </button>
   </svelte:fragment>
-</Header>
+</Appbar>
 
 <Vessel>
   <nav class="bread">

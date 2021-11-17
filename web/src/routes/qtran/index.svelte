@@ -1,6 +1,6 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import Header from '$sects/Header.svelte'
+  import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import Cvdata from '$sects/Cvdata.svelte'
@@ -48,7 +48,7 @@
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<Header>
+<Appbar>
   <span slot="left" class="header-item _active">
     <SIcon name="bolt" />
     <span class="header-text">Dịch nhanh</span>
@@ -64,7 +64,7 @@
       <span class="header-text _show-md">Giải nghĩa</span>
     </button>
   </svelte:fragment>
-</Header>
+</Appbar>
 
 <Vessel>
   <section class="main">

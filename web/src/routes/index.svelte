@@ -31,7 +31,7 @@
   import { page } from '$app/stores'
   import SIcon from '$atoms/SIcon.svelte'
   import Nvlist from '$parts/Nvlist.svelte'
-  import Header from '$sects/Header.svelte'
+  import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
@@ -47,7 +47,7 @@
   <title>Chivi - Truyện tàu dịch máy</title>
 </svelte:head>
 
-<Header>
+<Appbar>
   <svelte:fragment slot="left">
     <form class="header-field" action="/search" method="get">
       <input type="search" name="q" placeholder="Tìm truyện" />
@@ -66,7 +66,7 @@
       <span class="header-text _show-lg">Đánh giá</span>
     </a>
   </svelte:fragment>
-</Header>
+</Appbar>
 
 <Vessel>
   <div class="order">

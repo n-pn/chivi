@@ -20,7 +20,7 @@
 
   import SIcon from '$atoms/SIcon.svelte'
   import Nvlist from '$parts/Nvlist.svelte'
-  import Header from '$sects/Header.svelte'
+  import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
@@ -37,12 +37,12 @@
 <svelte:head>
   <title>Tủ truyện của {uname} - Chivi</title>
 </svelte:head>
-<Header>
+<Appbar>
   <span slot="left" class="header-item _active">
     <SIcon name="notebook" />
     <span class="header-text _title">Tủ truyện của [{uname}]</span>
   </span>
-</Header>
+</Appbar>
 
 <Vessel>
   <div class="tabs">

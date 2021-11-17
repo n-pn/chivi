@@ -10,7 +10,7 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import Header from '$lib/sects/Header.svelte'
+  import Appbar from '$lib/sects/Appbar.svelte'
 
   export let cvbook
   export let ubmemo
@@ -28,7 +28,7 @@
   }
 </script>
 
-<Header>
+<Appbar>
   <a slot="left" href="/-{cvbook.bslug}" class="header-item _active">
     <SIcon name="book" />
     <span class="header-text _title">{cvbook.htitle}</span>
@@ -77,4 +77,4 @@
       </a>
     {/if}
   </svelte:fragment>
-</Header>
+</Appbar>

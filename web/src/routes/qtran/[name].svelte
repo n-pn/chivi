@@ -15,7 +15,7 @@
   import { invalidate } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import Header from '$sects/Header.svelte'
+  import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import Cvdata from '$sects/Cvdata.svelte'
@@ -33,7 +33,7 @@
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<Header>
+<Appbar>
   <svelte:fragment slot="left">
     <a href="/qtran" class="header-item">
       <SIcon name="bolt" />
@@ -55,7 +55,7 @@
       <span class="header-text _show-md">Giải nghĩa</span>
     </button>
   </svelte:fragment>
-</Header>
+</Appbar>
 
 <Vessel>
   <section class="body">

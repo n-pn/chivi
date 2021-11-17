@@ -5,7 +5,7 @@
 </script>
 
 <script>
-  import Header from '$sects/Header.svelte'
+  import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   export let status
@@ -16,7 +16,7 @@
   <title>{status} - Chivi</title>
 </svelte:head>
 
-<Header />
+<Appbar />
 
 <Vessel>
   <section class="wrapper">
