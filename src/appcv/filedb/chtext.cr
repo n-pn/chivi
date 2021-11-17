@@ -2,7 +2,7 @@ require "file_utils"
 require "compress/zip"
 
 require "../../seeds/rm_text"
-require "../../cutil/ram_cache"
+require "../../_util/ram_cache"
 require "./chpage"
 
 class CV::Chtext

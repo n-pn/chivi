@@ -2,7 +2,7 @@ require "compress/gzip"
 require "json"
 require "myhtml"
 
-require "../../src/cutil/http_util"
+require "../../src/_util/http_util"
 require "../shared/seed_data"
 
 class CV::ZxcsmeParser

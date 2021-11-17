@@ -1,4 +1,4 @@
-require "../../src/cutil/order_map"
+require "../../src/_util/order_map"
 
 def test_map(name, limit = 10)
   map = CV::OrderMap.new(".tmp/#{name}.tsv", mode: 1)

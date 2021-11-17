@@ -1,7 +1,7 @@
-require "../cutil/http_util"
-require "../cutil/site_link"
-require "../cutil/path_util"
-require "../cutil/time_utils"
+require "../_util/http_util"
+require "../_util/site_link"
+require "../_util/path_util"
+require "../_util/time_utils"
 require "./shared/html_parser"
 
 class CV::RmInfo

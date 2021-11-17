@@ -1,4 +1,4 @@
-require "../cutil/ukey_util"
+require "../_util/ukey_util"
 
 class CV::Tlspec
   DIR = "db/tlspecs"

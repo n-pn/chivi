@@ -1,4 +1,4 @@
-require "../cutil/tsv_store"
+require "../_util/tsv_store"
 
 module CV::Bgenre
   extend self

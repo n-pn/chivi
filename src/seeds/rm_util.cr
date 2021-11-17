@@ -2,11 +2,11 @@ require "myhtml"
 require "colorize"
 require "file_utils"
 
-require "../cutil/http_util"
-require "../cutil/site_link"
-require "../cutil/gzip_file"
-require "../cutil/path_util"
-require "../cutil/time_utils"
+require "../_util/http_util"
+require "../_util/site_link"
+require "../_util/gzip_file"
+require "../_util/path_util"
+require "../_util/time_utils"
 
 module CV::RmUtil
   extend self

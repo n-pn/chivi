@@ -2,7 +2,7 @@ require "file_utils"
 require "compress/gzip"
 require "myhtml"
 
-require "../../src/cutil/http_util"
+require "../../src/_util/http_util"
 
 class CV::Seeds::ZxcsText
   DLPG_DIR = File.join("_db/.cache/zxcs_me/dlpgs")

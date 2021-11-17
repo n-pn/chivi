@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-require "../src/cutil/*"
+require "../src/_util/*"
 
 describe Utils do
   describe ".titleize" do

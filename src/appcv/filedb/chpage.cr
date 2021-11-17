@@ -1,6 +1,6 @@
 require "json"
 require "file_utils"
-require "../../cutil/ram_cache"
+require "../../_util/ram_cache"
 
 class CV::Chpage
   include JSON::Serializable

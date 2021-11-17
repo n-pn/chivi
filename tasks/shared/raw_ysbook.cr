@@ -1,7 +1,7 @@
 require "uri"
 require "json"
 
-require "../../src/cutil/*"
+require "../../src/_util/*"
 
 class CV::RawYsbook
   include JSON::Serializable

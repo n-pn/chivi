@@ -3,7 +3,7 @@ require "file_utils"
 require "compress/zip"
 
 require "icu"
-require "../../src/cutil/tsv_store"
+require "../../src/_util/tsv_store"
 require "../../src/appcv/filedb/*"
 
 class CV::Zxcs::SplitText

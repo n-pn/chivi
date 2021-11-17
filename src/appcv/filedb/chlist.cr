@@ -1,5 +1,5 @@
-require "../../cutil/tsv_store"
-require "../../cutil/ram_cache"
+require "../../_util/tsv_store"
+require "../../_util/ram_cache"
 require "./chpage"
 
 module CV::Chlist

@@ -1,5 +1,5 @@
-require "../../cutil/text_utils"
-require "../../cutil/tsv_store"
+require "../../_util/text_utils"
+require "../../_util/tsv_store"
 
 module CV::BookUtils
   extend self

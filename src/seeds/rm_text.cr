@@ -1,9 +1,9 @@
 require "file_utils"
 
-require "../cutil/site_link"
-require "../cutil/time_utils"
-require "../cutil/text_utils"
-require "../cutil/http_util"
+require "../_util/site_link"
+require "../_util/time_utils"
+require "../_util/text_utils"
+require "../_util/http_util"
 require "./shared/html_parser"
 
 class CV::RmText

@@ -2,8 +2,8 @@ require "mime"
 require "colorize"
 require "file_utils"
 
-require "../../src/cutil/http_util"
-require "../../src/cutil/tsv_store"
+require "../../src/_util/http_util"
+require "../../src/_util/tsv_store"
 require "../shared/seed_data"
 
 class CV::FetchCovers

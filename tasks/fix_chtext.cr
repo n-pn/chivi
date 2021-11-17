@@ -1,7 +1,7 @@
 require "file_utils"
 require "compress/zip"
 
-require "../src/cutil/tsv_store"
+require "../src/_util/tsv_store"
 INP = "_db/chseed"
 OUT = "db/chtexts"
 
