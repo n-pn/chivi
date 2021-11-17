@@ -101,7 +101,13 @@
     <div class="-text">Giải nghĩa</div>
   </svelte:fragment>
 
-  <button slot="header-right" class="-btn" on:click={() => ($enabled = false)}>
+  <button
+    slot="header-right"
+    class="-btn"
+    on:click={() => {
+      $enabled = false
+      $actived = false
+    }}>
     <SIcon name="circle-off" />
   </button>
 
