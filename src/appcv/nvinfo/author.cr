@@ -1,4 +1,4 @@
-require "./shared/book_utils"
+require "../shared/book_utils"
 
 class CV::Author
   include Clear::Model

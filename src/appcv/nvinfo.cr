@@ -1,18 +1,22 @@
-class CV::Cvbook
+class CV::Nvinfo
   include Clear::Model
 
-  self.table = "cvbooks"
+  self.table = "nvinfos"
   primary_key
-
-  has_many ysbooks : Ysbook, foreign_key: "cvbook_id"
-  has_many zhbooks : Zhbook, foreign_key: "cvbook_id"
-  has_many yscrits : Yscrit, foreign_key: "cvbook_id"
-  has_many yslists : Yslist, through: "yscrits"
 
   belongs_to author : Author
 
-  column bgenre_ids : Array(Int32) = [0]
-  column zhseed_ids : Array(Int32) = [] of Int32
+  has_many zhbooks : Zhbook, foreign_key: "nvinfo_id"
+  has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
+  has_many yslists : Yslist, through: "yscrits"
+
+  column nvseed_ids : Array(Int32) = [] of Int32
+  getter nvseeds : Array(String) { Chseed.to_s(nvseed_ids) }
+
+  column bgenre_ids : Array(Int32) = [] of Int32
+  getter bgenres : Array(String) { Bgenre.to_s(bgenre_ids) }
+
+  column blabels : Array(String) = [] of String
 
   column bhash : String # unique string generate from zh_title & zh_author
   column bslug : String # unique string generate from hv_title & bhash
@@ -21,48 +25,68 @@ class CV::Cvbook
   column htitle : String # hanviet title
   column vtitle : String # localization
 
-  getter bname : String { vtitle.empty? ? htitle : vtitle }
-
   column htslug : String # for text searching, auto generated from hname
   column vtslug : String # for text searching, auto generated from vname
 
-  getter bgenres : Array(String) { Bgenre.vname(bgenre_ids) }
-  getter zhseeds : Array(String) { Zhseed.all(zhseed_ids) }
-
   column bcover : String = ""
-  column bintro : String = ""
+  column bintro : String = "" # translated book desc
 
-  # 0: ongoing, 2: completed, 3: axed/hiatus, 4: unknown
+  # status value:
+  # 0: ongoing,
+  # 1: completed,
+  # 2: axed/hiatus,
+  # 3: unknown
   column status : Int32 = 0
 
-  # 0: public (anyone can see), 1: protected (show to registered users),
-  # 2: private (show to power users), 3: hidden (show to administrators only)
+  # shield value:
+  # 0: public (anyone can see),
+  # 1: protected (show to registered users),
+  # 2: private (show to power users),
+  # 3: hidden (show to administrators only)
   column shield : Int32 = 0 # default to 0
 
-  column bumped : Int64 = 0 # value by minute from the epoch, update whenever an registered user viewing book info
-  column mftime : Int64 = 0 # value by minute from the epoch, max value of nvseed mftime and ys_mftime
+  column atime : Int64 = 0 # value by minute from the epoch, update whenever an registered user viewing book info
+  column utime : Int64 = 0 # value by minute from the epoch, max value of nvseed mftime and ys_mftime
 
+  column clicks : Int32 = 0 # views count
   column weight : Int32 = 0 # voters * rating + ???
+
   column voters : Int32 = 0 # = ys_voters + vi_voters * 2 + random_seed (if < 25)
   column rating : Int32 = 0 # delivered from above values
 
-  column cv_voters : Int32 = 0
-  column cv_rating : Int32 = 0
-  column cv_clicks : Int32 = 0
+  column dtopics : Int32 = 0 # discuss topic count
+  column ubmemos : Int32 = 0 # user tracking count
 
-  column chap_count : Int32 = 0
-  column list_count : Int32 = 0
-  column crit_count : Int32 = 0
+  column cv_voters : Int32 = 0 # unique revierwers
+  column cv_rating : Int32 = 0 # average rating
 
-  timestamps
+  column cv_crits : Int32 = 0 # chivi book review count
+  column cv_lists : Int32 = 0 # chivi booi list count
+
+  column cv_chaps : Int32 = 0 # official chapters count
+  column cv_utime : Int64 = 0 # offiial chapter source updates
+
+  column ys_snvid : Int64? = nil  # yousuu book id
+  column ys_utime : Int64 = 0_i64 # yousuu book update time
+
+  column ys_voters : Int32 = 0 # yousuu book voters
+  column ys_rating : Int32 = 0 # yousu book average ratings
+
+  column ys_crits : Int32 = 0 # yousuu review counts
+  column ys_lists : Int32 = 0 # yousuu book list count
+  column ys_words : Int32 = 0 # original word count
+
+  column orig_link : String = "" # original publisher novel page
+  column orig_name : String = "" # original publisher name, extract from link
+
+  timestamps # created_at and updated_at
 
   scope :filter_ztitle do |input|
-    where("ztitle LIKE %?%", BookUtils.scrub_zname(input))
+    input ? where("ztitle LIKE %?%", input) : self
   end
 
   scope :filter_vtitle do |input|
-    scrub = BookUtils.scrub_vname(input)
-    where("vtslug LIKE %?% OR htslug LIKE %?%", scrub, scrub)
+    input ? where("vtslug LIKE %?% OR htslug LIKE %?%", input, input) : self
     # where("vtitle LIKE %$% OR htitle LIKE %$%", frag, frag) if accent
   end
 
@@ -79,23 +103,29 @@ class CV::Cvbook
   end
 
   scope :filter_author do |input|
-    return self if input.nil?
-
-    if input =~ /\p{Han}/
-      query = "zname LIKE '%#{BookUtils.scrub_zname(input)}%'"
+    if input.nil?
+      return self
+    elsif input =~ /\p{Han}/
+      scrub = BookUtils.scrub_zname(input)
+      query = "zname LIKE '%#{scrub}%'"
     else
-      query = "vslug LIKE '%-#{BookUtils.scrub_vname(input, "-")}-%'"
+      scrub = BookUtils.scrub_vname(input, "-")
+      query = "vslug LIKE '%-#{scrub}-%'"
     end
 
-    where("author_id IN (SELECT ID from authors WHERE #{query})")
+    where("author_id IN (SELECT id from authors WHERE #{query})")
   end
 
-  scope :filter_zseed do |query|
-    query ? where("zhseed_ids @> ?", [Zhseed.index(query)]) : self
+  scope :filter_zseed do |input|
+    input ? where("nvseed_ids @> ?", [Chseed.index(input)]) : self
   end
 
-  scope :filter_genre do |query|
-    query ? where("bgenre_ids @> ?", [Bgenre.map_vi(query)]) : self
+  scope :filter_genre do |input|
+    input ? where("bgenre_ids @> ?", [Bgenre.map_id(input)]) : self
+  end
+
+  scope :filter_label do |input|
+    input ? where("blabels @> ?", input) : self
   end
 
   scope :sort_by do |order|
@@ -103,24 +133,24 @@ class CV::Cvbook
     when "weight" then order_by(weight: :desc)
     when "rating" then order_by(rating: :desc)
     when "voters" then order_by(voters: :desc)
-    when "update" then order_by(mftime: :desc)
-    else               order_by(bumped: :desc)
+    when "update" then order_by(mtime: :desc)
+    when "access" then order_by(atime: :desc)
+    else               order_by(id: :desc)
     end
   end
 
   def set_genres(genres : Array(String), force = false) : Nil
-    return unless force || self.bgenre_ids == [0]
+    return unless force || self.bgenre_ids.empty?
+    genres_ids = Bgenre.map_zh(genres)
 
-    genres_ids = Bgenre.zh_map_ids(genres)
     self.bgenre_ids = genres_ids.empty? ? [0] : genres_ids
-
     self.bgenre_ids_column.dirty!
   end
 
-  def set_mftime(mftime : Int64, force = false) : Nil
-    return unless force || mftime > self.mftime
-    self.mftime = mftime
-    self.bumped = mftime
+  def set_utime(utime : Int64, force = false) : Nil
+    return unless force || utime > self.utime
+    self.utime = utime
+    self.atime = utime if self.atime < utime
   end
 
   def set_status(status : Int32, force = false) : Nil
@@ -157,7 +187,7 @@ class CV::Cvbook
   end
 
   def bump!(time = Time.utc)
-    update!(bumped: time.to_unix)
+    update!(atime: time.to_unix)
   end
 
   class_getter total : Int64 { query.count }
