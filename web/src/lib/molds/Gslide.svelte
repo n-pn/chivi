@@ -1,11 +1,12 @@
 <script>
-  import { onDestroy } from 'svelte'
-  import { toleft } from '$lib/stores'
   import { navigating } from '$app/stores'
+  import { toleft, add_layer, remove_layer } from '$lib/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
+
   export let actived = false
 
+  export let _klass = 'slider'
   export let _sticky = false
   export let _slider = 'right'
   export let _rwidth = 25
@@ -13,18 +14,18 @@
   let sticked = false
 
   $: $toleft = sticked
-  onDestroy(() => ($toleft = false))
   $: if ($navigating) actived = false
+
+  $: actived ? add_layer('.' + _klass) : remove_layer('.' + _klass)
 </script>
 
-<div
-  class="wrap"
+<slider-wrap
   class:_active={actived}
   class:_sticky={sticked}
   on:click={() => (actived = false)} />
 
-<aside
-  class="main"
+<slider-main
+  class={_klass}
   class:_left={_slider == 'left'}
   class:_right={_slider == 'right'}
   class:_active={actived}
@@ -50,16 +51,17 @@
   <section class="body">
     <slot />
   </section>
-</aside>
+</slider-main>
 
 <style lang="scss">
-  .wrap {
+  slider-wrap {
     position: fixed;
+    display: block;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
-    z-index: 97;
+    z-index: 50;
 
     background-color: rgba(#000, 0.5);
     transition: background-color 0.5s ease-in-out;
@@ -77,22 +79,22 @@
     }
   }
 
-  .main {
+  slider-main {
     position: fixed;
+    display: block;
 
     top: 0;
     width: var(--width, 20rem);
     overflow-y: auto;
     max-width: calc(100vw - 1.5rem);
     height: 100vh;
-    z-index: 98;
+    z-index: 55;
 
     will-change: transform;
     transition: transform 0.1s ease-in-out;
 
-    @media (prefers-reduced-motion) {
-      transition: none;
-    }
+    // prettier-ignore
+    @media (prefers-reduced-motion) { transition: none; }
 
     background: var(--bg-secd);
     @include shadow(2);

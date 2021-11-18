@@ -257,7 +257,9 @@
   </upsert-wrap>
 </Gmodal>
 
-<Postag bind:ptag={vpterm.ptag} bind:state={$state} />
+{#if $state == 2}
+  <Postag bind:ptag={vpterm.ptag} bind:state={$state} />
+{/if}
 
 <style lang="scss">
   $gutter: 0.75rem;

@@ -93,7 +93,7 @@
   }
 </script>
 
-<Gslide _rwidth={30} _sticky={true} bind:actived={$actived}>
+<Gslide _klass="lookup" _rwidth={30} _sticky={true} bind:actived={$actived}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="compass" />

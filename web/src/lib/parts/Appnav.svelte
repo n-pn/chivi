@@ -7,7 +7,7 @@
   export let actived = false
 </script>
 
-<Gslide bind:actived _rwidth={22} _slider="left">
+<Gslide _klass="appnav" bind:actived _rwidth={22} _slider="left">
   <svelte:fragment slot="header-left">
     <a class="brand" href="/">
       <img src="/icons/chivi.svg" alt="logo" class="-icon" />

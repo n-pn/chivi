@@ -29,7 +29,7 @@
   }
 </script>
 
-<Gslide bind:actived _rwidth={26}>
+<Gslide _klass="usercp" bind:actived _rwidth={26}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="user" />

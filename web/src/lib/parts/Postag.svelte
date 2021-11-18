@@ -45,7 +45,7 @@
   let sections = []
 </script>
 
-<Gmodal active={state > 1} index={80} on_close={hide_modal}>
+<Gmodal _klass="postag" active={state > 1} index={80} on_close={hide_modal}>
   <postag-wrap>
     <postag-head>
       <postag-tabs>
@@ -60,7 +60,7 @@
         {/each}
       </postag-tabs>
 
-      <button type="button" class="-btn" on:click={hide_modal}>
+      <button type="button" class="-btn" data-kbd="esc" on:click={hide_modal}>
         <SIcon name="x" />
       </button>
     </postag-head>

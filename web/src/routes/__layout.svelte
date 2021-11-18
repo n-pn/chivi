@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import { navigating, page, session } from '$app/stores'
-  import { scroll, wtheme, ftsize } from '$lib/stores'
+  import { scroll, wtheme, ftsize, layers } from '$lib/stores'
   import Loader from '$molds/Loader.svelte'
 
   import '../css/generic.scss'
@@ -75,9 +75,11 @@
   }
 
   function trigger_click(evt, sel) {
-    const elem = document.querySelector(sel)
+    const layer = $layers[0]
+    console.log({ layer })
+    const elem = document.querySelector(`${layer} ${sel}`)
     if (!elem) return
-    evt.preventDefault()
+
     evt.stopPropagation()
     elem.click()
   }
