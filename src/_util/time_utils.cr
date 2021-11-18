@@ -3,7 +3,7 @@ module CV::TimeUtils
 
   LOCATION = Time::Location.fixed(3600 * 8) # chinese timezone
 
-  TIME_LOCAL = {
+  TIME_FMT = {
     "%-m/%-d/%Y %r",
     "%-m/%-d/%Y %T",
     "%Y/%-m/%-d %T",
@@ -19,7 +19,7 @@ module CV::TimeUtils
     begin
       Time.parse_utc(input, "%FT%T.%3NZ")
     rescue
-      TIME_LOCAL.each do |format|
+      TIME_FMT.each do |format|
         return Time.parse(input, format, LOCATION)
       rescue
         next

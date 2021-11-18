@@ -1,6 +1,10 @@
 require "compress/gzip"
 
 class CV::GzipFile
+  enum State
+    Fresh; Staled; Missing
+  end
+
   getter file : String
 
   def initialize(@file, @data = nil)
@@ -21,10 +25,6 @@ class CV::GzipFile
   rescue err
     puts err
     state == State::Staled ? self.read : raise "File not found!"
-  end
-
-  enum State
-    Fresh; Staled; Missing
   end
 
   def check_state(ttl : Time::Span | Time::MonthSpan)

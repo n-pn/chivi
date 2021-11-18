@@ -2,8 +2,7 @@ require "colorize"
 require "file_utils"
 require "compress/zip"
 
-require "icu"
-require "../../src/_util/tsv_store"
+require "../../src/_util/file_util"
 require "../../src/appcv/filedb/*"
 
 class CV::Zxcs::SplitText
@@ -20,8 +19,6 @@ class CV::Zxcs::SplitText
   INP_TXT = "_db/.keeps/zxcs_me/texts"
 
   OUT_DIR = "db/chtexts/zxcs_me"
-
-  getter csdet = ICU::CharsetDetector.new
 
   def extract_all!
     input = Dir.glob("#{INP_RAR}/*.rar").shuffle
@@ -67,7 +64,7 @@ class CV::Zxcs::SplitText
   FILE_RE_2 = /《(.+)》(.+)\.txt/
 
   private def read_clean(inp_file : String) : Array(String)
-    lines = read_as_utf8(inp_file).strip.split(/\r\n?|\n/)
+    lines = FileUtil.read_utf8(inp_file).strip.split(/\r\n?|\n/)
 
     if lines.first.starts_with?("===")
       3.times { lines.shift; lines.pop }
@@ -91,18 +88,6 @@ class CV::Zxcs::SplitText
     end
 
     lines
-  end
-
-  private def read_as_utf8(txt_file : String)
-    File.open(txt_file, "r") do |f|
-      str = f.read_string(500)
-      csm = csdet.detect(str)
-      puts "- [#{File.basename txt_file}] encoding: #{csm.name} (#{csm.confidence})".colorize.green
-
-      f.rewind
-      f.set_encoding(csm.name, invalid: :skip)
-      f.gets_to_end
-    end
   end
 
   private def is_garbage?(line : String, title : String, author : String)
