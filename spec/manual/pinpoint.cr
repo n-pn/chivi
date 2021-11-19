@@ -1,4 +1,4 @@
-require "../../src/libcv/mt_core"
+require "../../src/cvmtl/mt_core"
 
 GENERIC = CV::MtCore.generic_mtl("combine")
 

@@ -1,5 +1,5 @@
 require "file_utils"
-require "../../src/libcv/vdict"
+require "../../src/cvmtl/vdict"
 
 def parse_term(cols : Array(String), dlock = 1)
   key = cols[0]

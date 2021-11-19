@@ -1,4 +1,4 @@
-require "../src/libcv/*"
+require "../src/cvmtl/*"
 
 def remove_dead_entries(dname : String, uniq = false)
   vdict = CV::VpDict.load(dname)

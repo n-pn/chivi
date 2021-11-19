@@ -1,4 +1,4 @@
-# require "../../src/libcv/vdict"
+# require "../../src/cvmtl/vdict"
 
 # test = CV::Vdict.new "test"
 
@@ -34,6 +34,6 @@
 # pp regular._root.find("体味")
 # pp regular._root.find("三人").try { |x| {x.entry, x.emend, x._hint} }
 
-require "../../src/libcv/vp_dict"
+require "../../src/cvmtl/vp_dict"
 
 pp CV::VpDict.essence.find("、")

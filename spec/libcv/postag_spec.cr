@@ -1,5 +1,5 @@
 require "spec"
-require "../../src/libcv/mt_core"
+require "../../src/cvmtl/mt_core"
 
 macro assert_eq(left, right)
   CV::PosTag.from_str("m", {{left}}).should eq(CV::PosTag::{{right}})

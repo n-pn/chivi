@@ -1,5 +1,5 @@
 require "spec"
-require "../../src/libcv/mt_core"
+require "../../src/cvmtl/mt_core"
 
 MTL = CV::MtCore.generic_mtl("combine")
 

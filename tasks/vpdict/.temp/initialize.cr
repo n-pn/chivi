@@ -8,7 +8,7 @@ def split_chars(input)
 end
 
 def extract_crucial_chars
-  file = "var/libcv/initial/autogen/crutial-chars.txt"
+  file = "var/cvmtl/initial/autogen/crutial-chars.txt"
   dict = ValueSet.new(file, mode: 0)
 
   infos = BookInfo.load_all!

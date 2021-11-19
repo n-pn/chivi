@@ -1,6 +1,6 @@
 require "../_util/ukey_util"
 require "../_util/site_link"
-require "../libcv/mt_core"
+require "../cvmtl/mt_core"
 require "../seeds/rm_info"
 
 class CV::Zhbook

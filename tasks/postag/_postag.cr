@@ -1,4 +1,4 @@
-require "../../src/libcv/*"
+require "../../src/cvmtl/*"
 
 struct CV::PosTag
   def self.from_pfr(tag : ::String) : self

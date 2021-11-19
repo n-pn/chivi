@@ -1,4 +1,4 @@
-require "../src/libcv/vp_dict"
+require "../src/cvmtl/vp_dict"
 
 MAIN_DIR = "_db/vpdict/main"
 PLEB_DIR = "_db/vpdict/pleb"

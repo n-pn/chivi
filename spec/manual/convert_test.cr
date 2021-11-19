@@ -1,4 +1,4 @@
-require "../../src/libcv/libcv"
+require "../../src/cvmtl/cvmtl"
 
 GENERIC = CV::Cvmtl.generic("various")
 CV::Vdict.various.set(CV::VpTerm.new("贾文和", ["Giả Văn Hoà"]))

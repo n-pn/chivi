@@ -1,8 +1,8 @@
 require "colorize"
 require "file_utils"
 
-require "../../../src/libcv/vdict"
-require "../../../src/libcv/vp_dict"
+require "../../../src/cvmtl/vdict"
+require "../../../src/cvmtl/vp_dict"
 
 DIR = "_db/vpinit"
 
