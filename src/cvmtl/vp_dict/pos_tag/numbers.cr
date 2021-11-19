@@ -49,87 +49,9 @@ struct CV::PosTag
     end
   end
 
-  QTTIMES = {
-    "秒"  => "giây",
-    "分钟" => "phút",
-    "小时" => "giờ",
-    "日"  => "ngày",
-    # "号"  => "ngày",
-    "月"  => "tháng",
-    "个月" => "tháng",
-    "年"  => "năm",
-    "岁"  => "tuổi",
-    "周"  => "tuần",
-    "席"  => "bữa",
-    "晚"  => "đêm",
-    "刻"  => "khắc",
-    "载"  => "năm",
-  }
-
-  QTVERBS = {
-    "次"  => "lượt", # lần/chuyến
-    "回"  => "hồi",
-    "遍"  => "lần",
-    "趟"  => "chuyến", # lần/hàng/dãy
-    "下"  => "phát",
-    "下儿" => "phát",
-    "顿"  => "chầu", # hồi/trận
-    "番"  => "phen", # loại/dạng/hồi/lần
-    "阵"  => "trận",
-    "会"  => "lúc",
-    "会儿" => "lát",
-  }
-
-  QTNOUNS = {
-    "钧" => "quân",
-    "袭" => "bộ",
-    "丈" => "trượng",
-    "招" => "chiêu",
-    "笔" => "bút",
-    "家" => "nhà",
-    "度" => "độ",
-    "处" => "chỗ",
-    "瓶" => "chai",
-    "石" => "thạch",
-    "丝" => "tia",
-    "抬" => "đài",
-    # "两"  => "lượng",
-    "里"  => "dặm",
-    "米"  => "mét",
-    "帮"  => "đám", # bọn/đàn/lũ/nhóm/tốp/bang
-    "道"  => "đạo", # đường/nét/vạch
-    "股"  => "cỗ",
-    "更"  => "canh",
-    "重"  => "tầng",
-    "分"  => "phần",
-    "只"  => "con",
-    "本"  => "quyển",
-    "种"  => "loại",
-    "间"  => "gian",
-    "声"  => "tiếng",
-    "代"  => "đời", # thời/nhà/lớp
-    "圈"  => "vòng",
-    "场"  => "trận", # bữa
-    "轮"  => "vòng", # vầng/vành/lượt
-    "步"  => "bước",
-    "盘"  => "khay",
-    "茬"  => "vụ", # lứa/đợt
-    "餐"  => "bữa",
-    "架"  => "khung",
-    "期"  => "kỳ",
-    "层"  => "tầng",
-    "门"  => "môn",
-    "转"  => "vòng",
-    "架次" => "lượt chiếc",
-    "场次" => "lượt diễn",
-    "人次" => "lượt người",
-    "站"  => "trạm",
-    "拨"  => "tốp",
-  }
-
   def self.map_quantis(key : ::String) : self
-    return Qttime if QTTIMES.has_key?(key)
-    return Qtverb if QTVERBS.has_key?(key)
+    return Qttime if MTL::QTTIMES.has_key?(key)
+    return Qtverb if MTL::QTVERBS.has_key?(key)
     Qtnoun
   end
 
@@ -138,10 +60,10 @@ struct CV::PosTag
   def self.map_nquants(key : ::String) : self
     key = key.sub(NUMCHR_RE, "")
     case
-    when QTTIMES.has_key?(key) then Nqtime
-    when QTNOUNS.has_key?(key) then Nqnoun
-    when QTVERBS.has_key?(key) then Nqverb
-    else                            Nqiffy
+    when MTL::QTTIMES.has_key?(key) then Nqtime
+    when MTL::QTNOUNS.has_key?(key) then Nqnoun
+    when MTL::QTVERBS.has_key?(key) then Nqverb
+    else                                 Nqiffy
     end
   end
 end

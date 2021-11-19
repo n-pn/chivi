@@ -115,36 +115,10 @@ module CV::TlRule
     fold!(verb, vdir, PosTag::Verb, dic: 5)
   end
 
-  VERB_COMPLS = {
-    "到" => "đến",
-    "向" => "hướng",
-    # "在"  => "ở",
-    "见"  => "thấy",
-    "着"  => "được",
-    "住"  => "lấy",
-    "不住" => "không nổi",
-    "上"  => "lên",
-    "开"  => "ra",
-    "完"  => "xong",
-    "好"  => "xong",
-    "错"  => "sai",
-    # "对"  => "đúng",
-    "成" => "thành",
-    "懂" => "hiểu",
-    "掉" => "mất",
-    "走" => "đi",
-    "够" => "đủ",
-    "满" => "đầy",
-    "倒" => "đổ",
-    "下" => "xuống",
-    "起" => "lên",
-    "给" => "cho",
-  }
-
   def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
     return if verb.v_you? || verb.v_shi?
 
-    unless val = VERB_COMPLS[compl.key]?
+    unless val = MTL::VERB_COMPLS[compl.key]?
       return unless compl.pre_dui?
 
       if succ = compl.succ?
