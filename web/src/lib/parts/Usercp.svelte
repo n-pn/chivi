@@ -25,7 +25,6 @@
     if (section != 'main') return
     const res = await fetch(`/api/_self/books/access?skip=${skip}&take=15`)
     if (res.ok) chaps = await res.json()
-    console.log(chaps.length)
   }
 </script>
 

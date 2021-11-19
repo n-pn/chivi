@@ -4,6 +4,8 @@ class CV::Nvinfo
   self.table = "nvinfos"
   primary_key
 
+  column succeed_id : Int64? = nil # in case of duplicate entries, this column will point to the better one
+
   belongs_to author : Author
 
   has_many zhbooks : Zhbook, foreign_key: "nvinfo_id"
@@ -116,7 +118,7 @@ class CV::Nvinfo
     where("author_id IN (SELECT id from authors WHERE #{query})")
   end
 
-  scope :filter_zseed do |input|
+  scope :filter_nseed do |input|
     input ? where("nvseed_ids @> ?", [Chseed.index(input)]) : self
   end
 
@@ -139,6 +141,12 @@ class CV::Nvinfo
     end
   end
 
+  def add_zhseed(nseed : Int32) : Nil
+    return if self.nvseed_ids.includes?(nseed)
+    self.nvseed_ids.push(nseed).sort!
+    self.nvseed_ids_column.dirty!
+  end
+
   def set_genres(genres : Array(String), force = false) : Nil
     return unless force || self.bgenre_ids.empty?
     genres_ids = Bgenre.map_zh(genres)
@@ -153,6 +161,10 @@ class CV::Nvinfo
     self.atime = utime if self.atime < utime
   end
 
+  def bump!(time = Time.utc)
+    update!(atime: time.to_unix)
+  end
+
   def set_status(status : Int32, force = false) : Nil
     self.status = status if force || status > self.status
   end
@@ -165,30 +177,46 @@ class CV::Nvinfo
     self.bcover = bcover if force || self.bcover.empty?
   end
 
-  def set_zintro(zintro : String, force = false) : Nil
-    return unless force || self.bintro.empty?
-    self.bintro = BookUtils.convert(zintro, self.bhash).join("\n")
+  def set_ys_scores(voters : Int32, rating : Int32) : Nil
+    self.ys_voters = voters
+    self.ys_rating = rating
+    fix_scores!
   end
 
-  def add_zhseed(zseed : Int32) : Nil
-    return if self.zhseed_ids.includes?(zseed)
-    self.zhseed_ids.push(zseed).sort!
-    self.zhseed_ids_column.dirty!
+  # trigger when user add a new book review
+  def add_cv_rating(rating : Int32) : Nil
+    points = self.cv_voters * self.cv_rating + rating
+
+    self.cv_voters += 1
+    self.cv_rating = points // self.cv_voters
+    fix_scores!
   end
 
-  def set_scores(voters : Int32, rating : Int32) : Nil
-    self.voters = voters
-    self.rating = rating
-    self.weight = voters * rating
-    return if voters >= 25
+  # trigger when user change book rating in his review
+  def fix_cv_rating(new_rating : Int32, old_rating : Int32) : Nil
+    return if new_rating == old_rating
 
-    self.weight += (25 - voters) * Random.rand(40..60)
-    self.rating = self.weight // 25
+    points = self.cv_voters * self.cv_rating + new_rating - old_rating
+    self.cv_rating = points // self.cv_voters
+    fix_scores!
   end
 
-  def bump!(time = Time.utc)
-    update!(atime: time.to_unix)
+  # recalculate
+  def fix_scores! : Nil
+    points = self.cv_voters * self.cv_rating + self.ys_voters * self.ys_rating
+    self.voters = self.cv_voters + self.ys_voters
+
+    if self.voters < 25
+      points += (25 - self.voters) * 50
+      self.rating = points // 25
+    else
+      self.rating = points // self.voters
+    end
+
+    self.weight = points + Math.log(self.clicks).to_i * 10 + Math.log(self.utime // 60).to_i
   end
+
+  #########################################
 
   class_getter total : Int64 { query.count }
 
@@ -209,26 +237,26 @@ class CV::Nvinfo
     end
   end
 
-  def self.upsert!(author : Author, ztitle : String,
-                   htitle : String? = nil, vtitle : String? = nil)
-    get(author, ztitle) || begin
-      bhash = UkeyUtil.digest32("#{ztitle}--#{author.zname}")
-      vtitle ||= BookUtils.get_vi_btitle(ztitle, bhash)
-      vtslug = "-#{BookUtils.scrub_vname(vtitle, "-")}-"
+  # def self.upsert!(author : Author, ztitle : String,
+  #                  htitle : String? = nil, vtitle : String? = nil)
+  #   get(author, ztitle) || begin
+  #     bhash = UkeyUtil.digest32("#{ztitle}--#{author.zname}")
+  #     vtitle ||= BookUtils.get_vi_btitle(ztitle, bhash)
+  #     vtslug = "-#{BookUtils.scrub_vname(vtitle, "-")}-"
 
-      htitle ||= BookUtils.hanviet(ztitle)
-      htslug = BookUtils.scrub_vname(htitle, "-")
+  #     htitle ||= BookUtils.hanviet(ztitle)
+  #     htslug = BookUtils.scrub_vname(htitle, "-")
 
-      bslug = htslug.split("-").first(8).push(bhash[0..3]).join("-")
+  #     bslug = htslug.split("-").first(8).push(bhash[0..3]).join("-")
 
-      htslug = "-#{htslug}-"
-      cvbook = new({
-        author_id: author.id, bhash: bhash, bslug: bslug,
-        ztitle: ztitle, htitle: htitle, vtitle: vtitle,
-        htslug: htslug, vtslug: vtslug,
-      })
+  #     htslug = "-#{htslug}-"
+  #     cvbook = new({
+  #       author_id: author.id, bhash: bhash, bslug: bslug,
+  #       ztitle: ztitle, htitle: htitle, vtitle: vtitle,
+  #       htslug: htslug, vtslug: vtslug,
+  #     })
 
-      cvbook.tap(&.save!)
-    end
-  end
+  #     cvbook.tap(&.save!)
+  #   end
+  # end
 end
