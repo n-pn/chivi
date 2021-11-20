@@ -1,19 +1,17 @@
 module CV::TlRule
   def scan_noun!(head : MtNode, mode = 0)
     case head
-    when .nphrase? then head
+    when .nphrase?, .vform? then head
     when .nouns?
       head = fold_noun!(head, mode: 1) # fold noun but do not consume penum
       head = scan_noun!(head) if head.verb?
       head
     when .numeric?
       head = fold_numbers!(head)
-      return head if head.noun?
+      return head unless !head.noun? && (succ = head.succ?) && !succ.ends?
 
-      return head unless (succ = head.succ?) && !succ.ends?
       succ = scan_noun!(succ)
-      return head unless succ.noun?
-      fold_nquant_noun!(node, succ)
+      succ.noun? ? fold_nquant_noun!(node, succ) : head
     when .adverbs?
       head = fold_adverbs!(head)
       return head unless (succ = head.succ?) && succ.ude1?
