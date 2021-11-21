@@ -78,3 +78,149 @@ img {
 p > img {
   display: inline-block;
 }
+
+@font-face {
+  font-family: 'Merriweather';
+  font-style: normal;
+  font-weight: 400;
+  src: local(''),
+    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-regular.woff2')
+      format('woff2'),
+    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-regular.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Merriweather';
+  font-style: italic;
+  font-weight: 400;
+  src: local(''),
+    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-italic.woff2')
+      format('woff2'),
+    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-italic.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Merriweather';
+  font-style: normal;
+  font-weight: 700;
+  src: local(''),
+    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700.woff2')
+      format('woff2'),
+    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'Merriweather';
+  font-style: italic;
+  font-weight: 700;
+  src: local(''),
+    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700italic.woff2')
+      format('woff2'),
+    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700italic.woff')
+      format('woff');
+}
+
+/* nunito-sans-italic - vietnamese_latin-ext_latin */
+@font-face {
+  font-family: 'Nunito Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local(''),
+    url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-italic.woff2')
+      format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-italic.woff')
+      format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* nunito-sans-regular - vietnamese_latin-ext_latin */
+@font-face {
+  font-family: 'Nunito Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local(''),
+    url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-regular.woff2')
+      format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-regular.woff')
+      format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* nunito-sans-700 - vietnamese_latin-ext_latin */
+@font-face {
+  font-family: 'Nunito Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local(''),
+    url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700.woff2')
+      format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700.woff')
+      format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* nunito-sans-700italic - vietnamese_latin-ext_latin */
+@font-face {
+  font-family: 'Nunito Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: local(''),
+    url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700italic.woff2')
+      format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700italic.woff')
+      format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* lora-regular - vietnamese_latin-ext_latin */
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  src: local(''),
+    url('/fonts/lora-v20-vietnamese_latin-ext_latin-regular.woff2')
+      format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/lora-v20-vietnamese_latin-ext_latin-regular.woff')
+      format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* lora-700 - vietnamese_latin-ext_latin */
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  src: local(''),
+    url('/fonts/lora-v20-vietnamese_latin-ext_latin-700.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/lora-v20-vietnamese_latin-ext_latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* lora-italic - vietnamese_latin-ext_latin */
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  src: local(''),
+    url('/fonts/lora-v20-vietnamese_latin-ext_latin-italic.woff2')
+      format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/lora-v20-vietnamese_latin-ext_latin-italic.woff')
+      format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* lora-700italic - vietnamese_latin-ext_latin */
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 700;
+  src: local(''),
+    url('/fonts/lora-v20-vietnamese_latin-ext_latin-700italic.woff2')
+      format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/lora-v20-vietnamese_latin-ext_latin-700italic.woff')
+      format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}

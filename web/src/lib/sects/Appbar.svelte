@@ -37,7 +37,10 @@
       <slot name="right" />
 
       {#if ptype == 'cvmtl'}
-        <button class="header-item" on:click={() => (active_config = true)}>
+        <button
+          class="header-item"
+          data-kbd="c"
+          on:click={() => (active_config = true)}>
           <SIcon name="settings" />
           <span class="header-text _show-md">Cài đặt </span>
         </button>

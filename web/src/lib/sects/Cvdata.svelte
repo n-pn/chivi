@@ -187,6 +187,22 @@
     color: var(--fgcolor, #{color(gray, 8)});
     // prettier-ignore
     @include tm-dark { --fgcolor: #{color(gray, 3)}; }
+
+    :global(.app-ff-1) & {
+      font-family: var(--font-sans);
+    }
+
+    :global(.app-ff-2) & {
+      font-family: var(--font-serif);
+    }
+
+    :global(.app-ff-3) & {
+      font-family: Nunito Sans, var(--font-sans);
+    }
+
+    :global(.app-ff-4) & {
+      font-family: Lora, var(--font-serif);
+    }
   }
 
   zh-line {

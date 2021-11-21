@@ -21,16 +21,14 @@
 
   let config_elem
   $: if (actived && config_elem) config_elem.focus()
+
   $: ftsize = +$config.ftsize || 3
+  $: ftface = +$config.ftface || 1
 
   async function update_wtheme(wtheme) {
     save_config('wtheme', wtheme)
     await call_update({ wtheme, tlmode: $session.tlmode })
   }
-
-  // async function update_tlmode(tlmode) {
-  //   await call_update({ tlmode, wtheme: $config.wtheme })
-  // }
 
   async function call_update(params) {
     const res = await fetch('/api/user/setting', {
@@ -96,10 +94,10 @@
       <select
         class="m-input"
         name="ftface"
-        bind:value={$config.ftface}
-        on:change={() => save_config('ftface', this.value)}>
-        {#each ftfaces as value}
-          <option {value}>{value}</option>
+        bind:value={ftface}
+        on:change={() => save_config('ftface', ftface)}>
+        {#each ftfaces as value, index}
+          <option value={index + 1}>{value}</option>
         {/each}
       </select>
     </field-input>
