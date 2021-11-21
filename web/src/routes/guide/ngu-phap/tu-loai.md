@@ -4,9 +4,9 @@ title: Từ loại trong tiếng Trung (WIP)
 
 Cập nhật: 21/11/2021
 
-**Tài liệu đang trong quá trình hoàn thiện**
+**Tài liệu đang trong quá trình hoàn thiện.**
 
-_Lưu ý: hiện tại từ loại trong các từ điển của Chivi độ chính xác chưa cao, một phần là vì chưa có hướng dẫn cụ thể cho các loại từ, một phần là vì công cụ phân loại tự động Chivi dùng lúc đầu độ chính xác chưa cao. Cho nên các ví dụ liên kết chỉ nên dùng để tham khảo_
+_Lưu ý: hiện tại từ loại trong các từ điển của Chivi độ chính xác chưa cao, một phần là vì chưa có hướng dẫn cụ thể cho các loại từ, một phần là vì công cụ phân loại tự động Chivi dùng lúc đầu độ chính xác chưa cao. Cho nên các ví dụ liên kết chỉ nên dùng để tham khảo._
 
 ## 1. DANH TỪ 名詞
 
@@ -24,22 +24,22 @@ Trong Chivi danh từ được chia thành các loại nhỏ:
 
 - **Địa danh/Tổ chức**: Tên riêng của các địa danh, tổ chức như Hoa Sơn, phái Thiếu Lâm.
 
-  Tên địa danh/tổ chức khác với tên người là không kết hợp được với danh xưng đằng sau.
+  _Tên địa danh/tổ chức khác với tên người là không kết hợp được với danh xưng đằng sau._
 
   Ví dụ từ:
 
   - [Địa danh trong từ điển thông dụng](/dicts/regular?ptag=ns)
   - [Tổ chức trong từ điển thông dụng](/dicts/regular?ptag=nt)
 
-  **_Hiện tại thì trong Chivi chưa có phân biệt trong vai trò về ngữ pháp giữa địa danh và cổ chức, nhiều khả năng hai loại từ này sẽ được gộp lại làm một để thuận tiện hơn cho người dùng_**
+  **_Hiện tại thì trong Chivi chưa có phân biệt trong vai trò về ngữ pháp giữa địa danh và cổ chức, nhiều khả năng hai loại từ này sẽ được gộp lại làm một để thuận tiện hơn cho người dùng._**
 
 - **Tên riêng khác**: Những loại tên riêng khác không hợp với các loại trên, ví dụ tên chiêu thức, tựa sách, hoá chất...
 
-  **Tên riêng khác với danh từ thông dụng là nó đứng độc lập, không ghép với các từ khác tạo thành cụm từ.**
+  _Tên riêng khác với danh từ thông dụng là nó đứng độc lập, không ghép với các từ khác tạo thành cụm từ._
 
   Ví dụ từ: [Tên riêng khác trong từ điển thông dụng](/dicts/regular?ptag=nz)
 
-  _Hiện tại việc đánh dấu tên riêng khác bị sai khá nhiều do Chivi dùng các công cụ phân loại từ tự động có độ chính xác chưa cao (do không được train với văn học mạng), các bạn nếu thấy từ nào đánh dấu là tên riêng khác mà là viết thường có thể đổi nó về danh từ_
+  **_Hiện tại việc đánh dấu tên riêng khác bị sai khá nhiều do Chivi dùng các công cụ phân loại từ tự động có độ chính xác chưa cao (do không được train với văn học mạng). Các bạn check thấy sai hãy sửa giùm :)_**
 
 - **Danh từ thông dụng**: Các từ chỉ đồ vật, hiện tượng.
   Danh từ thông dụng nếu đứng liền kề nhau có thể kết hợp được.
