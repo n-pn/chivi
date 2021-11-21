@@ -35,6 +35,8 @@ Trong Chivi danh từ được chia thành các loại nhỏ:
 
 - **Tên riêng khác**: Những loại tên riêng khác không hợp với các loại trên, ví dụ tên chiêu thức, tựa sách, hoá chất...
 
+  **Tên riêng khác với danh từ thông dụng là nó đứng độc lập, không ghép với các từ khác tạo thành cụm từ.**
+
   Ví dụ từ: [Tên riêng khác trong từ điển thông dụng](/dicts/regular?ptag=nz)
 
   _Hiện tại việc đánh dấu tên riêng khác bị sai khá nhiều do Chivi dùng các công cụ phân loại từ tự động có độ chính xác chưa cao (do không được train với văn học mạng), các bạn nếu thấy từ nào đánh dấu là tên riêng khác mà là viết thường có thể đổi nó về danh từ_
