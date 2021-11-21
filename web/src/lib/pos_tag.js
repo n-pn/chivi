@@ -1,12 +1,12 @@
 export const labels = {
   '_': 'Không rõ',
-  'nr': 'Tên người',
+  'nr': 'Tên/họ người',
   'ns': 'Địa danh',
   'nt': 'Tổ chức',
   'nz': 'Tên riêng khác',
 
   'n': 'Danh từ',
-  'nw': 'Nhân xưng',
+  'nw': 'Danh xưng',
   // 'nc': 'Danh từ trừu tượng',
   's': 'Nơi chốn',
   'f': 'Phương vị',

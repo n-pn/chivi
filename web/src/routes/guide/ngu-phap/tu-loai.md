@@ -1,10 +1,85 @@
 ---
-title: Từ loại trong tiếng Trung
+title: Từ loại trong tiếng Trung (WIP)
 ---
+
+Cập nhật: 21/11/2021
+
+**Tài liệu đang trong quá trình hoàn thiện**
+
+_Lưu ý: hiện tại từ loại trong các từ điển của Chivi độ chính xác chưa cao, một phần là vì chưa có hướng dẫn cụ thể cho các loại từ, một phần là vì công cụ phân loại tự động Chivi dùng lúc đầu độ chính xác chưa cao. Cho nên các ví dụ liên kết chỉ nên dùng để tham khảo_
 
 ## 1. DANH TỪ 名詞
 
 Danh từ dùng biểu thị người hay sự vật gọi là Danh từ. Nói chung ở trước Danh từ ta có thể thêm vào số từ hay Lượng từ nhưng Danh từ không thể nhận Phó từ làm bổ nghĩa.
+
+Trong Chivi danh từ được chia thành các loại nhỏ:
+
+- **Tên/họ người**: Tên riêng của người, bao gồm cả tên/họ tiếng Anh/Nhật, hoặc là họ tiếng Trung nếu hợp với văn cảnh.
+
+  _Không khuyến khích thêm họ tiếng Trung một ký tự vì thường nó là từ mang nhiều nghĩa_
+
+  Tên/họ người có thể kết hợp với danh xưng đằng sau, ví dụ "Vũ Nhu tiên tử", "Lâm tiểu thư"...
+
+  Ví dụ từ: [Tên người trong từ điển thông dụng](/dicts/regular?ptag=nr)
+
+- **Địa danh/Tổ chức**: Tên riêng của các địa danh, tổ chức như Hoa Sơn, phái Thiếu Lâm.
+
+  Tên địa danh/tổ chức khác với tên người là không kết hợp được với danh xưng đằng sau.
+
+  Ví dụ từ:
+
+  - [Địa danh trong từ điển thông dụng](/dicts/regular?ptag=ns)
+  - [Tổ chức trong từ điển thông dụng](/dicts/regular?ptag=nt)
+
+  **_Hiện tại thì trong Chivi chưa có phân biệt trong vai trò về ngữ pháp giữa địa danh và cổ chức, nhiều khả năng hai loại từ này sẽ được gộp lại làm một để thuận tiện hơn cho người dùng_**
+
+- **Tên riêng khác**: Những loại tên riêng khác không hợp với các loại trên, ví dụ tên chiêu thức, tựa sách, hoá chất...
+
+  Ví dụ từ: [Tên riêng khác trong từ điển thông dụng](/dicts/regular?ptag=nz)
+
+  _Hiện tại việc đánh dấu tên riêng khác bị sai khá nhiều do Chivi dùng các công cụ phân loại từ tự động có độ chính xác chưa cao (do không được train với văn học mạng), các bạn nếu thấy từ nào đánh dấu là tên riêng khác mà là viết thường có thể đổi nó về danh từ_
+
+- **Danh từ thông dụng**: Các từ chỉ đồ vật, hiện tượng.
+  Danh từ thông dụng nếu đứng liền kề nhau có thể kết hợp được.
+
+  [Các danh từ thường dùng](/dicts/regular?ptag=n&uname=Nipin)
+
+- **Danh xưng**: các danh từ dùng để xưng hô người như "tỷ tỷ", "muội muội", "lão sư", "chưởng môn", "tiên tử"...
+
+  Trong ngữ pháp thì danh từ nhân xưng có thể gộp với **Tên/họ người** đằng trước tạo thành tên người.
+
+  [Các danh xưng thường dùng](/dicts/regular?ptag=nw)
+
+- **Phương vị**:
+  Phương vị từ là những danh từ chỉ phương hướng, được sử dụng rất nhiều trong giao tiếp tiếng Trung, nhất là chủ đề giao tiếp liên quan tới xác định phương hướng, hỏi thăm đường xá.
+
+  Ví dụ phương vị: 上面 (phía trên), 下面 (phía dưới), 前边 (đằng trước), 后边 (đằng sau)
+
+  Phương vị đứng đằng sau danh từ thường sẽ tạo thành cụm từ chỉ nơi chốn
+
+  [Các từ phương vị thường dùng](/dicts/regular?ptag=f)
+
+- **Nơi chốn**: Thường thì nơi chốn là kết quả của việc ghép danh từ + phương vị từ.
+
+  Khác biệt lớn nhất giữa _danh từ thường_ và _nơi chốn_ là khi _nơi chốn_ làm định ngữ thì không thêm "của".
+
+  ví dụ: "桌上的本" dịch là "sách trên bàn" thay vì là "sách của trên bàn".
+
+  [Các từ chỉ nơi chốn thường dùng](/dicts/regular?ptag=f&uname=Nipin)
+
+- **Thời gian**: các từ mang nghĩa thời gian như "hôm nay", "4 giờ chiều", "12 tiếng"...
+
+  Danh từ thời gian có thể làm bổ ngữ hoặc trạng ngữ cho động từ.
+
+  Tham khảo: [Các từ thời gian thường dùng](/dicts/regular?ptag=t)
+
+- **Ngữ tố danh từ/Ngữ tố thời gian**: Kết quả rác của công cụ phân loại từ tự động, cần thiết chuyển về đúng phân loại danh từ/thời gian bình thường.
+
+- **Cụm danh từ**: Khi danh từ kết hợp với số lượng từ/đại từ chỉ thị ở trước thì nó sẽ được đổi thành "Cụm danh từ'.
+
+  Hiện tại cụm danh từ chưa có luật ngữ pháp riêng, cần thêm thời gian nghiên cứu.
+
+- **Hậu tố danh từ**: Những từ đứng sau danh từ/động từ/tính từ sau khi ghép với từ đằng trước sẽ biến cả cụm thành danh từ.
 
 ## 2. TÍNH TỪ 形容詞 - 状态词 - 区别词
 
