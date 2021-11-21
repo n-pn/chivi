@@ -1,3 +1,26 @@
+@mixin tm-light($svelte: true, $warm: true) {
+  @if ($svelte) {
+    :global(.tm-light) & {
+      @content;
+    }
+    @if $warm {
+      :global(.tm-warm) & {
+        @content;
+      }
+    }
+  } @else {
+    .tm-light & {
+      @content;
+    }
+
+    @if $warm {
+      .tm-warm & {
+        @content;
+      }
+    }
+  }
+}
+
 @mixin tm-dark($svelte: true, $oled: true) {
   @if ($svelte) {
     :global(.tm-dark) & {

@@ -14,6 +14,8 @@
     activate as cvmenu_activate,
     input,
   } from '$parts/Cvmenu.svelte'
+
+  import Cvline, { parse_lines } from '$sects/Cvline.svelte'
 </script>
 
 <script>
@@ -21,9 +23,8 @@
   import { browser } from '$app/env'
   import { page } from '$app/stores'
 
-  import { ftsize } from '$lib/stores'
-  import { MtData } from '$lib/mt_data'
   import read_selection from '$utils/read_selection'
+  import { config, zh_text } from '$lib/stores'
 
   export let cvdata = ''
   export let zhtext = []
@@ -36,7 +37,7 @@
 
   export let on_change = () => {}
 
-  $: lines = MtData.parse_lines(cvdata)
+  $: cv_lines = parse_lines(cvdata)
 
   let hover_line = 0
   let focus_line = 0
@@ -70,7 +71,7 @@
   function handle_click({ target }, index) {
     if (focus_line != index) focus_line = index
 
-    if (target.nodeName == 'C-V') cvmenu_activate(target, article)
+    if (target.nodeName == 'V-N') cvmenu_activate(target, article)
     else return cvmenu_state.set(0)
 
     const lower = +target.dataset.i
@@ -80,18 +81,11 @@
     if (target == focus_word) {
       upsert_activate($input, 0)
     } else {
-      if (focus_word) focus_word.classList.remove('_focus')
-      target.classList.add('_focus')
+      if (focus_word) focus_word.classList.remove('focus')
+      target.classList.add('focus')
       focus_word = target
       if ($lookup_enabled) lookup_activate($input)
     }
-  }
-
-  function render_line(idx = 0, hover = -1, focus = -1, debug = false) {
-    // return lines[idx].html
-    const mt_data = lines[idx]
-    const use_html = idx == hover || idx == focus
-    return use_html || debug ? mt_data.html : mt_data.text
   }
 </script>
 
@@ -103,16 +97,26 @@
 </div>
 
 <cvdata-wrap bind:this={article}>
-  <article class="cvdata _{$ftsize}" class:debug>
-    <slot name="header" />
-    {#each lines as _, index (index)}
-      <div
+  <article class="cvdata" class:debug>
+    <slot name="header">Dịch nhanh</slot>
+
+    {#each cv_lines as cv_line, index (index)}
+      <cv-data
         id="L{index}"
-        class="mtl {wtitle && index == 0 ? '_h' : '_p'}"
+        class={wtitle && index == 0 ? 'h' : 'p'}
+        class:debug
+        class:focus={index == focus_line}
         on:click={(e) => handle_click(e, index)}
         on:mouseenter={() => (hover_line = index)}>
-        {@html render_line(index, hover_line, focus_line, debug)}
-      </div>
+        {#if $config.showzh}
+          <zh-line>{zhtext[index]}</zh-line>
+        {/if}
+        <Cvline
+          input={cv_line}
+          focus={debug ||
+            index == hover_line ||
+            (index > focus_line - 2 && index < focus_line + 2)} />
+      </cv-data>
     {/each}
   </article>
 
@@ -140,26 +144,97 @@
     display: block;
     position: relative;
   }
-  // .report-line {
-  //   display: inline-block;
-  //   visibility: hidden;
 
-  //   background: inherit;
-  //   padding: 0.25rem;
-  //   line-height: 1.25em;
-  //   transform: translateY(-0.25rem);
+  .cvdata {
+    min-height: 50vh;
+    padding: 0 var(--gutter) var(--verpad);
 
-  //   @include ftsize(sm);
-  //   @include fgcolor(secd);
+    margin-left: calc(-1 * var(--gutter));
+    margin-right: calc(-1 * var(--gutter));
 
-  //   :global(svg) {
-  //     width: 1.25em;
-  //     height: 1.25em;
-  //   }
+    font-family: var(--font-serif, serif);
 
-  //   .mtl:hover & {
-  //     visibility: visible;
-  //     @include fgcolor(harmful, 5);
-  //   }
-  // }
+    @include fgcolor(secd);
+    @include bgcolor(tert);
+    @include shadow(1);
+
+    @include bp-min(tl) {
+      margin-left: 0;
+      margin-right: 0;
+
+      @include bdradi();
+      @include tm-dark {
+        @include linesd(--bd-soft, $ndef: false, $inset: false);
+      }
+    }
+
+    .tm-warm & {
+      background: #fffbeb;
+    }
+
+    .adsbygoogle {
+      margin-top: 1rem;
+    }
+
+    cite {
+      font-style: normal;
+      font-variant: small-caps;
+    }
+  }
+
+  cv-data {
+    display: block;
+    color: var(--fgcolor, #{color(gray, 8)});
+    // prettier-ignore
+    @include tm-dark() { --fgcolor: #{color(gray, 3)}; }
+  }
+
+  zh-line {
+    font-family: san-serif;
+    // font-size: 0.95em;
+  }
+
+  cv-data.h {
+    font-weight: 400;
+    line-height: 1.4em;
+
+    @include bps(font-size, rem(23px), rem(24px), rem(26px), rem(28px));
+
+    :global(.app-fs-xs) & {
+      @include bps(font-size, rem(22px), rem(23px), rem(25px), rem(27px));
+    }
+
+    :global(.app-fs-xl) & {
+      @include bps(font-size, rem(24px), rem(25px), rem(26px), rem(29px));
+    }
+  }
+
+  cv-data.p {
+    text-align: justify;
+    text-justify: auto;
+    line-height: 1.7em;
+
+    // @include bps(margin-top, 1.125em, 1.25em, 1.375em, 1.5em);
+    margin-top: 1em;
+
+    :global(.app-fs-xs) & {
+      @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(19px));
+    }
+
+    :global(.app-fs-sm) & {
+      @include bps(font-size, rem(18px), rem(19px), rem(20px), rem(21px));
+    }
+
+    :global(.app-fs-md) & {
+      @include bps(font-size, rem(19px), rem(20px), rem(21px), rem(22px));
+    }
+
+    :global(.app-fs-lg) & {
+      @include bps(font-size, rem(20px), rem(21px), rem(22px), rem(23px));
+    }
+
+    :global(.app-fs-xl) & {
+      @include bps(font-size, rem(22px), rem(23px), rem(24px), rem(25px));
+    }
+  }
 </style>

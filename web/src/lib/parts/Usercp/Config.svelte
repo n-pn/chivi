@@ -1,26 +1,29 @@
 <script context="module">
   import { session } from '$app/stores'
-  import { ftsize, wtheme } from '$lib/stores'
+  import { config } from '$lib/stores'
 
   const ftsizes = ['xs', 'sm', 'md', 'lg', 'xl']
   const wthemes = ['light', 'warm', 'dark', 'oled']
+  const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora']
+
   const tlmodes = ['Cơ bản', 'Nâng cao']
+
+  function save_config(name, data) {
+    localStorage.setItem(name, data)
+    config.update((x) => (x[name] = data))
+  }
 </script>
 
 <script>
   export let actived
 
-  function update_ftsize(value) {
-    localStorage.setItem('ftsize', value)
+  async function update_wtheme(wtheme) {
+    save_config('wtheme', wtheme)
+    await call_update({ wtheme, tlmode: $session.tlmode })
   }
 
   async function update_tlmode(tlmode) {
-    await call_update({ tlmode, wtheme: $wtheme })
-  }
-
-  async function update_wtheme(wtheme) {
-    localStorage.setItem('wtheme', wtheme)
-    await call_update({ wtheme, tlmode: $session.tlmode })
+    await call_update({ tlmode, wtheme: $config.wtheme })
   }
 
   async function call_update(params) {
@@ -39,39 +42,55 @@
   }
 </script>
 
-<div class="config">
-  <div class="radio">
-    <span class="label">Giao diện:</span>
-    {#each wthemes as value}
-      <label class="wtheme _{value}" class:_active={value == $wtheme}>
-        <input
-          type="radio"
-          name="wtheme"
-          {value}
-          bind:group={$wtheme}
-          on:click={() => update_wtheme(value)} />
-        <span>{value}</span>
-      </label>
-    {/each}
-  </div>
-</div>
+<config-main>
+  <config-item>
+    <field-label>Màu nền màn hình:</field-label>
+    <field-input>
+      {#each wthemes as value}
+        <label class="wtheme _{value}" class:_active={value == $config.wtheme}>
+          <input
+            type="radio"
+            name="wtheme"
+            {value}
+            on:change={() => update_wtheme(value)} />
+          <span>{value}</span>
+        </label>
+      {/each}
+    </field-input>
+  </config-item>
 
-<div class="config">
-  <div class="radio">
-    <span class="label">Cỡ chữ:</span>
-    {#each ftsizes as value}
-      <label class="ftsize _{value}" class:_active={value == $wtheme}>
-        <input
-          type="radio"
-          name="ftsize"
-          {value}
-          bind:group={$ftsize}
-          on:click={() => update_ftsize(value)} />
-        <span>{value}</span>
-      </label>
-    {/each}
-  </div>
-</div>
+  <config-item>
+    <field-label>Kích thước font chữ:</field-label>
+    <field-input>
+      {#each ftsizes as value}
+        <label class="ftsize _{value}" class:_active={value == $config.ftsize}>
+          <input
+            type="radio"
+            name="ftsize"
+            {value}
+            on:change={() => save_config('ftsize', value)} />
+          <span>{value}</span>
+        </label>
+      {/each}
+    </field-input>
+  </config-item>
+
+  <config-item>
+    <field-label>Loại font chữ:</field-label>
+    <field-input>
+      {#each ftfaces as value}
+        <label class="ftface _{value}" class:_active={value == $config.ftface}>
+          <input
+            type="radio"
+            name="ftface"
+            {value}
+            on:change={() => save_config('ftface', value)} />
+          <span>{value}</span>
+        </label>
+      {/each}
+    </field-input>
+  </config-item>
+</config-main>
 
 <div class="config">
   <div class="radio">

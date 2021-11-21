@@ -1,9 +1,17 @@
-<script>
+<script context="module">
   import { onMount } from 'svelte'
   import { navigating, page, session } from '$app/stores'
-  import { scroll, wtheme, ftsize, layers } from '$lib/stores'
-  import Loader from '$molds/Loader.svelte'
+  import { scroll, config, layers } from '$lib/stores'
 
+  function load_config(name, fallback) {
+    const data = localStorage.getItem(name) || fallback
+    if (data) config.update((x) => ({ ...x, [name]: data }))
+    else localStorage.setItem(name, data)
+  }
+</script>
+
+<script>
+  import Loader from '$molds/Loader.svelte'
   import '../css/generic.scss'
 
   const links = [
@@ -15,9 +23,7 @@
 
   $: {
     if (typeof gtag === 'function') {
-      window.gtag('config', 'UA-160000714-1', {
-        page_path: $page.path,
-      })
+      gtag('config', 'UA-160000714-1', { page_path: $page.path })
     }
   }
 
@@ -85,11 +91,9 @@
   }
 
   onMount(() => {
-    $wtheme = localStorage.getItem('wtheme') || $session.wtheme
-    localStorage.setItem('wtheme', $wtheme)
-
-    $ftsize = localStorage.getItem('ftsize') || 'md'
-    localStorage.setItem('ftsize', $ftsize)
+    load_config('wtheme', $session.wtheme)
+    load_config('ftsize')
+    load_config('ftface')
   })
 </script>
 
@@ -102,7 +106,9 @@
   <meta name="theme-color" content="#0b476b" />
 </svelte:head>
 
-<div class="app tm-{$wtheme}" class:kbd-hint={kbd_hint}>
+<div
+  class="app tm-{$config.wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+  class:kbd-hint={kbd_hint}>
   <slot />
 
   <div class="links">

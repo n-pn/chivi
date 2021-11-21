@@ -1,309 +1,271 @@
 @use '../essence' as *;
 
-.cvdata {
-  min-height: 50vh;
-  padding: 0 var(--gutter) var(--verpad);
+// .mtl._h {
+//   font-weight: 400;
+//   line-height: 1.4em;
+//   @include fgcolor(secd);
 
-  margin-left: calc(-1 * var(--gutter));
-  margin-right: calc(-1 * var(--gutter));
+//   @include bps(font-size, rem(23px), rem(24px), rem(26px), rem(28px));
 
-  font-family: var(--font-serif, serif);
+//   .cvdata._xs & {
+//     @include bps(font-size, rem(22px), rem(23px), rem(25px), rem(27px));
+//   }
 
-  @include bp-min(tl) {
-    margin-left: 0;
-    margin-right: 0;
+//   .cvdata._lg & {
+//     @include bps(font-size, rem(24px), rem(25px), rem(26px), rem(29px));
+//   }
+// }
 
-    .tm-dark &,
-    .tm-oled & {
-      @include linesd(--bd-soft, $ndef: false, $inset: false);
-    }
-  }
+// .mtl._p {
+//   margin-bottom: 0;
+//   text-align: justify;
+//   text-justify: auto;
+//   line-height: 1.7em;
 
-  @include bdradi();
-  @include fgcolor(secd);
-  @include bgcolor(tert);
-  @include shadow(1);
+//   @include bps(margin-top, 1.125em, 1.25em, 1.375em, 1.5em);
 
-  .tm-warm & {
-    background: #fffbeb;
-  }
+//   .cvdata._xs & {
+//     @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(19px));
+//   }
 
-  .adsbygoogle {
-    margin-top: 1rem;
-  }
+//   .cvdata._sm & {
+//     @include bps(font-size, rem(18px), rem(19px), rem(20px), rem(21px));
+//   }
 
-  cite {
-    font-style: normal;
-    font-variant: small-caps;
-  }
-}
+//   .cvdata._md & {
+//     @include bps(font-size, rem(19px), rem(20px), rem(21px), rem(22px));
+//   }
 
-.mtl._h {
-  font-weight: 400;
-  line-height: 1.4em;
-  @include fgcolor(secd);
+//   .cvdata._lg & {
+//     @include bps(font-size, rem(20px), rem(21px), rem(22px), rem(23px));
+//   }
 
-  @include bps(font-size, rem(23px), rem(24px), rem(26px), rem(28px));
+//   .cvdata._xl & {
+//     @include bps(font-size, rem(22px), rem(23px), rem(24px), rem(25px));
+//   }
+// }
 
-  .cvdata._xs & {
-    @include bps(font-size, rem(22px), rem(23px), rem(25px), rem(27px));
-  }
+// .mtl {
+//   --fgcolor: #{color(gray, 8)};
+//   color: var(--fgcolor);
 
-  .cvdata._lg & {
-    @include bps(font-size, rem(24px), rem(25px), rem(26px), rem(29px));
-  }
-}
+//   @include bps(font-size, rem(16px), rem(17px), rem(18px));
+//   @include bps(line-height, 1.5rem, 1.75rem);
 
-.mtl._p {
-  margin-bottom: 0;
-  text-align: justify;
-  text-justify: auto;
-  line-height: 1.7em;
+//   & + & {
+//     margin-top: 1em;
+//   }
 
-  @include bps(margin-top, 1.125em, 1.25em, 1.375em, 1.5em);
+//   .tm-dark &,
+//   .tm-oled & {
+//     --fgcolor: #{color(gray, 3)};
+//   }
+// }
 
-  .cvdata._xs & {
-    @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(19px));
-  }
+// @mixin cv-token($color: blue) {
+//   cursor: pointer;
+//   position: relative;
+//   --border: #{color($color, 4)};
+//   --active: #{color($color, 6)};
 
-  .cvdata._sm & {
-    @include bps(font-size, rem(18px), rem(19px), rem(20px), rem(21px));
-  }
+//   .tm-dark &,
+//   .tm-oled & {
+//     --border: #{color($color, 6)};
+//     --active: #{color($color, 4)};
+//   }
 
-  .cvdata._md & {
-    @include bps(font-size, rem(19px), rem(20px), rem(21px), rem(22px));
-  }
+//   &:hover,
+//   &._focus {
+//     color: var(--active);
+//     // background: var(--bg-active, inherit);
+//   }
+// }
 
-  .cvdata._lg & {
-    @include bps(font-size, rem(20px), rem(21px), rem(22px), rem(23px));
-  }
+// c-v {
+//   --border: transparent;
+//   --active: var(--fgcolor);
+//   color: var(--fgcolor);
 
-  .cvdata._xl & {
-    @include bps(font-size, rem(22px), rem(23px), rem(24px), rem(25px));
-  }
-}
+//   background: linear-gradient(to top, var(--border) 1px, transparent 0);
+//   background-position: bottom bottom;
 
-.mtl {
-  --fgcolor: #{color(gray, 8)};
-  color: var(--fgcolor);
+//   .mtl:hover &,
+//   .mtl._active & {
+//     // border-bottom: 1px solid var(--border);
+//     background: linear-gradient(to top, var(--border) 1px, transparent 0);
+//   }
 
-  @include bps(font-size, rem(16px), rem(17px), rem(18px));
-  @include bps(line-height, 1.5rem, 1.75rem);
+//   .debug & {
+//     background: linear-gradient(to top, var(--border) 1px, transparent 0);
+//   }
 
-  & + & {
-    margin-top: 1em;
-  }
+//   // essence
+//   &[data-d='1'] {
+//     @include cv-token(gray);
+//     border: 0;
+//   }
 
-  .tm-dark &,
-  .tm-oled & {
-    --fgcolor: #{color(gray, 3)};
-  }
-}
+//   // regular + public
+//   &[data-d='2'] {
+//     @include cv-token(blue);
+//     color: var(--fgmain);
+//     &:hover {
+//       color: var(--active);
+//     }
+//   }
 
-@mixin cv-token($color: blue) {
-  cursor: pointer;
-  position: relative;
-  --border: #{color($color, 4)};
-  --active: #{color($color, 6)};
+//   // unique + public
+//   &[data-d='3'] {
+//     @include cv-token(orange);
+//   }
 
-  .tm-dark &,
-  .tm-oled & {
-    --border: #{color($color, 6)};
-    --active: #{color($color, 4)};
-  }
+//   // regular + private
+//   &[data-d='4'] {
+//     @include cv-token(teal);
+//   }
 
-  &:hover,
-  &._focus {
-    color: var(--active);
-    // background: var(--bg-active, inherit);
-  }
-}
+//   // unique + private
+//   &[data-d='5'] {
+//     @include cv-token(red);
+//   }
 
-c-v {
-  --border: transparent;
-  --active: var(--fgcolor);
-  color: var(--fgcolor);
+//   c-z & {
+//     cursor: pointer;
+//     &:hover,
+//     &._active {
+//       color: var(--active);
+//     }
+//   }
+// }
 
-  background: linear-gradient(to top, var(--border) 1px, transparent 0);
-  background-position: bottom bottom;
+// // prettier-ignore
+// @mixin cg-decor($left: '{', $right: '}') {
+//   &:before, &:after {
+//     // font-family: var(--font-sans);
+//     font-style: normal;
+//   }
 
-  .mtl:hover &,
-  .mtl._active & {
-    // border-bottom: 1px solid var(--border);
-    background: linear-gradient(to top, var(--border) 1px, transparent 0);
-  }
+//   &:before { content: $left; }
+//   &:after { content: $right; }
+// }
 
-  .debug & {
-    background: linear-gradient(to top, var(--border) 1px, transparent 0);
-  }
+// @mixin cg-color($color) {
+//   --color: #{color($color, 5)};
+//   // margin: 0 0.1em;
+//   // padding: 0.2em -0.1em;
 
-  // essence
-  &[data-d='1'] {
-    @include cv-token(gray);
-    border: 0;
-  }
+//   .debug & {
+//     background: none !important;
+//   }
 
-  // regular + public
-  &[data-d='2'] {
-    @include cv-token(blue);
-    color: var(--fgmain);
-    &:hover {
-      color: var(--active);
-    }
-  }
+//   .debug & c-v {
+//     // --active: var(--color);
+//     color: var(--color);
+//     &:hover {
+//       color: var(--active);
+//     }
+//   }
+// }
 
-  // unique + public
-  &[data-d='3'] {
-    @include cv-token(orange);
-  }
+// c-g {
+//   --color: var(--fgmain);
 
-  // regular + private
-  &[data-d='4'] {
-    @include cv-token(teal);
-  }
+//   // .mtl:hover &,
+//   // .mtl._active & {
+//   //   background: linear-gradient(180deg, var(--color) 1px, transparent 0%);
+//   // }
 
-  // unique + private
-  &[data-d='5'] {
-    @include cv-token(red);
-  }
+//   // .mtl:hover & &,
+//   // .mtl._active & & {
+//   //   background: linear-gradient(
+//   //     180deg,
+//   //     transparent 2px,
+//   //     var(--color) 4px,
+//   //     transparent 0%
+//   //   );
+//   // }
 
-  c-z & {
-    cursor: pointer;
-    &:hover,
-    &._active {
-      color: var(--active);
-    }
-  }
-}
+//   // .mtl:hover & & &,
+//   // .mtl._active & & & {
+//   //   background: linear-gradient(
+//   //     180deg,
+//   //     transparent 4px,
+//   //     var(--color) 6px,
+//   //     transparent 0%
+//   //   );
+//   // }
 
-// prettier-ignore
-@mixin cg-decor($left: '{', $right: '}') {
-  &:before, &:after {
-    // font-family: var(--font-sans);
-    font-style: normal;
-  }
+//   // .mtl:hover & & & &,
+//   // .mtl._active & & & & {
+//   //   background: linear-gradient(
+//   //     180deg,
+//   //     transparent 6px,
+//   //     var(--color) 8px,
+//   //     transparent 0%
+//   //   );
+//   // }
 
-  &:before { content: $left; }
-  &:after { content: $right; }
-}
+//   .debug & {
+//     // c-v,
+//     &:before,
+//     &:after {
+//       color: var(--color);
+//     }
 
-@mixin cg-color($color) {
-  --color: #{color($color, 5)};
-  // margin: 0 0.1em;
-  // padding: 0.2em -0.1em;
+//     // @include cg-decor('⟨', '⟩');
+//     @include cg-decor('[', ']');
+//     // > c-g {
+//     //   @include cg-decor('[', ']');
+//     // }
+//     // > c-g > c-g {
+//     //   @include cg-decor('(', ')');
+//     // }
+//     // > c-g > c-g > c-g {
+//     //   @include cg-decor('<', '>');
+//     // }
+//   }
 
-  .debug & {
-    background: none !important;
-  }
+//   &[data-d='0'] {
+//     @include cg-decor('', '');
+//   }
 
-  .debug & c-v {
-    // --active: var(--color);
-    color: var(--color);
-    &:hover {
-      color: var(--active);
-    }
-  }
-}
+//   &[data-d='1'] {
+//     @include cg-color(gray);
+//     @include cg-decor('', '');
+//   }
 
-c-g {
-  --color: var(--fgmain);
+//   &[data-d='2'] {
+//     @include cg-color(green);
+//   }
 
-  // .mtl:hover &,
-  // .mtl._active & {
-  //   background: linear-gradient(180deg, var(--color) 1px, transparent 0%);
-  // }
+//   &[data-d='3'] {
+//     @include cg-color(blue);
+//   }
 
-  // .mtl:hover & &,
-  // .mtl._active & & {
-  //   background: linear-gradient(
-  //     180deg,
-  //     transparent 2px,
-  //     var(--color) 4px,
-  //     transparent 0%
-  //   );
-  // }
+//   &[data-d='4'] {
+//     @include cg-color(teal);
+//   }
 
-  // .mtl:hover & & &,
-  // .mtl._active & & & {
-  //   background: linear-gradient(
-  //     180deg,
-  //     transparent 4px,
-  //     var(--color) 6px,
-  //     transparent 0%
-  //   );
-  // }
+//   &[data-d='5'] {
+//     @include cg-color(orange);
+//   }
 
-  // .mtl:hover & & & &,
-  // .mtl._active & & & & {
-  //   background: linear-gradient(
-  //     180deg,
-  //     transparent 6px,
-  //     var(--color) 8px,
-  //     transparent 0%
-  //   );
-  // }
+//   &[data-d='6'] {
+//     @include cg-color(fuchsia);
+//   }
 
-  .debug & {
-    // c-v,
-    &:before,
-    &:after {
-      color: var(--color);
-    }
+//   &[data-d='7'] {
+//     @include cg-color(purple);
+//   }
 
-    // @include cg-decor('⟨', '⟩');
-    @include cg-decor('[', ']');
-    // > c-g {
-    //   @include cg-decor('[', ']');
-    // }
-    // > c-g > c-g {
-    //   @include cg-decor('(', ')');
-    // }
-    // > c-g > c-g > c-g {
-    //   @include cg-decor('<', '>');
-    // }
-  }
+//   &[data-d='8'] {
+//     @include cg-color(pink);
+//   }
 
-  &[data-d='0'] {
-    @include cg-decor('', '');
-  }
-
-  &[data-d='1'] {
-    @include cg-color(gray);
-    @include cg-decor('', '');
-  }
-
-  &[data-d='2'] {
-    @include cg-color(green);
-  }
-
-  &[data-d='3'] {
-    @include cg-color(blue);
-  }
-
-  &[data-d='4'] {
-    @include cg-color(teal);
-  }
-
-  &[data-d='5'] {
-    @include cg-color(orange);
-  }
-
-  &[data-d='6'] {
-    @include cg-color(fuchsia);
-  }
-
-  &[data-d='7'] {
-    @include cg-color(purple);
-  }
-
-  &[data-d='8'] {
-    @include cg-color(pink);
-  }
-
-  &[data-d='9'] {
-    @include cg-color(red);
-  }
-}
+//   &[data-d='9'] {
+//     @include cg-color(red);
+//   }
+// }
 
 x-t,
 x-p,

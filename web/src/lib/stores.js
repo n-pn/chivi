@@ -3,8 +3,12 @@ import { writable } from 'svelte/store'
 export const scroll = writable(0)
 export const toleft = writable(false)
 
-export const wtheme = writable('light')
-export const ftsize = writable('md')
+export const config = writable({
+  wtheme: 'light',
+  ftsize: 'md',
+  ftface: 'Merriweather',
+  showzh: false,
+})
 
 export const zh_text = writable('')
 export const zh_from = writable(0)

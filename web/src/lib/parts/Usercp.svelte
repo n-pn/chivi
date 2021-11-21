@@ -7,7 +7,7 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Gslide from '$molds/Gslide.svelte'
 
-  import Config from './Usercp/Config.svelte'
+  // import Config from './Usercp/Config.svelte'
   import Passwd from './Usercp/Passwd.svelte'
 
   export let actived = false
@@ -96,7 +96,6 @@
       </button>
     </div>
 
-    <Config bind:actived />
     <Passwd bind:section />
   {/if}
 </Gslide>

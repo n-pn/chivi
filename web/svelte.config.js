@@ -21,7 +21,7 @@ export default {
   preprocess: [
     preprocess({
       scss: {
-        prependData: `@use "sass:math";\n@import "essence";`,
+        prependData: `@use "sass:math";\n@use "sass:list";\n@import "essence";`,
         includePaths: [path.resolve(_cwd, 'src/css')],
         renderSync: true,
       },

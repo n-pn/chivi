@@ -1,18 +1,19 @@
 export default function read_selection() {
-  const nodes = get_selected().filter((x) => x.nodeName == 'C-V')
+  const nodes = get_selected().filter((x) => x.nodeName == 'V-N')
   if (nodes.length == 0) return [0, 0]
 
-  let lower = 99999
-  let upper = 0
+  let from = 99999
+  let upto = 0
+
   for (const node of nodes) {
     const i = +node.dataset.i
     const j = i + +node.dataset.l
-    if (i < lower) lower = i
-    if (j > upper) upper = j
+    if (i < from) from = i
+    if (j > upto) upto = j
   }
 
-  if (lower > upper) lower = upper
-  return [lower, upper]
+  if (from > upto) from = upto
+  return [from, upto]
 }
 
 function get_selected() {
@@ -28,7 +29,7 @@ function get_selected() {
   if (node == stop) return [node]
 
   // Iterate nodes until we hit the end container
-  let nodes = []
+  const nodes = []
   while (node && node != stop) {
     node = next_node(node)
     if (node) nodes.push(node)
