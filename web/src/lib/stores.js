@@ -5,7 +5,7 @@ export const toleft = writable(false)
 
 export const config = writable({
   wtheme: 'light',
-  ftsize: 'md',
+  ftsize: 3,
   ftface: 'Merriweather',
   showzh: false,
 })

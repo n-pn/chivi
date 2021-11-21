@@ -1,22 +1,15 @@
+// prettier-ignore
 @mixin tm-light($svelte: true, $warm: true) {
   @if ($svelte) {
-    :global(.tm-light) & {
-      @content;
-    }
+    :global(.tm-light) & { @content; }
     @if $warm {
-      :global(.tm-warm) & {
-        @content;
-      }
+      :global(.tm-warm) & { @content; }
     }
   } @else {
-    .tm-light & {
-      @content;
-    }
+    .tm-light & { @content; }
 
     @if $warm {
-      .tm-warm & {
-        @content;
-      }
+      .tm-warm & { @content; }
     }
   }
 }
@@ -69,5 +62,14 @@
     font-size: $size;
   } @else {
     font-size: #{var(--ftsize-#{$size})};
+  }
+}
+
+@mixin scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  &::-webkit-scrollbar {
+    cursor: pointer;
+    width: 8px;
   }
 }

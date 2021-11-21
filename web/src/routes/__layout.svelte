@@ -92,8 +92,8 @@
 
   onMount(() => {
     load_config('wtheme', $session.wtheme)
-    load_config('ftsize')
-    load_config('ftface')
+    load_config('ftsize', 3)
+    load_config('ftface', 'Merriweather')
   })
 </script>
 

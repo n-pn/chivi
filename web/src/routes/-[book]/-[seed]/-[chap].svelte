@@ -112,7 +112,7 @@
   <title>{chinfo.title} - {cvbook.vtitle} - Chivi</title>
 </svelte:head>
 
-<Appbar>
+<Appbar ptype="cvmtl">
   <svelte:fragment slot="left">
     <a href={paths.home} class="header-item _title">
       <SIcon name="book" />
@@ -124,7 +124,7 @@
     </button>
   </svelte:fragment>
 
-  <svelte:fragment slot="right">
+  <!-- <svelte:fragment slot="right">
     <button
       class="header-item"
       class:_active={$lookup_enabled}
@@ -133,7 +133,7 @@
       <SIcon name="compass" />
       <span class="header-text _show-lg">Giải nghĩa</span>
     </button>
-  </svelte:fragment>
+  </svelte:fragment> -->
 </Appbar>
 
 <Vessel>

@@ -168,15 +168,15 @@
       }
     }
 
-    .tm-warm & {
+    :global(.tm-warm) & {
       background: #fffbeb;
     }
 
-    .adsbygoogle {
+    :global(.adsbygoogle) {
       margin-top: 1rem;
     }
 
-    cite {
+    :global(cite) {
       font-style: normal;
       font-variant: small-caps;
     }
@@ -186,7 +186,7 @@
     display: block;
     color: var(--fgcolor, #{color(gray, 8)});
     // prettier-ignore
-    @include tm-dark() { --fgcolor: #{color(gray, 3)}; }
+    @include tm-dark { --fgcolor: #{color(gray, 3)}; }
   }
 
   zh-line {
@@ -200,11 +200,11 @@
 
     @include bps(font-size, rem(23px), rem(24px), rem(26px), rem(28px));
 
-    :global(.app-fs-xs) & {
+    :global(.app-fs-1) & {
       @include bps(font-size, rem(22px), rem(23px), rem(25px), rem(27px));
     }
 
-    :global(.app-fs-xl) & {
+    :global(.app-fs-5) & {
       @include bps(font-size, rem(24px), rem(25px), rem(26px), rem(29px));
     }
   }
@@ -217,23 +217,23 @@
     // @include bps(margin-top, 1.125em, 1.25em, 1.375em, 1.5em);
     margin-top: 1em;
 
-    :global(.app-fs-xs) & {
+    :global(.app-fs-1) & {
       @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(19px));
     }
 
-    :global(.app-fs-sm) & {
+    :global(.app-fs-2) & {
       @include bps(font-size, rem(18px), rem(19px), rem(20px), rem(21px));
     }
 
-    :global(.app-fs-md) & {
+    :global(.app-fs-3) & {
       @include bps(font-size, rem(19px), rem(20px), rem(21px), rem(22px));
     }
 
-    :global(.app-fs-lg) & {
+    :global(.app-fs-4) & {
       @include bps(font-size, rem(20px), rem(21px), rem(22px), rem(23px));
     }
 
-    :global(.app-fs-xl) & {
+    :global(.app-fs-5) & {
       @include bps(font-size, rem(22px), rem(23px), rem(24px), rem(25px));
     }
   }

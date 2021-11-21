@@ -26,7 +26,8 @@ $shadows: (
 }
 
 @function ringsd($color, $tone: 5, $width: 2px, $offset: 0px) {
-  @return 0 0 $offset ($width + $offset) color($color, $tone);
+  // prettier-ignore
+  @return 0 0 0 $offset var(--ringbg), 0 0 0 ($width + $offset) color($color, $tone);
 }
 
 // prettier-ignore
@@ -38,11 +39,11 @@ $shadows: (
 // prettier-ignore
 @mixin linesd($color: neutral, $tone: 3, $width: 1px, $ndef: true, $inset: true) {
   @if $color { --linesd: #{linesd($color, $tone, $width, $inset)}; }
-  @if $ndef { box-shadow: var(--linesd); }
+  @if $ndef { box-shadow: var(--ringsd, $shadow-0), var(--linesd); }
 }
 
 // prettier-ignore
 @mixin ringsd($color: primary, $tone: 5, $width: 2px, $offset: 0px, $ndef: true) {
   @if $color { --ringsd: #{ringsd($color, $tone, $width, $offset)}; }
-  @if $ndef { box-shadow: var(--ringsd), var(--linesd); }
+  @if $ndef { box-shadow: var(--ringsd), var(--linesd, $shadow-0); }
 }
