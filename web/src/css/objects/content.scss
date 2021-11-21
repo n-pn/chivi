@@ -50,3 +50,18 @@ article {
     font-family: var(--ff-mono);
   }
 }
+
+x-t,
+x-p,
+x-v {
+  display: inline-block;
+  padding: 0 0.5em;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  @include ftsize(sm);
+  @include linesd(--bd-main);
+}
+
+x-t {
+  @include bdradi();
+}
