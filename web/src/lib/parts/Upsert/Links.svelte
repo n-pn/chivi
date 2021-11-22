@@ -1,6 +1,4 @@
 <script>
-  import { fhint, hint } from './_shared'
-
   export let key = ''
 
   $: links = [
@@ -15,14 +13,10 @@
   ]
 </script>
 
-<footer class="foot" use:hint={''}>
-  {#if $fhint}
-    <div class="hint">{@html $fhint}</div>
-  {:else}
-    {#each links as [name, href]}
-      <a class="link" {href} target="_blank" rel="noopener noreferer">{name}</a>
-    {/each}
-  {/if}
+<footer class="foot">
+  {#each links as [name, href]}
+    <a class="link" {href} target="_blank" rel="noopener noreferer">{name}</a>
+  {/each}
 </footer>
 
 <style lang="scss">
@@ -44,15 +38,5 @@
     &:hover {
       @include fgcolor(primary, 5);
     }
-  }
-
-  .hint {
-    $line-height: 1.5rem;
-    @include ftsize(sm);
-    margin: math.div($height - $line-height, 2) 0.75rem;
-
-    line-height: $line-height;
-    @include clamp();
-    @include fgcolor(tert);
   }
 </style>

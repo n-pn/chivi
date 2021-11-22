@@ -80,10 +80,16 @@
 
     top: var(--top, 20vw);
     left: var(--left, 20vw);
+
+    --bgc: #{color(primary, 6)};
+    background: var(--bgc);
+
     @include fgcolor(white);
-    @include bgcolor(black);
     @include bdradi();
     @include shadow();
+
+    // prettier-ignore
+    // @include tm-dark { --bgc: #{color(primary, 4)}; }
 
     &:before {
       display: block;
@@ -94,7 +100,7 @@
       margin-left: -0.375rem;
 
       border: 0.375rem solid transparent;
-      border-bottom-color: color(black);
+      border-bottom-color: var(--bgc);
     }
   }
 
@@ -105,7 +111,7 @@
 
     &:hover {
       cursor: pointer;
-      @include fgcolor(primary, 5);
+      // @include fgcolor(primary, 5);
     }
   }
 </style>

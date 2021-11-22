@@ -1,9 +1,37 @@
 import { writable } from 'svelte/store'
 
 export const fhint = writable('')
-export function hint(node, msg) {
-  const show = () => fhint.set(msg)
-  const hide = () => fhint.set('')
+
+function get_rect(node) {
+  const rects = node.getClientRects()
+  return rects[rects.length - 1]
+}
+
+function get_place(target, parent) {
+  const target_rect = get_rect(target)
+  const parent_rect = get_rect(parent)
+
+  let top = target_rect.bottom - parent_rect.top + 4
+  let left = target_rect.left - parent_rect.left + target_rect.width / 2
+
+  return [top, left]
+}
+
+export function hint(node, data) {
+  const parent = document.querySelector('upsert-wrap') || node
+  parent.style.position = 'relative'
+
+  const tip = document.createElement('tool-tip')
+  tip.innerText = data
+
+  const show = () => {
+    const [top, left] = get_place(node, parent)
+    tip.style.top = top + 'px'
+    tip.style.left = left + 'px'
+    parent.appendChild(tip)
+  }
+
+  const hide = () => tip.remove()
 
   node.addEventListener('mouseenter', show, true)
   node.addEventListener('mouseleave', hide, true)

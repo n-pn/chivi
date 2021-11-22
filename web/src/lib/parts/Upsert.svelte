@@ -235,8 +235,8 @@
             class="m-btn _lg _fill _left {vpterm.btn_state('_base')}"
             data-kbd="↵"
             disabled={vpterm.disabled('_base', $session.privi, $tab + 1)}
-            use:hint={'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}
-            on:click={() => submit_val(false)}>
+            on:click={() => submit_val(false)}
+            use:hint={'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}>
             <SIcon name="users" />
             <span class="submit-text">{vpterm.state}</span>
           </button>
