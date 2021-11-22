@@ -36,6 +36,15 @@
 <div class="ztext">
   {#key ztext}
     <button
+      class="btn _left _hide"
+      data-kbd="h"
+      use:hint={'Mở rộng sang trái'}
+      disabled={lower == 0}
+      on:click={move_lower_left}>
+      <SIcon name="chevron-left" />
+    </button>
+
+    <button
       class="btn _left"
       data-kbd="j"
       use:hint={'Thu hẹp từ trái'}
@@ -91,25 +100,16 @@
       on:click={move_upper_left}>
       <SIcon name="chevron-left" />
     </button>
+
+    <button
+      class="btn _right _hide"
+      data-kbd="l"
+      use:hint={'Mở rộng sang phải'}
+      disabled={upper == ztext.length}
+      on:click={move_upper_right}>
+      <SIcon name="chevron-right" />
+    </button>
   {/key}
-</div>
-
-<div hidden>
-  <button
-    class="_left"
-    data-kbd="h"
-    disabled={lower == 0}
-    on:click={move_lower_left}>
-    <SIcon name="chevron-left" />
-  </button>
-
-  <button
-    class="_right"
-    data-kbd="l"
-    disabled={upper == ztext.length}
-    on:click={move_upper_right}>
-    <SIcon name="chevron-right" />
-  </button>
 </div>
 
 <style lang="scss">
@@ -226,6 +226,10 @@
 
     &._right {
       @include border(--bd-main, $loc: right);
+    }
+
+    &._hide {
+      @include bps(display, none, $pl: inline-block);
     }
 
     &:hover {
