@@ -31,16 +31,21 @@ export function hint(node, data) {
     parent.appendChild(tip)
   }
 
-  const hide = () => tip.remove()
+  const hide = () => document.querySelector('tool-tip').remove()
+  // const hide = () => tip.remove()
 
   node.addEventListener('mouseenter', show, true)
   node.addEventListener('mouseleave', hide, true)
+
+  node.addEventListener('focus', show, true)
   node.addEventListener('blur', hide, true)
 
   return {
     destroy: () => {
       node.removeEventListener('mouseenter', show)
       node.removeEventListener('mouseleave', hide)
+
+      node.removeEventListener('focus', show)
       node.removeEventListener('blur', hide)
     },
   }

@@ -82,10 +82,10 @@
 
   function trigger_click(evt, sel) {
     const layer = $layers[0]
-    console.log({ layer })
     const elem = document.querySelector(`${layer} ${sel}`)
     if (!elem) return
 
+    evt.preventDefault()
     evt.stopPropagation()
     elem.click()
   }

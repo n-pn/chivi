@@ -266,13 +266,14 @@
 
   upsert-wrap {
     display: block;
-    width: rem(30);
+    width: $bp-phone-lg;
     min-width: 320px;
     max-width: 100%;
 
     @include bgcolor(tert);
-    @include bdradi();
     @include shadow(3);
+
+    @include bps(border-radius, 0, $pl: 0.25rem);
 
     @include tm-dark {
       @include linesd(--bd-soft, $inset: false);
@@ -283,7 +284,7 @@
     @include flex();
 
     // @include bdradi($loc: top);
-    @include border(--bd-soft, $loc: bottom);
+    @include border(--bd-main, $loc: bottom);
     // @include linesd(--bd-soft);
 
     .m-btn {

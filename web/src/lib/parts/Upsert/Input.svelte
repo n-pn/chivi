@@ -1,6 +1,8 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
 
+  import { hint } from './_shared'
+
   export let ztext = ''
   export let lower = 0
   export let upper = 1
@@ -9,8 +11,8 @@
   export let output = ''
 
   $: output = ztext.substring(lower, upper)
-  $: prefix = Array.from(ztext.substring(lower - 5, lower))
-  $: suffix = Array.from(ztext.substring(upper, upper + 5))
+  $: prefix = Array.from(ztext.substring(lower - 10, lower))
+  $: suffix = Array.from(ztext.substring(upper, upper + 10))
 
   function move_lower_left() {
     lower -= 1
@@ -32,66 +34,82 @@
 </script>
 
 <div class="ztext">
+  {#key ztext}
+    <button
+      class="btn _left"
+      data-kbd="j"
+      use:hint={'Thu hẹp từ trái'}
+      disabled={lower >= ztext.length - 1}
+      on:click={move_lower_right}>
+      <SIcon name="chevron-right" />
+    </button>
+
+    <div class="key">
+      <div class="key-txt">
+        <div class="key-pre">
+          {#each prefix as chr, idx}
+            <button
+              class="key-btn"
+              use:hint={'Mở rộng sang trái'}
+              on:click={() => (lower -= prefix.length - idx)}>{chr}</button>
+          {/each}
+        </div>
+
+        <div class="key-out">
+          {#each output.slice(0, 6) as chr, idx}
+            <button
+              class="key-btn"
+              use:hint={'Thu hẹp về ký tự này'}
+              on:click={() => ((lower += idx), (upper = lower + 1))}
+              >{chr}</button>
+          {/each}
+          {#if output.length > 6}
+            <span class="trim">(+{output.length - 6})</span>
+          {/if}
+        </div>
+
+        <div class="key-suf">
+          {#each suffix as chr, idx}
+            <button
+              class="key-btn"
+              use:hint={'Mở rộng sang phải'}
+              on:click={() => (upper += idx + 1)}>{chr}</button>
+          {/each}
+        </div>
+      </div>
+    </div>
+
+    <div class="pinyin">
+      <span class="pinyin-txt">{pinyin}</span>
+    </div>
+
+    <button
+      class="btn _right"
+      data-kbd="k"
+      use:hint={'Thu hẹp từ phải'}
+      disabled={upper == 1}
+      on:click={move_upper_left}>
+      <SIcon name="chevron-left" />
+    </button>
+  {/key}
+</div>
+
+<div hidden>
   <button
     class="_left"
     data-kbd="h"
-    disabled={lower >= ztext.length - 1}
-    on:click={move_lower_right}>
-    <SIcon name="chevron-right" />
-  </button>
-
-  <button
-    class="_left"
-    data-kbd="j"
     disabled={lower == 0}
     on:click={move_lower_left}>
     <SIcon name="chevron-left" />
   </button>
 
-  <div class="key">
-    <div class="key-txt">
-      <div class="key-pre">
-        {#each prefix as chr, idx}
-          <span class="key-btn" on:click={() => (lower -= prefix.length - idx)}
-            >{chr}</span>
-        {/each}
-      </div>
-
-      <div class="key-out">
-        {#each output as chr, idx}
-          <span
-            class="key-btn"
-            on:click={() => ((lower += idx), (upper = lower + 1))}>{chr}</span>
-        {/each}
-      </div>
-
-      <div class="key-suf">
-        {#each suffix as chr, idx}
-          <span class="key-btn" on:click={() => (upper += idx + 1)}>{chr}</span>
-        {/each}
-      </div>
-    </div>
-  </div>
-
   <button
     class="_right"
-    data-kbd="k"
+    data-kbd="l"
     disabled={upper == ztext.length}
     on:click={move_upper_right}>
     <SIcon name="chevron-right" />
   </button>
-
-  <button
-    class="_right"
-    data-kbd="l"
-    disabled={upper == 1}
-    on:click={move_upper_left}>
-    <SIcon name="chevron-left" />
-  </button>
-
-  <div class="pinyin">
-    <span class="pinyin-txt">{pinyin}</span>
-  </div>
 </div>
 
 <style lang="scss">
@@ -112,8 +130,8 @@
 
     overflow: hidden;
     flex-wrap: nowrap;
-    font-size: rem(19px);
-    @include border(--bd-soft, $loc: left-right);
+    font-size: rem(20px);
+    @include border(--bd-main, $loc: left-right);
   }
 
   .key-txt {
@@ -126,7 +144,13 @@
     }
   }
 
+  .trim {
+    @include fgcolor(tert);
+    font-size: rem(16px);
+  }
+
   .key-out {
+    font-weight: 500;
     @include clamp($width: 20vw);
     @include fgcolor(main);
   }
@@ -151,9 +175,16 @@
   }
 
   .key-btn {
-    cursor: pointer;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    min-width: 0.5em;
+    text-align: center;
+    color: inherit;
+    background: transparent;
+
     @include hover {
-      @include fgcolor(tert);
+      @include fgcolor(primary, 5);
     }
   }
 
@@ -179,7 +210,7 @@
     @include bgcolor(tert);
   }
 
-  button {
+  .btn {
     background: transparent;
     padding: 0 0.5rem;
     margin: 0;
@@ -190,11 +221,11 @@
     @include fgcolor(secd);
 
     &._left {
-      @include border(--bd-soft, $loc: left);
+      @include border(--bd-main, $loc: left);
     }
 
     &._right {
-      @include border(--bd-soft, $loc: right);
+      @include border(--bd-main, $loc: right);
     }
 
     &:hover {
