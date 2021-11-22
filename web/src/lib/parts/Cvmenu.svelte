@@ -34,15 +34,13 @@
   import SIcon from '$atoms/SIcon.svelte'
   $: [top, left] = $place
 
-  let cvmenu
-  $: if (cvmenu && $state) cvmenu.focus()
+  // $: if (cvmenu && $state) cvmenu.focus()
 </script>
 
 <cvmenu-wrap
   tabindex="-1"
   on:blur={() => state.set(0)}
-  style="--top: {top}px; --left: {left}px"
-  bind:this={cvmenu}>
+  style="--top: {top}px; --left: {left}px">
   <cvmenu-item
     data-kbd="↵"
     data-tip="Sửa từ"
