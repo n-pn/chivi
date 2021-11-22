@@ -16,14 +16,18 @@
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
+  import { onMount } from 'svelte'
 
   export let actived = false
 
   let config_elem
   $: if (actived && config_elem) config_elem.focus()
 
-  $: ftsize = +$config.ftsize || 3
-  $: ftface = +$config.ftface || 1
+  let ftsize = +$config.ftsize || 3
+  let ftface = +$config.ftface || 1
+
+  $: save_config('ftsize', ftsize)
+  $: save_config('ftface', ftface)
 
   async function update_wtheme(wtheme) {
     save_config('wtheme', wtheme)
@@ -70,18 +74,14 @@
     <field-input>
       <button
         class="m-btn _sm"
-        on:click={() => save_config('ftsize', ftsize - 1)}
+        on:click={() => (ftsize -= 1)}
         disabled={ftsize == 1}>
         <SIcon name="minus" />
       </button>
-
-      <field-value>
-        {ftsizes[ftsize - 1]}
-      </field-value>
-
+      <field-value>{ftsizes[ftsize - 1]}</field-value>
       <button
         class="m-btn _sm"
-        on:click={() => save_config('ftsize', ftsize + 1)}
+        on:click={() => (ftsize += 1)}
         disabled={ftsize == 5}>
         <SIcon name="plus" />
       </button>
@@ -91,11 +91,7 @@
   <config-item>
     <field-label>Font chữ:</field-label>
     <field-input>
-      <select
-        class="m-input"
-        name="ftface"
-        bind:value={ftface}
-        on:change={() => save_config('ftface', ftface)}>
+      <select class="m-input" name="ftface" bind:value={ftface}>
         {#each ftfaces as value, index}
           <option value={index + 1}>{value}</option>
         {/each}
