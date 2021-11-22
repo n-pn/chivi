@@ -14,8 +14,6 @@
     activate as cvmenu_activate,
     input,
   } from '$parts/Cvmenu.svelte'
-
-  import Cvline, { parse_lines } from '$sects/Cvline.svelte'
 </script>
 
 <script>
@@ -23,8 +21,10 @@
   import { browser } from '$app/env'
   import { page } from '$app/stores'
 
+  import Cvline, { parse_lines } from '$sects/Cvline.svelte'
+
   import read_selection from '$utils/read_selection'
-  import { config, zh_text } from '$lib/stores'
+  import { config } from '$lib/stores'
 
   export let cvdata = ''
   export let zhtext = []
@@ -96,11 +96,11 @@
   <button data-kbd="c" on:click={() => upsert_activate($input, 1)}>C</button>
 </div>
 
-<cvdata-wrap bind:this={article}>
-  <article class="cvdata" class:debug>
-    <slot name="header">Dịch nhanh</slot>
+<article class="cvdata" class:debug bind:this={article}>
+  <slot name="header">Dịch nhanh</slot>
 
-    {#each cv_lines as cv_line, index (index)}
+  {#key [cvdata]}
+    {#each cv_lines as input, index (index)}
       <cv-data
         id="L{index}"
         class={wtitle && index == 0 ? 'h' : 'p'}
@@ -108,19 +108,21 @@
         class:focus={index == focus_line}
         on:click={(e) => handle_click(e, index)}
         on:mouseenter={() => (hover_line = index)}>
-        {#if $config.showzh}
-          <zh-line>{zhtext[index]}</zh-line>
-        {/if}
+        {#if $config.showzh}<zh-line>{zhtext[index]}</zh-line>{/if}
         <Cvline
-          input={cv_line}
+          {input}
           focus={debug ||
             index == hover_line ||
             (index > focus_line - 2 && index < focus_line + 2)} />
       </cv-data>
     {/each}
-  </article>
+  {/key}
 
   {#if browser}
+    {#if $cvmenu_state > 0}
+      <Cvmenu />
+    {/if}
+
     {#if $upsert_state}
       <Upsert {dname} {d_dub} {on_change} />
     {/if}
@@ -134,18 +136,12 @@
         ztext={zhtext[hover_line]}
         slink="{$page.path}#L{hover_line}" />
     {/if}
-
-    <Cvmenu />
   {/if}
-</cvdata-wrap>
+</article>
 
 <style lang="scss">
-  cvdata-wrap {
-    display: block;
-    position: relative;
-  }
-
   .cvdata {
+    position: relative;
     min-height: 50vh;
     padding: 0 var(--gutter) var(--verpad);
 

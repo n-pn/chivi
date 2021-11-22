@@ -33,9 +33,16 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
   $: [top, left] = $place
+
+  let cvmenu
+  $: if (cvmenu && $state) cvmenu.focus()
 </script>
 
-<cvmenu-wrap class:active={$state > 0} style="--top: {top}px; --left: {left}px">
+<cvmenu-wrap
+  tabindex="-1"
+  on:blur={() => state.set(0)}
+  style="--top: {top}px; --left: {left}px"
+  bind:this={cvmenu}>
   <cvmenu-item
     data-kbd="↵"
     data-tip="Sửa từ"
@@ -80,12 +87,6 @@
     @include bdradi();
     @include shadow();
 
-    visibility: hidden;
-
-    &.active {
-      visibility: visible;
-    }
-
     &:before {
       display: block;
       position: absolute;
@@ -108,13 +109,5 @@
       cursor: pointer;
       @include fgcolor(primary, 5);
     }
-
-    // &:first-child {
-    //   @include bdradi($loc: left);
-    // }
-
-    // &:last-child {
-    //   @include bdradi($loc: right);
-    // }
   }
 </style>

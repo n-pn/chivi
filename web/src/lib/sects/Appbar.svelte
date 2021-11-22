@@ -41,7 +41,7 @@
           class="header-item"
           data-kbd="c"
           on:click={() => (active_config = true)}>
-          <SIcon name="settings" />
+          <SIcon name="adjustments-alt" />
           <span class="header-text _show-md">Cài đặt </span>
         </button>
       {/if}
