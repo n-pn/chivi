@@ -35,11 +35,13 @@ export function hint(node, data) {
 
   node.addEventListener('mouseenter', show, true)
   node.addEventListener('mouseleave', hide, true)
+  node.addEventListener('blur', hide, true)
 
   return {
     destroy: () => {
       node.removeEventListener('mouseenter', show)
       node.removeEventListener('mouseleave', hide)
+      node.removeEventListener('blur', hide)
     },
   }
 }
