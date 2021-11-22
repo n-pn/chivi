@@ -100,7 +100,7 @@
     use:upcase_val={2}
     use:hint={'Viết hoa hai chữ đầu'}>
     <span>H. 2 chữ</span></button>
-  {#if length > 3}
+  {#if length >= 3}
     <button
       class="cap"
       data-kbd="3"
@@ -132,6 +132,7 @@
       data-kbd="t"
       on:click={() => load_gtran(key)}
       use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>
+      <span class="lang">{lang == 0 ? 'e' : 'v'}</span>
       <SIcon name="language" />
     </button>
 
@@ -148,7 +149,7 @@
       class="btn"
       data-kbd="e"
       on:click={() => (vpterm = vpterm.clear())}
-      use:hint={'Nhập nghĩa là <code>[[pass]]</code> nếu bạn muốn xoá đè.'}>
+      use:hint={'Nhập nghĩa là [[pass]] nếu bạn muốn xoá đè.'}>
       <SIcon name="eraser" />
     </button>
   </div>
@@ -190,6 +191,7 @@
     margin-left: auto;
     width: 1.75rem;
     height: $height;
+    position: relative;
     // padding: 0;
     // padding-bottom: 0.125rem;
     @include ftsize(lg);
@@ -201,5 +203,22 @@
     &[disabled] {
       @include fgcolor(mute);
     }
+  }
+
+  .lang {
+    position: absolute;
+    display: inline-block;
+
+    bottom: 0.25rem;
+    right: -0.125rem;
+    line-height: 0.75rem;
+    width: 0.75rem;
+    text-align: center;
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    border-radius: 0.125rem;
+    // @include border();
+    @include linesd(--bd-main, $inset: false);
   }
 </style>
