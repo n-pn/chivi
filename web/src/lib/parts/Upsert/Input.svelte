@@ -33,8 +33,8 @@
   }
 </script>
 
-<div class="ztext">
-  {#key ztext}
+{#key ztext}
+  <div class="ztext">
     <button
       class="btn _left _hide"
       data-kbd="h"
@@ -56,7 +56,7 @@
     <div class="key">
       <div class="key-txt">
         <div class="key-pre">
-          {#each prefix as chr, idx}
+          {#each prefix as chr, idx (chr)}
             <button
               class="key-btn"
               use:hint={'Mở rộng sang trái'}
@@ -65,7 +65,7 @@
         </div>
 
         <div class="key-out">
-          {#each output.slice(0, 6) as chr, idx}
+          {#each output.slice(0, 6) as chr, idx (chr)}
             <button
               class="key-btn"
               use:hint={'Thu hẹp về ký tự này'}
@@ -78,7 +78,7 @@
         </div>
 
         <div class="key-suf">
-          {#each suffix as chr, idx}
+          {#each suffix as chr, idx (chr)}
             <button
               class="key-btn"
               use:hint={'Mở rộng sang phải'}
@@ -109,8 +109,8 @@
       on:click={move_upper_right}>
       <SIcon name="chevron-right" />
     </button>
-  {/key}
-</div>
+  </div>
+{/key}
 
 <style lang="scss">
   $height: 2.25rem;
