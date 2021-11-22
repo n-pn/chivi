@@ -93,28 +93,31 @@
     data-kbd="1"
     use:upcase_val={1}
     use:hint={'Viết hoa một chữ đầu'}>
-    <span>Hoa 1 chữ</span></button>
+    <span>Hoa 1 chữ</span>
+  </button>
   <button
     class="cap"
     data-kbd="2"
     use:upcase_val={2}
     use:hint={'Viết hoa hai chữ đầu'}>
-    <span>H. 2 chữ</span></button>
-  {#if length >= 3}
-    <button
-      class="cap"
-      data-kbd="3"
-      use:upcase_val={3}
-      use:hint={'Viết hoa ba chữ đầu'}>
-      <span>H. 3 chữ</span></button>
-  {/if}
+    <span>H. 2 chữ</span>
+  </button>
+  <button
+    class="cap _hide"
+    data-kbd="3"
+    disabled={length < 3}
+    use:upcase_val={3}
+    use:hint={'Viết hoa ba chữ đầu'}>
+    <span>H. 3 chữ</span>
+  </button>
   {#if capped < length}
     <button
       class="cap"
       data-kbd="4"
       use:upcase_val={20}
       use:hint={'Viết hoa tất cả các chữ'}>
-      <span>H. tất cả</span></button>
+      <span>H. tất cả</span>
+    </button>
   {/if}
   {#if vpterm.val != vpterm.val.toLowerCase()}
     <button
@@ -123,7 +126,8 @@
       data-key="192"
       use:upcase_val={0}
       use:hint={'Viết thường tất cả các chữ'}>
-      <span>Không hoa</span></button>
+      <span>Không hoa</span>
+    </button>
   {/if}
 
   <div class="right">
@@ -185,6 +189,12 @@
     @include bp-max(pl) { @include ftsize(xs); }
     &:hover { @include fgcolor(primary, 5); }
     > span { @include clamp($width: null); }
+
+    &[disabled] { @include fgcolor(mute); }
+
+    &._hide {
+      @include bps(display, none, $ts: inline-block);
+    }
   }
 
   .btn {
