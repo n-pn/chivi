@@ -163,7 +163,7 @@
         class:_edited={is_edited(key, 0)}
         data-kbd="x"
         on:click={() => tab.set(0)}
-        use:hint={`Từ điển riêng cho [${d_dub}]`}>
+        use:hint={`Từ điển riêng cho từng bộ truyện`}>
         <SIcon name="book" />
         <span>{d_dub}</span>
       </button>
@@ -224,7 +224,7 @@
           {/if}
         </div>
 
-        <Vutil bind:vpterm />
+        <Vutil {key} bind:vpterm />
       </div>
 
       <div class="vfoot">

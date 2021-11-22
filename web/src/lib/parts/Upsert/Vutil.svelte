@@ -24,12 +24,16 @@
 
     return res.join(' ')
   }
+
+  const gtran =
+    'https://translate.googleapis.com/translate_a/single?client=gtx&text=&sl=zh-CN&dt=t'
 </script>
 
 <script>
   import { hint } from './_shared'
   import SIcon from '$atoms/SIcon.svelte'
 
+  export let key
   export let vpterm
 
   let capped = 0
@@ -62,6 +66,28 @@
     }
 
     return [capped, words.length]
+  }
+
+  const langs = ['en', 'vi']
+  let lang = 0
+
+  const opts = {
+    mode: 'cors', // no-cors, *cors, same-origin
+    credentials: 'include',
+    headers: { 'content-type': 'application/json' },
+  }
+
+  async function load_gtran(text, lang = 0) {
+    const url = `${gtran}&tl=${langs[lang]}&q=${text}`
+    const res = fetch(url, opts)
+
+    if (res.ok) {
+      const data = await res.json()
+      lang = (lang + 1) % langs.length
+      vpterm.val = data[0][0][0]
+    } else {
+      console.log(res.status)
+    }
   }
 </script>
 
@@ -105,6 +131,14 @@
   {/if}
 
   <div class="right">
+    <button
+      class="btn"
+      data-kbd="t"
+      on:click={() => load_gtran(key, lang)}
+      use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>
+      <SIcon name="language" />
+    </button>
+
     <button
       class="btn"
       data-kbd="w"
