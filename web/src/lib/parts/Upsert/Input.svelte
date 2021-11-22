@@ -33,84 +33,82 @@
   }
 </script>
 
-{#key ztext}
-  <div class="ztext">
-    <button
-      class="btn _left _hide"
-      data-kbd="h"
-      use:hint={'Mở rộng sang trái'}
-      disabled={lower == 0}
-      on:click={move_lower_left}>
-      <SIcon name="chevron-left" />
-    </button>
+<div class="ztext">
+  <button
+    class="btn _left _hide"
+    data-kbd="h"
+    use:hint={'Mở rộng sang trái'}
+    disabled={lower == 0}
+    on:click={move_lower_left}>
+    <SIcon name="chevron-left" />
+  </button>
 
-    <button
-      class="btn _left"
-      data-kbd="j"
-      use:hint={'Thu hẹp từ trái'}
-      disabled={lower >= ztext.length - 1}
-      on:click={move_lower_right}>
-      <SIcon name="chevron-right" />
-    </button>
+  <button
+    class="btn _left"
+    data-kbd="j"
+    use:hint={'Thu hẹp từ trái'}
+    disabled={lower >= ztext.length - 1}
+    on:click={move_lower_right}>
+    <SIcon name="chevron-right" />
+  </button>
 
-    <div class="key">
-      <div class="key-txt">
-        <div class="key-pre">
-          {#each prefix as chr, idx (chr)}
-            <button
-              class="key-btn"
-              use:hint={'Mở rộng sang trái'}
-              on:click={() => (lower -= prefix.length - idx)}>{chr}</button>
-          {/each}
-        </div>
+  <div class="key">
+    <div class="key-txt">
+      <div class="key-pre">
+        {#each prefix as chr, idx}
+          <button
+            class="key-btn"
+            use:hint={'Mở rộng sang trái'}
+            on:click={() => (lower -= prefix.length - idx)}>{chr}</button>
+        {/each}
+      </div>
 
-        <div class="key-out">
-          {#each output.slice(0, 6) as chr, idx (chr)}
-            <button
-              class="key-btn"
-              use:hint={'Thu hẹp về ký tự này'}
-              on:click={() => ((lower += idx), (upper = lower + 1))}
-              >{chr}</button>
-          {/each}
-          {#if output.length > 6}
-            <span class="trim">(+{output.length - 6})</span>
-          {/if}
-        </div>
+      <div class="key-out">
+        {#each output.slice(0, 6) as chr, idx}
+          <button
+            class="key-btn"
+            use:hint={'Thu hẹp về ký tự này'}
+            on:click={() => ((lower += idx), (upper = lower + 1))}
+            >{chr}</button>
+        {/each}
+        {#if output.length > 6}
+          <span class="trim">(+{output.length - 6})</span>
+        {/if}
+      </div>
 
-        <div class="key-suf">
-          {#each suffix as chr, idx (chr)}
-            <button
-              class="key-btn"
-              use:hint={'Mở rộng sang phải'}
-              on:click={() => (upper += idx + 1)}>{chr}</button>
-          {/each}
-        </div>
+      <div class="key-suf">
+        {#each suffix as chr, idx}
+          <button
+            class="key-btn"
+            use:hint={'Mở rộng sang phải'}
+            on:click={() => (upper += idx + 1)}>{chr}</button>
+        {/each}
       </div>
     </div>
-
-    <div class="pinyin">
-      <span class="pinyin-txt">{pinyin}</span>
-    </div>
-
-    <button
-      class="btn _right"
-      data-kbd="k"
-      use:hint={'Thu hẹp từ phải'}
-      disabled={upper == 1}
-      on:click={move_upper_left}>
-      <SIcon name="chevron-left" />
-    </button>
-
-    <button
-      class="btn _right _hide"
-      data-kbd="l"
-      use:hint={'Mở rộng sang phải'}
-      disabled={upper == ztext.length}
-      on:click={move_upper_right}>
-      <SIcon name="chevron-right" />
-    </button>
   </div>
-{/key}
+
+  <div class="pinyin">
+    <span class="pinyin-txt">{pinyin}</span>
+  </div>
+
+  <button
+    class="btn _right"
+    data-kbd="k"
+    use:hint={'Thu hẹp từ phải'}
+    disabled={upper == 1}
+    on:click={move_upper_left}>
+    <SIcon name="chevron-left" />
+  </button>
+
+  <button
+    class="btn _right _hide"
+    data-kbd="l"
+    use:hint={'Mở rộng sang phải'}
+    disabled={upper == ztext.length}
+    on:click={move_upper_right}>
+    <SIcon name="chevron-right" />
+  </button>
+</div>
 
 <style lang="scss">
   $height: 2.25rem;
@@ -182,10 +180,6 @@
     text-align: center;
     color: inherit;
     background: transparent;
-
-    @include hover {
-      @include fgcolor(primary, 5);
-    }
   }
 
   .pinyin {
