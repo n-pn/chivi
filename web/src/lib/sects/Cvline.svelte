@@ -5,182 +5,182 @@
     return str && str.replace(/[&<>]/g, (x) => escape_tags[x] || x)
   }
 
-  function do_parse(chars, i = 0) {
-    const data = []
-    let term = []
-    let word = ''
-
-    while (i < chars.length) {
-      const char = chars[i]
-      i += 1
-
-      switch (char) {
-        case '〉':
-          if (word) term.push(word)
-          if (term.length > 0) data.push(term)
-          return [data, i]
-
-        case '〈':
-          if (word) term.push(word)
-          if (term.length > 0) data.push(term)
-          const fold = chars[i]
-          const [child, j] = do_parse(chars, i + 1)
-          data.push([child, fold])
-          i = j
-
-          word = ''
-          term = []
-
-          break
-
-        case '\t':
-          if (word) term.push(word)
-          if (term.length > 0) data.push(term)
-
-          word = ''
-          term = []
-
-          break
-
-        case 'ǀ':
-          term.push(word)
-          word = ''
-          break
-
-        default:
-          word += char
-      }
+  export class Mtline {
+    static parse_lines(input = '') {
+      return input.split('\n').map((x) => new Mtline(x))
     }
 
-    if (word) term.push(word)
-    if (term.length > 0) data.push(term)
-
-    return [data, i]
-  }
-
-  export function parse_lines(input = '') {
-    return input.split('\n').map((x) => parse_raw(x))
-  }
-
-  export function parse_raw(input) {
-    return do_parse(Array.from(input), 0)[0]
-  }
-
-  export function render_zh(input) {
-    let res = ''
-    let idx = 0
-
-    for (const key of Array.from(input)) {
-      res += `<c-g data-d=1>`
-
-      for (const k of Array.from(key)) {
-        res += `<v-n data-d=2 data-i=${idx} data-l=1>${escape_html(k)}</v-n>`
-        idx += 1
-      }
-
-      res += '</c-g>'
+    constructor(input) {
+      this.data = this.parse(Array.from(input), 0)[0]
     }
 
-    return res
-  }
+    parse(chars, i = 0) {
+      const data = []
+      let term = []
+      let word = ''
 
-  export function render_hv(input) {
-    let res = ''
+      while (i < chars.length) {
+        const char = chars[i]
+        i += 1
 
-    for (const [val, dic, idx] of input) {
-      if (val == ' ') {
-        res += ' '
-        continue
+        switch (char) {
+          case '〉':
+            if (word) term.push(word)
+            if (term.length > 0) data.push(term)
+            return [data, i]
+
+          case '〈':
+            if (word) term.push(word)
+            if (term.length > 0) data.push(term)
+            const fold = chars[i]
+            const [child, j] = this.parse(chars, i + 1)
+            data.push([child, fold])
+            i = j
+
+            word = ''
+            term = []
+
+            break
+
+          case '\t':
+            if (word) term.push(word)
+            if (term.length > 0) data.push(term)
+
+            word = ''
+            term = []
+
+            break
+
+          case 'ǀ':
+            term.push(word)
+            word = ''
+            break
+
+          default:
+            word += char
+        }
       }
 
-      let chars = val.split(' ')
+      if (word) term.push(word)
+      if (term.length > 0) data.push(term)
 
-      res += `<c-g data-d=${dic}>`
-      for (let j = 0; j < chars.length; j++) {
-        if (j > 0) res += ' '
-        const val = escape_html(chars[j])
-        res += `<v-n data-d=2 data-i=${+idx + j} data-l=1>${val}</v-n>`
-      }
-      res += '</c-g>'
+      return [data, i]
     }
 
-    return res
-  }
+    render_hv() {
+      let res = ''
 
-  export function render_cv(data, text = true) {
-    let res = ''
-    let lvl = 0
+      for (const [val, dic, idx] of this.data) {
+        if (val == ' ') {
+          res += ' '
+          continue
+        }
 
-    for (const [val, dic, idx, len] of data) {
-      if (Array.isArray(val)) {
-        const inner = render_cv(val, text)
+        let chars = val.split(' ')
 
-        if (text) res += inner
-        else res += `<v-g data-d=${dic}>${inner}</v-g>`
-        continue
+        res += `<c-g data-d=${dic}>`
+        for (let j = 0; j < chars.length; j++) {
+          if (j > 0) res += ' '
+          const val = escape_html(chars[j])
+          res += `<v-n data-d=2 data-i=${+idx + j} data-l=1>${val}</v-n>`
+        }
+        res += '</c-g>'
       }
 
-      if (val == ' ') {
-        res += ' '
-        continue
-      }
-
-      const fval = val[0]
-      if (fval == '“' || fval == '‘') {
-        lvl += 1
-        res += '<em>'
-      } else if (fval == '⟨') {
-        res += '<cite>'
-      }
-
-      const esc = escape_html(val)
-
-      if (text) res += esc
-      else res += `<v-n data-d=${dic} data-i=${idx} data-l=${len}>${esc}</v-n>`
-
-      const lval = val[val.length - 1]
-
-      if (lval == '”' || lval == '’') {
-        lvl -= 1
-        res += '</em>'
-      } else if (fval == '⟩') {
-        res += '</cite>'
-      }
+      return res
     }
 
-    while (lvl < 0) {
-      res = '<em>' + res
-      lvl++
+    get html() {
+      this._html = this._html || this.render_cv(this.data, false)
+      return this._html
     }
 
-    while (lvl > 0) {
-      res = res + '</em>'
-      lvl--
+    get text() {
+      this._text = this._text || this.render_cv(this.data, true)
+      return this._text
     }
 
-    return res
+    render_cv(data = this.data, text = true) {
+      let res = ''
+      let lvl = 0
+
+      for (const [val, dic, idx, len] of data) {
+        if (Array.isArray(val)) {
+          const inner = this.render_cv(val, text)
+
+          if (text) res += inner
+          else res += `<v-g data-d=${dic}>${inner}</v-g>`
+          continue
+        }
+
+        if (val == ' ') {
+          res += ' '
+          continue
+        }
+
+        const fval = val[0]
+        if (fval == '“' || fval == '‘') {
+          lvl += 1
+          res += '<em>'
+        } else if (fval == '⟨') {
+          res += '<cite>'
+        }
+
+        const esc = escape_html(val)
+
+        if (text) res += esc
+        else
+          res += `<v-n data-d=${dic} data-i=${idx} data-l=${len}>${esc}</v-n>`
+
+        const lval = val[val.length - 1]
+
+        if (lval == '”' || lval == '’') {
+          lvl -= 1
+          res += '</em>'
+        } else if (fval == '⟩') {
+          res += '</cite>'
+        }
+      }
+
+      while (lvl < 0) {
+        res = '<em>' + res
+        lvl++
+      }
+
+      while (lvl > 0) {
+        res = res + '</em>'
+        lvl--
+      }
+
+      return res
+    }
+
+    static render_zh(input) {
+      let res = ''
+      let idx = 0
+
+      for (const key of Array.from(input)) {
+        res += `<c-g data-d=1>`
+
+        for (const k of Array.from(key)) {
+          res += `<v-n data-d=2 data-i=${idx} data-l=1>${escape_html(k)}</v-n>`
+          idx += 1
+        }
+
+        res += '</c-g>'
+      }
+
+      return res
+    }
   }
 </script>
 
 <script>
   export let input
   export let focus = false
-
-  let _html
-  let _text
-
-  function render(html = false) {
-    if (html) {
-      if (!_html) _html = render_cv(input, false)
-      return _html
-    } else {
-      if (!_text) _text = render_cv(input, true)
-      return _text
-    }
-  }
 </script>
 
-{@html render(focus)}
+{@html focus ? input.html : input.text}
 
 <style lang="scss" global>
   @mixin cv-node($color: blue) {

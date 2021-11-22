@@ -21,7 +21,7 @@
   import { browser } from '$app/env'
   import { page } from '$app/stores'
 
-  import Cvline, { parse_lines } from '$sects/Cvline.svelte'
+  import Cvline, { Mtline } from '$sects/Cvline.svelte'
 
   import read_selection from '$utils/read_selection'
   import { config } from '$lib/stores'
@@ -37,7 +37,7 @@
 
   export let on_change = () => {}
 
-  $: cv_lines = parse_lines(cvdata)
+  $: cv_lines = Mtline.parse_lines(cvdata)
 
   let hover_line = 0
   let focus_line = 0
@@ -99,7 +99,7 @@
 <article class="cvdata" class:debug bind:this={article}>
   <slot name="header">Dịch nhanh</slot>
 
-  {#key [cvdata]}
+  {#key zhtext}
     {#each cv_lines as input, index (index)}
       <cv-data
         id="L{index}"
@@ -147,8 +147,6 @@
 
     margin-left: calc(-1 * var(--gutter));
     margin-right: calc(-1 * var(--gutter));
-
-    font-family: var(--font-serif, serif);
 
     @include fgcolor(secd);
     @include bgcolor(tert);
