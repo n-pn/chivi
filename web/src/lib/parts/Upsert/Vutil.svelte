@@ -71,22 +71,18 @@
   const langs = ['en', 'vi']
   let lang = 0
 
-  const opts = {
-    mode: 'cors', // no-cors, *cors, same-origin
-    credentials: 'include',
-    headers: { 'content-type': 'application/json' },
-  }
-
-  async function load_gtran(text, lang = 0) {
+  async function load_gtran(text) {
     const url = `${gtran}&tl=${langs[lang]}&q=${text}`
-    const res = fetch(url, opts)
+    const res = await fetch(url)
 
-    if (res.ok) {
-      const data = await res.json()
-      lang = (lang + 1) % langs.length
+    try {
+      const data = JSON.parse(await res.text())
+      lang = (lang + 1) % 2
       vpterm.val = data[0][0][0]
-    } else {
-      console.log(res.status)
+
+      // vpterm = vpterm
+    } catch (err) {
+      console.log(err)
     }
   }
 </script>
@@ -134,7 +130,7 @@
     <button
       class="btn"
       data-kbd="t"
-      on:click={() => load_gtran(key, lang)}
+      on:click={() => load_gtran(key)}
       use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>
       <SIcon name="language" />
     </button>
