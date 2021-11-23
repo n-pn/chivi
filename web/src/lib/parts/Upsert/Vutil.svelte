@@ -68,11 +68,11 @@
     return [capped, words.length]
   }
 
-  let lang = 0
+  const lang = [0, 0, 0] // lang index for each tab
 
   async function load_gtran(text) {
     try {
-      const res = await gtran(text, lang)
+      const res = await gtran(text, lang[tab])
       const [capped, length] = check_capped(res)
 
       if (lang == 2 && capped == 2 && length == 2) {
@@ -83,11 +83,10 @@
         // keep res format if it is a name or in book dict tab
         vpterm.val = res
       } else {
-        console.log(res.toLowerCase())
         vpterm.val = res.toLowerCase()
       }
 
-      lang = (lang + 1) % 3
+      lang[tab] = (lang[tab] + 1) % 3
 
       // vpterm = vpterm
     } catch (err) {
