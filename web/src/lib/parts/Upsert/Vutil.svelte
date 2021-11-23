@@ -153,7 +153,7 @@
     <button
       class="btn"
       data-kbd="w"
-      disabled={vpterm.val == vpterm.old_val && vpterm.ptag == vpterm.old_ptag}
+      disabled={vpterm.val == vpterm.o_val && vpterm.ptag == vpterm.o_ptag}
       on:click={() => (vpterm = vpterm.reset())}
       use:hint={'Phục hồi lại nghĩa + phân loại ban đầu'}>
       <SIcon name="corner-up-left" />
@@ -197,11 +197,10 @@
     @include bps(padding, 0 0.25rem, 0 0.375rem);
 
     @include bp-max(pl) { @include ftsize(xs); }
-    &:hover { @include fgcolor(primary, 5); }
+
     > span { @include clamp($width: null); }
 
     &:disabled { @include fgcolor(mute); }
-
     &._actived { @include fgcolor(primary, 5); }
     &._show-ts { @include bps(display, none, $ts: inline-block); }
     &._show-pl:disabled { @include bps(display, none, $pl: inline-block); }
@@ -217,12 +216,7 @@
     // padding-bottom: 0.125rem;
     @include ftsize(lg);
 
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
-
     &[disabled] { @include fgcolor(mute); }
-
     &._1 { @include fgcolor(primary, 5); }
     &._2 { @include fgcolor(harmful, 5); }
   }
