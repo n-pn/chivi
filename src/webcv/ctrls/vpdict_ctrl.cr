@@ -160,10 +160,14 @@ class CV::VpdictCtrl < CV::BaseCtrl
 
   def upsert
     dname = params["dname"]
+    _priv = params["_priv"]? == "true"
     vdict = VpDict.load(dname)
-    return halt!(500, "Không đủ quyền hạn để sửa từ!") unless vdict.allow?(u_privi)
 
-    key = params.fetch_str("key").strip
+    unless vdict.allow?(u_privi, _priv)
+      return halt!(500, "Không đủ quyền hạn để sửa từ!")
+    end
+
+    key = params.fetch_str("key").gsub("\t", " ").strip
     val = params.fetch_str("val").split(" / ").map(&.strip)
 
     if vdict.dtype == 2 && VpDict.fixture.find(key)
@@ -173,8 +177,8 @@ class CV::VpdictCtrl < CV::BaseCtrl
     attr = params.fetch_str("attr", "")
     rank = params.fetch_str("rank", "").to_u8? || 3_u8
 
-    vpterm = VpTerm.new(key, val, attr, rank, uname: u_dname)
-    vpterm.to_priv! if params["_priv"]? == "true"
+    uname = _priv ? "!" + u_dname : u_dname
+    vpterm = VpTerm.new(key, val, attr, rank, uname: uname)
 
     return halt!(501, "Nội dung không thay đổi!") unless vdict.set!(vpterm)
 

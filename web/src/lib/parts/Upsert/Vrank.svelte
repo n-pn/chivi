@@ -19,8 +19,8 @@
   {#each lbls as lbl, idx}
     <button
       class="btn"
-      class:_base={vpterm._base.rank == 4 - idx}
-      class:_priv={vpterm._priv.rank == 4 - idx}
+      class:_base={vpterm.b_rank == 4 - idx}
+      class:_priv={vpterm.b_rank == 4 - idx}
       class:_curr={rank == 4 - idx}
       data-kbd={keys[idx]}
       on:click={() => (rank = 4 - idx)}

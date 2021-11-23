@@ -39,8 +39,8 @@
   function gen_hint(key, tab, vpterm) {
     if (tab > 1) return ['', '', []]
 
-    const priv = get_ptag(vpterm, '_priv') || ''
-    const base = get_ptag(vpterm, '_base') || ''
+    const priv = get_ptag(vpterm, true) || ''
+    const base = get_ptag(vpterm, false) || ''
     const list = [priv, base, ...similar_tag(vpterm.ptag)]
 
     const last_char = key.charAt(key.length - 1)
@@ -149,19 +149,19 @@
     }
   }
 
-  function get_ptag(vpterm, type) {
-    const orig = vpterm[type]
-    return orig.mtime < 0 || orig.ptag == vpterm.ptag ? null : orig.ptag
+  function get_ptag(vpterm, _priv) {
+    if (_priv) return vpterm.val ? vpterm.u_ptag : ''
+    return vpterm.b_ptag || vpterm.h_ptag
   }
 </script>
 
 <div class="hints">
   {#each hints as hint, idx (hint)}
-    {#if (idx == 0 || hint != vpterm.val.trim()) && hint}
+    {#if idx == 0 || (hint && hint != vpterm.val.trim())}
       <button
         class="hint"
-        class:_base={vpterm._base.mtime >= 0 && hint == vpterm._base.val}
-        class:_priv={vpterm._priv.mtime >= 0 && hint == vpterm._priv.val}
+        class:_base={hint == vpterm.b_val}
+        class:_priv={hint == vpterm.u_val}
         on:click={() => (vpterm.val = hint)}>{hint}</button>
     {/if}
   {/each}

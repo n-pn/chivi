@@ -32,7 +32,7 @@
 
 <script>
   import { session } from '$app/stores'
-  import { VpTerm, hint } from './Upsert/_shared.js'
+  import { enrich_term, hint } from './Upsert/_shared.js'
 
   import SIcon from '$atoms/SIcon.svelte'
   import CMenu from '$molds/CMenu.svelte'
@@ -59,7 +59,9 @@
   let valhint = {}
   let vpterms = {}
 
-  $: vpterm = (vpterms[key] || [])[$tab] || new VpTerm()
+  $: vpterm = (vpterms[key] || [])[$tab] || enrich_term({})
+
+  $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
 
   let focus
   $: vpterm, focus && focus.focus()
@@ -93,18 +95,17 @@
       pinyins[inp] = data.binh_am
       valhint[inp] = data.val_hint
       vpterms[inp] = [
-        new VpTerm(data.u_priv, data.u_base),
-        new VpTerm(data.c_priv, data.c_base),
-        new VpTerm(data.hanviet, data.hanviet),
+        enrich_term(data.special),
+        enrich_term(data.regular),
+        enrich_term(data.hanviet),
       ]
     }
   }
 
-  async function submit_val(_priv = false) {
+  async function submit_val() {
     const val = vpterm.val.replace('', '').trim()
     const attr = vpterm.ptag
-    const rank = vpterm.rank
-    const params = { key, val, attr, rank, _priv }
+    const params = { key, val, attr, rank: vpterm.rank, _priv: vpterm._priv }
 
     const dnames = [dname, 'regular', 'hanviet']
     const [status] = await dict_upsert(fetch, dnames[$tab], params)
@@ -115,8 +116,7 @@
 
   function is_edited(key, tab) {
     const terms = vpterms[key]
-    if (!terms) return false
-    return !terms[tab].fresh
+    return terms ? terms[tab].state > 0 : false
   }
 </script>
 
@@ -199,12 +199,12 @@
     </upsert-tabs>
 
     <upsert-body>
-      <Emend {vpterm} p_min={$tab + 1} />
+      <Emend {vpterm} />
 
       <div class="field">
         <Vhint {key} tab={$tab} hints={valhint[key] || []} bind:vpterm />
 
-        <div class="value" class:_fresh={vpterm.fresh}>
+        <div class="value" class:_fresh={vpterm.state == 0}>
           <input
             type="text"
             class="-input"
@@ -232,22 +232,24 @@
 
         <div class="bgroup">
           <button
-            class="m-btn _lg _fill _left {vpterm.btn_state('_base')}"
-            data-kbd="↵"
-            disabled={vpterm.disabled('_base', $session.privi, $tab + 1)}
-            on:click={() => submit_val(false)}
-            use:hint={'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}>
-            <SIcon name="users" />
-            <span class="submit-text">{vpterm.state}</span>
+            class="m-btn _lg _fill _left {btn_state}"
+            data-kbd="'"
+            use:hint={vpterm._priv
+              ? 'Đổi sang từ điển chung'
+              : 'Đổi sang từ điển cá nhân'}
+            on:click={() => (vpterm = vpterm.swap_dict())}>
+            <SIcon name={vpterm._priv ? 'user' : 'users'} />
           </button>
 
           <button
-            class="m-btn _lg _fill _right {vpterm.btn_state('_priv')}"
-            data-kbd="⇧↵"
-            disabled={vpterm.disabled('_priv', $session.privi, $tab + 1)}
-            use:hint={'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'}
-            on:click={() => submit_val(true)}>
-            <SIcon name="user" />
+            class="m-btn _lg _fill _right {btn_state}"
+            data-kbd="↵"
+            disabled={vpterm.disabled($session.privi)}
+            on:click={submit_val}
+            use:hint={vpterm._priv
+              ? 'Lưu nghĩa vào từ điển cá nhân (áp dụng cho riêng bạn)'
+              : 'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}>
+            <span class="submit-text">{lbl_state}</span>
           </button>
         </div>
       </div>
@@ -445,21 +447,15 @@
   }
 
   .m-btn._left {
-    padding-right: 0.25rem;
-    @include bps(padding-left, 0.25rem, $pl: 0.5rem);
     @include bdradi(0, $loc: right);
-
-    > span {
-      width: 2rem;
-    }
-
-    > :global(svg) {
-      @include bps(display, none, $pl: inline-block);
-    }
   }
 
   .m-btn._right {
     margin-left: -1px;
     @include bdradi(0, $loc: left);
+    @include bps(padding-left, 0.25rem, $pl: 0.5rem);
+    @include bps(padding-right, 0.25rem, $pl: 0.5rem);
+    // prettier-ignore
+    > span { width: 2rem; }
   }
 </style>

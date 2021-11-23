@@ -180,6 +180,9 @@
     text-align: center;
     color: inherit;
     background: transparent;
+
+    // prettier-ignore
+    // @include hover { @include fgcolor(primary, 5); }
   }
 
   .pinyin {

@@ -31,8 +31,8 @@ export function hint(node, data) {
     parent.appendChild(tip)
   }
 
-  const hide = () => document.querySelector('tool-tip').remove()
-  // const hide = () => tip.remove()
+  // const hide = () => document.querySelector('tool-tip').remove()
+  const hide = () => tip.remove()
 
   node.addEventListener('mouseenter', show, true)
   node.addEventListener('mouseleave', hide, true)
@@ -41,6 +41,7 @@ export function hint(node, data) {
   node.addEventListener('blur', hide, true)
 
   return {
+    update: (data) => (tip.innerText = data),
     destroy: () => {
       tip.remove()
 
@@ -53,69 +54,61 @@ export function hint(node, data) {
   }
 }
 
-export class VpTerm {
-  constructor(priv = {}, base = { mtime: -1 }) {
-    this._priv = priv
-    this._base = base
+export function enrich_term(data = {}) {
+  data.val = data.o_val = data.u_val || data.b_val || data.h_val || ''
+  data.state = data.u_val ? 2 : data.o_val ? 1 : 0
 
-    this.val = this.old_val = this._priv.val || this._base.val || ''
-    this.ptag = this.old_ptag = this._priv.ptag || this._base.ptag || ''
-    this.rank = this._priv.rank || this._base.rank || 3
+  if (data.u_val) {
+    data._priv = true
+    data.ptag = data.o_ptag = data.u_ptag || ''
+    data.rank = data.u_rank || 3
+  } else {
+    data._priv = false
+    data.ptag = data.o_ptag = data.b_ptag || data.h_ptag || ''
+    data.rank = data.b_rank || 3
   }
 
-  get fresh() {
-    return this.old_val == '' || (this._priv.mtime < 0 && this._base.mtime < 0)
+  data.get_state = (_priv = data._priv) => {
+    if (!data.val) return ['Xoá', '_harmful']
+    const o_val = _priv ? data.u_val : data.b_val
+    return o_val ? ['Sửa', '_primary'] : ['Lưu', '_success']
   }
 
-  get state() {
-    if (!this.val) return 'Xoá'
-    return this._base.mtime < 0 || this._base.val == '' ? 'Lưu' : 'Sửa'
+  data.swap_dict = () => {
+    data._priv = !data._priv
+    return data
   }
 
-  btn_state(type = '_base') {
-    if (!this.val) return '_harmful'
-
-    const blank = this.blank(type)
-    if (type == '_base') return blank ? '_success' : '_primary'
-
-    if (!blank) return '_primary'
-    return this.blank('_base') ? '_success' : '_primary'
+  data.clear = () => {
+    if (data.val) data.val = ''
+    else if (data.ptag) data.ptag = ''
+    else data.val = '[[pass]]'
+    return data
   }
 
-  blank(type) {
-    return this[type].mtime < 0 || this[type].val == ''
+  data.reset = () => {
+    data.val = data.o_val
+    data.ptag = data.o_ptag
+    return data
   }
 
-  dirty(type) {
-    return (
-      this[type].mtime < 0 ||
-      this.val != this[type].val ||
-      this.ptag != this[type].ptag ||
-      this.rank != this[type].rank
-    )
-  }
+  data.disabled = (privi) => {
+    if (data._priv) {
+      if (privi < data.u_privi) return true
+      if (data.val != data.u_val) return false
+      if (data.ptag != data.u_ptag) return false
+      if (data.rank != data.u_rank) return false
 
-  disabled(type, privi, p_min) {
-    if (privi < p_min) return true
-    if (!this.dirty(type)) return true
-    if (p_min < 3) return false
-    return type != '_base'
-  }
+      return true
+    } else {
+      if (privi < data.b_privi) return true
+      if (data.val != data.b_val) return false
+      if (data.ptag != data.b_ptag) return false
+      if (data.rank != data.b_rank) return false
 
-  clear() {
-    if (this.val) this.val = ''
-    else if (this.ptag) this.ptag = ''
-    else {
-      this.val = '[[pass]]'
-      this.ptag = '_'
+      return true
     }
-
-    return this
   }
 
-  reset() {
-    this.val = this.old_val
-    this.ptag = this.old_ptag
-    return this
-  }
+  return data
 }

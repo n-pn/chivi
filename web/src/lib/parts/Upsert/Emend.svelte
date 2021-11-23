@@ -5,7 +5,6 @@
   import SIcon from '$atoms/SIcon.svelte'
 
   export let vpterm
-  export let p_min
 
   function render_time(mtime) {
     return get_rtime(mtime * 60 + 1577836800)
@@ -13,34 +12,46 @@
 </script>
 
 <div class="emend">
-  <div class="group" use:hint={'Quyền hạn tối thiểu để thêm/sửa nghĩa của từ'}>
-    <SIcon name="lock" />
-    <span class="lbl">Q. hạn:</span>
-    <span class="val">{p_min}</span>
+  <div class="group">
+    <span class="entry" use:hint={'Lịch sử thêm/sửa dữ liệu từ điển cộng đồng'}>
+      <SIcon name="users" />
+
+      {#if vpterm.b_mtime > 0}
+        <span>{vpterm.b_state}:</span>
+        <span class="val">{render_time(vpterm.b_mtime)}</span>
+        <span class>bởi</span>
+        <span class="val user">{vpterm.b_uname}</span>
+      {:else}
+        <span>Chưa có lịch sử</span>
+      {/if}
+    </span>
+
+    <span
+      class="privi"
+      use:hint={`Quyền hạn tối thiểu để thêm/sửa nghĩa của từ vào từ điển chung: ${vpterm.b_privi}`}>
+      <SIcon name="lock" />
+      <span class="val">[{vpterm.b_privi}]</span>
+    </span>
   </div>
 
-  <div class="group" use:hint={'Lịch sử thêm/sửa dữ liệu từ điển cộng đồng'}>
-    <SIcon name="users" />
+  <div class="group">
+    <span class="entry" use:hint={'Lịch sử thêm/sửa của từ điển cá nhân bạn'}>
+      <SIcon name="user" />
 
-    {#if vpterm._base.mtime > 0}
-      <span>{vpterm._base.state}:</span>
-      <span class="val">{render_time(vpterm._base.mtime)}</span>
-      <span class>bởi</span>
-      <span class="val user">{vpterm._base.uname}</span>
-    {:else}
-      <span>Chưa có lịch sử</span>
-    {/if}
-  </div>
+      {#if vpterm.u_mtime > 0}
+        <span>{vpterm.u_state}:</span>
+        <span class="val">{render_time(vpterm.u_mtime)}</span>
+      {:else}
+        <span>Chưa có lịch sử</span>
+      {/if}
+    </span>
 
-  <div class="group" use:hint={'Lịch sử thêm/sửa của từ điển cá nhân bạn'}>
-    <SIcon name="user" />
-
-    {#if vpterm._priv.mtime > 0}
-      <span>{vpterm._priv.state}:</span>
-      <span class="val">{render_time(vpterm._priv.mtime)}</span>
-    {:else}
-      <span>Chưa có lịch sử</span>
-    {/if}
+    <span
+      class="privi"
+      use:hint={'Quyền hạn tối thiểu để thêm/sửa nghĩa của từ vào từ điển chung'}>
+      <SIcon name="lock" />
+      <span class="val">[{vpterm.u_privi}]</span>
+    </span>
   </div>
 </div>
 
@@ -52,21 +63,31 @@
     @include ftsize(xs);
     @include fgcolor(tert);
 
-    :global(svg) {
-      margin-right: -0.125rem;
-    }
+    // :global(svg) {
+    //   margin-right: -0.125rem;
+    // }
   }
 
   .group {
     @include flex($center: vert, $gap: 0.2rem);
-    @include clamp();
     // prettier-ignore
     & + &:before { content: '|'; }
   }
 
-  .lbl {
-    @include bps(display, none, $pl: inline);
+  .entry {
+    @include flex($center: vert, $gap: 0.2rem);
+    @include clamp();
   }
+
+  // prettier-ignore
+  .privi {
+    @include flex($center: vert);
+    > .val { margin-left: -0.05rem; }
+  }
+
+  // .lbl {
+  //   @include bps(display, none, $pl: inline);
+  // }
 
   .val {
     font-weight: 500;
