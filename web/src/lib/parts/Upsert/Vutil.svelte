@@ -41,6 +41,9 @@
 
   $: [capped, length] = check_capped(vpterm.val)
 
+  let lang = [0, 0, 0]
+  $: if (key) lang = [0, 0, 0] // lang index for each tab
+
   function upcase_val(node, count) {
     const action = (_) => {
       if (count != capped) {
@@ -68,9 +71,9 @@
     return [capped, words.length]
   }
 
-  const lang = [0, 0, 0] // lang index for each tab
-
   async function load_gtran(text) {
+    vpterm.val = '...'
+
     try {
       const res = await gtran(text, lang[tab])
       const [capped, length] = check_capped(res)
@@ -87,6 +90,7 @@
       }
 
       lang[tab] = (lang[tab] + 1) % 3
+      lang = lang
 
       // vpterm = vpterm
     } catch (err) {

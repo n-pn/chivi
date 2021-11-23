@@ -22,5 +22,5 @@ export async function gtran(text, lang) {
   const data = JSON.parse(await res.text())
 
   res_cache[key] = data[0][0][0]
-  return cache[key]
+  return res_cache[key]
 }
