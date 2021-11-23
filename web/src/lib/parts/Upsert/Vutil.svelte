@@ -100,17 +100,19 @@
     class="cap"
     class:_actived={capped == 1}
     data-kbd="1"
+    disabled={length < 1}
     use:upcase_val={1}
     use:hint={'Viết hoa một chữ đầu'}>
-    <span>H. 1 chữ</span>
+    <span>V. hoa 1</span>
   </button>
   <button
     class="cap"
     class:_actived={capped == 2}
     data-kbd="2"
+    disabled={length < 2}
     use:upcase_val={2}
     use:hint={'Viết hoa hai chữ đầu'}>
-    <span>H. 2 chữ</span>
+    <span>V. hoa 2</span>
   </button>
   <button
     class="cap _show-ts"
@@ -119,7 +121,7 @@
     disabled={length < 3}
     use:upcase_val={3}
     use:hint={'Viết hoa ba chữ đầu'}>
-    <span>H. 3 chữ</span>
+    <span>V. hoa 3</span>
   </button>
 
   <button
@@ -128,7 +130,7 @@
     disabled={capped == length}
     use:upcase_val={20}
     use:hint={'Viết hoa tất cả các chữ'}>
-    <span>H. tất cả</span>
+    <span>V.hoa tất</span>
   </button>
 
   <button
@@ -138,7 +140,7 @@
     data-key="192"
     use:upcase_val={0}
     use:hint={'Viết thường tất cả các chữ'}>
-    <span>Không hoa</span>
+    <span>Không v. hoa</span>
   </button>
 
   <div class="right">
