@@ -224,7 +224,7 @@
           {/if}
         </div>
 
-        <Vutil {key} bind:vpterm />
+        <Vutil {key} tap={$tab} bind:vpterm />
       </div>
 
       <div class="vfoot">

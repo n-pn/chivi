@@ -24,16 +24,16 @@
 
     return res.join(' ')
   }
-
-  const gtran =
-    'https://translate.googleapis.com/translate_a/single?client=gtx&text=&sl=zh-CN&dt=t'
 </script>
 
 <script>
   import { hint } from './_shared'
+  import { gtran } from '$utils/gtran.js'
+
   import SIcon from '$atoms/SIcon.svelte'
 
   export let key
+  export let tab = 0
   export let vpterm
 
   let capped = 0
@@ -68,17 +68,26 @@
     return [capped, words.length]
   }
 
-  const langs = ['en', 'vi']
   let lang = 0
 
   async function load_gtran(text) {
-    const url = `${gtran}&tl=${langs[lang]}&q=${text}`
-    const res = await fetch(url)
-
     try {
-      const data = JSON.parse(await res.text())
-      lang = (lang + 1) % 2
-      vpterm.val = data[0][0][0]
+      const res = await gtran(text, lang)
+      const [capped, length] = check_capped(res)
+
+      if (lang == 2 && capped == 2 && length == 2) {
+        // swap first name and last name if result is a japanese name
+        const [fname, lname] = res.split(' ')
+        vpterm.val = lname + ' ' + fname
+      } else if (capped > 1 || tab == 0) {
+        // keep res format if it is a name or in book dict tab
+        vpterm.val = res
+      } else {
+        console.log(res.toLowerCase())
+        vpterm.val = res.toLowerCase()
+      }
+
+      lang = (lang + 1) % 3
 
       // vpterm = vpterm
     } catch (err) {
@@ -90,53 +99,55 @@
 <div class="vutil">
   <button
     class="cap"
+    class:_actived={capped == 1}
     data-kbd="1"
     use:upcase_val={1}
     use:hint={'Viết hoa một chữ đầu'}>
-    <span>Hoa 1 chữ</span>
+    <span>H. 1 chữ</span>
   </button>
   <button
     class="cap"
+    class:_actived={capped == 2}
     data-kbd="2"
     use:upcase_val={2}
     use:hint={'Viết hoa hai chữ đầu'}>
     <span>H. 2 chữ</span>
   </button>
   <button
-    class="cap _hide"
+    class="cap _show-ts"
     data-kbd="3"
+    class:_actived={capped == 3}
     disabled={length < 3}
     use:upcase_val={3}
     use:hint={'Viết hoa ba chữ đầu'}>
     <span>H. 3 chữ</span>
   </button>
-  {#if capped < length}
-    <button
-      class="cap"
-      data-kbd="4"
-      use:upcase_val={20}
-      use:hint={'Viết hoa tất cả các chữ'}>
-      <span>H. tất cả</span>
-    </button>
-  {/if}
-  {#if vpterm.val != vpterm.val.toLowerCase()}
-    <button
-      class="cap"
-      data-kbd="0"
-      data-key="192"
-      use:upcase_val={0}
-      use:hint={'Viết thường tất cả các chữ'}>
-      <span>Không hoa</span>
-    </button>
-  {/if}
+
+  <button
+    class="cap _show-pl"
+    data-kbd="4"
+    disabled={capped == length}
+    use:upcase_val={20}
+    use:hint={'Viết hoa tất cả các chữ'}>
+    <span>H. tất cả</span>
+  </button>
+
+  <button
+    class="cap _show-pl"
+    disabled={vpterm.val == vpterm.val.toLowerCase()}
+    data-kbd="0"
+    data-key="192"
+    use:upcase_val={0}
+    use:hint={'Viết thường tất cả các chữ'}>
+    <span>Không hoa</span>
+  </button>
 
   <div class="right">
     <button
-      class="btn"
+      class="btn _{lang}"
       data-kbd="t"
       on:click={() => load_gtran(key)}
       use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>
-      <span class="lang">{lang == 0 ? 'e' : 'v'}</span>
       <SIcon name="language" />
     </button>
 
@@ -190,13 +201,14 @@
     &:hover { @include fgcolor(primary, 5); }
     > span { @include clamp($width: null); }
 
-    &[disabled] { @include fgcolor(mute); }
+    &:disabled { @include fgcolor(mute); }
 
-    &._hide {
-      @include bps(display, none, $ts: inline-block);
-    }
+    &._actived { @include fgcolor(primary, 5); }
+    &._show-ts { @include bps(display, none, $ts: inline-block); }
+    &._show-pl:disabled { @include bps(display, none, $pl: inline-block); }
   }
 
+  // prettier-ignore
   .btn {
     margin-left: auto;
     width: 1.75rem;
@@ -210,25 +222,26 @@
       @include fgcolor(primary, 5);
     }
 
-    &[disabled] {
-      @include fgcolor(mute);
-    }
+    &[disabled] { @include fgcolor(mute); }
+
+    &._1 { @include fgcolor(primary, 5); }
+    &._2 { @include fgcolor(harmful, 5); }
   }
 
-  .lang {
-    position: absolute;
-    display: inline-block;
+  // .lang {
+  //   position: absolute;
+  //   display: inline-block;
 
-    bottom: 0.25rem;
-    right: -0.125rem;
-    line-height: 0.75rem;
-    width: 0.75rem;
-    text-align: center;
-    font-size: 9px;
-    font-weight: 500;
-    text-transform: uppercase;
-    border-radius: 0.125rem;
-    // @include border();
-    @include linesd(--bd-main, $inset: false);
-  }
+  //   bottom: 0.25rem;
+  //   right: -0.125rem;
+  //   line-height: 0.75rem;
+  //   width: 0.75rem;
+  //   text-align: center;
+  //   font-size: 9px;
+  //   font-weight: 500;
+  //   text-transform: uppercase;
+  //   border-radius: 0.125rem;
+  //   // @include border();
+  //   @include linesd(--bd-main, $inset: false);
+  // }
 </style>
