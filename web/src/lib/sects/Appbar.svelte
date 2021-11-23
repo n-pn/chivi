@@ -39,7 +39,7 @@
       {#if ptype == 'cvmtl'}
         <button
           class="header-item"
-          data-kbd="c"
+          data-kbd="o"
           on:click={() => (active_config = true)}>
           <SIcon name="adjustments-alt" />
           <span class="header-text _show-md">Cài đặt </span>
