@@ -143,7 +143,7 @@
 
   <div class="right">
     <button
-      class="btn _{lang}"
+      class="btn _{lang[tab]}"
       data-kbd="t"
       on:click={() => load_gtran(key)}
       use:hint={'Dịch bằng Google Translate sang Anh/Việt'}>

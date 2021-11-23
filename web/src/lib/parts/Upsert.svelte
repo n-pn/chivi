@@ -199,7 +199,7 @@
     </upsert-tabs>
 
     <upsert-body>
-      <Emend {vpterm} />
+      <Emend privi={$session.privi} {vpterm} />
 
       <div class="field">
         <Vhint {key} tab={$tab} hints={valhint[key] || []} bind:vpterm />

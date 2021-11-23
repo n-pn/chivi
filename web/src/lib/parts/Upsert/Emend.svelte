@@ -5,6 +5,7 @@
   import SIcon from '$atoms/SIcon.svelte'
 
   export let vpterm
+  export let privi = 0
 
   function render_time(mtime) {
     return get_rtime(mtime * 60 + 1577836800)
@@ -28,9 +29,8 @@
 
     <span
       class="privi"
-      use:hint={`Quyền hạn tối thiểu để thêm/sửa nghĩa của từ vào từ điển chung: ${vpterm.b_privi}`}>
-      <SIcon name="lock" />
-      <span class="val">[{vpterm.b_privi}]</span>
+      use:hint={`Quyền hạn tối thiểu để thêm/sửa từ vào từ điển chung: ${vpterm.b_privi}`}>
+      <SIcon name={privi < vpterm.b_privi ? 'lock' : 'lock-open'} />
     </span>
   </div>
 
@@ -48,9 +48,8 @@
 
     <span
       class="privi"
-      use:hint={'Quyền hạn tối thiểu để thêm/sửa nghĩa của từ vào từ điển chung'}>
-      <SIcon name="lock" />
-      <span class="val">[{vpterm.u_privi}]</span>
+      use:hint={`Quyền hạn tối thiểu để thêm/sửa từ vào từ điển cá nhân: ${vpterm.u_privi}`}>
+      <SIcon name={privi < vpterm.u_privi ? 'lock' : 'lock-open'} />
     </span>
   </div>
 </div>
@@ -58,7 +57,7 @@
 <style lang="scss">
   .emend {
     @include flex($center: horz, $gap: 0.2rem);
-    padding: 0.25rem 0;
+
     line-height: 1.25rem;
     @include ftsize(xs);
     @include fgcolor(tert);
@@ -76,13 +75,14 @@
 
   .entry {
     @include flex($center: vert, $gap: 0.2rem);
+    padding: 0.25rem 0;
     @include clamp();
   }
 
   // prettier-ignore
   .privi {
     @include flex($center: vert);
-    > .val { margin-left: -0.05rem; }
+    padding: 0.25rem 0.125rem;
   }
 
   // .lbl {

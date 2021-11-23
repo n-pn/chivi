@@ -66,11 +66,11 @@ class CV::VpTermView
         jb.field "u_privi", 4
         jb.field "b_privi", 3
       when 1 # regular
-        jb.field "u_privi", 0
-        jb.field "b_privi", 1
-      when 0 # special
         jb.field "u_privi", 1
         jb.field "b_privi", 2
+      when 0 # special
+        jb.field "u_privi", 0
+        jb.field "b_privi", 1
       end
 
       if u_term
