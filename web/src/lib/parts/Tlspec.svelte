@@ -25,6 +25,7 @@
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
   export let slink = '.'
+  export let on_destroy = () => {}
 
   let error
   let unote = ''
@@ -47,7 +48,7 @@
   }
 </script>
 
-<Gmodal active={$state > 0} index={80} on_close={hide_tlspec}>
+<Gmodal actived={$state > 0} index={80} on_close={hide_tlspec}>
   <tlspec-wrap>
     <tlspec-head>
       <tlspec-title>

@@ -1,6 +1,6 @@
 <script>
   import { navigating } from '$app/stores'
-  import { toleft, add_layer, remove_layer } from '$lib/stores'
+  import { toleft, layers } from '$lib/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
 
@@ -16,7 +16,7 @@
   $: $toleft = sticked
   $: if ($navigating) actived = false
 
-  $: actived ? add_layer('.' + _klass) : remove_layer('.' + _klass)
+  $: layers.toggle(actived, '.' + _klass)
 </script>
 
 <slider-wrap

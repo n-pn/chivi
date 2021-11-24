@@ -24,8 +24,11 @@
     state.set(1)
   }
 
+  const fake_rect = { left: 0, right: 0, bottom: 0, top: 0 }
   function get_rect(node) {
+    if (!node) return fake_rect
     const rects = node.getClientRects()
+    if (rects.length == 0) return fake_rect
     return rects[rects.length - 1]
   }
 </script>

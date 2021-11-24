@@ -89,7 +89,6 @@
   }
 
   function regain_focus() {
-    $cvmenu_state = 0
     article.focus()
 
     const elem = article.querySelector('#L' + focus_line)
@@ -106,6 +105,10 @@
     const rect = elem.getBoundingClientRect()
     return rect.top > 0 && rect.bottom <= window.innerHeight
   }
+
+  function hide_cvmenu() {
+    setTimeout(() => cvmenu_state.set(0), 200)
+  }
 </script>
 
 <div hidden>
@@ -115,7 +118,7 @@
   <button data-kbd="c" on:click={() => upsert_activate($input, 1)}>C</button>
 </div>
 
-<article class="cvdata" class:debug tabindex="-1" bind:this={article}>
+<article tabindex="-1" bind:this={article} on:blur={hide_cvmenu}>
   <slot name="header">Dịch nhanh</slot>
 
   {#key zhtext}
@@ -139,7 +142,7 @@
 
   {#if browser}
     {#if $cvmenu_state > 0}
-      <Cvmenu on_destroy={regain_focus} />
+      <Cvmenu />
     {/if}
 
     {#if $upsert_state}
@@ -160,7 +163,7 @@
 </article>
 
 <style lang="scss">
-  .cvdata {
+  article {
     position: relative;
     min-height: 50vh;
     padding: 0 var(--gutter) var(--verpad);

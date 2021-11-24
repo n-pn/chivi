@@ -125,7 +125,7 @@
   }
 </script>
 
-<Gmodal active={$state > 0} on_close={deactivate}>
+<Gmodal actived={$state > 0} on_close={deactivate}>
   <upsert-wrap>
     <upsert-head class="head">
       <CMenu dir="left" loc="bottom">
@@ -229,7 +229,7 @@
           {/if}
         </div>
 
-        <Vutil {key} tap={$tab} bind:vpterm />
+        <Vutil {key} tab={$tab} bind:vpterm />
       </div>
 
       <div class="vfoot">

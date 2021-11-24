@@ -45,7 +45,7 @@
   let sections = []
 </script>
 
-<Gmodal _klass="postag" active={state > 1} index={80} on_close={hide_modal}>
+<Gmodal _klass="postag" actived={state > 1} index={80} on_close={hide_modal}>
   <postag-wrap>
     <postag-head>
       <postag-tabs>

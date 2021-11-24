@@ -5,45 +5,15 @@
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
   const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora']
-
-  // const tlmodes = ['Cơ bản', 'Nâng cao']
-
-  function save_config(name, data) {
-    localStorage.setItem(name, data)
-    config.update((x) => ({ ...x, [name]: data }))
-  }
 </script>
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
-  import { onMount } from 'svelte'
 
   export let actived = false
 
   let config_elem
   $: if (actived && config_elem) config_elem.focus()
-
-  let ftsize = +$config.ftsize || 3
-  let ftface = +$config.ftface || 1
-
-  $: save_config('ftsize', ftsize)
-  $: save_config('ftface', ftface)
-
-  async function update_wtheme(wtheme) {
-    save_config('wtheme', wtheme)
-    await call_update({ wtheme, tlmode: $session.tlmode })
-  }
-
-  async function call_update(params) {
-    const res = await fetch('/api/user/setting', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    })
-
-    if (res.ok) $session = await res.json()
-    else console.log('Error: ' + (await res.text()))
-  }
 </script>
 
 <config-main bind:this={config_elem}>
@@ -62,8 +32,8 @@
           <input
             type="radio"
             name="wtheme"
-            {value}
-            on:change={() => update_wtheme(value)} />
+            bind:group={$config.wtheme}
+            on:change={() => config.put('wtheme', value)} />
         </label>
       {/each}
     </field-input>
@@ -74,15 +44,15 @@
     <field-input>
       <button
         class="m-btn _sm"
-        on:click={() => (ftsize -= 1)}
-        disabled={ftsize == 1}>
+        on:click={() => ($config.ftsize -= 1)}
+        disabled={$config.ftsize == 1}>
         <SIcon name="minus" />
       </button>
-      <field-value>{ftsizes[ftsize - 1]}</field-value>
+      <field-value>{ftsizes[$config.ftsize - 1]}</field-value>
       <button
         class="m-btn _sm"
-        on:click={() => (ftsize += 1)}
-        disabled={ftsize == 5}>
+        on:click={() => ($config.ftsize += 1)}
+        disabled={$config.ftsize == 5}>
         <SIcon name="plus" />
       </button>
     </field-input>
@@ -91,7 +61,7 @@
   <config-item>
     <field-label>Font chữ:</field-label>
     <field-input>
-      <select class="m-input" name="ftface" bind:value={ftface}>
+      <select class="m-input" name="ftface" bind:value={$config.ftface}>
         {#each ftfaces as value, index}
           <option value={index + 1}>{value}</option>
         {/each}

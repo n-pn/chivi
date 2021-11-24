@@ -1,18 +1,17 @@
 <script>
   import { scale, fade } from 'svelte/transition'
   import { backInOut } from 'svelte/easing'
-  import { add_layer, remove_layer } from '$lib/stores'
+  import { layers } from '$lib/stores'
 
-  export let on_close = () => {}
-
-  export let active = true
+  export let actived = true
   export let zindex = 70
   export let _klass = 'gmodal'
+  export let on_close = () => {}
 
-  $: active ? add_layer('.' + _klass) : remove_layer('.' + _klass)
+  $: layers.toggle(actived, '.' + _klass)
 
   function close_modal() {
-    active = false
+    actived = false
     on_close()
   }
 </script>

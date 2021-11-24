@@ -1,13 +1,6 @@
 <script context="module">
-  import { onMount } from 'svelte'
-  import { navigating, page, session } from '$app/stores'
+  import { navigating, page } from '$app/stores'
   import { scroll, config, layers } from '$lib/stores'
-
-  function load_config(name, fallback) {
-    const data = localStorage.getItem(name) || fallback
-    if (data) config.update((x) => ({ ...x, [name]: data }))
-    else localStorage.setItem(name, data)
-  }
 </script>
 
 <script>
@@ -89,12 +82,6 @@
     evt.stopPropagation()
     elem.click()
   }
-
-  onMount(() => {
-    load_config('wtheme', $session.wtheme)
-    load_config('ftsize', 3)
-    load_config('ftface', 'Merriweather')
-  })
 </script>
 
 <svelte:window
