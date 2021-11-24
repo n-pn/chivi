@@ -5,7 +5,7 @@ import {
 } from '$utils/create_stores.js'
 
 export const config = create_config_store('_pref', {
-  wtheme: 'dark',
+  wtheme: '',
   ftsize: 3,
   ftface: 1,
   textlh: 160,

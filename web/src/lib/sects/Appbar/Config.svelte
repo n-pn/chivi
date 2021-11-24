@@ -14,6 +14,22 @@
 
   let config_elem
   $: if (actived && config_elem) config_elem.focus()
+
+  async function update_wtheme(value) {
+    config.put('wtheme', value)
+    await call_update({ value, tlmode: $session.tlmode })
+  }
+
+  async function call_update(params) {
+    const res = await fetch('/api/user/setting', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    })
+
+    if (res.ok) $session = await res.json()
+    else console.log('Error: ' + (await res.text()))
+  }
 </script>
 
 <config-main bind:this={config_elem}>
@@ -33,7 +49,7 @@
             type="radio"
             name="wtheme"
             bind:group={$config.wtheme}
-            on:change={() => config.put('wtheme', value)} />
+            on:change={() => update_wtheme(value)} />
         </label>
       {/each}
     </field-input>

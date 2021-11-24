@@ -1,10 +1,11 @@
 <script context="module">
-  import { navigating, page } from '$app/stores'
+  import { navigating, page, session } from '$app/stores'
   import { scroll, config, layers } from '$lib/stores'
 </script>
 
 <script>
   import Loader from '$molds/Loader.svelte'
+  import { onMount } from 'svelte'
   import '../css/generic.scss'
 
   const links = [
@@ -19,6 +20,12 @@
       gtag('config', 'UA-160000714-1', { page_path: $page.path })
     }
   }
+
+  let wtheme = $session.wtheme
+  onMount(() => {
+    if ($config.wtheme) wtheme = $config.wtheme
+    else config.put('wtheme', wtheme)
+  })
 
   let prevScrollTop = 0
 
@@ -94,7 +101,7 @@
 </svelte:head>
 
 <div
-  class="app tm-{$config.wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+  class="app tm-{wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   class:kbd-hint={kbd_hint}>
   <slot />
 
