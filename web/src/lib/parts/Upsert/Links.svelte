@@ -1,15 +1,14 @@
 <script>
   export let key = ''
 
+  // prettier-ignore
   $: links = [
-    [
-      'G.Trans',
-      `https://translate.google.com/?sl=zh-CN&tl=en&op=translate&text=${key}`,
-    ],
-    ['Fanyi', `https://fanyi.baidu.com/#zh/en/${key}`],
-    ['iCIBA', `https://www.iciba.com/word?w=${key}`],
-    ['Baidu', `http://www.baidu.com/s?wd=${key}`],
-    ['G.Search', `https://www.google.com/search?q=${key}`],
+    ['G.Trans', `//translate.google.com/?sl=zh-CN&tl=en&op=translate&text=${key}`, ],
+    ['Fanyi', `//fanyi.baidu.com/#zh/en/${key}`],
+    ['Bing', `//www.bing.com/translator?sl=zh-CN&tl=vi&text=${key}`],
+    ['iCIBA', `//www.iciba.com/word?w=${key}`],
+    ['Baidu', `//www.baidu.com/s?wd=${key}`],
+    ['G.Search', `//www.google.com/search?q=${key}`],
   ]
 </script>
 
@@ -21,7 +20,7 @@
 
 <style lang="scss">
   .foot {
-    @include flex($center: horz);
+    @include flex($center: horz, $gap: 0.25rem);
     @include border(--bd-main, $loc: top);
   }
 
@@ -29,7 +28,7 @@
 
   .link {
     cursor: pointer;
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
     line-height: $height;
 
     @include ftsize(sm);
