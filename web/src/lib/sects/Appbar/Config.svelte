@@ -7,6 +7,7 @@
   const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora']
 
   // const textlhs = [150, 150, 150, 150]
+  const readers = ['Thường', 'Zen', 'Dev']
 </script>
 
 <script>
@@ -17,20 +18,15 @@
   let config_elem
   $: if (actived && config_elem) config_elem.focus()
 
-  async function update_wtheme(value) {
-    config.put('wtheme', value)
-    await call_update({ value, tlmode: $session.tlmode })
-  }
+  async function update_wtheme() {
+    // config.put('wtheme', wtheme)
+    const params = { wtheme: $config.wtheme, tlmode: $session.tlmode }
 
-  async function call_update(params) {
-    const res = await fetch('/api/user/setting', {
+    await fetch('/api/user/setting', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params),
     })
-
-    if (res.ok) $session = await res.json()
-    else console.log('Error: ' + (await res.text()))
   }
 </script>
 
@@ -50,8 +46,9 @@
           <input
             type="radio"
             name="wtheme"
+            {value}
             bind:group={$config.wtheme}
-            on:change={() => update_wtheme(value)} />
+            on:change={update_wtheme} />
         </label>
       {/each}
     </field-input>
@@ -104,6 +101,31 @@
         <SIcon name="plus" />
       </button>
     </field-input>
+  </config-item>
+
+  <config-sep />
+
+  <config-item>
+    <field-label class="small">Chế độ:</field-label>
+    <field-input>
+      {#each readers as label, value}
+        <label class:_active={value == $config.reader}>
+          <input
+            type="radio"
+            name="reader"
+            {value}
+            bind:group={$config.reader} />
+          <span>{label}</span>
+        </label>
+      {/each}
+    </field-input>
+  </config-item>
+
+  <config-item>
+    <label class="switch">
+      <input type="checkbox" bind:checked={$config.showzh} />
+      <span class="switch-label">Hiển thị tiếng Trung gốc:</span>
+    </label>
   </config-item>
 </config-main>
 
@@ -158,11 +180,21 @@
     margin-top: 1rem;
   }
 
+  config-sep {
+    display: block;
+    margin-top: 1.5rem;
+    @include border($loc: top);
+  }
+
   field-label {
     display: inline-block;
     width: 33%;
     // @include ftsize(sm);
     font-weight: 500;
+
+    &.small {
+      width: 25%;
+    }
   }
 
   field-input {
@@ -246,31 +278,61 @@
     }
   }
 
-  // .radio {
-  //   line-height: 1.25;
-  //   padding: 0.5rem 0;
-  //   @include fgcolor(tert);
-  //   @include flex($center: none, $gap: 0.675rem);
-  // }
+  .switch {
+    display: block;
+    width: 100%;
+    // @include flex($center: vert);
 
-  // .label {
-  //   font-weight: 500;
-  //   display: block;
-  //   // text-align: center;
-  // }
+    // prettier-ignore
+    > input { display: none; }
+  }
 
-  // .ftsize {
-  //   font-variant: small-caps;
-  // }
+  .switch-label {
+    display: block;
+    position: relative;
+    font-weight: 500;
+    $size: 1.5rem;
 
-  // .config {
-  //   padding: 0.5rem 0.75rem;
-  //   @include border(--bd-main, $loc: bottom);
-  // }
+    &:before {
+      display: inline-block;
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      @include bgcolor(neutral, 1);
+      @include linesd(neutral, 2, $inset: false);
 
-  // .tlmode {
-  //   @include fgcolor(tert);
-  //   @include ftsize(sm);
-  //   line-height: 1.25rem;
-  // }
+      height: $size;
+      border-radius: 1rem;
+      width: $size * 2;
+
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    &:after {
+      background-color: #fff;
+      top: 0;
+      right: 0;
+      border-radius: 20px;
+      content: ' ';
+      display: block;
+      height: $size;
+      width: $size;
+      position: absolute;
+
+      @include linesd(neutral, 2, $inset: false);
+      transition: all 0.1s linear;
+      transform: translateX(-100%);
+    }
+
+    // prettier-ignore
+    input:checked + & {
+      &:before { @include bgcolor(primary, 5); }
+      &:after {
+        transform: translateX(0);
+        @include linesd(primary, 5, $inset: false, $ndef: false);
+      }
+    }
+  }
 </style>

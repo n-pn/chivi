@@ -109,11 +109,27 @@
   function hide_cvmenu() {
     setTimeout(() => cvmenu_state.set(0), 200)
   }
+
+  function show_html(reader, index, hover, focus) {
+    if (reader == 1) return false
+    if (reader == 2) return true
+
+    if (index == hover) return true
+    return index > focus - 2 && index < focus + 2
+  }
+
+  function switch_reader(reader_mode = 0) {
+    if ($config.reader == reader_mode) $config.reader = 0
+    else $config.reader = reader_mode
+  }
 </script>
 
 <div hidden>
-  <button data-kbd="r" on:click={on_change}>R</button>
-  <button data-kbd="g" on:click={() => (debug = !debug)}>G</button>
+  <button data-kbd="a" on:click={() => ($config.showzh = !$config.showzh)}
+    >A</button>
+  <button data-kbd="z" on:click={() => switch_reader(1)}>Z</button>
+  <button data-kbd="z" on:click={() => switch_reader(1)}>Z</button>
+  <button data-kbd="g" on:click={() => switch_reader(2)}>G</button>
   <button data-kbd="x" on:click={() => upsert_activate($input, 0)}>X</button>
   <button data-kbd="c" on:click={() => upsert_activate($input, 1)}>C</button>
 </div>
@@ -126,7 +142,7 @@
       <cv-data
         id="L{index}"
         class={wtitle && index == 0 ? 'h' : 'p'}
-        class:debug
+        class:debug={$config.reader == 2}
         class:focus={index == focus_line}
         style="--textlh: {$config.textlh}%"
         on:click={(e) => handle_click(e, index)}
@@ -134,9 +150,7 @@
         {#if $config.showzh}<zh-line>{zhtext[index]}</zh-line>{/if}
         <Cvline
           {input}
-          focus={debug ||
-            index == hover_line ||
-            (index > focus_line - 2 && index < focus_line + 2)} />
+          focus={show_html($config.reader, index, hover_line, focus_line)} />
       </cv-data>
     {/each}
   {/key}
@@ -224,8 +238,19 @@
   }
 
   zh-line {
+    display: block;
     font-family: san-serif;
     // font-size: 0.95em;
+    line-height: 1.4em;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.1em;
+    @include tm-light {
+      color: color(neutral, 6);
+    }
+
+    @include tm-dark {
+      color: color(neutral, 4);
+    }
   }
 
   cv-data.h {

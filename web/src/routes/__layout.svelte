@@ -22,9 +22,10 @@
   }
 
   let wtheme = $session.wtheme
+  $: if ($config.wtheme) wtheme = $config.wtheme
+
   onMount(() => {
-    if ($config.wtheme) wtheme = $config.wtheme
-    else config.put('wtheme', wtheme)
+    if (!$config.wtheme) config.put('wtheme', $session.wtheme)
   })
 
   let prevScrollTop = 0
