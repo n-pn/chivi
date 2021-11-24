@@ -107,7 +107,7 @@
   }
 
   function hide_cvmenu() {
-    setTimeout(() => cvmenu_state.set(0), 200)
+    setTimeout(() => cvmenu_state.set(0), 100)
   }
 
   function show_html(reader, index, hover, focus) {

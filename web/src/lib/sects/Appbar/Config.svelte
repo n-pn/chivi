@@ -139,16 +139,18 @@
     top: 3.5rem;
 
     z-index: 90;
-    right: var(--gutter);
-    // @include bps(margin-right, 0, $tl: var(--gutter));
+    right: 0;
+    // right: var(--gutter);
     padding-bottom: 1rem;
 
     @include fgcolor(secd);
     @include bgcolor(secd);
     @include bdradi();
-    @include shadow(2);
+    @include shadow(3);
 
-    @include linesd(--bd-soft, $ndef: false);
+    @include tm-dark {
+      @include linesd(--bd-main);
+    }
   }
 
   config-wrap {
@@ -156,7 +158,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
+    right: 0;
     height: 100vh;
     z-index: 89;
   }
