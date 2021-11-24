@@ -128,6 +128,7 @@
         class={wtitle && index == 0 ? 'h' : 'p'}
         class:debug
         class:focus={index == focus_line}
+        style="--textlh: {$config.textlh}%"
         on:click={(e) => handle_click(e, index)}
         on:mouseenter={() => (hover_line = index)}>
         {#if $config.showzh}<zh-line>{zhtext[index]}</zh-line>{/if}
@@ -245,7 +246,7 @@
   cv-data.p {
     text-align: justify;
     text-justify: auto;
-    line-height: 1.7em;
+    line-height: var(--textlh, 160%);
 
     // @include bps(margin-top, 1.125em, 1.25em, 1.375em, 1.5em);
     margin-top: 1em;
@@ -264,10 +265,6 @@
 
     :global(.app-fs-4) & {
       @include bps(font-size, rem(20px), rem(21px), rem(22px), rem(23px));
-    }
-
-    :global(.app-fs-5) & {
-      @include bps(font-size, rem(22px), rem(23px), rem(24px), rem(25px));
     }
   }
 </style>

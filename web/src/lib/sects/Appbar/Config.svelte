@@ -5,6 +5,8 @@
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
   const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora']
+
+  // const textlhs = [150, 150, 150, 150]
 </script>
 
 <script>
@@ -84,6 +86,25 @@
       </select>
     </field-input>
   </config-item>
+
+  <config-item>
+    <field-label>Giãn dòng:</field-label>
+    <field-input>
+      <button
+        class="m-btn _sm"
+        on:click={() => ($config.textlh -= 10)}
+        disabled={$config.textlh <= 130}>
+        <SIcon name="minus" />
+      </button>
+      <field-value>{$config.textlh}%</field-value>
+      <button
+        class="m-btn _sm"
+        on:click={() => ($config.textlh += 10)}
+        disabled={$config.textlh >= 180}>
+        <SIcon name="plus" />
+      </button>
+    </field-input>
+  </config-item>
 </config-main>
 
 <config-wrap on:click={() => (actived = false)} />
@@ -139,7 +160,8 @@
 
   field-label {
     display: inline-block;
-    width: 28%;
+    width: 33%;
+    // @include ftsize(sm);
     font-weight: 500;
   }
 
@@ -168,7 +190,7 @@
     text-transform: capitalize;
     cursor: pointer;
     display: inline-flex;
-    margin-right: 0.25rem;
+
     position: relative;
 
     width: 2rem;
@@ -217,6 +239,10 @@
       left: 0.75rem;
 
       @include border(--check, $width: 3px, $loc: bottom-right);
+    }
+
+    & + & {
+      margin-left: 0.25rem;
     }
   }
 

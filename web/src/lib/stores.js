@@ -8,7 +8,7 @@ export const config = create_config_store('_pref', {
   wtheme: '',
   ftsize: 3,
   ftface: 1,
-  textlh: 160,
+  textlh: 150,
   reader: 0,
   showzh: false,
 })
