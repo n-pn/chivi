@@ -47,10 +47,13 @@
 
   import Postag from '$parts/Postag.svelte'
   import { state as tlspec_state } from '$parts/Tlspec.svelte'
+  import { onDestroy } from 'svelte'
 
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
+
   export let on_change = () => {}
+  export let on_destroy = () => {}
 
   let key = ''
   $: if (key) change_key($ztext, $lower, $upper)
@@ -70,6 +73,8 @@
     await fetch_data(ztext, lower, upper)
     vpterms = vpterms
   }
+
+  onDestroy(on_destroy)
 
   async function fetch_data(ztext, lower, upper) {
     const words = [ztext.substring(lower, upper)]

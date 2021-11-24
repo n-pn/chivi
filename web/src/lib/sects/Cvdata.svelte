@@ -87,6 +87,25 @@
       if ($lookup_enabled) lookup_activate($input)
     }
   }
+
+  function regain_focus() {
+    $cvmenu_state = 0
+    article.focus()
+
+    const elem = article.querySelector('#L' + focus_line)
+    if (!elem || is_visible(elem)) return
+
+    elem?.scrollIntoView({
+      behavior: 'auto',
+      block: 'nearest',
+      inline: 'nearest',
+    })
+  }
+
+  function is_visible(elem) {
+    const rect = elem.getBoundingClientRect()
+    return rect.top > 0 && rect.bottom <= window.innerHeight
+  }
 </script>
 
 <div hidden>
@@ -96,7 +115,7 @@
   <button data-kbd="c" on:click={() => upsert_activate($input, 1)}>C</button>
 </div>
 
-<article class="cvdata" class:debug bind:this={article}>
+<article class="cvdata" class:debug tabindex="-1" bind:this={article}>
   <slot name="header">Dịch nhanh</slot>
 
   {#key zhtext}
@@ -120,21 +139,22 @@
 
   {#if browser}
     {#if $cvmenu_state > 0}
-      <Cvmenu />
+      <Cvmenu on_destroy={regain_focus} />
     {/if}
 
     {#if $upsert_state}
-      <Upsert {dname} {d_dub} {on_change} />
+      <Upsert {dname} {d_dub} {on_change} on_destroy={regain_focus} />
     {/if}
 
-    <Lookup {dname} />
+    <Lookup {dname} on_destroy={regain_focus} />
 
     {#if $tlspec_state}
       <Tlspec
         {dname}
         {d_dub}
         ztext={zhtext[hover_line]}
-        slink="{$page.path}#L{hover_line}" />
+        slink="{$page.path}#L{hover_line}"
+        on_destroy={regain_focus} />
     {/if}
   {/if}
 </article>

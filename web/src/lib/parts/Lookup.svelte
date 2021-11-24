@@ -29,10 +29,12 @@
 </script>
 
 <script>
+  import { onDestroy } from 'svelte'
   import SIcon from '$atoms/SIcon.svelte'
   import Gslide from '$molds/Gslide.svelte'
 
   export let dname = 'various'
+  export let on_destroy = () => {}
   // export let label = 'Tổng hợp'
 
   let entries = []
@@ -44,6 +46,8 @@
   $: zh_text = MtData.render_zh($input)
   let hv_text = ''
   $: if ($lower >= 0 && $upper > 0) update_focus($lower)
+
+  onDestroy(on_destroy)
 
   let tokens = []
   function highlight_focused(lower, upper) {

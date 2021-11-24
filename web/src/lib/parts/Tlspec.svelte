@@ -17,6 +17,7 @@
 </script>
 
 <script>
+  import { onDestroy } from 'svelte'
   import SIcon from '$atoms/SIcon.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
@@ -29,9 +30,9 @@
   let unote = ''
   let label = ''
 
-  function hide_tlspec() {
-    $state = 0
-  }
+  onDestroy(on_destroy)
+
+  const hide_tlspec = () => ($state = 0)
 
   async function handle_submit() {
     const params = { ztext, dname, slink, unote, label }
