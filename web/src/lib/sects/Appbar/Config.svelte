@@ -300,7 +300,12 @@
       right: 0;
       top: 0;
       @include bgcolor(neutral, 1);
-      @include linesd(neutral, 2, $inset: false);
+      @include linesd(neutral, 2, $inset: true);
+
+      @include tm-dark {
+        @include bgcolor(neutral, 7);
+        @include linesd(neutral, 6, $inset: true, $ndef: false);
+      }
 
       height: $size;
       border-radius: 1rem;
@@ -311,7 +316,6 @@
     }
 
     &:after {
-      background-color: #fff;
       top: 0;
       right: 0;
       border-radius: 20px;
@@ -321,14 +325,24 @@
       width: $size;
       position: absolute;
 
-      @include linesd(neutral, 2, $inset: false);
       transition: all 0.1s linear;
       transform: translateX(-100%);
+
+      @include bgcolor(white);
+      @include linesd(neutral, 2, $inset: false);
+
+      @include tm-dark {
+        @include bgcolor(neutral, 2);
+        @include linesd(neutral, 8, $inset: false, $ndef: false);
+      }
     }
 
-    // prettier-ignore
     input:checked + & {
-      &:before { @include bgcolor(primary, 5); }
+      &:before {
+        @include bgcolor(primary, 5);
+        @include linesd(primary, 5, $inset: true, $ndef: false);
+      }
+
       &:after {
         transform: translateX(0);
         @include linesd(primary, 5, $inset: false, $ndef: false);
