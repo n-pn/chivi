@@ -2,7 +2,7 @@
   import { MtData } from '$lib/mt_data'
   import { writable } from 'svelte/store'
   import { dict_lookup } from '$api/dictdb_api'
-  import { tag_label } from '$lib/pos_tag'
+  import { ptnames } from '$parts/Postag.svelte'
 
   import { activate as upsert_activate } from '$parts/Upsert.svelte'
   export const enabled = writable(false)
@@ -150,7 +150,7 @@
                 </term-dic>
 
                 <term-val>{val || '<đã xoá>'}</term-val>
-                <term-tag>{tag_label(tag) || 'Chưa phân loại'}</term-tag>
+                <term-tag>{ptnames[tag] || 'Chưa phân loại'}</term-tag>
               </p>
             {/each}
           </div>

@@ -1,7 +1,3 @@
-import { writable } from 'svelte/store'
-
-export const fhint = writable('')
-
 function get_rect(node) {
   const rects = node.getClientRects()
   return rects[rects.length - 1]

@@ -27,7 +27,7 @@
 </script>
 
 <script>
-  import { tag_label } from '$lib/pos_tag.js'
+  import { ptnames } from '$parts/Postag.svelte'
 
   export let key = ''
   export let tab = 0
@@ -172,7 +172,7 @@
         class="hint _ptag"
         class:_base={hint == ptag_base}
         class:_priv={hint == ptag_priv}
-        on:click={() => (vpterm.ptag = hint)}>{tag_label(hint)}</button>
+        on:click={() => (vpterm.ptag = hint)}>{ptnames[hint]}</button>
     {/each}
   </div>
 </div>

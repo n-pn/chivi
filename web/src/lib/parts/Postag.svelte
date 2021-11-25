@@ -428,7 +428,7 @@
 
     @include fgcolor(tert);
     @include bdradi(0.75rem);
-    @include bps(font-size, rem(13px), rem(14px));
+    @include bps(font-size, rem(13px), $pl: rem(14px));
     @include clamp($width: 100%);
 
     &:hover,

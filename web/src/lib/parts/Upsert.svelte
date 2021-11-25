@@ -218,11 +218,7 @@
             autocapitalize={$tab < 1 ? 'words' : 'off'} />
 
           {#if $tab < 2}
-            <button
-              class="postag"
-              data-kbd="p"
-              on:click={() => state.set(2)}
-              use:hint={'Phân loại cụm từ: Danh, động, tính, trạng...'}>
+            <button class="postag" data-kbd="p" on:click={() => state.set(2)}>
               {ptnames[vpterm.ptag] || 'Phân loại'}
             </button>
           {/if}

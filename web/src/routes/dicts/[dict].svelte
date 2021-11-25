@@ -9,8 +9,7 @@
     state as upsert_state,
   } from '$parts/Upsert.svelte'
 
-  import Postag from '$parts/Postag.svelte'
-  import { tag_label } from '$lib/pos_tag'
+  import Postag, { ptnames } from '$parts/Postag.svelte'
 
   export async function load({ fetch, page: { path, query } }) {
     const url = `/api/${path}?${query.toString()}`
@@ -44,7 +43,7 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  export let query = { key: '', val: '', ptag: '', rank: '' }
+  export let query = { key: '', val: '', ptag: '', rank: '', uname: '' }
 
   $: offset = (pgidx - 1) * 30 + 1
   function render_time(mtime) {
@@ -147,7 +146,7 @@
               ><input type="text" placeholder="-" bind:value={query.val} /></td>
             <td>
               <button class="m-btn _sm" on:click={() => (postag_state = 2)}
-                >{tag_label(query.ptag) || '-'}</button>
+                >{ptnames[query.ptag] || '-'}</button>
             </td>
             <td
               ><input
@@ -212,7 +211,7 @@
               </td>
               <td class="-ptag">
                 <span on:click={() => upsert_activate(key, d_tab, 2)}>
-                  {tag_label(ptag) || '~'}
+                  {ptnames[ptag] || '~'}
                 </span>
                 <div class="hover">
                   <button
