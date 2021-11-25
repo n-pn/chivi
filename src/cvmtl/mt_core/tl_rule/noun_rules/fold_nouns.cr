@@ -119,7 +119,7 @@ module CV::TlRule
       when .amorp?
         break if flag > 0
         node = fold!(prev, node, PosTag::Nphrase, dic: 7)
-      when .adesc?, .ajno?, .modifier?, .modiform?
+      when .ajno?, .modifier?
         break if flag > 0
         node = fold_swap!(prev, node, PosTag::Nphrase, dic: 3)
       when .place?

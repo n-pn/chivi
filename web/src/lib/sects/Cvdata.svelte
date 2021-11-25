@@ -33,7 +33,6 @@
 
   export let dname = 'various'
   export let d_dub = 'Tổng hợp'
-  export let debug = false
 
   export let on_change = () => {}
 

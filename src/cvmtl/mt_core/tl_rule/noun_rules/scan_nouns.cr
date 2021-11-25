@@ -24,7 +24,7 @@ module CV::TlRule
       head = fold_adjts!(head)
       return head unless (succ = head.succ?) && succ.ude1?
       fold_head_ude1_noun!(head, succ.succ?)
-    when .modifier?, .modiform?
+    when .modifier?
       return head unless succ = head.succ?
       fold_swap!(head, scan_noun!(succ), PosTag::Nphrase, dic: 4)
     else

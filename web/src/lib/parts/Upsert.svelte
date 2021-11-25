@@ -1,7 +1,6 @@
 <!-- @hmr:keep-all -->
 <script context="module">
   import { writable } from 'svelte/store'
-  import { tag_label } from '$lib/pos_tag.js'
   import { dict_upsert, dict_search } from '$api/dictdb_api.js'
 
   export const tab = writable(0)
@@ -45,7 +44,7 @@
   import Vrank from './Upsert/Vrank.svelte'
   import Links from './Upsert/Links.svelte'
 
-  import Postag from '$parts/Postag.svelte'
+  import Postag, { ptnames } from '$parts/Postag.svelte'
   import { state as tlspec_state } from '$parts/Tlspec.svelte'
   import { onDestroy } from 'svelte'
 
@@ -224,7 +223,7 @@
               data-kbd="p"
               on:click={() => state.set(2)}
               use:hint={'Phân loại cụm từ: Danh, động, tính, trạng...'}>
-              {tag_label(vpterm.ptag) || 'Phân loại'}
+              {ptnames[vpterm.ptag] || 'Phân loại'}
             </button>
           {/if}
         </div>

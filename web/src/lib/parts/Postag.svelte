@@ -1,6 +1,228 @@
+<script context="module">
+  export const ptnames = {
+    '_': 'Không rõ',
+    'nr': 'Tên người',
+    'ns': 'Địa danh',
+    'nt': 'Tổ chức',
+    'nz': 'Tên riêng khác',
+
+    'n': 'Danh từ',
+    'nw': 'Danh xưng',
+    // 'nc': 'Danh từ trừu tượng,
+    's': 'Nơi chốn',
+    'f': 'Phương vị',
+    't': 'Thời gian',
+    'ng': 'Ngữ tố danh từ',
+    'tg': 'Ngữ tố thời gian',
+
+    'a': 'Hình dung từ',
+    'b': 'Khu biệt từ',
+    'al': 'Cụm tính từ',
+    'an': 'Danh hình từ',
+    'ad': 'Phó hình từ',
+    'ag': 'Ngữ tố tính từ',
+
+    'v': 'Động từ',
+    'vd': 'Phó động từ',
+    'vn': 'Danh động từ',
+    'vi': 'Nội động từ',
+    'vl': 'Cụm động tân',
+    'vf': 'Động từ xu hướng',
+    'vx': 'Động từ hình thức',
+    'vm': 'Động từ năng nguyện',
+    'vg': 'Ngữ tố động từ',
+
+    'rr': 'Đại từ nhân xưng',
+    'rz': 'Đại từ chỉ thị',
+    'ry': 'Đại từ nghi vấn',
+    'r': 'Đại từ chưa phân loại',
+
+    'nl': 'Cụm danh từ',
+    'i': 'Thành/quán ngữ',
+
+    'm': 'Số từ',
+    'q': 'Lượng từ',
+    'mq': 'Số lượng từ',
+
+    'd': 'Phó từ',
+    'c': 'Liên từ',
+    'cc': 'Liên từ liệt kê',
+    'p': 'Giới từ',
+    'u': 'Trợ từ',
+    'e': 'Thán từ',
+    'y': 'Ngữ khí',
+    'o': 'Tượng thanh',
+
+    // affixes
+    'kn': 'Hậu tố danh từ',
+    'ka': 'Hậu tố tính từ',
+    'kv': 'Hậu tố động từ',
+    'k': 'Hậu tố chưa phân loại',
+
+    'x': 'Chữ latin',
+    'xx': 'Kaomoji',
+    'xu': 'Đường link',
+    'w': 'Dấu câu',
+
+    '!': 'Từ đặc biệt',
+    'vp': 'Cụm động từ',
+    'np': 'Cụm danh từ',
+    'ap': 'Cụm tính từ',
+    'dp': 'Cụm định ngữ',
+    'sv': 'Cụm chủ + vị (động)',
+    'sa': 'Cụm chủ + vị (tính)',
+  }
+
+  // prettier-ignore
+  export const tooltips = {
+    '_': 'Các thực từ chưa được phân loại',
+    'nr': 'Tên/họ riêng của người, như Trương Tam, Joe hay Kazuto.',
+    'ns': 'Tên địa danh như nước Tống, núi Thiếm Lâm, Trường Giang',
+    'nt': 'Tên cơ quan, tổ chức, bang phái',
+    'nz': 'Các từ viết hoa khác như tựa sách, chiêu thức, từ viết tắt đứng độc lập',
+    'n': 'Danh từ thông dụng như tên động vật, đồ vật hoặc các khái niệm trừu tượng',
+    'nw': 'Danh xưng cho người như tỷ tỷ, muội muội, đại nhân, lão sư, tiểu thư',
+    // 'nc': 'Danh từ trừu tượng,
+    's': 'Từ chỉ nơi chốn của đồ vật như trên bàn, dưới núi, trong thư viện',
+    'f': 'Các danh từ chỉ phương hướng như phía trên, bên dưới, đằng sau, ở giữa',
+    't': 'Các từ chỉ thời gian như buổi sáng, 12 giờ, thứ hai, tháng 7, năm 2021',
+    'ng': 'Ngữ tố danh từ',
+    'tg': 'Ngữ tố thời gian',
+
+    'a': 'Các từ mô tả hình dạng/tính chất của sự vật, hoặc trạng thái của hành vi',
+    'b': 'Tính từ phi vị ngữ, có thể làm định ngữ trực tiếp cho danh từ không cần 的',
+    'al': 'Từ trạng thái như ướt sùng sũng, đo đỏ / Các thành ngữ mang vai trò tính từ',
+    'an': 'Từ vừa đóng vai trò tính từ vừa đóng vai trò danh từ',
+    'ad': 'Từ vừa đóng vai trò tính từ vừa có thể là trạng ngữ cho động từ',
+    'ag': 'Ngữ tố tính từ',
+
+    'v': 'Từ chỉ động tác, hành vi, biến hoá, phát triển. Đằng sau cần một hoặc 2 tân ngữ',
+    'vd': 'Những từ vừa có vai trò là động từ vừa có thể làm trạng ngữ cho động từ đằng sau',
+    'vn': 'Các từ vừa đóng vai trò động từ vừa đóng vai trò danh từ. Cần tân ngữ',
+    'vi': 'Các động từ không cần thiết tân ngữ đằng sau',
+    'vf': 'Động từ xu hướng',
+    'vx': 'Động từ mang nghĩa bổ xung cho động từ đằng sau, đứng độc lập không có nghĩa',
+    'vm': 'Trợ động từ biểu đạt năng lực, nguyện vọng, yêu cầm, khả năng của một việc',
+    'vg': 'Ngữ tố động từ',
+
+    'rr': 'Đại từ chỉ ngôi thứ nhất, thứ hai hoặc thứ ba. Ví dụ ta, ngươi, hắn, trẫm, ngài',
+    'rz': 'Đại từ chỉ thị',
+    'ry': 'Đại từ nghi vấn',
+    'r': 'Đại từ chưa phân loại',
+
+    'nl': 'Cụm danh từ',
+    'bl': 'Cụm khu biệt',
+    'vl': 'Cụm động tân',
+    'i': 'Thành/quán ngữ',
+
+    'm': 'Số từ',
+    'q': 'Lượng từ',
+    'mq': 'Số lượng từ',
+
+    'd': 'Phó từ',
+    'c': 'Liên từ',
+    'cc': 'Liên từ liệt kê',
+    'p': 'Giới từ',
+    'u': 'Trợ từ',
+    'e': 'Thán từ',
+    'y': 'Ngữ khí',
+    'o': 'Tượng thanh',
+
+    // affixes
+    'kn': 'Hậu tố danh từ',
+    'ka': 'Hậu tố tính từ',
+    'kv': 'Hậu tố động từ',
+    'k': 'Hậu tố chưa phân loại',
+
+    'x': 'Chữ latin',
+    'xx': 'Kaomoji',
+    'xu': 'Đường link',
+    'w': 'Dấu câu',
+
+    '!': 'Từ đặc biệt',
+    'vp': 'Cụm động từ',
+    'np': 'Cụm danh từ',
+    'ap': 'Cụm tính từ',
+    'dp': 'Cụm định ngữ',
+    'sv': 'Cụm chủ + vị (động)',
+    'sa': 'Cụm chủ + vị (tính)',
+  }
+
+  export const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt']
+
+  export const groups = [
+    // prettier-ignore
+    [
+      'nr','ns','nt',
+      'nz',
+      '-',
+      'n', 'nw', 't',
+      's', 'f',
+      '-',
+      'a', 'an', 'ad',
+      'b', 'al',
+      '-',
+      'v', 'vn', 'vd',
+      'vi', 'vl',
+      '-',
+      'rr', 'rz', 'ry',
+      'r',
+      '-',
+      'nl', 'i',
+    ],
+    // prettier-ignore
+    [
+      'm', 'q', 'mq',
+      '-',
+      'vx', 'vm', 'vf',
+      '-',
+      'd', 'p', 'u',
+      'c', 'cc',
+      '-',
+      'e', 'y', 'o',
+    ],
+    // prettier-ignore
+    [
+      '-',
+      'kn', 'ka', 'kv',
+      'ag', 'vg', 'ng',
+      'tg',
+      '-',
+      'x', 'xx', 'xu',
+      'w', '!'
+    ],
+  ]
+
+  function find_group(tag) {
+    for (const [idx, group] of groups.entries()) {
+      if (group.includes(tag)) return idx
+    }
+
+    return -1
+  }
+
+  function map_kbd(tag) {
+    if (tag.length == 1) return tag
+
+    // prettier-ignore
+    switch (tag) {
+      case 'nr': return '1'
+      case 'ns': return '2'
+      case 'nt': return '3'
+      case 'nz': return '4'
+      case 'nw': return 'z'
+
+      case 'an': return '5'
+      case 'vn': return '6'
+
+      default: return ''
+    }
+  }
+</script>
+
 <script>
   import { onMount } from 'svelte'
-  import { gnames, groups, find_group, tag_label } from '$lib/pos_tag'
+  import { tooltip } from '$utils/actions'
 
   import SIcon from '$atoms/SIcon.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
@@ -74,8 +296,11 @@
                 class="pos-tag"
                 class:_active={ntag == ptag}
                 data-tag={ntag}
+                data-kbd={map_kbd(ntag)}
+                use:tooltip={tooltips[ntag]}
+                data-anchor="postag-wrap"
                 on:click={() => update_tag(ntag)}>
-                <span>{tag_label(ntag)}</span>
+                <span>{ptnames[ntag]}</span>
                 {#if ntag == ptag}
                   <SIcon name="check" />
                 {/if}
@@ -152,7 +377,7 @@
 
     @include ftsize(sm);
     @include fgcolor(tert);
-    @include clamp($width: null);
+
     @include border(--bd-main, $loc: left-right);
 
     &:hover {
@@ -196,14 +421,15 @@
     background: transparent;
     font-weight: 500;
 
+    flex-shrink: 1;
     line-height: 1.5rem;
 
     @include linesd(--bd-main);
 
     @include fgcolor(tert);
     @include bdradi(0.75rem);
-    @include clamp($width: null);
     @include bps(font-size, rem(13px), rem(14px));
+    @include clamp($width: 100%);
 
     &:hover,
     &._active {

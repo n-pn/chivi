@@ -74,58 +74,6 @@ export const labels = {
   'sa': 'Cụm chủ + vị (tính)',
 }
 
-export const gnames = ['Cơ bản', 'Hiếm gặp', 'Đặc biệt']
-export const groups = [
-  // prettier-ignore
-  [
-    'nr','ns','nt',
-    'nz',
-    '-',
-    'n', 'nw', 't',
-    's', 'f',
-    '-',
-    'a', 'an', 'ad',
-    'b', 'az',
-    '-',
-    'v', 'vn', 'vd',
-    'vi',
-    '-',
-    'rr', 'rz', 'ry',
-    'r',
-  ],
-  // prettier-ignore
-  [
-    'm', 'q', 'mq',
-    '-',
-    'vx', 'vm', 'vf',
-    '-',
-    'd', 'p', 'u',
-    'c', 'cc',
-    '-',
-    'e', 'y', 'o',
-  ],
-  // prettier-ignore
-  [
-    'nl', 'al', 'bl',
-    'vl','i',
-    '-',
-    'kn', 'ka', 'kv',
-    'ag', 'vg', 'ng',
-    'tg',
-    '-',
-    'x', 'xx', 'xu',
-    'w', '!'
-  ],
-]
-
 export function tag_label(tag) {
   return labels[tag] || tag
-}
-
-export function find_group(tag) {
-  for (const [idx, group] of groups.entries()) {
-    if (group.includes(tag)) return idx
-  }
-
-  return -1
 }

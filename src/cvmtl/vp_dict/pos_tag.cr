@@ -117,13 +117,14 @@ struct CV::PosTag
     when "m", "mx", "mz" then map_numbers(key)
     when "q", "qt", "qv" then map_quantis(key)
     when "mq" then map_nquants(key)
+    when "bl" then Modifier
+    when "z", "az" then Aform
     when "nf" then Person
     when "r" then Pronoun
     when "rr" then ProPer
     when "l" then Idiom
     when "j" then Noun
     when "-" then None
-    when "z" then Adesc
     {% for type in TYPES %}
     when {{ type[0] }} then {{ type[1].id }}
     {% end %}

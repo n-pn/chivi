@@ -13,11 +13,11 @@ struct CV::PosTag
     {"ag", "Amorp", Pos::Adjts | Pos::Contws},
 
     # 状态词 - stative verb - trạng thái
-    {"az", "Adesc", Pos::Adjts | Pos::Contws},
+    # {"az", "Adesc", Pos::Adjts | Pos::Contws},
     # modifier (non-predicate noun modifier) - 区别词 - từ khu biệt
     {"b", "Modifier", Pos::Adjts | Pos::Contws},
     # 区别词性惯用语 - noun modifier morpheme
-    {"bl", "Modiform", Pos::Adjts | Pos::Contws},
+    # {"bl", "Modiform", Pos::Adjts | Pos::Contws},
   }
 
   @[AlwaysInline]
