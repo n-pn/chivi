@@ -46,7 +46,8 @@
   let article = null
 
   function on_selection() {
-    if (hover_line < 0) return
+    if (hover_line < 0 || $config.reader == 1) return
+
     const [lower, upper] = read_selection()
     if (upper > 0) $input = [zhtext[hover_line], lower, upper]
 
@@ -107,7 +108,7 @@
   }
 
   function hide_cvmenu() {
-    setTimeout(() => cvmenu_state.set(0), 100)
+    setTimeout(() => cvmenu_state.set(0), 200)
   }
 
   function show_html(reader, index, hover, focus) {
