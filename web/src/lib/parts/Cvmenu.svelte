@@ -1,69 +1,70 @@
 <script context="module">
   import { writable } from 'svelte/store'
-  export const state = writable(0)
-  export const place = writable([100, 100])
-  export const input = writable([''])
-
-  import { ctrl as lookup } from '$parts/Lookup.svelte'
-  import { ctrl as upsert } from '$parts/Upsert.svelte'
-
-  import { state as tlspec_state } from '$parts/Tlspec.svelte'
+  import { create_input } from '$utils/create_stores'
 
   const width = 96
 
-  export function activate(target, parent) {
-    const rect = get_rect(target)
+  export const input = create_input()
 
-    let left = Math.floor((rect.left + rect.right) / 2) - width / 2
-    if (left < 0) left = 0
-    else if (left + width > window.innerWidth) left = window.innerWidth - width
+  export const ctrl = {
+    ...writable({ actived: false, top: 0, left: 0 }),
+    activate(target, parent) {
+      const rect = get_rect(target)
 
-    const parent_rect = get_rect(parent)
+      let left = Math.floor((rect.left + rect.right) / 2) - width / 2
+      if (left < 0) left = 0
+      else if (left + width > window.innerWidth)
+        left = window.innerWidth - width
 
-    place.set([rect.bottom + 6 - parent_rect.top, left - parent_rect.left])
-    state.set(1)
+      const parent_rect = get_rect(parent)
+
+      ctrl.set({
+        actived: true,
+        top: rect.bottom + 6 - parent_rect.top,
+        left: left - parent_rect.left,
+      })
+    },
+    deactivate: () => ctrl.set({ actived: false, top: 0, left: 0 }),
   }
 
-  const fake_rect = { left: 0, right: 0, bottom: 0, top: 0 }
   function get_rect(node) {
-    if (!node) return fake_rect
     const rects = node.getClientRects()
-    if (rects.length == 0) return fake_rect
-    return rects[rects.length - 1]
+    return rects[rects.length - 1] || { left: 0, right: 0, bottom: 0, top: 0 }
   }
 </script>
 
 <script>
-  import SIcon from '$atoms/SIcon.svelte'
-  $: [top, left] = $place
+  import { ctrl as lookup } from '$parts/Lookup.svelte'
+  import { ctrl as upsert } from '$parts/Upsert.svelte'
+  import { ctrl as tlspec } from '$parts/Tlspec.svelte'
 
-  // $: if (cvmenu && $state) cvmenu.focus()
+  import SIcon from '$atoms/SIcon.svelte'
 </script>
 
-<cv-menu style="--top: {top}px; --left: {left}px">
-  <menu-item
+<cv-menu style="--top: {$ctrl.top}px; --left: {$ctrl.left}px">
+  <cv-item
     data-kbd="↵"
     data-tip="Sửa từ"
     tip-loc="bottom"
     on:click={() => upsert.activate($input, 0)}>
     <SIcon name="pencil" />
-  </menu-item>
+  </cv-item>
 
-  <menu-item
+  <cv-item
     data-kbd="q"
     data-tip="Tra từ"
     tip-loc="bottom"
     on:click={() => lookup.activate($input, $lookup.enabled)}>
     <SIcon name="search" />
-  </menu-item>
+  </cv-item>
 
-  <menu-item
+  <cv-item
     data-kbd="p"
     data-tip="Báo lỗi"
     tip-loc="bottom"
-    on:click={() => ($tlspec_state = 1)}>
+    on:click={() => tlspec.activate($input, true)}>
     <SIcon name="flag" />
-  </menu-item>
+  </cv-item>
 </cv-menu>
 
 <style lang="scss">
@@ -84,7 +85,6 @@
     --bgc: #{color(primary, 6)};
     background: var(--bgc);
 
-    @include fgcolor(white);
     @include bdradi();
     @include shadow();
 
@@ -104,14 +104,14 @@
     }
   }
 
-  menu-item {
+  cv-item {
+    @include flex-ca;
+    cursor: pointer;
     width: $size;
     height: 100%;
-    @include flex-ca;
+    @include fgcolor(white);
 
-    &:hover {
-      cursor: pointer;
-      // @include fgcolor(primary, 5);
-    }
+    // prettier-ignore
+    &:hover { @include fgcolor(primary, 2); }
   }
 </style>

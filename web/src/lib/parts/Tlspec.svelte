@@ -1,5 +1,6 @@
 <script context="module">
   import { writable } from 'svelte/store'
+  import { create_input } from '$utils/create_stores'
 
   export async function submit_tlspec(params) {
     const url = '/api/tlspecs'
@@ -13,7 +14,16 @@
     return [res.status, await res.text()]
   }
 
-  export const state = writable(0)
+  const input = create_input()
+
+  export const ctrl = {
+    ...writable({ actived: false }),
+    activate: (data) => {
+      input.put(data)
+      ctrl.set({ actived: true })
+    },
+    deactivate: () => ctrl.set({ actived: false }),
+  }
 </script>
 
 <script>
@@ -21,7 +31,6 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
-  export let ztext = ''
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
   export let slink = '.'
@@ -33,13 +42,11 @@
 
   onDestroy(on_destroy)
 
-  const hide_tlspec = () => ($state = 0)
-
   async function handle_submit() {
-    const params = { ztext, dname, slink, unote, label }
+    const params = { ztext: $input.ztext, dname, slink, unote, label }
     const [status, payload] = await submit_tlspec(params)
     if (status) error = payload
-    else hide_tlspec()
+    else ctrl.deactivate()
   }
 
   function invalid_input(ztext, unote) {
@@ -48,7 +55,7 @@
   }
 </script>
 
-<Gmodal actived={$state > 0} index={80} on_close={hide_tlspec}>
+<Gmodal actived={$ctrl.actived} index={80} on_close={ctrl.deactivate}>
   <tlspec-wrap>
     <tlspec-head>
       <tlspec-title>
@@ -58,7 +65,7 @@
           <SIcon name="link" />
         </a>
       </tlspec-title>
-      <button type="button" class="close-btn" on:click={hide_tlspec}>
+      <button type="button" class="close-btn" on:click={ctrl.deactivate}>
         <SIcon name="x" />
       </button>
     </tlspec-head>
@@ -76,7 +83,7 @@
               class="m-input _zh"
               name="ztext"
               placeholder="Text tiếng trung"
-              bind:value={ztext} />
+              bind:value={$input.ztext} />
           </form-field>
         </form-group>
 
@@ -108,7 +115,7 @@
           <button
             type="submit"
             class="m-btn _primary _lg _fill"
-            disabled={invalid_input(ztext, unote)}>
+            disabled={invalid_input($input.ztext, unote)}>
             <SIcon name="send" />
             <span>Báo lỗi</span>
           </button>

@@ -17,6 +17,7 @@
 </script>
 
 <script>
+  import { onDestroy } from 'svelte'
   import { session } from '$app/stores'
   import { decor_term, hint } from './Upsert/_shared.js'
 
@@ -31,8 +32,7 @@
   import Links from './Upsert/Links.svelte'
 
   import Postag, { ptnames } from '$parts/Postag.svelte'
-  import { state as tlspec_state } from '$parts/Tlspec.svelte'
-  import { onDestroy } from 'svelte'
+  import { ctrl as tlspec } from '$parts/Tlspec.svelte'
 
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
@@ -118,7 +118,7 @@
             <span>Từ điển</span>
           </a>
 
-          <button class="-item" on:click={() => ($tlspec_state = 1)}>
+          <button class="-item" on:click={() => tlspec.activate($input)}>
             <SIcon name="flag" />
             <span>Báo lỗi</span>
           </button>

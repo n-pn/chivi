@@ -1,13 +1,9 @@
 <script context="module">
-  import Tlspec, { state as tlspec_state } from '$parts/Tlspec.svelte'
+  import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
   import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
   import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
 
-  import Cvmenu, {
-    state as cvmenu_state,
-    activate as cvmenu_activate,
-    input,
-  } from '$parts/Cvmenu.svelte'
+  import Cvmenu, { ctrl as cvmenu, input } from '$parts/Cvmenu.svelte'
 </script>
 
 <script>
@@ -33,64 +29,65 @@
   $: cv_lines = Mtline.parse_lines(cvdata)
   let article = null
 
-  let hover_line = 0
-  let focus_line = 0
-  let focus_word = null
+  let state = { hover: 0, focus: 0 }
+  let cvterm = null
+
+  const hide_cvmenu = () => setTimeout(cvmenu.deactivate, 50)
 
   $: if ($navigating) {
-    hover_line = 0
-    focus_line = 0
-    focus_word = null
-    $cvmenu_state = 0
+    state = { hover: 0, focus: 0 }
+    cvterm = null
+
+    cvmenu.deactivate()
     upsert.deactivate()
-  }
-
-  function on_selection() {
-    if (hover_line < 0 || $config.reader == 1) return
-
-    const [lower, upper] = read_selection()
-    if (upper > 0) $input = [zhtext[hover_line], lower, upper]
-
-    const selection = document.getSelection()
-    if (selection.isCollapsed) return
-
-    const range = selection.getRangeAt(0)
-    cvmenu_activate(range, article)
   }
 
   onMount(() => {
     let timeout = null
 
+    function on_selection() {
+      timeout = null
+      if (state.hover < 0 || $config.reader == 1) return
+
+      const [lower, upper] = read_selection()
+      if (upper > 0) $input = [zhtext[state.hover], lower, upper]
+
+      const selection = document.getSelection()
+      if (selection.isCollapsed) return
+
+      const range = selection.getRangeAt(0)
+      cvmenu.activate(range, article)
+    }
+
     const action = document.addEventListener('selectionchange', () => {
       if (timeout) clearTimeout(timeout)
-      timeout = setTimeout(on_selection, 150)
+      timeout = setTimeout(on_selection, 250)
     })
 
     return () => document.removeEventListener('selectionchange', action)
   })
 
   function handle_click({ target }, index) {
-    if (focus_line != index) focus_line = index
+    if (state.focus != index) state.focus = index
 
     if ($config.reader == 1) return // return if in zen mode
     if (target.nodeName != 'V-N') {
-      console.log(target)
-      if (target.nodeName != 'CV-MENU') cvmenu_state.set(0)
+      if (target.nodeName != 'CV-ITEM') hide_cvmenu()
       return
     }
 
-    cvmenu_activate(target, article)
+    cvmenu.activate(target, article)
 
     const lower = +target.dataset.i
     const upper = lower + +target.dataset.l
     $input = [zhtext[index], lower, upper]
 
-    if (target == focus_word) {
+    if (target == cvterm) {
       upsert.activate($input, 0)
     } else {
-      focus_word?.classList.remove('focus')
+      cvterm?.classList.remove('focus')
       target.classList.add('focus')
-      focus_word = target
+      cvterm = target
 
       if ($lookup.enabled || $lookup.actived) {
         lookup.activate($input, $lookup.enabled)
@@ -102,33 +99,22 @@
     if (!article) return
     article.focus()
 
-    setTimeout(() => {
-      const elem = article.querySelector('#L' + focus_line)
-      if (!elem || is_visible(elem)) return
+    const elem = article.querySelector('#L' + state.focus)
+    if (scroll_uneeded(elem)) return
 
-      elem?.scrollIntoView({
-        behavior: 'auto',
-        block: 'nearest',
-        inline: 'nearest',
-      })
-    }, 50)
+    elem?.scrollIntoView({ behavior: 'auto', block: 'nearest' })
   }
 
-  function is_visible(elem) {
+  function scroll_uneeded(elem) {
+    if (!elem) return true
     const rect = elem.getBoundingClientRect()
     return rect.top > 0 && rect.bottom <= window.innerHeight
   }
 
-  function hide_cvmenu() {
-    setTimeout(() => cvmenu_state.set(0), 200)
-  }
-
-  function show_html(reader, index, hover, focus) {
-    if (reader == 1) return false
-    if (reader == 2) return true
-
-    if (index == hover) return true
-    return index > focus - 2 && index < focus + 2
+  function show_html(reader, index, state) {
+    if (reader > 0) return reader == 2
+    if (index == state.hover) return true
+    return index > state.focus - 2 && index < state.focus + 2
   }
 
   function switch_reader(reader_mode = 0) {
@@ -152,7 +138,7 @@
   style="--textlh: {$config.textlh}%"
   bind:this={article}
   on:blur={hide_cvmenu}
-  on:click={(e) => handle_click(e, hover_line)}>
+  on:click={(e) => handle_click(e, state.hover)}>
   <slot name="header">Dịch nhanh</slot>
 
   {#key zhtext}
@@ -161,19 +147,15 @@
         id="L{index}"
         class={wtitle && index == 0 ? 'h' : 'p'}
         class:debug={$config.reader == 2}
-        class:focus={index == focus_line}
-        on:mouseenter={() => (hover_line = index)}>
+        class:focus={index == state.focus}
+        on:mouseenter={() => (state.hover = index)}>
         {#if $config.showzh}<zh-line>{zhtext[index]}</zh-line>{/if}
-        <Cvline
-          {input}
-          focus={show_html($config.reader, index, hover_line, focus_line)} />
+        <Cvline {input} focus={show_html($config.reader, index, state)} />
       </cv-data>
     {/each}
   {/key}
 
-  {#if $cvmenu_state > 0}
-    <Cvmenu />
-  {/if}
+  {#if $cvmenu.actived}<Cvmenu />{/if}
 </article>
 
 {#if browser}
@@ -184,12 +166,11 @@
   <Upsert {dname} {d_dub} {on_change} on_destroy={regain_focus} />
 {/if}
 
-{#if $tlspec_state}
+{#if $tlspec.actived}
   <Tlspec
     {dname}
     {d_dub}
-    ztext={zhtext[hover_line]}
-    slink="{$page.path}#L{hover_line}"
+    slink="{$page.path}#L{state.hover}"
     on_destroy={regain_focus} />
 {/if}
 
