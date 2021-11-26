@@ -1,9 +1,5 @@
 <script context="module">
-  import Lookup, {
-    activate as lookup_activate,
-    enabled as lookup_enabled,
-  } from '$parts/Lookup.svelte'
-
+  import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
   import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
 
   import Postag, { ptnames } from '$parts/Postag.svelte'
@@ -104,17 +100,6 @@
       <span class="header-text _title">{d_dub}</span>
     </a>
   </svelte:fragment>
-
-  <svelte:fragment slot="right">
-    <button
-      class="header-item"
-      class:_active={$lookup_enabled}
-      on:click={() => lookup_enabled.update((x) => !x)}
-      data-kbd="\">
-      <SIcon name="compass" />
-      <span class="header-text _show-md">Giải nghĩa</span>
-    </button>
-  </svelte:fragment>
 </Appbar>
 
 <Vessel>
@@ -173,7 +158,7 @@
           {#each terms as { key, val, ptag, rank, mtime, uname, _flag }, idx}
             <tr class="term _{_flag}">
               <td class="-idx">{offset + idx}</td>
-              <td class="-key" on:click={() => lookup_activate(key, true)}>
+              <td class="-key" on:click={() => lookup.activate(key, true)}>
                 <span>{key}</span>
                 <div class="hover">
                   <span class="m-btn _xs _active">
@@ -240,7 +225,7 @@
   </article>
 </Vessel>
 
-{#if $lookup_enabled}
+{#if $lookup.enabled}
   <Lookup {dname} />
 {/if}
 

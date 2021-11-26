@@ -4,7 +4,7 @@
   export const place = writable([100, 100])
   export const input = writable([''])
 
-  import { activate as lookup_activate } from '$parts/Lookup.svelte'
+  import { ctrl as lookup } from '$parts/Lookup.svelte'
   import { ctrl as upsert } from '$parts/Upsert.svelte'
 
   import { state as tlspec_state } from '$parts/Tlspec.svelte'
@@ -56,7 +56,7 @@
     data-kbd="q"
     data-tip="Tra từ"
     tip-loc="bottom"
-    on:click={() => lookup_activate($input)}>
+    on:click={() => lookup.activate($input)}>
     <SIcon name="search" />
   </cvmenu-item>
 

@@ -45,3 +45,21 @@ export function create_layers_store(data = []) {
     },
   }
 }
+
+export function create_input() {
+  const input = {
+    ...writable({ ztext: '', lower: 0, upper: 1 }),
+    put(data) {
+      if (Array.isArray(data)) {
+        const [ztext, lower, upper] = data
+        input.set({ ztext, lower, upper })
+      } else if (typeof data === 'string') {
+        input.set({ ztext: data, lower: 0, upper: data.length })
+      } else {
+        input.set(data)
+      }
+    },
+  }
+
+  return input
+}

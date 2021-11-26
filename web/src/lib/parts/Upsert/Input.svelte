@@ -1,17 +1,6 @@
 <script context="module">
-  import { writable } from 'svelte/store'
-
-  export const input = {
-    ...writable({ ztext: '', lower: 0, upper: 1 }),
-    put(data) {
-      if (Array.isArray(data)) {
-        const [ztext, lower, upper] = data
-        input.set({ ztext, lower, upper })
-      } else {
-        input.set({ ztext: data, lower: 0, upper: data.length })
-      }
-    },
-  }
+  import { create_input } from '$utils/create_stores'
+  export const input = create_input()
 </script>
 
 <script>

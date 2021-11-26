@@ -1,11 +1,7 @@
 <script context="module">
   import Tlspec, { state as tlspec_state } from '$parts/Tlspec.svelte'
   import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
-
-  import Lookup, {
-    enabled as lookup_enabled,
-    activate as lookup_activate,
-  } from '$parts/Lookup.svelte'
+  import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
 
   import Cvmenu, {
     state as cvmenu_state,
@@ -89,14 +85,15 @@
       if (focus_word) focus_word.classList.remove('focus')
       target.classList.add('focus')
       focus_word = target
-      if ($lookup_enabled) lookup_activate($input)
+      if ($lookup.enabled) lookup.activate($input)
     }
   }
 
   function regain_focus() {
-    setTimeout(() => {
-      article.focus()
+    if (!article) return
+    article.focus()
 
+    setTimeout(() => {
       const elem = article.querySelector('#L' + focus_line)
       if (!elem || is_visible(elem)) return
 

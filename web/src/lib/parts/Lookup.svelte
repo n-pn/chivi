@@ -1,35 +1,26 @@
 <script context="module">
-  import { MtData } from '$lib/mt_data'
+  import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
+
   import { dict_lookup } from '$api/dictdb_api'
+  import { create_input } from '$utils/create_stores'
+  import { Mtline } from '$sects/Cvline.svelte'
   import { ptnames } from '$parts/Postag.svelte'
-
   import { ctrl as upsert } from '$parts/Upsert.svelte'
-  export const enabled = writable(false)
-  export const actived = writable(false)
 
-  const input = writable('')
-  const lower = writable(0)
-  const upper = writable(0)
+  const input = create_input()
 
-  export function activate(data, _enable) {
-    if (typeof data == 'string') {
-      input.set(data)
-      lower.set(0)
-      upper.set(data.length)
-    } else {
-      input.set(data[0])
-      lower.set(data[1])
-      upper.set(data[2])
-    }
-
-    actived.set(true)
-    if (_enable) enabled.set(true)
+  export const ctrl = {
+    ...writable({ actived: false, enabled: false }),
+    activate(data, enabled = false) {
+      input.put(data)
+      ctrl.set({ enabled, actived: true })
+    },
+    deactivate: (enabled = true) => ctrl.set({ enabled, actived: false }),
   }
 </script>
 
 <script>
-  import { onDestroy } from 'svelte'
   import SIcon from '$atoms/SIcon.svelte'
   import Gslide from '$molds/Gslide.svelte'
 
@@ -37,37 +28,27 @@
   export let on_destroy = () => {}
   // export let label = 'Tổng hợp'
 
+  onDestroy(on_destroy)
+
   let entries = []
   let current = []
 
-  let lookup = null
-
+  let { lower, upper } = $input
   $: if ($input) update_lookup($input)
-  $: zh_text = MtData.render_zh($input)
-  let hv_text = ''
-  $: if ($lower >= 0 && $upper > 0) update_focus($lower)
 
-  onDestroy(on_destroy)
+  let hv_html = ''
+  let zh_html = ''
 
-  let tokens = []
-  function highlight_focused(lower, upper) {
-    if (!lookup) return
-    tokens.forEach((x) => x.classList.remove('_active'))
-    tokens = []
-
-    for (let idx = lower; idx < upper; idx++) {
-      const nodes = lookup.querySelectorAll(`c-v[data-i="${idx}"]`)
-      nodes.forEach((x) => {
-        tokens.push(x)
-        x.classList.add('_active')
-        x.scrollIntoView({ block: 'end', behavior: 'smooth' })
-      })
-    }
-  }
+  $: if (lower >= 0 && $input.upper > 0) update_focus(lower)
 
   async function update_lookup(input) {
-    const [err, data] = await dict_lookup(fetch, input, dname)
-    if (err) return
+    if (!input.ztext) return
+    zh_html = Mtline.render_zh(input.ztext)
+    lower = input.lower
+    upper = input.upper
+
+    const [lookup_err, data] = await dict_lookup(fetch, input.ztext, dname)
+    if (lookup_err) return console.log({ lookup_err })
 
     entries = data.entries
 
@@ -78,26 +59,48 @@
       }
     }
 
-    hv_text = new MtData(data.hanviet).render_hv()
-    update_focus($lower)
+    hv_html = new Mtline(data.hanviet).render_hv()
+    update_focus(lower)
   }
 
   function handle_click({ target }) {
     const name = target.nodeName
-    if (name == 'C-V') $lower = +target.dataset.i
+    if (name == 'V-N') lower = +target.dataset.i
   }
 
   function update_focus(lower) {
     current = entries[lower] || []
 
-    if (current.length == 0) $upper = lower
-    else $upper = lower + +current[0][0]
+    if (current.length == 0) upper = lower
+    else upper = lower + +current[0][0]
 
-    setTimeout(() => highlight_focused(lower, $upper), 10)
+    setTimeout(() => highlight_focused(lower, upper), 10)
+  }
+
+  let viewer = null
+  let focused = []
+
+  function highlight_focused(lower, upper) {
+    if (!viewer) return
+    focused.forEach((x) => x.classList.remove('focus'))
+    focused = []
+
+    for (let idx = lower; idx < upper; idx++) {
+      const nodes = viewer.querySelectorAll(`v-n[data-i="${idx}"]`)
+      nodes.forEach((x) => {
+        focused.push(x)
+        x.classList.add('focus')
+        x.scrollIntoView({ block: 'end', behavior: 'smooth' })
+      })
+    }
   }
 </script>
 
-<Gslide _klass="lookup" _rwidth={30} _sticky={true} bind:actived={$actived}>
+<Gslide
+  _klass="lookup"
+  _rwidth={30}
+  _sticky={true}
+  bind:actived={$ctrl.actived}>
   <svelte:fragment slot="header-left">
     <div class="-icon">
       <SIcon name="compass" />
@@ -105,23 +108,19 @@
     <div class="-text">Giải nghĩa</div>
   </svelte:fragment>
 
-  <button
-    slot="header-right"
-    class="-btn"
-    on:click={() => {
-      $enabled = false
-      $actived = false
-    }}>
-    <SIcon name="circle-off" />
-  </button>
+  <svelte:fragment slot="header-right">
+    <button class="-btn" on:click={() => ctrl.deactivate(false)}>
+      <SIcon name="circle-off" />
+    </button>
+  </svelte:fragment>
 
-  <section class="input" bind:this={lookup}>
+  <section class="input" bind:this={viewer}>
     <div class="input-nav _zh" on:click={handle_click} lang="zh">
-      {@html zh_text}
+      {@html zh_html}
     </div>
 
     <div class="input-nav _hv" on:click={handle_click}>
-      {@html hv_text}
+      {@html hv_html}
     </div>
   </section>
 
@@ -129,11 +128,12 @@
     {#each current as [size, terms]}
       <div class="entry">
         <h3 class="word" lang="zh">
-          <entry-key>{$input.substr($lower, size)}</entry-key>
+          <entry-key>{$input.ztext.substr(lower, size)}</entry-key>
           <entry-btn
             class="m-btn _sm"
             role="button"
-            on:click={() => upsert.activate([$input, $lower, $lower + size])}>
+            on:click={() =>
+              upsert.activate([$input.ztext, lower, lower + size])}>
             <SIcon name="edit" />
             <span>{terms.vietphrase ? 'Sửa' : 'Thêm'}</span>
           </entry-btn>

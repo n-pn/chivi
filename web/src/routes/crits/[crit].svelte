@@ -1,6 +1,5 @@
 <script context="module">
   import { api_call } from '$api/_api_call'
-  import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
   export async function load({ fetch, page }) {
     const [status, crit] = await api_call(fetch, `crits/${page.params.crit}`)
@@ -30,7 +29,7 @@
   <title>Đánh giá - Chivi</title>
 </svelte:head>
 
-<Appbar>
+<Appbar ptype="cvmtl">
   <svelte:fragment slot="left">
     <a href="/crits" class="header-item">
       <SIcon name="messages" />
@@ -39,17 +38,6 @@
 
     <button class="header-item _active">
       <span class="header-text _seed">[{crit.id}]</span>
-    </button>
-  </svelte:fragment>
-
-  <svelte:fragment slot="right">
-    <button
-      class="header-item"
-      class:_active={$lookup_enabled}
-      on:click={() => lookup_enabled.update((x) => !x)}
-      data-kbd="\">
-      <SIcon name="compass" />
-      <span class="header-text _show-md">Giải nghĩa</span>
     </button>
   </svelte:fragment>
 </Appbar>

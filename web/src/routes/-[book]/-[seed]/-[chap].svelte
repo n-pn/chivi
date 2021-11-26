@@ -1,6 +1,5 @@
 <script context="module">
   import { api_call, put_fetch } from '$api/_api_call'
-  import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
   export async function load({ fetch, page: { params }, stuff }) {
     const { cvbook } = stuff
@@ -123,17 +122,6 @@
       <span class="header-text _seed">[{chmeta.sname}]</span>
     </button>
   </svelte:fragment>
-
-  <!-- <svelte:fragment slot="right">
-    <button
-      class="header-item"
-      class:_active={$lookup_enabled}
-      on:click={() => lookup_enabled.update((x) => !x)}
-      data-kbd="\">
-      <SIcon name="compass" />
-      <span class="header-text _show-lg">Giải nghĩa</span>
-    </button>
-  </svelte:fragment> -->
 </Appbar>
 
 <Vessel>

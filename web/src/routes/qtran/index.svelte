@@ -4,7 +4,6 @@
   import Vessel from '$sects/Vessel.svelte'
 
   import Cvdata from '$sects/Cvdata.svelte'
-  import { enabled as lookup_enabled } from '$parts/Lookup.svelte'
 
   let zhtext = ''
   let cvdata = ''
@@ -48,22 +47,11 @@
   <title>Dịch nhanh - Chivi</title>
 </svelte:head>
 
-<Appbar>
+<Appbar ptype="cvmtl">
   <span slot="left" class="header-item _active">
     <SIcon name="bolt" />
     <span class="header-text">Dịch nhanh</span>
   </span>
-
-  <svelte:fragment slot="right">
-    <button
-      class="header-item"
-      class:_active={$lookup_enabled}
-      on:click={() => lookup_enabled.update((x) => !x)}
-      data-kbd="\">
-      <SIcon name="compass" />
-      <span class="header-text _show-md">Giải nghĩa</span>
-    </button>
-  </svelte:fragment>
 </Appbar>
 
 <Vessel>

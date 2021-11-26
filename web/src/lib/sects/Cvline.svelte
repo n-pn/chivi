@@ -204,8 +204,7 @@
     cv-data:hover &,
     cv-data.focus &,
     cv-data.debug &,
-    &:hover,
-    &.focus {
+    &:hover {
       background: linear-gradient(to top, var(--border) 1px, transparent 0);
     }
 
