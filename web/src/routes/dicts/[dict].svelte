@@ -4,10 +4,7 @@
     enabled as lookup_enabled,
   } from '$parts/Lookup.svelte'
 
-  import Upsert, {
-    activate as upsert_activate,
-    state as upsert_state,
-  } from '$parts/Upsert.svelte'
+  import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
 
   import Postag, { ptnames } from '$parts/Postag.svelte'
 
@@ -193,7 +190,7 @@
               <td
                 class="-val"
                 class:_del={!val[0]}
-                on:click={() => upsert_activate(key, d_tab, 1)}>
+                on:click={() => upsert.activate(key, d_tab, 1)}>
                 <span>
                   {val[0] || 'Đã xoá'}
                 </span>
@@ -210,12 +207,12 @@
                 </div>
               </td>
               <td class="-ptag">
-                <span on:click={() => upsert_activate(key, d_tab, 2)}>
+                <span on:click={() => upsert.activate(key, d_tab, 2)}>
                   {ptnames[ptag] || '~'}
                 </span>
                 <div class="hover">
                   <button
-                    on:click={() => upsert_activate(key, d_tab, 2)}
+                    on:click={() => upsert.activate(key, d_tab, 2)}
                     class="m-btn _xs _active">
                     <SIcon name="pencil" />
                   </button>
@@ -247,7 +244,7 @@
   <Lookup {dname} />
 {/if}
 
-{#if $upsert_state > 0}
+{#if $upsert.state > 0}
   <Upsert {...upsert_dict(dname, d_dub)} {on_change} />
 {/if}
 

@@ -1,9 +1,7 @@
 <script context="module">
   import Tlspec, { state as tlspec_state } from '$parts/Tlspec.svelte'
-  import Upsert, {
-    state as upsert_state,
-    activate as upsert_activate,
-  } from '$parts/Upsert.svelte'
+  import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
+
   import Lookup, {
     enabled as lookup_enabled,
     activate as lookup_activate,
@@ -48,7 +46,7 @@
     focus_line = 0
     focus_word = null
     $cvmenu_state = 0
-    $upsert_state = 0
+    upsert.deactivate()
   }
 
   function on_selection() {
@@ -69,7 +67,7 @@
 
     const action = document.addEventListener('selectionchange', () => {
       if (timeout) clearTimeout(timeout)
-      timeout = setTimeout(on_selection, 200)
+      timeout = setTimeout(on_selection, 50)
     })
 
     return () => document.removeEventListener('selectionchange', action)
@@ -86,7 +84,7 @@
     $input = [zhtext[index], lower, upper]
 
     if (target == focus_word) {
-      upsert_activate($input, 0)
+      upsert.activate($input, 0)
     } else {
       if (focus_word) focus_word.classList.remove('focus')
       target.classList.add('focus')
@@ -139,8 +137,8 @@
   <button data-kbd="z" on:click={() => switch_reader(1)}>Z</button>
   <button data-kbd="z" on:click={() => switch_reader(1)}>Z</button>
   <button data-kbd="g" on:click={() => switch_reader(2)}>G</button>
-  <button data-kbd="x" on:click={() => upsert_activate($input, 0)}>X</button>
-  <button data-kbd="c" on:click={() => upsert_activate($input, 1)}>C</button>
+  <button data-kbd="x" on:click={() => upsert.activate($input, 0)}>X</button>
+  <button data-kbd="c" on:click={() => upsert.activate($input, 1)}>C</button>
 </div>
 
 <article tabindex="-1" bind:this={article} on:blur={hide_cvmenu}>
@@ -169,7 +167,7 @@
       <Cvmenu />
     {/if}
 
-    {#if $upsert_state}
+    {#if $upsert.state > 0}
       <Upsert {dname} {d_dub} {on_change} on_destroy={regain_focus} />
     {/if}
 

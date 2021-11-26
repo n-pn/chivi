@@ -2,30 +2,17 @@
 <script context="module">
   import { writable } from 'svelte/store'
   import { dict_upsert, dict_search } from '$api/dictdb_api.js'
+  import Input, { input } from './Upsert/Input.svelte'
 
-  export const tab = writable(0)
-  export const state = writable(0)
-  export const ztext = writable('')
-  export const lower = writable(0)
-  export const upper = writable(1)
-
-  export function activate(data, active_tab = 0, active_state = 1) {
-    if (typeof data == 'string') {
-      ztext.set(data)
-      lower.set(0)
-      upper.set(data.length)
-    } else {
-      ztext.set(data[0])
-      lower.set(data[1])
-      upper.set(data[2])
-    }
-
-    tab.set(active_tab)
-    state.set(active_state)
-  }
-
-  export function deactivate(_evt) {
-    state.set(0)
+  export const ctrl = {
+    ...writable({ tab: 0, ztext: '' }),
+    activate(data, tab = 0, state = 1) {
+      input.put(data)
+      ctrl.set({ tab, state })
+    },
+    change_tab: (tab) => ctrl.update((x) => ({ ...x, tab })),
+    change_state: (state) => ctrl.update((x) => ({ ...x, state })),
+    deactivate: () => ctrl.change_state(0),
   }
 </script>
 
@@ -37,7 +24,6 @@
   import CMenu from '$molds/CMenu.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
-  import Input from './Upsert/Input.svelte'
   import Emend from './Upsert/Emend.svelte'
   import Vhint from './Upsert/Vhint.svelte'
   import Vutil from './Upsert/Vutil.svelte'
@@ -55,20 +41,20 @@
   export let on_destroy = () => {}
 
   let key = ''
-  $: if (key) change_key($ztext, $lower, $upper)
+  $: if (key) change_key($input)
 
   let pinyins = {}
   let valhint = {}
   let vpterms = {}
 
-  $: vpterm = (vpterms[key] || [])[$tab] || enrich_term({})
+  $: vpterm = (vpterms[key] || [])[$ctrl.tab] || enrich_term({})
 
   $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
 
   let focus
   $: vpterm, focus && focus.focus()
 
-  async function change_key(ztext, lower, upper) {
+  async function change_key({ ztext, lower, upper }) {
     await fetch_data(ztext, lower, upper)
     vpterms = vpterms
   }
@@ -112,10 +98,10 @@
     const params = { key, val, attr, rank: vpterm.rank, _priv: vpterm._priv }
 
     const dnames = [dname, 'regular', 'hanviet']
-    const [status] = await dict_upsert(fetch, dnames[$tab], params)
+    const [status] = await dict_upsert(fetch, dnames[$ctrl.tab], params)
 
     if (!status) on_change()
-    deactivate()
+    ctrl.deactivate()
   }
 
   function is_edited(key, tab) {
@@ -124,7 +110,7 @@
   }
 </script>
 
-<Gmodal actived={$state > 0} on_close={deactivate}>
+<Gmodal actived={$ctrl.state > 0} on_close={ctrl.deactivate}>
   <upsert-wrap>
     <upsert-head class="head">
       <CMenu dir="left" loc="bottom">
@@ -144,18 +130,13 @@
         </svelte:fragment>
       </CMenu>
 
-      <Input
-        ztext={$ztext}
-        bind:lower={$lower}
-        bind:upper={$upper}
-        pinyin={pinyins[key] || ''}
-        bind:output={key} />
+      <Input pinyin={pinyins[key]} bind:output={key} />
 
       <button
         type="button"
         class="m-btn _text"
         data-kbd="esc"
-        on:click={deactivate}>
+        on:click={ctrl.deactivate}>
         <SIcon name="x" />
       </button>
     </upsert-head>
@@ -163,10 +144,10 @@
     <upsert-tabs>
       <button
         class="tab-item _book"
-        class:_active={$tab == 0}
+        class:_active={$ctrl.tab == 0}
         class:_edited={is_edited(key, 0)}
         data-kbd="x"
-        on:click={() => tab.set(0)}
+        on:click={() => ctrl.change_tab(0)}
         use:hint={`Từ điển riêng cho từng bộ truyện`}>
         <SIcon name="book" />
         <span>{d_dub}</span>
@@ -174,10 +155,10 @@
 
       <button
         class="tab-item"
-        class:_active={$tab == 1}
+        class:_active={$ctrl.tab == 1}
         class:_edited={is_edited(key, 1)}
         data-kbd="c"
-        on:click={() => tab.set(1)}
+        on:click={() => ctrl.change_tab(1)}
         use:hint={'Từ điển chung cho tất cả các bộ truyện'}>
         <SIcon name="world" />
         <span>Thông dụng</span>
@@ -185,7 +166,7 @@
 
       <div class="tab-right">
         <CMenu dir="right">
-          <button slot="trigger" class="tab-item" class:_active={$tab > 1}>
+          <button slot="trigger" class="tab-item" class:_active={$ctrl.tab > 1}>
             <SIcon name="caret-down" />
           </button>
 
@@ -193,7 +174,7 @@
             <button
               class="-item"
               data-kbd={'c'}
-              on:click={() => tab.set(2)}
+              on:click={() => ctrl.change_tab(2)}
               use:hint={'Phiên âm Hán Việt cho tên người, sự vật...'}>
               <span>Hán Việt</span>
             </button>
@@ -206,7 +187,7 @@
       <Emend privi={$session.privi} {vpterm} />
 
       <div class="field">
-        <Vhint {key} tab={$tab} hints={valhint[key] || []} bind:vpterm />
+        <Vhint {key} tab={$ctrl.tab} hints={valhint[key] || []} bind:vpterm />
 
         <div class="value" class:_fresh={vpterm.state == 0}>
           <input
@@ -215,16 +196,19 @@
             bind:this={focus}
             bind:value={vpterm.val}
             autocomplete="off"
-            autocapitalize={$tab < 1 ? 'words' : 'off'} />
+            autocapitalize={$ctrl.tab < 1 ? 'words' : 'off'} />
 
-          {#if $tab < 2}
-            <button class="postag" data-kbd="p" on:click={() => state.set(2)}>
+          {#if $ctrl.tab < 2}
+            <button
+              class="postag"
+              data-kbd="p"
+              on:click={() => ctrl.change_state(2)}>
               {ptnames[vpterm.ptag] || 'Phân loại'}
             </button>
           {/if}
         </div>
 
-        <Vutil {key} tab={$tab} bind:vpterm />
+        <Vutil {key} tab={$ctrl.tab} bind:vpterm />
       </div>
 
       <div class="vfoot">
@@ -259,8 +243,8 @@
   </upsert-wrap>
 </Gmodal>
 
-{#if $state == 2}
-  <Postag bind:ptag={vpterm.ptag} bind:state={$state} />
+{#if $ctrl.state == 2}
+  <Postag bind:ptag={vpterm.ptag} bind:state={$ctrl.state} />
 {/if}
 
 <style lang="scss">

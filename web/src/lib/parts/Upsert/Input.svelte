@@ -1,35 +1,53 @@
+<script context="module">
+  import { writable } from 'svelte/store'
+
+  export const input = {
+    ...writable({ ztext: '', lower: 0, upper: 1 }),
+    put(data) {
+      if (Array.isArray(data)) {
+        const [ztext, lower, upper] = data
+        input.set({ ztext, lower, upper })
+      } else {
+        input.set({ ztext: data, lower: 0, upper: data.length })
+      }
+    },
+  }
+</script>
+
 <script>
-  import SIcon from '$atoms/SIcon.svelte'
-
   import { hint } from './_shared'
-
-  export let ztext = ''
-  export let lower = 0
-  export let upper = 1
+  import SIcon from '$atoms/SIcon.svelte'
 
   export let pinyin = ''
   export let output = ''
 
-  $: output = ztext.substring(lower, upper)
-  $: prefix = Array.from(ztext.substring(lower - 10, lower))
-  $: suffix = Array.from(ztext.substring(upper, upper + 10))
+  let prefix = []
+  let suffix = []
+  $: [output, prefix, suffix] = update($input)
+
+  function update({ ztext, lower, upper }) {
+    const output = ztext.substring(lower, upper)
+    const prefix = Array.from(ztext.substring(lower - 10, lower))
+    const suffix = Array.from(ztext.substring(upper, upper + 10))
+    return [output, prefix, suffix]
+  }
 
   function move_lower_left() {
-    lower -= 1
+    $input.lower -= 1
   }
 
   function move_lower_right() {
-    lower += 1
-    if (upper <= lower) upper += 1
+    $input.lower += 1
+    if ($input.upper <= $input.lower) $input.upper += 1
   }
 
   function move_upper_left() {
-    upper -= 1
-    if (lower >= upper) lower -= 1
+    $input.upper -= 1
+    if ($input.lower >= $input.upper) $input.lower -= 1
   }
 
   function move_upper_right() {
-    upper += 1
+    $input.upper += 1
   }
 </script>
 
@@ -38,7 +56,7 @@
     class="btn _left _hide"
     data-kbd="h"
     use:hint={'Mở rộng sang trái'}
-    disabled={lower == 0}
+    disabled={$input.lower == 0}
     on:click={move_lower_left}>
     <SIcon name="chevron-left" />
   </button>
@@ -47,7 +65,7 @@
     class="btn _left"
     data-kbd="j"
     use:hint={'Thu hẹp từ trái'}
-    disabled={lower >= ztext.length - 1}
+    disabled={$input.lower >= $input.ztext.length - 1}
     on:click={move_lower_right}>
     <SIcon name="chevron-right" />
   </button>
@@ -59,7 +77,8 @@
           <button
             class="key-btn"
             use:hint={'Mở rộng sang trái'}
-            on:click={() => (lower -= prefix.length - idx)}>{chr}</button>
+            on:click={() => ($input.lower -= prefix.length - idx)}
+            >{chr}</button>
         {/each}
       </div>
 
@@ -68,8 +87,9 @@
           <button
             class="key-btn"
             use:hint={'Thu hẹp về ký tự này'}
-            on:click={() => ((lower += idx), (upper = lower + 1))}
-            >{chr}</button>
+            on:click={() => (
+              ($input.lower += idx), ($input.upper = $input.lower + 1)
+            )}>{chr}</button>
         {/each}
         {#if output.length > 6}
           <span class="trim">(+{output.length - 6})</span>
@@ -81,21 +101,21 @@
           <button
             class="key-btn"
             use:hint={'Mở rộng sang phải'}
-            on:click={() => (upper += idx + 1)}>{chr}</button>
+            on:click={() => ($input.upper += idx + 1)}>{chr}</button>
         {/each}
       </div>
     </div>
   </div>
 
   <div class="pinyin">
-    <span class="pinyin-txt">{pinyin}</span>
+    <span class="pinyin-txt">{pinyin || '--'}</span>
   </div>
 
   <button
     class="btn _right"
     data-kbd="k"
     use:hint={'Thu hẹp từ phải'}
-    disabled={upper == 1}
+    disabled={$input.upper == 1}
     on:click={move_upper_left}>
     <SIcon name="chevron-left" />
   </button>
@@ -104,7 +124,7 @@
     class="btn _right _hide"
     data-kbd="l"
     use:hint={'Mở rộng sang phải'}
-    disabled={upper == ztext.length}
+    disabled={$input.upper == $input.ztext.length}
     on:click={move_upper_right}>
     <SIcon name="chevron-right" />
   </button>

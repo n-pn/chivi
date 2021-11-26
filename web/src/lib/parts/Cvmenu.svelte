@@ -5,7 +5,7 @@
   export const input = writable([''])
 
   import { activate as lookup_activate } from '$parts/Lookup.svelte'
-  import { activate as upsert_activate } from '$parts/Upsert.svelte'
+  import { ctrl as upsert } from '$parts/Upsert.svelte'
 
   import { state as tlspec_state } from '$parts/Tlspec.svelte'
 
@@ -48,7 +48,7 @@
     data-kbd="↵"
     data-tip="Sửa từ"
     tip-loc="bottom"
-    on:click={() => upsert_activate($input, 0)}>
+    on:click={() => upsert.activate($input, 0)}>
     <SIcon name="pencil" />
   </cvmenu-item>
 

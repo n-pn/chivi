@@ -4,7 +4,7 @@
   import { dict_lookup } from '$api/dictdb_api'
   import { ptnames } from '$parts/Postag.svelte'
 
-  import { activate as upsert_activate } from '$parts/Upsert.svelte'
+  import { ctrl as upsert } from '$parts/Upsert.svelte'
   export const enabled = writable(false)
   export const actived = writable(false)
 
@@ -133,7 +133,7 @@
           <entry-btn
             class="m-btn _sm"
             role="button"
-            on:click={() => upsert_activate([$input, $lower, $lower + size])}>
+            on:click={() => upsert.activate([$input, $lower, $lower + size])}>
             <SIcon name="edit" />
             <span>{terms.vietphrase ? 'Sửa' : 'Thêm'}</span>
           </entry-btn>
