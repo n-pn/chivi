@@ -3,7 +3,7 @@ struct CV::PosTag
     # 名词 - noun - danh từ chung
     {"n", "Noun", Pos::Nouns | Pos::Contws},
     # 抽象概念 - abstract concept - danh từ trừu tượng
-    {"nc", "Ncon", Pos::Nouns | Pos::Contws},
+    # {"nc", "Ncon", Pos::Nouns | Pos::Contws},
 
     # 名词性语素 - nominal formulaic expression
     {"nl", "Nform", Pos::Nouns | Pos::Contws},
@@ -15,10 +15,8 @@ struct CV::PosTag
     # 姓氏 - family name - dòng họ
     # {"nf", "Linage", Pos::Nouns | Pos::Human | Pos::Names | Pos::Contws},
 
-    # 地名 - location name - địa danh
-    {"ns", "Locname", Pos::Nouns | Pos::Names | Pos::Contws},
-    # 机构团体名 - organization name - tổ chức
-    {"nt", "Orgname", Pos::Nouns | Pos::Names | Pos::Contws},
+    # 地名 - location name - địa danh |  机构团体名 - organization name - tổ chức
+    {"nn", "Naffil", Pos::Nouns | Pos::Names | Pos::Contws},
 
     # 其它专名 - other proper noun - tên riêng khác
     {"nz", "Nother", Pos::Nouns | Pos::Names | Pos::Contws},

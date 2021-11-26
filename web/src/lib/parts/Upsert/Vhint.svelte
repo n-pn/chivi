@@ -12,17 +12,13 @@
   ]
 
   // prettier-ignore
-  const locations = [
+  const affiliates = [
+    '门', '教', '组', '朝', '校', '廷', '会', '部', '司', '宗',
+    '派', '家', '人', '楼', '氏', '府', '队', '织', '学', '院',
     '区', '谷', '町', '山', '岛', '国', '洲', '海', '峡', '省',
     '湾', '江', '市', '桥', '宫', '城', '池', '县', '寺', '殿',
     '峠', '乡', '川', '园', '湖', '都', '堂', '坡', '河', '坂',
     '社', '关', '门', '墟', '庙', '镇', '院', '村'
-  ]
-
-  // prettier-ignore
-  const organizations = [
-    '门', '教', '组', '朝', '校', '廷', '会', '部', '司', '宗',
-    '派', '家', '人', '楼', '氏', '府', '队', '织', '学', '院',
   ]
 </script>
 
@@ -44,11 +40,10 @@
     const list = [priv, base, ...similar_tag(vpterm.ptag)]
 
     const last_char = key.charAt(key.length - 1)
-    if (locations.includes(last_char)) list.push('ns')
-    if (organizations.includes(last_char)) list.push('nt')
+    if (affiliates.includes(last_char)) list.push('nn')
     if (surnames.includes(key.charAt(0))) list.push('nr')
 
-    if (tab == 0) list.push('nr', 'ns', 'nt')
+    if (tab == 0) list.push('nr', 'nn')
     else list.push('n', 'nr')
 
     const filter = (x, i, s) => x && x != vpterm.ptag && s.indexOf(x) == i
@@ -67,7 +62,10 @@
         return ['n']
 
       case 'nz':
-        return ['nr', 'n']
+        return ['nr', 'nn']
+
+      case 'nn':
+        return ['nr', 'nz']
 
       case 'n':
         return ['s', 't']

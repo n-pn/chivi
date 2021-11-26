@@ -2,8 +2,7 @@
   export const ptnames = {
     '_': 'Không rõ',
     'nr': 'Tên người',
-    'ns': 'Địa danh',
-    'nt': 'Tổ chức',
+    'nn': 'Nơi sở thuộc',
     'nz': 'Tên riêng khác',
 
     'n': 'Danh từ',
@@ -76,8 +75,7 @@
   export const tooltips = {
     '_': 'Các thực từ chưa được phân loại',
     'nr': 'Tên/họ riêng của người, như Trương Tam, Joe hay Kazuto.',
-    'ns': 'Tên địa danh như nước Tống, núi Thiếm Lâm, Trường Giang',
-    'nt': 'Tên cơ quan, tổ chức, bang phái',
+    'nn': 'Tên địa danh, khu vực, cơ quan, tổ chức, bang phái...',
     'nz': 'Các từ viết hoa khác như tựa sách, chiêu thức, từ viết tắt đứng độc lập',
     'n': 'Danh từ thông dụng như tên động vật, đồ vật hoặc các khái niệm trừu tượng',
     'nw': 'Danh xưng cho người như tỷ tỷ, muội muội, đại nhân, lão sư, tiểu thư',
@@ -150,8 +148,7 @@
   export const groups = [
     // prettier-ignore
     [
-      'nr','ns','nt',
-      'nz',
+      'nr','nn', 'nz',
       '-',
       'n', 'nw', 't',
       's', 'f',
@@ -185,8 +182,8 @@
       'ag', 'vg', 'ng',
       'tg',
       '-',
-      'x', 'xx', 'xu',
-      'w', '!'
+      'x', 'xx', 'w',
+      '!'
     ],
   ]
 
@@ -204,9 +201,8 @@
     // prettier-ignore
     switch (tag) {
       case 'nr': return '1'
-      case 'ns': return '2'
-      case 'nt': return '3'
-      case 'nz': return '4'
+      case 'nn': return '2'
+      case 'nz': return '3'
       case 'nw': return 'z'
 
       case 'an': return '5'

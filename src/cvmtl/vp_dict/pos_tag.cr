@@ -119,6 +119,7 @@ struct CV::PosTag
     when "mq" then map_nquants(key)
     when "bl" then Modifier
     when "z", "az" then Aform
+    when "ns", "nt" then Naffil
     when "nf" then Person
     when "r" then Pronoun
     when "rr" then ProPer
