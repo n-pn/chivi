@@ -18,7 +18,7 @@
 
 <script>
   import { session } from '$app/stores'
-  import { enrich_term, hint } from './Upsert/_shared.js'
+  import { decor_term, hint } from './Upsert/_shared.js'
 
   import SIcon from '$atoms/SIcon.svelte'
   import CMenu from '$molds/CMenu.svelte'
@@ -39,29 +39,23 @@
 
   export let on_change = () => {}
   export let on_destroy = () => {}
+  onDestroy(on_destroy)
 
   let key = ''
-  $: if (key) change_key($input)
+  $: fetch_data($input)
 
   let pinyins = {}
   let valhint = {}
   let vpterms = {}
 
-  $: vpterm = (vpterms[key] || [])[$ctrl.tab] || enrich_term({})
+  $: vpterm = (vpterms[key] || [])[$ctrl.tab] || decor_term({})
 
   $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
 
   let focus
   $: vpterm, focus && focus.focus()
 
-  async function change_key({ ztext, lower, upper }) {
-    await fetch_data(ztext, lower, upper)
-    vpterms = vpterms
-  }
-
-  onDestroy(on_destroy)
-
-  async function fetch_data(ztext, lower, upper) {
+  async function fetch_data({ ztext, lower, upper }) {
     const words = [ztext.substring(lower, upper)]
 
     if (lower > 0) words.push(ztext.substring(lower - 1, upper))
@@ -84,12 +78,13 @@
       const data = res[inp]
       pinyins[inp] = data.binh_am
       valhint[inp] = data.val_hint
-      vpterms[inp] = [
-        enrich_term(data.special),
-        enrich_term(data.regular),
-        enrich_term(data.hanviet),
-      ]
+
+      const { special, regular, hanviet } = data
+      // prettier-ignore
+      vpterms[inp] = [ decor_term(special), decor_term(regular), decor_term(hanviet) ]
     }
+
+    vpterms = vpterms
   }
 
   async function submit_val() {
@@ -105,8 +100,8 @@
   }
 
   function is_edited(key, tab) {
-    const terms = vpterms[key]
-    return terms ? terms[tab].state > 0 : false
+    const state = vpterms[key]?.[tab]?.state || 0
+    return state > 0
   }
 </script>
 

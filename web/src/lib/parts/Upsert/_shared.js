@@ -50,9 +50,9 @@ export function hint(node, data) {
   }
 }
 
-export function enrich_term(data = {}) {
+export function decor_term(data) {
   data.val = data.o_val = data.u_val || data.b_val || data.h_val || ''
-  data.state = data.u_val ? 2 : data.o_val ? 1 : 0
+  data.state = data.u_val ? 2 : data.b_val ? 1 : 0
 
   if (data.u_val) {
     data._priv = true
