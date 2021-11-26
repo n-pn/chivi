@@ -40,41 +40,38 @@
   // $: if (cvmenu && $state) cvmenu.focus()
 </script>
 
-<cvmenu-wrap
-  tabindex="-1"
-  on:blur={() => state.set(0)}
-  style="--top: {top}px; --left: {left}px">
-  <cvmenu-item
+<cv-menu style="--top: {top}px; --left: {left}px">
+  <menu-item
     data-kbd="↵"
     data-tip="Sửa từ"
     tip-loc="bottom"
     on:click={() => upsert.activate($input, 0)}>
     <SIcon name="pencil" />
-  </cvmenu-item>
+  </menu-item>
 
-  <cvmenu-item
+  <menu-item
     data-kbd="q"
     data-tip="Tra từ"
     tip-loc="bottom"
-    on:click={() => lookup.activate($input)}>
+    on:click={() => lookup.activate($input, $lookup.enabled)}>
     <SIcon name="search" />
-  </cvmenu-item>
+  </menu-item>
 
-  <cvmenu-item
+  <menu-item
     data-kbd="p"
     data-tip="Báo lỗi"
     tip-loc="bottom"
     on:click={() => ($tlspec_state = 1)}>
     <SIcon name="flag" />
-  </cvmenu-item>
-</cvmenu-wrap>
+  </menu-item>
+</cv-menu>
 
 <style lang="scss">
   $size: 2rem;
 
-  cvmenu-wrap {
+  cv-menu {
     height: $size;
-    z-index: 9;
+    z-index: 40;
     display: flex;
     position: absolute;
     height: $size;
@@ -107,7 +104,7 @@
     }
   }
 
-  cvmenu-item {
+  menu-item {
     width: $size;
     height: 100%;
     @include flex-ca;

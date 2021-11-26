@@ -72,8 +72,14 @@
   function handle_click({ target }, index) {
     if (focus_line != index) focus_line = index
 
-    if (target.nodeName == 'V-N') cvmenu_activate(target, article)
-    else return cvmenu_state.set(0)
+    if ($config.reader == 1) return // return if in zen mode
+    if (target.nodeName != 'V-N') {
+      console.log(target)
+      if (target.nodeName != 'CV-MENU') cvmenu_state.set(0)
+      return
+    }
+
+    cvmenu_activate(target, article)
 
     const lower = +target.dataset.i
     const upper = lower + +target.dataset.l
@@ -141,7 +147,12 @@
   <button data-kbd="c" on:click={() => upsert.activate($input, 1)}>C</button>
 </div>
 
-<article tabindex="-1" bind:this={article} on:blur={hide_cvmenu}>
+<article
+  tabindex="-1"
+  style="--textlh: {$config.textlh}%"
+  bind:this={article}
+  on:blur={hide_cvmenu}
+  on:click={(e) => handle_click(e, hover_line)}>
   <slot name="header">Dịch nhanh</slot>
 
   {#key zhtext}
@@ -151,8 +162,6 @@
         class={wtitle && index == 0 ? 'h' : 'p'}
         class:debug={$config.reader == 2}
         class:focus={index == focus_line}
-        style="--textlh: {$config.textlh}%"
-        on:click={(e) => handle_click(e, index)}
         on:mouseenter={() => (hover_line = index)}>
         {#if $config.showzh}<zh-line>{zhtext[index]}</zh-line>{/if}
         <Cvline
@@ -162,27 +171,27 @@
     {/each}
   {/key}
 
-  {#if browser}
-    {#if $cvmenu_state > 0}
-      <Cvmenu />
-    {/if}
-
-    {#if $upsert.state > 0}
-      <Upsert {dname} {d_dub} {on_change} on_destroy={regain_focus} />
-    {/if}
-
-    <Lookup {dname} on_destroy={regain_focus} />
-
-    {#if $tlspec_state}
-      <Tlspec
-        {dname}
-        {d_dub}
-        ztext={zhtext[hover_line]}
-        slink="{$page.path}#L{hover_line}"
-        on_destroy={regain_focus} />
-    {/if}
+  {#if $cvmenu_state > 0}
+    <Cvmenu />
   {/if}
 </article>
+
+{#if browser}
+  <Lookup {dname} on_destroy={regain_focus} />
+{/if}
+
+{#if $upsert.state > 0}
+  <Upsert {dname} {d_dub} {on_change} on_destroy={regain_focus} />
+{/if}
+
+{#if $tlspec_state}
+  <Tlspec
+    {dname}
+    {d_dub}
+    ztext={zhtext[hover_line]}
+    slink="{$page.path}#L{hover_line}"
+    on_destroy={regain_focus} />
+{/if}
 
 <style lang="scss">
   article {
