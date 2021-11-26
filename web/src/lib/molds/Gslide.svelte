@@ -13,10 +13,14 @@
 
   let sticked = false
 
-  $: $toleft = sticked
+  $: $toleft = sticked && actived
   $: if ($navigating) actived = false
 
   $: layers.toggle(actived, '.' + _klass)
+
+  function trigger_sticky() {
+    sticked = !sticked
+  }
 </script>
 
 <slider-wrap
@@ -35,10 +39,7 @@
     <slot name="header-right" />
 
     {#if _sticky}
-      <button
-        class="-btn"
-        class:_active={sticked}
-        on:click={() => (sticked = !sticked)}>
+      <button class="-btn" class:_active={sticked} on:click={trigger_sticky}>
         <SIcon name="pin" />
       </button>
     {/if}

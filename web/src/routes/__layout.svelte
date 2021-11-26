@@ -1,6 +1,6 @@
 <script context="module">
   import { navigating, page, session } from '$app/stores'
-  import { scroll, config, layers } from '$lib/stores'
+  import { scroll, toleft, config, layers } from '$lib/stores'
 </script>
 
 <script>
@@ -103,7 +103,8 @@
 
 <div
   class="app tm-{wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
-  class:kbd-hint={kbd_hint}>
+  class:kbd-hint={kbd_hint}
+  class:_shift={$toleft}>
   <slot />
 
   <div class="links">
@@ -128,6 +129,10 @@
 
     @include bgcolor(main);
     @include fgcolor(main);
+
+    &._shift {
+      @include bps(padding-right, $ls: 30rem);
+    }
   }
 
   .links {

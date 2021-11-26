@@ -1,6 +1,7 @@
 <script context="module">
   import { session } from '$app/stores'
   import { config } from '$lib/stores'
+  import { ctrl as lookup } from '$parts/Lookup.svelte'
 
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
@@ -125,6 +126,13 @@
     <label class="switch">
       <input type="checkbox" bind:checked={$config.showzh} />
       <span class="switch-label">Hiển thị tiếng Trung gốc:</span>
+    </label>
+  </config-item>
+
+  <config-item>
+    <label class="switch">
+      <input type="checkbox" bind:checked={$lookup.enabled} />
+      <span class="switch-label">Luôn bật ô giải nghĩa:</span>
     </label>
   </config-item>
 </config-main>

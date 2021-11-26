@@ -82,10 +82,13 @@
     if (target == focus_word) {
       upsert.activate($input, 0)
     } else {
-      if (focus_word) focus_word.classList.remove('focus')
+      focus_word?.classList.remove('focus')
       target.classList.add('focus')
       focus_word = target
-      if ($lookup.enabled) lookup.activate($input)
+
+      if ($lookup.enabled || $lookup.actived) {
+        lookup.activate($input, $lookup.enabled)
+      }
     }
   }
 

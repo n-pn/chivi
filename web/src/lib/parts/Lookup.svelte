@@ -34,7 +34,7 @@
   let current = []
 
   let { lower, upper } = $input
-  $: if ($input) update_lookup($input)
+  $: if ($input && $ctrl.actived) update_lookup($input)
 
   let hv_html = ''
   let zh_html = ''

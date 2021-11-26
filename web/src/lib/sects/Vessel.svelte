@@ -1,7 +1,7 @@
 <script context="module">
   import { onMount } from 'svelte'
   import { session } from '$app/stores'
-  import { scroll, toleft } from '$lib/stores'
+  import { scroll } from '$lib/stores'
 </script>
 
 <script>
@@ -17,7 +17,7 @@
   })
 </script>
 
-<main class="main" class:_shift={$toleft}>
+<main class="main">
   <div class="vessel _main">
     {#if $session.privi < 0}
       <div class="pledge">
@@ -57,10 +57,6 @@
     // &._footer {
     //   margin-bottom: $footer-height;
     // }
-  }
-
-  ._shift {
-    @include bps(padding-right, $ls: 30rem);
   }
 
   .footer {
