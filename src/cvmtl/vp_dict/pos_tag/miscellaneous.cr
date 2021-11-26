@@ -10,10 +10,8 @@ struct CV::PosTag
 
     # 字符串 - non-word character string - hư từ khác
     {"x", "String", Pos::Strings | Pos::Contws},
-    # 网址URL - url string
-    {"xu", "Urlstr", Pos::Strings | Pos::Contws},
-    # 非语素字 - for ascii art like emoji...
-    {"xx", "Artstr", Pos::Strings | Pos::Contws},
+    # 网址URL - url string | 非语素字 - for ascii art like emoji...
+    {"xx", "Rawstr", Pos::Strings | Pos::Contws},
 
     ################
     # 虚词 - hư từ #

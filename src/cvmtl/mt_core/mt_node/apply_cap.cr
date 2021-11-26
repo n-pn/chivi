@@ -17,8 +17,7 @@ module CV::MTL::ApplyCap
     case @tag
     when .none?   then cap
     when .puncts? then cap_after_punct?(cap) # TODO: merge this with should_cap?
-    when .urlstr? then false
-    when .artstr? then false
+    when .rawstr? then false
     else
       @val = TextUtils.capitalize(@val) if cap
       false

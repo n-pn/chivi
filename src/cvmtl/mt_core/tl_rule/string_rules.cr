@@ -1,9 +1,11 @@
 module CV::TlRule
   def fold_strings!(node : MtNode) : MtNode
-    case node.tag
-    when .urlstr? then node = fold_urlstr!(node)
-    when .string? then node = fold_string!(node)
-    else               node
+    if node.string?
+      fold_string!(node)
+    elsif node.key.starts_with?("http")
+      fold_urlstr!(node)
+    else
+      node
     end
   end
 
@@ -52,6 +54,7 @@ module CV::TlRule
     root.key = key_io.to_s
     root.val = val_io.to_s
 
+    root.tag = PosTag::Rawstr
     root.fix_succ!(node)
   end
 
