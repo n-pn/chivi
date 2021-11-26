@@ -19,7 +19,7 @@
 <script>
   import { onMount } from 'svelte'
   import { browser } from '$app/env'
-  import { page } from '$app/stores'
+  import { page, navigating } from '$app/stores'
 
   import Cvline, { Mtline } from '$sects/Cvline.svelte'
 
@@ -37,12 +37,19 @@
   export let on_change = () => {}
 
   $: cv_lines = Mtline.parse_lines(cvdata)
+  let article = null
 
   let hover_line = 0
   let focus_line = 0
   let focus_word = null
 
-  let article = null
+  $: if ($navigating) {
+    hover_line = 0
+    focus_line = 0
+    focus_word = null
+    $cvmenu_state = 0
+    $upsert_state = 0
+  }
 
   function on_selection() {
     if (hover_line < 0 || $config.reader == 1) return
@@ -89,16 +96,18 @@
   }
 
   function regain_focus() {
-    article.focus()
+    setTimeout(() => {
+      article.focus()
 
-    const elem = article.querySelector('#L' + focus_line)
-    if (!elem || is_visible(elem)) return
+      const elem = article.querySelector('#L' + focus_line)
+      if (!elem || is_visible(elem)) return
 
-    elem?.scrollIntoView({
-      behavior: 'auto',
-      block: 'nearest',
-      inline: 'nearest',
-    })
+      elem?.scrollIntoView({
+        behavior: 'auto',
+        block: 'nearest',
+        inline: 'nearest',
+      })
+    }, 50)
   }
 
   function is_visible(elem) {
