@@ -63,7 +63,7 @@
 
     const action = document.addEventListener('selectionchange', () => {
       if (timeout) clearTimeout(timeout)
-      timeout = setTimeout(on_selection, 50)
+      timeout = setTimeout(on_selection, 150)
     })
 
     return () => document.removeEventListener('selectionchange', action)
