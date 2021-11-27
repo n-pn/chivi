@@ -9,6 +9,8 @@ rsync -azui --no-p "$PROXY_DIR/awmproxy.com.txt" $PROXY_SSH
 rsync -azui --no-p "$PROXY_DIR/openproxy.space.txt" $PROXY_SSH
 rsync -azui --no-p "$PROXY_DIR/proxyscrape.com.txt" $PROXY_SSH
 
+rsync -azui --no-p "var/yousuu/yscrits" "$REMOTE/var/yousuu"
+
 # SEEDS_DIR=_db/yousuu/.cache
 # SEEDS_SSH="$REMOTE/$SEEDS_DIR"
 

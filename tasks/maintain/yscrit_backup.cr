@@ -3,46 +3,63 @@ require "./_shared"
 module CV::YscritBackup
   extend self
 
-  class_getter count = 0
+  DIR = "var/yousuu/yscrits"
+
+  class_getter missing = 0
+  class_getter recover = 0
+
+  ZTEXT = {} of String => Tabkv
+  INFOS = {} of String => Tabkv
+
+  def load_ztext_map(group)
+    ZTEXT[group] ||= Tabkv.new("#{DIR}/#{group}-ztext.tsv")
+  end
+
+  def load_infos_map(group)
+    INFOS[group] ||= Tabkv.new("#{DIR}/#{group}-infos.tsv")
+  end
 
   def save!(crit : Yscrit)
     ycrid = crit.origin_id
     group = ycrid[0..3]
 
-    File.open("#{YSCRIT_DIR}/#{group}-ztext.tsv", "a") do |io|
-      io << "\n" << ycrid << '\t'
-      format_ztext(crit.ztext).join(io, '\t')
+    ztext_map = load_ztext_map(group)
+    infos_map = load_infos_map(group)
+
+    old_ztext = ztext_map.fval(ycrid)
+
+    if crit.ztext != "请登录查看评论内容"
+      lines = format_ztext(crit.ztext)
+      @@recover += 1 if old_ztext == "$$$"
+    elsif !old_ztext
+      lines = ["$$$"]
+      @@missing += 1
     end
 
-    File.open("#{YSCRIT_DIR}/#{group}-infos.tsv", "a") do |io|
-      io << "\n"
+    infos = [
+      crit.ysbook_id, crit.ysuser.id, crit.ysuser.zname,
+      crit.stars, crit.like_count, crit.repl_count,
+      crit.created_at.to_unix, crit.mftime,
+    ]
 
-      {
-        ycrid,
-        crit.ysbook_id,
-        crit.ysuser.id,
-        crit.ysuser.zname,
-        crit.stars,
-        crit.created_at.to_unix,
-        crit.mftime,
-        crit.like_count,
-        crit.repl_count,
-      }.join(io, "\t")
-    end
+    ztext_map.set!(ycrid, lines) if lines
+    infos_map.set(ycrid, infos)
   end
 
   def format_ztext(ztext : String) : Array(String)
-    if ztext == "请登录查看评论内容"
-      @@count += 1
-      return [] of String
-    end
-
     ztext.split("\n").map(&.strip).reject(&.empty?)
   end
 
   def run!(fresh = false)
-    Yscrit.query.order_by(id: :asc).with_ysuser.each_with_cursor(20) { |crit| save!(crit) }
-    puts "- hidden body: #{@@count}"
+    query = Yscrit.query.order_by(id: :asc).with_ysuser
+    query.each_with_cursor(20) { |crit| save!(crit) }
+
+    ZTEXT.each_value(&.save!(dirty: false))
+    INFOS.each_value(&.save!(dirty: false))
+
+    File.open("var/yousuu/yscrits-log.txt", "a") do |io|
+      io.puts("backup:: missing: #{@@missing}, recover: #{@@recover}")
+    end
   end
 end
 
