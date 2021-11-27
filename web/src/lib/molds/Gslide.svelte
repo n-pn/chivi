@@ -85,10 +85,11 @@
     display: block;
 
     top: 0;
+    bottom: 0;
     width: var(--width, 20rem);
     overflow-y: auto;
     max-width: calc(100vw - 1.5rem);
-    height: 100vh;
+    // height: 100vh;
     z-index: 55;
 
     will-change: transform;
@@ -101,18 +102,15 @@
     @include shadow(2);
 
     &._left {
-      left: 0;
-      transform: translateX(-100%);
+      right: 100%;
+      // prettier-ignore
+      &._active { transform: translateX(100%); }
     }
 
     &._right {
-      right: 0;
-      transform: translateX(100%);
-    }
-
-    &._active {
-      // animation: slide-in 0.1s forwards;
-      transform: translateX(0);
+      left: 100%;
+      // prettier-ignore
+      &._active { transform: translateX(-100%); }
     }
   }
 

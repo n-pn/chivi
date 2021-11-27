@@ -1,3 +1,22 @@
+module CV::CtrlUtil
+  extend self
+
+  def d_dub(dname : String)
+    case dname
+    when "cc_cedict" then "CC-CEDICT"
+    when "trungviet" then "Trung Việt"
+    when "hanviet"   then "Hán Việt"
+    when "binh_am"   then "Bính âm"
+    when "tradsim"   then "Phồn giản"
+    when "regular"   then "Thông dụng"
+    when "essence"   then "Nền tảng"
+    when "fixture"   then "Khoá cứng"
+    else
+      Cvbook.find({bhash: dname}).try(&.bname) || dname
+    end
+  end
+end
+
 class CV::BaseCtrl < Amber::Controller::Base
   LAYOUT = false
 

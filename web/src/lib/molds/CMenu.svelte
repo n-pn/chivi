@@ -3,44 +3,45 @@
   export let dir = 'center'
 </script>
 
-<div class="menu {$$props.class || ''}">
+<menu-wrap class={$$props.class || ''}>
   <slot name="trigger" />
 
-  <div class="popup _{loc} _{dir}">
+  <menu-body class="{loc} {dir}">
     <div class="content">
       <slot name="content" />
     </div>
-  </div>
-</div>
+  </menu-body>
+</menu-wrap>
 
 <style lang="scss">
-  .menu {
+  menu-wrap {
+    display: run-in;
     position: relative;
   }
 
   // prettier-ignore
-  .popup {
+  menu-body {
     display: none;
     position: absolute;
     z-index: 999;
     width: var(--menu-width, 11rem);
 
-    &._top {
+    &.top {
       bottom: 100%;
       .content { margin-bottom: 0.5rem; }
     }
 
-    &._bottom {
+    &.bottom {
       top: 100%;
       .content { margin-top: 0.5rem; }
     }
 
-    &._left { left: 0; }
-    &._right { right: 0; }
-    &._center { left: 50%; transform: translateX(-50%);}
+    &.left { left: 0; }
+    &.right { right: 0; }
+    &.center { left: 50%; transform: translateX(-50%);}
 
     // prettier-ignore
-    .menu:hover > &, .menu._active > & { display: block; }
+    menu-wrap:hover > &, menu-wrap.active > & { display: block; }
   }
 
   .content {
@@ -53,8 +54,8 @@
   .content > :global(.-item) {
     display: block;
     width: 100%;
-    padding: 0 0.5rem;
-    line-height: 2.25rem;
+    padding: 0.5rem;
+    line-height: 1.25rem;
     // text-transform: uppercase;
     font-weight: 500;
 
@@ -74,11 +75,11 @@
       @include fgcolor(primary, 5);
       @include bgcolor(tert);
     }
+  }
 
-    :global(svg) {
-      margin: 0.5rem;
-      width: 1.25rem;
-      height: 1.25rem;
-    }
+  .content :global(svg) {
+    margin: 0 0.5rem;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 </style>

@@ -6,27 +6,12 @@ class CV::VpdictCtrl < CV::BaseCtrl
   getter core_dicts : Array(Dinfo) do
     dicts = [] of Dinfo
 
-    dicts << {"regular", dict_dubname("regular"), VpDict.regular.size}
-    dicts << {"hanviet", dict_dubname("hanviet"), VpDict.hanviet.size}
-    dicts << {"essence", dict_dubname("essence"), VpDict.essence.size}
-    dicts << {"fixture", dict_dubname("fixture"), VpDict.fixture.size}
+    dicts << {"regular", CtrlUtil.d_dub("regular"), VpDict.regular.size}
+    dicts << {"hanviet", CtrlUtil.d_dub("hanviet"), VpDict.hanviet.size}
+    dicts << {"essence", CtrlUtil.d_dub("essence"), VpDict.essence.size}
+    dicts << {"fixture", CtrlUtil.d_dub("fixture"), VpDict.fixture.size}
 
     dicts
-  end
-
-  private def dict_dubname(dname : String)
-    case dname
-    when "cc_cedict" then "CC-CEDICT"
-    when "trungviet" then "Trung Việt"
-    when "hanviet"   then "Hán Việt"
-    when "binh_am"   then "Bính âm"
-    when "tradsim"   then "Phồn giản"
-    when "regular"   then "Thông dụng"
-    when "essence"   then "Nền tảng"
-    when "fixture"   then "Cố định"
-    else
-      Cvbook.find({bhash: dname}).try(&.bname) || dname
-    end
   end
 
   def index
@@ -39,7 +24,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
     book_dicts = [] of Dinfo
 
     input[offset, limit].each do |dname|
-      book_dicts << {dname, dict_dubname(dname), VpDict.load(dname).size}
+      book_dicts << {dname, CtrlUtil.d_dub(dname), VpDict.load(dname).size}
     end
 
     total = input.size
@@ -79,8 +64,8 @@ class CV::VpdictCtrl < CV::BaseCtrl
     terms = terms.size > offset ? terms[offset, limit] : [] of VpTerm
 
     render_json({
-      d_dub: dict_dubname(dname),
       dname: dname,
+      d_dub: CtrlUtil.d_dub(dname),
       terms: terms,
       total: vdict.size,
       pgidx: pgidx,

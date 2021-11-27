@@ -1,11 +1,13 @@
 <script>
   import { get_rtime } from '$atoms/RTime.svelte'
   import SIcon from '$atoms/SIcon.svelte'
+  import CMenu from '$molds/CMenu.svelte'
   import Replies from './Yscrit/Replies.svelte'
 
   export let crit
   export let show_book = true
   export let view_all = false
+  export let big_text = false
 
   let active_repls = false
   let replies = []
@@ -30,16 +32,35 @@
     <a class="crit-user" href="/crits?user={crit.uslug}">{crit.uname}</a>
     <crit-sep>·</crit-sep>
     <a class="crit-time" href="/crits/{crit.id}">{get_rtime(crit.mftime)}</a>
+
     <crit-star>{get_stars(crit.stars)}</crit-star>
     {#if crit.vhtml.length >= 640}
-      <button class="m-btn _sm" on:click={() => (view_all = !view_all)}>
+      <button class="m-btn _sm _show" on:click={() => (view_all = !view_all)}>
         <SIcon name={view_all ? 'minus' : 'plus'} />
       </button>
     {/if}
+
+    <CMenu dir="right">
+      <button class="m-btn _sm _menu" slot="trigger">
+        <SIcon name="dots-vertical" />
+      </button>
+
+      <svelte:fragment slot="content">
+        <a class="-item" href="/crits/{crit.id}">
+          <SIcon name="link" />
+          <span>Đường dẫn</span>
+        </a>
+
+        <a class="-item" href="/qtran/crits/{crit.id}">
+          <SIcon name="bolt" />
+          <span>Dịch nhanh</span>
+        </a>
+      </svelte:fragment>
+    </CMenu>
   </crit-head>
 
-  <crit-body class:_all={view_all}>
-    <slot>{@html crit.vhtml}</slot>
+  <crit-body class:_all={view_all} class:big_text>
+    {@html crit.vhtml}
   </crit-body>
 
   <crit-foot>
@@ -100,13 +121,18 @@
     @include bgcolor(secd);
     @include bdradi($loc: top);
 
-    padding: 0.5rem var(--gutter);
+    padding: 0.25rem 0 0.5rem var(--gutter);
     line-height: 2rem;
     @include bps(font-size, rem(14px), rem(15px), rem(16px));
 
     button {
       --linesd: 0;
       background: inherit;
+    }
+
+    ._show {
+      margin-left: -0.25rem;
+      margin-right: -0.75rem;
     }
   }
 
@@ -136,7 +162,7 @@
   crit-body {
     display: block;
     margin: 0 var(--gutter);
-    @include bps(font-size, rem(16px), rem(17px));
+    @include bps(font-size, rem(16px), $pl: rem(17px), $tm: rem(18px));
 
     max-height: 12rem;
     overflow: hidden;
@@ -150,13 +176,18 @@
     }
 
     &._all {
-      overflow: none;
       max-height: initial;
+      overflow: none;
       background: none;
     }
 
+    &.big_text {
+      @include bps(font-size, rem(18px), $pl: rem(19px), $tm: rem(20px));
+    }
+
     :global(p) {
-      margin-bottom: 1rem !important;
+      line-height: 1.5em;
+      margin-bottom: 1em !important;
     }
   }
 

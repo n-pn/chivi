@@ -59,7 +59,7 @@ class CV::YscritCtrl < CV::BaseCtrl
 
     render_json do |res|
       JSON.build(res) do |jb|
-        render_crit(jb, yscrit, mtl: true)
+        render_crit(jb, yscrit)
       end
     end
   end
@@ -90,7 +90,7 @@ class CV::YscritCtrl < CV::BaseCtrl
     end
   end
 
-  private def render_crit(jb : JSON::Builder, crit : Yscrit, mtl = false)
+  private def render_crit(jb : JSON::Builder, crit : Yscrit)
     jb.object do
       jb.field "id", UkeyUtil.encode32(crit.id)
 
@@ -107,8 +107,7 @@ class CV::YscritCtrl < CV::BaseCtrl
 
       jb.field "stars", crit.stars
 
-      jb.field "ztext", mtl ? crit.zhtext : ""
-      jb.field "vhtml", mtl ? crit.cvdata : crit.vhtml
+      jb.field "vhtml", crit.vhtml
 
       jb.field "like_count", crit.like_count
       jb.field "repl_count", crit.repl_count

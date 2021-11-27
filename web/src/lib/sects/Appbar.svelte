@@ -1,4 +1,5 @@
 <script context="module">
+  import { browser } from '$app/env'
   import { session } from '$app/stores'
   import { scroll, toleft } from '$lib/stores'
 
@@ -60,11 +61,9 @@
   </nav>
 </app-bar>
 
-{#if active_appnav}
-  <Appnav bind:actived={active_appnav} />
-{/if}
+<Appnav bind:actived={active_appnav} />
 
-{#if active_usercp}
+{#if browser}
   {#if $session.uname == 'Khách'}
     <Signin bind:actived={active_usercp} />
   {:else}

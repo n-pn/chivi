@@ -230,15 +230,4 @@
   .navi {
     @include flex($center: horz, $gap: 0.5rem);
   }
-
-  .crumb {
-    // float: left;
-
-    &._link {
-      color: inherit;
-      &:hover {
-        @include fgcolor(primary, 5);
-      }
-    }
-  }
 </style>

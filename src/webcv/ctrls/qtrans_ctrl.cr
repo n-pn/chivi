@@ -7,25 +7,55 @@ class CV::QtransCtrl < CV::BaseCtrl
   ::FileUtils.mkdir_p(NOTE_DIR)
   ::FileUtils.mkdir_p(POST_DIR)
 
-  def show_note
-    qname = params["name"]
-    qfile = "#{NOTE_DIR}/#{qname}.txt"
-    return halt! 404, "Not found!" unless File.exists?(qfile)
+  alias RawQt = Tuple(String, String, Array(String))
 
-    lines = parse_lines(File.read(qfile))
+  CACHE = RamCache(String, RawQt).new(512, 6.hours)
 
-    json_view do |jb|
-      jb.object do
-        jb.field "zhtext", lines
-        jb.field "cvdata", String.build { |io| convert("combine", lines, io) }.to_s
+  def show
+    type = params["type"]
+    name = params["name"]
+
+    dname, d_dub, lines = CACHE.get("#{type}-#{name}") do
+      case type
+      when "notes" then load_note(name)
+      when "crits" then load_crit(name)
+      else              raise "Unknown qtran type!"
+      end
+    end
+
+    return halt! 404, "Not found!" if lines.empty?
+
+    if params["mode"]? == "text"
+      response.content_type = "text/plain; charset=utf-8"
+      convert(dname, lines, response)
+    else
+      json_view do |jb|
+        jb.object do
+          jb.field "dname", dname
+          jb.field "d_dub", d_dub
+          jb.field "zhtext", lines
+          jb.field "cvdata", String.build { |io| convert(dname, lines, io) }.to_s
+        end
       end
     end
   end
 
-  def show_crit
+  private def load_note(name : String) : RawQt
+    file = "#{NOTE_DIR}/#{name}.txt"
+    return {"", "", [] of String} unless File.exists?(file)
+
+    dname = params.fetch_str("dname", "combine")
+    d_dub = CtrlUtil.d_dub(dname)
+    {dname, d_dub, parse_lines(File.read(file))}
   end
 
-  def show_post
+  private def load_crit(name : String) : RawQt
+    crit_id = UkeyUtil.decode32(name)
+    return {"", "", [] of String} unless yscrit = Yscrit.find({id: crit_id})
+
+    dname = yscrit.cvbook.bhash
+    d_dub = yscrit.cvbook.vtitle
+    {dname, d_dub, parse_lines(yscrit.ztext)}
   end
 
   def qtran

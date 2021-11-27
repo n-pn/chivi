@@ -1,0 +1,50 @@
+// prettier-ignore
+@mixin tm-light($svelte: true, $warm: true) {
+  @if ($svelte) {
+    :global(.tm-light) & { @content; }
+    @if $warm {
+      :global(.tm-warm) & { @content; }
+    }
+  } @else {
+    .tm-light & { @content; }
+
+    @if $warm {
+      .tm-warm & { @content; }
+    }
+  }
+}
+
+@mixin tm-dark($svelte: true, $oled: true) {
+  @if ($svelte) {
+    :global(.tm-dark) & {
+      @content;
+    }
+    @if $oled {
+      :global(.tm-oled) & {
+        @content;
+      }
+    }
+  } @else {
+    .tm-dark & {
+      @content;
+    }
+
+    @if $oled {
+      .tm-oled & {
+        @content;
+      }
+    }
+  }
+}
+
+@mixin tm-oled($svelte: true) {
+  @if ($svelte) {
+    :global(.tm-oled) & {
+      @content;
+    }
+  } @else {
+    .tm-oled & {
+      @content;
+    }
+  }
+}

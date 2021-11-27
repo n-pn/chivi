@@ -16,7 +16,6 @@
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
-  import Cvdata from '$sects/Cvdata.svelte'
 
   export let crit
 
@@ -61,15 +60,7 @@
       </a>
     </nav>
 
-    <Yscrit {crit} view_all={true}>
-      <Cvdata
-        zhtext={crit.ztext}
-        cvdata={crit.vhtml}
-        wtitle={false}
-        dname={crit.bhash}
-        d_dub={crit.bname}
-        {on_change} />
-    </Yscrit>
+    <Yscrit {crit} view_all={true} big_text={true} />
   </section>
 </Vessel>
 

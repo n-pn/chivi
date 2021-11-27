@@ -1,31 +1,44 @@
 <script context="module">
   export async function load({ fetch, page: { params, query } }) {
-    const qname = params.name
+    const { type, name } = params
 
-    const url = `/api/qtran/${qname}?${query.toString()}`
+    const url = `/api/qtran/${type}/${name}?${query.toString()}`
     const res = await fetch(url)
     const props = await res.json()
 
-    if (res.ok) return { props: { ...props, qname, url } }
+    if (res.ok) return { props: { ...props, type, name } }
     return { status: 404, error }
+  }
+
+  const icons = {
+    notes: 'notes',
+    posts: 'user',
+    links: 'link',
+    crits: 'stars',
   }
 </script>
 
 <script>
-  import { invalidate } from '$app/navigation'
-
   import SIcon from '$atoms/SIcon.svelte'
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
   import Cvdata from '$sects/Cvdata.svelte'
 
+  export let name
+  export let type
+
+  export let dname
+  export let d_dub
+
   export let zhtext = []
   export let cvdata = ''
-  export let qname
-  export let url
 
-  const on_change = () => invalidate(url)
+  const on_change = async () => {
+    const url = `/api/qtran/${type}/${name}?mode=text`
+    const res = await fetch(url)
+    cvdata = await res.text()
+  }
 </script>
 
 <svelte:head>
@@ -40,14 +53,26 @@
     </a>
 
     <span class="header-item _active _title">
-      <span class="header-text">{qname}</span>
+      <SIcon name={icons[type]} />
+      <span class="header-text">[{name}]</span>
     </span>
   </svelte:fragment>
 </Appbar>
 
 <Vessel>
   <section class="body">
-    <Cvdata {zhtext} {cvdata} {on_change} />
+    <Cvdata {dname} {d_dub} {zhtext} {cvdata} {on_change}>
+      <svete:fragment slot="header">
+        <nav class="bread">
+          <a href="/qtran" class="crumb _link">Dịch nhanh</a>
+          <span>/</span>
+          <span class="crumb _text">[{type}]</span>
+
+          <span>/</span>
+          <span class="crumb _text">[{name}]</span>
+        </nav>
+      </svete:fragment>
+    </Cvdata>
   </section>
 
   <div slot="footer" class="foot">

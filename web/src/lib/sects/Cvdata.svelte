@@ -160,7 +160,7 @@
   {#if $cvmenu.actived}<Cvmenu />{/if}
 </article>
 
-{#if browser}
+{#if $lookup.enabled || $lookup.actived}
   <Lookup {dname} on_destroy={regain_focus} />
 {/if}
 
@@ -300,6 +300,19 @@
 
     :global(.app-fs-4) & {
       @include bps(font-size, rem(20px), rem(21px), rem(22px), rem(23px));
+    }
+  }
+
+  :global {
+    .crumb {
+      // float: left;
+
+      &._link {
+        color: inherit;
+        &:hover {
+          @include fgcolor(primary, 5);
+        }
+      }
     }
   }
 </style>
