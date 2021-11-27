@@ -405,10 +405,9 @@
     border-radius: 0.75rem;
     font-weight: 500;
 
-    @include ftsize(sm);
-
     @include fgcolor(tert);
     @include linesd(--bd-main);
+    @include bps(font-size, rem(12px), rem(13px), rem(14px));
 
     &:hover {
       @include fgcolor(primary, 5);
