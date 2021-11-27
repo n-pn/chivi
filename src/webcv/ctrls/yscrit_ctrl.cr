@@ -97,7 +97,7 @@ class CV::YscritCtrl < CV::BaseCtrl
       jb.field "bid", crit.cvbook.id
       jb.field "bname", crit.cvbook.bname
       jb.field "bslug", crit.cvbook.bslug
-      jb.field "genre", crit.cvbook.bhash
+      jb.field "bhash", crit.cvbook.bhash
 
       jb.field "author", crit.cvbook.author.vname
       jb.field "bgenre", crit.cvbook.bgenres.first? || "Loại khác"
@@ -107,8 +107,8 @@ class CV::YscritCtrl < CV::BaseCtrl
 
       jb.field "stars", crit.stars
 
-      jb.field "ztext", mtl ? crit.ztext : ""
-      jb.field "vhtml", mtl ? crit.cvdata(mode: _cvuser.tlmode) : crit.vhtml
+      jb.field "ztext", mtl ? crit.zhtext : ""
+      jb.field "vhtml", mtl ? crit.cvdata : crit.vhtml
 
       jb.field "like_count", crit.like_count
       jb.field "repl_count", crit.repl_count

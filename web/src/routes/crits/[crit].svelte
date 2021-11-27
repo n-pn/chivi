@@ -63,7 +63,7 @@
 
     <Yscrit {crit} view_all={true}>
       <Cvdata
-        zhtext={crit.ztext.split('\n')}
+        zhtext={crit.ztext}
         cvdata={crit.vhtml}
         wtitle={false}
         dname={crit.bhash}

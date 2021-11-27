@@ -27,9 +27,11 @@
     deactivate: () => ctrl.set({ actived: false, top: 0, left: 0 }),
   }
 
+  const default_rect = { left: 0, right: 0, bottom: 0, top: 0 }
   function get_rect(node) {
+    if (!node) return default_rect
     const rects = node.getClientRects()
-    return rects[rects.length - 1] || { left: 0, right: 0, bottom: 0, top: 0 }
+    return rects[rects.length - 1] || default_rect
   }
 </script>
 
