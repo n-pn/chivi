@@ -43,10 +43,6 @@
   </svelte:fragment>
 
   {#if section == 'main'}
-    <div class="hint">
-      <strong>Gợi ý:</strong> Bấm <SIcon name="settings" /> để thay đổi giao diện,
-      chế độ dịch hoặc đổi mật khẩu.
-    </div>
     <div class="chips">
       {#each ['reading', 'onhold', 'pending'] as status}
         <a href="/@{$session.uname}?bmark={status}" class="chip">
@@ -104,14 +100,6 @@
   @mixin label {
     font-weight: 500;
     text-transform: uppercase;
-    @include fgcolor(tert);
-  }
-
-  .hint {
-    margin: 0.75rem;
-    margin-bottom: 0;
-    line-height: 1.25rem;
-    @include ftsize(sm);
     @include fgcolor(tert);
   }
 

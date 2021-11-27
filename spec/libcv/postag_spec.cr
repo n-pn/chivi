@@ -1,5 +1,4 @@
-require "spec"
-require "../../src/cvmtl/mt_core"
+require "./_helper"
 
 macro assert_eq(left, right)
   CV::PosTag.from_str("m", {{left}}).should eq(CV::PosTag::{{right}})

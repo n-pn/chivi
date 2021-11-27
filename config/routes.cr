@@ -53,8 +53,10 @@ Amber::Server.configure do
     put "/dicts/:dname/search", CV::VpdictCtrl, :search
     put "/dicts/:dname/upsert", CV::VpdictCtrl, :upsert
 
-    post "/tools/convert/:dname", CV::TlToolCtrl, :convert
-    get "/qtran/:name", CV::TlToolCtrl, :show
+    get "/qtrans/crits/:name", CV::QtransCtrl, :show_crit
+    get "/qtrans/notes/:name", CV::QtransCtrl, :show_note
+    get "/qtrans/posts/:name", CV::QtransCtrl, :show_post
+    post "/qtrans/posts", CV::QtransCtrl, :qtran
 
     get "/boards/", CV::DboardCtrl, :index
     get "/boards/:dboard", CV::DboardCtrl, :show
