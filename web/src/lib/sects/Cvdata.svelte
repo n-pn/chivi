@@ -139,7 +139,9 @@
   bind:this={article}
   on:blur={hide_cvmenu}
   on:click={(e) => handle_click(e, state.hover)}>
-  <slot name="header">Dịch nhanh</slot>
+  <header>
+    <slot name="header">Dịch nhanh</slot>
+  </header>
 
   {#key zhtext}
     {#each cv_lines as input, index (index)}
@@ -209,6 +211,17 @@
       font-style: normal;
       font-variant: small-caps;
     }
+  }
+
+  header {
+    @include border(--bd-main, $loc: bottom);
+    margin-bottom: var(--verpad);
+    padding: var(--gutter-pm) 0;
+    line-height: 1.25rem;
+
+    // @include flow();
+    @include ftsize(sm);
+    @include fgcolor(secd);
   }
 
   cv-data {

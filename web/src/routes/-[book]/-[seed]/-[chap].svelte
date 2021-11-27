@@ -125,11 +125,7 @@
 </Appbar>
 
 <Vessel>
-  <nav class="bread">
-    <a href="/-{cvbook.bslug}" class="crumb _link">{cvbook.vtitle}</a>
-    <span>/</span>
-    <span class="crumb _text">{chinfo.chvol}</span>
-  </nav>
+  <ChapSeed {cvbook} {chmeta} {chinfo} />
 
   {#if cvdata}
     <Cvdata
@@ -140,15 +136,15 @@
       {on_change}
       bind:debug>
       <svelte:fragment slot="header">
-        <ChapSeed {cvbook} {chmeta} {chinfo} />
+        <nav class="bread">
+          <a href="/-{cvbook.bslug}" class="crumb _link">{cvbook.vtitle}</a>
+          <span>/</span>
+          <span class="crumb _text">{chinfo.chvol}</span>
+        </nav>
       </svelte:fragment>
     </Cvdata>
   {:else}
-    <Notext {chmeta}>
-      <svelte:fragment slot="header">
-        <ChapSeed {cvbook} {chmeta} {chinfo} />
-      </svelte:fragment>
-    </Notext>
+    <Notext {chmeta} />
   {/if}
 
   <div class="navi" slot="footer">
@@ -233,15 +229,6 @@
 <style lang="scss">
   .navi {
     @include flex($center: horz, $gap: 0.5rem);
-  }
-
-  .bread {
-    padding: var(--gutter-pl) 0;
-    line-height: 1.25rem;
-
-    // @include flow();
-    @include ftsize(sm);
-    @include fgcolor(secd);
   }
 
   .crumb {

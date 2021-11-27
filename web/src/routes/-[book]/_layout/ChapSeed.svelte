@@ -13,6 +13,7 @@
   $: hidden_seeds = calculate_hidden_seeds(cvbook.snames, chmeta.sname)
 
   function calculate_hidden_seeds(snames, sname) {
+    console.log({ snames })
     if (snames.length < 5) return 0
     if (snames.slice(0, 5).includes(sname)) return snames.length - 5
     return snames.length - 4
@@ -23,13 +24,10 @@
   {#each cvbook.chseed as zhbook, idx}
     <a
       class="seed-name"
-      class:_hidden={zhbook.sname != 'chivi' && idx > 3 && show_less}
+      class:_hidden={idx > 3 && show_less}
       class:_active={zhbook.sname == chmeta.sname}
       href={chap_url(zhbook.sname)}>
-      <seed-label>
-        <span>{zhbook.sname}</span>
-        <SIcon name={zhbook._seed ? 'cloud' : 'archive'} />
-      </seed-label>
+      <seed-label>{zhbook.sname}</seed-label>
     </a>
   {/each}
 
@@ -44,10 +42,7 @@
       class="seed-name"
       class:_active={chmeta.sname === 'chivi'}
       href={chap_url('chivi', 0)}>
-      <seed-label>
-        <span>chivi</span>
-        <SIcon name="archive" />
-      </seed-label>
+      <seed-label>chivi</seed-label>
     </a>
   {/if}
 </chap-seed>
@@ -57,9 +52,6 @@
     @include flex-cx($gap: 0.375rem);
     flex-wrap: wrap;
     padding: 0.5rem var(--gutter);
-    @include border(--bd-main, $loc: bottom);
-    margin-bottom: var(--verpad);
-    font-family: var(--font-sans);
   }
 
   @mixin label {
@@ -69,7 +61,7 @@
   }
 
   .seed-name {
-    padding: 0.5em;
+    padding: 0.375rem;
     @include bdradi();
     @include linesd(--bd-main);
 
@@ -104,10 +96,6 @@
     :global(svg) {
       width: 1rem;
       height: 1rem;
-    }
-
-    span {
-      margin-right: 0.125em;
     }
   }
 </style>
