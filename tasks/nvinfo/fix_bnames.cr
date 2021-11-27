@@ -3,7 +3,7 @@ require "./../shared/seed_data"
 module CV::FixBnames
   extend self
 
-  DIR = "var/fixtures"
+  DIR = "var/nvinfos/fixes"
   class_getter vtitles : TsvStore { TsvStore.new("#{DIR}/vi_btitles.tsv") }
 
   def fix_all!

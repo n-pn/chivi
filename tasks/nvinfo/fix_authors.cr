@@ -3,7 +3,7 @@ require "./../shared/seed_data"
 module CV::FixAuthors
   extend self
 
-  DIR = "var/fixtures"
+  DIR = "var/nvinfos/fixes"
   class_getter authors : TsvStore { TsvStore.new("#{DIR}/vi_authors.tsv") }
 
   def fix_all!

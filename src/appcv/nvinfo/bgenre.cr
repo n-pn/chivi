@@ -3,8 +3,10 @@ require "tabkv"
 module CV::Bgenre
   extend self
 
-  GENRES = {{ read_file("var/fixtures/vi_genres.txt").strip.split("\n") }}
-  class_getter map_name : Tabkv { Tabkv.new("var/fixtures/zh_genres.tsv") }
+  DIR = "var/nvinfos/fixes"
+
+  GENRES = File.read_lines("#{DIR}/vi_genres.txt").reject(&.empty?)
+  class_getter map_name : Tabkv { Tabkv.new("#{DIR}/zh_genres.tsv") }
 
   def vname(ids : Array(Int32))
     ids.map { |id| vname(id) }
