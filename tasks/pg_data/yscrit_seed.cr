@@ -82,7 +82,54 @@ module CV::YscritSeed
 
     File.open("var/yousuu/yscrits-log.txt", "a", &.puts("#{root}: #{@@count}"))
   end
+
+  def seed!
+    info_maps = Dir.glob("#{DIR}/*-infos.tsv")
+
+    info_maps.each do |infos_file|
+      infos_map = Tabkv.new(infos_file)
+      ztext_file = infos_file.sub("infos", "ztext")
+
+      infos_map = Tabkv.new(infos_file)
+      ztext_map = Tabkv.new(ztext_file)
+
+      seed_file!(infos_map, ztext_map)
+    end
+  end
+
+  def seed_file!(infos_map : Tabkv, ztext_map : Tabkv)
+    infos_map.data.each do |ycrid, infos|
+      mtime = infos[6].to_i64
+
+      yscrit_id = ycrid[12..].to_i64(base: 16)
+      ysbook_id = infos[0].to_i64
+
+      yscrit = Yscrit.get!(yscrit_id, Time.unix(mtime))
+      next unless ysbook = Ysbook.find({id: ysbook_id})
+      next unless ysuser = Ysuser.get!(infos[1].to_i64, infos[2])
+
+      yscrit.ysbook = ysbook
+      yscrit.cvbook = ysbook.cvbook
+      yscrit.ysuser = ysuser
+
+      yscrit.origin_id = ycrid
+      bhash = yscrit.cvbook.bhash
+
+      yscrit.stars = infos[3].to_i
+      yscrit.like_count = infos[4].to_i
+      yscrit.repl_count = infos[5].to_i
+
+      yscrit.mftime = mtime
+
+      if ztext = ztext_map.get(ycrid)
+        yscrit.ztext = ztext.join("\n")
+        yscrit.vhtml = SeedUtil.cv_ztext(ztext, bhash)
+      end
+
+      yscrit.save!
+    end
+  end
 end
 
-CV::YscritSeed.init!("_db/yousuu/crits.old")
-CV::YscritSeed.init!("_db/yousuu/crits")
+CV::YscritSeed.init!("_db/yousuu/crits") if ARGV.includes?("init")
+CV::YscritSeed.seed! if ARGV.includes?("seed")
