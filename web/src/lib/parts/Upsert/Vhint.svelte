@@ -20,6 +20,9 @@
     '峠', '乡', '川', '园', '湖', '都', '堂', '坡', '河', '坂',
     '社', '关', '门', '墟', '庙', '镇', '院', '村'
   ]
+
+  const v_kbd = ['~', '!', '@', '#', '$', '%', '^']
+  const p_kbd = ['-', '=']
 </script>
 
 <script>
@@ -76,9 +79,6 @@
       case 'b':
         return ['a', 'n']
 
-      case 'az':
-        return ['a', 'al']
-
       case 'an':
         return ['a', 'n']
 
@@ -110,10 +110,7 @@
         return ['rr', 'rz', 'ry']
 
       case 'al':
-        return ['a', 'bl']
-
-      case 'bl':
-        return ['b', 'al']
+        return ['a', 'b']
 
       case 'vl':
         return ['al', 'nl']
@@ -160,16 +157,18 @@
         class="hint"
         class:_base={hint == vpterm.b_val}
         class:_priv={hint == vpterm.u_val}
+        data-kbd={v_kbd[idx]}
         on:click={() => (vpterm.val = hint)}>{hint}</button>
     {/if}
   {/each}
 
   <div class="right">
-    {#each tag_hints as hint}
+    {#each tag_hints as hint, idx}
       <button
         class="hint _ptag"
         class:_base={hint == ptag_base}
         class:_priv={hint == ptag_priv}
+        data-kbd={p_kbd[idx]}
         on:click={() => (vpterm.ptag = hint)}>{ptnames[hint]}</button>
     {/each}
   </div>
