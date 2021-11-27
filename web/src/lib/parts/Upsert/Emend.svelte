@@ -15,7 +15,7 @@
 <div class="emend">
   <div class="group">
     <span class="entry" use:hint={'Lịch sử thêm/sửa dữ liệu từ điển cộng đồng'}>
-      <SIcon name="users" />
+      <SIcon name="share" />
 
       {#if vpterm.b_mtime > 0}
         <span>{vpterm.b_state}:</span>

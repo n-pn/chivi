@@ -16,12 +16,16 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <a href="/dicts" class="-btn">
-      <SIcon name="package" />
-    </a>
-
     <a href="/qtran" class="-btn">
       <SIcon name="bolt" />
+    </a>
+
+    <a href="/crits" class="-btn">
+      <SIcon name="stars" />
+    </a>
+
+    <a href="/dicts" class="-btn">
+      <SIcon name="package" />
     </a>
 
     <a href="/" class="-btn">

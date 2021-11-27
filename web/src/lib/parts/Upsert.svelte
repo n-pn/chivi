@@ -217,7 +217,7 @@
               ? 'Đổi sang từ điển chung'
               : 'Đổi sang từ điển cá nhân'}
             on:click={() => (vpterm = vpterm.swap_dict())}>
-            <SIcon name={vpterm._priv ? 'user' : 'users'} />
+            <SIcon name={vpterm._priv ? 'user' : 'share'} />
           </button>
 
           <button

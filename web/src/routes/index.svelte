@@ -62,7 +62,7 @@
     </a>
 
     <a href="/crits" class="header-item">
-      <SIcon name="messages" />
+      <SIcon name="stars" />
       <span class="header-text _show-lg">Đánh giá</span>
     </a>
   </svelte:fragment>

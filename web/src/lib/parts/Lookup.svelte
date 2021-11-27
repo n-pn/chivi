@@ -146,7 +146,7 @@
               <p class="term">
                 <term-dic>
                   <SIcon name={dic % 2 ? 'book' : 'world'} />
-                  <SIcon name={dic > 3 ? 'user' : 'users'} />
+                  <SIcon name={dic > 3 ? 'user' : 'share'} />
                 </term-dic>
 
                 <term-val>{val || '<đã xoá>'}</term-val>
