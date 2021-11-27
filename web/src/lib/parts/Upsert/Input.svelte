@@ -74,7 +74,7 @@
       <div class="key-out">
         {#each output.slice(0, 6) as chr, idx}
           <button
-            class="key-btn"
+            class="key-btn _out"
             use:hint={'Thu hẹp về ký tự này'}
             on:click={() => (
               ($input.lower += idx), ($input.upper = $input.lower + 1)
@@ -142,24 +142,15 @@
   }
 
   .key-txt {
-    font-weight: 500;
     position: relative;
     max-width: 100%;
     line-height: $height;
-    > * {
-      display: inline;
-    }
+    font-family: var(--font-sans);
   }
 
   .trim {
     @include fgcolor(tert);
     font-size: rem(16px);
-  }
-
-  .key-out {
-    font-weight: 500;
-    @include clamp($width: 20vw);
-    @include fgcolor(main);
   }
 
   .key-pre,
@@ -190,6 +181,10 @@
     color: inherit;
     background: transparent;
 
+    &._out {
+      font-weight: 500;
+      @include fgcolor(primary, 5);
+    }
     // prettier-ignore
     // @include hover { @include fgcolor(primary, 5); }
   }
