@@ -22,7 +22,7 @@
   import { decor_term, hint } from './Upsert/_shared.js'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import CMenu from '$molds/CMenu.svelte'
+  import Gmenu from '$molds/Gmenu.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
   import Emend from './Upsert/Emend.svelte'
@@ -108,7 +108,7 @@
 <Gmodal actived={$ctrl.state > 0} on_close={ctrl.deactivate}>
   <upsert-wrap>
     <upsert-head class="head">
-      <CMenu dir="left" loc="bottom">
+      <Gmenu dir="left" loc="bottom">
         <button class="m-btn _text" slot="trigger">
           <SIcon name="menu-2" />
         </button>
@@ -123,7 +123,7 @@
             <span>Báo lỗi</span>
           </button>
         </svelte:fragment>
-      </CMenu>
+      </Gmenu>
 
       <Input pinyin={pinyins[key]} bind:output={key} />
 
@@ -160,7 +160,7 @@
       </button>
 
       <div class="tab-right">
-        <CMenu dir="right">
+        <Gmenu dir="right">
           <button slot="trigger" class="tab-item" class:_active={$ctrl.tab > 1}>
             <SIcon name="caret-down" />
           </button>
@@ -168,13 +168,13 @@
           <svelte:fragment slot="content">
             <button
               class="-item"
-              data-kbd={'c'}
+              data-kbd="v"
               on:click={() => ctrl.change_tab(2)}
               use:hint={'Phiên âm Hán Việt cho tên người, sự vật...'}>
               <span>Hán Việt</span>
             </button>
           </svelte:fragment>
-        </CMenu>
+        </Gmenu>
       </div>
     </upsert-tabs>
 

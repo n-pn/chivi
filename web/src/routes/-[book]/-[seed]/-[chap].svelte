@@ -20,7 +20,7 @@
   import { invalidate } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
-  import CMenu from '$molds/CMenu.svelte'
+  import Gmenu from '$molds/Gmenu.svelte'
   import Notext from '$parts/Notext.svelte'
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
@@ -157,7 +157,7 @@
       <span>Trước</span>
     </a>
 
-    <CMenu class="navi-item" loc="top">
+    <Gmenu class="navi-item" loc="top">
       <div class="m-btn" slot="trigger">
         <SIcon name={memo_icon} />
         <span>{chinfo.chidx}/{chmeta.total}</span>
@@ -213,7 +213,7 @@
           <span>Mục lục</span>
         </a>
       </svelte:fragment>
-    </CMenu>
+    </Gmenu>
 
     <a
       href={paths.next}

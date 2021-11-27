@@ -1,7 +1,7 @@
 <script>
   import { get_rtime } from '$atoms/RTime.svelte'
   import SIcon from '$atoms/SIcon.svelte'
-  import CMenu from '$molds/CMenu.svelte'
+  import Gmenu from '$molds/Gmenu.svelte'
   import Replies from './Yscrit/Replies.svelte'
 
   export let crit
@@ -40,7 +40,7 @@
       </button>
     {/if}
 
-    <CMenu dir="right">
+    <Gmenu dir="right">
       <button class="m-btn _sm _menu" slot="trigger">
         <SIcon name="dots-vertical" />
       </button>
@@ -56,7 +56,7 @@
           <span>Dịch nhanh</span>
         </a>
       </svelte:fragment>
-    </CMenu>
+    </Gmenu>
   </crit-head>
 
   <crit-body class:_all={view_all} class:big_text>

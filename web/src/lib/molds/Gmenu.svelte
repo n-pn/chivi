@@ -15,7 +15,7 @@
 
 <style lang="scss">
   menu-wrap {
-    display: run-in;
+    display: block;
     position: relative;
   }
 
@@ -51,7 +51,7 @@
     @include bgcolor(secd);
   }
 
-  .content > :global(.-item) {
+  .content :global(.-item) {
     display: block;
     width: 100%;
     padding: 0.5rem;
