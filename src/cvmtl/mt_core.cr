@@ -135,8 +135,8 @@ class CV::MtCore
 
   private def can_merge?(left : MtNode, right : MtNode)
     case right.tag
-    when .strings? then left.tag.strings?
-    when .puncts?  then left.tag == right.tag
+    when .string? then left.tag.string?
+    when .puncts? then left.tag == right.tag
     when .nhanzi?
       return false unless left.nhanzi?
       return true unless right.key == "两"
@@ -151,7 +151,7 @@ class CV::MtCore
       case left.tag
       when .pdeci?  then true
       when .ndigit? then true
-      when .strings?
+      when .string?
         right.tag = left.tag
         true
       else false

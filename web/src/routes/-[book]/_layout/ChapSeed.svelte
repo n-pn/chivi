@@ -13,7 +13,6 @@
   $: hidden_seeds = calculate_hidden_seeds(cvbook.snames, chmeta.sname)
 
   function calculate_hidden_seeds(snames, sname) {
-    console.log({ snames })
     if (snames.length < 5) return 0
     if (snames.slice(0, 5).includes(sname)) return snames.length - 5
     return snames.length - 4
