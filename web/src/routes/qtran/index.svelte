@@ -19,7 +19,7 @@
   async function convert() {
     // if ($session.privi < 1) return
 
-    const url = `/api/qtrans/posts`
+    const url = `/api/qtran/posts`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

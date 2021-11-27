@@ -36,6 +36,9 @@ targets:
   fix_covers:
     main: tasks/nvinfo/fix_covers.cr
 
+  fix_bnames:
+    main: tasks/nvinfo/fix_bnames.cr
+
   fix_genres:
     main: tasks/nvinfo/fix_genres.cr
 
