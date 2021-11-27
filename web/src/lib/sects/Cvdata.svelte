@@ -8,7 +8,6 @@
 
 <script>
   import { onMount } from 'svelte'
-  import { browser } from '$app/env'
   import { page, navigating } from '$app/stores'
 
   import Cvline, { Mtline } from '$sects/Cvline.svelte'
@@ -41,16 +40,16 @@
     cvmenu.deactivate()
     upsert.deactivate()
   }
+  $: ztext = zhtext[state.hover] || ''
 
   onMount(() => {
     let timeout = null
 
     function on_selection() {
-      timeout = null
-      if (state.hover < 0 || $config.reader == 1) return
+      if ($config.reader == 1) return
 
       const [lower, upper] = read_selection()
-      if (upper > 0) $input = [zhtext[state.hover], lower, upper]
+      if (upper > 0) $input = [ztext, lower, upper]
 
       const selection = document.getSelection()
       if (selection.isCollapsed) return
@@ -67,8 +66,8 @@
     return () => document.removeEventListener('selectionchange', action)
   })
 
-  function handle_click({ target }, index) {
-    if (state.focus != index) state.focus = index
+  function handle_click({ target }) {
+    if (state.focus != state.hover) state.focus = state.hover
 
     if ($config.reader == 1) return // return if in zen mode
     if (target.nodeName != 'V-N') {
@@ -80,7 +79,7 @@
 
     const lower = +target.dataset.i
     const upper = lower + +target.dataset.l
-    $input = [zhtext[index], lower, upper]
+    $input = [ztext, lower, upper]
 
     if (target == cvterm) {
       upsert.activate($input, 0)
@@ -138,7 +137,7 @@
   style="--textlh: {$config.textlh}%"
   bind:this={article}
   on:blur={hide_cvmenu}
-  on:click={(e) => handle_click(e, state.hover)}>
+  on:click={handle_click}>
   <header>
     <slot name="header">Dịch nhanh</slot>
   </header>

@@ -1,5 +1,8 @@
 export default function read_selection() {
-  const nodes = get_selected().filter((x) => x.nodeName == 'V-N')
+  const selection = document.getSelection()
+  if (selection.isCollapsed) return [0, 0]
+
+  const nodes = get_selected(selection.getRangeAt(0))
   if (nodes.length == 0) return [0, 0]
 
   let from = 99999
@@ -16,13 +19,9 @@ export default function read_selection() {
   return [from, upto]
 }
 
-function get_selected() {
-  const selection = document.getSelection()
-  if (selection.isCollapsed) return []
-
-  const range = selection.getRangeAt(0)
-
+function get_selected(range) {
   let node = range.startContainer
+  if (node.nodeName == 'CV-DATA') node = node.firstChild
   const stop = range.endContainer
 
   // Special case for a range that is contained within a single node
@@ -42,7 +41,7 @@ function get_selected() {
     node = node.parentNode
   }
 
-  return nodes
+  return nodes.filter((x) => x.nodeName == 'V-N')
 }
 
 function next_node(node) {
