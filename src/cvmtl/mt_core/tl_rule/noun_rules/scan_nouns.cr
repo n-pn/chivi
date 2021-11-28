@@ -5,7 +5,7 @@ module CV::TlRule
     when .uniques?               then heal_uniques!(head)
     when .nouns?
       head = fold_noun!(head, mode: 1) # fold noun but do not consume penum
-      head.nouns? ? head : scan_noun!(head)
+      head = head.nouns? ? head : scan_noun!(head)
     when .numeric?
       head = fold_numbers!(head)
       return head unless !head.noun? && (succ = head.succ?) && !succ.ends?
@@ -13,11 +13,11 @@ module CV::TlRule
       succ = scan_noun!(succ)
       succ.nouns? ? fold_nquant_noun!(head, succ) : head
     when .adverbs?
-      fold_head_ude1_noun!(fold_adverbs!(head))
+      head = fold_head_ude1_noun!(fold_adverbs!(head))
     when .verbs?
-      fold_head_ude1_noun!(fold_verbs!(head))
+      head = fold_head_ude1_noun!(fold_verbs!(head))
     when .adjts?
-      fold_head_ude1_noun!(fold_adjts!(head))
+      head = fold_head_ude1_noun!(fold_adjts!(head))
     when .modifier?
       return head unless succ = head.succ?
 
@@ -26,9 +26,10 @@ module CV::TlRule
       else
         fold_swap!(head, scan_noun!(succ), PosTag::NounPhrase, dic: 4)
       end
-    else
-      head
     end
+
+    return head unless head.nouns? && (succ = head.succ?) && succ.space?
+    fold_swap!(head, succ, PosTag::Place, dic: 3)
   end
 
   def fold_head_ude1_noun!(head : MtNode)

@@ -17,8 +17,8 @@ module CV::TlRule
       fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)
     when .veno?, .vintr?, .verobj?,
          .time?, .place?, .space?,
-         .pro_dem?, .defn_phrase?,
-         .modifier?
+         .pro_dem?, .modifier?,
+         .defn_phrase?, .prep_phrase?
       fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)
     when .numeric?
       fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)
