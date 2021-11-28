@@ -29,7 +29,8 @@ module CV::TlRule
         elsif succ_2.vdir?
           verb = fold_verb_vdirs!(verb, succ_2)
         else
-          break
+          break unless fold = fold_verb_compl!(verb, succ)
+          verb = fold
         end
       when .numeric?
         if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key

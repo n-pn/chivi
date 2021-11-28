@@ -14,6 +14,7 @@ title: Thông tin cập nhật
   - Thêm luật ngữ pháp về thời gian cho từ dạng `9时21分`
   - `2015年2月5日9时21分` được dịch thành `9 giờ 21 phút ngày 5 tháng 2 năm 2015` thay vì là `ngày 5 tháng 2 năm 2015 9 giờ 21 phút`
   - Sửa một số lỗi liên quan tới phó từ `非` và số từ.
+  - Bổ sung quy luật ngữ pháp cho giới từ.
 
 - Nội dung
   - Phục hồi các bài bình luận từ yousuu có nội dung là "Mời đăng ký xem xét nội dung bình luận".
