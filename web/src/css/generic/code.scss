@@ -1,6 +1,6 @@
 // credit: https://github.com/twbs/bootstrap/blob/main/scss/_reboot.scss
 
-@use "../essence" as *;
+@use '../essence' as *;
 
 // Code
 
@@ -38,14 +38,10 @@ pre {
 }
 
 code {
-  --code-fg: var(--color-blue-6);
-  --code-bg: var(--color-gray-0);
-
   font-size: var(--ftsize-code);
-  color: var(--code-fg);
-  background-color: var(--code-bg);
+  color: var(--code-fg, #{color(blue, 6)});
+  background-color: var(--code-bg, #{color(gray, 0)});
   padding: 0 0.25em;
-
   word-wrap: break-word;
 
   // Streamline the style when inside anchors to avoid broken underline and more
@@ -53,28 +49,26 @@ code {
     color: inherit;
   }
 
-  .tm-dark & {
-    --code-fg: var(--color-blue-3);
-    --code-bg: var(--color-gray-9);
+  .tm-dark &,
+  .tm-oled & {
+    --code-fg: #{color(blue, 3)};
+    --code-bg: #{color(gray, 9)};
   }
 }
 
 kbd {
-  $kbd-font-size: 0.875em;
-  $kbd-padding-x: 0.125em;
-  $kbd-padding-y: 0.25em;
-
-  --kbd-fg: var(--color-gray-7);
-  --kbd-bg: var(--color-gray-1);
-
-  padding: $kbd-padding-y $kbd-padding-x;
-  font-size: $kbd-font-size;
-  color: var(--kbd-fg);
-  background-color: var(--kbd-bg);
-
+  padding: 0.125em 0.25em;
+  font-size: 0.75em;
+  text-transform: uppercase;
   border-radius: 2px;
+  font-weight: 600;
 
-  kbd {
+  @include fgcolor(tert);
+  @include bgcolor(tert);
+  @include border();
+  @include shadow();
+
+  > kbd {
     padding: 0;
     font-size: 1em;
     font-weight: 500;

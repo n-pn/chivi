@@ -58,7 +58,8 @@ x-v {
   padding: 0 0.5em;
   letter-spacing: 0.04em;
   font-weight: 500;
-  @include ftsize(sm);
+  text-transform: capitalize;
+  font-size: rem(13px);
   @include linesd(--bd-main);
 }
 

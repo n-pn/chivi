@@ -31,7 +31,7 @@
   export let key = ''
   export let tab = 0
   export let hints = []
-  export let vpterm = {}
+  export let vpterm
 
   $: [ptag_priv, ptag_base, tag_hints] = gen_hint(key, tab, vpterm)
 
