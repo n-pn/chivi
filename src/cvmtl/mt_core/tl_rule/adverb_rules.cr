@@ -51,9 +51,17 @@ module CV::TlRule
   end
 
   def fold_adv_fei!(node : MtNode, succ = node.succ?) : MtNode
-    return node unless succ && succ.verbs?
+    return node unless succ
+    case succ
+    when .verbs?
+      fold_verbs!(succ, prev: node)
+    when .noun?, .modifier?
+      fold!(node, succ, PosTag::Modifier, dic: 7)
+    else
+      node
+    end
+
     # TODO: check for key when 没 mean "không"
-    fold_verbs!(succ, prev: node)
   end
 
   def fold_adverb!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
