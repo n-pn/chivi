@@ -52,6 +52,7 @@ module CV::TlRule
 
   def heal_uniques_by_key!(node : MtNode, succ = node.succ?)
     case node.key
+    when "第" then fold_第!(node)
     when "完"
       node.val = "nộp"
       node.tag = PosTag::Verb

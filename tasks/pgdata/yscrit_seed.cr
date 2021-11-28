@@ -122,6 +122,8 @@ module CV::YscritSeed
       yscrit.mftime = mtime
 
       if ztext = ztext_map.get(ycrid)
+        File.write("tmp/yscrits.txt", ["#{bhash} #{ysbook.id}"].concat(ztext).join("\n"))
+
         yscrit.ztext = ztext.join("\n")
         yscrit.vhtml = SeedUtil.cv_ztext(ztext, bhash)
       end

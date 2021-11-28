@@ -33,34 +33,17 @@ module CV::TlRule
       return fold_yi_verb!(node, tail) unless tail.quantis?
     end
 
-    has_第 = node.key.starts_with?("第")
-
-    if (prev = node.prev?) && prev.key == "第"
-      has_第 = true
-      prev.val = "thứ"
-      node = fold!(prev, node, node.tag, dic: 1)
-    end
-
     has_个 = tail if tail.key.ends_with?('个')
     appro = 1 if is_pre_appro_num?(node.prev?)
 
-    # merge number with quantifiers
-    if !has_第
-      case tail.key
-      when "年" then node = fold_year!(node, tail, appro)
-      when "月" then node = fold_month!(node, tail, appro)
-      when "点" then node = fold_hour!(node, tail, appro)
-      when "分" then node = fold_minute!(node, tail, appro)
-      else
-        node = fold!(node, tail, map_nqtype(tail), dic: 2)
-        node = fold_suf_quanti_appro!(node) if has_个
-      end
-    elsif (tail_2 = tail.succ?) && tail_2.noun?
-      # val = "#{tail.val} #{tail_2.val} #{node.val}"
-      tail = fold!(tail, tail_2, tail_2.tag, dic: 4)
-      return fold_swap!(node, tail, PosTag::Nphrase, dic: 4)
+    case tail.key
+    when "年" then node = fold_year!(node, tail, appro)
+    when "月" then node = fold_month!(node, tail, appro)
+    when "点" then node = fold_hour!(node, tail, appro)
+    when "分" then node = fold_minute!(node, tail, appro)
     else
-      node = fold_swap!(node, tail, map_nqtype(tail), dic: 4)
+      node = fold!(node, tail, map_nqtype(tail), dic: 2)
+      node = fold_suf_quanti_appro!(node) if has_个
     end
 
     if has_个 && (tail = node.succ?) && tail.quantis?

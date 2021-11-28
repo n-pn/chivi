@@ -28,8 +28,8 @@ struct CV::PosTag
     {"np", "Nphrase", Pos::Nouns | Pos::Contws}, # noun phrase
     {"ap", "Aphrase", Pos::Adjts | Pos::Contws}, # adjective phrase
 
-    {"sv", "ClauseV", Pos::Contws}, # subject + verb clause
-    {"sa", "ClauseA", Pos::Contws}, # subject + adjt clause
+    {"sv", "Vclause", Pos::Contws}, # subject + verb clause
+    {"sa", "Aclause", Pos::Contws}, # subject + adjt clause
     {"dp", "Dphrase", Pos::Contws}, # định ngữ/definition
   }
 

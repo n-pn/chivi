@@ -60,6 +60,9 @@ targets:
   ys_replies:
     main: tasks/yousuu/ys_replies.cr
 
+  yscrit_seed:
+    main: tasks/pgdata/yscrit_seed.cr
+
 dependencies:
   tabkv:
     github: chi-vi/tabkv
