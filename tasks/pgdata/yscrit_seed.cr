@@ -99,11 +99,7 @@ module CV::YscritSeed
 
   def seed_file!(infos_map : Tabkv, ztext_map : Tabkv)
     infos_map.data.each do |ycrid, infos|
-      unless mtime = infos[6].to_i64?
-        text = [ycrid].concat(infos).join("\t")
-        File.open("tmp/yscrit-err.txt", "a", &.puts(text))
-        next
-      end
+      mtime = infos[6].to_i64
 
       yscrit_id = ycrid[12..].to_i64(base: 16)
       ysbook_id = infos[0].to_i64
@@ -126,7 +122,7 @@ module CV::YscritSeed
       yscrit.mftime = mtime
 
       if ztext = ztext_map.get(ycrid)
-        File.write("tmp/yscrits.txt", ["#{bhash} #{ysbook.id}"].concat(ztext).join("\n"))
+        File.write("tmp/yscrits.txt", ["#{bhash} #{ycrid}"].concat(ztext).join("\n"))
 
         yscrit.ztext = ztext.join("\n")
         yscrit.vhtml = SeedUtil.cv_ztext(ztext, bhash)

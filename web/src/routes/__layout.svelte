@@ -9,10 +9,10 @@
   import '../css/generic.scss'
 
   const links = [
-    ['Voz.vn (chính)', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],
-    ['Discord (chat)', 'https://discord.gg/mdC3KQH'],
-    ['Github (nguồn)', 'https://github.com/np-nam/chivi'],
-    ['Facebook (page)', 'https://www.facebook.com/chivi.fb/'],
+    ['Voz.vn', 'https://voz.vn/t/truyen-tau-dich-may-mtl.95881/'],
+    ['Discord', 'https://discord.gg/mdC3KQH'],
+    ['Github', 'https://github.com/np-nam/chivi'],
+    ['Facebook', 'https://www.facebook.com/chivi.fb/'],
   ]
 
   $: {
@@ -107,13 +107,20 @@
   class:_shift={$toleft}>
   <slot />
 
-  <div class="links">
-    <span> Liên kết hỗ trợ:</span>
-    {#each links as [text, href]}
-      <a {href} class="-link" target="_blank" rel="noreferer noopener"
-        >{text}</a>
-    {/each}
-  </div>
+  <footer>
+    <div class="notes">
+      <a href="/notes/changelog" class="-link">Thay đổi</a>
+      <a href="/notes/donation" class="-link">Ủng hộ trang</a>
+    </div>
+
+    <div class="links">
+      <strong>Links: </strong>
+      {#each links as [text, href]}
+        <a {href} class="-link" target="_blank" rel="noreferer noopener"
+          >{text}</a>
+      {/each}
+    </div>
+  </footer>
 </div>
 
 {#if $navigating}
@@ -135,15 +142,14 @@
     }
   }
 
-  .links {
+  footer {
+    line-height: 1.25rem;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-
     width: 100%;
+    justify-content: center;
     margin-top: auto;
     padding: var(--gutter-pl);
-    line-height: 1.25rem;
 
     @include ftsize(sm);
     @include border($loc: top);
@@ -151,8 +157,19 @@
     @include bgcolor(tert);
   }
 
+  .links {
+    &:before {
+      @include fgcolor(mute);
+      margin: 0 0.5rem;
+      content: '|';
+    }
+  }
+
   .-link {
-    margin-left: 0.5rem;
+    & + & {
+      margin-left: 0.5rem;
+    }
+
     font-weight: 500;
 
     @include fgcolor(primary, 6);
