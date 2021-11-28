@@ -72,7 +72,7 @@ module CV::TlRule
     return fold!(node, succ, PosTag::Dphrase, dic: 8) if tail.ude1?
 
     tail = fold_adverbs!(tail) if tail.adverbs?
-    return node unless tail.verb? || tail.vform?
+    return node unless tail.verb? || tail.verobj?
 
     node = fold!(node, tail, tail.tag)
   end

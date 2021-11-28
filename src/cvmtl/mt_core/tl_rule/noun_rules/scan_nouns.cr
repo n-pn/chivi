@@ -1,8 +1,8 @@
 module CV::TlRule
   def scan_noun!(head : MtNode, mode = 0)
     case head
-    when .nphrase?, .vform? then head
-    when .uniques?          then heal_uniques!(head)
+    when .nphrase?, .verobj? then head
+    when .uniques?           then heal_uniques!(head)
     when .nouns?
       head = fold_noun!(head, mode: 1) # fold noun but do not consume penum
       head = scan_noun!(head) if head.verb?
