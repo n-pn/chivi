@@ -30,12 +30,12 @@ module CV::TlRule
       when .adjts?
         return node unless node.prev?(&.nouns?)
         succ = fold_adjts!(succ)
-        return fold!(node, succ, PosTag::Aphrase, dic: 6)
+        return fold!(node, succ, PosTag::Aform, dic: 6)
       when .adverbs?
         return node unless node.prev?(&.nouns?)
         succ = fold_adverbs!(succ)
         return node unless succ.adjts?
-        return fold!(node, succ, PosTag::Aphrase, dic: 6)
+        return fold!(node, succ, PosTag::Aform, dic: 6)
       when .middot?
         break unless succ_2 = succ.succ?
         break unless succ_2.human?

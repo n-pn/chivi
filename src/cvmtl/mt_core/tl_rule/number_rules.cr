@@ -24,7 +24,7 @@ module CV::TlRule
     if tail.pre_dui?
       if (succ_2 = tail.succ?) && succ_2.numbers?
         tail.val = "đối"
-        return fold!(node, succ_2, PosTag::Aphrase, dic: 2)
+        return fold!(node, succ_2, PosTag::Aform, dic: 2)
       end
 
       tail.set!("đôi", PosTag::Qtnoun)

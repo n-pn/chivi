@@ -17,7 +17,7 @@ module CV::TlRule
 
     if (succ_2 = succ.succ?) && succ_2.numeric?
       succ_2 = fold_numbers!(succ_2)
-      return fold!(adjt, succ_2, PosTag::Aphrase, dic: 7)
+      return fold!(adjt, succ_2, PosTag::Aform, dic: 7)
     end
 
     return fold!(adjt, succ, PosTag::Vphrase, dic: 7)
@@ -32,6 +32,8 @@ module CV::TlRule
       break unless succ = node.succ?
 
       case succ.tag
+      when .aform?
+        node = fold!(node, succ, PosTag::Aform, dic: 4)
       when .adjt?, .amorp?
         node = fold!(node, succ, PosTag::Adjt, dic: 4)
       when .ajno?
@@ -64,17 +66,17 @@ module CV::TlRule
       when .penum?, .concoord?
         break unless (succ_2 = succ.succ?) && can_combine_adjt?(node, succ_2)
         heal_concoord!(succ) if succ.concoord?
-        node = fold!(node, succ_2, PosTag::Aphrase, dic: 4)
+        node = fold!(node, succ_2, PosTag::Aform, dic: 4)
       when .adv_bu?
         break unless (succ_2 = succ.succ?)
 
         if prev && prev.adv_bu?
-          return fold!(prev, succ_2, PosTag::Aphrase, dic: 4)
+          return fold!(prev, succ_2, PosTag::Aform, dic: 4)
         elsif succ_2.key == node.key
           node = fold_adj_adv!(node, prev)
           succ.val = "hay"
           succ_2.val = "không"
-          return fold!(node, succ_2, PosTag::Aphrase, dic: 4)
+          return fold!(node, succ_2, PosTag::Aform, dic: 4)
         end
 
         break
@@ -111,10 +113,10 @@ module CV::TlRule
       node.fix_prev!(head)
       node.fix_succ!(tail)
 
-      fold!(head, tail, PosTag::Aphrase, dic: 4)
+      fold!(head, tail, PosTag::Aform, dic: 4)
     else
       prev.val = "rất" if prev.key == "挺"
-      fold!(prev, node, PosTag::Aphrase, dic: 5)
+      fold!(prev, node, PosTag::Aform, dic: 5)
     end
   end
 end

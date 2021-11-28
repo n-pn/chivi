@@ -26,7 +26,6 @@ struct CV::PosTag
 
     {"vp", "Vphrase", Pos::Verbs | Pos::Contws}, # verb phrase
     {"np", "Nphrase", Pos::Nouns | Pos::Contws}, # noun phrase
-    {"ap", "Aphrase", Pos::Adjts | Pos::Contws}, # adjective phrase
 
     {"sv", "Vclause", Pos::Contws}, # subject + verb clause
     {"sa", "Aclause", Pos::Contws}, # subject + adjt clause
