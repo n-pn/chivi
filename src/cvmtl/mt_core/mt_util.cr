@@ -14,7 +14,7 @@ module CV::MtUtil
       int = to_integer(char)
 
       case char
-      when '万', '千', '百', '十'
+      when '兆', '亿', '万', '千', '百', '十'
         res += acc
         mod = int if mod < int
         acc = int
@@ -47,6 +47,8 @@ module CV::MtUtil
     when '百' then 100
     when '千' then 1000
     when '万' then 10000
+    when '亿' then 10000000
+    when '兆' then 10000000000
     when .ascii_number?
       char.to_i
     else

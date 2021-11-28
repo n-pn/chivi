@@ -50,7 +50,7 @@ module CV::TlRule
     node.key = key_io.to_s
     node.val = val_io.to_s # TODO: correct unit system
 
-    node.tag = PosTag::Nhanzi
+    node.tag = PosTag::Number
     node.fix_succ!(succ)
   end
 end
