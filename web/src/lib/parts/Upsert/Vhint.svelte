@@ -154,7 +154,11 @@
   <button data-kbd="~" on:click={() => (vpterm.val = vpterm.o_val)} />
   <button data-kbd="[" on:click={() => (vpterm.ptag = 'nr')} />
   <button data-kbd="]" on:click={() => (vpterm.ptag = 'nn')} />
-  <button data-kbd="\" on:click={() => (vpterm.ptag = 'nz')} />
+  <button data-kbd="." on:click={() => (vpterm.ptag = 'nz')} />
+  <button data-kbd="/" on:click={() => (vpterm.ptag = 'nw')} />
+  <button data-kbd=";" on:click={() => (vpterm.ptag = 'al')} />
+  <button data-kbd="'" on:click={() => (vpterm.ptag = 'vl')} />
+  <button data-kbd="n" on:click={() => (vpterm.ptag = 'n')} />
 </div>
 
 <div class="hints">

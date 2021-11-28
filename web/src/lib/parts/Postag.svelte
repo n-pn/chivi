@@ -161,11 +161,12 @@
       '-',
       'rr', 'rz', 'ry',
       'r',
-      '-',
-      'nl', 'i',
     ],
     // prettier-ignore
     [
+      '-',
+      'nl', 'i',
+      '-',
       'm', 'q', 'mq',
       '-',
       'vx', 'vm', 'vf',
@@ -200,13 +201,13 @@
 
     // prettier-ignore
     switch (tag) {
-      case 'nr': return '1'
-      case 'nn': return '2'
-      case 'nz': return '3'
-      case 'nw': return 'z'
+      case 'nr': return '['
+      case 'nn': return ']'
+      case 'nz': return '.'
+      case 'nw': return '/'
 
-      case 'an': return '5'
-      case 'vn': return '6'
+      case 'al': return ';'
+      case 'vl': return '\''
 
       default: return ''
     }
