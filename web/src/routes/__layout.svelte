@@ -109,7 +109,7 @@
 
   <footer>
     <div class="notes">
-      <a href="/notes/changelog" class="-link">Thay đổi</a>
+      <a href="/notes/changelog" class="-link">Thông tin cập nhật</a>
       <a href="/notes/donation" class="-link">Ủng hộ trang</a>
     </div>
 
