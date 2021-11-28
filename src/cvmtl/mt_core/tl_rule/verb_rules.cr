@@ -18,7 +18,7 @@ module CV::TlRule
         break if verb.succ? == succ
       when .vdirs?
         verb = fold_verb_vdirs!(verb, succ)
-      when .adjts?, .verbs?, .preposes?, .uniques?
+      when .adjts?, .verbs?, .preposes?, .uniques?, .space?
         break unless fold = fold_verb_compl!(verb, succ)
         verb = fold
       when .adv_bu?
@@ -118,20 +118,30 @@ module CV::TlRule
   def fold_verb_compl!(verb : MtNode, compl : MtNode) : MtNode?
     return if verb.v_you? || verb.v_shi?
 
-    unless val = MTL::VERB_COMPLS[compl.key]?
+    if val = MTL::VERB_COMPLS[compl.key]?
+      compl.val = val
+    else
       case compl.tag
       when .pre_dui?
         return if (succ = compl.succ?) && (succ.nouns? || succ.pro_per?)
-        val = "đúng"
+        compl.val = "đúng"
       when .pre_zai?
         return if compl.succ? { |x| x.nouns? || x.pro_per? }
-        val = "ở"
+        compl.val = "ở"
+      when .space?
+        return unless compl.key == "中"
+        if compl.succ?(&.ule?)
+          compl.val = "trúng"
+        else
+          compl.val = "đang"
+          return fold_swap!(node, compl, PosTag::Vphrase, 9)
+        end
       else
         return
       end
     end
 
-    fold!(verb, compl.set!(val), PosTag::Verb, dic: 6)
+    fold!(verb, compl, PosTag::Verb, dic: 6)
   end
 
   def fold_left_verb!(verb : MtNode, left : Nil)

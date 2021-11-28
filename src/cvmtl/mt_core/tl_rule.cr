@@ -37,7 +37,11 @@ module CV::TlRule
         node = fold_noun_left!(node, mode: mode)
       when .space?
         if prev = node.prev?
-          node = fold_noun_space!(prev, node) if prev.nouns?
+          if prev.nouns?
+            node = fold_noun_space!(prev, node)
+          elsif node.key == "中"
+            node.set!("trúng", PosTag::Verb)
+          end
         end
 
         node = fold_noun_left!(node, mode: mode)
