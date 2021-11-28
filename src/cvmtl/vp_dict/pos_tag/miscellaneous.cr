@@ -29,7 +29,8 @@ struct CV::PosTag
 
     {"sv", "Vclause", Pos::Contws}, # subject + verb clause
     {"sa", "Aclause", Pos::Contws}, # subject + adjt clause
-    {"dp", "Dphrase", Pos::Contws}, # định ngữ/definition
+    {"dp", "Dphrase", Pos::Contws}, # cụm định ngữ/definition
+    {"pp", "Pphrase", Pos::Contws}, # cụm giới từ
   }
 
   @[AlwaysInline]

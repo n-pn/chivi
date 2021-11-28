@@ -66,14 +66,33 @@ module CV::TlRule
 
   def fold_prepos!(node : MtNode, succ = node.succ?) : MtNode
     return node unless succ && !succ.ends?
-    succ = scan_noun!(succ)
+    succ = scan_noun!(succ, mode: 1)
 
     return node unless tail = succ.succ?
-    return fold!(node, succ, PosTag::Dphrase, dic: 8) if tail.ude1?
 
-    tail = fold_adverbs!(tail) if tail.adverbs?
-    return node unless tail.verb? || tail.verobj?
+    if (tail.verb? || tail.verobj?) && (succ.nouns? || succ.pro_per?)
+      # TODO: put node after tail
+      node = fold!(node, succ, PosTag::Pphrase, dic: 5)
+      tail = fold_verbs!(tail)
+      return fold!(node, tail, tail.tag, dic: 6)
+    end
 
-    node = fold!(node, tail, tail.tag)
+    if tail.ude1? && (tail_2 = tail.succ?)
+      tail_2 = scan_noun!(tail_2)
+
+      if (tail_3 = tail_2.succ?) && (tail_3.adverbs? || tail_3.verbs?)
+        succ = fold_ude1(tail_2)
+        node = fold!(node, succ, PosTag::Phrase, dic: 7)
+
+        tail = tail_3.adverbs? ? fold_adverbs!(tail_3) : fold_verbs!(tail_3)
+
+        return fold!(node, tail, tail.tag, dic: 8)
+      end
+
+      node = fold!(node, succ, PosTag::Pphrase, dic: 5)
+      return fold_ude1(tail_2)
+    end
+
+    fold!(node, succ, PosTag::Pphrase, dic: 5)
   end
 end
