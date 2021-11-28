@@ -107,7 +107,7 @@ class CV::MtNode
     else               nil
     end
   rescue err
-    puts err.inspect_with_backtrace
+    File.open("tmp/nhanzi-error.txt", "a", &.puts(@key))
     nil
   end
 
