@@ -3,7 +3,7 @@ module CV::TlRule
     return node unless succ = node.succ?
     return fold_ndigit_nhanzi!(node, succ) if succ.nhanzi?
 
-    if prev && (succ.key == "点")
+    if prev && (succ.key == "点" || succ.key == "时")
       return fold_number_hour!(node, succ)
     end
 
@@ -23,7 +23,7 @@ module CV::TlRule
 
       fold_ndigit_succs!(node, succ_3, succ_4, PosTag::Time)
     else
-      return node unless succ.key == "点"
+      return node unless succ.key == "点" || succ.key == "时"
       fold_number_hour!(node, succ)
     end
   end

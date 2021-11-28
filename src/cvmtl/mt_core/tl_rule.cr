@@ -13,12 +13,18 @@ module CV::TlRule
       when .time?     then node = fold_time!(node)
       when .numeric?
         node = fold_numbers!(node)
-        if node.nquants?
+
+        case node
+        when .nquants?
           next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)
           node = fold_noun_left!(node, mode: mode)
-        elsif node.nphrase?
+        when .nphrase?
           node = fold_noun_left!(node, mode: mode)
-        elsif node.verbs?
+        when .time?
+          if (prev = node.prev?) && prev.time?
+            node = fold_swap!(prev, node, node.tag, dic: 4)
+          end
+        when node.verbs?
           node = fold_verbs!(node)
         end
       when .veno?    then node = fold_veno!(node)

@@ -49,6 +49,9 @@ module CV::TlRule
         node = fold!(node, succ, succ.tag, dic: 3)
       when .place?
         return fold_swap!(node, succ, PosTag::Dphrase, dic: 3)
+        # when .time?
+        #   tag = node.time? ? node.tag : PosTag::Nphrase
+        #   fold_swap!(node, succ, tag, dic: 4)
       when .uzhi?
         return fold_uzhi!(succ, node)
       when .nmorp?
