@@ -63,7 +63,7 @@ module CV::YscritRaw
     crit = Yscrit.get!(json.id, json.created_at)
 
     return unless ysbook = Ysbook.find({id: json.book._id})
-    ysuser = Ysuser.get!(json.user._id, json.user.name)
+    ysuser = Ysuser.get!(json.user.name)
     cvbook = ysbook.cvbook
 
     crit.ysuser = ysuser

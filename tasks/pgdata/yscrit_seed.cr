@@ -106,7 +106,7 @@ module CV::YscritSeed
 
       yscrit = Yscrit.get!(yscrit_id, Time.unix(mtime))
       next unless ysbook = Ysbook.find({id: ysbook_id})
-      next unless ysuser = Ysuser.get!(infos[1].to_i64, infos[2])
+      next unless ysuser = Ysuser.get!(infos[2])
 
       yscrit.ysbook = ysbook
       yscrit.cvbook = ysbook.cvbook
@@ -129,6 +129,9 @@ module CV::YscritSeed
       end
 
       yscrit.save!
+    rescue
+      line = [ycrid].concat(infos).join("\t")
+      File.open("tmp/yscrits-err.txt", "a", &.puts(line))
     end
   end
 end

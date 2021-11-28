@@ -18,10 +18,10 @@ class CV::Ysuser
 
   timestamps
 
-  def self.get!(id : Int32 | Int64, zname : String)
+  def self.get!(zname : String)
     find({zname: zname}) || begin
       vname = BookUtils.hanviet(zname)
-      new({id: id, zname: zname, vname: vname}).tap(&.save!)
+      new({zname: zname, vname: vname}).tap(&.save!)
     end
   end
 end

@@ -43,7 +43,7 @@ class CV::RawYsrepl
     end
 
     return unless yscrit = Yscrit.find({origin_id: self.yscrit_id})
-    ysuser = Ysuser.get!(self.user._id, self.user.name)
+    ysuser = Ysuser.get!(self.user.name)
 
     repl.ysuser = ysuser
     repl.yscrit = yscrit
