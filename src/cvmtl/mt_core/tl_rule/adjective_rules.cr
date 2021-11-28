@@ -45,6 +45,11 @@ module CV::TlRule
         break unless node.key.size == 1 && !prev
         succ = fold_verbs!(succ)
         return fold_swap!(node, succ, PosTag::Vphrase, dic: 4)
+      when .ule?
+        break unless (succ_2 = succ.succ?) && succ_2.key == "点"
+        succ.val = ""
+        succ_2.val = "chút"
+        return fold!(node, succ_2, PosTag::Aform, dic: 6)
       when .ude2?
         break unless succ_2 = succ.succ?
         break unless succ_2.verb? || succ_2.veno?
