@@ -47,7 +47,9 @@ module CV::TlRule
   end
 
   def fold_ptitle!(head : MtNode, mode = 1) : MtNode
-    end_key = match_title_end(head.key[0])
+    return head unless start_key = head.key[0]?
+    end_key = match_title_end(start_key)
+
     tail = head
 
     while tail = tail.succ?
