@@ -3,14 +3,17 @@ module CV::TlRule
     return node unless succ = node.succ?
     return node unless succ.nhanzi? || succ.ndigit?
 
-    succ.val = "nhất" if succ.key == "一"
+    if succ.key == "一"
+      succ.val = "nhất"
+      node.val = "đệ" if node.prev?(&.nouns?)
+    end
 
     node = fold!(node, succ, PosTag::Noun, dic: 3)
     return node unless succ = node.succ?
     succ = heal_quanti!(succ)
 
     case succ.tag
-    when .noun?, .time?
+    when .noun?, .time?, .ptitle?
       node = fold_swap!(node, succ, succ.tag, dic: 8)
       fold_noun!(node)
     when .quantis?

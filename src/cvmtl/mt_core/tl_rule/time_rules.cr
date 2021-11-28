@@ -14,7 +14,7 @@ module CV::TlRule
         node
       end
     else
-      node
+      fold_noun!(node)
     end
   end
 

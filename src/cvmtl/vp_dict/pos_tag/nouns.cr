@@ -34,7 +34,6 @@ struct CV::PosTag
 
     # 时间词 - time word - thời gian
     {"t", "Time", Pos::Nouns | Pos::Contws},
-
   }
 
   @[AlwaysInline]

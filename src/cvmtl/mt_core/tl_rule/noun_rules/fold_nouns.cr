@@ -12,12 +12,21 @@ module CV::TlRule
   # end
 
   def fold_noun!(node : MtNode, mode : Int32 = 0) : MtNode
-    return node if node.nform?
+    # return node if node.nform?
 
     while node.nouns?
       break unless succ = node.succ?
 
       case succ.tag
+      when .uniques?
+        case succ.key
+        when "第"
+          succ = fold_第!(succ)
+          node = fold_swap!(node, succ, succ.tag, dic: 6)
+        else
+          # TODO!
+          break
+        end
       when .adjts?
         return node unless node.prev?(&.nouns?)
         succ = fold_adjts!(succ)
