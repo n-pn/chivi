@@ -24,13 +24,13 @@ struct CV::PosTag
     {"y", "Modalparticle", Pos::Funcws}, # 语气词 - modal particle - ngữ khí
     {"o", "Onomatopoeia", Pos::Funcws},  # 拟声词 - onomatopoeia - tượng thanh
 
-    {"vp", "Vphrase", Pos::Verbs | Pos::Contws}, # verb phrase
-    {"np", "Nphrase", Pos::Nouns | Pos::Contws}, # noun phrase
+    {"vp", "VerbPhrase", Pos::Verbs | Pos::Contws}, # verb phrase
+    {"np", "NounPhrase", Pos::Nouns | Pos::Contws}, # noun phrase
 
-    {"sv", "Vclause", Pos::Contws}, # subject + verb clause
-    {"sa", "Aclause", Pos::Contws}, # subject + adjt clause
-    {"dp", "Dphrase", Pos::Contws}, # cụm định ngữ/definition
-    {"pp", "Pphrase", Pos::Contws}, # cụm giới từ
+    {"sv", "VerbClause", Pos::Contws}, # subject + verb clause
+    {"sa", "AdjtClause", Pos::Contws}, # subject + adjt clause
+    {"dp", "DefnPhrase", Pos::Contws}, # cụm định ngữ/definition
+    {"pp", "PrepPhrase", Pos::Contws}, # cụm giới từ
   }
 
   @[AlwaysInline]

@@ -8,7 +8,7 @@ module CV::TlRule
       return verb unless is_temp_nqverb?(node)
     end
 
-    return fold!(verb, node, PosTag::Vphrase, dic: 6)
+    return fold!(verb, node, PosTag::VerbPhrase, dic: 6)
   end
 
   def is_temp_nqverb?(node : MtNode)

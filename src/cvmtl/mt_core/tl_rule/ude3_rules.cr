@@ -22,15 +22,15 @@ module CV::TlRule
       succ_2 = fold_adverbs!(succ_2)
 
       if succ_2.adjts?
-        fold!(node, succ_2, PosTag::Vphrase, dic: 5)
+        fold!(node, succ_2, PosTag::VerbPhrase, dic: 5)
       elsif succ_2.key == "很"
         succ_2.val = "cực kỳ"
-        fold!(node, succ_2, PosTag::Vphrase, dic: 5)
+        fold!(node, succ_2, PosTag::VerbPhrase, dic: 5)
       else
         node
       end
     when .adjts?
-      fold!(node, succ_2, PosTag::Vphrase, dic: 6)
+      fold!(node, succ_2, PosTag::VerbPhrase, dic: 6)
     when .verbs?
       node = fold!(node, succ, PosTag::Verb, dic: 6)
       return fold_verb_compl!(node, succ_2) || node

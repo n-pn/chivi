@@ -16,6 +16,6 @@ module CV::TlRule
       break unless join.penum?
     end
 
-    tail ? fold!(head, tail, PosTag::Nphrase, dic: 8) : head
+    tail ? fold!(head, tail, PosTag::NounPhrase, dic: 8) : head
   end
 end

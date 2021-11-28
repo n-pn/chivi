@@ -14,7 +14,7 @@ module CV::TlRule
     when .space?
       fold_swap!(node, succ, PosTag::Place, dic: 4)
     when .place?
-      fold_swap!(node, succ, PosTag::Dphrase, dic: 4)
+      fold_swap!(node, succ, PosTag::DefnPhrase, dic: 4)
     when .ptitle?
       return node unless should_not_combine_pro_per?(node.prev?, succ.succ?)
       fold_swap!(node, succ, succ.tag, dic: 4)
@@ -71,7 +71,7 @@ module CV::TlRule
   # }
 
   def fold_pro_dem_noun!(prev : MtNode, node : MtNode)
-    node.tag = PosTag::Nphrase
+    node.tag = PosTag::NounPhrase
     prev.val = prev.val.sub("cái", "").strip if prev.key.ends_with?("个")
 
     case prev.key
@@ -97,7 +97,7 @@ module CV::TlRule
       prev.key = "其"
       prev.val = "các"
 
-      fold!(prev, tail, PosTag::Nphrase, dic: 3)
+      fold!(prev, tail, PosTag::NounPhrase, dic: 3)
     when .ends_with?("个")
       fold!(prev, node, node.tag, dic: 3)
     when .starts_with?("各")

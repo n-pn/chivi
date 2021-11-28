@@ -44,7 +44,7 @@ module CV::TlRule
         fold_adverbs!(node, succ)
       when .ule?
         node.tag == PosTag::Adjt
-        fold_adjts(node)
+        fold_adjts!(node)
       else
         node
       end

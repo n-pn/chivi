@@ -8,29 +8,29 @@ module CV::TlRule
     case prev_2
     when .ajad?
       prev_2.val = "thông thường" if prev_2.key == "一般"
-      fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
+      fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)
     when .adjts?
       if (prev_3 = prev_2.prev?) && prev_3.noun?
-        prev_2 = fold!(prev_3, prev, PosTag::Dphrase, dic: 8)
+        prev_2 = fold!(prev_3, prev, PosTag::DefnPhrase, dic: 8)
       end
 
-      fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
+      fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)
     when .veno?, .vintr?, .verobj?,
          .time?, .place?, .space?,
-         .pro_dem?, .dphrase?,
+         .pro_dem?, .defn_phrase?,
          .modifier?
-      fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
+      fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)
     when .numeric?
-      fold_swap!(prev_2, node, PosTag::Nphrase, dic: 4)
+      fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)
     when .nouns?, .pro_per?
       if (prev_3 = prev_2.prev?) && is_verb_clause?(prev_3, node)
-        prev = fold!(prev_3, prev, PosTag::Dphrase, dic: 9)
-        return fold_swap!(prev, node, PosTag::Nphrase, dic: 6)
+        prev = fold!(prev_3, prev, PosTag::DefnPhrase, dic: 9)
+        return fold_swap!(prev, node, PosTag::NounPhrase, dic: 6)
       end
 
       prev.val = "của"
       dic = prev_2.prev?(&.verbs?) ? 6 : 4
-      return fold_swap!(prev_2, node, PosTag::Nphrase, dic: dic)
+      return fold_swap!(prev_2, node, PosTag::NounPhrase, dic: dic)
     when .verb?
       return node unless prev_3 = prev_2.prev?
       # puts [prev_3, prev_2]
@@ -38,14 +38,14 @@ module CV::TlRule
       case prev_3.tag
       when .nouns?
         if (prev_4 = prev_3.prev?) && prev_4.pre_bei?
-          head = fold!(prev_4, prev_2, PosTag::Dphrase, dic: 8)
+          head = fold!(prev_4, prev_2, PosTag::DefnPhrase, dic: 8)
         else
-          head = fold!(prev_3, prev_2, PosTag::Dphrase, dic: 9)
+          head = fold!(prev_3, prev_2, PosTag::DefnPhrase, dic: 9)
         end
-        fold_swap!(head, node, PosTag::Nphrase, dic: 9)
+        fold_swap!(head, node, PosTag::NounPhrase, dic: 9)
       when .nquants?
-        node = fold_swap!(prev_2, node, PosTag::Nphrase, dic: 8)
-        fold!(prev_3, node, PosTag::Nphrase, 3)
+        node = fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 8)
+        fold!(prev_3, node, PosTag::NounPhrase, 3)
       else
         node
       end
@@ -60,7 +60,7 @@ module CV::TlRule
       return false
     end
 
-    return false unless head.verb? || head.vphrase?
+    return false unless head.verb? || head.verb_phrase?
 
     by_succ = check_vclause_by_succ?(tail.succ?)
     return by_succ == 2 unless prev = head.prev?

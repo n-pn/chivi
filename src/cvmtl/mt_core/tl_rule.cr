@@ -18,7 +18,7 @@ module CV::TlRule
         when .nquants?
           next if (succ = node.succ?) && (succ.nouns? || succ.ude1?)
           node = fold_noun_left!(node, mode: mode)
-        when .nphrase?
+        when .noun_phrase?
           node = fold_noun_left!(node, mode: mode)
         when .time?
           if (prev = node.prev?) && prev.time?
@@ -48,7 +48,7 @@ module CV::TlRule
       when .vmodals? then node = heal_vmodal!(node)
       when .verbs?
         node = fold_verbs!(node)
-      when .nform?, .nphrase?
+      when .nform?, .noun_phrase?
         node = fold_noun_left!(node, mode: mode)
       when .nouns?
         node = fold_noun!(node)

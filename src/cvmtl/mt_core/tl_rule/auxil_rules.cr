@@ -40,7 +40,7 @@ module CV::TlRule
     end
 
     node.val = "của"
-    fold_swap!(prev, node, PosTag::Dphrase, dic: 8)
+    fold_swap!(prev, node, PosTag::DefnPhrase, dic: 8)
   end
 
   def heal_ude2!(node : MtNode) : MtNode

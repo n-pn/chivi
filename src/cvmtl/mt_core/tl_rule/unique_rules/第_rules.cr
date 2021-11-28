@@ -18,7 +18,7 @@ module CV::TlRule
       fold_noun!(node)
     when .quantis?
       if (succ_2 = succ.succ?) && succ_2.nouns?
-        succ = fold!(succ, succ_2, PosTag::Nphrase, dic: 7)
+        succ = fold!(succ, succ_2, PosTag::NounPhrase, dic: 7)
         fold_swap!(node, succ, succ.tag, dic: 6)
       else
         fold_swap!(node, succ, PosTag::Noun)

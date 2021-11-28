@@ -9,7 +9,7 @@ module CV::TlRule
         succ = fold_numbers!(succ, prev: node)
         succ.time? ? fold_time_prev!(succ, prev: node) : node
       when .adj_hao?
-        fold_swap!(node, succ.set!("chào"), PosTag::Vphrase, dic: 8)
+        fold_swap!(node, succ.set!("chào"), PosTag::VerbPhrase, dic: 8)
       else
         node
       end

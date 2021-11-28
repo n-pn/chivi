@@ -20,7 +20,7 @@ module CV::TlRule
       return fold!(adjt, succ_2, PosTag::Aform, dic: 7)
     end
 
-    return fold!(adjt, succ, PosTag::Vphrase, dic: 7)
+    return fold!(adjt, succ, PosTag::VerbPhrase, dic: 7)
   end
 
   def fold_adjts!(node : MtNode, prev : MtNode? = nil) : MtNode
@@ -40,11 +40,11 @@ module CV::TlRule
         return fold_swap!(node, succ, PosTag::Noun, dic: 7)
       when .noun?
         break unless node.key.size == 1 && !prev # or special case
-        return fold_swap!(node, succ, PosTag::Nphrase, dic: 4)
+        return fold_swap!(node, succ, PosTag::NounPhrase, dic: 4)
       when .vpro?, .verb?
         break unless node.key.size == 1 && !prev
         succ = fold_verbs!(succ)
-        return fold_swap!(node, succ, PosTag::Vphrase, dic: 4)
+        return fold_swap!(node, succ, PosTag::VerbPhrase, dic: 4)
       when .ule?
         break unless (succ_2 = succ.succ?) && succ_2.key == "点"
         succ.val = ""
@@ -58,7 +58,7 @@ module CV::TlRule
         node = fold_adj_adv!(node, prev)
 
         succ.set!("mà")
-        return fold!(node, succ_2, PosTag::Vphrase, dic: 5)
+        return fold!(node, succ_2, PosTag::VerbPhrase, dic: 5)
       when .uzhi?
         node = fold_adj_adv!(node, prev)
         return fold_uzhi!(succ, node)
