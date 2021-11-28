@@ -252,7 +252,7 @@
     // font-size: 0.95em;
     line-height: 1.4em;
     letter-spacing: 0.04em;
-    margin-bottom: 0.1em;
+    margin-bottom: 0.5em;
     @include tm-light {
       color: color(neutral, 6);
     }

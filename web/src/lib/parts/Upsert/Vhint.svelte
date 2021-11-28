@@ -21,7 +21,7 @@
     '社', '关', '门', '墟', '庙', '镇', '院', '村'
   ]
 
-  const v_kbd = ['~', '!', '@', '#', '$', '%', '^']
+  const v_kbd = ['!', '@', '#', '$', '%', '^']
   const p_kbd = ['-', '=']
 </script>
 
@@ -149,6 +149,13 @@
     return vpterm.b_ptag || vpterm.h_ptag
   }
 </script>
+
+<div hidden="hidden">
+  <button data-kbd="~" on:click={() => (vpterm.val = vpterm.o_val)} />
+  <button data-kbd="[" on:click={() => (vpterm.ptag = 'nr')} />
+  <button data-kbd="]" on:click={() => (vpterm.ptag = 'nn')} />
+  <button data-kbd="\" on:click={() => (vpterm.ptag = 'nz')} />
+</div>
 
 <div class="hints">
   {#each hints as hint, idx (hint)}
