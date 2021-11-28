@@ -42,6 +42,9 @@ module CV::TlRule
         node.val = "thật"
         node.tag == PosTag::Adverb
         fold_adverbs!(node, succ)
+      when .ule?
+        node.tag == PosTag::Adjt
+        fold_adjts(node)
       else
         node
       end
