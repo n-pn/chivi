@@ -54,14 +54,18 @@ module CV::TlRule
     end
 
     if (succ = node.succ?) && !succ.pro_dem?
-      node = scan_noun!(succ, prev: node)
+      succ = scan_noun!(succ, prev: node)
+      node = succ if succ.nouns?
     end
 
     case node.tag
-    when .pro_zhe? then node.set!("cái này", PosTag::Conjunct)
-    when .pro_na1? then node.set!("vậy", PosTag::Conjunct)
-    else                node
+    when .pro_zhe?
+      node.set!("cái này", PosTag::Noun)
+    when .pro_na1?
+      node.set!("vậy", PosTag::Conjunct)
     end
+
+    node
   end
 
   # FIX_PRONOUNS = {

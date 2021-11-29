@@ -29,7 +29,7 @@ module CV::TlRule
       end
     end
 
-    if (prev && prev.pro_dems?) && head.nouns?
+    if prev && prev.pro_dems? && head.nouns?
       head = fold_pro_dem_noun!(prev, head)
     end
 
