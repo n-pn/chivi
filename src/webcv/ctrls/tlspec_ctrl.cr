@@ -17,18 +17,17 @@ class CV::TlspecCtrl < CV::BaseCtrl
           jb.array {
             Tlspec.items[start..(start + limit)].each do |ukey|
               entry = Tlspec.load!(ukey)
-              next unless entry.utime
+              last_edit = entry.edits.last
+              lower = last_edit.lower
+              upper = last_edit.upper
 
-              jb.object {
-                jb.field "ztext", entry.ztext
-                jb.field "utime", entry.utime
-
-                jb.field "uname", entry.uname
-                jb.field "unote", entry.unote
-
-                jb.field "status", entry.status
-                jb.field "labels", entry.labels
-              }
+              {
+                ztext: entry.ztext[lower...upper],
+                d_dub: entry.d_dub,
+                mtime: last_edit.mtime,
+                uname: entry.edits.first.uname,
+                privi: entry.edits.first.privi,
+              }.to_json(jb)
             end
           }
         }
@@ -36,34 +35,19 @@ class CV::TlspecCtrl < CV::BaseCtrl
     end
   end
 
-  private def extract_ztext
-    ztext = params["ztext"]?
-    return halt! 400, "Câu văn gốc không được để trắng!" unless ztext
-    return halt! 403, "Câu văn gốc quá dài, mời nhập lại" if ztext.size > 200
-    ztext
-  end
-
-  private def extract_unote
-    unote = params["unote"]?
-    return "" unless unote
-    return halt! 403, "Câu văn gốc quá dài, mời nhập lại" if unote.size > 500
-    unote.gsub("\n", "   ")
-  end
-
   def create
-    return halt! 403, "Quyền hạn của bạn không đủ, mời thử lại sau." if u_privi < 0
-    return unless ztext = extract_ztext
-    return unless unote = extract_unote
+    return halt! 403, "Quyền hạn của bạn không đủ." if u_privi < 0
 
-    entry = Tlspec.init!
-    entry.push ["ztext", ztext]
+    ztext = params.fetch_str("ztext")
 
-    ctime = Time.utc.to_unix.to_s
-    dname = params["dname"]? || "combine"
-    slink = params["slink"]? || "."
-    entry.push ["_orig", ctime, dname, slink]
+    _ukey = UkeyUtil.gen_ukey(Time.utc)
+    entry = Tlspec.new(_ukey, fresh: true)
 
-    entry.push ["_note", _cvuser.uname, unote]
+    entry.ztext = ztext
+    entry.dname = params.fetch_str("dname", "combine")
+    entry.d_dub = params.fetch_str("d_dub", "Tổng hợp")
+
+    entry.add_edit!(params, _cvuser)
     entry.save!
 
     json_view(["ok"])
@@ -72,42 +56,32 @@ class CV::TlspecCtrl < CV::BaseCtrl
     halt! 500, "Có lỗi từ hệ thống, mời check lại!"
   end
 
-  @entry : Tlspec? = nil
-
-  before_action do
-    only [:show, :update, :delete] do
-      entry = Tlspec.load!(params["ukey"])
-      next halt!(404, "Không có dữ liệu") unless entry.utime
-      @entry = entry
-    end
-  end
-
   def show
-    return unless entry = @entry
+    entry = Tlspec.load!(params["ukey"])
 
-    json_view do |jb|
-      jb.object {
-        jb.field "ztext", entry.ztext
-        jb.field "dname", entry.dname
-        jb.field "slink", entry.slink
-
-        jb.field "ctime", entry.ctime
-        jb.field "utime", entry.utime
-
-        jb.field "uname", entry.uname
-        jb.field "unote", entry.unote
-
-        jb.field "status", entry.status
-        jb.field "labels", entry.labels
-
-        jb.field "_logs", entry._logs
-      }
-    end
+    json_view({
+      ztext: entry.ztext,
+      dname: entry.dname,
+      d_dub: entry.d_dub,
+      edits: entry.edits,
+    })
   end
 
   def update
+    entry = Tlspec.load!(params["ukey"])
+    entry.add_edit!(params, _cvuser)
+    entry.save!
+
+    json_view(["ok"])
   end
 
   def delete
+    entry = Tlspec.load!(params["ukey"])
+    entry.delete!
+
+    json_view(["ok"])
+  end
+
+  private def create_edit(params, upper = 0) : Tlspec::Edit
   end
 end

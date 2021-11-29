@@ -58,25 +58,35 @@ class CV::QtransCtrl < CV::BaseCtrl
     {dname, d_dub, parse_lines(yscrit.ztext)}
   end
 
-  def qtran
-    input = params.fetch_str("input").gsub("\t", "  ")
-    lines = parse_lines(input)
-
+  def create_post
+    # TODO: save posts
+    lines = parse_lines(params.fetch_str("input"))
     dname = params.fetch_str("dname", "combine")
+
     response.content_type = "text/plain; charset=utf-8"
-    convert(dname, lines, response)
+    convert(dname, lines, response, plain: false)
+  end
+
+  def qtran
+    lines = parse_lines(params.fetch_str("input"))
+    dname = params.fetch_str("dname", "combine")
+
+    response.content_type = "text/plain; charset=utf-8"
+    convert(dname, lines, response, plain: params["plain"]? == "true")
   end
 
   private def parse_lines(ztext : String) : Array(String)
+    ztext = ztext.gsub("\t", "  ")
     TextUtils.split_text(ztext, spaces_as_newline: false)
   end
 
-  private def convert(dname, lines : Array(String), output : IO)
+  private def convert(dname, lines : Array(String), output : IO, plain = false)
     cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
 
     lines.each_with_index do |line, idx|
       output << "\n" if idx > 0
-      cvmtl.cv_plain(line, mode: 1).to_str(output)
+      mtlist = cvmtl.cv_plain(line, mode: 1, cap_first: !plain)
+      plain ? mtlist.to_s(output) : mtlist.to_str(output)
     end
   end
 end

@@ -59,6 +59,20 @@ export function create_input() {
         input.set(data)
       }
     },
+    move_lower(value = 1) {
+      input.update((x) => {
+        x.lower += value
+        if (value > 0 && x.upper <= x.lower) x.upper = x.lower + 1
+        return x
+      })
+    },
+    move_upper(value = 1) {
+      input.update((x) => {
+        x.upper += value
+        if (value < 0 && x.lower >= x.upper) x.lower = x.upper - 1
+        return x
+      })
+    },
   }
 
   return input

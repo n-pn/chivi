@@ -1,98 +1,98 @@
-require "../_util/ukey_util"
+require "json"
 
 class CV::Tlspec
-  DIR = "db/tlspecs"
+  class Edit
+    include JSON::Serializable
 
-  CACHE = {} of String => self
+    property mtime = 0_i64
 
-  def self.load!(ukey : String, mode = 1) : self
-    CACHE[ukey] ||= new(ukey, mode: mode)
-  end
+    property uname = ""
+    property privi = 0
 
-  def self.init! : self
-    ukey = UkeyUtil.gen_ukey
-    items.unshift(ukey)
-    load!(ukey, mode: 0)
-  end
+    property lower = 0
+    property upper = 1
 
-  class_getter items : Array(String) do
-    Dir.glob("#{DIR}/*.tsv")
-      .sort_by { |x| File.info(x).modification_time.to_unix.- }
-      .map { |x| File.basename(x, ".tsv") }
+    property match = "" # spec type expected result/translation note
+    property extra = "" # spec detail
+
+    def initialize(user : Cvuser, @mtime = Time.utc.to_unix)
+      @uname = user.uname
+      @privi = user.privi
+    end
   end
 
   getter file : String
   getter ukey : String
 
-  property ztext : String = ""
+  property ztext = ""
+  property dname = "" # vpdict dname (book slug)
+  property d_dub = "" # vpdict label (book vi_name)
+  property edits = [] of Edit
 
-  property unote : String = ""   # expected result/translation note
-  property uname : String? = nil # original poster uname
-
-  property dname : String = "combine" # unique dict used
-  property slink : String = "."       # source link
-
-  property ctime : Int64 = 0_i64
-  property utime : Int64? = nil
-
-  property status : Int32 = 0 # 0: pending, 1: checking, 2: resolved, 3: duplicate, 4: wontfix
-  property labels : Array(String) = [] of String
-
-  getter _logs = [] of Array(String)
-
-  def initialize(@ukey : String, mode : Int32 = 1)
+  def initialize(@ukey : String, fresh = false)
     @file = "#{DIR}/#{@ukey}.tsv"
-    return unless mode > 0 && File.exists?(@file)
-    File.read_lines(@file).each { |line| push(line.split('\t')) }
+    load!(@file) unless fresh
   end
 
-  # format: [mtime uname field value...]
-  def push(rows : Array(String)) : Bool
-    @_logs << rows
+  def load!(file : String) : Nil
+    File.read_lines(@file).each do |line|
+      type, data = line.split('\t', 2)
 
-    case rows[0]?
-    when "ztext", "zhtxt"
-      @ztext = rows[1]? || "???"
-    when "_orig"
-      @ctime = @utime = parse_time(rows[2]?)
-      @dname = rows[1]? || "combine"
-      @slink = rows[2]? || "."
-    when "_note"
-      @uname = rows[1]? || "_"
-      @unote = rows[2]? || ""
-    else
-      @utime = parse_time(rows[0]?)
-      # uname = rows[2]? || "_"
-
-      case rows[1]?
-      when "unote"
-        @unote = rows[3]? || ""
-      when "state"
-        @status = rows[3]?.try(&.to_i?) || 0
-      when "label"
-        @labels = rows[3..]
+      case type
+      when "ztext" then @ztext = data
+      when "_dict" then @dname, @d_dub = data.split('\t', 2)
+      else              @edits << Edit.from_json(data)
       end
     end
-
-    true
   end
 
-  def parse_time(input : String?)
-    input.try(&.to_i64?) || 0_i64
-  end
+  def add_edit!(params, cvuser)
+    edit = Tlspec::Edit.new(cvuser)
 
-  def push!(rows : Array(String))
-    return unless push(rows)
-    File.open(@file, "a") { |io| io.puts(rows.join('\t')) }
-  end
+    edit.lower = params.fetch_int("lower", min: 0)
+    edit.upper = params.fetch_int("upper", min: 1, max: @ztext.size)
 
-  def push!(type : String, *value : String)
-    push!([Time.utc.to_unix.to_s, type].concat(value))
+    edit.match = params.fetch_str("match", "")
+    edit.extra = params.fetch_str("extra", "")
+
+    @edits << edit
   end
 
   def save!
-    File.open(@file, "w") do |io|
-      @_logs.each { |rows| io.puts rows.join('\t') }
+    CACHE[@ukey] = self
+
+    unless self.class.items.includes?(@ukey)
+      self.class.items << @ukey
     end
+
+    File.open(@file, "w") do |io|
+      io << "ztext" << "\t" << @ztext << "\n"
+      io << "_dict" << "\t" << @dname << "\t" << @d_dub << "\n"
+
+      @edits.each_with_index do |edit, idx|
+        io << idx << "\t" << edit.to_json << "\n"
+      end
+    end
+  end
+
+  def delete! : Nil
+    File.delete(@file)
+    CACHE.delete(@ukey)
+    self.class.items.delete(@ukey)
+  end
+
+  ######################
+
+  DIR   = "var/tlspecs/users"
+  CACHE = {} of String => self
+
+  def self.load!(ukey : String) : self
+    CACHE[ukey] ||= new(ukey)
+  end
+
+  class_getter items : Array(String) do
+    files = Dir.glob("#{DIR}/*.tsv")
+    files.sort_by! { |x| File.info(x).modification_time }
+    files.map { |x| File.basename(x, ".tsv") }
   end
 end

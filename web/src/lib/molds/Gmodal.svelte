@@ -4,7 +4,7 @@
   import { layers } from '$lib/stores'
 
   export let actived = true
-  export let zindex = 70
+  export let _z_idx = 70
   export let _klass = 'gmodal'
   export let on_close = () => {}
 
@@ -20,7 +20,7 @@
   class={_klass}
   on:click={close_modal}
   transition:fade={{ duration: 100 }}
-  style="--index: {zindex}">
+  style="--z-idx: {_z_idx}">
   <modal-body
     on:click={(e) => e.stopPropagation()}
     transition:scale={{ duration: 100, easing: backInOut }}>
@@ -36,7 +36,7 @@
     left: 0;
     bottom: 0;
     right: 0;
-    z-index: var(--index, 60);
+    z-index: var(--z-idx, 60);
     background: rgba(#000, 0.75);
   }
 

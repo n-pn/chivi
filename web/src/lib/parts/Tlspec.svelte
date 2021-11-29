@@ -1,6 +1,18 @@
 <script context="module">
+  import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
   import { create_input } from '$utils/create_stores'
+
+  const input = create_input()
+
+  export const ctrl = {
+    ...writable({ actived: false }),
+    activate: (data) => {
+      input.put(data)
+      ctrl.set({ actived: true })
+    },
+    deactivate: () => ctrl.set({ actived: false }),
+  }
 
   export async function submit_tlspec(params) {
     const url = '/api/tlspecs'
@@ -13,57 +25,66 @@
     if (res.ok) return [0, await res.json()]
     return [res.status, await res.text()]
   }
-
-  const input = create_input()
-
-  export const ctrl = {
-    ...writable({ actived: false }),
-    activate: (data) => {
-      input.put(data)
-      ctrl.set({ actived: true })
-    },
-    deactivate: () => ctrl.set({ actived: false }),
-  }
 </script>
 
 <script>
-  import { onDestroy } from 'svelte'
   import SIcon from '$atoms/SIcon.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
-  export let slink = '.'
+
   export let on_destroy = () => {}
-
-  let error
-  let unote = ''
-  let label = ''
-
   onDestroy(on_destroy)
 
+  let match = ''
+  let extra = ''
+  $: prefill_match($input)
+
+  let error
+
   async function handle_submit() {
-    const params = { ztext: $input.ztext, dname, slink, unote, label }
+    const params = { ...$input, dname, d_dub, match, extra }
     const [status, payload] = await submit_tlspec(params)
     if (status) error = payload
     else ctrl.deactivate()
   }
 
-  function invalid_input(ztext, unote) {
-    if (!ztext || ztext.length > 200) return true
-    return !unote || unote.length > 500
+  function change_focus(index) {
+    if (index < $input.lower) {
+      $input.lower = index
+    } else if (index + 1 > $input.upper) {
+      $input.upper = index + 1
+    } else {
+      $input.lower = index
+      $input.upper = index + 1
+    }
+  }
+
+  async function prefill_match({ ztext, lower, upper }) {
+    if (!ztext || lower >= upper) return
+    const input = ztext.substring(lower, upper)
+
+    const res = await fetch('/api/qtran', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input, dname, d_dub, plain: true }),
+    })
+
+    match = await res.text()
+  }
+
+  function focus(node) {
+    node.focus()
   }
 </script>
 
-<Gmodal actived={$ctrl.actived} index={80} on_close={ctrl.deactivate}>
+<Gmodal actived={$ctrl.actived} _z_idx={80} on_close={ctrl.deactivate}>
   <tlspec-wrap>
     <tlspec-head>
       <tlspec-title>
-        <title-lbl>Báo lỗi:</title-lbl>
-        <title-dub>[<span>{d_dub}</span>]</title-dub>
-        <a class="title-alt" href={slink}>
-          <SIcon name="link" />
-        </a>
+        <title-lbl>Báo lỗi dịch:</title-lbl>
+        <title-dub>{d_dub}</title-dub>
       </tlspec-title>
       <button type="button" class="close-btn" on:click={ctrl.deactivate}>
         <SIcon name="x" />
@@ -71,51 +92,62 @@
     </tlspec-head>
 
     <tlspec-body>
+      <form-label>Chọn đúng cụm từ bị lỗi</form-label>
+      <tlspec-input>
+        {#each Array.from($input.ztext) as char, index}
+          <x-z
+            class:active={index >= $input.lower && index < $input.upper}
+            on:click={() => change_focus(index)}>{char}</x-z>
+        {/each}
+      </tlspec-input>
+
+      <div hidden>
+        <button
+          data-kbd="h"
+          disabled={$input.lower == 0}
+          on:click={() => input.move_lower(-1)} />
+
+        <button
+          data-kbd="j"
+          disabled={$input.lower + 1 == $input.ztext.length}
+          on:click={() => input.move_lower(1)} />
+
+        <button
+          data-kbd="k"
+          disabled={$input.upper == 1}
+          on:click={() => input.move_upper(-1)} />
+
+        <button
+          data-kbd="l"
+          disabled={$input.upper == $input.ztext.length}
+          on:click={() => input.move_upper(1)} />
+      </div>
+
       <form
         action="/api/tlspecs"
-        method="POSTS"
+        method="POST"
         class="tlspec-form"
         on:submit|preventDefault={handle_submit}>
         <form-group>
-          <form-field>
-            <label for="ztext">Câu văn gốc (cắt ngắn cho phù hợp)</label>
-            <textarea
-              class="m-input _zh"
-              name="ztext"
-              placeholder="Text tiếng trung"
-              bind:value={$input.ztext} />
-          </form-field>
+          <form-label>Kết quả dịch chính xác</form-label>
+          <textarea class="m-input" name="match" bind:value={match} use:focus />
         </form-group>
 
         <form-group>
-          <form-field>
-            <label for="unote">Chú thích lỗi / gợi ý hướng giải quyết</label>
-
-            <textarea class="m-input _vi" name="unote" bind:value={unote} />
-          </form-field>
+          <form-label>Giải thích thêm nếu cần</form-label>
+          <textarea class="m-input" name="extra" bind:value={extra} />
         </form-group>
 
         {#if error}
           <form-error>{error}</form-error>
         {/if}
 
-        <!-- <form-group>
-          <form-field>
-            <label for="label">Nhãn:</label>
-            <input
-              type="text"
-              name="label"
-              class="m-input"
-              placeholder="Tách nhãn bằng dấu phẩy (,)"
-              bind:value={label} />
-          </form-field>
-        </form-group> -->
-
         <form-action>
           <button
             type="submit"
             class="m-btn _primary _lg _fill"
-            disabled={invalid_input($input.ztext, unote)}>
+            data-kbd="⇧↵"
+            disabled={!match}>
             <SIcon name="send" />
             <span>Báo lỗi</span>
           </button>
@@ -158,7 +190,7 @@
     :global(svg) {
       width: 1rem;
       height: 1rem;
-      margin-top: -0.25rem;
+      margin-top: -0.125rem;
     }
   }
 
@@ -175,23 +207,16 @@
   }
 
   title-dub {
-    width: 70%;
-    display: inline-flex;
+    flex: 1;
     @include fgcolor(tert);
+    @include clamp($width: null);
 
-    > span {
-      // display: inline-block;
-      text-align: center;
-      // width: 90%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    &:before {
+      content: '[';
     }
-  }
-
-  .title-alt {
-    margin-left: auto;
-    @include fgcolor(tert);
+    &:after {
+      content: ']';
+    }
   }
 
   .close-btn {
@@ -211,15 +236,13 @@
 
   tlspec-body {
     display: block;
-    padding: 0.5rem 0.75rem;
+    padding: 0 0.75rem;
     // @include scroll();
     @include bgcolor(secd);
   }
 
   form-group {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 0.5rem;
+    display: block;
   }
 
   form-error {
@@ -231,46 +254,50 @@
     @include fgcolor(harmful, 5);
   }
 
-  form-field {
-    flex: 1;
-    flex-basis: 100%;
-  }
-
-  textarea,
-  label {
+  tlspec-input {
     display: block;
-    width: 100%;
+    line-height: 1.25em;
+    padding: 0.375rem 0.75rem;
+    margin: 0 -0.75rem;
+
+    @include fgcolor(mute);
+    @include ftsize(lg);
+    @include bgcolor(tert);
+    @include border();
   }
 
-  .m-input {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+  x-z {
+    display: inline-block;
+    cursor: pointer;
+    min-width: 0.5em;
+    text-align: center;
+    &.active {
+      @include fgcolor(primary, 5);
+    }
   }
 
   textarea {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    height: 3.5rem;
+    line-height: 1.25rem;
+
     @include scroll();
   }
 
-  .m-input._zh {
-    @include ftsize(sm);
-    height: 3rem;
-    line-height: 1.25rem;
-  }
-
-  .m-input._vi {
-    height: 3.5rem;
-    line-height: 1.25rem;
-  }
-
-  label {
-    @include ftsize(sm);
+  form-label {
+    display: block;
+    width: 100%;
     font-weight: 500;
+    margin-top: 0.5rem;
     margin-bottom: 0.25rem;
+    @include ftsize(sm);
   }
 
   form-action {
     @include flex($gap: 0.75rem);
     justify-content: right;
-    margin-top: 0.75rem;
+    margin: 0.75rem 0 0.5rem;
   }
 </style>

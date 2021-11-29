@@ -5,6 +5,9 @@
 
   import Cvdata from '$sects/Cvdata.svelte'
 
+  export let dname = 'various'
+  export let d_dub = 'Tổng hợp'
+
   let zhtext = ''
   let cvdata = ''
 
@@ -17,13 +20,13 @@
   const on_change = () => convert()
 
   async function convert() {
-    // if ($session.privi < 1) return
+    // if ($session.privi < 0) return
 
-    const url = `/api/qtran/posts`
+    const url = `/api/qtran`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input: zhtext }),
+      body: JSON.stringify({ input: zhtext, dname, d_dub }),
     })
 
     cvdata = await res.text()

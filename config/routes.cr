@@ -54,7 +54,8 @@ Amber::Server.configure do
     put "/dicts/:dname/upsert", CV::VpdictCtrl, :upsert
 
     get "/qtran/:type/:name", CV::QtransCtrl, :show
-    post "/qtran/posts", CV::QtransCtrl, :qtran
+    post "/qtran", CV::QtransCtrl, :qtran
+    post "/qtran/posts", CV::QtransCtrl, :create_post
 
     get "/boards/", CV::DboardCtrl, :index
     get "/boards/:dboard", CV::DboardCtrl, :show
