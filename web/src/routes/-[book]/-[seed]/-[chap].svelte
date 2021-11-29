@@ -203,11 +203,6 @@
           </button>
         {/if}
 
-        <button class="-item" on:click={() => (debug = !debug)}>
-          <SIcon name={debug ? 'check' : 'terminal-2'} />
-          <span>Dev mode</span>
-        </button>
-
         <a href={paths.list} class="-item" data-kbd="h">
           <SIcon name="list" />
           <span>Mục lục</span>
