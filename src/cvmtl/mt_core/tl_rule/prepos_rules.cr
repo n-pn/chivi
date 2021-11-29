@@ -71,7 +71,7 @@ module CV::TlRule
     return node unless tail = succ.succ?
 
     case tail.tag
-    when .verb?, .verobj?
+    when .verb?, .verb_object?
       if (succ.nouns? || succ.pro_per?)
         # TODO: put node after tail
         node = fold!(node, succ, PosTag::PrepPhrase, dic: 5)

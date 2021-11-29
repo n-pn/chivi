@@ -112,6 +112,11 @@ class CV::MtNode
     nil
   end
 
+  def maybe_verb? : Bool
+    return true if @tag.verbs?
+    @tag.adverbs? && @succ.try(&.maybe_verb?) || false
+  end
+
   include MTL::Serialize
   include MTL::ApplyCap
   include MTL::PadSpace

@@ -15,10 +15,11 @@ module CV::TlRule
       end
 
       fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)
-    when .veno?, .vintr?, .verobj?,
+    when .veno?, .vintr?, .verb_object?,
          .time?, .place?, .space?,
          .pro_dem?, .modifier?,
          .defn_phrase?, .prep_phrase?
+      prev_2 = fold!(prev_2, prev, PosTag::DefnPhrase, dic: 7)
       fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)
     when .numeric?
       fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)

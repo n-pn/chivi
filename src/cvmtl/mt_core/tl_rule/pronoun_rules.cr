@@ -48,16 +48,12 @@ module CV::TlRule
 
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
     case node
-    when node.pro_zhe?, .pro_ji? then succ = heal_quanti!(succ)
-    when .pro_na1?
+    when .pro_zhe?, .pro_ji?, .pro_na1?
       succ = heal_quanti!(succ)
+      node = fold!(node, succ, PosTag::ProDem, dic: 4) if succ.quantis?
     end
 
-    if succ && succ.quantis?
-      node = fold!(node, succ, PosTag::ProDem, dic: 4)
-    end
-
-    if succ = node.succ?
+    if (succ = node.succ?) && !succ.pro_dem?
       node = scan_noun!(succ, prev: node)
     end
 

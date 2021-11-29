@@ -99,6 +99,12 @@ struct CV::PosTag
     @pos.funcws?
   end
 
+  # words that can act as noun
+  @[AlwaysInline]
+  def center_noun?
+    @pos.nouns? || @tag.pro_per? || @tag.verb_object?
+  end
+
   def ends?
     none? || puncts? || interjection? || modalparticle?
   end

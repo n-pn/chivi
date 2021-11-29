@@ -127,7 +127,11 @@ module CV::TlRule
         return if (succ = compl.succ?) && (succ.nouns? || succ.pro_per?)
         compl.val = "đúng"
       when .pre_zai?
-        return if compl.succ? { |x| x.nouns? || x.pro_per? }
+        if succ = compl.succ?
+          succ = scan_noun!(succ)
+          return if succ.center_noun? && succ.succ?(&.maybe_verb?)
+        end
+
         compl.val = "ở"
       when .space?
         return unless compl.key == "中"

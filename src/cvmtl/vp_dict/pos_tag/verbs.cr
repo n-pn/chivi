@@ -14,8 +14,6 @@ struct CV::PosTag
 
     # 不及物动词（内动词）- intransitive verb - nội động từ
     {"vi", "Vintr", Pos::Verbs | Pos::Contws},
-    # 动词性惯用语 - verbal formulaic expression
-    {"vl", "Verobj", Pos::Verbs | Pos::Contws},
     # 动词性语素 - verbal morpheme
     {"vg", "Vmorp", Pos::Verbs | Pos::Contws},
   }

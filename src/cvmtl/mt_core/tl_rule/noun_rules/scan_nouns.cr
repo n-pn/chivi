@@ -29,12 +29,18 @@ module CV::TlRule
       end
     end
 
-    if (prev && prev.pro_dem?) && head.nouns?
+    if (prev && prev.pro_dems?) && head.nouns?
       head = fold_pro_dem_noun!(prev, head)
     end
 
-    if (head.nouns? || head.verobj?) && (succ = head.succ?) && succ.space?
+    if head.center_noun?
+      return head unless (succ = head.succ?) && succ.space?
       fold_swap!(head, succ, PosTag::Place, dic: 3)
+    elsif head.verbs?
+      return head unless (succ = head.succ?) && !succ.ends?
+      # FIXME: move this to fold_verb?
+      succ = scan_noun!(succ)
+      fold!(head, succ, PosTag::VerbObject, dic: 8)
     else
       head
     end
