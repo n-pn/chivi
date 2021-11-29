@@ -5,10 +5,14 @@ title: Thông tin cập nhật
 ## Ngày 29-11-2021
 
 - Máy dịch
+
   - Cải thiện luật ngữ pháp cho giới từ (trước bị lỗi nếu đằng sau là cụm từ phức tạp)
   - Cải thiện luật ngữ pháp liên quan tới đại từ chỉ thị
   - Sửa một số lỗi liên quan tới "中"
   - Thêm luật khi "右" "左" là tiền tố của danh từ
+
+- Giao diện
+  - Thay đổi cấu trúc của cửa sổ báo lỗi dịch. Thêm gợi ý dịch đúng.
 
 ## Ngày 28-11-2021
 
