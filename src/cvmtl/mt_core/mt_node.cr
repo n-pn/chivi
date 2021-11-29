@@ -60,8 +60,8 @@ class CV::MtNode
   end
 
   def set_succ!(node : Nil) : self
-    @succ.try(&.prev = nil)
     @succ = node
+    self
   end
 
   def fix_prev!(@prev : self) : self

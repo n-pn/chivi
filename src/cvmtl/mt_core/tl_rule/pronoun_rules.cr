@@ -62,7 +62,11 @@ module CV::TlRule
       return fold_pro_dem_noun!(node, succ) if succ.nouns?
     end
 
-    node.pro_na1? ? node.set!("vậy", PosTag::Conjunct) : node
+    case node.tag
+    when .pro_zhe? then node.set!("cái này", PosTag::Conjunct)
+    when .pro_na1? then node.set!("vậy", PosTag::Conjunct)
+    else                node
+    end
   end
 
   # FIX_PRONOUNS = {
