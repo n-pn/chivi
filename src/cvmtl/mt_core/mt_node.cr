@@ -49,18 +49,19 @@ class CV::MtNode
     @succ.try { |x| yield x }
   end
 
-  def set_succ(node : self) : self # return node
-    if succ = @succ
-      succ.prev = node
-      node.succ = succ
-    end
-
-    node.prev = self
-    @succ = node
+  def set_prev!(node : MtNode) : self
+    node.fix_prev!(@prev)
+    self.fix_prev!(node)
   end
 
-  def set_succ(@succ : Nil) : self
-    self
+  def set_succ!(node : MtNode) : self
+    node.fix_succ!(@succ)
+    self.fix_succ!(node)
+  end
+
+  def set_succ!(node : Nil) : self
+    @succ.try(&.prev = nil)
+    @succ = node
   end
 
   def fix_prev!(@prev : self) : self

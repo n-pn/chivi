@@ -48,17 +48,21 @@ module CV::TlRule
 
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
     case node
-    when node.pro_zhe?, .pro_ji?
-      succ = heal_quanti!(succ)
+    when node.pro_zhe?, .pro_ji? then succ = heal_quanti!(succ)
     when .pro_na1?
-      if succ.pro_per?
-        return node.set!("vậy", PosTag::Conjunct)
-      end
-
       succ = heal_quanti!(succ)
     end
 
-    node
+    if succ && succ.quantis?
+      node = fold!(node, succ, PosTag::ProDem, dic: 4)
+    end
+
+    if succ = node.succ?
+      succ = scan_noun!(succ)
+      return fold_pro_dem_noun!(node, succ) if succ.nouns?
+    end
+
+    node.pro_na1? ? node.set!("vậy", PosTag::Conjunct) : node
   end
 
   # FIX_PRONOUNS = {
@@ -102,30 +106,27 @@ module CV::TlRule
       fold!(prev, node, node.tag, dic: 3)
     when .starts_with?("各")
       fold!(prev, node, node.tag, dic: 3)
-    when .starts_with?("这")
-      tail = MtNode.new("这", "này", PosTag::ProZhe, 1, prev.idx)
-      tail.fix_succ!(node.succ?)
-      node.fix_succ!(tail)
-
-      prev.key = prev.key.sub("这", "")
-      prev.val = prev.val.sub(" này", "")
-      prev.tag = PosTag::Qtnoun
-      prev.idx += 1
-
-      fold!(prev, tail, node.tag, dic: 3)
-    when .starts_with?("那")
-      tail = MtNode.new("那", "kia", PosTag::ProZhe, 1, prev.idx)
-      tail.fix_succ!(node.succ?)
-      node.fix_succ!(tail)
-
-      prev.key = prev.key.sub("那", "")
-      prev.val = prev.val.sub(/ (kia|đó)$/, "")
-      prev.tag = PosTag::Qtnoun
-      prev.idx += 1
-
+    when .starts_with?("这"), .starts_with?("那")
+      head, tail = clean_pro_per!(prev)
+      node.set_succ!(tail)
       fold!(prev, tail, node.tag, dic: 3)
     else
       fold_swap!(prev, node, node.tag, dic: 3)
     end
+  end
+
+  def clean_pro_per!(node : MtNode) : Tuple(MtNode, MtNode)
+    key = node.key[0].to_s
+    val = key == "这" ? "này" : "kia"
+
+    tail = MtNode.new(key, val, PosTag::ProZhe, 1, node.idx)
+
+    node.key = node.key[1..]
+    node.val = node.key == "些" ? "những" : node.val.sub(" " + val, "")
+
+    node.tag = PosTag::Qtnoun
+    node.idx += 1
+
+    {node, tail}
   end
 end

@@ -38,7 +38,7 @@ module CV::TlRule
       when .space?
         next unless prev = node.prev?
 
-        if prev.nouns?
+        if prev.nouns? || prev.pro_per?
           node = fold_noun_space!(prev, node)
           node = fold_noun_left!(node, mode: mode)
         elsif node.key == "中"

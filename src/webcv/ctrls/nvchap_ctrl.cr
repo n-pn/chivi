@@ -131,7 +131,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
       cvmtl.cv_plain(line, mode: mode).to_str(strio)
     rescue err
       Log.error { err.message }
-      strio << "\tMáy dịch gặp lỗi, mời liên hệ ban quản trị"
+      strio << "\t$$Máy dịch gặp lỗi, mời liên hệ ban quản trị$$"
     end
   rescue err
     puts err

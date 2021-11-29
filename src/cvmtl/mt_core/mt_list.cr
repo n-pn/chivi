@@ -11,7 +11,7 @@ class CV::MtList
   end
 
   def concat!(list : self)
-    self.tail.set_succ(list.first)
+    self.tail.set_succ!(list.first)
     self
   end
 
@@ -24,7 +24,7 @@ class CV::MtList
   end
 
   def prepend!(node : MtNode)
-    @head.set_succ(node)
+    @head.set_succ!(node)
   end
 
   def each(node = @head)
