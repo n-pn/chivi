@@ -70,11 +70,15 @@ module CV::TlRule
 
     return node unless tail = succ.succ?
 
-    if (tail.verb? || tail.verobj?) && (succ.nouns? || succ.pro_per?)
-      # TODO: put node after tail
-      node = fold!(node, succ, PosTag::PrepPhrase, dic: 5)
-      tail = fold_verbs!(tail)
-      return fold!(node, tail, tail.tag, dic: 6)
+    case tail.tag
+    when .verb?, .verobj?
+      if (succ.nouns? || succ.pro_per?)
+        # TODO: put node after tail
+        node = fold!(node, succ, PosTag::PrepPhrase, dic: 5)
+        tail = fold_verbs!(tail)
+        return fold!(node, tail, tail.tag, dic: 6)
+      end
+    when .uls?
     end
 
     if tail.ude1? && (tail_2 = tail.succ?)

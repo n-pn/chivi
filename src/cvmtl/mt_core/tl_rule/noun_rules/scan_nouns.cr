@@ -1,8 +1,8 @@
 module CV::TlRule
   def scan_noun!(head : MtNode, mode = 0)
     case head
-    when .noun_phrase?, .verobj? then head
-    when .uniques?               then heal_uniques!(head)
+    when .uniques?
+      head = heal_uniques!(head)
     when .nouns?
       head = fold_noun!(head, mode: 1) # fold noun but do not consume penum
       head = head.nouns? ? head : scan_noun!(head)
@@ -11,7 +11,7 @@ module CV::TlRule
       return head unless !head.noun? && (succ = head.succ?) && !succ.ends?
 
       succ = scan_noun!(succ)
-      succ.nouns? ? fold_nquant_noun!(head, succ) : head
+      head = succ.nouns? ? fold_nquant_noun!(head, succ) : head
     when .adverbs?
       head = fold_head_ude1_noun!(fold_adverbs!(head))
     when .verbs?
@@ -22,14 +22,18 @@ module CV::TlRule
       return head unless succ = head.succ?
 
       case succ
-      when .ude1? then fold_head_ude1_noun!(head)
+      when .ude1?
+        head = fold_head_ude1_noun!(head)
       else
-        fold_swap!(head, scan_noun!(succ), PosTag::NounPhrase, dic: 4)
+        head = fold_swap!(head, scan_noun!(succ), PosTag::NounPhrase, dic: 4)
       end
     end
 
-    return head unless head.nouns? && (succ = head.succ?) && succ.space?
-    fold_swap!(head, succ, PosTag::Place, dic: 3)
+    if (head.nouns? || head.verobj?) && (succ = head.succ?) && succ.space?
+      fold_swap!(head, succ, PosTag::Place, dic: 3)
+    else
+      head
+    end
   end
 
   def fold_head_ude1_noun!(head : MtNode)
