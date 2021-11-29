@@ -35,16 +35,7 @@ module CV::TlRule
         next unless node.nouns?
         node = fold_noun!(node)
         node = fold_noun_left!(node, mode: mode)
-      when .space?
-        next unless prev = node.prev?
-
-        if prev.nouns? || prev.pro_per?
-          node = fold_noun_space!(prev, node)
-          node = fold_noun_left!(node, mode: mode)
-        elsif node.key == "中"
-          node.set!("trúng", PosTag::Verb)
-          node = fold_verbs!(node)
-        end
+      when .space?   then node = fold_space!(node)
       when .vmodals? then node = heal_vmodal!(node)
       when .verbs?
         node = fold_verbs!(node)
