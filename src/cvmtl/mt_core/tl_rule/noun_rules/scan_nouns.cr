@@ -1,5 +1,5 @@
 module CV::TlRule
-  def scan_noun!(head : MtNode, mode = 0)
+  def scan_noun!(head : MtNode, mode = 0, prev : MtNode? = nil)
     case head
     when .uniques?
       head = heal_uniques!(head)
@@ -27,6 +27,10 @@ module CV::TlRule
       else
         head = fold_swap!(head, scan_noun!(succ), PosTag::NounPhrase, dic: 4)
       end
+    end
+
+    if (prev && prev.pro_dem?) && head.nouns?
+      head = fold_pro_dem_noun!(prev, head)
     end
 
     if (head.nouns? || head.verobj?) && (succ = head.succ?) && succ.space?

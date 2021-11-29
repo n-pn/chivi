@@ -58,8 +58,7 @@ module CV::TlRule
     end
 
     if succ = node.succ?
-      succ = scan_noun!(succ)
-      return fold_pro_dem_noun!(node, succ) if succ.nouns?
+      node = scan_noun!(succ, prev: node)
     end
 
     case node.tag
