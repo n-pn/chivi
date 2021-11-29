@@ -10,7 +10,7 @@ else
 fi
 
 ## upload user data
-if [[ $2 == "user"  ]]
+if [[ $2 == "user" ]]
 then
   echo upload user seeds!
   rsync -azi --no-p --delete "db/seeds/users" "$ssh/db/seeds"
@@ -36,7 +36,7 @@ then
 fi
 
 ## upload parsed seed data
-if [[ $2 == "fixes"  ]]
+if [[ $2 == "fixes" ]]
 then
   echo quickfix fixes!
   # rsync -azi --no-p "_db/.cache/bxwxorg/infos" "$ssh/_db/.cache/bxwxorg"
