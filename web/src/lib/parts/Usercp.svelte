@@ -86,7 +86,7 @@
         <span>Trở về</span>
       </button>
 
-      <button class="m-btn btn-back" on:click={logout}>
+      <button class="m-btn btn-back umami--click--logout" on:click={logout}>
         <SIcon name="logout" />
         <span>Đăng xuất</span>
       </button>

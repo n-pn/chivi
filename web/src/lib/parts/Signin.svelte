@@ -95,26 +95,24 @@
 
       <footer>
         {#if type == 'login'}
-          <button
-            type="button"
-            class="m-btn _text"
-            on:click={() => (type = 'signup')}>
+          <button class="m-btn _text" on:click={() => (type = 'signup')}>
             <span class="-text">Tài khoản mới</span>
           </button>
 
-          <button type="submit" class="m-btn _primary _fill">
+          <button
+            type="submit"
+            class="m-btn _primary _fill umami--click--signup">
             <SIcon name="login" />
             <span class="-text">Đăng nhập</span>
           </button>
         {:else}
-          <button
-            type="button"
-            class="m-btn _text"
-            on:click={() => (type = 'login')}>
+          <button class="m-btn _text" on:click={() => (type = 'login')}>
             <span class="-text">Đăng nhập</span>
           </button>
 
-          <button type="submit" class="m-btn _success _fill">
+          <button
+            type="submit"
+            class="m-btn _success _fill umami--click--signin">
             <SIcon name="user-plus" />
             <span class="-text">Tạo tài khoản</span>
           </button>
