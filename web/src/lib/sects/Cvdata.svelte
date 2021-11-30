@@ -1,21 +1,19 @@
 <script context="module">
+  import { page, navigating } from '$app/stores'
+  import { config } from '$lib/stores'
+
+  import { scroll_into_view, read_selection } from '$utils/dom_utils.js'
+
   import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
   import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
   import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
+  import Cvline, { Mtline } from '$sects/Cvline.svelte'
 
   import Cvmenu, { ctrl as cvmenu, input } from './Cvdata/Cvmenu.svelte'
   import Zhline from './Cvdata/Zhline.svelte'
 </script>
 
 <script>
-  import { onMount } from 'svelte'
-  import { page, navigating } from '$app/stores'
-
-  import Cvline, { Mtline } from '$sects/Cvline.svelte'
-
-  import read_selection from '$utils/read_selection'
-  import { config } from '$lib/stores'
-
   export let cvdata = ''
   export let zhtext = []
 
@@ -23,116 +21,144 @@
   export let d_dub = 'Tổng hợp'
 
   export let on_change = () => {}
+  const hide_cvmenu = () => setTimeout(cvmenu.deactivate, 50)
 
   $: cv_lines = Mtline.parse_lines(cvdata)
   let article = null
 
-  let state = { hover: 0, focus: 0 }
-  let cvterm = null
+  let l_hover = 0
+  let l_focus = 0
+  let hovered = []
+  let focused = []
 
-  const hide_cvmenu = () => setTimeout(cvmenu.deactivate, 50)
-
-  $: if ($navigating) {
-    state = { hover: 0, focus: 0 }
-    cvterm = null
-
+  $: if ($navigating && article) {
     cvmenu.deactivate()
-    upsert.deactivate()
+    change_focus(0, 0, 1)
   }
 
-  onMount(() => {
-    let timeout = null
-
-    function on_selection() {
-      if ($config.reader == 1) return
-
-      const [lower, upper] = read_selection()
-      if (upper > 0) $input = [zhtext[state.hover], lower, upper]
-
-      const selection = document.getSelection()
-      if (selection.isCollapsed) return
-
-      const range = selection.getRangeAt(0)
-      cvmenu.activate(range, article)
-    }
-
-    const action = document.addEventListener('selectionchange', () => {
-      if (timeout) clearTimeout(timeout)
-      timeout = setTimeout(on_selection, 250)
-    })
-
-    return () => document.removeEventListener('selectionchange', action)
-  })
-
-  function handle_click({ target }) {
-    if (state.focus != state.hover) state.focus = state.hover
+  function handle_mouse({ target }, _index = l_hover) {
     if ($config.reader == 1) return // return if in zen mode
 
-    target.classList.add('focus')
     const { nodeName } = target
     if (nodeName == 'CV-ITEM') return
-    if (nodeName != 'V-N' && nodeName != 'Z-N') return hide_cvmenu()
 
-    $input = [zhtext[state.hover], +target.dataset.l, +target.dataset.u]
+    let [nodes, lower, upper] = read_selection()
+    if (!nodes) {
+      if (nodeName != 'V-N' && nodeName != 'Z-N') return // hide_cvmenu()
+      nodes = [target]
 
-    cvmenu.activate(target, article)
+      lower = +target.dataset.l
+      upper = +target.dataset.u
+    }
 
-    if (target == cvterm) {
-      upsert.activate($input, 0)
-    } else {
-      cvterm?.classList.remove('focus')
-      cvterm = target
+    change_focus(_index, lower, upper, nodes)
 
-      if ($lookup.enabled || $lookup.actived) {
-        lookup.activate($input, $lookup.enabled)
+    // if (selected.includes(target)) {
+    //   upsert.activate($input, 0)
+    // } else {
+    //   selected.forEach((x) => x.classList.remove('focus'))
+    //   selected = [target]
+    //   target.classList.add('focus')
+
+    //   if ($lookup.enabled || $lookup.actived) {
+    //     lookup.activate($input, $lookup.enabled)
+    //   }
+    // }
+  }
+
+  function change_focus(index, lower, upper, nodes) {
+    l_focus = index
+
+    focused.forEach((x) => x.classList.remove('focus'))
+    hovered.forEach((x) => x.classList.remove('hover'))
+
+    const line = article.querySelector(`#L${index}`)
+    scroll_into_view(line, article, 'smooth')
+
+    if (!nodes) {
+      const child = line.querySelector('v-n:not([data-d="1"])')
+      if (child) {
+        nodes = [child]
+        lower = +child.dataset.l
+        upper = +child.dataset.u
+      } else {
+        nodes = []
       }
     }
+
+    focused = nodes
+    $input = [zhtext[index], lower, upper]
+
+    if (nodes.length > 0) {
+      focused.forEach((x) => x.classList.add('focus'))
+      cvmenu.activate(nodes[nodes.length - 1], article)
+    }
+
+    hovered = []
+
+    for (let i = lower; i < upper; i++) {
+      hovered.concat(line.querySelectorAll(`[data-l="${i}"]`))
+      hovered.concat(line.querySelectorAll(`[data-u="${i + 1}"]`))
+    }
+
+    hovered.forEach((x) => x.addClass('hover'))
   }
 
-  function regain_focus() {
+  function retake_control() {
     if (!article) return
     article.focus()
-
-    const elem = article.querySelector('#L' + state.focus)
-    if (scroll_uneeded(elem)) return
-
-    elem?.scrollIntoView({ behavior: 'auto', block: 'nearest' })
+    scroll_into_view('#L' + l_focus, article)
   }
 
-  function scroll_uneeded(elem) {
-    if (!elem) return true
-    const rect = elem.getBoundingClientRect()
-    return rect.top > 0 && rect.bottom <= window.innerHeight
-  }
-
-  function show_html(reader, index, state) {
+  function render_html(reader, index, hover, focus) {
     if (reader > 0) return reader == 2
-    if (index == state.hover) return true
-    return index > state.focus - 2 && index < state.focus + 2
+    if (index == hover) return true
+
+    if (index > focus - 2 && focus < focus + 2) return true
+    if (focus == 0) return index == zhtext.length - 1
+    return index == 0 && focus == zhtext.length - 1
   }
 
-  function switch_reader(reader_mode = 0) {
-    if ($config.reader == reader_mode) $config.reader = 0
-    else $config.reader = reader_mode
+  function handle_keydown(event) {
+    if (article != document.activeElement || $config.reader == '1') return
+
+    let focus = l_focus
+
+    switch (event.key) {
+      case 'ArrowUp':
+        event.preventDefault()
+
+        focus = focus == 0 ? zhtext.length - 1 : focus - 1
+        change_focus(focus, 0, 1)
+
+        break
+
+      case 'ArrowDown':
+        event.preventDefault()
+        focus = focus >= zhtext.length - 1 ? 0 : focus + 1
+
+        change_focus(focus, 0, 1)
+        break
+    }
   }
 </script>
 
 <div hidden>
-  <button data-kbd="a" on:click={() => ($config.showzh = !$config.showzh)}
-    >A</button>
-  <button data-kbd="z" on:click={() => switch_reader(1)}>Z</button>
-  <button data-kbd="z" on:click={() => switch_reader(1)}>Z</button>
-  <button data-kbd="g" on:click={() => switch_reader(2)}>G</button>
+  <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
+  <button data-kbd="z" on:click={() => config.set_reader(1)}>Z</button>
+  <button data-kbd="g" on:click={() => config.set_reader(2)}>G</button>
   <button data-kbd="x" on:click={() => upsert.activate($input, 0)}>X</button>
   <button data-kbd="c" on:click={() => upsert.activate($input, 1)}>C</button>
 </div>
+
+<svelte:window on:keydown={handle_keydown} />
 
 <article
   tabindex="-1"
   style="--textlh: {$config.textlh}%"
   bind:this={article}
   on:blur={hide_cvmenu}
-  on:click={handle_click}>
+  on:mouseup={handle_mouse}>
   <header>
     <slot name="header">Dịch nhanh</slot>
   </header>
@@ -142,12 +168,14 @@
       <cv-data
         id="L{index}"
         class:debug={$config.reader == 2}
-        class:focus={index == state.focus}
-        on:mouseenter={() => (state.hover = index)}>
+        class:focus={index == l_focus}
+        on:mouseenter={() => (l_hover = index)}>
         {#if $config.showzh}
           <Zhline ztext={zhtext[index]} plain={$config.reader == 1} />
         {/if}
-        <Cvline {input} focus={show_html($config.reader, index, state)} />
+        <Cvline
+          {input}
+          focus={render_html($config.reader, index, l_hover, l_focus)} />
       </cv-data>
     {/each}
   {/key}
@@ -156,26 +184,28 @@
 </article>
 
 {#if $lookup.enabled || $lookup.actived}
-  <Lookup {dname} on_destroy={regain_focus} />
+  <Lookup {dname} on_destroy={retake_control} />
 {/if}
 
 {#if $upsert.state > 0}
-  <Upsert {dname} {d_dub} {on_change} on_destroy={regain_focus} />
+  <Upsert {dname} {d_dub} {on_change} on_destroy={retake_control} />
 {/if}
 
 {#if $tlspec.actived}
   <Tlspec
     {dname}
     {d_dub}
-    slink="{$page.path}#L{state.hover}"
-    on_destroy={regain_focus} />
+    slink="{$page.path}#L{l_hover}"
+    on_destroy={retake_control} />
 {/if}
 
 <style lang="scss">
   article {
+    --pad: calc(var(--gutter) * 0.5);
+
     position: relative;
     min-height: 50vh;
-    padding: 0 var(--gutter) var(--verpad);
+    padding: 0 var(--pad) var(--verpad);
 
     margin-left: calc(-1 * var(--gutter));
     margin-right: calc(-1 * var(--gutter));
@@ -210,7 +240,7 @@
 
   header {
     @include border(--bd-main, $loc: bottom);
-    margin-bottom: var(--verpad);
+    margin: 0 var(--pad) var(--verpad);
     padding: var(--gutter-pm) 0;
     line-height: 1.25rem;
 
@@ -219,26 +249,37 @@
     @include fgcolor(secd);
   }
 
+  // prettier-ignore
   cv-data {
     display: block;
+    position: relative;
+    padding: 0 var(--pad);
     color: var(--fgcolor, #{color(gray, 8)});
-    // prettier-ignore
     @include tm-dark { --fgcolor: #{color(gray, 3)}; }
 
-    :global(.app-ff-1) & {
-      font-family: var(--font-sans);
-    }
+    :global(.app-ff-1) & { font-family: var(--font-sans); }
+    :global(.app-ff-2) & { font-family: var(--font-serif); }
+    :global(.app-ff-3) & { font-family: Nunito Sans, var(--font-sans); }
+    :global(.app-ff-4) & { font-family: Lora, var(--font-serif); }
 
-    :global(.app-ff-2) & {
-      font-family: var(--font-serif);
-    }
+    &.focus {
+      @include bgcolor(main);
 
-    :global(.app-ff-3) & {
-      font-family: Nunito Sans, var(--font-sans);
-    }
+      @include tm-oled {
+        @include bgcolor(neutral, 9);
+      }
 
-    :global(.app-ff-4) & {
-      font-family: Lora, var(--font-serif);
+      &:before {
+        --width: 3px;
+
+        position: absolute;
+        display: inline-block;
+        content: '';
+        width: var(--width);
+        left: calc(var(--width) * -0.5);
+        height: 100%;
+        @include bgcolor(primary, 5);
+      }
     }
   }
 

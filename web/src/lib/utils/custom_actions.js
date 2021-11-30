@@ -1,11 +1,8 @@
-export function get_rect(node) {
-  const rects = node.getClientRects()
-  return rects[rects.length - 1]
-}
+import { get_client_rect } from './dom_utils'
 
 export function get_offset(target, parent) {
-  const target_rect = get_rect(target)
-  const parent_rect = get_rect(parent)
+  const target_rect = get_client_rect(target)
+  const parent_rect = get_client_rect(parent)
 
   let top = target_rect.bottom - parent_rect.top + 4
   let left = target_rect.left - parent_rect.left + target_rect.width / 2

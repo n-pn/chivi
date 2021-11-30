@@ -216,7 +216,7 @@
 
 <script>
   import { onMount } from 'svelte'
-  import { tooltip } from '$utils/actions'
+  import { tooltip } from '$utils/custom_actions'
 
   import SIcon from '$atoms/SIcon.svelte'
   import Gmodal from '$molds/Gmodal.svelte'

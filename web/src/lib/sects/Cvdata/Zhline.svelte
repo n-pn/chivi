@@ -33,8 +33,17 @@
   z-n {
     cursor: pointer;
 
-    &:global(.focus) {
+    &:hover {
+      background: linear-gradient(to top, color(primary, 4) 1px, transparent 0);
+    }
+
+    &:global(.hover) {
       @include fgcolor(primary, 5);
+    }
+
+    &:global(.focus) {
+      @include bgcolor(primary, 6);
+      @include fgcolor(white);
     }
   }
 </style>

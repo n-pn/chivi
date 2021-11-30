@@ -16,7 +16,3 @@ export const config = create_config_store('_pref', {
 export const layers = create_layers_store(['#svelte'])
 export const scroll = writable(0)
 export const toleft = writable(false)
-
-export const zh_text = writable('')
-export const zh_from = writable(0)
-export const zh_upto = writable(1)

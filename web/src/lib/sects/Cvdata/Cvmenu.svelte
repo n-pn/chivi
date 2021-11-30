@@ -1,37 +1,30 @@
 <script context="module">
   import { writable } from 'svelte/store'
   import { create_input } from '$utils/create_stores'
-
-  const width = 96
+  import { get_client_rect } from '$utils/dom_utils'
 
   export const input = create_input()
 
   export const ctrl = {
     ...writable({ actived: false, top: 0, left: 0 }),
     activate(target, parent) {
-      const rect = get_rect(target)
+      const rect = get_client_rect(target)
+      const width = 96
 
       let left = Math.floor((rect.left + rect.right) / 2) - width / 2
       if (left < 0) left = 0
       else if (left + width > window.innerWidth)
         left = window.innerWidth - width
 
-      const parent_rect = get_rect(parent)
+      const parent_rect = get_client_rect(parent)
 
       ctrl.set({
         actived: true,
-        top: rect.bottom + 6 - parent_rect.top,
+        top: rect.top - parent_rect.top - 40,
         left: left - parent_rect.left,
       })
     },
     deactivate: () => ctrl.set({ actived: false, top: 0, left: 0 }),
-  }
-
-  const default_rect = { left: 0, right: 0, bottom: 0, top: 0 }
-  function get_rect(node) {
-    if (!node) return default_rect
-    const rects = node.getClientRects()
-    return rects[rects.length - 1] || default_rect
   }
 </script>
 
@@ -97,12 +90,12 @@
       display: block;
       position: absolute;
       content: ' ';
-      bottom: 100%;
+      top: 100%;
       left: 50%;
       margin-left: -0.375rem;
 
       border: 0.375rem solid transparent;
-      border-bottom-color: var(--bgc);
+      border-top-color: var(--bgc);
     }
   }
 

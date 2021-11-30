@@ -7,30 +7,23 @@ export function create_config_store(name, data) {
     if (stored) data = JSON.parse(stored)
   }
 
-  const { subscribe, set, update } = writable(data)
-
-  return {
-    subscribe,
-    store(data) {
-      if (browser) {
-        localStorage.setItem(name, JSON.stringify(data))
-      }
-    },
-    set(data) {
-      set(data)
-      this.store(data)
-    },
-    update(func) {
-      update((data) => {
-        data = func(data)
-        this.store(data)
-        return data
+  const store = {
+    ...writable(data),
+    put(key, val_or_fn) {
+      store.update((x) => {
+        x[key] = typeof val_or_fn == 'function' ? val_or_fn(x[key]) : val_or_fn
+        return x
       })
     },
-    put(key, val) {
-      this.update((x) => ({ ...x, [key]: val }))
-    },
+    toggle: (key) => store.put(key, (x) => !x),
+    set_reader: (val) => store.put('reader', (old) => (old == val ? 0 : val)),
   }
+
+  store.subscribe((val) => {
+    if (browser) localStorage.setItem(name, JSON.stringify(val))
+  })
+
+  return store
 }
 
 export function create_layers_store(data = []) {

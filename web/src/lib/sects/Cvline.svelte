@@ -186,7 +186,7 @@
   export let focus = false
 </script>
 
-{@html focus ? input.html : input.text}
+<cv-line>{@html focus ? input.html : input.text}</cv-line>
 
 <style lang="scss" global>
   @mixin cv-node($color: blue) {
@@ -212,11 +212,6 @@
     cv-data.debug &,
     &:hover {
       background: linear-gradient(to top, var(--border) 1px, transparent 0);
-    }
-
-    &:hover,
-    &.focus {
-      color: var(--active);
     }
 
     // essence + fixture
@@ -245,10 +240,20 @@
       @include cv-node(red);
     }
 
+    &:hover,
+    &.hover {
+      color: var(--active);
+    }
+
+    &.focus {
+      background: var(--active) !important;
+      color: color(white) !important;
+    }
+
     c-g & {
       cursor: pointer;
       // prettier-ignore
-      &:hover, &.focus { color: var(--active); }
+      &:hover, &.hover { color: var(--active); }
     }
   }
 
