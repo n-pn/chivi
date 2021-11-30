@@ -2,7 +2,12 @@
   import { page, navigating } from '$app/stores'
   import { config } from '$lib/stores'
 
-  import { scroll_into_view, read_selection } from '$utils/dom_utils.js'
+  import {
+    scroll_into_view,
+    read_selection,
+    next_elem,
+    prev_elem,
+  } from '$utils/dom_utils.js'
 
   import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
   import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
@@ -33,7 +38,7 @@
 
   $: if ($navigating && article) {
     cvmenu.deactivate()
-    change_focus(0, 0, 1)
+    change_focus(0, 0, 0)
   }
 
   function handle_mouse({ target }, _index = l_hover) {
@@ -76,7 +81,13 @@
     scroll_into_view(line, article, 'smooth')
 
     if (!nodes) {
-      const child = line.querySelector('v-n:not([data-d="1"])')
+      let child = line.querySelector(`v-n[data-l="${lower}"]`)
+
+      if (upper == 0 && child && +child.dataset.d < 2) {
+        const dnode = line.querySelector('v-n:not([data-d="1"])')
+        if (dnode) child = dnode
+      }
+
       if (child) {
         nodes = [child]
         lower = +child.dataset.l
@@ -87,7 +98,7 @@
     }
 
     focused = nodes
-    $input = [zhtext[index], lower, upper]
+    input.put([zhtext[index], lower, upper])
 
     if (nodes.length > 0) {
       focused.forEach((x) => x.classList.add('focus'))
@@ -96,18 +107,20 @@
 
     hovered = []
 
+    const query_all = (query) => Array.from(line.querySelectorAll(query))
+
     for (let i = lower; i < upper; i++) {
-      hovered.concat(line.querySelectorAll(`[data-l="${i}"]`))
-      hovered.concat(line.querySelectorAll(`[data-u="${i + 1}"]`))
+      hovered = hovered.concat(query_all(`[data-l="${i}"]`))
+      hovered = hovered.concat(query_all(`[data-u="${i + 1}"]`))
     }
 
-    hovered.forEach((x) => x.addClass('hover'))
+    hovered.forEach((x) => x.classList.add('hover'))
   }
 
   function retake_control() {
     if (!article) return
     article.focus()
-    scroll_into_view('#L' + l_focus, article)
+    change_focus(l_focus, $input.lower, $input.upper)
   }
 
   function render_html(reader, index, hover, focus) {
@@ -127,18 +140,77 @@
     switch (event.key) {
       case 'ArrowUp':
         event.preventDefault()
-
-        focus = focus == 0 ? zhtext.length - 1 : focus - 1
-        change_focus(focus, 0, 1)
-
-        break
+        focus = (focus - 1 + zhtext.length) % zhtext.length
+        return change_focus(focus, 0, 0)
 
       case 'ArrowDown':
         event.preventDefault()
-        focus = focus >= zhtext.length - 1 ? 0 : focus + 1
+        focus = (focus + 1) % zhtext.length
+        return change_focus(focus, 0, 0)
 
-        change_focus(focus, 0, 1)
-        break
+      case 'ArrowLeft':
+        event.preventDefault()
+        const prev = prev_elem(focused[0])
+
+        if (!prev) {
+          let step = 4
+
+          while (step > 0) {
+            focus = (focus - 1 + zhtext.length) % zhtext.length
+
+            let node = article.querySelector(`#L${focus}`)
+            while (node && node.nodeName != 'V-N') {
+              node = node.lastChild
+              while (node && node.nodeType != 1) node = node.previousSibling
+              // console.log(node)
+            }
+
+            if (node) {
+              while (+node.dataset.d < 2) {
+                const prev = prev_elem(node)
+                if (prev) node = prev
+                else break
+              }
+
+              const lower = +node.dataset.l
+              const upper = +node.dataset.u
+              return change_focus(focus, lower, upper, [node])
+            }
+
+            step -= 1
+          }
+
+          return
+        }
+
+        if (event.shiftKey) {
+          focused.unshift(prev)
+          const lower = +prev.dataset.l
+          return change_focus(l_focus, lower, $input.upper, focused)
+        } else {
+          const lower = +prev.dataset.l
+          const upper = +prev.dataset.u
+          return change_focus(l_focus, lower, upper, [prev])
+        }
+
+      case 'ArrowRight':
+        event.preventDefault()
+        const next = next_elem(focused[focused.length - 1])
+
+        if (!next) {
+          focus = (focus + 1) % zhtext.length
+          return change_focus(focus, 0, 1)
+        }
+
+        if (event.shiftKey) {
+          const nodes = focused.concat([next])
+          const upper = +next.dataset.u
+          return change_focus(l_focus, $input.lower, upper, nodes)
+        } else {
+          const lower = +next.dataset.l
+          const upper = +next.dataset.u
+          return change_focus(l_focus, lower, upper, [next])
+        }
     }
   }
 </script>

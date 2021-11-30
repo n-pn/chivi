@@ -76,3 +76,43 @@ function next_node(node) {
   if (!node) return null
   return node.nextSibling
 }
+
+export function prev_elem(node, stop = 'CV-DATA') {
+  if (!node) return
+
+  const name = node.nodeName
+
+  while (node && !node.previousSibling) {
+    if (node.nodeName == stop) return null
+    else node = node.parentNode
+  }
+
+  let prev = node.previousSibling
+  while (prev && prev.nodeType != 1) prev = prev.previousSibling
+
+  while (prev && (prev.nodeName != name || !prev.dataset.d)) {
+    prev = prev.lastChild
+  }
+
+  return prev
+}
+
+export function next_elem(node, stop = 'CV-DATA') {
+  if (!node) return
+
+  const name = node.nodeName
+
+  while (node && !node.nextSibling) {
+    if (node.nodeName == stop) return null
+    else node = node.parentNode
+  }
+
+  let next = node.nextSibling
+  while (next && next.nodeType != 1) next = next.nextSibling
+
+  while (next && (next.nodeName != name || !next.dataset.d)) {
+    next = next.firstChild
+  }
+
+  return next
+}
