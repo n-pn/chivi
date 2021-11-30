@@ -81,8 +81,11 @@
         res += `<c-g data-d=${dic}>`
         for (let j = 0; j < chars.length; j++) {
           if (j > 0) res += ' '
-          const val = escape_html(chars[j])
-          res += `<v-n data-d=2 data-i=${+idx + j} data-l=1>${val}</v-n>`
+
+          const v = escape_html(chars[j])
+          const l = +idx + j
+          const u = l + 1
+          res += `<v-n data-d=2 data-l=${l} data-u=${u}>${v}</v-n>`
         }
         res += '</c-g>'
       }
@@ -129,8 +132,11 @@
         const esc = escape_html(val)
 
         if (text) res += esc
-        else
-          res += `<v-n data-d=${dic} data-i=${idx} data-l=${len}>${esc}</v-n>`
+        else {
+          const l = idx
+          const u = +idx + +len
+          res += `<v-n data-d=${dic} data-l=${l} data-u=${u}>${esc}</v-n>`
+        }
 
         const lval = val[val.length - 1]
 

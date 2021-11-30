@@ -9,10 +9,10 @@ export default function read_selection() {
   let upto = 0
 
   for (const node of nodes) {
-    const i = +node.dataset.i
-    const j = i + +node.dataset.l
-    if (i < from) from = i
-    if (j > upto) upto = j
+    const lower = +node.dataset.l
+    const upper = +node.dataset.u
+    if (lower < from) from = lower
+    if (upper > upto) upto = upper
   }
 
   if (from > upto) from = upto
@@ -41,7 +41,7 @@ function get_selected(range) {
     node = node.parentNode
   }
 
-  return nodes.filter((x) => x.nodeName == 'V-N')
+  return nodes.filter((x) => x.nodeName == 'V-N' || x.nodeName == 'Z-N')
 }
 
 function next_node(node) {

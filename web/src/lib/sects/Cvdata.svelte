@@ -3,7 +3,8 @@
   import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
   import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
 
-  import Cvmenu, { ctrl as cvmenu, input } from '$parts/Cvmenu.svelte'
+  import Cvmenu, { ctrl as cvmenu, input } from './Cvdata/Cvmenu.svelte'
+  import Zhline from './Cvdata/Zhline.svelte'
 </script>
 
 <script>
@@ -17,8 +18,6 @@
 
   export let cvdata = ''
   export let zhtext = []
-
-  export let wtitle = true
 
   export let dname = 'various'
   export let d_dub = 'Tổng hợp'
@@ -40,7 +39,6 @@
     cvmenu.deactivate()
     upsert.deactivate()
   }
-  $: ztext = zhtext[state.hover] || ''
 
   onMount(() => {
     let timeout = null
@@ -49,7 +47,7 @@
       if ($config.reader == 1) return
 
       const [lower, upper] = read_selection()
-      if (upper > 0) $input = [ztext, lower, upper]
+      if (upper > 0) $input = [zhtext[state.hover], lower, upper]
 
       const selection = document.getSelection()
       if (selection.isCollapsed) return
@@ -68,24 +66,21 @@
 
   function handle_click({ target }) {
     if (state.focus != state.hover) state.focus = state.hover
-
     if ($config.reader == 1) return // return if in zen mode
-    if (target.nodeName != 'V-N') {
-      if (target.nodeName != 'CV-ITEM') hide_cvmenu()
-      return
-    }
+
+    target.classList.add('focus')
+    const { nodeName } = target
+    if (nodeName == 'CV-ITEM') return
+    if (nodeName != 'V-N' && nodeName != 'Z-N') return hide_cvmenu()
+
+    $input = [zhtext[state.hover], +target.dataset.l, +target.dataset.u]
 
     cvmenu.activate(target, article)
-
-    const lower = +target.dataset.i
-    const upper = lower + +target.dataset.l
-    $input = [ztext, lower, upper]
 
     if (target == cvterm) {
       upsert.activate($input, 0)
     } else {
       cvterm?.classList.remove('focus')
-      target.classList.add('focus')
       cvterm = target
 
       if ($lookup.enabled || $lookup.actived) {
@@ -146,11 +141,12 @@
     {#each cv_lines as input, index (index)}
       <cv-data
         id="L{index}"
-        class={wtitle && index == 0 ? 'h' : 'p'}
         class:debug={$config.reader == 2}
         class:focus={index == state.focus}
         on:mouseenter={() => (state.hover = index)}>
-        {#if $config.showzh}<zh-line>{zhtext[index]}</zh-line>{/if}
+        {#if $config.showzh}
+          <Zhline ztext={zhtext[index]} plain={$config.reader == 1} />
+        {/if}
         <Cvline {input} focus={show_html($config.reader, index, state)} />
       </cv-data>
     {/each}
@@ -246,23 +242,7 @@
     }
   }
 
-  zh-line {
-    display: block;
-    font-family: san-serif;
-    // font-size: 0.95em;
-    line-height: 1.4em;
-    letter-spacing: 0.04em;
-    margin-bottom: 0.25em;
-    @include tm-light {
-      color: color(neutral, 6);
-    }
-
-    @include tm-dark {
-      color: color(neutral, 4);
-    }
-  }
-
-  cv-data.h {
+  cv-data:first-of-type {
     font-weight: 400;
     line-height: 1.4em;
 
@@ -277,7 +257,7 @@
     }
   }
 
-  cv-data.p {
+  cv-data:not(:first-of-type) {
     text-align: justify;
     text-justify: auto;
     line-height: var(--textlh, 160%);

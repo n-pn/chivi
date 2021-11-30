@@ -9,19 +9,8 @@ class CV::InitNvinfo
   FileUtils.mkdir_p("#{DIR}/inits")
   FileUtils.mkdir_p("#{DIR}/users")
 
-  class_getter rating_fix : Tabkv { Tabkv.new("#{DIR}/rating_fix.tsv", :force) }
-  class_getter status_map : Tabkv { Tabkv.new("#{DIR}/status_map.tsv", :force) }
-
-  def self.map_status(status_str : String) : String
-    return "0" if status_str.empty?
-
-    unless status_int = status_map.fval(status_str)
-      puts " - unmapped status: <#{status_str}>!".colorize.red
-      status_map.set(status_str, "0")
-    else
-      status_int = "0"
-    end
-  end
+  @@rating_fix = Tabkv.new("#{DIR}/rating_fix.tsv", :force)
+  @@status_map = Tabkv.new("#{DIR}/status_map.tsv", :force)
 
   STORES = {
     _index: {} of String => Tabkv,
@@ -47,12 +36,11 @@ class CV::InitNvinfo
   private def group_of(snvid : String, len = 4) : String
     case @sname
     when "chivi", "local", "zhwenpg" then "0"
-    else
-      snvid.rjust(len, '0')[0..-len]
+    else                                  snvid.rjust(len, '0')[0..-len]
     end
   end
 
-  def get_map(type : Symbol, snvid : String, ext = ".tsv")
+  def get_map(type : Symbol, snvid : String, ext = "tsv")
     group = group_of(snvid)
     STORES[type][group] ||= Tabkv.new("#{@s_dir}/#{type}/#{type}-#{group}.#{ext}")
   end
@@ -76,11 +64,7 @@ class CV::InitNvinfo
       set_val!(:rating, snvid, [entry.voters, entry.rating])
       set_val!(:unique, snvid, [entry.addListTotal, entry.commentCount, entry.word_count])
     else
-      if @sname == "hetushu"
-        set_val!(:status, snvid, [entry.status])
-      else
-        set_val!(:status, snvid, [map_status(entry.status), entry.status])
-      end
+      set_val!(:status, snvid, map_status(entry.status))
       set_val!(:mftime, snvid, [entry.mftime.to_s, entry.update])
     end
   end
@@ -91,58 +75,72 @@ class CV::InitNvinfo
     end
   end
 
-  def get_index(snvid : String) : Tuple(Int64, String, String)
-    return {0_i64, "", ""} unless vals = get_map(:index, snvid).get(snvid)
+  def map_status(input : String) : Array(String)
+    return ["0"] if input.empty? || @sname == "hetushu"
 
-    atime, btitle, author = vals
-    {atime.to_i64, btitle, author}
-  end
-
-  def get_counts(snvid : String) : Array(Int32)
-    get_map(:counts, snvid).get(snvid).try(&.map(&.to_i)) || [0, 0, 0]
-  end
-
-  def get_status(snvid : String) : Array(Int32)
-    self.status.get(snvid).try(&.map { |x| x.to_i? || 0 }) || [0, 0]
-  end
-
-  def get_mftime(snvid : String) : Int64
-    self.mftime.ival_64(snvid)
-  end
-
-  def get_genres(snvid : String) : Array(String)
-    self.genres.get(snvid) || [] of String
-  end
-
-  def get_bcover(snvid : String) : String
-    # TODO: generate book cover without have to load cover file
-    @seed.bcover.fval(snvid) || ""
-  end
-
-  def get_intro(snvid : String) : Array(String)
-    intro_map(snvid).get(snvid) || [] of String
-  end
-
-  def get_scores(snvid : String) : Array(Int32)
-    if scores = self.scores.get(snvid)
-      scores.map(&.to_i)
-    elsif scores = SeedUtil.rating_fix.get(get_nlabel(snvid))
-      scores.map(&.to_i)
-    elsif @sname == "hetushu" || @sname == "zxcs_me"
-      [Random.rand(30..100), Random.rand(50..65)]
-    else
-      [Random.rand(25..50), Random.rand(40..50)]
+    if output = @@status_map.get(input)
+      return [output, input]
     end
+
+    debug_line = input + "\t" + @sname
+    File.open("tmp/unmapped-status.log", "a", &.puts(debug_line))
+
+    status_map.set(input, "0")
+    ["0", input]
   end
 
-  private def get_nlabel(snvid : String)
-    _, btitle, author = self._index.get(snvid).not_nil!
-    "#{btitle}  #{author}"
-  end
+  # def get_index(snvid : String) : Tuple(Int64, String, String)
+  #   return {0_i64, "", ""} unless vals = get_map(:index, snvid).get(snvid)
 
-  def get_origin(snvid : String)
-    self.origin.get(snvid) || ["", ""]
-  end
+  #   atime, btitle, author = vals
+  #   {atime.to_i64, btitle, author}
+  # end
+
+  # def get_counts(snvid : String) : Array(Int32)
+  #   get_map(:counts, snvid).get(snvid).try(&.map(&.to_i)) || [0, 0, 0]
+  # end
+
+  # def get_status(snvid : String) : Array(Int32)
+  #   self.status.get(snvid).try(&.map { |x| x.to_i? || 0 }) || [0, 0]
+  # end
+
+  # def get_mftime(snvid : String) : Int64
+  #   self.mftime.ival_64(snvid)
+  # end
+
+  # def get_genres(snvid : String) : Array(String)
+  #   self.genres.get(snvid) || [] of String
+  # end
+
+  # def get_bcover(snvid : String) : String
+  #   # TODO: generate book cover without have to load cover file
+  #   @seed.bcover.fval(snvid) || ""
+  # end
+
+  # def get_intro(snvid : String) : Array(String)
+  #   intro_map(snvid).get(snvid) || [] of String
+  # end
+
+  # def get_scores(snvid : String) : Array(Int32)
+  #   if scores = self.scores.get(snvid)
+  #     scores.map(&.to_i)
+  #   elsif scores = SeedUtil.rating_fix.get(get_nlabel(snvid))
+  #     scores.map(&.to_i)
+  #   elsif @sname == "hetushu" || @sname == "zxcs_me"
+  #     [Random.rand(30..100), Random.rand(50..65)]
+  #   else
+  #     [Random.rand(25..50), Random.rand(40..50)]
+  #   end
+  # end
+
+  # private def get_nlabel(snvid : String)
+  #   _, btitle, author = self._index.get(snvid).not_nil!
+  #   "#{btitle}  #{author}"
+  # end
+
+  # def get_origin(snvid : String)
+  #   self.origin.get(snvid) || ["", ""]
+  # end
 
   # def upsert!(snvid : String, fixed = false) : Tuple(String, String, String)
   #   _, btitle, author = _index.get(snvid).not_nil!
