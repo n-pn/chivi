@@ -1,6 +1,7 @@
 <script context="module">
   import { page, navigating } from '$app/stores'
   import { config } from '$lib/stores'
+  import CvData from '$lib/cv_data'
 
   import {
     scroll_into_view,
@@ -12,10 +13,11 @@
   import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
   import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
   import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
-  import Cvline, { Mtline } from '$sects/Cvline.svelte'
 
-  import Cvmenu, { ctrl as cvmenu, input } from './Cvdata/Cvmenu.svelte'
-  import Zhline from './Cvdata/Zhline.svelte'
+  import Cvline from '$sects/Cvline.svelte'
+
+  import Cvmenu, { ctrl as cvmenu, input } from './CvPage/Cvmenu.svelte'
+  import Zhline from './CvPage/Zhline.svelte'
 </script>
 
 <script>
@@ -26,9 +28,9 @@
   export let d_dub = 'Tổng hợp'
 
   export let on_change = () => {}
-  const hide_cvmenu = () => setTimeout(cvmenu.deactivate, 50)
+  const hide_cvmenu = () => setTimeout(cvmenu.deactivate, 10)
 
-  $: cv_lines = Mtline.parse_lines(cvdata)
+  $: cv_lines = CvData.parse_lines(cvdata)
   let article = null
 
   let l_hover = 0
@@ -44,16 +46,29 @@
   function handle_mouse({ target }, _index = l_hover) {
     if ($config.reader == 1) return // return if in zen mode
 
-    const { nodeName } = target
-    if (nodeName == 'CV-ITEM') return
-
     let [nodes, lower, upper] = read_selection()
-    if (!nodes) {
-      if (nodeName != 'V-N' && nodeName != 'Z-N') return // hide_cvmenu()
-      nodes = [target]
 
-      lower = +target.dataset.l
-      upper = +target.dataset.u
+    switch (target.nodeName) {
+      case 'CV-ITEM':
+      case 'CV-MENU':
+        return
+
+      case 'CV-DATA':
+        l_focus = _index
+        hide_cvmenu()
+        return
+
+      case 'V-N':
+      case 'Z-N':
+        if (nodes) break
+        nodes = [target]
+
+        lower = +target.dataset.l
+        upper = +target.dataset.u
+        break
+
+      default:
+        if (!nodes) return
     }
 
     change_focus(_index, lower, upper, nodes)
@@ -252,7 +267,7 @@
     {/each}
   {/key}
 
-  {#if $cvmenu.actived}<Cvmenu />{/if}
+  <Cvmenu />
 </article>
 
 {#if $lookup.enabled || $lookup.actived}
@@ -324,9 +339,9 @@
   // prettier-ignore
   cv-data {
     display: block;
-    position: relative;
     padding: 0 var(--pad);
     color: var(--fgcolor, #{color(gray, 8)});
+    @include bdradi();
     @include tm-dark { --fgcolor: #{color(gray, 3)}; }
 
     :global(.app-ff-1) & { font-family: var(--font-sans); }
@@ -335,23 +350,10 @@
     :global(.app-ff-4) & { font-family: Lora, var(--font-serif); }
 
     &.focus {
-      @include bgcolor(main);
-
-      @include tm-oled {
-        @include bgcolor(neutral, 9);
-      }
-
-      &:before {
-        --width: 3px;
-
-        position: absolute;
-        display: inline-block;
-        content: '';
-        width: var(--width);
-        left: calc(var(--width) * -0.5);
-        height: 100%;
-        @include bgcolor(primary, 5);
-      }
+      :global(.tm-light) & { @include bgcolor(warning, 2, 1); }
+      :global(.tm-warm) & { @include bgcolor(warning, 0, 4); }
+      :global(.tm-dark) & { @include bgcolor(neutral, 8, 9); }
+      :global(.tm-oled) & { @include bgcolor(neutral, 9, 8); }
     }
   }
 

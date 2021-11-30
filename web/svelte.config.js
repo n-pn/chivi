@@ -12,7 +12,7 @@ const mdsvexConfig = {
   smartypants: { dashes: 'oldschool' },
   remarkPlugins: [breaks],
   rehypePlugins: [],
-  layout: path.resolve(_cwd, 'src/lib/sects/Article.svelte'),
+  layout: path.resolve(_cwd, 'src/lib/sects/MdPost.svelte'),
 }
 
 /** @type {import('@sveltejs/kit').Config} */

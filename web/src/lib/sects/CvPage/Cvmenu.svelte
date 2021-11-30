@@ -36,31 +36,33 @@
   import SIcon from '$atoms/SIcon.svelte'
 </script>
 
-<cv-menu style="--top: {$ctrl.top}px; --left: {$ctrl.left}px">
-  <cv-item
-    data-kbd="↵"
-    data-tip="Sửa từ"
-    tip-loc="bottom"
-    on:click={() => upsert.activate($input, 0)}>
-    <SIcon name="pencil" />
-  </cv-item>
+{#if $ctrl.actived}
+  <cv-menu style="--top: {$ctrl.top}px; --left: {$ctrl.left}px">
+    <cv-item
+      data-kbd="↵"
+      data-tip="Sửa từ"
+      tip-loc="bottom"
+      on:click={() => upsert.activate($input, 0)}>
+      <SIcon name="pencil" />
+    </cv-item>
 
-  <cv-item
-    data-kbd="q"
-    data-tip="Tra từ"
-    tip-loc="bottom"
-    on:click={() => lookup.activate($input, $lookup.enabled)}>
-    <SIcon name="search" />
-  </cv-item>
+    <cv-item
+      data-kbd="q"
+      data-tip="Tra từ"
+      tip-loc="bottom"
+      on:click={() => lookup.activate($input, $lookup.enabled)}>
+      <SIcon name="search" />
+    </cv-item>
 
-  <cv-item
-    data-kbd="p"
-    data-tip="Báo lỗi"
-    tip-loc="bottom"
-    on:click={() => tlspec.activate($input, true)}>
-    <SIcon name="flag" />
-  </cv-item>
-</cv-menu>
+    <cv-item
+      data-kbd="p"
+      data-tip="Báo lỗi"
+      tip-loc="bottom"
+      on:click={() => tlspec.activate($input, true)}>
+      <SIcon name="flag" />
+    </cv-item>
+  </cv-menu>
+{/if}
 
 <style lang="scss">
   $size: 2rem;
@@ -77,7 +79,7 @@
     top: var(--top, 20vw);
     left: var(--left, 20vw);
 
-    --bgc: #{color(primary, 6)};
+    --bgc: #{color(primary, 6, 9.5)};
     background: var(--bgc);
 
     @include bdradi();

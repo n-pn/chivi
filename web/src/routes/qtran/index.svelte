@@ -3,7 +3,7 @@
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  import Cvdata from '$sects/Cvdata.svelte'
+  import CvPage from '$sects/CvPage.svelte'
 
   export let dname = 'various'
   export let d_dub = 'Tổng hợp'
@@ -67,7 +67,7 @@
         bind:this={text_elem}
         placeholder="Nhập dữ liệu vào đây" />
     {:else}
-      <Cvdata zhtext={split_input(zhtext)} {cvdata} {on_change} />
+      <CvPage zhtext={split_input(zhtext)} {cvdata} {on_change} />
     {/if}
   </section>
 

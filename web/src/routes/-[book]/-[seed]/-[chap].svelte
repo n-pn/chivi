@@ -24,7 +24,7 @@
   import Notext from '$parts/Notext.svelte'
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
-  import Cvdata from '$sects/Cvdata.svelte'
+  import CvPage from '$sects/CvPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
 
   export let cvbook
@@ -128,7 +128,7 @@
   <ChapSeed {cvbook} {chmeta} {chinfo} />
 
   {#if cvdata}
-    <Cvdata
+    <CvPage
       {cvdata}
       {zhtext}
       dname={cvbook.bhash}
@@ -142,7 +142,7 @@
           <span class="crumb _text">{chinfo.chvol}</span>
         </nav>
       </svelte:fragment>
-    </Cvdata>
+    </CvPage>
   {:else}
     <Notext {chmeta} />
   {/if}

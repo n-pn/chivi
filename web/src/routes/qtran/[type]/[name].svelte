@@ -23,7 +23,7 @@
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  import Cvdata from '$sects/Cvdata.svelte'
+  import CvPage from '$sects/CvPage.svelte'
 
   export let name
   export let type
@@ -61,7 +61,7 @@
 
 <Vessel>
   <section class="body">
-    <Cvdata {dname} {d_dub} {zhtext} {cvdata} {on_change}>
+    <CvPage {dname} {d_dub} {zhtext} {cvdata} {on_change}>
       <svete:fragment slot="header">
         <nav class="bread">
           <a href="/qtran" class="crumb _link">Dịch nhanh</a>
@@ -72,7 +72,7 @@
           <span class="crumb _text">[{name}]</span>
         </nav>
       </svete:fragment>
-    </Cvdata>
+    </CvPage>
   </section>
 
   <div slot="footer" class="foot">

@@ -1,10 +1,11 @@
 <script context="module">
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
+  import CvData from '$lib/cv_data'
 
   import { dict_lookup } from '$api/dictdb_api'
   import { create_input } from '$utils/create_stores'
-  import { Mtline } from '$sects/Cvline.svelte'
+
   import { ptnames } from '$parts/Postag.svelte'
   import { ctrl as upsert } from '$parts/Upsert.svelte'
 
@@ -43,7 +44,7 @@
 
   async function update_lookup(input) {
     if (!input.ztext) return
-    zh_html = Mtline.render_zh(input.ztext)
+    zh_html = CvData.render_zh(input.ztext)
     lower = input.lower
     upper = input.upper
 
@@ -59,7 +60,7 @@
       }
     }
 
-    hv_html = new Mtline(data.hanviet).render_hv()
+    hv_html = new CvData(data.hanviet).render_hv()
     update_focus(lower)
   }
 
