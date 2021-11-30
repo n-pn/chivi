@@ -19,8 +19,6 @@
     if (typeof gtag === 'function') {
       gtag('config', 'UA-160000714-1', { page_path: $page.path })
     }
-
-    if (typeof umami === 'function') umami.trackView($page.path)
   }
 
   let wtheme = $session.wtheme
