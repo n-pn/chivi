@@ -347,12 +347,12 @@
     :global(.app-ff-3) & { font-family: Nunito Sans, var(--font-sans); }
     :global(.app-ff-4) & { font-family: Lora, var(--font-serif); }
 
-    &.focus {
-      :global(.tm-light) & { @include bgcolor(warning, 2, 1); }
-      :global(.tm-warm) & { @include bgcolor(warning, 0, 4); }
-      :global(.tm-dark) & { @include bgcolor(neutral, 8, 9); }
-      :global(.tm-oled) & { @include bgcolor(neutral, 9, 8); }
-    }
+    // &.focus {
+    //   :global(.tm-light) & { @include bgcolor(warning, 2, 1); }
+    //   :global(.tm-warm) & { @include bgcolor(warning, 0, 4); }
+    //   :global(.tm-dark) & { @include bgcolor(neutral, 8, 9); }
+    //   :global(.tm-oled) & { @include bgcolor(neutral, 9, 8); }
+    // }
   }
 
   cv-data:first-of-type {
