@@ -115,7 +115,7 @@
 
     if (nodes.length > 0) {
       focused.forEach((x) => x.classList.add('focus'))
-      cvmenu.activate(nodes[nodes.length - 1], article)
+      cvmenu.activate(nodes, article)
     }
 
     hovered = []

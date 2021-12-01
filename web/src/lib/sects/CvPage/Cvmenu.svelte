@@ -7,21 +7,24 @@
 
   export const ctrl = {
     ...writable({ actived: false, top: 0, left: 0 }),
-    activate(target, parent) {
-      const rect = get_client_rect(target)
-      const width = 96
+    activate(nodes, parent) {
+      const { top, left } = get_client_rect(nodes[0])
+      const { right } = get_client_rect(nodes[nodes.length - 1])
 
-      let left = Math.floor((rect.left + rect.right) / 2) - width / 2
-      if (left < 0) left = 0
-      else if (left + width > window.innerWidth)
-        left = window.innerWidth - width
+      const width = 100
 
-      const parent_rect = get_client_rect(parent)
+      let out_left = Math.floor((left + right) / 2) - width / 2
+
+      if (out_left < 0) out_left = 0
+      else if (out_left + width > window.innerWidth)
+        out_left = window.innerWidth - width
+
+      const parent_rect = parent.getBoundingClientRect()
 
       ctrl.set({
         actived: true,
-        top: rect.top - parent_rect.top - 40,
-        left: left - parent_rect.left,
+        top: top - parent_rect.top - 40,
+        left: out_left - parent_rect.left,
       })
     },
     deactivate: () => ctrl.set({ actived: false, top: 0, left: 0 }),
