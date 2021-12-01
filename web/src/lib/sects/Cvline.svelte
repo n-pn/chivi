@@ -66,8 +66,9 @@
     // prettier-ignore
     &.focus {
       @include fgcolor(secd);
-      @include tm-light { background: color(success, 5, 2) !important; }
-      @include tm-dark { background: color(purple, 4, 3) !important; }
+      background: color(success, 5, 2) !important;
+      .tm-dark & { background: color(purple, 4, 3) !important; }
+      .tm-oled & { background: color(purple, 4, 4) !important; }
     }
 
     c-g & {
