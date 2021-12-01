@@ -47,6 +47,7 @@
     if ($config.reader == 1) return // return if in zen mode
 
     let [nodes, lower, upper] = read_selection()
+    const unchanged = !nodes
 
     switch (target.nodeName) {
       case 'CV-ITEM':
@@ -61,6 +62,7 @@
       case 'V-N':
       case 'Z-N':
         if (nodes) break
+
         nodes = [target]
 
         lower = +target.dataset.l
@@ -71,19 +73,12 @@
         if (!nodes) return
     }
 
-    change_focus(_index, lower, upper, nodes)
-
-    // if (selected.includes(target)) {
-    //   upsert.activate($input, 0)
-    // } else {
-    //   selected.forEach((x) => x.classList.remove('focus'))
-    //   selected = [target]
-    //   target.classList.add('focus')
-
-    //   if ($lookup.enabled || $lookup.actived) {
-    //     lookup.activate($input, $lookup.enabled)
-    //   }
-    // }
+    if (unchanged && target.classList.contains('focus')) {
+      const dic = +target.dataset.d
+      upsert.activate($input, dic == 3 || dic == 5 ? 0 : 1)
+    } else {
+      change_focus(_index, lower, upper, nodes)
+    }
   }
 
   function change_focus(index, lower, upper, nodes) {
@@ -114,6 +109,9 @@
 
     focused = nodes
     input.put([zhtext[index], lower, upper])
+    if ($lookup.enabled || $lookup.actived) {
+      lookup.activate($input, $lookup.enabled)
+    }
 
     if (nodes.length > 0) {
       focused.forEach((x) => x.classList.add('focus'))

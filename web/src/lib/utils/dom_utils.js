@@ -26,14 +26,18 @@ export function read_selection() {
   const selection = document.getSelection()
   if (selection.isCollapsed) return [null]
 
-  const nodes = get_selected(selection.getRangeAt(0))
+  const range = get_selected(selection.getRangeAt(0))
   selection.removeAllRanges()
+
+  const nodes = range.filter((x) => x.nodeName == 'V-N' || x.nodeName == 'Z-N')
   if (nodes.length == 0) return [null]
 
   let from = 99999
   let upto = 0
 
   for (const node of nodes) {
+    // if (node.nodeType != 1) continue
+
     const lower = +node.dataset.l
     const upper = +node.dataset.u
     if (lower < from) from = lower
@@ -66,7 +70,7 @@ function get_selected(range) {
     node = node.parentNode
   }
 
-  return nodes.filter((x) => x.nodeName == 'V-N' || x.nodeName == 'Z-N')
+  return nodes
 }
 
 function next_node(node) {

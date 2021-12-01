@@ -66,7 +66,7 @@
 
   function handle_click({ target }) {
     const name = target.nodeName
-    if (name == 'V-N') lower = +target.dataset.i
+    if (name == 'X-N') lower = +target.dataset.l
   }
 
   function update_focus(lower) {
@@ -74,8 +74,7 @@
 
     if (current.length == 0) upper = lower
     else upper = lower + +current[0][0]
-
-    setTimeout(() => highlight_focused(lower, upper), 10)
+    highlight_focused(lower, upper)
   }
 
   let viewer = null
@@ -87,7 +86,7 @@
     focused = []
 
     for (let idx = lower; idx < upper; idx++) {
-      const nodes = viewer.querySelectorAll(`v-n[data-i="${idx}"]`)
+      const nodes = viewer.querySelectorAll(`x-n[data-l="${idx}"]`)
       nodes.forEach((x) => {
         focused.push(x)
         x.classList.add('focus')
@@ -191,6 +190,21 @@
       $line: 1.25rem;
       line-height: $line;
       max-height: $line * 3 + 0.75rem;
+    }
+  }
+
+  :global {
+    x-n {
+      --color: #{color(primary, 5)};
+      cursor: pointer;
+
+      &:hover {
+        background: linear-gradient(to top, var(--color) 0.75px, transparent 0);
+      }
+
+      &.focus {
+        color: var(--color);
+      }
     }
   }
 

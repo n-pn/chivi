@@ -66,32 +66,6 @@ export default class CvData {
     return [data, i]
   }
 
-  render_hv() {
-    let res = ''
-
-    for (const [val, dic, idx] of this.data) {
-      if (val == ' ') {
-        res += ' '
-        continue
-      }
-
-      let chars = val.split(' ')
-
-      res += `<c-g data-d=${dic}>`
-      for (let j = 0; j < chars.length; j++) {
-        if (j > 0) res += ' '
-
-        const v = escape_html(chars[j])
-        const l = +idx + j
-        const u = l + 1
-        res += `<v-n data-d=2 data-l=${l} data-u=${u}>${v}</v-n>`
-      }
-      res += '</c-g>'
-    }
-
-    return res
-  }
-
   get html() {
     this._html = this._html || this.render_cv(this.data, false)
     return this._html
@@ -160,15 +134,43 @@ export default class CvData {
     return res
   }
 
+  render_hv() {
+    let res = ''
+
+    for (const [val, dic, idx] of this.data) {
+      if (val == ' ') {
+        res += ' '
+        continue
+      }
+
+      let chars = val.split(' ')
+
+      res += `<c-g data-d=${dic}>`
+      for (let j = 0; j < chars.length; j++) {
+        if (j > 0) res += ' '
+
+        const v = escape_html(chars[j])
+        const l = +idx + j
+        const u = l + 1
+        res += `<x-n data-d=2 data-l=${l} data-u=${u}>${v}</x-n>`
+      }
+      res += '</c-g>'
+    }
+
+    return res
+  }
+
   static render_zh(input) {
     let res = ''
     let idx = 0
 
-    for (const key of Array.from(input)) {
+    for (const chars of Array.from(input)) {
       res += `<c-g data-d=1>`
 
-      for (const k of Array.from(key)) {
-        res += `<v-n data-d=2 data-i=${idx} data-l=1>${escape_html(k)}</v-n>`
+      for (let j = 0; j < chars.length; j++) {
+        const v = escape_html(chars[j])
+        const u = idx + 1
+        res += `<x-n data-d=2 data-l=${idx} data-u=${u}>${v}</x-n>`
         idx += 1
       }
 
