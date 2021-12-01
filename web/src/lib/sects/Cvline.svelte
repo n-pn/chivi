@@ -66,8 +66,8 @@
     // prettier-ignore
     &.focus {
       @include fgcolor(secd);
-      background: color(success, 5, 2);
-      @include tm-dark { background: color(purple, 4, 2); }
+      @include tm-light { background: color(success, 5, 2) !important; }
+      @include tm-dark { background: color(purple, 4, 3) !important; }
     }
 
     c-g & {

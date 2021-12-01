@@ -31,7 +31,8 @@
   <crit-head>
     <a class="crit-user" href="/crits?user={crit.uslug}">{crit.uname}</a>
     <crit-sep>·</crit-sep>
-    <a class="crit-time" href="/crits/{crit.id}">{get_rtime(crit.mftime)}</a>
+    <a class="crit-time" href="/qtran/crits/{crit.id}"
+      >{get_rtime(crit.mftime)}</a>
 
     <crit-star>{get_stars(crit.stars)}</crit-star>
     {#if crit.vhtml.length >= 640}
