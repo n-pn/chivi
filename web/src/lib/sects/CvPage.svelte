@@ -286,11 +286,9 @@
 
 <style lang="scss">
   article {
-    --pad: calc(var(--gutter) * 0.5);
-
     position: relative;
     min-height: 50vh;
-    padding: 0 var(--pad) var(--verpad);
+    padding: 0 var(--gutter) var(--verpad);
 
     margin-left: calc(-1 * var(--gutter));
     margin-right: calc(-1 * var(--gutter));
@@ -325,7 +323,6 @@
 
   header {
     @include border(--bd-main, $loc: bottom);
-    margin: 0 var(--pad) var(--verpad);
     padding: var(--gutter-pm) 0;
     line-height: 1.25rem;
 
@@ -337,10 +334,8 @@
   // prettier-ignore
   cv-data {
     display: block;
-    padding: 0 var(--pad);
-    color: var(--fgcolor, #{color(gray, 8)});
-    @include bdradi();
-    @include tm-dark { --fgcolor: #{color(gray, 3)}; }
+    margin-top: 1em;
+    color: var(--fgcolor, var(--fg-main));
 
     :global(.app-ff-1) & { font-family: var(--font-sans); }
     :global(.app-ff-2) & { font-family: var(--font-serif); }
@@ -356,7 +351,6 @@
   }
 
   cv-data:first-of-type {
-    font-weight: 400;
     line-height: 1.4em;
 
     @include bps(font-size, rem(23px), rem(24px), rem(26px), rem(28px));
@@ -374,9 +368,6 @@
     text-align: justify;
     text-justify: auto;
     line-height: var(--textlh, 160%);
-
-    // @include bps(margin-top, 1.125em, 1.25em, 1.375em, 1.5em);
-    margin-top: 1em;
 
     :global(.app-fs-1) & {
       @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(19px));
