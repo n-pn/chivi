@@ -55,7 +55,7 @@
   }
 
   function handle_mouse({ target, which }, _index = l_hover) {
-    if ($config.reader == 1 || which == 3) return // return if in zen mode
+    if ($config.render < 0 || which == 3) return // return if in zen mode
 
     let [nodes, lower, upper] = read_selection()
 
@@ -136,8 +136,8 @@
     change_focus(l_focus, $input.lower, $input.upper)
   }
 
-  function render_html(reader, index, hover, focus) {
-    if (reader > 0) return reader == 2
+  function render_html(render, index, hover, focus) {
+    if (render != 0) return render > 0
     if (index == hover) return true
 
     if (index > focus - 2 && focus < focus + 2) return true
@@ -217,7 +217,7 @@
   // $: console.log($input)
 
   function handle_keydown(event) {
-    if (article != document.activeElement || $config.reader == '1') return
+    if (article != document.activeElement || $config.render < 0) return
 
     let focus = l_focus
 
@@ -251,8 +251,8 @@
 
 <div hidden>
   <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
-  <button data-kbd="z" on:click={() => config.set_reader(1)}>Z</button>
-  <button data-kbd="g" on:click={() => config.set_reader(2)}>G</button>
+  <button data-kbd="z" on:click={() => config.set_render(-1)}>Z</button>
+  <button data-kbd="g" on:click={() => config.set_render(1)}>G</button>
   <button data-kbd="c" on:click={() => upsert.activate($input, 1)}>C</button>
 </div>
 
@@ -272,15 +272,15 @@
     {#each cv_lines as input, index (index)}
       <cv-data
         id="L{index}"
-        class:debug={$config.reader == 2}
+        class:debug={$config.render == 2}
         class:focus={index == l_focus}
         on:mouseenter={() => (l_hover = index)}>
         {#if $config.showzh}
-          <Zhline ztext={zhtext[index]} plain={$config.reader == 1} />
+          <Zhline ztext={zhtext[index]} plain={$config.render == 1} />
         {/if}
         <Cvline
           {input}
-          focus={render_html($config.reader, index, l_hover, l_focus)} />
+          focus={render_html($config.render, index, l_hover, l_focus)} />
       </cv-data>
     {/each}
   {/key}

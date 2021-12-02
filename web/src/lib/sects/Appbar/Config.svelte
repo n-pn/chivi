@@ -8,7 +8,7 @@
   const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora']
 
   // const textlhs = [150, 150, 150, 150]
-  const readers = ['Thường', 'Zen', 'Dev']
+  const renders = ['Thường', 'Zen', 'Dev']
 </script>
 
 <script>
@@ -109,13 +109,13 @@
   <config-item>
     <field-label class="small">Chế độ:</field-label>
     <field-input>
-      {#each readers as label, value}
-        <label class:_active={value == $config.reader}>
+      {#each renders as label, value}
+        <label class:_active={value == $config.render}>
           <input
             type="radio"
-            name="reader"
+            name="render"
             {value}
-            bind:group={$config.reader} />
+            bind:group={$config.render} />
           <span>{label}</span>
         </label>
       {/each}

@@ -16,7 +16,7 @@ export function create_config_store(name, data) {
       })
     },
     toggle: (key) => store.put(key, (x) => !x),
-    set_reader: (val) => store.put('reader', (old) => (old == val ? 0 : val)),
+    set_render: (val) => store.put('render', (old) => (old == val ? 0 : val)),
   }
 
   store.subscribe((val) => {
