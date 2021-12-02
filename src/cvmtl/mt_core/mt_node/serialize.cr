@@ -15,8 +15,10 @@ module CV::MTL::Serialize
 
   def to_str(io : IO) : Nil
     io << "\t" << @val
-    return if @val == " "
-    io << 'ǀ' << @dic << 'ǀ' << @idx << 'ǀ' << @key.size
+    return if @key == "" && @val == " " # skip rendering if node is empty space
+
+    dic = @tag.puncts? || @val == "" ? 0 : @dic
+    io << 'ǀ' << dic << 'ǀ' << @idx << 'ǀ' << @key.size
   end
 
   def serialize(io : IO = STDOUT) : Nil

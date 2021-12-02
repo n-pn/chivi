@@ -205,7 +205,7 @@
 
     while (can_skip(node)) {
       nodes.push(node)
-      node = succ_elem(node)
+      node = next_elem(node)
     }
 
     const lower = shift ? $input.lower : +nodes[nodes.length - 1].dataset.l
