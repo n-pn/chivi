@@ -18,6 +18,16 @@
 
   import Cvmenu, { ctrl as cvmenu, input } from './CvPage/Cvmenu.svelte'
   import Zhline from './CvPage/Zhline.svelte'
+
+  const hovered = []
+  const focused = []
+
+  function remove_classes() {
+    focused.forEach((x) => x.classList.remove('focus'))
+    hovered.forEach((x) => x.classList.remove('hover'))
+    focused.length = 0
+    hovered.length = 0
+  }
 </script>
 
 <script>
@@ -28,75 +38,64 @@
   export let d_dub = 'Tổng hợp'
 
   export let on_change = () => {}
-  const hide_cvmenu = () => setTimeout(cvmenu.deactivate, 10)
+  const hide_controls = () => {
+    remove_classes()
+    cvmenu.deactivate()
+  }
 
   $: cv_lines = CvData.parse_lines(cvdata)
   let article = null
 
   let l_hover = 0
   let l_focus = 0
-  let hovered = []
-  let focused = []
 
-  $: if ($navigating && article) {
-    cvmenu.deactivate()
-    change_focus(0, 0, 0)
+  $: if ($navigating) {
+    hide_controls()
+    l_focus = 0
   }
 
-  function handle_mouse({ target }, _index = l_hover) {
-    if ($config.reader == 1) return // return if in zen mode
+  function handle_mouse({ target, which }, _index = l_hover) {
+    if ($config.reader == 1 || which == 3) return // return if in zen mode
 
     let [nodes, lower, upper] = read_selection()
-    const unchanged = !nodes
 
     switch (target.nodeName) {
       case 'CV-ITEM':
       case 'CV-MENU':
         return
 
-      case 'CV-DATA':
-        l_focus = _index
-        hide_cvmenu()
-        return
-
       case 'V-N':
       case 'Z-N':
-        if (nodes) break
+        if (nodes && nodes.length > 1 && nodes.includes(target)) break
 
         nodes = [target]
 
         lower = +target.dataset.l
         upper = +target.dataset.u
-        break
+
+        if (!target.classList.contains('focus')) break
+        return upsert.activate($input, +target.dataset.d % 2 ? 0 : 1)
+
+      case 'CV-DATA':
+        l_focus = _index
 
       default:
-        if (!nodes) return
+        hide_controls()
     }
 
-    if (unchanged && target.classList.contains('focus')) {
-      const dic = +target.dataset.d
-      upsert.activate($input, dic == 3 || dic == 5 ? 0 : 1)
-    } else {
-      change_focus(_index, lower, upper, nodes)
-    }
+    change_focus(_index, lower, upper, nodes)
   }
 
   function change_focus(index, lower, upper, nodes) {
     l_focus = index
-
-    focused.forEach((x) => x.classList.remove('focus'))
-    hovered.forEach((x) => x.classList.remove('hover'))
+    remove_classes()
 
     const line = article.querySelector(`#L${index}`)
     scroll_into_view(line, article, 'smooth')
 
     if (!nodes) {
       let child = line.querySelector(`v-n[data-l="${lower}"]`)
-
-      if (upper == 0 && child && +child.dataset.d < 2) {
-        const dnode = line.querySelector('v-n:not([data-d="1"])')
-        if (dnode) child = dnode
-      }
+      if (!upper && can_skip(child)) child = next_elem(child, true) || child
 
       if (child) {
         nodes = [child]
@@ -107,27 +106,28 @@
       }
     }
 
-    focused = nodes
     input.put([zhtext[index], lower, upper])
-    if ($lookup.enabled || $lookup.actived) {
+    if ($lookup.enabled || $lookup.actived)
       lookup.activate($input, $lookup.enabled)
+
+    for (let node of nodes) {
+      node.classList.add('focus')
+      focused.push(node)
     }
 
-    if (nodes.length > 0) {
-      focused.forEach((x) => x.classList.add('focus'))
-      cvmenu.activate(nodes, article)
+    const add_hover = (query) => {
+      for (let node of line.querySelectorAll(query)) {
+        node.classList.add('hover')
+        hovered.push(node)
+      }
     }
-
-    hovered = []
-
-    const query_all = (query) => Array.from(line.querySelectorAll(query))
 
     for (let i = lower; i < upper; i++) {
-      hovered = hovered.concat(query_all(`[data-l="${i}"]`))
-      hovered = hovered.concat(query_all(`[data-u="${i + 1}"]`))
+      add_hover(`[data-l="${i}"]`)
+      add_hover(`[data-u="${i + 1}"]`)
     }
 
-    hovered.forEach((x) => x.classList.add('hover'))
+    cvmenu.activate(nodes, article)
   }
 
   function retake_control() {
@@ -145,12 +145,89 @@
     return index == 0 && focus == zhtext.length - 1
   }
 
+  function move_left(shift = false) {
+    let node = prev_elem(focused[0], true)
+
+    let max_scan = 4
+    let focus = l_focus
+
+    while (!node && max_scan-- > 0) {
+      focus = (focus - 1 + zhtext.length) % zhtext.length
+      node = article.querySelector(`#L${focus} cv-line`).lastChild
+
+      while (node && node.nodeName != 'V-N') {
+        node = node.nodeType == 1 ? node.lastChild : node.previousSibling
+      }
+
+      while (can_skip(node)) node = prev_elem(node, true)
+    }
+
+    if (!node) return
+    const nodes = shift ? [node].concat(focused) : [node]
+
+    while (node && +node.dataset.d < 1) {
+      nodes.unshift(node)
+      node = prev_elem(node)
+    }
+
+    const lower = +nodes[0].dataset.l
+    const upper = shift ? $input.upper : +nodes[0].dataset.u
+
+    return change_focus(focus, lower, upper, nodes)
+  }
+
+  function can_skip(node) {
+    return node ? +node.dataset.d < 1 : false
+  }
+
+  function move_right(shift = false) {
+    let node = next_elem(focused[focused.length - 1], true)
+
+    let max_scan = 4
+    let focus = l_focus
+
+    while (!node && max_scan > 0) {
+      max_scan -= 1
+
+      focus = (focus + 1) % zhtext.length
+      node = article.querySelector(`#L${focus} cv-line`).firstChild
+
+      while (node && node.nodeName != 'V-N') {
+        node = node.nodeType == 1 ? node.firstChild : node.nextSibling
+      }
+
+      while (can_skip(node)) node = next_elem(node, true)
+    }
+
+    if (!node) return
+
+    const nodes = shift ? focused.concat([node]) : [node]
+
+    while (can_skip(node)) {
+      nodes.push(node)
+      node = succ_elem(node)
+    }
+
+    const lower = shift ? $input.lower : +nodes[nodes.length - 1].dataset.l
+    const upper = +nodes[nodes.length - 1].dataset.u
+
+    return change_focus(focus, lower, upper, nodes)
+  }
+
+  // $: console.log($input)
+
   function handle_keydown(event) {
     if (article != document.activeElement || $config.reader == '1') return
 
     let focus = l_focus
 
     switch (event.key) {
+      case 'Enter':
+        event.preventDefault()
+        let dic = 1
+        if (focused.length == 1 && +focused[0].dataset.d % 2) dic = 0
+        return setTimeout(() => upsert.activate($input, dic), 10)
+
       case 'ArrowUp':
         event.preventDefault()
         focus = (focus - 1 + zhtext.length) % zhtext.length
@@ -163,67 +240,11 @@
 
       case 'ArrowLeft':
         event.preventDefault()
-        const prev = prev_elem(focused[0])
-
-        if (!prev) {
-          let step = 4
-
-          while (step > 0) {
-            focus = (focus - 1 + zhtext.length) % zhtext.length
-
-            let node = article.querySelector(`#L${focus}`)
-            while (node && node.nodeName != 'V-N') {
-              node = node.lastChild
-              while (node && node.nodeType != 1) node = node.previousSibling
-              // console.log(node)
-            }
-
-            if (node) {
-              while (+node.dataset.d < 2) {
-                const prev = prev_elem(node)
-                if (prev) node = prev
-                else break
-              }
-
-              const lower = +node.dataset.l
-              const upper = +node.dataset.u
-              return change_focus(focus, lower, upper, [node])
-            }
-
-            step -= 1
-          }
-
-          return
-        }
-
-        if (event.shiftKey) {
-          focused.unshift(prev)
-          const lower = +prev.dataset.l
-          return change_focus(l_focus, lower, $input.upper, focused)
-        } else {
-          const lower = +prev.dataset.l
-          const upper = +prev.dataset.u
-          return change_focus(l_focus, lower, upper, [prev])
-        }
+        return move_left(event.shiftKey)
 
       case 'ArrowRight':
         event.preventDefault()
-        const next = next_elem(focused[focused.length - 1])
-
-        if (!next) {
-          focus = (focus + 1) % zhtext.length
-          return change_focus(focus, 0, 1)
-        }
-
-        if (event.shiftKey) {
-          const nodes = focused.concat([next])
-          const upper = +next.dataset.u
-          return change_focus(l_focus, $input.lower, upper, nodes)
-        } else {
-          const lower = +next.dataset.l
-          const upper = +next.dataset.u
-          return change_focus(l_focus, lower, upper, [next])
-        }
+        return move_right(event.shiftKey)
     }
   }
 </script>
@@ -232,7 +253,6 @@
   <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
   <button data-kbd="z" on:click={() => config.set_reader(1)}>Z</button>
   <button data-kbd="g" on:click={() => config.set_reader(2)}>G</button>
-  <button data-kbd="x" on:click={() => upsert.activate($input, 0)}>X</button>
   <button data-kbd="c" on:click={() => upsert.activate($input, 1)}>C</button>
 </div>
 
@@ -242,7 +262,7 @@
   tabindex="-1"
   style="--textlh: {$config.textlh}%"
   bind:this={article}
-  on:blur={hide_cvmenu}
+  on:blur={hide_controls}
   on:mouseup={handle_mouse}>
   <header>
     <slot name="header">Dịch nhanh</slot>

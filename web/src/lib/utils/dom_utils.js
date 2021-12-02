@@ -72,50 +72,55 @@ function get_selected(range) {
   return nodes
 }
 
-function next_node(node) {
-  if (node.hasChildNodes()) return node.firstChild
+// function next_node(node) {
+//   if (node.hasChildNodes()) return node.firstChild
 
-  while (node && !node.nextSibling) node = node.parentNode
-  if (!node) return null
-  return node.nextSibling
+//   while (node && !node.nextElementSibling) node = node.parentNode
+//   if (!node) return null
+//   return node.nextSibling
+// }
+
+function next_node(node) {
+  if (node.firstChild) return node.firstChild
+
+  while (node) {
+    if (node.nextElementSibling) return node.nextElementSibling
+    else node = node.parentNode
+  }
+
+  return null
 }
 
-export function prev_elem(node, stop = 'CV-DATA') {
+export function prev_elem(node, skip = false) {
   if (!node) return
-
   const name = node.nodeName
 
-  while (node && !node.previousSibling) {
-    if (node.nodeName == stop) return null
-    else node = node.parentNode
+  while (!node.previousSibling) {
+    node = node.parentNode
+    if (node.nodeName == 'CV-DATA') return null
   }
 
   let prev = node.previousSibling
-  while (prev && prev.nodeType != 1) prev = prev.previousSibling
-
-  while (prev && (prev.nodeName != name || !prev.dataset.d)) {
-    prev = prev.lastChild
+  while (prev && prev.nodeName != name) {
+    prev = prev.nodeType == 1 ? prev.lastChild : prev.previousSibling
   }
 
-  return prev
+  return skip && prev && +prev.dataset.d == 0 ? prev_elem(prev) : prev
 }
 
-export function next_elem(node, stop = 'CV-DATA') {
+export function next_elem(node, skip = false) {
   if (!node) return
-
   const name = node.nodeName
 
-  while (node && !node.nextSibling) {
-    if (node.nodeName == stop) return null
-    else node = node.parentNode
+  while (!node.nextElementSibling) {
+    node = node.parentNode
+    if (node.nodeName == 'CV-DATA') return null
   }
 
   let next = node.nextSibling
-  while (next && next.nodeType != 1) next = next.nextSibling
-
-  while (next && (next.nodeName != name || !next.dataset.d)) {
-    next = next.firstChild
+  while (next && next.nodeName != name) {
+    next = next.nodeType == 1 ? next.firstChild : next.nextSibling
   }
 
-  return next
+  return skip && next && +next.dataset.d == 0 ? next_elem(next) : next
 }

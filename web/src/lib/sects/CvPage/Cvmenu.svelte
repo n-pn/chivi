@@ -27,7 +27,9 @@
         left: out_left - parent_rect.left,
       })
     },
-    deactivate: () => ctrl.set({ actived: false, top: 0, left: 0 }),
+    deactivate() {
+      ctrl.set({ actived: false, top: 0, left: 0 })
+    },
   }
 </script>
 
@@ -42,7 +44,7 @@
 {#if $ctrl.actived}
   <cv-menu style="--top: {$ctrl.top}px; --left: {$ctrl.left}px">
     <cv-item
-      data-kbd="↵"
+      data-kbd="x"
       data-tip="Sửa từ"
       tip-loc="bottom"
       on:click={() => upsert.activate($input, 0)}>
