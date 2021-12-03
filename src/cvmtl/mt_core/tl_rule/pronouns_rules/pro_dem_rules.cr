@@ -1,24 +1,38 @@
 module CV::TlRule
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
     case node
-    when .pro_zhe?, .pro_ji?, .pro_na1?
-      succ = heal_quanti!(succ)
-      node = fold!(node, succ, PosTag::ProDem, dic: 4) if succ.quantis?
+    when .pro_zhe?, .pro_na1?, .pro_ji?
+      quanti = heal_quanti!(succ)
+      succ = quanti.succ?
+    else
+      orig = node
+      node, quanti = split_pro_dem!(node)
     end
 
+    unless succ && !succ.pro_dems?
+      return node if orig
+      return node.set!("cái này", PosTag::Noun) if node.pro_zhe?
+      return node.set!("vậy", PosTag::Conjunct) if node.pro_na1?
+      return node
+    end
+
+    succ = fold_noun!(succ)
+    return orig || node unless succ.nouns?
+
+    succ = fold!(quanti, succ, succ.tag, dic: 3) if quanti
+
+    if node.pro_zhe? || node.pro_na1?
+      fold_swap!(node, succ, PosTag::NounPhrase, dic: 2)
+    else
+      fold_swap!(node, succ, PosTag::NounPhrase, dic: 2)
+    end
+  end
+
+  def fold_pro_dem_noun!(node : MtNode, succ : MtNode?)
     if (succ = node.succ?) && !succ.pro_dem?
       succ = scan_noun!(succ, prev: node)
       node = succ if succ.nouns?
     end
-
-    case node.tag
-    when .pro_zhe?
-      node.set!("cái này", PosTag::Noun)
-    when .pro_na1?
-      node.set!("vậy", PosTag::Conjunct)
-    end
-
-    node
   end
 
   # FIX_PRONOUNS = {
@@ -63,19 +77,26 @@ module CV::TlRule
     when .starts_with?("各")
       fold!(prev, node, node.tag, dic: 3)
     when .starts_with?("这"), .starts_with?("那")
-      head, tail = clean_pro_dem!(prev)
-      node.set_succ!(tail)
-      fold!(prev, tail, node.tag, dic: 3)
+      head, tail = split_pro_dem!(prev)
+
+      if tail
+        node.set_succ!(tail)
+        fold!(prev, tail, node.tag, dic: 3)
+      else
+        fold!(prev, head, node.tag, dic: 3)
+      end
     else
       fold_swap!(prev, node, node.tag, dic: 3)
     end
   end
 
-  def clean_pro_dem!(node : MtNode) : Tuple(MtNode, MtNode)
+  def split_pro_dem!(node : MtNode) : Tuple(MtNode, MtNode?)
     key = node.key[0].to_s
-    val = key == "这" ? "này" : "kia"
+    tag, val = map_pro_dem!(key)
 
-    tail = MtNode.new(key, val, PosTag::ProZhe, 1, node.idx)
+    return {node, nil} if val.empty?
+
+    tail = MtNode.new(key, val, tag, 1, node.idx)
 
     node.key = node.key[1..]
     node.val = node.key == "些" ? "những" : node.val.sub(" " + val, "")
@@ -84,5 +105,14 @@ module CV::TlRule
     node.idx += 1
 
     {node, tail}
+  end
+
+  def self.map_pro_dem!(key : String) : {PosTag, String}
+    case key
+    when "这" then {PosTag::ProZhe, "này"}
+    when "那" then {PosTag::ProNa1, "kia"}
+    when "几" then {PosTag::ProJi, "mấy"}
+    else          {PosTag::ProDem, ""}
+    end
   end
 end
