@@ -35,11 +35,10 @@ module CV::TlRule
 
     return fold_swap!(node, quanti, PosTag::ProDem, dic: 8) if quanti
 
-    case node
-    when .pro_zhe? then node.set!("cái này")
-    when .pro_na1? then node.set!("vậy")
-    else                node
-    end
+    return node.set!("cái này") if node.pro_zhe?
+    return node.set!("vậy") if node.pro_na1? && !node.succ?(&.maybe_verb?)
+
+    node
   end
 
   def fold_pro_dem_noun!(node : MtNode, succ : MtNode?)
