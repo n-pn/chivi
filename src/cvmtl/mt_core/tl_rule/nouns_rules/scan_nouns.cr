@@ -3,6 +3,9 @@ module CV::TlRule
     case head
     when .uniques?
       head = heal_uniques!(head)
+    when .popens?
+      head = fold_quoted!(head)
+      head = fold_noun!(head) if head.nouns?
     when .adjts?, .modifier?
       head = head.ajno? ? fold_ajno!(head) : fold_adjts!(head)
 
@@ -11,15 +14,17 @@ module CV::TlRule
         head = fold_adjt_noun!(head, noun, ude1)
       end
     when .numeric?
-      head = fold_numbers!(head) if head.numbers?
-
-      if !head.noun? && (succ = head.succ?) && succ.ends?
-        succ = scan_noun!(succ)
-        head = succ.nouns? ? fold_nquant_noun!(head, succ) : head
-      end
+      head = fold_number!(head)
     when .adverbs?
       head = fold_adverbs!(head)
       head = fold_head_ude1_noun!(head) if head.adjts? || head.verbs?
+    when .vmodal?
+      if vmodal_is_noun?(head)
+        head.tag = PosTag::Noun
+      else
+        head = heal_vmodal!(head)
+        head = fold_head_ude1_noun!(head) if head.verbs?
+      end
     when .verbs?
       head = head.veno? ? fold_veno!(head) : fold_verbs!(head)
       head = fold_head_ude1_noun!(head) if head.verbs?

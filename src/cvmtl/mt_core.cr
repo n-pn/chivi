@@ -36,7 +36,7 @@ class CV::MtCore
     return title_res if label.empty?
 
     title_res.prepend!(MtNode.new("", " - ", idx: label.size))
-    label_res = cv_title(label, mode: mode)
+    label_res = cv_title(label)
     label_res.concat!(title_res)
   end
 
@@ -44,7 +44,7 @@ class CV::MtCore
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
     offset_2 = offset + pre_zh.size + pad.size
 
-    res = title.empty? ? MtList.new : cv_plain(title, mode: mode, offset: offset_2)
+    res = title.empty? ? MtList.new : cv_plain(title, offset: offset_2)
 
     unless pre_zh.empty?
       res.prepend!(MtNode.new(pad, title.empty? ? "" : ": ", idx: offset + pre_zh.size))
@@ -56,7 +56,7 @@ class CV::MtCore
 
   def cv_plain(input : String, mode = 1, cap_first = true, offset = 0)
     list = tokenize(input.chars, offset: offset)
-    list.fix_grammar!(mode: mode)
+    list.fix_grammar!
     list.capitalize!(cap: cap_first)
     list.pad_spaces!
   end

@@ -63,7 +63,7 @@ class CV::MtList
     self
   end
 
-  def fix_grammar!(mode = 1)
-    TlRule.fix_grammar!(@head, mode: mode)
+  def fix_grammar!
+    TlRule.fix_grammar!(@head)
   end
 end

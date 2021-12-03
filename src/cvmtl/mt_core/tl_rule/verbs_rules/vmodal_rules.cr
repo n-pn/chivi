@@ -6,23 +6,23 @@ module CV::TlRule
     when .vm_hui?   then node = heal_vm_hui!(node, succ, nega)
     when .vm_xiang? then node = heal_vm_xiang!(node, succ, nega)
     else
-      if vmodal_is_noun?(node, "可能")
+      if vmodal_is_noun?(node)
         node.tag = PosTag::Noun
-        return fold_noun_left!(node)
       end
 
       node = fold!(nega, node, node.tag, dic: 6) if nega
     end
 
-    succ && succ.verb? ? fold!(node, succ, succ.tag, dic: 6) : node
+    return node unless succ && succ.verb?
+
+    succ = fold_verbs!(succ)
+    fold!(node, succ, succ.tag, dic: 6)
   end
 
-  def vmodal_is_noun?(node : MtNode, key : String)
+  def vmodal_is_noun?(node : MtNode)
     return false unless node.key == "可能"
-    return true if !(succ = node.succ?) || succ.ends?
-
-    # TODO: add more cases
-    node.prev?(&.ude1?)
+    return true unless succ = node.succ?
+    succ.ends? || succ.v_shi? || succ.v_you?
   end
 
   def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode

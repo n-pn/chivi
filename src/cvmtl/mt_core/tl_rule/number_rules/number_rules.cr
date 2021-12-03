@@ -1,4 +1,24 @@
 module CV::TlRule
+  def fold_number!(node : MtNode)
+    node = fold_numbers!(node) # if head.numbers?
+
+    case node
+    when .verbs? then return fold_verbs!(node)
+    when .time?
+      if (prev = node.prev?) && prev.time?
+        node = fold_swap!(prev, node, node.tag, dic: 4)
+      end
+    end
+
+    return node unless succ = node.succ?
+
+    succ = fold_noun!(succ, mode: 1)
+    node = fold_nquant_noun!(node, succ)
+
+    return node unless (succ = node.succ?) && succ.space?
+    fold_swap!(node, succ, PosTag::Space, dic: 3)
+  end
+
   def fold_numbers!(node : MtNode, prev : MtNode? = nil) : MtNode
     case node.tag
     when .ndigit?

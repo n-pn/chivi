@@ -52,7 +52,7 @@ module CV::TlRule
     when .veno?, .vintr?, .verb_object?,
          .time?, .place?, .space?,
          .pro_dem?, .modifier?,
-         .defn_phrase?, .prep_phrase?
+         .defn_phrase?, .prep_phrase?, .unkn?
       prev = fold!(prev, prev, PosTag::DefnPhrase, dic: 7)
       fold_swap!(prev, right, PosTag::NounPhrase, dic: 4)
     when .numeric?
@@ -65,8 +65,8 @@ module CV::TlRule
 
       case prev_2.tag
       when .nouns?
-        if (prev_4 = prev_2.prev?) && prev_4.pre_bei?
-          head = fold!(prev_4, prev, PosTag::DefnPhrase, dic: 8)
+        if (prev_3 = prev_2.prev?) && prev_3.pre_bei?
+          head = fold!(prev_3, prev, PosTag::DefnPhrase, dic: 8)
         else
           head = fold!(prev_2, prev, PosTag::DefnPhrase, dic: 9)
         end

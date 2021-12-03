@@ -4,8 +4,7 @@ module CV::TlRule
 
     if node.noun?
       node.val = MTL::AS_NOUNS.fetch(node.key, node.val)
-      node = fold_noun!(node)
-      fold_noun_left!(node)
+      fold_noun!(node)
     else
       fold_verbs!(node)
     end

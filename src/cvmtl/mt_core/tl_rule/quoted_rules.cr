@@ -1,19 +1,9 @@
 module CV::TlRule
-  def fold_puncts!(node : MtNode, mode = 1) : MtNode
-    case node.tag
-    when .quoteop?, .parenop?, .brackop?
-      node = fold_nested!(node, mode: mode)
-      node.nouns? ? fold_noun_left!(node, mode: mode) : node
-    when .titleop?
-      node = fold_ptitle!(node, mode: mode)
-
-      node.body? ? fold_noun_left!(node, mode: mode) : node
-    else
-      node # TODO
-    end
+  def fold_quoted!(node : MtNode) : MtNode
+    node.tag.titleop? ? fold_ptitle!(node) : fold_nested!(node)
   end
 
-  def fold_nested!(head : MtNode, mode = 1) : MtNode
+  def fold_nested!(head : MtNode) : MtNode
     end_tag, end_val = match_end(head.val[0])
 
     tail = head
@@ -22,9 +12,11 @@ module CV::TlRule
     end
 
     return head unless tail && tail != head.succ?
-    root = fold!(head, tail, tag: PosTag::Unkn, dic: 0)
 
-    fix_grammar!(root.body, mode, level: 1)
+    tag = head.prev?(&.ude1?) ? PosTag::NounPhrase : PosTag::Unkn
+    root = fold!(head, tail, tag: tag, dic: 0)
+
+    fix_grammar!(root.body, level: 1)
 
     succ = head.succ
     if succ.succ? == tail
@@ -46,7 +38,7 @@ module CV::TlRule
     end
   end
 
-  def fold_ptitle!(head : MtNode, mode = 1) : MtNode
+  def fold_ptitle!(head : MtNode) : MtNode
     return head unless start_key = head.key[0]?
     end_key = match_title_end(start_key)
 
@@ -59,7 +51,7 @@ module CV::TlRule
     return head unless tail && tail != head.succ?
     root = fold!(head, tail, PosTag::Nother, dic: 0)
 
-    fix_grammar!(head, mode)
+    fix_grammar!(head)
     root
   end
 
