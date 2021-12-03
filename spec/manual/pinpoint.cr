@@ -2,7 +2,7 @@ require "../../src/cvmtl/mt_core"
 
 GENERIC = CV::MtCore.generic_mtl("7zx48vye")
 
-inp = "大的那个是男款，女款则是很小的童装"
+inp = "而是他给卡帝亚买的。"
 res = GENERIC.cv_plain(inp)
 
 puts inp, res.inspect, res

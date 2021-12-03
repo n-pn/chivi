@@ -23,16 +23,9 @@ module CV::TlRule
       return fold_swap!(node, right, PosTag::NounPhrase, dic: 6)
     end
 
-    puts [verb, noun, right, right.succ?]
-
     case prev = verb.prev?
     when .nil?, .none?
-      if tail = find_verb_after(right)
-        puts tail
-        head = verb
-      else
-        puts "!"
-      end
+      head = verb if tail = find_verb_after(right)
     when .v_you?
       head = prev.center_noun? ? prev : verb
     when .v_shi?
@@ -51,7 +44,7 @@ module CV::TlRule
 
   def find_verb_after(right : MtNode)
     while right = right.succ?
-      puts ["find_verb", right]
+      # puts ["find_verb", right]
       return right if right.verbs?
       return nil unless right.adverbs? || right.comma? # || right.conjunct?
     end

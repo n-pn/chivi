@@ -73,12 +73,33 @@ module CV::TlRule
     case tail.tag
     when .verb?, .verb_object?
       if (succ.nouns? || succ.pro_per?)
-        # TODO: put node after tail
+        # TODO: put more block after verb
+
+        if node.key == "给"
+          swap = true
+          node.val = "cho"
+        end
+
         node = fold!(node, succ, PosTag::PrepPhrase, dic: 5)
+
         tail = fold_verbs!(tail)
-        return fold!(node, tail, tail.tag, dic: 6)
+
+        if tail.verb? && (tail_noun = tail.succ?) && !tail_noun.ends?
+          tail_noun = scan_noun!(tail_noun)
+
+          if tail_noun.nouns?
+            tail = fold!(tail, tail_noun, PosTag::VerbObject, dic: 8)
+          end
+        end
+
+        if swap
+          return fold_swap!(node, tail, tail.tag, dic: 6)
+        else
+          return fold!(node, tail, tail.tag, dic: 6)
+        end
       end
     when .uls?
+      # TODO
     end
 
     if tail.ude1? && (tail_2 = tail.succ?)
