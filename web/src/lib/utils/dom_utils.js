@@ -26,7 +26,7 @@ export function read_selection() {
   if (selection.isCollapsed) return [null]
 
   const range = get_selected(selection.getRangeAt(0))
-  selection.removeAllRanges()
+  // selection.removeAllRanges()
 
   const nodes = range.filter((x) => x.nodeName == 'V-N' || x.nodeName == 'Z-N')
   if (nodes.length == 0) return [null]

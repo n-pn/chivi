@@ -58,7 +58,7 @@ module CV::TlRule
     when .numeric?
       fold_swap!(prev, right, PosTag::NounPhrase, dic: 4)
     when .nouns?, .pro_per?
-      return fold_noun_ude1!(prev, prev, right)
+      return fold_noun_ude1!(prev, ude1, right)
     when .verb?
       return right unless prev_2 = prev.prev?
       # puts [prev_2, prev]

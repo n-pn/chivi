@@ -8,6 +8,8 @@ module CV::TlRule
     ude1.val = "của"
     noun = fold_swap!(noun, ude1, PosTag::DefnPhrase, dic: 2)
 
+    puts [noun, ude1, right]
+
     dic = noun.prev?(&.verbs?) ? 6 : 4
     fold_swap!(noun, right, PosTag::NounPhrase, dic: dic)
   end
