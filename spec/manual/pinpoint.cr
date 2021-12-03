@@ -1,8 +1,8 @@
 require "../../src/cvmtl/mt_core"
 
-GENERIC = CV::MtCore.generic_mtl("7zx48vye")
+GENERIC = CV::MtCore.generic_mtl("various")
 
-inp = "利用系统将桑卓玛的安魂灯换了出来"
+inp = " 让纯洁的处女骑"
 res = GENERIC.cv_plain(inp)
 
 puts inp, res.inspect, res

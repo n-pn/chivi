@@ -21,6 +21,7 @@ module CV::TlRule
     return adjt unless noun.nouns? # ude1 || noun.noun? || noun.place?
 
     if ude1
+      ude1.val = ""
       adjt = fold!(adjt, ude1, PosTag::DefnPhrase, 1)
     elsif adjt.adjt? && adjt.key.size == 1
       return adjt
