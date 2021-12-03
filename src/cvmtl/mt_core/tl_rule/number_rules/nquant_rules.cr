@@ -1,4 +1,4 @@
-require "../mt_util"
+require "../../mt_util"
 
 module CV::TlRule
   def fold_year!(prev : MtNode, node : MtNode, appro : Int32 = 0)
