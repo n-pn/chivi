@@ -45,6 +45,7 @@ module CV::TlRule
     return head unless head.verbs? && (succ = head.succ?) && !succ.ends?
     # FIXME: move this to fold_verb?
     succ = scan_noun!(succ)
+
     fold!(head, succ, PosTag::VerbObject, dic: 8)
   end
 

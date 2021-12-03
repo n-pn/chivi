@@ -81,8 +81,7 @@ module CV::TlRule
         prev.succ = tail
       end
     else
-      head.succ = tail
-      tail.prev = head
+      head.fix_succ!(tail)
     end
 
     head.fix_prev!(nil)

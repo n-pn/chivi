@@ -110,7 +110,9 @@ module CV::TlRule
     return adjt if !noun
 
     noun = ude1 ? scan_noun!(noun) : fold_noun!(noun, mode: 1)
-    return adjt unless noun.nouns?
+    unless noun.nouns?
+      return adjt unless ude1 && noun.pronouns?
+    end
 
     if ude1
       ude1.val = ""

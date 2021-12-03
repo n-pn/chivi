@@ -33,7 +33,7 @@ module CV::TlRule
       end
     end
 
-    return fold_swap!(node, quanti, PosTag::ProDem, dic: 3) if quanti
+    return fold_swap!(node, quanti, PosTag::ProDem, dic: 8) if quanti
 
     case node
     when .pro_zhe? then node.set!("cái này")
@@ -104,20 +104,34 @@ module CV::TlRule
   end
 
   def split_pro_dem!(node : MtNode) : Tuple(MtNode, MtNode?)
-    key = node.key[0].to_s
-    tag, val = map_pro_dem!(key)
+    if qtnoun = node.body?
+      prodem = qtnoun.succ
 
-    return {node, nil} if val.empty?
+      # swap back
 
-    prodem = MtNode.new(key, val, tag, 1, node.idx)
+      prodem.fix_prev!(node.prev?)
+      qtnoun.fix_succ!(node.succ?)
+      prodem.fix_succ!(qtnoun)
 
-    qt_key = node.key[1..]
-    qt_val = node.key == "些" ? "những" : node.val.sub(" " + val, "")
-    qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, node.idx + 1)
+      # puts prodem.prev?(&.succ?) == prodem
+      # puts qtnoun.succ?(&.prev?) == qtnoun
+    else
+      node.key, qt_key = node.key.split("", 2)
+      node.tag, pro_val = map_pro_dem!(node.key)
 
-    prodem.fix_prev!(node.prev?)
-    qtnoun.fix_succ!(node.succ?)
-    prodem.fix_succ!(qtnoun)
+      return {node, nil} if pro_val.empty?
+
+      qt_val = qt_key == "些" ? "những" : node.val.sub(" " + pro_val, "")
+      node.val = pro_val
+
+      qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
+
+      prodem = node
+      prodem.set_succ!(qtnoun)
+
+      # puts prodem.prev?(&.succ?) == prodem
+      # puts qtnoun.succ?(&.prev?) == qtnoun
+    end
 
     {prodem, qtnoun}
   end
@@ -126,8 +140,8 @@ module CV::TlRule
     case key
     when "这" then {PosTag::ProZhe, "này"}
     when "那" then {PosTag::ProNa1, "kia"}
-    when "几" then {PosTag::ProJi, "mấy"}
-    else          {PosTag::ProDem, ""}
+      # when '几' then {PosTag::ProJi, "mấy"}
+    else {PosTag::ProDem, ""}
     end
   end
 end
