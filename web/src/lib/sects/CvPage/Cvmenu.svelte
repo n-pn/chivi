@@ -39,6 +39,8 @@
   import { ctrl as tlspec } from '$parts/Tlspec.svelte'
 
   import SIcon from '$atoms/SIcon.svelte'
+
+  // $: console.log($input)
 </script>
 
 {#if $ctrl.actived}
@@ -47,7 +49,7 @@
       data-kbd="x"
       data-tip="Sửa từ"
       tip-loc="bottom"
-      on:click={() => upsert.activate($input, 0)}>
+      on:click|capture={() => upsert.activate($input, 0)}>
       <SIcon name="pencil" />
     </cv-item>
 
@@ -55,7 +57,7 @@
       data-kbd="q"
       data-tip="Tra từ"
       tip-loc="bottom"
-      on:click={() => lookup.activate($input, $lookup.enabled)}>
+      on:click|capture={() => lookup.activate($input, $lookup.enabled)}>
       <SIcon name="search" />
     </cv-item>
 
@@ -63,7 +65,7 @@
       data-kbd="p"
       data-tip="Báo lỗi"
       tip-loc="bottom"
-      on:click={() => tlspec.activate($input, true)}>
+      on:click|capture={() => tlspec.activate($input, true)}>
       <SIcon name="flag" />
     </cv-item>
   </cv-menu>

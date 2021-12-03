@@ -60,10 +60,6 @@
     let [nodes, lower, upper] = read_selection()
 
     switch (target.nodeName) {
-      case 'CV-ITEM':
-      case 'CV-MENU':
-        return
-
       case 'V-N':
       case 'Z-N':
         if (nodes && nodes.length > 1 && nodes.includes(target)) break
@@ -79,8 +75,11 @@
       case 'CV-DATA':
         l_focus = _index
 
-      default:
+      case 'ARTICLE':
         hide_controls()
+
+      default:
+        return
     }
 
     change_focus(_index, lower, upper, nodes)
