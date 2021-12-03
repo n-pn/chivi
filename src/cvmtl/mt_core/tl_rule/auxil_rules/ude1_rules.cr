@@ -12,6 +12,9 @@ module CV::TlRule
         # puts [prev, succ, ude1]
         # handle adjt + ude1 + verb
         return fold!(prev, succ, succ.tag, dic: 9)
+      elsif prev.verb? && succ.adjts?
+        # ude3 => ude1 grammar error
+        return fold!(prev, succ, prev.tag, dic: 8)
       end
     end
 
