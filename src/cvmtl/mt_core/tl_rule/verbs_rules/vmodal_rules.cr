@@ -28,7 +28,7 @@ module CV::TlRule
   def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
     nega = prev.try(&.adv_bu?)
 
-    if is_skill_succ?(succ) || is_skill_prev?(prev.try(&.prev?))
+    if is_learnable_skill?(succ)
       node.val = "biết"
       prev ? fold!(prev, node, node.tag, dic: 6) : node
     else
@@ -37,25 +37,22 @@ module CV::TlRule
     end
   end
 
-  SKILLS = {"跳舞", "做饭", "开车", "游泳", "唱歌"}
+  private def is_learnable_skill?(node : MtNode?) : Bool
+    return true unless node
 
-  private def is_skill_succ?(succ : MtNode?) : Bool
-    return true unless succ
-    return true if succ.nouns? || succ.exmark? || succ.qsmark?
+    case node.tag
+    when .exmark?, .qsmark?, .nouns? then true
+    when .adverbs?                   then false
+    when .verb?, .verb_object?
+      key, val = node.key.split("", 2)
 
-    case succ.key[0]?
-    when '打', '说', '做' then true
+      if vals = MTL::VERB_SEPARATE[key]?
+        return true if val.empty? || vals[val]?
+      end
+
+      false
     else
-      SKILLS.includes?(succ.key)
-    end
-  end
-
-  private def is_skill_prev?(prev : MtNode?) : Bool
-    return true unless prev
-
-    case prev.key
-    when "都", "也" then true
-    else               false
+      false
     end
   end
 
