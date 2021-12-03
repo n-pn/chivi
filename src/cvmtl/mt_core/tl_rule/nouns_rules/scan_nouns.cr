@@ -16,16 +16,11 @@ module CV::TlRule
       head = fold_head_ude1_noun!(fold_adverbs!(head))
     when .verbs?
       head = fold_head_ude1_noun!(fold_verbs!(head))
-    when .adjts?
-      head = fold_head_ude1_noun!(fold_adjts!(head))
-    when .modifier?
-      return head unless succ = head.succ?
-
-      case succ
-      when .ude1?
-        head = fold_head_ude1_noun!(head)
-      else
-        head = fold_swap!(head, scan_noun!(succ), PosTag::NounPhrase, dic: 4)
+    when .adjts?, .modifier?
+      head = head.ajno? ? fold_ajno!(head) : fold_adjts!(head)
+      unless head.nouns? || !(succ = head.succ?)
+        noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
+        head = fold_adjt_noun!(head, noun, ude1)
       end
     end
 

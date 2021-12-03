@@ -2,7 +2,7 @@ module CV::TlRule
   def heal_auxils!(node : MtNode, mode = 1) : MtNode
     case node.tag
     when .ule?  then heal_ule!(node)  # 了
-    when .ude1? then heal_ude1!(node) # 的
+    when .ude1? then fold_ude1!(node) # 的
     when .ude2? then heal_ude2!(node) # 地
     when .ude3? then heal_ude3!(node) # 得
     else             node
@@ -19,28 +19,6 @@ module CV::TlRule
     return node if prev.tag.adjts? && prev.prev?(&.tag.ends?)
 
     node.set!(val: "")
-  end
-
-  def heal_ude1!(node : MtNode) : MtNode
-    node.val = ""
-    return node unless prev = node.prev?
-
-    case prev
-    when .popens?     then return node
-    when prev.puncts? then return node.set!("đích")
-    when .names?, .pro_per?
-      return node if (succ = node.succ?) && !succ.pstops?
-    else
-      # TODO: handle more case with prev
-      return node
-    end
-
-    prev.prev? do |x|
-      return node if x.verbs? || x.preposes? || x.nouns? || x.pronouns?
-    end
-
-    node.val = "của"
-    fold_swap!(prev, node, PosTag::DefnPhrase, dic: 8)
   end
 
   def heal_ude2!(node : MtNode) : MtNode

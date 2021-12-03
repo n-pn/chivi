@@ -54,7 +54,11 @@ module CV::TlRule
     when .nmorp?
       fold!(node, succ, node.tag, dic: 4)
     when .ptitle?
-      fold!(node, succ, PosTag::Person, dic: 3)
+      if node.names?
+        fold!(node, succ, PosTag::Person, dic: 3)
+      else
+        fold_swap!(node, succ, PosTag::Person, dic: 3)
+      end
     when .names?
       fold!(node, succ, succ.tag, dic: 4)
     when .place?
@@ -67,14 +71,17 @@ module CV::TlRule
   end
 
   def noun_can_combine?(prev : MtNode?, succ : MtNode?) : Bool
+    while prev && (prev.nquants? || prev.pronouns?)
+      prev = prev.prev?
+    end
+
     return true unless prev && succ
-    # return true unless prev.ends?
 
     case succ
     when .maybe_adjt?
       false
     when .maybe_verb?
-      prev.verbs? && is_linking_verb?(prev, succ)
+      prev.preposes? || prev.verbs? && is_linking_verb?(prev, succ)
     else
       true
     end

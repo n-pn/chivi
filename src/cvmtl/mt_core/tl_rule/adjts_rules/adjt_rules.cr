@@ -104,23 +104,6 @@ module CV::TlRule
 
   def fold_adj_adv!(node : MtNode, prev = node.prev?)
     return node unless prev && prev.adverbs?
-
-    case prev.key
-    when "最", "那么", "这么", "非常"
-      fold_swap!(prev, node, PosTag::Adjt, dic: 4)
-    when "不太"
-      head = MtNode.new("不", "không", PosTag::AdvBu, 1, prev.idx)
-      tail = MtNode.new("太", "lắm", PosTag::Adverb, 1, prev.idx + 1)
-
-      head.fix_prev!(prev.prev?)
-      tail.fix_succ!(node.succ?)
-      node.fix_prev!(head)
-      node.fix_succ!(tail)
-
-      fold!(head, tail, PosTag::Aform, dic: 4)
-    else
-      prev.val = "rất" if prev.key == "挺"
-      fold!(prev, node, PosTag::Aform, dic: 5)
-    end
+    fold_adverb_node!(prev, node, tag: PosTag::Aform, dic: 4)
   end
 end

@@ -33,7 +33,7 @@ module CV::TlRule
         node = fold_swap!(prev, node, PosTag::NounPhrase, dic: 8)
       when .ude1?
         break if mode < 1
-        node = fold_ude1!(node, prev)
+        node = fold_noun_ude1!(node, prev)
       else
         break
       end

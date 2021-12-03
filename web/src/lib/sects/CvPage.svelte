@@ -272,11 +272,11 @@
     {#each cv_lines as input, index (index)}
       <cv-data
         id="L{index}"
-        class:debug={$config.render == 2}
+        class:debug={$config.render == 1}
         class:focus={index == l_focus}
         on:mouseenter={() => (l_hover = index)}>
         {#if $config.showzh}
-          <Zhline ztext={zhtext[index]} plain={$config.render == 1} />
+          <Zhline ztext={zhtext[index]} plain={$config.render < 0} />
         {/if}
         <Cvline
           {input}

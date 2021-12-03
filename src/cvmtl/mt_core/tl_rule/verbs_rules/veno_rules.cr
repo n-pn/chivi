@@ -26,18 +26,12 @@ module CV::TlRule
         #   unless node.succ?(&.ude1?)
         #     return node.set!(PosTag::Noun)
         #   end
+      when .ude1?
+        node.set!(PosTag::Noun) if node.succ?(&.ends?)
       end
     end
 
-    return node unless succ = node.succ?
-
-    case succ
-    when .ends?
-      node.set!(PosTag::Noun)
-    when .auxils?, .vdir?
-      node.set!(PosTag::Verb)
-    else
-      node
-    end
+    node.tag = PosTag::Verb if node.succ? { |x| x.auxils? || x.vdir? }
+    node
   end
 end

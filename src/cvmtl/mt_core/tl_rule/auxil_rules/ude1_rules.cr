@@ -1,5 +1,27 @@
 module CV::TlRule
-  def fold_ude1!(node : MtNode, prev = node.prev) : MtNode
+  def fold_ude1!(node : MtNode, prev = node.prev?, succ = node.succ?) : MtNode
+    node.val = ""
+    return node unless prev
+
+    case prev
+    when .popens?     then return node
+    when prev.puncts? then return node.set!("đích")
+    when .names?, .pro_per?
+      return node if (succ = node.succ?) && !succ.pstops?
+    else
+      # TODO: handle more case with prev
+      return node
+    end
+
+    prev.prev? do |x|
+      return node if x.verbs? || x.preposes? || x.nouns? || x.pronouns?
+    end
+
+    node.val = "của"
+    fold_swap!(prev, node, PosTag::DefnPhrase, dic: 8)
+  end
+
+  def fold_noun_ude1!(node : MtNode, prev = node.prev) : MtNode
     node.succ? { |succ| return node if succ.penum? || succ.concoord? }
     return node unless prev_2 = prev.prev?
 
