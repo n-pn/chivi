@@ -2,7 +2,7 @@
 <script context="module">
   import { writable } from 'svelte/store'
   import { dict_upsert, dict_search } from '$api/dictdb_api.js'
-  import Input, { input } from './Upsert/Input.svelte'
+  import Hanzi, { input } from './Upsert/Hanzi.svelte'
 
   export const ctrl = {
     ...writable({ tab: 0, ztext: '' }),
@@ -125,7 +125,7 @@
         </svelte:fragment>
       </Gmenu>
 
-      <Input pinyin={pinyins[key]} bind:output={key} />
+      <Hanzi pinyin={pinyins[key]} bind:output={key} />
 
       <button
         type="button"
