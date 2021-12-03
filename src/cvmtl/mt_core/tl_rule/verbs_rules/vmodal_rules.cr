@@ -44,6 +44,7 @@ module CV::TlRule
     when .exmark?, .qsmark?, .nouns? then true
     when .adverbs?                   then false
     when .verb?, .verb_object?
+      return false if node.key.size < 2
       key, val = node.key.split("", 2)
 
       if vals = MTL::VERB_SEPARATE[key]?

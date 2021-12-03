@@ -86,5 +86,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
       }
     end
+  rescue err
+    puts err.inspect_with_backtrace
+    halt! 500, "Có lỗi từ hệ thống"
   end
 end
