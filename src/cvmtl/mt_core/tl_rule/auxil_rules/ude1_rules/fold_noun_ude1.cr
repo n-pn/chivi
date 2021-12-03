@@ -1,8 +1,8 @@
 module CV::TlRule
   def fold_noun_ude1!(noun : MtNode, ude1 : MtNode, right : MtNode) : MtNode
     if (prev = noun.prev?) && is_verb_clause?(prev, right)
-      noun = fold!(prev, ude1, PosTag::DefnPhrase, dic: 9)
-      return fold_swap!(noun, right, PosTag::NounPhrase, dic: 6)
+      prev = fold!(prev, ude1, PosTag::DefnPhrase, dic: 9)
+      return fold_swap!(prev, right, PosTag::NounPhrase, dic: 6)
     end
 
     ude1.val = "của"

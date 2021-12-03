@@ -84,8 +84,8 @@ module CV::TlRule
     if tail.ude1? && (tail_2 = tail.succ?)
       tail_2 = scan_noun!(tail_2)
 
-      if (tail_3 = tail_2.succ?) && (tail_3.adverbs? || tail_3.verbs?)
-        succ = fold_ude1!(tail_2)
+      if (tail_3 = tail_2.succ?) && (tail_3.maybe_verb?)
+        succ = fold_ude1_left!(tail_2)
         node = fold!(node, succ, PosTag::PrepPhrase, dic: 7)
 
         tail = tail_3.adverbs? ? fold_adverbs!(tail_3) : fold_verbs!(tail_3)
@@ -93,7 +93,7 @@ module CV::TlRule
       end
 
       node = fold!(node, succ, PosTag::PrepPhrase, dic: 5)
-      return fold_ude1!(tail_2)
+      return fold_ude1_left!(tail_2)
     end
 
     fold!(node, succ, PosTag::PrepPhrase, dic: 5)

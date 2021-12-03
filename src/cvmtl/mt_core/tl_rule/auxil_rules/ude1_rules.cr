@@ -2,10 +2,9 @@ module CV::TlRule
   def fold_ude1!(node : MtNode, prev = node.prev?, succ = node.succ?) : MtNode
     return node unless prev
 
-    puts [node, prev, succ]
-
     if succ && !succ.ends?
       succ = scan_noun!(succ)
+
       if succ.nouns?
         return fold_ude1_left!(succ, node)
       elsif prev.adjt? && succ.verbs?
