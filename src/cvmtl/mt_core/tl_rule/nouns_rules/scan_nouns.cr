@@ -41,17 +41,11 @@ module CV::TlRule
       head = fold_pro_dem_noun!(prev, head)
     end
 
-    if head.center_noun?
-      return head unless (succ = head.succ?) && succ.space?
-      fold_swap!(head, succ, PosTag::Place, dic: 3)
-    elsif head.verbs?
-      return head unless (succ = head.succ?) && !succ.ends?
-      # FIXME: move this to fold_verb?
-      succ = scan_noun!(succ)
-      fold!(head, succ, PosTag::VerbObject, dic: 8)
-    else
-      head
-    end
+    return fold_noun_space!(head) if head.center_noun?
+    return head unless head.verbs? && (succ = head.succ?) && !succ.ends?
+    # FIXME: move this to fold_verb?
+    succ = scan_noun!(succ)
+    fold!(head, succ, PosTag::VerbObject, dic: 8)
   end
 
   def fold_head_ude1_noun!(head : MtNode)

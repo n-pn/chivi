@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_noun_ude1!(noun : MtNode, ude1 : MtNode, right : MtNode) : MtNode
-    puts [noun, ude1, right]
+    # puts [noun, ude1, right]
 
     if (prev = noun.prev?) && prev.verbs?
       fold_verb_noun_ude1!(prev, noun, ude1, right)
@@ -25,7 +25,7 @@ module CV::TlRule
       return fold_swap!(node, right, PosTag::NounPhrase, dic: 6)
     end
 
-    puts [verb, noun, ude1, right]
+    # puts [verb, noun, ude1, right]
 
     case prev = verb.prev?
     when .nil?, .none?

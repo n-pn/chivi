@@ -38,9 +38,7 @@ module CV::TlRule
         node = fold!(node, succ, PosTag::Adjt, dic: 4)
       when .ajno?
         return fold_swap!(node, succ, PosTag::Noun, dic: 7)
-      when .noun?
-        break unless node.key.size == 1 && !prev # or special case
-        return fold_swap!(node, succ, PosTag::NounPhrase, dic: 4)
+      when .noun? then return fold_adjt_noun!(node, succ)
       when .vpro?, .verb?
         break unless node.key.size == 1 && !prev
         succ = fold_verbs!(succ)
@@ -127,8 +125,7 @@ module CV::TlRule
       noun = fold_swap!(adjt, noun, noun.tag, dic: 6)
     end
 
-    return noun unless (succ = noun.succ?) && noun.space?
-    fold_swap!(noun, succ, PosTag::Space, dic: 3)
+    fold_noun_space!(noun)
   end
 
   def do_not_swap?(key : String)

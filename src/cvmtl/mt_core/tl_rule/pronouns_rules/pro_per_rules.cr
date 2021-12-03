@@ -23,10 +23,10 @@ module CV::TlRule
 
   def fold_pro_per_noun!(node : MtNode, succ : MtNode) : MtNode
     case succ.tag
+    when .space?
+      fold_noun_space!(node, succ)
     when .place?
       fold_swap!(node, succ, PosTag::DefnPhrase, dic: 4)
-    when .space?
-      fold_swap!(node, succ, PosTag::Place, dic: 4)
     when .ptitle?
       fold_swap!(node, succ, succ.tag, dic: 4)
     when .names?

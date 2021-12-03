@@ -23,14 +23,16 @@ module CV::TlRule
       # TODO handle vyou
       return node
     when .v_shang?, .v_xia?
+      # puts [node, succ, "fold_noun_space"]
+
       if succ
         case succ.tag
         when .ule? then return fold_verbs!(node)
         end
       end
 
-      if node.prev.nouns?
-        return fold_noun_space!(node.prev, node)
+      if (prev = node.prev?) && prev.nouns?
+        return fold_noun_space!(node, prev)
       else
         return fold_verbs!(node)
       end

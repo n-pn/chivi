@@ -4,6 +4,7 @@ module CV::TlRule
 
     while node.nouns?
       break unless succ = node.succ?
+      # puts [node, succ]
 
       case succ
       when .uniques?
@@ -31,6 +32,8 @@ module CV::TlRule
       when .penum?, .concoord?
         return node unless fold = fold_noun_concoord!(succ, node)
         node = fold
+      when .space?
+        return mode == 0 ? fold_noun_space!(node, succ) : node
       when .nouns?
         return node unless fold = fold_noun_noun!(node, succ, mode: mode)
         node = fold
@@ -65,8 +68,8 @@ module CV::TlRule
       fold!(node, succ, PosTag::NounPhrase, dic: 4)
     when .place?
       fold_swap!(node, succ, PosTag::DefnPhrase, dic: 3)
-    when .space?
-      fold_swap!(node, succ, PosTag::Space, dic: 3) if mode == 0
+      # when .space?
+      #   fold_noun_space!(node, succ) if mode == 0
     else
       fold_swap!(node, succ, PosTag::Noun, dic: 3)
     end
