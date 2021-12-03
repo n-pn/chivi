@@ -1,28 +1,41 @@
 module CV::TlRule
   def fold_ude1!(node : MtNode, prev = node.prev?, succ = node.succ?) : MtNode
-    node.val = ""
     return node unless prev
 
-    case prev
-    when .popens?     then return node
-    when prev.puncts? then return node.set!("đích")
-    when .names?, .pro_per?
-      return node if (succ = node.succ?) && !succ.pstops?
-    else
-      # TODO: handle more case with prev
-      return node
+    puts [node, prev, succ]
+
+    if succ && !succ.ends?
+      succ = scan_noun!(succ)
+      if succ.nouns?
+        return fold_ude1_left!(succ, node)
+      elsif prev.adjt? && succ.verbs?
+        # handle adjt + ude1 + verb
+        return fold!(node, succ, succ.tag, dic: 9)
+      end
     end
 
-    prev.prev? do |x|
-      return node if x.verbs? || x.preposes? || x.nouns? || x.pronouns?
+    node.val = ""
+    heal_ude!(node, prev)
+  end
+
+  def heal_ude!(node : MtNode, prev : MtNode) : MtNode
+    case prev
+    when .popens? then return node
+    when .puncts? then return node.set!("đích")
+    when .names?, .pro_per?
+      prev.prev? do |x|
+        return node if x.verbs? || x.preposes? || x.nouns? || x.pronouns?
+      end
+    else
+      # TODO: handle verbs?, adjts?
+      return node
     end
 
     node.val = "của"
     fold_swap!(prev, node, PosTag::DefnPhrase, dic: 8)
   end
 
-  def fold_noun_ude1!(node : MtNode, prev = node.prev) : MtNode
-    node.succ? { |succ| return node if succ.penum? || succ.concoord? }
+  def fold_ude1_left!(node : MtNode, prev = node.prev) : MtNode
     return node unless prev_2 = prev.prev?
 
     prev.val = ""
@@ -46,14 +59,7 @@ module CV::TlRule
     when .numeric?
       fold_swap!(prev_2, node, PosTag::NounPhrase, dic: 4)
     when .nouns?, .pro_per?
-      if (prev_3 = prev_2.prev?) && is_verb_clause?(prev_3, node)
-        prev = fold!(prev_3, prev, PosTag::DefnPhrase, dic: 9)
-        return fold_swap!(prev, node, PosTag::NounPhrase, dic: 6)
-      end
-
-      prev.val = "của"
-      dic = prev_2.prev?(&.verbs?) ? 6 : 4
-      return fold_swap!(prev_2, node, PosTag::NounPhrase, dic: dic)
+      return fold_noun_ude1!(prev_2, prev, node)
     when .verb?
       return node unless prev_3 = prev_2.prev?
       # puts [prev_3, prev_2]
@@ -75,37 +81,5 @@ module CV::TlRule
     else
       node
     end
-  end
-
-  def is_verb_clause?(head : MtNode, tail : MtNode)
-    if head.v_you?
-      # TODO: check more conditions
-      return false
-    end
-
-    return false unless head.verb? || head.verb_phrase?
-
-    by_succ = check_vclause_by_succ?(tail.succ?)
-    return by_succ == 2 unless prev = head.prev?
-
-    case prev.tag
-    when .v_shi?, .verb?, .numeric?, .pro_dems?
-      true
-    when .nouns?, .comma?, .pro_per?, .popens?
-      false
-    else
-      prev.key == "在" ? true : by_succ > 1
-    end
-  end
-
-  # 0 : not a clause, 1: decide by prev values, 2: is a clause!
-  def check_vclause_by_succ?(succ : MtNode?)
-    return 1 unless succ
-    return 2 if succ.v_shi? || succ.v_you? || succ.vmodals?
-    return 1 if succ.verbs? || succ.adverbs? || succ.preposes?
-
-    # TODO: check more here
-    return 0 if succ.comma?
-    succ.ends? ? 1 : 0
   end
 end

@@ -3,6 +3,13 @@ module CV::TlRule
     case head
     when .uniques?
       head = heal_uniques!(head)
+    when .adjts?, .modifier?
+      head = head.ajno? ? fold_ajno!(head) : fold_adjts!(head)
+
+      unless head.nouns? || !(succ = head.succ?)
+        noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
+        head = fold_adjt_noun!(head, noun, ude1)
+      end
     when .nouns?
       head = fold_noun!(head, mode: 1) # fold noun but do not consume penum
       head = head.nouns? ? head : scan_noun!(head)
@@ -16,12 +23,6 @@ module CV::TlRule
       head = fold_head_ude1_noun!(fold_adverbs!(head))
     when .verbs?
       head = fold_head_ude1_noun!(fold_verbs!(head))
-    when .adjts?, .modifier?
-      head = head.ajno? ? fold_ajno!(head) : fold_adjts!(head)
-      unless head.nouns? || !(succ = head.succ?)
-        noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
-        head = fold_adjt_noun!(head, noun, ude1)
-      end
     end
 
     if prev && prev.pro_dems? && head.nouns?

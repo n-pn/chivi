@@ -17,7 +17,7 @@ module CV::TlRule
       when .maybe_adjt?
         return node unless node.prev?(&.nouns?)
         succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
-        return fold!(node, succ, PosTag::Aform, dic: 6)
+        node.noun? ? fold!(node, succ, PosTag::Aform, dic: 6) : node
       when .middot?
         break unless (succ_2 = succ.succ?) && succ_2.human?
         return fold!(node, succ_2, PosTag::Person, dic: 3)
