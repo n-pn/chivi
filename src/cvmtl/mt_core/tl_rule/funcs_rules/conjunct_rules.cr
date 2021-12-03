@@ -25,10 +25,10 @@ module CV::TlRule
     end
 
     if node.key == "和"
-      if (tail = succ.succ?) && tail.maybe_verb?
+      if (verb = find_verb_after(succ)) && !verb.uniques?
         node = fold!(node, succ, PosTag::PrepPhrase, dic: 5)
-        tail = fold_verbs!(tail)
-        fold!(node, tail, tail.tag, dic: 6)
+        verb = fold_verbs!(verb)
+        fold!(node, verb, verb.tag, dic: 6)
 
         # TOD: fold as subject + verb structure?
         return

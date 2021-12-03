@@ -63,8 +63,12 @@ module CV::TlRule
     if succ
       if succ.maybe_verb?
         node.val = "muốn"
-      elsif succ.human? && succ.succ?(&.maybe_verb?)
-        node.set!("nhớ", PosTag::Verb)
+      elsif succ.human?
+        if succ.succ?(&.maybe_verb?)
+          node.set!("muốn")
+        else
+          node.set!("nhớ", PosTag::Verb)
+        end
       end
     end
 

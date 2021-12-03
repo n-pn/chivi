@@ -12,7 +12,7 @@ module CV::MTL::ApplyCap
   end
 
   def capitalize!(cap : Bool = false) : Bool
-    return cap if @val == " "
+    return cap if @val.blank?
 
     case @tag
     when .none?   then cap

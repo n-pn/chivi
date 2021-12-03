@@ -38,7 +38,7 @@ class CV::MtNode
   end
 
   def blank?
-    @key.empty? || @val == " "
+    @key.empty? || @val.blank?
   end
 
   def prev?

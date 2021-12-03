@@ -21,9 +21,11 @@ module CV::TlRule
         end
 
         if node.pro_zhe? || node.pro_na1?
-          return fold_swap!(node, succ, PosTag::NounPhrase, dic: 2)
+          node = fold_swap!(node, succ, PosTag::NounPhrase, dic: 2)
+
+          return node
         else
-          return fold_swap!(node, succ, PosTag::NounPhrase, dic: 2)
+          return fold!(node, succ, PosTag::NounPhrase, dic: 2)
         end
       end
     end
