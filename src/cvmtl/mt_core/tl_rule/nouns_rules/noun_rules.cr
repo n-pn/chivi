@@ -32,7 +32,8 @@ module CV::TlRule
         return node unless fold = fold_noun_concoord!(succ, node)
         node = fold
       when .nouns?
-        fold_noun_noun!(node, succ)
+        return node unless fold = fold_noun_noun!(node, succ)
+        node = fold
       when .suf_verb?
         return fold_suf_verb!(node, succ)
       when .suf_nouns?
@@ -58,6 +59,8 @@ module CV::TlRule
       fold!(node, succ, succ.tag, dic: 4)
     when .place?
       fold_swap!(node, succ, PosTag::DefnPhrase, dic: 3)
+    when .space?
+      fold_swap!(node, succ, PosTag::Space, dic: 3)
     else
       fold_swap!(node, succ, PosTag::Noun, dic: 3)
     end

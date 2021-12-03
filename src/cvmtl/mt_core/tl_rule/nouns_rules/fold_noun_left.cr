@@ -10,16 +10,12 @@ module CV::TlRule
 
     while prev = node.prev?
       case prev
-      when .penum?, .concoord?
-        return fold_noun_concoord!(prev, succ: node) || node
       when .numeric?
         break if node.veno? || node.ajno?
         node = fold_nquant_noun!(prev, node)
         flag = 1
       when .pro_ji?
         return fold!(prev, node, PosTag::NounPhrase, dic: 3)
-      when .pro_dems?
-        return fold_pro_dem_noun!(prev, node)
       when .pro_ints?
         return fold_什么_noun!(prev, node) if prev.key == "什么"
         return fold_swap!(prev, node, PosTag::NounPhrase, dic: 3)
