@@ -8,15 +8,23 @@ module CV::TlRule
         succ = quanti.succ?
       end
     else
-      node, quanti = split_pro_dem!(node)
-      orig = node if quanti
+      prodem, quanti = split_pro_dem!(node)
+
+      if quanti
+        orig = node
+        node = prodem
+      end
     end
 
-    if succ && !succ.pro_dems?
+    if succ && !(succ.pro_dems? || succ.v_shi? || succ.v_you?)
       succ = scan_noun!(succ)
 
       if succ.nouns? || succ.nquants?
-        succ = fold!(quanti, succ, succ.tag, dic: 3) if quanti
+        if quanti
+          quanti.val = "" if quanti.key == "个"
+          succ = fold!(quanti, succ, succ.tag, dic: 3)
+        end
+
         if node.pro_zhe? || node.pro_na1?
           return fold_swap!(node, succ, PosTag::NounPhrase, dic: 2)
         else
@@ -25,10 +33,12 @@ module CV::TlRule
       end
     end
 
+    return orig || fold_swap!(node, quanti, PosTag::ProDem, dic: 3) if quanti
+
     case node
     when .pro_zhe? then node.set!("cái này")
     when .pro_na1? then node.set!("vậy")
-    else                orig || node
+    else                node
     end
   end
 
@@ -81,13 +91,13 @@ module CV::TlRule
     when .starts_with?("各")
       fold!(prev, node, node.tag, dic: 3)
     when .starts_with?("这"), .starts_with?("那")
-      head, tail = split_pro_dem!(prev)
+      prodem, qtnoun = split_pro_dem!(prev)
 
-      if tail
-        node.set_succ!(tail)
-        fold!(prev, tail, node.tag, dic: 3)
+      if qtnoun
+        node.set_succ!(prodem)
+        fold!(qtnoun, prodem, node.tag, dic: 3)
       else
-        fold!(prev, head, node.tag, dic: 3)
+        fold!(prev, node, node.tag, dic: 3)
       end
     else
       fold_swap!(prev, node, node.tag, dic: 3)
@@ -100,15 +110,17 @@ module CV::TlRule
 
     return {node, nil} if val.empty?
 
-    tail = MtNode.new(key, val, tag, 1, node.idx)
+    prodem = MtNode.new(key, val, tag, 1, node.idx)
 
-    node.key = node.key[1..]
-    node.val = node.key == "些" ? "những" : node.val.sub(" " + val, "")
+    qt_key = node.key[1..]
+    qt_val = node.key == "些" ? "những" : node.val.sub(" " + val, "")
+    qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, node.idx + 1)
 
-    node.tag = PosTag::Qtnoun
-    node.idx += 1
+    prodem.fix_prev!(node.prev?)
+    qtnoun.fix_succ!(node.succ?)
+    prodem.fix_succ!(qtnoun)
 
-    {node, tail}
+    {prodem, qtnoun}
   end
 
   def self.map_pro_dem!(key : String) : {PosTag, String}
