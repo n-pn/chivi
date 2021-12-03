@@ -98,8 +98,9 @@ module CV::TlRule
   def fold_modifier!(node : MtNode, succ = node.succ?, nega : MtNode? = nil)
     node = fold!(nega, node, node.tag, dic: 4) if nega
 
-    # TODO: combine with nouns
-    node
+    return node unless succ = node.succ?
+    succ.set!(PosTag::Noun) if succ.veno? || succ.ajno?
+    fold_adjt_noun!(node, node.succ?)
   end
 
   def fold_adj_adv!(node : MtNode, prev = node.prev?)

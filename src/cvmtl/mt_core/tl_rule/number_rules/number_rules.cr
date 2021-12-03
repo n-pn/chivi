@@ -10,10 +10,10 @@ module CV::TlRule
       end
     end
 
-    return node unless succ = node.succ?
+    return node unless (succ = node.succ?) && succ.nouns?
 
     succ = fold_noun!(succ, mode: 1)
-    node = fold_nquant_noun!(node, succ)
+    node = fold_nquant_noun!(node, succ) if succ.nouns?
 
     return node unless (succ = node.succ?) && succ.space?
     fold_swap!(node, succ, PosTag::Space, dic: 3)

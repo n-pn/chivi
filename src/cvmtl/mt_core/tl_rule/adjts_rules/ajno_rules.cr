@@ -17,9 +17,8 @@ module CV::TlRule
   def fold_adjt_noun!(adjt : MtNode, noun : MtNode?, ude1 : MtNode? = nil)
     return adjt if !noun
 
-    noun = scan_noun!(noun)
-
-    return adjt unless noun.nouns? || noun.nquants?
+    noun = ude1 ? scan_noun!(noun) : fold_noun!(noun, mode: 1)
+    return adjt unless noun.nouns?
 
     if ude1
       ude1.val = ""
@@ -28,6 +27,8 @@ module CV::TlRule
       return adjt
     end
 
-    fold_swap!(adjt, noun, noun.tag, dic: 6)
+    noun = fold_swap!(adjt, noun, noun.tag, dic: 6)
+    return noun unless (succ = noun.succ?) && noun.space?
+    fold_swap!(noun, succ, PosTag::Space, dic: 3)
   end
 end

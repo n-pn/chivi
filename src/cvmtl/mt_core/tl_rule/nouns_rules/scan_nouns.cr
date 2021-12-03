@@ -1,5 +1,7 @@
 module CV::TlRule
   def scan_noun!(head : MtNode, mode = 0, prev : MtNode? = nil)
+    # puts ["scan_noun", head]
+
     case head
     when .uniques?
       head = heal_uniques!(head)

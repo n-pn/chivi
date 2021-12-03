@@ -42,6 +42,11 @@ struct CV::PosTag
   end
 
   @[AlwaysInline]
+  def times?
+    @pos.times?
+  end
+
+  @[AlwaysInline]
   def names?
     @pos.names?
   end

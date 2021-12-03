@@ -71,7 +71,7 @@ module CV::TlRule
           head = fold!(prev_2, prev, PosTag::DefnPhrase, dic: 9)
         end
         fold_swap!(head, right, PosTag::NounPhrase, dic: 9)
-      when .nquants?
+      when .quantis?, .nquants?
         prev = fold_swap!(prev, right, PosTag::NounPhrase, dic: 8)
         fold!(prev_2, prev, PosTag::NounPhrase, 3)
       else

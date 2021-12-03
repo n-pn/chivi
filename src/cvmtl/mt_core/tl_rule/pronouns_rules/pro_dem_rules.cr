@@ -33,7 +33,7 @@ module CV::TlRule
       end
     end
 
-    return orig || fold_swap!(node, quanti, PosTag::ProDem, dic: 3) if quanti
+    return fold_swap!(node, quanti, PosTag::ProDem, dic: 3) if quanti
 
     case node
     when .pro_zhe? then node.set!("cái này")
@@ -92,7 +92,6 @@ module CV::TlRule
       fold!(prev, node, node.tag, dic: 3)
     when .starts_with?("这"), .starts_with?("那")
       prodem, qtnoun = split_pro_dem!(prev)
-
       if qtnoun
         node.set_succ!(prodem)
         fold!(qtnoun, prodem, node.tag, dic: 3)

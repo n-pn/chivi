@@ -7,14 +7,14 @@ struct CV::PosTag
 
   # # 量词 - quantifier - lượng từ
   QT_POS = Pos::Quantis | Pos::Numeric | Pos::Contws
-  Qtnoun = new(Tag::Qtnoun, QT_POS)
-  Qttime = new(Tag::Qttime, QT_POS)
+  Qtnoun = new(Tag::Qtnoun, QT_POS | Pos::Nouns)
+  Qttime = new(Tag::Qttime, QT_POS | Pos::Nouns | Pos::Times)
   Qtverb = new(Tag::Qtverb, QT_POS)
 
   # 数量词 - numeral and quantifier - số lượng từ
   NQ_POS = Pos::Nquants | Pos::Numeric | Pos::Contws
-  Nqnoun = new(Tag::Nqnoun, NQ_POS)
-  Nqtime = new(Tag::Nqtime, NQ_POS)
+  Nqnoun = new(Tag::Nqnoun, NQ_POS | Pos::Nouns)
+  Nqtime = new(Tag::Nqtime, NQ_POS | Pos::Nouns | Pos::Times)
   Nqverb = new(Tag::Nqverb, NQ_POS)
   Nqiffy = new(Tag::Nqiffy, NQ_POS) # unknown nquants
 

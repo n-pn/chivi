@@ -15,6 +15,7 @@ module CV::TlRule
       when .veno?     then node = fold_veno!(node)
       when .adverbs?  then node = fold_adverbs!(node)
       when .ajad?     then node = fold_ajad!(node)
+      when .modifier? then node = fold_modifier!(node)
       when .adjts?
         node = fold_adjts!(node, prev: nil)
         next unless node.nouns?
