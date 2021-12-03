@@ -1,51 +1,4 @@
 module CV::TlRule
-  def fold_pronouns!(pronoun : MtNode, succ = pronoun.succ?) : MtNode
-    return pronoun unless succ
-
-    case pronoun.tag
-    when .pro_per?  then fold_pro_per!(pronoun, succ)
-    when .pro_dems? then fold_pro_dems!(pronoun, succ)
-    else                 pronoun
-    end
-  end
-
-  def fold_pro_per!(node : MtNode, succ : MtNode) : MtNode
-    case succ.tag
-    when .space?
-      fold_swap!(node, succ, PosTag::Place, dic: 4)
-    when .place?
-      fold_swap!(node, succ, PosTag::DefnPhrase, dic: 4)
-    when .ptitle?
-      return node unless should_not_combine_pro_per?(node.prev?, succ.succ?)
-      fold_swap!(node, succ, succ.tag, dic: 4)
-      # when .names?
-      #   succ = fold_noun!(succ)
-      #   return node unless succ.names?
-
-      #   # TODO: add pseudo node
-      #   node.val = "của #{node.val}"
-      #   fold_swap!(node, succ, succ.tag, dic: 4)
-    when .penum?, .concoord?
-      return node unless (succ_2 = succ.succ?) && nouns_can_group?(node, succ_2)
-      succ = heal_concoord!(succ) if succ.concoord?
-      fold!(node, succ_2, tag: succ_2.tag, dic: 3)
-    else
-      # TODO: handle special cases
-      node
-    end
-  end
-
-  def fold_pro_per!(node : MtNode, succ = node.succ?) : MtNode
-    succ ? fold_pro_per!(node, succ) : node
-  end
-
-  private def should_not_combine_pro_per?(prev : MtNode?, succ : MtNode?)
-    return false unless prev && succ
-    return false unless prev.verbs?
-
-    succ.verbs? || succ.adverbs? && succ.succ?(&.verbs?)
-  end
-
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
     case node
     when .pro_zhe?, .pro_ji?, .pro_na1?
@@ -110,7 +63,7 @@ module CV::TlRule
     when .starts_with?("各")
       fold!(prev, node, node.tag, dic: 3)
     when .starts_with?("这"), .starts_with?("那")
-      head, tail = clean_pro_per!(prev)
+      head, tail = clean_pro_dem!(prev)
       node.set_succ!(tail)
       fold!(prev, tail, node.tag, dic: 3)
     else
@@ -118,7 +71,7 @@ module CV::TlRule
     end
   end
 
-  def clean_pro_per!(node : MtNode) : Tuple(MtNode, MtNode)
+  def clean_pro_dem!(node : MtNode) : Tuple(MtNode, MtNode)
     key = node.key[0].to_s
     val = key == "这" ? "này" : "kia"
 
