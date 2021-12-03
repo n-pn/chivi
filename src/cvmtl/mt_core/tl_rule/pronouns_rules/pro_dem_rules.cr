@@ -8,12 +8,7 @@ module CV::TlRule
         succ = quanti.succ?
       end
     else
-      prodem, quanti = split_pro_dem!(node)
-
-      if quanti
-        orig = node
-        node = prodem
-      end
+      node, quanti = split_pro_dem!(node) if node.key.size > 1
     end
 
     if succ && !(succ.pro_dems? || succ.v_shi? || succ.v_you?)
@@ -117,7 +112,6 @@ module CV::TlRule
     else
       node.key, qt_key = node.key.split("", 2)
       node.tag, pro_val = map_pro_dem!(node.key)
-
       return {node, nil} if pro_val.empty?
 
       qt_val = qt_key == "些" ? "những" : node.val.sub(" " + pro_val, "")
