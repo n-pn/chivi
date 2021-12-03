@@ -2,29 +2,33 @@ module CV::TlRule
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
     case node
     when .pro_zhe?, .pro_na1?, .pro_ji?
-      quanti = heal_quanti!(succ)
-      succ = quanti.succ?
+      succ = heal_quanti!(succ)
+      if succ.quantis?
+        quanti = succ
+        succ = quanti.succ?
+      end
     else
-      orig = node
       node, quanti = split_pro_dem!(node)
+      orig = node if quanti
     end
 
-    unless succ && !succ.pro_dems?
-      return node if orig
-      return node.set!("cái này", PosTag::Noun) if node.pro_zhe?
-      return node.set!("vậy", PosTag::Conjunct) if node.pro_na1?
-      return node
+    if succ && !succ.pro_dems?
+      succ = scan_noun!(succ)
+
+      if succ.nouns? || succ.nquants?
+        succ = fold!(quanti, succ, succ.tag, dic: 3) if quanti
+        if node.pro_zhe? || node.pro_na1?
+          return fold_swap!(node, succ, PosTag::NounPhrase, dic: 2)
+        else
+          return fold_swap!(node, succ, PosTag::NounPhrase, dic: 2)
+        end
+      end
     end
 
-    succ = fold_noun!(succ)
-    return orig || node unless succ.nouns?
-
-    succ = fold!(quanti, succ, succ.tag, dic: 3) if quanti
-
-    if node.pro_zhe? || node.pro_na1?
-      fold_swap!(node, succ, PosTag::NounPhrase, dic: 2)
-    else
-      fold_swap!(node, succ, PosTag::NounPhrase, dic: 2)
+    case node
+    when .pro_zhe? then node.set!("cái này")
+    when .pro_na1? then node.set!("vậy")
+    else                orig || node
     end
   end
 

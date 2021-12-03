@@ -10,19 +10,22 @@ module CV::TlRule
         noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
         head = fold_adjt_noun!(head, noun, ude1)
       end
+    when .numeric?
+      head = fold_numbers!(head) if head.numbers?
+
+      if !head.noun? && (succ = head.succ?) && succ.ends?
+        succ = scan_noun!(succ)
+        head = succ.nouns? ? fold_nquant_noun!(head, succ) : head
+      end
+    when .adverbs?
+      head = fold_adverbs!(head)
+      head = fold_head_ude1_noun!(head) if head.adjts? || head.verbs?
+    when .verbs?
+      head = head.veno? ? fold_veno!(head) : fold_verbs!(head)
+      head = fold_head_ude1_noun!(head) if head.verbs?
     when .nouns?
       head = fold_noun!(head, mode: 1) # fold noun but do not consume penum
       head = head.nouns? ? head : scan_noun!(head)
-    when .numeric?
-      head = fold_numbers!(head)
-      return head unless !head.noun? && (succ = head.succ?) && !succ.ends?
-
-      succ = scan_noun!(succ)
-      head = succ.nouns? ? fold_nquant_noun!(head, succ) : head
-    when .adverbs?
-      head = fold_head_ude1_noun!(fold_adverbs!(head))
-    when .verbs?
-      head = fold_head_ude1_noun!(fold_verbs!(head))
     end
 
     if prev && prev.pro_dems? && head.nouns?

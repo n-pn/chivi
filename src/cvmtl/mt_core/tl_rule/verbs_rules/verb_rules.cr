@@ -83,7 +83,7 @@ module CV::TlRule
       return verb unless (succ = verb.succ?) && succ.numeric?
 
       if is_pre_appro_num?(verb)
-        succ = fold_numbers!(succ) if succ.numbers?
+        succ = fold_numbers!(succ) if succ.numeric?
         return fold!(verb, succ, succ.tag, dic: 4)
       end
 

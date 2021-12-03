@@ -22,10 +22,10 @@ module CV::TlRule
         #   if (succ = node.succ?) && !(succ.nouns? || succ.pronouns?)
         #     return node.set!(PosTag::Noun)
         #   end
-        # when .pro_dem?
-        #   unless node.succ?(&.ude1?)
-        #     return node.set!(PosTag::Noun)
-        #   end
+      when .pro_dems?
+        unless node.succ?(&.ude1?)
+          return node.set!(PosTag::Noun)
+        end
       when .ude1?
         node.set!(PosTag::Noun) if node.succ?(&.ends?)
       end
