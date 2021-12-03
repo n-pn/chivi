@@ -1,28 +1,25 @@
 module CV::TlRule
-  def nouns_can_group?(left : MtNode, right : MtNode)
-    case left.tag
-    when .human? then right.human?
-    when .noun?  then right.noun? || right.pro_dem?
-    else              right.tag == left.tag
-    end
-  end
-
   def can_combine_adjt?(left : MtNode, right : MtNode?)
     return right.adjts?
   end
 
-  def heal_concoord!(node : MtNode)
+  def fold_adjt_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)
+    return unless prev && succ
+
+    unless succ.adjts?
+      return
+      # succ = scan_adjt!(succ)
+      # return unless succ.adjts?
+    end
+
     node.val = "và" if node.key == "和"
-    node
+    fold!(prev, succ, tag: PosTag::Aform, dic: 4)
   end
 
-  def fold_noun_penum!(prev : MtNode, node : MtNode, succ = node.succ?)
-  end
+  def fold_noun_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)
+    return unless prev && succ
 
-  def fold_noun_concoord!(prev : MtNode, node : MtNode, succ = node.succ?)
-    return unless succ
-
-    unless can_group?(prev, succ)
+    unless similar_tag?(prev, succ)
       succ = scan_noun!(succ)
       return unless succ.nouns?
     end
@@ -43,7 +40,7 @@ module CV::TlRule
     fold!(prev, succ, tag: PosTag::Nform, dic: 4)
   end
 
-  def can_group?(left : MtNode, right : MtNode)
+  def similar_tag?(left : MtNode, right : MtNode)
     case left.tag
     when .nform? then true
     when .human? then right.human?

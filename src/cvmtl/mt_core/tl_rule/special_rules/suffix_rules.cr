@@ -1,4 +1,7 @@
 module CV::TlRule
+  def fold_suffixes!(node : MtNode, succ : MtNode) : MtNode
+  end
+
   def fold_suf_noun!(node : MtNode, succ : MtNode) : MtNode
     case succ.key
     when "们" then succ.val = "các"

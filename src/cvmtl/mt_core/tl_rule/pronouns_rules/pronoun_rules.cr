@@ -8,11 +8,4 @@ module CV::TlRule
     else                 pronoun
     end
   end
-
-  private def should_not_combine_pro_per?(prev : MtNode?, succ : MtNode?)
-    return false unless prev && succ
-    return false unless prev.verbs?
-
-    succ.verbs? || succ.adverbs? && succ.succ?(&.verbs?)
-  end
 end

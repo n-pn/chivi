@@ -69,9 +69,8 @@ module CV::TlRule
         node = fold_adj_adv!(node, prev)
         return fold_suf_verb!(node, succ)
       when .penum?, .concoord?
-        break unless (succ_2 = succ.succ?) && can_combine_adjt?(node, succ_2)
-        heal_concoord!(succ) if succ.concoord?
-        node = fold!(node, succ_2, PosTag::Aform, dic: 4)
+        break unless fold = fold_adjt_concoord!(succ, prev: node)
+        node = fold
       when .adv_bu?
         break unless (succ_2 = succ.succ?)
 

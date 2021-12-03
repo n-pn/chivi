@@ -9,7 +9,7 @@ export const config = create_config_store('_pref', {
   ftsize: 3,
   ftface: 1,
   textlh: 150,
-  reader: 0,
+  render: 0,
   showzh: false,
 })
 

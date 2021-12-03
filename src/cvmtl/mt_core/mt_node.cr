@@ -113,8 +113,11 @@ class CV::MtNode
   end
 
   def maybe_verb? : Bool
-    return true if @tag.verbs?
-    @tag.adverbs? && @succ.try(&.maybe_verb?) || false
+    @tag.verbs? || @tag.adverbs? && @succ.try(&.maybe_verb?) || false
+  end
+
+  def maybe_adjt? : Bool
+    @tag.adjts? || @tag.adverbs? && @succ.try(&.maybe_adjt?) || false
   end
 
   include MTL::Serialize
