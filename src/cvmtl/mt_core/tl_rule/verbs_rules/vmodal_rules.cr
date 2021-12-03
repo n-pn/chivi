@@ -61,23 +61,13 @@ module CV::TlRule
 
   def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     if succ
-      if succ_is_verb?(succ)
+      if succ.maybe_verb?
         node.val = "muốn"
-      elsif succ.nouns? || succ.pronouns?
-        unless succ_is_verb?(succ.succ?)
-          node.val = "nhớ"
-          node.tag = PosTag::Verb
-        end
+      elsif succ.human? && succ.succ?(&.maybe_verb?)
+        node.set!("nhớ", PosTag::Verb)
       end
     end
 
     nega ? fold!(nega, node, node.tag, dic: 2) : node
-  end
-
-  private def succ_is_verb?(node : MtNode?) : Bool
-    return false unless node
-
-    node = fold_adverbs!(node) if node.adverbs?
-    node.verbs?
   end
 end
