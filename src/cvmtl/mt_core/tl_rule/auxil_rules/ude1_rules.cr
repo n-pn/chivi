@@ -6,7 +6,7 @@ module CV::TlRule
     if succ && !succ.ends?
       succ = scan_noun!(succ)
 
-      if succ.nouns?
+      if succ.nouns? || succ.pronouns?
         return fold_ude1_left!(succ, ude1)
       elsif prev.adjt? && succ.verbs?
         # handle adjt + ude1 + verb
@@ -43,17 +43,18 @@ module CV::TlRule
     when .ajad?
       prev.val = "thông thường" if prev.key == "一般"
       fold_swap!(prev, right, PosTag::NounPhrase, dic: 4)
-    when .adjts?
-      if (prev_2 = prev.prev?) && prev_2.noun?
-        prev = fold!(prev_2, prev, PosTag::DefnPhrase, dic: 8)
-      end
-
-      fold_swap!(prev, right, PosTag::NounPhrase, dic: 4)
     when .veno?, .vintr?, .verb_object?,
          .time?, .place?, .space?,
          .pro_dem?, .modifier?,
          .defn_phrase?, .prep_phrase?, .unkn?
-      prev = fold!(prev, prev, PosTag::DefnPhrase, dic: 7)
+      prev = fold!(prev, ude1, PosTag::DefnPhrase, dic: 7)
+
+      fold_swap!(prev, right, PosTag::NounPhrase, dic: 4)
+    when .adjts?
+      # if (prev_2 = prev.prev?) && prev_2.noun?
+      #   prev = fold!(prev_2, prev, PosTag::DefnPhrase, dic: 8)
+      # end
+
       fold_swap!(prev, right, PosTag::NounPhrase, dic: 4)
     when .numeric?
       fold_swap!(prev, right, PosTag::NounPhrase, dic: 4)
