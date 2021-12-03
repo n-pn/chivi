@@ -45,39 +45,4 @@ module CV::TlRule
     node = fold!(head, ude1, PosTag::DefnPhrase)
     fold_swap!(node, right, PosTag::NounPhrase, dic: 6)
   end
-
-  def find_verb_after(right : MtNode)
-    while right = right.succ?
-      # puts ["find_verb", right]
-      return right if right.verbs?
-      return nil unless right.adverbs? || right.comma? # || right.conjunct?
-    end
-  end
-
-  # def is_verb_clause?(head : MtNode, tail : MtNode)
-  #   return false unless head.verb? || head.verb_phrase?
-
-  #   by_succ = check_vclause_by_succ?(tail.succ?)
-  #   return by_succ == 2 unless prev = head.prev?
-
-  #   case prev.tag
-  #   when .v_shi?, .verb?, .numeric?, .pro_dems?
-  #     true
-  #   when .nouns?, .comma?, .pro_per?, .popens?
-  #     false
-  #   else
-  #     prev.key == "在" ? true : by_succ > 1
-  #   end
-  # end
-
-  # # 0 : not a clause, 1: decide by prev values, 2: is a clause!
-  # def check_vclause_by_succ?(succ : MtNode?)
-  #   return 1 unless succ
-  #   return 2 if succ.v_shi? || succ.v_you? || succ.vmodals?
-  #   return 1 if succ.verbs? || succ.adverbs? || succ.preposes?
-
-  #   # TODO: check more here
-  #   return 0 if succ.comma?
-  #   succ.ends? ? 1 : 0
-  # end
 end
