@@ -22,7 +22,7 @@ module CV::TlRule
         #     return node.set!(PosTag::Noun)
         #   end
       when .pro_dems?
-        unless node.succ?(&.ude1?)
+        unless node.succ?(&.nouns?)
           return node.set!(PosTag::Noun)
         end
       when .ude1?

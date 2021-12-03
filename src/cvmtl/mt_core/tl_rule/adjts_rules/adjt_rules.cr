@@ -107,4 +107,31 @@ module CV::TlRule
     return node unless prev && prev.adverbs?
     fold_adverb_node!(prev, node, tag: PosTag::Aform, dic: 4)
   end
+
+  def fold_adjt_noun!(adjt : MtNode, noun : MtNode?, ude1 : MtNode? = nil)
+    return adjt if !noun
+
+    noun = ude1 ? scan_noun!(noun) : fold_noun!(noun, mode: 1)
+    return adjt unless noun.nouns?
+
+    if ude1
+      ude1.val = ""
+      adjt = fold!(adjt, ude1, PosTag::DefnPhrase, 1)
+    elsif adjt.adjt? && adjt.key.size == 1
+      return adjt
+    end
+
+    if adjt.modifier? && do_not_swap?(adjt.key)
+      noun = fold!(adjt, noun, noun.tag, dic: 7)
+    else
+      noun = fold_swap!(adjt, noun, noun.tag, dic: 6)
+    end
+
+    return noun unless (succ = noun.succ?) && noun.space?
+    fold_swap!(noun, succ, PosTag::Space, dic: 3)
+  end
+
+  def do_not_swap?(key : String)
+    {"原"}.includes?(key)
+  end
 end

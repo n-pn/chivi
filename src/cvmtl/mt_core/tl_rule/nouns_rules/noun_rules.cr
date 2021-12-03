@@ -54,13 +54,15 @@ module CV::TlRule
     when .nmorp?
       fold!(node, succ, node.tag, dic: 4)
     when .ptitle?
-      if node.names?
+      if node.names? || node.ptitle?
         fold!(node, succ, PosTag::Person, dic: 3)
       else
         fold_swap!(node, succ, PosTag::Person, dic: 3)
       end
     when .names?
       fold!(node, succ, succ.tag, dic: 4)
+    when .times?
+      fold!(node, succ, PosTag::NounPhrase, dic: 4)
     when .place?
       fold_swap!(node, succ, PosTag::DefnPhrase, dic: 3)
     when .space?

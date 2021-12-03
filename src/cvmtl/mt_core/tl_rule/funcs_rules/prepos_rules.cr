@@ -104,6 +104,7 @@ module CV::TlRule
 
     if tail.ude1? && (tail_2 = tail.succ?)
       tail_2 = scan_noun!(tail_2)
+      # puts [node, succ, tail, tail_2, "prepos"]
 
       if (tail_3 = tail_2.succ?) && (tail_3.maybe_verb?)
         succ = fold_ude1_left!(tail_2, tail)

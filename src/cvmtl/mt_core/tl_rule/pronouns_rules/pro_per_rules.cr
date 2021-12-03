@@ -4,11 +4,14 @@ module CV::TlRule
   end
 
   def fold_pro_per!(node : MtNode, succ : MtNode) : MtNode
+    # puts [node, succ, "proper"]
+
     case succ.tag
     when .concoord?, .penum?
       fold_noun_concoord!(succ, node) || node
-    when .nouns?, .numbers?
+    when .nouns?, .numbers?, .pro_per?, .pro_dem?
       succ = scan_noun!(succ)
+
       return node unless succ.nouns?
       return node unless noun_can_combine?(node.prev?, succ.succ?)
       fold_pro_per_noun!(node, succ)

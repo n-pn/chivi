@@ -71,12 +71,13 @@ module CV::TlRule
     node.val = "vậy" if !nega && succ.ends? && node.key == "也"
 
     case succ.tag
-    when .veno?
-      succ.tag = PosTag::Verb
-      fold_verbs!(succ, prev: node)
+    when .vmodals?
+      heal_vmodal!(succ, nega: node)
     when .verbs?
+      succ.tag = PosTag::Verb if succ.veno? || succ.vead?
       fold_verbs!(succ, prev: node)
     when .adjts?
+      succ.tag = PosTag::Adjt if succ.ajno? || succ.ajad?
       fold_adjts!(succ, prev: node)
     when .adv_bu?
       succ = fold_adv_bu!(succ)

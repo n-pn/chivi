@@ -60,23 +60,7 @@ module CV::TlRule
     when .nouns?, .pro_per?
       return fold_noun_ude1!(prev, ude1, right)
     when .verb?
-      return right unless prev_2 = prev.prev?
-      # puts [prev_2, prev]
-
-      case prev_2.tag
-      when .nouns?
-        if (prev_3 = prev_2.prev?) && prev_3.pre_bei?
-          head = fold!(prev_3, prev, PosTag::DefnPhrase, dic: 8)
-        else
-          head = fold!(prev_2, prev, PosTag::DefnPhrase, dic: 9)
-        end
-        fold_swap!(head, right, PosTag::NounPhrase, dic: 9)
-      when .quantis?, .nquants?
-        prev = fold_swap!(prev, right, PosTag::NounPhrase, dic: 8)
-        fold!(prev_2, prev, PosTag::NounPhrase, 3)
-      else
-        right
-      end
+      return fold_verb_ude1!(prev, ude1, right)
     else
       right
     end

@@ -5,6 +5,8 @@ module CV::TlRule
     case head
     when .uniques?
       head = heal_uniques!(head)
+    when .pronouns?
+      head = fold_pronouns!(head)
     when .popens?
       head = fold_quoted!(head)
       head = fold_noun!(head) if head.nouns?
