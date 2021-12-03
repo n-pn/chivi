@@ -9,8 +9,9 @@ module CV::TlRule
       if succ.nouns? || succ.pronouns?
         return fold_ude1_left!(succ, ude1)
       elsif prev.adjt? && succ.verbs?
+        # puts [prev, succ, ude1]
         # handle adjt + ude1 + verb
-        return fold!(ude1, succ, succ.tag, dic: 9)
+        return fold!(prev, succ, succ.tag, dic: 9)
       end
     end
 

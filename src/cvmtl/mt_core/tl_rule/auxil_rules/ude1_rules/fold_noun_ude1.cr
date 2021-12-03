@@ -2,7 +2,7 @@ module CV::TlRule
   def fold_noun_ude1!(noun : MtNode, ude1 : MtNode, right : MtNode) : MtNode
     # puts [noun, ude1, right]
 
-    if (prev = noun.prev?) && prev.verbs?
+    if (prev = noun.prev?) && prev.verbs? && prev.key[-1]? != '着'
       fold_verb_noun_ude1!(prev, noun, ude1, right)
     else
       fold_noun_ude1_noun!(noun, ude1, right)
@@ -26,6 +26,7 @@ module CV::TlRule
     end
 
     # puts [verb, noun, ude1, right]
+    # puts [verb.key]
 
     case prev = verb.prev?
     when .nil?, .none?
