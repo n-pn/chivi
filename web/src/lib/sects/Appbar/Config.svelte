@@ -8,7 +8,11 @@
   const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora']
 
   // const textlhs = [150, 150, 150, 150]
-  const renders = ['Thường', 'Zen', 'Dev']
+  const renders = [
+    ['Thường', 0],
+    ['Zen', -1],
+    ['Dev', 1],
+  ]
 </script>
 
 <script>
@@ -109,7 +113,7 @@
   <config-item>
     <field-label class="small">Chế độ:</field-label>
     <field-input>
-      {#each renders as label, value}
+      {#each renders as [label, value]}
         <label class:_active={value == $config.render}>
           <input
             type="radio"
