@@ -81,7 +81,7 @@ module CV::TlRule
       fold_adjts!(succ, prev: node)
     when .adv_bu?
       succ = fold_adv_bu!(succ)
-      fold!(node, succ, succ.tag, dic: 3)
+      fold!(node, succ, succ.tag, dic: 2)
     when .space?
       return node unless node.key = "最"
       return fold_swap!(node, succ, succ.tag, dic: 7)

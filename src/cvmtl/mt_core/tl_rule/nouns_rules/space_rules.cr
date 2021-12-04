@@ -1,8 +1,7 @@
 module CV::TlRule
   def fold_space!(node : MtNode) : MtNode
     if (prev = node.prev?) && (prev.nouns? || prev.pro_per?)
-      node = fold_noun_space!(prev, node)
-      return fold_noun_left!(node)
+      return fold_noun_space!(prev, node)
     end
 
     case node.key

@@ -3,16 +3,17 @@ module CV::TlRule
     return right.adjts?
   end
 
-  def fold_adjt_concoord!(node : MtNode, prev = node.prev?, succ = node.succ?)
-    return unless prev && succ
-
-    unless succ.adjts?
-      return
-      # succ = scan_adjt!(succ)
-      # return unless succ.adjts?
+  def fold_adjt_conjunct!(node : MtNode, prev = node.prev?, succ = node.succ?)
+    if node.concoord?
+      node.val = "và" if node.key == "和"
+    else
+      return unless node.key == "但"
     end
 
-    node.val = "và" if node.key == "和"
+    return unless prev && succ
+    succ = scan_adjt!(succ)
+    return unless succ.adjts?
+
     fold!(prev, succ, tag: PosTag::Aform, dic: 4)
   end
 

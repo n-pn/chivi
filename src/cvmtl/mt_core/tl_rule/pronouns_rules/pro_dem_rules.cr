@@ -16,8 +16,11 @@ module CV::TlRule
 
       if succ.nouns? || succ.nquants?
         if quanti
-          quanti.val = "" if quanti.key == "个"
-          succ = fold!(quanti, succ, succ.tag, dic: 3)
+          case quanti.key
+          when "些" then quanti.val = "những"
+          when "个" then quanti.val = ""
+          end
+          succ = fold!(quanti, succ, succ.tag, dic: 4)
         end
 
         if node.pro_zhe? || node.pro_na1?
@@ -81,7 +84,7 @@ module CV::TlRule
       prev.key = "其"
       prev.val = "các"
 
-      fold!(prev, tail, PosTag::NounPhrase, dic: 3)
+      fold!(prev, tail, PosTag::NounPhrase, dic: 4)
     when .ends_with?("个")
       fold!(prev, node, node.tag, dic: 3)
     when .starts_with?("各")
@@ -116,7 +119,7 @@ module CV::TlRule
       node.tag, pro_val = map_pro_dem!(node.key)
       return {node, nil} if pro_val.empty?
 
-      qt_val = qt_key == "些" ? "những" : node.val.sub(" " + pro_val, "")
+      qt_val = node.val.sub(" " + pro_val, "")
       node.val = pro_val
 
       qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)

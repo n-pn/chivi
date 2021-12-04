@@ -1,16 +1,20 @@
 module CV::TlRule
   def fold_ajno!(node : MtNode)
-    if node.prev?(&.adverbs?)
-      node.tag = PosTag::Adjt
-    elsif !(succ = node.succ?) || succ.ends?
-      node.tag = PosTag::Noun
-    end
+    node = heal_ajno!(node)
+    node.noun? ? fold_noun!(node) : fold_adjts!(node)
+  end
 
-    if node.noun?
+  def heal_ajno!(node : MtNode)
+    return node.set!(PosTag::Adjt) if node.prev?(&.adverbs?)
+
+    case succ = node.succ?
+    when .nil?, .ends?
       node.val = MTL::AS_NOUNS.fetch(node.key, node.val)
-      fold_noun!(node)
+      node.set!(PosTag::Noun)
+    when .ude1?
+      node.set!(PosTag::Adjt)
     else
-      fold_adjts!(node)
+      node
     end
   end
 end

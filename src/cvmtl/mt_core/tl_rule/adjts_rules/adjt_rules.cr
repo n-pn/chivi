@@ -38,7 +38,8 @@ module CV::TlRule
         node = fold!(node, succ, PosTag::Adjt, dic: 4)
       when .ajno?
         return fold_swap!(node, succ, PosTag::Noun, dic: 7)
-      when .noun? then return fold_adjt_noun!(node, succ)
+      when .nouns?
+        return fold_adjt_noun!(node, succ)
       when .vpro?, .verb?
         break unless node.key.size == 1 && !prev
         succ = fold_verbs!(succ)
@@ -66,8 +67,8 @@ module CV::TlRule
       when .suf_verbs?
         node = fold_adj_adv!(node, prev)
         return fold_suf_verb!(node, succ)
-      when .penum?, .concoord?
-        break unless fold = fold_adjt_concoord!(succ, prev: node)
+      when .penum?, .conjunct?
+        break unless fold = fold_adjt_conjunct!(succ, prev: node)
         node = fold
       when .adv_bu?
         break unless (succ_2 = succ.succ?)
