@@ -10,7 +10,7 @@ class CV::VpTermView
   @hanviet : String
 
   def initialize(@key : String, @bdict : VpDict, cvmtl : MtCore, @uname = "~")
-    mt_list = cvmtl.cv_plain(key, mode: 1, cap_first: false)
+    mt_list = cvmtl.cv_plain(key, cap_first: false)
     @mtl_val = mt_list.to_s
     @mtl_tag = guess_tag(mt_list)
     @hanviet = MtCore.hanviet_mtl.translit(@key).to_s

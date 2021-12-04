@@ -41,12 +41,8 @@ class CV::CvuserCtrl < CV::BaseCtrl
   def update
     if u_privi >= 0
       wtheme = params.fetch_str("wtheme", "light")
-      tlmode = params.fetch_int("tlmode", min: 0, max: 2)
-
       session["_wtheme"] = wtheme
-      session["_tlmode"] = tlmode
-
-      _cvuser.update!({wtheme: wtheme, tlmode: tlmode})
+      _cvuser.update!({wtheme: wtheme})
     end
 
     return_user
@@ -76,7 +72,6 @@ class CV::CvuserCtrl < CV::BaseCtrl
     session["u_dname"] = user.uname
     session["u_privi"] = user.privi
     session["_wtheme"] = user.wtheme
-    session["_tlmode"] = user.tlmode
   end
 
   private def return_user(user = _cvuser)
@@ -86,7 +81,6 @@ class CV::CvuserCtrl < CV::BaseCtrl
       uname:  user.uname,
       privi:  user.privi,
       wtheme: user.wtheme,
-      tlmode: user.tlmode,
     })
   end
 end

@@ -1,5 +1,4 @@
 <script context="module">
-  import { session } from '$app/stores'
   import { config } from '$lib/stores'
   import { ctrl as lookup } from '$parts/Lookup.svelte'
 
@@ -23,14 +22,11 @@
   let config_elem
   $: if (actived && config_elem) config_elem.focus()
 
-  async function update_wtheme() {
-    // config.put('wtheme', wtheme)
-    const params = { wtheme: $config.wtheme, tlmode: $session.tlmode }
-
+  async function update_wtheme(wtheme) {
     await fetch('/api/user/setting', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
+      body: JSON.stringify({ wtheme }),
     })
   }
 </script>
@@ -53,7 +49,7 @@
             name="wtheme"
             {value}
             bind:group={$config.wtheme}
-            on:change={update_wtheme} />
+            on:change={() => update_wtheme(value)} />
         </label>
       {/each}
     </field-input>

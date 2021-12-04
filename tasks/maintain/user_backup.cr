@@ -7,7 +7,7 @@ module CV::UserBackup
     File.join(USER_DIR, uname.downcase + ".tsv")
   end
 
-  FIELDS = %w(id uname email cpass karma privi wtheme tlmode)
+  FIELDS = %w(id uname email cpass karma privi wtheme)
 
   TIMESTAMPS = %w(created_at updated_at)
 

@@ -29,7 +29,7 @@ class CV::MtCore
     list.pad_spaces!
   end
 
-  def cv_title_full(title : String, mode = 1)
+  def cv_title_full(title : String)
     title, label = TextUtils.format_title(title)
 
     title_res = cv_title(title, offset: label.size)
@@ -40,7 +40,7 @@ class CV::MtCore
     label_res.concat!(title_res)
   end
 
-  def cv_title(title : String, mode = 1, offset = 0)
+  def cv_title(title : String, offset = 0)
     pre_zh, pre_vi, pad, title = MtUtil.tl_title(title)
     offset_2 = offset + pre_zh.size + pad.size
 
@@ -54,7 +54,7 @@ class CV::MtCore
     res
   end
 
-  def cv_plain(input : String, mode = 1, cap_first = true, offset = 0)
+  def cv_plain(input : String, cap_first = true, offset = 0)
     list = tokenize(input.chars, offset: offset)
     list.fix_grammar!
     list.capitalize!(cap: cap_first)

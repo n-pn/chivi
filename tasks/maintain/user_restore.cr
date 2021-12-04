@@ -8,7 +8,7 @@ module CV::UserRestore
   end
 
   STR_FIELDS = %w(uname email cpass wtheme)
-  INT_FIELDS = %w(karma privi tlmode)
+  INT_FIELDS = %w(karma privi)
 
   TIME_FIELDS = %w(created_at updated_at privi_until)
 

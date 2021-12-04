@@ -32,7 +32,6 @@ class CV::Cvuser
 
   # TODO: mapping miscellaneous preferences
   column wtheme : String = "light"
-  column tlmode : Int32 = 0
 
   timestamps
 
@@ -75,13 +74,11 @@ class CV::Cvuser
       find({uname: dname}) || begin
         raise "User not found!" unless dname == "Khách"
         new({
-          uname: dname,
-          email: "guest@gmail.com",
-          cpass: "xxxxxxxxx",
-          privi: -1,
-
+          uname:  dname,
+          email:  "guest@gmail.com",
+          cpass:  "xxxxxxxxx",
+          privi:  -1,
           wtheme: "light",
-          tlmode: 0,
         })
       end
     end

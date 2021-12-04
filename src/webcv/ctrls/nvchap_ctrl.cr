@@ -119,16 +119,15 @@ class CV::NvchapCtrl < CV::BaseCtrl
     return if lines.empty?
 
     cvmtl = MtCore.generic_mtl(zhbook.cvbook.bhash, _cvuser.uname)
-    mode = _cvuser.tlmode
 
-    cvmtl.cv_title_full(lines[0], mode: mode).to_str(strio)
+    cvmtl.cv_title_full(lines[0]).to_str(strio)
     strio << "\t" << " (#{cpart + 1}/#{chinfo.parts})" if chinfo.parts > 1
 
     1.upto(lines.size - 1) do |i|
       line = lines.unsafe_fetch(i)
       # puts [line, i]
       strio << "\n"
-      cvmtl.cv_plain(line, mode: mode).to_str(strio)
+      cvmtl.cv_plain(line).to_str(strio)
     rescue err
       Log.error { err.message }
       strio << "\t$$Máy dịch gặp lỗi, mời liên hệ ban quản trị$$"
