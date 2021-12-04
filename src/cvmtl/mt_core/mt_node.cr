@@ -125,6 +125,26 @@ class CV::MtNode
     @tag.adjts? || @tag.adverbs? && @succ.try(&.maybe_adjt?) || false
   end
 
+  def last_child
+    return nil unless body = @body
+
+    while succ = body.succ?
+      body = succ
+    end
+
+    body
+  end
+
+  def starts_with?(key : String)
+    return @key.starts_with?(key) unless body = @body
+    body.starts_with?(key)
+  end
+
+  def ends_with?(key : String)
+    return @key.ends_with?(key) unless child = self.last_child
+    child.ends_with?(key)
+  end
+
   include MTL::Serialize
   include MTL::ApplyCap
   include MTL::PadSpace

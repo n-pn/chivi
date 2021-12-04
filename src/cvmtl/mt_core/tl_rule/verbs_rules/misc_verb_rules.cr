@@ -2,15 +2,18 @@ module CV::TlRule
   def is_linking_verb?(node : MtNode, succ : MtNode?) : Bool
     return true if node.vmodals?
 
-    case node.key[-1]?
-    when '来', '去', '到', '有', '上', '着', '想'
-      true
-    when '了', '过'
-      {"就", "才", "再"}.includes?(succ.try(&.key))
-    else
-      # TODO: check with node.verb_object?
-      succ.try(&.key.== "不") || false
+    {"来", "去", "到", "有", "上", "着", "想"}.each do |char|
+      return true if node.ends_with?(char)
     end
+
+    return false unless succ
+    return true if succ.starts_with?("不")
+
+    {"了", "过"}.each do |char|
+      return {"就", "才", "再"}.includes?(succ.key) if node.ends_with?(char)
+    end
+
+    false
   end
 
   def find_verb_after(right : MtNode)
