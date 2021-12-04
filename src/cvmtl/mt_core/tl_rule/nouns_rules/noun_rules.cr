@@ -1,4 +1,7 @@
 module CV::TlRule
+  # 0: fold all
+  # 1: skip uzhi and space and let the caller handle it
+
   def fold_noun!(noun : MtNode, mode : Int32 = 0) : MtNode
     # return node if node.nform?
 
@@ -24,7 +27,7 @@ module CV::TlRule
         noun = fold!(noun, succ_2, PosTag::Person, dic: 3)
       when .uzhi?
         # TODO: check with prev to group
-        return fold_uzhi!(succ, noun)
+        return mode == 0 ? fold_uzhi!(succ, noun) : noun
       when .veno?
         succ = heal_veno!(succ)
         return noun if succ.verbs?
@@ -80,15 +83,18 @@ module CV::TlRule
       prev = prev.prev?
     end
 
-    return true unless prev && succ
+    return true unless prev
 
-    case succ
-    when .comma?      then true
-    when .maybe_adjt? then false
-    when .maybe_verb?
-      prev.preposes? || prev.verbs? && is_linking_verb?(prev, succ)
-    else
-      true
+    while succ
+      case succ
+      when .adverbs? then succ = succ.succ?
+      when .adjts?   then return !succ.succ?(&.ude1?)
+      when .preposes?, .verbs?
+        return is_linking_verb?(prev, succ)
+      else return true
+      end
     end
+
+    true
   end
 end

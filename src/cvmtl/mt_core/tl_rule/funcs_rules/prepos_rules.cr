@@ -102,6 +102,8 @@ module CV::TlRule
     when .verb?    then verb = fold_verbs!(verb)
     end
 
+    return node unless verb.verbs?
+
     verb = fold!(node, verb, verb.tag, dic: 8, flip: flip)
     return verb if verb.verb_object? || verb.vintr?
     return verb unless (tail = verb.succ?) && !tail.ends?

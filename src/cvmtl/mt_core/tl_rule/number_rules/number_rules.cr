@@ -19,8 +19,14 @@ module CV::TlRule
     succ = scan_noun!(succ, mode: 1)
     node = fold_nquant_noun!(node, succ) if succ.nouns?
 
-    return node unless (succ = node.succ?) && succ.space?
-    fold!(node, succ, PosTag::Space, dic: 3, flip: true)
+    # puts [node, node.succ?]
+
+    case succ = node.succ?
+    when .nil?   then node
+    when .uzhi?  then fold_uzhi!(uzhi: succ, prev: node)
+    when .space? then fold_noun_space!(noun: node, space: succ)
+    else              node
+    end
   end
 
   def fold_nquant_noun!(prev : MtNode, node : MtNode)

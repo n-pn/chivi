@@ -95,5 +95,6 @@ module CV::MTL
     "举" => "cử chỉ",
     "流" => "phẩm cấp",
     "刑" => "hình phạt",
+    "一" => "một trong",
   }
 end
