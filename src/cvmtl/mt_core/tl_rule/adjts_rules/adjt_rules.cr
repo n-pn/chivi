@@ -37,13 +37,13 @@ module CV::TlRule
       when .adjt?, .amorp?
         node = fold!(node, succ, PosTag::Adjt, dic: 4)
       when .ajno?
-        return fold!(node, succ, PosTag::Noun, dic: 7, swap: true)
+        return fold!(node, succ, PosTag::Noun, dic: 7, flip: true)
       when .nouns?
         return fold_adjt_noun!(node, succ)
       when .vpro?, .verb?
         break unless node.key.size == 1 && !prev
         succ = fold_verbs!(succ)
-        return fold!(node, succ, PosTag::VerbPhrase, dic: 4, swap: true)
+        return fold!(node, succ, PosTag::VerbPhrase, dic: 4, flip: true)
       when .ule?
         break unless (succ_2 = succ.succ?) && succ_2.key == "点"
         succ.val = ""
@@ -120,13 +120,13 @@ module CV::TlRule
       return adjt
     end
 
-    no_swap = adjt.modifier? && do_not_swap?(adjt.key)
-    noun = fold!(adjt, noun, noun.tag, dic: 6, swap: !no_swap)
+    no_flip = adjt.modifier? && do_not_flip?(adjt.key)
+    noun = fold!(adjt, noun, noun.tag, dic: 6, flip: !no_flip)
 
     fold_noun_space!(noun)
   end
 
-  def do_not_swap?(key : String)
+  def do_not_flip?(key : String)
     {"原"}.includes?(key)
   end
 end

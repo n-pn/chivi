@@ -19,11 +19,11 @@ module CV::TlRule
 
   def fold!(head : MtNode, tail : MtNode,
             tag : PosTag = PosTag::None, dic : Int32 = 9,
-            swap : Bool = false)
+            flip : Bool = false)
     # Create new common root
-    root = MtNode.new("", "", tag, dic, swap ? tail.idx : head.idx)
+    root = MtNode.new("", "", tag, dic, head.idx)
 
-    if swap
+    if flip
       root.set_body!(tail)
       head.fix_root!(nil)
     else
@@ -33,9 +33,9 @@ module CV::TlRule
     root.fix_prev!(head.prev?)
     root.fix_succ!(tail.succ?)
 
-    if swap
+    if flip
       # check if there is some node in between
-      # if there is then swap their prev and succ node to current head and tail
+      # if there is then flip their prev and succ node to current head and tail
       if tail != head.succ?
         tail.fix_succ!(head.succ?)
         head.fix_prev!(tail.prev?)
@@ -53,7 +53,7 @@ module CV::TlRule
     root
   end
 
-  # def fold_swap!(tail : MtNode, head : MtNode, tag = PosTag::Unkn, dic = 9)
+  # def fold_flip!(tail : MtNode, head : MtNode, tag = PosTag::Unkn, dic = 9)
   #   root = MtNode.new("", "", tag, dic, head.idx)
   #   root.body = head
 
@@ -76,7 +76,7 @@ module CV::TlRule
   #   end
 
   #   # check if there is some node in between
-  #   # if there is then swap their prev and succ node to current head and tail
+  #   # if there is then flip their prev and succ node to current head and tail
   #   if head != tail.succ?
   #     if succ = tail.succ?
   #       head.succ = succ

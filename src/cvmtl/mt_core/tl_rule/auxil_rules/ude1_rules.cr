@@ -35,7 +35,7 @@ module CV::TlRule
     end
 
     ude1.val = "của"
-    fold!(prev, ude1, PosTag::DefnPhrase, dic: 8, swap: true)
+    fold!(prev, ude1, PosTag::DefnPhrase, dic: 8, flip: true)
   end
 
   def fold_ude1_left!(right : MtNode, ude1 : MtNode, prev = ude1.prev?) : MtNode
@@ -46,21 +46,21 @@ module CV::TlRule
     case prev
     when .ajad?
       prev.val = "thông thường" if prev.key == "一般"
-      fold!(prev, right, PosTag::NounPhrase, dic: 4, swap: true)
+      fold!(prev, right, PosTag::NounPhrase, dic: 4, flip: true)
     when .veno?, .vintr?, .verb_object?,
          .time?, .place?, .space?,
          .pro_dem?, .modifier?,
          .defn_phrase?, .prep_phrase?, .unkn?
       prev = fold!(prev, ude1, PosTag::DefnPhrase, dic: 7)
-      fold!(prev, right, PosTag::NounPhrase, dic: 4, swap: true)
+      fold!(prev, right, PosTag::NounPhrase, dic: 4, flip: true)
     when .adjts?
       # if (prev_2 = prev.prev?) && prev_2.noun?
       #   prev = fold!(prev_2, prev, PosTag::DefnPhrase, dic: 8)
       # end
 
-      fold!(prev, right, PosTag::NounPhrase, dic: 4, swap: true)
+      fold!(prev, right, PosTag::NounPhrase, dic: 4, flip: true)
     when .numeric?
-      fold!(prev, right, PosTag::NounPhrase, dic: 4, swap: true)
+      fold!(prev, right, PosTag::NounPhrase, dic: 4, flip: true)
     when .nouns?, .pro_per?
       return fold_noun_ude1!(prev, ude1, right)
     when .verb?, .verb_phrase?

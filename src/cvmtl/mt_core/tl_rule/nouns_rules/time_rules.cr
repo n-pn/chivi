@@ -9,7 +9,7 @@ module CV::TlRule
         succ = fold_numbers!(succ, prev: node)
         succ.time? ? fold_time_prev!(succ, prev: node) : node
       when .adj_hao?
-        fold!(node, succ.set!("chào"), PosTag::VerbPhrase, dic: 8, swap: true)
+        fold!(node, succ.set!("chào"), PosTag::VerbPhrase, dic: 8, flip: true)
       else
         node
       end
@@ -23,15 +23,15 @@ module CV::TlRule
 
     case prev.key
     when "早上", "早晨"
-      fold!(prev.set!("sáng"), node, PosTag::Time, dic: 2, swap: true)
+      fold!(prev.set!("sáng"), node, PosTag::Time, dic: 2, flip: true)
     when "中午"
-      fold!(prev.set!("trưa"), node, PosTag::Time, dic: 2, swap: true)
+      fold!(prev.set!("trưa"), node, PosTag::Time, dic: 2, flip: true)
     when "下午"
-      fold!(prev.set!("chiều"), node, PosTag::Time, dic: 2, swap: true)
+      fold!(prev.set!("chiều"), node, PosTag::Time, dic: 2, flip: true)
     when "晚上"
-      fold!(prev.set!("tối"), node, PosTag::Time, dic: 2, swap: true)
+      fold!(prev.set!("tối"), node, PosTag::Time, dic: 2, flip: true)
     when "半夜"
-      fold!(prev.set!("đêm"), node, PosTag::Time, dic: 2, swap: true)
+      fold!(prev.set!("đêm"), node, PosTag::Time, dic: 2, flip: true)
     when "凌晨"
       fold!(prev, node, PosTag::Time, dic: 2)
     else node
@@ -42,11 +42,11 @@ module CV::TlRule
     return node unless succ = node.succ?
     case succ.key
     when "前后"
-      fold!(node, succ.set!("tầm"), PosTag::Time, dic: 2, swap: true)
+      fold!(node, succ.set!("tầm"), PosTag::Time, dic: 2, flip: true)
     when "左右"
-      fold!(node, succ.set!("khoảng"), PosTag::Time, dic: 2, swap: true)
+      fold!(node, succ.set!("khoảng"), PosTag::Time, dic: 2, flip: true)
     when "多"
-      fold!(node, succ.set!("hơn"), PosTag::Time, dic: 2, swap: true)
+      fold!(node, succ.set!("hơn"), PosTag::Time, dic: 2, flip: true)
     else
       node
     end
@@ -61,7 +61,7 @@ module CV::TlRule
     when "半"
       return fold!(node, succ_2.set!("rưỡi"), PosTag::Time, dic: 1)
     when "前后"
-      return fold!(node, succ_2.set!("tầm"), PosTag::Time, dic: 1, swap: true)
+      return fold!(node, succ_2.set!("tầm"), PosTag::Time, dic: 1, flip: true)
     end
 
     unless minute = read_minute_quanti?(succ_2)

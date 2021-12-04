@@ -11,10 +11,10 @@ module CV::TlRule
 
   def fold_noun_ude1_noun!(noun : MtNode, ude1 : MtNode, right : MtNode) : MtNode
     ude1.val = "của"
-    noun = fold!(noun, ude1, PosTag::DefnPhrase, dic: 2, swap: true)
+    noun = fold!(noun, ude1, PosTag::DefnPhrase, dic: 2, flip: true)
 
     dic = noun.prev?(&.verbs?) ? 6 : 4
-    fold!(noun, right, PosTag::NounPhrase, dic: dic, swap: true)
+    fold!(noun, right, PosTag::NounPhrase, dic: dic, flip: true)
   end
 
   def fold_verb_noun_ude1!(verb : MtNode, noun : MtNode, ude1 : MtNode, right : MtNode) : MtNode
@@ -22,7 +22,7 @@ module CV::TlRule
     when "时候", "时"
       head = verb.try { |x| x if x.center_noun? } || verb
       node = fold!(head, ude1, PosTag::DefnPhrase)
-      return fold!(node, right, PosTag::NounPhrase, dic: 6, swap: true)
+      return fold!(node, right, PosTag::NounPhrase, dic: 6, flip: true)
     end
 
     # puts [verb, noun, ude1, right]
@@ -45,6 +45,6 @@ module CV::TlRule
     return fold_noun_ude1_noun!(noun, ude1, right) unless head
 
     node = fold!(head, ude1, PosTag::DefnPhrase)
-    fold!(node, right, PosTag::NounPhrase, dic: 6, swap: true)
+    fold!(node, right, PosTag::NounPhrase, dic: 6, flip: true)
   end
 end

@@ -84,7 +84,7 @@ module CV::TlRule
       fold!(node, succ, succ.tag, dic: 2)
     when .space?
       return node unless node.key = "最"
-      return fold!(node, succ, succ.tag, dic: 7, swap: true)
+      return fold!(node, succ, succ.tag, dic: 7, flip: true)
     when .preposes?
       succ = fold_preposes!(succ)
       fold!(node, succ, succ.tag, dic: 2)
@@ -93,7 +93,7 @@ module CV::TlRule
   end
 
   def fold_adverb_node!(adv : MtNode, node = adv.succ, tag = node.tag, dic = 4) : MtNode
-    swap = false
+    flip = false
 
     case adv.key
     when "不太"
@@ -106,11 +106,11 @@ module CV::TlRule
 
       return fold!(head, tail, PosTag::Aform, dic: dic)
     when "最", "最为", "那么", "这么", "非常", "如此"
-      swap = true
+      flip = true
     when "十分" then adv.val = "vô cùng"
     when "挺"  then adv.val = "rất"
     end
 
-    fold!(adv, node, tag, dic: dic, swap: swap)
+    fold!(adv, node, tag, dic: dic, flip: flip)
   end
 end

@@ -10,7 +10,7 @@ module CV::TlRule
       when .uniques?
         case succ.key
         when "第"
-          noun = fold!(noun, fold_第!(succ), succ.tag, dic: 6, swap: true)
+          noun = fold!(noun, fold_第!(succ), succ.tag, dic: 6, flip: true)
         else
           # TODO!
           break
@@ -28,7 +28,7 @@ module CV::TlRule
       when .veno?
         succ = heal_veno!(succ)
         return noun if succ.verbs?
-        noun = fold!(noun, succ, PosTag::Noun, dic: 7, swap: true)
+        noun = fold!(noun, succ, PosTag::Noun, dic: 7, flip: true)
       when .penum?, .concoord?
         return noun unless fold = fold_noun_concoord!(succ, noun)
         noun = fold
@@ -60,18 +60,18 @@ module CV::TlRule
       if node.names? || node.ptitle?
         fold!(node, succ, PosTag::Person, dic: 3)
       else
-        fold!(node, succ, PosTag::Person, dic: 3, swap: true)
+        fold!(node, succ, PosTag::Person, dic: 3, flip: true)
       end
     when .names?
       fold!(node, succ, succ.tag, dic: 4)
     when .times?
       fold!(node, succ, PosTag::NounPhrase, dic: 4)
     when .place?
-      fold!(node, succ, PosTag::DefnPhrase, dic: 3, swap: true)
+      fold!(node, succ, PosTag::DefnPhrase, dic: 3, flip: true)
       # when .space?
       #   fold_noun_space!(node, succ) if mode == 0
     else
-      fold!(node, succ, PosTag::Noun, dic: 3, swap: true)
+      fold!(node, succ, PosTag::Noun, dic: 3, flip: true)
     end
   end
 

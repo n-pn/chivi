@@ -23,12 +23,12 @@ module CV::TlRule
           succ = fold!(quanti, succ, succ.tag, dic: 4)
         end
 
-        swap = node.pro_zhe? || node.pro_na1?
-        return fold!(node, succ, PosTag::NounPhrase, dic: 2, swap: swap)
+        flip = node.pro_zhe? || node.pro_na1?
+        return fold!(node, succ, PosTag::NounPhrase, dic: 2, flip: flip)
       end
     end
 
-    return fold!(node, quanti, PosTag::ProDem, dic: 8, swap: true) if quanti
+    return fold!(node, quanti, PosTag::ProDem, dic: 8, flip: true) if quanti
 
     return node.set!("cái này") if node.pro_zhe?
     return node.set!("vậy") if node.pro_na1? && !node.succ?(&.maybe_verb?)
@@ -61,13 +61,13 @@ module CV::TlRule
       prev.val = "các"
       fold!(prev, node, node.tag, dic: 2)
     when "这", "那", "这个", "那个"
-      fold!(prev, node, node.tag, dic: 2, swap: true)
+      fold!(prev, node, node.tag, dic: 2, flip: true)
     when "这样"
       prev.val = "như vậy"
-      fold!(prev, node, node.tag, dic: 2, swap: true)
+      fold!(prev, node, node.tag, dic: 2, flip: true)
     when "那样"
       prev.val = "như thế"
-      fold!(prev, node, node.tag, dic: 2, swap: true)
+      fold!(prev, node, node.tag, dic: 2, flip: true)
     when "任何"
       prev.val = "bất kỳ"
       fold!(prev, node)
@@ -93,7 +93,7 @@ module CV::TlRule
         fold!(prev, node, node.tag, dic: 3)
       end
     else
-      fold!(prev, node, node.tag, dic: 3, swap: true)
+      fold!(prev, node, node.tag, dic: 3, flip: true)
     end
   end
 
@@ -101,7 +101,7 @@ module CV::TlRule
     if qtnoun = node.body?
       prodem = qtnoun.succ
 
-      # swap back
+      # flip back
 
       prodem.fix_prev!(node.prev?)
       qtnoun.fix_succ!(node.succ?)

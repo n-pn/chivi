@@ -30,13 +30,13 @@ module CV::TlRule
   def heal_vm_hui!(node : MtNode, succ = node.succ?, prev = node.prev?) : MtNode
     if is_learnable_skill?(succ)
       node.val = "biết"
-      swap = false
+      flip = false
     else
       node.val = "sẽ"
-      swap = prev.try(&.adv_bu?)
+      flip = prev.try(&.adv_bu?)
     end
 
-    prev ? fold!(prev, node, node.tag, dic: 6, swap: swap) : node
+    prev ? fold!(prev, node, node.tag, dic: 6, flip: flip) : node
   end
 
   private def is_learnable_skill?(node : MtNode?) : Bool

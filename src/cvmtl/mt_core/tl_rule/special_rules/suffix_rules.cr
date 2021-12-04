@@ -8,11 +8,11 @@ module CV::TlRule
     when "时" then succ.val = "lúc"
     end
 
-    fold!(node, succ, PosTag::Noun, dic: 7, swap: true)
+    fold!(node, succ, PosTag::Noun, dic: 7, flip: true)
   end
 
   def fold_suf_verb!(node : MtNode, succ : MtNode) : MtNode
     # TODO: handle special cases
-    fold!(node, succ, PosTag::Verb, dic: 7, swap: true)
+    fold!(node, succ, PosTag::Verb, dic: 7, flip: true)
   end
 end

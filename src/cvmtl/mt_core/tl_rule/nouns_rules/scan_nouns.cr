@@ -58,6 +58,6 @@ module CV::TlRule
     succ.val = "" unless head.noun? || head.names?
 
     return head unless tail = succ.succ?
-    fold!(head, scan_noun!(tail), PosTag::NounPhrase, dic: 4, swap: true)
+    fold!(head, scan_noun!(tail), PosTag::NounPhrase, dic: 4, flip: true)
   end
 end

@@ -76,7 +76,7 @@ module CV::TlRule
 
       unless tail.succ?(&.maybe_verb?)
         node = fold!(node, verb.set!(""), PosTag::PrepPhrase, dic: 5)
-        return fold!(node, tail, PosTag::NounPhrase, dic: 6, swap: true)
+        return fold!(node, tail, PosTag::NounPhrase, dic: 6, flip: true)
       end
 
       noun = fold_ude1_left!(tail, verb, noun)
@@ -84,12 +84,12 @@ module CV::TlRule
     end
 
     # fix prepos meaning
-    swap = false
+    flip = false
 
     case node.key
     when "给"
       node.val = "cho"
-      swap = true
+      flip = true
     when "让"
       node.val = "khiến cho"
     end
@@ -102,7 +102,7 @@ module CV::TlRule
     when .verb?    then verb = fold_verbs!(verb)
     end
 
-    verb = fold!(node, verb, verb.tag, dic: 8, swap: swap)
+    verb = fold!(node, verb, verb.tag, dic: 8, flip: flip)
     return verb if verb.verb_object? || verb.vintr?
     return verb unless (tail = verb.succ?) && !tail.ends?
 

@@ -12,19 +12,19 @@ module CV::TlRule
   #       return fold!(prev, node, PosTag::NounPhrase, dic: 3)
   #     when .pro_ints?
   #       return fold_什么_noun!(prev, node) if prev.key == "什么"
-  #       return fold_swap!(prev, node, PosTag::NounPhrase, dic: 3)
+  #       return fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
   #     when .amorp?
   #       break if flag > 0
   #       node = fold!(prev, node, PosTag::NounPhrase, dic: 7)
   #     when .ajno?, .modifier?
   #       break if flag > 0
-  #       node = fold_swap!(prev, node, PosTag::NounPhrase, dic: 3)
+  #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
   #     when .place?
   #       break if flag > 0
-  #       node = fold_swap!(prev, node, PosTag::NounPhrase, dic: 3)
+  #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 3)
   #     when .ajad?, .adjts?
   #       break if flag > 0 || prev.key.size > 1
-  #       node = fold_swap!(prev, node, PosTag::NounPhrase, dic: 8)
+  #       node = fold_flip!(prev, node, PosTag::NounPhrase, dic: 8)
   #     when .ude1?
   #       break if mode < 1
   #       node = fold_ude1_left!(node, prev)

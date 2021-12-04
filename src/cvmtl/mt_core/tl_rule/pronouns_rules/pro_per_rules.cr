@@ -26,13 +26,13 @@ module CV::TlRule
     when .space?
       fold_noun_space!(node, succ)
     when .place?
-      fold!(node, succ, PosTag::DefnPhrase, dic: 4, swap: true)
+      fold!(node, succ, PosTag::DefnPhrase, dic: 4, flip: true)
     when .ptitle?
-      fold!(node, succ, succ.tag, dic: 4, swap: true)
+      fold!(node, succ, succ.tag, dic: 4, flip: true)
     when .names?
       # TODO: add pseudo node
       node.val = "của #{node.val}"
-      fold!(node, succ, succ.tag, dic: 4, swap: true)
+      fold!(node, succ, succ.tag, dic: 4, flip: true)
     else
       fold!(node, succ, PosTag::Nform, dic: 8)
     end

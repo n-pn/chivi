@@ -21,7 +21,7 @@ module CV::TlRule
     # puts [noun, space, "fold_noun_space"]
 
     space.val = MTL::FIX_SPACES[space.key]? || space.val
-    no_swap = noun.time? && {"前"}.includes?(space.key)
-    fold!(noun, space, PosTag::Place, dic: 5, swap: !no_swap)
+    no_flip = noun.time? && {"前"}.includes?(space.key)
+    fold!(noun, space, PosTag::Place, dic: 5, flip: !no_flip)
   end
 end
