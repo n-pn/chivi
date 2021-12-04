@@ -125,7 +125,7 @@ class CV::MtNode
     @tag.adjts? || @tag.adverbs? && @succ.try(&.maybe_adjt?) || false
   end
 
-  def last_child
+  def last_child : MtNode?
     return nil unless body = @body
 
     while succ = body.succ?
@@ -135,12 +135,12 @@ class CV::MtNode
     body
   end
 
-  def starts_with?(key : String)
+  def starts_with?(key : String | Char)
     return @key.starts_with?(key) unless body = @body
     body.starts_with?(key)
   end
 
-  def ends_with?(key : String)
+  def ends_with?(key : String | Char)
     return @key.ends_with?(key) unless child = self.last_child
     child.ends_with?(key)
   end

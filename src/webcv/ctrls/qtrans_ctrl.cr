@@ -85,7 +85,7 @@ class CV::QtransCtrl < CV::BaseCtrl
 
     lines.each_with_index do |line, idx|
       output << "\n" if idx > 0
-      mtlist = cvmtl.cv_plain(line, mode: 1, cap_first: !plain)
+      mtlist = cvmtl.cv_plain(line, cap_first: !plain)
       plain ? mtlist.to_s(output) : mtlist.to_str(output)
     end
   end
