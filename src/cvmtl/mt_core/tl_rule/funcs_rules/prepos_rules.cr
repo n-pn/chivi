@@ -91,7 +91,7 @@ module CV::TlRule
       node.val = "cho"
       flip = true
     when "让"
-      node.val = "khiến cho"
+      node.val = "cho"
     end
 
     node = fold!(node, noun, PosTag::PrepPhrase, dic: 5)

@@ -148,6 +148,17 @@ class CV::MtNode
     child.ends_with?(key)
   end
 
+  def has_key?(key : String) : self | Nil
+    return @key.includes?(key) ? self : nil unless child = @body
+
+    while child
+      child = child.succ? unless found = child.has_key?(key)
+      return found
+    end
+
+    nil
+  end
+
   include MTL::Serialize
   include MTL::ApplyCap
   include MTL::PadSpace

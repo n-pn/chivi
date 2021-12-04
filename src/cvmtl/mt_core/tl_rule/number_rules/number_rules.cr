@@ -13,20 +13,7 @@ module CV::TlRule
     end
 
     return node unless (succ = node.succ?) && !succ.ends?
-
-    # puts [node, succ]
-
-    succ = scan_noun!(succ, mode: 1)
-    node = fold_nquant_noun!(node, succ) if succ.nouns?
-
-    # puts [node, node.succ?]
-
-    case succ = node.succ?
-    when .nil?   then node
-    when .uzhi?  then fold_uzhi!(uzhi: succ, prev: node)
-    when .space? then fold_noun_space!(noun: node, space: succ)
-    else              node
-    end
+    scan_noun!(succ, mode: 1, prev: node)
   end
 
   def fold_nquant_noun!(prev : MtNode, node : MtNode)

@@ -40,11 +40,21 @@ module CV::TlRule
       head = head.nouns? ? head : scan_noun!(head)
     end
 
-    if prev && prev.pro_dems? && head.nouns?
-      head = fold_pro_dem_noun!(prev, head)
+    if prev && head.nouns?
+      case prev
+      when .pro_dem? then head = fold_pro_dem_noun!(prev, head)
+      when .numeric? then head = fold_nquant_noun!(prev, head)
+      end
     end
 
-    return fold_noun_space!(head) if head.center_noun?
+    if mode == 1 && head.center_noun?
+      case succ = head.succ?
+      when .nil?
+      when .uzhi?  then fold_uzhi!(uzhi: succ, prev: head)
+      when .space? then fold_noun_space!(noun: head, space: succ)
+      else
+      end
+    end
 
     return head unless mode < 2 && head.verbs? && (succ = head.succ?) && !succ.ends?
     # FIXME: move this to fold_verb?

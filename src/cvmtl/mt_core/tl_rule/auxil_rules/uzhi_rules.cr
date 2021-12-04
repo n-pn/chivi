@@ -9,7 +9,21 @@ module CV::TlRule
     end
 
     uzhi.val = ""
-    tag = succ.key == "都" ? PosTag::Naffil : PosTag::Nform
+
+    case
+    when succ.key == "都"
+      tag = PosTag::Naffil
+    when prev.numbers? && succ.numbers?
+      # TODO: handle this in fold_number!
+      if node = prev.has_key?("分")
+        node.val = node.val.sub(/\s*phầ|ân\*/, "")
+        uzhi.val = "phần"
+      end
+
+      tag = PosTag::Number
+    else
+      tag = PosTag::Nform
+    end
 
     fold!(prev, succ, tag, dic: 2, flip: true)
   end
