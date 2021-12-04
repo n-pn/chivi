@@ -1,53 +1,53 @@
 module CV::TlRule
-  def fold_noun!(node : MtNode, mode : Int32 = 0) : MtNode
+  def fold_noun!(noun : MtNode, mode : Int32 = 0) : MtNode
     # return node if node.nform?
 
-    while node.nouns?
-      break unless succ = node.succ?
-      # puts [node, succ]
+    while noun.nouns?
+      break unless succ = noun.succ?
+      # puts [noun, succ]
 
       case succ
       when .uniques?
         case succ.key
         when "第"
-          node = fold_swap!(node, fold_第!(succ), succ.tag, dic: 6)
+          noun = fold_swap!(noun, fold_第!(succ), succ.tag, dic: 6)
         else
           # TODO!
           break
         end
       when .maybe_adjt?
-        return node unless node.prev?(&.nouns?)
+        return noun unless noun.prev?(&.nouns?)
         succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
-        node.succ?(&.ude1?) ? fold!(node, succ, PosTag::Aform, dic: 6) : node
+        return noun.succ?(&.ude1?) ? fold!(noun, succ, PosTag::Aform, dic: 6) : noun
       when .middot?
         break unless (succ_2 = succ.succ?) && succ_2.human?
-        return fold!(node, succ_2, PosTag::Person, dic: 3)
+        noun = fold!(noun, succ_2, PosTag::Person, dic: 3)
       when .uzhi?
         # TODO: check with prev to group
-        return fold_uzhi!(succ, node)
+        return fold_uzhi!(succ, noun)
       when .veno?
         succ = heal_veno!(succ)
-        return node if succ.verbs?
-        node = fold_swap!(node, succ, PosTag::Noun, dic: 7)
+        return noun if succ.verbs?
+        noun = fold_swap!(noun, succ, PosTag::Noun, dic: 7)
       when .penum?, .concoord?
-        return node unless fold = fold_noun_concoord!(succ, node)
-        node = fold
+        return noun unless fold = fold_noun_concoord!(succ, noun)
+        noun = fold
       when .space?
-        return mode == 0 ? fold_noun_space!(node, succ) : node
+        return mode == 0 ? fold_noun_space!(noun, succ) : noun
       when .nouns?
-        return node unless fold = fold_noun_noun!(node, succ, mode: mode)
-        node = fold
+        return noun unless fold = fold_noun_noun!(noun, succ, mode: mode)
+        noun = fold
       when .suf_verb?
-        return fold_suf_verb!(node, succ)
+        return fold_suf_verb!(noun, succ)
       when .suf_nouns?
-        return fold_suf_noun!(node, succ)
+        return fold_suf_noun!(noun, succ)
       else break
       end
 
-      break if succ == node.succ?
+      break if succ == noun.succ?
     end
 
-    node
+    noun
   end
 
   def fold_noun_noun!(node : MtNode, succ : MtNode, mode = 0)

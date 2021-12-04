@@ -6,6 +6,8 @@ module CV::TlRule
     end
 
     while succ = verb.succ?
+      # puts [verb, verb.idx, succ]
+
       case succ
       when .uzhi?
         verb = fold_left_verb!(verb, prev)
@@ -149,7 +151,7 @@ module CV::TlRule
     fold!(verb, compl, PosTag::Verb, dic: 6)
   end
 
-  def fold_left_verb!(node : MtNode, prev = node.prev?)
+  def fold_left_verb!(node : MtNode, prev : MtNode?)
     return node unless prev && prev.adverbs?
     fold_adverb_node!(prev, node)
   end

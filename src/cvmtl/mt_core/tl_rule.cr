@@ -2,6 +2,8 @@ require "./tl_rule/**"
 
 module CV::TlRule
   def fix_grammar!(node : MtNode, level = 0) : Nil
+    # puts [node, node.idx, node.succ?]
+
     while node = node.succ?
       case node.tag
       when .popens?   then node = fold_quoted!(node)
