@@ -26,6 +26,7 @@ module CV::TlRule
     end
 
     # puts [verb, noun, ude1, right]
+
     return fold_noun_ude1_noun!(noun, ude1, right) if verb.ends_with?('着')
 
     case prev = verb.prev?

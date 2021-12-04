@@ -4,7 +4,7 @@ module CV::TlRule
     return ude1 unless prev
 
     if succ && !succ.ends?
-      succ = scan_noun!(succ)
+      succ = scan_noun!(succ, mode: 2)
 
       if succ.nouns? || succ.pronouns?
         return fold_ude1_left!(succ, ude1)
@@ -64,7 +64,7 @@ module CV::TlRule
       fold_swap!(prev, right, PosTag::NounPhrase, dic: 4)
     when .nouns?, .pro_per?
       return fold_noun_ude1!(prev, ude1, right)
-    when .verb?
+    when .verb?, .verb_phrase?
       return fold_verb_ude1!(prev, ude1, right)
     else
       right

@@ -1,6 +1,9 @@
 module CV::TlRule
+  # modes:
+  # 1 => do not include spaces after nouns
+  # 2 => do not combine verb with object
   def scan_noun!(head : MtNode, mode = 0, prev : MtNode? = nil)
-    # puts ["scan_noun", head]
+    # puts ["scan_noun", head, mode]
 
     case head
     when .uniques?
@@ -42,7 +45,8 @@ module CV::TlRule
     end
 
     return fold_noun_space!(head) if head.center_noun?
-    return head unless head.verbs? && (succ = head.succ?) && !succ.ends?
+
+    return head unless mode < 2 && head.verbs? && (succ = head.succ?) && !succ.ends?
     # FIXME: move this to fold_verb?
     succ = scan_noun!(succ)
 

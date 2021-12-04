@@ -33,23 +33,24 @@ module CV::MTL::Serialize
     @succ.try(&.serialize(io))
   end
 
-  def inspect(io : IO = STDOUT) : Nil
-    return io << " " if val == " "
+  def inspect(io : IO = STDOUT, pad = 0) : Nil
+    return if @key == "" && @val == " "
+    io << " " * pad
     io << "[#{@key}/#{@val}/#{@tag.tag}/#{@dic}/#{@idx}]"
+    io << "\n"
   end
 
-  def deep_inspect(io : IO = STDOUT) : Nil
+  def deep_inspect(io : IO = STDOUT, pad = 0) : Nil
     node = self
 
     if body = @body
-      io << "{"
-      io << @tag.to_str << "|" << @dic
-      body.deep_inspect(io)
-      io << "}"
+      io << " " * pad << "{" << @tag.to_str << "/" << @dic << "}" << "\n"
+      body.deep_inspect(io, pad + 2)
+      io << " " * pad << "{/" << @tag.to_str << "/" << @dic << "}" << "\n"
     else
-      self.inspect(io)
+      self.inspect(io, pad: pad)
     end
 
-    @succ.try(&.deep_inspect(io))
+    @succ.try(&.deep_inspect(io, pad))
   end
 end
