@@ -13,7 +13,7 @@ module CV::TlRule
     end
 
     return node unless (succ = node.succ?) && !succ.ends?
-    scan_noun!(succ, mode: 1, prev: node)
+    scan_noun!(succ, mode: 1) { |noun| fold_nquant_noun!(node, noun) }
   end
 
   def fold_nquant_noun!(prev : MtNode, node : MtNode)

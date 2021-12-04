@@ -31,14 +31,14 @@ module CV::TlRule
 
     case prev = verb.prev?
     when .nil?, .none?
-      head = verb if tail = find_verb_after(right)
+      head = verb if has_verb_after?(right)
     when .v_you?
       head = prev.center_noun? ? prev : verb
     when .v_shi?
-      head = verb unless find_verb_after(right)
+      head = verb unless has_verb_after?(right)
     else
       unless is_linking_verb?(prev, right.succ?)
-        head = verb if find_verb_after(right)
+        head = verb if has_verb_after?(right)
       end
     end
 
@@ -46,5 +46,18 @@ module CV::TlRule
 
     node = fold!(head, ude1, PosTag::DefnPhrase)
     fold!(node, right, PosTag::NounPhrase, dic: 6, flip: true)
+  end
+
+  def has_verb_after?(right : MtNode) : Bool
+    while right = right.succ?
+      case right.tag
+      when .plsgn?, .mnsgn?    then return true
+      when .verbs?, .preposes? then return true
+      when .adverbs?, .comma?  then next
+      else                          return false
+      end
+    end
+
+    false
   end
 end

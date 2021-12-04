@@ -26,6 +26,9 @@ export function read_selection() {
   if (selection.isCollapsed) return [null]
 
   const range = get_selected(selection.getRangeAt(0))
+
+  navigator.clipboard.writeText(selection.toString())
+
   // selection.removeAllRanges()
 
   const nodes = range.filter((x) => x.nodeName == 'V-N' || x.nodeName == 'Z-N')

@@ -1,8 +1,8 @@
 require "../../src/cvmtl/mt_core"
 
-GENERIC = CV::MtCore.generic_mtl("21kd5dn7")
+GENERIC = CV::MtCore.generic_mtl("7zx48vye")
 
-inp = "一次兵荒中"
+inp = "而是他给卡帝亚买的"
 res = GENERIC.cv_plain(inp)
 
 puts res.inspect, inp, res

@@ -2,7 +2,11 @@ module CV::TlRule
   # modes:
   # 1 => do not include spaces after nouns
   # 2 => do not combine verb with object
-  def scan_noun!(head : MtNode, mode = 0, prev : MtNode? = nil)
+  def scan_noun!(head : MtNode, mode = 0)
+    scan_noun!(head, mode) { |x| x }
+  end
+
+  def scan_noun!(head : MtNode, mode = 0, &block : MtNode -> MtNode)
     # puts ["scan_noun", head, mode]
 
     case head
@@ -40,27 +44,20 @@ module CV::TlRule
       head = head.nouns? ? head : scan_noun!(head)
     end
 
-    if prev && head.nouns?
-      case prev
-      when .pro_dem? then head = fold_pro_dem_noun!(prev, head)
-      when .numeric? then head = fold_nquant_noun!(prev, head)
-      end
-    end
+    return head unless head.center_noun?
 
-    if mode == 1 && head.center_noun?
-      case succ = head.succ?
-      when .nil?
+    head = yield head
+    return head unless succ = head.succ?
+
+    if mode == 1
+      case succ
       when .uzhi?  then fold_uzhi!(uzhi: succ, prev: head)
       when .space? then fold_noun_space!(noun: head, space: succ)
       else
       end
     end
 
-    return head unless mode < 2 && head.verbs? && (succ = head.succ?) && !succ.ends?
-    # FIXME: move this to fold_verb?
-    succ = scan_noun!(succ)
-
-    fold!(head, succ, PosTag::VerbObject, dic: 8)
+    head
   end
 
   def fold_head_ude1_noun!(head : MtNode)

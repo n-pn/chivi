@@ -109,6 +109,6 @@ module CV::TlRule
     return verb unless (tail = verb.succ?) && !tail.ends?
 
     tail = scan_noun!(tail)
-    fold!(verb, tail, PosTag::VerbObject, dic: 8)
+    tail.center_noun? ? fold!(verb, tail, PosTag::VerbObject, dic: 6) : verb
   end
 end

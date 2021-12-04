@@ -15,7 +15,7 @@ module CV::TlRule
     case node.key[-1]?
     when "把"
       node.val = node.val.sub("bả", "phát")
-    when "脚", "口", "眼", "圈", "笔"
+    when "脚", "口", "眼", "圈"
       true
     else
       false
