@@ -9,7 +9,7 @@ module CV::TlRule
       if join.ude1?
         break unless (succ = join.succ?) && succ.nouns?
         join.val = "của"
-        node = fold_swap!(node, succ, succ.tag, dic: 7)
+        node = fold!(node, succ, succ.tag, dic: 7, swap: true)
         break unless join = node.succ?
       end
 

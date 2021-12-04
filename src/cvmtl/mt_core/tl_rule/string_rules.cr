@@ -26,7 +26,7 @@ module CV::TlRule
     root.key = key_io.to_s
     root.val = val_io.to_s
 
-    root.fix_succ!(node)
+    root.tap(&.fix_succ!(node))
   end
 
   private def string_component?(node : MtNode) : Bool
@@ -55,7 +55,7 @@ module CV::TlRule
     root.val = val_io.to_s
 
     root.tag = PosTag::Rawstr
-    root.fix_succ!(node)
+    root.tap(&.fix_succ!(node))
   end
 
   private def uri_component?(node : MtNode) : Bool

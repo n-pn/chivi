@@ -4,6 +4,6 @@ module CV::TlRule
     uzhi.val = ""
     tag = succ.key == "都" ? PosTag::Naffil : PosTag::Nform
     succ.val = MTL::UZHI_RIGHTS[succ.key]? || succ.val
-    fold_swap!(prev, succ, tag, dic: 2)
+    fold!(prev, succ, tag, dic: 2, swap: true)
   end
 end

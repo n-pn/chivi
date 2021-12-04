@@ -14,14 +14,14 @@ module CV::TlRule
 
     case succ.tag
     when .noun?, .time?, .ptitle?
-      node = fold_swap!(node, succ, succ.tag, dic: 8)
+      node = fold!(node, succ, succ.tag, dic: 8, swap: true)
       fold_noun!(node)
     when .quantis?
       if (succ_2 = succ.succ?) && succ_2.nouns?
         succ = fold!(succ, succ_2, PosTag::NounPhrase, dic: 7)
-        fold_swap!(node, succ, succ.tag, dic: 6)
+        fold!(node, succ, succ.tag, dic: 6, swap: true)
       else
-        fold_swap!(node, succ, PosTag::Noun)
+        fold!(node, succ, PosTag::Noun, swap: true)
       end
     else
       node

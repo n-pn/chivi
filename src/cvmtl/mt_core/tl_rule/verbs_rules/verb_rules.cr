@@ -142,7 +142,7 @@ module CV::TlRule
           compl.val = "trúng"
         else
           compl.val = "đang"
-          return fold_swap!(verb, compl, PosTag::VerbPhrase, 9)
+          return fold!(verb, compl, PosTag::VerbPhrase, 9, swap: true)
         end
       else
         return

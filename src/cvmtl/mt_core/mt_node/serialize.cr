@@ -33,11 +33,11 @@ module CV::MTL::Serialize
     @succ.try(&.serialize(io))
   end
 
-  def inspect(io : IO = STDOUT, pad = 0) : Nil
+  def inspect(io : IO = STDOUT, pad = -1) : Nil
     return if @key == "" && @val == " "
-    io << " " * pad
+    io << " " * pad if pad >= 0
     io << "[#{@key}/#{@val}/#{@tag.tag}/#{@dic}/#{@idx}]"
-    io << "\n"
+    io << "\n" if pad >= 0
   end
 
   def deep_inspect(io : IO = STDOUT, pad = 0) : Nil

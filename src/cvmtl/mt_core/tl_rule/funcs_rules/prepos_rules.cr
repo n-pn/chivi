@@ -64,60 +64,49 @@ module CV::TlRule
     # fold!(node, succ, PosTag::DefnPhrase, dic: 9)
   end
 
-  def fold_prepos!(node : MtNode, succ = node.succ?) : MtNode
-    return node unless succ && !succ.ends?
-    succ = scan_noun!(succ, mode: 1)
+  def fold_prepos!(node : MtNode, noun = node.succ?) : MtNode
+    return node unless noun && !noun.ends?
 
-    return node unless tail = succ.succ?
+    noun = scan_noun!(noun, mode: 1)
+    return node unless noun.center_noun? && (verb = noun.succ?)
 
-    case tail.tag
-    when .verb?, .verb_object?
-      if (succ.nouns? || succ.pro_per?)
-        # TODO: put more block after verb
+    # combine with ude1
+    if verb.ude1? && (tail = verb.succ?)
+      tail = scan_noun!(tail)
 
-        if node.key == "给"
-          swap = true
-          node.val = "cho"
-        end
-
-        node = fold!(node, succ, PosTag::PrepPhrase, dic: 5)
-
-        tail = fold_verbs!(tail)
-
-        if tail.verb? && (tail_noun = tail.succ?) && !tail_noun.ends?
-          tail_noun = scan_noun!(tail_noun)
-
-          if tail_noun.nouns?
-            tail = fold!(tail, tail_noun, PosTag::VerbObject, dic: 8)
-          end
-        end
-
-        if swap
-          return fold_swap!(node, tail, tail.tag, dic: 6)
-        else
-          return fold!(node, tail, tail.tag, dic: 6)
-        end
-      end
-    when .uls?
-      # TODO
-    end
-
-    if tail.ude1? && (tail_2 = tail.succ?)
-      tail_2 = scan_noun!(tail_2)
-      # puts [node, succ, tail, tail_2, "prepos"]
-
-      if (tail_3 = tail_2.succ?) && (tail_3.maybe_verb?)
-        succ = fold_ude1_left!(tail_2, tail)
-        node = fold!(node, succ, PosTag::PrepPhrase, dic: 7)
-
-        tail = tail_3.adverbs? ? fold_adverbs!(tail_3) : fold_verbs!(tail_3)
-        return fold!(node, tail, tail.tag, dic: 8)
+      unless tail.succ?(&.maybe_verb?)
+        node = fold!(node, verb.set!(""), PosTag::PrepPhrase, dic: 5)
+        return fold!(node, tail, PosTag::NounPhrase, dic: 6, swap: true)
       end
 
-      node = fold!(node, succ, PosTag::PrepPhrase, dic: 5)
-      return fold_ude1_left!(tail_2, tail)
+      noun = fold_ude1_left!(tail, verb, noun)
+      verb = tail.succ?
     end
 
-    fold!(node, succ, PosTag::PrepPhrase, dic: 5)
+    # fix prepos meaning
+    swap = false
+
+    case node.key
+    when "给"
+      node.val = "cho"
+      swap = true
+    when "让"
+      node.val = "khiến cho"
+    end
+
+    node = fold!(node, noun, PosTag::PrepPhrase, dic: 5)
+
+    case verb
+    when .nil?     then return node
+    when .adverbs? then verb = fold_adverbs!(verb)
+    when .verb?    then verb = fold_verbs!(verb)
+    end
+
+    verb = fold!(node, verb, verb.tag, dic: 8, swap: swap)
+    return verb if verb.verb_object? || verb.vintr?
+    return verb unless (tail = verb.succ?) && !tail.ends?
+
+    tail = scan_noun!(tail)
+    fold!(verb, tail, PosTag::VerbObject, dic: 8)
   end
 end

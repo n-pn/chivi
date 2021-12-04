@@ -11,8 +11,8 @@ module CV::TlRule
     end
 
     if month || exact_year?(node, appro)
-      prev = fold_swap!(prev, node, PosTag::Time, dic: 2)
-      return month ? fold_swap!(prev, month, prev.tag, dic: 2) : prev
+      prev = fold!(prev, node, PosTag::Time, dic: 2, swap: true)
+      return month ? fold!(prev, month, prev.tag, dic: 2, swap: true) : prev
     end
 
     fold!(prev, node, PosTag::Qttime, dic: 2)
@@ -37,13 +37,13 @@ module CV::TlRule
     date = fold_day?(node.succ?)
 
     if date || appro == -1
-      prev = fold_swap!(prev, node, PosTag::Time, dic: 2)
-      return date ? fold_swap!(prev, date, prev.tag, dic: 2) : prev
+      prev = fold!(prev, node, PosTag::Time, dic: 2, swap: true)
+      return date ? fold!(prev, date, prev.tag, dic: 2, swap: true) : prev
     end
 
     if appro == 0 && prev.to_int?.try(&.< 13)
       # TODO: check more cases
-      return fold_swap!(prev, node, PosTag::Time, dic: 2)
+      return fold!(prev, node, PosTag::Time, dic: 2, swap: true)
     end
 
     fold!(prev, node, PosTag::Qttime, dic: 2)
@@ -59,7 +59,7 @@ module CV::TlRule
     else          return
     end
 
-    fold_swap!(num, day, PosTag::Time, dic: 3)
+    fold!(num, day, PosTag::Time, dic: 3, swap: true)
   end
 
   def fold_hour!(node : MtNode, succ : MtNode, appro : Int32 = 0)

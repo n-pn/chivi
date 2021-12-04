@@ -102,7 +102,7 @@ struct CV::PosTag
   # words that can act as noun
   @[AlwaysInline]
   def center_noun?
-    @pos.nouns? || @tag.pro_per? || @tag.verb_object?
+    @pos.nouns? || @tag.nqiffy? || @tag.pro_per? || @tag.verb_object?
   end
 
   def ends?

@@ -41,6 +41,15 @@ class CV::MtNode
     @key.empty? || @val.blank?
   end
 
+  def set_body!(node : MtNode) : Nil
+    self.body = node
+    self.fix_root!(node.root?)
+    node.root = self
+  end
+
+  def fix_root!(@root : MtNode?) : Nil
+  end
+
   def prev?
     @prev.try { |x| yield x }
   end
@@ -49,48 +58,34 @@ class CV::MtNode
     @succ.try { |x| yield x }
   end
 
-  def set_prev!(node : Nil) : self
-    @prev = node
-    self
-  end
-
-  def set_prev!(node : MtNode) : self
+  def set_prev!(node : MtNode) : Nil
     node.fix_prev!(@prev)
     self.fix_prev!(node)
   end
 
-  def set_succ!(node : MtNode) : self
+  def set_prev!(@prev : Nil) : Nil
+  end
+
+  def set_succ!(node : MtNode) : Nil
     node.fix_succ!(@succ)
     self.fix_succ!(node)
   end
 
-  def set_succ!(node : Nil) : self
-    @succ = node
-    self
+  def set_succ!(@succ : Nil) : Nil
   end
 
-  def fix_prev!(@prev : self) : self
+  def fix_prev!(@prev : self) : Nil
     prev.succ = self
-    self
   end
 
-  def fix_prev!(@prev : Nil)
-    self
+  def fix_prev!(@prev : Nil) : Nil
   end
 
-  def fix_succ!(@succ : self) : self
+  def fix_succ!(@succ : self) : Nil
     succ.prev = self
   end
 
-  def fix_succ!(@succ : Nil) : self
-    self
-  end
-
-  def fix_root!(@root : Nil) : self
-    self
-  end
-
-  def fix_root!(@root : self) : self
+  def fix_succ!(@succ : Nil) : Nil
     self
   end
 
@@ -118,7 +113,15 @@ class CV::MtNode
   end
 
   def maybe_verb? : Bool
-    @tag.verbs? || @tag.adverbs? && @succ.try(&.maybe_verb?) || false
+    succ = self
+    while succ
+      # puts [succ, "maybe_verb", succ.verbs?]
+      return true if succ.verbs?
+      return false unless succ.adverbs? || succ.comma?
+      succ = succ.succ?
+    end
+
+    false
   end
 
   def maybe_adjt? : Bool

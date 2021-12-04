@@ -8,7 +8,7 @@ module CV::TlRule
     when .verbs? then return fold_verbs!(node)
     when .time?
       if (prev = node.prev?) && prev.time?
-        node = fold_swap!(prev, node, node.tag, dic: 4)
+        node = fold!(prev, node, node.tag, dic: 4, swap: true)
       end
     end
 
@@ -20,7 +20,7 @@ module CV::TlRule
     node = fold_nquant_noun!(node, succ) if succ.nouns?
 
     return node unless (succ = node.succ?) && succ.space?
-    fold_swap!(node, succ, PosTag::Space, dic: 3)
+    fold!(node, succ, PosTag::Space, dic: 3, swap: true)
   end
 
   def fold_nquant_noun!(prev : MtNode, node : MtNode)
@@ -103,7 +103,7 @@ module CV::TlRule
 
   def fold_yi_verb!(node : MtNode, succ : MtNode)
     return node unless node.key == "一" && succ.verb?
-    fold_swap!(node.set!("một phát"), succ, succ.tag, dic: 5)
+    fold!(node.set!("một phát"), succ, succ.tag, dic: 5, swap: true)
   end
 
   PRE_NUM_APPROS = {

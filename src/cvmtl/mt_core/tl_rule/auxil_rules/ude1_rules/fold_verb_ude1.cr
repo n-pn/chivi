@@ -10,9 +10,9 @@ module CV::TlRule
       else
         head = fold!(prev, verb, PosTag::DefnPhrase, dic: 9)
       end
-      fold_swap!(head, right, PosTag::NounPhrase, dic: 9)
+      fold!(head, right, PosTag::NounPhrase, dic: 9, swap: true)
     when .quantis?, .nquants?
-      verb = fold_swap!(verb, right, PosTag::NounPhrase, dic: 8)
+      verb = fold!(verb, right, PosTag::NounPhrase, dic: 8, swap: true)
       fold!(prev, verb, PosTag::NounPhrase, 3)
     else
       right

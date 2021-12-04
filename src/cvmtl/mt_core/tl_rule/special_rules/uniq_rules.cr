@@ -68,7 +68,7 @@ module CV::TlRule
     when "百分之"
       return node unless succ && succ.numbers?
       succ = fold_numbers!(succ)
-      fold_swap!(node, succ, PosTag::Number, dic: 4)
+      fold!(node, succ, PosTag::Number, dic: 4, swap: true)
     when "原来"
       if succ.try(&.ude1?) || node.prev?(&.contws?)
         node.set!("ban đầu", tag: PosTag::Modifier)

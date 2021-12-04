@@ -31,7 +31,7 @@ module CV::TlRule
   private def fold_ndigit_succs!(node : MtNode, succ : MtNode, tail : MtNode, tag : PosTag)
     node.key = "#{node.key}#{succ.key}#{tail.key}"
     node.set!("#{node.val}#{succ.val}#{tail.val}", tag)
-    node.fix_succ!(tail.succ?)
+    node.tap(&.fix_succ!(tail.succ?))
   end
 
   def fold_ndigit_nhanzi!(node : MtNode, succ : MtNode) : MtNode
@@ -51,6 +51,6 @@ module CV::TlRule
     node.val = val_io.to_s # TODO: correct unit system
 
     node.tag = PosTag::Number
-    node.fix_succ!(succ)
+    node.tap(&.fix_succ!(succ))
   end
 end
