@@ -16,6 +16,7 @@ module CV::TlRule
       # ude3 => ude1 grammar error
       fold!(prev, succ, prev.tag, dic: 8)
     else
+      # puts [ude1, prev, succ, ude1.idx, "here?"]
       ude1
     end
   end

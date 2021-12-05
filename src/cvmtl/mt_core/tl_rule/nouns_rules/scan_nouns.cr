@@ -41,7 +41,7 @@ module CV::TlRule
         when .adverb?
           node = nil
         else
-          puts [node, node.tag]
+          # puts [node, node.tag]
         end
       when .adjts?
         node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
@@ -85,7 +85,7 @@ module CV::TlRule
 
     return node unless mode != 1 && (succ = node.succ?)
 
-    fold_uzhi!(uzhi: succ, prev: node) if succ.uzhi?
+    node = fold_uzhi!(uzhi: succ, prev: node) if succ.uzhi?
     fold_noun_space!(noun: node, space: node.succ?)
   end
 

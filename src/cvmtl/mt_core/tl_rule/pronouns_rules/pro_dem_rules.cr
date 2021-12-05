@@ -1,5 +1,11 @@
 module CV::TlRule
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
+    if node.pro_ji? && succ.nhanzi?
+      succ.val = succ.val.sub("mười", "chục")
+      node = fold!(node, succ, PosTag::Number, dic: 5)
+      return scan_noun!(node.succ?, nquant: node).not_nil!
+    end
+
     node, quanti, succ = split_prodem!(node)
 
     if succ && !(succ.pro_dems? || succ.v_shi? || succ.v_you?)
@@ -28,8 +34,10 @@ module CV::TlRule
   end
 
   def split_prodem!(node : MtNode?, succ : MtNode? = node.succ?)
-    if succ && !node.pro_dem? # not pro_zhe, pro_na1, pro_ji
+    if succ && !node.pro_dem? # is pro_zhe, pro_na1, pro_ji
+
       succ = heal_quanti!(succ)
+
       return succ.quantis? ? {node, succ, succ.succ?} : {node, nil, succ}
     end
 
