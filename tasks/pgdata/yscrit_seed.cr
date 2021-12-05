@@ -65,7 +65,7 @@ module CV::YscritSeed
     File.open("var/yousuu/yscrits-invalid-json.txt", "a", &.puts(file))
   end
 
-  def init!(root : String)
+  def init!(root : String = "_db/yousuu/crits")
     @@count = 0
 
     Dir.children(root).each do |group|
@@ -134,7 +134,25 @@ module CV::YscritSeed
       File.open("tmp/yscrits-err.txt", "a", &.puts(line))
     end
   end
+
+  def test_cv!
+    engine = MtCore.generic_mtl("various")
+
+    text_maps = Dir.glob("#{DIR}/*-ztext.tsv")
+    text_maps.each_with_index(1) do |file, idx|
+      puts "- <#{idx}> #{file}"
+      map = Tabkv.new(file)
+
+      map.data.each_value do |lines|
+        lines.each do |line|
+          File.write("tmp/yscrits.txt", line)
+          engine.cv_plain(line)
+        end
+      end
+    end
+  end
 end
 
-CV::YscritSeed.init!("_db/yousuu/crits") if ARGV.includes?("init")
+CV::YscritSeed.init! if ARGV.includes?("init")
 CV::YscritSeed.seed! if ARGV.includes?("seed")
+CV::YscritSeed.test_cv! if ARGV.includes?("test_cv")

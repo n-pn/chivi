@@ -32,6 +32,7 @@ module CV::TlRule
       when .pro_per?
         node = proper || prodem || nquant ? nil : fold_pro_per!(node, node.succ?)
       when .adverbs?
+        break if mode == 2
         node = fold_adverbs!(node)
         case node.tag
         when .verbs?
@@ -84,7 +85,7 @@ module CV::TlRule
     node = fold_prodem_nounish!(prodem, node) if prodem
     node = fold_proper_nounish!(proper, node) if proper
 
-    return node unless mode != 1 && (succ = node.succ?)
+    return node unless mode > 0 && (succ = node.succ?)
     # puts [node, mode, "at_noun"]
 
     node = fold_uzhi!(uzhi: succ, prev: node) if succ.uzhi?
