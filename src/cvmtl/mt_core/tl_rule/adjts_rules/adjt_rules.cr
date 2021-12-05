@@ -122,6 +122,8 @@ module CV::TlRule
     end
 
     return adjt unless noun = scan_noun!(noun, mode: 1)
+    return adjt unless noun.center_noun?
+
     fold!(adjt, noun, noun.tag, dic: 6, flip: flip)
   end
 

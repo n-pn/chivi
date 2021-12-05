@@ -70,19 +70,32 @@ module CV::TlRule
 
     if nquant
       # puts [nquant, nquant.key, nquant.val]
-      nquant.each do |node|
-        case node.key
-        when "些" then node.val = "những"
-        when "个" then node.val = ""
-        end
-      end
 
+      nquant = clean_nquant(nquant, prodem)
       node = fold!(nquant, node, node.tag, dic: 4)
     end
 
     node = fold_prodem_nounish!(prodem, node) if prodem
     node = fold_proper_nounish!(proper, node) if proper
     mode != 1 ? fold_noun_after!(node, node.succ?) : node
+  end
+
+  def clean_nquant(nquant : MtNode, prodem : MtNode?)
+    return nquant.set!("những") if prodem && nquant.key == "些"
+    return nquant.set!("") if prodem && nquant.key == "个"
+
+    if body = nquant.body?
+      while body
+        if body.key.includes?("个")
+          body.val = body.val.sub(/\s*cái*/, "")
+          break
+        else
+          body = body.succ?
+        end
+      end
+    end
+
+    nquant
   end
 
   def fold_noun_after!(noun : MtNode, succ : MtNode? = noun.succ?)

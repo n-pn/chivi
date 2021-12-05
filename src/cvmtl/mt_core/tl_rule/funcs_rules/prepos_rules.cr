@@ -65,7 +65,7 @@ module CV::TlRule
   end
 
   def fold_prepos!(node : MtNode, noun = node.succ?) : MtNode
-    return node unless noun = scan_noun!(noun, mode: 1)
+    return node unless noun = scan_noun!(noun, mode: 0)
     return node unless verb = noun.succ?
 
     # combine with ude1
@@ -102,7 +102,7 @@ module CV::TlRule
 
     verb = fold!(node, verb, verb.tag, dic: 8, flip: flip)
     return verb if verb.verb_object? || verb.vintr?
-    return verb unless tail = scan_noun!(verb.succ?)
+    return verb unless tail = scan_noun!(verb.succ?, mode: 1)
     fold!(verb, tail, PosTag::VerbObject, dic: 6)
   end
 end

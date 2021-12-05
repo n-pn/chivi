@@ -17,11 +17,26 @@ module CV::TlRule
   end
 
   def fold_noun_space!(noun : MtNode, space = noun.succ?) : MtNode
-    return noun unless space && space.space?
-    # puts [noun, space, "fold_noun_space"]
+    # puts [noun, space, space.key, space.tag, "fold_noun_space"]
+    return noun unless space && space.spaces?
 
-    space.val = MTL::FIX_SPACES[space.key]? || space.val
-    no_flip = noun.time? && {"前"}.includes?(space.key)
-    fold!(noun, space, PosTag::Place, dic: 5, flip: !no_flip)
+    flip = true
+    case space.key
+    when "上", "下", "中"
+      return noun if space.succ?(&.ule?)
+      space.val = fix_space_val!(space)
+    when "前"
+      flip = !noun.time?
+    end
+
+    fold!(noun, space, PosTag::Place, dic: 5, flip: flip)
+  end
+
+  def fix_space_val!(node : MtNode)
+    case node.tag
+    when .v_shang? then "trên"
+    when .v_xia?   then "dưới"
+    else                node.key == "中" ? "trong" : node.val
+    end
   end
 end

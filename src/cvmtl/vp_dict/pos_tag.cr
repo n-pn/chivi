@@ -99,6 +99,11 @@ struct CV::PosTag
     @pos.funcws?
   end
 
+  @[AlwaysInline]
+  def spaces?
+    @tag.space? || @tag.v_shang? || @tag.v_xia?
+  end
+
   # words that can act as noun
   @[AlwaysInline]
   def center_noun?
