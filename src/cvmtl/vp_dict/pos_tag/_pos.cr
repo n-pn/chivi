@@ -19,5 +19,7 @@ struct CV::PosTag
     SufNouns; SufVerbs; SufAdjts
 
     Strings; Uniques
+
+    Junction
   end
 end

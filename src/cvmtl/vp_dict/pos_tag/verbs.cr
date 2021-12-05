@@ -17,14 +17,4 @@ struct CV::PosTag
     # 动词性语素 - verbal morpheme
     {"vg", "Vmorp", Pos::Verbs | Pos::Contws},
   }
-
-  @[AlwaysInline]
-  def verbs?
-    @pos.verbs?
-  end
-
-  @[AlwaysInline]
-  def vdirs?
-    @pos.vdirs?
-  end
 end

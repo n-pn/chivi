@@ -3,17 +3,30 @@ module CV::TlRule
     return right.adjts?
   end
 
-  def fold_adjt_conjunct!(node : MtNode, prev = node.prev?, succ = node.succ?)
+  def fold_verb_junction!(junc : MtNode, verb = node.prev, succ = junc.succ?)
+    return unless verb && succ
+    return unless succ.verb?
+
+    if junc.concoord?
+      junc.val = "và" if junc.key == "和"
+    elsif junc.conjunct?
+      return unless junc.key == "但"
+    end
+
+    fold!(verb, succ, tag: PosTag::Aform, dic: 4)
+  end
+
+  def fold_adjt_junction!(node : MtNode, prev = node.prev?, succ = node.succ?)
+    return unless prev && succ
+
     if node.concoord?
       node.val = "và" if node.key == "和"
-    else
+    elsif node.conjunct?
       return unless node.key == "但"
     end
 
-    return unless prev && succ
     succ = scan_adjt!(succ)
     return unless succ.adjts?
-
     fold!(prev, succ, tag: PosTag::Aform, dic: 4)
   end
 

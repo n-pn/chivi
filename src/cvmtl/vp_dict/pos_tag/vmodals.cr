@@ -7,11 +7,6 @@ struct CV::PosTag
   VmNeng  = new(Tag::VmNeng, VMODPOS)
   VmXiang = new(Tag::VmXiang, VMODPOS)
 
-  @[AlwaysInline]
-  def vmodals?
-    @pos.vmodals?
-  end
-
   def self.map_vmodals(key : ::String)
     case key
     when "会" then VmHui   # động từ `hội`

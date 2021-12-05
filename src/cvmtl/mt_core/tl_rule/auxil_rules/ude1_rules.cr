@@ -1,4 +1,5 @@
 module CV::TlRule
+  # do not return left when fail to prevent infinity loop!
   def fold_ude1!(ude1 : MtNode, prev = ude1.prev?, succ = ude1.succ?) : MtNode
     return ude1 unless prev
     return heal_ude!(ude1, prev) unless succ && !(succ.ends?)
@@ -36,7 +37,11 @@ module CV::TlRule
     fold!(prev, ude1, PosTag::DefnPhrase, dic: 6, flip: true)
   end
 
-  def fold_ude1_left!(left : MtNode, ude1 : MtNode, right : MtNode, mode = 0) : MtNode
+  # do not return left when fail to prevent infinity loop
+  def fold_ude1_left!(left : MtNode, ude1 : MtNode, right : MtNode?, mode = 0) : MtNode
+    return ude1 unless right
+    left.tag = PosTag::Adjt if left.ajno?
+
     case left
     when .nouns?, .pro_per?
       fold_noun_ude1!(left, ude1: ude1, right: right, mode: mode)

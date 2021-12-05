@@ -89,15 +89,36 @@ struct CV::PosTag
     end
   end
 
-  @[AlwaysInline]
-  def contws?
-    @pos.contws?
-  end
+  delegate nouns?, to: @pos
+  delegate times?, to: @pos
+  delegate names?, to: @pos
+  delegate human?, to: @pos
 
-  @[AlwaysInline]
-  def funcws?
-    @pos.funcws?
-  end
+  delegate numbers?, to: @pos
+  delegate quantis?, to: @pos
+  delegate nquants?, to: @pos
+  delegate numeric?, to: @pos
+
+  delegate pronouns?, to: @pos
+  delegate pro_dems?, to: @pos
+  delegate pro_ints?, to: @pos
+
+  delegate verbs?, to: @pos
+  delegate vdirs?, to: @pos
+  delegate vmodals?, to: @pos
+
+  delegate adjts?, to: @pos
+  delegate adverbs?, to: @pos
+
+  delegate preposes?, to: @pos
+  delegate auxils?, to: @pos
+
+  delegate junction?, to: @pos
+  delegate strings?, to: @pos
+
+  delegate contws?, to: @pos
+  delegate funcws?, to: @pos
+  delegate uniques?, to: @pos
 
   @[AlwaysInline]
   def spaces?
@@ -110,6 +131,7 @@ struct CV::PosTag
     @pos.nouns? || @tag.nqiffy? || @tag.pro_per? || @tag.verb_object?
   end
 
+  @[AlwaysInline]
   def ends?
     none? || puncts? || interjection? || modalparticle?
   end

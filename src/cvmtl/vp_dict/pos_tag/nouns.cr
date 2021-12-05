@@ -35,24 +35,4 @@ struct CV::PosTag
     # 时间词 - time word - thời gian
     {"t", "Time", Pos::Nouns | Pos::Times | Pos::Contws},
   }
-
-  @[AlwaysInline]
-  def nouns?
-    @pos.nouns?
-  end
-
-  @[AlwaysInline]
-  def times?
-    @pos.times?
-  end
-
-  @[AlwaysInline]
-  def names?
-    @pos.names?
-  end
-
-  @[AlwaysInline]
-  def human?
-    @pos.human?
-  end
 end

@@ -24,11 +24,6 @@ struct CV::PosTag
     {{ type[0].id }} = new(Tag::{{type[0].id}}, AUPOS)
   {% end %}
 
-  @[AlwaysInline]
-  def auxils?
-    @pos.auxils?
-  end
-
   def self.map_auxils(key : ::String)
     {% begin %}
     case key

@@ -67,8 +67,8 @@ module CV::TlRule
       when .suf_verbs?
         node = fold_adj_adv!(node, prev)
         return fold_suf_verb!(node, succ)
-      when .penum?, .conjunct?
-        break unless fold = fold_adjt_conjunct!(succ, prev: node)
+      when .junction?
+        break unless fold = fold_adjt_junction!(succ, prev: node)
         node = fold
       when .adv_bu?
         break unless (succ_2 = succ.succ?)

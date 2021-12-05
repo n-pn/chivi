@@ -18,26 +18,6 @@ struct CV::PosTag
   Nqverb = new(Tag::Nqverb, NQ_POS)
   Nqiffy = new(Tag::Nqiffy, NQ_POS) # unknown nquants
 
-  @[AlwaysInline]
-  def numbers?
-    @pos.numbers?
-  end
-
-  @[AlwaysInline]
-  def quantis?
-    @pos.quantis?
-  end
-
-  @[AlwaysInline]
-  def nquants?
-    @pos.nquants?
-  end
-
-  @[AlwaysInline]
-  def numeric?
-    @pos.numeric?
-  end
-
   NUMLAT_RE = /^\d+$/
   NUMHAN_RE = /^[零〇一二两三四五六七八九十百千万亿兆]+$/
 

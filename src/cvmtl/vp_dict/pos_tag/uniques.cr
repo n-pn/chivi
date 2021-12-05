@@ -7,11 +7,6 @@ struct CV::PosTag
   VShi   = new(Tag::VShi, Pos::Verbs | Pos::Uniques | Pos::Contws)
   VYou   = new(Tag::VYou, Pos::Verbs | Pos::Uniques | Pos::Contws)
 
-  @[AlwaysInline]
-  def uniques?
-    @pos.uniques?
-  end
-
   def self.map_uniques(key : ::String)
     case key
     when "好" then AdjHao # "hảo"

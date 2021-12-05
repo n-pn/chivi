@@ -33,7 +33,16 @@ module CV::TlRule
         node = proper || prodem || nquant ? nil : fold_pro_per!(node, node.succ?)
       when .adverbs?
         node = fold_adverbs!(node)
-        node = node.verbs? ? fold_verb_as_noun!(node) : fold_adjt_as_noun!(node)
+        case node.tag
+        when .verbs?
+          node = fold_verb_as_noun!(node)
+        when .adjts?
+          node = fold_adjt_as_noun!(node)
+        when .adverb?
+          node = nil
+        else
+          puts [node, node.tag]
+        end
       when .adjts?
         node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
         node = fold_adjt_as_noun!(node)
@@ -43,9 +52,10 @@ module CV::TlRule
         case succ
         when .nouns?
           succ = fold_noun!(succ, mode: 1)
-          node = fold!(node, succ, PosTag::NounPhrase, dic: 5)
+          node = fold!(node, succ, PosTag::NounPhrase, dic: 5, flip: true)
         when .ude1?
-          node = fold_verb_ude1!(node, succ)
+          ude1 = fold_ude1_left!(node, succ, succ.succ?)
+          node = ude1 unless ude1.ude1?
         end
       when .verbs?
         node = fold_verb_as_noun!(node)
@@ -126,6 +136,8 @@ module CV::TlRule
   end
 
   def fold_verb_as_noun!(node : MtNode, prev : MtNode? = nil)
+    return node if node.v_shi?
+
     case node
     when .vmodal?
       if vmodal_is_noun?(node)

@@ -23,9 +23,4 @@ struct CV::PosTag
     else          Adverb
     end
   end
-
-  @[AlwaysInline]
-  def adverbs?
-    @pos.adverbs?
-  end
 end

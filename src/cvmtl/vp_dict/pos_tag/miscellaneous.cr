@@ -17,8 +17,8 @@ struct CV::PosTag
     # 虚词 - hư từ #
     ###############
 
-    {"c", "Conjunct", Pos::Funcws},  # 连词 - conjunction - liên từ
-    {"cc", "Concoord", Pos::Funcws}, # 并列连词 - coordinating conjunction - liên từ kết hợp
+    {"c", "Conjunct", Pos::Junction | Pos::Funcws},  # 连词 - conjunction - liên từ
+    {"cc", "Concoord", Pos::Junction | Pos::Funcws}, # 并列连词 - coordinating conjunction - liên từ kết hợp
 
     {"e", "Interjection", Pos::Funcws},  # 叹词 - interjection/exclamation - thán từ
     {"y", "Modalparticle", Pos::Funcws}, # 语气词 - modal particle - ngữ khí
@@ -33,14 +33,4 @@ struct CV::PosTag
     {"dp", "DefnPhrase", Pos::Contws}, # cụm định ngữ/definition
     {"pp", "PrepPhrase", Pos::Contws}, # cụm giới từ
   }
-
-  @[AlwaysInline]
-  def strings?
-    @pos.strings?
-  end
-
-  @[AlwaysInline]
-  def uniqs?
-    @pos.uniqs?
-  end
 end

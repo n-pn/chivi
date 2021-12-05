@@ -34,7 +34,7 @@ module CV::MTL::Serialize
   end
 
   def inspect(io : IO = STDOUT, pad = -1) : Nil
-    # return if @key == "" && @val == " "
+    return if @key == "" && @val == " "
     io << " " * pad if pad >= 0
     io << "[#{@key}/#{@val}/#{@tag.tag}/#{@dic}/#{@idx}]"
     io << "\n" if pad >= 0

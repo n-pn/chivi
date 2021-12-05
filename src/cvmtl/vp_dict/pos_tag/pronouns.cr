@@ -19,21 +19,6 @@ struct CV::PosTag
   ProInt = new(Tag::ProInt, INTPOS)
   ProNa2 = new(Tag::ProNa2, INTPOS)
 
-  @[AlwaysInline]
-  def pronouns?
-    @pos.pronouns?
-  end
-
-  @[AlwaysInline]
-  def pro_dems?
-    @pos.pro_dems?
-  end
-
-  @[AlwaysInline]
-  def pro_ints?
-    @pos.pro_ints?
-  end
-
   def self.map_pro_dems(key : ::String)
     case key
     when "这" then ProZhe

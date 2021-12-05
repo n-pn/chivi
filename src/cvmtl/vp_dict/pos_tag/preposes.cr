@@ -17,9 +17,4 @@ struct CV::PosTag
     else          Prepos
     end
   end
-
-  @[AlwaysInline]
-  def preposes?
-    @pos.preposes?
-  end
 end

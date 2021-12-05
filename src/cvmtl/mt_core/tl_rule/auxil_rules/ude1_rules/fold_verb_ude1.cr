@@ -1,7 +1,8 @@
 module CV::TlRule
   def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, right : MtNode, mode = 0)
-    return right unless prev = verb.prev?
-    # puts [prev, verb]
+    return ude1 unless (prev = verb.prev?) && prev.center_noun?
+    # puts [prev, verb, "fold_verb_ude1!"]
+    # TODO: fix this shit!
 
     case prev.tag
     when .nouns?
@@ -15,7 +16,7 @@ module CV::TlRule
       verb = fold!(verb, right, PosTag::NounPhrase, dic: 8, flip: true)
       fold!(prev, verb, PosTag::NounPhrase, 3)
     else
-      right
+      ude1
     end
   end
 end

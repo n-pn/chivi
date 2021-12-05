@@ -19,9 +19,4 @@ struct CV::PosTag
     # 区别词性惯用语 - noun modifier morpheme
     # {"bl", "Modiform", Pos::Adjts | Pos::Contws},
   }
-
-  @[AlwaysInline]
-  def adjts?
-    @pos.adjts?
-  end
 end

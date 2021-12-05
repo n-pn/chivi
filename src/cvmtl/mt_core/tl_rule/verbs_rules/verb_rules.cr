@@ -53,6 +53,9 @@ module CV::TlRule
       when .suf_nouns?
         verb = fold_left_verb!(verb, prev)
         return fold_suf_noun!(verb, succ)
+      when .junction?
+        break unless join = fold_verb_junction!(junc: succ, verb: verb)
+        verb = join
       else
         break
       end
