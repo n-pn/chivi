@@ -1,9 +1,5 @@
 module CV::TlRule
   def fold_space!(node : MtNode) : MtNode
-    if (prev = node.prev?) && (prev.nouns? || prev.pro_per?)
-      return fold_noun_space!(prev, node)
-    end
-
     case node.key
     when "中"
       node.set!("trúng", PosTag::Verb)
