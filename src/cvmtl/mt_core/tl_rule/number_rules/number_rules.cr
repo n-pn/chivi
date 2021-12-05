@@ -1,7 +1,6 @@
 module CV::TlRule
   def fold_number!(node : MtNode)
-    puts ["number: ", node]
-
+    # puts ["number: ", node]
     node = fuse_number!(node) # if head.numbers?
 
     case node

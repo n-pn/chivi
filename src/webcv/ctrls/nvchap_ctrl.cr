@@ -126,7 +126,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     1.upto(lines.size - 1) do |i|
       line = lines.unsafe_fetch(i)
-      File.write("tmp/nvchap.txt", "#{dname}\n#{line}")
+      # File.write("tmp/nvchap.txt", "#{dname}\n#{line}")
 
       strio << "\n"
       cvmtl.cv_plain(line).to_str(strio)
