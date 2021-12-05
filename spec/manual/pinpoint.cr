@@ -2,7 +2,9 @@ require "../../src/cvmtl/mt_core"
 
 GENERIC = CV::MtCore.generic_mtl("7zx48vye")
 
-inp = "一个不漂亮但很温柔的妻子"
+inp = "xx 1:12 xx"
 res = GENERIC.cv_plain(inp)
 
-puts res.inspect, inp, res
+[res.inspect, inp, res].each do |text|
+  puts "--------", text
+end
