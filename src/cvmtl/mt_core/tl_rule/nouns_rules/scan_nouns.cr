@@ -1,7 +1,9 @@
 module CV::TlRule
   # modes:
   # 1 => do not include spaces after nouns
-  # 2 => do not combine verb with object
+  # 2 => ??
+  # 3 => scan_noun after ude1
+  #   can return non nounish node
   def scan_noun!(node : MtNode?, mode : Int32 = 0,
                  proper : MtNode? = nil, proint : MtNode? = nil,
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
@@ -32,11 +34,11 @@ module CV::TlRule
       when .pro_per?
         node = proper || prodem || nquant ? nil : fold_pro_per!(node, node.succ?)
       when .adverbs?
-        break if mode == 2
         node = fold_adverbs!(node)
+
         case node.tag
         when .verbs?
-          node = fold_verb_as_noun!(node)
+          node = fold_verb_as_noun!(node, mode: mode)
         when .adjts?
           node = fold_adjt_as_noun!(node)
         when .adverb?
@@ -44,9 +46,6 @@ module CV::TlRule
         else
           # puts [node, node.tag]
         end
-      when .adjts?
-        node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
-        node = fold_adjt_as_noun!(node)
       when .verb_object?
         break unless succ = node.succ?
 
@@ -59,7 +58,10 @@ module CV::TlRule
           node = ude1 unless ude1.ude1?
         end
       when .verbs?
-        node = fold_verb_as_noun!(node)
+        node = fold_verb_as_noun!(node, mode: mode)
+      when .adjts?
+        node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
+        node = fold_adjt_as_noun!(node)
       when .nouns?
         node = fold_noun!(node, mode: 1)
 
@@ -69,7 +71,7 @@ module CV::TlRule
       break
     end
 
-    unless node && node.center_noun?
+    unless node && (node.center_noun? || mode == 3)
       return fold_prodem_nounish!(prodem, nquant)
     end
 
@@ -138,7 +140,7 @@ module CV::TlRule
     fold_adjt_noun!(node, noun, ude1)
   end
 
-  def fold_verb_as_noun!(node : MtNode, prev : MtNode? = nil)
+  def fold_verb_as_noun!(node : MtNode, prev : MtNode? = nil, mode = 0)
     return node if node.v_shi?
 
     case node
@@ -157,8 +159,9 @@ module CV::TlRule
     end
 
     if node.nouns?
-      return prev ? fold!(prev, node, PosTag::NounPhrase, dic: 9, flip: true) : node
-    elsif !(succ = node.succ?)
+      return node unless prev
+      return fold!(prev, node, PosTag::NounPhrase, dic: 9, flip: true)
+    elsif mode == 3 || !(succ = node.succ?)
       return prev || node
     end
 

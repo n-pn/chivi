@@ -6,9 +6,12 @@ module CV::TlRule
 
     ude1.set!("")
 
-    if noun = scan_noun!(succ, mode: 2)
-      fold_ude1_left!(prev, ude1: ude1, right: noun, mode: 1)
-    elsif prev.adjt? && succ.verbs?
+    if noun = scan_noun!(succ, mode: 3)
+      return fold_ude1_left!(prev, ude1, noun, mode: 1) if noun.center_noun?
+      succ = noun
+    end
+
+    if prev.adjt? && succ.verbs?
       # puts [prev, succ, ude1]
       # handle adjt + ude1 + verb
       fold!(prev, succ, succ.tag, dic: 9)
