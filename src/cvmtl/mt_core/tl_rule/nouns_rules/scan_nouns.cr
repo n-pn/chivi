@@ -2,69 +2,107 @@ module CV::TlRule
   # modes:
   # 1 => do not include spaces after nouns
   # 2 => do not combine verb with object
-  def scan_noun!(head : MtNode, mode = 0)
-    scan_noun!(head, mode) { |x| x }
+  def scan_noun!(node : MtNode?, mode : Int32 = 0,
+                 proper : MtNode? = nil, proint : MtNode? = nil,
+                 prodem : MtNode? = nil, nquant : MtNode? = nil)
+    while node && !node.ends?
+      # puts ["scan_noun", node, mode]
+
+      case node
+      when .uniques?
+        node = heal_uniques!(node)
+        break
+      when .popens?
+        node = fold_quoted!(node)
+        node = fold_noun!(node) if node.nouns?
+        break
+      when .pro_per?
+        node = proper || prodem || nquant ? nil : fold_pro_per!(node, node.succ?)
+        break
+      when .pro_dems?
+        break if prodem || nquant
+        prodem, nquant, node = split_prodem!(node, node.succ?)
+      when .numeric?
+        break if nquant
+        node = fuse_number!(node)
+        break unless node.numeric?
+        nquant, node = node, node.succ?
+      when .adverbs?
+        node = fold_adverbs!(node)
+        node = fold_head_ude1_noun!(node) if node.adjts? || node.verbs?
+        break
+      when .adjts?
+        node = node.ajno? ? fold_ajno!(node) : fold_adjts!(node)
+
+        unless node.nouns? || !(succ = node.succ?)
+          noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
+          node = fold_adjt_noun!(node, noun, ude1)
+        end
+
+        break
+      when .vmodal?
+        if vmodal_is_noun?(node)
+          node.tag = PosTag::Noun
+        else
+          node = heal_vmodal!(node)
+          node = fold_head_ude1_noun!(node) if node.verbs?
+        end
+
+        break
+      when .verbs?
+        node = node.veno? ? fold_veno!(node) : fold_verbs!(node)
+        node = fold_head_ude1_noun!(node) if node.verbs?
+        break
+      when .nouns?
+        node = fold_noun!(node, mode: 1)
+        node = scan_noun!(node) || node unless node.nouns?
+        break
+      else
+        break
+      end
+    end
+
+    unless node && node.center_noun?
+      return fold_prodem_nounish!(prodem, nquant)
+    end
+
+    # puts [node, prodem, nquant]
+
+    if nquant
+      # puts [nquant, nquant.key, nquant.val]
+      nquant.each do |node|
+        case node.key
+        when "些" then node.val = "những"
+        when "个" then node.val = ""
+        end
+      end
+
+      node = fold!(nquant, node, node.tag, dic: 4)
+    end
+
+    node = fold_prodem_nounish!(prodem, node) if prodem
+    node = fold_proper_nounish!(proper, node) if proper
+    mode != 1 ? fold_noun_after!(node, node.succ?) : node
   end
 
-  def scan_noun!(head : MtNode, mode = 0, &block : MtNode -> MtNode)
-    # puts ["scan_noun", head, mode]
+  def fold_noun_after!(noun : MtNode, succ : MtNode? = noun.succ?)
+    return noun unless succ
 
-    case head
-    when .uniques?
-      head = heal_uniques!(head)
-    when .pronouns?
-      head = fold_pronouns!(head)
-    when .popens?
-      head = fold_quoted!(head)
-      head = fold_noun!(head) if head.nouns?
-    when .adjts?, .modifier?
-      head = head.ajno? ? fold_ajno!(head) : fold_adjts!(head)
-
-      unless head.nouns? || !(succ = head.succ?)
-        noun, ude1 = succ.ude1? ? {succ.succ?, succ} : {succ, nil}
-        head = fold_adjt_noun!(head, noun, ude1)
-      end
-    when .numeric?
-      head = fold_number!(head)
-    when .adverbs?
-      head = fold_adverbs!(head)
-      head = fold_head_ude1_noun!(head) if head.adjts? || head.verbs?
-    when .vmodal?
-      if vmodal_is_noun?(head)
-        head.tag = PosTag::Noun
-      else
-        head = heal_vmodal!(head)
-        head = fold_head_ude1_noun!(head) if head.verbs?
-      end
-    when .verbs?
-      head = head.veno? ? fold_veno!(head) : fold_verbs!(head)
-      head = fold_head_ude1_noun!(head) if head.verbs?
-    when .nouns?
-      head = fold_noun!(head, mode: 1) # fold noun but do not consume penum
-      head = head.nouns? ? head : scan_noun!(head)
+    case succ
+    when .uzhi?
+      fold_uzhi!(uzhi: succ, prev: noun)
+    when .space?
+      fold_noun_space!(noun: noun, space: succ)
+    else
+      noun
     end
-
-    return head unless head.center_noun?
-
-    head = yield head
-    return head unless succ = head.succ?
-
-    if mode == 1
-      case succ
-      when .uzhi?  then fold_uzhi!(uzhi: succ, prev: head)
-      when .space? then fold_noun_space!(noun: head, space: succ)
-      else
-      end
-    end
-
-    head
   end
 
   def fold_head_ude1_noun!(head : MtNode)
     return head unless (succ = head.succ?) && succ.ude1?
     succ.val = "" unless head.noun? || head.names?
 
-    return head unless tail = succ.succ?
-    fold!(head, scan_noun!(tail), PosTag::NounPhrase, dic: 4, flip: true)
+    return head unless tail = scan_noun!(succ.succ?)
+    fold!(head, tail, PosTag::NounPhrase, dic: 4, flip: true)
   end
 end

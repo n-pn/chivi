@@ -86,7 +86,7 @@ module CV::TlRule
       return verb unless (succ = verb.succ?) && succ.numeric?
 
       if is_pre_appro_num?(verb)
-        succ = fold_numbers!(succ) if succ.numeric?
+        succ = fuse_number!(succ) if succ.numeric?
         return fold!(verb, succ, succ.tag, dic: 4)
       end
 
@@ -130,9 +130,8 @@ module CV::TlRule
         return if (succ = compl.succ?) && (succ.nouns? || succ.pro_per?)
         compl.val = "đúng"
       when .pre_zai?
-        if succ = compl.succ?
-          succ = scan_noun!(succ)
-          return if succ.center_noun? && succ.succ?(&.maybe_verb?)
+        if succ = scan_noun!(compl.succ?)
+          return if succ.succ?(&.maybe_verb?)
         end
 
         compl.val = "ở"

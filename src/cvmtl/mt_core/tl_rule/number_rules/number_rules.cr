@@ -1,8 +1,8 @@
 module CV::TlRule
   def fold_number!(node : MtNode)
-    # puts ["number: ", node]
+    # puts ["number: ", node, prodem]
 
-    node = fold_numbers!(node) # if head.numbers?
+    node = fuse_number!(node) # if head.numbers?
 
     case node
     when .verbs? then return fold_verbs!(node)
@@ -12,8 +12,8 @@ module CV::TlRule
       end
     end
 
-    return node unless (succ = node.succ?) && !succ.ends?
-    scan_noun!(succ, mode: 1) { |noun| fold_nquant_noun!(node, noun) }
+    # puts ["number: ", node, prodem]
+    scan_noun!(node.succ?, nquant: node) || node
   end
 
   def fold_nquant_noun!(prev : MtNode, node : MtNode)
@@ -22,7 +22,7 @@ module CV::TlRule
     node
   end
 
-  def fold_numbers!(node : MtNode, prev : MtNode? = nil) : MtNode
+  def fuse_number!(node : MtNode, prev : MtNode? = nil) : MtNode
     case node.tag
     when .ndigit?
       node = fold_ndigit!(node, prev: prev)

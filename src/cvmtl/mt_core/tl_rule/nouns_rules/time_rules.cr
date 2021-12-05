@@ -6,7 +6,7 @@ module CV::TlRule
     when "早上", "下午", "凌晨", "早晨", "中午", "晚上"
       case succ.tag
       when .nhanzi?, .ndigit?
-        succ = fold_numbers!(succ, prev: node)
+        succ = fuse_number!(succ, prev: node)
         succ.time? ? fold_time_prev!(succ, prev: node) : node
       when .adj_hao?
         fold!(node, succ.set!("chào"), PosTag::VerbPhrase, dic: 8, flip: true)

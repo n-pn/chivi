@@ -16,7 +16,7 @@ module CV::TlRule
     succ.val = succ_val
 
     if (succ_2 = succ.succ?) && succ_2.numeric?
-      succ_2 = fold_numbers!(succ_2)
+      succ_2 = fuse_number!(succ_2)
       return fold!(adjt, succ_2, PosTag::Aform, dic: 7)
     end
 
@@ -109,21 +109,20 @@ module CV::TlRule
 
   def fold_adjt_noun!(adjt : MtNode, noun : MtNode?, ude1 : MtNode? = nil)
     return adjt if !noun
-
-    noun = ude1 ? scan_noun!(noun, mode: 2) : fold_noun!(noun, mode: 1)
-    return adjt unless noun.nouns? || ude1 && noun.pronouns?
+    flip = true
 
     if ude1
-      ude1.val = ""
-      adjt = fold!(adjt, ude1, PosTag::DefnPhrase, 1)
-    elsif adjt.adjt? && adjt.key.size == 1
-      return adjt
+      adjt = fold!(adjt, ude1.set!(""), PosTag::DefnPhrase, 2)
+    else
+      case adjt.tag
+      when .aform?    then return adjt
+      when .adjt?     then return adjt if adjt.key.size > 1
+      when .modifier? then flip = !do_not_flip?(adjt.key)
+      end
     end
 
-    no_flip = adjt.modifier? && do_not_flip?(adjt.key)
-    noun = fold!(adjt, noun, noun.tag, dic: 6, flip: !no_flip)
-
-    fold_noun_space!(noun)
+    return adjt unless noun = scan_noun!(noun, mode: 1)
+    fold!(adjt, noun, noun.tag, dic: 6, flip: flip)
   end
 
   def do_not_flip?(key : String)

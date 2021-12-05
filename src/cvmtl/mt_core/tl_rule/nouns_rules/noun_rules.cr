@@ -90,7 +90,7 @@ module CV::TlRule
       when .adverbs? then succ = succ.succ?
       when .adjts?   then return !succ.succ?(&.ude1?)
       when .preposes?, .verbs?
-        return is_linking_verb?(prev, succ)
+        return is_linking_verb?(prev, succ) || prev.ends?
       else return true
       end
     end

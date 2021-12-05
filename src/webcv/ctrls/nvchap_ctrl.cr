@@ -125,12 +125,12 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
     1.upto(lines.size - 1) do |i|
       line = lines.unsafe_fetch(i)
-      # puts [line, i]
+      puts [line, i]
       strio << "\n"
       cvmtl.cv_plain(line).to_str(strio)
     rescue err
       Log.error { err.message }
-      strio << "\t$$Máy dịch gặp lỗi, mời liên hệ ban quản trị$$"
+      strio << "\t[[Máy dịch gặp lỗi, mời liên hệ ban quản trị]]"
     end
   rescue err
     puts err

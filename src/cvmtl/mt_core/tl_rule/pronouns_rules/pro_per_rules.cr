@@ -10,18 +10,16 @@ module CV::TlRule
     when .concoord?, .penum?
       fold_noun_concoord!(succ, node) || node
     when .nouns?, .numbers?, .pro_per?, .pro_dem?
-      succ = scan_noun!(succ)
-
-      return node unless succ.nouns?
+      return node unless succ = scan_noun!(succ)
       return node unless noun_can_combine?(node.prev?, succ.succ?)
-      fold_pro_per_noun!(node, succ)
+      fold_proper_nounish!(node, succ)
     else
       # TODO: handle special cases
       node
     end
   end
 
-  def fold_pro_per_noun!(node : MtNode, succ : MtNode) : MtNode
+  def fold_proper_nounish!(node : MtNode, succ : MtNode) : MtNode
     case succ.tag
     when .space?
       fold_noun_space!(node, succ)

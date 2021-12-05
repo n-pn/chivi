@@ -1,29 +1,9 @@
 module CV::TlRule
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
-    case node
-    when .pro_zhe?, .pro_na1?, .pro_ji?
-      succ = heal_quanti!(succ)
-      if succ.quantis?
-        quanti = succ
-        succ = quanti.succ?
-      end
-    else
-      node, quanti = split_pro_dem!(node) if node.key.size > 1
-    end
+    node, quanti, succ = split_prodem!(node)
 
     if succ && !(succ.pro_dems? || succ.v_shi? || succ.v_you?)
-      scan_noun!(succ, mode: 1) do |succ|
-        if quanti
-          case quanti.key
-          when "些" then quanti.val = "những"
-          when "个" then quanti.val = ""
-          end
-          succ = fold!(quanti, succ, succ.tag, dic: 4)
-        end
-
-        flip = !succ.time? && node.pro_zhe? || node.pro_na1?
-        return fold!(node, succ, PosTag::NounPhrase, dic: 2, flip: flip)
-      end
+      return scan_noun!(succ, prodem: node, nquant: quanti).not_nil!
     end
 
     return fold!(node, quanti, PosTag::ProDem, dic: 8, flip: true) if quanti
@@ -34,11 +14,48 @@ module CV::TlRule
     node
   end
 
-  def fold_pro_dem_noun!(node : MtNode, succ : MtNode?)
-    if (succ = node.succ?) && !succ.pro_dem?
-      succ = scan_noun!(succ, prev: node)
-      node = succ if succ.nouns?
+  def fold_prodem_nounish!(prodem : MtNode?, nounish : MtNode?)
+    return nounish unless prodem
+
+    if nounish
+      flip = !nounish.time? && prodem.pro_zhe? || prodem.pro_na1?
+      return fold!(prodem, nounish, PosTag::NounPhrase, dic: 2, flip: flip)
     end
+
+    return prodem.set!("cái này") if prodem.pro_zhe?
+    return prodem.set!("vậy") if prodem.pro_na1? && !prodem.succ?(&.maybe_verb?)
+    prodem
+  end
+
+  def split_prodem!(node : MtNode?, succ : MtNode? = node.succ?)
+    if succ && !node.pro_dem? # not pro_zhe, pro_na1, pro_ji
+      succ = heal_quanti!(succ)
+      return succ.quantis? ? {node, succ, succ.succ?} : {node, nil, succ}
+    end
+
+    if (qtnoun = node.body?) && (prodem = qtnoun.succ?)
+      # flip back
+
+      prodem.fix_prev!(node.prev?)
+      qtnoun.fix_succ!(node.succ?)
+      prodem.fix_succ!(qtnoun)
+
+      return {prodem, qtnoun, succ}
+    end
+
+    return {node, nil, succ} if node.key.size < 2
+    node.key, qt_key = node.key.split("", 2)
+
+    node.tag, pro_val = map_pro_dem!(node.key)
+    return {node, nil, succ} if pro_val.empty?
+
+    qt_val = node.val.sub(" " + pro_val, "")
+    node.val = pro_val
+
+    qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
+
+    node.set_succ!(qtnoun)
+    {node, qtnoun, succ}
   end
 
   # FIX_PRONOUNS = {
@@ -60,29 +77,27 @@ module CV::TlRule
       qtnoun.fix_succ!(node.succ?)
       prodem.fix_succ!(qtnoun)
 
-      # puts prodem.prev?(&.succ?) == prodem
-      # puts qtnoun.succ?(&.prev?) == qtnoun
-    else
-      node.key, qt_key = node.key.split("", 2)
-      node.tag, pro_val = map_pro_dem!(node.key)
-      return {node, nil} if pro_val.empty?
-
-      qt_val = node.val.sub(" " + pro_val, "")
-      node.val = pro_val
-
-      qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
-
-      prodem = node
-      prodem.set_succ!(qtnoun)
-
-      # puts prodem.prev?(&.succ?) == prodem
-      # puts qtnoun.succ?(&.prev?) == qtnoun
+      return {prodem, qtnoun}
     end
+
+    return {node, nil} if node.key.size < 2
+    node.key, qt_key = node.key.split("", 2)
+
+    node.tag, pro_val = map_pro_dem!(node.key)
+    return {node, nil} if pro_val.empty?
+
+    qt_val = node.val.sub(" " + pro_val, "")
+    node.val = pro_val
+
+    qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
+
+    prodem = node
+    prodem.set_succ!(qtnoun)
 
     {prodem, qtnoun}
   end
 
-  def self.map_pro_dem!(key : String) : {PosTag, String}
+  def map_pro_dem!(key : String) : {PosTag, String}
     case key
     when "这" then {PosTag::ProZhe, "này"}
     when "那" then {PosTag::ProNa1, "kia"}

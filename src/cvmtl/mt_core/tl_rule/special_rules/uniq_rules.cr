@@ -67,7 +67,7 @@ module CV::TlRule
       fold_verbs!(node.set!("có lỗi với", PosTag::Verb))
     when "百分之"
       return node unless succ && succ.numbers?
-      succ = fold_numbers!(succ)
+      succ = fuse_number!(succ)
       fold!(node, succ, PosTag::Number, dic: 4, flip: true)
     when "原来"
       if succ.try(&.ude1?) || node.prev?(&.contws?)

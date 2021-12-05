@@ -21,8 +21,7 @@ module CV::TlRule
     return unless prev && succ
 
     unless similar_tag?(prev, succ)
-      succ = scan_noun!(succ)
-      return unless succ.nouns?
+      return unless succ = scan_noun!(succ)
     end
 
     if node.key == "和"

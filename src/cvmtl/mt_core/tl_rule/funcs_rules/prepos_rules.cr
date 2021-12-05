@@ -65,15 +65,11 @@ module CV::TlRule
   end
 
   def fold_prepos!(node : MtNode, noun = node.succ?) : MtNode
-    return node unless noun && !noun.ends?
-
-    noun = scan_noun!(noun, mode: 1)
-    return node unless noun.center_noun? && (verb = noun.succ?)
+    return node unless noun = scan_noun!(noun, mode: 1)
+    return node unless verb = noun.succ?
 
     # combine with ude1
-    if verb.ude1? && (tail = verb.succ?)
-      tail = scan_noun!(tail)
-
+    if verb.ude1? && (tail = scan_noun!(verb.succ?))
       unless tail.succ?(&.maybe_verb?)
         node = fold!(node, verb.set!(""), PosTag::PrepPhrase, dic: 5)
         return fold!(node, tail, PosTag::NounPhrase, dic: 6, flip: true)
@@ -106,9 +102,7 @@ module CV::TlRule
 
     verb = fold!(node, verb, verb.tag, dic: 8, flip: flip)
     return verb if verb.verb_object? || verb.vintr?
-    return verb unless (tail = verb.succ?) && !tail.ends?
-
-    tail = scan_noun!(tail)
-    tail.center_noun? ? fold!(verb, tail, PosTag::VerbObject, dic: 6) : verb
+    return verb unless tail = scan_noun!(verb.succ?)
+    fold!(verb, tail, PosTag::VerbObject, dic: 6)
   end
 end

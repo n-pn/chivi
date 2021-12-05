@@ -148,7 +148,7 @@ class CV::MtNode
     child.ends_with?(key)
   end
 
-  def has_key?(key : String) : self | Nil
+  def has_key?(key : String | Char) : self | Nil
     return @key.includes?(key) ? self : nil unless child = @body
 
     while child
@@ -157,6 +157,14 @@ class CV::MtNode
     end
 
     nil
+  end
+
+  def each
+    yield self unless body = @body
+
+    while body
+      yield body if body = body.succ?
+    end
   end
 
   include MTL::Serialize

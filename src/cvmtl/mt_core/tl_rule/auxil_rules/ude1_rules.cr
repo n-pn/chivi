@@ -1,46 +1,41 @@
 module CV::TlRule
   def fold_ude1!(ude1 : MtNode, prev = ude1.prev?, succ = ude1.succ?) : MtNode
-    ude1.val = ""
     return ude1 unless prev
+    return heal_ude!(ude1, prev) unless succ && !(succ.ends?)
 
-    if succ && !succ.ends?
-      succ = scan_noun!(succ, mode: 2)
-
-      if succ.nouns? || succ.pronouns?
-        return fold_ude1_left!(succ, ude1)
-      elsif prev.adjt? && succ.verbs?
-        # puts [prev, succ, ude1]
-        # handle adjt + ude1 + verb
-        return fold!(prev, succ, succ.tag, dic: 9)
-      elsif prev.verb? && succ.adjts?
-        # ude3 => ude1 grammar error
-        return fold!(prev, succ, prev.tag, dic: 8)
-      end
+    if noun = scan_noun!(succ, mode: 2)
+      fold_ude1_left!(right: noun, ude1: ude1, prev: prev)
+    elsif prev.adjt? && succ.verbs?
+      # puts [prev, succ, ude1]
+      # handle adjt + ude1 + verb
+      fold!(prev, succ, succ.tag, dic: 9)
+    elsif prev.verb? && succ.adjts?
+      # ude3 => ude1 grammar error
+      fold!(prev, succ, prev.tag, dic: 8)
+    else
+      ude1.set!("")
     end
-
-    heal_ude!(ude1, prev)
   end
 
   def heal_ude!(ude1 : MtNode, prev : MtNode) : MtNode
     case prev
-    when .popens? then return ude1
+    when .popens? then return ude1.set!("")
     when .puncts? then return ude1.set!("đích")
     when .names?, .pro_per?
       prev.prev? do |x|
-        return ude1 if x.verbs? || x.preposes? || x.nouns? || x.pronouns?
+        return ude1.set!("") if x.verbs? || x.preposes? # || x.nouns? || x.pronouns?
       end
     else
       # TODO: handle verbs?, adjts?
-      return ude1
+      return ude1.set!("")
     end
 
     ude1.val = "của"
-    fold!(prev, ude1, PosTag::DefnPhrase, dic: 8, flip: true)
+    fold!(prev, ude1, PosTag::DefnPhrase, dic: 6, flip: true)
   end
 
   def fold_ude1_left!(right : MtNode, ude1 : MtNode, prev = ude1.prev?) : MtNode
     return ude1 unless prev
-
     ude1.val = ""
 
     case prev
