@@ -61,6 +61,7 @@ module CV::TlRule
         node = fold_verb_as_noun!(node)
       when .nouns?
         node = fold_noun!(node, mode: 1)
+
         node = scan_noun!(node) || node unless node.nouns?
       end
 
@@ -84,6 +85,7 @@ module CV::TlRule
     node = fold_proper_nounish!(proper, node) if proper
 
     return node unless mode != 1 && (succ = node.succ?)
+    # puts [node, mode, "at_noun"]
 
     node = fold_uzhi!(uzhi: succ, prev: node) if succ.uzhi?
     fold_noun_space!(noun: node, space: node.succ?)
@@ -141,8 +143,7 @@ module CV::TlRule
     case node
     when .vmodal?
       if vmodal_is_noun?(node)
-        node.tag = PosTag::Noun
-        return fold_noun!(node, mode: 1)
+        return fold_noun!(node.set!(PosTag::Noun), mode: 1)
       end
 
       node = heal_vmodal!(node)
@@ -156,9 +157,7 @@ module CV::TlRule
 
     if node.nouns?
       return prev ? fold!(prev, node, PosTag::NounPhrase, dic: 9, flip: true) : node
-    end
-
-    unless succ = node.succ?
+    elsif !(succ = node.succ?)
       return prev || node
     end
 
@@ -172,9 +171,10 @@ module CV::TlRule
 
   def fold_verb_ude1!(node : MtNode, succ = node.succ?)
     return node unless succ && succ.ude1?
+
     node = fold!(node, succ.set!(""), PosTag::DefnPhrase, dic: 7)
 
-    return node unless noun = scan_noun!(node.succ, mode: 1)
-    fold!(node, succ, PosTag::NounPhrase, dic: 6, flip: true)
+    return node unless noun = scan_noun!(node.succ?, mode: 1)
+    fold!(node, noun, PosTag::NounPhrase, dic: 6, flip: true)
   end
 end
