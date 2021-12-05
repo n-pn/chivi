@@ -1,5 +1,5 @@
 module CV::TlRule
-  def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, right : MtNode)
+  def fold_verb_ude1!(verb : MtNode, ude1 : MtNode, right : MtNode, mode = 0)
     return right unless prev = verb.prev?
     # puts [prev, verb]
 

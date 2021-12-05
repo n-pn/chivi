@@ -6,7 +6,7 @@ module CV::TlRule
     ude1.set!("")
 
     if noun = scan_noun!(succ, mode: 2)
-      fold_ude1_left!(right: noun, ude1: ude1, prev: prev)
+      fold_ude1_left!(prev, ude1: ude1, right: noun, mode: 1)
     elsif prev.adjt? && succ.verbs?
       # puts [prev, succ, ude1]
       # handle adjt + ude1 + verb
@@ -36,33 +36,15 @@ module CV::TlRule
     fold!(prev, ude1, PosTag::DefnPhrase, dic: 6, flip: true)
   end
 
-  def fold_ude1_left!(right : MtNode, ude1 : MtNode, prev = ude1.prev?) : MtNode
-    return ude1 unless prev
-
-    case prev
-    when .ajad?
-      prev.val = "thông thường" if prev.key == "一般"
-      fold!(prev, right, PosTag::NounPhrase, dic: 4, flip: true)
-    when .veno?, .vintr?, .verb_object?,
-         .time?, .place?, .space?,
-         .pro_dem?, .modifier?,
-         .defn_phrase?, .prep_phrase?, .unkn?
-      prev = fold!(prev, ude1, PosTag::DefnPhrase, dic: 7)
-      fold!(prev, right, PosTag::NounPhrase, dic: 4, flip: true)
-    when .adjts?
-      # if (prev_2 = prev.prev?) && prev_2.noun?
-      #   prev = fold!(prev_2, prev, PosTag::DefnPhrase, dic: 8)
-      # end
-
-      fold!(prev, right, PosTag::NounPhrase, dic: 4, flip: true)
-    when .numeric?
-      fold!(prev, right, PosTag::NounPhrase, dic: 4, flip: true)
+  def fold_ude1_left!(left : MtNode, ude1 : MtNode, right : MtNode, mode = 0) : MtNode
+    case left
     when .nouns?, .pro_per?
-      return fold_noun_ude1!(prev, ude1, right)
+      fold_noun_ude1!(left, ude1: ude1, right: right, mode: mode)
     when .verb?, .verb_phrase?
-      return fold_verb_ude1!(prev, ude1, right)
+      fold_verb_ude1!(left, ude1: ude1, right: right, mode: mode)
     else
-      right
+      left = fold!(left, ude1, PosTag::DefnPhrase, dic: 7)
+      fold!(left, right, PosTag::NounPhrase, dic: 4, flip: true)
     end
   end
 end

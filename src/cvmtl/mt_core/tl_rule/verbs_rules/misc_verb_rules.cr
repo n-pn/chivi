@@ -2,7 +2,7 @@ module CV::TlRule
   def is_linking_verb?(node : MtNode, succ : MtNode?) : Bool
     return true if node.vmodals?
 
-    {'来', '去', '到', '有', '上', '着', '想'}.each do |char|
+    {'来', '去', '到', '有', '上', '着', '想', '出'}.each do |char|
       return true if node.ends_with?(char)
     end
 

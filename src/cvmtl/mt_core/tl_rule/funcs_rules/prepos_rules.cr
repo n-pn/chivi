@@ -69,14 +69,14 @@ module CV::TlRule
     return node unless verb = noun.succ?
 
     # combine with ude1
-    if verb.ude1? && (tail = scan_noun!(verb.succ?))
+    if verb.ude1? && (tail = scan_noun!(verb.succ?, mode: 0))
       unless tail.succ?(&.maybe_verb?)
         node = fold!(node, verb.set!(""), PosTag::PrepPhrase, dic: 5)
         return fold!(node, tail, PosTag::NounPhrase, dic: 6, flip: true)
       end
 
-      noun = fold_ude1_left!(tail, verb, noun)
-      verb = tail.succ?
+      noun = fold_ude1_left!(noun, verb, tail, mode: 1)
+      verb = noun.succ?
     end
 
     # fix prepos meaning
@@ -87,7 +87,7 @@ module CV::TlRule
       node.val = "cho"
       flip = true
     when "让"
-      node.val = "cho"
+      # node.val = "nhường"
     end
 
     node = fold!(node, noun, PosTag::PrepPhrase, dic: 5)

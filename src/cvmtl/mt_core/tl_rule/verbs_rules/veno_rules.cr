@@ -26,7 +26,9 @@ module CV::TlRule
           return node.set!(PosTag::Noun)
         end
       when .ude1?
-        node.set!(PosTag::Noun) if node.succ?(&.ends?)
+        if node.succ? { |x| x.ends? || x.nouns? }
+          node.set!(PosTag::Noun)
+        end
       end
     end
 
