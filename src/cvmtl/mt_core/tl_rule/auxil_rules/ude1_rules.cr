@@ -3,6 +3,8 @@ module CV::TlRule
     return ude1 unless prev
     return heal_ude!(ude1, prev) unless succ && !(succ.ends?)
 
+    ude1.set!("")
+
     if noun = scan_noun!(succ, mode: 2)
       fold_ude1_left!(right: noun, ude1: ude1, prev: prev)
     elsif prev.adjt? && succ.verbs?
@@ -13,7 +15,7 @@ module CV::TlRule
       # ude3 => ude1 grammar error
       fold!(prev, succ, prev.tag, dic: 8)
     else
-      ude1.set!("")
+      ude1
     end
   end
 
@@ -36,7 +38,6 @@ module CV::TlRule
 
   def fold_ude1_left!(right : MtNode, ude1 : MtNode, prev = ude1.prev?) : MtNode
     return ude1 unless prev
-    ude1.val = ""
 
     case prev
     when .ajad?
