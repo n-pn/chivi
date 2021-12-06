@@ -6,7 +6,7 @@ module CV::TlRule
 
     while node = node.succ?
       case node.tag
-      when .popens?   then node = fold_quoted!(node)
+      when .popens?   then node = fold_nested!(node)
       when .auxils?   then node = heal_auxils!(node)
       when .uniques?  then node = heal_uniques!(node)
       when .strings?  then node = fold_strings!(node)

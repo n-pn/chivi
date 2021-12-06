@@ -11,7 +11,7 @@ module CV::TlRule
       end
     end
 
-    # puts ["number: ", node, prodem]
+    # puts ["number: ", node, node.prev?, node.succ?]
     scan_noun!(node.succ?, nquant: node) || node
   end
 

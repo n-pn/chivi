@@ -15,7 +15,7 @@ module CV::TlRule
   end
 
   private def heal_uniques!(node : MtNode, succ = node.succ?) : MtNode
-    puts [node, succ, "heal_uniq"]
+    # puts [node, succ, "heal_uniq"]
 
     case node.tag
     when .v_shi?

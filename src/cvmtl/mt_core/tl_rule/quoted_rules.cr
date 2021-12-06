@@ -1,9 +1,9 @@
 module CV::TlRule
-  def fold_quoted!(node : MtNode) : MtNode
-    node.tag.titleop? ? fold_ptitle!(node) : fold_nested!(node)
+  def fold_nested!(node : MtNode) : MtNode
+    node.tag.titleop? ? fold_ptitle!(node) : fold_quoted!(node)
   end
 
-  def fold_nested!(head : MtNode) : MtNode
+  def fold_quoted!(head : MtNode) : MtNode
     end_tag, end_val = match_end(head.val[0])
 
     tail = head

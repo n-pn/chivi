@@ -7,10 +7,11 @@ module CV::TlRule
   def scan_noun!(node : MtNode?, mode : Int32 = 0,
                  proper : MtNode? = nil, proint : MtNode? = nil,
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
-    while node && !node.ends?
-      # puts ["scan_noun", node, mode]
-
+    while node
       case node
+      when .popens?
+        node = fold_nested!(node)
+        node = fold_noun!(node) if node.nouns?
       when .pro_dems?
         if prodem || nquant
           node = nil
@@ -25,12 +26,10 @@ module CV::TlRule
           node = fuse_number!(node)
           break unless node.numeric?
           nquant, node = node, node.succ?
+          next
         end
       when .uniques?
         node = heal_uniques!(node)
-      when .popens?
-        node = fold_quoted!(node)
-        node = fold_noun!(node) if node.nouns?
       when .pro_per?
         node = proper || prodem || nquant ? nil : fold_pro_per!(node, node.succ?)
       when .adverbs?
