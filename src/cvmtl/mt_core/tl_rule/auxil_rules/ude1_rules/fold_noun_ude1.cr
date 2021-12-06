@@ -11,7 +11,12 @@ module CV::TlRule
   end
 
   def fold_noun_ude1_noun!(noun : MtNode, ude1 : MtNode, right : MtNode) : MtNode
-    ude1.set!(noun.object? ? "của" : "")
+    if noun.times? || noun.place? || noun.space?
+      ude1.val = ""
+    else
+      ude1.val = "của"
+    end
+
     noun = fold!(noun, ude1, PosTag::DefnPhrase, dic: 3, flip: true)
     fold!(noun, right, PosTag::NounPhrase, dic: 5, flip: true)
   end
