@@ -93,6 +93,7 @@ struct CV::PosTag
   delegate times?, to: @pos
   delegate names?, to: @pos
   delegate human?, to: @pos
+  delegate object?, to: @pos
 
   delegate numbers?, to: @pos
   delegate quantis?, to: @pos
