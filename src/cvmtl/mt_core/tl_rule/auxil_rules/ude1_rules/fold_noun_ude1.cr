@@ -1,6 +1,6 @@
 module CV::TlRule
   def fold_noun_ude1!(noun : MtNode, ude1 : MtNode, right : MtNode, mode = 0) : MtNode
-    # puts [noun, ude1, right]
+    puts [noun, ude1, right]
 
     if mode == 0 && (prev = noun.prev?) && prev.verbs?
       fold_verb_noun_ude1!(prev, noun, ude1, right)

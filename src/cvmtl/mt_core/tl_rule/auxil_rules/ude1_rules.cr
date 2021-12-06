@@ -44,10 +44,15 @@ module CV::TlRule
   # do not return left when fail to prevent infinity loop
   def fold_ude1_left!(left : MtNode, ude1 : MtNode, right : MtNode?, mode = 0) : MtNode
     return ude1 unless right
-    left.tag = PosTag::Adjt if left.ajno?
+
+    if left.ajno?
+      left.tag = PosTag::Adjt
+    elsif left.pro_na1?
+      left.val = "cái kia"
+    end
 
     case left
-    when .nouns?, .pro_per?
+    when .nouns?, .pronouns?, .numeric?
       fold_noun_ude1!(left, ude1: ude1, right: right, mode: mode)
     when .verb?, .verb_phrase?
       fold_verb_ude1!(left, ude1: ude1, right: right, mode: mode)
