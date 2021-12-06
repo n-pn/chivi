@@ -6,8 +6,7 @@ module CV::TlRule
     when "早上", "下午", "凌晨", "早晨", "中午", "晚上"
       case succ.tag
       when .nhanzi?, .ndigit?
-        succ = fuse_number!(succ, prev: node)
-        succ.time? ? fold_time_prev!(succ, prev: node) : node
+        fold_number!(succ, prev: node)
       when .adj_hao?
         fold!(node, succ.set!("chào"), PosTag::VerbPhrase, dic: 8, flip: true)
       else
@@ -55,19 +54,16 @@ module CV::TlRule
   def fold_number_hour!(node : MtNode, succ : MtNode) : MtNode
     node = fold!(node, succ.set!("giờ"), PosTag::Time, dic: 1)
 
-    return node unless (succ_2 = node.succ?)
+    return node unless (succ = node.succ?)
 
-    case succ_2.key
+    case succ.key
     when "半"
-      return fold!(node, succ_2.set!("rưỡi"), PosTag::Time, dic: 1)
+      return fold!(node, succ.set!("rưỡi"), PosTag::Time, dic: 1)
     when "前后"
-      return fold!(node, succ_2.set!("tầm"), PosTag::Time, dic: 1, flip: true)
+      return fold!(node, succ.set!("tầm"), PosTag::Time, dic: 1, flip: true)
     end
 
-    unless minute = read_minute_quanti?(succ_2)
-      return fold!(node, succ_2, PosTag::Time, dic: 1)
-    end
-
+    return node unless minute = read_minute_quanti?(succ)
     node = fold!(node, minute.set!("phút"), PosTag::Time, dic: 1)
 
     return node unless second = read_second_quanti?(minute.succ?)

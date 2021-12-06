@@ -5,12 +5,11 @@ module CV::TlRule
     when "点"  then fold_nhanzi_dian!(node, succ, prev)
     when "分"  then fold_number_minute!(node, succ)
     when "分钟" then fold_number_minute!(node, succ, is_time: true)
-    else
-      node
+    else           node
     end
   end
 
-  def fold_nhanzi_dian!(node : MtNode, succ : MtNode, prev : MtNode?)
+  def fold_nhanzi_dian!(node : MtNode, succ : MtNode, prev : MtNode?) : MtNode
     result = keep_pure_numeric?(succ.succ?)
 
     if result.is_a?(MtNode)
@@ -19,7 +18,7 @@ module CV::TlRule
       return node.tap(&.fix_succ!(result.succ?))
     end
 
-    prev || result ? fold_number_hour!(node, succ) : node
+    node = prev || result ? fold_number_hour!(node, succ) : node
   end
 
   def keep_pure_numeric?(node : MtNode?) : Bool | MtNode

@@ -1,18 +1,23 @@
 module CV::TlRule
-  def fold_number!(node : MtNode)
+  def fold_number!(node : MtNode, prev : MtNode? = nil)
     # puts ["number: ", node]
-    node = fuse_number!(node) # if head.numbers?
+    node = fuse_number!(node, prev: prev) # if head.numbers?
 
     case node
     when .verbs? then return fold_verbs!(node)
     when .time?
-      if (prev = node.prev?) && prev.time?
-        node = fold!(prev, node, node.tag, dic: 4, flip: true)
-      end
-    end
+      # puts [node, node.succ?, node.prev?]
+      node = fold_time_prev!(node, prev: prev) if prev && prev.time?
 
-    # puts ["number: ", node, node.prev?, node.succ?]
-    scan_noun!(node.succ?, nquant: node) || node
+      if (prev = node.prev?) && prev.time?
+        # TODO: do not do this but calling fold_number a second time instead
+        node = fold!(prev, node, node.tag, dic: 6, flip: true)
+      end
+
+      fold_noun!(node)
+    else
+      scan_noun!(node.succ?, nquant: node) || node
+    end
   end
 
   def fold_nquant_noun!(prev : MtNode, node : MtNode)
