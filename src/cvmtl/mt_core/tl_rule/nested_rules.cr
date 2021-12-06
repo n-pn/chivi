@@ -8,6 +8,7 @@ module CV::TlRule
 
     tail = head
     while tail = tail.succ?
+      # return head if tail.pstop? && !tag.quotecl?
       break if tail.tag.tag == end_tag && tail.val[0] == end_val
     end
 
