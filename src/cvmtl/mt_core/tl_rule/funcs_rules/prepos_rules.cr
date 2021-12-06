@@ -70,7 +70,7 @@ module CV::TlRule
 
     # combine with ude1
     if verb.ude1? && (tail = scan_noun!(verb.succ?, mode: 0))
-      unless tail.succ?(&.maybe_verb?)
+      unless find_verb_after_for_prepos(tail, skip_comma: false)
         node = fold!(node, verb.set!(""), PosTag::PrepPhrase, dic: 5)
         return fold!(node, tail, PosTag::NounPhrase, dic: 6, flip: true)
       end
