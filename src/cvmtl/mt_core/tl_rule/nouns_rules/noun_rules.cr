@@ -43,7 +43,7 @@ module CV::TlRule
         noun = fold
       when .suf_verb?
         return fold_suf_verb!(noun, succ)
-      when .suf_nouns?
+      when .suf_noun?
         return fold_suf_noun!(noun, succ)
       else break
       end

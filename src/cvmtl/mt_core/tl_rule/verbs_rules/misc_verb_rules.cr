@@ -28,10 +28,14 @@ module CV::TlRule
   def find_verb_after_for_prepos(node : MtNode, skip_comma = true)
     while node = node.succ?
       # puts ["find_verb", node]
-
-      return node.uniques? ? nil : node if node.verbs?
-      return nil if skip_comma && node.comma?
-      return nil unless node.adverbs?
+      if node.verbs?
+        return node unless node.uniques?
+        return nil unless node.spaces?
+        return node if node.succ?(&.ule?)
+      else
+        return nil if skip_comma && node.comma?
+        return nil unless node.adverbs?
+      end
     end
 
     nil

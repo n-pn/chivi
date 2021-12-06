@@ -121,11 +121,6 @@ struct CV::PosTag
   delegate funcws?, to: @pos
   delegate uniques?, to: @pos
 
-  @[AlwaysInline]
-  def spaces?
-    @tag.space? || @tag.v_shang? || @tag.v_xia?
-  end
-
   # words that can act as noun
   @[AlwaysInline]
   def center_noun?
@@ -134,7 +129,22 @@ struct CV::PosTag
 
   @[AlwaysInline]
   def ends?
-    none? || puncts? || interjection? || modalparticle?
+    @pos.puncts? || @pos.none? || @tag.interjection? || @tag.modalparticle?
+  end
+
+  @[AlwaysInline]
+  def junction?
+    @tag.penum? || @tag.conjunct? || @tag.concoord?
+  end
+
+  @[AlwaysInline]
+  def spaces?
+    @tag.space? || @tag.v_shang? || @tag.v_xia?
+  end
+
+  @[AlwaysInline]
+  def object?
+    @tag.noun? || @tag.nmorp? || @tag.noun_phrase? || @pos.human? || @pos.names?
   end
 
   def self.from_str(tag : ::String, key : ::String = "") : self

@@ -61,10 +61,10 @@ module CV::TlRule
       when .uzhi?
         node = fold_adj_adv!(node, prev)
         return fold_uzhi!(succ, node)
-      when .suf_nouns?
+      when .suf_noun?
         node = fold_adj_adv!(node, prev)
         return fold_suf_noun!(node, succ)
-      when .suf_verbs?
+      when .suf_verb?
         node = fold_adj_adv!(node, prev)
         return fold_suf_verb!(node, succ)
       when .junction?

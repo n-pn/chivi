@@ -50,7 +50,7 @@ module CV::TlRule
 
         verb = fold_left_verb!(verb, prev)
         return fold_verb_nquant!(verb, succ, prev)
-      when .suf_nouns?
+      when .suf_noun?
         verb = fold_left_verb!(verb, prev)
         return fold_suf_noun!(verb, succ)
       when .junction?

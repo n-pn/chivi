@@ -13,7 +13,6 @@ module CV::TlRule
   end
 
   def fold_noun_space!(noun : MtNode, space = noun.succ?) : MtNode
-    # puts [noun, space, space.key, space.tag, "fold_noun_space"]
     return noun unless space && space.spaces?
 
     flip = true
