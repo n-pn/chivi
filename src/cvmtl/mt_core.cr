@@ -121,16 +121,13 @@ class CV::MtCore
   private def fix_val!(left : MtNode, right : MtNode)
     val = right.val
     case right.key[0]?
-    when '零' then val.sub("linh", "lẻ")
-    when '一'
-      left.key =~ /十$/ ? val.sub("một", "mốt") : val
     when '五'
-      left.key =~ /十$/ ? val.sub("năm", "lăm") : val
+      left.key.ends_with?('十') ? val.sub("năm", "lăm") : val
     when '十'
       return val unless left.key =~ /[一二两三四五六七八九]$/
       val.sub("mười một", "mươi mốt").sub("mười", "mươi")
-    else
-      val
+    when '零' then val.sub("linh", "lẻ")
+    else          val
     end
   end
 
