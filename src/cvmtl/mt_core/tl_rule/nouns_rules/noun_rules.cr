@@ -7,20 +7,12 @@ module CV::TlRule
 
     while noun.nouns?
       break unless succ = noun.succ?
-      # puts [noun, succ, "fold_noun"]
 
       case succ
-      when .uniques?
-        case succ.key
-        when "第"
-          noun = fold!(noun, fold_第!(succ), succ.tag, dic: 6, flip: true)
-        else
-          # TODO!
-          break
-        end
       when .maybe_adjt?
         return noun unless noun.prev?(&.nouns?)
         succ = succ.adverbs? ? fold_adverbs!(succ) : fold_adjts!(succ)
+
         return noun unless succ.succ?(&.ude1?)
         return fold!(noun, succ, PosTag::Aform, dic: 6)
       when .middot?
@@ -36,7 +28,7 @@ module CV::TlRule
       when .penum?, .concoord?
         return noun unless fold = fold_noun_concoord!(succ, noun)
         noun = fold
-      when .space?
+      when .spaces?
         return mode == 0 ? fold_noun_space!(noun, succ) : noun
       when .nouns?
         return noun unless fold = fold_noun_noun!(noun, succ, mode: mode)
@@ -45,7 +37,16 @@ module CV::TlRule
         return fold_suf_verb!(noun, succ)
       when .suf_noun?
         return fold_suf_noun!(noun, succ)
-      else break
+      when .uniques?
+        case succ.key
+        when "第"
+          noun = fold!(noun, fold_第!(succ), succ.tag, dic: 6, flip: true)
+        else
+          # TODO!
+          break
+        end
+      else
+        break
       end
 
       break if succ == noun.succ?

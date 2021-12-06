@@ -68,14 +68,14 @@ module CV::TlRule
     return node unless noun = scan_noun!(noun, mode: 0)
     return node unless verb = noun.succ?
 
-    # combine with ude1
+    # combine with noun after ude1 if there exists verb right after
     if verb.ude1? && (tail = scan_noun!(verb.succ?, mode: 0))
-      unless find_verb_after_for_prepos(tail, skip_comma: false)
+      unless found = find_verb_after_for_prepos(tail, skip_comma: false)
         node = fold!(node, verb.set!(""), PosTag::PrepPhrase, dic: 5)
         return fold!(node, tail, PosTag::NounPhrase, dic: 6, flip: true)
       end
 
-      noun = fold_ude1_left!(noun, verb, tail, mode: 1)
+      noun = fold_noun_ude1_noun!(noun, ude1: verb, right: tail)
       verb = noun.succ?
     end
 

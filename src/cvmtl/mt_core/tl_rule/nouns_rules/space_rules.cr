@@ -12,9 +12,12 @@ module CV::TlRule
     end
   end
 
-  def fold_noun_space!(noun : MtNode, space = noun.succ?) : MtNode
-    return noun unless space && space.spaces?
+  def fold_noun_space!(noun : MtNode) : MtNode
+    return noun unless (space = noun.succ?) && space.spaces?
+    fold_noun_space!(noun, space)
+  end
 
+  def fold_noun_space!(noun : MtNode, space : MtNode) : MtNode
     flip = true
     case space.key
     when "上", "下", "中"

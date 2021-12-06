@@ -64,7 +64,6 @@ module CV::TlRule
         node = fold_adjt_as_noun!(node)
       when .nouns?
         node = fold_noun!(node, mode: 1)
-
         node = scan_noun!(node) || node unless node.nouns?
       end
 
@@ -75,11 +74,7 @@ module CV::TlRule
       return fold_prodem_nounish!(prodem, nquant)
     end
 
-    # puts [node, prodem, nquant]
-
     if nquant
-      # puts [nquant, nquant.key, nquant.val]
-
       nquant = clean_nquant(nquant, prodem)
       node = fold!(nquant, node, node.tag, dic: 4)
     end
@@ -87,11 +82,10 @@ module CV::TlRule
     node = fold_prodem_nounish!(prodem, node) if prodem
     node = fold_proper_nounish!(proper, node) if proper
 
-    return node unless mode > 0 && (succ = node.succ?)
-    # puts [node, mode, "at_noun"]
+    return node unless mode == 0 && (succ = node.succ?)
 
     node = fold_uzhi!(uzhi: succ, prev: node) if succ.uzhi?
-    fold_noun_space!(noun: node, space: node.succ?)
+    fold_noun_space!(noun: node)
   end
 
   def clean_nquant(nquant : MtNode, prodem : MtNode?)
