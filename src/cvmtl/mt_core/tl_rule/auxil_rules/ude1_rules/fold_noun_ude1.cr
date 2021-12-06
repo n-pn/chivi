@@ -40,7 +40,6 @@ module CV::TlRule
     when .comma?
       # TODO: check before comma?
     else
-      puts [prev, prev.tag, prev.idx]
       unless is_linking_verb?(prev, right.succ?)
         head = verb if has_verb_after?(right)
       end
