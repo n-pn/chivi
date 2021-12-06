@@ -5,7 +5,7 @@ module CV::TlRule
     if mode == 0 && (prev = noun.prev?) && prev.verbs?
       fold_verb_noun_ude1!(prev, noun, ude1, right)
     else
-      # puts "this!"
+      # puts ["this!", mode]
       fold_noun_ude1_noun!(noun, ude1, right)
     end
   end
@@ -40,7 +40,7 @@ module CV::TlRule
     when .comma?
       # TODO: check before comma?
     else
-      # puts [prev, prev.tag, prev.idx]
+      puts [prev, prev.tag, prev.idx]
       unless is_linking_verb?(prev, right.succ?)
         head = verb if has_verb_after?(right)
       end

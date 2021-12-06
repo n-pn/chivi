@@ -127,7 +127,8 @@ class CV::MtCore
     when '五'
       left.key =~ /十$/ ? val.sub("năm", "lăm") : val
     when '十'
-      left.key =~ /[一二两三四五六七八九]$/ ? val.sub("mười", "mươi") : val
+      return val unless left.key =~ /[一二两三四五六七八九]$/
+      val.sub("mười một", "mươi mốt").sub("mười", "mươi")
     else
       val
     end
@@ -135,26 +136,27 @@ class CV::MtCore
 
   private def can_merge?(left : MtNode, right : MtNode)
     case right.tag
-    when .string? then left.tag.string?
     when .puncts? then left.tag == right.tag
+    when .string? then left.tag.string? || left.tag.ndigit?
+    when .ndigit?
+      case left.tag
+      when .string?
+        right.tag = left.tag
+        true
+      when .pdeci?  then true
+      when .ndigit? then true
+      else               false
+      end
     when .nhanzi?
       return false unless left.nhanzi?
       return true unless right.key == "两"
 
       case left.key[-1]?
-      when '一', '三' then return true
+      when '一', '三'
+        true
       else
         right.set!("lượng", PosTag::Qtnoun)
         false
-      end
-    when .ndigit?
-      case left.tag
-      when .pdeci?  then true
-      when .ndigit? then true
-      when .string?
-        right.tag = left.tag
-        true
-      else false
       end
     else
       false

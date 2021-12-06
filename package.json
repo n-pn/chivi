@@ -1,6 +1,8 @@
 {
   "private": true,
   "scripts": {
+    "test": "crystal spec spec/engine/cvmtl_spec.cr",
+    "debug": "crystal spec/manual/pinpoint.cr",
     "db-up": "bash priv/scripts/filedb-upload.sh",
     "db-bk": "bash priv/scripts/filedb-backup.sh",
     "ys-up": "bash priv/scripts/yousuu-upload.sh",

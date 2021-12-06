@@ -31,8 +31,9 @@ module CV::TlRule
       when .verbs?
         return node unless node.v_shang? || node.v_xia?
         return node if node.succ?(&.ule?)
-      when .comma? then return if skip_comma
-      else              return unless node.adverbs?
+        # when .plsgn?, .mnsgn? then return node
+      when .comma? then return nil if skip_comma
+      else              return nil unless node.adverbs?
       end
     end
   end

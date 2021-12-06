@@ -7,7 +7,7 @@ module CV::TlRule
     ude1.set!("")
 
     if noun = scan_noun!(succ, mode: 3)
-      return fold_ude1_left!(prev, ude1, noun, mode: 1) if noun.center_noun?
+      return fold_ude1_left!(prev, ude1, noun) if noun.center_noun?
       succ = noun
     end
 
