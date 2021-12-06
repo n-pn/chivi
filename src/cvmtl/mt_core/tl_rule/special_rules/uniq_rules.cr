@@ -15,6 +15,8 @@ module CV::TlRule
   end
 
   private def heal_uniques!(node : MtNode, succ = node.succ?) : MtNode
+    puts [node, succ, "heal_uniq"]
+
     case node.tag
     when .v_shi?
       # TODO handle vshi
@@ -25,17 +27,8 @@ module CV::TlRule
     when .v_shang?, .v_xia?
       # puts [node, succ, "fold_noun_space"]
 
-      if succ
-        case succ.tag
-        when .ule? then return fold_verbs!(node)
-        end
-      end
-
-      if (prev = node.prev?) && prev.nouns?
-        return fold_noun_space!(node, prev)
-      else
-        return fold_verbs!(node)
-      end
+      return node unless succ && (succ.ule?)
+      fold_verbs!(node)
     when .adj_hao?
       return node unless succ
 
