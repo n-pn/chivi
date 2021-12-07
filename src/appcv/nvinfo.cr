@@ -4,16 +4,15 @@ class CV::Nvinfo
   self.table = "nvinfos"
   primary_key
 
-  column subdue_id : Int64? = nil # in case of duplicate entries, this column will point to the better one
-
   belongs_to author : Author
-
   has_many zhbooks : Zhbook, foreign_key: "nvinfo_id"
   has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
-  has_many yslists : Yslist, through: "yscrits"
+  # has_many yslists : Yslist, through: "yscrits"
 
-  column bseed_ids : Array(Int32) = [] of Int32
-  getter bseeds : Array(String) { Nvseed.to_s(bseed_ids) }
+  column subdue_id : Int64? = nil # in case of duplicate entries, this column will point to the better one
+
+  column zseed_ids : Array(Int32) = [] of Int32
+  getter zseeds : Array(String) { Nvseed.to_s(zseed_ids) }
 
   column genre_ids : Array(Int32) = [] of Int32
   getter genres : Array(String) { Bgenre.to_s(genre_ids) }
@@ -31,7 +30,7 @@ class CV::Nvinfo
   column vslug : String # for text searching, auto generated from vname
 
   column cover : String = ""
-  column intro : String = "" # translated book desc
+  column intro : String = "" # translated book description
 
   # status value:
   # 0: ongoing,
@@ -48,38 +47,43 @@ class CV::Nvinfo
   column shield : Int32 = 0 # default to 0
 
   column atime : Int64 = 0 # value by minute from the epoch, update whenever an registered user viewing book info
-  column utime : Int64 = 0 # value by minute from the epoch, max value of bseed mftime and ys_mftime
+  column utime : Int64 = 0 # value by minute from the epoch, max value of zhbook utime and ys_utime
 
-  column clicks : Int32 = 0 # views count
-  column weight : Int32 = 0 # voters * rating + ???
-
-  column voters : Int32 = 0 # = ys_voters + vi_voters * 2 + random_seed (if < 25)
-  column rating : Int32 = 0 # delivered from above values
-
-  column dtopics : Int32 = 0 # discuss topic count
-  column ubmemos : Int32 = 0 # user tracking count
-
-  column cv_voters : Int32 = 0 # unique revierwers
-  column cv_rating : Int32 = 0 # average rating
-
-  column cv_crits : Int32 = 0 # chivi book review count
-  column cv_lists : Int32 = 0 # chivi booi list count
-
-  column cv_chaps : Int32 = 0 # official chapters count
-  column cv_utime : Int64 = 0 # offiial chapter source updates
-
-  column ys_snvid : Int64? = nil  # yousuu book id
+  column cv_utime : Int64 = 0_i64 # official chapter source updates
   column ys_utime : Int64 = 0_i64 # yousuu book update time
 
+  # ranking
+
+  column weight : Int32 = 0 # voters * rating + ???
+  column rating : Int32 = 0 # delivered from above values
+  column voters : Int32 = 0 # = ys_voters + vi_voters * 2 + random_seed (if < 25)
+
+  column cv_voters : Int32 = 0 # unique revierwers
   column ys_voters : Int32 = 0 # yousuu book voters
-  column ys_rating : Int32 = 0 # yousu book average ratings
 
-  column ys_crits : Int32 = 0 # yousuu review counts
-  column ys_lists : Int32 = 0 # yousuu book list count
-  column ys_words : Int32 = 0 # original word count
+  column cv_scores : Int32 = 0 # chivi users ratings * voters
+  column ys_scores : Int32 = 0 # yousuu users ratings * voters
 
-  column pub_link : String = "" # original publisher novel page
-  column pub_name : String = "" # original publisher name, extract from link
+  # counters
+
+  column cv_chap_count : Int32 = 0 # official chapters count
+  column ys_word_count : Int32 = 0 # total words count from yousuu
+
+  column cvcrit_count : Int32 = 0 # chivi reviews count
+  column yscrit_count : Int32 = 0 # yousuu reviews count
+
+  column cvlist_count : Int32 = 0 # chivi booklists count
+  column yslist_count : Int32 = 0 # yousuu booklists count
+
+  column total_clicks : Int32 = 0 # views count
+  column dtopic_count : Int32 = 0 # discuss topic count
+  column ubmemo_count : Int32 = 0 # user tracking count
+
+  # links
+
+  column ys_snvid : Int64? = nil # yousuu book id
+  column pub_link : String = ""  # original publisher novel page
+  column pub_name : String = ""  # original publisher name, extract from link
 
   timestamps # created_at and updated_at
 
@@ -118,8 +122,8 @@ class CV::Nvinfo
     where("author_id IN (SELECT id from authors WHERE #{query})")
   end
 
-  scope :filter_bseed do |input|
-    input ? where("bseed_ids @> ?", [Nvseed.map_id(input)]) : self
+  scope :filter_zseed do |input|
+    input ? where("zseed_ids @> ?", [Nvseed.map_id(input)]) : self
   end
 
   scope :filter_genre do |input|
@@ -141,10 +145,10 @@ class CV::Nvinfo
     end
   end
 
-  def add_nvseed(bseed : Int32) : Nil
-    return if self.bseed_ids.includes?(bseed)
-    self.bseed_ids.push(bseed).sort!
-    self.bseed_ids_column.dirty!
+  def add_nvseed(zseed : Int32) : Nil
+    return if self.zseed_ids.includes?(zseed)
+    self.zseed_ids.push(zseed).sort!
+    self.zseed_ids_column.dirty!
   end
 
   def set_genres(genres : Array(String), force = false) : Nil
