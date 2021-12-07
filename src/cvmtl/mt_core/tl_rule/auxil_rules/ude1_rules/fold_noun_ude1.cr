@@ -42,6 +42,8 @@ module CV::TlRule
       head = verb unless has_verb_after?(right)
     when .comma?
       # TODO: check before comma?
+    when .center_noun?
+      head = nil
     else
       unless is_linking_verb?(prev, right.succ?)
         head = verb if has_verb_after?(right)

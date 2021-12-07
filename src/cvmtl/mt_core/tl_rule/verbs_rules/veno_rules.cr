@@ -32,7 +32,12 @@ module CV::TlRule
       end
     end
 
-    node.tag = PosTag::Verb if node.succ? { |x| x.auxils? || x.vdir? }
-    node
+    return node unless succ = node.succ?
+    case succ
+    when .auxils?, .vdir?
+      node.set!(PosTag::Verb)
+    else
+      node
+    end
   end
 end

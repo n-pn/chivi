@@ -9,6 +9,12 @@ module CV::TlRule
     case succ.tag
     when .concoord?, .penum?
       fold_noun_concoord!(succ, node) || node
+    when .veno?
+      succ = heal_veno!(succ)
+      succ.noun? ? fold_proper_nounish!(node, succ) : node
+    when .ajno?
+      succ = heal_ajno!(succ)
+      succ.noun? ? fold_proper_nounish!(node, succ) : node
     when .nouns?, .numbers?, .pro_per?, .pro_dem?
       return node unless succ = scan_noun!(succ)
       return node unless noun_can_combine?(node.prev?, succ.succ?)
