@@ -18,6 +18,7 @@ module CV::TlRule
     return node unless succ && succ.verb?
 
     succ = fold_verbs!(succ)
+    succ.set!(PosTag::Verb) if succ.v_you?
     fold!(node, succ, succ.tag, dic: 6)
   end
 
