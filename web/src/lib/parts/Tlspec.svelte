@@ -139,12 +139,16 @@
         on:submit|preventDefault={handle_submit}>
         <form-group>
           <form-label>Kết quả dịch chính xác</form-label>
-          <textarea class="m-input" name="match" bind:value={match} use:focus />
+          <textarea
+            class="m-input _match"
+            name="match"
+            bind:value={match}
+            use:focus />
         </form-group>
 
         <form-group>
           <form-label>Giải thích thêm nếu cần</form-label>
-          <textarea class="m-input" name="extra" bind:value={extra} />
+          <textarea class="m-input _extra" name="extra" bind:value={extra} />
         </form-group>
 
         {#if error}
@@ -283,7 +287,7 @@
 
   tlspec-cvmtl {
     display: block;
-    margin: 0.5rem 0;
+    padding: 0.375rem 0.75rem;
     // @include fgcolor(tert);
     @include border($loc: top);
   }
@@ -302,10 +306,17 @@
     display: block;
     width: 100%;
     padding: 0.375rem 0.75rem;
-    height: 3.5rem;
-    line-height: 1.25rem;
 
+    line-height: 1.25rem;
     @include scroll();
+
+    &._match {
+      height: 2.25rem;
+    }
+
+    &._extra {
+      height: 3.5rem;
+    }
   }
 
   form-label {
