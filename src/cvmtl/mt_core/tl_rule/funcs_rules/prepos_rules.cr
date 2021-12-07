@@ -46,22 +46,12 @@ module CV::TlRule
   def fold_pre_zai!(node : MtNode, succ = node.succ?) : MtNode
     fold_prepos!(node, succ)
 
-    # return node unless succ && succ.nouns?
-    # succ = fold_noun!(succ)
-    # if (succ_2 = succ.succ?) && succ_2.space?
-    #   succ = fold_noun_space!(succ, succ_2)
-    # end
-
-    # # puts [node, succ, succ.succ?]
-    # return node unless succ.succ?(&.ude1?)
-
-    # node.val = "ở"
-
-    # if (prev = node.prev?) && prev.verbs?
-    #   node = prev
-    # end
-
-    # fold!(node, succ, PosTag::DefnPhrase, dic: 9)
+    if succ.verb?
+      node = fold!(node, succ, succ.tag, dic: 5)
+      fold_verbs!(node)
+    else
+      fold_prepos!(node, succ)
+    end
   end
 
   def fold_prepos!(node : MtNode, noun = node.succ?) : MtNode
