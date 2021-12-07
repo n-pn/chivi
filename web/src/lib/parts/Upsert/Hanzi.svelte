@@ -18,6 +18,8 @@
     const output = ztext.substring(lower, upper)
     const prefix = Array.from(ztext.substring(lower - 10, lower))
     const suffix = Array.from(ztext.substring(upper, upper + 10))
+
+    navigator.clipboard.writeText(output)
     return [output, prefix, suffix]
   }
 
