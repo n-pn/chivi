@@ -20,9 +20,15 @@ module CV::TlRule
   def fold_noun_space!(noun : MtNode, space : MtNode) : MtNode
     flip = true
     case space.key
-    when "上", "下", "中"
+    when "上", "下"
       return noun if space.succ?(&.ule?)
       space.val = fix_space_val!(space)
+    when "中"
+      return noun if space.succ?(&.ule?)
+      space.val = "trong"
+      if (succ = space.succ?) && succ.nouns?
+        return fold!(noun, succ, PosTag::NounPhrase, dic: 6, flip: true)
+      end
     when "前"
       flip = !noun.time?
     end
