@@ -6,17 +6,22 @@ module CV::TlRule
 
     case prev.tag
     when .nouns?
-      if (prev_2 = prev.prev?) && prev_2.pre_bei?
-        head = fold!(prev_2, verb, PosTag::DefnPhrase, dic: 8)
+      if should_include_noun_before_verb_ude1?(verb, prev)
+        head = fold!(prev, ude1, PosTag::DefnPhrase, dic: 7)
       else
-        head = fold!(prev, verb, PosTag::DefnPhrase, dic: 9)
+        head = fold!(verb, ude1, PosTag::DefnPhrase, dic: 7)
       end
-      fold!(head, right, PosTag::NounPhrase, dic: 9, flip: true)
+
+      fold!(head, right, PosTag::NounPhrase, dic: 6, flip: true)
     when .quantis?, .nquants?
       verb = fold!(verb, right, PosTag::NounPhrase, dic: 8, flip: true)
       fold!(prev, verb, PosTag::NounPhrase, 3)
     else
       ude1
     end
+  end
+
+  def should_include_noun_before_verb_ude1?(verb : MtNode, prev : MtNode)
+    MTL::VERBS_2_OBJS.has_key?(verb.key)
   end
 end
