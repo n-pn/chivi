@@ -116,9 +116,12 @@ class CV::MtNode
     succ = self
     while succ
       # puts [succ, "maybe_verb", succ.verbs?]
-      return true if succ.verbs?
-      return false unless succ.adverbs? || succ.comma?
-      succ = succ.succ?
+      case succ
+      when .verbs? then return true
+      when .adverbs?, .comma?, pro_ints?, .conjunct?, .time?
+        succ = succ.succ?
+      else return false
+      end
     end
 
     false
