@@ -5,7 +5,6 @@ module CV::TlRule
   # 3 => scan_noun after ude1
   #   can return non nounish node
   def scan_noun!(node : MtNode?, mode : Int32 = 0,
-                 proper : MtNode? = nil, proint : MtNode? = nil,
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
     while node
       case node
@@ -35,8 +34,6 @@ module CV::TlRule
         end
       when .uniques?
         node = heal_uniques!(node)
-      when .pro_per?
-        node = proper || prodem || nquant ? nil : fold_pro_per!(node, node.succ?)
       when .adverbs?
         node = fold_adverbs!(node)
 
@@ -74,7 +71,7 @@ module CV::TlRule
       break
     end
 
-    unless node && (node.center_noun? || mode == 3)
+    unless node && node.center_noun?
       return fold_prodem_nounish!(prodem, nquant)
     end
 
@@ -84,7 +81,7 @@ module CV::TlRule
     end
 
     node = fold_prodem_nounish!(prodem, node) if prodem
-    node = fold_proper_nounish!(proper, node) if proper
+    # node = fold_proper_nounish!(proper, node) if proper
 
     return node unless mode == 0 && (succ = node.succ?)
 

@@ -3,10 +3,12 @@ module CV::TlRule
     if node.pro_ji? && succ.nhanzi?
       succ.val = succ.val.sub("mười", "chục")
       node = fold!(node, succ, PosTag::Number, dic: 5)
+
       return scan_noun!(node.succ?, nquant: node).not_nil!
     end
 
     node, quanti, succ = split_prodem!(node)
+    # puts [node, quanti, succ]
 
     if succ && !(succ.pro_dems? || succ.v_shi? || succ.v_you?)
       return scan_noun!(succ, prodem: node, nquant: quanti).not_nil!

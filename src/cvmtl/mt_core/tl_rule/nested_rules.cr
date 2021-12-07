@@ -25,7 +25,7 @@ module CV::TlRule
       root.tag = succ.tag
     end
 
-    root
+    root.noun? ? fold_noun!(root, mode: 1) : root
   end
 
   private def match_end(char : Char)
