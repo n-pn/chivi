@@ -1,9 +1,7 @@
 module CV::TlRule
   # do not return left when fail to prevent infinity loop!
   def fold_ude1!(ude1 : MtNode, prev = ude1.prev?, succ = ude1.succ?) : MtNode
-    return ude1 unless prev
-    return heal_ude!(ude1, prev) unless succ && !(succ.ends?)
-
+    return heal_ude!(ude1, prev) unless prev && succ
     ude1.set!("")
 
     if noun = scan_noun!(succ, mode: 3)
@@ -25,17 +23,17 @@ module CV::TlRule
     end
   end
 
-  def heal_ude!(ude1 : MtNode, prev : MtNode) : MtNode
+  def heal_ude!(ude1 : MtNode, prev : MtNode?) : MtNode
     case prev
+    when .nil?    then return ude1.set!("của")
     when .popens? then return ude1.set!("")
     when .puncts? then return ude1.set!("đích")
     when .names?, .pro_per?
       prev.prev? do |x|
         return ude1.set!("") if x.verbs? || x.preposes? # || x.nouns? || x.pronouns?
       end
-    else
       # TODO: handle verbs?, adjts?
-      return ude1.set!("")
+    else return ude1.set!("")
     end
 
     ude1.val = "của"

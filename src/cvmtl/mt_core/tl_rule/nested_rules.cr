@@ -14,8 +14,7 @@ module CV::TlRule
 
     return head unless tail && tail != head.succ?
 
-    tag = head.prev?(&.ude1?) ? PosTag::NounPhrase : PosTag::Unkn
-    root = fold!(head, tail, tag: tag, dic: 0)
+    root = fold!(head, tail, tag: PosTag::Unkn, dic: 0)
 
     fix_grammar!(root.body, level: 1)
 
@@ -23,6 +22,8 @@ module CV::TlRule
     if succ.succ? == tail
       root.dic = 1
       root.tag = succ.tag
+    elsif root.prev? { |x| x.ude1? || x.pro_dems? || x.numeric? }
+      root.tag = PosTag::NounPhrase
     end
 
     root.noun? ? fold_noun!(root, mode: 1) : root
