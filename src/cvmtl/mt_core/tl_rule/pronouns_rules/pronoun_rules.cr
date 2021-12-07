@@ -13,7 +13,7 @@ module CV::TlRule
   def fold_proints!(proint : MtNode, succ : MtNode)
     case succ
     when .nouns?
-      succ = scan_noun!(succ)
+      return proint unless succ = scan_noun!(succ)
     when .verbs?
       succ = fold_verbs!(succ)
     else
@@ -25,6 +25,8 @@ module CV::TlRule
     case proint.key
     when "什么"
       proint.set!("gì")
+      flip = true
+    when "怎么"
       flip = true
     end
 

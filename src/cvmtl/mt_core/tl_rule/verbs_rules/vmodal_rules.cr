@@ -66,15 +66,13 @@ module CV::TlRule
   end
 
   def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
-    if succ
-      if succ.maybe_verb?
-        node.val = "muốn"
-      elsif succ.human?
-        if succ.succ?(&.maybe_verb?)
-          node.set!("muốn")
-        else
-          node.set!("nhớ", PosTag::Verb)
-        end
+    if has_verb_after?(node)
+      node.val = "muốn"
+    elsif succ && succ.human?
+      if has_verb_after?(succ)
+        node.set!("muốn")
+      else
+        node.set!("nhớ", PosTag::Verb)
       end
     end
 
