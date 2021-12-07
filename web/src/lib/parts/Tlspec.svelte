@@ -37,6 +37,7 @@
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
+  let cvmtl = ''
   let match = ''
   let extra = ''
   $: prefill_match($input)
@@ -64,6 +65,7 @@
   async function prefill_match({ ztext, lower, upper }) {
     if (!ztext || lower >= upper) return
     const input = ztext.substring(lower, upper)
+    navigator.clipboard.writeText(input)
 
     const res = await fetch('/api/qtran', {
       method: 'POST',
@@ -71,7 +73,7 @@
       body: JSON.stringify({ input, dname, d_dub, plain: true }),
     })
 
-    match = await res.text()
+    cvmtl = match = await res.text()
   }
 
   function focus(node) {
@@ -92,13 +94,20 @@
     </tlspec-head>
 
     <tlspec-body>
-      <form-label>Chọn đúng cụm từ bị lỗi</form-label>
+      <form-label>Khoanh phạm vi lỗi dịch</form-label>
+
       <tlspec-input>
-        {#each Array.from($input.ztext) as char, index}
-          <x-z
-            class:active={index >= $input.lower && index < $input.upper}
-            on:click={() => change_focus(index)}>{char}</x-z>
-        {/each}
+        <tlspec-hanzi>
+          {#each Array.from($input.ztext) as char, index}
+            <x-z
+              class:active={index >= $input.lower && index < $input.upper}
+              on:click={() => change_focus(index)}>{char}</x-z>
+          {/each}
+        </tlspec-hanzi>
+
+        <tlspec-cvmtl>
+          {cvmtl}
+        </tlspec-cvmtl>
       </tlspec-input>
 
       <div hidden>
@@ -256,20 +265,33 @@
 
   tlspec-input {
     display: block;
-    line-height: 1.25em;
-    padding: 0.375rem 0.75rem;
-    margin: 0 -0.75rem;
-
     @include fgcolor(mute);
-    @include ftsize(lg);
     @include bgcolor(tert);
     @include border();
+    @include bdradi();
+  }
+
+  tlspec-hanzi {
+    $height: 1.25rem;
+    display: block;
+    line-height: $height;
+    padding: 0.375rem 0.75rem;
+    max-height: $height * 4 + 0.75rem;
+    overflow-y: auto;
+    @include ftsize(lg);
+  }
+
+  tlspec-cvmtl {
+    display: block;
+    margin: 0.5rem 0;
+    // @include fgcolor(tert);
+    @include border($loc: top);
   }
 
   x-z {
     display: inline-block;
     cursor: pointer;
-    min-width: 0.5em;
+    min-width: 1em;
     text-align: center;
     &.active {
       @include fgcolor(primary, 5);
