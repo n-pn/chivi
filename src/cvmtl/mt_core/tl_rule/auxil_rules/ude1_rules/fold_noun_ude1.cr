@@ -9,7 +9,9 @@ module CV::TlRule
   end
 
   def fold_noun_ude1_noun!(noun : MtNode, ude1 : MtNode, right : MtNode) : MtNode
-    if noun.times? || noun.place? || noun.space?
+    puts [noun, right]
+
+    if noun.times? || noun.place? || noun.space? # || noun.prep_phrase? || noun.defn_phrase?
       ude1.val = ""
     else
       ude1.val = "của"

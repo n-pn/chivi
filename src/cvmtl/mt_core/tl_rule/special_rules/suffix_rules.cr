@@ -6,6 +6,8 @@ module CV::TlRule
     case succ.key
     when "们" then succ.val = "các"
     when "时" then succ.val = "lúc"
+    when "界"
+      return node unless succ.noun?
     end
 
     fold!(node, succ, PosTag::Noun, dic: 7, flip: true)

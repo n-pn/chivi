@@ -134,7 +134,7 @@ module CV::TlRule
         compl.val = "đúng"
       when .pre_zai?
         if succ = scan_noun!(compl.succ?)
-          return if succ.succ?(&.maybe_verb?)
+          return if find_verb_after(succ)
         end
 
         compl.val = "ở"

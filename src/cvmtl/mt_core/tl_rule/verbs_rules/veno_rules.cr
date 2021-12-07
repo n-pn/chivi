@@ -34,9 +34,9 @@ module CV::TlRule
       end
     end
 
-    return node unless succ = node.succ?
-    case succ
-    when .auxils?, .vdir?
+    case succ = node.succ?
+    when .nil? then node
+    when .auxils?, .vdir?, .pre_zai?
       node.set!(PosTag::Verb)
     else
       node

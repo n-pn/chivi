@@ -50,7 +50,12 @@ module CV::TlRule
       left.val = "cái kia"
     end
 
+    # puts [left, right]
+
     case left
+    when .verb_object?
+      left = fold!(left, ude1, PosTag::DefnPhrase, dic: 4)
+      fold!(left, right, PosTag::NounPhrase, dic: 5, flip: true)
     when .nouns?, .pronouns?, .numeric?
       fold_noun_ude1!(left, ude1: ude1, right: right, mode: mode)
     when .verb?, .verb_phrase?

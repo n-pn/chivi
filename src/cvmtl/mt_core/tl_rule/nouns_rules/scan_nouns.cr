@@ -47,6 +47,9 @@ module CV::TlRule
         else
           # puts [node, node.tag]
         end
+      when .preposes?
+        node = fold_preposes!(node, mode: 1) if prodem || nquant
+        # puts [node, node.succ?]
       when .verb_object?
         break unless succ = node.succ?
 
