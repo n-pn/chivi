@@ -33,6 +33,8 @@ module CV::TlRule
       fold!(node, succ, PosTag::DefnPhrase, dic: 4, flip: true)
     when .ptitle?
       fold!(node, succ, succ.tag, dic: 4, flip: true)
+    when .person?
+      fold!(node, succ, node.tag, dic: 4, flip: false)
     when .names?
       # TODO: add pseudo node
       node.val = "của #{node.val}"
