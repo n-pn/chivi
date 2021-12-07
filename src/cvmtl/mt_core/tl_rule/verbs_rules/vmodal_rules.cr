@@ -56,11 +56,11 @@ module CV::TlRule
 
       false
     else
-      node.prev? do |prev|
-        case prev.key
-        when "都", "也" then true
-        else               false
-        end
+      return false unless prev = node.prev?
+
+      case prev.key
+      when "都", "也" then true
+      else               false
       end
     end
   end
