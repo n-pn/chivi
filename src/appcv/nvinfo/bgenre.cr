@@ -3,39 +3,35 @@ require "tabkv"
 module CV::Bgenre
   extend self
 
-  DIR = "var/nvinfos/fixes"
+  DIR = "var/nvinfos/fixed"
 
-  GENRES = File.read_lines("#{DIR}/vi_genres.txt").reject(&.empty?)
-  class_getter map_name : Tabkv { Tabkv.new("#{DIR}/zh_genres.tsv") }
+  class_getter zh_map : Tabkv { Tabkv.new("#{DIR}/genres_zh.tsv") }
+  class_getter vi_map : Tabkv { Tabkv.new("#{DIR}/genres_vi.tsv") }
+  class_getter id_map : Tabkv { Tabkv.new("#{DIR}/genres_id.tsv") }
 
-  def vname(ids : Array(Int32))
-    ids.map { |id| vname(id) }
+  def map_id(input : String) : Int32
+    id_map.ival(input)
   end
 
-  def vname(index : Int32)
-    GENRES[index]? || "Loại khác"
+  def map_id(input : Array(String)) : Array(Int32)
+    input.each { |x| map_id(x) }
   end
 
-  def map_vi(vname : String)
-    GENRES.index(vname) || 0
+  def to_s(ids : Array(Int32)) : Array(String)
+    ids.map { |id| to_s(id) }
   end
 
-  def map_vi(vnames : Array(String))
-    vnames.map { |x| index(x) }.uniq
-  end
-
-  def cv_name(zname : String)
-    map_name.get(zname) || [] of String
+  def to_s(index : Int32) : String
+    vi_map.fval(index.to_s) || "Loại khác"
   end
 
   # mapping chinese genre to vietnamese one
-  def map_zh(zname : String) : Array(Int32)
-    cv_name(zname).map { |vname| map_vi(vname) }
+  def map_zh(input : String) : Array(Int32)
+    input == "轻小说" ? input : input.sub("小说", "")
+    zh_map.get(input) || [] of String
   end
 
-  def map_zh(znames : Array(String)) : Array(Int32)
-    znames.map do |zname|
-      map_zh(zname == "轻小说" ? zname : zname.sub("小说", ""))
-    end.flatten.uniq
+  def map_zh(input : Array(String)) : Array(Int32)
+    input.map { |x| map_zh(x) }.flatten.uniq
   end
 end
