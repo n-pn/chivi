@@ -35,7 +35,7 @@ module CV::TlRule
 
     case prev = verb.prev?
     when .nil?, .none?
-      head = verb if has_verb_after?(right)
+      head = verb if MTL::VERBS_2_OBJS.has_key?(verb.key) || has_verb_after?(right)
     when .v_you?
       head = prev.center_noun? ? prev : verb
     when .v_shi?
@@ -43,7 +43,7 @@ module CV::TlRule
     when .comma?
       # TODO: check before comma?
     when .center_noun?
-      head = nil
+      head = prev if MTL::VERBS_2_OBJS.has_key?(verb.key)
     else
       unless is_linking_verb?(prev, right.succ?)
         head = verb if has_verb_after?(right)
