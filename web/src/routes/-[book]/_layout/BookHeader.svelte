@@ -1,8 +1,7 @@
 <script context="module">
   import { session } from '$app/stores.js'
   import { invalidate } from '$app/navigation'
-
-  import { put_fetch } from '$api/_api_call'
+  import { call_api } from '$api/_api_call'
 
   import { kit_chap_url } from '$utils/route_utils'
   import { status_types, status_names, status_icons } from '$lib/constants.js'
@@ -21,8 +20,8 @@
     if ($session.privi < 0) return
     if (status == ubmemo.status) status = 'default'
 
-    const url = `/api/_self/books/${cvbook.id}/status`
-    const [stt, msg] = await put_fetch(fetch, url, { status })
+    const url = `_self/books/${cvbook.id}/status`
+    const [stt, msg] = await call_api(fetch, url, { status }, 'PUT')
     if (stt) return console.log(`error update book status: ${msg}`)
     invalidate(`/api/books/${cvbook.bslug}`)
   }

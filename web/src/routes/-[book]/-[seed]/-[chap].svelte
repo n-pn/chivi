@@ -1,5 +1,5 @@
 <script context="module">
-  import { api_call, put_fetch } from '$api/_api_call'
+  import { call_api } from '$api/_api_call'
 
   export async function load({ fetch, page: { params }, stuff }) {
     const { cvbook } = stuff
@@ -8,7 +8,7 @@
     const [chidx, cpart = 0] = chap.split('-').pop().split('.')
 
     const url = `chaps/${cvbook.id}/${sname}/${chidx}/${+cpart}`
-    const [status, cvchap] = await api_call(fetch, url)
+    const [status, cvchap] = await call_api(fetch, url, null, 'GET')
 
     if (status) return { status, error: cvchap }
     return { props: { cvbook, ...cvchap } }
@@ -87,10 +87,10 @@
     const { sname, cpart } = chmeta
     const { chidx, title, uslug } = chinfo
 
-    const url = `/api/_self/books/${cvbook.id}/access`
+    const url = `self/books/${cvbook.id}/access`
     const params = { sname, cpart, chidx, title, uslug, locked: lock }
 
-    const [status, payload] = await put_fetch(fetch, url, params)
+    const [status, payload] = await call_api(fetch, url, params, 'PUT')
     if (status) return console.log(`Error update history: ${payload}`)
 
     ubmemo = payload

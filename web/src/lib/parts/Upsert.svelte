@@ -1,13 +1,17 @@
 <!-- @hmr:keep-all -->
 <script context="module">
+  import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
+  import { session } from '$app/stores'
+  import { decor_term, hint } from './Upsert/_shared.js'
+
   import { dict_upsert, dict_search } from '$api/dictdb_api.js'
-  import Hanzi, { input } from './Upsert/Hanzi.svelte'
+  import Hanzi, { input as hanzi } from './Upsert/Hanzi.svelte'
 
   export const ctrl = {
-    ...writable({ tab: 0, ztext: '' }),
+    ...writable({ tab: 0, state: 0 }),
     activate(data, tab = 0, state = 1) {
-      input.put(data)
+      hanzi.put(data)
       ctrl.set({ tab, state })
     },
     change_tab: (tab) => ctrl.update((x) => ({ ...x, tab })),
@@ -17,10 +21,6 @@
 </script>
 
 <script>
-  import { onDestroy } from 'svelte'
-  import { session } from '$app/stores'
-  import { decor_term, hint } from './Upsert/_shared.js'
-
   import SIcon from '$atoms/SIcon.svelte'
   import Gmenu from '$molds/Gmenu.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
@@ -42,7 +42,7 @@
   onDestroy(on_destroy)
 
   let key = ''
-  $: fetch_data($input)
+  $: fetch_data($hanzi)
 
   let pinyins = {}
   let valhint = {}
@@ -118,7 +118,9 @@
             <span>Từ điển</span>
           </a>
 
-          <button class="-item" on:click={() => tlspec.activate($input)}>
+          <button
+            class="-item"
+            on:click={() => tlspec.activate($hanzi, { dname, d_dub })}>
             <SIcon name="flag" />
             <span>Báo lỗi</span>
           </button>

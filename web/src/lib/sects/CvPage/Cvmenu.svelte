@@ -34,25 +34,22 @@
 </script>
 
 <script>
-  import { ctrl as lookup } from '$parts/Lookup.svelte'
-  import { ctrl as upsert } from '$parts/Upsert.svelte'
-  import { ctrl as tlspec } from '$parts/Tlspec.svelte'
-
   import SIcon from '$atoms/SIcon.svelte'
 
+  import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
+  import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
+  import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
+
+  export let dname
+  export let d_dub
+
+  export let on_change = () => {}
+  export let on_destroy = () => {}
   // $: console.log($input)
 </script>
 
 {#if $ctrl.actived}
   <cv-menu style="--top: {$ctrl.top}px; --left: {$ctrl.left}px">
-    <cv-item
-      data-kbd="x"
-      data-tip="Sửa từ"
-      tip-loc="bottom"
-      on:click|capture={() => upsert.activate($input, 0)}>
-      <SIcon name="pencil" />
-    </cv-item>
-
     <cv-item
       data-kbd="q"
       data-tip="Tra từ"
@@ -62,13 +59,37 @@
     </cv-item>
 
     <cv-item
+      data-kbd="x"
+      data-tip="Sửa từ"
+      tip-loc="bottom"
+      on:click|capture={() => upsert.activate($input, 0)}>
+      <SIcon name="pencil" />
+    </cv-item>
+
+    <cv-item
       data-kbd="p"
       data-tip="Báo lỗi"
       tip-loc="bottom"
-      on:click|capture={() => tlspec.activate($input, true)}>
+      on:click|capture={() => tlspec.activate($input, { dname, d_dub })}>
       <SIcon name="flag" />
     </cv-item>
   </cv-menu>
+{/if}
+
+<div hidden>
+  <button data-kbd="c" on:click={() => upsert.activate($input, 1)}>C</button>
+</div>
+
+{#if $lookup.enabled || $lookup.actived}
+  <Lookup {dname} {on_destroy} />
+{/if}
+
+{#if $upsert.state > 0}
+  <Upsert {dname} {d_dub} {on_change} {on_destroy} />
+{/if}
+
+{#if $tlspec.actived}
+  <Tlspec {on_destroy} />
 {/if}
 
 <style lang="scss">

@@ -61,12 +61,28 @@ class CV::TlspecCtrl < CV::BaseCtrl
   end
 
   def show
-    entry = Tlspec.load!(params["ukey"])
+    ukey = params["ukey"]
+    entry = Tlspec.load!(ukey)
+    last_edit = entry.edits.last
+    ztext = entry.ztext[last_edit.lower...last_edit.upper]
+    cvmtl = MtCore.generic_mtl(entry.dname)
 
     json_view({
-      ztext: entry.ztext,
-      dname: entry.dname,
-      d_dub: entry.d_dub,
+      input: {
+        ztext: entry.ztext,
+        lower: last_edit.lower,
+        upper: last_edit.upper,
+      },
+      entry: {
+        _ukey: ukey,
+        dname: entry.dname,
+        d_dub: entry.d_dub,
+        match: last_edit.match,
+        extra: last_edit.extra,
+        cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_s,
+      },
+      uname: entry.edits.first.uname,
+      privi: entry.edits.first.privi,
       edits: entry.edits,
     })
   end

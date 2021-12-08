@@ -1,5 +1,5 @@
 <script context="module">
-  import { page, navigating } from '$app/stores'
+  import { navigating } from '$app/stores'
   import { config } from '$lib/stores'
   import CvData from '$lib/cv_data'
 
@@ -10,13 +10,11 @@
     prev_elem,
   } from '$utils/dom_utils.js'
 
-  import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
-  import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
-  import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
+  import { ctrl as upsert } from '$parts/Upsert.svelte'
+  import { ctrl as lookup } from '$parts/Lookup.svelte'
+  import Cvmenu, { ctrl as cvmenu, input } from './CvPage/Cvmenu.svelte'
 
   import Cvline from '$sects/Cvline.svelte'
-
-  import Cvmenu, { ctrl as cvmenu, input } from './CvPage/Cvmenu.svelte'
   import Zhline from './CvPage/Zhline.svelte'
 
   const hovered = []
@@ -248,13 +246,6 @@
   }
 </script>
 
-<div hidden>
-  <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
-  <button data-kbd="z" on:click={() => config.set_render(-1)}>Z</button>
-  <button data-kbd="g" on:click={() => config.set_render(1)}>G</button>
-  <button data-kbd="c" on:click={() => upsert.activate($input, 1)}>C</button>
-</div>
-
 <svelte:window on:keydown={handle_keydown} />
 
 <article
@@ -284,24 +275,16 @@
     {/each}
   {/key}
 
-  <Cvmenu />
+  {#if $config.reader >= 0}
+    <Cvmenu {dname} {d_dub} {on_change} on_destroy={retake_control} />
+  {/if}
 </article>
 
-{#if $lookup.enabled || $lookup.actived}
-  <Lookup {dname} on_destroy={retake_control} />
-{/if}
-
-{#if $upsert.state > 0}
-  <Upsert {dname} {d_dub} {on_change} on_destroy={retake_control} />
-{/if}
-
-{#if $tlspec.actived}
-  <Tlspec
-    {dname}
-    {d_dub}
-    slink="{$page.path}#L{l_hover}"
-    on_destroy={retake_control} />
-{/if}
+<div hidden>
+  <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
+  <button data-kbd="z" on:click={() => config.set_render(-1)}>Z</button>
+  <button data-kbd="g" on:click={() => config.set_render(1)}>G</button>
+</div>
 
 <style lang="scss">
   article {

@@ -1,29 +1,37 @@
 <script context="module">
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
+  import { call_api } from '$api/_api_call'
   import { create_input } from '$utils/create_stores'
 
   const input = create_input()
 
+  const entry = writable({
+    _ukey: '',
+    dname: 'combine',
+    d_dub: 'Tổng hợp',
+    cvmtl: '',
+    match: '',
+    extra: '',
+  })
+
   export const ctrl = {
     ...writable({ actived: false }),
-    activate: (data) => {
-      input.put(data)
+    deactivate: () => ctrl.set({ actived: false }),
+    activate: (_input, _entry) => {
+      input.put(_input)
+      entry.update((x) => ({ ...x, ..._entry }))
       ctrl.set({ actived: true })
     },
-    deactivate: () => ctrl.set({ actived: false }),
-  }
+    load: async (ukey) => {
+      const res = await fetch(`/api/tlspecs/${ukey}`)
+      const data = await res.json()
 
-  export async function submit_tlspec(params) {
-    const url = '/api/tlspecs'
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    })
+      input.put(data.input)
+      entry.set(data.entry)
 
-    if (res.ok) return [0, await res.json()]
-    return [res.status, await res.text()]
+      ctrl.set({ actived: true })
+    },
   }
 </script>
 
@@ -31,25 +39,12 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
-  export let dname = 'combine'
-  export let d_dub = 'Tổng hợp'
-
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
-  let cvmtl = ''
-  let match = ''
-  let extra = ''
   $: prefill_match($input)
 
   let error
-
-  async function handle_submit() {
-    const params = { ...$input, dname, d_dub, match, extra }
-    const [status, payload] = await submit_tlspec(params)
-    if (status) error = payload
-    else ctrl.deactivate()
-  }
 
   function change_focus(index) {
     if (index < $input.lower) {
@@ -67,13 +62,21 @@
     const input = ztext.substring(lower, upper)
     navigator.clipboard.writeText(input)
 
+    const { dname, d_dub } = $entry
     const res = await fetch('/api/qtran', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ input, dname, d_dub, plain: true }),
     })
 
-    cvmtl = match = await res.text()
+    $entry.cvmtl = $entry.match = await res.text()
+  }
+
+  async function handle_submit() {
+    const params = { ...$input, ...$entry }
+    const [err, data] = await call_api(fetch, 'tlspecs', params, 'POST')
+    if (err) error = data
+    else ctrl.deactivate()
   }
 
   function focus(node) {
@@ -86,7 +89,7 @@
     <tlspec-head>
       <tlspec-title>
         <title-lbl>Báo lỗi dịch:</title-lbl>
-        <title-dub>{d_dub}</title-dub>
+        <title-dub>{$entry.d_dub}</title-dub>
       </tlspec-title>
       <button type="button" class="close-btn" on:click={ctrl.deactivate}>
         <SIcon name="x" />
@@ -106,7 +109,7 @@
         </tlspec-hanzi>
 
         <tlspec-cvmtl>
-          {cvmtl}
+          {$entry.cvmtl}
         </tlspec-cvmtl>
       </tlspec-input>
 
@@ -142,13 +145,16 @@
           <textarea
             class="m-input _match"
             name="match"
-            bind:value={match}
+            bind:value={$entry.match}
             use:focus />
         </form-group>
 
         <form-group>
           <form-label>Giải thích thêm nếu cần</form-label>
-          <textarea class="m-input _extra" name="extra" bind:value={extra} />
+          <textarea
+            class="m-input _extra"
+            name="extra"
+            bind:value={$entry.extra} />
         </form-group>
 
         {#if error}
@@ -160,7 +166,7 @@
             type="submit"
             class="m-btn _primary _lg _fill"
             data-kbd="⇧↵"
-            disabled={!match}>
+            disabled={!$entry.match}>
             <SIcon name="send" />
             <span>Báo lỗi</span>
           </button>
@@ -273,13 +279,16 @@
     @include bgcolor(tert);
     @include border();
     @include bdradi();
+
+    > * {
+      padding: 0.25rem 0.5rem;
+    }
   }
 
   tlspec-hanzi {
     $height: 1.25rem;
     display: block;
     line-height: $height;
-    padding: 0.375rem 0.75rem;
     max-height: $height * 4 + 0.75rem;
     overflow-y: auto;
     @include ftsize(lg);
@@ -287,7 +296,7 @@
 
   tlspec-cvmtl {
     display: block;
-    padding: 0.375rem 0.75rem;
+    @include ftsize(sm);
     // @include fgcolor(tert);
     @include border($loc: top);
   }
@@ -305,17 +314,17 @@
   textarea {
     display: block;
     width: 100%;
-    padding: 0.375rem 0.75rem;
+    padding: 0.25rem 0.5rem;
 
     line-height: 1.25rem;
     @include scroll();
 
     &._match {
-      height: 2.25rem;
+      height: 3.25rem;
     }
 
     &._extra {
-      height: 3.5rem;
+      height: 2rem;
     }
   }
 

@@ -1,16 +1,13 @@
-import { put_fetch } from './_api_call'
+import { call_api } from './_api_call'
 
 export async function dict_lookup(fetch, input, dname) {
-  const url = `/api/dicts/${dname}/lookup`
-  return await put_fetch(fetch, url, { input })
+  return await call_api(fetch, `dicts/${dname}/lookup`, { input })
 }
 
 export async function dict_search(fetch, words, dname = 'combine') {
-  const url = `/api/dicts/${dname}/search`
-  return await put_fetch(fetch, url, { words })
+  return await call_api(fetch, `dicts/${dname}/search`, { words })
 }
 
 export async function dict_upsert(fetch, dname, params) {
-  const url = `/api/dicts/${dname}/upsert`
-  return await put_fetch(fetch, url, params)
+  return await call_api(fetch, `dicts/${dname}/upsert`, params)
 }

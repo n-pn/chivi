@@ -7,13 +7,14 @@ export async function api_call(fetch, route) {
   return [res.status, await res.text()]
 }
 
-export async function put_fetch(fetch, url, params) {
-  const res = await fetch(url, {
-    method: 'PUT',
+export async function call_api(fetch, url, body, method = 'PUT') {
+  const opts = {
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(params),
-  })
+    method,
+  }
+  if (body) opts.body = JSON.stringify(body)
 
+  const res = await fetch('/api/' + url, opts)
   if (res.ok) return [0, await res.json()]
   return [res.status, await res.text()]
 }
