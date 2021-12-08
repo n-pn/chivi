@@ -44,12 +44,12 @@
     <table>
       <thead>
         <tr>
-          <th class="id">ID</th>
+          <th class="id">#</th>
           <th class="ztext">Từ gốc</th>
           <th class="cvmtl">Dịch máy</th>
-          <th class="match">Nghĩa chuẩn</th>
+          <th class="match">Nghĩa đúng</th>
           <th class="d_dub">Bộ truyện</th>
-          <th class="uname">User</th>
+          <th class="uname">N. dùng</th>
           <th class="mtime">Cập nhật</th>
         </tr>
       </thead>

@@ -69,7 +69,9 @@
       body: JSON.stringify({ input, dname, d_dub, plain: true }),
     })
 
-    $entry.cvmtl = $entry.match = await res.text()
+    const cvmtl = await res.text()
+    $entry.cvmtl = cvmtl
+    if (!$entry.match) $entry.match = cvmtl
   }
 
   async function handle_submit() {
