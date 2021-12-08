@@ -24,6 +24,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
               cvmtl = MtCore.generic_mtl(entry.dname)
 
               {
+                _ukey: ukey,
                 ztext: ztext,
                 d_dub: entry.d_dub,
                 mtime: last_edit.mtime,
@@ -63,15 +64,19 @@ class CV::TlspecCtrl < CV::BaseCtrl
   def show
     ukey = params["ukey"]
     entry = Tlspec.load!(ukey)
+
     last_edit = entry.edits.last
-    ztext = entry.ztext[last_edit.lower...last_edit.upper]
+    lower = last_edit.lower
+    upper = last_edit.upper
+
+    ztext = entry.ztext[lower...upper]
     cvmtl = MtCore.generic_mtl(entry.dname)
 
     json_view({
       input: {
         ztext: entry.ztext,
-        lower: last_edit.lower,
-        upper: last_edit.upper,
+        lower: lower,
+        upper: upper,
       },
       entry: {
         _ukey: ukey,
@@ -85,10 +90,19 @@ class CV::TlspecCtrl < CV::BaseCtrl
       privi: entry.edits.first.privi,
       edits: entry.edits,
     })
+  rescue err
+    puts err
+
+    halt! 500, err.message
   end
 
   def update
     entry = Tlspec.load!(params["ukey"])
+
+    unless _cvuser.privi > 2 || entry.edits.first.uname == _cvuser.uname
+      return halt! 403, "Bạn không đủ quyền hạn để sửa!"
+    end
+
     entry.add_edit!(params, _cvuser)
     entry.save!
 
@@ -97,6 +111,11 @@ class CV::TlspecCtrl < CV::BaseCtrl
 
   def delete
     entry = Tlspec.load!(params["ukey"])
+
+    unless _cvuser.privi > 2 || entry.edits.first.uname == _cvuser.uname
+      return halt! 403, "Bạn không đủ quyền hạn để xoá!"
+    end
+
     entry.delete!
 
     json_view(["ok"])

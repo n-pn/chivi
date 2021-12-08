@@ -23,7 +23,7 @@
       entry.update((x) => ({ ...x, ..._entry }))
       ctrl.set({ actived: true })
     },
-    load: async (ukey) => {
+    invoke: async (ukey) => {
       const res = await fetch(`/api/tlspecs/${ukey}`)
       const data = await res.json()
 
@@ -73,14 +73,24 @@
   }
 
   async function handle_submit() {
+    let url = 'tlspecs'
+    if ($entry._ukey) url += '/' + $entry._ukey
+
     const params = { ...$input, ...$entry }
-    const [err, data] = await call_api(fetch, 'tlspecs', params, 'POST')
+    const [err, data] = await call_api(fetch, url, params, 'POST')
     if (err) error = data
     else ctrl.deactivate()
   }
 
   function focus(node) {
     node.focus()
+  }
+
+  async function delete_tlspec() {
+    const url = 'tlspecs/' + $entry._ukey
+    const [err, data] = await call_api(fetch, url, null, 'DELETE')
+    if (err) error = data
+    else ctrl.deactivate()
   }
 </script>
 
@@ -162,13 +172,23 @@
         {/if}
 
         <form-action>
+          {#if $entry._ukey}
+            <button
+              class="m-btn _harmful _lg"
+              data-kbd="delete"
+              on:click={delete_tlspec}>
+              <SIcon name="trash" />
+              <span>Xoá bỏ</span>
+            </button>
+          {/if}
+
           <button
             type="submit"
             class="m-btn _primary _lg _fill"
             data-kbd="⇧↵"
             disabled={!$entry.match}>
             <SIcon name="send" />
-            <span>Báo lỗi</span>
+            <span>{$entry._ukey ? 'Lưu lại' : 'Báo lỗi'}</span>
           </button>
         </form-action>
       </form>

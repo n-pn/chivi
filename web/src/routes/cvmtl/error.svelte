@@ -1,5 +1,6 @@
 <script context="module">
   import { page } from '$app/stores'
+  import { invalidate } from '$app/navigation'
 
   export async function load({ fetch, page: { query } }) {
     const res = await fetch(`/api/tlspecs?${query.toString()}`)
@@ -14,11 +15,17 @@
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
+  import Tlspec, { ctrl as tlspec } from '$parts/Tlspec.svelte'
+
   export let pgidx = 1
   export let pgmax = 1
   export let items = []
 
   $: pager = new Pager($page.path, $page.query, { page: 1 })
+
+  const on_destroy = () => {
+    invalidate('/api/tlspecs?' + $page.query.toString())
+  }
 </script>
 
 <Appbar>
@@ -37,17 +44,21 @@
     <table>
       <thead>
         <tr>
+          <th class="id">ID</th>
           <th class="ztext">Từ gốc</th>
           <th class="cvmtl">Dịch máy</th>
           <th class="match">Nghĩa chuẩn</th>
           <th class="d_dub">Bộ truyện</th>
-          <th class="uname">Người báo</th>
-          <th class="mtime">Thời gian</th>
+          <th class="uname">User</th>
+          <th class="mtime">Cập nhật</th>
         </tr>
       </thead>
       <tbody>
-        {#each items as { ztext, d_dub, mtime, uname, match, cvmtl }}
-          <tr class={cvmtl == match ? 'ok' : 'err'}>
+        {#each items as { _ukey, ztext, d_dub, mtime, uname, match, cvmtl }, idx}
+          <tr
+            class={cvmtl == match ? 'ok' : 'err'}
+            on:click={() => tlspec.invoke(_ukey)}>
+            <td class="id">{idx + 1 + (pgidx - 1) * 50}</td>
             <td class="ztext">{ztext}</td>
             <td class="cvmtl" title={cvmtl}>{cvmtl}</td>
             <td class="match" title={match}>{match}</td>
@@ -63,6 +74,10 @@
       <Mpager {pager} {pgidx} {pgmax} />
     </footer>
   </article>
+
+  {#if $tlspec.actived}
+    <Tlspec {on_destroy} />
+  {/if}
 </Vessel>
 
 <style lang="scss">
