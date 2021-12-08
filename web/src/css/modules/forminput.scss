@@ -22,16 +22,15 @@
   @include bgcolor(main);
 
   @include bdradi();
-  @include border($width: 1.5px);
+  @include border($width: 1px);
 
-  @include hover {
+  @include hover-focus {
     @include bdcolor(primary, 5);
   }
 
   &:focus {
     @include bgcolor(tert);
-    @include bdcolor(primary, 5);
-    box-shadow: 0 0 0 1.5px color(primary, 5, 5);
+    box-shadow: 0 0 0 2px color(primary, 5, 5);
   }
 
   &::placeholder {
@@ -43,7 +42,7 @@
   &:disabled {
     @include fgcolor(mute);
     @include bgcolor(mute);
-    @include linesd(--bd-mute);
+    @include bdcolor(mute);
   }
 }
 
