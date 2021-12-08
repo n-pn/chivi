@@ -37,7 +37,7 @@ module CV::FetchCovers
     end
 
     q_size = queue.size
-    w_size = q_size > 6 ? 6 : q_size
+    w_size = q_size > 12 ? 12 : q_size
 
     workers = Channel(Tuple(String, String, Int32)).new(w_size)
     results = Channel(Tuple(String, String, Int64)).new(q_size)
@@ -48,6 +48,8 @@ module CV::FetchCovers
       end
     end
 
+    finished = false
+
     w_size.times do
       spawn do
         loop do
@@ -55,16 +57,23 @@ module CV::FetchCovers
           size, file = save_image(link, snvid, out_dir)
           puts "- <#{idx}: #{snvid}> #{link}".colorize.cyan
           results.send({snvid, file, size})
+          break if finished
         end
       end
     end
 
     q_size.times do |idx|
-      snvid, file, size = results.receive
-      out_map.set!(snvid, [size.to_s, File.basename(file)])
-      out_map.save! if idx % 10 == 0
+      select
+      when result = results.receive
+        snvid, file, size = result
+        out_map.set!(snvid, [size.to_s, File.basename(file)])
+        out_map.save! if idx % 10 == 0
+      when timeout(10.seconds)
+        next
+      end
     end
 
+    finished = true
     out_map.save!
   end
 
