@@ -6,7 +6,7 @@ module CV::TlRule
 
     case prev.tag
     when .nouns?
-      if should_include_noun_before_verb_ude1?(verb, prev)
+      if verb.verb?
         head = fold!(prev, ude1, PosTag::DefnPhrase, dic: 7)
       else
         head = fold!(verb, ude1, PosTag::DefnPhrase, dic: 7)
@@ -19,9 +19,5 @@ module CV::TlRule
     else
       ude1
     end
-  end
-
-  def should_include_noun_before_verb_ude1?(verb : MtNode, prev : MtNode)
-    MTL::VERBS_2_OBJS.has_key?(verb.key)
   end
 end

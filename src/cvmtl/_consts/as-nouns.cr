@@ -4,5 +4,6 @@ module CV::MTL
     "果断" => "sự quyết đoán",
     "感谢" => "lòng biết ơn",
     "到来" => "sự đến nơi",
+    "光"  => "ánh sáng",
   }
 end
