@@ -64,15 +64,24 @@ class CV::QtransCtrl < CV::BaseCtrl
     dname = params.fetch_str("dname", "combine")
 
     response.content_type = "text/plain; charset=utf-8"
-    convert(dname, lines, response, plain: false)
+    convert(dname, lines, response)
   end
 
   def qtran
-    lines = parse_lines(params.fetch_str("input"))
+    input = params.fetch_str("input")
     dname = params.fetch_str("dname", "combine")
 
     response.content_type = "text/plain; charset=utf-8"
-    convert(dname, lines, response, plain: params["plain"]? == "true")
+
+    if params["mode"]? == "tlspec"
+      cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
+      cvmtl.cv_plain(input, cap_first: false).to_s(response)
+
+      response << "\n"
+      MtCore.hanviet_mtl.translit(input, apply_cap: false).to_s(response)
+    else
+      convert(dname, parse_lines(input), response)
+    end
   end
 
   private def parse_lines(ztext : String) : Array(String)
@@ -80,13 +89,12 @@ class CV::QtransCtrl < CV::BaseCtrl
     TextUtils.split_text(ztext, spaces_as_newline: false)
   end
 
-  private def convert(dname, lines : Array(String), output : IO, plain = false)
+  private def convert(dname, lines : Array(String), output : IO)
     cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
 
     lines.each_with_index do |line, idx|
       output << "\n" if idx > 0
-      mtlist = cvmtl.cv_plain(line, cap_first: !plain)
-      plain ? mtlist.to_s(output) : mtlist.to_str(output)
+      cvmtl.cv_plain(line, cap_first: true).to_str(output)
     end
   end
 end

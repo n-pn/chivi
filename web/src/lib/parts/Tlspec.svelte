@@ -44,6 +44,7 @@
 
   $: prefill_match($input)
 
+  let hanviet = ''
   let error
 
   function change_focus(index) {
@@ -66,12 +67,15 @@
     const res = await fetch('/api/qtran', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input, dname, d_dub, plain: true }),
+      body: JSON.stringify({ input, dname, d_dub, mode: 'tlspec' }),
     })
 
-    const cvmtl = await res.text()
+    const data = await res.text()
+    const [cvmtl, _hanviet] = data.split('\n')
+
     $entry.cvmtl = cvmtl
     if (!$entry.match) $entry.match = cvmtl
+    hanviet = _hanviet
   }
 
   async function handle_submit() {
@@ -119,6 +123,10 @@
               on:click={() => change_focus(index)}>{char}</x-z>
           {/each}
         </tlspec-hanzi>
+
+        <tlspec-cvmtl>
+          {hanviet}
+        </tlspec-cvmtl>
 
         <tlspec-cvmtl>
           {$entry.cvmtl}
@@ -297,7 +305,7 @@
 
   tlspec-input {
     display: block;
-    @include fgcolor(mute);
+    @include fgcolor(tert);
     @include bgcolor(tert);
     @include border();
     @include bdradi();
@@ -308,19 +316,26 @@
   }
 
   tlspec-hanzi {
-    $height: 1.25rem;
     display: block;
+    $height: 1.25rem;
     line-height: $height;
-    max-height: $height * 4 + 0.75rem;
-    overflow-y: auto;
+    max-height: $height * 3 + 0.5rem;
+    @include scroll();
     @include ftsize(lg);
   }
 
   tlspec-cvmtl {
     display: block;
+
+    $height: 1rem;
+    line-height: $height;
+    max-height: $height * 2 + 0.5rem;
+
     @include ftsize(sm);
     // @include fgcolor(tert);
+
     @include border($loc: top);
+    @include scroll();
   }
 
   x-z {
@@ -339,15 +354,8 @@
     padding: 0.25rem 0.5rem;
 
     line-height: 1.25rem;
+    height: 3.25rem;
     @include scroll();
-
-    &._match {
-      height: 3.25rem;
-    }
-
-    &._extra {
-      height: 2rem;
-    }
   }
 
   form-label {
