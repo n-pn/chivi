@@ -5,5 +5,6 @@ module CV::MTL
     "感谢" => "lòng biết ơn",
     "到来" => "sự đến nơi",
     "光"  => "ánh sáng",
+    "出现" => "sự xuất hiện",
   }
 end

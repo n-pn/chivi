@@ -96,5 +96,6 @@ module CV::MTL
     "流" => "phẩm cấp",
     "刑" => "hình phạt",
     "一" => "một trong",
+    "光" => "ánh sáng",
   }
 end

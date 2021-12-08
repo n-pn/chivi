@@ -48,5 +48,6 @@ module CV::MTL
     "家" => "nhà",
     "张" => "tờ",
     "线" => "tuyến",
+    "口" => "miệng",
   }
 end
