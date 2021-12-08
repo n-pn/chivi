@@ -62,7 +62,7 @@ class CV::Tlspec
     CACHE[@ukey] = self
 
     unless self.class.items.includes?(@ukey)
-      self.class.items << @ukey
+      self.class.items.unshift(@ukey)
     end
 
     File.open(@file, "w") do |io|
@@ -92,7 +92,7 @@ class CV::Tlspec
 
   class_getter items : Array(String) do
     files = Dir.glob("#{DIR}/*.tsv")
-    files.sort_by! { |x| File.info(x).modification_time }
+    files.sort_by! { |x| File.info(x).modification_time.to_unix.- }
     files.map { |x| File.basename(x, ".tsv") }
   end
 end

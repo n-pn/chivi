@@ -3,7 +3,7 @@ require "./base_ctrl"
 class CV::TlspecCtrl < CV::BaseCtrl
   def index
     pgidx = params.fetch_int("page", min: 1)
-    limit = 24
+    limit = 50
     start = (pgidx - 1) * limit
     total = Tlspec.items.size
 
@@ -20,13 +20,17 @@ class CV::TlspecCtrl < CV::BaseCtrl
               last_edit = entry.edits.last
               lower = last_edit.lower
               upper = last_edit.upper
+              ztext = entry.ztext[lower...upper]
+              cvmtl = MtCore.generic_mtl(entry.dname)
 
               {
-                ztext: entry.ztext[lower...upper],
+                ztext: ztext,
                 d_dub: entry.d_dub,
                 mtime: last_edit.mtime,
                 uname: entry.edits.first.uname,
                 privi: entry.edits.first.privi,
+                match: last_edit.match,
+                cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_s,
               }.to_json(jb)
             end
           }
@@ -80,8 +84,5 @@ class CV::TlspecCtrl < CV::BaseCtrl
     entry.delete!
 
     json_view(["ok"])
-  end
-
-  private def create_edit(params, upper = 0) : Tlspec::Edit
   end
 end

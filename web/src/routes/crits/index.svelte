@@ -1,7 +1,9 @@
 <script context="module">
+  import { page } from '$app/stores'
+
   export async function load({ fetch, page: { query } }) {
     const res = await fetch(`/api/crits?${query.toString()}&take=10`)
-    return { props: { ...(await res.json()) } }
+    return { props: await res.json() }
   }
 
   const sorts = {
@@ -9,14 +11,11 @@
     stars: 'Cho điểm',
     likes: 'Ưa thích',
   }
-
-  const _navi = { replace: true, scrollto: '#sorts' }
 </script>
 
 <script>
-  import { page } from '$app/stores'
   import SIcon from '$atoms/SIcon.svelte'
-  import Mpager, { Pager, navigate } from '$molds/Mpager.svelte'
+  import Mpager, { Pager } from '$molds/Mpager.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
@@ -50,7 +49,6 @@
         <a
           href={pager.url({ sort, page: 1 })}
           class="-sort"
-          use:navigate={_navi}
           class:_active={sort == _sort}>{name}</a>
       {/each}
     </div>
@@ -63,7 +61,7 @@
       {/each}
 
       <footer class="pagi">
-        <Mpager {pager} {pgidx} {pgmax} {_navi} />
+        <Mpager {pager} {pgidx} {pgmax} />
       </footer>
     </div>
   </section>
