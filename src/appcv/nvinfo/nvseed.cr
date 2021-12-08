@@ -1,9 +1,9 @@
-module CV::Chseed
+module CV::Nvseed
   extend self
 
-  SNAMES = {
-    "chivi" => 0,
-    "local" => 100,
+  MAP_ID = {
+    "chivi" => -1,
+    "local" => 0,
 
     "zxcs_me" => 2,
     "hetushu" => 4,
@@ -26,29 +26,24 @@ module CV::Chseed
     "jx_la" => 80,
   }
 
+  def map_id(sname : String)
+    MAP_ID[sname]? || 990
+  end
+
+  MAP_NAME = MAP_ID.invert
+
+  def map_name(index : Int32)
+    MAP_NAME[index] || "chivi"
+  end
+
+  def to_s(ids : Array(Int32))
+    ids.map { |id| map_name(id) }
+  end
+
   REMOTES = {
     "69shu", "5200", "bxwxorg", "bqg_5200", "nofff", "biqubao",
     "rengshu", "hetushu", "xbiquge", "duokan8", "paoshu8",
   }
-
-  def to_s(ids : Array(Int32))
-    ids.map { |id| sname(id) }
-  end
-
-  def sname(index : Int32)
-    {% begin %}
-    case index
-    {% for sname, i in SNAMES %}
-    when {{ i }} then {{ sname }}
-    {% end %}
-    else "users"
-    end
-    {% end %}
-  end
-
-  def index(sname : String)
-    SNAMES[sname]? || 99
-  end
 
   def remote?(sname : String, privi : Int32 = 4, special_case = false)
     case sname

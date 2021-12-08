@@ -4,34 +4,33 @@ class CV::Nvinfo
   self.table = "nvinfos"
   primary_key
 
-  column succeed_id : Int64? = nil # in case of duplicate entries, this column will point to the better one
-
   belongs_to author : Author
-
   has_many zhbooks : Zhbook, foreign_key: "nvinfo_id"
   has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
-  has_many yslists : Yslist, through: "yscrits"
+  # has_many yslists : Yslist, through: "yscrits"
 
-  column nvseed_ids : Array(Int32) = [] of Int32
-  getter nvseeds : Array(String) { Chseed.to_s(nvseed_ids) }
+  column subdue_id : Int64? = nil # in case of duplicate entries, this column will point to the better one
 
-  column bgenre_ids : Array(Int32) = [] of Int32
-  getter bgenres : Array(String) { Bgenre.to_s(bgenre_ids) }
+  column zseed_ids : Array(Int32) = [] of Int32
+  getter zseeds : Array(String) { Nvseed.to_s(zseed_ids) }
 
-  column blabels : Array(String) = [] of String
+  column genre_ids : Array(Int32) = [] of Int32
+  getter genres : Array(String) { Bgenre.to_s(genre_ids) }
+
+  column labels : Array(String) = [] of String
 
   column bhash : String # unique string generate from zh_title & zh_author
   column bslug : String # unique string generate from hv_title & bhash
 
-  column ztitle : String # chinese title
-  column htitle : String # hanviet title
-  column vtitle : String # localization
+  column zname : String # chinese title
+  column hname : String # hanviet title
+  column vname : String # localization
 
-  column htslug : String # for text searching, auto generated from hname
-  column vtslug : String # for text searching, auto generated from vname
+  column hslug : String # for text searching, auto generated from hname
+  column vslug : String # for text searching, auto generated from vname
 
-  column bcover : String = ""
-  column bintro : String = "" # translated book desc
+  column cover : String = ""
+  column intro : String = "" # translated book description
 
   # status value:
   # 0: ongoing,
@@ -48,48 +47,53 @@ class CV::Nvinfo
   column shield : Int32 = 0 # default to 0
 
   column atime : Int64 = 0 # value by minute from the epoch, update whenever an registered user viewing book info
-  column utime : Int64 = 0 # value by minute from the epoch, max value of nvseed mftime and ys_mftime
+  column utime : Int64 = 0 # value by minute from the epoch, max value of zhbook utime and ys_utime
 
-  column clicks : Int32 = 0 # views count
-  column weight : Int32 = 0 # voters * rating + ???
-
-  column voters : Int32 = 0 # = ys_voters + vi_voters * 2 + random_seed (if < 25)
-  column rating : Int32 = 0 # delivered from above values
-
-  column dtopics : Int32 = 0 # discuss topic count
-  column ubmemos : Int32 = 0 # user tracking count
-
-  column cv_voters : Int32 = 0 # unique revierwers
-  column cv_rating : Int32 = 0 # average rating
-
-  column cv_crits : Int32 = 0 # chivi book review count
-  column cv_lists : Int32 = 0 # chivi booi list count
-
-  column cv_chaps : Int32 = 0 # official chapters count
-  column cv_utime : Int64 = 0 # offiial chapter source updates
-
-  column ys_snvid : Int64? = nil  # yousuu book id
+  column cv_utime : Int64 = 0_i64 # official chapter source updates
   column ys_utime : Int64 = 0_i64 # yousuu book update time
 
+  # ranking
+
+  column weight : Int32 = 0 # voters * rating + ???
+  column rating : Int32 = 0 # delivered from above values
+  column voters : Int32 = 0 # = ys_voters + vi_voters * 2 + random_seed (if < 25)
+
+  column cv_voters : Int32 = 0 # unique revierwers
   column ys_voters : Int32 = 0 # yousuu book voters
-  column ys_rating : Int32 = 0 # yousu book average ratings
 
-  column ys_crits : Int32 = 0 # yousuu review counts
-  column ys_lists : Int32 = 0 # yousuu book list count
-  column ys_words : Int32 = 0 # original word count
+  column cv_scores : Int32 = 0 # chivi users ratings * voters
+  column ys_scores : Int32 = 0 # yousuu users ratings * voters
 
-  column orig_link : String = "" # original publisher novel page
-  column orig_name : String = "" # original publisher name, extract from link
+  # counters
+
+  column cv_chap_count : Int32 = 0 # official chapters count
+  column ys_word_count : Int32 = 0 # total words count from yousuu
+
+  column cvcrit_count : Int32 = 0 # chivi reviews count
+  column yscrit_count : Int32 = 0 # yousuu reviews count
+
+  column cvlist_count : Int32 = 0 # chivi booklists count
+  column yslist_count : Int32 = 0 # yousuu booklists count
+
+  column total_clicks : Int32 = 0 # views count
+  column dtopic_count : Int32 = 0 # discuss topic count
+  column ubmemo_count : Int32 = 0 # user tracking count
+
+  # links
+
+  column ys_snvid : Int64? = nil # yousuu book id
+  column pub_link : String = ""  # original publisher novel page
+  column pub_name : String = ""  # original publisher name, extract from link
 
   timestamps # created_at and updated_at
 
-  scope :filter_ztitle do |input|
-    input ? where("ztitle LIKE %?%", input) : self
+  scope :filter_zname do |input|
+    input ? where("zname LIKE %?%", input) : self
   end
 
-  scope :filter_vtitle do |input|
-    input ? where("vtslug LIKE %?% OR htslug LIKE %?%", input, input) : self
-    # where("vtitle LIKE %$% OR htitle LIKE %$%", frag, frag) if accent
+  scope :filter_vname do |input|
+    input ? where("vslug LIKE %?% OR hslug LIKE %?%", input, input) : self
+    # where("vname LIKE %$% OR hname LIKE %$%", frag, frag) if accent
   end
 
   scope :filter_btitle do |input|
@@ -97,10 +101,10 @@ class CV::Nvinfo
       self
     elsif input =~ /\p{Han}/
       scrub = BookUtils.scrub_zname(input)
-      where("ztitle LIKE '%#{scrub}%'")
+      where("zname LIKE '%#{scrub}%'")
     else
       scrub = BookUtils.scrub_vname(input, "-")
-      where("vtslug LIKE '%-#{scrub}-%' OR htslug LIKE '%-#{scrub}-%'")
+      where("vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%'")
     end
   end
 
@@ -118,16 +122,16 @@ class CV::Nvinfo
     where("author_id IN (SELECT id from authors WHERE #{query})")
   end
 
-  scope :filter_nseed do |input|
-    input ? where("nvseed_ids @> ?", [Chseed.index(input)]) : self
+  scope :filter_zseed do |input|
+    input ? where("zseed_ids @> ?", [Nvseed.map_id(input)]) : self
   end
 
   scope :filter_genre do |input|
-    input ? where("bgenre_ids @> ?", [Bgenre.map_id(input)]) : self
+    input ? where("genre_ids @> ?", [Bgenre.map_id(input)]) : self
   end
 
-  scope :filter_label do |input|
-    input ? where("blabels @> ?", input) : self
+  scope :filter_labels do |input|
+    input ? where("labels @> ?", input) : self
   end
 
   scope :sort_by do |order|
@@ -141,18 +145,18 @@ class CV::Nvinfo
     end
   end
 
-  def add_zhseed(nseed : Int32) : Nil
-    return if self.nvseed_ids.includes?(nseed)
-    self.nvseed_ids.push(nseed).sort!
-    self.nvseed_ids_column.dirty!
+  def add_nvseed(zseed : Int32) : Nil
+    return if self.zseed_ids.includes?(zseed)
+    self.zseed_ids.push(zseed).sort!
+    self.zseed_ids_column.dirty!
   end
 
   def set_genres(genres : Array(String), force = false) : Nil
-    return unless force || self.bgenre_ids.empty?
+    return unless force || self.genre_ids.empty?
     genres_ids = Bgenre.map_zh(genres)
 
-    self.bgenre_ids = genres_ids.empty? ? [0] : genres_ids
-    self.bgenre_ids_column.dirty!
+    self.genre_ids = genres_ids.empty? ? [0] : genres_ids
+    self.genre_ids_column.dirty!
   end
 
   def set_utime(utime : Int64, force = false) : Nil
@@ -220,8 +224,8 @@ class CV::Nvinfo
 
   class_getter total : Int64 { query.count }
 
-  def self.get(author : Author, ztitle : String)
-    find({author_id: author.id, ztitle: ztitle})
+  def self.get(author : Author, zname : String)
+    find({author_id: author.id, zname: zname})
   end
 
   CACHE_INT = RamCache(Int64, self).new
@@ -237,23 +241,23 @@ class CV::Nvinfo
     end
   end
 
-  # def self.upsert!(author : Author, ztitle : String,
-  #                  htitle : String? = nil, vtitle : String? = nil)
-  #   get(author, ztitle) || begin
-  #     bhash = UkeyUtil.digest32("#{ztitle}--#{author.zname}")
-  #     vtitle ||= BookUtils.get_vi_btitle(ztitle, bhash)
-  #     vtslug = "-#{BookUtils.scrub_vname(vtitle, "-")}-"
+  # def self.upsert!(author : Author, zname : String,
+  #                  hname : String? = nil, vname : String? = nil)
+  #   get(author, zname) || begin
+  #     bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
+  #     vname ||= BookUtils.get_vi_btitle(zname, bhash)
+  #     vslug = "-#{BookUtils.scrub_vname(vname, "-")}-"
 
-  #     htitle ||= BookUtils.hanviet(ztitle)
-  #     htslug = BookUtils.scrub_vname(htitle, "-")
+  #     hname ||= BookUtils.hanviet(zname)
+  #     hslug = BookUtils.scrub_vname(hname, "-")
 
-  #     bslug = htslug.split("-").first(8).push(bhash[0..3]).join("-")
+  #     bslug = hslug.split("-").first(8).push(bhash[0..3]).join("-")
 
-  #     htslug = "-#{htslug}-"
+  #     hslug = "-#{hslug}-"
   #     cvbook = new({
   #       author_id: author.id, bhash: bhash, bslug: bslug,
-  #       ztitle: ztitle, htitle: htitle, vtitle: vtitle,
-  #       htslug: htslug, vtslug: vtslug,
+  #       zname: zname, hname: hname, vname: vname,
+  #       hslug: hslug, vslug: vslug,
   #     })
 
   #     cvbook.tap(&.save!)

@@ -134,7 +134,7 @@ shards:
 
   tabkv:
     git: https://github.com/chi-vi/tabkv.git
-    version: 0.1.0+git.commit.50591ff82845f9b8960d3ea205bf456b9a068519
+    version: 0.1.0+git.commit.50cf964120a9cbc8c219ca9b8b1340a5dfc14409
 
   teeplate:
     git: https://github.com/amberframework/teeplate.git
