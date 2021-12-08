@@ -47,14 +47,18 @@
   let hanviet = ''
   let error
 
-  function change_focus(index) {
-    if (index < $input.lower) {
-      $input.lower = index
-    } else if (index + 1 > $input.upper) {
-      $input.upper = index + 1
+  function change_focus(type, value) {
+    $entry.match = ''
+
+    if (type == 'lower') input.move_lower(value)
+    else if (type == 'upper') input.move_upper(value)
+    else if (value < $input.lower) {
+      $input.lower = value
+    } else if (value + 1 > $input.upper) {
+      $input.upper = value + 1
     } else {
-      $input.lower = index
-      $input.upper = index + 1
+      $input.lower = value
+      $input.upper = value + 1
     }
   }
 
@@ -120,39 +124,34 @@
           {#each Array.from($input.ztext) as char, index}
             <x-z
               class:active={index >= $input.lower && index < $input.upper}
-              on:click={() => change_focus(index)}>{char}</x-z>
+              on:click={() => change_focus('both', index)}>{char}</x-z>
           {/each}
         </tlspec-hanzi>
 
-        <tlspec-cvmtl>
-          {hanviet}
-        </tlspec-cvmtl>
-
-        <tlspec-cvmtl>
-          {$entry.cvmtl}
-        </tlspec-cvmtl>
+        <tlspec-cvmtl>{hanviet}</tlspec-cvmtl>
+        <tlspec-cvmtl>{$entry.cvmtl}</tlspec-cvmtl>
       </tlspec-input>
 
       <div hidden>
         <button
           data-kbd="h"
           disabled={$input.lower == 0}
-          on:click={() => input.move_lower(-1)} />
+          on:click={() => change_focus('lower', -1)} />
 
         <button
           data-kbd="j"
           disabled={$input.lower + 1 == $input.ztext.length}
-          on:click={() => input.move_lower(1)} />
+          on:click={() => change_focus('lower', 1)} />
 
         <button
           data-kbd="k"
           disabled={$input.upper == 1}
-          on:click={() => input.move_upper(-1)} />
+          on:click={() => change_focus('upper', -1)} />
 
         <button
           data-kbd="l"
           disabled={$input.upper == $input.ztext.length}
-          on:click={() => input.move_upper(1)} />
+          on:click={() => change_focus('upper', 1)} />
       </div>
 
       <form
@@ -161,7 +160,12 @@
         class="tlspec-form"
         on:submit|preventDefault={handle_submit}>
         <form-group>
-          <form-label>Kết quả dịch chính xác</form-label>
+          <form-label>
+            <span>Kết quả dịch chính xác</span>
+            <span class="hint" on:click={() => ($entry.match = $entry.cvmtl)}>
+              Chép từ dịch máy
+            </span>
+          </form-label>
           <textarea
             class="m-input _match"
             name="match"
@@ -359,12 +363,20 @@
   }
 
   form-label {
-    display: block;
+    display: flex;
     width: 100%;
     font-weight: 500;
     margin-top: 0.5rem;
     margin-bottom: 0.25rem;
     @include ftsize(sm);
+  }
+
+  .hint {
+    cursor: pointer;
+    margin-left: auto;
+    font-weight: 400;
+    font-style: italic;
+    @include fgcolor(tert);
   }
 
   form-action {
