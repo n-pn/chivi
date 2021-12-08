@@ -28,18 +28,10 @@
 <BookHeader {cvbook} {ubmemo} />
 
 <Vessel>
-  <nav class="bread">
-    <a href="/-{cvbook.bslug}" class="crumb _link">{cvbook.vtitle}</a>
-    <span>/</span>
-    <span class="crumb _text">Chương tiết</span>
-  </nav>
+  <SeedList {cvbook} _sname={chinfo.sname} center={true} />
 
   <chap-page>
-    <page-header>
-      <SeedList {cvbook} _sname={chinfo.sname} />
-    </page-header>
-
-    <seed-info>
+    <page-info>
       <info-left>
         <info-text>{chinfo.sname}</info-text>
         <info-span>{chinfo.total} chương</info-span>
@@ -81,7 +73,7 @@
           </a>
         {/if}
       </info-right>
-    </seed-info>
+    </page-info>
 
     <chap-list>
       {#if chinfo.pgmax > 0}
@@ -118,64 +110,38 @@
     @include fgcolor(tert);
   }
 
-  .bread {
-    padding: var(--gutter-pl) 0;
-    line-height: var(--lh-narrow);
-
-    // @include flow();
-    @include ftsize(sm);
-    @include fgcolor(secd);
-  }
-
-  .crumb {
-    // float: left;
-
-    &._link {
-      color: inherit;
-      &:hover {
-        @include fgcolor(primary, 5);
-      }
-    }
-  }
-
   chap-page {
-    @include bgcolor(tert);
-
     display: block;
     margin: 0 -0.5rem var(--gutter);
-    padding: 0 0.5rem;
-    border-radius: 0.5rem;
 
     @include shadow(2);
+    @include bgcolor(tert);
 
     @include bp-min(pl) {
       margin-left: 0;
       margin-right: 0;
-
-      padding-left: 1rem;
-      padding-right: 1rem;
       border-radius: 1rem;
+    }
 
-      @include tm-dark {
-        @include linesd(--bd-soft, $ndef: false, $inset: false);
-      }
+    @include tm-dark {
+      @include linesd(--bd-soft, $ndef: false, $inset: false);
+    }
+
+    > * {
+      padding-left: var(--gutter);
+      padding-right: var(--gutter);
     }
   }
 
-  page-header {
-    display: block;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    @include border(--bd-main, $loc: bottom);
-
-    :global(seed-list) {
-      justify-content: center;
-    }
-  }
-
-  seed-info {
+  page-info {
     display: flex;
-    padding: 0.75rem 0;
+    padding-top: var(--gutter);
+    padding-bottom: var(--gutter);
+    margin-bottom: var(--gutter);
+
+    // @include bgcolor(main);
+    // @include bdradi(1rem, $loc: top);
+    @include border(--bd-main, $loc: bottom);
   }
 
   info-left {
@@ -195,6 +161,13 @@
     @include flex($gap: 0.5rem);
   }
 
+  .m-btn {
+    background: inherit;
+
+    &:hover {
+      @include bgcolor(secd);
+    }
+  }
   // .chinfo {
   //   margin-bottom: var(--gutter-pl);
   // }
@@ -225,7 +198,7 @@
 
   .chlist-sep {
     width: 70%;
-    margin: var(--gutter-ts) auto;
+    margin: var(--gutter) auto;
     @include border(--bd-main, $loc: bottom);
   }
 

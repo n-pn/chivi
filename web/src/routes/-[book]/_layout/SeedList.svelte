@@ -4,6 +4,8 @@
   export let cvbook
   export let _sname = ''
   export let pgidx = 0
+  export let center = false
+
   let show_less = true
 
   function chap_url(sname, pgidx = 0) {
@@ -14,17 +16,17 @@
   $: hidden_seeds = calculate_hidden_seeds(cvbook.snames, _sname)
 
   function calculate_hidden_seeds(snames, _sname) {
-    if (snames.length < 5) return 0
-    if (snames.slice(0, 5).includes(_sname)) return snames.length - 5
-    return snames.length - 4
+    if (snames.length < 4) return 0
+    if (snames.slice(0, 4).includes(_sname)) return snames.length - 4
+    return snames.length - 3
   }
 </script>
 
-<seed-list>
+<seed-list class:center>
   {#each cvbook.chseed as zhbook, idx}
     <a
       class="seed-name"
-      class:_hidden={zhbook.sname != 'chivi' && idx > 3 && show_less}
+      class:_hidden={zhbook.sname != 'chivi' && idx >= 3 && show_less}
       class:_active={zhbook.sname == _sname}
       href={chap_url(zhbook.sname, pgidx)}>
       <seed-label>
@@ -60,6 +62,12 @@
   seed-list {
     @include flex($gap: 0.375rem);
     flex-wrap: wrap;
+
+    &.center {
+      justify-content: center;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
   }
 
   @mixin label {
