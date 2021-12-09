@@ -267,9 +267,9 @@
     if (out_left < 4) {
       p_mid = p_mid - 4 + out_left
       out_left = 4
-    } else if (out_left > window.innerWidth - width - 4) {
-      p_mid = p_mid + 4 - window.innerWidth + width + out_left
-      out_left = window.innerWidth - width - 4
+    } else if (out_left > parent_rect.width - width - 4) {
+      p_mid = p_mid + 4 - parent_rect.width + width + out_left
+      out_left = parent_rect.width - width - 4
     }
 
     p_top = top - parent_rect.top - 40
