@@ -79,7 +79,6 @@
   onDestroy(() => article?.removeEventListener('mouseup', handle_mouse))
 
   function handle_mouse({ target, which }) {
-    console.log({ target, which })
     if (which == 3) return // return if is right click
     let nodes = read_selection()
 
@@ -113,7 +112,9 @@
 
       case 'Enter':
         event.preventDefault()
-        const dic = focused.length == 1 && +focused[0].dataset.d % 2 ? 0 : 1
+
+        const is_base = +focused[0].dataset.d % 2 == 0
+        const dic = focused.length == 1 && is_base ? 1 : 0
         return setTimeout(() => upsert.show(dic), 20)
 
       case 'ArrowUp':
