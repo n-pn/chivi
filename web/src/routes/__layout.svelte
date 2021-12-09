@@ -49,23 +49,31 @@
 
   let kbd_hint = false
 
+  function map_key(evt, key) {
+    if (evt.shiftKey) key = '⇧' + key
+    if (evt.ctrlKey) key = '⌃' + key
+
+    return key
+  }
+
   function handle_keydown(evt) {
     switch (evt.key) {
       case 'Enter':
-        if (evt.ctrlKey) trigger_click(evt, `[data-kbd="⌃↵"]`)
-        else if (evt.shiftKey) trigger_click(evt, `[data-kbd="⇧↵"]`)
-        else trigger_click(evt, `[data-kbd="↵"]`)
-        return
+        return trigger_click(evt, `[data-kbd="${map_key(evt, '↵')}"]`)
+
       case 'Escape':
-        trigger_click(evt, `[data-kbd="esc"]`)
-        return
+        return trigger_click(evt, `[data-kbd="esc"]`)
+
+      case 'ArrowLeft':
+        if (!evt.altKey) return
+        return trigger_click(evt, `[data-kbd="${map_key(evt, '←')}"]`)
 
       default:
+        console.log(evt.key)
         if (evt.ctrlKey) return
     }
 
-    let active = document?.activeElement
-    switch (active?.tagName) {
+    switch (document.activeElement?.tagName) {
       case 'TEXTAREA':
       case 'INPUT':
         if (!evt.altKey) return

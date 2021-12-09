@@ -97,7 +97,7 @@
 <div class="ztext">
   <button
     class="btn _left _hide"
-    data-kbd="h"
+    data-kbd="←"
     use:hint={'Mở rộng sang trái'}
     disabled={lower == 0}
     on:click={() => shift_lower(-1)}>
@@ -106,7 +106,7 @@
 
   <button
     class="btn _left"
-    data-kbd="j"
+    data-kbd="⇧←"
     use:hint={'Thu hẹp từ trái'}
     disabled={lower == ztext.length - 1}
     on:click={() => shift_lower(1)}>
@@ -153,7 +153,7 @@
 
   <button
     class="btn _right"
-    data-kbd="k"
+    data-kbd="⇧→"
     use:hint={'Thu hẹp từ phải'}
     disabled={upper == 1}
     on:click={() => shift_upper(-1)}>
@@ -162,7 +162,7 @@
 
   <button
     class="btn _right _hide"
-    data-kbd="l"
+    data-kbd="→"
     use:hint={'Mở rộng sang phải'}
     disabled={upper == ztext.length}
     on:click={() => shift_upper(1)}>

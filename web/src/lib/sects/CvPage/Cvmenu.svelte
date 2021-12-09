@@ -156,10 +156,8 @@
   }
 
   function change_focus(nodes, index, target = null) {
-    if (index != l_focus) {
-      l_focus = index
-      $ztext = lines[index]
-    }
+    if (index != l_focus) l_focus = index
+    $ztext = lines[index]
 
     const line = article.querySelector(`#L${index}`)
     if (line) scroll_into_view(line, article, 'smooth')
@@ -206,9 +204,6 @@
       node = prev_elem(node)
     }
 
-    $zfrom = +nodes[0].dataset.l
-    $zupto = shift ? $zupto : +nodes[0].dataset.u
-
     return change_focus(nodes, focus)
   }
 
@@ -244,9 +239,6 @@
       nodes.push(node)
       node = next_elem(node)
     }
-
-    $zfrom = shift ? $zfrom : +nodes[nodes.length - 1].dataset.l
-    $zupto = +nodes[nodes.length - 1].dataset.u
 
     return change_focus(nodes, focus)
   }

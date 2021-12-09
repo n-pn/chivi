@@ -175,7 +175,8 @@
         <upsert-btns>
           <button
             class="m-btn _lg _fill _left {btn_state}"
-            data-kbd="'"
+            data-kbd="\"
+            data-key="220"
             use:hint={vpterm._priv
               ? 'Đổi sang từ điển chung'
               : 'Đổi sang từ điển cá nhân'}
