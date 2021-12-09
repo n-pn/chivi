@@ -264,12 +264,14 @@
     p_mid = width / 2
     let out_left = Math.floor((left + right) / 2) - width / 2
 
+    const window_width = document.body.clientWidth
+
     if (out_left < 4) {
       p_mid = p_mid - 4 + out_left
       out_left = 4
-    } else if (out_left > parent_rect.width - width - 4) {
-      p_mid = p_mid + 4 - parent_rect.width + width + out_left
-      out_left = parent_rect.width - width - 4
+    } else if (out_left > window_width - width - 4) {
+      p_mid = p_mid + 4 - window_width + width + out_left
+      out_left = window_width - width - 4
     }
 
     p_top = top - parent_rect.top - 40
@@ -366,7 +368,7 @@
       top: 100%;
       // left: 50%;
       left: var(--mid);
-      margin-left: -0.2875rem;
+      margin-left: -0.375rem;
 
       border: 0.375rem solid transparent;
       border-top-color: var(--bgc);
