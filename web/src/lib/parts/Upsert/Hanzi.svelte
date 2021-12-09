@@ -120,7 +120,7 @@
           <button
             class="key-btn"
             use:hint={'Mở rộng sang trái'}
-            on:click={() => shift_lower(-idx - 1)}>{chr}</button>
+            on:click={() => (lower -= prefix.length - idx)}>{chr}</button>
         {/each}
       </div>
 
@@ -141,7 +141,7 @@
           <button
             class="key-btn"
             use:hint={'Mở rộng sang phải'}
-            on:click={() => shift_upper(idx + 1)}>{chr}</button>
+            on:click={() => (upper += idx + 1)}>{chr}</button>
         {/each}
       </div>
     </div>
