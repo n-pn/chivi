@@ -43,11 +43,7 @@
   }
 </script>
 
-<article
-  tabindex="-1"
-  style="--textlh: {$config.textlh}%"
-  bind:this={article}
-  on:blur={cvmenu.hide}>
+<article tabindex="-1" style="--textlh: {$config.textlh}%" bind:this={article}>
   <header>
     <slot name="header">Dịch nhanh</slot>
   </header>

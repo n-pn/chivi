@@ -159,7 +159,7 @@
           {#if $ctrl.tab < 2}
             <button
               class="postag"
-              data-kbd="p"
+              data-kbd="w"
               on:click={() => ctrl.set_state(2)}>
               {ptnames[vpterm.ptag] || 'Phân loại'}
             </button>

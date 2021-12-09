@@ -15,11 +15,11 @@
   const focused = []
 
   export const ctrl = {
-    ...writable({ actived: false, top: 0, left: 0 }),
+    ...writable({ actived: false }),
     hide() {
       update_hovered()
       update_focused()
-      ctrl.set({ actived: false, top: 0, left: 0 })
+      ctrl.set({ actived: false })
     },
   }
 
@@ -243,25 +243,33 @@
     return change_focus(nodes, focus)
   }
 
+  let p_top = 0
+  let p_left = 0
+  let p_mid = 0
+
   function show_cvmenu(nodes) {
     const parent_rect = article.getBoundingClientRect()
 
     const { top, left } = get_client_rect(nodes[0])
     const { right } = get_client_rect(nodes[nodes.length - 1])
 
-    const width = 100
+    const width = 128
 
+    p_mid = width / 2
     let out_left = Math.floor((left + right) / 2) - width / 2
 
-    if (out_left < 0) out_left = 0
-    else if (out_left + width > window.innerWidth)
-      out_left = window.innerWidth - width
+    if (out_left < 4) {
+      p_mid = p_mid - 4 + out_left
+      out_left = 4
+    } else if (out_left > window.innerWidth - width - 4) {
+      p_mid = p_mid + 4 - window.innerWidth + width + out_left
+      out_left = window.innerWidth - width - 4
+    }
 
-    ctrl.set({
-      actived: true,
-      top: top - parent_rect.top - 40,
-      left: out_left - parent_rect.left,
-    })
+    p_top = top - parent_rect.top - 40
+    p_left = out_left - parent_rect.left
+
+    ctrl.set({ actived: true })
   }
   // $: console.log($input)
 </script>
@@ -269,29 +277,34 @@
 <svelte:window on:keydown={handle_keydown} />
 
 {#if $ctrl.actived}
-  <cv-menu style="--top: {$ctrl.top}px; --left: {$ctrl.left}px">
+  <cv-menu style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
     <cv-item
-      data-kbd="q"
-      data-tip="Tra từ"
-      tip-loc="bottom"
-      on:click|capture={lookup.show}>
+      data-kbd="⇧←"
+      data-tip="Mở sang trái"
+      on:click|capture={() => move_left(true)}>
+      <SIcon name="arrow-left-square" />
+    </cv-item>
+
+    <cv-item data-kbd="q" data-tip="Tra từ" on:click|capture={lookup.show}>
       <SIcon name="search" />
     </cv-item>
 
     <cv-item
       data-kbd="x"
       data-tip="Sửa từ"
-      tip-loc="bottom"
       on:click|capture={() => upsert.show(0)}>
       <SIcon name="pencil" />
     </cv-item>
 
-    <cv-item
-      data-kbd="p"
-      data-tip="Báo lỗi"
-      tip-loc="bottom"
-      on:click|capture={tlspec.show}>
+    <cv-item data-kbd="p" data-tip="Báo lỗi" on:click|capture={tlspec.show}>
       <SIcon name="flag" />
+    </cv-item>
+
+    <cv-item
+      data-kbd="⇧→"
+      data-tip="Mở sang phải"
+      on:click|capture={() => move_right(true)}>
+      <SIcon name="arrow-right-square" />
     </cv-item>
   </cv-menu>
 {/if}
@@ -316,12 +329,13 @@
   $size: 2rem;
 
   cv-menu {
+    @include flex();
+
     height: $size;
     z-index: 40;
-    display: flex;
     position: absolute;
     height: $size;
-    width: 6rem;
+    width: 8rem;
     padding: 0 0.25rem;
 
     top: var(--top, 20vw);
@@ -341,8 +355,9 @@
       position: absolute;
       content: ' ';
       top: 100%;
-      left: 50%;
-      margin-left: -0.375rem;
+      // left: 50%;
+      left: var(--mid);
+      margin-left: -0.2875rem;
 
       border: 0.375rem solid transparent;
       border-top-color: var(--bgc);

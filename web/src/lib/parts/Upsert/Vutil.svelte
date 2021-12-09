@@ -158,7 +158,7 @@
 
     <button
       class="btn"
-      data-kbd="w"
+      data-kbd="r"
       disabled={vpterm.val == vpterm.o_val && vpterm.ptag == vpterm.o_ptag}
       on:click={() => (vpterm = vpterm.reset())}
       use:hint={'Phục hồi lại nghĩa + phân loại ban đầu'}>

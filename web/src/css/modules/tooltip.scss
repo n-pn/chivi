@@ -70,7 +70,7 @@ tool-tip {
 .kbd-hint [data-kbd] {
   // overflow: auto !important;
 
-  @include after($display: block, $abs: true, $content: attr(data-kbd)) {
+  @include before($display: block, $abs: true, $content: attr(data-kbd)) {
     top: -0.25rem;
     right: -0.25rem;
     min-width: 1.25rem;
@@ -85,11 +85,6 @@ tool-tip {
 
     // @include uppercase();
     @include bdradi(2);
-    z-index: 99;
+    z-index: 999;
   }
-
-  // @include hover {
-  //   // prettier-ignore
-  //   &:after { display: inline-block; }
-  // }
 }
