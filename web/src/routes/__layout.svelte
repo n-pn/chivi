@@ -68,6 +68,10 @@
         if (!evt.altKey) return
         return trigger_click(evt, `[data-kbd="${map_key(evt, '←')}"]`)
 
+      case 'ArrowRight':
+        if (!evt.altKey) return
+        return trigger_click(evt, `[data-kbd="${map_key(evt, '→')}"]`)
+
       default:
         console.log(evt.key)
         if (evt.ctrlKey) return
