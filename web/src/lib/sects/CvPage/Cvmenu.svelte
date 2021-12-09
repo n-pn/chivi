@@ -157,7 +157,9 @@
     return fallback ? [fallback] : []
   }
 
-  function change_focus(nodes, index, target = null) {
+  let timeout
+
+  function change_focus(nodes, index, target = null, delay = 0) {
     if (index != l_focus) l_focus = index
     $ztext = lines[index]
 
@@ -176,12 +178,14 @@
     } else {
       update_hovered(line, $zfrom, $zupto)
       update_focused(nodes)
-      show_cvmenu(nodes)
+
+      if (timeout) clearTimeout(timeout)
+      timeout = setTimeout(() => show_cvmenu(nodes), delay)
     }
   }
 
-  function move_left(shift = false) {
-    if (focused.length == 0) change_focus(null, l_focus)
+  function move_left(shift = false, delay = 0) {
+    if (focused.length == 0) change_focus(null, l_focus, null, 1000)
     let node = prev_elem(focused[0], true)
 
     let max_scan = 3
@@ -206,15 +210,15 @@
       node = prev_elem(node)
     }
 
-    return change_focus(nodes, focus)
+    return change_focus(nodes, focus, null, delay)
   }
 
   function can_skip(node) {
     return node ? +node.dataset.d < 1 : false
   }
 
-  function move_right(shift = false) {
-    if (focused.length == 0) change_focus(null, l_focus)
+  function move_right(shift = false, delay = 0) {
+    if (focused.length == 0) change_focus(null, l_focus, null, 500)
     let node = next_elem(focused[focused.length - 1], true)
 
     let max_scan = 3
@@ -242,7 +246,7 @@
       node = next_elem(node)
     }
 
-    return change_focus(nodes, focus)
+    return change_focus(nodes, focus, null, delay)
   }
 
   let p_top = 0
@@ -283,7 +287,7 @@
     <cv-item
       data-kbd="⇧←"
       data-tip="Mở sang trái"
-      on:click|capture={() => move_left(true)}>
+      on:click|capture={() => move_left(true, 500)}>
       <SIcon name="arrow-left-square" />
     </cv-item>
 
@@ -306,7 +310,7 @@
     <cv-item
       data-kbd="⇧→"
       data-tip="Mở sang phải"
-      on:click|capture={() => move_right(true)}>
+      on:click|capture={() => move_right(true, 500)}>
       <SIcon name="arrow-right-square" />
     </cv-item>
   </cv-menu>
@@ -351,6 +355,7 @@
     @include bdradi();
     @include shadow();
 
+    transition: all 0.05s ease-in-out;
     // prettier-ignore
     // @include tm-dark { --bgc: #{color(primary, 4)}; }
 
