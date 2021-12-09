@@ -120,7 +120,7 @@
         <title-lbl>Báo lỗi dịch:</title-lbl>
         <title-dub>{$vdict.d_dub}</title-dub>
       </tlspec-title>
-      <button type="button" class="close-btn" on:click={ctrl.hide}>
+      <button type="button" data-kbd="esc" class="x-btn" on:click={ctrl.hide}>
         <SIcon name="x" />
       </button>
     </tlspec-head>
@@ -279,7 +279,7 @@
     }
   }
 
-  .close-btn {
+  .x-btn {
     padding: 0.25rem;
     @include fgcolor(tert);
     @include bgcolor(tert);
