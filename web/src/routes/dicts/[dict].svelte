@@ -1,4 +1,9 @@
 <script context="module">
+  import { page, session } from '$app/stores'
+  import { invalidate } from '$app/navigation'
+
+  import { ztext, vdict } from '$lib/stores'
+
   import Lookup, { ctrl as lookup } from '$parts/Lookup.svelte'
   import Upsert, { ctrl as upsert } from '$parts/Upsert.svelte'
 
@@ -14,9 +19,6 @@
 </script>
 
 <script>
-  import { page, session } from '$app/stores'
-  import { invalidate } from '$app/navigation'
-
   import SIcon from '$atoms/SIcon.svelte'
   import { get_rtime_short } from '$atoms/RTime.svelte'
 
@@ -27,6 +29,13 @@
   export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
 
+  $: {
+    if (dname == 'regular' || dname == 'hanviet') {
+      vdict.set({ dname: 'combine', d_dub: 'Tổng hợp' })
+    } else {
+      vdict.set({ dname, d_dub })
+    }
+  }
   $: d_tab = dname == 'regular' ? 1 : dname == 'hanviet' ? 2 : 0
 
   // export let p_min = 1
@@ -65,14 +74,6 @@
     }
   }
 
-  function upsert_dict(dname, d_dub) {
-    if (dname == 'regular' || dname == 'hanviet') {
-      return { dname: 'combine', d_dub: 'Tổng hợp' }
-    } else {
-      return { dname, d_dub }
-    }
-  }
-
   function reset_query() {
     for (let key in query) query[key] = ''
     query = query
@@ -82,6 +83,16 @@
     if (!uname) return 'a'
     if (uname.charAt(0) != '!') return uname == $session.uname ? 'b' : 'c'
     return uname == '!' + $session.uname ? 'd' : 'e'
+  }
+
+  function show_lookup(key) {
+    ztext.put(key)
+    lookup.show(true)
+  }
+
+  function show_upsert(key, state = 1) {
+    ztext.put(key)
+    upsert.show(d_tab, state)
   }
 </script>
 
@@ -158,7 +169,7 @@
           {#each terms as { key, val, ptag, rank, mtime, uname, _flag }, idx}
             <tr class="term _{_flag}">
               <td class="-idx">{offset + idx}</td>
-              <td class="-key" on:click={() => lookup.activate(key, true)}>
+              <td class="-key" on:click={() => show_lookup(key)}>
                 <span>{key}</span>
                 <div class="hover">
                   <span class="m-btn _xs _active">
@@ -175,7 +186,7 @@
               <td
                 class="-val"
                 class:_del={!val[0]}
-                on:click={() => upsert.activate(key, d_tab, 1)}>
+                on:click={() => show_upsert(key, 1)}>
                 <span>
                   {val[0] || 'Đã xoá'}
                 </span>
@@ -192,12 +203,12 @@
                 </div>
               </td>
               <td class="-ptag">
-                <span on:click={() => upsert.activate(key, d_tab, 2)}>
+                <span on:click={() => show_upsert(key, 2)}>
                   {ptnames[ptag] || '~'}
                 </span>
                 <div class="hover">
                   <button
-                    on:click={() => upsert.activate(key, d_tab, 2)}
+                    on:click={() => show_upsert(key, 2)}
                     class="m-btn _xs _active">
                     <SIcon name="pencil" />
                   </button>
@@ -226,11 +237,11 @@
 </Vessel>
 
 {#if $lookup.enabled}
-  <Lookup {dname} />
+  <Lookup />
 {/if}
 
 {#if $upsert.state > 0}
-  <Upsert {...upsert_dict(dname, d_dub)} {on_change} />
+  <Upsert {on_change} />
 {/if}
 
 {#if postag_state > 1}

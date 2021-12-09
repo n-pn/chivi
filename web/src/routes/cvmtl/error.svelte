@@ -57,7 +57,7 @@
         {#each items as { _ukey, ztext, d_dub, mtime, uname, match, cvmtl }, idx}
           <tr
             class={cvmtl == match ? 'ok' : 'err'}
-            on:click={() => tlspec.invoke(_ukey)}>
+            on:click={() => tlspec.load(_ukey)}>
             <td class="id">{idx + 1 + (pgidx - 1) * 50}</td>
             <td class="ztext">{ztext}</td>
             <td class="cvmtl" title={cvmtl}>{cvmtl}</td>

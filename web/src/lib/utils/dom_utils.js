@@ -23,31 +23,14 @@ export function elem_in_viewport(elem) {
 
 export function read_selection() {
   const selection = document.getSelection()
-  if (selection.isCollapsed) return [null]
+  if (selection.isCollapsed) return null
 
-  const range = get_selected(selection.getRangeAt(0))
+  const nodes = get_selected(selection.getRangeAt(0))
 
   navigator.clipboard.writeText(selection.toString())
+  selection.removeAllRanges()
 
-  // selection.removeAllRanges()
-
-  const nodes = range.filter((x) => x.nodeName == 'V-N' || x.nodeName == 'Z-N')
-  if (nodes.length == 0) return [null]
-
-  let from = 99999
-  let upto = 0
-
-  for (const node of nodes) {
-    // if (node.nodeType != 1) continue
-
-    const lower = +node.dataset.l
-    const upper = +node.dataset.u
-    if (lower < from) from = lower
-    if (upper > upto) upto = upper
-  }
-
-  if (from > upto) from = upto
-  return [nodes, from, upto]
+  return nodes.filter((x) => x.nodeName == 'V-N' || x.nodeName == 'Z-N')
 }
 
 function get_selected(range) {

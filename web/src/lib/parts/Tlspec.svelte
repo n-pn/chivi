@@ -2,32 +2,25 @@
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
   import { call_api } from '$api/_api_call'
-  import { create_input } from '$utils/create_stores'
+  import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
-  const input = create_input()
-
-  const entry = writable({
-    _ukey: '',
-    dname: 'combine',
-    d_dub: 'Tổng hợp',
-    cvmtl: '',
-    match: '',
-    extra: '',
-  })
+  const entry = {
+    ...writable({ _ukey: '', match: '', extra: '', cvmtl: '' }),
+  }
 
   export const ctrl = {
     ...writable({ actived: false }),
-    deactivate: () => ctrl.set({ actived: false }),
-    activate: (_input, _entry) => {
-      input.put(_input)
-      entry.update((x) => ({ ...x, ..._entry }))
-      ctrl.set({ actived: true })
-    },
-    invoke: async (ukey) => {
+    show: () => ctrl.set({ actived: true }),
+    hide: () => ctrl.set({ actived: false }),
+    load: async (ukey) => {
       const res = await fetch(`/api/tlspecs/${ukey}`)
       const data = await res.json()
 
-      input.put(data.input)
+      ztext.set(data.ztext)
+      zfrom.set(data.lower)
+      zupto.set(data.upper)
+
+      vdict.set({ dname: data.dname, d_dub: data.d_dub })
       entry.set(data.entry)
 
       ctrl.set({ actived: true })
@@ -42,76 +35,92 @@
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
-  $: prefill_match($input)
+  let hvmtl = ''
+  let error = ''
 
-  let hanviet = ''
-  let error
+  let hanzi_elem
+  let match_elem
 
-  function change_focus(type, value) {
-    $entry.match = ''
+  $: lower = $zfrom
+  $: upper = $zupto
+  $: prefill_match($ztext, lower, upper)
 
-    if (type == 'lower') input.move_lower(value)
-    else if (type == 'upper') input.move_upper(value)
-    else if (value < $input.lower) {
-      $input.lower = value
-    } else if (value + 1 > $input.upper) {
-      $input.upper = value + 1
-    } else {
-      $input.lower = value
-      $input.upper = value + 1
-    }
-  }
-
-  async function prefill_match({ ztext, lower, upper }) {
-    if (!ztext || lower >= upper) return
+  async function prefill_match(ztext, lower, upper) {
     const input = ztext.substring(lower, upper)
+    if (!input) return
+
     navigator.clipboard.writeText(input)
 
-    const { dname, d_dub } = $entry
     const res = await fetch('/api/qtran', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input, dname, d_dub, mode: 'tlspec' }),
+      body: JSON.stringify({ input, dname: $vdict.dname, mode: 'tlspec' }),
     })
 
-    const data = await res.text()
-    const [cvmtl, _hanviet] = data.split('\n')
+    const [convert, hanviet] = (await res.text()).split('\n')
+    if (!$entry.match || $entry.match == $entry.cvmtl) $entry.match = convert
 
-    $entry.cvmtl = cvmtl
-    if (!$entry.match) $entry.match = cvmtl
-    hanviet = _hanviet
+    $entry.cvmtl = convert
+    hvmtl = hanviet
+
+    setTimeout(() => {
+      hanzi_elem.querySelector('.active').scrollIntoView()
+      match_elem.focus()
+    }, 10)
   }
 
   async function handle_submit() {
     let url = 'tlspecs'
     if ($entry._ukey) url += '/' + $entry._ukey
 
-    const params = { ...$input, ...$entry }
+    const params = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
     const [err, data] = await call_api(fetch, url, params, 'POST')
     if (err) error = data
-    else ctrl.deactivate()
-  }
-
-  function focus(node) {
-    node.focus()
+    else ctrl.hide()
   }
 
   async function delete_tlspec() {
     const url = 'tlspecs/' + $entry._ukey
     const [err, data] = await call_api(fetch, url, null, 'DELETE')
     if (err) error = data
-    else ctrl.deactivate()
+    else ctrl.hide()
+  }
+
+  function init_match() {
+    $entry.match = $entry.cvmtl
+    match_elem.focus()
+  }
+
+  function change_focus(index) {
+    if (index != lower && index < upper) lower = index
+    if (index >= lower) upper = index + 1
+  }
+
+  function shift_lower(value = 0) {
+    value += lower
+    if (value < 0 || value >= $ztext.length) return
+
+    lower = value
+    if (upper <= value) upper = value + 1
+  }
+
+  function shift_upper(value = 0) {
+    value += upper
+    if (value < 1 || value > $ztext.length) return
+
+    upper = value
+    if (lower >= value) lower = value - 1
   }
 </script>
 
-<Gmodal actived={$ctrl.actived} _z_idx={80} on_close={ctrl.deactivate}>
+<Gmodal actived={$ctrl.actived} _z_idx={80} on_close={ctrl.hide}>
   <tlspec-wrap>
     <tlspec-head>
       <tlspec-title>
         <title-lbl>Báo lỗi dịch:</title-lbl>
-        <title-dub>{$entry.d_dub}</title-dub>
+        <title-dub>{$vdict.d_dub}</title-dub>
       </tlspec-title>
-      <button type="button" class="close-btn" on:click={ctrl.deactivate}>
+      <button type="button" class="close-btn" on:click={ctrl.hide}>
         <SIcon name="x" />
       </button>
     </tlspec-head>
@@ -120,38 +129,38 @@
       <form-label>Khoanh phạm vi lỗi dịch</form-label>
 
       <tlspec-input>
-        <tlspec-hanzi>
-          {#each Array.from($input.ztext) as char, index}
+        <tlspec-hanzi bind:this={hanzi_elem}>
+          {#each Array.from($ztext) as char, index}
             <x-z
-              class:active={index >= $input.lower && index < $input.upper}
-              on:click={() => change_focus('both', index)}>{char}</x-z>
+              class:active={index >= lower && index < upper}
+              on:click={() => change_focus(index)}>{char}</x-z>
           {/each}
         </tlspec-hanzi>
 
-        <tlspec-cvmtl>{hanviet}</tlspec-cvmtl>
+        <tlspec-cvmtl>{hvmtl}</tlspec-cvmtl>
         <tlspec-cvmtl>{$entry.cvmtl}</tlspec-cvmtl>
       </tlspec-input>
 
       <div hidden>
         <button
           data-kbd="h"
-          disabled={$input.lower == 0}
-          on:click={() => change_focus('lower', -1)} />
+          disabled={lower == 0}
+          on:click={() => shift_lower(-1)} />
 
         <button
           data-kbd="j"
-          disabled={$input.lower + 1 == $input.ztext.length}
-          on:click={() => change_focus('lower', 1)} />
+          disabled={lower == $ztext.length - 1}
+          on:click={() => shift_lower(1)} />
 
         <button
           data-kbd="k"
-          disabled={$input.upper == 1}
-          on:click={() => change_focus('upper', -1)} />
+          disabled={lower == 1}
+          on:click={() => shift_upper(-1)} />
 
         <button
           data-kbd="l"
-          disabled={$input.upper == $input.ztext.length}
-          on:click={() => change_focus('upper', 1)} />
+          disabled={lower == $ztext.length}
+          on:click={() => shift_upper(1)} />
       </div>
 
       <form
@@ -162,15 +171,13 @@
         <form-group>
           <form-label>
             <span>Kết quả dịch chính xác</span>
-            <span class="hint" on:click={() => ($entry.match = $entry.cvmtl)}>
-              Chép từ dịch máy
-            </span>
+            <span class="hint" on:click={init_match}> Chép từ dịch máy </span>
           </form-label>
           <textarea
             class="m-input _match"
             name="match"
             bind:value={$entry.match}
-            use:focus />
+            bind:this={match_elem} />
         </form-group>
 
         <form-group>

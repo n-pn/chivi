@@ -1,44 +1,96 @@
 <script context="module">
-  import { create_input } from '$utils/create_stores'
-  export const input = create_input()
+  import { call_api } from '$api/_api_call'
+  import { vdict } from '$lib/stores'
+
+  function make_word_list(ztext, lower, upper) {
+    const words = [ztext.substring(lower, upper)]
+
+    if (lower > 0) words.push(ztext.substring(lower - 1, upper))
+    if (lower + 1 < upper) words.push(ztext.substring(lower + 1, upper))
+
+    if (upper - 1 > lower) words.push(ztext.substring(lower, upper - 1))
+    if (upper + 1 < ztext.length) words.push(ztext.substring(lower, upper + 1))
+    if (upper + 2 < ztext.length) words.push(ztext.substring(lower, upper + 2))
+    if (upper + 3 < ztext.length) words.push(ztext.substring(lower, upper + 3))
+
+    if (lower > 1) words.push(ztext.substring(lower - 2, upper))
+
+    return words
+  }
 </script>
 
 <script>
-  import { hint } from './_shared'
+  import { hint, decor_term } from './_shared'
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let pinyin = ''
+  export let ztext
+  export let lower
+  export let upper
+
+  export let vpterms = []
+  export let valhint = []
   export let output = ''
 
-  let prefix = []
-  let suffix = []
-  $: [output, prefix, suffix] = update($input)
+  let cached_vpterms = {}
+  let cached_valhint = {}
+  let cached_pinyins = {}
+  let prefix = ''
+  let suffix = ''
 
-  function update({ ztext, lower, upper }) {
-    const output = ztext.substring(lower, upper)
-    const prefix = Array.from(ztext.substring(lower - 10, lower))
-    const suffix = Array.from(ztext.substring(upper, upper + 10))
+  $: update_input(lower, upper)
+
+  async function update_input(lower, upper) {
+    output = ztext.substring(lower, upper)
+    prefix = ztext.substring(lower - 10, lower)
+    suffix = ztext.substring(upper, upper + 10)
 
     navigator.clipboard.writeText(output)
-    return [output, prefix, suffix]
+
+    let words = make_word_list(ztext, lower, upper)
+    words = words.filter((x) => x && !cached_vpterms[x])
+
+    if (words.length > 0) {
+      const url = `dicts/${$vdict.dname}/search`
+      const [err, res] = await call_api(fetch, url, { words })
+      if (err) return console.log({ err, res })
+
+      for (const inp in res) {
+        const data = res[inp]
+
+        cached_pinyins[inp] = data.binh_am
+        cached_valhint[inp] = data.val_hint
+
+        cached_vpterms[inp] = [
+          decor_term(data.special),
+          decor_term(data.regular),
+          decor_term(data.hanviet),
+        ]
+      }
+    }
+
+    vpterms = cached_vpterms[output] || []
+    valhint = cached_valhint[output] || []
   }
 
-  function move_lower_left() {
-    $input.lower -= 1
+  function change_focus(index) {
+    if (index != lower && index < upper) lower = index
+    if (index >= lower) upper = index + 1
   }
 
-  function move_lower_right() {
-    $input.lower += 1
-    if ($input.upper <= $input.lower) $input.upper += 1
+  function shift_lower(value = 0) {
+    value += lower
+    if (value < 0 || value >= ztext.length) return
+
+    lower = value
+    if (upper <= value) upper = value + 1
   }
 
-  function move_upper_left() {
-    $input.upper -= 1
-    if ($input.lower >= $input.upper) $input.lower -= 1
-  }
+  function shift_upper(value = 0) {
+    value += upper
+    if (value < 1 || value > ztext.length) return
 
-  function move_upper_right() {
-    $input.upper += 1
+    upper = value
+    if (lower >= value) lower = value - 1
   }
 </script>
 
@@ -47,8 +99,8 @@
     class="btn _left _hide"
     data-kbd="h"
     use:hint={'Mở rộng sang trái'}
-    disabled={$input.lower == 0}
-    on:click={move_lower_left}>
+    disabled={lower == 0}
+    on:click={() => shift_lower(-1)}>
     <SIcon name="chevron-left" />
   </button>
 
@@ -56,20 +108,19 @@
     class="btn _left"
     data-kbd="j"
     use:hint={'Thu hẹp từ trái'}
-    disabled={$input.lower >= $input.ztext.length - 1}
-    on:click={move_lower_right}>
+    disabled={lower == ztext.length - 1}
+    on:click={() => shift_lower(1)}>
     <SIcon name="chevron-right" />
   </button>
 
   <div class="key">
     <div class="key-txt">
       <div class="key-pre">
-        {#each prefix as chr, idx}
+        {#each Array.from(prefix) as chr, idx}
           <button
             class="key-btn"
             use:hint={'Mở rộng sang trái'}
-            on:click={() => ($input.lower -= prefix.length - idx)}
-            >{chr}</button>
+            on:click={() => shift_lower(-idx - 1)}>{chr}</button>
         {/each}
       </div>
 
@@ -78,9 +129,7 @@
           <button
             class="key-btn _out"
             use:hint={'Thu hẹp về ký tự này'}
-            on:click={() => (
-              ($input.lower += idx), ($input.upper = $input.lower + 1)
-            )}>{chr}</button>
+            on:click={() => change_focus(lower + idx)}>{chr}</button>
         {/each}
         {#if output.length > 6}
           <span class="trim">(+{output.length - 6})</span>
@@ -88,26 +137,26 @@
       </div>
 
       <div class="key-suf">
-        {#each suffix as chr, idx}
+        {#each Array.from(suffix) as chr, idx}
           <button
             class="key-btn"
             use:hint={'Mở rộng sang phải'}
-            on:click={() => ($input.upper += idx + 1)}>{chr}</button>
+            on:click={() => shift_upper(idx + 1)}>{chr}</button>
         {/each}
       </div>
     </div>
   </div>
 
   <div class="pinyin">
-    <span class="pinyin-txt">{pinyin || '--'}</span>
+    <span class="pinyin-txt">{cached_pinyins[output] || ''}</span>
   </div>
 
   <button
     class="btn _right"
     data-kbd="k"
     use:hint={'Thu hẹp từ phải'}
-    disabled={$input.upper == 1}
-    on:click={move_upper_left}>
+    disabled={upper == 1}
+    on:click={() => shift_upper(-1)}>
     <SIcon name="chevron-left" />
   </button>
 
@@ -115,8 +164,8 @@
     class="btn _right _hide"
     data-kbd="l"
     use:hint={'Mở rộng sang phải'}
-    disabled={$input.upper == $input.ztext.length}
-    on:click={move_upper_right}>
+    disabled={upper == ztext.length}
+    on:click={() => shift_upper(1)}>
     <SIcon name="chevron-right" />
   </button>
 </div>

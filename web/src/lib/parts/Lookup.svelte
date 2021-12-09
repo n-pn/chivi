@@ -1,23 +1,22 @@
 <script context="module">
   import { onDestroy } from 'svelte'
-  import { writable } from 'svelte/store'
-  import CvData from '$lib/cv_data'
+  import { writable, get } from 'svelte/store'
+  import { call_api } from '$api/_api_call'
 
-  import { dict_lookup } from '$api/dictdb_api'
-  import { create_input } from '$utils/create_stores'
+  import CvData from '$lib/cv_data'
+  import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
   import { ptnames } from '$parts/Postag.svelte'
   import { ctrl as upsert } from '$parts/Upsert.svelte'
 
-  const input = create_input()
-
   export const ctrl = {
     ...writable({ actived: false, enabled: false }),
-    activate(data, enabled = false) {
-      input.put(data)
-      ctrl.set({ enabled, actived: true })
+    hide: (enabled = true) => ctrl.set({ enabled, actived: false }),
+    show(show = true) {
+      const { enabled, actived } = get(ctrl)
+      show = show || enabled
+      if (actived || show) ctrl.set({ enabled: show, actived: true })
     },
-    deactivate: (enabled = true) => ctrl.set({ enabled, actived: false }),
   }
 </script>
 
@@ -25,31 +24,22 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Gslide from '$molds/Gslide.svelte'
 
-  export let dname = 'various'
   export let on_destroy = () => {}
-  // export let label = 'Tổng hợp'
-
   onDestroy(on_destroy)
 
   let entries = []
   let current = []
 
-  let { lower, upper } = $input
-  $: if ($input && $ctrl.actived) update_lookup($input)
+  $: if ($ztext && $ctrl.actived) update_lookup($ztext)
+  $: if ($zfrom && $ctrl.actived) update_focus()
 
   let hv_html = ''
-  let zh_html = ''
-
-  $: if (lower >= 0 && $input.upper > 0) update_focus(lower)
+  $: zh_html = CvData.render_zh($ztext)
 
   async function update_lookup(input) {
-    if (!input.ztext) return
-    zh_html = CvData.render_zh(input.ztext)
-    lower = input.lower
-    upper = input.upper
-
-    const [lookup_err, data] = await dict_lookup(fetch, input.ztext, dname)
-    if (lookup_err) return console.log({ lookup_err })
+    const url = `dicts/${$vdict.dname}/lookup`
+    const [err, data] = await call_api(fetch, url, { input })
+    if (err) return console.log({ err })
 
     entries = data.entries
 
@@ -61,31 +51,27 @@
     }
 
     hv_html = new CvData(data.hanviet).render_hv()
-    update_focus(lower)
+    setTimeout(update_focus, 10)
   }
 
   function handle_click({ target }) {
-    const name = target.nodeName
-    if (name == 'X-N') lower = +target.dataset.l
-  }
-
-  function update_focus(lower) {
-    current = entries[lower] || []
-
-    if (current.length == 0) upper = lower
-    else upper = lower + +current[0][0]
-    highlight_focused(lower, upper)
+    if (target.nodeName == 'X-N') $zfrom = +target.dataset.l
   }
 
   let viewer = null
-  let focused = []
+  const focused = []
 
-  function highlight_focused(lower, upper) {
+  function update_focus() {
     if (!viewer) return
-    focused.forEach((x) => x.classList.remove('focus'))
-    focused = []
 
-    for (let idx = lower; idx < upper; idx++) {
+    current = entries[$zfrom] || []
+    if (current.length == 0) $zupto = $zfrom
+    else $zupto = $zfrom + +current[0][0]
+
+    focused.forEach((x) => x.classList.remove('focus'))
+    focused.length = 0
+
+    for (let idx = $zfrom; idx < $zupto; idx++) {
       const nodes = viewer.querySelectorAll(`x-n[data-l="${idx}"]`)
       nodes.forEach((x) => {
         focused.push(x)
@@ -109,7 +95,7 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <button class="-btn" on:click={() => ctrl.deactivate(false)}>
+    <button class="-btn" on:click={() => ctrl.hide(false)}>
       <SIcon name="circle-off" />
     </button>
   </svelte:fragment>
@@ -128,12 +114,11 @@
     {#each current as [size, terms]}
       <div class="entry">
         <h3 class="word" lang="zh">
-          <entry-key>{$input.ztext.substr(lower, size)}</entry-key>
+          <entry-key>{$ztext.substr($zfrom, size)}</entry-key>
           <entry-btn
             class="m-btn _sm"
             role="button"
-            on:click={() =>
-              upsert.activate([$input.ztext, lower, lower + size])}>
+            on:click={() => upsert.activate([$ztext, $zfrom, $zfrom + size])}>
             <SIcon name="edit" />
             <span>{terms.vietphrase ? 'Sửa' : 'Thêm'}</span>
           </entry-btn>

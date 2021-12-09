@@ -3,20 +3,17 @@
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
   import { session } from '$app/stores'
-  import { decor_term, hint } from './Upsert/_shared.js'
 
-  import { dict_upsert, dict_search } from '$api/dictdb_api.js'
-  import Hanzi, { input as hanzi } from './Upsert/Hanzi.svelte'
+  import { vdict, ztext, zfrom, zupto } from '$lib/stores'
+  import { dict_upsert } from '$api/dictdb_api.js'
+  import { decor_term, hint } from './Upsert/_shared.js'
 
   export const ctrl = {
     ...writable({ tab: 0, state: 0 }),
-    activate(data, tab = 0, state = 1) {
-      hanzi.put(data)
-      ctrl.set({ tab, state })
-    },
-    change_tab: (tab) => ctrl.update((x) => ({ ...x, tab })),
-    change_state: (state) => ctrl.update((x) => ({ ...x, state })),
-    deactivate: () => ctrl.change_state(0),
+    show: (tab = 0, state = 1) => ctrl.set({ tab, state }),
+    hide: () => ctrl.set_state(0),
+    set_tab: (tab) => ctrl.update((x) => ({ ...x, tab })),
+    set_state: (state) => ctrl.update((x) => ({ ...x, state })),
   }
 </script>
 
@@ -25,6 +22,7 @@
   import Gmenu from '$molds/Gmenu.svelte'
   import Gmodal from '$molds/Gmodal.svelte'
 
+  import Hanzi from './Upsert/Hanzi.svelte'
   import Emend from './Upsert/Emend.svelte'
   import Vhint from './Upsert/Vhint.svelte'
   import Vutil from './Upsert/Vutil.svelte'
@@ -34,78 +32,37 @@
   import Postag, { ptnames } from '$parts/Postag.svelte'
   import { ctrl as tlspec } from '$parts/Tlspec.svelte'
 
-  export let dname = 'combine'
-  export let d_dub = 'Tổng hợp'
-
   export let on_change = () => {}
   export let on_destroy = () => {}
   onDestroy(on_destroy)
 
+  let vpterms = []
+  let valhint = []
   let key = ''
-  $: fetch_data($hanzi)
 
-  let pinyins = {}
-  let valhint = {}
-  let vpterms = {}
-
-  $: vpterm = (vpterms[key] || [])[$ctrl.tab] || decor_term({})
-
+  $: vpterm = vpterms[$ctrl.tab] || decor_term({})
   $: [lbl_state, btn_state] = vpterm.get_state(vpterm._priv)
 
   let focus
   $: vpterm, focus && focus.focus()
 
-  async function fetch_data({ ztext, lower, upper }) {
-    const words = [ztext.substring(lower, upper)]
-
-    if (lower > 0) words.push(ztext.substring(lower - 1, upper))
-    if (lower + 1 < upper) words.push(ztext.substring(lower + 1, upper))
-
-    if (upper - 1 > lower) words.push(ztext.substring(lower, upper - 1))
-    if (upper + 1 < ztext.length) words.push(ztext.substring(lower, upper + 1))
-    if (upper + 2 < ztext.length) words.push(ztext.substring(lower, upper + 2))
-    if (upper + 3 < ztext.length) words.push(ztext.substring(lower, upper + 3))
-
-    if (lower > 1) words.push(ztext.substring(lower - 2, upper))
-
-    const to_fetch = words.filter((x) => x && !vpterms[x])
-    if (to_fetch.length == 0) return
-
-    const [err, res] = await dict_search(fetch, to_fetch, dname)
-    if (err) return console.log({ err, res })
-
-    for (const inp in res) {
-      const data = res[inp]
-      pinyins[inp] = data.binh_am
-      valhint[inp] = data.val_hint
-
-      const { special, regular, hanviet } = data
-      // prettier-ignore
-      vpterms[inp] = [ decor_term(special), decor_term(regular), decor_term(hanviet) ]
-    }
-
-    vpterms = vpterms
-  }
-
   async function submit_val() {
-    const val = vpterm.val.replace('', '').trim()
-    const attr = vpterm.ptag
-    const params = { key, val, attr, rank: vpterm.rank, _priv: vpterm._priv }
+    const dname = [$vdict.dname, 'regular', 'hanviet'][$ctrl.tab]
 
-    const dnames = [dname, 'regular', 'hanviet']
-    const [status] = await dict_upsert(fetch, dnames[$ctrl.tab], params)
+    const { val, rank, ptag: attr, _priv } = vpterm
+    const params = { key, val, rank, attr, _priv }
 
+    const [status] = await dict_upsert(fetch, dname, params)
     if (!status) on_change()
-    ctrl.deactivate()
+    ctrl.hide()
   }
 
-  function is_edited(key, tab) {
-    const state = vpterms[key]?.[tab]?.state || 0
-    return state > 0
+  function is_edited(tab) {
+    return vpterms[tab]?.state > 0
   }
 </script>
 
-<Gmodal actived={$ctrl.state > 0} on_close={ctrl.deactivate}>
+<Gmodal actived={$ctrl.state > 0} on_close={ctrl.hide}>
   <upsert-wrap>
     <upsert-head class="head">
       <Gmenu dir="left" loc="bottom">
@@ -113,27 +70,31 @@
           <SIcon name="menu-2" />
         </button>
         <svelte:fragment slot="content">
-          <a class="-item" href="/dicts/{dname}" target="_blank">
+          <a class="-item" href="/dicts/{$vdict.dname}" target="_blank">
             <SIcon name="package" />
             <span>Từ điển</span>
           </a>
 
-          <button
-            class="-item"
-            on:click={() => tlspec.activate($hanzi, { dname, d_dub })}>
+          <button class="-item" on:click={tlspec.activate}>
             <SIcon name="flag" />
             <span>Báo lỗi</span>
           </button>
         </svelte:fragment>
       </Gmenu>
 
-      <Hanzi pinyin={pinyins[key]} bind:output={key} />
+      <Hanzi
+        ztext={$ztext}
+        lower={$zfrom}
+        upper={$zupto}
+        bind:vpterms
+        bind:valhint
+        bind:output={key} />
 
       <button
         type="button"
         class="m-btn _text"
         data-kbd="esc"
-        on:click={ctrl.deactivate}>
+        on:click={ctrl.hide}>
         <SIcon name="x" />
       </button>
     </upsert-head>
@@ -142,20 +103,20 @@
       <button
         class="tab-item _book"
         class:_active={$ctrl.tab == 0}
-        class:_edited={is_edited(key, 0)}
+        class:_edited={is_edited(0)}
         data-kbd="x"
-        on:click={() => ctrl.change_tab(0)}
+        on:click={() => ctrl.set_tab(0)}
         use:hint={`Từ điển riêng cho từng bộ truyện`}>
         <SIcon name="book" />
-        <span>{d_dub}</span>
+        <span>{$vdict.d_dub}</span>
       </button>
 
       <button
         class="tab-item"
         class:_active={$ctrl.tab == 1}
-        class:_edited={is_edited(key, 1)}
+        class:_edited={is_edited(1)}
         data-kbd="c"
-        on:click={() => ctrl.change_tab(1)}
+        on:click={() => ctrl.set_tab(1)}
         use:hint={'Từ điển chung cho tất cả các bộ truyện'}>
         <SIcon name="world" />
         <span>Thông dụng</span>
@@ -171,7 +132,7 @@
             <button
               class="-item"
               data-kbd="v"
-              on:click={() => ctrl.change_tab(2)}
+              on:click={() => ctrl.set_tab(2)}
               use:hint={'Phiên âm Hán Việt cho tên người, sự vật...'}>
               <span>Hán Việt</span>
             </button>
@@ -183,8 +144,8 @@
     <upsert-body>
       <Emend privi={$session.privi} {vpterm} />
 
-      <div class="field">
-        <Vhint {key} tab={$ctrl.tab} hints={valhint[key] || []} bind:vpterm />
+      <upsert-main>
+        <Vhint {key} tab={$ctrl.tab} hints={valhint} bind:vpterm />
 
         <div class="value" class:_fresh={vpterm.state == 0}>
           <input
@@ -199,19 +160,19 @@
             <button
               class="postag"
               data-kbd="p"
-              on:click={() => ctrl.change_state(2)}>
+              on:click={() => ctrl.set_state(2)}>
               {ptnames[vpterm.ptag] || 'Phân loại'}
             </button>
           {/if}
         </div>
 
         <Vutil {key} tab={$ctrl.tab} bind:vpterm />
-      </div>
+      </upsert-main>
 
-      <div class="vfoot">
+      <upsert-foot>
         <Vrank {vpterm} bind:rank={vpterm.rank} />
 
-        <div class="bgroup">
+        <upsert-btns>
           <button
             class="m-btn _lg _fill _left {btn_state}"
             data-kbd="'"
@@ -232,8 +193,8 @@
               : 'Lưu nghĩa vào từ điển chung (áp dụng cho mọi người)'}>
             <span class="submit-text">{lbl_state}</span>
           </button>
-        </div>
-      </div>
+        </upsert-btns>
+      </upsert-foot>
     </upsert-body>
 
     <Links {key} />
@@ -352,7 +313,8 @@
     @include bgcolor(bg-secd);
   }
 
-  .field {
+  upsert-main {
+    display: block;
     position: relative;
     @include bdradi;
 
@@ -416,13 +378,13 @@
     }
   }
 
-  .vfoot {
+  upsert-foot {
     display: flex;
     padding: 0.75rem 0;
     justify-content: right;
   }
 
-  .bgroup {
+  upsert-btns {
     @include flex();
   }
 

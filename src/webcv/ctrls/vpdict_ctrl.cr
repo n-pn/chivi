@@ -153,7 +153,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
     end
 
     key = params.fetch_str("key").gsub("\t", " ").strip
-    val = params.fetch_str("val").split(" | ").map(&.strip)
+    val = params.fetch_str("val").gsub('', "").split(" | ").map(&.strip)
 
     if vdict.dtype == 2 && VpDict.fixture.find(key)
       return halt!(403, "Không thể sửa được từ khoá cứng!")

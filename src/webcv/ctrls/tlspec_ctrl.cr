@@ -73,22 +73,20 @@ class CV::TlspecCtrl < CV::BaseCtrl
     cvmtl = MtCore.generic_mtl(entry.dname)
 
     json_view({
-      input: {
-        ztext: entry.ztext,
-        lower: lower,
-        upper: upper,
-      },
+      ztext: entry.ztext,
+      lower: lower,
+      upper: upper,
+      dname: entry.dname,
+      d_dub: entry.d_dub,
+      uname: entry.edits.first.uname,
+      privi: entry.edits.first.privi,
       entry: {
         _ukey: ukey,
-        dname: entry.dname,
-        d_dub: entry.d_dub,
         match: last_edit.match,
         extra: last_edit.extra,
         cvmtl: cvmtl.cv_plain(ztext, cap_first: false).to_s,
       },
-      uname: entry.edits.first.uname,
-      privi: entry.edits.first.privi,
-      edits: entry.edits,
+      # edits: entry.edits,
     })
   rescue err
     puts err
