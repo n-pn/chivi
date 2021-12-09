@@ -37,7 +37,6 @@
   export let cvdata
 
   const on_change = () => reload_chap(false)
-  let debug = false
 
   $: paths = gen_paths(cvbook, chmeta, chinfo)
   $: api_url = gen_api_url(cvbook, chmeta, chinfo)
@@ -133,8 +132,7 @@
       {zhtext}
       dname={cvbook.bhash}
       d_dub={cvbook.vtitle}
-      {on_change}
-      bind:debug>
+      {on_change}>
       <svelte:fragment slot="header">
         <nav class="bread">
           <a href="/-{cvbook.bslug}" class="crumb _link">{cvbook.vtitle}</a>

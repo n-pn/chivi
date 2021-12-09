@@ -1,5 +1,4 @@
 <script context="module">
-  import { browser } from '$app/env'
   import { navigating } from '$app/stores'
   import { config } from '$lib/stores'
   import { vdict } from '$lib/stores'
@@ -65,7 +64,7 @@
     {/each}
   {/key}
 
-  {#if browser && $config.reader >= 0}
+  {#if $config.render >= 0}
     <Cvmenu {article} lines={zhtext} bind:l_focus {l_hover} {on_change} />
   {/if}
 </article>

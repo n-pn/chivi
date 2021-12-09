@@ -74,11 +74,12 @@
   }
 
   onMount(() => {
-    setTimeout(() => article.addEventListener('mouseup', handle_mouse), 50)
+    setTimeout(() => article.addEventListener('mouseup', handle_mouse), 40)
   })
-  onDestroy(() => article.removeEventListener('mouseup', handle_mouse))
+  onDestroy(() => article?.removeEventListener('mouseup', handle_mouse))
 
   function handle_mouse({ target, which }) {
+    console.log({ target, which })
     if (which == 3) return // return if is right click
     let nodes = read_selection()
 
