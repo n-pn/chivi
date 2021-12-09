@@ -110,13 +110,6 @@
         ctrl.hide()
         return
 
-      case 'Enter':
-        event.preventDefault()
-
-        const is_base = +focused[0].dataset.d % 2 == 0
-        const dic = focused.length == 1 && is_base ? 1 : 0
-        return setTimeout(() => upsert.show(dic), 20)
-
       case 'ArrowUp':
         event.preventDefault()
         return change_focus(null, (l_focus - 1 + lines.length) % lines.length)
@@ -133,6 +126,13 @@
         event.preventDefault()
         return move_right(event.shiftKey)
     }
+  }
+
+  function show_upsert() {
+    const is_base = +focused[0].dataset.d % 2 == 0
+    const dic = focused.length == 1 && is_base ? 1 : 0
+
+    return setTimeout(() => upsert.show(dic), 20)
   }
 
   function find_nearest_nodes(line, idx, max) {
@@ -172,7 +172,7 @@
     lookup.show(false)
 
     if (target && focused.includes(target)) {
-      upsert.show(nodes.length == 1 && +target.dataset.d % 2 == 0 ? 1 : 0)
+      upsert.show(0)
     } else {
       update_hovered(line, $zfrom, $zupto)
       update_focused(nodes)
@@ -287,14 +287,15 @@
       <SIcon name="arrow-left-square" />
     </cv-item>
 
-    <cv-item data-kbd="q" data-tip="Tra từ" on:click|capture={lookup.show}>
+    <cv-item
+      data-kbd="\"
+      data-key="220"
+      data-tip="Tra từ"
+      on:click|capture={lookup.show}>
       <SIcon name="search" />
     </cv-item>
 
-    <cv-item
-      data-kbd="x"
-      data-tip="Sửa từ"
-      on:click|capture={() => upsert.show(0)}>
+    <cv-item data-kbd="↵" data-tip="Sửa từ" on:click|capture={show_upsert}>
       <SIcon name="pencil" />
     </cv-item>
 
@@ -312,6 +313,7 @@
 {/if}
 
 <div hidden>
+  <button data-kbd="x" on:click={() => upsert.show(0)}>X</button>
   <button data-kbd="c" on:click={() => upsert.show(1)}>C</button>
 </div>
 

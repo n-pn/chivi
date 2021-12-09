@@ -95,7 +95,7 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <button class="-btn" on:click={() => ctrl.hide(false)}>
+    <button class="-btn" data-kbd="`" on:click={() => ctrl.hide(false)}>
       <SIcon name="circle-off" />
     </button>
   </svelte:fragment>
