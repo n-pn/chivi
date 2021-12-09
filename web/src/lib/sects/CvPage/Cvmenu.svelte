@@ -259,7 +259,7 @@
     const { top, left } = get_client_rect(nodes[0])
     const { right } = get_client_rect(nodes[nodes.length - 1])
 
-    const width = 128
+    const width = 144
 
     p_mid = width / 2
     let out_left = Math.floor((left + right) / 2) - width / 2
@@ -274,7 +274,7 @@
       out_left = window_width - width - 4
     }
 
-    p_top = top - parent_rect.top - 40
+    p_top = top - parent_rect.top - 44
     p_left = out_left - parent_rect.left
 
     ctrl.set({ actived: true })
@@ -336,7 +336,7 @@
 {/if}
 
 <style lang="scss">
-  $size: 2rem;
+  $size: 2.25rem;
 
   cv-menu {
     @include flex();
@@ -345,7 +345,7 @@
     z-index: 40;
     position: absolute;
     height: $size;
-    width: 8rem;
+    width: 9rem;
     padding: 0 0.25rem;
 
     top: var(--top, 20vw);
