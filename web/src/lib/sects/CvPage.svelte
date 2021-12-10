@@ -145,43 +145,45 @@
     // }
   }
 
+  // prettier-ignore
   cv-data:first-of-type {
     line-height: 1.4em;
 
-    @include bps(font-size, rem(23px), rem(24px), rem(26px), rem(28px));
+    @include bps(font-size, rem(22px), rem(23px), rem(24px), rem(26px), rem(28px));
 
     :global(.app-fs-1) & {
-      @include bps(font-size, rem(22px), rem(23px), rem(25px), rem(27px));
+      @include bps(font-size, rem(21px), rem(22px), rem(23px), rem(25px), rem(27px));
     }
 
     :global(.app-fs-5) & {
-      @include bps(font-size, rem(24px), rem(25px), rem(26px), rem(29px));
+      @include bps(font-size, rem(23px), rem(24px), rem(25px), rem(26px), rem(29px));
     }
   }
 
+  // prettier-ignore
   cv-data:not(:first-of-type) {
     text-align: justify;
     text-justify: auto;
     line-height: var(--textlh, 160%);
 
     :global(.app-fs-1) & {
-      @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(19px));
+      @include bps(font-size, rem(15px), rem(16px), rem(17px), rem(18px), rem(19px));
     }
 
     :global(.app-fs-2) & {
-      @include bps(font-size, rem(17px), rem(18px), rem(10px), rem(20px));
+      @include bps(font-size, rem(16px), rem(17px), rem(18px), rem(10px), rem(20px));
     }
 
     :global(.app-fs-3) & {
-      @include bps(font-size, rem(18px), rem(19px), rem(20px), rem(21px));
+      @include bps(font-size, rem(17px), rem(18px), rem(19px), rem(20px), rem(21px));
     }
 
     :global(.app-fs-4) & {
-      @include bps(font-size, rem(19px), rem(20px), rem(21px), rem(22px));
+      @include bps(font-size, rem(19px), rem(20px), rem(21px), rem(22px), rem(23px));
     }
 
     :global(.app-fs-5) & {
-      @include bps(font-size, rem(20px), rem(21px), rem(22px), rem(23px));
+      @include bps(font-size, rem(21px), rem(22px), rem(23px), rem(24px), rem(25px));
     }
   }
 
