@@ -6,12 +6,18 @@
 
   const entry = {
     ...writable({ _ukey: '', match: '', extra: '', cvmtl: '' }),
+    reset() {
+      this.set({ match: '', extra: '', cvmtl: '' })
+    },
   }
 
   export const ctrl = {
     ...writable({ actived: false }),
     show: () => ctrl.set({ actived: true }),
-    hide: () => ctrl.set({ actived: false }),
+    hide: () => {
+      entry.reset()
+      ctrl.set({ actived: false })
+    },
     load: async (ukey) => {
       const res = await fetch(`/api/tlspecs/${ukey}`)
       const data = await res.json()
