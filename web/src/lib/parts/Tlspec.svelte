@@ -55,8 +55,6 @@
     const input = ztext.substring(lower, upper)
     if (!input) return
 
-    navigator.clipboard.writeText(input)
-
     const res = await fetch('/api/qtran', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -117,6 +115,11 @@
     upper = value
     if (lower >= value) lower = value - 1
   }
+
+  function copy_ztext() {
+    const input = $ztext.substring(lower, upper)
+    navigator.clipboard.writeText(input)
+  }
 </script>
 
 <Gmodal actived={$ctrl.actived} _z_idx={80} on_close={ctrl.hide}>
@@ -132,7 +135,43 @@
     </tlspec-head>
 
     <tlspec-body>
-      <form-label>Khoanh phạm vi lỗi dịch</form-label>
+      <form-label>
+        <span>Khoanh phạm vi lỗi dịch</span>
+
+        <btn-group>
+          <button
+            data-kbd="←"
+            disabled={lower == 0}
+            on:click={() => shift_lower(-1)}>
+            <SIcon name="arrow-left" />
+          </button>
+
+          <button
+            data-kbd="⇧←"
+            disabled={lower == $ztext.length - 1}
+            on:click={() => shift_lower(1)}>
+            <SIcon name="arrow-bar-to-right" />
+          </button>
+
+          <button
+            data-kbd="⇧→"
+            disabled={lower == 1}
+            on:click={() => shift_upper(-1)}>
+            <SIcon name="arrow-bar-to-left" />
+          </button>
+
+          <button
+            data-kbd="→"
+            disabled={lower == $ztext.length}
+            on:click={() => shift_upper(1)}>
+            <SIcon name="arrow-right" />
+          </button>
+
+          <button data-kbd="c" on:click={copy_ztext}>
+            <SIcon name="copy" />
+          </button>
+        </btn-group>
+      </form-label>
 
       <tlspec-input>
         <tlspec-hanzi bind:this={hanzi_elem}>
@@ -146,28 +185,6 @@
         <tlspec-cvmtl>{hvmtl}</tlspec-cvmtl>
         <tlspec-cvmtl>{$entry.cvmtl}</tlspec-cvmtl>
       </tlspec-input>
-
-      <div hidden>
-        <button
-          data-kbd="h"
-          disabled={lower == 0}
-          on:click={() => shift_lower(-1)} />
-
-        <button
-          data-kbd="j"
-          disabled={lower == $ztext.length - 1}
-          on:click={() => shift_lower(1)} />
-
-        <button
-          data-kbd="k"
-          disabled={lower == 1}
-          on:click={() => shift_upper(-1)} />
-
-        <button
-          data-kbd="l"
-          disabled={lower == $ztext.length}
-          on:click={() => shift_upper(1)} />
-      </div>
 
       <form
         action="/api/tlspecs"
@@ -396,5 +413,25 @@
     @include flex($gap: 0.75rem);
     justify-content: right;
     margin: 0.75rem 0 0.5rem;
+  }
+
+  btn-group {
+    display: flex;
+    margin-left: auto;
+
+    button {
+      background: none;
+      padding: 0;
+      width: 1.25rem;
+      height: 1.25rem;
+
+      @include fgcolor(tert);
+      @include hover {
+        @include fgcolor(main);
+      }
+      & + & {
+        margin-left: 0.25rem;
+      }
+    }
   }
 </style>
