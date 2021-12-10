@@ -60,9 +60,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     lines = zhbook.chtext(chidx - 1, cpart, privi: privi, reset: imode > 1)
 
     ubmemo = Ubmemo.find_or_new(_cvuser.id, zhbook.cvbook_id)
-    if privi >= 0 && !ubmemo.locked
-      ubmemo.mark!(zhbook.zseed, chinfo.chidx, chinfo.title, chinfo.uslug, cpart)
-    end
+    ubmemo.mark!(zhbook.zseed, chidx, cpart, chinfo.title, chinfo.uslug) if privi >= 0
 
     json_view do |jb|
       jb.object {

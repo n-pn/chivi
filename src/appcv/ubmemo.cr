@@ -39,16 +39,19 @@ class CV::Ubmemo
     @status_s = nil
   end
 
-  def mark!(zseed : Int32, chidx : Int32, title = "", uslug = "", cpart = 0, locked = false)
+  def mark!(zseed : Int32, chidx : Int32, cpart = 0, title = "", uslug = "", locked = false)
+    if locked || !self.locked
+      self.lr_zseed = zseed
+      self.lr_chidx = chidx
+      @lr_sname = nil
+    elsif self.lr_zseed != zseed || self.lr_chidx != chidx
+      return
+    end
+
     self.locked = locked
     self.bumped = Time.utc.to_unix
 
-    self.lr_zseed = zseed
-    @lr_sname = nil
-
-    self.lr_chidx = chidx
     self.lr_cpart = cpart
-
     self.lc_title = title
     self.lc_uslug = uslug
 
