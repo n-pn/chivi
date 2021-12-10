@@ -49,6 +49,8 @@ module CV::TlRule
       left.tag = PosTag::Adjt
     elsif left.pro_na1?
       left.val = "cái kia"
+    elsif left.key == "所有"
+      return fold!(left.set!("tất cả"), right, PosTag::NounPhrase, dic: 5)
     end
 
     # puts [left, right]
