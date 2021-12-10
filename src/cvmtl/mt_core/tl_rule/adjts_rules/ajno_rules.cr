@@ -9,7 +9,7 @@ module CV::TlRule
 
     case succ = node.succ?
     when .nil?, .ends?
-      node.val = MTL::AS_NOUNS.fetch(node.key, node.val)
+      node.val = MtDict::CAST_NOUNS.fetch(node.key, node.val)
       node.set!(PosTag::Noun)
     when .ude1?
       node.set!(PosTag::Adjt)
