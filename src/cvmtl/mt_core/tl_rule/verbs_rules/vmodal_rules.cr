@@ -1,5 +1,6 @@
 module CV::TlRule
   def heal_vmodal!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
+    return node.set!(PosTag::Noun) if vmodal_is_noun?(node)
     succ.tag = PosTag::Verb if succ && (succ.veno? || succ.vead?)
 
     # puts [node, succ, nega]
@@ -17,11 +18,17 @@ module CV::TlRule
       node = fold!(nega, node, node.tag, dic: 6) if nega
     end
 
-    return node unless succ && succ.verb?
-
-    succ = fold_verbs!(succ)
-    succ.set!(PosTag::Verb) if succ.v_you?
-    fold!(node, succ, succ.tag, dic: 6)
+    case succ
+    when .nil? then node
+    when .preposes?
+      node = fold!(node, succ, succ.tag, dic: 6)
+      fold_preposes!(node)
+    when .verbs?
+      verb = fold!(node, succ, succ.tag, dic: 6)
+      fold_verbs!(verb)
+    else
+      node
+    end
   end
 
   def vmodal_is_noun?(node : MtNode)

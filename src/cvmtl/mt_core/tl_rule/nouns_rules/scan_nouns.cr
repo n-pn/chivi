@@ -6,6 +6,8 @@ module CV::TlRule
   #   can return non nounish node
   def scan_noun!(node : MtNode?, mode : Int32 = 0,
                  prodem : MtNode? = nil, nquant : MtNode? = nil)
+    # puts [node, prodem, nquant, "scan_noun"]
+
     while node
       case node
       when .popens?
@@ -18,6 +20,7 @@ module CV::TlRule
         end
       when .pro_dems?
         if prodem || nquant
+          # TODO: call scan_noun here then fold
           node = nil
         else
           prodem, nquant, node = split_prodem!(node, node.succ?)
@@ -43,7 +46,7 @@ module CV::TlRule
         when .adjts?
           node = fold_adjt_as_noun!(node)
         when .adverb?
-          node = nil
+          break
         else
           # puts [node, node.tag]
         end
@@ -60,8 +63,14 @@ module CV::TlRule
         when .ude1?
           node = fold_ude1!(ude1: succ, prev: node)
         end
-      when .v_shi?
-        break
+      when .vmodal?
+        node = heal_vmodal!(node)
+
+        if node.preposes?
+          node = fold_preposes!(node, mode: 1)
+        elsif node.verbs?
+          node = fold_verb_as_noun!(node, mode: mode)
+        end
       when .verbs?
         node = fold_verb_as_noun!(node, mode: mode)
       when .adjts?
@@ -140,19 +149,12 @@ module CV::TlRule
   end
 
   def fold_verb_as_noun!(node : MtNode, prev : MtNode? = nil, mode = 0)
-    return node if node.v_shi?
+    # puts [node, node.succ?]
 
     case node
-    when .vmodal?
-      if vmodal_is_noun?(node)
-        return fold_noun!(node.set!(PosTag::Noun), mode: 1)
-      end
-
-      node = heal_vmodal!(node)
+    when .v_shi? then return node
     when .veno?
       node = fold_veno!(node)
-    when .verb_object?
-      # do nothing
     else
       node = fold_verbs!(node)
     end

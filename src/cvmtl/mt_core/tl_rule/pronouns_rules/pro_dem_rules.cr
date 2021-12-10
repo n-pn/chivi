@@ -1,5 +1,10 @@
 module CV::TlRule
   def fold_pro_dems!(node : MtNode, succ : MtNode) : MtNode
+    # if node.key == "这儿" || node.key == "这儿"
+    #   succ = fold_noun!(succ) if succ.nouns?
+    #   return node
+    # end
+
     if node.pro_ji? && succ.nhanzi?
       succ.val = succ.val.sub("mười", "chục")
       node = fold!(node, succ, PosTag::Number, dic: 5)
@@ -58,9 +63,11 @@ module CV::TlRule
       return {prodem, qtnoun, succ}
     end
 
-    return {node, nil, succ} if node.key.size < 2
-    node.key, qt_key = node.key.split("", 2)
+    if node.key.size < 2 || node.key == "这儿" || node.key == "这儿"
+      return {node, nil, succ}
+    end
 
+    node.key, qt_key = node.key.split("", 2)
     node.tag, pro_val = map_pro_dem!(node.key)
     return {node, nil, succ} if pro_val.empty?
 
@@ -82,35 +89,38 @@ module CV::TlRule
   #   "那样" => "như thế",
   # }
 
-  def split_pro_dem!(node : MtNode) : Tuple(MtNode, MtNode?)
-    if qtnoun = node.body?
-      prodem = qtnoun.succ
+  # def split_pro_dem!(node : MtNode) : Tuple(MtNode, MtNode?)
+  #   if qtnoun = node.body?
+  #     prodem = qtnoun.succ
 
-      # flip back
+  #     # flip back
 
-      prodem.fix_prev!(node.prev?)
-      qtnoun.fix_succ!(node.succ?)
-      prodem.fix_succ!(qtnoun)
+  #     prodem.fix_prev!(node.prev?)
+  #     qtnoun.fix_succ!(node.succ?)
+  #     prodem.fix_succ!(qtnoun)
 
-      return {prodem, qtnoun}
-    end
+  #     return {prodem, qtnoun}
+  #   end
 
-    return {node, nil} if node.key.size < 2
-    node.key, qt_key = node.key.split("", 2)
+  #   if node.key.size < 2 || node.key == "这儿" || node.key == "这儿"
+  #     return {node, nil}
+  #   end
 
-    node.tag, pro_val = map_pro_dem!(node.key)
-    return {node, nil} if pro_val.empty?
+  #   node.key, qt_key = node.key.split("", 2)
 
-    qt_val = node.val.sub(" " + pro_val, "")
-    node.val = pro_val
+  #   node.tag, pro_val = map_pro_dem!(node.key)
+  #   return {node, nil} if pro_val.empty?
 
-    qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
+  #   qt_val = node.val.sub(" " + pro_val, "")
+  #   node.val = pro_val
 
-    prodem = node
-    prodem.set_succ!(qtnoun)
+  #   qtnoun = MtNode.new(qt_key, qt_val, PosTag::Qtnoun, 1, node.idx + 1)
 
-    {prodem, qtnoun}
-  end
+  #   prodem = node
+  #   prodem.set_succ!(qtnoun)
+
+  #   {prodem, qtnoun}
+  # end
 
   def map_pro_dem!(key : String) : {PosTag, String}
     case key
