@@ -5,7 +5,10 @@ module CV::TlRule
     ude1.set!("")
 
     if noun = scan_noun!(succ, mode: 3)
-      return fold_ude1_left!(prev, ude1, noun)
+      node = fold_ude1_left!(prev, ude1, noun)
+      return node unless succ = node.succ?
+      node = fold_uzhi!(uzhi: succ, prev: node) if succ.uzhi?
+      return fold_noun_space!(noun: node)
     else
       succ = ude1.succ
     end
