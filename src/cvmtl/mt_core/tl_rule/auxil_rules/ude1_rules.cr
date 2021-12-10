@@ -25,16 +25,14 @@ module CV::TlRule
 
   def heal_ude!(ude1 : MtNode, prev : MtNode?) : MtNode
     case prev
-    when .nil?    then return ude1.set!("của")
-    when .popens? then return ude1.set!("")
+    when .nil?    then return ude1.set!("đích")
+    when .pstops? then return ude1.set!("")
     when .puncts? then return ude1.set!("đích")
-    when .names?, .pro_per?
-      prev.prev? do |x|
-        return ude1.set!("") if x.verbs? || x.preposes? # || x.nouns? || x.pronouns?
-      end
-      # TODO: handle verbs?, adjts?
+    when .names?, .human?
+      prev.prev?.try { |x| return ude1.set!("") if x.verb? || x.veno? || x.vead? }
     else return ude1.set!("")
     end
+    # TODO: handle verbs?, adjts?
 
     ude1.val = "của"
     fold!(prev, ude1, PosTag::DefnPhrase, dic: 6, flip: true)
