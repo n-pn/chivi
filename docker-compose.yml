@@ -6,22 +6,22 @@ services:
     image: chivi
     command: amber watch
     environment:
-      DATABASE_URL: postgres://postgres:password@db:5432/chivi_development
+      DATABASE_URL: postgres://postgres:password@db:5432/chivi_dev
     ports:
       - 3000:3000
     links:
       - db
     volumes:
-    - .:/app
-    - nodes:/app/node_modules
-    - shards:/app/lib
+      - .:/app
+      - nodes:/app/node_modules
+      - shards:/app/lib
 
   migrate:
     build: .
     image: chivi
     command: bash -c 'while ! nc -q 1 db 5432 </dev/null; do sleep 1; done && amber db migrate seed'
     environment:
-      DATABASE_URL: postgres://postgres:password@db:5432/chivi_development
+      DATABASE_URL: postgres://postgres:password@db:5432/chivi_dev
     volumes:
       - .:/app
     links:
@@ -34,7 +34,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: chivi_development
+      POSTGRES_DB: chivi_dev
     volumes:
       - db:/var/lib/postgres/data
 
