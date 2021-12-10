@@ -61,6 +61,8 @@ module CV::TlRule
           ude1 = fold_ude1_left!(node, succ, succ.succ?)
           node = ude1 unless ude1.ude1?
         end
+      when .v_shi?
+        break
       when .verbs?
         node = fold_verb_as_noun!(node, mode: mode)
       when .adjts?
