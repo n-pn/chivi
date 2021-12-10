@@ -44,7 +44,7 @@ module CV::TlRule
   end
 
   def fold_pre_zai!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
-    if succ.verb?
+    if succ.verb? || succ.verb_object?
       node = fold!(node, succ, succ.tag, dic: 5)
       fold_verbs!(node)
     else

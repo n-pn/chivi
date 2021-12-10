@@ -58,8 +58,7 @@ module CV::TlRule
           succ = fold_noun!(succ, mode: 1)
           node = fold!(node, succ, PosTag::NounPhrase, dic: 5, flip: true)
         when .ude1?
-          ude1 = fold_ude1_left!(node, succ, succ.succ?)
-          node = ude1 unless ude1.ude1?
+          node = fold_ude1!(ude1: succ, prev: node)
         end
       when .v_shi?
         break

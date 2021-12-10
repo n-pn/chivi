@@ -25,7 +25,7 @@
     'vd': 'Phó động từ',
     'vn': 'Danh động từ',
     'vi': 'Nội động từ',
-    'vl': 'Cụm động tân',
+    'vo': 'Cụm động tân',
     'vf': 'Động từ xu hướng',
     'vx': 'Động từ hình thức',
     'vm': 'Động từ năng nguyện',
@@ -108,7 +108,7 @@
     'r': 'Đại từ chưa phân loại',
 
     'nl': 'Các cấu trúc kết hợp danh từ với số lượng từ hoặc đại từ chỉ thị ở đằng trước',
-    'vl': 'Cấu trúc gồm một động từ + một danh từ, có thể làm định ngữ, bổ ngữ hoặc động từ li hợp',
+    'vo': 'Cấu trúc gồm một động từ + một danh từ, có thể làm định ngữ, bổ ngữ hoặc động từ li hợp',
     'i': 'Các cụm từ thường gặp nhưng chưa được phân loại sang danh/động/tính',
 
     'm': 'Các từ chỉ số lượng như một hai vạn ức, 1 2 3...',
@@ -157,7 +157,7 @@
       'b', 'al',
       '-',
       'v', 'vn', 'vd',
-      'vi', 'vl',
+      'vi', 'vo',
       '-',
       'rr', 'rz', 'ry',
       'r',
@@ -207,7 +207,7 @@
       case 'nw': return '/'
 
       case 'al': return ';'
-      case 'vl': return '\''
+      case 'vo': return '\''
 
       default: return ''
     }

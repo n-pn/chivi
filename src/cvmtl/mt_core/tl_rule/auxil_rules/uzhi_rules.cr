@@ -9,8 +9,11 @@ module CV::TlRule
     end
 
     uzhi.val = ""
+    tag = PosTag::Nform
 
     case
+    when succ.key == "中"
+      succ.val = "trong"
     when succ.key == "都"
       tag = PosTag::Naffil
     when prev.numbers? && succ.numbers?
@@ -21,8 +24,6 @@ module CV::TlRule
       end
 
       tag = PosTag::Number
-    else
-      tag = PosTag::Nform
     end
 
     fold!(prev, succ, tag, dic: 2, flip: true)

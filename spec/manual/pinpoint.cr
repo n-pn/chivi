@@ -1,8 +1,8 @@
 require "../../src/cvmtl/mt_core"
 
-GENERIC = CV::MtCore.generic_mtl("various")
+GENERIC = CV::MtCore.generic_mtl("7zx48vye")
 
-inp = "就抱着电脑和八音盒走了：“加油！”"
+inp = "菠萝娱乐是在走下坡路的，他们的市场份额人人都眼馋"
 res = GENERIC.cv_plain(inp)
 
 [res.inspect, inp, res].each do |text|

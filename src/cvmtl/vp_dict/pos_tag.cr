@@ -162,6 +162,7 @@ struct CV::PosTag
     when "q", "qt", "qv" then map_quantis(key)
     when "mq" then map_nquants(key)
     when "bl" then Modifier
+    when "vl" then VerbObject
     when "z", "az" then Aform
     when "ns", "nt" then Naffil
     when "nf" then Person
