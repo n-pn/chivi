@@ -37,21 +37,22 @@ class CV::VpDict
     files.map { |f| File.basename(f, ".tab") }
   end
 
+  BASICS = {} of String => self
   NOVELS = {} of String => self
   THEMES = {} of String => self
 
   def self.load(dname : String, scope = "novel", reset = false)
     case dname
     when "trungviet", "cc_cedict", "trich_dan"
-      new(path(dname, "miscs"), dtype: 0)
+      BASICS[dname] ||= new(path(dname, "miscs"), dtype: 0)
     when "tradsim", "hanviet", "pin_yin"
-      new(path(dname, "miscs"), dtype: 1, reset: reset)
+      BASICS[dname] ||= new(path(dname, "miscs"), dtype: 1, reset: reset)
     when "essence", "fixture"
-      new(path(dname, "basic"), dtype: 1, reset: reset)
+      BASICS[dname] ||= new(path(dname, "basic"), dtype: 1, reset: reset)
     when "regular", "suggest"
-      new(path(dname, "basic"), dtype: 2, reset: reset)
+      BASICS[dname] ||= new(path(dname, "basic"), dtype: 2, reset: reset)
     when "combine"
-      new(path(dname, "basic"), dtype: 3, reset: reset)
+      BASICS[dname] ||= new(path(dname, "basic"), dtype: 3, reset: reset)
     else
       cached = scope == "novel" ? NOVELS : THEMES
       cached[dname] ||= new(path(dname, scope), dtype: 3, reset: reset)

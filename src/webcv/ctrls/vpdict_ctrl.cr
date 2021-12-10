@@ -174,7 +174,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
 
     json_view(vpterm)
   rescue err
-    puts err
+    Log.error { err.message }
     halt! 500, err.message
   end
 
