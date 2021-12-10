@@ -15,11 +15,9 @@ if [[ $1 == "all" || $* == *dict* ]]
 then
   echo backup dicts data!
 
-  # rsync -aiz --no-p "$SSH/db/vpdicts/core" "_db/vpdict"
-  # rsync -aiz --no-p "$SSH/db/vpdicts/uniq" "_db/vpdict"
-
-  rsync -aiz --no-p "$SSH/var/vpdicts/core" "var/vpdicts"
-  rsync -aiz --no-p "$SSH/var/vpdicts/uniq" "var/vpdicts"
+  rsync -aiz --no-p "$SSH/var/vpdicts/basic" "var/vpdicts"
+  rsync -aiz --no-p "$SSH/var/vpdicts/novel" "var/vpdicts"
+  rsync -aiz --no-p "$SSH/var/vpdicts/theme" "var/vpdicts"
 fi
 
 ## backup user data
@@ -36,7 +34,7 @@ then
   echo backup books data!
   rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
   rsync -aiz --no-p "$SSH/_db/zhbook/" "_db/zhbook/"
-  rsync -aiz --no-p "$SSH/db/chtexts/" "db/chtexts/"
+  rsync -aiz --no-p "$SSH/var/chtexts/" "var/chtexts/"
 fi
 
 ## backup crit data

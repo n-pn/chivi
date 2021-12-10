@@ -1,6 +1,6 @@
 require "../shared/seed_data"
 
-DIR = "db/chtexts/chivi"
+DIR = "var/chtexts/chivi"
 
 Dir.children(DIR).each do |bhash|
   idx_files = Dir.glob("#{DIR}/#{bhash}/*.tsv")

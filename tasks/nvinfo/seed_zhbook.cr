@@ -248,7 +248,7 @@ class CV::SeedZhbook
       else
         puts "-- extract chap index: #{cvbook.bhash}".colorize.yellow
         # ttl = get_ttl(zhbook.mftime)
-        FileUtils.mkdir_p("db/chtexts/#{@sname}/#{snvid}")
+        FileUtils.mkdir_p("var/chtexts/#{@sname}/#{snvid}")
         _, chap_count = zhbook.refresh!(mode: 1, ttl: 10.years)
         @seed.chsize.set!(snvid, [chap_count.to_s, zhbook.last_schid])
       end

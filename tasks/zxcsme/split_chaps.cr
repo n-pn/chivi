@@ -18,7 +18,7 @@ class CV::Zxcs::SplitText
   INP_RAR = "_db/.keeps/zxcs_me/_rars"
   INP_TXT = "_db/.keeps/zxcs_me/texts"
 
-  OUT_DIR = "db/chtexts/zxcs_me"
+  OUT_DIR = "var/chtexts/zxcs_me"
 
   def extract_all!
     input = Dir.glob("#{INP_RAR}/*.rar").shuffle

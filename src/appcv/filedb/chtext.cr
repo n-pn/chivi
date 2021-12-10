@@ -8,7 +8,7 @@ require "./chpage"
 class CV::Chtext
   CACHE = RamCache(String, self).new(512, 3.hours)
   CHARS = 3000
-  VPDIR = "db/chtexts"
+  VPDIR = "var/chtexts"
 
   def self.load(sname : String, snvid : String, infos : Chpage)
     CACHE.get("#{sname}/#{snvid}/#{infos.chidx}") { new(sname, snvid, infos) }
