@@ -71,6 +71,10 @@ module CV::TlRule
     node.val = "vậy" if !nega && succ.ends? && node.key == "也"
 
     case succ.tag
+    when .v_you?
+      return node unless (noun = succ.succ?) && noun.noun?
+      succ = fold!(succ, noun, PosTag::Aform, dic: 5)
+      fold_adverb_node!(node, succ)
     when .vmodals?
       heal_vmodal!(succ, nega: node)
     when .verbs?
