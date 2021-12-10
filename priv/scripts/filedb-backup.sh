@@ -24,7 +24,6 @@ fi
 if [[ $1 == "all" || $* == *spec* ]]
 then
   echo backup tlspecs
-  rsync -aiz --no-p --delete "$SSH/db/tlspecs" "db"
   rsync -aiz --no-p --delete "$SSH/var/tlspecs/users" "var/tlspecs"
 fi
 

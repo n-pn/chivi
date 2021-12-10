@@ -86,7 +86,7 @@
     const { sname, cpart } = chmeta
     const { chidx, title, uslug } = chinfo
 
-    const url = `self/books/${cvbook.id}/access`
+    const url = `_self/books/${cvbook.id}/access`
     const params = { sname, cpart, chidx, title, uslug, locked: lock }
 
     const [status, payload] = await call_api(fetch, url, params, 'PUT')
