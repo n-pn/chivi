@@ -1,6 +1,9 @@
 module CV::TlRule
   def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
-    if verb.vpro?
+    case verb
+    when .v_shi?, .v_you?, .verb_object?
+      return fold_left_verb!(verb, prev)
+    when .vpro?
       return verb unless (succ = verb.succ?) && succ.verbs?
       verb = fold!(verb, succ, succ.tag, dic: 5)
     end
@@ -54,13 +57,13 @@ module CV::TlRule
         verb = fold_left_verb!(verb, prev)
         return fold_suf_noun!(verb, succ)
       when .junction?
-        break unless join = fold_verb_junction!(junc: succ, verb: verb)
-        verb = join
+        fold_verb_junction!(junc: succ, verb: verb).try { |x| verb = x } || break
       else
         break
       end
 
       break if verb.succ? == succ
+      verb.set!(PosTag::Verb) unless verb.vintr? || verb.verb_object?
     end
 
     fold_left_verb!(verb, prev)

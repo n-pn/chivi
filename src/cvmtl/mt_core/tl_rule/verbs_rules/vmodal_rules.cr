@@ -5,8 +5,10 @@ module CV::TlRule
     # puts [node, succ, nega]
 
     case node
-    when .vm_hui?   then node = heal_vm_hui!(node, succ, nega)
-    when .vm_xiang? then node = heal_vm_xiang!(node, succ, nega)
+    when .vm_hui? then node = heal_vm_hui!(node, succ, nega)
+    when .vm_xiang?
+      return fold_verbs!(node.set!(PosTag::Verb)) if succ.try(&.adv_bu?)
+      node = heal_vm_xiang!(node, succ, nega)
     else
       if vmodal_is_noun?(node)
         node.tag = PosTag::Noun
