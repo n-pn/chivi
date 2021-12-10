@@ -38,11 +38,11 @@ module CV::TlRule
     end
 
     if node.key == "和"
-      if (verb = find_verb_after_for_prepos(succ)) && !verb.unique?
+      if (verb = find_verb_after_for_prepos(succ)) && !verb.uniques?
         # TODO: add more white list?
         # puts [verb, node]
         node = fold!(node, succ, PosTag::PrepPhrase, dic: 5)
-        fold!(node, scan_verb!(node), verb.tag, dic: 6)
+        fold!(node, scan_verb!(verb), verb.tag, dic: 6)
 
         # TOD: fold as subject + verb structure?
         return

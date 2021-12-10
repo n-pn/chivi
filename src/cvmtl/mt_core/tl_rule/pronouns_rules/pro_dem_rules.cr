@@ -26,13 +26,18 @@ module CV::TlRule
     return nounish unless prodem
 
     if nounish
-      flip = !nounish.time? && prodem.pro_zhe? || prodem.pro_na1?
+      flip = !nounish.time? && should_flip_prodem?(prodem)
       return fold!(prodem, nounish, PosTag::NounPhrase, dic: 2, flip: flip)
     end
 
     return prodem.set!("cái này") if prodem.pro_zhe?
     return prodem.set!("vậy") if prodem.pro_na1? && !prodem.succ?(&.maybe_verb?)
     prodem
+  end
+
+  def should_flip_prodem?(prodem : MtNode)
+    return true if prodem.pro_zhe? || prodem.pro_na1?
+    {"另"}.includes?(prodem.key)
   end
 
   def split_prodem!(node : MtNode?, succ : MtNode? = node.succ?)
