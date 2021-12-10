@@ -60,21 +60,19 @@ class CV::VpTrie
     # term is a user private entry if uname is prefixed with a "!"
     if term.is_priv
       uname = term.uname
-      return unless newer?(term, @privs[uname]?)
-      @privs[uname] = term
+      @privs[uname] = term if newer?(term, @privs[uname]?)
     else
-      return unless newer?(term, @base)
-      @base = term
+      @base = term if newer?(term, @base)
     end
   end
 
   # checking if new term can overwrite current term
-  def newer?(term : VpTerm, prev : VpTerm?)
-    return term unless prev
+  def newer?(term : VpTerm, prev : VpTerm?) : Bool
+    return true unless prev
     time_diff = term.mtime - prev.mtime
 
     # do not record if term is outdated
-    return if time_diff < 0
+    return false if time_diff < 0
 
     if term.uname == prev.uname && time_diff <= 5
       prev._flag = 2_u8
@@ -84,6 +82,6 @@ class CV::VpTrie
       term._prev = prev
     end
 
-    term
+    true
   end
 end
