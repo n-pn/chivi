@@ -95,9 +95,9 @@
     match_elem.focus()
   }
 
-  function change_focus(index) {
-    if (index != lower && index < upper) lower = index
-    if (index >= lower) upper = index + 1
+  function change_focus(index, _prev = lower) {
+    if (index < upper) lower = index
+    if (index >= _prev) upper = index + 1
   }
 
   function shift_lower(value = 0) {
@@ -152,6 +152,8 @@
             on:click={() => shift_lower(1)}>
             <SIcon name="arrow-bar-to-right" />
           </button>
+
+          <span>({upper - lower})</span>
 
           <button
             data-kbd="⇧→"
@@ -419,18 +421,25 @@
     display: flex;
     margin-left: auto;
 
+    * + * {
+      margin-left: 0.25rem;
+    }
+
+    // prettier-ignore
     button {
       background: none;
       padding: 0;
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1.5rem;
+      height: 1.5rem;
 
       @include fgcolor(tert);
-      @include hover {
-        @include fgcolor(main);
-      }
-      & + & {
-        margin-left: 0.25rem;
+      &:hover { @include fgcolor(main); }
+      &:disabled { @include fgcolor(mute); }
+
+      :global(svg) {
+        width: 1rem;
+        height: 1rem;
+        margin: 0.25rem;
       }
     }
   }

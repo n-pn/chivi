@@ -18,7 +18,7 @@
 @mixin flex($center: null, $wrap: false, $gap: null) {
   display: flex;
 
-  @if ($gap) { gap: $gap; }
+  @if ($gap) { gap: $gap }
   @if ($wrap) { flex-wrap: wrap; }
 
   @if $center == both or $center == vert { align-items: center; }
