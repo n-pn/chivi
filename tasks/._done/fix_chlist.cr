@@ -2,7 +2,7 @@ require "file_utils"
 require "compress/zip"
 require "../src/_util/tsv_store"
 
-DIR = "db/chtexts"
+DIR = "var/chtexts"
 
 class CV::FixData
   def initialize(@sname : String, @snvid : String)

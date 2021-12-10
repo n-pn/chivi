@@ -5,7 +5,7 @@ require "./chpage"
 module CV::Chlist
   extend self
 
-  CHDIR = "db/chtexts"
+  CHDIR = "var/chtexts"
   LSIZE = 128
   CACHE = RamCache(String, TsvStore).new(4096, 3.days)
 

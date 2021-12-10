@@ -2,7 +2,7 @@ require "file_utils"
 require "compress/zip"
 
 INP = "_db/chseed"
-OUT = "db/chtexts"
+OUT = "var/chtexts"
 
 class RebuildBook
   record Chap, schid : String, title : String, chvol : String

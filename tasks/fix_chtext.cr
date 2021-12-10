@@ -3,7 +3,7 @@ require "compress/zip"
 
 require "../src/_util/tsv_store"
 INP = "_db/chseed"
-OUT = "db/chtexts"
+OUT = "var/chtexts"
 
 class CV::FixData
   record Chap, schid : String, title : String, chvol : String

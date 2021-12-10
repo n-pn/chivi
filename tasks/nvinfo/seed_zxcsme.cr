@@ -82,7 +82,7 @@ end
 
 class CV::SeedZxcsme
   INP_DIR = "_db/.cache/zxcs_me/infos"
-  TXT_DIR = "db/chtexts/zxcs_me"
+  TXT_DIR = "var/chtexts/zxcs_me"
 
   getter snvids : Array(String)
   @seed = SeedData.new("zxcs_me")
