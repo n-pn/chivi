@@ -47,18 +47,9 @@ module CV::TlRule
     when .exmark?, .qsmark?, .nouns? then true
     when .adverbs?                   then false
     when .verb?, .verb_object?
-      return false if node.key.size < 2
-      key, val = node.key.split("", 2)
-
-      if vals = MTL::VERB_SEPARATE[key]?
-        return true if val.empty? || vals[val]?
-      end
-
-      false
+      MtDict::VERBS_SEPERATED.has_key?(node.key)
     else
-      return false unless prev = node.prev?
-
-      case prev.key
+      case node.prev?(&.key)
       when "都", "也" then true
       else               false
       end

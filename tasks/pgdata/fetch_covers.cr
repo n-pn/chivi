@@ -30,7 +30,7 @@ module CV::FetchCovers
     out_map = Tabkv.new(file.sub(".tsv", ".tab"))
 
     queue = inp_map.data.compact_map do |snvid, value|
-      next unless redo || out_map.ival(snvid) == 0
+      next unless redo || !out_map.get(snvid)
       link = value[0]
       next if link.empty? && !link.starts_with?("http")
       {snvid, link}

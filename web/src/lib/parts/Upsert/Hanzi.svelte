@@ -33,7 +33,7 @@
 
   let cached_vpterms = {}
   let cached_valhint = {}
-  let cached_pinyins = {}
+  let cached_pin_yin = {}
   let prefix = ''
   let suffix = ''
 
@@ -57,7 +57,7 @@
       for (const inp in res) {
         const data = res[inp]
 
-        cached_pinyins[inp] = data.binh_am
+        cached_pin_yin[inp] = data.pin_yin
         cached_valhint[inp] = data.val_hint
 
         cached_vpterms[inp] = [
@@ -148,7 +148,7 @@
   </div>
 
   <div class="pinyin">
-    <span class="pinyin-txt">{cached_pinyins[output] || ''}</span>
+    <span class="pinyin-txt">{cached_pin_yin[output] || ''}</span>
   </div>
 
   <button

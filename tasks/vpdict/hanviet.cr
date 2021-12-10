@@ -4,7 +4,7 @@ class Hanviet
   HANZIDB = QtDict.load("system/hanzidb.txt")
 
   TRADSIM = CV::Vdict.tradsim
-  BINH_AM = CV::Vdict.binh_am
+  PIN_YIN = CV::Vdict.pin_yin
 
   getter input : QtDict = QtDict.load(".temps/hanviet.txt", false)
 

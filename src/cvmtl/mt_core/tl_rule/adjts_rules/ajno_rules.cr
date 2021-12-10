@@ -5,16 +5,14 @@ module CV::TlRule
   end
 
   def heal_ajno!(node : MtNode)
-    return node.set!(PosTag::Adjt) if node.prev?(&.adverbs?)
+    return cast_adjt!(node) if node.prev?(&.adverbs?)
 
     case succ = node.succ?
     when .nil?, .ends?
-      node.val = MtDict::CAST_NOUNS.fetch(node.key, node.val)
-      node.set!(PosTag::Noun)
+      cast_noun!(node)
     when .ude1?
-      node.set!(PosTag::Adjt)
-    else
-      node
+      cast_adjt!(node)
+    else node
     end
   end
 end

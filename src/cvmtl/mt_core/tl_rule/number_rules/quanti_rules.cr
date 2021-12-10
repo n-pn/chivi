@@ -1,10 +1,10 @@
 module CV::TlRule
   def heal_quanti!(node : MtNode) : MtNode
-    if val = MTL::QTTIMES[node.key]?
+    if val = MtDict::QUANTI_TIMES[node.key]?
       node.set!(val, PosTag::Qttime)
-    elsif val = MTL::QTVERBS[node.key]?
+    elsif val = MtDict::QUANTI_VERBS[node.key]?
       node.set!(val, PosTag::Qtverb)
-    elsif val = MTL::QTNOUNS[node.key]?
+    elsif val = MtDict::QUANTI_NOUNS[node.key]?
       node.set!(val, PosTag::Qtnoun)
     else
       node

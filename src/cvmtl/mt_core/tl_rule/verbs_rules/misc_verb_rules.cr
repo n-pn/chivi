@@ -45,4 +45,8 @@ module CV::TlRule
     else                 fold_verbs!(node)
     end
   end
+
+  def need_2_objects?(key : String)
+    MtDict::VERBS_2_OBJECTS.has_key?(key)
+  end
 end

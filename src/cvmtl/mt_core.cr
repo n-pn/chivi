@@ -3,7 +3,7 @@ require "./mt_core/*"
 
 class CV::MtCore
   class_getter hanviet_mtl : self { new([VpDict.essence, VpDict.hanviet]) }
-  class_getter binh_am_mtl : self { new([VpDict.essence, VpDict.binh_am]) }
+  class_getter pin_yin_mtl : self { new([VpDict.essence, VpDict.pin_yin]) }
   class_getter tradsim_mtl : self { new([VpDict.tradsim]) }
 
   def self.generic_mtl(bname : String = "combine", uname : String = "")
@@ -14,7 +14,7 @@ class CV::MtCore
   def self.convert(input : String, dname = "various") : Cvmtl
     case dname
     when "hanviet" then hanviet.translit(input).to_s
-    when "binh_am" then binh_am.translit(input).to_s
+    when "pin_yin" then pin_yin.translit(input).to_s
     when "tradsim" then tradsim.tokenize(input.chars).to_s
     else                generic(dname).cv_plain(input).to_s
     end

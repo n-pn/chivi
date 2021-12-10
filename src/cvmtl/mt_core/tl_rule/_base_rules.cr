@@ -1,22 +1,6 @@
 module CV::TlRule
   extend self
 
-  def end_sentence?(node : Nil)
-    true
-  end
-
-  def end_sentence?(node : MtNode)
-    node.pstops?
-  end
-
-  def boundary?(node : Nil)
-    true
-  end
-
-  def boundary?(node : MtNode)
-    node == node.tag.none? || node.tag.puncts? || node.tag.interjection?
-  end
-
   def fold!(head : MtNode, tail : MtNode,
             tag : PosTag = PosTag::None, dic : Int32 = 9,
             flip : Bool = false)
@@ -53,47 +37,34 @@ module CV::TlRule
     root
   end
 
-  # def fold_flip!(tail : MtNode, head : MtNode, tag = PosTag::Unkn, dic = 9)
-  #   root = MtNode.new("", "", tag, dic, head.idx)
-  #   root.body = head
+  def cast_noun!(node : MtNode)
+    MtDict::REFINE_NOUNS[node.key]?.try { |val| node.val = val }
+    node.set!(PosTag::Noun)
+  end
 
-  #   root.fix_root!(tail.root?)
-  #   tail.fix_root!(nil)
-  #   head.root = root
+  def cast_verb!(node : MtNode)
+    MtDict::REFINE_VERBS[node.key]?.try { |val| node.val = val }
+    node.set!(PosTag::Verb)
+  end
 
-  #   if prev = tail.prev?
-  #     prev.succ = root
-  #     root.prev = prev
-  #   else
-  #     root.fix_prev!(nil)
-  #   end
+  def cast_adjt!(node : MtNode)
+    MtDict::REFINE_ADJTS[node.key]?.try { |val| node.val = val }
+    node.set!(PosTag::Adjt)
+  end
 
-  #   if succ = head.succ?
-  #     succ.prev = root
-  #     root.succ = succ
-  #   else
-  #     root.fix_succ!(nil)
-  #   end
+  def end_sentence?(node : Nil)
+    true
+  end
 
-  #   # check if there is some node in between
-  #   # if there is then flip their prev and succ node to current head and tail
-  #   if head != tail.succ?
-  #     if succ = tail.succ?
-  #       head.succ = succ
-  #       succ.prev = head
-  #     end
+  def end_sentence?(node : MtNode)
+    node.pstops?
+  end
 
-  #     if prev = head.prev?
-  #       tail.prev = prev
-  #       prev.succ = tail
-  #     end
-  #   else
-  #     head.fix_succ!(tail)
-  #   end
+  def boundary?(node : Nil)
+    true
+  end
 
-  #   head.fix_prev!(nil)
-  #   tail.fix_succ!(nil)
-
-  #   root
-  # end
+  def boundary?(node : MtNode)
+    node == node.tag.none? || node.tag.puncts? || node.tag.interjection?
+  end
 end

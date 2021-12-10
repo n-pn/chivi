@@ -207,7 +207,7 @@ class CeInput
       end
     end
 
-    output = CV::VpDict.load("binh_am", reset: true)
+    output = CV::VpDict.load("pin_yin", reset: true)
 
     HANZIDB.each do |key, vals|
       next if vals.empty? || vals.first.empty?

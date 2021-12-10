@@ -1,43 +1,84 @@
+require "log"
+require "./vp_dict/vp_term"
+
 class CV::MtDict
   SEP = "ǀ"
-  DIR = "var/vpdicts/_mtl"
+  DIR = "var/vpdicts/cvmtl"
 
-  CAST_NOUNS = new("#{DIR}/cast-nouns.tsv")
-  CAST_VERBS = new("#{DIR}/cast-verbs.tsv")
-  CAST_ADJTS = new("#{DIR}/cast-adjts.tsv")
+  REFINE_NOUNS = new("#{DIR}/refine-nouns.tsv")
+  REFINE_VERBS = new("#{DIR}/refine-verbs.tsv")
+  REFINE_ADJTS = new("#{DIR}/refine-adjts.tsv")
 
   QUANTI_NOUNS = new("#{DIR}/quanti-nouns.tsv")
   QUANTI_TIMES = new("#{DIR}/quanti-times.tsv")
   QUANTI_VERBS = new("#{DIR}/quanti-verbs.tsv")
 
-  getter data = {} of String => String
-  getter _log = {} of String => Array(String)
+  U_ZHI_RIGHTS = new("#{DIR}/u_zhi-rights.tsv")
 
-  forward_missing_to @data
+  VERBS_2_OBJECTS = new("#{DIR}/verbs-2-objects.tsv")
+  VERBS_SEPERATED = new("#{DIR}/verbs-seperated.tsv")
 
-  def initialize(@file : String)
+  getter list = [] of VpTerm
+  getter hash = {} of String => VpTerm
+  getter vals = {} of String => String?
+
+  forward_missing_to @vals
+
+  @file : String
+  @ftab : String
+
+  def initialize(@file)
     @ftab = @file.sub(".tsv", ".tab")
     load!(@file)
     load!(@ftab) if File.exists?(@ftab)
   end
 
   def load!(file : String)
-    File.read_lines(file).each { |line| put(line.split('\t')) }
-  end
-
-  def put!(entry : Array(String)) : Nil
-    put(entry)
-    File.open(@ftab, "a") { |io| io << "\n" << entry.join('\t') }
-  end
-
-  def put(entry : Array(String)) : Nil
-    key = rows[0]
-    _log[key] = rows
-
-    if (val = rows[1]?) && !val.blank?
-      data[key] = val.split(SEP, 2)[0]
-    else
-      data.delete(key)
+    File.read_lines(file).each do |line|
+      term = VpTerm.new(line.split('\t'))
+      set(term)
+    rescue err
+      Log.error { err.message }
     end
+  end
+
+  def set!(term : VpTerm) : Nil
+    set(term).try do
+      File.open(@ftab, "a") { |io| io << "\n"; term.to_s(io) }
+    end
+  end
+
+  def set(term : VpTerm) : VpTerm?
+    return unless newer?(term, @hash[term.key]?)
+    @list << term
+
+    unless term.is_priv
+      @hash[term.key] = term
+
+      if val = term.val.first?.try { |x| x unless x.empty? }
+        @vals[term.key] = val
+      else
+        @vals.delete(term.key)
+      end
+    end
+
+    term
+  end
+
+  # checking if new term can overwrite current term
+  private def newer?(term : VpTerm, prev : VpTerm?)
+    return true unless prev
+    # do not record if term is outdated
+    return false if term.mtime < prev.mtime
+
+    if term.uname == prev.uname
+      prev._flag = 2_u8
+      term._prev = prev._prev
+    else
+      prev._flag = 1_u8
+      term._prev = prev
+    end
+
+    false
   end
 end

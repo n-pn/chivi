@@ -69,9 +69,9 @@ class CV::VpTrie
   end
 
   # checking if new term can overwrite current term
-  private def newer?(term : VpTerm, prev : VpTerm)
+  private def newer?(term : VpTerm, prev : VpTerm) : Bool
     # do not record if term is outdated
-    return if term.mtime < prev.mtime
+    return false if term.mtime < prev.mtime
 
     if is_redo_action?(term, prev)
       prev._flag = 2_u8
@@ -81,17 +81,17 @@ class CV::VpTrie
       term._prev = prev
     end
 
-    term
+    true
   end
 
   # :ditto:
-  def newer?(term : VpTerm, prev : Nil)
-    term
+  private def newer?(term : VpTerm, prev : Nil) : Bool
+    true
   end
 
   # skipping previous entry if edit under 5 minutes
   @[AlwaysInline]
-  def is_redo_action?(term : VpTerm, prev : VpTerm)
+  private def is_redo_action?(term : VpTerm, prev : VpTerm) : Bool
     return false unless term.uname == prev.uname
     prev.mtime - prev.mtime <= 5
   end

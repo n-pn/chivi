@@ -10,7 +10,7 @@ module CV::TlRule
       when .auxils?, .preposes?
         return cast_noun!(node)
       when .adverbs?, .vmodals?, .vpro?
-        return node.set!(PosTag::Verb)
+        return cast_verb!(node)
         # when .numeric?
         #   if (succ = node.succ?) && !(succ.nouns? || succ.pronouns?)
         #     return cast_noun!(node)
@@ -31,14 +31,8 @@ module CV::TlRule
     case succ = node.succ?
     when .nil? then node
     when .auxils?, .vdir?, .pre_zai?
-      node.set!(PosTag::Verb)
-    else
-      node
+      cast_verb!(node)
+    else node
     end
-  end
-
-  def cast_noun!(node : MtNode)
-    node.val = MtDict::CAST_NOUNS.fetch(node.key, node.val)
-    cast_noun!(node)
   end
 end

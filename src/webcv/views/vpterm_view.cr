@@ -40,7 +40,7 @@ class CV::VpTermView
     jb.object do
       @val_hint << @hanviet # add hanviet as val hint
 
-      jb.field "binh_am", MtCore.binh_am_mtl.translit(@key).to_s
+      jb.field "pin_yin", MtCore.pin_yin_mtl.translit(@key).to_s
       jb.field "hanviet" { to_json(jb, VpDict.hanviet, dtype: 2) }
       jb.field "regular" { to_json(jb, VpDict.regular, dtype: 1) }
       jb.field "special" { to_json(jb, @bdict, dtype: 0) }

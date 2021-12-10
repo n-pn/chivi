@@ -20,7 +20,7 @@ class CV::VpdictCtrl < CV::BaseCtrl
 
     offset = (pgidx - 1) * limit
 
-    input = VpDict.udicts
+    input = VpDict.novels
     book_dicts = [] of Dinfo
 
     input[offset, limit].each do |dname|
