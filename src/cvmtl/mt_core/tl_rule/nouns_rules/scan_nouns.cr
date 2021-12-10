@@ -63,13 +63,15 @@ module CV::TlRule
         when .ude1?
           node = fold_ude1!(ude1: succ, prev: node)
         end
-      when .vmodal?
+      when .vmodals?
         node = heal_vmodal!(node)
 
         if node.preposes?
           node = fold_preposes!(node, mode: 1)
         elsif node.verbs?
           node = fold_verb_as_noun!(node, mode: mode)
+        elsif node.adjts?
+          node = fold_adjt_as_noun!(node)
         end
       when .verbs?
         node = fold_verb_as_noun!(node, mode: mode)

@@ -23,6 +23,9 @@ module CV::TlRule
     when .preposes?
       node = fold!(node, succ, succ.tag, dic: 6)
       fold_preposes!(node)
+    when .adverbs?
+      succ = fold_adverbs!(succ)
+      fold!(node, succ, succ.tag, dic: 6)
     when .verbs?
       verb = fold!(node, succ, succ.tag, dic: 6)
       fold_verbs!(verb)
