@@ -41,9 +41,9 @@ class CV::VpTermView
       @val_hint << @hanviet # add hanviet as val hint
 
       jb.field "pin_yin", MtCore.pin_yin_mtl.translit(@key).to_s
-      jb.field "hanviet" { to_json(jb, VpDict.hanviet, dtype: 2) }
-      jb.field "regular" { to_json(jb, VpDict.regular, dtype: 1) }
-      jb.field "special" { to_json(jb, @bdict, dtype: 0) }
+      jb.field "hanviet" { to_json(jb, VpDict.hanviet) }
+      jb.field "regular" { to_json(jb, VpDict.regular) }
+      jb.field "special" { to_json(jb, @bdict) }
 
       VpDict.suggest.find(@key).try { |x| add_hints(x, deep_loop: false) }
       jb.field "val_hint", @val_hint.push(@mtl_val).uniq.reject(&.empty?)
@@ -51,31 +51,31 @@ class CV::VpTermView
     end
   end
 
-  def to_json(jb : JSON::Builder, vdict : VpDict, dtype = 0)
-    b_term, u_term = vdict.find(@key, @uname)
-
-    if dtype == 0 && (f_term = VpDict.fixture.find(@key))
+  def to_json(jb : JSON::Builder, vdict : VpDict)
+    if vdict.dtype == 2 && (f_term = VpDict.fixture.find(@key))
       b_term, u_term = f_term, nil
+    elsif node = vdict.trie.find(@key)
+      b_term, u_term = node.base, node.privs[@uname]?
+      add_hints(b_term) if b_term
+      node.privs.each_value { |u_term| add_hints(u_term) }
     else
-      b_term, u_term = vdict.find(@key, @uname)
+      b_term, u_term = nil, nil
     end
 
     jb.object do
-      case dtype
-      when 2 # hanviet
+      case vdict.dtype
+      when 1 # hanviet
         jb.field "u_privi", 4
         jb.field "b_privi", 3
-      when 1 # regular
+      when 2 # regular
         jb.field "u_privi", 1
         jb.field "b_privi", 2
-      when 0 # special
+      when 3 # special
         jb.field "u_privi", 0
         jb.field "b_privi", 1
       end
 
       if u_term
-        add_hints(u_term)
-
         jb.field "u_val", u_term.val.first
         jb.field "u_ptag", u_term.ptag.to_str
         jb.field "u_rank", u_term.rank
@@ -86,8 +86,6 @@ class CV::VpTermView
       end
 
       if b_term
-        add_hints(b_term)
-
         jb.field "b_val", b_term.val.first
         jb.field "b_ptag", b_term.ptag.to_str
         jb.field "b_rank", b_term.rank
@@ -97,9 +95,9 @@ class CV::VpTermView
         jb.field "b_state", b_term.state
       end
 
-      if dtype == 2
+      if vdict.dtype == 1
         jb.field "h_val", @hanviet
-      elsif dtype == 0 && @mtl_tag.empty?
+      elsif vdict.dtype == 3 && @mtl_tag.empty?
         jb.field "h_val", TextUtils.titleize(@hanviet)
         jb.field "h_ptag", "nr"
       else
@@ -107,35 +105,6 @@ class CV::VpTermView
         jb.field "h_ptag", @mtl_tag
       end
     end
-
-    # b_term.try{|x| }
-    # if term
-    #   add_hints(term)
-
-    #   jb.object do
-    #     jb.field "val", term.val.first
-    #     jb.field "ptag", term.ptag.to_str
-    #     jb.field "rank", term.rank
-
-    #     jb.field "mtime", term.mtime
-    #     jb.field "uname", term.uname
-    #     jb.field "state", term.state
-    #   end
-    # else
-    #   jb.object do
-    #     if type == 2
-    #       jb.field "val", @hanviet
-    #     elsif type == 1 && @mtl_tag.empty?
-    #       jb.field "val", TextUtils.titleize(@hanviet)
-    #       jb.field "ptag", "nr"
-    #     else
-    #       jb.field "val", @mtl_val
-    #       jb.field "ptag", @mtl_tag
-    #     end
-
-    #     jb.field "mtime", -1
-    #   end
-    # end
   end
 
   def add_hints(term : VpTerm, deep_loop = true)

@@ -34,8 +34,8 @@ class CV::VpTrie
     idx.upto(chars.size - 1) do |i|
       char = chars.unsafe_fetch(i)
       break unless node = node._next[char]?
-      next unless term = node.base
-      yield term unless term.empty?
+
+      node.base.try { |term| yield term unless term.empty? }
     end
   end
 
@@ -46,13 +46,8 @@ class CV::VpTrie
       char = chars.unsafe_fetch(i)
       break unless node = node._next[char]?
 
-      if term = node.base
-        yield term unless term.empty?
-      end
-
-      if term = node.privs[uname]?
-        yield term unless term.empty?
-      end
+      node.base.try { |term| yield term unless term.empty? }
+      node.privs[uname]?.try { |term| yield term unless term.empty? }
     end
   end
 
