@@ -114,11 +114,11 @@
     {#each current as [size, terms]}
       <div class="entry">
         <h3 class="word" lang="zh">
-          <entry-key>{$ztext.substr($zfrom, size)}</entry-key>
+          <entry-key>{$ztext.substring($zfrom, $zfrom + size)}</entry-key>
           <entry-btn
             class="m-btn _sm"
             role="button"
-            on:click={() => upsert.activate([$ztext, $zfrom, $zfrom + size])}>
+            on:click={() => upsert.show(0, 1, $zfrom, $zfrom + size)}>
             <SIcon name="edit" />
             <span>{terms.vietphrase ? 'Sửa' : 'Thêm'}</span>
           </entry-btn>

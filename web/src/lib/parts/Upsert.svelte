@@ -10,7 +10,11 @@
 
   export const ctrl = {
     ...writable({ tab: 0, state: 0 }),
-    show: (tab = 0, state = 1) => ctrl.set({ tab, state }),
+    show: (tab = 0, state = 1, from, upto) => {
+      if (from) zfrom.set(from)
+      if (upto) zupto.set(upto)
+      ctrl.set({ tab, state })
+    },
     hide: () => ctrl.set_state(0),
     set_tab: (tab) => ctrl.update((x) => ({ ...x, tab })),
     set_state: (state) => ctrl.update((x) => ({ ...x, state })),
