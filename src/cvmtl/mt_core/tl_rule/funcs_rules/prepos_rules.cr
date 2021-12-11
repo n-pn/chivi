@@ -63,8 +63,14 @@ module CV::TlRule
         return fold!(node, tail, PosTag::NounPhrase, dic: 6, flip: true)
       end
 
-      noun = fold_noun_ude1_noun!(noun, ude1: verb, right: tail)
-      verb = noun.succ?
+      if tail.succ?(&.v_shi?) && (prev = node.prev?) && prev.center_noun?
+        verb.val = "của"
+        node = fold!(prev, noun, PosTag::NounPhrase, dic: 8)
+        return fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
+      else
+        noun = fold_noun_ude1_noun!(noun, ude1: verb, right: tail)
+        verb = noun.succ?
+      end
     end
 
     # fix prepos meaning
