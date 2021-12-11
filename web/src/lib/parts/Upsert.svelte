@@ -75,7 +75,7 @@
             <span>Từ điển</span>
           </a>
 
-          <button class="-item" on:click={tlspec.activate}>
+          <button class="-item" on:click={tlspec.show}>
             <SIcon name="flag" />
             <span>Báo lỗi</span>
           </button>
@@ -106,7 +106,7 @@
         class:_edited={is_edited(0)}
         data-kbd="x"
         on:click={() => ctrl.set_tab(0)}
-        use:hint={`Từ điển riêng cho từng bộ truyện`}>
+        use:hint={'Từ điển riêng cho từng bộ truyện'}>
         <SIcon name="book" />
         <span>{$vdict.d_dub}</span>
       </button>
