@@ -1,8 +1,11 @@
 module CV::TlRule
   def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
     case verb
-    when .v_shi?, .v_you?, .verb_object?
+    when .v_shi?, .v_you?
       return fold_left_verb!(verb, prev)
+    when .verb_object?
+      verb = fold_left_verb!(verb, prev)
+      return verb.succ? { |x| fold_uzhi!(x, verb) if x.uzhi? } || verb
     when .vpro?
       return verb unless (succ = verb.succ?) && succ.verbs?
       verb = fold!(verb, succ, succ.tag, dic: 5)
