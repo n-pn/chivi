@@ -297,7 +297,7 @@
       data-kbd="\"
       data-key="220"
       data-tip="Tra từ"
-      on:click|capture={lookup.show}>
+      on:click|capture={() => lookup.show(true)}>
       <SIcon name="search" />
     </cv-item>
 

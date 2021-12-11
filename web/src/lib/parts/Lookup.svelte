@@ -12,10 +12,9 @@
   export const ctrl = {
     ...writable({ actived: false, enabled: false }),
     hide: (enabled = true) => ctrl.set({ enabled, actived: false }),
-    show(show = true) {
+    show(forced = true) {
       const { enabled, actived } = get(ctrl)
-      show = show || enabled
-      if (actived || show) ctrl.set({ enabled: show, actived: true })
+      if (actived || forced || enabled) ctrl.set({ enabled, actived: true })
     },
   }
 </script>
