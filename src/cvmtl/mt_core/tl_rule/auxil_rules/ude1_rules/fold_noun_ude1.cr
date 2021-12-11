@@ -21,7 +21,7 @@ module CV::TlRule
 
   def fold_verb_noun_ude1!(verb : MtNode, noun : MtNode, ude1 : MtNode, right : MtNode) : MtNode
     case right.key
-    when "时候", "时"
+    when "时候", "时", "打算"
       head = verb.try { |x| x if x.center_noun? } || verb
       node = fold!(head, ude1, PosTag::DefnPhrase)
       return fold!(node, right, PosTag::NounPhrase, dic: 6, flip: true)
