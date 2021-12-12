@@ -1,6 +1,6 @@
 require "tabkv"
 
-module CV::Bgenre
+module CV::BGenre
   extend self
 
   DIR = "var/nvinfos/fixed"

@@ -1,3 +1,6 @@
+require "./nvinfo/nv_seed"
+require "./nvinfo/b_genre"
+
 class CV::Nvinfo
   include Clear::Model
 
@@ -12,10 +15,10 @@ class CV::Nvinfo
   column subdue_id : Int64? = nil # in case of duplicate entries, this column will point to the better one
 
   column zseed_ids : Array(Int32) = [] of Int32
-  getter zseeds : Array(String) { Nvseed.to_s(zseed_ids) }
+  getter zseeds : Array(String) { NvSeed.to_s(zseed_ids) }
 
   column genre_ids : Array(Int32) = [] of Int32
-  getter genres : Array(String) { Bgenre.to_s(genre_ids) }
+  getter genres : Array(String) { BGenre.to_s(genre_ids) }
 
   column labels : Array(String) = [] of String
 
@@ -241,26 +244,29 @@ class CV::Nvinfo
     end
   end
 
-  # def self.upsert!(author : Author, zname : String,
-  #                  hname : String? = nil, vname : String? = nil)
-  #   get(author, zname) || begin
-  #     bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
-  #     vname ||= BookUtils.get_vi_btitle(zname, bhash)
-  #     vslug = "-#{BookUtils.scrub_vname(vname, "-")}-"
+  def self.upsert!(author : String, zname : String, fixed = true)
+    unless fixed
+    end
 
-  #     hname ||= BookUtils.hanviet(zname)
-  #     hslug = BookUtils.scrub_vname(hname, "-")
+    get(author, zname) || begin
+      bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
 
-  #     bslug = hslug.split("-").first(8).push(bhash[0..3]).join("-")
+      vname = BookUtils.get_vi_btitle(zname, bhash)
+      vslug = "-#{BookUtils.scrub_vname(vname, "-")}-"
 
-  #     hslug = "-#{hslug}-"
-  #     cvbook = new({
-  #       author_id: author.id, bhash: bhash, bslug: bslug,
-  #       zname: zname, hname: hname, vname: vname,
-  #       hslug: hslug, vslug: vslug,
-  #     })
+      hname = BookUtils.hanviet(zname)
+      hslug = BookUtils.scrub_vname(hname, "-")
 
-  #     cvbook.tap(&.save!)
-  #   end
-  # end
+      bslug = hslug.split("-").first(8).push(bhash[0..3]).join("-")
+
+      hslug = "-#{hslug}-"
+      cvbook = new({
+        author_id: author.id, bhash: bhash, bslug: bslug,
+        zname: zname, hname: hname, vname: vname,
+        hslug: hslug, vslug: vslug,
+      })
+
+      cvbook.tap(&.save!)
+    end
+  end
 end

@@ -30,21 +30,21 @@ class CV::Author
   end
 
   def self.glob_zh(qs : String)
-    query.where("zname LIKE '%#{BookUtils.scrub_zname(qs)}%'")
+    query.where("zname LIKE '%#{Nvutil.scrub_zname(qs)}%'")
   end
 
   def self.glob_vi(qs : String, accent = false)
-    res = query.where("vslug LIKE '%#{BookUtils.scrub_vname(qs, "-")}%'")
+    res = query.where("vslug LIKE '%#{Nvutil.scrub_vname(qs, "-")}%'")
     accent ? res.where("vname LIKE '%#{qs}%'") : res
   end
 
-  def self.upsert!(zname : String, vname : String? = nil) : Author
-    find({zname: zname}) || create!(zname, vname)
+  def self.upsert!(zname : String) : Author
+    find({zname: zname}) || create!(zname)
   end
 
   def self.create!(zname : String, vname : String? = nil) : Author
-    vname ||= BookUtils.get_vi_author(zname)
-    vslug = "-#{BookUtils.scrub_vname(vname, "-")}-"
+    vname ||= Nvutil.get_vi_author(zname)
+    vslug = "-#{Nvutil.scrub_vname(vname, "-")}-"
     author = new({zname: zname, vname: vname, vslug: vslug})
     author.tap(&.save!)
   end

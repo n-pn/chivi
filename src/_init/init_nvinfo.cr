@@ -99,6 +99,32 @@ class CV::InitNvinfo
     ["0", input]
   end
 
+  def get_names(svnid : String)
+    _, btitle, author = get_map(:_index, snvid).get(snvid).not_nil!
+    new_author = BookUtils.fiz_zh_author(author, btitle)
+  end
+
+  def seed!(snvid : String)
+    _, btitle_zh, author_zh = get_map(:_index, snvid).get(snvid).not_nil!
+
+    author = Author.upsert!(btitle_zh)
+    bhash, btitle, author = NvInfo.upsert!(author, btitle_zh)
+
+    genres = get_genres(snvid)
+    NvGenres.set!(bhash, genres) unless genres.empty?
+
+    bintro = get_intro(snvid)
+    NvBintro.set!(bhash, bintro, force: false) unless bintro.empty?
+
+    NvFields.set_status!(bhash, get_status(snvid))
+
+    mftime = update.ival_64(snvid)
+    NvOrders.set_update!(bhash, mftime)
+    NvOrders.set_access!(bhash, mftime // 60)
+
+    {bhash, btitle, author}
+  end
+
   # def get_index(snvid : String) : Tuple(Int64, String, String)
   #   return {0_i64, "", ""} unless vals = get_map(:index, snvid).get(snvid)
 

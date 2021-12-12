@@ -1,4 +1,4 @@
-module CV::Nvseed
+module CV::NvSeed
   extend self
 
   MAP_ID = {
