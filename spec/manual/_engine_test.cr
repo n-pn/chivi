@@ -13,13 +13,13 @@ require "../../src/cvmtl/cvmtl"
 # http://test.com/test?q=1
 # "
 
-# Engine.cv_mixed(TextUtil.split_text(text), "various").each do |data|
+# Engine.cv_mixed(TextUtil.split_text(text), "combine").each do |data|
 #   puts data.to_s
 # end
 
 # text = "【飞卢中文网A级签约作品：荒野食神之吃光食物链】当叶晓晨第一次得到【荒野食神系统】的时候，其实他是，是拒绝的，他跟系统讲，他拒绝，因为，其实他，根本没有厨艺……系统跟他讲，抓完荒野食材给厨艺，刀工很叼很快很炫目……  奇奇怪怪的荒野食材，丛林、沙漠、冰川、抓了这些食材，加了一段时间的厨艺技能之后呢！  菠萝烤鳄鱼，DUANG~~~很柔，很软。  蜜汁熊掌，DUANG~~~很香，很滑口。  亚马逊电鳗鱼面，DUANG~~DUANG~~DUANG~~很弹牙！  ……  女明星们问为什么这么好吃。  因为叶晓晨，他加特技…(本故事及人物纯属虚构，如有雷同，纯属巧合，切勿模仿。)"
 
-# Engine.cv_plain(TextUtil.split_text(text), "various").each do |data|
+# Engine.cv_plain(TextUtil.split_text(text), "combine").each do |data|
 #   puts data.to_s
 # end
 
@@ -44,21 +44,21 @@ puts HANVIET.translit(test3).to_s
 puts HANVIET.translit(test4).to_s
 puts HANVIET.translit("左丰").to_s
 
-# puts Engine.cv_plain(test4, "various").to_s
-# puts Engine.cv_plain(test5, "various").to_s
-# puts Engine.cv_plain(test6, "various").to_s
-# puts Engine.cv_title("一个普通人的日常（七）", "various").to_s
-# puts Engine.cv_title("一柱的数量多在5—50本之间", "various").to_s
-# pp Engine.cv_plain("了却它", "various")
+# puts Engine.cv_plain(test4, "combine").to_s
+# puts Engine.cv_plain(test5, "combine").to_s
+# puts Engine.cv_plain(test6, "combine").to_s
+# puts Engine.cv_title("一个普通人的日常（七）", "combine").to_s
+# puts Engine.cv_title("一柱的数量多在5—50本之间", "combine").to_s
+# pp Engine.cv_plain("了却它", "combine")
 # pp Engine.cv_plain("了却它", "kwxrpf79")
-# pp Engine.cv_plain("来自芈骊的愤怒值+678！", "various").to_s
-# pp Engine.cv_plain("一试63", "various").to_s
+# pp Engine.cv_plain("来自芈骊的愤怒值+678！", "combine").to_s
+# pp Engine.cv_plain("一试63", "combine").to_s
 # pp Engine.hanviet("来自芈骊的愤怒值+678！").to_s
 
-# VARIOUS = CV::Cvmtl.content("various")
+# COMBINE = CV::Cvmtl.content("combine")
 
-# pp VARIOUS.cv_plain("郑兴怀16岁进国子监，苦读十年，元景19年，他金榜题名，二甲进士。").to_s
-# pp VARIOUS.cv_plain("无论成败，了却它。").to_s
-# pp VARIOUS.cv_plain("第103章 102.").to_s
+# pp COMBINE.cv_plain("郑兴怀16岁进国子监，苦读十年，元景19年，他金榜题名，二甲进士。").to_s
+# pp COMBINE.cv_plain("无论成败，了却它。").to_s
+# pp COMBINE.cv_plain("第103章 102.").to_s
 # pp HANVIET.translit("第103章 102.").to_s
-# pp VARIOUS.cv_plain("第103章 102+ title 无论成败，了却它。").to_s
+# pp COMBINE.cv_plain("第103章 102+ title 无论成败，了却它。").to_s

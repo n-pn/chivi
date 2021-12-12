@@ -68,4 +68,4 @@ export const ztext = {
   },
 }
 
-export const vdict = writable({ dname: 'various', d_dub: 'Tổng hợp' })
+export const vdict = writable({ dname: 'combine', d_dub: 'Tổng hợp' })

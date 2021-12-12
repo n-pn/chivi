@@ -56,7 +56,7 @@ module CV::BookUtils
     caps ? TextUtils.titleize(output) : output
   end
 
-  def convert(input : String, udict = "various") : Array(String)
+  def convert(input : String, udict = "combine") : Array(String)
     cvmtl = MtCore.generic_mtl(udict)
 
     input.split(/[\r\n]/).map do |line|

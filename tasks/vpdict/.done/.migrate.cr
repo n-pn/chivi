@@ -65,7 +65,7 @@ def migrate(file : String, uniq = false)
     next if vals.empty?
     next if vals[0].downcase == vals[0]
     next if CV::Vdict.regular.find(key)
-    CV::Vdict.various.add(entry, emend)
+    CV::Vdict.combine.add(entry, emend)
   end
 
   vdict.save!
@@ -75,4 +75,4 @@ Dir.glob("_db/dictdb/legacy/core/*.log").each { |x| migrate(x) }
 Dir.glob("_db/dictdb/legacy/uniq/*.log").each { |x| migrate(x, uniq: true) }
 
 CV::Vdict.suggest.save!
-CV::Vdict.various.save!
+CV::Vdict.combine.save!

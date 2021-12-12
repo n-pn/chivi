@@ -14,7 +14,7 @@
   export let cvdata = ''
   export let zhtext = []
 
-  export let dname = 'various'
+  export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
 
   export let on_change = () => {}

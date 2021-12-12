@@ -36,7 +36,7 @@ upgrade_base("combine")
 
 Dir.glob("#{MAIN_DIR}/books/*.tsv").each do |file|
   dname = File.basename(file, ".tsv")
-  upgrade_base(dname, book: true) unless dname == "various"
+  upgrade_base(dname, book: true) unless dname == "combine"
 end
 
 puts "- upgrade uniq:"
@@ -46,5 +46,5 @@ upgrade_uniq("regular")
 Dir.glob("#{PLEB_DIR}/books/*.tsv").each do |file|
   dname = File.basename(file, ".tsv")
   next if dname.includes?(".")
-  upgrade_uniq(dname, book: true) unless dname == "various"
+  upgrade_uniq(dname, book: true) unless dname == "combine"
 end

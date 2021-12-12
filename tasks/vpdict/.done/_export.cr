@@ -25,7 +25,7 @@ class CV::ExportDicts
   end
 
   getter out_regular : Vdict = Vdict.load("regular", reset: true)
-  getter out_various : Vdict = Vdict.load("various", reset: true)
+  getter out_combine : Vdict = Vdict.load("combine", reset: true)
   getter out_suggest : Vdict = Vdict.load("suggest", reset: true)
 
   getter cv_hanviet : Cvmtl { Cvmtl.hanviet }
@@ -139,8 +139,8 @@ class CV::ExportDicts
         next if term.key.size < 3 || term.key.size > 6 || term.vals.empty?
         next unless capped?(term.vals[0])
 
-        various_term = @out_various.gen_term(term.key, term.vals, 2, 1)
-        @out_various.set(various_term)
+        combine_term = @out_combine.gen_term(term.key, term.vals, 2, 1)
+        @out_combine.set(combine_term)
       end
 
       dict.save!(prune: true)
@@ -175,20 +175,20 @@ class CV::ExportDicts
     out_suggest.save!(prune: true)
   end
 
-  def export_various!
-    puts "\n[Export various]".colorize.cyan.bold
+  def export_combine!
+    puts "\n[Export combine]".colorize.cyan.bold
 
-    inp_various = ::QtDict.load(".result/various.txt", true)
-    inp_various.to_a.sort_by(&.[0].size).each do |key, vals|
+    inp_combine = ::QtDict.load(".result/combine.txt", true)
+    inp_combine.to_a.sort_by(&.[0].size).each do |key, vals|
       next if key.size < 3 || key.size > 6
       unless should_keep?(key, vals.first)
         next if should_reject?(key)
       end
 
-      @out_various.set(key, vals)
+      @out_combine.set(key, vals)
     end
 
-    @out_various.save!(prune: true)
+    @out_combine.save!(prune: true)
   end
 
   def export_recycle!
@@ -213,4 +213,4 @@ tasks = CV::ExportDicts.new
 tasks.export_regular!
 tasks.export_uniques!
 tasks.export_suggest!
-tasks.export_various!
+tasks.export_combine!

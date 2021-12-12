@@ -1,7 +1,7 @@
 require "../../src/cvmtl/cvmtl"
 
-GENERIC = CV::Cvmtl.generic("various")
-CV::Vdict.various.set(CV::VpTerm.new("贾文和", ["Giả Văn Hoà"]))
+GENERIC = CV::Cvmtl.generic("combine")
+CV::Vdict.combine.set(CV::VpTerm.new("贾文和", ["Giả Văn Hoà"]))
 
 puts CV::Vdict.regular.find("龙")
 puts CV::Vdict.regular.find("之术")

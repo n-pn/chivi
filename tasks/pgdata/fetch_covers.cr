@@ -16,7 +16,7 @@ module CV::FetchCovers
       {file, basename.split("-")[-1]}
     end
 
-    input.sort_by! { |x| x[-1].to_i.- }
+    input.sort_by! { |x| x[-1].to_i }
 
     input.each_with_index do |(file, dir), i|
       out_dir = "#{OUT}/yousuu/#{dir}"

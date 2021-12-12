@@ -11,7 +11,7 @@ class CV::MtCore
     new(dicts, "!#{uname}")
   end
 
-  def self.convert(input : String, dname = "various") : Cvmtl
+  def self.convert(input : String, dname = "combine") : Cvmtl
     case dname
     when "hanviet" then hanviet.translit(input).to_s
     when "pin_yin" then pin_yin.translit(input).to_s

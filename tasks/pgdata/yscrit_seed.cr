@@ -136,7 +136,7 @@ module CV::YscritSeed
   end
 
   def test_cv!
-    engine = MtCore.generic_mtl("various")
+    engine = MtCore.generic_mtl("combine")
 
     text_maps = Dir.glob("#{DIR}/*-ztext.tsv")
     text_maps.each_with_index(1) do |file, idx|

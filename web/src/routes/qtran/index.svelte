@@ -5,7 +5,7 @@
 
   import CvPage from '$sects/CvPage.svelte'
 
-  export let dname = 'various'
+  export let dname = 'combine'
   export let d_dub = 'Tổng hợp'
 
   let zhtext = ''
