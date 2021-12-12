@@ -6,7 +6,7 @@ class CV::VpTerm
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
 
   def self.mtime(rtime : Time = Time.utc) : Int32
-    (rtime.to_unix - EPOCH).//(60).to_u32
+    (rtime.to_unix - EPOCH).//(60).to_i
   end
 
   getter key : String
