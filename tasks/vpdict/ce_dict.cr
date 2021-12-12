@@ -125,7 +125,7 @@ class CeInput
     end
 
     QtUtil.lexicon.save!
-    output.save!(prune: false)
+    output.save!(prune: 1_i8)
   end
 
   HANZIDB = QtDict.load("system/hanzidb.txt")
@@ -181,7 +181,7 @@ class CeInput
       output.set(key, simp)
     end
 
-    output.save!(prune: true)
+    output.save!(prune: 1_i8)
   end
 
   def export_pinyins!
@@ -235,7 +235,7 @@ class CeInput
       output.set(key, vals)
     end
 
-    output.save!(prune: true)
+    output.save!(prune: 1_i8)
   end
 end
 

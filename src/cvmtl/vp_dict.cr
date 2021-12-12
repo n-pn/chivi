@@ -105,6 +105,10 @@ class CV::VpDict
     {node.base, node.privs[uname]?}
   end
 
+  def set(key : String, vals : Array(String))
+    set(VpTerm.new(key, vals, mtime: 0_u32))
+  end
+
   def set(term : VpTerm) : VpTerm?
     @data << term
     return unless @trie.find!(term.key).push!(term)
@@ -123,7 +127,7 @@ class CV::VpDict
   # 2: delete shadowed entries (update in under 5 minutes)
   # 3: do not delete anything
 
-  def save!(file = @file, prune = 2_u8) : Nil
+  def save!(file = @file, prune : Int8 = 2_u8) : Nil
     return if prune < 1
 
     data = @data.reject { |x| x.key.empty? || x._flag >= prune }
@@ -138,7 +142,7 @@ class CV::VpDict
     list.sort_by! { |x| {x.mtime, x.key.size, x.key} }
 
     data = String.build do |io|
-      list.each_with_index(i) do |term, i|
+      list.each_with_index do |term, i|
         io << "\n" unless i == 0
         term.to_s(io, dtype: @dtype)
       end

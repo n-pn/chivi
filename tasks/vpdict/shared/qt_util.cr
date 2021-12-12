@@ -1,7 +1,6 @@
 require "colorize"
 require "file_utils"
 
-require "../../../src/cvmtl/vdict"
 require "../../../src/cvmtl/vp_dict"
 
 DIR = "_db/vpinit"
@@ -107,7 +106,7 @@ module QtUtil
 
     while caret < chars.size
       char = chars[caret]
-      keep = dict.new_term(char.to_s, [char.to_s])
+      keep = CV::VpTerm.new(char.to_s, [char.to_s], mtime: 0_u32)
 
       dict.scan(chars, caret) do |term|
         keep = term unless term.empty?
