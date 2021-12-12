@@ -147,7 +147,6 @@ old_suggest = CV::Vdict.suggest
 
 regular_out = CV::VpDict.load("regular", reset: true)
 suggest_out = CV::VpDict.load("suggest", reset: true)
-regular_pleb = CV::VpDict.load("pleb_regular", reset: true)
 
 CV::VpDict.suffix = "_seed"
 
@@ -164,12 +163,12 @@ regular_inp.each do |key|
     rank = key.size.in?(2..3) ? old_term.prio + 2 : 3
     mtime, uname, privi = old_term.mtime, old_term.uname, old_term.power
 
-    term = regular_out.new_term(key, val, tag, rank, mtime, uname, privi)
+    term = CV::VpTerm.new(key, val, tag, rank, mtime, uname, privi)
     regular_out.set(term)
   elsif val = lexicon.fval(key)
     next if key.starts_with?("第")
     if key.size > 2
-      term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "[qt]")
+      term = CV::VpTerm.new(key, [val], tag, mtime: 1, uname: "[qt]")
       regular_out.set(term)
     else
       term = suggest_out.new_term(key, [val], tag, mtime: 1, uname: "[qt]")
@@ -180,10 +179,10 @@ regular_inp.each do |key|
     cap_mode = {"nr", "ns", "nt", "nz"}.includes?(tag) ? 2 : 0
     val = HANVIET_MTL.translit(key, cap_mode: cap_mode).to_s
     if key.size > 3
-      term = regular_out.new_term(key, [val], tag, mtime: 1, uname: "[hv]")
+      term = CV::VpTerm.new(key, [val], tag, mtime: 1, uname: "![hv]")
       regular_out.set(term)
     else
-      term = suggest_out.new_term(key, [val], tag, mtime: 1, uname: "[hv]")
+      term = suggest_out.new_term(key, [val], tag, mtime: 1, uname: "![hv]")
       suggest_out.set(term)
     end
   else

@@ -1,6 +1,6 @@
-require "../src/cvmtl/*"
+require "../../src/cvmtl/*"
 
-DIR = File.join(__FILENAME__, "_fixes")
+DIR = File.join(__DIR__, "_fixes")
 
 DELETE = Set(String).new File.read_lines("#{DIR}/delete.txt")
 
@@ -14,6 +14,7 @@ def cleanup(dname : String, type = "basic")
     count += 1
   end
 
+  return if count == 0
   puts "- count: #{count}"
   vdict.save!
 end
@@ -27,4 +28,4 @@ cleanup("regular")
 cleanup("suggest")
 cleanup("combine")
 
-CV::VpDict.udicts.each { |udict| cleanup(udict, "novel") }
+CV::VpDict.novels.each { |bdict| cleanup(bdict, "novel") }
