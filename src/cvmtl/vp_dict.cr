@@ -44,9 +44,9 @@ class CV::VpDict
   def self.load(dname : String, scope = "novel", reset = false)
     case dname
     when "trungviet", "cc_cedict", "trich_dan"
-      BASICS[dname] ||= new(path(dname, "miscs"), dtype: 0)
+      BASICS[dname] ||= new(path(dname, "miscs"), dtype: -1)
     when "tradsim", "hanviet", "pin_yin"
-      BASICS[dname] ||= new(path(dname, "miscs"), dtype: 1, reset: reset)
+      BASICS[dname] ||= new(path(dname, "miscs"), dtype: 0, reset: reset)
     when "essence", "fixture"
       BASICS[dname] ||= new(path(dname, "basic"), dtype: 1, reset: reset)
     when "regular", "suggest"
@@ -106,7 +106,7 @@ class CV::VpDict
   end
 
   def set(key : String, vals : Array(String))
-    set(VpTerm.new(key, vals, mtime: 0_u32))
+    set(VpTerm.new(key, vals, mtime: 0))
   end
 
   def set(term : VpTerm) : VpTerm?

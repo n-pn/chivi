@@ -106,7 +106,7 @@ module QtUtil
 
     while caret < chars.size
       char = chars[caret]
-      keep = CV::VpTerm.new(char.to_s, [char.to_s], mtime: 0_u32)
+      keep = CV::VpTerm.new(char.to_s, [char.to_s], mtime: 0)
 
       dict.scan(chars, caret) do |term|
         keep = term unless term.empty?

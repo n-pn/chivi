@@ -5,7 +5,7 @@ class CV::VpTerm
   SPLIT = "ǀ"
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
 
-  def self.mtime(rtime : Time = Time.utc) : UInt32
+  def self.mtime(rtime : Time = Time.utc) : Int32
     (rtime.to_unix - EPOCH).//(60).to_u32
   end
 
@@ -15,7 +15,7 @@ class CV::VpTerm
   getter attr : String = ""
   getter rank : UInt8 = 3_u8
 
-  getter mtime : UInt32 = 0_u32
+  getter mtime : Int32 = 0
   getter uname : String = "~"
 
   # auto generated fields
@@ -33,16 +33,16 @@ class CV::VpTerm
                  @mtime = VpTerm.mtime, @uname = "~")
   end
 
-  def initialize(cols : Array(String), dtype = 1)
+  def initialize(cols : Array(String), dtype = 0)
     @key = cols[0]
     @val = cols.fetch(1, "").split(SPLIT)
 
-    return if dtype < 1 # skip reading attr if dict type is lookup
+    return if dtype < 0 # skip reading attr if dict type is lookup
 
     @attr = cols[2]? || ""
     @rank = cols[3]?.try(&.to_u8?) || 3_u8
 
-    if mtime = cols[4]?.try(&.to_u32?)
+    if mtime = cols[4]?.try(&.to_i?)
       @mtime = mtime
       @uname = cols[5]? || "~"
     end
@@ -60,15 +60,13 @@ class CV::VpTerm
     self.empty? ? "Xoá" : (self._prev ? "Sửa" : "Thêm")
   end
 
-  def to_s(io : IO, dtype = 1) : Nil
+  def to_s(io : IO, dtype = 0) : Nil
     io << key << '\t'
     @val.join(io, SPLIT)
 
-    return if dtype < 1 # skip printing if dict type is lookup
+    return if dtype < 0 # skip printing if dict type is lookup
     io << '\t' << @attr << '\t' << (@rank == 3_u8 ? "" : @rank)
-
-    return if @mtime <= 0
-    io << '\t' << @mtime << '\t' << @uname
+    io << '\t' << @mtime << '\t' << @uname if @mtime > 0
   end
 
   def inspect(io : IO) : Nil

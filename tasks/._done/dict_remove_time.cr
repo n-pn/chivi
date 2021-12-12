@@ -27,4 +27,4 @@ CV::VpDict.udicts.each do |udict|
   remove_time(udict)
 end
 
-CV::VpDict.regular.set!(CV::VpTerm.new("几十", ["mấy mươi"], "m", mtime: 0_u32))
+CV::VpDict.regular.set!(CV::VpTerm.new("几十", ["mấy mươi"], "m", mtime: 0))

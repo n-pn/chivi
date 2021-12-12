@@ -3,8 +3,8 @@ require "./shared/*"
 class Hanviet
   HANZIDB = QtDict.load("system/hanzidb.txt")
 
-  TRADSIM = CV::Vdict.tradsim
-  PIN_YIN = CV::Vdict.pin_yin
+  TRADSIM = CV::VpDict.tradsim
+  PIN_YIN = CV::VpDict.pin_yin
 
   getter input : QtDict = QtDict.load(".temps/hanviet.txt", false)
 
@@ -18,11 +18,11 @@ class Hanviet
   end
 
   def gen_from_trad!
-    TRADSIM.each do |term|
+    TRADSIM.data.each do |term|
       next if term.key.size > 0
       next unless vals = @input.data[term.key]?
 
-      term.vals.each do |simp|
+      term.val.each do |simp|
         next if @input.has_key?(simp)
         @input.set(simp, vals)
       end
@@ -34,10 +34,13 @@ class Hanviet
   end
 
   def save!
-    output = CV::Vdict.load("hanviet", reset: true)
+    output = CV::VpDict.load("hanviet", reset: true)
+    output.load!("_db/vpinit/manual/hanviet.tab")
+    output.load!("var/vpdicts/miscs/hanviet.tab")
 
     input = @input.to_a.sort_by(&.[0].size)
     input.each do |(key, vals)|
+      next if output.find(key)
       # next if key.size > 4
       next unless first = vals.first?
 
@@ -50,12 +53,7 @@ class Hanviet
       output.set(key, vals.uniq.first(3))
     end
 
-    remote = CV::Vdict.new("_db/vp_dicts/backup/system/hanviet.tsv", 2, 3)
-    remote.logs.each do |term|
-      output.set(term) unless term.power < 3
-    end
-
-    output.save!(prune: true)
+    output.save!(prune: 1)
   end
 end
 
