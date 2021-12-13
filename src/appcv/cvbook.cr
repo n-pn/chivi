@@ -26,7 +26,7 @@ class CV::Cvbook
   column htslug : String # for text searching, auto generated from hname
   column vtslug : String # for text searching, auto generated from vname
 
-  getter bgenres : Array(String) { Bgenre.to_s(bgenre_ids) }
+  getter bgenres : Array(String) { BGenre.to_s(bgenre_ids) }
   getter zhseeds : Array(String) { Zhseed.all(zhseed_ids) }
 
   column bcover : String = ""
@@ -95,7 +95,7 @@ class CV::Cvbook
   end
 
   scope :filter_genre do |query|
-    query ? where("bgenre_ids @> ?", [Bgenre.map_id(query)]) : self
+    query ? where("bgenre_ids @> ?", [BGenre.map_id(query)]) : self
   end
 
   scope :sort_by do |order|
