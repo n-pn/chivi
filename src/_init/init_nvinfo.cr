@@ -2,6 +2,7 @@ require "colorize"
 require "file_utils"
 
 require "tabkv"
+require "../appcv/nvinfo/nv_util"
 
 class CV::InitNvinfo
   DIR = "var/nvinfos"
@@ -99,31 +100,25 @@ class CV::InitNvinfo
     ["0", input]
   end
 
-  def get_names(svnid : String)
-    _, btitle, author = get_map(:_index, snvid).get(snvid).not_nil!
+  def get_index(svnid : String)
+    atime, btitle, author = get_map(:_index, snvid).get(snvid).not_nil!
+    return if btitle.empty? || btitle == "-"
+    return if author.empty? || author == "-"
+
     new_author = BookUtils.fiz_zh_author(author, btitle)
+
+    new_btitle = Nv
+
+
+    def fix_zh_btitle(ztitle : String, author : String = "") : String
+      find_alt(zh_btitles, "#{ztitle}  #{author}", ztitle) || begin
+        output = TextUtils.normalize(ztitle).join
+        clean_name(output)
+      end
+    end
+
   end
 
-  def seed!(snvid : String)
-    _, btitle_zh, author_zh = get_map(:_index, snvid).get(snvid).not_nil!
-
-    author = Author.upsert!(btitle_zh)
-    bhash, btitle, author = NvInfo.upsert!(author, btitle_zh)
-
-    genres = get_genres(snvid)
-    NvGenres.set!(bhash, genres) unless genres.empty?
-
-    bintro = get_intro(snvid)
-    NvBintro.set!(bhash, bintro, force: false) unless bintro.empty?
-
-    NvFields.set_status!(bhash, get_status(snvid))
-
-    mftime = update.ival_64(snvid)
-    NvOrders.set_update!(bhash, mftime)
-    NvOrders.set_access!(bhash, mftime // 60)
-
-    {bhash, btitle, author}
-  end
 
   # def get_index(snvid : String) : Tuple(Int64, String, String)
   #   return {0_i64, "", ""} unless vals = get_map(:index, snvid).get(snvid)

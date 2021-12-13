@@ -107,7 +107,7 @@ class CV::Nvinfo
       where("zname LIKE '%#{scrub}%'")
     else
       scrub = BookUtils.scrub_vname(input, "-")
-      where("vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%'")
+      where("(vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%')")
     end
   end
 
