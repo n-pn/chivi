@@ -103,10 +103,10 @@ class CV::Nvinfo
     if input.nil?
       self
     elsif input =~ /\p{Han}/
-      scrub = BookUtils.scrub_zname(input)
+      scrub = NvUtil.scrub_zname(input)
       where("zname LIKE '%#{scrub}%'")
     else
-      scrub = BookUtils.scrub_vname(input, "-")
+      scrub = NvUtil.scrub_vname(input, "-")
       where("(vslug LIKE '%-#{scrub}-%' OR hslug LIKE '%-#{scrub}-%')")
     end
   end
@@ -115,10 +115,10 @@ class CV::Nvinfo
     if input.nil?
       return self
     elsif input =~ /\p{Han}/
-      scrub = BookUtils.scrub_zname(input)
+      scrub = NvUtil.scrub_zname(input)
       query = "zname LIKE '%#{scrub}%'"
     else
-      scrub = BookUtils.scrub_vname(input, "-")
+      scrub = NvUtil.scrub_vname(input, "-")
       query = "vslug LIKE '%-#{scrub}-%'"
     end
 
@@ -126,11 +126,11 @@ class CV::Nvinfo
   end
 
   scope :filter_zseed do |input|
-    input ? where("zseed_ids @> ?", [Nvseed.map_id(input)]) : self
+    input ? where("zseed_ids @> ?", [NvSeed.map_id(input)]) : self
   end
 
   scope :filter_genre do |input|
-    input ? where("genre_ids @> ?", [Bgenre.map_id(input)]) : self
+    input ? where("genre_ids @> ?", [BGenre.map_id(input)]) : self
   end
 
   scope :filter_labels do |input|
@@ -156,7 +156,7 @@ class CV::Nvinfo
 
   def set_genres(genres : Array(String), force = false) : Nil
     return unless force || self.genre_ids.empty?
-    genres_ids = Bgenre.map_zh(genres)
+    genres_ids = Bgenre.map_id(genres)
 
     self.genre_ids = genres_ids.empty? ? [0] : genres_ids
     self.genre_ids_column.dirty!
@@ -186,41 +186,37 @@ class CV::Nvinfo
 
   def set_ys_scores(voters : Int32, rating : Int32) : Nil
     self.ys_voters = voters
-    self.ys_rating = rating
+    self.ys_scores = voters * rating
     fix_scores!
   end
 
   # trigger when user add a new book review
   def add_cv_rating(rating : Int32) : Nil
-    points = self.cv_voters * self.cv_rating + rating
-
     self.cv_voters += 1
-    self.cv_rating = points // self.cv_voters
+    self.cv_scores += rating
     fix_scores!
   end
 
   # trigger when user change book rating in his review
   def fix_cv_rating(new_rating : Int32, old_rating : Int32) : Nil
     return if new_rating == old_rating
-
-    points = self.cv_voters * self.cv_rating + new_rating - old_rating
-    self.cv_rating = points // self.cv_voters
+    self.cv_scores = self.cv_scores - old_rating + new_rating
     fix_scores!
   end
 
   # recalculate
   def fix_scores! : Nil
-    points = self.cv_voters * self.cv_rating + self.ys_voters * self.ys_rating
     self.voters = self.cv_voters + self.ys_voters
+    scores = self.cv_scores + self.ys_scores
 
-    if self.voters < 25
-      points += (25 - self.voters) * 50
-      self.rating = points // 25
+    if self.voters < 30
+      scores += (30 - self.voters) * 45
+      self.rating = scores // 30
     else
-      self.rating = points // self.voters
+      self.rating = scores // self.voters
     end
 
-    self.weight = points + Math.log(self.clicks).to_i * 10 + Math.log(self.utime // 60).to_i
+    self.weight = scores + Math.log(self.clicks * 10 + self.utime // 60).to_i
   end
 
   #########################################
@@ -244,29 +240,26 @@ class CV::Nvinfo
     end
   end
 
-  def self.upsert!(author : String, zname : String, fixed = true)
-    unless fixed
-    end
-
+  def self.upsert!(author : Author, zname : String)
     get(author, zname) || begin
       bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
 
       vname = BookUtils.get_vi_btitle(zname, bhash)
-      vslug = "-#{BookUtils.scrub_vname(vname, "-")}-"
+      vslug = "-" + NvUtil.scrub_vname(vname, "-") + "-"
 
       hname = BookUtils.hanviet(zname)
-      hslug = BookUtils.scrub_vname(hname, "-")
+      hslug, bslug = begin
+        slug = NvUtil.scrub_vname(hname, "-")
+        {"-" + slug + "-", slug.split("-").first(8).join("-") + bhash[0..3]}
+      end
 
-      bslug = hslug.split("-").first(8).push(bhash[0..3]).join("-")
-
-      hslug = "-#{hslug}-"
-      cvbook = new({
+      nvinfo = new({
         author_id: author.id, bhash: bhash, bslug: bslug,
         zname: zname, hname: hname, vname: vname,
         hslug: hslug, vslug: vslug,
       })
 
-      cvbook.tap(&.save!)
+      nvinfo.tap(&.save!)
     end
   end
 end
