@@ -4,8 +4,7 @@ class CV::Yscrit
   self.table = "yscrits"
   primary_key
 
-  belongs_to cvbook : Cvbook
-  belongs_to ysbook : Ysbook
+  belongs_to nvinfo : Nvinfo
 
   belongs_to ysuser : Ysuser
   belongs_to yslist : Yslist?
@@ -27,8 +26,8 @@ class CV::Yscrit
 
   timestamps
 
-  scope :filter_cvbook do |cvbook_id|
-    cvbook_id ? where("cvbook_id = #{cvbook_id}") : self
+  scope :filter_nvinfo do |nvinfo_id|
+    nvinfo_id ? where("nvinfo_id = #{nvinfo_id}") : self
   end
 
   scope :filter_ysuser do |ysuser_id|
@@ -44,9 +43,11 @@ class CV::Yscrit
     end
   end
 
-  getter zhtext : Array(String) { self.ztext.split("\n").map(&.strip).reject(&.empty?) }
+  getter zhtext : Array(String) do
+    self.ztext.split("\n").map(&.strip).reject(&.empty?)
+  end
 
-  def cvdata(bname = self.cvbook.bhash, mode = 1)
+  def cvdata(bname = self.nvinfo.bhash, mode = 1)
     cvmtl = MtCore.generic_mtl(bname)
     zhtext.map { |line| cvmtl.cv_plain(line, mode: mode).to_str }.join("\n")
   end

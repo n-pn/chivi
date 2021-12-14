@@ -11,24 +11,24 @@ class CV::YscritCtrl < CV::BaseCtrl
       .with_ysuser
 
     if book_id = params["book"]?.try(&.to_i64?)
-      query.filter_cvbook(book_id)
+      query.filter_nvinfo(book_id)
 
       total = query.dup.count
       crits = query.limit(take).offset(skip).to_a
 
       if crits.size > 0
-        cvbook = Cvbook.load!(book_id)
-        crits.each { |x| x.cvbook = cvbook }
+        nvinfo = Nvinfo.load!(book_id)
+        crits.each { |x| x.nvinfo = nvinfo }
       end
     else
       total = query.dup.limit((page + 2) * take).count
       crits = query.limit(take).offset(skip).to_a
 
       if crits.size > 0
-        cvbooks = Cvbook.query.with_author.where("id = ANY(?)", crits.map(&.cvbook_id))
-        bookmap = cvbooks.map { |x| {x.id, x} }.to_h
+        nvinfos = Nvinfo.query.with_author.where("id = ANY(?)", crits.map(&.nvinfo_id))
+        bookmap = nvinfos.map { |x| {x.id, x} }.to_h
 
-        crits.each { |x| x.cvbook = bookmap[x.cvbook_id] }
+        crits.each { |x| x.nvinfo = bookmap[x.nvinfo_id] }
       end
     end
 
@@ -94,13 +94,13 @@ class CV::YscritCtrl < CV::BaseCtrl
     jb.object do
       jb.field "id", UkeyUtil.encode32(crit.id)
 
-      jb.field "bid", crit.cvbook.id
-      jb.field "bname", crit.cvbook.bname
-      jb.field "bslug", crit.cvbook.bslug
-      jb.field "bhash", crit.cvbook.bhash
+      jb.field "bid", crit.nvinfo.id
+      jb.field "bname", crit.nvinfo.vname
+      jb.field "bslug", crit.nvinfo.bslug
+      jb.field "bhash", crit.nvinfo.bhash
 
-      jb.field "author", crit.cvbook.author.vname
-      jb.field "bgenre", crit.cvbook.bgenres.first? || "Loại khác"
+      jb.field "author", crit.nvinfo.author.vname
+      jb.field "bgenre", crit.nvinfo.genres.first? || "Loại khác"
 
       jb.field "uname", crit.ysuser.vname
       jb.field "uslug", crit.ysuser.id

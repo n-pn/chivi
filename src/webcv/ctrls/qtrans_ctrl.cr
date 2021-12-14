@@ -53,8 +53,8 @@ class CV::QtransCtrl < CV::BaseCtrl
     crit_id = UkeyUtil.decode32(name)
     return {"", "", [] of String} unless yscrit = Yscrit.find({id: crit_id})
 
-    dname = yscrit.cvbook.bhash
-    d_dub = yscrit.cvbook.vtitle
+    dname = yscrit.nvinfo.bhash
+    d_dub = yscrit.nvinfo.vname
     {dname, d_dub, parse_lines(yscrit.ztext)}
   end
 
