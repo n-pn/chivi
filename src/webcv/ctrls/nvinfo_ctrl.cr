@@ -8,6 +8,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   end
 
   def index
+    Log.info { params.to_h }
     pgidx, limit, offset = extract_params
 
     query =
@@ -16,17 +17,11 @@ class CV::NvinfoCtrl < CV::BaseCtrl
         .filter_author(params["author"]?)
         .filter_zseed(params["sname"]?)
         .filter_genre(params["genre"]?)
-
-    if uname = params["uname"]?.try(&.downcase)
-      cvuser = Cvuser.load!(uname)
-      status = Ubmemo.status(params.fetch_str("bmark", "reading"))
-
-      query = query.where("id IN (SELECT nvinfo_id from ubmemos where cvuser_id=#{cvuser.id} and status=#{status})")
-    end
+        .filter_cvuser(params["uname"]?, params["bmark"]?)
 
     total = query.dup.limit(offset + limit * 3).offset(0).count
 
-    query.sort_by(params.fetch_str("order", "bumped"))
+    query.sort_by(params.fetch_str("order", "access"))
     response.headers.add("Cache-Control", "public, min-fresh=180")
 
     json_view do |jb|
@@ -46,17 +41,8 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       }
     end
   rescue err
-    Log.error { err.inspect_with_backtrace }
+    Log.error { err.message }
     halt! 500, err.message
-  end
-
-  LOOKUP = TsvStore.new("priv/lookup.tsv")
-
-  def find
-    bname = params["bname"]
-    response.headers.add("Cache-Control", "public, min-fresh=60")
-    response.content_type = "text/plain; charset=utf-8"
-    context.content = LOOKUP.fval(bname) || bname
   end
 
   def show : Nil
@@ -87,7 +73,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       }
     end
   rescue err
-    Log.error { err.inspect_with_backtrace }
+    Log.error { err.message.colorize.red }
     halt! 500, "Có lỗi từ hệ thống"
   end
 end

@@ -67,20 +67,20 @@ class CV::Cvuser
 
   DUMMY_PASS = Crypto::Bcrypt::Password.create("chivi123", cost: 10)
 
-  CACHED = RamCache(String, self).new
+  CACHED = {} of String => self
+
+  GUEST = new({
+    id:     -1,
+    uname:  "Khách",
+    email:  "guest@chivi.app",
+    cpass:  "xxxxxxxxx",
+    privi:  -1,
+    wtheme: "light",
+  })
 
   def self.load!(dname : String) : self
-    CACHED.get(dname) do
-      find({uname: dname}) || begin
-        raise "User not found!" unless dname == "Khách"
-        new({
-          uname:  dname,
-          email:  "guest@gmail.com",
-          cpass:  "xxxxxxxxx",
-          privi:  -1,
-          wtheme: "light",
-        })
-      end
+    CACHED[dname.downcase] ||= find({uname: dname}) || begin
+      dname == "Khách" ? GUEST : raise "User not found!"
     end
   end
 

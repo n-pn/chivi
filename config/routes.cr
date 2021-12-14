@@ -26,7 +26,6 @@ Amber::Server.configure do
     get "/authors/:author_id/books", CV::AuthorCtrl, :books
 
     get "/books", CV::NvinfoCtrl, :index
-    get "/books/find/:bname", CV::NvinfoCtrl, :find
     get "/books/:bslug", CV::NvinfoCtrl, :show
 
     get "/chaps/:book/:sname", CV::NvchapCtrl, :index

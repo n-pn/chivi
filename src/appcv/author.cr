@@ -5,7 +5,7 @@ class CV::Author
   self.table = "authors"
   primary_key
 
-  has_many nvinfo : Nvinfo
+  has_many nvinfos : Nvinfo
 
   column zname : String
   column vname : String

@@ -33,7 +33,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
       end
     end
   rescue err
-    Log.error { err.inspect_with_backtrace }
+    Log.error { err.message.colorize.red }
     halt! 500, err.message
   end
 
@@ -46,7 +46,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
-    Log.error { err.inspect_with_backtrace }
+    Log.error { err.message.colorize.red }
     halt!(500, err.message)
   end
 
@@ -66,7 +66,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
     )
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
-    Log.error { err.inspect_with_backtrace }
+    Log.error { err.message.colorize.red }
     halt! 500, err.message
   end
 

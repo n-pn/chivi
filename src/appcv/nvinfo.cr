@@ -137,12 +137,19 @@ class CV::Nvinfo
     input ? where("labels @> ?", input) : self
   end
 
+  scope :filter_cvuser do |uname, bmark|
+    return self unless uname && (cvuser = Cvuser.load!(uname))
+    where_clause = "cvuser_id=#{cvuser.id}"
+    where_clause += " and status=#{Ubmemo.status(bmark)}" if bmark
+    where("id IN (SELECT id from ubmemos where (#{where_clause}))")
+  end
+
   scope :sort_by do |order|
     case order
     when "weight" then order_by(weight: :desc)
     when "rating" then order_by(rating: :desc)
     when "voters" then order_by(voters: :desc)
-    when "update" then order_by(mtime: :desc)
+    when "update" then order_by(utime: :desc)
     when "access" then order_by(atime: :desc)
     else               order_by(id: :desc)
     end

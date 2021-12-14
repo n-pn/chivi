@@ -3,8 +3,9 @@ require "./base_ctrl"
 class CV::NvchapCtrl < CV::BaseCtrl
   private def load_zhbook
     nvinfo_id = params["book"].to_i64
-    zname = Zhseed.index(params["sname"])
-    Zhbook.load!(nvinfo_id, zname)
+    sname = params["sname"]
+
+    Zhbook.load!(nvinfo_id, NvSeed.map_id(sname))
   end
 
   def index
@@ -20,7 +21,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     render_json do |res|
       JSON.build(res) do |jb|
         jb.object do
-          jb.field "_seed", Zhseed::REMOTES.includes?(zhbook.sname)
+          jb.field "_seed", NvSeed::REMOTES.includes?(zhbook.sname)
           jb.field "sname", zhbook.sname
           jb.field "utime", utime
 

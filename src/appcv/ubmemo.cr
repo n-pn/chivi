@@ -1,13 +1,11 @@
-require "./zhseed"
-
 class CV::Ubmemo
   include Clear::Model
 
   self.table = "ubmemos"
   primary_key
 
-  belongs_to cvuser : Cvuser
-  belongs_to nvinfo : Nvinfo
+  belongs_to cvuser : Cvuser, foreign_key: "cvuser_id"
+  belongs_to nvinfo : Nvinfo, foreign_key: "nvinfo_id"
 
   # bookmark types: default, reading, finished, onhold, dropped, pending
   column status : Int32 = 0

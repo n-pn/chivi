@@ -2,6 +2,7 @@ require "../_util/ukey_util"
 require "../_util/site_link"
 require "../cvmtl/mt_core"
 require "../seeds/rm_info"
+require "./nvinfo/nv_seed"
 
 class CV::Zhbook
   include Clear::Model
@@ -10,6 +11,7 @@ class CV::Zhbook
   primary_key
 
   belongs_to nvinfo : Nvinfo
+
   column zseed : Int32 # seed name
   column sname : String = ""
   column snvid : String # seed book id
@@ -93,7 +95,7 @@ class CV::Zhbook
   end
 
   def remote?(privi = 4)
-    Zhseed.remote?(sname, privi, old_enough?)
+    NvSeed.remote?(sname, privi, old_enough?)
   end
 
   def old_enough?
@@ -161,7 +163,7 @@ class CV::Zhbook
   end
 
   def remote_text?(chidx : Int32, privi : Int32 = 4)
-    Zhseed.remote?(sname, privi, public_chap?(chidx))
+    NvSeed.remote?(sname, privi, public_chap?(chidx))
   end
 
   def public_chap?(chidx : Int32)

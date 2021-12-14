@@ -47,7 +47,7 @@ module CV::NvinfoView
                 # jb.field "wlink", zhbook.wlink
                 # jb.field "utime", zhbook.mftime
                 jb.field "chaps", zhbook.chap_count
-                jb.field "_seed", Zhseed::REMOTES.includes?(zhbook.sname)
+                jb.field "_seed", NvSeed::REMOTES.includes?(zhbook.sname)
               }
             end
           end
