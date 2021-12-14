@@ -54,7 +54,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
 
     if ubmemo.lr_chidx == 0
-      lr_zseed = nvinfo.zseed_ids.first? || 0
+      lr_zseed = nvinfo.zseed_ids.find(0, &.> 0)
       zhbook = Zhbook.load!(nvinfo.id, lr_zseed)
 
       if chinfo = zhbook.chinfo(0)
