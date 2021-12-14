@@ -57,17 +57,17 @@ class CV::RawYscrit
 
     return unless ysbook = Ysbook.find({id: self.book._id})
     ysuser = Ysuser.get!(self.user._id, self.user.name)
-    cvbook = ysbook.cvbook
+    nvinfo = ysbook.nvinfo
 
     crit.ysuser = ysuser
     crit.ysbook = ysbook
-    crit.cvbook = cvbook
+    crit.nvinfo = nvinfo
 
     crit.origin_id = self._id
 
     crit.stars = self.stars
     crit.ztext = self.ztext
-    crit.vhtml = vhtml(cvbook.bhash)
+    crit.vhtml = vhtml(nvinfo.bhash)
 
     crit.bumped = bumped
     crit.mftime = self.updated_at.to_unix

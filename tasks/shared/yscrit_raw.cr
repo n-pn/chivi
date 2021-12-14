@@ -62,20 +62,20 @@ module CV::YscritRaw
   def seed!(json : Json, bumped : Int64 = Time.utc.to_unix)
     crit = Yscrit.get!(json.id, json.created_at)
 
-    return unless ysbook = Ysbook.find({id: json.book._id})
+    return unless nvinfo = Nvinfo.find({ys_snvid: json.book._id})
     ysuser = Ysuser.get!(json.user.name)
-    cvbook = ysbook.cvbook
+    nvinfo = ysbook.nvinfo
 
     crit.ysuser = ysuser
-    crit.ysbook = ysbook
-    crit.cvbook = cvbook
+    crit.nvinfo = nvinfo
 
+    crit.ysbook_id  = json.book._id
     crit.origin_id = json._id
     crit.stars = json.stars
 
     unless json.ztext.empty? || json.ztext == "请登录查看评论内容"
       crit.ztext = json.ztext
-      crit.vhtml = SeedUtil.cv_ztext(json.ztext, cvbook.bhash)
+      crit.vhtml = SeedUtil.cv_ztext(json.ztext, nvinfo.bhash)
     end
 
     crit.bumped = bumped

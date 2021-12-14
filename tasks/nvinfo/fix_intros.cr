@@ -4,16 +4,16 @@ module CV::FixIntros
   extend self
 
   def set!
-    total, index = Cvbook.query.count, 0
-    query = Cvbook.query.order_by(weight: :desc)
-    query.each_with_cursor(20) do |cvbook|
+    total, index = Nvinfo.query.count, 0
+    query = Nvinfo.query.order_by(weight: :desc)
+    query.each_with_cursor(20) do |nvinfo|
       index += 1
       puts "- [fix_intros] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
       yintro = bintro = fintro = nil.as(Array(String)?)
 
-      cvbook.ysbooks.each { |x| yintro = get_intro("yousuu", x.id.to_s) }
-      cvbook.zhbooks.to_a.each do |x|
+      nvinfo.ysbooks.each { |x| yintro = get_intro("yousuu", x.id.to_s) }
+      nvinfo.zhbooks.to_a.each do |x|
         bintro = get_intro(x.sname, x.snvid)
         break if decent_intro?(x.sname, bintro)
         fintro ||= bintro
@@ -23,13 +23,13 @@ module CV::FixIntros
       next if bintro.nil?
 
       # File.open("tmp/fix_intro.log", "a") do |io|
-      #   io << cvbook.bhash
+      #   io << nvinfo.bhash
       #   bintro.join(io, "\t")
       #   io << "\n"
       # end
 
-      cvbook.set_zintro(bintro.not_nil!.join("\n"), force: true)
-      cvbook.save!
+      nvinfo.set_zintro(bintro.not_nil!.join("\n"), force: true)
+      nvinfo.save!
     end
   end
 

@@ -180,7 +180,7 @@ class CV::SeedZhbook
 
     puts "- Input: #{input.size.colorize.cyan} entries, \
             authors: #{Author.query.count.colorize.cyan}, \
-            cvbooks: #{Cvbook.query.count.colorize.cyan}"
+            nvinfos: #{Nvinfo.query.count.colorize.cyan}"
 
     input.sort_by(&.[0].to_i).each_with_index(1) do |(snvid, values), idx|
       save_book(snvid, values, redo: redo)
@@ -188,12 +188,12 @@ class CV::SeedZhbook
       if idx % 100 == 0
         puts "- [#{@sname}] <#{idx.colorize.cyan}/#{input.size}>, \
                 authors: #{Author.query.count.colorize.cyan}, \
-                cvbooks: #{Cvbook.query.count.colorize.cyan}"
+                nvinfos: #{Nvinfo.query.count.colorize.cyan}"
       end
     end
 
     puts "- authors: #{Author.query.count.colorize.cyan}, \
-            cvbooks: #{Cvbook.query.count.colorize.cyan}"
+            nvinfos: #{Nvinfo.query.count.colorize.cyan}"
 
     @seed.save!
   end
@@ -206,37 +206,37 @@ class CV::SeedZhbook
     return unless author
 
     ztitle = BookUtils.fix_zh_btitle(p_ztitle, author.zname)
-    return unless cvbook = load_cvbook(author, ztitle)
+    return unless nvinfo = load_nvinfo(author, ztitle)
 
     zhbook = Zhbook.upsert!(@sname, snvid)
     bumped = bumped.to_i64
 
-    if redo || zhbook.unmatch?(cvbook.id)
-      zhbook.cvbook = cvbook
-      cvbook.add_zhseed(zhbook.zseed)
+    if redo || zhbook.unmatch?(nvinfo.id)
+      zhbook.nvinfo = nvinfo
+      nvinfo.add_zhseed(zhbook.zseed)
 
-      cvbook.set_genres(@seed.get_genres(snvid))
-      # cvbook.set_bcover("#{@sname}-#{snvid}.webp")
-      cvbook.set_zintro(@seed.get_intro(snvid).join("\n"))
+      nvinfo.set_genres(@seed.get_genres(snvid))
+      # nvinfo.set_bcover("#{@sname}-#{snvid}.webp")
+      nvinfo.set_zintro(@seed.get_intro(snvid).join("\n"))
 
-      if cvbook.voters == 0
+      if nvinfo.voters == 0
         voters, rating = @seed.get_scores(snvid)
-        cvbook.set_scores(voters, rating)
+        nvinfo.set_scores(voters, rating)
       end
     else # zhbook already created before
       return unless bumped > zhbook.bumped
     end
 
     zhbook.status = @seed.status.ival(snvid)
-    cvbook.set_status(zhbook.status)
+    nvinfo.set_status(zhbook.status)
 
     zhbook.bumped = bumped
     zhbook.mftime = @seed.mftime.ival_64(snvid)
 
     if zhbook.mftime < 1
-      zhbook.mftime = cvbook.mftime
+      zhbook.mftime = nvinfo.mftime
     else
-      cvbook.set_mftime(zhbook.mftime)
+      nvinfo.set_mftime(zhbook.mftime)
     end
 
     if zhbook.chap_count == 0 || redo
@@ -246,7 +246,7 @@ class CV::SeedZhbook
         zhbook.chap_count = vals[0].to_i
         zhbook.last_schid = vals[1]
       else
-        puts "-- extract chap index: #{cvbook.bhash}".colorize.yellow
+        puts "-- extract chap index: #{nvinfo.bhash}".colorize.yellow
         # ttl = get_ttl(zhbook.mftime)
         FileUtils.mkdir_p("var/chtexts/#{@sname}/#{snvid}")
         _, chap_count = zhbook.refresh!(mode: 1, ttl: 10.years)
@@ -255,7 +255,7 @@ class CV::SeedZhbook
     end
 
     zhbook.save!
-    cvbook.save!
+    nvinfo.save!
   end
 
   def get_ttl(mftime : Int64)
@@ -272,12 +272,12 @@ class CV::SeedZhbook
     end
   end
 
-  def load_cvbook(author : Author, ztitle : String)
+  def load_nvinfo(author : Author, ztitle : String)
     case @sname
     when "hetushu", "rengshu", "xbiquge", "69shu" # reliable source
-      Cvbook.upsert!(author, ztitle)
+      Nvinfo.upsert!(author, ztitle)
     else
-      Cvbook.get(author, ztitle)
+      Nvinfo.get(author, ztitle)
     end
   end
 

@@ -16,7 +16,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
       jb.array do
         query.with_nvinfo.each do |ubmemo|
           jb.object {
-            jb.field "bname", ubmemo.nvinfo.bname
+            jb.field "bname", ubmemo.nvinfo.vname
             jb.field "bslug", ubmemo.nvinfo.bslug
 
             jb.field "status", ubmemo.status_s
@@ -42,8 +42,8 @@ class CV::UbmemoCtrl < CV::BaseCtrl
       return halt! 403, "Người dùng chưa đăng nhập!"
     end
 
-    cvbook_id = params["book_id"].to_i64
-    ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook_id)
+    nvinfo_id = params["book_id"].to_i64
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
     Log.error { err.inspect_with_backtrace }
@@ -53,8 +53,8 @@ class CV::UbmemoCtrl < CV::BaseCtrl
   def update_access
     raise "Người dùng chưa đăng nhập!" if _cvuser.privi < 0
 
-    cvbook_id = params["book_id"].to_i64
-    ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook_id)
+    nvinfo_id = params["book_id"].to_i64
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
 
     ubmemo.mark!(
       params.fetch_str("sname"),
@@ -73,10 +73,10 @@ class CV::UbmemoCtrl < CV::BaseCtrl
   def update_status
     raise "Người dùng chưa đăng nhập!" if _cvuser.privi < 0
 
-    cvbook_id = params["book_id"].to_i64
+    nvinfo_id = params["book_id"].to_i64
     status = params.fetch_str("status", "default")
 
-    ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook_id)
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo_id)
     ubmemo.update!({status: status})
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err

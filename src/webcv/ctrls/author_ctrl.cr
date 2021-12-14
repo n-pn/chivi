@@ -27,7 +27,7 @@ class CV::AuthorCtrl < CV::BaseCtrl
         jb.field "books" {
           jb.array {
             books[offset, limit].each do |book|
-              CvbookView.render(jb, book, full: false)
+              NvinfoView.render(jb, book, full: false)
             end
           }
         }

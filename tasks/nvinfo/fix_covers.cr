@@ -11,9 +11,9 @@ class CV::FixCovers
   end
 
   def set!(redo : Bool = false)
-    total, index = Cvbook.query.count, 0
-    query = Cvbook.query.order_by(weight: :desc)
-    query.each_with_cursor(20) do |cvbook|
+    total, index = Nvinfo.query.count, 0
+    query = Nvinfo.query.order_by(weight: :desc)
+    query.each_with_cursor(20) do |nvinfo|
       index += 1
 
       if index % 100 == 0
@@ -21,22 +21,22 @@ class CV::FixCovers
         @@widths.each_value { |map| map.save!(clean: false) }
       end
 
-      fix_cover!(cvbook)
+      fix_cover!(nvinfo)
     end
 
     @@widths.each_value { |map| map.save!(clean: false) }
   end
 
-  def fix_cover!(cvbook, redo = false)
-    unless redo || cvbook.bcover.empty?
-      return File.exists?(out_path(cvbook.bcover))
+  def fix_cover!(nvinfo, redo = false)
+    unless redo || nvinfo.bcover.empty?
+      return File.exists?(out_path(nvinfo.bcover))
     end
 
     covers = [] of Tuple(String, String)
-    covers << {"chivi", cvbook.bhash}
+    covers << {"chivi", nvinfo.bhash}
 
-    cvbook.ysbooks.each { |x| covers << {"yousuu", x.id.to_s} }
-    cvbook.zhbooks.to_a.sort_by(&.zseed).each { |x| covers << {x.sname, x.snvid} }
+    nvinfo.ysbooks.each { |x| covers << {"yousuu", x.id.to_s} }
+    nvinfo.zhbooks.to_a.sort_by(&.zseed).each { |x| covers << {x.sname, x.snvid} }
 
     max_width, out_cover = 0, nil
     out_sname, out_snvid = nil, nil
@@ -46,8 +46,8 @@ class CV::FixCovers
         out_webp = "#{sname}-#{snvid}.webp"
         next unless File.exists? out_path(out_webp)
 
-        unless cvbook.bcover == out_webp
-          cvbook.tap(&.bcover = out_webp).save!
+        unless nvinfo.bcover == out_webp
+          nvinfo.tap(&.bcover = out_webp).save!
         end
 
         return puts "- reuse existing!"
@@ -79,11 +79,11 @@ class CV::FixCovers
     end
 
     unless out_cover && out_sname && out_snvid
-      return puts "no cover available for #{cvbook.bname}!"
+      return puts "no cover available for #{nvinfo.bname}!"
     end
 
     out_webp = "#{out_sname}-#{out_snvid}.webp"
-    cvbook.tap(&.bcover = out_webp).save! unless cvbook.bcover == out_webp
+    nvinfo.tap(&.bcover = out_webp).save! unless nvinfo.bcover == out_webp
 
     webp_path = out_path(out_webp)
     return if File.exists?(webp_path) || !File.exists?(out_cover)

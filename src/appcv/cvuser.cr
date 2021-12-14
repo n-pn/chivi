@@ -7,7 +7,7 @@ class CV::Cvuser
   primary_key
 
   has_many ubmemos : Ubmemo, foreign_key: "cvuser_id"
-  has_many cvbooks : Cvbook, through: "ubmemos"
+  has_many nvinfos : Nvinfo, through: "ubmemos"
 
   column uname : String
   column email : String

@@ -68,34 +68,34 @@ class CV::SeedZhwenpg
     ztitle = BookUtils.fix_zh_author(parser.ztitle, author.zname)
 
     zhbook = Zhbook.upsert!("zhwenpg", parser.snvid)
-    cvbook = Cvbook.upsert!(author, ztitle)
+    nvinfo = Nvinfo.upsert!(author, ztitle)
 
-    zhbook.cvbook = cvbook
-    cvbook.add_zhseed(zhbook.zseed)
+    zhbook.nvinfo = nvinfo
+    nvinfo.add_zhseed(zhbook.zseed)
 
-    cvbook.set_genres([parser.bgenre.empty? ? "其他" : parser.bgenre])
-    # cvbook.set_bcover("zhwenpg-#{parser.snvid}.webp")
-    cvbook.set_zintro(parser.bintro.join("\n"))
+    nvinfo.set_genres([parser.bgenre.empty? ? "其他" : parser.bgenre])
+    # nvinfo.set_bcover("zhwenpg-#{parser.snvid}.webp")
+    nvinfo.set_zintro(parser.bintro.join("\n"))
 
-    cvbook.set_status(status)
+    nvinfo.set_status(status)
 
     zhbook.bumped = bumped
     zhbook.mftime = parser.mftime
-    cvbook.set_mftime(zhbook.mftime)
+    nvinfo.set_mftime(zhbook.mftime)
 
-    if cvbook.voters == 0
-      voters, rating = get_scores(cvbook.ztitle, author.zname)
-      cvbook.set_scores(voters, rating)
+    if nvinfo.voters == 0
+      voters, rating = get_scores(nvinfo.ztitle, author.zname)
+      nvinfo.set_scores(voters, rating)
     end
 
     if zhbook.chap_count == 0
       zhbook.refresh!(privi: 3, mode: 1, ttl: 10.years)
-      # chinfo = ChInfo.new(cvbook.bhash, "zhwenpg", parser.snvid)
+      # chinfo = ChInfo.new(nvinfo.bhash, "zhwenpg", parser.snvid)
       # _, zhbook.chap_count, zhbook.last_schid = chinfo.update!(mode: 1, ttl: ttl)
     end
 
     zhbook.save!
-    cvbook.save!
+    nvinfo.save!
   end
 
   private def get_scores(ztitle : String, author : String)

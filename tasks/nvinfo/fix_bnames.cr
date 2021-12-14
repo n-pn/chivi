@@ -7,36 +7,36 @@ module CV::FixBnames
   class_getter vtitles : TsvStore { TsvStore.new("#{DIR}/vi_btitles.tsv") }
 
   def fix_all!
-    total, index = Cvbook.query.count, 1
-    query = Cvbook.query.order_by(weight: :desc)
-    query.each_with_cursor(20) do |cvbook|
+    total, index = Nvinfo.query.count, 1
+    query = Nvinfo.query.order_by(weight: :desc)
+    query.each_with_cursor(20) do |nvinfo|
       puts "- [fix_bnames] <#{index}/#{total}>".colorize.blue if index % 100 == 0
-      fix_bname!(cvbook)
+      fix_bname!(nvinfo)
       index += 1
     end
   end
 
   def fix_books!(titles : Array(String))
     titles.each do |title|
-      query = Cvbook.query.filter_btitle(title)
-      query.each { |cvbook| fix_bname!(cvbook) }
+      query = Nvinfo.query.filter_btitle(title)
+      query.each { |nvinfo| fix_bname!(nvinfo) }
     end
   end
 
-  def fix_bname!(cvbook : Cvbook)
-    ztitle, bhash = cvbook.ztitle, cvbook.bhash
+  def fix_bname!(nvinfo : Nvinfo)
+    ztitle, bhash = nvinfo.ztitle, nvinfo.bhash
 
-    cvbook.htitle = BookUtils.hanviet(ztitle)
-    htslug = BookUtils.scrub_vname(cvbook.htitle, "-")
+    nvinfo.htitle = BookUtils.hanviet(ztitle)
+    htslug = BookUtils.scrub_vname(nvinfo.htitle, "-")
 
-    cvbook.bslug = htslug.split("-").first(7).push(bhash[0..3]).join("-")
-    cvbook.htslug = "-#{htslug}-"
+    nvinfo.bslug = htslug.split("-").first(7).push(bhash[0..3]).join("-")
+    nvinfo.htslug = "-#{htslug}-"
 
     vtitle = vtitles.fval(ztitle) || convert(ztitle, bhash)
-    cvbook.vtitle = TextUtils.titleize(vtitle)
-    cvbook.vtslug = "-#{BookUtils.scrub_vname(vtitle, "-")}-"
+    nvinfo.vtitle = TextUtils.titleize(vtitle)
+    nvinfo.vtslug = "-#{BookUtils.scrub_vname(vtitle, "-")}-"
 
-    cvbook.save!
+    nvinfo.save!
   end
 
   def convert(ztitle : String, bhash : String)

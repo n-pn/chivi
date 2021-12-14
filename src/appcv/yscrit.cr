@@ -5,6 +5,7 @@ class CV::Yscrit
   primary_key
 
   belongs_to nvinfo : Nvinfo
+  column ysbook_id : Int64 = 0_i64
 
   belongs_to ysuser : Ysuser
   belongs_to yslist : Yslist?

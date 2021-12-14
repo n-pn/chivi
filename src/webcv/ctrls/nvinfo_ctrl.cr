@@ -11,7 +11,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     pgidx, limit, offset = extract_params
 
     query =
-      Cvbook.query
+      Nvinfo.query
         .filter_btitle(params["btitle"]?)
         .filter_author(params["author"]?)
         .filter_zseed(params["sname"]?)
@@ -21,7 +21,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       cvuser = Cvuser.load!(uname)
       status = Ubmemo.status(params.fetch_str("bmark", "reading"))
 
-      query = query.where("id IN (SELECT cvbook_id from ubmemos where cvuser_id=#{cvuser.id} and status=#{status})")
+      query = query.where("id IN (SELECT nvinfo_id from ubmemos where cvuser_id=#{cvuser.id} and status=#{status})")
     end
 
     total = query.dup.limit(offset + limit * 3).offset(0).count
@@ -39,7 +39,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
           jb.array {
             limit = limit == 24 ? 25 : limit
             query.limit(limit).offset(offset).with_author.each do |book|
-              CvbookView.render(jb, book, full: false)
+              NvinfoView.render(jb, book, full: false)
             end
           }
         }
@@ -60,19 +60,18 @@ class CV::NvinfoCtrl < CV::BaseCtrl
   end
 
   def show : Nil
-    unless cvbook = Cvbook.find({bslug: params["bslug"]})
+    unless nvinfo = Nvinfo.find({bslug: params["bslug"]})
       return halt!(404, "Quyển sách không tồn tại!")
     end
 
-    cvbook.bump! if u_privi >= 0
-    ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook.id)
+    nvinfo.bump! if u_privi >= 0
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
 
     if ubmemo.lr_chidx == 0
-      lr_zseed = cvbook.zhseed_ids.find(0, &.> 0)
-      zhbook = Zhbook.load!(cvbook.id, lr_zseed)
+      lr_zseed = nvinfo.zseed_ids.first? || 0
+      zhbook = Zhbook.load!(nvinfo.id, lr_zseed)
 
       if chinfo = zhbook.chinfo(0)
-        ubmemo.lr_sname = Zhseed.sname(lr_zseed)
         ubmemo.lr_chidx = -1
         ubmemo.lc_title = chinfo.title
         ubmemo.lc_uslug = chinfo.uslug
@@ -83,7 +82,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     json_view do |jb|
       jb.object {
-        jb.field "cvbook" { CvbookView.render(jb, cvbook, full: true) }
+        jb.field "cvbook" { NvinfoView.render(jb, nvinfo, full: true) }
         jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
       }
     end

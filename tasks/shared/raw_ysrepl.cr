@@ -51,7 +51,7 @@ class CV::RawYsrepl
     repl.origin_id = self._id
 
     repl.ztext = self.ztext
-    repl.vhtml = vhtml(yscrit.cvbook.bhash)
+    repl.vhtml = vhtml(yscrit.nvinfo.bhash)
 
     repl.bumped = bumped
 

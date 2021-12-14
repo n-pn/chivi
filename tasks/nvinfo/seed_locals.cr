@@ -10,15 +10,15 @@ Dir.children(DIR).each do |bhash|
     next
   end
 
-  next unless cvbook = CV::Cvbook.find({bhash: bhash})
-  puts cvbook.bname
+  next unless nvinfo = CV::Nvinfo.find({bhash: bhash})
+  puts nvinfo.bname
 
   idx_file = idx_files.sort_by { |x| File.basename(x, ".tsv").to_i.- }.first
 
   lines = File.read_lines(idx_file)
   lines.pop if lines.last.empty?
 
-  zhbook = CV::Zhbook.load!(cvbook, 0)
+  zhbook = CV::Zhbook.load!(nvinfo, 0)
 
   zhbook.chap_count = lines.size
   zhbook.last_schid = lines.last.split('\t')[1]

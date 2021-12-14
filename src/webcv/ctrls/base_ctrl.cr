@@ -12,7 +12,7 @@ module CV::CtrlUtil
     when "essence"   then "Nền tảng"
     when "fixture"   then "Khoá cứng"
     else
-      Cvbook.find({bhash: dname}).try(&.bname) || dname
+      Nvinfo.find({bhash: dname}).try(&.vname) || dname
     end
   end
 end

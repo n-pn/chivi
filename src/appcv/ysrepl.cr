@@ -35,7 +35,7 @@ class CV::Ysrepl
     end
   end
 
-  def cvdata(bname = self.yscrit.cvbook.bhash, mode = 1)
+  def cvdata(bname = self.yscrit.nvinfo.bhash, mode = 1)
     lines = self.ztext.split("\n").map(&.strip).reject(&.empty?)
     cvmtl = MtCore.generic_mtl(bname)
     lines.map { |line| cvmtl.cv_plain(line, mode: mode).to_str }.join("\n")

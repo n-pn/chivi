@@ -6,8 +6,7 @@ class CV::Ysuser
 
   has_many yslists : Yslist, foreign_key: "ysuser_id"
   has_many yscrits : Yscrit, foreign_key: "ysuser_id"
-  has_many ysbooks : Ysbook, through: "yscrits"
-  has_many cvbooks : Cvbook, through: "yscrits"
+  has_many nvinfos : Nvinfo, through: "yscrits"
 
   column zname : String
   column vname : String

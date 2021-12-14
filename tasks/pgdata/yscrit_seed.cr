@@ -109,11 +109,11 @@ module CV::YscritSeed
       next unless ysuser = Ysuser.get!(infos[2])
 
       yscrit.ysbook = ysbook
-      yscrit.cvbook = ysbook.cvbook
+      yscrit.nvinfo = ysbook.nvinfo
       yscrit.ysuser = ysuser
 
       yscrit.origin_id = ycrid
-      bhash = yscrit.cvbook.bhash
+      bhash = yscrit.nvinfo.bhash
 
       yscrit.stars = infos[3].to_i
       yscrit.like_count = infos[4].to_i

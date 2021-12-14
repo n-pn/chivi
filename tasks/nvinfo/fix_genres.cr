@@ -2,15 +2,15 @@ require "../shared/seed_util"
 
 class CV::FixGenres
   def set!
-    total, index = Cvbook.query.count, 0
-    query = Cvbook.query.order_by(weight: :desc)
-    query.each_with_cursor(20) do |cvbook|
+    total, index = Nvinfo.query.count, 0
+    query = Nvinfo.query.order_by(weight: :desc)
+    query.each_with_cursor(20) do |nvinfo|
       index += 1
       puts "- [fix_genres] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
       input = [0]
-      cvbook.ysbooks.each { |x| input.concat get_genres("yousuu", x.id.to_s) }
-      cvbook.zhbooks.each { |x| input.concat get_genres(x.sname, x.snvid) }
+      nvinfo.ysbooks.each { |x| input.concat get_genres("yousuu", x.id.to_s) }
+      nvinfo.zhbooks.each { |x| input.concat get_genres(x.sname, x.snvid) }
 
       tally = input.tally.to_a.sort_by(&.[1].-)
       keeps = tally.reject(&.[1].< 2)
@@ -18,8 +18,8 @@ class CV::FixGenres
       output = keeps.empty? ? tally.map(&.[0]).first(2) : keeps.map(&.[0]).first(3)
       output.reject!(&.== 0) if output.size > 1
 
-      cvbook.bgenre_ids = output
-      cvbook.save!
+      nvinfo.bgenre_ids = output
+      nvinfo.save!
     end
   end
 

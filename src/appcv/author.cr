@@ -5,7 +5,7 @@ class CV::Author
   self.table = "authors"
   primary_key
 
-  has_many cvbook : Cvbook, foreign_key: "author_id"
+  has_many nvinfo : Nvinfo
 
   column zname : String
   column vname : String
@@ -15,8 +15,8 @@ class CV::Author
 
   timestamps
 
-  getter books : Array(Cvbook) do
-    books = Cvbook.query.where({author_id: self.id}).sort_by("weight")
+  getter books : Array(Nvinfo) do
+    books = Nvinfo.query.where({author_id: self.id}).sort_by("weight")
     books.each { |x| x.author = self }
     books.to_a
   end

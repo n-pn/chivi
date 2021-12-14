@@ -60,7 +60,7 @@ class CV::SeedYsbook
 
     puts "- Input: #{snvids.size.colorize.cyan} entries, \
           authors: #{Author.query.count.colorize.cyan}, \
-          cvbooks: #{Cvbook.query.count.colorize.cyan}"
+          nvinfos: #{Nvinfo.query.count.colorize.cyan}"
 
     snvids.each_with_index(1) do |snvid, idx|
       save_book(snvid, redo: redo)
@@ -68,12 +68,12 @@ class CV::SeedYsbook
       if idx % 100 == 0
         puts "- [ysbook/seed] <#{idx.colorize.cyan}/#{snvids.size}>, \
               authors: #{Author.query.count.colorize.cyan}, \
-              cvbooks: #{Cvbook.query.count.colorize.cyan}"
+              nvinfos: #{Nvinfo.query.count.colorize.cyan}"
       end
     end
 
     puts "- authors: #{Author.query.count.colorize.cyan}, \
-            cvbooks: #{Cvbook.query.count.colorize.cyan}"
+            nvinfos: #{Nvinfo.query.count.colorize.cyan}"
   end
 
   @checked = Set(String).new # skip checked if run twice
@@ -92,35 +92,35 @@ class CV::SeedYsbook
     ztitle = BookUtils.fix_zh_btitle(rtitle, author.zname)
     ysbook = Ysbook.get!(snvid.to_i64)
 
-    cvbook = Cvbook.upsert!(author, ztitle)
+    nvinfo = Nvinfo.upsert!(author, ztitle)
 
-    if redo || ysbook.unmatch?(cvbook.id)
-      ysbook.cvbook_id = cvbook.id
-      # cvbook.set_bcover("yousuu-#{snvid}.webp")
+    if redo || ysbook.unmatch?(nvinfo.id)
+      ysbook.nvinfo_id = nvinfo.id
+      # nvinfo.set_bcover("yousuu-#{snvid}.webp")
 
-      cvbook.set_genres(@seed.get_genres(snvid))
-      cvbook.set_zintro(@seed.get_intro(snvid).join("\n"))
+      nvinfo.set_genres(@seed.get_genres(snvid))
+      nvinfo.set_zintro(@seed.get_intro(snvid).join("\n"))
     else # ysbook already created before
       return unless bumped > ysbook.bumped
     end
 
     status, shield = @seed.get_status(snvid)
-    cvbook.set_status(status)
-    cvbook.set_shield(shield)
+    nvinfo.set_status(status)
+    nvinfo.set_shield(shield)
 
     ysbook.voters, ysbook.rating = @seed.get_scores(snvid)
     author.update_weight!(ysbook.voters * ysbook.rating)
-    cvbook.set_scores(ysbook.voters, ysbook.rating)
+    nvinfo.set_scores(ysbook.voters, ysbook.rating)
 
     ysbook.bumped = bumped
     ysbook.mftime = @seed.get_mftime(snvid)
-    cvbook.set_mftime(ysbook.mftime)
+    nvinfo.set_mftime(ysbook.mftime)
 
     ysbook.root_link, ysbook.root_name = @seed.get_origin(snvid)
     ysbook.list_count, ysbook.crit_count, _ = @seed.get_counts(snvid)
 
     ysbook.save!
-    cvbook.save!
+    nvinfo.save!
   end
 
   def self.run!(argv = ARGV)

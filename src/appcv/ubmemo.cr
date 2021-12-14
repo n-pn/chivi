@@ -6,8 +6,8 @@ class CV::Ubmemo
   self.table = "ubmemos"
   primary_key
 
-  belongs_to nvinfo : Cvbook, foreign_key: "nvinfo_id"
   belongs_to cvuser : Cvuser
+  belongs_to nvinfo : Nvinfo
 
   # bookmark types: default, reading, finished, onhold, dropped, pending
   column status : Int32 = 0
@@ -70,12 +70,12 @@ class CV::Ubmemo
     end
   end
 
-  def self.find_or_new(cvuser : Cvuser, cvbook : Cvbook) : self
-    find_or_new(cvuser.id, cvbook.id)
+  def self.find_or_new(cvuser : Cvuser, nvinfo : Nvinfo) : self
+    find_or_new(cvuser.id, nvinfo.id)
   end
 
-  def self.upsert!(cvuser : Cvuser, cvbook : Cvbook) : self
-    ubmemo = find_or_new(cvuser, cvbook)
+  def self.upsert!(cvuser : Cvuser, nvinfo : Nvinfo) : self
+    ubmemo = find_or_new(cvuser, nvinfo)
     yield ubmemo
     ubmemo.save!
   end

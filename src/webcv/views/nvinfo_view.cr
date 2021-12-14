@@ -1,41 +1,39 @@
 require "json"
 
-module CV::CvbookView
+module CV::NvinfoView
   extend self
 
-  def render(jb : JSON::Builder, obj : Cvbook, full = true)
+  def render(jb : JSON::Builder, obj : Nvinfo, full = true)
     jb.object do
       jb.field "id", obj.id
       jb.field "bhash", obj.bhash
       jb.field "bslug", obj.bslug
 
-      jb.field "ztitle", obj.ztitle
-      jb.field "htitle", obj.htitle
-      jb.field "vtitle", obj.vtitle.empty? ? obj.htitle : obj.vtitle
+      jb.field "ztitle", obj.zname
+      jb.field "htitle", obj.hname
+      jb.field "vtitle", obj.vname
 
       jb.field "vauthor", obj.author.vname
 
-      jb.field "genres", obj.bgenres
-      jb.field "bcover", obj.bcover
+      jb.field "genres", obj.genres
+      jb.field "bcover", obj.cover
 
       jb.field "voters", obj.voters
-      jb.field "rating", obj.rating / 10.0
+      jb.field "rating", obj.rating / 10
 
       if full
         jb.field "author_id", obj.author_id
 
-        jb.field "bintro", obj.bintro.split("\n")
+        jb.field "bintro", obj.intro.split("\n")
 
-        jb.field "mftime", obj.mftime
+        jb.field "mftime", obj.utime
         jb.field "status", map_status(obj.status)
 
-        if ysbook = obj.ysbooks[0]?
-          jb.field "yousuu_id", ysbook.id
-          jb.field "root_link", ysbook.root_link
-          jb.field "root_name", ysbook.root_name
-        end
+        jb.field "yousuu_id", obj.ys_snvid
+        jb.field "root_link", obj.pub_link
+        jb.field "root_name", obj.pub_name
 
-        jb.field "snames", obj.zhseeds
+        jb.field "snames", obj.zseeds
         jb.field "chseed" do
           zhbooks = obj.zhbooks.to_a.sort_by do |x|
             x.zseed == 0 ? 99 : x.zseed

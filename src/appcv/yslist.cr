@@ -6,8 +6,7 @@ class CV::Yslist
 
   belongs_to ysuser : Ysuser
   has_many yscrits : Yscrit, foreign_key: "yslist_id"
-  has_many ysbooks : Ysbook, through: "yscrits"
-  has_many cvbooks : Cvbook, through: "yscrits"
+  has_many nvinfos : Nvinfo, through: "yscrits"
 
   column origin_id : String
 
