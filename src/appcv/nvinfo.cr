@@ -216,7 +216,7 @@ class CV::Nvinfo
       self.rating = scores // self.voters
     end
 
-    self.weight = scores + Math.log(self.clicks * 10 + self.utime // 60).to_i
+    self.weight = scores + Math.log(self.total_clicks + 10).to_i
   end
 
   #########################################

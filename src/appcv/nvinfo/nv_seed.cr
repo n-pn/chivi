@@ -2,8 +2,9 @@ module CV::NvSeed
   extend self
 
   MAP_ID = {
-    "chivi" => -1,
-    "local" => 0,
+    "chivi" => 0,
+    "users" => 99,
+    "miscs" => 100,
 
     "zxcs_me" => 2,
     "hetushu" => 4,
@@ -26,8 +27,12 @@ module CV::NvSeed
     "jx_la" => 80,
   }
 
+  def map_id(sname : Array(String))
+    sname.map { |x| map_id(x) }.uniq
+  end
+
   def map_id(sname : String)
-    MAP_ID[sname]? || 990
+    MAP_ID[sname]? || 0
   end
 
   MAP_NAME = MAP_ID.invert
