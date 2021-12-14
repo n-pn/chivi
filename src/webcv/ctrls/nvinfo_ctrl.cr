@@ -46,7 +46,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       }
     end
   rescue err
-    puts err.inspect_with_backtrace
+    Log.error { err.inspect_with_backtrace }
     halt! 500, err.message
   end
 
@@ -68,10 +68,11 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook.id)
 
     if ubmemo.lr_chidx == 0
-      ubmemo.lr_zseed = cvbook.zhseed_ids.find(0, &.> 0)
-      zhbook = Zhbook.load!(cvbook.id, ubmemo.lr_zseed)
+      lr_zseed = cvbook.zhseed_ids.find(0, &.> 0)
+      zhbook = Zhbook.load!(cvbook.id, lr_zseed)
 
       if chinfo = zhbook.chinfo(0)
+        ubmemo.lr_sname = Zhseed.sname(lr_zseed)
         ubmemo.lr_chidx = -1
         ubmemo.lc_title = chinfo.title
         ubmemo.lc_uslug = chinfo.uslug
@@ -87,7 +88,7 @@ class CV::NvinfoCtrl < CV::BaseCtrl
       }
     end
   rescue err
-    puts err.inspect_with_backtrace
+    Log.error { err.inspect_with_backtrace }
     halt! 500, "Có lỗi từ hệ thống"
   end
 end

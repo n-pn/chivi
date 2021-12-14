@@ -9,7 +9,7 @@ class CV::UbmemoCtrl < CV::BaseCtrl
     take = params.fetch_int("take", min: 15, max: 30)
 
     query = Ubmemo.query.where("cvuser_id = #{_cvuser.id}")
-    query = query.limit(take).offset(skip).order_by(bumped: :desc)
+    query = query.limit(take).offset(skip).order_by(utime: :desc)
 
     json_view do |jb|
       jb.array do
@@ -32,17 +32,20 @@ class CV::UbmemoCtrl < CV::BaseCtrl
       end
     end
   rescue err
-    puts err
+    Log.error { err.inspect_with_backtrace }
     halt! 500, err.message
   end
 
   def show : Nil
-    raise "Người dùng chưa đăng nhập!" if _cvuser.privi < 0
+    if _cvuser.privi < 0
+      return halt! 403, "Người dùng chưa đăng nhập!"
+    end
 
     cvbook_id = params["book_id"].to_i64
     ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook_id)
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
+    Log.error { err.inspect_with_backtrace }
     halt!(500, err.message)
   end
 
@@ -53,16 +56,16 @@ class CV::UbmemoCtrl < CV::BaseCtrl
     ubmemo = Ubmemo.find_or_new(_cvuser.id, cvbook_id)
 
     ubmemo.mark!(
-      Zhseed.index(params.fetch_str("sname")),
+      params.fetch_str("sname"),
       params.fetch_int("chidx"),
       params.fetch_int("cpart"),
       params.fetch_str("title"),
       params.fetch_str("uslug"),
-      params["locked"]? == "true"
+      params["locked"]? == "true" ? 1 : 0
     )
     json_view { |jb| UbmemoView.render(jb, ubmemo) }
   rescue err
-    puts err
+    Log.error { err.inspect_with_backtrace }
     halt! 500, err.message
   end
 

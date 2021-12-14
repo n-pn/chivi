@@ -1,8 +1,6 @@
 require "./zhseed"
 
 class CV::Ubmemo
-  STATUS = {"default", "reading", "finished", "onhold", "dropped", "pending"}
-
   include Clear::Model
 
   self.table = "ubmemos"
@@ -11,13 +9,14 @@ class CV::Ubmemo
   belongs_to cvbook : Cvbook
   belongs_to cvuser : Cvuser
 
-  # bookmark types: reading, finished, onhold, dropped, pending
+  # bookmark types: default, reading, finished, onhold, dropped, pending
   column status : Int32 = 0
   column locked : Bool = false
 
-  column access : Int64 = 0_i64 # update whenever user visit book page
-  column bumped : Int64 = 0_i64 # update when new reading history saved
+  column atime : Int64 = 0_i64 # update whenever user visit book page
+  column utime : Int64 = 0_i64 # update when new reading history saved
 
+  column lr_sname : String = ""
   column lr_zseed : Int32 = 0
   column lr_chidx : Int32 = 0
   column lr_cpart : Int32 = 0
@@ -27,11 +26,11 @@ class CV::Ubmemo
 
   timestamps
 
+  STATUS = {"default", "reading", "finished", "onhold", "dropped", "pending"}
   getter status_s : String { STATUS[status] }
-  getter lr_sname : String { Zhseed.sname(lr_zseed) }
 
   def bump!
-    update!(access: time.to_unix)
+    update!(atime: time.to_unix)
   end
 
   def status=(status : String)
@@ -39,18 +38,19 @@ class CV::Ubmemo
     @status_s = nil
   end
 
-  def mark!(zseed : Int32, chidx : Int32, cpart = 0, title = "", uslug = "", locked = false)
-    if locked || !self.locked
-      self.locked = locked
-      self.lr_zseed = zseed
-      self.lr_chidx = chidx
-      @lr_sname = nil
-    elsif self.lr_zseed != zseed || self.lr_chidx != chidx
-      return
+  def mark!(sname : String, chidx : Int32, cpart = 0, title = "", uslug = "", lock = -1)
+    if lock >= 0
+      self.locked = lock > 0
+    elsif self.locked
+      return if self.lr_sname != sname || self.lr_chidx != chidx
     end
 
-    self.bumped = Time.utc.to_unix
+    self.utime = Time.utc.to_unix
+
+    self.lr_sname = sname
+    self.lr_chidx = chidx
     self.lr_cpart = cpart
+
     self.lc_title = title
     self.lc_uslug = uslug
 
