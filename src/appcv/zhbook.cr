@@ -197,6 +197,18 @@ class CV::Zhbook
     end
   end
 
+  def get_schid(index : Int32)
+    chinfo.get_info(index).try(&.first?) || (index + 1).to_s.rjust(4, '0')
+  end
+
+  def set_chap!(index : Int32, schid : String, title : String, label : String)
+    chinfo.put_chap!(index, schid, title, label)
+  end
+
+  def chtext(index : Int32, schid : String? = get_schid(index))
+    ChText.load(nvinfo.bhash, sname, snvid, index, schid)
+  end
+
   ###########################
 
   def self.upsert!(zseed : Int32, snvid : String)
@@ -221,18 +233,6 @@ class CV::Zhbook
     CACHE[nvinfo.id << 6 | zseed] ||= find(nvinfo.id, zseed) || begin
       zseed == 0 ? dummy_local(nvinfo) : raise "Zhbook not found!"
     end
-  end
-
-  def get_schid(index : Int32)
-    chinfo.get_info(index).try(&.first?) || (index + 1).to_s.rjust(4, '0')
-  end
-
-  def set_chap!(index : Int32, schid : String, title : String, label : String)
-    chinfo.put_chap!(index, schid, title, label)
-  end
-
-  def chtext(index : Int32, schid : String? = get_schid(index))
-    ChText.load(nvinfo.bhash, sname, snvid, index, schid)
   end
 
   def self.dummy_local(nvinfo : Nvinfo)
