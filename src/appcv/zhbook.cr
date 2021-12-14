@@ -9,8 +9,7 @@ class CV::Zhbook
   self.table = "zhbooks"
   primary_key
 
-  # belongs_to nvinfo : Cvbook, foreign_key: "nvinfo_id"
-  column nvinfo_id : Int64 = 0_i64
+  belongs_to nvinfo : Nvinfo
   column zseed : Int32 # seed name
   column sname : String = ""
   column snvid : String # seed book id
@@ -33,7 +32,7 @@ class CV::Zhbook
     SiteLink.chtxt_url(sname, snvid, schid)
   end
 
-  getter nvinfo : Cvbook { Cvbook.load!(self.nvinfo_id) }
+  getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
   def unmatch?(nvinfo_id : Int64) : Bool
     nvinfo_id_column.value(0) != nvinfo_id
@@ -82,7 +81,7 @@ class CV::Zhbook
       end
 
       self.save!
-      nvinfo.tap(&.set_mftime(self.utime)).save! unless sname == "hetushu"
+      nvinfo.tap(&.set_utime(self.utime)).save! unless sname == "hetushu"
     else
       reset_pages!(chmin: 1) if privi > 1
     end
@@ -203,7 +202,7 @@ class CV::Zhbook
   end
 
   def self.upsert!(sname : String, snvid : String)
-    upsert!(Zhseed.index(sname), snvid)
+    upsert!(NvSeed.map_id(sname), snvid)
   end
 
   CACHE = {} of Int64 => self
@@ -213,10 +212,10 @@ class CV::Zhbook
   end
 
   def self.load!(nvinfo_id : Int64, zseed : Int32) : self
-    load!(Cvbook.load!(nvinfo_id), zseed)
+    load!(Nvinfo.load!(nvinfo_id), zseed)
   end
 
-  def self.load!(nvinfo : Cvbook, zseed : Int32) : self
+  def self.load!(nvinfo : Nvinfo, zseed : Int32) : self
     CACHE[nvinfo.id << 6 | zseed] ||= find(nvinfo.id, zseed) || begin
       zseed == 0 ? dummy_local(nvinfo) : raise "Zhbook not found!"
     end
@@ -231,10 +230,10 @@ class CV::Zhbook
   end
 
   def chtext(index : Int32, schid : String? = get_schid(index))
-    ChText.load(cvbook.bhash, sname, snvid, index, schid)
+    ChText.load(nvinfo.bhash, sname, snvid, index, schid)
   end
 
-  def self.dummy_local(nvinfo : Cvbook)
+  def self.dummy_local(nvinfo : Nvinfo)
     new({
       nvinfo_id: nvinfo.id,
 
@@ -245,7 +244,7 @@ class CV::Zhbook
       # status: nvinfo.status,
       # shield: nvinfo.shield,
 
-      utime: nvinfo.mftime,
+      utime: nvinfo.utime,
       # bumped: nvinfo.bumped,
 
       chap_count: 0,
