@@ -138,10 +138,13 @@ class CV::Nvinfo
   end
 
   scope :filter_cvuser do |uname, bmark|
-    return self unless uname && (cvuser = Cvuser.load!(uname))
-    where_clause = "cvuser_id=#{cvuser.id}"
-    where_clause += " and status=#{Ubmemo.status(bmark)}" if bmark
-    where("id IN (SELECT id from ubmemos where (#{where_clause}))")
+    if uname && (cvuser = Cvuser.load!(uname))
+      where_clause = "cvuser_id=#{cvuser.id}"
+      where_clause += " and status=#{Ubmemo.status(bmark)}" if bmark
+      where("id IN (SELECT nvinfo_id from ubmemos where #{where_clause})")
+    else
+      self
+    end
   end
 
   scope :sort_by do |order|
