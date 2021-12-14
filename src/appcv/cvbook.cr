@@ -5,7 +5,7 @@ class CV::Cvbook
   primary_key
 
   has_many ysbooks : Ysbook, foreign_key: "cvbook_id"
-  has_many zhbooks : Zhbook, foreign_key: "cvbook_id"
+  has_many zhbooks : Zhbook, foreign_key: "nvinfo_id"
   has_many yscrits : Yscrit, foreign_key: "cvbook_id"
   has_many yslists : Yslist, through: "yscrits"
 

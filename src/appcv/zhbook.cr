@@ -9,18 +9,17 @@ class CV::Zhbook
   self.table = "zhbooks"
   primary_key
 
-  belongs_to cvbook : Cvbook
-
+  # belongs_to nvinfo : Cvbook, foreign_key: "nvinfo_id"
+  column nvinfo_id : Int64 = 0_i64
   column zseed : Int32 # seed name
-  getter sname : String { Zhseed.sname(zseed) }
-
+  column sname : String = ""
   column snvid : String # seed book id
 
   column status : Int32 = 0 # same as Cvinfo#status
   column shield : Int32 = 0 # same as Cvinfo#shield
 
-  column bumped : Int64 = 0 # last fetching time as total minutes since the epoch
-  column mftime : Int64 = 0 # seed page update time as total seconds since the epoch
+  column atime : Int64 = 0 # last fetching time as total minutes since the epoch
+  column utime : Int64 = 0 # seed page update time as total seconds since the epoch
 
   column chap_count : Int32 = 0   # total chapters
   column last_schid : String = "" # seed's latest chap id
@@ -28,20 +27,20 @@ class CV::Zhbook
   timestamps
 
   getter wlink : String { SiteLink.binfo_url(sname, snvid) }
-  getter cvmtl : MtCore { MtCore.generic_mtl(cvbook.bhash) }
+  getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.bhash) }
 
   def clink(schid : String) : String
     SiteLink.chtxt_url(sname, snvid, schid)
   end
 
-  getter cvbook : Cvbook { Cvbook.load!(self.cvbook_id) }
+  getter nvinfo : Cvbook { Cvbook.load!(self.nvinfo_id) }
 
-  def unmatch?(cvbook_id : Int64) : Bool
-    cvbook_id_column.value(0) != cvbook_id
+  def unmatch?(nvinfo_id : Int64) : Bool
+    nvinfo_id_column.value(0) != nvinfo_id
   end
 
   def outdated?(privi = 0)
-    utime = Time.unix(bumped)
+    utime = Time.unix(atime)
 
     case status
     when 0 then Time.utc - 2.**(4 - privi).hours > utime
@@ -53,7 +52,7 @@ class CV::Zhbook
   def refresh!(privi = 4, mode = 0, ttl = 5.minutes) : Tuple(Int64, Int32)
     unless mode > 0 && remote?(privi)
       reset_pages!(chmin: 1) if privi > 1
-      return {mftime, chap_count}
+      return {utime, chap_count}
     end
 
     FileUtils.mkdir_p(PathUtil.cache_dir(sname, "infos"))
@@ -62,16 +61,16 @@ class CV::Zhbook
 
     if mode > 1 || parser.last_schid != self.last_schid
       if parser.mftime > 0
-        self.mftime = parser.mftime
+        self.utime = parser.mftime
       else
-        self.mftime = Time.utc.to_unix if parser.last_schid != self.last_schid
+        self.utime = Time.utc.to_unix if parser.last_schid != self.last_schid
       end
 
       old_chap_count = chap_count
       self.chap_count = parser.chap_list.size
 
       self.last_schid = parser.last_schid
-      self.bumped = Time.utc.to_unix
+      self.atime = Time.utc.to_unix
 
       Chlist.save!(sname, snvid, parser.chap_list, redo: privi > 0)
       Chpage.forget!(sname, snvid, -1)
@@ -79,19 +78,19 @@ class CV::Zhbook
 
       if self.status < parser.istate || self.status == 3
         self.status = parser.istate
-        cvbook.set_status(parser.istate, force: self.status == 3)
+        nvinfo.set_status(parser.istate, force: self.status == 3)
       end
 
       self.save!
-      cvbook.tap(&.set_mftime(self.mftime)).save! # unless sname == "hetushu"
+      nvinfo.tap(&.set_mftime(self.utime)).save! unless sname == "hetushu"
     else
       reset_pages!(chmin: 1) if privi > 1
     end
 
-    {mftime, chap_count}
+    {utime, chap_count}
   rescue err
-    Log.error { err }
-    {mftime, chap_count}
+    Log.error { err.inspect_with_backtrace }
+    {utime, chap_count}
   end
 
   def remote?(privi = 4)
@@ -99,8 +98,8 @@ class CV::Zhbook
   end
 
   def old_enough?
-    return false if Time.unix(self.bumped) >= Time.utc - 30.minutes
-    Time.unix(self.mftime) < Time.utc - (status < 1 ? 2.days : 4.weeks)
+    return false if Time.unix(self.atime) >= Time.utc - 30.minutes
+    Time.unix(self.utime) < Time.utc - (status < 1 ? 2.days : 4.weeks)
   end
 
   def reset_pages!(chmax = self.chap_count, chmin = chmax - 1)
@@ -209,17 +208,17 @@ class CV::Zhbook
 
   CACHE = {} of Int64 => self
 
-  def self.find(cvbook_id : Int64, zseed : Int32)
-    find({cvbook_id: cvbook_id, zseed: zseed})
+  def self.find(nvinfo_id : Int64, zseed : Int32)
+    find({nvinfo_id: nvinfo_id, zseed: zseed})
   end
 
-  def self.load!(cvbook_id : Int64, zseed : Int32) : self
-    load!(Cvbook.load!(cvbook_id), zseed)
+  def self.load!(nvinfo_id : Int64, zseed : Int32) : self
+    load!(Cvbook.load!(nvinfo_id), zseed)
   end
 
-  def self.load!(cvbook : Cvbook, zseed : Int32) : self
-    CACHE[cvbook.id << 6 | zseed] ||= find(cvbook.id, zseed) || begin
-      zseed == 0 ? dummy_local(cvbook) : raise "Zhbook not found!"
+  def self.load!(nvinfo : Cvbook, zseed : Int32) : self
+    CACHE[nvinfo.id << 6 | zseed] ||= find(nvinfo.id, zseed) || begin
+      zseed == 0 ? dummy_local(nvinfo) : raise "Zhbook not found!"
     end
   end
 
@@ -235,18 +234,19 @@ class CV::Zhbook
     ChText.load(cvbook.bhash, sname, snvid, index, schid)
   end
 
-  def self.dummy_local(cvbook : Cvbook)
+  def self.dummy_local(nvinfo : Cvbook)
     new({
-      cvbook_id: cvbook.id,
+      nvinfo_id: nvinfo.id,
 
       zseed: 0,
-      snvid: cvbook.bhash,
+      sname: "chivi",
+      snvid: nvinfo.bhash,
 
-      # status: cvbook.status,
-      # shield: cvbook.shield,
+      # status: nvinfo.status,
+      # shield: nvinfo.shield,
 
-      mftime: cvbook.mftime,
-      # bumped: cvbook.bumped,
+      utime: nvinfo.mftime,
+      # bumped: nvinfo.bumped,
 
       chap_count: 0,
       last_schid: "",

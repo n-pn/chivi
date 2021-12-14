@@ -59,7 +59,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     imode = params.fetch_int("mode", min: 0, max: privi)
     lines = zhbook.chtext(chidx - 1, cpart, privi: privi, reset: imode > 1)
 
-    ubmemo = Ubmemo.find_or_new(_cvuser.id, zhbook.cvbook_id)
+    ubmemo = Ubmemo.find_or_new(_cvuser.id, zhbook.nvinfo_id)
     ubmemo.mark!(zhbook.sname, chidx, cpart, chinfo.title, chinfo.uslug) if privi >= 0
 
     json_view do |jb|
@@ -116,7 +116,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
   private def convert(zhbook, chinfo, lines : Array(String), cpart : Int32, strio : IO)
     return if lines.empty?
 
-    dname = zhbook.cvbook.bhash
+    dname = zhbook.nvinfo.bhash
     cvmtl = MtCore.generic_mtl(dname, _cvuser.uname)
 
     cvmtl.cv_title_full(lines[0]).to_str(strio)

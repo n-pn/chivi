@@ -2,6 +2,7 @@ require "./base_ctrl"
 
 class CV::UbmemoCtrl < CV::BaseCtrl
   def cvbook
+    json_view({msg: "TODO!"})
   end
 
   def access
@@ -13,10 +14,10 @@ class CV::UbmemoCtrl < CV::BaseCtrl
 
     json_view do |jb|
       jb.array do
-        query.with_cvbook.each do |ubmemo|
+        query.with_nvinfo.each do |ubmemo|
           jb.object {
-            jb.field "bname", ubmemo.cvbook.bname
-            jb.field "bslug", ubmemo.cvbook.bslug
+            jb.field "bname", ubmemo.nvinfo.bname
+            jb.field "bslug", ubmemo.nvinfo.bslug
 
             jb.field "status", ubmemo.status_s
             jb.field "locked", ubmemo.locked
