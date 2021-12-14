@@ -9,9 +9,10 @@ class CV::CrawlYscrit
   def initialize(regen_proxy = false)
     @http = HttpClient.new(regen_proxy)
 
-    Ysbook.query.order_by(id: :desc).each_with_cursor(20) do |ysbook|
-      page_count = (ysbook.crit_count - 1) // 20 + 1
-      @pages[ysbook.id] = page_count > 1 ? page_count : 1
+    Nvinfo.query.order_by(id: :desc).each_with_cursor(20) do |nvinfo|
+      next unless ynvid = nvinfo.ys_snvid
+      page_count = (nvinfo.yscrit_count - 1) // 20 + 1
+      @pages[ynvid] = page_count > 1 ? page_count : 1
     end
   end
 

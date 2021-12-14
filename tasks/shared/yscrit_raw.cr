@@ -64,12 +64,11 @@ module CV::YscritRaw
 
     return unless nvinfo = Nvinfo.find({ys_snvid: json.book._id})
     ysuser = Ysuser.get!(json.user.name)
-    nvinfo = ysbook.nvinfo
 
     crit.ysuser = ysuser
     crit.nvinfo = nvinfo
 
-    crit.ysbook_id  = json.book._id
+    crit.ysbook_id = json.book._id
     crit.origin_id = json._id
     crit.stars = json.stars
 
