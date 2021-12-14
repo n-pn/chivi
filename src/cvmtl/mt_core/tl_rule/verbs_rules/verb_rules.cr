@@ -11,6 +11,8 @@ module CV::TlRule
       verb = fold!(verb, succ, succ.tag, dic: 5)
     end
 
+    flag = 0
+
     while succ = verb.succ?
       # puts [verb, verb.idx, succ]
 
@@ -26,9 +28,10 @@ module CV::TlRule
         break if verb.succ? == succ
       when .vdirs?
         verb = fold_verb_vdirs!(verb, succ)
+        flag = 1
       when .adjts?, .verbs?, .preposes?, .uniques?, .space?
-        break unless fold = fold_verb_compl!(verb, succ)
-        verb = fold
+        break unless flag == 0
+        fold_verb_compl!(verb, succ).try { |x| verb = x } || break
       when .adv_bu?
         break unless succ_2 = succ.succ?
 
@@ -37,8 +40,7 @@ module CV::TlRule
         elsif succ_2.vdir?
           verb = fold_verb_vdirs!(verb, succ_2)
         else
-          break unless fold = fold_verb_compl!(verb, succ)
-          verb = fold
+          fold_verb_compl!(verb, succ).try { |x| verb = x } || break
         end
       when .numeric?
         if succ.key == "一" && (succ_2 = succ.succ?) && succ_2.key == verb.key
