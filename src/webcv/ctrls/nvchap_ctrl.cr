@@ -140,40 +140,44 @@ class CV::NvchapCtrl < CV::BaseCtrl
 
   def upsert
     return 403, "Unsupported"
-    # return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 2
-    # zhbook = load_zhbook
-    # chidx = params.fetch_int("chidx") { 1 }
+    return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 2
 
-    # label = params.fetch_str("label")
-    # label = "" if label == "正文"
+    zhbook = load_zhbook
+    chidx = params.fetch_int("chidx") { 1 }
 
-    # input = params.fetch_str("input")
-    # lines = TextUtils.split_text(input, false)
+    label = params.fetch_str("label")
+    label = "" if label == "正文"
 
-    # chaps = split_chaps(lines, label)
+    input = params.fetch_str("input")
+    lines = TextUtils.split_text(input, false)
 
-    # chmax = zhbook.chap_count + 1
-    # chidx = chmax if chidx < 1 || chidx > chmax
+    chaps = split_chaps(lines, label)
 
-    # infos = chaps.map_with_index(chidx - 1) do |chap, index|
-    #   schid = zhbook.get_schid(index)
-    #   zhbook.chtext(index, schid).set_zh!(chap.lines)
-    #   zhbook.set_chap!(index, schid, chap.title, chap.label).not_nil!
-    # end
+    chidx = zhbook.chap_count + 1 if chidx < 1
 
-    # chmax = chidx + chaps.size - 1
+    infos = chaps.map_with_index(chidx - 1) do |chap, index|
+      chinfo = zhbook.chinfo[index]? || begin
 
-    # if chmax > zhbook.chap_count
-    #   zhbook.bumped = Time.utc.to_unix
-    #   zhbook.mftime = zhbook.bumped if zhbook.zseed == 0
-    #   zhbook.last_schid = infos.last[0]
-    #   zhbook.chap_count = chmax
-    #   zhbook.save!
-    # end
+      end
 
-    # zhbook.reset_trans!(chmax, chidx)
+      schid = zhbook.get_schid(index)
+      zhbook.chtext(index, schid).save!(chap.lines)
+      zhbook.set_chap!(index, schid, chap.title, chap.label).not_nil!
+    end
 
-    # render_json({msg: "ok", chidx: chidx.to_s, uslug: infos.first[3]})
+    chmax = chidx + chaps.size - 1
+
+    if chmax > zhbook.chap_count
+      zhbook.atime = Time.utc.to_unix
+      zhbook.utime = zhbook.atime if zhbook.zseed == 0
+      zhbook.last_schid = infos.last[0]
+      zhbook.chap_count = chmax
+      zhbook.save!
+    end
+
+    zhbook.reset_trans!(chmax, chidx)
+
+    render_json({msg: "ok", chidx: chidx.to_s, uslug: infos.first[3]})
   rescue err
     puts "- Error loading chtext: #{err}"
     halt!(500, err.message)
