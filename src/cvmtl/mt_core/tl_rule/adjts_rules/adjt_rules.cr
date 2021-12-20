@@ -24,20 +24,27 @@ module CV::TlRule
   end
 
   def fold_adjts!(node : MtNode, prev : MtNode? = nil) : MtNode
-    if fold = fold_measurement!(node)
-      return fold
-    end
+    fold_measurement!(node).try { |x| return x }
 
     while node.adjts?
       break unless succ = node.succ?
 
       case succ.tag
+      when .junction?
+        fold_adjt_junction!(succ, prev: node).try { |x| node = x } || break
       when .aform?
         node = fold!(node, succ, PosTag::Aform, dic: 4)
       when .adjt?, .amorp?
         node = fold!(node, succ, PosTag::Adjt, dic: 4)
       when .ajno?
         return fold!(node, succ, PosTag::Noun, dic: 7, flip: true)
+      when .veno?
+        unless prev || node.key.size > 1
+          succ = fold_noun!(cast_noun!(succ))
+          return fold!(node, succ, PosTag::NounPhrase, dic: 4, flip: true)
+        else
+          succ = cast_verb!(succ)
+        end
       when .nouns?
         return fold_adjt_noun!(node, succ)
       when .vpro?, .verb?
@@ -48,6 +55,7 @@ module CV::TlRule
         end
 
         break if prev || node.key.size > 1
+
         succ = fold_verbs!(succ)
         return fold!(node, succ, succ.tag, dic: 4, flip: true)
       when .ule?
@@ -73,9 +81,6 @@ module CV::TlRule
       when .suf_verb?
         node = fold_adj_adv!(node, prev)
         return fold_suf_verb!(node, succ)
-      when .junction?
-        break unless fold = fold_adjt_junction!(succ, prev: node)
-        node = fold
       when .adv_bu?
         break unless (succ_2 = succ.succ?)
 

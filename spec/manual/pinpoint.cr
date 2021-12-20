@@ -2,7 +2,7 @@ require "../../src/cvmtl/mt_core"
 
 GENERIC = CV::MtCore.generic_mtl("7zx48vye")
 
-inp = "好想踩他"
+inp = "很快收敛"
 res = GENERIC.cv_plain(inp)
 
 {res.inspect, inp, res}.each do |text|
