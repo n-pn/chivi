@@ -12,7 +12,7 @@ module CV::FixIntros
 
       yintro = bintro = fintro = nil.as(Array(String)?)
 
-      nvinfo.ysbooks.each { |x| yintro = get_intro("yousuu", x.id.to_s) }
+      nvinfo.ys_snvid.try { |x| yintro = get_intro("yousuu", x.to_s) }
       nvinfo.zhbooks.to_a.each do |x|
         bintro = get_intro(x.sname, x.snvid)
         break if decent_intro?(x.sname, bintro)
