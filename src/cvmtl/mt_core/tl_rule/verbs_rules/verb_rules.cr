@@ -3,9 +3,6 @@ module CV::TlRule
     case verb
     when .v_shi?, .v_you?
       return fold_left_verb!(verb, prev)
-    when .verb_object?
-      verb = fold_left_verb!(verb, prev)
-      return verb.succ? { |x| fold_uzhi!(x, verb) if x.uzhi? } || verb
     when .vpro?
       return verb unless (succ = verb.succ?) && succ.verbs?
       verb = fold!(verb, succ, succ.tag, dic: 5)
@@ -13,13 +10,12 @@ module CV::TlRule
 
     flag = 0
 
-    while succ = verb.succ?
+    while !verb.verb_object? && (succ = verb.succ?)
       # puts [verb, verb.idx, succ]
 
       case succ
-      when .uzhi?
-        verb = fold_left_verb!(verb, prev)
-        return fold_uzhi!(succ, verb)
+      when .junction?
+        fold_verb_junction!(junc: succ, verb: verb).try { |x| verb = x } || break
       when .uzhe?
         verb = fold_verb_uzhe!(verb, uzhe: succ)
         break
@@ -56,22 +52,27 @@ module CV::TlRule
           return fold!(verb, succ, succ.tag, dic: 8)
         end
 
-        verb = fold_left_verb!(verb, prev)
-        return fold_verb_nquant!(verb, succ, prev)
-      when .suf_noun?
-        verb = fold_left_verb!(verb, prev)
-        return fold_suf_noun!(verb, succ)
-      when .junction?
-        fold_verb_junction!(junc: succ, verb: verb).try { |x| verb = x } || break
+        verb = fold_verb_nquant!(verb, succ, prev)
+        break
       else
         break
       end
 
       break if verb.succ? == succ
-      verb.set!(PosTag::Verb) unless verb.vintr? || verb.verb_object?
+      verb.set!(PosTag::Verb) unless verb.vintr?
     end
 
     fold_left_verb!(verb, prev)
+    return verb unless succ = verb.succ?
+
+    if succ.suf_noun?
+      verb = fold_suf_noun!(verb, succ)
+      return verb unless succ = verb.succ?
+    end
+
+    return fold_uzhi!(uzhi: succ, prev: verb) if succ.uzhi?
+
+    verb
   end
 
   def fold_verb_bu_verb!(verb : MtNode, succ : MtNode, succ_2 : MtNode)
