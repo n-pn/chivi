@@ -5,12 +5,7 @@ module CV::TlRule
     #   return node
     # end
 
-    if node.pro_ji? && succ.nhanzi?
-      succ.val = succ.val.sub("mười", "chục")
-      node = fold!(node, succ, PosTag::Number, dic: 5)
-
-      return scan_noun!(node.succ?, nquant: node).not_nil!
-    end
+    return fold_proji_nhanzi!(node, succ) if node.pro_ji? && succ.nhanzi?
 
     node, quanti, succ = split_prodem!(node)
     # puts [node, quanti, succ]
@@ -27,12 +22,18 @@ module CV::TlRule
     node
   end
 
+  def fold_proji_nhanzi!(node : MtNode, succ : MtNode)
+    succ.val = succ.val.sub("mười", "chục")
+    node = fold!(node, succ, PosTag::Number, dic: 5)
+    scan_noun!(node.succ?, nquant: node).not_nil!
+  end
+
   def fold_prodem_nounish!(prodem : MtNode?, nounish : MtNode?)
     return nounish unless prodem
 
     if nounish
-      flip = !nounish.time? && should_flip_prodem?(prodem)
-      return fold!(prodem, nounish, PosTag::NounPhrase, dic: 2, flip: flip)
+      flip = should_flip_prodem?(prodem)
+      return fold!(prodem, nounish, nounish.tag, dic: 2, flip: flip)
     end
 
     return prodem.set!("cái này") if prodem.pro_zhe?
