@@ -92,10 +92,12 @@ module CV::TlRule
 
     case node.key
     when "给"
-      node.val = "cho"
-      flip = node.prev? { |x| x.nouns? || x.pro_per? } || false
+      if node.prev?(&.center_noun?)
+        node.val = "cho"
+        flip = true
+      end
     when "令"
-      node.val = "làm"
+      node.val = "làm" if node.prev?(&.center_noun?)
     when "让"
       # node.val = "nhường"
     end

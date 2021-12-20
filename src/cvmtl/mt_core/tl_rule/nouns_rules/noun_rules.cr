@@ -87,11 +87,12 @@ module CV::TlRule
     end
 
     return true unless prev
+    # return false if succ.maybe_adjt?
 
     while succ
       case succ
-      when .adverbs? then succ = succ.succ?
       when .adjts?   then return !succ.succ?(&.ude1?)
+      when .adverbs? then succ = succ.succ?
       when .preposes?, .verbs?
         return is_linking_verb?(prev, succ) || prev.ends?
       else return true
