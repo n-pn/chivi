@@ -36,7 +36,10 @@ module CV::TlRule
         noun = fold
       when .suf_verb?
         return fold_suf_verb!(noun, succ)
-      when .suf_noun?, .usuo?
+      when .suf_noun?
+        noun = fold_suf_noun!(noun, succ)
+      when .usuo?
+        break if succ.succ?(&.verbs?)
         noun = fold_suf_noun!(noun, succ)
       when .uniques?
         case succ.key
