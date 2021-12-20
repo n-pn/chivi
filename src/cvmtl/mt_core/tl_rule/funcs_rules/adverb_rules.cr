@@ -80,7 +80,7 @@ module CV::TlRule
       heal_vmodal!(succ, nega: node)
     when .verbs?
       succ.tag = PosTag::Verb if succ.veno? || succ.vead?
-      fold_verbs!(succ, prev: node)
+      fold_adverb_node!(node, fold_verbs!(succ))
     when .adjts?
       succ.tag = PosTag::Adjt if succ.ajno? || succ.ajad?
       fold_adjts!(succ, prev: node)

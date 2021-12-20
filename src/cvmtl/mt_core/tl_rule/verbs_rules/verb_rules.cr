@@ -53,6 +53,7 @@ module CV::TlRule
         end
 
         verb = fold_verb_nquant!(verb, succ, prev)
+        prev = nil
         break
       else
         break
@@ -62,7 +63,7 @@ module CV::TlRule
       verb.set!(PosTag::Verb) unless verb.vintr?
     end
 
-    fold_left_verb!(verb, prev)
+    fold_adverb_node!(prev, verb) if prev
     return verb unless succ = verb.succ?
 
     if succ.suf_noun? || succ.usuo?
