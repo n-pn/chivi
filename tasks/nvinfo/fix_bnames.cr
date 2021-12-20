@@ -3,8 +3,8 @@ require "./../shared/seed_data"
 module CV::FixBnames
   extend self
 
-  DIR = "var/nvinfos/fixes"
-  class_getter vtitles : TsvStore { TsvStore.new("#{DIR}/vi_btitles.tsv") }
+  DIR = "var/nvinfos/fixed"
+  class_getter vtitles : TsvStore { TsvStore.new("#{DIR}/btitles_vi.tsv") }
 
   def fix_all!
     total, index = Nvinfo.query.count, 1
@@ -24,30 +24,37 @@ module CV::FixBnames
   end
 
   def fix_bname!(nvinfo : Nvinfo)
-    ztitle, bhash = nvinfo.ztitle, nvinfo.bhash
+    zname, bhash = nvinfo.zname, nvinfo.bhash
 
-    nvinfo.htitle = BookUtils.hanviet(ztitle)
-    htslug = BookUtils.scrub_vname(nvinfo.htitle, "-")
+    nvinfo.hname = BookUtils.hanviet(zname)
+    hslug = BookUtils.scrub_vname(nvinfo.hname, "-")
 
-    nvinfo.bslug = htslug.split("-").first(7).push(bhash[0..3]).join("-")
-    nvinfo.htslug = "-#{htslug}-"
+    nvinfo.bslug = hslug.split("-").first(7).push(bhash[0..3]).join("-")
+    nvinfo.hslug = "-#{hslug}-"
 
-    vtitle = vtitles.fval(ztitle) || convert(ztitle, bhash)
-    nvinfo.vtitle = TextUtils.titleize(vtitle)
-    nvinfo.vtslug = "-#{BookUtils.scrub_vname(vtitle, "-")}-"
+    vname = vtitles.fval(zname) || convert(zname, bhash)
+    nvinfo.vname = TextUtils.titleize(vname)
+    nvinfo.vslug = "-#{BookUtils.scrub_vname(vname, "-")}-"
 
     nvinfo.save!
   end
 
-  def convert(ztitle : String, bhash : String)
+  PREFIXES = {
+    "三国之" => "Tam Quốc: ",
+    "重生之" => "Trùng sinh: ",
+  }
+
+  def convert(zname : String, bhash : String)
     mtl = MtCore.generic_mtl(bhash)
-    case ztitle
-    when .starts_with?("重生之")
-      ztitle = ztitle.sub(/^重生之/, "")
-      "Trùng sinh: " + mtl.cv_plain(ztitle).to_s
-    else
-      mtl.cv_plain(ztitle).to_s
+    pre = ""
+
+    PREFIXES.each do |key, val|
+      next unless zname.starts_with?(key)
+      pre, zname = val, zname.sub(/^#{key}/, "")
+      break
     end
+
+    pre + mtl.cv_plain(zname).to_s
   end
 end
 
