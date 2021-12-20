@@ -88,7 +88,7 @@ module CV::TlRule
       break
     end
 
-    unless node && node.center_noun?
+    unless node && node.subject?
       return fold_prodem_nounish!(prodem, nquant)
     end
 

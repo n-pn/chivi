@@ -77,7 +77,7 @@ module CV::TlRule
         return fold!(node, tail, PosTag::NounPhrase, dic: 6, flip: true)
       end
 
-      if tail.succ?(&.v_shi?) && (prev = node.prev?) && prev.center_noun?
+      if tail.succ?(&.v_shi?) && (prev = node.prev?) && prev.subject?
         verb.val = "của"
         node = fold!(prev, noun, PosTag::NounPhrase, dic: 8)
         return fold!(node, tail, PosTag::NounPhrase, dic: 9, flip: true)
@@ -92,12 +92,12 @@ module CV::TlRule
 
     case node.key
     when "给"
-      if node.prev?(&.center_noun?)
+      if node.prev?(&.subject?)
         node.val = "cho"
         flip = true
       end
     when "令"
-      node.val = "làm" if node.prev?(&.center_noun?)
+      node.val = "làm" if node.prev?(&.subject?)
     when "让"
       # node.val = "nhường"
     end
