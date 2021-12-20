@@ -6,6 +6,7 @@ module CV::TlRule
     case succ.key
     when "们" then succ.val = "các"
     when "时" then succ.val = "lúc"
+    when "所" then succ.val = "nơi"
     when "界"
       return node unless succ.noun?
     end

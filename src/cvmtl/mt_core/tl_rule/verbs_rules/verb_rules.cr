@@ -65,7 +65,7 @@ module CV::TlRule
     fold_left_verb!(verb, prev)
     return verb unless succ = verb.succ?
 
-    if succ.suf_noun?
+    if succ.suf_noun? || succ.usuo?
       verb = fold_suf_noun!(verb, succ)
       return verb unless succ = verb.succ?
     end
