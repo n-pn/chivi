@@ -19,6 +19,8 @@ module CV::TlRule
       return node unless succ = scan_noun!(succ)
       return node unless noun_can_combine?(node.prev?, succ.succ?)
       fold_proper_nounish!(node, succ)
+    when .uzhi?
+      fold_uzhi!(uzhi: succ, prev: node)
     else
       # TODO: handle special cases
       node
