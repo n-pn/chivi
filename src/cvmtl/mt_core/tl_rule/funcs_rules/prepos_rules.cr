@@ -94,6 +94,8 @@ module CV::TlRule
     when "给"
       node.val = "cho"
       flip = true
+    when "令"
+      node.val = "làm"
     when "让"
       # node.val = "nhường"
     end
@@ -103,6 +105,7 @@ module CV::TlRule
     case verb
     when .nil?     then return node
     when .adverbs? then verb = fold_adverbs!(verb)
+    when .veno?    then verb = fold_verbs!(verb.set!(PosTag::Verb))
     when .verb?    then verb = fold_verbs!(verb)
     end
 
