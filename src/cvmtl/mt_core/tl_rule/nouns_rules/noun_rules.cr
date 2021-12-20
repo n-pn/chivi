@@ -17,6 +17,7 @@ module CV::TlRule
         return fold!(noun, succ, PosTag::Aform, dic: 6)
       when .middot?
         break unless (succ_2 = succ.succ?) && succ_2.human?
+        succ.val = ""
         noun = fold!(noun, succ_2, PosTag::Person, dic: 3)
       when .uzhi?
         # TODO: check with prev to group
@@ -35,8 +36,8 @@ module CV::TlRule
         noun = fold
       when .suf_verb?
         return fold_suf_verb!(noun, succ)
-      when .suf_noun?
-        return fold_suf_noun!(noun, succ)
+      when .suf_noun?, .usuo?
+        noun = fold_suf_noun!(noun, succ)
       when .uniques?
         case succ.key
         when "第"
