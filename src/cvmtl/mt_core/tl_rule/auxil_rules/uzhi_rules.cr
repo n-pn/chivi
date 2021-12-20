@@ -18,7 +18,7 @@ module CV::TlRule
       tag = PosTag::Naffil
     when prev.numbers? && succ.numbers?
       # TODO: handle this in fold_number!
-      if node = prev.has_key?("分")
+      if node = prev.dig_key?("分")
         node.val = node.val.sub(/\s*phầ|ân\*/, "")
         uzhi.val = "phần"
       end

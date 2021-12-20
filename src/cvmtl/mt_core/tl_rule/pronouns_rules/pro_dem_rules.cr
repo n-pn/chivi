@@ -33,7 +33,13 @@ module CV::TlRule
 
     if nounish
       flip = should_flip_prodem?(prodem)
-      return fold!(prodem, nounish, nounish.tag, dic: 2, flip: flip)
+      if !prodem.pro_dem? && nounish.qtnoun?
+        tag = PosTag::ProDem
+      else
+        tag = nounish.tag
+      end
+
+      return fold!(prodem, nounish, tag, dic: 2, flip: flip)
     end
 
     return prodem.set!("cái này") if prodem.pro_zhe?

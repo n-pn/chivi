@@ -9,8 +9,16 @@ module CV::TlRule
   end
 
   def fold_noun_ude1_noun!(noun : MtNode, ude1 : MtNode, right : MtNode) : MtNode
-    if noun.times? || noun.place? || noun.space? # || noun.prep_phrase? || noun.defn_phrase?
+    case noun.tag
+    when .times?, .place?, .space? # , .prep_phrase? , .defn_phrase?
       ude1.val = ""
+    when .pro_dem?
+      if node = noun.dig_key?('样')
+        ude1.val = ""
+        node.val = "thế"
+      else
+        ude1.val = "của"
+      end
     else
       ude1.val = "của"
     end

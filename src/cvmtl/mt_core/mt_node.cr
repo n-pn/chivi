@@ -151,11 +151,11 @@ class CV::MtNode
     child.ends_with?(key)
   end
 
-  def has_key?(key : String | Char) : self | Nil
+  def dig_key?(key : String | Char) : self | Nil
     return @key.includes?(key) ? self : nil unless child = @body
 
     while child
-      child = child.succ? unless found = child.has_key?(key)
+      child = child.succ? unless found = child.dig_key?(key)
       return found
     end
 
