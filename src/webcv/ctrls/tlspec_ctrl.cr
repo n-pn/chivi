@@ -48,7 +48,7 @@ class CV::TlspecCtrl < CV::BaseCtrl
     _ukey = UkeyUtil.gen_ukey(Time.utc)
     entry = Tlspec.new(_ukey, fresh: true)
 
-    entry.ztext = ztext
+    entry.ztext = ztext.strip
     entry.dname = params.fetch_str("dname", "combine")
     entry.d_dub = params.fetch_str("d_dub", "Tổng hợp")
 

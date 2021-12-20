@@ -52,8 +52,8 @@ class CV::Tlspec
     edit.lower = params.fetch_int("lower", min: 0)
     edit.upper = params.fetch_int("upper", min: 1, max: @ztext.size)
 
-    edit.match = params.fetch_str("match", "")
-    edit.extra = params.fetch_str("extra", "")
+    edit.match = params.fetch_str("match", "").strip
+    edit.extra = params.fetch_str("extra", "").strip
 
     @edits << edit
   end
