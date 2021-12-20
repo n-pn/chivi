@@ -93,7 +93,7 @@ module CV::TlRule
     case node.key
     when "给"
       node.val = "cho"
-      flip = true
+      flip = node.prev? { |x| x.nouns? || x.pro_per? } || false
     when "令"
       node.val = "làm"
     when "让"

@@ -42,14 +42,13 @@ module CV::TlRule
 
   def should_flip_prodem?(prodem : MtNode)
     return true if prodem.pro_zhe? || prodem.pro_na1?
-    {"另"}.includes?(prodem.key)
+
+    {"另", "其他"}.includes?(prodem.key)
   end
 
   def split_prodem!(node : MtNode?, succ : MtNode? = node.succ?)
     if succ && !node.pro_dem? # is pro_zhe, pro_na1, pro_ji
-
       succ = heal_quanti!(succ)
-
       return succ.quantis? ? {node, succ, succ.succ?} : {node, nil, succ}
     end
 
@@ -63,11 +62,11 @@ module CV::TlRule
       return {prodem, qtnoun, succ}
     end
 
-    if node.key.size < 2 || node.key == "这儿" || node.key == "这儿"
+    unless match = node.key.match(/^(这|那)(.*[^儿])$/)
       return {node, nil, succ}
     end
 
-    node.key, qt_key = node.key.split("", 2)
+    _, node.key, qt_key = match
     node.tag, pro_val = map_pro_dem!(node.key)
     return {node, nil, succ} if pro_val.empty?
 
