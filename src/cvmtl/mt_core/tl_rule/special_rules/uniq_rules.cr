@@ -33,7 +33,7 @@ module CV::TlRule
       return node unless succ
 
       case succ
-      when .verbs?, .adjts?
+      when .adjts?, .verbs?, .vmodals?
         node.set!("thật", PosTag::Adverb)
         fold_adverbs!(node, succ)
       when .ule?
