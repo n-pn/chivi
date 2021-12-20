@@ -34,8 +34,7 @@ module CV::TlRule
 
       case succ
       when .verbs?, .adjts?
-        node.val = "thật"
-        node.tag == PosTag::Adverb
+        node.set!("thật", PosTag::Adverb)
         fold_adverbs!(node, succ)
       when .ule?
         node.tag == PosTag::Adjt

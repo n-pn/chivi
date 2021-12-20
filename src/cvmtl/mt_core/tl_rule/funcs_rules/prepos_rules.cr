@@ -45,20 +45,34 @@ module CV::TlRule
 
   def fold_pre_zai!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
     if succ.verb? || succ.verb_object?
-      node = fold!(node, succ, succ.tag, dic: 5)
-      fold_verbs!(node)
-    else
-      fold_prepos!(node, succ, mode: mode)
+      node = fold!(node.set!("đang"), succ, succ.tag, dic: 6)
+      return fold_verbs!(node)
     end
+
+    fold_prepos!(node, succ, mode: mode)
+  end
+
+  def fold_prezai_places?(node : MtNode, noun : MtNode, ude1 : MtNode, tail : MtNode) : MtNode?
+    return nil if noun.places?
+
+    unless tail.places?
+      return nil unless tail = fold_noun_space!(noun: tail)
+    end
+
+    fold_noun_ude1_noun!(noun, ude1, tail)
   end
 
   def fold_prepos!(node : MtNode, noun = node.succ?, mode = 0) : MtNode
     return node unless noun = scan_noun!(noun, mode: 0)
-    return node unless verb = noun.succ?
+    return fold!(node, noun, PosTag::PrepPhrase, dic: 2) unless verb = noun.succ?
 
     # combine with noun after ude1 if there exists verb right after
     if verb.ude1? && (tail = scan_noun!(verb.succ?, mode: mode))
       unless find_verb_after_for_prepos(tail, skip_comma: false)
+        if node.pre_zai? && (noun = fold_prezai_places?(node, noun, verb, tail))
+          return fold!(node, noun, PosTag::PrepPhrase, dic: 3)
+        end
+
         node = fold!(node, verb.set!(""), PosTag::PrepPhrase, dic: 5)
         return fold!(node, tail, PosTag::NounPhrase, dic: 6, flip: true)
       end
