@@ -41,9 +41,15 @@ module CV::TlRule
       when .nouns?
         return fold_adjt_noun!(node, succ)
       when .vpro?, .verb?
-        break unless node.key.size == 1 && !prev
+        case succ.key
+        when "到"
+          node = fold!(node, succ, PosTag::Verb, dic: 6)
+          return fold_verbs!(succ, prev: prev)
+        end
+
+        break if prev || node.key.size > 1
         succ = fold_verbs!(succ)
-        return fold!(node, succ, PosTag::VerbPhrase, dic: 4, flip: true)
+        return fold!(node, succ, succ.tag, dic: 4, flip: true)
       when .ule?
         break unless (succ_2 = succ.succ?) && succ_2.key == "点"
         succ.val = ""
