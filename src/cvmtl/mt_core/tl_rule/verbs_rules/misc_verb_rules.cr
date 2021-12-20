@@ -33,7 +33,8 @@ module CV::TlRule
         return node if node.succ?(&.ule?)
         # when .plsgn?, .mnsgn? then return node
       when .comma? then return nil if skip_comma
-      else              return nil unless node.adverbs?
+      else
+        return nil unless node.adverbs? || node.pdash?
       end
     end
   end
