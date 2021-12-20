@@ -30,6 +30,7 @@ module CV::TlRule
         return fold!(noun, succ, PosTag::NounPhrase, dic: 6, flip: true)
       end
     when "前"
+      # space.val = "trước khi" if noun.verbs?
       flip = !noun.time?
     end
 

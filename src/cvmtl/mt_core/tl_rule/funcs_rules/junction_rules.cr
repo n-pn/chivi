@@ -10,7 +10,7 @@ module CV::TlRule
     if junc.concoord?
       junc.val = "và" if junc.key == "和"
     elsif junc.conjunct?
-      return unless junc.key == "但"
+      return unless junc.key == "但" || node.key == "又"
     end
 
     fold!(verb, succ, tag: succ.tag, dic: 4)
@@ -22,7 +22,7 @@ module CV::TlRule
     if node.concoord?
       node.val = "và" if node.key == "和"
     elsif node.conjunct?
-      return unless node.key == "但"
+      return unless node.key == "但" || node.key == "又"
     end
 
     succ = scan_adjt!(succ)
