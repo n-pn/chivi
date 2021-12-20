@@ -5,6 +5,7 @@ module CV::TlRule
     when .ude1? then fold_ude1!(node) # 的
     when .ude2? then heal_ude2!(node) # 地
     when .ude3? then heal_ude3!(node) # 得
+    when .usuo? then fold_usuo!(node) # 所
     else             node
     end
   end
