@@ -46,6 +46,7 @@ module CV::FixBnames
     "综漫之" => "Tổng mạn: ",
     "娱乐之" => "Giải trí: ",
     "重生之" => "Trùng sinh: ",
+    "穿越之" => "Xuyên qua: ",
     "复活之" => "Phục sinh: ",
     "网游之" => "Game online: ",
 
