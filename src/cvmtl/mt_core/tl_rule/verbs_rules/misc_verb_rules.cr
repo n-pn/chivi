@@ -28,7 +28,7 @@ module CV::TlRule
   def find_verb_after_for_prepos(node : MtNode, skip_comma = true) : MtNode?
     while node = node.succ?
       case node
-      when .verbs?
+      when .vmodals?, .verbs?
         return node unless node.v_shang? || node.v_xia?
         return node if node.succ?(&.ule?)
         # when .plsgn?, .mnsgn? then return node
