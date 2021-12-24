@@ -9,7 +9,7 @@ class CV::HttpClient
     end
   end
 
-  PROXY_DIR = "_db/yousuu/_proxy"
+  PROXY_DIR = "var/_proxy"
   WORKS_DIR = "#{PROXY_DIR}/.works"
   ::FileUtils.mkdir_p(WORKS_DIR)
 

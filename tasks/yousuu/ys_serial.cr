@@ -1,4 +1,6 @@
 require "json"
+require "option_parser"
+
 require "../shared/raw_ysbook"
 require "./shared/http_client"
 
@@ -77,14 +79,16 @@ class CV::CrawlYsbook
   end
 end
 
-def guess_mode(argv = ARGV)
-  case argv
-  when .includes?("head") then :head
-  when .includes?("rand") then :rand
-  else                         :tail
-  end
+recheck_proxy = false
+crawl_mode = :tail
+max_ysnvid = ENV["SNVID"]?.try(&.to_i) || 269799
+
+OptionParser.parse(ARGV) do |opt|
+  opt.on("-p", "Recheck proxies") { recheck_proxy = true }
+  opt.on("-h", "Crawl from beginning") { crawl_mode = :head }
+  opt.on("-r", "Crawl randomly") { crawl_mode = :rand }
 end
 
-reload_proxy = ARGV.includes?("proxy")
-worker = CV::CrawlYsbook.new(reload_proxy)
-worker.crawl!(268421, mode: guess_mode(ARGV))
+recheck_proxy = ARGV.includes?("proxy")
+worker = CV::CrawlYsbook.new(recheck_proxy)
+worker.crawl!(max_ysnvid, mode: crawl_mode)

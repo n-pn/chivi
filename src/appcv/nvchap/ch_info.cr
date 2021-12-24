@@ -1,6 +1,6 @@
 require "json"
 
-class CV::ChItem
+class CV::ChInfo
   include JSON::Serializable
 
   property chidx : Int32
@@ -17,6 +17,9 @@ class CV::ChItem
 
   property uname = ""
   property privi = 0
+
+  # property sname = ""
+  # property scidx = ""
 
   property title : String? = nil
   property chvol : String? = nil
@@ -60,7 +63,7 @@ class CV::ChItem
 
   def trans!(cvmtl : MtCore)
     @title = cvmtl.cv_title(@title_zh).to_s
-    @chvol = @chvol.empty? ? "Chính văn" : cvmtl.cv_title(@chvol_zh).to_s
+    @chvol = @chvol_zh.empty? ? "Chính văn" : cvmtl.cv_title(@chvol_zh).to_s
     @uslug = TextUtils.tokenize(@title).first(10).join("-")
 
     self
