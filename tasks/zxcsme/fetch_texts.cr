@@ -52,4 +52,4 @@ class CV::Seeds::ZxcsText
 end
 
 worker = CV::Seeds::ZxcsText.new
-worker.fetch!(from: 1, upto: 13200)
+worker.fetch!(from: 1, upto: 13400)
