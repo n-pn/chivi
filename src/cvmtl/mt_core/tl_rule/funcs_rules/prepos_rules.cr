@@ -45,7 +45,10 @@ module CV::TlRule
 
   def fold_pre_zai!(node : MtNode, succ = node.succ?, mode = 0) : MtNode
     if succ.verb? || succ.verb_object?
-      node = fold!(node.set!("đang"), succ, succ.tag, dic: 6)
+      # TODO: check conditions when prezai can be translated at "đang"
+      # node.set!("đang")
+
+      node = fold!(node, succ, succ.tag, dic: 6)
       return fold_verbs!(node)
     end
 

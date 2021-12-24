@@ -1,5 +1,13 @@
 module CV::TlRule
   def heal_quanti!(node : MtNode) : MtNode
+    # abort transform if node is certainly a verb
+    if node.verbs? && (succ = node.succ?)
+      case succ.tag
+      when .ule?, .ends?
+        return node
+      end
+    end
+
     if val = MtDict::QUANTI_TIMES[node.key]?
       node.set!(val, PosTag::Qttime)
     elsif val = MtDict::QUANTI_VERBS[node.key]?
