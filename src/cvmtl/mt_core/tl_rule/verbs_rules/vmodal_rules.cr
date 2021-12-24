@@ -70,7 +70,7 @@ module CV::TlRule
 
   def heal_vm_xiang!(node : MtNode, succ = node.succ?, nega : MtNode? = nil) : MtNode
     if has_verb_after?(node)
-      node.val = "muốn"
+      node.val = "muốn" unless succ.try(&.key.== "也")
     elsif succ && succ.human?
       if has_verb_after?(succ)
         node.set!("muốn")

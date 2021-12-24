@@ -25,6 +25,10 @@ module CV::TlRule
       when .vdirs?
         verb = fold_verb_vdirs!(verb, succ)
         flag = 1
+      when .adj_hao?
+        break unless flag == 0 || succ.succ?(&.noun?)
+        succ.val = "xong" unless succ.succ?(&.ule?)
+        fold!(verb, succ, PosTag::Verb, dic: 4)
       when .adjts?, .verbs?, .preposes?, .uniques?, .space?
         break unless flag == 0
         fold_verb_compl!(verb, succ).try { |x| verb = x } || break
