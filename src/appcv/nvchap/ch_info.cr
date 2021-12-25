@@ -1,4 +1,5 @@
 require "json"
+require "../../_util/text_utils"
 
 class CV::ChInfo
   include JSON::Serializable
@@ -7,9 +8,9 @@ class CV::ChInfo
   property schid : String
 
   @[JSON::Field(ignore: true)]
-  property title_zh = ""
+  property z_title = ""
   @[JSON::Field(ignore: true)]
-  property chvol_zh = ""
+  property z_chvol = ""
 
   property utime = 0_i64
   property chars = 0
@@ -18,54 +19,90 @@ class CV::ChInfo
   property uname = ""
   property privi = 0
 
-  # property sname = ""
-  # property scidx = ""
+  property o_sname = ""
+  property o_chidx = 0
 
-  property title : String? = nil
-  property chvol : String? = nil
-  property uslug : String? = nil
+  property title = ""
+  property chvol = ""
+  property uslug = ""
 
-  def self.from_tsv(list : Array(String))
-    new(list[0].to_i, list[1]).tap do |x|
-      break if list.size < 4
+  def initialize(argv : Array(String))
+    @chidx = argv[0].to_i
+    @schid = argv[1]
 
-      x.title_zh = list[2]
-      x.chvol_zh = list[3]
+    return if argv.size < 4
 
-      break if list.size < 7
+    @z_title = argv[2]
+    @z_chvol = argv[3]
 
-      x.utime = list[4].to_i64
-      x.chars = list[5].to_i
-      x.parts = list[6].to_i
+    return if argv.size < 7
 
-      break if list.size < 9
+    @utime = argv[4].to_i64
+    @chars = argv[5].to_i
+    @parts = argv[6].to_i
 
-      x.uname = list[7]
-      x.privi = list[8].to_i
+    return if argv.size < 9
+
+    @uname = argv[7]
+    @privi = argv[8].to_i
+
+    return if argv.size < 11
+
+    @o_sname = argv[9]
+    @o_chidx = argv[10].to_i
+  end
+
+  def initialize(@chidx, @schid = chidx.to_s)
+  end
+
+  def initialize(@chidx, @schid, title : String, chvol = "")
+    @z_title, @z_chvol = TextUtils.format_title(title, chvol)
+    @z_chvol = @z_chvol.sub(/\s{2,}/, " ")
+  end
+
+  # delegate empty?, to: @z_title
+
+  def invalid?
+    @z_title.empty?
+  end
+
+  def get(chidx : Int32)
+    info = @data[chidx]? || ChInfo.new(chidx)
+  end
+
+  def trans!(cvmtl : MtCore) : Nil
+    return if self.invalid?
+    @title = cvmtl.cv_title(@z_title).to_s
+    @chvol = @z_chvol.empty? ? "Chính văn" : cvmtl.cv_title(@z_chvol).to_s
+    @uslug = TextUtils.tokenize(@title).first(10).join("-")
+  end
+
+  def equal?(other : self)
+    @schid == other.schid && @z_title == other.z_title && @z_chvol == other.z_chvol
+  end
+
+  def chap_url(part = 0)
+    String.build do |io|
+      io << @uslug << '-' << @chidx
+      if part != 0 && @parts > 1
+        io << '.' << part % @parts
+      end
     end
   end
 
-  def initialize(@chidx, @schid = @chidx.to_s)
-  end
-
-  def to_tsv(io : IO)
+  def to_tsv(io : IO = STDOUT)
     io << @chidx << '\t' << @schid
 
-    return if @title_zh.empty?
-    io << '\t' << @title_zh << '\t' << @chvol_zh
+    return if @z_title.empty?
+    io << '\t' << @z_title << '\t' << @z_chvol
 
     return if @utime == 0
     io << '\t' << @utime << '\t' << @chars << '\t' << @parts
 
     return if @uname.empty?
     io << '\t' << @uname << '\t' << @privi
-  end
 
-  def trans!(cvmtl : MtCore)
-    @title = cvmtl.cv_title(@title_zh).to_s
-    @chvol = @chvol_zh.empty? ? "Chính văn" : cvmtl.cv_title(@chvol_zh).to_s
-    @uslug = TextUtils.tokenize(@title).first(10).join("-")
-
-    self
+    return if @o_sname.empty?
+    io << '\t' << @o_sname << '\t' << @o_chidx
   end
 end

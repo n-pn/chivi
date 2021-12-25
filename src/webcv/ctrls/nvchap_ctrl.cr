@@ -34,15 +34,11 @@ class CV::NvchapCtrl < CV::BaseCtrl
           jb.field "pgmax", (total - 1) // 32 + 1
 
           jb.field "lasts" do
-            jb.array do
-              zhbook.lastpg.each(&.to_json(jb))
-            end
+            jb.array { zhbook.lastpg.each(&.to_json(jb)) }
           end
 
           jb.field "chaps" do
-            jb.array do
-              zhbook.chpage(pgidx - 1).each(&.to_json(jb))
-            end
+            jb.array { zhbook.chpage(pgidx - 1).each(&.to_json(jb)) }
           end
         end
       end
@@ -73,8 +69,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
             jb.field "clink", zhbook.clink(chinfo.schid)
             jb.field "cpart", cpart
 
-            jb.field "_prev", cpart == 0 ? zhbook.chap_url(chidx - 1, -1) : zhbook.chap_url(chidx, cpart - 1)
-            jb.field "_next", cpart + 1 < chinfo.parts ? zhbook.chap_url(chidx, cpart + 1) : zhbook.chap_url(chidx + 1)
+            jb.field "_prev", cpart == 0 ? zhbook.chap_url(chidx - 1, -1) : chinfo.chap_url(cpart - 1)
+            jb.field "_next", cpart + 1 < chinfo.parts ? chinfo.chap_url(cpart + 1) : zhbook.chap_url(chidx + 1)
           }
         }
 

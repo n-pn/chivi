@@ -1,36 +1,29 @@
 require "file_utils"
 require "compress/zip"
 
-require "../../seeds/rm_text"
 require "../../_util/ram_cache"
-require "./chpage"
+require "../remote/rm_text"
+require "../nvchap/ch_info"
 
 class CV::Chtext
   CACHE = RamCache(String, self).new(512, 3.hours)
   CHARS = 3000
   VPDIR = "var/chtexts"
 
-  def self.load(sname : String, snvid : String, infos : Chpage)
+  def self.load(sname : String, snvid : String, infos : ChInfo)
     CACHE.get("#{sname}/#{snvid}/#{infos.chidx}") { new(sname, snvid, infos) }
   end
 
   @parts = {} of Int32 => Tuple(Array(String), Int64)
 
-  getter infos : Chpage
-  getter title : String do
-    lines, _ = load!(0)
-    lines[0]
-  end
+  getter infos : ChInfo
+  getter title : String { infos.z_title }
 
   def initialize(@sname : String, @snvid : String, @infos)
     @chdir = "#{VPDIR}/#{sname}/#{snvid}"
 
     group = (@infos.chidx - 1) // 128
     @store = "#{@chdir}/#{group}.zip"
-  end
-
-  def part_path(part = 0)
-    "#{@infos.schid}-#{part}.txt"
   end
 
   def load!(part = 0) : Tuple(Array(String), Int64)
@@ -50,6 +43,10 @@ class CV::Chtext
 
       {lines, mtime}
     end
+  end
+
+  private def part_path(part = 0)
+    "#{@infos.schid}-#{part}.txt"
   end
 
   def fetch!(part : Int32 = 0, stale = 10.years)

@@ -1,5 +1,5 @@
 require "myhtml"
-require "../../_util/text_utils"
+require "../../../_util/text_utils"
 
 class CV::HtmlParser
   def initialize(html : String)

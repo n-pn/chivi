@@ -172,10 +172,14 @@ class CV::Nvinfo
     self.genre_ids_column.dirty!
   end
 
-  def set_utime(utime : Int64, force = false) : Nil
+  def set_utime(utime : Int64, force = false) : Int64?
     return unless force || utime > self.utime
-    self.utime = utime
     self.atime = utime if self.atime < utime
+    self.utime = utime
+  end
+
+  def update_utime(utime : Int64) : Nil
+    self.save! if set_utime(utime)
   end
 
   def bump!(time = Time.utc)
@@ -183,7 +187,8 @@ class CV::Nvinfo
   end
 
   def set_status(status : Int32, force = false) : Nil
-    self.status = status if force || status > self.status
+    return unless force || self.status < status || self.status == 3 && status > 0
+    self.status = status
   end
 
   def set_shield(shield : Int32, force = false) : Nil
