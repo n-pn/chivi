@@ -38,7 +38,7 @@ class CV::Tagger
         next unless should_tag?(tag_mode, index)
 
         txt_file = File.join(@out_dir, entry.filename)
-        next if !@redo && File.exists?(txt_file.sub(".txt", ".dat"))
+        next if !@redo && File.exists?(txt_file.sub(".txt", ".tsv"))
 
         entry.open { |io| File.write(txt_file, io.gets_to_end) }
       end
@@ -81,7 +81,7 @@ chan = Channel(Nil).new(wrks)
 
 lines = File.read_lines("priv/zhseed.tsv").reject(&.empty?)
 
-lines.first(5000).each_with_index(1) do |line, idx|
+lines.first(20000).each_with_index(1) do |line, idx|
   chan.receive if idx > wrks
 
   spawn do

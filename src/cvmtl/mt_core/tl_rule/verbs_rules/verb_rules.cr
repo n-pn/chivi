@@ -28,7 +28,7 @@ module CV::TlRule
       when .adj_hao?
         break unless flag == 0 || succ.succ?(&.noun?)
         succ.val = "xong" unless succ.succ?(&.ule?)
-        fold!(verb, succ, PosTag::Verb, dic: 4)
+        verb = fold!(verb, succ, PosTag::Verb, dic: 4)
       when .adjts?, .verbs?, .preposes?, .uniques?, .space?
         break unless flag == 0
         fold_verb_compl!(verb, succ).try { |x| verb = x } || break
