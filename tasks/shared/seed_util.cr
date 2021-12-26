@@ -1,13 +1,16 @@
+require "tabkv"
 require "file_utils"
-require "../../src/seeds/rm_info"
-require "../../src/_util/tsv_store"
+
+require "../../src/appcv/remote/rm_info"
 require "./bootstrap"
 
 module CV::SeedUtil
   extend self
 
-  class_getter rating_fix : TsvStore { load_map("rating_fix", 2) }
-  class_getter status_map : TsvStore { load_map("status_map", 2) }
+  DIR = "_db/zhbook"
+
+  class_getter rating_fix : Tabkv { Tabkv.new("#{DIR}/rating_fix.tsv") }
+  class_getter status_map : Tabkv { Tabkv.new("#{DIR}/status_map.tsv") }
 
   class_getter authors_map : Hash(String, Author) do
     Author.query.to_a.to_h { |x| {x.zname, x} }
@@ -15,10 +18,6 @@ module CV::SeedUtil
 
   def save_maps!(clean = false)
     @@status_map.try(&.save!(clean: clean))
-  end
-
-  def load_map(label : String, mode = 1)
-    TsvStore.new("_db/zhbook/#{label}.tsv", mode: mode)
   end
 
   def get_author(author : String, ztitle = "", force = false) : Author?

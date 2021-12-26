@@ -22,9 +22,9 @@ class CV::ChInfo
   property o_sname = ""
   property o_chidx = 0
 
-  property title = ""
-  property chvol = ""
-  property uslug = ""
+  property title = "Chương trống"
+  property chvol = "Chính văn"
+  property uslug = "chuong-trong"
 
   def initialize(argv : Array(String))
     @chidx = argv[0].to_i

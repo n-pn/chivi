@@ -116,11 +116,13 @@ class CV::Zhbook
     P_CACHE.get(page_uuid(pgidx)) do
       chlist = self.chlist(pgidx // 4)
 
-      chidx = pgidx * P_SIZE + 1
-      chmax = chidx + P_SIZE
+      chmin = pgidx * P_SIZE + 1
+      chmax = chmin + P_SIZE - 1
       chmax = self.chap_count if chmax > self.chap_count
 
-      (chmin..chmax).map { |idx| chlist.get(chidx).tap(&.trans!) }
+      (chmin..chmax).map do |chidx|
+        chlist.get(chidx).tap(&.trans!(cvmtl))
+      end
     end
   end
 

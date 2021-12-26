@@ -32,6 +32,10 @@ class CV::ChList
     end
   end
 
+  def get(chidx : Int32) : ChInfo
+    @data[chidx] ||= ChInfo.new(chidx)
+  end
+
   #####################
 
   DIR = "var/chtexts"
