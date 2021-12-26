@@ -1,6 +1,6 @@
 <script context="module">
   import { call_api } from '$api/_api_call'
-  import { vdict } from '$lib/stores'
+  import { vdict, ztext, zfrom, zupto } from '$lib/stores'
 
   function make_word_list(ztext, lower, upper) {
     const words = [ztext.substring(lower, upper)]
@@ -23,10 +23,6 @@
   import { hint, decor_term } from './_shared'
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let ztext
-  export let lower
-  export let upper
-
   export let vpterms = []
   export let valhint = []
   export let output = ''
@@ -37,16 +33,16 @@
   let prefix = ''
   let suffix = ''
 
-  $: update_input(lower, upper)
+  $: update_input($ztext, $zfrom, $zupto)
 
-  async function update_input(lower, upper) {
-    output = ztext.substring(lower, upper)
-    prefix = ztext.substring(lower - 10, lower)
-    suffix = ztext.substring(upper, upper + 10)
+  async function update_input(ztext, zfrom, zupto) {
+    output = ztext.substring(zfrom, zupto)
+    prefix = ztext.substring(zfrom - 10, zfrom)
+    suffix = ztext.substring(zupto, zupto + 10)
 
     navigator.clipboard.writeText(output)
 
-    let words = make_word_list(ztext, lower, upper)
+    let words = make_word_list(ztext, zfrom, zupto)
     words = words.filter((x) => x && !cached_vpterms[x])
 
     if (words.length > 0) {
@@ -73,24 +69,24 @@
   }
 
   function change_focus(index) {
-    if (index != lower && index < upper) lower = index
-    if (index >= lower) upper = index + 1
+    if (index != $zfrom && index < $zupto) $zfrom = index
+    if (index >= $zfrom) $zupto = index + 1
   }
 
   function shift_lower(value = 0) {
-    value += lower
+    value += $zfrom
     if (value < 0 || value >= ztext.length) return
 
-    lower = value
-    if (upper <= value) upper = value + 1
+    $zfrom = value
+    if ($zupto <= value) $zupto = value + 1
   }
 
   function shift_upper(value = 0) {
-    value += upper
+    value += $zupto
     if (value < 1 || value > ztext.length) return
 
-    upper = value
-    if (lower >= value) lower = value - 1
+    $zupto = value
+    if ($zfrom >= value) $zfrom = value - 1
   }
 </script>
 
@@ -99,7 +95,7 @@
     class="btn _left _hide"
     data-kbd="←"
     use:hint={'Mở rộng sang trái'}
-    disabled={lower == 0}
+    disabled={$zfrom == 0}
     on:click={() => shift_lower(-1)}>
     <SIcon name="chevron-left" />
   </button>
@@ -108,7 +104,7 @@
     class="btn _left"
     data-kbd="⇧←"
     use:hint={'Thu hẹp từ trái'}
-    disabled={lower == ztext.length - 1}
+    disabled={$zfrom == ztext.length - 1}
     on:click={() => shift_lower(1)}>
     <SIcon name="chevron-right" />
   </button>
@@ -120,7 +116,7 @@
           <button
             class="key-btn"
             use:hint={'Mở rộng sang trái'}
-            on:click={() => (lower -= prefix.length - idx)}>{chr}</button>
+            on:click={() => ($zfrom -= prefix.length - idx)}>{chr}</button>
         {/each}
       </div>
 
@@ -129,7 +125,7 @@
           <button
             class="key-btn _out"
             use:hint={'Thu hẹp về ký tự này'}
-            on:click={() => change_focus(lower + idx)}>{chr}</button>
+            on:click={() => change_focus($zfrom + idx)}>{chr}</button>
         {/each}
         {#if output.length > 6}
           <span class="trim">(+{output.length - 6})</span>
@@ -141,7 +137,7 @@
           <button
             class="key-btn"
             use:hint={'Mở rộng sang phải'}
-            on:click={() => (upper += idx + 1)}>{chr}</button>
+            on:click={() => ($zupto += idx + 1)}>{chr}</button>
         {/each}
       </div>
     </div>
@@ -155,7 +151,7 @@
     class="btn _right"
     data-kbd="⇧→"
     use:hint={'Thu hẹp từ phải'}
-    disabled={upper == 1}
+    disabled={$zupto == 1}
     on:click={() => shift_upper(-1)}>
     <SIcon name="chevron-left" />
   </button>
@@ -164,7 +160,7 @@
     class="btn _right _hide"
     data-kbd="→"
     use:hint={'Mở rộng sang phải'}
-    disabled={upper == ztext.length}
+    disabled={$zupto == ztext.length}
     on:click={() => shift_upper(1)}>
     <SIcon name="chevron-right" />
   </button>

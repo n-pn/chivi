@@ -17,9 +17,9 @@
   export const ctrl = {
     ...writable({ actived: false }),
     hide() {
-      update_hovered()
-      update_focused()
       ctrl.set({ actived: false })
+      update_focused()
+      update_hovered()
     },
   }
 
@@ -70,7 +70,14 @@
 
   const on_destroy = () => {
     article.focus()
-    change_focus(null, l_focus)
+    const nodes = []
+
+    const elem = article.querySelector(`#L${l_focus}`)
+    for (let lower = $zfrom; lower < $zupto; lower++) {
+      const node = elem.querySelector(`v-n[data-l="${lower}"]`)
+      if (node) nodes.push(node)
+    }
+    change_focus(nodes, l_focus)
   }
 
   onMount(() => {
@@ -169,8 +176,18 @@
     if (!nodes) nodes = find_nearest_nodes(line, $zfrom, $ztext.length)
     if (nodes.length == 0) return
 
-    $zfrom = +nodes[0].dataset.l
-    $zupto = +nodes[nodes.length - 1].dataset.u
+    let from = +nodes[0].dataset.l
+    let upto = +nodes[0].dataset.u
+
+    for (let i = 1; i < nodes.length; i++) {
+      const lower = +nodes[i].dataset.l
+      const upper = +nodes[i].dataset.u
+      if (lower < from) from = lower
+      if (upper > upto) upto = upper
+    }
+
+    $zfrom = from
+    $zupto = upto
     lookup.show(false)
 
     if (target && focused.includes(target)) {
@@ -279,7 +296,6 @@
 
     ctrl.set({ actived: true })
   }
-  // $: console.log($input)
 </script>
 
 <svelte:window on:keydown={handle_keydown} />

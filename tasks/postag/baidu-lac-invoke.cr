@@ -47,10 +47,10 @@ class CV::Tagger
 
   # tag_mode:
   # - 0: only postag every 8th chaps
-  # - 1: postag every 8th chaps plus first 64 chaps
+  # - 1: postag every 4th chaps plus first 64 chaps
   # - 2: postag all entries inside the archive
   private def should_tag?(tag_mode : Int32, chap_index : Int32)
-    return true if chap_index % 8 == 0
+    return true if chap_index % 4 == 0
     tag_mode == 2 || (tag_mode == 1 && chap_index < 64)
   end
 
@@ -81,7 +81,7 @@ chan = Channel(Nil).new(wrks)
 
 lines = File.read_lines("priv/zhseed.tsv").reject(&.empty?)
 
-lines.first(20000).each_with_index(1) do |line, idx|
+lines.first(30000).each_with_index(1) do |line, idx|
   chan.receive if idx > wrks
 
   spawn do
