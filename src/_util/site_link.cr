@@ -20,7 +20,6 @@ module CV::SiteLink
 
   def binfo_url(sname : String, snvid : String)
     case sname
-    when "chivi"    then "/"
     when "nofff"    then "https://www.nofff.com/#{snvid}/"
     when "jx_la"    then "https://www.jx.la/book/#{snvid}/"
     when "qu_la"    then "https://www.qu.la/book/#{snvid}/"
@@ -38,7 +37,7 @@ module CV::SiteLink
     when "shubaow"  then "https://www.shubaow.net/#{group(snvid)}/"
     when "bqg_5200" then "http://www.biquge5200.net/#{group(snvid)}/"
     when "ptwxz"    then "https://www.ptwxz.com/bookinfo/#{group(snvid, "/")}.html"
-    else                 raise "Unsupported link generation for <#{sname}>!"
+    else                 "/"
     end
   end
 

@@ -16,11 +16,7 @@ class CV::ChInfo
   property chars = 0     # char count
   property parts = 0     # chapter splitted parts
 
-  property u_dname = "" # user name
-  property o_sname = "" # original source name if current source is chivi
-  property o_snvid = "" # original source book id if current source is chivi
-  property o_chidx = 0  # original source chap index if current source is chivi
-
+  property uname = "" # user name
   property title = "Chương trống"
   property chvol = "Chính văn"
   property uslug = "chuong-trong"
@@ -37,14 +33,7 @@ class CV::ChInfo
     @utime = argv[4].to_i64
     @chars = argv[5].to_i
     @parts = argv[6].to_i
-
-    return if argv.size < 9
-    @u_dname = argv[7]
-
-    return if argv.size < 11
-    @o_sname = argv[8]
-    @o_snvid = argv[9]
-    @o_chidx = argv[10].to_i
+    @uname = argv[7]? || ""
   end
 
   def initialize(@chidx, @schid = chidx.to_s)
@@ -85,7 +74,7 @@ class CV::ChInfo
     end
   end
 
-  def to_tsv(io : IO = STDOUT)
+  def to_tsv(io : IO = STDOUT) : Nil
     io << @chidx << '\t' << @schid
 
     return if @z_title.empty?
@@ -94,10 +83,6 @@ class CV::ChInfo
     return if @utime == 0
     io << '\t' << @utime << '\t' << @chars << '\t' << @parts
 
-    return if @u_dname.empty? && @o_sname.empty?
-    io << '\t' << @u_dname
-
-    return if @o_sname.empty?
-    io << '\t' << @o_sname << '\t' << @o_snvid << '\t' << @o_chidx
+    io << '\t' << @uname unless @uname.empty?
   end
 end

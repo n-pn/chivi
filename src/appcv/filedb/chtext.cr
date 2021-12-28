@@ -21,9 +21,8 @@ class CV::Chtext
 
   def initialize(@sname : String, @snvid : String, @infos)
     @chdir = "#{VPDIR}/#{sname}/#{snvid}"
-
-    group = (@infos.chidx - 1) // 128
-    @store = "#{@chdir}/#{group}.zip"
+    pgidx = (@infos.chidx - 1) // 128
+    @store = "#{@chdir}/#{pgidx}.zip"
   end
 
   def load!(part = 0) : Tuple(Array(String), Int64)
