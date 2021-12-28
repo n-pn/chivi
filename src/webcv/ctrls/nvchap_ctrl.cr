@@ -64,12 +64,18 @@ class CV::NvchapCtrl < CV::BaseCtrl
     zhbook = load_zhbook
     return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
 
-    privi = _cvuser.privi
-    imode = params.fetch_int("mode", min: 0, max: privi)
-    lines = zhbook.chtext(chidx - 1, cpart, privi: privi, reset: imode > 1)
+    if remote_chap?(zhbook, chinfo)
+      mode = params["redo"]? ? 2 : 1
+    else
+      mode = 0
+    end
+
+    lines = zhbook.chtext(chinfo, cpart, mode: mode)
 
     ubmemo = Ubmemo.find_or_new(_cvuser.id, zhbook.nvinfo_id)
-    ubmemo.mark!(zhbook.sname, chidx, cpart, chinfo.title, chinfo.uslug) if privi >= 0
+    if _cvuser.privi > -1
+      ubmemo.mark!(zhbook.sname, chidx, cpart, chinfo.title, chinfo.uslug)
+    end
 
     json_view do |jb|
       jb.object {
@@ -103,6 +109,13 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
+  def remote_chap?(zhbook, chinfo)
+    sname = zhbook.zseed == 0 ? chinfo.o_sname : zhbook.sname
+    NvSeed.remote?(sname, _cvuser.privi) do
+      chinfo.chidx <= 40 || chinfo.chidx + 3 >= zhbook.chap_count
+    end
+  end
+
   def text : Nil
     chidx = params.fetch_int("chidx") { 1 }
     cpart = params.fetch_int("cpart") { 0 }
@@ -114,7 +127,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     response.headers.add("Cache-Control", "private, min-fresh=#{min_fresh}")
     response.content_type = "text/plain; charset=utf-8"
 
-    lines = zhbook.chtext(chidx - 1, cpart, privi: 0)
+    lines = zhbook.chtext(chinfo, cpart, mode: 0)
     convert(zhbook, chinfo, lines, cpart, response)
   end
 

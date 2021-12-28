@@ -4,14 +4,9 @@
   export async function load({ page: { params, query }, fetch, stuff }) {
     const { cvbook, ubmemo } = stuff
 
-    const { snames } = cvbook
-    const sname = extract_sname(snames, params.seed)
+    const sname = extract_sname(cvbook.snames, params.seed)
 
-    const page = +query.get('page') || 1
-    const mode = +query.get('mode') || 0
-
-    const url = `chaps/${cvbook.id}/${sname}?page=${page}&mode=${mode}`
-
+    const url = `chaps/${cvbook.id}/${sname}?page=${+query.get('page') || 1}`
     const [status, chinfo] = await api_call(fetch, url)
     if (status) return { status, error: chinfo }
 
@@ -19,8 +14,15 @@
     return { props: { cvbook, ubmemo, chinfo } }
   }
 
-  function extract_sname(snames, param) {
-    return snames.includes(param) ? param : snames[1] || 'chivi'
+  function extract_sname(snames, sname) {
+    switch (sname) {
+      case 'chivi':
+      case 'users':
+        return sname
+
+      default:
+        return snames.includes(sname) ? sname : snames[0]
+    }
   }
 </script>
 

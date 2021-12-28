@@ -12,6 +12,7 @@ class CV::Zhbook
   primary_key
 
   belongs_to nvinfo : Nvinfo
+  getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
   column zseed : Int32 # seed name
   column sname : String = ""
@@ -30,8 +31,6 @@ class CV::Zhbook
 
   getter wlink : String { SiteLink.binfo_url(sname, snvid) }
   getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.bhash) }
-
-  getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
 
   # def unmatch?(nvinfo_id : Int64) : Bool
   #   nvinfo_id_column.value(0) != nvinfo_id
@@ -122,6 +121,37 @@ class CV::Zhbook
     chpage(index // PG_PSIZE)[index % PG_PSIZE]?
   end
 
+  # def get_schid(index : Int32)
+  #   chinfo.get_info(index).try(&.first?) || (index + 1).to_s
+  # end
+
+  # def set_chap!(index : Int32, schid : String, title : String, label : String)
+  #   chinfo.put_chap!(index, schid, title, label)
+  # end
+
+  # def chtext(index : Int32, schid : String? = get_schid(index))
+  #   ChText.load(nvinfo.bhash, sname, snvid, index, schid)
+  # end
+
+  def chtext(chinfo : ChInfo, cpart = 0, mode = 0)
+    return [] of String if chinfo.invalid?
+
+    chtext = Chtext.load(sname, snvid, chinfo)
+    lines, utime = chtext.load!(cpart)
+
+    if mode > 1 || (mode == 1 && lines.empty?)
+      lines, _ = chtext.fetch!(cpart, stale: mode > 1 ? 3.minutes : 30.years)
+      update_stats!(chinfo)
+    elsif chinfo.utime < utime || chinfo.parts == 0
+      # check if text existed in zip file but not stored in index
+      update_stats!(chinfo, chtext.remap!)
+    end
+
+    lines
+  rescue
+    [] of String
+  end
+
   def update_stats!(chinfo : ChInfo, z_title : String? = nil) : Nil
     if z_title
       chinfo.z_title = z_title
@@ -135,45 +165,6 @@ class CV::Zhbook
 
     PG_CACHE.delete page_uuid(index // PG_PSIZE)
     lastpg = nil if chap_count < index + 4
-  end
-
-  # def get_schid(index : Int32)
-  #   chinfo.get_info(index).try(&.first?) || (index + 1).to_s
-  # end
-
-  # def set_chap!(index : Int32, schid : String, title : String, label : String)
-  #   chinfo.put_chap!(index, schid, title, label)
-  # end
-
-  def chtext(index : Int32, schid : String? = get_schid(index))
-    ChText.load(nvinfo.bhash, sname, snvid, index, schid)
-  end
-
-  def chtext(index : Int32, cpart = 0, privi = 4, reset = false)
-    unless (chinfo = self.chinfo(index)) && !chinfo.invalid?
-      return [] of String
-    end
-
-    chtext = Chtext.load(sname, snvid, chinfo)
-    lines, utime = chtext.load!(cpart)
-
-    if remote_text?(index, privi) && (reset || lines.empty?)
-      lines, _ = chtext.fetch!(cpart, stale: reset ? 3.minutes : 30.years)
-      update_stats!(chtext.infos)
-    elsif chinfo.utime < utime || chinfo.parts == 0
-      # check if text existed in zip file but not stored in index
-      update_stats!(chtext.infos, chtext.remap!)
-    end
-
-    lines
-  rescue
-    [] of String
-  end
-
-  def remote_text?(chidx : Int32, privi = 4)
-    NvSeed.remote?(sname, privi) do
-      chidx <= 40 || chidx >= self.chap_count - 4
-    end
   end
 
   def chap_url(chidx : Int32, cpart = 0)
@@ -203,13 +194,28 @@ class CV::Zhbook
 
   def self.load!(nvinfo : Nvinfo, zseed : Int32) : self
     CACHE[nvinfo.id << 6 | zseed] ||= find(nvinfo.id, zseed) || begin
-      raise "Zhbook not found!" unless zseed == 99
-
-      new({
-        nvinfo_id: nvinfo.id,
-        zseed: 99, sname: "users", snvid: nvinfo.bhash,
-        utime: nvinfo.utime, atime: nvinfo.atime,
-      })
+      case zseed
+      when 99 then dummy_users_entry(nvinfo)
+      when  0 then make_local_clone!(nvinfo)
+      else         raise "Zhbook not found!"
+      end
     end
+  end
+
+  def self.dummy_users_entry(nvinfo : Nvinfo)
+    new({nvinfo: nvinfo, zseed: 99, sname: "users", snvid: nvinfo.bhash})
+  end
+
+  def self.make_local_clone!(nvinfo : Nvinfo)
+    zhbook = new({nvinfo: nvinfo, zseed: 0, sname: "chivi", snvid: nvinfo.bhash})
+    return zhbook unless zseed = nvinfo.zseed_ids.sort.first?
+
+    source = load!(nvinfo, zseed)
+    ChList.dup_to_local!(source.sname, source.snvid, nvinfo.bhash)
+
+    zhbook.utime = source.utime
+    zhbook.chap_count = source.chap_count
+
+    zhbook.tap(&.save!)
   end
 end

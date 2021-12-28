@@ -32,13 +32,13 @@ module CV::NvSeed
   end
 
   def map_id(sname : String)
-    MAP_ID[sname]? || 0
+    MAP_ID[sname]? || 99
   end
 
   MAP_NAME = MAP_ID.invert
 
   def map_name(index : Int32)
-    MAP_NAME[index] || "chivi"
+    MAP_NAME[index] || "users"
   end
 
   def to_s(ids : Array(Int32))

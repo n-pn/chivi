@@ -14,48 +14,51 @@ class CV::ChList
 
   # return pgmax + lowest unchanged ch_list pgidx
   def self.save_many!(sname : String, snvid : String, infos : Array(ChInfo), redo = false)
-    pgmax = (infos.size - 1) // PSIZE
-    pgmax.downto(0) do |pgidx|
+    upper = infos.size - 1
+    pgmax = upper // PSIZE
+
+    while upper > 0
+      pgidx = upper // PSIZE
+      lower = pgidx * PSIZE
+
       ch_list = self.load!(sname, snvid, pgidx, reset: redo)
       changed = false
 
-      i_min = pgidx * PSIZE
-      i_max = i_min + PSIZE
-      i_max = infos.size if i_max > infos.size
-
-      i_min.upto(i_max - 1) do |idx|
-        info = infos.unsafe_fetch(idx)
+      upper.downto(lower) do |index|
+        chinfo = infos.unsafe_fetch(index)
 
         unless redo
-          break if ch_list[info.chidx]?.try(&.equal?(info))
+          break if ch_list[chinfo.chidx]?.try(&.equal?(chinfo))
           changed = true
         end
 
-        ch_list[info.chidx] = info
+        ch_list[chinfo.chidx] = chinfo
       end
 
       return {pgmax, pgidx} unless redo || changed
-      ch_list.save!
+
+      ch_list.save! if changed
+      upper = lower - 1
     end
 
     {pgmax, 0}
   end
 
-  def self.copy_all_to_base!(sname : String, snvid : String, bhash : String)
-    FileUtils.mkdir_p("#{DIR}/_base/#{bhash}")
+  def self.dup_to_local!(sname : String, snvid : String, bhash : String)
+    FileUtils.mkdir_p("#{DIR}/chivi/#{bhash}")
     files = Dir.glob("#{DIR}/#{sname}/#{snvid}/*.tsv")
 
     files.each do |inp_path|
       inp_list = CACHE.get(inp_path) { new(inp_path) }
 
-      out_path = inp_path.sub("#{sname}/#{snvid}", "_base/#{bhash}")
+      out_path = inp_path.sub("#{sname}/#{snvid}", "chivi/#{bhash}")
       out_list = CACHE.get(out_path) { new(out_path) }
 
       inp_list.each_value do |inp_info|
         out_info = inp_info.dup
-        out_info.o_sname = @sname
-        out_info.o_snvid = @snvid
-        out_info.o_schid = inp_info.schid
+        out_info.o_sname = sname
+        out_info.o_snvid = snvid
+        out_info.o_chidx = inp_info.chidx
         out_list[out_info.chidx] = out_info
       end
 

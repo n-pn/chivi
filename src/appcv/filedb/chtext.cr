@@ -22,11 +22,11 @@ class CV::Chtext
   def initialize(@sname : String, @snvid : String, @infos)
     if @sname == "chivi"
       @chdir = "#{VPDIR}/#{@infos.o_sname}/#{@infos.o_snvid}"
+      pgidx = (@infos.o_chidx - 1) // 128
     else
       @chdir = "#{VPDIR}/#{sname}/#{snvid}"
+      pgidx = (@infos.chidx - 1) // 128
     end
-
-    pgidx = (@infos.chidx - 1) // 128
     @store = "#{@chdir}/#{pgidx}.zip"
   end
 
@@ -56,7 +56,7 @@ class CV::Chtext
   def fetch!(part : Int32 = 0, stale = 10.years)
     if @sname == "chivi"
       RmText.mkdir!(@infos.o_sname, @infos.o_snvid)
-      remote = RmText.new(@infos.o_sname, @infos.o_snvid, @infos.o_schid, ttl: stale)
+      remote = RmText.new(@infos.o_sname, @infos.o_snvid, @infos.schid, ttl: stale)
     else
       RmText.mkdir!(@sname, @snvid)
       remote = RmText.new(@sname, @snvid, @infos.schid, ttl: stale)

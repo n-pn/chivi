@@ -17,13 +17,13 @@ class CV::ChInfo
   property parts = 0     # chapter splitted parts
   property uname = ""    # user name
 
-  property title = "Chương trống"
+  property title = "Thiếu chương"
   property chvol = "Chính văn"
-  property uslug = "chuong-trong"
+  property uslug = "thieu-chuong"
 
   property o_sname = ""
   property o_snvid = ""
-  property o_schid = ""
+  property o_chidx = 0
 
   def initialize(argv : Array(String))
     @chidx = argv[0].to_i
@@ -42,7 +42,7 @@ class CV::ChInfo
     return if argv.size < 11
     @o_sname = argv[8]
     @o_snvid = argv[9]
-    @o_schid = argv[10]
+    @o_chidx = argv[10].to_i
   end
 
   def initialize(@chidx, @schid = chidx.to_s)
@@ -89,13 +89,13 @@ class CV::ChInfo
     return if @z_title.empty?
     io << '\t' << @z_title << '\t' << @z_chvol
 
-    return if @utime == 0
+    return if @utime == 0 && @o_sname.empty?
     io << '\t' << @utime << '\t' << @chars << '\t' << @parts
 
     return if @uname.empty? && @o_sname.empty?
     io << '\t' << @uname
 
     return if @o_sname.empty?
-    io << '\t' << @o_sname << '\t' << @o_snvid << '\t' << @o_schid
+    io << '\t' << @o_sname << '\t' << @o_snvid << '\t' << @o_chidx
   end
 end
