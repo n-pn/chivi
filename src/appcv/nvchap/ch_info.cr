@@ -12,15 +12,14 @@ class CV::ChInfo
   @[JSON::Field(ignore: true)]
   property z_chvol = ""
 
-  property utime = 0_i64
-  property chars = 0
-  property parts = 0
+  property utime = 0_i64 # chapter modified at
+  property chars = 0     # char count
+  property parts = 0     # chapter splitted parts
 
-  property uname = ""
-  property privi = 0
-
-  property o_sname = ""
-  property o_chidx = 0
+  property u_dname = "" # user name
+  property o_sname = "" # original source name if current source is chivi
+  property o_snvid = "" # original source book id if current source is chivi
+  property o_chidx = 0  # original source chap index if current source is chivi
 
   property title = "Chương trống"
   property chvol = "Chính văn"
@@ -31,24 +30,20 @@ class CV::ChInfo
     @schid = argv[1]
 
     return if argv.size < 4
-
     @z_title = argv[2]
     @z_chvol = argv[3]
 
     return if argv.size < 7
-
     @utime = argv[4].to_i64
     @chars = argv[5].to_i
     @parts = argv[6].to_i
 
     return if argv.size < 9
-
-    @uname = argv[7]
-    @privi = argv[8].to_i
+    @u_dname = argv[7]
 
     return if argv.size < 11
-
-    @o_sname = argv[9]
+    @o_sname = argv[8]
+    @o_snvid = argv[9]
     @o_chidx = argv[10].to_i
   end
 
@@ -99,10 +94,10 @@ class CV::ChInfo
     return if @utime == 0
     io << '\t' << @utime << '\t' << @chars << '\t' << @parts
 
-    return if @uname.empty?
-    io << '\t' << @uname << '\t' << @privi
+    return if @u_dname.empty? && @o_sname.empty?
+    io << '\t' << @u_dname
 
     return if @o_sname.empty?
-    io << '\t' << @o_sname << '\t' << @o_chidx
+    io << '\t' << @o_sname << '\t' << @o_snvid << '\t' << @o_chidx
   end
 end

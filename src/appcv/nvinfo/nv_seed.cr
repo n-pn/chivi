@@ -3,8 +3,8 @@ module CV::NvSeed
 
   MAP_ID = {
     "chivi" => 0,
+    "miscs" => 1,
     "users" => 99,
-    "miscs" => 100,
 
     "zxcs_me" => 2,
     "hetushu" => 4,
@@ -46,8 +46,10 @@ module CV::NvSeed
   end
 
   REMOTES = {
-    "69shu", "5200", "bxwxorg", "bqg_5200", "nofff", "biqubao",
-    "rengshu", "hetushu", "xbiquge", "duokan8", "paoshu8",
+    "69shu", "5200", "bxwxorg",
+    "bqg_5200", "nofff", "biqubao",
+    "rengshu", "hetushu", "xbiquge",
+    "duokan8", "paoshu8",
   }
 
   def remote?(sname : String, privi : Int32 = 4, special_case = false)

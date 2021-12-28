@@ -236,26 +236,25 @@ class CV::Zhbook
 
   def self.load!(nvinfo : Nvinfo, zseed : Int32) : self
     CACHE[nvinfo.id << 6 | zseed] ||= find(nvinfo.id, zseed) || begin
-      zseed == 0 ? dummy_local(nvinfo) : raise "Zhbook not found!"
+      zseed == 0 ? make_local(nvinfo) : raise "Zhbook not found!"
     end
   end
 
-  def self.dummy_local(nvinfo : Nvinfo)
-    new({
-      nvinfo_id: nvinfo.id,
+  def self.make_local(nvinfo : Nvinfo)
+    zhbook = new({nvinfo_id: nvinfo.id, zseed: 0, sname: "chivi"})
 
-      zseed: 0,
-      sname: "chivi",
-      snvid: nvinfo.bhash,
+    unless source = nvinfos.zhbooks.to_a.sort_by(&.zseed).first?
+      zhbook.utime = nvinfo.utime
+      zhbook.atime = nvinfo.atime
+      return zhbook
+    end
 
-      # status: nvinfo.status,
-      # shield: nvinfo.shield,
+    zhbook.utime = source.utime
+    zhbook.atime = source.atime
+    zhbook.chap_count = source.chap_count
+    zhbook.last_schid = source.last_schid
 
-      utime: nvinfo.utime,
-      # bumped: nvinfo.bumped,
-
-      chap_count: 0,
-      last_schid: "",
-    })
+    # ChList.dup_to_local!(source.sname, source.snvid, nvinfo.bhash)
+    zhbook.tap(&.save!)
   end
 end
