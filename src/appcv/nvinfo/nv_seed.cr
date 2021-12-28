@@ -53,13 +53,17 @@ module CV::NvSeed
   }
 
   def remote?(sname : String, privi : Int32 = 4, special_case = false)
+    remote?(sname, privi) { special_case }
+  end
+
+  def remote?(sname : String, privi = 4)
     case sname
     when "5200", "bqg_5200", "rengshu", "nofff"
-      privi >= 0 || special_case
+      privi >= 0 || yield
     when "hetushu", "bxwxorg", "xbiquge", "biqubao"
-      privi >= 1 || special_case
+      privi >= 1 || yield
     when "69shu", "paoshu8", "duokan8"
-      privi >= 2 || special_case
+      privi >= 2 || yield
     when "shubaow" # only works in real pc environment
       privi >= 3 && ENV["AMBER_ENV"]? != "production"
     else false

@@ -1,23 +1,23 @@
-class CV::ChMeta
-  property index : Int32
-  property sname : String
-  property snvid : String
-  property chidx : In32
+# class CV::ChMeta
+#   property index : Int32
+#   property sname : String
+#   property snvid : String
+#   property chidx : In32
 
-  def initialize(argv : Array(String))
-    @index = argv[0].to_i
-    @sname = argv[1]
-    @snvid = argv[2]
-    @chidx = argv[3].to_i
-  end
+#   def initialize(argv : Array(String))
+#     @index = argv[0].to_i
+#     @sname = argv[1]
+#     @snvid = argv[2]
+#     @chidx = argv[3].to_i
+#   end
 
-  def initialize(@index, @sname, @snvid, @chidx)
-  end
+#   def initialize(@index, @sname, @snvid, @chidx = @index)
+#   end
 
-  def to_s(io : IO)
-    {@index, @sname, @snvid, @chidx}.join(IO, '\t')
-  end
-end
+#   def to_s(io : IO)
+#     {@index, @sname, @snvid, @chidx}.join(IO, '\t')
+#   end
+# end
 
 class CV::Nvchap
   CACHE = {} of Int64 => self
@@ -30,7 +30,6 @@ class CV::Nvchap
   end
 
   getter nvinfo : Nvinfo
-  getter ch_map : Array(ChMeta)
 
   def initialize(@nvinfo)
     @file = File.join(CHDIR, @nvinfo.bhash)
@@ -43,36 +42,61 @@ class CV::Nvchap
     return unless @ch_map.empty? && (zseed = nvinfo.zseed_ids.sort.first?)
     zhbook = Zhbook.load!(nvinfo, zseed)
 
-    nvinfo.update({
-      cv_utime:      zhbook.utime,
-      cv_chap_count: zhbook.chap_count,
-    })
-
-    @ch_map << ChMeta.new(1, zhbook.sname, zhbook.snvid, 1)
-    self.save!
+    nvinfo.update({cv_utime: zhbook.utime, cv_chap_count: zhbook.chap_count})
+    ChList.dup_to_local!(zhbook.sname, zhbook.snvid, nvinfo.bhash)
   end
 
-  def save!
-    File.write(@file, @ch_map.map(x.to_s).join('\n'))
-  end
+  # def delete!(index : Int32, count : Int32 = 1)
+  #   if (last = @ch_map.last?) && last.index < index
+  #     @ch_map << ChMeta.new(index, last.sname, last.snvid, last.chidx + count)
+  #   else
+  #   end
 
-  def delete!(index : Int32, count : Int32 = 1)
-    if (last = @ch_map.last?) && last.index < index
-      @ch_map << ChMeta.new(index, last.sname, last.snvid, last.chidx + count)
-    else
-    end
+  #   self.save!
+  # end
 
-    self.save!
-  end
+  # def insert!(sname : String, snvid : String, index : Int32, count : Int32 = 1)
+  #   @ch_map.reverse_each do |meta|
+  #     if meta.index > index
+  #       meta.index += count
+  #       next
+  #     end
+  #   end
 
-  def insert!(sname : String, snvid : String, index : Int32, count : Int32 = 1)
-    @ch_map.reverse_each do |meta|
-      if meta.index > index
-        meta.index += count
-        next
+  #   self.save!
+  # end
+
+  PAGES = RamCache(Int64, Array(ChInfo)).new(2048, 6.hours)
+
+  def chpage(pgidx : Int32)
+    PAGES.get(nvinfo.id << 6 | pgidx) do
+      yield_meta(pgidx) do |index, snvid, sname, chidx|
+        1
       end
     end
+  end
 
-    self.save!
+  def yield_meta(pgidx : Int32)
+    chidx = pgidx &* 32 + 1
+    chmax = chidx + 31
+    return unless index = @ch_map.bsearch_index(chidx)
+    from = @ch_map.unsafe_fetch(index)
+
+    while index < @ch_map.size
+      diff = from.chidx - from.index
+      upto = fetch(index + 1)
+
+      from.index.upto(upto.index - 1) do |chidx|
+        break if chidx > chmax
+        yield chidx, from.snvid, from.sname, chidx + diff
+      end
+
+      from = upto
+      index += 1
+    end
+  end
+
+  private def fetch(index : Int32)
+    @ch_map[index]? || ChMeta.new(nvinfo.chap_count + 1, from.sname, from.snvidt)
   end
 end

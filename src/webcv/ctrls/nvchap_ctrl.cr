@@ -9,27 +9,28 @@ class CV::NvchapCtrl < CV::BaseCtrl
   end
 
   def index
-    pgidx = params.fetch_int("page", min: 1)
-    imode = params.fetch_int("mode", min: 0, max: u_privi)
-
     zhbook = load_zhbook
-    imode = 1 if imode == 0 && zhbook.outdated?(u_privi)
+    mode = u_privi > 0 && params["force"]? ? 1 : 0
 
-    stale = 3.**(4 - u_privi).minutes
-    utime, total = zhbook.refresh!(u_privi, imode, ttl: stale)
+    is_remote = NvSeed::REMOTES.includes?(zhbook.sname)
+    mode += 2 if is_remote && seed_outdated?(zhbook)
+
+    total = zhbook.count_chap!(mode, ttl: 5.minutes)
+    pgidx = params.fetch_int("page", min: 1)
 
     render_json do |res|
       JSON.build(res) do |jb|
         jb.object do
-          jb.field "_seed", NvSeed::REMOTES.includes?(zhbook.sname)
+          jb.field "_seed", is_remote
           jb.field "sname", zhbook.sname
-          jb.field "utime", utime
+
+          jb.field "utime", zhbook.utime
+          jb.field "atime", zhbook.atime
 
           jb.field "wlink", zhbook.wlink
-          jb.field "crawl", zhbook.remote?(u_privi)
+          # jb.field "crawl", zhbook.remote?(u_privi)
 
           jb.field "total", total
-
           jb.field "pgidx", pgidx
           jb.field "pgmax", (total - 1) // 32 + 1
 
@@ -42,6 +43,17 @@ class CV::NvchapCtrl < CV::BaseCtrl
           end
         end
       end
+    end
+  end
+
+  private def seed_outdated?(zhbook : Zhbook)
+    utime = Time.unix(zhbook.atime)
+
+    case zhbook.status
+    when 0 then Time.utc - 2.**(4 - u_privi).hours > utime
+    when 1 then Time.utc - 2.*(4 - u_privi).days > utime
+    when 2 then Time.utc - 3.*(4 - u_privi).weeks > utime
+    else        false
     end
   end
 

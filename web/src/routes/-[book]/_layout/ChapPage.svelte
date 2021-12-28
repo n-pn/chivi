@@ -59,11 +59,8 @@
           </a>
           <a
             class="m-btn"
-            class:_disable={!chinfo.crawl}
-            href={pager.url({
-              page: chinfo.pgidx,
-              mode: chinfo.crawl ? 2 : 1,
-            })}>
+            class:_disable={!chinfo._seed}
+            href={pager.url({ page: chinfo.pgidx, force: true })}>
             {#if $navigating}
               <SIcon name="loader" spin={true} />
             {:else}

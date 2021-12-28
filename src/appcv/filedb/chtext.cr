@@ -20,7 +20,12 @@ class CV::Chtext
   getter title : String { infos.z_title }
 
   def initialize(@sname : String, @snvid : String, @infos)
-    @chdir = "#{VPDIR}/#{sname}/#{snvid}"
+    if @sname == "chivi"
+      @chdir = "#{VPDIR}/#{@infos.o_sname}/#{@infos.o_snvid}"
+    else
+      @chdir = "#{VPDIR}/#{sname}/#{snvid}"
+    end
+
     pgidx = (@infos.chidx - 1) // 128
     @store = "#{@chdir}/#{pgidx}.zip"
   end
@@ -49,9 +54,14 @@ class CV::Chtext
   end
 
   def fetch!(part : Int32 = 0, stale = 10.years)
-    RmText.mkdir!(@sname, @snvid)
+    if @sname == "chivi"
+      RmText.mkdir!(@infos.o_sname, @infos.o_snvid)
+      remote = RmText.new(@infos.o_sname, @infos.o_snvid, @infos.o_schid, ttl: stale)
+    else
+      RmText.mkdir!(@sname, @snvid)
+      remote = RmText.new(@sname, @snvid, @infos.schid, ttl: stale)
+    end
 
-    remote = RmText.new(@sname, @snvid, @infos.schid, ttl: stale)
     lines = remote.paras
     # special fix for 69shu, will investigate later
     lines.unshift(remote.title) unless remote.title.empty?

@@ -31,63 +31,50 @@ class CV::Zhbook
   getter wlink : String { SiteLink.binfo_url(sname, snvid) }
   getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.bhash) }
 
+  getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
+
+  # def unmatch?(nvinfo_id : Int64) : Bool
+  #   nvinfo_id_column.value(0) != nvinfo_id
+  # end
+
   def clink(schid : String) : String
     SiteLink.chtxt_url(sname, snvid, schid)
   end
 
-  getter nvinfo : Nvinfo { Nvinfo.load!(self.nvinfo_id) }
+  # mode:
+  # 0 : just return utime and chap_count
+  # 1 : reset cached translation
+  # 2 : update remote source
+  # 3 : make a full remote update
 
-  def unmatch?(nvinfo_id : Int64) : Bool
-    nvinfo_id_column.value(0) != nvinfo_id
-  end
+  def count_chap!(mode = 0, ttl = 5.minutes) : Int32
+    if mode > 1
+      parser = RmInfo.init(sname, snvid, ttl: ttl, mkdir: true)
+      changed = parser.last_schid != self.last_schid
 
-  def outdated?(privi = 0)
-    utime = Time.unix(atime)
+      if changed || mode > 2
+        self.atime = Time.utc.to_unix
+        self.update_status(parser.istate)
 
-    case self.status
-    when 0 then Time.utc - 2.**(4 - privi).hours > utime
-    when 1 then Time.utc - 2.*(4 - privi).months > utime
-    else        false
-    end
-  end
+        if changed
+          self.chap_count = parser.chap_infos.size
+          self.last_schid = parser.last_schid
 
-  def refresh!(privi = 4, mode = 0, ttl = 5.minutes) : Tuple(Int64, Int32)
-    vip_user = privi > 1
+          self.utime = parser.mftime > 0 ? parser.mftime : self.atime
+          nvinfo.update_utime(self.utime)
+        end
 
-    unless mode > 0 && NvSeed.remote?(sname, privi, old_enough?)
-      purge_cache! if vip_user
-      return {utime, chap_count}
-    end
-
-    parser = RmInfo.init(sname, snvid, ttl: ttl, mkdir: true)
-    changed = parser.last_schid != self.last_schid
-    if mode > 1 || changed
-      self.atime = Time.utc.to_unix
-      self.update_status(parser.istate)
-
-      if changed
-        self.chap_count = parser.chap_infos.size
-        self.last_schid = parser.last_schid
-
-        self.utime = parser.mftime > 0 ? parser.mftime : self.atime
-        nvinfo.update_utime(self.utime)
-      end
-
-      if changed || vip_user
-        CACHE.delete(page_uuid(-1))
-        pgmax, pgmin = ChList.save!(sname, snvid, parser.chap_infos, redo: vip_user)
+        lastpg = nil
+        pgmax, pgmin = ChList.save_many!(sname, snvid, parser.chap_infos, redo: mode > 2)
         purge_cache!(pgmin * 4, pgmax * 4 - 1)
       end
 
       self.save!
-    else
-      purge_cache! if vip_user
+    elsif mode > 0
+      purge_cache!
     end
 
-    {utime, chap_count}
-  rescue err
-    Log.error { err.inspect_with_backtrace }
-    {self.utime, self.chap_count}
+    self.chap_count
   end
 
   def update_status(status : Int32)
@@ -96,66 +83,43 @@ class CV::Zhbook
     self.status = status
   end
 
-  def remote?(privi = 4)
-    NvSeed.remote?(sname, privi, old_enough?)
-  end
-
-  def old_enough?
-    return false if Time.unix(self.atime) >= Time.utc - 30.minutes
-    Time.unix(self.utime) < Time.utc - (status < 1 ? 2.days : 4.weeks)
-  end
-
-  private def chlist(pgidx : Int32)
-    ChList.load!(sname, snvid, pgidx)
-  end
-
-  P_SIZE  = 32
-  P_CACHE = RamCache(String, Array(ChInfo)).new(4096, 12.hours)
+  PG_PSIZE = 32
+  PG_CACHE = RamCache(String, Array(ChInfo)).new(4096, 12.hours)
 
   def chpage(pgidx : Int32)
-    P_CACHE.get(page_uuid(pgidx)) do
-      chlist = self.chlist(pgidx // 4)
+    PG_CACHE.get(page_uuid(pgidx)) do
+      chlist = ChList.load!(sname, snvid, pgidx // 4)
 
-      chmin = pgidx * P_SIZE + 1
-      chmax = chmin + P_SIZE - 1
+      chmin = pgidx * PG_PSIZE + 1
+      chmax = chmin + PG_PSIZE - 1
       chmax = self.chap_count if chmax > self.chap_count
 
-      (chmin..chmax).map do |chidx|
-        chlist.get(chidx).tap(&.trans!(cvmtl))
-      end
+      (chmin..chmax).map { |chidx| chlist.get(chidx).tap(&.trans!(cvmtl)) }
     end
   end
 
-  def lastpg
-    P_CACHE.get(page_uuid(-1)) do
-      chmax = chap_count
+  getter lastpg : Array(ChInfo) do
+    chmax = self.chap_count - 1
+    chmin = chmax > 2 ? chmax - 3 : 0
 
-      chmin = chmax - 3
-      chmin = 1 if chmin < 1
-
-      output = [] of ChInfo
-      chmax.downto(chmin) do |chidx|
-        output << (self.chinfo(chidx - 1) || ChInfo.new(chidx))
-      end
-
-      output
+    output = [] of ChInfo
+    chmax.downto(chmin) do |index|
+      output << (self.chinfo(index) || ChInfo.new(index + 1))
     end
+
+    output
   end
 
-  def purge_cache!(pgmin = 0, pgmax = chap_count // 4 + 1)
-    pgmin.upto(pgmax) { |pgidx| P_CACHE.delete(page_uuid(pgidx)) }
+  def purge_cache!(pgmin : Int32 = 0, pgmax : Int32 = chap_count % PG_PSIZE + 1)
+    pgmin.upto(pgmax) { |pgidx| PG_CACHE.delete(page_uuid(pgidx)) }
   end
 
-  private def page_uuid(pgidx : Int32) : String
+  private def page_uuid(pgidx : Int32)
     "#{sname}-#{snvid}-#{pgidx}"
   end
 
   def chinfo(index : Int32) # provide real chap index
-    chpage(index // P_SIZE)[index % P_SIZE]?
-  end
-
-  def public_chap?(chidx : Int32)
-    chidx <= 40 || chidx >= self.chap_count - 5
+    chpage(index // PG_PSIZE)[index % PG_PSIZE]?
   end
 
   def update_stats!(chinfo : ChInfo, z_title : String? = nil) : Nil
@@ -164,12 +128,13 @@ class CV::Zhbook
       chinfo.trans!(cvmtl)
     end
 
-    chlist = self.chlist(ChList.pgidx(chinfo.chidx))
-    chlist.put!(chinfo)
-
     index = chinfo.chidx - 1
-    P_CACHE.delete page_uuid(index // P_SIZE)
-    P_CACHE.delete page_uuid(-1) if chap_count < index + 4
+
+    chlist = ChList.load!(sname, snvid, index % ChList::PSIZE)
+    chlist.update!(chinfo)
+
+    PG_CACHE.delete page_uuid(index // PG_PSIZE)
+    lastpg = nil if chap_count < index + 4
   end
 
   # def get_schid(index : Int32)
@@ -184,7 +149,7 @@ class CV::Zhbook
     ChText.load(nvinfo.bhash, sname, snvid, index, schid)
   end
 
-  def chtext(index : Int32, cpart : Int32 = 0, privi : Int32 = 4, reset : Bool = false)
+  def chtext(index : Int32, cpart = 0, privi = 4, reset = false)
     unless (chinfo = self.chinfo(index)) && !chinfo.invalid?
       return [] of String
     end
@@ -205,8 +170,10 @@ class CV::Zhbook
     [] of String
   end
 
-  def remote_text?(chidx : Int32, privi : Int32 = 4)
-    NvSeed.remote?(sname, privi, public_chap?(chidx))
+  def remote_text?(chidx : Int32, privi = 4)
+    NvSeed.remote?(sname, privi) do
+      chidx <= 40 || chidx >= self.chap_count - 4
+    end
   end
 
   def chap_url(chidx : Int32, cpart = 0)

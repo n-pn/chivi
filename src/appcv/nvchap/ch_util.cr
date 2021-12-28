@@ -1,0 +1,2 @@
+module CV::ChUtil
+end
