@@ -215,10 +215,6 @@ class CV::InitNvinfo
     else
       Nvinfo.get(author, ztitle)
     end
-  rescue err
-    puts err.inspect_with_backtrace
-    puts [author.zname, ztitle]
-    exit(1)
   end
 
   # def get_scores(snvid : String) : Array(Int32)
