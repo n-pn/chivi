@@ -11,7 +11,7 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Appbar from '$lib/sects/Appbar.svelte'
 
-  export let cvbook
+  export let nvinfo
   export let ubmemo
 
   $: memo_status = ubmemo.status || 'default'
@@ -20,17 +20,17 @@
     if ($session.privi < 0) return
     if (status == ubmemo.status) status = 'default'
 
-    const url = `_self/books/${cvbook.id}/status`
+    const url = `_self/books/${nvinfo.id}/status`
     const [stt, msg] = await call_api(fetch, url, { status }, 'PUT')
     if (stt) return console.log(`error update book status: ${msg}`)
-    invalidate(`/api/books/${cvbook.bslug}`)
+    invalidate(`/api/books/${nvinfo.bslug}`)
   }
 </script>
 
 <Appbar>
-  <a slot="left" href="/-{cvbook.bslug}" class="header-item _active">
+  <a slot="left" href="/-{nvinfo.bslug}" class="header-item _active">
     <SIcon name="book" />
-    <span class="header-text _title">{cvbook.htitle}</span>
+    <span class="header-text _title">{nvinfo.hname}</span>
   </a>
 
   <svelte:fragment slot="right">
@@ -63,14 +63,14 @@
         <span class="header-text _show-lg">Đọc thử</span>
       </div>
     {:else if ubmemo.chidx > 0}
-      <a class="header-item" href={kit_chap_url(cvbook.bslug, ubmemo)}>
+      <a class="header-item" href={kit_chap_url(nvinfo.bslug, ubmemo)}>
         <SIcon name={ubmemo.locked ? 'player-skip-forward' : 'player-play'} />
         <span class="header-text _show-lg">Đọc tiếp</span>
       </a>
     {:else}
       <a
         class="header-item"
-        href={kit_chap_url(cvbook.bslug, { ...ubmemo, chidx: 1 })}>
+        href={kit_chap_url(nvinfo.bslug, { ...ubmemo, chidx: 1 })}>
         <SIcon name="player-play" />
         <span class="header-text _show-lg">Đọc thử</span>
       </a>

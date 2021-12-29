@@ -1,37 +1,44 @@
+<script context="module">
+  const icon_types = ['affiliate', 'archive', 'archive', 'cloud']
+</script>
+
 <script>
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let cvbook
-  export let _sname = ''
+  export let nvinfo
+  export let chseed = []
+
+  export let sname = ''
   export let pgidx = 0
   export let center = false
 
   let show_less = true
 
   function chap_url(sname, pgidx = 0) {
-    const url = `/-${cvbook.bslug}/-${sname}`
+    const url = `/-${nvinfo.bslug}/-${sname}`
     return pgidx > 1 ? url + `?page=${pgidx}` : url
   }
 
-  $: hidden_seeds = calculate_hidden_seeds(cvbook.snames, _sname)
+  $: snames = chseed.map((x) => x.sname) || []
+  $: hidden_seeds = calculate_hidden_seeds(snames, sname)
 
-  function calculate_hidden_seeds(snames, _sname) {
+  function calculate_hidden_seeds(snames, sname) {
     if (snames.length < 4) return 0
-    if (snames.slice(0, 4).includes(_sname)) return snames.length - 4
+    if (snames.slice(0, 4).includes(sname)) return snames.length - 4
     return snames.length - 3
   }
 </script>
 
 <seed-list class:center>
-  {#each cvbook.chseed as zhbook, idx}
+  {#each chseed as zhbook, idx}
     <a
       class="seed-name"
-      class:_hidden={zhbook.sname != 'chivi' && idx >= 3 && show_less}
-      class:_active={zhbook.sname == _sname}
+      class:_hidden={zhbook.sname != 'users' && idx >= 3 && show_less}
+      class:_active={zhbook.sname == sname}
       href={chap_url(zhbook.sname, pgidx)}>
       <seed-label>
         <span>{zhbook.sname}</span>
-        <SIcon name={zhbook._seed ? 'cloud' : 'archive'} />
+        <SIcon name={icon_types[zhbook._type]} />
       </seed-label>
       <seed-stats><strong>{zhbook.chaps}</strong> chương</seed-stats>
     </a>
@@ -44,13 +51,13 @@
     </button>
   {/if}
 
-  {#if !cvbook.snames.includes('chivi')}
+  {#if !snames.includes('users')}
     <a
       class="seed-name"
-      class:_active={_sname === 'chivi'}
-      href={chap_url('chivi', 0)}>
+      class:_active={sname === 'users'}
+      href={chap_url('users', 0)}>
       <seed-label>
-        <span>chivi</span>
+        <span>users</span>
         <SIcon name="archive" />
       </seed-label>
       <seed-stats><strong>0</strong> chương</seed-stats>

@@ -7,29 +7,30 @@
   import SeedList from './SeedList.svelte'
   import BookHeader from './BookHeader.svelte'
 
-  export let cvbook
+  export let nvinfo
   export let ubmemo
+  export let chseed
   export let nvtab = 'index'
 </script>
 
-<BookHeader {cvbook} {ubmemo} />
+<BookHeader {nvinfo} {ubmemo} />
 
 <Vessel>
   <div class="main-info">
     <div class="title">
       <h1 class="bname _main">
-        <bname-vi>{cvbook.vtitle}</bname-vi>
+        <bname-vi>{nvinfo.vname}</bname-vi>
         <bname-sep>/</bname-sep>
-        <bname-zh>{cvbook.ztitle}</bname-zh>
-        {#if cvbook.vtitle != cvbook.htitle}
+        <bname-zh>{nvinfo.zname}</bname-zh>
+        {#if nvinfo.vname != nvinfo.hname}
           <bname-sep>/</bname-sep>
-          <bname-vi>{cvbook.htitle}</bname-vi>
+          <bname-vi>{nvinfo.hname}</bname-vi>
         {/if}
       </h1>
     </div>
 
     <div class="cover">
-      <BCover bcover={cvbook.bcover} />
+      <BCover bcover={nvinfo.bcover} />
     </div>
 
     <div class="line">
@@ -37,13 +38,13 @@
         <SIcon name="edit" />
         <a
           class="link"
-          href="/search?t=author&q={encodeURIComponent(cvbook.vauthor)}">
-          <span class="label">{cvbook.vauthor}</span>
+          href="/search?t=author&q={encodeURIComponent(nvinfo.author)}">
+          <span class="label">{nvinfo.author}</span>
         </a>
       </span>
 
       <div class="bgenres">
-        {#each cvbook.genres as genre, idx}
+        {#each nvinfo.genres as genre, idx}
           <span class="stat _genre" class:_trim={idx > 1}>
             <a class="link" href="/?genre={genre}">
               <SIcon name="folder" />
@@ -57,43 +58,43 @@
     <div class="line">
       <span class="stat _status">
         <SIcon name="activity" />
-        <span>{cvbook.status}</span>
+        <span>{nvinfo.status}</span>
       </span>
 
       <span class="stat _mftime">
         <SIcon name="clock" />
-        <span><RTime mtime={cvbook.mftime} /></span>
+        <span><RTime mtime={nvinfo.mftime} /></span>
       </span>
     </div>
 
     <div class="line">
       <span class="stat">
         <span>Đánh giá: </span><span class="label"
-          >{cvbook.voters <= 10 ? '--' : cvbook.rating}</span
+          >{nvinfo.voters <= 10 ? '--' : nvinfo.rating}</span
         >/10</span>
       <span class="stat"
-        >({cvbook.voters} lượt<span class="trim">&nbsp;đánh giá</span>)</span>
+        >({nvinfo.voters} lượt<span class="trim">&nbsp;đánh giá</span>)</span>
     </div>
 
-    {#if cvbook.yousuu_id || cvbook.root_link}
+    {#if nvinfo.ys_snvid || nvinfo.pub_link}
       <div class="line">
         <span class="stat">Liên kết:</span>
 
-        {#if cvbook.root_link != ''}
+        {#if nvinfo.pub_link != ''}
           <a
             class="stat link _outer"
-            href={cvbook.root_link}
+            href={nvinfo.pub_link}
             rel="noopener noreferer"
             target="_blank"
             title="Trang nguồn">
-            <span>{cvbook.root_name}</span>
+            <span>{nvinfo.pub_name}</span>
           </a>
         {/if}
 
-        {#if cvbook.yousuu_id != ''}
+        {#if nvinfo.ys_snvid != ''}
           <a
             class="stat link _outer"
-            href="https://www.yousuu.com/book/{cvbook.yousuu_id}"
+            href="https://www.yousuu.com/book/{nvinfo.ys_snvid}"
             rel="noopener noreferer"
             target="_blank"
             title="Đánh giá">
@@ -105,28 +106,28 @@
 
     <div class="line _chap">
       <div class="label _chap">Chương tiết:</div>
-      <SeedList {cvbook} />
+      <SeedList {nvinfo} {chseed} />
     </div>
   </div>
 
   <book-section>
     <header class="section-header">
       <a
-        href="/-{cvbook.bslug}"
+        href="/-{nvinfo.bslug}"
         class="header-tab"
         class:_active={nvtab == 'index'}>
         <span>Tổng quan</span>
       </a>
 
       <a
-        href="/-{cvbook.bslug}/crits"
+        href="/-{nvinfo.bslug}/crits"
         class="header-tab"
         class:_active={nvtab == 'crits'}>
         <span>Đánh giá</span>
       </a>
 
       <a
-        href="/-{cvbook.bslug}/board"
+        href="/-{nvinfo.bslug}/board"
         class="header-tab"
         class:_active={nvtab == 'board'}>
         <span>Thảo luận</span>

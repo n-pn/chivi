@@ -2,16 +2,16 @@
   import { call_api } from '$api/_api_call'
 
   export async function load({ fetch, page: { params }, stuff }) {
-    const { cvbook } = stuff
+    const { nvinfo } = stuff
 
     const { seed: sname, chap } = params
     const [chidx, cpart = 0] = chap.split('-').pop().split('.')
 
-    const url = `chaps/${cvbook.id}/${sname}/${chidx}/${+cpart}`
+    const url = `chaps/${nvinfo.id}/${sname}/${chidx}/${+cpart}`
     const [status, cvchap] = await call_api(fetch, url, null, 'GET')
 
     if (status) return { status, error: cvchap }
-    return { props: { cvbook, ...cvchap } }
+    return { props: { ...stuff, ...cvchap } }
   }
 </script>
 
@@ -27,8 +27,9 @@
   import CvPage from '$sects/CvPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
 
-  export let cvbook
+  export let nvinfo
   export let ubmemo
+  export let chseed
 
   export let chmeta
   export let chinfo
@@ -38,8 +39,8 @@
 
   const on_change = () => reload_chap(false)
 
-  $: paths = gen_paths(cvbook, chmeta, chinfo)
-  $: api_url = gen_api_url(cvbook, chmeta, chinfo)
+  $: paths = gen_paths(nvinfo, chmeta, chinfo)
+  $: api_url = gen_api_url(nvinfo, chmeta, chinfo)
 
   function gen_api_url({ id: book_id }, { sname, cpart }, { chidx }) {
     return `/api/chaps/${book_id}/${sname}/${chidx}/${cpart}`
@@ -86,14 +87,14 @@
     const { sname, cpart } = chmeta
     const { chidx, title, uslug } = chinfo
 
-    const url = `_self/books/${cvbook.id}/access`
+    const url = `_self/books/${nvinfo.id}/access`
     const params = { sname, cpart, chidx, title, uslug, locked: lock }
 
     const [status, payload] = await call_api(fetch, url, params, 'PUT')
     if (status) return console.log(`Error update history: ${payload}`)
 
     ubmemo = payload
-    invalidate(`/api/books/${cvbook.bslug}`)
+    invalidate(`/api/books/${nvinfo.bslug}`)
   }
 
   $: on_memory = check_memo(ubmemo)
@@ -107,14 +108,14 @@
 </script>
 
 <svelte:head>
-  <title>{chinfo.title} - {cvbook.vtitle} - Chivi</title>
+  <title>{chinfo.title} - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
 <Appbar ptype="cvmtl">
   <svelte:fragment slot="left">
     <a href={paths.home} class="header-item _title">
       <SIcon name="book" />
-      <span class="header-text _show-sm _title">{cvbook.htitle}</span>
+      <span class="header-text _show-sm _title">{nvinfo.hname}</span>
     </a>
 
     <button class="header-item _active">
@@ -124,18 +125,18 @@
 </Appbar>
 
 <Vessel>
-  <ChapSeed {cvbook} {chmeta} {chinfo} />
+  <ChapSeed {nvinfo} {chseed} {chmeta} {chinfo} />
 
   {#if cvdata}
     <CvPage
       {cvdata}
       {zhtext}
-      dname={cvbook.bhash}
-      d_dub={cvbook.vtitle}
+      dname={nvinfo.bhash}
+      d_dub={nvinfo.vname}
       {on_change}>
       <svelte:fragment slot="header">
         <nav class="bread">
-          <a href="/-{cvbook.bslug}" class="crumb _link">{cvbook.vtitle}</a>
+          <a href="/-{nvinfo.bslug}" class="crumb _link">{nvinfo.vname}</a>
           <span>/</span>
           <span class="crumb _text">{chinfo.chvol}</span>
         </nav>

@@ -11,7 +11,8 @@
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
-  export let cvbook
+  export let nvinfo
+  export let chseed
   export let ubmemo
   export let chinfo
 
@@ -20,15 +21,20 @@
 
   function get_pager(sname) {
     const page = chinfo.pgidx
-    const url = `/-${cvbook.bslug}/-${sname}`
+    const url = `/-${nvinfo.bslug}/-${sname}`
     return (pagers[sname] = pagers[sname] || new Pager(url, { page }))
   }
 </script>
 
-<BookHeader {cvbook} {ubmemo} />
+<BookHeader {nvinfo} {ubmemo} />
 
 <Vessel>
-  <SeedList {cvbook} _sname={chinfo.sname} center={true} />
+  <SeedList
+    {nvinfo}
+    {chseed}
+    sname={chinfo.sname}
+    pgidx={chinfo.pgidx}
+    center={true} />
 
   <chap-page>
     <page-info>
@@ -39,11 +45,11 @@
       </info-left>
 
       <info-right>
-        {#if chinfo.sname == 'chivi'}
+        {#if chinfo.sname == 'chivi' || chinfo.sname == 'users'}
           <a
             class="m-btn"
             class:_disable={$session.privi < 2}
-            href="/-{cvbook.bslug}/-{chinfo.sname}/+new?chidx={chinfo.total +
+            href="/-{nvinfo.bslug}/-{chinfo.sname}/+new?chidx={chinfo.total +
               1}">
             <SIcon name="plus" />
             <span class="-hide">Thêm chương</span>
@@ -75,20 +81,20 @@
     <chap-list>
       {#if chinfo.pgmax > 0}
         <Chlist
-          bslug={cvbook.bslug}
+          bslug={nvinfo.bslug}
           sname={chinfo.sname}
           chaps={chinfo.lasts}
           track={ubmemo}
-          is_remote={chinfo._seed} />
+          is_remote={chinfo._type > 2} />
 
         <div class="chlist-sep" />
 
         <Chlist
-          bslug={cvbook.bslug}
+          bslug={nvinfo.bslug}
           sname={chinfo.sname}
           chaps={chinfo.chaps}
           track={ubmemo}
-          is_remote={chinfo._seed} />
+          is_remote={chinfo._type > 2} />
 
         <footer class="foot">
           <Mpager {pager} pgidx={chinfo.pgidx} pgmax={chinfo.pgmax} />

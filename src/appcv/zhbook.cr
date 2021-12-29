@@ -31,6 +31,14 @@ class CV::Zhbook
 
   getter wlink : String { SiteLink.binfo_url(sname, snvid) }
   getter cvmtl : MtCore { MtCore.generic_mtl(nvinfo.bhash) }
+  getter _type : Int32 do
+    case sname
+    when "chivi"          then 0
+    when "users", "miscs" then 1
+    else
+      NvSeed::REMOTES.includes?(sname) ? 3 : 2
+    end
+  end
 
   # def unmatch?(nvinfo_id : Int64) : Bool
   #   nvinfo_id_column.value(0) != nvinfo_id
@@ -38,6 +46,10 @@ class CV::Zhbook
 
   def clink(schid : String) : String
     SiteLink.chtxt_url(sname, snvid, schid)
+  end
+
+  def staled?(ttl = 12.hours)
+    Time.unix(self.atime) < Time.utc - ttl
   end
 
   # mode:
@@ -55,17 +67,28 @@ class CV::Zhbook
         self.atime = Time.utc.to_unix
         self.update_status(parser.istate)
 
+        infos = parser.chap_infos
+        pgmax = (infos.size - 1) // PG_PSIZE + 1
+
+        if mode > 2
+          ChList.save!(sname, snvid, infos)
+          pgmin = 0
+        else
+          chmin = self.chap_count - 1
+          pgmin = chmin // PG_PSIZE
+          ChList.save!(sname, snvid, infos[chmin..])
+        end
+
         if changed
-          self.chap_count = parser.chap_infos.size
-          self.last_schid = parser.last_schid
+          self.chap_count = infos.size
+          self.last_schid = infos.last.schid
 
           self.utime = parser.mftime > 0 ? parser.mftime : self.atime
           nvinfo.update_utime(self.utime)
         end
 
         lastpg = nil
-        pgmax, pgmin = ChList.save_many!(sname, snvid, parser.chap_infos, redo: mode > 2)
-        purge_cache!(pgmin * 4, pgmax * 4 - 1)
+        purge_cache!(pgmin, pgmax)
       end
 
       self.save!
@@ -99,7 +122,7 @@ class CV::Zhbook
 
   getter lastpg : Array(ChInfo) do
     chmax = self.chap_count - 1
-    chmin = chmax > 2 ? chmax - 3 : 0
+    chmin = chmax > 3 ? chmax - 3 : 0
 
     output = [] of ChInfo
     chmax.downto(chmin) do |index|
@@ -172,6 +195,21 @@ class CV::Zhbook
     chinfo.chap_url(cpart)
   end
 
+  def copy_newers!(others : Array(self))
+    others.each do |other|
+      next unless other.chap_count > self.chap_count
+
+      infos = ChList.fetch(other.sname, other.snvid, self.chap_count + 1, other.chap_count)
+      ChList.save!(self.sname, self.snvid, infos)
+
+      self.chap_count = other.chap_count
+      self.utime = other.utime if self.utime < other.utime
+    end
+
+    self.atime = Time.utc.to_unix
+    self.save!
+  end
+
   ###########################
 
   def self.upsert!(zseed : Int32, snvid : String)
@@ -193,7 +231,7 @@ class CV::Zhbook
   end
 
   def self.load!(nvinfo : Nvinfo, zseed : Int32) : self
-    CACHE[nvinfo.id << 6 | zseed] ||= find(nvinfo.id, zseed) || begin
+    CACHE[nvinfo.id << 7 | zseed] ||= find(nvinfo.id, zseed) || begin
       case zseed
       when 99 then dummy_users_entry(nvinfo)
       when  0 then make_local_clone!(nvinfo)
@@ -208,14 +246,6 @@ class CV::Zhbook
 
   def self.make_local_clone!(nvinfo : Nvinfo)
     zhbook = new({nvinfo: nvinfo, zseed: 0, sname: "chivi", snvid: nvinfo.bhash})
-    return zhbook unless zseed = nvinfo.zseed_ids.sort.first?
-
-    source = load!(nvinfo, zseed)
-    ChList.dup_to_local!(source.sname, source.snvid, nvinfo.bhash)
-
-    zhbook.utime = source.utime
-    zhbook.chap_count = source.chap_count
-
-    zhbook.tap(&.save!)
+    zhbook.copy_newers!(nvinfo.zhbooks.to_a)
   end
 end

@@ -12,57 +12,34 @@ class CV::ChList
     CACHE.get(fpath) { new(fpath, reset: reset) }
   end
 
-  # return pgmax + lowest unchanged ch_list pgidx
-  def self.save_many!(sname : String, snvid : String, infos : Array(ChInfo), redo = false)
-    upper = infos.size - 1
-    pgmax = upper // PSIZE
+  def self.save!(sname : String, snvid : String, infos : Array(ChInfo))
+    return if infos.empty?
+    FileUtils.mkdir_p("#{DIR}/#{sname}/#{snvid}")
 
-    while upper > 0
-      pgidx = upper // PSIZE
-      lower = pgidx * PSIZE
-
-      ch_list = self.load!(sname, snvid, pgidx, reset: redo)
-      changed = false
-
-      upper.downto(lower) do |index|
-        chinfo = infos.unsafe_fetch(index)
-
-        unless redo
-          break if ch_list[chinfo.chidx]?.try(&.equal?(chinfo))
-          changed = true
-        end
-
-        ch_list[chinfo.chidx] = chinfo
-      end
-
-      return {pgmax, pgidx} unless redo || changed
-
-      ch_list.save! if changed
-      upper = lower - 1
+    input = infos.group_by { |x| (x.chidx - 1) // PSIZE }
+    input.each do |pgidx, infos|
+      ch_list = load!(sname, snvid, pgidx)
+      infos.each { |chinfo| ch_list[chinfo.chidx] = chinfo }
+      ch_list.save!
     end
-
-    {pgmax, 0}
   end
 
-  def self.dup_to_local!(sname : String, snvid : String, bhash : String)
-    FileUtils.mkdir_p("#{DIR}/chivi/#{bhash}")
-    files = Dir.glob("#{DIR}/#{sname}/#{snvid}/*.tsv")
+  def self.fetch(sname : String, snvid : String, chmin : Int32, chmax : Int32)
+    pgmin = (chmin - 1) // PSIZE
+    pgmax = (chmax - 1) // PSIZE
 
-    files.each do |inp_path|
-      inp_list = CACHE.get(inp_path) { new(inp_path) }
+    (pgmin..pgmax).each_with_object([] of ChInfo) do |pgidx, output|
+      chlist = self.load!(sname, snvid, pgidx)
+      chlist.each_value do |inp_info|
+        next if inp_info.chidx < chmin || inp_info.chidx > chmax
 
-      out_path = inp_path.sub("#{sname}/#{snvid}", "chivi/#{bhash}")
-      out_list = CACHE.get(out_path) { new(out_path) }
-
-      inp_list.each_value do |inp_info|
         out_info = inp_info.dup
         out_info.o_sname = sname
         out_info.o_snvid = snvid
         out_info.o_chidx = inp_info.chidx
-        out_list[out_info.chidx] = out_info
-      end
 
-      out_list.save!
+        output << out_info
+      end
     end
   end
 

@@ -1,11 +1,11 @@
 <script context="module">
   export async function load({ stuff, fetch, page: { query } }) {
-    const { cvbook } = stuff
-    const [status, dboard] = await load_board(fetch, cvbook.id)
+    const { nvinfo } = stuff
+    const [status, dboard] = await load_board(fetch, nvinfo.id)
 
     if (status) return { status, error: dboard }
 
-    const [status_2, dtopic] = await load_topics(fetch, cvbook.id, query)
+    const [status_2, dtopic] = await load_topics(fetch, nvinfo.id, query)
     if (status_2) return { status: status_2, error: dtopic }
 
     return { props: { ...stuff, dboard, dtopic } }
@@ -47,7 +47,7 @@
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
-  export let cvbook
+  export let nvinfo
   export let ubmemo
   // export let dboard
   export let dtopic = { items: [], pgidx: 1, pgmax: 1 }
@@ -63,7 +63,7 @@
       return (form_error = 'Tiêu đề quá dài!')
     }
 
-    const url = `/api/boards/${cvbook.id}/new`
+    const url = `/api/boards/${nvinfo.id}/new`
     const labels = form_label.map((x) => +x)
 
     const res = await fetch(url, {
@@ -76,13 +76,13 @@
     else form_error = await res.text()
 
     create_new = false
-    invalidate(`/api/boards/${cvbook.id}/topics`)
+    invalidate(`/api/boards/${nvinfo.id}/topics`)
   }
 
   const _navi = { replace: true, scrollto: '#board' }
 </script>
 
-<BookPage {cvbook} {ubmemo} nvtab="board">
+<BookPage {nvinfo} {ubmemo} nvtab="board">
   {#if $session.privi > 2}
     <board-content id="board">
       {#each dtopic.items as topic}
@@ -90,7 +90,7 @@
           <topic-body>
             <a
               class="topic-title"
-              href="/-{cvbook.bslug}/board/-{topic.uslug}-{topic.id}">
+              href="/-{nvinfo.bslug}/board/-{topic.uslug}-{topic.id}">
               {topic.title}
             </a>
 
@@ -126,7 +126,7 @@
 
       <board-form>
         <form
-          action="/api/boards/{cvbook.id}/new"
+          action="/api/boards/{nvinfo.id}/new"
           on:submit|preventDefault={create_topic}
           method="POST">
           <form-field>

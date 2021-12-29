@@ -9,11 +9,11 @@ module CV::NvinfoView
       jb.field "bhash", obj.bhash
       jb.field "bslug", obj.bslug
 
-      jb.field "ztitle", obj.zname
-      jb.field "htitle", obj.hname
-      jb.field "vtitle", obj.vname
+      jb.field "zname", obj.zname
+      jb.field "hname", obj.hname
+      jb.field "vname", obj.vname
 
-      jb.field "vauthor", obj.author.vname
+      jb.field "author", obj.author.vname
 
       jb.field "genres", obj.genres
       jb.field "bcover", obj.cover
@@ -22,36 +22,16 @@ module CV::NvinfoView
       jb.field "rating", obj.rating / 10
 
       if full
-        jb.field "author_id", obj.author_id
-
+        jb.field "zseeds", obj.zseeds
         jb.field "bintro", obj.intro.split("\n")
 
         jb.field "mftime", obj.utime
         jb.field "status", map_status(obj.status)
 
-        jb.field "yousuu_id", obj.ys_snvid
-        jb.field "root_link", obj.pub_link
-        jb.field "root_name", obj.pub_name
-
-        jb.field "snames", obj.zseeds
-        jb.field "chseed" do
-          zhbooks = obj.zhbooks.to_a.sort_by do |x|
-            x.zseed == 0 ? 99 : x.zseed
-          end
-
-          jb.array do
-            zhbooks.each do |zhbook|
-              jb.object {
-                jb.field "sname", zhbook.sname
-                jb.field "snvid", zhbook.snvid
-                # jb.field "wlink", zhbook.wlink
-                # jb.field "utime", zhbook.mftime
-                jb.field "chaps", zhbook.chap_count
-                jb.field "_seed", NvSeed::REMOTES.includes?(zhbook.sname)
-              }
-            end
-          end
-        end
+        jb.field "ys_snvid", obj.ys_snvid
+        jb.field "pub_link", obj.pub_link
+        jb.field "pub_name", obj.pub_name
+        jb.field "author_id", obj.author_id
       end
     end
   end

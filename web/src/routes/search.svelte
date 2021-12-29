@@ -59,16 +59,16 @@
         </div>
 
         <div class="infos">
-          <div class="extra _title">
-            <span class="-vi -trim">{book.vtitle}</span>
+          <div class="extra _vname">
+            <span class="-vi -trim">{book.vname}</span>
           </div>
 
-          <div class="extra _subtitle">
-            <small class="-zh -trim">{book.ztitle}</small>
+          <div class="extra _zname">
+            <small class="-zh -trim">{book.zname}</small>
           </div>
 
           <div class="extra _author">
-            <span class="value -trim">{book.vauthor}</span>
+            <span class="value -trim">{book.author}</span>
           </div>
 
           <div class="extra">

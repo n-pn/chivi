@@ -8,37 +8,32 @@
 </script>
 
 <script>
-  export let cvbook
+  export let nvinfo
 
-  function gen_keywords(cvbook) {
-    // prettier-ignore
-    const list = [
-      cvbook.ztitle, cvbook.vtitle, cvbook.htitle,
-      cvbook.zauthor, cvbook.vauthor, ...cvbook.genres,
-      'Truyện tàu', 'Truyện convert', 'Truyện mạng' ]
-    return list.join(',')
+  function keywords({ zname, vname, hname, author, genres }) {
+    return [zname, vname, hname, author, ...genres].join(',')
   }
 
-  $: book_intro = cvbook.bintro.join('').substring(0, 300)
+  $: book_intro = nvinfo.bintro.join('').substring(0, 300)
 </script>
 
 <!-- prettier-ignore -->
 <svelte:head>
-  <title>{cvbook.vtitle} - Chivi</title>
-  <meta name="keywords" content={gen_keywords(cvbook)} />
+  <title>{nvinfo.vname} - Chivi</title>
+  <meta name="keywords" content={keywords(nvinfo)} />
   <meta name="description" content={book_intro} />
 
-  <meta property="og:title" content={cvbook.vtitle} />
+  <meta property="og:title" content={nvinfo.vname} />
   <meta property="og:type" content="novel" />
   <meta property="og:description" content={book_intro} />
-  <meta property="og:url" content="https://chivi.app/-{cvbook.bslug}" />
-  <meta property="og:image" content="https://chivi.app/covers/{cvbook.bcover}" />
+  <meta property="og:url" content="https://chivi.app/-{nvinfo.bslug}" />
+  <meta property="og:image" content="https://chivi.app/covers/{nvinfo.bcover}" />
 
-  <meta property="og:novel:category" content={cvbook.genres[0]} />
-  <meta property="og:novel:author" content={cvbook.vauthor} />
-  <meta property="og:novel:book_name" content={cvbook.vtitle} />
-  <meta property="og:novel:status" content={cvbook.status} />
-  <meta property="og:novel:update_time" content={new Date(cvbook.mftime).toISOString()} />
+  <meta property="og:novel:category" content={nvinfo.genres[0]} />
+  <meta property="og:novel:author" content={nvinfo.author} />
+  <meta property="og:novel:book_name" content={nvinfo.vname} />
+  <meta property="og:novel:status" content={nvinfo.status} />
+  <meta property="og:novel:update_time" content={new Date(nvinfo.mftime).toISOString()} />
 </svelte:head>
 
 <slot />

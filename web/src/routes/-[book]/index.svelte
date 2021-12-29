@@ -1,18 +1,18 @@
 <script context="module">
   export async function load({ fetch, stuff }) {
-    const { cvbook, ubmemo } = stuff
+    const { nvinfo } = stuff
 
-    const crit_url = `/api/crits?book=${cvbook.id}&page=1&take=3&sort=stars`
+    const crit_url = `/api/crits?book=${nvinfo.id}&page=1&take=3&sort=stars`
     const crit_res = await fetch(crit_url)
     const { crits } = await crit_res.json()
 
-    const book_url = `/api/authors/${cvbook.author_id}/books?take=7`
+    const book_url = `/api/authors/${nvinfo.author_id}/books?take=7`
     const book_res = await fetch(book_url)
 
     const { books: book_raw } = await book_res.json()
-    const books = book_raw.filter((x) => x.id != cvbook.id).slice(0, 6)
+    const books = book_raw.filter((x) => x.id != nvinfo.id).slice(0, 6)
 
-    return { props: { cvbook, ubmemo, crits, books } }
+    return { props: { ...stuff, crits, books } }
   }
 </script>
 
@@ -22,8 +22,9 @@
 
   import BookPage from './_layout/BookPage.svelte'
 
-  export let cvbook
+  export let nvinfo
   export let ubmemo
+  export let chseed
 
   export let crits = []
   export let books = []
@@ -31,18 +32,18 @@
   let short_intro = false
 </script>
 
-<BookPage {cvbook} {ubmemo} nvtab="index">
+<BookPage {nvinfo} {ubmemo} {chseed} nvtab="index">
   <article class="m-article">
     <h2>Giới thiệu:</h2>
     <div class="intro" class:_short={short_intro}>
-      {#each cvbook.bintro as para}
+      {#each nvinfo.bintro as para}
         <p>{para}</p>
       {/each}
     </div>
 
     <h3 class="sub">
       <sub-label>Đánh giá nổi bật</sub-label>
-      <a class="sub-link" href="/-{cvbook.bslug}/crits">Xem tất cả</a>
+      <a class="sub-link" href="/-{nvinfo.bslug}/crits">Xem tất cả</a>
     </h3>
 
     <div class="crits">
@@ -59,7 +60,7 @@
       <sub-label>Truyện đồng tác giả</sub-label>
       <a
         class="sub-link"
-        href="/search?t=author&q={encodeURIComponent(cvbook.vauthor)}"
+        href="/search?t=author&q={encodeURIComponent(nvinfo.author)}"
         >Xem tất cả</a>
     </h3>
 

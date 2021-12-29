@@ -1,16 +1,19 @@
 <script>
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let cvbook
+  export let nvinfo
+  export let chseed
+
   export let chmeta = {}
   export let chinfo = {}
   let show_less = true
 
   function chap_url(sname) {
-    return `/-${cvbook.bslug}/-${sname}/-${chinfo.uslug}-${chinfo.chidx}`
+    return `/-${nvinfo.bslug}/-${sname}/-${chinfo.uslug}-${chinfo.chidx}`
   }
 
-  $: hidden_seeds = calculate_hidden_seeds(cvbook.snames, chmeta.sname)
+  $: snames = chseed?.map((x) => x.sname) || []
+  $: hidden_seeds = calculate_hidden_seeds(snames, chmeta.sname)
 
   function calculate_hidden_seeds(snames, sname) {
     if (snames.length < 5) return 0
@@ -20,29 +23,22 @@
 </script>
 
 <chap-seed>
-  {#each cvbook.chseed as zhbook, idx}
-    <a
-      class="seed-name"
-      class:_hidden={idx > 3 && show_less}
-      class:_active={zhbook.sname == chmeta.sname}
-      href={chap_url(zhbook.sname)}>
-      <seed-label>{zhbook.sname}</seed-label>
-    </a>
+  {#each chseed as zhbook, idx}
+    {#if zhbook.chaps >= chinfo.chidx}
+      <a
+        class="seed-name"
+        class:_hidden={idx > 3 && show_less}
+        class:_active={zhbook.sname == chmeta.sname}
+        href={chap_url(zhbook.sname)}>
+        <seed-label>{zhbook.sname}</seed-label>
+      </a>
+    {/if}
   {/each}
 
   {#if show_less && hidden_seeds > 0}
     <button class="seed-name _btn" on:click={() => (show_less = false)}>
       <seed-label><SIcon name="dots" /></seed-label>
     </button>
-  {/if}
-
-  {#if !cvbook.snames.includes('chivi')}
-    <a
-      class="seed-name"
-      class:_active={chmeta.sname === 'chivi'}
-      href={chap_url('chivi', 0)}>
-      <seed-label>chivi</seed-label>
-    </a>
   {/if}
 </chap-seed>
 

@@ -1,9 +1,9 @@
 <script context="module">
   export async function load({ page, stuff }) {
-    const { cvbook } = stuff
+    const { nvinfo } = stuff
     const sname = page.params.seed
     const chidx = +page.query.get('chidx') || 1
-    return { props: { cvbook, sname, chidx: chidx } }
+    return { props: { nvinfo, sname, chidx: chidx } }
   }
 </script>
 
@@ -14,7 +14,7 @@
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  export let cvbook
+  export let nvinfo
 
   export let sname
   export let chidx = 1
@@ -23,7 +23,7 @@
   let input = ''
 
   async function submit_text() {
-    const url = `/api/chaps/${cvbook.id}/${sname}`
+    const url = `/api/chaps/${nvinfo.id}/${sname}`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -32,7 +32,7 @@
 
     if (res.ok) {
       const data = await res.json()
-      goto(`/-${cvbook.bslug}/-${data.uslug}-${sname}-${data.chidx}`)
+      goto(`/-${nvinfo.bslug}/-${data.uslug}-${sname}-${data.chidx}`)
     } else {
       await res.text()
     }
@@ -40,14 +40,14 @@
 </script>
 
 <svelte:head>
-  <title>Thêm chương - {cvbook.vtitle} - Chivi</title>
+  <title>Thêm chương - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
 <Appbar>
   <svelte:fragment slot="left">
-    <a href="/-{cvbook.bslug}" class="header-item _title">
+    <a href="/-{nvinfo.bslug}" class="header-item _title">
       <SIcon name="book" />
-      <span class="header-text _show-md _title">{cvbook.vtitle}</span>
+      <span class="header-text _show-md _title">{nvinfo.vname}</span>
     </a>
 
     <button class="header-item _active">
@@ -59,7 +59,7 @@
 <Vessel>
   <nav class="navi">
     <div class="-item _sep">
-      <a href="/-{cvbook.bslug}" class="-link">{cvbook.vtitle}</a>
+      <a href="/-{nvinfo.bslug}" class="-link">{nvinfo.vname}</a>
     </div>
 
     <div class="-item">

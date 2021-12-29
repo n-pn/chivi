@@ -53,10 +53,15 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     nvinfo.bump! if u_privi >= 0
     ubmemo = Ubmemo.find_or_new(_cvuser.id, nvinfo.id)
 
-    if ubmemo.lr_chidx == 0
-      lr_zseed = nvinfo.zseed_ids.find(0, &.> 0)
-      zhbook = Zhbook.load!(nvinfo.id, lr_zseed)
+    zhbooks = nvinfo.zhbooks.to_a.sort_by(&.zseed)
+    if zhbooks.empty? || zhbooks.first.zseed != 0
+      zhbooks.unshift(Zhbook.load!(nvinfo, 0))
+    else
+      base_zhbook = zhbooks[0]
+      base_zhbook.copy_newers!(zhbooks[1..]) if base_zhbook.staled?
+    end
 
+    if (ubmemo.lr_sname.empty?) && (zhbook = zhbooks.first?)
       if chinfo = zhbook.chinfo(0)
         ubmemo.lr_chidx = -1
         ubmemo.lc_title = chinfo.title
@@ -68,8 +73,23 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     json_view do |jb|
       jb.object {
-        jb.field "cvbook" { NvinfoView.render(jb, nvinfo, full: true) }
+        jb.field "nvinfo" { NvinfoView.render(jb, nvinfo, full: true) }
         jb.field "ubmemo" { UbmemoView.render(jb, ubmemo) }
+
+        jb.field "chseed" do
+          jb.array do
+            zhbooks.each do |zhbook|
+              jb.object {
+                jb.field "sname", zhbook.sname
+                jb.field "snvid", zhbook.snvid
+                # jb.field "wlink", zhbook.wlink
+                jb.field "utime", zhbook.utime
+                jb.field "chaps", zhbook.chap_count
+                jb.field "_type", zhbook._type
+              }
+            end
+          end
+        end
       }
     end
   rescue err
