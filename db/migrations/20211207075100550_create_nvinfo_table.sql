@@ -87,7 +87,7 @@ CREATE INDEX nvinfo_weight_idx ON nvinfos (weight);
 CREATE INDEX nvinfo_voters_idx ON nvinfos (voters);
 CREATE INDEX nvinfo_rating_idx ON nvinfos (rating);
 
-CREATE INDEX nvinfo_yosuuu_idx ON nvinfos (ys_snvid);
+CREATE INDEX nvinfo_yousuu_idx ON nvinfos (ys_snvid);
 
 -- +micrate Down
 DROP TABLE IF EXISTS nvinfos;

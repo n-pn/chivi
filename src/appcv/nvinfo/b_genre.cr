@@ -14,7 +14,7 @@ module CV::BGenre
   end
 
   def map_id(input : Array(String)) : Array(Int32)
-    input.each { |x| map_id(x) }
+    input.map { |x| map_id(x) }.uniq
   end
 
   def to_s(ids : Array(Int32)) : Array(String)
@@ -26,12 +26,12 @@ module CV::BGenre
   end
 
   # mapping chinese genre to vietnamese one
-  def map_zh(input : String) : Array(Int32)
+  def map_zh(input : String) : Array(String)
     input == "轻小说" ? input : input.sub("小说", "")
     zh_map.get(input) || [] of String
   end
 
-  def map_zh(input : Array(String)) : Array(Int32)
+  def map_zh(input : Array(String)) : Array(String)
     input.map { |x| map_zh(x) }.flatten.uniq
   end
 end

@@ -27,14 +27,16 @@ module CV::NvUtil
 
   def clean_name(name : String, type = :btitle)
     name = name.chars.map { |x| NORMALIZE[x]? || x }.join
-    name = name.sub(/[（【\(\[].+?[）】\)\]](　ˇ第.+章ˇ )?\s*(最新更新.+)?$/, "").strip
+    name = name.sub(/[（【\(\[].+?[）】\)\]](\s*ˇ第.+章ˇ\s*)?\s*(最新更新.+)?$/, "").strip
     return name unless type == :author
     name.sub(/\.(QD|CS)$/, "").sub(/^·+(.+)·+$/) { |x| x }
   end
 
   NORMALIZE = begin
-    lines = File.read_lines("#{__DIR__}/nvutil/normalize.tsv")
-    lines.each_with_object({} of Char => Char) { |x, h| h[x[0]] = h[x[2]] }
+    lines = File.read_lines("#{__DIR__}/nv_util/normalize.tsv")
+    lines.each_with_object({} of Char => Char) do |line, hash|
+      hash[line[0]] = line[2]
+    end
   end
 
   def scrub(name : String, delimit = "-")
@@ -76,6 +78,34 @@ module CV::NvUtil
       .tr("úùũụủưứừữựử", "u")
       .tr("ýỳỹỵỷ", "y")
       .tr("đ", "d")
+  end
+
+  def author_vname(author : String) : String
+    vi_authors.fval(author) || hanviet(author)
+  end
+
+  def btitle_vname(zname : String, bhash : String = "combine") : String
+    unless vname = vi_btitles.fval(zname)
+      vname = MtCore.generic_mtl(bhash).cv_plain(zname).to_s
+    end
+
+    TextUtils.titleize(vname)
+  end
+
+  def hanviet(input : String, caps : Bool = true) : String
+    return input unless input =~ /\p{Han}/ # return if no hanzi found
+
+    output = MtCore.hanviet_mtl.translit(input, false).to_s
+    caps ? TextUtils.titleize(output) : output
+  end
+
+  def convert(input : String, udict = "combine") : Array(String)
+    cvmtl = MtCore.generic_mtl(udict)
+
+    input.split(/[\r\n]/).map do |line|
+      line = line.strip
+      line.empty? ? line : cvmtl.cv_plain(line).to_s
+    end
   end
 end
 

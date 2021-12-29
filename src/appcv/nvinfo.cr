@@ -85,8 +85,8 @@ class CV::Nvinfo
   # links
 
   column ys_snvid : Int64? = nil # yousuu book id
-  column pub_link : String = ""  # original publisher novel page
   column pub_name : String = ""  # original publisher name, extract from link
+  column pub_link : String = ""  # original publisher novel page
 
   timestamps # created_at and updated_at
 
@@ -166,10 +166,20 @@ class CV::Nvinfo
 
   def set_genres(genres : Array(String), force = false) : Nil
     return unless force || self.genre_ids.empty?
-    genres_ids = Bgenre.map_id(genres)
+    genres_ids = BGenre.map_id(genres)
 
     self.genre_ids = genres_ids.empty? ? [0] : genres_ids
     self.genre_ids_column.dirty!
+  end
+
+  def set_zintro(lines : Array(String), force = false) : Nil
+    return unless force || self.intro.empty?
+    cvmtl = MtCore.generic_mtl(bhash)
+    self.intro = lines.map { |line| cvmtl.cv_plain(line).to_s }.join("\n")
+  end
+
+  def set_bcover(cover : String, force = false) : Nil
+    self.cover = cover if force || self.cover.empty?
   end
 
   def set_utime(utime : Int64, force = false) : Int64?
@@ -193,10 +203,6 @@ class CV::Nvinfo
 
   def set_shield(shield : Int32, force = false) : Nil
     self.shield = shield if force || shield > self.shield
-  end
-
-  def set_bcover(bcover : String, force = false) : Nil
-    self.bcover = bcover if force || self.bcover.empty?
   end
 
   def set_ys_scores(voters : Int32, rating : Int32) : Nil
@@ -258,21 +264,16 @@ class CV::Nvinfo
   def self.upsert!(author : Author, zname : String)
     get(author, zname) || begin
       bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
+      nvinfo = new({author_id: author.id, bhash: bhash, zname: zname})
 
-      vname = BookUtils.get_vi_btitle(zname, bhash)
-      vslug = "-" + NvUtil.scrub_vname(vname, "-") + "-"
+      nvinfo.vname = NvUtil.btitle_vname(zname, bhash)
+      nvinfo.vslug = "-" + NvUtil.scrub_vname(nvinfo.vname, "-") + "-"
 
-      hname = BookUtils.hanviet(zname)
-      hslug, bslug = begin
-        slug = NvUtil.scrub_vname(hname, "-")
-        {"-" + slug + "-", slug.split("-").first(8).join("-") + bhash[0..3]}
-      end
+      nvinfo.hname = NvUtil.hanviet(zname)
+      hslug = NvUtil.scrub_vname(nvinfo.hname, "-")
+      nvinfo.hslug = "-" + hslug + "-"
 
-      nvinfo = new({
-        author_id: author.id, bhash: bhash, bslug: bslug,
-        zname: zname, hname: hname, vname: vname,
-        hslug: hslug, vslug: vslug,
-      })
+      nvinfo.bslug = hslug.split("-").first(8).join("-") + bhash[0..3]
 
       nvinfo.tap(&.save!)
     end

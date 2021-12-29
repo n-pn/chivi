@@ -38,12 +38,12 @@ class CV::Author
     accent ? res.where("vname LIKE '%#{qs}%'") : res
   end
 
-  def self.upsert!(zname : String) : Author
-    find({zname: zname}) || create!(zname, yield)
+  def self.upsert!(zname : String, vname : String? = nil) : Author
+    find({zname: zname}) || create!(zname, vname || NvUtil.author_vname(zname))
   end
 
   def self.create!(zname : String, vname : String) : Author
-    vslug = "-#{Nvutil.scrub_vname(vname, "-")}-"
+    vslug = "-#{NvUtil.scrub_vname(vname, "-")}-"
     author = new({zname: zname, vname: vname, vslug: vslug})
     author.tap(&.save!)
   end
