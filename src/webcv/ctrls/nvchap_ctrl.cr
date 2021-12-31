@@ -16,6 +16,12 @@ class CV::NvchapCtrl < CV::BaseCtrl
     mode += 2 if is_remote && seed_outdated?(zhbook)
 
     total = zhbook.count_chap!(mode, ttl: 5.minutes)
+
+    if is_remote
+      base_zhbook = Zhbook.load!(zhbook.nvinfo, 0)
+      base_zhbook.copy_newers!([zhbook]) if base_zhbook.chap_count < total
+    end
+
     pgidx = params.fetch_int("page", min: 1)
 
     render_json do |res|
