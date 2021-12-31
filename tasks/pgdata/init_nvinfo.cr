@@ -68,7 +68,7 @@ class CV::InitNvinfo
     set_val!(:_index, snvid, [atime.to_s, entry.btitle, entry.author])
     set_val!(:intros, snvid, entry.bintro)
     set_val!(:genres, snvid, entry.genres)
-    set_val!(:covers, snvid, entry.bcover)
+    set_val!(:covers, snvid, "#{@sname}-#{snvid}.webp")
 
     case entry
     when YsbookRaw
