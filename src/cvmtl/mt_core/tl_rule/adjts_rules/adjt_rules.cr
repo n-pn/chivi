@@ -106,11 +106,13 @@ module CV::TlRule
   end
 
   def fold_modifier!(node : MtNode, succ = node.succ?, nega : MtNode? = nil)
-    node = fold!(nega, node, node.tag, dic: 4) if nega
+    # puts [node, succ, nega].colorize.green
 
+    node = fold!(nega, node, node.tag, dic: 4) if nega
     return node unless succ = node.succ?
+
     succ.set!(PosTag::Noun) if succ.veno? || succ.ajno?
-    fold_adjt_noun!(node, node.succ?)
+    succ.noun? ? fold_adjt_noun!(node, succ) : node
   end
 
   def fold_adj_adv!(node : MtNode, prev = node.prev?)

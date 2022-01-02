@@ -3,6 +3,8 @@ require "./../pgdata/init_nvinfo"
 module CV::FixIntros
   extend self
 
+  DEBUG = ARGV.includes?("debug")
+
   def set!
     total, index = Nvinfo.query.count, 0
     query = Nvinfo.query.order_by(weight: :desc)
@@ -14,7 +16,7 @@ module CV::FixIntros
 
       nvinfo.ys_snvid.try { |x| yintro = get_intro("yousuu", x.to_s) }
 
-      if yintro && yintro.size > 0
+      if yintro && yintro.size > 1
         bintro = yintro
       else
         bintro = fintro = nil
@@ -34,11 +36,12 @@ module CV::FixIntros
 
       next if bintro.nil?
 
-      # File.open("tmp/fix_intro.log", "a") do |io|
-      #   io << nvinfo.bhash
-      #   bintro.join(io, "\t")
-      #   io << "\n"
-      # end
+      if DEBUG
+        File.open("tmp/fix_intro.log", "w") do |io|
+          io.puts nvinfo.bhash
+          bintro.join(io, '\n')
+        end
+      end
 
       nvinfo.set_zintro(bintro.not_nil!, force: true)
       nvinfo.save!

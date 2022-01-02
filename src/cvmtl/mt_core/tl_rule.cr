@@ -3,7 +3,7 @@ require "./tl_rule/**"
 
 module CV::TlRule
   def fix_grammar!(node : MtNode, level = 0) : Nil
-    # puts [node, node.idx, node.succ?, "base"]
+    # puts [node, node.idx, node.succ?, "base"].colorize.blue
 
     while node = node.succ?
       case node.tag

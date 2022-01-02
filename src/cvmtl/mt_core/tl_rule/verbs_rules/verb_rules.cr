@@ -1,5 +1,7 @@
 module CV::TlRule
   def fold_verbs!(verb : MtNode, prev : MtNode? = nil) : MtNode
+    # puts [verb, prev].colorize.yellow
+
     case verb
     when .v_shi?, .v_you?
       return fold_left_verb!(verb, prev)
@@ -77,6 +79,7 @@ module CV::TlRule
 
     return fold_uzhi!(uzhi: succ, prev: verb) if succ.uzhi?
 
+    # puts [verb, verb.succ, verb.succ.succ?]
     verb
   end
 
