@@ -1,8 +1,8 @@
 <script context="module">
   import { api_call } from '$api/_api_call'
 
-  export async function load({ fetch, page }) {
-    const [status, crit] = await api_call(fetch, `crits/${page.params.crit}`)
+  export async function load({ fetch, params }) {
+    const [status, crit] = await api_call(fetch, `crits/${params.crit}`)
     if (status) return { status, error: crit }
     else return { props: { crit } }
   }
@@ -18,10 +18,6 @@
   import Yscrit from '$parts/Yscrit.svelte'
 
   export let crit
-
-  const on_change = () => {
-    if ($session.privi > 0) invalidate(`api/crits/${crit.id}`)
-  }
 </script>
 
 <svelte:head>

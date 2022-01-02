@@ -1,5 +1,5 @@
 <script>
-  import { session, navigating } from '$app/stores'
+  import { session, navigating, page } from '$app/stores'
 
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
@@ -20,9 +20,13 @@
   $: pager = get_pager(chinfo.sname)
 
   function get_pager(sname) {
-    const page = chinfo.pgidx
-    const url = `/-${nvinfo.bslug}/-${sname}`
-    return (pagers[sname] = pagers[sname] || new Pager(url, { page }))
+    return (pagers[sname] = pagers[sname] || make_pager(sname))
+  }
+
+  function make_pager(sname) {
+    const url = new URL($page.url)
+    url.pathname = `/-${nvinfo.bslug}/-${sname}`
+    return new Pager(url)
   }
 </script>
 
@@ -66,7 +70,7 @@
           <a
             class="m-btn"
             class:_disable={!chinfo._seed}
-            href={pager.url({ page: chinfo.pgidx, force: true })}>
+            href={pager.make_url({ page: chinfo.pgidx, force: true })}>
             {#if $navigating}
               <SIcon name="loader" spin={true} />
             {:else}

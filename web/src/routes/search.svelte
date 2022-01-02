@@ -1,9 +1,9 @@
 <script context="module">
-  export async function load({ fetch, page: { query } }) {
-    const page = +query.get('page') || 1
-    const type = query.get('t') || 'btitle'
+  export async function load({ fetch, url: { searchParams } }) {
+    const page = +searchParams.get('page') || 1
+    const type = searchParams.get('t') || 'btitle'
 
-    const input = query.get('q')
+    const input = searchParams.get('q')
     if (!input) return { props: { input, type } }
 
     const qs = input.replace(/\+|-/g, ' ')
@@ -28,7 +28,7 @@
 
   $: from = (pgidx - 1) * 8 + 1
   $: upto = from + books.length - 1
-  $: pager = new Pager($page.path, $page.query)
+  $: pager = new Pager($page.url)
 </script>
 
 <svelte:head>

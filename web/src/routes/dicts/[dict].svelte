@@ -9,11 +9,14 @@
 
   import Postag, { ptnames } from '$parts/Postag.svelte'
 
-  export async function load({ fetch, page: { path, query } }) {
-    const url = `/api/${path}?${query.toString()}`
-    const res = await fetch(url)
+  export async function load({ fetch, url }) {
+    const api_url = `/api/${url.pathname}?${url.searchParams.toString()}`
+    const res = await fetch(api_url)
     return {
-      props: { ...(await res.json()), query: Object.fromEntries(query) },
+      props: {
+        ...(await res.json()),
+        query: Object.fromEntries(url.searchParams),
+      },
     }
   }
 </script>
@@ -55,9 +58,11 @@
   let postag_state = 1
 
   const on_change = () =>
-    invalidate(`/api/${$page.path}?${$page.query.toString()}`)
+    invalidate(
+      `/api/${$page.url.pathname}?${$page.url.searchParams.toString()}`
+    )
 
-  $: pager = new Pager($page.path, $page.query)
+  $: pager = new Pager($page.url)
 
   function render_rank(rank) {
     switch (rank) {
@@ -107,7 +112,7 @@
       <span class="header-text _show-md">Từ điển</span>
     </a>
 
-    <a href={$page.path} class="header-item _active _title">
+    <a href={$page.url.pathname} class="header-item _active _title">
       <span class="header-text _title">{d_dub}</span>
     </a>
   </svelte:fragment>
@@ -158,7 +163,7 @@
               <a
                 class="m-btn _sm"
                 data-kbd="ctrl+enter"
-                href={pager.url({ ...query, page: 1 })}>
+                href={pager.make_url({ ...query, page: 1 })}>
                 <SIcon name="search" />
               </a>
             </td>
@@ -212,16 +217,19 @@
                     class="m-btn _xs _active">
                     <SIcon name="pencil" />
                   </button>
-                  <a class="m-btn _xs" href={pager.url({ ptag: ptag || '~' })}>
+                  <a
+                    class="m-btn _xs"
+                    href={pager.make_url({ ptag: ptag || '~' })}>
                     <SIcon name="search" />
                   </a>
                 </div>
               </td>
               <td class="-rank">
-                <a href="{$page.path}?rank={rank}">{render_rank(rank)}</a>
+                <a href="{$page.url.pathname}?rank={rank}"
+                  >{render_rank(rank)}</a>
               </td>
               <td class="-uname  _{special_type(uname)}">
-                <a href="{$page.path}?uname={uname}">{uname}</a>
+                <a href="{$page.url.pathname}?uname={uname}">{uname}</a>
               </td>
               <td class="-mtime">{render_time(mtime)} </td>
             </tr>

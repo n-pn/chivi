@@ -1,9 +1,9 @@
 <script context="module">
-  export async function load({ fetch, page: { params, query } }) {
+  export async function load({ fetch, url, params }) {
     const { type, name } = params
 
-    const url = `/api/qtran/${type}/${name}?${query.toString()}`
-    const res = await fetch(url)
+    const api_url = `/api/qtran/${type}/${name}?${url.searchParams.toString()}`
+    const res = await fetch(api_url)
     const props = await res.json()
 
     if (res.ok) return { props: { ...props, type, name } }

@@ -1,18 +1,21 @@
 export async function handle({ request, resolve }) {
-  if (request.path.startsWith('/api/')) return await mutateFetch(request)
+  if (request.url.pathname.startsWith('/api/'))
+    return await mutateFetch(request)
   return resolve(request)
 }
 
-async function mutateFetch({ path, query, method, headers, rawBody: body }) {
-  const url = `http://localhost:5010${path}?${query.toString()}`
-  const res = await fetch(url, { method, headers, body })
+async function mutateFetch({ url, method, headers, rawBody: body }) {
+  const api_url = 'http://localhost:5010' + url.pathname + url.search
+  const res = await fetch(api_url, { method, headers, body })
 
   const res_headers = {}
   for (let [key, val] of res.headers.entries()) res_headers[key] = val
   const res_body = await res.text()
 
   const locals = {}
-  if (res.ok && path.startsWith('/api/user')) locals.user = JSON.parse(res_body)
+  if (res.ok && url.pathname.startsWith('/api/user')) {
+    locals.user = JSON.parse(res_body)
+  }
   return { status: res.status, headers: res_headers, body: res_body, locals }
 }
 

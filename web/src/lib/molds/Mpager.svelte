@@ -2,27 +2,29 @@
   import { goto } from '$app/navigation'
 
   export class Pager {
-    constructor(path, opts = {}, defs = { page: 1 }) {
-      if (typeof opts == 'string') opts = new URLSearchParams(opts)
-      if (opts instanceof URLSearchParams) opts = Object.fromEntries(opts)
-
-      this.path = path
-      this.opts = opts
-      this.defs = defs
+    constructor(url, dfs = { page: 1 }) {
+      this.url = url
+      this.dfs = dfs
     }
 
-    url(opts = {}) {
-      const query = new URLSearchParams()
-      opts = { ...this.opts, ...opts }
+    get(value) {
+      return this.url.searchParams.get(value) || this.dfs[value]
+    }
+
+    make_url(opts = {}) {
+      const query = new URLSearchParams(this.url.searchParams)
+
       for (const key in opts) {
         const val = opts[key]
-        if (val && val != this.defs[key]) {
+        if (val && val != this.dfs[key]) {
           query.set(key, val)
+        } else {
+          query.delete(key)
         }
       }
 
       const qs = query.toString()
-      return qs ? this.path + '?' + qs : this.path
+      return qs ? this.url.pathname + '?' + qs : this.url.pathname
     }
   }
 
@@ -79,7 +81,7 @@
   {#if pgidx > 1}
     <a
       class="m-btn _fill -md"
-      href={pager.url({ page: pgidx - 1 })}
+      href={pager.make_url({ page: pgidx - 1 })}
       data-kbd="j"
       sveltekit:noscroll={_navi.scrollto}
       use:navigate={_navi}>
@@ -95,7 +97,7 @@
     {#if pgnow != pgidx}
       <a
         class="m-btn _line"
-        href={pager.url({ page: pgnow })}
+        href={pager.make_url({ page: pgnow })}
         data-kbd={pgnow == 1 ? 'h' : pgnow == pgmax ? 'l' : ''}
         sveltekit:noscroll={_navi.scrollto}
         use:navigate={_navi}><span>{pgnow}</span></a>
@@ -109,7 +111,7 @@
   {#if pgidx < pgmax}
     <a
       class="m-btn _primary _fill"
-      href={pager.url({ page: pgidx + 1 })}
+      href={pager.make_url({ page: pgidx + 1 })}
       data-kbd="k"
       sveltekit:noscroll={_navi.scrollto}
       use:navigate={_navi}>

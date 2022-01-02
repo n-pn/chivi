@@ -1,8 +1,8 @@
 <script context="module">
   import { page } from '$app/stores'
 
-  export async function load({ fetch, page: { query } }) {
-    const res = await fetch(`/api/crits?${query.toString()}&take=10`)
+  export async function load({ fetch, url: { searchParams } }) {
+    const res = await fetch(`/api/crits?${searchParams.toString()}&take=10`)
     return { props: await res.json() }
   }
 
@@ -24,8 +24,8 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pager = new Pager($page.path, $page.query, { sort: 'mtime', page: 1 })
-  $: _sort = $page.query.get('sort') || 'mtime'
+  $: pager = new Pager($page.url, { sort: 'mtime', page: 1 })
+  $: _sort = pager.get('sort')
 </script>
 
 <svelte:head>
@@ -47,7 +47,7 @@
       <span class="h3 -label">Đánh giá</span>
       {#each Object.entries(sorts) as [sort, name]}
         <a
-          href={pager.url({ sort, page: 1 })}
+          href={pager.make_url({ sort, page: 1 })}
           class="-sort"
           class:_active={sort == _sort}>{name}</a>
       {/each}

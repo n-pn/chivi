@@ -10,18 +10,18 @@
     "start": "node build/index.js"
   },
   "devDependencies": {
-    "@fullhuman/postcss-purgecss": "^4.0.3",
-    "@sveltejs/adapter-node": "^1.0.0-next.55",
-    "@sveltejs/kit": "^1.0.0-next.196",
-    "autoprefixer": "^10.4.0",
+    "@fullhuman/postcss-purgecss": "^4.1.3",
+    "@sveltejs/adapter-node": "^1.0.0-next.58",
+    "@sveltejs/kit": "^1.0.0-next.212",
+    "autoprefixer": "^10.4.1",
     "cssnano": "5.0.7",
     "mdsvex": "^0.9.8",
-    "postcss": "^8.3.11",
-    "postcss-load-config": "^3.1.0",
+    "postcss": "^8.4.5",
+    "postcss-load-config": "^3.1.1",
     "remark-breaks": "^2.0.2",
-    "sass": "^1.43.4",
-    "svelte": "^3.44.2",
-    "svelte-preprocess": "^4.9.8"
+    "sass": "^1.45.2",
+    "svelte": "^3.44.3",
+    "svelte-preprocess": "^4.10.1"
   },
   "browserslist": [
     "> 1%",

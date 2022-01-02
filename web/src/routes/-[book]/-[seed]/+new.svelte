@@ -1,8 +1,7 @@
 <script context="module">
-  export async function load({ page, stuff }) {
+  export async function load({ url, params: { seed: sname }, stuff }) {
     const { nvinfo } = stuff
-    const sname = page.params.seed
-    const chidx = +page.query.get('chidx') || 1
+    const chidx = +url.searchParams.get('chidx') || 1
     return { props: { nvinfo, sname, chidx: chidx } }
   }
 </script>

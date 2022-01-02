@@ -2,8 +2,8 @@
   import { page } from '$app/stores'
   import { invalidate } from '$app/navigation'
 
-  export async function load({ fetch, page: { query } }) {
-    const res = await fetch(`/api/tlspecs?${query.toString()}`)
+  export async function load({ fetch, url: { searchParams } }) {
+    const res = await fetch(`/api/tlspecs?${searchParams.toString()}`)
     return { props: await res.json() }
   }
 </script>
@@ -21,10 +21,10 @@
   export let pgmax = 1
   export let items = []
 
-  $: pager = new Pager($page.path, $page.query, { page: 1 })
+  $: pager = new Pager($page.url)
 
   const on_destroy = () => {
-    invalidate('/api/tlspecs?' + $page.query.toString())
+    invalidate('/api/tlspecs?' + $page.url.searchParams.toString())
   }
 </script>
 

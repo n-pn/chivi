@@ -1,11 +1,11 @@
 <script context="module">
-  export async function load({ stuff, fetch, page: { query } }) {
+  export async function load({ stuff, fetch, url: { searchParams } }) {
     const { nvinfo } = stuff
     const [status, dboard] = await load_board(fetch, nvinfo.id)
 
     if (status) return { status, error: dboard }
 
-    const [status_2, dtopic] = await load_topics(fetch, nvinfo.id, query)
+    const [status_2, dtopic] = await load_topics(fetch, nvinfo.id, searchParams)
     if (status_2) return { status: status_2, error: dtopic }
 
     return { props: { ...stuff, dboard, dtopic } }
@@ -56,7 +56,7 @@
   let form_label = [1]
   let form_error = ''
 
-  $: pager = new Pager($page.path, $page.query, { page: 1, tl: '' })
+  $: pager = new Pager($page.url, { page: 1, tl: '' })
 
   async function create_topic() {
     if (form_title.length > 500) {

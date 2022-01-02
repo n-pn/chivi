@@ -1,6 +1,6 @@
 <script context="module">
-  export async function load({ fetch, page: { query } }) {
-    const url = `/api/dicts?${query.toString()}`
+  export async function load({ fetch, url: { searchParams } }) {
+    const url = `/api/dicts?${searchParams.toString()}`
     const res = await fetch(url)
     return { props: await res.json() }
   }
@@ -68,7 +68,7 @@
     </div>
 
     <footer class="foot">
-      <Mpager pager={new Pager($page.path, $page.query)} {pgidx} {pgmax} />
+      <Mpager pager={new Pager($page.url)} {pgidx} {pgmax} />
     </footer>
   </article>
 </Vessel>

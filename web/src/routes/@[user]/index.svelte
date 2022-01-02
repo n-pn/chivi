@@ -1,13 +1,13 @@
 <script context="module">
   import { status_types, status_names } from '$lib/constants'
 
-  export async function load({ page: { params, query }, fetch }) {
+  export async function load({ url, params, fetch }) {
     const uname = params.user
-    const bmark = query.get('bmark') || 'reading'
-    const page = +query.get('page') || 1
+    const bmark = url.searchParams.get('bmark') || 'reading'
+    const page = +url.searchParams.get('page') || 1
 
-    const url = `/api/books?page=${page}&take=24&order=update&uname=${uname}&bmark=${bmark}`
-    const res = await fetch(url)
+    const api_url = `/api/books?page=${page}&take=24&order=update&uname=${uname}&bmark=${bmark}`
+    const res = await fetch(api_url)
 
     if (res.ok) return { props: { uname, bmark, ...(await res.json()) } }
     return { status: res.status, error: await res.text() }
@@ -30,7 +30,7 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  $: pager = new Pager($page.path, $page.query)
+  $: pager = new Pager($page.url)
 </script>
 
 <svelte:head>

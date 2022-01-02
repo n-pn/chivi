@@ -1,22 +1,13 @@
 <script context="module">
-  export async function load({ page: { query }, fetch }) {
-    const page = +query.get('page') || 1
+  export async function load({ url, fetch }) {
+    const api_url = new URL(url)
+    api_url.pathname = '/api/books'
+    api_url.searchParams.set('take', 24)
 
-    const qs = `?${query.toString()}&take=24&page=${page}`
-    const res = await fetch(`/api/books${qs}`)
+    const res = await fetch(api_url.toString())
 
     if (!res.ok) return { status: res.status, error: await res.text() }
-    return { props: { ...(await res.json()), opts: parse_params(query) } }
-  }
-
-  function parse_params(query, params = {}) {
-    params.order = query.get('order') || 'bumped'
-
-    if (query.has('genre')) params.genre = query.get('genre')
-    if (query.has('sname')) params.sname = query.get('sname')
-    if (query.has('page')) params.page = +query.get('page')
-
-    return params
+    return { props: await res.json() }
   }
 
   const order_names = {
@@ -39,8 +30,7 @@
   export let pgidx = 1
   export let pgmax = 1
 
-  export let opts = { order: 'bumped' }
-  $: pager = new Pager($page.path, $page.query, { order: 'bumped' })
+  $: pager = new Pager($page.url, { order: 'bumped', page: 1 })
 </script>
 
 <svelte:head>
@@ -72,9 +62,9 @@
   <div class="order">
     {#each Object.entries(order_names) as [type, label]}
       <a
-        href={pager.url({ page: 1, order: type })}
+        href={pager.make_url({ page: 1, order: type })}
         class="-type"
-        class:_active={opts.order === type}>
+        class:_active={pager.get('order') == type}>
         <span>{label}</span>
       </a>
     {/each}

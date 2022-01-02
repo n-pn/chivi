@@ -1,8 +1,8 @@
 <script context="module">
-  export async function load({ fetch, stuff, page: { query } }) {
+  export async function load({ fetch, stuff, url: { searchParams } }) {
     const { nvinfo } = stuff
-    const page = +query.get('page') || 1
-    const sort = query.get('sort') || 'stars'
+    const page = +searchParams.get('page') || 1
+    const sort = searchParams.get('sort') || 'stars'
 
     const qs = `page=${page}&take=10&sort=${sort}`
     const res = await fetch(`/api/crits?book=${nvinfo.id}&${qs}`)
@@ -33,7 +33,7 @@
   export let pgmax = 1
   export let _sort
 
-  $: pager = new Pager($page.path, $page.query, { sort: 'stars', page: 1 })
+  $: pager = new Pager($page.url, { sort: 'stars', page: 1 })
 </script>
 
 <BookPage {nvinfo} {ubmemo} {chseed} nvtab="crits">
@@ -42,7 +42,7 @@
       <span class="h3 -label">Đánh giá</span>
       {#each Object.entries(sorts) as [sort, name]}
         <a
-          href={pager.url({ sort, page: 1 })}
+          href={pager.make_url({ sort, page: 1 })}
           class="-sort"
           class:_active={sort == _sort}>{name}</a>
       {/each}

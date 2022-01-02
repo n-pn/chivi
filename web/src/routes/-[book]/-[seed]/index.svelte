@@ -1,12 +1,13 @@
 <script context="module">
   import { api_call } from '$api/_api_call'
 
-  export async function load({ page: { params, query }, fetch, stuff }) {
+  export async function load({ params, url, fetch, stuff }) {
     const { nvinfo, ubmemo, chseed } = stuff
     const sname = extract_sname(chseed, params.seed)
 
-    const url = `chaps/${nvinfo.id}/${sname}?page=${+query.get('page') || 1}`
-    const [status, chinfo] = await api_call(fetch, url)
+    const page = url.searchParams.get('page') || 1
+    const api_url = `chaps/${nvinfo.id}/${sname}?page=${page}`
+    const [status, chinfo] = await api_call(fetch, api_url)
     if (status) return { status, error: chinfo }
 
     if (chinfo.utime > nvinfo.mftime) nvinfo.mftime = chinfo.utime

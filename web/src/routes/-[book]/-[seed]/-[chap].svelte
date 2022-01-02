@@ -1,13 +1,11 @@
 <script context="module">
   import { call_api } from '$api/_api_call'
 
-  export async function load({ fetch, page: { params }, stuff }) {
+  export async function load({ fetch, params: { seed, chap }, stuff }) {
     const { nvinfo } = stuff
-
-    const { seed: sname, chap } = params
     const [chidx, cpart = 0] = chap.split('-').pop().split('.')
 
-    const url = `chaps/${nvinfo.id}/${sname}/${chidx}/${+cpart}`
+    const url = `chaps/${nvinfo.id}/${seed}/${chidx}/${+cpart}`
     const [status, cvchap] = await call_api(fetch, url, null, 'GET')
 
     if (status) return { status, error: cvchap }

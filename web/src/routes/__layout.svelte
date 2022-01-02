@@ -17,7 +17,7 @@
 
   $: {
     if (typeof gtag === 'function') {
-      gtag('config', 'UA-160000714-1', { page_path: $page.path })
+      gtag('config', 'UA-160000714-1', { page_path: $page.url.pathname })
     }
   }
 
