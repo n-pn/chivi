@@ -257,7 +257,7 @@ class CV::Zhbook
   def self.load!(nvinfo : Nvinfo, zseed : Int32) : self
     CACHE[nvinfo.id << 6 | zseed] ||= find(nvinfo.id, zseed) || begin
       case zseed
-      when 99 then dummy_users_entry(nvinfo)
+      when 63 then dummy_users_entry(nvinfo)
       when  0 then make_local_clone!(nvinfo)
       else         raise "Zhbook not found!"
       end
