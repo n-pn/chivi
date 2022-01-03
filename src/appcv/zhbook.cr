@@ -52,6 +52,10 @@ class CV::Zhbook
     Time.unix(self.atime) < Time.utc - ttl
   end
 
+  def fix_id!
+    id = nvinfo.id << 6 | zseed
+  end
+
   # mode:
   # 0 : just return utime and chap_count
   # 1 : reset cached translation
@@ -251,7 +255,7 @@ class CV::Zhbook
   end
 
   def self.load!(nvinfo : Nvinfo, zseed : Int32) : self
-    CACHE[nvinfo.id << 7 | zseed] ||= find(nvinfo.id, zseed) || begin
+    CACHE[nvinfo.id << 6 | zseed] ||= find(nvinfo.id, zseed) || begin
       case zseed
       when 99 then dummy_users_entry(nvinfo)
       when  0 then make_local_clone!(nvinfo)
@@ -261,11 +265,14 @@ class CV::Zhbook
   end
 
   def self.dummy_users_entry(nvinfo : Nvinfo)
-    new({nvinfo: nvinfo, zseed: 99, sname: "users", snvid: nvinfo.bhash})
+    zseed = NvSeed.map_id("users")
+    zhbook = new({nvinfo: nvinfo, zseed: zseed, sname: "users", snvid: nvinfo.bhash})
+    zhbook.tap(&.fix_id!)
   end
 
   def self.make_local_clone!(nvinfo : Nvinfo)
     zhbook = new({nvinfo: nvinfo, zseed: 0, sname: "chivi", snvid: nvinfo.bhash})
+    zhbook.fix_id!
     zhbook.copy_newers!(nvinfo.zhbooks.to_a)
   end
 end

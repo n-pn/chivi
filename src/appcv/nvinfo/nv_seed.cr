@@ -4,7 +4,7 @@ module CV::NvSeed
   MAP_ID = {
     "chivi" => 0,
     "miscs" => 1,
-    "users" => 99,
+    "users" => 63,
 
     "zxcs_me" => 2,
     "hetushu" => 4,
@@ -12,19 +12,19 @@ module CV::NvSeed
     "bxwxorg" => 8,
     "69shu"   => 10,
 
-    "xbiquge" => 20,
-    "rengshu" => 22,
-    "biqubao" => 24,
-    "paoshu8" => 26,
-    "shubaow" => 28,
+    "xbiquge" => 16,
+    "rengshu" => 18,
+    "biqubao" => 20,
+    "paoshu8" => 22,
+    "shubaow" => 24,
 
-    "bqg_5200" => 40,
-    "5200"     => 42,
-    "nofff"    => 44,
-    "zhwenpg"  => 46,
-    "duokan8"  => 48,
+    "bqg_5200" => 32,
+    "5200"     => 34,
+    "nofff"    => 36,
+    "zhwenpg"  => 38,
+    "duokan8"  => 40,
 
-    "jx_la" => 80,
+    "jx_la" => 60,
   }
 
   def map_id(sname : Array(String))
@@ -32,7 +32,7 @@ module CV::NvSeed
   end
 
   def map_id(sname : String)
-    MAP_ID[sname]? || 99
+    MAP_ID[sname]? || 63
   end
 
   MAP_NAME = MAP_ID.invert
