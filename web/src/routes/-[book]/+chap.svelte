@@ -1,8 +1,8 @@
 <script context="module">
-  export async function load({ url, params: { seed: sname }, stuff }) {
+  export async function load({ url, stuff }) {
     const { nvinfo } = stuff
     const chidx = +url.searchParams.get('chidx') || 1
-    return { props: { nvinfo, sname, chidx: chidx } }
+    return { props: { nvinfo, chidx: chidx } }
   }
 </script>
 
@@ -12,17 +12,17 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
+  import A from '../[...slug].svelte'
 
   export let nvinfo
 
-  export let sname
   export let chidx = 1
 
   let label = '正文'
   let input = ''
 
   async function submit_text() {
-    const url = `/api/chaps/${nvinfo.id}/${sname}`
+    const url = `/api/chaps/${nvinfo.id}/users`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -31,7 +31,7 @@
 
     if (res.ok) {
       const data = await res.json()
-      goto(`/-${nvinfo.bslug}/-${data.uslug}-${sname}-${data.chidx}`)
+      goto(`/-${nvinfo.bslug}/-chivi/-${data.uslug}-${data.chidx}`)
     } else {
       await res.text()
     }
@@ -50,7 +50,7 @@
     </a>
 
     <button class="header-item _active">
-      <span class="header-text _seed">[{sname}]</span>
+      <span class="header-text _title">Thêm chương</span>
     </button>
   </svelte:fragment>
 </Appbar>
@@ -62,7 +62,7 @@
     </div>
 
     <div class="-item">
-      <span class="-text">Chương mới</span>
+      <a href="/-{nvinfo.bslug}/-chivi" class="-link">Mục lục</a>
     </div>
   </nav>
 
@@ -76,10 +76,7 @@
   </section>
 
   <div slot="footer" class="vessel">
-    <span class="label">Nhãn quyển</span>
-    <input class="m-input" name="label" lang="zh" bind:value={label} />
-
-    <span class="label">Chương số</span>
+    <span class="label">Chương bắt đầu</span>
     <input class="m-input" name="chidx" bind:value={chidx} />
 
     <button class="m-btn _primary _fill" on:click={submit_text}>
@@ -125,12 +122,11 @@
   }
 
   .vessel {
-    @include flex($gap: 0.5rem);
+    @include flex-cy($gap: 0.5rem);
 
     // prettier-ignore
     > .m-input {
       display: inline-block;
-      &[name='label'] { width: 16rem; }
       &[name='chidx'] { width: 4rem; }
     }
 
@@ -140,11 +136,9 @@
   }
 
   .label {
-    display: inline-block;
-    line-height: 2.25rem;
     text-transform: uppercase;
     font-weight: 500;
-    @include ftsize(xs);
+    @include ftsize(sm);
     @include fgcolor(tert);
   }
 </style>

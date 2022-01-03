@@ -34,6 +34,10 @@ class CV::Chtext
     @parts[part] ||= read!(part)
   end
 
+  def mkdir!
+    FileUtils.mkdir_p(@chdir)
+  end
+
   NOTFOUND = {[] of String, 0_i64}
 
   def read!(part = 0) : Tuple(Array(String), Int64)
@@ -87,8 +91,9 @@ class CV::Chtext
     @title
   end
 
-  def save!(input : Array(String), zipping = true) : Nil
+  def save!(input : Array(String), zipping = true, mkdir = false) : Nil
     return if input.empty?
+    self.mkdir! if mkdir
     @title = input[0]
 
     @infos.chars = input.map(&.size).sum
@@ -130,6 +135,7 @@ class CV::Chtext
   def save_part!(lines : Array(String), part = 0, zipping = true) : Nil
     file = "#{@chdir}/#{part_path(part)}"
     File.open(file, "w") { |io| lines.join(io, "\n") }
+
     `zip -jqm #{@store} #{file}` if zipping
 
     # puts "- <zh_text> [#{file}] saved.".colorize.yellow

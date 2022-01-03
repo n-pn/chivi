@@ -50,6 +50,9 @@ class CV::NvchapCtrl < CV::BaseCtrl
         end
       end
     end
+  rescue err
+    Log.error { err.inspect_with_backtrace }
+    halt! 500, "Internal error!"
   end
 
   private def seed_outdated?(zhbook : Zhbook)
@@ -133,7 +136,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     response.headers.add("Cache-Control", "private, min-fresh=#{min_fresh}")
     response.content_type = "text/plain; charset=utf-8"
 
-    lines = zhbook.chtext(chinfo, cpart, mode: 0)
+    lines = zhbook.chtext(chinfo, cpart, mode: 0, uname: _cvuser.uname)
     convert(zhbook, chinfo, lines, cpart, response)
   end
 
@@ -166,69 +169,74 @@ class CV::NvchapCtrl < CV::BaseCtrl
   end
 
   def upsert
-    return 403, "Unsupported"
-    return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 2
+    if _cvuser.privi < 2 || params["sname"] != "users"
+      return halt!(500, "Quyền hạn không đủ!")
+    end
 
     zhbook = load_zhbook
     chidx = params.fetch_int("chidx") { 1 }
 
-    label = params.fetch_str("label")
-    label = "" if label == "正文"
-
     input = params.fetch_str("input")
     lines = TextUtils.split_text(input, false)
 
-    chaps = split_chaps(lines, label)
-
+    chaps = split_chaps(lines, "")
     chidx = zhbook.chap_count + 1 if chidx < 1
 
-    infos = chaps.map_with_index(chidx - 1) do |chap, index|
-      chinfo = zhbook.chinfo[index]? || begin
-
+    infos = chaps.map_with_index(chidx) do |chap, chidx|
+      if chinfo = zhbook.chinfo(chidx - 1)
+        chinfo.bump_version!
+      else
+        chinfo = ChInfo.new(chidx, (chidx * 10).to_s)
       end
 
-      schid = zhbook.get_schid(index)
-      zhbook.chtext(index, schid).save!(chap.lines)
-      zhbook.set_chap!(index, schid, chap.title, chap.label).not_nil!
+      chinfo.utime = Time.utc.to_unix
+      chinfo.uname = _cvuser.uname
+
+      chtext = Chtext.load(zhbook.sname, zhbook.snvid, chinfo)
+      chtext.save!(chap.lines, mkdir: true)
+
+      zhbook.upsert_chinfo!(chinfo, chap.title, chap.chvol)
+      chinfo.make_copy!(zhbook.sname, zhbook.snvid)
     end
+
+    # copy new uploaded chapters to "chivi" source
+    Zhbook.load!(zhbook.nvinfo, 0).upsert_chinfos!(infos)
 
     chmax = chidx + chaps.size - 1
 
     if chmax > zhbook.chap_count
-      zhbook.atime = Time.utc.to_unix
-      zhbook.utime = zhbook.atime if zhbook.zseed == 0
-      zhbook.last_schid = infos.last[0]
+      zhbook.utime = Time.utc.to_unix
+      zhbook.last_schid = infos.last.schid
       zhbook.chap_count = chmax
+      zhbook.nvinfo.update_utime(zhbook.utime)
       zhbook.save!
     end
 
-    zhbook.reset_trans!(chmax, chidx)
-
-    render_json({msg: "ok", chidx: chidx.to_s, uslug: infos.first[3]})
+    render_json({msg: "ok", chidx: chidx, uslug: infos.first.uslug})
   rescue err
     puts "- Error loading chtext: #{err}"
     halt!(500, err.message)
   end
 
   struct Chap
-    getter label : String
+    getter chvol : String
     getter lines = [] of String
     getter title : String { lines.first? || "" }
 
-    def initialize(@label)
+    def initialize(@chvol)
     end
   end
 
   LINE_RE = /^\/{4,}(.*)^/
 
-  private def split_chaps(input : Array(String), label = "")
-    chaps = [Chap.new(label)]
+  private def split_chaps(input : Array(String), chvol = "")
+    chaps = [Chap.new(chvol)]
 
     input.each do |line|
       if line =~ /^\s*\/{4,}/
         extra = line.gsub("/", "")
-        label = extra unless extra.empty? || extra == "正文"
-        chaps << Chap.new(label)
+        chvol = extra unless extra.empty? || extra == "正文"
+        chaps << Chap.new(chvol)
       else
         line = line.strip
         chaps.last.lines << line unless line.empty?

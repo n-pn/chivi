@@ -83,6 +83,15 @@ class CV::ChInfo
     end
   end
 
+  # for sname == "users" only, avoid overwrite previous uploaded entry by increase
+  # last digit of schid by one
+  # schid initialized by multiple chidx by 10
+  def bump_version!
+    version = @schid.to_i % 10
+    version = version < 10 ? version + 1 : 0
+    @schid = (chidx * 10 + version).to_s
+  end
+
   def to_s(io : IO = STDOUT)
     io << @chidx << '\t' << @schid
 
@@ -97,5 +106,15 @@ class CV::ChInfo
 
     return if @o_sname.empty?
     io << '\t' << @o_sname << '\t' << @o_snvid << '\t' << @o_chidx
+  end
+
+  def make_copy!(sname : String, snvid : String, chidx = self.chidx) : self
+    copy = self.dup
+
+    copy.o_sname = sname
+    copy.o_snvid = snvid
+    copy.o_chidx = chidx
+
+    copy
   end
 end

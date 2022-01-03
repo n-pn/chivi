@@ -30,15 +30,9 @@ class CV::ChList
 
     (pgmin..pgmax).each_with_object([] of ChInfo) do |pgidx, output|
       chlist = self.load!(sname, snvid, pgidx)
-      chlist.each_value do |inp_info|
-        next if inp_info.chidx < chmin || inp_info.chidx > chmax
-
-        out_info = inp_info.dup
-        out_info.o_sname = sname
-        out_info.o_snvid = snvid
-        out_info.o_chidx = inp_info.chidx
-
-        output << out_info
+      chlist.each_value do |chinfo|
+        next if chinfo.chidx < chmin || chinfo.chidx > chmax
+        output << chinfo.make_copy!(sname, snvid)
       end
     end
   end
@@ -51,6 +45,7 @@ class CV::ChList
   def initialize(@file : String, reset = false)
     return if reset || !File.exists?(file)
     File.read_lines(file).each do |line|
+      next if line.empty?
       info = ChInfo.new(line.split('\t'))
       @data[info.chidx] = info
     end

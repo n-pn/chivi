@@ -68,14 +68,14 @@ class CV::Zhbook
         self.update_status(parser.istate)
 
         infos = parser.chap_infos
-        pgmax = (infos.size - 1) // PG_PSIZE + 1
+        pgmax = (infos.size - 1) // CV_PSIZE + 1
 
         if mode > 2
           ChList.save!(sname, snvid, infos)
           pgmin = 0
         else
           chmin = self.chap_count - 1
-          pgmin = chmin // PG_PSIZE
+          pgmin = chmin // CV_PSIZE
           ChList.save!(sname, snvid, infos[chmin..])
         end
 
@@ -105,15 +105,15 @@ class CV::Zhbook
     self.status = status
   end
 
-  PG_PSIZE = 32
-  PG_CACHE = RamCache(String, Array(ChInfo)).new(4096, 12.hours)
+  CV_PSIZE = 32
+  CV_CACHE = RamCache(String, Array(ChInfo)).new(4096, 12.hours)
 
   def chpage(pgidx : Int32)
-    PG_CACHE.get(page_uuid(pgidx)) do
+    CV_CACHE.get(page_uuid(pgidx)) do
       chlist = ChList.load!(sname, snvid, pgidx // 4)
 
-      chmin = pgidx * PG_PSIZE + 1
-      chmax = chmin + PG_PSIZE - 1
+      chmin = pgidx * CV_PSIZE + 1
+      chmax = chmin + CV_PSIZE - 1
       chmax = self.chap_count if chmax > self.chap_count
 
       (chmin..chmax).map { |chidx| chlist.get(chidx).tap(&.trans!(cvmtl)) }
@@ -132,8 +132,8 @@ class CV::Zhbook
     output
   end
 
-  def purge_cache!(pgmin : Int32 = 0, pgmax : Int32 = chap_count % PG_PSIZE + 1)
-    pgmin.upto(pgmax) { |pgidx| PG_CACHE.delete(page_uuid(pgidx)) }
+  def purge_cache!(pgmin : Int32 = 0, pgmax : Int32 = chap_count % CV_PSIZE + 1)
+    pgmin.upto(pgmax) { |pgidx| CV_CACHE.delete(page_uuid(pgidx)) }
   end
 
   private def page_uuid(pgidx : Int32)
@@ -141,22 +141,14 @@ class CV::Zhbook
   end
 
   def chinfo(index : Int32) # provide real chap index
-    chpage(index // PG_PSIZE)[index % PG_PSIZE]?
+    chpage(index // CV_PSIZE)[index % CV_PSIZE]?
   end
-
-  # def get_schid(index : Int32)
-  #   chinfo.get_info(index).try(&.first?) || (index + 1).to_s
-  # end
 
   # def set_chap!(index : Int32, schid : String, title : String, label : String)
   #   chinfo.put_chap!(index, schid, title, label)
   # end
 
-  # def chtext(index : Int32, schid : String? = get_schid(index))
-  #   ChText.load(nvinfo.bhash, sname, snvid, index, schid)
-  # end
-
-  def chtext(chinfo : ChInfo, cpart = 0, mode = 0)
+  def chtext(chinfo : ChInfo, cpart = 0, mode = 0, uname = "")
     return [] of String if chinfo.invalid?
 
     chtext = Chtext.load(sname, snvid, chinfo)
@@ -164,30 +156,16 @@ class CV::Zhbook
 
     if mode > 1 || (mode == 1 && lines.empty?)
       lines, _ = chtext.fetch!(cpart, stale: mode > 1 ? 3.minutes : 30.years)
-      update_stats!(chinfo)
+      chinfo.uname = uname unless uname.empty?
+      upsert_chinfo!(chinfo)
     elsif chinfo.utime < utime || chinfo.parts == 0
       # check if text existed in zip file but not stored in index
-      update_stats!(chinfo, chtext.remap!)
+      upsert_chinfo!(chinfo, chtext.remap!)
     end
 
     lines
   rescue
     [] of String
-  end
-
-  def update_stats!(chinfo : ChInfo, z_title : String? = nil) : Nil
-    if z_title
-      chinfo.z_title = z_title
-      chinfo.trans!(cvmtl)
-    end
-
-    index = chinfo.chidx - 1
-
-    chlist = ChList.load!(sname, snvid, index % ChList::PSIZE)
-    chlist.update!(chinfo)
-
-    PG_CACHE.delete page_uuid(index // PG_PSIZE)
-    lastpg = nil if chap_count < index + 4
   end
 
   def chap_url(chidx : Int32, cpart = 0)
@@ -206,7 +184,49 @@ class CV::Zhbook
       self.utime = other.utime if self.utime < other.utime
     end
 
+    self.purge_cache!
+    @lastpg = nil
+
     self.atime = Time.utc.to_unix
+    self.save!
+  end
+
+  def chlist(pgidx : Int32)
+    ChList.load!(sname, snvid, pgidx)
+  end
+
+  def upsert_chinfo!(chinfo : ChInfo, z_title : String? = nil, z_chvol : String? = nil) : Nil
+    if z_title
+      chinfo.z_title = z_title
+      chinfo.z_chvol = z_chvol if z_chvol
+    end
+
+    chinfo.trans!(cvmtl)
+    index = chinfo.chidx - 1
+
+    chlist = self.chlist(index // ChList::PSIZE)
+    chlist.update!(chinfo)
+
+    CV_CACHE.delete page_uuid(index // CV_PSIZE)
+    @lastpg = nil if chap_count < index + 4
+  end
+
+  def upsert_chinfos!(infos : Array(ChInfo), utime = Time.utc.to_unix)
+    return if infos.empty?
+
+    ChList.save!(self.sname, self.snvid, infos)
+    self.utime = utime
+
+    pgmin = (infos.first.chidx - 1) // CV_PSIZE
+    pgmax = (infos.last.chidx - 1) // CV_PSIZE
+
+    self.purge_cache!(pgmin, pgmax)
+    @lastpg = nil
+
+    return unless self.chap_count < infos.last.chidx
+
+    self.chap_count = infos.last.chidx
+    self.last_schid = infos.last.schid
     self.save!
   end
 

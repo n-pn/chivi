@@ -53,8 +53,7 @@
           <a
             class="m-btn"
             class:_disable={$session.privi < 2}
-            href="/-{nvinfo.bslug}/-{chinfo.sname}/+new?chidx={chinfo.total +
-              1}">
+            href="/-{nvinfo.bslug}/+chap?chidx={chinfo.total + 1}">
             <SIcon name="plus" />
             <span class="-hide">Thêm chương</span>
           </a>
