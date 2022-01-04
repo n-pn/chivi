@@ -81,7 +81,7 @@ end
 
 recheck_proxy = false
 crawl_mode = :tail
-max_ysnvid = ENV["SNVID"]?.try(&.to_i) || 269799
+max_ysnvid = ENV["SNVID"]?.try(&.to_i) || 270289
 
 OptionParser.parse(ARGV) do |opt|
   opt.on("-p", "Recheck proxies") { recheck_proxy = true }

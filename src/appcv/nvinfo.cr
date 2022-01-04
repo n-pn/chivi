@@ -12,7 +12,7 @@ class CV::Nvinfo
   has_many yscrits : Yscrit, foreign_key: "nvinfo_id"
   # has_many yslists : Yslist, through: "yscrits"
 
-  column subdue_id : Int64? = nil # in case of duplicate entries, this column will point to the better one
+  column subdue_id : Int64 = -1 # in case of duplicate entries, this column will point to the better one
 
   column zseed_ids : Array(Int32) = [] of Int32
   getter zseeds : Array(String) { NvSeed.to_s(zseed_ids) }

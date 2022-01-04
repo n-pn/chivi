@@ -3,7 +3,7 @@ CREATE TABLE nvinfos (
   id bigserial primary key,
 
   author_id bigint not null default 0,
-  subdue_id bigint,
+  subdue_id bigint not null default -1,
 
   zseed_ids int[] not null default '{}', -- not real database table ids
   genre_ids int[] not null default '{}', -- not real database table ids
