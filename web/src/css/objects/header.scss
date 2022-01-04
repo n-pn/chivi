@@ -204,7 +204,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     text-transform: uppercase;
     font-weight: 500;
 
-    @include flex(0);
+    @include flex-cy(0);
 
     @include border(--bd-main, $loc: top);
     &:last-child {

@@ -224,11 +224,12 @@
     }
 
     &._title {
-      max-width: 35vw;
+      @include bps(max-width, 55vw, 60vw, $ts: 35vw);
     }
 
     &._author {
       max-width: 25vw;
+      @include bps(display, none, $ts: inline-block);
     }
 
     &._genre {

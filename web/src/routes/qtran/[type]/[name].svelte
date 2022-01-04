@@ -49,7 +49,7 @@
   <svelte:fragment slot="left">
     <a href="/qtran" class="header-item">
       <SIcon name="bolt" />
-      <span class="header-text">Dịch nhanh</span>
+      <span class="header-text _show-sm">Dịch nhanh</span>
     </a>
 
     <span class="header-item _active _title">
