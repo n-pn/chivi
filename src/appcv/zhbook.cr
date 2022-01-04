@@ -236,12 +236,12 @@ class CV::Zhbook
 
   ###########################
 
-  def self.upsert!(zseed : Int32, snvid : String)
-    find({zseed: zseed, snvid: snvid}) || new({zseed: zseed, snvid: snvid})
-  end
+  def self.upsert!(nvinfo : Nvinfo, sname : String, snvid : String)
+    zseed = NvSeed.map_id(sname)
 
-  def self.upsert!(sname : String, snvid : String)
-    upsert!(NvSeed.map_id(sname), snvid)
+    find({nvinfo_id: nvinfo.id, zseed: zseed}) || begin
+      new({nvinfo: nvinfo, zseed: zseed, snvid: snvid}).tap(&.fix_id!)
+    end
   end
 
   CACHE = {} of Int64 => self
@@ -252,6 +252,10 @@ class CV::Zhbook
 
   def self.load!(nvinfo_id : Int64, zseed : Int32) : self
     load!(Nvinfo.load!(nvinfo_id), zseed)
+  end
+
+  def self.load!(nvinfo : Nvinfo, sname : String) : self
+    load!(nvinfo, NvSeed.map_id(sname))
   end
 
   def self.load!(nvinfo : Nvinfo, zseed : Int32) : self

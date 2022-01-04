@@ -12,7 +12,16 @@ class CV::InitNvinfo
   FileUtils.mkdir_p("#{DIR}/inits")
   FileUtils.mkdir_p("#{DIR}/users")
 
-  @@rating_fix = Tabkv.new("#{DIR}/rating_fix.tsv", :force)
+  RATING_FIX = Tabkv.new("#{DIR}/rating_fix.tsv", :force)
+
+  def self.get_scores(btitle : String, author : String)
+    if score = RATING_FIX.get("#{btitle}  #{author}")
+      score.map(&.to_i)
+    else
+      [Random.rand(25..50), Random.rand(40..50)]
+    end
+  end
+
   @@status_map = Tabkv.new("#{DIR}/status_map.tsv", :force)
 
   getter stores = {
@@ -68,19 +77,9 @@ class CV::InitNvinfo
     set_val!(:_index, snvid, [atime.to_s, entry.btitle, entry.author])
     set_val!(:intros, snvid, entry.bintro)
     set_val!(:genres, snvid, entry.genres)
-    set_val!(:covers, snvid, "#{@sname}-#{snvid}.webp")
-
-    case entry
-    when YsbookRaw
-      set_val!(:status, snvid, [entry.status])
-      set_val!(:utimes, snvid, entry.updated_at.to_unix)
-      set_val!(:rating, snvid, [entry.voters, entry.rating])
-      set_val!(:origin, snvid, [entry.pub_name, entry.pub_link])
-      set_val!(:extras, snvid, [entry.list_total, entry.crit_count, entry.word_count, entry.shield])
-    else
-      set_val!(:status, snvid, map_status(entry.status))
-      set_val!(:utimes, snvid, [entry.mftime.to_s, entry.update])
-    end
+    set_val!(:covers, snvid, entry.bcover)
+    set_val!(:status, snvid, map_status(entry.status))
+    set_val!(:utimes, snvid, [entry.mftime.to_s, entry.update])
   end
 
   def save_stores!(dirty = true) : Nil
@@ -154,25 +153,53 @@ class CV::InitNvinfo
     nvinfo.set_status(get_map(:status, snvid).ival(snvid))
     nvinfo.set_status(get_map(:status, snvid).ival(snvid))
 
+    if @sname == "yousuu" || nvinfo.ys_voters == 0
+      get_val(:rating, snvid).try do |vals|
+        voters, rating = vals.map(&.to_i)
+        nvinfo.set_ys_scores(voters, rating)
+      end
+    end
+
     if @sname == "yousuu"
       nvinfo.ys_snvid = snvid.to_i64
       nvinfo.ys_utime = get_map(:utimes, snvid).ival_64(snvid)
       nvinfo.set_utime(nvinfo.ys_utime)
 
-      get_val(:rating, snvid).try do |vals|
-        voters, rating = vals.map(&.to_i)
-        nvinfo.set_ys_scores(voters, rating)
-      end
-
       get_val(:origin, snvid).try do |vals|
         nvinfo.pub_name, nvinfo.pub_link = vals
       end
 
-      nvinfo.yslist_count, nvinfo.yscrit_count, nvinfo.ys_word_count, shield = get_ys_extras(snvid)
-      nvinfo.set_shield(shield)
+      extras = get_ys_extras(snvid)
+      nvinfo.yslist_count = extras[0]
+      nvinfo.yscrit_count = extras[1]
+      nvinfo.ys_word_count = extras[2]
+      nvinfo.set_shield(extras[3])
+    else
+      seed_zhbook!(nvinfo, snvid)
     end
 
     nvinfo.save!
+  end
+
+  def seed_zhbook!(nvinfo : Nvinfo, snvid : String)
+    zhbook = Zhbook.load!(nvinfo, @sname)
+    nvinfo.add_nvseed(zhbook.zseed)
+
+    if zhbook.chap_count == 0
+      zhbook.chap_count, zhbook.last_snvid = fetch_counts(snvid)
+    end
+
+    zhbook.save!
+    # TODO: add chap_count
+  end
+
+  def fetch_counts(snvid : String)
+    if vals = get_val(:extras, snvid)
+      return {vals[0].to_i, vals[1]}
+    end
+
+    # TODO: seed chap_count here
+    {0, ""}
   end
 
   def get_names(snvid : String)

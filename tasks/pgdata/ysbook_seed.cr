@@ -20,8 +20,13 @@ class CV::YsbookSeed
       entries.sort_by!(&.[1].to_i)
       entries.each_with_index(1) do |(file, snvid, atime), idx|
         next unless redo || @seed.staled?(snvid, atime)
+
         entry = YsbookRaw.parse_file(file)
         @seed.add!(entry, snvid, atime)
+
+        @seed.set_val!(:rating, snvid, [entry.voters, entry.rating])
+        @seed.set_val!(:origin, snvid, [entry.pub_name, entry.pub_link])
+        @seed.set_val!(:extras, snvid, [entry.list_total, entry.crit_count, entry.word_count, entry.shield])
       rescue err
         @seed.set_val!(:_index, snvid.not_nil!, [atime.to_s, "", ""])
 
