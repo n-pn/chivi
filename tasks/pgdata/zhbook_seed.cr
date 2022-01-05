@@ -1,10 +1,14 @@
 require "option_parser"
-require "../shared/seed_data"
+require "./init_nvinfo"
 
 class CV::SeedZhbook
   def initialize(@sname : String)
-    ::FileUtils.mkdir_p("_db/.cache/#{@sname}")
-    @seed = SeedData.new(@sname)
+    @infos_dir = "_db/.cache/#{@sname}/infos"
+    ::FileUtils.mkdir_p(@infos_dir)
+
+    # ::FileUtils.mkdir_p(@infos_dir.sub("infos", "texts"))
+
+    @seed = InitNvinfo.new(@sname)
   end
 
   def build!(upper : Int32)
@@ -26,10 +30,10 @@ class CV::SeedZhbook
     1.upto(upper) do |index|
       spawn do
         snvid = index.to_s
-        fpath = "_db/.cache/#{@sname}/infos/#{snvid}.html.gz"
+        fpath = "#{@infos_dir}/#{snvid}.html.gz"
 
-        mtime = SeedUtil.get_mtime(fpath)   # html cached if mtime > 0
-        atime = @seed._index.ival_64(snvid) # book parsed if atime > 0
+        mtime = InitNvinfo.get_mtime(fpath)
+        atime = @seed.get_map(:_index, snvid).ival_64(snvid)
 
         if mtime > 0
           channel.send({snvid, atime >= mtime ? 1 : 0})

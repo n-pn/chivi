@@ -1,6 +1,5 @@
-require "../shared/seed_data"
-
-DIR = "var/chtexts/chivi"
+require "../shared/bootstrap"
+DIR = "var/chtexts/users"
 
 Dir.children(DIR).each do |bhash|
   idx_files = Dir.glob("#{DIR}/#{bhash}/*.tsv")
@@ -18,15 +17,12 @@ Dir.children(DIR).each do |bhash|
   lines = File.read_lines(idx_file)
   lines.pop if lines.last.empty?
 
-  zhbook = CV::Zhbook.load!(nvinfo, 0)
+  zhbook = CV::Zhbook.load!(nvinfo, CV::NvSeed.map_id("users"))
 
   zhbook.chap_count = lines.size
   zhbook.last_schid = lines.last.split('\t')[1]
   zhbook.mftime = File.info(idx_file).modification_time.to_unix
 
-  puts [zhbook.chap_count,
-        zhbook.last_schid,
-        zhbook.mftime]
-
+  puts [zhbook.chap_count, zhbook.last_schid, zhbook.mftime]
   zhbook.save!
 end

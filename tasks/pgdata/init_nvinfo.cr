@@ -22,6 +22,10 @@ class CV::InitNvinfo
     end
   end
 
+  def self.get_mtime(file : String) : Int64
+    File.info?(file).try(&.modification_time.to_unix) || 0_i64
+  end
+
   @@status_map = Tabkv.new("#{DIR}/status_map.tsv", :force)
 
   getter stores = {
