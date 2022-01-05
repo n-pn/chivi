@@ -44,12 +44,12 @@
     return `/api/chaps/${book_id}/${sname}/${chidx}/${cpart}`
   }
 
-  async function reload_chap(full = false) {
+  async function reload_chap(redo = false) {
     if ($session.privi < 1) return
     // console.log({ api_url })
 
-    if (full) {
-      const res = await fetch(api_url + '?mode=2')
+    if (redo) {
+      const res = await fetch(api_url + '?redo=true')
       if (!res.ok) return console.log('Error: ' + (await res.text()))
       const data = await res.json()
       ubmemo = data.ubmemo
