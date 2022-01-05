@@ -270,7 +270,13 @@ class CV::RmInfo
     end
 
     # check if the list is in correct orlder
-    chaps.reverse! if chaps.first.schid == last_schid
+    if chaps.first.schid == last_schid
+      chaps.reverse!
+
+      chaps.each_with_index(1) do |chinfo, chidx|
+        chinfo.chidx = chidx
+      end
+    end
 
     chaps
   end

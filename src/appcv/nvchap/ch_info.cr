@@ -92,7 +92,11 @@ class CV::ChInfo
     @schid = (chidx * 10 + version).to_s
   end
 
-  def to_s(io : IO = STDOUT)
+  def to_s
+    String.build { |io| to_s(io) }
+  end
+
+  def to_s(io : IO)
     io << @chidx << '\t' << @schid
 
     return if @z_title.empty?

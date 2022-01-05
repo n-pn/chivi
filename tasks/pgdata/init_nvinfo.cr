@@ -52,7 +52,7 @@ class CV::InitNvinfo
 
   private def group_and_basename(type : Symbol, snvid : String, len = 4)
     case @sname
-    when "chivi", "local", "zhwenpg"
+    when "chivi", "users", "miscs", "zhwenpg"
       {"-", "#{type}"}
     else
       group = snvid.rjust(len, '0')[0..-len]
@@ -110,7 +110,13 @@ class CV::InitNvinfo
 
   def seed_all!(only_cached = true)
     unless only_cached
-      files = Dir.glob("#{@s_dir}/_index/*.tsv")
+      case @sname
+      when "chivi", "users", "miscs", "zhwenpg"
+        files = ["#{@s_dir}/_index.tsv"]
+      else
+        files = Dir.glob("#{@s_dir}/_index/*.tsv")
+      end
+
       files.each do |file|
         group = File.basename(file, ".tsv")
         @stores[:_index][group] ||= Tabkv.new(file)
@@ -122,7 +128,9 @@ class CV::InitNvinfo
     end
 
     puts "- authors: #{authors.size.colorize.cyan}, \
-            nvinfos: #{Nvinfo.query.count.colorize.cyan}"
+    nvinfos: #{Nvinfo.query.count.colorize.cyan}"
+
+    @stores[:extras].each_value(&.save!) if @sname != "yousuu"
   end
 
   def seed_part!(map : Tabkv, idx = 0)
@@ -186,20 +194,39 @@ class CV::InitNvinfo
     nvinfo.add_nvseed(zhbook.zseed)
 
     if zhbook.chap_count == 0
-      zhbook.chap_count, zhbook.last_snvid = fetch_counts(snvid)
+      zhbook.chap_count, zhbook.last_schid = fetch_counts(snvid)
     end
 
     zhbook.save!
-    # TODO: add chap_count
   end
 
-  def fetch_counts(snvid : String)
+  def fetch_counts(snvid : String) : {Int32, String}
     if vals = get_val(:extras, snvid)
       return {vals[0].to_i, vals[1]}
     end
 
-    # TODO: seed chap_count here
-    {0, ""}
+    base_path = ChList.path(@sname, snvid, "-")
+
+    if File.exists?(base_path)
+      lines = File.read_lines(base_path)
+      infos = lines.compact_map do |line|
+        ChInfo.new(line.split('\t')) unless line.empty?
+      end
+    elsif NvSeed.remote?(@sname, 4) || @sname == "zhwenpg"
+      parser = RmInfo.init(@sname, snvid, ttl: 10.years, mkdir: true)
+      infos = parser.chap_infos
+      File.write(base_path, infos.map(&.to_s).join('\n'))
+    else
+      puts "- Missing data for: #{snvid}".colorize.red.bold
+      return {0, ""}
+    end
+
+    ChList.save!(@sname, snvid, infos)
+
+    chap_count, last_schid = infos.last.chidx, infos.last.schid
+    set_val!(:extras, snvid, [chap_count.to_s, last_schid])
+
+    {chap_count, last_schid}
   end
 
   def get_names(snvid : String)

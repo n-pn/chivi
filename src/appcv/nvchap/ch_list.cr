@@ -8,8 +8,12 @@ class CV::ChList
   CACHE = RamCache(String, self).new(4096, 3.days)
 
   def self.load!(sname : String, snvid : String, pgidx = 0, reset = false)
-    fpath = "#{DIR}/#{sname}/#{snvid}/#{pgidx}.tsv"
+    fpath = self.path(sname, snvid, pgidx)
     CACHE.get(fpath) { new(fpath, reset: reset) }
+  end
+
+  def self.path(sname : String, snvid : String, fname : Int32 | String)
+    "#{DIR}/#{sname}/#{snvid}/#{fname}.tsv"
   end
 
   def self.save!(sname : String, snvid : String, infos : Array(ChInfo))
@@ -19,7 +23,7 @@ class CV::ChList
     input = infos.group_by { |x| (x.chidx - 1) // PSIZE }
     input.each do |pgidx, infos|
       ch_list = load!(sname, snvid, pgidx)
-      infos.each { |chinfo| ch_list[chinfo.chidx] = chinfo }
+      infos.each { |chinfo| ch_list.add(chinfo) }
       ch_list.save!
     end
   end
@@ -53,6 +57,19 @@ class CV::ChList
 
   def get(chidx : Int32) : ChInfo
     @data[chidx] ||= ChInfo.new(chidx)
+  end
+
+  def add(chinfo : ChInfo)
+    if (old_chinfo = @data[chinfo.chidx]?) && chinfo.schid == old_chinfo.schid
+      if old_chinfo.utime > chinfo.utime
+        chinfo.utime = old_chinfo.utime
+        chinfo.chars = old_chinfo.chars
+        chinfo.parts = old_chinfo.parts
+        chinfo.uname = old_chinfo.uname
+      end
+    end
+
+    @data[chinfo.chidx] = chinfo
   end
 
   def update!(chinfo : ChInfo) : Nil

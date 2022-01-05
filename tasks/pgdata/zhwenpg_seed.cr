@@ -71,25 +71,6 @@ class CV::ZhwenpgSeed
   def seed!
     @seed.seed_all!(only_cached: false)
   end
-
-  # def save_book(parser : ZhwenpgParser, status = 0, bumped = Time.utc) : Nil
-  #   zhbook.nvinfo = nvinfo
-  #   nvinfo.add_zhseed(zhbook.zseed)
-
-  #   zhbook.bumped = bumped
-  #   zhbook.mftime = parser.mftime
-  #   nvinfo.set_mftime(zhbook.mftime)
-
-  #   if zhbook.chap_count == 0
-  #     zhbook.refresh!(privi: 3, mode: 1, ttl: 10.years)
-  #     # chinfo = ChInfo.new(nvinfo.bhash, "zhwenpg", parser.snvid)
-  #     # _, zhbook.chap_count, zhbook.last_schid = chinfo.update!(mode: 1, ttl: ttl)
-  #   end
-
-  #   zhbook.save!
-  #   nvinfo.save!
-  # end
-
 end
 
 worker = CV::ZhwenpgSeed.new
