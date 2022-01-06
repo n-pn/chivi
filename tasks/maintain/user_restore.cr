@@ -3,10 +3,6 @@ require "./_shared"
 module CV::UserRestore
   extend self
 
-  def user_file(uname : String)
-    File.join(USER_DIR, uname.downcase + ".tsv")
-  end
-
   STR_FIELDS = %w(uname email cpass wtheme)
   INT_FIELDS = %w(karma privi)
 
@@ -18,8 +14,8 @@ module CV::UserRestore
     old_user.delete
   end
 
-  def restore_user(file : String, overwrite : Bool)
-    store = TsvStore.new(file)
+  def restore_cvuser(file : String, overwrite : Bool)
+    store = Tabkv.new(file)
     uname = File.basename(file, ".tsv")
     user_id = store.ival("id")
 
@@ -47,34 +43,28 @@ module CV::UserRestore
     user.tap(&.save!)
   end
 
-  def restore_user_library(user : Cvuser)
-    store = TsvStore.new(user_file("library/" + user.uname))
-    store.data.each do |bhash, values|
-      next unless book = Cvbook.load!(bhash)
+  def restore_ubmemo(user : Cvuser)
+    status = Tabkv.new(CV.user_file("memos/" + user.uname + "-status"))
+    access = Tabkv.new(CV.user_file("memos/" + user.uname + "-access"))
 
-      Ubmemo.upsert!(user, book) do |entry|
-        entry.status = Ubmemo.status(values[0])
-        entry.created_at = Time.unix(values[1].to_i64)
-        entry.updated_at = Time.unix(values[1].to_i64)
-      end
-    rescue err
-      puts err
-    end
-  end
+    status.data.each do |bhash, status_val|
+      next unless nvinfo = Nvinfo.load!(bhash)
+      access_val = access.get(bhash).not_nil!
 
-  def restore_user_history(user : Cvuser)
-    store = TsvStore.new(user_file("history/" + user.uname))
-    store.data.each do |bhash, values|
-      next unless book = Cvbook.load!(bhash)
+      Ubmemo.upsert!(user, nvinfo) do |entry|
+        entry.status = Ubmemo.status(status_val[0].to_s)
+        entry.locked = status_val[1] == "true"
+        entry.atime = status_val[2].to_i64
+        entry.created_at = Time.unix(status_val[3].to_i64)
+        entry.updated_at = Time.unix(status_val[4].to_i64)
 
-      Ubmemo.upsert!(user, book) do |entry|
-        entry.bumped = values[2].to_i64
+        entry.lr_sname = access_val[0]
+        entry.lr_chidx = access_val[1].to_i
+        entry.lr_cpart = access_val[2].to_i
 
-        entry.lr_zseed = Zhseed.index(values[0])
-        entry.lr_chidx = values[1].to_i
-
-        entry.lc_title = values[3]
-        entry.lc_uslug = values[4]
+        entry.utime = access_val[3].to_i64
+        entry.lc_title = access_val[4]
+        entry.lc_uslug = access_val[5]
       end
     rescue err
       puts err
@@ -82,10 +72,9 @@ module CV::UserRestore
   end
 
   def run!(overwrite = false)
-    Dir.glob("#{USER_DIR}/*.tsv").each do |file|
-      user = restore_user(file, overwrite: overwrite)
-      restore_user_library(user)
-      restore_user_history(user)
+    Dir.glob("#{CVUSER_DIR}/*.tsv").each do |file|
+      user = restore_cvuser(file, overwrite: overwrite)
+      restore_ubmemo(user)
     end
   end
 end

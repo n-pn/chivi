@@ -4,15 +4,14 @@ module CV::UserBackup
   extend self
 
   def user_file(uname : String)
-    File.join(USER_DIR, uname.downcase + ".tsv")
+    File.join(CVUSER_DIR, uname.downcase + ".tsv")
   end
 
   FIELDS = %w(id uname email cpass karma privi wtheme)
+  STAMPS = %w(created_at updated_at)
 
-  TIMESTAMPS = %w(created_at updated_at)
-
-  def save_user(user : Cvuser)
-    store = TsvStore.new(user_file(user.uname))
+  def save_cvuser(user : Cvuser)
+    store = Tabkv.new(user_file(user.uname))
 
     {% for field in FIELDS %}
       store.set!({{field}}, user.{{field.id}})
@@ -20,44 +19,36 @@ module CV::UserBackup
 
     store.set!("privi_until", user.privi_until.try(&.to_unix))
 
-    {% for field in TIMESTAMPS %}
+    {% for field in STAMPS %}
       store.set!({{field}}, user.{{field.id}}.to_unix)
     {% end %}
 
     store.save!
   end
 
-  def save_user_library(user : Cvuser)
-    store = TsvStore.new(user_file("library/" + user.uname))
+  def save_ubmemo(user : Cvuser)
+    status = Tabkv.new(user_file("memos/" + user.uname + "-status"))
+    access = Tabkv.new(user_file("memos/" + user.uname + "-access"))
 
     Ubmemo.query.where({cvuser_id: user.id}).with_nvinfo.each do |entry|
-      value = [entry.status_s, entry.created_at.to_unix, entry.updated_at.to_unix]
-      store.set!(entry.nvinfo.bhash, value.map(&.to_s))
+      value_1 = [entry.status_s, entry.locked, entry.atime, entry.created_at.to_unix, entry.updated_at.to_unix]
+      status.set!(entry.nvinfo.bhash, value_1.map(&.to_s))
+
+      value_2 = [entry.lr_sname, entry.lr_chidx, entry.lr_cpart, entry.utime, entry.lc_title, entry.lc_uslug]
+      access.set!(entry.nvinfo.bhash, value_2.map(&.to_s))
     end
 
-    store.save!
-  end
-
-  def save_user_history(user : Cvuser)
-    store = TsvStore.new(user_file("history/" + user.uname))
-
-    Ubmemo.query.where({cvuser_id: user.id}).with_nvinfo.each do |entry|
-      value = [entry.lr_sname, entry.lr_chidx, entry.bumped, entry.lc_title, entry.lc_uslug]
-      store.set!(entry.nvinfo.bhash, value.map(&.to_s))
-    end
-
-    store.save!
+    status.save!
+    access.save!
   end
 
   def run!(fresh = false)
-    FileUtils.rm_rf(USER_DIR) if fresh
-    FileUtils.mkdir_p(USER_DIR + "/library")
-    FileUtils.mkdir_p(USER_DIR + "/history")
+    FileUtils.rm_rf(CVUSER_DIR) if fresh
+    FileUtils.mkdir_p(CVUSER_DIR + "/memos")
 
     Cvuser.query.order_by(id: :asc).each do |user|
-      save_user(user)
-      save_user_library(user)
-      save_user_history(user)
+      save_cvuser(user)
+      save_ubmemo(user)
     end
   end
 end
