@@ -137,17 +137,15 @@ class CV::InitNvinfo
   end
 
   def seed_part!(map : Tabkv, idx = 0)
-    map.data.each_with_index(idx * 100 + 1) do |(snvid, value), idx|
+    map.data.each do |snvid, value|
       btitle, author = NvUtil.fix_names(value[1], value[2])
       seed_nvinfo!(snvid, btitle, author)
-
-      if idx % 100 == 0
-        puts "- [#{@sname}/seed] <#{idx.colorize.cyan}>, \
-                authors: #{authors.size.colorize.cyan}, \
-                nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
-                zhbooks: #{Zhbook.query.count.colorize.cyan}"
-      end
     end
+
+    puts "- [#{@sname}/seed] <#{idx.colorize.cyan}>, \
+            authors: #{authors.size.colorize.cyan}, \
+            nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
+            zhbooks: #{Zhbook.query.count.colorize.cyan}"
   end
 
   def seed_nvinfo!(snvid : String, nvinfo_zname : String? = nil, author_zname : String? = nil) : Nil
@@ -218,7 +216,7 @@ class CV::InitNvinfo
         ChInfo.new(line.split('\t')) unless line.empty?
       end
     elsif NvSeed.remote?(@sname, privi: 5)
-      ttl = NvSeed::REMOTES.includes?(@sname) ? 7.days : 10.years
+      ttl = NvSeed::REMOTES.includes?(@sname) ? 1.months : 10.years
       infos = fetch_chinfos!(snvid, ttl)
       File.write(base_path, infos.map(&.to_s).join('\n'))
     else
@@ -239,7 +237,7 @@ class CV::InitNvinfo
     {chap_count, last_schid}
   end
 
-  def fetch_chinfos!(snvid : String, ttl = 7.days)
+  def fetch_chinfos!(snvid : String, ttl = 1.months)
     parser = RmInfo.init(@sname, snvid, ttl: ttl, mkdir: true)
     output = parser.chap_infos
     output.empty? && ttl != 1.hours ? fetch_chinfos!(snvid, 1.hours) : output

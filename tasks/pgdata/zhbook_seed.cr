@@ -12,8 +12,12 @@ class CV::SeedZhbook
   end
 
   def build!(upper : Int32)
-    upper = upper_snvid.to_i if upper < 1
-    missing, updates = [] of String, [] of String
+    if upper < 1
+      upper = extract_upper.tap { |x| puts x }.to_i
+    end
+
+    missing = [] of String
+    updates = [] of String
 
     read_stats(upper) do |snvid, state|
       missing << snvid if state == 2
@@ -102,9 +106,9 @@ class CV::SeedZhbook
     @seed.save_stores!
   end
 
-  def upper_snvid : String
+  def extract_upper : String
     page = begin
-      file = "_db/.cache/#{@sname}/index.html.gz"
+      file = @infos_dir.sub("infos", "index.html.gz")
       link = site_index_link(@sname)
       encoding = HttpUtil.encoding_for(@sname)
       html = HttpUtil.load_html(link, file, ttl: 12.hours, encoding: encoding)
