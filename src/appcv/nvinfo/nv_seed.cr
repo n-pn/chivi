@@ -64,8 +64,8 @@ module CV::NvSeed
       privi >= 1 || yield
     when "69shu", "paoshu8", "duokan8"
       privi >= 2 || yield
-    when "shubaow" # only works in real pc environment
-      privi >= 3 && ENV["AMBER_ENV"]? != "production"
+    when "shubaow", "zhwenpg"
+      privi > 4
     else false
     end
   end

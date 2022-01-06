@@ -7,7 +7,7 @@ SSH=nipin@ssh.chivi.app:srv/chivi.app
 if [[ $1 == "all" || $* == *user* ]]
 then
   echo backup user seeds!
-  rsync -aiz --no-p --delete "$SSH/db/seeds/users" "db/seeds"
+  rsync -aiz --no-p --delete "$SSH/var/pg_data/cvusers" "var/pg_data"
 fi
 
 ## backup user data
@@ -32,8 +32,8 @@ if [[ $1 == "all" || $* == *book* ]]
 then
   echo backup books data!
   rsync -aiz --no-p "$SSH/_db/.cache/" "_db/.cache/"
-  rsync -aiz --no-p "$SSH/_db/zhbook/" "_db/zhbook/"
   rsync -aiz --no-p "$SSH/var/chtexts/" "var/chtexts/"
+  # rsync -aiz --no-p "$SSH/var/nvinfos/auto" "var/nvinfos"
 fi
 
 ## backup crit data

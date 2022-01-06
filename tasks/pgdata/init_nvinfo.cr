@@ -13,6 +13,7 @@ class CV::InitNvinfo
   FileUtils.mkdir_p("#{DIR}/users")
 
   RATING_FIX = Tabkv.new("#{DIR}/rating_fix.tsv", :force)
+  STATUS_MAP = Tabkv.new("#{DIR}/status_map.tsv", :force)
 
   def self.get_scores(btitle : String, author : String)
     if score = RATING_FIX.get("#{btitle}  #{author}")
@@ -25,8 +26,6 @@ class CV::InitNvinfo
   def self.get_mtime(file : String) : Int64
     File.info?(file).try(&.modification_time.to_unix) || 0_i64
   end
-
-  @@status_map = Tabkv.new("#{DIR}/status_map.tsv", :force)
 
   getter stores = {
     _index: {} of String => Tabkv,
@@ -101,14 +100,14 @@ class CV::InitNvinfo
   def map_status(input : String) : Array(String)
     return ["0"] if input.empty? || @sname == "hetushu"
 
-    if output = @@status_map.get(input)
+    if output = STATUS_MAP.fval(input)
       return [output, input]
     end
 
     debug_line = input + "\t" + @sname
     File.open("tmp/unmapped-status.log", "a", &.puts(debug_line))
 
-    status_map.set(input, "0")
+    STATUS_MAP.set(input, "0")
     ["0", input]
   end
 
@@ -145,7 +144,8 @@ class CV::InitNvinfo
       if idx % 100 == 0
         puts "- [#{@sname}/seed] <#{idx.colorize.cyan}>, \
                 authors: #{authors.size.colorize.cyan}, \
-                nvinfos: #{Nvinfo.query.count.colorize.cyan}"
+                nvinfos: #{Nvinfo.query.count.colorize.cyan}, \
+                zhbooks: #{Zhbook.query.count.colorize.cyan}"
       end
     end
   end
@@ -194,11 +194,11 @@ class CV::InitNvinfo
   end
 
   def seed_zhbook!(nvinfo : Nvinfo, snvid : String)
-    zhbook = Zhbook.load!(nvinfo, @sname)
+    zhbook = Zhbook.upsert!(nvinfo, @sname, snvid)
     nvinfo.add_nvseed(zhbook.zseed)
 
     if zhbook.chap_count == 0
-      zhbook.chap_count, zhbook.last_schid = fetch_counts(snvid)
+      zhbook.chap_count, zhbook.last_schid = self.fetch_counts(snvid)
     end
 
     zhbook.save!
@@ -210,15 +210,16 @@ class CV::InitNvinfo
     end
 
     base_path = ChList.path(@sname, snvid, "-")
+    FileUtils.mkdir_p(File.dirname(base_path))
 
     if File.exists?(base_path)
       lines = File.read_lines(base_path)
       infos = lines.compact_map do |line|
         ChInfo.new(line.split('\t')) unless line.empty?
       end
-    elsif NvSeed.remote?(@sname, 4) || @sname == "zhwenpg"
-      parser = RmInfo.init(@sname, snvid, ttl: 10.years, mkdir: true)
-      infos = parser.chap_infos
+    elsif NvSeed.remote?(@sname, privi: 5)
+      ttl = NvSeed::REMOTES.includes?(@sname) ? 7.days : 10.years
+      infos = fetch_chinfos!(snvid, ttl)
       File.write(base_path, infos.map(&.to_s).join('\n'))
     else
       puts "- Missing data for: #{snvid}".colorize.red.bold
@@ -227,10 +228,21 @@ class CV::InitNvinfo
 
     ChList.save!(@sname, snvid, infos)
 
-    chap_count, last_schid = infos.last.chidx, infos.last.schid
+    if infos.empty?
+      puts "#{@sname}/#{snvid} has no chapters!".colorize.red
+    end
+
+    last_chap = infos.last? || ChInfo.new(0)
+    chap_count, last_schid = last_chap.chidx, last_chap.schid
     set_val!(:extras, snvid, [chap_count.to_s, last_schid])
 
     {chap_count, last_schid}
+  end
+
+  def fetch_chinfos!(snvid : String, ttl = 7.days)
+    parser = RmInfo.init(@sname, snvid, ttl: ttl, mkdir: true)
+    output = parser.chap_infos
+    output.empty? && ttl != 1.hours ? fetch_chinfos!(snvid, 1.hours) : output
   end
 
   def get_names(snvid : String)

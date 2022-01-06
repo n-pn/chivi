@@ -15,14 +15,14 @@ targets:
   amber:
     main: lib/amber/src/amber/cli.cr
 
-  seed_zhwenpg:
-    main: tasks/nvinfo/seed_zhwenpg.cr
+  zhwenpg_seed:
+    main: tasks/pgdata/zhwenpg_seed.cr
 
-  seed_ysbook:
-    main: tasks/nvinfo/seed_ysbook.cr
+  ysbook_seed:
+    main: tasks/pgdata/ysbook_seed.cr
 
-  seed_zhbook:
-    main: tasks/nvinfo/seed_zhbook.cr
+  zhbook_seed:
+    main: tasks/pgdata/zhbook_seed.cr
 
   seed_zxcsme:
     main: tasks/nvinfo/seed_zxcsme.cr

@@ -8,8 +8,8 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   next if old_btitle == fix_btitle && old_author == fix_author
 
   puts "- #{nvinfo.bhash}"
-  puts "btitle: #{old_btitle} => #{fix_btitle}" if old_btitle != fix_btitle
-  puts "author: #{old_author} => #{fix_author}" if old_author != fix_author
+  puts "  btitle: #{old_btitle} => #{fix_btitle}" if old_btitle != fix_btitle
+  puts "  author: #{old_author} => #{fix_author}" if old_author != fix_author
 
   if old_author == fix_author
     author = nvinfo.author
@@ -18,12 +18,12 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   end
 
   new_nvinfo = CV::Nvinfo.upsert!(author, fix_btitle)
-  nvinfo.update({subdue_id: new_nvinfo.id})
+  nvinfo.update!({subdue_id: new_nvinfo.id})
 
   zhbooks = nvinfo.zhbooks.to_a.sort_by(&.zseed)
   zhbooks.each do |zhbook|
     next if zhbook.sname == "chivi" || zhbook.sname == "users"
-    next if Zhbook.find({nvinfo_id: new_nvinfo.id, zseed: zhbook.zseed})
+    next if CV::Zhbook.find({nvinfo_id: new_nvinfo.id, zseed: zhbook.zseed})
 
     zhbook.nvinfo_id = new_nvinfo.id
     zhbook.fix_id!
@@ -31,7 +31,7 @@ CV::Nvinfo.query.with_author.to_a.each do |nvinfo|
   end
 
   zseed_ids = new_nvinfo.zhbooks.to_a.map(&.zseed).sort
-  new_nvinfo.update({zseed_ids: zseed_ids})
+  new_nvinfo.update!({zseed_ids: zseed_ids})
 
   CV::Yscrit.query.where(nvinfo_id: nvinfo.id).to_update.set(nvinfo_id: new_nvinfo.id).execute
   CV::Ubmemo.query.where(nvinfo_id: nvinfo.id).to_update.set(nvinfo_id: new_nvinfo.id).execute

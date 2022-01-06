@@ -13,7 +13,7 @@ fi
 if [[ $2 == "seed" ]]
 then
   echo upload seeds!
-  rsync -azi --no-p --delete "db/seeds/users" "$ssh/db/seeds"
+  # rsync -azi --no-p --delete "var/pg_data/cvusers" "$ssh/var/pg_data"
   rsync -azi --no-p --delete "var/nvinfos/autos" "$ssh/var/nvinfos"
 fi
 

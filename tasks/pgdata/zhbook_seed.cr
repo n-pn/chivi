@@ -88,32 +88,18 @@ class CV::SeedZhbook
 
     queue.each_with_index(1) do |snvid, idx|
       bfile = PathUtil.binfo_cpath(@sname, snvid)
-      atime = SeedUtil.get_mtime(bfile)
+      atime = InitNvinfo.get_mtime(bfile)
 
       entry = RmInfo.init(@sname, snvid, lbl: "#{idx}/#{queue.size}")
-
-      @seed._index.set!(snvid, [atime.to_s, entry.btitle, entry.author])
-      @seed.set_intro(snvid, entry.bintro)
-
-      @seed.genres.set!(snvid, entry.genres)
-      @seed.bcover.set!(snvid, entry.bcover)
-
-      if @sname == "hetushu"
-        @seed.status.set!(snvid, [entry.status])
-      else
-        status_int = SeedUtil.parse_status(entry.status)
-        @seed.status.set!(snvid, [status_int.to_s, entry.status])
-      end
-
-      @seed.mftime.set!(snvid, [entry.mftime.to_s, entry.update])
+      @seed.add!(entry, snvid, atime)
 
       if idx % 100 == 0
         puts "- [#{@sname}]: <#{idx}/#{queue.size}>"
-        @seed.save!(clean: false)
+        @seed.save_stores!
       end
     end
 
-    @seed.save!(clean: false)
+    @seed.save_stores!
   end
 
   def upper_snvid : String
@@ -180,92 +166,68 @@ class CV::SeedZhbook
   end
 
   def seed!(redo = false)
-    input = @seed._index.data.to_a
-
-    puts "- Input: #{input.size.colorize.cyan} entries, \
-            authors: #{Author.query.count.colorize.cyan}, \
-            nvinfos: #{Nvinfo.query.count.colorize.cyan}"
-
-    input.sort_by(&.[0].to_i).each_with_index(1) do |(snvid, values), idx|
-      save_book(snvid, values, redo: redo)
-
-      if idx % 100 == 0
-        puts "- [#{@sname}] <#{idx.colorize.cyan}/#{input.size}>, \
-                authors: #{Author.query.count.colorize.cyan}, \
-                nvinfos: #{Nvinfo.query.count.colorize.cyan}"
-      end
-    end
-
-    puts "- authors: #{Author.query.count.colorize.cyan}, \
-            nvinfos: #{Nvinfo.query.count.colorize.cyan}"
-
-    @seed.save!
+    @seed.seed_all!(only_cached: !redo)
   end
 
-  def save_book(snvid : String, values : Array(String), redo = false)
-    bumped, p_ztitle, p_author = values
-    return if p_ztitle.empty? || p_author.empty?
+  # def save_book(snvid : String, values : Array(String), redo = false)
+  #   bumped, p_ztitle, p_author = values
+  #   return if p_ztitle.empty? || p_author.empty?
 
-    author = SeedUtil.get_author(p_author, p_ztitle, @sname == "hetushu")
-    return unless author
+  #   author = SeedUtil.get_author(p_author, p_ztitle, @sname == "hetushu")
+  #   return unless author
 
-    ztitle = BookUtils.fix_zh_btitle(p_ztitle, author.zname)
-    return unless nvinfo = load_nvinfo(author, ztitle)
+  #   ztitle = BookUtils.fix_zh_btitle(p_ztitle, author.zname)
+  #   return unless nvinfo = load_nvinfo(author, ztitle)
 
-    zhbook = Zhbook.upsert!(@sname, snvid)
-    bumped = bumped.to_i64
+  #   zhbook = Zhbook.upsert!(@sname, snvid)
+  #   bumped = bumped.to_i64
 
-    if redo || zhbook.unmatch?(nvinfo.id)
-      zhbook.nvinfo = nvinfo
-      nvinfo.add_zhseed(zhbook.zseed)
+  #   if redo || zhbook.unmatch?(nvinfo.id)
+  #     zhbook.nvinfo = nvinfo
+  #     nvinfo.add_zhseed(zhbook.zseed)
 
-      nvinfo.set_genres(@seed.get_genres(snvid))
-      # nvinfo.set_bcover("#{@sname}-#{snvid}.webp")
-      nvinfo.set_zintro(@seed.get_intro(snvid).join("\n"))
+  #     nvinfo.set_genres(@seed.get_genres(snvid))
+  #     # nvinfo.set_bcover("#{@sname}-#{snvid}.webp")
+  #     nvinfo.set_zintro(@seed.get_intro(snvid).join("\n"))
 
-      if nvinfo.voters == 0
-        voters, rating = @seed.get_scores(snvid)
-        nvinfo.set_scores(voters, rating)
-      end
-    else # zhbook already created before
-      return unless bumped > zhbook.bumped
-    end
+  #     if nvinfo.voters == 0
+  #       voters, rating = @seed.get_scores(snvid)
+  #       nvinfo.set_scores(voters, rating)
+  #     end
+  #   else # zhbook already created before
+  #     return unless bumped > zhbook.bumped
+  #   end
 
-    zhbook.status = @seed.status.ival(snvid)
-    nvinfo.set_status(zhbook.status)
+  #   zhbook.status = @seed.status.ival(snvid)
+  #   nvinfo.set_status(zhbook.status)
 
-    zhbook.bumped = bumped
-    zhbook.mftime = @seed.mftime.ival_64(snvid)
+  #   zhbook.bumped = bumped
+  #   zhbook.mftime = @seed.mftime.ival_64(snvid)
 
-    if zhbook.mftime < 1
-      zhbook.mftime = nvinfo.mftime
-    else
-      nvinfo.set_mftime(zhbook.mftime)
-    end
+  #   if zhbook.mftime < 1
+  #     zhbook.mftime = nvinfo.mftime
+  #   else
+  #     nvinfo.set_mftime(zhbook.mftime)
+  #   end
 
-    if zhbook.chap_count == 0 || redo
-      vals = @seed.chsize.get(snvid)
+  #   if zhbook.chap_count == 0 || redo
+  #     vals = @seed.chsize.get(snvid)
 
-      if vals = @seed.chsize.get(snvid)
-        zhbook.chap_count = vals[0].to_i
-        zhbook.last_schid = vals[1]
-      else
-        puts "-- extract chap index: #{nvinfo.bhash}".colorize.yellow
-        # ttl = get_ttl(zhbook.mftime)
-        FileUtils.mkdir_p("var/chtexts/#{@sname}/#{snvid}")
-        _, chap_count = zhbook.refresh!(mode: 1, ttl: 10.years)
-        @seed.chsize.set!(snvid, [chap_count.to_s, zhbook.last_schid])
-      end
-    end
+  #     if vals = @seed.chsize.get(snvid)
+  #       zhbook.chap_count = vals[0].to_i
+  #       zhbook.last_schid = vals[1]
+  #     else
+  #       puts "-- extract chap index: #{nvinfo.bhash}".colorize.yellow
+  #       # ttl = get_ttl(zhbook.mftime)
+  #       FileUtils.mkdir_p("var/chtexts/#{@sname}/#{snvid}")
+  #       _, chap_count = zhbook.refresh!(mode: 1, ttl: 10.years)
+  #       @seed.chsize.set!(snvid, [chap_count.to_s, zhbook.last_schid])
+  #     end
+  #   end
 
-    zhbook.save!
-    nvinfo.save!
-  end
-
-  def get_ttl(mftime : Int64)
-    return 10.years if @sname == "hetushu" || @sname == "jx_la"
-    Time.utc - Time.unix(mftime) - 1.days
-  end
+  #   zhbook.save!
+  #   nvinfo.save!
+  # end
 
   private def get_fake_scores
     case @sname
@@ -273,15 +235,6 @@ class CV::SeedZhbook
       [Random.rand(30..100), Random.rand(50..65)]
     else
       [Random.rand(25..50), Random.rand(40..50)]
-    end
-  end
-
-  def load_nvinfo(author : Author, ztitle : String)
-    case @sname
-    when "hetushu", "rengshu", "xbiquge", "69shu" # reliable source
-      Nvinfo.upsert!(author, ztitle)
-    else
-      Nvinfo.get(author, ztitle)
     end
   end
 
@@ -321,7 +274,7 @@ class CV::SeedZhbook
 
     updates -= missing if sname == "jx_la"
     seeder.init!(updates) if cr_mode != 1
-    seeder.seed!(redo: redo) unless no_seed
+    seeder.seed!(true) unless no_seed
   end
 end
 
