@@ -161,7 +161,6 @@ class CV::InitNvinfo
     nvinfo.set_bcover(get_map(:covers, snvid).fval(snvid) || "")
 
     nvinfo.set_status(get_map(:status, snvid).ival(snvid))
-    nvinfo.set_status(get_map(:status, snvid).ival(snvid))
 
     if @sname == "yousuu" || nvinfo.ys_voters == 0
       get_val(:rating, snvid).try do |vals|

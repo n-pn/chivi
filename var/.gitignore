@@ -1,4 +1,5 @@
+_proxy/.works/*.txt
+_ulogs/*.log
 chtexts
 chtexts/**
 pg_data/**
-_proxy/.works/*.txt

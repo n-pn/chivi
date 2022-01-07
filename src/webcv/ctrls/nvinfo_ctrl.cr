@@ -97,4 +97,32 @@ class CV::NvinfoCtrl < CV::BaseCtrl
     Log.error { err.message.colorize.red }
     halt! 500, "Có lỗi từ hệ thống"
   end
+
+  def upsert
+    return halt!(403, "Quyền hạn không đủ!") if _cvuser.privi < 3
+
+    btitle_zname, author_zname = NvUtil.fix_names(params["btitle"].strip, params["author"].strip)
+    author = Author.upsert!(author_zname)
+    nvinfo = Nvinfo.upsert!(author, btitle_zname)
+
+    params["bintro"]?.try { |x| nvinfo.set_zintro(TextUtils.split_text(x), true) }
+    params["genres"]?.try { |x| nvinfo.set_zgenre(x.split(' ').map(&.strip), true) }
+
+    params["bcover"]?.try { |x| nvinfo.set_bcover(x, force: true) }
+    params["status"]?.try { |x| nvinfo.set_status(x.to_i, force: true) }
+
+    nvinfo.save!
+
+    log_upsert_action(params.to_unsafe_h)
+    json_view({bslug: nvinfo.bslug})
+  end
+
+  LOG_FILE = "var/_ulogs/#{Time.utc.to_s.split(' ', 2).first}.log"
+
+  private def log_upsert_action(params : Hash(String, String))
+    File.open(LOG_FILE, "a") do |io|
+      data = {action: "upsert_nvinfo", cvuser: _cvuser.uname, params: params}
+      io.puts(data.to_json)
+    end
+  end
 end

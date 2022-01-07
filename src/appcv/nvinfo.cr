@@ -164,6 +164,10 @@ class CV::Nvinfo
     self.zseed_ids_column.dirty!
   end
 
+  def set_zgenre(genres : Array(String), force = false) : Nil
+    set_genres(BGenre.map_zh(genres), force: force)
+  end
+
   def set_genres(genres : Array(String), force = false) : Nil
     return unless force || self.genre_ids.empty?
     genres_ids = BGenre.map_id(genres)
@@ -240,6 +244,18 @@ class CV::Nvinfo
     self.weight = scores + Math.log(self.total_clicks + 10).to_i
   end
 
+  def fix_names!
+    self.vname = NvUtil.btitle_vname(self.zname, self.bhash)
+    self.vslug = "-" + NvUtil.scrub_vname(self.vname, "-") + "-"
+
+    self.hname = NvUtil.hanviet(self.zname)
+    hslug = NvUtil.scrub_vname(self.hname, "-")
+    self.hslug = "-" + hslug + "-"
+
+    self.bslug = hslug.split("-").first(8).join("-") + "-" + bhash[0..3]
+    self.save!
+  end
+
   #########################################
 
   class_getter total : Int64 { query.count }
@@ -261,21 +277,13 @@ class CV::Nvinfo
     end
   end
 
-  def self.upsert!(author : Author, zname : String)
-    get(author, zname) || begin
+  def self.upsert!(author : Author, zname : String, remap = false)
+    unless nvinfo = get(author, zname)
       bhash = UkeyUtil.digest32("#{zname}--#{author.zname}")
       nvinfo = new({author_id: author.id, bhash: bhash, zname: zname})
-
-      nvinfo.vname = NvUtil.btitle_vname(zname, bhash)
-      nvinfo.vslug = "-" + NvUtil.scrub_vname(nvinfo.vname, "-") + "-"
-
-      nvinfo.hname = NvUtil.hanviet(zname)
-      hslug = NvUtil.scrub_vname(nvinfo.hname, "-")
-      nvinfo.hslug = "-" + hslug + "-"
-
-      nvinfo.bslug = hslug.split("-").first(8).join("-") + bhash[0..3]
-
-      nvinfo.tap(&.save!)
+      remap = true
     end
+
+    nvinfo.tap { |x| x.fix_names! if remap }
   end
 end

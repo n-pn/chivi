@@ -1,10 +1,11 @@
 <script>
   export let bcover
+  $: src = bcover.startsWith('http') ? bcover : `/covers/${bcover}`
 </script>
 
 <div>
   {#if bcover}
-    <img alt="" src="/covers/{bcover}" loading="lazy" />
+    <img alt="" {src} loading="lazy" />
   {:else}
     <img alt="" src="/imgs/blank.png" />
   {/if}

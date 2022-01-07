@@ -86,7 +86,7 @@ module CV::NvUtil
 
   def btitle_vname(zname : String, bhash : String = "combine") : String
     unless vname = vi_btitles.fval(zname)
-      vname = MtCore.generic_mtl(bhash).cv_plain(zname).to_s
+      vname = convert_btitle_vname(bhash, zname)
     end
 
     TextUtils.titleize(vname)
@@ -106,6 +106,34 @@ module CV::NvUtil
       line = line.strip
       line.empty? ? line : cvmtl.cv_plain(line).to_s
     end
+  end
+
+  PREFIXES = {
+    "火影之" => "NARUTO: ",
+    "民国之" => "Dân quốc: ",
+    "三国之" => "Tam Quốc: ",
+    "综漫之" => "Tổng mạn: ",
+    "娱乐之" => "Giải trí: ",
+    "重生之" => "Trùng sinh: ",
+    "穿越之" => "Xuyên qua: ",
+    "复活之" => "Phục sinh: ",
+    "网游之" => "Game online: ",
+
+    "哈利波特之" => "Harry Potter: ",
+    "网游三国之" => "Tam Quốc game online: ",
+  }
+
+  def convert_btitle_vname(bhash : String, zname : String)
+    mtl = MtCore.generic_mtl(bhash)
+    pre = ""
+
+    PREFIXES.each do |key, val|
+      next unless zname.starts_with?(key)
+      pre, zname = val, zname.sub(/^#{key}/, "")
+      break
+    end
+
+    pre + mtl.cv_plain(zname).to_s
   end
 end
 
