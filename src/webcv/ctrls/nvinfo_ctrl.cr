@@ -113,13 +113,16 @@ class CV::NvinfoCtrl < CV::BaseCtrl
 
     nvinfo.save!
 
-    log_upsert_action(params.to_unsafe_h)
+    log_upsert_action(params)
     json_view({bslug: nvinfo.bslug})
   end
 
   LOG_FILE = "var/_ulogs/#{Time.utc.to_s.split(' ', 2).first}.log"
 
-  private def log_upsert_action(params : Hash(String, String))
+  private def log_upsert_action(params)
+    params = params.to_unsafe_h
+    params.delete("_json")
+
     File.open(LOG_FILE, "a") do |io|
       data = {action: "upsert_nvinfo", cvuser: _cvuser.uname, params: params}
       io.puts(data.to_json)
