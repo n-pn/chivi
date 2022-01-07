@@ -20,9 +20,11 @@
     <div class="title">
       <h1 class="bname _main">
         <bname-vi>{nvinfo.vname}</bname-vi>
-        <bname-sep>/</bname-sep>
-        <bname-zh>{nvinfo.zname}</bname-zh>
-        {#if nvinfo.vname != nvinfo.hname}
+        {#if nvinfo.zname != nvinfo.vname}
+          <bname-sep>/</bname-sep>
+          <bname-zh>{nvinfo.zname}</bname-zh>
+        {/if}
+        {#if nvinfo.hname != nvinfo.vname.toLowerCase() && nvinfo.hname != nvinfo.zname}
           <bname-sep>/</bname-sep>
           <bname-vi>{nvinfo.hname}</bname-vi>
         {/if}
