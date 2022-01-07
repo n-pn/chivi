@@ -1,5 +1,5 @@
 <script context="module">
-  export async function load({ fetch, stuff }) {
+  export async function load({ stuff }) {
     const { nvinfo } = stuff
     return { props: { nvinfo } }
   }

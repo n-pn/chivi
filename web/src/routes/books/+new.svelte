@@ -7,7 +7,7 @@
 <Appbar>
   <svelte:fragment slot="left">
     <div class="header-item">
-      <span class="header-text">Thêm/sửa sách</span>
+      <span class="header-text">Thêm truyện</span>
     </div>
   </svelte:fragment>
 </Appbar>
