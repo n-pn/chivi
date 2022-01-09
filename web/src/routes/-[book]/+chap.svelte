@@ -48,7 +48,7 @@
 </script>
 
 <svelte:head>
-  <title>Thêm chương - {nvinfo.vname} - Chivi</title>
+  <title>Thêm/sửa chương - {nvinfo.vname} - Chivi</title>
 </svelte:head>
 
 <Appbar>
@@ -59,7 +59,7 @@
     </a>
 
     <button class="header-item _active">
-      <span class="header-text _title">Thêm chương</span>
+      <span class="header-text _title">Thêm/sửa chương</span>
     </button>
   </svelte:fragment>
 </Appbar>
