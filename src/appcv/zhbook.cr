@@ -156,18 +156,18 @@ class CV::Zhbook
     return [] of String if chinfo.invalid?
 
     chtext = Chtext.load(sname, snvid, chinfo)
-    lines, utime = chtext.load!(cpart)
+    chdata = chtext.load!(cpart)
 
-    if mode > 1 || (mode == 1 && lines.empty?)
-      lines, _ = chtext.fetch!(cpart, stale: mode > 1 ? 3.minutes : 30.years)
+    if mode > 1 || (mode == 1 && chdata.lines.empty?)
+      chdata = chtext.fetch!(cpart, stale: mode > 1 ? 3.minutes : 30.years)
       chinfo.uname = uname unless uname.empty?
       upsert_chinfo!(chinfo)
-    elsif chinfo.utime < utime || chinfo.parts == 0
+    elsif chinfo.utime < chdata.utime || chinfo.parts == 0
       # check if text existed in zip file but not stored in index
       upsert_chinfo!(chinfo, chtext.remap!)
     end
 
-    lines
+    chdata.lines
   rescue
     [] of String
   end

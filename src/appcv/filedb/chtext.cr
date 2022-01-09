@@ -6,7 +6,20 @@ require "../remote/rm_text"
 require "../nvchap/ch_info"
 
 class CV::Chtext
-  CACHE = RamCache(String, self).new(512, 3.hours)
+  struct Data
+    property lines = [] of String
+    property utime = 0_i64
+
+    def initialize
+    end
+
+    def initialize(@lines, @utime)
+    end
+  end
+
+  CACHE = RamCache(String, self).new(1024, 6.hours)
+  TEXTS = RamCache(String, Data).new(512, 3.hours)
+
   CHARS = 3000
   VPDIR = "var/chtexts"
 
@@ -14,42 +27,39 @@ class CV::Chtext
     CACHE.get("#{sname}/#{snvid}/#{infos.chidx}") { new(sname, snvid, infos) }
   end
 
-  @parts = {} of Int32 => Tuple(Array(String), Int64)
-
   getter infos : ChInfo
-  getter title : String { infos.z_title }
 
   def initialize(@sname : String, @snvid : String, @infos)
     if @sname == "chivi"
       @chdir = "#{VPDIR}/#{@infos.o_sname}/#{@infos.o_snvid}"
       pgidx = (@infos.o_chidx - 1) // 128
+
+      @h_key = "#{@infos.o_sname}/#{@infos.o_snvid}/#{@infos.o_chidx}"
     else
       @chdir = "#{VPDIR}/#{sname}/#{snvid}"
       pgidx = (@infos.chidx - 1) // 128
+
+      @h_key = "#{@sname}/#{@snvid}/#{@infos.chidx}"
     end
     @store = "#{@chdir}/#{pgidx}.zip"
-  end
-
-  def load!(part = 0) : Tuple(Array(String), Int64)
-    @parts[part] ||= read!(part)
   end
 
   def mkdir!
     FileUtils.mkdir_p(@chdir)
   end
 
-  NOTFOUND = {[] of String, 0_i64}
+  NOTFOUND = Data.new([] of String, 0_i64)
 
-  def read!(part = 0) : Tuple(Array(String), Int64)
-    return NOTFOUND unless File.exists?(@store)
-
-    Compress::Zip::File.open(@store) do |zip|
-      return NOTFOUND unless entry = zip[part_path(part)]?
-
-      mtime = entry.time.to_unix
-      lines = entry.open(&.gets_to_end).split('\n')
-
-      {lines, mtime}
+  def load!(part = 0) : Data
+    TEXTS.get("#{@h_key}/#{part}") do
+      Compress::Zip::File.open(@store) do |zip|
+        entry = zip[part_path(part)]
+        lines = entry.open(&.gets_to_end).split('\n')
+        utime = entry.time.to_unix
+        Data.new(lines, utime)
+      end
+    rescue
+      NOTFOUND
     end
   end
 
@@ -71,31 +81,32 @@ class CV::Chtext
     lines.unshift(remote.title) unless remote.title.empty?
 
     save!(lines)
-    @parts[part]
+    load!(part)
   end
 
   def remap!
     @infos.parts = @infos.chars = 0
+    title = nil
 
     while true
-      lines, utime = self.load!(@infos.parts)
-      break if utime == 0
+      chdata = self.load!(@infos.parts)
+      break if chdata.utime == 0
 
-      @title ||= lines[0]?
+      title ||= chdata.lines[0]?
 
-      @infos.utime = utime if @infos.utime < utime
-      @infos.chars += lines.map(&.size).sum
+      @infos.utime = chdata.utime if @infos.utime < chdata.utime
+      @infos.chars += chdata.lines.map(&.size).sum
       @infos.parts += 1
     end
 
-    @title
+    title
   end
 
   def save!(input : Array(String), zipping = true, mkdir = false) : Nil
     return if input.empty?
     self.mkdir! if mkdir
-    @title = input[0]
 
+    title = input[0]
     @infos.chars = input.map(&.size).sum
     @infos.utime = Time.utc.to_unix
 
@@ -137,8 +148,8 @@ class CV::Chtext
     File.open(file, "w") { |io| lines.join(io, "\n") }
 
     `zip -jqm #{@store} #{file}` if zipping
-
     # puts "- <zh_text> [#{file}] saved.".colorize.yellow
-    @parts[part] = {lines, @infos.utime}
+
+    TEXTS.set("#{@h_key}/#{part}", Data.new(lines, @infos.utime))
   end
 end
