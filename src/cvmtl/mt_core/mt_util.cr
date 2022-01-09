@@ -59,7 +59,7 @@ module CV::MtUtil
   NUMS = "零〇一二两三四五六七八九十百千"
   SEPS = ".，,、：:"
 
-  LABEL_RE_1 = /^(【?第?([#{NUMS}]+|\d+)([集卷])】?)([#{SEPS}\s]*)(.*)$/
+  LABEL_RE_1 = /^(【?第?([#{NUMS}]+|\d+)([集卷季])】?)([#{SEPS}\s]*)(.*)$/
 
   TITLE_RE_1 = /^(第.*?([#{NUMS}]+|\d+).*?([章节幕回折]))(.*?\d+\.\s)(.+)/
   TITLE_RE_2 = /^(.*?([#{NUMS}]+|\d+).*?([章节幕回折]))([#{SEPS}\s】]*)(.*)$/
@@ -85,6 +85,7 @@ module CV::MtUtil
 
   def tl_label(label = "")
     case label
+    when "季" then "Mùa"
     when "章" then "Chương"
     when "卷" then "Quyển"
     when "集" then "Tập"
