@@ -1,6 +1,7 @@
 module CV::TlRule
   # 0: fold all
   # 1: skip uzhi and space and let the caller handle it
+  # 2: stop at concoords
 
   def fold_noun!(noun : MtNode, mode : Int32 = 0) : MtNode
     # return node if node.nform?
@@ -26,9 +27,8 @@ module CV::TlRule
         succ = heal_veno!(succ)
         return noun if succ.verbs?
         noun = fold!(noun, succ, PosTag::Noun, dic: 7, flip: true)
-      when .penum?, .concoord?
-        return noun unless fold = fold_noun_concoord!(succ, noun)
-        noun = fold
+      when .junction?
+        fold_noun_concoord!(succ, noun).try { |fold| noun = fold } || break
       when .spaces?
         return mode == 0 ? fold_noun_space!(noun, succ) : noun
       when .nouns?
