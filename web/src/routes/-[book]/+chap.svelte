@@ -46,8 +46,6 @@
       await res.text()
     }
   }
-
-  $: console.log({ _trad })
 </script>
 
 <svelte:head>

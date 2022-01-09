@@ -198,6 +198,8 @@ class CV::NvchapCtrl < CV::BaseCtrl
     input = params.fetch_str("input")
     lines = TextUtils.split_text(input, false)
 
+    Log.info { params["_trad"]? }
+
     if params["_trad"]? == "true"
       lines.map! { |x| MtCore.trad_to_simp(x) }
       puts "trad => simp"
@@ -251,7 +253,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  LINE_RE = /^\/{3,}(.*)^/
+  LINE_RE = /^\/{3,}(.*)$/
 
   private def split_chaps(input : Array(String), chvol = "")
     chaps = [Chap.new(chvol)]
