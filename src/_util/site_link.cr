@@ -14,7 +14,7 @@ module CV::SiteLink
     when "bxwxorg"  then "https://www.bxwxorg.com/"
     when "shubaow"  then "https://www.shubaow.net/"
     when "paoshu8"  then "http://www.paoshu8.com/"
-    else                 raise "Unsupported source name!"
+    else                 "/"
     end
   end
 

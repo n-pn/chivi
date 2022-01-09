@@ -8,7 +8,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     Zhbook.load!(nvinfo_id, NvSeed.map_id(sname))
   end
 
-  def index
+  def ch_list
     zhbook = load_zhbook
     mode = u_privi > 0 && params["force"]? ? 1 : 0
 
@@ -66,7 +66,7 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  def show
+  def ch_info
     chidx = params.fetch_int("chidx")
     cpart = params.fetch_int("cpart") { 0 }
 
@@ -118,14 +118,33 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  def remote_chap?(zhbook, chinfo)
+  private def remote_chap?(zhbook, chinfo)
     sname = zhbook.zseed == 0 ? chinfo.o_sname : zhbook.sname
     NvSeed.remote?(sname, _cvuser.privi) do
       chinfo.chidx <= 40 || chinfo.chidx + 3 >= zhbook.chap_count
     end
   end
 
-  def text : Nil
+  def zh_text
+    return halt!(500, "Quyền hạn không đủ!") if _cvuser.privi < 2
+
+    zhbook = load_zhbook
+    chidx = params.fetch_int("chidx")
+
+    return text_not_found! unless chinfo = zhbook.chinfo(chidx - 1)
+
+    response.headers.add("Cache-Control", "private")
+    response.content_type = "text/plain; charset=utf-8"
+
+    response << "//// #{chinfo.z_chvol}\n#{chinfo.z_title}\n"
+
+    chinfo.parts.times do |cpart|
+      lines = zhbook.chtext(chinfo, cpart)
+      1.upto(lines.size - 1) { |i| response << '\n' << lines.unsafe_fetch(i) }
+    end
+  end
+
+  def cv_text : Nil
     chidx = params.fetch_int("chidx") { 1 }
     cpart = params.fetch_int("cpart") { 0 }
 

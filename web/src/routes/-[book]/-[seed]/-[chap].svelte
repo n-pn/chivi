@@ -170,14 +170,20 @@
           <span>Dịch lại</span>
         </button>
 
-        {#if chinfo.clink != '/'}
-          <button
-            class="-item"
-            disabled={$session.privi < 1}
-            on:click={() => reload_chap(true)}>
-            <SIcon name="rotate-rectangle" />
-            <span>Tải lại nguồn</span>
-          </button>
+        {#if $session.privi > 1}
+          {#if chmeta.clink != '/'}
+            <button class="-item" on:click={() => reload_chap(true)}>
+              <SIcon name="rotate-rectangle" />
+              <span>Tải lại nguồn</span>
+            </button>
+          {:else}
+            <a
+              class="-item"
+              href="/-{nvinfo.bslug}/+chap?chidx={chinfo.chidx}&mode=edit">
+              <SIcon name="pencil" />
+              <span>Sửa text gốc</span>
+            </a>
+          {/if}
         {/if}
 
         {#if on_memory && ubmemo.locked}

@@ -1,8 +1,20 @@
 <script context="module">
-  export async function load({ url, stuff }) {
+  export async function load({ url, fetch, stuff }) {
     const { nvinfo } = stuff
     const chidx = +url.searchParams.get('chidx') || 1
-    return { props: { nvinfo, chidx: chidx } }
+
+    let input = ''
+
+    if (url.searchParams.get('mode') == 'edit') {
+      input = await load_text(fetch, nvinfo.id, chidx)
+    }
+
+    return { props: { nvinfo, chidx, input } }
+  }
+
+  async function load_text(fetch, book_id, chidx) {
+    const res = await fetch(`/api/chaps/${book_id}/chivi/${chidx}/_raw`)
+    return await res.text()
   }
 </script>
 
@@ -12,21 +24,18 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
-  import A from '../[...slug].svelte'
 
   export let nvinfo
 
   export let chidx = 1
-
-  let label = '正文'
-  let input = ''
+  export let input = ''
 
   async function submit_text() {
     const url = `/api/chaps/${nvinfo.id}/users`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chidx, label, input }),
+      body: JSON.stringify({ chidx, input }),
     })
 
     if (res.ok) {
@@ -81,7 +90,7 @@
 
     <button class="m-btn _primary _fill" on:click={submit_text}>
       <SIcon name="square-plus" />
-      <span class="-text">Thêm</span>
+      <span class="-text">Lưu trữ</span>
     </button>
   </div>
 </Vessel>
