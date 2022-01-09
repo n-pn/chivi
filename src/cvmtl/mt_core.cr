@@ -11,6 +11,10 @@ class CV::MtCore
     new(dicts, "!#{uname}")
   end
 
+  def self.trad_to_simp(input : String) : String
+    tradsim_mtl.tokenize(input.chars).to_s
+  end
+
   def self.convert(input : String, dname = "combine") : Cvmtl
     case dname
     when "hanviet" then hanviet.translit(input).to_s

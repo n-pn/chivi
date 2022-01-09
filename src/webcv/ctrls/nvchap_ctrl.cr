@@ -198,6 +198,11 @@ class CV::NvchapCtrl < CV::BaseCtrl
     input = params.fetch_str("input")
     lines = TextUtils.split_text(input, false)
 
+    if params["_trad"]? == "true"
+      lines.map! { |x| MtCore.trad_to_simp(x) }
+      puts "trad => simp"
+    end
+
     chaps = split_chaps(lines, "")
     chidx = zhbook.chap_count + 1 if chidx < 1
 
@@ -246,14 +251,14 @@ class CV::NvchapCtrl < CV::BaseCtrl
     end
   end
 
-  LINE_RE = /^\/{4,}(.*)^/
+  LINE_RE = /^\/{3,}(.*)^/
 
   private def split_chaps(input : Array(String), chvol = "")
     chaps = [Chap.new(chvol)]
 
     input.each do |line|
-      if line =~ /^\s*\/{4,}/
-        extra = line.gsub("/", "")
+      if match = LINE_RE.match(line)
+        extra = match[1].strip
         chvol = extra unless extra.empty? || extra == "正文"
         chaps << Chap.new(chvol)
       else

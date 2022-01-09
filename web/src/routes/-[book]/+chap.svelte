@@ -29,13 +29,14 @@
 
   export let chidx = 1
   export let input = ''
+  let _trad = false
 
   async function submit_text() {
     const url = `/api/chaps/${nvinfo.id}/users`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chidx, input }),
+      body: JSON.stringify({ chidx, input, _trad }),
     })
 
     if (res.ok) {
@@ -45,6 +46,8 @@
       await res.text()
     }
   }
+
+  $: console.log({ _trad })
 </script>
 
 <svelte:head>
@@ -85,12 +88,19 @@
   </section>
 
   <div slot="footer" class="vessel">
-    <span class="label">Chương bắt đầu</span>
-    <input class="m-input" name="chidx" bind:value={chidx} />
+    <label class="label" for="chidx">
+      <span>Chương số</span>
+      <input class="m-input" name="chidx" bind:value={chidx} />
+    </label>
+
+    <label class="label">
+      <input type="checkbox" name="_trad" bind:checked={_trad} />
+      <span>Phồn -> Giản</span>
+    </label>
 
     <button class="m-btn _primary _fill" on:click={submit_text}>
       <SIcon name="square-plus" />
-      <span class="-text">Lưu trữ</span>
+      <span class="-text">Lưu</span>
     </button>
   </div>
 </Vessel>
@@ -133,19 +143,22 @@
   .vessel {
     @include flex-cy($gap: 0.5rem);
 
-    // prettier-ignore
-    > .m-input {
+    .m-input {
       display: inline-block;
-      &[name='chidx'] { width: 4rem; }
+      &[name='chidx'] {
+        margin-left: 0.25rem;
+        width: 3.5rem;
+        text-align: center;
+      }
     }
 
-    > .m-btn {
+    .m-btn {
       margin-left: auto;
     }
   }
 
   .label {
-    text-transform: uppercase;
+    // text-transform: uppercase;
     font-weight: 500;
     @include ftsize(sm);
     @include fgcolor(tert);
