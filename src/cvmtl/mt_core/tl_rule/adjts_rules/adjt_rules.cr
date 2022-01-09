@@ -45,6 +45,10 @@ module CV::TlRule
         else
           succ = cast_verb!(succ)
         end
+      when .verb?
+        break unless succ.key == "到"
+        node = fold!(node, succ, PosTag::Adverb)
+        return fold_adverbs!(node)
       when .nouns?
         return fold_adjt_noun!(node, succ)
       when .vpro?, .verb?

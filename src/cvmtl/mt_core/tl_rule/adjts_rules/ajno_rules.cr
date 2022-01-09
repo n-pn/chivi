@@ -11,7 +11,11 @@ module CV::TlRule
     when .ude1?
       cast_adjt!(node)
     else
-      node
+      if {"到"}.includes?(succ.key)
+        cast_adjt!(node)
+      else
+        node
+      end
     end
   end
 end
