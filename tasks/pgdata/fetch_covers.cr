@@ -21,16 +21,19 @@ module CV::FetchCovers
     input.each_with_index do |(file, dir), i|
       out_dir = "#{OUT}/yousuu/#{dir}"
       FileUtils.mkdir_p(out_dir)
-      fetch_batch!(file, out_dir, i * 1000, redo: redo)
+      fetch_batch!("yousuu", file, out_dir, i * 1000, redo: redo)
     end
   end
 
-  def fetch_batch!(file : String, out_dir : String, offset : Int32, redo = false)
-    inp_map = Tabkv.new(file)
-    out_map = Tabkv.new(file.sub(".tsv", ".tab"))
+  def fetch_batch!(sname : String, map_file : String, out_dir : String, offset = 0, redo = false)
+    inp_map = Tabkv.new(map_file)
+    out_map = Tabkv.new(map_file.sub(".tsv", ".tab"))
 
     queue = inp_map.data.compact_map do |snvid, value|
-      next unless redo || !out_map.get(snvid)
+      if !redo && (result = out_map.get(snvid))
+        next if make_webp(sname, snvid, "#{out_dir}/#{result[1]}")
+      end
+
       link = value[0]
       next if link.empty? && !link.starts_with?("http")
       {snvid, link}
@@ -66,6 +69,7 @@ module CV::FetchCovers
       select
       when result = results.receive
         snvid, file, size = result
+
         out_map.set!(snvid, [size.to_s, File.basename(file)])
         out_map.save! if idx % 10 == 0
       when timeout(10.seconds)
@@ -113,6 +117,49 @@ module CV::FetchCovers
       puts exts
       exts.first
     end
+  end
+
+  OUT_DIR = "priv/static/covers"
+
+  def make_webp(sname : String, snvid : String, inp_file : String) : Bool
+    out_file = "#{OUT_DIR}/#{sname}-#{snvid}.webp"
+    return true if File.exists?(out_file)
+
+    puts "- #{inp_file} => #{File.basename(out_file)}".colorize.yellow
+
+    case File.extname(inp_file)
+    when ".xml", ".html", ".raw"
+      puts "  Invalid format, skipping"
+      return false
+    when ".gif"
+      gif_to_webp(inp_file, out_file)
+    else
+      width = read_image_width(inp_file)
+      to_webp(inp_file, out_file, width: width > 360 ? 360 : width)
+    end
+
+    File.exists?(out_file)
+  end
+
+  private def gif_to_webp(inp_file, out_file)
+    `gif2webp -quiet "#{inp_file}" -o "#{out_file}"`
+  end
+
+  private def to_webp(inp_file : String, out_file : String, width = 360)
+    if width > 360
+      `cwebp -quiet -q 100 -resize #{width} 0 -mt "#{inp_file}" -o "#{out_file}"`
+    else
+      `cwebp -quiet -q 100 -mt "#{inp_file}" -o "#{out_file}"`
+    end
+
+    return if File.exists?(out_file)
+    `convert #{inp_file} -quality 50 -define webp:lossless=true -resize "#{width}x>" #{out_file}`
+  end
+
+  private def read_image_width(image_path : String)
+    `identify -format '%w %h' "#{image_path}"`.split(" ").first.to_i? || 0
+  rescue
+    0
   end
 end
 
