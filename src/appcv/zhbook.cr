@@ -159,7 +159,7 @@ class CV::Zhbook
     chdata = chtext.load!(cpart)
 
     if mode > 1 || (mode == 1 && chdata.lines.empty?)
-      chdata = chtext.fetch!(cpart, stale: mode > 1 ? 3.minutes : 30.years)
+      chdata = chtext.fetch!(cpart, ttl: mode > 1 ? 3.minutes : 10.years)
       chinfo.uname = uname unless uname.empty?
       upsert_chinfo!(chinfo)
     elsif chinfo.utime < chdata.utime || chinfo.parts == 0

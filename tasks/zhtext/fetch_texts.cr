@@ -46,7 +46,7 @@ class CV::FextText
       chtext = Chtext.new("chivi", @snvid, chinfo)
       chtext.fetch!(mkdir: false, lbl: "#{label}: #{idx}/#{@queue.size}")
       update_chinfo!(chinfo)
-      # sleep_by_sname(chinfo.o_sname)
+      sleep_by_sname(chinfo.o_sname)
     end
   end
 
@@ -59,19 +59,15 @@ class CV::FextText
     ChList.load!(sname, chinfo.o_snvid, chinfo.pgidx).update!(chinfo)
   end
 
-  # def sleep_by_sname(sname : String)
-  #   case sname
-  #   when "shubaow"
-  #     sleep Random.rand(1000..2000).milliseconds
-  #   when "zhwenpg"
-  #     sleep Random.rand(400..1000).milliseconds
-  #   when "bqg_5200"
-  #     sleep Random.rand(100..400).milliseconds
-  #   end
-  # end
+  def sleep_by_sname(sname : String)
+    case sname
+    when "shubaow", "bqg_5200"
+      sleep Random.rand(1000..2000).milliseconds
+    end
+  end
 
   def self.run!(argv = ARGV)
-    workers = 8
+    workers = 6
 
     OptionParser.parse(ARGV) do |opt|
       opt.banner = "Usage: fetch_zhtexts [arguments]"
@@ -87,6 +83,8 @@ class CV::FextText
       channel.receive if idx > workers
       spawn do
         new(nvinfo).crawl!("#{idx}/#{total}")
+      ensure
+        channel.send(nil)
       end
     end
 

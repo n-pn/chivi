@@ -173,66 +173,6 @@ class CV::SeedZhbook
     @seed.seed_all!(only_cached: !redo)
   end
 
-  # def save_book(snvid : String, values : Array(String), redo = false)
-  #   bumped, p_ztitle, p_author = values
-  #   return if p_ztitle.empty? || p_author.empty?
-
-  #   author = SeedUtil.get_author(p_author, p_ztitle, @sname == "hetushu")
-  #   return unless author
-
-  #   ztitle = BookUtils.fix_zh_btitle(p_ztitle, author.zname)
-  #   return unless nvinfo = load_nvinfo(author, ztitle)
-
-  #   zhbook = Zhbook.upsert!(@sname, snvid)
-  #   bumped = bumped.to_i64
-
-  #   if redo || zhbook.unmatch?(nvinfo.id)
-  #     zhbook.nvinfo = nvinfo
-  #     nvinfo.add_zhseed(zhbook.zseed)
-
-  #     nvinfo.set_genres(@seed.get_genres(snvid))
-  #     # nvinfo.set_bcover("#{@sname}-#{snvid}.webp")
-  #     nvinfo.set_zintro(@seed.get_intro(snvid).join("\n"))
-
-  #     if nvinfo.voters == 0
-  #       voters, rating = @seed.get_scores(snvid)
-  #       nvinfo.set_scores(voters, rating)
-  #     end
-  #   else # zhbook already created before
-  #     return unless bumped > zhbook.bumped
-  #   end
-
-  #   zhbook.status = @seed.status.ival(snvid)
-  #   nvinfo.set_status(zhbook.status)
-
-  #   zhbook.bumped = bumped
-  #   zhbook.mftime = @seed.mftime.ival_64(snvid)
-
-  #   if zhbook.mftime < 1
-  #     zhbook.mftime = nvinfo.mftime
-  #   else
-  #     nvinfo.set_mftime(zhbook.mftime)
-  #   end
-
-  #   if zhbook.chap_count == 0 || redo
-  #     vals = @seed.chsize.get(snvid)
-
-  #     if vals = @seed.chsize.get(snvid)
-  #       zhbook.chap_count = vals[0].to_i
-  #       zhbook.last_schid = vals[1]
-  #     else
-  #       puts "-- extract chap index: #{nvinfo.bhash}".colorize.yellow
-  #       # ttl = get_ttl(zhbook.mftime)
-  #       FileUtils.mkdir_p("var/chtexts/#{@sname}/#{snvid}")
-  #       _, chap_count = zhbook.refresh!(mode: 1, ttl: 10.years)
-  #       @seed.chsize.set!(snvid, [chap_count.to_s, zhbook.last_schid])
-  #     end
-  #   end
-
-  #   zhbook.save!
-  #   nvinfo.save!
-  # end
-
   private def get_fake_scores
     case @sname
     when "hetushu"
