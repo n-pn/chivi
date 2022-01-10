@@ -9,14 +9,6 @@ else
   ssh=nipin@dev.chivi.app:srv/chivi.app
 fi
 
-## upload user data
-if [[ $2 == "seed" ]]
-then
-  echo upload seeds!
-  # rsync -azi --no-p --delete "var/pg_data/cvusers" "$ssh/var/pg_data"
-  rsync -azi --no-p --delete "var/nvinfos/autos" "$ssh/var/nvinfos"
-fi
-
 ## upload dicts
 if [[ $2 == "all" || $* == *dict* ]]
 then
@@ -31,7 +23,8 @@ fi
 if [[ $2 == "all" || $* == *seed* ]]
 then
   echo upload seed data!
-  rsync -azi --no-p "_db/zhbook/" "$ssh/_db/zhbook/"
+  # rsync -azi --no-p --delete "var/pg_data/cvusers" "$ssh/var/pg_data"
+  rsync -azi --no-p "var/nvinfos/autos" "$ssh/var/nvinfos"
   rsync -azi --no-p "priv/static/covers/" "$ssh/priv/static/covers/"
   # rsync -azi --no-p --exclude='*.zip' "_db/chseed/" "$ssh/_db/chseed/"
 fi
