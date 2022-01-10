@@ -1,158 +1,97 @@
-# require "json"
-require "colorize"
-require "file_utils"
 require "option_parser"
-require "compress/zip"
+require "../shared/bootstrap"
 
-require "../../src/appcv/filedb/ch_text"
-require "../../src/_util/tsv_store"
+class CV::FextText
+  DIR = "var/chtexts/chivi"
 
-class CV::FetchBook
-  def initialize(@sname : String, @snvid : String)
-    @dir = "_db/chseed/#{@sname}/#{@snvid}"
-  end
+  @snvid : String
 
-  private def scan_for_missing(min_size : Int32)
-    output = {} of String => Int32
+  def initialize(nvinfo : Nvinfo)
+    @snvid = nvinfo.bhash
+    zhbook = Zhbook.load!(nvinfo, 0)
+    zhbook.copy_newers!(nvinfo.zhbooks.to_a)
 
-    index_map = TsvStore.new("#{@dir}/_id.tsv", mode: 1)
-    index_map.data.keys.each_with_index do |snvid, index|
-      output[snvid] = index
-    end
+    crawl_all = should_crawl_all?(nvinfo)
+    @queue = [] of ChInfo
 
-    Dir.glob("#{@dir}/*.zip").each do |zip_file|
-      Compress::Zip::File.open(zip_file) do |zip|
-        zip.entries.each do |entry|
-          next if entry.uncompressed_size < min_size
-          schid = File.basename(entry.filename, ".txt")
-          output.delete(schid)
-        end
+    files = Dir.glob("#{DIR}/#{@snvid}/*.tsv")
+    files.each do |file|
+      group = File.basename(file, ".tsv")
+      next if group == "-"
+
+      infos = ChList.load!("chivi", @snvid, group)
+      infos.data.each_value do |chinfo|
+        @queue << chinfo if should_crawl?(chinfo, crawl_all)
       end
     end
-
-    output
   end
 
-  def crawl!(wrks = 4, label = "1/1")
-    queue = scan_for_missing(min_size = 1)
-    return if queue.empty?
-
-    wrks = queue.size if wrks > queue.size
-    puts "- <#{label}> [#{@sname}/#{@snvid}] #{queue.size} entries".colorize.light_cyan
-
-    ::FileUtils.mkdir_p(RmText.c_dir(@sname, @snvid))
-
-    channel = Channel(Nil).new(wrks + 1)
-    queue.each_with_index(1) do |(schid, chidx), idx|
-      spawn do
-        chtext = ChText.new("_", @sname, @snvid, chidx, schid)
-        chtext.fetch_zh!(mkdir: false, label: "#{idx}/#{queue.size}")
-      rescue err
-        puts "- <#{idx}> [#{@sname}/#{@snvid}/#{schid}]: #{err}".colorize.red
-      else
-        # throttling
-        case @sname
-        when "shubaow"
-          sleep Random.rand(1000..2000).milliseconds
-        when "zhwenpg"
-          sleep Random.rand(400..1000).milliseconds
-        when "bqg_5200"
-          sleep Random.rand(100..400).milliseconds
-        end
-      ensure
-        channel.send(nil)
-      end
-
-      channel.receive if idx > wrks
-    end
-
-    wrks.times { channel.receive }
-  end
-end
-
-class CV::FetchSeed
-  def initialize(@sname : String, @favi = false)
+  def should_crawl_all?(nvinfo : Nvinfo)
+    return true if nvinfo.cv_voters >= 8 || nvinfo.ys_voters >= 64
+    Ubmemo.query.where(nvinfo_id: nvinfo.id).where("status > 0").count > 0
   end
 
-  def crawl!(wrks = 4)
-    queue = [] of String
+  # load all or load first 64 chapters and every 4th chapters
+  private def should_crawl?(chinfo : ChInfo, crawl_all = false)
+    return false if chinfo.chars > 0 || !NvSeed.remote?(chinfo.o_sname, privi: 5)
+    crawl_all || chinfo.chidx <= 64 || chinfo.chidx % 4 == 0
+  end
 
-    File.read_lines("priv/zhseed.tsv").each do |line|
-      parts = line.split('\t', 4)
-      next if parts.size < 3
+  def crawl!(label = "1/1")
+    return if @queue.empty?
 
-      sname, snvid, bhash = parts
-      queue << snvid if should_crawl?(bhash, sname)
-    end
+    puts "- <#{label}> [zhtext/#{@snvid}] #{@queue.size} entries".colorize.light_cyan
 
-    puts "[#{@sname}: #{queue.size} entries]".colorize.green.bold
-
-    queue.each_with_index(1) do |snvid, idx|
-      worker = FetchBook.new(@sname, snvid)
-      worker.crawl!(wrks: wrks, label: "#{idx}/#{queue.size}")
+    @queue.each_with_index(1) do |chinfo, idx|
+      chtext = Chtext.new("chivi", @snvid, chinfo)
+      chtext.fetch!(mkdir: false, lbl: "#{label}: #{idx}/#{@queue.size}")
+      update_chinfo!(chinfo)
+      # sleep_by_sname(chinfo.o_sname)
     end
   end
 
-  def should_crawl?(bhash : String, sname : String)
-    return false if sname != @sname
-    !@favi || library.includes?(bhash)
+  def update_chinfo!(chinfo : ChInfo)
+    ChList.load!("chivi", @snvid, chinfo.pgidx).update!(chinfo)
+
+    # reset info to save to origin seed
+    sname, chinfo.o_sname = chinfo.o_sname, "" # clear o_sname
+    chinfo.chidx = chinfo.o_chidx              # recover original chap _index
+    ChList.load!(sname, chinfo.o_snvid, chinfo.pgidx).update!(chinfo)
   end
 
-  getter library : Set(String) do
-    inp_dir = "_db/vi_users/marks"
-    bhashes = Dir.children(inp_dir).map { |x| File.basename(x, ".tsv") }
-    Set(String).new(bhashes)
-  end
+  # def sleep_by_sname(sname : String)
+  #   case sname
+  #   when "shubaow"
+  #     sleep Random.rand(1000..2000).milliseconds
+  #   when "zhwenpg"
+  #     sleep Random.rand(400..1000).milliseconds
+  #   when "bqg_5200"
+  #     sleep Random.rand(100..400).milliseconds
+  #   end
+  # end
 
   def self.run!(argv = ARGV)
-    sname, snvid = "hetushu", "1"
-    mode, wrks, favi = :multi, 0, false
+    workers = 8
 
     OptionParser.parse(ARGV) do |opt|
       opt.banner = "Usage: fetch_zhtexts [arguments]"
-      opt.on("-t WORKERS", "Parallel workers") { |x| wrks = x.to_i }
+      opt.on("-t WORKERS", "Parallel workers") { |x| workers = x.to_i }
+    end
 
-      opt.on("single", "Fetch a single book") do
-        mode = :single
-        opt.banner = "Usage: fetch_zhtexts single [arguments]"
-        opt.on("-s SNAME", "Seed name") { |x| sname = x }
-        opt.on("-n SNVID", "Seed book id") { |x| snvid = x }
-      end
+    total = Nvinfo.query.count
+    channel = Channel(Nil).new(workers)
 
-      opt.on("multi", "Fetch multi books") do
-        mode = :multi
-        opt.banner = "Usage: fetch_zhtexts multi [arguments]"
-        opt.on("-s SNAMES", "Seed names") { |x| sname = x }
-        opt.on("-f", "Only favorited books") { favi = true }
-      end
+    nvinfos = Nvinfo.query.order_by(weight: :desc).to_a
 
-      opt.invalid_option do |flag|
-        STDERR.puts "ERROR: `#{flag}` is not a valid option."
-        STDERR.puts opt
-        exit(1)
+    nvinfos.each_with_index(1) do |nvinfo, idx|
+      channel.receive if idx > workers
+      spawn do
+        new(nvinfo).crawl!("#{idx}/#{total}")
       end
     end
 
-    wrks = ideal_workers_count_for(sname) if wrks < 1
-
-    case mode
-    when :single
-      puts "[#{sname} - #{snvid} - #{wrks}]".colorize.cyan.bold
-      FetchBook.new(sname, snvid).crawl!(wrks: wrks)
-    when :multi
-      puts "[sname: #{sname}, workers: #{wrks}]".colorize.cyan.bold
-      FetchSeed.new(sname, favi: favi).crawl!(wrks: wrks)
-    end
-  end
-
-  def self.ideal_workers_count_for(sname : String) : Int32
-    case sname
-    when "zhwenpg", "shubaow"  then 1
-    when "paoshu8", "bqg_5200" then 2
-    when "duokan8", "69shu"    then 4
-    else                            6
-    end
+    workers.times { channel.receive }
   end
 end
 
-CV::FetchSeed.run!
+CV::FextText.run!

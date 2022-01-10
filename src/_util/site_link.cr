@@ -10,7 +10,7 @@ module CV::SiteLink
     when "5200"     then "https://www.5200.tv/"
     when "duokan8"  then "http://www.duokan8.com/"
     when "nofff"    then "https://www.nofff.com/"
-    when "bqg_5200" then "http://www.biquge5200.net/"
+    when "bqg_5200" then "http://www.biqu5200.net/"
     when "bxwxorg"  then "https://www.bxwxorg.com/"
     when "shubaow"  then "https://www.shubaow.net/"
     when "paoshu8"  then "http://www.paoshu8.com/"
@@ -35,7 +35,7 @@ module CV::SiteLink
     when "paoshu8"  then "http://www.paoshu8.com/#{group(snvid)}/"
     when "5200"     then "https://www.5200.tv/#{group(snvid)}/"
     when "shubaow"  then "https://www.shubaow.net/#{group(snvid)}/"
-    when "bqg_5200" then "http://www.biquge5200.net/#{group(snvid)}/"
+    when "bqg_5200" then "http://www.biqu5200.net/#{group(snvid)}/"
     when "ptwxz"    then "https://www.ptwxz.com/bookinfo/#{group(snvid, "/")}.html"
     else                 "/"
     end
@@ -65,7 +65,7 @@ module CV::SiteLink
     when "paoshu8"  then "http://www.paoshu8.com/#{group(snvid)}/#{schid}.html"
     when "5200"     then "https://www.5200.tv/#{group(snvid)}/#{schid}.html"
     when "shubaow"  then "https://www.shubaow.net/#{group(snvid)}/#{schid}.html"
-    when "bqg_5200" then "http://www.biquge5200.net/#{group(snvid)}/#{schid}.html"
+    when "bqg_5200" then "http://www.biqu5200.net/#{group(snvid)}/#{schid}.html"
     when "ptwxz"    then "https://www.ptwxz.com/html/#{group(snvid, "/")}/#{schid}.html"
     else                 "/"
     end

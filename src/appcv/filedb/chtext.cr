@@ -67,20 +67,18 @@ class CV::Chtext
     "#{@infos.schid}-#{part}.txt"
   end
 
-  def fetch!(part : Int32 = 0, stale = 10.years)
-    if @sname == "chivi"
-      RmText.mkdir!(@infos.o_sname, @infos.o_snvid)
-      remote = RmText.new(@infos.o_sname, @infos.o_snvid, @infos.schid, ttl: stale)
-    else
-      RmText.mkdir!(@sname, @snvid)
-      remote = RmText.new(@sname, @snvid, @infos.schid, ttl: stale)
-    end
+  def fetch!(part : Int32 = 0, ttl = 10.years, mkdir = true, lbl = "1/1")
+    sname = @sname == "chivi" ? @infos.o_sname : @sname
+    snvid = @sname == "chivi" ? @infos.o_snvid : @snvid
+
+    RmText.mkdir!(sname, snvid)
+    remote = RmText.new(sname, snvid, @infos.schid, ttl: ttl, lbl: lbl)
 
     lines = remote.paras
     # special fix for 69shu, will investigate later
     lines.unshift(remote.title) unless remote.title.empty?
 
-    save!(lines)
+    save!(lines, mkdir: mkdir)
     load!(part)
   end
 

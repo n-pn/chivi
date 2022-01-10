@@ -74,6 +74,10 @@ class CV::ChInfo
     @schid == other.schid && @z_title == other.z_title && @z_chvol == other.z_chvol
   end
 
+  def pgidx : Int32
+    (self.chidx - 1) // 128
+  end
+
   def chap_url(part = 0)
     String.build do |io|
       io << @uslug << '-' << @chidx
