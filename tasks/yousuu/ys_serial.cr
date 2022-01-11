@@ -79,16 +79,17 @@ class CV::CrawlYsbook
   end
 end
 
-recheck_proxy = false
 crawl_mode = :tail
-max_ysnvid = ENV["SNVID"]?.try(&.to_i) || 270388
+recheck_proxy = false
+upper_book_id = File.read("#{__DIR__}/shared/upper_nvid.txt").strip.to_i? || 270000
 
 OptionParser.parse(ARGV) do |opt|
-  opt.on("-p", "Recheck proxies") { recheck_proxy = true }
   opt.on("-h", "Crawl from beginning") { crawl_mode = :head }
-  opt.on("-r", "Crawl randomly") { crawl_mode = :rand }
+  opt.on("-r", "Crawl infos randomly") { crawl_mode = :rand }
+  opt.on("-p", "Recheck proxies") { recheck_proxy = true }
+  opt.on("-u", "Upper book id") { |x| upper_book_id = x.to_i }
 end
 
 recheck_proxy = ARGV.includes?("proxy")
 worker = CV::CrawlYsbook.new(recheck_proxy)
-worker.crawl!(max_ysnvid, mode: crawl_mode)
+worker.crawl!(upper_book_id, mode: crawl_mode)

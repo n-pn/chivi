@@ -13,7 +13,6 @@ module CV::FixIntros
       puts "- [fix_intros] <#{index}/#{total}>".colorize.blue if index % 100 == 0
 
       yintro = nil
-
       nvinfo.ys_snvid.try { |x| yintro = get_intro("yousuu", x.to_s) }
 
       if yintro && yintro.size > 1

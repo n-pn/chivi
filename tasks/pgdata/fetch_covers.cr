@@ -122,31 +122,30 @@ module CV::FetchCovers
   OUT_DIR = "priv/static/covers"
 
   def make_webp(sname : String, snvid : String, inp_file : String) : Bool
-    out_file = "#{OUT_DIR}/#{sname}-#{snvid}.webp"
-    return true if File.exists?(out_file)
+    ext_name = File.extname(inp_file)
+    out_file = inp_file.sub(ext_name, ".webp")
 
-    puts "- #{inp_file} => #{File.basename(out_file)}".colorize.yellow
+    return true if File.exists?(out_file)
+    puts "- #{inp_file} => .webp".colorize.yellow
 
     case File.extname(inp_file)
-    when ".xml", ".html", ".raw"
+    when ".xml", ".html", ".raw", ".asc", ""
       puts "  Invalid format, skipping"
-      return false
+    when ".webp"
+      File.copy(inp_file, out_file)
     when ".gif"
-      gif_to_webp(inp_file, out_file)
+      `gif2webp -quiet "#{inp_file}" -o "#{out_file}"`
     else
-      width = read_image_width(inp_file)
-      to_webp(inp_file, out_file, width: width > 360 ? 360 : width)
+      to_webp(inp_file, out_file)
     end
 
     File.exists?(out_file)
   end
 
-  private def gif_to_webp(inp_file, out_file)
-    `gif2webp -quiet "#{inp_file}" -o "#{out_file}"`
-  end
-
-  private def to_webp(inp_file : String, out_file : String, width = 360)
+  private def to_webp(inp_file : String, out_file : String)
+    width = read_image_width(inp_file)
     if width > 360
+      width = 360
       `cwebp -quiet -q 100 -resize #{width} 0 -mt "#{inp_file}" -o "#{out_file}"`
     else
       `cwebp -quiet -q 100 -mt "#{inp_file}" -o "#{out_file}"`

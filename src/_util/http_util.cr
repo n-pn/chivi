@@ -25,7 +25,7 @@ module CV::HttpUtil
       puts "<http_utils> #{url} err: #{err}".colorize.red
     ensure
       try += 1
-      sleep 200.milliseconds * try
+      sleep 500.milliseconds * try
       raise "[GET: #{url} failed after 2 attempts.]" if try > 2
     end
   end
@@ -68,7 +68,7 @@ module CV::HttpUtil
       return if File.exists?(file)
     ensure
       try += 1
-      sleep 250.milliseconds * try
+      sleep 500.milliseconds * try
       raise "[DL: #{url} failed after 3 attempts.]" if try > 2
     end
   end

@@ -11,7 +11,7 @@ class CV::FextText
     zhbook = Zhbook.load!(nvinfo, 0)
     zhbook.copy_newers!(nvinfo.zhbooks.to_a)
 
-    crawl_all = should_crawl_all?(nvinfo)
+    crawl_all = false # should_crawl_all?(nvinfo)
     @queue = [] of ChInfo
 
     files = Dir.glob("#{DIR}/#{@snvid}/*.tsv")
@@ -46,6 +46,7 @@ class CV::FextText
       chtext = Chtext.new("chivi", @snvid, chinfo)
       chtext.fetch!(mkdir: false, lbl: "#{label}: #{idx}/#{@queue.size}")
       update_chinfo!(chinfo)
+    ensure
       sleep_by_sname(chinfo.o_sname)
     end
   end
@@ -67,7 +68,7 @@ class CV::FextText
   end
 
   def self.run!(argv = ARGV)
-    workers = 6
+    workers = 8
 
     OptionParser.parse(ARGV) do |opt|
       opt.banner = "Usage: fetch_zhtexts [arguments]"
