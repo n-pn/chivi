@@ -180,9 +180,15 @@ class CV::Nvinfo
   end
 
   def set_zintro(lines : Array(String), force = false) : Nil
-    return unless force || self.vintro.empty?
-    cvmtl = MtCore.generic_mtl(bhash)
-    self.vintro = lines.map { |line| cvmtl.cv_plain(line).to_s }.join("\n")
+    return unless force || self.zintro.empty?
+    self.zintro = lines.join("\n")
+
+    trans = NvUtil.convert(lines, self.bhash)
+    set_vintro(trans.join("\n"), force: true)
+  end
+
+  def set_vintro(vintro : String, force = false) : Nil
+    self.vintro = vintro if force || self.vintro.empty?
   end
 
   def set_bcover(cover : String, force = false) : Nil

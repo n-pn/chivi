@@ -100,12 +100,13 @@ module CV::NvUtil
   end
 
   def convert(input : String, udict = "combine") : Array(String)
-    cvmtl = MtCore.generic_mtl(udict)
+    lines = TextUtils.split_html(input)
+    convert(lines, udict)
+  end
 
-    input.split(/[\r\n]/).map do |line|
-      line = line.strip
-      line.empty? ? line : cvmtl.cv_plain(line).to_s
-    end
+  def convert(lines : Array(String), udict = "combine") : Array(String)
+    cvmtl = MtCore.generic_mtl(udict)
+    lines.map! { |line| cvmtl.cv_plain(line).to_s }
   end
 
   PREFIXES = {
