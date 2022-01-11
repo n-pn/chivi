@@ -16,14 +16,14 @@ module CV::NvinfoView
       jb.field "author", obj.author.vname
 
       jb.field "genres", obj.genres
-      jb.field "bcover", obj.cover
+      jb.field "bcover", obj.bcover
 
       jb.field "voters", obj.voters
       jb.field "rating", obj.rating / 10
 
       if full
         jb.field "zseeds", obj.zseeds
-        jb.field "bintro", obj.intro.split("\n")
+        jb.field "bintro", obj.vintro.split("\n")
 
         jb.field "mftime", obj.utime
         jb.field "status", map_status(obj.status)

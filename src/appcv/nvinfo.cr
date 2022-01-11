@@ -32,8 +32,11 @@ class CV::Nvinfo
   column hslug : String # for text searching, auto generated from hname
   column vslug : String # for text searching, auto generated from vname
 
-  column cover : String = ""
-  column intro : String = "" # translated book description
+  column scover : String = "" # original seed cover url
+  column bcover : String = "" # cached book cover path
+
+  column zintro : String = "" # book introduction in chinese
+  column vintro : String = "" # translated book introduction
 
   # status value:
   # 0: ongoing,
@@ -177,13 +180,13 @@ class CV::Nvinfo
   end
 
   def set_zintro(lines : Array(String), force = false) : Nil
-    return unless force || self.intro.empty?
+    return unless force || self.vintro.empty?
     cvmtl = MtCore.generic_mtl(bhash)
-    self.intro = lines.map { |line| cvmtl.cv_plain(line).to_s }.join("\n")
+    self.vintro = lines.map { |line| cvmtl.cv_plain(line).to_s }.join("\n")
   end
 
   def set_bcover(cover : String, force = false) : Nil
-    self.cover = cover if force || self.cover.empty?
+    self.bcover = bcover if force || self.bcover.empty?
   end
 
   def set_utime(utime : Int64, force = false) : Int64?

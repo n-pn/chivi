@@ -31,7 +31,9 @@ module CV::FetchCovers
 
     queue = inp_map.data.compact_map do |snvid, value|
       if !redo && (result = out_map.get(snvid))
-        next if make_webp(sname, snvid, "#{out_dir}/#{result[1]}")
+        img_size, img_file = result
+        next if img_size == "0"
+        next if make_webp(sname, snvid, "#{out_dir}/#{img_file}")
       end
 
       link = value[0]
@@ -81,7 +83,7 @@ module CV::FetchCovers
     out_map.save!
   end
 
-  KNOWN_EXTS = {".jpg", ".raw", ".png", ".gif", ".webp", ".html"}
+  KNOWN_EXTS = {".jpg", ".raw", ".png", ".gif", ".webp", ".html", ".xml"}
 
   def save_image(link : String, name : String, out_dir : String)
     out_file = File.join(out_dir, name + ".jpg")
@@ -112,10 +114,7 @@ module CV::FetchCovers
     when "text/html"  then ".html"
     else
       exts = MIME.extensions(mime)
-      return ".raw" if exts.empty?
-
-      puts exts
-      exts.first
+      exts.empty? ? ".raw" : exts.first
     end
   end
 
@@ -129,10 +128,10 @@ module CV::FetchCovers
     puts "- #{inp_file} => .webp".colorize.yellow
 
     case File.extname(inp_file)
-    when ".xml", ".html", ".raw", ".asc", ""
-      puts "  Invalid format, skipping"
+    when ".raw", ".xml", ".html", ".asc", ""
+      puts "  [#{snvid}] Invalid format, skipping ".colorize.gray
     when ".webp"
-      File.copy(inp_file, out_file)
+      puts "  [#{snvid}] Input is already webp!".colorize.blue
     when ".gif"
       `gif2webp -quiet "#{inp_file}" -o "#{out_file}"`
     else

@@ -19,8 +19,11 @@ CREATE TABLE nvinfos (
   hslug text not null default '',
   vslug text not null default '',
 
-  cover text not null default '',
-  intro text not null default '',
+  scover text not null default '',
+  bcover text not null default '',
+
+  zintro text not null default '',
+  vintro text not null default '',
 
   status int not null default 0,
   shield int not null default 0,
