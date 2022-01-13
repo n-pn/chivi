@@ -240,7 +240,7 @@ class CV::Zhbook
     zseed = NvSeed.map_id(sname)
 
     find({nvinfo_id: nvinfo.id, zseed: zseed}) || begin
-      new({nvinfo: nvinfo, zseed: zseed, snvid: snvid}).tap(&.fix_id!)
+      new({nvinfo: nvinfo, zseed: zseed, sname: sname, snvid: snvid}).tap(&.fix_id!)
     end
   end
 
