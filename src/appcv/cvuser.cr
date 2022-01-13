@@ -92,4 +92,8 @@ class CV::Cvuser
       nil
     end
   end
+
+  def self.load_many(unames : Array(String))
+    query.where("uname IN ?", unames).to_a
+  end
 end

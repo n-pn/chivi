@@ -18,6 +18,10 @@ class CV::Dboard
     update!({updated_at: time})
   end
 
+  def bump_view_count!
+    update!({views: views + 1})
+  end
+
   #################
 
   CACHE_INT = RamCache(Int64, self).new(2048, ttl: 2.hours)
@@ -32,17 +36,19 @@ class CV::Dboard
   end
 
   def self.init!(id : Int64) : self
-    bname, bslug =
-      case id
-      when -1_i64 then {"Đại sảnh", "dai-sanh"}   # general place
-      when -2_i64 then {"Thông cáo", "thong-cao"} # show in top of board list
-      when -3_i64 then {"Quảng bá", "quang-ba"}   # show in every page
-      else
-        raise "Unknown book!" unless nvinfo = Nvinfo.load!(id)
-        {nvinfo.vname, nvinfo.bslug}
-      end
-
+    bname, bslug = map_id_to_name(id)
     new({id: id, bname: bname, bslug: bslug}).tap(&.save!)
+  end
+
+  def self.map_id_to_name(id : Int64) : {String, String}
+    case id
+    when -1_i64 then {"Đại sảnh", "dai-sanh"}   # general place
+    when -2_i64 then {"Thông cáo", "thong-cao"} # show in top of board list
+    when -3_i64 then {"Quảng bá", "quang-ba"}   # show in every page
+    else
+      raise "Unknown book!" unless nvinfo = Nvinfo.load!(id)
+      {nvinfo.vname, nvinfo.bslug}
+    end
   end
 
   def self.guess_id(bslug : String) : Int64

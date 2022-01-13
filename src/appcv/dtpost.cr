@@ -9,22 +9,27 @@ class CV::Dtpost
   belongs_to cvuser : Cvuser
   belongs_to dtopic : Dboard
 
-  column tagged_ids : Array(Int64) = [] of Int64
+  column dt_id : Int32 = 0 # post index in the thread
 
-  column dt_id : Int32 = 0
+  column repl_dtpost_id : Int64 = 0 # replied to dtpost.id
+  column repl_cvuser_id : Int64 = 0 # replied to dtpost's cvuser.id
+
+  column tagged_ids : Array(Int64) = [] of Int64
 
   column input : String = ""
   column itype : String = "md"
 
   column ohtml : String = ""
-  column odesc : String = ""
+  column otext : String = ""
 
   column state : Int32 = 0 # 0: normal, 1: highlight, -1: deleted, -2: removed
   column utime : Int64 = 0 # update when new post created/updated
 
-  column edits : Int32 = 0 # edit count
-  column likes : Int32 = 0 # like count
-  column award : Int32 = 0 # karma given by users to this post
+  column edit_count : Int32 = 0 # edit count
+  column like_count : Int32 = 0 # like count
+  column repl_count : Int32 = 0 # repl count
+
+  column coins : Int32 = 0 # reward given by users to this post
 
   timestamps
 

@@ -1,6 +1,6 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE TABLE dtopics ( 
+CREATE TABLE dtopics (
   id bigserial primary key,
 
   cvuser_id bigint not null default 0,
@@ -19,7 +19,7 @@ CREATE TABLE dtopics (
   views int not null default '0', -- view count
 
   created_at timestamptz not null default CURRENT_TIMESTAMP,
-  updated_at timestamptz not null default CURRENT_TIMESTAMP 
+  updated_at timestamptz not null default CURRENT_TIMESTAMP
 );
 
 

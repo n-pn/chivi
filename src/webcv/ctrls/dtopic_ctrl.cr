@@ -44,7 +44,8 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
   def show
     dtopic = Dtopic.load!(params["dtopic"].to_i64)
-    dtopic.update!({views: dtopic.views + 1})
+    dtopic.bump_view_count!
+
     cache_rule :public, 120, 300, dtopic.updated_at.to_s
     # TODO: load user trace
 
@@ -62,15 +63,8 @@ class CV::DtopicCtrl < CV::BaseCtrl
     return halt!(403) unless DboardACL.dtopic_create?(dboard, _cvuser)
 
     dtopic = Dtopic.new({cvuser: _cvuser, dboard: dboard})
-
-    dtopic.set_title(params["title"])
-    dtopic.label_ids = params.json("labels").as_a.map(&.as_i)
-
-    dtopic.posts = 0
-    dtopic.set_utime(Time.utc.to_unix)
-
-    dtopic.save!
-    dboard.update!({posts: dboard.posts + 1})
+    populate_dtopic(dtopic)
+    dboard.update!({posts: dboard.posts + 1}) if dtopic.save
 
     json_view do |jb|
       jb.object {
@@ -84,10 +78,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     dtopic = Dtopic.load!(params["dtopic"].to_i64)
     return halt!(403) unless DboardACL.dtopic_update?(dboard, _cvuser, dtopic)
 
-    dtopic.set_title(params["title"])
-    dtopic.label_ids = params.json("labels").as_a.map(&.as_i)
-    dtopic.set_utime(Time.utc.to_unix)
-
+    populate_dtopic(dtopic)
     dtopic.save!
 
     json_view do |jb|
@@ -95,5 +86,11 @@ class CV::DtopicCtrl < CV::BaseCtrl
         jb.field "dtopic" { DtopicView.render(jb, dtopic, dboard) }
       }
     end
+  end
+
+  private def populate_dtopic(dtopic : Dtopic)
+    dtopic.set_title(params["title"])
+    dtopic.dlabel_ids = params.json("labels").as_a.map(&.as_i)
+    dtopic.set_utime(Time.utc.to_unix)
   end
 end

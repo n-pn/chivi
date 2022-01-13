@@ -1,3 +1,5 @@
+require "cmark"
+
 class CV::Dtopic
   include Clear::Model
 
@@ -6,23 +8,24 @@ class CV::Dtopic
 
   belongs_to cvuser : Cvuser
   belongs_to dboard : Dboard
-  column label_ids : Array(Int32) = [] of Int32
 
-  column title : String
-  column uslug : String
+  column dlabel_ids : Array(Int32) = [] of Int32
+
+  column title : String = ""
+  column tslug : String = ""
 
   column state : Int32 = 0 # 0: normal, 1: sticky, -1: locked, -2: deleted, -3: removed
   column utime : Int64 = 0 # update when new post created
   column _sort : Int32 = 0
 
-  column posts : Int32 = 0 # post count
-  column marks : Int32 = 0 # counting user bookmarks
-  column views : Int32 = 0 # number of times this topic is viewed
+  column post_count : Int32 = 0 # post count
+  column like_count : Int32 = 0 # counting user bookmarks
+  column view_count : Int32 = 0 # number of times this topic is viewed
 
   timestamps
 
   scope :filter_label do |label|
-    label ? where("label_ids @> ?", [label.to_i]) : self
+    label ? where("dlabel_ids @> ?", [label.to_i]) : self
   end
 
   scope :filter_board do |board|
@@ -35,7 +38,7 @@ class CV::Dtopic
 
   def set_title(title : String)
     self.title = title
-    self.uslug = TextUtils.slugify(title)
+    self.tslug = TextUtils.slugify(title)
   end
 
   def set_utime(utime : Int64)
@@ -44,11 +47,11 @@ class CV::Dtopic
   end
 
   def update_sort(utime : Int64)
-    self._sort = (utime // 60 + posts + views // 100 + marks * 5).to_i
+    self._sort = (utime // 60 + post_count + view_count // 100 + like_count * 5).to_i
   end
 
-  def bump_views!
-    update!({views: views + 1})
+  def bump_view_count!
+    update!({view_count: view_count + 1})
   end
 
   #################

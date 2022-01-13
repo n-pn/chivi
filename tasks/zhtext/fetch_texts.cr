@@ -34,7 +34,7 @@ class CV::FextText
   # load all or load first 64 chapters and every 4th chapters
   private def should_crawl?(chinfo : ChInfo, crawl_all = false)
     return false if chinfo.chars > 0 || !NvSeed.remote?(chinfo.o_sname, privi: 5)
-    crawl_all || chinfo.chidx <= 64 || chinfo.chidx % 4 == 0
+    crawl_all || chinfo.chidx <= 64 || chinfo.chidx % 8 == 0
   end
 
   def crawl!(label = "1/1")

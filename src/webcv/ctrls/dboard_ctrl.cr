@@ -28,8 +28,8 @@ class CV::DboardCtrl < CV::BaseCtrl
 
   def show
     dboard = Dboard.load!(params["dboard"].to_i64)
-    dboard.update({views: dboard.views + 1})
-    
+    dboard.bump_view_count!
+
     cache_rule :public, 120, 300, dboard.updated_at.to_s
 
     # TODO: load user trace
