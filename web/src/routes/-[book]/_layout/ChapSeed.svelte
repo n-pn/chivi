@@ -1,11 +1,13 @@
 <script>
+  import { page } from '$app/stores'
   import SIcon from '$atoms/SIcon.svelte'
-
-  export let nvinfo
-  export let chseed
 
   export let chmeta = {}
   export let chinfo = {}
+
+  $: nvinfo = $page.stuff.nvinfo || {}
+  $: chseed = $page.stuff.chseed || []
+
   let show_less = true
 
   function chap_url(sname) {

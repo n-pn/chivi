@@ -1,13 +1,12 @@
 <script context="module">
   export async function load({ fetch, stuff, url: { searchParams } }) {
-    const { nvinfo } = stuff
     const page = +searchParams.get('page') || 1
     const sort = searchParams.get('sort') || 'stars'
 
     const qs = `page=${page}&take=10&sort=${sort}`
-    const res = await fetch(`/api/crits?book=${nvinfo.id}&${qs}`)
+    const res = await fetch(`/api/crits?book=${stuff.nvinfo.id}&${qs}`)
 
-    return { props: { ...stuff, _sort: sort, ...(await res.json()) } }
+    return { props: { _sort: sort, ...(await res.json()) } }
   }
 
   const sorts = {
@@ -24,10 +23,6 @@
   import Yscrit from '$parts/Yscrit.svelte'
   import BookPage from './_layout/BookPage.svelte'
 
-  export let nvinfo
-  export let ubmemo
-  export let chseed
-
   export let crits = []
   export let pgidx = 1
   export let pgmax = 1
@@ -36,7 +31,7 @@
   $: pager = new Pager($page.url, { sort: 'stars', page: 1 })
 </script>
 
-<BookPage {nvinfo} {ubmemo} {chseed} nvtab="crits">
+<BookPage nvtab="crits">
   <article class="m-article">
     <div class="sorts" id="sorts">
       <span class="h3 -label">Đánh giá</span>

@@ -9,12 +9,12 @@
     const [status, cvchap] = await call_api(fetch, url, null, 'GET')
 
     if (status) return { status, error: cvchap }
-    return { props: { ...stuff, ...cvchap } }
+    return { props: cvchap }
   }
 </script>
 
 <script>
-  import { session } from '$app/stores'
+  import { page, session } from '$app/stores'
   import { invalidate } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
@@ -25,9 +25,9 @@
   import CvPage from '$sects/CvPage.svelte'
   import ChapSeed from '../_layout/ChapSeed.svelte'
 
-  export let nvinfo
-  export let ubmemo
-  export let chseed
+  $: nvinfo = $page.stuff.nvinfo || {}
+  $: ubmemo = $page.stuff.ubmemo || []
+  $: chseed = $page.stuff.chseed || []
 
   export let chmeta
   export let chinfo
@@ -123,7 +123,7 @@
 </Appbar>
 
 <Vessel>
-  <ChapSeed {nvinfo} {chseed} {chmeta} {chinfo} />
+  <ChapSeed {chmeta} {chinfo} />
 
   {#if cvdata}
     <CvPage

@@ -1,7 +1,7 @@
 <script context="module">
-  export async function load({ fetch, stuff }) {
-    const { nvinfo } = stuff
+  import { page } from '$app/stores'
 
+  export async function load({ fetch, stuff: { nvinfo } }) {
     const crit_url = `/api/crits?book=${nvinfo.id}&page=1&take=3&sort=stars`
     const crit_res = await fetch(crit_url)
     const { crits } = await crit_res.json()
@@ -10,29 +10,26 @@
     const book_res = await fetch(book_url)
 
     const { books: book_raw } = await book_res.json()
-    const books = book_raw.filter((x) => x.id != nvinfo.id).slice(0, 6)
+    const books = book_raw.filter((x) => x.id != nvinfo.id)
 
-    return { props: { ...stuff, crits, books } }
+    return { props: { crits, books } }
   }
 </script>
 
 <script>
   import Nvlist from '$parts/Nvlist.svelte'
   import Yscrit from '$parts/Yscrit.svelte'
-
   import BookPage from './_layout/BookPage.svelte'
-
-  export let nvinfo
-  export let ubmemo
-  export let chseed
 
   export let crits = []
   export let books = []
 
+  $: nvinfo = $page.stuff.nvinfo
+
   let short_intro = false
 </script>
 
-<BookPage {nvinfo} {ubmemo} {chseed} nvtab="index">
+<BookPage nvtab="index">
   <article class="m-article">
     <h2>Giới thiệu:</h2>
     <div class="intro" class:_short={short_intro}>

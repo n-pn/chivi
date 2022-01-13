@@ -1,15 +1,14 @@
 <script context="module">
   export async function load({ url, fetch, stuff }) {
-    const { nvinfo } = stuff
     const chidx = +url.searchParams.get('chidx') || 1
 
     let input = ''
 
     if (url.searchParams.get('mode') == 'edit') {
-      input = await load_text(fetch, nvinfo.id, chidx)
+      input = await load_text(fetch, stuff.nvinfo.id, chidx)
     }
 
-    return { props: { nvinfo, chidx, input } }
+    return { props: { chidx, input } }
   }
 
   async function load_text(fetch, book_id, chidx) {
@@ -19,16 +18,17 @@
 </script>
 
 <script>
+  import { page } from '$app/stores'
   import { goto } from '$app/navigation'
 
   import SIcon from '$atoms/SIcon.svelte'
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  export let nvinfo
-
   export let chidx = 1
   export let input = ''
+
+  $: nvinfo = $page.stuff.nvinfo
   let _trad = false
 
   async function submit_text() {

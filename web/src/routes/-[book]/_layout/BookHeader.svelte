@@ -1,5 +1,5 @@
 <script context="module">
-  import { session } from '$app/stores.js'
+  import { page, session } from '$app/stores'
   import { invalidate } from '$app/navigation'
   import { call_api } from '$api/_api_call'
 
@@ -11,19 +11,19 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Appbar from '$lib/sects/Appbar.svelte'
 
-  export let nvinfo
-  export let ubmemo
+  $: ubmemo = $page.stuff.ubmemo
+  $: nvinfo = $page.stuff.nvinfo
+  $: status = ubmemo.status || 'default'
 
-  $: memo_status = ubmemo.status || 'default'
-
-  async function change_status(status) {
+  async function update_ubmemo(status) {
     if ($session.privi < 0) return
     if (status == ubmemo.status) status = 'default'
+    ubmemo.status = status
 
     const url = `_self/books/${nvinfo.id}/status`
     const [stt, msg] = await call_api(fetch, url, { status }, 'PUT')
     if (stt) return console.log(`error update book status: ${msg}`)
-    invalidate(`/api/books/${nvinfo.bslug}`)
+    else invalidate(`/api/books/${nvinfo.bslug}`)
   }
 </script>
 
@@ -36,17 +36,17 @@
   <svelte:fragment slot="right">
     {#if $session.privi > 0}
       <div class="header-item _menu" class:_disable={$session.privi < 0}>
-        <SIcon name={status_icons[memo_status]} />
+        <SIcon name={status_icons[status]} />
 
-        <span class="header-text _show-md">{status_names[memo_status]}</span>
+        <span class="header-text _show-md">{status_names[status]}</span>
 
         <div class="header-menu">
           {#each status_types as status}
-            <div class="-item" on:click={() => change_status(status)}>
+            <div class="-item" on:click={() => update_ubmemo(status)}>
               <SIcon name={status_icons[status]} />
               <span>{status_names[status]}</span>
 
-              {#if memo_status == status}
+              {#if status == status}
                 <span class="_right">
                   <SIcon name="check" />
                 </span>

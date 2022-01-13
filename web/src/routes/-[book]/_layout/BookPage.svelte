@@ -1,4 +1,6 @@
 <script>
+  import { page } from '$app/stores'
+
   import SIcon from '$atoms/SIcon.svelte'
   import RTime from '$atoms/RTime.svelte'
   import BCover from '$atoms/BCover.svelte'
@@ -7,13 +9,11 @@
   import SeedList from './SeedList.svelte'
   import BookHeader from './BookHeader.svelte'
 
-  export let nvinfo
-  export let ubmemo
-  export let chseed
   export let nvtab = 'index'
+  $: nvinfo = $page.stuff.nvinfo
 </script>
 
-<BookHeader {nvinfo} {ubmemo} />
+<BookHeader />
 
 <Vessel>
   <div class="main-info">
@@ -108,7 +108,7 @@
 
     <div class="line _chap">
       <div class="label _chap">Chương tiết:</div>
-      <SeedList {nvinfo} {chseed} />
+      <SeedList />
     </div>
   </div>
 

@@ -11,9 +11,9 @@
 
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
-  export let nvinfo
-  export let chseed
-  export let ubmemo
+  $: nvinfo = $page.stuff.nvinfo
+  $: ubmemo = $page.stuff.ubmemo
+
   export let chinfo
 
   let pagers = {}
@@ -30,15 +30,10 @@
   }
 </script>
 
-<BookHeader {nvinfo} {ubmemo} />
+<BookHeader />
 
 <Vessel>
-  <SeedList
-    {nvinfo}
-    {chseed}
-    sname={chinfo.sname}
-    pgidx={chinfo.pgidx}
-    center={true} />
+  <SeedList sname={chinfo.sname} pgidx={chinfo.pgidx} center={true} />
 
   <chap-page>
     <page-info>

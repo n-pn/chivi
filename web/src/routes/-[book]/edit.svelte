@@ -1,8 +1,5 @@
 <script context="module">
-  export async function load({ stuff }) {
-    const { nvinfo } = stuff
-    return { props: { nvinfo } }
-  }
+  import { page } from '$app/stores'
 </script>
 
 <script>
@@ -10,7 +7,7 @@
   import Appbar from '$sects/Appbar.svelte'
   import Vessel from '$sects/Vessel.svelte'
 
-  export let nvinfo
+  $: nvinfo = $page.stuff.nvinfo
 
   $: params = {
     author: nvinfo.author,

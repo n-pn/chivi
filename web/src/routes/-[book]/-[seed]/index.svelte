@@ -2,7 +2,7 @@
   import { api_call } from '$api/_api_call'
 
   export async function load({ params, url, fetch, stuff }) {
-    const { nvinfo, ubmemo, chseed } = stuff
+    const { nvinfo, chseed } = stuff
     const sname = extract_sname(chseed, params.seed)
 
     const page = url.searchParams.get('page') || 1
@@ -11,7 +11,7 @@
     if (status) return { status, error: chinfo }
 
     if (chinfo.utime > nvinfo.mftime) nvinfo.mftime = chinfo.utime
-    return { props: { nvinfo, ubmemo, chseed, chinfo } }
+    return { props: { chinfo } }
   }
 
   function extract_sname(chseed, sname) {
@@ -29,11 +29,7 @@
 
 <script>
   import ChapPage from '../_layout/ChapPage.svelte'
-
-  export let nvinfo
-  export let ubmemo
   export let chinfo
-  export let chseed
 </script>
 
-<ChapPage {nvinfo} {ubmemo} {chseed} {chinfo} />
+<ChapPage {chinfo} />

@@ -10,7 +10,7 @@
     const api_url = `/api/boards/${nvinfo.id}/topics?page=${page}&take=${15}`
     const api_res = await fetch(dlbl ? `${api_url}&dlabel=${dlbl}` : api_url)
 
-    if (api_res.ok) return { props: { nvinfo, content: await api_res.json() } }
+    if (api_res.ok) return { props: { content: await api_res.json() } }
     return { status: api_res.status, error: await api_res.text() }
   }
 </script>
@@ -21,10 +21,10 @@
   import SIcon from '$atoms/SIcon.svelte'
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
-  export let nvinfo
   // export let dboard
   export let content = { items: [], pgidx: 1, pgmax: 1 }
 
+  $: nvinfo = $page.stuff.nvinfo
   $: pager = new Pager($page.url, { page: 1, tl: '' })
 
   const _navi = { replace: true, scrollto: '#board' }

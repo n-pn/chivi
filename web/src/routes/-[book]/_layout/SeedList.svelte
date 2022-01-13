@@ -1,16 +1,17 @@
 <script context="module">
+  import { page } from '$app/stores'
   const icon_types = ['affiliate', 'archive', 'archive', 'cloud']
 </script>
 
 <script>
   import SIcon from '$atoms/SIcon.svelte'
 
-  export let nvinfo
-  export let chseed = []
-
   export let sname = ''
   export let pgidx = 0
   export let center = false
+
+  $: nvinfo = $page.stuff.nvinfo || {}
+  $: chseed = $page.stuff.chseed || []
 
   let show_less = true
 
