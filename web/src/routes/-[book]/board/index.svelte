@@ -1,178 +1,91 @@
 <script context="module">
+  import { dlabels } from '$lib/constants'
+
   export async function load({ stuff, fetch, url: { searchParams } }) {
     const { nvinfo } = stuff
-    const [status, dboard] = await load_board(fetch, nvinfo.id)
 
-    if (status) return { status, error: dboard }
+    const page = +searchParams.get('page') || 1
+    const dlbl = searchParams.get('label')
 
-    const [status_2, dtopic] = await load_topics(fetch, nvinfo.id, searchParams)
-    if (status_2) return { status: status_2, error: dtopic }
+    const api_url = `/api/boards/${nvinfo.id}/topics?page=${page}&take=${15}`
+    const api_res = await fetch(dlbl ? `${api_url}&dlabel=${dlbl}` : api_url)
 
-    return { props: { ...stuff, dboard, dtopic } }
-  }
-
-  async function load_board(fetch, id) {
-    const url = `/api/boards/${id}`
-    const res = await fetch(url)
-    if (res.ok) return [0, await res.json()]
-    return [res.status, await res.text()]
-  }
-
-  async function load_topics(fetch, board_id, query) {
-    const page = +query.get('page') || 1
-    const tlbl = query.get('tl')
-
-    const url = `/api/boards/${board_id}/topics?page=${page}&take=${15}`
-    const res = await fetch(tlbl ? `${url}&dlabel=${tlbl}` : url)
-
-    if (res.ok) return [0, await res.json()]
-    return [res.status, await res.text()]
-  }
-
-  const topic_labels = {
-    1: 'Thảo luận',
-    2: 'Chia sẻ',
-    3: 'Thắc mắc',
-    4: 'Yêu cầu',
-    5: 'Dịch thuật',
+    if (api_res.ok) return { props: { nvinfo, content: await api_res.json() } }
+    return { status: api_res.status, error: await api_res.text() }
   }
 </script>
 
 <script>
   import { page, session } from '$app/stores'
-  import { invalidate } from '$app/navigation'
   import { get_rtime } from '$atoms/RTime.svelte'
   import SIcon from '$atoms/SIcon.svelte'
-  import BookPage from '../_layout/BookPage.svelte'
-
   import Mpager, { Pager } from '$molds/Mpager.svelte'
 
   export let nvinfo
-  export let ubmemo
   // export let dboard
-  export let dtopic = { items: [], pgidx: 1, pgmax: 1 }
-
-  let form_title = ''
-  let form_label = [1]
-  let form_error = ''
+  export let content = { items: [], pgidx: 1, pgmax: 1 }
 
   $: pager = new Pager($page.url, { page: 1, tl: '' })
-
-  async function create_topic() {
-    if (form_title.length > 500) {
-      return (form_error = 'Tiêu đề quá dài!')
-    }
-
-    const url = `/api/boards/${nvinfo.id}/new`
-    const labels = form_label.map((x) => +x)
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: form_title, labels }),
-    })
-
-    if (res.ok) console.log(await res.json())
-    else form_error = await res.text()
-
-    create_new = false
-    invalidate(`/api/boards/${nvinfo.id}/topics`)
-  }
 
   const _navi = { replace: true, scrollto: '#board' }
 </script>
 
-<BookPage {nvinfo} {ubmemo} nvtab="board">
-  {#if $session.privi > 2}
-    <board-content id="board">
-      {#each dtopic.items as topic}
-        <topic-card>
-          <topic-body>
+{#if $session.privi > 2}
+  <board-content id="board">
+    {#each content.items as topic}
+      <topic-card>
+        <topic-body>
+          <a
+            class="topic-title"
+            href="/-{nvinfo.bslug}/board/-{topic.uslug}-{topic.id}">
+            {topic.title}
+          </a>
+
+          {#each topic.labels as label}
+            <a class="topic-label _{label}" href="./board?tl={label}"
+              >{dlabels[label]}</a>
+          {/each}
+        </topic-body>
+
+        <topic-foot>
+          <topic-user>{topic.u_dname}</topic-user>
+          <topic-sep>·</topic-sep>
+          <topic-time>{get_rtime(topic.ctime || 1212121200)}</topic-time>
+          <topic-sep>·</topic-sep>
+          <topic-repl>
+            {#if topic.posts > 0}
+              <span>{topic.posts} lượt trả lời</span>
+            {:else}
+              <span>Trả lời</span>
+            {/if}
+          </topic-repl>
+        </topic-foot>
+      </topic-card>
+    {:else}
+      <div class="empty">
+        <div>
+          <h4>Chưa có chủ đề thảo luận :(</h4>
+
+          <p>
             <a
-              class="topic-title"
-              href="/-{nvinfo.bslug}/board/-{topic.uslug}-{topic.id}">
-              {topic.title}
-            </a>
-
-            {#each topic.labels as label}
-              <a class="topic-label _{label}" href="./board?tl={label}"
-                >{topic_labels[label]}</a>
-            {/each}
-          </topic-body>
-
-          <topic-foot>
-            <topic-user>{topic.u_dname}</topic-user>
-            <topic-sep>·</topic-sep>
-            <topic-time>{get_rtime(topic.ctime || 1212121200)}</topic-time>
-            <topic-sep>·</topic-sep>
-            <topic-repl>
-              {#if topic.posts > 0}
-                <span>{topic.posts} lượt trả lời</span>
-              {:else}
-                <span>Trả lời</span>
-              {/if}
-            </topic-repl>
-          </topic-foot>
-        </topic-card>
-      {:else}
-        <div class="empty">Chưa có chủ đề thảo luận :(</div>
-      {/each}
-
-      {#if dtopic.total > 10}
-        <board-pagi>
-          <Mpager {pager} pgidx={dtopic.pgidx} pgmax={dtopic.pgmax} {_navi} />
-        </board-pagi>
-      {/if}
-
-      <board-form>
-        <form
-          action="/api/boards/{nvinfo.id}/new"
-          on:submit|preventDefault={create_topic}
-          method="POST">
-          <form-field>
-            <label class="form-label" for="title">Chủ đề mới</label>
-            <textarea
-              class="m-input"
-              name="title"
-              lang="vi"
-              bind:value={form_title} />
-          </form-field>
-
-          {#if form_error}
-            <form-error>{form_error}</form-error>
-          {/if}
-
-          <form-foot>
-            <form-labels>
-              <label-caption>Nhãn:</label-caption>
-
-              {#each Object.entries(topic_labels) as [value, label]}
-                <label
-                  class="topic-label _{value}"
-                  class:_active={form_label.includes(value)}
-                  ><input type="checkbox" {value} bind:group={form_label} />
-                  <label-name>{label}</label-name>
-                  {#if form_label.includes(value)}
-                    <SIcon name="check" />
-                  {/if}
-                </label>
-              {/each}
-            </form-labels>
-
-            <button
-              type="submit"
               class="m-btn _primary _fill"
-              disabled={form_title.length < 5 || form_title.length > 200}
-              on:click|preventDefault={create_topic}>
-              Tạo chủ đề</button>
-          </form-foot>
-        </form>
-      </board-form>
-    </board-content>
-  {:else}
-    <div class="empty">Chức năng đang hoàn thiện :(</div>
-  {/if}
-</BookPage>
+              href="/-{nvinfo.bslug}/board/+topic">
+              <SIcon name="message-plus" />
+              <span>Tạo chủ đề mới</span></a>
+          </p>
+        </div>
+      </div>
+    {/each}
+
+    {#if content.total > 10}
+      <board-pagi>
+        <Mpager {pager} pgidx={content.pgidx} pgmax={content.pgmax} {_navi} />
+      </board-pagi>
+    {/if}
+  </board-content>
+{:else}
+  <div class="empty">Chức năng đang hoàn thiện :(</div>
+{/if}
 
 <style lang="scss">
   board-content {
@@ -187,7 +100,7 @@
   }
 
   .empty {
-    min-height: 20vh;
+    min-height: 50vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -195,6 +108,10 @@
     font-style: italic;
     @include ftsize(lg);
     @include fgcolor(mute);
+
+    h4 {
+      margin-bottom: 1rem;
+    }
   }
 
   topic-card {
@@ -300,63 +217,5 @@
       @include fgcolor(primary, 5);
       text-decoration: underline;
     }
-  }
-
-  form-field {
-    display: block;
-  }
-
-  .form-label {
-    display: block;
-    line-height: 1.75rem;
-    font-weight: 500;
-    margin-top: 0.25rem;
-    @include fgcolor(secd);
-  }
-
-  form-foot {
-    @include flex($center: vert, $gap: 0.5rem);
-    margin-top: 0.75rem;
-  }
-
-  textarea {
-    display: block;
-    width: 100%;
-    min-height: 5.5rem;
-    max-height: 10rem;
-    font-weight: 500;
-
-    @include ftsize(lg);
-    @include fgcolor(secd);
-  }
-
-  board-form {
-    display: block;
-    margin-top: 0.25rem;
-  }
-
-  form-labels {
-    @include flex($gap: 0.25rem);
-    flex: 1;
-    flex-wrap: wrap;
-    @include ftsize(sm);
-  }
-
-  label-caption {
-    font-weight: 500;
-  }
-
-  form-error {
-    display: block;
-    line-height: 1.5rem;
-    margin-top: 0.25rem;
-    margin-bottom: -0.5rem;
-    font-style: italic;
-    @include ftsize(sm);
-    @include fgcolor(harmful, 5);
-  }
-
-  .topic-label > input {
-    display: none;
   }
 </style>

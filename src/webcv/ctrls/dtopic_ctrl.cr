@@ -39,7 +39,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
       }
     end
   rescue err
-    halt!(500, "Có lỗi!")
+    halt!(500, err.message)
   end
 
   def show

@@ -79,3 +79,11 @@ export const order_names = {
   rating: 'Đánh giá',
   weight: 'Tổng hợp',
 }
+
+export const dlabels = {
+  1: 'Thảo luận',
+  2: 'Chia sẻ',
+  3: 'Thắc mắc',
+  4: 'Yêu cầu',
+  5: 'Dịch thuật',
+}
