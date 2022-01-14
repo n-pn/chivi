@@ -79,10 +79,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     return halt!(403) unless DboardACL.dtopic_create?(dboard, _cvuser)
 
     dtopic = Dtopic.new({cvuser: _cvuser, dboard: dboard})
-    populate_dtopic(dtopic)
-
-    dtopic.save_content!
-    dboard.bump_post_count!
+    dtopic.update_content!(params)
 
     json_view do |jb|
       jb.object {
@@ -96,22 +93,21 @@ class CV::DtopicCtrl < CV::BaseCtrl
     dtopic = Dtopic.load!(params["dtopic"].to_i64)
     return halt!(403) unless DboardACL.dtopic_update?(dboard, _cvuser, dtopic)
 
-    populate_dtopic(dtopic)
-    dtopic.save_content!
+    dtopic.update_content!(params)
 
     json_view do |jb|
       jb.object {
         jb.field "dtopic" { DtopicView.render(jb, dtopic, dboard) }
       }
     end
+  rescue err
+    Log.error { err.inspect_with_backtrace }
+    halt! 500, err.message
   end
 
-  private def populate_dtopic(dtopic : Dtopic)
-    dtopic.set_title(params["title"])
-    dtopic.dlabel_ids = params.json("labels").as_a.map(&.as_i)
-    dtopic.set_utime(Time.utc.to_unix)
-
-    dtopic.dtbody.set_input(params["body_input"], params["body_itype"])
-    dtopic.brief = dtopic.dtbody.otext.split("\n", 2).first? || ""
+  def delete
+    return halt!(403) unless _cvuser.privi > 2
+    Dtopic.load!(params["dtopic"].to_i64).delete
+    json_view({msg: "ok"})
   end
 end

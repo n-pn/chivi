@@ -60,9 +60,20 @@ class CV::Dtopic
     update!({view_count: view_count + 1})
   end
 
-  def save_content!
-    self.save!
+  def update_content!(params)
+    set_utime(Time.utc.to_unix)
+
+    set_title(params["title"])
+    self.dlabel_ids = params.json("labels").as_a.map(&.as_i)
+
+    self.save! unless @id_column.defined? # make id column available
+
+    self.dtbody.cvuser_id = self.cvuser_id
+    self.dtbody.set_input(params["body_input"], params["body_itype"])
     self.dtbody.save!
+
+    self.brief = dtbody.otext.split("\n", 2).first? || ""
+    self.save!
   end
 
   #################

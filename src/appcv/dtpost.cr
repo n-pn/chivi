@@ -34,6 +34,8 @@ class CV::Dtpost
   timestamps
 
   def set_input(input : String, itype = "md")
+    self.utime = Time.utc.to_unix
+
     self.input = input
     self.itype = itype
     self.ohtml = PostUtil.md_to_html(input)

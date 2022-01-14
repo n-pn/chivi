@@ -55,7 +55,7 @@
   import Gmodal from '$molds/Gmodal.svelte'
 
   export let dboard = { id: 0, bname: 'Thảo luận' }
-  export let on_destroy = () => {}
+  export let on_destroy = () => window.location.reload()
 
   $: on_edit = $ctrl.id > 0
   $: api_url = make_api_endpoint(dboard.id, on_edit)
@@ -74,6 +74,7 @@
   async function submit() {
     if (is_invalid_form($form)) return
 
+    console.log({ api_url })
     const res = await fetch(api_url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

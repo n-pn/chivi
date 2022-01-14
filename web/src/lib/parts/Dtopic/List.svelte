@@ -97,6 +97,7 @@
   topic-brief {
     display: block;
     @include fgcolor(tert);
+    font-style: italic;
   }
 
   topic-foot {

@@ -71,7 +71,7 @@
       </board-foot>
     {/if}
 
-    {#if dtopic_form.actived}<DtopicForm {dboard} />{/if}
+    {#if $dtopic_form.actived}<DtopicForm {dboard} />{/if}
   </board-content>
 </BookPage>
 
