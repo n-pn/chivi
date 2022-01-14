@@ -13,6 +13,7 @@ class CV::Dtopic
 
   column title : String = ""
   column tslug : String = ""
+  column brief : String = ""
 
   column state : Int32 = 0 # 0: normal, 1: sticky, -1: locked, -2: deleted, -3: removed
   column utime : Int64 = 0 # update when new post created
@@ -57,6 +58,11 @@ class CV::Dtopic
 
   def bump_view_count!
     update!({view_count: view_count + 1})
+  end
+
+  def save_content!
+    self.save!
+    self.dtbody.save!
   end
 
   #################

@@ -22,6 +22,11 @@ class CV::Dboard
     update!({views: views + 1})
   end
 
+  def bump_post_count!
+    update!({posts: posts + 1})
+    Nvinfo.load!(id).update!({dtopic_count: posts}) if id > 0
+  end
+
   #################
 
   CACHE_INT = RamCache(Int64, self).new(2048, ttl: 2.hours)

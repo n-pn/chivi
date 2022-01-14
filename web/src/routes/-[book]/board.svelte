@@ -61,15 +61,17 @@
       </board-pagi>
     {/if}
 
-    <board-foot>
-      <button class="m-btn _primary _fill" on:click={() => dtopic_form.show(0)}>
-        <SIcon name="message-plus" />
-        <span>Tạo chủ đề mới</span></button>
-    </board-foot>
-
-    {#if $session.privi > 0 && $dtopic_form.actived}
-      <DtopicForm {dboard} />
+    {#if $session.privi > 2}
+      <board-foot>
+        <button
+          class="m-btn _primary _fill"
+          on:click={() => dtopic_form.show(0)}>
+          <SIcon name="message-plus" />
+          <span>Tạo chủ đề mới</span></button>
+      </board-foot>
     {/if}
+
+    {#if dtopic_form.actived}<DtopicForm {dboard} />{/if}
   </board-content>
 </BookPage>
 

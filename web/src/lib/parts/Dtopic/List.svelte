@@ -1,14 +1,19 @@
-<script>
+<script context="module">
+  import { session } from '$app/stores'
   import { dlabels } from '$lib/constants'
   import { get_rtime } from '$atoms/RTime.svelte'
 
+  import DtopicForm, { ctrl as dtopic_form } from '$parts/Dtopic/Form.svelte'
+</script>
+
+<script>
   export let topics = []
   export let dboard = {}
 </script>
 
 {#each topics as topic}
   <topic-card>
-    <topic-body>
+    <topic-title>
       <a
         class="topic-title"
         href="/board/-{dboard.bslug}/-{topic.tslug}-{topic.id}">
@@ -18,7 +23,9 @@
       {#each topic.labels as label}
         <a class="m-label _{label}" href="?label={label}">{dlabels[label]}</a>
       {/each}
-    </topic-body>
+    </topic-title>
+
+    <topic-brief>{topic.brief}</topic-brief>
 
     <topic-foot>
       <topic-user>{topic.u_dname}</topic-user>
@@ -32,6 +39,12 @@
           <span>Trả lời</span>
         {/if}
       </topic-repl>
+      {#if $session.privi > 3 || $session.uname == topic.u_dname}
+        <topic-sep>·</topic-sep>
+        <topic-action on:click={() => dtopic_form.show(topic.id)}>
+          <span>Sửa</span>
+        </topic-action>
+      {/if}
     </topic-foot>
   </topic-card>
 {:else}
@@ -39,6 +52,8 @@
     <h4>Chưa có chủ đề thảo luận :(</h4>
   </div>
 {/each}
+
+{#if dtopic_form.actived}<DtopicForm {dboard} />{/if}
 
 <style lang="scss">
   .empty {
@@ -67,6 +82,23 @@
     }
   }
 
+  topic-title {
+    display: block;
+    padding-top: 0.5rem;
+
+    @include bps(font-size, rem(16px), rem(17px));
+
+    cursor: pointer;
+    &:hover .topic-title {
+      @include fgcolor(primary, 5);
+    }
+  }
+
+  topic-brief {
+    display: block;
+    @include fgcolor(tert);
+  }
+
   topic-foot {
     @include flex($gap: 0.25rem);
     line-height: 2rem;
@@ -81,18 +113,6 @@
   topic-user {
     font-weight: 200;
     // @include ftsize(md);
-  }
-
-  topic-body {
-    display: block;
-    padding-top: 0.5rem;
-
-    @include bps(font-size, rem(16px), rem(17px));
-
-    cursor: pointer;
-    &:hover .topic-title {
-      @include fgcolor(primary, 5);
-    }
   }
 
   .topic-title {
@@ -111,6 +131,10 @@
       @include fgcolor(primary, 5);
       text-decoration: underline;
     }
+  }
+
+  topic-action {
+    cursor: pointer;
   }
 
   .m-label + .m-label {

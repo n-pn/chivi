@@ -14,6 +14,7 @@ module CV::DtopicView
 
       jb.field "title", dtopic.title
       jb.field "tslug", dtopic.tslug
+      jb.field "brief", dtopic.brief
 
       jb.field "labels", dtopic.dlabel_ids
 

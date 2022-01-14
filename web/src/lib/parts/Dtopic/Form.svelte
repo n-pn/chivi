@@ -1,6 +1,5 @@
 <script context="module">
   import { writable } from 'svelte/store'
-  import { session } from '$app/stores'
   import { dlabels } from '$lib/constants'
 
   function build_labels(labels) {
@@ -152,8 +151,8 @@
           disabled={is_invalid_form($form)}
           on:click|preventDefault={submit}>
           <SIcon name="send" />
-          <span
-            >{#if on_edit}Lưu nội dung{:else}Tạo chủ đề{/if}</span>
+          <!-- prettier-ignore -->
+          <span>{#if on_edit}Lưu nội dung{:else}Tạo chủ đề{/if}</span>
         </button>
       </form-foot>
     </form>

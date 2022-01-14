@@ -1,4 +1,4 @@
-require "cmark"
+require "../_util/post_util"
 
 class CV::Dtpost
   include Clear::Model
@@ -33,34 +33,26 @@ class CV::Dtpost
 
   timestamps
 
-  OPTS = Cmark::Option.flags(Hardbreaks, ValidateUTF8, FullInfoString)
-
   def set_input(input : String, itype = "md")
     self.input = input
     self.itype = itype
-    self.ohtml = Cmark.gfm_to_html(input, OPTS)
+    self.ohtml = PostUtil.md_to_html(input)
 
     self.ohtml, self.tagged_ids = extract_user_ids(self.ohtml)
-    self.odesc = extract_desc(self.ohtml)
+    self.otext = PostUtil.html_to_text(self.ohtml)
   end
 
   def extract_user_ids(input : String)
     users = [] of Int64
 
-    input = input.gsub(/@\[(.+?)\]/) do |str|
-      users << Cvuser.load!($1).id
-      "<cv-user>@#{$1}</cv-user>"
+    output = input.gsub(/@\[(.+?)\]/) do |str|
+      user = Cvuser.load!($1)
+      users << user.id
+      "<cv-user>@[#{user.uname}]</cv-user>"
     rescue
       str
     end
 
-    {input, users}
-  end
-
-  DESC_RE = Regex.new("<p>(.+)<\\/p>", :multiline)
-
-  def extract_desc(input : String)
-    return "" unless match = DESC_RE.match(input)
-    match[1]
+    {output, users}
   end
 end

@@ -80,7 +80,9 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
     dtopic = Dtopic.new({cvuser: _cvuser, dboard: dboard})
     populate_dtopic(dtopic)
-    dboard.update!({posts: dboard.posts + 1}) if dtopic.save
+
+    dtopic.save_content!
+    dboard.bump_post_count!
 
     json_view do |jb|
       jb.object {
@@ -95,7 +97,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
     return halt!(403) unless DboardACL.dtopic_update?(dboard, _cvuser, dtopic)
 
     populate_dtopic(dtopic)
-    dtopic.save!
+    dtopic.save_content!
 
     json_view do |jb|
       jb.object {
@@ -108,5 +110,8 @@ class CV::DtopicCtrl < CV::BaseCtrl
     dtopic.set_title(params["title"])
     dtopic.dlabel_ids = params.json("labels").as_a.map(&.as_i)
     dtopic.set_utime(Time.utc.to_unix)
+
+    dtopic.dtbody.set_input(params["body_input"], params["body_itype"])
+    dtopic.brief = dtopic.dtbody.otext.split("\n", 2).first? || ""
   end
 end
